@@ -154,13 +154,10 @@ case "$SYSTEM_NAME" in
 		find ${frameworksPath}/ -name Headers -exec rm -rf {} \; || true
 		find ${frameworksPath}/ -name Resources -exec rm -rf {} \; || true
 
-		SDK=/Developer/SDKs/MacOSX10.5.sdk
-		if [ ! -d $SDK ] ; then
-			SDK=/usr/lib/apple/SDKs/MacOSX10.5.sdk
-		fi
+		SDK=@CMAKE_OSX_SYSROOT@
 
 		# copy libs
-		for LIBNAME in miniupnpc.5 boost_system boost_filesystem boost_iostreams boost_thread boost_locale boost_program_options ; do
+		for LIBNAME in boost_system boost_filesystem boost_iostreams boost_thread boost_locale boost_program_options ; do
 			LIB=/usr/lib/lib${LIBNAME}.dylib
 			if [ -f $SDK$LIB ] ; then
 				cp -rv $SDK$LIB ${macOSPath} || exit 1
@@ -169,6 +166,15 @@ case "$SYSTEM_NAME" in
 				exit 1
 			fi
 		done
+        LIB=/usr/lib/libminiupnpc.5.dylib
+        if [ -f $SDK$LIB ] ; then
+            cp -rv $SDK$LIB ${macOSPath} || exit 1
+        else
+            LIB=/usr/lib/libminiupnpc.16.dylib
+            cp -rv $SDK$LIB ${macOSPath} || exit 1
+            LIB=/usr/lib/libminiupnpc.2.0.dylib
+            cp -rv $SDK$LIB ${macOSPath} || exit 1
+        fi
 
 		mkdir -vp ${macOSPath}/bin || exit 1
 		mkdir -vp ${macOSPath}/libexec || exit 1
