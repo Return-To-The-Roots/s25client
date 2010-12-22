@@ -1,0 +1,10 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Return To The Roots
+Comment=A Settlers II Remake
+Comment[de]=Eine Siedler II Nachprogrammierung
+Exec=rttr.sh noupdate
+Icon=s25rttr.png
+Terminal=true
+Type=Application
+Categories=Game;StrategyGame;

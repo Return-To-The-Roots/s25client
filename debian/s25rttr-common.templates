@@ -1,0 +1,15 @@
+Template: s25rttr-common/cdpath
+Type: string
+Default: /media/cdrom0
+Description: Where is your Settlers II CD?
+ If you want to cancel, enter an empty string instead
+
+Template: s25rttr-common/invalidpath
+Type: note
+Description: Was not able to find a suitable Settlers II Gold CD!
+ The path you provided did not contain a "s2" directory, in which "data" and "gfx" have to be!
+
+Template: s25rttr-common/cancel
+Type: note
+Description: You have to copy the directories DATA and GFX by yourself into /usr/share/s25rttr/S2
+ You also have to make sure, that all files and directories in it are uppercase.

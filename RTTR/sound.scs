@@ -1,0 +1,123 @@
+#
+# you can use some special commands in here:
+# if <itemnr> is "empty", an empty item will be inserted,
+# if <itemnr> is "copy", the item <source-frequency> will be copied.
+#
+# if <source-frequency> is 0, an empty item will be inserted
+#
+# <itemnr> <source-frequency>
+copy 0
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+051 11025
+052 11025
+053 11025
+054 11025
+055 11025
+056 11025
+057 11025
+058 11025
+059 11025
+empty
+061 11025
+062 11025
+empty
+064 11025
+065 11025
+066 11025
+067 11025
+068 11025
+069 11025
+070 11025
+empty
+072 11025
+empty
+074 11025
+empty
+076 11025
+077 11025
+078 6000
+empty
+empty
+081 11025
+082 9000
+empty
+084 11025
+085 11025
+086 11025
+087 11025
+088 11025
+089 11025
+090 11025
+091 11025
+092 11025
+093 11025
+094 6000
+095 11025
+096 11025
+empty
+098 11025
+099 11025
+100 11025
+101 11025
+102 11025
+103 11025
+104 06500
+105 10025
+empty
+107 9000
+empty
+109 11025
+110 9000
+111 11025
+112 11025
+113 11025
+114 11025

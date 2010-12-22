@@ -1,0 +1,137 @@
+#!/usr/bin/make -f
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+ifeq ($(DH_VERBOSE),1)
+	CMAKE_VERBOSE=--enable-verbose
+else
+	CMAKE_VERBOSE=
+endif
+
+# todo: if we're doing a native amd64 build, the 32bit build will be cross!
+ifeq ($(DEB_HOST_ARCH),amd64)
+	CMAKE_ARCH=--arch=c.linux.x86_64
+else
+	CMAKE_ARCH=
+endif
+
+VERSION="$$(head debian/changelog -n 1 | cut -d '-' -f 1 | cut -d '(' -f 2)"
+REVISION="$$(head debian/changelog -n 1 | cut -d '-' -f 2 | cut -d ')' -f 1)"
+
+# create .svn/entries with values from debian/changelog for version tool
+.svn/entries:
+	mkdir -p .svn && \
+	echo "10" > .svn/entries && \
+	echo "" >> .svn/entries && \
+	echo "dir" >> .svn/entries && \
+	echo "$$(head debian/changelog -n 1 | cut -d '-' -f 2 | cut -d ')' -f 1)" >> .svn/entries
+
+# configure
+build/Makefile: .svn/entries
+	dh_testdir
+
+	# Add here commands to configure the package.
+	chmod 0755 ./build/cmake.sh && \
+	cd build && ./cmake.sh --prefix=/usr $(CMAKE_VERBOSE) $(CMAKE_ARCH) -DCMAKE_C_FLAGS="$(CFLAGS)" -DCMAKE_LD_FLAGS="-Wl,-z,defs" -DCMAKE_CXX_FLAGS="$(CXXFLAGS)" -DCMAKE_SKIP_RPATH=ON
+
+	# force version
+	cp ./build_version.h.cmake ./build/build_version.h
+	sed -i "s/\"20000211\"/\"${VERSION}\"/g;s/\"0\"/\"${REVISION}\"/g" ./build/build_version.h
+	touch ./build/build_version.h.force
+
+# and make
+build: build-stamp
+
+build-stamp: build/Makefile 
+	dh_testdir
+
+	# Add here commands to compile the package.
+	$(MAKE) -C build -j 3
+
+	touch $@
+
+# clean up
+clean: 
+	dh_testdir
+	dh_testroot
+	rm -f build-stamp 
+
+	# Add here commands to clean up after the build process.
+	chmod 0755 ./build/cleanup.sh
+	cd build && ./cleanup.sh
+
+	dh_clean 
+
+# install
+install: build
+	dh_testdir
+	dh_testroot
+	dh_prep
+	dh_installdirs
+
+	# Add here commands to install the package into debian/s25rttr.
+	$(MAKE) -C build DESTDIR=$(CURDIR)/debian/s25rttr install
+	
+	# copy menu items
+	mkdir -vp $(CURDIR)/debian/s25rttr/usr/share/pixmaps $(CURDIR)/debian/s25rttr/usr/share/applications
+	cp -v $(CURDIR)/debian/s25rttr.png $(CURDIR)/debian/s25rttr/usr/share/pixmaps/
+	cp -v $(CURDIR)/debian/s25rttr.desktop $(CURDIR)/debian/s25rttr/usr/share/applications/
+	
+	# remove updater
+	rm -vf $(CURDIR)/debian/s25rttr/usr/share/s25rttr/RTTR/s25update
+	
+	# move maps to maps-package
+	mkdir -vp $(CURDIR)/debian/s25rttr-maps/usr/share/s25rttr/RTTR
+	mv -v $(CURDIR)/debian/s25rttr/usr/share/s25rttr/RTTR/MAPS $(CURDIR)/debian/s25rttr-maps/usr/share/s25rttr/RTTR
+
+	# move music to music-package
+	mkdir -vp $(CURDIR)/debian/s25rttr-music/usr/share/s25rttr/RTTR
+	mv -v $(CURDIR)/debian/s25rttr/usr/share/s25rttr/RTTR/MUSIC $(CURDIR)/debian/s25rttr-music/usr/share/s25rttr/RTTR
+
+	# move data to common-package (except drivers)
+	mkdir -vp $(CURDIR)/debian/s25rttr-common/usr/share/s25rttr
+	mv -v $(CURDIR)/debian/s25rttr/usr/share/s25rttr/S2/* $(CURDIR)/debian/s25rttr-common/usr/share/s25rttr/S2
+	mv -v $(CURDIR)/debian/s25rttr/usr/share/s25rttr/RTTR/* $(CURDIR)/debian/s25rttr-common/usr/share/s25rttr/RTTR
+		
+	# move sound-convert binaries back ...
+	mkdir -vp $(CURDIR)/debian/s25rttr/usr/share/s25rttr/RTTR
+	mv -v $(CURDIR)/debian/s25rttr-common/usr/share/s25rttr/RTTR/s-c_resample $(CURDIR)/debian/s25rttr/usr/share/s25rttr/RTTR
+	mv -v $(CURDIR)/debian/s25rttr-common/usr/share/s25rttr/RTTR/sound-convert $(CURDIR)/debian/s25rttr/usr/share/s25rttr/RTTR
+
+# Build architecture-independent files here.
+binary-indep: install
+
+# Build architecture-dependent files here.
+binary-arch: install
+	dh_testdir
+	dh_testroot
+	dh_installchangelogs 
+#	dh_installdocs
+#	dh_installexamples
+#	dh_install
+	dh_installmenu
+	dh_installdebconf
+#	dh_installlogrotate
+#	dh_installemacsen
+#	dh_installpam
+#	dh_installmime
+#	dh_python
+#	dh_installinit
+#	dh_installcron
+#	dh_installinfo
+#	dh_installman
+	dh_link
+#	dh_strip --dbg-package=s25rttr-dbg
+	dh_compress
+	dh_fixperms
+#	dh_perl
+#	dh_makeshlibs
+	dh_installdeb
+#	dh_shlibdeps
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
+
+binary: binary-indep binary-arch
+.PHONY: build clean binary-indep binary-arch binary install 

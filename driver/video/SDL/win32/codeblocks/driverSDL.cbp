@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="driverSDL" />
+		<Option pch_mode="0" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="default">
+				<Option output="..\..\..\driverSDL.dll" prefix_auto="0" extension_auto="0" />
+				<Option object_output="DEBUG" />
+				<Option type="3" />
+				<Option compiler="gcc" />
+				<Option createStaticLib="1" />
+				<Compiler>
+					<Add option="-Wall" />
+					<Add option="-g" />
+					<Add directory="..\..\..\..\src" />
+				</Compiler>
+				<Linker>
+					<Add library="SDL" />
+				</Linker>
+			</Target>
+		</Build>
+		<VirtualTargets>
+			<Add alias="All" targets="default;" />
+		</VirtualTargets>
+		<Compiler>
+			<Add option="-DBUILD_DLL" />
+		</Compiler>
+		<Unit filename="..\..\..\..\src\AudioDriver.cpp" />
+		<Unit filename="..\..\..\..\src\AudioDriver.h" />
+		<Unit filename="..\..\..\..\src\AudioInterface.cpp" />
+		<Unit filename="..\..\..\..\src\AudioInterface.h" />
+		<Unit filename="..\..\..\..\src\DriverInterface.h" />
+		<Unit filename="..\..\..\..\src\VideoDriver.cpp" />
+		<Unit filename="..\..\..\..\src\VideoDriver.h" />
+		<Unit filename="..\..\..\..\src\VideoInterface.cpp" />
+		<Unit filename="..\..\..\..\src\VideoInterface.h" />
+		<Unit filename="..\..\..\..\src\main.h" />
+		<Unit filename="..\..\src\SDL.cpp" />
+		<Unit filename="..\..\src\SDL.h" />
+		<Unit filename="..\..\src\main.h" />
+		<Unit filename="..\..\..\..\..\build_version.cpp" />
+		<Unit filename="..\..\..\..\..\build_version.h" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

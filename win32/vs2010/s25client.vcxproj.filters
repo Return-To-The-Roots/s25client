@@ -1,0 +1,1663 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Headerdateien">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Quelldateien">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Quelldateien\Allgemein">
+      <UniqueIdentifier>{0c2c5035-c290-4349-8c57-a99eed087b2d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\GUI">
+      <UniqueIdentifier>{f09eff8f-4a6a-4786-a54d-56eda8e0bfc2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\GUI\Controls">
+      <UniqueIdentifier>{068144a5-b969-4555-a5cc-896b8419b2a2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\GUI\Fenster">
+      <UniqueIdentifier>{a12f37af-d632-42af-a89c-12ff4ce4277f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\GUI\Fenster\Desktops">
+      <UniqueIdentifier>{621c0273-5141-41c4-8b81-c037bc69e644}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\GUI\Fenster\IngameWindows">
+      <UniqueIdentifier>{3d43faa4-5ce3-4e16-ada1-8d0289443bb3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\GUI\Hilfsfunktionen und -klassen">
+      <UniqueIdentifier>{4ae80c0c-967c-400a-bec4-33d0a4833d29}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\KI">
+      <UniqueIdentifier>{bea209fe-e1ea-4ed3-9194-7cc28e8979d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Loader">
+      <UniqueIdentifier>{3378c92c-20ee-4b66-9aa7-c1c15bb656ce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Loader\glLibSiedler2">
+      <UniqueIdentifier>{eb7993b8-2af5-434d-907a-9a89d8a0dde0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Netzwerk">
+      <UniqueIdentifier>{6d9b10e4-2fbd-4b80-8371-2566194b45ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Netzwerk\Spiel">
+      <UniqueIdentifier>{a4d51624-96cf-4461-8ce9-e9dbf3442af3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Spiel">
+      <UniqueIdentifier>{28170663-a604-4454-a1fe-77d66701c951}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Spiel\Addons">
+      <UniqueIdentifier>{197fdc00-3a72-451f-a004-87659475cf73}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Spiel\Knotenobjekte">
+      <UniqueIdentifier>{757f5fea-0e72-4050-ac5d-47cef6e34b59}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Spiel\Knotenobjekte\Gebäude">
+      <UniqueIdentifier>{7075e75e-d8b7-4307-9bed-f2be33308be3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Spiel\Knotenobjekte\Menschen">
+      <UniqueIdentifier>{000ee99d-51c8-4a60-945a-8f2888e69367}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Spiel\Knotenobjekte\Menschen\Soldaten">
+      <UniqueIdentifier>{ff8d82d1-3df0-45e9-abc1-1f753d44005d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Spiel\Knotenobjekte\Objekte">
+      <UniqueIdentifier>{f1a5667c-a461-444f-ae61-6fecc1c6c40a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Spiel\Konstanten">
+      <UniqueIdentifier>{1ed901ad-658c-4e2b-b95b-0c0ab60dd0c2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Treiber/Grafik">
+      <UniqueIdentifier>{17aede06-ad5e-4151-a815-423fd31746b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resourcendateien">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\build_paths.h">
+      <Filter>Quelldateien\Allgemein</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\AddonChangeGoldDeposits.h">
+      <Filter>Quelldateien\Spiel\Addons</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\AddonCharburner.h">
+      <Filter>Quelldateien\Spiel\Addons</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\AddonCustomBuildSequence.h">
+      <Filter>Quelldateien\Spiel\Addons</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\AddonDefenderBehavior.h">
+      <Filter>Quelldateien\Spiel\Addons</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\AddonDemolitionProhibition.h">
+      <Filter>Quelldateien\Spiel\Addons</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\AddonExhaustibleWells.h">
+      <Filter>Quelldateien\Spiel\Addons</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\AddonInexhaustibleMines.h">
+      <Filter>Quelldateien\Spiel\Addons</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\AddonLimitCatapults.h">
+      <Filter>Quelldateien\Spiel\Addons</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\AddonManager.h">
+      <Filter>Quelldateien\Spiel\Addons</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\AddonManualRoadEnlargement.h">
+      <Filter>Quelldateien\Spiel\Addons</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\AddonMaxWaterwayLength.h">
+      <Filter>Quelldateien\Spiel\Addons</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\AddonNoCoinsDefault.h">
+      <Filter>Quelldateien\Spiel\Addons</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\AddonRefundMaterials.h">
+      <Filter>Quelldateien\Spiel\Addons</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\AddonRefundOnEmergency.h">
+      <Filter>Quelldateien\Spiel\Addons</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Addons.h">
+      <Filter>Quelldateien\Spiel\Addons</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\AddonStatisticsVisibility.h">
+      <Filter>Quelldateien\Spiel\Addons</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\AIBase.h">
+      <Filter>Quelldateien\KI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\AIConstruction.h">
+      <Filter>Quelldateien\KI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\AIEventManager.h">
+      <Filter>Quelldateien\KI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\AIJHHelper.h">
+      <Filter>Quelldateien\KI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\AIPlayer.h">
+      <Filter>Quelldateien\KI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\AIPlayerJH.h">
+      <Filter>Quelldateien\KI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\AIResourceMap.h">
+      <Filter>Quelldateien\KI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\AudioDriverWrapper.h">
+      <Filter>Quelldateien\Treiber/Grafik</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\BinaryFile.h">
+      <Filter>Quelldateien\GUI\Hilfsfunktionen und -klassen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\BuildingConsts.h">
+      <Filter>Quelldateien\Spiel\Konstanten</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\BurnedWarehouse.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Objekte</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\CatapultStone.h">
+      <Filter>Quelldateien\Spiel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\ClientInterface.h">
+      <Filter>Quelldateien\Netzwerk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\CollisionDetection.h">
+      <Filter>Quelldateien\GUI\Hilfsfunktionen und -klassen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\const_addons.h">
+      <Filter>Quelldateien\Spiel\Addons</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\const_gui_ids.h">
+      <Filter>Quelldateien\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\controls.h">
+      <Filter>Quelldateien\GUI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\ctrlBuildingIcon.h">
+      <Filter>Quelldateien\GUI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\ctrlButton.h">
+      <Filter>Quelldateien\GUI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\ctrlChat.h">
+      <Filter>Quelldateien\GUI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\ctrlCheck.h">
+      <Filter>Quelldateien\GUI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\ctrlComboBox.h">
+      <Filter>Quelldateien\GUI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\ctrlDeepening.h">
+      <Filter>Quelldateien\GUI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\ctrlEdit.h">
+      <Filter>Quelldateien\GUI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\ctrlGroup.h">
+      <Filter>Quelldateien\GUI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\ctrlImage.h">
+      <Filter>Quelldateien\GUI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\ctrlIngameMinimap.h">
+      <Filter>Quelldateien\GUI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\ctrlList.h">
+      <Filter>Quelldateien\GUI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\ctrlMinimap.h">
+      <Filter>Quelldateien\GUI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\ctrlMultiline.h">
+      <Filter>Quelldateien\GUI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\ctrlMultiSelectGroup.h">
+      <Filter>Quelldateien\GUI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\ctrlOptionGroup.h">
+      <Filter>Quelldateien\GUI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\ctrlPercent.h">
+      <Filter>Quelldateien\GUI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\ctrlPreviewMinimap.h">
+      <Filter>Quelldateien\GUI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\ctrlProgress.h">
+      <Filter>Quelldateien\GUI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\ctrlRectangle.h">
+      <Filter>Quelldateien\GUI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\ctrlScrollBar.h">
+      <Filter>Quelldateien\GUI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\ctrlTab.h">
+      <Filter>Quelldateien\GUI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\ctrlTable.h">
+      <Filter>Quelldateien\GUI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\ctrlText.h">
+      <Filter>Quelldateien\GUI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\ctrlTimer.h">
+      <Filter>Quelldateien\GUI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\ctrlVarDeepening.h">
+      <Filter>Quelldateien\GUI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\ctrlVarText.h">
+      <Filter>Quelldateien\GUI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\customborderbuilder.h">
+      <Filter>Quelldateien\GUI\Hilfsfunktionen und -klassen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Desktop.h">
+      <Filter>Quelldateien\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\DoorConsts.h">
+      <Filter>Quelldateien\Spiel\Konstanten</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\DriverLoaderInterface.h">
+      <Filter>Quelldateien\Treiber/Grafik</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\DriverWrapper.h">
+      <Filter>Quelldateien\Treiber/Grafik</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\dskAboutRTTR.h">
+      <Filter>Quelldateien\GUI\Fenster\Desktops</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\dskCredits.h">
+      <Filter>Quelldateien\GUI\Fenster\Desktops</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\dskDirectIP.h">
+      <Filter>Quelldateien\GUI\Fenster\Desktops</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\dskGameInterface.h">
+      <Filter>Quelldateien\GUI\Fenster\Desktops</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\dskGameLoader.h">
+      <Filter>Quelldateien\GUI\Fenster\Desktops</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\dskHostGame.h">
+      <Filter>Quelldateien\GUI\Fenster\Desktops</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\dskIntro.h">
+      <Filter>Quelldateien\GUI\Fenster\Desktops</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\dskLobby.h">
+      <Filter>Quelldateien\GUI\Fenster\Desktops</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\dskMainMenu.h">
+      <Filter>Quelldateien\GUI\Fenster\Desktops</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\dskMultiPlayer.h">
+      <Filter>Quelldateien\GUI\Fenster\Desktops</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\dskOptions.h">
+      <Filter>Quelldateien\GUI\Fenster\Desktops</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\dskSelectMap.h">
+      <Filter>Quelldateien\GUI\Fenster\Desktops</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\dskSinglePlayer.h">
+      <Filter>Quelldateien\GUI\Fenster\Desktops</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\dskSplash.h">
+      <Filter>Quelldateien\GUI\Fenster\Desktops</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\EventManager.h">
+      <Filter>Quelldateien\Spiel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\ExtensionList.h">
+      <Filter>Quelldateien\Treiber/Grafik</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\FileChecksum.h">
+      <Filter>Quelldateien\GUI\Hilfsfunktionen und -klassen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\FOWObjects.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GameClient.h">
+      <Filter>Quelldateien\Netzwerk\Spiel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GameClientPlayer.h">
+      <Filter>Quelldateien\Spiel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GameCommands.h">
+      <Filter>Quelldateien\Netzwerk\Spiel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GameConsts.h">
+      <Filter>Quelldateien\Spiel\Konstanten</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GameInterface.h">
+      <Filter>Quelldateien\Spiel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GameManager.h">
+      <Filter>Quelldateien\Allgemein</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GameMessage.h">
+      <Filter>Quelldateien\Netzwerk\Spiel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GameMessageInterface.h">
+      <Filter>Quelldateien\Netzwerk\Spiel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GameMessages.h">
+      <Filter>Quelldateien\Netzwerk\Spiel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GameObject.h">
+      <Filter>Quelldateien\Spiel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GamePlayerInfo.h">
+      <Filter>Quelldateien\Netzwerk\Spiel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GameProtocol.h">
+      <Filter>Quelldateien\Netzwerk\Spiel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GameReplay.h">
+      <Filter>Quelldateien\Spiel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GameSavedFile.h">
+      <Filter>Quelldateien\Spiel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GameSavegame.h">
+      <Filter>Quelldateien\Spiel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GameServer.h">
+      <Filter>Quelldateien\Netzwerk\Spiel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GameServerPlayer.h">
+      <Filter>Quelldateien\Netzwerk\Spiel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GameWorld.h">
+      <Filter>Quelldateien\Spiel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\glAllocator.h">
+      <Filter>Quelldateien\Loader\glLibSiedler2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\glArchivItem_Bitmap.h">
+      <Filter>Quelldateien\Loader\glLibSiedler2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\glArchivItem_Bitmap_Direct.h">
+      <Filter>Quelldateien\Loader\glLibSiedler2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\glArchivItem_Bitmap_Player.h">
+      <Filter>Quelldateien\Loader\glLibSiedler2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\glArchivItem_Bitmap_Raw.h">
+      <Filter>Quelldateien\Loader\glLibSiedler2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\glArchivItem_Bitmap_RLE.h">
+      <Filter>Quelldateien\Loader\glLibSiedler2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\glArchivItem_Bitmap_Shadow.h">
+      <Filter>Quelldateien\Loader\glLibSiedler2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\glArchivItem_Bob.h">
+      <Filter>Quelldateien\Loader\glLibSiedler2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\glArchivItem_Font.h">
+      <Filter>Quelldateien\Loader\glLibSiedler2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\glArchivItem_Map.h">
+      <Filter>Quelldateien\Loader\glLibSiedler2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\glArchivItem_Music.h">
+      <Filter>Quelldateien\Loader\glLibSiedler2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\glArchivItem_Sound.h">
+      <Filter>Quelldateien\Loader\glLibSiedler2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\glArchivItem_Sound_Midi.h">
+      <Filter>Quelldateien\Loader\glLibSiedler2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\glArchivItem_Sound_Other.h">
+      <Filter>Quelldateien\Loader\glLibSiedler2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\glArchivItem_Sound_Wave.h">
+      <Filter>Quelldateien\Loader\glLibSiedler2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\glArchivItem_Sound_XMidi.h">
+      <Filter>Quelldateien\Loader\glLibSiedler2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GlobalGameSettings.h">
+      <Filter>Quelldateien\Spiel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GlobalVars.h">
+      <Filter>Quelldateien\Allgemein</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\IngameWindow.h">
+      <Filter>Quelldateien\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\iwAction.h">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\iwAddons.h">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\iwAIDebug.h">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\iwBaseWarehouse.h">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\iwBuilding.h">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\iwBuildingProductivities.h">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\iwBuildings.h">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\iwBuildingSite.h">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\iwBuildOrder.h">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\iwChat.h">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\iwDemolishBuilding.h">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\iwDiplomacy.h">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\iwDirectIPConnect.h">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\iwDirectIPCreate.h">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\iwDistribution.h">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\iwEndgame.h">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\iwHarborBuilding.h">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\iwHelp.h">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\iwHQ.h">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\iwInventory.h">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\iwLobbyConnect.h">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\iwLobbyRanking.h">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\iwLobbyServerInfo.h">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\iwMainMenu.h">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\iwMerchandiseStatistics.h">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\iwMilitary.h">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\iwMilitaryBuilding.h">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\iwMinimap.h">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\iwMsgbox.h">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\iwMusicPlayer.h">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\iwOptionsWindow.h">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\iwPlayReplay.h">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\iwPleaseWait.h">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\iwPostWindow.h">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\iwRoadWindow.h">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\iwSave.h">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\iwSettings.h">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\iwShip.h">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\iwSkipGFs.h">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\iwStatistics.h">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\iwStorehouse.h">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\iwSurrender.h">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\iwTextfile.h">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\iwTools.h">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\iwTransport.h">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\iwWares.h">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\JobConsts.h">
+      <Filter>Quelldateien\Spiel\Konstanten</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\languages.h">
+      <Filter>Quelldateien\Allgemein</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\list.h">
+      <Filter>Quelldateien\GUI\Hilfsfunktionen und -klassen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\ListDir.h">
+      <Filter>Quelldateien\GUI\Hilfsfunktionen und -klassen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Loader.h">
+      <Filter>Quelldateien\Loader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\macros.h">
+      <Filter>Quelldateien\Allgemein</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\main.h">
+      <Filter>Quelldateien\Allgemein</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\MapConsts.h">
+      <Filter>Quelldateien\Spiel\Konstanten</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\MapGeometry.h">
+      <Filter>Quelldateien\Spiel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Messenger.h">
+      <Filter>Quelldateien\Spiel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\MilitaryConsts.h">
+      <Filter>Quelldateien\Spiel\Konstanten</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Minimap.h">
+      <Filter>Quelldateien\Spiel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\MinimapConsts.h">
+      <Filter>Quelldateien\Spiel\Konstanten</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\MusicPlayer.h">
+      <Filter>Quelldateien\Spiel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\noAnimal.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\noBase.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\noBaseBuilding.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\nobBaseMilitary.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Gebäude</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\nobBaseWarehouse.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Gebäude</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\nobHarborBuilding.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Gebäude</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\nobHQ.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Gebäude</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\nobMilitary.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Gebäude</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\nobShipYard.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Gebäude</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\nobStorehouse.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Gebäude</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\noBuilding.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\noBuildingSite.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Objekte</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\nobUsual.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Gebäude</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\noCharburnerPile.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Objekte</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\noCoordBase.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\NodalObjectTypes.h">
+      <Filter>Quelldateien\Spiel\Konstanten</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Node.h">
+      <Filter>Quelldateien\Spiel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\noDisappearingEnvObject.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Objekte</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\noDisappearingMapEnvObject.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Objekte</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\noEnvObject.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Objekte</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\noExtension.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Objekte</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\nofActiveSoldier.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen\Soldaten</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\nofAggressiveDefender.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen\Soldaten</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\nofArmorer.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\nofAttacker.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen\Soldaten</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\nofBaker.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\nofBrewer.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\nofBuilder.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\nofBuildingWorker.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\nofButcher.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\nofCarpenter.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\nofCarrier.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\nofCatapultMan.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\nofCharburner.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\nofDefender.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen\Soldaten</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\nofDonkeybreeder.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\nofFarmer.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\nofFarmhand.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\nofFisher.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\nofFlagWorker.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\nofForester.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\nofGeologist.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\nofHunter.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\noFighting.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\noFigure.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\noFire.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Objekte</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\nofIronfounder.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\noFlag.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Objekte</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\nofMetalworker.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\nofMiller.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\nofMiner.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\nofMinter.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\nofPassiveSoldier.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen\Soldaten</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\nofPassiveWorker.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\nofPigbreeder.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\nofPlaner.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\nofScout_Free.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\nofScout_LookoutTower.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\nofShipWright.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\nofSoldier.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen\Soldaten</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\nofStonemason.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\nofWarehouseWorker.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\nofWellguy.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\nofWoodcutter.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\nofWorkman.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\noGrainfield.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Objekte</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\noGranite.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Objekte</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\noMovable.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\noNothing.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\noRoadNode.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\noShip.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\noShipBuildingSite.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Objekte</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\noSign.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Objekte</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\noSkeleton.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Objekte</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\noStaticObject.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Objekte</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\noTree.h">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Objekte</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\PointDistance.h">
+      <Filter>Quelldateien\GUI\Hilfsfunktionen und -klassen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\PostMsg.h">
+      <Filter>Quelldateien\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Random.h">
+      <Filter>Quelldateien\GUI\Hilfsfunktionen und -klassen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\RoadSegment.h">
+      <Filter>Quelldateien\Spiel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\SerializedGameData.h">
+      <Filter>Quelldateien\Spiel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Settings.h">
+      <Filter>Quelldateien\Allgemein</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\signale.h">
+      <Filter>Quelldateien\Allgemein</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\SoundManager.h">
+      <Filter>Quelldateien\Spiel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Swap.h">
+      <Filter>Quelldateien\GUI\Hilfsfunktionen und -klassen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\TerrainRenderer.h">
+      <Filter>Quelldateien\Spiel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\TerritoryRegion.h">
+      <Filter>Quelldateien\Spiel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\VideoDriverWrapper.h">
+      <Filter>Quelldateien\Treiber/Grafik</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Ware.h">
+      <Filter>Quelldateien\Spiel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\win32_nanosleep.h">
+      <Filter>Quelldateien\Allgemein</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Window.h">
+      <Filter>Quelldateien\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\WindowManager.h">
+      <Filter>Quelldateien\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\build_version.h">
+      <Filter>Quelldateien\Allgemein</Filter>
+    </ClInclude>
+    <ClInclude Include="..\resource.h">
+      <Filter>Resourcendateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\AIInterface.h">
+      <Filter>Quelldateien\KI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\AddonAIDebugWindow.h">
+      <Filter>Quelldateien\Spiel\Addons</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\AddonManager.cpp">
+      <Filter>Quelldateien\Spiel\Addons</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Addons.cpp">
+      <Filter>Quelldateien\Spiel\Addons</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\AIConstruction.cpp">
+      <Filter>Quelldateien\KI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\AIEventManager.cpp">
+      <Filter>Quelldateien\KI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\AIJHHelper.cpp">
+      <Filter>Quelldateien\KI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\AIPlayer.cpp">
+      <Filter>Quelldateien\KI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\AIPlayerJH.cpp">
+      <Filter>Quelldateien\KI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\AIResourceMap.cpp">
+      <Filter>Quelldateien\KI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\AudioDriverWrapper.cpp">
+      <Filter>Quelldateien\Treiber/Grafik</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\BinaryFile.cpp">
+      <Filter>Quelldateien\GUI\Hilfsfunktionen und -klassen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\BurnedWarehouse.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Objekte</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\CatapultStone.cpp">
+      <Filter>Quelldateien\Spiel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ClientInterface.cpp">
+      <Filter>Quelldateien\Netzwerk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\CollisionDetection.cpp">
+      <Filter>Quelldateien\GUI\Hilfsfunktionen und -klassen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ctrlBuildingIcon.cpp">
+      <Filter>Quelldateien\GUI\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ctrlButton.cpp">
+      <Filter>Quelldateien\GUI\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ctrlChat.cpp">
+      <Filter>Quelldateien\GUI\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ctrlCheck.cpp">
+      <Filter>Quelldateien\GUI\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ctrlComboBox.cpp">
+      <Filter>Quelldateien\GUI\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ctrlDeepening.cpp">
+      <Filter>Quelldateien\GUI\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ctrlEdit.cpp">
+      <Filter>Quelldateien\GUI\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ctrlGroup.cpp">
+      <Filter>Quelldateien\GUI\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ctrlImage.cpp">
+      <Filter>Quelldateien\GUI\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ctrlIngameMinimap.cpp">
+      <Filter>Quelldateien\GUI\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ctrlList.cpp">
+      <Filter>Quelldateien\GUI\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ctrlMinimap.cpp">
+      <Filter>Quelldateien\GUI\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ctrlMultiline.cpp">
+      <Filter>Quelldateien\GUI\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ctrlMultiSelectGroup.cpp">
+      <Filter>Quelldateien\GUI\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ctrlOptionGroup.cpp">
+      <Filter>Quelldateien\GUI\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ctrlPercent.cpp">
+      <Filter>Quelldateien\GUI\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ctrlPreviewMinimap.cpp">
+      <Filter>Quelldateien\GUI\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ctrlProgress.cpp">
+      <Filter>Quelldateien\GUI\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ctrlRectangle.cpp">
+      <Filter>Quelldateien\GUI\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ctrlScrollBar.cpp">
+      <Filter>Quelldateien\GUI\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ctrlTab.cpp">
+      <Filter>Quelldateien\GUI\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ctrlTable.cpp">
+      <Filter>Quelldateien\GUI\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ctrlText.cpp">
+      <Filter>Quelldateien\GUI\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ctrlTimer.cpp">
+      <Filter>Quelldateien\GUI\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ctrlVarDeepening.cpp">
+      <Filter>Quelldateien\GUI\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ctrlVarText.cpp">
+      <Filter>Quelldateien\GUI\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\customborderbuilder.cpp">
+      <Filter>Quelldateien\GUI\Hilfsfunktionen und -klassen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Desktop.cpp">
+      <Filter>Quelldateien\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\DriverWrapper.cpp">
+      <Filter>Quelldateien\Treiber/Grafik</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\dskAboutRTTR.cpp">
+      <Filter>Quelldateien\GUI\Fenster\Desktops</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\dskCredits.cpp">
+      <Filter>Quelldateien\GUI\Fenster\Desktops</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\dskDirectIP.cpp">
+      <Filter>Quelldateien\GUI\Fenster\Desktops</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\dskGameInterface.cpp">
+      <Filter>Quelldateien\GUI\Fenster\Desktops</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\dskGameLoader.cpp">
+      <Filter>Quelldateien\GUI\Fenster\Desktops</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\dskHostGame.cpp">
+      <Filter>Quelldateien\GUI\Fenster\Desktops</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\dskIntro.cpp">
+      <Filter>Quelldateien\GUI\Fenster\Desktops</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\dskLobby.cpp">
+      <Filter>Quelldateien\GUI\Fenster\Desktops</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\dskMainMenu.cpp">
+      <Filter>Quelldateien\GUI\Fenster\Desktops</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\dskMultiPlayer.cpp">
+      <Filter>Quelldateien\GUI\Fenster\Desktops</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\dskOptions.cpp">
+      <Filter>Quelldateien\GUI\Fenster\Desktops</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\dskSelectMap.cpp">
+      <Filter>Quelldateien\GUI\Fenster\Desktops</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\dskSinglePlayer.cpp">
+      <Filter>Quelldateien\GUI\Fenster\Desktops</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\dskSplash.cpp">
+      <Filter>Quelldateien\GUI\Fenster\Desktops</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\EventManager.cpp">
+      <Filter>Quelldateien\Spiel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ExtensionList.cpp">
+      <Filter>Quelldateien\Treiber/Grafik</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\FileChecksum.cpp">
+      <Filter>Quelldateien\GUI\Hilfsfunktionen und -klassen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\FOWObjects.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\GameClient.cpp">
+      <Filter>Quelldateien\Netzwerk\Spiel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\GameClientCommands.cpp">
+      <Filter>Quelldateien\Netzwerk\Spiel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\GameClientGF_Game.cpp">
+      <Filter>Quelldateien\Netzwerk\Spiel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\GameClientGF_Replay.cpp">
+      <Filter>Quelldateien\Netzwerk\Spiel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\GameClientPlayer.cpp">
+      <Filter>Quelldateien\Spiel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\GameCommands.cpp">
+      <Filter>Quelldateien\Netzwerk\Spiel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\GameInterface.cpp">
+      <Filter>Quelldateien\Spiel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\GameManager.cpp">
+      <Filter>Quelldateien\Allgemein</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\GameMessage.cpp">
+      <Filter>Quelldateien\Netzwerk\Spiel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\GameMessageInterface.cpp">
+      <Filter>Quelldateien\Netzwerk\Spiel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\GameMessages.cpp">
+      <Filter>Quelldateien\Netzwerk\Spiel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\GameObject.cpp">
+      <Filter>Quelldateien\Spiel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\GamePlayerInfo.cpp">
+      <Filter>Quelldateien\Netzwerk\Spiel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\GameReplay.cpp">
+      <Filter>Quelldateien\Spiel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\GameSavedFile.cpp">
+      <Filter>Quelldateien\Spiel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\GameSavegame.cpp">
+      <Filter>Quelldateien\Spiel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\GameServer.cpp">
+      <Filter>Quelldateien\Netzwerk\Spiel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\GameServerPlayer.cpp">
+      <Filter>Quelldateien\Netzwerk\Spiel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\GameWorld.cpp">
+      <Filter>Quelldateien\Spiel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\GameWorldBase.cpp">
+      <Filter>Quelldateien\Spiel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\GameWorldGame.cpp">
+      <Filter>Quelldateien\Spiel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\GameWorldViewer.cpp">
+      <Filter>Quelldateien\Spiel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\glAllocator.cpp">
+      <Filter>Quelldateien\Loader\glLibSiedler2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\glArchivItem_Bitmap.cpp">
+      <Filter>Quelldateien\Loader\glLibSiedler2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\glArchivItem_Bitmap_Direct.cpp">
+      <Filter>Quelldateien\Loader\glLibSiedler2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\glArchivItem_Bitmap_Player.cpp">
+      <Filter>Quelldateien\Loader\glLibSiedler2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\glArchivItem_Bitmap_Raw.cpp">
+      <Filter>Quelldateien\Loader\glLibSiedler2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\glArchivItem_Bitmap_RLE.cpp">
+      <Filter>Quelldateien\Loader\glLibSiedler2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\glArchivItem_Bitmap_Shadow.cpp">
+      <Filter>Quelldateien\Loader\glLibSiedler2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\glArchivItem_Bob.cpp">
+      <Filter>Quelldateien\Loader\glLibSiedler2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\glArchivItem_Font.cpp">
+      <Filter>Quelldateien\Loader\glLibSiedler2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\glArchivItem_Map.cpp">
+      <Filter>Quelldateien\Loader\glLibSiedler2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\glArchivItem_Music.cpp">
+      <Filter>Quelldateien\Loader\glLibSiedler2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\glArchivItem_Sound.cpp">
+      <Filter>Quelldateien\Loader\glLibSiedler2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\glArchivItem_Sound_Midi.cpp">
+      <Filter>Quelldateien\Loader\glLibSiedler2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\glArchivItem_Sound_Other.cpp">
+      <Filter>Quelldateien\Loader\glLibSiedler2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\glArchivItem_Sound_Wave.cpp">
+      <Filter>Quelldateien\Loader\glLibSiedler2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\glArchivItem_Sound_XMidi.cpp">
+      <Filter>Quelldateien\Loader\glLibSiedler2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\GlobalGameSettings.cpp">
+      <Filter>Quelldateien\Spiel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\GlobalVars.cpp">
+      <Filter>Quelldateien\Allgemein</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\IngameWindow.cpp">
+      <Filter>Quelldateien\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\iwAction.cpp">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\iwAddons.cpp">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\iwAIDebug.cpp">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\iwBaseWarehouse.cpp">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\iwBuilding.cpp">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\iwBuildingProductivities.cpp">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\iwBuildings.cpp">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\iwBuildingSite.cpp">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\iwBuildOrder.cpp">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\iwChat.cpp">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\iwDemolishBuilding.cpp">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\iwDiplomacy.cpp">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\iwDirectIPConnect.cpp">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\iwDirectIPCreate.cpp">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\iwDistribution.cpp">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\iwEndgame.cpp">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\iwHarborBuilding.cpp">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\iwHelp.cpp">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\iwHQ.cpp">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\iwInventory.cpp">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\iwLobbyConnect.cpp">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\iwLobbyRanking.cpp">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\iwLobbyServerInfo.cpp">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\iwMainMenu.cpp">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\iwMerchandiseStatistics.cpp">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\iwMilitary.cpp">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\iwMilitaryBuilding.cpp">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\iwMinimap.cpp">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\iwMsgbox.cpp">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\iwMusicPlayer.cpp">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\iwOptionsWindow.cpp">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\iwPlayReplay.cpp">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\iwPleaseWait.cpp">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\iwPostWindow.cpp">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\iwRoadWindow.cpp">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\iwSave.cpp">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\iwSettings.cpp">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\iwShip.cpp">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\iwSkipGFs.cpp">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\iwStatistics.cpp">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\iwStorehouse.cpp">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\iwSurrender.cpp">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\iwTextfile.cpp">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\iwTools.cpp">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\iwTransport.cpp">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\iwWares.cpp">
+      <Filter>Quelldateien\GUI\Fenster\IngameWindows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\languages.cpp">
+      <Filter>Quelldateien\Allgemein</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ListDir.cpp">
+      <Filter>Quelldateien\GUI\Hilfsfunktionen und -klassen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Loader.cpp">
+      <Filter>Quelldateien\Loader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\main.cpp">
+      <Filter>Quelldateien\Allgemein</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\MapGeometry.cpp">
+      <Filter>Quelldateien\Spiel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Messenger.cpp">
+      <Filter>Quelldateien\Spiel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Minimap.cpp">
+      <Filter>Quelldateien\Spiel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\MusicPlayer.cpp">
+      <Filter>Quelldateien\Spiel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\noAnimal.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\noBase.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\noBaseBuilding.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\nobBaseMilitary.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Gebäude</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\nobBaseWarehouse.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Gebäude</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\nobHarborBuilding.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Gebäude</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\nobHQ.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Gebäude</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\nobMilitary.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Gebäude</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\nobShipYard.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Gebäude</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\nobStorehouse.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Gebäude</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\noBuilding.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\noBuildingSite.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Objekte</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\nobUsual.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Gebäude</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\noCharburnerPile.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Objekte</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\noCoordBase.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\noDisappearingEnvObject.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Objekte</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\noDisappearingMapEnvObject.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Objekte</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\noEnvObject.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Objekte</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\noExtension.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Objekte</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\nofActiveSoldier.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen\Soldaten</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\nofAggressiveDefender.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen\Soldaten</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\nofArmorer.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\nofAttacker.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen\Soldaten</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\nofBaker.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\nofBrewer.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\nofBuilder.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\nofBuildingWorker.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\nofButcher.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\nofCarpenter.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\nofCarrier.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\nofCatapultMan.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\nofCharburner.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\nofDefender.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen\Soldaten</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\nofDonkeybreeder.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\nofFarmer.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\nofFarmhand.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\nofFisher.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\nofFlagWorker.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\nofForester.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\nofGeologist.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\nofHunter.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\noFighting.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\noFigure.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\noFire.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Objekte</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\nofIronfounder.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\noFlag.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Objekte</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\nofMetalworker.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\nofMiller.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\nofMiner.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\nofMinter.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\nofPassiveSoldier.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen\Soldaten</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\nofPassiveWorker.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\nofPigbreeder.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\nofPlaner.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\nofScout_Free.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\nofScout_LookoutTower.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\nofShipWright.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\nofSoldier.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen\Soldaten</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\nofStonemason.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\nofWarehouseWorker.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\nofWellguy.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\nofWoodcutter.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\nofWorkman.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Menschen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\noGrainfield.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Objekte</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\noGranite.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Objekte</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\noMovable.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\noNothing.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\noRoadNode.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\noShip.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\noShipBuildingSite.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Objekte</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\noSign.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Objekte</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\noSkeleton.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Objekte</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\noStaticObject.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Objekte</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\noTree.cpp">
+      <Filter>Quelldateien\Spiel\Knotenobjekte\Objekte</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Pathfinding.cpp">
+      <Filter>Quelldateien\Spiel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\PostMsg.cpp">
+      <Filter>Quelldateien\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Random.cpp">
+      <Filter>Quelldateien\GUI\Hilfsfunktionen und -klassen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\RoadSegment.cpp">
+      <Filter>Quelldateien\Spiel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\SerializedGameData.cpp">
+      <Filter>Quelldateien\Spiel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Settings.cpp">
+      <Filter>Quelldateien\Allgemein</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\signale.cpp">
+      <Filter>Quelldateien\Allgemein</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\SoundManager.cpp">
+      <Filter>Quelldateien\Spiel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\TerrainRenderer.cpp">
+      <Filter>Quelldateien\Spiel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\TerritoryRegion.cpp">
+      <Filter>Quelldateien\Spiel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\VideoDriverWrapper.cpp">
+      <Filter>Quelldateien\Treiber/Grafik</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Ware.cpp">
+      <Filter>Quelldateien\Spiel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\win32_nanosleep.cpp">
+      <Filter>Quelldateien\Allgemein</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Window.cpp">
+      <Filter>Quelldateien\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\WindowManager.cpp">
+      <Filter>Quelldateien\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\build_version.cpp">
+      <Filter>Quelldateien\Allgemein</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\AIInterface.cpp">
+      <Filter>Quelldateien\KI</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\s25client.ico">
+      <Filter>Resourcendateien</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\s25client.rc">
+      <Filter>Resourcendateien</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>

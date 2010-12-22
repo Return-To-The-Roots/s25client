@@ -1,0 +1,149 @@
+// $Id: MilitaryConsts.h 6909 2010-12-20 15:11:34Z OLiver $
+//
+// Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
+//
+// This file is part of Return To The Roots.
+//
+// Return To The Roots is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 2 of the License, or
+// (at your option) any later version.
+//
+// Return To The Roots is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
+
+#ifndef MILITARY_CONSTS_H_
+#define MILITARY_CONSTS_H_
+
+/// GrÃ¶Ãe der Militärquadrate (in Knotenpunkten), in die die Welt eingeteilt wurde für Militärgebäude
+const unsigned short MILITARY_SQUARE_SIZE = 20;
+
+/// Maximale Entfernungen für "nahe Militärgebäudedistanz" und "mittlere Militärgebäudedistanz"
+const unsigned MAX_MILITARY_DISTANCE_NEAR = 18;
+const unsigned MAX_MILITARY_DISTANCE_MIDDLE = 26;
+
+/// Basisangriffsreichweite (Angriff mit allen Soldaten mÃ¶glich)
+const unsigned BASE_ATTACKING_DISTANCE = 21;
+
+/// Erweiterte Reichweite, für die jeweils ein Soldat von der Angriffsarmee abgezogen wird
+const unsigned EXTENDED_ATTACKING_DISTANCE = 1;
+
+/// Maximale Länge für den Laufweg beim Angriff
+const unsigned MAX_ATTACKING_RUN_DISTANCE = 40;
+
+/// Distanz zwischen zwei Gegnern, sodass diese aufeinander zugehen
+const unsigned MEET_FOR_FIGHT_DISTANCE = 5;
+
+/// Besatzung in den einzelnen Militärgebäuden und nach Nation
+const int TROOPS_COUNT[4][4] =
+{
+	{2,3,6,9},
+	{2,3,6,9},
+	{2,3,6,9},
+	{2,3,6,9}
+};
+
+/// Gold in den einzelnen Militärgebäuden und nach Nation
+const unsigned short GOLD_COUNT[4][4] =
+{
+	{1,2,4,6},
+	{1,2,4,6},
+	{1,2,4,6},
+	{1,2,4,6}
+};
+
+/// Radien der Militärgebäude ( die letzten beiden sind HQ und Hafen!)
+const unsigned MILITARY_RADIUS[6] =
+{ 8,9,10,11,9,4 };
+
+// Radius für einzelne Hafen(baustellen)
+const unsigned HARBOR_ALONE_RADIUS = 8;
+
+/// Fahnenpositionen bei den Militärgebäuden
+
+// Besatzungsflaggen (4 VÃ¶lker x 4 GrÃ¶Ãen x 2 X+Y) - ab 3162
+const signed char TROOPS_FLAGS[4][4][2] =
+{
+	{{24,-41},{19,-41},{31,-88},{35,-67}},
+	{{-9,-49},{14,-59},{16,-63},{0,-44}},
+	{{-24,-36},{9,-62},{-2,-80},{23,-75}},
+	{{-5,-50},{-5,-51},{-9,-74},{-12,-58}}
+};
+
+/// Anzahl an Militäreinstellungen
+const unsigned MILITARY_SETTINGS_COUNT = 8;
+
+/// Skalierung der einzelnen Militäreinstellungen (maximale Werte)
+const unsigned MILITARY_SETTINGS_SCALE[MILITARY_SETTINGS_COUNT] = 
+{
+	10,
+	5,
+	5,
+	5,
+	8,
+	8,
+	8,
+	8
+};
+
+// Besatzungsflaggen für die HQs
+const signed char TROOPS_FLAGS_HQ[4][2] =
+{
+	{-12,-102},{-19,-94},{-18,-112},{20,-54},
+};
+
+/// Grenzflaggen (4 VÃ¶lker x 4 GrÃ¶Ãen x 2 X+Y) - ab 3162 
+const signed char BORDER_FLAGS[4][4][2] =
+{
+	{{-6,-36},{7,-48},{-18,-28},{-47,-64}},
+	{{17,-45},{-3,-49},{-30,-25},{22,-53}},
+	{{28,-19},{29,-18},{-27,-12},{-49,-62}},
+	{{24,-19},{24,-19},{17,-52},{-37,-32}},
+};
+
+
+/// maximale Hitpoints der Soldaten von jedem Volk
+const unsigned char HITPOINTS[4][5] =
+{
+	{3,4,5,6,7},
+	{3,4,5,6,7},
+	{3,4,5,6,7},
+	{3,4,5,6,7}
+};
+
+/// Max distance for an attacker to reach a building and join in capturing
+const unsigned MAX_FAR_AWAY_CAPTURING_DISTANCE = 15;
+
+/// Sichtweite der Militärgebäude (relativ); wird auf die normale Grenzweite draufaddiert
+const unsigned VISUALRANGE_MILITARY = 3;
+/// Sichtweite von Spähtürmen (absolut)
+const unsigned VISUALRANGE_LOOKOUTTOWER = 20;
+/// Sichtweite von Spähern
+const unsigned VISUALRANGE_SCOUT = 3;
+/// Sichtweite von Soldaten
+const unsigned VISUALRANGE_SOLDIER = 2;
+/// Sichtweite von Schiffen
+const unsigned VISUALRANGE_SHIP = 2;
+/// Sichtweite von Erkundungs-Schiffen
+const unsigned VISUALRANGE_EXPLORATION_SHIP = 12;
+
+/// BefÃ¶rderungszeit von Soldaten ( =UPGRADE_TIME + rand(UPGRADE_TIME_RANDOM) )
+const unsigned UPGRADE_TIME = 100;
+const unsigned UPGRADE_TIME_RANDOM = 300;
+/// Genesungszeit von Soldaten in Häusern, Zeit, die gebraucht wird um sich um einen Hitpoint zu erholen
+// ( =CONVALESCE_TIME + rand(CONVALESCE_TIME_RANDOM) )
+const unsigned CONVALESCE_TIME = 500;
+const unsigned CONVALESCE_TIME_RANDOM = 500;
+
+/// Maximale Entfernung des Militärgebäudes von dem Hafen bei Seeangriffen
+const unsigned SEAATTACK_DISTANCE = 15;
+
+
+
+
+#endif

@@ -1,0 +1,34 @@
+-------------------------------------------------------------------------------
+$Id: INSTALL 6065 2010-02-22 10:32:37Z FloSoft $
+-------------------------------------------------------------------------------
+
+Conditions:
+
+You have to install at least libsdl1.2-dev and libsdl_mixer1.2-dev to
+be able to build the SDL video and SDL audio driver module. On not 
+debian-based systems this dev-packages will be named different.
+
+Please add the DATA and GFX folders of the original game to the
+following folder: ../trunk/build/S2/
+
+Installation:
+
+cd build
+./cmake.sh $options	(see below)
+make
+make install            or rather ./start.sh
+
+
+-------------------------------------------------------------------------------
+
+Options:
+
+--enable-debug           Enables Debug-Build
+--prefix                 Usually /usr/local, alternativly you can use 
+			 "." - relative paths work
+
+-------------------------------------------------------------------------------
+
+./cleanup.sh             Cleans all files created by cmake.sh and make
+
+-------------------------------------------------------------------------------

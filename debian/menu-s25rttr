@@ -1,0 +1,2 @@
+?package(s25rttr):needs="X11|text|vc|wm" section="Applications/games"\
+  title="s25rttr" command="/usr/bin/rttr.sh noupdate"
