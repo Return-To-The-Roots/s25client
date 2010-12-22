@@ -1,0 +1,27 @@
+[submodule "driver/audio/SDL/libendian"]
+	url = ../libendian
+	path = driver/audio/SDL/libendian
+[submodule "libendian"]
+	url = ../libendian
+	path = libendian
+[submodule "liblobby"]
+	url = ../liblobby
+	path = liblobby
+[submodule "libsiedler2"]
+	url = ../libsiedler2
+	path = libsiedler2
+[submodule "libutil"]
+	url = ../libutil
+	path = libutil
+[submodule "mygettext"]
+	url = ../mygettext
+	path = mygettext
+[submodule "s-c"]
+	url = ../s-c
+	path = s-c
+[submodule "s25update"]
+	url = ../s25update
+	path = s25update
+[submodule "version"]
+	url = ../version
+	path = version
