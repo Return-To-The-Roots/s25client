@@ -1,4 +1,4 @@
-// $Id: main.h 6902 2010-12-18 17:19:09Z OLiver $
+// $Id: main.h 6919 2010-12-22 07:50:44Z FloSoft $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -26,10 +26,6 @@
 
 #define _CRTDBG_MAP_ALLOC
 #define _WINSOCKAPI_
-
-#ifdef _MSC_VER
-typedef unsigned long long uint64_t;
-#endif
 
 #ifdef _WIN32
 	#include <windows.h>
