@@ -1,4 +1,4 @@
-// $Id: glArchivItem_Bitmap.h 6865 2010-12-02 11:11:05Z FloSoft $
+// $Id: glArchivItem_Bitmap.h 6921 2010-12-22 08:19:30Z FloSoft $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -22,6 +22,10 @@
 #pragma once
 
 #include "colors.h"
+
+#ifdef _MSC_VER
+typedef unsigned long long uint64_t;
+#endif
 
 /// Basisklasse für GL-Bitmapitems.
 class glArchivItem_Bitmap : public virtual libsiedler2::baseArchivItem_Bitmap
