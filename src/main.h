@@ -1,4 +1,4 @@
-// $Id: main.h 6919 2010-12-22 07:50:44Z FloSoft $
+// $Id: main.h 6920 2010-12-22 08:09:01Z FloSoft $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -182,11 +182,8 @@ struct Point
 	{ return (x == second.x && y == second.y); }
 };
 
-
 const char *GetWindowTitle();
 const char *GetWindowVersion();
 const char *GetWindowRevision();
-
-
 
 #endif // MAIN_H_INCLUDED
