@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Siedler II.5 RttR\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-07-03 18:00+0100\n"
+"POT-Creation-Date: 2010-12-23 23:17+0100\n"
 "PO-Revision-Date: 2010-07-08 05:39+0000\n"
 "Last-Translator: Sios <Unknown>\n"
 "Language-Team: Siedler II.5 RttR <sf-team@siedler25.org>\n"
@@ -23,8 +23,8 @@ msgstr ""
 "\n"
 "Стоимость: "
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:601
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:614
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:602
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:615
 msgid " (AI)"
 msgstr " (ИИ)"
 
@@ -56,16 +56,16 @@ msgstr "%u/%u"
 msgid "'s Game"
 msgstr "Игра"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameWorldViewer.cpp:296
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameWorldViewer.cpp:295
 #, c-format
 msgid "(%d soldiers)"
 msgstr "(%d солдат)"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameWorldViewer.cpp:294
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameWorldViewer.cpp:293
 msgid "(1 soldier)"
 msgstr "(1 солдат)"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameWorldViewer.cpp:262
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameWorldViewer.cpp:261
 msgid "(House unoccupied)"
 msgstr "(Здание не занято)"
 
@@ -78,7 +78,7 @@ msgstr ""
 "(Replay-Mode) Current GF: %u (End at: %u) / GF length: %u ms / NWF length: %"
 "u gf (%u ms)"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameWorldViewer.cpp:264
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameWorldViewer.cpp:263
 msgid "(stopped)"
 msgstr "(остановлено)"
 
@@ -112,7 +112,7 @@ msgstr "-> Копать шахты"
 msgid "1 h"
 msgstr "1 ч."
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:49
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:51
 msgid "10 catapults"
 msgstr ""
 
@@ -126,11 +126,16 @@ msgstr "15 мин."
 msgid "16 h"
 msgstr "16 ч."
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:50
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:52
 msgid "20 catapults"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:51
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:49
+#, fuzzy
+msgid "3 catapults"
+msgstr "Катапульта"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:53
 msgid "30 catapults"
 msgstr ""
 
@@ -139,13 +144,10 @@ msgstr ""
 msgid "4 h"
 msgstr "4 ч."
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:52
-msgid "40 catapults"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:53
-msgid "50 catapults"
-msgstr ""
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:50
+#, fuzzy
+msgid "5 catapults"
+msgstr "Катапульта"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1002
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1052
@@ -158,7 +160,7 @@ msgstr "<%s> "
 msgid "A auto-savegame is created..."
 msgstr "Произведено автосохранение..."
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobMilitary.cpp:1090
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobMilitary.cpp:1119
 msgid "A catapult is firing upon us!"
 msgstr "Катапульта стреляет по нам!"
 
@@ -176,11 +178,11 @@ msgstr "Много"
 msgid "A new ship is ready"
 msgstr "Готов новый корабль"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/noShip.cpp:444
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/noShip.cpp:454
 msgid "A ship disovered an enemy territory"
 msgstr "Обнаружен корабль на вражеской территории"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/noShip.cpp:722
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/noShip.cpp:732
 msgid "A ship has reached the destination of its expedition."
 msgstr "Корабль достиг места назначения в экспедиции."
 
@@ -207,6 +209,11 @@ msgstr "Отладка ИИ"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMainMenu.cpp:97
 msgid "AI Debug Window"
+msgstr "Окно отладки ИИ"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAIDebugWindow.h:38
+#, fuzzy
+msgid "AI Debugging Window"
 msgstr "Окно отладки ИИ"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:45
@@ -243,13 +250,18 @@ msgstr ""
 msgid "Add track"
 msgstr "Добавить дорожку"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:121
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:138
 msgid "Additional Programming:"
 msgstr "Дополнительное программирование:"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAddons.cpp:46
 msgid "Additional features:"
 msgstr "Дополнительные особенности:"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:131
+#, fuzzy
+msgid "Additional graphics"
+msgstr "Дополнительное программирование:"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAddons.cpp:43
 msgid "Addon Settings"
@@ -262,6 +274,11 @@ msgstr "Дополнения"
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:94
 msgid "Addons:"
 msgstr "Дополнения:"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAdjustMilitaryStrength.h:47
+#, fuzzy
+msgid "Adjust military strength"
+msgstr "Военная мощь"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwOptionsWindow.cpp:105
 msgid "Advanced"
@@ -368,6 +385,12 @@ msgid ""
 "and build donkey roads directly"
 msgstr ""
 
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAdjustMilitaryStrength.h:48
+msgid ""
+"Allows you to modify the strength increase of military ranks\n"
+"\n"
+msgstr ""
+
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/SerializedGameData.cpp:243
 msgid "An error occured while saving which was suppressed!"
 msgstr "Во время сохранения возникла ошибка, которая была подавлена!"
@@ -392,25 +415,25 @@ msgstr "Вы уверены, что хотите удалить все повт�
 msgid "Armorer"
 msgstr "Оружейник"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:101
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:111
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:107
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:117
 msgid "Armory"
 msgstr "Оружейная"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:116
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:123
 msgid "Artificial Intelligence (AI)"
 msgstr "Искусственный интеллект (ИИ)"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:385
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:387
 msgid "Attack not possible."
 msgstr "Нападение невозможно."
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:318
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:326
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:320
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:328
 msgid "Attack options"
 msgstr "Планирование нападения"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:410
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:412
 msgid "Attack!"
 msgstr "Напасть!"
 
@@ -418,7 +441,7 @@ msgstr "Напасть!"
 msgid "Author"
 msgstr "Автор"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:1287
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:1288
 msgid "Auto-Save"
 msgstr "Автосохранение"
 
@@ -431,7 +454,7 @@ msgid "Axe"
 msgstr "Топор"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskAboutRTTR.cpp:55
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:62
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:69
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskDirectIP.cpp:65
 msgid "Back"
 msgstr "Назад"
@@ -440,7 +463,7 @@ msgstr "Назад"
 msgid "Baker"
 msgstr "Пекарь"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:136
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:153
 msgid "Bakery"
 msgstr "Пекарня"
 
@@ -452,7 +475,7 @@ msgstr "Бараки"
 msgid "Beer"
 msgstr "Пиво"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:121
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:137
 msgid "Boards"
 msgstr "Доски"
 
@@ -484,19 +507,19 @@ msgstr "Хлеб"
 msgid "Brewer"
 msgstr "Пивовар"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:94
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:139
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:97
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:156
 msgid "Brewery"
 msgstr "Пивоварня"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:262
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:269
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:277
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:281
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:264
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:271
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:279
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:283
 msgid "Build road"
 msgstr "Проложить дорогу"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:270
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:272
 msgid "Build waterway"
 msgstr "Проложить морской путь"
 
@@ -509,7 +532,7 @@ msgstr "Строитель"
 msgid "Building sequence"
 msgstr "Последовательность строений"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildings.cpp:76
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildings.cpp:79
 msgid "Buildings"
 msgstr "Здания"
 
@@ -517,8 +540,8 @@ msgstr "Здания"
 msgid "Butcher"
 msgstr "Мясник"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:264
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:272
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:266
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:274
 msgid "Call in geologist"
 msgstr "Вызвать геолога"
 
@@ -569,8 +592,8 @@ msgstr "Выбрать залежи золота"
 msgid "Change the visibility of your ingame statistics"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:255
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:345
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:100
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:133
 msgid "Charburner"
 msgstr ""
 
@@ -611,17 +634,22 @@ msgstr "Закрыть без сохранения"
 msgid "Closed"
 msgstr "Закрыто"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:108
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:114
 msgid "Coal"
 msgstr "Уголь"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:72
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:75
 msgid "Coal mine"
 msgstr "Угольная шахта"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:83
 msgid "Coins"
 msgstr "Монеты"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBaseWarehouse.cpp:62
+#, fuzzy
+msgid "Collect"
+msgstr "Подключиться"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:66
 msgid "Color"
@@ -631,7 +659,7 @@ msgstr "Цвет"
 msgid "Common"
 msgstr "Общие"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:612
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:613
 #, c-format
 msgid "Computer %u"
 msgstr "Компьютер %u"
@@ -666,7 +694,7 @@ msgstr "Подключение к хосту закрыто!"
 msgid "Conquer 3/4 of map"
 msgstr "Захватить 3/4 карты"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:124
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:140
 msgid "Construction"
 msgstr "Строительство"
 
@@ -702,7 +730,7 @@ msgstr "Преобразовать в железную руду"
 msgid "Create Game"
 msgstr "Создать игру"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:68
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:75
 msgid "Credits"
 msgstr "Авторы"
 
@@ -735,7 +763,7 @@ msgid ""
 msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildOrder.cpp:75
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:160
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:181
 msgid "Default"
 msgstr "Стандарт"
 
@@ -743,9 +771,9 @@ msgstr "Стандарт"
 msgid "Delete all"
 msgstr "Удалить всё"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:282
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:284
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBaseWarehouse.cpp:112
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuilding.cpp:79
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuilding.cpp:87
 msgid "Demolish house"
 msgstr "Взорвать здание"
 
@@ -770,8 +798,8 @@ msgstr "Взрыв невозможен"
 msgid "Destroy all buildings and surrender"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:306
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:313
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:308
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:315
 msgid "Dig up road"
 msgstr "Уничтожить дорогу"
 
@@ -800,11 +828,11 @@ msgstr "Отключено"
 msgid "Disallow change"
 msgstr "Запретить изменения"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:337
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:339
 msgid "Display options"
 msgstr "Настройки дисплея"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:54
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:57
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMainMenu.cpp:67
 msgid "Distribution of goods"
 msgstr "Распределение товаров"
@@ -817,7 +845,7 @@ msgstr "Не забудьте проверить конфигурацию доп
 msgid "Don't surrender"
 msgstr "Не сдаваться"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:146
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:163
 msgid "Donators"
 msgstr "Благотворители"
 
@@ -825,8 +853,8 @@ msgstr "Благотворители"
 msgid "Donkey breeder"
 msgstr "Скотовод"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:91
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:145
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:94
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:162
 msgid "Donkey breeding"
 msgstr "Скотоводство"
 
@@ -838,7 +866,7 @@ msgstr "Вниз"
 msgid "Downwards"
 msgstr "Вниз"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:599
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:600
 #, c-format
 msgid "Dummy %u"
 msgstr "Кукла %u"
@@ -874,6 +902,12 @@ msgstr "Эффекты"
 msgid "Email Address:"
 msgstr "E-mail адрес:"
 
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAIDebugWindow.h:39
+msgid ""
+"Enable AI Debugging Window\n"
+" (possible cheating)"
+msgstr ""
+
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonCharburner.h:36
 msgid "Enable charburner"
 msgstr ""
@@ -890,9 +924,9 @@ msgstr "Закончить игру?"
 msgid "Enemies"
 msgstr "Враги"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:256
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:290
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:300
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:258
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:292
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:302
 msgid "Erect flag"
 msgstr "Установть флаг"
 
@@ -1004,7 +1038,7 @@ msgstr "Туман Войны"
 msgid "Food"
 msgstr "Еда"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:67
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:70
 msgid "Foodstuff"
 msgstr "Продтовар"
 
@@ -1102,12 +1136,12 @@ msgstr "Геолог"
 msgid "Get all back"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:341
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:343
 msgid "Go to headquarters"
 msgstr "Перейти к штабу"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBaseWarehouse.cpp:73
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuilding.cpp:94
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuilding.cpp:102
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildingSite.cpp:65
 msgid "Go to place"
 msgstr "Перейти к месту"
@@ -1122,7 +1156,7 @@ msgstr "Цели:"
 msgid "Gold"
 msgstr "Золото"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:78
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:81
 msgid "Gold mine"
 msgstr "Золотая шахта"
 
@@ -1130,7 +1164,7 @@ msgstr "Золотая шахта"
 msgid "Goods at start:"
 msgstr "Стартовые товары:"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:82
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:85
 msgid "Grain"
 msgstr "Зерно"
 
@@ -1142,7 +1176,7 @@ msgstr ""
 "Для разведения свиней необходимы зерно и вода. Полученное мясо может после "
 "этого быть обработано мясником."
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:69
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:72
 msgid "Granite mine"
 msgstr "Гранитная шахта"
 
@@ -1178,9 +1212,9 @@ msgstr "Строительство гавани"
 msgid "Headquarters"
 msgstr "Штаб"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuilding.cpp:77
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildingProductivities.cpp:103
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildings.cpp:89
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuilding.cpp:85
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildingProductivities.cpp:106
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildings.cpp:92
 msgid "Help"
 msgstr "Помощь"
 
@@ -1196,7 +1230,7 @@ msgstr ""
 msgid "Host:"
 msgstr "Хост:"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:340
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:342
 msgid "House names"
 msgstr "Названия зданий"
 
@@ -1266,7 +1300,7 @@ msgstr "Неправильный повтор!"
 msgid "Invalid port. The valid port-range is 1 to 65535!"
 msgstr "Неправильный порт! Должен быть в пределах от 1 до 65535!"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:98
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:104
 msgid "Iron"
 msgstr "Железо"
 
@@ -1274,7 +1308,7 @@ msgstr "Железо"
 msgid "Iron founder"
 msgstr "Сталевар"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:75
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:78
 msgid "Iron mine"
 msgstr "Железная шахта"
 
@@ -1282,7 +1316,7 @@ msgstr "Железная шахта"
 msgid "Iron ore"
 msgstr "Железная руда"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:114
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:120
 msgid "Iron smelter"
 msgstr "Сталеплавильня"
 
@@ -1326,7 +1360,7 @@ msgstr "Длина"
 msgid "Less"
 msgstr "Меньше"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:392
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:394
 msgid "Less attackers"
 msgstr "Меньше нападающих"
 
@@ -1391,7 +1425,7 @@ msgid "Load game"
 msgstr "Загрузить игру"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwOptionsWindow.cpp:81
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSave.cpp:258
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSave.cpp:257
 msgid "Load game!"
 msgstr "Загрузить игру!"
 
@@ -1435,7 +1469,7 @@ msgstr "Потеряно подключение к лобби!"
 msgid "Lost connection to server!"
 msgstr "Потеряно подключение к серверу!"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameWorldGame.cpp:574
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameWorldGame.cpp:593
 msgid "Lost land by this building"
 msgstr ""
 
@@ -1472,9 +1506,15 @@ msgstr "Карта: "
 msgid "Mapfile: "
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:107
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:114
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:133
 msgid "Mapping"
 msgstr "Нанести на карту"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAdjustMilitaryStrength.h:52
+#, fuzzy
+msgid "Maximum strength"
+msgstr "Военная мощь"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:170
 msgid "Meat"
@@ -1483,6 +1523,11 @@ msgstr "Мясо"
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/BuildingConsts.h:417
 msgid "Meat the hunter acquires is used to feed the miners."
 msgstr "Мясо добываемое охотником используется, чтобы кормит шахтеров."
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAdjustMilitaryStrength.h:53
+#, fuzzy
+msgid "Medium strength"
+msgstr "Военная мощь"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:244
 msgid "Medium-term"
@@ -1506,8 +1551,8 @@ msgstr "Сообщение"
 msgid "Metalworker"
 msgstr "Кузнец"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:104
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:127
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:110
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:143
 msgid "Metalworks"
 msgstr "Кузница"
 
@@ -1515,15 +1560,15 @@ msgstr "Кузница"
 msgid "Military"
 msgstr "Войска"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobMilitary.cpp:863
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobMilitary.cpp:872
 msgid "Military building captured"
 msgstr "Военное здание захвачено"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobMilitary.cpp:860
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobMilitary.cpp:869
 msgid "Military building lost"
 msgstr "Военное здание потеряно"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobMilitary.cpp:600
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobMilitary.cpp:609
 msgid "Military building occupied"
 msgstr "Военное здание захвачено"
 
@@ -1532,7 +1577,7 @@ msgstr "Военное здание захвачено"
 msgid "Military strength"
 msgstr "Военная мощь"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:85
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:88
 msgid "Mill"
 msgstr "Мельница"
 
@@ -1544,7 +1589,12 @@ msgstr "Мельник"
 msgid "Miner"
 msgstr "Шахтер"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:117
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAdjustMilitaryStrength.h:54
+#, fuzzy
+msgid "Minimum strength"
+msgstr "Военная мощь"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:123
 msgid "Mint"
 msgstr "Монетный двор"
 
@@ -1560,7 +1610,7 @@ msgstr "Режим:"
 msgid "More"
 msgstr "Больше"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:393
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:395
 msgid "More attackers"
 msgstr "Больше нападающих"
 
@@ -1620,7 +1670,7 @@ msgstr ""
 msgid "Network/LAN"
 msgstr "Network/LAN"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobHarborBuilding.cpp:105
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobHarborBuilding.cpp:103
 msgid "New harbor building finished"
 msgstr ""
 
@@ -1628,11 +1678,11 @@ msgstr ""
 msgid "New maps"
 msgstr "Новые карты"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobStorehouse.cpp:57
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobStorehouse.cpp:56
 msgid "New storehouse finished"
 msgstr "Новый склад построен"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwWares.cpp:176
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwWares.cpp:188
 msgid "Next page"
 msgstr "Следующая страница"
 
@@ -1662,11 +1712,11 @@ msgstr "Нет текущей работы"
 msgid "No letters!"
 msgstr "Нет писем!"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofFarmhand.cpp:176
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofFarmhand.cpp:196
 msgid "No more fishes in range"
 msgstr "В округе больше нет рыбы"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofFarmhand.cpp:169
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofFarmhand.cpp:189
 msgid "No more stones in range"
 msgstr ""
 
@@ -1717,7 +1767,7 @@ msgstr ""
 "Примечание: Играбельные повторы закончились. (GF: %u, %dh %dmin %ds, TF: %u, "
 "AVG_FPS: %u)"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:407
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:409
 msgid "Number of attackers"
 msgstr "Количество нападающих"
 
@@ -1728,7 +1778,7 @@ msgstr "Количество нападающих"
 msgid "OK"
 msgstr "OK"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:339
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:341
 msgid "Observation window"
 msgstr "Окно обзора"
 
@@ -1777,9 +1827,13 @@ msgstr "Order of building site"
 msgid "Other"
 msgstr "Другое"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:134
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:151
 msgid "Other Support:"
 msgstr "Другая поддержка:"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofAttacker.cpp:288
+msgid "Our headquarters was destroyed!"
+msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMinimap.cpp:53
 msgid "Outline map"
@@ -1814,8 +1868,8 @@ msgstr "Кирка"
 msgid "Pig breeder"
 msgstr "Свиновод"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:88
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:142
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:91
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:159
 msgid "Pig farm"
 msgstr "Свиноферма"
 
@@ -1878,6 +1932,15 @@ msgstr "Список воспроизведения:"
 msgid "Please enter a name for the game"
 msgstr "Пожалуйтса введине название игры"
 
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:95
+#, fuzzy
+msgid ""
+"Please use the Multiplayer mode and 'Direct IP' to create a Singleplayer "
+"game."
+msgstr ""
+"Одиночкая игра и ИИ еще не доделаны. Пожалуйста используйте режим сетевой "
+"игры и 'Direct IP', чтобы создать одиночную игру."
+
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPleaseWait.cpp:44
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPleaseWait.cpp:47
 msgid "Please wait..."
@@ -1899,7 +1962,7 @@ msgstr "Рядовой"
 msgid "Private first class"
 msgstr "Ефрейтор"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildingProductivities.cpp:82
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildingProductivities.cpp:85
 msgid "Productivity"
 msgstr "Производительность"
 
@@ -1907,14 +1970,14 @@ msgstr "Производительность"
 msgid "Program version is too old to play that replay!"
 msgstr "Слишком старая версия программы, чтоб воспроизвести повтор!"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:76
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:88
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:115
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:83
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:95
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:122
 msgid "Programming"
 msgstr "Программирование"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:74
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:87
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:81
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:94
 msgid "Project management"
 msgstr "Управление проектом"
 
@@ -1930,15 +1993,16 @@ msgstr "Прокси сервер"
 msgid "Proxytyp:"
 msgstr "Тип прокси"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:263
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:271
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:265
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:273
 msgid "Pull down flag"
 msgstr "Снять флаг"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:79
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:89
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:98
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:106
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:86
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:96
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:105
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:113
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:132
 msgid "Quality Assurance"
 msgstr "Гарантия качества"
 
@@ -2054,7 +2118,7 @@ msgstr "Продолжить последнюю игру"
 msgid "Return"
 msgstr "Вернуться"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:65
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:72
 msgid "Return To The Roots"
 msgstr "Назад к предкам"
 
@@ -2097,7 +2161,7 @@ msgstr "Сохранить игру!"
 msgid "Saw"
 msgstr "Пила"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:261
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:130
 msgid "Sawmill"
 msgstr "Пилорама"
 
@@ -2121,8 +2185,8 @@ msgstr "Выбрать все"
 msgid "Selection of maps"
 msgstr "Выбор карт"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:265
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:273
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:267
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:275
 msgid "Send out scout"
 msgstr "Послать разведчика"
 
@@ -2146,7 +2210,7 @@ msgstr "Информация о сервере"
 msgid "Server Name:"
 msgstr "Имя сервера:"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:75
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:82
 msgid "Server management"
 msgstr "Управление сервером"
 
@@ -2188,7 +2252,7 @@ msgstr ""
 msgid "Shipwright"
 msgstr "Кораблестроитель"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:130
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:146
 msgid "Shipyard"
 msgstr "Верфь"
 
@@ -2207,14 +2271,6 @@ msgstr "Лопата"
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskMainMenu.cpp:72
 msgid "Singleplayer"
 msgstr "Одиночная игра"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:95
-msgid ""
-"Singleplayer mode and AI are not yet implemented. Please use the Multiplayer "
-"mode and 'Direct IP' to create a Singleplayer game."
-msgstr ""
-"Одиночкая игра и ИИ еще не доделаны. Пожалуйста используйте режим сетевой "
-"игры и 'Direct IP', чтобы создать одиночную игру."
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:99
 msgid "Size"
@@ -2328,7 +2384,7 @@ msgstr "Прекратить хранение"
 msgid "Storehouse"
 msgstr "Склад"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:398
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:400
 msgid "Strong attackers"
 msgstr "Сильные нападающие"
 
@@ -2360,7 +2416,7 @@ msgstr "Меч"
 msgid "System language"
 msgstr "Системный язык"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:174
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:191
 msgid "THE END"
 msgstr "КОНЕЦ"
 
@@ -2376,11 +2432,11 @@ msgstr "Команда"
 msgid "Temporary map file was not found!"
 msgstr "Временный файл карты не найден!"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:166
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:183
 msgid "Thank you for your donations!"
 msgstr "Спасибо за пожертвования!"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:173
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:190
 msgid "Thank you!"
 msgstr "Спасибо!"
 
@@ -2469,11 +2525,11 @@ msgstr ""
 "позволяет прекратить поставку золотых монет  находящимся здесь солдатам. Но "
 "без золотых монет солдаты не смогут тренироваться и улучшать свои навыки."
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClientPlayer.cpp:2043
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClientPlayer.cpp:2058
 msgid "The emergency program has been activated."
 msgstr "Экстренная программа активирована"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClientPlayer.cpp:2053
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClientPlayer.cpp:2068
 msgid "The emergency program has been deactivated."
 msgstr "Экстренная программа деактивирована"
 
@@ -2630,6 +2686,19 @@ msgstr ""
 msgid "This Server is full!"
 msgstr "Сервер заполнен!"
 
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofAttacker.cpp:291
+#, fuzzy
+msgid "This harbor building was destroyed"
+msgstr "Военное здание захвачено"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofBuildingWorker.cpp:403
+msgid "This mine is exhausted"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofBuildingWorker.cpp:405
+msgid "This well is dried out"
+msgstr ""
+
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSave.cpp:67
 msgid "Time"
 msgstr "Время"
@@ -2685,6 +2754,7 @@ msgid "Type"
 msgstr "Тип"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:46
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonMaxWaterwayLength.h:50
 msgid "Unlimited"
 msgstr ""
 
@@ -2692,7 +2762,7 @@ msgstr ""
 msgid "Up"
 msgstr "Вверх"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:365
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:367
 msgid "Upgrade to donkey road"
 msgstr "Обновить до ослиной дороги"
 
@@ -2779,19 +2849,19 @@ msgstr "Пустошь"
 msgid "Watchtower"
 msgstr "Сторожевая вышка"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:133
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:150
 msgid "Water"
 msgstr "Вода"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofAttacker.cpp:610
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofAttacker.cpp:654
 msgid "We are under attack!"
 msgstr "Нас атакуют!"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:171
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:188
 msgid "We hope you enjoy playing Return To The Roots!"
 msgstr "Мы надеемся, что Вы получите удовольствие, играя в Назад к предкам!"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:397
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:399
 msgid "Weak attackers"
 msgstr "Слабые нападающие"
 
@@ -2803,12 +2873,12 @@ msgstr "Слабые защитники"
 msgid "Weapons"
 msgstr "Оружие"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:77
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:97
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:84
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:104
 msgid "Website Administration"
 msgstr "Администрация вебсайта"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:78
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:85
 msgid "Website Programming"
 msgstr "Программирование вебсайта"
 
@@ -2834,7 +2904,7 @@ msgstr "Лесник садит деревья вокруг своей хижи�
 msgid "Won"
 msgstr "Выиграл"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:71
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:127
 msgid "Wood"
 msgstr "Древесина"
 
@@ -2891,14 +2961,10 @@ msgstr "Вам нужно перезапустить игру, чтобы при
 msgid "You need to restart your game to change the video or audio driver!"
 msgstr "Вам нужно перезапустить игру для смены аудио или видео драйвера!"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:1608
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:1609
 #, c-format
 msgid "current GF: %u - still fast forwarding: %d GFs left (%d %%)"
 msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBaseWarehouse.cpp:62
-msgid "do nothing"
-msgstr "ничего не делать"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskDirectIP.cpp:56
 msgid "http://www.siedler25.org"
@@ -2928,7 +2994,7 @@ msgstr "к кадру:"
 msgid "treaty of alliance"
 msgstr "соглашение на союз"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:148
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:165
 msgid "various anonymous donators"
 msgstr "разные анонимные благотворители"
 
@@ -2976,3 +3042,6 @@ msgstr "разные анонимные благотворители"
 
 #~ msgid "You are not allowed to change the standard playlist!"
 #~ msgstr "Нельзя изменять стандартный список воспроизведения!"
+
+#~ msgid "do nothing"
+#~ msgstr "ничего не делать"

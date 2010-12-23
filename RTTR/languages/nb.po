@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: s25rttr\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-07-03 18:00+0100\n"
+"POT-Creation-Date: 2010-12-23 23:17+0100\n"
 "PO-Revision-Date: 2010-05-02 22:05+0000\n"
 "Last-Translator: Jg.a <Unknown>\n"
 "Language-Team: Norwegian Bokmal <nb@li.org>\n"
@@ -23,8 +23,8 @@ msgid ""
 "Costs: "
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:601
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:614
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:602
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:615
 msgid " (AI)"
 msgstr " (KI)"
 
@@ -56,16 +56,16 @@ msgstr "%u/%u"
 msgid "'s Game"
 msgstr "s spill"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameWorldViewer.cpp:296
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameWorldViewer.cpp:295
 #, c-format
 msgid "(%d soldiers)"
 msgstr "(%d soldater)"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameWorldViewer.cpp:294
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameWorldViewer.cpp:293
 msgid "(1 soldier)"
 msgstr "(1 soldat)"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameWorldViewer.cpp:262
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameWorldViewer.cpp:261
 msgid "(House unoccupied)"
 msgstr ""
 
@@ -76,7 +76,7 @@ msgid ""
 "u gf (%u ms)"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameWorldViewer.cpp:264
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameWorldViewer.cpp:263
 msgid "(stopped)"
 msgstr "(stopped)"
 
@@ -110,7 +110,7 @@ msgstr ""
 msgid "1 h"
 msgstr "1 t"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:49
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:51
 msgid "10 catapults"
 msgstr ""
 
@@ -124,11 +124,16 @@ msgstr "15 min"
 msgid "16 h"
 msgstr "16 t"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:50
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:52
 msgid "20 catapults"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:51
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:49
+#, fuzzy
+msgid "3 catapults"
+msgstr "Katapult"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:53
 msgid "30 catapults"
 msgstr ""
 
@@ -137,13 +142,10 @@ msgstr ""
 msgid "4 h"
 msgstr "4 t"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:52
-msgid "40 catapults"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:53
-msgid "50 catapults"
-msgstr ""
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:50
+#, fuzzy
+msgid "5 catapults"
+msgstr "Katapult"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1002
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1052
@@ -156,7 +158,7 @@ msgstr "<%s> "
 msgid "A auto-savegame is created..."
 msgstr "En automatisk lagringsfil blir lagd..."
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobMilitary.cpp:1090
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobMilitary.cpp:1119
 msgid "A catapult is firing upon us!"
 msgstr "En katapult angriper oss!"
 
@@ -174,11 +176,11 @@ msgstr "Mye"
 msgid "A new ship is ready"
 msgstr "Et nytt skip er klart"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/noShip.cpp:444
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/noShip.cpp:454
 msgid "A ship disovered an enemy territory"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/noShip.cpp:722
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/noShip.cpp:732
 msgid "A ship has reached the destination of its expedition."
 msgstr ""
 
@@ -203,6 +205,10 @@ msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMainMenu.cpp:97
 msgid "AI Debug Window"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAIDebugWindow.h:38
+msgid "AI Debugging Window"
 msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:45
@@ -239,12 +245,17 @@ msgstr ""
 msgid "Add track"
 msgstr "Legg til spor"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:121
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:138
 msgid "Additional Programming:"
 msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAddons.cpp:46
 msgid "Additional features:"
+msgstr "Tilleggsfunksjoner:"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:131
+#, fuzzy
+msgid "Additional graphics"
 msgstr "Tilleggsfunksjoner:"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAddons.cpp:43
@@ -258,6 +269,11 @@ msgstr "Utvidelser"
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:94
 msgid "Addons:"
 msgstr "Utvidelser:"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAdjustMilitaryStrength.h:47
+#, fuzzy
+msgid "Adjust military strength"
+msgstr "Militærstyrke"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwOptionsWindow.cpp:105
 msgid "Advanced"
@@ -351,6 +367,12 @@ msgid ""
 "and build donkey roads directly"
 msgstr ""
 
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAdjustMilitaryStrength.h:48
+msgid ""
+"Allows you to modify the strength increase of military ranks\n"
+"\n"
+msgstr ""
+
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/SerializedGameData.cpp:243
 msgid "An error occured while saving which was suppressed!"
 msgstr ""
@@ -375,25 +397,25 @@ msgstr "Er du sikker på at du vil fjerne alle opptakene?"
 msgid "Armorer"
 msgstr "Våpensmed"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:101
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:111
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:107
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:117
 msgid "Armory"
 msgstr "Våpensmie"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:116
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:123
 msgid "Artificial Intelligence (AI)"
 msgstr "Kunstig Intelligens (AI)"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:385
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:387
 msgid "Attack not possible."
 msgstr "Angrep er ikke mulig."
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:318
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:326
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:320
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:328
 msgid "Attack options"
 msgstr "Angrepsinstillinger"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:410
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:412
 msgid "Attack!"
 msgstr "Angrip!"
 
@@ -401,7 +423,7 @@ msgstr "Angrip!"
 msgid "Author"
 msgstr "Skaper"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:1287
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:1288
 msgid "Auto-Save"
 msgstr "Autolagring"
 
@@ -414,7 +436,7 @@ msgid "Axe"
 msgstr "Øks"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskAboutRTTR.cpp:55
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:62
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:69
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskDirectIP.cpp:65
 msgid "Back"
 msgstr "Tilbake"
@@ -423,7 +445,7 @@ msgstr "Tilbake"
 msgid "Baker"
 msgstr "Baker"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:136
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:153
 msgid "Bakery"
 msgstr "Bakeri"
 
@@ -435,7 +457,7 @@ msgstr "Brakke"
 msgid "Beer"
 msgstr "Øl"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:121
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:137
 msgid "Boards"
 msgstr "Planker"
 
@@ -467,19 +489,19 @@ msgstr "Brød"
 msgid "Brewer"
 msgstr "Brygger"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:94
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:139
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:97
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:156
 msgid "Brewery"
 msgstr "Bryggeri"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:262
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:269
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:277
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:281
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:264
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:271
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:279
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:283
 msgid "Build road"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:270
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:272
 msgid "Build waterway"
 msgstr ""
 
@@ -492,7 +514,7 @@ msgstr "Bygger"
 msgid "Building sequence"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildings.cpp:76
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildings.cpp:79
 msgid "Buildings"
 msgstr "Bygninger"
 
@@ -500,8 +522,8 @@ msgstr "Bygninger"
 msgid "Butcher"
 msgstr "Slakter"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:264
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:272
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:266
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:274
 msgid "Call in geologist"
 msgstr "Send en geolog"
 
@@ -552,8 +574,8 @@ msgstr ""
 msgid "Change the visibility of your ingame statistics"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:255
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:345
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:100
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:133
 msgid "Charburner"
 msgstr ""
 
@@ -594,17 +616,22 @@ msgstr "Lukk uten å lagre"
 msgid "Closed"
 msgstr "Stengt"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:108
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:114
 msgid "Coal"
 msgstr "Kull"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:72
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:75
 msgid "Coal mine"
 msgstr "Kullgruve"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:83
 msgid "Coins"
 msgstr "Mynter"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBaseWarehouse.cpp:62
+#, fuzzy
+msgid "Collect"
+msgstr "Koble til"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:66
 msgid "Color"
@@ -614,7 +641,7 @@ msgstr "Farge"
 msgid "Common"
 msgstr "Vanlig"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:612
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:613
 #, c-format
 msgid "Computer %u"
 msgstr ""
@@ -649,7 +676,7 @@ msgstr "Tilkobling til vert lukket."
 msgid "Conquer 3/4 of map"
 msgstr "Kontroller 3/4 av kartet"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:124
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:140
 msgid "Construction"
 msgstr "Konstruksjon"
 
@@ -685,7 +712,7 @@ msgstr ""
 msgid "Create Game"
 msgstr "Lag spill"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:68
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:75
 msgid "Credits"
 msgstr "Bidragsytere"
 
@@ -717,7 +744,7 @@ msgid ""
 msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildOrder.cpp:75
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:160
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:181
 msgid "Default"
 msgstr "Standard"
 
@@ -725,9 +752,9 @@ msgstr "Standard"
 msgid "Delete all"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:282
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:284
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBaseWarehouse.cpp:112
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuilding.cpp:79
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuilding.cpp:87
 msgid "Demolish house"
 msgstr "Riv bygningen"
 
@@ -752,8 +779,8 @@ msgstr "Riving er ikke mulig"
 msgid "Destroy all buildings and surrender"
 msgstr "Ødelegg alle bygningene og gi opp"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:306
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:313
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:308
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:315
 msgid "Dig up road"
 msgstr "Grav opp veien"
 
@@ -782,11 +809,11 @@ msgstr "Deaktivert"
 msgid "Disallow change"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:337
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:339
 msgid "Display options"
 msgstr "Visningsinstillinger"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:54
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:57
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMainMenu.cpp:67
 msgid "Distribution of goods"
 msgstr "Godsfordeling"
@@ -799,7 +826,7 @@ msgstr "Ikke glem å sjekke konfigurasjonen til utvidelsene."
 msgid "Don't surrender"
 msgstr "Ikke gi opp"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:146
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:163
 msgid "Donators"
 msgstr ""
 
@@ -807,8 +834,8 @@ msgstr ""
 msgid "Donkey breeder"
 msgstr "Eselrøkter"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:91
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:145
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:94
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:162
 msgid "Donkey breeding"
 msgstr "Eselfarm"
 
@@ -820,7 +847,7 @@ msgstr "Nedover"
 msgid "Downwards"
 msgstr "Nedover"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:599
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:600
 #, c-format
 msgid "Dummy %u"
 msgstr ""
@@ -854,6 +881,12 @@ msgstr "Effekter"
 msgid "Email Address:"
 msgstr "E-postadresse:"
 
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAIDebugWindow.h:39
+msgid ""
+"Enable AI Debugging Window\n"
+" (possible cheating)"
+msgstr ""
+
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonCharburner.h:36
 msgid "Enable charburner"
 msgstr ""
@@ -870,9 +903,9 @@ msgstr "Avslutte spillet?"
 msgid "Enemies"
 msgstr "Fiender"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:256
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:290
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:300
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:258
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:292
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:302
 msgid "Erect flag"
 msgstr ""
 
@@ -984,7 +1017,7 @@ msgstr "Krigståke"
 msgid "Food"
 msgstr "Mat"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:67
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:70
 msgid "Foodstuff"
 msgstr "Matvarer"
 
@@ -1081,12 +1114,12 @@ msgstr "Geolog"
 msgid "Get all back"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:341
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:343
 msgid "Go to headquarters"
 msgstr "Gå til hovedkvarteret"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBaseWarehouse.cpp:73
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuilding.cpp:94
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuilding.cpp:102
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildingSite.cpp:65
 msgid "Go to place"
 msgstr "Gå til plassering"
@@ -1101,7 +1134,7 @@ msgstr "Mål"
 msgid "Gold"
 msgstr "Gull"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:78
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:81
 msgid "Gold mine"
 msgstr "Gullgruve"
 
@@ -1109,7 +1142,7 @@ msgstr "Gullgruve"
 msgid "Goods at start:"
 msgstr "Varelager ved start:"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:82
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:85
 msgid "Grain"
 msgstr "Korn"
 
@@ -1119,7 +1152,7 @@ msgid ""
 "be processed by a butcher."
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:69
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:72
 msgid "Granite mine"
 msgstr "Granittgruve"
 
@@ -1155,9 +1188,9 @@ msgstr "Havnebygning"
 msgid "Headquarters"
 msgstr "Hovedkvarter"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuilding.cpp:77
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildingProductivities.cpp:103
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildings.cpp:89
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuilding.cpp:85
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildingProductivities.cpp:106
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildings.cpp:92
 msgid "Help"
 msgstr "Hjelp"
 
@@ -1173,7 +1206,7 @@ msgstr "Hei, jeg er en kunstig spiller og er ikke veldig god foreløpig!"
 msgid "Host:"
 msgstr "Vert:"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:340
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:342
 msgid "House names"
 msgstr ""
 
@@ -1243,7 +1276,7 @@ msgstr "Ugyldig opptak!"
 msgid "Invalid port. The valid port-range is 1 to 65535!"
 msgstr "Ugyldig port. Velg en verdi mellom 1 og 65535."
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:98
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:104
 msgid "Iron"
 msgstr "Jern"
 
@@ -1251,7 +1284,7 @@ msgstr "Jern"
 msgid "Iron founder"
 msgstr "Smelteverksarbeider"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:75
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:78
 msgid "Iron mine"
 msgstr "Jerngruve"
 
@@ -1259,7 +1292,7 @@ msgstr "Jerngruve"
 msgid "Iron ore"
 msgstr "Jernmalm"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:114
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:120
 msgid "Iron smelter"
 msgstr "Smelteverk"
 
@@ -1301,7 +1334,7 @@ msgstr "Lengde"
 msgid "Less"
 msgstr "Mindre"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:392
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:394
 msgid "Less attackers"
 msgstr "Færre angripere"
 
@@ -1366,7 +1399,7 @@ msgid "Load game"
 msgstr "Last inn spill"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwOptionsWindow.cpp:81
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSave.cpp:258
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSave.cpp:257
 msgid "Load game!"
 msgstr "Last inn spillet!"
 
@@ -1410,7 +1443,7 @@ msgstr "Mistet koblingen til lobbyen!"
 msgid "Lost connection to server!"
 msgstr "Mistet koblingen til serveren!"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameWorldGame.cpp:574
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameWorldGame.cpp:593
 msgid "Lost land by this building"
 msgstr "Landområder tapt til denne bygningen"
 
@@ -1447,9 +1480,15 @@ msgstr "Kart: "
 msgid "Mapfile: "
 msgstr "Kartfil: "
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:107
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:114
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:133
 msgid "Mapping"
 msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAdjustMilitaryStrength.h:52
+#, fuzzy
+msgid "Maximum strength"
+msgstr "Militærstyrke"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:170
 msgid "Meat"
@@ -1458,6 +1497,11 @@ msgstr "Kjøtt"
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/BuildingConsts.h:417
 msgid "Meat the hunter acquires is used to feed the miners."
 msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAdjustMilitaryStrength.h:53
+#, fuzzy
+msgid "Medium strength"
+msgstr "Militærstyrke"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:244
 msgid "Medium-term"
@@ -1481,8 +1525,8 @@ msgstr "Melding"
 msgid "Metalworker"
 msgstr "Smed"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:104
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:127
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:110
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:143
 msgid "Metalworks"
 msgstr "Smie"
 
@@ -1490,15 +1534,15 @@ msgstr "Smie"
 msgid "Military"
 msgstr "Militær"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobMilitary.cpp:863
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobMilitary.cpp:872
 msgid "Military building captured"
 msgstr "Vi overtok en militær bygning!"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobMilitary.cpp:860
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobMilitary.cpp:869
 msgid "Military building lost"
 msgstr "Vi tapte en militær bygning!"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobMilitary.cpp:600
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobMilitary.cpp:609
 msgid "Military building occupied"
 msgstr "Vi okkuperte en militær bygning!"
 
@@ -1507,7 +1551,7 @@ msgstr "Vi okkuperte en militær bygning!"
 msgid "Military strength"
 msgstr "Militærstyrke"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:85
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:88
 msgid "Mill"
 msgstr "Mølle"
 
@@ -1519,7 +1563,12 @@ msgstr "Møller"
 msgid "Miner"
 msgstr "Gruvearbeider"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:117
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAdjustMilitaryStrength.h:54
+#, fuzzy
+msgid "Minimum strength"
+msgstr "Militærstyrke"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:123
 msgid "Mint"
 msgstr "Myntverk"
 
@@ -1535,7 +1584,7 @@ msgstr "Modus:"
 msgid "More"
 msgstr "Mer"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:393
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:395
 msgid "More attackers"
 msgstr "Flere angripere"
 
@@ -1595,7 +1644,7 @@ msgstr ""
 msgid "Network/LAN"
 msgstr "Lokalnettverk"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobHarborBuilding.cpp:105
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobHarborBuilding.cpp:103
 msgid "New harbor building finished"
 msgstr ""
 
@@ -1603,11 +1652,11 @@ msgstr ""
 msgid "New maps"
 msgstr "Nye kart"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobStorehouse.cpp:57
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobStorehouse.cpp:56
 msgid "New storehouse finished"
 msgstr "Nytt lagerbygg fullført"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwWares.cpp:176
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwWares.cpp:188
 msgid "Next page"
 msgstr "Neste side"
 
@@ -1637,11 +1686,11 @@ msgstr ""
 msgid "No letters!"
 msgstr "Ingen brev"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofFarmhand.cpp:176
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofFarmhand.cpp:196
 msgid "No more fishes in range"
 msgstr "Ikke mer fisk innen rekkevidde"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofFarmhand.cpp:169
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofFarmhand.cpp:189
 msgid "No more stones in range"
 msgstr "Ikke mer stein innen rekkevidde"
 
@@ -1690,7 +1739,7 @@ msgid ""
 "AVG_FPS: %u)"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:407
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:409
 msgid "Number of attackers"
 msgstr "Antall angripere"
 
@@ -1701,7 +1750,7 @@ msgstr "Antall angripere"
 msgid "OK"
 msgstr "OK"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:339
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:341
 msgid "Observation window"
 msgstr "Obervasjonsvindu"
 
@@ -1750,8 +1799,12 @@ msgstr ""
 msgid "Other"
 msgstr "Annet"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:134
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:151
 msgid "Other Support:"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofAttacker.cpp:288
+msgid "Our headquarters was destroyed!"
 msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMinimap.cpp:53
@@ -1787,8 +1840,8 @@ msgstr ""
 msgid "Pig breeder"
 msgstr "Griserøkter"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:88
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:142
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:91
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:159
 msgid "Pig farm"
 msgstr "Grisefarm"
 
@@ -1851,6 +1904,15 @@ msgstr "Spilleliste:"
 msgid "Please enter a name for the game"
 msgstr "Vennligst skriv inn et navn for spillet"
 
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:95
+#, fuzzy
+msgid ""
+"Please use the Multiplayer mode and 'Direct IP' to create a Singleplayer "
+"game."
+msgstr ""
+"Enspillermodus og AI er ennå ikke implementert. Vennligst bruk "
+"flerspillermodus og \"Direkte IP\" for å lage et spill i enspillermodus."
+
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPleaseWait.cpp:44
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPleaseWait.cpp:47
 msgid "Please wait..."
@@ -1872,7 +1934,7 @@ msgstr "Menig"
 msgid "Private first class"
 msgstr "Korporal"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildingProductivities.cpp:82
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildingProductivities.cpp:85
 msgid "Productivity"
 msgstr "Produktivitet"
 
@@ -1880,14 +1942,14 @@ msgstr "Produktivitet"
 msgid "Program version is too old to play that replay!"
 msgstr "Versjonen er for gammel til å spille det opptaket"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:76
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:88
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:115
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:83
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:95
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:122
 msgid "Programming"
 msgstr "Programmering"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:74
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:87
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:81
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:94
 msgid "Project management"
 msgstr ""
 
@@ -1903,15 +1965,16 @@ msgstr "Proxytjener"
 msgid "Proxytyp:"
 msgstr "Proxytype:"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:263
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:271
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:265
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:273
 msgid "Pull down flag"
 msgstr "Ta ned flagget"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:79
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:89
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:98
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:106
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:86
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:96
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:105
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:113
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:132
 msgid "Quality Assurance"
 msgstr "Kvalitetssikring"
 
@@ -2027,7 +2090,7 @@ msgstr "Fortsett forrige spill"
 msgid "Return"
 msgstr "Tilbake"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:65
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:72
 msgid "Return To The Roots"
 msgstr "Tilbake til røttene"
 
@@ -2070,7 +2133,7 @@ msgstr "Lagre spillet!"
 msgid "Saw"
 msgstr "Sag"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:261
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:130
 msgid "Sawmill"
 msgstr "Sagbruk"
 
@@ -2094,8 +2157,8 @@ msgstr "Merk alt"
 msgid "Selection of maps"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:265
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:273
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:267
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:275
 msgid "Send out scout"
 msgstr "Send ut speider"
 
@@ -2119,7 +2182,7 @@ msgstr "Tjenerinformasjon"
 msgid "Server Name:"
 msgstr "Tjenernavn:"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:75
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:82
 msgid "Server management"
 msgstr ""
 
@@ -2161,7 +2224,7 @@ msgstr ""
 msgid "Shipwright"
 msgstr "Skipsbygger"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:130
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:146
 msgid "Shipyard"
 msgstr "Skipsverft"
 
@@ -2180,14 +2243,6 @@ msgstr ""
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskMainMenu.cpp:72
 msgid "Singleplayer"
 msgstr "Enspiller"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:95
-msgid ""
-"Singleplayer mode and AI are not yet implemented. Please use the Multiplayer "
-"mode and 'Direct IP' to create a Singleplayer game."
-msgstr ""
-"Enspillermodus og AI er ennå ikke implementert. Vennligst bruk "
-"flerspillermodus og \"Direkte IP\" for å lage et spill i enspillermodus."
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:99
 msgid "Size"
@@ -2301,7 +2356,7 @@ msgstr "Stopp lagring"
 msgid "Storehouse"
 msgstr "Lagerhus"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:398
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:400
 msgid "Strong attackers"
 msgstr "Sterke angripere"
 
@@ -2333,7 +2388,7 @@ msgstr "Sverd"
 msgid "System language"
 msgstr "Systemspråk"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:174
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:191
 msgid "THE END"
 msgstr ""
 
@@ -2349,11 +2404,11 @@ msgstr "Lag"
 msgid "Temporary map file was not found!"
 msgstr "Den midlertidlige kartfilen ble ikke funnet"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:166
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:183
 msgid "Thank you for your donations!"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:173
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:190
 msgid "Thank you!"
 msgstr ""
 
@@ -2424,11 +2479,11 @@ msgid ""
 "soldiers here can not train and improve their skills."
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClientPlayer.cpp:2043
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClientPlayer.cpp:2058
 msgid "The emergency program has been activated."
 msgstr "Nødprogrammet har blitt aktivert."
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClientPlayer.cpp:2053
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClientPlayer.cpp:2068
 msgid "The emergency program has been deactivated."
 msgstr "Nødprogrammet har blitt deaktivert."
 
@@ -2558,6 +2613,19 @@ msgstr ""
 msgid "This Server is full!"
 msgstr "Denne serveren er full."
 
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofAttacker.cpp:291
+#, fuzzy
+msgid "This harbor building was destroyed"
+msgstr "Vi overtok en militær bygning!"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofBuildingWorker.cpp:403
+msgid "This mine is exhausted"
+msgstr "Denne gruva er tom"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofBuildingWorker.cpp:405
+msgid "This well is dried out"
+msgstr ""
+
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSave.cpp:67
 msgid "Time"
 msgstr "Tid"
@@ -2613,6 +2681,7 @@ msgid "Type"
 msgstr "Type"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:46
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonMaxWaterwayLength.h:50
 msgid "Unlimited"
 msgstr ""
 
@@ -2620,7 +2689,7 @@ msgstr ""
 msgid "Up"
 msgstr "Oppover"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:365
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:367
 msgid "Upgrade to donkey road"
 msgstr ""
 
@@ -2705,19 +2774,19 @@ msgstr "Ødemark"
 msgid "Watchtower"
 msgstr "Vakttårn"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:133
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:150
 msgid "Water"
 msgstr "Eau"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofAttacker.cpp:610
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofAttacker.cpp:654
 msgid "We are under attack!"
 msgstr "Vi er under angrep!"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:171
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:188
 msgid "We hope you enjoy playing Return To The Roots!"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:397
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:399
 msgid "Weak attackers"
 msgstr "Svake angripere"
 
@@ -2729,12 +2798,12 @@ msgstr "Svakt forsvar"
 msgid "Weapons"
 msgstr "Våpen"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:77
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:97
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:84
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:104
 msgid "Website Administration"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:78
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:85
 msgid "Website Programming"
 msgstr "Programmering av hjemmesiden"
 
@@ -2760,7 +2829,7 @@ msgstr ""
 msgid "Won"
 msgstr "Vunnet"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:71
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:127
 msgid "Wood"
 msgstr "Lund"
 
@@ -2818,14 +2887,10 @@ msgstr ""
 msgid "You need to restart your game to change the video or audio driver!"
 msgstr "Du må starte spillet på nytt for at Audio/Video-driveren skal endres!"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:1608
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:1609
 #, c-format
 msgid "current GF: %u - still fast forwarding: %d GFs left (%d %%)"
 msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBaseWarehouse.cpp:62
-msgid "do nothing"
-msgstr "gjør ingenting"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskDirectIP.cpp:56
 msgid "http://www.siedler25.org"
@@ -2855,7 +2920,7 @@ msgstr ""
 msgid "treaty of alliance"
 msgstr "allianseavtale"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:148
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:165
 msgid "various anonymous donators"
 msgstr ""
 
@@ -2880,8 +2945,8 @@ msgstr ""
 #~ msgid "Save"
 #~ msgstr "Lagre"
 
-#~ msgid "This mine is exhausted"
-#~ msgstr "Denne gruva er tom"
-
 #~ msgid "VSync:"
 #~ msgstr "VSync:"
+
+#~ msgid "do nothing"
+#~ msgstr "gjør ingenting"
