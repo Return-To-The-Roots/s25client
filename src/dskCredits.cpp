@@ -1,4 +1,4 @@
-// $Id: dskCredits.cpp 6929 2010-12-23 18:12:49Z OLiver $
+// $Id: dskCredits.cpp 6930 2010-12-23 18:14:23Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -376,5 +376,5 @@ bool dskCredits::Msg_KeyDown(const KeyEvent& ke)
 
 void dskCredits::Msg_ButtonClick(const unsigned ctrl_id)
 {
-	return Close();
+	Close();
 }
