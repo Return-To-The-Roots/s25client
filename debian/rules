@@ -81,6 +81,9 @@ install: build
 	# remove updater
 	rm -vf $(CURDIR)/debian/s25rttr/usr/share/s25rttr/RTTR/s25update
 	
+	# remove miniupnp
+	rm -vf $(CURDIR)/debian/s25rttr/usr/lib/libminiupnpc*
+	
 	# move maps to maps-package
 	mkdir -vp $(CURDIR)/debian/s25rttr-maps/usr/share/s25rttr/RTTR
 	mv -v $(CURDIR)/debian/s25rttr/usr/share/s25rttr/RTTR/MAPS $(CURDIR)/debian/s25rttr-maps/usr/share/s25rttr/RTTR

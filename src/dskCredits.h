@@ -1,4 +1,4 @@
-// $Id: dskCredits.h 6582 2010-07-16 11:23:35Z FloSoft $
+// $Id: dskCredits.h 6931 2010-12-23 18:25:48Z FloSoft $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -34,10 +34,9 @@ public:
 	~dskCredits();
 
 private:
-	bool Msg_LeftUp(const MouseCoords& mc);
-	bool Msg_RightUp(const MouseCoords& mc);
 	bool Msg_KeyDown(const KeyEvent& ke);
 	void Msg_PaintAfter();
+	void Msg_ButtonClick(const unsigned ctrl_id);
 
 	bool Close(void);
 

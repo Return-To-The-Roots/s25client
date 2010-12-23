@@ -1,4 +1,4 @@
-// $Id: dskCredits.cpp 6597 2010-07-19 10:02:40Z FloSoft $
+// $Id: dskCredits.cpp 6931 2010-12-23 18:25:48Z FloSoft $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -27,6 +27,7 @@
 #include "Loader.h"
 
 #include "dskMainMenu.h"
+#include "ctrlButton.h"
 
 #include "VideoDriverWrapper.h"
 #include "JobConsts.h"
@@ -50,6 +51,12 @@
  *  @author FloSoft
  */
 
+
+/// Duration for one credits page
+const unsigned PAGE_TIME = 10000;
+/// Duration for fading between pages
+const unsigned FADING_TIME = 2000;
+
 ///////////////////////////////////////////////////////////////////////////////
 /**
  *  Konstruktor von @p dskCredits.
@@ -69,7 +76,7 @@ dskCredits::dskCredits(void) : Desktop(LOADER.GetImageN("setup013", 0))
 	
 	CreditsEntry entry = CreditsEntry();
 	entry.title = "Florian Doersch (FloSoft):";
-	entry.picId = 2;
+	entry.picId = 1;
 	entry.lastLine = "";
 	entry.lines.push_back(CreditsEntry::Line(_("Project management")));
 	entry.lines.push_back(CreditsEntry::Line(_("Server management")));
@@ -82,7 +89,7 @@ dskCredits::dskCredits(void) : Desktop(LOADER.GetImageN("setup013", 0))
 	entry.lines.clear();
 
 	entry.title = "Oliver Siebert (Oliverr):";
-	entry.picId = 8;
+	entry.picId = 4;
 	entry.lastLine = "";
 	entry.lines.push_back(CreditsEntry::Line(_("Project management")));
 	entry.lines.push_back(CreditsEntry::Line(_("Programming")));
@@ -101,7 +108,7 @@ dskCredits::dskCredits(void) : Desktop(LOADER.GetImageN("setup013", 0))
 	entry.lines.clear();
 
 	entry.title = "Jonas Trampe (NastX):";
-	entry.picId = 6;
+	entry.picId = 3;
 	entry.lastLine = "";
 	entry.lines.push_back(CreditsEntry::Line(_("Quality Assurance")));
 	entry.lines.push_back(CreditsEntry::Line(_("Mapping")));
@@ -110,10 +117,20 @@ dskCredits::dskCredits(void) : Desktop(LOADER.GetImageN("setup013", 0))
 	entry.lines.clear();
 
 	entry.title = "Jan-Henrik Kluth (jh):";
-	entry.picId = 4;
+	entry.picId = 2;
 	entry.lastLine = "";
 	entry.lines.push_back(CreditsEntry::Line(_("Programming")));
 	entry.lines.push_back(CreditsEntry::Line(_("Artificial Intelligence (AI)")));
+
+	this->entries.push_back(entry);
+	entry.lines.clear();
+
+	entry.title = "Christopher Kuehnel (Spikeone):";
+	entry.picId = 5;
+	entry.lastLine = "";
+	entry.lines.push_back(CreditsEntry::Line(_("Additional graphics")));
+	entry.lines.push_back(CreditsEntry::Line(_("Quality Assurance")));
+	entry.lines.push_back(CreditsEntry::Line(_("Mapping")));
 
 	this->entries.push_back(entry);
 	entry.lines.clear();
@@ -138,7 +155,6 @@ dskCredits::dskCredits(void) : Desktop(LOADER.GetImageN("setup013", 0))
 	entry.lines.push_back(CreditsEntry::Line("Sotham"));
 	entry.lines.push_back(CreditsEntry::Line("Z-Stef"));
 	entry.lines.push_back(CreditsEntry::Line("Fenan"));
-	entry.lines.push_back(CreditsEntry::Line("Christopher Kuehnel (Spikeone)"));
 	entry.lines.push_back(CreditsEntry::Line("Phil Groenewold (Phil333)"));
 
 	this->entries.push_back(entry);
@@ -207,7 +223,7 @@ void dskCredits::Msg_PaintAfter()
 {
 	unsigned int time = VideoDriverWrapper::inst().GetTickCount() - startTime;
 
-	if (time > 5000) {
+	if (time > PAGE_TIME) {
 		++this->it;
 		if (this->it == entries.end())
 			this->it = entries.begin();
@@ -267,7 +283,7 @@ void dskCredits::Msg_PaintAfter()
 		}
 
 		b.id = job;
-		b.y = VideoDriverWrapper::inst().GetScreenHeight() - 170 + rand() % 150;
+		b.y = GetCtrl<ctrlButton>(0)->GetY() - 20 - rand() % 150;
 		bobs.push_back(b);
 	}
 	
@@ -304,10 +320,12 @@ void dskCredits::Msg_PaintAfter()
 	// calculate text transparency
 	unsigned transparency = 0xFF;
 
-	if (time > 4000)
-		transparency = (transparency - transparency*(time-4000)/1000);
+	if(time < FADING_TIME)
+		transparency = 0xFF * time / FADING_TIME;
+	if (time > PAGE_TIME-FADING_TIME)
+		transparency = (0xFF - 0xFF*(time-(PAGE_TIME-FADING_TIME))/FADING_TIME);
 
-	if (time < 500 || time > 5000)
+	if (time > PAGE_TIME)
 		transparency = 0;
 
 	transparency=transparency<<24;
@@ -350,29 +368,13 @@ bool dskCredits::Close(void)
  *
  *  @author siegi44
  */
-bool dskCredits::Msg_LeftUp(const MouseCoords& mc)
-{
-	return Close();
-}
-
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  
- *
- *  @author siegi44
- */
-bool dskCredits::Msg_RightUp(const MouseCoords& mc)
-{
-	return Close();
-}
-
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  
- *
- *  @author siegi44
- */
 bool dskCredits::Msg_KeyDown(const KeyEvent& ke)
 {
 	return Close();
+}
+
+
+void dskCredits::Msg_ButtonClick(const unsigned ctrl_id)
+{
+	Close();
 }
