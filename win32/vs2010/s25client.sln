@@ -103,6 +103,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "s-c_resample", "..\..\s-c\r
 		{FED04AF3-3FE4-41CA-9DB9-6E0AD873183A} = {FED04AF3-3FE4-41CA-9DB9-6E0AD873183A}
 	EndProjectSection
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "s25client-setup", "s25client-setup\s25client-setup.vdproj", "{56BF47EE-F483-4E33-8562-D753F73ECE9B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -173,6 +175,8 @@ Global
 		{D1615B31-8DDB-4308-84D7-60C1EB576EA1}.Debug|Win32.Build.0 = Debug|Win32
 		{D1615B31-8DDB-4308-84D7-60C1EB576EA1}.Release|Win32.ActiveCfg = Release|Win32
 		{D1615B31-8DDB-4308-84D7-60C1EB576EA1}.Release|Win32.Build.0 = Release|Win32
+		{56BF47EE-F483-4E33-8562-D753F73ECE9B}.Debug|Win32.ActiveCfg = Debug
+		{56BF47EE-F483-4E33-8562-D753F73ECE9B}.Release|Win32.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
