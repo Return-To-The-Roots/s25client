@@ -1,4 +1,4 @@
-// $Id: dskCredits.cpp 6930 2010-12-23 18:14:23Z OLiver $
+// $Id: dskCredits.cpp 6932 2010-12-23 20:27:55Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -53,7 +53,7 @@
 
 
 /// Duration for one credits page
-const unsigned PAGE_TIME = 10000;
+const unsigned PAGE_TIME = 12900;
 /// Duration for fading between pages
 const unsigned FADING_TIME = 2000;
 
@@ -200,7 +200,7 @@ dskCredits::dskCredits(void) : Desktop(LOADER.GetImageN("setup013", 0))
 	this->it = entries.begin();
 	startTime = bobTime = bobSpawnTime = VideoDriverWrapper::inst().GetTickCount();
 	
-	GetMusic(sng_lst, 13)->Play(0);
+	GetMusic(sng_lst, 8)->Play(0);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
