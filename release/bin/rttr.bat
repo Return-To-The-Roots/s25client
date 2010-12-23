@@ -9,7 +9,7 @@ xcopy /Y RTTR\s25update.exe update
 xcopy /Y RTTR\libcurl-4.dll update
 xcopy /Y RTTR\zlib1.dll update
 
-update\s25update.exe -d %CD%
+update\s25update.exe --stable -d %CD%
 
 :START
 s25client.exe
