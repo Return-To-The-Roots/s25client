@@ -1,4 +1,4 @@
-// $Id: dskSinglePlayer.cpp 6582 2010-07-16 11:23:35Z FloSoft $
+// $Id: dskSinglePlayer.cpp 6934 2010-12-23 22:15:36Z FloSoft $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -92,7 +92,7 @@ void dskSinglePlayer::Msg_ButtonClick(const unsigned int ctrl_id)
 	case 5: // "Spiel starten"
 		{
 			/// @todo Hier dann Auswahl zwischen Kampagne(n) und "Freies Spiel"
-			WindowManager::inst().Show(new iwMsgbox(_("Not available"),_("Singleplayer mode and AI are not yet implemented. Please use the Multiplayer mode and \'Direct IP\' to create a Singleplayer game."),this,MSB_OK,MSB_EXCLAMATIONGREEN));
+			WindowManager::inst().Show(new iwMsgbox(_("Not available"),_("Please use the Multiplayer mode and \'Direct IP\' to create a Singleplayer game."),this,MSB_OK,MSB_EXCLAMATIONGREEN));
 		} break;
 	case 6: // "Spiel laden"
 		{
