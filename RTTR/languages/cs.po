@@ -7,21 +7,25 @@ msgid ""
 msgstr ""
 "Project-Id-Version: s25rttr\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-12-23 23:17+0100\n"
-"PO-Revision-Date: 2009-12-02 17:45+0000\n"
-"Last-Translator: Trijanix <janjanjanx@gmail.com>\n"
+"POT-Creation-Date: 2010-12-24 07:49+0100\n"
+"PO-Revision-Date: 2010-12-24 08:03+0100\n"
+"Last-Translator: Florian Doersch <sf-team@siedler25.org>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-07-29 13:20+0000\n"
-"X-Generator: Launchpad (build Unknown)\n"
+"X-Launchpad-Export-Date: 2010-12-24 06:40+0000\n"
+"X-Generator: Launchpad (build 12138)\n"
+"X-Poedit-Language: Czech\n"
+"X-Poedit-Country: CZECH REPUBLIC\n"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:234
 msgid ""
 "\n"
 "Costs: "
 msgstr ""
+"\n"
+"Náklady: "
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:602
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:615
@@ -34,7 +38,7 @@ msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:241
 msgid " stones"
-msgstr ""
+msgstr " kameny"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:252
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:279
@@ -114,7 +118,7 @@ msgstr "1 h"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:51
 msgid "10 catapults"
-msgstr ""
+msgstr "10 katapultů"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:96
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:127
@@ -128,16 +132,15 @@ msgstr "16 h"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:52
 msgid "20 catapults"
-msgstr ""
+msgstr "20 katapultů"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:49
-#, fuzzy
 msgid "3 catapults"
-msgstr "Katapult"
+msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:53
 msgid "30 catapults"
-msgstr ""
+msgstr "30 katapultů"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:98
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:129
@@ -145,9 +148,8 @@ msgid "4 h"
 msgstr "4 h"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:50
-#, fuzzy
 msgid "5 catapults"
-msgstr "Katapult"
+msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1002
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1052
@@ -178,19 +180,19 @@ msgstr "Hodně"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/noShipBuildingSite.cpp:138
 msgid "A new ship is ready"
-msgstr ""
+msgstr "Nová loď je připravena"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/noShip.cpp:454
 msgid "A ship disovered an enemy territory"
-msgstr ""
+msgstr "Loď objevila nepřátelské území"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/noShip.cpp:732
 msgid "A ship has reached the destination of its expedition."
-msgstr ""
+msgstr "Loď dorazila do cíle své cesty."
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/noShip.cpp:285
 msgid "A ship is ready for an expedition."
-msgstr ""
+msgstr "Loď je připravena na cestu."
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/BuildingConsts.h:510
 msgid ""
@@ -223,7 +225,7 @@ msgstr "Přerušit"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonDemolitionProhibition.h:43
 msgid "Active if attacked"
-msgstr ""
+msgstr "Aktivní v případě útoku"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonDemolitionProhibition.h:44
 msgid "Active near frontiers"
@@ -276,9 +278,8 @@ msgid "Addons:"
 msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAdjustMilitaryStrength.h:47
-#, fuzzy
 msgid "Adjust military strength"
-msgstr "Síla armády"
+msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwOptionsWindow.cpp:105
 msgid "Advanced"
@@ -409,7 +410,7 @@ msgstr "Kovárna"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:123
 msgid "Artificial Intelligence (AI)"
-msgstr ""
+msgstr "Umělá Inteligence (UI)"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:387
 msgid "Attack not possible."
@@ -544,7 +545,7 @@ msgstr "Zrušit"
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHarborBuilding.cpp:91
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHarborBuilding.cpp:122
 msgid "Cancel expedition"
-msgstr ""
+msgstr "Zrušit výpravu"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:484
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:692
@@ -634,9 +635,8 @@ msgid "Coins"
 msgstr "Mince"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBaseWarehouse.cpp:62
-#, fuzzy
 msgid "Collect"
-msgstr "Připojit se"
+msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:66
 msgid "Color"
@@ -703,15 +703,15 @@ msgstr "Typ kontraktu:"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonChangeGoldDeposits.h:50
 msgid "Convert to coal"
-msgstr ""
+msgstr "Změnit na uhlí"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonChangeGoldDeposits.h:51
 msgid "Convert to granite"
-msgstr ""
+msgstr "Změnit na žulu"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonChangeGoldDeposits.h:49
 msgid "Convert to iron ore"
-msgstr ""
+msgstr "Změnit na železnou rudu"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskDirectIP.cpp:61
 msgid "Create Game"
@@ -958,7 +958,7 @@ msgstr "Expedice"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHarborBuilding.cpp:60
 msgid "Exploration expedition"
-msgstr ""
+msgstr "Průzkumná výprava"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:102
 msgid "Exploration:"
@@ -1072,7 +1072,7 @@ msgstr "Celá obrazovka"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:162
 msgid "Fullscreen resolution:"
-msgstr ""
+msgstr "Rozlišení v režimu celé obrazovky:"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:487
 msgid ""
@@ -1120,7 +1120,7 @@ msgstr "Geolog"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonRefundMaterials.h:46
 msgid "Get all back"
-msgstr ""
+msgstr "Získat vše zpět"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:343
 msgid "Go to headquarters"
@@ -1433,7 +1433,7 @@ msgstr "Dlouhodobý"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonMaxWaterwayLength.h:48
 msgid "Longer"
-msgstr ""
+msgstr "Delší"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:242
 msgid "Lookout tower"
@@ -1469,7 +1469,7 @@ msgstr "Hlavní nabídka"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonManualRoadEnlargement.h:37
 msgid "Manual road enlargement"
-msgstr ""
+msgstr "Ruční rozšíření silnice"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:104
 msgid "Map"
@@ -1498,9 +1498,8 @@ msgid "Mapping"
 msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAdjustMilitaryStrength.h:52
-#, fuzzy
 msgid "Maximum strength"
-msgstr "Síla armády"
+msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:170
 msgid "Meat"
@@ -1511,9 +1510,8 @@ msgid "Meat the hunter acquires is used to feed the miners."
 msgstr "Maso ulovené lovcem je obživa pro horníky."
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAdjustMilitaryStrength.h:53
-#, fuzzy
 msgid "Medium strength"
-msgstr "Síla armády"
+msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:244
 msgid "Medium-term"
@@ -1576,9 +1574,8 @@ msgid "Miner"
 msgstr "Horník"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAdjustMilitaryStrength.h:54
-#, fuzzy
 msgid "Minimum strength"
-msgstr "Síla armády"
+msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:123
 msgid "Mint"
@@ -1658,7 +1655,7 @@ msgstr "Network/LAN"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobHarborBuilding.cpp:103
 msgid "New harbor building finished"
-msgstr ""
+msgstr "Byla dokončena stavba nové loděnice"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:115
 msgid "New maps"
@@ -1682,7 +1679,7 @@ msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:48
 msgid "No catapults"
-msgstr ""
+msgstr "Bez katapultů"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonChangeGoldDeposits.h:47
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonDefenderBehavior.h:46
@@ -1708,7 +1705,7 @@ msgstr "V dosahu není již žádný kámen"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonRefundMaterials.h:42
 msgid "No refund"
-msgstr ""
+msgstr "Bez náhrady"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwShip.cpp:109
 msgid "No ships available"
@@ -1815,7 +1812,7 @@ msgstr "Jiné"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:151
 msgid "Other Support:"
-msgstr ""
+msgstr "Jiná podpora:"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofAttacker.cpp:288
 msgid "Our headquarters was destroyed!"
@@ -1919,13 +1916,10 @@ msgid "Please enter a name for the game"
 msgstr "Prosím, zadejte název hry"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:95
-#, fuzzy
 msgid ""
 "Please use the Multiplayer mode and 'Direct IP' to create a Singleplayer "
 "game."
 msgstr ""
-"V singleplayeru není implementována AI. Prosím, použijte Multiplayer a "
-"'Přímá IP' a vytvořit Singleplayer hru."
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPleaseWait.cpp:44
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPleaseWait.cpp:47
@@ -2316,7 +2310,7 @@ msgstr "Start GF"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:556
 msgid "Start aborted"
-msgstr ""
+msgstr "Start zrušen"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHarborBuilding.cpp:56
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHarborBuilding.cpp:96
@@ -2337,7 +2331,7 @@ msgstr "Start hry"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:543
 msgid "Starting game, please wait"
-msgstr ""
+msgstr "Spouštím hru, prosím počkejte"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:46
 msgid "Statistics"
@@ -2685,9 +2679,8 @@ msgid "This Server is full!"
 msgstr "Server je již plný!"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofAttacker.cpp:291
-#, fuzzy
 msgid "This harbor building was destroyed"
-msgstr "Vojenská stavba zajata"
+msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofBuildingWorker.cpp:403
 msgid "This mine is exhausted"

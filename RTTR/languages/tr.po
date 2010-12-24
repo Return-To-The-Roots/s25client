@@ -7,67 +7,69 @@ msgid ""
 msgstr ""
 "Project-Id-Version: s25rttr\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-12-23 23:17+0100\n"
-"PO-Revision-Date: 2009-07-07 01:02+0000\n"
-"Last-Translator: Angel Spy <melissadilara@yahoo.com>\n"
+"POT-Creation-Date: 2010-12-24 07:49+0100\n"
+"PO-Revision-Date: 2010-12-24 07:50+0100\n"
+"Last-Translator: Florian Doersch <sf-team@siedler25.org>\n"
 "Language-Team: Turkish <tr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-07-29 13:20+0000\n"
-"X-Generator: Launchpad (build Unknown)\n"
+"X-Launchpad-Export-Date: 2010-12-24 06:40+0000\n"
+"X-Generator: Launchpad (build 12138)\n"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:234
 msgid ""
 "\n"
 "Costs: "
 msgstr ""
+"\n"
+"Fiyat: "
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:602
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:615
 msgid " (AI)"
-msgstr ""
+msgstr " (yapay zeka)"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:236
 msgid " boards"
-msgstr ""
+msgstr " tahta"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:241
 msgid " stones"
-msgstr ""
+msgstr " taş"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:252
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:279
 #, c-format
 msgid "%d"
-msgstr ""
+msgstr "%d"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:403
 #, c-format
 msgid "%d Player"
-msgstr ""
+msgstr "%d oyuncu"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHQ.cpp:68
 #, c-format
 msgid "%u/%u"
-msgstr ""
+msgstr "%u/%u"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPCreate.cpp:83
 msgid "'s Game"
-msgstr ""
+msgstr "'in oyunu"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameWorldViewer.cpp:295
 #, c-format
 msgid "(%d soldiers)"
-msgstr ""
+msgstr "(%d asker)"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameWorldViewer.cpp:293
 msgid "(1 soldier)"
-msgstr ""
+msgstr "(1 asker)"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameWorldViewer.cpp:261
 msgid "(House unoccupied)"
-msgstr ""
+msgstr "(Ev kuşatılmadı)"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:248
 #, c-format
@@ -75,10 +77,12 @@ msgid ""
 "(Replay-Mode) Current GF: %u (End at: %u) / GF length: %u ms / NWF length: %"
 "u gf (%u ms)"
 msgstr ""
+"(Tekrar-Oynama-Modu) Mevcut GF: %u (Bitiş: %u) / GF uzunluğu: %u ms / NWF "
+"uzunluğu: %u gf (%u ms)"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameWorldViewer.cpp:263
 msgid "(stopped)"
-msgstr ""
+msgstr "(durdu)"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:262
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:271
@@ -87,46 +91,46 @@ msgstr "-"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:123
 msgid "-> Build castle"
-msgstr ""
+msgstr "-> Kale inşa et"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:102
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:116
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:122
 msgid "-> Build house"
-msgstr ""
+msgstr "-> Ev inşa et"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:111
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:115
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:121
 msgid "-> Build hut"
-msgstr ""
+msgstr "-> Kulübe inşa et"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:127
 msgid "-> Dig mines"
-msgstr ""
+msgstr "-> Madeni kaz"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:97
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:128
 msgid "1 h"
-msgstr ""
+msgstr "1 sa"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:51
 msgid "10 catapults"
-msgstr ""
+msgstr "10 fırlatma"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:96
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:127
 msgid "15 m"
-msgstr ""
+msgstr "15 dk"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:99
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:130
 msgid "16 h"
-msgstr ""
+msgstr "16 sa"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:52
 msgid "20 catapults"
-msgstr ""
+msgstr "20 fırlatma"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:49
 msgid "3 catapults"
@@ -134,12 +138,12 @@ msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:53
 msgid "30 catapults"
-msgstr ""
+msgstr "30 fırlatma"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:98
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:129
 msgid "4 h"
-msgstr ""
+msgstr "4 sa"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:50
 msgid "5 catapults"
@@ -150,7 +154,7 @@ msgstr ""
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1081
 #, c-format
 msgid "<%s> "
-msgstr ""
+msgstr "<%s> "
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1017
 msgid "A auto-savegame is created..."
@@ -172,7 +176,7 @@ msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/noShipBuildingSite.cpp:138
 msgid "A new ship is ready"
-msgstr ""
+msgstr "Yeni bir gemi hazır"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/noShip.cpp:454
 msgid "A ship disovered an enemy territory"
@@ -199,11 +203,11 @@ msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAIDebug.cpp:49
 msgid "AI Debug"
-msgstr ""
+msgstr "YZ Onarma"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMainMenu.cpp:97
 msgid "AI Debug Window"
-msgstr ""
+msgstr "YZ onarma penceresi"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAIDebugWindow.h:38
 msgid "AI Debugging Window"
@@ -211,19 +215,19 @@ msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:45
 msgid "Abort"
-msgstr ""
+msgstr "Yoksay"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonDemolitionProhibition.h:43
 msgid "Active if attacked"
-msgstr ""
+msgstr "Saldırıldığında aktif"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonDemolitionProhibition.h:44
 msgid "Active near frontiers"
-msgstr ""
+msgstr "Sınırlara yakınken aktif"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:69
 msgid "Activity window"
-msgstr ""
+msgstr "Etkinlik penceresi"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:76
 msgid "Add"
@@ -236,20 +240,20 @@ msgstr "Sunucu Ekle"
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:83
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:218
 msgid "Add directory of tracks"
-msgstr ""
+msgstr "Parça dizini ekle"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:82
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:212
 msgid "Add track"
-msgstr ""
+msgstr "Parça ekle"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:138
 msgid "Additional Programming:"
-msgstr ""
+msgstr "Ek Programlama:"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAddons.cpp:46
 msgid "Additional features:"
-msgstr ""
+msgstr "Ek özellikler:"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:131
 msgid "Additional graphics"
@@ -625,9 +629,8 @@ msgid "Coins"
 msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBaseWarehouse.cpp:62
-#, fuzzy
 msgid "Collect"
-msgstr "Bağlan"
+msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:66
 msgid "Color"

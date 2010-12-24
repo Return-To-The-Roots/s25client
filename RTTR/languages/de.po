@@ -2,20 +2,20 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Siedler II.5 RttR\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-12-23 23:17+0100\n"
-"PO-Revision-Date: 2010-07-07 20:18+0000\n"
-"Last-Translator: FloSoft <Unknown>\n"
+"POT-Creation-Date: 2010-12-24 07:49+0100\n"
+"PO-Revision-Date: 2010-12-24 08:02+0100\n"
+"Last-Translator: Florian Doersch <sf-team@siedler25.org>\n"
 "Language-Team: Siedler II.5 RttR <sf-team@siedler25.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-07-29 13:20+0000\n"
-"X-Generator: Launchpad (build Unknown)\n"
+"X-Launchpad-Export-Date: 2010-12-24 06:40+0000\n"
+"X-Generator: Launchpad (build 12138)\n"
 "X-Poedit-Country: GERMANY\n"
 "X-Poedit-Language: German\n"
 "X-Poedit-SourceCharset: iso-8859-15\n"
-"X-Poedit-SearchPath-0: /storage/RTTR/svn/trunk/src\n"
 "X-Poedit-Basepath: /storage/RTTR/svn/trunk/src\n"
+"X-Poedit-SearchPath-0: /storage/RTTR/svn/trunk/src\n"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:234
 msgid ""
@@ -133,9 +133,8 @@ msgid "20 catapults"
 msgstr "20 Katapulte"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:49
-#, fuzzy
 msgid "3 catapults"
-msgstr "30 Katapulte"
+msgstr "3 Katapulte"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:53
 msgid "30 catapults"
@@ -147,9 +146,8 @@ msgid "4 h"
 msgstr "4 h"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:50
-#, fuzzy
 msgid "5 catapults"
-msgstr "50 Katapulte"
+msgstr "5 Katapulte"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1002
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1052
@@ -218,9 +216,8 @@ msgid "AI Debug Window"
 msgstr "KI Debug Fenster"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAIDebugWindow.h:38
-#, fuzzy
 msgid "AI Debugging Window"
-msgstr "KI Debug Fenster"
+msgstr "Fenster für KI Debugging"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:45
 msgid "Abort"
@@ -267,9 +264,8 @@ msgid "Additional features:"
 msgstr "Zusätzliche Funktionen:"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:131
-#, fuzzy
 msgid "Additional graphics"
-msgstr "Weitere Programmierer:"
+msgstr "Zusätzliche Grafiken"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAddons.cpp:43
 msgid "Addon Settings"
@@ -284,9 +280,8 @@ msgid "Addons:"
 msgstr "Erweiterungen:"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAdjustMilitaryStrength.h:47
-#, fuzzy
 msgid "Adjust military strength"
-msgstr "Militärmacht"
+msgstr "Stärke des Militärs anpassen"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwOptionsWindow.cpp:105
 msgid "Advanced"
@@ -416,6 +411,8 @@ msgid ""
 "Allows you to modify the strength increase of military ranks\n"
 "\n"
 msgstr ""
+"Erlaubt, die Stärke der einzelnen militärischen Ränge anzupassen.\n"
+"\n"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/SerializedGameData.cpp:243
 msgid "An error occured while saving which was suppressed!"
@@ -673,9 +670,8 @@ msgid "Coins"
 msgstr "Münzen"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBaseWarehouse.cpp:62
-#, fuzzy
 msgid "Collect"
-msgstr "Verbinde..."
+msgstr "Sammeln"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:66
 msgid "Color"
@@ -938,7 +934,7 @@ msgstr "Emailadresse:"
 msgid ""
 "Enable AI Debugging Window\n"
 " (possible cheating)"
-msgstr ""
+msgstr "Aktiviere das Fenster für KI Debugging"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonCharburner.h:36
 msgid "Enable charburner"
@@ -1560,9 +1556,8 @@ msgid "Mapping"
 msgstr "Kartengestaltung"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAdjustMilitaryStrength.h:52
-#, fuzzy
 msgid "Maximum strength"
-msgstr "Militärmacht"
+msgstr "Maximale Stärke"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:170
 msgid "Meat"
@@ -1573,9 +1568,8 @@ msgid "Meat the hunter acquires is used to feed the miners."
 msgstr "Das Fleisch des erlegten Wildes dient der Ernährung der Bergarbeiter."
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAdjustMilitaryStrength.h:53
-#, fuzzy
 msgid "Medium strength"
-msgstr "Militärmacht"
+msgstr "Mittlere Stärke"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:244
 msgid "Medium-term"
@@ -1638,9 +1632,8 @@ msgid "Miner"
 msgstr "Bergarbeiter"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAdjustMilitaryStrength.h:54
-#, fuzzy
 msgid "Minimum strength"
-msgstr "Militärmacht"
+msgstr "Minimale Stärke"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:123
 msgid "Mint"
@@ -1881,7 +1874,7 @@ msgstr "Weiterer Support:"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofAttacker.cpp:288
 msgid "Our headquarters was destroyed!"
-msgstr ""
+msgstr "Unser Hauptquartier wurde zerstört!"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMinimap.cpp:53
 msgid "Outline map"
@@ -1981,14 +1974,12 @@ msgid "Please enter a name for the game"
 msgstr "Bitte geben Sie einen Namen für das Spiel an!"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:95
-#, fuzzy
 msgid ""
 "Please use the Multiplayer mode and 'Direct IP' to create a Singleplayer "
 "game."
 msgstr ""
-"Der Einzelspielermodus sowie die KI sind zur Zeit leider noch nicht "
-"implementiert. Bitte benutzen Sie den Mehrspielermodus  und \"Direkte IP\", "
-"um als einzelner ein Spiel zu starten."
+"Um ein Einzelspielerspiel zu erstellen, muss man aktuell \"Multiplayer\" und "
+"\"Direkte IP\" verwenden."
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPleaseWait.cpp:44
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPleaseWait.cpp:47
@@ -2763,9 +2754,8 @@ msgid "This Server is full!"
 msgstr "Der Server ist bereits voll besetzt!"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofAttacker.cpp:291
-#, fuzzy
 msgid "This harbor building was destroyed"
-msgstr "Erstatte Rohstoffe wenn ein Gebäude abgerissen wird"
+msgstr "Dieses Hafengebäude wurde zerstört!"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofBuildingWorker.cpp:403
 msgid "This mine is exhausted"
@@ -2773,7 +2763,7 @@ msgstr "Dieses Bergwerk ist verbraucht"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofBuildingWorker.cpp:405
 msgid "This well is dried out"
-msgstr ""
+msgstr "Dieser Brunnen ist erschöpft!"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSave.cpp:67
 msgid "Time"
