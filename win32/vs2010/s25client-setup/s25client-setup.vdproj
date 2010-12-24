@@ -165,6 +165,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_0A55CB0E95FA44F0A43739F23B168BC2"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_0A9D9C306D924D4FA351719890FC1C44"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -315,13 +321,25 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_18F78A9D6A714F86A317719C0964FBAC"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_1954DF93AEAB4D0CA38CDE5C124B201A"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_1A0C880AD01641A09DC8151380C7C999"
+        "MsmKey" = "8:_199174915DD142ED997C81585A671185"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_19C7C1DAB212457B96BDB8985C4E89A3"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -387,12 +405,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_1CC32025EF98440B85D5AA8A31A148D7"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_1CDF8F9D1F3C493DBFB9055035098B77"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -436,6 +448,12 @@
         "Entry"
         {
         "MsmKey" = "8:_20EF6934890A47258555E4D0A347A42B"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_2129723BCC434CAC82C433CED86601A0"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -508,6 +526,18 @@
         "Entry"
         {
         "MsmKey" = "8:_279D1C4E21EB4D69954AE41A889EA38F"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_27C001CAD3B147738B11EC6F5A9CF770"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_2802CF9DEC254F96A543F562BC709618"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -610,6 +640,18 @@
         "Entry"
         {
         "MsmKey" = "8:_343A9A1E680E4BC1B3B7E1DC4B61B1A0"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_34AB5B89AB234B0EBCC4F673DAF42CE1"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_35213D41C6624609849D02507FCC6304"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -795,6 +837,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_4C0C78794B3247BC8749D7028AA7F8A7"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_4C10A3071B22403BB8BCB0FFD73B67B3"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -850,6 +898,12 @@
         "Entry"
         {
         "MsmKey" = "8:_5161FF9296034D299E894161C73602D3"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_51E779837003408184004A35529DD13D"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -921,42 +975,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_5A138D1E8B74425E83E64F351F802313"
-        "OwnerKey" = "8:_12AA3CB4B9B74BCF954647E14A20E481"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_5A138D1E8B74425E83E64F351F802313"
-        "OwnerKey" = "8:_BFA2A7B167B744A4959E3CFAA7D8613F"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_5A138D1E8B74425E83E64F351F802313"
-        "OwnerKey" = "8:_8A86AC7F172B4280808692891D2AA7D2"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_5A138D1E8B74425E83E64F351F802313"
-        "OwnerKey" = "8:_4B51EBD99D3E44B7A198A1A6DEF2C3E6"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_5A138D1E8B74425E83E64F351F802313"
-        "OwnerKey" = "8:_4324DE1D49E84780BB1D5807C0193174"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_5A138D1E8B74425E83E64F351F802313"
-        "OwnerKey" = "8:_2B16E679F6BC4B549C12FC85C559ACFD"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_5B5E82D1EE9B49DB9C53039289082019"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -1023,6 +1041,42 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_65F2B96715AB4C69980270EAC9D86BE5"
+        "OwnerKey" = "8:_12AA3CB4B9B74BCF954647E14A20E481"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_65F2B96715AB4C69980270EAC9D86BE5"
+        "OwnerKey" = "8:_BFA2A7B167B744A4959E3CFAA7D8613F"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_65F2B96715AB4C69980270EAC9D86BE5"
+        "OwnerKey" = "8:_8A86AC7F172B4280808692891D2AA7D2"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_65F2B96715AB4C69980270EAC9D86BE5"
+        "OwnerKey" = "8:_4B51EBD99D3E44B7A198A1A6DEF2C3E6"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_65F2B96715AB4C69980270EAC9D86BE5"
+        "OwnerKey" = "8:_4324DE1D49E84780BB1D5807C0193174"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_65F2B96715AB4C69980270EAC9D86BE5"
+        "OwnerKey" = "8:_2B16E679F6BC4B549C12FC85C559ACFD"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_65F8176AD4384CDAA5C3FC8C9AFC75A3"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -1060,6 +1114,12 @@
         "Entry"
         {
         "MsmKey" = "8:_6992B340C3D447F594BE43195536E722"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_69BAB1FEF3524B87A3F49EFF25442CE6"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -1269,6 +1329,18 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_86295AAAB8DE40728CCB71770D9E458C"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_86410CC5C5864D679116FC00FEAE1F37"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_86494BA9E84340B99916F965106790F0"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -1282,6 +1354,12 @@
         "Entry"
         {
         "MsmKey" = "8:_86FB42BA6C984DD18F74AD9C47F077D7"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_8705EE5578464C0583AE0315191419F9"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -1329,6 +1407,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_8CA28E26183E4C54977E9ACC30143C3D"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_8CB9A1F18ED7474E943E1652A8E2283D"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -1341,7 +1425,7 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_8D5F6C637DA0467E8001EE22303B3E5E"
+        "MsmKey" = "8:_8D03DD638FEF4E0BB07AE9BB8BDCDA5F"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -1372,6 +1456,12 @@
         "Entry"
         {
         "MsmKey" = "8:_8FF692D7130E48598B6FDE674FADF5B4"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_92ADFBC68F024255BD29C32032D60D2F"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -1629,6 +1719,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_B5120B8047C044E2B68F94DFB98CDAFB"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_B58620AFF42C4A34A9E733539460A560"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -1677,6 +1773,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_BA032E0C044F443FAC774E98F2DFFA04"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_BB47AAC8313941B3A56006DD4302F924"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -1701,12 +1803,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_BD9D62A4700046C09A562C4E9A0E21E5"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_BDB0D8107EC14119895AF8C1F2F579CE"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -1720,6 +1816,12 @@
         "Entry"
         {
         "MsmKey" = "8:_BE2AE8428D03446F931C3A05B4583BFB"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_BE436650A12548EDAF3B01852A9B703B"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -1780,6 +1882,12 @@
         "Entry"
         {
         "MsmKey" = "8:_C44F69D26E8049BD91AD423E59A1CE71"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_C641C9A1CCE44912B59A0AF0AFE3C2E4"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -1917,6 +2025,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_D40B055B5DF9484FA3FFE2813D87105C"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_D42C5DBD6AAE45798C265508B69E1F7E"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -1977,12 +2091,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_DAACF7A93ABC413EB074B3BC880E7B0D"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_DCE46C6DC1C54E1E80821AD474FBAB31"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -2037,6 +2145,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_E081376FBB644C4FB4C861C6B3C5EB34"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_E24EFE0578834C50B0B41215784C5E23"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -2073,6 +2187,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_E4F64D3B7B1E41B88EFC7E1169AC6280"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_E51A4DD3BC6E4446A20B75C8C745C3CD"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -2085,6 +2205,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_E5A119BE18314C3CA7F207CF64F60D3A"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_E636B44AE0404E298E9FF8C245A690A9"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -2092,6 +2218,12 @@
         "Entry"
         {
         "MsmKey" = "8:_E649E71B2A234FDCB9715B4F51AF1FFC"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_E6994182513F42B4A6BD0A5403D9FFD1"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -2158,6 +2290,12 @@
         "Entry"
         {
         "MsmKey" = "8:_EBF296014E2D4A28AF1CA13D6F60AE76"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_EC035A033648465582EA0AD5E9DEAB2E"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -2740,6 +2878,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_0A55CB0E95FA44F0A43739F23B168BC2"
+            {
+            "SourcePath" = "8:..\\..\\..\\RTTR\\MUSIC\\SNG\\SNG_0013.OGG"
+            "TargetName" = "8:SNG_0013.OGG"
+            "Tag" = "8:"
+            "Folder" = "8:_8D087B0A496343C598663F87BB3380E9"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_0A9D9C306D924D4FA351719890FC1C44"
             {
             "SourcePath" = "8:..\\..\\..\\RTTR\\MAPS\\OTHER\\Berg.swd"
@@ -3220,6 +3378,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_18F78A9D6A714F86A317719C0964FBAC"
+            {
+            "SourcePath" = "8:..\\..\\..\\RTTR\\MUSIC\\SNG\\SNG_0006.OGG"
+            "TargetName" = "8:SNG_0006.OGG"
+            "Tag" = "8:"
+            "Folder" = "8:_8D087B0A496343C598663F87BB3380E9"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_1954DF93AEAB4D0CA38CDE5C124B201A"
             {
             "SourcePath" = "8:..\\..\\..\\RTTR\\MAPS\\SEA\\Schrecksenberg.wld"
@@ -3240,12 +3418,32 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_1A0C880AD01641A09DC8151380C7C999"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_199174915DD142ED997C81585A671185"
             {
-            "SourcePath" = "8:..\\..\\..\\RTTR\\LSTS\\CREDITS.LST\\nastx.bmp"
-            "TargetName" = "8:nastx.bmp"
+            "SourcePath" = "8:..\\..\\..\\RTTR\\MUSIC\\SNG\\SNG_0007.OGG"
+            "TargetName" = "8:SNG_0007.OGG"
             "Tag" = "8:"
-            "Folder" = "8:_9B2A8D4AF62C4938954F22E6CB0CB97F"
+            "Folder" = "8:_8D087B0A496343C598663F87BB3380E9"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_19C7C1DAB212457B96BDB8985C4E89A3"
+            {
+            "SourcePath" = "8:D:\\SIEDLER2\\s25rttr_0.7\\SDL.dll"
+            "TargetName" = "8:SDL.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_99A457B5CE6645C3B24358FE0EDD7B95"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -3460,26 +3658,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_1CC32025EF98440B85D5AA8A31A148D7"
-            {
-            "SourcePath" = "8:..\\..\\..\\RTTR\\LSTS\\CREDITS.LST\\jh.bmp"
-            "TargetName" = "8:jh.bmp"
-            "Tag" = "8:"
-            "Folder" = "8:_9B2A8D4AF62C4938954F22E6CB0CB97F"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_1CDF8F9D1F3C493DBFB9055035098B77"
             {
             "SourcePath" = "8:..\\..\\..\\RTTR\\MAPS\\NEW\\Kreisel.swd"
@@ -3626,6 +3804,26 @@
             "TargetName" = "8:Suche01.swd"
             "Tag" = "8:"
             "Folder" = "8:_4C88CC48F84947B2A46A8FDDFC531A5F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_2129723BCC434CAC82C433CED86601A0"
+            {
+            "SourcePath" = "8:..\\..\\..\\RTTR\\MUSIC\\SNG\\SNG_0010.OGG"
+            "TargetName" = "8:SNG_0010.OGG"
+            "Tag" = "8:"
+            "Folder" = "8:_8D087B0A496343C598663F87BB3380E9"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -3846,6 +4044,46 @@
             "TargetName" = "8:Salvodor.swd"
             "Tag" = "8:"
             "Folder" = "8:_4C88CC48F84947B2A46A8FDDFC531A5F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_27C001CAD3B147738B11EC6F5A9CF770"
+            {
+            "SourcePath" = "8:..\\..\\..\\RTTR\\MUSIC\\SNG\\SNG_0008.OGG"
+            "TargetName" = "8:SNG_0008.OGG"
+            "Tag" = "8:"
+            "Folder" = "8:_8D087B0A496343C598663F87BB3380E9"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_2802CF9DEC254F96A543F562BC709618"
+            {
+            "SourcePath" = "8:..\\..\\..\\RTTR\\MUSIC\\SNG\\SNG_0009.OGG"
+            "TargetName" = "8:SNG_0009.OGG"
+            "Tag" = "8:"
+            "Folder" = "8:_8D087B0A496343C598663F87BB3380E9"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -4166,6 +4404,46 @@
             "TargetName" = "8:Star.swd"
             "Tag" = "8:"
             "Folder" = "8:_4C88CC48F84947B2A46A8FDDFC531A5F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_34AB5B89AB234B0EBCC4F673DAF42CE1"
+            {
+            "SourcePath" = "8:..\\..\\..\\RTTR\\LSTS\\CREDITS.LST\\demophobie.bmp"
+            "TargetName" = "8:demophobie.bmp"
+            "Tag" = "8:"
+            "Folder" = "8:_9B2A8D4AF62C4938954F22E6CB0CB97F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_35213D41C6624609849D02507FCC6304"
+            {
+            "SourcePath" = "8:..\\..\\..\\RTTR\\MUSIC\\SNG\\SNG_0011.OGG"
+            "TargetName" = "8:SNG_0011.OGG"
+            "Tag" = "8:"
+            "Folder" = "8:_8D087B0A496343C598663F87BB3380E9"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -4740,6 +5018,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_4C0C78794B3247BC8749D7028AA7F8A7"
+            {
+            "SourcePath" = "8:..\\..\\..\\RTTR\\LSTS\\CREDITS.LST\\flosoft.bmp"
+            "TargetName" = "8:flosoft.bmp"
+            "Tag" = "8:"
+            "Folder" = "8:_9B2A8D4AF62C4938954F22E6CB0CB97F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_4C10A3071B22403BB8BCB0FFD73B67B3"
             {
             "SourcePath" = "8:..\\..\\..\\RTTR\\MAPS\\OTHER\\CARDHU.SWD"
@@ -4926,6 +5224,26 @@
             "TargetName" = "8:CALEDOR.SWD"
             "Tag" = "8:"
             "Folder" = "8:_4C88CC48F84947B2A46A8FDDFC531A5F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_51E779837003408184004A35529DD13D"
+            {
+            "SourcePath" = "8:D:\\SIEDLER2\\s25rttr_0.7\\libogg-0.dll"
+            "TargetName" = "8:libogg-0.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_99A457B5CE6645C3B24358FE0EDD7B95"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -5506,6 +5824,26 @@
             "TargetName" = "8:Random11.swd"
             "Tag" = "8:"
             "Folder" = "8:_D4D17B06D7F046FFBAFF8E11160CBD52"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_69BAB1FEF3524B87A3F49EFF25442CE6"
+            {
+            "SourcePath" = "8:..\\..\\..\\RTTR\\LSTS\\CREDITS.LST\\jh.bmp"
+            "TargetName" = "8:jh.bmp"
+            "Tag" = "8:"
+            "Folder" = "8:_9B2A8D4AF62C4938954F22E6CB0CB97F"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -6200,6 +6538,46 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_86295AAAB8DE40728CCB71770D9E458C"
+            {
+            "SourcePath" = "8:..\\..\\..\\release\\bin\\rttr.bat"
+            "TargetName" = "8:rttr.bat"
+            "Tag" = "8:"
+            "Folder" = "8:_99A457B5CE6645C3B24358FE0EDD7B95"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_86410CC5C5864D679116FC00FEAE1F37"
+            {
+            "SourcePath" = "8:D:\\SIEDLER2\\s25rttr_0.7\\libvorbisfile-3.dll"
+            "TargetName" = "8:libvorbisfile-3.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_99A457B5CE6645C3B24358FE0EDD7B95"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_86494BA9E84340B99916F965106790F0"
             {
             "SourcePath" = "8:..\\..\\..\\RTTR\\MAPS\\NEW\\KARTE06-fix.swd"
@@ -6246,6 +6624,26 @@
             "TargetName" = "8:Saentis1.swd"
             "Tag" = "8:"
             "Folder" = "8:_4C88CC48F84947B2A46A8FDDFC531A5F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_8705EE5578464C0583AE0315191419F9"
+            {
+            "SourcePath" = "8:..\\..\\..\\RTTR\\MUSIC\\SNG\\SNG_0014.OGG"
+            "TargetName" = "8:SNG_0014.OGG"
+            "Tag" = "8:"
+            "Folder" = "8:_8D087B0A496343C598663F87BB3380E9"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -6380,6 +6778,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_8CA28E26183E4C54977E9ACC30143C3D"
+            {
+            "SourcePath" = "8:D:\\SIEDLER2\\s25rttr_0.7\\libvorbis-0.dll"
+            "TargetName" = "8:libvorbis-0.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_99A457B5CE6645C3B24358FE0EDD7B95"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_8CB9A1F18ED7474E943E1652A8E2283D"
             {
             "SourcePath" = "8:..\\..\\..\\RTTR\\languages\\cs.mo"
@@ -6420,12 +6838,12 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_8D5F6C637DA0467E8001EE22303B3E5E"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_8D03DD638FEF4E0BB07AE9BB8BDCDA5F"
             {
-            "SourcePath" = "8:..\\..\\..\\RTTR\\LSTS\\CREDITS.LST\\demophobie.bmp"
-            "TargetName" = "8:demophobie.bmp"
+            "SourcePath" = "8:D:\\SIEDLER2\\s25rttr_0.7\\libintl3.dll"
+            "TargetName" = "8:libintl3.dll"
             "Tag" = "8:"
-            "Folder" = "8:_9B2A8D4AF62C4938954F22E6CB0CB97F"
+            "Folder" = "8:_99A457B5CE6645C3B24358FE0EDD7B95"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -6526,6 +6944,26 @@
             "TargetName" = "8:Wasserwege.wld"
             "Tag" = "8:"
             "Folder" = "8:_57AFA50582D44A9C9B5C27CE668E328F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_92ADFBC68F024255BD29C32032D60D2F"
+            {
+            "SourcePath" = "8:..\\..\\..\\RTTR\\MUSIC\\SNG\\SNG_0005.OGG"
+            "TargetName" = "8:SNG_0005.OGG"
+            "Tag" = "8:"
+            "Folder" = "8:_8D087B0A496343C598663F87BB3380E9"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -7380,6 +7818,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_B5120B8047C044E2B68F94DFB98CDAFB"
+            {
+            "SourcePath" = "8:D:\\SIEDLER2\\s25rttr_0.7\\RTTR\\zlib1.dll"
+            "TargetName" = "8:zlib1.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_1B7A32FD810F445EA615D5241410FB64"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_B58620AFF42C4A34A9E733539460A560"
             {
             "SourcePath" = "8:..\\..\\..\\RTTR\\MAPS\\OTHER\\World6.swd"
@@ -7540,6 +7998,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_BA032E0C044F443FAC774E98F2DFFA04"
+            {
+            "SourcePath" = "8:..\\..\\..\\RTTR\\MUSIC\\SNG\\SNG_0003.OGG"
+            "TargetName" = "8:SNG_0003.OGG"
+            "Tag" = "8:"
+            "Folder" = "8:_8D087B0A496343C598663F87BB3380E9"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_BB47AAC8313941B3A56006DD4302F924"
             {
             "SourcePath" = "8:..\\..\\..\\RTTR\\MAPS\\OTHER\\BISLAND.SWD"
@@ -7620,26 +8098,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_BD9D62A4700046C09A562C4E9A0E21E5"
-            {
-            "SourcePath" = "8:..\\..\\..\\RTTR\\LSTS\\CREDITS.LST\\oliverr.bmp"
-            "TargetName" = "8:oliverr.bmp"
-            "Tag" = "8:"
-            "Folder" = "8:_9B2A8D4AF62C4938954F22E6CB0CB97F"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_BDB0D8107EC14119895AF8C1F2F579CE"
             {
             "SourcePath" = "8:..\\..\\..\\RTTR\\MAPS\\NEW\\TAL019.SWD"
@@ -7686,6 +8144,26 @@
             "TargetName" = "8:sound.scs"
             "Tag" = "8:"
             "Folder" = "8:_1B7A32FD810F445EA615D5241410FB64"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_BE436650A12548EDAF3B01852A9B703B"
+            {
+            "SourcePath" = "8:..\\..\\..\\RTTR\\LSTS\\CREDITS.LST\\spikeone.bmp"
+            "TargetName" = "8:spikeone.bmp"
+            "Tag" = "8:"
+            "Folder" = "8:_9B2A8D4AF62C4938954F22E6CB0CB97F"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -7866,6 +8344,26 @@
             "TargetName" = "8:GLEICH.SWD"
             "Tag" = "8:"
             "Folder" = "8:_4C88CC48F84947B2A46A8FDDFC531A5F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C641C9A1CCE44912B59A0AF0AFE3C2E4"
+            {
+            "SourcePath" = "8:..\\..\\..\\RTTR\\MUSIC\\SNG\\SNG_0004.OGG"
+            "TargetName" = "8:SNG_0004.OGG"
+            "Tag" = "8:"
+            "Folder" = "8:_8D087B0A496343C598663F87BB3380E9"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -8320,6 +8818,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D40B055B5DF9484FA3FFE2813D87105C"
+            {
+            "SourcePath" = "8:..\\..\\..\\RTTR\\MUSIC\\SNG\\SNG_0001.OGG"
+            "TargetName" = "8:SNG_0001.OGG"
+            "Tag" = "8:"
+            "Folder" = "8:_8D087B0A496343C598663F87BB3380E9"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D42C5DBD6AAE45798C265508B69E1F7E"
             {
             "SourcePath" = "8:..\\..\\..\\RTTR\\MAPS\\OTHER\\CENTRUM_.SWD"
@@ -8520,26 +9038,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_DAACF7A93ABC413EB074B3BC880E7B0D"
-            {
-            "SourcePath" = "8:..\\..\\..\\RTTR\\LSTS\\CREDITS.LST\\flosoft.bmp"
-            "TargetName" = "8:flosoft.bmp"
-            "Tag" = "8:"
-            "Folder" = "8:_9B2A8D4AF62C4938954F22E6CB0CB97F"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_DCE46C6DC1C54E1E80821AD474FBAB31"
             {
             "SourcePath" = "8:..\\..\\..\\RTTR\\MAPS\\OTHER\\DZIKI002.SWD"
@@ -8700,6 +9198,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E081376FBB644C4FB4C861C6B3C5EB34"
+            {
+            "SourcePath" = "8:D:\\SIEDLER2\\s25rttr_0.7\\SDL_mixer.dll"
+            "TargetName" = "8:SDL_mixer.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_99A457B5CE6645C3B24358FE0EDD7B95"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E24EFE0578834C50B0B41215784C5E23"
             {
             "SourcePath" = "8:..\\..\\..\\RTTR\\MAPS\\OTHER\\INSEL5-2.SWD"
@@ -8820,6 +9338,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E4F64D3B7B1E41B88EFC7E1169AC6280"
+            {
+            "SourcePath" = "8:..\\..\\..\\RTTR\\MUSIC\\SNG\\SNG_0002.OGG"
+            "TargetName" = "8:SNG_0002.OGG"
+            "Tag" = "8:"
+            "Folder" = "8:_8D087B0A496343C598663F87BB3380E9"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E51A4DD3BC6E4446A20B75C8C745C3CD"
             {
             "SourcePath" = "8:..\\..\\..\\RTTR\\LSTS\\GAME\\lst files loaded at game start"
@@ -8860,6 +9398,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E5A119BE18314C3CA7F207CF64F60D3A"
+            {
+            "SourcePath" = "8:..\\..\\..\\RTTR\\MUSIC\\SNG\\SNG_0012.OGG"
+            "TargetName" = "8:SNG_0012.OGG"
+            "Tag" = "8:"
+            "Folder" = "8:_8D087B0A496343C598663F87BB3380E9"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E636B44AE0404E298E9FF8C245A690A9"
             {
             "SourcePath" = "8:..\\..\\..\\RTTR\\MAPS\\OTHER\\Insel3.swd"
@@ -8886,6 +9444,26 @@
             "TargetName" = "8:VK02.SWD"
             "Tag" = "8:"
             "Folder" = "8:_4C88CC48F84947B2A46A8FDDFC531A5F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E6994182513F42B4A6BD0A5403D9FFD1"
+            {
+            "SourcePath" = "8:..\\..\\..\\RTTR\\LSTS\\CREDITS.LST\\nastx.bmp"
+            "TargetName" = "8:nastx.bmp"
+            "Tag" = "8:"
+            "Folder" = "8:_9B2A8D4AF62C4938954F22E6CB0CB97F"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -9106,6 +9684,26 @@
             "TargetName" = "8:en_GB.mo"
             "Tag" = "8:"
             "Folder" = "8:_8A91650CE1B845619CF11B5065A9B248"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_EC035A033648465582EA0AD5E9DEAB2E"
+            {
+            "SourcePath" = "8:..\\..\\..\\RTTR\\LSTS\\CREDITS.LST\\oliverr.bmp"
+            "TargetName" = "8:oliverr.bmp"
+            "Tag" = "8:"
+            "Folder" = "8:_9B2A8D4AF62C4938954F22E6CB0CB97F"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -9914,15 +10512,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Return To The Roots"
-        "ProductCode" = "8:{60D02D94-698B-4A5D-BC7B-E1B34EEE7DF0}"
-        "PackageCode" = "8:{1CC75BDA-24FA-4CFF-ADB7-E52FE4D192BC}"
+        "ProductCode" = "8:{76AEA7BB-24A5-482C-A5AD-77C1DD76E4FF}"
+        "PackageCode" = "8:{07C8EE46-79A3-467B-B40B-526056F392B1}"
         "UpgradeCode" = "8:{59DD45BA-B479-45EE-899E-C7C7D7188387}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:0.7"
+        "ProductVersion" = "8:0.7.1"
         "Manufacturer" = "8:Settler's Freaks"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://www.siedler25.org"
@@ -10043,7 +10641,7 @@
             "ShowCmd" = "3:1"
             "IconIndex" = "3:0"
             "Transitive" = "11:FALSE"
-            "Target" = "8:_4B51EBD99D3E44B7A198A1A6DEF2C3E6"
+            "Target" = "8:_86295AAAB8DE40728CCB71770D9E458C"
             "Folder" = "8:_62264F1ACADC429EB70A18ACDE23E3AE"
             "WorkingFolder" = "8:_99A457B5CE6645C3B24358FE0EDD7B95"
             "Icon" = "8:_A8F4A59FF5E240F6A2CE40340563997A"
@@ -10445,7 +11043,7 @@
         }
         "MergeModule"
         {
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_5A138D1E8B74425E83E64F351F802313"
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_65F2B96715AB4C69980270EAC9D86BE5"
             {
             "UseDynamicProperties" = "11:TRUE"
             "IsDependency" = "11:TRUE"

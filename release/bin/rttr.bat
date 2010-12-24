@@ -6,8 +6,7 @@ GOTO START
 :UPDATE
 mkdir update
 xcopy /Y RTTR\s25update.exe update
-xcopy /Y RTTR\libcurl-4.dll update
-xcopy /Y RTTR\zlib1.dll update
+xcopy /Y RTTR\libcurl.dll update
 
 update\s25update.exe --stable -d %CD%
 
