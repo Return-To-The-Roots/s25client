@@ -921,6 +921,42 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_5A138D1E8B74425E83E64F351F802313"
+        "OwnerKey" = "8:_12AA3CB4B9B74BCF954647E14A20E481"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_5A138D1E8B74425E83E64F351F802313"
+        "OwnerKey" = "8:_BFA2A7B167B744A4959E3CFAA7D8613F"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_5A138D1E8B74425E83E64F351F802313"
+        "OwnerKey" = "8:_8A86AC7F172B4280808692891D2AA7D2"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_5A138D1E8B74425E83E64F351F802313"
+        "OwnerKey" = "8:_4B51EBD99D3E44B7A198A1A6DEF2C3E6"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_5A138D1E8B74425E83E64F351F802313"
+        "OwnerKey" = "8:_4324DE1D49E84780BB1D5807C0193174"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_5A138D1E8B74425E83E64F351F802313"
+        "OwnerKey" = "8:_2B16E679F6BC4B549C12FC85C559ACFD"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_5B5E82D1EE9B49DB9C53039289082019"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -965,42 +1001,6 @@
         {
         "MsmKey" = "8:_6234EAF17CF24D638735AF910D512C18"
         "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_6255FDE89F8B4B508ED46401620B7094"
-        "OwnerKey" = "8:_2B16E679F6BC4B549C12FC85C559ACFD"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_6255FDE89F8B4B508ED46401620B7094"
-        "OwnerKey" = "8:_BFA2A7B167B744A4959E3CFAA7D8613F"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_6255FDE89F8B4B508ED46401620B7094"
-        "OwnerKey" = "8:_4B51EBD99D3E44B7A198A1A6DEF2C3E6"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_6255FDE89F8B4B508ED46401620B7094"
-        "OwnerKey" = "8:_12AA3CB4B9B74BCF954647E14A20E481"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_6255FDE89F8B4B508ED46401620B7094"
-        "OwnerKey" = "8:_8A86AC7F172B4280808692891D2AA7D2"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_6255FDE89F8B4B508ED46401620B7094"
-        "OwnerKey" = "8:_4324DE1D49E84780BB1D5807C0193174"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -1517,6 +1517,12 @@
         {
         "MsmKey" = "8:_A7A83F77FF274798983CEAFBC9268B16"
         "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_A83BE9381C0D8710045E3C4BB68F9F08"
+        "OwnerKey" = "8:_4B51EBD99D3E44B7A198A1A6DEF2C3E6"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -2317,12 +2323,6 @@
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_4B51EBD99D3E44B7A198A1A6DEF2C3E6"
-        "MsmSig" = "8:_UNDEFINED"
-        }
     }
     "Configurations"
     {
@@ -2348,6 +2348,19 @@
             "PrerequisitesLocation" = "2:1"
             "Url" = "8:"
             "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.0,Profile=Client"
+                    {
+                    "Name" = "8:Microsoft .NET Framework 4 Client Profile (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.0,Profile=Client"
+                    }
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:Microsoft.Windows.Installer.3.1"
+                    {
+                    "Name" = "8:Windows Installer 3.1"
+                    "ProductCode" = "8:Microsoft.Windows.Installer.3.1"
+                    }
+                }
             }
         }
         "Release"
@@ -2359,7 +2372,7 @@
         "PackageFilesAs" = "3:2"
         "PackageFileSize" = "3:-2147483648"
         "CabType" = "3:1"
-        "Compression" = "3:2"
+        "Compression" = "3:3"
         "SignOutput" = "11:FALSE"
         "CertificateFile" = "8:"
         "PrivateKeyFile" = "8:"
@@ -2374,10 +2387,10 @@
             "ComponentsUrl" = "8:"
                 "Items"
                 {
-                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.0,Profile=Client"
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:Microsoft.Visual.C++.10.0.x86"
                     {
-                    "Name" = "8:Microsoft .NET Framework 4 Client Profile (x86 and x64)"
-                    "ProductCode" = "8:.NETFramework,Version=v4.0,Profile=Client"
+                    "Name" = "8:Visual C++ 2010-Laufzeitbibliotheken (x86)"
+                    "ProductCode" = "8:Microsoft.Visual.C++.10.0.x86"
                     }
                     "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:Microsoft.Windows.Installer.3.1"
                     {
@@ -7007,6 +7020,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A83BE9381C0D8710045E3C4BB68F9F08"
+            {
+            "SourcePath" = "8:IPHLPAPI.DLL"
+            "TargetName" = "8:IPHLPAPI.DLL"
+            "Tag" = "8:"
+            "Folder" = "8:_99A457B5CE6645C3B24358FE0EDD7B95"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A8F4A59FF5E240F6A2CE40340563997A"
             {
             "SourcePath" = "8:..\\..\\s25client.ico"
@@ -9882,7 +9915,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Return To The Roots"
         "ProductCode" = "8:{60D02D94-698B-4A5D-BC7B-E1B34EEE7DF0}"
-        "PackageCode" = "8:{C75A7684-38B8-4D2C-8B4D-519041DFA566}"
+        "PackageCode" = "8:{1CC75BDA-24FA-4CFF-ADB7-E52FE4D192BC}"
         "UpgradeCode" = "8:{59DD45BA-B479-45EE-899E-C7C7D7188387}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -9893,7 +9926,7 @@
         "Manufacturer" = "8:Settler's Freaks"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://www.siedler25.org"
-        "Title" = "8:Return To The Roots"
+        "Title" = "8:Return To The Roots 0.7"
         "Subject" = "8:"
         "ARPCONTACT" = "8:Settler's Freaks"
         "Keywords" = "8:"
@@ -10412,7 +10445,7 @@
         }
         "MergeModule"
         {
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_6255FDE89F8B4B508ED46401620B7094"
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_5A138D1E8B74425E83E64F351F802313"
             {
             "UseDynamicProperties" = "11:TRUE"
             "IsDependency" = "11:TRUE"
