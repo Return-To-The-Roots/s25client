@@ -1,5 +1,5 @@
 -------------------------------------------------------------------------------
-$Id: INSTALL 6921 2010-12-22 08:19:30Z FloSoft $
+$Id: INSTALL 6941 2010-12-24 07:49:50Z FloSoft $
 -------------------------------------------------------------------------------
 
 Conditions:
@@ -25,7 +25,14 @@ Options:
 
 --enable-debug           Enables Debug-Build
 --prefix                 Usually /usr/local, alternativly you can use 
-			 "." - relative paths work
+                         "." - relative paths work
+--arch=x                 compile for architecture x
+                         x = "system.platform", i.e apple.universal
+--disable-arch=x         disables on specific architecture x
+                         x = platform, i.e ppc
+                         can be supplied multiple times
+                         normally only used for removing a specific platform
+                         from apple universal builds
 
 -------------------------------------------------------------------------------
 

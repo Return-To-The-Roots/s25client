@@ -1,4 +1,4 @@
-// $Id: dskCredits.cpp 6936 2010-12-23 22:24:04Z FloSoft $
+// $Id: dskCredits.cpp 6941 2010-12-24 07:49:50Z FloSoft $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -378,3 +378,8 @@ void dskCredits::Msg_ButtonClick(const unsigned ctrl_id)
 {
 	Close();
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// EOF
+///////////////////////////////////////////////////////////////////////////////
+

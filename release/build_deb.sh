@@ -9,6 +9,8 @@ REVISION=$(head debian/changelog -n 1 | cut -d '-' -f 2 | cut -d ')' -f 1)
 
 PARAMS="--svn-ignore-new -k6D09334C"
 
+mkdir -p release/deb
+
 # build source, i386 and all
 svn-buildpackage $PARAMS -ai386 || exit 1
 mv -v ../build-area/s25rttr_${VERSION}-${REVISION}.dsc release/deb || exit 1

@@ -6,8 +6,8 @@ if [ -z "$ARCH" ] ; then
     export ARCH="local"
 fi
 
-export TARGET=/var/www/ra-doersch.de/nightly/s25client
-export VERSION=$(date +%Y%m%d)
+export TARGET=/var/www/ra-doersch.de/nightly/s25client/stable
+export VERSION=0.7
 
 #sed "s/WINDOW_VERSION \".*\"/WINDOW_VERSION \"$(date +%Y%m%d)\"/" ../version.h > /tmp/version.$$
 #if ! diff -s $BUILDDIR/build_version.h /tmp/version.$$ >/dev/null 2>&1 ; then
@@ -29,7 +29,7 @@ EXIT=$?
 echo "Build completed: $(date)" >>$TARGET/build_${ARCH}.log
 
 if [ $EXIT != 0 ] ; then
-	cat $TARGET/build_${ARCH}.log | /usr/bin/mail -s "Daily Build $VERSION Failed" -c bugs@siedler25.org sf-team@siedler25.org
+	cat $TARGET/build_${ARCH}.log | /usr/bin/mail -s "Stable Build $VERSION Failed" -c bugs@siedler25.org sf-team@siedler25.org
 
 	EXIT=1
 else

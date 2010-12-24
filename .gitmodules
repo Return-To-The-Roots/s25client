@@ -1,6 +1,3 @@
-[submodule "driver/audio/SDL/libendian"]
-	url = ../libendian
-	path = driver/audio/SDL/libendian
 [submodule "libendian"]
 	url = ../libendian
 	path = libendian
