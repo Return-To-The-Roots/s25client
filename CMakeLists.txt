@@ -1,5 +1,5 @@
 ################################################################################
-### $Id: CMakeLists.txt 6809 2010-10-18 14:20:02Z FloSoft $
+### $Id: CMakeLists.txt 6944 2010-12-24 07:56:07Z FloSoft $
 ################################################################################
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6.0)
@@ -141,6 +141,7 @@ INSTALL(SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/cmake/preinstall.cmake")
 ################################################################################
 
 ADD_SUBDIRECTORY(driver)
+ADD_SUBDIRECTORY(libendian)
 ADD_SUBDIRECTORY(mygettext)
 ADD_SUBDIRECTORY(libsiedler2)
 ADD_SUBDIRECTORY(libutil)
