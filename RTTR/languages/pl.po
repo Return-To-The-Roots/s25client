@@ -7,21 +7,25 @@ msgid ""
 msgstr ""
 "Project-Id-Version: s25rttr\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-12-23 23:17+0100\n"
-"PO-Revision-Date: 2010-03-14 13:55+0000\n"
-"Last-Translator: Vennor <Unknown>\n"
+"POT-Creation-Date: 2010-12-24 07:49+0100\n"
+"PO-Revision-Date: 2010-12-24 07:54+0100\n"
+"Last-Translator: Florian Doersch <sf-team@siedler25.org>\n"
 "Language-Team: Polish <pl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-07-29 13:20+0000\n"
-"X-Generator: Launchpad (build Unknown)\n"
+"X-Launchpad-Export-Date: 2010-12-24 06:40+0000\n"
+"X-Generator: Launchpad (build 12138)\n"
+"X-Poedit-Language: Polish\n"
+"X-Poedit-Country: POLAND\n"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:234
 msgid ""
 "\n"
 "Costs: "
 msgstr ""
+"\n"
+"Koszty: "
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:602
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:615
@@ -30,11 +34,11 @@ msgstr " AI"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:236
 msgid " boards"
-msgstr ""
+msgstr " deski"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:241
 msgid " stones"
-msgstr ""
+msgstr " kamienie"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:252
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:279
@@ -131,9 +135,8 @@ msgid "20 catapults"
 msgstr "20 katapult"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:49
-#, fuzzy
 msgid "3 catapults"
-msgstr "30 katapult"
+msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:53
 msgid "30 catapults"
@@ -145,9 +148,8 @@ msgid "4 h"
 msgstr "4 godz."
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:50
-#, fuzzy
 msgid "5 catapults"
-msgstr "50 katapult"
+msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1002
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1052
@@ -182,7 +184,7 @@ msgstr "Ukończono budowę okrętu"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/noShip.cpp:454
 msgid "A ship disovered an enemy territory"
-msgstr ""
+msgstr "Statek odkrył terytorium wroga"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/noShip.cpp:732
 msgid "A ship has reached the destination of its expedition."
@@ -213,9 +215,8 @@ msgid "AI Debug Window"
 msgstr "Debugger AI"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAIDebugWindow.h:38
-#, fuzzy
 msgid "AI Debugging Window"
-msgstr "Debugger AI"
+msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:45
 msgid "Abort"
@@ -223,11 +224,11 @@ msgstr "Anuluj"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonDemolitionProhibition.h:43
 msgid "Active if attacked"
-msgstr ""
+msgstr "Aktywne w razie ataku"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonDemolitionProhibition.h:44
 msgid "Active near frontiers"
-msgstr ""
+msgstr "Aktywne blisko granic"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:69
 msgid "Activity window"
@@ -244,7 +245,7 @@ msgstr "Dodaj serwer"
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:83
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:218
 msgid "Add directory of tracks"
-msgstr ""
+msgstr "Dodaj kierunek trasy"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:82
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:212
@@ -260,9 +261,8 @@ msgid "Additional features:"
 msgstr "Dodatkowe opcje:"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:131
-#, fuzzy
 msgid "Additional graphics"
-msgstr "Pozostali programiści:"
+msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAddons.cpp:43
 msgid "Addon Settings"
@@ -277,9 +277,8 @@ msgid "Addons:"
 msgstr "Dodatki:"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAdjustMilitaryStrength.h:47
-#, fuzzy
 msgid "Adjust military strength"
-msgstr "Siła wojska"
+msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwOptionsWindow.cpp:105
 msgid "Advanced"
@@ -388,6 +387,8 @@ msgid ""
 "Allows you to manually upgrade your roads\n"
 "and build donkey roads directly"
 msgstr ""
+"Pozwala na ręczne ulepszanie dróg\n"
+"i bezpośrednie wysyłanie osłów na drogi"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAdjustMilitaryStrength.h:48
 msgid ""
@@ -586,7 +587,7 @@ msgstr "Zmień ustawienia..."
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonDefenderBehavior.h:38
 msgid "Change defender behavior"
-msgstr ""
+msgstr "Zmień zachowanie obrońców"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonChangeGoldDeposits.h:38
 msgid "Change gold deposits"
@@ -651,9 +652,8 @@ msgid "Coins"
 msgstr "Monety"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBaseWarehouse.cpp:62
-#, fuzzy
 msgid "Collect"
-msgstr "Połącz"
+msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:66
 msgid "Color"
@@ -780,7 +780,7 @@ msgstr "Domyślne"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:92
 msgid "Delete all"
-msgstr ""
+msgstr "Usuń wszystkie"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:284
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBaseWarehouse.cpp:112
@@ -827,11 +827,11 @@ msgstr "TCP/IP"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonDemolitionProhibition.h:37
 msgid "Disable Demolition of military buildings"
-msgstr ""
+msgstr "Wyłącz niszczenie militarnych budynków"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonNoCoinsDefault.h:19
 msgid "Disable coins by default"
-msgstr ""
+msgstr "Wyłącz monety jako domyślne"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:280
 msgid "Disabled"
@@ -839,7 +839,7 @@ msgstr "Wyłączony"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonDefenderBehavior.h:47
 msgid "Disallow change"
-msgstr ""
+msgstr "Zabroń zmian"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:339
 msgid "Display options"
@@ -982,7 +982,7 @@ msgstr "Ekspedycja"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHarborBuilding.cpp:60
 msgid "Exploration expedition"
-msgstr ""
+msgstr "Ekspedycja odkrywcza"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:102
 msgid "Exploration:"
@@ -1096,7 +1096,7 @@ msgstr "Pełny ekran"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:162
 msgid "Fullscreen resolution:"
-msgstr ""
+msgstr "Rozdzielczość na pełnym ekranie"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:487
 msgid ""
@@ -1334,7 +1334,7 @@ msgstr "Huta żelaza"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:80
 msgid "Ironore"
-msgstr ""
+msgstr "Złoża rudy żelaza"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/BuildingConsts.h:516
 msgid ""
@@ -1511,7 +1511,7 @@ msgstr "Ustawienia"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonManualRoadEnlargement.h:37
 msgid "Manual road enlargement"
-msgstr ""
+msgstr "Ręczne ulepszenie drogi"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:104
 msgid "Map"
@@ -1540,9 +1540,8 @@ msgid "Mapping"
 msgstr "Mapy"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAdjustMilitaryStrength.h:52
-#, fuzzy
 msgid "Maximum strength"
-msgstr "Siła wojska"
+msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:170
 msgid "Meat"
@@ -1553,9 +1552,8 @@ msgid "Meat the hunter acquires is used to feed the miners."
 msgstr "Zdobywane przez myśliwego mięso stanowi pokarm dla górników."
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAdjustMilitaryStrength.h:53
-#, fuzzy
 msgid "Medium strength"
-msgstr "Siła wojska"
+msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:244
 msgid "Medium-term"
@@ -1618,9 +1616,8 @@ msgid "Miner"
 msgstr "Górnik"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAdjustMilitaryStrength.h:54
-#, fuzzy
 msgid "Minimum strength"
-msgstr "Siła wojska"
+msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:123
 msgid "Mint"
@@ -1692,7 +1689,7 @@ msgstr "Imię w grze:"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMilitary.cpp:56
 msgid "Near harbor points"
-msgstr ""
+msgstr "Pobliskie punkty budowy portu"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskMultiPlayer.cpp:67
 msgid "Network/LAN"
@@ -1700,7 +1697,7 @@ msgstr "Sieć LAN"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobHarborBuilding.cpp:103
 msgid "New harbor building finished"
-msgstr ""
+msgstr "Pobliski port ukończony"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:115
 msgid "New maps"
@@ -1961,13 +1958,10 @@ msgid "Please enter a name for the game"
 msgstr "Wpisz nazwę gry"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:95
-#, fuzzy
 msgid ""
 "Please use the Multiplayer mode and 'Direct IP' to create a Singleplayer "
 "game."
 msgstr ""
-"Pojedynczy gracz oraz SI nie zostały jeszcze załączone. Użyj gry "
-"wieloosobowej, a następnie 'Direct IP', aby utworzyć grę dla jednej osoby."
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPleaseWait.cpp:44
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPleaseWait.cpp:47
@@ -2092,6 +2086,8 @@ msgid ""
 "Receiving coins is disabled\n"
 "for military buildings by default"
 msgstr ""
+"Otrzymywanie monet\n"
+"przez budynki militarne wyłączone jako domyślne"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonDefenderBehavior.h:48
 msgid "Reduce reoccupying troops accordingly"
@@ -2160,7 +2156,7 @@ msgstr "Return To The Roots - v%s-%s"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwShip.cpp:80
 msgid "Return to harbor"
-msgstr ""
+msgstr "Powrót do portu"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:57
 msgid "Rod and line"
@@ -2374,7 +2370,7 @@ msgstr "Rozpocznij ekspedycję"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHarborBuilding.cpp:63
 msgid "Start exporation expedition"
-msgstr ""
+msgstr "Rozpocząć ekspedycję odkrywczą"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:83
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:480
@@ -2393,7 +2389,7 @@ msgstr "Statystyki"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSettings.cpp:58
 msgid "Statistics Scale"
-msgstr ""
+msgstr "Skala"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwInventory.cpp:46
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMainMenu.cpp:79
@@ -2743,9 +2739,8 @@ msgid "This Server is full!"
 msgstr "Serwer jest pełny!"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofAttacker.cpp:291
-#, fuzzy
 msgid "This harbor building was destroyed"
-msgstr "Zwracaj materiały po zburzeniu budynku."
+msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofBuildingWorker.cpp:403
 msgid "This mine is exhausted"
@@ -2822,7 +2817,7 @@ msgstr "W górę"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:367
 msgid "Upgrade to donkey road"
-msgstr ""
+msgstr "Ulepsz do drogi z osłem"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:85
 msgid "Upwards"

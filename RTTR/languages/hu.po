@@ -2,26 +2,28 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Siedler II.5 RttR\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-12-23 23:17+0100\n"
-"PO-Revision-Date: 2010-05-16 16:36+0000\n"
-"Last-Translator: Krasznecz Zoltán <zoltan.krasznecz@gmail.com>\n"
+"POT-Creation-Date: 2010-12-24 07:49+0100\n"
+"PO-Revision-Date: 2010-12-24 07:58+0100\n"
+"Last-Translator: Florian Doersch <sf-team@siedler25.org>\n"
 "Language-Team: Siedler II.5 RttR <sf-team@siedler25.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-07-29 13:20+0000\n"
-"X-Generator: Launchpad (build Unknown)\n"
+"X-Launchpad-Export-Date: 2010-12-24 06:40+0000\n"
+"X-Generator: Launchpad (build 12138)\n"
 "X-Poedit-Country: Hungary\n"
 "X-Poedit-Language: Hungarian\n"
 "X-Poedit-SourceCharset: iso-8859-15\n"
-"X-Poedit-SearchPath-0: /storage/RTTR/svn/trunk/src\n"
 "X-Poedit-Basepath: .\n"
+"X-Poedit-SearchPath-0: /storage/RTTR/svn/trunk/src\n"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:234
 msgid ""
 "\n"
 "Costs: "
 msgstr ""
+"\n"
+"Kerül: "
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:602
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:615
@@ -34,7 +36,7 @@ msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:241
 msgid " stones"
-msgstr ""
+msgstr " kő"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:252
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:279
@@ -114,7 +116,7 @@ msgstr "1 h"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:51
 msgid "10 catapults"
-msgstr ""
+msgstr "10 katapult"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:96
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:127
@@ -128,16 +130,15 @@ msgstr "16 h"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:52
 msgid "20 catapults"
-msgstr ""
+msgstr "20 katapult"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:49
-#, fuzzy
 msgid "3 catapults"
-msgstr "Katapult"
+msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:53
 msgid "30 catapults"
-msgstr ""
+msgstr "30 katapult"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:98
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:129
@@ -145,9 +146,8 @@ msgid "4 h"
 msgstr "4 h"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:50
-#, fuzzy
 msgid "5 catapults"
-msgstr "Katapult"
+msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1002
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1052
@@ -182,15 +182,15 @@ msgstr "Egy új hajó áll készen"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/noShip.cpp:454
 msgid "A ship disovered an enemy territory"
-msgstr ""
+msgstr "A hajó felfedezett egy ellenséges területet"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/noShip.cpp:732
 msgid "A ship has reached the destination of its expedition."
-msgstr ""
+msgstr "A hajó elérte az expedició távolságát."
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/noShip.cpp:285
 msgid "A ship is ready for an expedition."
-msgstr ""
+msgstr "A hajó készen áll az expedícióra."
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/BuildingConsts.h:510
 msgid ""
@@ -207,11 +207,11 @@ msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAIDebug.cpp:49
 msgid "AI Debug"
-msgstr ""
+msgstr "AI Debug"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMainMenu.cpp:97
 msgid "AI Debug Window"
-msgstr ""
+msgstr "AI Debug Window"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAIDebugWindow.h:38
 msgid "AI Debugging Window"
@@ -223,11 +223,11 @@ msgstr "Megszakít"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonDemolitionProhibition.h:43
 msgid "Active if attacked"
-msgstr ""
+msgstr "Aktív, ha megtámadták"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonDemolitionProhibition.h:44
 msgid "Active near frontiers"
-msgstr ""
+msgstr "Aktív a határhoz közel"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:69
 msgid "Activity window"
@@ -253,11 +253,11 @@ msgstr "Szám hozzáadása"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:138
 msgid "Additional Programming:"
-msgstr ""
+msgstr "Kiegészítő programozás:"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAddons.cpp:46
 msgid "Additional features:"
-msgstr ""
+msgstr "További lehetőségek:"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:131
 msgid "Additional graphics"
@@ -265,24 +265,23 @@ msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAddons.cpp:43
 msgid "Addon Settings"
-msgstr ""
+msgstr "Kiegészítők beállításai"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:79
 msgid "Addons"
-msgstr ""
+msgstr "Kiegészítők"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:94
 msgid "Addons:"
-msgstr ""
+msgstr "Kiegészítők:"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAdjustMilitaryStrength.h:47
-#, fuzzy
 msgid "Adjust military strength"
-msgstr "Katonai erő"
+msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwOptionsWindow.cpp:105
 msgid "Advanced"
-msgstr ""
+msgstr "Speciális"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:258
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:267
@@ -634,9 +633,8 @@ msgid "Coins"
 msgstr "Érmék"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBaseWarehouse.cpp:62
-#, fuzzy
 msgid "Collect"
-msgstr "Kapcsolódás"
+msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:66
 msgid "Color"
@@ -1496,9 +1494,8 @@ msgid "Mapping"
 msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAdjustMilitaryStrength.h:52
-#, fuzzy
 msgid "Maximum strength"
-msgstr "Katonai erő"
+msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:170
 msgid "Meat"
@@ -1509,9 +1506,8 @@ msgid "Meat the hunter acquires is used to feed the miners."
 msgstr "A vadász által szerzett hús a bányászoknak kell."
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAdjustMilitaryStrength.h:53
-#, fuzzy
 msgid "Medium strength"
-msgstr "Katonai erő"
+msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:244
 msgid "Medium-term"
@@ -1574,9 +1570,8 @@ msgid "Miner"
 msgstr "Bányász"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAdjustMilitaryStrength.h:54
-#, fuzzy
 msgid "Minimum strength"
-msgstr "Katonai erő"
+msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:123
 msgid "Mint"
@@ -1915,13 +1910,10 @@ msgid "Please enter a name for the game"
 msgstr "Írd be a játék nevét!"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:95
-#, fuzzy
 msgid ""
 "Please use the Multiplayer mode and 'Direct IP' to create a Singleplayer "
 "game."
 msgstr ""
-"Az egyjátékos mód és a mesterséges intelligencia még nincs kész. Használd a "
-"többjátékos módot és a 'Direct IP' módban csinálhatsz egyszemélyes játékot."
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPleaseWait.cpp:44
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPleaseWait.cpp:47
@@ -2668,9 +2660,8 @@ msgid "This Server is full!"
 msgstr "A szerver foglalt..."
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofAttacker.cpp:291
-#, fuzzy
 msgid "This harbor building was destroyed"
-msgstr "Katonai épület elfoglalva"
+msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofBuildingWorker.cpp:403
 msgid "This mine is exhausted"
@@ -2965,7 +2956,7 @@ msgstr "nem támogatott"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPostWindow.cpp:292
 msgid "of"
-msgstr ""
+msgstr "ebből"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSkipGFs.cpp:47
 msgid "to GameFrame:"

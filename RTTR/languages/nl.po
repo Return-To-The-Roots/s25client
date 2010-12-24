@@ -2,20 +2,20 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Siedler II.5 RttR\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-12-23 23:17+0100\n"
-"PO-Revision-Date: 2010-02-23 12:38+0000\n"
-"Last-Translator: FloSoft <Unknown>\n"
+"POT-Creation-Date: 2010-12-24 07:49+0100\n"
+"PO-Revision-Date: 2010-12-24 07:54+0100\n"
+"Last-Translator: Florian Doersch <sf-team@siedler25.org>\n"
 "Language-Team: Siedler II.5 RttR <sf-team@siedler25.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-07-29 13:20+0000\n"
-"X-Generator: Launchpad (build Unknown)\n"
-"X-Poedit-Country: GERMANY\n"
-"X-Poedit-Language: German\n"
+"X-Launchpad-Export-Date: 2010-12-24 06:40+0000\n"
+"X-Generator: Launchpad (build 12138)\n"
+"X-Poedit-Country: NETHERLANDS\n"
+"X-Poedit-Language: Dutch\n"
 "X-Poedit-SourceCharset: iso-8859-15\n"
-"X-Poedit-SearchPath-0: /storage/RTTR/svn/trunk/src\n"
 "X-Poedit-Basepath: /storage/RTTR/svn/trunk/src\n"
+"X-Poedit-SearchPath-0: /storage/RTTR/svn/trunk/src\n"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:234
 msgid ""
@@ -131,9 +131,8 @@ msgid "20 catapults"
 msgstr "20 katapulten"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:49
-#, fuzzy
 msgid "3 catapults"
-msgstr "30 katapulten"
+msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:53
 msgid "30 catapults"
@@ -145,9 +144,8 @@ msgid "4 h"
 msgstr "4 u"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:50
-#, fuzzy
 msgid "5 catapults"
-msgstr "50 katapulten"
+msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1002
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1052
@@ -262,9 +260,8 @@ msgid "Additional features:"
 msgstr "Toegevoegde functies:"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:131
-#, fuzzy
 msgid "Additional graphics"
-msgstr "Extra programmeerwerk:"
+msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAddons.cpp:43
 msgid "Addon Settings"
@@ -279,9 +276,8 @@ msgid "Addons:"
 msgstr "Uitbreidingen:"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAdjustMilitaryStrength.h:47
-#, fuzzy
 msgid "Adjust military strength"
-msgstr "Militaire kracht"
+msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwOptionsWindow.cpp:105
 msgid "Advanced"
@@ -640,9 +636,8 @@ msgid "Coins"
 msgstr "Munten"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBaseWarehouse.cpp:62
-#, fuzzy
 msgid "Collect"
-msgstr "Verbind"
+msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:66
 msgid "Color"
@@ -1508,9 +1503,8 @@ msgid "Mapping"
 msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAdjustMilitaryStrength.h:52
-#, fuzzy
 msgid "Maximum strength"
-msgstr "Militaire kracht"
+msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:170
 msgid "Meat"
@@ -1522,9 +1516,8 @@ msgstr ""
 "Het vlees dat de jager verkrijgt wordt gebruikt om de mijnwerkers te voeden."
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAdjustMilitaryStrength.h:53
-#, fuzzy
 msgid "Medium strength"
-msgstr "Militaire kracht"
+msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:244
 msgid "Medium-term"
@@ -1587,9 +1580,8 @@ msgid "Miner"
 msgstr "Mijnwerker"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAdjustMilitaryStrength.h:54
-#, fuzzy
 msgid "Minimum strength"
-msgstr "Militaire kracht"
+msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:123
 msgid "Mint"
@@ -1930,13 +1922,10 @@ msgid "Please enter a name for the game"
 msgstr "Vul a.u.b. een naam in voor het spel"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:95
-#, fuzzy
 msgid ""
 "Please use the Multiplayer mode and 'Direct IP' to create a Singleplayer "
 "game."
 msgstr ""
-"Singleplayer modus en KI zijn nog niet geïmplementeerd. Gebruik a.u.b. de "
-"Multiplayer modus en \"Direct IP\", om een Singelplayer spel te creëren."
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPleaseWait.cpp:44
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPleaseWait.cpp:47
@@ -2716,9 +2705,8 @@ msgid "This Server is full!"
 msgstr "De server zit vol!"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofAttacker.cpp:291
-#, fuzzy
 msgid "This harbor building was destroyed"
-msgstr "Stort materialen terug wanneer een gebouw gesloopt is"
+msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofBuildingWorker.cpp:403
 msgid "This mine is exhausted"

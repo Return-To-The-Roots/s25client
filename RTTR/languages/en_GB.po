@@ -2,26 +2,28 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Siedler II.5 RttR\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-12-23 23:17+0100\n"
-"PO-Revision-Date: 2010-03-15 22:56+0000\n"
-"Last-Translator: Robert Readman <Unknown>\n"
+"POT-Creation-Date: 2010-12-24 07:49+0100\n"
+"PO-Revision-Date: 2010-12-24 08:02+0100\n"
+"Last-Translator: Florian Doersch <sf-team@siedler25.org>\n"
 "Language-Team: Siedler II.5 RttR <sf-team@siedler25.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-07-29 13:20+0000\n"
-"X-Generator: Launchpad (build Unknown)\n"
+"X-Launchpad-Export-Date: 2010-12-24 06:40+0000\n"
+"X-Generator: Launchpad (build 12138)\n"
 "X-Poedit-Country: UNITED KINGDOM\n"
 "X-Poedit-Language: English\n"
 "X-Poedit-SourceCharset: iso-8859-15\n"
-"X-Poedit-SearchPath-0: /storage/RTTR/svn/trunk/src\n"
 "X-Poedit-Basepath: .\n"
+"X-Poedit-SearchPath-0: /storage/RTTR/svn/trunk/src\n"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:234
 msgid ""
 "\n"
 "Costs: "
 msgstr ""
+"\n"
+"Custos: "
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:602
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:615
@@ -30,11 +32,11 @@ msgstr " (AI)"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:236
 msgid " boards"
-msgstr ""
+msgstr " boards"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:241
 msgid " stones"
-msgstr ""
+msgstr " stones"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:252
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:279
@@ -131,9 +133,8 @@ msgid "20 catapults"
 msgstr "20 catapults"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:49
-#, fuzzy
 msgid "3 catapults"
-msgstr "30 catapults"
+msgstr "3 catapults"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:53
 msgid "30 catapults"
@@ -145,9 +146,8 @@ msgid "4 h"
 msgstr "4 h"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:50
-#, fuzzy
 msgid "5 catapults"
-msgstr "50 catapults"
+msgstr "5 catapults"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1002
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1052
@@ -182,7 +182,7 @@ msgstr "A new ship is ready"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/noShip.cpp:454
 msgid "A ship disovered an enemy territory"
-msgstr ""
+msgstr "Um navio descobriu um território inimigo"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/noShip.cpp:732
 msgid "A ship has reached the destination of its expedition."
@@ -215,9 +215,8 @@ msgid "AI Debug Window"
 msgstr "AI Debug Window"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAIDebugWindow.h:38
-#, fuzzy
 msgid "AI Debugging Window"
-msgstr "AI Debug Window"
+msgstr "AI Debugging Window"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:45
 msgid "Abort"
@@ -225,11 +224,11 @@ msgstr "Abort"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonDemolitionProhibition.h:43
 msgid "Active if attacked"
-msgstr ""
+msgstr "Activo se atacado"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonDemolitionProhibition.h:44
 msgid "Active near frontiers"
-msgstr ""
+msgstr "Activo perto de fronteiras"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:69
 msgid "Activity window"
@@ -246,7 +245,7 @@ msgstr "Add Server"
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:83
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:218
 msgid "Add directory of tracks"
-msgstr ""
+msgstr "Adicionar directório de trilhos"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:82
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:212
@@ -262,9 +261,8 @@ msgid "Additional features:"
 msgstr "Additional features:"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:131
-#, fuzzy
 msgid "Additional graphics"
-msgstr "Additional Programming:"
+msgstr "Additional graphics"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAddons.cpp:43
 msgid "Addon Settings"
@@ -279,9 +277,8 @@ msgid "Addons:"
 msgstr "Add-ons:"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAdjustMilitaryStrength.h:47
-#, fuzzy
 msgid "Adjust military strength"
-msgstr "Military strength"
+msgstr "Adjust military strength"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwOptionsWindow.cpp:105
 msgid "Advanced"
@@ -317,7 +314,7 @@ msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonCharburner.h:37
 msgid "Allows to build charburners"
-msgstr ""
+msgstr "Permitir construir queimadores"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonDefenderBehavior.h:39
 msgid ""
@@ -327,12 +324,19 @@ msgid ""
 "or you can limit the amount of reoccupying troops\n"
 "(during an attack) according to the defender setting"
 msgstr ""
+"Allows to change the military setting 'defender'.\n"
+"\n"
+"You can choose to disallow any changes to that setting\n"
+"or you can limit the amount of reoccupying troops\n"
+"(during an attack) according to the defender setting"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonDemolitionProhibition.h:38
 msgid ""
 "Allows to disable the demolition of military buildings under attack or near "
 "frontiers"
 msgstr ""
+"Permite desactivar a demolição de edifícios militares sob ataque ou perto de "
+"fronteiras"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonExhaustibleWells.h:38
 msgid ""
@@ -386,18 +390,25 @@ msgid ""
 "and your emergency program is active\n"
 "\n"
 msgstr ""
+"Allows you to get building materials back if the building is destroyed\n"
+"and your emergency program is active\n"
+"\n"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonManualRoadEnlargement.h:38
 msgid ""
 "Allows you to manually upgrade your roads\n"
 "and build donkey roads directly"
 msgstr ""
+"Allows you to manually upgrade your roads\n"
+"and build donkey roads directly"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAdjustMilitaryStrength.h:48
 msgid ""
 "Allows you to modify the strength increase of military ranks\n"
 "\n"
 msgstr ""
+"Allows you to modify the strength increase of military ranks\n"
+"\n"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/SerializedGameData.cpp:243
 msgid "An error occured while saving which was suppressed!"
@@ -590,7 +601,7 @@ msgstr "Change Settings..."
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonDefenderBehavior.h:38
 msgid "Change defender behavior"
-msgstr ""
+msgstr "Change defender behavior"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonChangeGoldDeposits.h:38
 msgid "Change gold deposits"
@@ -603,7 +614,7 @@ msgstr "Change the visibility of your in-game statistics"
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:100
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:133
 msgid "Charburner"
-msgstr ""
+msgstr "Charburner"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwChat.cpp:47
 msgid "Chat Window"
@@ -655,9 +666,8 @@ msgid "Coins"
 msgstr "Coins"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBaseWarehouse.cpp:62
-#, fuzzy
 msgid "Collect"
-msgstr "Connect"
+msgstr "Collect"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:66
 msgid "Color"
@@ -782,7 +792,7 @@ msgstr "Default"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:92
 msgid "Delete all"
-msgstr ""
+msgstr "Delete all"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:284
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBaseWarehouse.cpp:112
@@ -828,11 +838,11 @@ msgstr "Direct IP"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonDemolitionProhibition.h:37
 msgid "Disable Demolition of military buildings"
-msgstr ""
+msgstr "Disable Demolition of military buildings"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonNoCoinsDefault.h:19
 msgid "Disable coins by default"
-msgstr ""
+msgstr "Disable coins by default"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:280
 msgid "Disabled"
@@ -840,7 +850,7 @@ msgstr "Disabled"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonDefenderBehavior.h:47
 msgid "Disallow change"
-msgstr ""
+msgstr "Disallow change"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:339
 msgid "Display options"
@@ -919,10 +929,12 @@ msgid ""
 "Enable AI Debugging Window\n"
 " (possible cheating)"
 msgstr ""
+"Enable AI Debugging Window\n"
+" (possible cheating)"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonCharburner.h:36
 msgid "Enable charburner"
-msgstr ""
+msgstr "Enable charburner"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwOptionsWindow.cpp:110
 msgid "End game"
@@ -983,7 +995,7 @@ msgstr "Expedition"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHarborBuilding.cpp:60
 msgid "Exploration expedition"
-msgstr ""
+msgstr "Exploration expedition"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:102
 msgid "Exploration:"
@@ -1098,7 +1110,7 @@ msgstr "Fullscreen"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:162
 msgid "Fullscreen resolution:"
-msgstr ""
+msgstr "Fullscreen resolution:"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:487
 msgid ""
@@ -1334,7 +1346,7 @@ msgstr "Iron smelter"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:80
 msgid "Ironore"
-msgstr ""
+msgstr "Ironore"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/BuildingConsts.h:516
 msgid ""
@@ -1512,7 +1524,7 @@ msgstr "Main selection"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonManualRoadEnlargement.h:37
 msgid "Manual road enlargement"
-msgstr ""
+msgstr "Manual road enlargement"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:104
 msgid "Map"
@@ -1541,9 +1553,8 @@ msgid "Mapping"
 msgstr "Mapping"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAdjustMilitaryStrength.h:52
-#, fuzzy
 msgid "Maximum strength"
-msgstr "Military strength"
+msgstr "Maximum strength"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:170
 msgid "Meat"
@@ -1554,9 +1565,8 @@ msgid "Meat the hunter acquires is used to feed the miners."
 msgstr "The hunter is acquiring meat to fead the miners."
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAdjustMilitaryStrength.h:53
-#, fuzzy
 msgid "Medium strength"
-msgstr "Military strength"
+msgstr "Medium strength"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:244
 msgid "Medium-term"
@@ -1619,9 +1629,8 @@ msgid "Miner"
 msgstr "Miner"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAdjustMilitaryStrength.h:54
-#, fuzzy
 msgid "Minimum strength"
-msgstr "Military strength"
+msgstr "Minimum strength"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:123
 msgid "Mint"
@@ -1693,7 +1702,7 @@ msgstr "Name in Game:"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMilitary.cpp:56
 msgid "Near harbor points"
-msgstr ""
+msgstr "Near harbor points"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskMultiPlayer.cpp:67
 msgid "Network/LAN"
@@ -1701,7 +1710,7 @@ msgstr "Network/LAN"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobHarborBuilding.cpp:103
 msgid "New harbor building finished"
-msgstr ""
+msgstr "New harbor building finished"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:115
 msgid "New maps"
@@ -1862,7 +1871,7 @@ msgstr "Other Support:"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofAttacker.cpp:288
 msgid "Our headquarters was destroyed!"
-msgstr ""
+msgstr "Our headquarters was destroyed!"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMinimap.cpp:53
 msgid "Outline map"
@@ -1962,13 +1971,12 @@ msgid "Please enter a name for the game"
 msgstr "Please enter a name for the game."
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:95
-#, fuzzy
 msgid ""
 "Please use the Multiplayer mode and 'Direct IP' to create a Singleplayer "
 "game."
 msgstr ""
-"Singleplayer mode and AI are not yet implemented. Please use the Multiplayer "
-"mode and 'Direct IP' to create a Singleplayer game."
+"Please use the Multiplayer mode and 'Direct IP' to create a Singleplayer "
+"game."
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPleaseWait.cpp:44
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPleaseWait.cpp:47
@@ -2093,10 +2101,12 @@ msgid ""
 "Receiving coins is disabled\n"
 "for military buildings by default"
 msgstr ""
+"Receiving coins is disabled\n"
+"for military buildings by default"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonDefenderBehavior.h:48
 msgid "Reduce reoccupying troops accordingly"
-msgstr ""
+msgstr "Reduce reoccupying troops accordingly"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonRefundMaterials.h:43
 msgid "Refund 25%"
@@ -2116,7 +2126,7 @@ msgstr "Refund materials when building is destroyed"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonRefundOnEmergency.h:38
 msgid "Refund materials when emergency program is active"
-msgstr ""
+msgstr "Refund materials when emergency program is active"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:88
 msgid "Register"
@@ -2161,7 +2171,7 @@ msgstr "Return To The Roots - v%s-%s"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwShip.cpp:80
 msgid "Return to harbor"
-msgstr ""
+msgstr "Return to harbor"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:57
 msgid "Rod and line"
@@ -2375,7 +2385,7 @@ msgstr "Start expedition"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHarborBuilding.cpp:63
 msgid "Start exporation expedition"
-msgstr ""
+msgstr "Start exporation expedition"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:83
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:480
@@ -2394,7 +2404,7 @@ msgstr "Statistics"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSettings.cpp:58
 msgid "Statistics Scale"
-msgstr ""
+msgstr "Escala de Estatísticas"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwInventory.cpp:46
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMainMenu.cpp:79
@@ -2743,9 +2753,8 @@ msgid "This Server is full!"
 msgstr "This server is full!"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofAttacker.cpp:291
-#, fuzzy
 msgid "This harbor building was destroyed"
-msgstr "Refund materials when building is destroyed"
+msgstr "This harbor building was destroyed"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofBuildingWorker.cpp:403
 msgid "This mine is exhausted"
@@ -2753,7 +2762,7 @@ msgstr "This mine is exhausted"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofBuildingWorker.cpp:405
 msgid "This well is dried out"
-msgstr ""
+msgstr "This well is dried out"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSave.cpp:67
 msgid "Time"
@@ -2822,7 +2831,7 @@ msgstr "Up"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:367
 msgid "Upgrade to donkey road"
-msgstr ""
+msgstr "Melhorar para estrada de burros"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:85
 msgid "Upwards"

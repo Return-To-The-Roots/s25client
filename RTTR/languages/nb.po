@@ -7,15 +7,18 @@ msgid ""
 msgstr ""
 "Project-Id-Version: s25rttr\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-12-23 23:17+0100\n"
-"PO-Revision-Date: 2010-05-02 22:05+0000\n"
-"Last-Translator: Jg.a <Unknown>\n"
+"POT-Creation-Date: 2010-12-24 07:49+0100\n"
+"PO-Revision-Date: 2010-12-24 07:57+0100\n"
+"Last-Translator: Florian Doersch <sf-team@siedler25.org>\n"
 "Language-Team: Norwegian Bokmal <nb@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-07-29 13:20+0000\n"
-"X-Generator: Launchpad (build Unknown)\n"
+"X-Launchpad-Export-Date: 2010-12-24 06:40+0000\n"
+"X-Generator: Launchpad (build 12138)\n"
+"X-Poedit-Language: Norwegian Bokmal\n"
+"X-Poedit-Country: NORWAY\n"
+"X-Poedit-SourceCharset: iso-8859-15\n"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:234
 msgid ""
@@ -129,9 +132,8 @@ msgid "20 catapults"
 msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:49
-#, fuzzy
 msgid "3 catapults"
-msgstr "Katapult"
+msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:53
 msgid "30 catapults"
@@ -143,9 +145,8 @@ msgid "4 h"
 msgstr "4 t"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:50
-#, fuzzy
 msgid "5 catapults"
-msgstr "Katapult"
+msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1002
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1052
@@ -254,9 +255,8 @@ msgid "Additional features:"
 msgstr "Tilleggsfunksjoner:"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:131
-#, fuzzy
 msgid "Additional graphics"
-msgstr "Tilleggsfunksjoner:"
+msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAddons.cpp:43
 msgid "Addon Settings"
@@ -271,9 +271,8 @@ msgid "Addons:"
 msgstr "Utvidelser:"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAdjustMilitaryStrength.h:47
-#, fuzzy
 msgid "Adjust military strength"
-msgstr "Militærstyrke"
+msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwOptionsWindow.cpp:105
 msgid "Advanced"
@@ -629,9 +628,8 @@ msgid "Coins"
 msgstr "Mynter"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBaseWarehouse.cpp:62
-#, fuzzy
 msgid "Collect"
-msgstr "Koble til"
+msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:66
 msgid "Color"
@@ -1196,7 +1194,7 @@ msgstr "Hjelp"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:314
 msgid "Helper"
-msgstr ""
+msgstr "Hjelper"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AIPlayerJH.cpp:106
 msgid "Hi, I'm an artifical player and I'm not very good yet!"
@@ -1224,7 +1222,7 @@ msgstr "ID"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:55
 msgid "IP Address of Host:"
-msgstr ""
+msgstr "IP-adresse til verten:"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:129
 msgid "IPv4"
@@ -1298,7 +1296,7 @@ msgstr "Smelteverk"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:80
 msgid "Ironore"
-msgstr ""
+msgstr "Jernmalm"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/BuildingConsts.h:516
 msgid ""
@@ -1363,7 +1361,7 @@ msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:37
 msgid "Limit count of catapults"
-msgstr ""
+msgstr "Begrens antall katapulter"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:38
 msgid ""
@@ -1486,9 +1484,8 @@ msgid "Mapping"
 msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAdjustMilitaryStrength.h:52
-#, fuzzy
 msgid "Maximum strength"
-msgstr "Militærstyrke"
+msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:170
 msgid "Meat"
@@ -1499,9 +1496,8 @@ msgid "Meat the hunter acquires is used to feed the miners."
 msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAdjustMilitaryStrength.h:53
-#, fuzzy
 msgid "Medium strength"
-msgstr "Militærstyrke"
+msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:244
 msgid "Medium-term"
@@ -1564,9 +1560,8 @@ msgid "Miner"
 msgstr "Gruvearbeider"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAdjustMilitaryStrength.h:54
-#, fuzzy
 msgid "Minimum strength"
-msgstr "Militærstyrke"
+msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:123
 msgid "Mint"
@@ -1905,13 +1900,10 @@ msgid "Please enter a name for the game"
 msgstr "Vennligst skriv inn et navn for spillet"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:95
-#, fuzzy
 msgid ""
 "Please use the Multiplayer mode and 'Direct IP' to create a Singleplayer "
 "game."
 msgstr ""
-"Enspillermodus og AI er ennå ikke implementert. Vennligst bruk "
-"flerspillermodus og \"Direkte IP\" for å lage et spill i enspillermodus."
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPleaseWait.cpp:44
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPleaseWait.cpp:47
@@ -2614,9 +2606,8 @@ msgid "This Server is full!"
 msgstr "Denne serveren er full."
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofAttacker.cpp:291
-#, fuzzy
 msgid "This harbor building was destroyed"
-msgstr "Vi overtok en militær bygning!"
+msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofBuildingWorker.cpp:403
 msgid "This mine is exhausted"
