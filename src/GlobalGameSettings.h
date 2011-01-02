@@ -1,4 +1,4 @@
-// $Id: GlobalGameSettings.h 6582 2010-07-16 11:23:35Z FloSoft $
+// $Id: GlobalGameSettings.h 6958 2011-01-02 11:39:33Z FloSoft $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -35,7 +35,7 @@ public:
 public:
 	enum GameSpeed { GS_VERYSLOW = 0,GS_SLOW , GS_NORMAL, GS_FAST, GS_VERYFAST } game_speed;
 	enum GameObjective { GO_NONE = 0, GO_TOTALDOMINATION, GO_CONQUER3_4 } game_objective;
-	enum StartWares { SWR_LOW = 0, SWR_NORMAL, SWR_ALOT } start_wares;
+	enum StartWares {SWR_VLOW = 0, SWR_LOW, SWR_NORMAL, SWR_ALOT} start_wares;
 	bool lock_teams;
 	enum Exploration { EXP_DISABLED = 0, EXP_CLASSIC, EXP_FOGOFWAR, EXP_FOGOFWARE_EXPLORED } exploration;
 	bool team_view;

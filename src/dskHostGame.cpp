@@ -1,4 +1,4 @@
-// $Id: dskHostGame.cpp 6582 2010-07-16 11:23:35Z FloSoft $
+// $Id: dskHostGame.cpp 6958 2011-01-02 11:39:33Z FloSoft $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -109,6 +109,7 @@ dskHostGame::dskHostGame() :
 	// "Waren zu Beginn"
 	AddText(31, 400, 375, _("Goods at start:"), COLOR_YELLOW, 0, NormalFont);
 	combo = AddComboBox(41, 600, 370, 180, 20, TC_GREY, NormalFont, 100, !GAMECLIENT.IsHost()||GAMECLIENT.IsSavegame());
+	combo->AddString(_("Very Low"));
 	combo->AddString(_("Low"));
 	combo->AddString(_("Normal"));
 	combo->AddString(_("A lot"));

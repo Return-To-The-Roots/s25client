@@ -1,4 +1,4 @@
-// $Id: nobHQ.cpp 6911 2010-12-20 20:24:31Z OLiver $
+// $Id: nobHQ.cpp 6958 2011-01-02 11:39:33Z FloSoft $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -53,8 +53,79 @@ nobHQ::nobHQ(const unsigned short x, const unsigned short y,const unsigned char 
 	// StartWaren setzen ( provisorisch )
 	switch(GameClient::inst().GetGGS().start_wares)
 	{
+	//sehr wenig
+
+		case 0:
+			goods.goods[GD_BEER] = 0;
+			goods.goods[GD_TONGS] = 1;
+			goods.goods[GD_HAMMER] = 4;
+			goods.goods[GD_AXE] = 1;
+			goods.goods[GD_SAW] = 0;
+			goods.goods[GD_PICKAXE] = 0;
+			goods.goods[GD_SHOVEL] = 1;
+			goods.goods[GD_CRUCIBLE] = 1;
+			goods.goods[GD_RODANDLINE] = 1;//??
+			goods.goods[GD_SCYTHE] = 2;//??
+			goods.goods[GD_WATEREMPTY] = 0;
+			goods.goods[GD_WATER] = 0;
+			goods.goods[GD_CLEAVER] = 0;
+			goods.goods[GD_ROLLINGPIN] = 1;
+			goods.goods[GD_BOW] = 0;
+			goods.goods[GD_BOAT] = 0;
+			goods.goods[GD_SWORD] = 0;
+			goods.goods[GD_IRON] = 0;
+			goods.goods[GD_FLOUR] = 0;
+			goods.goods[GD_FISH] = 1;
+			goods.goods[GD_BREAD] = 2;
+			goods.goods[GD_SHIELDROMANS] = 0;
+			goods.goods[GD_WOOD] = 6;
+			goods.goods[GD_BOARDS] = 11;
+			goods.goods[GD_STONES] = 17;
+			goods.goods[GD_SHIELDVIKINGS] = 0;
+			goods.goods[GD_SHIELDAFRICANS] = 0;
+			goods.goods[GD_GRAIN] = 0;
+			goods.goods[GD_COINS] = 0;
+			goods.goods[GD_GOLD] = 0;
+			goods.goods[GD_IRONORE] = 4;
+			goods.goods[GD_COAL] = 4;
+			goods.goods[GD_MEAT] = 0;
+			goods.goods[GD_HAM] = 0;
+			goods.goods[GD_SHIELDJAPANESE] = 0;
+
+			goods.people[JOB_HELPER] = 13;
+			goods.people[JOB_WOODCUTTER] = 2;
+			goods.people[JOB_FISHER] = 0;
+			goods.people[JOB_FORESTER] = 1;
+			goods.people[JOB_CARPENTER] = 1;
+			goods.people[JOB_STONEMASON] = 1;
+			goods.people[JOB_HUNTER] = 1;
+			goods.people[JOB_FARMER] = 0;
+			goods.people[JOB_MILLER] = 0;
+			goods.people[JOB_BAKER] = 0;
+			goods.people[JOB_BUTCHER] = 0;
+			goods.people[JOB_MINER] = 2;
+			goods.people[JOB_BREWER] = 0;
+			goods.people[JOB_PIGBREEDER] = 0;
+			goods.people[JOB_DONKEYBREEDER] = 0;
+			goods.people[JOB_IRONFOUNDER] = 0;
+			goods.people[JOB_MINTER] = 0;
+			goods.people[JOB_METALWORKER] = 0;
+			goods.people[JOB_ARMORER] = 1;
+			goods.people[JOB_BUILDER] = 2;
+			goods.people[JOB_PLANER] = 1;
+			goods.people[JOB_PRIVATE] = 13;
+			goods.people[JOB_PRIVATEFIRSTCLASS] = 0;
+			goods.people[JOB_SERGEANT] = 0;
+			goods.people[JOB_OFFICER] = 0;
+			goods.people[JOB_GENERAL] = 0;
+			goods.people[JOB_GEOLOGIST] = 2;
+			goods.people[JOB_SHIPWRIGHT] = 0;
+			goods.people[JOB_SCOUT] = 1;
+			goods.people[JOB_PACKDONKEY] = 2;
+			break;
+
 	// Wenig
-	case 0:
+	case 1:
 
 		goods.goods[GD_BEER] = 0;
 		goods.goods[GD_TONGS] = 0;
@@ -125,7 +196,7 @@ nobHQ::nobHQ(const unsigned short x, const unsigned short y,const unsigned char 
 		break;
 
 	// Mittel
-	case 1:
+	case 2:
 
 		goods.goods[GD_BEER] = 6;
 		goods.goods[GD_TONGS] = 0;
@@ -196,7 +267,7 @@ nobHQ::nobHQ(const unsigned short x, const unsigned short y,const unsigned char 
 		break;
 
 	// Viel
-	case 2:
+	case 3:
 		goods.goods[GD_BEER] = 12;
 		goods.goods[GD_TONGS] = 0;
 		goods.goods[GD_HAMMER] = 32;
