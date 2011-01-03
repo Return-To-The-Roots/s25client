@@ -1,4 +1,4 @@
-// $Id: AIConstruction.h 6582 2010-07-16 11:23:35Z FloSoft $
+// $Id: AIConstruction.h 6961 2011-01-03 23:10:34Z jh $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -67,8 +67,11 @@ public:
 	/// Randomly chooses a military building, prefering bigger buildings if enemy nearby
 	BuildingType ChooseMilitaryBuilding(MapCoord x, MapCoord y);
 
-	/// Returns the number of buildings and buildingsites of a specific typ
+	/// Returns the number of buildings and buildingsites of a specific type (refresh with RefreshBuildingCount())
 	unsigned GetBuildingCount(BuildingType type);
+
+	/// Returns the number of buildingsites of a specific type (refresh with RefreshBuildingCount())
+	unsigned GetBuildingSitesCount(BuildingType type);
 
 	/// Refreshes the number of buildings by asking the GameClientPlayer and recalcs some wanted buildings
 	void RefreshBuildingCount();

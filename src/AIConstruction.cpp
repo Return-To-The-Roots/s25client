@@ -1,4 +1,4 @@
-// $Id: AIConstruction.cpp 6874 2010-12-05 12:41:01Z jh $
+// $Id: AIConstruction.cpp 6961 2011-01-03 23:10:34Z jh $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -270,7 +270,11 @@ BuildingType AIConstruction::ChooseMilitaryBuilding(MapCoord x, MapCoord y)
 		{
 			int randmil = rand();
 
-			if (randmil % 8 == 0 && aii->CanBuildCatapult())
+			// avoid to build catapults in the beginning (no expansion)
+			unsigned  militaryBuildingCount = GetBuildingCount(BLD_BARRACKS) + GetBuildingCount(BLD_GUARDHOUSE)
+				+ GetBuildingCount(BLD_WATCHTOWER) + GetBuildingCount(BLD_FORTRESS);
+
+			if (randmil % 8 == 0 && aii->CanBuildCatapult() && militaryBuildingCount > 3)
 				bld = BLD_CATAPULT;
 			else if (randmil % 2 == 0)
 				bld = BLD_FORTRESS;
@@ -287,6 +291,11 @@ BuildingType AIConstruction::ChooseMilitaryBuilding(MapCoord x, MapCoord y)
 unsigned AIConstruction::GetBuildingCount(BuildingType type)
 {
 	return buildingCounts.building_counts[type] + buildingCounts.building_site_counts[type];
+}
+
+unsigned AIConstruction::GetBuildingSitesCount(BuildingType type)
+{
+	return buildingCounts.building_site_counts[type];
 }
 
 bool AIConstruction::Wanted(BuildingType type)

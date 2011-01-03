@@ -1,4 +1,4 @@
-// $Id: AIJHHelper.cpp 6582 2010-07-16 11:23:35Z FloSoft $
+// $Id: AIJHHelper.cpp 6961 2011-01-03 23:10:34Z jh $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -122,15 +122,21 @@ void AIJH::BuildJob::TryToBuild()
 	switch(type)
 	{
 	case BLD_WOODCUTTER:
-		foundPos = aijh->FindBestPosition(bx, by, AIJH::WOOD, BQ_HUT, 20, 15);
+		{
+		unsigned numWoodcutter = aijh->GetConstruction()->GetBuildingCount(BLD_WOODCUTTER);
+		foundPos = aijh->FindBestPosition(bx, by, AIJH::WOOD, BQ_HUT, (numWoodcutter > 2) ? 20 : 1 + aijh->GetConstruction()->GetBuildingCount(BLD_WOODCUTTER) * 10, 15);
 		break;
+		}
 	case BLD_FORESTER:
  		if (aijh->GetDensity(bx, by, AIJH::PLANTSPACE, 7) > 0.2)
 			foundPos = aijh->FindBestPosition(bx, by, AIJH::WOOD, BQ_HUT, 1, 15);
 		break;
 	case BLD_QUARRY:
-		foundPos = aijh->FindBestPosition(bx, by, AIJH::STONES, BQ_HUT, 40, 15);
+		{
+		unsigned numQuarries = aijh->GetConstruction()->GetBuildingCount(BLD_QUARRY);
+		foundPos = aijh->FindBestPosition(bx, by, AIJH::STONES, BQ_HUT, (numQuarries > 4) ? 40 : 1 + aijh->GetConstruction()->GetBuildingCount(BLD_QUARRY) * 10, 15);
 		break;
+		}
 	case BLD_BARRACKS:
 	case BLD_GUARDHOUSE:
 	case BLD_WATCHTOWER:
