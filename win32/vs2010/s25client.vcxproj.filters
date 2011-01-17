@@ -72,7 +72,7 @@
     <Filter Include="Quelldateien\Treiber/Grafik">
       <UniqueIdentifier>{17aede06-ad5e-4151-a815-423fd31746b6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resourcendateien">
+    <Filter Include="Ressourcendateien">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
     </Filter>
@@ -898,7 +898,7 @@
       <Filter>Quelldateien\Allgemein</Filter>
     </ClInclude>
     <ClInclude Include="..\resource.h">
-      <Filter>Resourcendateien</Filter>
+      <Filter>Ressourcendateien</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\AIInterface.h">
       <Filter>Quelldateien\KI</Filter>
@@ -1652,12 +1652,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\s25client.ico">
-      <Filter>Resourcendateien</Filter>
+      <Filter>Ressourcendateien</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\s25client.rc">
-      <Filter>Resourcendateien</Filter>
+      <Filter>Ressourcendateien</Filter>
     </ResourceCompile>
   </ItemGroup>
 </Project>

@@ -1041,42 +1041,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_65F2B96715AB4C69980270EAC9D86BE5"
-        "OwnerKey" = "8:_12AA3CB4B9B74BCF954647E14A20E481"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_65F2B96715AB4C69980270EAC9D86BE5"
-        "OwnerKey" = "8:_BFA2A7B167B744A4959E3CFAA7D8613F"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_65F2B96715AB4C69980270EAC9D86BE5"
-        "OwnerKey" = "8:_8A86AC7F172B4280808692891D2AA7D2"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_65F2B96715AB4C69980270EAC9D86BE5"
-        "OwnerKey" = "8:_4B51EBD99D3E44B7A198A1A6DEF2C3E6"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_65F2B96715AB4C69980270EAC9D86BE5"
-        "OwnerKey" = "8:_4324DE1D49E84780BB1D5807C0193174"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_65F2B96715AB4C69980270EAC9D86BE5"
-        "OwnerKey" = "8:_2B16E679F6BC4B549C12FC85C559ACFD"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_65F8176AD4384CDAA5C3FC8C9AFC75A3"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -1553,6 +1517,42 @@
         {
         "MsmKey" = "8:_A3011D68FEB04AC1B4A9B92D9CACCB90"
         "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_A38E104E8F544170A997E1212098B0A1"
+        "OwnerKey" = "8:_12AA3CB4B9B74BCF954647E14A20E481"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_A38E104E8F544170A997E1212098B0A1"
+        "OwnerKey" = "8:_BFA2A7B167B744A4959E3CFAA7D8613F"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_A38E104E8F544170A997E1212098B0A1"
+        "OwnerKey" = "8:_8A86AC7F172B4280808692891D2AA7D2"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_A38E104E8F544170A997E1212098B0A1"
+        "OwnerKey" = "8:_4B51EBD99D3E44B7A198A1A6DEF2C3E6"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_A38E104E8F544170A997E1212098B0A1"
+        "OwnerKey" = "8:_4324DE1D49E84780BB1D5807C0193174"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_A38E104E8F544170A997E1212098B0A1"
+        "OwnerKey" = "8:_2B16E679F6BC4B549C12FC85C559ACFD"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -10512,15 +10512,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Return To The Roots"
-        "ProductCode" = "8:{76AEA7BB-24A5-482C-A5AD-77C1DD76E4FF}"
-        "PackageCode" = "8:{07C8EE46-79A3-467B-B40B-526056F392B1}"
+        "ProductCode" = "8:{FE970D71-EE17-4399-AD9A-97BE995FF5C1}"
+        "PackageCode" = "8:{806E62A0-8751-4B8D-B040-909794B346F7}"
         "UpgradeCode" = "8:{59DD45BA-B479-45EE-899E-C7C7D7188387}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:0.7.1"
+        "ProductVersion" = "8:0.7.2"
         "Manufacturer" = "8:Settler's Freaks"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://www.siedler25.org"
@@ -11043,7 +11043,7 @@
         }
         "MergeModule"
         {
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_65F2B96715AB4C69980270EAC9D86BE5"
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_A38E104E8F544170A997E1212098B0A1"
             {
             "UseDynamicProperties" = "11:TRUE"
             "IsDependency" = "11:TRUE"
@@ -11118,7 +11118,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_2B16E679F6BC4B549C12FC85C559ACFD"
             {
-            "SourcePath" = "8:..\\Release\\libsiedler2.dll"
+            "SourcePath" = "8:..\\Release\\libsiedler2.lib"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_99A457B5CE6645C3B24358FE0EDD7B95"
@@ -11202,7 +11202,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_8A86AC7F172B4280808692891D2AA7D2"
             {
-            "SourcePath" = "8:..\\Release\\libsiedler2.dll"
+            "SourcePath" = "8:..\\Release\\libsiedler2.lib"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_1B7A32FD810F445EA615D5241410FB64"
