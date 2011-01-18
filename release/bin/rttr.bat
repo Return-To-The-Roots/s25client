@@ -3,6 +3,7 @@
 IF EXIST RTTR\s25update.exe GOTO UPDATE
 GOTO START
 
+:UPDATE
 RTTR\s25update.exe --stable -d %CD%
 
 :START
