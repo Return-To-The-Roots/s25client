@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.h 6874 2010-12-05 12:41:01Z jh $
+// $Id: AIPlayerJH.h 7000 2011-01-21 20:51:29Z jh $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -42,6 +42,50 @@ class AIPlayerJH;
 class nobMilitary;
 class nobBaseMilitary;
 
+enum PositionSearchState
+{
+	SEARCH_IN_PROGRESS,
+	SEARCH_SUCCESSFUL,
+	SEARCH_FAILED
+};
+
+struct PositionSearch
+{
+	// where did the search start?
+	MapCoord startX;
+	MapCoord startY;
+
+	// what do we want to find?
+	AIJH::Resource res;
+
+	// and how much of that at least?
+	int minimum;
+
+	// how much space do we need?
+	BuildingQuality size;
+
+	// how many nodes should we test each cycle?
+	int nodesPerStep;
+
+	// which nodes have already been tested or will be tested next (=already in queue)?
+	std::vector<bool>* tested;
+
+	// which nodes are currently queued to be tested next?
+	std::queue<unsigned>* toTest;
+
+	MapCoord resultX;
+	MapCoord resultY;
+	int resultValue;
+
+	PositionSearch(MapCoord x, MapCoord y, AIJH::Resource res, int minimum, BuildingQuality size)
+		: startX(x), startY(y), res(res), minimum(minimum), size(size) { }
+
+	~PositionSearch() 
+	{
+		delete tested;
+		delete toTest;
+	}
+};
 
 /// Klasse für die besser JH-KI
 class AIPlayerJH : public AIBase
@@ -106,6 +150,11 @@ protected:
 	/// Finds a good position for a specific resource in an area using the resource maps, 
 	/// first position satisfying threshold is returned, returns false if no such position found
 	bool FindGoodPosition(MapCoord &x, MapCoord &y, AIJH::Resource res, int threshold, BuildingQuality size, int radius = -1, bool inTerritory = true);
+
+	PositionSearch *CreatePositionSearch(MapCoord &x, MapCoord &y, AIJH::Resource res, BuildingQuality size, int minimum);
+
+	// Find position that satifies search->minimum or best (takes longer!)
+	PositionSearchState FindGoodPosition(PositionSearch *search, bool best = false);
 
 	/// Finds the best position for a specific resource in an area using the resource maps, 
 	/// satisfying the minimum value, returns false if no such position is found

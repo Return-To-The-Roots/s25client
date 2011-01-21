@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 6582 2010-07-16 11:23:35Z FloSoft $
+// $Id: AIPlayerJH.cpp 7000 2011-01-21 20:51:29Z jh $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -87,6 +87,7 @@ void AIPlayerJH::RunGF(const unsigned gf)
 		MapCoord hqx = hq->GetX();
 		MapCoord hqy = hq->GetY();
 
+		
 		AddBuildJob(BLD_HARBORBUILDING, hqx, hqy);
 		AddBuildJob(BLD_SAWMILL);
 		AddBuildJob(BLD_FORESTER);
@@ -439,6 +440,89 @@ bool AIPlayerJH::FindGoodPosition(MapCoord &x, MapCoord &y, AIJH::Resource res, 
 		}
 	}
 	return false;
+}
+
+PositionSearch *AIPlayerJH::CreatePositionSearch(MapCoord &x, MapCoord &y, AIJH::Resource res, BuildingQuality size, int minimum)
+{
+	// set some basic parameters
+	PositionSearch *p = new PositionSearch(x, y, res, minimum, size);
+	p->nodesPerStep = 25; // TODO make it dependent on something...
+	p->resultValue = 0;
+
+	// allocate memory for the nodes
+	unsigned numNodes = aii->GetMapWidth() * aii->GetMapHeight();
+	p->tested = new std::vector<bool>(numNodes, false);
+	p->toTest = new std::queue<unsigned>;
+
+	// insert start position as first node to test
+	p->toTest->push(x + y * aii->GetMapWidth());
+
+	return p;
+}
+
+PositionSearchState AIPlayerJH::FindGoodPosition(PositionSearch *search, bool best)
+{
+	// make nodesPerStep tests
+	for (int i = 0; i < search->nodesPerStep; i++)
+	{
+		// no more nodes to test? end this!
+		if (search->toTest->empty())
+			break;
+
+		// get the node
+		unsigned nodeIndex = search->toTest->front();
+		AIJH::Node *node = &nodes[nodeIndex];
+		unsigned short width = aii->GetMapWidth();
+		MapCoord x = nodeIndex % width;
+		MapCoord y = nodeIndex / width;
+		
+		// and test it... TODO exception at res::borderland?
+		if (resourceMaps[search->res][nodeIndex] > search->resultValue // value better
+			&& node->owned && node->reachable && !node->farmed // available node
+			&& ((node->bq >= search->size && node->bq < BQ_MINE) || (node->bq == search->size)) // matching size
+			)
+		{
+			// store location & value
+			search->resultValue = resourceMaps[search->res][nodeIndex];
+			search->resultX = x;
+			search->resultY = y;
+		}
+
+		// now insert neighbouring nodes...
+		for (unsigned char dir = 0; dir < 6; ++dir)
+		{
+			MapCoord nx = aii->GetXA(x, y, dir);
+			MapCoord ny = aii->GetYA(x, y, dir);
+			unsigned ni = nx + ny * width;
+
+			// test if already tested or not in territory
+			if (!(*search->tested)[ni] && nodes[ni].owned)
+			{
+				search->toTest->push(ni);
+			}
+		}
+	}
+
+	// decide the state of the search
+
+	// no more nodes to test, not reached minimum
+	if (search->toTest->empty() && search->resultValue < search->minimum)
+	{
+		return SEARCH_FAILED;
+	}
+
+	// reached minimal satifiying value or best value, if needed
+	else if (search->resultValue >= search->minimum && !best 
+		|| (search->resultValue >= search->minimum && search->toTest->empty()))
+	{
+		return SEARCH_SUCCESSFUL;
+	}
+
+	// more to search...
+	else
+	{
+		return SEARCH_IN_PROGRESS;
+	}
 }
 
 
