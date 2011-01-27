@@ -1,3 +1,88 @@
+s25rttr (20110111-6971) hardy; urgency=low
+
+  * New upstream snapshot
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 11 Jan 2011 00:00:00 +0100
+
+s25rttr (20110111-6968) hardy; urgency=low
+
+  * New upstream snapshot
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 11 Jan 2011 00:00:00 +0100
+
+s25rttr (20110103-6961) hardy; urgency=low
+
+  * - KI baut jetzt Holzfäller/Steinbrüche bei kleineren Vorkommen,
+    wenn keine oder nur wenige Holzfäller/Steinbrüche vorhanden sind
+    - KI vermeidet Katapulte am Anfang, um die Expansion nicht zu
+    behindern (hilft noch nicht wirklich auf engen Maps)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Mon, 03 Jan 2011 23:10:00 +0100
+
+s25rttr (20110102-6958) hardy; urgency=low
+
+  * merged lp:~greg1989/s25rttr/very-low-ressources into trunk
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sun, 02 Jan 2011 11:39:00 +0100
+
+s25rttr (20101224-6945) hardy; urgency=low
+
+  * New upstream snapshot
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Fri, 24 Dec 2010 00:00:00 +0100
+
+s25rttr (20101224-6944) hardy; urgency=low
+
+  * merged changes into trunk
+
+ -- Florian Doersch <flosoft@siedler25.org>  Fri, 24 Dec 2010 07:56:00 +0100
+
+s25rttr (20101224-6939) hardy; urgency=low
+
+  * language update from launchpad
+
+ -- Florian Doersch <flosoft@siedler25.org>  Fri, 24 Dec 2010 07:17:00 +0100
+
+s25rttr (20101224-6938) hardy; urgency=low
+
+  * New upstream snapshot
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Fri, 24 Dec 2010 00:00:00 +0100
+
+s25rttr (20101223-6937) hardy; urgency=low
+
+  * trunk translations ...
+
+ -- Florian Doersch <flosoft@siedler25.org>  Thu, 23 Dec 2010 22:24:00 +0100
+
+s25rttr (20101223-6932) hardy; urgency=low
+
+  * Credits erweitert, Länge an Musik angepasst
+
+ -- OLiver Siebert <oliver@siedler25.org>  Thu, 23 Dec 2010 20:27:00 +0100
+
+s25rttr (20101223-6930) hardy; urgency=low
+
+  * ups, kleiner Fehler
+
+ -- OLiver Siebert <oliver@siedler25.org>  Thu, 23 Dec 2010 18:14:00 +0100
+
+s25rttr (20101223-6929) hardy; urgency=low
+
+  * Credits verbessert, neue Fotos
+
+ -- OLiver Siebert <oliver@siedler25.org>  Thu, 23 Dec 2010 18:12:00 +0100
+
+s25rttr (20101223-6926) hardy; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Thu, 23 Dec 2010 00:19:00 +0100
+
 s25rttr (20101223-6925) hardy; urgency=low
 
   * New upstream snapshot

@@ -1,5 +1,5 @@
 ################################################################################
-### $Id: CMakeLists.txt 6699 2010-09-01 17:12:06Z jh $
+### $Id: CMakeLists.txt 7004 2011-01-27 19:04:08Z FloSoft $
 ################################################################################
 
 INCLUDE(FindBZip2)
@@ -388,7 +388,7 @@ SET(s25client_SRCS
 IF ( "${COMPILEFOR}" STREQUAL "windows")
 	ADD_DEFINITIONS("-DAFX_TARG_DEU")
 
-	FIND_PROGRAM(WINDRES NAMES windres i686-mingw32-windres i586-mingw32msvc-windres DOC "path to mingw's windres executable")
+	FIND_PROGRAM(WINDRES NAMES windres i686-pc-mingw32-windres i686-mingw32-windres i586-mingw32msvc-windres DOC "path to mingw's windres executable")
 	
 	# Add Icon to Application
 	ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/s25client.res.o 

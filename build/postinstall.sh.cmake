@@ -1,6 +1,6 @@
 #!/bin/bash
 ###############################################################################
-## $Id: postinstall.sh.cmake 6832 2010-11-08 16:32:25Z FloSoft $
+## $Id: postinstall.sh.cmake 7004 2011-01-27 19:04:08Z FloSoft $
 ###############################################################################
 
 # Editable Variables
@@ -179,15 +179,17 @@ if [ "$COMPILEFOR" = "apple" ] ; then
 	mv -v ${DESTDIR}share ${DESTDIR}s25client.app/Contents/MacOS/ || exit 1
 
 elif [ "$COMPILEFOR" = "windows" ] ; then
-	cp -v /usr/i586-mingw32msvc/bin/libiconv2.dll ${DESTDIR} || exit 1
-	cp -v /usr/i586-mingw32msvc/bin/libintl3.dll ${DESTDIR} || exit 1
-	cp -v /usr/i586-mingw32msvc/bin/libogg-0.dll ${DESTDIR} || exit 1
-	cp -v /usr/i586-mingw32msvc/bin/SDL_mixer.dll ${DESTDIR} || exit 1
-	cp -v /usr/i586-mingw32msvc/bin/SDL.dll ${DESTDIR} || exit 1
-	cp -v /usr/i586-mingw32msvc/bin/libvorbis-0.dll ${DESTDIR} || exit 1
-	cp -v /usr/i586-mingw32msvc/bin/libvorbisfile-3.dll ${DESTDIR} || exit 1
-	cp -v /usr/i586-mingw32msvc/bin/libcurl-4.dll ${DESTDIR}RTTR || exit 1
-	cp -v /usr/i586-mingw32msvc/bin/zlib1.dll ${DESTDIR}RTTR || exit 1
+	cp -v /usr/i686-pc-mingw32/bin/libgcc_s_sjlj-1.dll ${DESTDIR} || exit 1
+	cp -v /usr/i686-pc-mingw32/bin/miniupnpc.dll ${DESTDIR} || exit 1
+	cp -v /usr/i686-pc-mingw32/bin/libiconv-2.dll ${DESTDIR} || exit 1
+	cp -v /usr/i686-pc-mingw32/bin/libintl-8.dll ${DESTDIR} || exit 1
+	cp -v /usr/i686-pc-mingw32/bin/libogg-0.dll ${DESTDIR} || exit 1
+	cp -v /usr/i686-pc-mingw32/bin/SDL_mixer.dll ${DESTDIR} || exit 1
+	cp -v /usr/i686-pc-mingw32/bin/SDL.dll ${DESTDIR} || exit 1
+	cp -v /usr/i686-pc-mingw32/bin/libvorbis-0.dll ${DESTDIR} || exit 1
+	cp -v /usr/i686-pc-mingw32/bin/libvorbisfile-3.dll ${DESTDIR} || exit 1
+	cp -v /usr/i686-pc-mingw32/bin/libcurl-4.dll ${DESTDIR}RTTR || exit 1
+	cp -v /usr/i686-pc-mingw32/bin/zlib1.dll ${DESTDIR}RTTR || exit 1
 elif [ "$COMPILEFOR" = "linux" ] ; then
 	miniupnpc=/usr/lib/libminiupnpc.so
 	case "$COMPILEARCH" in

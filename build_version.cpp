@@ -1,4 +1,4 @@
-// $Id: build_version.cpp 6742 2010-09-15 19:25:13Z OLiver $
+// $Id: build_version.cpp 7004 2011-01-27 19:04:08Z FloSoft $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -21,7 +21,7 @@
 // Header
 #include <build_version.h>
 #include <memory.h>
-#include <string>
+#include <cstring>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
