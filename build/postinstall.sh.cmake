@@ -1,6 +1,6 @@
 #!/bin/bash
 ###############################################################################
-## $Id: postinstall.sh.cmake 7004 2011-01-27 19:04:08Z FloSoft $
+## $Id: postinstall.sh.cmake 7005 2011-01-27 22:01:07Z FloSoft $
 ###############################################################################
 
 # Editable Variables
@@ -179,17 +179,27 @@ if [ "$COMPILEFOR" = "apple" ] ; then
 	mv -v ${DESTDIR}share ${DESTDIR}s25client.app/Contents/MacOS/ || exit 1
 
 elif [ "$COMPILEFOR" = "windows" ] ; then
-	cp -v /usr/i686-pc-mingw32/bin/libgcc_s_sjlj-1.dll ${DESTDIR} || exit 1
-	cp -v /usr/i686-pc-mingw32/bin/miniupnpc.dll ${DESTDIR} || exit 1
-	cp -v /usr/i686-pc-mingw32/bin/libiconv-2.dll ${DESTDIR} || exit 1
-	cp -v /usr/i686-pc-mingw32/bin/libintl-8.dll ${DESTDIR} || exit 1
-	cp -v /usr/i686-pc-mingw32/bin/libogg-0.dll ${DESTDIR} || exit 1
-	cp -v /usr/i686-pc-mingw32/bin/SDL_mixer.dll ${DESTDIR} || exit 1
-	cp -v /usr/i686-pc-mingw32/bin/SDL.dll ${DESTDIR} || exit 1
-	cp -v /usr/i686-pc-mingw32/bin/libvorbis-0.dll ${DESTDIR} || exit 1
-	cp -v /usr/i686-pc-mingw32/bin/libvorbisfile-3.dll ${DESTDIR} || exit 1
-	cp -v /usr/i686-pc-mingw32/bin/libcurl-4.dll ${DESTDIR}RTTR || exit 1
-	cp -v /usr/i686-pc-mingw32/bin/zlib1.dll ${DESTDIR}RTTR || exit 1
+	mingw=/usr
+	case "$COMPILEARCH" in
+		i686|*86)
+			mingw=/usr/i686-pc-mingw32
+		;;
+		x86_64|*64)
+			mingw=/usr/x86_64-pc-mingw32
+		;;
+	esac
+
+	cp -v ${mingw}/bin/libgcc_s_sjlj-1.dll ${DESTDIR} || exit 1
+	cp -v ${mingw}/bin/miniupnpc.dll ${DESTDIR} || exit 1
+	cp -v ${mingw}/bin/libiconv-2.dll ${DESTDIR} || exit 1
+	cp -v ${mingw}/bin/libintl-8.dll ${DESTDIR} || exit 1
+	cp -v ${mingw}/bin/libogg-0.dll ${DESTDIR} || exit 1
+	cp -v ${mingw}/bin/SDL_mixer.dll ${DESTDIR} || exit 1
+	cp -v ${mingw}/bin/SDL.dll ${DESTDIR} || exit 1
+	cp -v ${mingw}/bin/libvorbis-0.dll ${DESTDIR} || exit 1
+	cp -v ${mingw}/bin/libvorbisfile-3.dll ${DESTDIR} || exit 1
+	cp -v ${mingw}/bin/libcurl-4.dll ${DESTDIR}RTTR || exit 1
+	cp -v ${mingw}/bin/zlib1.dll ${DESTDIR}RTTR || exit 1
 elif [ "$COMPILEFOR" = "linux" ] ; then
 	miniupnpc=/usr/lib/libminiupnpc.so
 	case "$COMPILEARCH" in

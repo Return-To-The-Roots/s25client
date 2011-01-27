@@ -1,5 +1,5 @@
 ################################################################################
-### $Id: CMakeLists.txt 7004 2011-01-27 19:04:08Z FloSoft $
+### $Id: CMakeLists.txt 7005 2011-01-27 22:01:07Z FloSoft $
 ################################################################################
 
 INCLUDE(FindBZip2)
@@ -388,7 +388,11 @@ SET(s25client_SRCS
 IF ( "${COMPILEFOR}" STREQUAL "windows")
 	ADD_DEFINITIONS("-DAFX_TARG_DEU")
 
-	FIND_PROGRAM(WINDRES NAMES windres i686-pc-mingw32-windres i686-mingw32-windres i586-mingw32msvc-windres DOC "path to mingw's windres executable")
+    IF ( "${COMPILEARCH}" STREQUAL "i386" )
+        FIND_PROGRAM(WINDRES NAMES windres i686-pc-mingw32-windres i686-mingw32-windres i586-mingw32msvc-windres DOC "path to mingw's windres executable")
+    ELSE ( "${COMPILEARCH}" STREQUAL "i386" )
+        FIND_PROGRAM(WINDRES NAMES windres x86_64-pc-mingw32-windres x86_64-mingw32-windres amd64-mingw32msvc-windres DOC "path to mingw's windres executable")
+    ENDIF ( "${COMPILEARCH}" STREQUAL "i386" )
 	
 	# Add Icon to Application
 	ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/s25client.res.o 
@@ -418,7 +422,7 @@ IF ( "${COMPILEFOR}" STREQUAL "apple")
 ENDIF ( "${COMPILEFOR}" STREQUAL "apple")
 
 IF ( "${COMPILEFOR}" STREQUAL "windows")
-	TARGET_LINK_LIBRARIES(s25client ole32 wsock32 shlwapi bz2 ${TARGET_LINK_LIBRARIES} )
+	TARGET_LINK_LIBRARIES(s25client ole32 ws2_32 shlwapi bz2 ${TARGET_LINK_LIBRARIES} )
 ENDIF ( "${COMPILEFOR}" STREQUAL "windows")
 
 INSTALL(TARGETS s25client RUNTIME DESTINATION ${BINDIR})

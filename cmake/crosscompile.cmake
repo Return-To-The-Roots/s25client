@@ -1,5 +1,5 @@
 #################################################################################
-### $Id: crosscompile.cmake 6807 2010-10-18 14:12:04Z FloSoft $
+### $Id: crosscompile.cmake 7005 2011-01-27 22:01:07Z FloSoft $
 #################################################################################
 
 # read host compiler machine triplet
@@ -159,7 +159,11 @@ ENDIF ( "${USED_GCC_OUTPUT}" MATCHES "apple" )
 IF ( "${USED_GCC_OUTPUT}" MATCHES "mingw" OR "${USED_GCC_OUTPUT}" MATCHES "cygwin" )
 	SET(COMPILEFOR "windows")
 
-	SET(COMPILEARCH "i386")
+    IF ( "${USED_GCC_OUTPUT}" MATCHES "x86_64" )
+        SET(COMPILEARCH "x86_64")
+    ELSE ( "${USED_GCC_OUTPUT}" MATCHES "x86_64" )
+        SET(COMPILEARCH "i386")
+    ENDIF ( "${USED_GCC_OUTPUT}" MATCHES "x86_64" )
 ENDIF ( "${USED_GCC_OUTPUT}" MATCHES "mingw" OR "${USED_GCC_OUTPUT}" MATCHES "cygwin" )
 
 #################################################################################
