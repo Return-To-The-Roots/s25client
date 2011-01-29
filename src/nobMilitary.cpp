@@ -1,4 +1,4 @@
-// $Id: nobMilitary.cpp 6909 2010-12-20 15:11:34Z OLiver $
+// $Id: nobMilitary.cpp 7024 2011-01-29 17:51:58Z jh $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -423,8 +423,9 @@ void nobMilitary::RegulateTroops()
 			{
 				if (it.valid())
 				{	
-					(*it)->NotNeeded();
+					nofPassiveSoldier * soldier = *it;
 					ordered_troops.erase(&it);
+					soldier->NotNeeded();
 				}
 				else
 				{
