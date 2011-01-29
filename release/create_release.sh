@@ -33,7 +33,6 @@ fi
 RELEASEDEF=$SRCDIR/release/release.$TYPE.def
 source $RELEASEDEF || error
 
-stat $TARGET
 if [ ! -d "$TARGET" ] ; then
 	echo "WARN: $RELEASEDEF does not contain TARGET, using $(pwd)"
 	TARGET=$(pwd)
