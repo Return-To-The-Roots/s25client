@@ -1,3 +1,159 @@
+s25rttr (20110129-7029) hardy; urgency=low
+
+  * New upstream snapshot
+  * feature xD
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 29 Jan 2011 19:54:00 +0100
+
+s25rttr (20110129-7028) hardy; urgency=low
+
+  * New upstream snapshot
+  * fix 1000000000000000000000000000000000
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 29 Jan 2011 19:51:00 +0100
+
+s25rttr (20110129-7027) hardy; urgency=low
+
+  * New upstream snapshot
+  * fix3 :(
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 29 Jan 2011 19:11:00 +0100
+
+s25rttr (20110129-7026) hardy; urgency=low
+
+  * fix2
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 29 Jan 2011 19:09:00 +0100
+
+s25rttr (20110129-7025) hardy; urgency=low
+
+  * fix
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 29 Jan 2011 19:05:00 +0100
+
+s25rttr (20110129-7024) hardy; urgency=low
+
+  * Fixed Bug #700668 (recursive call to nobMilitary::RegulateTroops)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sat, 29 Jan 2011 17:51:00 +0100
+
+s25rttr (20110129-7023) hardy; urgency=low
+
+  * use correct path for changelog
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 29 Jan 2011 17:50:00 +0100
+
+s25rttr (20110129-7022) hardy; urgency=low
+
+  * so noch debugoutput raus ...
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 29 Jan 2011 17:06:00 +0100
+
+s25rttr (20110129-7021) hardy; urgency=low
+
+  * ach neee --- ich rast aus ....
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 29 Jan 2011 17:04:00 +0100
+
+s25rttr (20110129-7020) hardy; urgency=low
+
+  * und immernoch ...
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 29 Jan 2011 16:45:00 +0100
+
+s25rttr (20110129-7019) hardy; urgency=low
+
+  * okay so hoffentlich war das nun endlich der letzte fix an diesem
+    sch**** script
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 29 Jan 2011 16:19:00 +0100
+
+s25rttr (20110129-7018) hardy; urgency=low
+
+  * nochmal bissl was überarbeitet
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 29 Jan 2011 16:00:00 +0100
+
+s25rttr (20110129-7017) hardy; urgency=low
+
+  * info output
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 29 Jan 2011 15:47:00 +0100
+
+s25rttr (20110129-7016) hardy; urgency=low
+
+  * fix (again) 2 ...
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 29 Jan 2011 15:34:00 +0100
+
+s25rttr (20110129-7015) hardy; urgency=low
+
+  * fix (again)
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 29 Jan 2011 15:32:00 +0100
+
+s25rttr (20110129-7014) hardy; urgency=low
+
+  * noch ein scriptfix
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 29 Jan 2011 14:47:00 +0100
+
+s25rttr (20110129-7013) hardy; urgency=low
+
+  * nochmal kleiner fix
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 29 Jan 2011 14:38:00 +0100
+
+s25rttr (20110129-7012) hardy; urgency=low
+
+  * und nochmal
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 29 Jan 2011 14:01:00 +0100
+
+s25rttr (20110129-7011) hardy; urgency=low
+
+  * nochmal fix
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 29 Jan 2011 13:58:00 +0100
+
+s25rttr (20110129-7010) hardy; urgency=low
+
+  * noch einige anpassungen
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 29 Jan 2011 13:56:00 +0100
+
+s25rttr (20110129-7009) hardy; urgency=low
+
+  * added script for url upload
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 29 Jan 2011 13:47:00 +0100
+
+s25rttr (20110129-7008) hardy; urgency=low
+
+  * noch paar änderungen
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 29 Jan 2011 13:38:00 +0100
+
+s25rttr (20110129-7007) hardy; urgency=low
+
+  * created "create_nightly" target for cmake, obsoletes
+    make*-scripts
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 29 Jan 2011 13:29:00 +0100
+
+s25rttr (20110127-7006) hardy; urgency=low
+
+  * was vergessen
+
+ -- Florian Doersch <flosoft@siedler25.org>  Thu, 27 Jan 2011 22:05:00 +0100
+
+s25rttr (20110127-7005) hardy; urgency=low
+
+  * win 64bit-build fixes
+    newer cygwin build fixes
+
+ -- Florian Doersch <flosoft@siedler25.org>  Thu, 27 Jan 2011 22:01:00 +0100
+
 s25rttr (20110127-7004) hardy; urgency=low
 
   * New upstream snapshot
