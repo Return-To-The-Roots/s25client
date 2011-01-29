@@ -33,6 +33,7 @@ fi
 RELEASEDEF=$SRCDIR/release/release.$TYPE.def
 source $RELEASEDEF || error
 
+stat $TARGET
 if [ ! -d "$TARGET" ] ; then
 	echo "WARN: $RELEASEDEF does not contain TARGET, using $(pwd)"
 	TARGET=$(pwd)
@@ -98,12 +99,12 @@ if [ $CHANGED -eq 1 ] || [ ! -f $ARCHDIR/packed/s25rttr.tar.bz2 ] ; then
 	echo "creating new archive"
 	
 	# pack
-#	tar -C $ARCHNEWDIR/unpacked \
-#		--exclude=.svn \
-#		--exclude s25rttr_$VERSION/share/s25rttr/RTTR/MUSIC/SNG/SNG_*.OGG \
-#		--exclude s25rttr_$VERSION/RTTR/MUSIC/SNG/SNG_*.OGG \
-#		--exclude s25rttr_$VERSION/s25client.app/Contents/MacOS/share/s25rttr/RTTR/MUSIC/SNG/SNG_*.OGG \
-#		-cvjf $ARCHNEWDIR/packed/s25rttr.tar.bz2 s25rttr_$VERSION || error
+	tar -C $ARCHNEWDIR/unpacked \
+		--exclude=.svn \
+		--exclude s25rttr_$VERSION/share/s25rttr/RTTR/MUSIC/SNG/SNG_*.OGG \
+		--exclude s25rttr_$VERSION/RTTR/MUSIC/SNG/SNG_*.OGG \
+		--exclude s25rttr_$VERSION/s25client.app/Contents/MacOS/share/s25rttr/RTTR/MUSIC/SNG/SNG_*.OGG \
+		-cvjf $ARCHNEWDIR/packed/s25rttr.tar.bz2 s25rttr_$VERSION || error
 	
 	# link to archive
 	mkdir -p $ARCHIVE
