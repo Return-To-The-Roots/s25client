@@ -98,6 +98,14 @@ if [ $CHANGED -eq 1 ] || [ ! -f $ARCHDIR/packed/s25rttr.tar.bz2 ] ; then
 	# link to archive
 	mkdir -p $ARCHIVE
 	ln -v $ARCHNEWDIR/packed/s25rttr.tar.bz2 $ARCHIVE/s25rttr_$VERSION-${REVISION}_$ARCH.tar.bz2
+
+	# do upload
+	if [ ! -z "$UPLOADTO" ] ; then
+		scp $ARCHIVE/s25rttr_$VERSION-${REVISION}_$ARCH.tar.bz2 $UPLOADTO
+		if [ ! -z "$UPLOADURL" ] ; then
+			echo "$UPLOADURL$(basename $file)" >> $TARGET/rapidshare.txt
+		fi
+	fi
 	
 	echo "creating new updater tree"
 

@@ -1,2 +1,4 @@
 TARGET=/var/www/ra-doersch.de/nightly/s25client/nightly
 ARCHIVE=/var/www/ra-doersch.de/nightly/s25client/archive/$(date +%Y)
+UPLOADTO=root@tyra.ra-doersch.de:/www/siedler25.org/www/uploads/nightly/
+UPLOADURL=http://www.siedler25.org/uploads/nightly/
