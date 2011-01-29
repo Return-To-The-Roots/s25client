@@ -23,10 +23,10 @@ if [ ! -d "$TARGET" ] ; then
 fi
 
 # create changelog
-svn log . > ${UPLOADURL}changelog.txt
+svn log . > ${UPLOADFILE}changelog.txt
 
 # upload data
-scp ${UPLOADURL}rapidshare.txt $UPLOADTARGET
-scp ${UPLOADURL}changelog.txt $UPLOADTARGET
+scp ${UPLOADFILE}rapidshare.txt $UPLOADTARGET
+scp ${UPLOADFILE}changelog.txt $UPLOADTARGET
 
 exit 0
