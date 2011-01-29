@@ -23,13 +23,10 @@ if [ ! -d "$TARGET" ] ; then
 fi
 
 # create changelog
-svn log . > $TARGET/changelog.txt
-
-# update data
-(cd $TARGET && php -q $TARGET/nightlysql.php && php -q $TARGET/changelogsql.php)
+svn log . > ${UPLOADURL}changelog.txt
 
 # upload data
-scp $TARGET/rapidshare.txt root@tyra.ra-doersch.de:/www/siedler25.org/www/uploads
-scp $TARGET/changelog.txt root@tyra.ra-doersch.de:/www/siedler25.org/www/uploads
+scp ${UPLOADURL}rapidshare.txt $UPLOADTARGET
+scp ${UPLOADURL}changelog.txt $UPLOADTARGET
 
 exit 0
