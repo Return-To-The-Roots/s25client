@@ -107,7 +107,7 @@ if [ $CHANGED -eq 1 ] || [ ! -f $ARCHDIR/packed/s25rttr.tar.bz2 ] ; then
 	ln -v $ARCHNEWDIR/packed/s25rttr.tar.bz2 $ARCHIVE/s25rttr_$VERSION-${REVISION}_$ARCH.tar.bz2
 
 	# do upload
-	if [ ! -z "$UPLOADTARGET" ] ; then
+	if [ ! "$NOUPLOAD" = "1" ] && [ ! -z "$UPLOADTARGET" ] ; then
 		echo "uploading file to $UPLOADTARGET$UPLOADTO"
 		scp $ARCHIVE/s25rttr_$VERSION-${REVISION}_$ARCH.tar.bz2 $UPLOADTARGET$UPLOADTO
 		if [ ! -z "$UPLOADTARGET" ] ; then
@@ -122,8 +122,9 @@ if [ $CHANGED -eq 1 ] || [ ! -f $ARCHDIR/packed/s25rttr.tar.bz2 ] ; then
 	(cd $ARCHNEWDIR/unpacked/s25rttr_$VERSION && find -type f -exec cp {} $ARCHNEWDIR/updater/{} \;)
 	
 	# note symlinks
-	echo -n > /tmp/links.$$
-	(cd $ARCHNEWDIR/unpacked/s25rttr_$VERSION && find -type l -exec bash -c 'echo "{} $(readlink {})" >> /tmp/links.$$' \;)
+	L=/tmp/links.$$
+	echo -n > $L
+	(cd $ARCHNEWDIR/unpacked/s25rttr_$VERSION && find -type l -exec bash -c 'echo "{} $(readlink {})" >> $L' \;)
 	
 	# note hashes
 	(cd $ARCHNEWDIR/updater && md5deep -r -l . > /tmp/files.$$)
@@ -132,8 +133,8 @@ if [ $CHANGED -eq 1 ] || [ ! -f $ARCHDIR/packed/s25rttr.tar.bz2 ] ; then
 	find $ARCHNEWDIR/updater -type f -exec bzip2 -v {} \;
 	
 	# move file lists
-	mv /tmp/links.$$ $ARCHNEWDIR/updater/links
-	mv /tmp/files.$$ $ARCHNEWDIR/updater/files
+	mv -v /tmp/links.$$ $ARCHNEWDIR/updater/links
+	mv -v /tmp/files.$$ $ARCHNEWDIR/updater/files
 
 	# create human version notifier
 	touch $ARCHNEWDIR/revision-${REVISION}
