@@ -44,10 +44,6 @@ VERSION=$(grep WINDOW_VERSION build_version.h | cut -d ' ' -f 3 | cut -d \" -f 2
 # get revision
 REVISION=$(grep WINDOW_REVISION build_version.h | cut -d ' ' -f 3 | cut -d \" -f 2)
 
-if [ $REVISION -eq 0 ] ; then
-	exit 1
-fi
-
 # get arch
 ARCH="$(grep COMPILEFOR CMakeCache.txt | cut -d '=' -f 2 | head -n 1).$(grep COMPILEARCH CMakeCache.txt | cut -d '=' -f 2 | head -n 1)"
 
@@ -72,6 +68,16 @@ exec 1>$npipe
 echo "Building $TYPE for $VERSION-$REVISION/$ARCH in $SRCDIR"
 
 make || error
+
+if [ $REVISION -eq 0 ] ; then
+	# get revision again
+	REVISION=$(grep WINDOW_REVISION build_version.h | cut -d ' ' -f 3 | cut -d \" -f 2)
+fi
+
+if [ $REVISION -eq 0 ] ; then
+	echo "error: revision is null"
+	error
+fi
 
 DESTDIR=$ARCHNEWDIR/unpacked/s25rttr_$VERSION
 make install DESTDIR=$DESTDIR || error
