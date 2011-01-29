@@ -51,6 +51,9 @@ mkdir -p $ARCHNEWDIR/packed
 mkdir -p $ARCHNEWDIR/unpacked
 mkdir -p $ARCHNEWDIR/updater
 
+touch $ARCHNEWDIR/.writetest || error
+rm -f $ARCHNEWDIR/.writetest
+
 # redirect output to log AND stdout
 npipe=/tmp/$$.log
 trap "rm -f $npipe" EXIT
@@ -95,12 +98,12 @@ if [ $CHANGED -eq 1 ] || [ ! -f $ARCHDIR/packed/s25rttr.tar.bz2 ] ; then
 	echo "creating new archive"
 	
 	# pack
-	tar -C $ARCHNEWDIR/unpacked \
-		--exclude=.svn \
-		--exclude s25rttr_$VERSION/share/s25rttr/RTTR/MUSIC/SNG/SNG_*.OGG \
-		--exclude s25rttr_$VERSION/RTTR/MUSIC/SNG/SNG_*.OGG \
-		--exclude s25rttr_$VERSION/s25client.app/Contents/MacOS/share/s25rttr/RTTR/MUSIC/SNG/SNG_*.OGG \
-		-cvjf $ARCHNEWDIR/packed/s25rttr.tar.bz2 s25rttr_$VERSION || error
+#	tar -C $ARCHNEWDIR/unpacked \
+#		--exclude=.svn \
+#		--exclude s25rttr_$VERSION/share/s25rttr/RTTR/MUSIC/SNG/SNG_*.OGG \
+#		--exclude s25rttr_$VERSION/RTTR/MUSIC/SNG/SNG_*.OGG \
+#		--exclude s25rttr_$VERSION/s25client.app/Contents/MacOS/share/s25rttr/RTTR/MUSIC/SNG/SNG_*.OGG \
+#		-cvjf $ARCHNEWDIR/packed/s25rttr.tar.bz2 s25rttr_$VERSION || error
 	
 	# link to archive
 	mkdir -p $ARCHIVE
@@ -124,21 +127,24 @@ if [ $CHANGED -eq 1 ] || [ ! -f $ARCHDIR/packed/s25rttr.tar.bz2 ] ; then
 	# note symlinks
 	L=/tmp/links.$$
 	echo -n > $L
-	(cd $ARCHNEWDIR/unpacked/s25rttr_$VERSION && find -type l -exec bash -c 'echo "{} $(readlink {})" >> $L' \;)
+	echo "reading links"
+	(cd $ARCHNEWDIR/unpacked/s25rttr_$VERSION && find -type l -exec bash -c 'echo "{} $(readlink {})"' \;) | tee $L
 	
 	# note hashes
-	(cd $ARCHNEWDIR/updater && md5deep -r -l . > /tmp/files.$$)
+	F=/tmp/files.$$
+	echo "reading files"
+	(cd $ARCHNEWDIR/updater && md5deep -r -l .) > $F
 
 	# bzip files
 	find $ARCHNEWDIR/updater -type f -exec bzip2 -v {} \;
 	
 	# move file lists
-	mv -v /tmp/links.$$ $ARCHNEWDIR/updater/links
-	mv -v /tmp/files.$$ $ARCHNEWDIR/updater/files
+	mv -v $L $ARCHNEWDIR/updater/links || exit 1
+	mv -v $F $ARCHNEWDIR/updater/files || exit 1
 
 	# create human version notifier
-	touch $ARCHNEWDIR/revision-${REVISION}
-	touch $ARCHNEWDIR/version-$VERSION
+	touch $ARCHNEWDIR/revision-${REVISION} || exit 1
+	touch $ARCHNEWDIR/version-$VERSION || exit 1
 	
 	# rotate trees
 	rm -rf $ARCHDIR.5
@@ -147,7 +153,7 @@ if [ $CHANGED -eq 1 ] || [ ! -f $ARCHDIR/packed/s25rttr.tar.bz2 ] ; then
 	mv $ARCHDIR.2 $ARCHDIR.3
 	mv $ARCHDIR.1 $ARCHDIR.2
 	mv $ARCHDIR $ARCHDIR.1
-	mv $ARCHNEWDIR $ARCHDIR
+	mv $ARCHNEWDIR $ARCHDIR || exit 1
 
 	echo "done"
 else
