@@ -23,7 +23,7 @@ if [ ! -d "$TARGET" ] ; then
 fi
 
 # create changelog
-svn log . > ${UPLOADFILE}changelog.txt || exit 2
+svn log $(dirname $(svn info | grep "URL" | cut -d ' ' -f 2)) > ${UPLOADFILE}changelog.txt || exit 2
 
 # upload data
 scp ${UPLOADFILE}rapidshare.txt $UPLOADTARGET || exit 3
