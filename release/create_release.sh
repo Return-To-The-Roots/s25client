@@ -113,7 +113,7 @@ if [ $CHANGED -eq 1 ] || [ ! -f $ARCHDIR/packed/s25rttr.tar.bz2 ] ; then
 	if [ ! -z "$UPLOADTARGET" ] ; then
 		scp $ARCHIVE/s25rttr_$VERSION-${REVISION}_$ARCH.tar.bz2 $UPLOADTARGET$UPLOADTO
 		if [ ! -z "$UPLOADTARGET" ] ; then
-			echo "$UPLOADURL$(basename $file)" >> ${UPLOADFILE}rapidshare.txt
+			echo "${UPLOADURL}s25rttr_$VERSION-${REVISION}_$ARCH.tar.bz2" >> ${UPLOADFILE}rapidshare.txt
 		fi
 	fi
 	
