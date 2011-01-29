@@ -37,7 +37,7 @@ mv -v ../build-area/s25rttr_${VERSION}-${REVISION}_amd64.changes release/deb || 
 mv -v ../build-area/s25rttr*_${VERSION}-${REVISION}_amd64.deb release/deb || exit 1
 
 # add repository to params
-PARAMS="-b $DISTRIBUTION $*"
+PARAMS="-b $REPOSITORY $*"
 
 # include files
 reprepro $PARAMS -S games -P optional includedsc $DISTRIBUTION release/deb/s25rttr_${VERSION}-${REVISION}.dsc || exit 1
