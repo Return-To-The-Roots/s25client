@@ -1,6 +1,6 @@
 #!/bin/bash
 ###############################################################################
-## $Id: postinstall.sh.cmake 7005 2011-01-27 22:01:07Z FloSoft $
+## $Id: postinstall.sh.cmake 7007 2011-01-29 13:29:12Z FloSoft $
 ###############################################################################
 
 # Editable Variables
@@ -200,6 +200,8 @@ elif [ "$COMPILEFOR" = "windows" ] ; then
 	cp -v ${mingw}/bin/libvorbisfile-3.dll ${DESTDIR} || exit 1
 	cp -v ${mingw}/bin/libcurl-4.dll ${DESTDIR}RTTR || exit 1
 	cp -v ${mingw}/bin/zlib1.dll ${DESTDIR}RTTR || exit 1
+	
+	rmdir --ignore-fail-on-non-empty -v ${DESTDIR}S2
 elif [ "$COMPILEFOR" = "linux" ] ; then
 	miniupnpc=/usr/lib/libminiupnpc.so
 	case "$COMPILEARCH" in

@@ -1,0 +1,2 @@
+TARGET=/var/www/ra-doersch.de/nightly/s25client/nightly
+ARCHIVE=/var/www/ra-doersch.de/nightly/s25client/archive/$(date +%Y)

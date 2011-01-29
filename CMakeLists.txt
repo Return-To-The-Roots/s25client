@@ -1,5 +1,5 @@
 ################################################################################
-### $Id: CMakeLists.txt 6944 2010-12-24 07:56:07Z FloSoft $
+### $Id: CMakeLists.txt 7007 2011-01-29 13:29:12Z FloSoft $
 ################################################################################
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6.0)
@@ -134,6 +134,16 @@ ADD_CUSTOM_TARGET(mrproper
 				  COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/build/cleanup.sh"
 				  WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
 )
+
+ADD_CUSTOM_TARGET(create_nightly
+				  COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/release/create_release.sh" "nightly" "${CMAKE_SOURCE_DIR}"
+				  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
+)
+
+#ADD_CUSTOM_TARGET(create_stable
+#				  COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/release/create_release.sh" "stable" "${CMAKE_SOURCE_DIR}"
+#				  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
+#)
 
 # preinstall script
 INSTALL(SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/cmake/preinstall.cmake")
