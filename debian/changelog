@@ -1,3 +1,16 @@
+s25rttr (20110129-7032) hardy; urgency=low
+
+  * New upstream snapshot
+  * bug fix
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 29 Jan 2011 21:25:00 +0100
+
+s25rttr (20110129-7031) hardy; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 29 Jan 2011 20:22:00 +0100
+
 s25rttr (20110129-7030) hardy; urgency=low
 
   * New upstream snapshot
