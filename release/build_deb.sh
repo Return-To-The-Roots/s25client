@@ -9,7 +9,7 @@ if [ ! -d "$REPOSITORY" ] ; then
 	exit 1
 fi
 
-if [ ! -z "$DISTRIBUTION" ] ; then
+if [ -z "$DISTRIBUTION" ] ; then
 	echo "ERROR: repository.def does not contain DISTRIBUTION"
 	exit 1
 fi
