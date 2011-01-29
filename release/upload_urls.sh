@@ -18,7 +18,7 @@ RELEASEDEF=release.$TYPE.def
 source $RELEASEDEF || exit 1
 
 if [ ! -d "$TARGET" ] ; then
-	echo "WARN: $RELEASEDEF does not contain $TARGET, using $(pwd)"
+	echo "WARN: $RELEASEDEF does not contain TARGET, using $(pwd)"
 	TARGET=$(pwd)
 fi
 

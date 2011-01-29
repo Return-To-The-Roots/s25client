@@ -2,6 +2,18 @@
 
 cd $(dirname $0)/../
 
+source repository.def || error
+
+if [ ! -d "$REPOSITORY" ] ; then
+	echo "ERROR: repository.def does not contain REPOSITORY"
+	exit 1
+fi
+
+if [ ! -d "$DISTRIBUTION" ] ; then
+	echo "ERROR: repository.def does not contain DISTRIBUTION"
+	exit 1
+fi
+
 debian/update-changelog.sh || exit 1
 
 VERSION=$(head debian/changelog -n 1 | cut -d '-' -f 1 | cut -d '(' -f 2)
@@ -24,13 +36,13 @@ svn-buildpackage $PARAMS -aamd64 -B || exit 1
 mv -v ../build-area/s25rttr_${VERSION}-${REVISION}_amd64.changes release/deb || exit 1
 mv -v ../build-area/s25rttr*_${VERSION}-${REVISION}_amd64.deb release/deb || exit 1
 
-# add to repository
-PARAMS="-b release/deb/repository $*"
-DISTRI=hardy
+# add repository to params
+PARAMS="-b $DISTRIBUTION $*"
 
-reprepro $PARAMS -S games -P optional includedsc $DISTRI release/deb/s25rttr_${VERSION}-${REVISION}.dsc || exit 1
-reprepro $PARAMS include $DISTRI release/deb/s25rttr_${VERSION}-${REVISION}_i386.changes || exit 1
-reprepro $PARAMS include $DISTRI release/deb/s25rttr_${VERSION}-${REVISION}_amd64.changes || exit 1
+# include files
+reprepro $PARAMS -S games -P optional includedsc $DISTRIBUTION release/deb/s25rttr_${VERSION}-${REVISION}.dsc || exit 1
+reprepro $PARAMS include $DISTRIBUTION release/deb/s25rttr_${VERSION}-${REVISION}_i386.changes || exit 1
+reprepro $PARAMS include $DISTRIBUTION release/deb/s25rttr_${VERSION}-${REVISION}_amd64.changes || exit 1
 
 #svn ci debian/changelog -m "Automatic debian/changelog update"
 

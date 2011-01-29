@@ -34,7 +34,7 @@ RELEASEDEF=$SRCDIR/release/release.$TYPE.def
 source $RELEASEDEF || error
 
 if [ ! -d "$TARGET" ] ; then
-	echo "WARN: $RELEASEDEF does not contain $TARGET, using $(pwd)"
+	echo "WARN: $RELEASEDEF does not contain TARGET, using $(pwd)"
 	TARGET=$(pwd)
 fi
 
@@ -124,18 +124,18 @@ if [ $CHANGED -eq 1 ] || [ ! -f $ARCHDIR/packed/s25rttr.tar.bz2 ] ; then
 	(cd $ARCHNEWDIR/unpacked/s25rttr_$VERSION && find -type f -exec cp {} $ARCHNEWDIR/updater/{} \;)
 	
 	# note symlinks
-	echo -n > $ARCHNEWDIR/links
-	(cd $ARCHNEWDIR/unpacked/s25rttr_$VERSION && find -type l -exec bash -c 'echo "{} $(readlink {})" >> $ARCHNEWDIR/links' \;)
+	echo -n > /tmp/links.$$
+	(cd $ARCHNEWDIR/unpacked/s25rttr_$VERSION && find -type l -exec bash -c 'echo "{} $(readlink {})" >> /tmp/links.$$' \;)
 	
 	# note hashes
-	(cd $ARCHNEWDIR/updater && md5deep -r -l . > $ARCHNEWDIR/files)
+	(cd $ARCHNEWDIR/updater && md5deep -r -l . > /tmp/files.$$)
 
 	# bzip files
 	find $ARCHNEWDIR/updater -type f -exec bzip2 -v {} \;
 	
 	# move file lists
-	mv $ARCHNEWDIR/links $ARCHNEWDIR/updater/links
-	mv $ARCHNEWDIR/files $ARCHNEWDIR/updater/files
+	mv /tmp/links.$$ $ARCHNEWDIR/updater/links
+	mv /tmp/files.$$ $ARCHNEWDIR/updater/files
 
 	# create human version notifier
 	touch $ARCHNEWDIR/revision-${REVISION}
