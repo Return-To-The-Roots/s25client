@@ -2,7 +2,7 @@
 
 cd $(dirname $0)/../
 
-source repository.def || error
+source release/repository.def || error
 
 if [ ! -d "$REPOSITORY" ] ; then
 	echo "ERROR: repository.def does not contain REPOSITORY"
