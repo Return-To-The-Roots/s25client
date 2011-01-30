@@ -24,20 +24,29 @@ PARAMS="--svn-ignore-new -k6D09334C"
 mkdir -p release/deb
 
 # build source, i386 and all
-svn-buildpackage $PARAMS -ai386 || exit 1
-mv -v ../build-area/s25rttr_${VERSION}-${REVISION}.dsc release/deb || exit 1
-mv -v ../build-area/s25rttr_${VERSION}-${REVISION}.tar.gz release/deb || exit 1
-mv -v ../build-area/s25rttr_${VERSION}-${REVISION}_i386.changes release/deb || exit 1
-mv -v ../build-area/s25rttr*_${VERSION}-${REVISION}_i386.deb release/deb || exit 1
-mv -v ../build-area/s25rttr*_${VERSION}-${REVISION}_all.deb release/deb || exit 1
+#svn-buildpackage $PARAMS -ai386 || exit 1
+#mv -v ../build-area/s25rttr_${VERSION}-${REVISION}.dsc release/deb || exit 1
+#mv -v ../build-area/s25rttr_${VERSION}-${REVISION}.tar.gz release/deb || exit 1
+#mv -v ../build-area/s25rttr_${VERSION}-${REVISION}_i386.changes release/deb || exit 1
+#mv -v ../build-area/s25rttr*_${VERSION}-${REVISION}_i386.deb release/deb || exit 1
+#mv -v ../build-area/s25rttr*_${VERSION}-${REVISION}_all.deb release/deb || exit 1
 
 # build amd64
-svn-buildpackage $PARAMS -aamd64 -B || exit 1
-mv -v ../build-area/s25rttr_${VERSION}-${REVISION}_amd64.changes release/deb || exit 1
-mv -v ../build-area/s25rttr*_${VERSION}-${REVISION}_amd64.deb release/deb || exit 1
+#svn-buildpackage $PARAMS -aamd64 -B || exit 1
+#mv -v ../build-area/s25rttr_${VERSION}-${REVISION}_amd64.changes release/deb || exit 1
+#mv -v ../build-area/s25rttr*_${VERSION}-${REVISION}_amd64.deb release/deb || exit 1
 
 # add repository to params
 PARAMS="-b $REPOSITORY $*"
+
+echo "reprepro $PARAMS list hardy s25rttr | grep -q ${VERSION}-${REVISION}"
+reprepro $PARAMS list hardy s25rttr | grep -q ${VERSION}-${REVISION}
+EXIT=$?
+echo $EXIT
+if [ "$EXIT" = "0" ] ; then
+	echo "removing s25rttr from repository to avoid conflicts"
+	reprepro $PARAMS remove $DISTRIBUTION s25rttr s25rttr-music s25rttr-maps s25rttr-common || exit 1
+fi
 
 # include files
 reprepro $PARAMS -S games -P optional includedsc $DISTRIBUTION release/deb/s25rttr_${VERSION}-${REVISION}.dsc || exit 1
