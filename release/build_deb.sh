@@ -44,6 +44,6 @@ reprepro $PARAMS -S games -P optional includedsc $DISTRIBUTION release/deb/s25rt
 reprepro $PARAMS include $DISTRIBUTION release/deb/s25rttr_${VERSION}-${REVISION}_i386.changes || exit 1
 reprepro $PARAMS include $DISTRIBUTION release/deb/s25rttr_${VERSION}-${REVISION}_amd64.changes || exit 1
 
-svn ci debian/changelog -m "Automatic debian/changelog update"
+#svn ci debian/changelog -m "Automatic debian/changelog update"
 
 exit 0
