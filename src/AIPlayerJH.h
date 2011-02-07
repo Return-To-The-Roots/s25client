@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.h 7000 2011-01-21 20:51:29Z jh $
+// $Id: AIPlayerJH.h 7038 2011-02-07 21:06:30Z jh $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -73,12 +73,18 @@ struct PositionSearch
 	// which nodes are currently queued to be tested next?
 	std::queue<unsigned>* toTest;
 
+	// results
 	MapCoord resultX;
 	MapCoord resultY;
 	int resultValue;
 
-	PositionSearch(MapCoord x, MapCoord y, AIJH::Resource res, int minimum, BuildingQuality size)
-		: startX(x), startY(y), res(res), minimum(minimum), size(size) { }
+	// what to we want to build there?
+	BuildingType bld;
+
+	bool best;
+
+	PositionSearch(MapCoord x, MapCoord y, AIJH::Resource res, int minimum, BuildingQuality size, BuildingType bld, bool best = false)
+		: startX(x), startY(y), res(res), minimum(minimum), size(size), bld(bld), best(best) { }
 
 	~PositionSearch() 
 	{
@@ -93,6 +99,7 @@ class AIPlayerJH : public AIBase
 	friend class AIJH::BuildJob;
 	friend class AIJH::EventJob;
 	friend class AIJH::ConnectJob;
+	friend class AIJH::SearchJob;
 	friend class iwAIDebug;
 public:
 	AIPlayerJH(const unsigned char playerid, const GameWorldBase * const gwb, const GameClientPlayer * const player,
@@ -128,6 +135,7 @@ protected:
 	void AddBuildJob(AIJH::BuildJob *job, bool front = false) { construction.AddBuildJob(job, front); }
 	void AddBuildJob(BuildingType type, MapCoord x, MapCoord y, bool front = false);
 	void AddBuildJob(BuildingType type);
+	void AddJob(AIJH::Job *job, bool front);
 
 	/// Checks the list of military buildingsites and puts the coordinates into the list of military buildings if building is finished
 	void CheckNewMilitaryBuildings();
@@ -151,7 +159,7 @@ protected:
 	/// first position satisfying threshold is returned, returns false if no such position found
 	bool FindGoodPosition(MapCoord &x, MapCoord &y, AIJH::Resource res, int threshold, BuildingQuality size, int radius = -1, bool inTerritory = true);
 
-	PositionSearch *CreatePositionSearch(MapCoord &x, MapCoord &y, AIJH::Resource res, BuildingQuality size, int minimum);
+	PositionSearch *CreatePositionSearch(MapCoord &x, MapCoord &y, AIJH::Resource res, BuildingQuality size, int minimum, BuildingType bld, bool best = false);
 
 	// Find position that satifies search->minimum or best (takes longer!)
 	PositionSearchState FindGoodPosition(PositionSearch *search, bool best = false);
@@ -205,6 +213,9 @@ protected:
 	void SetFarmedNodes(MapCoord x, MapCoord y);
 
 	void RemoveUnusedRoad(const noFlag *startFlag, unsigned char excludeDir = 0xFF);
+
+	// check if there are free soldiers (in hq/storehouses)
+	bool SoldierAvailable();
 
 
 protected:

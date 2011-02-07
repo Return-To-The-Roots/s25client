@@ -1,4 +1,4 @@
-// $Id: AIJHHelper.h 6582 2010-07-16 11:23:35Z FloSoft $
+// $Id: AIJHHelper.h 7038 2011-02-07 21:06:30Z jh $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -36,6 +36,7 @@ class AIPlayerJH;
 class AIConstruction;
 class GameWorldBase;
 class AIInterface;
+struct PositionSearch;
 namespace gc { class GameCommand; }
 
 namespace AIJH
@@ -98,6 +99,13 @@ enum JobStatus
 	JOB_FAILED
 };
 
+enum SearchMode
+{
+	SEARCHMODE_NONE,
+	SEARCHMODE_RADIUS,
+	SEARCHMODE_GLOBAL
+};
+
 class Job
 {
 	friend class iwAIDebug;
@@ -116,10 +124,10 @@ class BuildJob : public Job
 {
 	friend class iwAIDebug;
 public:
-	BuildJob(AIPlayerJH *aijh, BuildingType type, MapCoord around_x, MapCoord around_y) 
-		: Job(aijh), type(type), target_x(0xFFFF), target_y(0xFFFF), around_x(around_x), around_y(around_y) { }
-	BuildJob(AIPlayerJH *aijh, BuildingType type) 
-		: Job(aijh), type(type), target_x(0xFFFF), target_y(0xFFFF), around_x(0xFFFF), around_y(0xFFFF) { }
+	BuildJob(AIPlayerJH *aijh, BuildingType type, MapCoord around_x, MapCoord around_y, SearchMode searchMode = SEARCHMODE_RADIUS) 
+		: Job(aijh), type(type), target_x(0xFFFF), target_y(0xFFFF), around_x(around_x), around_y(around_y), searchMode(searchMode) { }
+	BuildJob(AIPlayerJH *aijh, BuildingType type, SearchMode searchMode = SEARCHMODE_RADIUS) 
+		: Job(aijh), type(type), target_x(0xFFFF), target_y(0xFFFF), around_x(0xFFFF), around_y(0xFFFF), searchMode(searchMode) { }
 
 	~BuildJob() { }
 	virtual void ExecuteJob();
@@ -130,6 +138,7 @@ private:
 	BuildingType type;
 	MapCoord target_x, target_y;
 	MapCoord around_x, around_y;
+	 SearchMode searchMode;
 	std::vector<unsigned char> route;
 
 	void TryToBuild();
@@ -174,6 +183,19 @@ public:
 	inline AIEvent::Base *GetEvent() const { return ev; }
 private:
 	AIEvent::Base *ev;
+};
+
+
+class SearchJob : public Job
+{
+	friend class iwAIDebug;
+public:
+	SearchJob(AIPlayerJH *aijh, PositionSearch* search) : Job(aijh), search(search) { }
+	~SearchJob();
+	void ExecuteJob();
+
+private:
+	PositionSearch *search;
 };
 
 }

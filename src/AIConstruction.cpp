@@ -1,4 +1,4 @@
-// $Id: AIConstruction.cpp 6961 2011-01-03 23:10:34Z jh $
+// $Id: AIConstruction.cpp 7038 2011-02-07 21:06:30Z jh $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -51,6 +51,15 @@ void AIConstruction::AddBuildJob(AIJH::BuildJob *job, bool front)
 		buildJobs.push_front(job);
 	else
 		buildJobs.push_back(job);
+}
+
+void AIConstruction::AddJob(AIJH::Job *job, bool front) 
+{
+	if (front)
+		buildJobs.push_front(job);
+	else
+		buildJobs.push_back(job);
+
 }
 
 AIJH::Job *AIConstruction::GetBuildJob()
@@ -317,6 +326,8 @@ void AIConstruction::RefreshBuildingCount()
 	buildingsWanted[BLD_ARMORY] = GetBuildingCount(BLD_IRONSMELTER);
 	buildingsWanted[BLD_BREWERY] = (GetBuildingCount(BLD_ARMORY) > 0 && GetBuildingCount(BLD_FARM) > 0) ? 1 : 0;
 
+	buildingsWanted[BLD_METALWORKS] = (GetBuildingCount(BLD_IRONSMELTER) > 1) ? 1 : 0;
+
 	buildingsWanted[BLD_MILL] = (buildingCounts.building_counts[BLD_FARM] + 2) / 4;
 	buildingsWanted[BLD_BAKERY] = buildingsWanted[BLD_MILL];
 
@@ -332,6 +343,8 @@ void AIConstruction::RefreshBuildingCount()
 		buildingsWanted[BLD_IRONMINE] = 2;
 		buildingsWanted[BLD_GOLDMINE] = 2;
 	}
+
+	buildingsWanted[BLD_FARM] = aii->GetInventory()->goods[GD_SCYTHE] + aii->GetInventory()->people[JOB_FARMER];
 }
 
 void AIConstruction::InitBuildingsWanted()
@@ -341,8 +354,8 @@ void AIConstruction::InitBuildingsWanted()
 	buildingsWanted[BLD_WOODCUTTER] = 12;
 	buildingsWanted[BLD_QUARRY] = 6;
 	buildingsWanted[BLD_GRANITEMINE] = 0;
-	buildingsWanted[BLD_COALMINE] = 3;
-	buildingsWanted[BLD_IRONMINE] = 1;
+	buildingsWanted[BLD_COALMINE] = 4;
+	buildingsWanted[BLD_IRONMINE] = 2;
 	buildingsWanted[BLD_GOLDMINE] = 1;
 	buildingsWanted[BLD_CATAPULT] = 5;
 	buildingsWanted[BLD_FISHERY] = 6;

@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 7000 2011-01-21 20:51:29Z jh $
+// $Id: AIPlayerJH.cpp 7038 2011-02-07 21:06:30Z jh $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -87,7 +87,6 @@ void AIPlayerJH::RunGF(const unsigned gf)
 		MapCoord hqx = hq->GetX();
 		MapCoord hqy = hq->GetY();
 
-		
 		AddBuildJob(BLD_HARBORBUILDING, hqx, hqy);
 		AddBuildJob(BLD_SAWMILL);
 		AddBuildJob(BLD_FORESTER);
@@ -99,7 +98,6 @@ void AIPlayerJH::RunGF(const unsigned gf)
 		AddBuildJob(construction.ChooseMilitaryBuilding(hqx, hqy));
 		AddBuildJob(BLD_QUARRY);
 		AddBuildJob(BLD_FISHERY);
-		
 	}
 
 	if (gf == 100)
@@ -131,6 +129,14 @@ void AIPlayerJH::RunGF(const unsigned gf)
 			AddBuildJob(BLD_SAWMILL);
 		}
 	}
+
+	// from time to time give some random build orders to keep alive
+	if ((gf % 3000) == 2999)
+	{
+		if (construction.Wanted(BLD_WOODCUTTER)) AddBuildJob(new AIJH::BuildJob(this, BLD_WOODCUTTER, AIJH::SEARCHMODE_GLOBAL));
+		if (construction.Wanted(BLD_QUARRY)) AddBuildJob(new AIJH::BuildJob(this, BLD_QUARRY, AIJH::SEARCHMODE_GLOBAL));
+		if (SoldierAvailable()) AddBuildJob(new AIJH::BuildJob(this, BLD_GUARDHOUSE, AIJH::SEARCHMODE_GLOBAL));
+	}
 }
 
 bool AIPlayerJH::TestDefeat()
@@ -149,6 +155,12 @@ void AIPlayerJH::AddBuildJob(BuildingType type, MapCoord x, MapCoord y, bool fro
 {
 	construction.AddBuildJob(new AIJH::BuildJob(this, type, x, y), front);
 }
+
+void AIPlayerJH::AddJob(AIJH::Job *job, bool front)
+{
+	construction.AddJob(job, front);
+}
+
 
 void AIPlayerJH::AddBuildJob(BuildingType type)
 {
@@ -442,10 +454,10 @@ bool AIPlayerJH::FindGoodPosition(MapCoord &x, MapCoord &y, AIJH::Resource res, 
 	return false;
 }
 
-PositionSearch *AIPlayerJH::CreatePositionSearch(MapCoord &x, MapCoord &y, AIJH::Resource res, BuildingQuality size, int minimum)
+PositionSearch *AIPlayerJH::CreatePositionSearch(MapCoord &x, MapCoord &y, AIJH::Resource res, BuildingQuality size, int minimum, BuildingType bld, bool best)
 {
 	// set some basic parameters
-	PositionSearch *p = new PositionSearch(x, y, res, minimum, size);
+	PositionSearch *p = new PositionSearch(x, y, res, minimum, size, BLD_WOODCUTTER, best);
 	p->nodesPerStep = 25; // TODO make it dependent on something...
 	p->resultValue = 0;
 
@@ -454,8 +466,17 @@ PositionSearch *AIPlayerJH::CreatePositionSearch(MapCoord &x, MapCoord &y, AIJH:
 	p->tested = new std::vector<bool>(numNodes, false);
 	p->toTest = new std::queue<unsigned>;
 
+
+	// if no useful startpos is given, use headquarter
+	if (x >= aii->GetMapWidth() || y >= aii->GetMapHeight())
+	{
+		x = aii->GetHeadquarter()->GetX();
+		y = aii->GetHeadquarter()->GetY();
+	}
+
 	// insert start position as first node to test
 	p->toTest->push(x + y * aii->GetMapWidth());
+	(*p->tested)[x + y * aii->GetMapWidth()] = true;
 
 	return p;
 }
@@ -471,6 +492,7 @@ PositionSearchState AIPlayerJH::FindGoodPosition(PositionSearch *search, bool be
 
 		// get the node
 		unsigned nodeIndex = search->toTest->front();
+		search->toTest->pop();
 		AIJH::Node *node = &nodes[nodeIndex];
 		unsigned short width = aii->GetMapWidth();
 		MapCoord x = nodeIndex % width;
@@ -499,6 +521,7 @@ PositionSearchState AIPlayerJH::FindGoodPosition(PositionSearch *search, bool be
 			if (!(*search->tested)[ni] && nodes[ni].owned)
 			{
 				search->toTest->push(ni);
+				(*search->tested)[ni] = true;
 			}
 		}
 	}
@@ -823,40 +846,43 @@ void AIPlayerJH::HandleNewMilitaryBuilingOccupied(const Coords& coords)
 	}
 
 	AddBuildJob(BLD_HARBORBUILDING, x, y);
-
-	AddBuildJob(construction.ChooseMilitaryBuilding(x, y), x, y);
-	AddBuildJob(construction.ChooseMilitaryBuilding(x, y), x, y);
-	AddBuildJob(construction.ChooseMilitaryBuilding(x, y), x, y);
+	if (SoldierAvailable())
+	{
+		AddBuildJob(construction.ChooseMilitaryBuilding(x, y), x, y);
+		AddBuildJob(construction.ChooseMilitaryBuilding(x, y), x, y);
+		AddBuildJob(construction.ChooseMilitaryBuilding(x, y), x, y);
+	}
 
 	// Temporär only
-	AddBuildJob(BLD_FORESTER, x, y);
-	AddBuildJob(BLD_WOODCUTTER, x, y);
+	BuildingType bldToTest[] = {
+		BLD_FORESTER,
+		BLD_WOODCUTTER,
+		BLD_QUARRY,
+		BLD_GOLDMINE,
+		BLD_COALMINE,
+		BLD_IRONMINE,
+		BLD_SAWMILL,
+		BLD_IRONSMELTER,
+		BLD_MINT,
+		BLD_ARMORY,
+		BLD_METALWORKS,
+		BLD_FISHERY,
+		BLD_HUNTER,
+		BLD_STOREHOUSE,
+		BLD_FARM,
+		BLD_BREWERY,
+		BLD_MILL,
+		BLD_PIGFARM
+	};
+	unsigned numBldToTest = 18;
 
-	AddBuildJob(BLD_QUARRY, x, y);
-
-	AddBuildJob(BLD_GOLDMINE, x, y);
-	AddBuildJob(BLD_COALMINE, x, y);
-	AddBuildJob(BLD_IRONMINE, x, y);
-
-	AddBuildJob(BLD_SAWMILL, x, y);
-
-	AddBuildJob(BLD_IRONSMELTER, x, y);
-	AddBuildJob(BLD_MINT, x, y);
-	AddBuildJob(BLD_ARMORY, x, y);
-
-	AddBuildJob(BLD_FISHERY, x, y);
-
-	AddBuildJob(BLD_HUNTER, x, y);
-
-	AddBuildJob(BLD_STOREHOUSE, x, y);
-
-
-	AddBuildJob(BLD_FARM, x, y);
-
-
-	AddBuildJob(BLD_BREWERY, x, y);
-	AddBuildJob(BLD_MILL, x, y);
-	AddBuildJob(BLD_PIGFARM, x, y);
+	for (unsigned int i = 0; i < numBldToTest; ++i)
+	{
+		if (construction.Wanted(bldToTest[i]))
+		{
+			AddBuildJob(bldToTest[i], x, y);
+		}
+	}
 }
 
 void AIPlayerJH::HandleBuildingFinished(const Coords& coords, BuildingType bld)
@@ -1209,5 +1235,25 @@ void AIPlayerJH::RemoveUnusedRoad(const noFlag *startFlag, unsigned char exclude
 				}
 			}
 		}
+		
+		// no more road to follow, stop it
+		break;
 	}
 }
+
+bool AIPlayerJH::SoldierAvailable()
+{
+	std::list<AIJH::Coords> storeHousePoses = construction.GetStoreHousePositions();
+	unsigned freeSoldiers = 0;
+	for (std::list<AIJH::Coords>::iterator it = storeHousePoses.begin(); it != storeHousePoses.end(); it++)
+	{
+		const nobBaseWarehouse *nbw = aii->GetSpecObj<nobBaseWarehouse>(it->x, it->y);
+		if (nbw)
+		{
+			const Goods *g = nbw->GetInventory();
+			freeSoldiers += (g->people[JOB_PRIVATE] + g->people[JOB_PRIVATEFIRSTCLASS] + g->people[JOB_SERGEANT] + g->people[JOB_OFFICER] + g->people[JOB_GENERAL]);
+		}
+	}
+	return (freeSoldiers != 0);
+}
+

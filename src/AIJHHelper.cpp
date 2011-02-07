@@ -1,4 +1,4 @@
-// $Id: AIJHHelper.cpp 6961 2011-01-03 23:10:34Z jh $
+// $Id: AIJHHelper.cpp 7038 2011-02-07 21:06:30Z jh $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -118,60 +118,90 @@ void AIJH::BuildJob::TryToBuild()
 	}
 
 	bool foundPos = false;
-
-	switch(type)
+	if (searchMode == SEARCHMODE_GLOBAL)
 	{
-	case BLD_WOODCUTTER:
+		// TODO: tmp solution for testing: only woodcutter
+		//hier machen für mehre gebäude
+		if (type != BLD_WOODCUTTER)
 		{
-		unsigned numWoodcutter = aijh->GetConstruction()->GetBuildingCount(BLD_WOODCUTTER);
-		foundPos = aijh->FindBestPosition(bx, by, AIJH::WOOD, BQ_HUT, (numWoodcutter > 2) ? 20 : 1 + aijh->GetConstruction()->GetBuildingCount(BLD_WOODCUTTER) * 10, 15);
-		break;
+			searchMode = SEARCHMODE_RADIUS;
 		}
-	case BLD_FORESTER:
- 		if (aijh->GetDensity(bx, by, AIJH::PLANTSPACE, 7) > 0.2)
-			foundPos = aijh->FindBestPosition(bx, by, AIJH::WOOD, BQ_HUT, 1, 15);
-		break;
-	case BLD_QUARRY:
+		else
 		{
-		unsigned numQuarries = aijh->GetConstruction()->GetBuildingCount(BLD_QUARRY);
-		foundPos = aijh->FindBestPosition(bx, by, AIJH::STONES, BQ_HUT, (numQuarries > 4) ? 40 : 1 + aijh->GetConstruction()->GetBuildingCount(BLD_QUARRY) * 10, 15);
-		break;
+			PositionSearch *search = aijh->CreatePositionSearch(bx, by, AIJH::WOOD, BQ_HUT, 20, BLD_WOODCUTTER, true);
+			SearchJob *job = new SearchJob(aijh, search);
+			aijh->AddJob(job, true);
+			status = AIJH::JOB_FINISHED;
+			return;
 		}
-	case BLD_BARRACKS:
-	case BLD_GUARDHOUSE:
-	case BLD_WATCHTOWER:
-	case BLD_FORTRESS:
-		foundPos = aijh->FindBestPosition(bx, by, AIJH::BORDERLAND, BUILDING_SIZE[type], 15, true);
-		break;
-	case BLD_GOLDMINE:
-		foundPos = aijh->FindBestPosition(bx, by, AIJH::GOLD, BQ_MINE, 15, true);
-		break;
-	case BLD_COALMINE:
-		foundPos = aijh->FindBestPosition(bx, by, AIJH::COAL, BQ_MINE, 15, true);
-		break;
-	case BLD_IRONMINE:
-		foundPos = aijh->FindBestPosition(bx, by, AIJH::IRONORE, BQ_MINE, 15, true);
-		break;
-	case BLD_GRANITEMINE:
-		foundPos = aijh->FindBestPosition(bx, by, AIJH::GRANITE, BQ_MINE, 15, true);
-		break;
-
-	case BLD_FISHERY:
-		foundPos = aijh->FindBestPosition(bx, by, AIJH::FISH, BQ_HUT, 15, true);
-		break;
-	case BLD_STOREHOUSE:
-		if(aijh->GetConstruction()->FindStoreHousePosition(bx, by, 15))
-			foundPos = aijh->SimpleFindPosition(bx, by, BUILDING_SIZE[BLD_STOREHOUSE], 15);
-		break;
-
-	case BLD_FARM:
-		foundPos = aijh->FindBestPosition(bx, by, AIJH::PLANTSPACE, BQ_CASTLE, 25, 12, true);
-		break;
-
-	default:
-		foundPos = aijh->SimpleFindPosition(bx, by, BUILDING_SIZE[type], 15);
-		break;
+		
 	}
+	
+
+	if (searchMode == SEARCHMODE_RADIUS)
+	{
+		switch(type)
+		{
+		case BLD_WOODCUTTER:
+			{
+			unsigned numWoodcutter = aijh->GetConstruction()->GetBuildingCount(BLD_WOODCUTTER);
+			foundPos = aijh->FindBestPosition(bx, by, AIJH::WOOD, BQ_HUT, (numWoodcutter > 2) ? 20 : 1 + aijh->GetConstruction()->GetBuildingCount(BLD_WOODCUTTER) * 10, 15);
+			break;
+			}
+		case BLD_FORESTER:
+ 			if (aijh->GetDensity(bx, by, AIJH::PLANTSPACE, 7) > 0.2)
+				foundPos = aijh->FindBestPosition(bx, by, AIJH::WOOD, BQ_HUT, 1, 15);
+			break;
+		case BLD_QUARRY:
+			{
+			unsigned numQuarries = aijh->GetConstruction()->GetBuildingCount(BLD_QUARRY);
+			foundPos = aijh->FindBestPosition(bx, by, AIJH::STONES, BQ_HUT, (numQuarries > 4) ? 40 : 1 + aijh->GetConstruction()->GetBuildingCount(BLD_QUARRY) * 10, 15);
+			break;
+			}
+		case BLD_BARRACKS:
+		case BLD_GUARDHOUSE:
+		case BLD_WATCHTOWER:
+		case BLD_FORTRESS:
+			foundPos = aijh->FindBestPosition(bx, by, AIJH::BORDERLAND, BUILDING_SIZE[type], 15, true);
+			break;
+		case BLD_GOLDMINE:
+			foundPos = aijh->FindBestPosition(bx, by, AIJH::GOLD, BQ_MINE, 15, true);
+			break;
+		case BLD_COALMINE:
+			foundPos = aijh->FindBestPosition(bx, by, AIJH::COAL, BQ_MINE, 15, true);
+			break;
+		case BLD_IRONMINE:
+			foundPos = aijh->FindBestPosition(bx, by, AIJH::IRONORE, BQ_MINE, 15, true);
+			break;
+		case BLD_GRANITEMINE:
+			foundPos = aijh->FindBestPosition(bx, by, AIJH::GRANITE, BQ_MINE, 15, true);
+			break;
+
+		case BLD_FISHERY:
+			foundPos = aijh->FindBestPosition(bx, by, AIJH::FISH, BQ_HUT, 15, true);
+			break;
+		case BLD_STOREHOUSE:
+			if(aijh->GetConstruction()->FindStoreHousePosition(bx, by, 15))
+				foundPos = aijh->SimpleFindPosition(bx, by, BUILDING_SIZE[BLD_STOREHOUSE], 15);
+			break;
+
+		case BLD_FARM:
+			foundPos = aijh->FindBestPosition(bx, by, AIJH::PLANTSPACE, BQ_CASTLE, 25, 12, true);
+			break;
+
+		default:
+			foundPos = aijh->SimpleFindPosition(bx, by, BUILDING_SIZE[type], 15);
+			break;
+		}
+	}
+
+	if (searchMode == SEARCHMODE_NONE)
+	{
+		foundPos = true;
+		bx = around_x;
+		by = around_y;
+	}
+
 	
 	if (!foundPos)
 	{
@@ -456,3 +486,27 @@ void AIJH::ConnectJob::ExecuteJob()
 	}
 }
 
+
+void AIJH::SearchJob::ExecuteJob()
+{
+	PositionSearchState state = aijh->FindGoodPosition(search, true);
+
+	if (state == SEARCH_IN_PROGRESS)
+	{
+		status = JOB_WAITING;
+	}
+	else if (state == SEARCH_FAILED)
+	{
+		status = JOB_FAILED;
+	}
+	else
+	{
+		status = JOB_FINISHED;
+		aijh->AddBuildJob(new BuildJob(aijh, search->bld, search->resultX, search->resultY, SEARCHMODE_NONE), true);
+	}
+}
+
+AIJH::SearchJob::~SearchJob()
+{ 
+	delete search; 
+}

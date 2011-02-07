@@ -1,4 +1,4 @@
-// $Id: AIConstruction.h 6961 2011-01-03 23:10:34Z jh $
+// $Id: AIConstruction.h 7038 2011-02-07 21:06:30Z jh $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -41,6 +41,7 @@ public:
 
 	/// Adds a build job to the queue
 	void AddBuildJob(AIJH::BuildJob *job, bool front);
+	void AddJob(AIJH::Job *job, bool front);
 
 	AIJH::Job *GetBuildJob();
 	unsigned GetBuildJobNum() const { return buildJobs.size(); }
@@ -95,6 +96,8 @@ public:
 	void AddStoreHouse(MapCoord x, MapCoord y) { storeHouses.push_back(AIJH::Coords(x, y)); }
 
 	noFlag *FindTargetStoreHouseFlag(MapCoord x, MapCoord y);
+
+	std::list<AIJH::Coords> &GetStoreHousePositions() { return storeHouses; }
 
 private:
 	/// Contains how many buildings of every type is wanted
