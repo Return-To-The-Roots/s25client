@@ -1,4 +1,4 @@
-// $Id: glArchivItem_Bitmap.h 7038 2011-02-07 21:06:30Z jh $
+// $Id: glArchivItem_Bitmap.h 7039 2011-02-08 07:22:22Z FloSoft $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -22,7 +22,7 @@
 #pragma once
 
 #include "colors.h"
-typedef unsigned long long uint64_t;
+
 #ifdef _WIN32
 typedef unsigned long long uint64_t;
 #endif
