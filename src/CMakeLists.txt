@@ -1,5 +1,5 @@
 ################################################################################
-### $Id: CMakeLists.txt 7005 2011-01-27 22:01:07Z FloSoft $
+### $Id: CMakeLists.txt 7040 2011-02-16 23:23:20Z jh $
 ################################################################################
 
 INCLUDE(FindBZip2)
@@ -69,6 +69,7 @@ SET(SOURCES_DESKTOPS
 	dskSinglePlayer.cpp                dskSinglePlayer.h
 	dskSplash.cpp                      dskSplash.h
 	dskGameLoader.cpp                  dskGameLoader.h
+	dskUnlimitedPlay.cpp               dskUnlimitedPlay.h
    )
 
 SET(SOURCES_INGAMEWINDOWS

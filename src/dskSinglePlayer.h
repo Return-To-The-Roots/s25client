@@ -1,4 +1,4 @@
-// $Id: dskSinglePlayer.h 6582 2010-07-16 11:23:35Z FloSoft $
+// $Id: dskSinglePlayer.h 7040 2011-02-16 23:23:20Z jh $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -32,6 +32,7 @@ public:
 private:
 
 	void Msg_ButtonClick(const unsigned int ctrl_id);
+	void PrepareSinglePlayerServer();
 };
 
 #endif // !dskSINGLEPLAYER_H_INCLUDED

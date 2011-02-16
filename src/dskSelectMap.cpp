@@ -1,4 +1,4 @@
-// $Id: dskSelectMap.cpp 6582 2010-07-16 11:23:35Z FloSoft $
+// $Id: dskSelectMap.cpp 7040 2011-02-16 23:23:20Z jh $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -34,6 +34,8 @@
 #include "dskDirectIP.h"
 #include "dskHostGame.h"
 #include "dskLobby.h"
+#include "dskSinglePlayer.h"
+#include "dskUnlimitedPlay.h"
 
 #include "iwMsgbox.h"
 #include "iwSave.h"
@@ -272,7 +274,12 @@ void dskSelectMap::StartServer()
 		// Server starten
 		if(!GAMESERVER.TryToStart(csi, map_path,MAPTYPE_OLDMAP))
 		{
-			if(LOBBYCLIENT.LoggedIn())
+			// Falls es ein lokal Spiel werden sollte, zurück zum SP-Menü
+			if (csi.type == NP_LOCAL)
+			{
+				WindowManager::inst().Switch(new dskSinglePlayer);
+			}
+			else if(LOBBYCLIENT.LoggedIn())
 				// Lobby zeigen, wenn das nich ging
 				WindowManager::inst().Switch(new dskLobby);
 			else
@@ -316,7 +323,10 @@ void dskSelectMap::CI_NextConnectState(const ConnectState cs)
 	{
 	case CS_FINISHED:
 	{
-		WindowManager::inst().Switch(new dskHostGame);
+		if (csi.type == NP_LOCAL)
+			WindowManager::inst().Switch(new dskUnlimitedPlay);
+		else
+			WindowManager::inst().Switch(new dskHostGame);
 	} break;
 	default: 
 		break;

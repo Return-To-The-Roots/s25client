@@ -1,4 +1,4 @@
-// $Id: GameServer.cpp 6582 2010-07-16 11:23:35Z FloSoft $
+// $Id: GameServer.cpp 7040 2011-02-16 23:23:20Z jh $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -574,7 +574,7 @@ void GameServer::TogglePlayerState(unsigned char client)
 	case PS_FREE: 
 		{
 			player->ps = PS_KI; 
-			player->aiType = AI_DUMMY;
+			player->aiType = AI_JH;
 			// Baby mit einem Namen Taufen ("Name (KI)")
 			SetAIName(client);
 		} break;
@@ -583,11 +583,11 @@ void GameServer::TogglePlayerState(unsigned char client)
 			// Verschiedene KIs durchgehen
 			switch(player->aiType)
 			{
-			case AI_DUMMY:
-				player->aiType = AI_JH;
+			case AI_JH:
+				player->aiType = AI_DUMMY;
 				SetAIName(client);
 				break;
-			case AI_JH:
+			case AI_DUMMY:
 				if(mapinfo.map_type != MAPTYPE_SAVEGAME)
 					player->ps = PS_LOCKED;
 				else

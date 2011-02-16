@@ -1,4 +1,4 @@
-// $Id: GameProtocol.h 6582 2010-07-16 11:23:35Z FloSoft $
+// $Id: GameProtocol.h 7040 2011-02-16 23:23:20Z jh $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -165,7 +165,8 @@ enum
 enum
 {
 	NP_LOBBY = 0,
-	NP_DIRECT
+	NP_DIRECT,
+	NP_LOCAL
 };
 
 // Wie lange maximal warten, bis Rausschmiss des Spielers

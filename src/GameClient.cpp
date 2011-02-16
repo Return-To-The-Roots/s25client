@@ -1,4 +1,4 @@
-// $Id: GameClient.cpp 6701 2010-09-01 17:44:59Z jh $
+// $Id: GameClient.cpp 7040 2011-02-16 23:23:20Z jh $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -594,28 +594,27 @@ void GameClient::OnNMSPlayerToggleState(const GameMessage_Player_Toggle_State& m
 			case PS_FREE:
 				{
 					player->ps = PS_KI;
-					player->aiType = AI_DUMMY;
+					player->aiType = AI_JH;
 					// Baby mit einem Namen Taufen ("Name (KI)")
 					char str[512];
-					sprintf(str,_("Dummy %u"),unsigned(msg.player));
+					sprintf(str,_("Computer %u"),unsigned(msg.player));
 					player->name = str;
 					player->name += _(" (AI)");
-					player->rating = 0;
+					player->rating = 666;
 				} break;
 		case PS_KI:
 			{
 				// Verschiedene KIs durchgehen
 				switch(player->aiType)
 				{
-				case AI_DUMMY:
-					player->aiType = AI_JH;
-					char str[512];
-					sprintf(str,_("Computer %u"),unsigned(msg.player));
-					player->name = str;
-					player->name += _(" (AI)");
-					player->rating = 666; // ;-)
-					break;
 				case AI_JH:
+					player->aiType = AI_DUMMY;
+					char str[512];
+					sprintf(str,_("Dummy %u"),unsigned(msg.player));
+					player->name = str;
+					player->rating = 0; // ;-)
+					break;
+				case AI_DUMMY:
 					if(mapinfo.map_type != MAPTYPE_SAVEGAME)
 					player->ps = PS_LOCKED;
 				else

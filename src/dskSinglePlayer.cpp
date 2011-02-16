@@ -1,4 +1,4 @@
-// $Id: dskSinglePlayer.cpp 6932 2010-12-23 20:27:55Z OLiver $
+// $Id: dskSinglePlayer.cpp 7040 2011-02-16 23:23:20Z jh $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -24,11 +24,15 @@
 
 #include "WindowManager.h"
 #include "Loader.h"
+#include "GameServer.h"
 
 #include "dskMainMenu.h"
+#include "dskUnlimitedPlay.h"
+#include "dskSelectMap.h"
 #include "iwPlayReplay.h"
 #include "iwSave.h"
 #include "iwMsgbox.h"
+#include "iwPleaseWait.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -66,12 +70,14 @@ dskSinglePlayer::dskSinglePlayer(void) : Desktop(LOADER.GetImageN("menu", 0))
 	AddTextButton(3, 115, 180, 220, 22, TC_GREEN2, _("Resume last game"),NormalFont);
 	// "Replay abspielen"
 	AddTextButton(4, 115, 220, 220, 22, TC_GREEN2, _("Play Replay"),NormalFont);
-	// "Spiel starten"
-	AddTextButton(5, 115, 260, 220, 22, TC_GREEN2, _("Start game"),NormalFont);
+	// "Kampagne"
+	AddTextButton(5, 115, 260, 220, 22, TC_GREEN2, _("Campaign"),NormalFont);
+	// "Freies Spiel"
+	AddTextButton(6, 115, 290, 220, 22, TC_GREEN2, _("Unlimited Play"),NormalFont);
 	// "Spiel laden"
-	AddTextButton(6, 115, 290, 220, 22, TC_GREEN2, _("Load game"),NormalFont);
+	AddTextButton(7, 115, 320, 220, 22, TC_GREEN2, _("Load game"),NormalFont);
 	// "Zurück"
-	AddTextButton(7, 115, 330, 220, 22, TC_RED1, _("Back"),NormalFont);
+	AddTextButton(8, 115, 360, 220, 22, TC_RED1, _("Back"),NormalFont);
 
 	AddImage(11, 20, 20, LOADER.GetImageN("logo", 0));
 }
@@ -84,23 +90,42 @@ void dskSinglePlayer::Msg_ButtonClick(const unsigned int ctrl_id)
 	{
 	case 3: // "Letztes Spiel fortsetzen"
 		{
+			WindowManager::inst().Show(new iwMsgbox(_("Not available"),_("Please use \'Unlimited Play\' to create a Singleplayer game."),this,MSB_OK,MSB_EXCLAMATIONGREEN));
 		} break;
 	case 4: // "Replay abspielen"
 		{
 			WindowManager::inst().Show(new iwPlayReplay);
 		} break;
-	case 5: // "Spiel starten"
+	case 5: // "Kampagne"
 		{
 			/// @todo Hier dann Auswahl zwischen Kampagne(n) und "Freies Spiel"
-			WindowManager::inst().Show(new iwMsgbox(_("Not available"),_("Please use the Multiplayer mode and \'Direct IP\' to create a Singleplayer game."),this,MSB_OK,MSB_EXCLAMATIONGREEN));
+			WindowManager::inst().Show(new iwMsgbox(_("Not available"),_("Please use \'Unlimited Play\' to create a Singleplayer game."),this,MSB_OK,MSB_EXCLAMATIONGREEN));
 		} break;
-	case 6: // "Spiel laden"
+	case 6: // "Freies Spiel"
 		{
+			PrepareSinglePlayerServer();
 		} break;
-	case 7: // "Zurück"
+	case 7: // "Spiel laden"
+		{
+			WindowManager::inst().Show(new iwMsgbox(_("Not available"),_("Please use \'Unlimited Play\' to create a Singleplayer game."),this,MSB_OK,MSB_EXCLAMATIONGREEN));
+		} break;
+	case 8: // "Zurück"
 		{
 			WindowManager::inst().Switch(new dskMainMenu);
 		} break;
 	}
 }
+
+void dskSinglePlayer::PrepareSinglePlayerServer()
+{
+	CreateServerInfo csi;
+	csi.gamename = _("Unlimited Play");
+	csi.password = "localgame";
+	csi.port = 3665;
+	csi.type = NP_LOCAL;
+	csi.ipv6 = false;
+
+	WindowManager::inst().Switch(new dskSelectMap(csi));
+}
+
 
