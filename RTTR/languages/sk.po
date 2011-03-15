@@ -2,20 +2,20 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Siedler II.5 RttR\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-12-24 07:49+0100\n"
-"PO-Revision-Date: 2010-12-24 07:52+0100\n"
-"Last-Translator: Florian Doersch <sf-team@siedler25.org>\n"
+"POT-Creation-Date: 2011-03-15 21:48+0100\n"
+"PO-Revision-Date: 2009-12-02 17:49+0000\n"
+"Last-Translator: NoLiFe <no.live.forever@gmail.com>\n"
 "Language-Team: Siedler II.5 RttR <sf-team@siedler25.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-12-24 06:40+0000\n"
-"X-Generator: Launchpad (build 12138)\n"
+"X-Launchpad-Export-Date: 2011-03-15 20:44+0000\n"
+"X-Generator: Launchpad (build 12589)\n"
 "X-Poedit-Country: SLOVAKIA\n"
 "X-Poedit-Language: Slovak\n"
 "X-Poedit-SourceCharset: iso-8859-15\n"
-"X-Poedit-Basepath: .\n"
 "X-Poedit-SearchPath-0: /storage/RTTR/svn/trunk/src\n"
+"X-Poedit-Basepath: .\n"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:234
 msgid ""
@@ -24,7 +24,6 @@ msgid ""
 msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:602
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:615
 msgid " (AI)"
 msgstr " (AI)"
 
@@ -36,13 +35,15 @@ msgstr ""
 msgid " stones"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:252
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:279
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:253
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:280
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:246
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:273
 #, c-format
 msgid "%d"
 msgstr "%d"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:403
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:413
 #, c-format
 msgid "%d Player"
 msgstr "%d Hráč"
@@ -82,8 +83,10 @@ msgstr ""
 msgid "(stopped)"
 msgstr "(zastavené)"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:262
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:271
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:263
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:272
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:256
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:265
 msgid "-"
 msgstr "-"
 
@@ -108,7 +111,6 @@ msgid "-> Dig mines"
 msgstr "-> Postaviť baňu"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:97
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:128
 msgid "1 h"
 msgstr "1 h"
 
@@ -117,12 +119,10 @@ msgid "10 catapults"
 msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:96
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:127
 msgid "15 m"
 msgstr "15 m"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:99
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:130
 msgid "16 h"
 msgstr "16 h"
 
@@ -139,7 +139,6 @@ msgid "30 catapults"
 msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:98
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:129
 msgid "4 h"
 msgstr "4 h"
 
@@ -158,7 +157,7 @@ msgstr "<%s> "
 msgid "A auto-savegame is created..."
 msgstr "auto-save je vytvorená..."
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobMilitary.cpp:1119
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobMilitary.cpp:1120
 msgid "A catapult is firing upon us!"
 msgstr ""
 
@@ -168,7 +167,8 @@ msgid ""
 "is necessary to ensure that the miners are provided with plenty of food."
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:114
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:115
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:108
 msgid "A lot"
 msgstr "Veľa"
 
@@ -270,6 +270,7 @@ msgid "Addons"
 msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:94
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:87
 msgid "Addons:"
 msgstr ""
 
@@ -281,9 +282,12 @@ msgstr ""
 msgid "Advanced"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:258
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:267
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:707
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:259
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:268
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:708
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:252
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:261
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:681
 msgid "Africans"
 msgstr "Afričania"
 
@@ -379,7 +383,7 @@ msgstr ""
 msgid "An error occured while saving which was suppressed!"
 msgstr "Vyskytla sa chyba pri ukladaní!"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AIPlayerJH.cpp:110
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AIPlayerJH.cpp:109
 msgid "And I may crash your game sometimes..."
 msgstr "A občas môžem spôsobiť pád hry...."
 
@@ -421,11 +425,11 @@ msgstr "Nastavenia útoku"
 msgid "Attack!"
 msgstr "Útok!"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:99
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:101
 msgid "Author"
 msgstr "Autor"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:1288
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:1287
 msgid "Auto-Save"
 msgstr "Automatické ukladanie"
 
@@ -512,7 +516,6 @@ msgid "Builder"
 msgstr "Staviteľ"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildOrder.cpp:45
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMainMenu.cpp:90
 msgid "Building sequence"
 msgstr ""
 
@@ -529,7 +532,8 @@ msgstr "Mäsiar"
 msgid "Call in geologist"
 msgstr "Zavolať geológa"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:121
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:123
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:74
 msgid "Campaign"
 msgstr "Kampaň"
 
@@ -543,8 +547,10 @@ msgstr "Zrušiť"
 msgid "Cancel expedition"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:484
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:692
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:485
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:693
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:477
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:666
 msgid "Cancel start"
 msgstr ""
 
@@ -561,6 +567,7 @@ msgid "Center of country"
 msgstr "Centrum krajiny"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:95
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:88
 msgid "Change Settings..."
 msgstr "Zmenit Nastavenia..."
 
@@ -594,10 +601,12 @@ msgid "Checking Password..."
 msgstr "Overujem heslo..."
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:105
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:98
 msgid "Classic (Settlers 2)"
 msgstr "Klasické (Settlers 2)"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:62
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:64
 msgid "Classification"
 msgstr "Klasifikácia"
 
@@ -614,7 +623,8 @@ msgstr "Sekáčik"
 msgid "Close Without Saving"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:223
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:224
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:217
 msgid "Closed"
 msgstr "Zatvorené"
 
@@ -635,6 +645,7 @@ msgid "Collect"
 msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:66
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:68
 msgid "Color"
 msgstr "Farba"
 
@@ -642,7 +653,7 @@ msgstr "Farba"
 msgid "Common"
 msgstr "Všeobecné"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:613
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:600
 #, c-format
 msgid "Computer %u"
 msgstr "Počítač %u"
@@ -673,7 +684,8 @@ msgstr "Spojenie zlyhalo!"
 msgid "Connection to Host closed!"
 msgstr "Spojenie s hostiteľom zrušené!"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:120
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:121
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:114
 msgid "Conquer 3/4 of map"
 msgstr "Dobyť 3/4 mapy"
 
@@ -685,11 +697,11 @@ msgstr "Postaviť"
 msgid "Construction aid mode"
 msgstr "Podpora výstavby"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:119
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:121
 msgid "Continents"
 msgstr "Kontinenty"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:109
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:111
 msgid "Continue"
 msgstr "Pokračovať"
 
@@ -787,7 +799,6 @@ msgid "Dig up road"
 msgstr "Odstrániť cestu"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:75
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMainMenu.cpp:93
 msgid "Diplomacy"
 msgstr "Diplomacia"
 
@@ -816,11 +827,10 @@ msgid "Display options"
 msgstr "Zobraziť nastavenia"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:57
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMainMenu.cpp:67
 msgid "Distribution of goods"
 msgstr "Preprava tovaru"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:536
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:537
 msgid "Don't forget to check the addon configuration!"
 msgstr ""
 
@@ -849,7 +859,7 @@ msgstr "Nižšie"
 msgid "Downwards"
 msgstr "Nadol"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:600
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:613
 #, c-format
 msgid "Dummy %u"
 msgstr ""
@@ -912,12 +922,14 @@ msgid "Erect flag"
 msgstr "Vztýčiť vlajku"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameLoader.cpp:188
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:487
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:946
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:975
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:488
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:947
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:976
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskLobby.cpp:322
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:348
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:362
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:358
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:372
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:480
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:914
 msgid "Error"
 msgstr "Chyba"
 
@@ -955,6 +967,7 @@ msgid "Exploration expedition"
 msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:102
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:95
 msgid "Exploration:"
 msgstr "Odhalenie:"
 
@@ -974,7 +987,8 @@ msgstr "Farma"
 msgid "Farmer"
 msgstr "Farmár"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:129
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:130
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:123
 msgid "Fast"
 msgstr "Rýchlo"
 
@@ -1008,10 +1022,12 @@ msgid "Flour"
 msgstr "Múka"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:107
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:100
 msgid "FoW - all explored"
 msgstr "FoW - všetko preskúmané"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:106
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:99
 msgid "Fog of War"
 msgstr "Nejasná situácia"
 
@@ -1068,7 +1084,8 @@ msgstr "Celá obrazovka"
 msgid "Fullscreen resolution:"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:487
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:488
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:480
 msgid ""
 "Game can only be started as soon as everybody has a unique color,everyone is "
 "ready and all free slots are closed."
@@ -1122,17 +1139,15 @@ msgstr "Choď do základne"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBaseWarehouse.cpp:73
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuilding.cpp:102
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildingSite.cpp:65
 msgid "Go to place"
 msgstr "Choď"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:117
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:118
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:111
 msgid "Goals:"
 msgstr "Ciele:"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:81
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:121
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:231
 msgid "Gold"
 msgstr "Zlato"
 
@@ -1141,6 +1156,7 @@ msgid "Gold mine"
 msgstr "Zlatá baňa"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:110
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:103
 msgid "Goods at start:"
 msgstr "Počiatočné suroviny:"
 
@@ -1168,7 +1184,7 @@ msgstr "Grafické nastavenia"
 msgid "Graphics Driver"
 msgstr "Grafický ovládač"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:408
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:418
 msgid "Greenland"
 msgstr "Grónsko"
 
@@ -1202,7 +1218,7 @@ msgstr "Pomoc"
 msgid "Helper"
 msgstr "Pomocník"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AIPlayerJH.cpp:106
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AIPlayerJH.cpp:105
 msgid "Hi, I'm an artifical player and I'm not very good yet!"
 msgstr "Ahoj, som počitač a ešte nie som moc dobrý."
 
@@ -1238,7 +1254,7 @@ msgstr ""
 msgid "IPv6"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:342
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:352
 msgid "Incomplete message was received!"
 msgstr "Bola prijatá neúplná správa!"
 
@@ -1312,7 +1328,8 @@ msgstr ""
 "V lodenici sa vyrábajú člnky a veľké prepravné lode.Pre výrobu člnov a lodí "
 "sú potrebne dosky."
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:707
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:708
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:681
 msgid "Japaneses"
 msgstr "Japonec"
 
@@ -1400,7 +1417,7 @@ msgstr ""
 msgid "Load 'ReadMe' file"
 msgstr "Načitať 'ReadMe' súbor"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:72
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:78
 msgid "Load game"
 msgstr "Načitať hru"
 
@@ -1409,11 +1426,12 @@ msgstr "Načitať hru"
 msgid "Load game!"
 msgstr "Načitať hru!"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:107
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:109
 msgid "Load game..."
 msgstr "Načítavam hru..."
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:89
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:82
 msgid "Lock teams:"
 msgstr "Uzamknúť tímy:"
 
@@ -1453,7 +1471,8 @@ msgstr "Zlyhalo spojenie so serverom!"
 msgid "Lost land by this building"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:112
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:113
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:106
 msgid "Low"
 msgstr "Málo"
 
@@ -1477,12 +1496,13 @@ msgstr "Názov mapy:"
 msgid "Map was loaded and pinned at the wall..."
 msgstr "Mapa bola načítaná a je pripravená..."
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:145
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:132
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:146
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:134
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:139
 msgid "Map: "
 msgstr "Mapa: "
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:133
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:135
 msgid "Mapfile: "
 msgstr "Soubor s mapou: "
 
@@ -1512,8 +1532,6 @@ msgid "Medium-term"
 msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:63
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:119
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:223
 msgid "Merchandise"
 msgstr "Tovar"
 
@@ -1538,15 +1556,15 @@ msgstr "Kovodieľňa"
 msgid "Military"
 msgstr "Armáda"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobMilitary.cpp:872
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobMilitary.cpp:873
 msgid "Military building captured"
 msgstr "Vojenská budova zajata"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobMilitary.cpp:869
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobMilitary.cpp:870
 msgid "Military building lost"
 msgstr "Vojenská budova ztracena"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobMilitary.cpp:609
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobMilitary.cpp:610
 msgid "Military building occupied"
 msgstr ""
 
@@ -1631,7 +1649,7 @@ msgid "Music player"
 msgstr "Hudobný prehrávač"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskLobby.cpp:79
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:99
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:101
 msgid "Name"
 msgstr "Názov"
 
@@ -1651,7 +1669,7 @@ msgstr "Internet/LAN"
 msgid "New harbor building finished"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:115
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:117
 msgid "New maps"
 msgstr "Nové mapy"
 
@@ -1713,20 +1731,26 @@ msgstr ""
 msgid "Non-aggression pact"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:119
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:120
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:113
 msgid "None"
 msgstr "Nič"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:113
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:128
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:114
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:129
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:107
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:122
 msgid "Normal"
 msgstr "Normal"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:694
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:695
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:668
 msgid "Not Ready"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:95
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:93
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:102
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:110
 msgid "Not available"
 msgstr "nie je k dispozícii"
 
@@ -1764,6 +1788,7 @@ msgid "Off"
 msgstr "Vypnuté"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:104
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:97
 msgid "Off (all visible)"
 msgstr "Vypnuté (všetko viditeľné)"
 
@@ -1771,11 +1796,11 @@ msgstr "Vypnuté (všetko viditeľné)"
 msgid "Officer"
 msgstr "Dôstojník"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AIPlayerJH.cpp:141
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AIPlayerJH.cpp:148
 msgid "Oh, no, you destroyed my headquarter! I surrender!"
 msgstr "Zničil si mi veliteľstvo! Vzdávam sa!"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:113
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:115
 msgid "Old maps"
 msgstr "Staré mapy"
 
@@ -1785,7 +1810,8 @@ msgstr "Staré mapy"
 msgid "On"
 msgstr "Zapnuté"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:218
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:219
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:212
 msgid "Open"
 msgstr "Otvoriť"
 
@@ -1798,7 +1824,7 @@ msgstr "Nastavenia"
 msgid "Order of building site"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:125
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:127
 msgid "Other"
 msgstr "Ostatné"
 
@@ -1814,7 +1840,7 @@ msgstr ""
 msgid "Outline map"
 msgstr "Náhľad"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:117
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:119
 msgid "Own maps"
 msgstr "Vlastné mapy"
 
@@ -1832,6 +1858,7 @@ msgid "Password:"
 msgstr "Heslo:"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:75
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:73
 msgid "Past player"
 msgstr "Poslední hráč"
 
@@ -1857,7 +1884,7 @@ msgstr "Odozva"
 msgid "Planer"
 msgstr "Geodet"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:68
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:72
 msgid "Play Replay"
 msgstr "Prehrať záznam"
 
@@ -1866,12 +1893,12 @@ msgstr "Prehrať záznam"
 msgid "Playback in this order"
 msgstr "Playback in this order"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:129
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:131
 msgid "Played"
 msgstr "Posledná hra"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskLobby.cpp:77
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:99
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:101
 msgid "Player"
 msgstr "Hráč"
 
@@ -1896,6 +1923,7 @@ msgid "Player '%s' was defeated!"
 msgstr "Hráč '%s' bol porazený!"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:60
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:62
 msgid "Player Name"
 msgstr "Názov hráča"
 
@@ -1907,10 +1935,10 @@ msgstr "Playlist:"
 msgid "Please enter a name for the game"
 msgstr "Prosím vložte názov hry."
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:95
-msgid ""
-"Please use the Multiplayer mode and 'Direct IP' to create a Singleplayer "
-"game."
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:93
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:102
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:110
+msgid "Please use 'Unlimited Play' to create a Singleplayer game."
 msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPleaseWait.cpp:44
@@ -1986,11 +2014,12 @@ msgstr "Kameňolom"
 msgid "Quit program"
 msgstr "Skončiť program"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:123
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:125
 msgid "RTTR"
 msgstr "RTTR"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:64
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:66
 msgid "Race"
 msgstr "Rasa"
 
@@ -2019,8 +2048,11 @@ msgid "Readme!"
 msgstr "Čítaj ma!"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:83
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:494
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:694
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:495
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:695
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:76
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:487
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:668
 msgid "Ready"
 msgstr ""
 
@@ -2082,11 +2114,12 @@ msgstr "Odstrániť záznam"
 msgid "Reserve"
 msgstr "Rezerva"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:66
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:70
 msgid "Resume last game"
 msgstr "Obnoviť poslednú hru"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:86
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:79
 msgid "Return"
 msgstr "Návrat"
 
@@ -2111,7 +2144,8 @@ msgstr "Udica"
 msgid "Rolling pin"
 msgstr "Valček"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:707
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:708
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:681
 msgid "Romans"
 msgstr "Rimania"
 
@@ -2145,7 +2179,7 @@ msgstr "Skaut"
 msgid "Scythe"
 msgstr "Kosa"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:127
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:129
 msgid "Sea"
 msgstr "More"
 
@@ -2153,7 +2187,7 @@ msgstr "More"
 msgid "Select all"
 msgstr "Vybrať všetko"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:102
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:104
 msgid "Selection of maps"
 msgstr "Výber mapy"
 
@@ -2200,6 +2234,7 @@ msgid "Settings"
 msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:91
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:84
 msgid "Shared team view"
 msgstr "Tímové odhalenie:"
 
@@ -2208,6 +2243,7 @@ msgid "Shield"
 msgstr "Štít"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMainMenu.cpp:86
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwShip.cpp:60
 msgid "Ship register"
 msgstr "Zoznam lodí"
 
@@ -2244,7 +2280,7 @@ msgstr "Lopata"
 msgid "Singleplayer"
 msgstr "Jeden hráč"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:99
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:101
 msgid "Size"
 msgstr "Rozmer"
 
@@ -2262,7 +2298,8 @@ msgstr ""
 msgid "Slaughterhouse"
 msgstr "Mäsiareň"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:127
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:128
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:121
 msgid "Slow"
 msgstr "Pomaly"
 
@@ -2286,7 +2323,8 @@ msgstr "Zvukový ovládač"
 msgid "Specify the playlist name"
 msgstr "Názov playlistu"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:124
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:125
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:118
 msgid "Speed:"
 msgstr "Rýchlosť:"
 
@@ -2298,7 +2336,8 @@ msgstr "Štart"
 msgid "Start GF"
 msgstr "Start GF"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:556
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:557
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:533
 msgid "Start aborted"
 msgstr ""
 
@@ -2313,13 +2352,15 @@ msgid "Start exporation expedition"
 msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:83
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:480
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:692
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:70
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:481
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:693
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:76
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:473
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:666
 msgid "Start game"
 msgstr "Spustiť hru"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:543
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:544
 msgid "Starting game, please wait"
 msgstr ""
 
@@ -2332,7 +2373,6 @@ msgid "Statistics Scale"
 msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwInventory.cpp:46
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMainMenu.cpp:79
 msgid "Stock"
 msgstr "Sklad"
 
@@ -2397,6 +2437,7 @@ msgid "Take out of store"
 msgstr "Von zo skladu"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:68
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:70
 msgid "Team"
 msgstr "Tím"
 
@@ -2683,6 +2724,7 @@ msgid "Too short Message received!"
 msgstr "Prikrátka správa prijatá!"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMainMenu.cpp:71
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:84
 msgid "Tools"
 msgstr "Nástroje"
 
@@ -2690,7 +2732,8 @@ msgstr "Nástroje"
 msgid "Top"
 msgstr "Navrch"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:121
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:122
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:115
 msgid "Total domination"
 msgstr "Totálne ovládnutie"
 
@@ -2710,13 +2753,18 @@ msgstr ""
 msgid "Tribal chiefs assembled around the table..."
 msgstr "Náčelníci národov sa zhromaždili okolo stola...."
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:99
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:101
 msgid "Type"
 msgstr "Typ"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:46
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonMaxWaterwayLength.h:50
 msgid "Unlimited"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:76
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:122
+msgid "Unlimited Play"
 msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildOrder.cpp:58
@@ -2765,7 +2813,14 @@ msgstr "Verzia:"
 msgid "Vertex Buffer Objects:"
 msgstr "Vertex Buffer Objects:"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:130
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:112
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:105
+#, fuzzy
+msgid "Very Low"
+msgstr "Veľmi pomaly"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:131
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:124
 msgid "Very fast"
 msgstr "Veľmi rýchlo"
 
@@ -2773,15 +2828,18 @@ msgstr "Veľmi rýchlo"
 msgid "Very long"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:126
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:127
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:120
 msgid "Very slow"
 msgstr "Veľmi pomaly"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:95
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:88
 msgid "View Settings..."
 msgstr "Pozriet si Nastavenia...."
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:707
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:708
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:681
 msgid "Vikings"
 msgstr "Vikingovia"
 
@@ -2801,7 +2859,7 @@ msgid ""
 msgstr ""
 "Upozornenie: Prehrávaný záznam nie je totožný s originálnym zápasom. (GF: %u)"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:409
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:419
 msgid "Wasteland"
 msgstr "Pustatina"
 
@@ -2850,7 +2908,7 @@ msgstr "Studňa"
 msgid "Windowed"
 msgstr "Okno"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:410
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:420
 msgid "Winter world"
 msgstr "Zimný svet"
 
@@ -2906,7 +2964,7 @@ msgid ""
 "Disable the use of a proxy server first!"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:535
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:536
 msgid "You have 10 seconds until game starts"
 msgstr ""
 
@@ -2919,7 +2977,7 @@ msgstr ""
 msgid "You need to restart your game to change the video or audio driver!"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:1609
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:1608
 #, c-format
 msgid "current GF: %u - still fast forwarding: %d GFs left (%d %%)"
 msgstr ""
@@ -2928,7 +2986,8 @@ msgstr ""
 msgid "http://www.siedler25.org"
 msgstr "http://www.siedler25.org"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:252
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:253
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:246
 msgid "n/a"
 msgstr ""
 
@@ -2956,8 +3015,18 @@ msgstr ""
 msgid "various anonymous donators"
 msgstr "iní anonymní darcovia"
 
+#~ msgid "%s"
+#~ msgstr "%s"
+
 #~ msgid "0 means infinite"
 #~ msgstr "0 znamená nekonečně"
+
+#~ msgid ""
+#~ "A catapult is firing\n"
+#~ " upon us!"
+#~ msgstr ""
+#~ "Jsme pod palbou\n"
+#~ " z katapultu!"
 
 #~ msgid "Demolition prohibition:"
 #~ msgstr "Zabránenie zničeniu:"
@@ -2980,11 +3049,49 @@ msgstr "iní anonymní darcovia"
 #~ msgid "Load"
 #~ msgstr "Načítať"
 
+#~ msgid ""
+#~ "Military building\n"
+#~ " occupied"
+#~ msgstr ""
+#~ "Vojenská budova\n"
+#~ " obsazena"
+
 #~ msgid "Near frontiers"
 #~ msgstr "Blízko hraníc"
 
+#~ msgid ""
+#~ "No more fishes\n"
+#~ " in range"
+#~ msgstr ""
+#~ "Všechny ryby byly\n"
+#~ " vyloveny"
+
+#~ msgid ""
+#~ "No more stones\n"
+#~ " in range"
+#~ msgstr ""
+#~ "Veškerý kámen byl\n"
+#~ " vytěžen"
+
+#~ msgid "Notice: The played replay has ended. (GF: %u)"
+#~ msgstr "Poznámka: záznam skončil. (GF: %u)"
+
+#~ msgid "Other Support"
+#~ msgstr "Podpora"
+
 #~ msgid "Please fill out all fields!"
 #~ msgstr "Prosím vypĺnte všetký políčka!"
+
+#~ msgid ""
+#~ "Raw iron ore is smelted in the iron smelters with the help of coal and "
+#~ "raw iron. The processed iron is then used to making weapons (in the "
+#~ "Armory) and tools (in the metalworks)."
+#~ msgstr ""
+#~ "Raw iron ore is smelted in the iron smelters with the help of coal and "
+#~ "raw iron. The processed iron is then used to making weapons (in the "
+#~ "Armoury) and tools (in the metalworks).Surová železná ruda a uhlie sú "
+#~ "potrebné na výrobu železa. Vyrobené železo sa použiva na výrobu zbraní (v "
+#~ "Zbrojnici) a na výrobu nástrojov (v Kovodielni)."
 
 #~ msgid "Resolution:"
 #~ msgstr "Rozlíšenie:"
@@ -2992,11 +3099,24 @@ msgstr "iní anonymní darcovia"
 #~ msgid "Save"
 #~ msgstr "Uložiť"
 
+#~ msgid ""
+#~ "Singleplayer mode and AI are not yet implemented. Please use the "
+#~ "Multiplayer mode and 'Direct IP' to create a Singleplayer game."
+#~ msgstr ""
+#~ "Hra jedného hráča a hra proti počítaču momentálne nefungujú. Prosím "
+#~ "použite hru viacerých hráčou a \"Direct IP\" pre vytvorenie hry."
+
 #~ msgid "The Settlers II.5 RTTR"
 #~ msgstr "The Settlers II.5 RTTR"
 
 #~ msgid "The Settlers II.5 RTTR, v%s-%s"
 #~ msgstr "The Settlers II.5 RTTR, v%s-%s"
+
+#~ msgid ""
+#~ "The carpenter turns the woodcutter's logs into made-to-measure planks. "
+#~ "There form the basic for building houses and ships."
+#~ msgstr ""
+#~ "Tesár reže polená na dosky, ktoré su základom na stavbu budov a lodí."
 
 #~ msgid "VSync:"
 #~ msgstr "VSync:"
