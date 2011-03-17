@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 7038 2011-02-07 21:06:30Z jh $
+// $Id: AIPlayerJH.cpp 7057 2011-03-17 12:56:17Z FloSoft $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -535,7 +535,7 @@ PositionSearchState AIPlayerJH::FindGoodPosition(PositionSearch *search, bool be
 	}
 
 	// reached minimal satifiying value or best value, if needed
-	else if (search->resultValue >= search->minimum && !best 
+	else if ( (search->resultValue >= search->minimum && !best) 
 		|| (search->resultValue >= search->minimum && search->toTest->empty()))
 	{
 		return SEARCH_SUCCESSFUL;
