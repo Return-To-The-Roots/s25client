@@ -1,4 +1,4 @@
-// $Id: noFlag.cpp 6582 2010-07-16 11:23:35Z FloSoft $
+// $Id: noFlag.cpp 7060 2011-03-19 11:32:53Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -399,7 +399,7 @@ unsigned short noFlag::GetPunishmentPoints(const unsigned char dir) const
 void noFlag::DestroyAttachedBuilding()
 {
 	// Achtung es wird ein Feuer durch Destroy gesetzt, daher Objekt merken!
-	noBase *no = gwg->GetNO(x - !(y & 1), y - 1);
+	noBase *no = gwg->GetNO(gwg->GetXA(x,y,1),gwg->GetYA(x,y,1));
 	if(no->GetType() == NOP_BUILDINGSITE || no->GetType() == NOP_BUILDING)
 	{
 		no->Destroy();

@@ -1,4 +1,4 @@
-// $Id: nofCarrier.cpp 6741 2010-09-15 19:12:50Z OLiver $
+// $Id: nofCarrier.cpp 7060 2011-03-19 11:32:53Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -332,9 +332,7 @@ void nofCarrier::Draw(int x, int y)
 				}
 			}
 			
-		//			char number[256];
-		//sprintf(number,"%u",obj_id);
-		//NormalFont->Draw(x,y,number,0,0xFFFF0000);
+		
 
 		} break;
 	case CT_BOAT:

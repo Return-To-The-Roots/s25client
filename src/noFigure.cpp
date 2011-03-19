@@ -1006,6 +1006,10 @@ void noFigure::DrawWalking(int x, int y, glArchivItem_Bob *file, unsigned int id
 	if(file)
 		file->Draw(id, dir, fat, ani_step, x, y, COLORS[gwg->GetPlayer(player)->color]);
 	DrawShadow(x,y,ani_step,dir);
+
+	/*char number[256];
+	sprintf(number,"%u",obj_id);
+	NormalFont->Draw(x,y,number,0,0xFFFF0000);*/
 }
 
 /// Zeichnet standardmäßig die Figur, wenn sie läuft aus einem bestimmten normalen LST Archiv

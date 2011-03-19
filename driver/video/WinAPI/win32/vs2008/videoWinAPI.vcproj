@@ -125,7 +125,7 @@
 				Optimization="3"
 				AdditionalIncludeDirectories="$(ProjectDir)..\..\..\..\src"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;WINAPI_EXPORTS"
-				RuntimeLibrary="2"
+				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				WarnAsError="true"

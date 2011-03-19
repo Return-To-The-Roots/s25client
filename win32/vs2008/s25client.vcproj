@@ -134,7 +134,7 @@
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				StringPooling="true"
 				MinimalRebuild="false"
-				RuntimeLibrary="2"
+				RuntimeLibrary="0"
 				BufferSecurityCheck="false"
 				EnableFunctionLevelLinking="true"
 				EnableEnhancedInstructionSet="2"
@@ -142,7 +142,7 @@
 				BrowseInformation="1"
 				WarningLevel="3"
 				WarnAsError="true"
-				DebugInformationFormat="3"
+				DebugInformationFormat="0"
 				DisableSpecificWarnings="4996;4355;4250"
 			/>
 			<Tool
@@ -158,7 +158,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="Shlwapi.lib OpenGL32.lib libbz2.lib"
 				LinkIncremental="1"
-				GenerateDebugInformation="true"
+				GenerateDebugInformation="false"
 				SubSystem="1"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
