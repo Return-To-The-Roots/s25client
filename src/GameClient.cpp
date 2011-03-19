@@ -1,4 +1,4 @@
-// $Id: GameClient.cpp 7060 2011-03-19 11:32:53Z OLiver $
+// $Id: GameClient.cpp 7061 2011-03-19 12:38:05Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1278,7 +1278,7 @@ void GameClient::ExecuteGameFrame(const bool skipping)
 		// Auto-Speichern ggf.
 
 		// Aktiviert?
-		if(SETTINGS.interface.autosave_interval)
+		if(SETTINGS.interface.autosave_interval && !replay_mode)
 		{
 			// Alle .... GF
 			if(framesinfo.nr % SETTINGS.interface.autosave_interval == 0)

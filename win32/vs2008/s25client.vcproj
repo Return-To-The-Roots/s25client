@@ -588,6 +588,14 @@
 							RelativePath="..\..\src\dskSplash.h"
 							>
 						</File>
+						<File
+							RelativePath="..\..\src\dskUnlimitedPlay.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\src\dskUnlimitedPlay.h"
+							>
+						</File>
 					</Filter>
 					<Filter
 						Name="IngameWindows"
