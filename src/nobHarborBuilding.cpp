@@ -1,4 +1,4 @@
-// $Id: nobHarborBuilding.cpp 6915 2010-12-22 06:46:02Z FloSoft $
+// $Id: nobHarborBuilding.cpp 7063 2011-03-19 14:51:19Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -756,6 +756,12 @@ void nobHarborBuilding::RemoveDependentFigure(noFigure * figure)
 /// Gibt eine Liste mit möglichen Verbindungen zurück
 void nobHarborBuilding::GetShipConnections(std::vector<ShipConnection>& connections) const
 {
+	// Is there any harbor building at all? (could be destroyed)?
+	if(gwg->GetGOT(this->x,this->y) !=GOT_NOB_HARBORBUILDING)
+		// Then good-bye
+		return;
+
+
 	std::vector<nobHarborBuilding*> harbor_buildings;
 	for(unsigned short sea_id = 0;sea_id<6;++sea_id)
 	{
