@@ -1,4 +1,4 @@
-// $Id: nofActiveSoldier.cpp 6902 2010-12-18 17:19:09Z OLiver $
+// $Id: nofActiveSoldier.cpp 7065 2011-03-20 13:11:57Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -180,9 +180,10 @@ void nofActiveSoldier::Draw(int x, int y)
 		} break;
 	}
 
-	/*char str[255];
+	char str[255];
 	sprintf(str,"%u",obj_id);
-	LOADER.GetFontN("resource",0)->Draw(x,y,str,0,0xFFFF0000);*/
+	if(obj_id == 455921 || obj_id == 787460)
+	LOADER.GetFontN("resource",0)->Draw(x,y,str,0,0xFFFF0000);
 }
 
 void nofActiveSoldier::HandleDerivedEvent(const unsigned int id)
@@ -410,14 +411,17 @@ void nofActiveSoldier::MeetEnemy(nofActiveSoldier * other, const Point<MapCoord>
 	// Remember these things
 	enemy = other;
 	this->fight_spot = figh_spot;
-
+	
+	SoldierState old_state = state;
+	state = STATE_MEETENEMY;
+	
 	// In some cases we have to start walking
-	if(state == STATE_ATTACKING_WAITINGAROUNDBUILDING)
+	if(old_state == STATE_ATTACKING_WAITINGAROUNDBUILDING)
 	{
 		MeetingEnemy();
 	}
 
-	state = STATE_MEETENEMY;
+	
 	
 }
 

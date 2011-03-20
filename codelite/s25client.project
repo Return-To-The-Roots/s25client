@@ -176,6 +176,8 @@
         <File Name="../src/dskSinglePlayer.h"/>
         <File Name="../src/dskSplash.cpp"/>
         <File Name="../src/dskSplash.h"/>
+        <File Name="../src/dskUnlimitedPlay.cpp"/>
+        <File Name="../src/dskUnlimitedPlay.h"/>
       </VirtualDirectory>
       <VirtualDirectory Name="IngameWindows">
         <File Name="../src/iwStatistics.cpp"/>

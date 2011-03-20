@@ -1,4 +1,4 @@
-// $Id: nofWarehouseWorker.cpp 6582 2010-07-16 11:23:35Z FloSoft $
+// $Id: nofWarehouseWorker.cpp 7065 2011-03-20 13:11:57Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -44,10 +44,10 @@ nofWarehouseWorker::nofWarehouseWorker(const unsigned short x, const unsigned sh
 : noFigure(JOB_HELPER,x,y,player,gwg->GetSpecObj<noRoadNode>(gwg->GetXA(x,y,4),gwg->GetYA(x,y,4))),
 carried_ware(ware), task(task), fat((RANDOM.Rand(__FILE__,__LINE__,obj_id,2))?true:false)
 {
-	// Zur Inventur hinzufügen, sind ja sonst nicht registriert
+	// Zur Inventur hinzufÃ¼gen, sind ja sonst nicht registriert
 	gwg->GetPlayer(player)->IncreaseInventoryJob(JOB_HELPER,1);
 	
-	/// Straße (also die 1-er-Straße vor dem Lagerhaus) setzen
+	/// StraÃŸe (also die 1-er-StraÃŸe vor dem Lagerhaus) setzen
 	assert(gwg->GetSpecObj<noFlag>(gwg->GetXA(x,y,4),gwg->GetYA(x,y,4))->routes[1]->GetLength() == 1);
 	cur_rs = gwg->GetSpecObj<noFlag>(gwg->GetXA(x,y,4),gwg->GetYA(x,y,4))->routes[1];
 	rs_dir = true;
@@ -93,7 +93,7 @@ void nofWarehouseWorker::Draw(int x, int y)
 {
 	// Trage ich ne Ware oder nicht?
 	if(carried_ware)
-		// Japaner-Schild-Animation existiert leider nicht --> Römerschild nehmen
+		// Japaner-Schild-Animation existiert leider nicht --> RÃ¶merschild nehmen
 		DrawWalking(x,y,LOADER.GetBobN("carrier"),(carried_ware->type==GD_SHIELDJAPANESE)
 		?GD_SHIELDROMANS:carried_ware->type,fat);
 	else
@@ -105,16 +105,18 @@ void nofWarehouseWorker::GoalReached()
 	if(!task)
 	{
 		// Ware an der Fahne ablegen ( wenn noch genug Platz ist, 8 max pro Flagge!)
-		// außerdem ggf. Waren wieder mit reinnehmen, deren Zíel zerstört wurde
+		// auÃŸerdem ggf. Waren wieder mit reinnehmen, deren ZÃ­el zerstÃ¶rt wurde
 		// ( dann ist goal = location )
 		if(gwg->GetSpecObj<noFlag>(x,y)->GetWareCount() < 8 && carried_ware->goal != carried_ware->GetLocation())
 		{
+			carried_ware->LieAtFlag(gwg->GetSpecObj<noRoadNode>(x,y));
+			
 			// Ware soll ihren weiteren Weg berechnen
 			carried_ware->RecalcRoute();
 
 			// Ware ablegen
 			gwg->GetSpecObj<noFlag>(x,y)->AddWare(carried_ware);
-			carried_ware->LieAtFlag(gwg->GetSpecObj<noRoadNode>(x,y));
+			
 
 			// Ich trage keine Ware mehr
 			carried_ware = 0;
@@ -186,7 +188,7 @@ void nofWarehouseWorker::Walked()
 
 void nofWarehouseWorker::AbrogateWorkplace()
 {
-	 // Wenn ich noch ne Ware in der Hand habe, muss die gelöscht werden
+	 // Wenn ich noch ne Ware in der Hand habe, muss die gelÃ¶scht werden
 	 if(carried_ware)
 	 {
 		carried_ware->WareLost(player);

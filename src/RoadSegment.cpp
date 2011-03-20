@@ -1,4 +1,4 @@
-// $Id: RoadSegment.cpp 6582 2010-07-16 11:23:35Z FloSoft $
+// $Id: RoadSegment.cpp 7065 2011-03-20 13:11:57Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -95,13 +95,13 @@ void RoadSegment::Destroy_RoadSegment()
 
 	if(route.size())
 	{
-		// Straﬂe durchgehen und alle Figuren sagen, dass sie die Arbeit verloren haben
+		// Stra√üe durchgehen und alle Figuren sagen, dass sie die Arbeit verloren haben
 		unsigned short x = f1->GetX();
 		unsigned short y = f1->GetY();
 
 		for(unsigned short i = 0; i < route.size() + 1; ++i)
 		{
-			// Figuren sammeln, Achtung, einige kˆnnen (... ? was?)
+			// Figuren sammeln, Achtung, einige k√∂nnen (... ? was?)
 			list<noBase*> objects;
 			gwg->GetDynamicObjectsFrom(x, y, objects);
 
@@ -154,7 +154,7 @@ void RoadSegment::Serialize_RoadSegment(SerializedGameData *sgd) const
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  zerteilt die Straﬂe in 2 Teile.
+ *  zerteilt die Stra√üe in 2 Teile.
  *
  *  @author OLiver
  */
@@ -163,10 +163,10 @@ void RoadSegment::SplitRoad(noFlag *splitflag)
 	// Flagge 1 _________ Diese Flagge _________ Flagge 2
 	//         |       unterbrochener Weg       |
 	
-	// Alten Straﬂenverlauf merken, damit wir sp‰ter allen Leuten darau Bescheid sagen kˆnnen
+	// Alten Stra√üenverlauf merken, damit wir sp√§ter allen Leuten darau Bescheid sagen k√∂nnen
 	std::vector<unsigned char> old_route(route);
 
-	// Stelle herausfinden, an der der Weg zerschnitten wird ( = L‰nge des ersten Teilst¸cks )
+	// Stelle herausfinden, an der der Weg zerschnitten wird ( = L√§nge des ersten Teilst√ºcks )
 	unsigned int length1, length2;
 	unsigned short tx = f1->GetX(), ty = f1->GetY();
 	for(length1 = 0; length1 < route.size(); ++length1)
@@ -185,11 +185,11 @@ void RoadSegment::SplitRoad(noFlag *splitflag)
 
 	RoadSegment *second = new RoadSegment(rt, splitflag, f2, second_route);
 
-	// Eselstraﬂe? Dann pr‰chtige Flagge, da sie ja wieder zwischen Eselstraﬂen ist
+	// Eselstra√üe? Dann pr√§chtige Flagge, da sie ja wieder zwischen Eselstra√üen ist
 	if(rt == RT_DONKEY)
 		splitflag->Upgrade();
 
-	// 1. Teilst¸ck von F1 bis zu dieser F erstellen ( 1. Teilst¸ck ist dieser Weg dann! )
+	// 1. Teilst√ºck von F1 bis zu dieser F erstellen ( 1. Teilst√ºck ist dieser Weg dann! )
 
 	route.resize(length1);
 	//f1 = f1;
@@ -198,12 +198,12 @@ void RoadSegment::SplitRoad(noFlag *splitflag)
 	f1->routes[route.front()] = this;
 	splitflag->routes[(route.back() + 3) % 6] = this;
 
-	// 2. Teilst¸ck von dieser F bis zu F2
+	// 2. Teilst√ºck von dieser F bis zu F2
 
 	splitflag->routes[second->route.front()] = second;
 	second->f2->routes[(second->route.back() + 3) % 6] = second;
 
-	// Straﬂe durchgehen und allen Figuren Bescheid sagen
+	// Stra√üe durchgehen und allen Figuren Bescheid sagen
 	tx = f1->GetX();
 	ty = f1->GetY();
 
@@ -233,7 +233,7 @@ void RoadSegment::SplitRoad(noFlag *splitflag)
 		if(carrier[i])
 			carrier[i]->RoadSplitted(this, second);
 		else if(i == 0)
-			// Die Straﬂe war vorher unbesetzt? Dann 2. Straﬂenteil zu den unoccupied rodes
+			// Die Stra√üe war vorher unbesetzt? Dann 2. Stra√üenteil zu den unoccupied rodes
 			// (1. ist ja schon drin)
 			gwg->GetPlayer(f1->GetPlayer())->FindCarrierForRoad(second);
 	}
@@ -241,8 +241,8 @@ void RoadSegment::SplitRoad(noFlag *splitflag)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  ‹berpr¸ft ob es an den Flaggen noch Waren zu tragen gibt f¸r den Tr‰ger. 
- *  Nur bei Straﬂen mit 2 Flagge aufrufen, nicht bei Hauseing‰ngen etc. !!
+ *  √úberpr√ºft ob es an den Flaggen noch Waren zu tragen gibt f√ºr den Tr√§ger. 
+ *  Nur bei Stra√üen mit 2 Flagge aufrufen, nicht bei Hauseing√§ngen etc. !!
  *
  *  @author OLiver
  */
@@ -256,8 +256,8 @@ bool RoadSegment::AreWareJobs(const bool flag, unsigned ct, const bool take_ware
 	else
 		jobs_count = static_cast<noFlag*>(f1)->GetWaresCountForRoad(route.front());
 
-	// Nur eine Ware da --> evtl l‰uft schon ein anderer Tr‰ger/Esel hin, nur wo Esel und Tr‰ger da sind
-	// Wenn der Tr‰ger nun nat¸rlich schon da ist, kann er die mitnehmen
+	// Nur eine Ware da --> evtl l√§uft schon ein anderer Tr√§ger/Esel hin, nur wo Esel und Tr√§ger da sind
+	// Wenn der Tr√§ger nun nat√ºrlich schon da ist, kann er die mitnehmen
 	if(jobs_count == 1 && carrier[0] && carrier[1] && !take_ware_immediately)
 	{
 		// anderen Esel ermitteln
@@ -271,14 +271,14 @@ bool RoadSegment::AreWareJobs(const bool flag, unsigned ct, const bool take_ware
 		case CARRS_WAITFORWARESPACE:
 		case CARRS_GOBACKFROMFLAG:
 			{
-				// L‰uft der in die Richtung, holt eine Ware bzw. ist schon fast da, braucht der hier nicht hinlaufen
+				// L√§uft der in die Richtung, holt eine Ware bzw. ist schon fast da, braucht der hier nicht hinlaufen
 				if(carrier[ct]->GetRoadDir() == !flag)
 					return false;
 			} break;
 		case CARRS_CARRYWARETOBUILDING:
 		case CARRS_LEAVEBUILDING:
 			{
-				// Wenn an die Flagge ein Geb‰ude angrenzt und der Tr‰ger da was reintr‰gt, kann der auch die Ware 
+				// Wenn an die Flagge ein Geb√§ude angrenzt und der Tr√§ger da was reintr√§gt, kann der auch die Ware 
 				// gleich mitnehmen, der zweite muss hier also nicht kommen
 				if((carrier[ct]->GetCurrentRoad()->f1 == f1 && flag == false) || (carrier[ct]->GetCurrentRoad()->f1 == f2 && flag == true))
 					return false;
@@ -292,7 +292,7 @@ bool RoadSegment::AreWareJobs(const bool flag, unsigned ct, const bool take_ware
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Eine Ware sagt Bescheid, dass sie ¸ber dem Weg getragen werden will.
+ *  Eine Ware sagt Bescheid, dass sie √ºber dem Weg getragen werden will.
  *  
  *  rn ist die Flagge, von der sie kommt
  *
@@ -300,7 +300,7 @@ bool RoadSegment::AreWareJobs(const bool flag, unsigned ct, const bool take_ware
  */
 void RoadSegment::AddWareJob(const noRoadNode *rn)
 {
-	// Wenn das eine Straﬂe zu einer Geb‰udet¸r ist, muss dem entsprechenden Geb‰ude Bescheid gesagt werden (momentan nur Lagerh‰user!)
+	// Wenn das eine Stra√üe zu einer Geb√§udet√ºr ist, muss dem entsprechenden Geb√§ude Bescheid gesagt werden (momentan nur Lagerh√§user!)
 	if(route.size() == 1)
 	{
 		if(f2->GetType() == NOP_BUILDING)
@@ -316,7 +316,7 @@ void RoadSegment::AddWareJob(const noRoadNode *rn)
 			LOG.lprintf("RoadSegment::AddWareJob: WARNING: Ware in front of building site (gf: %u)!\n", GAMECLIENT.GetGFNumber());
 	}
 
-	// Zuf‰llig Esel oder Tr‰ger zuerst fragen, ob er Zeit hat
+	// Zuf√§llig Esel oder Tr√§ger zuerst fragen, ob er Zeit hat
 	unsigned char first = Random::inst().Rand(__FILE__, __LINE__, this->obj_id, 2);
 	for(unsigned char i = 0; i < 2; ++i)
 	{
@@ -331,13 +331,13 @@ void RoadSegment::AddWareJob(const noRoadNode *rn)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Eine Ware will nicht mehr befˆrdert werden.
+ *  Eine Ware will nicht mehr bef√∂rdert werden.
  *
  *  @author OLiver
  */
 void RoadSegment::WareJobRemoved(const noFigure *const exception)
 {
-	// Allen Tr‰gern Bescheid sagen
+	// Allen Tr√§gern Bescheid sagen
 	for(unsigned char i = 0; i < 2; ++i)
 	{
 		if(carrier[i] && carrier[i] != exception)
@@ -347,19 +347,19 @@ void RoadSegment::WareJobRemoved(const noFigure *const exception)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Baut die Straﬂe zu einer Eselstraﬂe aus.
+ *  Baut die Stra√üe zu einer Eselstra√üe aus.
  *
  *  @author OLiver
  */
 void RoadSegment::UpgradeDonkeyRoad()
 {
-	// Nur normale Straﬂe kˆnnen Eselstraﬂen werden
+	// Nur normale Stra√üe k√∂nnen Eselstra√üen werden
 	if(rt != RT_NORMAL)
 		return;
 
 	rt = RT_DONKEY;
 
-	// Eselstraﬂen setzen
+	// Eselstra√üen setzen
 	int x = f1->GetX(), y = f1->GetY();
 	for(unsigned short i = 0; i < route.size(); ++i)
 	{
@@ -388,24 +388,24 @@ void RoadSegment::UpgradeDonkeyRoad()
  */
 void RoadSegment::TryGetDonkey()
 {
-	// Nur rufen, falls es eine Eselstraﬂe ist, noch kein Esel da ist, aber schon ein Tr‰ger da ist
+	// Nur rufen, falls es eine Eselstra√üe ist, noch kein Esel da ist, aber schon ein Tr√§ger da ist
 	if(NeedDonkey())
 		carrier[1] = gwg->GetPlayer(f1->GetPlayer())->OrderDonkey(this);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Ein Tr‰ger muss k¸ndigen, aus welchen Gr¸nden auch immer.
+ *  Ein Tr√§ger muss k√ºndigen, aus welchen Gr√ºnden auch immer.
  *
  *  @author OLiver
  */
 void RoadSegment::CarrierAbrogated(nofCarrier *carrier)
 {
-	// Gucken, ob Tr‰ger und Esel gek¸ndigt hat
+	// Gucken, ob Tr√§ger und Esel gek√ºndigt hat
 	if(carrier->GetCarrierType() == nofCarrier::CT_NORMAL || 
 	   carrier->GetCarrierType() == nofCarrier::CT_BOAT)
 	{
-		// Straﬂe wieder unbesetzt, bzw. nur noch Esel
+		// Stra√üe wieder unbesetzt, bzw. nur noch Esel
 		this->carrier[0] = NULL;
 		gwg->GetPlayer(f1->GetPlayer())->FindCarrierForRoad(this);
 	}

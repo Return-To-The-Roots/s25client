@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 7057 2011-03-17 12:56:17Z FloSoft $
+// $Id: AIPlayerJH.cpp 7065 2011-03-20 13:11:57Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -239,7 +239,7 @@ void AIPlayerJH::IterativeReachableNodeChecker(std::queue<std::pair<MapCoord, Ma
 {
 	unsigned short width = aii->GetMapWidth();
 
-	// TODO auch mal bootswege bauen können
+	// TODO auch mal bootswege bauen kÃ¶nnen
 	//Param_RoadPath prp = { false };
 
 	while(toCheck.size() > 0)
@@ -370,7 +370,7 @@ void AIPlayerJH::InitResourceMaps()
 
 void AIPlayerJH::SetFarmedNodes(MapCoord x, MapCoord y)
 {
-	// Radius in dem Bausplatz für Felder blockiert wird
+	// Radius in dem Bausplatz fÃ¼r Felder blockiert wird
 	const unsigned radius = 3;
 
 	unsigned short width = aii->GetMapWidth();
@@ -424,7 +424,7 @@ bool AIPlayerJH::FindGoodPosition(MapCoord &x, MapCoord &y, AIJH::Resource res, 
 		y = aii->GetHeadquarter()->GetY();
 	}
 
-	// TODO was besseres wär schön ;)
+	// TODO was besseres wÃ¤r schÃ¶n ;)
 	if (radius == -1)
 		radius = 30;
 
@@ -440,7 +440,7 @@ bool AIPlayerJH::FindGoodPosition(MapCoord &x, MapCoord &y, AIJH::Resource res, 
 				{
 					if ((inTerritory && !nodes[i].owned) || nodes[i].farmed)
 						continue;
-					if ( (nodes[i].bq >= size && nodes[i].bq < BQ_MINE) // normales Gebäude
+					if ( (nodes[i].bq >= size && nodes[i].bq < BQ_MINE) // normales GebÃ¤ude
 						|| (nodes[i].bq == size))	// auch Bergwerke
 					{
 						x = tx2;
@@ -560,7 +560,7 @@ bool AIPlayerJH::FindBestPosition(MapCoord &x, MapCoord &y, AIJH::Resource res, 
 		y = aii->GetHeadquarter()->GetY();
 	}
 
-	// TODO was besseres wär schön ;)
+	// TODO was besseres wÃ¤r schÃ¶n ;)
 	if (radius == -1)
 		radius = 30;
 
@@ -579,7 +579,7 @@ bool AIPlayerJH::FindBestPosition(MapCoord &x, MapCoord &y, AIJH::Resource res, 
 				{
 					if (!nodes[i].reachable || (inTerritory && !nodes[i].owned) || nodes[i].farmed)
 						continue;
-					if ( (nodes[i].bq >= size && nodes[i].bq < BQ_MINE) // normales Gebäude
+					if ( (nodes[i].bq >= size && nodes[i].bq < BQ_MINE) // normales GebÃ¤ude
 						|| (nodes[i].bq == size))	// auch Bergwerke
 					{
 						best_x = tx2;
@@ -633,7 +633,7 @@ void AIPlayerJH::UpdateNodesAround(MapCoord x, MapCoord y, unsigned radius)
 					// Altes entfernen:
 					if (nodes[i].res != AIJH::NOTHING)
 						ChangeResourceMap(tx2, ty2, AIJH::RES_RADIUS[nodes[i].res], resourceMaps[nodes[i].res], -1);
-					// Neues Hinzufügen:
+					// Neues HinzufÃ¼gen:
 					if (res != AIJH::NOTHING)
 						ChangeResourceMap(tx2, ty2, AIJH::RES_RADIUS[res], resourceMaps[res], 1);
 
@@ -706,7 +706,7 @@ void AIPlayerJH::RecalcBQAround(const MapCoord x, const MapCoord y)
 {
 	unsigned width = aii->GetMapWidth();
 
-	// Drumherum BQ neu berechnen, da diese sich ja jetzt hätten ändern können
+	// Drumherum BQ neu berechnen, da diese sich ja jetzt hÃ¤tten Ã¤ndern kÃ¶nnen
 	unsigned index = x + y * width;
 
 	nodes[index].bq = aii->GetBuildingQuality(x,y);
@@ -751,7 +751,7 @@ bool AIPlayerJH::SimpleFindPosition(MapCoord &x, MapCoord &y, BuildingQuality si
 		y = aii->GetHeadquarter()->GetY();
 	}
 
-	// TODO was besseres wär schön ;)
+	// TODO was besseres wÃ¤r schÃ¶n ;)
 	if (radius == -1)
 		radius = 30;
 
@@ -766,7 +766,7 @@ bool AIPlayerJH::SimpleFindPosition(MapCoord &x, MapCoord &y, BuildingQuality si
 
 				if (!nodes[i].reachable || !nodes[i].owned || nodes[i].farmed)
 					continue;
-				if ( (nodes[i].bq >= size && nodes[i].bq < BQ_MINE) // normales Gebäude
+				if ( (nodes[i].bq >= size && nodes[i].bq < BQ_MINE) // normales GebÃ¤ude
 					|| (nodes[i].bq == size))	// auch Bergwerke
 				{
 					x = tx2;
@@ -853,7 +853,7 @@ void AIPlayerJH::HandleNewMilitaryBuilingOccupied(const Coords& coords)
 		AddBuildJob(construction.ChooseMilitaryBuilding(x, y), x, y);
 	}
 
-	// Temporär only
+	// TemporÃ¤r only
 	BuildingType bldToTest[] = {
 		BLD_FORESTER,
 		BLD_WOODCUTTER,
