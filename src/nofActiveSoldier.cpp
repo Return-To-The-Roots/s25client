@@ -1,4 +1,4 @@
-// $Id: nofActiveSoldier.cpp 7065 2011-03-20 13:11:57Z OLiver $
+// $Id: nofActiveSoldier.cpp 7066 2011-03-20 13:57:09Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -179,11 +179,6 @@ void nofActiveSoldier::Draw(int x, int y)
 			DrawSoldierWalking(x,y);
 		} break;
 	}
-
-	char str[255];
-	sprintf(str,"%u",obj_id);
-	if(obj_id == 455921 || obj_id == 787460)
-	LOADER.GetFontN("resource",0)->Draw(x,y,str,0,0xFFFF0000);
 }
 
 void nofActiveSoldier::HandleDerivedEvent(const unsigned int id)
