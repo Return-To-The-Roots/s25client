@@ -1,4 +1,4 @@
-// $Id: GameClientPlayer.cpp 7081 2011-03-26 14:14:51Z OLiver $
+// $Id: GameClientPlayer.cpp 7082 2011-03-26 14:42:07Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1793,6 +1793,7 @@ void GameClientPlayer::OrderShip(nobHarborBuilding * hb)
 				if(ships[i]->GetX() == dest_x && ships[i]->GetY() == dest_y)
 				{
 					// Dann nehmen wir das gleich
+					ships[i]->AssignHarborId(hb->GetHarborPosID());
 					hb->ShipArrived(ships[i]);
 					return;
 				}
