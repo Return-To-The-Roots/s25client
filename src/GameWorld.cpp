@@ -1,4 +1,4 @@
-// $Id: GameWorld.cpp 7084 2011-03-26 21:31:12Z OLiver $
+// $Id: GameWorld.cpp 7085 2011-03-26 21:41:36Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -676,7 +676,7 @@ void GameWorld::MilitaryBuildingCaptured(const unsigned short x, const MapCoord 
 {
 	if(player == GAMECLIENT.GetPlayerID())
 	{
-		int this_x,this_y = y-3*int(height);
+	/*	int this_x,this_y = y-3*int(height);
 
 		for(unsigned sy = 0;sy<6;++sy,this_y+=int(height))
 		{
@@ -684,10 +684,10 @@ void GameWorld::MilitaryBuildingCaptured(const unsigned short x, const MapCoord 
 			for(unsigned sx = 0;sx<6;++sx,this_x+=int(width))
 			{
 				if(this_x > GetFirstX() && this_x < GetLastX()
-					&& this_y > GetFirstY() && this_y < GetLastY())
+					&& this_y > GetFirstY() && this_y < GetLastY())*/
 					LOADER.GetSoundN("sound", 110)->Play(255,false);
-			}
-		}
+		/*	}
+		}*/
 		
 	}
 }
