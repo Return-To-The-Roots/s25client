@@ -1,4 +1,4 @@
-// $Id: nobHQ.cpp 6958 2011-01-02 11:39:33Z FloSoft $
+// $Id: nobHQ.cpp 7079 2011-03-26 13:47:23Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -42,8 +42,6 @@
 nobHQ::nobHQ(const unsigned short x, const unsigned short y,const unsigned char player,const Nation nation) 
 : nobBaseWarehouse(BLD_HEADQUARTERS,x,y,player,nation)
 {
-	// Alter mit Bau setzen
-	SetAge();
 
 	// ins Militärquadrat einfügen
 	gwg->GetMilitarySquare(x,y).push_back(this);

@@ -1,4 +1,4 @@
-// $Id: nobBaseMilitary.h 6582 2010-07-16 11:23:35Z FloSoft $
+// $Id: nobBaseMilitary.h 7079 2011-03-26 13:47:23Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -56,10 +56,6 @@ protected:
 	list<nofAggressiveDefender*> aggressive_defenders;
 	/// Soldat, der grad dieses Gebäude verteidigt
 	nofDefender * defender;
-	
-	/// Counter zum hochzählen
-	static unsigned age_counter;
-
 
 private:
 
@@ -88,17 +84,12 @@ public: void Serialize(SerializedGameData *sgd) const { Serialize_nobBaseMilitar
 	/// Liefert Militärradius des Gebäudes (falls es ein Militärgebäude ist)
 	virtual MapCoord GetMilitaryRadius() const { return 0; }
 
-	/// Setzt das Alter
-	void SetAge() { age = age_counter++; }
-	/// Gibt Alter zurück
-	unsigned GetAge() const { return age; }
-
 	/// Gibt Verteidiger zurück
 	nofDefender * GetDefender() const { return defender; }
 
 	/// Das Alter wird immer verglichen
 	/// absteigend sortieren, da jünger <=> age größer
-	bool operator < (const nobBaseMilitary& other) const { return age > other.age; }
+	bool operator < (const nobBaseMilitary& other) const { return obj_id > other.GetObjId(); }
 
 	/// Meldet ein neues "Rausgeh"-Event an, falls gerade keiner rausgeht
 	/// (damit nicht alle auf einmal rauskommen), für Lager- und Militärhäuser)

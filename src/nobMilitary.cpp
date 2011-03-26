@@ -1,4 +1,4 @@
-// $Id: nobMilitary.cpp 7024 2011-01-29 17:51:58Z jh $
+// $Id: nobMilitary.cpp 7079 2011-03-26 13:47:23Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -610,8 +610,6 @@ void nobMilitary::AddPassiveSoldier(nofPassiveSoldier * soldier)
 			GameClient::inst().SendPostMessage(new ImagePostMsgWithLocation(_("Military building occupied"), PMC_MILITARY, this->x, this->y, this->type, this->nation));
 		// Ist nun besetzt
 		new_built = false;
-		// Alter ab jetzt setzen
-		SetAge();
 		// Landgrenzen verschieben
 		gwg->RecalcTerritory(this,MILITARY_RADIUS[size],false, true);
 		// Tür zumachen

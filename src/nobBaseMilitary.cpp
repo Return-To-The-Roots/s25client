@@ -1,4 +1,4 @@
-// $Id: nobBaseMilitary.cpp 6582 2010-07-16 11:23:35Z FloSoft $
+// $Id: nobBaseMilitary.cpp 7079 2011-03-26 13:47:23Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -43,11 +43,10 @@
 	static char THIS_FILE[] = __FILE__;
 #endif
 
-unsigned nobBaseMilitary::age_counter = 0;
 
 nobBaseMilitary::nobBaseMilitary(const BuildingType type,const unsigned short x, const unsigned short y,
 								 const unsigned char player,const Nation nation)
-								 : noBuilding(type,x,y,player,nation),leaving_event(0), go_out(false), age(age_counter++),defender(0)
+								 : noBuilding(type,x,y,player,nation),leaving_event(0), go_out(false), defender(0)
 {
 
 }
@@ -132,7 +131,7 @@ void nobBaseMilitary::Serialize_nobBaseMilitary(SerializedGameData * sgd) const
 	sgd->PushObjectList(leave_house,false);
 	sgd->PushObject(leaving_event,true);
 	sgd->PushBool(go_out);
-	sgd->PushUnsignedInt(age);
+	sgd->PushUnsignedInt(0); // former age, compatibility with 0.7, remove it in furher versions
 	sgd->PushObjectList(troops_on_mission,false);
 	sgd->PushObjectList(aggressors,true);
 	sgd->PushObjectList(aggressive_defenders,true);
@@ -144,7 +143,7 @@ nobBaseMilitary::nobBaseMilitary(SerializedGameData * sgd, const unsigned obj_id
 	sgd->PopObjectList(leave_house,GOT_UNKNOWN);
 	leaving_event = sgd->PopObject<EventManager::Event>(GOT_EVENT);
 	go_out = sgd->PopBool();
-	age = sgd->PopUnsignedInt();
+	sgd->PopUnsignedInt(); // former age, compatibility with 0.7, remove it in furher versions
 	sgd->PopObjectList(troops_on_mission,GOT_UNKNOWN);
 	sgd->PopObjectList(aggressors,GOT_NOF_ATTACKER);
 	sgd->PopObjectList(aggressive_defenders,GOT_NOF_AGGRESSIVEDEFENDER);
