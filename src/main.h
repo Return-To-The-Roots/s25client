@@ -1,4 +1,4 @@
-// $Id: main.h 6920 2010-12-22 08:09:01Z FloSoft $
+// $Id: main.h 7084 2011-03-26 21:31:12Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -120,11 +120,11 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Eigene Header
 #include <build_paths.h>
-#include "libutil.h"
-#include "mygettext.h"
-#include "liblobby.h"
-#include "libsiedler2.h"
-#include "libendian.h"
+#include "../libutil/src/libutil.h"
+#include "../mygettext/src/mygettext.h"
+#include "../liblobby/src/liblobby.h"
+#include "../libsiedler2/src/libsiedler2.h"
+#include "../libendian/src/libendian.h"
 
 #include "macros.h"
 #include "list.h"

@@ -1,4 +1,4 @@
-// $Id: glArchivItem_Bitmap.h 7039 2011-02-08 07:22:22Z FloSoft $
+// $Id: glArchivItem_Bitmap.h 7084 2011-03-26 21:31:12Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -21,7 +21,7 @@
 
 #pragma once
 
-#include "colors.h"
+#include "../libutil/src/colors.h"
 
 #ifdef _WIN32
 typedef unsigned long long uint64_t;

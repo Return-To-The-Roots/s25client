@@ -1,4 +1,4 @@
-// $Id: main.h 6582 2010-07-16 11:23:35Z FloSoft $
+// $Id: main.h 7084 2011-03-26 21:31:12Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -63,7 +63,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Header
 #include "tempname.h"
-#include <libendian.h>
+#include "../../../../libendian/src/main.h"
 
 #include <Interface.h>
 

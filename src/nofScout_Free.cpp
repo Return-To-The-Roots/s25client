@@ -1,4 +1,4 @@
-// $Id: nofScout_Free.cpp 6727 2010-09-12 20:33:56Z OLiver $
+// $Id: nofScout_Free.cpp 7084 2011-03-26 21:31:12Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -19,6 +19,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
+#include "stdafx.h"
 #include "main.h"
 #include "nofScout_Free.h"
 

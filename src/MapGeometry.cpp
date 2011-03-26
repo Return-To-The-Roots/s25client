@@ -16,6 +16,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
+#include "stdafx.h"
 #include "main.h"
 #include "MapGeometry.h"
 #include <cmath>

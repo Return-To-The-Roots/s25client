@@ -1,4 +1,4 @@
-// $Id: AudioDriverWrapper.cpp 6582 2010-07-16 11:23:35Z FloSoft $
+// $Id: AudioDriverWrapper.cpp 7084 2011-03-26 21:31:12Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -19,6 +19,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
+#include "stdafx.h"
 #include "main.h"
 #include "AudioDriverWrapper.h"
 #include "VideoDriverWrapper.h"

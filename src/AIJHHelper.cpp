@@ -1,4 +1,4 @@
-// $Id: AIJHHelper.cpp 7038 2011-02-07 21:06:30Z jh $
+// $Id: AIJHHelper.cpp 7084 2011-03-26 21:31:12Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -17,6 +17,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
+#include "stdafx.h"
 #include "AIJHHelper.h"
 #include "main.h"
 #include "AIPlayerJH.h"

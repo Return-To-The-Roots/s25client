@@ -1,4 +1,4 @@
-// $Id: Loader.cpp 6698 2010-09-01 10:34:08Z OLiver $
+// $Id: Loader.cpp 7084 2011-03-26 21:31:12Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -19,6 +19,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
+#include "stdafx.h"
 #include "main.h"
 #include "Loader.h"
 

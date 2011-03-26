@@ -19,6 +19,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
+#include "stdafx.h"
 #include "main.h"
 #include "dskUnlimitedPlay.h"
 #include "dskGameLoader.h"

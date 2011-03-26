@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "main.h"
 #include "nobShipYard.h"
 #include "SerializedGameData.h"

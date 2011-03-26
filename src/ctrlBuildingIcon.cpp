@@ -1,4 +1,4 @@
-// $Id: ctrlBuildingIcon.cpp 6591 2010-07-18 17:13:01Z FloSoft $
+// $Id: ctrlBuildingIcon.cpp 7084 2011-03-26 21:31:12Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -19,6 +19,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
+#include "stdafx.h"
 #include "main.h"
 #include "ctrlBuildingIcon.h"
 

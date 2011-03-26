@@ -1,4 +1,4 @@
-// $Id: GameWorld.cpp 6791 2010-10-08 21:09:55Z OLiver $
+// $Id: GameWorld.cpp 7084 2011-03-26 21:31:12Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -19,6 +19,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
+#include "stdafx.h"
 #include "main.h"
 #include "GameWorld.h"
 #include "Loader.h"

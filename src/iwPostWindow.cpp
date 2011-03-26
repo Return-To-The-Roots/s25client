@@ -1,4 +1,4 @@
-// $Id: iwPostWindow.cpp 6906 2010-12-20 09:55:16Z OLiver $
+// $Id: iwPostWindow.cpp 7084 2011-03-26 21:31:12Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -20,6 +20,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Header
 
+#include "stdafx.h"
 #include "main.h"
 #include "iwPostWindow.h"
 #include "ctrlText.h"

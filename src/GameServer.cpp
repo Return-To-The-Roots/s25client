@@ -1,4 +1,4 @@
-// $Id: GameServer.cpp 7040 2011-02-16 23:23:20Z jh $
+// $Id: GameServer.cpp 7084 2011-03-26 21:31:12Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -19,6 +19,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
+#include "stdafx.h"
 #include "main.h"
 #include "GameServer.h"
 

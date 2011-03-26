@@ -19,7 +19,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-
+#include "stdafx.h"
 #include "AIInterface.h"
 #include "nobHarborBuilding.h"
 #include "nobHQ.h"

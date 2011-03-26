@@ -1,4 +1,4 @@
-// $Id: AIResourceMap.cpp 6582 2010-07-16 11:23:35Z FloSoft $
+// $Id: AIResourceMap.cpp 7084 2011-03-26 21:31:12Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -16,7 +16,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-
+#include "stdafx.h"
 #include "AIResourceMap.h"
 
 AIResourceMap::AIResourceMap(const GameWorldBase * const gwb, const std::vector<AIJH::Node> &nodes)
