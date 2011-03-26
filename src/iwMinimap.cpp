@@ -1,4 +1,4 @@
-// $Id: iwMinimap.cpp 7084 2011-03-26 21:31:12Z OLiver $
+// $Id: iwMinimap.cpp 7086 2011-03-26 22:14:52Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -67,9 +67,6 @@ iwMinimap::iwMinimap(IngameMinimap * minimap, GameWorldViewer& gwv)
 
 
 	ChangeWindowSize(width,height);
-
-	// In die Mitte verschieben
-	MoveToCenter();
 }
 
 /// Verändert die Größe des Fensters und positioniert alle Controls etc. neu

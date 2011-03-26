@@ -1,4 +1,4 @@
-// $Id: IngameWindow.h 6582 2010-07-16 11:23:35Z FloSoft $
+// $Id: IngameWindow.h 7086 2011-03-26 22:14:52Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -26,6 +26,9 @@
 
 class IngameWindow : public Window
 {
+	
+	/// For each id we save the last posistion of the window
+	static std::vector< Point<unsigned short> > last_pos;
 public:
 	/// Konstruktor von @p IngameWindow.
 	IngameWindow(unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, const std::string& title, glArchivItem_Bitmap *background, bool modal = false);

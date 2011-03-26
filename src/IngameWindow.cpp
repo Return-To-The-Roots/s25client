@@ -1,4 +1,4 @@
-// $Id: IngameWindow.cpp 7084 2011-03-26 21:31:12Z OLiver $
+// $Id: IngameWindow.cpp 7086 2011-03-26 22:14:52Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -36,6 +36,10 @@
 	static char THIS_FILE[] = __FILE__;
 #endif
 
+const unsigned MAX_POS_SAVE_ENTRIES = CGI_MERCHANDISE_STATISTICS+1;
+std::vector< Point<unsigned short> > IngameWindow::last_pos(MAX_POS_SAVE_ENTRIES,
+															Point<unsigned short>(0xffff, 0xffff));
+
 ///////////////////////////////////////////////////////////////////////////////
 /**
  *  Konstruktor von @p IngameWindow.
@@ -49,10 +53,21 @@ IngameWindow::IngameWindow(unsigned int id, unsigned short x, unsigned short y, 
 {
 	memset(button_state, BUTTON_UP, sizeof(ButtonState)*2);
 
-	// soll das Fenster zentriert dargestellt werden? 
+	// Load last position or center the window
 	if(x == 0xFFFF)
 	{
 		MoveToCenter();
+
+		if(id < MAX_POS_SAVE_ENTRIES)
+		{
+			Point<unsigned short> pos = last_pos[id];
+			if(pos.x != 0xffff)
+			{
+				Move(pos.x,pos.y);
+			}
+		}
+
+		
 	}
 	else if(x == 0xFFFE)
 	{
@@ -68,6 +83,9 @@ IngameWindow::IngameWindow(unsigned int id, unsigned short x, unsigned short y, 
  */
 IngameWindow::~IngameWindow(void)
 {
+	// Possibly save our old position
+	if(id < MAX_POS_SAVE_ENTRIES)
+		last_pos[id] = Point<unsigned short>(x,y);
 }
 
 void IngameWindow::SetMinimized(bool minimized)
