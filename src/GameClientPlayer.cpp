@@ -1,4 +1,4 @@
-// $Id: GameClientPlayer.cpp 6903 2010-12-18 21:41:50Z OLiver $
+// $Id: GameClientPlayer.cpp 7081 2011-03-26 14:14:51Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -78,6 +78,7 @@ GameClientPlayer::GameClientPlayer(const unsigned playerid) : GamePlayerInfo(pla
 	distribution[GD_HAM].client_buildings.push_back(BLD_SLAUGHTERHOUSE);
 	distribution[GD_STONES].client_buildings.push_back(BLD_HEADQUARTERS); // BLD_HEADQUARTERS = Baustellen!
 	distribution[GD_STONES].client_buildings.push_back(BLD_CATAPULT);
+	distribution[GD_WOOD].client_buildings.push_back(BLD_SAWMILL);
 
 
 	// Waren mit mehreren mÃ¶glichen Zielen erstmal nullen, kann dann im Fenster eingestellt werden
