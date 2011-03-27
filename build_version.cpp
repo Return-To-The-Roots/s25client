@@ -1,4 +1,4 @@
-// $Id: build_version.cpp 7093 2011-03-27 11:49:37Z OLiver $
+// $Id: build_version.cpp 7094 2011-03-27 11:53:07Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //

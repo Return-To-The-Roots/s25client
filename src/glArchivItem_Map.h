@@ -1,4 +1,4 @@
-// $Id: glArchivItem_Map.h 7091 2011-03-27 10:57:38Z OLiver $
+// $Id: glArchivItem_Map.h 7094 2011-03-27 11:53:07Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -21,7 +21,6 @@
 
 #pragma once
 
-#include <stdafx.h>
 #include "main.h"
 
 class SerializedGameData;
