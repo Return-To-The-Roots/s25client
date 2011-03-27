@@ -1,4 +1,4 @@
-// $Id: GameReplay.cpp 7091 2011-03-27 10:57:38Z OLiver $
+// $Id: GameReplay.cpp 7093 2011-03-27 11:49:37Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -150,6 +150,7 @@ bool Replay::WriteHeader(const std::string& filename)
  */
 bool Replay::LoadHeader(const std::string& filename, const bool load_extended_header)
 {
+	this->filename = filename;
 	// Datei öffnen
 	if(!file.Open(filename.c_str(),OFM_READ))
 		return false;
@@ -403,7 +404,13 @@ bool Replay::ReadPathfindingResult(unsigned char * data, unsigned * length, Poin
 	unsigned char tmp = pf_file.ReadUnsignedChar();
 
 	if(pf_file.EndOfFile())
+	{
+		// Open the file for writing
+		pf_file.Close();
+		pf_file.Open((filename + "_res").c_str(),OFM_WRITE_ADD);
+		pathfinding_results = false;
 		return false;
+	}
 
 	*data = tmp;
 	if(length) *length = pf_file.ReadUnsignedInt();

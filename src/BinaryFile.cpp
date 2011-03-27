@@ -1,4 +1,4 @@
-// $Id: BinaryFile.cpp 7091 2011-03-27 10:57:38Z OLiver $
+// $Id: BinaryFile.cpp 7093 2011-03-27 11:49:37Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -38,7 +38,7 @@
  */
 bool BinaryFile::Open(const char * const filename, const OpenFileMode of)
 {
-	static const char * modes[] = {"wb","rb"};
+	static const char * modes[] = {"wb","w+b","rb"};
 	return ((file = fopen(filename,modes[of])) ? true : false);
 }
 

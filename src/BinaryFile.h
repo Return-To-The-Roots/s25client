@@ -1,4 +1,4 @@
-// $Id: BinaryFile.h 6582 2010-07-16 11:23:35Z FloSoft $
+// $Id: BinaryFile.h 7093 2011-03-27 11:49:37Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -27,6 +27,7 @@ class String;
 enum OpenFileMode
 {
 	OFM_WRITE = 0, 
+	OFM_WRITE_ADD,
 	OFM_READ
 };
 

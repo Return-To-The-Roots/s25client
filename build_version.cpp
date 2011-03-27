@@ -1,4 +1,4 @@
-// $Id: build_version.cpp 7092 2011-03-27 11:04:22Z OLiver $
+// $Id: build_version.cpp 7093 2011-03-27 11:49:37Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -19,9 +19,10 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#ifdef _MSC_VER
-	#include <stdafx.h>
-#endif
+#include "stdafx.h"
+
+
+
 #include <build_version.h>
 #include <memory.h>
 #include <cstring>

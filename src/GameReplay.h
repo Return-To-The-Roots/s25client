@@ -1,4 +1,4 @@
-// $Id: GameReplay.h 7088 2011-03-27 09:53:32Z OLiver $
+// $Id: GameReplay.h 7093 2011-03-27 11:49:37Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -107,6 +107,8 @@ private:
 	BinaryFile file;
 	/// File handle for pathfinding results
 	BinaryFile pf_file;
+	/// File path +  name
+	std::string filename;
 };
 
 #endif //!GAMEREPLAY_H_INCLUDED
