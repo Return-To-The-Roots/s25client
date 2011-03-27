@@ -1,4 +1,4 @@
-// $Id: SerializedGameData.h 6582 2010-07-16 11:23:35Z FloSoft $
+// $Id: SerializedGameData.h 7095 2011-03-27 20:15:08Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -62,8 +62,6 @@ public:
 
 	/// Nimmt das gesamte Spiel auf und speichert es im Buffer
 	void MakeSnapshot(GameWorld *const gw, EventManager *const em);
-	/// Schreibt den Buffer in eine Datei
-	void WriteToFile(BinaryFile& file);
 	/// Liest den Buffer aus einer Datei
 	void ReadFromFile(BinaryFile& file);
 

@@ -1,4 +1,4 @@
-// $Id: dskHostGame.cpp 7091 2011-03-27 10:57:38Z OLiver $
+// $Id: dskHostGame.cpp 7095 2011-03-27 20:15:08Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -501,7 +501,7 @@ void dskHostGame::Msg_ButtonClick(const unsigned int ctrl_id)
 		} break;
 	case 22: // Addons
 		{
-			iwAddons *w = new iwAddons(GAMECLIENT.IsHost() ? iwAddons::HOSTGAME : iwAddons::READONLY);
+			iwAddons *w = new iwAddons(&ggs,GAMECLIENT.IsHost() ? iwAddons::HOSTGAME : iwAddons::READONLY);
 			w->SetParent(this);
 			WindowManager::inst().Show(w);
 		} break;

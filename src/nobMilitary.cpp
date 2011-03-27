@@ -1,4 +1,4 @@
-// $Id: nobMilitary.cpp 7091 2011-03-27 10:57:38Z OLiver $
+// $Id: nobMilitary.cpp 7095 2011-03-27 20:15:08Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -77,7 +77,7 @@ nobMilitary::nobMilitary(const BuildingType type,const unsigned short x, const u
 
 	// Wenn kein Gold in neu gebaute Militärgebäude eingeliefert werden soll, wird die Goldzufuhr gestoppt
 	// Ansonsten neue Goldmünzen anfordern
-	if(ADDONMANAGER.isEnabled(ADDON_NO_COINS_DEFAULT))
+	if(GameClient::inst().GetGGS().isEnabled(ADDON_NO_COINS_DEFAULT))
 	{
 		disable_coins = true;
 		disable_coins_virtual = true;
@@ -475,7 +475,7 @@ void nobMilitary::RegulateTroops()
 
 		// Gebäude wird angegriffen und
 		// Addon aktiv, nur soviele Leute zum Nachbesetzen schicken wie Verteidiger eingestellt
-		if (aggressors.size() > 0 && ADDONMANAGER.getSelection(ADDON_DEFENDER_BEHAVIOR) == 2)	
+		if (aggressors.size() > 0 && GameClient::inst().GetGGS().getSelection(ADDON_DEFENDER_BEHAVIOR) == 2)	
 		{
 			diff = (gwg->GetPlayer(player)->military_settings[2] * diff) / MILITARY_SETTINGS_SCALE[2];
 		}
@@ -1127,7 +1127,7 @@ void nobMilitary::HitOfCatapultStone()
  */
 bool nobMilitary::IsDemolitionAllowed() const
 {
-	switch(ADDONMANAGER.getSelection(ADDON_DEMOLITION_PROHIBITION))
+	switch(GameClient::inst().GetGGS().getSelection(ADDON_DEMOLITION_PROHIBITION))
 	{
 	default: // off
 		break;

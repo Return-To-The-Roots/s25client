@@ -1,4 +1,4 @@
-// $Id: nofBuildingWorker.cpp 7091 2011-03-27 10:57:38Z OLiver $
+// $Id: nofBuildingWorker.cpp 7095 2011-03-27 20:15:08Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -390,8 +390,8 @@ bool nofBuildingWorker::GetResources(unsigned char type)
 	if(found)
 	{
 		// Minen / Brunnen unerschöpflich?
-		if( (type == 4 && ADDONMANAGER.isEnabled(ADDON_EXHAUSTIBLE_WELLS)) || 
-			(type != 4 && !ADDONMANAGER.isEnabled(ADDON_INEXHAUSTIBLE_MINES)) )
+		if( (type == 4 && GameClient::inst().GetGGS().isEnabled(ADDON_EXHAUSTIBLE_WELLS)) || 
+			(type != 4 && !GameClient::inst().GetGGS().isEnabled(ADDON_INEXHAUSTIBLE_MINES)) )
 			--gwg->GetNode(mx, my).resources;
 		return true;
 	}

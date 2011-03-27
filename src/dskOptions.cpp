@@ -1,4 +1,4 @@
-// $Id: dskOptions.cpp 7091 2011-03-27 10:57:38Z OLiver $
+// $Id: dskOptions.cpp 7095 2011-03-27 20:15:08Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -23,7 +23,8 @@
 #include "main.h"
 #include "dskOptions.h"
 
-#include "AddonManager.h"
+#include "GlobalGameSettings.h"
+#include "GameClient.h"
 #include "WindowManager.h"
 #include "Loader.h"
 
@@ -570,8 +571,8 @@ void dskOptions::Msg_ButtonClick(const unsigned int ctrl_id)
 		} break;
 	case 14: // Addons
 		{
-			ADDONMANAGER.LoadSettings();
-			WindowManager::inst().Show(new iwAddons());
+			//GameClient::inst().GetGGS().LoadSettings();
+			//WindowManager::inst().Show(new iwAddons());
 		} break;
 	}
 }

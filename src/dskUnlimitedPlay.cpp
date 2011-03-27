@@ -493,7 +493,7 @@ void dskUnlimitedPlay::Msg_ButtonClick(const unsigned int ctrl_id)
 		} break;
 	case 22: // Addons
 		{
-			iwAddons *w = new iwAddons(GAMECLIENT.IsHost() ? iwAddons::HOSTGAME : iwAddons::READONLY);
+			iwAddons *w = new iwAddons(&ggs,GAMECLIENT.IsHost() ? iwAddons::HOSTGAME : iwAddons::READONLY);
 			w->SetParent(this);
 			WindowManager::inst().Show(w);
 		} break;

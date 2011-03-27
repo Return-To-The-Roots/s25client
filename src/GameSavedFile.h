@@ -1,4 +1,4 @@
-// $Id: GameSavedFile.h 6582 2010-07-16 11:23:35Z FloSoft $
+// $Id: GameSavedFile.h 7095 2011-03-27 20:15:08Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -48,10 +48,6 @@ protected:
 	/// liest die GlobalGameSettings aus der Datei.
 	void ReadGGS(BinaryFile& file);
 
-	/// schreibt die Addoneinstellungen in die Datei.
-	void WriteAddonSettings(BinaryFile& file);
-	/// liest die Addoneinstellungen aus der Datei.
-	void ReadAddonSettings(BinaryFile& file);
 
 public:
 	/// Zeitpunkt der Aufnahme

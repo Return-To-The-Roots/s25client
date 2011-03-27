@@ -1,4 +1,4 @@
-// $Id: GameClient.cpp 7091 2011-03-27 10:57:38Z OLiver $
+// $Id: GameClient.cpp 7095 2011-03-27 20:15:08Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -382,7 +382,7 @@ void GameClient::StartGame(const unsigned int random_init)
 
 		/// Evtl. Goldvorkommen ändern
 		unsigned char target = 0xFF; // lÃ¶schen
-		switch(ADDONMANAGER.getSelection(ADDON_CHANGE_GOLD_DEPOSITS))
+		switch(GameClient::inst().GetGGS().getSelection(ADDON_CHANGE_GOLD_DEPOSITS))
 		{
 		case 0: target = 3; break; //in Gold   konvertieren bzw. nichts tun
 		case 1: target = 0xFF; break; // löschen

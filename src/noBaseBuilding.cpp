@@ -1,4 +1,4 @@
-// $Id: noBaseBuilding.cpp 7091 2011-03-27 10:57:38Z OLiver $
+// $Id: noBaseBuilding.cpp 7095 2011-03-27 20:15:08Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -122,8 +122,8 @@ void noBaseBuilding::Destroy_noBaseBuilding()
 
 	// Baukosten zurückerstatten (nicht bei Baustellen)
 	if( (GetGOT() != GOT_BUILDINGSITE) && 
-		( ADDONMANAGER.isEnabled(ADDON_REFUND_MATERIALS) || 
-		ADDONMANAGER.isEnabled(ADDON_REFUND_ON_EMERGENCY) ) )
+		( GameClient::inst().GetGGS().isEnabled(ADDON_REFUND_MATERIALS) || 
+		GameClient::inst().GetGGS().isEnabled(ADDON_REFUND_ON_EMERGENCY) ) )
 	{
 		// lebt unsere Flagge noch?
 		noFlag *flag = GetFlag();
@@ -132,11 +132,11 @@ void noBaseBuilding::Destroy_noBaseBuilding()
 			unsigned int percent_index = 0;
 
 			// wenn Rückerstattung aktiv ist, entsprechende Prozentzahl wählen
-			if(ADDONMANAGER.isEnabled(ADDON_REFUND_MATERIALS))
-				percent_index = ADDONMANAGER.getSelection(ADDON_REFUND_MATERIALS);
+			if(GameClient::inst().GetGGS().isEnabled(ADDON_REFUND_MATERIALS))
+				percent_index = GameClient::inst().GetGGS().getSelection(ADDON_REFUND_MATERIALS);
 
 			// wenn Rückerstattung bei Notprogramm aktiv ist, 50% zurückerstatten
-			else if(gwg->GetPlayer(player)->hasEmergency() && ADDONMANAGER.isEnabled(ADDON_REFUND_ON_EMERGENCY))
+			else if(gwg->GetPlayer(player)->hasEmergency() && GameClient::inst().GetGGS().isEnabled(ADDON_REFUND_ON_EMERGENCY))
 				percent_index = 2;
 			
 			// wieviel kriegt man von jeder Ware wieder?

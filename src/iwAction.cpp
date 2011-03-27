@@ -1,4 +1,4 @@
-// $Id: iwAction.cpp 7091 2011-03-27 10:57:38Z OLiver $
+// $Id: iwAction.cpp 7095 2011-03-27 20:15:08Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -204,7 +204,7 @@ iwAction::iwAction(dskGameInterface *const gi, GameWorldViewer * const gwv, cons
 		}
 		
 		// Mint and Goldmine
-		if(ADDONMANAGER.isEnabled(ADDON_CHANGE_GOLD_DEPOSITS))
+		if(GameClient::inst().GetGGS().isEnabled(ADDON_CHANGE_GOLD_DEPOSITS))
 		{
 			building_available[1][7] = false;
 			building_available[3][0] = false;
@@ -215,7 +215,7 @@ iwAction::iwAction(dskGameInterface *const gi, GameWorldViewer * const gwv, cons
 			building_available[1][12] = false;
 			
 		// Charburner
-		if(!ADDONMANAGER.isEnabled(ADDON_CHARBURNER))
+		if(!GameClient::inst().GetGGS().isEnabled(ADDON_CHARBURNER))
 			building_available[2][3] = false;
 		
 		for(unsigned char i = 0; i < TABS_COUNT[tabs.build_tabs]; ++i)
@@ -358,7 +358,7 @@ void iwAction::AddUpgradeRoad(ctrlGroup *group, unsigned int &x, unsigned int& w
 {
 	assert(group);
 
-	if(ADDONMANAGER.isEnabled(ADDON_MANUAL_ROAD_ENLARGEMENT))
+	if(GameClient::inst().GetGGS().isEnabled(ADDON_MANUAL_ROAD_ENLARGEMENT))
 	{
 		unsigned char flag_dir = 0;
 		noFlag *flag = gwv->GetRoadFlag(selected_x, selected_y, flag_dir);

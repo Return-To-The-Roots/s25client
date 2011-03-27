@@ -1,4 +1,4 @@
-// $Id: GameSavegame.cpp 7091 2011-03-27 10:57:38Z OLiver $
+// $Id: GameSavegame.cpp 7095 2011-03-27 20:15:08Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -107,9 +107,6 @@ bool Savegame::Save(BinaryFile& file)
 	// Serialisiertes Spielzeug reinschreiben
 	sgd.WriteToFile(file);
 
-	// Addoneinstellungen
-	WriteAddonSettings(file);
-
 	return true;
 }
 
@@ -181,9 +178,6 @@ bool Savegame::Load(BinaryFile& file,const bool load_players,const bool load_sgd
 	{
 		// Serialisiertes Spielzeug lesen
 		sgd.ReadFromFile(file);
-
-		// Addoneinstellungen
-		ReadAddonSettings(file);
 	}
 
 	return true;

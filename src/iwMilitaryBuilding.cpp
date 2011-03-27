@@ -1,4 +1,4 @@
-// $Id: iwMilitaryBuilding.cpp 7091 2011-03-27 10:57:38Z OLiver $
+// $Id: iwMilitaryBuilding.cpp 7095 2011-03-27 20:15:08Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -171,7 +171,7 @@ void iwMilitaryBuilding::DemolitionNotAllowed()
 {
 	// Meldung auswählen, je nach Einstellung
 	std::string msg;
-	switch(ADDONMANAGER.getSelection(ADDON_DEMOLITION_PROHIBITION))
+	switch(GameClient::inst().GetGGS().getSelection(ADDON_DEMOLITION_PROHIBITION))
 	{
 	default: assert(false); break;
 	case 1: msg = _("Demolition ist not allowed because the building is under attack!"); break;

@@ -1,4 +1,4 @@
-// $Id: GameWorldViewer.cpp 7091 2011-03-27 10:57:38Z OLiver $
+// $Id: GameWorldViewer.cpp 7095 2011-03-27 20:15:08Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -371,7 +371,7 @@ void GameWorldViewer::Draw(const unsigned char player, unsigned * water, const b
 				int altitude = GetNode(rb.point_x,rb.point_y).altitude;
 
 				const unsigned char waterway_lengthes[] = {3, 5, 9, 13, 21, 0}; // these are written into dskGameInterface.cpp, too
-				const unsigned char index = ADDONMANAGER.getSelection(ADDON_MAX_WATERWAY_LENGTH);
+				const unsigned char index = GameClient::inst().GetGGS().getSelection(ADDON_MAX_WATERWAY_LENGTH);
 				assert(index <= sizeof(waterway_lengthes) - 1);
 				const unsigned char max_length = waterway_lengthes[index];
 

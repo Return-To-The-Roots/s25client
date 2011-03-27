@@ -1,4 +1,4 @@
-// $Id: GlobalGameSettings.h 6958 2011-01-02 11:39:33Z FloSoft $
+// $Id: GlobalGameSettings.h 7095 2011-03-27 20:15:08Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -16,17 +16,18 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef GLOBALGAMESETTINGS_H_INCLUDED
-#define GLOBALGAMESETTINGS_H_INCLUDED
+#ifndef GlobalGameSettings_H_INCLUDED
+#define GlobalGameSettings_H_INCLUDED
+
+#include "Addons.h"
 
 #pragma once
-
-class Serializer;
 
 class GlobalGameSettings
 {
 public:
-	GlobalGameSettings() : game_speed(GS_FAST), game_objective(GO_NONE), start_wares(SWR_NORMAL), lock_teams(true), exploration(EXP_FOGOFWAR), team_view(true) {}
+	GlobalGameSettings();
+	~GlobalGameSettings();
 
 	/// Serialisierung und Deserialisierung
 	void Serialize(Serializer * ser) const;
@@ -39,6 +40,81 @@ public:
 	bool lock_teams;
 	enum Exploration { EXP_DISABLED = 0, EXP_CLASSIC, EXP_FOGOFWAR, EXP_FOGOFWARE_EXPLORED } exploration;
 	bool team_view;
+
+	/// clears the addon memory.
+	void reset(bool recreate = true);
+
+	const Addon *getAddon(unsigned int nr, unsigned int &status) const
+	{
+		if(nr >= addons.size())
+			return NULL;
+
+		const item *i = &addons.at(nr);
+
+		if(!i->addon)
+			return NULL;
+
+		status = i->status;
+		return i->addon;
+	}
+
+	unsigned int getCount() const { return addons.size(); }
+
+	bool isEnabled(AddonId id) const
+	{
+		std::vector<item>::const_iterator it = std::find(addons.begin(), addons.end(), id);
+		if(it == addons.end() || it->status == it->addon->getDefaultStatus())
+			return false;
+		return true;
+	}
+
+	unsigned int getSelection(AddonId id) const
+	{
+		std::vector<item>::const_iterator it = std::find(addons.begin(), addons.end(), id);
+		if(it == addons.end())
+			return 0;
+		return it->status;
+	}
+
+	void setSelection(AddonId id, unsigned int selection)
+	{
+		std::vector<item>::iterator it = std::find(addons.begin(), addons.end(), id);
+		if(it == addons.end())
+			return;
+
+		it->status = selection;
+	}
+
+	/// loads the saved addon configuration from the SETTINGS.
+	void LoadSettings();
+	/// saves the current addon configuration to the SETTINGS.
+	void SaveSettings() const;
+
+private:
+	void registerAddon(Addon *addon)
+	{
+		if(!addon)
+			return;
+
+		if(std::find(addons.begin(), addons.end(), addon->getId()) == addons.end())
+			addons.push_back(item(addon));
+
+		std::sort(addons.begin(), addons.end());
+	}
+
+	struct item
+	{
+		item(void) : addon(NULL), status(0) {}
+		item(Addon *addon) : addon(addon), status(addon->getDefaultStatus()) {}
+
+		Addon *addon;
+		unsigned int status;
+
+		bool operator==(const AddonId &o) const { return (addon ? addon->getId() == o : false); }
+		bool operator<(const item &o) const { return (addon->getName().compare(o.addon->getName()) < 0); }
+	};
+
+	std::vector<item> addons;
 };
 
-#endif // !GLOBALGAMESETTINGS_H_INCLUDED
+#endif // !GlobalGameSettings_H_INCLUDED

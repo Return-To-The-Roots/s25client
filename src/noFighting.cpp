@@ -1,4 +1,4 @@
-// $Id: noFighting.cpp 7091 2011-03-27 10:57:38Z OLiver $
+// $Id: noFighting.cpp 7095 2011-03-27 20:15:08Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -578,7 +578,7 @@ void noFighting::StartAttack()
 
 	unsigned char results[2];	
 	for(unsigned i = 0;i<2;++i){
-		switch (ADDONMANAGER.getSelection(ADDON_ADJUST_MILITARY_STRENGTH))
+		switch (GameClient::inst().GetGGS().getSelection(ADDON_ADJUST_MILITARY_STRENGTH))
 		{
 		case 0: // Maximale Stärke
 			{

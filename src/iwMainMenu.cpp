@@ -1,4 +1,4 @@
-// $Id: iwMainMenu.cpp 7091 2011-03-27 10:57:38Z OLiver $
+// $Id: iwMainMenu.cpp 7095 2011-03-27 20:15:08Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -87,14 +87,14 @@ iwMainMenu::iwMainMenu(GameWorldViewer * const gwv, dskGameInterface * const gi)
 	AddImageButton( 9, 124, 118,  53, 44, TC_GREY, LOADER.GetImageN("io", 175), _("Ship register"));
 
 	// Baureihenfolge
-	if(ADDONMANAGER.isEnabled(ADDON_CUSTOM_BUILD_SEQUENCE))
+	if(GameClient::inst().GetGGS().isEnabled(ADDON_CUSTOM_BUILD_SEQUENCE))
 		AddImageButton( 10,  12, 166,  53, 44, TC_GREY, LOADER.GetImageN("io", 24), _("Building sequence"));
 	
 	// Diplomatie (todo: besseres Bild suchen)
 	AddImageButton( 11,  68, 166,  53, 44, TC_GREY, LOADER.GetImageN("io", 190), _("Diplomacy"));
 
 	// AI-Debug
-	if(GameClient::inst().IsHost() && ADDONMANAGER.isEnabled(ADDON_AI_DEBUG_WINDOW))
+	if(GameClient::inst().IsHost() && GameClient::inst().GetGGS().isEnabled(ADDON_AI_DEBUG_WINDOW))
 		AddImageButton( 13,  80, 210,  20, 20, TC_GREY, NULL, _("AI Debug Window"));
 
 	// Optionen

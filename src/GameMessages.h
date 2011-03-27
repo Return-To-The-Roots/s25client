@@ -1,4 +1,4 @@
-// $Id: GameMessages.h 6582 2010-07-16 11:23:35Z FloSoft $
+// $Id: GameMessages.h 7095 2011-03-27 20:15:08Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -739,14 +739,12 @@ public:
 		: GameMessage(NMS_GGS_CHANGE, player)
 	{
 		ggs.Serialize(this);
-		ADDONMANAGER.Serialize(this);
 
 		LOG.write(">>> NMS_GGS_CHANGE\n");
 	}
 	void Run(MessageInterface *callback) 
 	{ 
 		ggs.Deserialize(this);
-		ADDONMANAGER.Deserialize(this);
 
 		LOG.write("<<< NMS_GGS_CHANGE\n");
 		GetInterface(callback)->OnNMSGGSChange(*this);

@@ -1,4 +1,4 @@
-// $Id: iwStatistics.cpp 7091 2011-03-27 10:57:38Z OLiver $
+// $Id: iwStatistics.cpp 7095 2011-03-27 20:15:08Z OLiver $
 //
 // Copyright (c) 2005-2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -83,7 +83,7 @@ iwStatistics::iwStatistics()
 		}
 
 		// Statistik-Sichtbarkeit abhängig von Auswahl
-		switch (ADDONMANAGER.getSelection(ADDON_STATISTICS_VISIBILITY))
+		switch (GameClient::inst().GetGGS().getSelection(ADDON_STATISTICS_VISIBILITY))
 		{
 		default: // Passiert eh nicht, nur zur Sicherheit
 			activePlayers[i] = false;

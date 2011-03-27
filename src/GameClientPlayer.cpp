@@ -1,4 +1,4 @@
-// $Id: GameClientPlayer.cpp 7091 2011-03-27 10:57:38Z OLiver $
+// $Id: GameClientPlayer.cpp 7095 2011-03-27 20:15:08Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -2097,7 +2097,7 @@ void GameClientPlayer::TestPacts()
 bool GameClientPlayer::CanBuildCatapult() const
 {
 	// Wenn ADDON_LIMIT_CATAPULTS nicht aktiv ist, bauen immer erlaubt
-	if(!ADDONMANAGER.isEnabled(ADDON_LIMIT_CATAPULTS))
+	if(!GameClient::inst().GetGGS().isEnabled(ADDON_LIMIT_CATAPULTS))
 		return true;
 
 	BuildingCount bc;
@@ -2106,7 +2106,7 @@ bool GameClientPlayer::CanBuildCatapult() const
 	unsigned int max = 0;
 
 	// proportional?
-	if(ADDONMANAGER.getSelection(ADDON_LIMIT_CATAPULTS) == 1)
+	if(GameClient::inst().GetGGS().getSelection(ADDON_LIMIT_CATAPULTS) == 1)
 	{
 		max = int(bc.building_counts[BLD_BARRACKS] * 0.125 +
 			  bc.building_counts[BLD_GUARDHOUSE] * 0.25 +
@@ -2116,7 +2116,7 @@ bool GameClientPlayer::CanBuildCatapult() const
 	else
 	{
 		const unsigned int limits[6] = { 0, 3, 5, 10, 20, 30};
-		max = limits[ADDONMANAGER.getSelection(ADDON_LIMIT_CATAPULTS) - 2];
+		max = limits[GameClient::inst().GetGGS().getSelection(ADDON_LIMIT_CATAPULTS) - 2];
 	}
 
 	if(bc.building_counts[BLD_CATAPULT] + bc.building_site_counts[BLD_CATAPULT] >= max)

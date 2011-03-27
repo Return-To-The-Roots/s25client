@@ -1,4 +1,4 @@
-// $Id: GameReplay.cpp 7093 2011-03-27 11:49:37Z OLiver $
+// $Id: GameReplay.cpp 7095 2011-03-27 20:15:08Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -99,8 +99,6 @@ bool Replay::WriteHeader(const std::string& filename)
 	WritePlayerData(file);
 	// GGS
 	WriteGGS(file);
-	// Addoneinstellungen schreiben
-	WriteAddonSettings(file);
 
 	// Map-Type
 	file.WriteUnsignedShort(static_cast<unsigned short>(map_type));
@@ -180,8 +178,6 @@ bool Replay::LoadHeader(const std::string& filename, const bool load_extended_he
 	ReadPlayerData(file);
 	// GGS
 	ReadGGS(file);
-	// Addoneinstellungen laden
-	ReadAddonSettings(file);
 
 	// Map-Type
 	map_type = static_cast<MapType>(file.ReadUnsignedShort());

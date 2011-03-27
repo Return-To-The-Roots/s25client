@@ -1,5 +1,5 @@
 ################################################################################
-### $Id: CMakeLists.txt 7040 2011-02-16 23:23:20Z jh $
+### $Id: CMakeLists.txt 7095 2011-03-27 20:15:08Z OLiver $
 ################################################################################
 
 INCLUDE(FindBZip2)
@@ -215,7 +215,6 @@ SET(SOURCES_NOF
 	)
 
 SET(SOURCES_OTHER
-	BinaryFile.cpp
 										BuildingConsts.h
 	BurnedWarehouse.cpp                 BurnedWarehouse.h
 	CatapultStone.cpp                   CatapultStone.h
@@ -294,7 +293,6 @@ SET(SOURCES_OTHER
 	WindowManager.cpp                   WindowManager.h
 	FOWObjects.cpp                      FOWObjects.h
 	PostMsg.cpp                         PostMsg.h
-	AddonManager.cpp                    AddonManager.h
 	Addons.cpp                          Addons.h
 										AddonChangeGoldDeposits.h
 										AddonMaxWaterwayLength.h

@@ -994,14 +994,6 @@
 					Name="Hilfsfunktionen und -klassen"
 					>
 					<File
-						RelativePath="..\..\src\BinaryFile.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\BinaryFile.h"
-						>
-					</File>
-					<File
 						RelativePath="..\..\src\CollisionDetection.cpp"
 						>
 					</File>
@@ -2075,14 +2067,6 @@
 					</File>
 					<File
 						RelativePath="..\..\src\AddonLimitCatapults.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\AddonManager.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\AddonManager.h"
 						>
 					</File>
 					<File

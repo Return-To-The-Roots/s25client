@@ -1,4 +1,4 @@
-// $Id: GameSavedFile.cpp 7091 2011-03-27 10:57:38Z OLiver $
+// $Id: GameSavedFile.cpp 7095 2011-03-27 20:15:08Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -177,36 +177,3 @@ void SavedFile::ReadGGS(BinaryFile& file)
 	delete[] buffer;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  schreibt die Addoneinstellungen in die Datei.
- *
- *  @author FloSoft
- */
-void SavedFile::WriteAddonSettings(BinaryFile& file)
-{
-	Serializer ser;
-	ADDONMANAGER.Serialize(&ser);
-
-	file.WriteUnsignedInt(ser.GetLength());
-	file.WriteRawData(ser.GetData(), ser.GetLength());
-}
-
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  liest die Addoneinstellungen aus der Datei.
- *
- *  @author FloSoft
- */
-void SavedFile::ReadAddonSettings(BinaryFile& file)
-{
-	unsigned length = file.ReadUnsignedInt();
-	unsigned char *buffer = new unsigned char[length];
-
-	file.ReadRawData(buffer, length);
-	Serializer ser(buffer, length);
-	
-	ADDONMANAGER.Deserialize(&ser);
-	
-	delete[] buffer;
-}

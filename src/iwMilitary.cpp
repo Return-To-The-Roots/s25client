@@ -1,4 +1,4 @@
-// $Id: iwMilitary.cpp 7091 2011-03-27 10:57:38Z OLiver $
+// $Id: iwMilitary.cpp 7095 2011-03-27 20:15:08Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -63,7 +63,7 @@ iwMilitary::iwMilitary(void)
 	AddImageButton(21,120,282,30,32,TC_GREY, LOADER.GetImageN("io",191),_("Default"));
 
 	// Falls Verteidiger ändern verboten ist, einfach die Bar ausblenden
-	if (ADDONMANAGER.getSelection(ADDON_DEFENDER_BEHAVIOR) == 1)
+	if (GameClient::inst().GetGGS().getSelection(ADDON_DEFENDER_BEHAVIOR) == 1)
 	{
 		GetCtrl<ctrlProgress>(2)->SetVisible(false);
 	}

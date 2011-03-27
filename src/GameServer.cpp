@@ -1,4 +1,4 @@
-// $Id: GameServer.cpp 7091 2011-03-27 10:57:38Z OLiver $
+// $Id: GameServer.cpp 7095 2011-03-27 20:15:08Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -260,7 +260,7 @@ bool GameServer::Start()
 			players[0].is_host = true;
 
 			// Standardeinstellungen aus den SETTINGS für die Addons laden
-			ADDONMANAGER.LoadSettings();
+			//GameClient::inst().GetGGS().LoadSettings();
 		} break;
 	case MAPTYPE_SAVEGAME:
 		{

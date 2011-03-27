@@ -1,4 +1,4 @@
-// $Id: iwAddons.h 6458 2010-05-31 11:38:51Z FloSoft $
+// $Id: iwAddons.h 7095 2011-03-27 20:15:08Z OLiver $
 //
 // Copyright (c) 2005-2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -23,10 +23,14 @@
 
 #include "IngameWindow.h"
 
+class GlobalGameSettings;
+
 class iwAddons : public IngameWindow
 {
 	/// Breite der Scrollbar
 	static const unsigned short SCROLLBAR_WIDTH = 20;
+	/// Pointer to the settings we edit in this window
+	GlobalGameSettings * ggs;
 
 public:
 	enum ChangePolicy
@@ -37,7 +41,7 @@ public:
 	};
 
 public:
-	iwAddons(ChangePolicy policy = SETDEFAULTS);
+	iwAddons(GlobalGameSettings * ggs,ChangePolicy policy = SETDEFAULTS);
 	~iwAddons(void);
 
 protected:
