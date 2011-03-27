@@ -1,4 +1,4 @@
-// $Id: noBaseBuilding.cpp 7095 2011-03-27 20:15:08Z OLiver $
+// $Id: noBaseBuilding.cpp 7096 2011-03-27 20:17:55Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -34,7 +34,7 @@
 #include "WindowManager.h"
 #include "SerializedGameData.h"
 #include "GameInterface.h"
-#include "AddonManager.h"
+
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

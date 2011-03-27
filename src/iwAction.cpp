@@ -1,4 +1,4 @@
-// $Id: iwAction.cpp 7095 2011-03-27 20:15:08Z OLiver $
+// $Id: iwAction.cpp 7096 2011-03-27 20:17:55Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -27,7 +27,7 @@
 #include "iwDemolishBuilding.h"
 #include "iwMilitaryBuilding.h"
 
-#include "AddonManager.h"
+
 #include "Loader.h"
 #include "controls.h"
 #include "VideoDriverWrapper.h"
