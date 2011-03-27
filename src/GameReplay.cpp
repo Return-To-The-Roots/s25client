@@ -1,4 +1,4 @@
-// $Id: GameReplay.cpp 7095 2011-03-27 20:15:08Z OLiver $
+// $Id: GameReplay.cpp 7097 2011-03-27 20:58:30Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -28,7 +28,7 @@
 /// Kleine Signatur am Anfang "RTTRRP", die ein gültiges S25 RTTR Replay kennzeichnet
 const char Replay::REPLAY_SIGNATURE[6] = {'R','T','T','R','R','P'};
 /// Version des Replay-Formates
-const unsigned short Replay::REPLAY_VERSION = 21;
+const unsigned short Replay::REPLAY_VERSION = 22;
 
 ///////////////////////////////////////////////////////////////////////////////
 /**

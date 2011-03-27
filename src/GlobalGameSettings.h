@@ -1,4 +1,4 @@
-// $Id: GlobalGameSettings.h 7095 2011-03-27 20:15:08Z OLiver $
+// $Id: GlobalGameSettings.h 7097 2011-03-27 20:58:30Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -27,7 +27,10 @@ class GlobalGameSettings
 {
 public:
 	GlobalGameSettings();
+	GlobalGameSettings(const GlobalGameSettings& ggs);
 	~GlobalGameSettings();
+
+	void operator=(const GlobalGameSettings& ggs);
 
 	/// Serialisierung und Deserialisierung
 	void Serialize(Serializer * ser) const;

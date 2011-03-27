@@ -1,4 +1,4 @@
-// $Id: GlobalGameSettings.cpp 7095 2011-03-27 20:15:08Z OLiver $
+// $Id: GlobalGameSettings.cpp 7097 2011-03-27 20:58:30Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -56,6 +56,20 @@ GlobalGameSettings::GlobalGameSettings() : game_speed(GS_FAST), game_objective(G
 {
 	// register addons
 	reset();
+}
+
+GlobalGameSettings::GlobalGameSettings(const GlobalGameSettings& ggs)
+{
+	Serializer ser;
+	ggs.Serialize(&ser);
+	Deserialize(&ser);
+}
+
+void GlobalGameSettings::operator=(const GlobalGameSettings& ggs)
+{
+	Serializer ser;
+	ggs.Serialize(&ser);
+	Deserialize(&ser);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
