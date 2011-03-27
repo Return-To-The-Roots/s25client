@@ -966,7 +966,7 @@ noFigure * CreateJob(const Job job_id,const unsigned short x, const unsigned sho
 			// Wenn goal = 0 oder Lagerhaus, dann Auslagern anscheinend und mann kann irgendeinen Typ nehmen
 			if(!goal)
 				return new nofScout_LookoutTower(x,y,player,static_cast<nobUsual*>(goal));
-			if(goal->GetGOT() == GOT_NOB_HARBORBUILDING)
+			if(goal->GetGOT() == GOT_NOB_HARBORBUILDING || goal->GetGOT() == GOT_NOB_STOREHOUSE || goal->GetGOT																	() == GOT_NOB_HQ)
 				return new nofPassiveWorker(JOB_SCOUT,x,y,player,goal);
 			// Spähturm / Lagerhaus?
 			else if(goal->GetGOT() == GOT_NOB_USUAL || goal->GetGOT() == GOT_NOB_HARBORBUILDING)
