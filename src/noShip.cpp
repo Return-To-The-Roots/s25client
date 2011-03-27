@@ -1,4 +1,4 @@
-// $Id: noShip.cpp 7084 2011-03-26 21:31:12Z OLiver $
+// $Id: noShip.cpp 7091 2011-03-27 10:57:38Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -20,7 +20,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Header
 
-#include "stdafx.h"
+#include <stdafx.h>
 #include "main.h"
 #include "noShip.h"
 #include "Loader.h"

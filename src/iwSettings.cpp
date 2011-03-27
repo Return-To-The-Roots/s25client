@@ -19,7 +19,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "stdafx.h"
+#include <stdafx.h>
 #include "main.h"
 #include "iwSettings.h"
 

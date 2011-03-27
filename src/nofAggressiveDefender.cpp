@@ -20,7 +20,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Header
 
-#include "stdafx.h"
+#include <stdafx.h>
 #include "main.h"
 #include "nofAggressiveDefender.h"
 #include "nofAttacker.h"
