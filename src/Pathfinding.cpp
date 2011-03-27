@@ -1,4 +1,4 @@
-// $Id: Pathfinding.cpp 7084 2011-03-26 21:31:12Z OLiver $
+// $Id: Pathfinding.cpp 7088 2011-03-27 09:53:32Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -145,7 +145,7 @@ std::vector<unsigned> clean_list;
 bool GameWorldBase::FindFreePath(const MapCoord x_start,const MapCoord y_start,
 				  const MapCoord x_dest, const MapCoord y_dest, const bool random_route, 
 				  const unsigned max_route, std::vector<unsigned char> * route, unsigned *length,
-				  unsigned char * first_dir,  FP_Node_OK_Callback IsNodeOK, FP_Node_OK_Callback IsNodeToDestOk, const void * param) const
+				  unsigned char * first_dir,  FP_Node_OK_Callback IsNodeOK, FP_Node_OK_Callback IsNodeToDestOk, const void * param, const bool record) const
 {
 	//puts("");
 	// Erst einmal wieder aufräumen
@@ -278,21 +278,24 @@ bool GameWorldBase::FindFreePath(const MapCoord x_start,const MapCoord y_start,
 bool GameWorldBase::FindPathOnRoads(const noRoadNode * const start, const noRoadNode * const goal,
 									const bool ware_mode, unsigned * length, 
 									unsigned char * first_dir,  Point<MapCoord> * next_harbor,
-									const RoadSegment * const forbidden) const
+									const RoadSegment * const forbidden, const bool record) const
 {
 	// Aus Replay lesen?
-	if(GameClient::inst().ArePathfindingResultsAvailable())
+	if(GameClient::inst().ArePathfindingResultsAvailable() && record)
 	{
 		unsigned char dir;
-		GameClient::inst().ReadPathfindingResult(&dir,length,next_harbor);
-		if(first_dir) *first_dir = dir;
-		return (dir != 0xff);
+		if(GameClient::inst().ReadPathfindingResult(&dir,length,next_harbor))
+		{
+			if(first_dir) *first_dir = dir;
+			return (dir != 0xff);
+		}
 	}
 			
 	// Irgendwelche Null-Anfänge oder Ziele? --> Kein Weg
 	if(!start || !goal)
 	{
-		GameClient::inst().AddPathfindingResult(0xff,length,next_harbor);
+		if(record)
+			GameClient::inst().AddPathfindingResult(0xff,length,next_harbor);
 		return false;
 	}
 
@@ -320,7 +323,8 @@ bool GameWorldBase::FindPathOnRoads(const noRoadNode * const start, const noRoad
 		// Liste leer und kein Ziel erreicht --> kein Weg
 		if(!todo.size())
 		{
-			GameClient::inst().AddPathfindingResult(0xff,length,next_harbor);
+			if(record)
+				GameClient::inst().AddPathfindingResult(0xff,length,next_harbor);
 			return false;
 		}
 		
@@ -368,7 +372,8 @@ bool GameWorldBase::FindPathOnRoads(const noRoadNode * const start, const noRoad
 				
 
 			// Fertig, es wurde ein Pfad gefunden
-			GameClient::inst().AddPathfindingResult(first_dir_tmp,length,next_harbor);
+			if(record)
+				GameClient::inst().AddPathfindingResult(first_dir_tmp,length,next_harbor);
 			return true;
 		}
 		
@@ -529,7 +534,7 @@ bool IsPointOK_RoadPath(const GameWorldBase& gwb, const MapCoord x, const MapCoo
 bool GameWorldViewer::FindRoadPath(const MapCoord x_start,const MapCoord y_start, const MapCoord x_dest, const MapCoord y_dest,std::vector<unsigned char>& route, const bool boat_road)
 {
 	Param_RoadPath prp = { boat_road };
-	return FindFreePath(x_start,y_start,x_dest,y_dest,false,100,&route,NULL,NULL,IsPointOK_RoadPath,NULL, &prp);
+	return FindFreePath(x_start,y_start,x_dest,y_dest,false,100,&route,NULL,NULL,IsPointOK_RoadPath,NULL, &prp,false);
 }
 
 /// Abbruch-Bedingungen für freien Pfad für Menschen
@@ -586,16 +591,16 @@ unsigned char GameWorldBase::FindHumanPath(const MapCoord x_start,const MapCoord
 			const MapCoord x_dest, const MapCoord y_dest, const unsigned max_route, const bool random_route, unsigned *length) const
 {
 	// Aus Replay lesen?
-	if(GameClient::inst().ArePathfindingResultsAvailable())
+	if(GameClient::inst().ArePathfindingResultsAvailable() && !random_route)
 	{
 		unsigned char dir;
-		GameClient::inst().ReadPathfindingResult(&dir,length,NULL);
-		return dir;
+		if(GameClient::inst().ReadPathfindingResult(&dir,length,NULL))
+			return dir;
 	}
 	
 	unsigned char first_dir = 0xFF;
 	FindFreePath(x_start,y_start,x_dest,y_dest,random_route,max_route,NULL,length,&first_dir,IsPointOK_HumanPath,
-		IsPointToDestOK_HumanPath,NULL);
+		IsPointToDestOK_HumanPath,NULL,true);
 		
 	GameClient::inst().AddPathfindingResult(first_dir,length,NULL);	
 	
@@ -630,7 +635,7 @@ bool GameWorldBase::FindShipPath(const MapCoord x_start,const MapCoord y_start, 
 								 GameWorldBase::CrossBorders * cb)
 {
 	return FindFreePath(x_start,y_start,x_dest,y_dest,true,400,route,length,NULL,IsPointOK_ShipPath,
-		IsPointToDestOK_ShipPath,NULL);
+		IsPointToDestOK_ShipPath,NULL,false);
 }
 
 /// Prüft, ob eine Schiffsroute noch Gültigkeit hat

@@ -1,4 +1,4 @@
-// $Id: GameReplay.cpp 7084 2011-03-26 21:31:12Z OLiver $
+// $Id: GameReplay.cpp 7088 2011-03-27 09:53:32Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -35,7 +35,7 @@ const unsigned short Replay::REPLAY_VERSION = 21;
  *
  *  @author OLiver
  */
-Replay::Replay() : nwf_length(0), random_init(0), pathfinding_results(false), map_length(0), map_zip_length(0), map_data(0), 
+Replay::Replay() : nwf_length(0), random_init(0), pathfinding_results(true), map_length(0), map_zip_length(0), map_data(0), 
 	savegame(0), last_gf(0), last_gf_file_pos(0), gf_file_pos(0)
 {
 }
@@ -58,6 +58,7 @@ Replay::~Replay()
 void Replay::StopRecording()
 {
 	file.Close();
+	pf_file.Close();
 
 	delete [] players;
 	players = 0;
@@ -135,6 +136,10 @@ bool Replay::WriteHeader(const std::string& filename)
 	
 	gf_file_pos  = 0;
 
+	// Create File for pathfinding results
+	if(pathfinding_results)
+		pf_file.Open((filename + "_res").c_str(),OFM_WRITE);
+
 	return true;
 }
 
@@ -208,6 +213,16 @@ bool Replay::LoadHeader(const std::string& filename, const bool load_extended_he
 		//while(file.Tell() % 4)
 		//	file.Seek(1, SEEK_CUR);
 	}
+
+	if(load_extended_header)
+	{
+		// Try to open precalculated pathfinding results
+		pathfinding_results = pf_file.Open((filename + "_res").c_str(),OFM_READ);
+
+		if(!pathfinding_results)
+			pf_file.Open((filename + "_res").c_str(),OFM_WRITE);
+	}
+
 
 	return true;
 }
@@ -303,16 +318,17 @@ void Replay::AddGameCommand(const unsigned gf,const unsigned short length, const
 /// Fügt Pathfinding-Result hinzu
 void Replay::AddPathfindingResult(const unsigned char data, const unsigned * const length, const Point<MapCoord> * const next_harbor)
 {
-	if(!pathfinding_results)
-		return;
+	//if(!pathfinding_results)
+	//	return;
 		
-	file.WriteUnsignedChar(data);
-	if(length) file.WriteUnsignedInt(*length);
+	pf_file.WriteUnsignedChar(data);
+	if(length) pf_file.WriteUnsignedInt(*length);
 	if(next_harbor)
 	{
-		file.WriteUnsignedShort(next_harbor->x);
-		file.WriteUnsignedShort(next_harbor->y);
+		pf_file.WriteUnsignedShort(next_harbor->x);
+		pf_file.WriteUnsignedShort(next_harbor->y);
 	}
+	pf_file.Flush();
 }
 
 
@@ -379,15 +395,25 @@ void Replay::ReadGameCommand(unsigned short *length, unsigned char ** data)
 	file.ReadRawData(*data,*length);
 }
 
-void Replay::ReadPathfindingResult(unsigned char * data, unsigned * length, Point<MapCoord> * next_harbor)
+bool Replay::ReadPathfindingResult(unsigned char * data, unsigned * length, Point<MapCoord> * next_harbor)
 {
-	*data = file.ReadUnsignedChar();
-	if(length) *length = file.ReadUnsignedInt();
+	if(!pathfinding_results)
+		return false;
+
+	unsigned char tmp = pf_file.ReadUnsignedChar();
+
+	if(pf_file.EndOfFile())
+		return false;
+
+	*data = tmp;
+	if(length) *length = pf_file.ReadUnsignedInt();
 	if(next_harbor)
 	{
-		next_harbor->x = file.ReadUnsignedShort();
-		next_harbor->y = file.ReadUnsignedShort();
+		next_harbor->x = pf_file.ReadUnsignedShort();
+		next_harbor->y = pf_file.ReadUnsignedShort();
 	}
+
+	return true;
 		
 }
 

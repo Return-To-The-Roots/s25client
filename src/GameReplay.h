@@ -1,4 +1,4 @@
-// $Id: GameReplay.h 6582 2010-07-16 11:23:35Z FloSoft $
+// $Id: GameReplay.h 7088 2011-03-27 09:53:32Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -69,7 +69,7 @@ public:
 	/// Liest ein Chat-Command aus
 	void ReadChatCommand(unsigned char * player, unsigned char  * dest, std::string& str);
 	void ReadGameCommand(unsigned short *length, unsigned char ** data);
-	void ReadPathfindingResult(unsigned char * data, unsigned * length, Point<MapCoord> * next_harbor);
+	bool ReadPathfindingResult(unsigned char * data, unsigned * length, Point<MapCoord> * next_harbor);
 
 	/// Aktualisiert den End-GF, schreibt ihn in die Replaydatei (nur beim Spielen bzw. Schreiben verwenden!)
 	void UpdateLastGF(const unsigned last_gf);
@@ -105,6 +105,8 @@ private:
 
 	/// Dateihandle
 	BinaryFile file;
+	/// File handle for pathfinding results
+	BinaryFile pf_file;
 };
 
 #endif //!GAMEREPLAY_H_INCLUDED

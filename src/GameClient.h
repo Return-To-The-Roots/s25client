@@ -1,4 +1,4 @@
-// $Id: GameClient.h 6720 2010-09-10 08:53:20Z OLiver $
+// $Id: GameClient.h 7088 2011-03-27 09:53:32Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -155,7 +155,7 @@ public:
 	/// Gibt zurück, ob Pathfinding-Results zur Verfügung stehen
 	bool ArePathfindingResultsAvailable() const;
 	/// Gibt Pathfinding-Results zurück aus einem Replay
-	void ReadPathfindingResult( unsigned char *dir, unsigned * length, Point<MapCoord> * next_harbor);
+	bool ReadPathfindingResult( unsigned char *dir, unsigned * length, Point<MapCoord> * next_harbor);
 
 private:
 	/// Versucht einen neuen GameFrame auszuführen, falls die Zeit dafür gekommen ist

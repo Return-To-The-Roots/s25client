@@ -113,7 +113,7 @@
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				WarnAsError="true"
+				WarnAsError="false"
 				DebugInformationFormat="3"
 				DisableSpecificWarnings="4996"
 			/>

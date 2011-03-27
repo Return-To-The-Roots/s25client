@@ -1,4 +1,4 @@
-// $Id: GameClient.cpp 7084 2011-03-26 21:31:12Z OLiver $
+// $Id: GameClient.cpp 7088 2011-03-27 09:53:32Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1863,7 +1863,7 @@ void GameClient::SendAIEvent(AIEvent::Base *ev, unsigned receiver)
 void GameClient::AddPathfindingResult(const unsigned char dir, const unsigned * const length, const Point<MapCoord> * const next_harbor)
 {
 	// Sind wir im normalem Spiel?
-	if(!replay_mode)
+	if(!replay_mode || (replay_mode && !replayinfo.replay.pathfinding_results))
 	{
 		// Dann hinzufügen
 		replayinfo.replay.AddPathfindingResult(dir,length,next_harbor);
@@ -1874,7 +1874,7 @@ void GameClient::AddPathfindingResult(const unsigned char dir, const unsigned * 
 bool GameClient::ArePathfindingResultsAvailable() const
 {
 	// Replaymodus?
-	if(replay_mode)
+	if(replay_mode || (!replay_mode && !replayinfo.replay.pathfinding_results))
 	{
 		// Unterstützt das Replay das auch (noch)?
 		if(replayinfo.replay.pathfinding_results && !replayinfo.end)
@@ -1885,9 +1885,9 @@ bool GameClient::ArePathfindingResultsAvailable() const
 }
 
 /// Gibt Pathfinding-Results zurück aus einem Replay
-void GameClient::ReadPathfindingResult(unsigned char *dir, unsigned * length, Point<MapCoord> * next_harbor)
+bool GameClient::ReadPathfindingResult(unsigned char *dir, unsigned * length, Point<MapCoord> * next_harbor)
 {
-	replayinfo.replay.ReadPathfindingResult(dir,length,next_harbor);
+	return replayinfo.replay.ReadPathfindingResult(dir,length,next_harbor);
 }
 
 

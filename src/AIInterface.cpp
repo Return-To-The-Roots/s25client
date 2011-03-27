@@ -87,13 +87,13 @@ bool AIInterface::FindFreePathForNewRoad(MapCoord startX, MapCoord startY, MapCo
 		unsigned *length) const
 {
 	bool boat = false;
-	return gwb->FindFreePath(startX, startY, targetX, targetY, false, 100, route, length, NULL, IsPointOK_RoadPath, NULL, (void *) &boat);
+	return gwb->FindFreePath(startX, startY, targetX, targetY, false, 100, route, length, NULL, IsPointOK_RoadPath, NULL, (void *) &boat,false);
 }
 
 
 bool AIInterface::FindPathOnRoads(const noRoadNode *start, const noRoadNode *target, unsigned *length) const
 {
-	return gwb->FindPathOnRoads(start, target, false, length, NULL, NULL, NULL);
+	return gwb->FindPathOnRoads(start, target, false, length, NULL, NULL, NULL, false);
 }
 
 const nobHQ *AIInterface::GetHeadquarter() const

@@ -1,4 +1,4 @@
-// $Id: GameWorld.h 6911 2010-12-20 20:24:31Z OLiver $
+// $Id: GameWorld.h 7088 2011-03-27 09:53:32Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -326,7 +326,7 @@ public:
 	bool FindFreePath(const MapCoord x_start,const MapCoord y_start,
 				  const MapCoord x_dest, const MapCoord y_dest, const bool random_route, 
 				  const unsigned max_route, std::vector<unsigned char> * route, unsigned *length, unsigned char * first_dir, 
-				  FP_Node_OK_Callback IsNodeOK, FP_Node_OK_Callback IsNodeToDestOk, const void * param) const;
+				  FP_Node_OK_Callback IsNodeOK, FP_Node_OK_Callback IsNodeToDestOk, const void * param, const bool record) const;
 	/// Ermittelt, ob eine freie Route noch passierbar ist und gibt den Endpunkt der Route zurück
 	bool CheckFreeRoute(const MapCoord x_start,const MapCoord y_start, const std::vector<unsigned char>& route,
 		const unsigned pos, FP_Node_OK_Callback IsNodeOK, FP_Node_OK_Callback IsNodeToDestOk,
@@ -334,7 +334,7 @@ public:
 	/// Wegfindung auf StraÃŸen - Basisroutine
 	bool FindPathOnRoads(const noRoadNode * const start, const noRoadNode * const goal,
 									const bool ware_mode, unsigned * length,
-									unsigned char * first_dir, Point<MapCoord> * next_harbor, const RoadSegment * const forbidden) const;
+									unsigned char * first_dir, Point<MapCoord> * next_harbor, const RoadSegment * const forbidden, const bool record = true) const;
 	/// Findet einen Weg für Figuren
 	unsigned char FindHumanPath(const MapCoord x_start,const MapCoord y_start,
 		  const MapCoord x_dest, const MapCoord y_dest, const unsigned max_route = 0xFFFFFFFF, const bool random_route = false, unsigned *length = NULL) const;

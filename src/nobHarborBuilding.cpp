@@ -1,4 +1,4 @@
-// $Id: nobHarborBuilding.cpp 7084 2011-03-26 21:31:12Z OLiver $
+// $Id: nobHarborBuilding.cpp 7088 2011-03-27 09:53:32Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1018,7 +1018,7 @@ void nobHarborBuilding::GetAttackerBuildingsForSeaAttack(std::vector<SeaAttacker
 			continue;
 
 		// Weg vom Hafen zum Militärgebäude berechnen
-		if(!gwg->FindFreePath((*it)->GetX(),(*it)->GetY(),x,y,false,BASE_ATTACKING_DISTANCE*2,NULL,NULL,NULL,NULL,NULL,NULL))
+		if(!gwg->FindFreePath((*it)->GetX(),(*it)->GetY(),x,y,false,BASE_ATTACKING_DISTANCE*2,NULL,NULL,NULL,NULL,NULL,NULL,false))
 			continue;
 			
 		// Entfernung zwischen Hafen und möglichen Zielhafenpunkt ausrechnen
