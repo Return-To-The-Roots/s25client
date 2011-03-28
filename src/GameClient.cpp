@@ -1,4 +1,4 @@
-// $Id: GameClient.cpp 7095 2011-03-27 20:15:08Z OLiver $
+// $Id: GameClient.cpp 7101 2011-03-28 21:35:43Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -184,6 +184,7 @@ GameClient::~GameClient(void)
 bool GameClient::Connect(const std::string& server, const std::string& password, unsigned char servertyp, unsigned short port, bool host, bool use_ipv6)
 {
 	Stop();
+	ggs.LoadSettings();
 
 	// Name und Password kopieren
 	clientconfig.server = server;

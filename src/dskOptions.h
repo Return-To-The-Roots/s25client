@@ -1,4 +1,4 @@
-// $Id: dskOptions.h 6582 2010-07-16 11:23:35Z FloSoft $
+// $Id: dskOptions.h 7101 2011-03-28 21:35:43Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -23,12 +23,14 @@
 
 #include "Desktop.h"
 #include "../driver/src/VideoDriver.h"
+#include "GlobalGameSettings.h"
 
 /// Klasse des Optionen Desktops.
 class dskOptions: public Desktop
 {
 public:
 	dskOptions(void);
+	~dskOptions();
 
 private:
 	void Msg_OptionGroupChange(const unsigned int ctrl_id, const unsigned short selection);
@@ -41,6 +43,7 @@ private:
 	void Msg_Group_OptionGroupChange(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short selection);
 
 private:
+	GlobalGameSettings ggs;
 	std::vector<VideoDriver::VideoMode> video_modes; ///< Vector für die Auflösungen
 };
 

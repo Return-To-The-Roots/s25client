@@ -1,4 +1,4 @@
-// $Id: dskOptions.cpp 7095 2011-03-27 20:15:08Z OLiver $
+// $Id: dskOptions.cpp 7101 2011-03-28 21:35:43Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -331,6 +331,12 @@ dskOptions::dskOptions(void) : Desktop(LOADER.GetImageN("setup013", 0))
 	// }
 }
 
+dskOptions::~dskOptions()
+{
+	// Save settings
+	ggs.SaveSettings();
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 /**
  *
@@ -571,8 +577,9 @@ void dskOptions::Msg_ButtonClick(const unsigned int ctrl_id)
 		} break;
 	case 14: // Addons
 		{
-			//GameClient::inst().GetGGS().LoadSettings();
-			//WindowManager::inst().Show(new iwAddons());
+			ggs.LoadSettings();
+			WindowManager::inst().Show(new iwAddons(&ggs));
+			
 		} break;
 	}
 }
