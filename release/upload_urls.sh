@@ -26,7 +26,7 @@ fi
 svn log $(dirname $(svn info | grep "URL" | cut -d ' ' -f 2)) > ${UPLOADFILE}changelog.txt || exit 2
 
 # upload data
-scp ${UPLOADFILE}rapidshare.txt $UPLOADTARGET || exit 3
-scp ${UPLOADFILE}changelog.txt $UPLOADTARGET || exit 4
+scp -4 ${UPLOADFILE}rapidshare.txt $UPLOADTARGET || exit 3
+scp -4 ${UPLOADFILE}changelog.txt $UPLOADTARGET || exit 4
 
 exit 0
