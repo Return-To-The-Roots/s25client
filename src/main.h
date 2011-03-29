@@ -1,4 +1,4 @@
-// $Id: main.h 7084 2011-03-26 21:31:12Z OLiver $
+// $Id: main.h 7103 2011-03-29 12:08:51Z FloSoft $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -25,9 +25,9 @@
 // System-Header
 
 #define _CRTDBG_MAP_ALLOC
-#define _WINSOCKAPI_
 
 #ifdef _WIN32
+	#define WIN32_LEAN_AND_MEAN
 	#include <windows.h>
 	#include <ws2tcpip.h>
 	#include <shlwapi.h>
@@ -38,7 +38,7 @@
 #ifdef _MSC_VER
 	#include <crtdbg.h>
 #else
-    #include <assert.h>
+	#include <assert.h>
 #endif
 
 	#undef PlaySound
