@@ -1,5 +1,5 @@
 #################################################################################
-### $Id: CMakeLists.txt 6458 2010-05-31 11:38:51Z FloSoft $
+### $Id: CMakeLists.txt 7104 2011-03-29 13:44:22Z FloSoft $
 #################################################################################
 
 IF ("${COMPILEFOR}" STREQUAL "windows" )
@@ -20,12 +20,13 @@ IF ("${COMPILEFOR}" STREQUAL "windows" )
 		TARGET_LINK_LIBRARIES(videoWinAPI videodrv gdi32 opengl32 user32) 
 		# ${GDI32_LIBRARY} ${OPENGL32_LIBRARY} ${USER32_LIBRARY})
 	
+		SET(SL_PREFIX ${CMAKE_SHARED_LIBRARY_PREFIX})
 		IF ( "${COMPILEFOR}" STREQUAL "windows")
 			ADD_DEFINITIONS(-DBUILD_DLL)
-			SET(CMAKE_SHARED_LIBRARY_PREFIX "")
+			SET(SL_PREFIX "")
 		ENDIF ( "${COMPILEFOR}" STREQUAL "windows")
 		
-		ADD_CUSTOM_COMMAND(TARGET videoWinAPI POST_BUILD COMMAND ln -fvs WinAPI/src/${CMAKE_SHARED_LIBRARY_PREFIX}videoWinAPI${CMAKE_SHARED_LIBRARY_SUFFIX} ../../videoWinAPI${CMAKE_SHARED_LIBRARY_SUFFIX})
+		ADD_CUSTOM_COMMAND(TARGET videoWinAPI POST_BUILD COMMAND ln -fvs WinAPI/src/${SL_PREFIX}videoWinAPI${CMAKE_SHARED_LIBRARY_SUFFIX} ../../videoWinAPI${CMAKE_SHARED_LIBRARY_SUFFIX})
 
 		INSTALL(TARGETS videoWinAPI RUNTIME DESTINATION ${LIBDIR}/driver/video)
 	#ENDIF (GDI32_LIBRARY AND OPENGL_LIBRARY AND USER32_LIBRARY)

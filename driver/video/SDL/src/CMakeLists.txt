@@ -1,5 +1,5 @@
 #################################################################################
-### $Id: CMakeLists.txt 6458 2010-05-31 11:38:51Z FloSoft $
+### $Id: CMakeLists.txt 7104 2011-03-29 13:44:22Z FloSoft $
 #################################################################################
 
 INCLUDE(FindSDL)
@@ -21,12 +21,13 @@ IF (SDL_FOUND)
 
 	TARGET_LINK_LIBRARIES(videoSDL videodrv ${SDL_LIBRARY})
 
+	SET(SL_PREFIX ${CMAKE_SHARED_LIBRARY_PREFIX})
 	IF ( "${COMPILEFOR}" STREQUAL "windows")
 		ADD_DEFINITIONS(-DBUILD_DLL)
-		SET(CMAKE_SHARED_LIBRARY_PREFIX "")
+		SET(SL_PREFIX "")
 	ENDIF ( "${COMPILEFOR}" STREQUAL "windows")
 
-	ADD_CUSTOM_COMMAND(TARGET videoSDL POST_BUILD COMMAND ln -fvs SDL/src/${CMAKE_SHARED_LIBRARY_PREFIX}videoSDL${CMAKE_SHARED_LIBRARY_SUFFIX} ../../videoSDL${CMAKE_SHARED_LIBRARY_SUFFIX})
+	ADD_CUSTOM_COMMAND(TARGET videoSDL POST_BUILD COMMAND ln -fvs SDL/src/${SL_PREFIX}videoSDL${CMAKE_SHARED_LIBRARY_SUFFIX} ../../videoSDL${CMAKE_SHARED_LIBRARY_SUFFIX})
 	
 	INSTALL(TARGETS videoSDL 
 		RUNTIME DESTINATION ${LIBDIR}/driver/video 

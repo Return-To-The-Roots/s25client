@@ -1,5 +1,5 @@
 #################################################################################
-### $Id: CMakeLists.txt 6944 2010-12-24 07:56:07Z FloSoft $
+### $Id: CMakeLists.txt 7104 2011-03-29 13:44:22Z FloSoft $
 #################################################################################
 
 INCLUDE(FindSDL)
@@ -25,12 +25,13 @@ IF (SDL_FOUND)
 
         TARGET_LINK_LIBRARIES(audioSDL audiodrv endian ${SDL_LIBRARY} ${SDLMIXER_LIBRARY})
         
+	SET(SL_PREFIX ${CMAKE_SHARED_LIBRARY_PREFIX})
         IF ( "${COMPILEFOR}" STREQUAL "windows")
             ADD_DEFINITIONS(-DBUILD_DLL)
-            SET(CMAKE_SHARED_LIBRARY_PREFIX "")
+            SET(SL_PREFIX "")
         ENDIF ( "${COMPILEFOR}" STREQUAL "windows")
             
-        ADD_CUSTOM_COMMAND(TARGET audioSDL POST_BUILD COMMAND ln -fvs SDL/src/${CMAKE_SHARED_LIBRARY_PREFIX}audioSDL${CMAKE_SHARED_LIBRARY_SUFFIX} ../../audioSDL${CMAKE_SHARED_LIBRARY_SUFFIX})
+        ADD_CUSTOM_COMMAND(TARGET audioSDL POST_BUILD COMMAND ln -fvs SDL/src/${SL_PREFIX}audioSDL${CMAKE_SHARED_LIBRARY_SUFFIX} ../../audioSDL${CMAKE_SHARED_LIBRARY_SUFFIX})
 
         INSTALL(TARGETS audioSDL 
             RUNTIME DESTINATION ${LIBDIR}/driver/audio 
