@@ -1,4 +1,4 @@
-// $Id: EventManager.cpp 7091 2011-03-27 10:57:38Z OLiver $
+// $Id: EventManager.cpp 7111 2011-04-01 19:05:47Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -65,7 +65,7 @@ EventManager::EventPointer EventManager::AddEvent(GameObject *obj, const unsigne
 	Event * event = new Event(obj, GAMECLIENT.GetGFNumber(), gf_length, id);
 	eis.push_back(event);
 	
-	//assert(event->GetObjId() != 1560584 );
+	//assert(event->GetObjId() != 1220037 );
 	return event;
 }
 
@@ -73,7 +73,7 @@ EventManager::EventPointer EventManager::AddEvent(SerializedGameData * sgd, cons
 {
 	Event * event = new Event(sgd,obj_id);
 	eis.push_back(event);
-	//assert(event->GetObjId() != 1560864 );
+	//assert(event->GetObjId() != 1220037 );
 	//assert(event->GetObjId() != 1560584 );
 	return event;
 }
@@ -83,7 +83,7 @@ EventManager::EventPointer EventManager::AddEvent(GameObject *obj, const unsigne
 	// Anfang des Events in die Vergangenheit zurückverlegen
 	Event * event = new Event(obj, GAMECLIENT.GetGFNumber()-gf_elapsed, gf_length, id);
 	eis.push_back(event);
-	//assert(event->GetObjId() != 1560864 );
+	//assert(event->GetObjId() != 1220037 );
 	//assert(event->GetObjId() != 1560584 );
 	return event;
 }

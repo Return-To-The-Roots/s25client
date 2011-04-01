@@ -1,4 +1,4 @@
-// $Id: Pathfinding.cpp 7091 2011-03-27 10:57:38Z OLiver $
+// $Id: Pathfinding.cpp 7111 2011-04-01 19:05:47Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -602,6 +602,7 @@ unsigned char GameWorldBase::FindHumanPath(const MapCoord x_start,const MapCoord
 	FindFreePath(x_start,y_start,x_dest,y_dest,random_route,max_route,NULL,length,&first_dir,IsPointOK_HumanPath,
 		IsPointToDestOK_HumanPath,NULL,true);
 		
+	if(!random_route)
 	GameClient::inst().AddPathfindingResult(first_dir,length,NULL);	
 	
 	return first_dir;

@@ -1,4 +1,4 @@
-// $Id: nobHarborBuilding.cpp 7091 2011-03-27 10:57:38Z OLiver $
+// $Id: nobHarborBuilding.cpp 7111 2011-04-01 19:05:47Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1118,6 +1118,10 @@ unsigned nobHarborBuilding::CalcDistributionPoints(const GoodType type)
 /// A ware changed its route and doesn't want to use the ship anymore
 void nobHarborBuilding::WareDontWantToTravelByShip(Ware * ware)
 {
+	// Maybe this building is already destroyed
+	if(gwg->GetGOT(x,y) != GOT_NOB_HARBORBUILDING)
+		return;
+
 	// Ware aus unserer Liste streichen
 	wares_for_ships.remove(ware);
 	// Will die Ware jetzt vielleicht zu uns?
