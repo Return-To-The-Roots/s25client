@@ -1,6 +1,6 @@
 #!/bin/bash
 ###############################################################################
-## $Id: postinstall.sh.cmake 7106 2011-03-29 14:20:46Z FloSoft $
+## $Id: postinstall.sh.cmake 7113 2011-04-02 07:42:32Z FloSoft $
 ###############################################################################
 
 # Editable Variables
@@ -207,12 +207,12 @@ elif [ "$COMPILEFOR" = "linux" ] ; then
 	case "$COMPILEARCH" in
 		i686|*86)
 			if [ ! "$(uname -m | sed s/i686/i386/g)" = "$COMPILEARCH" ] ; then
-				miniupnpc=/usr/i686-pc-linux-gnu/lib/libminiupnpc.so
+				miniupnpc=/usr/i686-pc-linux-gnu/lib/libminiupnpc-5.so
 			fi
 		;;
 		x86_64|*64)
             if [ ! "$(uname -m)" = "$COMPILEARCH" ] ; then
-                miniupnpc=/usr/x86_64-pc-linux-gnu/lib/libminiupnpc.so
+                miniupnpc=/usr/x86_64-pc-linux-gnu/lib/libminiupnpc-5.so
             fi
 		;;
 	esac
