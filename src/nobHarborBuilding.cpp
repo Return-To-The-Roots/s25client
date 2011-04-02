@@ -1,4 +1,4 @@
-// $Id: nobHarborBuilding.cpp 7111 2011-04-01 19:05:47Z OLiver $
+// $Id: nobHarborBuilding.cpp 7117 2011-04-02 19:30:46Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -798,8 +798,9 @@ void nobHarborBuilding::AddWareForShip(Ware * ware)
 	wares_for_ships.push_back(ware);
 	// Anzahl visuell erhöhen
 	++goods.goods[ConvertShields(ware->type)];
-	players->getElement(player)->OrderShip(this);
 	ware->WaitForShip(this);
+	players->getElement(player)->OrderShip(this);
+	
 }
 
 /// Gibt Anzahl der Schiffe zurück, die noch für ausstehende Aufgaben benötigt werden

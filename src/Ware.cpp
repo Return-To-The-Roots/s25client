@@ -1,4 +1,4 @@
-// $Id: Ware.cpp 7111 2011-04-01 19:05:47Z OLiver $
+// $Id: Ware.cpp 7117 2011-04-02 19:30:46Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -49,7 +49,7 @@ goal(goal)
 	gwg->GetPlayer(location->GetPlayer())->RegisterWare(this);
 	
 	
-	assert(obj_id != 1197877);
+	//assert(obj_id != 1197877);
 }
 
 Ware::~Ware()
@@ -86,7 +86,7 @@ goal(sgd->PopObject<noBaseBuilding>(GOT_UNKNOWN))
 {
 	next_harbor.x = sgd->PopUnsignedShort();
 	next_harbor.y = sgd->PopUnsignedShort();
-	assert(obj_id != 1197877);
+	//assert(obj_id != 1197877);
 }
 
 
