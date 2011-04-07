@@ -1,2 +1,2 @@
-REPOSITORY=/var/www/ra-doersch.de/nightly/s25client/deb
+REPOSITORY=/srv/apache/siedler25.org/.packages
 DISTRIBUTION=hardy
