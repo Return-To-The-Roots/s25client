@@ -1,5 +1,5 @@
 ################################################################################
-### $Id: c.apple.common.cmake 6807 2010-10-18 14:12:04Z FloSoft $
+### $Id: c.apple.common.cmake 7125 2011-04-07 15:03:44Z FloSoft $
 ################################################################################
 
 # specify the cross compiler
@@ -12,7 +12,7 @@ SET(CMAKE_LIPO i686-apple-darwin10-lipo CACHE STRING "" FORCE)
 SET(CMAKE_OSX_DEPLOYMENT_TARGET "10.4" CACHE STRING "OSX-Target")
 
 # set SDK
-SET(CMAKE_PREFIX_PATH "/srv/buildfarm/SDKs/MacOSX10.5.sdk")
+SET(CMAKE_PREFIX_PATH "/usr/lib/apple/SDKs/MacOSX10.5.sdk")
 
 FORCE_ADD_FLAGS(CMAKE_C_FLAGS -isysroot ${CMAKE_PREFIX_PATH})
 FORCE_ADD_FLAGS(CMAKE_CXX_FLAGS -isysroot ${CMAKE_PREFIX_PATH})

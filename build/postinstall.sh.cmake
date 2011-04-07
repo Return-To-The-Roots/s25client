@@ -1,6 +1,6 @@
 #!/bin/bash
 ###############################################################################
-## $Id: postinstall.sh.cmake 7114 2011-04-02 11:16:45Z FloSoft $
+## $Id: postinstall.sh.cmake 7125 2011-04-07 15:03:44Z FloSoft $
 ###############################################################################
 
 # Editable Variables
@@ -144,8 +144,14 @@ if [ "$COMPILEFOR" = "apple" ] ; then
 	# frameworks kopieren
 	mkdir -vp ${DESTDIR}s25client.app/Contents/MacOS/Frameworks || exit 1
 	mkdir -vp ${DESTDIR}s25client.app/Contents/MacOS/Frameworks/{SDL,SDL_mixer}.framework || exit 1
-	cp -r /Library/Frameworks/SDL.framework ${DESTDIR}s25client.app/Contents/MacOS/Frameworks || exit 1
-	cp -r /Library/Frameworks/SDL_mixer.framework ${DESTDIR}s25client.app/Contents/MacOS/Frameworks || exit 1
+
+	if [ -d /Library/Frameworks ] ; then
+		cp -r /Library/Frameworks/SDL.framework ${DESTDIR}s25client.app/Contents/MacOS/Frameworks || exit 1
+		cp -r /Library/Frameworks/SDL_mixer.framework ${DESTDIR}s25client.app/Contents/MacOS/Frameworks || exit 1
+	else
+                cp -r /usr/lib/apple/SDKs/Library/Frameworks/SDL.framework ${DESTDIR}s25client.app/Contents/MacOS/Frameworks || exit 1
+                cp -r /usr/lib/apple/SDKs/Library/Frameworks/SDL_mixer.framework ${DESTDIR}s25client.app/Contents/MacOS/Frameworks || exit 1
+	fi
 	
 	# remove headers and additional libraries from the frameworks
 	find ${DESTDIR}s25client.app/Contents/MacOS/Frameworks/ -name Headers -exec rm -rf {} \;
@@ -154,8 +160,8 @@ if [ "$COMPILEFOR" = "apple" ] ; then
 	# copy miniupnp
 	if [ -f /Developer/SDKs/MacOSX10.5.sdk/usr/lib/libminiupnpc.5.dylib ] ; then
 		cp -rv /Developer/SDKs/MacOSX10.5.sdk/usr/lib/libminiupnpc.5.dylib ${DESTDIR}s25client.app/Contents/MacOS || exit 1
-	elif  [ -f /srv/buildfarm/SDKs/MacOSX10.5.sdk/usr/lib/libminiupnpc.5.dylib ] ; then
-		cp -rv /srv/buildfarm/SDKs/MacOSX10.5.sdk/usr/lib/libminiupnpc.5.dylib ${DESTDIR}s25client.app/Contents/MacOS || exit 1
+	elif  [ -f /usr/lib/apple/SDKs/MacOSX10.5.sdk/usr/lib/libminiupnpc.5.dylib ] ; then
+		cp -rv /usr/lib/apple/SDKs/MacOSX10.5.sdk/usr/lib/libminiupnpc.5.dylib ${DESTDIR}s25client.app/Contents/MacOS || exit 1
 	else
 		echo "libminiupnpc.5.dylib was not found"
 		exit 1
