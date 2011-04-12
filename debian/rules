@@ -11,7 +11,7 @@ endif
 
 # todo: if we're doing a native amd64 build, the 32bit build will be cross!
 ifeq ($(DEB_HOST_ARCH),$(DEB_BUILD_ARCH))
-	CMAKE_ARCH=--arch=$(DEB_BUILD_ARCH_OS).$(DEB_BUILD_GNU_CPU)
+	CMAKE_ARCH=
 else
 	CMAKE_ARCH=--arch=c.$(DEB_BUILD_ARCH_OS).$(DEB_BUILD_GNU_CPU)
 endif
