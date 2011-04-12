@@ -14,8 +14,9 @@ PARAMS="--svn-ignore-new -k6D09334C"
  
 if [ ! -z "$UPLOAD" ] ; then
 	echo "Building Source only for upload to $UPLOAD"
-	svn-buildpackage $PARAMS -S
+	svn-buildpackage $PARAMS -S || exit 1
 
+	dput $UPLOAD ../build-area/s25rttr*${VERSION}-${REVISION}*.changes || exit 1
 else
 	if [ ! -d "$REPOSITORY" ] ; then
 		echo "ERROR: repository.def does not contain REPOSITORY"
