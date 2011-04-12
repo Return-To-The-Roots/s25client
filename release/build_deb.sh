@@ -13,13 +13,21 @@ REVISION=$(head debian/changelog -n 1 | cut -d '-' -f 2 | cut -d ')' -f 1)
 PARAMS="--svn-ignore-new -k6D09334C"
  
 if [ ! -f "../tarballs/s25rttr_{$VERSION}.orig.tar.gz" ] ; then
+	# remove orig tarballs older that a week (and recreate orig source ...)
+	if [ ! -z "$(find ../tarballs/s25rttr.orig.tar.gz -mtime +7 | wc -l)" ] ; then
+		rm ../tarballs/s25rttr.orig.tar.gz
+	fi
+
 	if [ ! -f "../tarballs/s25rttr.orig.tar.gz" ] ; then
 		rm -r ../tarballs/s25rttr
 		svn export . ../tarballs/s25rttr
 		rm -r ../tarballs/s25rttr/debian
 		(cd ../tarballs && tar cvzf s25rttr.orig.tar.gz s25rttr)
 		rm -r ../tarballs/s25rttr
+		PARAMS="-sa $PARAMS"
 	fi
+
+	find ../tarballs -mtime +7 -exec rm {} \;
 	ln -f s25rttr.orig.tar.gz ../tarballs/s25rttr_{$VERSION}.orig.tar.gz
 fi
 
