@@ -1,2 +1,1 @@
-REPOSITORY=/srv/apache/siedler25.org/.packages
-DISTRIBUTION=hardy
+UPLOAD=ppa:flosoft/s25rttr
