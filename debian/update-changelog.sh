@@ -62,9 +62,10 @@ if [ ! -z "$BUILD_NUMBER" ] ; then
 	D=$(LANG=C date +"%a, %d %b %Y %H:%M:%S %z")
 	UD=$(LANG=C date +"%Y%m%d")
 	echo "s25rttr ($UD-$HEAD.$BUILD_NUMBER) any; urgency=low" > $msg
+	echo "" >> $msg
 	echo "  * Automatic Jenkins Build $BUILD_NUMBER" >> $msg
 	echo "" >> $msg
-	echo " -- Return To The Roots Team <sf-team@siedler25.org>  $D"
+	echo " -- Return To The Roots Team <sf-team@siedler25.org>  $D" >> $msg
 	echo "" >> $msg
 
 	mv changelog /tmp/changelog.$$
