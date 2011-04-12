@@ -1,3 +1,262 @@
+s25rttr (20110402-7112) hardy; urgency=low
+
+  * New upstream snapshot
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sat, 02 Apr 2011 00:00:00 +0200
+
+s25rttr (20110401-7111) hardy; urgency=low
+
+  * #745912 partly fixed
+
+ -- OLiver Siebert <oliver@siedler25.org>  Fri, 01 Apr 2011 19:05:00 +0200
+
+s25rttr (20110329-7106) hardy; urgency=low
+
+  * fixed miniupnpc-dll name
+
+ -- Florian Doersch <flosoft@siedler25.org>  Tue, 29 Mar 2011 14:20:00 +0200
+
+s25rttr (20110329-7104) hardy; urgency=low
+
+  * fixed build with cmake 2.8 (...)
+
+ -- Florian Doersch <flosoft@siedler25.org>  Tue, 29 Mar 2011 13:44:00 +0200
+
+s25rttr (20110329-7103) hardy; urgency=low
+
+  * fixed winsock-bug
+    removed some eols
+
+ -- Florian Doersch <flosoft@siedler25.org>  Tue, 29 Mar 2011 12:08:00 +0200
+
+s25rttr (20110328-7101) hardy; urgency=low
+
+  * Saving/Loading/manipulating of the addons settings works again
+
+ -- OLiver Siebert <oliver@siedler25.org>  Mon, 28 Mar 2011 21:35:00 +0200
+
+s25rttr (20110328-7100) hardy; urgency=low
+
+  * disabled ipv6 in upload_urls
+
+ -- Florian Doersch <flosoft@siedler25.org>  Mon, 28 Mar 2011 12:48:00 +0200
+
+s25rttr (20110327-7097) hardy; urgency=low
+
+  * Fixed some (potential) crashes
+
+ -- OLiver Siebert <oliver@siedler25.org>  Sun, 27 Mar 2011 20:58:00 +0200
+
+s25rttr (20110327-7096) hardy; urgency=low
+
+  * removed AddonManager includes
+
+ -- OLiver Siebert <oliver@siedler25.org>  Sun, 27 Mar 2011 20:17:00 +0200
+
+s25rttr (20110327-7095) hardy; urgency=low
+
+  * - added file support for the normal Serializer object, therefore
+    moved BinaryFile to libutil
+    - Merged AddonManager and GlobalGameSettings in
+    "GlobalGameSettings", no evil singleton necessary
+
+ -- OLiver Siebert <oliver@siedler25.org>  Sun, 27 Mar 2011 20:15:00 +0200
+
+s25rttr (20110327-7094) hardy; urgency=low
+
+  * Empty log message
+
+ -- OLiver Siebert <oliver@siedler25.org>  Sun, 27 Mar 2011 11:53:00 +0200
+
+s25rttr (20110327-7093) hardy; urgency=low
+
+  * Incompleted _res files will be completed with the replay playing
+
+ -- OLiver Siebert <oliver@siedler25.org>  Sun, 27 Mar 2011 11:49:00 +0200
+
+s25rttr (20110327-7092) hardy; urgency=low
+
+  * Empty log message
+
+ -- OLiver Siebert <oliver@siedler25.org>  Sun, 27 Mar 2011 11:04:00 +0200
+
+s25rttr (20110327-7091) hardy; urgency=low
+
+  * Include-Bürokratie
+
+ -- OLiver Siebert <oliver@siedler25.org>  Sun, 27 Mar 2011 10:57:00 +0200
+
+s25rttr (20110327-7090) hardy; urgency=low
+
+  * Empty log message
+
+ -- OLiver Siebert <oliver@siedler25.org>  Sun, 27 Mar 2011 10:50:00 +0200
+
+s25rttr (20110327-7089) hardy; urgency=low
+
+  * Fixed #729725
+
+ -- OLiver Siebert <oliver@siedler25.org>  Sun, 27 Mar 2011 10:20:00 +0200
+
+s25rttr (20110327-7088) hardy; urgency=low
+
+  * Enabled precalculated pathfinding results in replays (saved as
+    "_res" files in the replay directory) in order to speed up the
+    watching / debugging of replays and measure the pathfinding
+    performance bottle neck
+
+ -- OLiver Siebert <oliver@siedler25.org>  Sun, 27 Mar 2011 09:53:00 +0200
+
+s25rttr (20110326-7086) hardy; urgency=low
+
+  * Wish #564548
+
+ -- OLiver Siebert <oliver@siedler25.org>  Sat, 26 Mar 2011 22:14:00 +0100
+
+s25rttr (20110326-7085) hardy; urgency=low
+
+  * Fixed #703654
+
+ -- OLiver Siebert <oliver@siedler25.org>  Sat, 26 Mar 2011 21:41:00 +0100
+
+s25rttr (20110326-7084) hardy; urgency=low
+
+  * Implemented High-Speed compiling (precompiled headers), for
+    vs2008 project only yet
+
+ -- OLiver Siebert <oliver@siedler25.org>  Sat, 26 Mar 2011 21:31:00 +0100
+
+s25rttr (20110326-7083) hardy; urgency=low
+
+  * Empty log message
+
+ -- OLiver Siebert <oliver@siedler25.org>  Sat, 26 Mar 2011 20:57:00 +0100
+
+s25rttr (20110326-7082) hardy; urgency=low
+
+  * Fixed #734216
+
+ -- OLiver Siebert <oliver@siedler25.org>  Sat, 26 Mar 2011 14:42:00 +0100
+
+s25rttr (20110326-7081) hardy; urgency=low
+
+  * Fixed direct wood supply for saw mill
+
+ -- OLiver Siebert <oliver@siedler25.org>  Sat, 26 Mar 2011 14:14:00 +0100
+
+s25rttr (20110326-7080) hardy; urgency=low
+
+  * Addon "near frontiers" fixed
+
+ -- OLiver Siebert <oliver@siedler25.org>  Sat, 26 Mar 2011 13:50:00 +0100
+
+s25rttr (20110326-7079) hardy; urgency=low
+
+  * Fixed async bug (age variable of military buildings was not set
+    to 0 at the beginning of a game -> caused a different territory
+    change at hostile borders on different computers), age removed
+    and use of obj_id instead
+
+ -- OLiver Siebert <oliver@siedler25.org>  Sat, 26 Mar 2011 13:47:00 +0100
+
+s25rttr (20110320-7066) hardy; urgency=low
+
+  * Ein paar paar unsinnige Änderungen zurückgenommen
+
+ -- OLiver Siebert <oliver@siedler25.org>  Sun, 20 Mar 2011 13:57:00 +0100
+
+s25rttr (20110320-7065) hardy; urgency=low
+
+  * Fixed #729092
+
+ -- OLiver Siebert <oliver@siedler25.org>  Sun, 20 Mar 2011 13:11:00 +0100
+
+s25rttr (20110319-7063) hardy; urgency=low
+
+  * Fixed #704830
+
+ -- OLiver Siebert <oliver@siedler25.org>  Sat, 19 Mar 2011 14:51:00 +0100
+
+s25rttr (20110319-7061) hardy; urgency=low
+
+  * 2008er Project can be compiled again, revert: auto save in
+    replays
+
+ -- OLiver Siebert <oliver@siedler25.org>  Sat, 19 Mar 2011 12:38:00 +0100
+
+s25rttr (20110319-7060) hardy; urgency=low
+
+  * Fixed crashs after destruction of flags at the border of the map
+    (#705835 #706102)
+
+ -- OLiver Siebert <oliver@siedler25.org>  Sat, 19 Mar 2011 11:32:00 +0100
+
+s25rttr (20110317-7057) hardy; urgency=low
+
+  * potentieller warnungs-fix
+
+ -- Florian Doersch <flosoft@siedler25.org>  Thu, 17 Mar 2011 12:56:00 +0100
+
+s25rttr (20110315-7052) hardy; urgency=low
+
+  * language update ( Bug #735025 )
+
+ -- Florian Doersch <flosoft@siedler25.org>  Tue, 15 Mar 2011 20:55:00 +0100
+
+s25rttr (20110306-7041) hardy; urgency=low
+
+  * new map by Spike
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sun, 06 Mar 2011 09:44:00 +0100
+
+s25rttr (20110216-7040) hardy; urgency=low
+
+  * - Angefangen ein SinglePlayer-Interface zu bauen, erstmal eine
+    Kopie vom Multiplayer, nur ohne andere Spieler und
+    Direct-IP-Abfrage-Kram.
+    - Reihenfolge der KIs (Dummy und normale) geändert, damit man
+    gleich Starten kann ;)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Wed, 16 Feb 2011 23:23:00 +0100
+
+s25rttr (20110208-7039) hardy; urgency=low
+
+  * wer hat da das typedef drin gelassen ...
+
+ -- Florian Doersch <flosoft@siedler25.org>  Tue, 08 Feb 2011 07:22:00 +0100
+
+s25rttr (20110207-7038) hardy; urgency=low
+
+  * KI: Mehr für globale Platzsuche, erste Schlossereiversuche, keine
+    Militärgebäude mehr bauen wenn keine Soldaten mehr verfügbar sind
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Mon, 07 Feb 2011 21:06:00 +0100
+
+s25rttr (20110130-7037) hardy; urgency=low
+
+  * fix fix
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sun, 30 Jan 2011 11:00:00 +0100
+
+s25rttr (20110130-7036) hardy; urgency=low
+
+  * fixed
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sun, 30 Jan 2011 10:54:00 +0100
+
+s25rttr (20110130-7035) hardy; urgency=low
+
+  * commit entfernt
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sun, 30 Jan 2011 09:19:00 +0100
+
+s25rttr (20110130-7034) hardy; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sun, 30 Jan 2011 00:12:00 +0100
+
 s25rttr (20110129-7033) hardy; urgency=low
 
   * New upstream snapshot
