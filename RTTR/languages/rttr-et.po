@@ -7,19 +7,19 @@ msgid ""
 msgstr ""
 "Project-Id-Version: s25rttr\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-03-15 21:48+0100\n"
+"POT-Creation-Date: 2011-04-12 21:30+0100\n"
 "PO-Revision-Date: 2010-12-25 10:22+0000\n"
 "Last-Translator: rm87 <Unknown>\n"
 "Language-Team: Estonian <et@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-03-15 20:44+0000\n"
-"X-Generator: Launchpad (build 12589)\n"
+"X-Launchpad-Export-Date: 2011-04-12 19:20+0000\n"
+"X-Generator: Launchpad (build 12792)\n"
 "X-Poedit-Country: ESTONIA\n"
 "X-Poedit-Language: Estonian\n"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:234
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:235
 msgid ""
 "\n"
 "Costs: "
@@ -27,54 +27,52 @@ msgstr ""
 "\n"
 "Maksumus: "
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:602
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:604
 msgid " (AI)"
 msgstr " (TI)"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:236
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:237
 msgid " boards"
 msgstr " laudu"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:241
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:242
 msgid " stones"
 msgstr " kive"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:253
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:280
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:246
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:273
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:254
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:281
 #, c-format
 msgid "%d"
 msgstr "%d"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:413
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:414
 #, c-format
 msgid "%d Player"
 msgstr "%d Mängija"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHQ.cpp:68
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHQ.cpp:69
 #, c-format
 msgid "%u/%u"
 msgstr "%u/%u"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPCreate.cpp:83
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPCreate.cpp:84
 msgid "'s Game"
 msgstr "' Mäng"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameWorldViewer.cpp:295
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameWorldViewer.cpp:296
 #, c-format
 msgid "(%d soldiers)"
 msgstr "(%d sõdutit)"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameWorldViewer.cpp:293
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameWorldViewer.cpp:294
 msgid "(1 soldier)"
 msgstr "(1 sõdur)"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameWorldViewer.cpp:261
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameWorldViewer.cpp:262
 msgid "(House unoccupied)"
 msgstr "(Maja on asustamata)"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:248
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:249
 #, c-format
 msgid ""
 "(Replay-Mode) Current GF: %u (End at: %u) / GF length: %u ms / NWF length: %"
@@ -83,38 +81,36 @@ msgstr ""
 "(Tagasimängu viis) Praegune GF: %u (Lõpp: %u) / GF pikkus: %u ms / NWF "
 "pikkus: %u gf (%u ms)"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameWorldViewer.cpp:263
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameWorldViewer.cpp:264
 msgid "(stopped)"
 msgstr "(seisatud)"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:263
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:272
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:256
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:265
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:264
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:273
 msgid "-"
 msgstr "-"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:123
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:124
 msgid "-> Build castle"
 msgstr "-> Ehita loss"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:102
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:116
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:122
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:103
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:117
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:123
 msgid "-> Build house"
 msgstr "-> Ehita maja"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:111
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:115
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:121
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:112
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:116
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:122
 msgid "-> Build hut"
 msgstr "-> Ehita hütt"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:127
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:128
 msgid "-> Dig mines"
 msgstr "-> Kaeva kaevandusi"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:97
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:98
 msgid "1 h"
 msgstr "1 t"
 
@@ -122,11 +118,11 @@ msgstr "1 t"
 msgid "10 catapults"
 msgstr "10 katapulti"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:96
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:97
 msgid "15 m"
 msgstr "15 m"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:99
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:100
 msgid "16 h"
 msgstr "16 t"
 
@@ -142,7 +138,7 @@ msgstr "3 katapulti"
 msgid "30 catapults"
 msgstr "30 katapulti"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:98
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:99
 msgid "4 h"
 msgstr "4 t"
 
@@ -150,18 +146,18 @@ msgstr "4 t"
 msgid "5 catapults"
 msgstr "5 katapulti"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1002
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1052
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1081
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1003
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1053
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1082
 #, c-format
 msgid "<%s> "
 msgstr "<%s> "
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1017
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1018
 msgid "A auto-savegame is created..."
 msgstr "Automaatse mängusalvestuse tegemine..."
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobMilitary.cpp:1120
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobMilitary.cpp:1119
 msgid "A catapult is firing upon us!"
 msgstr "Katapult tulistab meie suunas!"
 
@@ -174,24 +170,23 @@ msgstr ""
 "kulladeposiitidele . Selleks on vajalik kindlustada, et kaevurid oleks "
 "varustatud piisava söögiga."
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:115
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:108
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:116
 msgid "A lot"
 msgstr "Palju"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/noShipBuildingSite.cpp:138
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/noShipBuildingSite.cpp:139
 msgid "A new ship is ready"
 msgstr "Uus laev on valmis"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/noShip.cpp:454
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/noShip.cpp:455
 msgid "A ship disovered an enemy territory"
 msgstr "Laev avastas vaenlase territooriumi"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/noShip.cpp:732
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/noShip.cpp:733
 msgid "A ship has reached the destination of its expedition."
 msgstr "Laev on jõudnud ekspeditsiooni lõpp punkti."
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/noShip.cpp:285
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/noShip.cpp:286
 msgid "A ship is ready for an expedition."
 msgstr "Laev on valmis ekspeditsiooniks."
 
@@ -210,11 +205,11 @@ msgstr ""
 "Puuraidur varustab saekaatrit palkidega. Metsaistutaja on võimeline uuesti "
 "istutama maha raiutud metsa."
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAIDebug.cpp:49
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAIDebug.cpp:50
 msgid "AI Debug"
 msgstr "KI Silumine"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMainMenu.cpp:97
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMainMenu.cpp:98
 msgid "AI Debug Window"
 msgstr "KI Silumise Aken"
 
@@ -222,7 +217,7 @@ msgstr "KI Silumise Aken"
 msgid "AI Debugging Window"
 msgstr "TI silumise aken"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:45
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:46
 msgid "Abort"
 msgstr "Katkesta"
 
@@ -234,50 +229,49 @@ msgstr "Aktiivne kui rünnatakse"
 msgid "Active near frontiers"
 msgstr "Aktiivne piirialadel"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:69
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:70
 msgid "Activity window"
 msgstr "Tegevuste aken"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:76
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:77
 msgid "Add"
 msgstr "Lisa"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskLobby.cpp:74
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskLobby.cpp:75
 msgid "Add Server"
 msgstr "Lisa server"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:83
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:218
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:84
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:219
 msgid "Add directory of tracks"
 msgstr "Lisa kataloog lugudega"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:82
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:212
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:83
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:213
 msgid "Add track"
 msgstr "Lisa lugu"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:138
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:139
 msgid "Additional Programming:"
 msgstr "Täiendav programeerimine:"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAddons.cpp:46
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAddons.cpp:47
 msgid "Additional features:"
 msgstr "Lisa võimalused:"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:131
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:132
 msgid "Additional graphics"
 msgstr "Täiendav graafika"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAddons.cpp:43
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAddons.cpp:45
 msgid "Addon Settings"
 msgstr "Lisade Seaded"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:79
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:81
 msgid "Addons"
 msgstr "Lisad"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:94
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:87
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:95
 msgid "Addons:"
 msgstr "Lisad:"
 
@@ -285,28 +279,25 @@ msgstr "Lisad:"
 msgid "Adjust military strength"
 msgstr "Kohanda sõjaväe tugevust"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwOptionsWindow.cpp:105
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwOptionsWindow.cpp:106
 msgid "Advanced"
 msgstr "Muud"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:259
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:268
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:708
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:252
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:261
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:681
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:260
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:269
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:709
 msgid "Africans"
 msgstr "Aafriklased"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildOrder.cpp:69
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildOrder.cpp:70
 msgid "After the following order"
 msgstr "Peale järgnevat järjestust"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAddons.cpp:59
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAddons.cpp:60
 msgid "All"
 msgstr "Kõik"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwChat.cpp:56
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwChat.cpp:57
 msgid "Allies"
 msgstr "Liitlased"
 
@@ -417,23 +408,23 @@ msgstr ""
 "Lubab sul muuta sõjaväelaste auastmete tugevusi\n"
 "\n"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/SerializedGameData.cpp:243
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/SerializedGameData.cpp:232
 msgid "An error occured while saving which was suppressed!"
 msgstr "Salvestamisel ilmnes viga, salvestamine peatati!"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AIPlayerJH.cpp:109
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AIPlayerJH.cpp:110
 msgid "And I may crash your game sometimes..."
 msgstr "Ja ma võin su mängu mõnikord kokku jooksutada..."
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameLoader.cpp:164
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameLoader.cpp:165
 msgid "And let's go!"
 msgstr "Ja läheb lahti!"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAddons.cpp:49
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAddons.cpp:50
 msgid "Apply Changes"
 msgstr "Rakenda muudatused"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPlayReplay.cpp:93
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPlayReplay.cpp:94
 msgid "Are you sure to remove all replays?"
 msgstr "Kindel, et soovid kõik tagasimängud kustutada?"
 
@@ -441,47 +432,47 @@ msgstr "Kindel, et soovid kõik tagasimängud kustutada?"
 msgid "Armorer"
 msgstr "Relvameister"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:107
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:117
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:108
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:118
 msgid "Armory"
 msgstr "Relvatöökoda"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:123
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:124
 msgid "Artificial Intelligence (AI)"
 msgstr "Tehisintellekt (TI)"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:387
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:388
 msgid "Attack not possible."
 msgstr "Rünnak pole võimalik."
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:320
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:328
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:321
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:329
 msgid "Attack options"
 msgstr "Rünnaku valikud"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:412
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:413
 msgid "Attack!"
 msgstr "Ründa!"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:101
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:102
 msgid "Author"
 msgstr "Autor"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:1287
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:1289
 msgid "Auto-Save"
 msgstr "Automaatne Salvestus"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSave.cpp:203
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSave.cpp:204
 msgid "Auto-Save every:"
 msgstr "Automaatsalvestus iga:"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:51
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:52
 msgid "Axe"
 msgstr "Kirves"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskAboutRTTR.cpp:55
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:69
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskDirectIP.cpp:65
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskAboutRTTR.cpp:56
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:70
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskDirectIP.cpp:66
 msgid "Back"
 msgstr "Tagasi"
 
@@ -489,7 +480,7 @@ msgstr "Tagasi"
 msgid "Baker"
 msgstr "Pagar"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:153
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:154
 msgid "Bakery"
 msgstr "Pagari töökoda"
 
@@ -497,11 +488,12 @@ msgstr "Pagari töökoda"
 msgid "Barracks"
 msgstr "Barakk"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:76
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:77
 msgid "Beer"
 msgstr "Õlu"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:137
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:138
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:73
 msgid "Boards"
 msgstr "Lauad"
 
@@ -509,19 +501,19 @@ msgstr "Lauad"
 msgid "Boat"
 msgstr "Paat"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:86
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:87
 msgid "Boats"
 msgstr "Paadid"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMilitary.cpp:58
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMilitary.cpp:59
 msgid "Border areas"
 msgstr "Piiri alad"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildOrder.cpp:62
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildOrder.cpp:63
 msgid "Bottom"
 msgstr "Alumiseks"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:61
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:62
 msgid "Bow"
 msgstr "Vibu"
 
@@ -533,19 +525,19 @@ msgstr "Leib"
 msgid "Brewer"
 msgstr "Pruulija"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:97
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:156
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:98
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:157
 msgid "Brewery"
 msgstr "pruulikoda"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:264
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:271
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:279
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:283
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:265
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:272
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:280
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:284
 msgid "Build road"
 msgstr "Ehita tee"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:272
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:273
 msgid "Build waterway"
 msgstr "Ehita veetee"
 
@@ -553,11 +545,11 @@ msgstr "Ehita veetee"
 msgid "Builder"
 msgstr "Ehitaja"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildOrder.cpp:45
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildOrder.cpp:46
 msgid "Building sequence"
 msgstr "Ehitiste ehitamise järjekord"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildings.cpp:79
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildings.cpp:80
 msgid "Buildings"
 msgstr "Ehitised"
 
@@ -565,30 +557,28 @@ msgstr "Ehitised"
 msgid "Butcher"
 msgstr "Lihunik"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:266
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:274
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:267
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:275
 msgid "Call in geologist"
 msgstr "Kutsu geoloog"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:123
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:74
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:124
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:75
 msgid "Campaign"
 msgstr "Sõjaretk"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMsgbox.cpp:72
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMsgbox.cpp:87
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMsgbox.cpp:73
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMsgbox.cpp:88
 msgid "Cancel"
 msgstr "Katkesta"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHarborBuilding.cpp:91
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHarborBuilding.cpp:122
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHarborBuilding.cpp:92
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHarborBuilding.cpp:123
 msgid "Cancel expedition"
 msgstr "Tühista ekspeditsioon"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:485
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:693
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:477
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:666
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:486
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:694
 msgid "Cancel start"
 msgstr "Katkesta alustamine"
 
@@ -600,12 +590,11 @@ msgstr "saagija"
 msgid "Catapult"
 msgstr "Katapult"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMilitary.cpp:55
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMilitary.cpp:56
 msgid "Center of country"
 msgstr "Keskmaa"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:95
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:88
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:96
 msgid "Change Settings..."
 msgstr "Muuda seadeid..."
 
@@ -621,129 +610,125 @@ msgstr "Muuda kulla varud"
 msgid "Change the visibility of your ingame statistics"
 msgstr "Muuda oma mängusisese statistika nähtavust"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:100
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:133
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:101
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:134
 msgid "Charburner"
 msgstr "Söepõletaja"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwChat.cpp:47
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwChat.cpp:48
 msgid "Chat Window"
 msgstr "Vestlusaken"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:281
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:282
 msgid "Checking Map..."
 msgstr "Kontrollin kaarti ..."
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:280
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:281
 msgid "Checking Password..."
 msgstr "Kontrollin parooli..."
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:105
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:98
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:106
 msgid "Classic (Settlers 2)"
 msgstr "Klassikaline (Settlers 2)"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:62
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:64
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:63
 msgid "Classification"
 msgstr "Liigitus"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPlayReplay.cpp:68
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPlayReplay.cpp:93
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPlayReplay.cpp:69
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPlayReplay.cpp:94
 msgid "Clear"
 msgstr "Puhasta"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:59
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:60
 msgid "Cleaver"
 msgstr "Lihunikukirves"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAddons.cpp:51
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAddons.cpp:52
 msgid "Close Without Saving"
 msgstr "Sulge Salvestamata"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:224
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:217
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:225
 msgid "Closed"
 msgstr "Suletud"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:114
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:115
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:78
 msgid "Coal"
 msgstr "Süsi"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:75
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:76
 msgid "Coal mine"
 msgstr "Söekaevandus"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:83
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:84
 msgid "Coins"
 msgstr "Mündid"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBaseWarehouse.cpp:62
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBaseWarehouse.cpp:63
 msgid "Collect"
 msgstr "Kogu"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:66
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:68
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:67
 msgid "Color"
 msgstr "Värv"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:82
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:84
 msgid "Common"
 msgstr "Üldine"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:600
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:602
 #, c-format
 msgid "Computer %u"
 msgstr "Arvuti %u"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:285
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:286
 msgid "Confirm"
 msgstr "Kinnita"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskLobby.cpp:70
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskLobby.cpp:71
 msgid "Connect"
 msgstr "Ühenda"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:50
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:51
 msgid "Connecting to Lobby"
 msgstr "Ühendan ooteruumiga"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:167
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:207
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:168
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:208
 msgid "Connecting with Host..."
 msgstr "Ühendan hostiga..."
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:173
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:216
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:174
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:217
 msgid "Connection failed!"
 msgstr "Ühendus ebaõnnestus!"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:261
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:262
 msgid "Connection to Host closed!"
 msgstr "Ühendus hostiga suletud!"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:121
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:114
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:122
 msgid "Conquer 3/4 of map"
 msgstr "Valluta 3/4 kaardist"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:140
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:141
 msgid "Construction"
 msgstr "Ehitus"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:108
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:109
 msgid "Construction aid mode"
 msgstr "Arvuti assisteeritud ehitamine"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:121
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:122
 msgid "Continents"
 msgstr "Kontinendid"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:111
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:112
 msgid "Continue"
 msgstr "Jätka"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:265
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:266
 msgid "Contract type:"
 msgstr "Lepingu tüüp:"
 
@@ -759,19 +744,19 @@ msgstr "Muuda graniidiks"
 msgid "Convert to iron ore"
 msgstr "Muuda rauamaagiks"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskDirectIP.cpp:61
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskDirectIP.cpp:62
 msgid "Create Game"
 msgstr "Loo mäng"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:75
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:76
 msgid "Credits"
 msgstr "Tiitelinfo"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:56
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:57
 msgid "Crucible"
 msgstr "Tiigel"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:250
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:251
 #, c-format
 msgid ""
 "Current GF: %u / GF length: %u ms / NWF length: %u gf (%u ms) /  Ping: %u ms"
@@ -801,52 +786,52 @@ msgstr ""
 "Sügaval mäe sees kaevavad kaevurid rauamaaki. Nad vajavad otseloomulikult "
 "palju sööki pingutava töö eest."
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildOrder.cpp:75
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:181
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildOrder.cpp:76
 msgid "Default"
 msgstr "Algne"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:92
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:93
 msgid "Delete all"
 msgstr "Kustuta kõik"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:284
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBaseWarehouse.cpp:112
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuilding.cpp:87
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:285
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBaseWarehouse.cpp:113
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuilding.cpp:88
 msgid "Demolish house"
 msgstr "Lammuta maja"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDemolishBuilding.cpp:44
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDemolishBuilding.cpp:45
 msgid "Demolish?"
 msgstr "Lammutan?"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMilitaryBuilding.cpp:177
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMilitaryBuilding.cpp:178
 msgid ""
 "Demolition ist not allowed because the building is located in border area!"
 msgstr "Lammutamine ei ole lubatud, kuna ehitis asub piiri alal!"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMilitaryBuilding.cpp:176
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMilitaryBuilding.cpp:177
 msgid "Demolition ist not allowed because the building is under attack!"
 msgstr "Lammutamine ei ole lubatud, kuna ehitis on rünnaku all!"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMilitaryBuilding.cpp:180
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMilitaryBuilding.cpp:181
 msgid "Demolition not possible"
 msgstr "Lammutamine ei ole võimalik"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSurrender.cpp:54
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSurrender.cpp:55
 msgid "Destroy all buildings and surrender"
 msgstr "Lammuta kõik ehitised ja alistu"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:308
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:315
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:309
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:316
 msgid "Dig up road"
 msgstr "Kaeva tee ülesse"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:75
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:76
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMainMenu.cpp:94
 msgid "Diplomacy"
 msgstr "Diplomaatia"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskMultiPlayer.cpp:69
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskMultiPlayer.cpp:70
 msgid "Direct IP"
 msgstr "Otsene IP"
 
@@ -858,7 +843,7 @@ msgstr "Keela sõjaliste ehitiste lammutamine"
 msgid "Disable coins by default"
 msgstr "Keela mündid vaikimisi"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:280
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:282
 msgid "Disabled"
 msgstr "Väljas"
 
@@ -866,23 +851,24 @@ msgstr "Väljas"
 msgid "Disallow change"
 msgstr "Keela muudatus"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:339
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:340
 msgid "Display options"
 msgstr "Ekraani seaded"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:57
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:58
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMainMenu.cpp:68
 msgid "Distribution of goods"
 msgstr "Kaupade jaotus"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:537
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:538
 msgid "Don't forget to check the addon configuration!"
 msgstr "Ära unusta lisade seadistusi kontrollimast!"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSurrender.cpp:56
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSurrender.cpp:57
 msgid "Don't surrender"
 msgstr "Ära alistu"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:163
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:164
 msgid "Donators"
 msgstr "Annetajad"
 
@@ -890,25 +876,25 @@ msgstr "Annetajad"
 msgid "Donkey breeder"
 msgstr "Eeslikasvataja"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:94
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:162
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:95
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:163
 msgid "Donkey breeding"
 msgstr "Eesli kasvatus"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildOrder.cpp:60
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildOrder.cpp:61
 msgid "Down"
 msgstr "Allapoole"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:86
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:87
 msgid "Downwards"
 msgstr "Allapoole"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:613
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:615
 #, c-format
 msgid "Dummy %u"
 msgstr "Fiktiivne %u"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:269
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:270
 msgid "Duration:"
 msgstr "Kestvus:"
 
@@ -921,21 +907,21 @@ msgstr "Kestvus: %u GF (%s)"
 msgid "Duration: Forever"
 msgstr "Kestvus: Igavesti"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:286
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:288
 msgid "Dynamic (Limits to display refresh rate, works with most drivers)"
 msgstr ""
 "Dünaamiline (Piirab ekraani värskendamissagedusega, töötab enamuse "
 "draiveritega)"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAddons.cpp:63
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAddons.cpp:64
 msgid "Economy"
 msgstr "Majandus"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:223
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:225
 msgid "Effects"
 msgstr "Efektid"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:64
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:65
 msgid "Email Address:"
 msgstr "E-posti aadress:"
 
@@ -949,50 +935,45 @@ msgstr "Luba TI silumise aken"
 msgid "Enable charburner"
 msgstr "Luba söepõletus"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwOptionsWindow.cpp:110
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwOptionsWindow.cpp:111
 msgid "End game"
 msgstr "Lõpeta mäng"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwEndgame.cpp:48
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwEndgame.cpp:49
 msgid "End game?"
 msgstr "Lõpeta mäng?"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwChat.cpp:58
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwChat.cpp:59
 msgid "Enemies"
 msgstr "Vaenlased"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:258
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:292
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:302
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:259
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:293
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:303
 msgid "Erect flag"
 msgstr "Püstita lipp"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameLoader.cpp:188
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:488
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:947
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:976
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskLobby.cpp:322
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:358
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:372
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:480
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:914
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameLoader.cpp:189
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:489
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:948
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:977
 msgid "Error"
 msgstr "Viga"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPlayReplay.cpp:119
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPlayReplay.cpp:120
 msgid "Error while opening file!"
 msgstr "Viga faili avamisel!"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPlayReplay.cpp:118
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPlayReplay.cpp:128
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPlayReplay.cpp:119
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPlayReplay.cpp:129
 msgid "Error while playing replay!"
 msgstr "Viga tagasimängimisel!"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPlayReplay.cpp:121
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPlayReplay.cpp:122
 msgid "Error: Replay is too old!"
 msgstr "Viga: Tagasimäng on liiga vana!"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:283
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:284
 msgid "Eternal"
 msgstr "Igavene"
 
@@ -1004,24 +985,23 @@ msgstr "Kõik"
 msgid "Exhaustible Wells"
 msgstr "Kuivavad kaevud"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHarborBuilding.cpp:53
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHarborBuilding.cpp:54
 msgid "Expedition"
 msgstr "Ekspeditsioon"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHarborBuilding.cpp:60
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHarborBuilding.cpp:61
 msgid "Exploration expedition"
 msgstr "Avastamis ekspeditsioon"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:102
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:95
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:103
 msgid "Exploration:"
 msgstr "Avastamine:"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameLoader.cpp:140
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameLoader.cpp:141
 msgid "Failed to load map objects."
 msgstr "Kaardi objektide laadimine ebaõnnestus."
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameLoader.cpp:152
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameLoader.cpp:153
 msgid "Failed to load terrain data."
 msgstr "Maastiku andmete laadimine ebaõnnestus."
 
@@ -1033,21 +1013,20 @@ msgstr "Talu"
 msgid "Farmer"
 msgstr "Talupidaja"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:130
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:123
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:131
 msgid "Fast"
 msgstr "Kiire"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMilitary.cpp:52
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMilitary.cpp:53
 msgid "Fewer defenders"
 msgstr "Vähem kaitsjaid"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMilitary.cpp:50
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMilitary.cpp:51
 msgid "Fewer recruits"
 msgstr "Vähem värvatuid"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPlayReplay.cpp:63
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSave.cpp:67
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPlayReplay.cpp:64
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSave.cpp:68
 msgid "Filename"
 msgstr "Faili nimi"
 
@@ -1067,21 +1046,19 @@ msgstr "Kaluri hütt"
 msgid "Flour"
 msgstr "Jahu"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:107
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:100
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:108
 msgid "FoW - all explored"
 msgstr "Sõjaudu - Kõik avastatud"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:106
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:99
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:107
 msgid "Fog of War"
 msgstr "Sõjaudu"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:74
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:75
 msgid "Food"
 msgstr "Söök"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:70
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:71
 msgid "Foodstuff"
 msgstr "Toiduained"
 
@@ -1093,27 +1070,27 @@ msgstr "Metsaistutaja hütt"
 msgid "Fortress"
 msgstr "Kindlus"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofGeologist.cpp:500
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofGeologist.cpp:501
 msgid "Found coal"
 msgstr "Leiti sütt"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwShip.cpp:72
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwShip.cpp:73
 msgid "Found colony"
 msgstr "Asuta koloonia"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofGeologist.cpp:498
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofGeologist.cpp:499
 msgid "Found gold"
 msgstr "Leiti kulda"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofGeologist.cpp:502
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofGeologist.cpp:503
 msgid "Found granite"
 msgstr "Leiti graniiti"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofGeologist.cpp:496
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofGeologist.cpp:497
 msgid "Found iron ore"
 msgstr "Leiti rauamaaki"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofGeologist.cpp:504
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofGeologist.cpp:505
 msgid "Found water"
 msgstr "Leiti vett"
 
@@ -1122,16 +1099,15 @@ msgid ""
 "From the lookout tower you can see far into previously unexplored lands."
 msgstr "Vaatetornist näed sa kaugele seni avastamata maadele."
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:168
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:170
 msgid "Fullscreen"
 msgstr "Täisekraan"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:162
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:164
 msgid "Fullscreen resolution:"
 msgstr "Täisekraani resolutsioon:"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:488
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:480
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:489
 msgid ""
 "Game can only be started as soon as everybody has a unique color,everyone is "
 "ready and all free slots are closed."
@@ -1139,27 +1115,27 @@ msgstr ""
 "Mängu saab alustada alles siis kui kõigil on valitud unikaalne värv, "
 "mängijad on valmis ja kõik vabad kohad on täidetud."
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameLoader.cpp:144
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameLoader.cpp:145
 msgid "Game crate was picked and spread out..."
 msgstr "Mäng kasti pakitud ja laiali saadetud..."
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwOptionsWindow.cpp:59
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwOptionsWindow.cpp:60
 msgid "Game menu"
 msgstr "Menüü"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1053
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1054
 msgid "Game was paused."
 msgstr "Mäng peatati."
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1082
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1083
 msgid "Game was resumed."
 msgstr "Mängu jätkati."
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPCreate.cpp:55
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPCreate.cpp:56
 msgid "Game's Name:"
 msgstr "Mängu nimi:"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAddons.cpp:65
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAddons.cpp:66
 msgid "Gameplay"
 msgstr "Mängimine"
 
@@ -1167,7 +1143,7 @@ msgstr "Mängimine"
 msgid "General"
 msgstr "Kindral"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMainMenu.cpp:74
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMainMenu.cpp:75
 msgid "General statistics"
 msgstr "Üldine statistika"
 
@@ -1179,34 +1155,33 @@ msgstr "Geoloog"
 msgid "Get all back"
 msgstr "Saa kõik tagasi"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:343
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:344
 msgid "Go to headquarters"
 msgstr "Mine peakorteri juurde"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBaseWarehouse.cpp:73
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuilding.cpp:102
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBaseWarehouse.cpp:74
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuilding.cpp:103
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildingSite.cpp:66
 msgid "Go to place"
 msgstr "Mine"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:118
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:111
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:119
 msgid "Goals:"
 msgstr "Eesmärgid:"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:81
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:82
 msgid "Gold"
 msgstr "Kuld"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:81
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:82
 msgid "Gold mine"
 msgstr "Kullakaevandus"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:110
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:103
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:111
 msgid "Goods at start:"
 msgstr "Kaupasid alustades:"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:85
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:86
 msgid "Grain"
 msgstr "Vili"
 
@@ -1218,19 +1193,19 @@ msgstr ""
 "Sigade kasvatamiseks on vaja vett ja vilja. Niimoodi saadav liha läheb "
 "lihuniku juurde töötlemiseks."
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:72
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:73
 msgid "Granite mine"
 msgstr "Graniidikaevandus"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:84
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:86
 msgid "Graphics"
 msgstr "Graafika"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:186
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:188
 msgid "Graphics Driver"
 msgstr "Graafika draiver"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:418
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:419
 msgid "Greenland"
 msgstr "Rohelus"
 
@@ -1242,21 +1217,21 @@ msgstr "Vahimaja"
 msgid "Ham"
 msgstr "Sink"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:54
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:55
 msgid "Hammer"
 msgstr "Haamer"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHarborBuilding.cpp:47
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHarborBuilding.cpp:48
 msgid "Harbor building"
 msgstr "Sadam"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:389
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:390
 msgid "Headquarters"
 msgstr "Peakorter"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuilding.cpp:85
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildingProductivities.cpp:106
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildings.cpp:92
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuilding.cpp:86
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildingProductivities.cpp:107
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildings.cpp:93
 msgid "Help"
 msgstr "Abi"
 
@@ -1264,15 +1239,15 @@ msgstr "Abi"
 msgid "Helper"
 msgstr "Abiline"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AIPlayerJH.cpp:105
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AIPlayerJH.cpp:106
 msgid "Hi, I'm an artifical player and I'm not very good yet!"
 msgstr "Tere, olen tehismängija ja ma ei ole veel väga hea!"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyServerInfo.cpp:79
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyServerInfo.cpp:80
 msgid "Host:"
 msgstr "Host:"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:342
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:343
 msgid "House names"
 msgstr "Majade nimed"
 
@@ -1284,23 +1259,23 @@ msgstr "Jahimaja"
 msgid "Huntsman"
 msgstr "Jahimees"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskLobby.cpp:77
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskLobby.cpp:78
 msgid "ID"
 msgstr "ID"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:55
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:56
 msgid "IP Address of Host:"
 msgstr "Host'i IP aadress:"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:129
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:131
 msgid "IPv4"
 msgstr "IPv4"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:128
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:130
 msgid "IPv6"
 msgstr "IPv6"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:352
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:353
 msgid "Incomplete message was received!"
 msgstr "Poolik sõnum võeti vastu!"
 
@@ -1308,41 +1283,42 @@ msgstr "Poolik sõnum võeti vastu!"
 msgid "Inexhaustible Mines"
 msgstr "Mitteammenduvad kaevandused"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:118
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:219
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:119
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:220
 msgid "Inhabitants"
 msgstr "Elanikke"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMilitary.cpp:54
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMilitary.cpp:55
 msgid "Interior"
 msgstr "Sisemaa"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskMultiPlayer.cpp:65
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskMultiPlayer.cpp:66
 msgid "Internet Lobby"
 msgstr "Interneti ooteruum"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskLobby.cpp:72
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskLobby.cpp:73
 msgid "Internet Ranking"
 msgstr "Edetabel"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwRoadWindow.cpp:50
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwRoadWindow.cpp:51
 msgid "Interrupt road building"
 msgstr "Katkesta tee ehitamine"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskMainMenu.cpp:78
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskMainMenu.cpp:79
 msgid "Intro"
 msgstr "Sissejuhatus"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPlayReplay.cpp:120
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPlayReplay.cpp:121
 msgid "Invalid Replay!"
 msgstr "Vigane tagasimäng!"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:156
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPCreate.cpp:177
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:157
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPCreate.cpp:178
 msgid "Invalid port. The valid port-range is 1 to 65535!"
 msgstr "Vigane port. Võimalik portide vahemik on 1-65535!"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:104
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:105
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:83
 msgid "Iron"
 msgstr "Raud"
 
@@ -1350,19 +1326,19 @@ msgstr "Raud"
 msgid "Iron founder"
 msgstr "Raua sulataja"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:78
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:79
 msgid "Iron mine"
 msgstr "rauakaevandus"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTransport.cpp:64
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTransport.cpp:65
 msgid "Iron ore"
 msgstr "Raua maak"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:120
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:121
 msgid "Iron smelter"
 msgstr "Raua sulatuskoda"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:80
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:81
 msgid "Ironore"
 msgstr "Rauamaak"
 
@@ -1374,40 +1350,38 @@ msgstr ""
 "Laevatehases on võimalik ehitada väikseid aerupaate kui ka tohutuid "
 "kaubalaevu. Selleks vajaminevaid laudu töötlevad oskuslikult laevaehitajad."
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:708
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:681
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:709
 msgid "Japaneses"
 msgstr "Jaapanlased"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskDirectIP.cpp:62
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskDirectIP.cpp:63
 msgid "Join Game"
 msgstr "Ühine mänguga"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:596
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:597
 msgid "Keyboard layout"
 msgstr "Klaviatuuri paigutus"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:121
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:123
 msgid "Keyboard layout:"
 msgstr "Klaviatuuri asetus:"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:102
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:104
 msgid "Language:"
 msgstr "Keel:"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPlayReplay.cpp:63
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPlayReplay.cpp:64
 msgid "Length"
 msgstr "Pikkus"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/ctrlProgress.cpp:74
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/ctrlProgress.cpp:75
 msgid "Less"
 msgstr "Vähem"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:394
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:395
 msgid "Less attackers"
 msgstr "Vähem ründajaid"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:50
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:51
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:52
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:53
@@ -1419,14 +1393,15 @@ msgstr "Vähem ründajaid"
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:59
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:60
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:61
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:62
 msgid "Less often"
 msgstr "Harvem"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:88
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:89
 msgid "Less repeats"
 msgstr "Vähem kordusi"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:172
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:174
 msgid "Limit Framerate:"
 msgstr "Piira kaadrisagedust:"
 
@@ -1482,25 +1457,24 @@ msgstr ""
 "Väga pikk: 21 plaati\n"
 "ja piiramata"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwOptionsWindow.cpp:77
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwOptionsWindow.cpp:78
 msgid "Load 'ReadMe' file"
 msgstr "Ava 'Loe mind' fail"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:78
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:79
 msgid "Load game"
 msgstr "Laadi mäng"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwOptionsWindow.cpp:81
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSave.cpp:257
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwOptionsWindow.cpp:82
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSave.cpp:258
 msgid "Load game!"
 msgstr "Laadi mäng!"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:109
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:110
 msgid "Load game..."
 msgstr "Laadi mäng ..."
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:89
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:82
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:90
 msgid "Lock teams:"
 msgstr "Lukusta tiimid:"
 
@@ -1508,7 +1482,7 @@ msgstr "Lukusta tiimid:"
 msgid "Long"
 msgstr "Pikk"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:245
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:246
 msgid "Long-run"
 msgstr "Pikaajaline"
 
@@ -1520,32 +1494,32 @@ msgstr "Pikem"
 msgid "Lookout tower"
 msgstr "Vaatlustorn"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofScout_LookoutTower.cpp:83
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofScout_LookoutTower.cpp:84
 msgid "Lookout-tower occupied"
 msgstr "Vaatlustorn asustatud"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyRanking.cpp:81
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyRanking.cpp:82
 msgid "Lost"
 msgstr "Kaotanud"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1113
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1114
 msgid "Lost connection to lobby!"
 msgstr "Ühendus ooteruumiga katkenud!"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1100
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1101
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:948
 msgid "Lost connection to server!"
 msgstr "Ühendus serveriga on katkenud!"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameWorldGame.cpp:593
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameWorldGame.cpp:594
 msgid "Lost land by this building"
 msgstr "Kaotati maad sellele ehitisele"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:113
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:106
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:114
 msgid "Low"
 msgstr "Vähe"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:106
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:107
 msgid "Main selection"
 msgstr "Põhi valikud"
 
@@ -1553,30 +1527,28 @@ msgstr "Põhi valikud"
 msgid "Manual road enlargement"
 msgstr "Manuaalne tee laiendamine"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:104
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:105
 msgid "Map"
 msgstr "Kaart"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyServerInfo.cpp:75
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyServerInfo.cpp:76
 msgid "Map Name:"
 msgstr "Kaardi nimi:"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameLoader.cpp:122
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameLoader.cpp:123
 msgid "Map was loaded and pinned at the wall..."
 msgstr "Kaart välja võetud ja seinale riputatud..."
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:146
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:134
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:139
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:147
 msgid "Map: "
 msgstr "Kaart: "
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:135
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:136
 msgid "Mapfile: "
 msgstr "Kaardifail: "
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:114
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:133
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:115
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:134
 msgid "Mapping"
 msgstr "Kartograafia"
 
@@ -1596,19 +1568,19 @@ msgstr "Liha, mida jahimees muretseb, kasutatakse kaevurite toitmiseks."
 msgid "Medium strength"
 msgstr "Keskmine tugevus"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:244
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:245
 msgid "Medium-term"
 msgstr "Keskmise ajaline"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:63
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:64
 msgid "Merchandise"
 msgstr "Kaupasid"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMainMenu.cpp:75
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMainMenu.cpp:76
 msgid "Merchandise statistics"
 msgstr "Kaupade statistika"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPostWindow.cpp:292
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPostWindow.cpp:293
 msgid "Message"
 msgstr "Sõnum"
 
@@ -1616,33 +1588,33 @@ msgstr "Sõnum"
 msgid "Metalworker"
 msgstr "Metallitööline"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:110
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:143
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:111
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:144
 msgid "Metalworks"
 msgstr "Metallitöökoda"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAddons.cpp:61
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAddons.cpp:62
 msgid "Military"
 msgstr "Sõjavägi"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobMilitary.cpp:873
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobMilitary.cpp:872
 msgid "Military building captured"
 msgstr "Sõjaline ehitis vallutatud"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobMilitary.cpp:870
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobMilitary.cpp:869
 msgid "Military building lost"
 msgstr "Sõjaline ehitis kaotatud"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobMilitary.cpp:610
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobMilitary.cpp:611
 msgid "Military building occupied"
 msgstr "Sõjaline ehitis asustatud"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:120
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:227
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:121
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:228
 msgid "Military strength"
 msgstr "Sõjaväe tugevus"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:88
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:89
 msgid "Mill"
 msgstr "Veski"
 
@@ -1658,7 +1630,7 @@ msgstr "Kaevur"
 msgid "Minimum strength"
 msgstr "Minimaalne tugevus"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:123
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:124
 msgid "Mint"
 msgstr "Mündivalukoda"
 
@@ -1666,23 +1638,22 @@ msgstr "Mündivalukoda"
 msgid "Minter"
 msgstr "Vermija"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:166
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:168
 msgid "Mode:"
 msgstr "Ekraan:"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/ctrlProgress.cpp:75
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/ctrlProgress.cpp:76
 msgid "More"
 msgstr "Rohkem"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:395
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:396
 msgid "More attackers"
 msgstr "Rohkem ründajaid"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMilitary.cpp:52
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMilitary.cpp:53
 msgid "More defenders"
 msgstr "Rohkem kaitsjaid"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:50
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:51
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:52
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:53
@@ -1694,67 +1665,68 @@ msgstr "Rohkem kaitsjaid"
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:59
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:60
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:61
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:62
 msgid "More often"
 msgstr "Tihedamini"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMilitary.cpp:50
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMilitary.cpp:51
 msgid "More recruits"
 msgstr "Rohkem värvatuid"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:89
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:90
 msgid "More repeats"
 msgstr "Rohkem kordusi"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskMainMenu.cpp:74
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskMainMenu.cpp:75
 msgid "Multiplayer"
 msgstr "Mitmemäng"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:214
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:216
 msgid "Music"
 msgstr "Muusika"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:232
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:234
 msgid "Music player"
 msgstr "Muusika mängija"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskLobby.cpp:79
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:101
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskLobby.cpp:80
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:102
 msgid "Name"
 msgstr "Nimi"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:97
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:99
 msgid "Name in Game:"
 msgstr "Nimi mängus:"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMilitary.cpp:56
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMilitary.cpp:57
 msgid "Near harbor points"
 msgstr "Sadamakohtade lähedal"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskMultiPlayer.cpp:67
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskMultiPlayer.cpp:68
 msgid "Network/LAN"
 msgstr "Võrk/LAN"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobHarborBuilding.cpp:103
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobHarborBuilding.cpp:104
 msgid "New harbor building finished"
 msgstr "Uus sadamaehitis lõpetatud"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:117
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:118
 msgid "New maps"
 msgstr "Uued kaardid"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobStorehouse.cpp:56
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobStorehouse.cpp:57
 msgid "New storehouse finished"
 msgstr "Uus ladu valmis"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwWares.cpp:188
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwWares.cpp:189
 msgid "Next page"
 msgstr "Järgmine lehekülg"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:72
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:73
 msgid "No"
 msgstr "Ei"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:145
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:147
 msgid "No Proxy"
 msgstr "Puhverserver puudub"
 
@@ -1767,20 +1739,20 @@ msgstr "Katapulte pole"
 msgid "No change"
 msgstr "Ei muudeta"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAIDebug.cpp:148
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAIDebug.cpp:149
 msgid "No current job"
 msgstr "Praegune töö puudub"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPostWindow.cpp:83
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPostWindow.cpp:269
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPostWindow.cpp:84
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPostWindow.cpp:270
 msgid "No letters!"
 msgstr "Kirju pole!"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofFarmhand.cpp:196
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofFarmhand.cpp:197
 msgid "No more fishes in range"
 msgstr "Rohkem kalu tegevuspiirkonnas pole"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofFarmhand.cpp:189
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofFarmhand.cpp:190
 msgid "No more stones in range"
 msgstr "Rohkem kive tegevuspiirkonnas pole"
 
@@ -1788,7 +1760,7 @@ msgstr "Rohkem kive tegevuspiirkonnas pole"
 msgid "No refund"
 msgstr "Ei tagastata"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwShip.cpp:109
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwShip.cpp:110
 msgid "No ships available"
 msgstr "Laevu pole saadaval"
 
@@ -1796,39 +1768,35 @@ msgstr "Laevu pole saadaval"
 msgid "Nobody else but you"
 msgstr "Ei keegi peale enda"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:114
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:115
 msgid "Non-aggression pact"
 msgstr "Mittekallaletungileping"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:120
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:113
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:121
 msgid "None"
 msgstr "Puuduvad"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:114
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:129
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:107
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:122
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:115
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:130
 msgid "Normal"
 msgstr "Normaalselt"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:695
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:668
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:696
 msgid "Not Ready"
 msgstr "Pole valmis"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:93
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:102
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:110
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:94
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:103
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:111
 msgid "Not available"
 msgstr "Pole saadaval"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:989
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:990
 #, c-format
 msgid "Note: Game settings changed by the server%s"
 msgstr "Märkus: Mängu seaded muudetud serveri%s poolt"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClientGF_Replay.cpp:122
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClientGF_Replay.cpp:123
 #, c-format
 msgid ""
 "Notice: The played replay has ended. (GF: %u, %dh %dmin %ds, TF: %u, "
@@ -1837,29 +1805,28 @@ msgstr ""
 "Märkus: Ettemängitud tagasimäng on lõppenud. (GF: %u, %dh %dmin %ds, TF: %u, "
 "AVG_FPS: %u)"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:409
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:410
 msgid "Number of attackers"
 msgstr "Ründajate arv"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMsgbox.cpp:65
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMsgbox.cpp:71
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:44
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSkipGFs.cpp:54
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMsgbox.cpp:66
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMsgbox.cpp:72
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:45
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSkipGFs.cpp:55
 msgid "OK"
 msgstr "OK"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:341
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:342
 msgid "Observation window"
 msgstr "Vaatlusaken"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:183
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:217
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:226
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:185
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:219
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:228
 msgid "Off"
 msgstr "Väljas"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:104
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:97
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:105
 msgid "Off (all visible)"
 msgstr "Väljas (kõik nähtav)"
 
@@ -1867,51 +1834,50 @@ msgstr "Väljas (kõik nähtav)"
 msgid "Officer"
 msgstr "Kolonel"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AIPlayerJH.cpp:148
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AIPlayerJH.cpp:149
 msgid "Oh, no, you destroyed my headquarter! I surrender!"
 msgstr "Oh ei, sa hävitasid minu peakorteri! Annan alla!"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:115
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:116
 msgid "Old maps"
 msgstr "Vanad kaardid"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:182
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:216
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:225
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:184
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:218
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:227
 msgid "On"
 msgstr "Sees"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:219
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:212
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:220
 msgid "Open"
 msgstr "Vaba"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskMainMenu.cpp:76
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:75
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskMainMenu.cpp:77
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:77
 msgid "Options"
 msgstr "Seaded"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildingSite.cpp:57
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildingSite.cpp:58
 msgid "Order of building site"
 msgstr "Ehitusplatsi korraldus"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:127
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:128
 msgid "Other"
 msgstr "Muu"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:151
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:152
 msgid "Other Support:"
 msgstr "Muu toetus:"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofAttacker.cpp:288
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofAttacker.cpp:289
 msgid "Our headquarters was destroyed!"
 msgstr "Meie peakorter hävitati!"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMinimap.cpp:53
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMinimap.cpp:54
 msgid "Outline map"
 msgstr "Kontuurkaart"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:119
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:120
 msgid "Own maps"
 msgstr "Enda kaardid"
 
@@ -1919,21 +1885,20 @@ msgstr "Enda kaardid"
 msgid "Pack donkey"
 msgstr "Veoeesel"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:63
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:64
 msgid "Password (if needed):"
 msgstr "Parool (kui vaja):"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPCreate.cpp:63
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:59
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPCreate.cpp:64
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:60
 msgid "Password:"
 msgstr "Parool:"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:75
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:73
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:76
 msgid "Past player"
 msgstr "Eelmine mängija"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:53
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:54
 msgid "Pick-axe"
 msgstr "Kirka"
 
@@ -1941,13 +1906,12 @@ msgstr "Kirka"
 msgid "Pig breeder"
 msgstr "Seakasvataja"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:91
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:159
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:92
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:160
 msgid "Pig farm"
 msgstr "Sea kasvatus"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:72
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskLobby.cpp:77
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:73
 msgid "Ping"
 msgstr "Ping"
 
@@ -1955,75 +1919,72 @@ msgstr "Ping"
 msgid "Planer"
 msgstr "Planeerija"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:72
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:73
 msgid "Play Replay"
 msgstr "Tagasimäng"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:90
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:283
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:91
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:284
 msgid "Playback in this order"
 msgstr "Mahamängimine etteantud järjekorras"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:131
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:132
 msgid "Played"
 msgstr "Mängitud"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskLobby.cpp:77
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:101
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskLobby.cpp:78
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:102
 msgid "Player"
 msgstr "Mängijaid"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:975
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:976
 #, c-format
 msgid "Player '%s' joined the game!"
 msgstr "Mängija '%s' liitus mänguga!"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:972
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:973
 #, c-format
 msgid "Player '%s' left the game!"
 msgstr "Mängija '%s' lahkus mängust!"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1137
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1138
 #, c-format
 msgid "Player '%s' switched to player '%s'"
 msgstr "Mängija '%s' on nüüd mängija '%s'"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1160
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1161
 #, c-format
 msgid "Player '%s' was defeated!"
 msgstr "Mängija '%s' on kaotanud!"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:60
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:62
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:61
 msgid "Player Name"
 msgstr "Mängija nimi"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:70
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:71
 msgid "Playlist:"
 msgstr "Esitusnimekiri:"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPCreate.cpp:169
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPCreate.cpp:170
 msgid "Please enter a name for the game"
 msgstr "Palun sisesta nimi mängu jaoks"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:93
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:102
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:110
-#, fuzzy
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:94
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:103
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:111
 msgid "Please use 'Unlimited Play' to create a Singleplayer game."
 msgstr ""
-"Palun kasuta mitmemängija viisi ja 'Otsene IP' et luua üksimängija mängu."
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPleaseWait.cpp:44
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPleaseWait.cpp:47
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPleaseWait.cpp:45
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPleaseWait.cpp:48
 msgid "Please wait..."
 msgstr "Palun oota..."
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskLobby.cpp:79
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskLobby.cpp:80
 msgid "Points"
 msgstr "Punkte"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:110
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:111
 msgid "Post office"
 msgstr "Postkontor"
 
@@ -2035,22 +1996,22 @@ msgstr "Reamees"
 msgid "Private first class"
 msgstr "Kapral"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildingProductivities.cpp:85
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildingProductivities.cpp:86
 msgid "Productivity"
 msgstr "Tootlikkus"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPlayReplay.cpp:122
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPlayReplay.cpp:123
 msgid "Program version is too old to play that replay!"
 msgstr "Programmi versioon on liiga vana selle tagasimängu mängimiseks!"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:83
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:95
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:122
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:84
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:96
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:123
 msgid "Programming"
 msgstr "Programmeerimine"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:81
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:94
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:82
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:95
 msgid "Project management"
 msgstr "Projektihaldus"
 
@@ -2058,24 +2019,24 @@ msgstr "Projektihaldus"
 msgid "Proportional"
 msgstr "Proportsionaalselt"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:136
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:138
 msgid "Proxyserver:"
 msgstr "Puhverserver:"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:143
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:145
 msgid "Proxytyp:"
 msgstr "Tüüp:"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:265
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:273
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:266
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:274
 msgid "Pull down flag"
 msgstr "Murra lipp maha"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:86
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:96
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:105
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:113
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:132
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:87
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:97
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:106
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:114
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:133
 msgid "Quality Assurance"
 msgstr "Kvaliteedi tagamine"
 
@@ -2083,20 +2044,19 @@ msgstr "Kvaliteedi tagamine"
 msgid "Quarry"
 msgstr "Kiviraiduri hütt"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskMainMenu.cpp:84
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskMainMenu.cpp:85
 msgid "Quit program"
 msgstr "Välju programmist"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:125
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:126
 msgid "RTTR"
 msgstr "RTTR"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:64
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:66
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:65
 msgid "Race"
 msgstr "Rass"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:283
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:284
 msgid "Random playback"
 msgstr "Suvalises järjekorras mahamängimine"
 
@@ -2114,25 +2074,22 @@ msgstr ""
 "kasutatakse siis relvade (Relvatöökojas) ja tööriistade (Metallitöökojas) "
 "valmistamiseks"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskMainMenu.cpp:80
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:122
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskMainMenu.cpp:81
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:124
 msgid "Readme"
 msgstr "Loe mind"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:600
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:601
 msgid "Readme!"
 msgstr "Loe mind!"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:83
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:495
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:695
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:76
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:487
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:668
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:84
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:496
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:696
 msgid "Ready"
 msgstr "Valmis"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:70
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:71
 msgid "Ready?"
 msgstr "Valmis?"
 
@@ -2168,15 +2125,15 @@ msgstr "Tagastata materjalid ehitise lammutamisel"
 msgid "Refund materials when emergency program is active"
 msgstr "Tagasta materjalid kui hädaolukorra programm on aktiivne"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:88
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:89
 msgid "Register"
 msgstr "Registreeri"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:319
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:320
 msgid "Registration successful!"
 msgstr "Registreerimine õnnestus!"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:77
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:78
 msgid "Remove"
 msgstr "Eemalda"
 
@@ -2184,68 +2141,66 @@ msgstr "Eemalda"
 msgid "Remove gold completely"
 msgstr "Eemalda kuld täielikult"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:84
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:85
 msgid "Remove track"
 msgstr "Eemalda lugu"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHQ.cpp:52
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHQ.cpp:53
 msgid "Reserve"
 msgstr "Reserv"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:70
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:71
 msgid "Resume last game"
 msgstr "Taasta eelmine mäng"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:86
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:79
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:87
 msgid "Return"
 msgstr "Tagasi"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:72
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:73
 msgid "Return To The Roots"
 msgstr "Return To The Roots"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskDirectIP.cpp:53
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskDirectIP.cpp:54
 #, c-format
 msgid "Return To The Roots - v%s-%s"
 msgstr "Return To The Roots - v%s-%s"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwShip.cpp:80
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwShip.cpp:81
 msgid "Return to harbor"
 msgstr "Mine sadamasse tagasi"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:57
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:58
 msgid "Rod and line"
 msgstr "Õng"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:60
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:61
 msgid "Rolling pin"
 msgstr "Taignarull"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:708
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:681
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:709
 msgid "Romans"
 msgstr "Roomlased"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1052
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1081
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1053
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1082
 msgid "SYSTEM"
 msgstr "SÜSTEEM"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:69
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:70
 msgid "Save Password?"
 msgstr "Salvestan parooli?"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwOptionsWindow.cpp:85
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSave.cpp:197
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwOptionsWindow.cpp:86
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSave.cpp:198
 msgid "Save game!"
 msgstr "Salvesta mäng!"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:52
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:53
 msgid "Saw"
 msgstr "Saag"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:130
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:131
 msgid "Sawmill"
 msgstr "Saeveski"
 
@@ -2253,28 +2208,28 @@ msgstr "Saeveski"
 msgid "Scout"
 msgstr "Skaut"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:58
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:59
 msgid "Scythe"
 msgstr "Vikat"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:129
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:130
 msgid "Sea"
 msgstr "Meri"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBaseWarehouse.cpp:71
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBaseWarehouse.cpp:72
 msgid "Select all"
 msgstr "Vali kõik"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:104
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:105
 msgid "Selection of maps"
 msgstr "Kaartide valik"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:267
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:275
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:268
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:276
 msgid "Send out scout"
 msgstr "Saada skaut välja"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildOrder.cpp:68
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildOrder.cpp:69
 msgid "Sequence of given order"
 msgstr "Etteantud järjekorras"
 
@@ -2282,24 +2237,24 @@ msgstr "Etteantud järjekorras"
 msgid "Sergeant"
 msgstr "Seersant"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskLobby.cpp:77
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskLobby.cpp:78
 msgid "Server"
 msgstr "Server"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyServerInfo.cpp:73
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyServerInfo.cpp:74
 msgid "Server Information"
 msgstr "Serveri informatsioon"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyServerInfo.cpp:77
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyServerInfo.cpp:78
 msgid "Server Name:"
 msgstr "Serveri nimetus:"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:82
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:83
 msgid "Server management"
 msgstr "Serverihaldus"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:59
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPCreate.cpp:59
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:60
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPCreate.cpp:60
 msgid "Server-Port:"
 msgstr "Serveri port:"
 
@@ -2307,12 +2262,11 @@ msgstr "Serveri port:"
 msgid "Set maximum waterway length"
 msgstr "Sea maksimaalne veetee pikkus"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSettings.cpp:53
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSettings.cpp:54
 msgid "Settings"
 msgstr "Seadistused"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:91
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:84
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:92
 msgid "Shared team view"
 msgstr "Jagatud tiimi vaade"
 
@@ -2320,8 +2274,7 @@ msgstr "Jagatud tiimi vaade"
 msgid "Shield"
 msgstr "Kilp"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMainMenu.cpp:86
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwShip.cpp:60
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMainMenu.cpp:87
 msgid "Ship register"
 msgstr "Laevaregister"
 
@@ -2343,7 +2296,7 @@ msgstr ""
 msgid "Shipwright"
 msgstr "laevaehitaja"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:146
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:147
 msgid "Shipyard"
 msgstr "Laevatehas"
 
@@ -2351,29 +2304,29 @@ msgstr "Laevatehas"
 msgid "Short"
 msgstr "Lühike"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:243
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:244
 msgid "Short-run"
 msgstr "Lühiajaline"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:55
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:56
 msgid "Shovel"
 msgstr "Labidas"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskMainMenu.cpp:72
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskMainMenu.cpp:73
 msgid "Singleplayer"
 msgstr "Üksimäng"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:101
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:102
 msgid "Size"
 msgstr "Mõõtmed"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:116
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:136
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:211
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:117
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:137
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:212
 msgid "Size of country"
 msgstr "Maa suurus"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSkipGFs.cpp:44
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSkipGFs.cpp:45
 msgid "Skip GameFrames"
 msgstr "Jäta vahele mängu kaadrid"
 
@@ -2381,85 +2334,80 @@ msgstr "Jäta vahele mängu kaadrid"
 msgid "Slaughterhouse"
 msgstr "Tapamaja"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:128
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:121
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:129
 msgid "Slow"
 msgstr "Aeglane"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:146
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:148
 msgid "Socks v4"
 msgstr "Socks V4"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskDirectIP.cpp:79
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskDirectIP.cpp:80
 msgid "Sorry!"
 msgstr "Vabandust!"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:86
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:88
 msgid "Sound/Music"
 msgstr "Heli/Muusika"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:200
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:202
 msgid "Sounddriver"
 msgstr "Heli draiver"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:175
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:176
 msgid "Specify the playlist name"
 msgstr "Täpsusta esitusnimekirja nime"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:125
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:118
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:126
 msgid "Speed:"
 msgstr "Kiirus:"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPCreate.cpp:78
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPCreate.cpp:79
 msgid "Start"
 msgstr "Alusta"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSave.cpp:67
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSave.cpp:68
 msgid "Start GF"
 msgstr "Alguse GF"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:557
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:533
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:558
 msgid "Start aborted"
 msgstr "Alustamine katkestatud"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHarborBuilding.cpp:56
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHarborBuilding.cpp:96
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHarborBuilding.cpp:127
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHarborBuilding.cpp:57
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHarborBuilding.cpp:97
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHarborBuilding.cpp:128
 msgid "Start expedition"
 msgstr "Alusta ekspeditsiooni"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHarborBuilding.cpp:63
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHarborBuilding.cpp:64
 msgid "Start exporation expedition"
 msgstr "Alusta avastamis ekspeditsdiooni"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:83
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:481
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:693
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:76
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:473
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:666
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:84
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:482
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:694
 msgid "Start game"
 msgstr "Alusta mänguga"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:544
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:545
 msgid "Starting game, please wait"
 msgstr "Mängu alustamine, palun oota"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:46
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:47
 msgid "Statistics"
 msgstr "Statistika"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSettings.cpp:58
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSettings.cpp:59
 msgid "Statistics Scale"
 msgstr "Statistika Skaala"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwInventory.cpp:46
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwInventory.cpp:47
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMainMenu.cpp:80
 msgid "Stock"
 msgstr "Laoseis"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPlayReplay.cpp:63
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPlayReplay.cpp:64
 msgid "Stocktaking date"
 msgstr "Salvestamise kuupäev"
 
@@ -2467,39 +2415,39 @@ msgstr "Salvestamise kuupäev"
 msgid "Stonemason"
 msgstr "Kiviraidur"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:73
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:74
 msgid "Stones"
 msgstr "Kivid"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBaseWarehouse.cpp:66
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBaseWarehouse.cpp:67
 msgid "Stop storage"
 msgstr "Peata laostamine"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStorehouse.cpp:43
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStorehouse.cpp:44
 msgid "Storehouse"
 msgstr "Ladu"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:400
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:401
 msgid "Strong attackers"
 msgstr "Tugevad ründajad"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMilitary.cpp:51
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMilitary.cpp:52
 msgid "Strong defense"
 msgstr "Tugev kaitse"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:225
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:226
 msgid "Suggest non-aggression pact"
 msgstr "Paku mittekallaletungilepingut"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:224
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:225
 msgid "Suggest treaty of alliance"
 msgstr "Paku liidulepingut"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwOptionsWindow.cpp:108
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwOptionsWindow.cpp:109
 msgid "Surrender"
 msgstr "Alistu"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSurrender.cpp:49
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSurrender.cpp:50
 msgid "Surrender game?"
 msgstr "Alistun?"
 
@@ -2507,32 +2455,31 @@ msgstr "Alistun?"
 msgid "Sword"
 msgstr "Mõõk"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/languages.cpp:69
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/languages.cpp:70
 msgid "System language"
 msgstr "OP. Süsteemi keel"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:191
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:192
 msgid "THE END"
 msgstr "LÕPP"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBaseWarehouse.cpp:64
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBaseWarehouse.cpp:65
 msgid "Take out of store"
 msgstr "Väljasta laost"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:68
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:70
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:69
 msgid "Team"
 msgstr "Tiim"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPlayReplay.cpp:124
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPlayReplay.cpp:125
 msgid "Temporary map file was not found!"
 msgstr "Ajutist kaardi faili ei leitud!"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:183
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:184
 msgid "Thank you for your donations!"
 msgstr "Täname teid annetuste eest!"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:190
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:191
 msgid "Thank you!"
 msgstr "Täname!"
 
@@ -2554,7 +2501,7 @@ msgstr "%s mängija '%s' ja sinu vahel on tühistatud!"
 msgid "The %s between player '%s' and you has been concluded."
 msgstr "%s mängija '%s' ja sinu vahel on lõppenud."
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1015
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1016
 msgid "The Game is not in sync. Checksums of some players don't match."
 msgstr "Mäng ei ole sünkroonis. Mõnede mängijate kontrollsumma ei sobi."
 
@@ -2623,11 +2570,11 @@ msgstr ""
 "nuppu saad sa peatada kuldmüntide andmise siin majutatud sõduritele. Samas, "
 "ilma kuldmüntideta ei saa siinsed sõdurid treenida ja oma oskusi arendada."
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClientPlayer.cpp:2058
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClientPlayer.cpp:2061
 msgid "The emergency program has been activated."
 msgstr "Hädaolukorra programm on aktiveeritud."
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClientPlayer.cpp:2068
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClientPlayer.cpp:2071
 msgid "The emergency program has been deactivated."
 msgstr "Hädaolukorra programm on deaktiveeritud."
 
@@ -2743,20 +2690,20 @@ msgstr ""
 "Kivi kaevandamine graniidi kaevanduses kindlustab ehitiste kividega "
 "varustamise. Siiski peab ka graniidi kaevandus oma töölisi toitma."
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTextfile.cpp:72
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTextfile.cpp:73
 msgid "The readme file was not found!"
 msgstr "\"Loe mind\" faili ei leitud!"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:147
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:148
 msgid "The specified file couldn't be loaded!"
 msgstr "Antud faili ei saanud laadida!"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:335
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:336
 msgid "The specified file couldn't be opened!"
 msgstr "Antud faili ei saanud avada!"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:117
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:360
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:118
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:361
 msgid "The specified file couldn't be saved!"
 msgstr "Antud faili ei saanud salvestada!"
 
@@ -2794,31 +2741,31 @@ msgstr ""
 "sõduritele. Samas, ilma kuldmüntideta ei saa siinsed sõdurid treenida ja oma "
 "oskusi arendada."
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:258
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:259
 msgid "This Server is full!"
 msgstr "See server on täis!"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofAttacker.cpp:291
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofAttacker.cpp:292
 msgid "This harbor building was destroyed"
 msgstr "See sadam hävitati"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofBuildingWorker.cpp:403
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofBuildingWorker.cpp:404
 msgid "This mine is exhausted"
 msgstr "See kaevandus on ammendunud"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofBuildingWorker.cpp:405
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofBuildingWorker.cpp:406
 msgid "This well is dried out"
 msgstr "See kaev on ära kuivanud"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSave.cpp:67
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSave.cpp:68
 msgid "Time"
 msgstr "Aeg"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:267
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:268
 msgid "To player:"
 msgstr "Mängijale:"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:222
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:223
 msgid ""
 "To register, you have to create a valid board account at http://forum."
 "siedler25.org at the moment.\n"
@@ -2826,113 +2773,107 @@ msgstr ""
 "Hetkel pead sa registreerimiseks looma kehtiva foorumi konto aadressil "
 "http://forum.siedler25.org .\n"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:50
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:51
 msgid "Tongs"
 msgstr "Tangid"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:262
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:263
 msgid "Too short Message received!"
 msgstr "Liiga lühike sõnum võeti vastu!"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMainMenu.cpp:71
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:84
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMainMenu.cpp:72
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:85
 msgid "Tools"
 msgstr "Tööriistad"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildOrder.cpp:56
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildOrder.cpp:57
 msgid "Top"
 msgstr "Ülemiseks"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:122
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:115
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:123
 msgid "Total domination"
 msgstr "Täielik allutamine"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMainMenu.cpp:69
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMainMenu.cpp:70
 msgid "Transport"
 msgstr "Transport"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:80
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:81
 msgid "Treaties"
 msgstr "Lepingud"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:105
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:106
 msgid "Treaty of alliance"
 msgstr "Liiduleping"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameLoader.cpp:132
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameLoader.cpp:133
 msgid "Tribal chiefs assembled around the table..."
 msgstr "Hõimupealikud ümber laua jaotatud..."
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:101
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:102
 msgid "Type"
 msgstr "Tüüp"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:46
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonMaxWaterwayLength.h:50
 msgid "Unlimited"
 msgstr "Piiramata"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:76
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:122
-#, fuzzy
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:77
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:123
 msgid "Unlimited Play"
-msgstr "Piiramata"
+msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildOrder.cpp:58
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildOrder.cpp:59
 msgid "Up"
 msgstr "Ülespoole"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:367
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:368
 msgid "Upgrade to donkey road"
 msgstr "Uuenda eesliga teeks"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:85
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:86
 msgid "Upwards"
 msgstr "Ülespoole"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/Addons.cpp:168
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/Addons.cpp:169
 msgid "Use"
 msgstr "Kasuta"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:125
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:127
 msgid "Use IPv6:"
 msgstr "Kasuta IPv6:"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAddons.cpp:54
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAddons.cpp:55
 msgid "Use S2 Defaults"
 msgstr "Kasuta S2 Vaikeväärtusi"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:53
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:54
 msgid "Username:"
 msgstr "Kasutajanimi:"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:123
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:239
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:124
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:240
 msgid "Vanquished enemies"
 msgstr "Vaenlasi võidetud"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskLobby.cpp:77
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskLobby.cpp:79
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskLobby.cpp:78
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskLobby.cpp:80
 msgid "Version"
 msgstr "Versioon"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyServerInfo.cpp:81
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyServerInfo.cpp:82
 msgid "Version:"
 msgstr "Versioon:"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:176
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:178
 msgid "Vertex Buffer Objects:"
 msgstr "Vertikaalbuffri objekt"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:112
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:105
-#, fuzzy
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:113
 msgid "Very Low"
-msgstr "Väga aeglane"
+msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:131
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:124
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:132
 msgid "Very fast"
 msgstr "Väga kiire"
 
@@ -2940,37 +2881,34 @@ msgstr "Väga kiire"
 msgid "Very long"
 msgstr "Väga pikk"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:127
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:120
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:128
 msgid "Very slow"
 msgstr "Väga aeglane"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:95
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:88
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:96
 msgid "View Settings..."
 msgstr "Vaata seadeid..."
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:708
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:681
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:709
 msgid "Vikings"
 msgstr "Vikingid"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:282
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:283
 msgid "Waiting for Playerinfo..."
 msgstr "Ootan mängijainfot..."
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:279
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:332
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:280
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:333
 msgid "Waiting for Reply..."
 msgstr "Ootan tagasimängu ..."
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClientGF_Replay.cpp:81
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClientGF_Replay.cpp:82
 #, c-format
 msgid ""
 "Warning: The played replay is not in sync with the original match. (GF: %u)"
 msgstr "Hoiatus: Tagasimäng ei ole sünkroonis esialgse mänguga. (GF: %u)"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:419
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:420
 msgid "Wasteland"
 msgstr "Tühermaa"
 
@@ -2978,36 +2916,37 @@ msgstr "Tühermaa"
 msgid "Watchtower"
 msgstr "Vahitorn"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:150
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:151
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:76
 msgid "Water"
 msgstr "Vesi"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofAttacker.cpp:654
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofAttacker.cpp:655
 msgid "We are under attack!"
 msgstr "Me oleme rünnaku all!"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:188
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:189
 msgid "We hope you enjoy playing Return To The Roots!"
 msgstr "Me loodame, et naudid Return To The Roots mängimist!"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:399
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:400
 msgid "Weak attackers"
 msgstr "Nõrgad ründajad"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMilitary.cpp:51
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMilitary.cpp:52
 msgid "Weak defense"
 msgstr "Nõrk kaitse"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:85
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:86
 msgid "Weapons"
 msgstr "Relvad"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:84
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:104
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:85
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:105
 msgid "Website Administration"
 msgstr "Veebilehe administreerimine"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:85
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:86
 msgid "Website Programming"
 msgstr "Veebilehe programmeerimine"
 
@@ -3015,11 +2954,11 @@ msgstr "Veebilehe programmeerimine"
 msgid "Well"
 msgstr "Kaev"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:169
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:171
 msgid "Windowed"
 msgstr "Akendatult"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:420
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:421
 msgid "Winter world"
 msgstr "Talvemaa"
 
@@ -3031,11 +2970,12 @@ msgstr ""
 "Metsaistutaja tagab metsa ellujäämise oma ala sees. Ta istutab igat tüüpi "
 "puid."
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyRanking.cpp:81
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyRanking.cpp:82
 msgid "Won"
 msgstr "Võitnud"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:127
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:128
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:72
 msgid "Wood"
 msgstr "Puit"
 
@@ -3047,31 +2987,31 @@ msgstr "Puuraidur"
 msgid "Woodcutter"
 msgstr "Puuraiduri hütt"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameLoader.cpp:158
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameLoader.cpp:159
 msgid "World was put together and glued..."
 msgstr "Maailm kokku pandud ja liimitud..."
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:259
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:260
 msgid "Wrong Password!"
 msgstr "Vale parool!"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:263
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:264
 msgid "Wrong Server Type!"
 msgstr "Vale serveri tüüp!"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:260
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:261
 msgid "Wrong client version"
 msgstr "Vale kliendi versioon"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:73
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:74
 msgid "Yes"
 msgstr "Jah"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:190
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:191
 msgid "You are not allowed to delete the standard playlist!"
 msgstr "Teil ei ole lubatud kustutada algset esitusnimekirja!"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskDirectIP.cpp:79
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskDirectIP.cpp:80
 msgid ""
 "You can't create a game while a proxy server is active\n"
 "Disable the use of a proxy server first!"
@@ -3079,31 +3019,30 @@ msgstr ""
 "Sa ei saa luua mängu kui puhverserver on aktiivne\n"
 "Keela puhverserveri kautamine esmalt!"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:536
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:537
 msgid "You have 10 seconds until game starts"
 msgstr "Sul on 10 sekundit mängu alguseni"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:541
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:556
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:549
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:564
 msgid "You need to restart your game to change the screen resolution!"
 msgstr "Sa pead taaskäivitama oma mängu, et muuta ekraani resolutsiooni!"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:564
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:572
 msgid "You need to restart your game to change the video or audio driver!"
 msgstr "Sa pead restartima oma mängu, et muuta video või audio draiverit!"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:1608
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:1610
 #, c-format
 msgid "current GF: %u - still fast forwarding: %d GFs left (%d %%)"
 msgstr ""
 "praegune GF: %u - endiselt kiirelt edasi kerimas: %d GF'i järel (%d %%)"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskDirectIP.cpp:56
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskDirectIP.cpp:57
 msgid "http://www.siedler25.org"
 msgstr "http://www.siedler25.org"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:253
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskUnlimitedPlay.cpp:246
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:254
 msgid "n/a"
 msgstr "puudub"
 
@@ -3111,15 +3050,15 @@ msgstr "puudub"
 msgid "non-aggression pact"
 msgstr "mittekallaletungileping"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:180
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:182
 msgid "not supported"
 msgstr "mitte toetatud"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPostWindow.cpp:292
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPostWindow.cpp:293
 msgid "of"
 msgstr "/"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSkipGFs.cpp:47
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSkipGFs.cpp:48
 msgid "to GameFrame:"
 msgstr "Mängu kaadrini:"
 
@@ -3127,7 +3066,7 @@ msgstr "Mängu kaadrini:"
 msgid "treaty of alliance"
 msgstr "liiduleping"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:165
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:166
 msgid "various anonymous donators"
 msgstr "mitmed anonüümsed annetajad"
 
@@ -3207,6 +3146,12 @@ msgstr "mitmed anonüümsed annetajad"
 
 #~ msgid "Please fill out all fields!"
 #~ msgstr "Palun täida küik väljad!"
+
+#~ msgid ""
+#~ "Please use the Multiplayer mode and 'Direct IP' to create a Singleplayer "
+#~ "game."
+#~ msgstr ""
+#~ "Palun kasuta mitmemängija viisi ja 'Otsene IP' et luua üksimängija mängu."
 
 #~ msgid "Quality assurance"
 #~ msgstr "Tarkvara kvaliteedikontroll"
