@@ -1,3 +1,27 @@
+s25rttr (20110412-7148.20) karmic; urgency=low
+
+  * Automatic Jenkins Build 20
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 12 Apr 2011 20:36:31 +0200
+
+s25rttr (20110412-7148) any; urgency=low
+
+  * fix
+
+ -- Florian Doersch <flosoft@siedler25.org>  Tue, 12 Apr 2011 18:32:00 +0200
+
+s25rttr (20110412-7147) any; urgency=low
+
+  * added missing dependencies curl, libbz and libglfw
+
+ -- Florian Doersch <flosoft@siedler25.org>  Tue, 12 Apr 2011 18:16:00 +0200
+
+s25rttr (20110412-7146) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Tue, 12 Apr 2011 17:26:00 +0200
+
 s25rttr (20110412-7145.18) karmic; urgency=low
 
   * Automatic Jenkins Build 18
