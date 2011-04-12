@@ -12,7 +12,7 @@ REVISION=$(head debian/changelog -n 1 | cut -d '-' -f 2 | cut -d ')' -f 1)
 
 PARAMS="--svn-ignore-new -k6D09334C"
  
-if [ ! -f "../tarballs/s25rttr_{$VERSION}.orig.tar.gz" ] ; then
+if [ ! -f "../tarballs/s25rttr_${VERSION}.orig.tar.gz" ] ; then
 	# remove orig tarballs older that a week (and recreate orig source ...)
 	if [ ! -z "$(find ../tarballs/s25rttr.orig.tar.gz -mtime +7 | wc -l)" ] ; then
 		rm ../tarballs/s25rttr.orig.tar.gz
@@ -28,7 +28,7 @@ if [ ! -f "../tarballs/s25rttr_{$VERSION}.orig.tar.gz" ] ; then
 	fi
 
 	find ../tarballs -mtime +7 -exec rm {} \;
-	ln -f ../tarballs/s25rttr.orig.tar.gz ../tarballs/s25rttr_{$VERSION}.orig.tar.gz
+	ln -f ../tarballs/s25rttr.orig.tar.gz ../tarballs/s25rttr_${VERSION}.orig.tar.gz
 fi
 
 if [ ! -z "$UPLOAD" ] ; then
