@@ -29,6 +29,7 @@ if [ ! -f "../tarballs/s25rttr_${VERSION}.orig.tar.gz" ] ; then
 
 	find ../tarballs -mtime +7 -exec rm {} \;
 	ln -f ../tarballs/s25rttr.orig.tar.gz ../tarballs/s25rttr_${VERSION}.orig.tar.gz
+	rm -r ../build-area/*
 fi
 
 if [ ! -z "$UPLOAD" ] ; then
