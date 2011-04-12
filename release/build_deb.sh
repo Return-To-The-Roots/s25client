@@ -20,7 +20,7 @@ if [ ! -f "../tarballs/s25rttr_{$VERSION}.orig.tar.gz" ] ; then
 		(cd ../tarballs && tar cvzf s25rttr.orig.tar.gz s25rttr)
 		rm -r ../tarballs/s25rttr
 	fi
-	ln -s s25rttr.orig.tar.gz ../tarballs/s25rttr_{$VERSION}.orig.tar.gz
+	ln -f s25rttr.orig.tar.gz ../tarballs/s25rttr_{$VERSION}.orig.tar.gz
 fi
 
 if [ ! -z "$UPLOAD" ] ; then

@@ -61,7 +61,7 @@ done
 if [ ! -z "$BUILD_NUMBER" ] ; then
 	D=$(LANG=C date +"%a, %d %b %Y %H:%M:%S %z")
 	UD=$(LANG=C date +"%Y%m%d")
-	echo "s25rttr ($UD-$HEAD.$BUILD_NUMBER) hardy jaunty karmic lucid maverick natty; urgency=low" > $msg
+	echo "s25rttr ($UD-$HEAD.$BUILD_NUMBER) hardy; urgency=low" > $msg
 	echo "" >> $msg
 	echo "  * Automatic Jenkins Build $BUILD_NUMBER" >> $msg
 	echo "" >> $msg
