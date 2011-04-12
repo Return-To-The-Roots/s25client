@@ -4,7 +4,7 @@ cd $(dirname $0)
 
 BUILD_NUMBER=$1
 
-OLDREV=$(head changelog -n 1 | cut -d '-' -f 2 | cut -d ')' -f 1)
+OLDREV=$(head changelog -n 1 | cut -d '-' -f 2 | cut -d '.' -f 1 | cut -d ')' -f 1)
 if [ -z "$OLDREV" ] ; then
 	OLDREV=0
 fi
