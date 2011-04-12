@@ -12,6 +12,17 @@ REVISION=$(head debian/changelog -n 1 | cut -d '-' -f 2 | cut -d ')' -f 1)
 
 PARAMS="--svn-ignore-new -k6D09334C"
  
+if [ ! -f "../tarballs/s25rttr_{$VERSION}.orig.tar.gz" ] ; then
+	if [ ! -f "../tarballs/s25rttr.orig.tar.gz" ] ; then
+		rm -r ../tarballs/s25rttr
+		svn export . ../tarballs/s25rttr
+		rm -r ../tarballs/s25rttr/debian
+		(cd ../tarballs && tar cvzf s25rttr.orig.tar.gz s25rttr)
+		rm -r ../tarballs/s25rttr
+	fi
+	ln -s s25rttr.orig.tar.gz ../tarballs/s25rttr_{$VERSION}.orig.tar.gz
+fi
+
 if [ ! -z "$UPLOAD" ] ; then
 	echo "Building Source only for upload to $UPLOAD"
 	svn-buildpackage $PARAMS -S || exit 1
@@ -60,9 +71,9 @@ else
 	reprepro $PARAMS -S games -P optional includedsc $DISTRIBUTION release/deb/s25rttr_${VERSION}-${REVISION}.dsc || exit 1
 	reprepro $PARAMS include $DISTRIBUTION release/deb/s25rttr_${VERSION}-${REVISION}_i386.changes || exit 1
 	reprepro $PARAMS include $DISTRIBUTION release/deb/s25rttr_${VERSION}-${REVISION}_amd64.changes || exit 1
-
-	#svn ci debian/changelog -m "Automatic debian/changelog update"
 fi
+
+svn ci debian/changelog -m "Automatic debian/changelog update"
 
 exit 0
 
