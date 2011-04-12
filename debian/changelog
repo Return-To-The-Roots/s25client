@@ -1,3 +1,21 @@
+s25rttr (20110412-7153.22) karmic; urgency=low
+
+  * Automatic Jenkins Build 22
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 12 Apr 2011 21:03:06 +0200
+
+s25rttr (20110412-7153) any; urgency=low
+
+  * fixed cross detection (3...)
+
+ -- Florian Doersch <flosoft@siedler25.org>  Tue, 12 Apr 2011 18:56:00 +0200
+
+s25rttr (20110412-7152) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Tue, 12 Apr 2011 18:48:00 +0200
+
 s25rttr (20110412-7151.21) karmic; urgency=low
 
   * Automatic Jenkins Build 21
