@@ -2,7 +2,7 @@ Source: s25rttr
 Section: games
 Priority: optional
 Bugs: <https://bugs.siedler25.org>
-Homepage: <https://www.siedler25.org>
+Homepage: https://www.siedler25.org
 Maintainer: Return To The Roots Team <sf-team@siedler25.org>
 Build-Depends: debhelper (>= 7), debconf (>=0.2.17), cmake (>=2.6), libsdl1.2-dev, libsdl-mixer1.2-dev, gettext, libminiupnpc-dev (>=1.3)
 Standards-Version: 3.8.0
@@ -10,7 +10,7 @@ XS-Vcs-Bzr: lp:s25rttr
 XS-Vcs-Browser: http://bazaar.launchpad.net/~flosoft/s25rttr/trunk/files
 
 Package: s25rttr-common
-Architecture: all
+Architecture: any
 Depends: debconf (>=0.2.17)
 Suggests: s25rttr
 Description: Dies ist das Allgemeine Paket von Return To The Roots
@@ -28,7 +28,7 @@ Description: Dies ist das Allgemeine Paket von Return To The Roots
  Don't forget: The original game files of The Settlers II Gold must be copied to /usr/share/s25rttr/S2 and must be readably for the user to play this game.
 
 Package: s25rttr-maps
-Architecture: all
+Architecture: any
 Depends: s25rttr-common
 Suggests: s25rttr
 Description: Dies ist das Kartenpaket von Return To The Roots
@@ -46,7 +46,7 @@ Description: Dies ist das Kartenpaket von Return To The Roots
  Don't forget: The original game files of The Settlers II Gold must be copied to /usr/share/s25rttr/S2 and must be readably for the user to play this game.
 
 Package: s25rttr-music
-Architecture: all
+Architecture: any
 Depends: s25rttr-common
 Suggests: s25rttr
 Description: Dies ist das Musikpaket von Return To The Roots

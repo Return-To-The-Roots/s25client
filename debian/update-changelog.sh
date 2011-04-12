@@ -27,7 +27,7 @@ do
 		D=$(LANG=C date --date="$(echo "$LOG" | head -n 1 | sed "s/\(.*\)  \(.*\)/\1/g")" +"%a, %d %b %Y %H:%M:%S %z")
 		UD=$(LANG=C date --date="$(echo "$LOG" | head -n 1 | sed "s/\(.*\)  \(.*\)/\1/g")" +"%Y%m%d")
 	
-		echo "s25rttr ($UD-$r) any; urgency=low" > $msg
+		echo "s25rttr ($UD-$r) hardy jaunty karmic lucid maverick natty; urgency=medium" > $msg
 		
 		# parse logmessage
 		echo "" >> $msg

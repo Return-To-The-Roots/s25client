@@ -1,3 +1,70 @@
+s25rttr (20110412-7135.10) any; urgency=low
+
+  * Automatic Jenkins Build 10
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 12 Apr 2011 18:07:40 +0200
+
+s25rttr (20110412-7135) any; urgency=low
+
+  * fix for changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Tue, 12 Apr 2011 16:01:00 +0200
+
+s25rttr (20110412-7134) any; urgency=low
+
+  * ...
+
+ -- Florian Doersch <flosoft@siedler25.org>  Tue, 12 Apr 2011 15:59:00 +0200
+
+s25rttr (20110412-7133) any; urgency=low
+
+  * added dput ...
+
+ -- Florian Doersch <flosoft@siedler25.org>  Tue, 12 Apr 2011 15:56:00 +0200
+
+s25rttr (20110412-7132) any; urgency=low
+
+  * changelog update
+    build script preperation for deb lp upload
+
+ -- Florian Doersch <flosoft@siedler25.org>  Tue, 12 Apr 2011 15:51:00 +0200
+
+s25rttr (20110407-7126) any; urgency=low
+
+  * changed paths
+
+ -- Florian Doersch <flosoft@siedler25.org>  Thu, 07 Apr 2011 17:05:00 +0200
+
+s25rttr (20110407-7125) any; urgency=low
+
+  * fixed apple paths for cross compiler
+
+ -- Florian Doersch <flosoft@siedler25.org>  Thu, 07 Apr 2011 15:03:00 +0200
+
+s25rttr (20110402-7117) any; urgency=low
+
+  * #745912 fixed completely
+
+ -- OLiver Siebert <oliver@siedler25.org>  Sat, 02 Apr 2011 19:30:00 +0200
+
+s25rttr (20110402-7115) any; urgency=low
+
+  * fixed ccache-lipo and show used apple sdk path
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 02 Apr 2011 14:16:00 +0200
+
+s25rttr (20110402-7114) any; urgency=low
+
+  * fix2
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 02 Apr 2011 11:16:00 +0200
+
+s25rttr (20110402-7113) any; urgency=low
+
+  * miniupnpc fix
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 02 Apr 2011 07:42:00 +0200
+
 s25rttr (20110402-7112) hardy; urgency=low
 
   * New upstream snapshot
