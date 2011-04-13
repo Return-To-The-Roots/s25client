@@ -132,7 +132,6 @@
     <ClInclude Include="..\..\src\AddonExhaustibleWells.h" />
     <ClInclude Include="..\..\src\AddonInexhaustibleMines.h" />
     <ClInclude Include="..\..\src\AddonLimitCatapults.h" />
-    <ClInclude Include="..\..\src\AddonManager.h" />
     <ClInclude Include="..\..\src\AddonManualRoadEnlargement.h" />
     <ClInclude Include="..\..\src\AddonMaxWaterwayLength.h" />
     <ClInclude Include="..\..\src\AddonNoCoinsDefault.h" />
@@ -248,7 +247,6 @@
     <ClInclude Include="..\..\src\iwTools.h" />
     <ClInclude Include="..\..\src\iwTransport.h" />
     <ClInclude Include="..\..\src\iwWares.h" />
-    <ClInclude Include="..\..\src\BinaryFile.h" />
     <ClInclude Include="..\..\src\CollisionDetection.h" />
     <ClInclude Include="..\..\src\customborderbuilder.h" />
     <ClInclude Include="..\..\src\FileChecksum.h" />
@@ -401,7 +399,6 @@
     <ClInclude Include="..\resource.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\AddonManager.cpp" />
     <ClCompile Include="..\..\src\Addons.cpp" />
     <ClCompile Include="..\..\src\AIConstruction.cpp" />
     <ClCompile Include="..\..\src\AIEventManager.cpp" />
@@ -507,7 +504,6 @@
     <ClCompile Include="..\..\src\iwTools.cpp" />
     <ClCompile Include="..\..\src\iwTransport.cpp" />
     <ClCompile Include="..\..\src\iwWares.cpp" />
-    <ClCompile Include="..\..\src\BinaryFile.cpp" />
     <ClCompile Include="..\..\src\CollisionDetection.cpp" />
     <ClCompile Include="..\..\src\customborderbuilder.cpp" />
     <ClCompile Include="..\..\src\FileChecksum.cpp" />
