@@ -204,6 +204,7 @@
     <ClInclude Include="..\..\src\dskSelectMap.h" />
     <ClInclude Include="..\..\src\dskSinglePlayer.h" />
     <ClInclude Include="..\..\src\dskSplash.h" />
+	<ClInclude Include="..\..\src\UnlimitedPlay.h" />
     <ClInclude Include="..\..\src\iwAction.h" />
     <ClInclude Include="..\..\src\iwBaseWarehouse.h" />
     <ClInclude Include="..\..\src\iwBuilding.h" />
@@ -461,6 +462,7 @@
     <ClCompile Include="..\..\src\dskSelectMap.cpp" />
     <ClCompile Include="..\..\src\dskSinglePlayer.cpp" />
     <ClCompile Include="..\..\src\dskSplash.cpp" />
+	<ClCompile Include="..\..\src\UnlimitedPlay.cpp" />
     <ClCompile Include="..\..\src\iwAction.cpp" />
     <ClCompile Include="..\..\src\iwBaseWarehouse.cpp" />
     <ClCompile Include="..\..\src\iwBuilding.cpp" />
