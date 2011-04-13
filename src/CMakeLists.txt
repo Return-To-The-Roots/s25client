@@ -1,5 +1,5 @@
 ################################################################################
-### $Id: CMakeLists.txt 7095 2011-03-27 20:15:08Z OLiver $
+### $Id: CMakeLists.txt 7164 2011-04-13 16:17:09Z FloSoft $
 ################################################################################
 
 INCLUDE(FindBZip2)
@@ -328,25 +328,25 @@ SET(SOURCES_GL
 ################################################################################
 
 GETTEXT_CREATE_TRANSLATIONS(../RTTR/languages/rttr.pot ALL 
-							../RTTR/languages/de.po
-							../RTTR/languages/es.po
-							../RTTR/languages/sv.po
-							../RTTR/languages/fi.po
-							../RTTR/languages/fr.po
-							../RTTR/languages/ru.po
-							../RTTR/languages/nl.po
-							../RTTR/languages/et.po
-							../RTTR/languages/en_GB.po
-							../RTTR/languages/sk.po
-							../RTTR/languages/nds.po
-							../RTTR/languages/tr.po
-							../RTTR/languages/pl.po
-							../RTTR/languages/he.po
-							../RTTR/languages/cs.po
-							../RTTR/languages/hu.po
-							../RTTR/languages/it.po
-							../RTTR/languages/sl.po
-							../RTTR/languages/nb.po
+							../RTTR/languages/rttr-de.po
+							../RTTR/languages/rttr-es.po
+							../RTTR/languages/rttr-sv.po
+							../RTTR/languages/rttr-fi.po
+							../RTTR/languages/rttr-fr.po
+							../RTTR/languages/rttr-ru.po
+							../RTTR/languages/rttr-nl.po
+							../RTTR/languages/rttr-et.po
+							../RTTR/languages/rttr-en_GB.po
+							../RTTR/languages/rttr-sk.po
+							../RTTR/languages/rttr-nds.po
+							../RTTR/languages/rttr-tr.po
+							../RTTR/languages/rttr-pl.po
+							../RTTR/languages/rttr-he.po
+							../RTTR/languages/rttr-cs.po
+							../RTTR/languages/rttr-hu.po
+							../RTTR/languages/rttr-it.po
+							../RTTR/languages/rttr-sl.po
+							../RTTR/languages/rttr-nb.po
 						   )
 
 ################################################################################
