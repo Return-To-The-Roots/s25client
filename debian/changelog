@@ -1,3 +1,62 @@
+s25rttr (20110414-7166.32) karmic; urgency=low
+
+  * Automatic Jenkins Build 32
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Thu, 14 Apr 2011 14:40:27 +0200
+
+s25rttr (20110414-7166) any; urgency=low
+
+  * mkdir
+
+ -- Florian Doersch <flosoft@siedler25.org>  Thu, 14 Apr 2011 06:05:00 +0200
+
+s25rttr (20110413-7164) any; urgency=low
+
+  * fixed mo-creation
+
+ -- Florian Doersch <flosoft@siedler25.org>  Wed, 13 Apr 2011 16:17:00 +0200
+
+s25rttr (20110413-7163) any; urgency=low
+
+  * VS2010-Projekt: UnlimitedPlay hinzugefügt
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Wed, 13 Apr 2011 07:19:00 +0200
+
+s25rttr (20110413-7162) any; urgency=low
+
+  * VS2010-Projekt angepasst (AddonManager.cpp/h und
+    BinaryFile.cpp/h)
+    libutil-Projekt muss auch noch angepasst werden, aber da habe ich
+    keine Schreibrechte...
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Wed, 13 Apr 2011 07:05:00 +0200
+
+s25rttr (20110412-7160) any; urgency=low
+
+  * removed todo comment
+
+ -- Florian Doersch <flosoft@siedler25.org>  Tue, 12 Apr 2011 19:35:00 +0200
+
+s25rttr (20110412-7159) any; urgency=low
+
+  * language update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Tue, 12 Apr 2011 19:31:00 +0200
+
+s25rttr (20110412-7157) any; urgency=low
+
+  * renamed locale-files from $locale.po to $catalog-$locale.po - so
+    we dont have to rename all files everytime we import them from
+    launchpad
+
+ -- Florian Doersch <flosoft@siedler25.org>  Tue, 12 Apr 2011 19:27:00 +0200
+
+s25rttr (20110412-7156) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Tue, 12 Apr 2011 19:13:00 +0200
+
 s25rttr (20110412-7155.23) karmic; urgency=low
 
   * Automatic Jenkins Build 23
