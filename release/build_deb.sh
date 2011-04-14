@@ -11,6 +11,8 @@ VERSION=$(head debian/changelog -n 1 | cut -d '-' -f 1 | cut -d '(' -f 2)
 REVISION=$(head debian/changelog -n 1 | cut -d '-' -f 2 | cut -d ')' -f 1)
 
 PARAMS="--svn-ignore-new -k6D09334C"
+
+mkdir -p ../tarballs
  
 if [ ! -f "../tarballs/s25rttr_${VERSION}.orig.tar.gz" ] ; then
 	# remove orig tarballs older that a week (and recreate orig source ...)
