@@ -1,3 +1,21 @@
+s25rttr (20110415-7170.34) karmic; urgency=low
+
+  * Automatic Jenkins Build 34
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Fri, 15 Apr 2011 20:23:12 +0200
+
+s25rttr (20110415-7170) any; urgency=low
+
+  * fixed linux i686 cross build
+
+ -- Florian Doersch <flosoft@siedler25.org>  Fri, 15 Apr 2011 18:19:00 +0200
+
+s25rttr (20110414-7169) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Thu, 14 Apr 2011 23:20:00 +0200
+
 s25rttr (20110415-7168.33) karmic; urgency=low
 
   * Automatic Jenkins Build 33
