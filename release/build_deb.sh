@@ -84,7 +84,7 @@ else
 	reprepro $PARAMS include $DISTRIBUTION release/deb/s25rttr_${VERSION}-${REVISION}_amd64.changes || exit 1
 fi
 
-svn ci debian/changelog -m "Automatic debian/changelog update"
+#svn ci debian/changelog -m "Automatic debian/changelog update"
 
 exit 0
 

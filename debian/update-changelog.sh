@@ -4,6 +4,12 @@ cd $(dirname $0)
 
 BUILD_NUMBER=$1
 
+if [ "$USER" = "jenkins" ] ; then
+	if [ -f ~/s25rttr_changelog ] ; then
+		cp ~/s25rttr_changelog changelog
+	fi
+fi
+
 OLDREV=$(head changelog -n 1 | cut -d '-' -f 2 | cut -d '.' -f 1 | cut -d ')' -f 1)
 if [ -z "$OLDREV" ] ; then
 	OLDREV=0
@@ -76,3 +82,8 @@ rm -f $msg
 rm -f /tmp/changelog.$$
 
 php update-changelog.php
+
+if [ "$USER" = "jenkins" ] ; then
+	cp changelog ~/s25rttr_changelog
+fi
+
