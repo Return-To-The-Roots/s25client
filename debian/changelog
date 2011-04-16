@@ -1,3 +1,27 @@
+s25rttr (20110416-7175.36) karmic; urgency=low
+
+  * Automatic Jenkins Build 36
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sat, 16 Apr 2011 13:37:13 +0200
+
+s25rttr (20110416-7175) any; urgency=low
+
+  * remove contrib from orig tarball
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 16 Apr 2011 09:43:00 +0200
+
+s25rttr (20110416-7174) any; urgency=low
+
+  * fixed unnecessary builds
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 16 Apr 2011 09:36:00 +0200
+
+s25rttr (20110415-7173) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Fri, 15 Apr 2011 23:20:00 +0200
+
 s25rttr (20110416-7172.35) karmic; urgency=low
 
   * Automatic Jenkins Build 35
