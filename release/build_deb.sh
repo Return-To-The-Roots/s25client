@@ -24,6 +24,7 @@ if [ ! -f "../tarballs/s25rttr_${VERSION}.orig.tar.gz" ] ; then
 		rm -r ../tarballs/s25rttr
 		svn export . ../tarballs/s25rttr
 		rm -r ../tarballs/s25rttr/debian
+		rm -r ../tarballs/s25rttr/contrib
 		(cd ../tarballs && tar cvzf s25rttr.orig.tar.gz s25rttr)
 		rm -r ../tarballs/s25rttr
 		PARAMS="-sa $PARAMS"
