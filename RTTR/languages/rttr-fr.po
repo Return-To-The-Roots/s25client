@@ -6,6 +6,7 @@ msgstr ""
 "PO-Revision-Date: 2010-12-31 14:29+0000\n"
 "Last-Translator: Thibault Févry <Unknown>\n"
 "Language-Team: Siedler II.5 RttR <sf-team@siedler25.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -73,8 +74,8 @@ msgstr "(Maison inoccupée)"
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:249
 #, c-format
 msgid ""
-"(Replay-Mode) Current GF: %u (End at: %u) / GF length: %u ms / NWF length: %"
-"u gf (%u ms)"
+"(Replay-Mode) Current GF: %u (End at: %u) / GF length: %u ms / NWF length: "
+"%u gf (%u ms)"
 msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameWorldViewer.cpp:264

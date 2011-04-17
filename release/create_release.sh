@@ -133,7 +133,7 @@ if [ $CHANGED -eq 1 ] || [ ! -f $ARCHDIR/packed/s25rttr.tar.bz2 ] ; then
 	# note hashes
 	F=/tmp/files.$$
 	echo "reading files"
-	(cd $ARCHNEWDIR/updater && md5deep -r -l .) > $F
+	(cd $ARCHNEWDIR/updater && md5deep -r -l .) | tee $F
 
 	# bzip files
 	find $ARCHNEWDIR/updater -type f -exec bzip2 -v {} \;
