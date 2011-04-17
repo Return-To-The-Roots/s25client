@@ -1,6 +1,6 @@
 #!/bin/bash
 ###############################################################################
-## $Id: postinstall.sh.cmake 7179 2011-04-17 15:55:52Z FloSoft $
+## $Id: postinstall.sh.cmake 7181 2011-04-17 18:31:24Z FloSoft $
 ###############################################################################
 
 # Editable Variables
@@ -196,7 +196,10 @@ elif [ "$COMPILEFOR" = "windows" ] ; then
 	esac
 
 	cp -v ${mingw}/bin/libgcc_s_sjlj-1.dll ${DESTDIR} || exit 1
-	cp -v ${mingw}/bin/libminiupnpc-5.dll ${DESTDIR} || exit 1
+
+	# not necessary on x64
+	cp -v ${mingw}/bin/libminiupnpc-5.dll ${DESTDIR} || true
+
 	cp -v ${mingw}/bin/libiconv-2.dll ${DESTDIR} || exit 1
 	cp -v ${mingw}/bin/libintl-8.dll ${DESTDIR} || exit 1
 	cp -v ${mingw}/bin/libogg-0.dll ${DESTDIR} || exit 1
