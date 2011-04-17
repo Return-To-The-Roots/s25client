@@ -15,28 +15,21 @@ PARAMS="--svn-ignore-new -k6D09334C"
 mkdir -p ../tarballs
  
 if [ ! -f "../tarballs/s25rttr_${VERSION}.orig.tar.gz" ] ; then
-	# remove orig tarballs older that a week (and recreate orig source ...)
-	if [ ! -z "$(find ../tarballs/s25rttr.orig.tar.gz -mtime +7 | wc -l)" ] ; then
-		rm ../tarballs/s25rttr.orig.tar.gz
-	fi
-
-	if [ ! -f "../tarballs/s25rttr.orig.tar.gz" ] ; then
-		rm -r ../tarballs/s25rttr
-		svn export . ../tarballs/s25rttr
-		rm -r ../tarballs/s25rttr/debian
-		rm -r ../tarballs/s25rttr/contrib
-		(cd ../tarballs && tar cvzf s25rttr.orig.tar.gz s25rttr)
-		rm -r ../tarballs/s25rttr
-		PARAMS="-sa $PARAMS"
-	fi
+	rm -rf ../tarballs/s25rttr_${VERSION}
+	svn export . ../tarballs/s25rttr_${VERSION}
+	rm -r ../tarballs/s25rttr_${VERSION}/debian
+	rm -r ../tarballs/s25rttr_${VERSION}/contrib
+	(cd ../tarballs && tar cvzf s25rttr_${VERSION}.orig.tar.gz s25rttr_${VERSION})
+	rm -r ../tarballs/s25rttr_${VERSION}
+	PARAMS="-sa $PARAMS"
 
 	find ../tarballs -mtime +7 -exec rm {} \;
-	ln -f ../tarballs/s25rttr.orig.tar.gz ../tarballs/s25rttr_${VERSION}.orig.tar.gz
-	rm -r ../build-area/*
+	rm -rf ../build-area/*
 fi
 
 if [ ! -z "$UPLOAD" ] ; then
 	echo "Building Source only for upload to $UPLOAD"
+	svn rm --force contrib
 	svn-buildpackage $PARAMS -S || exit 1
 
 	dput $UPLOAD ../build-area/s25rttr*${VERSION}-${REVISION}*.changes || exit 1
