@@ -1,6 +1,6 @@
 #!/bin/bash
 ###############################################################################
-## $Id: postinstall.sh.cmake 7125 2011-04-07 15:03:44Z FloSoft $
+## $Id: postinstall.sh.cmake 7178 2011-04-17 15:53:20Z FloSoft $
 ###############################################################################
 
 # Editable Variables
@@ -208,6 +208,7 @@ elif [ "$COMPILEFOR" = "windows" ] ; then
 	cp -v ${mingw}/bin/zlib1.dll ${DESTDIR}RTTR || exit 1
 	
 	rmdir --ignore-fail-on-non-empty -v ${DESTDIR}S2
+	rm -rf ${DESTDIR}doc
 elif [ "$COMPILEFOR" = "linux" ] ; then
 	miniupnpc=/usr/lib/libminiupnpc.so
 	case "$COMPILEARCH" in

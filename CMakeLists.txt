@@ -1,5 +1,5 @@
 ################################################################################
-### $Id: CMakeLists.txt 7104 2011-03-29 13:44:22Z FloSoft $
+### $Id: CMakeLists.txt 7178 2011-04-17 15:53:20Z FloSoft $
 ################################################################################
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6.0)
@@ -85,15 +85,6 @@ IF (WERROR_FLAGS)
 		ADD_DEFINITIONS(-Wall -pedantic -Wno-long-long) # win32 cross build with -Werror does not work
 	ENDIF (NOT "${COMPILEFOR}" STREQUAL "windows" )
 ENDIF (WERROR_FLAGS)
-
-IF ("${COMPILEFOR}" STREQUAL "linux")
-	CHECK_CXX_COMPILER_FLAG("-fPIC" FPIC_FLAGS)
-	IF (FPIC_FLAGS)
-		IF ("${COMPILEARCH}" STREQUAL "x86_64" )
-			ADD_DEFINITIONS(-fPIC)
-		ENDIF ("${COMPILEARCH}" STREQUAL "x86_64" )
-	ENDIF (FPIC_FLAGS)
-ENDIF ("${COMPILEFOR}" STREQUAL "linux")
 
 # avoid lhs-path bug in windows
 IF ("${COMPILEFOR}" STREQUAL "windows")

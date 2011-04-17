@@ -1,11 +1,12 @@
 ################################################################################
-### $Id: CMakeLists.txt 6458 2010-05-31 11:38:51Z FloSoft $
+### $Id: CMakeLists.txt 7178 2011-04-17 15:53:20Z FloSoft $
 ################################################################################
 
 IF ( NOT "${COMPILEFOR}" STREQUAL "windows" )
-	IF ("${CROSSCOMPILE}" STREQUAL "1" OR "${COMPILEARCH}" STREQUAL "x86_64" )
+	CHECK_CXX_COMPILER_FLAG("-fPIC" FPIC_FLAGS)
+	IF (FPIC_FLAGS)
 		ADD_DEFINITIONS(-fPIC)
-	ENDIF ("${CROSSCOMPILE}" STREQUAL "1" OR "${COMPILEARCH}" STREQUAL "x86_64" )
+	ENDIF (FPIC_FLAGS)
 ENDIF ( NOT "${COMPILEFOR}" STREQUAL "windows" )
 
 ################################################################################
