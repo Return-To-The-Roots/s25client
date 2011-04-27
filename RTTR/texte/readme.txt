@@ -1,5 +1,5 @@
-2010.02.15                         RETURN TO THE ROOTS                     0.7-dev
-----------------------------------------------------------------------------
+2010.01.17                    RETURN TO THE ROOTS                          0.7.2
+--------------------------------------------------------------------------------
 
 A. Reference Note
 B. Installation
@@ -13,7 +13,7 @@ C. Game
 D. Crash and bugs
 E. Summary: Updates and changelog
 
-----------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 
 A. Reference Note
 
@@ -23,7 +23,7 @@ A. Reference Note
    Further on you will need an installed version of "The Settlers 2 
    Gold-Edition" or the original version + Mission-Cd. 
 
-----------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 
 B. Installation
 
@@ -37,10 +37,10 @@ B. Installation
          in the original S2 Gold (or S2 + Mission CD) game. Copy them
          into the nightly folder
          (where u find the file "Put your S2-Files in here").
-	 
+         
          To play RTTR, you simply have to run s25client.exe.
          
-         (In Nightly's you can update with: START.bat)
+         (In Nightly's you can update with: RTTR.BAT)
 
       b) Setup
          Run the setup-file and choose the "The Settlers 2 Gold-Edition" 
@@ -52,8 +52,8 @@ B. Installation
       Note: RTTR does not change any files from the original game. 
       It acts like a game-mod. 
          
-   -------------------------------------------------------------------------
-
+   --------------------------------------------------------------------------
+   
    2. Linux
 
       You will need the following packages:
@@ -87,12 +87,12 @@ B. Installation
       (Nightly versions automatically update when you start rttr.sh.
       Use "sh rttr.sh noupdate" to keep the actual version.)
 
-----------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 
 C. Game
 
    1. Create a game
-
+   
       A singleplayer mode is not available yet, but you can play on your 
       own by doing this:      
 
@@ -110,6 +110,7 @@ C. Game
          computer players or human players.
          Alternatively you can close the slots by clicking on them. 
          Note that the artificial intelligence does not work yet.
+   
    2. Multiplayer game
 
       a) Direct game
@@ -170,7 +171,7 @@ C. Game
 
       The options in the main menu are self-explanatory.
 
-----------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 
 D. Crash and bugs
 
@@ -199,7 +200,7 @@ D. Crash and bugs
    for you to see if your bug is already fixed.
 
    If you have further questions, please contact:
-	
+        
                bugs@siedler25.org
 
    Alternatively you can post the bug in the forum or visit us on IRC
@@ -212,12 +213,16 @@ D. Crash and bugs
    Settlers Freaks
    February 15th 2010
 
-----------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 
 E. Summary: Updates and changelog
 
- * 0.7-dev - Seventh version - 15.02.2010 *
-   -------------------------------------------------------------------------
+ * 0.7.2 - 17.01.2011 *
+   --------------------------------------------------------------------------
+   - Critical Bugfixes
+
+ * 0.7 - Seventh version - 24.12.2010 *
+   --------------------------------------------------------------------------
    - OpenSource!
    - Translation: Dutch
    - Translation: Russian (Font is missing)
@@ -236,7 +241,7 @@ E. Summary: Updates and changelog
    - Addon Menu
  
  * 0.6 - Sixth version - 25.01.2009 *
-   -------------------------------------------------------------------------
+   --------------------------------------------------------------------------
    - Fixed a lot of bugs
    - Fog of War (with Teamview-option)
    - Watchout tower added
@@ -310,6 +315,6 @@ E. Summary: Updates and changelog
    -------------------------------------------------------------------------
    - Everything! ;-)
 
-----------------------------------------------------------------------------
-http://www.siedler25.org            Copyright (C) 2005-2010 Settlers Freaks
-----------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+http://www.siedler25.org                 Copyright (C) 2005-2011 Settlers Freaks
+--------------------------------------------------------------------------------

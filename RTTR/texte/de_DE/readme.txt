@@ -1,5 +1,5 @@
-2008.11.23                 SETTLERS II.5 - RETURN TO THE ROOTS                0.7-dev
-------------------------------------------------------------------------------------
+2010.01.17                    RETURN TO THE ROOTS                          0.7.2
+--------------------------------------------------------------------------------
 
 A. Allgemeine Hinweise
 B. Installation
@@ -13,7 +13,7 @@ C. Spiel
 D. Abstürze und Fehler
 E. Übersicht: Updates und Änderungen
 
-------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 
 A. Allgemeine Hinweise
 
@@ -23,7 +23,7 @@ A. Allgemeine Hinweise
    Weiterhin benötigt man eine installierte "Siedler 2 Gold-Edition" oder die
    Originalversion + Missions-CD.
 
-------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 
 B. Installation
 
@@ -34,14 +34,14 @@ B. Installation
 
       a) Zip-Archive
          Zum Spielen sucht man die Verzeichnisse "DATA" und "GFX" im
-	 Original "Die Siedler 2 Gold" Spiel (oder S2 + Mission CD) und kopiert
-	 diese in das Nightly-Verzeichnis (so dass s25client.exe sich auf 
+         Original "Die Siedler 2 Gold" Spiel (oder S2 + Mission CD) und kopiert
+         diese in das Nightly-Verzeichnis (so dass s25client.exe sich auf 
          der selben Ebene wie S2.EXE befindet).
 
          Darin kann man dann s25client.exe zum Spielen von Siedler II.5 RTTR
          ausführen.
          
-         (In Nightlies kann man mit START.bat updaten.)
+         (In Nightlies kann man mit RTTR.BAT updaten.)
 
       b) Setup
          Setup ausführen und als Installationsverzeichnis die installierte
@@ -91,7 +91,7 @@ B. Installation
       (Nightly Versionen updaten sich selber. Wenn man rttr.sh mit der
       Option noupdate startet, wird kein Update durchgeführt.)
 
-------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 
 C. Spiel
 
@@ -191,7 +191,7 @@ C. Spiel
       Die Einstellungen im Optionsmenü sollten so weit selbsterklärend sein.
 
 
-------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 
 D. Abstürze und Fehler
 
@@ -219,7 +219,7 @@ D. Abstürze und Fehler
    zudem selber einsehen zu können, wann der Bug gefixt wurde.
 
    Bei weiteren Fragen bitte an
-	
+        
                bugs@siedler25.org
 
    wenden.
@@ -233,20 +233,32 @@ D. Abstürze und Fehler
    Settlers Freaks
    23. November 2009
 
-------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 
 E. Übersicht: Updates und Änderungen
 
- * 0.7-dev - Siebte Version - 23.11.2009 *
-   -------------------------------------------------------------------------
+ * 0.7.2 - 17.01.2011 *
+   --------------------------------------------------------------------------
+   - Kritische Fehlerkorrekturen
+
+ * 0.7 - Seventh version - 24.12.2010 *
+   --------------------------------------------------------------------------
    - OpenSource!
    - Übersetzung: Niederländisch
    - Übersetzung: Russisch (Zeichensatz fehlt)
+   - Übersetzung: Czech
+   - Übersetzung: Estonian
+   - Übersetzung: Italian
+   - Übersetzung: Norwegian
+   - Übersetzung: Polish
+   - Übersetzung: Slovenian
+   - Übersetzung: Slovak
    - Statistik
    - Post
    - Diplomatie - noch nicht fertig
    - Erste KI von jh
    - Seefahrt (noch nicht fertig)
+   - Addon Menü
 
  * 0.6 - Sechste Version - 25.01.2009 *
    -------------------------------------------------------------------------
@@ -327,6 +339,6 @@ E. Übersicht: Updates und Änderungen
    -------------------------------------------------------------------------
    - alles ;-)
 
-------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 http://www.siedler25.org                     Copyright (C) 2005-2009 Settlers Freaks
-------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
