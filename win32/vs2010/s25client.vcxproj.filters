@@ -105,9 +105,6 @@
     <ClInclude Include="..\..\src\AddonLimitCatapults.h">
       <Filter>Quelldateien\Spiel\Addons</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\AddonManager.h">
-      <Filter>Quelldateien\Spiel\Addons</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\AddonManualRoadEnlargement.h">
       <Filter>Quelldateien\Spiel\Addons</Filter>
     </ClInclude>
@@ -152,9 +149,6 @@
     </ClInclude>
     <ClInclude Include="..\..\src\AudioDriverWrapper.h">
       <Filter>Quelldateien\Treiber/Grafik</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\BinaryFile.h">
-      <Filter>Quelldateien\GUI\Hilfsfunktionen und -klassen</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\BuildingConsts.h">
       <Filter>Quelldateien\Spiel\Konstanten</Filter>
@@ -908,9 +902,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\AddonManager.cpp">
-      <Filter>Quelldateien\Spiel\Addons</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\Addons.cpp">
       <Filter>Quelldateien\Spiel\Addons</Filter>
     </ClCompile>
@@ -934,9 +925,6 @@
     </ClCompile>
     <ClCompile Include="..\..\src\AudioDriverWrapper.cpp">
       <Filter>Quelldateien\Treiber/Grafik</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\BinaryFile.cpp">
-      <Filter>Quelldateien\GUI\Hilfsfunktionen und -klassen</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\BurnedWarehouse.cpp">
       <Filter>Quelldateien\Spiel\Knotenobjekte\Objekte</Filter>
