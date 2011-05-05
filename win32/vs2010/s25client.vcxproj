@@ -151,6 +151,7 @@
     <ClInclude Include="..\..\src\const_gui_ids.h" />
     <ClInclude Include="..\..\src\ctrlMultiSelectGroup.h" />
     <ClInclude Include="..\..\src\Desktop.h" />
+    <ClInclude Include="..\..\src\dskUnlimitedPlay.h" />
     <ClInclude Include="..\..\src\GameReplay.h" />
     <ClInclude Include="..\..\src\GameSavedFile.h" />
     <ClInclude Include="..\..\src\GameSavegame.h" />
@@ -409,6 +410,7 @@
     <ClCompile Include="..\..\src\AIResourceMap.cpp" />
     <ClCompile Include="..\..\src\ctrlMultiSelectGroup.cpp" />
     <ClCompile Include="..\..\src\Desktop.cpp" />
+    <ClCompile Include="..\..\src\dskUnlimitedPlay.cpp" />
     <ClCompile Include="..\..\src\GameReplay.cpp" />
     <ClCompile Include="..\..\src\GameSavedFile.cpp" />
     <ClCompile Include="..\..\src\GameSavegame.cpp" />

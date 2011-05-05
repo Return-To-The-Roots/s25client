@@ -900,6 +900,9 @@
     <ClInclude Include="..\..\src\AddonAIDebugWindow.h">
       <Filter>Quelldateien\Spiel\Addons</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\dskUnlimitedPlay.h">
+      <Filter>Quelldateien\GUI\Fenster\Desktops</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Addons.cpp">
@@ -1636,6 +1639,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\AIInterface.cpp">
       <Filter>Quelldateien\KI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\dskUnlimitedPlay.cpp">
+      <Filter>Quelldateien\GUI\Fenster\Desktops</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
