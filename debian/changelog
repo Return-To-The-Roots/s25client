@@ -1,3 +1,59 @@
+s25rttr (20110506-7207.48) karmic; urgency=low
+
+  * Automatic Jenkins Build 48
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Fri, 06 May 2011 01:14:44 +0200
+
+s25rttr (20110506-7207) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Fri, 06 May 2011 00:00:00 +0200
+
+s25rttr (20110505-7206) any; urgency=low
+
+  * nochmal projekte korrigiert
+
+ -- Florian Doersch <flosoft@siedler25.org>  Thu, 05 May 2011 16:24:00 +0200
+
+s25rttr (20110505-7205) any; urgency=low
+
+  * update vcproj
+
+ -- Florian Doersch <flosoft@siedler25.org>  Thu, 05 May 2011 16:00:00 +0200
+
+s25rttr (20110427-7196.47) karmic; urgency=low
+
+  * Automatic Jenkins Build 47
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Wed, 27 Apr 2011 09:56:21 +0200
+
+s25rttr (20110427-7196) any; urgency=low
+
+  * Readme aktualisiert
+    *.bak ignoriert
+    Bug #764432 gefixt
+
+ -- Florian Doersch <flosoft@siedler25.org>  Wed, 27 Apr 2011 07:38:00 +0200
+
+s25rttr (20110424-7192.46) karmic; urgency=low
+
+  * Automatic Jenkins Build 46
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sun, 24 Apr 2011 01:13:12 +0200
+
+s25rttr (20110424-7192) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sun, 24 Apr 2011 00:00:00 +0200
+
+s25rttr (20110423-7191) any; urgency=low
+
+  * Automatich debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 23 Apr 2011 22:00:00 +0200
+
 s25rttr (20110419-7186.45) karmic; urgency=low
 
   * Automatic Jenkins Build 45
