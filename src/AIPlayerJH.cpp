@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 7091 2011-03-27 10:57:38Z OLiver $
+// $Id: AIPlayerJH.cpp 7213 2011-05-10 17:57:02Z jh $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1011,6 +1011,18 @@ void AIPlayerJH::HandleNoMoreResourcesReachable(const Coords& coords, BuildingTy
 
 	// farm is always good!
 	AddBuildJob(BLD_FARM, x, y);
+}
+
+void AIPlayerJH::HandleShipBuilt(const Coords& coords)
+{
+	// Stop building ships if reached a maximum (TODO: make variable)
+	if (aii->GetShipCount() > 5)
+	{
+		for (std::list<nobUsual *>::const_iterator it = aii->GetBuildings(BLD_SHIPYARD).begin(); it != aii->GetBuildings(BLD_SHIPYARD).end(); it++)
+		{
+			(*it)->StopProduction();
+		}
+	}
 }
 
 void AIPlayerJH::HandleBorderChanged(const Coords& coords)

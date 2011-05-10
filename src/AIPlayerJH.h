@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.h 7038 2011-02-07 21:06:30Z jh $
+// $Id: AIPlayerJH.h 7213 2011-05-10 17:57:02Z jh $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -183,6 +183,9 @@ protected:
 
 	// Handle event "no more resources"
 	void HandleNoMoreResourcesReachable(const Coords& coords, BuildingType bld);
+
+	// A new ship has been built -> handle it
+	void HandleShipBuilt(const Coords& coords);
 
 	// Handle border event
 	void HandleBorderChanged(const Coords& coords);

@@ -1,4 +1,4 @@
-// $Id: noShipBuildingSite.cpp 7091 2011-03-27 10:57:38Z OLiver $
+// $Id: noShipBuildingSite.cpp 7213 2011-05-10 17:57:02Z jh $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -137,6 +137,9 @@ void noShipBuildingSite::MakeBuildStep()
 		// Spieler über Fertigstellung benachrichtigen
 		if(GameClient::inst().GetPlayerID() == this->player)
 			GAMECLIENT.SendPostMessage(new ShipPostMsg(_("A new ship is ready"), PMC_GENERAL, GAMECLIENT.GetPlayer(player)->nation, x, y));
+
+		// KI Event senden
+		GAMECLIENT.SendAIEvent(new AIEvent::Location(AIEvent::ShipBuilt, x, y), player);
 	}
 		
 }

@@ -146,11 +146,17 @@ public:
 	// Returns reference to the list of building sites
 	const std::list<noBuildingSite *> &GetBuildingSites() const { return player->GetBuildingSites(); }
 
+	// Returns a list to buildings of a given type
+	const std::list<nobUsual*>& GetBuildings(const BuildingType type) const { return player->GetBuildings(type); }
+
 	// Retrieves the current counts of all buildings
 	void GetBuildingCount(BuildingCount &counts) const { player->GetBuildingCount(counts); }
 
 	// Returns the inventory of the ai player
 	const Goods *GetInventory() const { return player->GetInventory(); }
+
+	// Returns the number of ships
+	unsigned GetShipCount() const { return player->GetShipCount(); }
 
 
 	/// Returns the ID of a given ship

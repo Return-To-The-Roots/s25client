@@ -1,4 +1,4 @@
-// $Id: GameClientPlayer.h 6727 2010-09-12 20:33:56Z OLiver $
+// $Id: GameClientPlayer.h 7213 2011-05-10 17:57:02Z jh $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -258,7 +258,7 @@ public:
 	const std::list<nobMilitary *>& GetMilitaryBuildings() const { return military_buildings; }
 
 	/// Gibt Liste von Gebäuden des Spieler zurück
-	const std::list<nobUsual*>& GetBuildings(const BuildingType type);
+	const std::list<nobUsual*>& GetBuildings(const BuildingType type) const;
 	/// Liefert die Anzahl aller Gebäude einzeln
 	void GetBuildingCount(BuildingCount& bc) const;
 	/// Berechnet die durschnittlichen Produktivität eines jeden Gebäudetyps

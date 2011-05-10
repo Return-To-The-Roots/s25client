@@ -1,4 +1,4 @@
-// $Id: GameClientPlayer.cpp 7095 2011-03-27 20:15:08Z OLiver $
+// $Id: GameClientPlayer.cpp 7213 2011-05-10 17:57:02Z jh $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1062,7 +1062,7 @@ void GameClientPlayer::RemoveMilitaryBuilding(nobMilitary * building)
 }
 
 /// Gibt Liste von Gebäuden des Spieler zurück
-const std::list<nobUsual*>& GameClientPlayer::GetBuildings(const BuildingType type)
+const std::list<nobUsual*>& GameClientPlayer::GetBuildings(const BuildingType type) const
 {
 	assert(type >= 10);
 

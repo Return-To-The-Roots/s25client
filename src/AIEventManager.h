@@ -1,4 +1,4 @@
-// $Id: AIEventManager.h 6582 2010-07-16 11:23:35Z FloSoft $
+// $Id: AIEventManager.h 7213 2011-05-10 17:57:02Z jh $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -39,7 +39,8 @@ namespace AIEvent
 		NoMoreResourcesReachable,
 		BuildingFinished,
 		ExpeditionWaiting,
-		TreeChopped
+		TreeChopped,
+		ShipBuilt
 	};
 
 
