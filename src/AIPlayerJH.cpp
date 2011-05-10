@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 7213 2011-05-10 17:57:02Z jh $
+// $Id: AIPlayerJH.cpp 7214 2011-05-10 18:10:11Z jh $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -960,6 +960,9 @@ void AIPlayerJH::HandleExpedition(const Coords& coords)
 					break;
 				}
 			}
+
+			// no direction possible, sad, stop it
+			aii->CancelExpedition(ship);
 		}
 	}
 

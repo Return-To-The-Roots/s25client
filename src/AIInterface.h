@@ -197,6 +197,10 @@ public:
 	void TravelToNextSpot(Direction direction, unsigned int shipID) { gcs->push_back(new gc::ExpeditionCommand(gc::ExpeditionCommand::Action(direction + 2), shipID)); }
 	void TravelToNextSpot(Direction direction, const noShip *ship) { TravelToNextSpot(direction, player->GetShipID(ship)); }
 
+	/// Cancels an expedition
+	void CancelExpedition(unsigned int shipID) { gcs->push_back(new gc::ExpeditionCommand(gc::ExpeditionCommand::CANCELEXPEDITION, shipID)); }
+	void CancelExpedition(const noShip *ship) { CancelExpedition(player->GetShipID(ship)); }
+
 	/// Toggles the construction mode of the shipyard between boat and ship
 	void ToggleShipyardMode(MapCoord x, MapCoord y) { gcs->push_back(new gc::ChangeShipYardMode(x, y)); }
 	void ToggleShipyardMode(const nobShipYard *yard) { ToggleShipyardMode(yard->GetX(), yard->GetY()); }
