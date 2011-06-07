@@ -1,4 +1,4 @@
-// $Id: Window.h 7243 2011-06-07 15:12:46Z FloSoft $
+// $Id: Window.h 7248 2011-06-07 15:33:29Z FloSoft $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -118,7 +118,7 @@ public:
 	template<typename T>
 	T *GetCtrl(unsigned int id)
 	{
-		std::hash_map<unsigned int, Window*>::iterator it = idmap.find(id);
+		std::map<unsigned int, Window*>::iterator it = idmap.find(id);
 		if(it == idmap.end())
 			return NULL;
 
@@ -128,7 +128,7 @@ public:
 	template<typename T>
 	const T *GetCtrl(unsigned int id) const
 	{
-		std::hash_map<unsigned int, Window*>::const_iterator it = idmap.find(id);
+		std::map<unsigned int, Window*>::const_iterator it = idmap.find(id);
 		if(it == idmap.end())
 			return NULL;
 
@@ -137,7 +137,7 @@ public:
 
 	void DeleteCtrl(unsigned int id)
 	{
-		std::hash_map<unsigned int, Window*>::iterator it = idmap.find(id);
+		std::map<unsigned int, Window*>::iterator it = idmap.find(id);
 
 		if(it == idmap.end())
 			return;
@@ -332,7 +332,7 @@ protected:
 	};
 
 	list<LockedRegion> locked_areas;       ///< gesperrte Regionen des Fensters.
-	std::hash_map<unsigned int, Window*> idmap; ///< Die Steuerelemente des Fensters.
+	std::map<unsigned int, Window*> idmap; ///< Die Steuerelemente des Fensters.
 };
 
 #endif // !WINDOW_H_INCLUDED

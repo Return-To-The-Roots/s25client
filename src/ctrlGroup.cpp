@@ -1,4 +1,4 @@
-// $Id: ctrlGroup.cpp 7243 2011-06-07 15:12:46Z FloSoft $
+// $Id: ctrlGroup.cpp 7248 2011-06-07 15:33:29Z FloSoft $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -72,7 +72,7 @@ void ctrlGroup::Msg_ScreenResize(const ScreenResizeEvent& sr)
 	if (scale)
 	{
 		//Zunächst an die Kinder weiterleiten
-		for(std::hash_map<unsigned int,Window*>::iterator it = idmap.begin(); it != idmap.end(); ++it)
+		for(std::map<unsigned int,Window*>::iterator it = idmap.begin(); it != idmap.end(); ++it)
 		if(it->second)
 		{
 			Window* ctrl = it->second;

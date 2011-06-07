@@ -1,4 +1,4 @@
-// $Id: Window.cpp 7243 2011-06-07 15:12:46Z FloSoft $
+// $Id: Window.cpp 7248 2011-06-07 15:33:29Z FloSoft $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -77,7 +77,7 @@ Window::Window(unsigned short x,
 Window::~Window(void)
 {
 	// Steuerelemente aufräumen
-	for(std::hash_map<unsigned int,Window*>::iterator it = idmap.begin();it != idmap.end();++it)
+	for(std::map<unsigned int,Window*>::iterator it = idmap.begin();it != idmap.end();++it)
 		delete it->second;
 }
 
@@ -173,7 +173,7 @@ bool Window::RelayKeyboardMessage(bool (Window::*msg)(const KeyEvent&),const Key
 
 	// Alle Controls durchgehen
 	// Falls das Fenster dann plötzlich nich mehr aktiv ist (z.b. neues Fenster geöffnet, sofort abbrechen!)
-	for(std::hash_map<unsigned int,Window*>::iterator it = idmap.begin(); it != idmap.end() && active; ++it)
+	for(std::map<unsigned int,Window*>::iterator it = idmap.begin(); it != idmap.end() && active; ++it)
 	{
 		if(it->second->visible && it->second->active)
 			if((it->second->*msg)(ke))
@@ -195,7 +195,7 @@ bool Window::RelayMouseMessage(bool (Window::*msg)(const MouseCoords&),const Mou
 	// Alle Controls durchgehen
 	// Falls das Fenster dann plötzlich nich mehr aktiv ist (z.b. neues Fenster geöffnet, sofort abbrechen!)
 	// Use reverse iterator because the topmost (=last elements) should receive the messages first!
-	for(std::hash_map<unsigned int,Window*>::reverse_iterator it = idmap.rbegin(); it != idmap.rend() && active; ++it)
+	for(std::map<unsigned int,Window*>::reverse_iterator it = idmap.rbegin(); it != idmap.rend() && active; ++it)
 	{
 		if(locked_areas.size())
 			if(TestWindowInRegion(it->second, mc))
@@ -213,7 +213,7 @@ bool Window::RelayMouseMessage(bool (Window::*msg)(const MouseCoords&),const Mou
 	/*// Nur vorläufig
 	if(processed && msg == &Window::Msg_LeftDown)
 	{
-		for(std::hash_map<unsigned int,Window*>::iterator it = idmap.begin(); it != idmap.end() && active; ++it)
+		for(std::map<unsigned int,Window*>::iterator it = idmap.begin(); it != idmap.end() && active; ++it)
 		{
 			if(locked_areas.size())
 				if(TestWindowInRegion(it->second, mc))
@@ -253,7 +253,7 @@ void Window::SetActive(bool activate)
  */
 void Window::ActivateControls(bool activate)
 {
-	for(std::hash_map<unsigned int,Window*>::iterator it = idmap.begin(); it != idmap.end(); ++it)
+	for(std::map<unsigned int,Window*>::iterator it = idmap.begin(); it != idmap.end(); ++it)
 		it->second->SetActive(activate);
 }
 
@@ -1137,7 +1137,7 @@ void Window::DrawLine(unsigned short ax, unsigned short ay, unsigned short bx, u
  */
 void Window::DrawControls(void)
 {
-	for(std::hash_map<unsigned int,Window*>::iterator it = idmap.begin(); it != idmap.end(); ++it)
+	for(std::map<unsigned int,Window*>::iterator it = idmap.begin(); it != idmap.end(); ++it)
 	{
 		Window *control = it->second;
 		assert(control);
@@ -1146,7 +1146,7 @@ void Window::DrawControls(void)
 		control->Draw();
 	}
 
-	for(std::hash_map<unsigned int,Window*>::iterator it = idmap.begin(); it != idmap.end(); ++it)
+	for(std::map<unsigned int,Window*>::iterator it = idmap.begin(); it != idmap.end(); ++it)
 	{
 		Window *control = it->second;
 		assert(control);

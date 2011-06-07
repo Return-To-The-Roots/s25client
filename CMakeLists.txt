@@ -1,5 +1,5 @@
 ################################################################################
-### $Id: CMakeLists.txt 7247 2011-06-07 15:28:43Z FloSoft $
+### $Id: CMakeLists.txt 7248 2011-06-07 15:33:29Z FloSoft $
 ################################################################################
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6.0)
@@ -77,12 +77,12 @@ SET (LOBBY_C TRUE)
 
 INCLUDE(CheckCXXCompilerFlag)
 
-CHECK_CXX_COMPILER_FLAG("-Wall -Werror -pedantic -Wno-long-long -Wno-deprecated -fno-strict-aliasing" WERROR_FLAGS)
+CHECK_CXX_COMPILER_FLAG("-Wall -Werror -pedantic -Wno-long-long -fno-strict-aliasing" WERROR_FLAGS)
 IF (WERROR_FLAGS)
 	IF (NOT "${COMPILEFOR}" STREQUAL "windows" )
-		ADD_DEFINITIONS(-Wall -Werror -pedantic -Wno-deprecated -fno-strict-aliasing)
+		ADD_DEFINITIONS(-Wall -Werror -pedantic -fno-strict-aliasing)
 	ELSE (NOT "${COMPILEFOR}" STREQUAL "windows" )
-		ADD_DEFINITIONS(-Wall -pedantic -Wno-long-long -Wno-deprecated) # win32 cross build with -Werror does not work
+		ADD_DEFINITIONS(-Wall -pedantic -Wno-long-long) # win32 cross build with -Werror does not work
 	ENDIF (NOT "${COMPILEFOR}" STREQUAL "windows" )
 ENDIF (WERROR_FLAGS)
 
