@@ -1,4 +1,4 @@
-// $Id: Loader.h 7084 2011-03-26 21:31:12Z OLiver $
+// $Id: Loader.h 7243 2011-06-07 15:12:46Z FloSoft $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -23,6 +23,7 @@
 
 #include "../libutil/src/Singleton.h"
 #include "../libsiedler2/src/libsiedler2.h"
+#include "const_addons.h"
 
 /// Loader Klasse.
 class Loader : public Singleton<Loader>
@@ -37,6 +38,8 @@ public:
 	bool LoadFilesAtStart(void);
 	/// Lädt die Spieldateien.
 	bool LoadFilesAtGame(unsigned char gfxset, bool *nations);
+	/// Lädt Dateien von Addons.
+	bool LoadFilesFromAddon(const AddonId id);
 	/// Lädt das Terrain.
 	bool CreateTerrainTextures(void);
 
@@ -57,6 +60,7 @@ private:
 
 	bool LoadFilesFromArray(const unsigned int files_count, const unsigned int *files, bool load_always = true);
 	bool LoadLsts(unsigned int dir);
+	bool LoadFileOrDir(const std::string& file, const unsigned int file_id, bool load_always);
 
 	static bool SortFilesHelper(const std::string& lhs, const std::string& rhs);
 	static std::vector<std::string> ExplodeString(std::string const &line, const char delim, const unsigned int max = 0xFFFFFFFF);

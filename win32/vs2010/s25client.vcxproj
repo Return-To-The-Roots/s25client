@@ -124,6 +124,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\AddonAIDebugWindow.h" />
+    <ClInclude Include="..\..\src\AddonCatapultGraphics.h" />
     <ClInclude Include="..\..\src\AddonChangeGoldDeposits.h" />
     <ClInclude Include="..\..\src\AddonCharburner.h" />
     <ClInclude Include="..\..\src\AddonCustomBuildSequence.h" />

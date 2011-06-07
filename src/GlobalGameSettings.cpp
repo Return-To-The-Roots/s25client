@@ -1,4 +1,4 @@
-// $Id: GlobalGameSettings.cpp 7097 2011-03-27 20:58:30Z OLiver $
+// $Id: GlobalGameSettings.cpp 7243 2011-06-07 15:12:46Z FloSoft $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -31,9 +31,10 @@
 #include "AddonExhaustibleWells.h"
 #include "AddonRefundOnEmergency.h"
 #include "AddonManualRoadEnlargement.h"
-#include "AddonCharburner.h"
+#include "AddonCatapultGraphics.h"
 
 #include "AddonDemolitionProhibition.h"
+#include "AddonCharburner.h"
 
 #include "AddonChangeGoldDeposits.h"
 #include "AddonMaxWaterwayLength.h"
@@ -107,9 +108,10 @@ void GlobalGameSettings::reset(bool recreate)
 		registerAddon(new AddonExhaustibleWells);
 		registerAddon(new AddonRefundOnEmergency);
 		registerAddon(new AddonManualRoadEnlargement);
-		registerAddon(new AddonCharburner);
+		registerAddon(new AddonCatapultGraphics);
 
 		registerAddon(new AddonDemolitionProhibition);
+		registerAddon(new AddonCharburner);
 
 		registerAddon(new AddonChangeGoldDeposits);
 		registerAddon(new AddonMaxWaterwayLength);

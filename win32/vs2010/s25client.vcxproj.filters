@@ -903,6 +903,9 @@
     <ClInclude Include="..\..\src\dskUnlimitedPlay.h">
       <Filter>Quelldateien\GUI\Fenster\Desktops</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\AddonCatapultGraphics.h">
+      <Filter>Quelldateien\Spiel\Addons</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Addons.cpp">

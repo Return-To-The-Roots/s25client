@@ -1,4 +1,4 @@
-// $Id: dskCredits.cpp 7091 2011-03-27 10:57:38Z OLiver $
+// $Id: dskCredits.cpp 7243 2011-06-07 15:12:46Z FloSoft $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -99,6 +99,15 @@ dskCredits::dskCredits(void) : Desktop(LOADER.GetImageN("setup013", 0))
 	this->entries.push_back(entry);
 	entry.lines.clear();
 
+	entry.title = "Stefan Schüchl (Z-Stef):";
+	entry.picId = 6;
+	entry.lastLine = "";
+	entry.lines.push_back(CreditsEntry::Line(_("Website Administration")));
+	entry.lines.push_back(CreditsEntry::Line(_("Website Programming")));
+
+	this->entries.push_back(entry);
+	entry.lines.clear();
+
 	entry.title = "Patrick Haak (Demophobie):";
 	entry.picId = 0;
 	entry.lastLine = "";
@@ -149,12 +158,19 @@ dskCredits::dskCredits(void) : Desktop(LOADER.GetImageN("setup013", 0))
 	this->entries.push_back(entry);
 	entry.lines.clear();
 
+	entry.title = _("Additional Graphics:");
+	entry.picId = -1;
+	entry.lastLine = "";
+	entry.lines.push_back(CreditsEntry::Line("Marcus Bullin (Parasit)"));
+
+	this->entries.push_back(entry);
+	entry.lines.clear();
+
 	entry.title = _("Other Support:");
 	entry.picId = -1;
 	entry.lastLine = "";
 	entry.lines.push_back(CreditsEntry::Line("muhahahaha"));
 	entry.lines.push_back(CreditsEntry::Line("Sotham"));
-	entry.lines.push_back(CreditsEntry::Line("Z-Stef"));
 	entry.lines.push_back(CreditsEntry::Line("Fenan"));
 	entry.lines.push_back(CreditsEntry::Line("Phil Groenewold (Phil333)"));
 

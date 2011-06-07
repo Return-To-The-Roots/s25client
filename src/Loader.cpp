@@ -1,4 +1,4 @@
-// $Id: Loader.cpp 7091 2011-03-27 10:57:38Z OLiver $
+// $Id: Loader.cpp 7243 2011-06-07 15:12:46Z FloSoft $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -20,7 +20,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Header
 #include <stdafx.h>
-#include "main.h"
+
+#include <iomanip>
 #include "Loader.h"
 
 #include "files.h"
@@ -96,6 +97,49 @@ bool Loader::LoadFilesAtStart(void)
 	return true;
 }
 
+bool Loader::LoadFileOrDir(const std::string& file, const unsigned int file_id, bool load_always)
+{
+		// is the entry a directory?
+		if(IsDir(file))
+		{
+			// yes, load all files in the directory
+			unsigned int ladezeit = VideoDriverWrapper::inst().GetTickCount();
+
+			LOG.lprintf("Lade LST,BMP,IDX,TXT Dateien aus \"%s\"\n", GetFilePath(file).c_str());
+
+			std::list<std::string> lst;
+			ListDir(GetFilePath(file) + "*.lst", true, NULL, NULL, &lst);
+			ListDir(GetFilePath(file) + "*.idx", true, NULL, NULL, &lst);
+			ListDir(GetFilePath(file) + "*.bmp", true, NULL, NULL, &lst);
+			ListDir(GetFilePath(file) + "*.txt", true, NULL, NULL, &lst);
+			ListDir(GetFilePath(file) + "*.ger", true, NULL, NULL, &lst);
+			ListDir(GetFilePath(file) + "*.eng", true, NULL, NULL, &lst);
+
+			for(std::list<std::string>::iterator i = lst.begin(); i != lst.end(); ++i)
+			{
+				if(!LoadFile( i->c_str(), GetPaletteN("pal5"), load_always ) )
+					return false;
+			}
+			LOG.lprintf("fertig (%ums)\n", VideoDriverWrapper::inst().GetTickCount()-ladezeit);
+		}
+		else
+		{
+			// no, only single file specified
+			if(!LoadFile(file.c_str(), GetPaletteN("pal5"), load_always ) )
+				return false;
+
+			// ggf Splash anzeigen
+			if(file_id == FILE_SPLASH_ID)
+			{
+				glArchivItem_Bitmap *image = GetImageN("splash", 0);
+				image->setFilter(GL_LINEAR);
+				image->Draw(0, 0, VideoDriverWrapper::inst().GetScreenWidth(), VideoDriverWrapper::inst().GetScreenHeight(), 0, 0, 0, 0);
+				VideoDriverWrapper::inst().SwapBuffers();
+			}
+		}
+		return true;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 /**
  *  Lädt Dateien aus FILE_PATHS bzw aus dem Verzeichnis.
@@ -112,44 +156,8 @@ bool Loader::LoadFilesFromArray(const unsigned int files_count, const unsigned i
 		if(files[i] == 0xFFFFFFFF)
 			continue;
 
-		// is the entry a directory?
-		if(IsDir(FILE_PATHS[ files[i] ]))
-		{
-			// yes, load all files in the directory
-			unsigned int ladezeit = VideoDriverWrapper::inst().GetTickCount();
-
-			LOG.lprintf("Lade LST,BMP,IDX,TXT Dateien aus \"%s\"\n", GetFilePath(FILE_PATHS[ files[i] ]).c_str());
-
-			std::list<std::string> lst;
-			ListDir(GetFilePath(FILE_PATHS[ files[i] ]) + "*.lst", true, NULL, NULL, &lst);
-			ListDir(GetFilePath(FILE_PATHS[ files[i] ]) + "*.idx", true, NULL, NULL, &lst);
-			ListDir(GetFilePath(FILE_PATHS[ files[i] ]) + "*.bmp", true, NULL, NULL, &lst);
-			ListDir(GetFilePath(FILE_PATHS[ files[i] ]) + "*.txt", true, NULL, NULL, &lst);
-			ListDir(GetFilePath(FILE_PATHS[ files[i] ]) + "*.ger", true, NULL, NULL, &lst);
-			ListDir(GetFilePath(FILE_PATHS[ files[i] ]) + "*.eng", true, NULL, NULL, &lst);
-
-			for(std::list<std::string>::iterator i = lst.begin(); i != lst.end(); ++i)
-			{
-				if(!LoadFile( i->c_str(), GetPaletteN("pal5"), load_always ) )
-					return false;
-			}
-			LOG.lprintf("fertig (%ums)\n", VideoDriverWrapper::inst().GetTickCount()-ladezeit);
-		}
-		else
-		{
-			// no, only single file specified
-			if(!LoadFile(FILE_PATHS[ files[i] ], GetPaletteN("pal5"), load_always ) )
-				return false;
-
-			// ggf Splash anzeigen
-			if(files[i] == FILE_SPLASH_ID)
-			{
-				glArchivItem_Bitmap *image = GetImageN("splash", 0);
-				image->setFilter(GL_LINEAR);
-				image->Draw(0, 0, VideoDriverWrapper::inst().GetScreenWidth(), VideoDriverWrapper::inst().GetScreenHeight(), 0, 0, 0, 0);
-				VideoDriverWrapper::inst().SwapBuffers();
-			}
-		}
+		if(!LoadFileOrDir(FILE_PATHS[ files[i] ], files[i], load_always))
+			return false;
 	}
 
 	return true;
@@ -703,6 +711,24 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool *nations)
 
 	lastgfx = gfxset;
 	return true;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/**
+ *  Lädt Dateien von Addons.
+ *
+ *  @param[in] id die Addon ID
+ *
+ *  @return @p true bei Erfolg, @p false bei Fehler.
+ *
+ *  @author FloSoft
+ */
+bool Loader::LoadFilesFromAddon(const AddonId id)
+{
+	std::stringstream s;
+	s << GetFilePath(FILE_PATHS[96]) << "Addon_0x" << std::setw(8) << std::setfill('0') << std::hex << id << "/";
+
+	return LoadFileOrDir(s.str(), 96, true);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

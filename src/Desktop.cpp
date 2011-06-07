@@ -1,4 +1,4 @@
-// $Id: Desktop.cpp 7091 2011-03-27 10:57:38Z OLiver $
+// $Id: Desktop.cpp 7243 2011-06-07 15:12:46Z FloSoft $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -92,7 +92,7 @@ void Desktop::Msg_ScreenResize(const ScreenResizeEvent& sr)
 	if (scale)
 	{
 		//Zunächst an die Kinder weiterleiten
-		for(std::map<unsigned int,Window*>::iterator it = idmap.begin(); it != idmap.end(); ++it)
+		for(std::hash_map<unsigned int,Window*>::iterator it = idmap.begin(); it != idmap.end(); ++it)
 		if(it->second)
 		{
 			Window* ctrl = it->second;

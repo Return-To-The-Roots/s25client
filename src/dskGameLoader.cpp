@@ -1,4 +1,4 @@
-// $Id: dskGameLoader.cpp 7091 2011-03-27 10:57:38Z OLiver $
+// $Id: dskGameLoader.cpp 7243 2011-06-07 15:12:46Z FloSoft $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -140,6 +140,15 @@ void dskGameLoader::Msg_Timer(const unsigned int ctrl_id)
 			{
 				LC_Status_Error(_("Failed to load map objects."));
 				return;
+			}
+
+			if(GAMECLIENT.GetGGS().isEnabled(ADDON_CATAPULT_GRAPHICS))
+			{
+				if(!LOADER.LoadFilesFromAddon(ADDON_CATAPULT_GRAPHICS))
+				{
+					LC_Status_Error(_("Failed to load addon objects."));
+					return;
+				}
 			}
 
 			text->SetText(_("Game crate was picked and spread out..."));

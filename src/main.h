@@ -1,4 +1,4 @@
-// $Id: main.h 7103 2011-03-29 12:08:51Z FloSoft $
+// $Id: main.h 7243 2011-06-07 15:12:46Z FloSoft $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -75,6 +75,7 @@
 #include <cmath>
 
 #include <map>
+#include <hash_map>
 #include <algorithm>
 #include <vector>
 #include <fstream>
