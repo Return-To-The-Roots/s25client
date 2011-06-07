@@ -1,4 +1,4 @@
-// $Id: build_version.cpp 7103 2011-03-29 12:08:51Z FloSoft $
+// $Id: build_version.cpp 7245 2011-06-07 15:19:11Z FloSoft $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -22,7 +22,6 @@
 #include "stdafx.h"
 
 #include <build_version.h>
-#include <memory.h>
 #include <cstring>
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -36,23 +35,23 @@
 const char *GetWindowTitle()
 {
 	static char title[256];
-	memset(title, 0, 256);
-	strncpy(title, WINDOW_TITLE, 256);
+	std::memset(title, 0, 256);
+	std::strncpy(title, WINDOW_TITLE, 256);
 	return title;
 }
 
 const char *GetWindowVersion()
 {
 	static char version[256];
-	memset(version, 0, 256);
-	strncpy(version, WINDOW_VERSION, 256);
+	std::memset(version, 0, 256);
+	std::strncpy(version, WINDOW_VERSION, 256);
 	return version;
 }
 
 const char *GetWindowRevision()
 {
 	static char revision[256];
-	memset(revision, 0, 256);
-	strncpy(revision, WINDOW_REVISION, 256);
+	std::memset(revision, 0, 256);
+	std::strncpy(revision, WINDOW_REVISION, 256);
 	return revision;
 }
