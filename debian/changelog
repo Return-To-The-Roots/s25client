@@ -1,3 +1,121 @@
+s25rttr (20110609-7251.55) karmic; urgency=low
+
+  * Automatic Jenkins Build 55
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Thu, 09 Jun 2011 08:09:49 +0200
+
+s25rttr (20110609-7251.54) karmic; urgency=low
+
+  * Automatic Jenkins Build 54
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Thu, 09 Jun 2011 01:05:29 +0200
+
+s25rttr (20110609-7251) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Thu, 09 Jun 2011 00:00:00 +0200
+
+s25rttr (20110608-7250) any; urgency=low
+
+  * neues Icon für Katapult
+
+ -- Florian Doersch <flosoft@siedler25.org>  Wed, 08 Jun 2011 19:11:00 +0200
+
+s25rttr (20110607-7248.53) karmic; urgency=low
+
+  * Automatic Jenkins Build 53
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 07 Jun 2011 17:49:43 +0200
+
+s25rttr (20110607-7248) any; urgency=low
+
+  * so und nochmal zurück
+
+ -- Florian Doersch <flosoft@siedler25.org>  Tue, 07 Jun 2011 15:33:00 +0200
+
+s25rttr (20110607-7247) any; urgency=low
+
+  * again
+
+ -- Florian Doersch <flosoft@siedler25.org>  Tue, 07 Jun 2011 15:28:00 +0200
+
+s25rttr (20110607-7246) any; urgency=low
+
+  * deprecation fix
+
+ -- Florian Doersch <flosoft@siedler25.org>  Tue, 07 Jun 2011 15:25:00 +0200
+
+s25rttr (20110607-7245) any; urgency=low
+
+  * deprecated error ...
+
+ -- Florian Doersch <flosoft@siedler25.org>  Tue, 07 Jun 2011 15:19:00 +0200
+
+s25rttr (20110607-7244.51) karmic; urgency=low
+
+  * Automatic Jenkins Build 51
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 07 Jun 2011 17:16:13 +0200
+
+s25rttr (20110607-7244) any; urgency=low
+
+  * und grafik vergessen ...
+
+ -- Florian Doersch <flosoft@siedler25.org>  Tue, 07 Jun 2011 15:13:00 +0200
+
+s25rttr (20110607-7243) any; urgency=low
+
+  * möglichkeit zum laden von zusätzlichen grafikdateien für addons
+    integriert
+    Katapultgrafiken von Parasit als Addon integriert
+    Credits angepasst
+
+ -- Florian Doersch <flosoft@siedler25.org>  Tue, 07 Jun 2011 15:12:00 +0200
+
+s25rttr (20110606-7241.50) karmic; urgency=low
+
+  * Automatic Jenkins Build 50
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Mon, 06 Jun 2011 22:11:53 +0200
+
+s25rttr (20110606-7241) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Mon, 06 Jun 2011 00:00:00 +0200
+
+s25rttr (20110601-7236.49) karmic; urgency=low
+
+  * Automatic Jenkins Build 49
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Wed, 01 Jun 2011 01:37:12 +0200
+
+s25rttr (20110601-7236) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Wed, 01 Jun 2011 00:00:00 +0200
+
+s25rttr (20110510-7214) any; urgency=low
+
+  * KI bricht Expeditionen ab, wenn kein Ziel anfahrbar ist
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Tue, 10 May 2011 18:10:00 +0200
+
+s25rttr (20110510-7213) any; urgency=low
+
+  * KI baut jetzt nicht mehr unendlich viele Schiffe, sondern nur
+    noch maximal 6.
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Tue, 10 May 2011 17:57:00 +0200
+
+s25rttr (20110507-7209) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 07 May 2011 22:00:00 +0200
+
 s25rttr (20110506-7207.48) karmic; urgency=low
 
   * Automatic Jenkins Build 48
