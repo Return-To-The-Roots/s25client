@@ -1,3 +1,27 @@
+s25rttr (20110617-7261.56) karmic; urgency=low
+
+  * Automatic Jenkins Build 56
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Fri, 17 Jun 2011 01:06:18 +0200
+
+s25rttr (20110617-7261) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Fri, 17 Jun 2011 00:00:00 +0200
+
+s25rttr (20110616-7260) any; urgency=low
+
+  * katapultgrafikupdate (wintergrafiken)
+
+ -- Florian Doersch <flosoft@siedler25.org>  Thu, 16 Jun 2011 20:48:00 +0200
+
+s25rttr (20110611-7254) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 11 Jun 2011 22:00:00 +0200
+
 s25rttr (20110609-7251.55) karmic; urgency=low
 
   * Automatic Jenkins Build 55
