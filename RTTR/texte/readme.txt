@@ -36,7 +36,14 @@ B. Installation
          To play the game search for the "DATA" und "GFX" directories
          in the original S2 Gold (or S2 + Mission CD) game. Copy them
          into the nightly folder
-         (where u find the file "Put your S2-Files in here").
+         (where you find the file "Put your S2-Files in here").
+         
+         Alternatively you can make NTFS symbolic links as Administrator:
+         mklink /D DATA "C:\S2\DATA"
+         mklink /D GFX "C:\S2\GFX"
+
+         If you can't install S2 via the original installer (i.e on 64bit), 
+         you can simply copy DATA and GFX from the S2-Directory of your CD.
          
          To play RTTR, you simply have to run s25client.exe.
          
