@@ -1,4 +1,4 @@
-// $Id: Pathfinding.cpp 7111 2011-04-01 19:05:47Z OLiver $
+// $Id: Pathfinding.cpp 7284 2011-07-07 15:07:13Z FloSoft $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -79,7 +79,7 @@ struct NewNode
 };
 
 /// Die Knoten der Map gespeichert, größtmöglichste Kartengröße nehmen
-NewNode pf_nodes[256*256];
+NewNode pf_nodes[1024*1024];
 
 /// Punkte als Verweise auf die obengenannen Knoten, damit nur die beiden Koordinaten x,y im set mit rumgeschleppt
 /// werden müsen
