@@ -1,4 +1,4 @@
-// $Id: Loader.cpp 7243 2011-06-07 15:12:46Z FloSoft $
+// $Id: Loader.cpp 7283 2011-07-07 11:39:19Z FloSoft $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -105,10 +105,11 @@ bool Loader::LoadFileOrDir(const std::string& file, const unsigned int file_id, 
 			// yes, load all files in the directory
 			unsigned int ladezeit = VideoDriverWrapper::inst().GetTickCount();
 
-			LOG.lprintf("Lade LST,BMP,IDX,TXT Dateien aus \"%s\"\n", GetFilePath(file).c_str());
+			LOG.lprintf("Lade LST,BOB,IDX,BMP,TXT,GER,ENG Dateien aus \"%s\"\n", GetFilePath(file).c_str());
 
 			std::list<std::string> lst;
 			ListDir(GetFilePath(file) + "*.lst", true, NULL, NULL, &lst);
+			ListDir(GetFilePath(file) + "*.bob", true, NULL, NULL, &lst);
 			ListDir(GetFilePath(file) + "*.idx", true, NULL, NULL, &lst);
 			ListDir(GetFilePath(file) + "*.bmp", true, NULL, NULL, &lst);
 			ListDir(GetFilePath(file) + "*.txt", true, NULL, NULL, &lst);
@@ -364,9 +365,13 @@ bool Loader::LoadFile(const char *pfad, const libsiedler2::ArchivItem_Palette *p
 	if(pp != std::string::npos)
 		p = p.substr(pp+1);
 
+	std::string e = p;
 	pp = p.find_first_of('.');
 	if(pp != std::string::npos)
+	{
+		e = p.substr(pp);
 		p = p.substr(0, pp);
+	}
 
 	// bereits geladen und wir wollen kein nochmaliges laden
 	if(!load_always && files.find(p) != files.end() && files.find(p)->second.getCount() != 0)
@@ -563,6 +568,15 @@ bool Loader::LoadFile(const char *pfad, const libsiedler2::ArchivItem_Palette *p
 	{
 		LOG.lprintf("Ersetze Daten der vorher geladenen Datei\n");
 		to = &files.find(p)->second;
+
+		if(e == ".bob")
+			to = dynamic_cast<libsiedler2::ArchivInfo*>(to->get(0));
+
+		if(to == NULL)
+		{
+			LOG.lprintf("Fehler beim Ersetzen einer BOB-Datei\n");
+			return false;
+		}
 
 		if(archiv.getCount() > to->getCount())
 			to->alloc_inc(archiv.getCount()-to->getCount());
