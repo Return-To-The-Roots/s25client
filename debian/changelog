@@ -1,3 +1,56 @@
+s25rttr (20110708-7286.59) karmic; urgency=low
+
+  * Automatic Jenkins Build 59
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Fri, 08 Jul 2011 01:04:30 +0200
+
+s25rttr (20110708-7286) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Fri, 08 Jul 2011 00:00:00 +0200
+
+s25rttr (20110707-7285) any; urgency=low
+
+  * Text aktualisiert
+    merge ~le-pierog/s25rttr/pierog
+
+ -- Florian Doersch <flosoft@siedler25.org>  Thu, 07 Jul 2011 19:53:00 +0200
+
+s25rttr (20110707-7284.58) karmic; urgency=low
+
+  * Automatic Jenkins Build 58
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Thu, 07 Jul 2011 18:59:56 +0200
+
+s25rttr (20110707-7284) any; urgency=low
+
+  * pathfinding auf 1024x1024 umgestellt
+
+ -- Florian Doersch <flosoft@siedler25.org>  Thu, 07 Jul 2011 15:07:00 +0200
+
+s25rttr (20110707-7283.57) karmic; urgency=low
+
+  * Automatic Jenkins Build 57
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Thu, 07 Jul 2011 13:56:07 +0200
+
+s25rttr (20110707-7283) any; urgency=low
+
+  * Ersetzen von Bildern einer BOB-Datei ist nun auch möglich
+    WICHTIG: Der Ersetzungsordner muss auf .BOB enden
+    z.B ein RTTR/LSTS/GAME/JOBS.LST/859.player.nx16.ny18.bmp als
+    override macht nicht das was man erwartet,
+    ein RTTR/LSTS/GAME/JOBS.BOB/859.player.nx16.ny18.bmp schon.
+
+ -- Florian Doersch <flosoft@siedler25.org>  Thu, 07 Jul 2011 11:39:00 +0200
+
+s25rttr (20110618-7263) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 18 Jun 2011 22:00:00 +0200
+
 s25rttr (20110617-7261.56) karmic; urgency=low
 
   * Automatic Jenkins Build 56
