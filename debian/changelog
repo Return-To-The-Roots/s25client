@@ -1,3 +1,21 @@
+s25rttr (20110713-7296.60) karmic; urgency=low
+
+  * Automatic Jenkins Build 60
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Wed, 13 Jul 2011 01:06:51 +0200
+
+s25rttr (20110713-7296) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Wed, 13 Jul 2011 00:00:00 +0200
+
+s25rttr (20110709-7288) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 09 Jul 2011 22:00:00 +0200
+
 s25rttr (20110708-7286.59) karmic; urgency=low
 
   * Automatic Jenkins Build 59
