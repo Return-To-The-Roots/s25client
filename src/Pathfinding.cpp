@@ -1,4 +1,4 @@
-// $Id: Pathfinding.cpp 7318 2011-07-31 14:16:27Z jh $
+// $Id: Pathfinding.cpp 7319 2011-07-31 14:18:41Z jh $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -299,7 +299,7 @@ public:
 	openlist_container()
 		: std::priority_queue<_Ty,	_Container,	_Pr>()
 	{
-		c.reserve(255);
+		std::priority_queue<_Ty,	_Container,	_Pr>::c.reserve(255);
 	}
 	
 	void rearrange(const _Ty& target)
@@ -310,7 +310,7 @@ public:
 
 	void clear()
 	{
-		c.clear();
+		std::priority_queue<_Ty,	_Container,	_Pr>::c.clear();
 	}
 };
 
