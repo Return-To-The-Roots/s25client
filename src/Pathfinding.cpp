@@ -1,4 +1,4 @@
-// $Id: Pathfinding.cpp 7316 2011-07-31 12:14:21Z jh $
+// $Id: Pathfinding.cpp 7317 2011-07-31 13:27:50Z jh $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -298,8 +298,8 @@ public:
 	}
 	void rearrange(const _Ty& target)
 	{
-		std::vector<_Ty>::iterator it = std::find(c.begin(), c.end(), target);
-		std::push_heap(c.begin(), it+1, comp);
+		typename std::vector<_Ty>::iterator it = std::find(std::priority_queue<_Ty,	_Container,	_Pr>::c.begin(), std::priority_queue<_Ty,	_Container,	_Pr>::c.end(), target);
+		std::push_heap(std::priority_queue<_Ty,	_Container,	_Pr>::c.begin(), it+1, std::priority_queue<_Ty,	_Container,	_Pr>::comp);
 	}
 };
 
