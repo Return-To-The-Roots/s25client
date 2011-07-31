@@ -1,4 +1,4 @@
-// $Id: nofCarrier.cpp 7091 2011-03-27 10:57:38Z OLiver $
+// $Id: nofCarrier.cpp 7321 2011-07-31 16:29:42Z jh $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -477,8 +477,10 @@ void nofCarrier::Walked()
 				// Flagge, an der wir gerade stehen
 				noFlag * this_flag  = static_cast<noFlag*>(((rs_dir) ? workplace->GetF1() : workplace->GetF2()));
 
+				bool calculated = false;
+
 				// Will die Waren jetzt gleich zur Baustelle neben der Flagge?
-				if(WantInBuilding())
+				if(WantInBuilding(&calculated))
 				{
 					// Erst noch zur Baustelle bzw Gebäude laufen
 					state = CARRS_CARRYWARETOBUILDING;
@@ -495,7 +497,10 @@ void nofCarrier::Walked()
 						carried_ware->LieAtFlag(this_flag);
 
 						// Ware soll ihren weiteren Weg berechnen
-						carried_ware->RecalcRoute();
+						if (!calculated)
+						{
+							carried_ware->RecalcRoute();
+						}
 
 						// Ware ablegen
 						this_flag->AddWare(carried_ware);
@@ -515,7 +520,11 @@ void nofCarrier::Walked()
 
 						// alte Ware ablegen
 						tmp_ware->LieAtFlag(this_flag);
-						tmp_ware->RecalcRoute();
+
+						if (!calculated)
+						{
+							tmp_ware->RecalcRoute();
+						}
 						this_flag->AddWare(tmp_ware);
 					}
 					else
@@ -533,7 +542,7 @@ void nofCarrier::Walked()
 				// Wenn wir fast da sind, gucken, ob an der Flagge noch ein freier Platz ist
 				noFlag * this_flag  = static_cast<noFlag*>(((rs_dir) ? workplace->GetF1() : workplace->GetF2()));
 
-				if(this_flag->IsSpaceForWare() || WantInBuilding() || cur_rs->AreWareJobs(!rs_dir,ct,true))
+				if(this_flag->IsSpaceForWare() || WantInBuilding(NULL) || cur_rs->AreWareJobs(!rs_dir,ct,true))
 				{
 					// Es ist Platz, dann zur Flagge laufen
 					StartWalking(cur_rs->GetDir(rs_dir,rs_pos));
@@ -1013,7 +1022,7 @@ bool nofCarrier::SpaceAtFlag(const bool flag)
  *
  *  @author OLiver
  */
-bool nofCarrier::WantInBuilding()
+bool nofCarrier::WantInBuilding(bool *calculated)
 {
 	RoadSegment * rs = static_cast<noFlag*>((rs_dir?cur_rs->GetF1():cur_rs->GetF2()))->routes[1];
 	if(!rs)
@@ -1022,6 +1031,10 @@ bool nofCarrier::WantInBuilding()
 	if(rs->GetLength() != 1)
 		return false;
 
+	if (calculated != NULL)
+	{
+		*calculated = true;
+	}
 
 	carried_ware->RecalcRoute();
 	return (carried_ware->GetNextDir() == 1);

@@ -1,4 +1,4 @@
-// $Id: nofCarrier.h 6737 2010-09-14 14:17:33Z OLiver $
+// $Id: nofCarrier.h 7321 2011-07-31 16:29:42Z jh $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -94,7 +94,7 @@ private:
 	void FetchWare(const bool swap_wares);
 
 	/// Prüft, ob die getragene Ware dann von dem Weg zum Gebäude will
-	bool WantInBuilding();
+	bool WantInBuilding(bool *calculated);
 
 	/// Für Produktivitätsmessungen: fängt an zu arbeiten
 	void StartWorking();
