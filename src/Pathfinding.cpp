@@ -1,4 +1,4 @@
-// $Id: Pathfinding.cpp 7284 2011-07-07 15:07:13Z FloSoft $
+// $Id: Pathfinding.cpp 7316 2011-07-31 12:14:21Z jh $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -52,6 +52,11 @@ public:
 	bool operator()(const noRoadNode* const rn1, const noRoadNode* const rn2) const;
 };
 
+class RoadNodeComperatorInv
+{
+public:
+	bool operator()(const noRoadNode* const rn1, const noRoadNode* const rn2) const;
+};
 struct PathfindingPoint;
 
 /// Klass für einen Knoten mit dazugehörigen Informationen
@@ -128,6 +133,12 @@ bool RoadNodeComperator::operator()(const noRoadNode* const rn1, const noRoadNod
 {
 	PathfindingPoint p1 (rn1->GetX(), rn1->GetY()), p2(rn2->GetX(), rn2->GetY());
 	return p1<p2;
+}
+
+bool RoadNodeComperatorInv::operator()(const noRoadNode* const rn1, const noRoadNode* const rn2) const
+{
+	PathfindingPoint p1 (rn1->GetX(), rn1->GetY()), p2(rn2->GetX(), rn2->GetY());
+	return p2<p1;
 }
 
 /// Definitionen siehe oben
@@ -274,6 +285,25 @@ bool GameWorldBase::FindFreePath(const MapCoord x_start,const MapCoord y_start,
 	return false;
 }
 
+template<class _Ty,	
+	class _Container = std::vector<_Ty>,	
+	class _Pr = std::less<typename _Container::value_type> >
+class openlist_container : public std::priority_queue<_Ty,	_Container,	_Pr> 
+{
+public:
+	openlist_container()
+		: std::priority_queue<_Ty,	_Container,	_Pr>()
+	{
+		//c.reserve(255);
+	}
+	void rearrange(const _Ty& target)
+	{
+		std::vector<_Ty>::iterator it = std::find(c.begin(), c.end(), target);
+		std::push_heap(c.begin(), it+1, comp);
+	}
+};
+
+
 /// Wegfinden ( A* ), O(v lg v) --> Wegfindung auf allgemeinen Terrain (ohne Straßen), für Wegbau und frei herumlaufende Berufe
 bool GameWorldBase::FindPathOnRoads(const noRoadNode * const start, const noRoadNode * const goal,
 									const bool ware_mode, unsigned * length, 
@@ -304,13 +334,15 @@ bool GameWorldBase::FindPathOnRoads(const noRoadNode * const start, const noRoad
 		pf_nodes[clean_list[i]].visited = false;
 	clean_list.clear();
 
-	std::set<const noRoadNode*,RoadNodeComperator> todo;
+	//std::set<const noRoadNode*,RoadNodeComperator> todo;
+	openlist_container<const noRoadNode*, std::vector<const noRoadNode*>, RoadNodeComperatorInv> todo;
 	PathfindingPoint::Init(goal->GetX(),goal->GetY(),this);
 
 	// Anfangsknoten einfügen
-	std::pair< std::set<const noRoadNode*, RoadNodeComperator>::iterator, bool > ret = todo.insert(start);
+	/*std::pair< std::set<const noRoadNode*, RoadNodeComperator>::iterator, bool > ret = */
+	todo.push(start);
 	unsigned start_id = MakeCoordID(start->GetX(),start->GetY());
-	pf_nodes[start_id].it_rn = ret.first;
+	//pf_nodes[start_id].it_rn = ret.first;
 	pf_nodes[start_id].prev = INVALID_PREV;
 	pf_nodes[start_id].visited = true;
 	clean_list.push_back(start_id);
@@ -329,15 +361,16 @@ bool GameWorldBase::FindPathOnRoads(const noRoadNode * const start, const noRoad
 		}
 		
 		// Knoten mit den geringsten Wegkosten auswählen
-		const noRoadNode* best = *todo.begin();
+		const noRoadNode* best = todo.top();
 		// Knoten behandelt --> raus aus der todo Liste
-		todo.erase(todo.begin());
+		//todo.erase(todo.begin());
+		todo.pop();
 
 		// ID des bisher besten Knotens bilden
 		unsigned best_id = MakeCoordID(best->GetX(),best->GetY());
 
 		// Knoten wurde entfernt, daher erstmal auf das Ende des set setzen (als Alternative zu NULL)
-		pf_nodes[best_id].it_rn = todo.end();
+		//pf_nodes[best_id].it_rn = todo.end();
 		
 		unsigned char first_dir_tmp = 0xff;
 
@@ -410,13 +443,14 @@ bool GameWorldBase::FindPathOnRoads(const noRoadNode * const start, const noRoad
 			if(pf_nodes[xaid].visited)
 			{
 				// Dann nur ggf. Weg und Vorgänger korrigieren, falls der Weg kürzer ist
-				if(pf_nodes[xaid].it_rn != todo.end() && new_way < pf_nodes[xaid].way)
+				if(/*pf_nodes[xaid].it_rn != todo.end() &&*/ new_way < pf_nodes[xaid].way)
 				{
 					pf_nodes[xaid].way  = new_way;
 					pf_nodes[xaid].prev = best_id;
-					todo.erase(pf_nodes[xaid].it_rn);
-					ret = todo.insert(rna);
-					pf_nodes[xaid].it_rn = ret.first;
+					//todo.erase(pf_nodes[xaid].it_rn);
+					//ret = todo.insert(rna);
+					todo.rearrange(rna);
+					//pf_nodes[xaid].it_rn = ret.first;
 					pf_nodes[xaid].dir = i;
 					pf_nodes[xaid].count_nodes = pf_nodes[best_id].count_nodes + 1;
 				}
@@ -431,8 +465,8 @@ bool GameWorldBase::FindPathOnRoads(const noRoadNode * const start, const noRoad
 			pf_nodes[xaid].dir = i;
 			pf_nodes[xaid].prev = best_id;
 
-			ret = todo.insert(rna);
-			pf_nodes[xaid].it_rn = ret.first;
+			/*ret = */todo.push(rna);
+			//pf_nodes[xaid].it_rn = ret.first;
 		}
 
 		// Stehen wir hier auf einem Hafenplatz
@@ -452,13 +486,14 @@ bool GameWorldBase::FindPathOnRoads(const noRoadNode * const start, const noRoad
 				if(pf_nodes[xaid].visited)
 				{
 					// Dann nur ggf. Weg und Vorgänger korrigieren, falls der Weg kürzer ist
-					if(pf_nodes[xaid].it_rn != todo.end() && new_way < pf_nodes[xaid].way)
+					if(/*pf_nodes[xaid].it_rn != todo.end() && */new_way < pf_nodes[xaid].way)
 					{
 						pf_nodes[xaid].way  = new_way;
 						pf_nodes[xaid].prev = best_id;
-						todo.erase(pf_nodes[xaid].it_rn);
-						ret = todo.insert(scs[i].dest);
-						pf_nodes[xaid].it_rn = ret.first;
+						//todo.erase(pf_nodes[xaid].it_rn);
+						//ret = todo.insert(scs[i].dest);
+						//pf_nodes[xaid].it_rn = ret.first;
+						todo.rearrange(scs[i].dest);
 						pf_nodes[xaid].dir = 100;
 						pf_nodes[xaid].count_nodes = pf_nodes[best_id].count_nodes + 1;
 					}
@@ -473,8 +508,9 @@ bool GameWorldBase::FindPathOnRoads(const noRoadNode * const start, const noRoad
 				pf_nodes[xaid].dir = 100;
 				pf_nodes[xaid].prev = best_id;
 
-				ret = todo.insert(scs[i].dest);
-				pf_nodes[xaid].it_rn = ret.first;
+				todo.push(scs[i].dest);
+				//ret = todo.insert(scs[i].dest);
+				//pf_nodes[xaid].it_rn = ret.first;
 
 			}
 		}
