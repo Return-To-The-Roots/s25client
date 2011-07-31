@@ -1,4 +1,4 @@
-// $Id: GameWorldViewer.cpp 7096 2011-03-27 20:17:55Z OLiver $
+// $Id: GameWorldViewer.cpp 7320 2011-07-31 16:19:48Z jh $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -578,7 +578,13 @@ void GameWorldViewer::MoveToMapObject(const MapCoord x, const MapCoord y)
 /// Springt zur letzten Position, bevor man "weggesprungen" ist
 void GameWorldViewer::MoveToLastPosition()
 {
+	int new_last_xoffset = xoffset;
+	int new_last_yoffset = yoffset;
+
 	MoveTo(last_xoffset,last_yoffset,true);
+
+	last_xoffset = new_last_xoffset;
+	last_yoffset = new_last_yoffset;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
