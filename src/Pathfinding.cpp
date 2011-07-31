@@ -1,4 +1,4 @@
-// $Id: Pathfinding.cpp 7317 2011-07-31 13:27:50Z jh $
+// $Id: Pathfinding.cpp 7318 2011-07-31 14:16:27Z jh $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -33,6 +33,9 @@
 
 #include <set>
 #include <vector>
+#include <limits>
+
+#include <iostream>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -64,7 +67,7 @@ struct PathfindingPoint;
 /// Die Knoten können im Array mit einer eindeutigen ID (gebildet aus y*Kartenbreite+x) identifiziert werden
 struct NewNode
 {
-	NewNode() : way(0), count_nodes(0), dir(0), prev(INVALID_PREV), visited(false) {}
+	NewNode() : way(0), count_nodes(0), dir(0), prev(INVALID_PREV), visited(false), lastVisited(0) {}
 
 	/// Wegkosten, die vom Startpunkt bis zu diesem Knoten bestehen
 	unsigned way;
@@ -80,11 +83,13 @@ struct NewNode
 	/// Iterator auf Position in der Prioritätswarteschlange (std::set), freies Pathfinding
 	std::set<PathfindingPoint>::iterator it_p;
 	/// Iterator auf Position in der Prioritätswarteschlange (std::set), weggebundenes Pathfinding
-	std::set<const noRoadNode*,RoadNodeComperator>::iterator it_rn;
+	//std::set<const noRoadNode*,RoadNodeComperator>::iterator it_rn;
+	unsigned lastVisited;
 };
 
+const unsigned maxMapSize = 1024;
 /// Die Knoten der Map gespeichert, größtmöglichste Kartengröße nehmen
-NewNode pf_nodes[1024*1024];
+NewNode pf_nodes[maxMapSize*maxMapSize];
 
 /// Punkte als Verweise auf die obengenannen Knoten, damit nur die beiden Koordinaten x,y im set mit rumgeschleppt
 /// werden müsen
@@ -294,15 +299,24 @@ public:
 	openlist_container()
 		: std::priority_queue<_Ty,	_Container,	_Pr>()
 	{
-		//c.reserve(255);
+		c.reserve(255);
 	}
+	
 	void rearrange(const _Ty& target)
 	{
 		typename std::vector<_Ty>::iterator it = std::find(std::priority_queue<_Ty,	_Container,	_Pr>::c.begin(), std::priority_queue<_Ty,	_Container,	_Pr>::c.end(), target);
 		std::push_heap(std::priority_queue<_Ty,	_Container,	_Pr>::c.begin(), it+1, std::priority_queue<_Ty,	_Container,	_Pr>::comp);
 	}
+
+	void clear()
+	{
+		c.clear();
+	}
 };
 
+
+openlist_container<const noRoadNode*, std::vector<const noRoadNode*>, RoadNodeComperatorInv> todo;
+unsigned currentVisit = 0;
 
 /// Wegfinden ( A* ), O(v lg v) --> Wegfindung auf allgemeinen Terrain (ohne Straßen), für Wegbau und frei herumlaufende Berufe
 bool GameWorldBase::FindPathOnRoads(const noRoadNode * const start, const noRoadNode * const goal,
@@ -310,6 +324,19 @@ bool GameWorldBase::FindPathOnRoads(const noRoadNode * const start, const noRoad
 									unsigned char * first_dir,  Point<MapCoord> * next_harbor,
 									const RoadSegment * const forbidden, const bool record) const
 {
+	// increase currentVisit, so we don't have to clear the visited-states at every run
+	currentVisit++;
+
+	// if the counter reaches its maxium, tidy up
+	if (currentVisit == std::numeric_limits<unsigned>::max() - 1)
+	{
+		for (unsigned i = 0; i < (maxMapSize*maxMapSize); ++i)
+		{
+			pf_nodes[i].lastVisited = 0;
+		}
+		currentVisit = 1;
+	}
+
 	// Aus Replay lesen?
 	if(GameClient::inst().ArePathfindingResultsAvailable() && record)
 	{
@@ -330,22 +357,14 @@ bool GameWorldBase::FindPathOnRoads(const noRoadNode * const start, const noRoad
 	}
 
 	// Erst einmal wieder aufräumen
-	for(unsigned i = 0;i<clean_list.size();++i)
-		pf_nodes[clean_list[i]].visited = false;
-	clean_list.clear();
-
-	//std::set<const noRoadNode*,RoadNodeComperator> todo;
-	openlist_container<const noRoadNode*, std::vector<const noRoadNode*>, RoadNodeComperatorInv> todo;
 	PathfindingPoint::Init(goal->GetX(),goal->GetY(),this);
 
 	// Anfangsknoten einfügen
-	/*std::pair< std::set<const noRoadNode*, RoadNodeComperator>::iterator, bool > ret = */
+	todo.clear();
 	todo.push(start);
 	unsigned start_id = MakeCoordID(start->GetX(),start->GetY());
-	//pf_nodes[start_id].it_rn = ret.first;
 	pf_nodes[start_id].prev = INVALID_PREV;
-	pf_nodes[start_id].visited = true;
-	clean_list.push_back(start_id);
+	pf_nodes[start_id].lastVisited = currentVisit;
 	pf_nodes[start_id].way = 0;
 	pf_nodes[start_id].count_nodes = 0;
 	pf_nodes[start_id].dir = 0;
@@ -363,14 +382,13 @@ bool GameWorldBase::FindPathOnRoads(const noRoadNode * const start, const noRoad
 		// Knoten mit den geringsten Wegkosten auswählen
 		const noRoadNode* best = todo.top();
 		// Knoten behandelt --> raus aus der todo Liste
-		//todo.erase(todo.begin());
 		todo.pop();
 
 		// ID des bisher besten Knotens bilden
 		unsigned best_id = MakeCoordID(best->GetX(),best->GetY());
 
 		// Knoten wurde entfernt, daher erstmal auf das Ende des set setzen (als Alternative zu NULL)
-		//pf_nodes[best_id].it_rn = todo.end();
+		//pf_nodes[best_id].it_rn = todo.end(); // @ Oliver: Wo ist das relevant? Ich nutze es nicht, und scheinbar geht nichts kaputt (jh)
 		
 		unsigned char first_dir_tmp = 0xff;
 
@@ -440,17 +458,14 @@ bool GameWorldBase::FindPathOnRoads(const noRoadNode * const start, const noRoad
 
 
 			// Knoten schon auf dem Feld gebildet?
-			if(pf_nodes[xaid].visited)
+			if (pf_nodes[xaid].lastVisited == currentVisit)
 			{
 				// Dann nur ggf. Weg und Vorgänger korrigieren, falls der Weg kürzer ist
 				if(/*pf_nodes[xaid].it_rn != todo.end() &&*/ new_way < pf_nodes[xaid].way)
 				{
 					pf_nodes[xaid].way  = new_way;
 					pf_nodes[xaid].prev = best_id;
-					//todo.erase(pf_nodes[xaid].it_rn);
-					//ret = todo.insert(rna);
 					todo.rearrange(rna);
-					//pf_nodes[xaid].it_rn = ret.first;
 					pf_nodes[xaid].dir = i;
 					pf_nodes[xaid].count_nodes = pf_nodes[best_id].count_nodes + 1;
 				}
@@ -458,15 +473,13 @@ bool GameWorldBase::FindPathOnRoads(const noRoadNode * const start, const noRoad
 			}
 
 			// Alles in Ordnung, Knoten kann gebildet werden
-			pf_nodes[xaid].visited = true;
-			clean_list.push_back(xaid);
+			pf_nodes[xaid].lastVisited = currentVisit;
 			pf_nodes[xaid].count_nodes = pf_nodes[best_id].count_nodes + 1;
 			pf_nodes[xaid].way = new_way;
 			pf_nodes[xaid].dir = i;
 			pf_nodes[xaid].prev = best_id;
 
-			/*ret = */todo.push(rna);
-			//pf_nodes[xaid].it_rn = ret.first;
+			todo.push(rna);
 		}
 
 		// Stehen wir hier auf einem Hafenplatz
@@ -483,16 +496,13 @@ bool GameWorldBase::FindPathOnRoads(const noRoadNode * const start, const noRoad
 				unsigned new_way = pf_nodes[best_id].way  + scs[i].way_costs;
 
 				// Knoten schon auf dem Feld gebildet?
-				if(pf_nodes[xaid].visited)
+				if (pf_nodes[xaid].lastVisited == currentVisit)
 				{
 					// Dann nur ggf. Weg und Vorgänger korrigieren, falls der Weg kürzer ist
 					if(/*pf_nodes[xaid].it_rn != todo.end() && */new_way < pf_nodes[xaid].way)
 					{
 						pf_nodes[xaid].way  = new_way;
 						pf_nodes[xaid].prev = best_id;
-						//todo.erase(pf_nodes[xaid].it_rn);
-						//ret = todo.insert(scs[i].dest);
-						//pf_nodes[xaid].it_rn = ret.first;
 						todo.rearrange(scs[i].dest);
 						pf_nodes[xaid].dir = 100;
 						pf_nodes[xaid].count_nodes = pf_nodes[best_id].count_nodes + 1;
@@ -501,17 +511,13 @@ bool GameWorldBase::FindPathOnRoads(const noRoadNode * const start, const noRoad
 				}
 
 				// Alles in Ordnung, Knoten kann gebildet werden
-				pf_nodes[xaid].visited = true;
-				clean_list.push_back(xaid);
+				pf_nodes[xaid].lastVisited = currentVisit;
 				pf_nodes[xaid].count_nodes = pf_nodes[best_id].count_nodes + 1;
 				pf_nodes[xaid].way = new_way;
 				pf_nodes[xaid].dir = 100;
 				pf_nodes[xaid].prev = best_id;
 
 				todo.push(scs[i].dest);
-				//ret = todo.insert(scs[i].dest);
-				//pf_nodes[xaid].it_rn = ret.first;
-
 			}
 		}
 
