@@ -1,4 +1,4 @@
-// $Id: GameClientPlayer.cpp 7213 2011-05-10 17:57:02Z jh $
+// $Id: GameClientPlayer.cpp 7322 2011-07-31 16:34:44Z jh $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -901,12 +901,12 @@ noBaseBuilding * GameClientPlayer::FindClientForWare(Ware * ware)
 			// Bei Baustellen die Extraliste abfragen
 			for(std::list<noBuildingSite*>::iterator i = building_sites.begin(); i!=building_sites.end(); ++i)
 			{
-				// Weg dorthin berechnen
-				if(gwg->FindPathForWareOnRoads(ware->GetLocation(),*i,&way_points) != 0xFF)
-				{
-					points = (*i)->CalcDistributionPoints(ware->GetLocation(),gt);
+				points = (*i)->CalcDistributionPoints(ware->GetLocation(),gt);
 
-					if(points)
+				if(points)
+				{
+					// Weg dorthin berechnen
+					if(gwg->FindPathForWareOnRoads(ware->GetLocation(),*i,&way_points) != 0xFF)
 					{
 						// Die Wegpunkte noch davon abziehen, Verteilung draufaddieren
 						points -= way_points/2;
@@ -927,12 +927,12 @@ noBaseBuilding * GameClientPlayer::FindClientForWare(Ware * ware)
 			// Für übrige Gebäude
 			for(std::list<nobUsual*>::iterator i = buildings[*it-10].begin(); i!=buildings[*it-10].end(); ++i)
 			{
-				// Weg dorthin berechnen
-				if(gwg->FindPathForWareOnRoads(ware->GetLocation(),*i,&way_points) != 0xFF)
+				points = (*i)->CalcDistributionPoints(ware->GetLocation(),gt);
+				// Wenn 0, dann braucht er die Ware nicht
+				if(points)
 				{
-					points = (*i)->CalcDistributionPoints(ware->GetLocation(),gt);
-					// Wenn 0, dann braucht er die Ware nicht
-					if(points)
+					// Weg dorthin berechnen
+					if(gwg->FindPathForWareOnRoads(ware->GetLocation(),*i,&way_points) != 0xFF)
 					{
 						// Die Wegpunkte noch davon abziehen, Verteilung draufaddieren
 						//points -= way_points;
@@ -991,12 +991,13 @@ nobBaseMilitary * GameClientPlayer::FindClientForCoin(Ware * ware)
 	for(std::list<nobMilitary*>::iterator it = military_buildings.begin();it!=military_buildings.end();++it)
 	{
 		unsigned way_points;
-		// Weg dorthin berechnen
-		if(gwg->FindPathForWareOnRoads(ware->GetLocation(),*it,&way_points) != 0xFF)
+
+		points = (*it)->CalcCoinsPoints();
+		// Wenn 0, will er gar keine Münzen (Goldzufuhr gestoppt)
+		if(points)
 		{
-			points = (*it)->CalcCoinsPoints();
-			// Wenn 0, will er gar keine Münzen (Goldzufuhr gestoppt)
-			if(points)
+			// Weg dorthin berechnen
+			if(gwg->FindPathForWareOnRoads(ware->GetLocation(),*it,&way_points) != 0xFF)
 			{
 				// Die Wegpunkte noch davon abziehen
 				points -= way_points;
