@@ -1,4 +1,4 @@
-// $Id: GameWorldBase.cpp 7326 2011-08-02 10:32:54Z FloSoft $
+// $Id: GameWorldBase.cpp 7327 2011-08-02 15:34:57Z jh $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -230,32 +230,20 @@ MapCoord GameWorldBase::CalcDistanceAroundBorderY(const MapCoord y1, const MapCo
 unsigned GameWorldBase::CalcDistance(const int x1, const int y1,
 					  const int x2, const int y2) const
 {
-	// Jeweils kürzeste gemessene Distanz
-	unsigned best = 0xffffffff;
+	int dx = std::abs((2*int(x1)+(y1&1))-(2*int(x2)+(y2&1)));
+	int dy = 2 * std::abs(int(y1)-int(y2));
 
-	// In Erwägung ziehen, alle Kartenränder jeweils zu überqueren und kürzeste Distanz merken
-	for(unsigned plusx = 0;plusx<3;++plusx)
+	if (dy > height)
 	{
-		for(unsigned plusy = 0;plusy<3;++plusy)
-		{
-			int tx1 = x1, ty1 = y1, tx2 = x2, ty2 = y2;
-			if(plusx == 1)
-				tx1 += width;
-			else if(plusx == 2)
-				tx2 += width;
-			if(plusy == 1)
-				ty1 += height;
-			else if(plusy == 2)
-				ty2 += height;
-
-			unsigned tmp_dist = CalcRawDistance(tx1,ty1,tx2,ty2);
-			if(tmp_dist < best)
-				best = tmp_dist;
-
-		}
+		dy = (height * 2) - dy;
 	}
 
-	return best;
+	if (dx > width)
+	{
+		dx = (width * 2) - dx;
+	}
+
+	return((dy + std::max(0, dx - dy / 2)) / 2);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

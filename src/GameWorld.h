@@ -1,4 +1,4 @@
-// $Id: GameWorld.h 7326 2011-08-02 10:32:54Z FloSoft $
+// $Id: GameWorld.h 7327 2011-08-02 15:34:57Z jh $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -228,8 +228,7 @@ public:
 	MapCoord CalcDistanceAroundBorderY(const MapCoord y1, const MapCoord y2) const;
 
 	/// Ermittelt Abstand zwischen 2 Punkten auf der Map unter Berücksichtigung der Kartengrenzüberquerung
-	unsigned CalcDistance(const int x1, const int y1,
-					  const int x2, const int y2) const;
+	unsigned CalcDistance(int x1, int y1, int x2, int y2) const;
 
 	// Erzeugt eindeutige ID aus gegebenen X und Y-Werten
 	unsigned MakeCoordID(const MapCoord x, const MapCoord y) const
