@@ -1,4 +1,4 @@
-// $Id: Pathfinding.cpp 7319 2011-07-31 14:18:41Z jh $
+// $Id: Pathfinding.cpp 7328 2011-08-02 15:41:32Z jh $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -67,7 +67,7 @@ struct PathfindingPoint;
 /// Die Knoten können im Array mit einer eindeutigen ID (gebildet aus y*Kartenbreite+x) identifiziert werden
 struct NewNode
 {
-	NewNode() : way(0), count_nodes(0), dir(0), prev(INVALID_PREV), visited(false), lastVisited(0) {}
+	NewNode() : way(0), count_nodes(0), dir(0), prev(INVALID_PREV), /*visited(false),*/ lastVisited(0) {}
 
 	/// Wegkosten, die vom Startpunkt bis zu diesem Knoten bestehen
 	unsigned way;
@@ -78,18 +78,16 @@ struct NewNode
 	unsigned char dir;
 	/// ID (gebildet aus y*Kartenbreite+x) des Vorgänngerknotens
 	unsigned prev;
-	/// Wurde Knoten schon besucht (für A*-Algorithmus)
-	bool visited;
 	/// Iterator auf Position in der Prioritätswarteschlange (std::set), freies Pathfinding
 	std::set<PathfindingPoint>::iterator it_p;
-	/// Iterator auf Position in der Prioritätswarteschlange (std::set), weggebundenes Pathfinding
-	//std::set<const noRoadNode*,RoadNodeComperator>::iterator it_rn;
+	/// Wurde Knoten schon besucht (für A*-Algorithmus), wenn lastVisited == currentVisit
 	unsigned lastVisited;
 };
 
 const unsigned maxMapSize = 1024;
 /// Die Knoten der Map gespeichert, größtmöglichste Kartengröße nehmen
 NewNode pf_nodes[maxMapSize*maxMapSize];
+unsigned currentVisit = 0;
 
 /// Punkte als Verweise auf die obengenannen Knoten, damit nur die beiden Koordinaten x,y im set mit rumgeschleppt
 /// werden müsen
@@ -97,11 +95,16 @@ struct PathfindingPoint {
 public:
 	/// Die beiden Koordinaten des Punktes
 	MapCoord x,y;
+	unsigned distance;
 
 public:
 	/// Konstruktoren
-	PathfindingPoint() {};
-	PathfindingPoint(const MapCoord x, const MapCoord y) : x(x), y(y) {}
+	PathfindingPoint(const MapCoord sx, const MapCoord sy)
+	{
+		x = sx;
+		y = sy;
+		distance = gwb->CalcDistance(x,y,dst_x,dst_y);
+	}
 
 	/// Koordinaten des Ziels beim jeweils aktuellen Pathfinding, die wir zur Bewertung der Punkte benötigen
 	static MapCoord dst_x, dst_y;
@@ -120,8 +123,8 @@ public:
 	{
 		// Weglängen schätzen für beide Punkte, indem man den bisherigen Weg mit der Luftlinie vom aktullen 
 		// Punkt zum Ziel addiert und auf diese Weise den kleinsten Weg auswählt
-		unsigned way1 = pf_nodes[gwb->MakeCoordID(x,y)].way + gwb->CalcDistance(x,y,dst_x,dst_y);
-		unsigned way2 = pf_nodes[gwb->MakeCoordID(two.x,two.y)].way + gwb->CalcDistance(two.x,two.y,dst_x,dst_y);
+		unsigned way1 = pf_nodes[gwb->MakeCoordID(x,y)].way + distance;
+		unsigned way2 = pf_nodes[gwb->MakeCoordID(two.x,two.y)].way + two.distance;
 
 		// Wenn die Wegkosten gleich sind, vergleichen wir die Koordinaten, da wir für std::set eine streng
 		// monoton steigende Folge brauchen
@@ -151,23 +154,24 @@ MapCoord PathfindingPoint::dst_x = 0;
 MapCoord PathfindingPoint::dst_y = 0;
 const GameWorldBase * PathfindingPoint::gwb = NULL;
 
-/// Nach jedem Pathfinding sind Knoten der pf_nodes "verunreinigt", d.h. u.a. visited steht noch auf true
-/// Dazu werden in dieser Liste die Knoten gespeichert, die vor jedem Pathfinding erstmal einmal wieder zurück-
-/// gesetzt werden müssen
-std::vector<unsigned> clean_list;
-
-
 /// Wegfinden ( A* ), O(v lg v) --> Wegfindung auf allgemeinen Terrain (ohne Straßen), für Wegbau und frei herumlaufende Berufe
 bool GameWorldBase::FindFreePath(const MapCoord x_start,const MapCoord y_start,
 				  const MapCoord x_dest, const MapCoord y_dest, const bool random_route, 
 				  const unsigned max_route, std::vector<unsigned char> * route, unsigned *length,
 				  unsigned char * first_dir,  FP_Node_OK_Callback IsNodeOK, FP_Node_OK_Callback IsNodeToDestOk, const void * param, const bool record) const
 {
-	//puts("");
-	// Erst einmal wieder aufräumen
-	for(unsigned i = 0;i<clean_list.size();++i)
-		pf_nodes[clean_list[i]].visited = false;
-	clean_list.clear();
+	// increase currentVisit, so we don't have to clear the visited-states at every run
+	currentVisit++;
+
+	// if the counter reaches its maxium, tidy up
+	if (currentVisit == std::numeric_limits<unsigned>::max() - 1)
+	{
+		for (unsigned i = 0; i < (maxMapSize*maxMapSize); ++i)
+		{
+			pf_nodes[i].lastVisited = 0;
+		}
+		currentVisit = 1;
+	}
 
 	std::set<PathfindingPoint> todo;
 	PathfindingPoint::Init(x_dest,y_dest,this);
@@ -178,8 +182,7 @@ bool GameWorldBase::FindFreePath(const MapCoord x_start,const MapCoord y_start,
 	// Und mit entsprechenden Werten füllen
 	pf_nodes[start_id].it_p = ret.first;
 	pf_nodes[start_id].prev = INVALID_PREV;
-	pf_nodes[start_id].visited = true;
-	clean_list.push_back(start_id);
+	pf_nodes[start_id].lastVisited = currentVisit;
 	pf_nodes[start_id].way = 0;
 	pf_nodes[start_id].dir = 0;
 
@@ -243,7 +246,7 @@ bool GameWorldBase::FindFreePath(const MapCoord x_start,const MapCoord y_start,
 			unsigned xaid = MakeCoordID(xa,ya);
 
 			// Knoten schon auf dem Feld gebildet?
-			if(pf_nodes[xaid].visited)
+			if (pf_nodes[xaid].lastVisited == currentVisit)
 			{
 				// Dann nur ggf. Weg und Vorgänger korrigieren, falls der Weg kürzer ist
 				if(pf_nodes[xaid].it_p != todo.end() && pf_nodes[best_id].way+1 < pf_nodes[xaid].way)
@@ -275,8 +278,7 @@ bool GameWorldBase::FindFreePath(const MapCoord x_start,const MapCoord y_start,
 			}
 
 			// Alles in Ordnung, Knoten kann gebildet werden
-			pf_nodes[xaid].visited = true;
-			clean_list.push_back(xaid);
+			pf_nodes[xaid].lastVisited = currentVisit;
 			pf_nodes[xaid].way = pf_nodes[best_id].way+1;
 			pf_nodes[xaid].dir = i;
 			pf_nodes[xaid].prev = best_id;
@@ -316,7 +318,6 @@ public:
 
 
 openlist_container<const noRoadNode*, std::vector<const noRoadNode*>, RoadNodeComperatorInv> todo;
-unsigned currentVisit = 0;
 
 /// Wegfinden ( A* ), O(v lg v) --> Wegfindung auf allgemeinen Terrain (ohne Straßen), für Wegbau und frei herumlaufende Berufe
 bool GameWorldBase::FindPathOnRoads(const noRoadNode * const start, const noRoadNode * const goal,
@@ -324,19 +325,6 @@ bool GameWorldBase::FindPathOnRoads(const noRoadNode * const start, const noRoad
 									unsigned char * first_dir,  Point<MapCoord> * next_harbor,
 									const RoadSegment * const forbidden, const bool record) const
 {
-	// increase currentVisit, so we don't have to clear the visited-states at every run
-	currentVisit++;
-
-	// if the counter reaches its maxium, tidy up
-	if (currentVisit == std::numeric_limits<unsigned>::max() - 1)
-	{
-		for (unsigned i = 0; i < (maxMapSize*maxMapSize); ++i)
-		{
-			pf_nodes[i].lastVisited = 0;
-		}
-		currentVisit = 1;
-	}
-
 	// Aus Replay lesen?
 	if(GameClient::inst().ArePathfindingResultsAvailable() && record)
 	{
@@ -354,6 +342,19 @@ bool GameWorldBase::FindPathOnRoads(const noRoadNode * const start, const noRoad
 		if(record)
 			GameClient::inst().AddPathfindingResult(0xff,length,next_harbor);
 		return false;
+	}
+
+	// increase currentVisit, so we don't have to clear the visited-states at every run
+	currentVisit++;
+
+	// if the counter reaches its maxium, tidy up
+	if (currentVisit == std::numeric_limits<unsigned>::max() - 1)
+	{
+		for (unsigned i = 0; i < (maxMapSize*maxMapSize); ++i)
+		{
+			pf_nodes[i].lastVisited = 0;
+		}
+		currentVisit = 1;
 	}
 
 	// Erst einmal wieder aufräumen
