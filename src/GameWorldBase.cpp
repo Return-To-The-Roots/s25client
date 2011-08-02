@@ -1,4 +1,4 @@
-// $Id: GameWorldBase.cpp 7325 2011-08-02 10:05:50Z FloSoft $
+// $Id: GameWorldBase.cpp 7326 2011-08-02 10:32:54Z FloSoft $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -227,31 +227,35 @@ MapCoord GameWorldBase::CalcDistanceAroundBorderY(const MapCoord y1, const MapCo
 
 
 /// Ermittelt Abstand zwischen 2 Punkten auf der Map unter Berücksichtigung der Kartengrenzüberquerung
-unsigned GameWorldBase::CalcDistance(int x1, int y1,
-					  int x2, int y2) const
+unsigned GameWorldBase::CalcDistance(const int x1, const int y1,
+					  const int x2, const int y2) const
 {
-	unsigned xd = (x1 > x2) ? x1 - x2 : x2 - x1;
-	unsigned yd = (y1 > y1) ? y1 - y2 : y2 - y1;
+	// Jeweils kürzeste gemessene Distanz
+	unsigned best = 0xffffffff;
 
-	// wenn die x-Entfernung ohne Überschreitung der Grenzen größer ist als
-	// die halbe Kartengröße, ist es über die Kartengrenzen schneller.
-	if (xd > (width >> 1))
+	// In Erwägung ziehen, alle Kartenränder jeweils zu überqueren und kürzeste Distanz merken
+	for(unsigned plusx = 0;plusx<3;++plusx)
 	{
-		if (x1 > x2)
-			x2 += width;
-		else
-			x1 += width;
+		for(unsigned plusy = 0;plusy<3;++plusy)
+		{
+			int tx1 = x1, ty1 = y1, tx2 = x2, ty2 = y2;
+			if(plusx == 1)
+				tx1 += width;
+			else if(plusx == 2)
+				tx2 += width;
+			if(plusy == 1)
+				ty1 += height;
+			else if(plusy == 2)
+				ty2 += height;
+
+			unsigned tmp_dist = CalcRawDistance(tx1,ty1,tx2,ty2);
+			if(tmp_dist < best)
+				best = tmp_dist;
+
+		}
 	}
 
-	if (yd > (height >> 2))
-	{
-		if (y1 > y2)
-			y2 += height;
-		else
-			y1 += height;
-	}
-
-	return CalcRawDistance(x1, y1, x2, y2);
+	return best;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

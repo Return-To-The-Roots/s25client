@@ -1,4 +1,4 @@
-// $Id: GameWorld.h 7325 2011-08-02 10:05:50Z FloSoft $
+// $Id: GameWorld.h 7326 2011-08-02 10:32:54Z FloSoft $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -66,7 +66,7 @@ struct MapNode
 	/// StraÃŸen
 	unsigned char roads[3];
 	bool roads_real[3];
-	/// Höhe
+	/// HÃ¶he
 	unsigned char altitude;
 	/// Schattierung
 	unsigned char shadow;
@@ -99,7 +99,7 @@ struct MapNode
 		unsigned char boundary_stones[4];
 	} fow[MAX_PLAYERS];
 
-	/// Meeres-ID, d.h. zu welchem Meer gehört dieser Punkt (0 = kein Meer)
+	/// Meeres-ID, d.h. zu welchem Meer gehÃ¶rt dieser Punkt (0 = kein Meer)
 	unsigned short sea_id;
 	/// Hafenpunkt-ID (0 = kein Hafenpunkt)
 	unsigned harbor_id;
@@ -128,7 +128,7 @@ protected:
 	/// Interface zum GUI
 	GameInterface * gi;
 
-	/// Breite und Höhe der Karte in Kontenpunkten
+	/// Breite und HÃ¶he der Karte in Kontenpunkten
 	unsigned short width,height;
 	/// Landschafts-Typ
 	LandscapeType lt;
@@ -205,7 +205,7 @@ public:
 	/// Setzt GameInterface
 	void SetGameInterface(GameInterface * const gi) { this->gi = gi; }
 
-	/// GröÃŸe der Map abfragen
+	/// GrÃ¶ÃŸe der Map abfragen
 	unsigned short GetWidth() const { return width; }
 	unsigned short GetHeight() const { return height; }
 
@@ -228,7 +228,8 @@ public:
 	MapCoord CalcDistanceAroundBorderY(const MapCoord y1, const MapCoord y2) const;
 
 	/// Ermittelt Abstand zwischen 2 Punkten auf der Map unter Berücksichtigung der Kartengrenzüberquerung
-	unsigned CalcDistance(int x1, int y1, int x2, int y2) const;
+	unsigned CalcDistance(const int x1, const int y1,
+					  const int x2, const int y2) const;
 
 	// Erzeugt eindeutige ID aus gegebenen X und Y-Werten
 	unsigned MakeCoordID(const MapCoord x, const MapCoord y) const
@@ -284,13 +285,13 @@ public:
 	bool RoadAvailable(const bool boat_road,const int x, const int y,unsigned char to_dir,const bool visual = true) const;
 	/// Prüft ob exakt die gleiche StraÃŸe schon gebaut wurde
 	bool RoadAlreadyBuilt(const bool boat_road, unsigned short start_x, unsigned short start_y, const std::vector<unsigned char>& route);
-	/// Bauqualitäten berechnen, bei flagonly gibt er nur 1 zurück, wenn eine Flagge möglich ist
+	/// Bauqualitäten berechnen, bei flagonly gibt er nur 1 zurück, wenn eine Flagge mÃ¶glich ist
 	BuildingQuality CalcBQ(const MapCoord x, const MapCoord y,const unsigned char player,const bool flagonly = false,const bool visual = true, const bool ignore_player = false) const;
 	/// Setzt die errechnete BQ gleich mit
 	void SetBQ(const MapCoord x, const MapCoord y,const unsigned char player,const bool flagonly = false,const bool visual = true)
 	{ GetNode(x,y).bq = CalcBQ(x,y,player,flagonly,visual); }
 
-	/// Prüft, ob der Pkut zu dem Spieler gehört (wenn er der Besitzer ist und es false zurückliefert, ist es Grenzgebiet)
+	/// Prüft, ob der Pkut zu dem Spieler gehÃ¶rt (wenn er der Besitzer ist und es false zurückliefert, ist es Grenzgebiet)
 	bool IsPlayerTerritory(const MapCoord x, const MapCoord y) const;
 	/// Berechnet BQ bei einer gebauten StraÃŸe
 	void CalcRoad(const MapCoord x, const MapCoord y,const unsigned char player);
@@ -360,7 +361,7 @@ public:
 	float GetTerrainY(const MapCoord x, const MapCoord y)
 	{ return tr.GetTerrainY(x,y); }
 
-	/// Verändert die Höhe eines Punktes und die damit verbundenen Schatten
+	/// Verändert die HÃ¶he eines Punktes und die damit verbundenen Schatten
 	void ChangeAltitude(const MapCoord x, const MapCoord y, const unsigned char altitude);
 	
 	/// Ermittelt Sichtbarkeit eines Punktes auch unter Einbeziehung der Verbündeten des jeweiligen Spielers
@@ -369,7 +370,7 @@ public:
 	/// Gibt die Anzahl an Hafenpunkten zurück
 	unsigned GetHarborPointCount() const 
 	{ return harbor_pos.size()-1; }
-	/// Ist es an dieser Stelle für einen Spieler möglich einen Hafen zu bauen
+	/// Ist es an dieser Stelle für einen Spieler mÃ¶glich einen Hafen zu bauen
 	bool IsHarborPointFree(const unsigned harbor_id, const unsigned char player, 
 		const unsigned short sea_id) const;
 	/// Gibt die Koordinaten eines bestimmten Hafenpunktes zurück
@@ -382,7 +383,7 @@ public:
 	unsigned short IsCoastalPoint(const MapCoord x, const MapCoord y) const;
 		/// Grenzt der Hafen an ein bestimmtes Meer an?
 	bool IsAtThisSea(const unsigned harbor_id, const unsigned short sea_id) const;
-	/// Gibt den Punkt eines bestimmtes Meeres um den Hafen herum an, sodass Schiffe diesen anfahren können
+	/// Gibt den Punkt eines bestimmtes Meeres um den Hafen herum an, sodass Schiffe diesen anfahren kÃ¶nnen
 	void GetCoastalPoint(const unsigned harbor_id, MapCoord * px, MapCoord * py, const unsigned short sea_id) const;
 	/// Sucht freie Hafenpunkte, also wo noch ein Hafen gebaut werden kann
 	unsigned GetNextFreeHarborPoint(const MapCoord x, const MapCoord y, const unsigned origin_harbor_id, const unsigned char dir,
@@ -527,7 +528,7 @@ public:
 	/// Ermittelt Sichtbarkeit eines Punktes für den lokalen Spieler, berücksichtigt ggf. Teamkameraden
 	Visibility GetVisibility(const MapCoord x, const MapCoord y) const; 
 
-	/// Höhe wurde verändert: TerrainRenderer Bescheid sagen, damit es entsprechend verändert werden kann
+	/// HÃ¶he wurde verändert: TerrainRenderer Bescheid sagen, damit es entsprechend verändert werden kann
 	void AltitudeChanged(const MapCoord x, const MapCoord y);
 	/// Sichtbarkeit wurde verändert: TerrainRenderer Bescheid sagen, damit es entsprechend verändert werden kann
 	void VisibilityChanged(const MapCoord x, const MapCoord y);
@@ -582,10 +583,10 @@ private:
 	/// Punkt ggf. zu gar keinem Spieler, 2. Funktion wird für Punkte im 2er Abstand verwendet, da es dort ein bisschen anders läuft!
 	void AdjustNodes(const MapCoord x1, const MapCoord y1, const MapCoord x2, const MapCoord y2);
 	void AdjustNodes2(const MapCoord x1, const MapCoord y1, const MapCoord x2, const MapCoord y2);
-	/// Zerstört Spielerteile auf einem Punkt, wenn der Punkt dem Spieler nun nich mehr gehört
+	/// ZerstÃ¶rt Spielerteile auf einem Punkt, wenn der Punkt dem Spieler nun nich mehr gehÃ¶rt
 	void DestroyPlayerRests(const MapCoord x, const MapCoord y, const unsigned char new_player,const noBaseBuilding * exception);
 
-	/// Prüft, ob auf diesem Punkt Deko-Objekte liegen, die für den Wegbau entfernt werden können
+	/// Prüft, ob auf diesem Punkt Deko-Objekte liegen, die für den Wegbau entfernt werden kÃ¶nnen
 	bool IsObjectionableForRoad(const MapCoord x, const MapCoord y);
 
 	
@@ -600,7 +601,7 @@ private:
 	/// Setzt Punkt auf jeden Fall auf sichtbar
 	void SetVisibility(const MapCoord x, const MapCoord y,  const unsigned char player);
 	
-	/// Prüfen, ob zu einem bestimmten Küsenpunkt ein Hafenpunkt gehört und wenn ja, wird dieser zurückgegeben
+	/// Prüfen, ob zu einem bestimmten Küsenpunkt ein Hafenpunkt gehÃ¶rt und wenn ja, wird dieser zurückgegeben
 	unsigned short GetHarborPosID(const MapCoord x, const MapCoord y);
 	/// Bestimmt die Schifffahrtrichtung, in der ein Punkt relativ zu einem anderen liegt 
 	unsigned char GetShipDir(Point<int> pos1, Point<int> pos2);
@@ -642,7 +643,7 @@ public:
 	/// Flagge an x,y setzen, dis_dir ist der aus welche Richtung der Weg kommt, wenn man einen Weg mit Flagge baut
 	/// kann ansonsten auf 255 gesetzt werden
 	void SetFlag(const MapCoord x, const MapCoord y, const unsigned char player,const unsigned char dis_dir = 255);
-	/// Flagge soll zerstrört werden
+	/// Flagge soll zerstrÃ¶rt werden
 	void DestroyFlag(const MapCoord x, const MapCoord y);
 	/// Baustelle setzen
 	void SetBuildingSite(const BuildingType type,const MapCoord x, const MapCoord y, const unsigned char player);
@@ -687,10 +688,10 @@ public:
 	void AddCatapultStone(CatapultStone * cs) {catapult_stones.push_back(cs); }
 	void RemoveCatapultStone(CatapultStone * cs) {catapult_stones.erase(cs); }
 
-	/// Lässt alles spielerische abbrennen, indem es alle Flaggen der Spieler zerstört
+	/// Lässt alles spielerische abbrennen, indem es alle Flaggen der Spieler zerstÃ¶rt
 	void Armageddon();
 
-  /// Lässt alles spielerische eines Spielers abbrennen, indem es alle Flaggen eines Spieler zerstört
+  /// Lässt alles spielerische eines Spielers abbrennen, indem es alle Flaggen eines Spieler zerstÃ¶rt
 	void Armageddon(const unsigned char player);
 
 	/// Sagt der GW Bescheid, dass ein Objekt von Bedeutung an x,y vernichtet wurde, damit dieser
@@ -718,7 +719,7 @@ public:
 	/// Stellt fest, ob auf diesem Punkt ein Grenzstein steht (ob das Grenzgebiet ist)
 	bool IsBorderNode(const MapCoord x, const MapCoord y, const unsigned char player) const;
 	
-	// Konvertiert Ressourcen zwischen Typen hin und her oder löscht sie.
+	// Konvertiert Ressourcen zwischen Typen hin und her oder lÃ¶scht sie.
 	// Für Spiele ohne Gold.
 	void ConvertMineResourceTypes(unsigned char from, unsigned char to);
 
