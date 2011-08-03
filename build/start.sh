@@ -41,6 +41,10 @@ while test $# != 0 ; do
 			CMD=valgrind
 			ARGS="$ARGS --leak-check=full --log-file=s25client"
 			;;
+		callgrind)
+			CMD=valgrind
+			ARGS="$ARGS --tool=callgrind"
+			;;
 		ddd)
 			CMD=ddd
 			;;
