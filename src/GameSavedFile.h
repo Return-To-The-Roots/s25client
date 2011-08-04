@@ -1,4 +1,4 @@
-// $Id: GameSavedFile.h 7095 2011-03-27 20:15:08Z OLiver $
+// $Id: GameSavedFile.h 7338 2011-08-04 20:17:14Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -21,7 +21,6 @@
 
 #pragma once
 
-#include "BinaryFile.h"
 #include "GameConsts.h"
 #include "GlobalGameSettings.h"
 

@@ -1,4 +1,4 @@
-// $Id: GameClient.h 7088 2011-03-27 09:53:32Z OLiver $
+// $Id: GameClient.h 7338 2011-08-04 20:17:14Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -21,6 +21,7 @@
 
 #include "Singleton.h"
 #include "Socket.h"
+#include "BinaryFile.h"
 
 #include "GameMessageInterface.h"
 

@@ -1,4 +1,4 @@
-// $Id: GameSavedFile.cpp 7096 2011-03-27 20:17:55Z OLiver $
+// $Id: GameSavedFile.cpp 7338 2011-08-04 20:17:14Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -21,6 +21,7 @@
 // Header
 #include <stdafx.h>
 #include "main.h"
+#include "BinaryFile.h"
 #include "GameSavedFile.h"
 
 
