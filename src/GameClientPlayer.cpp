@@ -1,4 +1,4 @@
-// $Id: GameClientPlayer.cpp 7322 2011-07-31 16:34:44Z jh $
+// $Id: GameClientPlayer.cpp 7334 2011-08-04 10:37:07Z FloSoft $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -82,7 +82,7 @@ GameClientPlayer::GameClientPlayer(const unsigned playerid) : GamePlayerInfo(pla
 	distribution[GD_WOOD].client_buildings.push_back(BLD_SAWMILL);
 
 
-	// Waren mit mehreren mÃ¶glichen Zielen erstmal nullen, kann dann im Fenster eingestellt werden
+	// Waren mit mehreren möglichen Zielen erstmal nullen, kann dann im Fenster eingestellt werden
 	for(unsigned char i = 0; i < WARE_TYPES_COUNT; ++i)
 	{
 		memset(distribution[i].percent_buildings, 0, 40*sizeof(unsigned char));
@@ -108,8 +108,8 @@ GameClientPlayer::GameClientPlayer(const unsigned playerid) : GamePlayerInfo(pla
 	GAMECLIENT.visual_settings.distribution[12] = distribution[GD_COAL].percent_buildings[BLD_IRONSMELTER] = 7;
 	GAMECLIENT.visual_settings.distribution[13] = distribution[GD_COAL].percent_buildings[BLD_MINT] = 10;
 
-	GAMECLIENT.visual_settings.distribution[14] = distribution[GD_GRAIN].percent_buildings[BLD_SAWMILL] = 8;
-	GAMECLIENT.visual_settings.distribution[15] = distribution[GD_GRAIN].percent_buildings[BLD_CHARBURNER] = 3;
+	GAMECLIENT.visual_settings.distribution[14] = distribution[GD_WOOD].percent_buildings[BLD_SAWMILL] = 8;
+	GAMECLIENT.visual_settings.distribution[15] = distribution[GD_WOOD].percent_buildings[BLD_CHARBURNER] = 3;
 
 	GAMECLIENT.visual_settings.distribution[16] = distribution[GD_BOARDS].percent_buildings[BLD_HEADQUARTERS] = 10;
 	GAMECLIENT.visual_settings.distribution[17] = distribution[GD_BOARDS].percent_buildings[BLD_METALWORKS] = 4;
@@ -465,20 +465,20 @@ void GameClientPlayer::NewRoad(RoadSegment * const rs)
 	// Alle StraÃen müssen nun gucken, ob sie einen Weg zu einem Warehouse finden
 	FindWarehouseForAllRoads();
 
-	// Alle StraÃen müssen gucken, ob sie einen Esel bekommen kÃ¶nnen
+	// Alle StraÃen müssen gucken, ob sie einen Esel bekommen können
 	for(std::list<RoadSegment*>::iterator it = roads.begin();it!=roads.end();++it)
 		(*it)->TryGetDonkey();
 
 	// Alle Arbeitsplätze müssen nun gucken, ob sie einen Weg zu einem Lagerhaus mit entsprechender Arbeitskraft finden
 	FindWarehouseForAllJobs(JOB_NOTHING);
 
-	// Alle Baustellen müssen nun gucken, ob sie ihr benÃ¶tigtes Baumaterial bekommen (evtl war vorher die StraÃe zum Lagerhaus unterbrochen
+	// Alle Baustellen müssen nun gucken, ob sie ihr benötigtes Baumaterial bekommen (evtl war vorher die StraÃe zum Lagerhaus unterbrochen
 	FindMaterialForBuildingSites();
 
 	// Alle Lost-Wares müssen gucken, ob sie ein Lagerhaus finden
 	FindClientForLostWares();
 
-	// Alle Militärgebäude müssen ihre Truppen überprüfen und kÃ¶nnen nun ggf. neue bestellen
+	// Alle Militärgebäude müssen ihre Truppen überprüfen und können nun ggf. neue bestellen
 	// und müssen prüfen, ob sie evtl Gold bekommen
 	for(std::list<nobMilitary*>::iterator it = military_buildings.begin();it!=military_buildings.end();++it)
 	{
@@ -503,7 +503,7 @@ void GameClientPlayer::FindClientForLostWares()
 
 void GameClientPlayer::RoadDestroyed()
 {
-	// Alle Waren, die an Flagge liegen und in Lagerhäusern, müssen gucken, ob sie ihr Ziel noch erreichen kÃ¶nnen, jetzt wo eine StraÃe fehlt
+	// Alle Waren, die an Flagge liegen und in Lagerhäusern, müssen gucken, ob sie ihr Ziel noch erreichen können, jetzt wo eine StraÃe fehlt
 	for(std::list<Ware*>::iterator it = ware_list.begin(); it!=ware_list.end(); )
 	{
 		if((*it)->LieAtFlag())
@@ -651,7 +651,7 @@ void GameClientPlayer::RecalcDistributionOfWare(const GoodType ware)
 		// Distanz zwischen zwei gleichen Gebäuden
 		float dist = float(goal_count) / float(it->count);
 
-		// MÃ¶glichst gleichmäÃige Verteilung der Gebäude auf das Array berechnen
+		// Möglichst gleichmäÃige Verteilung der Gebäude auf das Array berechnen
 		for(unsigned char i = 0; i < it->count; ++i, position = std::fmod(position + dist, float(goal_count)) )
 		{
 			for(pos = unsigned(position + .5f); distribution[ware].goals[pos] != 0; pos = (pos + 1) % goal_count);
@@ -787,7 +787,7 @@ nofCarrier * GameClientPlayer::OrderDonkey(RoadSegment * road)
 
 RoadSegment * GameClientPlayer::FindRoadForDonkey(noRoadNode * start,noRoadNode ** goal)
 {
-	// Bisher hÃ¶chste Trägerproduktivität und die entsprechende StraÃe dazu
+	// Bisher höchste Trägerproduktivität und die entsprechende StraÃe dazu
 	unsigned best_productivity = 0;
 	RoadSegment * best_road = 0;
 	// Beste Flagge dieser StraÃe
@@ -895,7 +895,7 @@ noBaseBuilding * GameClientPlayer::FindClientForWare(Ware * ware)
 	{
 		unsigned way_points,points;
 
-		// BLD_HEADQUARTERS sind Baustellen!!, da HQs ja sowieso nicht gebaut werden kÃ¶nnen
+		// BLD_HEADQUARTERS sind Baustellen!!, da HQs ja sowieso nicht gebaut werden können
 		if(*it == BLD_HEADQUARTERS)
 		{
 			// Bei Baustellen die Extraliste abfragen
@@ -1289,7 +1289,7 @@ void GameClientPlayer::CallFlagWorker(const unsigned short x, const unsigned sho
 
 void GameClientPlayer::FlagDestroyed(noFlag * flag)
 {
-	// Alle durchgehen und ggf. sagen, dass sie keine Flagge mehr haben, wenn das ihre Flagge war, die zerstÃ¶rt wurde
+	// Alle durchgehen und ggf. sagen, dass sie keine Flagge mehr haben, wenn das ihre Flagge war, die zerstört wurde
 	for(std::list<nofFlagWorker*>::iterator it = flagworkers.begin();it!=flagworkers.end();)
 	{
 		if((*it)->GetFlag() == flag)
@@ -1515,7 +1515,7 @@ void GameClientPlayer::StatisticStep()
 	for (unsigned int i=0; i<WARE_TYPES_COUNT; ++i)
 		statisticCurrentData[STAT_MERCHANDISE] += global_inventory.goods[i];
 
-	// BevÃ¶lkerung aus der Inventur zählen
+	// Bevölkerung aus der Inventur zählen
 	statisticCurrentData[STAT_INHABITANTS] = 0;
 	for (unsigned int i=0; i<JOB_TYPES_COUNT; ++i)
 		statisticCurrentData[STAT_INHABITANTS] += global_inventory.people[i];
@@ -1613,7 +1613,7 @@ void GameClientPlayer::AcceptPact(const unsigned id, const PactType pt, const un
 		GameClient::inst().GetPlayer(other_player)->MakePact(pt,playerid,pacts[other_player][pt].duration);
 
 		// Besetzung der Militärgebäude der jeweiligen Spieler überprüfen, da ja jetzt neue Feinde oder neue 
-		// Verbündete sich in Grenznähe befinden kÃ¶nnten
+		// Verbündete sich in Grenznähe befinden könnten
 		this->RegulateAllTroops();
 		GameClient::inst().GetPlayer(other_player)->RecalcMilitaryFlags();
 
@@ -1680,20 +1680,20 @@ unsigned GameClientPlayer::GetRemainingPactTime(const PactType pt, const unsigne
 	return 0;
 }
 
-/// Gibt Einverständnis, dass dieser Spieler den Pakt auflÃ¶sen will
+/// Gibt Einverständnis, dass dieser Spieler den Pakt auflösen will
 /// Falls dieser Spieler einen Bündnisvorschlag gemacht hat, wird dieser dagegen zurückgenommen
 void GameClientPlayer::CancelPact(const PactType pt, const unsigned char other_player)
 {
 	// Besteht bereits ein Bündnis?
 	if(pacts[other_player][pt].accepted)
 	{
-		// Vermerken, dass der Spieler das Bündnis auflÃ¶sen will
+		// Vermerken, dass der Spieler das Bündnis auflösen will
 		pacts[other_player][pt].want_cancel = true;
 
-		// Will der andere Spieler das Bündnis auch auflÃ¶sen?
+		// Will der andere Spieler das Bündnis auch auflösen?
 		if(GameClient::inst().GetPlayer(other_player)->pacts[playerid][pt].want_cancel)
 		{
-			// Dann wird das Bündnis aufgelÃ¶st
+			// Dann wird das Bündnis aufgelöst
 			pacts[other_player][pt].accepted = false;
 			pacts[other_player][pt].duration = 0;
 			pacts[other_player][pt].want_cancel = false;
@@ -1980,7 +1980,7 @@ unsigned GameClientPlayer::GetShipsToHarbor(nobHarborBuilding * hb) const
 }
 
 
-/// Gibt der Wirtschaft Bescheid, dass ein Hafen zerstÃ¶rt wurde
+/// Gibt der Wirtschaft Bescheid, dass ein Hafen zerstört wurde
 void GameClientPlayer::HarborDestroyed(nobHarborBuilding * hb)
 {
 	// Schiffen Bescheid sagen
@@ -2052,7 +2052,7 @@ void GameClientPlayer::TestForEmergencyProgramm()
 	unsigned woodcutter = buildings[BLD_WOODCUTTER-10].size();
 	unsigned sawmills = buildings[BLD_SAWMILL-10].size();
 
-	// Wenn nÃ¶tig, Notfallprogramm auslÃ¶sen
+	// Wenn nötig, Notfallprogramm auslösen
 	if ((boards <= 10 || stones <= 10) && (woodcutter == 0 || sawmills == 0) && (!isDefeated()))
 	{
 		if (!emergency)

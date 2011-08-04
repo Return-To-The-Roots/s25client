@@ -1,4 +1,4 @@
-// $Id: GameClientPlayer.h 7213 2011-05-10 17:57:02Z jh $
+// $Id: GameClientPlayer.h 7334 2011-08-04 10:37:07Z FloSoft $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -123,7 +123,7 @@ private:
 		unsigned duration;
 		/// Startzeitpunkt (in GF)
 		unsigned start;
-		/// Will dieser Spieler (also der this-Pointer) diesen Vertrag auflÃ¶sen?
+		/// Will dieser Spieler (also der this-Pointer) diesen Vertrag auflösen?
 		bool want_cancel;
 
 		Pact() : accepted(false), duration(0), start(0), want_cancel(false) {}
@@ -270,7 +270,7 @@ public:
 
 
 	/// Gibt Priorität der Baustelle zurück (entscheidet selbständig, welche Reihenfolge usw)
-	/// je kleiner die Rückgabe, destro grÃ¶Ãer die Priorität!
+	/// je kleiner die Rückgabe, destro gröÃer die Priorität!
 	unsigned GetBuidingSitePriority(const noBuildingSite * building_site);
 
 	/// Berechnet die Verteilung der Waren auf die einzelnen Gebäude neu
@@ -353,7 +353,7 @@ public:
 	void GetHarborBuildings(std::vector<nobHarborBuilding*>& harbor_buildings, const unsigned short sea_id) const;
 	/// Gibt die Anzahl der Schiffe, die einen bestimmten Hafen ansteuern, zurück
 	unsigned GetShipsToHarbor(nobHarborBuilding * hb) const;
-	/// Gibt der Wirtschaft Bescheid, dass ein Hafen zerstÃ¶rt wurde
+	/// Gibt der Wirtschaft Bescheid, dass ein Hafen zerstört wurde
 	void HarborDestroyed(nobHarborBuilding * hb);
 	/// Sucht einen Hafen in der Nähe, wo dieses Schiff seine Waren abladen kann
 	/// gibt true zurück, falls erfolgreich
@@ -374,7 +374,7 @@ public:
 	void SuggestPact(const unsigned char other_player, const PactType pt, const unsigned duration);
 	/// Akzeptiert ein bestimmtes Bündnis, welches an diesen Spieler gemacht wurde
 	void AcceptPact(const unsigned id, const PactType pt, const unsigned char other_player);
-	/// Gibt Einverständnis, dass dieser Spieler den Pakt auflÃ¶sen will
+	/// Gibt Einverständnis, dass dieser Spieler den Pakt auflösen will
 	/// Falls dieser Spieler einen Bündnisvorschlag gemacht hat, wird dieser dagegen zurückgenommen
 	void CancelPact(const PactType pt, const unsigned char other_player);
 	/// Zeigt an, ob ein Pakt besteht
