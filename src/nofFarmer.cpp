@@ -1,4 +1,4 @@
-// $Id: nofFarmer.cpp 7091 2011-03-27 10:57:38Z OLiver $
+// $Id: nofFarmer.cpp 7335 2011-08-04 10:46:48Z FloSoft $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -206,7 +206,7 @@ nofFarmhand::PointQuality nofFarmer::GetPointQuality(const MapCoord x, const Map
 		}
 
 		// Nicht direkt neben den Bauernhof pflanzen!
-		if(x == workplace->GetX()+1)
+		if(x == workplace->GetX()+1 && y == workplace->GetY())
 			return PQ_NOTPOSSIBLE;
 
 		return PQ_CLASS2;
