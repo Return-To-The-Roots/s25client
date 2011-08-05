@@ -1,4 +1,4 @@
-// $Id: GameWorld.h 7327 2011-08-02 15:34:57Z jh $
+// $Id: GameWorld.h 7342 2011-08-05 23:23:18Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -336,7 +336,7 @@ public:
 									unsigned char * first_dir, Point<MapCoord> * next_harbor, const RoadSegment * const forbidden, const bool record = true) const;
 	/// Findet einen Weg für Figuren
 	unsigned char FindHumanPath(const MapCoord x_start,const MapCoord y_start,
-		  const MapCoord x_dest, const MapCoord y_dest, const unsigned max_route = 0xFFFFFFFF, const bool random_route = false, unsigned *length = NULL) const;
+		  const MapCoord x_dest, const MapCoord y_dest, const unsigned max_route = 0xFFFFFFFF, const bool random_route = false, unsigned *length = NULL, const bool record = true) const;
 	/// Wegfindung für Schiffe auf dem Wasser
 	bool FindShipPath(const MapCoord x_start,const MapCoord y_start, const MapCoord x_dest, const MapCoord y_dest, std::vector<unsigned char> * route, unsigned * length, const unsigned max_length = 200,
 								 CrossBorders * cb = NULL);

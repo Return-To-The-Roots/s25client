@@ -1,4 +1,4 @@
-// $Id: Pathfinding.cpp 7328 2011-08-02 15:41:32Z jh $
+// $Id: Pathfinding.cpp 7342 2011-08-05 23:23:18Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -631,7 +631,7 @@ bool IsPointToDestOK_ShipPath(const GameWorldBase& gwb, const MapCoord x, const 
 
 /// Findet einen Weg für Figuren
 unsigned char GameWorldBase::FindHumanPath(const MapCoord x_start,const MapCoord y_start,
-			const MapCoord x_dest, const MapCoord y_dest, const unsigned max_route, const bool random_route, unsigned *length) const
+			const MapCoord x_dest, const MapCoord y_dest, const unsigned max_route, const bool random_route, unsigned *length, const bool record) const
 {
 	// Aus Replay lesen?
 	if(GameClient::inst().ArePathfindingResultsAvailable() && !random_route)
@@ -643,7 +643,7 @@ unsigned char GameWorldBase::FindHumanPath(const MapCoord x_start,const MapCoord
 	
 	unsigned char first_dir = 0xFF;
 	FindFreePath(x_start,y_start,x_dest,y_dest,random_route,max_route,NULL,length,&first_dir,IsPointOK_HumanPath,
-		IsPointToDestOK_HumanPath,NULL,true);
+		IsPointToDestOK_HumanPath,NULL,record);
 		
 	if(!random_route)
 	GameClient::inst().AddPathfindingResult(first_dir,length,NULL);	

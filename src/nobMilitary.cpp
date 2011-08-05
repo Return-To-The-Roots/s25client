@@ -1,4 +1,4 @@
-// $Id: nobMilitary.cpp 7096 2011-03-27 20:17:55Z OLiver $
+// $Id: nobMilitary.cpp 7342 2011-08-05 23:23:18Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -734,7 +734,7 @@ unsigned nobMilitary::GetSoldiersForAttack(const MapCoord dest_x, const MapCoord
 	}
 
 	// und auch der Weg zu Fuß darf dann nicht so weit sein, wenn das alles bestanden ist, können wir ihn nehmen..
-	if(soldiers_count && gwg->FindHumanPath(x,y,dest_x,dest_y,MAX_ATTACKING_RUN_DISTANCE,false) != 0xFF)
+	if(soldiers_count && gwg->FindHumanPath(x,y,dest_x,dest_y,MAX_ATTACKING_RUN_DISTANCE,false,false) != 0xFF)
 		// Soldaten davon nehmen
 		return soldiers_count;
 	else
@@ -1137,7 +1137,7 @@ bool nobMilitary::IsDemolitionAllowed() const
 			if(aggressors.size())
 				return false;
 		} break;
-	case 3: // near frontiers
+	case 2: // near frontiers
 		{
 			// Prüfen, ob es in Grenznähe steht
 			if(frontier_distance == 3)

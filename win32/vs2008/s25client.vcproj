@@ -2046,7 +2046,15 @@
 						>
 					</File>
 					<File
+						RelativePath="..\..\src\AddonAIDebugWindow.h"
+						>
+					</File>
+					<File
 						RelativePath="..\..\src\AddonChangeGoldDeposits.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\AddonCharburner.h"
 						>
 					</File>
 					<File
@@ -2055,6 +2063,10 @@
 					</File>
 					<File
 						RelativePath="..\..\src\AddonDefenderBehavior.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\AddonDemolitionProhibition.h"
 						>
 					</File>
 					<File
@@ -2075,6 +2087,10 @@
 					</File>
 					<File
 						RelativePath="..\..\src\AddonMaxWaterwayLength.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\AddonNoCoinsDefault.h"
 						>
 					</File>
 					<File
