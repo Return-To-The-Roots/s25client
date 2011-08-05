@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 7214 2011-05-10 18:10:11Z jh $
+// $Id: AIPlayerJH.cpp 7340 2011-08-05 20:17:25Z jh $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -957,7 +957,7 @@ void AIPlayerJH::HandleExpedition(const Coords& coords)
 				if (aii->IsExplorationDirectionPossible(coords.x, coords.y, ship->GetCurrentHarbor(), i%6))
 				{
 					aii->TravelToNextSpot(i%6, ship);
-					break;
+					return;
 				}
 			}
 
