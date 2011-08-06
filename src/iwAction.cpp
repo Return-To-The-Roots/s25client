@@ -1,4 +1,4 @@
-// $Id: iwAction.cpp 7096 2011-03-27 20:17:55Z OLiver $
+// $Id: iwAction.cpp 7343 2011-08-06 08:41:20Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -636,13 +636,13 @@ void iwAction::Msg_ButtonClick_TabFlag(const unsigned int ctrl_id)
 		} break;
 	case 3: // Flagge abreißen
 		{
+			NodalObjectType nop = (gwv->GetNO(gwv->GetXA(selected_x,selected_y,1),gwv->GetYA(selected_x,selected_y,1)))->GetType() ;
 			// Haben wir ne Baustelle/Gebäude dran?
-			if(gwv->GetNO(selected_x-!(selected_y&1), selected_y-1)->GetType() == NOP_BUILDING ||
-			   gwv->GetNO(selected_x-!(selected_y&1), selected_y-1)->GetType() == NOP_BUILDINGSITE)
+			if(nop == NOP_BUILDING || nop == NOP_BUILDINGSITE)
 			{
 				// Abreißen?
 				Close();
-				noBaseBuilding * building = gwv->GetSpecObj<noBaseBuilding>(selected_x-!(selected_y&1), selected_y-1);
+				noBaseBuilding * building = gwv->GetSpecObj<noBaseBuilding>(gwv->GetXA(selected_x,selected_y,1),gwv->GetYA(selected_x,selected_y,1));
 
 				// Militärgebäude?
 				if(building->GetGOT() == GOT_NOB_MILITARY)
