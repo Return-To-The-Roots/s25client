@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 7340 2011-08-05 20:17:25Z jh $
+// $Id: AIPlayerJH.cpp 7344 2011-08-06 13:00:51Z jh $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1023,7 +1023,7 @@ void AIPlayerJH::HandleShipBuilt(const Coords& coords)
 	{
 		for (std::list<nobUsual *>::const_iterator it = aii->GetBuildings(BLD_SHIPYARD).begin(); it != aii->GetBuildings(BLD_SHIPYARD).end(); it++)
 		{
-			(*it)->StopProduction();
+			aii->StopProduction((*it)->GetX(), (*it)->GetY());
 		}
 	}
 }
