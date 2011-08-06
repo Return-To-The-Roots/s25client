@@ -1,3 +1,300 @@
+s25rttr (20110806-7345.78) karmic; urgency=low
+
+  * Automatic Jenkins Build 78
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sat, 06 Aug 2011 19:36:30 +0200
+
+s25rttr (20110806-7345) any; urgency=low
+
+  * Fix missing NULL in nobMilitary::GetSoldiersForAttack
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sat, 06 Aug 2011 16:52:00 +0200
+
+s25rttr (20110806-7344) any; urgency=low
+
+  * Fix AI using wrong method, causing async when 6 ships are built.
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sat, 06 Aug 2011 13:00:00 +0200
+
+s25rttr (20110806-7343) any; urgency=low
+
+  * Fixed #792596
+
+ -- OLiver Siebert <oliver@siedler25.org>  Sat, 06 Aug 2011 08:41:00 +0200
+
+s25rttr (20110806-7342.77) karmic; urgency=low
+
+  * Automatic Jenkins Build 77
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sat, 06 Aug 2011 01:32:10 +0200
+
+s25rttr (20110805-7342) any; urgency=low
+
+  * side effect in GetSoldiersForAttack fixed, quick'n dirty
+
+ -- OLiver Siebert <oliver@siedler25.org>  Fri, 05 Aug 2011 23:23:00 +0200
+
+s25rttr (20110806-7341.76) karmic; urgency=low
+
+  * Automatic Jenkins Build 76
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sat, 06 Aug 2011 01:05:29 +0200
+
+s25rttr (20110806-7341) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sat, 06 Aug 2011 00:00:00 +0200
+
+s25rttr (20110805-7340) any; urgency=low
+
+  * Fix: AI did not start sea expeditions correctly.
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Fri, 05 Aug 2011 20:17:00 +0200
+
+s25rttr (20110805-7339.75) karmic; urgency=low
+
+  * Automatic Jenkins Build 75
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Fri, 05 Aug 2011 01:10:43 +0200
+
+s25rttr (20110805-7339) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Fri, 05 Aug 2011 00:00:00 +0200
+
+s25rttr (20110804-7338) any; urgency=low
+
+  * direct wood supply without the distribution not necessary
+
+ -- OLiver Siebert <oliver@siedler25.org>  Thu, 04 Aug 2011 20:17:00 +0200
+
+s25rttr (20110804-7337) any; urgency=low
+
+  * Savegameversion zurück ...
+
+ -- Florian Doersch <flosoft@siedler25.org>  Thu, 04 Aug 2011 11:27:00 +0200
+
+s25rttr (20110804-7336) any; urgency=low
+
+  * Savegame & Replayversion erhöht
+
+ -- Florian Doersch <flosoft@siedler25.org>  Thu, 04 Aug 2011 11:25:00 +0200
+
+s25rttr (20110804-7335.74) karmic; urgency=low
+
+  * Automatic Jenkins Build 74
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Thu, 04 Aug 2011 13:18:30 +0200
+
+s25rttr (20110804-7335) any; urgency=low
+
+  * Bug #820016: Fix 2
+
+ -- Florian Doersch <flosoft@siedler25.org>  Thu, 04 Aug 2011 10:46:00 +0200
+
+s25rttr (20110804-7334) any; urgency=low
+
+  * fixed GD_GRAIN/GD_WOOD copy&paste-bug und ein paar UTF-8 fixes
+
+ -- Florian Doersch <flosoft@siedler25.org>  Thu, 04 Aug 2011 10:37:00 +0200
+
+s25rttr (20110804-7333.73) karmic; urgency=low
+
+  * Automatic Jenkins Build 73
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Thu, 04 Aug 2011 01:06:57 +0200
+
+s25rttr (20110804-7333.72) karmic; urgency=low
+
+  * Automatic Jenkins Build 72
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Thu, 04 Aug 2011 01:05:18 +0200
+
+s25rttr (20110804-7333) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Thu, 04 Aug 2011 00:00:00 +0200
+
+s25rttr (20110803-7332) any; urgency=low
+
+  * added callgrind (patch by Maqs)
+
+ -- Florian Doersch <flosoft@siedler25.org>  Wed, 03 Aug 2011 11:00:00 +0200
+
+s25rttr (20110802-7330.71) karmic; urgency=low
+
+  * Automatic Jenkins Build 71
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 02 Aug 2011 19:01:55 +0200
+
+s25rttr (20110802-7330) any; urgency=low
+
+  * shit typo ...
+
+ -- Florian Doersch <flosoft@siedler25.org>  Tue, 02 Aug 2011 16:58:00 +0200
+
+s25rttr (20110802-7329.70) karmic; urgency=low
+
+  * Automatic Jenkins Build 70
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 02 Aug 2011 18:57:40 +0200
+
+s25rttr (20110802-7329) any; urgency=low
+
+  * hard link fix
+
+ -- Florian Doersch <flosoft@siedler25.org>  Tue, 02 Aug 2011 16:55:00 +0200
+
+s25rttr (20110802-7328.69) karmic; urgency=low
+
+  * Automatic Jenkins Build 69
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 02 Aug 2011 18:51:19 +0200
+
+s25rttr (20110802-7328.68) karmic; urgency=low
+
+  * Automatic Jenkins Build 68
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 02 Aug 2011 17:50:21 +0200
+
+s25rttr (20110802-7328) any; urgency=low
+
+  * - Precalucated distance for PathfindingPoint -> fewer calls to
+    CalcDistance
+    - Removed clean_list on FindFreePath (now same method as in
+    FindHumanPathOnRoads)
+    (patch by Maqs)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Tue, 02 Aug 2011 15:41:00 +0200
+
+s25rttr (20110802-7327) any; urgency=low
+
+  * Rewrite of GameWorld::CalcDistance to increase performance.
+    (patch by Maqs)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Tue, 02 Aug 2011 15:34:00 +0200
+
+s25rttr (20110802-7326.67) karmic; urgency=low
+
+  * Automatic Jenkins Build 67
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 02 Aug 2011 12:39:05 +0200
+
+s25rttr (20110802-7326) any; urgency=low
+
+  * patch rückgängig
+
+ -- Florian Doersch <flosoft@siedler25.org>  Tue, 02 Aug 2011 10:32:00 +0200
+
+s25rttr (20110802-7325.66) karmic; urgency=low
+
+  * Automatic Jenkins Build 66
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 02 Aug 2011 12:23:47 +0200
+
+s25rttr (20110802-7325) any; urgency=low
+
+  * calcdistance.patch von Maqs
+
+ -- Florian Doersch <flosoft@siedler25.org>  Tue, 02 Aug 2011 10:05:00 +0200
+
+s25rttr (20110801-7323.65) karmic; urgency=low
+
+  * Automatic Jenkins Build 65
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Mon, 01 Aug 2011 18:40:41 +0200
+
+s25rttr (20110801-7323) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Mon, 01 Aug 2011 00:00:00 +0200
+
+s25rttr (20110731-7322.64) karmic; urgency=low
+
+  * Automatic Jenkins Build 64
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sun, 31 Jul 2011 19:48:14 +0200
+
+s25rttr (20110731-7322.63) karmic; urgency=low
+
+  * Automatic Jenkins Build 63
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sun, 31 Jul 2011 19:35:04 +0200
+
+s25rttr (20110731-7322.62) karmic; urgency=low
+
+  * Automatic Jenkins Build 62
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sun, 31 Jul 2011 18:48:05 +0200
+
+s25rttr (20110731-7322) any; urgency=low
+
+  * Switch order of FindPathForWareOnRoads and CalcDistributionPoints
+    in GameClientPlayer::FindClientForWare to avoid useless route
+    calculations (patch by Maqs)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sun, 31 Jul 2011 16:34:00 +0200
+
+s25rttr (20110731-7321) any; urgency=low
+
+  * Avoid recalculation of routes in nofCarrier::Walked when already
+    calculated in nofCarrier::WantInBuilding (patch by Maqs)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sun, 31 Jul 2011 16:29:00 +0200
+
+s25rttr (20110731-7320) any; urgency=low
+
+  * Changes behaviour of 'B' key to the original one - jump between
+    the last two views. (patch by Maqs)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sun, 31 Jul 2011 16:19:00 +0200
+
+s25rttr (20110731-7319) any; urgency=low
+
+  * Yes, I'm stupid. (Added explicit names again)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sun, 31 Jul 2011 14:18:00 +0200
+
+s25rttr (20110731-7318) any; urgency=low
+
+  * - Moved creation of openlist_container outside the routing-method
+    -> no memory allocation at each call
+    - Replaced "visited"-bool in pf_nodes with an unsigned counter,
+    so we don't have to clear the pf_nodes at every call, but only
+    every 2^32. call
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sun, 31 Jul 2011 14:16:00 +0200
+
+s25rttr (20110731-7317.61) karmic; urgency=low
+
+  * Automatic Jenkins Build 61
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sun, 31 Jul 2011 15:38:19 +0200
+
+s25rttr (20110731-7317) any; urgency=low
+
+  * Added explicit name for container and comparator
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sun, 31 Jul 2011 13:27:00 +0200
+
+s25rttr (20110731-7316) any; urgency=low
+
+  * Replaced std::set with std::priority_queue-based structure in
+    FindPathOnRoads. Please test for bugs and performace (in
+    comparison to last nightly)!
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sun, 31 Jul 2011 12:14:00 +0200
+
+s25rttr (20110716-7300) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 16 Jul 2011 22:00:00 +0200
+
 s25rttr (20110713-7296.60) karmic; urgency=low
 
   * Automatic Jenkins Build 60
