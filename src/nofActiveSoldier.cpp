@@ -1,4 +1,4 @@
-// $Id: nofActiveSoldier.cpp 7091 2011-03-27 10:57:38Z OLiver $
+// $Id: nofActiveSoldier.cpp 7348 2011-08-07 13:17:05Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -359,7 +359,7 @@ void nofActiveSoldier::MeetingEnemy()
 		{
 			// Is the fighting point still valid (could be another fight there already e.g.)?
 			// And the enemy still on the way?
-			if (!gwg->ValidPointForFighting(x, y) || !(enemy->GetState() == STATE_MEETENEMY))
+			if (!gwg->ValidPointForFighting(x, y, true) || !(enemy->GetState() == STATE_MEETENEMY))
 			{
 				// No
 				// Abort the whole fighting fun with the enemy
@@ -455,7 +455,7 @@ bool nofActiveSoldier::GetFightSpotNear(nofActiveSoldier * other, Point<MapCoord
 
 
 	// Test Middle point first
-	if(gwg->ValidPointForFighting(middle.x,middle.y,NULL)
+	if(gwg->ValidPointForFighting(middle.x,middle.y,false,NULL)
 		&& (GetPos() == middle || gwg->FindHumanPath(x,y,middle.x,middle.y,MEET_FOR_FIGHT_DISTANCE*2,false,NULL) != 0xff)
 		&& (other->GetPos() == middle || gwg->FindHumanPath(other->GetX(),other->GetY(),middle.x,middle.y,MEET_FOR_FIGHT_DISTANCE*2,false,NULL) != 0xff))
 	{
@@ -477,7 +477,7 @@ bool nofActiveSoldier::GetFightSpotNear(nofActiveSoldier * other, Point<MapCoord
 			for(MapCoord r2=0;r2<r;gwg->GetPointA(tx2,ty2,i%6),++r2)
 			{
 				// Did we find a good spot?
-				if(gwg->ValidPointForFighting(tx2,ty2,NULL)
+				if(gwg->ValidPointForFighting(tx2,ty2,false,NULL)
 					&& gwg->FindHumanPath(x,y,tx2,ty2,MEET_FOR_FIGHT_DISTANCE*2,true,NULL) != 0xff
 					&& gwg->FindHumanPath(other->GetX(),other->GetY(),tx2,ty2,MEET_FOR_FIGHT_DISTANCE*2,true,NULL) != 0xff)
 

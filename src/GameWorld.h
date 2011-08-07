@@ -1,4 +1,4 @@
-// $Id: GameWorld.h 7342 2011-08-05 23:23:18Z OLiver $
+// $Id: GameWorld.h 7348 2011-08-07 13:17:05Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -702,7 +702,7 @@ public:
 	/// Ist der Punkt ein geeigneter Platz zum Warten vor dem Militärgebäude
 	bool ValidWaitingAroundBuildingPoint(const MapCoord x, const MapCoord y, nofAttacker * attacker);
 	/// Geeigneter Punkt für Kämpfe?
-	bool ValidPointForFighting(const MapCoord x, const MapCoord y, nofActiveSoldier *exception = NULL);
+	bool ValidPointForFighting(const MapCoord x, const MapCoord y, const bool avoid_military_building_flags, nofActiveSoldier *exception = NULL);
 
 	/// Berechnet die Sichtbarkeiten neu um einen Punkt mit radius
 	void RecalcVisibilitiesAroundPoint(const MapCoord x, const MapCoord y, const MapCoord radius, const unsigned char player, const noBaseBuilding * const exception);

@@ -1,4 +1,4 @@
-// $Id: GameWorldGame.cpp 7091 2011-03-27 10:57:38Z OLiver $
+// $Id: GameWorldGame.cpp 7348 2011-08-07 13:17:05Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1208,8 +1208,16 @@ bool GameWorldGame::ValidWaitingAroundBuildingPoint(const MapCoord x, const MapC
 	return true;
 }
 
-bool GameWorldGame::ValidPointForFighting(const MapCoord x, const MapCoord y, nofActiveSoldier *exception)
+bool GameWorldGame::ValidPointForFighting(const MapCoord x, const MapCoord y, const bool avoid_military_building_flags, nofActiveSoldier *exception)
 {
+	// Is this a flag of a military building?
+	if(avoid_military_building_flags && GetNO(x,y)->GetGOT() == GOT_FLAG)
+	{
+		GO_Type got = GetNO(GetXA(x,y,1),GetYA(x,y,1))->GetGOT();
+		if(got == GOT_NOB_MILITARY || got == GOT_NOB_HARBORBUILDING || got == GOT_NOB_HQ)
+			return false;
+	}
+	
 	// Objekte, die sich hier befinden durchgehen
 	for(list<noBase*>::iterator it = GetFigures(x,y).begin();it.valid();++it)
 	{

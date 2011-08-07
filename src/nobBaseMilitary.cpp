@@ -1,4 +1,4 @@
-// $Id: nobBaseMilitary.cpp 7091 2011-03-27 10:57:38Z OLiver $
+// $Id: nobBaseMilitary.cpp 7348 2011-08-07 13:17:05Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -213,7 +213,7 @@ void nobBaseMilitary::FindAnAttackerPlace(unsigned short &ret_x,unsigned short &
 	// Eigenommen werden können natürlich nur richtige Militärgebäude
 	bool capturing = (type >= BLD_BARRACKS && type <= BLD_FORTRESS)?(static_cast<nobMilitary*>(this)->IsCaptured()):false;
 
-	if(gwg->ValidPointForFighting(flag_x,flag_y) && !capturing)
+	if(gwg->ValidPointForFighting(flag_x,flag_y,false) && !capturing)
 	{
 		ret_x = flag_x;
 		ret_y = flag_y;
