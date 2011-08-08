@@ -1,5 +1,5 @@
 ################################################################################
-### $Id: CMakeLists.txt 7164 2011-04-13 16:17:09Z FloSoft $
+### $Id: CMakeLists.txt 7351 2011-08-08 20:47:37Z OLiver $
 ################################################################################
 
 INCLUDE(FindBZip2)
@@ -116,6 +116,7 @@ SET(SOURCES_INGAMEWINDOWS
 	iwStatistics.cpp                    iwStatistics.h
 	iwTextfile.cpp                      iwTextfile.h
 	iwTools.cpp                         iwTools.h
+	iwTrade.cpp			    iwTrade.h
 	iwTransport.cpp                     iwTransport.h
 	iwWares.cpp                         iwWares.h
 	iwMerchandiseStatistics.cpp         iwMerchandiseStatistics.h

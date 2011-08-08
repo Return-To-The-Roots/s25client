@@ -1,4 +1,4 @@
-// $Id: ctrlComboBox.cpp 7091 2011-03-27 10:57:38Z OLiver $
+// $Id: ctrlComboBox.cpp 7351 2011-08-08 20:47:37Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -265,7 +265,6 @@ void ctrlComboBox::Msg_ListSelectItem(const unsigned int ctrl_id, const unsigned
 	// ist in der Liste überhaupt was drin?
 	if(list->GetLineCount() > 0)
 	{
-		list->SetSelection(selection);
 
 		this->selection = selection;
 

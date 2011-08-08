@@ -1,4 +1,4 @@
-// $Id: ctrlList.h 6582 2010-07-16 11:23:35Z FloSoft $
+// $Id: ctrlList.h 7351 2011-08-08 20:47:37Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -51,7 +51,11 @@ public:
 
 	unsigned short GetLineCount(void) const { return static_cast<unsigned short>(lines.size()); }
 	unsigned short GetSelection(void) const { return static_cast<unsigned short>(selection); };
-	void SetSelection(unsigned short selection) { if(selection < lines.size()) this->selection = selection; }
+	void SetSelection(unsigned short selection) { if(selection < lines.size()) { 
+		this->selection = selection;
+		if(parent) parent->Msg_ListSelectItem(id,selection);
+	}
+	}
 	
 	virtual bool Msg_MouseMove(const MouseCoords& mc);
 	virtual bool Msg_LeftDown(const MouseCoords& mc);
