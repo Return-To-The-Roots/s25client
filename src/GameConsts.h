@@ -1,4 +1,4 @@
-// $Id: GameConsts.h 6582 2010-07-16 11:23:35Z FloSoft $
+// $Id: GameConsts.h 7350 2011-08-08 17:14:40Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -372,11 +372,12 @@ enum StatisticType
   STAT_MILITARY,
   STAT_GOLD,
   STAT_PRODUCTIVITY,
-  STAT_VANQUISHED
+  STAT_VANQUISHED,
+  STAT_TOURNEY
 };
 
 /// Anzahl Statistikarten
-const unsigned STAT_TYPE_COUNT = 8;
+const unsigned STAT_TYPE_COUNT = 9;
 
 /// Anzahl Warenstatistikarten
 const unsigned STAT_MERCHANDISE_TYPE_COUNT = 14;
@@ -470,5 +471,14 @@ const unsigned char SHIP_DIR = 100;
 
 /// Anzahl der Späher bei einer Erkundungs-Expedition
 const unsigned SCOUTS_EXPLORATION_EXPEDITION = 3;
+
+/// Number of "classical" objectives in a friendly match
+const unsigned OBJECTIVES_COUNT = 3;
+/// Tourney modes
+const unsigned TOURNEY_MODES_COUNT = 5;
+const unsigned TOURNEY_MODES_DURATION[TOURNEY_MODES_COUNT] =
+{
+	30,60,90,120,240
+};
 
 #endif

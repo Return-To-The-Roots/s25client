@@ -1,4 +1,4 @@
-// $Id: GameClient.cpp 7101 2011-03-28 21:35:43Z OLiver $
+// $Id: GameClient.cpp 7350 2011-08-08 17:14:40Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1892,4 +1892,11 @@ bool GameClient::ReadPathfindingResult(unsigned char *dir, unsigned * length, Po
 }
 
 
-
+/// Is Tourney mode activated (0 if not)? Returns the durations of the tourney mode in gf otherwise
+unsigned GameClient::GetTourneyModeDuration() const
+{
+	if(ggs.game_objective >= OBJECTIVES_COUNT)
+		return TOURNEY_MODES_DURATION[ggs.game_objective-OBJECTIVES_COUNT]*60*1000/framesinfo.gf_length;
+	else
+		return 0;
+}

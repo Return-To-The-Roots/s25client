@@ -1,4 +1,4 @@
-// $Id: GameClientPlayer.cpp 7338 2011-08-04 20:17:14Z OLiver $
+// $Id: GameClientPlayer.cpp 7350 2011-08-08 17:14:40Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1507,7 +1507,8 @@ void GameClientPlayer::IncreaseMerchandiseStatistic(GoodType type)
 
 }
 
-void GameClientPlayer::StatisticStep()
+/// Calculates current statistics
+void GameClientPlayer::CalcStatistics()
 {
 	// Waren aus der Inventur zählen
 	statisticCurrentData[STAT_MERCHANDISE] = 0;
@@ -1530,6 +1531,15 @@ void GameClientPlayer::StatisticStep()
 
 	// Produktivität berechnen
 	statisticCurrentData[STAT_PRODUCTIVITY] = CalcAverageProductivitiy();
+
+	// Total points for tourney games
+	statisticCurrentData[STAT_TOURNEY] = statisticCurrentData[STAT_MILITARY] 
+											+ 3*statisticCurrentData[STAT_VANQUISHED] ;
+}
+
+void GameClientPlayer::StatisticStep()
+{
+	CalcStatistics();
 
 	// 15-min-Statistik ein Feld weiterschieben
 	for (unsigned int i=0; i<STAT_TYPE_COUNT; ++i)

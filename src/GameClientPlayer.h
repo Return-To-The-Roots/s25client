@@ -1,4 +1,4 @@
-// $Id: GameClientPlayer.h 7334 2011-08-04 10:37:07Z FloSoft $
+// $Id: GameClientPlayer.h 7350 2011-08-08 17:14:40Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -401,7 +401,11 @@ public:
 
 	void IncreaseMerchandiseStatistic(GoodType type);
  
-  void StatisticStep();
+	/// Calculates current statistics
+	void CalcStatistics();
+
+
+	void StatisticStep();
   
   struct Statistic
   {

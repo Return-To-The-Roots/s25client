@@ -1,4 +1,4 @@
-// $Id: GameClient.h 7338 2011-08-04 20:17:14Z OLiver $
+// $Id: GameClient.h 7350 2011-08-08 17:14:40Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -134,6 +134,9 @@ public:
 	const std::string& GetReplayFileName() const { return replayinfo.filename; }
 	/// Wird ein Replay abgespielt?
 	bool IsReplayModeOn() const { return replay_mode; }
+
+	/// Is Tourney mode activated (0 if not)? Returns the durations of the tourney mode in gf otherwise
+	unsigned GetTourneyModeDuration() const;
 
 	void SkipGF(unsigned int gf);
 

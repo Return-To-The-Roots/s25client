@@ -1,4 +1,4 @@
-// $Id: dskHostGame.cpp 7095 2011-03-27 20:15:08Z OLiver $
+// $Id: dskHostGame.cpp 7350 2011-08-08 17:14:40Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -121,6 +121,17 @@ dskHostGame::dskHostGame() :
 	combo->AddString(_("None")); // Kein Spielziel
 	combo->AddString(_("Conquer 3/4 of map")); // Besitz 3/4 des Landes
 	combo->AddString(_("Total domination")); // Alleinherrschaft
+	// Lobby game?
+	if(LOBBYCLIENT.LoggedIn())
+	{
+		// Then add tourney modes as possible "objectives"
+		for(unsigned i = 0;i<TOURNEY_MODES_COUNT;++i)
+		{
+			char str[512];
+			sprintf (str,_("Torney: %u minutes"),TOURNEY_MODES_DURATION[i]);
+			combo->AddString(str);
+		}
+	}
 
 	// "Geschwindigkeit"
 	AddText(33, 400, 315, _("Speed:"), COLOR_YELLOW, 0, NormalFont);
