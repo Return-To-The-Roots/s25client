@@ -1,4 +1,4 @@
-// $Id: iwLobbyConnect.cpp 7350 2011-08-08 17:14:40Z OLiver $
+// $Id: iwLobbyConnect.cpp 7354 2011-08-09 20:53:15Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -212,7 +212,7 @@ void iwLobbyConnect::Msg_ButtonClick(const unsigned int ctrl_id)
 			LobbyForm(user, pass, email);
 
 			// Einloggen
-			if(LOBBYCLIENT.Login("localhost",3664, user, pass, SETTINGS.server.ipv6) == false)
+			if(LOBBYCLIENT.Login(LOADER.GetTextN("client", 0), atoi(LOADER.GetTextN("client", 1)), user, pass, SETTINGS.server.ipv6) == false)
 			{
 				SetText(_("Connection failed!"), COLOR_RED, true);
 				break;
@@ -220,9 +220,9 @@ void iwLobbyConnect::Msg_ButtonClick(const unsigned int ctrl_id)
 		} break;
 	case 8: // Registrieren
 		{
-			//WindowManager::inst().Show(new iwMsgbox(_("Error"), _("To register, you have to create a valid board account at http://forum.siedler25.org at the moment.\n"), this, MSB_OK, MSB_EXCLAMATIONRED, 0));
+			WindowManager::inst().Show(new iwMsgbox(_("Error"), _("To register, you have to create a valid board account at http://forum.siedler25.org at the moment.\n"), this, MSB_OK, MSB_EXCLAMATIONRED, 0));
 
-			
+			/*
 			// Text auf "Verbinde mit Host..." setzen und Button deaktivieren
 			SetText( _("Connecting with Host..."), COLOR_RED, false);
 
@@ -237,11 +237,11 @@ void iwLobbyConnect::Msg_ButtonClick(const unsigned int ctrl_id)
 				break; // raus
 			}
 
-			if(LOBBYCLIENT.Register("localhost",3664, user, pass, email, SETTINGS.server.ipv6) == false)
+			if(LOBBYCLIENT.Register(LOADER.GetTextN("client", 0), atoi(LOADER.GetTextN("client", 1)), user, pass, email) == false)
 			{
 				SetText(_("Connection failed!"), COLOR_RED, true);
 				break;
-			}
+			}*/
 		} break;
 	}
 }

@@ -1,4 +1,4 @@
-// $Id: GameWorld.h 7348 2011-08-07 13:17:05Z OLiver $
+// $Id: GameWorld.h 7354 2011-08-09 20:53:15Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -31,6 +31,7 @@
 #include "main.h"
 #include <vector>
 #include "GamePlayerList.h"
+#include "TradeGraph.h"
 
 class noEnvObject;
 class noGranite;
@@ -185,6 +186,9 @@ protected:
 	std::list<noBuildingSite*> harbor_building_sites_from_sea;
 
 
+	
+	
+
 public:
 	unsigned int map_size;
 
@@ -329,7 +333,7 @@ public:
 	/// Ermittelt, ob eine freie Route noch passierbar ist und gibt den Endpunkt der Route zurück
 	bool CheckFreeRoute(const MapCoord x_start,const MapCoord y_start, const std::vector<unsigned char>& route,
 		const unsigned pos, FP_Node_OK_Callback IsNodeOK, FP_Node_OK_Callback IsNodeToDestOk,
-		 MapCoord* x_dest,  MapCoord* y_dest, const void * const param = NULL);
+		 MapCoord* x_dest,  MapCoord* y_dest, const void * const param = NULL) const;
 	/// Wegfindung auf StraÃŸen - Basisroutine
 	bool FindPathOnRoads(const noRoadNode * const start, const noRoadNode * const goal,
 									const bool ware_mode, unsigned * length,
@@ -656,6 +660,15 @@ public:
 	/// Prüft, ob eine Schiffsroute noch Gültigkeit hat
 	bool CheckShipRoute(const MapCoord x_start,const MapCoord y_start, const std::vector<unsigned char>& route, const unsigned pos, 
 		 MapCoord* x_dest,  MapCoord* y_dest);
+	/// Find a route for trade caravanes
+	unsigned char FindTradePath(const Point<MapCoord> start,
+		const Point<MapCoord> dest, const unsigned char player, const unsigned max_route = 0xffffffff, const bool random_route = false,
+		 std::vector<unsigned char> * route = NULL, unsigned *length = NULL, 
+		const bool record = false) const;
+	/// Check whether trade path is still valid
+	bool CheckTradeRoute(const Point<MapCoord> start, const std::vector<unsigned char>& route, const unsigned pos, const unsigned char player,
+		 Point<MapCoord> * dest = NULL) const;
+
 
 	/// setzt den StraÃŸen-Wert an der Stelle X,Y (berichtigt).
 	void SetRoad(const MapCoord x, const MapCoord y, unsigned char dir, unsigned char type);

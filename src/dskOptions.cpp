@@ -1,4 +1,4 @@
-// $Id: dskOptions.cpp 7101 2011-03-28 21:35:43Z OLiver $
+// $Id: dskOptions.cpp 7354 2011-08-09 20:53:15Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -375,8 +375,11 @@ void dskOptions::Msg_Group_ComboSelectItem(const unsigned int group_id, const un
 	{
 	case 33: // Sprache
 		{
+			// Language changed?
+			std::string old_lang = SETTINGS.language.language;
 			SETTINGS.language.language = LANGUAGES.setLanguage(selection);
-			WindowManager::inst().Switch(new dskOptions);
+			if(SETTINGS.language.language != old_lang)
+				WindowManager::inst().Switch(new dskOptions);
 		} break;
 	case 39: // Proxy
 		{

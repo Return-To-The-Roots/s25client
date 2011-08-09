@@ -1,4 +1,4 @@
-// $Id: Pathfinding.cpp 7342 2011-08-05 23:23:18Z OLiver $
+// $Id: Pathfinding.cpp 7354 2011-08-09 20:53:15Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -530,7 +530,7 @@ bool GameWorldBase::FindPathOnRoads(const noRoadNode * const start, const noRoad
 
 /// Ermittelt, ob eine freie Route noch passierbar ist und gibt den Endpunkt der Route zurück
 bool GameWorldBase::CheckFreeRoute(const MapCoord x_start,const MapCoord y_start, const std::vector<unsigned char>& route, const unsigned pos, 
-	FP_Node_OK_Callback IsNodeOK, FP_Node_OK_Callback IsNodeToDestOk,  MapCoord* x_dest, MapCoord* y_dest, const void * const param)
+	FP_Node_OK_Callback IsNodeOK, FP_Node_OK_Callback IsNodeToDestOk,  MapCoord* x_dest, MapCoord* y_dest, const void * const param) const
 {
 	MapCoord x = x_start, y = y_start;
 
@@ -688,4 +688,56 @@ bool GameWorldGame::CheckShipRoute(const MapCoord x_start,const MapCoord y_start
 {
 	return CheckFreeRoute(x_start,y_start,route,pos,IsPointOK_ShipPath,
 		IsPointToDestOK_ShipPath,x_dest,y_dest,NULL);
+}
+
+
+
+/// Abbruch-Bedingungen für freien Pfad für Menschen
+bool IsPointOK_TradePath(const GameWorldBase& gwb, const MapCoord x, const MapCoord y, const unsigned char dir, const void *param)
+{
+	// Feld passierbar?
+	noBase::BlockingManner bm = gwb.GetNO(x,y)->GetBM();
+	if(bm != noBase::BM_NOTBLOCKING && bm != noBase::BM_TREE && bm != noBase::BM_FLAG)
+		return false;
+
+	// Not trough hostile territory?
+	unsigned char player = gwb.GetNode(x,y).owner;
+	// Ally or no player? Then ok
+	if(player == 0 || gwb.GetPlayer(*((unsigned char*)param))->IsAlly(player-1)) 
+		return true;
+	else
+		return false;
+}
+
+/// Find a route for trade caravanes
+unsigned char GameWorldGame::FindTradePath(const Point<MapCoord> start,
+	const Point<MapCoord> dest, const unsigned char player, const unsigned max_route, const bool random_route, 
+	 std::vector<unsigned char> * route, unsigned *length, 
+	const bool record) const
+{
+	// Aus Replay lesen?
+	if(GameClient::inst().ArePathfindingResultsAvailable() && !random_route)
+	{
+		unsigned char dir;
+		if(GameClient::inst().ReadPathfindingResult(&dir,length,NULL))
+			return dir;
+	}
+	
+	unsigned char first_dir = 0xFF;
+	FindFreePath(start.x,start.y,dest.x,dest.y,random_route,max_route,route,length,&first_dir,IsPointOK_TradePath,
+		IsPointToDestOK_HumanPath,&player,record);
+		
+	if(!random_route)
+		GameClient::inst().AddPathfindingResult(first_dir,length,NULL);	
+	
+	return first_dir;
+}
+
+/// Check whether trade path is still valid
+bool GameWorldGame::CheckTradeRoute(const Point<MapCoord> start, const std::vector<unsigned char>& route, 
+									const unsigned pos, const unsigned char player,
+									Point<MapCoord> * dest) const
+{
+	return CheckFreeRoute(start.x,start.y,route,pos,IsPointOK_TradePath,
+		IsPointToDestOK_HumanPath,dest ? &dest->x : NULL,dest ? &dest->y : NULL,&player);
 }

@@ -1,5 +1,5 @@
 ################################################################################
-### $Id: CMakeLists.txt 7351 2011-08-08 20:47:37Z OLiver $
+### $Id: CMakeLists.txt 7354 2011-08-09 20:53:15Z OLiver $
 ################################################################################
 
 INCLUDE(FindBZip2)
@@ -289,6 +289,7 @@ SET(SOURCES_OTHER
 										Swap.h
 	TerrainRenderer.cpp                 TerrainRenderer.h
 	TerritoryRegion.cpp                 TerritoryRegion.h
+	TradeGraph.cpp			    TradeGraph.h
 	Ware.cpp                            Ware.h
 	Window.cpp                          Window.h
 	WindowManager.cpp                   WindowManager.h
