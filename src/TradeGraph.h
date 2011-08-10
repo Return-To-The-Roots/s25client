@@ -73,7 +73,7 @@ class TradeGraph
 
 public:
 
-	TradeGraph(const unsigned char player,const GameWorldGame * const gwg) : player(player), gwg(gwg) {}
+	TradeGraph(const unsigned char player,const GameWorldGame * const gwg) : gwg(gwg), player(player) {}
 
 	/// Returns a speciefic TradeGraphNode
 	TradeGraphNode& GetNode(const Point<MapCoord> pos)
