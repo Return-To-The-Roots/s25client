@@ -1,4 +1,4 @@
-// $Id: main.cpp 7091 2011-03-27 10:57:38Z OLiver $
+// $Id: main.cpp 7358 2011-08-10 09:50:48Z FloSoft $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -159,6 +159,16 @@ int main(int argc, char *argv[])
 	// diverse dirs anlegen
 	const unsigned int dir_count = 7;
 	unsigned int dirs[dir_count] = { 94, 47, 48, 51, 85, 98, 99 }; // settingsdir muss zuerst angelegt werden (94)
+	
+#ifdef _WIN32
+	if(IsDir(GetFilePath("~/Siedler II.5 RttR")))
+		MoveFile(GetFilePath("~/Siedler II.5 RttR"), GetFilePath(FILE_PATHS[94]));
+#endif
+
+#ifdef __APPLE__
+	if(IsDir(GetFilePath("~/.s25rttr")))
+		rename(GetFilePath("~/.s25rttr"), GetFilePath(FILE_PATHS[94]));
+#endif
 
 	for(unsigned int i = 0; i < dir_count; ++i)
 	{
