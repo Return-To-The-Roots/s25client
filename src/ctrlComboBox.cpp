@@ -1,4 +1,4 @@
-// $Id: ctrlComboBox.cpp 7351 2011-08-08 20:47:37Z OLiver $
+// $Id: ctrlComboBox.cpp 7364 2011-08-10 15:07:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -263,9 +263,8 @@ void ctrlComboBox::Msg_ListSelectItem(const unsigned int ctrl_id, const unsigned
 	ctrlList *list = GetCtrl<ctrlList>(0);
 
 	// ist in der Liste überhaupt was drin?
-	if(list->GetLineCount() > 0)
+	if(selection != this->selection && list->GetLineCount() > 0)
 	{
-
 		this->selection = selection;
 
 		// Nachricht an übergeordnetes Fenster verschicken
