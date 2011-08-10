@@ -1,4 +1,4 @@
-// $Id: main.cpp 7358 2011-08-10 09:50:48Z FloSoft $
+// $Id: main.cpp 7360 2011-08-10 11:04:39Z FloSoft $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -162,12 +162,12 @@ int main(int argc, char *argv[])
 	
 #ifdef _WIN32
 	if(IsDir(GetFilePath("~/Siedler II.5 RttR")))
-		MoveFile(GetFilePath("~/Siedler II.5 RttR"), GetFilePath(FILE_PATHS[94]));
+		MoveFileA(GetFilePath("~/Siedler II.5 RttR").c_str(), GetFilePath(FILE_PATHS[94]).c_str());
 #endif
 
 #ifdef __APPLE__
 	if(IsDir(GetFilePath("~/.s25rttr")))
-		rename(GetFilePath("~/.s25rttr"), GetFilePath(FILE_PATHS[94]));
+		rename(GetFilePath("~/.s25rttr").c_str(), GetFilePath(FILE_PATHS[94]).c_str());
 #endif
 
 	for(unsigned int i = 0; i < dir_count; ++i)
