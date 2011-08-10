@@ -1,4 +1,4 @@
-// $Id: iwBuildOrder.cpp 7091 2011-03-27 10:57:38Z OLiver $
+// $Id: iwBuildOrder.cpp 7366 2011-08-10 21:28:16Z FloSoft $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -51,7 +51,6 @@ iwBuildOrder::iwBuildOrder(void)
 	// Liste füllen
 	for(unsigned char i = 0; i < 31; ++i)
 		list->AddString(_(BUILDING_NAMES[GAMECLIENT.visual_settings.build_order[i]]));
-	list->SetSelection(0);
 
 	// Nach ganz oben
 	AddImageButton(1, 250, 194, 48, 20, TC_GREY, LOADER.GetImageN("io", 215), _("Top"));
@@ -77,6 +76,8 @@ iwBuildOrder::iwBuildOrder(void)
 
 	// Absendetimer, in 2s-Abschnitten wird jeweils das ganze als Netzwerknachricht ggf. abgeschickt
 	AddTimer(11,2000);
+
+	list->SetSelection(0);
 }
 
 iwBuildOrder::~iwBuildOrder()
