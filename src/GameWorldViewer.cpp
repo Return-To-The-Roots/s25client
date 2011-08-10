@@ -1,4 +1,4 @@
-// $Id: GameWorldViewer.cpp 7320 2011-07-31 16:19:48Z jh $
+// $Id: GameWorldViewer.cpp 7359 2011-08-10 10:21:18Z FloSoft $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -611,7 +611,7 @@ void GameWorldViewer::CalcFxLx()
 	
 }
 
-// HÃ¶he wurde Verändert: TerrainRenderer Bescheid sagen, damit es entsprechend verändert werden kann
+// Höhe wurde Verändert: TerrainRenderer Bescheid sagen, damit es entsprechend verändert werden kann
 void GameWorldViewer::AltitudeChanged(const MapCoord x, const MapCoord y)
 {
 	tr.AltitudeChanged(x,y,this);

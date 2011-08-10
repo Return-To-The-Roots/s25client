@@ -1,4 +1,4 @@
-// $Id: MilitaryConsts.h 6909 2010-12-20 15:11:34Z OLiver $
+// $Id: MilitaryConsts.h 7359 2011-08-10 10:21:18Z FloSoft $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -20,14 +20,14 @@
 #ifndef MILITARY_CONSTS_H_
 #define MILITARY_CONSTS_H_
 
-/// GrÃ¶Ãe der Militärquadrate (in Knotenpunkten), in die die Welt eingeteilt wurde für Militärgebäude
+/// GröÃe der Militärquadrate (in Knotenpunkten), in die die Welt eingeteilt wurde für Militärgebäude
 const unsigned short MILITARY_SQUARE_SIZE = 20;
 
 /// Maximale Entfernungen für "nahe Militärgebäudedistanz" und "mittlere Militärgebäudedistanz"
 const unsigned MAX_MILITARY_DISTANCE_NEAR = 18;
 const unsigned MAX_MILITARY_DISTANCE_MIDDLE = 26;
 
-/// Basisangriffsreichweite (Angriff mit allen Soldaten mÃ¶glich)
+/// Basisangriffsreichweite (Angriff mit allen Soldaten möglich)
 const unsigned BASE_ATTACKING_DISTANCE = 21;
 
 /// Erweiterte Reichweite, für die jeweils ein Soldat von der Angriffsarmee abgezogen wird
@@ -66,7 +66,7 @@ const unsigned HARBOR_ALONE_RADIUS = 8;
 
 /// Fahnenpositionen bei den Militärgebäuden
 
-// Besatzungsflaggen (4 VÃ¶lker x 4 GrÃ¶Ãen x 2 X+Y) - ab 3162
+// Besatzungsflaggen (4 Völker x 4 GröÃen x 2 X+Y) - ab 3162
 const signed char TROOPS_FLAGS[4][4][2] =
 {
 	{{24,-41},{19,-41},{31,-88},{35,-67}},
@@ -97,7 +97,7 @@ const signed char TROOPS_FLAGS_HQ[4][2] =
 	{-12,-102},{-19,-94},{-18,-112},{20,-54},
 };
 
-/// Grenzflaggen (4 VÃ¶lker x 4 GrÃ¶Ãen x 2 X+Y) - ab 3162 
+/// Grenzflaggen (4 Völker x 4 GröÃen x 2 X+Y) - ab 3162 
 const signed char BORDER_FLAGS[4][4][2] =
 {
 	{{-6,-36},{7,-48},{-18,-28},{-47,-64}},
@@ -132,7 +132,7 @@ const unsigned VISUALRANGE_SHIP = 2;
 /// Sichtweite von Erkundungs-Schiffen
 const unsigned VISUALRANGE_EXPLORATION_SHIP = 12;
 
-/// BefÃ¶rderungszeit von Soldaten ( =UPGRADE_TIME + rand(UPGRADE_TIME_RANDOM) )
+/// Beförderungszeit von Soldaten ( =UPGRADE_TIME + rand(UPGRADE_TIME_RANDOM) )
 const unsigned UPGRADE_TIME = 100;
 const unsigned UPGRADE_TIME_RANDOM = 300;
 /// Genesungszeit von Soldaten in Häusern, Zeit, die gebraucht wird um sich um einen Hitpoint zu erholen

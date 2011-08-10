@@ -1,4 +1,4 @@
-// $Id: nofFarmer.cpp 7335 2011-08-04 10:46:48Z FloSoft $
+// $Id: nofFarmer.cpp 7359 2011-08-10 10:21:18Z FloSoft $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -190,7 +190,6 @@ nofFarmhand::PointQuality nofFarmer::GetPointQuality(const MapCoord x, const Map
 		}
 		if (good_terrains != 6) 
 			return PQ_NOTPOSSIBLE;
-
 
 		// Ist Platz frei?
 		NodalObjectType nop = gwg->GetNO(x,y)->GetType();

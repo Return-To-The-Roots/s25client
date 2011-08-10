@@ -1,4 +1,4 @@
-// $Id: nobHarborBuilding.h 6903 2010-12-18 21:41:50Z OLiver $
+// $Id: nobHarborBuilding.h 7359 2011-08-10 10:21:18Z FloSoft $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -143,8 +143,8 @@ public:
 	/// Schiff konnte nicht mehr kommen
 	void ShipLost(noShip * ship);
 
-	/// Abfangen, wenn ein Mann nicht mehr kommen kann --> kÃ¶nnte ein Bauarbeiter sein und
-	/// wenn wir einen benÃ¶tigen, müssen wir einen neuen bestellen
+	/// Abfangen, wenn ein Mann nicht mehr kommen kann --> könnte ein Bauarbeiter sein und
+	/// wenn wir einen benötigen, müssen wir einen neuen bestellen
 	void RemoveDependentFigure(noFigure * figure);
 
 	/// Gibt die Hafenplatz-ID zurück, auf der der Hafen steht
@@ -157,7 +157,7 @@ public:
 		/// Kosten für die Strecke in Weglänge eines einfachen Trägers
 		unsigned way_costs;
 	};
-	/// Gibt eine Liste mit mÃ¶glichen Verbindungen zurück
+	/// Gibt eine Liste mit möglichen Verbindungen zurück
 	void GetShipConnections(std::vector<ShipConnection>& connections) const;
 
 	/// Fügt einen Mensch hinzu, der mit dem Schiff irgendwo hin fahren will
@@ -168,7 +168,7 @@ public:
 	/// A ware changed its route and doesn't want to use the ship anymore
 	void WareDontWantToTravelByShip(Ware * ware);
 
-	/// Gibt Anzahl der Schiffe zurück, die noch für ausstehende Aufgaben benÃ¶tigt werden
+	/// Gibt Anzahl der Schiffe zurück, die noch für ausstehende Aufgaben benötigt werden
 	unsigned GetNeededShipsCount() const;
 	/// Gibt die Wichtigkeit an, dass ein Schiff kommen muss (0 -> keine Bedürftigkeit)
 	int GetNeedForShip(unsigned ships_coming) const;
@@ -180,7 +180,7 @@ public:
 	{
 		/// Das Gebäude selbst
 		nobMilitary * building;
-		// DazugehÃ¶riger Hafen, wo die Angreifer dann auf das Schiff warten sollen
+		// Dazugehöriger Hafen, wo die Angreifer dann auf das Schiff warten sollen
 		nobHarborBuilding * harbor;
 		/// Entfernung Hafen - anderer Hafen
 		unsigned distance;
@@ -192,7 +192,7 @@ public:
 	};
 	
 	/// Gibt die Angreifer zurück, die dieser Hafen für einen Seeangriff zur Verfügung stellen kann
-	/// defender_harbors sind dabei mÃ¶gliche Zielhäfen
+	/// defender_harbors sind dabei mögliche Zielhäfen
 	void GetAttackerBuildingsForSeaAttack(std::vector<SeaAttackerBuilding> * buildings,
 											const std::vector<unsigned>& defender_harbors);
 											

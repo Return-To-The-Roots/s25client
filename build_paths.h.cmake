@@ -15,6 +15,7 @@
 //		You can define paths here, but you should only use
 //		those definitions in DEBUG-configuration.
 #	endif // _DEBUG
+
 //	if you don't define anything here, the current working
 //	directory will be used to search the files and paths
 //	(the s25rttr-files must be in the SETTLERS II installation folder)

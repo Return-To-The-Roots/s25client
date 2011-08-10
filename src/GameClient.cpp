@@ -1,4 +1,4 @@
-// $Id: GameClient.cpp 7355 2011-08-09 20:57:11Z OLiver $
+// $Id: GameClient.cpp 7359 2011-08-10 10:21:18Z FloSoft $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -287,9 +287,9 @@ void GameClient::Stop()
 		LOG.lprintf("client state changed to stop\n");
 	}
 
-	// Nicht im Spiel --> Spieler lÃ¶schen
+	// Nicht im Spiel --> Spieler löschen
 	// (im Spiel wird das dann von ExitGame übernommen, da die Spielerdaten evtl noch für
-	// Statistiken usw. benÃ¶tigt werden
+	// Statistiken usw. benötigt werden
 	if(state != CS_GAME)
 		players.clear();
 
@@ -341,7 +341,7 @@ void GameClient::StartGame(const unsigned int random_init)
 	gw->SetPlayers(&players);
 	em = new EventManager();
 	GameObject::SetPointers(gw,em, &players);
-	for(unsigned i = 0;i< players.getCount(); ++i)
+	for(unsigned i = 0; i < players.getCount(); ++i)
 		dynamic_cast<GameClientPlayer*>(players.getElement(i))->SetGameWorldPointer(gw);
 
 	if(ci)
@@ -354,10 +354,10 @@ void GameClient::StartGame(const unsigned int random_init)
 		savegame->sgd.PrepareDeserialization(em);
 		gw->Deserialize(&savegame->sgd);
 		em->Deserialize(&savegame->sgd);
-		for(unsigned i = 0;i<GAMECLIENT.GetPlayerCount();++i)
+		for(unsigned i = 0; i < players.getCount(); ++i)
 			GetPlayer(i)->Deserialize(&savegame->sgd);
 
-		// TODO: schÃ¶ner machen: 
+		// TODO: schöner machen: 
 		// Die Fläche, die nur von einem Allierten des Spielers gesehen werden, müssen noch dem TerrainRenderer mitgeteilt werden
 		// oder entsprechende Flächen müssen vorher bekannt gemacht werden
 		// Die folgende Schleife aktualisiert einfach *alle* Punkt, ist also ziemlich ineffizient
@@ -382,7 +382,7 @@ void GameClient::StartGame(const unsigned int random_init)
 		gw->LoadMap(clientconfig.mapfilepath);
 
 		/// Evtl. Goldvorkommen ändern
-		unsigned char target = 0xFF; // lÃ¶schen
+		unsigned char target = 0xFF; // löschen
 		switch(GameClient::inst().GetGGS().getSelection(ADDON_CHANGE_GOLD_DEPOSITS))
 		{
 		case 0: target = 3; break; //in Gold   konvertieren bzw. nichts tun
@@ -411,7 +411,7 @@ void GameClient::StartGame(const unsigned int random_init)
 		game_log = fopen(filename,"a");
 	}
 
-	// Daten nach dem Schreiben des Replays ggf wieder lÃ¶schen
+	// Daten nach dem Schreiben des Replays ggf wieder löschen
 	if(mapinfo.zipdata)
 	{
 		delete [] mapinfo.zipdata;
@@ -445,7 +445,7 @@ void GameClient::RealStart()
  */
 void GameClient::ExitGame()
 {
-	// Spielwelt zerstÃ¶ren
+	// Spielwelt zerstören
 	delete gw;
 	delete em;
 	gw = 0;
@@ -633,7 +633,7 @@ void GameClient::OnNMSPlayerToggleState(const GameMessage_Player_Toggle_State& m
 			}
 			case PS_LOCKED: 
 			{
-				// Im Savegame kÃ¶nnen auf geschlossene Slots keine Spieler
+				// Im Savegame können auf geschlossene Slots keine Spieler
 				// gesetzt werden, der entsprechende Spieler existierte ja gar nicht auf 
 				// der Karte!
 				if(mapinfo.map_type != MAPTYPE_SAVEGAME)
@@ -965,8 +965,8 @@ void GameClient::OnNMSServerCancelCountdown(const GameMessage_Server_CancelCount
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  verarbeitet die MapInfo-Nachricht, in der die gepackte GrÃ¶ÃŸe,
- *  die normale GrÃ¶ÃŸe und Teilanzahl der Karte übertragen wird.
+ *  verarbeitet die MapInfo-Nachricht, in der die gepackte GröÃŸe,
+ *  die normale GröÃŸe und Teilanzahl der Karte übertragen wird.
  *
  *  @param message Nachricht, welche ausgeführt wird
  *
@@ -1413,9 +1413,9 @@ void GameClient::WriteReplayHeader(const unsigned random_init)
 
 	case MAPTYPE_OLDMAP:
 		{
-			// GrÃ¶ÃŸe der entpackten Map
+			// GröÃŸe der entpackten Map
 			replayinfo.replay.map_length  = mapinfo.length;
-			// GrÃ¶ÃŸe der gepackten Map
+			// GröÃŸe der gepackten Map
 			replayinfo.replay.map_zip_length = mapinfo.ziplength;
 			// Gepackte Map
 			replayinfo.replay.map_data = mapinfo.zipdata;
@@ -1835,7 +1835,7 @@ void GameClient::SendPostMessage(PostMsg *msg)
 		ci->CI_NewPostMessage(postMessages.size());
 }
 
-// Entfernt eine Postnachricht aus der Liste und lÃ¶scht sie
+// Entfernt eine Postnachricht aus der Liste und löscht sie
 void GameClient::DeletePostMessage(PostMsg *msg)
 {
 	for(std::list<PostMsg*>::iterator it = postMessages.begin(); it != postMessages.end(); ++it)

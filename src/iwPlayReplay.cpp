@@ -1,4 +1,4 @@
-// $Id: iwPlayReplay.cpp 7091 2011-03-27 10:57:38Z OLiver $
+// $Id: iwPlayReplay.cpp 7359 2011-08-10 10:21:18Z FloSoft $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -90,7 +90,7 @@ void iwPlayReplay::Msg_ButtonClick(const unsigned int ctrl_id)
 		} break;
 	case 2:
 		{
-			// Sicherheitsabfrage, ob der Benutzer auch wirklich alle lÃ¶schen mÃ¶chte
+			// Sicherheitsabfrage, ob der Benutzer auch wirklich alle löschen möchte
 			WindowManager::inst().Show( new iwMsgbox(_("Clear"), _("Are you sure to remove all replays?"), this, MSB_YESNO, MSB_QUESTIONRED,1) );
 
 		} break;
@@ -134,10 +134,10 @@ void iwPlayReplay::StartReplay()
 
 void iwPlayReplay::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr)
 {
-	// Sollen alle Replays gelÃ¶scht werden?
+	// Sollen alle Replays gelöscht werden?
 	if(mbr == MSR_YES && msgbox_id == 1)
 	{
-		// Dateien lÃ¶schen
+		// Dateien löschen
 		std::string tmp = GetFilePath(FILE_PATHS[51]);
 		tmp += "*.rpl";
 		ListDir(tmp, false, RemoveReplay, 0);
