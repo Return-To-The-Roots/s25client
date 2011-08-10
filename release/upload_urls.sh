@@ -29,4 +29,9 @@ svn log $(dirname $(svn info | grep "URL" | cut -d ' ' -f 2)) > ${UPLOADFILE}cha
 scp -4 ${UPLOADFILE}rapidshare.txt $UPLOADTARGET || exit 3
 scp -4 ${UPLOADFILE}changelog.txt $UPLOADTARGET || exit 4
 
+if [ ! -z "$UPLOADSCRIPT" ] ; then
+	echo "running post upload script"
+	bash -c "$UPLOADSCRIPT"
+fi
+
 exit 0

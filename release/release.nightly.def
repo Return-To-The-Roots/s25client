@@ -1,6 +1,7 @@
 TARGET=/srv/apache/siedler25.org/nightly/s25client/nightly
 ARCHIVE=/srv/apache/siedler25.org/nightly/s25client/archive/$(date +%Y)
 UPLOADTARGET=root@tyra.ra-doersch.de:/www/siedler25.org/www/uploads/
+UPLOADSCRIPT="ssh root@tyra.ra-doersch.de /usr/bin/php -q /www/siedler25.org/www/docs/cron/nightlysql.php"
 UPLOADTO=nightly/
 UPLOADURL=http://www.siedler25.org/uploads/nightly/
 UPLOADFILE=/srv/apache/siedler25.org/nightly/s25client/
