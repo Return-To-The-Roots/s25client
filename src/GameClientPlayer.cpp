@@ -1,4 +1,4 @@
-// $Id: GameClientPlayer.cpp 7350 2011-08-08 17:14:40Z OLiver $
+// $Id: GameClientPlayer.cpp 7371 2011-08-12 13:11:08Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -2163,5 +2163,30 @@ bool GameClientPlayer::CheckDependentFigure(noFigure * fig)
 			return true;
 	}
 	return false;
+}
+
+/// Get available wares/figures which can THIS player (usually ally of wh->player) send to warehouse wh
+unsigned GameClientPlayer::GetAvailableWaresForTrading(nobBaseWarehouse * wh, const GoodType gt, const Job job) const
+{
+	unsigned count = 0;
+
+	for(std::list<nobBaseWarehouse*>::const_iterator it = warehouses.begin();it!=warehouses.end();++it)
+	{
+		// Find a trade path from this warehouse to wh?
+		TradeRoute * tr;
+		gwg->CreateTradeRoute((*it)->GetPos(),wh->GetPos(),playerid,&tr);
+
+		// Found a path?
+		if(tr->GetNextDir() != 0xff)
+			// Then consider this warehouse
+			if(gt != GD_NOTHING)
+				count += (*it)->GetAvailableWaresForTrading(gt);
+			else if(job != JOB_NOTHING)
+				count += (*it)->GetAvailableFiguresForTrading(job);
+		delete tr;
+	}
+
+	return count;
+
 }
 	

@@ -1,4 +1,4 @@
-// $Id: const_addons.h 7243 2011-06-07 15:12:46Z FloSoft $
+// $Id: const_addons.h 7371 2011-08-12 13:11:08Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -49,6 +49,7 @@ enum AddonId
 
 	ADDON_DEMOLITION_PROHIBITION	= 0x00100000,
 	ADDON_CHARBURNER				= 0x00100001,
+	ADDON_TRADE						= 0x00100002,
 
 	ADDON_CHANGE_GOLD_DEPOSITS		= 0x00200000,
 	ADDON_MAX_WATERWAY_LENGTH		= 0x00200001,

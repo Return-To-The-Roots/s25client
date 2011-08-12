@@ -1,4 +1,4 @@
-// $Id: nobBaseWarehouse.h 6903 2010-12-18 21:41:50Z OLiver $
+// $Id: nobBaseWarehouse.h 7371 2011-08-12 13:11:08Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -239,6 +239,13 @@ public: void Serialize(SerializedGameData *sgd) const { Serialize_nobBaseWarehou
 	/// Gibt Zeiger auf dir Reserve zurück für das GUI
 	const unsigned * GetReservePointerAvailable(unsigned rank) const { return &reserve_soldiers_available[rank]; }
 	const unsigned * GetReservePointerClaimed(unsigned rank) const { return &reserve_soldiers_claimed_visual[rank]; }
+
+	/// Available goods of a speciefic type that can be used for trading
+	unsigned GetAvailableWaresForTrading(const GoodType gt) const
+	{ return min(real_goods.goods[gt],real_goods.people[JOB_PACKDONKEY]); }
+	/// Available figures of a speciefic type that can be used for trading 
+	unsigned GetAvailableFiguresForTrading(const Job job) const
+	{ return real_goods.people[job]; }
 	
 	/// For debug only
 	bool CheckDependentFigure(noFigure * fig);

@@ -1,4 +1,4 @@
-// $Id: GlobalGameSettings.cpp 7243 2011-06-07 15:12:46Z FloSoft $
+// $Id: GlobalGameSettings.cpp 7371 2011-08-12 13:11:08Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -35,6 +35,7 @@
 
 #include "AddonDemolitionProhibition.h"
 #include "AddonCharburner.h"
+#include "AddonTrade.h"
 
 #include "AddonChangeGoldDeposits.h"
 #include "AddonMaxWaterwayLength.h"
@@ -112,6 +113,7 @@ void GlobalGameSettings::reset(bool recreate)
 
 		registerAddon(new AddonDemolitionProhibition);
 		registerAddon(new AddonCharburner);
+		registerAddon(new AddonTrade);
 
 		registerAddon(new AddonChangeGoldDeposits);
 		registerAddon(new AddonMaxWaterwayLength);

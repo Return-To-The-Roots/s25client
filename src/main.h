@@ -1,4 +1,4 @@
-// $Id: main.h 7248 2011-06-07 15:33:29Z FloSoft $
+// $Id: main.h 7371 2011-08-12 13:11:08Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -185,5 +185,7 @@ struct Point
 const char *GetWindowTitle();
 const char *GetWindowVersion();
 const char *GetWindowRevision();
+
+const unsigned oo = 0xffffffff;
 
 #endif // MAIN_H_INCLUDED

@@ -1,4 +1,4 @@
-// $Id: GameWorld.cpp 7091 2011-03-27 10:57:38Z OLiver $
+// $Id: GameWorld.cpp 7371 2011-08-12 13:11:08Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -54,6 +54,8 @@ bool GameWorld::LoadMap(const std::string& filename)
 	glArchivItem_Map *map = static_cast<glArchivItem_Map*>(ai.get(0));
 
 	Scan(map);
+
+	CreateTradeGraphs();
 
 	tr.GenerateOpenGL(this);
 

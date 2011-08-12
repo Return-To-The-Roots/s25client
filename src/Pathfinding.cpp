@@ -1,4 +1,4 @@
-// $Id: Pathfinding.cpp 7354 2011-08-09 20:53:15Z OLiver $
+// $Id: Pathfinding.cpp 7371 2011-08-12 13:11:08Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -44,6 +44,7 @@
 	#undef THIS_FILE
 	static char THIS_FILE[] = __FILE__;
 #endif
+
 
 /// Konstante für einen ungültigen Vorgänerknoten
 const unsigned INVALID_PREV = 0xFFFFFFFF;
@@ -691,7 +692,6 @@ bool GameWorldGame::CheckShipRoute(const MapCoord x_start,const MapCoord y_start
 }
 
 
-
 /// Abbruch-Bedingungen für freien Pfad für Menschen
 bool IsPointOK_TradePath(const GameWorldBase& gwb, const MapCoord x, const MapCoord y, const unsigned char dir, const void *param)
 {
@@ -700,7 +700,7 @@ bool IsPointOK_TradePath(const GameWorldBase& gwb, const MapCoord x, const MapCo
 	if(bm != noBase::BM_NOTBLOCKING && bm != noBase::BM_TREE && bm != noBase::BM_FLAG)
 		return false;
 
-	// Not trough hostile territory?
+	
 	unsigned char player = gwb.GetNode(x,y).owner;
 	// Ally or no player? Then ok
 	if(player == 0 || gwb.GetPlayer(*((unsigned char*)param))->IsAlly(player-1)) 
@@ -709,26 +709,52 @@ bool IsPointOK_TradePath(const GameWorldBase& gwb, const MapCoord x, const MapCo
 		return false;
 }
 
+bool IsPointToDestOK_TradePath(const GameWorldBase& gwb, const MapCoord x, const MapCoord y, const unsigned char dir, const void *param)
+{
+	// Feld passierbar?
+	// Nicht über Wasser, Lava, Sümpfe gehen
+	if(!gwb.IsNodeToNodeForFigure(x,y,(dir+3)%6))
+		return false;
+
+	// Not trough hostile territory?
+	unsigned char old_player = gwb.GetNode(gwb.GetXA(x,y,(dir+3)%6),gwb.GetYA(x,y,(dir+3)%6)).owner,
+		new_player = gwb.GetNode(x,y).owner;
+	// Ally or no player? Then ok
+	if(new_player == 0 || gwb.GetPlayer(*((unsigned char*)param))->IsAlly(new_player-1)) 
+		return true;
+	else
+	{
+		// Old player also evil?
+		if(old_player != 0 && !gwb.GetPlayer(*((unsigned char*)param))->IsAlly(old_player-1)) 
+			return true;
+		else
+			return false;
+	}
+}
+
+
 /// Find a route for trade caravanes
 unsigned char GameWorldGame::FindTradePath(const Point<MapCoord> start,
 	const Point<MapCoord> dest, const unsigned char player, const unsigned max_route, const bool random_route, 
 	 std::vector<unsigned char> * route, unsigned *length, 
 	const bool record) const
 {
-	// Aus Replay lesen?
-	if(GameClient::inst().ArePathfindingResultsAvailable() && !random_route)
-	{
-		unsigned char dir;
-		if(GameClient::inst().ReadPathfindingResult(&dir,length,NULL))
-			return dir;
-	}
-	
+	//unsigned tt = GetTickCount();
+	//static unsigned cc = 0;
+	//++cc;
+
+	unsigned char pp = GetNode(dest.x,dest.y).owner;
+	if(!(pp == 0 || GetPlayer(player)->IsAlly(pp-1))) 
+		return 0xff;
+	if(!IsNodeForFigures(dest.x,dest.y))
+		return 0xff;
+
 	unsigned char first_dir = 0xFF;
 	FindFreePath(start.x,start.y,dest.x,dest.y,random_route,max_route,route,length,&first_dir,IsPointOK_TradePath,
-		IsPointToDestOK_HumanPath,&player,record);
-		
-	if(!random_route)
-		GameClient::inst().AddPathfindingResult(first_dir,length,NULL);	
+		IsPointToDestOK_TradePath,&player,record);
+
+	//if(GetTickCount()-tt > 100)
+	//	printf("%u: %u ms; (%u,%u) to (%u,%u)\n",cc,GetTickCount()-tt,start.x,start.y,dest.x,dest.y);
 	
 	return first_dir;
 }

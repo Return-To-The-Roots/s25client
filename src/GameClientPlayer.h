@@ -1,4 +1,4 @@
-// $Id: GameClientPlayer.h 7350 2011-08-08 17:14:40Z OLiver $
+// $Id: GameClientPlayer.h 7371 2011-08-12 13:11:08Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -26,6 +26,7 @@
 #include <algorithm>
 #include "MapConsts.h"
 #include "PostMsg.h"
+#include "TradeGraph.h"
 
 
 class GameWorld;
@@ -391,9 +392,10 @@ public:
 	void MakeStartPacts();
 	/// Testet die Bündnisse, ob sie nicht schon abgelaufen sind
 	void TestPacts();
+
+	/// Get available wares/figures which can THIS player (usually ally of wh->player) send to warehouse wh
+	unsigned GetAvailableWaresForTrading(nobBaseWarehouse * wh, const GoodType gt, const Job job) const;
 		
-
-
   // Statistik-Sachen
 
   void SetStatisticValue(StatisticType type, unsigned int value);

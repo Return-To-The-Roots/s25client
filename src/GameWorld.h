@@ -1,4 +1,4 @@
-// $Id: GameWorld.h 7354 2011-08-09 20:53:15Z OLiver $
+// $Id: GameWorld.h 7371 2011-08-12 13:11:08Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -55,6 +55,7 @@ class GameWorldBase;
 class glArchivItem_Map;
 class noShip;
 class nofActiveSoldier;
+class TradeGraph;
 
 struct RoadsBuilding;
 class FOWObject;
@@ -185,10 +186,8 @@ protected:
 	/// Baustellen von Häfen, die vom Schiff aus errichtet wurden
 	std::list<noBuildingSite*> harbor_building_sites_from_sea;
 
-
+	GameClientPlayerList *players;
 	
-	
-
 public:
 	unsigned int map_size;
 
@@ -226,6 +225,9 @@ public:
 	MapCoord GetYA2(const MapCoord x, const MapCoord y, unsigned dir) const;
 	/// Wandelt einen Punkt in einen Nachbarpunkt um
 	void GetPointA(MapCoord& x, MapCoord& y, unsigned dir) const;
+	/// Returns neighbouring point
+	Point<MapCoord> GetPointA(Point<MapCoord> p,const unsigned dir) const
+	{ GetPointA(p.x,p.y,dir); return p; }
 	/// Berechnet die Differenz zweier Koordinaten von x1 zu x2, wenn man berücksichtigt, dass man über den 
 	/// Rand weitergehen kann
 	MapCoord CalcDistanceAroundBorderX(const MapCoord x1, const MapCoord x2) const;
@@ -233,6 +235,8 @@ public:
 
 	/// Ermittelt Abstand zwischen 2 Punkten auf der Map unter Berücksichtigung der Kartengrenzüberquerung
 	unsigned CalcDistance(int x1, int y1, int x2, int y2) const;
+	unsigned CalcDistance(const Point<MapCoord> p1, const Point<MapCoord> p2) const
+	{ return CalcDistance(p1.x,p1.y,p2.x,p2.y); }
 
 	// Erzeugt eindeutige ID aus gegebenen X und Y-Werten
 	unsigned MakeCoordID(const MapCoord x, const MapCoord y) const
@@ -439,8 +443,6 @@ protected:
 	unsigned GetNextHarborPoint(const MapCoord x, const MapCoord y, const unsigned origin_harbor_id, const unsigned char dir,
 										   const unsigned char player, bool (GameWorldBase::*IsPointOK)(const unsigned, const unsigned char, const unsigned short) const) const;
 
-private:
-	GameClientPlayerList *players;
 
 };
 
@@ -580,7 +582,11 @@ protected:
 /// "Interface-Klasse" für das Spiel
 class GameWorldGame : public virtual GameWorldBase
 {
+	/// rade graphs, one for each player
+	std::vector<TradeGraph*> tgs;
 private:
+
+
 
 	/// vergleicht 2 Punkte, ob sie von unterschiedlichen Spielern sind und setzt
 	/// Punkt ggf. zu gar keinem Spieler, 2. Funktion wird für Punkte im 2er Abstand verwendet, da es dort ein bisschen anders läuft!
@@ -617,9 +623,12 @@ protected:
 	/// Berechnet für alle Hafenpunkt jeweils die Richtung und Entfernung zu allen anderen Hafenpunkten
 	/// über die Kartenränder hinweg
 	void CalcHarborPosNeighbors();
-
+	/// Create Trade graphs
+	void CreateTradeGraphs();
 
 public:
+
+	virtual ~GameWorldGame();
 
 	/// Stellt anderen Spielern/Spielobjekten das Game-GUI-Interface zur Verfüung
 	GameInterface * GetGameInterface() const { return gi; }
@@ -634,7 +643,7 @@ public:
 	void RecalcBQAroundPointBig(const MapCoord x, const MapCoord y);
 
 	/// Prüft, ob dieser Punkt von Menschen betreten werden kann
-	bool IsNodeForFigures(const MapCoord x, const MapCoord y);
+	bool IsNodeForFigures(const MapCoord x, const MapCoord y) const;
 	/// Kann dieser Punkt von auf StraÃŸen laufenden Menschen betreten werden? (Kämpfe!)
 	bool IsRoadNodeForFigures(const MapCoord x, const MapCoord y,const unsigned char dir);
 	/// Lässt alle Figuren, die auf diesen Punkt  auf Wegen zulaufen, anhalten auf dem Weg (wegen einem Kampf)
@@ -747,6 +756,9 @@ public:
 	bool IsHarborBuildingSiteFromSea(const noBuildingSite * building_site) const;
 	/// Liefert eine Liste der Hafenpunkte, die von einem bestimmten Hafenpunkt erreichbar sind
 	void GetHarborPointsWithinReach(const unsigned hp,std::vector<unsigned>& hps) const;
+
+	/// Creates a Trade Route from one point to another
+	void CreateTradeRoute(const Point<MapCoord> start, Point<MapCoord> dest,const unsigned char player,TradeRoute ** tr);
 };
 
 

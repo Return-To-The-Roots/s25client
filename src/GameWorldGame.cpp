@@ -1,4 +1,4 @@
-// $Id: GameWorldGame.cpp 7359 2011-08-10 10:21:18Z FloSoft $
+// $Id: GameWorldGame.cpp 7371 2011-08-12 13:11:08Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -55,6 +55,12 @@
 #include "WindowManager.h"
 #include "GameInterface.h"
 
+
+ GameWorldGame::~GameWorldGame()
+ {
+	 for(unsigned i = 0;i<tgs.size();++i)
+		 delete tgs[i];
+ }
 
 void GameWorldGame::RecalcBQAroundPoint(const MapCoord x, const MapCoord y)
 {
@@ -801,7 +807,7 @@ void GameWorldGame::DestroyPlayerRests(const MapCoord x, const MapCoord y, const
 }
 
 
-bool GameWorldGame::IsNodeForFigures(const MapCoord x, const MapCoord y)
+bool GameWorldGame::IsNodeForFigures(const MapCoord x, const MapCoord y) const
 {
 	// Nicht über die Kante gehen!
 	if(x>=width||y>=height)
@@ -1875,4 +1881,37 @@ void GameWorldGame::GetHarborPointsWithinReach(const unsigned hp,std::vector<uns
 	}
 }
 
+/// Create Trade graphs
+void GameWorldGame::CreateTradeGraphs()
+{
+	// Only if trade is enabled
+	if(!GameClient::inst().GetGGS().isEnabled(ADDON_TRADE))
+		return;
 
+	unsigned tt = GetTickCount();
+
+	
+	for(unsigned i = 0;i<tgs.size();++i)
+		delete tgs[i];
+	tgs.resize(GameClient::inst().GetPlayerCount());
+	for(unsigned i = 0;i<tgs.size();++i)
+		tgs[i] = new TradeGraph(i,this);
+	
+	// Calc the graph for the first player completely
+	tgs[0]->Create();
+
+	printf("first %u: %u ms;\n",GetTickCount()-tt);
+	tt = GetTickCount();
+
+
+	// And use this one for the others
+	for(unsigned i = 1;i<GameClient::inst().GetPlayerCount();++i)
+		tgs[i]->CreateWithHelpOfAnotherPlayer(*tgs[0],*players);
+	printf("others %u: %u ms;\n",GetTickCount()-tt);
+}
+
+/// Creates a Trade Route from one point to another
+void GameWorldGame::CreateTradeRoute(const Point<MapCoord> start, Point<MapCoord> dest,const unsigned char player,TradeRoute ** tr)
+{
+	*tr = new TradeRoute(tgs[player],start,dest);
+}

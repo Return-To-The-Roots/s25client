@@ -1,4 +1,4 @@
-// $Id: dskGameInterface.cpp 7350 2011-08-08 17:14:40Z OLiver $
+// $Id: dskGameInterface.cpp 7371 2011-08-12 13:11:08Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -61,6 +61,7 @@
 #include "iwOptionsWindow.h"
 #include "iwEndgame.h"
 #include "iwShip.h"
+#include "iwTrade.h"
 
 #include "nobHQ.h"
 #include "nobHarborBuilding.h"
@@ -399,6 +400,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
 			BuildingType bt = static_cast<noBuilding*>(gwv->GetNO(cselx,csely))->GetBuildingType();
 			// HQ
 			if(bt == BLD_HEADQUARTERS)
+				//WindowManager::inst().Show(new iwTrade(gwv,this,gwv->GetSpecObj<nobHQ>(cselx,csely)));
 				WindowManager::inst().Show(new iwHQ(gwv,gwv->GetSpecObj<nobHQ>(cselx,csely),_("Headquarters"),3));
 			// Lagerhäuser
 			else if(bt == BLD_STOREHOUSE)
@@ -474,8 +476,22 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
 		{
 			if(gwv->GetNO(cselx,csely)->GetType() == NOP_BUILDING)
 			{
+				noBuilding * building = gwv->GetSpecObj<noBuilding>(cselx,csely);
+				BuildingType bt = building->GetBuildingType();
+
+				// Only if trade is enabled
+				if(GameClient::inst().GetGGS().isEnabled(ADDON_TRADE))
+				{
+					// Allied warehouse? -> Show trade window
+					if(GameClient::inst().GetLocalPlayer()->IsAlly(building->GetPlayer()) 
+						&& (bt == BLD_HEADQUARTERS || bt == BLD_HARBORBUILDING || bt == BLD_STOREHOUSE))
+					{
+						WindowManager::inst().Show(new iwTrade(gwv,this,static_cast<nobBaseWarehouse*>(building)));
+						return true;
+					}
+				}
+
 				// Ist es ein gewöhnliches Militärgebäude?
-				BuildingType bt = gwv->GetSpecObj<noBuilding>(cselx,csely)->GetBuildingType();
 				if(bt >= BLD_BARRACKS && bt <= BLD_FORTRESS)
 				{
 					// Dann darf es nicht neu gebaut sein!
