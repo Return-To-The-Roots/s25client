@@ -1,4 +1,4 @@
-// $Id: glArchivItem_Font.cpp 7091 2011-03-27 10:57:38Z OLiver $
+// $Id: glArchivItem_Font.cpp 7370 2011-08-12 12:48:55Z jh $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -179,7 +179,7 @@ void glArchivItem_Font::Draw(short x,
 				x = c % 16;
 				y = c / 16;
 
-				_font->Draw(cx, cy, _charwidths[c], dy, x*(dx+2)+1, y*(dy+2)+1, _charwidths[c], dy, (GetAlpha(color) << 24) | 0x00FFFFFF, color);
+				_font->Draw(cx, cy, _charwidths[c], dy, x*(dx+2)+1, y*(dy+2)+1, _charwidths[c], dy, color);
 				cx += _charwidths[c];
 			}
 		}
@@ -202,7 +202,7 @@ void glArchivItem_Font::Draw(short x,
 					x = c % 16;
 					y = c / 16;
 
-					_font->Draw(cx, cy, 0, 0, x*(dx+2)+1, y*(dy+2)+1, _charwidths[c], dy, (GetAlpha(color) << 24) | 0x00FFFFFF, color);
+					_font->Draw(cx, cy, 0, 0, x*(dx+2)+1, y*(dy+2)+1, _charwidths[c], dy, color);
 					cx += _charwidths[c];
 				}
 			}
@@ -427,7 +427,7 @@ void glArchivItem_Font::GetWrapInfo(const std::string& text,
 
 void glArchivItem_Font::initFont()
 {
-	_font = dynamic_cast<glArchivItem_Bitmap_Player *>(glAllocator(libsiedler2::BOBTYPE_BITMAP_PLAYER, 0, NULL));
+	_font = dynamic_cast<glArchivItem_Bitmap *>(glAllocator(libsiedler2::BOBTYPE_BITMAP_RLE, 0, NULL));
 
 	memset(_charwidths, 0, sizeof(_charwidths));
 
@@ -447,7 +447,7 @@ void glArchivItem_Font::initFont()
 			x = 1;
 		}
 
-		const glArchivItem_Bitmap_Player *c = dynamic_cast<const glArchivItem_Bitmap_Player *>(get(i));
+		const libsiedler2::baseArchivItem_Bitmap_Player *c = dynamic_cast<const libsiedler2::baseArchivItem_Bitmap_Player *>(get(i));
 		if(c)
 		{
 			// Spezialpalette (blaue Spielerfarben sind Grau) verwenden,
@@ -460,6 +460,6 @@ void glArchivItem_Font::initFont()
 
 	// Spezialpalette (blaue Spielerfarben sind Grau) verwenden,
 	// damit man per OpenGL einfärben kann!
-	_font->create(w, h, buffer, w, h, libsiedler2::FORMAT_RGBA, LOADER.GetPaletteN("colors"), 128);
+	_font->create(w, h, buffer, w, h, libsiedler2::FORMAT_RGBA, LOADER.GetPaletteN("colors"));
 	_font->setFilter(GL_LINEAR);
 }
