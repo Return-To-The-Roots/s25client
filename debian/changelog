@@ -1,3 +1,194 @@
+s25rttr (20110813-7372.86) karmic; urgency=low
+
+  * Automatic Jenkins Build 86
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sat, 13 Aug 2011 01:12:12 +0200
+
+s25rttr (20110813-7372) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sat, 13 Aug 2011 00:00:00 +0200
+
+s25rttr (20110812-7371) any; urgency=low
+
+  * further Trade preparations (creation of the trade graph for each
+    player at the beginning should work and was a little bit
+    optimized though it's still quite slow in debug mode), trade
+    window is shown when you click on an allied warehouse
+
+ -- OLiver Siebert <oliver@siedler25.org>  Fri, 12 Aug 2011 13:11:00 +0200
+
+s25rttr (20110812-7370) any; urgency=low
+
+  * Use glArchivItem_Bitmap instead of glArchivItem_Bitmap_Player for
+    fonts to increase performance (patch by Maqs)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Fri, 12 Aug 2011 12:48:00 +0200
+
+s25rttr (20110812-7369.85) karmic; urgency=low
+
+  * Automatic Jenkins Build 85
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Fri, 12 Aug 2011 01:07:09 +0200
+
+s25rttr (20110812-7369) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Fri, 12 Aug 2011 00:00:00 +0200
+
+s25rttr (20110811-7367.84) karmic; urgency=low
+
+  * Automatic Jenkins Build 84
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Thu, 11 Aug 2011 01:04:28 +0200
+
+s25rttr (20110811-7367) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Thu, 11 Aug 2011 00:00:00 +0200
+
+s25rttr (20110810-7366) any; urgency=low
+
+  * buildorder crash ...
+
+ -- Florian Doersch <flosoft@siedler25.org>  Wed, 10 Aug 2011 21:28:00 +0200
+
+s25rttr (20110810-7365) any; urgency=low
+
+  * added post-upload script
+
+ -- Florian Doersch <flosoft@siedler25.org>  Wed, 10 Aug 2011 15:35:00 +0200
+
+s25rttr (20110810-7364.83) karmic; urgency=low
+
+  * Automatic Jenkins Build 83
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Wed, 10 Aug 2011 17:16:39 +0200
+
+s25rttr (20110810-7364) any; urgency=low
+
+  * Recursion-Overflow-Fix
+
+ -- Florian Doersch <flosoft@siedler25.org>  Wed, 10 Aug 2011 15:07:00 +0200
+
+s25rttr (20110810-7363.82) karmic; urgency=low
+
+  * Automatic Jenkins Build 82
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Wed, 10 Aug 2011 13:34:18 +0200
+
+s25rttr (20110810-7363) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Wed, 10 Aug 2011 00:00:00 +0200
+
+s25rttr (20110810-7362) any; urgency=low
+
+  * fixed "error: 'TradeGraph::player' will be initialized after"
+
+ -- Florian Doersch <flosoft@siedler25.org>  Wed, 10 Aug 2011 11:21:00 +0200
+
+s25rttr (20110810-7360) any; urgency=low
+
+  * fixed typo - but It works (yeah!)
+
+ -- Florian Doersch <flosoft@siedler25.org>  Wed, 10 Aug 2011 11:04:00 +0200
+
+s25rttr (20110810-7359) any; urgency=low
+
+  * utf-8 fixes
+
+ -- Florian Doersch <flosoft@siedler25.org>  Wed, 10 Aug 2011 10:21:00 +0200
+
+s25rttr (20110810-7358) any; urgency=low
+
+  * added rename/move of old data dir
+
+ -- Florian Doersch <flosoft@siedler25.org>  Wed, 10 Aug 2011 09:50:00 +0200
+
+s25rttr (20110810-7356.81) karmic; urgency=low
+
+  * Automatic Jenkins Build 81
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Wed, 10 Aug 2011 01:03:20 +0200
+
+s25rttr (20110810-7356) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Wed, 10 Aug 2011 00:00:00 +0200
+
+s25rttr (20110809-7355) any; urgency=low
+
+  * gcc fix
+
+ -- OLiver Siebert <oliver@siedler25.org>  Tue, 09 Aug 2011 20:57:00 +0200
+
+s25rttr (20110809-7354) any; urgency=low
+
+  * - TradeGraph preparations
+    - fixed dskOptions & iwLobbyConnect bugs
+
+ -- OLiver Siebert <oliver@siedler25.org>  Tue, 09 Aug 2011 20:53:00 +0200
+
+s25rttr (20110809-7353) any; urgency=low
+
+  * Fixed #822984
+
+ -- OLiver Siebert <oliver@siedler25.org>  Tue, 09 Aug 2011 08:32:00 +0200
+
+s25rttr (20110809-7352.80) karmic; urgency=low
+
+  * Automatic Jenkins Build 80
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 09 Aug 2011 01:11:12 +0200
+
+s25rttr (20110809-7352) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 09 Aug 2011 00:00:00 +0200
+
+s25rttr (20110808-7351) any; urgency=low
+
+  * Trade window
+
+ -- OLiver Siebert <oliver@siedler25.org>  Mon, 08 Aug 2011 20:47:00 +0200
+
+s25rttr (20110808-7350) any; urgency=low
+
+  * Turnier-Vorbereitungs-Zeug
+
+ -- OLiver Siebert <oliver@siedler25.org>  Mon, 08 Aug 2011 17:14:00 +0200
+
+s25rttr (20110808-7349.79) karmic; urgency=low
+
+  * Automatic Jenkins Build 79
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Mon, 08 Aug 2011 01:15:39 +0200
+
+s25rttr (20110808-7349) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Mon, 08 Aug 2011 00:00:00 +0200
+
+s25rttr (20110807-7348) any; urgency=low
+
+  * fixed #808082
+
+ -- OLiver Siebert <oliver@siedler25.org>  Sun, 07 Aug 2011 13:17:00 +0200
+
+s25rttr (20110806-7346) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 06 Aug 2011 22:00:00 +0200
+
 s25rttr (20110806-7345.78) karmic; urgency=low
 
   * Automatic Jenkins Build 78
