@@ -1,4 +1,4 @@
-// $Id: GameClientPlayer.cpp 7373 2011-08-13 10:03:29Z OLiver $
+// $Id: GameClientPlayer.cpp 7374 2011-08-13 20:11:20Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -2224,7 +2224,7 @@ void GameClientPlayer::Trade(nobBaseWarehouse * wh, const GoodType gt, const Job
 	{
 		// Find a trade path from this warehouse to wh?
 		TradeRoute * tr;
-		gwg->CreateTradeRoute((*it)->GetFlag()->GetPos(),wh->GetPos(),playerid,&tr);
+		gwg->CreateTradeRoute((*it)->GetFlag()->GetPos(),wh->GetFlag()->GetPos(),playerid,&tr);
 
 		// Found a path?
 		if(tr->IsValid())
@@ -2239,9 +2239,8 @@ void GameClientPlayer::Trade(nobBaseWarehouse * wh, const GoodType gt, const Job
 			available = min(available,count);
 			count -= available;
 
-			nofTradeLeader * tl = new nofTradeLeader((*it)->GetX(),(*it)->GetY(),playerid,*tr);
-			gwg->AddFigure(tl,tl->GetX(),tl->GetY());
-			tl->StartWalking(4);
+			(*it)->StartTradeCaravane(gt,job,available,*tr);
+
 
 		}
 		delete tr;

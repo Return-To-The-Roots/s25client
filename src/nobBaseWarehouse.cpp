@@ -1,4 +1,4 @@
-// $Id: nobBaseWarehouse.cpp 7091 2011-03-27 10:57:38Z OLiver $
+// $Id: nobBaseWarehouse.cpp 7374 2011-08-13 20:11:20Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -40,6 +40,8 @@
 #include "BurnedWarehouse.h"
 #include "SerializedGameData.h"
 #include "nofPassiveWorker.h"
+#include "nofTradeLeader.h"
+#include "nofTradeDonkey.h"
 
 #include <algorithm>
 
@@ -292,20 +294,20 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
 			if(leave_house.size())
 			{
 				noFigure * fig = *leave_house.begin();
-				gwg->AddFigure(*leave_house.begin(),x,y);
+				gwg->AddFigure(fig,x,y);
 
 				/// Aktive Soldaten laufen nicht im Wegenetz, die das Haus verteidigen!
 				if(fig->GetGOT() != GOT_NOF_AGGRESSIVEDEFENDER && 
 					fig->GetGOT() != GOT_NOF_DEFENDER)
 					// ansonsten alle anderen müssen aber wissen, auf welcher StraÃe sie zu Beginn laufen
-					(*leave_house.begin())->InitializeRoadWalking(routes[4],0,true);
+					fig->InitializeRoadWalking(routes[4],0,true);
 
-				(*leave_house.begin())->ActAtFirst();
+				fig->ActAtFirst();
 				// Bei Lagerhausarbeitern das nicht abziehen!
-				if(!(*leave_house.begin())->MemberOfWarehouse())
+				if(!fig->MemberOfWarehouse())
 				{
 					// War das ein Boot-Träger?
-					if((*leave_house.begin())->GetJobType() == JOB_BOATCARRIER)
+					if(fig->GetJobType() == JOB_BOATCARRIER)
 					{
 						// Träger abziehen einzeln
 						--goods.people[JOB_HELPER];
@@ -314,6 +316,12 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
 					}
 					else
 						--goods.people[(*leave_house.begin())->GetJobType()];
+
+					if(fig->GetGOT() == GOT_NOF_TRADEDONKEY)
+					{
+						// Trade donkey carrying wares?
+						--goods.goods[static_cast<nofTradeDonkey*>(fig)->GetCarriedWare()];
+					}
 				}
 
 				leave_house.pop_front();
@@ -1412,4 +1420,57 @@ bool nobBaseWarehouse::CheckDependentFigure(noFigure * fig)
 	}
 	
 	return false;
+}
+
+/// Available goods of a speciefic type that can be used for trading
+unsigned nobBaseWarehouse::GetAvailableWaresForTrading(const GoodType gt) const
+{ 
+	// We need a helper as leader
+	if(!real_goods.people[JOB_HELPER]) return 0;
+
+	return min(real_goods.goods[gt],real_goods.people[JOB_PACKDONKEY]); 
+}
+
+/// Available figures of a speciefic type that can be used for trading 
+unsigned nobBaseWarehouse::GetAvailableFiguresForTrading(const Job job) const
+{
+	// We need a helper as leader
+	if(!real_goods.people[JOB_HELPER]) return 0;
+
+	return real_goods.people[job]; 
+}
+
+/// Starts a trade caravane from this warehouse
+void nobBaseWarehouse::StartTradeCaravane(const GoodType gt, const Job job, const unsigned count,const TradeRoute& tr)
+{
+	nofTradeLeader * tl = new nofTradeLeader(x,y,player,tr);
+	AddLeavingFigure(tl);
+
+	// Create the donkeys or other people
+	nofTradeDonkey * last = NULL;
+	for(unsigned i = 0;i<count;++i)
+	{
+		nofTradeDonkey * next = new nofTradeDonkey(x,y,player,tl,gt,job);
+
+		if(last == NULL) tl->SetSuccessor(next);
+		else last->SetSuccessor(next);
+
+		last = next;
+
+		AddLeavingFigure(next);
+	}
+
+	// Diminish the goods in the warehouse
+	--real_goods.people[JOB_HELPER];
+	this->players->getElement(player)->DecreaseInventoryJob(JOB_HELPER,1);
+	if(gt != GD_NOTHING) 
+	{ 
+		real_goods.goods[gt] -= count;
+		this->players->getElement(player)->DecreaseInventoryWare(gt,count);
+	}
+	else if(job != JOB_NOTHING) 
+	{ 
+		real_goods.people[job] -= count;
+		this->players->getElement(player)->DecreaseInventoryJob(job,count);
+	}
 }

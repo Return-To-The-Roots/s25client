@@ -13,6 +13,10 @@ const MapCoord TGN_SIZE = 20;
 /// Maximum route length for pathfinding
 const MapCoord TG_PF_LENGTH = 2*TGN_SIZE;
 
+/// Constants used for Pathfinding
+const unsigned char NO_PATH = 0xff;
+const unsigned char REACHED_GOAL = 0xdd;
+
 struct TradeGraphNode
 {
 	/// Point of the node, representing the main node 

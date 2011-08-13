@@ -1,4 +1,4 @@
-// $Id: nofCarrier.cpp 7321 2011-07-31 16:29:42Z jh $
+// $Id: nofCarrier.cpp 7374 2011-08-13 20:11:20Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -35,6 +35,7 @@
 #include "noRoadNode.h"
 #include "noFlag.h"
 #include "noBaseBuilding.h"
+#include "JobConsts.h"
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -52,21 +53,7 @@
 const unsigned PRODUCTIVITY_GF = 6000;
 /// Ab wieviel Prozent Auslastung in Prozent eines Trägers ein Esel kommen soll
 const unsigned DONKEY_PRODUCTIVITY = 80;
-/// Positionen der Ware für jede Richtung beim Zeichnen für Esel und Boot
-const int WARE_POS_DONKEY[96] = 
-{
-	0,-13, 0,-12, 0,-12, 1,-13, 2,-13, 2,-12, 2,-12, 1,-13,
-	3,-12, 3,-11, 3,-11, 3,-12, 4,-12, 5,-11, 5,-11, 5,-12,
-	2,-9, 1,-8, 0,-7, 1,-8, 2,-9, 3,-8, 4,-8, 3,-9,
-	-1,-8, -2,-7, -3,-7, -2,-8, -1,-8, 0,-7, 1,-7, 0,-8,
-	-3,-7, -2,-6, -1,-6, -1,-7, -2,-7, -3,-6, -4,-6, -3,-7,
-	-3,-10, -3,-9, -3,-9, -2,-10, -1,-10, -1,-10, -1,-9, -1,-10,
-};
-/// Positionen der Ware im Boat für jede Richtung
-const int WARE_POS_BOAT[12] =
-{
-	11,-4, 11,0, -7,-1, -8,-5, -7,-7, 6,-7
-};
+
 
 
 /// Abstand zur nächsten Animation (Wert ergibt sich aus NEXT_ANIMATION + rand(NEXT_ANIMATION_RANDOM) )

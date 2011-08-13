@@ -21,11 +21,19 @@
 
 #include "noFigure.h"
 #include "TradeGraph.h"
+#include <queue>
+
+class nofTradeDonkey;
 
 /// Leader of a trade caravane
 class nofTradeLeader : public noFigure
 {
+	/// Route of this caravane
 	TradeRoute tr;
+	/// For the successors: Last direction in which the leader walked
+	std::queue<unsigned char> last_dirs;
+	/// Successor (NULL if this is the one behind the leader)
+	nofTradeDonkey * successor;
 
 private:
 
@@ -47,6 +55,13 @@ public:
 
 	/// Wird aufgerufen, wenn die Flagge abgerissen wurde
 	void LostWork();
+
+	/// For predecessors: returns the last direction in which this donkey walked
+	unsigned char GetLastDir() { unsigned char dir = last_dirs.front(); last_dirs.pop(); return dir; }
+
+	/// Sets the sucessor in the caravane
+	void SetSuccessor(nofTradeDonkey * const successor) 
+	{ this->successor = successor; }
 };
 
 

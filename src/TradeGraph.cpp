@@ -72,6 +72,11 @@ unsigned char TradeRoute::GetNextDir()
 {
 	if(local_route.size() == 0) return 0xff;
 
+	if(current_pos == tg->gwg->GetPointA(goal,1))
+	{
+		return 0xdd;
+	}
+
 	// Test the route in the trade graph
 	for(unsigned i = global_pos;i<global_route.size();++i)
 	{
@@ -90,17 +95,19 @@ unsigned char TradeRoute::GetNextDir()
 	}
 
 	unsigned char next_dir = local_route[local_pos];
+	current_pos = tg->gwg->GetPointA(current_pos,next_dir);
 
 	// Next step
 	if(++local_pos >= local_route.size())
 	{
 		local_pos = 0;
-		current_pos_tg = tg->GetNodeAround(current_pos_tg,global_route[global_pos]+1);
+		if(global_pos < global_route.size())
+			current_pos_tg = tg->GetNodeAround(current_pos_tg,global_route[global_pos]+1);
 		++global_pos;
 		RecalcLocalRoute();
 	}
 
-	current_pos = tg->gwg->GetPointA(current_pos,next_dir);
+	
 	return next_dir;
 
 }
@@ -108,8 +115,25 @@ unsigned char TradeRoute::GetNextDir()
 /// Recalc local route and returns next direction
 unsigned char TradeRoute::RecalcLocalRoute()
 {
-	unsigned char next_dir = tg->gwg->FindTradePath(current_pos,tg->GetNode(current_pos_tg).main_pos,tg->player,TG_PF_LENGTH,
-		false,&local_route);
+	/// Are we at the flag of the goal?
+	if(current_pos == goal)
+	{
+		local_route.resize(1);
+		local_route[0] = 1;
+		return 1;
+	}
+
+	unsigned char next_dir;
+	// Global route over or are we near the goal? Then find a (real) path to our goal
+	if(global_pos >= global_route.size()
+		|| tg->gwg->CalcDistance(current_pos,goal) < TGN_SIZE/2)
+	{
+		global_pos = global_route.size();
+		next_dir = tg->gwg->FindTradePath(current_pos,goal,tg->player,TG_PF_LENGTH,false,&local_route);
+	}
+	else
+		next_dir = tg->gwg->FindTradePath(current_pos,tg->GetNode(current_pos_tg).main_pos,tg->player,TG_PF_LENGTH,
+			false,&local_route);
 	if(next_dir != 0xff)
 		return next_dir;
 	else

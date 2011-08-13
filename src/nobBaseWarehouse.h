@@ -1,4 +1,4 @@
-// $Id: nobBaseWarehouse.h 7371 2011-08-12 13:11:08Z OLiver $
+// $Id: nobBaseWarehouse.h 7374 2011-08-13 20:11:20Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -31,6 +31,7 @@ class nofWarehouseWorker;
 class noFigure;
 class Ware;
 class nobMilitary;
+class TradeRoute;
 
 /// Ein/Auslagereinstellungsstruktur
 struct InventorySettings
@@ -241,11 +242,11 @@ public: void Serialize(SerializedGameData *sgd) const { Serialize_nobBaseWarehou
 	const unsigned * GetReservePointerClaimed(unsigned rank) const { return &reserve_soldiers_claimed_visual[rank]; }
 
 	/// Available goods of a speciefic type that can be used for trading
-	unsigned GetAvailableWaresForTrading(const GoodType gt) const
-	{ return min(real_goods.goods[gt],real_goods.people[JOB_PACKDONKEY]); }
+	unsigned GetAvailableWaresForTrading(const GoodType gt) const;
 	/// Available figures of a speciefic type that can be used for trading 
-	unsigned GetAvailableFiguresForTrading(const Job job) const
-	{ return real_goods.people[job]; }
+	unsigned GetAvailableFiguresForTrading(const Job job) const;
+	/// Starts a trade caravane from this warehouse
+	void StartTradeCaravane(const GoodType gt, const Job job, const unsigned count,const TradeRoute& tr);
 	
 	/// For debug only
 	bool CheckDependentFigure(noFigure * fig);
