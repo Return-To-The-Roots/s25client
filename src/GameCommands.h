@@ -49,6 +49,7 @@ enum Type
 	EXPEDITION_COMMAND,
 	SEAATTACK,
 	STARTEXPLORATIONEXPEDITION,
+	TRADEOVERLAND,
 	SURRENDER,
 	CHEAT_ARMAGEDDON,
 	DESTROYALL,
@@ -832,6 +833,44 @@ private:
 	/// Schiff, welches dieses Command betrifft
 	unsigned ship_id;
 };
+
+
+/// Send wares to another allied player via donkeys
+class TradeOverLand : public Coords
+{
+	friend class GameClient;
+	/// Type of Ware / Figure
+	bool ware_figure;
+	GoodType gt;
+	Job job;
+	/// Number of wares/figures we want to trade
+	unsigned count;
+
+public:
+	TradeOverLand(const MapCoord x, const MapCoord y, const bool ware_figure, const GoodType gt, const Job job, const unsigned count)
+		: Coords(TRADEOVERLAND,x,y), ware_figure(ware_figure), gt(gt),job(job),count(count) {}
+	TradeOverLand(Serializer * ser)
+		: Coords(TRADEOVERLAND,ser),
+		ware_figure(ser->PopBool()),
+		gt( ware_figure ? GD_NOTHING : GoodType(ser->PopUnsignedChar())),
+		job( ware_figure ? Job(ser->PopUnsignedChar()) : JOB_NOTHING),
+		count(ser->PopUnsignedInt())
+	{}
+
+	virtual void Serialize(Serializer *ser) const
+	{
+		Coords::Serialize(ser);
+
+		ser->PushBool(ware_figure);
+		if(ware_figure == false) ser->PushUnsignedChar(static_cast<unsigned char>(gt));
+		else ser->PushUnsignedChar(static_cast<unsigned char>(job));
+		ser->PushUnsignedInt(count);
+	}
+
+	/// Führt das GameCommand aus
+	void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+};
+
 
 }
 

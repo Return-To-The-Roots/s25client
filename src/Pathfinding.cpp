@@ -1,4 +1,4 @@
-// $Id: Pathfinding.cpp 7371 2011-08-12 13:11:08Z OLiver $
+// $Id: Pathfinding.cpp 7373 2011-08-13 10:03:29Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -746,7 +746,14 @@ unsigned char GameWorldGame::FindTradePath(const Point<MapCoord> start,
 	unsigned char pp = GetNode(dest.x,dest.y).owner;
 	if(!(pp == 0 || GetPlayer(player)->IsAlly(pp-1))) 
 		return 0xff;
-	if(!IsNodeForFigures(dest.x,dest.y))
+	bool is_warehouse_at_goal = false;
+	if(GetNO(dest.x,dest.y)->GetType() == NOP_BUILDING)
+	{
+		if(GetSpecObj<noBuilding>(dest.x,dest.y)->IsWarehouse()) 
+			is_warehouse_at_goal = true;
+	}
+
+	if(!IsNodeForFigures(dest.x,dest.y) && !is_warehouse_at_goal )
 		return 0xff;
 
 	unsigned char first_dir = 0xFF;

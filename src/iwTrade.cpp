@@ -69,7 +69,7 @@ iwTrade::iwTrade(GameWorldViewer * const gwv,dskGameInterface *const gi,nobBaseW
 
 	const unsigned left_column = 200;
 
-	this->AddComboBox(4,left_column,84,160,18,TC_GREY,NormalFont,200); // Ware/Figure names
+	this->AddComboBox(4,left_column,84,160,18,TC_GREY,NormalFont,90); // Ware/Figure names
 	this->AddText(1,left_column,30,"Deal in:",COLOR_YELLOW,glArchivItem_Font::DF_LEFT,NormalFont);
 	ctrlComboBox * box = this->AddComboBox(2,left_column,44,160,18,TC_GREY,NormalFont,200); // Ware or figure?
 	box->AddString(_("Wares"));
@@ -93,13 +93,14 @@ iwTrade::iwTrade(GameWorldViewer * const gwv,dskGameInterface *const gi,nobBaseW
 	}
 
 	AddImage(5,left_column+20,130,NULL,_("Ware you like to trade"));
-	AddEdit(6,left_column+34,120,39 ,20,TC_GREY,NormalFont);
-	AddText(7,left_column+70,125," / 20",COLOR_YELLOW,glArchivItem_Font::DF_LEFT,NormalFont);
+	AddEdit(6,left_column+34,120,39 ,20,TC_GREY,NormalFont)->SetNumberOnly(true);
+	AddText(7,left_column+75,125,"/ 20",COLOR_YELLOW,glArchivItem_Font::DF_LEFT,NormalFont);
 
 	AddTextButton(8,left_column,150,150,22,TC_GREEN2,_("Send"),NormalFont);
 
 	// Choose wares at first
 	box->SetSelection(0);
+	Msg_ComboSelectItem(2,0);
 
 	
 }
@@ -123,6 +124,18 @@ void iwTrade::Msg_PaintAfter()
 
 void iwTrade::Msg_ButtonClick(const unsigned int ctrl_id)
 {
+	unsigned short ware_figure_selection = GetCtrl<ctrlComboBox>(4)->GetSelection();
+	bool ware_figure = this->GetCtrl<ctrlComboBox>(2)->GetSelection() == 1;
+	GoodType gt = ware_figure ? GD_NOTHING : GoodType(ware_figure_selection);
+	Job job = ware_figure ? Job(ware_figure_selection) : JOB_NOTHING;
+
+	const std::string number_str = GetCtrl<ctrlEdit>(6)->GetText();
+
+	// Start trading
+	GameClient::inst().AddGC(new gc::TradeOverLand(wh->GetX(),wh->GetY(),
+		ware_figure,gt,job,atoi(number_str.c_str())));
+
+	this->Close();
 }
 
 
@@ -150,10 +163,13 @@ void iwTrade::Msg_ComboSelectItem(const unsigned ctrl_id, const unsigned short s
 
 			}
 			names->SetSelection(0);
+			Msg_ComboSelectItem(4,0);
 
 		} break;
 	case 4:
 		{
+			
+			unsigned number;
 			if(this->GetCtrl<ctrlComboBox>(2)->GetSelection() == 0)
 			{
 				// Wares
@@ -161,6 +177,8 @@ void iwTrade::Msg_ComboSelectItem(const unsigned ctrl_id, const unsigned short s
 				// Set the new image of the ware which was selected
 				GetCtrl<ctrlImage>(5)->SetImage(LOADER.GetMapImageN(2250+wares[selection]));
 
+				// Get the number of available wares/figures
+				number = GameClient::inst().GetLocalPlayer()->GetAvailableWaresForTrading(wh,GoodType(selection),JOB_NOTHING);
 			}
 			else
 			{
@@ -169,8 +187,14 @@ void iwTrade::Msg_ComboSelectItem(const unsigned ctrl_id, const unsigned short s
 				if(jobs[selection] == JOB_CHARBURNER)
 					image = LOADER.GetImageN("charburner",51);
 				GetCtrl<ctrlImage>(5)->SetImage(image);
-				
+
+					// Get the number of available wares/figures
+				number = GameClient::inst().GetLocalPlayer()->GetAvailableWaresForTrading(wh,GD_NOTHING,Job(selection));
 			}
+
+			char str[256];
+			sprintf(str,"/ %u",number);
+			GetCtrl<ctrlText>(7)->SetText(str);
 		} break;
 	}
 }

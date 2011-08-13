@@ -1,4 +1,4 @@
-// $Id: GameCommands.cpp 7091 2011-03-27 10:57:38Z OLiver $
+// $Id: GameCommands.cpp 7373 2011-08-13 10:03:29Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -67,6 +67,7 @@ GameCommand * GameCommand::CreateGameCommand(const Type gst, Serializer * ser)
 	case STARTEXPEDITION: return new StartExpedition(ser);
 	case STARTEXPLORATIONEXPEDITION: return new StartExplorationExpedition(ser);
 	case EXPEDITION_COMMAND: return new ExpeditionCommand(ser);
+	case TRADEOVERLAND: return new TradeOverLand(ser);
 	case SURRENDER: return new Surrender(ser);
 	case CHEAT_ARMAGEDDON: return new CheatArmageddon(ser);
 	case DESTROYALL: return new DestroyAll(ser);
@@ -245,3 +246,10 @@ void ExpeditionCommand::Execute(GameWorldGame& gwg, GameClientPlayer& player, co
 	}
 }
 
+/// Führt das GameCommand aus
+void TradeOverLand::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
+{
+	noBase * nob = gwg.GetNO(x,y);
+	if(nob->GetGOT() == GOT_NOB_HARBORBUILDING || nob->GetGOT() == GOT_NOB_HQ || nob->GetGOT() == GOT_NOB_STOREHOUSE)
+		player.Trade(static_cast<nobBaseWarehouse*>(nob),gt,job,count);
+}

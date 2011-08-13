@@ -70,6 +70,8 @@ void TradeGraph::CreateWithHelpOfAnotherPlayer(const TradeGraph& helper,const Ga
 /// Gets the next direction the caravane has to take
 unsigned char TradeRoute::GetNextDir()
 {
+	if(local_route.size() == 0) return 0xff;
+
 	// Test the route in the trade graph
 	for(unsigned i = global_pos;i<global_route.size();++i)
 	{
@@ -93,10 +95,12 @@ unsigned char TradeRoute::GetNextDir()
 	if(++local_pos >= local_route.size())
 	{
 		local_pos = 0;
+		current_pos_tg = tg->GetNodeAround(current_pos_tg,global_route[global_pos]+1);
 		++global_pos;
 		RecalcLocalRoute();
 	}
 
+	current_pos = tg->gwg->GetPointA(current_pos,next_dir);
 	return next_dir;
 
 }
@@ -116,7 +120,7 @@ unsigned char TradeRoute::RecalcLocalRoute()
 unsigned char TradeRoute::RecalcGlobalRoute()
 {
 	// TG node where we start
-	Point<MapCoord> start_tgn = TradeGraphNode::ConverToTGCoords(start);
+	Point<MapCoord> start_tgn  = current_pos_tg = TradeGraphNode::ConverToTGCoords(start);
 	// Try to calc paths to the main point and - if this doesn't work - to the mainpoints of the surrounded nodes
 	unsigned char next_dir;
 	for(unsigned char i = 0;i<=8;++i)
@@ -138,11 +142,12 @@ unsigned char TradeRoute::RecalcGlobalRoute()
 	// The same for the last path main_point-->destination
 	// TG node where we end
 	Point<MapCoord> goal_tgn = TradeGraphNode::ConverToTGCoords(goal);
+	Point<MapCoord> goal_tgn_tmp = goal_tgn;
 	// Try to calc paths to the main point and - if this doesn't work - to the mainpoints of the surrounded nodes
 	for(unsigned char i = 0;i<=8;++i)
 	{
 		// Try to find path
-		goal_tgn = tg->GetNodeAround(current_pos_tg,i);
+		goal_tgn = tg->GetNodeAround(goal_tgn_tmp,i);
 		next_dir = tg->gwg->FindTradePath(tg->GetNode
 			(goal_tgn).main_pos,goal,tg->player,TG_PF_LENGTH,
 			false);
@@ -157,7 +162,10 @@ unsigned char TradeRoute::RecalcGlobalRoute()
 
 	// Pathfinding on the TradeGraph
 	if(!tg->FindPath(start_tgn,goal_tgn,global_route))
+	{
+		local_route.clear();
 		return 0xff;
+	}
 
 	return local_route[0];
 }
@@ -177,7 +185,7 @@ Point<MapCoord> TradeGraph::GetNodeAround(const Point<MapCoord> pos, const unsig
 	case 4: new_pos = Point<int>(cpos.x+1,cpos.y-1); break;
 	case 5: new_pos = Point<int>(cpos.x+1,cpos.y); break;
 	case 6: new_pos = Point<int>(cpos.x+1,cpos.y+1); break;
-	case 7: new_pos = Point<int>(cpos.x-1,cpos.y+1); break;
+	case 7: new_pos = Point<int>(cpos.x,cpos.y+1); break;
 	case 8: new_pos = Point<int>(cpos.x-1,cpos.y+1); break;
 	default: break;
 	}
@@ -199,7 +207,7 @@ struct TGN
 	bool visited;
 	bool in_list;
 
-	TGN() : route_length(0),real_length(0),visited(false),in_list(false) {}
+	TGN() : route_length(oo),real_length(oo),visited(false),in_list(false) {}
 };
 
 
@@ -214,6 +222,9 @@ bool TradeGraph::FindPath(const Point<MapCoord> start, const Point<MapCoord> goa
 	std::vector<TGN> nodes(size.x*size.y);
 
 	unsigned nodes_count = 0;
+
+	nodes[start.y*size.x+start.x].route_length = 0;
+	nodes[start.y*size.x+start.x].real_length = 0;
 
 	while(todo.size())
 	{
@@ -251,12 +262,12 @@ bool TradeGraph::FindPath(const Point<MapCoord> start, const Point<MapCoord> goa
 			if(new_pos == goal)
 			{
 				// Reached goal
-				route.resize(nodes[best_it->y*size.x+best_it->x].route_length);
+				route.resize(nodes[best_it->y*size.x+best_it->x].route_length+1);
 				route[route.size()-1] = i;
 
 				Point<MapCoord> pos = *best_it;
 
-				for(int z = route.size()-1;z>=0;--z,pos = GetNodeAround(pos,nodes[pos.y*size.x+pos.x].dir))
+				for(int z = route.size()-2;z>=0;--z,pos = GetNodeAround(pos,(nodes[pos.y*size.x+pos.x].dir+4)%8+1))
 					route[z] =nodes[pos.y*size.x+pos.x].dir;
 
 				return true;

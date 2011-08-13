@@ -99,7 +99,7 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			OutputDirectory="..\..\..\sie"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
 			CharacterSet="0"
@@ -107,7 +107,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="&quot;$(OutDir)\prebuild-mutex.exe&quot; &quot;prebuild&quot; &quot;$(SolutionName)&quot; &quot;$(SolutionDir)..\..&quot; &quot;$(OutDir)&quot;"
+				CommandLine=""
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -187,7 +187,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="&quot;$(OutDir)\prebuild-mutex.exe&quot; &quot;postbuild&quot; &quot;$(SolutionName)&quot; &quot;$(SolutionDir)..\..&quot; &quot;$(OutDir)&quot;"
+				CommandLine=""
 			/>
 		</Configuration>
 	</Configurations>
@@ -973,6 +973,14 @@
 							>
 						</File>
 						<File
+							RelativePath="..\..\src\iwTrade.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\src\iwTrade.h"
+							>
+						</File>
+						<File
 							RelativePath="..\..\src\iwTransport.cpp"
 							>
 						</File>
@@ -1043,150 +1051,6 @@
 					</File>
 					<File
 						RelativePath="..\..\src\Swap.h"
-						>
-					</File>
-				</Filter>
-			</Filter>
-			<Filter
-				Name="Loader"
-				>
-				<File
-					RelativePath="..\..\src\Loader.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\Loader.h"
-					>
-				</File>
-				<Filter
-					Name="glLibSiedler2"
-					>
-					<File
-						RelativePath="..\..\src\glAllocator.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\glAllocator.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\glArchivItem_Bitmap.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\glArchivItem_Bitmap.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\glArchivItem_Bitmap_Direct.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\glArchivItem_Bitmap_Direct.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\glArchivItem_Bitmap_Player.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\glArchivItem_Bitmap_Player.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\glArchivItem_Bitmap_Raw.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\glArchivItem_Bitmap_Raw.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\glArchivItem_Bitmap_RLE.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\glArchivItem_Bitmap_RLE.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\glArchivItem_Bitmap_Shadow.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\glArchivItem_Bitmap_Shadow.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\glArchivItem_Bob.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\glArchivItem_Bob.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\glArchivItem_Font.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\glArchivItem_Font.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\glArchivItem_Map.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\glArchivItem_Map.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\glArchivItem_Music.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\glArchivItem_Music.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\glArchivItem_Sound.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\glArchivItem_Sound.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\glArchivItem_Sound_Midi.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\glArchivItem_Sound_Midi.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\glArchivItem_Sound_Other.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\glArchivItem_Sound_Other.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\glArchivItem_Sound_Wave.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\glArchivItem_Sound_Wave.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\glArchivItem_Sound_XMidi.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\glArchivItem_Sound_XMidi.h"
 						>
 					</File>
 				</Filter>
@@ -1364,6 +1228,14 @@
 				</File>
 				<File
 					RelativePath="..\..\src\TerritoryRegion.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\TradeGraph.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\TradeGraph.h"
 					>
 				</File>
 				<File
@@ -1790,6 +1662,22 @@
 						</File>
 						<File
 							RelativePath="..\..\src\nofStonemason.h"
+							>
+						</File>
+						<File
+							RelativePath="..\..\src\nofTradeDonkey.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\src\nofTradeDonkey.h"
+							>
+						</File>
+						<File
+							RelativePath="..\..\src\nofTradeLeader.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\src\nofTradeLeader.h"
 							>
 						</File>
 						<File
@@ -2399,6 +2287,150 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="Loader"
+				>
+				<File
+					RelativePath="..\..\src\Loader.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\Loader.h"
+					>
+				</File>
+				<Filter
+					Name="glLibSiedler2"
+					>
+					<File
+						RelativePath="..\..\src\glAllocator.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\glAllocator.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\glArchivItem_Bitmap.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\glArchivItem_Bitmap.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\glArchivItem_Bitmap_Direct.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\glArchivItem_Bitmap_Direct.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\glArchivItem_Bitmap_Player.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\glArchivItem_Bitmap_Player.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\glArchivItem_Bitmap_Raw.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\glArchivItem_Bitmap_Raw.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\glArchivItem_Bitmap_RLE.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\glArchivItem_Bitmap_RLE.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\glArchivItem_Bitmap_Shadow.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\glArchivItem_Bitmap_Shadow.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\glArchivItem_Bob.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\glArchivItem_Bob.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\glArchivItem_Font.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\glArchivItem_Font.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\glArchivItem_Map.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\glArchivItem_Map.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\glArchivItem_Music.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\glArchivItem_Music.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\glArchivItem_Sound.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\glArchivItem_Sound.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\glArchivItem_Sound_Midi.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\glArchivItem_Sound_Midi.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\glArchivItem_Sound_Other.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\glArchivItem_Sound_Other.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\glArchivItem_Sound_Wave.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\glArchivItem_Sound_Wave.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\glArchivItem_Sound_XMidi.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\glArchivItem_Sound_XMidi.h"
+						>
+					</File>
+				</Filter>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Headerdateien"
@@ -2428,6 +2460,10 @@
 				>
 			</File>
 		</Filter>
+		<File
+			RelativePath=".\ClassDiagram1.cd"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

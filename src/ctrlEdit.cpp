@@ -1,4 +1,4 @@
-// $Id: ctrlEdit.cpp 7091 2011-03-27 10:57:38Z OLiver $
+// $Id: ctrlEdit.cpp 7373 2011-08-13 10:03:29Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -53,7 +53,7 @@ ctrlEdit::ctrlEdit(Window *parent,
 				   bool notify)
 	: Window(x, y, id, parent, width, height),
 	maxlength(maxlength), tc(tc), font(font), password(password), disabled(disabled),
-	focus(false), newfocus(false), notify(notify)
+	focus(false), newfocus(false), notify(notify), number_only(false)
 {
 	SetText("");
 }
@@ -165,6 +165,10 @@ bool ctrlEdit::Draw_(void)
  */
 void ctrlEdit::AddChar(char c)
 {
+	// Number-only text fields accept numbers only ;)
+	if(number_only && !(c>='0'&&c<='9'))
+		return;
+
 	if(maxlength > 0 && text.size() >= maxlength)
 		return;
 

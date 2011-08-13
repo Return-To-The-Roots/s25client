@@ -1,4 +1,4 @@
-// $Id: GameClientPlayer.h 7371 2011-08-12 13:11:08Z OLiver $
+// $Id: GameClientPlayer.h 7373 2011-08-13 10:03:29Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -395,6 +395,8 @@ public:
 
 	/// Get available wares/figures which can THIS player (usually ally of wh->player) send to warehouse wh
 	unsigned GetAvailableWaresForTrading(nobBaseWarehouse * wh, const GoodType gt, const Job job) const;
+	/// Send wares to warehouse wh
+	void Trade(nobBaseWarehouse * wh, const GoodType gt, const Job job, unsigned count) const;
 		
   // Statistik-Sachen
 

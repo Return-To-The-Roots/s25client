@@ -1,4 +1,4 @@
-// $Id: noBaseBuilding.h 6706 2010-09-03 09:35:55Z OLiver $
+// $Id: noBaseBuilding.h 7373 2011-08-13 10:03:29Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -68,6 +68,11 @@ public:		void Destroy() { Destroy_noBaseBuilding(); }
 	BuildingType GetBuildingType () const { return type; }
 	Nation GetNation() const { return nation; }
 	virtual BlockingManner GetBM() const;
+
+	/// Harbor, storehouse or headquarters?
+	bool IsWarehouse() const
+	{ return (GetBuildingType() == BLD_HEADQUARTERS ||
+	GetBuildingType() == BLD_STOREHOUSE || GetBuildingType() == BLD_STOREHOUSE);}
 
 	/// Ermittelt die Flagge, die vor dem Gebäude steht
 	noFlag * GetFlag() const;

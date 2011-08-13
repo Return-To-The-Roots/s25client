@@ -1,5 +1,5 @@
 ################################################################################
-### $Id: CMakeLists.txt 7354 2011-08-09 20:53:15Z OLiver $
+### $Id: CMakeLists.txt 7373 2011-08-13 10:03:29Z OLiver $
 ################################################################################
 
 INCLUDE(FindBZip2)
@@ -208,6 +208,8 @@ SET(SOURCES_NOF
 	nofShipWright.cpp                   nofShipWright.h
 	nofSoldier.cpp                      nofSoldier.h
 	nofStonemason.cpp                   nofStonemason.h
+	nofTradeLeader.cpp		    nofTradeLeader.h
+	nofTradeDonkey.cpp		    nofTradeDonkey.h
 	nofWarehouseWorker.cpp              nofWarehouseWorker.h
 	nofWellguy.cpp                      nofWellguy.h
 	nofWoodcutter.cpp                   nofWoodcutter.h

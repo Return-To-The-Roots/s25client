@@ -1,4 +1,4 @@
-// $Id: GameObject.h 6582 2010-07-16 11:23:35Z FloSoft $
+// $Id: GameObject.h 7373 2011-08-13 10:03:29Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -72,6 +72,8 @@ enum GO_Type
 	GOT_NOF_CATAPULTMAN,
 	GOT_NOF_PASSIVEWORKER,
 	GOT_NOF_CHARBURNER,
+	GOT_NOF_TRADELEADER,
+	GOT_NOF_TRADEDONKEY,
 	GOT_EXTENSION,
 	GOT_ENVOBJECT,
 	GOT_FIRE,

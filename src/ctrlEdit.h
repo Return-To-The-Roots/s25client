@@ -1,4 +1,4 @@
-// $Id: ctrlEdit.h 6582 2010-07-16 11:23:35Z FloSoft $
+// $Id: ctrlEdit.h 7373 2011-08-13 10:03:29Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -37,6 +37,7 @@ public:
 	void SetDisabled(bool disabled = true) { this->disabled = disabled; }
 	void SetNotify(bool notify = true) { this->notify = notify; }
 	void SetMaxLength(unsigned short maxlength = 0) { this->maxlength = maxlength; }
+	void SetNumberOnly(const bool activated) {this->number_only = activated; }
 
 	virtual void Msg_PaintAfter();
 	virtual bool Msg_LeftDown(const MouseCoords& mc);
@@ -67,6 +68,8 @@ private:
 	std::string text;
 	unsigned cursor_pos;
 	unsigned view_start;
+
+	bool number_only;
 };
 
 #endif // !CTRLEDIT_H_INCLUDED

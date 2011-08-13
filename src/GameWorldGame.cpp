@@ -1,4 +1,4 @@
-// $Id: GameWorldGame.cpp 7371 2011-08-12 13:11:08Z OLiver $
+// $Id: GameWorldGame.cpp 7373 2011-08-13 10:03:29Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -54,6 +54,7 @@
 
 #include "WindowManager.h"
 #include "GameInterface.h"
+#include "VideoDriverWrapper.h"
 
 
  GameWorldGame::~GameWorldGame()
@@ -1888,7 +1889,7 @@ void GameWorldGame::CreateTradeGraphs()
 	if(!GameClient::inst().GetGGS().isEnabled(ADDON_TRADE))
 		return;
 
-	unsigned tt = GetTickCount();
+	unsigned tt = VideoDriverWrapper::inst().GetTickCount();
 
 	
 	for(unsigned i = 0;i<tgs.size();++i)
@@ -1900,14 +1901,14 @@ void GameWorldGame::CreateTradeGraphs()
 	// Calc the graph for the first player completely
 	tgs[0]->Create();
 
-	printf("first %u: %u ms;\n",GetTickCount()-tt);
+	printf("first: %u ms;\n",VideoDriverWrapper::inst().GetTickCount()-tt);
 	tt = GetTickCount();
 
 
 	// And use this one for the others
 	for(unsigned i = 1;i<GameClient::inst().GetPlayerCount();++i)
 		tgs[i]->CreateWithHelpOfAnotherPlayer(*tgs[0],*players);
-	printf("others %u: %u ms;\n",GetTickCount()-tt);
+	printf("others: %u ms;\n",VideoDriverWrapper::inst().GetTickCount()-tt);
 }
 
 /// Creates a Trade Route from one point to another

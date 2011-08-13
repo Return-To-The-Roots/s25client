@@ -1,4 +1,4 @@
-// $Id: GameClientPlayer.cpp 7371 2011-08-12 13:11:08Z OLiver $
+// $Id: GameClientPlayer.cpp 7373 2011-08-13 10:03:29Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -40,7 +40,7 @@
 #include "nofCarrier.h"
 #include "noShip.h"
 #include "nobHarborBuilding.h"
-#include "MapGeometry.h"
+#include "nofTradeLeader.h"
 
 #include "GameInterface.h"
 
@@ -2187,6 +2187,68 @@ unsigned GameClientPlayer::GetAvailableWaresForTrading(nobBaseWarehouse * wh, co
 	}
 
 	return count;
+
+}
+
+struct WarehouseDistanceComperator
+{
+	// Reference warehouse, to which we want to calc the distance
+	static nobBaseWarehouse * ref;
+	/// GameWorld
+	static GameWorldGame * gwg;
+
+	/// Set Parameters
+	static void SetParameters(nobBaseWarehouse * ref, GameWorldGame * gwg)
+	{
+		WarehouseDistanceComperator::ref = ref;
+		WarehouseDistanceComperator::gwg = gwg;
+	}
+
+
+	static bool Compare(nobBaseWarehouse * const wh1, nobBaseWarehouse * const wh2)
+	{
+		return (gwg->CalcDistance(wh1->GetPos(),ref->GetPos()) < gwg->CalcDistance(wh2->GetPos(),ref->GetPos()));
+	}
+};
+
+nobBaseWarehouse * WarehouseDistanceComperator::ref;
+GameWorldGame * WarehouseDistanceComperator::gwg;
+
+/// Send wares to warehouse wh
+void GameClientPlayer::Trade(nobBaseWarehouse * wh, const GoodType gt, const Job job, unsigned count) const
+{
+	std::list<nobBaseWarehouse*> whs(warehouses);
+	WarehouseDistanceComperator::SetParameters(wh,gwg);
+	whs.sort(WarehouseDistanceComperator::Compare);
+	for(std::list<nobBaseWarehouse*>::const_iterator it = warehouses.begin();it!=warehouses.end();++it)
+	{
+		// Find a trade path from this warehouse to wh?
+		TradeRoute * tr;
+		gwg->CreateTradeRoute((*it)->GetFlag()->GetPos(),wh->GetPos(),playerid,&tr);
+
+		// Found a path?
+		if(tr->IsValid())
+		{
+			unsigned available = 0;
+			// Then consider this warehouse
+			if(gt != GD_NOTHING)
+				available = (*it)->GetAvailableWaresForTrading(gt);
+			else if(job != JOB_NOTHING)
+				available = (*it)->GetAvailableFiguresForTrading(job);
+
+			available = min(available,count);
+			count -= available;
+
+			nofTradeLeader * tl = new nofTradeLeader((*it)->GetX(),(*it)->GetY(),playerid,*tr);
+			gwg->AddFigure(tl,tl->GetX(),tl->GetY());
+			tl->StartWalking(4);
+
+		}
+		delete tr;
+
+		if(!count)
+			return;
+	}
 
 }
 	
