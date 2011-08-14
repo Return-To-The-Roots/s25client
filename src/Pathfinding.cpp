@@ -1,4 +1,4 @@
-// $Id: Pathfinding.cpp 7373 2011-08-13 10:03:29Z OLiver $
+// $Id: Pathfinding.cpp 7378 2011-08-14 12:44:58Z jh $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -44,7 +44,6 @@
 	#undef THIS_FILE
 	static char THIS_FILE[] = __FILE__;
 #endif
-
 
 /// Konstante für einen ungültigen Vorgänerknoten
 const unsigned INVALID_PREV = 0xFFFFFFFF;
@@ -140,14 +139,28 @@ public:
 // gehandelt, nur dass wir noRoadNodes statt direkt Points vergleichen
 bool RoadNodeComperator::operator()(const noRoadNode* const rn1, const noRoadNode* const rn2) const
 {
-	PathfindingPoint p1 (rn1->GetX(), rn1->GetY()), p2(rn2->GetX(), rn2->GetY());
-	return p1<p2;
+	unsigned way1 = pf_nodes[rn1->coord_id].way + rn1->distance;
+	unsigned way2 = pf_nodes[rn2->coord_id].way + rn2->distance;
+
+	// Wenn die Wegkosten gleich sind, vergleichen wir die Koordinaten, da wir für std::set eine streng
+	// monoton steigende Folge brauchen
+	if(way1 == way2)
+		return (rn1->coord_id < rn2->coord_id);
+	else
+		return (way1 < way2);
 }
 
 bool RoadNodeComperatorInv::operator()(const noRoadNode* const rn1, const noRoadNode* const rn2) const
 {
-	PathfindingPoint p1 (rn1->GetX(), rn1->GetY()), p2(rn2->GetX(), rn2->GetY());
-	return p2<p1;
+	unsigned way1 = pf_nodes[rn1->coord_id].way + rn1->distance;
+	unsigned way2 = pf_nodes[rn2->coord_id].way + rn2->distance;
+
+	// Wenn die Wegkosten gleich sind, vergleichen wir die Koordinaten, da wir für std::set eine streng
+	// monoton steigende Folge brauchen
+	if(way1 == way2)
+		return (rn1->coord_id > rn2->coord_id);
+	else
+		return (way1>way2);
 }
 
 /// Definitionen siehe oben
@@ -363,8 +376,14 @@ bool GameWorldBase::FindPathOnRoads(const noRoadNode * const start, const noRoad
 
 	// Anfangsknoten einfügen
 	todo.clear();
-	todo.push(start);
+
 	unsigned start_id = MakeCoordID(start->GetX(),start->GetY());
+
+	start->coord_id = start_id;
+	start->distance = CalcDistance(start->GetX(), start->GetY(), PathfindingPoint::dst_x, PathfindingPoint::dst_y);
+
+	todo.push(start);
+
 	pf_nodes[start_id].prev = INVALID_PREV;
 	pf_nodes[start_id].lastVisited = currentVisit;
 	pf_nodes[start_id].way = 0;
@@ -434,7 +453,7 @@ bool GameWorldBase::FindPathOnRoads(const noRoadNode * const start, const noRoad
 		for(unsigned i = 0;i<6;++i)
 		{
 			// Gibt es auch einen solchen Weg bzw. Nachbarflagge?
-			const noRoadNode * rna = best->GetNeighbour(i);
+			noRoadNode * rna = best->GetNeighbour(i);
 			// Wenn nicht, brauchen wir mit dieser Richtung gar nicht weiter zu machen
 			if(!rna)
 				continue;
@@ -481,6 +500,9 @@ bool GameWorldBase::FindPathOnRoads(const noRoadNode * const start, const noRoad
 			pf_nodes[xaid].dir = i;
 			pf_nodes[xaid].prev = best_id;
 
+			rna->coord_id = xaid;
+			rna->distance = CalcDistance(rna->GetX(),rna->GetY(),PathfindingPoint::dst_x,PathfindingPoint::dst_y);
+
 			todo.push(rna);
 		}
 
@@ -518,6 +540,9 @@ bool GameWorldBase::FindPathOnRoads(const noRoadNode * const start, const noRoad
 				pf_nodes[xaid].way = new_way;
 				pf_nodes[xaid].dir = 100;
 				pf_nodes[xaid].prev = best_id;
+
+				scs[i].dest->coord_id = xaid;
+				scs[i].dest->distance = CalcDistance(scs[i].dest->GetX(),scs[i].dest->GetY(),PathfindingPoint::dst_x,PathfindingPoint::dst_y);
 
 				todo.push(scs[i].dest);
 			}

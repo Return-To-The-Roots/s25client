@@ -1,4 +1,4 @@
-// $Id: noRoadNode.h 6582 2010-07-16 11:23:35Z FloSoft $
+// $Id: noRoadNode.h 7378 2011-08-14 12:44:58Z jh $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -42,6 +42,10 @@ protected:
 public:
 
 	RoadSegment	* routes[6];
+
+// For Pathfinding
+	mutable unsigned distance;
+	mutable unsigned coord_id;
 
 public:
 
