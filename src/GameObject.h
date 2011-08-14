@@ -1,4 +1,4 @@
-// $Id: GameObject.h 7373 2011-08-13 10:03:29Z OLiver $
+// $Id: GameObject.h 7380 2011-08-14 13:50:47Z jh $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -27,6 +27,8 @@ class EventManager;
 class GameClientPlayerList;
 
 /// IDs für jede Klasse AM ENDE DER Hierarchie für die Speicherfunktionen
+/// To be able to load old savegames and keep ids unique, please insert new
+/// items at the end of the list.
 enum GO_Type
 {
 	GOT_UNKNOWN = 0,
@@ -72,8 +74,6 @@ enum GO_Type
 	GOT_NOF_CATAPULTMAN,
 	GOT_NOF_PASSIVEWORKER,
 	GOT_NOF_CHARBURNER,
-	GOT_NOF_TRADELEADER,
-	GOT_NOF_TRADEDONKEY,
 	GOT_EXTENSION,
 	GOT_ENVOBJECT,
 	GOT_FIRE,
@@ -94,7 +94,9 @@ enum GO_Type
 	GOT_BURNEDWAREHOUSE,
 	GOT_SHIPBUILDINGSITE,
 	GOT_SHIP,
-	GOT_CHARBURNERPILE
+	GOT_CHARBURNERPILE,
+	GOT_NOF_TRADELEADER,
+	GOT_NOF_TRADEDONKEY
 };
 
 /// Basisklasse für alle Spielobjekte
