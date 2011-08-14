@@ -1,4 +1,4 @@
-// $Id: nobBaseWarehouse.h 7374 2011-08-13 20:11:20Z OLiver $
+// $Id: nobBaseWarehouse.h 7379 2011-08-14 13:45:53Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -246,7 +246,7 @@ public: void Serialize(SerializedGameData *sgd) const { Serialize_nobBaseWarehou
 	/// Available figures of a speciefic type that can be used for trading 
 	unsigned GetAvailableFiguresForTrading(const Job job) const;
 	/// Starts a trade caravane from this warehouse
-	void StartTradeCaravane(const GoodType gt, const Job job, const unsigned count,const TradeRoute& tr);
+	void StartTradeCaravane(const GoodType gt,  Job job, const unsigned count,const TradeRoute& tr,nobBaseWarehouse * goal);
 	
 	/// For debug only
 	bool CheckDependentFigure(noFigure * fig);

@@ -24,6 +24,7 @@
 #include <queue>
 
 class nofTradeDonkey;
+class nobBaseWarehouse;
 
 /// Leader of a trade caravane
 class nofTradeLeader : public noFigure
@@ -34,6 +35,8 @@ class nofTradeLeader : public noFigure
 	std::queue<unsigned char> last_dirs;
 	/// Successor (NULL if this is the one behind the leader)
 	nofTradeDonkey * successor;
+	/// The start and home warehosue
+	Point<MapCoord> start, goal;
 
 private:
 
@@ -42,9 +45,14 @@ private:
 	void HandleDerivedEvent(const unsigned int id);
 	void AbrogateWorkplace();
 
+	/// Tries to go to the home ware house, otherwise start wandering
+	void TryToGoHome();
+	/// Start wandering and informs the other successors about this
+	void CancelTradeCaravane();
+
 public:
 
-	nofTradeLeader(const MapCoord x, const MapCoord y,const unsigned char player,const TradeRoute& tr);
+	nofTradeLeader(const MapCoord x, const MapCoord y,const unsigned char player,const TradeRoute& tr, const Point<MapCoord>  start, const Point<MapCoord> goal);
 	nofTradeLeader(SerializedGameData * sgd, const unsigned obj_id);
 
 	void Serialize(SerializedGameData *sgd) const;

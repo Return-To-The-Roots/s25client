@@ -1,4 +1,4 @@
-// $Id: GameClientPlayer.cpp 7377 2011-08-14 09:21:35Z OLiver $
+// $Id: GameClientPlayer.cpp 7379 2011-08-14 13:45:53Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -2241,7 +2241,7 @@ void GameClientPlayer::Trade(nobBaseWarehouse * wh, const GoodType gt, const Job
 			available = min(available,count);
 			count -= available;
 
-			(*it)->StartTradeCaravane(gt,job,available,*tr);
+			(*it)->StartTradeCaravane(gt,job,available,*tr,wh);
 
 
 		}

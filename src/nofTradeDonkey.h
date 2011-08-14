@@ -73,6 +73,9 @@ public:
 	/// Sets the sucessor in the caravane
 	void SetSuccessor(nofTradeDonkey * const successor) 
 	{ this->successor = successor; }
+
+	/// Start wandering and informs the other successors about this
+	void CancelTradeCaravane();
 };
 
 

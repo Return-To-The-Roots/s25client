@@ -143,6 +143,8 @@ unsigned char TradeRoute::RecalcLocalRoute()
 /// Recalc the whole route and returns next direction
 unsigned char TradeRoute::RecalcGlobalRoute()
 {
+	local_pos = 0;
+	global_pos = 0;
 	// TG node where we start
 	Point<MapCoord> start_tgn  = current_pos_tg = TradeGraphNode::ConverToTGCoords(start);
 	// Try to calc paths to the main point and - if this doesn't work - to the mainpoints of the surrounded nodes
@@ -443,4 +445,12 @@ void TradeGraph::UpdateEdge(Point<MapCoord> pos, const unsigned char dir, const 
 	if(!player)
 		GetNode(pos).dont_run_over_player_territory[dir] = true;
 
+}
+
+/// Assigns new start and goal positions and hence, a new route
+void TradeRoute::AssignNewGoal(const Point<MapCoord> new_goal)
+{
+	this->start = current_pos;
+	this->goal = new_goal;
+	RecalcGlobalRoute();
 }

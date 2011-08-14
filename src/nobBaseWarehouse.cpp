@@ -1,4 +1,4 @@
-// $Id: nobBaseWarehouse.cpp 7374 2011-08-13 20:11:20Z OLiver $
+// $Id: nobBaseWarehouse.cpp 7379 2011-08-14 13:45:53Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1441,9 +1441,9 @@ unsigned nobBaseWarehouse::GetAvailableFiguresForTrading(const Job job) const
 }
 
 /// Starts a trade caravane from this warehouse
-void nobBaseWarehouse::StartTradeCaravane(const GoodType gt, const Job job, const unsigned count,const TradeRoute& tr)
+void nobBaseWarehouse::StartTradeCaravane(const GoodType gt,  Job job, const unsigned count,const TradeRoute& tr,nobBaseWarehouse * goal)
 {
-	nofTradeLeader * tl = new nofTradeLeader(x,y,player,tr);
+	nofTradeLeader * tl = new nofTradeLeader(x,y,player,tr,this->GetPos(),goal->GetPos());
 	AddLeavingFigure(tl);
 
 	// Create the donkeys or other people
@@ -1459,6 +1459,10 @@ void nobBaseWarehouse::StartTradeCaravane(const GoodType gt, const Job job, cons
 
 		AddLeavingFigure(next);
 	}
+
+	// Also diminish the count of donkeys
+	if(job == JOB_NOTHING)
+		job = JOB_PACKDONKEY;
 
 	// Diminish the goods in the warehouse
 	--real_goods.people[JOB_HELPER];

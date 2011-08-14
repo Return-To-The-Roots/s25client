@@ -40,10 +40,18 @@ void nofTradeDonkey::Walked()
 	if(next_dir == REACHED_GOAL)
 	{
 		noBase * nob = gwg->GetNO(x,y);
+		bool invalid_goal = false;
 		if(nob->GetType() != NOP_BUILDING)
-			return; //todo
-		if(!static_cast<noBuilding*>(nob)->IsWarehouse())
-			return //todo
+			invalid_goal = true; 
+		else if(!static_cast<noBuilding*>(nob)->IsWarehouse())
+			invalid_goal = true;
+
+		if(invalid_goal)
+		{
+			CancelTradeCaravane();
+			Wander();
+			return;
+		}
 
 		gwg->GetPlayer(static_cast<nobBaseWarehouse*>(nob)->GetPlayer())
 			->IncreaseInventoryJob(this->GetJobType(),1);
@@ -100,4 +108,16 @@ void nofTradeDonkey::Draw(int x, int y)
 
 void nofTradeDonkey::LostWork()
 {
+}
+
+
+/// Start wandering and informs the other successors about this
+void nofTradeDonkey::CancelTradeCaravane()
+{
+	if(successor) 
+	{
+		successor->CancelTradeCaravane();
+		successor = NULL;
+	}
+	StartWandering();
 }

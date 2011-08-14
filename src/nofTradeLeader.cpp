@@ -5,8 +5,8 @@
 #include "GameWorld.h"
 #include "nobBaseWarehouse.h"
 
-nofTradeLeader::nofTradeLeader(const MapCoord x, const MapCoord y,const unsigned char player,const TradeRoute& tr) 
-: noFigure(JOB_HELPER,x,y,player), tr(tr), successor(NULL)
+nofTradeLeader::nofTradeLeader(const MapCoord x, const MapCoord y,const unsigned char player,const TradeRoute& tr, const Point<MapCoord>  start, const Point<MapCoord> goal) 
+: noFigure(JOB_HELPER,x,y,player), tr(tr), successor(NULL), start(start), goal(goal)
 {
 }
 
@@ -29,23 +29,36 @@ void nofTradeLeader::GoalReached()
 
 void nofTradeLeader::Walked()
 {
-	unsigned char next_dir = tr.GetNextDir();
-	// Are we now at the goal?
-	if(next_dir == REACHED_GOAL)
-	{
-		noBase * nob = gwg->GetNO(x,y);
-		if(nob->GetType() != NOP_BUILDING)
-			return; //todo
-		if(!static_cast<noBuilding*>(nob)->IsWarehouse())
-			return; //todo
+	// Exception handling: goal destroyed or sth. like this
+	bool invalid_goal = false;
 
-		gwg->GetPlayer(static_cast<nobBaseWarehouse*>(nob)->GetPlayer())
-			->IncreaseInventoryJob(this->GetJobType(),1);
-		gwg->RemoveFigure(this,x,y);
-		static_cast<nobBaseWarehouse*>(nob)->AddFigure(this);
+	noBase * nob = gwg->GetNO(goal.x,goal.y);
+	if(nob->GetType() != NOP_BUILDING)
+		invalid_goal = true;
+	if(!static_cast<noBuilding*>(nob)->IsWarehouse())
+		invalid_goal = true;
+
+	unsigned char next_dir;
+	if(invalid_goal)
+	{
+		TryToGoHome();
+		next_dir = dir;
 	}
 	else
-		StartWalking(next_dir);
+	{
+
+		next_dir = tr.GetNextDir();
+		// Are we now at the goal?
+		if(next_dir == REACHED_GOAL)
+		{
+			gwg->GetPlayer(static_cast<nobBaseWarehouse*>(nob)->GetPlayer())
+				->IncreaseInventoryJob(this->GetJobType(),1);
+			gwg->RemoveFigure(this,x,y);
+			static_cast<nobBaseWarehouse*>(nob)->AddFigure(this);
+		}
+		else
+			StartWalking(next_dir);
+	}
 
 	if(successor)
 		successor->AddNextDir(next_dir);
@@ -65,4 +78,28 @@ void nofTradeLeader::Draw(int x, int y)
 
 void nofTradeLeader::LostWork()
 {
+}
+
+/// Tries to go to the home ware house, otherwise start wandering
+void nofTradeLeader::TryToGoHome()
+{
+	goal = start;
+	// Find a way back home
+	tr.AssignNewGoal(gwg->GetPointA(start,4));
+	if(!tr.IsValid())
+		CancelTradeCaravane();
+	else
+		StartWalking(tr.GetNextDir());
+}
+
+/// Start wandering and informs the other successors about this
+void nofTradeLeader::CancelTradeCaravane()
+{
+	if(successor) 
+	{
+		successor->CancelTradeCaravane();
+		successor = NULL;
+	}
+	StartWandering();
+	Wander();
 }
