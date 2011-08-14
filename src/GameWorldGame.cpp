@@ -1,4 +1,4 @@
-// $Id: GameWorldGame.cpp 7373 2011-08-13 10:03:29Z OLiver $
+// $Id: GameWorldGame.cpp 7377 2011-08-14 09:21:35Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1902,7 +1902,6 @@ void GameWorldGame::CreateTradeGraphs()
 	tgs[0]->Create();
 
 	printf("first: %u ms;\n",VideoDriverWrapper::inst().GetTickCount()-tt);
-	tt = GetTickCount();
 
 
 	// And use this one for the others

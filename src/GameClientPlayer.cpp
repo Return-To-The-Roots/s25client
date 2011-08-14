@@ -1,4 +1,4 @@
-// $Id: GameClientPlayer.cpp 7374 2011-08-13 20:11:20Z OLiver $
+// $Id: GameClientPlayer.cpp 7377 2011-08-14 09:21:35Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -2178,11 +2178,13 @@ unsigned GameClientPlayer::GetAvailableWaresForTrading(nobBaseWarehouse * wh, co
 
 		// Found a path?
 		if(tr->GetNextDir() != 0xff)
+		{
 			// Then consider this warehouse
 			if(gt != GD_NOTHING)
 				count += (*it)->GetAvailableWaresForTrading(gt);
 			else if(job != JOB_NOTHING)
 				count += (*it)->GetAvailableFiguresForTrading(job);
+		}
 		delete tr;
 	}
 

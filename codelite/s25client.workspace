@@ -8,7 +8,7 @@
   <Project Name="s25client" Path="s25client.project" Active="Yes"/>
   <Project Name="libsiedler2" Path="../libsiedler2/codelite/libsiedler2.project" Active="No"/>
   <Project Name="libendian" Path="../libsiedler2/libendian/codelite/libendian.project" Active="No"/>
-  <Project Name="soundconvert" Path="../s-c/codelite/soundconvert.project"/>
+  <Project Name="soundconvert" Path="../s-c/codelite/soundconvert.project" Active="No"/>
   <Project Name="libsiedler2" Path="../libsiedler2/codelite/libsiedler2.project"/>
   <Project Name="libendian" Path="../libsiedler2/libendian/codelite/libendian.project"/>
   <Project Name="mygettext" Path="../mygettext/codelite/mygettext.project"/>

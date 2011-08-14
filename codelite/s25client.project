@@ -69,6 +69,8 @@
       <File Name="../libutil/src/SocketSet.h"/>
       <File Name="../libutil/src/libutil.h"/>
       <File Name="../libutil/src/main.h"/>
+      <File Name="../libutil/src/BinaryFile.cpp"/>
+      <File Name="../libutil/src/BinaryFile.h"/>
     </VirtualDirectory>
     <VirtualDirectory Name="lobby">
       <File Name="../liblobby/src/LobbyClient.cpp"/>
@@ -271,6 +273,8 @@
         <File Name="../src/iwAIDebug.h"/>
         <File Name="../src/iwMerchandiseStatistics.cpp"/>
         <File Name="../src/iwMerchandiseStatistics.h"/>
+        <File Name="../src/iwTrade.cpp"/>
+        <File Name="../src/iwTrade.h"/>
       </VirtualDirectory>
       <File Name="../src/PostMsg.cpp"/>
       <File Name="../src/PostMsg.h"/>
@@ -285,6 +289,7 @@
       <File Name="../src/MouseAndKeys.h"/>
       <File Name="../src/iwShip.cpp"/>
       <File Name="../src/nofAttacker.cpp"/>
+      <File Name="../src/nofHunter.cpp"/>
     </VirtualDirectory>
     <VirtualDirectory Name="Spiel">
       <File Name="../src/BurnedWarehouse.cpp"/>
@@ -430,7 +435,6 @@
       <File Name="../src/noExtension.h"/>
       <File Name="../src/noFlag.h"/>
       <File Name="../src/nobUsual.h"/>
-      <File Name="../src/nofHunter.cpp"/>
       <File Name="../src/nofArmorer.cpp"/>
       <File Name="../src/nobMilitary.h"/>
       <File Name="../src/nofStonemason.cpp"/>
@@ -485,8 +489,6 @@
         <File Name="../src/AddonExhaustibleWells.h"/>
         <File Name="../src/AddonInexhaustibleMines.h"/>
         <File Name="../src/AddonLimitCatapults.h"/>
-        <File Name="../src/AddonManager.cpp"/>
-        <File Name="../src/AddonManager.h"/>
         <File Name="../src/AddonMaxWaterwayLength.h"/>
         <File Name="../src/AddonRefundMaterials.h"/>
         <File Name="../src/Addons.cpp"/>
@@ -511,6 +513,10 @@
         <File Name="../src/nofForester.cpp"/>
         <File Name="../src/nofForester.h"/>
         <File Name="../src/nofCharburner.cpp"/>
+        <File Name="../src/nofTradeDonkey.cpp"/>
+        <File Name="../src/nofTradeDonkey.h"/>
+        <File Name="../src/nofTradeLeader.cpp"/>
+        <File Name="../src/nofTradeLeader.h"/>
       </VirtualDirectory>
       <VirtualDirectory Name="Objekte">
         <File Name="../src/noCharburnerPile.cpp"/>
@@ -518,6 +524,8 @@
         <File Name="../src/noGrainfield.cpp"/>
         <File Name="../src/noGrainfield.h"/>
       </VirtualDirectory>
+      <File Name="../src/TradeGraph.h"/>
+      <File Name="../src/TradeGraph.cpp"/>
     </VirtualDirectory>
     <VirtualDirectory Name="libutil">
       <File Name="../libutil/src/Serializer.cpp"/>
@@ -570,8 +578,6 @@
       <File Name="../src/GammaTable.h"/>
     </VirtualDirectory>
     <VirtualDirectory Name="Allgemein">
-      <File Name="../src/BinaryFile.cpp"/>
-      <File Name="../src/BinaryFile.h"/>
       <File Name="../src/CollisionDetection.cpp"/>
       <File Name="../src/CollisionDetection.h"/>
       <File Name="../libutil/src/error.cpp"/>
@@ -632,11 +638,34 @@
     <Project Name="mygettext"/>
   </Dependencies>
   <Settings Type="Executable">
+    <GlobalSettings>
+      <Compiler Options="-Wall;-Werror" C_Options="-Wall;-Werror">
+        <IncludePath Value="."/>
+        <IncludePath Value="../"/>
+        <IncludePath Value="../libsiedler2/src/"/>
+        <IncludePath Value="../liblobby/src/"/>
+        <IncludePath Value="../liblobby/libutil/src/"/>
+        <IncludePath Value="../mygettext/src/"/>
+        <IncludePath Value="../libendian/src/"/>
+      </Compiler>
+      <Linker Options="">
+        <LibraryPath Value="../libsiedler2/libendian/codelite"/>
+        <LibraryPath Value="../"/>
+        <Library Value="GL"/>
+        <Library Value="siedler2"/>
+        <Library Value="mygettext"/>
+        <Library Value="endian"/>
+        <Library Value="bz2"/>
+        <Library Value="libminiupnpc"/>
+      </Linker>
+      <ResourceCompiler Options=""/>
+    </GlobalSettings>
     <Configuration Name="Debug" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
-      <Compiler Options="-g -pg" Required="yes" PreCompiledHeader=""/>
-      <Linker Options="-pg" Required="yes"/>
+      <Compiler Options="-g" C_Options="-g" Required="yes" PreCompiledHeader=""/>
+      <Linker Options="" Required="yes"/>
       <ResourceCompiler Options="" Required="no"/>
-      <General OutputFile="../$(ProjectName)" IntermediateDirectory="./Debug" Command="./$(ProjectName)" CommandArguments="set environment LD_LIBRARY_PATH = ." WorkingDirectory="../" PauseExecWhenProcTerminates="yes"/>
+      <General OutputFile="../$(ProjectName)" IntermediateDirectory="./Debug" Command="./$(ProjectName)" CommandArguments="set environment LD_LIBRARY_PATH = ." UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="../" PauseExecWhenProcTerminates="yes"/>
+      <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;"/>
       <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="">
         <PostConnectCommands/>
         <StartupCommands>set environment LD_LIBRARY_PATH = .</StartupCommands>
@@ -659,12 +688,13 @@
       </AdditionalRules>
     </Configuration>
     <Configuration Name="Release" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
-      <Compiler Options="-O3;-fno-strict-aliasing" Required="yes" PreCompiledHeader="">
+      <Compiler Options="-O3;-fno-strict-aliasing" C_Options="-O3;-fno-strict-aliasing" Required="yes" PreCompiledHeader="">
         <IncludePath Value="."/>
       </Compiler>
       <Linker Options="-O3" Required="yes"/>
       <ResourceCompiler Options="" Required="no"/>
-      <General OutputFile="../$(ProjectName)" IntermediateDirectory="./Release" Command="./$(ProjectName)" CommandArguments="set environment LD_LIBRARY_PATH = ." WorkingDirectory="../" PauseExecWhenProcTerminates="yes"/>
+      <General OutputFile="../$(ProjectName)" IntermediateDirectory="./Release" Command="./$(ProjectName)" CommandArguments="set environment LD_LIBRARY_PATH = ." UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="../" PauseExecWhenProcTerminates="yes"/>
+      <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;"/>
       <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="">
         <PostConnectCommands/>
         <StartupCommands>set environment LD_LIBRARY_PATH = .</StartupCommands>
@@ -686,27 +716,5 @@
         <CustomPreBuild/>
       </AdditionalRules>
     </Configuration>
-    <GlobalSettings>
-      <Compiler Options="-Wall;-Werror">
-        <IncludePath Value="."/>
-        <IncludePath Value="../"/>
-        <IncludePath Value="../libsiedler2/src/"/>
-        <IncludePath Value="../liblobby/src/"/>
-        <IncludePath Value="../liblobby/libutil/src/"/>
-        <IncludePath Value="../mygettext/src/"/>
-        <IncludePath Value="../libendian/src/"/>
-      </Compiler>
-      <Linker Options="">
-        <LibraryPath Value="../libsiedler2/libendian/codelite"/>
-        <LibraryPath Value="../"/>
-        <Library Value="GL"/>
-        <Library Value="siedler2"/>
-        <Library Value="mygettext"/>
-        <Library Value="endian"/>
-        <Library Value="bz2"/>
-        <Library Value="libminiupnpc"/>
-      </Linker>
-      <ResourceCompiler Options=""/>
-    </GlobalSettings>
   </Settings>
 </CodeLite_Project>

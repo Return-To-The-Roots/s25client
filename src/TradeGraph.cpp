@@ -245,8 +245,6 @@ bool TradeGraph::FindPath(const Point<MapCoord> start, const Point<MapCoord> goa
 
 	std::vector<TGN> nodes(size.x*size.y);
 
-	unsigned nodes_count = 0;
-
 	nodes[start.y*size.x+start.x].route_length = 0;
 	nodes[start.y*size.x+start.x].real_length = 0;
 
@@ -258,9 +256,9 @@ bool TradeGraph::FindPath(const Point<MapCoord> start, const Point<MapCoord> goa
 
 		unsigned shortest_route = 0xFFFFFFFF;
 
-		std::list<Point<MapCoord>>::iterator best_it;
+		std::list<Point<MapCoord> >::iterator best_it;
 
-		for(std::list<Point<MapCoord>>::iterator it = todo.begin(); it!=todo.end(); ++it)
+		for(std::list<Point<MapCoord> >::iterator it = todo.begin(); it!=todo.end(); ++it)
 		{
 			unsigned new_way = nodes[it->y*size.x+it->x].real_length + TGN_SIZE;
 			if(new_way < shortest_route)
@@ -383,7 +381,7 @@ void TradeGraph::FindMainPoint(const Point<MapCoord> tgn)
 		{
 			if(i==j || !good_points[j]) continue;
 
-			unsigned char next_dir = gwg->FindTradePath(p,ps[j],player,TG_PF_LENGTH,false,NULL,false);
+			unsigned char next_dir = gwg->FindTradePath(p,ps[j],player,TG_PF_LENGTH,false,NULL,NULL,false);
 			if(next_dir != 0xff) ++connections;
 		}
 
