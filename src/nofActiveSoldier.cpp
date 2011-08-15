@@ -1,4 +1,4 @@
-// $Id: nofActiveSoldier.cpp 7353 2011-08-09 08:32:54Z OLiver $
+// $Id: nofActiveSoldier.cpp 7382 2011-08-15 17:32:29Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -459,7 +459,7 @@ bool nofActiveSoldier::GetFightSpotNear(nofActiveSoldier * other, Point<MapCoord
 
 	// Test Middle point first
 	if(gwg->ValidPointForFighting(middle.x,middle.y,true,NULL)
-		&& (GetPos() == middle || gwg->FindHumanPath(x,y,middle.x,middle.y,MEET_FOR_FIGHT_DISTANCE*2,true,NULL) != 0xff)
+		&& (GetPos() == middle || gwg->FindHumanPath(x,y,middle.x,middle.y,MEET_FOR_FIGHT_DISTANCE*2,false,NULL) != 0xff)
 		&& (other->GetPos() == middle || gwg->FindHumanPath(other->GetX(),other->GetY(),middle.x,middle.y,MEET_FOR_FIGHT_DISTANCE*2,false,NULL) != 0xff))
 	{
 		// Great, then let's take this one
@@ -481,8 +481,8 @@ bool nofActiveSoldier::GetFightSpotNear(nofActiveSoldier * other, Point<MapCoord
 			{
 				// Did we find a good spot?
 				if(gwg->ValidPointForFighting(tx2,ty2,true,NULL)
-					&& gwg->FindHumanPath(x,y,tx2,ty2,MEET_FOR_FIGHT_DISTANCE*2,true,NULL) != 0xff
-					&& gwg->FindHumanPath(other->GetX(),other->GetY(),tx2,ty2,MEET_FOR_FIGHT_DISTANCE*2,true,NULL) != 0xff)
+					&& gwg->FindHumanPath(x,y,tx2,ty2,MEET_FOR_FIGHT_DISTANCE*2,false,NULL) != 0xff
+					&& gwg->FindHumanPath(other->GetX(),other->GetY(),tx2,ty2,MEET_FOR_FIGHT_DISTANCE*2,false,NULL) != 0xff)
 
 				{
 					// Great, then let's take this one
