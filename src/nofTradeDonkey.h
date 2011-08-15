@@ -21,7 +21,7 @@
 
 #include "noFigure.h"
 #include "TradeGraph.h"
-#include <queue>
+#include <deque>
 
 class nofTradeLeader;
 
@@ -36,7 +36,7 @@ class nofTradeDonkey : public noFigure
 	/// Ware this donkey carries (GD_NOTHING if this is a normal figure)
 	GoodType gt;
 	/// Last dir this donkey used
-	std::queue<unsigned char> next_dirs;
+	std::deque<unsigned char> next_dirs;
 
 private:
 
@@ -46,7 +46,7 @@ private:
 	void AbrogateWorkplace();
 
 	/// Returns next direction
-	unsigned char GetNextDir() { unsigned char dir = next_dirs.front(); next_dirs.pop(); return dir; }
+	unsigned char GetNextDir() { unsigned char dir = next_dirs.front(); next_dirs.pop_front(); return dir; }
 
 public:
 
@@ -65,7 +65,7 @@ public:
 
 	
 	/// Adds the next direction, this is usually done by the predecessor
-	void AddNextDir(const unsigned char dir) { next_dirs.push(dir); }
+	void AddNextDir(const unsigned char dir) { next_dirs.push_back(dir); }
 
 	/// Gets the type of ware this donkey is carrying
 	GoodType GetCarriedWare() const { return gt; }

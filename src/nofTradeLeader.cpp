@@ -4,6 +4,7 @@
 #include "nofTradeDonkey.h"
 #include "GameWorld.h"
 #include "nobBaseWarehouse.h"
+#include "SerializedGameData.h"
 
 nofTradeLeader::nofTradeLeader(const MapCoord x, const MapCoord y,const unsigned char player,const TradeRoute& tr, const Point<MapCoord>  start, const Point<MapCoord> goal) 
 : noFigure(JOB_HELPER,x,y,player), tr(tr), successor(NULL), start(start), goal(goal)
@@ -11,16 +12,27 @@ nofTradeLeader::nofTradeLeader(const MapCoord x, const MapCoord y,const unsigned
 }
 
 nofTradeLeader::nofTradeLeader(SerializedGameData * sgd, const unsigned obj_id)
-: noFigure(sgd,obj_id), tr(NULL,Point<MapCoord>(0,0),Point<MapCoord>(0,0))
+: noFigure(sgd,obj_id),
+tr(sgd,gwg,player), 
+successor(sgd->PopObject<nofTradeDonkey>(GOT_NOF_TRADEDONKEY)),
+start(sgd->PopUnsignedShort(),sgd->PopUnsignedShort()),
+goal(sgd->PopUnsignedShort(),sgd->PopUnsignedShort())
 {
-	 //todo
 }
 
 
 void nofTradeLeader::Serialize(SerializedGameData *sgd) const 
 {
 	Serialize_noFigure(sgd);
-	 //todo
+	
+	tr.Serialize(sgd);
+	
+	sgd->PushObject(successor,true);
+	sgd->PushUnsignedShort(start.x);
+	sgd->PushUnsignedShort(start.y);
+	sgd->PushUnsignedShort(goal.x);
+	sgd->PushUnsignedShort(goal.y);
+
 }
 
 void nofTradeLeader::GoalReached()

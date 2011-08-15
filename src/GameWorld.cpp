@@ -1,4 +1,4 @@
-// $Id: GameWorld.cpp 7371 2011-08-12 13:11:08Z OLiver $
+// $Id: GameWorld.cpp 7384 2011-08-15 22:13:01Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -36,6 +36,7 @@
 #include "CatapultStone.h"
 #include "noBuildingSite.h"
 #include "Random.h"
+#include "TradeGraph.h"
 #include <queue>
 
 #include "WindowManager.h"
@@ -477,6 +478,16 @@ void GameWorld::Serialize(SerializedGameData *sgd) const
 	// Obj-ID-Counter reinschreiben
 	sgd->PushUnsignedInt(GameObject::GetObjIDCounter());
 
+	/// Serialize trade graphs first if they exist
+	// Only if trade is enabled
+	if(GameClient::inst().GetGGS().isEnabled(ADDON_TRADE))
+	{
+		sgd->PushUnsignedChar(static_cast<unsigned char>(tgs.size()));
+		for(unsigned i = 0;i<tgs.size();++i)
+			tgs[i]->Serialize(sgd);
+	}
+
+
 	// Alle Weltpunkte serialisieren
 	for(unsigned i = 0;i<map_size;++i)
 	{
@@ -562,6 +573,15 @@ void GameWorld::Deserialize(SerializedGameData *sgd)
 
 	// Obj-ID-Counter setzen
 	GameObject::SetObjIDCounter(sgd->PopUnsignedInt());
+
+	// Trade graphs
+	// Only if trade is enabled
+	if(GameClient::inst().GetGGS().isEnabled(ADDON_TRADE))
+	{
+		tgs.resize(sgd->PopUnsignedChar());
+		for(unsigned i = 0;i<tgs.size();++i)
+			tgs[i] = new TradeGraph(sgd,this);
+	}
 
 	// Alle Weltpunkte serialisieren
 	for(unsigned i = 0;i<map_size;++i)

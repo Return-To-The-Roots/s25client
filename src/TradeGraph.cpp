@@ -2,6 +2,7 @@
 #include "main.h"
 #include "TradeGraph.h"
 #include "GameWorld.h"
+#include "SerializedGameData.h"
 
 TradeGraph::TradeGraph(const unsigned char player,const GameWorldGame * const gwg)
 : gwg(gwg), player(player), size(gwg->GetWidth() / TGN_SIZE,gwg->GetHeight() / TGN_SIZE)
@@ -24,6 +25,47 @@ void TradeGraph::Create()
 			for(unsigned d = 0;d<8;++d)
 				UpdateEdge(Point<MapCoord>(x,y),d,NULL);
 		}
+}
+
+void TradeGraphNode::Deserialize(SerializedGameData *sgd)
+{
+	main_pos.x = sgd->PopUnsignedShort();
+	main_pos.y = sgd->PopUnsignedShort();
+	for(unsigned i = 0;i<8;++i)
+	{
+		dirs[i] = sgd->PopUnsignedShort();
+		not_possible_forever[i] = sgd->PopBool();
+		dont_run_over_player_territory[i] = sgd->PopBool();
+	}
+}
+
+void TradeGraphNode::Serialize(SerializedGameData *sgd) const
+{
+	sgd->PushUnsignedShort(main_pos.x);
+	sgd->PushUnsignedShort(main_pos.y);
+	for(unsigned i = 0;i<8;++i)
+	{
+		sgd->PushUnsignedShort(dirs[i]);
+		sgd->PushBool(not_possible_forever[i]);
+		sgd->PushBool(dont_run_over_player_territory[i]);
+	}
+}
+
+TradeGraph::TradeGraph(SerializedGameData * sgd, const GameWorldGame* const gwg) :
+gwg(gwg), player(sgd->PopUnsignedChar()), size(sgd->PopUnsignedShort(),sgd->PopUnsignedShort()),
+trade_graph(size.x*size.y)
+{
+	for(unsigned i = 0;i<trade_graph.size();++i)
+		trade_graph[i].Deserialize(sgd);
+}
+
+void TradeGraph::Serialize(SerializedGameData *sgd) const
+{
+	sgd->PushUnsignedChar(player);
+	sgd->PushUnsignedShort(size.x);
+	sgd->PushUnsignedShort(size.y);
+	for(unsigned i = 0;i<trade_graph.size();++i)
+		trade_graph[i].Serialize(sgd);
 }
 
 /// Creates the graph at the beginning of the game using the data of the graph of another player
@@ -64,6 +106,48 @@ void TradeGraph::CreateWithHelpOfAnotherPlayer(const TradeGraph& helper,const Ga
 			for(unsigned d = 0;d<8;++d)
 				UpdateEdge(Point<MapCoord>(x,y),d,&helper);
 	}
+}
+
+TradeRoute::TradeRoute(SerializedGameData * sgd, const GameWorldGame* const gwg, const unsigned char player) :
+tg(gwg->GetTradeGraph(player)),
+start(sgd->PopUnsignedShort(),sgd->PopUnsignedShort()),
+goal(sgd->PopUnsignedShort(),sgd->PopUnsignedShort()),
+current_pos(sgd->PopUnsignedShort(),sgd->PopUnsignedShort()),
+current_pos_tg(sgd->PopUnsignedShort(),sgd->PopUnsignedShort())
+{
+	global_route.resize(sgd->PopUnsignedInt());
+	for(unsigned i = 0;i<global_route.size();++i)
+		global_route[i] = sgd->PopUnsignedChar();
+	global_pos = sgd->PopUnsignedInt();
+
+	local_route.resize(sgd->PopUnsignedInt());
+	for(unsigned i = 0;i<local_route.size();++i)
+		local_route[i] = sgd->PopUnsignedChar();
+	local_pos = sgd->PopUnsignedInt();
+}
+
+void TradeRoute::Serialize(SerializedGameData *sgd) const
+{
+	sgd->PushUnsignedShort(start.x);
+	sgd->PushUnsignedShort(start.y);
+	sgd->PushUnsignedShort(goal.x);
+	sgd->PushUnsignedShort(goal.y);
+	sgd->PushUnsignedShort(current_pos.x);
+	sgd->PushUnsignedShort(current_pos.y);
+	sgd->PushUnsignedShort(current_pos_tg.x);
+	sgd->PushUnsignedShort(current_pos_tg.y);
+
+	sgd->PushUnsignedInt(global_route.size());
+	for(unsigned i = 0;i<global_route.size();++i)
+		sgd->PushUnsignedChar(global_route[i]);
+	sgd->PushUnsignedInt(global_pos);
+
+	sgd->PushUnsignedInt(local_route.size());
+	for(unsigned i = 0;i<local_route.size();++i)
+		sgd->PushUnsignedChar(local_route[i]);
+	sgd->PushUnsignedInt(local_pos);
+
+	
 }
 
 
@@ -275,7 +359,7 @@ bool TradeGraph::FindPath(const Point<MapCoord> start, const Point<MapCoord> goa
 
 		for(unsigned i = 0;i<8;++i)
 		{
-			if(GetNode(*best_it).dirs[i] == oo)
+			if(GetNode(*best_it).dirs[i] == NO_EDGE)
 				continue;
 
 			Point<MapCoord> new_pos(GetNodeAround(*best_it,i+1));
@@ -431,8 +515,8 @@ void TradeGraph::UpdateEdge(Point<MapCoord> pos, const unsigned char dir, const 
 	// Simply try to find a path from one main point to another
 	if(gwg->FindTradePath(mpos,GetNode(other).main_pos,
 		player,TG_PF_LENGTH,false,&route,&length) == 0xff)
-		length = oo;
-	GetNode(pos).dirs[dir] = length;
+		length = NO_EDGE;
+	GetNode(pos).dirs[dir] = static_cast<MapCoord>(length);
 
 	bool player = false;
 	for(unsigned i = 0;i<route.size();++i)

@@ -347,7 +347,7 @@ void nofAttacker::Walked()
 			{
 			
 				// Weg zum Hafen suchen
-				unsigned char dir = gwg->FindHumanPath(x,y,harbor_flag_x,harbor_flag_y,20,NULL,NULL);
+				unsigned char dir = gwg->FindHumanPath(x,y,harbor_flag_x,harbor_flag_y,20,false,NULL);
 				if(dir == 0xff)
 				{
 					// Kein Weg gefunden? Dann auch abbrechen!

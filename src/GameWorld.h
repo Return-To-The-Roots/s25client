@@ -1,4 +1,4 @@
-// $Id: GameWorld.h 7371 2011-08-12 13:11:08Z OLiver $
+// $Id: GameWorld.h 7384 2011-08-15 22:13:01Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -582,6 +582,7 @@ protected:
 /// "Interface-Klasse" für das Spiel
 class GameWorldGame : public virtual GameWorldBase
 {
+protected:
 	/// rade graphs, one for each player
 	std::vector<TradeGraph*> tgs;
 private:
@@ -759,6 +760,8 @@ public:
 
 	/// Creates a Trade Route from one point to another
 	void CreateTradeRoute(const Point<MapCoord> start, Point<MapCoord> dest,const unsigned char player,TradeRoute ** tr);
+	/// Retrieves a trade graph
+	TradeGraph * GetTradeGraph(const unsigned char player) const { return tgs[player]; }
 };
 
 

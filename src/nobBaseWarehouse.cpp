@@ -1,4 +1,4 @@
-// $Id: nobBaseWarehouse.cpp 7379 2011-08-14 13:45:53Z OLiver $
+// $Id: nobBaseWarehouse.cpp 7384 2011-08-15 22:13:01Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1437,7 +1437,10 @@ unsigned nobBaseWarehouse::GetAvailableFiguresForTrading(const Job job) const
 	// We need a helper as leader
 	if(!real_goods.people[JOB_HELPER]) return 0;
 
-	return real_goods.people[job]; 
+	if(job == JOB_HELPER)
+		return real_goods.people[JOB_HELPER]-1; // need one as leader
+	else
+		return real_goods.people[job]; 
 }
 
 /// Starts a trade caravane from this warehouse

@@ -7,6 +7,7 @@
 class GameWorldGame;
 class TradeGraph;
 class GameClientPlayerList;
+class SerializedGameData;
 
 /// Size of such a TradeGraphNode
 const MapCoord TGN_SIZE = 20;
@@ -16,6 +17,7 @@ const MapCoord TG_PF_LENGTH = 2*TGN_SIZE;
 /// Constants used for Pathfinding
 const unsigned char NO_PATH = 0xff;
 const unsigned char REACHED_GOAL = 0xdd;
+const MapCoord NO_EDGE = 0xffff;
 
 struct TradeGraphNode
 {
@@ -29,7 +31,13 @@ struct TradeGraphNode
 	bool dont_run_over_player_territory[8];
 
 	TradeGraphNode() : main_pos(0xffff,0xffff)
-	{ memset(dont_run_over_player_territory,0,8*sizeof(bool)); }
+	{ 
+		for(unsigned i = 0;i<8;++i) dirs[i] = NO_EDGE;
+		memset(dont_run_over_player_territory,0,8*sizeof(bool));
+	}
+
+	void Deserialize(SerializedGameData *sgd);
+	void Serialize(SerializedGameData *sgd) const;
 
 	/// Converts map coords to TG coords
 	static Point<MapCoord> ConverToTGCoords(const Point<MapCoord> pos)
@@ -73,6 +81,10 @@ public:
 
 	TradeRoute(const TradeGraph * const tg, const Point<MapCoord> start, const Point<MapCoord> goal) :
 	  tg(tg), start(start),goal(goal), current_pos(start), global_pos(0), local_pos(0) { RecalcGlobalRoute(); }
+	TradeRoute(SerializedGameData * sgd, const GameWorldGame* const gwg, const unsigned char player);
+
+	void Serialize(SerializedGameData *sgd) const;
+
 
 	/// Was a route found?
 	bool IsValid() const 
@@ -92,7 +104,7 @@ class TradeGraph
 	// Reference to the game world
 	const GameWorldGame * const gwg;
 	/// Player which uses the graph
-	const unsigned player;
+	const unsigned char player;
 	/// Size of the graph
 	Point<MapCoord> size;
 	/// The trade graph consisting of big squares
@@ -107,6 +119,9 @@ private:
 public:
 
 	TradeGraph(const unsigned char player,const GameWorldGame * const gwg);
+	TradeGraph(SerializedGameData * sgd, const GameWorldGame* const gwg);
+
+	void Serialize(SerializedGameData *sgd) const;
 
 	/// Creates a new complete graph
 	void Create();
