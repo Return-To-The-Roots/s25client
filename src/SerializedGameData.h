@@ -1,4 +1,4 @@
-// $Id: SerializedGameData.h 7095 2011-03-27 20:15:08Z OLiver $
+// $Id: SerializedGameData.h 7385 2011-08-16 09:22:29Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -112,6 +112,25 @@ public:
 
 	/// FoW-Objekt
 	void PushFOWObject(const FOWObject * fowobj);
+	
+		/// Point of map coords
+	void PushMapPoint(const Point<MapCoord> p)
+	{
+		PushUnsignedShort(p.x);
+		PushUnsignedShort(p.y);
+	}
+	
+	/// Point of map coords
+	Point<MapCoord> PopMapPoint()
+	{
+		Point<MapCoord> p;
+		p.x = PopUnsignedShort();
+		p.y = PopUnsignedShort();
+		return p;
+	}
+
+	
+
 
 
 	// Lesemethoden

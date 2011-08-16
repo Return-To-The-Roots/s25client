@@ -29,8 +29,7 @@ void TradeGraph::Create()
 
 void TradeGraphNode::Deserialize(SerializedGameData *sgd)
 {
-	main_pos.x = sgd->PopUnsignedShort();
-	main_pos.y = sgd->PopUnsignedShort();
+	main_pos = sgd->PopMapPoint();
 	for(unsigned i = 0;i<8;++i)
 	{
 		dirs[i] = sgd->PopUnsignedShort();
@@ -41,8 +40,7 @@ void TradeGraphNode::Deserialize(SerializedGameData *sgd)
 
 void TradeGraphNode::Serialize(SerializedGameData *sgd) const
 {
-	sgd->PushUnsignedShort(main_pos.x);
-	sgd->PushUnsignedShort(main_pos.y);
+	sgd->PushMapPoint(main_pos);
 	for(unsigned i = 0;i<8;++i)
 	{
 		sgd->PushUnsignedShort(dirs[i]);
@@ -52,7 +50,7 @@ void TradeGraphNode::Serialize(SerializedGameData *sgd) const
 }
 
 TradeGraph::TradeGraph(SerializedGameData * sgd, const GameWorldGame* const gwg) :
-gwg(gwg), player(sgd->PopUnsignedChar()), size(sgd->PopUnsignedShort(),sgd->PopUnsignedShort()),
+gwg(gwg), player(sgd->PopUnsignedChar()), size(sgd->PopMapPoint()),
 trade_graph(size.x*size.y)
 {
 	for(unsigned i = 0;i<trade_graph.size();++i)
@@ -62,8 +60,7 @@ trade_graph(size.x*size.y)
 void TradeGraph::Serialize(SerializedGameData *sgd) const
 {
 	sgd->PushUnsignedChar(player);
-	sgd->PushUnsignedShort(size.x);
-	sgd->PushUnsignedShort(size.y);
+	sgd->PushMapPoint(size);
 	for(unsigned i = 0;i<trade_graph.size();++i)
 		trade_graph[i].Serialize(sgd);
 }
@@ -110,10 +107,10 @@ void TradeGraph::CreateWithHelpOfAnotherPlayer(const TradeGraph& helper,const Ga
 
 TradeRoute::TradeRoute(SerializedGameData * sgd, const GameWorldGame* const gwg, const unsigned char player) :
 tg(gwg->GetTradeGraph(player)),
-start(sgd->PopUnsignedShort(),sgd->PopUnsignedShort()),
-goal(sgd->PopUnsignedShort(),sgd->PopUnsignedShort()),
-current_pos(sgd->PopUnsignedShort(),sgd->PopUnsignedShort()),
-current_pos_tg(sgd->PopUnsignedShort(),sgd->PopUnsignedShort())
+start(sgd->PopMapPoint()),
+goal(sgd->PopMapPoint()),
+current_pos(sgd->PopMapPoint()),
+current_pos_tg(sgd->PopMapPoint())
 {
 	global_route.resize(sgd->PopUnsignedInt());
 	for(unsigned i = 0;i<global_route.size();++i)
@@ -128,14 +125,10 @@ current_pos_tg(sgd->PopUnsignedShort(),sgd->PopUnsignedShort())
 
 void TradeRoute::Serialize(SerializedGameData *sgd) const
 {
-	sgd->PushUnsignedShort(start.x);
-	sgd->PushUnsignedShort(start.y);
-	sgd->PushUnsignedShort(goal.x);
-	sgd->PushUnsignedShort(goal.y);
-	sgd->PushUnsignedShort(current_pos.x);
-	sgd->PushUnsignedShort(current_pos.y);
-	sgd->PushUnsignedShort(current_pos_tg.x);
-	sgd->PushUnsignedShort(current_pos_tg.y);
+	sgd->PushMapPoint(start);
+	sgd->PushMapPoint(goal);
+	sgd->PushMapPoint(current_pos);
+	sgd->PushMapPoint(current_pos_tg);
 
 	sgd->PushUnsignedInt(global_route.size());
 	for(unsigned i = 0;i<global_route.size();++i)

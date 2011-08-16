@@ -1,4 +1,4 @@
-// $Id: SerializedGameData.cpp 7095 2011-03-27 20:15:08Z OLiver $
+// $Id: SerializedGameData.cpp 7385 2011-08-16 09:22:29Z OLiver $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -67,6 +67,8 @@
 #include "nofPassiveWorker.h"
 #include "nofCharburner.h"
 #include "nofCatapultMan.h"
+#include "nofTradeDonkey.h"
+#include "nofTradeLeader.h"
 #include "noExtension.h"
 #include "noBuildingSite.h"
 #include "noEnvObject.h"
@@ -145,6 +147,8 @@ GameObject * SerializedGameData::Create_GameObject(const GO_Type got, const unsi
 	case GOT_NOF_WAREHOUSEWORKER: return new nofWarehouseWorker(this,obj_id);
 	case GOT_NOF_CATAPULTMAN: return new nofCatapultMan(this,obj_id);
 	case GOT_NOF_CHARBURNER: return new nofCharburner(this,obj_id);
+	case GOT_NOF_TRADEDONKEY: return new nofTradeDonkey(this,obj_id);
+	case GOT_NOF_TRADELEADER: return new nofTradeLeader(this,obj_id);
 	case GOT_EXTENSION: return new noExtension(this,obj_id);
 	case GOT_BUILDINGSITE: return new noBuildingSite(this,obj_id);
 	case GOT_ENVOBJECT: return new noEnvObject(this,obj_id);

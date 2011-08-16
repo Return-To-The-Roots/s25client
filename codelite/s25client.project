@@ -501,6 +501,8 @@
         <File Name="../src/AddonCharburner.h"/>
         <File Name="../src/const_addons.h"/>
         <File Name="../src/nofFarmhand.cpp"/>
+        <File Name="../src/nofTradeDonkey.cpp"/>
+        <File Name="../src/nofTradeLeader.cpp"/>
       </VirtualDirectory>
       <File Name="../src/GameReplay.cpp"/>
       <File Name="../src/GameReplay.h"/>
@@ -513,9 +515,7 @@
         <File Name="../src/nofForester.cpp"/>
         <File Name="../src/nofForester.h"/>
         <File Name="../src/nofCharburner.cpp"/>
-        <File Name="../src/nofTradeDonkey.cpp"/>
         <File Name="../src/nofTradeDonkey.h"/>
-        <File Name="../src/nofTradeLeader.cpp"/>
         <File Name="../src/nofTradeLeader.h"/>
       </VirtualDirectory>
       <VirtualDirectory Name="Objekte">

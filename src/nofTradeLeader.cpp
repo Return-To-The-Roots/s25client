@@ -15,8 +15,8 @@ nofTradeLeader::nofTradeLeader(SerializedGameData * sgd, const unsigned obj_id)
 : noFigure(sgd,obj_id),
 tr(sgd,gwg,player), 
 successor(sgd->PopObject<nofTradeDonkey>(GOT_NOF_TRADEDONKEY)),
-start(sgd->PopUnsignedShort(),sgd->PopUnsignedShort()),
-goal(sgd->PopUnsignedShort(),sgd->PopUnsignedShort())
+start(sgd->PopMapPoint()),
+goal(sgd->PopMapPoint())
 {
 }
 
@@ -28,11 +28,8 @@ void nofTradeLeader::Serialize(SerializedGameData *sgd) const
 	tr.Serialize(sgd);
 	
 	sgd->PushObject(successor,true);
-	sgd->PushUnsignedShort(start.x);
-	sgd->PushUnsignedShort(start.y);
-	sgd->PushUnsignedShort(goal.x);
-	sgd->PushUnsignedShort(goal.y);
-
+	sgd->PushMapPoint(start);
+	sgd->PushMapPoint(goal);
 }
 
 void nofTradeLeader::GoalReached()
