@@ -525,7 +525,6 @@
         <File Name="../src/noGrainfield.h"/>
       </VirtualDirectory>
       <File Name="../src/TradeGraph.h"/>
-      <File Name="../src/TradeGraph.cpp"/>
     </VirtualDirectory>
     <VirtualDirectory Name="libutil">
       <File Name="../libutil/src/Serializer.cpp"/>
@@ -588,6 +587,7 @@
       <File Name="../src/GameManager.h"/>
       <File Name="../src/GlobalVars.cpp"/>
       <File Name="../src/GlobalVars.h"/>
+      <File Name="../src/TradeGraph.cpp"/>
     </VirtualDirectory>
     <File Name="../liblobby/src/LobbyInterface.h"/>
     <File Name="../liblobby/src/LobbyMessage.cpp"/>
