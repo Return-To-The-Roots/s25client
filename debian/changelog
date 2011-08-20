@@ -1,3 +1,140 @@
+s25rttr (20110819-7390.92) karmic; urgency=low
+
+  * Automatic Jenkins Build 92
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Fri, 19 Aug 2011 13:40:26 +0200
+
+s25rttr (20110819-7390.91) karmic; urgency=low
+
+  * Automatic Jenkins Build 91
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Fri, 19 Aug 2011 13:37:37 +0200
+
+s25rttr (20110819-7390) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Fri, 19 Aug 2011 00:00:00 +0200
+
+s25rttr (20110817-7388.90) karmic; urgency=low
+
+  * Automatic Jenkins Build 90
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Wed, 17 Aug 2011 01:16:49 +0200
+
+s25rttr (20110817-7388) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Wed, 17 Aug 2011 00:00:00 +0200
+
+s25rttr (20110816-7387) any; urgency=low
+
+  * Added trading files to VS2010 project file
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Tue, 16 Aug 2011 17:58:00 +0200
+
+s25rttr (20110816-7386) any; urgency=low
+
+  * build version fix
+
+ -- OLiver Siebert <oliver@siedler25.org>  Tue, 16 Aug 2011 09:23:00 +0200
+
+s25rttr (20110816-7385) any; urgency=low
+
+  * Fixed trade serializing, is supposed to work now
+
+ -- OLiver Siebert <oliver@siedler25.org>  Tue, 16 Aug 2011 09:22:00 +0200
+
+s25rttr (20110816-7384.89) karmic; urgency=low
+
+  * Automatic Jenkins Build 89
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 16 Aug 2011 01:10:09 +0200
+
+s25rttr (20110815-7384) any; urgency=low
+
+  * serializing and deserializing of the trade stuff and fixed some
+    small bugs
+
+ -- OLiver Siebert <oliver@siedler25.org>  Mon, 15 Aug 2011 22:13:00 +0200
+
+s25rttr (20110815-7382) any; urgency=low
+
+  * maybe async fix
+
+ -- OLiver Siebert <oliver@siedler25.org>  Mon, 15 Aug 2011 17:32:00 +0200
+
+s25rttr (20110815-7381.88) karmic; urgency=low
+
+  * Automatic Jenkins Build 88
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Mon, 15 Aug 2011 01:10:34 +0200
+
+s25rttr (20110815-7381) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Mon, 15 Aug 2011 00:00:00 +0200
+
+s25rttr (20110814-7380) any; urgency=low
+
+  * Move tradedonkey down in the food chain (patch by Maqs)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sun, 14 Aug 2011 13:50:00 +0200
+
+s25rttr (20110814-7379) any; urgency=low
+
+  * trading. exception handling for burned storehouses etc. and fixed
+    some bugs
+
+ -- OLiver Siebert <oliver@siedler25.org>  Sun, 14 Aug 2011 13:45:00 +0200
+
+s25rttr (20110814-7378) any; urgency=low
+
+  * Store distance & coord_id in noRoadNode instead of creating
+    PathfindingPoint every time needed to increase performance (patch
+    by Maqs)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sun, 14 Aug 2011 12:44:00 +0200
+
+s25rttr (20110814-7377) any; urgency=low
+
+  * fixed linux build errors
+
+ -- OLiver Siebert <oliver@siedler25.org>  Sun, 14 Aug 2011 09:21:00 +0200
+
+s25rttr (20110814-7376.87) karmic; urgency=low
+
+  * Automatic Jenkins Build 87
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sun, 14 Aug 2011 01:05:33 +0200
+
+s25rttr (20110814-7376) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sun, 14 Aug 2011 00:00:00 +0200
+
+s25rttr (20110813-7375) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 13 Aug 2011 22:00:00 +0200
+
+s25rttr (20110813-7374) any; urgency=low
+
+  * first caravanes travel from one warehouse to another
+
+ -- OLiver Siebert <oliver@siedler25.org>  Sat, 13 Aug 2011 20:11:00 +0200
+
+s25rttr (20110813-7373) any; urgency=low
+
+  * Next intermediate "release" of the trade features, added the
+    missing files
+
+ -- OLiver Siebert <oliver@siedler25.org>  Sat, 13 Aug 2011 10:03:00 +0200
+
 s25rttr (20110813-7372.86) karmic; urgency=low
 
   * Automatic Jenkins Build 86
