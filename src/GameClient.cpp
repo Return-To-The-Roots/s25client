@@ -1,4 +1,4 @@
-// $Id: GameClient.cpp 7400 2011-08-23 19:19:02Z marcus $
+// $Id: GameClient.cpp 7403 2011-08-23 20:43:07Z marcus $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1902,3 +1902,4 @@ unsigned GameClient::GetTourneyModeDuration() const
 	else
 		return 0;
 }
+
