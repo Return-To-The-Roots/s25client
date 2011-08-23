@@ -1,4 +1,4 @@
-// $Id: SoundManager.cpp 7091 2011-03-27 10:57:38Z OLiver $
+// $Id: SoundManager.cpp 7399 2011-08-23 18:54:43Z marcus $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -28,6 +28,7 @@
 #include "AudioDriverWrapper.h"
 #include "Settings.h"
 #include "noBase.h"
+#include "GameClient.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -46,6 +47,9 @@ SoundManager::~SoundManager()
 
 void SoundManager::PlayNOSound(const unsigned sound_lst_id,noBase * const obj,const unsigned int id, unsigned char volume)
 {
+	if (GAMECLIENT.IsPaused())
+		return;
+
 	if(SETTINGS.sound.effekte == false)
 		return;
 
@@ -72,6 +76,9 @@ void SoundManager::PlayNOSound(const unsigned sound_lst_id,noBase * const obj,co
 
 void SoundManager::WorkingFinished(noBase * const obj)
 {
+	if (GAMECLIENT.IsPaused())
+		return;
+
 	if(SETTINGS.sound.effekte == false)
 		return;
 
@@ -89,6 +96,9 @@ void SoundManager::WorkingFinished(noBase * const obj)
 
 void SoundManager::PlayBirdSounds(const unsigned short tree_count)
 {
+	if (GAMECLIENT.IsPaused())
+		return;
+
 	if(SETTINGS.sound.effekte == false)
 		return;
 
@@ -114,6 +124,9 @@ void SoundManager::PlayBirdSounds(const unsigned short tree_count)
 
 void SoundManager::PlayOceanBrawling(const unsigned water_percent)
 {
+	if (GAMECLIENT.IsPaused())
+		return;
+
 	if(SETTINGS.sound.effekte == false)
 		return;
 

@@ -1,4 +1,4 @@
-// $Id: noAnimal.cpp 7091 2011-03-27 10:57:38Z OLiver $
+// $Id: noAnimal.cpp 7399 2011-08-23 18:54:43Z marcus $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -145,7 +145,7 @@ void noAnimal::Draw(int x, int y)
 				if(now > sound_moment)
 				{
 					// Wenns in dem jeweiligen Rahmen liegt, Sound abspielen
-					if(now < sound_moment + 1000)
+					if((now < sound_moment + 1000) && !GAMECLIENT.IsPaused())
 						LOADER.GetSoundN("sound", (species == SPEC_SHEEP)?94:95)->Play(50+rand()%70,false);
 
 					// Neuen Zeitpunkt errechnen

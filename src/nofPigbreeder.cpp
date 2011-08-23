@@ -1,4 +1,4 @@
-// $Id: nofPigbreeder.cpp 7091 2011-03-27 10:57:38Z OLiver $
+// $Id: nofPigbreeder.cpp 7399 2011-08-23 18:54:43Z marcus $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -97,7 +97,7 @@ void nofPigbreeder::MakePigSounds()
 {
 	/// Ist es wieder Zeit für einen Schweine-Sound?
 	if(GameClient::inst().GetGFNumber() - last_id > 600+unsigned(rand()%200)-unsigned((*workplace->GetProduktivityPointer())*5) && 
-		GameClient::inst().GetGFNumber() != last_id)
+		(GameClient::inst().GetGFNumber() != last_id) && !GAMECLIENT.IsPaused())
 	{
 		// "Oink"
 		LOADER.GetSoundN("sound", 86)->Play(255,false);
