@@ -43,7 +43,7 @@ while test $# != 0 ; do
 			;;
 		callgrind)
 			CMD=valgrind
-			ARGS="$ARGS --tool=callgrind"
+			ARGS="$ARGS --tool=callgrind --instr-atstart=no"
 			;;
 		ddd)
 			CMD=ddd

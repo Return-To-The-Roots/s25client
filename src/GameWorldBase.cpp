@@ -1,4 +1,4 @@
-// $Id: GameWorldBase.cpp 7327 2011-08-02 15:34:57Z jh $
+// $Id: GameWorldBase.cpp 7397 2011-08-23 15:48:26Z marcus $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -225,13 +225,15 @@ MapCoord GameWorldBase::CalcDistanceAroundBorderY(const MapCoord y1, const MapCo
 	}
 }
 
-
 /// Ermittelt Abstand zwischen 2 Punkten auf der Map unter Berücksichtigung der Kartengrenzüberquerung
 unsigned GameWorldBase::CalcDistance(const int x1, const int y1,
 					  const int x2, const int y2) const
 {
-	int dx = std::abs((2*int(x1)+(y1&1))-(2*int(x2)+(y2&1)));
-	int dy = 2 * std::abs(int(y1)-int(y2));
+	int dx = (2*int(x1)+(y1&1))-(2*int(x2)+(y2&1));
+	int dy = 2 * ((y1 > y2) ? (int(y1)-int(y2)) : (int(y2)-int(y1)));
+
+	if (dx < 0)
+		dx = -dx;
 
 	if (dy > height)
 	{
@@ -243,7 +245,9 @@ unsigned GameWorldBase::CalcDistance(const int x1, const int y1,
 		dx = (width * 2) - dx;
 	}
 
-	return((dy + std::max(0, dx - dy / 2)) / 2);
+	dx -= dy / 2;
+
+	return((dy + (dx > 0 ? dx : 0)) / 2);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
