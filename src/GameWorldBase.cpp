@@ -1,4 +1,4 @@
-// $Id: GameWorldBase.cpp 7397 2011-08-23 15:48:26Z marcus $
+// $Id: GameWorldBase.cpp 7398 2011-08-23 18:39:36Z marcus $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -885,9 +885,6 @@ noFlag * GameWorldBase::GetRoadFlag(int x, int y,unsigned char& dir,unsigned las
 	}
 }
 
-
-
-
 ///////////////////////////////////////////////////////////////////////////////
 /**
  *
@@ -898,22 +895,30 @@ unsigned short GameWorldBase::GetXA(const MapCoord x, const MapCoord y, unsigned
 {
 	assert(dir < 6);
 
-	int tx = x;
-
 	switch(dir)
 	{
-	case 0: tx = x - 1; break;
-	case 1: tx = x - !(y&1); break;
-	case 2: tx = x + (y&1); break;
-	case 3: tx = x + 1; break;
-	case 4: tx = x + (y&1); break;
-	case 5: tx = x - !(y&1); break;
+		case 1:
+		case 5:
+			if (y & 1)
+				return(x);
+		case 0:
+			if (x == 0)
+				return(width - 1);
+			
+			return(x - 1);
+		case 2:
+		case 4:
+			if (!(y&1))
+				return(x);
+		case 3:
+			if (x == width - 1)
+				return(0);
+
+			return(x + 1);
 	}
 
-	unsigned short rx,ry;
-	ConvertCoords(tx,int(y),&rx,&ry);
-
-	return rx;
+	// never reached, but compiler likes to complain :)
+	return(0);
 }
 
 void GameWorldBase::GetPointA(MapCoord& x, MapCoord& y, unsigned dir) const
@@ -937,21 +942,26 @@ unsigned short GameWorldBase::GetYA(const MapCoord x, const MapCoord y, unsigned
 {
 	assert(dir < 6);
 
-	int ty=y;
-
-	switch(dir)
+	switch (dir)
 	{
-	default: break;
-	case 1:
-	case 2: --ty; break;
-	case 4:
-	case 5: ++ty; break;
+		case 1:
+		case 2:
+			if (y == 0)
+				return(height - 1);
+
+			return(y - 1);
+		case 4:
+		case 5:
+			if (y == height - 1)
+				return(0);
+
+			return(y + 1);
+		default:
+			return(y);
 	}
 
-	unsigned short rx,ry;
-	ConvertCoords(int(x),ty,&rx,&ry);
-
-	return ry;
+	// never reached, but compiler likes to complain :)
+	return(0);
 }
 
 /// Wie GetXA, bloß 2. Außenschale (dir zwischen 0 bis 11)
