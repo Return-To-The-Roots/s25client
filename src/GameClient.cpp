@@ -1,4 +1,4 @@
-// $Id: GameClient.cpp 7359 2011-08-10 10:21:18Z FloSoft $
+// $Id: GameClient.cpp 7400 2011-08-23 19:19:02Z marcus $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1286,8 +1286,10 @@ void GameClient::ExecuteGameFrame(const bool skipping)
 			if(framesinfo.nr % SETTINGS.interface.autosave_interval == 0)
 			{
 				std::string tmp = GetFilePath(FILE_PATHS[85]).c_str();
+				tmp += this->mapinfo.title;
+				tmp += " (";
 				tmp += _("Auto-Save");
-				tmp += ".sav";
+				tmp += ").sav";
 
 				WriteSaveHeader(tmp);
 			}
