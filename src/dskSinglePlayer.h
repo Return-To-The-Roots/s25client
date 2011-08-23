@@ -1,4 +1,4 @@
-// $Id: dskSinglePlayer.h 7040 2011-02-16 23:23:20Z jh $
+// $Id: dskSinglePlayer.h 7401 2011-08-23 19:43:19Z marcus $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -33,6 +33,7 @@ private:
 
 	void Msg_ButtonClick(const unsigned int ctrl_id);
 	void PrepareSinglePlayerServer();
+	void PrepareLoadGame();
 };
 
 #endif // !dskSINGLEPLAYER_H_INCLUDED

@@ -1,4 +1,4 @@
-// $Id: dskSinglePlayer.cpp 7091 2011-03-27 10:57:38Z OLiver $
+// $Id: dskSinglePlayer.cpp 7401 2011-08-23 19:43:19Z marcus $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -108,7 +108,7 @@ void dskSinglePlayer::Msg_ButtonClick(const unsigned int ctrl_id)
 		} break;
 	case 7: // "Spiel laden"
 		{
-			WindowManager::inst().Show(new iwMsgbox(_("Not available"),_("Please use \'Unlimited Play\' to create a Singleplayer game."),this,MSB_OK,MSB_EXCLAMATIONGREEN));
+			PrepareLoadGame();
 		} break;
 	case 8: // "Zurück"
 		{
@@ -129,4 +129,16 @@ void dskSinglePlayer::PrepareSinglePlayerServer()
 	WindowManager::inst().Switch(new dskSelectMap(csi));
 }
 
+void dskSinglePlayer::PrepareLoadGame()
+{
+	CreateServerInfo csi;
+	csi.gamename = _("Unlimited Play");
+	csi.password = "localgame";
+	csi.port = 3665;
+	csi.type = NP_LOCAL;
+	csi.ipv6 = false;
 
+	WindowManager::inst().Switch(new dskSelectMap(csi));
+	WindowManager::inst().Draw();
+	WindowManager::inst().Show(new iwLoad(csi));
+}
