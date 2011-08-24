@@ -1,4 +1,4 @@
-// $Id: nobMilitary.cpp 7345 2011-08-06 16:52:46Z jh $
+// $Id: nobMilitary.cpp 7407 2011-08-24 15:19:01Z marcus $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -198,7 +198,7 @@ void nobMilitary::Draw(int x, int y)
 	else
 	{
 		if(frontier_distance_tmp == 3) frontier_distance_tmp = 2;
-		bitmap = LOADER.GetMapImageN(3150+frontier_distance_tmp*4+GAMECLIENT.GetGlobalAnimation(4,1,1,this->x*this->y*age));
+		bitmap = LOADER.GetMapImageN(3150+frontier_distance_tmp*4+GAMECLIENT.GetGlobalAnimation(4,1,1,GetX()*GetY()*age));
 	}
 	if(bitmap)
 		bitmap->Draw(x+BORDER_FLAGS[nation][size][0],y+BORDER_FLAGS[nation][size][1],0,0,0,0,0,0);

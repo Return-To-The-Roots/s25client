@@ -1,4 +1,4 @@
-// $Id: nobHQ.cpp 7091 2011-03-27 10:57:38Z OLiver $
+// $Id: nobHQ.cpp 7407 2011-08-24 15:19:01Z marcus $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -383,7 +383,7 @@ void nobHQ::Draw(int x,int y)
 		reserve_soldiers_available[0]+reserve_soldiers_available[1]+reserve_soldiers_available[2]+reserve_soldiers_available[3]+reserve_soldiers_available[4]
 	,4);i;--i)
 	{
-		glArchivItem_Bitmap *bitmap = LOADER.GetMapImageN(3162 + GAMECLIENT.GetGlobalAnimation(8, 80, 40, this->x * this->y * i));
+		glArchivItem_Bitmap *bitmap = LOADER.GetMapImageN(3162 + GAMECLIENT.GetGlobalAnimation(8, 80, 40, GetX() * GetY() * i));
 		if(bitmap)
 			bitmap->Draw(x+TROOPS_FLAGS_HQ[nation][0],y+TROOPS_FLAGS_HQ[nation][1]+(i-1)*3,0,0,0,0,0,0, COLOR_WHITE, COLORS[GAMECLIENT.GetPlayer(player)->color]);
 	}

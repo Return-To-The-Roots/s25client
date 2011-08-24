@@ -1,4 +1,4 @@
-// $Id: nobHarborBuilding.cpp 7117 2011-04-02 19:30:46Z OLiver $
+// $Id: nobHarborBuilding.cpp 7407 2011-08-24 15:19:01Z marcus $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -250,11 +250,11 @@ void nobHarborBuilding::Draw(int x,int y)
 	// Hafenfeuer zeichnen // TODO auch für nicht-römer machen
 	if (nation == NAT_ROMANS || nation == NAT_JAPANESES)
 	{
-		LOADER.GetNationImageN(nation, 500 + 5 * GameClient::inst().GetGlobalAnimation(8,2,1,obj_id+x+y))->Draw(x+FIRE_POS[nation].x,y+FIRE_POS[nation].y,0,0,0,0,0,0);
+		LOADER.GetNationImageN(nation, 500 + 5 * GameClient::inst().GetGlobalAnimation(8,2,1,obj_id+GetX()+GetY()))->Draw(x+FIRE_POS[nation].x,y+FIRE_POS[nation].y,0,0,0,0,0,0);
 	}
 	else if (nation == NAT_AFRICANS || nation == NAT_VIKINGS)
 	{
-		LOADER.GetMapImageN(740+GameClient::inst().GetGlobalAnimation(8,5,2,obj_id+x+y))->Draw(x+FIRE_POS[nation].x,y+FIRE_POS[nation].y);
+		LOADER.GetMapImageN(740+GameClient::inst().GetGlobalAnimation(8,5,2,obj_id+GetX()+GetY()))->Draw(x+FIRE_POS[nation].x,y+FIRE_POS[nation].y);
 	}
 
 	// Läuft gerade eine Expedition?
@@ -272,7 +272,7 @@ void nobHarborBuilding::Draw(int x,int y)
 		// Und den Bauarbeiter, falls er schon da ist
 		if(expedition.builder)
 		{
-			unsigned id = GameClient::inst().GetGlobalAnimation(1000,7,1,this->x+this->y);
+			unsigned id = GameClient::inst().GetGlobalAnimation(1000,7,1,GetX()+GetY());
 
 			const int WALKING_DISTANCE = 30;
 
