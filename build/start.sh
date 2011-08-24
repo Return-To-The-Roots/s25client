@@ -8,6 +8,7 @@ export EF_FREE_WIPES=1
 BIN=src/s25client
 CMD=
 ARGS=
+BINARGS=
 
 while test $# != 0 ; do
 	case $1 in
@@ -24,6 +25,13 @@ while test $# != 0 ; do
 	esac
 	
 	case $ac_option in
+                -l | --load)
+                        BINARGS="$ac_optarg"
+			if [ -n "$ac_optarg" ]
+			then
+				ac_shift=2
+			fi
+			;;
 		-n | --nowait)
 			NOWAIT=1
 			;;
@@ -75,7 +83,7 @@ case $CMD in
 		;;
 esac
 
-$CMD $ARGS $BIN
+$CMD $ARGS $BIN $BINARGS
 
 exit $?
 

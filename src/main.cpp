@@ -1,4 +1,4 @@
-// $Id: main.cpp 7360 2011-08-10 11:04:39Z FloSoft $
+// $Id: main.cpp 7409 2011-08-24 22:47:58Z marcus $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -27,6 +27,17 @@
 #include "Socket.h"
 
 #include "GameManager.h"
+
+#ifndef _NDEBUG
+#include "GameClient.h"
+#include "GameWorld.h"
+#include "GameServer.h"
+#include "iwDirectIPCreate.h"
+#include "WindowManager.h"
+#include "dskGameLoader.h"
+#include "dskSelectMap.h"
+#include "iwPleaseWait.h"
+#endif
 
 #ifdef __APPLE__
 #	include <SDL_main.h>
@@ -201,9 +212,54 @@ int main(int argc, char *argv[])
 	// Spiel starten
 	if(!GAMEMANAGER.Start())
 	{
-        error("Das Spiel konnte nicht gestartet werden");
+	        error("Das Spiel konnte nicht gestartet werden");
 		return 1;
 	}
+
+#ifndef _NDEBUG
+	if (argc > 1)
+	{
+		CreateServerInfo csi;
+		csi.gamename = _("Unlimited Play");
+		csi.password = "localgame";
+		csi.port = 3665;
+		csi.type = NP_LOCAL;
+		csi.ipv6 = false;
+
+		printf("loading game!\n");
+
+		WindowManager::inst().Switch(new dskSelectMap(csi));
+
+	        if(!GAMESERVER.TryToStart(csi, argv[1], MAPTYPE_SAVEGAME))
+		{
+			GameWorldViewer *gwv;
+			unsigned int error = GAMECLIENT.StartReplay(argv[1], gwv);
+
+			std::string replay_errors[] = 
+			{
+				_("Error while playing replay!"),
+				_("Error while opening file!"),
+				_("Invalid Replay!"),
+				_("Error: Replay is too old!"),
+				_("Program version is too old to play that replay!"),
+				"",
+				_("Temporary map file was not found!")
+			};
+
+			if (error)
+			{
+				printf("ERROR: %s\n", replay_errors[error].c_str());
+			} else
+			{
+				WindowManager::inst().Switch(new dskGameLoader(gwv));
+			}
+		} else
+		{
+			WindowManager::inst().Draw();
+			WindowManager::inst().Show(new iwPleaseWait);
+		}
+	}
+#endif
 
 	// Hauptschleife
 	while(GAMEMANAGER.Run())
