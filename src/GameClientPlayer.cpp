@@ -1,4 +1,4 @@
-// $Id: GameClientPlayer.cpp 7379 2011-08-14 13:45:53Z OLiver $
+// $Id: GameClientPlayer.cpp 7405 2011-08-24 12:20:38Z marcus $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -841,6 +841,24 @@ RoadSegment * GameClientPlayer::FindRoadForDonkey(noRoadNode * start,noRoadNode 
 	return best_road;
 }
 
+struct ClientForWare
+{
+	noBaseBuilding *bb;
+	unsigned estimate;	// points minus half the optimal distance
+	unsigned points;
+
+	ClientForWare(noBaseBuilding *bb, unsigned estimate, unsigned points) : bb(bb), estimate(estimate), points(points) {}
+
+	bool operator<(const ClientForWare b) const
+	{
+		if (estimate == b.estimate)
+		{
+			return(points > b.points);
+		}
+		return(estimate > b.estimate);
+	}
+};
+
 noBaseBuilding * GameClientPlayer::FindClientForWare(Ware * ware)
 {
 	// Wenn es eine Goldmünze ist, wird das Ziel auf eine andere Art und Weise berechnet
@@ -849,6 +867,7 @@ noBaseBuilding * GameClientPlayer::FindClientForWare(Ware * ware)
 
 	noBaseBuilding * bb = 0;
 	unsigned best_points = 0;
+	unsigned points;
 
 	// Warentyp herausfinden
 	GoodType gt = ware->type;
@@ -858,42 +877,30 @@ noBaseBuilding * GameClientPlayer::FindClientForWare(Ware * ware)
 	// akzeptiert wird
 	if(gt_clients == GD_BREAD || gt_clients == GD_MEAT)
 		gt_clients = GD_FISH;
-		
+
+	std::vector<ClientForWare> cfw;
+
+	noRoadNode *start = ware->GetLocation();
+
 	// Bretter und Steine können evtl. auch Häfen für Expeditionen gebrauchen
 	if(gt_clients == GD_STONES || gt_clients == GD_BOARDS)
 	{
 		for(std::list<nobHarborBuilding*>::iterator it = harbors.begin();it!=harbors.end();++it)
 		{
-			unsigned way_points,points;
 			points = (*it)->CalcDistributionPoints(gt);
 
-			if(points)
+			if (points)
 			{
-				// Weg dorthin berechnen
-				if(gwg->FindPathForWareOnRoads(ware->GetLocation(),*it,&way_points) != 0xFF)
-				{
-					// Die Wegpunkte noch davon abziehen, Verteilung draufaddieren
-					points -= way_points/2;
-					points += 10*30; // Verteilung existiert nicht, Expeditionen haben 
-					// allerdings hohe Priorität
+				points += 10 * 30; // Verteilung existiert nicht, Expeditionen haben allerdings hohe Priorität
 
-					// Besser als der bisher Beste?
-					if(points > best_points)
-					{
-						best_points = points;
-						bb = *it;
-					}
-				}
+				cfw.push_back(ClientForWare(*it, points - (gwg->CalcDistance(start->GetX(), start->GetY(), (*it)->GetX(), (*it)->GetY()) / 2), points));
 			}
 		}
 	}
-		
 
 	for(std::list<BuildingType>::iterator it = distribution[gt_clients].client_buildings.begin();
 		it!=distribution[gt_clients].client_buildings.end(); ++it)
 	{
-		unsigned way_points,points;
-
 		// BLD_HEADQUARTERS sind Baustellen!!, da HQs ja sowieso nicht gebaut werden können
 		if(*it == BLD_HEADQUARTERS)
 		{
@@ -902,22 +909,11 @@ noBaseBuilding * GameClientPlayer::FindClientForWare(Ware * ware)
 			{
 				points = (*i)->CalcDistributionPoints(ware->GetLocation(),gt);
 
-				if(points)
+				if (points)
 				{
-					// Weg dorthin berechnen
-					if(gwg->FindPathForWareOnRoads(ware->GetLocation(),*i,&way_points) != 0xFF)
-					{
-						// Die Wegpunkte noch davon abziehen, Verteilung draufaddieren
-						points -= way_points/2;
-						points += distribution[gt].percent_buildings[BLD_HEADQUARTERS]*30;
+					points += distribution[gt].percent_buildings[BLD_HEADQUARTERS]*30;
 
-						// Besser als der bisher Beste?
-						if(points > best_points)
-						{
-							best_points = points;
-							bb = *i;
-						}
-					}
+					cfw.push_back(ClientForWare(*i, points - (gwg->CalcDistance(start->GetX(), start->GetY(), (*i)->GetX(), (*i)->GetY()) / 2), points));
 				}
 			}
 		}
@@ -927,43 +923,64 @@ noBaseBuilding * GameClientPlayer::FindClientForWare(Ware * ware)
 			for(std::list<nobUsual*>::iterator i = buildings[*it-10].begin(); i!=buildings[*it-10].end(); ++i)
 			{
 				points = (*i)->CalcDistributionPoints(ware->GetLocation(),gt);
+
 				// Wenn 0, dann braucht er die Ware nicht
-				if(points)
+				if (points)
 				{
-					// Weg dorthin berechnen
-					if(gwg->FindPathForWareOnRoads(ware->GetLocation(),*i,&way_points) != 0xFF)
+					if (distribution[gt].goals.size())
 					{
-						// Die Wegpunkte noch davon abziehen, Verteilung draufaddieren
-						//points -= way_points;
-						points -= (unsigned int) ( way_points / 2);
-						//points += distribution[gt].percent_buildings[*it]*30;
-
-						if(distribution[gt].goals.size()) {
-							if ((*i)->GetBuildingType() == 
-								static_cast<BuildingType>(distribution[gt].goals[distribution[gt].selected_goal])) {
-									points += 300;
-							} else {
-								points -= 300;
-							}
-						}
-
-						// Besser als der bisher Beste?
-						if(points > best_points)
+						if ((*i)->GetBuildingType() == static_cast<BuildingType>(distribution[gt].goals[distribution[gt].selected_goal]))
 						{
-							best_points = points;
-							bb = *i;
+								points += 300;
+						} else
+						{
+							points -= 300;
 						}
 					}
 
+					cfw.push_back(ClientForWare(*i, points - (gwg->CalcDistance(start->GetX(), start->GetY(), (*i)->GetX(), (*i)->GetY()) / 2), points));
 				}
 			}
 		}
 	}
 
+	// sort our clients, highest score first
+	std::sort(cfw.begin(), cfw.end());
+
+	noBaseBuilding *last_bb = NULL;
+	for (std::vector<ClientForWare>::iterator it = cfw.begin(); it != cfw.end(); ++it)
+	{
+		unsigned path_length;
+
+		// If our estimate is worse (or equal) best_points, the real value cannot be better.
+		// As our list is sorted, further entries cannot be better either, so stop searching.
+		if ((*it).estimate <= best_points)
+			break;
+
+		// get rid of double building entries. TODO: why are there double entries!?
+		if ((*it).bb == last_bb)
+			continue;
+
+		last_bb = (*it).bb;
+
+		// Find path ONLY if it may be better. Pathfinding is limited to the worst path score that would lead to a better score.
+		// This eliminates the worst case scenario where all nodes in a split road network would be hit by the pathfinding only
+		// to conclude that there is no possible path.
+		if (gwg->FindPathForWareOnRoads(start, (*it).bb, &path_length, NULL, ((*it).points - best_points) * 2 - 1) != 0xFF)
+		{
+			unsigned score = (*it).points - (path_length / 2);
+
+			// As we have limited our pathfinding to take a maximum of (points - best_points) * 2 - 1 steps,
+			// path_length / 2 can at most be points - best_points - 1, so the score will be greater than best_points. :) 
+			assert(score > best_points);
+
+			best_points = score;
+			bb = (*it).bb;
+		}
+	}
+
 	if(bb && distribution[gt].goals.size())
 		distribution[gt].selected_goal = (distribution[gt].selected_goal + 1) % unsigned(distribution[gt].goals.size());
-
-	
 
 	// Wenn kein Abnehmer gefunden wurde, muss es halt in ein Lagerhaus
 	if(!bb)

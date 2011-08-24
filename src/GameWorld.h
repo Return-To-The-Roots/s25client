@@ -1,4 +1,4 @@
-// $Id: GameWorld.h 7384 2011-08-15 22:13:01Z OLiver $
+// $Id: GameWorld.h 7405 2011-08-24 12:20:38Z marcus $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -340,8 +340,8 @@ public:
 		 MapCoord* x_dest,  MapCoord* y_dest, const void * const param = NULL) const;
 	/// Wegfindung auf StraÃŸen - Basisroutine
 	bool FindPathOnRoads(const noRoadNode * const start, const noRoadNode * const goal,
-									const bool ware_mode, unsigned * length,
-									unsigned char * first_dir, Point<MapCoord> * next_harbor, const RoadSegment * const forbidden, const bool record = true) const;
+			const bool ware_mode, unsigned * length, unsigned char * first_dir, Point<MapCoord> * next_harbor,
+			const RoadSegment * const forbidden, const bool record = true, unsigned max = 0xFFFFFFFF) const;
 	/// Findet einen Weg für Figuren
 	unsigned char FindHumanPath(const MapCoord x_start,const MapCoord y_start,
 		  const MapCoord x_dest, const MapCoord y_dest, const unsigned max_route = 0xFFFFFFFF, const bool random_route = false, unsigned *length = NULL, const bool record = true) const;
@@ -666,7 +666,7 @@ public:
 	/// Wegfindung für Menschen im StraÃŸennetz
 	unsigned char FindHumanPathOnRoads(const noRoadNode * const start, const noRoadNode * const goal,unsigned * length = NULL, Point<MapCoord> * next_harbor = NULL, const RoadSegment * const forbidden = NULL);
 	/// Wegfindung für Waren im StraÃŸennetz
-	unsigned char FindPathForWareOnRoads(const noRoadNode * const start, const noRoadNode * const goal,unsigned * length = NULL, Point<MapCoord> * next_harbor = NULL);
+	unsigned char FindPathForWareOnRoads(const noRoadNode * const start, const noRoadNode * const goal,unsigned * length = NULL, Point<MapCoord> * next_harbor = NULL, unsigned max = 0xFFFFFFFF);
 	/// Prüft, ob eine Schiffsroute noch Gültigkeit hat
 	bool CheckShipRoute(const MapCoord x_start,const MapCoord y_start, const std::vector<unsigned char>& route, const unsigned pos, 
 		 MapCoord* x_dest,  MapCoord* y_dest);

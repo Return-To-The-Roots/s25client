@@ -1,4 +1,4 @@
-// $Id: Pathfinding.cpp 7378 2011-08-14 12:44:58Z jh $
+// $Id: Pathfinding.cpp 7405 2011-08-24 12:20:38Z marcus $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -337,7 +337,7 @@ openlist_container<const noRoadNode*, std::vector<const noRoadNode*>, RoadNodeCo
 bool GameWorldBase::FindPathOnRoads(const noRoadNode * const start, const noRoadNode * const goal,
 									const bool ware_mode, unsigned * length, 
 									unsigned char * first_dir,  Point<MapCoord> * next_harbor,
-									const RoadSegment * const forbidden, const bool record) const
+									const RoadSegment * const forbidden, const bool record, unsigned max) const
 {
 	// Aus Replay lesen?
 	if(GameClient::inst().ArePathfindingResultsAvailable() && record)
@@ -469,6 +469,9 @@ bool GameWorldBase::FindPathOnRoads(const noRoadNode * const start, const noRoad
 			if(ware_mode)
 				new_way += best->GetPunishmentPoints(i);
 
+			if (new_way > max)
+				continue;
+
 			// evtl verboten?
 			if(best->routes[i] == forbidden)
 				continue;
@@ -476,7 +479,6 @@ bool GameWorldBase::FindPathOnRoads(const noRoadNode * const start, const noRoad
 			// evtl Wasserstraße?
 			if(best->routes[i]->GetRoadType() == RoadSegment::RT_BOAT && !ware_mode)
 				continue;
-
 
 			// Knoten schon auf dem Feld gebildet?
 			if (pf_nodes[xaid].lastVisited == currentVisit)
@@ -518,6 +520,9 @@ bool GameWorldBase::FindPathOnRoads(const noRoadNode * const start, const noRoad
 				unsigned xaid = MakeCoordID(scs[i].dest->GetX(),scs[i].dest->GetY());
 				// Neuer Weg für diesen neuen Knoten berechnen
 				unsigned new_way = pf_nodes[best_id].way  + scs[i].way_costs;
+
+				if (new_way > max)
+					continue;
 
 				// Knoten schon auf dem Feld gebildet?
 				if (pf_nodes[xaid].lastVisited == currentVisit)
@@ -689,10 +694,10 @@ unsigned char GameWorldGame::FindHumanPathOnRoads(const noRoadNode * const start
 }
 
 /// Wegfindung für Waren im Straßennetz
-unsigned char GameWorldGame::FindPathForWareOnRoads(const noRoadNode * const start, const noRoadNode * const goal,unsigned * length, Point<MapCoord> * next_harbor)
+unsigned char GameWorldGame::FindPathForWareOnRoads(const noRoadNode * const start, const noRoadNode * const goal,unsigned * length, Point<MapCoord> * next_harbor, unsigned max)
 {
 	unsigned char first_dir = 0xFF;
-	if(FindPathOnRoads(start, goal, true, length, &first_dir, next_harbor, NULL))
+	if(FindPathOnRoads(start, goal, true, length, &first_dir, next_harbor, NULL, true, max))
 		return first_dir;
 	else
 		return 0xFF;
