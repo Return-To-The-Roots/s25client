@@ -1,4 +1,4 @@
-// $Id: CatapultStone.cpp 7413 2011-08-25 15:19:44Z marcus $
+// $Id: CatapultStone.cpp 7414 2011-08-25 15:20:58Z marcus $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -62,7 +62,6 @@ dest_y(sgd->PopSignedInt()),
 explode(sgd->PopBool()),
 event(sgd->PopObject<EventManager::Event>(GOT_EVENT))
 {
-	printf("deserialized catapultstone\n");
 }
 
 
@@ -131,7 +130,6 @@ void CatapultStone::HandleEvent(const unsigned int id)
 	if(explode)
 	{
 		// Explodiert --> mich zerstören
-		printf("REMOVE CATAPULT STONE: %p\n", (void *) this);
 		gwg->RemoveCatapultStone(this);
 		em->AddToKillList(this);
 	}

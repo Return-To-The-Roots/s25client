@@ -1,4 +1,4 @@
-// $Id: nofCatapultMan.cpp 7413 2011-08-25 15:19:44Z marcus $
+// $Id: nofCatapultMan.cpp 7414 2011-08-25 15:20:58Z marcus $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -289,9 +289,6 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned int id)
 			}
 
 			// Stein erzeugen
-			printf("AddCatapultStone(%i, %i, %i, %i, %i, %i, %i, %i, 80)\n", target.x,target.y,dest_map_x,dest_map_y,
-				start_x, start_y,
-				dest_x, dest_y);
 			gwg->AddCatapultStone(new CatapultStone(target.x,target.y,dest_map_x,dest_map_y,
 				start_x, start_y,
 				dest_x, dest_y,
