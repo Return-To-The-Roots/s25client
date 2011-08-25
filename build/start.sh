@@ -44,6 +44,7 @@ while test $# != 0 ; do
 			;;
 		debug)
 			CMD=gdb
+			BIN="--args $BIN"
 			;;
 		valgrind)
 			CMD=valgrind

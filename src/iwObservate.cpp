@@ -1,4 +1,4 @@
-// $Id: iwDemolishBuilding.cpp 7091 2011-03-27 10:57:38Z OLiver $
+// $Id: iwObservate.cpp 7414 2011-08-25 17:44:38Z marcus $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -39,10 +39,13 @@
 	#undef THIS_FILE
 	static char THIS_FILE[] = __FILE__;
 #endif
+
+// 260x190 and 300x250
+
 //IngameWindow::IngameWindow(unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, const std::string& title, glArchivItem_Bitmap *background, bool modal)
 iwObservate::iwObservate(GameWorldViewer * const gwv,const unsigned short selected_x, const unsigned short selected_y)
 : IngameWindow(gwv->CreateGUIID(selected_x, selected_y),0xFFFE,0xFFFE,300,300,_("Observation window"),NULL),
-	view(new GameWorldView(gwv, GetX(), GetY(), 300, 300)), selected_x(selected_x), selected_y(selected_y)
+	view(new GameWorldView(gwv, GetX(), GetY(), 300, 250)), selected_x(selected_x), selected_y(selected_y)
 {
 	view->MoveToMapObject(selected_x, selected_y);
 }
