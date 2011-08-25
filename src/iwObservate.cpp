@@ -44,7 +44,7 @@
 
 //IngameWindow::IngameWindow(unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, const std::string& title, glArchivItem_Bitmap *background, bool modal)
 iwObservate::iwObservate(GameWorldViewer * const gwv,const unsigned short selected_x, const unsigned short selected_y)
-: IngameWindow(gwv->CreateGUIID(selected_x, selected_y),0xFFFE,0xFFFE,300,300,_("Observation window"),NULL),
+: IngameWindow(gwv->CreateGUIID(selected_x, selected_y),0xFFFE,0xFFFE,300,250,_("Observation window"),NULL),
 	view(new GameWorldView(gwv, GetX(), GetY(), 300, 250)), selected_x(selected_x), selected_y(selected_y)
 {
 	view->MoveToMapObject(selected_x, selected_y);
