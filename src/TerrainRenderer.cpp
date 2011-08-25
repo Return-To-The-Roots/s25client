@@ -1,4 +1,4 @@
-// $Id: TerrainRenderer.cpp 7091 2011-03-27 10:57:38Z OLiver $
+// $Id: TerrainRenderer.cpp 7410 2011-08-25 12:08:21Z marcus $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -686,7 +686,7 @@ void TerrainRenderer::UpdateBorderTriangleTerrain(const MapCoord x, const MapCoo
  *  @author OLiver
  *  @author FloSoft
  */
-void TerrainRenderer::Draw(const GameWorldViewer * gwv,unsigned int *water)
+void TerrainRenderer::Draw(const GameWorldView * gwv,unsigned int *water)
 {
 	assert(gl_vertices);
 	assert(borders);
@@ -708,7 +708,7 @@ void TerrainRenderer::Draw(const GameWorldViewer * gwv,unsigned int *water)
 		{
 			ConvertCoords(x, y, tx, ty, &xo, &yo);
 
-			unsigned char t = gwv->GetNode(tx,ty).t1;
+			unsigned char t = gwv->GetGameWorldViewer()->GetNode(tx,ty).t1;
 			if(xo != lastxo || yo != lastyo)
 				last = 255;
 
@@ -716,7 +716,7 @@ void TerrainRenderer::Draw(const GameWorldViewer * gwv,unsigned int *water)
 			if(t == TT_WATER)
 			{
 				// Sichtbar?
-				if(gwv->GetVisibility(tx,ty) == VIS_VISIBLE)
+				if(gwv->GetGameWorldViewer()->GetVisibility(tx,ty) == VIS_VISIBLE)
 					// Dann Waser erhöhen, um Wasserrauschen abzuspielen
 					++water_count;
 			}
@@ -733,7 +733,7 @@ void TerrainRenderer::Draw(const GameWorldViewer * gwv,unsigned int *water)
 			lastxo = xo;
 			lastyo = yo;
 
-			t = gwv->GetNode(tx,ty).t2;
+			t = gwv->GetGameWorldViewer()->GetNode(tx,ty).t2;
 			if(xo != lastxo || yo != lastyo)
 				last = 255;
 
@@ -741,7 +741,7 @@ void TerrainRenderer::Draw(const GameWorldViewer * gwv,unsigned int *water)
 			if(t == TT_WATER)
 			{
 				// Sichtbar?
-				if(gwv->GetVisibility(tx,ty) == VIS_VISIBLE)
+				if(gwv->GetGameWorldViewer()->GetVisibility(tx,ty) == VIS_VISIBLE)
 					// Dann Waser erhöhen, um Wasserrauschen abzuspielen
 					++water_count;
 			}
@@ -944,7 +944,7 @@ void TerrainRenderer::ConvertCoords(int x,int y,unsigned short& x_out, unsigned 
 	y_out = static_cast<unsigned short>(y);
 }
 
-void TerrainRenderer::DrawWays(const GameWorldViewer * gwv)
+void TerrainRenderer::DrawWays(const GameWorldView * gwv)
 {
 	for(int y = gwv->GetFirstY();y<gwv->GetLastY();++y)
 	{
@@ -982,36 +982,36 @@ void TerrainRenderer::DrawWays(const GameWorldViewer * gwv)
 			// Terrain drumherum speichern
 			unsigned terrain[6];
 			for(unsigned i = 0;i<6;++i)
-				terrain[i] = gwv->GetTerrainAround(tx,ty,i);
+				terrain[i] = gwv->GetGameWorldViewer()->GetTerrainAround(tx,ty,i);
 
 			// Wegtypen für die drei Richtungen
 			unsigned char type;
 
-			Visibility visibility = gwv->GetVisibility(tx,ty);
+			Visibility visibility = gwv->GetGameWorldViewer()->GetVisibility(tx,ty);
 
 			for(unsigned char dir = 0;dir<3;++dir)
 			{
-				if( (type = gwv->GetVisibleRoad(tx,ty, dir+3, visibility)) )
+				if( (type = gwv->GetGameWorldViewer()->GetVisibleRoad(tx,ty, dir+3, visibility)) )
 				{
-					float xpos2 = GetTerrainX(gwv->GetXA(tx,ty,3+dir),gwv->GetYA(tx,ty,3+dir))-gwv->GetXOffset()+xo;
-					float ypos2 = GetTerrainY(gwv->GetXA(tx,ty,3+dir),gwv->GetYA(tx,ty,3+dir))-gwv->GetYOffset()+yo;
+					float xpos2 = GetTerrainX(gwv->GetGameWorldViewer()->GetXA(tx,ty,3+dir),gwv->GetGameWorldViewer()->GetYA(tx,ty,3+dir))-gwv->GetXOffset()+xo;
+					float ypos2 = GetTerrainY(gwv->GetGameWorldViewer()->GetXA(tx,ty,3+dir),gwv->GetGameWorldViewer()->GetYA(tx,ty,3+dir))-gwv->GetYOffset()+yo;
 					
 					
 					// Gehen wir über einen Kartenrand (horizontale Richung?)
-					if(abs(xpos-xpos2) >= gwv->GetWidth() * TR_W / 2)
+					if(abs(xpos-xpos2) >= gwv->GetGameWorldViewer()->GetWidth() * TR_W / 2)
 					{
-						if(abs(xpos2-int(gwv->GetWidth())*TR_W-xpos) < abs(xpos-xpos2))
-							xpos2 -= gwv->GetWidth()*TR_W;
+						if(abs(xpos2-int(gwv->GetGameWorldViewer()->GetWidth())*TR_W-xpos) < abs(xpos-xpos2))
+							xpos2 -= gwv->GetGameWorldViewer()->GetWidth()*TR_W;
 						else
-							xpos2 += gwv->GetWidth()*TR_W;
+							xpos2 += gwv->GetGameWorldViewer()->GetWidth()*TR_W;
 					}
 					// Und dasselbe für vertikale Richtung
-					if(abs(ypos-ypos2) >= gwv->GetHeight() * TR_H / 2)
+					if(abs(ypos-ypos2) >= gwv->GetGameWorldViewer()->GetHeight() * TR_H / 2)
 					{
-						if(abs(ypos2-int(gwv->GetHeight())*TR_H-ypos) < abs(ypos-ypos2))
-							ypos2 -= gwv->GetHeight()*TR_H;
+						if(abs(ypos2-int(gwv->GetGameWorldViewer()->GetHeight())*TR_H-ypos) < abs(ypos-ypos2))
+							ypos2 -= gwv->GetGameWorldViewer()->GetHeight()*TR_H;
 						else
-							ypos2 += gwv->GetHeight()*TR_H;
+							ypos2 += gwv->GetGameWorldViewer()->GetHeight()*TR_H;
 					}
 
 					--type;
@@ -1046,9 +1046,9 @@ void TerrainRenderer::DrawWays(const GameWorldViewer * gwv)
 					glTexCoord2f(0.0f,1.0f);
 					glVertex2f(xpos+begin_end_coords[dir*8+2],ypos+begin_end_coords[dir*8+3]);
 
-					glColor3f(GetColor(gwv->GetXA(tx,ty,3+dir),gwv->GetYA(tx,ty,3+dir)),
-					GetColor(gwv->GetXA(tx,ty,3+dir),gwv->GetYA(tx,ty,3+dir)),
-					GetColor(gwv->GetXA(tx,ty,3+dir),gwv->GetYA(tx,ty,3+dir)));
+					glColor3f(GetColor(gwv->GetGameWorldViewer()->GetXA(tx,ty,3+dir),gwv->GetGameWorldViewer()->GetYA(tx,ty,3+dir)),
+					GetColor(gwv->GetGameWorldViewer()->GetXA(tx,ty,3+dir),gwv->GetGameWorldViewer()->GetYA(tx,ty,3+dir)),
+					GetColor(gwv->GetGameWorldViewer()->GetXA(tx,ty,3+dir),gwv->GetGameWorldViewer()->GetYA(tx,ty,3+dir)));
 					glTexCoord2f(0.78f,1.0f);
 					glVertex2f(xpos2+begin_end_coords[dir*8+4],ypos2+begin_end_coords[dir*8+5]);
 					glTexCoord2f(0.78f,0.0f);

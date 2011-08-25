@@ -1,4 +1,4 @@
-// $Id: GameWorld.h 7405 2011-08-24 12:20:38Z marcus $
+// $Id: GameWorld.h 7410 2011-08-25 12:08:21Z marcus $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -446,37 +446,56 @@ protected:
 
 };
 
-/// "Interface-Klasse" für GameWorldBase, die die Daten grafisch anzeigt
-class GameWorldViewer : public virtual GameWorldBase
+class GameWorldView
 {
+	/// Selektierter Punkt
+	unsigned short selx,sely;
+	int selxo,selyo;
+
+	/// Koordinaten auf der Map anzeigen (zum Debuggen)?
+	bool show_coordinates;
+
 	bool show_bq;    ///< Bauqualitäten-Anzeigen ein oder aus
 	bool show_names; ///< Gebäudenamen-Anzeigen ein oder aus
 	bool show_productivity; ///< Produktivität-Anzeigen ein oder aus
 
 	/// Scrolling-Zeug
 	int xoffset,yoffset;
+	/// Letzte Scrollposition, an der man war, bevor man weggesprungen ist
+	int last_xoffset, last_yoffset;
 	/// Erster gezeichneter Map-Punkt
 	int fx,fy;
 	/// Letzter gezeichneter Map-Punkt
 	int lx,ly;
-	/// Selektierter Punkt
-	unsigned short selx,sely;
-	int selxo,selyo;
-	int sx,sy;
-	/// Wird gerade gescrollt?
-	bool scroll;
-	/// Letzte Scrollposition, an der man war, bevor man weggesprungen ist
-	int last_xoffset, last_yoffset;
-	/// Koordinaten auf der Map anzeigen (zum Debuggen)?
-	bool show_coordinates;
+
+	GameWorldViewer *gwv;
+
+protected:
+	unsigned d_what;
+	unsigned d_player;
+	bool d_active;
+
+	unsigned short x, y;
+	unsigned short width, height;
 
 public:
+	bool terrain_rerender;
+	unsigned int terrain_list;
+	int terrain_last_xoffset, terrain_last_yoffset;
+	unsigned int terrain_last_global_animation;
 
-	GameWorldViewer();
 
-	// Wege und Grenzsteine zeichnen ( nur reingenommen, da die Position sowieso hier berechnet wird, da bietet es sich an )
-	void DrawWays(const int x, const int y, const float xpos, const float ypos);
-	void DrawBoundaryStone(const int x, const int y, const MapCoord tx, const MapCoord ty, const int xpos, const int ypos, Visibility vis);
+	GameWorldView(GameWorldViewer *gwv, unsigned short x, unsigned short y, unsigned short width, unsigned short height);
+
+	GameWorldViewer *GetGameWorldViewer() {return(gwv);}
+	GameWorldViewer *GetGameWorldViewer() const {return(gwv);};
+
+
+	void SetX(unsigned short new_x) {x = new_x;}
+	void SetY(unsigned short new_y) {y = new_y;}
+
+	unsigned short GetX() {return(x);}
+	unsigned short GetY() {return(y);}
 
 	/// Bauqualitäten anzeigen oder nicht
 	void ShowBQ() { show_bq = !show_bq; }
@@ -487,16 +506,13 @@ public:
 	/// Schaltet Produktivitäten/Namen komplett aus oder an
 	void ShowNamesAndProductivity();
 
-	/// Wegfinden ( A* ) --> Wegfindung auf allgemeinen Terrain ( ohne Straäcn ) ( fr Wegebau oder frei herumlaufende )
-	bool FindRoadPath(const MapCoord x_start,const MapCoord y_start, const MapCoord x_dest, const MapCoord y_dest,std::vector<unsigned char>& route, const bool boat_road);
-	/// Sucht die Anzahl der verfügbaren Soldaten, um das Militärgebäude an diesem Punkt anzugreifen
-	unsigned GetAvailableSoldiersForAttack(const unsigned char player_attacker,const MapCoord x, const MapCoord y);
-	/// Zeichnet die Objekte
-	void Draw(const unsigned char player, unsigned * water, const bool draw_selected, const MapCoord selected_x, const MapCoord selected_y,const RoadsBuilding& rb);
 
-	/// Scrolling-Zeug
-	void MouseMove(const MouseCoords& mc);
-	void MouseDown(const MouseCoords& mc);
+	void Draw(const unsigned char player, unsigned * water, const bool draw_selected, const MapCoord selected_x, const MapCoord selected_y,const RoadsBuilding& rb);
+/*
+	void PrepareRendering(const unsigned char player, const bool draw_selected, const MapCoord selected_x, const MapCoord selected_y,const RoadsBuilding& rb);
+	void Render();
+*/
+
 	/// Bewegt sich zu einer bestimmten Position in Pixeln auf der Karte
 	void MoveTo(int x, int y, bool absolute = false);
 	/// Zentriert den Bildschirm auf ein bestimmtes Map-Object
@@ -506,8 +522,7 @@ public:
 
 	void MoveToX(int x, bool absolute = false) { MoveTo( (absolute ? 0 : xoffset) + x, yoffset, true); }
 	void MoveToY(int y, bool absolute = false) { MoveTo( xoffset, (absolute ? 0 : yoffset) + y, true); }
-	void MouseUp();
-	void DontScroll() { scroll = false; }
+
 	void CalcFxLx();
 
 	/// Koordinatenanzeige ein/aus
@@ -521,14 +536,103 @@ public:
 	int GetSelYo() const { return selyo; }
 
 	/// Gibt Scrolling-Offset zurück
-	int GetXOffset() const { return xoffset; }
-	int GetYOffset() const { return yoffset; }
+	int GetXOffset() const { return xoffset - x; }
+	int GetYOffset() const { return yoffset - y; }
 	/// Gibt ersten Punkt an, der beim Zeichnen angezeigt wird
 	int GetFirstX() const { return fx; }
 	int GetFirstY() const { return fy; }
 	/// Gibt letzten Punkt an, der beim Zeichnen angezeigt wird
 	int GetLastX() const { return lx; }
 	int GetLastY() const { return ly; }
+
+/*
+	list<MapTile> sorted_textures[16];
+	list<BorderTile> sorted_borders[5];
+	list<PreparedRoad> sorted_roads[4];
+*/
+
+	void DrawBoundaryStone(const int x, const int y, const MapCoord tx, const MapCoord ty, const int xpos, const int ypos, Visibility vis);
+
+	void Resize(unsigned short width, unsigned short height);
+
+	void SetAIDebug(unsigned what, unsigned player, bool active) 
+	{
+		d_what = what; d_player = player; d_active = active; 
+	}
+};
+
+/// "Interface-Klasse" für GameWorldBase, die die Daten grafisch anzeigt
+class GameWorldViewer : public virtual GameWorldBase
+{
+	/// Wird gerade gescrollt?
+	bool scroll;
+	int sx,sy;
+
+	GameWorldView view;
+public:
+
+	GameWorldViewer();
+
+	// Wege und Grenzsteine zeichnen ( nur reingenommen, da die Position sowieso hier berechnet wird, da bietet es sich an )
+	void DrawWays(const int x, const int y, const float xpos, const float ypos);
+
+	void Draw(const unsigned char player, unsigned * water, const bool draw_selected, const MapCoord selected_x, const MapCoord selected_y,const RoadsBuilding& rb)
+	{
+		view.Draw(player, water, draw_selected, selected_x, selected_y, rb);
+	}
+
+/*
+	void PrepareRendering(const unsigned char player, const bool draw_selected, const MapCoord selected_x, const MapCoord selected_y,const RoadsBuilding& rb)
+		{view.PrepareRendering(player, draw_selected, selected_x, selected_y, rb);}
+	void Render() {view.Render();}
+*/
+
+	TerrainRenderer *GetTerrainRenderer() {return(&tr);}
+	list<CatapultStone*> GetCatapultStones() {return(catapult_stones);}
+
+	/// Bauqualitäten anzeigen oder nicht
+	void ShowBQ() {view.ShowBQ();}
+	/// Gebäudenamen zeigen oder nicht
+	void ShowNames() {view.ShowNames();}
+	/// Produktivität zeigen oder nicht
+	void ShowProductivity() {view.ShowProductivity();};
+	/// Schaltet Produktivitäten/Namen komplett aus oder an
+	void ShowNamesAndProductivity() {view.ShowNamesAndProductivity();}
+
+	/// Wegfinden ( A* ) --> Wegfindung auf allgemeinen Terrain ( ohne Straäcn ) ( fr Wegebau oder frei herumlaufende )
+	bool FindRoadPath(const MapCoord x_start,const MapCoord y_start, const MapCoord x_dest, const MapCoord y_dest,std::vector<unsigned char>& route, const bool boat_road);
+	/// Sucht die Anzahl der verfügbaren Soldaten, um das Militärgebäude an diesem Punkt anzugreifen
+	unsigned GetAvailableSoldiersForAttack(const unsigned char player_attacker,const MapCoord x, const MapCoord y);
+
+	/// Scrolling-Zeug
+	void MouseMove(const MouseCoords& mc);
+	void MouseDown(const MouseCoords& mc);
+	void MouseUp();
+	void DontScroll() { scroll = false; }
+
+	/// Bewegt sich zu einer bestimmten Position in Pixeln auf der Karte
+	void MoveTo(int x, int y, bool absolute = false) {view.MoveTo(x, y, absolute);};
+	/// Zentriert den Bildschirm auf ein bestimmtes Map-Object
+	void MoveToMapObject(const MapCoord x, const MapCoord y) {view.MoveToMapObject(x, y);};
+	/// Springt zur letzten Position, bevor man "weggesprungen" ist
+	void MoveToLastPosition() {view.MoveToLastPosition();};
+
+	void MoveToX(int x, bool absolute = false) {view.MoveToX(x, absolute);}
+	void MoveToY(int y, bool absolute = false) {view.MoveToY(y, absolute);}
+
+	/// Koordinatenanzeige ein/aus
+	void ShowCoordinates() { view.ShowCoordinates(); }
+
+	/// Gibt selektierten Punkt zurück
+	unsigned short GetSelX() const { return(view.GetSelX()); }
+	unsigned short GetSelY() const { return(view.GetSelY()); }
+
+	/// Gibt ersten Punkt an, der beim Zeichnen angezeigt wird
+	int GetFirstX() const { return(view.GetFirstX()); }
+	int GetFirstY() const { return(view.GetFirstY()); }
+	/// Gibt letzten Punkt an, der beim Zeichnen angezeigt wird
+	int GetLastX() const { return(view.GetLastX()); }
+	int GetLastY() const { return(view.GetLastY()); }
 
 	/// Ermittelt Sichtbarkeit eines Punktes für den lokalen Spieler, berücksichtigt ggf. Teamkameraden
 	Visibility GetVisibility(const MapCoord x, const MapCoord y) const; 
@@ -538,6 +642,9 @@ public:
 	/// Sichtbarkeit wurde verändert: TerrainRenderer Bescheid sagen, damit es entsprechend verändert werden kann
 	void VisibilityChanged(const MapCoord x, const MapCoord y);
 
+	/// liefert sichtbare Strasse, im Nebel entsprechend die FoW-Strasse
+	unsigned char GetVisibleRoad(const MapCoord x, const MapCoord y, unsigned char dir, const Visibility visibility) const;
+
 	/// Get the "youngest" FOWObject of all players who share the view with the local player
 	const FOWObject * GetYoungestFOWObject(const Point<MapCoord> pos) const;
 	
@@ -545,38 +652,19 @@ public:
 	/// with the local player via team view
 	unsigned char GetYoungestFOWNodePlayer(const Point<MapCoord> pos) const;
 
-
 	/// Schattierungen (vor allem FoW) neu berechnen
 	void RecalcAllColors();
-
-	/// liefert sichtbare StraÃŸe, im Nebel entsprechend die FoW-StraÃŸe
-	unsigned char GetVisibleRoad(const MapCoord x, const MapCoord y, unsigned char dir, const Visibility visibility) const;
 
 	/// Gibt das erste Schiff, was gefunden wird von diesem Spieler, zurück, ansonsten NULL, falls es nicht
 	/// existiert
 	noShip * GetShip(const MapCoord x, const MapCoord y, const unsigned char player) const;
-	
+
 	/// Gibt die verfügbar Anzahl der Angreifer für einen Seeangriff zurück
 	unsigned GetAvailableSoldiersForSeaAttackCount(const unsigned char player_attacker, const MapCoord x, const MapCoord y) const;
 
-	void Resize(unsigned short displayWidth, unsigned short displayHeight);
+	void Resize(unsigned short width, unsigned short height) {view.Resize(width, height);}
 
-protected:
-	unsigned short displayWidth, displayHeight;
-
-
-	// debug ai
-	private:
-		unsigned d_what;
-		unsigned d_player;
-		bool d_active;
-	public:
-		void SetAIDebug(unsigned what, unsigned player, bool active) 
-		{
-			d_what = what; d_player = player; d_active = active; 
-		}
-
-
+	void SetAIDebug(unsigned what, unsigned player, bool active) {view.SetAIDebug(what, player, active);}
 };
 
 /// "Interface-Klasse" für das Spiel

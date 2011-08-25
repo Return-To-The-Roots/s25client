@@ -1,5 +1,5 @@
 ################################################################################
-### $Id: CMakeLists.txt 7373 2011-08-13 10:03:29Z OLiver $
+### $Id: CMakeLists.txt 7410 2011-08-25 12:08:21Z marcus $
 ################################################################################
 
 INCLUDE(FindBZip2)
@@ -102,6 +102,7 @@ SET(SOURCES_INGAMEWINDOWS
 	iwMinimap.cpp                       iwMinimap.h
 	iwMsgbox.cpp                        iwMsgbox.h
 	iwMusicPlayer.cpp                   iwMusicPlayer.h
+        iwObservate.cpp                     iwObservate.h
 	iwOptionsWindow.cpp                 iwOptionsWindow.h
 	iwPlayReplay.cpp                    iwPlayReplay.h
 	iwPleaseWait.cpp                    iwPleaseWait.h
@@ -253,6 +254,7 @@ SET(SOURCES_OTHER
 	GameWorld.cpp                       GameWorld.h
 	GameWorldBase.cpp
 	GameWorldGame.cpp
+	GameWorldView.cpp
 	GameWorldViewer.cpp
 										GammaTable.h
 	GlobalGameSettings.cpp              GlobalGameSettings.h

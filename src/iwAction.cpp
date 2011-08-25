@@ -1,4 +1,4 @@
-// $Id: iwAction.cpp 7343 2011-08-06 08:41:20Z OLiver $
+// $Id: iwAction.cpp 7410 2011-08-25 12:08:21Z marcus $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -26,7 +26,7 @@
 #include "dskGameInterface.h"
 #include "iwDemolishBuilding.h"
 #include "iwMilitaryBuilding.h"
-
+#include "iwObservate.h"
 
 #include "Loader.h"
 #include "controls.h"
@@ -733,6 +733,9 @@ void iwAction::Msg_ButtonClick_TabWatch(const unsigned int ctrl_id)
 	{
 	case 1:
 		{
+			Close();
+// TODO: bestimen, was an der position selected_x, selected_y ist
+			WindowManager::inst().Show(new iwObservate(gwv,selected_x, selected_y));
 		} break;
 	case 2: // Häusernamen/Prozent anmachen
 		{

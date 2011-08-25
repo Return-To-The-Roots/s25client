@@ -1,4 +1,4 @@
-// $Id: TerrainRenderer.h 6582 2010-07-16 11:23:35Z FloSoft $
+// $Id: TerrainRenderer.h 7410 2011-08-25 12:08:21Z marcus $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -22,6 +22,7 @@
 #include "MapConsts.h"
 
 class GameWorldViewer;
+class GameWorldView;
 
 /// Klasse, die für das grafische Anzeigen (Rendern) des Terrains zuständig ist
 class TerrainRenderer
@@ -142,7 +143,7 @@ private:
 	float GetBColor(const MapCoord x, const MapCoord y, unsigned char triangle) { return GetVertex(x,y).border[triangle].color; }
 
 	/// Zeichnet die Wege
-	void DrawWays(const GameWorldViewer * gwb);
+	void DrawWays(const GameWorldView * gwb);
 
 
 public:
@@ -155,7 +156,7 @@ public:
 
 
 	/// zeichnet den Kartenausschnitt.
-	void Draw(const GameWorldViewer * gwv,unsigned int *water);
+	void Draw(const GameWorldView * gwv,unsigned int *water);
 	
 	/// Konvertiert "falsche Koordinaten", also im Minusbereich oder zu groß wegen Zeichnen, in "richtige Koordinaten"
 	/// mit 0 <= x_out < width und 0 <= y_out < height 
