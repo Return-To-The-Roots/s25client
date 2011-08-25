@@ -1,4 +1,4 @@
-// $Id: iwPostWindow.cpp 7091 2011-03-27 10:57:38Z OLiver $
+// $Id: iwPostWindow.cpp 7417 2011-08-25 17:31:35Z marcus $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -224,7 +224,10 @@ bool iwPostWindow::Msg_KeyDown(const KeyEvent& ke)
 		} return true;
 	case 'g': // Go to site of event
 		{
-			Msg_ButtonClick(14);
+			if (GameClient::inst().GetPostMessages().size())
+			{
+				Msg_ButtonClick(14);
+			}
 		} return true;
 	}
 
