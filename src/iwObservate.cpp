@@ -55,23 +55,21 @@ bool iwObservate::Draw_()
 		view->SetY(GetY());
 		last_x = x;
 		last_y = y;
-		view->terrain_rerender = true;
 	}
 
-	glTranslatef(0.0f, 0.0f, 9.9f);
-	DrawRectangle(x, y, width, height, COLOR_WHITE);
-	glTranslatef(0.0f, 0.0f, -9.9f);
+	if (!GetMinimized())
+	{
+		RoadsBuilding road;
 
-	RoadsBuilding road;
+		road.mode = RM_DISABLED;
+		road.point_x = 0;
+		road.point_y = 0;
+		road.start_x = 0;
+		road.start_y = 0;
 
-	road.mode = RM_DISABLED;
-	road.point_x = 0;
-	road.point_y = 0;
-	road.start_x = 0;
-	road.start_y = 0;
-
-	unsigned water;
-	view->Draw(GAMECLIENT.GetPlayerID(), &water, true, selected_x, selected_y, road);
+		unsigned water;
+		view->Draw(GAMECLIENT.GetPlayerID(), &water, true, view->GetGameWorldViewer()->GetSelX(), view->GetGameWorldViewer()->GetSelY(), road);
+	}
 
 	return(IngameWindow::Draw_());
 }

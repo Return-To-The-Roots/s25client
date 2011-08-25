@@ -422,8 +422,8 @@ void GameWorldView::Draw(const unsigned char player, unsigned * water, const boo
 	}
 
 	// Umherfliegende Katapultsteine zeichnen
-	for(list<CatapultStone*>::iterator it = gwv->GetCatapultStones().begin();it.valid();++it)
-		(*it)->Draw(*gwv,xoffset,yoffset);
+	for(std::list<CatapultStone*>::iterator it = gwv->catapult_stones.begin();it!=gwv->catapult_stones.end();++it)
+		(*it)->Draw(*this,xoffset,yoffset);
 
 	glTranslatef(-this->x, -this->y, 0.0f);
 

@@ -1,4 +1,4 @@
-// $Id: GameWorld.h 7410 2011-08-25 12:08:21Z marcus $
+// $Id: GameWorld.h 7413 2011-08-25 15:19:44Z marcus $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -136,7 +136,6 @@ protected:
 	LandscapeType lt;
 
 	unsigned short * handled_nodes; /// Array von abgeklapperten Knoten und deren Punktzahlen
-	list<CatapultStone*> catapult_stones; /// Liste von allen umherfliegenden Katapultsteinen.
 
 	/// Eigenschaften von einem Punkt auf der Map
 	MapNode *nodes;
@@ -190,6 +189,8 @@ protected:
 	
 public:
 	unsigned int map_size;
+
+	std::list<CatapultStone*> catapult_stones; /// Liste von allen umherfliegenden Katapultsteinen.
 
 	noNothing nothing; // nur Platzhalter bei der Rckgabe von GetNO
 	/// Liste von Militärgebäuden (auch HQ und Haufengebäude, daher normale Gebäude) pro "Militärquadrat"
@@ -581,14 +582,9 @@ public:
 		view.Draw(player, water, draw_selected, selected_x, selected_y, rb);
 	}
 
-/*
-	void PrepareRendering(const unsigned char player, const bool draw_selected, const MapCoord selected_x, const MapCoord selected_y,const RoadsBuilding& rb)
-		{view.PrepareRendering(player, draw_selected, selected_x, selected_y, rb);}
-	void Render() {view.Render();}
-*/
+	GameWorldView *GetView() {return(&view);}
 
 	TerrainRenderer *GetTerrainRenderer() {return(&tr);}
-	list<CatapultStone*> GetCatapultStones() {return(catapult_stones);}
 
 	/// Bauqualitäten anzeigen oder nicht
 	void ShowBQ() {view.ShowBQ();}
@@ -796,7 +792,7 @@ public:
 
 	/// Fügt einen Katapultstein der Welt hinzu, der gezeichnt werden will
 	void AddCatapultStone(CatapultStone * cs) {catapult_stones.push_back(cs); }
-	void RemoveCatapultStone(CatapultStone * cs) {catapult_stones.erase(cs); }
+	void RemoveCatapultStone(CatapultStone * cs) {catapult_stones.remove(cs); }
 
 	/// Lässt alles spielerische abbrennen, indem es alle Flaggen der Spieler zerstÃ¶rt
 	void Armageddon();

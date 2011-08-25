@@ -1,4 +1,4 @@
-// $Id: CatapultStone.cpp 7091 2011-03-27 10:57:38Z OLiver $
+// $Id: CatapultStone.cpp 7413 2011-08-25 15:19:44Z marcus $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -62,6 +62,7 @@ dest_y(sgd->PopSignedInt()),
 explode(sgd->PopBool()),
 event(sgd->PopObject<EventManager::Event>(GOT_EVENT))
 {
+	printf("deserialized catapultstone\n");
 }
 
 
@@ -84,11 +85,11 @@ void CatapultStone::Destroy()
 {
 }
 
-void CatapultStone::Draw(const GameWorldViewer& gwv,const int xoffset, const int yoffset)
+void CatapultStone::Draw(const GameWorldView& gwv,const int xoffset, const int yoffset)
 {
 	// Stein überhaupt zeichnen (wenn Quelle und Ziel nicht sichtbar sind, dann nicht!)
-	if(gwv.GetVisibility(dest_building_x,dest_building_y) != VIS_VISIBLE &&
-		gwv.GetVisibility(dest_map_x,dest_map_y) != VIS_VISIBLE)
+	if(gwv.GetGameWorldViewer()->GetVisibility(dest_building_x,dest_building_y) != VIS_VISIBLE &&
+		gwv.GetGameWorldViewer()->GetVisibility(dest_map_x,dest_map_y) != VIS_VISIBLE)
 		return;
 
 	int world_width = gwg->GetWidth() * TR_W;
@@ -130,6 +131,7 @@ void CatapultStone::HandleEvent(const unsigned int id)
 	if(explode)
 	{
 		// Explodiert --> mich zerstören
+		printf("REMOVE CATAPULT STONE: %p\n", (void *) this);
 		gwg->RemoveCatapultStone(this);
 		em->AddToKillList(this);
 	}

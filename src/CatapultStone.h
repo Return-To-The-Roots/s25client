@@ -1,4 +1,4 @@
-// $Id: CatapultStone.h 6582 2010-07-16 11:23:35Z FloSoft $
+// $Id: CatapultStone.h 7413 2011-08-25 15:19:44Z marcus $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -23,6 +23,7 @@
 #include "EventManager.h"
 
 class nobMilitary;
+class GameWorldView;
 class GameWorldViewer;
 
 
@@ -61,7 +62,7 @@ public:
 	public:		void Serialize(SerializedGameData *sgd) const { Serialize_CatapultStone(sgd); }
 
 	// Zeichnet den fliegenden Stein
-	void Draw(const GameWorldViewer& gwv,const int xoffset, const int yoffset);
+	void Draw(const GameWorldView& gwv,const int xoffset, const int yoffset);
 
 	/// Event-Handler
 	void HandleEvent(const unsigned int id);
