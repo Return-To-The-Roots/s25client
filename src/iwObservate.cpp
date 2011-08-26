@@ -31,6 +31,7 @@
 #include "iwMsgbox.h"
 #include "GameCommands.h"
 #include "dskGameInterface.h"
+#include "Settings.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -45,9 +46,10 @@
 //IngameWindow::IngameWindow(unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, const std::string& title, glArchivItem_Bitmap *background, bool modal)
 iwObservate::iwObservate(GameWorldViewer * const gwv,const unsigned short selected_x, const unsigned short selected_y)
 : IngameWindow(gwv->CreateGUIID(selected_x, selected_y),0xFFFE,0xFFFE,300,250,_("Observation window"),NULL),
-	view(new GameWorldView(gwv, GetX(), GetY(), 300, 250)), selected_x(selected_x), selected_y(selected_y)
+	view(new GameWorldView(gwv, GetX(), GetY(), 300, 250)), selected_x(selected_x), selected_y(selected_y), last_x(-1), last_y(-1), scroll(false)
 {
 	view->MoveToMapObject(selected_x, selected_y);
+	SetCloseOnRightClick(false);
 }
 
 bool iwObservate::Draw_()
@@ -76,4 +78,41 @@ bool iwObservate::Draw_()
 
 	return(IngameWindow::Draw_());
 }
+
+bool iwObservate::Msg_MouseMove(const MouseCoords& mc)
+{
+	if (scroll)
+	{
+		printf("SCROLL\n");
+		if(SETTINGS.interface.revert_mouse)
+			view->MoveTo( ( sx - mc.x)*2,  ( sy - mc.y)*2);
+		else
+			view->MoveTo(-( sx - mc.x)*2, -( sy - mc.y)*2);
+		VideoDriverWrapper::inst().SetMousePos(sx, sy);
+	}
+
+	return(false);
+}
+
+bool iwObservate::Msg_RightDown(const MouseCoords& mc)
+{
+	printf("\n\n\nRIGHT DOWN %s\n\n\n", WindowManager::inst().IsDesktopActive() ? "aktiv" : "inaktiv");
+
+	sx = mc.x;
+	sy = mc.y;
+
+	scroll = true;
+
+	return(false);
+}
+
+bool iwObservate::Msg_RightUp(const MouseCoords& mc)
+{
+	printf("\n\n\nRIGHT UP\n\n\n");
+
+	scroll = false;
+
+	return(false);
+}
+
 

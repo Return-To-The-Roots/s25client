@@ -1,4 +1,4 @@
-// $Id: IngameWindow.h 7086 2011-03-26 22:14:52Z OLiver $
+// $Id: IngameWindow.h 7419 2011-08-26 13:54:02Z marcus $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -31,7 +31,7 @@ class IngameWindow : public Window
 	static std::vector< Point<unsigned short> > last_pos;
 public:
 	/// Konstruktor von @p IngameWindow.
-	IngameWindow(unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, const std::string& title, glArchivItem_Bitmap *background, bool modal = false);
+	IngameWindow(unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, const std::string& title, glArchivItem_Bitmap *background, bool modal = false, bool close_on_right_click = true);
 	/// Destruktor von @p IngameWindow.
 	~IngameWindow(void);
 
@@ -64,6 +64,10 @@ public:
 	void SetMinimized(bool minimized = true);
 	/// ist das Fenster minimiert?
 	bool GetMinimized() { return minimized; }
+
+	/// Fenster wird bei Rechtsklick geschlossen?
+	void SetCloseOnRightClick(bool close_on_right_click) {this->close_on_right_click = close_on_right_click;}
+	bool GetCloseOnRightClick() {return(close_on_right_click);}
 
 	/// "modalisiert" das Fenster.
 	void SetModal(bool modal = true) { this->modal = modal; }
@@ -100,6 +104,7 @@ private:
 	bool closeme;
 	bool minimized;
 	bool move;
+	bool close_on_right_click;
 };
 
 #endif // !INGAMEWINDOW_H_INCLUDED

@@ -1,4 +1,4 @@
-// $Id: IngameWindow.cpp 7091 2011-03-27 10:57:38Z OLiver $
+// $Id: IngameWindow.cpp 7419 2011-08-26 13:54:02Z marcus $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -46,10 +46,10 @@ std::vector< Point<unsigned short> > IngameWindow::last_pos(MAX_POS_SAVE_ENTRIES
  *
  *  @author OLiver
  */
-IngameWindow::IngameWindow(unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, const std::string& title, glArchivItem_Bitmap *background, bool modal)
+IngameWindow::IngameWindow(unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, const std::string& title, glArchivItem_Bitmap *background, bool modal, bool close_on_right_click)
 	: Window(x, y, id, NULL, width, height), 
 	iwHeight(height), title(title), background(background), last_x(0), last_y(0),
-	last_down(false), last_down2(false), modal(modal), closeme(false), minimized(false), move(false)
+	last_down(false), last_down2(false), modal(modal), closeme(false), minimized(false), move(false), close_on_right_click(close_on_right_click)
 {
 	memset(button_state, BUTTON_UP, sizeof(ButtonState)*2);
 

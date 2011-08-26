@@ -1,4 +1,4 @@
-// $Id: WindowManager.cpp 7091 2011-03-27 10:57:38Z OLiver $
+// $Id: WindowManager.cpp 7419 2011-08-26 13:54:02Z marcus $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -584,10 +584,10 @@ void WindowManager::Msg_RightDown(const MouseCoords& mc)
 	if(windows.size())
 	{
 		// ist das aktive Fenster ok
-		if( (*windows.end()) != NULL)
+		if ((*windows.end()) != NULL)
 		{
 			// ist das Fenster modal? wenn ja, dann raus
-			if((*windows.end())->GetModal())
+			if ((*windows.end())->GetModal())
 				return;
 
 			// ja, dann prüfen ob Fenster geschlossen werden muss
@@ -601,7 +601,24 @@ void WindowManager::Msg_RightDown(const MouseCoords& mc)
 				if(Coll(mc.x, mc.y, (*it)->GetX(), (*it)->GetY(), (*it)->GetWidth(), (*it)->GetHeight()))
 				{
 					// ja, dann schliessen
-					(*it)->Close();
+					if ((*it)->GetCloseOnRightClick())
+					{
+						(*it)->Close();
+					} else
+					{
+						if( (*windows.end()) != NULL)
+							(*windows.end())->SetActive(false);
+
+						// Fenster aus der Liste holen und vorne wieder anhängen
+						IngameWindow *tmp = *it;
+						windows.erase(it); // ACHTUNG!!!!
+						windows.push_back(tmp);
+
+						desktop->SetActive(false);
+
+						(*it)->SetActive(true);
+						(*it)->Msg_RightDown(mc);
+					}
 
 					// und raus
 					return;

@@ -37,11 +37,18 @@ class iwObservate : public IngameWindow
 	const unsigned short selected_x, selected_y;
 	short last_x, last_y;
 
+	// Scrolling
+	bool scroll;
+	int sx, sy;
+	
 public:
 	iwObservate(GameWorldViewer * const gwv,const unsigned short selected_x, const unsigned short selected_y);
 
 private:
 	bool Draw_();
+	bool Msg_MouseMove(const MouseCoords& mc);
+	bool Msg_RightDown(const MouseCoords& mc);
+	bool Msg_RightUp(const MouseCoords& mc);
 };
 
 #endif // !iwOBSERVATE_H_INCLUDED
