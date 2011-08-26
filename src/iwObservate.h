@@ -46,6 +46,7 @@ public:
 
 private:
 	bool Draw_();
+	void Msg_ButtonClick(const unsigned int ctrl_id);
 	bool Msg_MouseMove(const MouseCoords& mc);
 	bool Msg_RightDown(const MouseCoords& mc);
 	bool Msg_RightUp(const MouseCoords& mc);
