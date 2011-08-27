@@ -1,4 +1,4 @@
-// $Id: VideoDriverWrapper.cpp 7091 2011-03-27 10:57:38Z OLiver $
+// $Id: VideoDriverWrapper.cpp 7423 2011-08-27 21:40:22Z marcus $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -341,6 +341,9 @@ bool VideoDriverWrapper::Initialize()
 
 	// Smooth - Shading aktivieren
 	glShadeModel(GL_SMOOTH);
+
+	glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_GREATER, 0.0f);
 
 	// Alphablending an
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

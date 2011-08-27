@@ -53,9 +53,9 @@ iwObservate::iwObservate(GameWorldViewer * const gwv,const unsigned short select
 	SetCloseOnRightClick(false);
 
 	// Lupe: 36
-	AddImageButton(1, GetWidth() / 2 - 36*2, GetHeight() - 50, 36, 36, TC_GREY, LOADER.GetImageN("io", 36));
+	AddImageButton(1, GetWidth() / 2 - 36*2, GetHeight() - 50, 36, 36, TC_BRICKS, LOADER.GetImageN("io", 36));
 	// Kamera (Folgen): 43
-	AddImageButton(2, GetWidth() / 2 - 36, GetHeight() - 50, 36, 36, TC_GREY, LOADER.GetImageN("io", 43));
+	AddImageButton(2, GetWidth() / 2 - 36, GetHeight() - 50, 36, 36, TC_BRICKS, LOADER.GetImageN("io", 43));
 	// Zum Ort
 	AddImageButton(3, GetWidth() / 2, GetHeight() - 50, 36, 36, TC_GREY, LOADER.GetImageN("io", 107));
 	// Fenster vergroessern/verkleinern

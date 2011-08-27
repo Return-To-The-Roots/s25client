@@ -66,7 +66,7 @@ void GameWorldView::Draw(const unsigned char player, unsigned * water, const boo
 
 	gwv->GetTerrainRenderer()->Draw(this, water);
 
-	glTranslatef(this->x, this->y, 0.0f);
+	glTranslatef((GLfloat) this->x, (GLfloat) this->y, 0.0f);
 
 	// Draw-Counter der Bäume zurücksetzen vor jedem Zeichnen
 	noTree::ResetDrawCounter();
@@ -425,7 +425,7 @@ void GameWorldView::Draw(const unsigned char player, unsigned * water, const boo
 	for(std::list<CatapultStone*>::iterator it = gwv->catapult_stones.begin();it!=gwv->catapult_stones.end();++it)
 		(*it)->Draw(*this,xoffset,yoffset);
 
-	glTranslatef(-this->x, -this->y, 0.0f);
+	glTranslatef((GLfloat) -this->x, (GLfloat) -this->y, 0.0f);
 
 	glScissor(0, 0, VideoDriverWrapper::inst().GetScreenWidth(), VideoDriverWrapper::inst().GetScreenWidth());
 
