@@ -41,7 +41,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions="/MP"
+				AdditionalOptions="/MP2"
 				Optimization="0"
 				AdditionalIncludeDirectories="&quot;$(SolutionDir)..\..\&quot;;&quot;$(SolutionDir)..\..\libendian\src&quot;;&quot;$(SolutionDir)..\..\libutil\src&quot;;&quot;$(SolutionDir)..\..\mygettext\src&quot;;&quot;$(SolutionDir)..\..\libsiedler2\src&quot;;&quot;$(SolutionDir)..\..\liblobby\src&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_VC"
@@ -861,6 +861,14 @@
 							>
 						</File>
 						<File
+							RelativePath="..\..\src\iwObservate.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\src\iwObservate.h"
+							>
+						</File>
+						<File
 							RelativePath="..\..\src\iwOptionsWindow.cpp"
 							>
 						</File>
@@ -1136,6 +1144,10 @@
 				</File>
 				<File
 					RelativePath="..\..\src\GameWorldGame.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\GameWorldView.cpp"
 					>
 				</File>
 				<File
