@@ -1,4 +1,4 @@
-// $Id: TerrainRenderer.h 7410 2011-08-25 12:08:21Z marcus $
+// $Id: TerrainRenderer.h 7428 2011-08-28 17:33:19Z marcus $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -156,7 +156,7 @@ public:
 
 
 	/// zeichnet den Kartenausschnitt.
-	void Draw(const GameWorldView * gwv,unsigned int *water);
+	void Draw(GameWorldView * gwv,unsigned int *water);
 	
 	/// Konvertiert "falsche Koordinaten", also im Minusbereich oder zu groﬂ wegen Zeichnen, in "richtige Koordinaten"
 	/// mit 0 <= x_out < width und 0 <= y_out < height 

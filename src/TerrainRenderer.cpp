@@ -1,4 +1,4 @@
-// $Id: TerrainRenderer.cpp 7410 2011-08-25 12:08:21Z marcus $
+// $Id: TerrainRenderer.cpp 7428 2011-08-28 17:33:19Z marcus $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -686,10 +686,25 @@ void TerrainRenderer::UpdateBorderTriangleTerrain(const MapCoord x, const MapCoo
  *  @author OLiver
  *  @author FloSoft
  */
-void TerrainRenderer::Draw(const GameWorldView * gwv,unsigned int *water)
+void TerrainRenderer::Draw(GameWorldView * gwv,unsigned int *water)
 {
 	assert(gl_vertices);
 	assert(borders);
+
+	if ((gwv->GetXOffset() == gwv->terrain_last_xoffset) && (gwv->GetYOffset() == gwv->terrain_last_yoffset) && (gwv->terrain_list != 0) && (GAMECLIENT.GetGlobalAnimation(4, 5, 4, 0) == gwv->terrain_last_global_animation))
+	{
+		glCallList(gwv->terrain_list);
+		return;
+	}
+
+	gwv->terrain_last_xoffset = gwv->GetXOffset();
+	gwv->terrain_last_yoffset = gwv->GetYOffset();
+	gwv->terrain_last_global_animation = GAMECLIENT.GetGlobalAnimation(4, 5, 4, 0);
+
+	if (gwv->terrain_list == 0)
+		gwv->terrain_list = glGenLists(1);
+
+	glNewList(gwv->terrain_list, GL_COMPILE_AND_EXECUTE);
 
 	// nach Texture in Listen sortieren
 	list<MapTile> sorted_textures[16];
@@ -870,6 +885,7 @@ void TerrainRenderer::Draw(const GameWorldView * gwv,unsigned int *water)
 			}
 		}
 	}
+
 	glEnable(GL_BLEND);
 
 	glLoadIdentity();
@@ -902,6 +918,8 @@ void TerrainRenderer::Draw(const GameWorldView * gwv,unsigned int *water)
 
 	// Wieder zurück ins normale modulate
 	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+
+	glEndList();
 }
 
 
