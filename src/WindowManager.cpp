@@ -1,4 +1,4 @@
-// $Id: WindowManager.cpp 7419 2011-08-26 13:54:02Z marcus $
+// $Id: WindowManager.cpp 7433 2011-08-28 22:45:25Z marcus $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -561,25 +561,6 @@ void WindowManager::Msg_RightDown(const MouseCoords& mc)
 	if(!desktop)
 		return;
 
-	// ist der Desktop aktiv?
-	if(desktop->GetActive())
-	{
-		// ja, dann Msg_RightDown aufrufen
-		desktop->Msg_RightDown(mc);
-		
-		// und die Fenster darunter auch
-		desktop->RelayMouseMessage(&Window::Msg_RightDown, mc);
-	}
-	else
-	{
-		// nein, ist das Fenster ok?
-		if( (*windows.end()) != NULL)
-		{
-			// ja, dann Nachricht an Fenster weiterleiten
-			(*windows.end())->RelayMouseMessage(&Window::Msg_RightDown, mc);
-		}
-	}
-
 	// Sind Fenster vorhanden?
 	if(windows.size())
 	{
@@ -620,10 +601,28 @@ void WindowManager::Msg_RightDown(const MouseCoords& mc)
 						(*it)->Msg_RightDown(mc);
 					}
 
-					// und raus
 					return;
 				}
 			}
+		}
+	}
+
+	// ist der Desktop aktiv?
+	if(desktop->GetActive())
+	{
+		// ja, dann Msg_RightDown aufrufen
+		desktop->Msg_RightDown(mc);
+		
+		// und die Fenster darunter auch
+		desktop->RelayMouseMessage(&Window::Msg_RightDown, mc);
+	}
+	else
+	{
+		// nein, ist das Fenster ok?
+		if( (*windows.end()) != NULL)
+		{
+			// ja, dann Nachricht an Fenster weiterleiten
+			(*windows.end())->RelayMouseMessage(&Window::Msg_RightDown, mc);
 		}
 	}
 

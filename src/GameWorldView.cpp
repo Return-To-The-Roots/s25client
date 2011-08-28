@@ -47,6 +47,12 @@ GameWorldView::GameWorldView(GameWorldViewer *gwv, unsigned short x, unsigned sh
 	CalcFxLx();
 }
 
+GameWorldView::~GameWorldView()
+{
+	if (terrain_list != 0)
+		glDeleteLists(terrain_list, 1);
+}
+
 struct ObjectBetweenLines
 {
 	noBase * obj;

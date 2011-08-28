@@ -1,4 +1,4 @@
-// $Id: GameWorld.h 7430 2011-08-28 21:56:51Z marcus $
+// $Id: GameWorld.h 7433 2011-08-28 22:45:25Z marcus $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -488,6 +488,7 @@ public:
 
 
 	GameWorldView(GameWorldViewer *gwv, unsigned short x, unsigned short y, unsigned short width, unsigned short height);
+	~GameWorldView();
 
 	GameWorldViewer *GetGameWorldViewer() {return(gwv);}
 	GameWorldViewer *GetGameWorldViewer() const {return(gwv);};
