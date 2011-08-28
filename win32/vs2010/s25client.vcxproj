@@ -420,10 +420,12 @@
     <ClCompile Include="..\..\src\GameReplay.cpp" />
     <ClCompile Include="..\..\src\GameSavedFile.cpp" />
     <ClCompile Include="..\..\src\GameSavegame.cpp" />
+    <ClCompile Include="..\..\src\GameWorldView.cpp" />
     <ClCompile Include="..\..\src\IngameWindow.cpp" />
     <ClCompile Include="..\..\src\iwAddons.cpp" />
     <ClCompile Include="..\..\src\iwAIDebug.cpp" />
     <ClCompile Include="..\..\src\iwMerchandiseStatistics.cpp" />
+    <ClCompile Include="..\..\src\iwObservate.cpp" />
     <ClCompile Include="..\..\src\iwTrade.cpp" />
     <ClCompile Include="..\..\src\noCharburnerPile.cpp" />
     <ClCompile Include="..\..\src\nofCharburner.cpp" />
