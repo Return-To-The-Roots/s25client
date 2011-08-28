@@ -85,10 +85,12 @@ void iwObservate::Msg_ButtonClick(const unsigned int ctrl_id)
 			{
 				SetWidth(340);
 				SetIwHeight(310);
+				GetCtrl<ctrlImageButton>(4)->SetImage(LOADER.GetImageN("io", 108));
 			} else
 			{
 				SetWidth(260);
 				SetIwHeight(190);
+				GetCtrl<ctrlImageButton>(4)->SetImage(LOADER.GetImageN("io", 109));
 			}
 
 			diff -= width;
