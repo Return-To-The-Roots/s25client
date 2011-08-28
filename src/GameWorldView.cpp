@@ -42,7 +42,7 @@
 #include "GameServer.h"
 #include "AIPlayerJH.h"
 
-GameWorldView::GameWorldView(GameWorldViewer *gwv, unsigned short x, unsigned short y, unsigned short width, unsigned short height) : selx(0), sely(0), show_coordinates(false), show_bq(false), show_names(false), show_productivity(false), xoffset(0), yoffset(0), last_xoffset(0), last_yoffset(0), gwv(gwv), d_what(0), d_player(0), d_active(false), x(x), y(y), width(width), height(height)
+GameWorldView::GameWorldView(GameWorldViewer *gwv, unsigned short x, unsigned short y, unsigned short width, unsigned short height) : selx(0), sely(0), show_coordinates(false), show_bq(false), show_names(false), show_productivity(false), xoffset(0), yoffset(0), last_xoffset(0), last_yoffset(0), gwv(gwv), d_what(0), d_player(0), d_active(false), x(x), y(y), width(width), height(height), terrain_list(0), terrain_last_xoffset(0), terrain_last_yoffset(0), terrain_last_global_animation(0), terrain_last_water(0)
 {
 	CalcFxLx();
 }
