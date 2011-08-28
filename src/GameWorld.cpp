@@ -1,4 +1,4 @@
-// $Id: GameWorld.cpp 7384 2011-08-15 22:13:01Z OLiver $
+// $Id: GameWorld.cpp 7429 2011-08-28 21:45:22Z jh $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -75,8 +75,9 @@ void GameWorld::Scan(glArchivItem_Map *map)
 
 	Init();
 
-	// Dummy-Hafenpos für Index 0 einfügen
-	harbor_pos.push_back(GameWorldBase::HarborPos());
+	// Dummy-Hafenpos für Index 0 einfügen // ask Oliverr why!
+	GameWorldBase::HarborPos dummy = {0,0};
+	harbor_pos.push_back(dummy);
 
 	// Andere Sachen setzen
 	for(unsigned y = 0;y<height;++y)
