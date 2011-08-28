@@ -1,4 +1,4 @@
-// $Id: nofFarmhand.cpp 7350 2011-08-08 17:14:40Z OLiver $
+// $Id: nofFarmhand.cpp 7427 2011-08-28 16:15:13Z marcus $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -114,6 +114,7 @@ void nofFarmhand::HandleDerivedEvent(const unsigned int id)
 			
 			unsigned max_radius = (job == JOB_CHARBURNER) ? 2 : RADIUS[job-JOB_WOODCUTTER];
 			bool points_found = false;
+			bool wait = false;
 
 			for(MapCoord tx=gwg->GetXA(x,y,0), r=1;r<=max_radius;tx=gwg->GetXA(tx,y,0),++r)
 			{
@@ -125,11 +126,18 @@ void nofFarmhand::HandleDerivedEvent(const unsigned int id)
 				{
 					for(MapCoord r2=0;r2<r;gwg->GetPointA(tx2,ty2,i%6),++r2)
 					{
-						if(IsPointAvailable(tx2,ty2) && !gwg->GetNode(tx2,ty2).reserved)
+						if(IsPointAvailable(tx2,ty2))
 						{
-							available_points[GetPointQuality(tx2,ty2)-PQ_CLASS1].push_back(Point<MapCoord>(tx2, ty2));
-							found_in_radius = true;
-							points_found = true;
+							if (!gwg->GetNode(tx2,ty2).reserved)
+							{
+								available_points[GetPointQuality(tx2,ty2)-PQ_CLASS1].push_back(Point<MapCoord>(tx2, ty2));
+								found_in_radius = true;
+								points_found = true;
+							} else if (job == JOB_STONEMASON)
+							{
+								// just wait a little bit longer
+								wait = true;
+							}
 						}
 					}
 				}
@@ -175,8 +183,13 @@ void nofFarmhand::HandleDerivedEvent(const unsigned int id)
 				StopNotWorking();
 
 				WalkingStarted();
-			}
-			else
+			} else if (wait)
+			{
+				// We have to wait, since we do not know whether there are any unreachable or reserved points where there's more to get
+				current_ev = em->AddEvent(this,JOB_CONSTS[job].wait1_length,1);
+
+				StartNotWorking();
+			} else
 			{
 
 				if(GameClient::inst().GetPlayerID() == this->player)
