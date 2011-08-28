@@ -1,4 +1,4 @@
-// $Id: Loader.cpp 7283 2011-07-07 11:39:19Z FloSoft $
+// $Id: Loader.cpp 7425 2011-08-28 10:31:42Z marcus $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -724,6 +724,15 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool *nations)
 	}
 
 	lastgfx = gfxset;
+
+	for (unsigned int nation = 0; nation < NATION_COUNT; ++nation)
+	{
+		nation_gfx[nation] = &(this->files[NATION_GFXSET_Z[lastgfx][nation]]);
+	}
+
+	map_gfx = &(this->files[MAP_GFXSET_Z[lastgfx]]);
+	tex_gfx = &(this->files[TEX_GFXSET[lastgfx]]);
+
 	return true;
 }
 

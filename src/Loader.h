@@ -1,4 +1,4 @@
-// $Id: Loader.h 7243 2011-06-07 15:12:46Z FloSoft $
+// $Id: Loader.h 7425 2011-08-28 10:31:42Z marcus $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -73,10 +73,10 @@ public:
 	inline const char *GetTextN(std::string file, unsigned int nr) { return dynamic_cast<libsiedler2::ArchivItem_Text*>( files[file].get(nr) ) ? dynamic_cast<libsiedler2::ArchivItem_Text*>( files[file].get(nr) )->getText() : "text missing"; }
 	inline libsiedler2::ArchivInfo *GetInfoN(std::string file) { return dynamic_cast<libsiedler2::ArchivInfo*>( &files[file] ); }
 	inline glArchivItem_Bob *GetBobN(std::string file) { return dynamic_cast<glArchivItem_Bob*>( files[file].get(0) ); };
-	inline glArchivItem_Bitmap *GetNationImageN(unsigned int nation, unsigned int nr) { return GetImageN(NATION_GFXSET_Z[lastgfx][nation], nr); }
-	inline glArchivItem_Bitmap *GetMapImageN(unsigned int nr) { return GetImageN(MAP_GFXSET_Z[lastgfx], nr); }
-	inline glArchivItem_Bitmap *GetTexImageN(unsigned int nr) { return GetImageN(TEX_GFXSET[lastgfx], nr); }
-	inline libsiedler2::ArchivItem_Palette *GetTexPaletteN(unsigned int nr) { return GetPaletteN(TEX_GFXSET[lastgfx], nr); }
+	inline glArchivItem_Bitmap *GetNationImageN(unsigned int nation, unsigned int nr) { return dynamic_cast<glArchivItem_Bitmap*>(nation_gfx[nation]->get(nr)); }
+	inline glArchivItem_Bitmap *GetMapImageN(unsigned int nr) { return dynamic_cast<glArchivItem_Bitmap*>(map_gfx->get(nr)); }
+	inline glArchivItem_Bitmap *GetTexImageN(unsigned int nr) { return dynamic_cast<glArchivItem_Bitmap*>(tex_gfx->get(nr)); }
+	inline libsiedler2::ArchivItem_Palette *GetTexPaletteN(unsigned int nr) { return dynamic_cast<libsiedler2::ArchivItem_Palette*>(tex_gfx->get(nr)); }
 	inline libsiedler2::ArchivItem_Ini *GetSettingsIniN(std::string name) { return static_cast<libsiedler2::ArchivItem_Ini*>( GetInfoN(CONFIG_NAME)->find(name.c_str()) ); }
 
 	// should not use this!
@@ -85,6 +85,9 @@ public:
 private:
 	std::map<std::string, libsiedler2::ArchivInfo> files;
 	unsigned char lastgfx;
+	libsiedler2::ArchivInfo *nation_gfx[NATION_COUNT];
+	libsiedler2::ArchivInfo *map_gfx;
+	libsiedler2::ArchivInfo *tex_gfx;
 
 public:
 	libsiedler2::ArchivInfo sng_lst;

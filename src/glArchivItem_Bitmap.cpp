@@ -1,4 +1,4 @@
-// $Id: glArchivItem_Bitmap.cpp 7091 2011-03-27 10:57:38Z OLiver $
+// $Id: glArchivItem_Bitmap.cpp 7425 2011-08-28 10:31:42Z marcus $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -139,29 +139,26 @@ void glArchivItem_Bitmap::Draw(short dst_x, short dst_y, short dst_w, short dst_
 			glTranslatef((float)dst_x, (float)dst_y, 0);
 			glCallList(map->second);
 			glTranslatef((float)-dst_x, (float)-dst_y, 0);
+
 			return;
 		}
 	}
 
 	unsigned int list = glGenLists(1);
 
-	/*std::cout << "generate  " << list << " for " 
-		<< dst_x << "," << dst_y << "," << dst_w << "x" << dst_h << " and "
-		<< src_x << "," << src_y << "," << src_w << "x" << src_h 
-		<< std::endl;*/
+	glTranslatef((float)dst_x, (float)dst_y, 0);
 
-	glNewList(list, GL_COMPILE);
+	glNewList(list, GL_COMPILE_AND_EXECUTE);
+
 	glBegin(GL_QUADS);
 	DrawVertex( (float)(-nx),         (float)(-ny),         (float)src_x,         (float)src_y);
 	DrawVertex( (float)(-nx),         (float)(-ny + dst_h), (float)src_x,         (float)(src_y+src_h));
 	DrawVertex( (float)(-nx + dst_w), (float)(-ny + dst_h), (float)(src_x+src_w), (float)(src_y+src_h));
 	DrawVertex( (float)(-nx + dst_w), (float)(-ny),         (float)(src_x+src_w), (float)src_y);
 	glEnd();
+
 	glEndList();
 
-	// should be faster
-	glTranslatef((float)dst_x, (float)dst_y, 0);
-	glCallList(list);
 	glTranslatef((float)-dst_x, (float)-dst_y, 0);
 
 	calllists[dst.l][src.l] = list;
