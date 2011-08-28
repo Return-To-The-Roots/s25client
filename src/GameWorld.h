@@ -1,4 +1,4 @@
-// $Id: GameWorld.h 7413 2011-08-25 15:19:44Z marcus $
+// $Id: GameWorld.h 7430 2011-08-28 21:56:51Z marcus $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -484,6 +484,7 @@ public:
 	unsigned int terrain_list;
 	int terrain_last_xoffset, terrain_last_yoffset;
 	unsigned int terrain_last_global_animation;
+	unsigned int terrain_last_water;
 
 
 	GameWorldView(GameWorldViewer *gwv, unsigned short x, unsigned short y, unsigned short width, unsigned short height);

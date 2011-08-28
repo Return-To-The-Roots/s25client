@@ -1,4 +1,4 @@
-// $Id: TerrainRenderer.cpp 7428 2011-08-28 17:33:19Z marcus $
+// $Id: TerrainRenderer.cpp 7430 2011-08-28 21:56:51Z marcus $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -694,6 +694,7 @@ void TerrainRenderer::Draw(GameWorldView * gwv,unsigned int *water)
 	if ((gwv->GetXOffset() == gwv->terrain_last_xoffset) && (gwv->GetYOffset() == gwv->terrain_last_yoffset) && (gwv->terrain_list != 0) && (GAMECLIENT.GetGlobalAnimation(4, 5, 4, 0) == gwv->terrain_last_global_animation))
 	{
 		glCallList(gwv->terrain_list);
+		*water = gwv->terrain_last_water;
 		return;
 	}
 
@@ -920,6 +921,8 @@ void TerrainRenderer::Draw(GameWorldView * gwv,unsigned int *water)
 	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
 	glEndList();
+
+	gwv->terrain_last_water = *water;
 }
 
 
