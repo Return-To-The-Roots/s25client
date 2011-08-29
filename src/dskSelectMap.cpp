@@ -1,4 +1,4 @@
-// $Id: dskSelectMap.cpp 7091 2011-03-27 10:57:38Z OLiver $
+// $Id: dskSelectMap.cpp 7452 2011-08-29 23:12:23Z marcus $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -107,7 +107,7 @@ dskSelectMap::dskSelectMap(const CreateServerInfo& csi)
 	// "Zurück"
 	AddTextButton(3, 380, 560, 200, 22, TC_RED1, _("Back"), NormalFont);
 	// "Spiel laden..."
-	AddTextButton(4, 590, 530, 200, 22, TC_GREEN1, _("Load game..."), NormalFont);
+	AddTextButton(4, 590, 530, 200, 22, TC_GREEN2, _("Load game..."), NormalFont);
 	// "Weiter"
 	AddTextButton(5, 590, 560, 200, 22, TC_GREEN2, _("Continue"), NormalFont);
 
