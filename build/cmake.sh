@@ -1,6 +1,6 @@
 #!/bin/bash
 ###############################################################################
-## $Id: cmake.sh 6807 2010-10-18 14:12:04Z FloSoft $
+## $Id: cmake.sh 7435 2011-08-29 07:43:23Z marcus $
 ###############################################################################
 
 # Editable Variables
@@ -238,7 +238,7 @@ case "$enable_debug" in
 			;;
 			*)
 				mecho --magenta "Activating release build"
-				PARAMS="$PARAMS -DCMAKE_BUILD_TYPE=MinSizeRel"
+				PARAMS="$PARAMS -DCMAKE_BUILD_TYPE=Release"
 			;;
 		esac
 	;;
