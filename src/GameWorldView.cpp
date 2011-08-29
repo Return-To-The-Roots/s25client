@@ -292,8 +292,6 @@ void GameWorldView::Draw(const unsigned char player, unsigned * water, const boo
 						// Militärgebäude?
 						else if(got == GOT_NOB_MILITARY)
 						{
-							
-				
 							// Dann kommt noch die Soldatenanzahl drunter
 							unsigned soldiers_count = static_cast<nobMilitary*>(no)->GetTroopsCount();
 							char str[64];
@@ -310,8 +308,6 @@ void GameWorldView::Draw(const unsigned char player, unsigned * water, const boo
 					}
 				}
 			}
-
-					
 		}
 	}
 
