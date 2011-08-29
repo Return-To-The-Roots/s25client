@@ -1,4 +1,4 @@
-// $Id: nobMilitary.cpp 7407 2011-08-24 15:19:01Z marcus $
+// $Id: nobMilitary.cpp 7437 2011-08-29 12:10:41Z marcus $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -309,7 +309,6 @@ void nobMilitary::LookForEnemyBuildings(const nobBaseMilitary * const exception)
 	gwg->LookForMilitaryBuildings(buildings,x,y,3);
 	frontier_distance = 0;
 
-
 	for(std::list<nobBaseMilitary*>::iterator it = buildings.begin();it!=buildings.end();++it)
 	{
 		// feindliches Militärgebäude?
@@ -428,10 +427,8 @@ void nobMilitary::RegulateTroops()
 					ordered_troops.erase(&it);
 					soldier->NotNeeded();
 				}
-				else
-				{
-					--it;
-				}
+
+				--it;
 			}
 		}
 
@@ -460,10 +457,8 @@ void nobMilitary::RegulateTroops()
 						AddLeavingFigure(*it);
 						troops.erase(&it);
 					}
-					else
-					{
-						--it;
-					}
+
+					--it;
 				}
 			}
 		}
