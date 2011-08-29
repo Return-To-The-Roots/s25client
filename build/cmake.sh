@@ -1,6 +1,6 @@
 #!/bin/bash
 ###############################################################################
-## $Id: cmake.sh 7435 2011-08-29 07:43:23Z marcus $
+## $Id: cmake.sh 7438 2011-08-29 19:21:44Z FloSoft $
 ###############################################################################
 
 # Editable Variables
@@ -148,17 +148,17 @@ while test $# != 0 ; do
 		;;
 		-disable-* | --disable-*)
 		        ac_feature=`expr "x$ac_option" : 'x-*disable-\([^=]*\)'`
-                        # Reject names that are not valid shell variable names.
-                        expr "x$ac_feature" : ".*[^-._$as_cr_alnum]" >/dev/null &&
-                        {
-                                echo "error: invalid feature name: $ac_feature" >&2
-                                { (exit 1); exit 1; };
-                        }
-                        ac_feature=`echo $ac_feature | sed 's/[-.]/_/g'`
-                        if [ -z "$ac_optarg" ] ; then
-                                ac_optarg="yes"
-                        fi
-                        eval disable_$ac_feature=\$ac_optarg
+						# Reject names that are not valid shell variable names.
+						expr "x$ac_feature" : ".*[^-._$as_cr_alnum]" >/dev/null &&
+						{
+								echo "error: invalid feature name: $ac_feature" >&2
+								{ (exit 1); exit 1; };
+						}
+						ac_feature=`echo $ac_feature | sed 's/[-.]/_/g'`
+						if [ -z "$ac_optarg" ] ; then
+								ac_optarg="yes"
+						fi
+						eval disable_$ac_feature=\$ac_optarg
 		;;
 		-D*)
 			PARAMS="$ac_option=$ac_optarg"
@@ -220,7 +220,7 @@ if [ ! -z "$disable_arch" ] ; then
 	NOARCH="$disable_arch $NOARCH"
 fi
 for I in $NOARCH ; do
-	if [ ! -z "$I" ] ; then	
+	if [ ! -z "$I" ] ; then
 		PARAMS="$PARAMS -DNO$I=$I"
 	fi
 done
