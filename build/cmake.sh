@@ -1,6 +1,6 @@
 #!/bin/bash
 ###############################################################################
-## $Id: cmake.sh 7438 2011-08-29 19:21:44Z FloSoft $
+## $Id: cmake.sh 7468 2011-09-03 11:47:14Z marcus $
 ###############################################################################
 
 # Editable Variables
@@ -204,7 +204,7 @@ echo "Setting Path-Prefix to \"$PREFIX\""
 PARAMS="$PARAMS -DPREFIX=$PREFIX"
 
 echo "Setting Architecture to \"$ARCH\""
-PARAMS="$PARAMS -DCOMPILEFOR_PLATFORM=$ARCH"
+PARAMS="$PARAMS -DCOMPILEFOR_PLATFORM=$ARCH -DCOMPILEFOR=`echo "$ARCH" | cut -d'.' -f1` -DCOMPILEARCH=`echo "$ARCH" | cut -d'.' -f2`"
 
 echo "Setting Binary Dir to \"$BINDIR\""
 PARAMS="$PARAMS -DBINDIR=$BINDIR"
