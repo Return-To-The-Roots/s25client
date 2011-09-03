@@ -1,4 +1,4 @@
-// $Id: TerrainRenderer.cpp 7430 2011-08-28 21:56:51Z marcus $
+// $Id: TerrainRenderer.cpp 7469 2011-09-03 17:24:33Z marcus $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -691,7 +691,7 @@ void TerrainRenderer::Draw(GameWorldView * gwv,unsigned int *water)
 	assert(gl_vertices);
 	assert(borders);
 
-	if ((gwv->GetXOffset() == gwv->terrain_last_xoffset) && (gwv->GetYOffset() == gwv->terrain_last_yoffset) && (gwv->terrain_list != 0) && (GAMECLIENT.GetGlobalAnimation(4, 5, 4, 0) == gwv->terrain_last_global_animation))
+/*	if ((gwv->GetXOffset() == gwv->terrain_last_xoffset) && (gwv->GetYOffset() == gwv->terrain_last_yoffset) && (gwv->terrain_list != 0) && (GAMECLIENT.GetGlobalAnimation(4, 5, 4, 0) == gwv->terrain_last_global_animation))
 	{
 		glCallList(gwv->terrain_list);
 		*water = gwv->terrain_last_water;
@@ -705,7 +705,7 @@ void TerrainRenderer::Draw(GameWorldView * gwv,unsigned int *water)
 	if (gwv->terrain_list == 0)
 		gwv->terrain_list = glGenLists(1);
 
-	glNewList(gwv->terrain_list, GL_COMPILE_AND_EXECUTE);
+	glNewList(gwv->terrain_list, GL_COMPILE_AND_EXECUTE);*/
 
 	// nach Texture in Listen sortieren
 	list<MapTile> sorted_textures[16];
@@ -920,9 +920,9 @@ void TerrainRenderer::Draw(GameWorldView * gwv,unsigned int *water)
 	// Wieder zurück ins normale modulate
 	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
-	glEndList();
+/*	glEndList();
 
-	gwv->terrain_last_water = *water;
+	gwv->terrain_last_water = *water;*/
 }
 
 
