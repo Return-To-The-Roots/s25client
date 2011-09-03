@@ -1,3 +1,409 @@
+s25rttr (20110903-7467.114) karmic; urgency=low
+
+  * Automatic Jenkins Build 114
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sat, 03 Sep 2011 01:05:42 +0200
+
+s25rttr (20110903-7467) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sat, 03 Sep 2011 00:00:00 +0200
+
+s25rttr (20110902-7466) any; urgency=low
+
+  * Added new map by NastX from
+    https://bugs.launchpad.net/s25rttr/s25client/+bug/826190/comments/2
+
+ -- marcus  Fri, 02 Sep 2011 09:05:00 +0200
+
+s25rttr (20110831-7462.113) karmic; urgency=low
+
+  * Automatic Jenkins Build 113
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Wed, 31 Aug 2011 01:07:08 +0200
+
+s25rttr (20110831-7462) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Wed, 31 Aug 2011 00:00:00 +0200
+
+s25rttr (20110830-7461) any; urgency=low
+
+  * fixed VS2008 project...
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Tue, 30 Aug 2011 21:20:00 +0200
+
+s25rttr (20110829-7452) any; urgency=low
+
+  * Changed background for "Load game..." button to match "Continue"
+    button (reported by Spikeone)
+
+ -- marcus  Mon, 29 Aug 2011 23:12:00 +0200
+
+s25rttr (20110829-7438.112) karmic; urgency=low
+
+  * Automatic Jenkins Build 112
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Mon, 29 Aug 2011 21:37:36 +0200
+
+s25rttr (20110829-7438) any; urgency=low
+
+  * clean
+
+ -- Florian Doersch <flosoft@siedler25.org>  Mon, 29 Aug 2011 19:21:00 +0200
+
+s25rttr (20110829-7437.111) karmic; urgency=low
+
+  * Automatic Jenkins Build 111
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Mon, 29 Aug 2011 20:47:31 +0200
+
+s25rttr (20110829-7437) any; urgency=low
+
+  * Fixed crash in nobMilitary::RegulateTroops().
+
+ -- marcus  Mon, 29 Aug 2011 12:10:00 +0200
+
+s25rttr (20110829-7436.110) karmic; urgency=low
+
+  * Automatic Jenkins Build 110
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Mon, 29 Aug 2011 09:50:29 +0200
+
+s25rttr (20110829-7436) any; urgency=low
+
+  * Dummy for triggering new build.
+
+ -- marcus  Mon, 29 Aug 2011 07:48:00 +0200
+
+s25rttr (20110829-7435.109) karmic; urgency=low
+
+  * Automatic Jenkins Build 109
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Mon, 29 Aug 2011 09:45:47 +0200
+
+s25rttr (20110829-7435) any; urgency=low
+
+  * Test for binary size with CMAKE_BUILD_TYPE=Release. (only was 6,3
+    MB here)
+
+ -- marcus  Mon, 29 Aug 2011 07:43:00 +0200
+
+s25rttr (20110828-7434) any; urgency=low
+
+  * Added iwObservate and GameWorldView to VS2010 project
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sun, 28 Aug 2011 23:34:00 +0200
+
+s25rttr (20110829-7433.108) karmic; urgency=low
+
+  * Automatic Jenkins Build 108
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Mon, 29 Aug 2011 01:10:59 +0200
+
+s25rttr (20110828-7433) any; urgency=low
+
+  * Fixed scrolling desktop after closing observation window when
+    desktop was active before scrolling in the observation window. %)
+
+ -- marcus  Sun, 28 Aug 2011 22:45:00 +0200
+
+s25rttr (20110828-7432) any; urgency=low
+
+  * Fix for forgetting to initialize instance variables of
+    GameWorldView.
+
+ -- marcus  Sun, 28 Aug 2011 22:04:00 +0200
+
+s25rttr (20110828-7430) any; urgency=low
+
+  * Water percent fix.
+
+ -- marcus  Sun, 28 Aug 2011 21:56:00 +0200
+
+s25rttr (20110828-7429) any; urgency=low
+
+  * fixing weird Oliver bug :P
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sun, 28 Aug 2011 21:45:00 +0200
+
+s25rttr (20110828-7428.107) karmic; urgency=low
+
+  * Automatic Jenkins Build 107
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sun, 28 Aug 2011 19:48:08 +0200
+
+s25rttr (20110828-7428) any; urgency=low
+
+  * Call list for terrain renderer and roads.
+
+ -- marcus  Sun, 28 Aug 2011 17:33:00 +0200
+
+s25rttr (20110828-7427) any; urgency=low
+
+  * Fixed #835443.
+
+ -- marcus  Sun, 28 Aug 2011 16:15:00 +0200
+
+s25rttr (20110828-7426) any; urgency=low
+
+  * Corrected resize icon in iwObservate.
+
+ -- marcus  Sun, 28 Aug 2011 12:20:00 +0200
+
+s25rttr (20110828-7425) any; urgency=low
+
+  * Minor graphics speedups.
+
+ -- marcus  Sun, 28 Aug 2011 10:31:00 +0200
+
+s25rttr (20110827-7423) any; urgency=low
+
+  * Alpha testing (better results with slow hardware?) & other minor
+    changes.
+
+ -- marcus  Sat, 27 Aug 2011 21:40:00 +0200
+
+s25rttr (20110827-7422) any; urgency=low
+
+  * Added iwObservate & GameWorldView to VS2008 project
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sat, 27 Aug 2011 13:50:00 +0200
+
+s25rttr (20110826-7420.104) karmic; urgency=low
+
+  * Automatic Jenkins Build 104
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Fri, 26 Aug 2011 22:50:17 +0200
+
+s25rttr (20110826-7420.103) karmic; urgency=low
+
+  * Automatic Jenkins Build 103
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Fri, 26 Aug 2011 22:44:10 +0200
+
+s25rttr (20110826-7420.102) karmic; urgency=low
+
+  * Automatic Jenkins Build 102
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Fri, 26 Aug 2011 19:55:41 +0200
+
+s25rttr (20110826-7420) any; urgency=low
+
+  * Added observation window buttons and scrolling.
+
+ -- marcus  Fri, 26 Aug 2011 16:56:00 +0200
+
+s25rttr (20110826-7419) any; urgency=low
+
+  * Scrolling for observation window. Added
+    Get/SetCloseOnRightClick() to IngameWindow.
+
+ -- marcus  Fri, 26 Aug 2011 13:54:00 +0200
+
+s25rttr (20110825-7417.101) karmic; urgency=low
+
+  * Automatic Jenkins Build 101
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Thu, 25 Aug 2011 20:25:23 +0200
+
+s25rttr (20110825-7417) any; urgency=low
+
+  * Fixed: pressing "g" in post window caused assert.
+
+ -- marcus  Thu, 25 Aug 2011 17:31:00 +0200
+
+s25rttr (20110825-7416) any; urgency=low
+
+  * Observation window was bigger than view.
+
+ -- marcus  Thu, 25 Aug 2011 16:48:00 +0200
+
+s25rttr (20110825-7415) any; urgency=low
+
+  * Right size of observation window & fixed start.sh for gdb +
+    replay.
+
+ -- marcus  Thu, 25 Aug 2011 16:16:00 +0200
+
+s25rttr (20110825-7414.100) karmic; urgency=low
+
+  * Automatic Jenkins Build 100
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Thu, 25 Aug 2011 17:31:05 +0200
+
+s25rttr (20110825-7414) any; urgency=low
+
+  * Removed debugging printf()s.
+
+ -- marcus  Thu, 25 Aug 2011 15:20:00 +0200
+
+s25rttr (20110825-7413) any; urgency=low
+
+  * Observation windows do not show contents when minimized and
+    CatapultStone() no longer leads to crashes.
+
+ -- marcus  Thu, 25 Aug 2011 15:19:00 +0200
+
+s25rttr (20110825-7412) any; urgency=low
+
+  * AI causing assert() in debug fixed.
+
+ -- marcus  Thu, 25 Aug 2011 13:03:00 +0200
+
+s25rttr (20110825-7411.99) karmic; urgency=low
+
+  * Automatic Jenkins Build 99
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Thu, 25 Aug 2011 14:31:39 +0200
+
+s25rttr (20110825-7411.98) karmic; urgency=low
+
+  * Automatic Jenkins Build 98
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Thu, 25 Aug 2011 14:26:55 +0200
+
+s25rttr (20110825-7411) any; urgency=low
+
+  * Sometimes "svn add" helps...
+
+ -- marcus  Thu, 25 Aug 2011 12:12:00 +0200
+
+s25rttr (20110825-7410) any; urgency=low
+
+  * Split of GameWorldViewer into GameWorldViewer and GameWorldView
+    (does the actual rendering). Added observation windows.
+
+ -- marcus  Thu, 25 Aug 2011 12:08:00 +0200
+
+s25rttr (20110825-7409.97) karmic; urgency=low
+
+  * Automatic Jenkins Build 97
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Thu, 25 Aug 2011 01:05:46 +0200
+
+s25rttr (20110824-7409) any; urgency=low
+
+  * Start replay/savegame from commandline. build/start.sh -l
+    <filename>. (DEBUG ONLY)
+
+ -- marcus  Wed, 24 Aug 2011 22:47:00 +0200
+
+s25rttr (20110824-7407) any; urgency=low
+
+  * Donkeys, pigs, ... do no longer move while scrolling when game is
+    paused.
+
+ -- marcus  Wed, 24 Aug 2011 15:19:00 +0200
+
+s25rttr (20110824-7406.96) karmic; urgency=low
+
+  * Automatic Jenkins Build 96
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Wed, 24 Aug 2011 14:35:18 +0200
+
+s25rttr (20110824-7406) any; urgency=low
+
+  * Autosave: do not include map name for maps that have no name (or
+    replays).
+
+ -- marcus  Wed, 24 Aug 2011 12:21:00 +0200
+
+s25rttr (20110824-7405) any; urgency=low
+
+  * Introduced a limit for pathfinding on roads & optimizations for
+    GameClientPlayer::FindClientForWare.
+
+ -- marcus  Wed, 24 Aug 2011 12:20:00 +0200
+
+s25rttr (20110824-7404.95) karmic; urgency=low
+
+  * Automatic Jenkins Build 95
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Wed, 24 Aug 2011 01:04:21 +0200
+
+s25rttr (20110824-7404) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Wed, 24 Aug 2011 00:00:00 +0200
+
+s25rttr (20110823-7403) any; urgency=low
+
+  * Final newline added for src/GameClient.cpp :)
+
+ -- marcus  Tue, 23 Aug 2011 20:43:00 +0200
+
+s25rttr (20110823-7402.94) karmic; urgency=low
+
+  * Automatic Jenkins Build 94
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 23 Aug 2011 22:25:38 +0200
+
+s25rttr (20110823-7402) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 23 Aug 2011 00:00:00 +0200
+
+s25rttr (20110823-7401) any; urgency=low
+
+  * "Single Player" -> "Load Game" now does what it is supposed to
+    do.
+
+ -- marcus  Tue, 23 Aug 2011 19:43:00 +0200
+
+s25rttr (20110823-7400) any; urgency=low
+
+  * Added map title to autosave. Fixes #823803.
+
+ -- marcus  Tue, 23 Aug 2011 19:19:00 +0200
+
+s25rttr (20110823-7399) any; urgency=low
+
+  * Mute "the world" while paused. Fixes #711228
+
+ -- marcus  Tue, 23 Aug 2011 18:54:00 +0200
+
+s25rttr (20110823-7398) any; urgency=low
+
+  * GetXA(...) & GetYA(...) rewritten; they don't call
+    ConvertCoords(...) any more.
+
+ -- marcus  Tue, 23 Aug 2011 18:39:00 +0200
+
+s25rttr (20110823-7397) any; urgency=low
+
+  * GameWorldBase::CalcDistance does not use std::abs any more.
+
+ -- marcus  Tue, 23 Aug 2011 15:48:00 +0200
+
+s25rttr (20110823-7396) any; urgency=low
+
+  * neue map von biristefan
+
+ -- Florian Doersch <flosoft@siedler25.org>  Tue, 23 Aug 2011 12:44:00 +0200
+
+s25rttr (20110823-7395.93) karmic; urgency=low
+
+  * Automatic Jenkins Build 93
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 23 Aug 2011 10:38:33 +0200
+
+s25rttr (20110823-7395) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 23 Aug 2011 00:00:00 +0200
+
+s25rttr (20110820-7392) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 20 Aug 2011 22:00:00 +0200
+
 s25rttr (20110819-7390.92) karmic; urgency=low
 
   * Automatic Jenkins Build 92
