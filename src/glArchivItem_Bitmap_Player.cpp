@@ -1,4 +1,4 @@
-// $Id: glArchivItem_Bitmap_Player.cpp 7091 2011-03-27 10:57:38Z OLiver $
+// $Id: glArchivItem_Bitmap_Player.cpp 7473 2011-09-04 13:39:27Z marcus $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -97,7 +97,9 @@ void glArchivItem_Bitmap_Player::Draw(short dst_x, short dst_y, short dst_w, sho
 			<< src_x << "," << src_y << "," << src_w << "x" << src_h 
 			<< std::endl;*/
 
-		glNewList(list, GL_COMPILE);
+		glTranslatef((float)dst_x, (float)dst_y, 0);
+
+		glNewList(list, GL_COMPILE_AND_EXECUTE);
 
 		glBegin(GL_QUADS);
 		DrawVertex( (float)(-nx),         (float)(-ny),         (float)src_x/2.0f,         (float)src_y);
@@ -108,8 +110,6 @@ void glArchivItem_Bitmap_Player::Draw(short dst_x, short dst_y, short dst_w, sho
 
 		glEndList();
 
-		glTranslatef((float)dst_x, (float)dst_y, 0);
-		glCallList(list);
 		glTranslatef((float)-dst_x, (float)-dst_y, 0);
 
 		calllists[dst.l][src.l] = list;
@@ -139,12 +139,9 @@ void glArchivItem_Bitmap_Player::Draw(short dst_x, short dst_y, short dst_w, sho
 
 	unsigned int list = glGenLists(1);
 
-	/*std::cout << "generateB " << list << " for " 
-		<< dst_x << "," << dst_y << "," << dst_w << "x" << dst_h << " and "
-		<< src_x << "," << src_y << "," << src_w << "x" << src_h 
-		<< std::endl;*/
+	glTranslatef((float)dst_x, (float)dst_y, 0);
 
-	glNewList(list, GL_COMPILE);
+	glNewList(list, GL_COMPILE_AND_EXECUTE);
 	glBegin(GL_QUADS);
 	DrawVertex( (float)(-nx),         (float)(-ny),         (float)src_x/2.0f,         (float)src_y);
 	DrawVertex( (float)(-nx),         (float)(-ny + dst_h), (float)src_x/2.0f,         (float)(src_y+src_h));
@@ -153,8 +150,6 @@ void glArchivItem_Bitmap_Player::Draw(short dst_x, short dst_y, short dst_w, sho
 	glEnd();
 	glEndList();
 
-	glTranslatef((float)dst_x, (float)dst_y, 0);
-	glCallList(list);
 	glTranslatef((float)-dst_x, (float)-dst_y, 0);
 
 	calllists[dst.l][src.l] = list;
