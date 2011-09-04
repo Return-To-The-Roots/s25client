@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 export LD_LIBRARY_PATH=libsiedler2/src
 export EF_ALLOW_MALLOC_0=1
@@ -70,10 +70,10 @@ while test $# != 0 ; do
 	shift $ac_shift
 done
 
-JOBS_COUNT=`grep -ce '^processor' /proc/cpuinfo`
+CPU_COUNT=`grep -ce '^processor' /proc/cpuinfo`
 
-if test "$JOBS_COUNT" -gt 0; then
-	MAKEARGS="-j $JOBS_COUNT $MAKEARGS"
+if test "$CPU_COUNT" -gt 0; then
+	MAKEARGS="-j $((1+$CPU_COUNT)) $MAKEARGS"
 fi
 
 make $MAKEARGS
