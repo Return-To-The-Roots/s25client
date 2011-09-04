@@ -1,4 +1,4 @@
-// $Id: TerrainRenderer.cpp 7474 2011-09-04 13:43:05Z marcus $
+// $Id: TerrainRenderer.cpp 7476 2011-09-04 13:57:28Z marcus $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -829,15 +829,12 @@ void TerrainRenderer::Draw(GameWorldView * gwv,unsigned int *water)
 	if(SETTINGS.video.vbo)
 	{
 		glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo_vertices);
-		glBufferDataARB(GL_ARRAY_BUFFER_ARB, (offset + border_count) * 3 * 2 * sizeof(float), gl_vertices, GL_STATIC_DRAW_ARB);
 		glVertexPointer(2, GL_FLOAT, 0, NULL);
 
 		glBindBufferARB(GL_ARRAY_BUFFER_ARB,vbo_texcoords);
-		glBufferDataARB(GL_ARRAY_BUFFER_ARB, (offset + border_count) * 3 * 2 * sizeof(float), gl_texcoords, GL_STATIC_DRAW_ARB );
 		glTexCoordPointer(2, GL_FLOAT, 0, NULL);
 
 		glBindBufferARB(GL_ARRAY_BUFFER_ARB,vbo_colors);
-		glBufferDataARB(GL_ARRAY_BUFFER_ARB, (offset + border_count) * 3 * 3 * sizeof(float), gl_colors, GL_STATIC_DRAW_ARB );
 		glColorPointer(3, GL_FLOAT, 0, NULL);
 	} else
 	{
