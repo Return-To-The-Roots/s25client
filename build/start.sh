@@ -70,6 +70,12 @@ while test $# != 0 ; do
 	shift $ac_shift
 done
 
+JOBS_COUNT=`grep -ce '^processor' /proc/cpuinfo`
+
+if test "$JOBS_COUNT" -gt 0; then
+	$MAKEARGS="-j $JOBS_COUNT $MAKEARGS"
+fi
+
 make $MAKEARGS
 
 if [ $? != 0 ] ; then
