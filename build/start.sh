@@ -73,7 +73,7 @@ done
 JOBS_COUNT=`grep -ce '^processor' /proc/cpuinfo`
 
 if test "$JOBS_COUNT" -gt 0; then
-	$MAKEARGS="-j $JOBS_COUNT $MAKEARGS"
+	MAKEARGS="-j $JOBS_COUNT $MAKEARGS"
 fi
 
 make $MAKEARGS
