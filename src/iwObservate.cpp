@@ -133,8 +133,7 @@ bool iwObservate::Draw_()
 		road.start_x = 0;
 		road.start_y = 0;
 
-		unsigned water;
-		view->Draw(GAMECLIENT.GetPlayerID(), &water, true, view->GetGameWorldViewer()->GetSelX(), view->GetGameWorldViewer()->GetSelY(), road);
+		view->Draw(GAMECLIENT.GetPlayerID(), NULL, true, view->GetGameWorldViewer()->GetSelX(), view->GetGameWorldViewer()->GetSelY(), road);
 	}
 
 	return(IngameWindow::Draw_());

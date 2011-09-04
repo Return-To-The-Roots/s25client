@@ -1,4 +1,4 @@
-// $Id: TerrainRenderer.cpp 7476 2011-09-04 13:57:28Z marcus $
+// $Id: TerrainRenderer.cpp 7477 2011-09-04 14:12:52Z marcus $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -686,7 +686,7 @@ void TerrainRenderer::UpdateBorderTriangleTerrain(const MapCoord x, const MapCoo
  *  @author OLiver
  *  @author FloSoft
  */
-void TerrainRenderer::Draw(GameWorldView * gwv,unsigned int *water)
+void TerrainRenderer::Draw(GameWorldView * gwv, unsigned int *water)
 {
 	assert(gl_vertices);
 	assert(borders);
@@ -719,7 +719,6 @@ void TerrainRenderer::Draw(GameWorldView * gwv,unsigned int *water)
 	unsigned int offset = width * height * 2;
 
 	// Beim zeichnen immer nur beginnen, wo man auch was sieht
-	unsigned int water_count = 0;
 	for(int y = gwv->GetFirstY(); y < gwv->GetLastY(); ++y)
 	{
 		unsigned char last = 255;
@@ -733,15 +732,6 @@ void TerrainRenderer::Draw(GameWorldView * gwv,unsigned int *water)
 			if(xo != lastxo || yo != lastyo)
 				last = 255;
 
-			// Wasser?
-			if(t == TT_WATER)
-			{
-				// Sichtbar?
-				if(gwv->GetGameWorldViewer()->GetVisibility(tx,ty) == VIS_VISIBLE)
-					// Dann Waser erhöhen, um Wasserrauschen abzuspielen
-					++water_count;
-			}
-
 			if(t == last)
 				++sorted_textures[t].back().count;
 			else
@@ -753,15 +743,6 @@ void TerrainRenderer::Draw(GameWorldView * gwv,unsigned int *water)
 			last = t;
 
 			t = gwv->GetGameWorldViewer()->GetNode(tx,ty).t2;
-
-			// Wasser?
-			if(t == TT_WATER)
-			{
-				// Sichtbar?
-				if(gwv->GetGameWorldViewer()->GetVisibility(tx,ty) == VIS_VISIBLE)
-					// Dann Waser erhöhen, um Wasserrauschen abzuspielen
-					++water_count;
-			}
 
 			if(t == last)
 				++sorted_textures[t].back().count;
@@ -816,12 +797,20 @@ void TerrainRenderer::Draw(GameWorldView * gwv,unsigned int *water)
 		}
 	}
 
-	assert(water);
+	if (water)
+	{
+		unsigned water_count = 0;
 
-	if( (gwv->GetLastX() - gwv->GetFirstX()) && (gwv->GetLastY() - gwv->GetFirstY()) )
-		*water = 50 * water_count / ( (gwv->GetLastX() - gwv->GetFirstX()) * (gwv->GetLastY() - gwv->GetFirstY()) );
-	else
-		*water = 0;
+		for(std::list<MapTile>::iterator it = sorted_textures[TT_WATER].begin(); it != sorted_textures[TT_WATER].end(); ++it)
+		{
+			water_count += it->count;
+		}
+
+		if( (gwv->GetLastX() - gwv->GetFirstX()) && (gwv->GetLastY() - gwv->GetFirstY()) )
+			*water = 50 * water_count / ( (gwv->GetLastX() - gwv->GetFirstX()) * (gwv->GetLastY() - gwv->GetFirstY()) );
+		else
+			*water = 0;
+	}
 
 	lastxo = 0;
 	lastyo = 0;
@@ -860,10 +849,10 @@ void TerrainRenderer::Draw(GameWorldView * gwv,unsigned int *water)
 		{
 			switch(i)
 			{
-			case 14:
+			case TT_WATER:
 				glBindTexture(GL_TEXTURE_2D, GetImage(water, GAMECLIENT.GetGlobalAnimation(8, 5, 2, 0))->GetTexture());
 				break;
-			case 15:
+			case TT_LAVA:
 				glBindTexture(GL_TEXTURE_2D, GetImage(lava, GAMECLIENT.GetGlobalAnimation(4, 5, 4, 0))->GetTexture());
 				break;
 			default:
