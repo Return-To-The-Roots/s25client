@@ -1,4 +1,4 @@
-// $Id: glArchivItem_Font.cpp 7370 2011-08-12 12:48:55Z jh $
+// $Id: glArchivItem_Font.cpp 7478 2011-09-04 16:11:23Z marcus $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -22,6 +22,8 @@
 #include <stdafx.h>
 #include "main.h"
 #include "glArchivItem_Font.h"
+#include "Settings.h"
+#include "ExtensionList.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -54,6 +56,13 @@ const unsigned char ANSI_TO_OEM[256] =
 	/* D */ 0x44,0xa5,0x4f,0x4f, 0x4f,0x4f,0x99,0x78, 0x4f,0x55,0x55,0x55, 0x9a,0x59,0x00,0xe1,
 	/* E */ 0x85,0xa0,0x83,0x61, 0x84,0x86,0x91,0x87, 0x8a,0x82,0x88,0x89, 0x8d,0xa1,0x8c,0x8b,
 	/* F */ 0x64,0xa4,0x95,0xa2, 0x93,0x6f,0x94,0xf6, 0x6f,0x97,0xa3,0x96, 0x81,0x79,0x00,0x98,
+};
+
+
+struct GL_T2F_V3F_Struct
+{
+	GLfloat tx, ty;
+	GLfloat x, y, z;
 };
 
 
@@ -147,6 +156,13 @@ void glArchivItem_Font::Draw(short x,
 		cx = x - line_width / 2;
 	}
 
+	GL_T2F_V3F_Struct *tmp = new GL_T2F_V3F_Struct[(text_max + (enable_end ? end_length : 0)) * 4];
+	float tw = _font->GetTexWidth();
+	float th = _font->GetTexHeight();
+	unsigned idx = 0;
+
+	glColor4ub(GetRed(color), GetGreen(color), GetBlue(color), GetAlpha(color));
+
 	for(unsigned short i = 0; i < text_max; ++i)
 	{
 		if(text[i] == '\n')
@@ -175,11 +191,50 @@ void glArchivItem_Font::Draw(short x,
 			unsigned char c = ANSI_TO_OEM[(unsigned char)text[i]];
 			if(_charwidths[c] > 0)
 			{
-				unsigned int x = 0, y = 0;
-				x = c % 16;
-				y = c / 16;
+				unsigned int x = c % 16;
+				unsigned int y = c / 16;
 
-				_font->Draw(cx, cy, _charwidths[c], dy, x*(dx+2)+1, y*(dy+2)+1, _charwidths[c], dy, color);
+				float tx1 = (float)(x*(dx+2)+1) / tw;
+				float tx2 = (float)(x*(dx+2)+1+_charwidths[c]) / tw;
+				float ty1 = (float)(y*(dy+2)+1) / th;
+				float ty2 = (float)(y*(dy+2)+1 + dy) / th;
+
+				tmp[idx].tx = tx1;
+				tmp[idx].ty = ty1;
+
+				tmp[idx].x = cx;
+				tmp[idx].y = cy;
+				tmp[idx].z = 0.0f;
+
+				idx++;
+
+				tmp[idx].tx = tx1;
+				tmp[idx].ty = ty2;
+
+				tmp[idx].x = cx;
+				tmp[idx].y = cy + dy;
+				tmp[idx].z = 0.0f;
+
+				idx++;
+
+				tmp[idx].tx = tx2;
+				tmp[idx].ty = ty2;
+
+				tmp[idx].x = cx + _charwidths[c];
+				tmp[idx].y = cy + dy;
+				tmp[idx].z = 0.0f;
+
+				idx++;
+
+				tmp[idx].tx = tx2;
+				tmp[idx].ty = ty1;
+
+				tmp[idx].x = cx + _charwidths[c];
+				tmp[idx].y = cy;
+				tmp[idx].z = 0.0f;
+
+				idx++;
+
 				cx += _charwidths[c];
 			}
 		}
@@ -202,12 +257,71 @@ void glArchivItem_Font::Draw(short x,
 					x = c % 16;
 					y = c / 16;
 
-					_font->Draw(cx, cy, 0, 0, x*(dx+2)+1, y*(dy+2)+1, _charwidths[c], dy, color);
+					float tx1 = (float)(x*(dx+2)+1) / tw;
+					float tx2 = (float)(x*(dx+2)+1+_charwidths[c]) / tw;
+					float ty1 = (float)(y*(dy+2)+1) / th;
+					float ty2 = (float)(y*(dy+2)+1 + dy) / th;
+
+					tmp[idx].tx = tx1;
+					tmp[idx].ty = ty1;
+
+					tmp[idx].x = cx;
+					tmp[idx].y = cy;
+					tmp[idx].z = 0.0f;
+
+					idx++;
+
+					tmp[idx].tx = tx1;
+					tmp[idx].ty = ty2;
+
+					tmp[idx].x = cx;
+					tmp[idx].y = cy + dy;
+					tmp[idx].z = 0.0f;
+
+					idx++;
+
+					tmp[idx].tx = tx2;
+					tmp[idx].ty = ty2;
+
+					tmp[idx].x = cx + _charwidths[c];
+					tmp[idx].y = cy + dy;
+					tmp[idx].z = 0.0f;
+
+					idx++;
+
+					tmp[idx].tx = tx2;
+					tmp[idx].ty = ty1;
+
+					tmp[idx].x = cx + _charwidths[c];
+					tmp[idx].y = cy;
+					tmp[idx].z = 0.0f;
+
+					idx++;
+
 					cx += _charwidths[c];
 				}
 			}
 		}
 	}
+
+	if (SETTINGS.video.vbo)
+	{
+		// unbind VBO
+		glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
+	}
+
+	glEnable(GL_TEXTURE_2D);
+
+	// Arrays aktivieren
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	glDisableClientState(GL_COLOR_ARRAY);
+
+	glInterleavedArrays(GL_T2F_V3F, 0, tmp);
+	glBindTexture(GL_TEXTURE_2D, _font->GetTexture());
+	glDrawArrays(GL_QUADS, 0, idx);
+
+	delete[] tmp;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -1,4 +1,4 @@
-// $Id: glArchivItem_Bitmap.h 7084 2011-03-26 21:31:12Z OLiver $
+// $Id: glArchivItem_Bitmap.h 7478 2011-09-04 16:11:23Z marcus $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -48,6 +48,9 @@ public:
 	virtual void DeleteTexture();
 	/// Setzt den Texturfilter auf einen bestimmten Wert.
 	virtual void setFilter(unsigned int filter);
+
+	unsigned short GetTexWidth() {return(tex_width);}
+	unsigned short GetTexHeight() {return(tex_width);}
 
 protected:
 	/// Erzeugt die Textur.

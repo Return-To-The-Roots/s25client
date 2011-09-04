@@ -1,4 +1,4 @@
-// $Id: TerrainRenderer.cpp 7477 2011-09-04 14:12:52Z marcus $
+// $Id: TerrainRenderer.cpp 7478 2011-09-04 16:11:23Z marcus $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -831,6 +831,11 @@ void TerrainRenderer::Draw(GameWorldView * gwv, unsigned int *water)
 		glTexCoordPointer(2, GL_FLOAT, 0, gl_texcoords);
 		glColorPointer(3, GL_FLOAT, 0, gl_colors);
 	}
+
+	// Arrays aktivieren
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	glEnableClientState(GL_COLOR_ARRAY);
 
 	// Modulate2x
 	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_EXT);
