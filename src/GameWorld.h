@@ -1,4 +1,4 @@
-// $Id: GameWorld.h 7433 2011-08-28 22:45:25Z marcus $
+// $Id: GameWorld.h 7474 2011-09-04 13:43:05Z marcus $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -486,6 +486,9 @@ public:
 	unsigned int terrain_last_global_animation;
 	unsigned int terrain_last_water;
 
+	std::list<MapTile> sorted_textures[16];
+	std::list<BorderTile> sorted_borders[5];
+	std::list<PreparedRoad> sorted_roads[4];
 
 	GameWorldView(GameWorldViewer *gwv, unsigned short x, unsigned short y, unsigned short width, unsigned short height);
 	~GameWorldView();

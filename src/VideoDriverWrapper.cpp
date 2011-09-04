@@ -1,4 +1,4 @@
-// $Id: VideoDriverWrapper.cpp 7423 2011-08-27 21:40:22Z marcus $
+// $Id: VideoDriverWrapper.cpp 7474 2011-09-04 13:43:05Z marcus $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -363,6 +363,11 @@ bool VideoDriverWrapper::Initialize()
 
 	// Nur obere Seite von Dreiecke rendern --> Performance
 	glEnable(GL_CULL_FACE);
+
+	// Arrays aktivieren
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	glEnableClientState(GL_COLOR_ARRAY);
 
 	// Extensions laden
 	if(!LoadAllExtensions())

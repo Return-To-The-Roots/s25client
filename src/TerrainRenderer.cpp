@@ -1,4 +1,4 @@
-// $Id: TerrainRenderer.cpp 7469 2011-09-03 17:24:33Z marcus $
+// $Id: TerrainRenderer.cpp 7474 2011-09-04 13:43:05Z marcus $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -707,18 +707,23 @@ void TerrainRenderer::Draw(GameWorldView * gwv,unsigned int *water)
 
 	glNewList(gwv->terrain_list, GL_COMPILE_AND_EXECUTE);*/
 
+	PrepareWays(gwv);
+
 	// nach Texture in Listen sortieren
-	list<MapTile> sorted_textures[16];
+	std::list<MapTile> sorted_textures[16];
+	std::list<BorderTile> sorted_borders[5];
 
 	int lastxo = 0, lastyo = 0;
 	int xo, yo;
 	unsigned short tx,ty;
+	unsigned int offset = width * height * 2;
 
 	// Beim zeichnen immer nur beginnen, wo man auch was sieht
 	unsigned int water_count = 0;
 	for(int y = gwv->GetFirstY(); y < gwv->GetLastY(); ++y)
 	{
 		unsigned char last = 255;
+		unsigned char last_border = 255;
 
 		for(int x = gwv->GetFirstX(); x < gwv->GetLastX(); ++x)
 		{
@@ -738,7 +743,7 @@ void TerrainRenderer::Draw(GameWorldView * gwv,unsigned int *water)
 			}
 
 			if(t == last)
-				++sorted_textures[t].end()->count;
+				++sorted_textures[t].back().count;
 			else
 			{
 				MapTile tmp = {tx * 2, ty, 1, xo, yo};
@@ -746,12 +751,8 @@ void TerrainRenderer::Draw(GameWorldView * gwv,unsigned int *water)
 			}
 
 			last = t;
-			lastxo = xo;
-			lastyo = yo;
 
 			t = gwv->GetGameWorldViewer()->GetNode(tx,ty).t2;
-			if(xo != lastxo || yo != lastyo)
-				last = 255;
 
 			// Wasser?
 			if(t == TT_WATER)
@@ -763,7 +764,7 @@ void TerrainRenderer::Draw(GameWorldView * gwv,unsigned int *water)
 			}
 
 			if(t == last)
-				++sorted_textures[t].end()->count;
+				++sorted_textures[t].back().count;
 			else
 			{
 				MapTile tmp = {tx * 2 + 1, ty, 1, xo, yo};
@@ -771,31 +772,6 @@ void TerrainRenderer::Draw(GameWorldView * gwv,unsigned int *water)
 			}
 
 			last = t;
-			lastxo = xo;
-			lastyo = yo;
-		}
-	}
-
-	assert(water);
-
-	if( (gwv->GetLastX() - gwv->GetFirstX()) && (gwv->GetLastY() - gwv->GetFirstY()) )
-		*water = 50 * water_count / ( (gwv->GetLastX() - gwv->GetFirstX()) * (gwv->GetLastY() - gwv->GetFirstY()) );
-	else
-		*water = 0;
-
-	list<BorderTile> sorted_borders[5];
-	unsigned int offset = width * height * 2;
-
-	lastxo = lastyo = 0;
-	for(int y = gwv->GetFirstY(); y < gwv->GetLastY(); ++y)
-	{
-		unsigned char last = 255;
-		for(int x = gwv->GetFirstX(); x < gwv->GetLastX(); ++x)
-		{
-			ConvertCoords(x, y, tx, ty, &xo, &yo);
-
-			if(xo != lastxo || yo != lastyo)
-				last = 255;
 
 			unsigned char tiles[6] =
 			{
@@ -821,30 +797,54 @@ void TerrainRenderer::Draw(GameWorldView * gwv,unsigned int *water)
 			{
 				if(tiles[i])
 				{
-					if(tiles[i] == last)
-						++sorted_borders[last-1].end()->count;
+					if(tiles[i] == last_border)
+						++sorted_borders[last_border-1].back().count;
 					else
 					{
-						last = tiles[i];
+						last_border = tiles[i];
 						BorderTile tmp = { offsets[i], 1, xo, yo};
-						sorted_borders[last-1].push_back(tmp);
+						sorted_borders[last_border-1].push_back(tmp);
 					}
 					++offset;
-
-					lastxo = xo;
-					lastyo = yo;
 				}
 			}
+
+			PrepareWaysPoint(gwv, tx, ty, xo, yo);
+
+			lastxo = xo;
+			lastyo = yo;
 		}
 	}
+
+	assert(water);
+
+	if( (gwv->GetLastX() - gwv->GetFirstX()) && (gwv->GetLastY() - gwv->GetFirstY()) )
+		*water = 50 * water_count / ( (gwv->GetLastX() - gwv->GetFirstX()) * (gwv->GetLastY() - gwv->GetFirstY()) );
+	else
+		*water = 0;
 
 	lastxo = 0;
 	lastyo = 0;
 
-	// Arrays aktivieren
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-	glEnableClientState(GL_COLOR_ARRAY);
+	if(SETTINGS.video.vbo)
+	{
+		glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo_vertices);
+		glBufferDataARB(GL_ARRAY_BUFFER_ARB, (offset + border_count) * 3 * 2 * sizeof(float), gl_vertices, GL_STATIC_DRAW_ARB);
+		glVertexPointer(2, GL_FLOAT, 0, NULL);
+
+		glBindBufferARB(GL_ARRAY_BUFFER_ARB,vbo_texcoords);
+		glBufferDataARB(GL_ARRAY_BUFFER_ARB, (offset + border_count) * 3 * 2 * sizeof(float), gl_texcoords, GL_STATIC_DRAW_ARB );
+		glTexCoordPointer(2, GL_FLOAT, 0, NULL);
+
+		glBindBufferARB(GL_ARRAY_BUFFER_ARB,vbo_colors);
+		glBufferDataARB(GL_ARRAY_BUFFER_ARB, (offset + border_count) * 3 * 3 * sizeof(float), gl_colors, GL_STATIC_DRAW_ARB );
+		glColorPointer(3, GL_FLOAT, 0, NULL);
+	} else
+	{
+		glVertexPointer(2, GL_FLOAT, 0, gl_vertices);
+		glTexCoordPointer(2, GL_FLOAT, 0, gl_texcoords);
+		glColorPointer(3, GL_FLOAT, 0, gl_colors);
+	}
 
 	// Modulate2x
 	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_EXT);
@@ -873,7 +873,7 @@ void TerrainRenderer::Draw(GameWorldView * gwv,unsigned int *water)
 				glBindTexture(GL_TEXTURE_2D, GetImage(textures, i)->GetTexture());
 			}
 
-			for(list<MapTile>::iterator it = sorted_textures[i].begin(); it.valid(); ++it)
+			for(std::list<MapTile>::iterator it = sorted_textures[i].begin(); it != sorted_textures[i].end(); ++it)
 			{
 				if(it->xo != lastxo || it->yo != lastyo)
 				{
@@ -900,7 +900,7 @@ void TerrainRenderer::Draw(GameWorldView * gwv,unsigned int *water)
 		{
 			glBindTexture(GL_TEXTURE_2D, GetImage(borders, i)->GetTexture());
 
-			for(list<BorderTile>::iterator it = sorted_borders[i].begin(); it.valid(); ++it)
+			for(std::list<BorderTile>::iterator it = sorted_borders[i].begin(); it != sorted_borders[i].end(); ++it)
 			{
 				if(it->xo != lastxo || it->yo != lastyo)
 				{
@@ -965,120 +965,180 @@ void TerrainRenderer::ConvertCoords(int x,int y,unsigned short& x_out, unsigned 
 	y_out = static_cast<unsigned short>(y);
 }
 
-void TerrainRenderer::DrawWays(const GameWorldView * gwv)
+struct GL_T2F_C3F_V3F_Struct
 {
-	for(int y = gwv->GetFirstY();y<gwv->GetLastY();++y)
+	GLfloat tx, ty;
+	GLfloat r, g, b;
+	GLfloat x, y, z;
+};
+
+void TerrainRenderer::PrepareWays(GameWorldView *gwv)
+{
+	for (unsigned char type = 0; type < 4; type++)
 	{
-		for(int x = gwv->GetFirstX();x<gwv->GetLastX();++x)
+		gwv->sorted_roads[type].clear();
+	}
+}
+
+void TerrainRenderer::PrepareWaysPoint(GameWorldView *gwv, unsigned short tx, unsigned short ty, int xo, int yo)
+{
+	float xpos = GetTerrainX(tx,ty)-gwv->GetXOffset()+xo;
+	float ypos = GetTerrainY(tx,ty)-gwv->GetYOffset()+yo;
+
+	// Wegtypen für die drei Richtungen
+	unsigned char type;
+
+	Visibility visibility = gwv->GetGameWorldViewer()->GetVisibility(tx,ty);
+
+	for(unsigned char dir = 0;dir<3;++dir)
+	{
+		if ((type = gwv->GetGameWorldViewer()->GetVisibleRoad(tx,ty, dir+3, visibility)))
 		{
-			unsigned short tx,ty;
-			int xo,yo;
-			ConvertCoords(x,y,tx,ty,&xo,&yo);
-
-			float xpos = GetTerrainX(tx,ty)-gwv->GetXOffset()+xo;
-			float ypos = GetTerrainY(tx,ty)-gwv->GetYOffset()+yo;
-
-
-			//////////////////////////////
-			// Weg(e) zeichnen
-
-			float begin_end_coords[24] =
+			float xpos2 = GetTerrainX(gwv->GetGameWorldViewer()->GetXA(tx,ty,3+dir),gwv->GetGameWorldViewer()->GetYA(tx,ty,3+dir))-gwv->GetXOffset()+xo;
+			float ypos2 = GetTerrainY(gwv->GetGameWorldViewer()->GetXA(tx,ty,3+dir),gwv->GetGameWorldViewer()->GetYA(tx,ty,3+dir))-gwv->GetYOffset()+yo;
+			
+			// Gehen wir über einen Kartenrand (horizontale Richung?)
+			if(abs(xpos-xpos2) >= gwv->GetGameWorldViewer()->GetWidth() * TR_W / 2)
 			{
-				-3.0f,-3.0f,
-				-3.0f, 3.0f,
-				-3.0f, 3.0f,
-				-3.0f,-3.0f,
-
-				 3.0f,-3.0f,
-				-3.0f, 3.0f,
-				-3.0f, 3.0f,
-				 3.0f,-3.0f,
-
-				 3.0f, 3.0f,
-				-3.0f,-3.0f,
-				-3.0f,-3.0f,
-				 3.0f, 3.0f,
-			};
-
-			// Terrain drumherum speichern
-			unsigned terrain[6];
-			for(unsigned i = 0;i<6;++i)
-				terrain[i] = gwv->GetGameWorldViewer()->GetTerrainAround(tx,ty,i);
-
-			// Wegtypen für die drei Richtungen
-			unsigned char type;
-
-			Visibility visibility = gwv->GetGameWorldViewer()->GetVisibility(tx,ty);
-
-			for(unsigned char dir = 0;dir<3;++dir)
-			{
-				if( (type = gwv->GetGameWorldViewer()->GetVisibleRoad(tx,ty, dir+3, visibility)) )
-				{
-					float xpos2 = GetTerrainX(gwv->GetGameWorldViewer()->GetXA(tx,ty,3+dir),gwv->GetGameWorldViewer()->GetYA(tx,ty,3+dir))-gwv->GetXOffset()+xo;
-					float ypos2 = GetTerrainY(gwv->GetGameWorldViewer()->GetXA(tx,ty,3+dir),gwv->GetGameWorldViewer()->GetYA(tx,ty,3+dir))-gwv->GetYOffset()+yo;
-					
-					
-					// Gehen wir über einen Kartenrand (horizontale Richung?)
-					if(abs(xpos-xpos2) >= gwv->GetGameWorldViewer()->GetWidth() * TR_W / 2)
-					{
-						if(abs(xpos2-int(gwv->GetGameWorldViewer()->GetWidth())*TR_W-xpos) < abs(xpos-xpos2))
-							xpos2 -= gwv->GetGameWorldViewer()->GetWidth()*TR_W;
-						else
-							xpos2 += gwv->GetGameWorldViewer()->GetWidth()*TR_W;
-					}
-					// Und dasselbe für vertikale Richtung
-					if(abs(ypos-ypos2) >= gwv->GetGameWorldViewer()->GetHeight() * TR_H / 2)
-					{
-						if(abs(ypos2-int(gwv->GetGameWorldViewer()->GetHeight())*TR_H-ypos) < abs(ypos-ypos2))
-							ypos2 -= gwv->GetGameWorldViewer()->GetHeight()*TR_H;
-						else
-							ypos2 += gwv->GetGameWorldViewer()->GetHeight()*TR_H;
-					}
-
-					--type;
-
-					// Wegtypen "konvertieren"
-					switch(type)
-					{
-					case RoadSegment::RT_DONKEY:
-					case RoadSegment::RT_NORMAL:
-						{
-							// Prüfen, ob Bergwerge gezeichnet werden müssen, indem man guckt, ob der Weg einen
-							// Berg "streift" oder auch eine Bergwiese
-							if(( (terrain[dir+2] >= TT_MOUNTAIN1 && terrain[dir+2] <= TT_MOUNTAIN4) || terrain[dir+2] == TT_MOUNTAINMEADOW) 
-								|| ( (terrain[dir+3] >= TT_MOUNTAIN1  && terrain[dir+3] <= TT_MOUNTAIN4) || terrain[dir+3] == TT_MOUNTAINMEADOW))
-								type = 3;
-
-						} break;
-					case RoadSegment::RT_BOAT:
-						{
-							type = 2;
-						} break;
-					}
-
-					glColor3f(1.0f,1.0f,1.0f);
-					glBindTexture(GL_TEXTURE_2D, GetImage(roads, type)->GetTexture());
-					glBegin(GL_QUADS);
-
-
-					glColor3f(GetColor(tx,ty),GetColor(tx,ty),GetColor(tx,ty));
-					glTexCoord2f(0.0f,0.0f);
-					glVertex2f(xpos+begin_end_coords[dir*8],ypos+begin_end_coords[dir*8+1]);
-					glTexCoord2f(0.0f,1.0f);
-					glVertex2f(xpos+begin_end_coords[dir*8+2],ypos+begin_end_coords[dir*8+3]);
-
-					glColor3f(GetColor(gwv->GetGameWorldViewer()->GetXA(tx,ty,3+dir),gwv->GetGameWorldViewer()->GetYA(tx,ty,3+dir)),
-					GetColor(gwv->GetGameWorldViewer()->GetXA(tx,ty,3+dir),gwv->GetGameWorldViewer()->GetYA(tx,ty,3+dir)),
-					GetColor(gwv->GetGameWorldViewer()->GetXA(tx,ty,3+dir),gwv->GetGameWorldViewer()->GetYA(tx,ty,3+dir)));
-					glTexCoord2f(0.78f,1.0f);
-					glVertex2f(xpos2+begin_end_coords[dir*8+4],ypos2+begin_end_coords[dir*8+5]);
-					glTexCoord2f(0.78f,0.0f);
-					glVertex2f(xpos2+begin_end_coords[dir*8+6],ypos2+begin_end_coords[dir*8+7]);
-
-					glEnd();
-				}
+				if(abs(xpos2-int(gwv->GetGameWorldViewer()->GetWidth())*TR_W-xpos) < abs(xpos-xpos2))
+					xpos2 -= gwv->GetGameWorldViewer()->GetWidth()*TR_W;
+				else
+					xpos2 += gwv->GetGameWorldViewer()->GetWidth()*TR_W;
 			}
+			// Und dasselbe für vertikale Richtung
+			if(abs(ypos-ypos2) >= gwv->GetGameWorldViewer()->GetHeight() * TR_H / 2)
+			{
+				if(abs(ypos2-int(gwv->GetGameWorldViewer()->GetHeight())*TR_H-ypos) < abs(ypos-ypos2))
+					ypos2 -= gwv->GetGameWorldViewer()->GetHeight()*TR_H;
+				else
+					ypos2 += gwv->GetGameWorldViewer()->GetHeight()*TR_H;
+			}
+
+			--type;
+
+			// Wegtypen "konvertieren"
+			switch(type)
+			{
+			case RoadSegment::RT_DONKEY:
+			case RoadSegment::RT_NORMAL:
+				{
+					unsigned t1 = gwv->GetGameWorldViewer()->GetTerrainAround(tx,ty, dir + 2);
+					unsigned t2 = gwv->GetGameWorldViewer()->GetTerrainAround(tx,ty, dir + 3);
+
+					// Prüfen, ob Bergwerge gezeichnet werden müssen, indem man guckt, ob der Weg einen
+					// Berg "streift" oder auch eine Bergwiese
+					if(( (t1 >= TT_MOUNTAIN1 && t1 <= TT_MOUNTAIN4) || t1 == TT_MOUNTAINMEADOW) 
+						|| ( (t2 >= TT_MOUNTAIN1  && t2 <= TT_MOUNTAIN4) || t2 == TT_MOUNTAINMEADOW))
+						type = 3;
+
+				} break;
+			case RoadSegment::RT_BOAT:
+				{
+					type = 2;
+				} break;
+			}
+
+			gwv->sorted_roads[type].push_back(
+				PreparedRoad(type,
+					xpos, ypos, xpos2, ypos2,
+					GetColor(tx, ty), GetColor(gwv->GetGameWorldViewer()->GetXA(tx,ty,3+dir),gwv->GetGameWorldViewer()->GetYA(tx,ty,3+dir)),
+					dir
+				)
+			);
 		}
+	}
+}
+void TerrainRenderer::DrawWays(GameWorldView *gwv)
+{
+	const float begin_end_coords[24] =
+	{
+		-3.0f,-3.0f,
+		-3.0f, 3.0f,
+		-3.0f, 3.0f,
+		-3.0f,-3.0f,
+
+		 3.0f,-3.0f,
+		-3.0f, 3.0f,
+		-3.0f, 3.0f,
+		 3.0f,-3.0f,
+
+		 3.0f, 3.0f,
+		-3.0f,-3.0f,
+		-3.0f,-3.0f,
+		 3.0f, 3.0f,
+	};
+
+	if (SETTINGS.video.vbo)
+	{
+		// unbind VBO
+		glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
+	}
+
+	for (unsigned char type = 0; type < 4; type++)
+	{
+		unsigned int i = 0;
+		GL_T2F_C3F_V3F_Struct *tmp = new GL_T2F_C3F_V3F_Struct[gwv->sorted_roads[type].size() * 4];
+
+		for (std::list<PreparedRoad>::iterator it = gwv->sorted_roads[type].begin(); it != gwv->sorted_roads[type].end(); ++it)
+		{
+			tmp[i].tx = 0.0f;
+			tmp[i].ty = 0.0f;
+
+			tmp[i].r = (*it).color1;
+			tmp[i].g = (*it).color1;
+			tmp[i].b = (*it).color1;
+
+			tmp[i].x = (*it).xpos+begin_end_coords[(*it).dir*8];
+			tmp[i].y = (*it).ypos+begin_end_coords[(*it).dir*8+1];
+			tmp[i].z = 0.0f;
+
+			i++;
+
+			tmp[i].tx = 0.0f;
+			tmp[i].ty = 1.0f;
+
+			tmp[i].r = (*it).color1;
+			tmp[i].g = (*it).color1;
+			tmp[i].b = (*it).color1;
+
+			tmp[i].x = (*it).xpos+begin_end_coords[(*it).dir*8+2];
+			tmp[i].y = (*it).ypos+begin_end_coords[(*it).dir*8+3];
+			tmp[i].z = 0.0f;
+
+			i++;
+
+			tmp[i].tx = 0.78f;
+			tmp[i].ty = 1.0f;
+
+			tmp[i].r = (*it).color2;
+			tmp[i].g = (*it).color2;
+			tmp[i].b = (*it).color2;
+
+			tmp[i].x = (*it).xpos2+begin_end_coords[(*it).dir*8+4];
+			tmp[i].y = (*it).ypos2+begin_end_coords[(*it).dir*8+5];
+			tmp[i].z = 0.0f;
+
+			i++;
+
+			tmp[i].tx = 0.78f;
+			tmp[i].ty = 0.0f;
+
+			tmp[i].r = (*it).color2;
+			tmp[i].g = (*it).color2;
+			tmp[i].b = (*it).color2;
+
+			tmp[i].x = (*it).xpos2+begin_end_coords[(*it).dir*8+6];
+			tmp[i].y = (*it).ypos2+begin_end_coords[(*it).dir*8+7];
+			tmp[i].z = 0.0f;
+
+			i++;
+		}
+
+		glInterleavedArrays(GL_T2F_C3F_V3F, 0, tmp);
+		glBindTexture(GL_TEXTURE_2D, GetImage(roads, type)->GetTexture());
+		glDrawArrays(GL_QUADS, 0, i);
+
+		delete[] tmp;
 	}
 }
 

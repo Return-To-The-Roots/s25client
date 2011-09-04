@@ -1,4 +1,4 @@
-// $Id: TerrainRenderer.h 7428 2011-08-28 17:33:19Z marcus $
+// $Id: TerrainRenderer.h 7474 2011-09-04 13:43:05Z marcus $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -23,6 +23,37 @@
 
 class GameWorldViewer;
 class GameWorldView;
+
+struct MapTile
+{
+	int x;
+	int y;
+	unsigned int count;
+	int xo;
+	int yo;
+};
+
+struct BorderTile
+{
+	int offset;
+	unsigned int count;
+	int xo;
+	int yo;
+};
+
+struct PreparedRoad
+{
+	unsigned char type;
+	float xpos, ypos;
+	float xpos2, ypos2;
+	float color1, color2;
+	unsigned char dir;
+
+	PreparedRoad(unsigned char type, float xpos, float ypos, float xpos2, float ypos2, float color1, float color2, unsigned char dir) : type(type), xpos(xpos), ypos(ypos), xpos2(xpos2), ypos2(ypos2), color1(color1), color2(color2), dir(dir) {}
+
+	bool operator<(const PreparedRoad b) const {return(type < b.type);}
+};
+
 
 /// Klasse, die für das grafische Anzeigen (Rendern) des Terrains zuständig ist
 class TerrainRenderer
@@ -71,23 +102,6 @@ class TerrainRenderer
 		unsigned int left_right_offset[2];
 		unsigned int right_left_offset[2];
 		unsigned int top_down_offset[2];
-	};
-
-	struct BorderTile
-	{
-		int offset;
-		unsigned int count;
-		int xo;
-		int yo;
-	};
-
-	struct MapTile
-	{
-		int x;
-		int y;
-		unsigned int count;
-		int xo;
-		int yo;
 	};
 
 	/// Breite und Höhe der Karte
@@ -143,7 +157,10 @@ private:
 	float GetBColor(const MapCoord x, const MapCoord y, unsigned char triangle) { return GetVertex(x,y).border[triangle].color; }
 
 	/// Zeichnet die Wege
-	void DrawWays(const GameWorldView * gwb);
+	void PrepareWays(GameWorldView *gwv);
+	void PrepareWaysPoint(GameWorldView *gwv, unsigned short tx, unsigned short ty, int xo, int yo);
+
+	void DrawWays(GameWorldView *gwv);
 
 
 public:
