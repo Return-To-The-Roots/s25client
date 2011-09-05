@@ -1,4 +1,4 @@
-// $Id: Desktop.cpp 7248 2011-06-07 15:33:29Z FloSoft $
+// $Id: Desktop.cpp 7493 2011-09-05 16:53:55Z FloSoft $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -61,7 +61,16 @@ Desktop::Desktop(glArchivItem_Bitmap *background)
 bool Desktop::Draw_(void)
 {
 	if(background)
-		background->Draw(0, 0, VideoDriverWrapper::inst().GetScreenWidth(), VideoDriverWrapper::inst().GetScreenHeight(), 0, 0, 0, 0);
+	{
+		short w,h;
+		double sW,sH, s;
+		sW = (double)VideoDriverWrapper::inst().GetScreenWidth() / background->getWidth();
+		sH = (double)VideoDriverWrapper::inst().GetScreenHeight() / background->getHeight();
+		s = (sW > sH ? sW : sH);
+		w = (short)(background->getWidth() * s);
+		h = (short)(background->getHeight() * s);
+		background->Draw(0, 0, w, h, 0, 0, 0, 0);
+	}
 
 	DrawControls();
 
