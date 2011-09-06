@@ -1,4 +1,4 @@
-// $Id: noFlag.cpp 7091 2011-03-27 10:57:38Z OLiver $
+// $Id: noFlag.cpp 7495 2011-09-06 07:37:54Z marcus $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -356,18 +356,14 @@ Ware *noFlag::SelectWare(const unsigned char dir, const bool swap_wares, const n
  */
 unsigned noFlag::GetWaresCountForRoad(const unsigned char dir) const
 {
-	unsigned count = 0;
-
-	for(unsigned char i = 0; i < 8; ++i)
-	{
-		if(wares[i])
-		{
-			if(wares[i]->GetNextDir() == dir)
-				++count;
-		}
-	}
-
-	return count;
+	return((wares[0] && (wares[0]->GetNextDir() == dir) ? 1 : 0) + 
+		(wares[1] && (wares[1]->GetNextDir() == dir) ? 1 : 0) + 
+		(wares[2] && (wares[2]->GetNextDir() == dir) ? 1 : 0) + 
+		(wares[3] && (wares[3]->GetNextDir() == dir) ? 1 : 0) + 
+		(wares[4] && (wares[4]->GetNextDir() == dir) ? 1 : 0) + 
+		(wares[5] && (wares[5]->GetNextDir() == dir) ? 1 : 0) + 
+		(wares[6] && (wares[6]->GetNextDir() == dir) ? 1 : 0) + 
+		(wares[7] && (wares[7]->GetNextDir() == dir) ? 1 : 0));
 }
 
 ///////////////////////////////////////////////////////////////////////////////

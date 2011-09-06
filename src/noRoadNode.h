@@ -1,4 +1,4 @@
-// $Id: noRoadNode.h 7378 2011-08-14 12:44:58Z jh $
+// $Id: noRoadNode.h 7495 2011-09-06 07:37:54Z marcus $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -21,8 +21,8 @@
 #define NO_ROADNODE_H_
 
 #include "noCoordBase.h"
+#include "RoadSegment.h"
 
-class RoadSegment;
 class noFigure;
 class Ware;
 // Enumforwarddeklaration bei VC nutzen
@@ -61,7 +61,8 @@ public:		void Destroy() { Destroy_noRoadNode(); }
 	protected:	void Serialize_noRoadNode(SerializedGameData * sgd) const;
 	public:		void Serialize(SerializedGameData *sgd) const { Serialize_noRoadNode(sgd); }
 
-	noRoadNode * GetNeighbour(const unsigned char dir) const;
+	inline noRoadNode * GetNeighbour(const unsigned char dir) const {if(!routes[dir]) return 0; return((routes[dir]->GetF1() == this) ? routes[dir]->GetF2() : routes[dir]->GetF1());}
+
 	void DestroyRoad(const unsigned char dir);
 	void UpgradeRoad(const unsigned char dir);
 	/// Vernichtet Alle Straﬂe um diesen Knoten

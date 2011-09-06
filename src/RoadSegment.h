@@ -1,4 +1,4 @@
-// $Id: RoadSegment.h 6582 2010-07-16 11:23:35Z FloSoft $
+// $Id: RoadSegment.h 7495 2011-09-06 07:37:54Z marcus $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -80,12 +80,7 @@ public:
 	/// haben wir überhaupt Carrier?
 	inline bool isOccupied() const
 	{
-		for(unsigned char i = 0; i < 2; ++i)
-		{
-			if(carrier[i])
-				return true;
-		}
-		return false;
+		return((carrier[0]) || (carrier[1]));
 	}
 
 	inline unsigned char GetDir(const bool dir, const unsigned int id) const

@@ -1,4 +1,4 @@
-// $Id: noRoadNode.cpp 7091 2011-03-27 10:57:38Z OLiver $
+// $Id: noRoadNode.cpp 7495 2011-09-06 07:37:54Z marcus $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -71,17 +71,6 @@ player(sgd->PopUnsignedChar())
 {
 	for(unsigned i = 0;i<6;++i)
 		routes[i] = sgd->PopObject<RoadSegment>(GOT_ROADSEGMENT);
-}
-
-noRoadNode * noRoadNode::GetNeighbour(const unsigned char dir) const
-{
-	if(!routes[dir])
-		return 0;
-
-	if(routes[dir]->GetF1() == this)
-		return routes[dir]->GetF2();
-	else
-		return routes[dir]->GetF1();
 }
 
 void noRoadNode::UpgradeRoad(const unsigned char dir)
