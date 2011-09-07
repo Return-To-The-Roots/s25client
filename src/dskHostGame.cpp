@@ -1,4 +1,4 @@
-// $Id: dskHostGame.cpp 7350 2011-08-08 17:14:40Z OLiver $
+// $Id: dskHostGame.cpp 7507 2011-09-07 13:37:09Z FloSoft $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -128,7 +128,7 @@ dskHostGame::dskHostGame() :
 		for(unsigned i = 0;i<TOURNEY_MODES_COUNT;++i)
 		{
 			char str[512];
-			sprintf (str,_("Torney: %u minutes"),TOURNEY_MODES_DURATION[i]);
+			sprintf (str,_("Tourney: %u minutes"),TOURNEY_MODES_DURATION[i]);
 			combo->AddString(str);
 		}
 	}
