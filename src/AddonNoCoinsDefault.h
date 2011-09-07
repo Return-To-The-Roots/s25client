@@ -18,7 +18,7 @@ public:
 										  ADDONGROUP_MILITARY,
 										  gettext_noop("Disable coins by default"), 
 										  gettext_noop("Receiving coins is disabled\n"
-													   "for military buildings by default"),
+													   "for military buildings by default."),
 										  0
 										 )
 	{

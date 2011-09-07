@@ -1,4 +1,4 @@
-// $Id: AddonAIDebugWindow.h 6711 2010-09-06 14:42:33Z FloSoft $
+// $Id: AddonAIDebugWindow.h 7501 2011-09-07 12:43:39Z FloSoft $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -36,7 +36,8 @@ public:
 	AddonAIDebugWindow() : AddonBool(ADDON_AI_DEBUG_WINDOW,
 									ADDONGROUP_OTHER,
 										  gettext_noop("AI Debugging Window"), 
-										  gettext_noop("Enable AI Debugging Window\n (possible cheating)"),
+										  gettext_noop("Enable AI Debugging Window\n"
+										               "(possible cheating)"),
 										  0
 										 )
 	{

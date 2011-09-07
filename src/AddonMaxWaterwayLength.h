@@ -1,4 +1,4 @@
-// $Id: AddonMaxWaterwayLength.h 6582 2010-07-16 11:23:35Z FloSoft $
+// $Id: AddonMaxWaterwayLength.h 7501 2011-09-07 12:43:39Z FloSoft $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -36,9 +36,13 @@ public:
 										 ADDONGROUP_GAMEPLAY,
 											gettext_noop("Set maximum waterway length"), 
 											gettext_noop("Limits the distance settlers may travel per boat.\n\n"
-														 "Possible values are:\nShort: 3 tiles\n"
-														 "Default: 5 tiles\nLong: 9 tiles\nLonger: 13 tiles\n"
-														 "Very long: 21 tiles\nand Unlimited"),
+														 "Possible values are:\n"
+														 "Short: 3 tiles\n"
+														 "Default: 5 tiles\n"
+														 "Long: 9 tiles\n"
+														 "Longer: 13 tiles\n"
+														 "Very long: 21 tiles\n"
+														 "and Unlimited."),
 											1
 										 )
 	{

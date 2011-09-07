@@ -1,4 +1,4 @@
-// $Id: AddonManualRoadEnlargement.h 6582 2010-07-16 11:23:35Z FloSoft $
+// $Id: AddonManualRoadEnlargement.h 7501 2011-09-07 12:43:39Z FloSoft $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -36,7 +36,7 @@ public:
 											 ADDONGROUP_ECONOMY,
 											 gettext_noop("Manual road enlargement"), 
 											 gettext_noop("Allows you to manually upgrade your roads\n"
-														  "and build donkey roads directly"),
+														  "and build donkey roads directly."),
 											 0
 										 )
 	{

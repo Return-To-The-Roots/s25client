@@ -1,4 +1,4 @@
-// $Id: AddonInexhaustibleMines.h 6582 2010-07-16 11:23:35Z FloSoft $
+// $Id: AddonInexhaustibleMines.h 7501 2011-09-07 12:43:39Z FloSoft $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -35,8 +35,8 @@ public:
 	AddonInexhaustibleMines() : AddonBool(ADDON_INEXHAUSTIBLE_MINES,
 										  ADDONGROUP_ECONOMY,
 										  gettext_noop("Inexhaustible Mines"), 
-										  gettext_noop("Allows to have unlimited resources\n\n"
-													   "Mines will never be depleted"),
+										  gettext_noop("Allows to have unlimited resources.\n\n"
+													   "Mines will never be depleted."),
 										  0
 										 )
 	{

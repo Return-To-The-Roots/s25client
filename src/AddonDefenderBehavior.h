@@ -1,4 +1,4 @@
-// $Id: AddonDefenderBehavior.h 6582 2010-07-16 11:23:35Z FloSoft $
+// $Id: AddonDefenderBehavior.h 7501 2011-09-07 12:43:39Z FloSoft $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -39,7 +39,7 @@ public:
 											gettext_noop("Allows to change the military setting 'defender'.\n\n"
 														 "You can choose to disallow any changes to that setting\n"
 														 "or you can limit the amount of reoccupying troops\n"
-														 "(during an attack) according to the defender setting"),
+														 "(during an attack) according to the defender setting."),
 											0
 										 )
 	{

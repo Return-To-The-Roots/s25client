@@ -1,4 +1,4 @@
-// $Id: AddonDemolitionProhibition.h 6582 2010-07-16 11:23:35Z FloSoft $
+// $Id: AddonDemolitionProhibition.h 7501 2011-09-07 12:43:39Z FloSoft $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -35,7 +35,7 @@ public:
 	AddonDemolitionProhibition() : AddonList(ADDON_DEMOLITION_PROHIBITION, 
 											 ADDONGROUP_MILITARY,
 											 gettext_noop("Disable Demolition of military buildings"), 
-											 gettext_noop("Allows to disable the demolition of military buildings under attack or near frontiers"),
+											 gettext_noop("Allows to disable the demolition of military buildings under attack or near frontiers."),
 											 0
 										   )
 	{

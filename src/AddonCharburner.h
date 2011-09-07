@@ -1,4 +1,4 @@
-// $Id: AddonCharburner.h 6582 2010-07-16 11:23:35Z FloSoft $
+// $Id: AddonCharburner.h 7501 2011-09-07 12:43:39Z FloSoft $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -34,7 +34,7 @@ public:
 	AddonCharburner() : AddonBool(ADDON_CHARBURNER,
 										  ADDONGROUP_ECONOMY,
 										  gettext_noop("Enable charburner"), 
-										  gettext_noop("Allows to build charburners"),
+										  gettext_noop("Allows to build the charburner."),
 										  0
 										 )
 	{
