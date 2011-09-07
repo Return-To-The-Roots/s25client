@@ -1,4 +1,4 @@
-// $Id: GameClient.h 7350 2011-08-08 17:14:40Z OLiver $
+// $Id: GameClient.h 7508 2011-09-07 13:46:34Z FloSoft $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -135,8 +135,8 @@ public:
 	/// Wird ein Replay abgespielt?
 	bool IsReplayModeOn() const { return replay_mode; }
 
-	/// Is Tourney mode activated (0 if not)? Returns the durations of the tourney mode in gf otherwise
-	unsigned GetTourneyModeDuration() const;
+	/// Is tournament mode activated (0 if not)? Returns the durations of the tournament mode in gf otherwise
+	unsigned GetTournamentModeDuration() const;
 
 	void SkipGF(unsigned int gf);
 

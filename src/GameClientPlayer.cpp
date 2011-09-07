@@ -1,4 +1,4 @@
-// $Id: GameClientPlayer.cpp 7405 2011-08-24 12:20:38Z marcus $
+// $Id: GameClientPlayer.cpp 7508 2011-09-07 13:46:34Z FloSoft $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1549,8 +1549,8 @@ void GameClientPlayer::CalcStatistics()
 	// Produktivität berechnen
 	statisticCurrentData[STAT_PRODUCTIVITY] = CalcAverageProductivitiy();
 
-	// Total points for tourney games
-	statisticCurrentData[STAT_TOURNEY] = statisticCurrentData[STAT_MILITARY] 
+	// Total points for tournament games
+	statisticCurrentData[STAT_TOURNAMENT] = statisticCurrentData[STAT_MILITARY] 
 											+ 3*statisticCurrentData[STAT_VANQUISHED] ;
 }
 

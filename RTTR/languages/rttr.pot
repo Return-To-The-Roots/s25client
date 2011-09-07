@@ -497,7 +497,7 @@ msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:131
 #, c-format
-msgid "Tourney: %u minutes"
+msgid "Tournament: %u minutes"
 msgstr ""
 
 #. Besitz 3/4 des Landes

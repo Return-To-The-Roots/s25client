@@ -1,4 +1,4 @@
-// $Id: GameConsts.h 7350 2011-08-08 17:14:40Z OLiver $
+// $Id: GameConsts.h 7508 2011-09-07 13:46:34Z FloSoft $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -373,7 +373,7 @@ enum StatisticType
   STAT_GOLD,
   STAT_PRODUCTIVITY,
   STAT_VANQUISHED,
-  STAT_TOURNEY
+  STAT_TOURNAMENT
 };
 
 /// Anzahl Statistikarten
@@ -474,9 +474,9 @@ const unsigned SCOUTS_EXPLORATION_EXPEDITION = 3;
 
 /// Number of "classical" objectives in a friendly match
 const unsigned OBJECTIVES_COUNT = 3;
-/// Tourney modes
-const unsigned TOURNEY_MODES_COUNT = 5;
-const unsigned TOURNEY_MODES_DURATION[TOURNEY_MODES_COUNT] =
+/// tournament modes
+const unsigned TOURNAMENT_MODES_COUNT = 5;
+const unsigned TOURNAMENT_MODES_DURATION[TOURNAMENT_MODES_COUNT] =
 {
 	30,60,90,120,240
 };

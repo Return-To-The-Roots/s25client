@@ -1,4 +1,4 @@
-// $Id: dskGameInterface.cpp 7371 2011-08-12 13:11:08Z OLiver $
+// $Id: dskGameInterface.cpp 7508 2011-09-07 13:46:34Z FloSoft $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -251,8 +251,8 @@ void dskGameInterface::Msg_PaintAfter()
 	else
 		snprintf(nwf_string, 255, _("Current GF: %u / GF length: %u ms / NWF length: %u gf (%u ms) /  Ping: %u ms"),GAMECLIENT.GetGFNumber(),GAMECLIENT.GetGFLength(), GAMECLIENT.GetNWFLength(), GAMECLIENT.GetNWFLength() * GAMECLIENT.GetGFLength(), GAMECLIENT.GetLocalPlayer()->ping);
 
-	// Tourney mode?
-	unsigned tmd = GameClient::inst().GetTourneyModeDuration();
+	// tournament mode?
+	unsigned tmd = GameClient::inst().GetTournamentModeDuration();
 
 	if(tmd)
 	{
@@ -260,7 +260,7 @@ void dskGameInterface::Msg_PaintAfter()
 		unsigned sec = (GameClient::inst().GetGGS().game_objective-OBJECTIVES_COUNT)*60 -
 			GameClient::inst().GetGFNumber() * GameClient::inst().GetGFLength() / 1000;
 		char str[512];
-		sprintf(str,"Tourney mode: %02u:%02u:%02u remaining",sec/3600,(sec/60)%60,sec%60);
+		sprintf(str,"tournament mode: %02u:%02u:%02u remaining",sec/3600,(sec/60)%60,sec%60);
 	}
 
 	NormalFont->Draw(30,1,nwf_string,0,0xFFFFFF00);

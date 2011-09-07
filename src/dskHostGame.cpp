@@ -1,4 +1,4 @@
-// $Id: dskHostGame.cpp 7507 2011-09-07 13:37:09Z FloSoft $
+// $Id: dskHostGame.cpp 7508 2011-09-07 13:46:34Z FloSoft $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -124,11 +124,11 @@ dskHostGame::dskHostGame() :
 	// Lobby game?
 	if(LOBBYCLIENT.LoggedIn())
 	{
-		// Then add tourney modes as possible "objectives"
-		for(unsigned i = 0;i<TOURNEY_MODES_COUNT;++i)
+		// Then add tournament modes as possible "objectives"
+		for(unsigned i = 0;i<TOURNAMENT_MODES_COUNT;++i)
 		{
 			char str[512];
-			sprintf (str,_("Tourney: %u minutes"),TOURNEY_MODES_DURATION[i]);
+			sprintf (str,_("Tournament: %u minutes"),TOURNAMENT_MODES_DURATION[i]);
 			combo->AddString(str);
 		}
 	}
