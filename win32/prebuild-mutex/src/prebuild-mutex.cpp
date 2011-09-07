@@ -1,4 +1,4 @@
-// $Id: prebuild-mutex.cpp 6582 2010-07-16 11:23:35Z FloSoft $
+// $Id: prebuild-mutex.cpp 7500 2011-09-07 12:42:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -170,7 +170,7 @@ int main(int argc, char *argv[])
 						{
 							std::cout << "creating language " << (*it) << std::endl;
 
-							cmd = "msgmerge --quiet --update --backup=none -s RTTR/languages/" + (*it) + ".po RTTR/languages/rttr.pot";
+							cmd = "msgmerge --sort-output --no-wrap --quiet --update --backup=none -s RTTR/languages/" + (*it) + ".po RTTR/languages/rttr.pot";
 							exec(cmd);
 							cmd = "msgfmt -o RTTR/languages/" + (*it) + ".mo RTTR/languages/" + (*it) + ".po";
 							exec(cmd);
