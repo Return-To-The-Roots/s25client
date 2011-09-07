@@ -1,4 +1,4 @@
-// $Id: dskMainMenu.cpp 7091 2011-03-27 10:57:38Z OLiver $
+// $Id: dskMainMenu.cpp 7504 2011-09-07 12:56:11Z FloSoft $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -37,6 +37,7 @@
 
 #include "ListDir.h"
 #include "iwTextfile.h"
+
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
@@ -65,9 +66,9 @@ dskMainMenu::dskMainMenu(void) : Desktop(LOADER.GetImageN("menu", 0))
 	// Version
 	AddVarText(0, 0, 600, _("Return To The Roots - v%s-%s"), COLOR_YELLOW, 0 | glArchivItem_Font::DF_BOTTOM, NormalFont, 2, GetWindowVersion(), GetWindowRevision());
 	// URL
-	AddText(1, 400, 600, "http://www.siedler25.org", COLOR_GREEN, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, NormalFont);
+	AddText(1, 400, 600, _("http://www.siedler25.org"), COLOR_GREEN, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, NormalFont);
 	// Copyright
-	AddText(2, 800, 600, "∞ 2005 - 2010 Settlers Freaks", COLOR_YELLOW, glArchivItem_Font::DF_RIGHT | glArchivItem_Font::DF_BOTTOM, NormalFont);
+	AddText(2, 800, 600, _("\xA9 2005 - 2011 Settlers Freaks"), COLOR_YELLOW, glArchivItem_Font::DF_RIGHT | glArchivItem_Font::DF_BOTTOM, NormalFont);
 
 	// "Einzelspieler"
 	AddTextButton(4, 115, 180, 220, 22, TC_GREEN2, _("Singleplayer"), NormalFont);
@@ -85,6 +86,11 @@ dskMainMenu::dskMainMenu(void) : Desktop(LOADER.GetImageN("menu", 0))
 	AddTextButton(9, 115, 390, 220, 22, TC_RED1, _("Quit program"), NormalFont);
 
 	AddImage(11, 20, 20, LOADER.GetImageN("logo", 0));
+
+	/*AddText(20, 50, 450, _("Font Test"), COLOR_YELLOW, glArchivItem_Font::DF_LEFT, SmallFont);
+	AddText(21, 50, 470, _("Font Test"), COLOR_YELLOW, glArchivItem_Font::DF_LEFT, NormalFont);
+	AddText(22, 50, 490, _("Font Test"), COLOR_YELLOW, glArchivItem_Font::DF_LEFT, LargeFont);*/
+	//  !\"#$%&'()*+,-./0123456789:;<=>?@abcdefghijklmnopqrstuvwxyz\\_ABCDEFGHIJKLMNOPQRSTUVWXYZ«¸È‚‰‡ÂÁÍÎËÔÓÏ©ƒ≈ÙˆÚ˚˘÷‹·ÌÛ˙Ò
 }
 
 ///////////////////////////////////////////////////////////////////////////////

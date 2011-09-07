@@ -1,4 +1,4 @@
-// $Id: glArchivItem_Font.h 7370 2011-08-12 12:48:55Z jh $
+// $Id: glArchivItem_Font.h 7504 2011-09-07 12:56:11Z FloSoft $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -25,20 +25,18 @@
 class glArchivItem_Font : public libsiedler2::ArchivItem_Font
 {
 public:
-
-	/// Konstruktor von @p glArchivItem_Font.
-	glArchivItem_Font(void) : ArchivItem_Font(), _font(NULL) {}
+		/// Konstruktor von @p glArchivItem_Font.
+	glArchivItem_Font(void) : ArchivItem_Font(), _font(NULL), chars_per_line(16) {}
 	/// Kopierkonstruktor von @p glArchivItem_Font.
 	glArchivItem_Font(const glArchivItem_Font *item) : ArchivItem_Font(item), _font(NULL) {}
 
 	/// Zeichnet einen Text.
 	void Draw(short x, short y, const std::string& text, unsigned int format, unsigned int color = COLOR_WHITE, unsigned short length = 0, unsigned short max = 0xFFFF, const std::string& end = "...", unsigned short end_length = 0);
-	/// prüft ob ein Buchstabe existiert.
-	bool CharExist(unsigned char c) const;
+
 	/// liefert die Länge einer Zeichenkette.
-	unsigned short getWidth(const std::string& text, unsigned length = 0, unsigned max_width = 0xffffffff, unsigned short *max = NULL) const;
+	inline unsigned short getWidth(const std::string& text, unsigned length = 0, unsigned max_width = 0xffffffff, unsigned short *max = NULL) const;
 	/// liefert die Höhe des Textes ( entspricht @p getDy()+1 )
-	unsigned short getHeight() const { return dy+1; }
+	inline unsigned short getHeight() const { return dy+1; }
 
 	/// Gibt Infos, über die Unterbrechungspunkte in einem Text
 	class WrapInfo 
@@ -68,11 +66,48 @@ public:
 		DF_VCENTER = 8
 	};
 
+	/// prüft ob ein Buchstabe existiert.
+	inline bool CharExist(unsigned int c) const { return (CharWidth(c) > 0); }
+	/// liefert die Breite eines Zeichens
+	inline unsigned int CharWidth(unsigned int c) const { return CharInfo(c).width; }
+
 private:
 	void initFont();
 
+	struct GL_T2F_V3F_Struct
+	{
+		GLfloat tx, ty;
+		GLfloat x, y, z;
+	};
+
+	unsigned int Utf8_to_Unicode(const std::string& text, unsigned int& i) const;
+	void DrawChar(const std::string& text, unsigned int& i, GL_T2F_V3F_Struct *tmp, short& cx, short& cy, float tw, float th, unsigned int& idx);
+
+	struct char_info
+	{
+		char_info() : x(0), y(0), width(0), reserved(0xFFFF) {}
+		unsigned short width;
+		unsigned short x;
+		unsigned short y;
+		unsigned short reserved; // so we have 8 byte's
+	};
+
+	/// liefert das Char-Info eines Zeichens
+	inline const char_info& CharInfo(unsigned int c) const
+	{
+		static char_info ci;
+
+		std::map<unsigned int, char_info>::const_iterator it = utf8_mapping.find(c);
+		if(it != utf8_mapping.end())
+			return it->second;
+
+		return ci;
+	}
+
 	glArchivItem_Bitmap *_font;
-	unsigned short _charwidths[256];
+
+	unsigned int chars_per_line;
+	std::map<unsigned int, char_info> utf8_mapping;
 };
 
 #endif // !GLARCHIVITEM_FONT_H_INCLUDED

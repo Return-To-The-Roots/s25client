@@ -103,6 +103,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "s-c_resample", "..\..\s-c\r
 		{FED04AF3-3FE4-41CA-9DB9-6E0AD873183A} = {FED04AF3-3FE4-41CA-9DB9-6E0AD873183A}
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8D366491-CE3A-4E8E-854F-D622CBECE3F1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32

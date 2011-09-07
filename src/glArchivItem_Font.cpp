@@ -1,4 +1,4 @@
-// $Id: glArchivItem_Font.cpp 7478 2011-09-04 16:11:23Z marcus $
+// $Id: glArchivItem_Font.cpp 7504 2011-09-07 12:56:11Z FloSoft $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -25,6 +25,8 @@
 #include "Settings.h"
 #include "ExtensionList.h"
 
+#include <cmath>
+
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
@@ -33,38 +35,117 @@
 	static char THIS_FILE[] = __FILE__;
 #endif
 
-
-/// Ansi --> Oem konvertieren
-const unsigned char ANSI_TO_OEM[256] =
+///////////////////////////////////////////////////////////////////////////////
+/**
+ *  @brief wandelt ein UTF-8 Zeichen nach Unicode um
+ *
+ *  @author FloSoft
+ */
+unsigned int glArchivItem_Font::Utf8_to_Unicode(const std::string& text, unsigned int& i) const
 {
-	/*       0    1    2    3     4    5    6    7     8    9    A    B     C    D    E    F  */
-	/* 0 */ 0x00,0x01,0x02,0x03, 0x04,0x05,0x06,0x07, 0x08,0x09,0x0a,0x0b, 0x0c,0xd0,0x0e,0x0f,
-	/* 1 */ 0x10,0x11,0x12,0x13, 0x14,0x15,0x16,0x17, 0x18,0x19,0x1a,0x1b, 0x1c,0x1d,0x1e,0x1f, 
-	/* 2 */ 0x20,0x21,0x22,0x23, 0x24,0x25,0x26,0x27, 0x28,0x29,0x2a,0x2b, 0x2c,0x2d,0x2e,0x2f, 
-	/* 3 */ 0x30,0x31,0x32,0x33, 0x34,0x35,0x36,0x37, 0x38,0x39,0x3a,0x3b, 0x3c,0x3d,0x3e,0x3f, 
-	/* 4 */ 0x40,0x41,0x42,0x43, 0x44,0x45,0x46,0x47, 0x48,0x49,0x4a,0x4b, 0x4c,0x4d,0x4e,0x4f, 
-	/* 5 */ 0x50,0x51,0x52,0x53, 0x54,0x55,0x56,0x57, 0x58,0x59,0x5a,0x5b, 0x5c,0x5d,0x5f,0x5e, 
-	/* 6 */ 0x60,0x61,0x62,0x63, 0x64,0x65,0x66,0x67, 0x68,0x69,0x6a,0x6b, 0x6c,0x6d,0x6e,0x6f, 
-	/* 7 */ 0x70,0x71,0x72,0x73, 0x74,0x75,0x76,0x77, 0x78,0x79,0x7a,0x7b, 0x7c,0x7d,0x7e,0x7f, 
+	unsigned int c = (text[i] & 0xFF);
+	if( (c & 0x80) == 0x80) // 1Xxxxxxx
+	{
+		if( (c & 0xC0) == 0x80) // 10xxxxxx
+		{
+			if(!CharExist(c)) // some hardcoded non utf-8 characters may be here ...
+				LOG.lprintf("woops, corrupt utf-8 stream: %02x / %d\n", c, c); 
+		}
+		else if( (c & 0xE0) == 0xC0) // 110xxxxx
+		{
+			// 2 byte sequence 110xxxxx 10xxxxxx
+			unsigned int c2 = (text[++i] & 0xFF);
+			c =  ((c & 0x1F ) << 6) | (c2 & 0x3F);
+		}
+		else if( (c & 0xF0) == 0xE0) // 1110xxxx
+		{
+			// 3 byte sequence 1110xxxx 10xxxxxx 10xxxxxx
+			unsigned int c2 = (text[++i] & 0xFF);
+			unsigned int c3 = (text[++i] & 0xFF);
 
-	/*       0    1    2    3     4    5    6    7     8    9    A    B     C    D    E    F  */
-	/* 8 */ 0x00,0x00,0x00,0x9f, 0x00,0x00,0x00,0xd8, 0x00,0x00,0x00,0x00, 0x00,0x00,0x00,0x00,
-	/* 9 */ 0x00,0x60,0x27,0x00, 0x00,0x00,0x00,0x00, 0x00,0x00,0x00,0x00, 0x00,0x00,0x00,0x00,
-	/* A */ 0xff,0xad,0x9b,0x9c, 0x0f,0x9d,0x7c,0x15, 0x22,0x63,0xa6,0xae, 0xaa,0x2d,0x52,0x00,
-	/* B */ 0xf8,0xf1,0xfd,0x33, 0x27,0xe6,0x14,0xfa, 0x2c,0x31,0xa7,0xaf, 0xac,0xab,0x00,0xa8,
-	/* C */ 0x41,0x41,0x41,0x41, 0x8e,0x8f,0x92,0x80, 0x45,0x90,0x45,0x45, 0x49,0x49,0x49,0x49,
-	/* D */ 0x44,0xa5,0x4f,0x4f, 0x4f,0x4f,0x99,0x78, 0x4f,0x55,0x55,0x55, 0x9a,0x59,0x00,0xe1,
-	/* E */ 0x85,0xa0,0x83,0x61, 0x84,0x86,0x91,0x87, 0x8a,0x82,0x88,0x89, 0x8d,0xa1,0x8c,0x8b,
-	/* F */ 0x64,0xa4,0x95,0xa2, 0x93,0x6f,0x94,0xf6, 0x6f,0x97,0xa3,0x96, 0x81,0x79,0x00,0x98,
-};
+			c =  ((c & 0x0F) << 12) | ((c2 & 0x3F) << 6) | (c3 & 0x3F);
+		}
+		else if( (c & 0xF8) == 0xF0) // 11110xxx
+		{
+			// 4 byte sequence 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
+			unsigned int c2 = (text[++i] & 0xFF);
+			unsigned int c3 = (text[++i] & 0xFF);
+			unsigned int c4 = (text[++i] & 0xFF);
+			c =  ((c & 0x0F) << 18) | ((c2 & 0x3F) << 12) | ((c3 & 0x3F) << 6) | (c4 & 0x3F);
+		}
+		else
+			LOG.lprintf("unknown utf-8 sequence: %02x / %d\n", c, c); 
+	}
+	return c;
+}
 
-
-struct GL_T2F_V3F_Struct
+///////////////////////////////////////////////////////////////////////////////
+/**
+ *  @brief fügt ein einzelnes Zeichen zur Zeichenliste hinzu
+ *
+ *  @author Marcus
+ */
+void glArchivItem_Font::DrawChar(const std::string& text,
+								 unsigned int& i,
+	                             GL_T2F_V3F_Struct *tmp, 
+								 short& cx,
+								 short& cy,
+								 float tw, 
+								 float th,
+								 unsigned int& idx)
 {
-	GLfloat tx, ty;
-	GLfloat x, y, z;
-};
+	unsigned int c = Utf8_to_Unicode(text, i);
 
+	if(CharExist(c))
+	{
+		char_info ci = CharInfo(c);
+		unsigned short x = ci.x;
+		unsigned short y = ci.y;
+
+		float tx1 = (float)(ci.x) / tw;
+		float tx2 = (float)(ci.x + CharWidth(c)) / tw;
+		float ty1 = (float)(ci.y) / th;
+		float ty2 = (float)(ci.y + dy) / th;
+
+		tmp[idx].tx = tx1;
+		tmp[idx].ty = ty1;
+
+		tmp[idx].x = cx;
+		tmp[idx].y = cy;
+		tmp[idx].z = 0.0f;
+
+		idx++;
+
+		tmp[idx].tx = tx1;
+		tmp[idx].ty = ty2;
+
+		tmp[idx].x = cx;
+		tmp[idx].y = (GLfloat)(cy + dy);
+		tmp[idx].z = 0.0f;
+
+		idx++;
+
+		tmp[idx].tx = tx2;
+		tmp[idx].ty = ty2;
+
+		tmp[idx].x = (GLfloat)(cx + CharWidth(c));
+		tmp[idx].y = (GLfloat)(cy + dy);
+		tmp[idx].z = 0.0f;
+
+		idx++;
+
+		tmp[idx].tx = tx2;
+		tmp[idx].ty = ty1;
+
+		tmp[idx].x = (GLfloat)(cx + CharWidth(c));
+		tmp[idx].y = cy;
+		tmp[idx].z = 0.0f;
+
+		idx++;
+
+		cx += CharWidth(c);
+	}
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
@@ -159,11 +240,11 @@ void glArchivItem_Font::Draw(short x,
 	GL_T2F_V3F_Struct *tmp = new GL_T2F_V3F_Struct[(text_max + (enable_end ? end_length : 0)) * 4];
 	float tw = _font->GetTexWidth();
 	float th = _font->GetTexHeight();
-	unsigned idx = 0;
+	unsigned int idx = 0;
 
 	glColor4ub(GetRed(color), GetGreen(color), GetBlue(color), GetAlpha(color));
 
-	for(unsigned short i = 0; i < text_max; ++i)
+	for(unsigned int i = 0; i < text_max; ++i)
 	{
 		if(text[i] == '\n')
 		{
@@ -187,61 +268,12 @@ void glArchivItem_Font::Draw(short x,
 				cx = x;
 		}
 		else
-		{
-			unsigned char c = ANSI_TO_OEM[(unsigned char)text[i]];
-			if(_charwidths[c] > 0)
-			{
-				unsigned int x = c % 16;
-				unsigned int y = c / 16;
-
-				float tx1 = (float)(x*(dx+2)+1) / tw;
-				float tx2 = (float)(x*(dx+2)+1+_charwidths[c]) / tw;
-				float ty1 = (float)(y*(dy+2)+1) / th;
-				float ty2 = (float)(y*(dy+2)+1 + dy) / th;
-
-				tmp[idx].tx = tx1;
-				tmp[idx].ty = ty1;
-
-				tmp[idx].x = cx;
-				tmp[idx].y = cy;
-				tmp[idx].z = 0.0f;
-
-				idx++;
-
-				tmp[idx].tx = tx1;
-				tmp[idx].ty = ty2;
-
-				tmp[idx].x = cx;
-				tmp[idx].y = cy + dy;
-				tmp[idx].z = 0.0f;
-
-				idx++;
-
-				tmp[idx].tx = tx2;
-				tmp[idx].ty = ty2;
-
-				tmp[idx].x = cx + _charwidths[c];
-				tmp[idx].y = cy + dy;
-				tmp[idx].z = 0.0f;
-
-				idx++;
-
-				tmp[idx].tx = tx2;
-				tmp[idx].ty = ty1;
-
-				tmp[idx].x = cx + _charwidths[c];
-				tmp[idx].y = cy;
-				tmp[idx].z = 0.0f;
-
-				idx++;
-
-				cx += _charwidths[c];
-			}
-		}
+			DrawChar(text, i, tmp, cx, cy, tw, th, idx);
 	}
+
 	if(enable_end)
 	{
-		for(unsigned short i = 0; i < end_length; ++i)
+		for(unsigned int i = 0; i < end_length; ++i)
 		{
 			if(end[i] == '\n')
 			{
@@ -249,58 +281,7 @@ void glArchivItem_Font::Draw(short x,
 				cx = x;
 			}
 			else
-			{
-				unsigned char c = ANSI_TO_OEM[(unsigned char)end[i]];
-				if(_charwidths[c] > 0)
-				{
-					unsigned int x = 0, y = 0;
-					x = c % 16;
-					y = c / 16;
-
-					float tx1 = (float)(x*(dx+2)+1) / tw;
-					float tx2 = (float)(x*(dx+2)+1+_charwidths[c]) / tw;
-					float ty1 = (float)(y*(dy+2)+1) / th;
-					float ty2 = (float)(y*(dy+2)+1 + dy) / th;
-
-					tmp[idx].tx = tx1;
-					tmp[idx].ty = ty1;
-
-					tmp[idx].x = cx;
-					tmp[idx].y = cy;
-					tmp[idx].z = 0.0f;
-
-					idx++;
-
-					tmp[idx].tx = tx1;
-					tmp[idx].ty = ty2;
-
-					tmp[idx].x = cx;
-					tmp[idx].y = cy + dy;
-					tmp[idx].z = 0.0f;
-
-					idx++;
-
-					tmp[idx].tx = tx2;
-					tmp[idx].ty = ty2;
-
-					tmp[idx].x = cx + _charwidths[c];
-					tmp[idx].y = cy + dy;
-					tmp[idx].z = 0.0f;
-
-					idx++;
-
-					tmp[idx].tx = tx2;
-					tmp[idx].ty = ty1;
-
-					tmp[idx].x = cx + _charwidths[c];
-					tmp[idx].y = cy;
-					tmp[idx].z = 0.0f;
-
-					idx++;
-
-					cx += _charwidths[c];
-				}
-			}
+				DrawChar(end, i, tmp, cx, cy, tw, th, idx);
 		}
 	}
 
@@ -326,21 +307,6 @@ void glArchivItem_Font::Draw(short x,
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  prüft ob ein Buchstabe existiert.
- *
- *  @param[in] c Buchstabe der geprüft werden soll
- *
- *  @return @p true falls Buchstabe existiert, @p false wenn nicht
- *
- *  @author OLiver
- */
-bool glArchivItem_Font::CharExist(unsigned char c) const
-{
-	return (_charwidths[ANSI_TO_OEM[c]] > 0);
-}
-
-///////////////////////////////////////////////////////////////////////////////
-/**
  *  liefert die Länge einer Zeichenkette.
  *
  *  @param[in]     text   Der Text
@@ -358,9 +324,9 @@ unsigned short glArchivItem_Font::getWidth(const std::string& text, unsigned len
 		length = unsigned(text.length());
 
 	unsigned short w = 0, wm = 0;
-	for(unsigned short i = 0; i < length; ++i)
+	for(unsigned int i = 0; i < length; ++i)
 	{
-		unsigned short cw = _charwidths[ANSI_TO_OEM[(unsigned char)text[i]]];
+		unsigned short cw = CharWidth(Utf8_to_Unicode(text, i));
 
 		if(text[i] == '\n')
 		{
@@ -388,6 +354,13 @@ unsigned short glArchivItem_Font::getWidth(const std::string& text, unsigned len
 
 	return wm;
 }
+
+///////////////////////////////////////////////////////////////////////////////
+/**
+ *  @brief
+ *
+ *  @author OLiver
+ */
 void glArchivItem_Font::WrapInfo::CreateSingleStrings(const std::string& origin_text,std::string * dest_strings)
 {
 	// Kopie des ursprünglichen Strings erstellen
@@ -434,6 +407,7 @@ void glArchivItem_Font::GetWrapInfo(const std::string& text,
 {
 	if(!_font)
 		initFont();
+
 	// Breite der aktuellen Zeile
 	unsigned short line_width = 0;
 	// Breite des aktuellen Wortes
@@ -446,7 +420,7 @@ void glArchivItem_Font::GetWrapInfo(const std::string& text,
 	wi.positions.push_back(0);
 
 	// Länge des Strings
-	unsigned length = unsigned(text.length());
+	unsigned int length = (unsigned int)text.length();
 
 	for(unsigned i = 0; i <= length; ++i)
 	{
@@ -458,7 +432,7 @@ void glArchivItem_Font::GetWrapInfo(const std::string& text,
 			{
 				// Länge des Leerzeichens mit draufaddieren
 				line_width += word_width;
-				line_width += _charwidths[(unsigned int)' '];
+				line_width += CharWidth(' ');
 
 				// neues Wort fängt dann nach dem Leerzeichen an (falls wir nicht schon am Ende vom Text sind)
 				if(i < length-1)
@@ -477,7 +451,7 @@ void glArchivItem_Font::GetWrapInfo(const std::string& text,
 					// neue Zeile anfangen mit diesem Wort
 					wi.positions.push_back(word_start);
 					// In der Zeile ist schon das Wort und das jetzige Leerzeichen mit drin
-					line_width = word_width + _charwidths[(unsigned int)' '];
+					line_width = word_width + CharWidth(' ');
 					// Neues Wort beginnen (falls wir nicht schon am Ende vom Text sind)
 					if(i < length-1)
 					{
@@ -490,7 +464,9 @@ void glArchivItem_Font::GetWrapInfo(const std::string& text,
 					// ansonsten muss das Wort zwangsläufig auf mehrere Zeilen verteilt werden
 					for(size_t z = 0; text[word_start+z] != ' ' && text[word_start+z]; ++z)
 					{
-						unsigned short letter_width = _charwidths[ANSI_TO_OEM[(unsigned char)text[word_start+z]]];
+						unsigned int zz = word_start+z;
+						unsigned short letter_width = CharWidth(Utf8_to_Unicode(text, zz));
+						z = zz - word_start;
 
 						// passt der neue Buchstabe noch mit drauf?
 						if(line_width + letter_width <= ( (wi.positions.size() == 1) ? primary_width : secondary_width))
@@ -506,7 +482,7 @@ void glArchivItem_Font::GetWrapInfo(const std::string& text,
 					}
 
 					// Leerzeichen nicht vergessen
-					line_width += _charwidths[(unsigned int)' '];
+					line_width += CharWidth(' ');
 
 					// Neues Wort beginnen (falls wir nicht schon am Ende vom Text sind)
 					if(i < length-1)
@@ -529,8 +505,8 @@ void glArchivItem_Font::GetWrapInfo(const std::string& text,
 		else
 		{
 			// Anderes Zeichen --> einfach dessen Breite mit addieren
-			if( CharExist((unsigned char)text[i]) )
-				word_width += _charwidths[ANSI_TO_OEM[(unsigned char)text[i]]];
+			if( CharExist(Utf8_to_Unicode(text, i)) )
+				word_width += CharWidth(Utf8_to_Unicode(text, i));
 		}
 	}
 
@@ -539,23 +515,40 @@ void glArchivItem_Font::GetWrapInfo(const std::string& text,
 		wi.positions.pop_back();
 }
 
+///////////////////////////////////////////////////////////////////////////////
+/**
+ *  @brief
+ *
+ *  @author FloSoft
+ */
 void glArchivItem_Font::initFont()
 {
 	_font = dynamic_cast<glArchivItem_Bitmap *>(glAllocator(libsiedler2::BOBTYPE_BITMAP_RLE, 0, NULL));
 
-	memset(_charwidths, 0, sizeof(_charwidths));
+	//memset(_charwidths, 0, sizeof(_charwidths));
 
-	int w = (dx+2) * 16 + 2;
-	int h = (dy+2) * 16 + 2;
+	// first, we have to find how much chars we really have, but we can also skip first 32
+	unsigned int chars = 32;
+	for(unsigned int i = 32; i < getCount(); ++i)
+	{
+		if(get(i))
+			++chars;
+	}
+	
+	chars_per_line = (unsigned int)std::sqrt((double)chars);
+	
+	int w = (dx+2) * chars_per_line + 2;
+	int h = (dy+2) * chars_per_line + 2;
 	unsigned int buffersize = w * h * 4; // RGBA Puffer für alle Buchstaben
 	unsigned char *buffer = new unsigned char[buffersize];
 	memset(buffer, 0, buffersize);
 
 	int x = 1;
-	int y = 1 + 2 * (dy+2);
-	for(int i = 32; i < 256; ++i)
+	int y = 1;
+	chars = 0;
+	for(unsigned int i = 32; i < getCount(); ++i)
 	{
-		if( (i % 16) == 0 && i != 32 )
+		if( (chars % chars_per_line) == 0 && i != 32 )
 		{
 			y += dy+2;
 			x = 1;
@@ -567,13 +560,24 @@ void glArchivItem_Font::initFont()
 			// Spezialpalette (blaue Spielerfarben sind Grau) verwenden,
 			// damit man per OpenGL einfärben kann!
 			c->print(buffer, w, h, libsiedler2::FORMAT_RGBA, LOADER.GetPaletteN("colors"), 128, x, y);
-			_charwidths[i] = c->getWidth();
+
+			char_info ci;
+			ci.x = x;
+			ci.y = y;
+			ci.width = (c->getWidth() > dx+2 ? dx+2 : c->getWidth());
+
+			utf8_mapping[i] = ci;
+			x += dx+2;
+			++chars;
 		}
-		x += dx+2;
 	}
 
 	// Spezialpalette (blaue Spielerfarben sind Grau) verwenden,
 	// damit man per OpenGL einfärben kann!
 	_font->create(w, h, buffer, w, h, libsiedler2::FORMAT_RGBA, LOADER.GetPaletteN("colors"));
 	_font->setFilter(GL_LINEAR);
+
+	ArchivInfo items;
+	items.pushC(_font);
+	libsiedler2::loader::WriteBMP((std::string("font") + std::string(getName()) + std::string(".bmp")).c_str(), LOADER.GetPaletteN("colors"), &items);
 }

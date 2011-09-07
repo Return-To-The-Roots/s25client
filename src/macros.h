@@ -1,4 +1,4 @@
-// $Id: macros.h 6582 2010-07-16 11:23:35Z FloSoft $
+// $Id: macros.h 7504 2011-09-07 12:56:11Z FloSoft $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -31,8 +31,8 @@
 #define GetMapBob(nr) ( GetMapImageN(nr) )
 #define GetMapPlayerImage(nr) ( dynamic_cast<glArchivItem_Bitmap_Player*>(LOADER.map_lst.get(nr)) )
 
-#define SmallFont ( LOADER.GetFontN("resource", 2) )
-#define NormalFont ( LOADER.GetFontN("outline_fonts", 0) )
+#define SmallFont ( LOADER.GetFontN("outline_fonts", 0) )
+#define NormalFont ( LOADER.GetFontN("outline_fonts", 1) )
 #define LargeFont ( LOADER.GetFontN("outline_fonts", 2) )
 
 #if defined _WIN32 && defined _MSC_VER

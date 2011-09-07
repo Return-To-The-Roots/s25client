@@ -1,4 +1,4 @@
-// $Id: dskMultiPlayer.cpp 7091 2011-03-27 10:57:38Z OLiver $
+// $Id: dskMultiPlayer.cpp 7504 2011-09-07 12:56:11Z FloSoft $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -60,7 +60,7 @@ dskMultiPlayer::dskMultiPlayer(void) : Desktop(LOADER.GetImageN("menu", 0))
 	// URL
 	AddText(1, 400, 600, _("http://www.siedler25.org"), COLOR_GREEN, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, NormalFont);
 	// Copyright
-	AddText(2, 800, 600, "° 2005 - 2010 Settlers Freaks", COLOR_YELLOW, glArchivItem_Font::DF_RIGHT | glArchivItem_Font::DF_BOTTOM, NormalFont);
+	AddText(2, 800, 600, _("\xA9 2005 - 2011 Settlers Freaks"), COLOR_YELLOW, glArchivItem_Font::DF_RIGHT | glArchivItem_Font::DF_BOTTOM, NormalFont);
 
 	// "Internet - Lobby"
 	AddTextButton(3, 115, 180, 220, 22, TC_GREEN2, _("Internet Lobby"),NormalFont);

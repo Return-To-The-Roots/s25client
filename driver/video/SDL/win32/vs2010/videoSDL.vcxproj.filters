@@ -14,18 +14,12 @@
     <ClCompile Include="..\..\..\..\src\DriverInterface.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\oem.cpp">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\SDL.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\main.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\oem.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\SDL.h">

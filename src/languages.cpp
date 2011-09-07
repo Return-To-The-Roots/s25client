@@ -1,4 +1,4 @@
-// $Id: languages.cpp 7091 2011-03-27 10:57:38Z OLiver $
+// $Id: languages.cpp 7504 2011-09-07 12:56:11Z FloSoft $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -120,7 +120,7 @@ void Languages::setLanguage(const std::string& lang_code)
 		Settings::inst().language.language = locale;
 
 	const char *domain = "rttr";
-	bind_textdomain_codeset(domain, "ISO-8859-1");
+	bind_textdomain_codeset(domain, "UTF-8");
 	bindtextdomain(domain, FILE_PATHS[15]);
 	textdomain(domain);
 }

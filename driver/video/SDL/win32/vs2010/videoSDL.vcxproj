@@ -113,12 +113,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\src\DriverInterface.cpp" />
-    <ClCompile Include="..\..\src\oem.cpp" />
     <ClCompile Include="..\..\src\SDL.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\main.h" />
-    <ClInclude Include="..\..\src\oem.h" />
     <ClInclude Include="..\..\src\SDL.h" />
   </ItemGroup>
   <ItemGroup>

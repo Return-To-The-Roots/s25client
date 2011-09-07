@@ -1,4 +1,4 @@
-// $Id: dskLobby.cpp 7091 2011-03-27 10:57:38Z OLiver $
+// $Id: dskLobby.cpp 7504 2011-09-07 12:56:11Z FloSoft $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -63,7 +63,7 @@ dskLobby::dskLobby() : Desktop(LOADER.GetImageN("setup013", 0)), serverinfo(NULL
 	// URL
 	AddText(1, 400, 600, _("http://www.siedler25.org"), COLOR_GREEN, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, NormalFont);
 	// Copyright
-	AddText(2, 800, 600, "° 2005 - 2010 Settlers Freaks", COLOR_YELLOW, glArchivItem_Font::DF_RIGHT | glArchivItem_Font::DF_BOTTOM, NormalFont);
+	AddText(2, 800, 600, _("\xA9 2005 - 2011 Settlers Freaks"), COLOR_YELLOW, glArchivItem_Font::DF_RIGHT | glArchivItem_Font::DF_BOTTOM, NormalFont);
 
 	// "Zurück"
 	AddTextButton(3, 530, 530, 250, 22, TC_RED1, _("Back"),NormalFont);

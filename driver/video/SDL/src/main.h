@@ -1,4 +1,4 @@
-// $Id: main.h 6582 2010-07-16 11:23:35Z FloSoft $
+// $Id: main.h 7504 2011-09-07 12:56:11Z FloSoft $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -49,7 +49,5 @@
 #else
 	#include <SDL/SDL.h>
 #endif // !__APPLE__
-
-#include "oem.h"
 
 #endif // !MAIN_H_INCLUDED
