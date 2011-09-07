@@ -1,4 +1,4 @@
-// $Id: glArchivItem_Font.h 7504 2011-09-07 12:56:11Z FloSoft $
+// $Id: glArchivItem_Font.h 7505 2011-09-07 13:14:38Z FloSoft $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -34,7 +34,7 @@ public:
 	void Draw(short x, short y, const std::string& text, unsigned int format, unsigned int color = COLOR_WHITE, unsigned short length = 0, unsigned short max = 0xFFFF, const std::string& end = "...", unsigned short end_length = 0);
 
 	/// liefert die Länge einer Zeichenkette.
-	inline unsigned short getWidth(const std::string& text, unsigned length = 0, unsigned max_width = 0xffffffff, unsigned short *max = NULL) const;
+	unsigned short getWidth(const std::string& text, unsigned length = 0, unsigned max_width = 0xffffffff, unsigned short *max = NULL) const;
 	/// liefert die Höhe des Textes ( entspricht @p getDy()+1 )
 	inline unsigned short getHeight() const { return dy+1; }
 
@@ -86,9 +86,9 @@ private:
 	struct char_info
 	{
 		char_info() : x(0), y(0), width(0), reserved(0xFFFF) {}
-		unsigned short width;
 		unsigned short x;
 		unsigned short y;
+		unsigned short width;
 		unsigned short reserved; // so we have 8 byte's
 	};
 

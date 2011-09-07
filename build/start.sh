@@ -72,7 +72,7 @@ done
 
 CPU_COUNT=`grep -ce '^processor' /proc/cpuinfo`
 
-if test "$CPU_COUNT" -gt 0; then
+if test "$CPU_COUNT" -gt 1; then
 	MAKEARGS="-j $((1+$CPU_COUNT)) $MAKEARGS"
 fi
 

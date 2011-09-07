@@ -1,4 +1,4 @@
-// $Id: glArchivItem_Font.cpp 7504 2011-09-07 12:56:11Z FloSoft $
+// $Id: glArchivItem_Font.cpp 7505 2011-09-07 13:14:38Z FloSoft $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -99,8 +99,6 @@ void glArchivItem_Font::DrawChar(const std::string& text,
 	if(CharExist(c))
 	{
 		char_info ci = CharInfo(c);
-		unsigned short x = ci.x;
-		unsigned short y = ci.y;
 
 		float tx1 = (float)(ci.x) / tw;
 		float tx2 = (float)(ci.x + CharWidth(c)) / tw;
