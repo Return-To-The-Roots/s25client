@@ -7,27 +7,1035 @@ msgid ""
 msgstr ""
 "Project-Id-Version: s25rttr\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-04-12 21:30+0100\n"
+"POT-Creation-Date: 2011-09-07 14:40+0100\n"
 "PO-Revision-Date: 2010-07-29 14:31+0000\n"
 "Last-Translator: FloSoft <Unknown>\n"
 "Language-Team: Hebrew <he@li.org>\n"
-"Language: he\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-04-12 19:20+0000\n"
-"X-Generator: Launchpad (build 12792)\n"
+"X-Launchpad-Export-Date: 2011-09-07 13:44+0000\n"
+"X-Generator: Launchpad (build 13861)\n"
 "X-Poedit-Country: ISRAEL\n"
 "X-Poedit-Language: Hebrew\n"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AIPlayerJH.cpp:110
+msgid "And I may crash your game sometimes..."
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AIPlayerJH.cpp:106
+msgid "Hi, I'm an artifical player and I'm not very good yet!"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AIPlayerJH.cpp:149
+msgid "Oh, no, you destroyed my headquarter! I surrender!"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/Addons.cpp:169
+msgid "Use"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/ctrlProgress.cpp:75
+msgid "Less"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/ctrlProgress.cpp:76
+msgid "More"
+msgstr ""
+
+#. / Einstufung nur bei Lobbyspielen anzeigen @todo Einstufung ( "%d" )
+#. Ping ( "%d" )
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:265
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:292
+#, c-format
+msgid "%d"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:250
+#, c-format
+msgid ""
+"(Replay-Mode) Current GF: %u (End at: %u) / GF length: %u ms / NWF length: "
+"%u gf (%u ms)"
+msgstr ""
+
+#. Team
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:275
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:284
+msgid "-"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1031
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1081
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1110
+#, c-format
+msgid "<%s> "
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1046
+msgid "A auto-savegame is created..."
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:116
+msgid "A lot"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:161
+msgid "Additional Graphics:"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:148
+msgid "Additional Programming:"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:141
+msgid "Additional graphics"
+msgstr ""
+
+#. "Enhancements"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:95
+msgid "Addons:"
+msgstr ""
+
+#. Volk
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:271
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:280
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:720
+msgid "Africans"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameLoader.cpp:174
+msgid "And let's go!"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:133
+msgid "Artificial Intelligence (AI)"
+msgstr ""
+
+#. "Zurück"
+#. ZurÃŒck
+#. "Zurück"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskAboutRTTR.cpp:56
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:70
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskDirectIP.cpp:66
+msgid "Back"
+msgstr "חזרה"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:497
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:705
+msgid "Cancel start"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:96
+msgid "Change Settings..."
+msgstr "שינוי הגדרות..."
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:106
+msgid "Classic (Settlers 2)"
+msgstr ""
+
+#. "Einstufung"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:63
+msgid "Classification"
+msgstr "סיווג"
+
+#. Geschlossen
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:236
+msgid "Closed"
+msgstr ""
+
+#. "Farbe"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:67
+msgid "Color"
+msgstr "צבע"
+
+#. Kein Spielziel
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:122
+msgid "Conquer 3/4 of map"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:110
+msgid "Construction aid mode"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskDirectIP.cpp:62
+msgid "Create Game"
+msgstr ""
+
+#. "Credits"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:76
+msgid "Credits"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:252
+#, c-format
+msgid ""
+"Current GF: %u / GF length: %u ms / NWF length: %u gf (%u ms) /  Ping: %u ms"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:549
+msgid "Don't forget to check the addon configuration!"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:180
+msgid "Donators"
+msgstr ""
+
+#. Verbindung zu Server abgebrochen
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameLoader.cpp:198
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:500
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:959
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:988
+msgid "Error"
+msgstr "שגיאה"
+
+#. umgedrehte Reihenfolge, damit die Listen nicht dahinter sind
+#. "Aufklärung"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:103
+msgid "Exploration:"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameLoader.cpp:149
+msgid "Failed to load addon objects."
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameLoader.cpp:141
+msgid "Failed to load map objects."
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameLoader.cpp:162
+msgid "Failed to load terrain data."
+msgstr ""
+
+#. Normal
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:142
+msgid "Fast"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:108
+msgid "FoW - all explored"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:107
+msgid "Fog of War"
+msgstr "ערפל לחימה"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:500
+msgid ""
+"Game can only be started as soon as everybody has a unique color,everyone is "
+"ready and all free slots are closed."
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameLoader.cpp:154
+msgid "Game crate was picked and spread out..."
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1082
+msgid "Game was paused."
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1111
+msgid "Game was resumed."
+msgstr ""
+
+#. "Spielziel"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:119
+msgid "Goals:"
+msgstr ""
+
+#. "Waren zu Beginn"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:111
+msgid "Goods at start:"
+msgstr ""
+
+#. WindowManager::inst().Show(new iwTrade(gwv,this,gwv->GetSpecObj<nobHQ>(cselx,csely)));
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:404
+msgid "Headquarters"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:720
+msgid "Japaneses"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskDirectIP.cpp:63
+msgid "Join Game"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:625
+msgid "Keyboard layout"
+msgstr "פריסת מקלדת"
+
+#. "Teams sperren"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:90
+msgid "Lock teams:"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1142
+msgid "Lost connection to lobby!"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1129
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:959
+msgid "Lost connection to server!"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:114
+msgid "Low"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:108
+msgid "Main selection"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:106
+msgid "Map"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameLoader.cpp:123
+msgid "Map was loaded and pinned at the wall..."
+msgstr ""
+
+#. Titel der Karte, Y-Position relativ je nach Höhe der Minimap festlegen, daher nochmals danach
+#. verschieben, da diese Position sonst skaliert wird!
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:158
+msgid "Map: "
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:124
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:143
+msgid "Mapping"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:121
+msgid "None"
+msgstr ""
+
+#. Langsam
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:115
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:141
+msgid "Normal"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:707
+msgid "Not Ready"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1018
+#, c-format
+msgid "Note: Game settings changed by the server%s"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:105
+msgid "Off (all visible)"
+msgstr ""
+
+#. Offen
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:231
+msgid "Open"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:169
+msgid "Other Support:"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:76
+msgid "Past player"
+msgstr "שחקן עבר"
+
+#. "Ping"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:73
+msgid "Ping"
+msgstr "פינג"
+
+#. Im Spiel anzeigen, dass die KI das Spiel betreten hat
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1004
+#, c-format
+msgid "Player '%s' joined the game!"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1001
+#, c-format
+msgid "Player '%s' left the game!"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1166
+#, c-format
+msgid "Player '%s' switched to player '%s'"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1189
+#, c-format
+msgid "Player '%s' was defeated!"
+msgstr ""
+
+#. "Spielername"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:61
+msgid "Player Name"
+msgstr "שם השחקן"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:112
+msgid "Post office"
+msgstr "משרד הדואר"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:84
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:96
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:132
+msgid "Programming"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:82
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:95
+msgid "Project management"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:87
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:97
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:115
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:123
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:142
+msgid "Quality Assurance"
+msgstr ""
+
+#. "Volk"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:65
+msgid "Race"
+msgstr "מרוץ"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:720
+msgid "Random"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:629
+msgid "Readme!"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:84
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:507
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:707
+msgid "Ready"
+msgstr "מוכן"
+
+#. "Bereit"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:71
+msgid "Ready?"
+msgstr "מוכן?"
+
+#. "Zurück"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:87
+msgid "Return"
+msgstr "חזרה"
+
+#. "Die Siedler II.5 RTTR"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:73
+msgid "Return To The Roots"
+msgstr ""
+
+#. Version
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskDirectIP.cpp:54
+#, c-format
+msgid "Return To The Roots - v%s-%s"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:720
+msgid "Romans"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1081
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1110
+msgid "SYSTEM"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:83
+msgid "Server management"
+msgstr ""
+
+#. "Gemeinsame Team-Sicht"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:92
+msgid "Shared team view"
+msgstr ""
+
+#. Sehr Langsam
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:140
+msgid "Slow"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskDirectIP.cpp:80
+msgid "Sorry!"
+msgstr "מצטערים!"
+
+#. "Geschwindigkeit"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:137
+msgid "Speed:"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:569
+msgid "Start aborted"
+msgstr ""
+
+#. "Spiel starten"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:84
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:493
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:705
+msgid "Start game"
+msgstr "התחלת המשחק"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:556
+msgid "Starting game, please wait"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:208
+msgid "THE END"
+msgstr ""
+
+#. "Team"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:69
+msgid "Team"
+msgstr "קבוצה"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:200
+msgid "Thank you for your donations!"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:207
+msgid "Thank you!"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1044
+msgid "The Game is not in sync. Checksums of some players don't match."
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:131
+#, c-format
+msgid "Torney: %u minutes"
+msgstr ""
+
+#. Besitz 3/4 des Landes
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:123
+msgid "Total domination"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameLoader.cpp:133
+msgid "Tribal chiefs assembled around the table..."
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:113
+msgid "Very Low"
+msgstr ""
+
+#. Schnell
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:143
+msgid "Very fast"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:139
+msgid "Very slow"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:96
+msgid "View Settings..."
+msgstr "צפייה בהגדרות..."
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:720
+msgid "Vikings"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:205
+msgid "We hope you enjoy playing Return To The Roots!"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:85
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:105
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:114
+msgid "Website Administration"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:86
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:106
+msgid "Website Programming"
+msgstr ""
+
+#. TODO: richtige Messages senden, um das zu laden /*GetMap()->GenerateOpenGL();*/
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameLoader.cpp:168
+msgid "World was put together and glued..."
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskDirectIP.cpp:80
+msgid ""
+"You can't create a game while a proxy server is active\n"
+"Disable the use of a proxy server first!"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:548
+msgid "You have 10 seconds until game starts"
+msgstr ""
+
+#. URL
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskDirectIP.cpp:57
+msgid "http://www.siedler25.org"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:265
+msgid "n/a"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:182
+msgid "various anonymous donators"
+msgstr ""
+
+#. Copyright
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskDirectIP.cpp:60
+msgid "© 2005 - 2011 Settlers Freaks"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:604
+msgid " (AI)"
+msgstr ""
+
+#. Und Zeilen vorbereiten
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:414
+#, c-format
+msgid "%d Player"
+msgstr ""
+
+#. "Server hinzufügen"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskLobby.cpp:75
+msgid "Add Server"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:81
+msgid "Addons"
+msgstr "Addons"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:102
+msgid "Author"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:1294
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:1298
+msgid "Auto-Save"
+msgstr ""
+
+#. "Kampagne"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:124
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:75
+msgid "Campaign"
+msgstr ""
+
+#. "Allgemein"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:84
+msgid "Common"
+msgstr "משותף"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:602
+#, c-format
+msgid "Computer %u"
+msgstr ""
+
+#. "Verbinden"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskLobby.cpp:71
+msgid "Connect"
+msgstr ""
+
+#. "Kontinente"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:122
+msgid "Continents"
+msgstr ""
+
+#. "Weiter"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:112
+msgid "Continue"
+msgstr ""
+
+#. "Direkte IP"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskMultiPlayer.cpp:70
+msgid "Direct IP"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:282
+msgid "Disabled"
+msgstr "כבוי"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:615
+#, c-format
+msgid "Dummy %u"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:288
+msgid "Dynamic (Limits to display refresh rate, works with most drivers)"
+msgstr "דינאמי (הגבלה לפי קצב רענון המסך, פועל היטב עם רוב הדרייברים)"
+
+#. Effekte
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:225
+msgid "Effects"
+msgstr "אפקטים"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:170
+msgid "Fullscreen"
+msgstr "מסך מלא"
+
+#. }
+#. "Auflösung"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:164
+msgid "Fullscreen resolution:"
+msgstr ""
+
+#. "Grafik"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:86
+msgid "Graphics"
+msgstr "גרפיקה"
+
+#. "Grafiktreiber"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:188
+msgid "Graphics Driver"
+msgstr "מנהל התקן לכרטיס מסך"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:419
+msgid "Greenland"
+msgstr ""
+
+#. Gameserver-Tabelle - "ID", "Server", "Karte", "Spieler", "Version", "Ping"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskLobby.cpp:78
+msgid "ID"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:131
+msgid "IPv4"
+msgstr "IPv4"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:130
+msgid "IPv6"
+msgstr "IPv6"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:353
+msgid "Incomplete message was received!"
+msgstr ""
+
+#. "Internet - Lobby"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskMultiPlayer.cpp:66
+msgid "Internet Lobby"
+msgstr ""
+
+#. "Internet Ranking"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskLobby.cpp:73
+msgid "Internet Ranking"
+msgstr ""
+
+#. "Intro"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskMainMenu.cpp:80
+msgid "Intro"
+msgstr ""
+
+#. Tastaturlayout
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:123
+msgid "Keyboard layout:"
+msgstr "פריסת המקלדת:"
+
+#. "Sprache"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:104
+msgid "Language:"
+msgstr "שפה:"
+
+#. "VSync"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:174
+msgid "Limit Framerate:"
+msgstr "הגבלת קצב פרייימים:"
+
+#. "Spiel laden"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:79
+msgid "Load game"
+msgstr ""
+
+#. "Spiel laden..."
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:110
+msgid "Load game..."
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:136
+msgid "Mapfile: "
+msgstr ""
+
+#. "Vollbild"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:168
+msgid "Mode:"
+msgstr "מצב:"
+
+#. "Mehrspieler"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskMainMenu.cpp:76
+msgid "Multiplayer"
+msgstr ""
+
+#. Musik
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:216
+msgid "Music"
+msgstr "מוזיקה"
+
+#. Musicplayer-Button
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:234
+msgid "Music player"
+msgstr "נגן מוזיקה"
+
+#. Spieler-Tabelle - "Name", "Punkte", "Version"
+#. Die Tabelle für die Maps
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskLobby.cpp:80
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:102
+msgid "Name"
+msgstr ""
+
+#. Allgemein
+#. {
+#. "Name"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:99
+msgid "Name in Game:"
+msgstr "השם במשחק:"
+
+#. "Netzwerk / LAN"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskMultiPlayer.cpp:68
+msgid "Network/LAN"
+msgstr ""
+
+#. "Neue"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:118
+msgid "New maps"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:147
+msgid "No Proxy"
+msgstr "ללא פרוקסי"
+
+#. / @todo Hier dann Auswahl zwischen Kampagne(n) und "Freies Spiel"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:94
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:103
+msgid "Not available"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:185
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:219
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:228
+msgid "Off"
+msgstr "כבוי"
+
+#. "Alte"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:116
+msgid "Old maps"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:184
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:218
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:227
+msgid "On"
+msgstr "פעיל"
+
+#. "Optionen"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskMainMenu.cpp:78
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:77
+msgid "Options"
+msgstr "אפשרויות"
+
+#. "Andere"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:128
+msgid "Other"
+msgstr ""
+
+#. "Eigene"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:120
+msgid "Own maps"
+msgstr ""
+
+#. "Replay abspielen"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:73
+msgid "Play Replay"
+msgstr ""
+
+#. "Heruntergeladene"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:132
+msgid "Played"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskLobby.cpp:78
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:102
+msgid "Player"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:94
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:103
+msgid "Please use 'Unlimited Play' to create a Singleplayer game."
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskLobby.cpp:80
+msgid "Points"
+msgstr ""
+
+#. Proxyserver
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:138
+msgid "Proxyserver:"
+msgstr "שרת פרוקסי:"
+
+#. Proxytyp
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:145
+msgid "Proxytyp:"
+msgstr "סוג פרוקסי:"
+
+#. "Programm verlassen"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskMainMenu.cpp:86
+msgid "Quit program"
+msgstr ""
+
+#. "RTTR"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:126
+msgid "RTTR"
+msgstr ""
+
+#. "ReadMe"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskMainMenu.cpp:82
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:124
+msgid "Readme"
+msgstr "קרא אותי"
+
+#. "Letztes Spiel fortsetzen"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:71
+msgid "Resume last game"
+msgstr ""
+
+#. "Andere"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:130
+msgid "Sea"
+msgstr ""
+
+#. "Karten Auswahl"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:105
+msgid "Selection of maps"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskLobby.cpp:78
+msgid "Server"
+msgstr ""
+
+#. "Einzelspieler"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskMainMenu.cpp:74
+msgid "Singleplayer"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:102
+msgid "Size"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:148
+msgid "Socks v4"
+msgstr "Socks v4"
+
+#. "Sound"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:88
+msgid "Sound/Music"
+msgstr "שמע/מוזיקה"
+
+#. "Audiotreiber"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:202
+msgid "Sounddriver"
+msgstr "התקן שמע"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:102
+msgid "Type"
+msgstr ""
+
+#. "Freies Spiel"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:77
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:123
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:135
+msgid "Unlimited Play"
+msgstr ""
+
+#. IPv4/6
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:127
+msgid "Use IPv6:"
+msgstr "עשה שימוש ב- IPv6:"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskLobby.cpp:78
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskLobby.cpp:80
+msgid "Version"
+msgstr ""
+
+#. "VBO"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:178
+msgid "Vertex Buffer Objects:"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:420
+msgid "Wasteland"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:171
+msgid "Windowed"
+msgstr "בחלון"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:421
+msgid "Winter world"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:552
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:567
+msgid "You need to restart your game to change the screen resolution!"
+msgstr "יש צורך בהפעלת המשחק מחדש כדי לשנות את הרזולוצייה!"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:575
+msgid "You need to restart your game to change the video or audio driver!"
+msgstr "יש צורך בהפעלת המשחק מחדש כדי לשנות דרייבר קול או וידאו!"
+
+#. text oben noch hinschreiben
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:1620
+#, c-format
+msgid "current GF: %u - still fast forwarding: %d GFs left (%d %%)"
+msgstr ""
+
+#. VBO unterstützt?
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:182
+msgid "not supported"
+msgstr "לא נתמך"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClientGF_Replay.cpp:123
+#, c-format
+msgid ""
+"Notice: The played replay has ended. (GF: %u, %dh %dmin %ds, TF: %u, "
+"AVG_FPS: %u)"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClientPlayer.cpp:2088
+msgid "The emergency program has been activated."
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClientPlayer.cpp:2098
+msgid "The emergency program has been deactivated."
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClientGF_Replay.cpp:82
+#, c-format
+msgid ""
+"Warning: The played replay is not in sync with the original match. (GF: %u)"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameWorldView.cpp:301
+#, c-format
+msgid "(%d soldiers)"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameWorldView.cpp:299
+msgid "(1 soldier)"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameWorldView.cpp:269
+msgid "(House unoccupied)"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameWorldView.cpp:271
+msgid "(stopped)"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameWorldGame.cpp:601
+msgid "Lost land by this building"
+msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:235
 msgid ""
 "\n"
 "Costs: "
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:604
-msgid " (AI)"
 msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:237
@@ -36,55 +1044,6 @@ msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:242
 msgid " stones"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:254
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:281
-#, c-format
-msgid "%d"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:414
-#, c-format
-msgid "%d Player"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHQ.cpp:69
-#, c-format
-msgid "%u/%u"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPCreate.cpp:84
-msgid "'s Game"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameWorldViewer.cpp:296
-#, c-format
-msgid "(%d soldiers)"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameWorldViewer.cpp:294
-msgid "(1 soldier)"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameWorldViewer.cpp:262
-msgid "(House unoccupied)"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:249
-#, c-format
-msgid ""
-"(Replay-Mode) Current GF: %u (End at: %u) / GF length: %u ms / NWF length: "
-"%u gf (%u ms)"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameWorldViewer.cpp:264
-msgid "(stopped)"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:264
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:273
-msgid "-"
 msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:124
@@ -107,299 +1066,32 @@ msgstr ""
 msgid "-> Dig mines"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:98
-msgid "1 h"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:51
-msgid "10 catapults"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:97
-msgid "15 m"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:100
-msgid "16 h"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:52
-msgid "20 catapults"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:49
-msgid "3 catapults"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:53
-msgid "30 catapults"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:99
-msgid "4 h"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:50
-msgid "5 catapults"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1003
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1053
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1082
-#, c-format
-msgid "<%s> "
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1018
-msgid "A auto-savegame is created..."
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobMilitary.cpp:1119
-msgid "A catapult is firing upon us!"
-msgstr "קטפולטה יורה עלינו!"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/BuildingConsts.h:357
-msgid ""
-"A gold mine allows you to prospect for valuable gold deposits. For this, it "
-"is necessary to ensure that the miners are provided with plenty of food."
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:116
-msgid "A lot"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/noShipBuildingSite.cpp:139
-msgid "A new ship is ready"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/noShip.cpp:455
-msgid "A ship disovered an enemy territory"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/noShip.cpp:733
-msgid "A ship has reached the destination of its expedition."
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/noShip.cpp:286
-msgid "A ship is ready for an expedition."
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/BuildingConsts.h:510
-msgid ""
-"A well supplies water to the bakery, brewery, donkey breeder and pig farm."
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/BuildingConsts.h:382
-msgid ""
-"A woodcutter provides the sawmill with logs. A forester is able to replant "
-"the depleted forest."
-msgstr ""
-
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAIDebug.cpp:50
 msgid "AI Debug"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMainMenu.cpp:98
-msgid "AI Debug Window"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAIDebugWindow.h:38
-msgid "AI Debugging Window"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:46
-msgid "Abort"
-msgstr "ביטול"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonDemolitionProhibition.h:43
-msgid "Active if attacked"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonDemolitionProhibition.h:44
-msgid "Active near frontiers"
 msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:70
 msgid "Activity window"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:77
-msgid "Add"
-msgstr "הוספה"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskLobby.cpp:75
-msgid "Add Server"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:84
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:219
-msgid "Add directory of tracks"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:83
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:213
-msgid "Add track"
-msgstr "הוספת רצועה"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:139
-msgid "Additional Programming:"
-msgstr ""
-
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAddons.cpp:47
 msgid "Additional features:"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:132
-msgid "Additional graphics"
 msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAddons.cpp:45
 msgid "Addon Settings"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:81
-msgid "Addons"
-msgstr "Addons"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:95
-msgid "Addons:"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAdjustMilitaryStrength.h:47
-msgid "Adjust military strength"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwOptionsWindow.cpp:106
-msgid "Advanced"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:260
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:269
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:709
-msgid "Africans"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildOrder.cpp:70
-msgid "After the following order"
-msgstr ""
-
+#. "Alle"
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAddons.cpp:60
 msgid "All"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwChat.cpp:57
-msgid "Allies"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonCustomBuildSequence.h:38
-msgid ""
-"Allows every player to control whether building sites\n"
-"should be supplied in sequence of given order or in a definable\n"
-"sequence based on the building type."
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonCharburner.h:37
-msgid "Allows to build charburners"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonDefenderBehavior.h:39
-msgid ""
-"Allows to change the military setting 'defender'.\n"
-"\n"
-"You can choose to disallow any changes to that setting\n"
-"or you can limit the amount of reoccupying troops\n"
-"(during an attack) according to the defender setting"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonDemolitionProhibition.h:38
-msgid ""
-"Allows to disable the demolition of military buildings under attack or near "
-"frontiers"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonExhaustibleWells.h:38
-msgid ""
-"Allows to have limited water\n"
-"\n"
-"Wells will now dry out"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonInexhaustibleMines.h:38
-msgid ""
-"Allows to have unlimited resources\n"
-"\n"
-"Mines will never be depleted"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonChangeGoldDeposits.h:39
-msgid ""
-"Allows to play games without gold.\n"
-"\n"
-"You can choose to remove gold resources completely,\n"
-"to convert them into iron ore, coal or granite.\n"
-"\n"
-"You'll probably want to convert gold to iron ore, as this (on most maps)\n"
-"allows you to utilize the additional coal not needed for minting anymore."
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonRefundMaterials.h:38
-msgid ""
-"Allows you to get building materials back if the building is destroyed\n"
-"\n"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonRefundOnEmergency.h:39
-msgid ""
-"Allows you to get building materials back if the building is destroyed\n"
-"and your emergency program is active\n"
-"\n"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonManualRoadEnlargement.h:38
-msgid ""
-"Allows you to manually upgrade your roads\n"
-"and build donkey roads directly"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAdjustMilitaryStrength.h:48
-msgid ""
-"Allows you to modify the strength increase of military ranks\n"
-"\n"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/SerializedGameData.cpp:232
-msgid "An error occured while saving which was suppressed!"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AIPlayerJH.cpp:110
-msgid "And I may crash your game sometimes..."
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameLoader.cpp:165
-msgid "And let's go!"
 msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAddons.cpp:50
 msgid "Apply Changes"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPlayReplay.cpp:94
-msgid "Are you sure to remove all replays?"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:332
-msgid "Armorer"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:108
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:118
-msgid "Armory"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:124
-msgid "Artificial Intelligence (AI)"
-msgstr ""
-
+#. Angriff nicht  mÃ¶glich!
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:388
 msgid "Attack not possible."
 msgstr ""
@@ -409,84 +1101,9 @@ msgstr ""
 msgid "Attack options"
 msgstr ""
 
+#. Angriffsbutton
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:413
 msgid "Attack!"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:102
-msgid "Author"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:1289
-msgid "Auto-Save"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSave.cpp:204
-msgid "Auto-Save every:"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:52
-msgid "Axe"
-msgstr "גרזן"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskAboutRTTR.cpp:56
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:70
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskDirectIP.cpp:66
-msgid "Back"
-msgstr "חזרה"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:323
-msgid "Baker"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:154
-msgid "Bakery"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:229
-msgid "Barracks"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:77
-msgid "Beer"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:138
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:73
-msgid "Boards"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:153
-msgid "Boat"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:87
-msgid "Boats"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMilitary.cpp:59
-msgid "Border areas"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildOrder.cpp:63
-msgid "Bottom"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:62
-msgid "Bow"
-msgstr "קשת"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:158
-msgid "Bread"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:326
-msgid "Brewer"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:98
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:157
-msgid "Brewery"
 msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:265
@@ -500,20 +1117,9 @@ msgstr ""
 msgid "Build waterway"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:333
-msgid "Builder"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildOrder.cpp:46
-msgid "Building sequence"
-msgstr ""
-
+#. / Konstruktor von @p iwMilitary.
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildings.cpp:80
 msgid "Buildings"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:324
-msgid "Butcher"
 msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:267
@@ -521,14 +1127,202 @@ msgstr ""
 msgid "Call in geologist"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:124
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:75
-msgid "Campaign"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAddons.cpp:52
+msgid "Close Without Saving"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMsgbox.cpp:73
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMsgbox.cpp:88
-msgid "Cancel"
+#. Einlagern
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBaseWarehouse.cpp:63
+msgid "Collect"
+msgstr ""
+
+#. Abreißen
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:285
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBaseWarehouse.cpp:113
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuilding.cpp:88
+msgid "Demolish house"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:309
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:316
+msgid "Dig up road"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:340
+msgid "Display options"
+msgstr ""
+
+#. "Wirtschaft"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAddons.cpp:64
+msgid "Economy"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:259
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:293
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:303
+msgid "Erect flag"
+msgstr ""
+
+#. "Spielverhalten"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAddons.cpp:66
+msgid "Gameplay"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:344
+msgid "Go to headquarters"
+msgstr ""
+
+#. "Gehe Zu Ort"
+#. "Gehe Zum Ort"
+#. "Gehe Zu Ort"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBaseWarehouse.cpp:74
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuilding.cpp:103
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildingSite.cpp:66
+msgid "Go to place"
+msgstr ""
+
+#. Info
+#. Hilfe-Button
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuilding.cpp:86
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildingProductivities.cpp:107
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildings.cpp:93
+msgid "Help"
+msgstr "עזרה"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:343
+msgid "House names"
+msgstr ""
+
+#. Minus und Plus - Button
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:395
+msgid "Less attackers"
+msgstr ""
+
+#. "Militär"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAddons.cpp:62
+msgid "Military"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:396
+msgid "More attackers"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAIDebug.cpp:149
+msgid "No current job"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:410
+msgid "Number of attackers"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:342
+msgid "Observation window"
+msgstr ""
+
+#. Gebäudename
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildingSite.cpp:58
+msgid "Order of building site"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildingProductivities.cpp:86
+msgid "Productivity"
+msgstr "פרודוקטיביות"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:266
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:274
+msgid "Pull down flag"
+msgstr ""
+
+#. Alle auswählen bzw setzen!
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBaseWarehouse.cpp:72
+msgid "Select all"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:268
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:276
+msgid "Send out scout"
+msgstr ""
+
+#. Einlagern verbieten
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBaseWarehouse.cpp:67
+msgid "Stop storage"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:401
+msgid "Strong attackers"
+msgstr ""
+
+#. Auslagern
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBaseWarehouse.cpp:65
+msgid "Take out of store"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:368
+msgid "Upgrade to donkey road"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAddons.cpp:55
+msgid "Use S2 Defaults"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:400
+msgid "Weak attackers"
+msgstr ""
+
+#. Anzahl-Text
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHQ.cpp:69
+#, c-format
+msgid "%u/%u"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPCreate.cpp:84
+msgid "'s Game"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMainMenu.cpp:98
+msgid "AI Debug Window"
+msgstr ""
+
+#. "Reihenfolge der Auftraggebung"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildOrder.cpp:69
+msgid "After the following order"
+msgstr ""
+
+#. "Verbündete"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwChat.cpp:57
+msgid "Allies"
+msgstr ""
+
+#. Schmiede
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:108
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:118
+msgid "Armory"
+msgstr ""
+
+#. Bäckerei
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:154
+msgid "Bakery"
+msgstr ""
+
+#. Brettergruppe
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:138
+msgid "Boards"
+msgstr ""
+
+#. Nach ganz unten
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildOrder.cpp:62
+msgid "Bottom"
+msgstr ""
+
+#. Brauerei
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:98
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:157
+msgid "Brewery"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildOrder.cpp:46
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMainMenu.cpp:91
+msgid "Building sequence"
 msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHarborBuilding.cpp:92
@@ -536,39 +1330,7 @@ msgstr ""
 msgid "Cancel expedition"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:486
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:694
-msgid "Cancel start"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:318
-msgid "Carpenter"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:244
-msgid "Catapult"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMilitary.cpp:56
-msgid "Center of country"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:96
-msgid "Change Settings..."
-msgstr "שינוי הגדרות..."
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonDefenderBehavior.h:38
-msgid "Change defender behavior"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonChangeGoldDeposits.h:38
-msgid "Change gold deposits"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonStatisticsVisibility.h:37
-msgid "Change the visibility of your ingame statistics"
-msgstr ""
-
+#. Charburner
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:101
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:134
 msgid "Charburner"
@@ -586,78 +1348,31 @@ msgstr ""
 msgid "Checking Password..."
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:106
-msgid "Classic (Settlers 2)"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:63
-msgid "Classification"
-msgstr "סיווג"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPlayReplay.cpp:69
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPlayReplay.cpp:94
-msgid "Clear"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:60
-msgid "Cleaver"
-msgstr "קופיץ"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAddons.cpp:52
-msgid "Close Without Saving"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:225
-msgid "Closed"
-msgstr ""
-
+#. Kohlegruppe
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:115
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:78
 msgid "Coal"
 msgstr ""
 
+#. Kohlebergwerk
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:76
 msgid "Coal mine"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:84
-msgid "Coins"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBaseWarehouse.cpp:63
-msgid "Collect"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:67
-msgid "Color"
-msgstr "צבע"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:84
-msgid "Common"
-msgstr "משותף"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:602
-#, c-format
-msgid "Computer %u"
 msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:286
 msgid "Confirm"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskLobby.cpp:71
-msgid "Connect"
-msgstr ""
-
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:51
 msgid "Connecting to Lobby"
 msgstr ""
 
+#. Text auf "Verbinde mit Host..." setzen und Button deaktivieren
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:168
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:208
 msgid "Connecting with Host..."
 msgstr ""
 
+#. Text auf "Verbindung fehlgeschlagen" setzen und Button aktivieren
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:174
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:217
 msgid "Connection failed!"
@@ -667,93 +1382,480 @@ msgstr ""
 msgid "Connection to Host closed!"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:122
-msgid "Conquer 3/4 of map"
-msgstr ""
-
+#. Baustellen
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:141
 msgid "Construction"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:109
-msgid "Construction aid mode"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:122
-msgid "Continents"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:112
-msgid "Continue"
 msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:266
 msgid "Contract type:"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonChangeGoldDeposits.h:50
-msgid "Convert to coal"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonChangeGoldDeposits.h:51
-msgid "Convert to granite"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonChangeGoldDeposits.h:49
-msgid "Convert to iron ore"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskDirectIP.cpp:62
-msgid "Create Game"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:76
-msgid "Credits"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:57
-msgid "Crucible"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:251
-#, c-format
-msgid ""
-"Current GF: %u / GF length: %u ms / NWF length: %u gf (%u ms) /  Ping: %u ms"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonCustomBuildSequence.h:37
-msgid "Custom build sequence"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonStatisticsVisibility.h:38
-msgid ""
-"Decides to whom your statistics is visible.\n"
-"\n"
-"\"Allies\" applies to team members as well as to allies by treaty."
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/BuildingConsts.h:350
-msgid ""
-"Deep within the mountains, miners dig for iron ore. They will obviously need "
-"a lot of food for the strenuous work."
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildOrder.cpp:76
+#. Standard
+#. Standardbelegung
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildOrder.cpp:75
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:182
 msgid "Default"
 msgstr "ברירת מחדל"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:93
-msgid "Delete all"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:285
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBaseWarehouse.cpp:113
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuilding.cpp:88
-msgid "Demolish house"
-msgstr ""
-
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDemolishBuilding.cpp:45
 msgid "Demolish?"
+msgstr ""
+
+#. Diplomatie (todo: besseres Bild suchen)
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:76
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMainMenu.cpp:94
+msgid "Diplomacy"
+msgstr ""
+
+#. Verteilung
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:58
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMainMenu.cpp:68
+msgid "Distribution of goods"
+msgstr ""
+
+#. Eselzucht
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:95
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:163
+msgid "Donkey breeding"
+msgstr ""
+
+#. Runter
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildOrder.cpp:60
+msgid "Down"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:270
+msgid "Duration:"
+msgstr ""
+
+#. Emailadresse
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:65
+msgid "Email Address:"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwEndgame.cpp:49
+msgid "End game?"
+msgstr ""
+
+#. "Feinde"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwChat.cpp:59
+msgid "Enemies"
+msgstr ""
+
+#. Option "ewig" noch hinzufügen
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:284
+msgid "Eternal"
+msgstr ""
+
+#. "Expedition"-Ãberschrift
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHarborBuilding.cpp:54
+msgid "Expedition"
+msgstr ""
+
+#. "Expedition"-Ãberschrift
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHarborBuilding.cpp:61
+msgid "Exploration expedition"
+msgstr ""
+
+#. Nahrungsgruppe
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:71
+msgid "Foodstuff"
+msgstr ""
+
+#. "Name des Spiels"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPCreate.cpp:56
+msgid "Game's Name:"
+msgstr ""
+
+#. Statistiken
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMainMenu.cpp:75
+msgid "General statistics"
+msgstr ""
+
+#. Goldbergwerk
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:82
+msgid "Gold mine"
+msgstr ""
+
+#. Getreidegruppe
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:86
+msgid "Grain"
+msgstr ""
+
+#. Granitbergwerk
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:73
+msgid "Granite mine"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHarborBuilding.cpp:48
+msgid "Harbor building"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyServerInfo.cpp:80
+msgid "Host:"
+msgstr ""
+
+#. "IP - Adresse vom Host"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:56
+msgid "IP Address of Host:"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:157
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPCreate.cpp:178
+msgid "Invalid port. The valid port-range is 1 to 65535!"
+msgstr ""
+
+#. Eisengruppe
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:105
+msgid "Iron"
+msgstr ""
+
+#. Eisenbergwerk
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:79
+msgid "Iron mine"
+msgstr ""
+
+#. Eisenschmelze
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:121
+msgid "Iron smelter"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:246
+msgid "Long-run"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyRanking.cpp:82
+msgid "Lost"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyServerInfo.cpp:76
+msgid "Map Name:"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:245
+msgid "Medium-term"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMainMenu.cpp:76
+msgid "Merchandise statistics"
+msgstr ""
+
+#. Schlosserei
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:111
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:144
+msgid "Metalworks"
+msgstr ""
+
+#. Mühle
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:89
+msgid "Mill"
+msgstr ""
+
+#. Münzprägerei
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:124
+msgid "Mint"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:73
+msgid "No"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:115
+msgid "Non-aggression pact"
+msgstr ""
+
+#. "Passwort (falls vorhanden)"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:64
+msgid "Password (if needed):"
+msgstr ""
+
+#. "Passwort"
+#. Passwort
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPCreate.cpp:64
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:60
+msgid "Password:"
+msgstr ""
+
+#. Schweinezucht
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:92
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:160
+msgid "Pig farm"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPCreate.cpp:170
+msgid "Please enter a name for the game"
+msgstr ""
+
+#. Registrieren
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:89
+msgid "Register"
+msgstr ""
+
+#. Registrierung erfolgreich
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:320
+msgid "Registration successful!"
+msgstr ""
+
+#. "Reserve"-Überschrift
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHQ.cpp:53
+msgid "Reserve"
+msgstr ""
+
+#. Passwort speichern ja/nein
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:70
+msgid "Save Password?"
+msgstr ""
+
+#. Sawmill
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:131
+msgid "Sawmill"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildOrder.cpp:68
+msgid "Sequence of given order"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyServerInfo.cpp:74
+msgid "Server Information"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyServerInfo.cpp:78
+msgid "Server Name:"
+msgstr ""
+
+#. "Server-Port"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:60
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPCreate.cpp:60
+msgid "Server-Port:"
+msgstr ""
+
+#. Schiffe
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMainMenu.cpp:87
+msgid "Ship register"
+msgstr ""
+
+#. Werft
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:147
+msgid "Shipyard"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:244
+msgid "Short-run"
+msgstr ""
+
+#. "Starten"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPCreate.cpp:79
+msgid "Start"
+msgstr ""
+
+#. Button zum Expedition starten
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHarborBuilding.cpp:57
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHarborBuilding.cpp:97
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHarborBuilding.cpp:128
+msgid "Start expedition"
+msgstr ""
+
+#. Button zum Expedition starten
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHarborBuilding.cpp:64
+msgid "Start exporation expedition"
+msgstr ""
+
+#. Inventur
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwInventory.cpp:47
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMainMenu.cpp:80
+msgid "Stock"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:226
+msgid "Suggest non-aggression pact"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:225
+msgid "Suggest treaty of alliance"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:259
+msgid "This Server is full!"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:268
+msgid "To player:"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:223
+msgid ""
+"To register, you have to create a valid board account at "
+"http://forum.siedler25.org at the moment.\n"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:263
+msgid "Too short Message received!"
+msgstr ""
+
+#. Werkzeugproduktion
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMainMenu.cpp:72
+msgid "Tools"
+msgstr "כלים"
+
+#. Nach ganz oben
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildOrder.cpp:56
+msgid "Top"
+msgstr ""
+
+#. Transport
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMainMenu.cpp:70
+msgid "Transport"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:81
+msgid "Treaties"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:106
+msgid "Treaty of alliance"
+msgstr ""
+
+#. Hoch
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildOrder.cpp:58
+msgid "Up"
+msgstr ""
+
+#. Benutzername
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:54
+msgid "Username:"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyServerInfo.cpp:82
+msgid "Version:"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:283
+msgid "Waiting for Playerinfo..."
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:280
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:333
+msgid "Waiting for Reply..."
+msgstr ""
+
+#. Wasserbüffel äh -gruppe ;-)
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:151
+msgid "Water"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyRanking.cpp:82
+msgid "Won"
+msgstr ""
+
+#. Wood group
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:128
+msgid "Wood"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:260
+msgid "Wrong Password!"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:264
+msgid "Wrong Server Type!"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:261
+msgid "Wrong client version"
+msgstr ""
+
+#. nein
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:74
+msgid "Yes"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:98
+msgid "1 h"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:97
+msgid "15 m"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:100
+msgid "16 h"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:99
+msgid "4 h"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:46
+msgid "Abort"
+msgstr "ביטול"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:77
+msgid "Add"
+msgstr "הוספה"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:84
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:219
+msgid "Add directory of tracks"
+msgstr ""
+
+#. AddTextButton(5,b1->GetX(false),320,button_width,22,TC_GREEN2,_("Save"),NormalFont);
+#. AddTextButton(6,b2->GetX(false),320,button_width,22,TC_GREEN2,_("Load"),NormalFont);
+#. Buttons fÃŒr die MusikstÃŒcke
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:83
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:213
+msgid "Add track"
+msgstr "הוספת רצועה"
+
+#. Advanced Options
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwOptionsWindow.cpp:106
+msgid "Advanced"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPlayReplay.cpp:94
+msgid "Are you sure to remove all replays?"
+msgstr ""
+
+#. Autospeicherzeug
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSave.cpp:204
+msgid "Auto-Save every:"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:77
+msgid "Beer"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:87
+msgid "Boats"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMilitary.cpp:59
+msgid "Border areas"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMsgbox.cpp:73
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMsgbox.cpp:88
+msgid "Cancel"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMilitary.cpp:56
+msgid "Center of country"
+msgstr ""
+
+#. Aufräumen
+#. Sicherheitsabfrage, ob der Benutzer auch wirklich alle löschen möchte
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPlayReplay.cpp:69
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPlayReplay.cpp:94
+msgid "Clear"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:84
+msgid "Coins"
+msgstr ""
+
+#. Mülleimer
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:93
+msgid "Delete all"
 msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMilitaryBuilding.cpp:178
@@ -769,146 +1871,14 @@ msgstr ""
 msgid "Demolition not possible"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSurrender.cpp:55
-msgid "Destroy all buildings and surrender"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:309
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:316
-msgid "Dig up road"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:76
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMainMenu.cpp:94
-msgid "Diplomacy"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskMultiPlayer.cpp:70
-msgid "Direct IP"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonDemolitionProhibition.h:37
-msgid "Disable Demolition of military buildings"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonNoCoinsDefault.h:19
-msgid "Disable coins by default"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:282
-msgid "Disabled"
-msgstr "כבוי"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonDefenderBehavior.h:47
-msgid "Disallow change"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:340
-msgid "Display options"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:58
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMainMenu.cpp:68
-msgid "Distribution of goods"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:538
-msgid "Don't forget to check the addon configuration!"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSurrender.cpp:57
-msgid "Don't surrender"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:164
-msgid "Donators"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:328
-msgid "Donkey breeder"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:95
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:163
-msgid "Donkey breeding"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildOrder.cpp:61
-msgid "Down"
-msgstr ""
-
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:87
 msgid "Downwards"
 msgstr "כלפי מטה"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:615
-#, c-format
-msgid "Dummy %u"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:270
-msgid "Duration:"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/PostMsg.cpp:122
-#, c-format
-msgid "Duration: %u GF (%s)"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/PostMsg.cpp:120
-msgid "Duration: Forever"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:288
-msgid "Dynamic (Limits to display refresh rate, works with most drivers)"
-msgstr "דינאמי (הגבלה לפי קצב רענון המסך, פועל היטב עם רוב הדרייברים)"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAddons.cpp:64
-msgid "Economy"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:225
-msgid "Effects"
-msgstr "אפקטים"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:65
-msgid "Email Address:"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAIDebugWindow.h:39
-msgid ""
-"Enable AI Debugging Window\n"
-" (possible cheating)"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonCharburner.h:36
-msgid "Enable charburner"
-msgstr ""
-
+#. "Spiel beenden"
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwOptionsWindow.cpp:111
 msgid "End game"
 msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwEndgame.cpp:49
-msgid "End game?"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwChat.cpp:59
-msgid "Enemies"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:259
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:293
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:303
-msgid "Erect flag"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameLoader.cpp:189
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:489
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:948
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:977
-msgid "Error"
-msgstr "שגיאה"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPlayReplay.cpp:120
 msgid "Error while opening file!"
@@ -923,54 +1893,11 @@ msgstr ""
 msgid "Error: Replay is too old!"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:284
-msgid "Eternal"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonStatisticsVisibility.h:44
-msgid "Everyone"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonExhaustibleWells.h:37
-msgid "Exhaustible Wells"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHarborBuilding.cpp:54
-msgid "Expedition"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHarborBuilding.cpp:61
-msgid "Exploration expedition"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:103
-msgid "Exploration:"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameLoader.cpp:141
-msgid "Failed to load map objects."
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameLoader.cpp:153
-msgid "Failed to load terrain data."
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:265
-msgid "Farm"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:321
-msgid "Farmer"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:131
-msgid "Fast"
-msgstr ""
-
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMilitary.cpp:53
 msgid "Fewer defenders"
 msgstr ""
 
+#. Einzelne Balken
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMilitary.cpp:51
 msgid "Fewer recruits"
 msgstr ""
@@ -980,52 +1907,463 @@ msgstr ""
 msgid "Filename"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:157
-msgid "Fish"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:316
-msgid "Fisher"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:246
-msgid "Fishery"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:156
-msgid "Flour"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:108
-msgid "FoW - all explored"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:107
-msgid "Fog of War"
-msgstr "ערפל לחימה"
-
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:75
 msgid "Food"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:71
-msgid "Foodstuff"
+#. "Gehe Zu Ort"
+#. Die Expeditionsweiterfahrbuttons
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwShip.cpp:73
+msgid "Found colony"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:248
-msgid "Forester"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwOptionsWindow.cpp:60
+msgid "Game menu"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:237
-msgid "Fortress"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:82
+msgid "Gold"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMilitary.cpp:55
+msgid "Interior"
+msgstr ""
+
+#. Bau abbrechen
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwRoadWindow.cpp:51
+msgid "Interrupt road building"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPlayReplay.cpp:121
+msgid "Invalid Replay!"
+msgstr ""
+
+#. untere Reihe
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:81
+msgid "Ironore"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPlayReplay.cpp:64
+msgid "Length"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:89
+msgid "Less repeats"
+msgstr "פחות חזרות"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwOptionsWindow.cpp:78
+msgid "Load 'ReadMe' file"
+msgstr ""
+
+#. /////////////////////////////////////////////////////////////////////////////
+#. *
+#. *
+#. *
+#. *  @author OLiver
+#. 
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwOptionsWindow.cpp:82
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSave.cpp:258
+msgid "Load game!"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:64
+msgid "Merchandise"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPostWindow.cpp:296
+msgid "Message"
+msgstr "הודעה"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMilitary.cpp:53
+msgid "More defenders"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMilitary.cpp:51
+msgid "More recruits"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:90
+msgid "More repeats"
+msgstr "יותר חזרות"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMilitary.cpp:57
+msgid "Near harbor points"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPostWindow.cpp:84
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPostWindow.cpp:273
+msgid "No letters!"
+msgstr "אין מכתבים!"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwShip.cpp:110
+msgid "No ships available"
+msgstr ""
+
+#. OK-Button
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMsgbox.cpp:66
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMsgbox.cpp:72
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:45
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSkipGFs.cpp:55
+msgid "OK"
+msgstr "אישור"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMinimap.cpp:54
+msgid "Outline map"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:91
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:284
+msgid "Playback in this order"
+msgstr "נגינה בסדר זה"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:71
+msgid "Playlist:"
+msgstr "רשימת־השמעה:"
+
+#. /////////////////////////////////////////////////////////////////////////////
+#. *
+#. *  Konstruktor von @p iwPleaseWait.
+#. *
+#. *  Fenster wird modal geöffnet, damit man ggf. einen "Weiter"-Button nicht
+#. *  mehrfach betätigen kann.
+#. *
+#. *  @author OLiver
+#. 
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPleaseWait.cpp:45
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPleaseWait.cpp:48
+msgid "Please wait..."
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPlayReplay.cpp:123
+msgid "Program version is too old to play that replay!"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:284
+msgid "Random playback"
+msgstr "נגינה אקראית"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:78
+msgid "Remove"
+msgstr "הסרה"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:85
+msgid "Remove track"
+msgstr "הסרת רצועה"
+
+#. Expedition abbrechen
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwShip.cpp:81
+msgid "Return to harbor"
+msgstr ""
+
+#. /////////////////////////////////////////////////////////////////////////////
+#. *
+#. *
+#. *
+#. *  @author OLiver
+#. 
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwOptionsWindow.cpp:86
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSave.cpp:198
+msgid "Save game!"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSettings.cpp:54
+msgid "Settings"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSkipGFs.cpp:45
+msgid "Skip GameFrames"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:176
+msgid "Specify the playlist name"
+msgstr "ציון שם רשימת ההשמעה"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSave.cpp:68
+msgid "Start GF"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSettings.cpp:59
+msgid "Statistics Scale"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPlayReplay.cpp:64
+msgid "Stocktaking date"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:74
+msgid "Stones"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMilitary.cpp:52
+msgid "Strong defense"
+msgstr ""
+
+#. "Spiel aufgeben"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwOptionsWindow.cpp:109
+msgid "Surrender"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPlayReplay.cpp:125
+msgid "Temporary map file was not found!"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:148
+msgid "The specified file couldn't be loaded!"
+msgstr "לא ניתן לטעון את הקובץ המצוין!"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:336
+msgid "The specified file couldn't be opened!"
+msgstr "לא ניתן לפתוח את הקובץ שצויין!"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:118
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:361
+msgid "The specified file couldn't be saved!"
+msgstr "לא ניתן לשמור את הקובץ המצוין!"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSave.cpp:68
+msgid "Time"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:86
+msgid "Upwards"
+msgstr "כלפי מעלה"
+
+#. pitch: 4, 4
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMilitary.cpp:52
+msgid "Weak defense"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:86
+msgid "Weapons"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:191
+msgid "You are not allowed to delete the standard playlist!"
+msgstr "אין לך הרשאה למחיקת רשימת ההשמעה הסטנדרטית!"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPostWindow.cpp:296
+msgid "of"
+msgstr "מתוך"
+
+#. Text vor Editfeld
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSkipGFs.cpp:48
+msgid "to GameFrame:"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:52
+msgid "Axe"
+msgstr "גרזן"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:62
+msgid "Bow"
+msgstr "קשת"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:60
+msgid "Cleaver"
+msgstr "קופיץ"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:57
+msgid "Crucible"
+msgstr ""
+
+#. Ok + Abbrennen
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSurrender.cpp:55
+msgid "Destroy all buildings and surrender"
+msgstr ""
+
+#. Abbrechen
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSurrender.cpp:57
+msgid "Don't surrender"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:55
+msgid "Hammer"
+msgstr "פטיש"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:119
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:220
+msgid "Inhabitants"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTransport.cpp:65
+msgid "Iron ore"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:51
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:52
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:53
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:54
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:55
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:56
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:57
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:58
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:59
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:60
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:61
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:62
+msgid "Less often"
+msgstr "לעיתים פחות תכופות"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:121
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:228
+msgid "Military strength"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:51
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:52
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:53
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:54
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:55
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:56
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:57
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:58
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:59
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:60
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:61
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:62
+msgid "More often"
+msgstr "לעיתים יותר תכופות"
+
+#. "Blättern"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwWares.cpp:189
+msgid "Next page"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:54
+msgid "Pick-axe"
+msgstr "מכוש"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:58
+msgid "Rod and line"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:61
+msgid "Rolling pin"
+msgstr "מערוך"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:53
+msgid "Saw"
+msgstr "מסור"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:59
+msgid "Scythe"
+msgstr "חרמש"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTrade.cpp:99
+msgid "Send"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTrade.cpp:76
+msgid "Settlers"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:56
+msgid "Shovel"
+msgstr "מעדר"
+
+#. Aktuelle Überschrift über der Statistik
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:117
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:137
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:212
+msgid "Size of country"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:47
+msgid "Statistics"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStorehouse.cpp:44
+msgid "Storehouse"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSurrender.cpp:50
+msgid "Surrender game?"
+msgstr ""
+
+#. Systemsprache hinzufügen
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/languages.cpp:70
+msgid "System language"
+msgstr "שפת המערכת"
+
+#. immer noch nichts gefunden? --> Dann Fehlermeldung
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTextfile.cpp:73
+msgid "The readme file was not found!"
+msgstr ""
+
+#. Einzelne Balken
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:51
+msgid "Tongs"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTrade.cpp:60
+msgid "Trade"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTrade.cpp:65
+#, c-format
+msgid "Trade with %s"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:124
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:240
+msgid "Vanquished enemies"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTrade.cpp:95
+msgid "Ware you like to trade"
+msgstr ""
+
+#. Ware or figure?
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTrade.cpp:75
+msgid "Wares"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobMilitary.cpp:1114
+msgid "A catapult is firing upon us!"
+msgstr "קטפולטה יורה עלינו!"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobMilitary.cpp:867
+msgid "Military building captured"
+msgstr "מבנה צבא נשבה"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobMilitary.cpp:864
+msgid "Military building lost"
+msgstr "מבנה צבא אבד"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobMilitary.cpp:606
+msgid "Military building occupied"
+msgstr "מבנה צבא מאוכלס"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobHarborBuilding.cpp:104
+msgid "New harbor building finished"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobStorehouse.cpp:57
+msgid "New storehouse finished"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofAttacker.cpp:289
+msgid "Our headquarters was destroyed!"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofAttacker.cpp:292
+msgid "This harbor building was destroyed"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofBuildingWorker.cpp:404
+msgid "This mine is exhausted"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofBuildingWorker.cpp:406
+msgid "This well is dried out"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofAttacker.cpp:655
+msgid "We are under attack!"
 msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofGeologist.cpp:501
 msgid "Found coal"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwShip.cpp:73
-msgid "Found colony"
 msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofGeologist.cpp:499
@@ -1044,310 +2382,291 @@ msgstr ""
 msgid "Found water"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/BuildingConsts.h:366
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofFarmhand.cpp:210
+msgid "No more fishes in range"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofFarmhand.cpp:203
+msgid "No more stones in range"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofScout_LookoutTower.cpp:84
+msgid "Lookout-tower occupied"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/noShipBuildingSite.cpp:139
+msgid "A new ship is ready"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/noShip.cpp:455
+msgid "A ship disovered an enemy territory"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/noShip.cpp:733
+msgid "A ship has reached the destination of its expedition."
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/noShip.cpp:286
+msgid "A ship is ready for an expedition."
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/PostMsg.cpp:122
+#, c-format
+msgid "Duration: %u GF (%s)"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/PostMsg.cpp:120
+msgid "Duration: Forever"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/PostMsg.cpp:160
+#, c-format
+msgid "The %s between player '%s' and you has been cancelled."
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/PostMsg.cpp:157
+#, c-format
+msgid "The %s between player '%s' and you has been concluded."
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/PostMsg.cpp:115
+#, c-format
+msgid "The player '%s' offers you a %s."
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/PostMsg.cpp:134
+#, c-format
 msgid ""
-"From the lookout tower you can see far into previously unexplored lands."
+"The player '%s' want to cancel the '%s' between you both primaturely. Do you "
+"agree?"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:170
-msgid "Fullscreen"
-msgstr "מסך מלא"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:164
-msgid "Fullscreen resolution:"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/PostMsg.cpp:105
+msgid "non-aggression pact"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:489
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/PostMsg.cpp:104
+msgid "treaty of alliance"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAIDebugWindow.h:38
+msgid "AI Debugging Window"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonCatapultGraphics.h:40
+msgid "Adds new graphics for catapults to the game."
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAdjustMilitaryStrength.h:47
+msgid "Adjust military strength"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonChangeGoldDeposits.h:39
 msgid ""
-"Game can only be started as soon as everybody has a unique color,everyone is "
-"ready and all free slots are closed."
+"Allows to play games without gold.\n"
+"\n"
+"You can choose to remove gold resources completely,\n"
+"to convert them into iron ore, coal or granite.\n"
+"\n"
+"You'll probably want to convert gold to iron ore, as this (on most maps)\n"
+"allows you to utilize the additional coal not needed for minting anymore."
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameLoader.cpp:145
-msgid "Game crate was picked and spread out..."
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAdjustMilitaryStrength.h:48
+msgid ""
+"Allows you to modify the strength increase of military ranks\n"
+"\n"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwOptionsWindow.cpp:60
-msgid "Game menu"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/SerializedGameData.cpp:236
+msgid "An error occured while saving which was suppressed!"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1054
-msgid "Game was paused."
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonChangeGoldDeposits.h:38
+msgid "Change gold deposits"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1083
-msgid "Game was resumed."
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonChangeGoldDeposits.h:50
+msgid "Convert to coal"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPCreate.cpp:56
-msgid "Game's Name:"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonChangeGoldDeposits.h:51
+msgid "Convert to granite"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAddons.cpp:66
-msgid "Gameplay"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonChangeGoldDeposits.h:49
+msgid "Convert to iron ore"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:339
-msgid "General"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAIDebugWindow.h:39
+msgid ""
+"Enable AI Debugging Window\n"
+"(possible cheating)"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMainMenu.cpp:75
-msgid "General statistics"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAdjustMilitaryStrength.h:52
+msgid "Maximum strength"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:340
-msgid "Geologist"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAdjustMilitaryStrength.h:53
+msgid "Medium strength"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAdjustMilitaryStrength.h:54
+msgid "Minimum strength"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonChangeGoldDeposits.h:47
+msgid "No change"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonCatapultGraphics.h:39
+msgid "Race specific catapult graphics"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonChangeGoldDeposits.h:48
+msgid "Remove gold completely"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:51
+msgid "10 catapults"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:52
+msgid "20 catapults"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:49
+msgid "3 catapults"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:53
+msgid "30 catapults"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:50
+msgid "5 catapults"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonDemolitionProhibition.h:43
+msgid "Active if attacked"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonDemolitionProhibition.h:44
+msgid "Active near frontiers"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonCustomBuildSequence.h:38
+msgid ""
+"Allows every player to control whether building sites\n"
+"should be supplied in sequence of given order or in a definable\n"
+"sequence based on the building type."
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonCharburner.h:37
+msgid "Allows to build the charburner."
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonDefenderBehavior.h:39
+msgid ""
+"Allows to change the military setting 'defender'.\n"
+"\n"
+"You can choose to disallow any changes to that setting\n"
+"or you can limit the amount of reoccupying troops\n"
+"(during an attack) according to the defender setting."
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonDemolitionProhibition.h:38
+msgid ""
+"Allows to disable the demolition of military buildings under attack or near "
+"frontiers."
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonExhaustibleWells.h:38
+msgid ""
+"Allows to have limited water.\n"
+"\n"
+"Wells will now dry out."
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonInexhaustibleMines.h:38
+msgid ""
+"Allows to have unlimited resources.\n"
+"\n"
+"Mines will never be depleted."
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonTrade.h:37
+msgid "Allows to send wares/figures to allied warehouses"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonRefundOnEmergency.h:39
+msgid ""
+"Allows you to get building materials back if the building is destroyed\n"
+"and your emergency program is active."
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonRefundMaterials.h:38
+msgid ""
+"Allows you to get building materials back if the building is destroyed."
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonManualRoadEnlargement.h:38
+msgid ""
+"Allows you to manually upgrade your roads\n"
+"and build donkey roads directly."
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonDefenderBehavior.h:38
+msgid "Change defender behavior"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonStatisticsVisibility.h:37
+msgid "Change the visibility of your ingame statistics"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonCustomBuildSequence.h:37
+msgid "Custom build sequence"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonStatisticsVisibility.h:38
+msgid ""
+"Decides to whom your statistics is visible.\n"
+"\n"
+"\"Allies\" applies to team members as well as to allies by treaty."
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonDemolitionProhibition.h:37
+msgid "Disable Demolition of military buildings"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonNoCoinsDefault.h:19
+msgid "Disable coins by default"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonDefenderBehavior.h:47
+msgid "Disallow change"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonCharburner.h:36
+msgid "Enable charburner"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonStatisticsVisibility.h:44
+msgid "Everyone"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonExhaustibleWells.h:37
+msgid "Exhaustible Wells"
 msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonRefundMaterials.h:46
 msgid "Get all back"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:344
-msgid "Go to headquarters"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBaseWarehouse.cpp:74
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuilding.cpp:103
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildingSite.cpp:66
-msgid "Go to place"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:119
-msgid "Goals:"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:82
-msgid "Gold"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:82
-msgid "Gold mine"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:111
-msgid "Goods at start:"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:86
-msgid "Grain"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/BuildingConsts.h:454
-msgid ""
-"Grain and water are needed for rearing pigs. The meat thus obtained can then "
-"be processed by a butcher."
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:73
-msgid "Granite mine"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:86
-msgid "Graphics"
-msgstr "גרפיקה"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:188
-msgid "Graphics Driver"
-msgstr "מנהל התקן לכרטיס מסך"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:419
-msgid "Greenland"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:230
-msgid "Guardhouse"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:171
-msgid "Ham"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:55
-msgid "Hammer"
-msgstr "פטיש"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHarborBuilding.cpp:48
-msgid "Harbor building"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:390
-msgid "Headquarters"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuilding.cpp:86
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildingProductivities.cpp:107
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildings.cpp:93
-msgid "Help"
-msgstr "עזרה"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:314
-msgid "Helper"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AIPlayerJH.cpp:106
-msgid "Hi, I'm an artifical player and I'm not very good yet!"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyServerInfo.cpp:80
-msgid "Host:"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:343
-msgid "House names"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:250
-msgid "Hunter"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:320
-msgid "Huntsman"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskLobby.cpp:78
-msgid "ID"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:56
-msgid "IP Address of Host:"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:131
-msgid "IPv4"
-msgstr "IPv4"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:130
-msgid "IPv6"
-msgstr "IPv6"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:353
-msgid "Incomplete message was received!"
-msgstr ""
-
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonInexhaustibleMines.h:37
 msgid "Inexhaustible Mines"
 msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:119
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:220
-msgid "Inhabitants"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMilitary.cpp:55
-msgid "Interior"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskMultiPlayer.cpp:66
-msgid "Internet Lobby"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskLobby.cpp:73
-msgid "Internet Ranking"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwRoadWindow.cpp:51
-msgid "Interrupt road building"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskMainMenu.cpp:79
-msgid "Intro"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPlayReplay.cpp:121
-msgid "Invalid Replay!"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:157
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPCreate.cpp:178
-msgid "Invalid port. The valid port-range is 1 to 65535!"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:105
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:83
-msgid "Iron"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:329
-msgid "Iron founder"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:79
-msgid "Iron mine"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTransport.cpp:65
-msgid "Iron ore"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:121
-msgid "Iron smelter"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:81
-msgid "Ironore"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/BuildingConsts.h:516
-msgid ""
-"It is possible to build small rowing boats as well as huge cargo ships in a "
-"shipyard. The boards required for this are skillfully worked by shipwrights."
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:709
-msgid "Japaneses"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskDirectIP.cpp:63
-msgid "Join Game"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:597
-msgid "Keyboard layout"
-msgstr "פריסת מקלדת"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:123
-msgid "Keyboard layout:"
-msgstr "פריסת המקלדת:"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:104
-msgid "Language:"
-msgstr "שפה:"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPlayReplay.cpp:64
-msgid "Length"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/ctrlProgress.cpp:75
-msgid "Less"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:395
-msgid "Less attackers"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:51
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:52
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:53
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:54
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:55
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:56
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:57
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:58
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:59
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:60
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:61
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:62
-msgid "Less often"
-msgstr "לעיתים פחות תכופות"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:89
-msgid "Less repeats"
-msgstr "פחות חזרות"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:174
-msgid "Limit Framerate:"
-msgstr "הגבלת קצב פרייימים:"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:37
 msgid "Limit count of catapults"
@@ -1375,644 +2694,41 @@ msgid ""
 "Long: 9 tiles\n"
 "Longer: 13 tiles\n"
 "Very long: 21 tiles\n"
-"and Unlimited"
+"and Unlimited."
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwOptionsWindow.cpp:78
-msgid "Load 'ReadMe' file"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:79
-msgid "Load game"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwOptionsWindow.cpp:82
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSave.cpp:258
-msgid "Load game!"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:110
-msgid "Load game..."
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:90
-msgid "Lock teams:"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonMaxWaterwayLength.h:47
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonMaxWaterwayLength.h:51
 msgid "Long"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:246
-msgid "Long-run"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonMaxWaterwayLength.h:48
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonMaxWaterwayLength.h:52
 msgid "Longer"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:242
-msgid "Lookout tower"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofScout_LookoutTower.cpp:84
-msgid "Lookout-tower occupied"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyRanking.cpp:82
-msgid "Lost"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1114
-msgid "Lost connection to lobby!"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1101
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:948
-msgid "Lost connection to server!"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameWorldGame.cpp:594
-msgid "Lost land by this building"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:114
-msgid "Low"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:107
-msgid "Main selection"
 msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonManualRoadEnlargement.h:37
 msgid "Manual road enlargement"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:105
-msgid "Map"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyServerInfo.cpp:76
-msgid "Map Name:"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameLoader.cpp:123
-msgid "Map was loaded and pinned at the wall..."
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:147
-msgid "Map: "
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:136
-msgid "Mapfile: "
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:115
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:134
-msgid "Mapping"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAdjustMilitaryStrength.h:52
-msgid "Maximum strength"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:170
-msgid "Meat"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/BuildingConsts.h:417
-msgid "Meat the hunter acquires is used to feed the miners."
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAdjustMilitaryStrength.h:53
-msgid "Medium strength"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:245
-msgid "Medium-term"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:64
-msgid "Merchandise"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMainMenu.cpp:76
-msgid "Merchandise statistics"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPostWindow.cpp:293
-msgid "Message"
-msgstr "הודעה"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:331
-msgid "Metalworker"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:111
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:144
-msgid "Metalworks"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAddons.cpp:62
-msgid "Military"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobMilitary.cpp:872
-msgid "Military building captured"
-msgstr "מבנה צבא נשבה"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobMilitary.cpp:869
-msgid "Military building lost"
-msgstr "מבנה צבא אבד"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobMilitary.cpp:611
-msgid "Military building occupied"
-msgstr "מבנה צבא מאוכלס"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:121
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:228
-msgid "Military strength"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:89
-msgid "Mill"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:322
-msgid "Miller"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:325
-msgid "Miner"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAdjustMilitaryStrength.h:54
-msgid "Minimum strength"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:124
-msgid "Mint"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:330
-msgid "Minter"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:168
-msgid "Mode:"
-msgstr "מצב:"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/ctrlProgress.cpp:76
-msgid "More"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:396
-msgid "More attackers"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMilitary.cpp:53
-msgid "More defenders"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:51
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:52
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:53
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:54
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:55
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:56
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:57
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:58
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:59
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:60
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:61
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:62
-msgid "More often"
-msgstr "לעיתים יותר תכופות"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMilitary.cpp:51
-msgid "More recruits"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:90
-msgid "More repeats"
-msgstr "יותר חזרות"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskMainMenu.cpp:75
-msgid "Multiplayer"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:216
-msgid "Music"
-msgstr "מוזיקה"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:234
-msgid "Music player"
-msgstr "נגן מוזיקה"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskLobby.cpp:80
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:102
-msgid "Name"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:99
-msgid "Name in Game:"
-msgstr "השם במשחק:"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMilitary.cpp:57
-msgid "Near harbor points"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskMultiPlayer.cpp:68
-msgid "Network/LAN"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobHarborBuilding.cpp:104
-msgid "New harbor building finished"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:118
-msgid "New maps"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobStorehouse.cpp:57
-msgid "New storehouse finished"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwWares.cpp:189
-msgid "Next page"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:73
-msgid "No"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:147
-msgid "No Proxy"
-msgstr "ללא פרוקסי"
-
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:48
 msgid "No catapults"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonChangeGoldDeposits.h:47
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonDefenderBehavior.h:46
-msgid "No change"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAIDebug.cpp:149
-msgid "No current job"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPostWindow.cpp:84
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPostWindow.cpp:270
-msgid "No letters!"
-msgstr "אין מכתבים!"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofFarmhand.cpp:197
-msgid "No more fishes in range"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofFarmhand.cpp:190
-msgid "No more stones in range"
 msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonRefundMaterials.h:42
 msgid "No refund"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwShip.cpp:110
-msgid "No ships available"
-msgstr ""
-
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonStatisticsVisibility.h:46
 msgid "Nobody else but you"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:115
-msgid "Non-aggression pact"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:121
-msgid "None"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:115
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:130
-msgid "Normal"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:696
-msgid "Not Ready"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:94
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:103
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:111
-msgid "Not available"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:990
-#, c-format
-msgid "Note: Game settings changed by the server%s"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClientGF_Replay.cpp:123
-#, c-format
-msgid ""
-"Notice: The played replay has ended. (GF: %u, %dh %dmin %ds, TF: %u, "
-"AVG_FPS: %u)"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:410
-msgid "Number of attackers"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMsgbox.cpp:66
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMsgbox.cpp:72
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:45
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSkipGFs.cpp:55
-msgid "OK"
-msgstr "אישור"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:342
-msgid "Observation window"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:185
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:219
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:228
-msgid "Off"
-msgstr "כבוי"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:105
-msgid "Off (all visible)"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:338
-msgid "Officer"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AIPlayerJH.cpp:149
-msgid "Oh, no, you destroyed my headquarter! I surrender!"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:116
-msgid "Old maps"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:184
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:218
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:227
-msgid "On"
-msgstr "פעיל"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:220
-msgid "Open"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskMainMenu.cpp:77
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:77
-msgid "Options"
-msgstr "אפשרויות"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildingSite.cpp:58
-msgid "Order of building site"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:128
-msgid "Other"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:152
-msgid "Other Support:"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofAttacker.cpp:289
-msgid "Our headquarters was destroyed!"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMinimap.cpp:54
-msgid "Outline map"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:120
-msgid "Own maps"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:343
-msgid "Pack donkey"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:64
-msgid "Password (if needed):"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPCreate.cpp:64
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:60
-msgid "Password:"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:76
-msgid "Past player"
-msgstr "שחקן עבר"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:54
-msgid "Pick-axe"
-msgstr "מכוש"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:327
-msgid "Pig breeder"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:92
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:160
-msgid "Pig farm"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:73
-msgid "Ping"
-msgstr "פינג"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:334
-msgid "Planer"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:73
-msgid "Play Replay"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:91
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:284
-msgid "Playback in this order"
-msgstr "נגינה בסדר זה"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:132
-msgid "Played"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskLobby.cpp:78
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:102
-msgid "Player"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:976
-#, c-format
-msgid "Player '%s' joined the game!"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:973
-#, c-format
-msgid "Player '%s' left the game!"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1138
-#, c-format
-msgid "Player '%s' switched to player '%s'"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1161
-#, c-format
-msgid "Player '%s' was defeated!"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:61
-msgid "Player Name"
-msgstr "שם השחקן"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:71
-msgid "Playlist:"
-msgstr "רשימת־השמעה:"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPCreate.cpp:170
-msgid "Please enter a name for the game"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:94
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:103
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:111
-msgid "Please use 'Unlimited Play' to create a Singleplayer game."
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPleaseWait.cpp:45
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPleaseWait.cpp:48
-msgid "Please wait..."
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskLobby.cpp:80
-msgid "Points"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:111
-msgid "Post office"
-msgstr "משרד הדואר"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:335
-msgid "Private"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:336
-msgid "Private first class"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildingProductivities.cpp:86
-msgid "Productivity"
-msgstr "פרודוקטיביות"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPlayReplay.cpp:123
-msgid "Program version is too old to play that replay!"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:84
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:96
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:123
-msgid "Programming"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:82
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:95
-msgid "Project management"
 msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:47
 msgid "Proportional"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:138
-msgid "Proxyserver:"
-msgstr "שרת פרוקסי:"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:145
-msgid "Proxytyp:"
-msgstr "סוג פרוקסי:"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:266
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:274
-msgid "Pull down flag"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:87
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:97
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:106
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:114
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:133
-msgid "Quality Assurance"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:247
-msgid "Quarry"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskMainMenu.cpp:85
-msgid "Quit program"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:126
-msgid "RTTR"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:65
-msgid "Race"
-msgstr "מרוץ"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:284
-msgid "Random playback"
-msgstr "נגינה אקראית"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:317
-msgid "Ranger"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/BuildingConsts.h:442
-msgid ""
-"Raw iron ore is smelted in the iron smelters with the help of coal. The "
-"processed iron is then used to making weapons (in the Armory) and tools (in "
-"the metalworks)."
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskMainMenu.cpp:81
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:124
-msgid "Readme"
-msgstr "קרא אותי"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:601
-msgid "Readme!"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:84
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:496
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:696
-msgid "Ready"
-msgstr "מוכן"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:71
-msgid "Ready?"
-msgstr "מוכן?"
-
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonNoCoinsDefault.h:20
 msgid ""
 "Receiving coins is disabled\n"
-"for military buildings by default"
+"for military buildings by default."
 msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonDefenderBehavior.h:48
@@ -2039,157 +2755,72 @@ msgstr ""
 msgid "Refund materials when emergency program is active"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:89
-msgid "Register"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:320
-msgid "Registration successful!"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:78
-msgid "Remove"
-msgstr "הסרה"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonChangeGoldDeposits.h:48
-msgid "Remove gold completely"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:85
-msgid "Remove track"
-msgstr "הסרת רצועה"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHQ.cpp:53
-msgid "Reserve"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:71
-msgid "Resume last game"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:87
-msgid "Return"
-msgstr "חזרה"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:73
-msgid "Return To The Roots"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskDirectIP.cpp:54
-#, c-format
-msgid "Return To The Roots - v%s-%s"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwShip.cpp:81
-msgid "Return to harbor"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:58
-msgid "Rod and line"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:61
-msgid "Rolling pin"
-msgstr "מערוך"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:709
-msgid "Romans"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1053
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1082
-msgid "SYSTEM"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:70
-msgid "Save Password?"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwOptionsWindow.cpp:86
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSave.cpp:198
-msgid "Save game!"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:53
-msgid "Saw"
-msgstr "מסור"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:131
-msgid "Sawmill"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:342
-msgid "Scout"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:59
-msgid "Scythe"
-msgstr "חרמש"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:130
-msgid "Sea"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBaseWarehouse.cpp:72
-msgid "Select all"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:105
-msgid "Selection of maps"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:268
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:276
-msgid "Send out scout"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildOrder.cpp:69
-msgid "Sequence of given order"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:337
-msgid "Sergeant"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskLobby.cpp:78
-msgid "Server"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyServerInfo.cpp:74
-msgid "Server Information"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyServerInfo.cpp:78
-msgid "Server Name:"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:83
-msgid "Server management"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:60
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPCreate.cpp:60
-msgid "Server-Port:"
-msgstr ""
-
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonMaxWaterwayLength.h:37
 msgid "Set maximum waterway length"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSettings.cpp:54
-msgid "Settings"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonMaxWaterwayLength.h:49
+msgid "Short"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:92
-msgid "Shared team view"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:46
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonMaxWaterwayLength.h:54
+msgid "Unlimited"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:159
-msgid "Shield"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonMaxWaterwayLength.h:53
+msgid "Very long"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMainMenu.cpp:87
-msgid "Ship register"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/BuildingConsts.h:357
+msgid ""
+"A gold mine allows you to prospect for valuable gold deposits. For this, it "
+"is necessary to ensure that the miners are provided with plenty of food."
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/BuildingConsts.h:510
+msgid ""
+"A well supplies water to the bakery, brewery, donkey breeder and pig farm."
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/BuildingConsts.h:382
+msgid ""
+"A woodcutter provides the sawmill with logs. A forester is able to replant "
+"the depleted forest."
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/BuildingConsts.h:350
+msgid ""
+"Deep within the mountains, miners dig for iron ore. They will obviously need "
+"a lot of food for the strenuous work."
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/BuildingConsts.h:366
+msgid ""
+"From the lookout tower you can see far into previously unexplored lands."
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/BuildingConsts.h:454
+msgid ""
+"Grain and water are needed for rearing pigs. The meat thus obtained can then "
+"be processed by a butcher."
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/BuildingConsts.h:516
+msgid ""
+"It is possible to build small rowing boats as well as huge cargo ships in a "
+"shipyard. The boards required for this are skillfully worked by shipwrights."
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/BuildingConsts.h:417
+msgid "Meat the hunter acquires is used to feed the miners."
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/BuildingConsts.h:442
+msgid ""
+"Raw iron ore is smelted in the iron smelters with the help of coal. The "
+"processed iron is then used to making weapons (in the Armory) and tools (in "
+"the metalworks)."
 msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/BuildingConsts.h:541
@@ -2201,215 +2832,10 @@ msgid ""
 "or job symbol."
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:341
-msgid "Shipwright"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:147
-msgid "Shipyard"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonMaxWaterwayLength.h:45
-msgid "Short"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:244
-msgid "Short-run"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:56
-msgid "Shovel"
-msgstr "מעדר"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskMainMenu.cpp:73
-msgid "Singleplayer"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:102
-msgid "Size"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:117
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:137
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:212
-msgid "Size of country"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSkipGFs.cpp:45
-msgid "Skip GameFrames"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:249
-msgid "Slaughterhouse"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:129
-msgid "Slow"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:148
-msgid "Socks v4"
-msgstr "Socks v4"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskDirectIP.cpp:80
-msgid "Sorry!"
-msgstr "מצטערים!"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:88
-msgid "Sound/Music"
-msgstr "שמע/מוזיקה"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:202
-msgid "Sounddriver"
-msgstr "התקן שמע"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:176
-msgid "Specify the playlist name"
-msgstr "ציון שם רשימת ההשמעה"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:126
-msgid "Speed:"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPCreate.cpp:79
-msgid "Start"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSave.cpp:68
-msgid "Start GF"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:558
-msgid "Start aborted"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHarborBuilding.cpp:57
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHarborBuilding.cpp:97
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHarborBuilding.cpp:128
-msgid "Start expedition"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHarborBuilding.cpp:64
-msgid "Start exporation expedition"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:84
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:482
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:694
-msgid "Start game"
-msgstr "התחלת המשחק"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:545
-msgid "Starting game, please wait"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:47
-msgid "Statistics"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSettings.cpp:59
-msgid "Statistics Scale"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwInventory.cpp:47
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMainMenu.cpp:80
-msgid "Stock"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPlayReplay.cpp:64
-msgid "Stocktaking date"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:319
-msgid "Stonemason"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:74
-msgid "Stones"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBaseWarehouse.cpp:67
-msgid "Stop storage"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStorehouse.cpp:44
-msgid "Storehouse"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:401
-msgid "Strong attackers"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMilitary.cpp:52
-msgid "Strong defense"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:226
-msgid "Suggest non-aggression pact"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:225
-msgid "Suggest treaty of alliance"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwOptionsWindow.cpp:109
-msgid "Surrender"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSurrender.cpp:50
-msgid "Surrender game?"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:154
-msgid "Sword"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/languages.cpp:70
-msgid "System language"
-msgstr "שפת המערכת"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:192
-msgid "THE END"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBaseWarehouse.cpp:65
-msgid "Take out of store"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:69
-msgid "Team"
-msgstr "קבוצה"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPlayReplay.cpp:125
-msgid "Temporary map file was not found!"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:184
-msgid "Thank you for your donations!"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:191
-msgid "Thank you!"
-msgstr ""
-
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/BuildingConsts.h:375
 msgid ""
 "Thanks to its immense strength, the catapults represents an effective weapon "
 "against enemy military buildings."
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/PostMsg.cpp:160
-#, c-format
-msgid "The %s between player '%s' and you has been cancelled."
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/PostMsg.cpp:157
-#, c-format
-msgid "The %s between player '%s' and you has been concluded."
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1016
-msgid "The Game is not in sync. Checksums of some players don't match."
 msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/BuildingConsts.h:429
@@ -2457,14 +2883,6 @@ msgid ""
 "protected. Using the gold coin button you can stop the delivery of gold "
 "coins to the soldiers stationed here. However, without gold coins the "
 "soldiers here can not train and improve their skills."
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClientPlayer.cpp:2061
-msgid "The emergency program has been activated."
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClientPlayer.cpp:2071
-msgid "The emergency program has been deactivated."
 msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/BuildingConsts.h:525
@@ -2531,40 +2949,11 @@ msgid ""
 "efficiently. They are reared on water and grain."
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/PostMsg.cpp:115
-#, c-format
-msgid "The player '%s' offers you a %s."
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/PostMsg.cpp:134
-#, c-format
-msgid ""
-"The player '%s' want to cancel the '%s' between you both primaturely. Do you "
-"agree?"
-msgstr ""
-
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/BuildingConsts.h:335
 msgid ""
 "The quarrying of stone in a granite mine guarantees the supply of stone for "
 "buildings. However, even a granite mine has to feed its workers."
 msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTextfile.cpp:73
-msgid "The readme file was not found!"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:148
-msgid "The specified file couldn't be loaded!"
-msgstr "לא ניתן לטעון את הקובץ המצוין!"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:336
-msgid "The specified file couldn't be opened!"
-msgstr "לא ניתן לפתוח את הקובץ שצויין!"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:118
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:361
-msgid "The specified file couldn't be saved!"
-msgstr "לא ניתן לשמור את הקובץ המצוין!"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/BuildingConsts.h:395
 msgid ""
@@ -2589,348 +2978,232 @@ msgid ""
 "coins the soldiers here can not train and improve their skills."
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:259
-msgid "This Server is full!"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofAttacker.cpp:292
-msgid "This harbor building was destroyed"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofBuildingWorker.cpp:404
-msgid "This mine is exhausted"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofBuildingWorker.cpp:406
-msgid "This well is dried out"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSave.cpp:68
-msgid "Time"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:268
-msgid "To player:"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:223
-msgid ""
-"To register, you have to create a valid board account at http://forum."
-"siedler25.org at the moment.\n"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:51
-msgid "Tongs"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:263
-msgid "Too short Message received!"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMainMenu.cpp:72
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:85
-msgid "Tools"
-msgstr "כלים"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildOrder.cpp:57
-msgid "Top"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:123
-msgid "Total domination"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMainMenu.cpp:70
-msgid "Transport"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:81
-msgid "Treaties"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:106
-msgid "Treaty of alliance"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameLoader.cpp:133
-msgid "Tribal chiefs assembled around the table..."
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:102
-msgid "Type"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:46
-msgid "Unlimited"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:77
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:123
-msgid "Unlimited Play"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildOrder.cpp:59
-msgid "Up"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:368
-msgid "Upgrade to donkey road"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:86
-msgid "Upwards"
-msgstr "כלפי מעלה"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/Addons.cpp:169
-msgid "Use"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:127
-msgid "Use IPv6:"
-msgstr "עשה שימוש ב- IPv6:"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAddons.cpp:55
-msgid "Use S2 Defaults"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:54
-msgid "Username:"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:124
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:240
-msgid "Vanquished enemies"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskLobby.cpp:78
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskLobby.cpp:80
-msgid "Version"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyServerInfo.cpp:82
-msgid "Version:"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:178
-msgid "Vertex Buffer Objects:"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:113
-msgid "Very Low"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:132
-msgid "Very fast"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonMaxWaterwayLength.h:49
-msgid "Very long"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:128
-msgid "Very slow"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:96
-msgid "View Settings..."
-msgstr "צפייה בהגדרות..."
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:709
-msgid "Vikings"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:283
-msgid "Waiting for Playerinfo..."
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:280
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:333
-msgid "Waiting for Reply..."
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClientGF_Replay.cpp:82
-#, c-format
-msgid ""
-"Warning: The played replay is not in sync with the original match. (GF: %u)"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:420
-msgid "Wasteland"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:232
-msgid "Watchtower"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:151
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:76
-msgid "Water"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofAttacker.cpp:655
-msgid "We are under attack!"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:189
-msgid "We hope you enjoy playing Return To The Roots!"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:400
-msgid "Weak attackers"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMilitary.cpp:52
-msgid "Weak defense"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:86
-msgid "Weapons"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:85
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:105
-msgid "Website Administration"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:86
-msgid "Website Programming"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:263
-msgid "Well"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:171
-msgid "Windowed"
-msgstr "בחלון"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:421
-msgid "Winter world"
-msgstr ""
-
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/BuildingConsts.h:403
 msgid ""
 "Within his area, the forester ensures the survival of the forest. He plants "
 "all types of trees."
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyRanking.cpp:82
-msgid "Won"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:333
+msgid "Armorer"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:128
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:72
-msgid "Wood"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:324
+msgid "Baker"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:315
-msgid "Woodchopper"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:230
+msgid "Barracks"
+msgstr ""
+
+#. Bogen
+#. 15
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:154
+msgid "Boat"
+msgstr ""
+
+#. Fisch
+#. 20
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:159
+msgid "Bread"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:327
+msgid "Brewer"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:334
+msgid "Builder"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:325
+msgid "Butcher"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:319
+msgid "Carpenter"
 msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:245
+msgid "Catapult"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:329
+msgid "Donkey breeder"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:266
+msgid "Farm"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:322
+msgid "Farmer"
+msgstr ""
+
+#. Mehl
+#. 19
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:158
+msgid "Fish"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:317
+msgid "Fisher"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:247
+msgid "Fishery"
+msgstr ""
+
+#. Eisen
+#. 18
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:157
+msgid "Flour"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:249
+msgid "Forester"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:238
+msgid "Fortress"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:340
+msgid "General"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:341
+msgid "Geologist"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:231
+msgid "Guardhouse"
+msgstr ""
+
+#. Fleisch
+#. 33
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:172
+msgid "Ham"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:315
+msgid "Helper"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:251
+msgid "Hunter"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:321
+msgid "Huntsman"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:330
+msgid "Iron founder"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:243
+msgid "Lookout tower"
+msgstr ""
+
+#. Kohle
+#. 32
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:171
+msgid "Meat"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:332
+msgid "Metalworker"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:323
+msgid "Miller"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:326
+msgid "Miner"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:331
+msgid "Minter"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:339
+msgid "Officer"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:344
+msgid "Pack donkey"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:328
+msgid "Pig breeder"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:335
+msgid "Planer"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:336
+msgid "Private"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:337
+msgid "Private first class"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:248
+msgid "Quarry"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:318
+msgid "Ranger"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:343
+msgid "Scout"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:338
+msgid "Sergeant"
+msgstr ""
+
+#. Brot
+#. 21
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:160
+msgid "Shield"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:342
+msgid "Shipwright"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:250
+msgid "Slaughterhouse"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:320
+msgid "Stonemason"
+msgstr ""
+
+#. Boot
+#. 16
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:155
+msgid "Sword"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:233
+msgid "Watchtower"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:264
+msgid "Well"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:316
+msgid "Woodchopper"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:246
 msgid "Woodcutter"
 msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameLoader.cpp:159
-msgid "World was put together and glued..."
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:260
-msgid "Wrong Password!"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:264
-msgid "Wrong Server Type!"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:261
-msgid "Wrong client version"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:74
-msgid "Yes"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:191
-msgid "You are not allowed to delete the standard playlist!"
-msgstr "אין לך הרשאה למחיקת רשימת ההשמעה הסטנדרטית!"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskDirectIP.cpp:80
-msgid ""
-"You can't create a game while a proxy server is active\n"
-"Disable the use of a proxy server first!"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:537
-msgid "You have 10 seconds until game starts"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:549
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:564
-msgid "You need to restart your game to change the screen resolution!"
-msgstr "יש צורך בהפעלת המשחק מחדש כדי לשנות את הרזולוצייה!"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:572
-msgid "You need to restart your game to change the video or audio driver!"
-msgstr "יש צורך בהפעלת המשחק מחדש כדי לשנות דרייבר קול או וידאו!"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:1610
-#, c-format
-msgid "current GF: %u - still fast forwarding: %d GFs left (%d %%)"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskDirectIP.cpp:57
-msgid "http://www.siedler25.org"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:254
-msgid "n/a"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/PostMsg.cpp:105
-msgid "non-aggression pact"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:182
-msgid "not supported"
-msgstr "לא נתמך"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPostWindow.cpp:293
-msgid "of"
-msgstr "מתוך"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSkipGFs.cpp:48
-msgid "to GameFrame:"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/PostMsg.cpp:104
-msgid "treaty of alliance"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:166
-msgid "various anonymous donators"
-msgstr ""
-
-#~ msgid "Enhancements"
-#~ msgstr "הרחבות"
-
-#~ msgid "Enhancements:"
-#~ msgstr "הרחבות:"
-
-#~ msgid "Load"
-#~ msgstr "טעינה"
-
-#~ msgid "Resolution:"
-#~ msgstr "רזולוציה:"
-
-#~ msgid "Save"
-#~ msgstr "שמירה"
-
-#~ msgid "VSync:"
-#~ msgstr "סנכרון אנכי:"
-
-#~ msgid "When attack"
-#~ msgstr "בעת תקיפה"
-
-#~ msgid "You are not allowed to change the standard playlist!"
-#~ msgstr "אין לך הרשאה לשינוי רשימת ההשמעה הסטנדרטית!"

@@ -2,21 +2,1041 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Siedler II.5 RttR\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-04-12 21:30+0100\n"
+"POT-Creation-Date: 2011-09-07 14:40+0100\n"
 "PO-Revision-Date: 2010-09-12 11:33+0000\n"
 "Last-Translator: Papp Bence <papp.bence89@gmail.com>\n"
 "Language-Team: Siedler II.5 RttR <sf-team@siedler25.org>\n"
-"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-04-12 19:20+0000\n"
-"X-Generator: Launchpad (build 12792)\n"
+"X-Launchpad-Export-Date: 2011-09-07 13:44+0000\n"
+"X-Generator: Launchpad (build 13861)\n"
 "X-Poedit-Country: Hungary\n"
 "X-Poedit-Language: Hungarian\n"
 "X-Poedit-SourceCharset: iso-8859-15\n"
 "X-Poedit-SearchPath-0: /storage/RTTR/svn/trunk/src\n"
 "X-Poedit-Basepath: .\n"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AIPlayerJH.cpp:110
+msgid "And I may crash your game sometimes..."
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AIPlayerJH.cpp:106
+msgid "Hi, I'm an artifical player and I'm not very good yet!"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AIPlayerJH.cpp:149
+msgid "Oh, no, you destroyed my headquarter! I surrender!"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/Addons.cpp:169
+msgid "Use"
+msgstr "Használ"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/ctrlProgress.cpp:75
+msgid "Less"
+msgstr "Kevesebb"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/ctrlProgress.cpp:76
+msgid "More"
+msgstr "Több"
+
+#. / Einstufung nur bei Lobbyspielen anzeigen @todo Einstufung ( "%d" )
+#. Ping ( "%d" )
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:265
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:292
+#, c-format
+msgid "%d"
+msgstr "%d"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:250
+#, c-format
+msgid ""
+"(Replay-Mode) Current GF: %u (End at: %u) / GF length: %u ms / NWF length: "
+"%u gf (%u ms)"
+msgstr ""
+"(Visszajátszás-Mód) Éppen GF: %u (Vége: %u) / GF hossz: %u ms / NWF hossz: "
+"%u gf (%u ms)"
+
+#. Team
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:275
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:284
+msgid "-"
+msgstr "-"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1031
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1081
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1110
+#, c-format
+msgid "<%s> "
+msgstr "<%s> "
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1046
+msgid "A auto-savegame is created..."
+msgstr "Automatikus mentés létrehozva"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:116
+msgid "A lot"
+msgstr "Sok"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:161
+msgid "Additional Graphics:"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:148
+msgid "Additional Programming:"
+msgstr "Kiegészítő programozás:"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:141
+msgid "Additional graphics"
+msgstr ""
+
+#. "Enhancements"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:95
+msgid "Addons:"
+msgstr "Kiegészítők:"
+
+#. Volk
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:271
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:280
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:720
+msgid "Africans"
+msgstr "Afrikaiak"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameLoader.cpp:174
+msgid "And let's go!"
+msgstr "És gyerünk!"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:133
+msgid "Artificial Intelligence (AI)"
+msgstr "Mesterséges Intelligencia (MI)"
+
+#. "Zurück"
+#. ZurÃŒck
+#. "Zurück"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskAboutRTTR.cpp:56
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:70
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskDirectIP.cpp:66
+msgid "Back"
+msgstr "Vissza"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:497
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:705
+msgid "Cancel start"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:96
+msgid "Change Settings..."
+msgstr "Beállítások módosítása..."
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:106
+msgid "Classic (Settlers 2)"
+msgstr "Klasszikus (Settlers 2)"
+
+#. "Einstufung"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:63
+msgid "Classification"
+msgstr "Besorolás"
+
+#. Geschlossen
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:236
+msgid "Closed"
+msgstr "Zárt"
+
+#. "Farbe"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:67
+msgid "Color"
+msgstr "Szín"
+
+#. Kein Spielziel
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:122
+msgid "Conquer 3/4 of map"
+msgstr "A térkép 3/4-ének elfoglalása"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:110
+msgid "Construction aid mode"
+msgstr "Építkezést segítő mód"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskDirectIP.cpp:62
+msgid "Create Game"
+msgstr "Új játék létrehozása"
+
+#. "Credits"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:76
+msgid "Credits"
+msgstr "Készítők"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:252
+#, c-format
+msgid ""
+"Current GF: %u / GF length: %u ms / NWF length: %u gf (%u ms) /  Ping: %u ms"
+msgstr ""
+"Jelenlegi GF: %u / GF hossz: %u ms / NWF hossz: %u gf (%u ms) /  Ping: %u ms"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:549
+msgid "Don't forget to check the addon configuration!"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:180
+msgid "Donators"
+msgstr "Támogatók"
+
+#. Verbindung zu Server abgebrochen
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameLoader.cpp:198
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:500
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:959
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:988
+msgid "Error"
+msgstr "Hiba"
+
+#. umgedrehte Reihenfolge, damit die Listen nicht dahinter sind
+#. "Aufklärung"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:103
+msgid "Exploration:"
+msgstr "Felderítés:"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameLoader.cpp:149
+msgid "Failed to load addon objects."
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameLoader.cpp:141
+msgid "Failed to load map objects."
+msgstr "Nem sikerült betölteni a térkép objektumait."
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameLoader.cpp:162
+msgid "Failed to load terrain data."
+msgstr "Nem sikerült betölteni a terepadatot."
+
+#. Normal
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:142
+msgid "Fast"
+msgstr "Gyors"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:108
+msgid "FoW - all explored"
+msgstr "FoW - minden felderítve"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:107
+msgid "Fog of War"
+msgstr "Köd"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:500
+msgid ""
+"Game can only be started as soon as everybody has a unique color,everyone is "
+"ready and all free slots are closed."
+msgstr ""
+"A játékot akkor lehet elindítani ha mindenkinek van egyedi szine,mindenki "
+"kész,és az üres helyen zárva vannak."
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameLoader.cpp:154
+msgid "Game crate was picked and spread out..."
+msgstr "Játék létrehozása kiválasztva és szétterítve..."
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1082
+msgid "Game was paused."
+msgstr "Játék szüneteltetve"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1111
+msgid "Game was resumed."
+msgstr "Játék folytatása"
+
+#. "Spielziel"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:119
+msgid "Goals:"
+msgstr "Cél:"
+
+#. "Waren zu Beginn"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:111
+msgid "Goods at start:"
+msgstr "Nyersanyagmennyiség induláskor"
+
+#. WindowManager::inst().Show(new iwTrade(gwv,this,gwv->GetSpecObj<nobHQ>(cselx,csely)));
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:404
+msgid "Headquarters"
+msgstr "Főhadiszállás"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:720
+msgid "Japaneses"
+msgstr "Japánok"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskDirectIP.cpp:63
+msgid "Join Game"
+msgstr "Csatlakozás"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:625
+msgid "Keyboard layout"
+msgstr "Billentyüzetkiosztás"
+
+#. "Teams sperren"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:90
+msgid "Lock teams:"
+msgstr "Zárt csapatok"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1142
+msgid "Lost connection to lobby!"
+msgstr "Elveszett a kapcsolat a lobbyval"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1129
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:959
+msgid "Lost connection to server!"
+msgstr "Elveszett a kapcsolat a szerverrel!"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:114
+msgid "Low"
+msgstr "Alacsony"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:108
+msgid "Main selection"
+msgstr "Fő kiválasztás"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:106
+msgid "Map"
+msgstr "Térkép"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameLoader.cpp:123
+msgid "Map was loaded and pinned at the wall..."
+msgstr "Térkép betöltve és kiszögelve a falra..."
+
+#. Titel der Karte, Y-Position relativ je nach Höhe der Minimap festlegen, daher nochmals danach
+#. verschieben, da diese Position sonst skaliert wird!
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:158
+msgid "Map: "
+msgstr "Térkép: "
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:124
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:143
+msgid "Mapping"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:121
+msgid "None"
+msgstr "Nincs"
+
+#. Langsam
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:115
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:141
+msgid "Normal"
+msgstr "Normális"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:707
+msgid "Not Ready"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1018
+#, c-format
+msgid "Note: Game settings changed by the server%s"
+msgstr "Megjegyzés: A játék beállításai megváltoztatta a server%s"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:105
+msgid "Off (all visible)"
+msgstr "Ki (minden látható)"
+
+#. Offen
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:231
+msgid "Open"
+msgstr "Nyitott"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:169
+msgid "Other Support:"
+msgstr "Egyéb Támogatás:"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:76
+msgid "Past player"
+msgstr "Előző játékos"
+
+#. "Ping"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:73
+msgid "Ping"
+msgstr "Ping"
+
+#. Im Spiel anzeigen, dass die KI das Spiel betreten hat
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1004
+#, c-format
+msgid "Player '%s' joined the game!"
+msgstr "'%s' csatlakozott a játékhoz!"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1001
+#, c-format
+msgid "Player '%s' left the game!"
+msgstr "'%s' elhagyta a játékot!"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1166
+#, c-format
+msgid "Player '%s' switched to player '%s'"
+msgstr "'%s' átváltott '%s'"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1189
+#, c-format
+msgid "Player '%s' was defeated!"
+msgstr "'%s' Vesztett!"
+
+#. "Spielername"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:61
+msgid "Player Name"
+msgstr "Játékos neve"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:112
+msgid "Post office"
+msgstr "Posta"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:84
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:96
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:132
+msgid "Programming"
+msgstr "Programozás"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:82
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:95
+msgid "Project management"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:87
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:97
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:115
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:123
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:142
+msgid "Quality Assurance"
+msgstr ""
+
+#. "Volk"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:65
+msgid "Race"
+msgstr "Nép"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:720
+msgid "Random"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:629
+msgid "Readme!"
+msgstr "Olvassel!"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:84
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:507
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:707
+msgid "Ready"
+msgstr ""
+
+#. "Bereit"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:71
+msgid "Ready?"
+msgstr "Kész?"
+
+#. "Zurück"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:87
+msgid "Return"
+msgstr "Vissza"
+
+#. "Die Siedler II.5 RTTR"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:73
+msgid "Return To The Roots"
+msgstr ""
+
+#. Version
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskDirectIP.cpp:54
+#, c-format
+msgid "Return To The Roots - v%s-%s"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:720
+msgid "Romans"
+msgstr "Rómaiak"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1081
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1110
+msgid "SYSTEM"
+msgstr "RENDSZER"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:83
+msgid "Server management"
+msgstr ""
+
+#. "Gemeinsame Team-Sicht"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:92
+msgid "Shared team view"
+msgstr "Osztott csapatnézet"
+
+#. Sehr Langsam
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:140
+msgid "Slow"
+msgstr "Lassú"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskDirectIP.cpp:80
+msgid "Sorry!"
+msgstr "Elnézést!"
+
+#. "Geschwindigkeit"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:137
+msgid "Speed:"
+msgstr "Sebesség:"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:569
+msgid "Start aborted"
+msgstr "Indítás megszakítva"
+
+#. "Spiel starten"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:84
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:493
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:705
+msgid "Start game"
+msgstr "Új játék"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:556
+msgid "Starting game, please wait"
+msgstr "Játék indítása, kérlek várj"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:208
+msgid "THE END"
+msgstr ""
+
+#. "Team"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:69
+msgid "Team"
+msgstr "Csapat"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:200
+msgid "Thank you for your donations!"
+msgstr "Köszönet a támagatásokért!"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:207
+msgid "Thank you!"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1044
+msgid "The Game is not in sync. Checksums of some players don't match."
+msgstr "A játék nincs szinkronban. A játékosok ellenőrzőszámai nem egyeznek."
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:131
+#, c-format
+msgid "Torney: %u minutes"
+msgstr ""
+
+#. Besitz 3/4 des Landes
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:123
+msgid "Total domination"
+msgstr "Teljes uralom"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameLoader.cpp:133
+msgid "Tribal chiefs assembled around the table..."
+msgstr "A törzsfők összegyűltek az asztal körül..."
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:113
+msgid "Very Low"
+msgstr ""
+
+#. Schnell
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:143
+msgid "Very fast"
+msgstr "Nagyon Gyors"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:139
+msgid "Very slow"
+msgstr "Nagyon Lassú"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:96
+msgid "View Settings..."
+msgstr "Beállítások megtekintése"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:720
+msgid "Vikings"
+msgstr "Vikingek"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:205
+msgid "We hope you enjoy playing Return To The Roots!"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:85
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:105
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:114
+msgid "Website Administration"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:86
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:106
+msgid "Website Programming"
+msgstr ""
+
+#. TODO: richtige Messages senden, um das zu laden /*GetMap()->GenerateOpenGL();*/
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameLoader.cpp:168
+msgid "World was put together and glued..."
+msgstr "A világot öszerakták és ragasztották..."
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskDirectIP.cpp:80
+msgid ""
+"You can't create a game while a proxy server is active\n"
+"Disable the use of a proxy server first!"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:548
+msgid "You have 10 seconds until game starts"
+msgstr "10 másodperced van amíg elindul a játék"
+
+#. URL
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskDirectIP.cpp:57
+msgid "http://www.siedler25.org"
+msgstr "http://www.siedler25.org"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:265
+msgid "n/a"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:182
+msgid "various anonymous donators"
+msgstr "Számos névtelen támogató"
+
+#. Copyright
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskDirectIP.cpp:60
+msgid "© 2005 - 2011 Settlers Freaks"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:604
+msgid " (AI)"
+msgstr " (MI)"
+
+#. Und Zeilen vorbereiten
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:414
+#, c-format
+msgid "%d Player"
+msgstr "%d Játékos"
+
+#. "Server hinzufügen"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskLobby.cpp:75
+msgid "Add Server"
+msgstr "Szerver hozzáadása"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:81
+msgid "Addons"
+msgstr "Kiegészítők"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:102
+msgid "Author"
+msgstr "Szerző"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:1294
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:1298
+msgid "Auto-Save"
+msgstr "Automatikus mentés"
+
+#. "Kampagne"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:124
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:75
+msgid "Campaign"
+msgstr "Küldetés"
+
+#. "Allgemein"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:84
+msgid "Common"
+msgstr "Általános"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:602
+#, c-format
+msgid "Computer %u"
+msgstr "Számítógép %u"
+
+#. "Verbinden"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskLobby.cpp:71
+msgid "Connect"
+msgstr "Kapcsolódás"
+
+#. "Kontinente"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:122
+msgid "Continents"
+msgstr "Kontinens"
+
+#. "Weiter"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:112
+msgid "Continue"
+msgstr "Folytatás"
+
+#. "Direkte IP"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskMultiPlayer.cpp:70
+msgid "Direct IP"
+msgstr "Direct IP"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:282
+msgid "Disabled"
+msgstr "Kikapcsolva"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:615
+#, c-format
+msgid "Dummy %u"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:288
+msgid "Dynamic (Limits to display refresh rate, works with most drivers)"
+msgstr ""
+
+#. Effekte
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:225
+msgid "Effects"
+msgstr "Effektek"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:170
+msgid "Fullscreen"
+msgstr "Teljes képernyő"
+
+#. }
+#. "Auflösung"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:164
+msgid "Fullscreen resolution:"
+msgstr ""
+
+#. "Grafik"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:86
+msgid "Graphics"
+msgstr "Grafika"
+
+#. "Grafiktreiber"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:188
+msgid "Graphics Driver"
+msgstr "Grafikai vezérlő"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:419
+msgid "Greenland"
+msgstr "Zöld vidék"
+
+#. Gameserver-Tabelle - "ID", "Server", "Karte", "Spieler", "Version", "Ping"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskLobby.cpp:78
+msgid "ID"
+msgstr "ID"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:131
+msgid "IPv4"
+msgstr "IPv4"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:130
+msgid "IPv6"
+msgstr "IPv6"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:353
+msgid "Incomplete message was received!"
+msgstr "Bejezetlen levél érkezett!"
+
+#. "Internet - Lobby"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskMultiPlayer.cpp:66
+msgid "Internet Lobby"
+msgstr "Internet Lobby"
+
+#. "Internet Ranking"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskLobby.cpp:73
+msgid "Internet Ranking"
+msgstr "Internet helyezés"
+
+#. "Intro"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskMainMenu.cpp:80
+msgid "Intro"
+msgstr "Intro"
+
+#. Tastaturlayout
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:123
+msgid "Keyboard layout:"
+msgstr "Billentyüzetkiosztás:"
+
+#. "Sprache"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:104
+msgid "Language:"
+msgstr "Nyelv:"
+
+#. "VSync"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:174
+msgid "Limit Framerate:"
+msgstr ""
+
+#. "Spiel laden"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:79
+msgid "Load game"
+msgstr "Játék betöltése"
+
+#. "Spiel laden..."
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:110
+msgid "Load game..."
+msgstr "Játék betöltése..."
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:136
+msgid "Mapfile: "
+msgstr "Térképfájl : "
+
+#. "Vollbild"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:168
+msgid "Mode:"
+msgstr "Mód:"
+
+#. "Mehrspieler"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskMainMenu.cpp:76
+msgid "Multiplayer"
+msgstr "Többjátékos"
+
+#. Musik
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:216
+msgid "Music"
+msgstr "Zene"
+
+#. Musicplayer-Button
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:234
+msgid "Music player"
+msgstr "Zenelejátszó"
+
+#. Spieler-Tabelle - "Name", "Punkte", "Version"
+#. Die Tabelle für die Maps
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskLobby.cpp:80
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:102
+msgid "Name"
+msgstr "Név"
+
+#. Allgemein
+#. {
+#. "Name"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:99
+msgid "Name in Game:"
+msgstr "Név a Játékban:"
+
+#. "Netzwerk / LAN"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskMultiPlayer.cpp:68
+msgid "Network/LAN"
+msgstr "Hálózat/LAN"
+
+#. "Neue"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:118
+msgid "New maps"
+msgstr "Új térképek"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:147
+msgid "No Proxy"
+msgstr ""
+
+#. / @todo Hier dann Auswahl zwischen Kampagne(n) und "Freies Spiel"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:94
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:103
+msgid "Not available"
+msgstr "Nem elérhetö"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:185
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:219
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:228
+msgid "Off"
+msgstr "Ki"
+
+#. "Alte"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:116
+msgid "Old maps"
+msgstr "Régi térképek"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:184
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:218
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:227
+msgid "On"
+msgstr "Be"
+
+#. "Optionen"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskMainMenu.cpp:78
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:77
+msgid "Options"
+msgstr "Beállitások"
+
+#. "Andere"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:128
+msgid "Other"
+msgstr "Egyéb"
+
+#. "Eigene"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:120
+msgid "Own maps"
+msgstr "Saját térképek"
+
+#. "Replay abspielen"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:73
+msgid "Play Replay"
+msgstr "Visszajátszás inditása"
+
+#. "Heruntergeladene"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:132
+msgid "Played"
+msgstr "Játszott"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskLobby.cpp:78
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:102
+msgid "Player"
+msgstr "Játékos"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:94
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:103
+msgid "Please use 'Unlimited Play' to create a Singleplayer game."
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskLobby.cpp:80
+msgid "Points"
+msgstr "Pontok"
+
+#. Proxyserver
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:138
+msgid "Proxyserver:"
+msgstr ""
+
+#. Proxytyp
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:145
+msgid "Proxytyp:"
+msgstr ""
+
+#. "Programm verlassen"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskMainMenu.cpp:86
+msgid "Quit program"
+msgstr "Kilépés"
+
+#. "RTTR"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:126
+msgid "RTTR"
+msgstr "RTTR"
+
+#. "ReadMe"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskMainMenu.cpp:82
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:124
+msgid "Readme"
+msgstr "Olvassel"
+
+#. "Letztes Spiel fortsetzen"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:71
+msgid "Resume last game"
+msgstr "Visszatérés a legutóbbi játékhoz"
+
+#. "Andere"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:130
+msgid "Sea"
+msgstr "Tenger"
+
+#. "Karten Auswahl"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:105
+msgid "Selection of maps"
+msgstr "Térkép kiválasztása"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskLobby.cpp:78
+msgid "Server"
+msgstr "Szerver"
+
+#. "Einzelspieler"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskMainMenu.cpp:74
+msgid "Singleplayer"
+msgstr "Egyjátékos"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:102
+msgid "Size"
+msgstr "Méret"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:148
+msgid "Socks v4"
+msgstr ""
+
+#. "Sound"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:88
+msgid "Sound/Music"
+msgstr "Hang/Zene"
+
+#. "Audiotreiber"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:202
+msgid "Sounddriver"
+msgstr "Hangvezérlö"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:102
+msgid "Type"
+msgstr "Típus"
+
+#. "Freies Spiel"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:77
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:123
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:135
+msgid "Unlimited Play"
+msgstr ""
+
+#. IPv4/6
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:127
+msgid "Use IPv6:"
+msgstr "IPv6 használata:"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskLobby.cpp:78
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskLobby.cpp:80
+msgid "Version"
+msgstr "Verzió"
+
+#. "VBO"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:178
+msgid "Vertex Buffer Objects:"
+msgstr "Vertex buffer objektumok"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:420
+msgid "Wasteland"
+msgstr "Sivatag"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:171
+msgid "Windowed"
+msgstr "Ablakban"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:421
+msgid "Winter world"
+msgstr "Havas világ"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:552
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:567
+msgid "You need to restart your game to change the screen resolution!"
+msgstr "A felbontás megváltoztatásához újra kell indítani a játékot!"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:575
+msgid "You need to restart your game to change the video or audio driver!"
+msgstr ""
+"A videó- vagy hangeszköz megváltoztatásához újra kell indítania a játékot!"
+
+#. text oben noch hinschreiben
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:1620
+#, c-format
+msgid "current GF: %u - still fast forwarding: %d GFs left (%d %%)"
+msgstr ""
+
+#. VBO unterstützt?
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:182
+msgid "not supported"
+msgstr "nem támogatott"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClientGF_Replay.cpp:123
+#, c-format
+msgid ""
+"Notice: The played replay has ended. (GF: %u, %dh %dmin %ds, TF: %u, "
+"AVG_FPS: %u)"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClientPlayer.cpp:2088
+msgid "The emergency program has been activated."
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClientPlayer.cpp:2098
+msgid "The emergency program has been deactivated."
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClientGF_Replay.cpp:82
+#, c-format
+msgid ""
+"Warning: The played replay is not in sync with the original match. (GF: %u)"
+msgstr ""
+"Figyelem: A lejátszott visszajátszás nincs szinkronban az eredeti matchal. "
+"(GF: %u)"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameWorldView.cpp:301
+#, c-format
+msgid "(%d soldiers)"
+msgstr "%d katonák"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameWorldView.cpp:299
+msgid "(1 soldier)"
+msgstr "1 katona"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameWorldView.cpp:269
+msgid "(House unoccupied)"
+msgstr "Üres ház"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameWorldView.cpp:271
+msgid "(stopped)"
+msgstr "megállítva"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameWorldGame.cpp:601
+msgid "Lost land by this building"
+msgstr "Elvesztett terület emiatt az épület miatt"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:235
 msgid ""
@@ -26,10 +1046,6 @@ msgstr ""
 "\n"
 "Kerül: "
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:604
-msgid " (AI)"
-msgstr " (MI)"
-
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:237
 msgid " boards"
 msgstr ""
@@ -37,57 +1053,6 @@ msgstr ""
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:242
 msgid " stones"
 msgstr " kő"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:254
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:281
-#, c-format
-msgid "%d"
-msgstr "%d"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:414
-#, c-format
-msgid "%d Player"
-msgstr "%d Játékos"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHQ.cpp:69
-#, c-format
-msgid "%u/%u"
-msgstr "%u/%u"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPCreate.cpp:84
-msgid "'s Game"
-msgstr "játéka"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameWorldViewer.cpp:296
-#, c-format
-msgid "(%d soldiers)"
-msgstr "%d katonák"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameWorldViewer.cpp:294
-msgid "(1 soldier)"
-msgstr "1 katona"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameWorldViewer.cpp:262
-msgid "(House unoccupied)"
-msgstr "Üres ház"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:249
-#, c-format
-msgid ""
-"(Replay-Mode) Current GF: %u (End at: %u) / GF length: %u ms / NWF length: "
-"%u gf (%u ms)"
-msgstr ""
-"(Visszajátszás-Mód) Éppen GF: %u (Vége: %u) / GF hossz: %u ms / NWF hossz: "
-"%u gf (%u ms)"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameWorldViewer.cpp:264
-msgid "(stopped)"
-msgstr "megállítva"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:264
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:273
-msgid "-"
-msgstr "-"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:124
 msgid "-> Build castle"
@@ -109,303 +1074,32 @@ msgstr "-> Kunyhóépítés"
 msgid "-> Dig mines"
 msgstr "-> Bányaásás"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:98
-msgid "1 h"
-msgstr "1 h"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:51
-msgid "10 catapults"
-msgstr "10 katapult"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:97
-msgid "15 m"
-msgstr "15 m"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:100
-msgid "16 h"
-msgstr "16 h"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:52
-msgid "20 catapults"
-msgstr "20 katapult"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:49
-msgid "3 catapults"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:53
-msgid "30 catapults"
-msgstr "30 katapult"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:99
-msgid "4 h"
-msgstr "4 h"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:50
-msgid "5 catapults"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1003
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1053
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1082
-#, c-format
-msgid "<%s> "
-msgstr "<%s> "
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1018
-msgid "A auto-savegame is created..."
-msgstr "Automatikus mentés létrehozva"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobMilitary.cpp:1119
-msgid "A catapult is firing upon us!"
-msgstr "Egy katapulttal lőnek ránk!"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/BuildingConsts.h:357
-msgid ""
-"A gold mine allows you to prospect for valuable gold deposits. For this, it "
-"is necessary to ensure that the miners are provided with plenty of food."
-msgstr ""
-"Egy aranybánya lehetővé teszi, hogy értékes aranykészlet birtokába juss. "
-"Ezért szükséges, hogy biztosítsd a megfelelő élelembőséget a bányászoknak."
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:116
-msgid "A lot"
-msgstr "Sok"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/noShipBuildingSite.cpp:139
-msgid "A new ship is ready"
-msgstr "Egy új hajó áll készen"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/noShip.cpp:455
-msgid "A ship disovered an enemy territory"
-msgstr "A hajó felfedezett egy ellenséges területet"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/noShip.cpp:733
-msgid "A ship has reached the destination of its expedition."
-msgstr "A hajó elérte az expedició távolságát."
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/noShip.cpp:286
-msgid "A ship is ready for an expedition."
-msgstr "A hajó készen áll az expedícióra."
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/BuildingConsts.h:510
-msgid ""
-"A well supplies water to the bakery, brewery, donkey breeder and pig farm."
-msgstr ""
-"A kút ellátja vízzel a péket, sörfőzdét, szamárneveldét, és a disznófarmot."
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/BuildingConsts.h:382
-msgid ""
-"A woodcutter provides the sawmill with logs. A forester is able to replant "
-"the depleted forest."
-msgstr ""
-"A favágó fával látja el a fürészetet. A faültetö pótolja a kivágott fákat."
-
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAIDebug.cpp:50
 msgid "AI Debug"
 msgstr "AI Debug"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMainMenu.cpp:98
-msgid "AI Debug Window"
-msgstr "AI Debug Window"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAIDebugWindow.h:38
-msgid "AI Debugging Window"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:46
-msgid "Abort"
-msgstr "Megszakít"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonDemolitionProhibition.h:43
-msgid "Active if attacked"
-msgstr "Aktív, ha megtámadták"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonDemolitionProhibition.h:44
-msgid "Active near frontiers"
-msgstr "Aktív a határhoz közel"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:70
 msgid "Activity window"
 msgstr "Tevékenység ablak"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:77
-msgid "Add"
-msgstr "Hozzáad"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskLobby.cpp:75
-msgid "Add Server"
-msgstr "Szerver hozzáadása"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:84
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:219
-msgid "Add directory of tracks"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:83
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:213
-msgid "Add track"
-msgstr "Szám hozzáadása"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:139
-msgid "Additional Programming:"
-msgstr "Kiegészítő programozás:"
-
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAddons.cpp:47
 msgid "Additional features:"
 msgstr "További lehetőségek:"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:132
-msgid "Additional graphics"
-msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAddons.cpp:45
 msgid "Addon Settings"
 msgstr "Kiegészítők beállításai"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:81
-msgid "Addons"
-msgstr "Kiegészítők"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:95
-msgid "Addons:"
-msgstr "Kiegészítők:"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAdjustMilitaryStrength.h:47
-msgid "Adjust military strength"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwOptionsWindow.cpp:106
-msgid "Advanced"
-msgstr "Speciális"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:260
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:269
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:709
-msgid "Africans"
-msgstr "Afrikaiak"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildOrder.cpp:70
-msgid "After the following order"
-msgstr "A következö parancs alapján"
-
+#. "Alle"
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAddons.cpp:60
 msgid "All"
 msgstr "Minden"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwChat.cpp:57
-msgid "Allies"
-msgstr "Szövetségesek"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonCustomBuildSequence.h:38
-msgid ""
-"Allows every player to control whether building sites\n"
-"should be supplied in sequence of given order or in a definable\n"
-"sequence based on the building type."
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonCharburner.h:37
-msgid "Allows to build charburners"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonDefenderBehavior.h:39
-msgid ""
-"Allows to change the military setting 'defender'.\n"
-"\n"
-"You can choose to disallow any changes to that setting\n"
-"or you can limit the amount of reoccupying troops\n"
-"(during an attack) according to the defender setting"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonDemolitionProhibition.h:38
-msgid ""
-"Allows to disable the demolition of military buildings under attack or near "
-"frontiers"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonExhaustibleWells.h:38
-msgid ""
-"Allows to have limited water\n"
-"\n"
-"Wells will now dry out"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonInexhaustibleMines.h:38
-msgid ""
-"Allows to have unlimited resources\n"
-"\n"
-"Mines will never be depleted"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonChangeGoldDeposits.h:39
-msgid ""
-"Allows to play games without gold.\n"
-"\n"
-"You can choose to remove gold resources completely,\n"
-"to convert them into iron ore, coal or granite.\n"
-"\n"
-"You'll probably want to convert gold to iron ore, as this (on most maps)\n"
-"allows you to utilize the additional coal not needed for minting anymore."
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonRefundMaterials.h:38
-msgid ""
-"Allows you to get building materials back if the building is destroyed\n"
-"\n"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonRefundOnEmergency.h:39
-msgid ""
-"Allows you to get building materials back if the building is destroyed\n"
-"and your emergency program is active\n"
-"\n"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonManualRoadEnlargement.h:38
-msgid ""
-"Allows you to manually upgrade your roads\n"
-"and build donkey roads directly"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAdjustMilitaryStrength.h:48
-msgid ""
-"Allows you to modify the strength increase of military ranks\n"
-"\n"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/SerializedGameData.cpp:232
-msgid "An error occured while saving which was suppressed!"
-msgstr "Hiba lépett fel a mentésnél!"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AIPlayerJH.cpp:110
-msgid "And I may crash your game sometimes..."
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameLoader.cpp:165
-msgid "And let's go!"
-msgstr "És gyerünk!"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAddons.cpp:50
 msgid "Apply Changes"
 msgstr "Változtatások alkalmazása"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPlayReplay.cpp:94
-msgid "Are you sure to remove all replays?"
-msgstr "Biztos eltávolitod az összes viszajátszást?"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:332
-msgid "Armorer"
-msgstr "Kovács"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:108
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:118
-msgid "Armory"
-msgstr "Kovács"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:124
-msgid "Artificial Intelligence (AI)"
-msgstr "Mesterséges Intelligencia (MI)"
-
+#. Angriff nicht  mÃ¶glich!
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:388
 msgid "Attack not possible."
 msgstr "Támadás nem lehetséges."
@@ -415,85 +1109,10 @@ msgstr "Támadás nem lehetséges."
 msgid "Attack options"
 msgstr "Támadási beállítások"
 
+#. Angriffsbutton
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:413
 msgid "Attack!"
 msgstr "Támadás!"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:102
-msgid "Author"
-msgstr "Szerző"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:1289
-msgid "Auto-Save"
-msgstr "Automatikus mentés"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSave.cpp:204
-msgid "Auto-Save every:"
-msgstr "Automatikus mentés minden:"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:52
-msgid "Axe"
-msgstr "Balta"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskAboutRTTR.cpp:56
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:70
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskDirectIP.cpp:66
-msgid "Back"
-msgstr "Vissza"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:323
-msgid "Baker"
-msgstr "Pék"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:154
-msgid "Bakery"
-msgstr "Pék"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:229
-msgid "Barracks"
-msgstr "Barakk"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:77
-msgid "Beer"
-msgstr "Sör"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:138
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:73
-msgid "Boards"
-msgstr "Deszka"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:153
-msgid "Boat"
-msgstr "Hajó"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:87
-msgid "Boats"
-msgstr "Hajó"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMilitary.cpp:59
-msgid "Border areas"
-msgstr "Határterület"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildOrder.cpp:63
-msgid "Bottom"
-msgstr "Alja"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:62
-msgid "Bow"
-msgstr "Íj"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:158
-msgid "Bread"
-msgstr "Kenyér"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:326
-msgid "Brewer"
-msgstr "Sörfőző"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:98
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:157
-msgid "Brewery"
-msgstr "Sörfőzde"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:265
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:272
@@ -506,75 +1125,220 @@ msgstr "Útépítés"
 msgid "Build waterway"
 msgstr "Vízi út építése"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:333
-msgid "Builder"
-msgstr "Építőmunkás"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildOrder.cpp:46
-msgid "Building sequence"
-msgstr "Építési sorrend"
-
+#. / Konstruktor von @p iwMilitary.
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildings.cpp:80
 msgid "Buildings"
 msgstr "Épületek"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:324
-msgid "Butcher"
-msgstr "Hentes"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:267
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:275
 msgid "Call in geologist"
 msgstr "Geológusok hívása"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:124
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:75
-msgid "Campaign"
-msgstr "Küldetés"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAddons.cpp:52
+msgid "Close Without Saving"
+msgstr "Bezárás mentés nélkül"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMsgbox.cpp:73
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMsgbox.cpp:88
-msgid "Cancel"
-msgstr "Megszakit"
+#. Einlagern
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBaseWarehouse.cpp:63
+msgid "Collect"
+msgstr ""
+
+#. Abreißen
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:285
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBaseWarehouse.cpp:113
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuilding.cpp:88
+msgid "Demolish house"
+msgstr "Ház lerombolása"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:309
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:316
+msgid "Dig up road"
+msgstr "Út felásása"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:340
+msgid "Display options"
+msgstr "Beállítások kijelzése"
+
+#. "Wirtschaft"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAddons.cpp:64
+msgid "Economy"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:259
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:293
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:303
+msgid "Erect flag"
+msgstr "Zászló felállítása"
+
+#. "Spielverhalten"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAddons.cpp:66
+msgid "Gameplay"
+msgstr "Játékmenet"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:344
+msgid "Go to headquarters"
+msgstr "Menj a főhadiszállásra"
+
+#. "Gehe Zu Ort"
+#. "Gehe Zum Ort"
+#. "Gehe Zu Ort"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBaseWarehouse.cpp:74
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuilding.cpp:103
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildingSite.cpp:66
+msgid "Go to place"
+msgstr "Menj a helyre"
+
+#. Info
+#. Hilfe-Button
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuilding.cpp:86
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildingProductivities.cpp:107
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildings.cpp:93
+msgid "Help"
+msgstr "Súgó"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:343
+msgid "House names"
+msgstr "Házak neve"
+
+#. Minus und Plus - Button
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:395
+msgid "Less attackers"
+msgstr "Kevesebb támadó"
+
+#. "Militär"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAddons.cpp:62
+msgid "Military"
+msgstr "Katonaság"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:396
+msgid "More attackers"
+msgstr "Több támadó"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAIDebug.cpp:149
+msgid "No current job"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:410
+msgid "Number of attackers"
+msgstr "Támadók száma"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:342
+msgid "Observation window"
+msgstr "Megfigyelési ablak"
+
+#. Gebäudename
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildingSite.cpp:58
+msgid "Order of building site"
+msgstr "Építés alatt"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildingProductivities.cpp:86
+msgid "Productivity"
+msgstr "Termelékenység"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:266
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:274
+msgid "Pull down flag"
+msgstr "Zászló leszúrása"
+
+#. Alle auswählen bzw setzen!
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBaseWarehouse.cpp:72
+msgid "Select all"
+msgstr "Mindet kijelöl"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:268
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:276
+msgid "Send out scout"
+msgstr "Felderítő kiküldése"
+
+#. Einlagern verbieten
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBaseWarehouse.cpp:67
+msgid "Stop storage"
+msgstr "Nem tárol tovább"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:401
+msgid "Strong attackers"
+msgstr "Erös támadok"
+
+#. Auslagern
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBaseWarehouse.cpp:65
+msgid "Take out of store"
+msgstr "Kivitel"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:368
+msgid "Upgrade to donkey road"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAddons.cpp:55
+msgid "Use S2 Defaults"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:400
+msgid "Weak attackers"
+msgstr "Gyenge támadók"
+
+#. Anzahl-Text
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHQ.cpp:69
+#, c-format
+msgid "%u/%u"
+msgstr "%u/%u"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPCreate.cpp:84
+msgid "'s Game"
+msgstr "játéka"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMainMenu.cpp:98
+msgid "AI Debug Window"
+msgstr "AI Debug Window"
+
+#. "Reihenfolge der Auftraggebung"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildOrder.cpp:69
+msgid "After the following order"
+msgstr "A következö parancs alapján"
+
+#. "Verbündete"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwChat.cpp:57
+msgid "Allies"
+msgstr "Szövetségesek"
+
+#. Schmiede
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:108
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:118
+msgid "Armory"
+msgstr "Kovács"
+
+#. Bäckerei
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:154
+msgid "Bakery"
+msgstr "Pék"
+
+#. Brettergruppe
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:138
+msgid "Boards"
+msgstr "Deszka"
+
+#. Nach ganz unten
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildOrder.cpp:62
+msgid "Bottom"
+msgstr "Alja"
+
+#. Brauerei
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:98
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:157
+msgid "Brewery"
+msgstr "Sörfőzde"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildOrder.cpp:46
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMainMenu.cpp:91
+msgid "Building sequence"
+msgstr "Építési sorrend"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHarborBuilding.cpp:92
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHarborBuilding.cpp:123
 msgid "Cancel expedition"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:486
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:694
-msgid "Cancel start"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:318
-msgid "Carpenter"
-msgstr "Asztalos"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:244
-msgid "Catapult"
-msgstr "Katapult"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMilitary.cpp:56
-msgid "Center of country"
-msgstr "Az ország közepe"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:96
-msgid "Change Settings..."
-msgstr "Beállítások módosítása..."
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonDefenderBehavior.h:38
-msgid "Change defender behavior"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonChangeGoldDeposits.h:38
-msgid "Change gold deposits"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonStatisticsVisibility.h:37
-msgid "Change the visibility of your ingame statistics"
-msgstr ""
-
+#. Charburner
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:101
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:134
 msgid "Charburner"
@@ -592,78 +1356,31 @@ msgstr "Térképellenörzés..."
 msgid "Checking Password..."
 msgstr "Jelszóellenörzés..."
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:106
-msgid "Classic (Settlers 2)"
-msgstr "Klasszikus (Settlers 2)"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:63
-msgid "Classification"
-msgstr "Besorolás"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPlayReplay.cpp:69
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPlayReplay.cpp:94
-msgid "Clear"
-msgstr "Töröl"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:60
-msgid "Cleaver"
-msgstr "Bárd"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAddons.cpp:52
-msgid "Close Without Saving"
-msgstr "Bezárás mentés nélkül"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:225
-msgid "Closed"
-msgstr "Zárt"
-
+#. Kohlegruppe
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:115
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:78
 msgid "Coal"
 msgstr "Szén"
 
+#. Kohlebergwerk
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:76
 msgid "Coal mine"
 msgstr "Szénbánya"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:84
-msgid "Coins"
-msgstr "Érmék"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBaseWarehouse.cpp:63
-msgid "Collect"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:67
-msgid "Color"
-msgstr "Szín"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:84
-msgid "Common"
-msgstr "Általános"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:602
-#, c-format
-msgid "Computer %u"
-msgstr "Számítógép %u"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:286
 msgid "Confirm"
 msgstr "Megerősít"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskLobby.cpp:71
-msgid "Connect"
-msgstr "Kapcsolódás"
-
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:51
 msgid "Connecting to Lobby"
 msgstr "Csatlakozás a Lobbyhoz"
 
+#. Text auf "Verbinde mit Host..." setzen und Button deaktivieren
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:168
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:208
 msgid "Connecting with Host..."
 msgstr "Csatlakozás a Hosttal..."
 
+#. Text auf "Verbindung fehlgeschlagen" setzen und Button aktivieren
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:174
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:217
 msgid "Connection failed!"
@@ -673,97 +1390,481 @@ msgstr "Csatlakozás sikertelen!"
 msgid "Connection to Host closed!"
 msgstr "Megszakadt a kapcsolat a Hosttal!"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:122
-msgid "Conquer 3/4 of map"
-msgstr "A térkép 3/4-ének elfoglalása"
-
+#. Baustellen
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:141
 msgid "Construction"
 msgstr "Építés"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:109
-msgid "Construction aid mode"
-msgstr "Építkezést segítő mód"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:122
-msgid "Continents"
-msgstr "Kontinens"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:112
-msgid "Continue"
-msgstr "Folytatás"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:266
 msgid "Contract type:"
 msgstr "Szerződéstípus:"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonChangeGoldDeposits.h:50
-msgid "Convert to coal"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonChangeGoldDeposits.h:51
-msgid "Convert to granite"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonChangeGoldDeposits.h:49
-msgid "Convert to iron ore"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskDirectIP.cpp:62
-msgid "Create Game"
-msgstr "Új játék létrehozása"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:76
-msgid "Credits"
-msgstr "Készítők"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:57
-msgid "Crucible"
-msgstr "Olvasztótégely"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:251
-#, c-format
-msgid ""
-"Current GF: %u / GF length: %u ms / NWF length: %u gf (%u ms) /  Ping: %u ms"
-msgstr ""
-"Jelenlegi GF: %u / GF hossz: %u ms / NWF hossz: %u gf (%u ms) /  Ping: %u ms"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonCustomBuildSequence.h:37
-msgid "Custom build sequence"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonStatisticsVisibility.h:38
-msgid ""
-"Decides to whom your statistics is visible.\n"
-"\n"
-"\"Allies\" applies to team members as well as to allies by treaty."
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/BuildingConsts.h:350
-msgid ""
-"Deep within the mountains, miners dig for iron ore. They will obviously need "
-"a lot of food for the strenuous work."
-msgstr ""
-"A hegyek mélyén a bányászok vasércet bányásznak. Nyilvánvalóan nekik sok "
-"élelemre van szükségük a kimerítő munkához."
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildOrder.cpp:76
+#. Standard
+#. Standardbelegung
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildOrder.cpp:75
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:182
 msgid "Default"
 msgstr "Alapbeállitás"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:93
-msgid "Delete all"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:285
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBaseWarehouse.cpp:113
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuilding.cpp:88
-msgid "Demolish house"
-msgstr "Ház lerombolása"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDemolishBuilding.cpp:45
 msgid "Demolish?"
 msgstr "Lerombol?"
+
+#. Diplomatie (todo: besseres Bild suchen)
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:76
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMainMenu.cpp:94
+msgid "Diplomacy"
+msgstr "Diplomácia"
+
+#. Verteilung
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:58
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMainMenu.cpp:68
+msgid "Distribution of goods"
+msgstr "Javak elosztása"
+
+#. Eselzucht
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:95
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:163
+msgid "Donkey breeding"
+msgstr "Szamártenyészö"
+
+#. Runter
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildOrder.cpp:60
+msgid "Down"
+msgstr "Le"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:270
+msgid "Duration:"
+msgstr "Időtartam:"
+
+#. Emailadresse
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:65
+msgid "Email Address:"
+msgstr "E-mail cím:"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwEndgame.cpp:49
+msgid "End game?"
+msgstr "Játék vége?"
+
+#. "Feinde"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwChat.cpp:59
+msgid "Enemies"
+msgstr "Ellenségek"
+
+#. Option "ewig" noch hinzufügen
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:284
+msgid "Eternal"
+msgstr "Végtelen"
+
+#. "Expedition"-Ãberschrift
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHarborBuilding.cpp:54
+msgid "Expedition"
+msgstr "Felfedezés"
+
+#. "Expedition"-Ãberschrift
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHarborBuilding.cpp:61
+msgid "Exploration expedition"
+msgstr ""
+
+#. Nahrungsgruppe
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:71
+msgid "Foodstuff"
+msgstr "Ételek"
+
+#. "Name des Spiels"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPCreate.cpp:56
+msgid "Game's Name:"
+msgstr "Játék neve:"
+
+#. Statistiken
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMainMenu.cpp:75
+msgid "General statistics"
+msgstr "Általános statisztika"
+
+#. Goldbergwerk
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:82
+msgid "Gold mine"
+msgstr "Aranybánya"
+
+#. Getreidegruppe
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:86
+msgid "Grain"
+msgstr "Gabona"
+
+#. Granitbergwerk
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:73
+msgid "Granite mine"
+msgstr "Köbánya"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHarborBuilding.cpp:48
+msgid "Harbor building"
+msgstr "Kikötő"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyServerInfo.cpp:80
+msgid "Host:"
+msgstr "Host:"
+
+#. "IP - Adresse vom Host"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:56
+msgid "IP Address of Host:"
+msgstr "A Host IP címe"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:157
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPCreate.cpp:178
+msgid "Invalid port. The valid port-range is 1 to 65535!"
+msgstr "Rossz port. A jó port 1 és 65535 között van!"
+
+#. Eisengruppe
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:105
+msgid "Iron"
+msgstr "Vas"
+
+#. Eisenbergwerk
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:79
+msgid "Iron mine"
+msgstr "Vasércbánya"
+
+#. Eisenschmelze
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:121
+msgid "Iron smelter"
+msgstr "Kohászat"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:246
+msgid "Long-run"
+msgstr "Hosszútávú"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyRanking.cpp:82
+msgid "Lost"
+msgstr "Vereség"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyServerInfo.cpp:76
+msgid "Map Name:"
+msgstr "Térkép:"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:245
+msgid "Medium-term"
+msgstr "Középtávú"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMainMenu.cpp:76
+msgid "Merchandise statistics"
+msgstr "Árustatisztika"
+
+#. Schlosserei
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:111
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:144
+msgid "Metalworks"
+msgstr "Szerszámkészitö"
+
+#. Mühle
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:89
+msgid "Mill"
+msgstr "Malom"
+
+#. Münzprägerei
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:124
+msgid "Mint"
+msgstr "Aranyolvasztó"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:73
+msgid "No"
+msgstr "Nem"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:115
+msgid "Non-aggression pact"
+msgstr "Megnem-támadási szerződés"
+
+#. "Passwort (falls vorhanden)"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:64
+msgid "Password (if needed):"
+msgstr "Jelszó (ha szükséges):"
+
+#. "Passwort"
+#. Passwort
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPCreate.cpp:64
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:60
+msgid "Password:"
+msgstr "Jelszó:"
+
+#. Schweinezucht
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:92
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:160
+msgid "Pig farm"
+msgstr "Disznófarm"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPCreate.cpp:170
+msgid "Please enter a name for the game"
+msgstr "Írd be a játék nevét!"
+
+#. Registrieren
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:89
+msgid "Register"
+msgstr "Regisztráció"
+
+#. Registrierung erfolgreich
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:320
+msgid "Registration successful!"
+msgstr "A regisztráció sikeres!"
+
+#. "Reserve"-Überschrift
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHQ.cpp:53
+msgid "Reserve"
+msgstr "Lefoglalt"
+
+#. Passwort speichern ja/nein
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:70
+msgid "Save Password?"
+msgstr "Jelszó mentése?"
+
+#. Sawmill
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:131
+msgid "Sawmill"
+msgstr "Fűrészet"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildOrder.cpp:68
+msgid "Sequence of given order"
+msgstr "Kiadott parancsok sorrendje"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyServerInfo.cpp:74
+msgid "Server Information"
+msgstr "Szerverinformáció"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyServerInfo.cpp:78
+msgid "Server Name:"
+msgstr "Szervernév:"
+
+#. "Server-Port"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:60
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPCreate.cpp:60
+msgid "Server-Port:"
+msgstr "Szerver-Port:"
+
+#. Schiffe
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMainMenu.cpp:87
+msgid "Ship register"
+msgstr "Hajónevek"
+
+#. Werft
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:147
+msgid "Shipyard"
+msgstr "Hajógyár"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:244
+msgid "Short-run"
+msgstr "Rövidtávú"
+
+#. "Starten"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPCreate.cpp:79
+msgid "Start"
+msgstr "Kezdés"
+
+#. Button zum Expedition starten
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHarborBuilding.cpp:57
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHarborBuilding.cpp:97
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHarborBuilding.cpp:128
+msgid "Start expedition"
+msgstr "Felfedezés indítása"
+
+#. Button zum Expedition starten
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHarborBuilding.cpp:64
+msgid "Start exporation expedition"
+msgstr ""
+
+#. Inventur
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwInventory.cpp:47
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMainMenu.cpp:80
+msgid "Stock"
+msgstr "Készlet"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:226
+msgid "Suggest non-aggression pact"
+msgstr "Megnem-támadási szerződés felajánlása"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:225
+msgid "Suggest treaty of alliance"
+msgstr "Szövetségi megállapodás felajánlása"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:259
+msgid "This Server is full!"
+msgstr "A szerver foglalt..."
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:268
+msgid "To player:"
+msgstr "Játékosnak:"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:223
+msgid ""
+"To register, you have to create a valid board account at "
+"http://forum.siedler25.org at the moment.\n"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:263
+msgid "Too short Message received!"
+msgstr "Túl rövid üzenet érkezett!"
+
+#. Werkzeugproduktion
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMainMenu.cpp:72
+msgid "Tools"
+msgstr "Eszközök"
+
+#. Nach ganz oben
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildOrder.cpp:56
+msgid "Top"
+msgstr "Teteje"
+
+#. Transport
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMainMenu.cpp:70
+msgid "Transport"
+msgstr "Szállító"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:81
+msgid "Treaties"
+msgstr "Szerződések"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:106
+msgid "Treaty of alliance"
+msgstr "Szövetségi megállapodás"
+
+#. Hoch
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildOrder.cpp:58
+msgid "Up"
+msgstr "Fel"
+
+#. Benutzername
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:54
+msgid "Username:"
+msgstr "Felhasználónév:"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyServerInfo.cpp:82
+msgid "Version:"
+msgstr "Verzió:"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:283
+msgid "Waiting for Playerinfo..."
+msgstr "Játékosra várakozás..."
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:280
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:333
+msgid "Waiting for Reply..."
+msgstr "Válaszra vár..."
+
+#. Wasserbüffel äh -gruppe ;-)
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:151
+msgid "Water"
+msgstr "Víz"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyRanking.cpp:82
+msgid "Won"
+msgstr "Győzelem"
+
+#. Wood group
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:128
+msgid "Wood"
+msgstr "Fa"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:260
+msgid "Wrong Password!"
+msgstr "Hibás jelszó!"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:264
+msgid "Wrong Server Type!"
+msgstr "Rossz szervertípus!"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:261
+msgid "Wrong client version"
+msgstr "Rosz kliens verzió!"
+
+#. nein
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:74
+msgid "Yes"
+msgstr "Igen"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:98
+msgid "1 h"
+msgstr "1 h"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:97
+msgid "15 m"
+msgstr "15 m"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:100
+msgid "16 h"
+msgstr "16 h"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:99
+msgid "4 h"
+msgstr "4 h"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:46
+msgid "Abort"
+msgstr "Megszakít"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:77
+msgid "Add"
+msgstr "Hozzáad"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:84
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:219
+msgid "Add directory of tracks"
+msgstr ""
+
+#. AddTextButton(5,b1->GetX(false),320,button_width,22,TC_GREEN2,_("Save"),NormalFont);
+#. AddTextButton(6,b2->GetX(false),320,button_width,22,TC_GREEN2,_("Load"),NormalFont);
+#. Buttons fÃŒr die MusikstÃŒcke
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:83
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:213
+msgid "Add track"
+msgstr "Szám hozzáadása"
+
+#. Advanced Options
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwOptionsWindow.cpp:106
+msgid "Advanced"
+msgstr "Speciális"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPlayReplay.cpp:94
+msgid "Are you sure to remove all replays?"
+msgstr "Biztos eltávolitod az összes viszajátszást?"
+
+#. Autospeicherzeug
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSave.cpp:204
+msgid "Auto-Save every:"
+msgstr "Automatikus mentés minden:"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:77
+msgid "Beer"
+msgstr "Sör"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:87
+msgid "Boats"
+msgstr "Hajó"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMilitary.cpp:59
+msgid "Border areas"
+msgstr "Határterület"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMsgbox.cpp:73
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMsgbox.cpp:88
+msgid "Cancel"
+msgstr "Megszakit"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMilitary.cpp:56
+msgid "Center of country"
+msgstr "Az ország közepe"
+
+#. Aufräumen
+#. Sicherheitsabfrage, ob der Benutzer auch wirklich alle löschen möchte
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPlayReplay.cpp:69
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPlayReplay.cpp:94
+msgid "Clear"
+msgstr "Töröl"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:84
+msgid "Coins"
+msgstr "Érmék"
+
+#. Mülleimer
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:93
+msgid "Delete all"
+msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMilitaryBuilding.cpp:178
 msgid ""
@@ -778,146 +1879,14 @@ msgstr "Rombolás nem engedélyezett mert az épület támadás alatt van!"
 msgid "Demolition not possible"
 msgstr "A rombolás nem lehetséges"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSurrender.cpp:55
-msgid "Destroy all buildings and surrender"
-msgstr "Minden épület elpusztítása és abbahagyás"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:309
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:316
-msgid "Dig up road"
-msgstr "Út felásása"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:76
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMainMenu.cpp:94
-msgid "Diplomacy"
-msgstr "Diplomácia"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskMultiPlayer.cpp:70
-msgid "Direct IP"
-msgstr "Direct IP"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonDemolitionProhibition.h:37
-msgid "Disable Demolition of military buildings"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonNoCoinsDefault.h:19
-msgid "Disable coins by default"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:282
-msgid "Disabled"
-msgstr "Kikapcsolva"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonDefenderBehavior.h:47
-msgid "Disallow change"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:340
-msgid "Display options"
-msgstr "Beállítások kijelzése"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:58
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMainMenu.cpp:68
-msgid "Distribution of goods"
-msgstr "Javak elosztása"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:538
-msgid "Don't forget to check the addon configuration!"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSurrender.cpp:57
-msgid "Don't surrender"
-msgstr "Ne add fel"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:164
-msgid "Donators"
-msgstr "Támogatók"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:328
-msgid "Donkey breeder"
-msgstr "Szamártenyésztő"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:95
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:163
-msgid "Donkey breeding"
-msgstr "Szamártenyészö"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildOrder.cpp:61
-msgid "Down"
-msgstr "Le"
-
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:87
 msgid "Downwards"
 msgstr "Lejjebb"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:615
-#, c-format
-msgid "Dummy %u"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:270
-msgid "Duration:"
-msgstr "Időtartam:"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/PostMsg.cpp:122
-#, c-format
-msgid "Duration: %u GF (%s)"
-msgstr "Időtartam: %u GF (%s)"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/PostMsg.cpp:120
-msgid "Duration: Forever"
-msgstr "Időtartam: örökre"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:288
-msgid "Dynamic (Limits to display refresh rate, works with most drivers)"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAddons.cpp:64
-msgid "Economy"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:225
-msgid "Effects"
-msgstr "Effektek"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:65
-msgid "Email Address:"
-msgstr "E-mail cím:"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAIDebugWindow.h:39
-msgid ""
-"Enable AI Debugging Window\n"
-" (possible cheating)"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonCharburner.h:36
-msgid "Enable charburner"
-msgstr ""
-
+#. "Spiel beenden"
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwOptionsWindow.cpp:111
 msgid "End game"
 msgstr "Játék vége"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwEndgame.cpp:49
-msgid "End game?"
-msgstr "Játék vége?"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwChat.cpp:59
-msgid "Enemies"
-msgstr "Ellenségek"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:259
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:293
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:303
-msgid "Erect flag"
-msgstr "Zászló felállítása"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameLoader.cpp:189
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:489
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:948
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:977
-msgid "Error"
-msgstr "Hiba"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPlayReplay.cpp:120
 msgid "Error while opening file!"
@@ -932,54 +1901,11 @@ msgstr "Hiba a visszajátszásban!"
 msgid "Error: Replay is too old!"
 msgstr "Hiba: A visszajátszás túl régi!"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:284
-msgid "Eternal"
-msgstr "Végtelen"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonStatisticsVisibility.h:44
-msgid "Everyone"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonExhaustibleWells.h:37
-msgid "Exhaustible Wells"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHarborBuilding.cpp:54
-msgid "Expedition"
-msgstr "Felfedezés"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHarborBuilding.cpp:61
-msgid "Exploration expedition"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:103
-msgid "Exploration:"
-msgstr "Felderítés:"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameLoader.cpp:141
-msgid "Failed to load map objects."
-msgstr "Nem sikerült betölteni a térkép objektumait."
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameLoader.cpp:153
-msgid "Failed to load terrain data."
-msgstr "Nem sikerült betölteni a terepadatot."
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:265
-msgid "Farm"
-msgstr "Tanya"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:321
-msgid "Farmer"
-msgstr "Földműves"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:131
-msgid "Fast"
-msgstr "Gyors"
-
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMilitary.cpp:53
 msgid "Fewer defenders"
 msgstr "Kevesebb védő"
 
+#. Einzelne Balken
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMilitary.cpp:51
 msgid "Fewer recruits"
 msgstr "Kevesebb újonc"
@@ -989,53 +1915,464 @@ msgstr "Kevesebb újonc"
 msgid "Filename"
 msgstr "Fájlnév"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:157
-msgid "Fish"
-msgstr "Hal"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:316
-msgid "Fisher"
-msgstr "Halász"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:246
-msgid "Fishery"
-msgstr "Halászat"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:156
-msgid "Flour"
-msgstr "Liszt"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:108
-msgid "FoW - all explored"
-msgstr "FoW - minden felderítve"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:107
-msgid "Fog of War"
-msgstr "Köd"
-
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:75
 msgid "Food"
 msgstr "Étel"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:71
-msgid "Foodstuff"
-msgstr "Ételek"
+#. "Gehe Zu Ort"
+#. Die Expeditionsweiterfahrbuttons
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwShip.cpp:73
+msgid "Found colony"
+msgstr "Kolóniát találtam"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:248
-msgid "Forester"
-msgstr "Erdész"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwOptionsWindow.cpp:60
+msgid "Game menu"
+msgstr "Játék menü"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:237
-msgid "Fortress"
-msgstr "Erőd"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:82
+msgid "Gold"
+msgstr "Arany"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMilitary.cpp:55
+msgid "Interior"
+msgstr "Belső"
+
+#. Bau abbrechen
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwRoadWindow.cpp:51
+msgid "Interrupt road building"
+msgstr "Útépítés megszakitása"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPlayReplay.cpp:121
+msgid "Invalid Replay!"
+msgstr "Érvénytelen visszajátszás"
+
+#. untere Reihe
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:81
+msgid "Ironore"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPlayReplay.cpp:64
+msgid "Length"
+msgstr "Hossz"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:89
+msgid "Less repeats"
+msgstr "Kevesebb újrajátszás"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwOptionsWindow.cpp:78
+msgid "Load 'ReadMe' file"
+msgstr "'Olvassel' fájl betöltése"
+
+#. /////////////////////////////////////////////////////////////////////////////
+#. *
+#. *
+#. *
+#. *  @author OLiver
+#. 
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwOptionsWindow.cpp:82
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSave.cpp:258
+msgid "Load game!"
+msgstr "Játék betöltése!"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:64
+msgid "Merchandise"
+msgstr "Kereskedelem"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPostWindow.cpp:296
+msgid "Message"
+msgstr "Üzenet"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMilitary.cpp:53
+msgid "More defenders"
+msgstr "Több védő"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMilitary.cpp:51
+msgid "More recruits"
+msgstr "Több újonc"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:90
+msgid "More repeats"
+msgstr "Több újrajátszás"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMilitary.cpp:57
+msgid "Near harbor points"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPostWindow.cpp:84
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPostWindow.cpp:273
+msgid "No letters!"
+msgstr "Nincs levél!"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwShip.cpp:110
+msgid "No ships available"
+msgstr "Nincs használható hajó"
+
+#. OK-Button
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMsgbox.cpp:66
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMsgbox.cpp:72
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:45
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSkipGFs.cpp:55
+msgid "OK"
+msgstr "OK"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMinimap.cpp:54
+msgid "Outline map"
+msgstr "Vázlatos térkép"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:91
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:284
+msgid "Playback in this order"
+msgstr "Lejátszás ebben a sorrendben"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:71
+msgid "Playlist:"
+msgstr "Lejátszási lista:"
+
+#. /////////////////////////////////////////////////////////////////////////////
+#. *
+#. *  Konstruktor von @p iwPleaseWait.
+#. *
+#. *  Fenster wird modal geöffnet, damit man ggf. einen "Weiter"-Button nicht
+#. *  mehrfach betätigen kann.
+#. *
+#. *  @author OLiver
+#. 
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPleaseWait.cpp:45
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPleaseWait.cpp:48
+msgid "Please wait..."
+msgstr "Kérem várjon..."
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPlayReplay.cpp:123
+msgid "Program version is too old to play that replay!"
+msgstr "A program túl régi hogy lejátsza ezt a visszajátszást!"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:284
+msgid "Random playback"
+msgstr "Véletlenszerű lejátszás"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:78
+msgid "Remove"
+msgstr "Eltávolitás"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:85
+msgid "Remove track"
+msgstr "Szám eltávolítása"
+
+#. Expedition abbrechen
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwShip.cpp:81
+msgid "Return to harbor"
+msgstr ""
+
+#. /////////////////////////////////////////////////////////////////////////////
+#. *
+#. *
+#. *
+#. *  @author OLiver
+#. 
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwOptionsWindow.cpp:86
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSave.cpp:198
+msgid "Save game!"
+msgstr "Játék mentése!"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSettings.cpp:54
+msgid "Settings"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSkipGFs.cpp:45
+msgid "Skip GameFrames"
+msgstr "GameFrames kihagyása"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:176
+msgid "Specify the playlist name"
+msgstr "Ird be a lejátszási lista nevét"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSave.cpp:68
+msgid "Start GF"
+msgstr "GF indítása"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSettings.cpp:59
+msgid "Statistics Scale"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPlayReplay.cpp:64
+msgid "Stocktaking date"
+msgstr "Leltározás dátum"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:74
+msgid "Stones"
+msgstr "Kö"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMilitary.cpp:52
+msgid "Strong defense"
+msgstr "Erős védelem"
+
+#. "Spiel aufgeben"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwOptionsWindow.cpp:109
+msgid "Surrender"
+msgstr "Feladás"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPlayReplay.cpp:125
+msgid "Temporary map file was not found!"
+msgstr "Ideiglenes térképfile nem található!"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:148
+msgid "The specified file couldn't be loaded!"
+msgstr "A kiválasztott fájlt nem lehet betölteni!"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:336
+msgid "The specified file couldn't be opened!"
+msgstr "A kiválasztott fájl nem nyitható meg!"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:118
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:361
+msgid "The specified file couldn't be saved!"
+msgstr "A kiválasztott fájlt nem lehet menteni!"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSave.cpp:68
+msgid "Time"
+msgstr "Idő"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:86
+msgid "Upwards"
+msgstr "Feljebb"
+
+#. pitch: 4, 4
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMilitary.cpp:52
+msgid "Weak defense"
+msgstr "Gyenge védelem"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:86
+msgid "Weapons"
+msgstr "Fegyverek"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:191
+msgid "You are not allowed to delete the standard playlist!"
+msgstr "Nem törölheted az alap listát!"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPostWindow.cpp:296
+msgid "of"
+msgstr "ebből"
+
+#. Text vor Editfeld
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSkipGFs.cpp:48
+msgid "to GameFrame:"
+msgstr "GameFramehez:"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:52
+msgid "Axe"
+msgstr "Balta"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:62
+msgid "Bow"
+msgstr "Íj"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:60
+msgid "Cleaver"
+msgstr "Bárd"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:57
+msgid "Crucible"
+msgstr "Olvasztótégely"
+
+#. Ok + Abbrennen
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSurrender.cpp:55
+msgid "Destroy all buildings and surrender"
+msgstr "Minden épület elpusztítása és abbahagyás"
+
+#. Abbrechen
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSurrender.cpp:57
+msgid "Don't surrender"
+msgstr "Ne add fel"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:55
+msgid "Hammer"
+msgstr "Kalapács"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:119
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:220
+msgid "Inhabitants"
+msgstr "Lakosok"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTransport.cpp:65
+msgid "Iron ore"
+msgstr "Vasérc"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:51
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:52
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:53
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:54
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:55
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:56
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:57
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:58
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:59
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:60
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:61
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:62
+msgid "Less often"
+msgstr "Kevésbé"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:121
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:228
+msgid "Military strength"
+msgstr "Katonai erő"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:51
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:52
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:53
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:54
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:55
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:56
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:57
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:58
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:59
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:60
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:61
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:62
+msgid "More often"
+msgstr "Gyakrabban"
+
+#. "Blättern"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwWares.cpp:189
+msgid "Next page"
+msgstr "Következő oldal"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:54
+msgid "Pick-axe"
+msgstr "Csákány"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:58
+msgid "Rod and line"
+msgstr "Horgászbot"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:61
+msgid "Rolling pin"
+msgstr "Sodrófa"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:53
+msgid "Saw"
+msgstr "Fürész"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:59
+msgid "Scythe"
+msgstr "Kasza"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTrade.cpp:99
+msgid "Send"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTrade.cpp:76
+msgid "Settlers"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:56
+msgid "Shovel"
+msgstr "Ásó"
+
+#. Aktuelle Überschrift über der Statistik
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:117
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:137
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:212
+msgid "Size of country"
+msgstr "Ország mérete"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:47
+msgid "Statistics"
+msgstr "Statisztika"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStorehouse.cpp:44
+msgid "Storehouse"
+msgstr "Raktár"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSurrender.cpp:50
+msgid "Surrender game?"
+msgstr "Játék feladása?"
+
+#. Systemsprache hinzufügen
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/languages.cpp:70
+msgid "System language"
+msgstr "Rendszer nyelv"
+
+#. immer noch nichts gefunden? --> Dann Fehlermeldung
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTextfile.cpp:73
+msgid "The readme file was not found!"
+msgstr "Az Olvassel fájl nem található!"
+
+#. Einzelne Balken
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:51
+msgid "Tongs"
+msgstr "Fogó"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTrade.cpp:60
+msgid "Trade"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTrade.cpp:65
+#, c-format
+msgid "Trade with %s"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:124
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:240
+msgid "Vanquished enemies"
+msgstr "Legyőzőtt ellenség"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTrade.cpp:95
+msgid "Ware you like to trade"
+msgstr ""
+
+#. Ware or figure?
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTrade.cpp:75
+msgid "Wares"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobMilitary.cpp:1114
+msgid "A catapult is firing upon us!"
+msgstr "Egy katapulttal lőnek ránk!"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobMilitary.cpp:867
+msgid "Military building captured"
+msgstr "Katonai épület elfoglalva"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobMilitary.cpp:864
+msgid "Military building lost"
+msgstr "Katonai épület elvesztve"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobMilitary.cpp:606
+msgid "Military building occupied"
+msgstr "Katonai épület elfoglalva"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobHarborBuilding.cpp:104
+msgid "New harbor building finished"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobStorehouse.cpp:57
+msgid "New storehouse finished"
+msgstr "Az új raktár elkészült"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofAttacker.cpp:289
+msgid "Our headquarters was destroyed!"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofAttacker.cpp:292
+msgid "This harbor building was destroyed"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofBuildingWorker.cpp:404
+msgid "This mine is exhausted"
+msgstr "Ez a bánya kimerült"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofBuildingWorker.cpp:406
+msgid "This well is dried out"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofAttacker.cpp:655
+msgid "We are under attack!"
+msgstr "Megtámadtak!"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofGeologist.cpp:501
 msgid "Found coal"
 msgstr "Szenet találtunk"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwShip.cpp:73
-msgid "Found colony"
-msgstr "Kolóniát találtam"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofGeologist.cpp:499
 msgid "Found gold"
@@ -1053,313 +2390,290 @@ msgstr "Vasércet találtam"
 msgid "Found water"
 msgstr "Vizet találtunk"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/BuildingConsts.h:366
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofFarmhand.cpp:210
+msgid "No more fishes in range"
+msgstr "Nincs több hal"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofFarmhand.cpp:203
+msgid "No more stones in range"
+msgstr "Nincs több kő"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofScout_LookoutTower.cpp:84
+msgid "Lookout-tower occupied"
+msgstr "Kilátó-torony elfoglalva"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/noShipBuildingSite.cpp:139
+msgid "A new ship is ready"
+msgstr "Egy új hajó áll készen"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/noShip.cpp:455
+msgid "A ship disovered an enemy territory"
+msgstr "A hajó felfedezett egy ellenséges területet"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/noShip.cpp:733
+msgid "A ship has reached the destination of its expedition."
+msgstr "A hajó elérte az expedició távolságát."
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/noShip.cpp:286
+msgid "A ship is ready for an expedition."
+msgstr "A hajó készen áll az expedícióra."
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/PostMsg.cpp:122
+#, c-format
+msgid "Duration: %u GF (%s)"
+msgstr "Időtartam: %u GF (%s)"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/PostMsg.cpp:120
+msgid "Duration: Forever"
+msgstr "Időtartam: örökre"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/PostMsg.cpp:160
+#, c-format
+msgid "The %s between player '%s' and you has been cancelled."
+msgstr "A %s a '%s' játékos és közted törlődött."
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/PostMsg.cpp:157
+#, c-format
+msgid "The %s between player '%s' and you has been concluded."
+msgstr "A %s a '%s' játékos és közted befejeződött."
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/PostMsg.cpp:115
+#, c-format
+msgid "The player '%s' offers you a %s."
+msgstr "A '%s' játékos felajánl neked: %s"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/PostMsg.cpp:134
+#, c-format
 msgid ""
-"From the lookout tower you can see far into previously unexplored lands."
-msgstr "A kilátótoronyból láthatod a felderítetlen területet."
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:170
-msgid "Fullscreen"
-msgstr "Teljes képernyő"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:164
-msgid "Fullscreen resolution:"
+"The player '%s' want to cancel the '%s' between you both primaturely. Do you "
+"agree?"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:489
-msgid ""
-"Game can only be started as soon as everybody has a unique color,everyone is "
-"ready and all free slots are closed."
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/PostMsg.cpp:105
+msgid "non-aggression pact"
+msgstr "megnem-támadási szerződés"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/PostMsg.cpp:104
+msgid "treaty of alliance"
+msgstr "szövetségi megállapodás"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAIDebugWindow.h:38
+msgid "AI Debugging Window"
 msgstr ""
-"A játékot akkor lehet elindítani ha mindenkinek van egyedi szine,mindenki "
-"kész,és az üres helyen zárva vannak."
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameLoader.cpp:145
-msgid "Game crate was picked and spread out..."
-msgstr "Játék létrehozása kiválasztva és szétterítve..."
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonCatapultGraphics.h:40
+msgid "Adds new graphics for catapults to the game."
+msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwOptionsWindow.cpp:60
-msgid "Game menu"
-msgstr "Játék menü"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAdjustMilitaryStrength.h:47
+msgid "Adjust military strength"
+msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1054
-msgid "Game was paused."
-msgstr "Játék szüneteltetve"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonChangeGoldDeposits.h:39
+msgid ""
+"Allows to play games without gold.\n"
+"\n"
+"You can choose to remove gold resources completely,\n"
+"to convert them into iron ore, coal or granite.\n"
+"\n"
+"You'll probably want to convert gold to iron ore, as this (on most maps)\n"
+"allows you to utilize the additional coal not needed for minting anymore."
+msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1083
-msgid "Game was resumed."
-msgstr "Játék folytatása"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAdjustMilitaryStrength.h:48
+msgid ""
+"Allows you to modify the strength increase of military ranks\n"
+"\n"
+msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPCreate.cpp:56
-msgid "Game's Name:"
-msgstr "Játék neve:"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/SerializedGameData.cpp:236
+msgid "An error occured while saving which was suppressed!"
+msgstr "Hiba lépett fel a mentésnél!"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAddons.cpp:66
-msgid "Gameplay"
-msgstr "Játékmenet"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonChangeGoldDeposits.h:38
+msgid "Change gold deposits"
+msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:339
-msgid "General"
-msgstr "Fővezér"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonChangeGoldDeposits.h:50
+msgid "Convert to coal"
+msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMainMenu.cpp:75
-msgid "General statistics"
-msgstr "Általános statisztika"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonChangeGoldDeposits.h:51
+msgid "Convert to granite"
+msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:340
-msgid "Geologist"
-msgstr "Geológus"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonChangeGoldDeposits.h:49
+msgid "Convert to iron ore"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAIDebugWindow.h:39
+msgid ""
+"Enable AI Debugging Window\n"
+"(possible cheating)"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAdjustMilitaryStrength.h:52
+msgid "Maximum strength"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAdjustMilitaryStrength.h:53
+msgid "Medium strength"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAdjustMilitaryStrength.h:54
+msgid "Minimum strength"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonChangeGoldDeposits.h:47
+msgid "No change"
+msgstr "Nincs változás"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonCatapultGraphics.h:39
+msgid "Race specific catapult graphics"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonChangeGoldDeposits.h:48
+msgid "Remove gold completely"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:51
+msgid "10 catapults"
+msgstr "10 katapult"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:52
+msgid "20 catapults"
+msgstr "20 katapult"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:49
+msgid "3 catapults"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:53
+msgid "30 catapults"
+msgstr "30 katapult"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:50
+msgid "5 catapults"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonDemolitionProhibition.h:43
+msgid "Active if attacked"
+msgstr "Aktív, ha megtámadták"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonDemolitionProhibition.h:44
+msgid "Active near frontiers"
+msgstr "Aktív a határhoz közel"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonCustomBuildSequence.h:38
+msgid ""
+"Allows every player to control whether building sites\n"
+"should be supplied in sequence of given order or in a definable\n"
+"sequence based on the building type."
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonCharburner.h:37
+msgid "Allows to build the charburner."
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonDefenderBehavior.h:39
+msgid ""
+"Allows to change the military setting 'defender'.\n"
+"\n"
+"You can choose to disallow any changes to that setting\n"
+"or you can limit the amount of reoccupying troops\n"
+"(during an attack) according to the defender setting."
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonDemolitionProhibition.h:38
+msgid ""
+"Allows to disable the demolition of military buildings under attack or near "
+"frontiers."
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonExhaustibleWells.h:38
+msgid ""
+"Allows to have limited water.\n"
+"\n"
+"Wells will now dry out."
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonInexhaustibleMines.h:38
+msgid ""
+"Allows to have unlimited resources.\n"
+"\n"
+"Mines will never be depleted."
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonTrade.h:37
+msgid "Allows to send wares/figures to allied warehouses"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonRefundOnEmergency.h:39
+msgid ""
+"Allows you to get building materials back if the building is destroyed\n"
+"and your emergency program is active."
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonRefundMaterials.h:38
+msgid ""
+"Allows you to get building materials back if the building is destroyed."
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonManualRoadEnlargement.h:38
+msgid ""
+"Allows you to manually upgrade your roads\n"
+"and build donkey roads directly."
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonDefenderBehavior.h:38
+msgid "Change defender behavior"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonStatisticsVisibility.h:37
+msgid "Change the visibility of your ingame statistics"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonCustomBuildSequence.h:37
+msgid "Custom build sequence"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonStatisticsVisibility.h:38
+msgid ""
+"Decides to whom your statistics is visible.\n"
+"\n"
+"\"Allies\" applies to team members as well as to allies by treaty."
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonDemolitionProhibition.h:37
+msgid "Disable Demolition of military buildings"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonNoCoinsDefault.h:19
+msgid "Disable coins by default"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonDefenderBehavior.h:47
+msgid "Disallow change"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonCharburner.h:36
+msgid "Enable charburner"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonStatisticsVisibility.h:44
+msgid "Everyone"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonExhaustibleWells.h:37
+msgid "Exhaustible Wells"
+msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonRefundMaterials.h:46
 msgid "Get all back"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:344
-msgid "Go to headquarters"
-msgstr "Menj a főhadiszállásra"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBaseWarehouse.cpp:74
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuilding.cpp:103
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildingSite.cpp:66
-msgid "Go to place"
-msgstr "Menj a helyre"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:119
-msgid "Goals:"
-msgstr "Cél:"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:82
-msgid "Gold"
-msgstr "Arany"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:82
-msgid "Gold mine"
-msgstr "Aranybánya"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:111
-msgid "Goods at start:"
-msgstr "Nyersanyagmennyiség induláskor"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:86
-msgid "Grain"
-msgstr "Gabona"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/BuildingConsts.h:454
-msgid ""
-"Grain and water are needed for rearing pigs. The meat thus obtained can then "
-"be processed by a butcher."
-msgstr "Disznóneveléshez kell búza és víz. A húst a hentes használja fel."
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:73
-msgid "Granite mine"
-msgstr "Köbánya"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:86
-msgid "Graphics"
-msgstr "Grafika"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:188
-msgid "Graphics Driver"
-msgstr "Grafikai vezérlő"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:419
-msgid "Greenland"
-msgstr "Zöld vidék"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:230
-msgid "Guardhouse"
-msgstr "Őrház"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:171
-msgid "Ham"
-msgstr "Disznó"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:55
-msgid "Hammer"
-msgstr "Kalapács"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHarborBuilding.cpp:48
-msgid "Harbor building"
-msgstr "Kikötő"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:390
-msgid "Headquarters"
-msgstr "Főhadiszállás"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuilding.cpp:86
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildingProductivities.cpp:107
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildings.cpp:93
-msgid "Help"
-msgstr "Súgó"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:314
-msgid "Helper"
-msgstr "Segéd"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AIPlayerJH.cpp:106
-msgid "Hi, I'm an artifical player and I'm not very good yet!"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyServerInfo.cpp:80
-msgid "Host:"
-msgstr "Host:"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:343
-msgid "House names"
-msgstr "Házak neve"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:250
-msgid "Hunter"
-msgstr "Vadász"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:320
-msgid "Huntsman"
-msgstr "Vadász"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskLobby.cpp:78
-msgid "ID"
-msgstr "ID"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:56
-msgid "IP Address of Host:"
-msgstr "A Host IP címe"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:131
-msgid "IPv4"
-msgstr "IPv4"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:130
-msgid "IPv6"
-msgstr "IPv6"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:353
-msgid "Incomplete message was received!"
-msgstr "Bejezetlen levél érkezett!"
-
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonInexhaustibleMines.h:37
 msgid "Inexhaustible Mines"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:119
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:220
-msgid "Inhabitants"
-msgstr "Lakosok"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMilitary.cpp:55
-msgid "Interior"
-msgstr "Belső"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskMultiPlayer.cpp:66
-msgid "Internet Lobby"
-msgstr "Internet Lobby"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskLobby.cpp:73
-msgid "Internet Ranking"
-msgstr "Internet helyezés"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwRoadWindow.cpp:51
-msgid "Interrupt road building"
-msgstr "Útépítés megszakitása"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskMainMenu.cpp:79
-msgid "Intro"
-msgstr "Intro"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPlayReplay.cpp:121
-msgid "Invalid Replay!"
-msgstr "Érvénytelen visszajátszás"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:157
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPCreate.cpp:178
-msgid "Invalid port. The valid port-range is 1 to 65535!"
-msgstr "Rossz port. A jó port 1 és 65535 között van!"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:105
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:83
-msgid "Iron"
-msgstr "Vas"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:329
-msgid "Iron founder"
-msgstr "Kohász"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:79
-msgid "Iron mine"
-msgstr "Vasércbánya"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTransport.cpp:65
-msgid "Iron ore"
-msgstr "Vasérc"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:121
-msgid "Iron smelter"
-msgstr "Kohászat"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:81
-msgid "Ironore"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/BuildingConsts.h:516
-msgid ""
-"It is possible to build small rowing boats as well as huge cargo ships in a "
-"shipyard. The boards required for this are skillfully worked by shipwrights."
-msgstr ""
-"Lehet kis csónakokat és nagy hajókat építeni a hajógyárban. Deszkák kellenek "
-"a munkához."
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:709
-msgid "Japaneses"
-msgstr "Japánok"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskDirectIP.cpp:63
-msgid "Join Game"
-msgstr "Csatlakozás"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:597
-msgid "Keyboard layout"
-msgstr "Billentyüzetkiosztás"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:123
-msgid "Keyboard layout:"
-msgstr "Billentyüzetkiosztás:"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:104
-msgid "Language:"
-msgstr "Nyelv:"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPlayReplay.cpp:64
-msgid "Length"
-msgstr "Hossz"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/ctrlProgress.cpp:75
-msgid "Less"
-msgstr "Kevesebb"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:395
-msgid "Less attackers"
-msgstr "Kevesebb támadó"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:51
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:52
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:53
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:54
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:55
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:56
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:57
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:58
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:59
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:60
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:61
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:62
-msgid "Less often"
-msgstr "Kevésbé"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:89
-msgid "Less repeats"
-msgstr "Kevesebb újrajátszás"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:174
-msgid "Limit Framerate:"
 msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:37
@@ -1388,644 +2702,41 @@ msgid ""
 "Long: 9 tiles\n"
 "Longer: 13 tiles\n"
 "Very long: 21 tiles\n"
-"and Unlimited"
+"and Unlimited."
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwOptionsWindow.cpp:78
-msgid "Load 'ReadMe' file"
-msgstr "'Olvassel' fájl betöltése"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:79
-msgid "Load game"
-msgstr "Játék betöltése"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwOptionsWindow.cpp:82
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSave.cpp:258
-msgid "Load game!"
-msgstr "Játék betöltése!"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:110
-msgid "Load game..."
-msgstr "Játék betöltése..."
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:90
-msgid "Lock teams:"
-msgstr "Zárt csapatok"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonMaxWaterwayLength.h:47
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonMaxWaterwayLength.h:51
 msgid "Long"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:246
-msgid "Long-run"
-msgstr "Hosszútávú"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonMaxWaterwayLength.h:48
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonMaxWaterwayLength.h:52
 msgid "Longer"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:242
-msgid "Lookout tower"
-msgstr "Kilátótorony"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofScout_LookoutTower.cpp:84
-msgid "Lookout-tower occupied"
-msgstr "Kilátó-torony elfoglalva"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyRanking.cpp:82
-msgid "Lost"
-msgstr "Vereség"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1114
-msgid "Lost connection to lobby!"
-msgstr "Elveszett a kapcsolat a lobbyval"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1101
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:948
-msgid "Lost connection to server!"
-msgstr "Elveszett a kapcsolat a szerverrel!"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameWorldGame.cpp:594
-msgid "Lost land by this building"
-msgstr "Elvesztett terület emiatt az épület miatt"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:114
-msgid "Low"
-msgstr "Alacsony"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:107
-msgid "Main selection"
-msgstr "Fő kiválasztás"
-
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonManualRoadEnlargement.h:37
 msgid "Manual road enlargement"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:105
-msgid "Map"
-msgstr "Térkép"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyServerInfo.cpp:76
-msgid "Map Name:"
-msgstr "Térkép:"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameLoader.cpp:123
-msgid "Map was loaded and pinned at the wall..."
-msgstr "Térkép betöltve és kiszögelve a falra..."
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:147
-msgid "Map: "
-msgstr "Térkép: "
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:136
-msgid "Mapfile: "
-msgstr "Térképfájl : "
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:115
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:134
-msgid "Mapping"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAdjustMilitaryStrength.h:52
-msgid "Maximum strength"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:170
-msgid "Meat"
-msgstr "Hús"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/BuildingConsts.h:417
-msgid "Meat the hunter acquires is used to feed the miners."
-msgstr "A vadász által szerzett hús a bányászoknak kell."
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAdjustMilitaryStrength.h:53
-msgid "Medium strength"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:245
-msgid "Medium-term"
-msgstr "Középtávú"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:64
-msgid "Merchandise"
-msgstr "Kereskedelem"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMainMenu.cpp:76
-msgid "Merchandise statistics"
-msgstr "Árustatisztika"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPostWindow.cpp:293
-msgid "Message"
-msgstr "Üzenet"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:331
-msgid "Metalworker"
-msgstr "Szerszámkészitő"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:111
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:144
-msgid "Metalworks"
-msgstr "Szerszámkészitö"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAddons.cpp:62
-msgid "Military"
-msgstr "Katonaság"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobMilitary.cpp:872
-msgid "Military building captured"
-msgstr "Katonai épület elfoglalva"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobMilitary.cpp:869
-msgid "Military building lost"
-msgstr "Katonai épület elvesztve"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobMilitary.cpp:611
-msgid "Military building occupied"
-msgstr "Katonai épület elfoglalva"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:121
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:228
-msgid "Military strength"
-msgstr "Katonai erő"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:89
-msgid "Mill"
-msgstr "Malom"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:322
-msgid "Miller"
-msgstr "Molnár"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:325
-msgid "Miner"
-msgstr "Bányász"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonAdjustMilitaryStrength.h:54
-msgid "Minimum strength"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:124
-msgid "Mint"
-msgstr "Aranyolvasztó"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:330
-msgid "Minter"
-msgstr "Aranyolvasztó"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:168
-msgid "Mode:"
-msgstr "Mód:"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/ctrlProgress.cpp:76
-msgid "More"
-msgstr "Több"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:396
-msgid "More attackers"
-msgstr "Több támadó"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMilitary.cpp:53
-msgid "More defenders"
-msgstr "Több védő"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:51
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:52
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:53
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:54
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:55
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:56
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:57
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:58
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:59
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:60
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:61
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:62
-msgid "More often"
-msgstr "Gyakrabban"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMilitary.cpp:51
-msgid "More recruits"
-msgstr "Több újonc"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:90
-msgid "More repeats"
-msgstr "Több újrajátszás"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskMainMenu.cpp:75
-msgid "Multiplayer"
-msgstr "Többjátékos"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:216
-msgid "Music"
-msgstr "Zene"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:234
-msgid "Music player"
-msgstr "Zenelejátszó"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskLobby.cpp:80
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:102
-msgid "Name"
-msgstr "Név"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:99
-msgid "Name in Game:"
-msgstr "Név a Játékban:"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMilitary.cpp:57
-msgid "Near harbor points"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskMultiPlayer.cpp:68
-msgid "Network/LAN"
-msgstr "Hálózat/LAN"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobHarborBuilding.cpp:104
-msgid "New harbor building finished"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:118
-msgid "New maps"
-msgstr "Új térképek"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nobStorehouse.cpp:57
-msgid "New storehouse finished"
-msgstr "Az új raktár elkészült"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwWares.cpp:189
-msgid "Next page"
-msgstr "Következő oldal"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:73
-msgid "No"
-msgstr "Nem"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:147
-msgid "No Proxy"
 msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:48
 msgid "No catapults"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonChangeGoldDeposits.h:47
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonDefenderBehavior.h:46
-msgid "No change"
-msgstr "Nincs változás"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAIDebug.cpp:149
-msgid "No current job"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPostWindow.cpp:84
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPostWindow.cpp:270
-msgid "No letters!"
-msgstr "Nincs levél!"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofFarmhand.cpp:197
-msgid "No more fishes in range"
-msgstr "Nincs több hal"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofFarmhand.cpp:190
-msgid "No more stones in range"
-msgstr "Nincs több kő"
-
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonRefundMaterials.h:42
 msgid "No refund"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwShip.cpp:110
-msgid "No ships available"
-msgstr "Nincs használható hajó"
-
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonStatisticsVisibility.h:46
 msgid "Nobody else but you"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:115
-msgid "Non-aggression pact"
-msgstr "Megnem-támadási szerződés"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:121
-msgid "None"
-msgstr "Nincs"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:115
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:130
-msgid "Normal"
-msgstr "Normális"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:696
-msgid "Not Ready"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:94
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:103
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:111
-msgid "Not available"
-msgstr "Nem elérhetö"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:990
-#, c-format
-msgid "Note: Game settings changed by the server%s"
-msgstr "Megjegyzés: A játék beállításai megváltoztatta a server%s"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClientGF_Replay.cpp:123
-#, c-format
-msgid ""
-"Notice: The played replay has ended. (GF: %u, %dh %dmin %ds, TF: %u, "
-"AVG_FPS: %u)"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:410
-msgid "Number of attackers"
-msgstr "Támadók száma"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMsgbox.cpp:66
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMsgbox.cpp:72
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:45
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSkipGFs.cpp:55
-msgid "OK"
-msgstr "OK"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:342
-msgid "Observation window"
-msgstr "Megfigyelési ablak"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:185
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:219
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:228
-msgid "Off"
-msgstr "Ki"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:105
-msgid "Off (all visible)"
-msgstr "Ki (minden látható)"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:338
-msgid "Officer"
-msgstr "Ezredes"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AIPlayerJH.cpp:149
-msgid "Oh, no, you destroyed my headquarter! I surrender!"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:116
-msgid "Old maps"
-msgstr "Régi térképek"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:184
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:218
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:227
-msgid "On"
-msgstr "Be"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:220
-msgid "Open"
-msgstr "Nyitott"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskMainMenu.cpp:77
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:77
-msgid "Options"
-msgstr "Beállitások"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildingSite.cpp:58
-msgid "Order of building site"
-msgstr "Építés alatt"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:128
-msgid "Other"
-msgstr "Egyéb"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:152
-msgid "Other Support:"
-msgstr "Egyéb Támogatás:"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofAttacker.cpp:289
-msgid "Our headquarters was destroyed!"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMinimap.cpp:54
-msgid "Outline map"
-msgstr "Vázlatos térkép"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:120
-msgid "Own maps"
-msgstr "Saját térképek"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:343
-msgid "Pack donkey"
-msgstr "Szamár"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:64
-msgid "Password (if needed):"
-msgstr "Jelszó (ha szükséges):"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPCreate.cpp:64
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:60
-msgid "Password:"
-msgstr "Jelszó:"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:76
-msgid "Past player"
-msgstr "Előző játékos"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:54
-msgid "Pick-axe"
-msgstr "Csákány"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:327
-msgid "Pig breeder"
-msgstr "Disznótenyésztő"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:92
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:160
-msgid "Pig farm"
-msgstr "Disznófarm"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:73
-msgid "Ping"
-msgstr "Ping"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:334
-msgid "Planer"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:73
-msgid "Play Replay"
-msgstr "Visszajátszás inditása"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:91
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:284
-msgid "Playback in this order"
-msgstr "Lejátszás ebben a sorrendben"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:132
-msgid "Played"
-msgstr "Játszott"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskLobby.cpp:78
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:102
-msgid "Player"
-msgstr "Játékos"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:976
-#, c-format
-msgid "Player '%s' joined the game!"
-msgstr "'%s' csatlakozott a játékhoz!"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:973
-#, c-format
-msgid "Player '%s' left the game!"
-msgstr "'%s' elhagyta a játékot!"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1138
-#, c-format
-msgid "Player '%s' switched to player '%s'"
-msgstr "'%s' átváltott '%s'"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1161
-#, c-format
-msgid "Player '%s' was defeated!"
-msgstr "'%s' Vesztett!"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:61
-msgid "Player Name"
-msgstr "Játékos neve"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:71
-msgid "Playlist:"
-msgstr "Lejátszási lista:"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPCreate.cpp:170
-msgid "Please enter a name for the game"
-msgstr "Írd be a játék nevét!"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:94
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:103
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:111
-msgid "Please use 'Unlimited Play' to create a Singleplayer game."
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPleaseWait.cpp:45
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPleaseWait.cpp:48
-msgid "Please wait..."
-msgstr "Kérem várjon..."
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskLobby.cpp:80
-msgid "Points"
-msgstr "Pontok"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:111
-msgid "Post office"
-msgstr "Posta"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:335
-msgid "Private"
-msgstr "Katona"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:336
-msgid "Private first class"
-msgstr "Őrvezető"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildingProductivities.cpp:86
-msgid "Productivity"
-msgstr "Termelékenység"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPlayReplay.cpp:123
-msgid "Program version is too old to play that replay!"
-msgstr "A program túl régi hogy lejátsza ezt a visszajátszást!"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:84
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:96
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:123
-msgid "Programming"
-msgstr "Programozás"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:82
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:95
-msgid "Project management"
 msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:47
 msgid "Proportional"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:138
-msgid "Proxyserver:"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:145
-msgid "Proxytyp:"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:266
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:274
-msgid "Pull down flag"
-msgstr "Zászló leszúrása"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:87
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:97
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:106
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:114
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:133
-msgid "Quality Assurance"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:247
-msgid "Quarry"
-msgstr "Kőfejtő"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskMainMenu.cpp:85
-msgid "Quit program"
-msgstr "Kilépés"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:126
-msgid "RTTR"
-msgstr "RTTR"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:65
-msgid "Race"
-msgstr "Nép"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:284
-msgid "Random playback"
-msgstr "Véletlenszerű lejátszás"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:317
-msgid "Ranger"
-msgstr "Erdész"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/BuildingConsts.h:442
-msgid ""
-"Raw iron ore is smelted in the iron smelters with the help of coal. The "
-"processed iron is then used to making weapons (in the Armory) and tools (in "
-"the metalworks)."
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskMainMenu.cpp:81
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:124
-msgid "Readme"
-msgstr "Olvassel"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:601
-msgid "Readme!"
-msgstr "Olvassel!"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:84
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:496
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:696
-msgid "Ready"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:71
-msgid "Ready?"
-msgstr "Kész?"
-
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonNoCoinsDefault.h:20
 msgid ""
 "Receiving coins is disabled\n"
-"for military buildings by default"
+"for military buildings by default."
 msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonDefenderBehavior.h:48
@@ -2052,158 +2763,81 @@ msgstr ""
 msgid "Refund materials when emergency program is active"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:89
-msgid "Register"
-msgstr "Regisztráció"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:320
-msgid "Registration successful!"
-msgstr "A regisztráció sikeres!"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:78
-msgid "Remove"
-msgstr "Eltávolitás"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonChangeGoldDeposits.h:48
-msgid "Remove gold completely"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:85
-msgid "Remove track"
-msgstr "Szám eltávolítása"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHQ.cpp:53
-msgid "Reserve"
-msgstr "Lefoglalt"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:71
-msgid "Resume last game"
-msgstr "Visszatérés a legutóbbi játékhoz"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:87
-msgid "Return"
-msgstr "Vissza"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:73
-msgid "Return To The Roots"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskDirectIP.cpp:54
-#, c-format
-msgid "Return To The Roots - v%s-%s"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwShip.cpp:81
-msgid "Return to harbor"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:58
-msgid "Rod and line"
-msgstr "Horgászbot"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:61
-msgid "Rolling pin"
-msgstr "Sodrófa"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:709
-msgid "Romans"
-msgstr "Rómaiak"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1053
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1082
-msgid "SYSTEM"
-msgstr "RENDSZER"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:70
-msgid "Save Password?"
-msgstr "Jelszó mentése?"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwOptionsWindow.cpp:86
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSave.cpp:198
-msgid "Save game!"
-msgstr "Játék mentése!"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:53
-msgid "Saw"
-msgstr "Fürész"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:131
-msgid "Sawmill"
-msgstr "Fűrészet"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:342
-msgid "Scout"
-msgstr "Felderítő"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:59
-msgid "Scythe"
-msgstr "Kasza"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:130
-msgid "Sea"
-msgstr "Tenger"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBaseWarehouse.cpp:72
-msgid "Select all"
-msgstr "Mindet kijelöl"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:105
-msgid "Selection of maps"
-msgstr "Térkép kiválasztása"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:268
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:276
-msgid "Send out scout"
-msgstr "Felderítő kiküldése"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildOrder.cpp:69
-msgid "Sequence of given order"
-msgstr "Kiadott parancsok sorrendje"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:337
-msgid "Sergeant"
-msgstr "Őrmester"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskLobby.cpp:78
-msgid "Server"
-msgstr "Szerver"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyServerInfo.cpp:74
-msgid "Server Information"
-msgstr "Szerverinformáció"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyServerInfo.cpp:78
-msgid "Server Name:"
-msgstr "Szervernév:"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:83
-msgid "Server management"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:60
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPCreate.cpp:60
-msgid "Server-Port:"
-msgstr "Szerver-Port:"
-
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonMaxWaterwayLength.h:37
 msgid "Set maximum waterway length"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSettings.cpp:54
-msgid "Settings"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonMaxWaterwayLength.h:49
+msgid "Short"
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:92
-msgid "Shared team view"
-msgstr "Osztott csapatnézet"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:46
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonMaxWaterwayLength.h:54
+msgid "Unlimited"
+msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:159
-msgid "Shield"
-msgstr "Pajzs"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonMaxWaterwayLength.h:53
+msgid "Very long"
+msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMainMenu.cpp:87
-msgid "Ship register"
-msgstr "Hajónevek"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/BuildingConsts.h:357
+msgid ""
+"A gold mine allows you to prospect for valuable gold deposits. For this, it "
+"is necessary to ensure that the miners are provided with plenty of food."
+msgstr ""
+"Egy aranybánya lehetővé teszi, hogy értékes aranykészlet birtokába juss. "
+"Ezért szükséges, hogy biztosítsd a megfelelő élelembőséget a bányászoknak."
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/BuildingConsts.h:510
+msgid ""
+"A well supplies water to the bakery, brewery, donkey breeder and pig farm."
+msgstr ""
+"A kút ellátja vízzel a péket, sörfőzdét, szamárneveldét, és a disznófarmot."
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/BuildingConsts.h:382
+msgid ""
+"A woodcutter provides the sawmill with logs. A forester is able to replant "
+"the depleted forest."
+msgstr ""
+"A favágó fával látja el a fürészetet. A faültetö pótolja a kivágott fákat."
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/BuildingConsts.h:350
+msgid ""
+"Deep within the mountains, miners dig for iron ore. They will obviously need "
+"a lot of food for the strenuous work."
+msgstr ""
+"A hegyek mélyén a bányászok vasércet bányásznak. Nyilvánvalóan nekik sok "
+"élelemre van szükségük a kimerítő munkához."
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/BuildingConsts.h:366
+msgid ""
+"From the lookout tower you can see far into previously unexplored lands."
+msgstr "A kilátótoronyból láthatod a felderítetlen területet."
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/BuildingConsts.h:454
+msgid ""
+"Grain and water are needed for rearing pigs. The meat thus obtained can then "
+"be processed by a butcher."
+msgstr "Disznóneveléshez kell búza és víz. A húst a hentes használja fel."
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/BuildingConsts.h:516
+msgid ""
+"It is possible to build small rowing boats as well as huge cargo ships in a "
+"shipyard. The boards required for this are skillfully worked by shipwrights."
+msgstr ""
+"Lehet kis csónakokat és nagy hajókat építeni a hajógyárban. Deszkák kellenek "
+"a munkához."
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/BuildingConsts.h:417
+msgid "Meat the hunter acquires is used to feed the miners."
+msgstr "A vadász által szerzett hús a bányászoknak kell."
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/BuildingConsts.h:442
+msgid ""
+"Raw iron ore is smelted in the iron smelters with the help of coal. The "
+"processed iron is then used to making weapons (in the Armory) and tools (in "
+"the metalworks)."
+msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/BuildingConsts.h:541
 msgid ""
@@ -2214,216 +2848,11 @@ msgid ""
 "or job symbol."
 msgstr ""
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:341
-msgid "Shipwright"
-msgstr "Hajóács"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:147
-msgid "Shipyard"
-msgstr "Hajógyár"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonMaxWaterwayLength.h:45
-msgid "Short"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:244
-msgid "Short-run"
-msgstr "Rövidtávú"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:56
-msgid "Shovel"
-msgstr "Ásó"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskMainMenu.cpp:73
-msgid "Singleplayer"
-msgstr "Egyjátékos"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:102
-msgid "Size"
-msgstr "Méret"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:117
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:137
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:212
-msgid "Size of country"
-msgstr "Ország mérete"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSkipGFs.cpp:45
-msgid "Skip GameFrames"
-msgstr "GameFrames kihagyása"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:249
-msgid "Slaughterhouse"
-msgstr "Hentes"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:129
-msgid "Slow"
-msgstr "Lassú"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:148
-msgid "Socks v4"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskDirectIP.cpp:80
-msgid "Sorry!"
-msgstr "Elnézést!"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:88
-msgid "Sound/Music"
-msgstr "Hang/Zene"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:202
-msgid "Sounddriver"
-msgstr "Hangvezérlö"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:176
-msgid "Specify the playlist name"
-msgstr "Ird be a lejátszási lista nevét"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:126
-msgid "Speed:"
-msgstr "Sebesség:"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPCreate.cpp:79
-msgid "Start"
-msgstr "Kezdés"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSave.cpp:68
-msgid "Start GF"
-msgstr "GF indítása"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:558
-msgid "Start aborted"
-msgstr "Indítás megszakítva"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHarborBuilding.cpp:57
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHarborBuilding.cpp:97
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHarborBuilding.cpp:128
-msgid "Start expedition"
-msgstr "Felfedezés indítása"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwHarborBuilding.cpp:64
-msgid "Start exporation expedition"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:84
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:482
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:694
-msgid "Start game"
-msgstr "Új játék"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:545
-msgid "Starting game, please wait"
-msgstr "Játék indítása, kérlek várj"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:47
-msgid "Statistics"
-msgstr "Statisztika"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSettings.cpp:59
-msgid "Statistics Scale"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwInventory.cpp:47
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMainMenu.cpp:80
-msgid "Stock"
-msgstr "Készlet"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPlayReplay.cpp:64
-msgid "Stocktaking date"
-msgstr "Leltározás dátum"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:319
-msgid "Stonemason"
-msgstr "Kőfaragó"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:74
-msgid "Stones"
-msgstr "Kö"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBaseWarehouse.cpp:67
-msgid "Stop storage"
-msgstr "Nem tárol tovább"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStorehouse.cpp:44
-msgid "Storehouse"
-msgstr "Raktár"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:401
-msgid "Strong attackers"
-msgstr "Erös támadok"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMilitary.cpp:52
-msgid "Strong defense"
-msgstr "Erős védelem"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:226
-msgid "Suggest non-aggression pact"
-msgstr "Megnem-támadási szerződés felajánlása"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:225
-msgid "Suggest treaty of alliance"
-msgstr "Szövetségi megállapodás felajánlása"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwOptionsWindow.cpp:109
-msgid "Surrender"
-msgstr "Feladás"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSurrender.cpp:50
-msgid "Surrender game?"
-msgstr "Játék feladása?"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:154
-msgid "Sword"
-msgstr "Kard"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/languages.cpp:70
-msgid "System language"
-msgstr "Rendszer nyelv"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:192
-msgid "THE END"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBaseWarehouse.cpp:65
-msgid "Take out of store"
-msgstr "Kivitel"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:69
-msgid "Team"
-msgstr "Csapat"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPlayReplay.cpp:125
-msgid "Temporary map file was not found!"
-msgstr "Ideiglenes térképfile nem található!"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:184
-msgid "Thank you for your donations!"
-msgstr "Köszönet a támagatásokért!"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:191
-msgid "Thank you!"
-msgstr ""
-
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/BuildingConsts.h:375
 msgid ""
 "Thanks to its immense strength, the catapults represents an effective weapon "
 "against enemy military buildings."
 msgstr "A katapultok az ellenséges katonai épületek ellen igen hasznosak."
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/PostMsg.cpp:160
-#, c-format
-msgid "The %s between player '%s' and you has been cancelled."
-msgstr "A %s a '%s' játékos és közted törlődött."
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/PostMsg.cpp:157
-#, c-format
-msgid "The %s between player '%s' and you has been concluded."
-msgstr "A %s a '%s' játékos és közted befejeződött."
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameInterface.cpp:1016
-msgid "The Game is not in sync. Checksums of some players don't match."
-msgstr "A játék nincs szinkronban. A játékosok ellenőrzőszámai nem egyeznek."
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/BuildingConsts.h:429
 msgid ""
@@ -2483,14 +2912,6 @@ msgstr ""
 "Az erőd a legerősebb katonai épület. Megvédi a környező épületeket. Az "
 "aranyérme gombot használva megállíthatod az érmék szállítását. Érmék nélkül "
 "azonban a katonák nem tudják fejleszteni képességeiket."
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClientPlayer.cpp:2061
-msgid "The emergency program has been activated."
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClientPlayer.cpp:2071
-msgid "The emergency program has been deactivated."
-msgstr ""
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/BuildingConsts.h:525
 msgid ""
@@ -2578,40 +2999,11 @@ msgstr ""
 "Szamarak születnek itt, amik az áruszállításban segítenek. Gabonán és vízen "
 "élnek."
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/PostMsg.cpp:115
-#, c-format
-msgid "The player '%s' offers you a %s."
-msgstr "A '%s' játékos felajánl neked: %s"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/PostMsg.cpp:134
-#, c-format
-msgid ""
-"The player '%s' want to cancel the '%s' between you both primaturely. Do you "
-"agree?"
-msgstr ""
-
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/BuildingConsts.h:335
 msgid ""
 "The quarrying of stone in a granite mine guarantees the supply of stone for "
 "buildings. However, even a granite mine has to feed its workers."
 msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTextfile.cpp:73
-msgid "The readme file was not found!"
-msgstr "Az Olvassel fájl nem található!"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:148
-msgid "The specified file couldn't be loaded!"
-msgstr "A kiválasztott fájlt nem lehet betölteni!"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:336
-msgid "The specified file couldn't be opened!"
-msgstr "A kiválasztott fájl nem nyitható meg!"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:118
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:361
-msgid "The specified file couldn't be saved!"
-msgstr "A kiválasztott fájlt nem lehet menteni!"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/BuildingConsts.h:395
 msgid ""
@@ -2646,227 +3038,6 @@ msgstr ""
 "megállíthatod az érmék szállítását. Érmék nélkül azonban a katonák nem "
 "tudják fejleszteni képességeiket."
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:259
-msgid "This Server is full!"
-msgstr "A szerver foglalt..."
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofAttacker.cpp:292
-msgid "This harbor building was destroyed"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofBuildingWorker.cpp:404
-msgid "This mine is exhausted"
-msgstr "Ez a bánya kimerült"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofBuildingWorker.cpp:406
-msgid "This well is dried out"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSave.cpp:68
-msgid "Time"
-msgstr "Idő"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:268
-msgid "To player:"
-msgstr "Játékosnak:"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:223
-msgid ""
-"To register, you have to create a valid board account at http://forum."
-"siedler25.org at the moment.\n"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwTools.cpp:51
-msgid "Tongs"
-msgstr "Fogó"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:263
-msgid "Too short Message received!"
-msgstr "Túl rövid üzenet érkezett!"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMainMenu.cpp:72
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:85
-msgid "Tools"
-msgstr "Eszközök"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildOrder.cpp:57
-msgid "Top"
-msgstr "Teteje"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:123
-msgid "Total domination"
-msgstr "Teljes uralom"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMainMenu.cpp:70
-msgid "Transport"
-msgstr "Szállító"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:81
-msgid "Treaties"
-msgstr "Szerződések"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDiplomacy.cpp:106
-msgid "Treaty of alliance"
-msgstr "Szövetségi megállapodás"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameLoader.cpp:133
-msgid "Tribal chiefs assembled around the table..."
-msgstr "A törzsfők összegyűltek az asztal körül..."
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:102
-msgid "Type"
-msgstr "Típus"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonLimitCatapults.h:46
-msgid "Unlimited"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:77
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSinglePlayer.cpp:123
-msgid "Unlimited Play"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwBuildOrder.cpp:59
-msgid "Up"
-msgstr "Fel"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:368
-msgid "Upgrade to donkey road"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:86
-msgid "Upwards"
-msgstr "Feljebb"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/Addons.cpp:169
-msgid "Use"
-msgstr "Használ"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:127
-msgid "Use IPv6:"
-msgstr "IPv6 használata:"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAddons.cpp:55
-msgid "Use S2 Defaults"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:54
-msgid "Username:"
-msgstr "Felhasználónév:"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:124
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwStatistics.cpp:240
-msgid "Vanquished enemies"
-msgstr "Legyőzőtt ellenség"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskLobby.cpp:78
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskLobby.cpp:80
-msgid "Version"
-msgstr "Verzió"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyServerInfo.cpp:82
-msgid "Version:"
-msgstr "Verzió:"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:178
-msgid "Vertex Buffer Objects:"
-msgstr "Vertex buffer objektumok"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:113
-msgid "Very Low"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:132
-msgid "Very fast"
-msgstr "Nagyon Gyors"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/AddonMaxWaterwayLength.h:49
-msgid "Very long"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:128
-msgid "Very slow"
-msgstr "Nagyon Lassú"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:96
-msgid "View Settings..."
-msgstr "Beállítások megtekintése"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:709
-msgid "Vikings"
-msgstr "Vikingek"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:283
-msgid "Waiting for Playerinfo..."
-msgstr "Játékosra várakozás..."
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:280
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:333
-msgid "Waiting for Reply..."
-msgstr "Válaszra vár..."
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClientGF_Replay.cpp:82
-#, c-format
-msgid ""
-"Warning: The played replay is not in sync with the original match. (GF: %u)"
-msgstr ""
-"Figyelem: A lejátszott visszajátszás nincs szinkronban az eredeti matchal. "
-"(GF: %u)"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:420
-msgid "Wasteland"
-msgstr "Sivatag"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:232
-msgid "Watchtower"
-msgstr "Őrtorony"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:151
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:76
-msgid "Water"
-msgstr "Víz"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/nofAttacker.cpp:655
-msgid "We are under attack!"
-msgstr "Megtámadtak!"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:189
-msgid "We hope you enjoy playing Return To The Roots!"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwAction.cpp:400
-msgid "Weak attackers"
-msgstr "Gyenge támadók"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMilitary.cpp:52
-msgid "Weak defense"
-msgstr "Gyenge védelem"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:86
-msgid "Weapons"
-msgstr "Fegyverek"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:85
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:105
-msgid "Website Administration"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:86
-msgid "Website Programming"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:263
-msgid "Well"
-msgstr "Kút"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:171
-msgid "Windowed"
-msgstr "Ablakban"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskSelectMap.cpp:421
-msgid "Winter world"
-msgstr "Havas világ"
-
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/BuildingConsts.h:403
 msgid ""
 "Within his area, the forester ensures the survival of the forest. He plants "
@@ -2874,259 +3045,226 @@ msgid ""
 msgstr ""
 "A faültető pótolja a favágó által kivágott fát. Mindenféle típusú fát ültet."
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyRanking.cpp:82
-msgid "Won"
-msgstr "Győzelem"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:333
+msgid "Armorer"
+msgstr "Kovács"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDistribution.cpp:128
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMerchandiseStatistics.cpp:72
-msgid "Wood"
-msgstr "Fa"
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:324
+msgid "Baker"
+msgstr "Pék"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:230
+msgid "Barracks"
+msgstr "Barakk"
+
+#. Bogen
+#. 15
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:154
+msgid "Boat"
+msgstr "Hajó"
+
+#. Fisch
+#. 20
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:159
+msgid "Bread"
+msgstr "Kenyér"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:327
+msgid "Brewer"
+msgstr "Sörfőző"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:334
+msgid "Builder"
+msgstr "Építőmunkás"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:325
+msgid "Butcher"
+msgstr "Hentes"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:319
+msgid "Carpenter"
+msgstr "Asztalos"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:245
+msgid "Catapult"
+msgstr "Katapult"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:329
+msgid "Donkey breeder"
+msgstr "Szamártenyésztő"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:266
+msgid "Farm"
+msgstr "Tanya"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:322
+msgid "Farmer"
+msgstr "Földműves"
+
+#. Mehl
+#. 19
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:158
+msgid "Fish"
+msgstr "Hal"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:317
+msgid "Fisher"
+msgstr "Halász"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:247
+msgid "Fishery"
+msgstr "Halászat"
+
+#. Eisen
+#. 18
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:157
+msgid "Flour"
+msgstr "Liszt"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:249
+msgid "Forester"
+msgstr "Erdész"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:238
+msgid "Fortress"
+msgstr "Erőd"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:340
+msgid "General"
+msgstr "Fővezér"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:341
+msgid "Geologist"
+msgstr "Geológus"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:231
+msgid "Guardhouse"
+msgstr "Őrház"
+
+#. Fleisch
+#. 33
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:172
+msgid "Ham"
+msgstr "Disznó"
 
 #: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:315
+msgid "Helper"
+msgstr "Segéd"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:251
+msgid "Hunter"
+msgstr "Vadász"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:321
+msgid "Huntsman"
+msgstr "Vadász"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:330
+msgid "Iron founder"
+msgstr "Kohász"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:243
+msgid "Lookout tower"
+msgstr "Kilátótorony"
+
+#. Kohle
+#. 32
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:171
+msgid "Meat"
+msgstr "Hús"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:332
+msgid "Metalworker"
+msgstr "Szerszámkészitő"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:323
+msgid "Miller"
+msgstr "Molnár"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:326
+msgid "Miner"
+msgstr "Bányász"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:331
+msgid "Minter"
+msgstr "Aranyolvasztó"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:339
+msgid "Officer"
+msgstr "Ezredes"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:344
+msgid "Pack donkey"
+msgstr "Szamár"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:328
+msgid "Pig breeder"
+msgstr "Disznótenyésztő"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:335
+msgid "Planer"
+msgstr ""
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:336
+msgid "Private"
+msgstr "Katona"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:337
+msgid "Private first class"
+msgstr "Őrvezető"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:248
+msgid "Quarry"
+msgstr "Kőfejtő"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:318
+msgid "Ranger"
+msgstr "Erdész"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:343
+msgid "Scout"
+msgstr "Felderítő"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:338
+msgid "Sergeant"
+msgstr "Őrmester"
+
+#. Brot
+#. 21
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:160
+msgid "Shield"
+msgstr "Pajzs"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:342
+msgid "Shipwright"
+msgstr "Hajóács"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:250
+msgid "Slaughterhouse"
+msgstr "Hentes"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:320
+msgid "Stonemason"
+msgstr "Kőfaragó"
+
+#. Boot
+#. 16
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:155
+msgid "Sword"
+msgstr "Kard"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:233
+msgid "Watchtower"
+msgstr "Őrtorony"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:264
+msgid "Well"
+msgstr "Kút"
+
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:316
 msgid "Woodchopper"
 msgstr "Favágó"
 
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:245
+#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameConsts.h:246
 msgid "Woodcutter"
 msgstr "Favágó"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskGameLoader.cpp:159
-msgid "World was put together and glued..."
-msgstr "A világot öszerakták és ragasztották..."
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:260
-msgid "Wrong Password!"
-msgstr "Hibás jelszó!"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:264
-msgid "Wrong Server Type!"
-msgstr "Rossz szervertípus!"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwDirectIPConnect.cpp:261
-msgid "Wrong client version"
-msgstr "Rosz kliens verzió!"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwLobbyConnect.cpp:74
-msgid "Yes"
-msgstr "Igen"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwMusicPlayer.cpp:191
-msgid "You are not allowed to delete the standard playlist!"
-msgstr "Nem törölheted az alap listát!"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskDirectIP.cpp:80
-msgid ""
-"You can't create a game while a proxy server is active\n"
-"Disable the use of a proxy server first!"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:537
-msgid "You have 10 seconds until game starts"
-msgstr "10 másodperced van amíg elindul a játék"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:549
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:564
-msgid "You need to restart your game to change the screen resolution!"
-msgstr "A felbontás megváltoztatásához újra kell indítani a játékot!"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:572
-msgid "You need to restart your game to change the video or audio driver!"
-msgstr ""
-"A videó- vagy hangeszköz megváltoztatásához újra kell indítania a játékot!"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/GameClient.cpp:1610
-#, c-format
-msgid "current GF: %u - still fast forwarding: %d GFs left (%d %%)"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskDirectIP.cpp:57
-msgid "http://www.siedler25.org"
-msgstr "http://www.siedler25.org"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskHostGame.cpp:254
-msgid "n/a"
-msgstr ""
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/PostMsg.cpp:105
-msgid "non-aggression pact"
-msgstr "megnem-támadási szerződés"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskOptions.cpp:182
-msgid "not supported"
-msgstr "nem támogatott"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwPostWindow.cpp:293
-msgid "of"
-msgstr "ebből"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/iwSkipGFs.cpp:48
-msgid "to GameFrame:"
-msgstr "GameFramehez:"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/PostMsg.cpp:104
-msgid "treaty of alliance"
-msgstr "szövetségi megállapodás"
-
-#: F:\programmierung\Projekte\siedler15\s25client\trunk\src/dskCredits.cpp:166
-msgid "various anonymous donators"
-msgstr "Számos névtelen támogató"
-
-#~ msgid "%s"
-#~ msgstr "%s"
-
-#~ msgid "40 catapults"
-#~ msgstr "40 katapult"
-
-#~ msgid "50 catapults"
-#~ msgstr "50 katapult"
-
-#~ msgid "About"
-#~ msgstr "Névjegy"
-
-#~ msgid "Airhardt"
-#~ msgstr "Airhardt"
-
-#~ msgid "Cat666"
-#~ msgstr "Cat666"
-
-#~ msgid "Demolition prohibition:"
-#~ msgstr "Rombolás lehetséges"
-
-#~ msgid "Devil"
-#~ msgstr "Devil"
-
-#~ msgid "Discard Changes"
-#~ msgstr "A módosítások eldobása"
-
-#~ msgid "Divan"
-#~ msgstr "Divan"
-
-#~ msgid "Enhancements"
-#~ msgstr "Fokozások"
-
-#~ msgid "Enhancements:"
-#~ msgstr "Fejlesztések:"
-
-#~ msgid "Fenan"
-#~ msgstr "Fenan"
-
-#~ msgid "File was not found!"
-#~ msgstr "File nem található!"
-
-#~ msgid "Florian Doersch (FloSoft)"
-#~ msgstr "Florian Doersch (FloSoft)"
-
-#~ msgid "Found ironore"
-#~ msgstr "Vasércet találtunk"
-
-#~ msgid "Game testers"
-#~ msgstr "Játéktesztelők"
-
-#~ msgid "Jan Montag"
-#~ msgstr "Jan Montag"
-
-#~ msgid "Jonas Trampe (NastX)"
-#~ msgstr "Jonas Trampe (NastX)"
-
-#~ msgid "Load"
-#~ msgstr "Betöltés"
-
-#~ msgid "Mode :"
-#~ msgstr "Mód :"
-
-#~ msgid "Near frontiers"
-#~ msgstr "Közel a határhoz"
-
-#~ msgid "Notice: The played replay has ended. (GF: %u)"
-#~ msgstr "A visszajátszás végetért. (GF: %u)"
-
-#~ msgid "Oliver Siebert (OLiver)"
-#~ msgstr "Oliver Siebert (OLiver)"
-
-#~ msgid "Other Support"
-#~ msgstr "Egyéb támogatás"
-
-#~ msgid "Patrick Haak (Demophobie)"
-#~ msgstr "Patrick Haak (Demophobie)"
-
-#~ msgid "Please fill out all fields!"
-#~ msgstr "Minden mezőt töltsön ki!"
-
-#~ msgid ""
-#~ "Raw iron ore is smelted in the iron smelters with the help of coal and "
-#~ "raw iron. The processed iron is then used to making weapons (in the "
-#~ "Armory) and tools (in the metalworks)."
-#~ msgstr ""
-#~ "Vasércböl és szénböl a kohász vasat csinál. Ebböl fegyverek és eszközök "
-#~ "készülnek."
-
-#~ msgid "Resolution :"
-#~ msgstr "Felbontás :"
-
-#~ msgid "Resolution:"
-#~ msgstr "Felbontás:"
-
-#~ msgid "Save"
-#~ msgstr "Mentés"
-
-#~ msgid "Series sequence"
-#~ msgstr "Sorrendek"
-
-#~ msgid ""
-#~ "Singleplayer mode and AI are not yet implemented. Please use the "
-#~ "Multiplayer mode and 'Direct IP' to create a Singleplayer game."
-#~ msgstr ""
-#~ "Az egyjátékos mód és a mesterséges intelligencia még nincs kész. Használd "
-#~ "a többjátékos módot és a 'Direct IP' módban csinálhatsz egyszemélyes "
-#~ "játékot."
-
-#~ msgid "Sotham"
-#~ msgstr "Sotham"
-
-#~ msgid "The Settlers II.5 RTTR"
-#~ msgstr "The Settlers II.5 RTTR"
-
-#~ msgid "The Settlers II.5 RTTR, v%s-%s"
-#~ msgstr "The Settlers II.5 RTTR, v%s-%s"
-
-#~ msgid ""
-#~ "The carpenter turns the woodcutter's logs into made-to-measure planks. "
-#~ "There form the basic for building houses and ships."
-#~ msgstr ""
-#~ "A fürész csinál deszkákat a kivágott fákból. Ezek epítkezéshez és "
-#~ "hajógyártáshoz kellenek."
-
-#~ msgid ""
-#~ "The quarrying of stone in a granite mine guarantees the supply of stone "
-#~ "for buildings. However, eben a granite mine has to feed its workers."
-#~ msgstr ""
-#~ "A gránitbányából kifejthető kövek szolgáltatják a követ az épületekhez. "
-#~ "Azonban a bányászoknak élelemre van szükségük a munkához."
-
-#~ msgid "VSync:"
-#~ msgstr "VSync:"
-
-#~ msgid "When attack"
-#~ msgstr "Támadáskor"
-
-#~ msgid "You are not allowed to change the standard playlist!"
-#~ msgstr "Nem változtathatod meg az alap listát!"
-
-#~ msgid "Zwoks-Stef"
-#~ msgstr "Zwoks-Stef"
-
-#~ msgid "do nothing"
-#~ msgstr "semmit se csinál"
-
-#~ msgid "liwo"
-#~ msgstr "liwo"
-
-#~ msgid "morlock"
-#~ msgstr "morlock"
-
-#~ msgid "muhahahaha"
-#~ msgstr "muhahahaha"
-
-#~ msgid "° 2005 - 2008 Settlers Freaks"
-#~ msgstr "° 2005 - 2008 Settlers Freaks"
