@@ -1,5 +1,5 @@
 #################################################################################
-### $Id: CMakeLists.txt 7104 2011-03-29 13:44:22Z FloSoft $
+### $Id: CMakeLists.txt 7506 2011-09-07 13:16:08Z FloSoft $
 #################################################################################
 
 INCLUDE(FindSDL)
@@ -14,7 +14,7 @@ IF (SDL_FOUND)
 	INCLUDE(AddFileDependencies)
 	ADD_FILE_DEPENDENCIES(../../../../build_version.cpp ${CMAKE_BINARY_DIR}/build_version.h)
 
-	ADD_LIBRARY(videoSDL SHARED SDL.cpp SDL.h main.h oem.cpp oem.h ../../../../build_version.cpp ../../../src/DriverInterface.cpp)
+	ADD_LIBRARY(videoSDL SHARED SDL.cpp SDL.h main.h ../../../../build_version.cpp ../../../src/DriverInterface.cpp)
 
 	ADD_FLAGS(CMAKE_C_FLAGS -I${SDL_INCLUDE_DIR})
 	ADD_FLAGS(CMAKE_CXX_FLAGS -I${SDL_INCLUDE_DIR})
