@@ -1,4 +1,4 @@
-// $Id: ctrlEdit.cpp 7373 2011-08-13 10:03:29Z OLiver $
+// $Id: ctrlEdit.cpp 7502 2011-09-07 12:44:43Z FloSoft $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -303,7 +303,7 @@ bool ctrlEdit::Msg_KeyDown(const KeyEvent& ke)
 
 	case KT_CHAR: // Zeichen eingegeben
 		{
-			if(!disabled && font->CharExist(ke.c))
+			if(!disabled && font->CharExist( (ke.c & 0xFF) ))
 				AddChar(ke.c);
 		} break;
 
