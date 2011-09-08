@@ -1,4 +1,4 @@
-// $Id: glArchivItem_Font.cpp 7516 2011-09-08 09:38:31Z FloSoft $
+// $Id: glArchivItem_Font.cpp 7517 2011-09-08 16:33:17Z marcus $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -101,7 +101,7 @@ void glArchivItem_Font::DrawChar(const std::string& text,
 		char_info ci = CharInfo(c);
 
 		float tx1 = (float)(ci.x) / tw;
-		float tx2 = (float)(ci.x + CharWidth(c)) / tw;
+		float tx2 = (float)(ci.x + ci.width) / tw;
 		float ty1 = (float)(ci.y) / th;
 		float ty2 = (float)(ci.y + dy) / th;
 
@@ -126,7 +126,7 @@ void glArchivItem_Font::DrawChar(const std::string& text,
 		tmp[idx].tx = tx2;
 		tmp[idx].ty = ty2;
 
-		tmp[idx].x = (GLfloat)(cx + CharWidth(c));
+		tmp[idx].x = (GLfloat)(cx + ci.width);
 		tmp[idx].y = (GLfloat)(cy + dy);
 		tmp[idx].z = 0.0f;
 
@@ -135,13 +135,13 @@ void glArchivItem_Font::DrawChar(const std::string& text,
 		tmp[idx].tx = tx2;
 		tmp[idx].ty = ty1;
 
-		tmp[idx].x = (GLfloat)(cx + CharWidth(c));
+		tmp[idx].x = (GLfloat)(cx + ci.width);
 		tmp[idx].y = cy;
 		tmp[idx].z = 0.0f;
 
 		idx++;
 
-		cx += CharWidth(c);
+		cx += ci.width;
 	}
 }
 
