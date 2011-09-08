@@ -1,5 +1,5 @@
 ################################################################################
-### $Id: CMakeLists.txt 7410 2011-08-25 12:08:21Z marcus $
+### $Id: CMakeLists.txt 7522 2011-09-08 20:57:56Z FloSoft $
 ################################################################################
 
 INCLUDE(FindBZip2)
@@ -241,7 +241,7 @@ SET(SOURCES_OTHER
 	GameSavedFile.cpp                   GameSavedFile.h
 	GameReplay.cpp                      GameReplay.h
 	GameSavegame.cpp                    GameSavegame.h
-	GameInterface.cpp                   GameInterface.h
+	                                    GameInterface.h
 	GameManager.cpp                     GameManager.h
 	GameMessage.cpp                     GameMessage.h
 	GameMessageInterface.cpp            GameMessageInterface.h
