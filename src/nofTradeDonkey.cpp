@@ -1,7 +1,7 @@
-#include <stdafx.h>
+
 #include "main.h"
 
-#include <stdafx.h>
+
 #include "main.h"
 #include "nofTradeDonkey.h"
 #include "nofTradeLeader.h"

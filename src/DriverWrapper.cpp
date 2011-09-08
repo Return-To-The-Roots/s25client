@@ -1,6 +1,6 @@
-// $Id: DriverWrapper.cpp 7091 2011-03-27 10:57:38Z OLiver $
+// $Id: DriverWrapper.cpp 7521 2011-09-08 20:45:55Z FloSoft $
 //
-// Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -19,9 +19,9 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include <stdafx.h>
 #include "main.h"
-#include "VideoDriverWrapper.h"
+#include "DriverWrapper.h"
+
 #include "ListDir.h"
 #include "files.h"
 #include "../driver/src/Interface.h"
@@ -102,7 +102,7 @@ bool DriverWrapper::Load(const DriverType dt, std::string& preference)
 		if(it->GetName() == preference)
 		{
 			// Dann den gleich nehmen
-			dll = LoadLibrary(it->GetFile().c_str());
+			dll = LoadLibraryA(it->GetFile().c_str());
 			break;
 		}
 	}
@@ -110,7 +110,7 @@ bool DriverWrapper::Load(const DriverType dt, std::string& preference)
 	// ersten Treiber laden
 	if(!dll)
 	{
-		dll = LoadLibrary(drivers.begin()->GetFile().c_str());
+		dll = LoadLibraryA(drivers.begin()->GetFile().c_str());
 
 		// Standardwert zuweisen
 		preference = drivers.begin()->GetName();
@@ -178,15 +178,15 @@ void DriverWrapper::LoadDriverList(const DriverType dt, list<DriverItem>& driver
 		{
 			std::string file = path.substr(filepos+1);
 #ifdef _DEBUG
-			if(file.substr(0, 4) == "rls_")
+			if(file.substr(0, 4) == "rls_" || file.substr(0, 8) == "Release_")
 #else
-			if(file.substr(0, 4) == "dbg_")
+			if(file.substr(0, 4) == "dbg_" || file.substr(0, 6) == "Debug_")
 #endif
 				continue;
 		}
 #endif
 
-		if( (dll = LoadLibrary(path.c_str())) )
+		if( (dll = LoadLibraryA(path.c_str())) )
 		{
 			PDRIVER_GETDRIVERAPIVERSION GetDriverAPIVersion = pto2ptf<PDRIVER_GETDRIVERAPIVERSION>((void*)GetProcAddress(dll, "GetDriverAPIVersion"));
 

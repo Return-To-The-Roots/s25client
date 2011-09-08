@@ -1,6 +1,6 @@
-// $Id: ctrlEdit.cpp 7502 2011-09-07 12:44:43Z FloSoft $
+// $Id: ctrlEdit.cpp 7521 2011-09-08 20:45:55Z FloSoft $
 //
-// Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -19,7 +19,6 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include <stdafx.h>
 #include "main.h"
 #include "ctrlEdit.h"
 
@@ -71,7 +70,7 @@ void ctrlEdit::SetText(const std::string& text)
 	cursor_pos = 0;
 	view_start = 0;
 
-	this->text = "";
+	this->text = L"";
 
 	for(unsigned i = 0; i < unsigned(text.length()); ++i)
 		AddChar(text.at(i));
@@ -85,10 +84,18 @@ void ctrlEdit::SetText(const unsigned int text)
 	cursor_pos = 0;
 	view_start = 0;
 
-	this->text = "";
+	this->text = L"";
 
 	for(unsigned i = 0; i < unsigned(textt.str().length()); ++i)
 		AddChar(textt.str().at(i));
+}
+
+const std::string ctrlEdit::GetText(void) const
+{
+	std::string t;
+	for(unsigned int i = 0; i < text.length(); ++i)
+		t += font->Unicode_to_Utf8(text[i]);
+	return t;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -104,11 +111,11 @@ bool ctrlEdit::Draw_(void)
 	// Box malen
 	Draw3D(GetX(), GetY(), width, height, tc, 2);
 
-	std::string dtext;
+	std::wstring dtext;
 
 	// Text zeichnen
 	if(password)
-		dtext = std::string(text.length(), '*');
+		dtext = std::wstring(text.length(), '*');
 	else
 		dtext = text;
 
@@ -163,7 +170,7 @@ bool ctrlEdit::Draw_(void)
  *
  *  @author FloSoft
  */
-void ctrlEdit::AddChar(char c)
+void ctrlEdit::AddChar(unsigned int c)
 {
 	// Number-only text fields accept numbers only ;)
 	if(number_only && !(c>='0'&&c<='9'))
@@ -272,15 +279,25 @@ bool ctrlEdit::Msg_KeyDown(const KeyEvent& ke)
 			if(ke.ctrl)
 			{
 				// Erst über alle Trennzeichen hinweg
-				while (cursor_pos > 0 && std::string(" \t\n-+=").find(text[cursor_pos-1]) != std::string::npos)
+				while (cursor_pos > 0 && std::wstring(L" \t\n-+=").find(text[cursor_pos-1]) != std::wstring::npos)
+				{
 					CursorLeft();
+					if(cursor_pos == 0)
+						break;
+				}
+
 				// Und dann über alles, was kein Trenner ist
-				while (cursor_pos > 0 && std::string(" \t\n-+=").find(text[cursor_pos-1]) == std::string::npos)
+				while (cursor_pos > 0 && std::wstring(L" \t\n-+=").find(text[cursor_pos-1]) == std::wstring::npos)
+				{
 					CursorLeft();
+					if(cursor_pos == 0)
+						break;
+				}
 			}
+
 			// Sonst nur einen Schritt
-				if (cursor_pos > 0)
-					CursorLeft();
+			if (cursor_pos > 0)
+				CursorLeft();
 		} break;
 
 	case KT_RIGHT: // Cursor nach Rechts
@@ -289,21 +306,29 @@ bool ctrlEdit::Msg_KeyDown(const KeyEvent& ke)
 			if(ke.ctrl)
 			{
 				// Erst über alle Trennzeichen hinweg
-				while (cursor_pos < text.length() && std::string(" \t\n-+=").find(text[cursor_pos+1]) != std::string::npos)
+				while (cursor_pos+1 < text.length() && std::wstring(L" \t\n-+=").find(text[cursor_pos+1]) != std::wstring::npos)
+				{
 					CursorRight();
+					if(cursor_pos == text.length())
+						break;
+				}
 				// Und dann über alles, was kein Trenner ist
-				while (cursor_pos < text.length() && std::string(" \t\n-+=").find(text[cursor_pos+1]) == std::string::npos)
+				while (cursor_pos+1 < text.length() && std::wstring(L" \t\n-+=").find(text[cursor_pos+1]) == std::wstring::npos)
+				{
 					CursorRight();
+					if(cursor_pos == text.length())
+						break;
+				}
 			}
-			else
+			
 			// Sonst nur einen Schritt
-				if (cursor_pos < text.length())
-					CursorRight();
+			if (cursor_pos < text.length())
+				CursorRight();
 		} break;
 
 	case KT_CHAR: // Zeichen eingegeben
 		{
-			if(!disabled && font->CharExist( (ke.c & 0xFF) ))
+			if(!disabled && font->CharExist( ke.c ))
 				AddChar(ke.c);
 		} break;
 

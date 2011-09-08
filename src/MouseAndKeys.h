@@ -1,4 +1,4 @@
-// $Id: MouseAndKeys.h 6458 2010-05-31 11:38:51Z FloSoft $
+// $Id: MouseAndKeys.h 7521 2011-09-08 20:45:55Z FloSoft $
 //
 // Copyright (c) 20052008 Settlers Freaks (sfteam at siedler25.org)
 //
@@ -73,7 +73,7 @@ enum KeyType
 struct KeyEvent
 {
 	KeyType kt;
-	char c;
+	unsigned int c;
 	bool ctrl,shift,alt;
 };
 

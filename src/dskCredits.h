@@ -1,6 +1,6 @@
-// $Id: dskCredits.h 6929 2010-12-23 18:12:49Z OLiver $
+// $Id: dskCredits.h 7521 2011-09-08 20:45:55Z FloSoft $
 //
-// Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //

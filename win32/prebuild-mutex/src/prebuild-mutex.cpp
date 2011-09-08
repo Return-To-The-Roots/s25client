@@ -1,6 +1,6 @@
-// $Id: prebuild-mutex.cpp 7500 2011-09-07 12:42:25Z FloSoft $
+// $Id: prebuild-mutex.cpp 7521 2011-09-08 20:45:55Z FloSoft $
 //
-// Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -71,13 +71,16 @@ void copyfile(std::string file, std::string from, std::string to, std::string to
 	std::cout << "copying file \"" << file << "\" from \"" << from << "\" to file \"" << tofile << "\" in \"" << to << "\": ";
 	from += file;
 	to += tofile;
-	std::cout << (CopyFile(from.c_str(), to.c_str(), FALSE) ? "ok" : "failed") << std::endl;
+	std::cout << (CopyFileA(from.c_str(), to.c_str(), FALSE) ? "ok" : "failed") << std::endl;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  usage: argv[0] $uniqueid $prebuild-script $params
- *  example: prebuild-mutex projectname prebuild.bat a b c
+ *  usage: argv[0] $uniqueid $workingdir $binarydir
+ *  example:
+ *
+ *  "$(OutDir)prebuild-mutex.exe" "prebuild" "$(SolutionName)" "$(ProjectName)" "$(ProjectDir)..\..\.." "$(OutDir)"
+ *  "$(OutDir)prebuild-mutex.exe" "postbuild" "$(SolutionName)" "$(ProjectName)" "$(ProjectDir)..\..\.." "$(OutDir)"
  *
  *  @author FloSoft
  */
@@ -101,19 +104,20 @@ int main(int argc, char *argv[])
 		prebuild = true;
 
 	string mutexname = (prebuild ? "prebuild" : "postbuild") + args.at(2);
-	string working = args.at(3);
-	string binary = args.at(4);
+	string project = args.at(3);
+	string working = args.at(4);
+	string binary = args.at(5);
 
 	if(working.at(working.length()-1) != '\\')
 		working += "\\";
 	if(binary.at(binary.length()-1) != '\\')
 		binary += "\\";
 
-	std::cout << (prebuild ? "prebuild" : "postbuild") << "-mutex started" << std::endl;
+	std::cout << (prebuild ? "prebuild" : "postbuild") << "-mutex for " << project << " started" << std::endl;
 	//std::cout << "working in " << working << std::endl;
 	//std::cout << "binary dir is " << binary << std::endl;
 
-	SetCurrentDirectory(working.c_str());
+	SetCurrentDirectoryA(working.c_str());
 
 	HANDLE mHandle; 
 
@@ -122,7 +126,7 @@ int main(int argc, char *argv[])
 	int timeout = 0;
 	do
 	{
-		mHandle = CreateMutex(NULL, true, mutexname.c_str()); 
+		mHandle = CreateMutexA(NULL, true, mutexname.c_str()); 
 
 		if(mHandle != NULL)
 		{ 
@@ -146,43 +150,52 @@ int main(int argc, char *argv[])
 						cmd = "\"" + binary + "version.exe\"";
 						exec(cmd);
 
-						std::cout << "creating language files" << std::endl;
-
-						std::vector<std::string> langs;
-
-						HANDLE hFile;
-						WIN32_FIND_DATA wfd;
-
-						hFile = FindFirstFile("RTTR\\languages\\*.po", &wfd);
-						if(hFile != INVALID_HANDLE_VALUE)
+						if(project == "s25client")
 						{
-							do
+							std::cout << "creating language files" << std::endl;
+
+							std::vector<std::string> langs;
+
+							HANDLE hFile;
+							WIN32_FIND_DATAA wfd;
+
+							hFile = FindFirstFileA("RTTR\\languages\\*.po", &wfd);
+							if(hFile != INVALID_HANDLE_VALUE)
 							{
-								std::string lang = wfd.cFileName;
-								lang = lang.substr(0, lang.find_last_of('.'));
-								langs.push_back(lang);
-							} while(FindNextFile(hFile, &wfd));
+								do
+								{
+									std::string lang = wfd.cFileName;
+									lang = lang.substr(0, lang.find_last_of('.'));
+									langs.push_back(lang);
+								} while(FindNextFileA(hFile, &wfd));
 
-							FindClose(hFile);
-						}
+								FindClose(hFile);
+							}
 
-						for(std::vector<std::string>::iterator it = langs.begin(); it != langs.end(); ++it)
-						{
-							std::cout << "creating language " << (*it) << std::endl;
+							for(std::vector<std::string>::iterator it = langs.begin(); it != langs.end(); ++it)
+							{
+								std::cout << "creating language " << (*it) << std::endl;
 
-							cmd = "msgmerge --sort-output --no-wrap --quiet --update --backup=none -s RTTR/languages/" + (*it) + ".po RTTR/languages/rttr.pot";
-							exec(cmd);
-							cmd = "msgfmt -o RTTR/languages/" + (*it) + ".mo RTTR/languages/" + (*it) + ".po";
-							exec(cmd);
+								cmd = "msgmerge --sort-output --no-wrap --quiet --update --backup=none -s RTTR/languages/" + (*it) + ".po RTTR/languages/rttr.pot";
+								exec(cmd);
+								cmd = "msgfmt -o RTTR/languages/" + (*it) + ".mo RTTR/languages/" + (*it) + ".po";
+								exec(cmd);
+							}
 						}
 					}
 					else
 					{
-						copyfile("sound-convert.exe", binary, working + "RTTR\\");
-						copyfile("s-c_resample.exe", binary, working + "RTTR\\");
-						copyfile("libsiedler2.dll", binary, working + "RTTR\\");
+						if(project == "s25client")
+						{
+							copyfile("sound-convert.exe", binary, working + "RTTR\\");
+							copyfile("s-c_resample.exe", binary, working + "RTTR\\");
+							copyfile("libsiedler2.dll", binary, working + "RTTR\\");
+						}
 					}
 				}
+
+				std::cout << (prebuild ? "prebuild" : "postbuild") << "-mutex for " << project << " finished" << std::endl;
+				std::cout << std::endl;
 
 				ReleaseMutex(mHandle);
 				return 0;

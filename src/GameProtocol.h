@@ -1,6 +1,6 @@
-// $Id: GameProtocol.h 7040 2011-02-16 23:23:20Z jh $
+// $Id: GameProtocol.h 7521 2011-09-08 20:45:55Z FloSoft $
 //
-// Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //

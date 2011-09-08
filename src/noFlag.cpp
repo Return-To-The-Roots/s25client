@@ -1,6 +1,6 @@
-// $Id: noFlag.cpp 7495 2011-09-06 07:37:54Z marcus $
+// $Id: noFlag.cpp 7521 2011-09-08 20:45:55Z FloSoft $
 //
-// Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -19,7 +19,6 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include <stdafx.h>
 #include "main.h"
 #include "noFlag.h"
 

@@ -1,6 +1,6 @@
-// $Id: noFigure.h 6903 2010-12-18 21:41:50Z OLiver $
+// $Id: noFigure.h 7521 2011-09-08 20:45:55Z FloSoft $
 //
-// Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //

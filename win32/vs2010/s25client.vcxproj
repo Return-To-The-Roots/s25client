@@ -11,118 +11,92 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{3BE5D05B-EEDF-4B5E-BCC1-E7086D9D5A29}</ProjectGuid>
-    <RootNamespace>Siedler 2.5 RTTR</RootNamespace>
+    <ProjectGuid>{B42E552A-1422-446A-96F9-0D649B078DCB}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
+    <RootNamespace>s25client</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <CharacterSet>NotSet</CharacterSet>
-    <WholeProgramOptimization>PGUpdate</WholeProgramOptimization>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <CharacterSet>NotSet</CharacterSet>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup>
-    <_ProjectFileVersion>10.0.21006.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)$(Configuration)\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration)\</IntDir>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)$(Configuration)\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\</IntDir>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <PreBuildEvent>
-      <Command>"$(OutDir)prebuild-mutex.exe" "prebuild" "$(SolutionName)" "$(ProjectDir)..\.." "$(OutDir)"</Command>
-    </PreBuildEvent>
     <ClCompile>
-      <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
-      <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_VC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ExceptionHandling>Async</ExceptionHandling>
-      <SmallerTypeCheck>true</SmallerTypeCheck>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <PrecompiledHeaderFile>
-      </PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
-      <DisableSpecificWarnings>4996;4355;4250;4512;6385;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..;$(ProjectDir)..\..\libutil\src;$(ProjectDir)..\..\mygettext\src;$(ProjectDir)..\..\liblobby\src;$(ProjectDir)..\..\libsiedler2\src;$(ProjectDir)..\..\libendian\src</AdditionalIncludeDirectories>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <DisableSpecificWarnings>4996;4250;4355;</DisableSpecificWarnings>
+      <AdditionalIncludeDirectories>$(ProjectDir)\..\..;$(ProjectDir)\..\..\libendian\src;$(ProjectDir)\..\..\libsiedler2\src;$(ProjectDir)\..\..\mygettext\src;$(ProjectDir)\..\..\libutil\src;$(ProjectDir)\..\..\liblobby\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PrecompiledHeaderFile>main.h</PrecompiledHeaderFile>
+      <AdditionalOptions>
+      </AdditionalOptions>
     </ClCompile>
     <Link>
-      <AdditionalOptions>/fixed:no %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>opengl32.lib;libbz2.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
-      <RandomizedBaseAddress>false</RandomizedBaseAddress>
-      <DataExecutionPrevention>
-      </DataExecutionPrevention>
-      <TargetMachine>MachineX86</TargetMachine>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>opengl32.lib;shlwapi.lib;libbz2.lib;$(OutDir)\libendian.lib;$(OutDir)\libsiedler2.lib;$(OutDir)\libutil.lib;$(OutDir)\mygettext.lib;$(OutDir)\liblobby_c.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PreBuildEvent>
+      <Command>"$(OutDir)prebuild-mutex.exe" "prebuild" "$(SolutionName)" "$(ProjectName)" "$(ProjectDir)\..\.." "$(OutDir)"</Command>
+    </PreBuildEvent>
     <PostBuildEvent>
-      <Command>"$(OutDir)prebuild-mutex.exe" "postbuild" "$(SolutionName)" "$(ProjectDir)..\.." "$(OutDir)"</Command>
+      <Command>"$(OutDir)prebuild-mutex.exe" "postbuild" "$(SolutionName)" "$(ProjectName)" "$(ProjectDir)\..\.." "$(OutDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <PreBuildEvent>
-      <Command>"$(OutDir)prebuild-mutex.exe" "prebuild" "$(SolutionName)" "$(ProjectDir)..\.." "$(OutDir)"</Command>
-    </PreBuildEvent>
     <ClCompile>
-      <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
-      <Optimization>Full</Optimization>
-      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <OmitFramePointers>true</OmitFramePointers>
-      <WholeProgramOptimization>true</WholeProgramOptimization>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <StringPooling>true</StringPooling>
-      <MinimalRebuild>false</MinimalRebuild>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <BufferSecurityCheck>false</BufferSecurityCheck>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <BrowseInformation>true</BrowseInformation>
       <WarningLevel>Level3</WarningLevel>
-      <TreatWarningAsError>true</TreatWarningAsError>
-      <DebugInformationFormat>
-      </DebugInformationFormat>
-      <DisableSpecificWarnings>4996;4355;4250;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..;$(ProjectDir)..\..\libutil\src;$(ProjectDir)..\..\mygettext\src;$(ProjectDir)..\..\liblobby\src;$(ProjectDir)..\..\libsiedler2\src;$(ProjectDir)..\..\libendian\src</AdditionalIncludeDirectories>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <DisableSpecificWarnings>4996;4250;4355;</DisableSpecificWarnings>
+      <AdditionalIncludeDirectories>$(ProjectDir)\..\..;$(ProjectDir)\..\..\libendian\src;$(ProjectDir)\..\..\libsiedler2\src;$(ProjectDir)\..\..\mygettext\src;$(ProjectDir)\..\..\libutil\src;$(ProjectDir)\..\..\liblobby\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <PrecompiledHeaderFile>main.h</PrecompiledHeaderFile>
+      <AdditionalOptions>
+      </AdditionalOptions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>opengl32.lib;libbz2.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <GenerateDebugInformation>false</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
-      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <RandomizedBaseAddress>false</RandomizedBaseAddress>
-      <DataExecutionPrevention>
-      </DataExecutionPrevention>
-      <TargetMachine>MachineX86</TargetMachine>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>opengl32.lib;shlwapi.lib;libbz2.lib;$(OutDir)\libendian.lib;$(OutDir)\libsiedler2.lib;$(OutDir)\libutil.lib;$(OutDir)\mygettext.lib;$(OutDir)\liblobby_c.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PreBuildEvent>
+      <Command>"$(OutDir)prebuild-mutex.exe" "prebuild" "$(SolutionName)" "$(ProjectName)" "$(ProjectDir)\..\.." "$(OutDir)"</Command>
+    </PreBuildEvent>
     <PostBuildEvent>
-      <Command>"$(OutDir)prebuild-mutex.exe" "postbuild" "$(SolutionName)" "$(ProjectDir)..\.." "$(OutDir)"</Command>
+      <Command>"$(OutDir)prebuild-mutex.exe" "postbuild" "$(SolutionName)" "$(ProjectName)" "$(ProjectDir)\..\.." "$(OutDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\build_version.h" />
+    <ClInclude Include="..\..\src\AddonAdjustMilitaryStrength.h" />
     <ClInclude Include="..\..\src\AddonAIDebugWindow.h" />
     <ClInclude Include="..\..\src\AddonCatapultGraphics.h" />
     <ClInclude Include="..\..\src\AddonChangeGoldDeposits.h" />
@@ -140,6 +114,7 @@
     <ClInclude Include="..\..\src\AddonRefundOnEmergency.h" />
     <ClInclude Include="..\..\src\Addons.h" />
     <ClInclude Include="..\..\src\AddonStatisticsVisibility.h" />
+    <ClInclude Include="..\..\src\AddonTrade.h" />
     <ClInclude Include="..\..\src\AIBase.h" />
     <ClInclude Include="..\..\src\AIConstruction.h" />
     <ClInclude Include="..\..\src\AIEventManager.h" />
@@ -148,29 +123,15 @@
     <ClInclude Include="..\..\src\AIPlayer.h" />
     <ClInclude Include="..\..\src\AIPlayerJH.h" />
     <ClInclude Include="..\..\src\AIResourceMap.h" />
+    <ClInclude Include="..\..\src\AudioDriverLoaderInterface.h" />
+    <ClInclude Include="..\..\src\AudioDriverWrapper.h" />
+    <ClInclude Include="..\..\src\BuildingConsts.h" />
+    <ClInclude Include="..\..\src\BurnedWarehouse.h" />
+    <ClInclude Include="..\..\src\CatapultStone.h" />
+    <ClInclude Include="..\..\src\ClientInterface.h" />
+    <ClInclude Include="..\..\src\CollisionDetection.h" />
     <ClInclude Include="..\..\src\const_addons.h" />
     <ClInclude Include="..\..\src\const_gui_ids.h" />
-    <ClInclude Include="..\..\src\ctrlMultiSelectGroup.h" />
-    <ClInclude Include="..\..\src\Desktop.h" />
-    <ClInclude Include="..\..\src\dskUnlimitedPlay.h" />
-    <ClInclude Include="..\..\src\GameReplay.h" />
-    <ClInclude Include="..\..\src\GameSavedFile.h" />
-    <ClInclude Include="..\..\src\GameSavegame.h" />
-    <ClInclude Include="..\..\src\IngameWindow.h" />
-    <ClInclude Include="..\..\src\iwAddons.h" />
-    <ClInclude Include="..\..\src\iwAIDebug.h" />
-    <ClInclude Include="..\..\src\iwMerchandiseStatistics.h" />
-    <ClInclude Include="..\..\src\iwObservate.h" />
-    <ClInclude Include="..\..\src\iwTrade.h" />
-    <ClInclude Include="..\..\src\noCharburnerPile.h" />
-    <ClInclude Include="..\..\src\nofCharburner.h" />
-    <ClInclude Include="..\..\src\nofTradeDonkey.h" />
-    <ClInclude Include="..\..\src\nofTradeLeader.h" />
-    <ClInclude Include="..\..\src\PostMsg.h" />
-    <ClInclude Include="..\..\src\TradeGraph.h" />
-    <ClInclude Include="..\..\src\win32_nanosleep.h" />
-    <ClInclude Include="..\..\src\Window.h" />
-    <ClInclude Include="..\..\src\WindowManager.h" />
     <ClInclude Include="..\..\src\controls.h" />
     <ClInclude Include="..\..\src\ctrlBuildingIcon.h" />
     <ClInclude Include="..\..\src\ctrlButton.h" />
@@ -185,6 +146,7 @@
     <ClInclude Include="..\..\src\ctrlList.h" />
     <ClInclude Include="..\..\src\ctrlMinimap.h" />
     <ClInclude Include="..\..\src\ctrlMultiline.h" />
+    <ClInclude Include="..\..\src\ctrlMultiSelectGroup.h" />
     <ClInclude Include="..\..\src\ctrlOptionGroup.h" />
     <ClInclude Include="..\..\src\ctrlPercent.h" />
     <ClInclude Include="..\..\src\ctrlPreviewMinimap.h" />
@@ -197,6 +159,10 @@
     <ClInclude Include="..\..\src\ctrlTimer.h" />
     <ClInclude Include="..\..\src\ctrlVarDeepening.h" />
     <ClInclude Include="..\..\src\ctrlVarText.h" />
+    <ClInclude Include="..\..\src\customborderbuilder.h" />
+    <ClInclude Include="..\..\src\Desktop.h" />
+    <ClInclude Include="..\..\src\DoorConsts.h" />
+    <ClInclude Include="..\..\src\DriverWrapper.h" />
     <ClInclude Include="..\..\src\dskAboutRTTR.h" />
     <ClInclude Include="..\..\src\dskCredits.h" />
     <ClInclude Include="..\..\src\dskDirectIP.h" />
@@ -211,7 +177,53 @@
     <ClInclude Include="..\..\src\dskSelectMap.h" />
     <ClInclude Include="..\..\src\dskSinglePlayer.h" />
     <ClInclude Include="..\..\src\dskSplash.h" />
+    <ClInclude Include="..\..\src\dskUnlimitedPlay.h" />
+    <ClInclude Include="..\..\src\EventManager.h" />
+    <ClInclude Include="..\..\src\ExtensionList.h" />
+    <ClInclude Include="..\..\src\FileChecksum.h" />
+    <ClInclude Include="..\..\src\FOWObjects.h" />
+    <ClInclude Include="..\..\src\GameClient.h" />
+    <ClInclude Include="..\..\src\GameClientPlayer.h" />
+    <ClInclude Include="..\..\src\GameCommands.h" />
+    <ClInclude Include="..\..\src\GameConsts.h" />
+    <ClInclude Include="..\..\src\GameInterface.h" />
+    <ClInclude Include="..\..\src\GameManager.h" />
+    <ClInclude Include="..\..\src\GameMessage.h" />
+    <ClInclude Include="..\..\src\GameMessageInterface.h" />
+    <ClInclude Include="..\..\src\GameMessages.h" />
+    <ClInclude Include="..\..\src\GameObject.h" />
+    <ClInclude Include="..\..\src\GamePlayerInfo.h" />
+    <ClInclude Include="..\..\src\GamePlayerList.h" />
+    <ClInclude Include="..\..\src\GameProtocol.h" />
+    <ClInclude Include="..\..\src\GameReplay.h" />
+    <ClInclude Include="..\..\src\GameSavedFile.h" />
+    <ClInclude Include="..\..\src\GameSavegame.h" />
+    <ClInclude Include="..\..\src\GameServer.h" />
+    <ClInclude Include="..\..\src\GameServerPlayer.h" />
+    <ClInclude Include="..\..\src\GameWorld.h" />
+    <ClInclude Include="..\..\src\GammaTable.h" />
+    <ClInclude Include="..\..\src\glAllocator.h" />
+    <ClInclude Include="..\..\src\glArchivItem_Bitmap.h" />
+    <ClInclude Include="..\..\src\glArchivItem_Bitmap_Direct.h" />
+    <ClInclude Include="..\..\src\glArchivItem_Bitmap_Player.h" />
+    <ClInclude Include="..\..\src\glArchivItem_Bitmap_Raw.h" />
+    <ClInclude Include="..\..\src\glArchivItem_Bitmap_RLE.h" />
+    <ClInclude Include="..\..\src\glArchivItem_Bitmap_Shadow.h" />
+    <ClInclude Include="..\..\src\glArchivItem_Bob.h" />
+    <ClInclude Include="..\..\src\glArchivItem_Font.h" />
+    <ClInclude Include="..\..\src\glArchivItem_Map.h" />
+    <ClInclude Include="..\..\src\glArchivItem_Music.h" />
+    <ClInclude Include="..\..\src\glArchivItem_Sound.h" />
+    <ClInclude Include="..\..\src\glArchivItem_Sound_Midi.h" />
+    <ClInclude Include="..\..\src\glArchivItem_Sound_Other.h" />
+    <ClInclude Include="..\..\src\glArchivItem_Sound_Wave.h" />
+    <ClInclude Include="..\..\src\glArchivItem_Sound_XMidi.h" />
+    <ClInclude Include="..\..\src\GlobalGameSettings.h" />
+    <ClInclude Include="..\..\src\GlobalVars.h" />
+    <ClInclude Include="..\..\src\IngameWindow.h" />
     <ClInclude Include="..\..\src\iwAction.h" />
+    <ClInclude Include="..\..\src\iwAddons.h" />
+    <ClInclude Include="..\..\src\iwAIDebug.h" />
     <ClInclude Include="..\..\src\iwBaseWarehouse.h" />
     <ClInclude Include="..\..\src\iwBuilding.h" />
     <ClInclude Include="..\..\src\iwBuildingProductivities.h" />
@@ -233,11 +245,13 @@
     <ClInclude Include="..\..\src\iwLobbyRanking.h" />
     <ClInclude Include="..\..\src\iwLobbyServerInfo.h" />
     <ClInclude Include="..\..\src\iwMainMenu.h" />
+    <ClInclude Include="..\..\src\iwMerchandiseStatistics.h" />
     <ClInclude Include="..\..\src\iwMilitary.h" />
     <ClInclude Include="..\..\src\iwMilitaryBuilding.h" />
     <ClInclude Include="..\..\src\iwMinimap.h" />
     <ClInclude Include="..\..\src\iwMsgbox.h" />
     <ClInclude Include="..\..\src\iwMusicPlayer.h" />
+    <ClInclude Include="..\..\src\iwObservate.h" />
     <ClInclude Include="..\..\src\iwOptionsWindow.h" />
     <ClInclude Include="..\..\src\iwPlayReplay.h" />
     <ClInclude Include="..\..\src\iwPleaseWait.h" />
@@ -252,63 +266,28 @@
     <ClInclude Include="..\..\src\iwSurrender.h" />
     <ClInclude Include="..\..\src\iwTextfile.h" />
     <ClInclude Include="..\..\src\iwTools.h" />
+    <ClInclude Include="..\..\src\iwTrade.h" />
     <ClInclude Include="..\..\src\iwTransport.h" />
     <ClInclude Include="..\..\src\iwWares.h" />
-    <ClInclude Include="..\..\src\CollisionDetection.h" />
-    <ClInclude Include="..\..\src\customborderbuilder.h" />
-    <ClInclude Include="..\..\src\FileChecksum.h" />
+    <ClInclude Include="..\..\src\JobConsts.h" />
+    <ClInclude Include="..\..\src\languages.h" />
     <ClInclude Include="..\..\src\list.h" />
     <ClInclude Include="..\..\src\ListDir.h" />
-    <ClInclude Include="..\..\src\PointDistance.h" />
-    <ClInclude Include="..\..\src\Random.h" />
-    <ClInclude Include="..\..\src\Swap.h" />
     <ClInclude Include="..\..\src\Loader.h" />
-    <ClInclude Include="..\..\src\glAllocator.h" />
-    <ClInclude Include="..\..\src\glArchivItem_Bitmap.h" />
-    <ClInclude Include="..\..\src\glArchivItem_Bitmap_Direct.h" />
-    <ClInclude Include="..\..\src\glArchivItem_Bitmap_Player.h" />
-    <ClInclude Include="..\..\src\glArchivItem_Bitmap_Raw.h" />
-    <ClInclude Include="..\..\src\glArchivItem_Bitmap_RLE.h" />
-    <ClInclude Include="..\..\src\glArchivItem_Bitmap_Shadow.h" />
-    <ClInclude Include="..\..\src\glArchivItem_Bob.h" />
-    <ClInclude Include="..\..\src\glArchivItem_Font.h" />
-    <ClInclude Include="..\..\src\glArchivItem_Map.h" />
-    <ClInclude Include="..\..\src\glArchivItem_Music.h" />
-    <ClInclude Include="..\..\src\glArchivItem_Sound.h" />
-    <ClInclude Include="..\..\src\glArchivItem_Sound_Midi.h" />
-    <ClInclude Include="..\..\src\glArchivItem_Sound_Other.h" />
-    <ClInclude Include="..\..\src\glArchivItem_Sound_Wave.h" />
-    <ClInclude Include="..\..\src\glArchivItem_Sound_XMidi.h" />
-    <ClInclude Include="..\..\src\CatapultStone.h" />
-    <ClInclude Include="..\..\src\EventManager.h" />
-    <ClInclude Include="..\..\src\GameClientPlayer.h" />
-    <ClInclude Include="..\..\src\GameInterface.h" />
-    <ClInclude Include="..\..\src\GameObject.h" />
-    <ClInclude Include="..\..\src\GameWorld.h" />
-    <ClInclude Include="..\..\src\GlobalGameSettings.h" />
+    <ClInclude Include="..\..\src\macros.h" />
+    <ClInclude Include="..\..\src\main.h" />
+    <ClInclude Include="..\..\src\MapConsts.h" />
     <ClInclude Include="..\..\src\MapGeometry.h" />
     <ClInclude Include="..\..\src\Messenger.h" />
+    <ClInclude Include="..\..\src\MilitaryConsts.h" />
     <ClInclude Include="..\..\src\Minimap.h" />
+    <ClInclude Include="..\..\src\MinimapConsts.h" />
+    <ClInclude Include="..\..\src\MouseAndKeys.h" />
+    <ClInclude Include="..\..\src\Msgbox.h" />
     <ClInclude Include="..\..\src\MusicPlayer.h" />
-    <ClInclude Include="..\..\src\Node.h" />
-    <ClInclude Include="..\..\src\RoadSegment.h" />
-    <ClInclude Include="..\..\src\SerializedGameData.h" />
-    <ClInclude Include="..\..\src\SoundManager.h" />
-    <ClInclude Include="..\..\src\TerrainRenderer.h" />
-    <ClInclude Include="..\..\src\TerritoryRegion.h" />
-    <ClInclude Include="..\..\src\Ware.h" />
-    <ClInclude Include="..\..\src\FOWObjects.h" />
     <ClInclude Include="..\..\src\noAnimal.h" />
     <ClInclude Include="..\..\src\noBase.h" />
     <ClInclude Include="..\..\src\noBaseBuilding.h" />
-    <ClInclude Include="..\..\src\noBuilding.h" />
-    <ClInclude Include="..\..\src\noCoordBase.h" />
-    <ClInclude Include="..\..\src\noFighting.h" />
-    <ClInclude Include="..\..\src\noFigure.h" />
-    <ClInclude Include="..\..\src\noMovable.h" />
-    <ClInclude Include="..\..\src\noNothing.h" />
-    <ClInclude Include="..\..\src\noRoadNode.h" />
-    <ClInclude Include="..\..\src\noShip.h" />
     <ClInclude Include="..\..\src\nobBaseMilitary.h" />
     <ClInclude Include="..\..\src\nobBaseWarehouse.h" />
     <ClInclude Include="..\..\src\nobHarborBuilding.h" />
@@ -316,8 +295,21 @@
     <ClInclude Include="..\..\src\nobMilitary.h" />
     <ClInclude Include="..\..\src\nobShipYard.h" />
     <ClInclude Include="..\..\src\nobStorehouse.h" />
+    <ClInclude Include="..\..\src\noBuilding.h" />
+    <ClInclude Include="..\..\src\noBuildingSite.h" />
     <ClInclude Include="..\..\src\nobUsual.h" />
+    <ClInclude Include="..\..\src\noCharburnerPile.h" />
+    <ClInclude Include="..\..\src\noCoordBase.h" />
+    <ClInclude Include="..\..\src\NodalObjectTypes.h" />
+    <ClInclude Include="..\..\src\Node.h" />
+    <ClInclude Include="..\..\src\noDisappearingEnvObject.h" />
+    <ClInclude Include="..\..\src\noDisappearingMapEnvObject.h" />
+    <ClInclude Include="..\..\src\noEnvObject.h" />
+    <ClInclude Include="..\..\src\noExtension.h" />
+    <ClInclude Include="..\..\src\nofActiveSoldier.h" />
+    <ClInclude Include="..\..\src\nofAggressiveDefender.h" />
     <ClInclude Include="..\..\src\nofArmorer.h" />
+    <ClInclude Include="..\..\src\nofAttacker.h" />
     <ClInclude Include="..\..\src\nofBaker.h" />
     <ClInclude Include="..\..\src\nofBrewer.h" />
     <ClInclude Include="..\..\src\nofBuilder.h" />
@@ -326,6 +318,8 @@
     <ClInclude Include="..\..\src\nofCarpenter.h" />
     <ClInclude Include="..\..\src\nofCarrier.h" />
     <ClInclude Include="..\..\src\nofCatapultMan.h" />
+    <ClInclude Include="..\..\src\nofCharburner.h" />
+    <ClInclude Include="..\..\src\nofDefender.h" />
     <ClInclude Include="..\..\src\nofDonkeybreeder.h" />
     <ClInclude Include="..\..\src\nofFarmer.h" />
     <ClInclude Include="..\..\src\nofFarmhand.h" />
@@ -334,78 +328,64 @@
     <ClInclude Include="..\..\src\nofForester.h" />
     <ClInclude Include="..\..\src\nofGeologist.h" />
     <ClInclude Include="..\..\src\nofHunter.h" />
+    <ClInclude Include="..\..\src\noFighting.h" />
+    <ClInclude Include="..\..\src\noFigure.h" />
+    <ClInclude Include="..\..\src\noFire.h" />
     <ClInclude Include="..\..\src\nofIronfounder.h" />
+    <ClInclude Include="..\..\src\noFlag.h" />
     <ClInclude Include="..\..\src\nofMetalworker.h" />
     <ClInclude Include="..\..\src\nofMiller.h" />
     <ClInclude Include="..\..\src\nofMiner.h" />
     <ClInclude Include="..\..\src\nofMinter.h" />
+    <ClInclude Include="..\..\src\nofPassiveSoldier.h" />
     <ClInclude Include="..\..\src\nofPassiveWorker.h" />
     <ClInclude Include="..\..\src\nofPigbreeder.h" />
     <ClInclude Include="..\..\src\nofPlaner.h" />
     <ClInclude Include="..\..\src\nofScout_Free.h" />
     <ClInclude Include="..\..\src\nofScout_LookoutTower.h" />
     <ClInclude Include="..\..\src\nofShipWright.h" />
+    <ClInclude Include="..\..\src\nofSoldier.h" />
     <ClInclude Include="..\..\src\nofStonemason.h" />
+    <ClInclude Include="..\..\src\nofTradeDonkey.h" />
+    <ClInclude Include="..\..\src\nofTradeLeader.h" />
     <ClInclude Include="..\..\src\nofWarehouseWorker.h" />
     <ClInclude Include="..\..\src\nofWellguy.h" />
     <ClInclude Include="..\..\src\nofWoodcutter.h" />
     <ClInclude Include="..\..\src\nofWorkman.h" />
-    <ClInclude Include="..\..\src\nofActiveSoldier.h" />
-    <ClInclude Include="..\..\src\nofAggressiveDefender.h" />
-    <ClInclude Include="..\..\src\nofAttacker.h" />
-    <ClInclude Include="..\..\src\nofDefender.h" />
-    <ClInclude Include="..\..\src\nofPassiveSoldier.h" />
-    <ClInclude Include="..\..\src\nofSoldier.h" />
-    <ClInclude Include="..\..\src\BurnedWarehouse.h" />
-    <ClInclude Include="..\..\src\noBuildingSite.h" />
-    <ClInclude Include="..\..\src\noDisappearingEnvObject.h" />
-    <ClInclude Include="..\..\src\noDisappearingMapEnvObject.h" />
-    <ClInclude Include="..\..\src\noEnvObject.h" />
-    <ClInclude Include="..\..\src\noExtension.h" />
-    <ClInclude Include="..\..\src\noFire.h" />
-    <ClInclude Include="..\..\src\noFlag.h" />
     <ClInclude Include="..\..\src\noGrainfield.h" />
     <ClInclude Include="..\..\src\noGranite.h" />
+    <ClInclude Include="..\..\src\noMovable.h" />
+    <ClInclude Include="..\..\src\noNothing.h" />
+    <ClInclude Include="..\..\src\noRoadNode.h" />
+    <ClInclude Include="..\..\src\noShip.h" />
     <ClInclude Include="..\..\src\noShipBuildingSite.h" />
     <ClInclude Include="..\..\src\noSign.h" />
     <ClInclude Include="..\..\src\noSkeleton.h" />
     <ClInclude Include="..\..\src\noStaticObject.h" />
     <ClInclude Include="..\..\src\noTree.h" />
-    <ClInclude Include="..\..\src\BuildingConsts.h" />
-    <ClInclude Include="..\..\src\DoorConsts.h" />
-    <ClInclude Include="..\..\src\GameConsts.h" />
-    <ClInclude Include="..\..\src\JobConsts.h" />
-    <ClInclude Include="..\..\src\MapConsts.h" />
-    <ClInclude Include="..\..\src\MilitaryConsts.h" />
-    <ClInclude Include="..\..\src\MinimapConsts.h" />
-    <ClInclude Include="..\..\src\NodalObjectTypes.h" />
-    <ClInclude Include="..\..\src\AudioDriverWrapper.h" />
-    <ClInclude Include="..\..\src\DriverLoaderInterface.h" />
-    <ClInclude Include="..\..\src\DriverWrapper.h" />
-    <ClInclude Include="..\..\src\ExtensionList.h" />
-    <ClInclude Include="..\..\src\VideoDriverWrapper.h" />
-    <ClInclude Include="..\..\src\ClientInterface.h" />
-    <ClInclude Include="..\..\src\GameClient.h" />
-    <ClInclude Include="..\..\src\GameCommands.h" />
-    <ClInclude Include="..\..\src\GameMessage.h" />
-    <ClInclude Include="..\..\src\GameMessageInterface.h" />
-    <ClInclude Include="..\..\src\GameMessages.h" />
-    <ClInclude Include="..\..\src\GamePlayerInfo.h" />
-    <ClInclude Include="..\..\src\GameProtocol.h" />
-    <ClInclude Include="..\..\src\GameServer.h" />
-    <ClInclude Include="..\..\src\GameServerPlayer.h" />
-    <ClInclude Include="..\..\src\GameManager.h" />
-    <ClInclude Include="..\..\src\GlobalVars.h" />
-    <ClInclude Include="..\..\src\languages.h" />
-    <ClInclude Include="..\..\build_paths.h" />
-    <ClInclude Include="..\..\src\macros.h" />
-    <ClInclude Include="..\..\src\main.h" />
+    <ClInclude Include="..\..\src\PointDistance.h" />
+    <ClInclude Include="..\..\src\PostMsg.h" />
+    <ClInclude Include="..\..\src\Random.h" />
+    <ClInclude Include="..\..\src\RoadSegment.h" />
+    <ClInclude Include="..\..\src\SerializedGameData.h" />
     <ClInclude Include="..\..\src\Settings.h" />
     <ClInclude Include="..\..\src\signale.h" />
-    <ClInclude Include="..\..\build_version.h" />
+    <ClInclude Include="..\..\src\SoundManager.h" />
+    <ClInclude Include="..\..\src\strlwr.h" />
+    <ClInclude Include="..\..\src\Swap.h" />
+    <ClInclude Include="..\..\src\TerrainRenderer.h" />
+    <ClInclude Include="..\..\src\TerritoryRegion.h" />
+    <ClInclude Include="..\..\src\TradeGraph.h" />
+    <ClInclude Include="..\..\src\VideoDriverLoaderInterface.h" />
+    <ClInclude Include="..\..\src\VideoDriverWrapper.h" />
+    <ClInclude Include="..\..\src\Ware.h" />
+    <ClInclude Include="..\..\src\win32_nanosleep.h" />
+    <ClInclude Include="..\..\src\Window.h" />
+    <ClInclude Include="..\..\src\WindowManager.h" />
     <ClInclude Include="..\resource.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\build_version.cpp" />
     <ClCompile Include="..\..\src\Addons.cpp" />
     <ClCompile Include="..\..\src\AIConstruction.cpp" />
     <ClCompile Include="..\..\src\AIEventManager.cpp" />
@@ -414,28 +394,11 @@
     <ClCompile Include="..\..\src\AIPlayer.cpp" />
     <ClCompile Include="..\..\src\AIPlayerJH.cpp" />
     <ClCompile Include="..\..\src\AIResourceMap.cpp" />
-    <ClCompile Include="..\..\src\ctrlMultiSelectGroup.cpp" />
-    <ClCompile Include="..\..\src\Desktop.cpp" />
-    <ClCompile Include="..\..\src\dskUnlimitedPlay.cpp" />
-    <ClCompile Include="..\..\src\GameReplay.cpp" />
-    <ClCompile Include="..\..\src\GameSavedFile.cpp" />
-    <ClCompile Include="..\..\src\GameSavegame.cpp" />
-    <ClCompile Include="..\..\src\GameWorldView.cpp" />
-    <ClCompile Include="..\..\src\IngameWindow.cpp" />
-    <ClCompile Include="..\..\src\iwAddons.cpp" />
-    <ClCompile Include="..\..\src\iwAIDebug.cpp" />
-    <ClCompile Include="..\..\src\iwMerchandiseStatistics.cpp" />
-    <ClCompile Include="..\..\src\iwObservate.cpp" />
-    <ClCompile Include="..\..\src\iwTrade.cpp" />
-    <ClCompile Include="..\..\src\noCharburnerPile.cpp" />
-    <ClCompile Include="..\..\src\nofCharburner.cpp" />
-    <ClCompile Include="..\..\src\nofTradeDonkey.cpp" />
-    <ClCompile Include="..\..\src\nofTradeLeader.cpp" />
-    <ClCompile Include="..\..\src\PostMsg.cpp" />
-    <ClCompile Include="..\..\src\TradeGraph.cpp" />
-    <ClCompile Include="..\..\src\win32_nanosleep.cpp" />
-    <ClCompile Include="..\..\src\Window.cpp" />
-    <ClCompile Include="..\..\src\WindowManager.cpp" />
+    <ClCompile Include="..\..\src\AudioDriverWrapper.cpp" />
+    <ClCompile Include="..\..\src\BurnedWarehouse.cpp" />
+    <ClCompile Include="..\..\src\CatapultStone.cpp" />
+    <ClCompile Include="..\..\src\ClientInterface.cpp" />
+    <ClCompile Include="..\..\src\CollisionDetection.cpp" />
     <ClCompile Include="..\..\src\ctrlBuildingIcon.cpp" />
     <ClCompile Include="..\..\src\ctrlButton.cpp" />
     <ClCompile Include="..\..\src\ctrlChat.cpp" />
@@ -449,6 +412,7 @@
     <ClCompile Include="..\..\src\ctrlList.cpp" />
     <ClCompile Include="..\..\src\ctrlMinimap.cpp" />
     <ClCompile Include="..\..\src\ctrlMultiline.cpp" />
+    <ClCompile Include="..\..\src\ctrlMultiSelectGroup.cpp" />
     <ClCompile Include="..\..\src\ctrlOptionGroup.cpp" />
     <ClCompile Include="..\..\src\ctrlPercent.cpp" />
     <ClCompile Include="..\..\src\ctrlPreviewMinimap.cpp" />
@@ -461,6 +425,9 @@
     <ClCompile Include="..\..\src\ctrlTimer.cpp" />
     <ClCompile Include="..\..\src\ctrlVarDeepening.cpp" />
     <ClCompile Include="..\..\src\ctrlVarText.cpp" />
+    <ClCompile Include="..\..\src\customborderbuilder.cpp" />
+    <ClCompile Include="..\..\src\Desktop.cpp" />
+    <ClCompile Include="..\..\src\DriverWrapper.cpp" />
     <ClCompile Include="..\..\src\dskAboutRTTR.cpp" />
     <ClCompile Include="..\..\src\dskCredits.cpp" />
     <ClCompile Include="..\..\src\dskDirectIP.cpp" />
@@ -475,7 +442,56 @@
     <ClCompile Include="..\..\src\dskSelectMap.cpp" />
     <ClCompile Include="..\..\src\dskSinglePlayer.cpp" />
     <ClCompile Include="..\..\src\dskSplash.cpp" />
+    <ClCompile Include="..\..\src\dskUnlimitedPlay.cpp" />
+    <ClCompile Include="..\..\src\EventManager.cpp" />
+    <ClCompile Include="..\..\src\ExtensionList.cpp" />
+    <ClCompile Include="..\..\src\FileChecksum.cpp" />
+    <ClCompile Include="..\..\src\FOWObjects.cpp" />
+    <ClCompile Include="..\..\src\GameClient.cpp" />
+    <ClCompile Include="..\..\src\GameClientCommands.cpp" />
+    <ClCompile Include="..\..\src\GameClientGF_Game.cpp" />
+    <ClCompile Include="..\..\src\GameClientGF_Replay.cpp" />
+    <ClCompile Include="..\..\src\GameClientPlayer.cpp" />
+    <ClCompile Include="..\..\src\GameCommands.cpp" />
+    <ClCompile Include="..\..\src\GameManager.cpp" />
+    <ClCompile Include="..\..\src\GameMessage.cpp" />
+    <ClCompile Include="..\..\src\GameMessageInterface.cpp" />
+    <ClCompile Include="..\..\src\GameMessages.cpp" />
+    <ClCompile Include="..\..\src\GameObject.cpp" />
+    <ClCompile Include="..\..\src\GamePlayerInfo.cpp" />
+    <ClCompile Include="..\..\src\GamePlayerList.cpp" />
+    <ClCompile Include="..\..\src\GameReplay.cpp" />
+    <ClCompile Include="..\..\src\GameSavedFile.cpp" />
+    <ClCompile Include="..\..\src\GameSavegame.cpp" />
+    <ClCompile Include="..\..\src\GameServer.cpp" />
+    <ClCompile Include="..\..\src\GameServerPlayer.cpp" />
+    <ClCompile Include="..\..\src\GameWorld.cpp" />
+    <ClCompile Include="..\..\src\GameWorldBase.cpp" />
+    <ClCompile Include="..\..\src\GameWorldGame.cpp" />
+    <ClCompile Include="..\..\src\GameWorldView.cpp" />
+    <ClCompile Include="..\..\src\GameWorldViewer.cpp" />
+    <ClCompile Include="..\..\src\glAllocator.cpp" />
+    <ClCompile Include="..\..\src\glArchivItem_Bitmap.cpp" />
+    <ClCompile Include="..\..\src\glArchivItem_Bitmap_Direct.cpp" />
+    <ClCompile Include="..\..\src\glArchivItem_Bitmap_Player.cpp" />
+    <ClCompile Include="..\..\src\glArchivItem_Bitmap_Raw.cpp" />
+    <ClCompile Include="..\..\src\glArchivItem_Bitmap_RLE.cpp" />
+    <ClCompile Include="..\..\src\glArchivItem_Bitmap_Shadow.cpp" />
+    <ClCompile Include="..\..\src\glArchivItem_Bob.cpp" />
+    <ClCompile Include="..\..\src\glArchivItem_Font.cpp" />
+    <ClCompile Include="..\..\src\glArchivItem_Map.cpp" />
+    <ClCompile Include="..\..\src\glArchivItem_Music.cpp" />
+    <ClCompile Include="..\..\src\glArchivItem_Sound.cpp" />
+    <ClCompile Include="..\..\src\glArchivItem_Sound_Midi.cpp" />
+    <ClCompile Include="..\..\src\glArchivItem_Sound_Other.cpp" />
+    <ClCompile Include="..\..\src\glArchivItem_Sound_Wave.cpp" />
+    <ClCompile Include="..\..\src\glArchivItem_Sound_XMidi.cpp" />
+    <ClCompile Include="..\..\src\GlobalGameSettings.cpp" />
+    <ClCompile Include="..\..\src\GlobalVars.cpp" />
+    <ClCompile Include="..\..\src\IngameWindow.cpp" />
     <ClCompile Include="..\..\src\iwAction.cpp" />
+    <ClCompile Include="..\..\src\iwAddons.cpp" />
+    <ClCompile Include="..\..\src\iwAIDebug.cpp" />
     <ClCompile Include="..\..\src\iwBaseWarehouse.cpp" />
     <ClCompile Include="..\..\src\iwBuilding.cpp" />
     <ClCompile Include="..\..\src\iwBuildingProductivities.cpp" />
@@ -497,11 +513,13 @@
     <ClCompile Include="..\..\src\iwLobbyRanking.cpp" />
     <ClCompile Include="..\..\src\iwLobbyServerInfo.cpp" />
     <ClCompile Include="..\..\src\iwMainMenu.cpp" />
+    <ClCompile Include="..\..\src\iwMerchandiseStatistics.cpp" />
     <ClCompile Include="..\..\src\iwMilitary.cpp" />
     <ClCompile Include="..\..\src\iwMilitaryBuilding.cpp" />
     <ClCompile Include="..\..\src\iwMinimap.cpp" />
     <ClCompile Include="..\..\src\iwMsgbox.cpp" />
     <ClCompile Include="..\..\src\iwMusicPlayer.cpp" />
+    <ClCompile Include="..\..\src\iwObservate.cpp" />
     <ClCompile Include="..\..\src\iwOptionsWindow.cpp" />
     <ClCompile Include="..\..\src\iwPlayReplay.cpp" />
     <ClCompile Include="..\..\src\iwPleaseWait.cpp" />
@@ -516,63 +534,20 @@
     <ClCompile Include="..\..\src\iwSurrender.cpp" />
     <ClCompile Include="..\..\src\iwTextfile.cpp" />
     <ClCompile Include="..\..\src\iwTools.cpp" />
+    <ClCompile Include="..\..\src\iwTrade.cpp" />
     <ClCompile Include="..\..\src\iwTransport.cpp" />
     <ClCompile Include="..\..\src\iwWares.cpp" />
-    <ClCompile Include="..\..\src\CollisionDetection.cpp" />
-    <ClCompile Include="..\..\src\customborderbuilder.cpp" />
-    <ClCompile Include="..\..\src\FileChecksum.cpp" />
+    <ClCompile Include="..\..\src\languages.cpp" />
     <ClCompile Include="..\..\src\ListDir.cpp" />
-    <ClCompile Include="..\..\src\Random.cpp" />
     <ClCompile Include="..\..\src\Loader.cpp" />
-    <ClCompile Include="..\..\src\glAllocator.cpp" />
-    <ClCompile Include="..\..\src\glArchivItem_Bitmap.cpp" />
-    <ClCompile Include="..\..\src\glArchivItem_Bitmap_Direct.cpp" />
-    <ClCompile Include="..\..\src\glArchivItem_Bitmap_Player.cpp" />
-    <ClCompile Include="..\..\src\glArchivItem_Bitmap_Raw.cpp" />
-    <ClCompile Include="..\..\src\glArchivItem_Bitmap_RLE.cpp" />
-    <ClCompile Include="..\..\src\glArchivItem_Bitmap_Shadow.cpp" />
-    <ClCompile Include="..\..\src\glArchivItem_Bob.cpp" />
-    <ClCompile Include="..\..\src\glArchivItem_Font.cpp" />
-    <ClCompile Include="..\..\src\glArchivItem_Map.cpp" />
-    <ClCompile Include="..\..\src\glArchivItem_Music.cpp" />
-    <ClCompile Include="..\..\src\glArchivItem_Sound.cpp" />
-    <ClCompile Include="..\..\src\glArchivItem_Sound_Midi.cpp" />
-    <ClCompile Include="..\..\src\glArchivItem_Sound_Other.cpp" />
-    <ClCompile Include="..\..\src\glArchivItem_Sound_Wave.cpp" />
-    <ClCompile Include="..\..\src\glArchivItem_Sound_XMidi.cpp" />
-    <ClCompile Include="..\..\src\CatapultStone.cpp" />
-    <ClCompile Include="..\..\src\EventManager.cpp" />
-    <ClCompile Include="..\..\src\GameClientPlayer.cpp" />
-    <ClCompile Include="..\..\src\GameInterface.cpp" />
-    <ClCompile Include="..\..\src\GameObject.cpp" />
-    <ClCompile Include="..\..\src\GameWorld.cpp" />
-    <ClCompile Include="..\..\src\GameWorldBase.cpp" />
-    <ClCompile Include="..\..\src\GameWorldGame.cpp" />
-    <ClCompile Include="..\..\src\GameWorldViewer.cpp" />
-    <ClCompile Include="..\..\src\GlobalGameSettings.cpp" />
+    <ClCompile Include="..\..\src\main.cpp" />
     <ClCompile Include="..\..\src\MapGeometry.cpp" />
     <ClCompile Include="..\..\src\Messenger.cpp" />
     <ClCompile Include="..\..\src\Minimap.cpp" />
     <ClCompile Include="..\..\src\MusicPlayer.cpp" />
-    <ClCompile Include="..\..\src\Pathfinding.cpp" />
-    <ClCompile Include="..\..\src\RoadSegment.cpp" />
-    <ClCompile Include="..\..\src\SerializedGameData.cpp" />
-    <ClCompile Include="..\..\src\SoundManager.cpp" />
-    <ClCompile Include="..\..\src\TerrainRenderer.cpp" />
-    <ClCompile Include="..\..\src\TerritoryRegion.cpp" />
-    <ClCompile Include="..\..\src\Ware.cpp" />
-    <ClCompile Include="..\..\src\FOWObjects.cpp" />
     <ClCompile Include="..\..\src\noAnimal.cpp" />
     <ClCompile Include="..\..\src\noBase.cpp" />
     <ClCompile Include="..\..\src\noBaseBuilding.cpp" />
-    <ClCompile Include="..\..\src\noBuilding.cpp" />
-    <ClCompile Include="..\..\src\noCoordBase.cpp" />
-    <ClCompile Include="..\..\src\noFighting.cpp" />
-    <ClCompile Include="..\..\src\noFigure.cpp" />
-    <ClCompile Include="..\..\src\noMovable.cpp" />
-    <ClCompile Include="..\..\src\noNothing.cpp" />
-    <ClCompile Include="..\..\src\noRoadNode.cpp" />
-    <ClCompile Include="..\..\src\noShip.cpp" />
     <ClCompile Include="..\..\src\nobBaseMilitary.cpp" />
     <ClCompile Include="..\..\src\nobBaseWarehouse.cpp" />
     <ClCompile Include="..\..\src\nobHarborBuilding.cpp" />
@@ -580,8 +555,19 @@
     <ClCompile Include="..\..\src\nobMilitary.cpp" />
     <ClCompile Include="..\..\src\nobShipYard.cpp" />
     <ClCompile Include="..\..\src\nobStorehouse.cpp" />
+    <ClCompile Include="..\..\src\noBuilding.cpp" />
+    <ClCompile Include="..\..\src\noBuildingSite.cpp" />
     <ClCompile Include="..\..\src\nobUsual.cpp" />
+    <ClCompile Include="..\..\src\noCharburnerPile.cpp" />
+    <ClCompile Include="..\..\src\noCoordBase.cpp" />
+    <ClCompile Include="..\..\src\noDisappearingEnvObject.cpp" />
+    <ClCompile Include="..\..\src\noDisappearingMapEnvObject.cpp" />
+    <ClCompile Include="..\..\src\noEnvObject.cpp" />
+    <ClCompile Include="..\..\src\noExtension.cpp" />
+    <ClCompile Include="..\..\src\nofActiveSoldier.cpp" />
+    <ClCompile Include="..\..\src\nofAggressiveDefender.cpp" />
     <ClCompile Include="..\..\src\nofArmorer.cpp" />
+    <ClCompile Include="..\..\src\nofAttacker.cpp" />
     <ClCompile Include="..\..\src\nofBaker.cpp" />
     <ClCompile Include="..\..\src\nofBrewer.cpp" />
     <ClCompile Include="..\..\src\nofBuilder.cpp" />
@@ -590,6 +576,8 @@
     <ClCompile Include="..\..\src\nofCarpenter.cpp" />
     <ClCompile Include="..\..\src\nofCarrier.cpp" />
     <ClCompile Include="..\..\src\nofCatapultMan.cpp" />
+    <ClCompile Include="..\..\src\nofCharburner.cpp" />
+    <ClCompile Include="..\..\src\nofDefender.cpp" />
     <ClCompile Include="..\..\src\nofDonkeybreeder.cpp" />
     <ClCompile Include="..\..\src\nofFarmer.cpp" />
     <ClCompile Include="..\..\src\nofFarmhand.cpp" />
@@ -598,89 +586,63 @@
     <ClCompile Include="..\..\src\nofForester.cpp" />
     <ClCompile Include="..\..\src\nofGeologist.cpp" />
     <ClCompile Include="..\..\src\nofHunter.cpp" />
+    <ClCompile Include="..\..\src\noFighting.cpp" />
+    <ClCompile Include="..\..\src\noFigure.cpp" />
+    <ClCompile Include="..\..\src\noFire.cpp" />
     <ClCompile Include="..\..\src\nofIronfounder.cpp" />
+    <ClCompile Include="..\..\src\noFlag.cpp" />
     <ClCompile Include="..\..\src\nofMetalworker.cpp" />
     <ClCompile Include="..\..\src\nofMiller.cpp" />
     <ClCompile Include="..\..\src\nofMiner.cpp" />
     <ClCompile Include="..\..\src\nofMinter.cpp" />
+    <ClCompile Include="..\..\src\nofPassiveSoldier.cpp" />
     <ClCompile Include="..\..\src\nofPassiveWorker.cpp" />
     <ClCompile Include="..\..\src\nofPigbreeder.cpp" />
     <ClCompile Include="..\..\src\nofPlaner.cpp" />
     <ClCompile Include="..\..\src\nofScout_Free.cpp" />
     <ClCompile Include="..\..\src\nofScout_LookoutTower.cpp" />
     <ClCompile Include="..\..\src\nofShipWright.cpp" />
+    <ClCompile Include="..\..\src\nofSoldier.cpp" />
     <ClCompile Include="..\..\src\nofStonemason.cpp" />
+    <ClCompile Include="..\..\src\nofTradeDonkey.cpp" />
+    <ClCompile Include="..\..\src\nofTradeLeader.cpp" />
     <ClCompile Include="..\..\src\nofWarehouseWorker.cpp" />
     <ClCompile Include="..\..\src\nofWellguy.cpp" />
     <ClCompile Include="..\..\src\nofWoodcutter.cpp" />
     <ClCompile Include="..\..\src\nofWorkman.cpp" />
-    <ClCompile Include="..\..\src\nofActiveSoldier.cpp" />
-    <ClCompile Include="..\..\src\nofAggressiveDefender.cpp" />
-    <ClCompile Include="..\..\src\nofAttacker.cpp" />
-    <ClCompile Include="..\..\src\nofDefender.cpp" />
-    <ClCompile Include="..\..\src\nofPassiveSoldier.cpp" />
-    <ClCompile Include="..\..\src\nofSoldier.cpp" />
-    <ClCompile Include="..\..\src\BurnedWarehouse.cpp" />
-    <ClCompile Include="..\..\src\noBuildingSite.cpp" />
-    <ClCompile Include="..\..\src\noDisappearingEnvObject.cpp" />
-    <ClCompile Include="..\..\src\noDisappearingMapEnvObject.cpp" />
-    <ClCompile Include="..\..\src\noEnvObject.cpp" />
-    <ClCompile Include="..\..\src\noExtension.cpp" />
-    <ClCompile Include="..\..\src\noFire.cpp" />
-    <ClCompile Include="..\..\src\noFlag.cpp" />
     <ClCompile Include="..\..\src\noGrainfield.cpp" />
     <ClCompile Include="..\..\src\noGranite.cpp" />
+    <ClCompile Include="..\..\src\noMovable.cpp" />
+    <ClCompile Include="..\..\src\noNothing.cpp" />
+    <ClCompile Include="..\..\src\noRoadNode.cpp" />
+    <ClCompile Include="..\..\src\noShip.cpp" />
     <ClCompile Include="..\..\src\noShipBuildingSite.cpp" />
     <ClCompile Include="..\..\src\noSign.cpp" />
     <ClCompile Include="..\..\src\noSkeleton.cpp" />
     <ClCompile Include="..\..\src\noStaticObject.cpp" />
     <ClCompile Include="..\..\src\noTree.cpp" />
-    <ClCompile Include="..\..\src\AudioDriverWrapper.cpp" />
-    <ClCompile Include="..\..\src\DriverWrapper.cpp" />
-    <ClCompile Include="..\..\src\ExtensionList.cpp" />
-    <ClCompile Include="..\..\src\VideoDriverWrapper.cpp" />
-    <ClCompile Include="..\..\src\ClientInterface.cpp" />
-    <ClCompile Include="..\..\src\GameClient.cpp" />
-    <ClCompile Include="..\..\src\GameClientCommands.cpp" />
-    <ClCompile Include="..\..\src\GameClientGF_Game.cpp" />
-    <ClCompile Include="..\..\src\GameClientGF_Replay.cpp" />
-    <ClCompile Include="..\..\src\GameCommands.cpp" />
-    <ClCompile Include="..\..\src\GameMessage.cpp" />
-    <ClCompile Include="..\..\src\GameMessageInterface.cpp" />
-    <ClCompile Include="..\..\src\GameMessages.cpp" />
-    <ClCompile Include="..\..\src\GamePlayerInfo.cpp" />
-    <ClCompile Include="..\..\src\GameServer.cpp" />
-    <ClCompile Include="..\..\src\GameServerPlayer.cpp" />
-    <ClCompile Include="..\..\src\GameManager.cpp" />
-    <ClCompile Include="..\..\src\GlobalVars.cpp" />
-    <ClCompile Include="..\..\src\languages.cpp" />
-    <ClCompile Include="..\..\src\main.cpp" />
+    <ClCompile Include="..\..\src\Pathfinding.cpp" />
+    <ClCompile Include="..\..\src\PostMsg.cpp" />
+    <ClCompile Include="..\..\src\Random.cpp" />
+    <ClCompile Include="..\..\src\RoadSegment.cpp" />
+    <ClCompile Include="..\..\src\SerializedGameData.cpp" />
     <ClCompile Include="..\..\src\Settings.cpp" />
     <ClCompile Include="..\..\src\signale.cpp" />
-    <ClCompile Include="..\..\build_version.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\s25client.ico" />
+    <ClCompile Include="..\..\src\SoundManager.cpp" />
+    <ClCompile Include="..\..\src\TerrainRenderer.cpp" />
+    <ClCompile Include="..\..\src\TerritoryRegion.cpp" />
+    <ClCompile Include="..\..\src\TradeGraph.cpp" />
+    <ClCompile Include="..\..\src\VideoDriverWrapper.cpp" />
+    <ClCompile Include="..\..\src\Ware.cpp" />
+    <ClCompile Include="..\..\src\win32_nanosleep.cpp" />
+    <ClCompile Include="..\..\src\Window.cpp" />
+    <ClCompile Include="..\..\src\WindowManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\s25client.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\libendian\win32\vs2010\libendian.vcxproj">
-      <Project>{1c4d182c-4502-4a05-b1f3-9dd5214c3dee}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\liblobby\win32\vs2010\liblobby_c.vcxproj">
-      <Project>{23eba5f4-45cc-45b1-8f8e-04337a6f7da3}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\libsiedler2\win32\vs2010\libsiedler2.vcxproj">
-      <Project>{290e94f7-c0be-4950-87aa-d269467a82bf}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\libutil\win32\vs2010\libutil.vcxproj">
-      <Project>{74ce1cab-7950-436f-8d27-48f9fb7e9f22}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\mygettext\win32\vs2010\mygettext.vcxproj">
-      <Project>{94be9c74-5e13-404e-858b-2cba20d8f5c9}</Project>
-    </ProjectReference>
+    <None Include="..\s25client.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

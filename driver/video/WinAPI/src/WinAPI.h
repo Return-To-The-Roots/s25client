@@ -1,6 +1,6 @@
-// $Id: WinAPI.h 6582 2010-07-16 11:23:35Z FloSoft $
+// $Id: WinAPI.h 7521 2011-09-08 20:45:55Z FloSoft $
 //
-// Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -83,8 +83,8 @@ public:
 
 private:
 	/// Funktion zum Senden einer gedrückten Taste.
-	void OnWMChar(char c, bool disablepaste = false, LPARAM lParam = 0);
-	void OnWMKeyDown(unsigned char c, LPARAM lParam = 0);
+	void OnWMChar(unsigned int c, bool disablepaste = false, LPARAM lParam = 0);
+	void OnWMKeyDown(unsigned int c, LPARAM lParam = 0);
 
 	/// Funktion zum Pasten von Text aus dem Clipboard.
 	void OnWMPaste();

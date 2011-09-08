@@ -1,6 +1,6 @@
-// $Id: Loader.h 7425 2011-08-28 10:31:42Z marcus $
+// $Id: Loader.h 7521 2011-09-08 20:45:55Z FloSoft $
 //
-// Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -53,8 +53,9 @@ protected:
 	inline bool LoadSounds();
 
 private:
-	bool LoadFile(const char *pfad, const libsiedler2::ArchivItem_Palette *palette = NULL, bool load_always = true);
-	bool LoadFile(const char *pfad, const libsiedler2::ArchivItem_Palette *palette, libsiedler2::ArchivInfo *archiv);
+	bool LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Palette *palette = NULL, bool load_always = true);
+	bool LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Palette *palette, libsiedler2::ArchivInfo *archiv);
+	bool LoadArchiv(const std::string& pfad, const libsiedler2::ArchivItem_Palette *palette, libsiedler2::ArchivInfo *archiv);
 	void ExtractTexture(libsiedler2::ArchivInfo *destination, Rect &rect);
 	void ExtractAnimatedTexture(libsiedler2::ArchivInfo *destination, Rect &rect, unsigned char color_count, unsigned char start_index);
 

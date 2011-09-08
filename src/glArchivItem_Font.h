@@ -1,6 +1,6 @@
-// $Id: glArchivItem_Font.h 7505 2011-09-07 13:14:38Z FloSoft $
+// $Id: glArchivItem_Font.h 7521 2011-09-08 20:45:55Z FloSoft $
 //
-// Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -31,9 +31,11 @@ public:
 	glArchivItem_Font(const glArchivItem_Font *item) : ArchivItem_Font(item), _font(NULL) {}
 
 	/// Zeichnet einen Text.
+	void Draw(short x, short y, const std::wstring& wtext, unsigned int format, unsigned int color = COLOR_WHITE, unsigned short length = 0, unsigned short max = 0xFFFF, const std::wstring& wend = L"...", unsigned short end_length = 0);
 	void Draw(short x, short y, const std::string& text, unsigned int format, unsigned int color = COLOR_WHITE, unsigned short length = 0, unsigned short max = 0xFFFF, const std::string& end = "...", unsigned short end_length = 0);
 
 	/// liefert die Länge einer Zeichenkette.
+	unsigned short getWidth(const std::wstring& text, unsigned length = 0, unsigned max_width = 0xffffffff, unsigned short *max = NULL) const;
 	unsigned short getWidth(const std::string& text, unsigned length = 0, unsigned max_width = 0xffffffff, unsigned short *max = NULL) const;
 	/// liefert die Höhe des Textes ( entspricht @p getDy()+1 )
 	inline unsigned short getHeight() const { return dy+1; }
@@ -71,6 +73,9 @@ public:
 	/// liefert die Breite eines Zeichens
 	inline unsigned int CharWidth(unsigned int c) const { return CharInfo(c).width; }
 
+	std::string Unicode_to_Utf8(unsigned int c) const;
+	unsigned int Utf8_to_Unicode(const std::string& text, unsigned int& i) const;
+
 private:
 	void initFont();
 
@@ -80,7 +85,6 @@ private:
 		GLfloat x, y, z;
 	};
 
-	unsigned int Utf8_to_Unicode(const std::string& text, unsigned int& i) const;
 	void DrawChar(const std::string& text, unsigned int& i, GL_T2F_V3F_Struct *tmp, short& cx, short& cy, float tw, float th, unsigned int& idx);
 
 	struct char_info

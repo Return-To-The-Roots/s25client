@@ -1,4 +1,4 @@
-#include <stdafx.h>
+
 #include "main.h"
 #include "nofTradeLeader.h"
 #include "nofTradeDonkey.h"

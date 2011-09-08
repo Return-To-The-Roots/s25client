@@ -1,6 +1,6 @@
-// $Id: nofCatapultMan.cpp 7414 2011-08-25 15:20:58Z marcus $
+// $Id: nofCatapultMan.cpp 7521 2011-09-08 20:45:55Z FloSoft $
 //
-// Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -19,7 +19,6 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include <stdafx.h>
 #include "main.h"
 #include "nofCatapultMan.h"
 #include "GameWorld.h"

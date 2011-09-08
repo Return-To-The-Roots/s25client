@@ -1,6 +1,6 @@
-// $Id: WinAPI.cpp 6582 2010-07-16 11:23:35Z FloSoft $
+// $Id: WinAPI.cpp 7521 2011-09-08 20:45:55Z FloSoft $
 //
-// Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -182,6 +182,20 @@ void VideoWinAPI::CleanUp(void)
 	initialized = false;
 }
 
+LPWSTR AnsiToUtf8(LPWSTR& wTarget, LPCSTR tSource, int nLength = -1)
+{
+	int nConvertedLength = MultiByteToWideChar(CP_UTF8, 0, tSource, nLength, NULL, 0);
+	wTarget = new WCHAR[nConvertedLength];
+	int nResult = MultiByteToWideChar(CP_UTF8, 0, tSource, nLength, wTarget, nConvertedLength);
+	if(nResult != nConvertedLength)
+	{
+		delete[] wTarget;
+		return NULL;
+	}
+
+	return wTarget;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 /** 
  *  Erstellt das Fenster mit entsprechenden Werten.
@@ -204,7 +218,10 @@ bool VideoWinAPI::CreateScreen(unsigned short width, unsigned short height, cons
 	if(!initialized)
 		return false;
 
-	WNDCLASSA  wc;
+	LPWSTR wTitle;
+	AnsiToUtf8(wTitle, GetWindowTitle());
+
+	WNDCLASSW  wc;
 	wc.style			= CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
 	wc.lpfnWndProc		= WindowProc;
 	wc.cbClsExtra	    = 0;
@@ -214,10 +231,10 @@ bool VideoWinAPI::CreateScreen(unsigned short width, unsigned short height, cons
 	wc.hCursor			= NULL;
 	wc.hbrBackground	= NULL;
 	wc.lpszMenuName		= NULL;
-	wc.lpszClassName	= GetWindowTitle();
+	wc.lpszClassName	= wTitle;
 
 	// Fensterklasse registrieren
-	if (!RegisterClassA(&wc))
+	if (!RegisterClassW(&wc))
 		return false;
 
 	DWORD dwExStyle	= WS_EX_APPWINDOW | WS_EX_WINDOWEDGE;
@@ -237,9 +254,10 @@ bool VideoWinAPI::CreateScreen(unsigned short width, unsigned short height, cons
 		height+= 2*GetSystemMetrics(SM_CXFIXEDFRAME) + GetSystemMetrics(SM_CYCAPTION);
 	}
 
-
 	// Fenster erstellen
-	screen = CreateWindowExA(dwExStyle, GetWindowTitle(), GetWindowTitle(), dwStyle, CW_USEDEFAULT, CW_USEDEFAULT, width, height, NULL, NULL, GetModuleHandle(NULL), NULL);
+	screen = CreateWindowExW(dwExStyle, wTitle, wTitle, dwStyle, CW_USEDEFAULT, CW_USEDEFAULT, width, height, NULL, NULL, GetModuleHandle(NULL), NULL);
+
+	delete[] wTitle;
 
 	if(screen == NULL)
 		return false;
@@ -247,8 +265,13 @@ bool VideoWinAPI::CreateScreen(unsigned short width, unsigned short height, cons
 	SetClipboardViewer(screen);
 
 	sprintf(title, "%s - v%s-%s", GetWindowTitle(), GetWindowVersion(), GetWindowRevision());
-	SetWindowTextA(screen, title);
-	SetWindowText(GetConsoleWindow(), title);
+
+	AnsiToUtf8(wTitle, title);
+
+	SetWindowTextW(screen, wTitle);
+	SetWindowTextW(GetConsoleWindow(), wTitle);
+
+	delete[] wTitle;
 
 	// Pixelformat zuweisen
 	GLuint PixelFormat;
@@ -475,7 +498,7 @@ bool VideoWinAPI::SwapBuffers(void)
 bool VideoWinAPI::MessageLoop(void)
 {
 	MSG msg;
-	if(PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+	if(PeekMessage(&msg, screen, 0, 0, PM_REMOVE))
 	{
 		if(msg.message == WM_QUIT)
 			return false;
@@ -595,7 +618,7 @@ void VideoWinAPI::SetMousePosY(int y)
  *
  *  @author FloSoft
  */
-void VideoWinAPI::OnWMChar(char c, bool disablepaste, LPARAM lParam)
+void VideoWinAPI::OnWMChar(unsigned int c, bool disablepaste, LPARAM lParam)
 {
 	// Keine Leerzeichen als Extra-Zeichen senden!
 	if(c == ' ')
@@ -624,7 +647,7 @@ void VideoWinAPI::OnWMChar(char c, bool disablepaste, LPARAM lParam)
  *
  *  @author FloSoft
  */
-void VideoWinAPI::OnWMKeyDown(unsigned char c, LPARAM lParam)
+void VideoWinAPI::OnWMKeyDown(unsigned int c, LPARAM lParam)
 {
 	KeyEvent ke = {KT_INVALID, 0,
 		(GetKeyState(VK_CONTROL) & 0x8000) != 0, 
@@ -794,15 +817,15 @@ LRESULT CALLBACK VideoWinAPI::WindowProc(HWND window, UINT msg, WPARAM wParam, L
 	case WM_KEYDOWN:
 //	case WM_SYSKEYDOWN: // auch abfangen, wenn linkes ALT mit gedrückt wurde
 		{
-			pVideoWinAPI->OnWMKeyDown((unsigned char)wParam, lParam);
+			pVideoWinAPI->OnWMKeyDown((unsigned int)wParam, lParam);
 		} return 0;
 	case WM_CHAR:
 	case WM_SYSCHAR: // auch abfangen, wenn linkes ALT mit gedrückt wurde
 		{
-			pVideoWinAPI->OnWMChar((char)wParam, false, lParam);
+			pVideoWinAPI->OnWMChar((unsigned int)wParam, false, lParam);
 		} return 0;
 	}
-	return DefWindowProc(window, msg, wParam, lParam);
+	return DefWindowProcW(window, msg, wParam, lParam);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

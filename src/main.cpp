@@ -1,6 +1,6 @@
-// $Id: main.cpp 7409 2011-08-24 22:47:58Z marcus $
+// $Id: main.cpp 7521 2011-09-08 20:45:55Z FloSoft $
 //
-// Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -19,7 +19,6 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include <stdafx.h>
 #include "main.h"
 
 #include "GlobalVars.h"
@@ -101,7 +100,7 @@ int mkdir_p(const std::string dir)
 
 	if (
 #ifdef _WIN32
-		!CreateDirectory(dir.c_str(), NULL)
+		!CreateDirectoryA(dir.c_str(), NULL)
 #else
 		mkdir(dir.c_str(), 0750) < 0
 #endif
@@ -115,7 +114,7 @@ int mkdir_p(const std::string dir)
 			{
 				return (
 #ifdef _WIN32
-					CreateDirectory(dir.c_str(), NULL) ? 0 : -1
+					CreateDirectoryA(dir.c_str(), NULL) ? 0 : -1
 #else
 					mkdir(dir.c_str(), 0750)
 #endif
@@ -156,6 +155,9 @@ int main(int argc, char *argv[])
 
 	// set console window icon
 	SendMessage(GetConsoleWindow(), WM_SETICON, (WPARAM)TRUE, (LPARAM)LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_SYMBOL)));
+
+	// Set UTF-8 console charset
+	SetConsoleOutputCP(CP_UTF8);
 #else
 	struct sigaction sa;
 	sa.sa_handler = HandlerRoutine;

@@ -1,6 +1,6 @@
-// $Id: AIConstruction.h 7038 2011-02-07 21:06:30Z jh $
+// $Id: AIConstruction.h 7521 2011-09-08 20:45:55Z FloSoft $
 //
-// Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //

@@ -1,6 +1,6 @@
-// $Id: glArchivItem_Font.cpp 7517 2011-09-08 16:33:17Z marcus $
+// $Id: glArchivItem_Font.cpp 7521 2011-09-08 20:45:55Z FloSoft $
 //
-// Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -19,7 +19,6 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include <stdafx.h>
 #include "main.h"
 #include "glArchivItem_Font.h"
 #include "Settings.h"
@@ -34,6 +33,59 @@
 	#undef THIS_FILE
 	static char THIS_FILE[] = __FILE__;
 #endif
+
+std::string glArchivItem_Font::Unicode_to_Utf8(unsigned int c) const
+{
+	std::string text;
+	if(c > 0x7F) // unicode?
+	{
+		if(c >= 0x80 && c <= 0x7FF) // 2 byte utf-8
+		{
+			unsigned int cH = ((c & 0x0000FF00) >> 8);
+			unsigned int cL =  (c & 0x000000FF);
+
+			unsigned char c0 = 0xC0 | ((cL & 0xC0) >> 6) | ((cH & 0x07) << 2); // untere 2 bits und obere 3 bits
+			unsigned char c1 = 0x80 |  (cL & 0x3F); // untere 6 bits
+
+			text.push_back(c0);
+			text.push_back(c1);
+		}
+		else if(c >= 0x800 && c <= 0xFFFF) // 3 byte utf-8
+		{
+			unsigned int cH = ((c & 0x0000FF00) >> 8);
+			unsigned int cL =  (c & 0x000000FF);
+
+			unsigned char c0 = 0xE0 | ((cH & 0xF0) >> 4); // obere 4 bits
+			unsigned char c1 = 0x80 | ((cL & 0xC0) >> 6) | ((cH & 0x0F) << 2); // untere 2 bits und obere 4 bits
+			unsigned char c2 = 0x80 |  (cL & 0x3F); // untere 6 bits
+
+			text.push_back(c0);
+			text.push_back(c1);
+			text.push_back(c2);
+		}
+		else if(c >= 0x10000 && c <= 0x1FFFFF) // 4 byte utf-8
+		{
+			//unsigned int cH1 = ((c & 0xFF000000) >> 24);
+			unsigned int cH  = ((c & 0x00FF0000) >> 16);
+			unsigned int cL1 = ((c & 0x0000FF00) >> 8);
+			unsigned int cL2 =  (c & 0x000000FF);
+
+			unsigned char c0 = 0xF0 | ((cH & 0x3C) >> 2); // obere 4 bits xxHHHHhh -> xxxxHHHH
+			unsigned char c1 = 0x80 | ((cL1 & 0xF0) >> 4) | ((cH & 0x03) << 4); // untere1 4 bits und obere 2 bits LLLLllll xxhhhhHH -> xxHHLLLL
+			unsigned char c2 = 0x80 | ((cL2 & 0xC0) >> 6) | ((cL1 & 0x0F) << 2); // untere2 2 bits und untere1 4 bits
+			unsigned char c3 = 0x80 |  (cL2 & 0x3F); // untere2 6 bits
+
+			text.push_back(c0);
+			text.push_back(c1);
+			text.push_back(c2);
+			text.push_back(c3);
+		}
+	}
+	else
+		text.push_back(c & 0xFF);
+
+	return text;
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
@@ -74,7 +126,10 @@ unsigned int glArchivItem_Font::Utf8_to_Unicode(const std::string& text, unsigne
 			c =  ((c & 0x0F) << 18) | ((c2 & 0x3F) << 12) | ((c3 & 0x3F) << 6) | (c4 & 0x3F);
 		}
 		else
-			LOG.lprintf("unknown utf-8 sequence: %02x / %d\n", c, c); 
+		{
+			if(!CharExist(c)) // some hardcoded non utf-8 characters may be here ...
+				LOG.lprintf("unknown utf-8 sequence: %02x / %d\n", c, c); 
+		}
 	}
 	return c;
 }
@@ -143,6 +198,36 @@ void glArchivItem_Font::DrawChar(const std::string& text,
 
 		cx += ci.width;
 	}
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/**
+ *  @brief
+ *
+ *  @author FloSoft
+ */
+void glArchivItem_Font::Draw(short x, 
+							 short y, 
+							 const std::wstring& wtext, 
+							 unsigned int format, 
+							 unsigned int color, 
+							 unsigned short length, 
+							 unsigned short max, 
+							 const std::wstring& wend, 
+							 unsigned short end_length)
+{
+	// etwas dämlich, aber einfach ;)
+	// da wir hier erstmal in utf8 konvertieren, und dann im anderen Draw wieder zurück ...
+
+	std::string text;
+	for(unsigned int i = 0; i < wtext.length(); ++i)
+		text += Unicode_to_Utf8(wtext[i]);
+
+	std::string end;
+	for(unsigned int i = 0; i < wend.length(); ++i)
+		end += Unicode_to_Utf8(wend[i]);
+
+	Draw(x, y, text, format, color, length, max, end, end_length);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -316,6 +401,43 @@ void glArchivItem_Font::Draw(short x,
  *
  *  @author OLiver
  */
+unsigned short glArchivItem_Font::getWidth(const std::wstring& text, unsigned length, unsigned max_width, unsigned short *max) const
+{
+	if(length == 0)
+		length = unsigned(text.length());
+
+	unsigned short w = 0, wm = 0;
+	for(unsigned int i = 0; i < length; ++i)
+	{
+		unsigned short cw = CharWidth(text[i]);
+
+		if(text[i] == '\n')
+		{
+			if(w > wm) // Längste Zeile
+				wm = w;
+			w = 0;
+		}
+
+		// haben wir das maximum erreicht?
+		if(unsigned((wm > 0 ? wm : w) + cw) > max_width)
+		{
+			*max = i;
+			if(wm == 0)
+				wm = w;
+			return wm;
+		}
+		w += cw;
+	}
+
+	if((wm == 0) || (wm < w)) // Letzte Zeile kann auch die längste sein und hat kein \n am Ende
+		wm = w;
+
+	if(max)
+		*max = length;
+
+	return wm;
+}
+
 unsigned short glArchivItem_Font::getWidth(const std::string& text, unsigned length, unsigned max_width, unsigned short *max) const
 {
 	if(length == 0)
@@ -503,8 +625,9 @@ void glArchivItem_Font::GetWrapInfo(const std::string& text,
 		else
 		{
 			// Anderes Zeichen --> einfach dessen Breite mit addieren
-			if( CharExist(Utf8_to_Unicode(text, i)) )
-				word_width += CharWidth(Utf8_to_Unicode(text, i));
+			unsigned int c = Utf8_to_Unicode(text, i);
+			if( CharExist(c) )
+				word_width += CharWidth(c);
 		}
 	}
 

@@ -1,6 +1,6 @@
-// $Id: dskSinglePlayer.h 7401 2011-08-23 19:43:19Z marcus $
+// $Id: dskSinglePlayer.h 7521 2011-09-08 20:45:55Z FloSoft $
 //
-// Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //

@@ -1,6 +1,6 @@
-// $Id: tempname.h 6582 2010-07-16 11:23:35Z FloSoft $
+// $Id: tempname.h 7521 2011-09-08 20:45:55Z FloSoft $
 //
-// Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //

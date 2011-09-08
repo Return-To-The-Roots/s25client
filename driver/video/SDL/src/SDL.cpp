@@ -1,6 +1,6 @@
-// $Id: SDL.cpp 6582 2010-07-16 11:23:35Z FloSoft $
+// $Id: SDL.cpp 7521 2011-09-08 20:45:55Z FloSoft $
 //
-// Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -189,12 +189,13 @@ bool VideoSDL::CreateScreen(unsigned short width, unsigned short height, const b
 
 	// TODO: Icon setzen
 
-	// Videomodus setzen
-#ifdef _WIN32
-	if(!(screen = SDL_SetVideoMode(width, height, 32, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_OPENGL | ((fullscreen) ? SDL_FULLSCREEN : 0) )))
-#else
-	if(!(screen = SDL_SetVideoMode(width, height, 32, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_OPENGL | (fullscreen ? SDL_FULLSCREEN : SDL_RESIZABLE))))
+#ifdef WIN32
+	// das spinnt ja total unter windows ...
+	this->fullscreen = false;
 #endif
+
+	// Videomodus setzen
+	if(!(screen = SDL_SetVideoMode(width, height, 32, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_OPENGL | (this->fullscreen ? SDL_FULLSCREEN : SDL_RESIZABLE))))
 	{
 		fprintf(stderr, "%s\n", SDL_GetError());
 		return false;
@@ -204,7 +205,7 @@ bool VideoSDL::CreateScreen(unsigned short width, unsigned short height, const b
 	SDL_WM_SetCaption(title, 0);
 
 #ifdef _WIN32
-	SetWindowText(GetConsoleWindow(), title);
+	SetWindowTextA(GetConsoleWindow(), title);
 #endif
 
 	// GL-Attribute setzen
@@ -248,69 +249,17 @@ bool VideoSDL::ResizeScreen(unsigned short width, unsigned short height, const b
 	this->screenHeight = height;
 	this->fullscreen = fullscreen;
 
-	// Die SDL-Implementierung kann das noch nicht direkt, also umweg über WinAPI!
 #ifdef WIN32
-	SDL_SysWMinfo info;
-	int retval;
+	// das spinnt ja total unter windows ...
+	this->fullscreen = false;
+#endif
 
-	/* Grab the window manager specific information */
-	retval = -1;
-	SDL_SetError("SDL is not running on known window manager");
-
-	SDL_VERSION(&info.version);
-	if ( SDL_GetWMInfo(&info) )
-	{
-		if(this->fullscreen && !fullscreen)
-			ChangeDisplaySettings(NULL, 0);
-
-		ShowWindow(info.window, SW_HIDE);
-
-		// Fensterstyle ggf. ändern
-		SetWindowLongPtr(info.window, GWL_STYLE, (fullscreen ? WS_POPUP : (WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_OVERLAPPED | WS_SYSMENU | WS_MINIMIZEBOX | WS_CAPTION) ) );
-		SetWindowLongPtr(info.window, GWL_EXSTYLE, (fullscreen ? WS_EX_APPWINDOW : (WS_EX_APPWINDOW | WS_EX_WINDOWEDGE) ) );
-		SetWindowPos(info.window, NULL, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
-
-		RECT pos = {
-			(fullscreen ? 0 : GetSystemMetrics(SM_CXSCREEN) / 2 - (width) / 2),
-			(fullscreen ? 0 : GetSystemMetrics(SM_CYSCREEN) / 2 - (height) / 2),
-			(width) + (fullscreen ? 0 : 2 * GetSystemMetrics(SM_CXFIXEDFRAME)),
-			(height) + (fullscreen ? 0 : 2 * GetSystemMetrics(SM_CXFIXEDFRAME) + GetSystemMetrics(SM_CYCAPTION))
-		};
-
-		screen->w = width;
-		screen->h = height;
-
-		// Fenstergröße ändern
-		SetWindowPos(info.window, HWND_TOP, pos.left, pos.top, pos.right, pos.bottom, SWP_SHOWWINDOW|SWP_DRAWFRAME|SWP_FRAMECHANGED);
-
-		// Bei Vollbild Auflösung umstellen
-		if(fullscreen)
-		{
-			DEVMODE dm;
-			memset(&dm, 0, sizeof(dm));
-			dm.dmSize = sizeof(dm);
-			dm.dmFields = DM_PELSWIDTH | DM_PELSHEIGHT;
-			dm.dmPelsWidth = width;
-			dm.dmPelsHeight = height;
-
-			ChangeDisplaySettings(&dm, CDS_FULLSCREEN);
-		}
-
-		// Das Fenster anzeigen
-		ShowWindow(info.window, SW_SHOW);
-		// Das Fenster in den Vordergrund rcken
-		SetForegroundWindow(info.window);
-		// Dem Fenster den Eingabefokus geben
-		SetFocus(info.window);
-	}
-#else // unter anderen Platformen kann SDL das ohne den OpenGL-Kontext zu killen
 	// Videomodus setzen
-	if(!(screen = SDL_SetVideoMode(width, height, 32, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_OPENGL | (fullscreen ? SDL_FULLSCREEN : SDL_RESIZABLE))))
+	if(!(screen = SDL_SetVideoMode(width, height, 32, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_OPENGL | (this->fullscreen ? SDL_FULLSCREEN : SDL_RESIZABLE))))
 	{
 		fprintf(stderr, "%s\n", SDL_GetError());
 		return false;
 	}
-#endif
 
 	return true;
 }
@@ -412,11 +361,8 @@ bool VideoSDL::MessageLoop(void)
 
 				if(ke.kt == KT_INVALID)
 				{
-					char c[2] = {static_cast<char>(ev.key.keysym.unicode), 0};
-					//AnsiToOem(c,c);
-
 					ke.kt = KT_CHAR;
-					ke.c = c[0];
+					ke.c = ev.key.keysym.unicode;
 				}
 				
 				CallBack->Msg_KeyDown(ke);

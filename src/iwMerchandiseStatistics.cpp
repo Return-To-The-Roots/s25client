@@ -1,4 +1,4 @@
-// $Id: iwMerchandiseStatistics.cpp 7091 2011-03-27 10:57:38Z OLiver $
+// $Id: iwMerchandiseStatistics.cpp 7521 2011-09-08 20:45:55Z FloSoft $
 //
 // Copyright (c) 2005-2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -19,7 +19,6 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include <stdafx.h>
 #include "main.h"
 #include "iwMerchandiseStatistics.h"
 #include "controls.h"

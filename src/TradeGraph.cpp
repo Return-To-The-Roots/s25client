@@ -1,4 +1,4 @@
-#include <stdafx.h>
+
 #include "main.h"
 #include "TradeGraph.h"
 #include "GameWorld.h"

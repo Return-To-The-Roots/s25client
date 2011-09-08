@@ -1,6 +1,6 @@
-// $Id: AIConstruction.cpp 7091 2011-03-27 10:57:38Z OLiver $
+// $Id: AIConstruction.cpp 7521 2011-09-08 20:45:55Z FloSoft $
 //
-// Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -16,12 +16,15 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#include <stdafx.h>
+
+///////////////////////////////////////////////////////////////////////////////
+// Header
+#include "main.h"
 #include "AIConstruction.h"
+
 #include "GameCommands.h"
 #include "nobBaseMilitary.h"
 #include "MapGeometry.h"
-#include <iostream>
 #include "nobHQ.h"
 #include "AIPlayerJH.h"
 

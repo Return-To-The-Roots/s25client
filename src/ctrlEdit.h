@@ -1,6 +1,6 @@
-// $Id: ctrlEdit.h 7373 2011-08-13 10:03:29Z OLiver $
+// $Id: ctrlEdit.h 7521 2011-09-08 20:45:55Z FloSoft $
 //
-// Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -32,7 +32,8 @@ public:
 	void SetText(const std::string& text);
 	void SetText(const unsigned int text);
 
-	const std::string& GetText(void) const { return text; }
+	const std::string GetText(void) const;
+	const std::wstring& GetWText(void) const { return text; }
 	void SetFocus(bool focus = true) { newfocus = focus; }
 	void SetDisabled(bool disabled = true) { this->disabled = disabled; }
 	void SetNotify(bool notify = true) { this->notify = notify; }
@@ -48,7 +49,7 @@ protected:
 	virtual bool Draw_(void);
 
 private:
-	void AddChar(char c);
+	void AddChar(unsigned int c);
 	void RemoveChar(void);
 	void Notify(void);
 
@@ -65,7 +66,7 @@ private:
 	bool newfocus;
 	bool notify;
 
-	std::string text;
+	std::wstring text;
 	unsigned cursor_pos;
 	unsigned view_start;
 

@@ -1,6 +1,6 @@
-// $Id: customborderbuilder.cpp 7091 2011-03-27 10:57:38Z OLiver $
+// $Id: customborderbuilder.cpp 7521 2011-09-08 20:45:55Z FloSoft $
 //
-// Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -42,7 +42,7 @@ zu sehen sein.
 
 Vor dem Aufruf von buildBorder() muss der interne, öffentliche Zeiger *palette auf ein ArchivItem_Palette* gesetzt werden.
 */
-#include <stdafx.h>
+
 #include "main.h"
 #include "customborderbuilder.h"
 #include "glArchivItem_Bitmap_RLE.h"

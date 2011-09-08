@@ -1,6 +1,6 @@
-// $Id: Loader.cpp 7425 2011-08-28 10:31:42Z marcus $
+// $Id: Loader.cpp 7521 2011-09-08 20:45:55Z FloSoft $
 //
-// Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -19,7 +19,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include <stdafx.h>
+#include "main.h"
 
 #include <iomanip>
 #include "Loader.h"
@@ -97,6 +97,12 @@ bool Loader::LoadFilesAtStart(void)
 	return true;
 }
 
+///////////////////////////////////////////////////////////////////////////////
+/**
+ *  @brief
+ *
+ *  @author FloSoft
+ */
 bool Loader::LoadFileOrDir(const std::string& file, const unsigned int file_id, bool load_always)
 {
 		// is the entry a directory?
@@ -344,289 +350,6 @@ std::vector<std::string> Loader::ExplodeString(std::string const &line, const ch
 	return result;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Lädt eine Datei in ein ArchivInfo in @p files auf Basis des Dateinames.
- *
- *  @param[in] pfad    Der Dateipfad
- *  @param[in] palette (falls benötigt) die Palette.
- *  @param[in] load_always bei @p true wird die datei immer geladen (und ggf überschrieben)
- *
- *  @return @p true bei Erfolg, @p false bei Fehler.
- *
- *  @author FloSoft
- */
-bool Loader::LoadFile(const char *pfad, const libsiedler2::ArchivItem_Palette *palette, bool load_always)
-{
-	std::string p = pfad;
-	transform ( p.begin(), p.end(), p.begin(), tolower );
-
-	size_t pp = p.find_last_of("/\\");
-	if(pp != std::string::npos)
-		p = p.substr(pp+1);
-
-	std::string e = p;
-	pp = p.find_first_of('.');
-	if(pp != std::string::npos)
-	{
-		e = p.substr(pp);
-		p = p.substr(0, pp);
-	}
-
-	// bereits geladen und wir wollen kein nochmaliges laden
-	if(!load_always && files.find(p) != files.end() && files.find(p)->second.getCount() != 0)
-		return true;
-
-	bool directory = false;
-#ifdef _WIN32
-	if(!PathFileExists(GetFilePath(pfad).c_str()))
-	{
-		LOG.lprintf("Fehler: Datei oder Verzeichnis \"%s\" existiert nicht.\n", GetFilePath(pfad).c_str());
-		return false;
-	}
-	if ( (GetFileAttributes(GetFilePath(pfad).c_str()) & FILE_ATTRIBUTE_DIRECTORY) == FILE_ATTRIBUTE_DIRECTORY)
-		directory = true;
-#else
-	struct stat file_stat;
-	stat(GetFilePath(pfad).c_str(), &file_stat);
-	if(S_ISDIR(file_stat.st_mode))
-		directory = true;
-#endif
-
-	libsiedler2::ArchivInfo archiv;
-	libsiedler2::ArchivInfo *to = &archiv;
-
-	bool override_file = false;
-
-	if(files.find(p) == files.end() || files.find(p)->second.getCount() == 0)
-	{
-		// leeres Archiv in Map einfügen
-		files.insert(std::make_pair(p, archiv));
-		to = &files.find(p)->second;
-	}
-	else
-		override_file = true;
-
-	// dann daten reinladen um ggf. kopieren zu vermeiden
-	if(directory)
-	{
-		LOG.lprintf("lade Verzeichnis %s\n", GetFilePath(pfad).c_str());
-		std::list<std::string> lst;
-		ListDir(GetFilePath(pfad) + "/*.bmp", false, NULL, NULL, &lst);
-		ListDir(GetFilePath(pfad) + "/*.txt", false, NULL, NULL, &lst);
-		ListDir(GetFilePath(pfad) + "/*.ger", false, NULL, NULL, &lst);
-		ListDir(GetFilePath(pfad) + "/*.eng", false, NULL, NULL, &lst);
-		ListDir(GetFilePath(pfad) + "/*.empty", false, NULL, NULL, &lst);
-
-		lst.sort(SortFilesHelper);
-		
-		unsigned char *buffer = new unsigned char[1000*1000*4];
-		for(std::list<std::string>::iterator i = lst.begin(); i != lst.end(); ++i)
-		{
-			// empty-file filler
-			/*std::string lf = i->substr(i->find_last_of('/')+1);
-			std::stringstream aa;
-			unsigned int a = 0, b = 0;
-			aa << lf;
-			if(aa >> a)
-			{
-				for(; b < a; ++b)
-				{
-					std::stringstream file;
-					file << GetFilePath(pfad) << "/" << b << ".empty";
-					std::ofstream out(file.str().c_str());
-					out.close();
-				}
-				b = a + 1;
-			}*/
-
-			// read file number, to set the index correctly
-			std::string filename = i->substr(i->find_last_of('/')+1);
-			std::stringstream nrs;
-			int nr = -1;
-			nrs << filename;
-			if(! (nrs >> nr) )
-				nr = -1;
-
-			std::string filetype = "empty";
-			unsigned int bobtype = 0;
-			short nx = 0, ny = 0;
-
-			// Dateiname zerlegen
-			std::vector<std::string> wf = ExplodeString(*i, '.');
-
-			for(std::vector<std::string>::iterator it = wf.begin(); it != wf.end(); ++it)
-			{
-				if(*it == "rle")
-					bobtype = libsiedler2::BOBTYPE_BITMAP_RLE;
-				else if(*it == "player")
-					bobtype = libsiedler2::BOBTYPE_BITMAP_PLAYER;
-				else if(*it == "shadow")
-					bobtype = libsiedler2::BOBTYPE_BITMAP_SHADOW;
-
-				else if(it->substr(0, 2) == "nx" || it->substr(0, 2) == "dx")
-					nx = atoi(it->substr(2).c_str());
-				else if(it->substr(0, 2) == "ny" || it->substr(0, 2) == "dy")
-					ny = atoi(it->substr(2).c_str());
-			}
-
-			if((wf.back()) == "bmp")
-				filetype = "bitmap";
-			else if((wf.back()) == "bbm" || (wf.back()) == "act")
-			{
-				bobtype = libsiedler2::BOBTYPE_PALETTE;
-				filetype = "palette";
-			}
-
-			// Empty-Dateien überspringen
-			if( i->substr(i->length()-6, 6) == ".empty")
-			{
-				LOG.lprintf("ueberspringe %s\n", i->c_str());
-				to->alloc_inc(1);
-				continue;
-			}
-			
-			// Datei laden
-			libsiedler2::ArchivInfo toto;
-			if(!LoadFile( i->c_str(), palette, &toto ) )
-				return false;
-
-			// Nun Daten abhängig der Typen erstellen, nur erstes Element wird bei Bitmaps konvertiert
-
-			libsiedler2::ArchivItem *neu = toto.get(0);
-			if(filetype == "bitmap")
-			{
-				glArchivItem_Bitmap *in = dynamic_cast<glArchivItem_Bitmap*>(neu);
-				glArchivItem_Bitmap *out = in;
-				
-				switch(bobtype)
-				{
-				case libsiedler2::BOBTYPE_BITMAP_RLE:
-				case libsiedler2::BOBTYPE_BITMAP_PLAYER:
-				case libsiedler2::BOBTYPE_BITMAP_SHADOW:
-					{
-						out = dynamic_cast<glArchivItem_Bitmap*>(glAllocator(bobtype, 0, NULL));
-					} break;
-				}
-
-				out->setName(i->c_str());
-				out->setNx(nx);
-				out->setNy(ny);
-
-				if(out != in)
-				{
-					memset(buffer, 0, 1000*1000*4);
-					in->print(buffer, 1000, 1000, libsiedler2::FORMAT_RGBA, palette);
-				}
-
-				switch(bobtype)
-				{
-				case libsiedler2::BOBTYPE_BITMAP_RLE:
-				case libsiedler2::BOBTYPE_BITMAP_SHADOW:
-					{
-						out->create(in->getWidth(), in->getHeight(), buffer, 1000, 1000, libsiedler2::FORMAT_RGBA, palette);
-					} break;
-				case libsiedler2::BOBTYPE_BITMAP_PLAYER:
-					{
-						dynamic_cast<glArchivItem_Bitmap_Player*>(out)->create(in->getWidth(), in->getHeight(), buffer, 1000, 1000, libsiedler2::FORMAT_RGBA, palette, 128);
-					} break;
-				}
-
-				neu = out;
-
-				// had the filename a number? then set it to the corresponding item.
-				if(nr >= 0)
-				{
-					if(nr >= (int)to->getCount())
-						to->alloc_inc(nr - to->getCount() + 1);
-					to->setC(nr, neu);
-				}
-				else
-					to->pushC(neu);
-			}
-			else // Paletten der Bitmaps nicht mitladen
-			{
-				unsigned int offset = to->getCount();
-				to->alloc_inc(toto.getCount());
-
-				to->setC(offset, neu);
-							
-				for(unsigned int ii = 0; ii < toto.getCount(); ++ii)
-					to->setC(offset+ii, toto.get(ii));
-			}
-		}
-		delete[] buffer;
-	}
-	else
-	{
-		if(!LoadFile(pfad, palette, to))
-			return false;
-	}
-
-	// haben wir eine override file? dann nicht-leere items überschreiben
-	if(override_file)
-	{
-		LOG.lprintf("Ersetze Daten der vorher geladenen Datei\n");
-		to = &files.find(p)->second;
-
-		if(e == ".bob")
-			to = dynamic_cast<libsiedler2::ArchivInfo*>(to->get(0));
-
-		if(to == NULL)
-		{
-			LOG.lprintf("Fehler beim Ersetzen einer BOB-Datei\n");
-			return false;
-		}
-
-		if(archiv.getCount() > to->getCount())
-			to->alloc_inc(archiv.getCount()-to->getCount());
-
-		for(unsigned int i = 0; i < archiv.getCount(); ++i)
-		{
-			if(archiv.get(i))
-			{
-				if(to->get(i))
-					delete to->get(i);
-				LOG.lprintf("Ersetze Eintrag %d durch %s\n", i, archiv.get(i)->getName());
-				to->setC(i, archiv.get(i));
-			}
-		}
-	}
-
-	return true;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Lädt eine Datei in ein ArchivInfo.
- *
- *  @param[in] pfad    Der Dateipfad
- *  @param[in] palette (falls benötigt) die Palette.
- *  @param[in] archiv  Das Zielarchivinfo.
- *
- *  @return @p true bei Erfolg, @p false bei Fehler.
- *
- *  @author FloSoft
- */
-bool Loader::LoadFile(const char *pfad, const libsiedler2::ArchivItem_Palette *palette, libsiedler2::ArchivInfo *archiv)
-{
-	unsigned int ladezeit = VideoDriverWrapper::inst().GetTickCount();
-
-	std::string file = GetFilePath(pfad);
-
-	LOG.lprintf("lade \"%s\": ", file.c_str());
-	fflush(stdout);
-
-	if(libsiedler2::Load(file.c_str(), archiv, palette) != 0)
-	{
-		LOG.lprintf("fehlgeschlagen\n");
-		return false;
-	}
-
-	LOG.lprintf("fertig (%ums)\n", VideoDriverWrapper::inst().GetTickCount()-ladezeit);
-
-	return true;
-}
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
@@ -922,4 +645,286 @@ void Loader::ExtractAnimatedTexture(libsiedler2::ArchivInfo *destination, Rect &
 	}
 
 	delete[] buffer;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/**
+ *  @brief Lädt eine Datei in ein ArchivInfo.
+ *
+ *  @param[in] pfad    Der Dateipfad
+ *  @param[in] palette (falls benötigt) die Palette.
+ *  @param[in] archiv  Das Zielarchivinfo.
+ *
+ *  @return @p true bei Erfolg, @p false bei Fehler.
+ *
+ *  @author FloSoft
+ */
+bool Loader::LoadArchiv(const std::string& pfad, const libsiedler2::ArchivItem_Palette *palette, libsiedler2::ArchivInfo *archiv)
+{
+	unsigned int ladezeit = VideoDriverWrapper::inst().GetTickCount();
+
+	std::string file = GetFilePath(pfad);
+
+	LOG.lprintf("lade \"%s\": ", file.c_str());
+	fflush(stdout);
+
+	if(libsiedler2::Load(file.c_str(), archiv, palette) != 0)
+	{
+		LOG.lprintf("fehlgeschlagen\n");
+		return false;
+	}
+
+	LOG.lprintf("fertig (%ums)\n", VideoDriverWrapper::inst().GetTickCount()-ladezeit);
+
+	return true;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/**
+ *  @brief 
+ *
+ *  @author FloSoft
+ */
+bool Loader::LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Palette *palette, libsiedler2::ArchivInfo *to)
+{
+	bool directory = false;
+#ifdef _WIN32
+	if(!PathFileExistsA(GetFilePath(pfad).c_str()))
+	{
+		LOG.lprintf("Fehler: Datei oder Verzeichnis \"%s\" existiert nicht.\n", GetFilePath(pfad).c_str());
+		return false;
+	}
+	if ( (GetFileAttributesA(GetFilePath(pfad).c_str()) & FILE_ATTRIBUTE_DIRECTORY) == FILE_ATTRIBUTE_DIRECTORY)
+		directory = true;
+#else
+	struct stat file_stat;
+	stat(GetFilePath(pfad).c_str(), &file_stat);
+	if(S_ISDIR(file_stat.st_mode))
+		directory = true;
+#endif
+
+	if(!directory)
+	{
+		if(!LoadArchiv(pfad, palette, to))
+			return false;
+		return true;
+	}
+
+	LOG.lprintf("lade Verzeichnis %s\n", GetFilePath(pfad).c_str());
+	std::list<std::string> lst;
+	ListDir(GetFilePath(pfad) + "/*.bmp", false, NULL, NULL, &lst);
+	ListDir(GetFilePath(pfad) + "/*.txt", false, NULL, NULL, &lst);
+	ListDir(GetFilePath(pfad) + "/*.ger", false, NULL, NULL, &lst);
+	ListDir(GetFilePath(pfad) + "/*.eng", false, NULL, NULL, &lst);
+	ListDir(GetFilePath(pfad) + "/*.fon", true, NULL, NULL, &lst);
+	ListDir(GetFilePath(pfad) + "/*.empty", false, NULL, NULL, &lst);
+
+	lst.sort(SortFilesHelper);
+	
+	unsigned char *buffer = new unsigned char[1000*1000*4];
+	for(std::list<std::string>::iterator i = lst.begin(); i != lst.end(); ++i)
+	{
+		// read file number, to set the index correctly
+		std::string filename = i->substr(i->find_last_of('/')+1);
+		std::stringstream nrs;
+		int nr = -1;
+		nrs << filename;
+		if(! (nrs >> nr) )
+			nr = -1;
+			
+		// Dateiname zerlegen
+		std::vector<std::string> wf = ExplodeString(*i, '.');
+			
+		unsigned int bobtype = libsiedler2::BOBTYPE_BITMAP_RAW;
+		short nx = 0;
+		short ny = 0;
+		unsigned char dx = 0;
+		unsigned char dy = 0;
+		libsiedler2::ArchivItem *item = NULL;
+
+		// Common
+		for(std::vector<std::string>::iterator it = wf.begin(); it != wf.end(); ++it)
+		{
+			if(*it == "rle")
+				bobtype = libsiedler2::BOBTYPE_BITMAP_RLE;
+			else if(*it == "player")
+				bobtype = libsiedler2::BOBTYPE_BITMAP_PLAYER;
+			else if(*it == "shadow")
+				bobtype = libsiedler2::BOBTYPE_BITMAP_SHADOW;
+
+			else if(it->substr(0, 2) == "nx")
+				nx = atoi(it->substr(2).c_str());
+			else if(it->substr(0, 2) == "ny")
+				ny = atoi(it->substr(2).c_str());
+			else if(it->substr(0, 2) == "dx")
+				dx = atoi(it->substr(2).c_str());
+			else if(it->substr(0, 2) == "dy")
+				dy = atoi(it->substr(2).c_str());
+		}
+		
+		// Placeholder
+		if( wf.back() == "empty" )
+		{
+			LOG.lprintf("ueberspringe %s\n", i->c_str());
+			to->alloc_inc(1);
+			continue;
+		}
+
+		// Bitmap
+		else if( wf.back() == "bmp" )
+		{
+			libsiedler2::ArchivInfo temp;
+			if(!LoadArchiv( *i, palette, &temp ) )
+				return false;
+
+			// Nun Daten abhängig der Typen erstellen, nur erstes Element wird bei Bitmaps konvertiert
+			
+			glArchivItem_Bitmap *in = dynamic_cast<glArchivItem_Bitmap*>(temp.get(0));
+			glArchivItem_Bitmap *out = dynamic_cast<glArchivItem_Bitmap*>(glAllocator(bobtype, 0, NULL));
+
+			if(!out)
+			{
+				LOG.lprintf("unbekannter bobtype: %d\n", bobtype);
+				return false;
+			}
+			
+			out->setName(i->c_str());
+			out->setNx(nx);
+			out->setNy(ny);
+
+			memset(buffer, 0, 1000*1000*4);
+			in->print(buffer, 1000, 1000, libsiedler2::FORMAT_RGBA, palette);
+
+			switch(bobtype)
+			{
+			case libsiedler2::BOBTYPE_BITMAP_RLE:
+			case libsiedler2::BOBTYPE_BITMAP_SHADOW:
+				{
+					out->create(in->getWidth(), in->getHeight(), buffer, 1000, 1000, libsiedler2::FORMAT_RGBA, palette);
+				} break;
+			case libsiedler2::BOBTYPE_BITMAP_PLAYER:
+				{
+					dynamic_cast<glArchivItem_Bitmap_Player*>(out)->create(in->getWidth(), in->getHeight(), buffer, 1000, 1000, libsiedler2::FORMAT_RGBA, palette, 128);
+				} break;
+			}
+
+			item = out;
+		}
+		
+		// Palettes
+		else if( (wf.back() == "bbm") || (wf.back() == "act") )
+		{
+			libsiedler2::ArchivInfo temp;
+			if(!LoadArchiv( *i, palette, &temp ) )
+				return false;
+			item = temp.get(0);
+		}
+
+		// Font
+		else if( wf.back() == "fon" )
+		{
+			glArchivItem_Font font;
+			font.setName(i->c_str());
+			font.setDx(dx);
+			font.setDy(dy);
+			
+			if(!LoadFile(*i, palette, &font))
+				return false;
+			
+			item = &font;
+		}
+
+		if(item)
+		{
+			// had the filename a number? then set it to the corresponding item.
+			if(nr >= 0)
+			{
+				if(nr >= (int)to->getCount())
+					to->alloc_inc(nr - to->getCount() + 1);
+				to->setC(nr, item);
+			}
+			else
+				to->pushC(item);
+		}
+	}
+	delete[] buffer;
+	
+	return true;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/**
+ *  @brief 
+ *
+ *  @author FloSoft
+ */
+bool Loader::LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Palette *palette, bool load_always)
+{
+	std::string p = pfad;
+	transform ( p.begin(), p.end(), p.begin(), tolower );
+
+	size_t pp = p.find_last_of("/\\");
+	if(pp != std::string::npos)
+		p = p.substr(pp+1);
+
+	std::string e = p;
+	pp = p.find_first_of('.');
+	if(pp != std::string::npos)
+	{
+		e = p.substr(pp);
+		p = p.substr(0, pp);
+	}
+
+	// bereits geladen und wir wollen kein nochmaliges laden
+	if(!load_always && files.find(p) != files.end() && files.find(p)->second.getCount() != 0)
+		return true;
+
+	bool override_file = false;
+
+	libsiedler2::ArchivInfo archiv;
+	libsiedler2::ArchivInfo *to = &archiv;
+
+	if(files.find(p) == files.end() || files.find(p)->second.getCount() == 0)
+	{
+		// leeres Archiv in Map einfügen
+		files.insert(std::make_pair(p, archiv));
+		to = &files.find(p)->second;
+	}
+	else
+		override_file = true;
+		
+	if(!LoadFile(pfad, palette, to))
+		return false;
+	
+	// haben wir eine override file? dann nicht-leere items überschreiben
+	if(override_file)
+	{
+		LOG.lprintf("Ersetze Daten der vorher geladenen Datei\n");
+		to = &files.find(p)->second;
+
+		if(e == ".bob")
+			to = dynamic_cast<libsiedler2::ArchivInfo*>(to->get(0));
+
+		if(to == NULL)
+		{
+			LOG.lprintf("Fehler beim Ersetzen einer BOB-Datei\n");
+			return false;
+		}
+
+		if(archiv.getCount() > to->getCount())
+			to->alloc_inc(archiv.getCount()-to->getCount());
+
+		for(unsigned int i = 0; i < archiv.getCount(); ++i)
+		{
+			if(archiv.get(i))
+			{
+				if(to->get(i))
+					delete to->get(i);
+				LOG.lprintf("Ersetze Eintrag %d durch %s\n", i, archiv.get(i)->getName());
+				to->setC(i, archiv.get(i));
+			}
+		}
+	}
+
+	return true;
 }

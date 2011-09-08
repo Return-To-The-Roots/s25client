@@ -1,6 +1,6 @@
-// $Id: Window.h 7248 2011-06-07 15:33:29Z FloSoft $
+// $Id: Window.h 7521 2011-09-08 20:45:55Z FloSoft $
 //
-// Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
