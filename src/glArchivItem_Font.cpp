@@ -1,4 +1,4 @@
-// $Id: glArchivItem_Font.cpp 7505 2011-09-07 13:14:38Z FloSoft $
+// $Id: glArchivItem_Font.cpp 7516 2011-09-08 09:38:31Z FloSoft $
 //
 // Copyright (c) 2005 - 2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -575,7 +575,7 @@ void glArchivItem_Font::initFont()
 	_font->create(w, h, buffer, w, h, libsiedler2::FORMAT_RGBA, LOADER.GetPaletteN("colors"));
 	_font->setFilter(GL_LINEAR);
 
-	ArchivInfo items;
+	/*ArchivInfo items;
 	items.pushC(_font);
-	libsiedler2::loader::WriteBMP((std::string("font") + std::string(getName()) + std::string(".bmp")).c_str(), LOADER.GetPaletteN("colors"), &items);
+	libsiedler2::loader::WriteBMP((std::string("font") + std::string(getName()) + std::string(".bmp")).c_str(), LOADER.GetPaletteN("colors"), &items);*/
 }
