@@ -1,3 +1,287 @@
+s25rttr (20110909-7523.122) karmic; urgency=low
+
+  * Automatic Jenkins Build 122
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Fri, 09 Sep 2011 01:19:46 +0200
+
+s25rttr (20110909-7523) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Fri, 09 Sep 2011 00:00:00 +0200
+
+s25rttr (20110908-7522) any; urgency=low
+
+  * linux fixes
+
+ -- Florian Doersch <flosoft@siedler25.org>  Thu, 08 Sep 2011 20:57:00 +0200
+
+s25rttr (20110908-7521) any; urgency=low
+
+  * so große änderung:
+    - aufgeräumt (alte codelite & codeblocks projekte gelöscht)
+    - visual studio projektdateien für vs2010 neugeneriert und alles
+    neu eingestellt
+    - Unicode Mist weitergemacht, also Eingaben von WinAPI und SDL
+    in/als Unicode möglich
+    - ganze stdafx geschmarre entfernt - debuggen&fortfahren
+    funktioniert auch ohne gescheit wenn das projektfile mitmacht -.-
+    - alle copyright header mal um 2011 ergänzt ;-) (wirds auch zeit
+    ...)
+
+ -- Florian Doersch <flosoft@siedler25.org>  Thu, 08 Sep 2011 20:45:00 +0200
+
+s25rttr (20110908-7520) any; urgency=low
+
+  * .po file update.
+
+ -- marcus  Thu, 08 Sep 2011 17:14:00 +0200
+
+s25rttr (20110908-7519) any; urgency=low
+
+  * again
+
+ -- Florian Doersch <flosoft@siedler25.org>  Thu, 08 Sep 2011 17:05:00 +0200
+
+s25rttr (20110908-7518) any; urgency=low
+
+  * added sort & no-wrap
+
+ -- Florian Doersch <flosoft@siedler25.org>  Thu, 08 Sep 2011 17:00:00 +0200
+
+s25rttr (20110908-7517) any; urgency=low
+
+  * Graphics bug fix (black lines with captions and status).
+
+ -- marcus  Thu, 08 Sep 2011 16:33:00 +0200
+
+s25rttr (20110908-7516) any; urgency=low
+
+  * removed debug code
+
+ -- Florian Doersch <flosoft@siedler25.org>  Thu, 08 Sep 2011 09:38:00 +0200
+
+s25rttr (20110908-7515.121) karmic; urgency=low
+
+  * Automatic Jenkins Build 121
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Thu, 08 Sep 2011 01:24:43 +0200
+
+s25rttr (20110908-7515) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Thu, 08 Sep 2011 00:00:00 +0200
+
+s25rttr (20110907-7509) any; urgency=low
+
+  * language update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Wed, 07 Sep 2011 13:48:00 +0200
+
+s25rttr (20110907-7508) any; urgency=low
+
+  * changed tourney to tournament ... the other one is only the verb
+    ;-)
+
+ -- Florian Doersch <flosoft@siedler25.org>  Wed, 07 Sep 2011 13:46:00 +0200
+
+s25rttr (20110907-7507) any; urgency=low
+
+  * Torney Tourney ...
+
+ -- Florian Doersch <flosoft@siedler25.org>  Wed, 07 Sep 2011 13:37:00 +0200
+
+s25rttr (20110907-7506) any; urgency=low
+
+  * ...
+
+ -- Florian Doersch <flosoft@siedler25.org>  Wed, 07 Sep 2011 13:16:00 +0200
+
+s25rttr (20110907-7505) any; urgency=low
+
+  * paar fixes,
+    removed multi-jobs for singlecore computers
+
+ -- Florian Doersch <flosoft@siedler25.org>  Wed, 07 Sep 2011 13:14:00 +0200
+
+s25rttr (20110907-7504) any; urgency=low
+
+  * changed outline_fonts for correct unicode placement of special
+    chars,
+    changed drawing of fonts
+    removed old oem charset conversion on drawing and input
+    changed copyright-symbol and -year
+    removed oem conversion from videoSDL
+    
+    todo: how to handle more than 256-32 characters in a font - the
+    old font file format does not support that.
+
+ -- Florian Doersch <flosoft@siedler25.org>  Wed, 07 Sep 2011 12:56:00 +0200
+
+s25rttr (20110907-7502) any; urgency=low
+
+  * forced entered key to be a char (perhaps we have to change the
+    SDL-video-wrapper itself to get the full unicode support
+
+ -- Florian Doersch <flosoft@siedler25.org>  Wed, 07 Sep 2011 12:44:00 +0200
+
+s25rttr (20110907-7501) any; urgency=low
+
+  * updated addon texts (added dots, etc)
+
+ -- Florian Doersch <flosoft@siedler25.org>  Wed, 07 Sep 2011 12:43:00 +0200
+
+s25rttr (20110907-7500) any; urgency=low
+
+  * enabled sorting of language files
+
+ -- Florian Doersch <flosoft@siedler25.org>  Wed, 07 Sep 2011 12:42:00 +0200
+
+s25rttr (20110907-7496.120) karmic; urgency=low
+
+  * Automatic Jenkins Build 120
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Wed, 07 Sep 2011 01:12:14 +0200
+
+s25rttr (20110907-7496) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Wed, 07 Sep 2011 00:00:00 +0200
+
+s25rttr (20110906-7495) any; urgency=low
+
+  * Minor improvements.
+
+ -- marcus  Tue, 06 Sep 2011 07:37:00 +0200
+
+s25rttr (20110906-7494.119) karmic; urgency=low
+
+  * Automatic Jenkins Build 119
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 06 Sep 2011 01:07:31 +0200
+
+s25rttr (20110906-7494) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 06 Sep 2011 00:00:00 +0200
+
+s25rttr (20110905-7493) any; urgency=low
+
+  * added Merris background
+    added proper Background-Scaling - but it's cut from right (and
+    not centered, or cut left, but I think centered would be better)
+
+ -- Florian Doersch <flosoft@siedler25.org>  Mon, 05 Sep 2011 16:53:00 +0200
+
+s25rttr (20110905-7483.118) karmic; urgency=low
+
+  * Automatic Jenkins Build 118
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Mon, 05 Sep 2011 01:06:17 +0200
+
+s25rttr (20110905-7483) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Mon, 05 Sep 2011 00:00:00 +0200
+
+s25rttr (20110904-7479) any; urgency=low
+
+  * Use (cpus+1) jobs for make.
+
+ -- marcus  Sun, 04 Sep 2011 17:26:00 +0200
+
+s25rttr (20110904-7478.117) karmic; urgency=low
+
+  * Automatic Jenkins Build 117
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sun, 04 Sep 2011 18:38:14 +0200
+
+s25rttr (20110904-7478.116) karmic; urgency=low
+
+  * Automatic Jenkins Build 116
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sun, 04 Sep 2011 18:25:23 +0200
+
+s25rttr (20110904-7478) any; urgency=low
+
+  * Draw fonts through vertex arrays.
+
+ -- marcus  Sun, 04 Sep 2011 16:11:00 +0200
+
+s25rttr (20110904-7477) any; urgency=low
+
+  * Faster water percent calculations, water may be NULL in
+    TerrainRenderer::Draw().
+
+ -- marcus  Sun, 04 Sep 2011 14:12:00 +0200
+
+s25rttr (20110904-7476) any; urgency=low
+
+  * Stupidity, no need to transfer VBO every frame.
+
+ -- marcus  Sun, 04 Sep 2011 13:57:00 +0200
+
+s25rttr (20110904-7475) any; urgency=low
+
+  * Oops.
+
+ -- marcus  Sun, 04 Sep 2011 13:53:00 +0200
+
+s25rttr (20110904-7474) any; urgency=low
+
+  * Implemented drawing ways as vertex array and other improvements
+    in TerrainRenderer.cpp
+
+ -- marcus  Sun, 04 Sep 2011 13:43:00 +0200
+
+s25rttr (20110904-7473) any; urgency=low
+
+  * Minor improvements in glArchivItem_Bitmap_Player.cpp
+
+ -- marcus  Sun, 04 Sep 2011 13:39:00 +0200
+
+s25rttr (20110904-7472) any; urgency=low
+
+  * Compile faster using all available CPUs in parallel.
+
+ -- marcus  Sun, 04 Sep 2011 13:36:00 +0200
+
+s25rttr (20110904-7471.115) karmic; urgency=low
+
+  * Automatic Jenkins Build 115
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sun, 04 Sep 2011 01:06:10 +0200
+
+s25rttr (20110904-7471) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sun, 04 Sep 2011 00:00:00 +0200
+
+s25rttr (20110903-7470) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 03 Sep 2011 22:00:00 +0200
+
+s25rttr (20110903-7469) any; urgency=low
+
+  * Reverted changes to TerrainRenderer due to strange winapi issues.
+    Seems not to be a problem with SDL.
+
+ -- marcus  Sat, 03 Sep 2011 17:24:00 +0200
+
+s25rttr (20110903-7468) any; urgency=low
+
+  * Preparations for ARM cross-compiling, libraries are still
+    missing.
+
+ -- marcus  Sat, 03 Sep 2011 11:47:00 +0200
+
 s25rttr (20110903-7467.114) karmic; urgency=low
 
   * Automatic Jenkins Build 114
