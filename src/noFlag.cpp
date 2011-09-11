@@ -1,4 +1,4 @@
-// $Id: noFlag.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: noFlag.cpp 7528 2011-09-11 13:21:03Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -345,24 +345,6 @@ Ware *noFlag::SelectWare(const unsigned char dir, const bool swap_wares, const n
 		LOG.lprintf("Achtung: Bug im Spiel: noFlag::SelectWare: best_ware = 0!\n");
 
 	return best_ware;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Prüft, ob es Waren gibt, die auf den Weg in Richtung dir getragen werden müssen.
- *
- *  @author OLiver
- */
-unsigned noFlag::GetWaresCountForRoad(const unsigned char dir) const
-{
-	return((wares[0] && (wares[0]->GetNextDir() == dir) ? 1 : 0) + 
-		(wares[1] && (wares[1]->GetNextDir() == dir) ? 1 : 0) + 
-		(wares[2] && (wares[2]->GetNextDir() == dir) ? 1 : 0) + 
-		(wares[3] && (wares[3]->GetNextDir() == dir) ? 1 : 0) + 
-		(wares[4] && (wares[4]->GetNextDir() == dir) ? 1 : 0) + 
-		(wares[5] && (wares[5]->GetNextDir() == dir) ? 1 : 0) + 
-		(wares[6] && (wares[6]->GetNextDir() == dir) ? 1 : 0) + 
-		(wares[7] && (wares[7]->GetNextDir() == dir) ? 1 : 0));
 }
 
 ///////////////////////////////////////////////////////////////////////////////

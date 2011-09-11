@@ -1,4 +1,4 @@
-// $Id: noFlag.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: noFlag.h 7528 2011-09-11 13:21:03Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -22,8 +22,7 @@
 #include "noRoadNode.h"
 #include "RoadSegment.h"
 #include "MapConsts.h"
-
-class Ware;
+#include "Ware.h"
 
 class noFlag : public noRoadNode
 {
@@ -53,7 +52,13 @@ public:
 	/// Wählt eine Ware von einer Flagge aus (anhand der Transportreihenfolge), entfernt sie von der Flagge und gibt sie zurück.
 	Ware *SelectWare(const unsigned char dir, const bool swap_wares, const noFigure *const carrier);
 	/// Prüft, ob es Waren gibt, die auf den Weg in Richtung dir getragen werden müssen.
-	unsigned GetWaresCountForRoad(const unsigned char dir) const;
+	inline unsigned GetWaresCountForRoad(const unsigned char dir) const
+	{
+		return((wares[0] && (wares[0]->GetNextDir() == dir) ? 1 : 0) + (wares[1] && (wares[1]->GetNextDir() == dir) ? 1 : 0) + 
+			(wares[2] && (wares[2]->GetNextDir() == dir) ? 1 : 0) + (wares[3] && (wares[3]->GetNextDir() == dir) ? 1 : 0) + 
+			(wares[4] && (wares[4]->GetNextDir() == dir) ? 1 : 0) + (wares[5] && (wares[5]->GetNextDir() == dir) ? 1 : 0) + 
+			(wares[6] && (wares[6]->GetNextDir() == dir) ? 1 : 0) + (wares[7] && (wares[7]->GetNextDir() == dir) ? 1 : 0));
+	}
 	/// Gibt Wegstrafpunkte für das Pathfinden für Waren, die in eine bestimmte Richtung noch transportiert werden müssen.
 	unsigned short GetPunishmentPoints(const unsigned char dir) const;
 	/// Zerstört evtl. vorhandenes Gebäude bzw. Baustelle vor der Flagge.
