@@ -1,4 +1,4 @@
-// $Id: glArchivItem_Font.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: glArchivItem_Font.h 7527 2011-09-11 13:19:54Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -68,10 +68,22 @@ public:
 		DF_VCENTER = 8
 	};
 
+	struct char_info
+	{
+		char_info() : x(0), y(0), width(0), reserved(0xFFFF) {}
+		unsigned short x;
+		unsigned short y;
+		unsigned short width;
+		unsigned short reserved; // so we have 8 byte's
+	};
+
 	/// prüft ob ein Buchstabe existiert.
 	inline bool CharExist(unsigned int c) const { return (CharWidth(c) > 0); }
+	inline bool CharExist(char_info ci) const { return (ci.width > 0); }
+
 	/// liefert die Breite eines Zeichens
 	inline unsigned int CharWidth(unsigned int c) const { return CharInfo(c).width; }
+	inline unsigned int CharWidth(char_info ci) const { return ci.width; }
 
 	std::string Unicode_to_Utf8(unsigned int c) const;
 	unsigned int Utf8_to_Unicode(const std::string& text, unsigned int& i) const;
@@ -87,15 +99,6 @@ private:
 
 	void DrawChar(const std::string& text, unsigned int& i, GL_T2F_V3F_Struct *tmp, short& cx, short& cy, float tw, float th, unsigned int& idx);
 
-	struct char_info
-	{
-		char_info() : x(0), y(0), width(0), reserved(0xFFFF) {}
-		unsigned short x;
-		unsigned short y;
-		unsigned short width;
-		unsigned short reserved; // so we have 8 byte's
-	};
-
 	/// liefert das Char-Info eines Zeichens
 	inline const char_info& CharInfo(unsigned int c) const
 	{
@@ -104,6 +107,8 @@ private:
 		std::map<unsigned int, char_info>::const_iterator it = utf8_mapping.find(c);
 		if(it != utf8_mapping.end())
 			return it->second;
+
+		ci.width = 0;
 
 		return ci;
 	}
