@@ -70,7 +70,7 @@ iwSettings::iwSettings(dskGameInterface *gameDesktop)
 	VideoDriverWrapper::inst().ListVideoModes(video_modes);
 
 	// "Auflösung"
-	AddComboBox(0, 200, 35, 150, 22, TC_GREY, NormalFont, 150);
+	AddComboBox(0, 200, 35, 150, 22, TC_GREY, NormalFont, 110);
 
 	// Und zu der Combobox hinzufügen
 	for(unsigned i = 0;i<video_modes.size();++i)
