@@ -1,3 +1,51 @@
+s25rttr (20110914-7545.124) karmic; urgency=low
+
+  * Automatic Jenkins Build 124
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Wed, 14 Sep 2011 01:06:20 +0200
+
+s25rttr (20110914-7545) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Wed, 14 Sep 2011 00:00:00 +0200
+
+s25rttr (20110913-7543) any; urgency=low
+
+  * 150 zu 110 (110+35+19 < 172)
+
+ -- Florian Doersch <flosoft@siedler25.org>  Tue, 13 Sep 2011 17:12:00 +0200
+
+s25rttr (20110912-7532.123) karmic; urgency=low
+
+  * Automatic Jenkins Build 123
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Mon, 12 Sep 2011 01:17:34 +0200
+
+s25rttr (20110912-7532) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Mon, 12 Sep 2011 00:00:00 +0200
+
+s25rttr (20110911-7528) any; urgency=low
+
+  * Inlined noFlag::GetWaresCountForRoad().
+
+ -- marcus  Sun, 11 Sep 2011 13:21:00 +0200
+
+s25rttr (20110911-7527) any; urgency=low
+
+  * Font speed-ups.
+
+ -- marcus  Sun, 11 Sep 2011 13:19:00 +0200
+
+s25rttr (20110910-7525) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 10 Sep 2011 22:00:00 +0200
+
 s25rttr (20110909-7523.122) karmic; urgency=low
 
   * Automatic Jenkins Build 122
