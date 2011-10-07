@@ -70,10 +70,12 @@ while test $# != 0 ; do
 	shift $ac_shift
 done
 
-CPU_COUNT=`grep -ce '^processor' /proc/cpuinfo`
+if [ -f /proc/cpuinfo ] ; then
+	CPU_COUNT=`grep -ce '^processor' /proc/cpuinfo`
 
-if test "$CPU_COUNT" -gt 1; then
-	MAKEARGS="-j $((1+$CPU_COUNT)) $MAKEARGS"
+	if test "$CPU_COUNT" -gt 1; then
+		MAKEARGS="-j $((1+$CPU_COUNT)) $MAKEARGS"
+	fi
 fi
 
 make $MAKEARGS
