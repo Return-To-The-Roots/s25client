@@ -1,4 +1,4 @@
-// $Id: SDL.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: SDL.cpp 7572 2011-10-07 09:46:58Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -189,7 +189,7 @@ bool VideoSDL::CreateScreen(unsigned short width, unsigned short height, const b
 
 	// TODO: Icon setzen
 
-#ifdef WIN32
+#ifdef _WIN32
 	// das spinnt ja total unter windows ...
 	this->fullscreen = false;
 #endif
@@ -249,7 +249,7 @@ bool VideoSDL::ResizeScreen(unsigned short width, unsigned short height, const b
 	this->screenHeight = height;
 	this->fullscreen = fullscreen;
 
-#ifdef WIN32
+#ifdef _WIN32
 	// das spinnt ja total unter windows ...
 	this->fullscreen = false;
 #endif
@@ -536,7 +536,9 @@ void * VideoSDL::GetWindowPointer() const
 {
 #ifdef WIN32
 	SDL_SysWMinfo wmInfo;
+	SDL_VERSION(&wmInfo.version);
 	SDL_GetWMInfo(&wmInfo);
+	//return (void*)wmInfo.info.win.window;
 	return (void*)wmInfo.window;
 #else
 	return NULL;
