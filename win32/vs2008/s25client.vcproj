@@ -138,7 +138,7 @@
 				BufferSecurityCheck="false"
 				EnableFunctionLevelLinking="true"
 				EnableEnhancedInstructionSet="2"
-				UsePrecompiledHeader="2"
+				UsePrecompiledHeader="0"
 				BrowseInformation="1"
 				WarningLevel="3"
 				WarnAsError="true"
@@ -1088,14 +1088,6 @@
 				</File>
 				<File
 					RelativePath="..\..\src\GameClientPlayer.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\GameInterface.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\GameInterface.h"
 					>
 				</File>
 				<File
