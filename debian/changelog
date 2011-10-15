@@ -1,3 +1,51 @@
+s25rttr (20111015-7584.128) karmic; urgency=low
+
+  * Automatic Jenkins Build 128
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sat, 15 Oct 2011 01:08:01 +0200
+
+s25rttr (20111015-7584) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sat, 15 Oct 2011 00:00:00 +0200
+
+s25rttr (20111014-7583) any; urgency=low
+
+  * 2008er Projekt repariert
+
+ -- OLiver Siebert <oliver@siedler25.org>  Fri, 14 Oct 2011 20:17:00 +0200
+
+s25rttr (20111013-7581.127) karmic; urgency=low
+
+  * Automatic Jenkins Build 127
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Thu, 13 Oct 2011 01:06:18 +0200
+
+s25rttr (20111013-7581) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Thu, 13 Oct 2011 00:00:00 +0200
+
+s25rttr (20111011-7578.126) karmic; urgency=low
+
+  * Automatic Jenkins Build 126
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 11 Oct 2011 01:07:19 +0200
+
+s25rttr (20111011-7578) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 11 Oct 2011 00:00:00 +0200
+
+s25rttr (20111008-7574) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 08 Oct 2011 22:00:00 +0200
+
 s25rttr (20111008-7573.125) karmic; urgency=low
 
   * Automatic Jenkins Build 125
