@@ -1,3 +1,27 @@
+s25rttr (20111203-7636.129) karmic; urgency=low
+
+  * Automatic Jenkins Build 129
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sat, 03 Dec 2011 01:05:54 +0100
+
+s25rttr (20111203-7636) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sat, 03 Dec 2011 00:00:00 +0100
+
+s25rttr (20111202-7635) any; urgency=low
+
+  * new map by Spike, 172x172, 2on2on2, ffa, 3on3
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Fri, 02 Dec 2011 22:48:00 +0100
+
+s25rttr (20111015-7585) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 15 Oct 2011 22:00:00 +0200
+
 s25rttr (20111015-7584.128) karmic; urgency=low
 
   * Automatic Jenkins Build 128
