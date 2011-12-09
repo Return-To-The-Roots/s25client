@@ -1,4 +1,4 @@
-// $Id: FOWObjects.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: FOWObjects.cpp 7644 2011-12-09 21:29:10Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -80,10 +80,20 @@ void fowBuilding::Serialize(SerializedGameData *sgd) const
 
 void fowBuilding::Draw(int x, int y) const
 {
-	LOADER.GetNationImageN(nation, 250+5*type)->Draw(x,y,0,0,0,0,0,0,FOW_DRAW_COLOR);
-	// ACHTUNG nicht jedes Gebäude hat einen Schatten !!
-	if(LOADER.GetNationImageN(nation, 250+5*type+1))
-		LOADER.GetNationImageN(nation, 250+5*type+1)->Draw(x,y,0,0,0,0,0,0,COLOR_SHADOW);
+	if(type == BLD_CHARBURNER)
+	{
+		unsigned id = 1+nation*8;
+		//if(gwg->GetLandscapeType() == LT_WINTERWORLD) // don't know how to check for LT_WINTERWORLD from here
+		//	id = 1+nation*8+5;
+		LOADER.GetImageN("charburner",id)->Draw(x,y,0,0,0,0,0,0,FOW_DRAW_COLOR);
+	}
+	else
+	{
+		LOADER.GetNationImageN(nation, 250+5*type)->Draw(x,y,0,0,0,0,0,0,FOW_DRAW_COLOR);
+		// ACHTUNG nicht jedes Gebäude hat einen Schatten !!
+		if(LOADER.GetNationImageN(nation, 250+5*type+1))
+			LOADER.GetNationImageN(nation, 250+5*type+1)->Draw(x,y,0,0,0,0,0,0,COLOR_SHADOW);
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
