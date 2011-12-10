@@ -1,3 +1,28 @@
+s25rttr (20111210-7645.130) karmic; urgency=low
+
+  * Automatic Jenkins Build 130
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sat, 10 Dec 2011 01:09:27 +0100
+
+s25rttr (20111210-7645) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sat, 10 Dec 2011 00:00:00 +0100
+
+s25rttr (20111209-7644) any; urgency=low
+
+  * dirty fix for Bug #902334 This should be fixed in a different
+    way!
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Fri, 09 Dec 2011 21:29:00 +0100
+
+s25rttr (20111203-7637) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 03 Dec 2011 23:00:00 +0100
+
 s25rttr (20111203-7636.129) karmic; urgency=low
 
   * Automatic Jenkins Build 129
