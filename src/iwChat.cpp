@@ -1,4 +1,4 @@
-// $Id: iwChat.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: iwChat.cpp 7668 2011-12-26 22:55:02Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -26,6 +26,7 @@
 #include "controls.h"
 #include "GameClient.h"
 #include "GameCommands.h"
+#include "Random.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -81,14 +82,17 @@ void iwChat::Msg_EditEnter(const unsigned int ctrl_id)
 	if(chat_dest != 0 && chat_dest != 1 && chat_dest != 2)
 		chat_dest = 0;
 
-	if(edit->GetText() == "apocalypsis")
+	if (edit->GetText() == "apocalypsis")
 	{
 		GameClient::inst().AddGC(new gc::CheatArmageddon);
 		return;
-	}
-	else if(edit->GetText() == "surrender")
+	} else if (edit->GetText() == "surrender")
 	{
 		GameClient::inst().AddGC(new gc::Surrender);
+		return;
+	} else if (edit->GetText() == "async!")
+	{
+		(void) RANDOM.Rand(__FILE__, __LINE__, 0, 255);
 		return;
 	}
 
