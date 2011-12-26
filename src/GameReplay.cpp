@@ -1,4 +1,4 @@
-// $Id: GameReplay.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: GameReplay.cpp 7667 2011-12-26 22:40:31Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -34,7 +34,7 @@ const unsigned short Replay::REPLAY_VERSION = 23;
  *
  *  @author OLiver
  */
-Replay::Replay() : nwf_length(0), random_init(0), pathfinding_results(true), map_length(0), map_zip_length(0), map_data(0), 
+Replay::Replay() : nwf_length(0), random_init(0), pathfinding_results(false), map_length(0), map_zip_length(0), map_data(0), 
 	savegame(0), last_gf(0), last_gf_file_pos(0), gf_file_pos(0)
 {
 }
