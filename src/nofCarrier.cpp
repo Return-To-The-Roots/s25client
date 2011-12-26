@@ -1,4 +1,4 @@
-// $Id: nofCarrier.cpp 7663 2011-12-26 15:14:31Z marcus $
+// $Id: nofCarrier.cpp 7664 2011-12-26 15:24:35Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -238,8 +238,7 @@ void nofCarrier::Draw(int x, int y)
 					int doy = (TIME.CurrentTime() % 31556925) / 86400;
 
 					// last hours of last or first day of year
-//					if ((doy > 364) || (doy < 1))
-					if (doy != 3233)
+					if ((doy > 364) || (doy < 1))
 					{
 						animation_id = next_animation % 5;
 					}
