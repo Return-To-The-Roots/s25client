@@ -1,4 +1,4 @@
-// $Id: Random.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: Random.cpp 7666 2011-12-26 21:49:18Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -73,11 +73,7 @@ int Random::Rand(const char * const src_name, const unsigned src_line,const unsi
 {
 	zahl = ( (zahl * 997) + 1+max) & 32767;
 
-	/// Randomgenerator loggen
-	char log_str[512];
-	//assert(counter != 7731970); <- wtf?
-	sprintf(log_str,"%u:R(%d)=%d,z=%d | %s Z: %u|id=%u",counter,max,(zahl * max) / 32768,zahl,src_name,src_line,obj_id);
-	async_log.push_back(log_str);
+	async_log.push_back(RandomEntry(counter, max, zahl, src_name, src_line, obj_id));
 	if(async_log.size() > 10000)
 		async_log.pop_front();
 
@@ -85,13 +81,12 @@ int Random::Rand(const char * const src_name, const unsigned src_line,const unsi
 	return ( (zahl * max) / 32768);
 }
 
-
 void Random::SaveLog(const char * const filename)
 {
 	FILE * file = fopen(filename,"w");
 
-	for(list<std::string>::iterator it = async_log.begin();it.valid();++it)
-		fprintf(file,"%s\n",it->c_str());
+	for (list<RandomEntry>::iterator it = async_log.begin();it.valid();++it)
+		fprintf(file, "%u:R(%d)=%d,z=%d | %s Z: %u|id=%u\n", it->counter, it->max, (it->value * it->max) / 32768, it->value,it->src_name, it->src_line, it->obj_id);
 
 	fclose(file);
 }

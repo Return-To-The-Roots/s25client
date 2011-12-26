@@ -1,4 +1,4 @@
-// $Id: noRoadNode.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: noRoadNode.cpp 7666 2011-12-26 21:49:18Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -43,6 +43,7 @@ noRoadNode::noRoadNode(const NodalObjectType nop,const unsigned short x, const u
 {
 	for(unsigned i = 0;i<6;++i)
 		routes[i] = 0;
+	coord_id = gwg->MakeCoordID(x, y);
 }
 
 noRoadNode::~noRoadNode()
@@ -70,6 +71,7 @@ player(sgd->PopUnsignedChar())
 {
 	for(unsigned i = 0;i<6;++i)
 		routes[i] = sgd->PopObject<RoadSegment>(GOT_ROADSEGMENT);
+	coord_id = gwg->MakeCoordID(x, y);
 }
 
 void noRoadNode::UpgradeRoad(const unsigned char dir)

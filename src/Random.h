@@ -1,4 +1,4 @@
-// $Id: Random.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: Random.h 7666 2011-12-26 21:49:18Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -24,10 +24,22 @@
 #include "Singleton.h"
 #include "list.h"
 
+struct RandomEntry
+{
+	unsigned counter;
+	int max;
+	int value;
+	const char *src_name;
+	unsigned int src_line;
+	unsigned obj_id;
+
+	RandomEntry(unsigned counter, int max, int value, const char *src_name, unsigned int src_line, unsigned obj_id) : counter(counter), max(max), value(value), src_name(src_name), src_line(src_line), obj_id(obj_id) {};
+};
+
 class Random : public Singleton<Random>
 {
 	unsigned counter;
-	list<std::string> async_log;
+	list<RandomEntry> async_log;
 
 public:
 
