@@ -1,4 +1,4 @@
-// $Id: nofCarrier.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: nofCarrier.cpp 7663 2011-12-26 15:14:31Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -227,22 +227,52 @@ void nofCarrier::Draw(int x, int y)
 
 				// Ist es schon Zeit für eine Animation?
 				unsigned current_gf = GameClient::inst().GetGFNumber();
+
 				if(current_gf >= next_animation)
 				{
 					// Animationstype bestimmen
-					unsigned animation_id = next_animation%4;
+					unsigned animation_id = next_animation % 4;
+
+// <Silvesteregg>
+					// day of year, 0-365, accuracy about 1/4 day
+					int doy = (TIME.CurrentTime() % 31556925) / 86400;
+
+					// last hours of last or first day of year
+//					if ((doy > 364) || (doy < 1))
+					if (doy != 3233)
+					{
+						animation_id = next_animation % 5;
+					}
+// </Silvesteregg>
 
 					// Ist die Animation schon vorbei?
-					if(current_gf >= next_animation+ANIMATION_FRAME_LENGTHS[fat?1:0][animation_id]*FRAME_GF)
+					if (((animation_id < 4) && (current_gf >= next_animation+ANIMATION_FRAME_LENGTHS[fat?1:0][animation_id]*FRAME_GF)) ||
+						((animation_id == 4) && (current_gf >= next_animation + 32*3)))
+					{
 						// Neuen nächsten Animationszeitpunkt bestimmen
 						SetNewAnimationMoment();
-					else
+					} else
 					{
 						animation = true;
 
-						// Nein, dann Animation abspielen
-						LOADER.GetImageN("rom_bobs", ANIMATION[fat?1:0][animation_id][(current_gf-next_animation)/FRAME_GF])
-							->Draw(x,y,0,0,0,0,0,0,COLOR_WHITE, COLORS[gwg->GetPlayer(player)->color]);
+						if (animation_id < 4)
+						{
+							// Nein, dann Animation abspielen
+							LOADER.GetImageN("rom_bobs", ANIMATION[fat?1:0][animation_id][(current_gf-next_animation)/FRAME_GF])
+								->Draw(x,y,0,0,0,0,0,0,COLOR_WHITE, COLORS[gwg->GetPlayer(player)->color]);
+						} else if (animation_id == 4)	// Silvesteregg
+						{
+							glArchivItem_Bitmap *bmp = LOADER.GetImageN("firework", (current_gf - next_animation) / 3 + 1);
+
+							if (bmp)
+							{
+								bmp->Draw(x-26,y-104,0,0,0,0,0,0,COLOR_WHITE, COLORS[gwg->GetPlayer(player)->color]);
+							} else
+							{
+								SetNewAnimationMoment();
+								animation = false;
+							}
+						}
 					}
 				}
 
