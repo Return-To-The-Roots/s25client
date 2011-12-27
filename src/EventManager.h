@@ -1,4 +1,4 @@
-// $Id: EventManager.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: EventManager.h 7670 2011-12-27 11:50:40Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -25,6 +25,8 @@
 #include "GameConsts.h"
 #include "list.h"
 #include "GameObject.h"
+
+#include <list>
 
 class GameObject;
 class SerializedGameData;
@@ -80,7 +82,7 @@ public:
 	/// Löscht alle Listen für Spielende
 	void Clear() { eis.clear(); kill_list.clear(); }
 	/// Event entfernen
-	void RemoveEvent(EventPointer ep) { eis.erase(ep); delete ep; }
+	void RemoveEvent(EventPointer ep) {  eis.remove(ep); delete ep; }
 	/// Objekt will gekillt werden
 	void AddToKillList(GameObject *obj) { kill_list.push_back(obj); }
 
@@ -93,8 +95,8 @@ public:
 	bool IsEventAcive(const GameObject * const obj, const unsigned id) const;
 
 private:
-	list<Event*> eis;     ///< Liste der Events für die einzelnen Objekte
-	list<GameObject*> kill_list; ///< Liste mit Objekten die unmittelbar nach NextGF gekillt werden sollen
+	std::list<Event*> eis;     ///< Liste der Events für die einzelnen Objekte
+	std::list<GameObject*> kill_list; ///< Liste mit Objekten die unmittelbar nach NextGF gekillt werden sollen
 };
 
 #define EVENTMANAGER EventManager::inst()
