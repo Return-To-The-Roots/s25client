@@ -1,4 +1,4 @@
-// $Id: GameWorld.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: GameWorld.h 7671 2011-12-27 11:52:38Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -207,11 +207,11 @@ public:
 	void Unload();
 
 	/// Setzt GameInterface
-	void SetGameInterface(GameInterface * const gi) { this->gi = gi; }
+	inline void SetGameInterface(GameInterface * const gi) { this->gi = gi; }
 
 	/// GrÃ¶ÃŸe der Map abfragen
-	unsigned short GetWidth() const { return width; }
-	unsigned short GetHeight() const { return height; }
+	inline unsigned short GetWidth() const { return width; }
+	inline unsigned short GetHeight() const { return height; }
 
 	/// Landschaftstyp abfragen
 	LandscapeType GetLandscapeType() const { return lt; }
@@ -227,7 +227,7 @@ public:
 	/// Wandelt einen Punkt in einen Nachbarpunkt um
 	void GetPointA(MapCoord& x, MapCoord& y, unsigned dir) const;
 	/// Returns neighbouring point
-	Point<MapCoord> GetPointA(Point<MapCoord> p,const unsigned dir) const
+	inline Point<MapCoord> GetPointA(Point<MapCoord> p,const unsigned dir) const
 	{ GetPointA(p.x,p.y,dir); return p; }
 	/// Berechnet die Differenz zweier Koordinaten von x1 zu x2, wenn man berücksichtigt, dass man über den 
 	/// Rand weitergehen kann
@@ -236,20 +236,20 @@ public:
 
 	/// Ermittelt Abstand zwischen 2 Punkten auf der Map unter Berücksichtigung der Kartengrenzüberquerung
 	unsigned CalcDistance(int x1, int y1, int x2, int y2) const;
-	unsigned CalcDistance(const Point<MapCoord> p1, const Point<MapCoord> p2) const
+	inline unsigned CalcDistance(const Point<MapCoord> p1, const Point<MapCoord> p2) const
 	{ return CalcDistance(p1.x,p1.y,p2.x,p2.y); }
 
 	// Erzeugt eindeutige ID aus gegebenen X und Y-Werten
-	unsigned MakeCoordID(const MapCoord x, const MapCoord y) const
+	inline unsigned MakeCoordID(const MapCoord x, const MapCoord y) const
 	{ return y*width+x; }
 
 	/// Gibt Map-Knotenpunkt zurück
-	const MapNode& GetNode(const MapCoord x, const MapCoord y) const { assert(x<width && y<height);  return nodes[y*width+x]; }
+	inline const MapNode& GetNode(const MapCoord x, const MapCoord y) const { assert(x<width && y<height);  return nodes[y*width+x]; }
 	MapNode& GetNode(const MapCoord x, const MapCoord y) { assert(x<width && y<height); return nodes[y*width+x]; }
 	/// Gibt MapKnotenpunkt darum zurück
-	const MapNode& GetNodeAround(const MapCoord x, const MapCoord y, const unsigned i) const
+	inline const MapNode& GetNodeAround(const MapCoord x, const MapCoord y, const unsigned i) const
 	{ return GetNode(GetXA(x,y,i),GetYA(x,y,i));  }
-	MapNode& GetNodeAround(const MapCoord x, const MapCoord y, const unsigned i)
+	inline MapNode& GetNodeAround(const MapCoord x, const MapCoord y, const unsigned i)
 	{ return GetNode(GetXA(x,y,i),GetYA(x,y,i));  }
 
 	// Gibt ein NO zurück, falls keins existiert, wird ein "Nothing-Objekt" zurückgegeben
@@ -269,9 +269,9 @@ public:
 	void GetDynamicObjectsFrom(const MapCoord x, const MapCoord y,list<noBase*>& objects) const;
 
 	// Gibt ein spezifisches Objekt zurück
-	template<typename T> T * GetSpecObj(MapCoord x, MapCoord y) { return dynamic_cast<T*>( GetNode(x,y).obj ); }
-		// Gibt ein spezifisches Objekt zurück
-	template<typename T> const T * GetSpecObj(MapCoord x, MapCoord y) const { return dynamic_cast<const T*>( GetNode(x,y).obj ); }
+	template<typename T> inline T * GetSpecObj(MapCoord x, MapCoord y) { return dynamic_cast<T*>( GetNode(x,y).obj ); }
+	// Gibt ein spezifisches Objekt zurück
+	template<typename T> inline const T * GetSpecObj(MapCoord x, MapCoord y) const { return dynamic_cast<const T*>( GetNode(x,y).obj ); }
 
 	/// Gibt ein Terrain-Dreieck um einen Punkt herum zurück.
 	unsigned char GetTerrainAround(int x, int y, unsigned char dir) const;
@@ -296,7 +296,7 @@ public:
 	/// Bauqualitäten berechnen, bei flagonly gibt er nur 1 zurück, wenn eine Flagge mÃ¶glich ist
 	BuildingQuality CalcBQ(const MapCoord x, const MapCoord y,const unsigned char player,const bool flagonly = false,const bool visual = true, const bool ignore_player = false) const;
 	/// Setzt die errechnete BQ gleich mit
-	void SetBQ(const MapCoord x, const MapCoord y,const unsigned char player,const bool flagonly = false,const bool visual = true)
+	inline void SetBQ(const MapCoord x, const MapCoord y,const unsigned char player,const bool flagonly = false,const bool visual = true)
 	{ GetNode(x,y).bq = CalcBQ(x,y,player,flagonly,visual); }
 
 	/// Prüft, ob der Pkut zu dem Spieler gehÃ¶rt (wenn er der Besitzer ist und es false zurückliefert, ist es Grenzgebiet)
@@ -361,12 +361,12 @@ public:
 	void ConvertCoords(int x, int y, unsigned short * x_out, unsigned short * y_out) const;
 
 	/// Erzeugt eine GUI-ID für die Fenster von Map-Objekten
-	unsigned CreateGUIID(const MapCoord x, const MapCoord y) const
+	inline unsigned CreateGUIID(const MapCoord x, const MapCoord y) const
 	{ return 1000 + width*y+x; }
 	/// Gibt Terrainkoordinaten zurück
-	float GetTerrainX(const MapCoord x, const MapCoord y)
+	inline float GetTerrainX(const MapCoord x, const MapCoord y)
 	{ return tr.GetTerrainX(x,y); }
-	float GetTerrainY(const MapCoord x, const MapCoord y)
+	inline float GetTerrainY(const MapCoord x, const MapCoord y)
 	{ return tr.GetTerrainY(x,y); }
 
 	/// Verändert die HÃ¶he eines Punktes und die damit verbundenen Schatten
@@ -376,7 +376,7 @@ public:
 	Visibility CalcWithAllyVisiblity(const MapCoord x, const MapCoord y, const unsigned char player) const; 
 
 	/// Gibt die Anzahl an Hafenpunkten zurück
-	unsigned GetHarborPointCount() const 
+	inline unsigned GetHarborPointCount() const 
 	{ return harbor_pos.size()-1; }
 	/// Ist es an dieser Stelle für einen Spieler mÃ¶glich einen Hafen zu bauen
 	bool IsHarborPointFree(const unsigned harbor_id, const unsigned char player, 
@@ -384,7 +384,7 @@ public:
 	/// Gibt die Koordinaten eines bestimmten Hafenpunktes zurück
 	Point<MapCoord> GetHarborPoint(const unsigned harbor_id) const;
 	/// Gibt die ID eines Hafenpunktes zurück
-	unsigned GetHarborPointID(const MapCoord x, const MapCoord y) const
+	inline unsigned GetHarborPointID(const MapCoord x, const MapCoord y) const
 	{ return GetNode(x,y).harbor_id; }
 	/// Ermittelt, ob ein Punkt Küstenpunkt ist, d.h. Zugang zu einem schiffbaren Meer hat 
 	/// und gibt ggf. die Meeres-ID zurück, ansonsten 0
@@ -405,7 +405,7 @@ public:
 	
 	
 
-	void SetPlayers(GameClientPlayerList *pls) { players = pls; }
+	inline void SetPlayers(GameClientPlayerList *pls) { players = pls; }
 	/// Liefert einen Player zurück
 	inline GameClientPlayer * GetPlayer(const unsigned int id) const { return players->getElement(id); }
 	
@@ -497,18 +497,18 @@ public:
 	GameWorldViewer *GetGameWorldViewer() const {return(gwv);};
 
 
-	void SetX(unsigned short new_x) {x = new_x;}
-	void SetY(unsigned short new_y) {y = new_y;}
+	inline void SetX(unsigned short new_x) {x = new_x;}
+	inline void SetY(unsigned short new_y) {y = new_y;}
 
-	unsigned short GetX() {return(x);}
-	unsigned short GetY() {return(y);}
+	inline unsigned short GetX() {return(x);}
+	inline unsigned short GetY() {return(y);}
 
 	/// Bauqualitäten anzeigen oder nicht
-	void ShowBQ() { show_bq = !show_bq; }
+	inline void ShowBQ() { show_bq = !show_bq; }
 	/// Gebäudenamen zeigen oder nicht
-	void ShowNames() { show_names = !show_names; }
+	inline void ShowNames() { show_names = !show_names; }
 	/// Produktivität zeigen oder nicht
-	void ShowProductivity() { show_productivity = !show_productivity; };
+	inline void ShowProductivity() { show_productivity = !show_productivity; };
 	/// Schaltet Produktivitäten/Namen komplett aus oder an
 	void ShowNamesAndProductivity();
 
@@ -526,30 +526,30 @@ public:
 	/// Springt zur letzten Position, bevor man "weggesprungen" ist
 	void MoveToLastPosition();
 
-	void MoveToX(int x, bool absolute = false) { MoveTo( (absolute ? 0 : xoffset) + x, yoffset, true); }
-	void MoveToY(int y, bool absolute = false) { MoveTo( xoffset, (absolute ? 0 : yoffset) + y, true); }
+	inline void MoveToX(int x, bool absolute = false) { MoveTo( (absolute ? 0 : xoffset) + x, yoffset, true); }
+	inline void MoveToY(int y, bool absolute = false) { MoveTo( xoffset, (absolute ? 0 : yoffset) + y, true); }
 
 	void CalcFxLx();
 
 	/// Koordinatenanzeige ein/aus
-	void ShowCoordinates() { show_coordinates = !show_coordinates; }
+	inline void ShowCoordinates() { show_coordinates = !show_coordinates; }
 
 	/// Gibt selektierten Punkt zurück
-	unsigned short GetSelX() const { return selx; }
-	unsigned short GetSelY() const { return sely; }
+	inline unsigned short GetSelX() const { return selx; }
+	inline unsigned short GetSelY() const { return sely; }
 
-	int GetSelXo() const { return selxo; }
-	int GetSelYo() const { return selyo; }
+	inline int GetSelXo() const { return selxo; }
+	inline int GetSelYo() const { return selyo; }
 
 	/// Gibt Scrolling-Offset zurück
-	int GetXOffset() const { return xoffset - x; }
-	int GetYOffset() const { return yoffset - y; }
+	inline int GetXOffset() const { return xoffset - x; }
+	inline int GetYOffset() const { return yoffset - y; }
 	/// Gibt ersten Punkt an, der beim Zeichnen angezeigt wird
-	int GetFirstX() const { return fx; }
-	int GetFirstY() const { return fy; }
+	inline int GetFirstX() const { return fx; }
+	inline int GetFirstY() const { return fy; }
 	/// Gibt letzten Punkt an, der beim Zeichnen angezeigt wird
-	int GetLastX() const { return lx; }
-	int GetLastY() const { return ly; }
+	inline int GetLastX() const { return lx; }
+	inline int GetLastY() const { return ly; }
 
 /*
 	list<MapTile> sorted_textures[16];
@@ -587,18 +587,18 @@ public:
 		view.Draw(player, water, draw_selected, selected_x, selected_y, rb);
 	}
 
-	GameWorldView *GetView() {return(&view);}
+	inline GameWorldView *GetView() {return(&view);}
 
-	TerrainRenderer *GetTerrainRenderer() {return(&tr);}
+	inline TerrainRenderer *GetTerrainRenderer() {return(&tr);}
 
 	/// Bauqualitäten anzeigen oder nicht
-	void ShowBQ() {view.ShowBQ();}
+	inline void ShowBQ() {view.ShowBQ();}
 	/// Gebäudenamen zeigen oder nicht
-	void ShowNames() {view.ShowNames();}
+	inline void ShowNames() {view.ShowNames();}
 	/// Produktivität zeigen oder nicht
-	void ShowProductivity() {view.ShowProductivity();};
+	inline void ShowProductivity() {view.ShowProductivity();};
 	/// Schaltet Produktivitäten/Namen komplett aus oder an
-	void ShowNamesAndProductivity() {view.ShowNamesAndProductivity();}
+	inline void ShowNamesAndProductivity() {view.ShowNamesAndProductivity();}
 
 	/// Wegfinden ( A* ) --> Wegfindung auf allgemeinen Terrain ( ohne Straäcn ) ( fr Wegebau oder frei herumlaufende )
 	bool FindRoadPath(const MapCoord x_start,const MapCoord y_start, const MapCoord x_dest, const MapCoord y_dest,std::vector<unsigned char>& route, const bool boat_road);
@@ -609,31 +609,31 @@ public:
 	void MouseMove(const MouseCoords& mc);
 	void MouseDown(const MouseCoords& mc);
 	void MouseUp();
-	void DontScroll() { scroll = false; }
+	inline void DontScroll() { scroll = false; }
 
 	/// Bewegt sich zu einer bestimmten Position in Pixeln auf der Karte
-	void MoveTo(int x, int y, bool absolute = false) {view.MoveTo(x, y, absolute);};
+	inline void MoveTo(int x, int y, bool absolute = false) {view.MoveTo(x, y, absolute);};
 	/// Zentriert den Bildschirm auf ein bestimmtes Map-Object
-	void MoveToMapObject(const MapCoord x, const MapCoord y) {view.MoveToMapObject(x, y);};
+	inline void MoveToMapObject(const MapCoord x, const MapCoord y) {view.MoveToMapObject(x, y);};
 	/// Springt zur letzten Position, bevor man "weggesprungen" ist
-	void MoveToLastPosition() {view.MoveToLastPosition();};
+	inline void MoveToLastPosition() {view.MoveToLastPosition();};
 
 	void MoveToX(int x, bool absolute = false) {view.MoveToX(x, absolute);}
 	void MoveToY(int y, bool absolute = false) {view.MoveToY(y, absolute);}
 
 	/// Koordinatenanzeige ein/aus
-	void ShowCoordinates() { view.ShowCoordinates(); }
+	inline void ShowCoordinates() { view.ShowCoordinates(); }
 
 	/// Gibt selektierten Punkt zurück
-	unsigned short GetSelX() const { return(view.GetSelX()); }
-	unsigned short GetSelY() const { return(view.GetSelY()); }
+	inline unsigned short GetSelX() const { return(view.GetSelX()); }
+	inline unsigned short GetSelY() const { return(view.GetSelY()); }
 
 	/// Gibt ersten Punkt an, der beim Zeichnen angezeigt wird
-	int GetFirstX() const { return(view.GetFirstX()); }
-	int GetFirstY() const { return(view.GetFirstY()); }
+	inline int GetFirstX() const { return(view.GetFirstX()); }
+	inline int GetFirstY() const { return(view.GetFirstY()); }
 	/// Gibt letzten Punkt an, der beim Zeichnen angezeigt wird
-	int GetLastX() const { return(view.GetLastX()); }
-	int GetLastY() const { return(view.GetLastY()); }
+	inline int GetLastX() const { return(view.GetLastX()); }
+	inline int GetLastY() const { return(view.GetLastY()); }
 
 	/// Ermittelt Sichtbarkeit eines Punktes für den lokalen Spieler, berücksichtigt ggf. Teamkameraden
 	Visibility GetVisibility(const MapCoord x, const MapCoord y) const; 
@@ -663,9 +663,9 @@ public:
 	/// Gibt die verfügbar Anzahl der Angreifer für einen Seeangriff zurück
 	unsigned GetAvailableSoldiersForSeaAttackCount(const unsigned char player_attacker, const MapCoord x, const MapCoord y) const;
 
-	void Resize(unsigned short width, unsigned short height) {view.Resize(width, height);}
+	inline void Resize(unsigned short width, unsigned short height) {view.Resize(width, height);}
 
-	void SetAIDebug(unsigned what, unsigned player, bool active) {view.SetAIDebug(what, player, active);}
+	inline void SetAIDebug(unsigned what, unsigned player, bool active) {view.SetAIDebug(what, player, active);}
 };
 
 /// "Interface-Klasse" für das Spiel
@@ -721,9 +721,9 @@ public:
 	virtual ~GameWorldGame();
 
 	/// Stellt anderen Spielern/Spielobjekten das Game-GUI-Interface zur Verfüung
-	GameInterface * GetGameInterface() const { return gi; }
+	inline GameInterface * GetGameInterface() const { return gi; }
 
-	void SetNO(noBase * obj, const MapCoord x, const MapCoord y) { GetNode(x,y).obj = obj; }
+	inline void SetNO(noBase * obj, const MapCoord x, const MapCoord y) { GetNode(x,y).obj = obj; }
 	void AddFigure(noBase * fig,const MapCoord x, const MapCoord y);
 	void RemoveFigure(const noBase * fig,const MapCoord x, const MapCoord y);
 
@@ -796,8 +796,8 @@ public:
 	{ return military_squares[(y/MILITARY_SQUARE_SIZE)*(width/MILITARY_SQUARE_SIZE+1)+x/MILITARY_SQUARE_SIZE]; }
 
 	/// Fügt einen Katapultstein der Welt hinzu, der gezeichnt werden will
-	void AddCatapultStone(CatapultStone * cs) {catapult_stones.push_back(cs); }
-	void RemoveCatapultStone(CatapultStone * cs) {catapult_stones.remove(cs); }
+	inline void AddCatapultStone(CatapultStone * cs) {catapult_stones.push_back(cs); }
+	inline void RemoveCatapultStone(CatapultStone * cs) {catapult_stones.remove(cs); }
 
 	/// Lässt alles spielerische abbrennen, indem es alle Flaggen der Spieler zerstÃ¶rt
 	void Armageddon();

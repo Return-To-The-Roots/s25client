@@ -1,4 +1,4 @@
-// $Id: GameClient.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: GameClient.h 7671 2011-12-27 11:52:38Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -95,10 +95,10 @@ public:
 	void ExitGame();
 
 	ClientState GetState() const { return state; }
-	unsigned int GetGFNumber() const { return framesinfo.nr; }
-	unsigned int GetGFLength() const { return framesinfo.gf_length; }
-	unsigned int GetNWFLength() const { return framesinfo.nwf_length; }
-	unsigned int GetFrameTime() const { return framesinfo.frame_time; }
+	inline unsigned int GetGFNumber() const { return framesinfo.nr; }
+	inline unsigned int GetGFLength() const { return framesinfo.gf_length; }
+	inline unsigned int GetNWFLength() const { return framesinfo.nwf_length; }
+	inline unsigned int GetFrameTime() const { return framesinfo.frame_time; }
 	unsigned int GetGlobalAnimation(const unsigned short max, const unsigned char factor_numerator, const unsigned char factor_denumerator, const unsigned int offset);
 	unsigned int Interpolate(unsigned max_val,EventManager::EventPointer ev);
 	int Interpolate(int x1,int x2,EventManager::EventPointer ev);
