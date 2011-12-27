@@ -1,4 +1,4 @@
-// $Id: GameClientPlayer.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: GameClientPlayer.cpp 7673 2011-12-27 14:11:15Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -428,7 +428,7 @@ nobBaseWarehouse * GameClientPlayer::FindWarehouse(const noRoadNode * const star
 {
 	nobBaseWarehouse * best	= 0;
 
-	unsigned char path = 0xFF, tpath = 0xFF;
+//	unsigned char path = 0xFF, tpath = 0xFF;
 	unsigned tlength = 0xFFFFFFFF,best_length = 0xFFFFFFFF;
 
 	for(std::list<nobBaseWarehouse*>::iterator w = warehouses.begin(); w!=warehouses.end(); ++w)
@@ -441,7 +441,7 @@ nobBaseWarehouse * GameClientPlayer::FindWarehouse(const noRoadNode * const star
 			{
 				if(tlength < best_length || !best)
 				{
-					path = tpath;
+//					path = tpath;
 					best_length = tlength;
 					best = (*w);
 				}

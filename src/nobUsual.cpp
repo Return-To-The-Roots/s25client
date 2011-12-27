@@ -1,4 +1,4 @@
-// $Id: nobUsual.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: nobUsual.cpp 7673 2011-12-27 14:11:15Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -362,13 +362,13 @@ void nobUsual::AddWare(Ware *ware)
 
 {
 	// Maximale Warenanzahlbestimmen (nur für assert unten)
-	unsigned wares_count;
+/*	unsigned wares_count;
 	if(USUAL_BUILDING_CONSTS[this->type-10].wares_needed_count == 3)
 		wares_count = 2;
 	else if(this->type == BLD_CATAPULT)
 		wares_count = 4;
 	else 
-		wares_count = 6;
+		wares_count = 6;*/
 
 	// Gucken, um was für einen Warentyp es sich handelt und dann dort hinzufügen
 	for(unsigned char i = 0;i<USUAL_BUILDING_CONSTS[type-10].wares_needed_count;++i)
