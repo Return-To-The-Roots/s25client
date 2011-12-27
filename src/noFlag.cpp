@@ -1,4 +1,4 @@
-// $Id: noFlag.cpp 7528 2011-09-11 13:21:03Z marcus $
+// $Id: noFlag.cpp 7674 2011-12-27 14:47:15Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -356,10 +356,8 @@ Ware *noFlag::SelectWare(const unsigned char dir, const bool swap_wares, const n
  */
 unsigned short noFlag::GetPunishmentPoints(const unsigned char dir) const
 {
-	unsigned short points = 0;
-
 	// Waren zählen, die in diese Richtung transportiert werden müssen
-	points += GetWaresCountForRoad(dir) * 2;
+	unsigned short points = GetWaresCountForRoad(dir) << 1;
 
 	// Wenn kein Träger auf der Straße ist, gibts nochmal extra satte Strafpunkte
 	if(!routes[dir]->isOccupied())

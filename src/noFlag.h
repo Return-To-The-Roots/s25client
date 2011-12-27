@@ -1,4 +1,4 @@
-// $Id: noFlag.h 7528 2011-09-11 13:21:03Z marcus $
+// $Id: noFlag.h 7674 2011-12-27 14:47:15Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -52,12 +52,28 @@ public:
 	/// Wählt eine Ware von einer Flagge aus (anhand der Transportreihenfolge), entfernt sie von der Flagge und gibt sie zurück.
 	Ware *SelectWare(const unsigned char dir, const bool swap_wares, const noFigure *const carrier);
 	/// Prüft, ob es Waren gibt, die auf den Weg in Richtung dir getragen werden müssen.
-	inline unsigned GetWaresCountForRoad(const unsigned char dir) const
+	inline unsigned short GetWaresCountForRoad(const unsigned char dir) const
 	{
-		return((wares[0] && (wares[0]->GetNextDir() == dir) ? 1 : 0) + (wares[1] && (wares[1]->GetNextDir() == dir) ? 1 : 0) + 
-			(wares[2] && (wares[2]->GetNextDir() == dir) ? 1 : 0) + (wares[3] && (wares[3]->GetNextDir() == dir) ? 1 : 0) + 
-			(wares[4] && (wares[4]->GetNextDir() == dir) ? 1 : 0) + (wares[5] && (wares[5]->GetNextDir() == dir) ? 1 : 0) + 
-			(wares[6] && (wares[6]->GetNextDir() == dir) ? 1 : 0) + (wares[7] && (wares[7]->GetNextDir() == dir) ? 1 : 0));
+		unsigned short ret = 0;
+
+		if (wares[0] && (wares[0]->GetNextDir() == dir))
+			ret++;
+		if (wares[1] && (wares[1]->GetNextDir() == dir))
+			ret++;
+		if (wares[2] && (wares[2]->GetNextDir() == dir))
+			ret++;
+		if (wares[3] && (wares[3]->GetNextDir() == dir))
+			ret++;
+		if (wares[4] && (wares[4]->GetNextDir() == dir))
+			ret++;
+		if (wares[5] && (wares[5]->GetNextDir() == dir))
+			ret++;
+		if (wares[6] && (wares[6]->GetNextDir() == dir))
+			ret++;
+		if (wares[7] && (wares[7]->GetNextDir() == dir))
+			ret++;
+
+		return(ret);
 	}
 	/// Gibt Wegstrafpunkte für das Pathfinden für Waren, die in eine bestimmte Richtung noch transportiert werden müssen.
 	unsigned short GetPunishmentPoints(const unsigned char dir) const;
