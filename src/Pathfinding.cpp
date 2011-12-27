@@ -1,4 +1,4 @@
-// $Id: Pathfinding.cpp 7666 2011-12-26 21:49:18Z marcus $
+// $Id: Pathfinding.cpp 7672 2011-12-27 14:02:13Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -138,28 +138,26 @@ public:
 // gehandelt, nur dass wir noRoadNodes statt direkt Points vergleichen
 bool RoadNodeComperator::operator()(const noRoadNode* const rn1, const noRoadNode* const rn2) const
 {
-	unsigned way1 = pf_nodes[rn1->coord_id].way + rn1->distance;
-	unsigned way2 = pf_nodes[rn2->coord_id].way + rn2->distance;
-
-	// Wenn die Wegkosten gleich sind, vergleichen wir die Koordinaten, da wir für std::set eine streng
-	// monoton steigende Folge brauchen
-	if(way1 == way2)
+	if (rn1->estimate == rn2->estimate)
+	{
+		// Wenn die Wegkosten gleich sind, vergleichen wir die Koordinaten, da wir für std::set eine streng
+		// monoton steigende Folge brauchen
 		return (rn1->coord_id < rn2->coord_id);
-	else
-		return (way1 < way2);
+	}
+
+	return (rn1->estimate < rn2->estimate);
 }
 
 bool RoadNodeComperatorInv::operator()(const noRoadNode* const rn1, const noRoadNode* const rn2) const
 {
-	unsigned way1 = pf_nodes[rn1->coord_id].way + rn1->distance;
-	unsigned way2 = pf_nodes[rn2->coord_id].way + rn2->distance;
-
-	// Wenn die Wegkosten gleich sind, vergleichen wir die Koordinaten, da wir für std::set eine streng
-	// monoton steigende Folge brauchen
-	if(way1 == way2)
+	if (rn1->estimate == rn2->estimate)
+	{
+		// Wenn die Wegkosten gleich sind, vergleichen wir die Koordinaten, da wir für std::set eine streng
+		// monoton steigende Folge brauchen
 		return (rn1->coord_id > rn2->coord_id);
-	else
-		return (way1>way2);
+	}
+
+	return (rn1->estimate > rn2->estimate);
 }
 
 /// Definitionen siehe oben
@@ -377,7 +375,7 @@ bool GameWorldBase::FindPathOnRoads(const noRoadNode * const start, const noRoad
 	todo.clear();
 
 	unsigned start_id = start->coord_id;
-	start->distance = CalcDistance(start->GetX(), start->GetY(), PathfindingPoint::dst_x, PathfindingPoint::dst_y);
+	start->distance = start->estimate = CalcDistance(start->GetX(), start->GetY(), PathfindingPoint::dst_x, PathfindingPoint::dst_y);
 
 	todo.push(start);
 
@@ -483,6 +481,7 @@ bool GameWorldBase::FindPathOnRoads(const noRoadNode * const start, const noRoad
 				{
 					pf_nodes[xaid].way  = new_way;
 					pf_nodes[xaid].prev = best_id;
+					rna->estimate = rna->distance + new_way;
 					todo.rearrange(rna);
 					pf_nodes[xaid].dir = i;
 					pf_nodes[xaid].count_nodes = pf_nodes[best_id].count_nodes + 1;
@@ -499,6 +498,7 @@ bool GameWorldBase::FindPathOnRoads(const noRoadNode * const start, const noRoad
 			pf_nodes[xaid].prev = best_id;
 
 			rna->distance = CalcDistance(rna->GetX(), rna->GetY(), PathfindingPoint::dst_x, PathfindingPoint::dst_y);
+			rna->estimate = rna->distance + new_way;
 
 			todo.push(rna);
 		}
@@ -528,6 +528,7 @@ bool GameWorldBase::FindPathOnRoads(const noRoadNode * const start, const noRoad
 					{
 						pf_nodes[xaid].way  = new_way;
 						pf_nodes[xaid].prev = best_id;
+						scs[i].dest->estimate = scs[i].dest->distance + new_way;
 						todo.rearrange(scs[i].dest);
 						pf_nodes[xaid].dir = 100;
 						pf_nodes[xaid].count_nodes = pf_nodes[best_id].count_nodes + 1;
@@ -544,6 +545,7 @@ bool GameWorldBase::FindPathOnRoads(const noRoadNode * const start, const noRoad
 				pf_nodes[xaid].prev = best_id;
 
 				scs[i].dest->distance = CalcDistance(scs[i].dest->GetX(), scs[i].dest->GetY(), PathfindingPoint::dst_x, PathfindingPoint::dst_y);
+				scs[i].dest->estimate = scs[i].dest->distance + new_way;
 
 				todo.push(scs[i].dest);
 			}

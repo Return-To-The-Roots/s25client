@@ -1,4 +1,4 @@
-// $Id: noRoadNode.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: noRoadNode.h 7672 2011-12-27 14:02:13Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -46,6 +46,7 @@ public:
 // For Pathfinding
 	mutable unsigned distance;
 	mutable unsigned coord_id;
+	mutable unsigned estimate;
 
 public:
 

@@ -1,4 +1,4 @@
-// $Id: GameWorldBase.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: GameWorldBase.cpp 7672 2011-12-27 14:02:13Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -228,25 +228,25 @@ MapCoord GameWorldBase::CalcDistanceAroundBorderY(const MapCoord y1, const MapCo
 unsigned GameWorldBase::CalcDistance(const int x1, const int y1,
 					  const int x2, const int y2) const
 {
-	int dx = (2*int(x1)+(y1&1))-(2*int(x2)+(y2&1));
-	int dy = 2 * ((y1 > y2) ? (int(y1)-int(y2)) : (int(y2)-int(y1)));
+	int dx = ((x1 << 1) + (y1 & 1))-((x2 << 1) + (y2 & 1));
+	int dy = ((y1 > y2) ? (y1-y2) : (y2-y1)) << 1;
 
 	if (dx < 0)
 		dx = -dx;
 
 	if (dy > height)
 	{
-		dy = (height * 2) - dy;
+		dy = (height << 1) - dy;
 	}
 
 	if (dx > width)
 	{
-		dx = (width * 2) - dx;
+		dx = (width << 1) - dx;
 	}
 
-	dx -= dy / 2;
+	dx -= dy >> 1;
 
-	return((dy + (dx > 0 ? dx : 0)) / 2);
+	return((dy + (dx > 0 ? dx : 0)) >> 1);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -338,8 +338,7 @@ bool GameWorldBase::RoadAvailable(const bool boat_road,const int x, const int y,
 		// Other roads at this point?
 		if(GetPointRoad(x,y, z, visual))
 		{
-			unsigned r;
-			r = GetPointRoad(x,y, z, visual);
+			(void) GetPointRoad(x,y, z, visual);
 			return 0;
 		}
 	}
