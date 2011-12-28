@@ -1,4 +1,4 @@
-// $Id: Random.h 7666 2011-12-26 21:49:18Z marcus $
+// $Id: Random.h 7678 2011-12-28 17:05:25Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -22,7 +22,7 @@
 #pragma once
 
 #include "Singleton.h"
-#include "list.h"
+#include <list>
 
 struct RandomEntry
 {
@@ -39,7 +39,7 @@ struct RandomEntry
 class Random : public Singleton<Random>
 {
 	unsigned counter;
-	list<RandomEntry> async_log;
+	std::list<RandomEntry> async_log;
 
 public:
 
@@ -68,6 +68,8 @@ public:
 
 	/// Gibt aktuelle Zufallszahl zurück
 	int GetCurrentRandomValue() const { return zahl; }
+
+	std::list<RandomEntry> *GetAsyncLog();
 
 	/// Speichere Log
 	void SaveLog(const char * const filename);

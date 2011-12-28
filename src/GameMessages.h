@@ -1,4 +1,4 @@
-// $Id: GameMessages.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: GameMessages.h 7678 2011-12-28 17:05:25Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -25,7 +25,7 @@
 #include "GamePlayerList.h"
 #include "GameCommands.h"
 #include "GlobalGameSettings.h"
-
+#include "Random.h"
 
 /* 
  * das Klassenkommentar ist alles Client-Sicht, für Server-Sicht ist alles andersrum
@@ -819,7 +819,6 @@ public:
 	}
 };
 
-
 class GameMessage_Pause : public GameMessage
 {
 public:
@@ -841,6 +840,82 @@ public:
 
 		LOG.write("<<< NMS_GGS_CHANGE\n");
 		GetInterface(callback)->OnNMSPause(*this);
+	}
+};
+
+///////////////////////////////////////////////////////////////////////////////
+/// ausgehende GetAsyncLog-Nachricht
+class GameMessage_GetAsyncLog : public GameMessage
+{
+public:
+	GameMessage_GetAsyncLog() : GameMessage(NMS_GET_ASYNC_LOG) {}
+	GameMessage_GetAsyncLog(const unsigned char player) : GameMessage(NMS_GET_ASYNC_LOG, player)
+	{
+		LOG.write(">>> NMS_GET_ASYNC_LOG\n");
+	}
+	void Run(MessageInterface *callback) 
+	{ 
+		LOG.write("<<< NMS_GET_ASYNC_LOG\n");
+		GetInterface(callback)->OnNMSGetAsyncLog(*this);
+	}
+};
+
+///////////////////////////////////////////////////////////////////////////////
+/// eingehende SendAsyncLog-Nachricht
+class GameMessage_SendAsyncLog : public GameMessage
+{
+	std::list<RandomEntry> recved_log;
+
+public:
+	GameMessage_SendAsyncLog() : GameMessage(NMS_SEND_ASYNC_LOG) {}
+
+	GameMessage_SendAsyncLog(std::list<RandomEntry> *async_log, bool last) : GameMessage(NMS_SEND_ASYNC_LOG, 0xFF)
+	{
+		PushBool(last);
+		PushUnsignedInt(async_log->size());
+
+		for(std::list<RandomEntry>::iterator it = async_log->begin(); it != async_log->end(); ++it)
+		{
+			PushUnsignedInt(it->counter);
+			PushSignedInt(it->max);
+			PushSignedInt(it->value);
+			PushString(it->src_name);
+			PushUnsignedInt(it->src_line);
+			PushUnsignedInt(it->obj_id);
+		}
+
+		LOG.write(">>> NMS_SEND_ASYNC_LOG\n");
+	}
+	void Run(MessageInterface *callback) 
+	{ 
+		bool last =  PopBool();
+		unsigned int cnt = PopUnsignedInt();
+		unsigned counter;
+		int max;
+		int value;
+		char *src_name;
+		unsigned int src_line;
+		unsigned obj_id;
+
+		LOG.write("<<< NMS_SEND_ASYNC_LOG: %u [%s]\n", cnt, last ? "last" : "non-last");
+
+		recved_log.clear();
+
+		while (cnt--)
+		{
+			counter = PopUnsignedInt();
+			max = PopSignedInt();
+			value = PopSignedInt();
+			std::string str = PopString();
+			src_name = new char [str.size()+1];
+			strcpy(src_name, str.c_str());
+			src_line = PopUnsignedInt();
+			obj_id = PopUnsignedInt();
+
+			recved_log.push_back(RandomEntry(counter, max, value, src_name, src_line, obj_id));
+		}
+
+		GetInterface(callback)->OnNMSSendAsyncLog(*this, &recved_log, last);
 	}
 };
 

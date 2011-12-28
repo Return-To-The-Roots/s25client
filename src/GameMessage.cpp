@@ -1,4 +1,4 @@
-// $Id: GameMessage.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: GameMessage.cpp 7678 2011-12-28 17:05:25Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -82,6 +82,10 @@ Message *GameMessage::create_game(unsigned short id)
 	case NMS_GAMECOMMANDS:				{ msg = new GameMessage_GameCommand; } break;
 	case NMS_PAUSE:						{ msg = new GameMessage_Pause; } break;
 	case NMS_GGS_CHANGE:				{ msg = new GameMessage_GGSChange; } break;
+
+	case NMS_GET_ASYNC_LOG:				{ msg = new GameMessage_GetAsyncLog(); } break;
+	case NMS_SEND_ASYNC_LOG:			{ msg = new GameMessage_SendAsyncLog(); } break;
+
 	}
 
 	return msg;

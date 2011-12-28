@@ -1,4 +1,4 @@
-// $Id: GameClient.h 7671 2011-12-27 11:52:38Z marcus $
+// $Id: GameClient.h 7678 2011-12-28 17:05:25Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -215,6 +215,8 @@ private:
 	virtual void OnNMSGameCommand(const GameMessage_GameCommand& msg);
 
 	void OnNMSGGSChange(const GameMessage_GGSChange& msg);
+
+	void OnNMSGetAsyncLog(const GameMessage_GetAsyncLog& msg);
 
 	/// Wird aufgerufen, wenn der Server gegangen ist (Verbindung verloren, ungültige Nachricht etc.)
 	void ServerLost();

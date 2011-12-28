@@ -1,4 +1,4 @@
-// $Id: GameServer.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: GameServer.h 7678 2011-12-28 17:05:25Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -102,6 +102,7 @@ private:
 	void OnNMSMapChecksum(const GameMessage_Map_Checksum& msg);
 	void OnNMSGameCommand(const GameMessage_GameCommand& msg);
 
+	void OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, std::list<RandomEntry> *his, bool last);
 
 private:
 	enum ServerState
@@ -183,6 +184,10 @@ private:
 
 	/// Alle KI-Spieler und ihre Daten (NULL, falls ein solcher Spieler nicht existiert)
 	std::vector<AIBase*> ai_players;
+
+	/// AsyncLog des Spielers, der das ASYNC ausgeloest hat
+	std::list<RandomEntry> async_log;
+	int async_player;
 
 	public:
 		AIBase *GetAIPlayer(unsigned playerID) { return ai_players[playerID]; }

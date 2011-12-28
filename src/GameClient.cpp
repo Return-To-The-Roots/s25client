@@ -1,4 +1,4 @@
-// $Id: GameClient.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: GameClient.cpp 7678 2011-12-28 17:05:25Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -924,11 +924,11 @@ void GameClient::OnNMSServerAsync(const GameMessage_Server_Async& msg)
 	unser_time_t temp = TIME.CurrentTime();
 	TIME.FormatTime(time_str, "async_%Y-%m-%d_%H-%i-%s", &temp);
 
-	sprintf(filename,"%s%s-%u.log",  GetFilePath(FILE_PATHS[47]).c_str(), time_str, rand()%100);
+//	sprintf(filename,"%s%s-%u.log",  GetFilePath(FILE_PATHS[47]).c_str(), time_str, rand()%100);
 
-	Random::inst().SaveLog(filename);
+//	Random::inst().SaveLog(filename);
 
-	LOG.lprintf("Async log saved at \"%s\"\n",filename);
+//	LOG.lprintf("Async log saved at \"%s\"\n",filename);
 
 	sprintf(filename,"%s%s.sav", GetFilePath(FILE_PATHS[85]).c_str(), time_str);
 
@@ -1157,6 +1157,39 @@ void GameClient::OnNMSPause(const GameMessage_Pause& msg)
 	else
 		ci->CI_GameResumed();
 
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/**
+ *  NFC GetAsyncLog von Server
+ *
+ *  @param[in] message Nachricht, welche ausgeführt wird
+ *
+ *  @author Maqs
+ */
+void GameClient::OnNMSGetAsyncLog(const GameMessage_GetAsyncLog& msg)
+{
+	// AsyncLog an den Server senden
+
+	// stückeln...
+	std::list<RandomEntry> *async_log = RANDOM.GetAsyncLog();
+
+	std::list<RandomEntry> part;
+
+	for (std::list<RandomEntry>::iterator it = async_log->begin(); it != async_log->end(); ++it)
+	{
+		part.push_back(*it);
+
+		if (part.size() == 100)
+		{
+			send_queue.push(new GameMessage_SendAsyncLog(&part, false));
+			part.clear();
+		}
+	}
+
+	send_queue.push(new GameMessage_SendAsyncLog(&part, true));
+
+	part.clear();
 }
 
 /// Findet heraus, ob ein Spieler laggt und setzt bei diesen Spieler den entsprechenden flag

@@ -1,4 +1,4 @@
-// $Id: GameServer.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: GameServer.cpp 7678 2011-12-28 17:05:25Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -117,6 +117,7 @@ GameServer::GameServer(void)
 {
 	status = SS_STOPPED;
 
+	async_player = -1;
 	framesinfo.Clear();
 	serverconfig.Clear();
 	mapinfo.Clear();
@@ -905,14 +906,21 @@ void GameServer::ClientWatchDog()
 									for(unsigned int i = 0; i < players.getCount(); ++i)
 										checksums.push_back(players.getElement(i)->checksum);
 
+									// AsyncLog des asynchronen Players anfordern
+									if (async_player == -1)
+									{
+										GameServerPlayer *player = &players[client];
+										player->send_queue.push(new GameMessage_GetAsyncLog(client));
+										player->send_queue.flush(&player->so);
+
+										async_player = client;
+									}
+
 									// Async-Meldung rausgeben.
 									SendToAll(GameMessage_Server_Async(checksums));
 
 									// Spiel pausieren
 									TogglePause();
-
-									// diesen Spieler kicken
-									KickPlayer(client, NP_ASYNC, 0);
 
 									// rausgehen
 									continue;
@@ -1351,6 +1359,106 @@ void GameServer::OnNMSGameCommand(const GameMessage_GameCommand& msg)
 		SendToAll(msg);
 	else
 		SendToAll(GameMessage_GameCommand(msg.player,msg.checksum,std::vector<gc::GameCommand*>()));
+}
+
+void GameServer::OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, std::list<RandomEntry> *his, bool last)
+{
+	if (msg.player != async_player)
+	{
+		for (std::list<RandomEntry>::iterator it = his->begin(); it != his->end(); ++it)
+		{
+			delete[] it->src_name;
+		}
+		return;
+	}
+
+	for (std::list<RandomEntry>::iterator it = his->begin(); it != his->end(); ++it)
+	{
+		async_log.push_back(*it);
+	}
+
+	// list is not yet complete, keep it coming...
+	if (!last)
+	{
+		return;
+	}
+
+	LOG.lprintf("Received async log from %u containing %lu entries.\n", msg.player, async_log.size());
+
+	std::list<RandomEntry> *my = RANDOM.GetAsyncLog();
+	his = &async_log;
+
+	std::list<RandomEntry>::iterator my_it = my->begin();
+	std::list<RandomEntry>::iterator his_it = his->begin();
+
+	// compare counters, adjust them so we're comparing the same counter numbers
+	if (my_it->counter > his_it->counter)
+	{
+		for(; his_it != his->end(); ++his_it)
+		{
+			if (his_it->counter == my_it->counter)
+				break;
+		}
+	} else if (my_it->counter < his_it->counter)
+	{
+		for(; my_it != my->end(); ++my_it)
+		{
+			if (his_it->counter == my_it->counter)
+				break;
+		}
+	}
+
+	// count identical lines
+	unsigned identical = 0;
+	while ((my_it != my->end()) && (his_it != his->end()) && (my_it->max == his_it->max) && (my_it->value == his_it->value) && (my_it->obj_id == his_it->obj_id))
+	{
+		++identical; ++my_it; ++his_it;
+	}
+
+	char filename[256], time_str[80];
+	unser_time_t temp = TIME.CurrentTime();
+	TIME.FormatTime(time_str, "async_%Y-%m-%d_%H-%i-%s", &temp);
+
+	sprintf(filename,"%s%s-%u.log",  GetFilePath(FILE_PATHS[47]).c_str(), time_str, rand()%100);
+
+	FILE *file = fopen(filename,"w");
+
+	sprintf(filename,"%s%s.sav", GetFilePath(FILE_PATHS[85]).c_str(), time_str);
+
+	GameClient::inst().WriteSaveHeader(filename);
+
+	// if there were any identical lines, include only the last one
+	if (identical)
+	{
+		--my_it; --his_it;
+
+		// write last common line
+		fprintf(file, "[L]: %u:R(%d)=%d,z=%d | %s Z: %u|id=%u\n", my_it->counter, my_it->max, (my_it->value * my_it->max) / 32768, my_it->value, my_it->src_name, my_it->src_line, my_it->obj_id);
+
+		++my_it; ++his_it;
+	}
+
+	while ((my_it != my->end()) && (his_it != his->end()))
+	{
+		fprintf(file, "[S]: %u:R(%d)=%d,z=%d | %s Z: %u|id=%u\n", my_it->counter, my_it->max, (my_it->value * my_it->max) / 32768, my_it->value, my_it->src_name, my_it->src_line, my_it->obj_id);
+		fprintf(file, "[C]: %u:R(%d)=%d,z=%d | %s Z: %u|id=%u\n", his_it->counter, his_it->max, (his_it->value * his_it->max) / 32768, his_it->value, his_it->src_name, his_it->src_line, his_it->obj_id);
+
+		++my_it;
+		++his_it;
+	}
+
+	fclose(file);
+
+	LOG.lprintf("Async log saved at \"%s\"\n",filename);
+
+	for (std::list<RandomEntry>::iterator it = async_log.begin(); it != async_log.end(); ++it)
+	{
+		delete[] it->src_name;
+	}
+
+	async_log.clear();
+
+	KickPlayer(msg.player, NP_ASYNC, 0);
 }
 
 void GameServer::ChangePlayer(const unsigned char old_id, const unsigned char new_id)

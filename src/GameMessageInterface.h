@@ -1,4 +1,4 @@
-// $Id: GameMessageInterface.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: GameMessageInterface.h 7678 2011-12-28 17:05:25Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -22,6 +22,8 @@
 #pragma once
 
 #include "MessageInterface.h"
+#include "Random.h"
+#include <list>
 
 class GameMessage_Ping;
 class GameMessage_Pong;
@@ -57,6 +59,9 @@ class GameMessage_GGSChange;
 class GameMessage_Pause;
 class GameMessage_Server_NWFDone;
 class GameMessage_GameCommand;
+
+class GameMessage_GetAsyncLog;
+class GameMessage_SendAsyncLog;
 
 class GameMessageInterface : public MessageInterface
 {
@@ -101,6 +106,9 @@ public:
 	virtual void OnNMSGameCommand(const GameMessage_GameCommand& msg);
 
 	virtual void OnNMSGGSChange(const GameMessage_GGSChange& msg);
+
+	virtual void OnNMSGetAsyncLog(const GameMessage_GetAsyncLog& msg);
+	virtual void OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, std::list<RandomEntry> *his, bool last);
 };
 
 #endif //!GAMEMESSAGEINTERFACE_H_INCLUDED
