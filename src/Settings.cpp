@@ -1,4 +1,4 @@
-// $Id: Settings.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: Settings.cpp 7676 2011-12-28 12:16:43Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -58,6 +58,7 @@ bool Settings::LoadDefaults()
 
 	// global
 	// {
+		global.submit_debug_data = false;
 	// }
 
 	// video
@@ -181,6 +182,8 @@ bool Settings::Load(void)
 		// stimmt die Spielrevision überein?
 		if(strcmp(global->getValue("gameversion"), GetWindowRevision()) != 0)
 			warning("Your application version has changed - please recheck your settings!\n");
+
+		this->global.submit_debug_data = (global->getValueI("submit_debug_data") ? true : false);
 	// };
 
 	// video
@@ -328,6 +331,7 @@ void Settings::Save(void)
 	// {
 		global->setValue("version", SETTINGS_VERSION);
 		global->setValue("gameversion", GetWindowRevision());
+		global->setValue("submit_debug_data", (this->global.submit_debug_data ? 1 : 0));
 	// };
 
 	// video

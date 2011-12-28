@@ -1,4 +1,4 @@
-// $Id: Settings.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: Settings.h 7676 2011-12-28 12:16:43Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -42,6 +42,7 @@ protected:
 
 public:
 	struct {
+		bool submit_debug_data;
 	} global;
 
 	struct {

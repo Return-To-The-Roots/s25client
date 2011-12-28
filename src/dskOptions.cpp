@@ -1,4 +1,4 @@
-// $Id: dskOptions.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: dskOptions.cpp 7676 2011-12-28 12:16:43Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -158,6 +158,19 @@ dskOptions::dskOptions(void) : Desktop(LOADER.GetImageN("setup013", 0))
 	}
 
 	// }
+
+	groupAllgemein->AddText(  70,  80, 360, _("Submit debug data:"), COLOR_YELLOW, 0, NormalFont);
+	optiongroup = groupAllgemein->AddOptionGroup(71, ctrlOptionGroup::CHECK, scale);
+	optiongroup->AddTextButton(72, 480, 355, 190, 22, TC_GREY, _("On"), NormalFont);
+	optiongroup->AddTextButton(73, 280, 355, 190, 22, TC_GREY, _("Off"), NormalFont);
+
+	optiongroup->SetSelection( (SETTINGS.global.submit_debug_data ? 72 : 73) );
+
+	if(GLOBALVARS.ext_vbo == false) // VBO unterstützt?
+		optiongroup->AddText(  56, 280, 230, _("not supported"), COLOR_YELLOW, 0, NormalFont);
+	else
+		optiongroup->AddTextButton(56, 280, 225, 190, 22, TC_GREY,_("On"), NormalFont);
+	optiongroup->AddTextButton(57, 480, 225, 190, 22, TC_GREY, _("Off"), NormalFont);
 
 	// "Auflösung"
 	groupGrafik->AddText(  40,  80, 80, _("Fullscreen resolution:"), COLOR_YELLOW, 0, NormalFont);
@@ -492,6 +505,14 @@ void dskOptions::Msg_Group_OptionGroupChange(const unsigned int group_id, const 
 			{
 			case 68: SETTINGS.sound.effekte = true;  break;
 			case 69: SETTINGS.sound.effekte = false; break;
+			}
+		} break;
+	case 71: // Submit debug data
+		{
+			switch(selection)
+			{
+			case 72: SETTINGS.global.submit_debug_data = true; break;
+			case 73: SETTINGS.global.submit_debug_data = false; break;
 			}
 		} break;
 	}
