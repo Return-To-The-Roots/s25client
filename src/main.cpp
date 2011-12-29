@@ -1,4 +1,4 @@
-// $Id: main.cpp 7680 2011-12-29 15:52:11Z marcus $
+// $Id: main.cpp 7681 2011-12-29 19:41:22Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -203,7 +203,7 @@ static LONG WINAPI WinExceptionHandler(LPEXCEPTION_POINTERS info)
 {
 	SendCrashInfo();
 
-        exit(1);
+	return(EXCEPTION_EXECUTE_HANDLER);
 }
 
 #endif
