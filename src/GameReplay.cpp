@@ -1,4 +1,4 @@
-// $Id: GameReplay.cpp 7667 2011-12-26 22:40:31Z marcus $
+// $Id: GameReplay.cpp 7680 2011-12-29 15:52:11Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -75,6 +75,8 @@ bool Replay::WriteHeader(const std::string& filename)
 	// Datei öffnen
 	if(!file.Open(filename.c_str(),OFM_WRITE))
 		return false;
+
+	Replay::filename = filename;
 
 	// Versionszeug schreiben
 	WriteVersion(file,6,REPLAY_SIGNATURE,REPLAY_VERSION);

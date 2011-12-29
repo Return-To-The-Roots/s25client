@@ -1,4 +1,4 @@
-// $Id: main.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: main.cpp 7680 2011-12-29 15:52:11Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -27,8 +27,10 @@
 
 #include "GameManager.h"
 
-#ifndef _NDEBUG
 #include "GameClient.h"
+#include "Settings.h"
+
+#ifndef _NDEBUG
 #include "GameWorld.h"
 #include "GameServer.h"
 #include "iwDirectIPCreate.h"
@@ -36,6 +38,11 @@
 #include "dskGameLoader.h"
 #include "dskSelectMap.h"
 #include "iwPleaseWait.h"
+#endif
+
+// for backtrace()
+#ifndef _WIN32
+#include <execinfo.h>
 #endif
 
 #ifdef __APPLE__
@@ -126,6 +133,94 @@ int mkdir_p(const std::string dir)
 	return 0;
 }
 
+void SendCrashInfo()
+{
+	if (!GAMECLIENT.IsReplayModeOn() && SETTINGS.global.submit_debug_data)
+	{
+		Socket socket;
+		Replay rpl = GAMECLIENT.GetReplay();
+
+		BinaryFile rf = rpl.GetFile();
+
+		rf.Flush();
+
+		// find out size of replay file by seeking to its end
+		rf.Seek(0, SEEK_END);
+		unsigned us = rf.Tell();
+
+		fprintf(stderr, "replay file size: %u\nreplay file: %s\n", us, rpl.GetFileName().c_str());
+
+		if (socket.Connect("188.40.245.45", 4123, false, (Socket::PROXY_TYPE)SETTINGS.proxy.typ, SETTINGS.proxy.proxy, SETTINGS.proxy.port))
+		{
+#ifdef _WIN32
+			const char *platform = "WIN";
+#elif defined __APPLE__
+			const char *platform = "MAC";
+#else
+			const char *platform = "LNX";
+#endif
+			const char *wv = GetWindowVersion();
+			const char *wr = GetWindowRevision();
+
+			unsigned len = strlen(platform) + strlen(wv) + strlen(wr) + 4;
+			char *version = new char[len];
+
+			snprintf(version, len, "%s-%s-%s", wv, wr, platform);
+
+			socket.Send(&len, 4);
+			socket.Send(version, len + 1);
+
+			delete[] version;
+
+			char *in = new char[us];
+			unsigned int out_len = us * 2 + 600;
+			char *out = new char[out_len];
+
+			BinaryFile rf2;
+
+			rf2.Open(rpl.GetFileName().c_str(), OFM_READ);
+			rf2.ReadRawData(in, us);
+			rf2.Close();
+
+			if (BZ2_bzBuffToBuffCompress(out, (unsigned int*)&out_len, in, us, 9, 0, 250) == BZ_OK)
+			{
+				// send size of replay via socket
+				socket.Send(&out_len, 4);
+				socket.Send(out, out_len);
+			}
+
+			socket.Close();
+
+			delete[] in;
+			delete[] out;
+		}
+	}
+}
+
+
+#if defined _WIN32 && !defined _MSC_VER
+static LONG WINAPI WinExceptionHandler(LPEXCEPTION_POINTERS info)
+{
+	SendCrashInfo();
+
+        exit(1);
+}
+
+#endif
+
+#ifndef _WIN32
+void LinExceptionHandler(int sig)
+{
+	fprintf(stderr, "SEGFAULT HANDLER:\n");
+
+	SendCrashInfo();
+
+	exit(1);
+}
+
+#endif
+
+
 ///////////////////////////////////////////////////////////////////////////////
 /**
  *  Hauptfunktion von Siedler II.5 Return to the Roots
@@ -158,6 +253,11 @@ int main(int argc, char *argv[])
 
 	// Set UTF-8 console charset
 	SetConsoleOutputCP(CP_UTF8);
+
+#ifndef  _MSC_VER
+	SetUnhandledExceptionFilter(WinExceptionHandler);
+#endif
+
 #else
 	struct sigaction sa;
 	sa.sa_handler = HandlerRoutine;
@@ -167,6 +267,8 @@ int main(int argc, char *argv[])
 	sigaction(SIGINT, &sa, NULL);
 	sigaction(SIGPIPE, &sa, NULL);
 	sigaction(SIGALRM, &sa, NULL);
+
+	signal(SIGSEGV, LinExceptionHandler);
 #endif // _WIN32
 
 	// diverse dirs anlegen

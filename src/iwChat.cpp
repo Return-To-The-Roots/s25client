@@ -1,4 +1,4 @@
-// $Id: iwChat.cpp 7668 2011-12-26 22:55:02Z marcus $
+// $Id: iwChat.cpp 7680 2011-12-29 15:52:11Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -93,6 +93,13 @@ void iwChat::Msg_EditEnter(const unsigned int ctrl_id)
 	} else if (edit->GetText() == "async!")
 	{
 		(void) RANDOM.Rand(__FILE__, __LINE__, 0, 255);
+		return;
+	} else if (edit->GetText() == "segfault!")
+	{
+		char *x = NULL;
+
+		*x = 1;
+
 		return;
 	}
 
