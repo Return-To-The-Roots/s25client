@@ -1,4 +1,4 @@
-// $Id: GameWorld.h 7671 2011-12-27 11:52:38Z marcus $
+// $Id: GameWorld.h 7683 2011-12-29 21:08:32Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -550,12 +550,6 @@ public:
 	/// Gibt letzten Punkt an, der beim Zeichnen angezeigt wird
 	inline int GetLastX() const { return lx; }
 	inline int GetLastY() const { return ly; }
-
-/*
-	list<MapTile> sorted_textures[16];
-	list<BorderTile> sorted_borders[5];
-	list<PreparedRoad> sorted_roads[4];
-*/
 
 	void DrawBoundaryStone(const int x, const int y, const MapCoord tx, const MapCoord ty, const int xpos, const int ypos, Visibility vis);
 

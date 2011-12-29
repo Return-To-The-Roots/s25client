@@ -1,4 +1,4 @@
-// $Id: Messenger.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: Messenger.cpp 7683 2011-12-29 21:08:32Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -54,12 +54,12 @@ void Messenger::Draw()
 {
 	unsigned y = 100;
 
-	for(list<Messenger::Msg>::iterator it = messages.begin(); it.valid(); ++it, y+=LargeFont->getHeight())
+	for(std::list<Messenger::Msg>::iterator it = messages.begin(); it != messages.end(); ++it, y+=LargeFont->getHeight())
 	{
 		unsigned diff = VideoDriverWrapper::inst().GetTickCount() - it->starttime;
 		if(diff > 20000)
 		{
-			messages.erase(&it);
+			messages.erase(it++);
 			continue;
 		}
 

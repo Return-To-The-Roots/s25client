@@ -1,4 +1,4 @@
-// $Id: Messenger.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: Messenger.h 7683 2011-12-29 21:08:32Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -22,6 +22,7 @@
 #pragma once
 
 #include "GameProtocol.h"
+#include <list>
 
 class Messenger
 {
@@ -35,7 +36,8 @@ class Messenger
 		unsigned starttime;
 		unsigned short width;
 	};
-	list<Msg> messages;
+
+	std::list<Msg> messages;
 
 public:
 	~Messenger();
