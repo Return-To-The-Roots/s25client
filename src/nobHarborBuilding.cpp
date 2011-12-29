@@ -1,4 +1,4 @@
-// $Id: nobHarborBuilding.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: nobHarborBuilding.cpp 7682 2011-12-29 19:43:45Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -722,7 +722,7 @@ void nobHarborBuilding::RemoveDependentFigure(noFigure * figure)
 	{
 		// Alle Figuren durchkommen, die noch hierher kommen wollen und gucken, ob ein 
 		// Bauarbeiter dabei ist
-		for(list<noFigure*>::iterator it = dependent_figures.begin();it.valid();++it)
+		for(std::list<noFigure*>::iterator it = dependent_figures.begin();it != dependent_figures.end();++it)
 		{
 			if((*it)->GetJobType() == JOB_BUILDER)
 				// Brauchen keinen bestellen, also raus
@@ -739,7 +739,7 @@ void nobHarborBuilding::RemoveDependentFigure(noFigure * figure)
 		unsigned scouts_coming = 0;
 		// Alle Figuren durchkommen, die noch hierher kommen wollen und gucken, ob ein 
 		// Bauarbeiter dabei ist
-		for(list<noFigure*>::iterator it = dependent_figures.begin();it.valid();++it)
+		for(std::list<noFigure*>::iterator it = dependent_figures.begin();it != dependent_figures.end();++it)
 		{
 			if((*it)->GetJobType() == JOB_SCOUT)
 				// Brauchen keinen bestellen, also raus

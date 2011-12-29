@@ -1,4 +1,4 @@
-// $Id: nobBaseWarehouse.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: nobBaseWarehouse.h 7682 2011-12-29 19:43:45Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -25,6 +25,7 @@
 #include "GameConsts.h"
 #include "EventManager.h"
 #include "noFigure.h"
+#include <list>
 
 class nofCarrier;
 class nofWarehouseWorker;
@@ -54,7 +55,7 @@ protected:
 	// verhindert doppeltes Holen von Waren
 	bool fetch_double_protection;
 	/// Liste von Figuren, die auf dem Weg zu dem Lagerhaus sind bzw. Soldaten die von ihm kommen
-	list<noFigure*> dependent_figures;
+	std::list<noFigure*> dependent_figures;
 	/// Liste von Waren, die auf dem Weg zum Lagerhaus sind
 	list<Ware*> dependent_wares;
 	/// Produzier-Träger-Event
@@ -200,7 +201,7 @@ public: void Serialize(SerializedGameData *sgd) const { Serialize_nobBaseWarehou
 	/// Fügt eine Figur hinzu, die auf dem Weg zum Lagerhaus ist
 	void AddDependentFigure(noFigure * figure) { assert(CheckDependentFigure(figure) == false); dependent_figures.push_back(figure); }
 	//// Entfernt eine abhängige Figur wieder aus der Liste
-	virtual void RemoveDependentFigure(noFigure * figure) { dependent_figures.erase(figure); }
+	virtual void RemoveDependentFigure(noFigure * figure) { dependent_figures.remove(figure); }
 	/// Wird aufgerufen, wenn ein Arbeiter hierher kommt
 	void GotWorker(Job job, noFigure * worker)
 	{ assert(CheckDependentFigure(worker) == false); dependent_figures.push_back(worker); }

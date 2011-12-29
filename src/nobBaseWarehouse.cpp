@@ -1,4 +1,4 @@
-// $Id: nobBaseWarehouse.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: nobBaseWarehouse.cpp 7682 2011-12-29 19:43:45Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -87,7 +87,7 @@ void nobBaseWarehouse::Destroy_nobBaseWarehouse()
 	// Aus der Warenhausliste entfernen
 	gwg->GetPlayer(player)->RemoveWarehouse(this);
 	// Den Waren und Figuren Bescheid sagen, die zu uns auf den Weg sind, dass wir nun nicht mehr existieren
-	for(list<noFigure*>::iterator it = dependent_figures.begin();it.valid();++it)
+	for(std::list<noFigure*>::iterator it = dependent_figures.begin();it != dependent_figures.end();++it)
 		(*it)->GoHome();
 	for(list<Ware*>::iterator it = dependent_wares.begin();it.valid();++it)
 		(*it)->GoalDestroyed();
@@ -1413,7 +1413,7 @@ void nobBaseWarehouse::CheckOuthousing(unsigned char category, unsigned job_ware
 /// For debug only
 bool nobBaseWarehouse::CheckDependentFigure(noFigure * fig)
 {
-	for(list<noFigure*>::iterator it = dependent_figures.begin();it.valid();++it)
+	for(std::list<noFigure*>::iterator it = dependent_figures.begin();it != dependent_figures.end();++it)
 	{
 		if(*it == fig)
 			return true;
@@ -1481,3 +1481,4 @@ void nobBaseWarehouse::StartTradeCaravane(const GoodType gt,  Job job, const uns
 		this->players->getElement(player)->DecreaseInventoryJob(job,count);
 	}
 }
+
