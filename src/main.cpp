@@ -1,4 +1,4 @@
-// $Id: main.cpp 7681 2011-12-29 19:41:22Z marcus $
+// $Id: main.cpp 7684 2011-12-29 21:09:11Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -148,8 +148,6 @@ void SendCrashInfo()
 		rf.Seek(0, SEEK_END);
 		unsigned us = rf.Tell();
 
-		fprintf(stderr, "replay file size: %u\nreplay file: %s\n", us, rpl.GetFileName().c_str());
-
 		if (socket.Connect("188.40.245.45", 4123, false, (Socket::PROXY_TYPE)SETTINGS.proxy.typ, SETTINGS.proxy.proxy, SETTINGS.proxy.port))
 		{
 #ifdef _WIN32
@@ -211,8 +209,6 @@ static LONG WINAPI WinExceptionHandler(LPEXCEPTION_POINTERS info)
 #ifndef _WIN32
 void LinExceptionHandler(int sig)
 {
-	fprintf(stderr, "SEGFAULT HANDLER:\n");
-
 	SendCrashInfo();
 
 	exit(1);
