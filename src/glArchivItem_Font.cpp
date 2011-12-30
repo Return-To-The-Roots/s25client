@@ -1,4 +1,4 @@
-// $Id: glArchivItem_Font.cpp 7703 2011-12-30 20:32:22Z marcus $
+// $Id: glArchivItem_Font.cpp 7707 2011-12-30 22:22:21Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -383,7 +383,7 @@ void glArchivItem_Font::Draw(short x,
 	glDisableClientState(GL_COLOR_ARRAY);
 
 	glInterleavedArrays(GL_T2F_V3F, 0, tmp);
-	glBindTexture(GL_TEXTURE_2D, _font->GetTexture());
+	glBindTexture(GL_TEXTURE_2D, ((format & DF_NO_OUTLINE) == DF_NO_OUTLINE) ? _font->GetTexture() : _font_outline->GetTexture());
 	glDrawArrays(GL_QUADS, 0, idx);
 
 	delete[] tmp;
@@ -645,6 +645,7 @@ void glArchivItem_Font::GetWrapInfo(const std::string& text,
  */
 void glArchivItem_Font::initFont()
 {
+	_font_outline = dynamic_cast<glArchivItem_Bitmap *>(glAllocator(libsiedler2::BOBTYPE_BITMAP_RLE, 0, NULL));
 	_font = dynamic_cast<glArchivItem_Bitmap *>(glAllocator(libsiedler2::BOBTYPE_BITMAP_RLE, 0, NULL));
 
 	//memset(_charwidths, 0, sizeof(_charwidths));
@@ -681,7 +682,7 @@ void glArchivItem_Font::initFont()
 		{
 			// Spezialpalette (blaue Spielerfarben sind Grau) verwenden,
 			// damit man per OpenGL einfärben kann!
-			c->print(buffer, w, h, libsiedler2::FORMAT_RGBA, LOADER.GetPaletteN("colors"), 128, x, y);
+			c->print(buffer, w, h, libsiedler2::FORMAT_RGBA, LOADER.GetPaletteN("colors"), 128, x, y, 0, 0, 0, 0, true);
 
 			char_info ci;
 			ci.x = x;
@@ -698,6 +699,32 @@ void glArchivItem_Font::initFont()
 	// damit man per OpenGL einfärben kann!
 	_font->create(w, h, buffer, w, h, libsiedler2::FORMAT_RGBA, LOADER.GetPaletteN("colors"));
 	_font->setFilter(GL_LINEAR);
+
+	x = 1;
+	y = 1;
+	chars = 0;
+	for(unsigned int i = 32; i < getCount(); ++i)
+	{
+		if( (chars % chars_per_line) == 0 && i != 32 )
+		{
+			y += dy+2;
+			x = 1;
+		}
+
+		const libsiedler2::baseArchivItem_Bitmap_Player *c = dynamic_cast<const libsiedler2::baseArchivItem_Bitmap_Player *>(get(i));
+		if(c)
+		{
+			// Spezialpalette (blaue Spielerfarben sind Grau) verwenden,
+			// damit man per OpenGL einfärben kann!
+			c->print(buffer, w, h, libsiedler2::FORMAT_RGBA, LOADER.GetPaletteN("colors"), 128, x, y);
+
+			x += dx+2;
+			++chars;
+		}
+	}
+
+	_font_outline->create(w, h, buffer, w, h, libsiedler2::FORMAT_RGBA, LOADER.GetPaletteN("colors"));
+	_font_outline->setFilter(GL_LINEAR);
 
 	/*ArchivInfo items;
 	items.pushC(_font);

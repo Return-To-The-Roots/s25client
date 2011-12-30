@@ -1,4 +1,4 @@
-// $Id: iwShip.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: iwShip.cpp 7707 2011-12-30 22:22:21Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -106,20 +106,20 @@ void iwShip::Msg_PaintAfter()
 		// Immer noch nicht? Dann gibt es keine Schiffe mehr und wir zeigen eine entsprechende Meldung an
 		if(!ship)
 		{
-			LOADER.GetFontN("resource", 0)->Draw(GetX()+width/2,GetY()+60,_("No ships available"),glArchivItem_Font::DF_CENTER,COLOR_WINDOWBROWN);
+			NormalFont->Draw(GetX() + width / 2, GetY() + 60, _("No ships available"), glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_NO_OUTLINE, COLOR_WINDOWBROWN);
 			return;
 		}
 	}
 
 
 	// Schiffsname
-	LOADER.GetFontN("resource", 0)->Draw(GetX()+42,GetY()+42,ship->GetName(),0,COLOR_WINDOWBROWN);
+	NormalFont->Draw(GetX() + 42, GetY() + 42, ship->GetName(), glArchivItem_Font::DF_NO_OUTLINE, COLOR_WINDOWBROWN);
 	// Schiffs-Nr.
 	char str[32];
 	sprintf(str,"%u/%u",ship_id+1,GameClient::inst().GetPlayer(ship->GetPlayer())->GetShipCount());
-	LOADER.GetFontN("resource", 0)->Draw(GetX()+208,GetY()+42,str,glArchivItem_Font::DF_RIGHT,COLOR_WINDOWBROWN);
+	NormalFont->Draw(GetX() + 208, GetY() + 42, str, glArchivItem_Font::DF_RIGHT | glArchivItem_Font::DF_NO_OUTLINE, COLOR_WINDOWBROWN);
 	// Das Schiffs-Bild
-	LOADER.GetImageN("boot_z", 12)->Draw(GetX()+138,GetY()+117);
+	LOADER.GetImageN("boot_z", 12)->Draw(GetX() + 138,GetY() + 117);
 
 	// Expeditions-Buttons malen?
 	if(ship->IsWaitingForExpeditionInstructions())

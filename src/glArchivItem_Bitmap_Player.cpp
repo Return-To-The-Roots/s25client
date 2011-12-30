@@ -1,4 +1,4 @@
-// $Id: glArchivItem_Bitmap_Player.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: glArchivItem_Bitmap_Player.cpp 7707 2011-12-30 22:22:21Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -172,8 +172,8 @@ void glArchivItem_Bitmap_Player::GenerateTexture(void)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
 
 	memset(buffer, 0, tex_width*2*tex_height*4);
-	printHelper(buffer, tex_width*2, tex_height, libsiedler2::FORMAT_RGBA, palette, 128, 0, 0, 0, 0, 0, 0, false);
-	printHelper(buffer, tex_width*2, tex_height, libsiedler2::FORMAT_RGBA, palette, 128, tex_width, 0, 0, 0, 0, 0, true);
+	print(buffer, tex_width*2, tex_height, libsiedler2::FORMAT_RGBA, palette, 128, 0, 0, 0, 0, 0, 0, false);
+	print(buffer, tex_width*2, tex_height, libsiedler2::FORMAT_RGBA, palette, 128, tex_width, 0, 0, 0, 0, 0, true);
 	glTexImage2D(GL_TEXTURE_2D, 0, iformat, tex_width*2, tex_height, 0, dformat, GL_UNSIGNED_BYTE, buffer);
 
 	delete[] buffer;

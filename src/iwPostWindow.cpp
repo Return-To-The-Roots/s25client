@@ -1,4 +1,4 @@
-// $Id: iwPostWindow.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: iwPostWindow.cpp 7707 2011-12-30 22:22:21Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -75,7 +75,7 @@ iwPostWindow::iwPostWindow(GameWorldViewer& gwv)
 	postImage = AddImage(13, 127, 155, LOADER.GetImageN("io", 225));
 
 	// Multiline-Teil mit drei leeren Zeilen erzeugen
-	ctrlMultiline *text = AddMultiline(12, 126, 141, 200, 50, TC_INVISIBLE, LOADER.GetFontN("resource", 0), glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM);
+	ctrlMultiline *text = AddMultiline(12, 126, 141, 200, 50, TC_INVISIBLE, NormalFont, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM | glArchivItem_Font::DF_NO_OUTLINE);
 	text->EnableBox(false);
 	text->AddString("",COLOR_WINDOWBROWN,false);
 	text->AddString("",COLOR_WINDOWBROWN,false);
@@ -379,7 +379,7 @@ void iwPostWindow::SetMessageText(const std::string& message)
 
 	glArchivItem_Font::WrapInfo wi;
 
-	LOADER.GetFontN("resource", 0)->GetWrapInfo(message,190,190,wi);
+	NormalFont->GetWrapInfo(message,190,190,wi);
 	std::string *lines = new std::string[wi.positions.size()];
 	wi.CreateSingleStrings(message,lines);
 	for(unsigned i = 0; i < 3; ++i)

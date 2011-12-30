@@ -1,4 +1,4 @@
-// $Id: glArchivItem_Font.h 7527 2011-09-11 13:19:54Z marcus $
+// $Id: glArchivItem_Font.h 7707 2011-12-30 22:22:21Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -68,6 +68,10 @@ public:
 		DF_VCENTER = 8
 	};
 
+	enum {
+		DF_NO_OUTLINE = 16
+	};
+
 	struct char_info
 	{
 		char_info() : x(0), y(0), width(0), reserved(0xFFFF) {}
@@ -113,6 +117,7 @@ private:
 		return ci;
 	}
 
+	glArchivItem_Bitmap *_font_outline;
 	glArchivItem_Bitmap *_font;
 
 	unsigned int chars_per_line;
