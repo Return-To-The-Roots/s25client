@@ -129,8 +129,8 @@ if [ $CHANGED -eq 1 ] || [ ! -f $ARCHDIR/packed/s25rttr.tar.bz2 ] ; then
 	echo "creating new updater tree"
 
 	# fastcopy files (only dirs and files, no symlinks
-	(cd $ARCHNEWDIR/unpacked/s25rttr_$VERSION && find -type d -exec mkdir -vp $ARCHNEWDIR/updater/{} \;)
-	(cd $ARCHNEWDIR/unpacked/s25rttr_$VERSION && find -type f -exec cp {} $ARCHNEWDIR/updater/{} \;)
+	(cd $ARCHNEWDIR/unpacked/s25rttr_$VERSION && find -type d -a ! -path */dbg* -exec mkdir -vp $ARCHNEWDIR/updater/{} \;)
+	(cd $ARCHNEWDIR/unpacked/s25rttr_$VERSION && find -type f -a ! -name *.dbg -exec cp {} $ARCHNEWDIR/updater/{} \;)
 	
 	# note symlinks
 	L=/tmp/links.$$
