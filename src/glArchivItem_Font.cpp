@@ -1,4 +1,4 @@
-// $Id: glArchivItem_Font.cpp 7527 2011-09-11 13:19:54Z marcus $
+// $Id: glArchivItem_Font.cpp 7703 2011-12-30 20:32:22Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -100,8 +100,9 @@ unsigned int glArchivItem_Font::Utf8_to_Unicode(const std::string& text, unsigne
 	{
 		if( (c & 0xC0) == 0x80) // 10xxxxxx
 		{
-			if(!CharExist(c)) // some hardcoded non utf-8 characters may be here ...
-				LOG.lprintf("woops, corrupt utf-8 stream: %02x / %d\n", c, c); 
+// Disabled this message since it is repeated for ages and does not really help :-)
+//			if(!CharExist(c)) // some hardcoded non utf-8 characters may be here ...
+//				LOG.lprintf("woops, corrupt utf-8 stream: %02x / %d\n", c, c);
 		}
 		else if( (c & 0xE0) == 0xC0) // 110xxxxx
 		{
