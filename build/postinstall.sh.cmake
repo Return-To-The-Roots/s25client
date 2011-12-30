@@ -1,6 +1,6 @@
 #!/bin/bash
 ###############################################################################
-## $Id: postinstall.sh.cmake 7185 2011-04-18 07:39:12Z FloSoft $
+## $Id: postinstall.sh.cmake 7689 2011-12-30 09:36:14Z FloSoft $
 ###############################################################################
 
 # Editable Variables
@@ -135,6 +135,20 @@ fi
 mecho --blue "## Removing files which are unused (but installed by cmake)"
 rm -vf ${DESTDIR}${LIBDIR}/driver/video/libvideo*.{a,lib}
 rm -vf ${DESTDIR}${LIBDIR}/driver/audio/libaudio*.{a,lib}
+
+# strip out debug symbols into external file
+EXE=${DESTDIR}bin/s25client
+DBG=$EXE.dbg
+if [ "$COMPILEFOR" = "windows" ] ; then
+	EXE=$EXE.exe
+fi
+
+objcopy --only-keep-debug $EXE $DBG
+objcopy --strip-debug $EXE
+objcopy --add-gnu-debuglink=$(basename $DBG) $EXE
+
+unset EXE
+unset DBG
 
 # create app-bundle for apple
 if [ "$COMPILEFOR" = "apple" ] ; then
