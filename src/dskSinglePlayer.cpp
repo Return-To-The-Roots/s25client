@@ -1,4 +1,4 @@
-// $Id: dskSinglePlayer.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: dskSinglePlayer.cpp 7710 2011-12-30 23:41:29Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -25,6 +25,8 @@
 #include "WindowManager.h"
 #include "Loader.h"
 #include "GameServer.h"
+#include "ListDir.h"
+#include "GameSavegame.h"
 
 #include "dskMainMenu.h"
 #include "dskUnlimitedPlay.h"
@@ -90,7 +92,73 @@ void dskSinglePlayer::Msg_ButtonClick(const unsigned int ctrl_id)
 	{
 	case 3: // "Letztes Spiel fortsetzen"
 		{
-			WindowManager::inst().Show(new iwMsgbox(_("Not available"),_("Please use \'Unlimited Play\' to create a Singleplayer game."),this,MSB_OK,MSB_EXCLAMATIONGREEN));
+			std::list<std::string> liste;
+			std::string tmp = GetFilePath(FILE_PATHS[85]);
+
+			tmp += "*.sav";
+			ListDir(tmp.c_str(), false, NULL, NULL, &liste);
+
+			std::string path;
+			unser_time_t recent = 0;
+			for(std::list<std::string>::iterator it = liste.begin(); it!=liste.end(); ++it)
+			{
+				Savegame save;
+
+				// Datei öffnen
+				if (!save.Load(*it, false, false))
+					continue;
+
+				if (save.save_time > recent)
+				{
+					recent = save.save_time;
+					path = *it;
+				}
+			}
+
+			if (recent != 0)
+			{
+				// Dateiname noch rausextrahieren aus dem Pfad
+				size_t pos = path.find_last_of('/');
+				if(pos == std::string::npos)
+					return;
+				std::string extracted_filename = path.substr(pos+1);
+
+				// Unterstriche in OEM-Unterstrich umwandeln, damit die korrekt angezeigt werden
+				for(unsigned int i = 0; i < extracted_filename.length(); ++i)
+				{
+					if(extracted_filename[i] == '_')
+						extracted_filename[i]  = '^';
+				}
+
+				// ".sav" am Ende weg
+				assert(extracted_filename.length() >= 4);
+				extracted_filename.erase(extracted_filename.length()-4);
+
+				// Server info
+				CreateServerInfo csi;
+
+				csi.gamename = extracted_filename;
+				csi.password = "localgame";
+				csi.port = 3665;
+				csi.type = NP_LOCAL;
+				csi.ipv6 = false;
+
+				WindowManager::inst().Switch(new dskSelectMap(csi));
+			
+				if(GAMESERVER.TryToStart(csi, path, MAPTYPE_SAVEGAME))
+				{
+					WindowManager::inst().Draw();
+					WindowManager::inst().Show(new iwPleaseWait);
+				} else
+				{
+					WindowManager::inst().Show(new iwMsgbox(_("Error"),_("The specified file couldn't be loaded!"),this,MSB_OK,MSB_EXCLAMATIONRED));
+				}
+			} else
+			{
+				WindowManager::inst().Show(new iwMsgbox(_("Error"),_("The specified file couldn't be loaded!"),this,MSB_OK,MSB_EXCLAMATIONRED));
+			}
+
+			liste.clear();
 		} break;
 	case 4: // "Replay abspielen"
 		{
