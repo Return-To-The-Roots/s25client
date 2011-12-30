@@ -1,6 +1,6 @@
 #!/bin/bash
 ###############################################################################
-## $Id: postinstall.sh.cmake 7690 2011-12-30 11:00:30Z FloSoft $
+## $Id: postinstall.sh.cmake 7691 2011-12-30 11:04:17Z FloSoft $
 ###############################################################################
 
 # Editable Variables
@@ -164,7 +164,7 @@ elif [ "$COMPILEFOR" = "linux" ] ; then
         extract_debug_symbols share/s25rttr/RTTR/s25update
         extract_debug_symbols share/s25rttr/RTTR/sound-convert
         extract_debug_symbols share/s25rttr/RTTR/s-c_resample
-endif
+fi
 
 # create app-bundle for apple
 if [ "$COMPILEFOR" = "apple" ] ; then
