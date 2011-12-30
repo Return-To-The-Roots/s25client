@@ -1,6 +1,6 @@
 #!/bin/bash
 ###############################################################################
-## $Id: postinstall.sh.cmake 7692 2011-12-30 11:07:48Z FloSoft $
+## $Id: postinstall.sh.cmake 7693 2011-12-30 11:16:17Z FloSoft $
 ###############################################################################
 
 # Editable Variables
@@ -148,6 +148,8 @@ extract_debug_symbols()
     popd
 }
 
+mecho --blue "## Extracting debug info from files and saving them into dbg"
+
 # strip out debug symbols into external file
 if [ "$COMPILEFOR" = "apple" ] ; then
 	echo "extraction not supported ???"
@@ -167,6 +169,8 @@ elif [ "$COMPILEFOR" = "linux" ] ; then
         extract_debug_symbols share/s25rttr/RTTR/sound-convert
         extract_debug_symbols share/s25rttr/RTTR/s-c_resample
 fi
+
+mecho --blue "## Performing additional tasks"
 
 # create app-bundle for apple
 if [ "$COMPILEFOR" = "apple" ] ; then
