@@ -1,6 +1,6 @@
 #!/bin/bash
 ###############################################################################
-## $Id: postinstall.sh.cmake 7689 2011-12-30 09:36:14Z FloSoft $
+## $Id: postinstall.sh.cmake 7690 2011-12-30 11:00:30Z FloSoft $
 ###############################################################################
 
 # Editable Variables
@@ -136,19 +136,35 @@ mecho --blue "## Removing files which are unused (but installed by cmake)"
 rm -vf ${DESTDIR}${LIBDIR}/driver/video/libvideo*.{a,lib}
 rm -vf ${DESTDIR}${LIBDIR}/driver/audio/libaudio*.{a,lib}
 
+extract_debug_symbols()
+{
+    local FILE=$1
+
+    mkdir -vp ${DESTDIR}dbg/$(dirname $FILE)
+    objcopy --only-keep-debug ${DESTDIR}$FILE ${DESTDIR}dbg/$FILE.dbg
+    objcopy --strip-debug ${DESTDIR}$FILE
+    objcopy --add-gnu-debuglink=dbg/$FILE.dbg ${DESTDIR}$FILE
+}
+
 # strip out debug symbols into external file
-EXE=${DESTDIR}bin/s25client
-DBG=$EXE.dbg
-if [ "$COMPILEFOR" = "windows" ] ; then
-	EXE=$EXE.exe
-fi
-
-objcopy --only-keep-debug $EXE $DBG
-objcopy --strip-debug $EXE
-objcopy --add-gnu-debuglink=$(basename $DBG) $EXE
-
-unset EXE
-unset DBG
+if [ "$COMPILEFOR" = "apple" ] ; then
+	echo "extraction not supported ???"
+elif [ "$COMPILEFOR" = "windows" ] ; then
+	extract_debug_symbols s25client.exe
+        extract_debug_symbols driver/video/libvideoWinAPI.dll
+	extract_debug_symbols driver/video/libvideoSDL.dll
+	extract_debug_symbols driver/audio/libaudioSDL.dll
+	extract_debug_symbols RTTR/s25update.exe
+	extract_debug_symbols RTTR/sound-convert.exe
+	extract_debug_symbols RTTR/s-c_resample.exe
+elif [ "$COMPILEFOR" = "linux" ] ; then
+	extract_debug_symbols bin/s25client
+        extract_debug_symbols share/s25rttr/driver/video/libvideoSDL.so
+        extract_debug_symbols share/s25rttr/driver/audio/libaudioSDL.so
+        extract_debug_symbols share/s25rttr/RTTR/s25update
+        extract_debug_symbols share/s25rttr/RTTR/sound-convert
+        extract_debug_symbols share/s25rttr/RTTR/s-c_resample
+endif
 
 # create app-bundle for apple
 if [ "$COMPILEFOR" = "apple" ] ; then
