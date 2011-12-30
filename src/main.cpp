@@ -1,4 +1,4 @@
-// $Id: main.cpp 7684 2011-12-29 21:09:11Z marcus $
+// $Id: main.cpp 7688 2011-12-30 09:33:43Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -211,7 +211,7 @@ void LinExceptionHandler(int sig)
 {
 	SendCrashInfo();
 
-	exit(1);
+	abort();
 }
 
 #endif
