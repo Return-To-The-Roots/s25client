@@ -106,17 +106,24 @@ if [ $CHANGED -eq 1 ] || [ ! -f $ARCHDIR/packed/s25rttr.tar.bz2 ] ; then
 		--exclude s25rttr_$VERSION/s25client.app/Contents/MacOS/share/s25rttr/RTTR/MUSIC/SNG/SNG_*.OGG \
 		-cvjf $ARCHNEWDIR/packed/s25rttr.tar.bz2 s25rttr_$VERSION || error
 
-	tar -C $ARCHNEWDIR/unpacked \
-		-cvjf $ARCHNEWDIR/packed/s25rttr_dbg.tar.bz2 s25rttr_$VERSION/dbg || error
-	rm -f ../s25rttr-dbg_*.tar.bz2
-	cp -v $ARCHNEWDIR/packed/s25rttr_dbg.tar.bz2 ../s25rttr-dbg_$VERSION-${REVISION}_$ARCH.tar.bz2 || exit 1 
+	if [ -d $ARCHNEWDIR/unpacked/s25rttr_$VERSION/dbg ] ; then
+		tar -C $ARCHNEWDIR/unpacked \
+			-cvjf $ARCHNEWDIR/packed/s25rttr_dbg.tar.bz2 s25rttr_$VERSION/dbg || error
+		rm -f ../s25rttr-dbg_*.tar.bz2
+		cp -v $ARCHNEWDIR/packed/s25rttr_dbg.tar.bz2 ../s25rttr-dbg_$VERSION-${REVISION}_$ARCH.tar.bz2 || exit 1 
+	else
+		touch ../s25rttr-dbg_$VERSION-${REVISION}_$ARCH.tar.bz2
+	fi
 	
 	# link to archive
 	mkdir -p $ARCHIVE
 	ln -v $ARCHNEWDIR/packed/s25rttr.tar.bz2 $ARCHIVE/s25rttr_$VERSION-${REVISION}_$ARCH.tar.bz2 || \
 		cp -v $ARCHNEWDIR/packed/s25rttr.tar.bz2 $ARCHIVE/s25rttr_$VERSION-${REVISION}_$ARCH.tar.bz2 || exit 1
-	ln -v $ARCHNEWDIR/packed/s25rttr_dbg.tar.bz2 $ARCHIVE/s25rttr-dbg_$VERSION-${REVISION}_$ARCH.tar.bz2 || \
-		cp -v $ARCHNEWDIR/packed/s25rttr_dbg.tar.bz2 $ARCHIVE/s25rttr-dbg_$VERSION-${REVISION}_$ARCH.tar.bz2 || exit 1
+
+	if [ -d $ARCHNEWDIR/unpacked/s25rttr_$VERSION/dbg ] ; then
+		ln -v $ARCHNEWDIR/packed/s25rttr_dbg.tar.bz2 $ARCHIVE/s25rttr-dbg_$VERSION-${REVISION}_$ARCH.tar.bz2 || \
+			cp -v $ARCHNEWDIR/packed/s25rttr_dbg.tar.bz2 $ARCHIVE/s25rttr-dbg_$VERSION-${REVISION}_$ARCH.tar.bz2 || exit 1
+	fi
 
 	# do upload
 	if [ ! "$NOUPLOAD" = "1" ] && [ ! -z "$UPLOADTARGET" ] ; then
