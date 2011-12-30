@@ -1,4 +1,4 @@
-// $Id: GlobalGameSettings.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: GlobalGameSettings.cpp 7700 2011-12-30 18:13:33Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -53,7 +53,7 @@
  *
  *  @author FloSoft
  */
-GlobalGameSettings::GlobalGameSettings() : game_speed(GS_FAST), game_objective(GO_NONE), start_wares(SWR_NORMAL),													lock_teams(true), exploration(EXP_FOGOFWAR), team_view(true) 
+GlobalGameSettings::GlobalGameSettings() : game_speed(GS_FAST), game_objective(GO_NONE), start_wares(SWR_NORMAL), lock_teams(false), exploration(EXP_FOGOFWAR), team_view(true) 
 {
 	// register addons
 	reset();

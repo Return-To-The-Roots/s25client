@@ -1,4 +1,4 @@
-// $Id: iwDiplomacy.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: iwDiplomacy.cpp 7700 2011-12-30 18:13:33Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -31,6 +31,7 @@
 #include "WindowManager.h"
 #include "GameCommands.h"
 #include "GameClientPlayer.h"
+#include "iwMsgbox.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -188,6 +189,12 @@ void iwDiplomacy::Msg_PaintAfter()
 
 void iwDiplomacy::Msg_ButtonClick(const unsigned int ctrl_id)
 {
+	if (GameClient::inst().GetGGS().lock_teams)
+	{
+		WindowManager::inst().Show(new iwMsgbox(_("Teams locked"), _("As the teams are locked, you cannot make treaties of any kind."), NULL, MSB_OK, MSB_EXCLAMATIONGREEN, 1));
+		return;
+	}
+
 	// Bündnisverträge
 	if(ctrl_id >= 300 && ctrl_id < 400)
 	{
