@@ -1,6 +1,6 @@
 #!/bin/bash
 ###############################################################################
-## $Id: postinstall.sh.cmake 7691 2011-12-30 11:04:17Z FloSoft $
+## $Id: postinstall.sh.cmake 7692 2011-12-30 11:07:48Z FloSoft $
 ###############################################################################
 
 # Editable Variables
@@ -140,10 +140,12 @@ extract_debug_symbols()
 {
     local FILE=$1
 
-    mkdir -vp ${DESTDIR}dbg/$(dirname $FILE)
-    objcopy --only-keep-debug ${DESTDIR}$FILE ${DESTDIR}dbg/$FILE.dbg
-    objcopy --strip-debug ${DESTDIR}$FILE
-    objcopy --add-gnu-debuglink=dbg/$FILE.dbg ${DESTDIR}$FILE
+    pushd ${DESTDIR}
+    mkdir -vp dbg/$(dirname $FILE)
+    objcopy --only-keep-debug $FILE dbg/$FILE.dbg
+    objcopy --strip-debug $FILE
+    objcopy --add-gnu-debuglink=dbg/$FILE.dbg $FILE
+    popd
 }
 
 # strip out debug symbols into external file
