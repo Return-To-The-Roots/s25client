@@ -1,4 +1,4 @@
-// $Id: iwBuilding.cpp 7707 2011-12-30 22:22:21Z marcus $
+// $Id: iwBuilding.cpp 7708 2011-12-30 22:59:42Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -64,15 +64,9 @@ iwBuilding::iwBuilding(GameWorldViewer * const gwv,dskGameInterface *const gi,no
 {
 	// Arbeitersymbol
 	AddImage(0, 28, 39, LOADER.GetMapImageN(2298));
-	// Arbeitersymbol
-	glArchivItem_Bitmap * image;
-	// Exception: charburner
-	if(building->GetBuildingType() != BLD_CHARBURNER)
-		image = LOADER.GetMapImageN(2300 + USUAL_BUILDING_CONSTS[building->GetBuildingType()-10].job);
-	else
-		image = LOADER.GetImageN("charburner",51);
-	AddImage(1, 28, 39, image);
 
+	// Gebäudesymbol
+	AddImage(1, 117, 114, building->GetBuildingImage());
 
 	// Symbol der produzierten Ware (falls hier was produziert wird)
 	if(USUAL_BUILDING_CONSTS[building->GetBuildingType()-10].produced_ware != GD_NOTHING)
@@ -116,7 +110,7 @@ iwBuilding::iwBuilding(GameWorldViewer * const gwv,dskGameInterface *const gi,no
 void iwBuilding::Msg_PaintBefore()
 {
 	// Schatten des Gebäudes (muss hier gezeichnet werden wegen schwarz und halbdurchsichtig)
-	glArchivItem_Bitmap *bitmap = LOADER.GetNationImageN(building->GetNation(), 250+5*building->GetBuildingType()+1);
+	glArchivItem_Bitmap *bitmap = building->GetBuildingImageShadow();
 
 	if(bitmap)
 		bitmap->Draw(GetX()+117, GetY()+114, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
