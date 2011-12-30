@@ -1,4 +1,4 @@
-// $Id: iwBuilding.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: iwBuilding.cpp 7705 2011-12-30 21:01:47Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -105,7 +105,8 @@ iwBuilding::iwBuilding(GameWorldViewer * const gwv,dskGameInterface *const gi,no
 	AddImage( 8, 117, 114, LOADER.GetNationImageN(building->GetNation(), 250+5*building->GetBuildingType()));
 
 	// Produktivitätsanzeige (bei Katapulten und Spähtürmen ausblenden)
-	Window * productivity = AddPercent(9, 59, 31, 106, 16, TC_GREY, 0xFFFFFF00, LOADER.GetFontN("resource", 2), building->GetProduktivityPointer());
+	// FIXME: font should be LOADER.GetFontN("resource", 2)
+	Window * productivity = AddPercent(9, 59, 31, 106, 16, TC_GREY, 0xFFFFFF00, SmallFont, building->GetProduktivityPointer());
 	if(building->GetBuildingType() == BLD_CATAPULT || building->GetBuildingType() == BLD_LOOKOUTTOWER)
 		productivity->SetVisible(false);
 
