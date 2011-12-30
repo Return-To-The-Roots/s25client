@@ -1,4 +1,4 @@
-// $Id: dskGameInterface.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: dskGameInterface.cpp 7702 2011-12-30 20:11:27Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -997,10 +997,10 @@ void dskGameInterface::CI_PlayerLeft(const unsigned player_id)
 {
 	// Info-Meldung ausgeben
 	char text[256];
-	snprintf(text, 256, _("Player '%s' left the game!"), GameClient::inst().GetPlayer(player_id)->name.c_str());
+	snprintf(text, sizeof(text), _("Player '%s' left the game!"), GameClient::inst().GetPlayer(player_id)->name.c_str());
 	messenger.AddMessage("", 0, CD_SYSTEM, text, COLOR_RED);
 	// Im Spiel anzeigen, dass die KI das Spiel betreten hat
-	snprintf(text, 256, _("Player '%s' joined the game!"), "KI");
+	snprintf(text, sizeof(text), _("Player '%s' joined the game!"), "KI");
 	messenger.AddMessage("", 0, CD_SYSTEM, text, COLOR_GREEN);
 }
 
@@ -1014,7 +1014,7 @@ void dskGameInterface::CI_GGSChanged(const GlobalGameSettings& ggs)
 {
 	// TODO: print what has changed
 	char text[256];
-	snprintf(text, 256, _("Note: Game settings changed by the server%s"),"");
+	snprintf(text, sizeof(text), _("Note: Game settings changed by the server%s"),"");
 	messenger.AddMessage("", 0, CD_SYSTEM, text);
 }
 
@@ -1027,7 +1027,7 @@ void dskGameInterface::CI_GGSChanged(const GlobalGameSettings& ggs)
 void dskGameInterface::CI_Chat(const unsigned player_id, const ChatDestination cd, const std::string& msg)
 {
 	char from[256];
-	snprintf(from, 256, _("<%s> "), GameClient::inst().GetPlayer(player_id)->name.c_str());
+	snprintf(from, sizeof(from), _("<%s> "), GameClient::inst().GetPlayer(player_id)->name.c_str());
 	messenger.AddMessage(from,
 		COLORS[GameClient::inst().GetPlayer(player_id)->color], cd, msg);
 }
@@ -1077,7 +1077,7 @@ void dskGameInterface::CI_ReplayEndReached(const std::string& msg)
 void dskGameInterface::CI_GamePaused()
 {
 	char from[256];
-	snprintf(from, 256, _("<%s> "), _("SYSTEM"));
+	snprintf(from, sizeof(from), _("<%s> "), _("SYSTEM"));
 	messenger.AddMessage(from, COLOR_GREY, CD_SYSTEM, _("Game was paused."));
 
 	/// Straﬂenbau ggf. abbrechen, wenn aktiviert
@@ -1106,7 +1106,7 @@ void dskGameInterface::CI_GamePaused()
 void dskGameInterface::CI_GameResumed()
 {
 	char from[256];
-	snprintf(from, 256, _("<%s> "), _("SYSTEM"));
+	snprintf(from, sizeof(from), _("<%s> "), _("SYSTEM"));
 	messenger.AddMessage(from, COLOR_GREY, CD_SYSTEM, _("Game was resumed."));
 }
 
@@ -1162,7 +1162,7 @@ void dskGameInterface::CI_PlayersSwapped(const unsigned player1, const unsigned 
 {
 	// Meldung anzeigen
 	char text[256];
-	snprintf(text, 256, _("Player '%s' switched to player '%s'"), GameClient::inst().GetPlayer(player1)->name.c_str()
+	snprintf(text, sizeof(text), _("Player '%s' switched to player '%s'"), GameClient::inst().GetPlayer(player1)->name.c_str()
 		,GameClient::inst().GetPlayer(player2)->name.c_str());
 	messenger.AddMessage("", 0, CD_SYSTEM, text, COLOR_YELLOW);
 
@@ -1185,7 +1185,7 @@ void dskGameInterface::CI_PlayersSwapped(const unsigned player1, const unsigned 
 void dskGameInterface::GI_PlayerDefeated(const unsigned player_id)
 {
 	char text[256];
-	snprintf(text, 256, _("Player '%s' was defeated!"), GameClient::inst().GetPlayer(player_id)->name.c_str());
+	snprintf(text, sizeof(text), _("Player '%s' was defeated!"), GameClient::inst().GetPlayer(player_id)->name.c_str());
 	messenger.AddMessage("", 0, CD_SYSTEM, text, COLOR_ORANGE);
 
 	/// Lokaler Spieler?
@@ -1298,3 +1298,17 @@ void dskGameInterface::CI_PostMessageDeleted(const unsigned postmessages_count)
 {
 	UpdatePostIcon(postmessages_count, false);
 }
+
+///////////////////////////////////////////////////////////////////////////////
+/**
+ *  Ein Spieler hat das Spiel gewonnen.
+ *
+ *  @author OLiver
+ */
+void dskGameInterface::GI_Winner(const unsigned player_id)
+{
+	char text[256];
+	snprintf(text, sizeof(text), _("Player '%s' is the winner!"), GameClient::inst().GetPlayer(player_id)->name.c_str());
+	messenger.AddMessage("", 0, CD_SYSTEM, text, COLOR_ORANGE);
+}
+

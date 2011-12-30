@@ -1,4 +1,4 @@
-// $Id: GameClientPlayer.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: GameClientPlayer.h 7702 2011-12-30 20:11:27Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -424,6 +424,7 @@ public:
   };
 
   const Statistic& GetStatistic(StatisticTime time) { return statistic[time]; };
+  const unsigned int GetStatisticCurrentValue(unsigned int idx)  { assert(idx < STAT_TYPE_COUNT); return(statisticCurrentData[idx]);}
 
 	// Testet ob Notfallprogramm aktiviert werden muss und tut dies dann
 	void TestForEmergencyProgramm();

@@ -1,4 +1,4 @@
-// $Id: GameInterface.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: GameInterface.h 7702 2011-12-30 20:11:27Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -36,6 +36,8 @@ public:
 	virtual void GI_FlagDestroyed(const MapCoord x, const MapCoord y) = 0;
 	/// Bündnisvertrag wurde abgeschlossen oder abgebrochen --> Minimap updaten
 	virtual void GI_TreatyOfAllianceChanged() = 0;
+
+	virtual void GI_Winner(const unsigned player_id) = 0;
 };
 
 

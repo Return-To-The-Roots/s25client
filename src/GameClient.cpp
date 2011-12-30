@@ -1,4 +1,4 @@
-// $Id: GameClient.cpp 7678 2011-12-28 17:05:25Z marcus $
+// $Id: GameClient.cpp 7702 2011-12-30 20:11:27Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1221,7 +1221,55 @@ void GameClient::StatisticStep()
 	if ((framesinfo.nr-1) % 750 == 0)
 	{
 		for (unsigned int i=0; i<players.getCount(); ++i)
+		{
 			players[i].StatisticStep();
+		}
+
+		// Check objective if there is one and there are at least two players
+		if ((ggs.game_objective != GlobalGameSettings::GO_NONE) && (players.getCount() > 1))
+		{
+			// check winning condition
+			unsigned int max = 0, sum = 0, best = 0xFFFF;
+
+			// Find out best player. Since at least 3/4 of the populated land is needed to win, we don't care about ties.
+			for (unsigned int i=0; i<players.getCount(); ++i)
+			{
+				unsigned int v = players[i].GetStatisticCurrentValue(STAT_COUNTRY);
+
+				if (v > max)
+				{
+					max = v;
+					best = i;
+				}
+
+				sum += v;
+			}
+
+			switch (ggs.game_objective)
+			{
+				case GlobalGameSettings::GO_CONQUER3_4:	// at least 3/4 of the land
+					if ((max * 4 >= sum * 3) && (best != 0xFFFF))
+					{
+						ggs.game_objective = GlobalGameSettings::GO_NONE;
+					}
+					break;
+
+				case GlobalGameSettings::GO_TOTALDOMINATION:	// whole populated land
+					if ((max == sum) && (best != 0xFFFF))
+					{
+						ggs.game_objective = GlobalGameSettings::GO_NONE;
+					}
+					break;
+				default:
+					break;
+			}
+
+			// We have a winner! Objective was changed to GO_NONE to avoid further checks.
+			if (ggs.game_objective == GlobalGameSettings::GO_NONE)
+			{
+				gw->GetGameInterface()->GI_Winner(best);
+			}
+		}
 	}
 }
 
