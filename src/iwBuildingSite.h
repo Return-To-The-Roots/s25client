@@ -1,4 +1,4 @@
-// $Id: iwBuildingSite.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: iwBuildingSite.h 7704 2011-12-30 20:49:00Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -33,6 +33,7 @@ public:
 
 protected:
 	void Msg_ButtonClick(const unsigned int ctrl_id);
+	void Msg_PaintBefore();
 	void Msg_PaintAfter();
 
 private:

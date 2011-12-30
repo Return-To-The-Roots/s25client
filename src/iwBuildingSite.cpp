@@ -1,4 +1,4 @@
-// $Id: iwBuildingSite.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: iwBuildingSite.cpp 7704 2011-12-30 20:49:00Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -95,6 +95,15 @@ void iwBuildingSite::Msg_ButtonClick(const unsigned int ctrl_id)
 			gwv->MoveToMapObject(buildingsite->GetX(), buildingsite->GetY());	
 		} break;
 	}
+}
+
+void iwBuildingSite::Msg_PaintBefore()
+{
+	// Schatten des Gebäudes (muss hier gezeichnet werden wegen schwarz und halbdurchsichtig)
+	glArchivItem_Bitmap *bitmap = buildingsite->GetBuildingImageShadow();
+
+	if(bitmap)
+		bitmap->Draw(GetX()+113, GetY()+130, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
 }
 
 void iwBuildingSite::Msg_PaintAfter()
