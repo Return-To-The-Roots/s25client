@@ -1,6 +1,6 @@
 #!/bin/bash
 ###############################################################################
-## $Id: cmake.sh 7686 2011-12-30 09:11:57Z FloSoft $
+## $Id: cmake.sh 7687 2011-12-30 09:17:47Z FloSoft $
 ###############################################################################
 
 # Editable Variables
@@ -204,19 +204,7 @@ echo "Setting Path-Prefix to \"$PREFIX\""
 PARAMS="$PARAMS -DPREFIX=$PREFIX"
 
 echo "Setting Architecture to \"$ARCH\""
-
-IFS="."
-sarch=($ARCH)
-unset IFS
-if [ ${sarch[0]} == 'c' ] ; then
-	compilefor=${sarch[1]}
-	compilearch=${sarch[2]}
-else
-	compilefor=${sarch[0]}
-	compilearch=${sarch[1]}
-fi
-
-PARAMS="$PARAMS -DCOMPILEFOR_PLATFORM=$ARCH -DCOMPILEFOR=$compilefor -DCOMPILEARCH=$compilearch"
+PARAMS="$PARAMS -DCOMPILEFOR_PLATFORM=$ARCH"
 
 echo "Setting Binary Dir to \"$BINDIR\""
 PARAMS="$PARAMS -DBINDIR=$BINDIR"
