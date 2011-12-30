@@ -108,6 +108,7 @@ if [ $CHANGED -eq 1 ] || [ ! -f $ARCHDIR/packed/s25rttr.tar.bz2 ] ; then
 
 	tar -C $ARCHNEWDIR/unpacked \
 		-cvjf $ARCHNEWDIR/packed/s25rttr_dbg.tar.bz2 s25rttr_$VERSION/dbg || error
+	rm -f ../s25rttr-dbg_*.tar.bz2
 	cp -v $ARCHNEWDIR/packed/s25rttr_dbg.tar.bz2 ../s25rttr-dbg_$VERSION-${REVISION}_$ARCH.tar.bz2 || exit 1 
 	
 	# link to archive
