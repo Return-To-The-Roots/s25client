@@ -1,6 +1,6 @@
 #!/bin/bash
 ###############################################################################
-## $Id: postinstall.sh.cmake 7697 2011-12-30 11:40:09Z FloSoft $
+## $Id: postinstall.sh.cmake 7698 2011-12-30 11:44:36Z FloSoft $
 ###############################################################################
 
 # Editable Variables
@@ -153,12 +153,12 @@ mecho --blue "## Extracting debug info from files and saving them into dbg"
 # strip out debug symbols into external file
 if [ "$COMPILEFOR" = "apple" ] ; then
 	echo "extraction not supported ???"
-	i686-apple-darwin10-strip -S bin/s25client
-	i686-apple-darwin10-strip -S share/s25rttr/driver/video/libvideoSDL.dylib
-        i686-apple-darwin10-strip -S share/s25rttr/driver/audio/libaudioSDL.dylib
-        i686-apple-darwin10-strip -S share/s25rttr/RTTR/s25update
-        i686-apple-darwin10-strip -S share/s25rttr/RTTR/sound-convert
-        i686-apple-darwin10-strip -S share/s25rttr/RTTR/s-c_resample
+	i686-apple-darwin10-strip -S ${DESTDIR}bin/s25client
+	i686-apple-darwin10-strip -S ${DESTDIR}share/s25rttr/driver/video/libvideoSDL.dylib
+        i686-apple-darwin10-strip -S ${DESTDIR}share/s25rttr/driver/audio/libaudioSDL.dylib
+        i686-apple-darwin10-strip -S ${DESTDIR}share/s25rttr/RTTR/s25update
+        i686-apple-darwin10-strip -S ${DESTDIR}share/s25rttr/RTTR/sound-convert
+        i686-apple-darwin10-strip -S ${DESTDIR}share/s25rttr/RTTR/s-c_resample
 elif [ "$COMPILEFOR" = "windows" ] ; then
 	extract_debug_symbols s25client.exe
         extract_debug_symbols driver/video/libvideoWinAPI.dll
