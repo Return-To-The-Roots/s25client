@@ -1,3 +1,448 @@
+s25rttr (20111231-7725.141) karmic; urgency=low
+
+  * Automatic Jenkins Build 141
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sat, 31 Dec 2011 18:26:11 +0100
+
+s25rttr (20111231-7725) any; urgency=low
+
+  * Walkaround for mingw not containing CaptureStackBackTrace (fix 3)
+
+ -- marcus  Sat, 31 Dec 2011 16:40:00 +0100
+
+s25rttr (20111231-7724) any; urgency=low
+
+  * Walkaround for mingw not containing CaptureStackBackTrace (fix 2)
+
+ -- marcus  Sat, 31 Dec 2011 16:32:00 +0100
+
+s25rttr (20111231-7723) any; urgency=low
+
+  * Walkaround for mingw not containing CaptureStackBackTrace (fix 1)
+
+ -- marcus  Sat, 31 Dec 2011 16:30:00 +0100
+
+s25rttr (20111231-7722) any; urgency=low
+
+  * Walkaround for mingw not containing CaptureStackBackTrace
+
+ -- marcus  Sat, 31 Dec 2011 16:28:00 +0100
+
+s25rttr (20111231-7721) any; urgency=low
+
+  * WinExceptionHandler now about()s.
+
+ -- marcus  Sat, 31 Dec 2011 16:16:00 +0100
+
+s25rttr (20111231-7720) any; urgency=low
+
+  * kleiner unicode fix
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 31 Dec 2011 15:59:00 +0100
+
+s25rttr (20111231-7719) any; urgency=low
+
+  * VideoDriverWrapper.h included
+
+ -- marcus  Sat, 31 Dec 2011 15:55:00 +0100
+
+s25rttr (20111231-7718) any; urgency=low
+
+  * Crash debug for VC (fix)
+
+ -- marcus  Sat, 31 Dec 2011 15:52:00 +0100
+
+s25rttr (20111231-7716) any; urgency=low
+
+  * Crash debug for VC
+
+ -- marcus  Sat, 31 Dec 2011 15:08:00 +0100
+
+s25rttr (20111231-7715) any; urgency=low
+
+  * Added Debug.cpp/Debug.h to vs2010 project file.
+
+ -- marcus  Sat, 31 Dec 2011 14:56:00 +0100
+
+s25rttr (20111231-7714) any; urgency=low
+
+  * Allow direct start of map as cmdline arg in debug build. Now you
+    can start savegames, maps and replays via cmdline.
+
+ -- marcus  Sat, 31 Dec 2011 14:22:00 +0100
+
+s25rttr (20111231-7713) any; urgency=low
+
+  * Crash & async data is sent when sending debug data is enabled.
+
+ -- marcus  Sat, 31 Dec 2011 13:57:00 +0100
+
+s25rttr (20111231-7712) any; urgency=low
+
+  * fix for #849088: "Change Settings..." button falsch texturiert
+
+ -- marcus  Sat, 31 Dec 2011 00:18:00 +0100
+
+s25rttr (20111231-7711) any; urgency=low
+
+  * Get iwDemolishBuilding from building. Fixes #861948.
+
+ -- marcus  Sat, 31 Dec 2011 00:08:00 +0100
+
+s25rttr (20111230-7710) any; urgency=low
+
+  * initial implementation of "Resume last game" fixes #899105.
+
+ -- marcus  Fri, 30 Dec 2011 23:41:00 +0100
+
+s25rttr (20111230-7708) any; urgency=low
+
+  * get building image and building shadow image from noBaseBuilding,
+    fixes #861952
+
+ -- marcus  Fri, 30 Dec 2011 22:59:00 +0100
+
+s25rttr (20111230-7707) any; urgency=low
+
+  * Fix for #847693. Uses NormalFont instead of
+    LOADER.GetFontN("resource", 0) with new DF_NO_OUTLINE. Looks a
+    bit ugly, maybe character spacing could be reduced.
+
+ -- marcus  Fri, 30 Dec 2011 22:22:00 +0100
+
+s25rttr (20111230-7705) any; urgency=low
+
+  * Quick fix for #864075: fehlerhafte Prozentanzeigen in
+    Gebäudefenstern
+
+ -- marcus  Fri, 30 Dec 2011 21:01:00 +0100
+
+s25rttr (20111230-7704) any; urgency=low
+
+  * Fixed #861946: Schatten im Bau nicht angezeigt
+
+ -- marcus  Fri, 30 Dec 2011 20:49:00 +0100
+
+s25rttr (20111230-7703) any; urgency=low
+
+  * "fixes" #861958
+
+ -- marcus  Fri, 30 Dec 2011 20:32:00 +0100
+
+s25rttr (20111230-7702) any; urgency=low
+
+  * Basic implementation of the game objective. On a per-player
+    basis, as teams are confusing and may lead to difficulties:
+    imagine players A, B, C and treaties A-B, B-C. A would be the
+    forced winner but there are no "teams".
+
+ -- marcus  Fri, 30 Dec 2011 20:11:00 +0100
+
+s25rttr (20111230-7701) any; urgency=low
+
+  * make sure that objects may be on kill list only once, assert()
+    otherwise
+
+ -- marcus  Fri, 30 Dec 2011 18:14:00 +0100
+
+s25rttr (20111230-7700) any; urgency=low
+
+  * Initial implementation of locked teams. Default is now false to
+    prevent confusing people, as it never worked before.
+
+ -- marcus  Fri, 30 Dec 2011 18:13:00 +0100
+
+s25rttr (20111230-7699.139) karmic; urgency=low
+
+  * Automatic Jenkins Build 139
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Fri, 30 Dec 2011 13:03:35 +0100
+
+s25rttr (20111230-7699) any; urgency=low
+
+  * save build artefacts
+
+ -- Florian Doersch <flosoft@siedler25.org>  Fri, 30 Dec 2011 11:47:00 +0100
+
+s25rttr (20111230-7698) any; urgency=low
+
+  * fix apple path
+
+ -- Florian Doersch <flosoft@siedler25.org>  Fri, 30 Dec 2011 11:44:00 +0100
+
+s25rttr (20111230-7697) any; urgency=low
+
+  * remove debug symbols for apple
+
+ -- Florian Doersch <flosoft@siedler25.org>  Fri, 30 Dec 2011 11:40:00 +0100
+
+s25rttr (20111230-7696) any; urgency=low
+
+  * fix apple
+
+ -- Florian Doersch <flosoft@siedler25.org>  Fri, 30 Dec 2011 11:30:00 +0100
+
+s25rttr (20111230-7695) any; urgency=low
+
+  * removed older build artefacts
+
+ -- Florian Doersch <flosoft@siedler25.org>  Fri, 30 Dec 2011 11:28:00 +0100
+
+s25rttr (20111230-7694) any; urgency=low
+
+  * exclude dbg from updater
+
+ -- Florian Doersch <flosoft@siedler25.org>  Fri, 30 Dec 2011 11:24:00 +0100
+
+s25rttr (20111230-7693.138) karmic; urgency=low
+
+  * Automatic Jenkins Build 138
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Fri, 30 Dec 2011 12:17:06 +0100
+
+s25rttr (20111230-7693) any; urgency=low
+
+  * exclude dbg from normal updater, pack dbg symbols to extra
+    archive
+
+ -- Florian Doersch <flosoft@siedler25.org>  Fri, 30 Dec 2011 11:16:00 +0100
+
+s25rttr (20111230-7692) any; urgency=low
+
+  * fix 2
+
+ -- Florian Doersch <flosoft@siedler25.org>  Fri, 30 Dec 2011 11:07:00 +0100
+
+s25rttr (20111230-7691) any; urgency=low
+
+  * stupid typo
+
+ -- Florian Doersch <flosoft@siedler25.org>  Fri, 30 Dec 2011 11:04:00 +0100
+
+s25rttr (20111230-7690) any; urgency=low
+
+  * 2nd part: debug symbol extraction
+
+ -- Florian Doersch <flosoft@siedler25.org>  Fri, 30 Dec 2011 11:00:00 +0100
+
+s25rttr (20111230-7689.137) karmic; urgency=low
+
+  * Automatic Jenkins Build 137
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Fri, 30 Dec 2011 11:50:41 +0100
+
+s25rttr (20111230-7689.136) karmic; urgency=low
+
+  * Automatic Jenkins Build 136
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Fri, 30 Dec 2011 10:52:10 +0100
+
+s25rttr (20111230-7689) any; urgency=low
+
+  * external debug info
+
+ -- Florian Doersch <flosoft@siedler25.org>  Fri, 30 Dec 2011 09:36:00 +0100
+
+s25rttr (20111230-7688) any; urgency=low
+
+  * fixed linux/mac crash handler to use abort() instead of exit()
+
+ -- marcus  Fri, 30 Dec 2011 09:33:00 +0100
+
+s25rttr (20111230-7687) any; urgency=low
+
+  * remove COMPILEFOR and COMPILEARCH
+
+ -- Florian Doersch <flosoft@siedler25.org>  Fri, 30 Dec 2011 09:17:00 +0100
+
+s25rttr (20111230-7686) any; urgency=low
+
+  * fixed compile
+
+ -- Florian Doersch <flosoft@siedler25.org>  Fri, 30 Dec 2011 09:11:00 +0100
+
+s25rttr (20111230-7685.135) karmic; urgency=low
+
+  * Automatic Jenkins Build 135
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Fri, 30 Dec 2011 01:15:03 +0100
+
+s25rttr (20111230-7685) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Fri, 30 Dec 2011 00:00:00 +0100
+
+s25rttr (20111229-7684) any; urgency=low
+
+  * removed debug fprintf()s.
+
+ -- marcus  Thu, 29 Dec 2011 21:09:00 +0100
+
+s25rttr (20111229-7683) any; urgency=low
+
+  * list -> std::list
+
+ -- marcus  Thu, 29 Dec 2011 21:08:00 +0100
+
+s25rttr (20111229-7682) any; urgency=low
+
+  * Fixed #909827. list -> std::list.
+
+ -- marcus  Thu, 29 Dec 2011 19:43:00 +0100
+
+s25rttr (20111229-7681) any; urgency=low
+
+  * Windows unhandled exception handler fixed.
+
+ -- marcus  Thu, 29 Dec 2011 19:41:00 +0100
+
+s25rttr (20111229-7680) any; urgency=low
+
+  * (experimental) upload of replay on crash
+
+ -- marcus  Thu, 29 Dec 2011 15:52:00 +0100
+
+s25rttr (20111229-7679.134) karmic; urgency=low
+
+  * Automatic Jenkins Build 134
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Thu, 29 Dec 2011 01:22:15 +0100
+
+s25rttr (20111229-7679) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Thu, 29 Dec 2011 00:00:00 +0100
+
+s25rttr (20111228-7678) any; urgency=low
+
+  * Added NMS_GET_ASYNC_LOG & NMS_SEND_ASYNC_LOG. Async log is now
+    transfered from the async client to the host, reduced (removal of
+    all common lines but one) and saved there. For future possibility
+    to automatically send the async log to a central server.
+
+ -- marcus  Wed, 28 Dec 2011 17:05:00 +0100
+
+s25rttr (20111228-7677) any; urgency=low
+
+  * Compile time fixes for future support of -Werror (again).
+
+ -- marcus  Wed, 28 Dec 2011 17:03:00 +0100
+
+s25rttr (20111228-7676) any; urgency=low
+
+  * Added SETTINGS.global.submit_debug_data for being able to
+    transmit bug reports (async logs etc.) automatically with the
+    user's allowance. The default value therefore is false.
+
+ -- marcus  Wed, 28 Dec 2011 12:16:00 +0100
+
+s25rttr (20111228-7675.133) karmic; urgency=low
+
+  * Automatic Jenkins Build 133
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Wed, 28 Dec 2011 01:13:43 +0100
+
+s25rttr (20111228-7675) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Wed, 28 Dec 2011 00:00:00 +0100
+
+s25rttr (20111227-7674) any; urgency=low
+
+  * even more small things
+
+ -- marcus  Tue, 27 Dec 2011 14:47:00 +0100
+
+s25rttr (20111227-7673) any; urgency=low
+
+  * avoid compiler warnings (unused variables)
+
+ -- marcus  Tue, 27 Dec 2011 14:11:00 +0100
+
+s25rttr (20111227-7672) any; urgency=low
+
+  * minor pathfinding improvements
+
+ -- marcus  Tue, 27 Dec 2011 14:02:00 +0100
+
+s25rttr (20111227-7671) any; urgency=low
+
+  * Inlining of short functions, mostly getters/setters.
+
+ -- marcus  Tue, 27 Dec 2011 11:52:00 +0100
+
+s25rttr (20111227-7670) any; urgency=low
+
+  * EventManager list -> std::list
+
+ -- marcus  Tue, 27 Dec 2011 11:50:00 +0100
+
+s25rttr (20111227-7669.132) karmic; urgency=low
+
+  * Automatic Jenkins Build 132
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 27 Dec 2011 01:12:07 +0100
+
+s25rttr (20111227-7669) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 27 Dec 2011 00:00:00 +0100
+
+s25rttr (20111226-7668) any; urgency=low
+
+  * [Debug] "async!" in chat window -> async, may be useful for
+    debugging transfer of async log to server.
+
+ -- marcus  Mon, 26 Dec 2011 22:55:00 +0100
+
+s25rttr (20111226-7667) any; urgency=low
+
+  * Disable creation of buggy _res-files.
+
+ -- marcus  Mon, 26 Dec 2011 22:40:00 +0100
+
+s25rttr (20111226-7666) any; urgency=low
+
+  * minor improvements of pathfinding & storage of AsyncLog in a list
+    of structs rather than strings (faster, more accessible)
+
+ -- marcus  Mon, 26 Dec 2011 21:49:00 +0100
+
+s25rttr (20111226-7665.131) karmic; urgency=low
+
+  * Automatic Jenkins Build 131
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Mon, 26 Dec 2011 16:41:59 +0100
+
+s25rttr (20111226-7665) any; urgency=low
+
+  * GCC fix.
+
+ -- marcus  Mon, 26 Dec 2011 15:26:00 +0100
+
+s25rttr (20111226-7664) any; urgency=low
+
+  * Stupidity fix.
+
+ -- marcus  Mon, 26 Dec 2011 15:24:00 +0100
+
+s25rttr (20111226-7663) any; urgency=low
+
+  * Removed -Werror, since gcc did not compile anymore plus minor
+    changes.
+
+ -- marcus  Mon, 26 Dec 2011 15:14:00 +0100
+
+s25rttr (20111210-7646) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 10 Dec 2011 23:00:00 +0100
+
 s25rttr (20111210-7645.130) karmic; urgency=low
 
   * Automatic Jenkins Build 130
