@@ -1,4 +1,4 @@
-// $Id: main.cpp 7713 2011-12-31 13:57:54Z marcus $
+// $Id: main.cpp 7714 2011-12-31 14:22:28Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -286,26 +286,33 @@ int main(int argc, char *argv[])
 
 	        if(!GAMESERVER.TryToStart(csi, argv[1], MAPTYPE_SAVEGAME))
 		{
-			GameWorldViewer *gwv;
-			unsigned int error = GAMECLIENT.StartReplay(argv[1], gwv);
-
-			std::string replay_errors[] = 
+			if(!GAMESERVER.TryToStart(csi, argv[1], MAPTYPE_OLDMAP))
 			{
-				_("Error while playing replay!"),
-				_("Error while opening file!"),
-				_("Invalid Replay!"),
-				_("Error: Replay is too old!"),
-				_("Program version is too old to play that replay!"),
-				"",
-				_("Temporary map file was not found!")
-			};
+				GameWorldViewer *gwv;
+				unsigned int error = GAMECLIENT.StartReplay(argv[1], gwv);
 
-			if (error)
-			{
-				printf("ERROR: %s\n", replay_errors[error].c_str());
+				std::string replay_errors[] = 
+				{
+					_("Error while playing replay!"),
+					_("Error while opening file!"),
+					_("Invalid Replay!"),
+					_("Error: Replay is too old!"),
+					_("Program version is too old to play that replay!"),
+					"",
+					_("Temporary map file was not found!")
+				};
+
+				if (error)
+				{
+					printf("ERROR: %s\n", replay_errors[error].c_str());
+				} else
+				{
+					WindowManager::inst().Switch(new dskGameLoader(gwv));
+				}
 			} else
 			{
-				WindowManager::inst().Switch(new dskGameLoader(gwv));
+				WindowManager::inst().Draw();
+				WindowManager::inst().Show(new iwPleaseWait);
 			}
 		} else
 		{
