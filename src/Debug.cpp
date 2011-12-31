@@ -22,7 +22,7 @@
 #include "Debug.h"
 
 #ifdef _WIN32
-typedef USHORT (WINAPI *CaptureStackBackTraceType)(__in ULONG, __in ULONG, __out PVOID*, __out_opt PULONG);
+typedef USHORT (WINAPI *CaptureStackBackTraceType)(ULONG, ULONG, PVOID*, PULONG);
 #endif
 
 DebugInfo::DebugInfo() : Socket()
