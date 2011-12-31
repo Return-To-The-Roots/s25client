@@ -1,4 +1,4 @@
-// $Id: main.cpp 7718 2011-12-31 15:52:39Z marcus $
+// $Id: main.cpp 7719 2011-12-31 15:55:16Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -49,6 +49,7 @@
 
 #ifdef _WIN32
 #	include "../win32/resource.h"
+#	include "VideoDriverWrapper.h"
 #endif
 
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER && !defined NOHWETRANS
