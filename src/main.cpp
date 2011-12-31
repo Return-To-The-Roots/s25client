@@ -1,4 +1,4 @@
-// $Id: main.cpp 7716 2011-12-31 15:08:15Z marcus $
+// $Id: main.cpp 7718 2011-12-31 15:52:39Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -131,7 +131,7 @@ int mkdir_p(const std::string dir)
 	return 0;
 }
 
-#if defined _WIN32 && !defined _MSC_VER
+#if defined _WIN32
 static LONG WINAPI WinExceptionHandler(LPEXCEPTION_POINTERS info)
 {
 //ExceptionRecord
@@ -152,9 +152,8 @@ static LONG WINAPI WinExceptionHandler(LPEXCEPTION_POINTERS info)
 	return(EXCEPTION_EXECUTE_HANDLER);
 }
 
-#endif
+#else
 
-#ifndef _WIN32
 void LinExceptionHandler(int sig)
 {
 	if (SETTINGS.global.submit_debug_data)
