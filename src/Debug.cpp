@@ -111,7 +111,7 @@ bool DebugInfo::SendStackTrace()
 	void *stacktrace[63];
 
 #if defined _WIN32
-	CaptureStackBackTraceType CaptureStackBackTraceType = (CaptureStackBackTraceType)(GetProcAddress(LoadLibrary("kernel32.dll"), "RtlCaptureStackBackTrace"));
+	CaptureStackBackTraceType CaptureStackBackTrace = (CaptureStackBackTraceType)(GetProcAddress(LoadLibrary("kernel32.dll"), "RtlCaptureStackBackTrace"));
 
 	unsigned num_frames = CaptureStackBackTrace(0, 63, stacktrace, NULL);
 #else
