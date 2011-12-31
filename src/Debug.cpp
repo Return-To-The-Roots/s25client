@@ -21,6 +21,10 @@
 
 #include "Debug.h"
 
+#ifdef _WIN32
+typedef USHORT (WINAPI *CaptureStackBackTraceType)(__in ULONG, __in ULONG, __out PVOID*, __out_opt PULONG);
+#endif
+
 DebugInfo::DebugInfo() : Socket()
 {
 	Connect("188.40.245.45", 4123, false, (Socket::PROXY_TYPE)SETTINGS.proxy.typ, SETTINGS.proxy.proxy, SETTINGS.proxy.port);
@@ -107,6 +111,8 @@ bool DebugInfo::SendStackTrace()
 	void *stacktrace[63];
 
 #if defined _WIN32
+	CaptureStackBackTraceType CaptureStackBackTraceType = (CaptureStackBackTraceType)(GetProcAddress(LoadLibrary("kernel32.dll"), "RtlCaptureStackBackTrace"));
+
 	unsigned num_frames = CaptureStackBackTrace(0, 63, stacktrace, NULL);
 #else
 	unsigned num_frames = backtrace(stacktrace, 63);
