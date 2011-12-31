@@ -1,4 +1,4 @@
-// $Id: iwAction.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: iwAction.cpp 7711 2011-12-31 00:08:36Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -656,8 +656,7 @@ void iwAction::Msg_ButtonClick_TabFlag(const unsigned int ctrl_id)
 					
 				}
 
-				WindowManager::inst().Show(new iwDemolishBuilding(gwv,gwv->GetNO(selected_x,selected_y)->GetGOT(),
-					selected_x, selected_y,building->GetBuildingType(),building->GetNation(),building->CreateGUIID()));
+				WindowManager::inst().Show(new iwDemolishBuilding(gwv, building));
 			}
 			else
 			{

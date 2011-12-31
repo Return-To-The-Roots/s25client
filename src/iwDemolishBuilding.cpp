@@ -1,4 +1,4 @@
-// $Id: iwDemolishBuilding.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: iwDemolishBuilding.cpp 7711 2011-12-31 00:08:36Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -39,10 +39,8 @@
 	static char THIS_FILE[] = __FILE__;
 #endif
 
-/// Konstruktor von @p iwBuilding.
-iwDemolishBuilding::iwDemolishBuilding(GameWorldViewer * const gwv,const GO_Type got,const unsigned short building_x, const unsigned short building_y,const BuildingType building, const Nation nation, const unsigned guiid)
-: IngameWindow(guiid,0xFFFE,0xFFFE,200,200,_("Demolish?"),LOADER.GetImageN("resource", 41)), gwv(gwv),  got(got),
-			   building_x(building_x),  building_y(building_y), building(building), nation(nation)
+iwDemolishBuilding::iwDemolishBuilding(GameWorldViewer * const gwv,const noBaseBuilding *building)
+: IngameWindow(building->CreateGUIID(), 0xFFFE,0xFFFE,200,200,_("Demolish?"),LOADER.GetImageN("resource", 41)), gwv(gwv), building(building)
 {
 	
 	// Ja
@@ -52,9 +50,9 @@ iwDemolishBuilding::iwDemolishBuilding(GameWorldViewer * const gwv,const GO_Type
 	// Gehe zum Standort
 	AddImageButton(2,150,140,36,40,TC_GREY,LOADER.GetImageN("io", 107));
 	// Gebäudebild
-	AddImage(3, 104, 109, LOADER.GetNationImageN(nation, 250+5*building));
+	AddImage(3, 104, 109, building->GetBuildingImage());
 	// Gebäudename
-	AddText(4,100,125,_(BUILDING_NAMES[building]),0xFFFFFF00,glArchivItem_Font::DF_CENTER,NormalFont);
+	AddText(4,100,125,_(BUILDING_NAMES[building->GetBuildingType()]),0xFFFFFF00,glArchivItem_Font::DF_CENTER,NormalFont);
 }
 
 void iwDemolishBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
@@ -63,13 +61,14 @@ void iwDemolishBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
 	{
 	case 0:
 		{
+			const GO_Type got = building->GetGOT();
 			if(got == GOT_NOB_MILITARY || got == GOT_NOB_STOREHOUSE || got == GOT_NOB_USUAL  || got == GOT_BUILDINGSITE)
 			{
-				GameClient::inst().AddGC(new gc::DestroyBuilding(building_x,building_y));
+				GameClient::inst().AddGC(new gc::DestroyBuilding(building->GetX(), building->GetY()));
 			}
 			else if(got == GOT_FLAG)
 				// Flagge (mitsamt Gebäude) wegreißen
-				GameClient::inst().AddGC(new gc::DestroyFlag(building_x,building_y));
+				GameClient::inst().AddGC(new gc::DestroyFlag(building->GetX(), building->GetY()));
 
 			Close();
 
@@ -82,7 +81,7 @@ void iwDemolishBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
 	case 2:
 		{
 			// Zum Ort gehen
-			gwv->MoveToMapObject(building_x, building_y);
+			gwv->MoveToMapObject(building->GetX(), building->GetY());
 		} break;
 	}
 }
@@ -90,7 +89,7 @@ void iwDemolishBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
 void iwDemolishBuilding::Msg_PaintBefore()
 {
 	// Schatten des Gebäudes (muss hier gezeichnet werden wegen schwarz und halbdurchsichtig)
-	glArchivItem_Bitmap *bitmap = LOADER.GetNationImageN(nation, 250+5*building+1);
+	glArchivItem_Bitmap *bitmap = building->GetBuildingImageShadow();
 
 	if(bitmap)
 		bitmap->Draw(GetX()+104, GetY()+109, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);

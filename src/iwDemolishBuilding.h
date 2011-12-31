@@ -24,6 +24,7 @@
 #include "IngameWindow.h"
 #include "GameConsts.h"
 #include "GameObject.h"
+#include "noBuilding.h"
 
 class dskGameInterface;
 class GameWorldViewer;
@@ -32,17 +33,13 @@ class GameWorldViewer;
 class iwDemolishBuilding : public IngameWindow
 {
 	GameWorldViewer * const gwv;
-	/// Typ, was abgerissen wird
-	const GO_Type got;
-
-	const unsigned short building_x, building_y; /// X- und Y-Koordinate des Gebäudes oder der Flagge, die abgerissen werden soll
-	const BuildingType building;             ///< Der zugehörige Gebäudetyp
-	const Nation nation; ///< Gebäude welcher Nation?
+	const noBaseBuilding *building;
 
 public:
 
 	/// Konstruktor von @p iwBuilding.
-	iwDemolishBuilding(GameWorldViewer * const gwv,const GO_Type got,const unsigned short building_x, const unsigned short building_y,const BuildingType building, const Nation nation, const unsigned guiid);
+//	iwDemolishBuilding(GameWorldViewer * const gwv,const GO_Type got,const unsigned short building_x, const unsigned short building_y,const BuildingType building, const Nation nation, const unsigned guiid);
+	iwDemolishBuilding(GameWorldViewer * const gwv, const noBaseBuilding *building);
 
 private:
 

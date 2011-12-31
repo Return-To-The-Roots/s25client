@@ -1,4 +1,4 @@
-// $Id: iwBuildingSite.cpp 7704 2011-12-30 20:49:00Z marcus $
+// $Id: iwBuildingSite.cpp 7711 2011-12-31 00:08:36Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -85,10 +85,7 @@ void iwBuildingSite::Msg_ButtonClick(const unsigned int ctrl_id)
 		{
 			// Abreißen?
 			Close();
-			WindowManager::inst().Show(new iwDemolishBuilding(gwv, GOT_NOB_USUAL, 
-															  buildingsite->GetX(), buildingsite->GetY(), 
-															  buildingsite->GetBuildingType(), buildingsite->GetNation(), 
-															  buildingsite->CreateGUIID() ) );
+			WindowManager::inst().Show(new iwDemolishBuilding(gwv, buildingsite));
 		} break;
 	case 4: // "Gehe Zu Ort"
 		{
