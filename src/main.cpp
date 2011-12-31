@@ -1,4 +1,4 @@
-// $Id: main.cpp 7714 2011-12-31 14:22:28Z marcus $
+// $Id: main.cpp 7716 2011-12-31 15:08:15Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -204,10 +204,7 @@ int main(int argc, char *argv[])
 	// Set UTF-8 console charset
 	SetConsoleOutputCP(CP_UTF8);
 
-#ifndef  _MSC_VER
 	SetUnhandledExceptionFilter(WinExceptionHandler);
-#endif
-
 #else
 	struct sigaction sa;
 	sa.sa_handler = HandlerRoutine;
