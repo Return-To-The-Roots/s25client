@@ -1,4 +1,4 @@
-// $Id: dskHostGame.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: dskHostGame.cpp 7712 2011-12-31 00:18:45Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -92,7 +92,7 @@ dskHostGame::dskHostGame() :
 
 	// "Enhancements"
 	AddText(21, 400, 499, _("Addons:"), COLOR_YELLOW, 0, NormalFont);
-	AddTextButton(22, 600, 495, 180, 22, TC_GREEN1, (GAMECLIENT.IsHost() ? _("Change Settings...") : _("View Settings...")),NormalFont);
+	AddTextButton(22, 600, 495, 180, 22, TC_GREEN2, (GAMECLIENT.IsHost() ? _("Change Settings...") : _("View Settings...")),NormalFont);
 
 	ctrlComboBox *combo;
 
