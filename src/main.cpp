@@ -1,4 +1,4 @@
-// $Id: main.cpp 7720 2011-12-31 15:59:05Z FloSoft $
+// $Id: main.cpp 7721 2011-12-31 16:16:56Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -149,6 +149,8 @@ static LONG WINAPI WinExceptionHandler(LPEXCEPTION_POINTERS info)
 		di.SendStackTrace();
 		di.SendReplay();
 	}
+
+	abort();
 
 	return(EXCEPTION_EXECUTE_HANDLER);
 }
