@@ -1,4 +1,4 @@
-// $Id: Random.h 7678 2011-12-28 17:05:25Z marcus $
+// $Id: Random.h 7713 2011-12-31 13:57:54Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -30,7 +30,7 @@ struct RandomEntry
 	int max;
 	int value;
 	const char *src_name;
-	unsigned int src_line;
+	unsigned src_line;
 	unsigned obj_id;
 
 	RandomEntry(unsigned counter, int max, int value, const char *src_name, unsigned int src_line, unsigned obj_id) : counter(counter), max(max), value(value), src_name(src_name), src_line(src_line), obj_id(obj_id) {};

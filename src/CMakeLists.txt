@@ -1,5 +1,5 @@
 ################################################################################
-### $Id: CMakeLists.txt 7522 2011-09-08 20:57:56Z FloSoft $
+### $Id: CMakeLists.txt 7713 2011-12-31 13:57:54Z marcus $
 ################################################################################
 
 INCLUDE(FindBZip2)
@@ -310,6 +310,7 @@ SET(SOURCES_OTHER
 										AddonAIDebugWindow.h
 										const_addons.h
 	win32_nanosleep.cpp                 win32_nanosleep.h
+	Debug.cpp                           Debug.h
    )
 
 SET(SOURCES_GL

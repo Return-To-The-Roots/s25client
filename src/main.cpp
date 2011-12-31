@@ -1,4 +1,4 @@
-// $Id: main.cpp 7688 2011-12-30 09:33:43Z marcus $
+// $Id: main.cpp 7713 2011-12-31 13:57:54Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -30,6 +30,9 @@
 #include "GameClient.h"
 #include "Settings.h"
 
+// This is for catching crashes and reporting bugs, it does not slow down anything.
+#include "Debug.h"
+
 #ifndef _NDEBUG
 #include "GameWorld.h"
 #include "GameServer.h"
@@ -38,11 +41,6 @@
 #include "dskGameLoader.h"
 #include "dskSelectMap.h"
 #include "iwPleaseWait.h"
-#endif
-
-// for backtrace()
-#ifndef _WIN32
-#include <execinfo.h>
 #endif
 
 #ifdef __APPLE__
@@ -133,73 +131,23 @@ int mkdir_p(const std::string dir)
 	return 0;
 }
 
-void SendCrashInfo()
-{
-	if (!GAMECLIENT.IsReplayModeOn() && SETTINGS.global.submit_debug_data)
-	{
-		Socket socket;
-		Replay rpl = GAMECLIENT.GetReplay();
-
-		BinaryFile rf = rpl.GetFile();
-
-		rf.Flush();
-
-		// find out size of replay file by seeking to its end
-		rf.Seek(0, SEEK_END);
-		unsigned us = rf.Tell();
-
-		if (socket.Connect("188.40.245.45", 4123, false, (Socket::PROXY_TYPE)SETTINGS.proxy.typ, SETTINGS.proxy.proxy, SETTINGS.proxy.port))
-		{
-#ifdef _WIN32
-			const char *platform = "WIN";
-#elif defined __APPLE__
-			const char *platform = "MAC";
-#else
-			const char *platform = "LNX";
-#endif
-			const char *wv = GetWindowVersion();
-			const char *wr = GetWindowRevision();
-
-			unsigned len = strlen(platform) + strlen(wv) + strlen(wr) + 4;
-			char *version = new char[len];
-
-			snprintf(version, len, "%s-%s-%s", wv, wr, platform);
-
-			socket.Send(&len, 4);
-			socket.Send(version, len + 1);
-
-			delete[] version;
-
-			char *in = new char[us];
-			unsigned int out_len = us * 2 + 600;
-			char *out = new char[out_len];
-
-			BinaryFile rf2;
-
-			rf2.Open(rpl.GetFileName().c_str(), OFM_READ);
-			rf2.ReadRawData(in, us);
-			rf2.Close();
-
-			if (BZ2_bzBuffToBuffCompress(out, (unsigned int*)&out_len, in, us, 9, 0, 250) == BZ_OK)
-			{
-				// send size of replay via socket
-				socket.Send(&out_len, 4);
-				socket.Send(out, out_len);
-			}
-
-			socket.Close();
-
-			delete[] in;
-			delete[] out;
-		}
-	}
-}
-
-
 #if defined _WIN32 && !defined _MSC_VER
 static LONG WINAPI WinExceptionHandler(LPEXCEPTION_POINTERS info)
 {
-	SendCrashInfo();
+//ExceptionRecord
+
+	if (SETTINGS.global.submit_debug_data ||
+		MessageBox(NULL,
+		_("RttR crashed. Would you like to send debug information to RttR to help us avoiding this crash in the future? Thank you very much!"),
+		_("Error"), MB_YESNO | MB_ICONERROR | MB_TASKMODAL | MB_SETFOREGROUND) == IDYES)
+	{
+		VideoDriverWrapper::inst().DestroyScreen();
+
+		DebugInfo di;
+
+		di.SendStackTrace();
+		di.SendReplay();
+	}
 
 	return(EXCEPTION_EXECUTE_HANDLER);
 }
@@ -209,7 +157,13 @@ static LONG WINAPI WinExceptionHandler(LPEXCEPTION_POINTERS info)
 #ifndef _WIN32
 void LinExceptionHandler(int sig)
 {
-	SendCrashInfo();
+	if (SETTINGS.global.submit_debug_data)
+	{
+		DebugInfo di;
+
+		di.SendStackTrace();
+		di.SendReplay();
+	}
 
 	abort();
 }

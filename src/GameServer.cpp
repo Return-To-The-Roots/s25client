@@ -1,4 +1,4 @@
-// $Id: GameServer.cpp 7678 2011-12-28 17:05:25Z marcus $
+// $Id: GameServer.cpp 7713 2011-12-31 13:57:54Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -41,6 +41,9 @@
 #include "GameSavegame.h"
 #include "GameReplay.h"
 #include "AIPlayer.h"
+
+#include "Settings.h"
+#include "Debug.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -1384,6 +1387,14 @@ void GameServer::OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, std::lis
 	}
 
 	LOG.lprintf("Received async log from %u containing %lu entries.\n", msg.player, async_log.size());
+		
+	if (SETTINGS.global.submit_debug_data)
+	{
+		DebugInfo di;
+		di.SendAsyncLog(&async_log);
+		di.SendReplay();
+		di.SendStackTrace();
+	}
 
 	std::list<RandomEntry> *my = RANDOM.GetAsyncLog();
 	his = &async_log;
@@ -1433,7 +1444,7 @@ void GameServer::OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, std::lis
 		--my_it; --his_it;
 
 		// write last common line
-		fprintf(file, "[L]: %u:R(%d)=%d,z=%d | %s Z: %u|id=%u\n", my_it->counter, my_it->max, (my_it->value * my_it->max) / 32768, my_it->value, my_it->src_name, my_it->src_line, my_it->obj_id);
+		fprintf(file, "[I]: %u:R(%d)=%d,z=%d | %s Z: %u|id=%u\n", my_it->counter, my_it->max, (my_it->value * my_it->max) / 32768, my_it->value, my_it->src_name, my_it->src_line, my_it->obj_id);
 
 		++my_it; ++his_it;
 	}
