@@ -1,4 +1,4 @@
-// $Id: GameReplay.h 7680 2011-12-29 15:52:11Z marcus $
+// $Id: GameReplay.h 7728 2012-01-01 15:15:01Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -76,7 +76,7 @@ public:
 	void UpdateLastGF(const unsigned last_gf);
 
 	const std::string& GetFileName() const { return filename; }
-	const BinaryFile& GetFile() const { return file; }
+	BinaryFile *GetFile() { return &file; }
 
 public:
 	/// NWF-Länge

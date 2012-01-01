@@ -139,7 +139,9 @@ bool DebugInfo::SendReplay()
 	{
 		Replay rpl = GAMECLIENT.GetReplay();
 
-		FILE *f = fopen(rpl.GetFileName().c_str(), "r");
+		rpl.GetFile()->Flush();
+
+		FILE *f = fopen(rpl.GetFileName().c_str(), "rb");
 
 		if (f != NULL)
 		{
