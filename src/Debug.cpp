@@ -135,7 +135,7 @@ bool DebugInfo::SendStackTrace()
                 GetCurrentProcess(), GetCurrentThread(), &frame, 
                 ctx, 0, SymFunctionTableAccess, SymGetModuleBase, 0) && (num_frames < sizeof(stacktrace) / sizeof(stacktrace[0])))
 	{
-		stacktrace[num_frames] = frame.AddrPC.Offset;
+		stacktrace[num_frames++] = frame.AddrPC.Offset;
 	}
 
 /*	CaptureStackBackTraceType CaptureStackBackTrace = (CaptureStackBackTraceType)(GetProcAddress(LoadLibrary("kernel32.dll"), "RtlCaptureStackBackTrace"));
