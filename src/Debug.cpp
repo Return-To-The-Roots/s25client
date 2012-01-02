@@ -164,17 +164,17 @@ bool DebugInfo::SendStackTrace()
         STACKFRAME frame;
         memset(&frame,0,sizeof(frame));
 
-        frame.AddrPC.Offset = ctx->Eip;
+        frame.AddrPC.Offset = ctx.Eip;
         frame.AddrPC.Mode = AddrModeFlat;
-        frame.AddrStack.Offset = ctx->Esp;
+        frame.AddrStack.Offset = ctx.Esp;
         frame.AddrStack.Mode = AddrModeFlat;
-        frame.AddrFrame.Offset = ctx->Ebp;
+        frame.AddrFrame.Offset = ctx.Ebp;
         frame.AddrFrame.Mode = AddrModeFlat;
 
 	unsigned num_frames = 0;
         while (StackWalk(IMAGE_FILE_MACHINE_I386, 
                 GetCurrentProcess(), GetCurrentThread(), &frame, 
-                ctx, 0, SymFunctionTableAccess, SymGetModuleBase, 0) && (num_frames < sizeof(stacktrace) / sizeof(stacktrace[0])))
+                &ctx, 0, SymFunctionTableAccess, SymGetModuleBase, 0) && (num_frames < sizeof(stacktrace) / sizeof(stacktrace[0])))
 	{
 		stacktrace[num_frames++] = frame.AddrPC.Offset;
 	}
