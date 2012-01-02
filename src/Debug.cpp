@@ -24,6 +24,7 @@
 #ifdef _WIN32
 typedef WINBOOL (IMAGEAPI *SymInitializeType)(HANDLE hProcess,PSTR UserSearchPath,WINBOOL fInvadeProcess);
 typedef WINBOOL (IMAGEAPI *SymCleanupType)(HANDLE hProcess);
+typedef NTSYSAPI VOID (NTAPI *RtlCaptureContextType)(PCONTEXT ContextRecord);
 
 //typedef USHORT (WINAPI *CaptureStackBackTraceType)(ULONG, ULONG, PVOID*, PULONG);
 #ifdef _WIN64
@@ -128,6 +129,8 @@ bool DebugInfo::SendStackTrace()
 #ifdef _WIN32
 	CONTEXT ctx;
 
+	RtlCaptureContextType RtlCaptureContext = (RtlCaptureContextType)(GetProcAddress(LoadLibrary("kernel32.dll"), "RtlCaptureContext"));
+
 	SymInitializeType SymInitialize = (SymInitializeType)(GetProcAddress(LoadLibrary("dbghelp.dll"), "SymInitialize"));
 	SymCleanupType SymCleanup = (SymCleanupType)(GetProcAddress(LoadLibrary("dbghelp.dll"), "SymCleanup"));
 
@@ -149,7 +152,7 @@ bool DebugInfo::SendStackTrace()
 		SymGetModuleBase = (SymGetModuleBaseType)(GetProcAddress(LoadLibrary("dbghelp.dll"), "SymGetModuleBase"));
 	}
 
-	if ((SymInitialize == NULL) || (StackWalk == NULL) || (SymFunctionTableAccess == NULL) || (SymGetModuleBase == NULL))
+	if ((SymInitialize == NULL) || (StackWalk == NULL) || (SymFunctionTableAccess == NULL) || (SymGetModuleBase == NULL) || (RtlCaptureContext == NULL))
 	{
 		return(false);
 	}
