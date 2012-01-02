@@ -191,7 +191,7 @@ bool DebugInfo::SendStackTrace()
 	unsigned num_frames = 0;
         while (StackWalk(IMAGE_FILE_MACHINE_I386, 
                 GetCurrentProcess(), GetCurrentThread(), &frame, 
-                ctx, 0, SymFunctionTableAccess, SymGetModuleBase, 0) && (num_frames < sizeof(stacktrace) / sizeof(stacktrace[0])))
+                ctx, 0, SymFunctionTableAccess, SymGetModuleBase, 0) && (num_frames < 128))
 	{
 		stacktrace[num_frames++] = (void *) frame.AddrPC.Offset;
 	}
