@@ -22,7 +22,8 @@
 #include "Debug.h"
 
 #ifdef _WIN32
-typedef USHORT (WINAPI *CaptureStackBackTraceType)(ULONG, ULONG, PVOID*, PULONG);
+//typedef USHORT (WINAPI *CaptureStackBackTraceType)(ULONG, ULONG, PVOID*, PULONG);
+typedef WINBOOL (IMAGEAPI *StackWalkType)(DWORD MachineType,HANDLE hProcess,HANDLE hThread,LPSTACKFRAME StackFrame,PVOID ContextRecord,PREAD_PROCESS_MEMORY_ROUTINE ReadMemoryRoutine,PFUNCTION_TABLE_ACCESS_ROUTINE FunctionTableAccessRoutine,PGET_MODULE_BASE_ROUTINE GetModuleBaseRoutine,PTRANSLATE_ADDRESS_ROUTINE TranslateAddress);
 #endif
 
 DebugInfo::DebugInfo() : Socket()
@@ -106,21 +107,47 @@ bool DebugInfo::SendString(const char *str, unsigned len)
 	return(Send(str, len));
 }
 
+
+
 bool DebugInfo::SendStackTrace()
 {
-	void *stacktrace[63];
+	void *stacktrace[128];
 
 #ifdef _WIN32
-	CaptureStackBackTraceType CaptureStackBackTrace = (CaptureStackBackTraceType)(GetProcAddress(LoadLibrary("kernel32.dll"), "RtlCaptureStackBackTrace"));
+	PCONTEXT ctx;
+
+	StackWalkType StackWalk = (StackWalkType)(GetProcAddress(LoadLibrary("dbghelp.dll"), "StackWalk64"));
+
+	RtlCaptureContext(&ctx);
+
+        STACKFRAME frame;
+        memset(&frame,0,sizeof(frame));
+
+        frame.AddrPC.Offset = ctx->Eip;
+        frame.AddrPC.Mode = AddrModeFlat;
+        frame.AddrStack.Offset = ctx->Esp;
+        frame.AddrStack.Mode = AddrModeFlat;
+        frame.AddrFrame.Offset = ctx->Ebp;
+        frame.AddrFrame.Mode = AddrModeFlat;
+
+	unsigned num_frames = 0;
+        while (StackWalk(IMAGE_FILE_MACHINE_I386, 
+                GetCurrentProcess(), GetCurrentThread(), &frame, 
+                ctx, 0, SymFunctionTableAccess, SymGetModuleBase, 0) && (num_frames < sizeof(stacktrace) / sizeof(stacktrace[0])))
+	{
+		stacktrace[num_frames] = frame.AddrPC.Offset;
+	}
+
+/*	CaptureStackBackTraceType CaptureStackBackTrace = (CaptureStackBackTraceType)(GetProcAddress(LoadLibrary("kernel32.dll"), "RtlCaptureStackBackTrace"));
 
 	if (CaptureStackBackTrace == NULL)
 	{
 		return(false);
 	}
 
-	unsigned num_frames = CaptureStackBackTrace(0, 63, stacktrace, NULL);
+	unsigned num_frames = CaptureStackBackTrace(0, 62, stacktrace, NULL);*/
 #else
-	unsigned num_frames = backtrace(stacktrace, 63);
+	unsigned num_frames = backtrace(stacktrace, sizeof(stacktrace) / sizeof(stacktrace[0]));
 #endif
 	if (!SendString("StackTrace"))
 	{
@@ -152,7 +179,13 @@ bool DebugInfo::SendReplay()
 			char *in = new char[in_len];
 
 			fseek(f, 0, SEEK_SET);
-			fread(in, in_len, 1, f);
+			if (fread(in, in_len, 1, f) != in_len)
+			{
+				fclose(f);
+				delete[] in;
+
+				return(false);
+			}
 
 			fclose(f);
 
