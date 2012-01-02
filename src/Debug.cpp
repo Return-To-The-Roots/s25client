@@ -134,6 +134,11 @@ bool DebugInfo::SendStackTrace()
 	HMODULE kernel32 = LoadLibrary("kernel32.dll");
 	HMODULE dbghelp = LoadLibrary("dbghelp.dll");
 
+	if ((kernel32 == NULL) || (dbghelp == NULL))
+	{
+		return(false);
+	}
+
 	RtlCaptureContextType RtlCaptureContext = (RtlCaptureContextType)(GetProcAddress(kernel32, "RtlCaptureContext"));
 
 	SymInitializeType SymInitialize = (SymInitializeType)(GetProcAddress(dbghelp, "SymInitialize"));
@@ -186,7 +191,7 @@ bool DebugInfo::SendStackTrace()
 	unsigned num_frames = 0;
         while (StackWalk(IMAGE_FILE_MACHINE_I386, 
                 GetCurrentProcess(), GetCurrentThread(), &frame, 
-                &ctx, 0, SymFunctionTableAccess, SymGetModuleBase, 0) && (num_frames < sizeof(stacktrace) / sizeof(stacktrace[0])))
+                ctx, 0, SymFunctionTableAccess, SymGetModuleBase, 0) && (num_frames < sizeof(stacktrace) / sizeof(stacktrace[0])))
 	{
 		stacktrace[num_frames++] = (void *) frame.AddrPC.Offset;
 	}
