@@ -22,8 +22,20 @@
 #include "Debug.h"
 
 #ifdef _WIN32
+typedef WINBOOL (IMAGEAPI *SymInitializeType)(HANDLE hProcess,PSTR UserSearchPath,WINBOOL fInvadeProcess);
+typedef WINBOOL (IMAGEAPI *SymCleanupType)(HANDLE hProcess);
+
 //typedef USHORT (WINAPI *CaptureStackBackTraceType)(ULONG, ULONG, PVOID*, PULONG);
+#ifdef _WIN64
+typedef WINBOOL (IMAGEAPI *StackWalkType)(DWORD MachineType,HANDLE hProcess,HANDLE hThread,LPSTACKFRAME64 StackFrame,PVOID ContextRecord,PREAD_PROCESS_MEMORY_ROUTINE64 ReadMemoryRoutine,PFUNCTION_TABLE_ACCESS_ROUTINE64 FunctionTableAccessRoutine,PGET_MODULE_BASE_ROUTINE64 GetModuleBaseRoutine,PTRANSLATE_ADDRESS_ROUTINE64 TranslateAddress);
+typedef PVOID (IMAGEAPI *SymFunctionTableAccessType)(HANDLE hProcess,DWORD64 AddrBase);
+typedef DWORD64 (IMAGEAPI *SymGetModuleBaseType)(HANDLE hProcess,DWORD64 qwAddr);
+#else
 typedef WINBOOL (IMAGEAPI *StackWalkType)(DWORD MachineType,HANDLE hProcess,HANDLE hThread,LPSTACKFRAME StackFrame,PVOID ContextRecord,PREAD_PROCESS_MEMORY_ROUTINE ReadMemoryRoutine,PFUNCTION_TABLE_ACCESS_ROUTINE FunctionTableAccessRoutine,PGET_MODULE_BASE_ROUTINE GetModuleBaseRoutine,PTRANSLATE_ADDRESS_ROUTINE TranslateAddress);
+typedef PVOID (IMAGEAPI *SymFunctionTableAccessType)(HANDLE hProcess,DWORD AddrBase);
+typedef DWORD (IMAGEAPI *SymGetModuleBaseType)(HANDLE hProcess,DWORD dwAddr);
+#endif
+
 #endif
 
 DebugInfo::DebugInfo() : Socket()
@@ -116,7 +128,35 @@ bool DebugInfo::SendStackTrace()
 #ifdef _WIN32
 	PCONTEXT ctx;
 
+	SymInitializeType SymInitialize = (SymInitializeType)(GetProcAddress(LoadLibrary("dbghelp.dll"), "SymInitialize"));
+	SymCleanupType SymCleanup = (SymCleanupType)(GetProcAddress(LoadLibrary("dbghelp.dll"), "SymCleanup"));
+
 	StackWalkType StackWalk = (StackWalkType)(GetProcAddress(LoadLibrary("dbghelp.dll"), "StackWalk64"));
+	if (StackWalk == NULL)
+	{
+		StackWalk = (StackWalkType)(GetProcAddress(LoadLibrary("dbghelp.dll"), "StackWalk"));
+	}
+
+	SymFunctionTableAccessType SymFunctionTableAccess = (SymFunctionTableAccessType)(GetProcAddress(LoadLibrary("dbghelp.dll"), "SymFunctionTableAccess64"));
+	if (SymFunctionTableAccess == NULL)
+	{
+		SymFunctionTableAccess = (SymFunctionTableAccessType)(GetProcAddress(LoadLibrary("dbghelp.dll"), "SymFunctionTableAccess"));
+	}
+
+	SymGetModuleBaseType SymGetModuleBase = (SymGetModuleBaseType)(GetProcAddress(LoadLibrary("dbghelp.dll"), "SymGetModuleBase64"));
+	if (SymGetModuleBase == NULL)
+	{
+		SymGetModuleBase = (SymGetModuleBaseType)(GetProcAddress(LoadLibrary("dbghelp.dll"), "SymGetModuleBase"));
+	}
+
+	if ((SymInitialize == NULL) || (StackWalk == NULL) || (SymFunctionTableAccess == NULL) || (SymGetModuleBase == NULL))
+	{
+		return(false);
+
+	if (!SymInitialize(GetCurrentProcess(), 0, TRUE))
+	{
+		return(false);
+	}
 
 	RtlCaptureContext(&ctx);
 
@@ -137,6 +177,8 @@ bool DebugInfo::SendStackTrace()
 	{
 		stacktrace[num_frames++] = frame.AddrPC.Offset;
 	}
+
+	SymCleanup(GetCurrentProcess());
 
 /*	CaptureStackBackTraceType CaptureStackBackTrace = (CaptureStackBackTraceType)(GetProcAddress(LoadLibrary("kernel32.dll"), "RtlCaptureStackBackTrace"));
 
