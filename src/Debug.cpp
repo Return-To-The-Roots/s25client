@@ -126,7 +126,7 @@ bool DebugInfo::SendStackTrace()
 	void *stacktrace[128];
 
 #ifdef _WIN32
-	PCONTEXT ctx;
+	CONTEXT ctx;
 
 	SymInitializeType SymInitialize = (SymInitializeType)(GetProcAddress(LoadLibrary("dbghelp.dll"), "SymInitialize"));
 	SymCleanupType SymCleanup = (SymCleanupType)(GetProcAddress(LoadLibrary("dbghelp.dll"), "SymCleanup"));
@@ -152,6 +152,7 @@ bool DebugInfo::SendStackTrace()
 	if ((SymInitialize == NULL) || (StackWalk == NULL) || (SymFunctionTableAccess == NULL) || (SymGetModuleBase == NULL))
 	{
 		return(false);
+	}
 
 	if (!SymInitialize(GetCurrentProcess(), 0, TRUE))
 	{
