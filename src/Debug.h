@@ -42,7 +42,11 @@ public:
 	bool SendUnsigned(unsigned i);
 	bool SendString(const char *str, unsigned len = 0);
 
+#ifdef _WIN32
+	bool SendStackTrace(LPCONTEXT ctx = NULL)
+#else
 	bool SendStackTrace();
+#endif
 	bool SendReplay();
 	bool SendAsyncLog(std::list<RandomEntry> *other);
 };

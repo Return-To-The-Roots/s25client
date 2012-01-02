@@ -120,36 +120,41 @@ bool DebugInfo::SendString(const char *str, unsigned len)
 	return(Send(str, len));
 }
 
-
-
+#ifdef _WIN32
+bool DebugInfo::SendStackTrace(LPCONTEXT ctx)
+#else
 bool DebugInfo::SendStackTrace()
+#endif
 {
 	void *stacktrace[128];
 
 #ifdef _WIN32
-	CONTEXT ctx;
+	CONTEXT context;
 
-	RtlCaptureContextType RtlCaptureContext = (RtlCaptureContextType)(GetProcAddress(LoadLibrary("kernel32.dll"), "RtlCaptureContext"));
+	HMODULE kernel32 = LoadLibrary("kernel32.dll");
+	HMODULE dbghelp = LoadLibrary("dbghelp.dll");
 
-	SymInitializeType SymInitialize = (SymInitializeType)(GetProcAddress(LoadLibrary("dbghelp.dll"), "SymInitialize"));
-	SymCleanupType SymCleanup = (SymCleanupType)(GetProcAddress(LoadLibrary("dbghelp.dll"), "SymCleanup"));
+	RtlCaptureContextType RtlCaptureContext = (RtlCaptureContextType)(GetProcAddress(kernel32, "RtlCaptureContext"));
 
-	StackWalkType StackWalk = (StackWalkType)(GetProcAddress(LoadLibrary("dbghelp.dll"), "StackWalk64"));
+	SymInitializeType SymInitialize = (SymInitializeType)(GetProcAddress(dbghelp, "SymInitialize"));
+	SymCleanupType SymCleanup = (SymCleanupType)(GetProcAddress(dbghelp, "SymCleanup"));
+
+	StackWalkType StackWalk = (StackWalkType)(GetProcAddress(dbghelp, "StackWalk64"));
 	if (StackWalk == NULL)
 	{
-		StackWalk = (StackWalkType)(GetProcAddress(LoadLibrary("dbghelp.dll"), "StackWalk"));
+		StackWalk = (StackWalkType)(GetProcAddress(dbghelp, "StackWalk"));
 	}
 
-	SymFunctionTableAccessType SymFunctionTableAccess = (SymFunctionTableAccessType)(GetProcAddress(LoadLibrary("dbghelp.dll"), "SymFunctionTableAccess64"));
+	SymFunctionTableAccessType SymFunctionTableAccess = (SymFunctionTableAccessType)(GetProcAddress(dbghelp, "SymFunctionTableAccess64"));
 	if (SymFunctionTableAccess == NULL)
 	{
-		SymFunctionTableAccess = (SymFunctionTableAccessType)(GetProcAddress(LoadLibrary("dbghelp.dll"), "SymFunctionTableAccess"));
+		SymFunctionTableAccess = (SymFunctionTableAccessType)(GetProcAddress(dbghelp, "SymFunctionTableAccess"));
 	}
 
-	SymGetModuleBaseType SymGetModuleBase = (SymGetModuleBaseType)(GetProcAddress(LoadLibrary("dbghelp.dll"), "SymGetModuleBase64"));
+	SymGetModuleBaseType SymGetModuleBase = (SymGetModuleBaseType)(GetProcAddress(dbghelp, "SymGetModuleBase64"));
 	if (SymGetModuleBase == NULL)
 	{
-		SymGetModuleBase = (SymGetModuleBaseType)(GetProcAddress(LoadLibrary("dbghelp.dll"), "SymGetModuleBase"));
+		SymGetModuleBase = (SymGetModuleBaseType)(GetProcAddress(dbghelp, "SymGetModuleBase"));
 	}
 
 	if ((SymInitialize == NULL) || (StackWalk == NULL) || (SymFunctionTableAccess == NULL) || (SymGetModuleBase == NULL) || (RtlCaptureContext == NULL))
@@ -162,16 +167,20 @@ bool DebugInfo::SendStackTrace()
 		return(false);
 	}
 
-	RtlCaptureContext(&ctx);
+	if (ctx == NULL)
+	{
+		RtlCaptureContext(&context);
+		ctx = &context;
+	}
 
         STACKFRAME frame;
         memset(&frame,0,sizeof(frame));
 
-        frame.AddrPC.Offset = ctx.Eip;
+        frame.AddrPC.Offset = ctx->Eip;
         frame.AddrPC.Mode = AddrModeFlat;
-        frame.AddrStack.Offset = ctx.Esp;
+        frame.AddrStack.Offset = ctx->Esp;
         frame.AddrStack.Mode = AddrModeFlat;
-        frame.AddrFrame.Offset = ctx.Ebp;
+        frame.AddrFrame.Offset = ctx->Ebp;
         frame.AddrFrame.Mode = AddrModeFlat;
 
 	unsigned num_frames = 0;
