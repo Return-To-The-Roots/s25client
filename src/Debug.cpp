@@ -121,6 +121,13 @@ bool DebugInfo::SendString(const char *str, unsigned len)
 }
 
 #ifdef _WIN32
+	void* CALLBACK FunctionTableAccess(HANDLE hProcess, DWORD64 AddrBase)
+	{
+		return NULL;
+	}
+#endif
+
+#ifdef _WIN32
 bool DebugInfo::SendStackTrace(LPCONTEXT ctx)
 #else
 bool DebugInfo::SendStackTrace()
@@ -129,7 +136,7 @@ bool DebugInfo::SendStackTrace()
 	void *stacktrace[128];
 
 #ifdef _WIN32
-	CONTEXT context;
+/*	CONTEXT context;
 
 	HMODULE kernel32 = LoadLibrary("kernel32.dll");
 	HMODULE dbghelp = LoadLibrary("dbghelp.dll");
@@ -197,24 +204,32 @@ bool DebugInfo::SendStackTrace()
         frame.AddrStack.Mode = AddrModeFlat;
         frame.AddrFrame.Mode = AddrModeFlat;
 
+	HANDLE process = GetCurrentProcess();
+	HANDLE thread = GetCurrentThread();
+
 	unsigned num_frames = 0;
-        while (StackWalk(IMAGE_FILE_MACHINE_I386, 
-                GetCurrentProcess(), GetCurrentThread(), &frame, 
-                ctx, NULL, SymFunctionTableAccess, SymGetModuleBase, NULL) && (num_frames < 128))
+        while (StackWalk(
+#ifdef _WIN64
+		IMAGE_FILE_MACHINE_AMD64,
+#else
+		IMAGE_FILE_MACHINE_I386, 
+#endif
+                process, thread, &frame, 
+                ctx, NULL, FunctionTableAccess, SymGetModuleBase, NULL) && (num_frames < 128))
 	{
 		stacktrace[num_frames++] = (void *) frame.AddrPC.Offset;
 	}
 
 	SymCleanup(GetCurrentProcess());
-
-/*	CaptureStackBackTraceType CaptureStackBackTrace = (CaptureStackBackTraceType)(GetProcAddress(LoadLibrary("kernel32.dll"), "RtlCaptureStackBackTrace"));
+*/
+	CaptureStackBackTraceType CaptureStackBackTrace = (CaptureStackBackTraceType)(GetProcAddress(LoadLibrary("kernel32.dll"), "RtlCaptureStackBackTrace"));
 
 	if (CaptureStackBackTrace == NULL)
 	{
 		return(false);
 	}
 
-	unsigned num_frames = CaptureStackBackTrace(0, 62, stacktrace, NULL);*/
+	unsigned num_frames = CaptureStackBackTrace(0, 62, stacktrace, NULL);
 #else
 	unsigned num_frames = backtrace(stacktrace, sizeof(stacktrace) / sizeof(stacktrace[0]));
 #endif

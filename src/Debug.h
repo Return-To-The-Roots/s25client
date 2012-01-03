@@ -49,6 +49,12 @@ public:
 #endif
 	bool SendReplay();
 	bool SendAsyncLog(std::list<RandomEntry> *other);
+
+private:
+
+#ifdef _WIN32
+	void* CALLBACK FunctionTableAccess(HANDLE hProcess, DWORD64 AddrBase);
+#endif
 };
 
 #endif
