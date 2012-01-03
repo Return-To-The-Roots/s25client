@@ -26,7 +26,7 @@ typedef WINBOOL (IMAGEAPI *SymInitializeType)(HANDLE hProcess,PSTR UserSearchPat
 typedef WINBOOL (IMAGEAPI *SymCleanupType)(HANDLE hProcess);
 typedef NTSYSAPI VOID (NTAPI *RtlCaptureContextType)(PCONTEXT ContextRecord);
 
-//typedef USHORT (WINAPI *CaptureStackBackTraceType)(ULONG, ULONG, PVOID*, PULONG);
+typedef USHORT (WINAPI *CaptureStackBackTraceType)(ULONG, ULONG, PVOID*, PULONG);
 #ifdef _WIN64
 typedef WINBOOL (IMAGEAPI *StackWalkType)(DWORD MachineType,HANDLE hProcess,HANDLE hThread,LPSTACKFRAME64 StackFrame,PVOID ContextRecord,PREAD_PROCESS_MEMORY_ROUTINE64 ReadMemoryRoutine,PFUNCTION_TABLE_ACCESS_ROUTINE64 FunctionTableAccessRoutine,PGET_MODULE_BASE_ROUTINE64 GetModuleBaseRoutine,PTRANSLATE_ADDRESS_ROUTINE64 TranslateAddress);
 typedef PVOID (IMAGEAPI *SymFunctionTableAccessType)(HANDLE hProcess,DWORD64 AddrBase);
@@ -167,10 +167,12 @@ bool DebugInfo::SendStackTrace()
 		return(false);
 	}
 
-	if (!SymInitialize(GetCurrentProcess(), 0, TRUE))
+	if (!SymInitialize(GetCurrentProcess(), NULL, true))
 	{
 		return(false);
 	}
+
+	ctx->ContextFlags = CONTEXT_FULL;
 
 	if (ctx == NULL)
 	{
@@ -179,19 +181,22 @@ bool DebugInfo::SendStackTrace()
 	}
 
         STACKFRAME frame;
-        memset(&frame,0,sizeof(frame));
+        memset(&frame, 0, sizeof(frame));
 
-        frame.AddrPC.Offset = ctx->Eip;
+#ifdef _WIN64
+        frame.AddrPC.Offset = ctx->Rip;
+        frame.AddrStack.Offset = ctx->Rsp;
+        frame.AddrFrame.Offset = ctx->Rbp;
+#else
         frame.AddrPC.Mode = AddrModeFlat;
-        frame.AddrStack.Offset = ctx->Esp;
         frame.AddrStack.Mode = AddrModeFlat;
-        frame.AddrFrame.Offset = ctx->Ebp;
         frame.AddrFrame.Mode = AddrModeFlat;
+#endif
 
 	unsigned num_frames = 0;
         while (StackWalk(IMAGE_FILE_MACHINE_I386, 
                 GetCurrentProcess(), GetCurrentThread(), &frame, 
-                ctx, 0, SymFunctionTableAccess, SymGetModuleBase, 0) && (num_frames < 128))
+                ctx, NULL, SymFunctionTableAccess, SymGetModuleBase, NULL) && (num_frames < 128))
 	{
 		stacktrace[num_frames++] = (void *) frame.AddrPC.Offset;
 	}
