@@ -188,10 +188,14 @@ bool DebugInfo::SendStackTrace()
         frame.AddrStack.Offset = ctx->Rsp;
         frame.AddrFrame.Offset = ctx->Rbp;
 #else
+        frame.AddrPC.Offset = ctx->Eip;
+        frame.AddrStack.Offset = ctx->Esp;
+        frame.AddrFrame.Offset = ctx->Ebp;
+#endif
+
         frame.AddrPC.Mode = AddrModeFlat;
         frame.AddrStack.Mode = AddrModeFlat;
         frame.AddrFrame.Mode = AddrModeFlat;
-#endif
 
 	unsigned num_frames = 0;
         while (StackWalk(IMAGE_FILE_MACHINE_I386, 
