@@ -1,5 +1,5 @@
 ################################################################################
-### $Id: CMakeLists.txt 7748 2012-01-04 02:46:39Z marcus $
+### $Id: CMakeLists.txt 7752 2012-01-04 03:22:08Z marcus $
 ################################################################################
 
 INCLUDE(FindBZip2)
@@ -433,7 +433,7 @@ IF ( "${COMPILEFOR}" STREQUAL "windows")
 ENDIF ( "${COMPILEFOR}" STREQUAL "windows")
 
 IF ( "${COMPILEFOR}" STREQUAL "linux")
-	TARGET_LINK_LIBRARIES(dl ${TARGET_LINK_LIBRARIES} )
+	TARGET_LINK_LIBRARIES(s25client dl ${TARGET_LINK_LIBRARIES} )
 ENDIF ( "${COMPILEFOR}" STREQUAL "linux")
 
 INSTALL(TARGETS s25client RUNTIME DESTINATION ${BINDIR})
