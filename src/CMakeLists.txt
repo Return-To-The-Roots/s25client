@@ -1,5 +1,5 @@
 ################################################################################
-### $Id: CMakeLists.txt 7713 2011-12-31 13:57:54Z marcus $
+### $Id: CMakeLists.txt 7748 2012-01-04 02:46:39Z marcus $
 ################################################################################
 
 INCLUDE(FindBZip2)
@@ -419,6 +419,7 @@ IF ( "${COMPILEFOR}" STREQUAL "apple")
 	ADD_FLAGS(CMAKE_EXE_LINKER_FLAGS -framework OpenGL -L${CMAKE_SOURCE_DIR}/macos -lSDLmain)
 ENDIF ( "${COMPILEFOR}" STREQUAL "apple")
 
+
 ADD_EXECUTABLE(s25client ${s25client_SRCS})
 TARGET_LINK_LIBRARIES(s25client siedler2 lobby_c s25util mygettext ${BZIP2_LIBRARIES} ${OPENGL_gl_LIBRARY})
 
@@ -430,6 +431,10 @@ ENDIF ( "${COMPILEFOR}" STREQUAL "apple")
 IF ( "${COMPILEFOR}" STREQUAL "windows")
 	TARGET_LINK_LIBRARIES(s25client ole32 ws2_32 shlwapi bz2 ${TARGET_LINK_LIBRARIES} )
 ENDIF ( "${COMPILEFOR}" STREQUAL "windows")
+
+IF ( "${COMPILEFOR}" STREQUAL "linux")
+	TARGET_LINK_LIBRARIES(dl ${TARGET_LINK_LIBRARIES} )
+ENDIF ( "${COMPILEFOR}" STREQUAL "linux")
 
 INSTALL(TARGETS s25client RUNTIME DESTINATION ${BINDIR})
 
