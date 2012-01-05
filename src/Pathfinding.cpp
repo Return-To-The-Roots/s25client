@@ -1,4 +1,4 @@
-// $Id: Pathfinding.cpp 7672 2011-12-27 14:02:13Z marcus $
+// $Id: Pathfinding.cpp 7760 2012-01-05 20:19:33Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -385,16 +385,8 @@ bool GameWorldBase::FindPathOnRoads(const noRoadNode * const start, const noRoad
 	pf_nodes[start_id].count_nodes = 0;
 	pf_nodes[start_id].dir = 0;
 
-	while (true)
+	while (todo.size())
 	{
-		// Liste leer und kein Ziel erreicht --> kein Weg
-		if(!todo.size())
-		{
-			if(record)
-				GameClient::inst().AddPathfindingResult(0xff,length,next_harbor);
-			return false;
-		}
-
 		// Knoten mit den geringsten Wegkosten auswählen
 		const noRoadNode *best = todo.top();
 
@@ -551,9 +543,12 @@ bool GameWorldBase::FindPathOnRoads(const noRoadNode * const start, const noRoad
 			}
 		}
 	}
+
+	// Liste leer und kein Ziel erreicht --> kein Weg
+	if(record)
+		GameClient::inst().AddPathfindingResult(0xff,length,next_harbor);
+	return false;
 }
-
-
 
 /// Ermittelt, ob eine freie Route noch passierbar ist und gibt den Endpunkt der Route zurück
 bool GameWorldBase::CheckFreeRoute(const MapCoord x_start,const MapCoord y_start, const std::vector<unsigned char>& route, const unsigned pos, 

@@ -1,4 +1,4 @@
-// $Id: Ware.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: Ware.h 7760 2012-01-05 20:19:33Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -78,7 +78,7 @@ public:
 	GO_Type GetGOT() const { return GOT_WARE; }
 
 	/// siehe oben
-	unsigned char GetNextDir() const { return next_dir; }
+	inline unsigned char GetNextDir() const { return next_dir; }
 	/// Gibt nächsten Hafen zurück, falls vorhanden
 	Point<MapCoord> GetNextHarbor() const { return  next_harbor; }
 	/// Berechnet den Weg neu zu ihrem Ziel

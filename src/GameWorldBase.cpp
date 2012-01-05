@@ -1,4 +1,4 @@
-// $Id: GameWorldBase.cpp 7672 2011-12-27 14:02:13Z marcus $
+// $Id: GameWorldBase.cpp 7760 2012-01-05 20:19:33Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -228,7 +228,7 @@ MapCoord GameWorldBase::CalcDistanceAroundBorderY(const MapCoord y1, const MapCo
 unsigned GameWorldBase::CalcDistance(const int x1, const int y1,
 					  const int x2, const int y2) const
 {
-	int dx = ((x1 << 1) + (y1 & 1))-((x2 << 1) + (y2 & 1));
+	int dx = ((x1 - x2) << 1) + (y1 & 1) - (y2 & 1);
 	int dy = ((y1 > y2) ? (y1-y2) : (y2-y1)) << 1;
 
 	if (dx < 0)
