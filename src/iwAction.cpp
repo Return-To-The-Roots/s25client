@@ -1,4 +1,4 @@
-// $Id: iwAction.cpp 7711 2011-12-31 00:08:36Z marcus $
+// $Id: iwAction.cpp 7759 2012-01-05 20:11:47Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -656,7 +656,7 @@ void iwAction::Msg_ButtonClick_TabFlag(const unsigned int ctrl_id)
 					
 				}
 
-				WindowManager::inst().Show(new iwDemolishBuilding(gwv, building));
+				WindowManager::inst().Show(new iwDemolishBuilding(gwv, building, true));
 			}
 			else
 			{

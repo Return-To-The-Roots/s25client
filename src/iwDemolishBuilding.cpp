@@ -1,4 +1,4 @@
-// $Id: iwDemolishBuilding.cpp 7711 2011-12-31 00:08:36Z marcus $
+// $Id: iwDemolishBuilding.cpp 7759 2012-01-05 20:11:47Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -39,10 +39,9 @@
 	static char THIS_FILE[] = __FILE__;
 #endif
 
-iwDemolishBuilding::iwDemolishBuilding(GameWorldViewer * const gwv,const noBaseBuilding *building)
-: IngameWindow(building->CreateGUIID(), 0xFFFE,0xFFFE,200,200,_("Demolish?"),LOADER.GetImageN("resource", 41)), gwv(gwv), building(building)
+iwDemolishBuilding::iwDemolishBuilding(GameWorldViewer * const gwv,const noBaseBuilding *building, const bool flag)
+: IngameWindow(building->CreateGUIID(), 0xFFFE,0xFFFE,200,200,_("Demolish?"),LOADER.GetImageN("resource", 41)), gwv(gwv), building(building), flag(flag)
 {
-	
 	// Ja
 	AddImageButton(0,14,140,66,40,TC_RED1,LOADER.GetImageN("io", 32));
 	// Nein
@@ -61,14 +60,14 @@ void iwDemolishBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
 	{
 	case 0:
 		{
-			const GO_Type got = building->GetGOT();
-			if(got == GOT_NOB_MILITARY || got == GOT_NOB_STOREHOUSE || got == GOT_NOB_USUAL  || got == GOT_BUILDINGSITE)
+			if (flag)
+			{
+				// Flagge (mitsamt Gebäude) wegreißen
+				GameClient::inst().AddGC(new gc::DestroyFlag(gwv->GetXA(building->GetX(), building->GetY(), 4), gwv->GetYA(building->GetX(), building->GetY(), 4)));
+			} else
 			{
 				GameClient::inst().AddGC(new gc::DestroyBuilding(building->GetX(), building->GetY()));
 			}
-			else if(got == GOT_FLAG)
-				// Flagge (mitsamt Gebäude) wegreißen
-				GameClient::inst().AddGC(new gc::DestroyFlag(building->GetX(), building->GetY()));
 
 			Close();
 
