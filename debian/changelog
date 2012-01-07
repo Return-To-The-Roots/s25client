@@ -1,3 +1,241 @@
+s25rttr (20120107-7763.150) karmic; urgency=low
+
+  * Automatic Jenkins Build 150
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sat, 07 Jan 2012 10:00:50 +0100
+
+s25rttr (20120107-7763) any; urgency=low
+
+  * [EXPERIMENTAL] rewrote pathfinding on roads, should be a lot
+    faster now - please test!
+
+ -- marcus  Sat, 07 Jan 2012 00:57:00 +0100
+
+s25rttr (20120106-7761.149) karmic; urgency=low
+
+  * Automatic Jenkins Build 149
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Fri, 06 Jan 2012 01:20:39 +0100
+
+s25rttr (20120106-7761) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Fri, 06 Jan 2012 00:00:00 +0100
+
+s25rttr (20120105-7760) any; urgency=low
+
+  * All the small things... (inlining, beauty etc.)
+
+ -- marcus  Thu, 05 Jan 2012 20:19:00 +0100
+
+s25rttr (20120105-7759) any; urgency=low
+
+  * Fixed #910831: Gebäude mit Fahne abreißen.
+
+ -- marcus  Thu, 05 Jan 2012 20:11:00 +0100
+
+s25rttr (20120105-7758.148) karmic; urgency=low
+
+  * Automatic Jenkins Build 148
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Thu, 05 Jan 2012 01:09:53 +0100
+
+s25rttr (20120105-7758) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Thu, 05 Jan 2012 00:00:00 +0100
+
+s25rttr (20120104-7753) any; urgency=low
+
+  * language update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Wed, 04 Jan 2012 10:42:00 +0100
+
+s25rttr (20120104-7752) any; urgency=low
+
+  * fix for -ldl
+
+ -- marcus  Wed, 04 Jan 2012 03:22:00 +0100
+
+s25rttr (20120104-7751) any; urgency=low
+
+  * -Werror is not back :( (old gcc has problems with
+    -Wno-unused-result, -Wno-unused-but-set-variable)
+
+ -- marcus  Wed, 04 Jan 2012 02:54:00 +0100
+
+s25rttr (20120104-7750) any; urgency=low
+
+  * -Werror is back :)
+
+ -- marcus  Wed, 04 Jan 2012 02:48:00 +0100
+
+s25rttr (20120104-7748) any; urgency=low
+
+  * added -ldl for linux to avoid compilation error, as dlopen() etc.
+    are used in DriverWrapper.cpp
+
+ -- marcus  Wed, 04 Jan 2012 02:46:00 +0100
+
+s25rttr (20120104-7747.147) karmic; urgency=low
+
+  * Automatic Jenkins Build 147
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Wed, 04 Jan 2012 02:12:39 +0100
+
+s25rttr (20120104-7747) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Wed, 04 Jan 2012 00:00:00 +0100
+
+s25rttr (20120104-7746.146) karmic; urgency=low
+
+  * Automatic Jenkins Build 146
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Wed, 04 Jan 2012 01:10:59 +0100
+
+s25rttr (20120104-7746) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Wed, 04 Jan 2012 00:00:00 +0100
+
+s25rttr (20120103-7744.145) karmic; urgency=low
+
+  * Automatic Jenkins Build 145
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 03 Jan 2012 14:35:54 +0100
+
+s25rttr (20120103-7744) any; urgency=low
+
+  * StackWalk64(...) -> RtlCaptureStackBackTrace(...) (Return to the
+    Roots, this time with 62 instead of 63)
+
+ -- marcus  Tue, 03 Jan 2012 11:37:00 +0100
+
+s25rttr (20120103-7743) any; urgency=low
+
+  * StackWalk64(...) - fix 12 (WIN64)
+
+ -- marcus  Tue, 03 Jan 2012 10:35:00 +0100
+
+s25rttr (20120103-7742) any; urgency=low
+
+  * StackWalk64(...) - fix 11 (WIN64)
+
+ -- marcus  Tue, 03 Jan 2012 10:33:00 +0100
+
+s25rttr (20120103-7741.144) karmic; urgency=low
+
+  * Automatic Jenkins Build 144
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 03 Jan 2012 01:01:37 +0100
+
+s25rttr (20120103-7741) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 03 Jan 2012 00:00:00 +0100
+
+s25rttr (20120102-7740) any; urgency=low
+
+  * StackWalk64(...) - fix 10
+
+ -- marcus  Mon, 02 Jan 2012 15:14:00 +0100
+
+s25rttr (20120102-7739) any; urgency=low
+
+  * StackWalk64(...) - fix 9
+
+ -- marcus  Mon, 02 Jan 2012 14:30:00 +0100
+
+s25rttr (20120102-7738) any; urgency=low
+
+  * StackWalk64(...) - fix 8
+
+ -- marcus  Mon, 02 Jan 2012 14:15:00 +0100
+
+s25rttr (20120102-7737) any; urgency=low
+
+  * StackWalk64(...) - fix 7
+
+ -- marcus  Mon, 02 Jan 2012 14:14:00 +0100
+
+s25rttr (20120102-7736) any; urgency=low
+
+  * StackWalk64(...) - fix 6
+
+ -- marcus  Mon, 02 Jan 2012 13:48:00 +0100
+
+s25rttr (20120102-7735) any; urgency=low
+
+  * StackWalk64(...) - fix 5
+
+ -- marcus  Mon, 02 Jan 2012 13:45:00 +0100
+
+s25rttr (20120102-7734) any; urgency=low
+
+  * StackWalk64(...) - fix 4
+
+ -- marcus  Mon, 02 Jan 2012 13:43:00 +0100
+
+s25rttr (20120102-7733) any; urgency=low
+
+  * StackWalk64(...) - fix 3
+
+ -- marcus  Mon, 02 Jan 2012 13:42:00 +0100
+
+s25rttr (20120102-7732) any; urgency=low
+
+  * StackWalk64(...) - fix 2
+
+ -- marcus  Mon, 02 Jan 2012 13:38:00 +0100
+
+s25rttr (20120102-7731) any; urgency=low
+
+  * StackWalk64(...) - fix 1
+
+ -- marcus  Mon, 02 Jan 2012 13:15:00 +0100
+
+s25rttr (20120102-7730) any; urgency=low
+
+  * StackWalk64(...)
+
+ -- marcus  Mon, 02 Jan 2012 13:13:00 +0100
+
+s25rttr (20120102-7729.143) karmic; urgency=low
+
+  * Automatic Jenkins Build 143
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Mon, 02 Jan 2012 06:38:35 +0100
+
+s25rttr (20120102-7729.142) karmic; urgency=low
+
+  * Automatic Jenkins Build 142
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Mon, 02 Jan 2012 02:00:09 +0100
+
+s25rttr (20120102-7729) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Mon, 02 Jan 2012 00:00:00 +0100
+
+s25rttr (20120101-7728) any; urgency=low
+
+  * Flush replay file, use binary mode for reading (windows).
+
+ -- marcus  Sun, 01 Jan 2012 15:15:00 +0100
+
+s25rttr (20111231-7726) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 31 Dec 2011 23:00:00 +0100
+
 s25rttr (20111231-7725.141) karmic; urgency=low
 
   * Automatic Jenkins Build 141
