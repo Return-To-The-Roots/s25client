@@ -1,4 +1,4 @@
-// $Id: Pathfinding.cpp 7763 2012-01-07 00:57:12Z marcus $
+// $Id: Pathfinding.cpp 7766 2012-01-08 13:38:30Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -337,7 +337,7 @@ Pathfinding fun: how does this work?
 - a path that may be found isn't necessarily the best
   - keep searching with a new limit of max_way = best_length - 1
   - best path is: res (direction), max_way (length - 1), next_id (id for next flag)
-- if there isn't an element left in any of the two open lists: check results (res == 0xFF)
+- if there isn't an element left in at least one of the two open lists: check results (res == 0xFF)
 
 Comparism of CPU ticks per pathfinding call (averaged over ~8000 GF):
 

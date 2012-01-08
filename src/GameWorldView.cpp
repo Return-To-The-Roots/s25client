@@ -238,8 +238,6 @@ void GameWorldView::Draw(const unsigned char player, unsigned * water, const boo
 						py += SmallFont->getHeight();
 					}
 
-						
-
 					if(show_productivity)
 					{
 						// Baustelle?
