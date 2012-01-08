@@ -1,4 +1,4 @@
-// $Id: Pathfinding.cpp 7766 2012-01-08 13:38:30Z marcus $
+// $Id: Pathfinding.cpp 7769 2012-01-08 20:06:01Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -415,8 +415,6 @@ bool GameWorldBase::FindPathOnRoads(const noRoadNode * const start, const noRoad
 	pf_nodes[destination_id].way = 0;
 	pf_nodes[destination_id].dir = 0;
 
-//	fprintf(stderr, "FIND PATH: %u,%u -> %u,%u\n", start->GetX(), start->GetY(), destination->GetX(), destination->GetY());
-
 	unsigned char res = 0xFF;
 	unsigned next_id = 0;
 
@@ -494,14 +492,16 @@ bool GameWorldBase::FindPathOnRoads(const noRoadNode * const start, const noRoad
 				// "collision detection"
 				if (current_destination != pf_nodes[xaid].destination)
 				{
-					if (pf_nodes[best->coord_id].way + pf_nodes[xaid].way + new_way > max_way)
+					new_way += pf_nodes[xaid].way;
+
+					if (new_way > max_way)
 					{
 						// we found a new way that's worse than what we've already found
 						continue;
 					}
 
 					// limit our search to only find new ways with a better score
-					max_way = pf_nodes[best->coord_id].way + pf_nodes[xaid].way + new_way - 1;
+					max_way = new_way - 1;
 
 					// find last node of start -> destination pathfinding
 					unsigned id = (current_destination == destination) ? best->coord_id : xaid;
@@ -572,14 +572,16 @@ bool GameWorldBase::FindPathOnRoads(const noRoadNode * const start, const noRoad
 					// "collision detection"
 					if (current_destination != pf_nodes[xaid].destination)
 					{
-						if (pf_nodes[best->coord_id].way + pf_nodes[xaid].way + new_way > max_way)
+						new_way += pf_nodes[xaid].way;
+
+						if (new_way > max_way)
 						{
 							// we found a new way that's worse than what we've already found
 							continue;
 						}
 
 						// limit our search to only find new ways with a better score
-						max_way = pf_nodes[best->coord_id].way + pf_nodes[xaid].way + new_way - 1;
+						max_way = new_way - 1;
 
 						// find last node of start -> destination pathfinding
 						unsigned id = (current_destination == destination) ? best->coord_id : xaid;
@@ -640,7 +642,6 @@ bool GameWorldBase::FindPathOnRoads(const noRoadNode * const start, const noRoad
 	}
 
 	// we found a path, this means that max_way has been set to length -1 and res is our result.
-
 	if (first_dir)
 		*first_dir = res;
 
