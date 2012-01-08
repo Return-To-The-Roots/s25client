@@ -1,4 +1,4 @@
-// $Id: Random.cpp 7678 2011-12-28 17:05:25Z marcus $
+// $Id: Random.cpp 7768 2012-01-08 13:40:06Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -56,7 +56,7 @@ void Random::Init(const unsigned int init)
 {
 	zahl = init;
 	counter = 0;
-	async_log.clear();
+//	async_log.clear();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -73,9 +73,11 @@ int Random::Rand(const char * const src_name, const unsigned src_line,const unsi
 {
 	zahl = ( (zahl * 997) + 1+max) & 32767;
 
-	async_log.push_back(RandomEntry(counter, max, zahl, src_name, src_line, obj_id));
+	async_log[counter % 1024] = RandomEntry(counter, max, zahl, src_name, src_line, obj_id);
+
+/*	async_log.push_back();
 	if(async_log.size() > 10000)
-		async_log.pop_front();
+		async_log.pop_front();*/
 
 	++counter;
 	return ( (zahl * max) / 32768);
@@ -83,15 +85,28 @@ int Random::Rand(const char * const src_name, const unsigned src_line,const unsi
 
 std::list<RandomEntry> *Random::GetAsyncLog()
 {
-	return(&async_log);
+	std::list<RandomEntry> *ret = new std::list<RandomEntry>;
+
+	for (unsigned i = 0; i < (counter > 1024) ? 1024 : counter; ++i)
+	{
+		ret->push_back(async_log[(i + counter) % 1024]);
+	}
+
+	return(ret);
+
+//	return(&async_log);
 }
 
 void Random::SaveLog(const char * const filename)
 {
 	FILE * file = fopen(filename,"w");
 
-	for(std::list<RandomEntry>::iterator it = async_log.begin(); it!=async_log.end(); ++it)
+	for (unsigned i = 0; i < (counter > 1024) ? 1024 : counter; ++i)
+//	for(std::list<RandomEntry>::iterator it = async_log.begin(); it!=async_log.end(); ++it)
+	{
+		RandomEntry *it = &(async_log[(i + counter) % 1024]);
 		fprintf(file, "%u:R(%d)=%d,z=%d | %s Z: %u|id=%u\n", it->counter, it->max, (it->value * it->max) / 32768, it->value,it->src_name, it->src_line, it->obj_id);
+	}
 
 	fclose(file);
 }
