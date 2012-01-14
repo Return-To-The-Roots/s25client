@@ -1,3 +1,41 @@
+s25rttr (20120108-7769.151) karmic; urgency=low
+
+  * Automatic Jenkins Build 151
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sun, 08 Jan 2012 21:33:02 +0100
+
+s25rttr (20120108-7769) any; urgency=low
+
+  * pathfinding: pf_nodes[best->coord_id].way has already been added
+    to new_way, avoid doing it twice...
+
+ -- marcus  Sun, 08 Jan 2012 20:06:00 +0100
+
+s25rttr (20120108-7768) any; urgency=low
+
+  * AsyncLog in ring buffer -> makes Random::Rand() calls a lot
+    faster
+
+ -- marcus  Sun, 08 Jan 2012 13:40:00 +0100
+
+s25rttr (20120108-7767) any; urgency=low
+
+  * GL_NEAREST for Fonts, as we do not scale them anyway
+
+ -- marcus  Sun, 08 Jan 2012 13:39:00 +0100
+
+s25rttr (20120108-7766) any; urgency=low
+
+  * small fixes
+
+ -- marcus  Sun, 08 Jan 2012 13:38:00 +0100
+
+s25rttr (20120107-7764) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 07 Jan 2012 23:00:00 +0100
+
 s25rttr (20120107-7763.150) karmic; urgency=low
 
   * Automatic Jenkins Build 150
