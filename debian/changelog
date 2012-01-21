@@ -1,3 +1,27 @@
+s25rttr (20120117-7780.152) karmic; urgency=low
+
+  * Automatic Jenkins Build 152
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 17 Jan 2012 01:11:43 +0100
+
+s25rttr (20120117-7780) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 17 Jan 2012 00:00:00 +0100
+
+s25rttr (20120116-7779) any; urgency=low
+
+  * Undid new pathfinding, too many bugs.
+
+ -- marcus  Mon, 16 Jan 2012 20:23:00 +0100
+
+s25rttr (20120114-7776) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 14 Jan 2012 23:00:00 +0100
+
 s25rttr (20120108-7769.151) karmic; urgency=low
 
   * Automatic Jenkins Build 151
