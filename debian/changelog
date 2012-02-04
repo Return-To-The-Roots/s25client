@@ -1,3 +1,99 @@
+s25rttr (20120204-7817.157) karmic; urgency=low
+
+  * Automatic Jenkins Build 157
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sat, 04 Feb 2012 13:54:36 +0100
+
+s25rttr (20120204-7817.156) karmic; urgency=low
+
+  * Automatic Jenkins Build 156
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sat, 04 Feb 2012 09:26:15 +0100
+
+s25rttr (20120204-7817) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sat, 04 Feb 2012 00:00:00 +0100
+
+s25rttr (20120204-7816) any; urgency=low
+
+  * ...
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 04 Feb 2012 08:15:00 +0100
+
+s25rttr (20120203-7814.155) karmic; urgency=low
+
+  * Automatic Jenkins Build 155
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Fri, 03 Feb 2012 19:51:15 +0100
+
+s25rttr (20120203-7814) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Fri, 03 Feb 2012 00:00:00 +0100
+
+s25rttr (20120203-7811.154) karmic; urgency=low
+
+  * Automatic Jenkins Build 154
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Fri, 03 Feb 2012 08:29:38 +0100
+
+s25rttr (20120203-7811) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Fri, 03 Feb 2012 00:00:00 +0100
+
+s25rttr (20120203-7806) any; urgency=low
+
+  * ...
+
+ -- Florian Doersch <flosoft@siedler25.org>  Fri, 03 Feb 2012 07:08:00 +0100
+
+s25rttr (20120129-7800.153) karmic; urgency=low
+
+  * Automatic Jenkins Build 153
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sun, 29 Jan 2012 21:41:36 +0100
+
+s25rttr (20120129-7800) any; urgency=low
+
+  * Language Update - Teil 4
+
+ -- Patrick Haak <demophobie@siedler25.org>  Sun, 29 Jan 2012 13:38:00 +0100
+
+s25rttr (20120129-7799) any; urgency=low
+
+  * Language Update - Teil 3
+
+ -- Patrick Haak <demophobie@siedler25.org>  Sun, 29 Jan 2012 11:47:00 +0100
+
+s25rttr (20120128-7797) any; urgency=low
+
+  * Portugiesisch
+
+ -- Patrick Haak <demophobie@siedler25.org>  Sat, 28 Jan 2012 21:04:00 +0100
+
+s25rttr (20120128-7796) any; urgency=low
+
+  * Language Update - Teil 2 - Wo ist der Reader leute?
+
+ -- Patrick Haak <demophobie@siedler25.org>  Sat, 28 Jan 2012 20:47:00 +0100
+
+s25rttr (20120128-7795) any; urgency=low
+
+  * Language Update - Teil 1
+
+ -- Patrick Haak <demophobie@siedler25.org>  Sat, 28 Jan 2012 20:29:00 +0100
+
+s25rttr (20120121-7787) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 21 Jan 2012 23:00:00 +0100
+
 s25rttr (20120117-7780.152) karmic; urgency=low
 
   * Automatic Jenkins Build 152
