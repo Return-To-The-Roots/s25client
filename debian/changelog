@@ -1,3 +1,33 @@
+s25rttr (20120208-7824.158) karmic; urgency=low
+
+  * Automatic Jenkins Build 158
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Wed, 08 Feb 2012 01:30:41 +0100
+
+s25rttr (20120208-7824) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Wed, 08 Feb 2012 00:00:00 +0100
+
+s25rttr (20120207-7823) any; urgency=low
+
+  * GameObjective corrected.
+
+ -- marcus  Tue, 07 Feb 2012 16:43:00 +0100
+
+s25rttr (20120207-7822) any; urgency=low
+
+  * Fix #928298: Missing icons.
+
+ -- marcus  Tue, 07 Feb 2012 16:37:00 +0100
+
+s25rttr (20120204-7818) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 04 Feb 2012 23:00:00 +0100
+
 s25rttr (20120204-7817.157) karmic; urgency=low
 
   * Automatic Jenkins Build 157
