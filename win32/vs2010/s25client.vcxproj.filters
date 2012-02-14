@@ -48,6 +48,9 @@
     <Filter Include="Quelldateien\Loader\Driver">
       <UniqueIdentifier>{5806bd48-55dc-4fcb-982f-0b08f56d47c9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Quelldateien\Debug">
+      <UniqueIdentifier>{326bb6b8-998a-4f4e-9a34-c50182346fd5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\AddonAdjustMilitaryStrength.h">
@@ -914,6 +917,9 @@
     <ClInclude Include="..\resource.h">
       <Filter>Ressourcendateien</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Debug.h">
+      <Filter>Quelldateien\Debug</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Addons.cpp">
@@ -1671,6 +1677,9 @@
     </ClCompile>
     <ClCompile Include="..\..\build_version.cpp">
       <Filter>Quelldateien\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Debug.cpp">
+      <Filter>Quelldateien\Debug</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
