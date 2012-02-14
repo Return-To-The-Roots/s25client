@@ -1,4 +1,4 @@
-// $Id: prebuild-mutex.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: prebuild-mutex.cpp 7836 2012-02-14 13:12:50Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -26,6 +26,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <algorithm>
 
 using namespace std;
 
@@ -107,6 +108,9 @@ int main(int argc, char *argv[])
 	string project = args.at(3);
 	string working = args.at(4);
 	string binary = args.at(5);
+
+	std::replace(working.begin(), working.end(), '"', '\\');
+	std::replace(binary.begin(), binary.end(), '"', '\\');
 
 	if(working.at(working.length()-1) != '\\')
 		working += "\\";
