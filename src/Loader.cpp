@@ -1,4 +1,4 @@
-// $Id: Loader.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: Loader.cpp 7835 2012-02-14 13:12:30Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -247,6 +247,7 @@ bool Loader::LoadSounds(void)
 		std::replace(cmd.begin(), cmd.end(), '/', '\\'); // Slash in Backslash verwandeln, sonst will "system" unter win nicht
 #endif // _WIN32
 
+		LOG.lprintf("Starte Sound-Konverter ...");
 		if(system(cmd.c_str()) == -1)
 			return false;
 
