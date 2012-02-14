@@ -1,4 +1,4 @@
-// $Id: Random.cpp 7768 2012-01-08 13:40:06Z marcus $
+// $Id: Random.cpp 7833 2012-02-14 10:28:28Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -87,22 +87,21 @@ std::list<RandomEntry> *Random::GetAsyncLog()
 {
 	std::list<RandomEntry> *ret = new std::list<RandomEntry>;
 
-	for (unsigned i = 0; i < (counter > 1024) ? 1024 : counter; ++i)
+	unsigned int max = (counter > 1024 ? 1024 : counter);
+	for (unsigned int i = 0; i < max; ++i)
 	{
 		ret->push_back(async_log[(i + counter) % 1024]);
 	}
 
 	return(ret);
-
-//	return(&async_log);
 }
 
 void Random::SaveLog(const char * const filename)
 {
 	FILE * file = fopen(filename,"w");
 
-	for (unsigned i = 0; i < (counter > 1024) ? 1024 : counter; ++i)
-//	for(std::list<RandomEntry>::iterator it = async_log.begin(); it!=async_log.end(); ++it)
+	unsigned int max = (counter > 1024 ? 1024 : counter);
+	for (unsigned int i = 0; i < max; ++i)
 	{
 		RandomEntry *it = &(async_log[(i + counter) % 1024]);
 		fprintf(file, "%u:R(%d)=%d,z=%d | %s Z: %u|id=%u\n", it->counter, it->max, (it->value * it->max) / 32768, it->value,it->src_name, it->src_line, it->obj_id);
