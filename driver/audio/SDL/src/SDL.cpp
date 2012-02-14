@@ -1,4 +1,4 @@
-// $Id: SDL.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: SDL.cpp 7834 2012-02-14 10:29:08Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -298,6 +298,9 @@ Sound *AudioSDL::LoadMusic(unsigned int data_type, unsigned char *data, unsigned
  */
 unsigned int AudioSDL::PlayEffect(Sound * sound, const unsigned char volume, const bool loop)
 {
+	if(sound == NULL)
+		return 0xFFFFFFFF;
+
 	int channel = Mix_PlayChannel(-1, static_cast<SoundSDL_Effect*>(sound)->sound, (loop)?-1:0);
 
 	if(channel == -1)
