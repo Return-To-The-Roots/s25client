@@ -1,3 +1,51 @@
+s25rttr (20120214-7839.159) karmic; urgency=low
+
+  * Automatic Jenkins Build 159
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 14 Feb 2012 16:30:20 +0100
+
+s25rttr (20120214-7839) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 14 Feb 2012 00:00:00 +0100
+
+s25rttr (20120214-7836) any; urgency=low
+
+  * fix win msvc prebuild
+
+ -- Florian Doersch <flosoft@siedler25.org>  Tue, 14 Feb 2012 13:12:00 +0100
+
+s25rttr (20120214-7835) any; urgency=low
+
+  * verbose
+
+ -- Florian Doersch <flosoft@siedler25.org>  Tue, 14 Feb 2012 13:12:00 +0100
+
+s25rttr (20120214-7834) any; urgency=low
+
+  * fix/avoid crash on loading invalid sound files
+
+ -- Florian Doersch <flosoft@siedler25.org>  Tue, 14 Feb 2012 10:29:00 +0100
+
+s25rttr (20120214-7833) any; urgency=low
+
+  * fix warnings
+
+ -- Florian Doersch <flosoft@siedler25.org>  Tue, 14 Feb 2012 10:28:00 +0100
+
+s25rttr (20120214-7832) any; urgency=low
+
+  * fix debug on msvc
+
+ -- Florian Doersch <flosoft@siedler25.org>  Tue, 14 Feb 2012 10:28:00 +0100
+
+s25rttr (20120211-7828) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 11 Feb 2012 23:00:00 +0100
+
 s25rttr (20120208-7824.158) karmic; urgency=low
 
   * Automatic Jenkins Build 158
