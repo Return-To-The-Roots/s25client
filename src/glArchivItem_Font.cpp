@@ -1,4 +1,4 @@
-// $Id: glArchivItem_Font.cpp 7767 2012-01-08 13:39:20Z marcus $
+// $Id: glArchivItem_Font.cpp 7876 2012-03-18 22:10:38Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -96,8 +96,10 @@ std::string glArchivItem_Font::Unicode_to_Utf8(unsigned int c) const
 unsigned int glArchivItem_Font::Utf8_to_Unicode(const std::string& text, unsigned int& i) const
 {
 	unsigned int c = (text[i] & 0xFF);
+	if(c==0xF6)return c; // if we accidentally try to convert an already unicode text including ö (0xF6) this will catch it (todo: find a better way to do this that includes other cases)
 	if( (c & 0x80) == 0x80) // 1Xxxxxxx
 	{
+		
 		if( (c & 0xC0) == 0x80) // 10xxxxxx
 		{
 // Disabled this message since it is repeated for ages and does not really help :-)

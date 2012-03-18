@@ -1,4 +1,4 @@
-// $Id: Messenger.cpp 7683 2011-12-29 21:08:32Z marcus $
+// $Id: Messenger.cpp 7876 2012-03-18 22:10:38Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -53,14 +53,17 @@ Messenger::~Messenger()
 void Messenger::Draw()
 {
 	unsigned y = 100;
-
 	for(std::list<Messenger::Msg>::iterator it = messages.begin(); it != messages.end(); ++it, y+=LargeFont->getHeight())
 	{
 		unsigned diff = VideoDriverWrapper::inst().GetTickCount() - it->starttime;
 		if(diff > 20000)
 		{
 			messages.erase(it++);
-			continue;
+			if(it!=messages.end())
+				continue;
+			else
+				break;
+		
 		}
 
 		// Transparenz der Schrift ausrechnen, da sie am Ende ausgeblendet wird

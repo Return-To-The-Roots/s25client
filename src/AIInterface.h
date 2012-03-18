@@ -174,6 +174,9 @@ public:
 	/// Sets new military settings for the ai player (8 values)
 	void SetMilitarySettings(std::vector<unsigned char> &newSettings) { gcs->push_back(new gc::ChangeMilitary(newSettings)); }
 
+	/// Sets new tool production settings -poc
+	void SetToolSettings(std::vector<unsigned char> &newSettings){gcs->push_back(new gc::ChangeTools(newSettings));}
+
 	/// Simply surrenders...
 	void Surrender() { gcs->push_back(new gc::Surrender()); }
 

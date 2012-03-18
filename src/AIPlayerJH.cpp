@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: AIPlayerJH.cpp 7876 2012-03-18 22:10:38Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -63,50 +63,118 @@ void AIPlayerJH::RunGF(const unsigned gf)
 	if (TestDefeat())
 		return;
 
-	if ((gf + (playerid * 2)) % 20 == 0)
+	if ((gf + (playerid * 2)) % 20 == 0) //try to complete a job on the list
 	{
 		construction.RefreshBuildingCount();
 		ExecuteAIJob();
 	}
 
-	if ((gf + playerid * 1000) % 3000 == 0)
+	if ((gf + playerid * 17) % 3000 == 0)
 	{
 		//CheckExistingMilitaryBuildings();
 		TryToAttack();
 	}
 
-	if ((gf + playerid * 10) % 100 == 0)
+	if ((gf + playerid * 13) % 100 == 0)
 	{
 		CheckNewMilitaryBuildings();
 	}
-
-
-
-	if (gf == 5)
+	if((gf+playerid*11)%700==0) //update tool creation settings
 	{
-		const nobHQ * hq = aii->GetHeadquarter();
-		MapCoord hqx = hq->GetX();
-		MapCoord hqy = hq->GetY();
+		std::vector<unsigned char> toolsettings;
+		toolsettings.resize(12);
+		toolsettings[0] = 0;
+		toolsettings[1] = 0;
+		toolsettings[2] = (aii->GetInventory()->goods[GD_SAW] + aii->GetInventory()->people[JOB_CARPENTER]<2)?4:0;
+		toolsettings[3] = (aii->GetInventory()->goods[GD_PICKAXE]<1)?1:0;
+		toolsettings[4] = (aii->GetInventory()->goods[GD_HAMMER]<1)?1:0;
+		toolsettings[5] = 0;
+		toolsettings[6] = (aii->GetInventory()->goods[GD_CRUCIBLE]+aii->GetInventory()->people[JOB_IRONFOUNDER]<construction.GetBuildingCount(BLD_IRONSMELTER))?1:0;;
+		toolsettings[7] = 0;		
+		toolsettings[8]=(toolsettings[4]<1&&toolsettings[3]<1&&toolsettings[6]<1&&toolsettings[2]<1&&(aii->GetInventory()->goods[GD_SCYTHE] + aii->GetInventory()->people[JOB_FARMER]<8))?1:0;
+		toolsettings[9] = (aii->GetInventory()->goods[GD_CLEAVER]+aii->GetInventory()->people[JOB_BUTCHER]<construction.GetBuildingCount(BLD_SLAUGHTERHOUSE))?1:0;
+		toolsettings[10] = (aii->GetInventory()->goods[GD_ROLLINGPIN]+aii->GetInventory()->people[JOB_BAKER]<construction.GetBuildingCount(BLD_BAKERY))?1:0;
+		toolsettings[11] = 0;	
+		aii->SetToolSettings(toolsettings);		
+	}
+	if((gf+playerid*7)%300==0) // plan new buildings
+	{
+		construction.RefreshBuildingCount();		
+		//pick a random storehouse and try to build one of these buildings around it (checks if we actually want more of the building type)
+		BuildingType bldToTest[] = {
+		BLD_SAWMILL,
+		BLD_FORESTER,
+		BLD_IRONSMELTER,
+		BLD_MINT,
+		BLD_ARMORY,
+		BLD_METALWORKS,
+		BLD_BREWERY,
+		BLD_MILL,
+		BLD_PIGFARM,
+		BLD_SLAUGHTERHOUSE,
+		BLD_BAKERY,
+		BLD_FARM,
+		BLD_FISHERY,
+		BLD_WOODCUTTER,
+		BLD_QUARRY,
+		BLD_GOLDMINE,
+		BLD_IRONMINE,
+		BLD_COALMINE,
+		BLD_GRANITEMINE
+	};
+	unsigned numBldToTest = 15;
+	std::list<AIJH::Coords> bldPoses = construction.GetStoreHousePositions();
+	unsigned char randomstore=rand()%bldPoses.size();
+	for (std::list<AIJH::Coords>::iterator it = bldPoses.begin(); it != bldPoses.end(); it++)
+	{
+		if(randomstore>0)
+			randomstore--;	
+		else
+		{
+			for (unsigned int i = 0; i < numBldToTest; ++i)
+			{
+				if (construction.Wanted(bldToTest[i]))
+				{
+					AddBuildJob(bldToTest[i],(*it).x,(*it).y);
+				}
+			}
+			if(gf>1500||aii->GetInventory()->goods[GD_BOARDS]>11)
+				AddBuildJob(construction.ChooseMilitaryBuilding((*it).x, (*it).y));
+			break;
+		}
+		
+	}
+	//now pick a random military building and try to build around that
+	if(milBuildings.size()<1)return;
+	randomstore=rand()%milBuildings.size();	
+	numBldToTest = 19;
+	for (std::list<Coords>::iterator it = milBuildings.begin(); it != milBuildings.end(); it++)
+	{
+		if(randomstore>0)
+			randomstore--;
+		const nobMilitary *mil;
+		if (!(mil = aii->GetSpecObj<nobMilitary>((*it).x, (*it).y)))
+			continue;
+		if(randomstore<=0)
+		{
+			for (unsigned int i = 11; i < numBldToTest; ++i) // todo change 11 to a variable or make a new list to be less confusing ...
+			{
+				if (construction.Wanted(bldToTest[i]))
+				{
+					AddBuildJob(bldToTest[i],(*it).x,(*it).y);
+				}
+			}
 
-		AddBuildJob(BLD_HARBORBUILDING, hqx, hqy);
-		AddBuildJob(BLD_SAWMILL);
-		AddBuildJob(BLD_FORESTER);
-		AddBuildJob(BLD_WOODCUTTER);
-		AddBuildJob(BLD_WOODCUTTER);
-		AddBuildJob(construction.ChooseMilitaryBuilding(hqx, hqy));
-		AddBuildJob(construction.ChooseMilitaryBuilding(hqx, hqy));
-		AddBuildJob(construction.ChooseMilitaryBuilding(hqx, hqy));
-		AddBuildJob(construction.ChooseMilitaryBuilding(hqx, hqy));
-		AddBuildJob(BLD_QUARRY);
-		AddBuildJob(BLD_FISHERY);
+		}
+	}
+
+
+	
 	}
 
 	if (gf == 100)
 	{
 		Chat(_("Hi, I'm an artifical player and I'm not very good yet!"));
-	}
-	if (gf == 120)
-	{
 		Chat(_("And I may crash your game sometimes..."));
 
 		// Set military settings to some nicer default values
@@ -123,21 +191,14 @@ void AIPlayerJH::RunGF(const unsigned gf)
 		aii->SetMilitarySettings(milSettings);
 	}
 
-	if ((gf % 1000) == 0)
-	{
-		if (construction.Wanted(BLD_SAWMILL))
-		{
-			AddBuildJob(BLD_SAWMILL);
-		}
-	}
-
 	// from time to time give some random build orders to keep alive
-	if ((gf % 3000) == 2999)
+	
+	/*if ((gf % 3000) == 2999)
 	{
 		if (construction.Wanted(BLD_WOODCUTTER)) AddBuildJob(new AIJH::BuildJob(this, BLD_WOODCUTTER, AIJH::SEARCHMODE_GLOBAL));
 		if (construction.Wanted(BLD_QUARRY)) AddBuildJob(new AIJH::BuildJob(this, BLD_QUARRY, AIJH::SEARCHMODE_GLOBAL));
 		if (SoldierAvailable()) AddBuildJob(new AIJH::BuildJob(this, BLD_GUARDHOUSE, AIJH::SEARCHMODE_GLOBAL));
-	}
+	}*/
 }
 
 bool AIPlayerJH::TestDefeat()
@@ -854,28 +915,34 @@ void AIPlayerJH::HandleNewMilitaryBuilingOccupied(const Coords& coords)
 		AddBuildJob(construction.ChooseMilitaryBuilding(x, y), x, y);
 	}
 
-	// Temporär only
+	// try to build one the following buildings around the new military building
+	
 	BuildingType bldToTest[] = {
-		BLD_FORESTER,
 		BLD_WOODCUTTER,
 		BLD_QUARRY,
 		BLD_GOLDMINE,
 		BLD_COALMINE,
 		BLD_IRONMINE,
-		BLD_SAWMILL,
-		BLD_IRONSMELTER,
-		BLD_MINT,
-		BLD_ARMORY,
-		BLD_METALWORKS,
+		BLD_GRANITEMINE,
 		BLD_FISHERY,
-		BLD_HUNTER,
-		BLD_STOREHOUSE,
 		BLD_FARM,
-		BLD_BREWERY,
-		BLD_MILL,
-		BLD_PIGFARM
+		BLD_HUNTER,		
+		BLD_STOREHOUSE
 	};
-	unsigned numBldToTest = 18;
+	std::list<AIJH::Coords> storeHousePoses = construction.GetStoreHousePositions();
+	bool storeclose=false;
+	unsigned numBldToTest = 10;
+	//remove the storehouse from the building test list if we are close to another storehouse already
+	for (std::list<AIJH::Coords>::iterator it = storeHousePoses.begin(); it != storeHousePoses.end(); it++)
+	{
+		if (gwb->CalcDistance((*it).x, (*it).y, x, y) < 20)
+		{
+			numBldToTest = 9;
+			break;
+		}
+		
+	}
+	
 
 	for (unsigned int i = 0; i < numBldToTest; ++i)
 	{
@@ -1215,7 +1282,7 @@ void AIPlayerJH::RemoveUnusedRoad(const noFlag *startFlag, unsigned char exclude
 		}
 	}
 
-	// if its not equal to 1, it's not an useless flag
+	// if its not equal to 1, it's not an useless flag 
 	if (finds != 1)
 		return;
 

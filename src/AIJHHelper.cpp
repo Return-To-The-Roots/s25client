@@ -1,4 +1,4 @@
-// $Id: AIJHHelper.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: AIJHHelper.cpp 7876 2012-03-18 22:10:38Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -302,16 +302,20 @@ void AIJH::BuildJob::BuildMainRoad()
 			aijh->ChangeResourceMap(target_x, target_y, 8, aijh->resourceMaps[AIJH::BORDERLAND], -8);
 			aijh->milBuildingSites.push_back(AIPlayerJH::Coords(target_x, target_y));
 		case BLD_GOLDMINE:
-			aijh->ChangeResourceMap(target_x, target_y, 4, aijh->resourceMaps[AIJH::GOLD], -30);
+			if(!(aijh->ggs->isEnabled(ADDON_INEXHAUSTIBLE_MINES)))
+				aijh->ChangeResourceMap(target_x, target_y, 4, aijh->resourceMaps[AIJH::GOLD], -30);
 			break;
 		case BLD_COALMINE:
-			aijh->ChangeResourceMap(target_x, target_y, 4, aijh->resourceMaps[AIJH::COAL], -30);
+			if(!(aijh->ggs->isEnabled(ADDON_INEXHAUSTIBLE_MINES)))
+				aijh->ChangeResourceMap(target_x, target_y, 4, aijh->resourceMaps[AIJH::COAL], -30);
 			break;
 		case BLD_IRONMINE:
-			aijh->ChangeResourceMap(target_x, target_y, 4, aijh->resourceMaps[AIJH::IRONORE], -30);
+			if(!(aijh->ggs->isEnabled(ADDON_INEXHAUSTIBLE_MINES)))
+				aijh->ChangeResourceMap(target_x, target_y, 4, aijh->resourceMaps[AIJH::IRONORE], -30);
 			break;
 		case BLD_GRANITEMINE:
-			aijh->ChangeResourceMap(target_x, target_y, 4, aijh->resourceMaps[AIJH::GRANITE], -30);
+			if(!(aijh->ggs->isEnabled(ADDON_INEXHAUSTIBLE_MINES)))
+				aijh->ChangeResourceMap(target_x, target_y, 4, aijh->resourceMaps[AIJH::GRANITE], -30);
 			break;
 
 		case BLD_FISHERY:

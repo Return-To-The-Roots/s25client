@@ -531,7 +531,8 @@ void dskUnlimitedPlay::CI_Countdown(int countdown)
  */
 void dskUnlimitedPlay::CI_CancelCountdown()
 {
-	GetCtrl<ctrlChat>(1)->AddMessage("", "", 0xFFCC2222, _("Start aborted"), 0xFFFFCC00);
+	//singleplayer unlimitedPlay has no chat so trying to write this would crash the game.
+	//GetCtrl<ctrlChat>(1)->AddMessage("", "", 0xFFCC2222, _("Start aborted"), 0xFFFFCC00);
 	
 	has_countdown = false;
 
