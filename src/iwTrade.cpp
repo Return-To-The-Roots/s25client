@@ -123,6 +123,7 @@ void iwTrade::Msg_PaintAfter()
 
 void iwTrade::Msg_ButtonClick(const unsigned int ctrl_id)
 {
+	//pressed the send button
 	unsigned short ware_figure_selection = GetCtrl<ctrlComboBox>(4)->GetSelection();
 	bool ware_figure = this->GetCtrl<ctrlComboBox>(2)->GetSelection() == 1;
 	GoodType gt = ware_figure ? GD_NOTHING : GoodType(ware_figure_selection);
@@ -131,10 +132,11 @@ void iwTrade::Msg_ButtonClick(const unsigned int ctrl_id)
 	const std::string number_str = GetCtrl<ctrlEdit>(6)->GetText();
 
 	// Start trading
-	GameClient::inst().AddGC(new gc::TradeOverLand(wh->GetX(),wh->GetY(),
-		ware_figure,gt,job,atoi(number_str.c_str())));
-
-	this->Close();
+	if(GetCtrl<ctrlComboBox>(4)->GetCtrl<ctrlList>(0)->GetVisible()==false&&atoi(number_str.c_str())>0)
+	{
+		GameClient::inst().AddGC(new gc::TradeOverLand(wh->GetX(),wh->GetY(),ware_figure,gt,job,atoi(number_str.c_str())));
+		this->Close();
+	}
 }
 
 
