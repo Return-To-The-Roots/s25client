@@ -1,4 +1,4 @@
-// $Id: nobMilitary.cpp 7884 2012-03-18 22:19:43Z jh $
+// $Id: nobMilitary.cpp 7885 2012-03-18 22:20:10Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -400,10 +400,9 @@ void nobMilitary::RegulateTroops()
 	// Zu viele oder zu wenig Truppen?
 	int diff;
 	if((diff = CalcTroopsCount() - int(troops.size()+ordered_troops.size()+troops_on_mission.size()+((defender)?1:0)
-	+ capturing_soldiers + far_away_capturers.size())) < 0)
+	/*+ capturing_soldiers*/ + far_away_capturers.size())) < 0) //poc: this should only be >0 if we are being captured. capturing should be true until its the last soldier and this last one would count twice here and result in a returning soldier that shouldnt return.
 	{
-		// Zu viel --> überflüssige Truppen nach Hause schicken
-
+		// Zu viel --> überflüssige Truppen nach Hause schicken		
 		// Zuerst die bestellten Soldaten wegschicken
 		// Schwache zuerst zurück
 		if (gwg->GetPlayer(player)->military_settings[1] > MILITARY_SETTINGS_SCALE[1]/2)
@@ -480,8 +479,7 @@ void nobMilitary::RegulateTroops()
 
 int nobMilitary::CalcTroopsCount()
 {
-	return (TROOPS_COUNT[nation][size]-1)*
-	gwg->GetPlayer(player)->military_settings[4+frontier_distance]/MILITARY_SETTINGS_SCALE[4+frontier_distance] + 1;
+	return (TROOPS_COUNT[nation][size]-1)*gwg->GetPlayer(player)->military_settings[4+frontier_distance]/MILITARY_SETTINGS_SCALE[4+frontier_distance] + 1;
 }
 
 void nobMilitary::TakeWare(Ware * ware)
