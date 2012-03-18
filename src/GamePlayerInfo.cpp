@@ -1,4 +1,4 @@
-// $Id: GamePlayerInfo.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: GamePlayerInfo.cpp 7888 2012-03-18 22:21:47Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -105,6 +105,7 @@ void GamePlayerInfo::SwapPlayer(GamePlayerInfo& two)
 {
 	/// Besiegt?
 	Swap(ps,two.ps);
+	Swap(aiType,two.aiType);
 	Swap(defeated,two.defeated);
 	Swap(name,two.name);
 	Swap(is_host,two.is_host);
