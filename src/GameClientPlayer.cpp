@@ -1,4 +1,4 @@
-// $Id: GameClientPlayer.cpp 7673 2011-12-27 14:11:15Z marcus $
+// $Id: GameClientPlayer.cpp 7878 2012-03-18 22:15:23Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1382,8 +1382,8 @@ void GameClientPlayer::ChangeDistribution(const std::vector<unsigned char>& dist
 	distribution[GD_COAL].percent_buildings[BLD_IRONSMELTER] = distribution_settings[12];
 	distribution[GD_COAL].percent_buildings[BLD_MINT] = distribution_settings[13];
 
-	distribution[GD_COAL].percent_buildings[BLD_SAWMILL] = distribution_settings[14];
-	distribution[GD_COAL].percent_buildings[BLD_CHARBURNER] = distribution_settings[15];
+	distribution[GD_WOOD].percent_buildings[BLD_SAWMILL] = distribution_settings[14];
+	distribution[GD_WOOD].percent_buildings[BLD_CHARBURNER] = distribution_settings[15];
 
 	distribution[GD_BOARDS].percent_buildings[BLD_HEADQUARTERS] = distribution_settings[16];
 	distribution[GD_BOARDS].percent_buildings[BLD_METALWORKS] = distribution_settings[17];

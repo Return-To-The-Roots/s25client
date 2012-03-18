@@ -177,6 +177,9 @@ public:
 	/// Sets new tool production settings -poc
 	void SetToolSettings(std::vector<unsigned char> &newSettings){gcs->push_back(new gc::ChangeTools(newSettings));}
 
+	// Sets new distribution of goods
+	void SetDistribution(const std::vector<unsigned char>&distribution_settings){gcs->push_back(new gc::ChangeDistribution(distribution_settings));}
+
 	/// Simply surrenders...
 	void Surrender() { gcs->push_back(new gc::Surrender()); }
 

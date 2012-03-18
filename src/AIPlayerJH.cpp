@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 7877 2012-03-18 22:14:43Z jh $
+// $Id: AIPlayerJH.cpp 7878 2012-03-18 22:15:23Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -190,6 +190,39 @@ void AIPlayerJH::RunGF(const unsigned gf)
 		milSettings[6] = 8;
 		milSettings[7] = 8;
 		aii->SetMilitarySettings(milSettings);
+		//set good distribution settings 
+		std::vector<unsigned char> goodSettings;
+		goodSettings.resize(23);
+		goodSettings[0] = 10; //food granite
+		goodSettings[1] = 10; //food coal
+		goodSettings[2] = 10; //food iron
+		goodSettings[3] = 10; //food gold
+
+		goodSettings[4] = 10; //grain mill
+		goodSettings[5] = 10; //grain pigfarm
+		goodSettings[6] = 10; //grain donkeybreeder
+		goodSettings[7] = 10; //grain brewery
+		goodSettings[8] = 10; //grain charburner
+
+		goodSettings[9] = 10; //iron armory
+		goodSettings[10] = 10; //iron metalworks
+
+		goodSettings[11] = 10; //coal armory
+		goodSettings[12] = 10; //coal ironsmelter
+		goodSettings[13] = 10; //coal mint
+
+		goodSettings[14] = 10; //wood sawmill
+		goodSettings[15] = 10; //wood charburner
+
+		goodSettings[16] = 10; //boards new buildings
+		goodSettings[17] = 4; //boards metalworks
+		goodSettings[18] = 2; //boards shipyard
+
+		goodSettings[19] = 10; //water bakery
+		goodSettings[20] = 10; //water brewery
+		goodSettings[21] = 10; //water pigfarm
+		goodSettings[22] = 10; //water donkeybreeder
+
 	}
 
 	// from time to time give some random build orders to keep alive
