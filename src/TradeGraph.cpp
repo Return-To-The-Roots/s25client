@@ -214,7 +214,8 @@ unsigned char TradeRoute::RecalcLocalRoute()
 	if(next_dir != 0xff)
 		return next_dir;
 	else
-		return RecalcGlobalRoute();
+		return next_dir; //so we can actually fail to find a path now
+		//return RecalcGlobalRoute();
 }
 
 /// Recalc the whole route and returns next direction

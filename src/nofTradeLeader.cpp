@@ -6,7 +6,7 @@
 #include "nobBaseWarehouse.h"
 #include "SerializedGameData.h"
 
-nofTradeLeader::nofTradeLeader(const MapCoord x, const MapCoord y,const unsigned char player,const TradeRoute& tr, const Point<MapCoord>  start, const Point<MapCoord> goal) 
+nofTradeLeader::nofTradeLeader(const MapCoord x, const MapCoord y,const unsigned char player,const TradeRoute& tr, const Point<MapCoord>  start,const Point<MapCoord> goal) 
 : noFigure(JOB_HELPER,x,y,player), tr(tr), successor(NULL), start(start), goal(goal)
 {
 }
@@ -17,6 +17,7 @@ tr(sgd,gwg,player),
 successor(sgd->PopObject<nofTradeDonkey>(GOT_NOF_TRADEDONKEY)),
 start(sgd->PopMapPoint()),
 goal(sgd->PopMapPoint())
+
 {
 }
 
@@ -66,7 +67,14 @@ void nofTradeLeader::Walked()
 			static_cast<nobBaseWarehouse*>(nob)->AddFigure(this);
 		}
 		else
-			StartWalking(next_dir);
+			if(next_dir!= NO_PATH)
+				StartWalking(next_dir);
+			else
+			{
+				TryToGoHome();
+				next_dir = dir;
+			}
+
 	}
 
 	if(successor)

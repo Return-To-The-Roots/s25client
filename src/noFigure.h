@@ -1,4 +1,4 @@
-// $Id: noFigure.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: noFigure.h 7881 2012-03-18 22:18:01Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -99,6 +99,8 @@ private:
 
 	/// Unterfunktion von Wander --> zur Flagge irren
 	void WanderToFlag();
+	/// Unterfunktion von Wander --> zur Flagge irren
+	void WanderToFlagFailedTrade();
 
 	/// Sichtbarkeiten berechnen für Figuren mit Sichtradius (Soldaten, Erkunder) vor dem Laufen
 	void CalcVisibilities(const MapCoord x, const MapCoord y);
@@ -112,6 +114,8 @@ protected:
 
 	/// Herumirren
 	void Wander();
+	/// Herumirren after failed traderoute
+	void WanderFailedTrade();
 
 	/// Ziel zurückgeben
 	noRoadNode * GetGoal() const { return goal; }
@@ -158,14 +162,20 @@ public:		void Destroy() { Destroy_noFigure(); }
 	bool CalcFigurRelative(int &x, int &y);
 	/// Anfangen zu laufen (Event anmelden, Tür aufmachen ggf)
 	void StartWalking(const unsigned char dir);
+	/// Anfangen zu laufen (Event anmelden, Tür aufmachen ggf)
+	void StartWalkingFailedTrade(const unsigned char dir);
 	/// Umherirren starten (frei rumlaufen) 
 	void StartWandering(const unsigned burned_wh_id = 0xFFFFFFFF);
+	/// Umherirren starten (frei rumlaufen - nach fehlgeschlagener handelsroute) 
+	void StartWanderingFailedTrade(const unsigned burned_wh_id = 0xFFFFFFFF);
 	/// Auf Straßen(!) nach Hause laufen
 	void GoHome(noRoadNode *goal = NULL);
 	/// Aktuellen Weg, auf dem er läuft, fr ungültig erklären
 	void CutCurrentRoad() { cur_rs = 0; }
 	/// Auf Straßen zur Zielflagge laufen
 	void WalkToGoal();
+	/// Auf Straßen zur Zielflagge laufen
+	void WalkToGoalFailedTrade();
 	/// Gibt die Straße zurück, auf der man gerade läuft
 	const RoadSegment * GetCurrentRoad() { return cur_rs; }
 	/// Wird aufgerufen, wenn die Straße unter der Figur geteilt wurde, setzt vorraus, dass die Figur auf der geteilten Straße läuft!

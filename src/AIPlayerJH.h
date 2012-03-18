@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: AIPlayerJH.h 7881 2012-03-18 22:18:01Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -145,6 +145,7 @@ protected:
 
 	/// Updates the nodes around a position 
 	void UpdateNodesAround(MapCoord x, MapCoord y, unsigned radius);
+	void UpdateNodesAroundNoBorder(MapCoord x, MapCoord y, unsigned radius);
 
 	/// Returns the resource on a specific point
 	AIJH::Resource CalcResource(MapCoord x, MapCoord y);

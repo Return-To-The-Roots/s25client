@@ -137,5 +137,5 @@ void nofTradeDonkey::CancelTradeCaravane()
 		successor->CancelTradeCaravane();
 		successor = NULL;
 	}
-	StartWandering();
+	StartWanderingFailedTrade();
 }

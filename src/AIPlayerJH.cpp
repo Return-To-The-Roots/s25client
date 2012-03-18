@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 7880 2012-03-18 22:17:30Z jh $
+// $Id: AIPlayerJH.cpp 7881 2012-03-18 22:18:01Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -86,7 +86,7 @@ void AIPlayerJH::RunGF(const unsigned gf)
 		toolsettings[0] = 0;
 		toolsettings[1] = 0;
 		toolsettings[2] = (aii->GetInventory()->goods[GD_SAW] + aii->GetInventory()->people[JOB_CARPENTER]<2)?4:0;
-		toolsettings[3] = (aii->GetInventory()->goods[GD_PICKAXE]<1)?1:0;
+		toolsettings[3] = (aii->GetInventory()->goods[GD_PICKAXE]<1&&aii->GetInventory()->people[JOB_STONEMASON]+aii->GetInventory()->people[JOB_MINER]<9)?1:0;
 		toolsettings[4] = (aii->GetInventory()->goods[GD_HAMMER]<1)?1:0;
 		toolsettings[5] = 0;
 		toolsettings[6] = (aii->GetInventory()->goods[GD_CRUCIBLE]+aii->GetInventory()->people[JOB_IRONFOUNDER]<construction.GetBuildingCount(BLD_IRONSMELTER)+1)?1:0;;
@@ -132,7 +132,7 @@ void AIPlayerJH::RunGF(const unsigned gf)
 			randomstore--;	
 		else
 		{
-			UpdateNodesAround((*it).x,(*it).y,15); //update the area we want to build in first 
+			UpdateNodesAroundNoBorder((*it).x,(*it).y,15); //update the area we want to build in first 
 			for (unsigned int i = 0; i < numBldToTest; ++i)
 			{
 				if (construction.Wanted(bldToTest[i]))
@@ -163,7 +163,7 @@ void AIPlayerJH::RunGF(const unsigned gf)
 			continue;
 		if(randomstore<=0)
 		{
-			UpdateNodesAround((*it).x,(*it).y,15); //update the area we want to build in first 
+			UpdateNodesAroundNoBorder((*it).x,(*it).y,15); //update the area we want to build in first 
 			for (unsigned int i = 0; i < numBldToTest; ++i) 
 			{
 				if (construction.Wanted(bldToTest[i]))
@@ -762,6 +762,50 @@ void AIPlayerJH::UpdateNodesAround(MapCoord x, MapCoord y, unsigned radius)
 		}
 	}
 }
+void AIPlayerJH::UpdateNodesAroundNoBorder(MapCoord x, MapCoord y, unsigned radius)
+{
+	unsigned width = aii->GetMapWidth();
+
+	UpdateReachableNodes(x, y, radius);
+
+	for(MapCoord tx=aii->GetXA(x,y,0), r=1;r<=radius;tx=aii->GetXA(tx,y,0),++r)
+	{
+		MapCoord tx2 = tx, ty2 = y;
+		for(unsigned i = 2;i<8;++i)
+		{
+			for(MapCoord r2=0;r2<r;aii->GetPointA(tx2,ty2,i%6),++r2)
+			{
+				unsigned i = tx2 + ty2 * width;
+
+				nodes[i].owned = aii->IsOwnTerritory(tx2, ty2);
+
+				if (nodes[i].owned)
+				{
+					nodes[i].bq = aii->GetBuildingQuality(tx2, ty2);
+				}
+				else
+				{
+					nodes[i].owned = false;
+					nodes[i].bq = BQ_NOTHING;
+				}
+
+				AIJH::Resource res = CalcResource(tx2, ty2);
+				if (res != nodes[i].res)
+				{
+					// Altes entfernen:
+					if (nodes[i].res != AIJH::NOTHING)
+						ChangeResourceMap(tx2, ty2, AIJH::RES_RADIUS[nodes[i].res], resourceMaps[nodes[i].res], -1);
+					// Neues Hinzufügen:
+					if (res != AIJH::NOTHING)
+						ChangeResourceMap(tx2, ty2, AIJH::RES_RADIUS[res], resourceMaps[res], 1);
+
+					nodes[i].res = res;
+				}			
+
+			}
+		}
+	}
+}
 
 void AIPlayerJH::ExecuteAIJob()
 {
@@ -1170,10 +1214,12 @@ void AIPlayerJH::TryToAttack()
 	for (std::list<Coords>::iterator it = milBuildings.begin(); it != milBuildings.end(); it++)
 	{
 		const nobMilitary *mil;
-		if (!(mil = aii->GetSpecObj<nobMilitary>((*it).x, (*it).y)))
+		if (!(mil = aii->GetSpecObj<nobMilitary>((*it).x, (*it).y)))	
+		{
 			//this means there is no military building although there should be - probably destroyed or just failed to save the right spot - lets try to remove it from the list
 			it=milBuildings.erase(it);
 			continue;
+		}
 
 		if (mil->GetFrontierDistance() == 0)
 			continue;
