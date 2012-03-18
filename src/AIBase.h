@@ -1,4 +1,4 @@
-// $Id: AIBase.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: AIBase.h 7884 2012-03-18 22:19:43Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -52,9 +52,6 @@ protected:
 	const GameClientPlayer * const player;
 	/// Verweis auf etwaige andere Spieler, bspw. um deren Bündnisse zu überprüfen etc.
 	const GameClientPlayerList * const players;
-	/// Verweis auf die Globalen Spieleinstellungen, da diese auch die weiteren Entscheidungen beeinflussen können
-	/// (beispielsweise Siegesbedingungen, FOW usw.)
-	const GlobalGameSettings * const ggs;
 	/// Queue der GameCommands, die noch bearbeitet werden müssen
 	std::vector<gc::GameCommand*> gcs;
 	/// Stärke der KI
@@ -72,6 +69,10 @@ public:
 
 	/// Wird jeden GF aufgerufen und die KI kann hier entsprechende Handlungen vollziehen
 	virtual void RunGF(const unsigned gf) = 0;
+
+	/// Verweis auf die Globalen Spieleinstellungen, da diese auch die weiteren Entscheidungen beeinflussen können
+	/// (beispielsweise Siegesbedingungen, FOW usw.)
+	const GlobalGameSettings * const ggs;
 
 	/// Zugriff auf die GameCommands, um diese abarbeiten zu können
 	const std::vector<gc::GameCommand*>& GetGameCommands() const { return gcs; }

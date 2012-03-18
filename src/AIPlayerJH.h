@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.h 7881 2012-03-18 22:18:01Z jh $
+// $Id: AIPlayerJH.h 7884 2012-03-18 22:19:43Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -153,6 +153,14 @@ protected:
 	/// Initialize the resource maps
 	void InitResourceMaps();
 
+	//returns true if we can get to the startflag in <maxlen without turning back
+	bool AIPlayerJH::IsFlagPartofCircle(const noFlag *startFlag,unsigned maxlen,const noFlag *curFlag,unsigned char excludeDir,bool init,std::vector<int> oldflagsx,std::vector<int> oldflagsy);
+
+	//globally update a layer of the resource map
+	void RecalcResource(AIJH::Resource res);	
+
+	//get me the current addon settings?
+
 	/// Changes a single resource map around point x,y in radius; to every point around x,y distanceFromCenter * value is added
 	void ChangeResourceMap(MapCoord x, MapCoord y, unsigned radius, std::vector<int> &resMap, int value);
 
@@ -181,6 +189,12 @@ protected:
 
 	/// Does some actions after a new military building is occupied
 	void HandleNewMilitaryBuilingOccupied(const Coords& coords);
+
+	/// Does some actions after a military building is lost
+	void HandleMilitaryBuilingLost(const Coords& coords);
+
+	/// Does some actions after a building is destroyed
+	void HandleBuilingDestroyed(const Coords& coords,BuildingType bld);
 
 	// Handle event "no more resources"
 	void HandleNoMoreResourcesReachable(const Coords& coords, BuildingType bld);
@@ -216,7 +230,7 @@ protected:
 
 	void SetFarmedNodes(MapCoord x, MapCoord y);
 
-	void RemoveUnusedRoad(const noFlag *startFlag, unsigned char excludeDir = 0xFF);
+	void RemoveUnusedRoad(const noFlag *startFlag, unsigned char excludeDir = 0xFF, bool firstflag=true);
 
 	// check if there are free soldiers (in hq/storehouses)
 	bool SoldierAvailable();

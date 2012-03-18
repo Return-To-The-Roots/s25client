@@ -1,4 +1,4 @@
-// $Id: AIConstruction.cpp 7881 2012-03-18 22:18:01Z jh $
+// $Id: AIConstruction.cpp 7884 2012-03-18 22:19:43Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -292,7 +292,9 @@ BuildingType AIConstruction::ChooseMilitaryBuilding(MapCoord x, MapCoord y)
 				bld = BLD_FORTRESS;
 			else
 				bld = BLD_WATCHTOWER;
-
+			//slim chance for a guardhouse instead of tower or fortress so we can expand towards an enemy even if there are no big building spots in that direction
+			if(randmil%10==0)
+				bld=BLD_GUARDHOUSE;
 			break;
 		}
 	}
@@ -316,14 +318,14 @@ bool AIConstruction::Wanted(BuildingType type)
 		return false;
 	if ((type >= BLD_BARRACKS && type <= BLD_FORTRESS) || type == BLD_STOREHOUSE)
 		//todo: find a better way to determine that there is no risk in expanding than sawmill up and complete (everything else complete as well)
-		return (GetBuildingCount(BLD_BARRACKS)+GetBuildingCount(BLD_GUARDHOUSE)+GetBuildingCount(BLD_FORTRESS)+GetBuildingCount(BLD_WATCHTOWER)>0 || (GetBuildingCount(BLD_SAWMILL)>1&&aii->GetBuildingSites().size()<1));		
+		return (GetBuildingCount(BLD_BARRACKS)+GetBuildingCount(BLD_GUARDHOUSE)+GetBuildingCount(BLD_FORTRESS)+GetBuildingCount(BLD_WATCHTOWER)>0 || (GetBuildingCount(BLD_SAWMILL)>1&&aii->GetBuildingSites().size()<2));		
 	return GetBuildingCount(type) < buildingsWanted[type];
 }
 
 void AIConstruction::RefreshBuildingCount()
 {
 	aii->GetBuildingCount(buildingCounts);
-	//very low boards count or no military buildings -> usually start only
+	//no military buildings -> usually start only
 	if(GetBuildingCount(BLD_BARRACKS)+GetBuildingCount(BLD_GUARDHOUSE)+GetBuildingCount(BLD_FORTRESS)+GetBuildingCount(BLD_WATCHTOWER)<1)
 	{
 		buildingsWanted[BLD_FORESTER] = 1;
@@ -338,11 +340,10 @@ void AIConstruction::RefreshBuildingCount()
 		buildingsWanted[BLD_FISHERY] = 0;		
 		buildingsWanted[BLD_HUNTER] = 0;
 		buildingsWanted[BLD_FARM] = 0;
-		buildingsWanted[BLD_HARBORBUILDING] = 0;
-		buildingsWanted[BLD_SHIPYARD] = 0;
 	}
 	else
 	{
+		buildingsWanted[BLD_FORESTER]=(GetBuildingCount(BLD_SAWMILL)>2&&GetBuildingCount(BLD_SAWMILL)>GetBuildingCount(BLD_WOODCUTTER))?2:1;
 	//building types usually limited by profession+tool for profession with some arbitrary limit. Some buildings which are linked to others in a chain / profession-tool-rivalry have additional limits.
 	buildingsWanted[BLD_WOODCUTTER]=(aii->GetInventory()->goods[GD_AXE] + aii->GetInventory()->people[JOB_WOODCUTTER]<12) ? aii->GetInventory()->goods[GD_AXE] + aii->GetInventory()->people[JOB_WOODCUTTER] : 12;
 	if(GetBuildingCount(BLD_SAWMILL)*2<buildingsWanted[BLD_WOODCUTTER]&&GetBuildingCount(BLD_SAWMILL)<4)
@@ -384,14 +385,14 @@ void AIConstruction::RefreshBuildingCount()
 	buildingsWanted[BLD_ARMORY] = (GetBuildingCount(BLD_IRONSMELTER)>1)?GetBuildingCount(BLD_IRONSMELTER)-GetBuildingCount(BLD_METALWORKS):GetBuildingCount(BLD_IRONSMELTER);
 	//brewery count = 1+(armory/4) if there is at least 1 armory
 	buildingsWanted[BLD_BREWERY] = (GetBuildingCount(BLD_ARMORY) > 0 && GetBuildingCount(BLD_FARM) > 0) ? 1+(GetBuildingCount(BLD_ARMORY)/4) : 0;
-	//metalworks is 1 if there is at least 1 smelter
-	buildingsWanted[BLD_METALWORKS] = (GetBuildingCount(BLD_IRONSMELTER) > 0) ? 1 : 0 ;
+	//metalworks is 1 if there is at least 1 smelter, 2 if mines are inexhaustible and we have at least 4 ironsmelters
+	buildingsWanted[BLD_METALWORKS] = (GetBuildingCount(BLD_IRONSMELTER) > 0) ? (aijh->ggs->isEnabled(ADDON_INEXHAUSTIBLE_MINES)&&GetBuildingCount(BLD_IRONSMELTER)>3)?2:1 : 0 ;
 
 	buildingsWanted[BLD_MILL] = (buildingCounts.building_counts[BLD_FARM]<8)?(buildingCounts.building_counts[BLD_FARM] + 2) / 4:(buildingCounts.building_counts[BLD_FARM] ) / 4;
 	if (buildingsWanted[BLD_MILL]>GetBuildingCount(BLD_BAKERY)+1) buildingsWanted[BLD_MILL]=GetBuildingCount(BLD_BAKERY)+1;
 	buildingsWanted[BLD_BAKERY] = (GetBuildingCount(BLD_MILL)>aii->GetInventory()->goods[GD_ROLLINGPIN] + aii->GetInventory()->people[JOB_BAKER])?aii->GetInventory()->goods[GD_ROLLINGPIN] + aii->GetInventory()->people[JOB_BAKER]:(GetBuildingCount(BLD_MILL));
 
-	buildingsWanted[BLD_PIGFARM] = (buildingCounts.building_counts[BLD_FARM]<8)?buildingCounts.building_counts[BLD_FARM] / 4:buildingCounts.building_counts[BLD_FARM]-2 / 4;
+	buildingsWanted[BLD_PIGFARM] = (buildingCounts.building_counts[BLD_FARM]<8)?buildingCounts.building_counts[BLD_FARM] / 4:(buildingCounts.building_counts[BLD_FARM]-2) / 4;
 	if (buildingsWanted[BLD_PIGFARM]>GetBuildingCount(BLD_SLAUGHTERHOUSE)+1)buildingsWanted[BLD_PIGFARM]=GetBuildingCount(BLD_SLAUGHTERHOUSE)+1;
 	buildingsWanted[BLD_SLAUGHTERHOUSE] = (GetBuildingCount(BLD_PIGFARM)>aii->GetInventory()->goods[GD_CLEAVER] + aii->GetInventory()->people[JOB_BUTCHER])?aii->GetInventory()->goods[GD_CLEAVER] + aii->GetInventory()->people[JOB_BUTCHER]:(GetBuildingCount(BLD_PIGFARM));
 

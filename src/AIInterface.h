@@ -114,6 +114,9 @@ public:
 	/// Tests whether there is a object of a certain type on a spot
 	bool IsObjectTypeOnNode(MapCoord x, MapCoord y, NodalObjectType objectType) const { return gwb->GetNO(x,y)->GetType() == objectType; }
 
+	/// Tests whether there is specific building on a spot
+	bool IsBuildingOnNode(MapCoord x, MapCoord y, BuildingType bld) const { return (gwb->GetNO(x,y)->GetType()==NOP_BUILDING||gwb->GetNO(x,y)->GetType()==NOP_BUILDINGSITE)?(gwb->GetSpecObj<noBaseBuilding>(x,y)->GetBuildingType()==bld):false;; }
+
 	/// Tests whether the ai player can see a point
 	bool IsVisible(MapCoord x, MapCoord y) const { return gwb->GetNode(x, y).fow[playerID].visibility == VIS_VISIBLE; }
 

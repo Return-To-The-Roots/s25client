@@ -1,4 +1,4 @@
-// $Id: nofHunter.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: nofHunter.cpp 7884 2012-03-18 22:19:43Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -200,6 +200,8 @@ void nofHunter::HandleDerivedEvent(const unsigned int id)
 			{
 				// Weiter warten, vielleicht gibts ja später wieder mal was
 				current_ev = em->AddEvent(this,JOB_CONSTS[job].wait1_length,1);
+				//tell the ai that there is nothing left to hunt!
+				GAMECLIENT.SendAIEvent(new AIEvent::Building(AIEvent::NoMoreResourcesReachable, workplace->GetX(), workplace->GetY(),workplace->GetBuildingType()), player);
 
 				StartNotWorking();
 			}

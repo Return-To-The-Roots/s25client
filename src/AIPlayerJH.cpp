@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 7881 2012-03-18 22:18:01Z jh $
+// $Id: AIPlayerJH.cpp 7884 2012-03-18 22:19:43Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -63,13 +63,13 @@ void AIPlayerJH::RunGF(const unsigned gf)
 	if (TestDefeat())
 		return;
 
-	if ((gf + (playerid * 11)) % 5 == 0) //try to complete a job on the list
+	if ((gf + (playerid * 11)) % 3 == 0) //try to complete a job on the list
 	{
 		construction.RefreshBuildingCount();
 		ExecuteAIJob();
 	}
 
-	if ((gf + playerid * 17) % 3000 == 0)
+	if ((gf + playerid * 17) % 2000 == 0)
 	{
 		//CheckExistingMilitaryBuildings();
 		TryToAttack();
@@ -83,22 +83,30 @@ void AIPlayerJH::RunGF(const unsigned gf)
 	{
 		std::vector<unsigned char> toolsettings;
 		toolsettings.resize(12);
-		toolsettings[0] = 0;
-		toolsettings[1] = 0;
-		toolsettings[2] = (aii->GetInventory()->goods[GD_SAW] + aii->GetInventory()->people[JOB_CARPENTER]<2)?4:0;
-		toolsettings[3] = (aii->GetInventory()->goods[GD_PICKAXE]<1&&aii->GetInventory()->people[JOB_STONEMASON]+aii->GetInventory()->people[JOB_MINER]<9)?1:0;
-		toolsettings[4] = (aii->GetInventory()->goods[GD_HAMMER]<1)?1:0;
-		toolsettings[5] = 0;
-		toolsettings[6] = (aii->GetInventory()->goods[GD_CRUCIBLE]+aii->GetInventory()->people[JOB_IRONFOUNDER]<construction.GetBuildingCount(BLD_IRONSMELTER)+1)?1:0;;
-		toolsettings[7] = 0;		
-		toolsettings[8]=(toolsettings[4]<1&&toolsettings[3]<1&&toolsettings[6]<1&&toolsettings[2]<1&&(aii->GetInventory()->goods[GD_SCYTHE] + aii->GetInventory()->people[JOB_FARMER]<8))?1:0;
-		toolsettings[9] = (aii->GetInventory()->goods[GD_CLEAVER]+aii->GetInventory()->people[JOB_BUTCHER]<construction.GetBuildingCount(BLD_SLAUGHTERHOUSE)+1)?1:0;
-		toolsettings[10] = (aii->GetInventory()->goods[GD_ROLLINGPIN]+aii->GetInventory()->people[JOB_BAKER]<construction.GetBuildingCount(BLD_BAKERY)+1)?1:0;
-		toolsettings[11] = 0;	
+		toolsettings[2] = (aii->GetInventory()->goods[GD_SAW] + aii->GetInventory()->people[JOB_CARPENTER]<2)?4:0;																					//saw
+		toolsettings[3] = (aii->GetInventory()->goods[GD_PICKAXE]<1)?1:0;																															//pickaxe
+		toolsettings[4] = (aii->GetInventory()->goods[GD_HAMMER]<1)?1:0;																															//hammer
+		toolsettings[6] = (aii->GetInventory()->goods[GD_CRUCIBLE]+aii->GetInventory()->people[JOB_IRONFOUNDER]<construction.GetBuildingCount(BLD_IRONSMELTER)+1)?1:0;;								//crucible
+		toolsettings[8]=(toolsettings[4]<1&&toolsettings[3]<1&&toolsettings[6]<1&&toolsettings[2]<1&&(aii->GetInventory()->goods[GD_SCYTHE] <1))?1:0;												//scythe
+		toolsettings[9] = (aii->GetInventory()->goods[GD_CLEAVER]+aii->GetInventory()->people[JOB_BUTCHER]<construction.GetBuildingCount(BLD_SLAUGHTERHOUSE)+1)?1:0;								//cleaver
+		toolsettings[10] = (aii->GetInventory()->goods[GD_ROLLINGPIN]+aii->GetInventory()->people[JOB_BAKER]<construction.GetBuildingCount(BLD_BAKERY)+1)?1:0;										//rollingpin
+		toolsettings[5] =(toolsettings[4]<1&&toolsettings[3]<1&&toolsettings[6]<1&&toolsettings[2]<1&&(aii->GetInventory()->goods[GD_SHOVEL]<1))?1:0 ;												//shovel
+		toolsettings[1] =(toolsettings[4]<1&&toolsettings[3]<1&&toolsettings[6]<1&&toolsettings[2]<1&&(aii->GetInventory()->goods[GD_AXE]+aii->GetInventory()->people[JOB_WOODCUTTER]<12)&&aii->GetInventory()->goods[GD_AXE]<1)?1:0;		//axe
+		toolsettings[0] =(toolsettings[4]<1&&toolsettings[3]<1&&toolsettings[6]<1&&toolsettings[2]<1&&(aii->GetInventory()->goods[GD_TONGS]<1))?1:0;												//Tongs(metalworks)
+		toolsettings[7] = 0;																																										//rod & line 
+		toolsettings[11] = 0;																																										//bow
 		aii->SetToolSettings(toolsettings);		
 	}
-	if((gf+playerid*7)%300==0) // plan new buildings
+	if((gf+playerid*7)%200==0) // plan new buildings
 	{
+		RecalcResource(AIJH::GOLD);
+		RecalcResource(AIJH::IRONORE);
+		RecalcResource(AIJH::COAL);
+		RecalcResource(AIJH::GRANITE);
+		RecalcResource(AIJH::BORDERLAND);
+		RecalcResource(AIJH::WOOD);
+		RecalcResource(AIJH::STONES);
+		RecalcResource(AIJH::PLANTSPACE);
 		construction.RefreshBuildingCount();		
 		//pick a random storehouse and try to build one of these buildings around it (checks if we actually want more of the building type)
 		BuildingType bldToTest[] = {
@@ -121,19 +129,41 @@ void AIPlayerJH::RunGF(const unsigned gf)
 		BLD_GOLDMINE,
 		BLD_IRONMINE,
 		BLD_COALMINE,
-		BLD_GRANITEMINE
+		BLD_GRANITEMINE,
+		BLD_HARBORBUILDING
 	};
-	unsigned numBldToTest = 20;
-	std::list<AIJH::Coords> bldPoses = construction.GetStoreHousePositions();
-	unsigned char randomstore=rand()%bldPoses.size();
-	for (std::list<AIJH::Coords>::iterator it = bldPoses.begin(); it != bldPoses.end(); it++)
-	{		
+	unsigned numBldToTest = 21;
+	//std::list<AIJH::Coords> bldPoses = construction.GetStoreHousePositions();
+	unsigned char randomstore=rand()%construction.GetStoreHousePositions().size();
+	bool firsthouse=true;
+	bool lostmainstore=false;
+	if(construction.GetStoreHousePositions().size()<1)
+		return;
+	for (std::list<AIJH::Coords>::iterator it = construction.GetStoreHousePositions().begin(); it != construction.GetStoreHousePositions().end(); it++)
+	{
+		//check if there still is a building if not remove from list
+		if(!aii->IsObjectTypeOnNode((*it).x,(*it).y,NOP_BUILDING)&&!aii->IsObjectTypeOnNode((*it).x,(*it).y,NOP_BUILDINGSITE))
+		{
+			lostmainstore=(firsthouse);
+			it=construction.GetStoreHousePositions().erase(it);
+			break;
+		}
+		else
+		{
+			firsthouse=false;
+			if(lostmainstore)
+			{				
+				gcs.push_back(new gc::ChangeInventorySetting((*it).x, (*it).y, 0, 2, 0));
+				gcs.push_back(new gc::ChangeInventorySetting((*it).x, (*it).y, 0, 2, 16));
+				gcs.push_back(new gc::ChangeInventorySetting((*it).x, (*it).y, 0, 2, 21));
+			}
+		}
 		if(randomstore>0)
 			randomstore--;	
 		else
 		{
 			UpdateNodesAroundNoBorder((*it).x,(*it).y,15); //update the area we want to build in first 
-			for (unsigned int i = 0; i < numBldToTest; ++i)
+			for (unsigned int i = 0; i < numBldToTest; i++)
 			{
 				if (construction.Wanted(bldToTest[i]))
 				{
@@ -141,7 +171,7 @@ void AIPlayerJH::RunGF(const unsigned gf)
 				}
 			}
 			if(gf>1500||aii->GetInventory()->goods[GD_BOARDS]>11)
-				AddBuildJob(construction.ChooseMilitaryBuilding((*it).x, (*it).y));
+				AddBuildJob(construction.ChooseMilitaryBuilding((*it).x, (*it).y),(*it).x, (*it).y);			
 			break;
 		}
 		
@@ -149,13 +179,13 @@ void AIPlayerJH::RunGF(const unsigned gf)
 	//now pick a random military building and try to build around that
 	if(milBuildings.size()<1)return;
 	randomstore=rand()%milBuildings.size();	
-	numBldToTest = 20;
-	std::list<Coords>::iterator it2 = milBuildings.end();
+	numBldToTest = 21;
+	//std::list<Coords>::iterator it2 = milBuildings.end();
 	for (std::list<Coords>::iterator it = milBuildings.begin(); it != milBuildings.end(); it++)
 	{
 		//order ai to try building new military buildings close to the latest completed military buildings
-		it2--;
-		AddBuildJob(construction.ChooseMilitaryBuilding((*it2).x, (*it2).y));
+		//it2--;
+		//AddBuildJob(construction.ChooseMilitaryBuilding((*it2).x, (*it2).y),(*it2).x, (*it2).y);  //faster expansion when we have a huge empire BUT if we have lots of mil buildings this clogs the job queue FIX IT
 		if(randomstore>0)
 			randomstore--;
 		const nobMilitary *mil;
@@ -164,14 +194,14 @@ void AIPlayerJH::RunGF(const unsigned gf)
 		if(randomstore<=0)
 		{
 			UpdateNodesAroundNoBorder((*it).x,(*it).y,15); //update the area we want to build in first 
-			for (unsigned int i = 0; i < numBldToTest; ++i) 
+			for (unsigned int i = 0; i < numBldToTest; i++) 
 			{
 				if (construction.Wanted(bldToTest[i]))
 				{
 					AddBuildJob(bldToTest[i],(*it).x,(*it).y);
 				}
 			}
-			AddBuildJob(construction.ChooseMilitaryBuilding((*it).x, (*it).y));
+			AddBuildJob(construction.ChooseMilitaryBuilding((*it).x, (*it).y),(*it).x, (*it).y);
 			break;
 		}
 	}
@@ -244,11 +274,11 @@ void AIPlayerJH::RunGF(const unsigned gf)
 
 bool AIPlayerJH::TestDefeat()
 {
-	if (!aii->GetHeadquarter())
+	if (!aii->GetHeadquarter()&&construction.GetStoreHousePositions().size()<1)
 	{
 		defeated = true;
 		aii->Surrender();
-		Chat(_("Oh, no, you destroyed my headquarter! I surrender!"));
+		Chat(_("You win"));
 		return true;
 	}
 	return false;
@@ -467,6 +497,39 @@ void AIPlayerJH::InitResourceMaps()
 					ChangeResourceMap(x, y, AIJH::RES_RADIUS[AIJH::BORDERLAND], resourceMaps[AIJH::BORDERLAND], 1);
 				}
 			}
+		}
+	}
+}
+
+void AIPlayerJH::RecalcResource(AIJH::Resource restype)
+{
+	unsigned short width = aii->GetMapWidth();
+	unsigned short height = aii->GetMapHeight();
+	unsigned res=restype;
+	std::vector<int> &resmap=resourceMaps[res];
+	for (unsigned y=0; y<resmap.size(); ++y)
+	{
+		resmap[y]=0;
+	}
+	for (unsigned short y=0; y<height; ++y)
+	{
+		for (unsigned short x=0; x<width; ++x)
+		{
+			unsigned i = y * width + x;
+			//resourceMaps[res][i] = 0;
+			if (nodes[i].res == (AIJH::Resource)res && (AIJH::Resource)res != AIJH::BORDERLAND && gwb->GetNode(x,y).t1!=TT_WATER && gwb->GetNode(x,y).t1!=TT_LAVA && gwb->GetNode(x,y).t1!=TT_SWAMPLAND )
+			{
+				ChangeResourceMap(x, y, AIJH::RES_RADIUS[res], resourceMaps[res], 1);
+			}
+							// Grenzgebiet"ressource"
+			else if (aii->IsBorder(x, y) && (AIJH::Resource)res == AIJH::BORDERLAND)
+			{
+				ChangeResourceMap(x, y, AIJH::RES_RADIUS[AIJH::BORDERLAND], resourceMaps[AIJH::BORDERLAND], 1);
+			}
+			if(res==AIJH::WOOD&&aii->IsBuildingOnNode(x,y,BLD_WOODCUTTER)) //existing woodcutters reduce wood rating
+				ChangeResourceMap(x, y, 7, resourceMaps[res], -10);
+			if(res==AIJH::PLANTSPACE&&aii->IsBuildingOnNode(x,y,BLD_FARM)) //existing farm reduce plantspace rating
+				ChangeResourceMap(x, y, 3, resourceMaps[res], -25);
 		}
 	}
 }
@@ -788,7 +851,7 @@ void AIPlayerJH::UpdateNodesAroundNoBorder(MapCoord x, MapCoord y, unsigned radi
 					nodes[i].owned = false;
 					nodes[i].bq = BQ_NOTHING;
 				}
-
+				/*
 				AIJH::Resource res = CalcResource(tx2, ty2);
 				if (res != nodes[i].res)
 				{
@@ -800,7 +863,7 @@ void AIPlayerJH::UpdateNodesAroundNoBorder(MapCoord x, MapCoord y, unsigned radi
 						ChangeResourceMap(tx2, ty2, AIJH::RES_RADIUS[res], resourceMaps[res], 1);
 
 					nodes[i].res = res;
-				}			
+				}*/			
 
 			}
 		}
@@ -891,6 +954,8 @@ bool AIPlayerJH::SimpleFindPosition(MapCoord &x, MapCoord &y, BuildingQuality si
 {
 	unsigned short width = aii->GetMapWidth();
 	unsigned short height = aii->GetMapHeight();
+	//if(size==BQ_HARBOR)
+	//	Chat(_("looking for harbor"));
 
 	if (x >= width || y >= height)
 	{
@@ -966,11 +1031,34 @@ double AIPlayerJH::GetDensity(MapCoord x, MapCoord y, AIJH::Resource res, int ra
 }
 
 void AIPlayerJH::HandleNewMilitaryBuilingOccupied(const Coords& coords)
-{
+{	
 	MapCoord x = coords.x;
 	MapCoord y = coords.y;
+	//kill bad flags we find
+	std::vector<const noFlag*> flags;
+	construction.FindFlags(flags, x, y, 15);	
+	// Jede Flagge im umkreis testen auf kaputte wege
+	for(unsigned i=0; i<flags.size(); ++i)
+	{
+		//excluding direction 255 means no excluded direction ... sometimes I used 7 for the same purpose so if you ever change the direction to count to include 7 this will fail in some spots :)
+		RemoveUnusedRoad(flags[i],255,true);
+	}	
 	UpdateNodesAround(x, y, 11); // todo: fix radius
 	construction.RefreshBuildingCount();
+	//is the captured building in our list(should be if be constructed it)
+	bool alreadyinlist=false;
+	for (std::list<Coords>::iterator it = milBuildings.begin(); it != milBuildings.end(); it++)
+	{		
+		if (((*it).x==x&&(*it).y==y))	
+		{
+			//already in our list break the search
+			alreadyinlist=true;
+			break;
+		}
+	}
+	//if it wasnt in the list add it to the list
+	if(!alreadyinlist)
+		milBuildings.push_back(coords);
 
 	const nobMilitary *mil = aii->GetSpecObj<nobMilitary>(x, y);
 	if (mil)
@@ -1036,6 +1124,40 @@ void AIPlayerJH::HandleNewMilitaryBuilingOccupied(const Coords& coords)
 			AddBuildJob(bldToTest[i], x, y);
 		}
 	}
+}
+
+void AIPlayerJH::HandleBuilingDestroyed(const Coords& coords, BuildingType bld)
+{
+	MapCoord x = coords.x;
+	MapCoord y = coords.y;
+	UpdateNodesAroundNoBorder(x, y, 11); // todo: fix radius
+	//not sure but maybe we have to update resources if we lost a mine
+}
+
+void AIPlayerJH::HandleMilitaryBuilingLost(const Coords& coords)
+{
+	MapCoord x = coords.x;
+	MapCoord y = coords.y;
+	UpdateNodesAroundNoBorder(x, y, 11); // todo: fix radius
+	//remove from military building list if possible
+	for (std::list<Coords>::iterator it = milBuildings.begin(); it != milBuildings.end(); it++)
+	{
+		const nobMilitary *mil;
+		if (!(mil = aii->GetSpecObj<nobMilitary>((*it).x, (*it).y))||((*it).x==x&&(*it).y==y))	
+		{
+			//this means there is no military building although there should be - probably destroyed or that it is the one we just lost
+			it=milBuildings.erase(it);
+		}
+	}
+	//find all flags around the lost building and try to reconnect them if necessary 
+	std::vector<const noFlag*> flags;
+	construction.FindFlags(flags, x, y, 15);	
+	// Jede Flagge testen...
+	for(unsigned i=0; i<flags.size(); ++i)
+	{
+		//excluding direction 7 means no excluded direction because there are only 6 valid directions
+		RemoveUnusedRoad(flags[i],255,true);
+	}	
 }
 
 void AIPlayerJH::HandleBuildingFinished(const Coords& coords, BuildingType bld)
@@ -1155,14 +1277,15 @@ void AIPlayerJH::HandleNoMoreResourcesReachable(const Coords& coords, BuildingTy
 	else
 		return;
 	
-	RemoveUnusedRoad(aii->GetSpecObj<noFlag>(aii->GetXA(x,y,4),aii->GetYA(x,y,4)), 1);
+	RemoveUnusedRoad(aii->GetSpecObj<noFlag>(aii->GetXA(x,y,4),aii->GetYA(x,y,4)), 1,true);
 
 	// try to expand, maybe res blocked a passage
 	AddBuildJob(construction.ChooseMilitaryBuilding(x, y), x, y);
 	AddBuildJob(construction.ChooseMilitaryBuilding(x, y), x, y);
 
 	// and try to rebuild the same building
-	AddBuildJob(bld);
+	if(bld!=BLD_HUNTER)
+		AddBuildJob(bld);
 
 	// farm is always good!
 	AddBuildJob(BLD_FARM, x, y);
@@ -1197,7 +1320,7 @@ void AIPlayerJH::HandleBorderChanged(const Coords& coords)
 		{
 			AddBuildJob(construction.ChooseMilitaryBuilding(x, y), x, y);
 		}
-	}
+	}	
 }
 
 
@@ -1218,6 +1341,8 @@ void AIPlayerJH::TryToAttack()
 		{
 			//this means there is no military building although there should be - probably destroyed or just failed to save the right spot - lets try to remove it from the list
 			it=milBuildings.erase(it);
+			if(it==milBuildings.end())
+				break;
 			continue;
 		}
 
@@ -1354,9 +1479,85 @@ void AIPlayerJH::SendAIEvent(AIEvent::Base *ev)
 	eventManager.AddAIEvent(ev);
 }
 
-void AIPlayerJH::RemoveUnusedRoad(const noFlag *startFlag, unsigned char excludeDir)
+bool AIPlayerJH::IsFlagPartofCircle(const noFlag *startFlag,unsigned maxlen,const noFlag *curFlag,unsigned char excludeDir,bool init,std::vector<int> oldflagsx,std::vector<int> oldflagsy)
+{
+	if(!init&&startFlag==curFlag)
+		return true;
+	if(maxlen<1)
+		return false;
+	bool partofcircle=false;
+	unsigned testdir=0;
+	while(testdir<6&&!partofcircle)
+	{
+		if (testdir == excludeDir)
+		{
+			testdir++;
+			continue;
+		}
+		if (aii->GetPointRoad(curFlag->GetX(), curFlag->GetY(), testdir)) //road towards testdir?
+		{ //follow road to next flag and ask again
+			unsigned char foundDir=testdir;
+			unsigned char prevDir=(testdir+3)%6;
+			MapCoord x = aii->GetXA(curFlag->GetX(), curFlag->GetY(), foundDir);
+			MapCoord y = aii->GetYA(curFlag->GetX(), curFlag->GetY(), foundDir);
+			unsigned char finds=0;
+			while(true)
+			{
+				const noFlag *flag;
+				finds=0;
+				// flag found?
+				if ((flag = aii->GetSpecObj<noFlag>(x, y)))
+				{
+					bool alreadyinlist=false;
+					for(unsigned i=0;i<oldflagsx.size();i++)
+					{
+						if (flag->GetX()==oldflagsx[i]&&flag->GetY()==oldflagsy[i])
+						{
+							alreadyinlist=true;
+							break;
+						}
+
+					}
+					if(!alreadyinlist)
+					{
+						oldflagsx.push_back(flag->GetX());
+						oldflagsy.push_back(flag->GetY());						
+						partofcircle=IsFlagPartofCircle(startFlag,maxlen-1,flag,prevDir,false,oldflagsx,oldflagsy);
+					}
+					break;
+				}
+				else
+				{			
+					// continue to follow the road
+					for (unsigned char nextDir = 0; nextDir < 6; ++nextDir)
+					{
+						if (aii->GetPointRoad(x, y, nextDir) && nextDir != prevDir)
+						{
+							x = aii->GetXA(x, y, nextDir);
+							y = aii->GetYA(x, y, nextDir);
+							prevDir = (nextDir + 3) % 6;
+							finds++;
+							break;
+						}
+					}
+				}
+				if(finds!=1)
+				{
+					// either found a split in the road (>1) or the road stopped (0) - both things shouldnt happen but just in case they do: break the loop.
+					break;
+				}
+			}
+		}
+		testdir++;
+	}
+	return partofcircle;
+}
+
+
+void AIPlayerJH::RemoveUnusedRoad(const noFlag *startFlag, unsigned char excludeDir,bool firstflag)
 {
 	unsigned char foundDir = 0xFF;
+	unsigned char foundDir2= 0xFF;
 	unsigned char finds = 0;
 
 	// Count roads from this flag...
@@ -1367,14 +1568,37 @@ void AIPlayerJH::RemoveUnusedRoad(const noFlag *startFlag, unsigned char exclude
 		if (aii->GetPointRoad(startFlag->GetX(), startFlag->GetY(), dir))
 		{
 			finds++;
-			foundDir = dir;
+			if(finds==1)
+				foundDir = dir;
+			else
+				if(finds==2)
+					foundDir2=dir;
+			if(dir==1&&(aii->IsObjectTypeOnNode(aii->GetXA(startFlag->GetX(),startFlag->GetY(),1),aii->GetYA(startFlag->GetX(),startFlag->GetY(),1),NOP_BUILDING)||aii->IsObjectTypeOnNode(aii->GetXA(startFlag->GetX(),startFlag->GetY(),1),aii->GetYA(startFlag->GetX(),startFlag->GetY(),1),NOP_BUILDINGSITE)))
+			{
+				//the flag belongs to a building - update the pathing map around us and try to reconnect it (if we cant reconnect it -> burn it(burning takes place at the pathfinding job))
+				finds+=3;
+				UpdateNodesAroundNoBorder(startFlag->GetX(),startFlag->GetY(),20);
+				construction.AddConnectFlagJob(startFlag);
+
+			}
 		}
 	}
 
-	// if we found more than 1 road the flag is still in use.
-	if (finds>1)
-	{		
+	// if we found more than 1 road (or a building) the flag is still in use.	
+	if (finds>2)
+	{	
 		return;
+	}
+	else
+	{
+		if(finds==2)
+		{
+			std::vector<int> flagcheck;
+			if(!IsFlagPartofCircle(startFlag,10,startFlag,7,true,flagcheck,flagcheck))
+				return;
+			if(!firstflag)
+				return;
+		}
 	}
 
 	// kill the flag
@@ -1392,7 +1616,7 @@ void AIPlayerJH::RemoveUnusedRoad(const noFlag *startFlag, unsigned char exclude
 		// flag found?
 		if ((flag = aii->GetSpecObj<noFlag>(x, y)))
 		{
-			RemoveUnusedRoad(flag, prevDir);
+			RemoveUnusedRoad(flag, prevDir,false);
 			break;
 		}
 		else
@@ -1415,6 +1639,43 @@ void AIPlayerJH::RemoveUnusedRoad(const noFlag *startFlag, unsigned char exclude
 			// either found a split in the road (>1) or the road stopped (0) - both things shouldnt happen but just in case they do: break the loop.
 			break;
 		}
+	}
+	if(foundDir2!=0xFF)//remove road in the other path as well in case of a 2 way road remove
+	{
+		x = aii->GetXA(startFlag->GetX(), startFlag->GetY(), foundDir2);
+		y = aii->GetYA(startFlag->GetX(), startFlag->GetY(), foundDir2);
+		prevDir = (foundDir2 + 3) % 6;
+		while(true)
+	{
+		const noFlag *flag;
+		finds=0;
+		// flag found?
+		if ((flag = aii->GetSpecObj<noFlag>(x, y)))
+		{
+			RemoveUnusedRoad(flag, prevDir,false);
+			break;
+		}
+		else
+		{			
+			// continue to follow the road
+			for (unsigned char nextDir = 0; nextDir < 6; ++nextDir)
+			{
+				if (aii->GetPointRoad(x, y, nextDir) && nextDir != prevDir)
+				{
+					x = aii->GetXA(x, y, nextDir);
+					y = aii->GetYA(x, y, nextDir);
+					prevDir = (nextDir + 3) % 6;
+					finds++;
+					break;
+				}
+			}
+		}
+		if(finds!=1)
+		{
+			// either found a split in the road (>1) or the road stopped (0) - both things shouldnt happen but just in case they do: break the loop.
+			break;
+		}
+	}
 	}
 }
 

@@ -1,4 +1,4 @@
-// $Id: AIEventManager.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: AIEventManager.h 7884 2012-03-18 22:19:43Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -40,7 +40,8 @@ namespace AIEvent
 		BuildingFinished,
 		ExpeditionWaiting,
 		TreeChopped,
-		ShipBuilt
+		ShipBuilt,
+		ResourceUsed
 	};
 
 

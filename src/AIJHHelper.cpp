@@ -1,4 +1,4 @@
-// $Id: AIJHHelper.cpp 7879 2012-03-18 22:15:56Z jh $
+// $Id: AIJHHelper.cpp 7884 2012-03-18 22:19:43Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -287,35 +287,35 @@ void AIJH::BuildJob::BuildMainRoad()
 		switch(type)
 		{
 		case BLD_WOODCUTTER:
-			aijh->ChangeResourceMap(target_x, target_y, 7, aijh->resourceMaps[AIJH::WOOD], -15);
+			//aijh->ChangeResourceMap(target_x, target_y, 7, aijh->resourceMaps[AIJH::WOOD], -15);
 			break;
 		case BLD_FORESTER:
-			aijh->ChangeResourceMap(target_x, target_y, 7, aijh->resourceMaps[AIJH::WOOD], 15);
+			//aijh->ChangeResourceMap(target_x, target_y, 7, aijh->resourceMaps[AIJH::WOOD], 15);
 			break;
 		case BLD_QUARRY:
-			aijh->ChangeResourceMap(target_x, target_y, 7, aijh->resourceMaps[AIJH::STONES], -15);
+			//aijh->ChangeResourceMap(target_x, target_y, 7, aijh->resourceMaps[AIJH::STONES], -15);
 			break;
 		case BLD_BARRACKS:
 		case BLD_GUARDHOUSE:
 		case BLD_WATCHTOWER:
 		case BLD_FORTRESS:
-			aijh->ChangeResourceMap(target_x, target_y, 8, aijh->resourceMaps[AIJH::BORDERLAND], -8);
+			//aijh->ChangeResourceMap(target_x, target_y, 8, aijh->resourceMaps[AIJH::BORDERLAND], -8);
 			aijh->milBuildingSites.push_back(AIPlayerJH::Coords(target_x, target_y));
 		case BLD_GOLDMINE:
-			if(!(aijh->ggs->isEnabled(ADDON_INEXHAUSTIBLE_MINES)))
-				aijh->ChangeResourceMap(target_x, target_y, 4, aijh->resourceMaps[AIJH::GOLD], -30);
+			//if(!(aijh->ggs->isEnabled(ADDON_INEXHAUSTIBLE_MINES))) //ask the ai to recalculate the resourcemap instead of the old way to just change it this way its accurate
+			//	aijh->ChangeResourceMap(target_x, target_y, 4, aijh->resourceMaps[AIJH::GOLD], -30);
 			break;
 		case BLD_COALMINE:
-			if(!(aijh->ggs->isEnabled(ADDON_INEXHAUSTIBLE_MINES)))
-				aijh->ChangeResourceMap(target_x, target_y, 4, aijh->resourceMaps[AIJH::COAL], -30);
+			//if(!(aijh->ggs->isEnabled(ADDON_INEXHAUSTIBLE_MINES)))
+			//	aijh->ChangeResourceMap(target_x, target_y, 4, aijh->resourceMaps[AIJH::COAL], -30);
 			break;
 		case BLD_IRONMINE:
-			if(!(aijh->ggs->isEnabled(ADDON_INEXHAUSTIBLE_MINES)))
-				aijh->ChangeResourceMap(target_x, target_y, 4, aijh->resourceMaps[AIJH::IRONORE], -30);
+			//if(!(aijh->ggs->isEnabled(ADDON_INEXHAUSTIBLE_MINES)))
+			//	aijh->ChangeResourceMap(target_x, target_y, 4, aijh->resourceMaps[AIJH::IRONORE], -30);
 			break;
 		case BLD_GRANITEMINE:
-			if(!(aijh->ggs->isEnabled(ADDON_INEXHAUSTIBLE_MINES)))
-				aijh->ChangeResourceMap(target_x, target_y, 4, aijh->resourceMaps[AIJH::GRANITE], -30);
+			//if(!(aijh->ggs->isEnabled(ADDON_INEXHAUSTIBLE_MINES)))
+			//	aijh->ChangeResourceMap(target_x, target_y, 4, aijh->resourceMaps[AIJH::GRANITE], -30);
 			break;
 
 		case BLD_FISHERY:
@@ -324,7 +324,9 @@ void AIJH::BuildJob::BuildMainRoad()
 		case BLD_STOREHOUSE:
 			aijh->GetConstruction()->AddStoreHouse(target_x, target_y);
 			break;
-
+		case BLD_HARBORBUILDING:
+			aijh->GetConstruction()->AddStoreHouse(target_x, target_y);
+			break;
 		case BLD_FARM:
 			aijh->ChangeResourceMap(target_x, target_y, 5, aijh->resourceMaps[AIJH::PLANTSPACE], -30);
 			aijh->SetFarmedNodes(target_x, target_y);
@@ -395,6 +397,20 @@ void AIJH::EventJob::ExecuteJob()
 		{
 			AIEvent::Building *evb = dynamic_cast<AIEvent::Building *>(ev);
 			aijh->HandleNewMilitaryBuilingOccupied(AIPlayerJH::Coords(evb->GetX(), evb->GetY()));
+			status = AIJH::JOB_FINISHED;
+		}
+		break;
+	case AIEvent::BuildingLost:
+		{
+			AIEvent::Building *evb = dynamic_cast<AIEvent::Building *>(ev);
+			aijh->HandleMilitaryBuilingLost(AIPlayerJH::Coords(evb->GetX(), evb->GetY()));
+			status = AIJH::JOB_FINISHED;
+		}
+		break;
+	case AIEvent::BuildingDestroyed:
+		{//todo maybe do sth about it?
+			//AIEvent::Building *evb = dynamic_cast<AIEvent::Building *>(ev);
+			//aijh->HandleBuilingDestroyed(AIPlayerJH::Coords(evb->GetX(), evb->GetY()),evb->GetBuildingType());
 			status = AIJH::JOB_FINISHED;
 		}
 		break;
