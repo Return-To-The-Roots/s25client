@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 7878 2012-03-18 22:15:23Z jh $
+// $Id: AIPlayerJH.cpp 7879 2012-03-18 22:15:56Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -79,7 +79,7 @@ void AIPlayerJH::RunGF(const unsigned gf)
 	{
 		CheckNewMilitaryBuildings();
 	}
-	if((gf+playerid*11)%700==0) //update tool creation settings
+	if((gf+playerid*11)%1500==0) //update tool creation settings
 	{
 		std::vector<unsigned char> toolsettings;
 		toolsettings.resize(12);
@@ -126,8 +126,12 @@ void AIPlayerJH::RunGF(const unsigned gf)
 	unsigned numBldToTest = 20;
 	std::list<AIJH::Coords> bldPoses = construction.GetStoreHousePositions();
 	unsigned char randomstore=rand()%bldPoses.size();
+	std::list<AIJH::Coords>::iterator it2 = bldPoses.end();
 	for (std::list<AIJH::Coords>::iterator it = bldPoses.begin(); it != bldPoses.end(); it++)
 	{
+		//order ai to try building new military buildings close to the latest completed military buildings
+		it2--;
+		AddBuildJob(construction.ChooseMilitaryBuilding((*it2).x, (*it2).y));
 		if(randomstore>0)
 			randomstore--;	
 		else

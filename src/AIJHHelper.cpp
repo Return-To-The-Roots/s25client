@@ -1,4 +1,4 @@
-// $Id: AIJHHelper.cpp 7876 2012-03-18 22:10:38Z jh $
+// $Id: AIJHHelper.cpp 7879 2012-03-18 22:15:56Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -107,7 +107,7 @@ void AIJH::BuildJob::TryToBuild()
 	MapCoord bx = around_x;
 	MapCoord by = around_y;
 
-	if (aii->GetBuildingSites().size() > 15)
+	if (aii->GetBuildingSites().size() > 40)
 	{
 		return;
 	}

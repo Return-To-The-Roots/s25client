@@ -1,4 +1,4 @@
-// $Id: AIConstruction.cpp 7878 2012-03-18 22:15:23Z jh $
+// $Id: AIConstruction.cpp 7879 2012-03-18 22:15:56Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -315,7 +315,8 @@ bool AIConstruction::Wanted(BuildingType type)
 	if (type == BLD_CATAPULT && !aii->CanBuildCatapult())
 		return false;
 	if ((type >= BLD_BARRACKS && type <= BLD_FORTRESS) || type == BLD_STOREHOUSE)
-		if(aii->GetInventory()->goods[GD_BOARDS] > 11 || GetBuildingCount(BLD_BARRACKS)+GetBuildingCount(BLD_GUARDHOUSE)>0 || GetBuildingCount(BLD_SAWMILL)>1)
+		//todo: find a better way to determine that there is no risk in expanding than sawmill up and complete (everything else complete as well)
+		if(GetBuildingCount(BLD_BARRACKS)+GetBuildingCount(BLD_GUARDHOUSE)>0 || (GetBuildingCount(BLD_SAWMILL)>1&&aii->GetBuildingSites().size()<1))
 			return true;
 		else
 			return false;
@@ -400,14 +401,6 @@ void AIConstruction::RefreshBuildingCount()
 	buildingsWanted[BLD_WELL] = buildingsWanted[BLD_BAKERY] + buildingsWanted[BLD_PIGFARM]
 		+ buildingsWanted[BLD_DONKEYBREEDER] + buildingsWanted[BLD_BREWERY];
 
-	if (GetBuildingCount(BLD_FARM) > 8)
-	{
-		buildingsWanted[BLD_IRONMINE] = (GetBuildingCount(BLD_FARM)/3>GetBuildingCount(BLD_IRONSMELTER)+1)?GetBuildingCount(BLD_IRONSMELTER)+1:GetBuildingCount(BLD_FARM)/3;
-		buildingsWanted[BLD_GOLDMINE] = (GetBuildingCount(BLD_MINT)+1>1)?2:1;
-		buildingsWanted[BLD_COALMINE]=(GetBuildingCount(BLD_IRONMINE)>0)?(GetBuildingCount(BLD_IRONMINE)*2)-1+GetBuildingCount(BLD_GOLDMINE):(GetBuildingCount(BLD_GOLDMINE)>0)?GetBuildingCount(BLD_GOLDMINE):1;		
-		buildingsWanted[BLD_DONKEYBREEDER]=1;
-	}
-
 	buildingsWanted[BLD_FARM] = aii->GetInventory()->goods[GD_SCYTHE] + aii->GetInventory()->people[JOB_FARMER];
 	
 	if(aii->GetInventory()->goods[GD_PICKAXE]+aii->GetInventory()->people[JOB_MINER]<3){
@@ -438,6 +431,8 @@ void AIConstruction::RefreshBuildingCount()
 		}
 		if(aii->GetInventory()->goods[GD_STONES]<50 && GetBuildingCount(BLD_QUARRY)<1) //no more stones and no quarry -> try emergency granitemines.
 			buildingsWanted[BLD_GRANITEMINE] =(aii->GetInventory()->people[JOB_MINER]>6)? 2:1;
+		else
+			buildingsWanted[BLD_GRANITEMINE]=0;
 	}
 	}
 }

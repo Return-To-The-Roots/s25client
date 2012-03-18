@@ -1,4 +1,4 @@
-// $Id: glArchivItem_Font.cpp 7876 2012-03-18 22:10:38Z jh $
+// $Id: glArchivItem_Font.cpp 7879 2012-03-18 22:15:56Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -504,7 +504,8 @@ void glArchivItem_Font::WrapInfo::CreateSingleStrings(const std::string& origin_
 			copy[positions.at(i+1)] = 0;
 		}
 
-		dest_strings[i] = &copy[positions.at(i)];
+		if(i<origin_text.length()) //in case of empty string dont try to read char 1 ...
+			dest_strings[i] = &copy[positions.at(i)];
 
 		// wieder ggf. zurücksetzen, siehe oben
 		if(i + 1 < positions.size())
