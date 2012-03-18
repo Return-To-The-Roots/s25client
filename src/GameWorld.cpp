@@ -1,4 +1,4 @@
-// $Id: GameWorld.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: GameWorld.cpp 7886 2012-03-18 22:20:44Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -169,6 +169,8 @@ void GameWorld::Scan(glArchivItem_Map *map)
 
 
 	// Objekte auslesen
+	int temphqx[]={0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF};
+	int temphqy[]={0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF};
 	for(unsigned y = 0;y<height;++y)
 	{
 		for(unsigned x = 0;x<width;++x)
@@ -181,6 +183,8 @@ void GameWorld::Scan(glArchivItem_Map *map)
 			// Player Startpos (provisorisch)
 			case 0x80:
 				{
+					temphqx[lc]=x;
+					temphqy[lc]=y;
 					if(lc < GameClient::inst().GetPlayerCount())
 					{
 						GetPlayer(lc)->hqx = x;
@@ -358,7 +362,44 @@ void GameWorld::Scan(glArchivItem_Map *map)
 			SetBQ(x,y,BQ_NOTHING);
 		}
 	}
-
+	//random locations? -> randomize them :)
+	if(GameClient::inst().GetGGS().random_location)	
+	{
+		for(unsigned i = 0;i<GAMECLIENT.GetPlayerCount();++i)
+		{			
+			if(GetPlayer(i)->ps == PS_OCCUPIED || GetPlayer(i)->ps == PS_KI)
+			{
+				int failedattempts=0;
+				int pickedrandomlocation=RANDOM.GetCurrentRandomValue()%(GAMECLIENT.GetPlayerCount()-i);
+				while(temphqx[pickedrandomlocation]==0xFFFF&&failedattempts<250)
+				{
+					RANDOM.Rand("a",0,0,8);
+					pickedrandomlocation=RANDOM.GetCurrentRandomValue()%(GAMECLIENT.GetPlayerCount()-i);
+					failedattempts++;
+				}
+				//LOG.lprintf("player i=%d,auf startloc pickedrandomlocation=%d \n", pickedrandomlocation, i );
+				GetPlayer(i)->hqx=temphqx[pickedrandomlocation];
+				GetPlayer(i)->hqy=temphqy[pickedrandomlocation];
+				nobHQ * hq = new nobHQ(GetPlayer(i)->hqx,GetPlayer(i)->hqy,i,GetPlayer(i)->nation);
+				SetNO(hq,GetPlayer(i)->hqx,GetPlayer(i)->hqy);
+				GetPlayer(i)->AddWarehouse(reinterpret_cast<nobBaseWarehouse*>(hq));
+				//remove the no longer available position from the list
+				unsigned char k=pickedrandomlocation+1;
+				while(temphqx[k]!=0xFFFF)
+				{
+					temphqx[k-1]=temphqx[k];
+					temphqy[k-1]=temphqy[k];
+					k++;
+				}
+				temphqx[k]=0xFFFF;
+				temphqy[k]=0xFFFF;
+			}
+			/*else
+				GetNode(GetPlayer(i)->hqx,GetPlayer(i)->hqy).obj = 0;*/			
+		}
+	}
+	else
+	{
 	// HQ setzen
 	for(unsigned i = 0;i<GAMECLIENT.GetPlayerCount();++i)
 	{
@@ -374,6 +415,7 @@ void GameWorld::Scan(glArchivItem_Map *map)
 			/*else
 				GetNode(GetPlayer(i)->hqx,GetPlayer(i)->hqy).obj = 0;*/
 		}
+	}
 	}
 
 	// Tiere auslesen

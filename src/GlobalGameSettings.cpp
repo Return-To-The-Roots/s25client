@@ -1,4 +1,4 @@
-// $Id: GlobalGameSettings.cpp 7700 2011-12-30 18:13:33Z marcus $
+// $Id: GlobalGameSettings.cpp 7886 2012-03-18 22:20:44Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -53,7 +53,7 @@
  *
  *  @author FloSoft
  */
-GlobalGameSettings::GlobalGameSettings() : game_speed(GS_FAST), game_objective(GO_NONE), start_wares(SWR_NORMAL), lock_teams(false), exploration(EXP_FOGOFWAR), team_view(true) 
+GlobalGameSettings::GlobalGameSettings() : game_speed(GS_FAST), game_objective(GO_NONE), start_wares(SWR_NORMAL), lock_teams(false), exploration(EXP_FOGOFWAR), team_view(true), random_location(false) 
 {
 	// register addons
 	reset();
@@ -172,6 +172,7 @@ void GlobalGameSettings::Serialize(Serializer *ser) const
 	ser->PushBool(lock_teams);
 	ser->PushUnsignedChar(static_cast<unsigned char>(exploration));
 	ser->PushBool(team_view);
+	ser->PushBool(random_location);
 
 	ser->PushUnsignedInt(addons.size());
 	for( std::vector<item>::const_iterator it = addons.begin(); it != addons.end(); ++it)
@@ -197,6 +198,7 @@ void GlobalGameSettings::Deserialize(Serializer *ser)
 	lock_teams = ser->PopBool();
 	exploration = static_cast<Exploration>(ser->PopUnsignedChar());
 	team_view = ser->PopBool();
+	random_location = ser->PopBool();
 
 	unsigned int count = ser->PopUnsignedInt();
 

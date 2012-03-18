@@ -1,4 +1,4 @@
-// $Id: dskHostGame.cpp 7712 2011-12-31 00:18:45Z marcus $
+// $Id: dskHostGame.cpp 7886 2012-03-18 22:20:44Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -89,6 +89,8 @@ dskHostGame::dskHostGame() :
 	AddCheckBox(20, 400, 460, 180, 26, TC_GREY, _("Lock teams:"), NormalFont, !GAMECLIENT.IsHost()||GAMECLIENT.IsSavegame());
 	// "Gemeinsame Team-Sicht"
 	AddCheckBox(19, 600, 460, 180, 26, TC_GREY, _("Shared team view"), NormalFont, !GAMECLIENT.IsHost()||GAMECLIENT.IsSavegame());
+	// "Random Start Locations"
+	AddCheckBox(23, 600, 430, 180, 26, TC_GREY, _("Random start locations"), NormalFont, !GAMECLIENT.IsHost()||GAMECLIENT.IsSavegame());
 
 	// "Enhancements"
 	AddText(21, 400, 499, _("Addons:"), COLOR_YELLOW, 0, NormalFont);
@@ -639,6 +641,7 @@ void dskHostGame::Msg_CheckboxChange(const unsigned int ctrl_id, const bool chec
 		break;
 	case 19: // Team-Sicht
 	case 20: // Teams
+	case 23: //random startlocation
 		{
 			// GameSettings wurden verändert, resetten
 			UpdateGGS();
@@ -666,6 +669,8 @@ void dskHostGame::UpdateGGS()
 	ggs.lock_teams = GetCtrl<ctrlCheck>(20)->GetCheck();
 	// Team sicht
 	ggs.team_view = GetCtrl<ctrlCheck>(19)->GetCheck();
+	//random locations
+	ggs.random_location=GetCtrl<ctrlCheck>(23)->GetCheck();
 
 	// An Server übermitteln
 	GameServer::inst().ChangeGlobalGameSettings(ggs);
@@ -918,6 +923,8 @@ void dskHostGame::CI_GGSChanged(const GlobalGameSettings& ggs)
 	GetCtrl<ctrlCheck>(20)->SetCheck(ggs.lock_teams);
 	// Team-Sicht
 	GetCtrl<ctrlCheck>(19)->SetCheck(ggs.team_view);
+	//random location
+	GetCtrl<ctrlCheck>(23)->SetCheck(ggs.random_location);
 
 	TogglePlayerReady(GAMECLIENT.GetPlayerID(), false);
 }

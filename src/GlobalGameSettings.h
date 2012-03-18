@@ -1,4 +1,4 @@
-// $Id: GlobalGameSettings.h 7823 2012-02-07 16:43:17Z marcus $
+// $Id: GlobalGameSettings.h 7886 2012-03-18 22:20:44Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -43,6 +43,7 @@ public:
 	bool lock_teams;
 	enum Exploration { EXP_DISABLED = 0, EXP_CLASSIC, EXP_FOGOFWAR, EXP_FOGOFWARE_EXPLORED } exploration;
 	bool team_view;
+	bool random_location;
 
 	/// clears the addon memory.
 	void reset(bool recreate = true);
