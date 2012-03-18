@@ -1,4 +1,4 @@
-// $Id: AIConstruction.cpp 7876 2012-03-18 22:10:38Z jh $
+// $Id: AIConstruction.cpp 7877 2012-03-18 22:14:43Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -268,7 +268,7 @@ BuildingType AIConstruction::ChooseMilitaryBuilding(MapCoord x, MapCoord y)
 {
 	BuildingType bld = BLD_BARRACKS;
 
-	if (((rand() % 3) == 0||aii->GetInventory()->people[JOB_PRIVATE]<15)&&(aii->GetInventory()->goods[GD_STONES])>6||GetBuildingCount(BLD_QUARRY)>0)
+	if (((rand() % 3) == 0||aii->GetInventory()->people[JOB_PRIVATE]<15)&&(aii->GetInventory()->goods[GD_STONES]>6||GetBuildingCount(BLD_QUARRY)>0))
 		bld = BLD_GUARDHOUSE;
 
 	std::list<nobBaseMilitary*> military;
@@ -389,20 +389,23 @@ void AIConstruction::RefreshBuildingCount()
 	//metalworks is 1 if there is at least 1 smelter
 	buildingsWanted[BLD_METALWORKS] = (GetBuildingCount(BLD_IRONSMELTER) > 0) ? 1 : 0 ;
 
-	buildingsWanted[BLD_MILL] = (buildingCounts.building_counts[BLD_FARM] + 2) / 4;
-	buildingsWanted[BLD_BAKERY] = buildingsWanted[BLD_MILL];
+	buildingsWanted[BLD_MILL] = (buildingCounts.building_counts[BLD_FARM]<8)?(buildingCounts.building_counts[BLD_FARM] + 2) / 4:(buildingCounts.building_counts[BLD_FARM] + 2) / 3;
+	if (buildingsWanted[BLD_MILL]>GetBuildingCount(BLD_BAKERY)+1) buildingsWanted[BLD_MILL]=GetBuildingCount(BLD_BAKERY)+1;
+	buildingsWanted[BLD_BAKERY] = (GetBuildingCount(BLD_MILL)>aii->GetInventory()->goods[GD_ROLLINGPIN] + aii->GetInventory()->people[JOB_BAKER])?aii->GetInventory()->goods[GD_ROLLINGPIN] + aii->GetInventory()->people[JOB_BAKER]:(GetBuildingCount(BLD_MILL));
 
-	buildingsWanted[BLD_PIGFARM] = buildingCounts.building_counts[BLD_FARM] / 4;
-	buildingsWanted[BLD_SLAUGHTERHOUSE] = buildingsWanted[BLD_PIGFARM];
+	buildingsWanted[BLD_PIGFARM] = (buildingCounts.building_counts[BLD_FARM]<8)?buildingCounts.building_counts[BLD_FARM] / 4:buildingCounts.building_counts[BLD_FARM] / 3;
+	if (buildingsWanted[BLD_PIGFARM]>GetBuildingCount(BLD_SLAUGHTERHOUSE)+1)buildingsWanted[BLD_PIGFARM]=GetBuildingCount(BLD_SLAUGHTERHOUSE)+1;
+	buildingsWanted[BLD_SLAUGHTERHOUSE] = (GetBuildingCount(BLD_PIGFARM)>aii->GetInventory()->goods[GD_CLEAVER] + aii->GetInventory()->people[JOB_BUTCHER])?aii->GetInventory()->goods[GD_CLEAVER] + aii->GetInventory()->people[JOB_BUTCHER]:(GetBuildingCount(BLD_PIGFARM));
 
 	buildingsWanted[BLD_WELL] = buildingsWanted[BLD_BAKERY] + buildingsWanted[BLD_PIGFARM]
 		+ buildingsWanted[BLD_DONKEYBREEDER] + buildingsWanted[BLD_BREWERY];
 
 	if (GetBuildingCount(BLD_FARM) > 8)
 	{
-		buildingsWanted[BLD_IRONMINE] = GetBuildingCount(BLD_FARM)/3;
-		buildingsWanted[BLD_GOLDMINE] = 2;
-		buildingsWanted[BLD_COALMINE]=(GetBuildingCount(BLD_IRONMINE)>0)?(GetBuildingCount(BLD_IRONMINE)*2)-1+GetBuildingCount(BLD_GOLDMINE):(GetBuildingCount(BLD_GOLDMINE)>0)?GetBuildingCount(BLD_GOLDMINE):1;
+		buildingsWanted[BLD_IRONMINE] = (GetBuildingCount(BLD_FARM)/3>GetBuildingCount(BLD_IRONSMELTER)+1)?GetBuildingCount(BLD_IRONSMELTER)+1:GetBuildingCount(BLD_FARM)/3;
+		buildingsWanted[BLD_GOLDMINE] = (GetBuildingCount(BLD_MINT)+1>1)?2:1;
+		buildingsWanted[BLD_COALMINE]=(GetBuildingCount(BLD_IRONMINE)>0)?(GetBuildingCount(BLD_IRONMINE)*2)-1+GetBuildingCount(BLD_GOLDMINE):(GetBuildingCount(BLD_GOLDMINE)>0)?GetBuildingCount(BLD_GOLDMINE):1;		
+		buildingsWanted[BLD_DONKEYBREEDER]=1;
 	}
 
 	buildingsWanted[BLD_FARM] = aii->GetInventory()->goods[GD_SCYTHE] + aii->GetInventory()->people[JOB_FARMER];
@@ -424,13 +427,13 @@ void AIConstruction::RefreshBuildingCount()
 		buildingsWanted[BLD_COALMINE]=(GetBuildingCount(BLD_IRONMINE)>0)?(GetBuildingCount(BLD_IRONMINE)*2)-1+GetBuildingCount(BLD_GOLDMINE):(GetBuildingCount(BLD_GOLDMINE)>0)?GetBuildingCount(BLD_GOLDMINE):1;
 		if (GetBuildingCount(BLD_FARM) > 8) //quite the empire just scale mines with farms
 		{
-			buildingsWanted[BLD_IRONMINE] = GetBuildingCount(BLD_FARM)/3;
-			buildingsWanted[BLD_GOLDMINE] = 2;
+			buildingsWanted[BLD_IRONMINE] = (GetBuildingCount(BLD_FARM)/3>GetBuildingCount(BLD_IRONSMELTER)+1)?GetBuildingCount(BLD_IRONSMELTER)+1:GetBuildingCount(BLD_FARM)/3;
+			buildingsWanted[BLD_GOLDMINE] = (GetBuildingCount(BLD_MINT)+1>1)?2:1;
 			buildingsWanted[BLD_DONKEYBREEDER]=1;
 		}
 		else
 		{		//probably still limited in food supply	go up to 4 coal 1 gold 2 iron (gold+coal->coin, iron+coal->tool, iron+coal+coal->weapon)				
-			buildingsWanted[BLD_IRONMINE]=(aii->GetInventory()->people[JOB_MINER]+aii->GetInventory()->goods[GD_PICKAXE]-(GetBuildingCount(BLD_COALMINE)+GetBuildingCount(BLD_GOLDMINE))>2)?2:1;
+			buildingsWanted[BLD_IRONMINE]=(aii->GetInventory()->people[JOB_MINER]+aii->GetInventory()->goods[GD_PICKAXE]-(GetBuildingCount(BLD_COALMINE)+GetBuildingCount(BLD_GOLDMINE))>1)?2:1;
 			buildingsWanted[BLD_GOLDMINE]=(aii->GetInventory()->people[JOB_MINER]>2)?1:0;			
 		}
 		if(aii->GetInventory()->goods[GD_STONES]<50 && GetBuildingCount(BLD_QUARRY)<1) //no more stones and no quarry -> try emergency granitemines.
