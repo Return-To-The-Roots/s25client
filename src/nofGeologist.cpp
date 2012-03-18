@@ -1,4 +1,4 @@
-// $Id: nofGeologist.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: nofGeologist.cpp 7887 2012-03-18 22:21:17Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -164,8 +164,7 @@ void nofGeologist::Draw(int x, int y)
 				LOADER.GetImageN("rom_bobs", 361+ids[i-7])->Draw(x,y,0,0,0,0,0,0, COLOR_WHITE, COLORS[gwg->GetPlayer(player)->color]);
 			}
 
-			if(i == 4)
-				SoundManager::inst().PlayNOSound(107,this,12);
+			if(i == 4)SoundManager::inst().PlayNOSound(107,this,12); //yippy
 
 		} break;
 	}

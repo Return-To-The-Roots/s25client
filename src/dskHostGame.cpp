@@ -1,4 +1,4 @@
-// $Id: dskHostGame.cpp 7886 2012-03-18 22:20:44Z jh $
+// $Id: dskHostGame.cpp 7887 2012-03-18 22:21:17Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -70,6 +70,9 @@ dskHostGame::dskHostGame() :
 	AddText(15, 465, 40, _("Ready?"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, NormalFont);
 	// "Ping"
 	AddText(16, 515, 40, _("Ping"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, NormalFont);
+	// "Swap"
+	if(GAMECLIENT.IsHost()&&!GAMECLIENT.IsSavegame())
+		AddText(24, 10, 40, _("Swap"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, NormalFont);
 	// "Verschieben" (nur bei Savegames!)
 	if(GAMECLIENT.IsSavegame())
 		AddText(17, 645, 40, _("Past player"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, NormalFont);
@@ -164,7 +167,12 @@ dskHostGame::dskHostGame() :
 	// Alle Spielercontrols erstellen
 	for(unsigned char i = GAMECLIENT.GetPlayerCount(); i; --i)
 		UpdatePlayerRow(i-1);
-
+	//swap buttons erstellen
+	if(GAMECLIENT.IsHost()&&!GAMECLIENT.IsSavegame())
+	{
+		for(unsigned char i = GAMECLIENT.GetPlayerCount(); i; --i)
+			AddTextButton(80+i, 5, 80+(i-1)*30, 10, 22, TC_RED1, _("-"), NormalFont);;
+	}
 	// GGS aktualisieren, zum ersten Mal
 	this->CI_GGSChanged(GameClient::inst().GetGGS());
 
@@ -471,6 +479,38 @@ void dskHostGame::Msg_ButtonClick(const unsigned int ctrl_id)
 {
 	switch(ctrl_id)
 	{
+	case 81:
+	case 82:
+	case 83:
+	case 84:
+	case 85:
+	case 86:
+	case 87:
+	case 80: //swap 
+		{
+			LOG.lprintf("dskHostGame: swap button pressed\n");
+			unsigned char p=0;
+			while(true)
+			{
+				if(GAMECLIENT.GetPlayer(p)->is_host)
+				{
+					LOG.lprintf("dskHostGame: host detected\n");
+					break;
+				}
+				if(p>8)
+				{
+					LOG.lprintf("dskHostGame: could not find host\n");
+					break;
+				}
+				else
+					p++;
+			}
+			if(p<8)
+			{
+				GameServer::inst().SwapPlayer(p,ctrl_id-81);
+				CI_PlayersSwapped(p,ctrl_id-81);
+			}
+		}break;
 	case 3: // Zurück
 		{
 			if(GAMECLIENT.IsHost())

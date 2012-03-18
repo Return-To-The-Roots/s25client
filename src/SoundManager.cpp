@@ -1,4 +1,4 @@
-// $Id: SoundManager.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: SoundManager.cpp 7887 2012-03-18 22:21:17Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -80,12 +80,11 @@ void SoundManager::WorkingFinished(noBase * const obj)
 
 	if(SETTINGS.sound.effekte == false)
 		return;
-
 	// Alle Sounds von diesem Objekt stoppen und löschen
 	for(list<NOSound>::iterator it = no_sounds.begin();it.valid();++it)
 	{
 		if(it->obj == obj)
-		{
+		{			
 			AudioDriverWrapper::inst().StopEffect(it->play_id);
 			no_sounds.erase(&it);
 		}

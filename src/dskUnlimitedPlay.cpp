@@ -69,9 +69,12 @@ dskUnlimitedPlay::dskUnlimitedPlay() :
 	AddText(13, 355, 40, _("Color"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, NormalFont);
 	// "Team"
 	AddText(14, 405, 40, _("Team"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, NormalFont);
+	// "Swap"
+	if(GAMECLIENT.IsHost())
+		AddText(24, 10, 40, _("Swap"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, NormalFont);
 	// "Verschieben" (nur bei Savegames!)
 	if(GAMECLIENT.IsSavegame())
-		AddText(17, 645, 40, _("Past player"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, NormalFont);
+		AddText(17, 460, 40, _("Past player"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, NormalFont);
 
 	// "Spiel starten"
 	AddTextButton(2, 600, 560, 180, 22, TC_GREEN2, (GAMECLIENT.IsHost() ? _("Start game") : _("Ready")), NormalFont);
@@ -147,7 +150,12 @@ dskUnlimitedPlay::dskUnlimitedPlay() :
 	// Alle Spielercontrols erstellen
 	for(unsigned char i = GAMECLIENT.GetPlayerCount(); i; --i)
 		UpdatePlayerRow(i-1);
-
+	//swap buttons erstellen
+	if(GAMECLIENT.IsHost())
+	{
+		for(unsigned char i = GAMECLIENT.GetPlayerCount(); i; --i)
+			AddTextButton(80+i, 5, 80+(i-1)*30, 10, 22, TC_RED1, _("-"), NormalFont);;
+	}
 	// GGS aktualisieren, zum ersten Mal
 	this->CI_GGSChanged(GameClient::inst().GetGGS());
 
@@ -457,6 +465,38 @@ void dskUnlimitedPlay::Msg_ButtonClick(const unsigned int ctrl_id)
 {
 	switch(ctrl_id)
 	{
+	case 81:
+	case 82:
+	case 83:
+	case 84:
+	case 85:
+	case 86:
+	case 87:
+	case 80: //swap 
+		{
+			LOG.lprintf("dskHostGame: swap button pressed\n");
+			unsigned char p=0;
+			while(true)
+			{
+				if(GAMECLIENT.GetPlayer(p)->is_host)
+				{
+					LOG.lprintf("dskHostGame: host detected\n");
+					break;
+				}
+				if(p>8)
+				{
+					LOG.lprintf("dskHostGame: could not find host\n");
+					break;
+				}
+				else
+					p++;
+			}
+			if(p<8)
+			{
+				GameServer::inst().SwapPlayer(p,ctrl_id-81);
+				CI_PlayersSwapped(p,ctrl_id-81);
+			}
+		}break;
 	case 3: // Zurück
 		{
 			if(GAMECLIENT.IsHost())

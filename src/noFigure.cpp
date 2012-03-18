@@ -315,7 +315,7 @@ void noFigure::StartWalking(const unsigned char dir)
 	}
 }
 
-void noFigure::StartWalkingFailedTrade(const unsigned char dir)
+/*void noFigure::StartWalkingFailedTrade(const unsigned char dir)
 {
 	assert(!(GetGOT() == GOT_NOF_PASSIVESOLDIER && fs == FS_JOB));
 
@@ -348,7 +348,7 @@ void noFigure::StartWalkingFailedTrade(const unsigned char dir)
 		// Normal hinlaufen
 		StartMoving(dir,20);
 	}
-}
+}*/
 
 
 
@@ -505,7 +505,7 @@ void noFigure::WalkToGoal()
 	}
 }
 
-void noFigure::WalkToGoalFailedTrade()
+/*void noFigure::WalkToGoalFailedTrade()
 {
 	// Kein Ziel mehr --> Rumirren
 	if(!goal)
@@ -633,7 +633,7 @@ void noFigure::WalkToGoalFailedTrade()
 	{
 		StartWalkingFailedTrade(cur_rs->GetDir(rs_dir,rs_pos));
 	}
-}
+}*/
 
 
 
@@ -769,7 +769,7 @@ void noFigure::StartWandering(const unsigned burned_wh_id)
 	}
 }
 
-void noFigure::StartWanderingFailedTrade(const unsigned burned_wh_id)
+/*void noFigure::StartWanderingFailedTrade(const unsigned burned_wh_id)
 {
 	fs = FS_WANDER;
 	cur_rs = 0;
@@ -789,7 +789,7 @@ void noFigure::StartWanderingFailedTrade(const unsigned burned_wh_id)
 		waiting_for_free_node = false;
 		WanderFailedTrade();
 	}
-}
+}*/
 
 void noFigure::Wander()
 {
@@ -1120,7 +1120,7 @@ void noFigure::WanderToFlag()
 	}
 }
 
-void noFigure::WanderToFlagFailedTrade()
+/*void noFigure::WanderToFlagFailedTrade()
 {
 	// Existiert die Flagge überhaupt noch? 
 	noBase * no = gwg->GetNO(flag_x,flag_y);
@@ -1172,7 +1172,7 @@ void noFigure::WanderToFlagFailedTrade()
 		StartWanderingFailedTrade();
 		WanderFailedTrade();
 	}
-}
+}*/
 
 //void noFigure::Wander()
 //{
