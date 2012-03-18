@@ -1,4 +1,4 @@
-// $Id: GameClientPlayer.cpp 7878 2012-03-18 22:15:23Z jh $
+// $Id: GameClientPlayer.cpp 7882 2012-03-18 22:18:36Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -2235,6 +2235,8 @@ GameWorldGame * WarehouseDistanceComperator::gwg;
 /// Send wares to warehouse wh
 void GameClientPlayer::Trade(nobBaseWarehouse * wh, const GoodType gt, const Job job, unsigned count) const
 {
+	if(count<1) //block trolling player who wants to send empty tradecaravan, sending packdonkeys is forbidden because it crashes the game 
+		return;
 	std::list<nobBaseWarehouse*> whs(warehouses);
 	WarehouseDistanceComperator::SetParameters(wh,gwg);
 	whs.sort(WarehouseDistanceComperator::Compare);
@@ -2256,8 +2258,8 @@ void GameClientPlayer::Trade(nobBaseWarehouse * wh, const GoodType gt, const Job
 
 			available = min(available,count);
 			count -= available;
-
-			(*it)->StartTradeCaravane(gt,job,available,*tr,wh);
+			if(available>0) //we dont have anything to send .. so dont start a new traderoute from here!
+				(*it)->StartTradeCaravane(gt,job,available,*tr,wh);
 
 
 		}

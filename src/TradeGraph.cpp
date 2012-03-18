@@ -526,9 +526,9 @@ void TradeGraph::UpdateEdge(Point<MapCoord> pos, const unsigned char dir, const 
 }
 
 /// Assigns new start and goal positions and hence, a new route
-void TradeRoute::AssignNewGoal(const Point<MapCoord> new_goal)
+void TradeRoute::AssignNewGoal(const Point<MapCoord> new_goal,const Point<MapCoord> current)
 {
-	this->start = current_pos;
+	this->start = current;
 	this->goal = new_goal;
 	RecalcGlobalRoute();
 }

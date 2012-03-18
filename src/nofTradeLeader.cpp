@@ -7,7 +7,7 @@
 #include "SerializedGameData.h"
 
 nofTradeLeader::nofTradeLeader(const MapCoord x, const MapCoord y,const unsigned char player,const TradeRoute& tr, const Point<MapCoord>  start,const Point<MapCoord> goal) 
-: noFigure(JOB_HELPER,x,y,player), tr(tr), successor(NULL), start(start), goal(goal)
+: noFigure(JOB_HELPER,x,y,player), tr(tr), successor(NULL), start(start), goal(goal), fails(0)
 {
 }
 
@@ -16,7 +16,8 @@ nofTradeLeader::nofTradeLeader(SerializedGameData * sgd, const unsigned obj_id)
 tr(sgd,gwg,player), 
 successor(sgd->PopObject<nofTradeDonkey>(GOT_NOF_TRADEDONKEY)),
 start(sgd->PopMapPoint()),
-goal(sgd->PopMapPoint())
+goal(sgd->PopMapPoint()),
+fails(sgd->PopUnsignedChar())
 
 {
 }
@@ -31,6 +32,7 @@ void nofTradeLeader::Serialize(SerializedGameData *sgd) const
 	sgd->PushObject(successor,true);
 	sgd->PushMapPoint(start);
 	sgd->PushMapPoint(goal);
+	sgd->PushUnsignedChar(fails);
 }
 
 void nofTradeLeader::GoalReached()
@@ -40,6 +42,11 @@ void nofTradeLeader::GoalReached()
 void nofTradeLeader::Walked()
 {
 	// Exception handling: goal destroyed or sth. like this
+	if(fails>1)
+	{
+		WanderFailedTrade();
+		return;
+	}
 	bool invalid_goal = false;
 
 	noBase * nob = gwg->GetNO(goal.x,goal.y);
@@ -52,7 +59,8 @@ void nofTradeLeader::Walked()
 	if(invalid_goal)
 	{
 		TryToGoHome();
-		next_dir = dir;
+		next_dir=tr.GetNextDir();
+		StartWalking(next_dir);
 	}
 	else
 	{
@@ -70,15 +78,27 @@ void nofTradeLeader::Walked()
 			if(next_dir!= NO_PATH)
 				StartWalking(next_dir);
 			else
-			{
+			{				
 				TryToGoHome();
-				next_dir = dir;
+				next_dir=tr.GetNextDir();
+				if(next_dir==NO_PATH)
+				{
+					CancelTradeCaravane();
+					next_dir=dir;
+					//StartWanderingFailedTrade();
+				}
+				StartWalking(next_dir);
+				//next_dir=tr.GetNextDir();
+				//next_dir = dir;
 			}
 
 	}
 
+	//if(successor&&next_dir!=NO_PATH)
 	if(successor)
+	{	
 		successor->AddNextDir(next_dir);
+	}
 }
 
 void nofTradeLeader::HandleDerivedEvent(const unsigned int id)
@@ -99,14 +119,16 @@ void nofTradeLeader::LostWork()
 
 /// Tries to go to the home ware house, otherwise start wandering
 void nofTradeLeader::TryToGoHome()
-{
-	goal = start;
+{	
+	fails++;
+	//if(fails>1)
+		//CancelTradeCaravane();
+	
 	// Find a way back home
-	tr.AssignNewGoal(gwg->GetPointA(start,4));
+	tr.AssignNewGoal(gwg->GetPointA(start,4),this->GetPos());
 	if(!tr.IsValid())
 		CancelTradeCaravane();
-	else
-		StartWalking(tr.GetNextDir());
+	
 }
 
 /// Start wandering and informs the other successors about this
@@ -117,6 +139,7 @@ void nofTradeLeader::CancelTradeCaravane()
 		successor->CancelTradeCaravane();
 		successor = NULL;
 	}
-	StartWandering();
-	Wander();
+	//StartWanderingFailedTrade();
+	//DieFailedTrade();
+	//WanderFailedTrade();
 }

@@ -1,4 +1,4 @@
-// $Id: noFigure.h 7881 2012-03-18 22:18:01Z jh $
+// $Id: noFigure.h 7882 2012-03-18 22:18:36Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -184,6 +184,8 @@ public:		void Destroy() { Destroy_noFigure(); }
 	virtual void CorrectSplitData_Derived();
 	/// Lässt die Figur sterben (löst sich auf und hinterlässt ggf. Leiche)
 	void Die();
+	/// Lässt die Figur sterben (löst sich auf und hinterlässt ggf. Leiche) - does not reduce good counts because for trade routes they have been reduced already.
+	void DieFailedTrade();
 	/// Mitglied von nem Lagerhaus(Lagerhausarbeiter, die die Träger-Bestände nicht beeinflussen?)
 	/// Kann außer bei WarehouseWorker die Default-Definition gelassen werden
 	virtual bool MemberOfWarehouse() const { return false; }

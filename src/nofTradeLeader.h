@@ -37,6 +37,7 @@ class nofTradeLeader : public noFigure
 
 private:
 
+	unsigned char fails;
 	void GoalReached();
 	void Walked();
 	void HandleDerivedEvent(const unsigned int id);

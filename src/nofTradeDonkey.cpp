@@ -48,6 +48,12 @@ void nofTradeDonkey::GoalReached()
 
 void nofTradeDonkey::Walked()
 {
+	if(next_dirs.size()<1)
+	{
+		//WanderFailedTrade();
+		gwg->RemoveFigure(this,x,y);
+	    return;
+	}
 	unsigned char next_dir = GetNextDir();
 	// Are we now at the goal?
 	if(next_dir == REACHED_GOAL)
@@ -62,7 +68,7 @@ void nofTradeDonkey::Walked()
 		if(invalid_goal)
 		{
 			CancelTradeCaravane();
-			Wander();
+			WanderFailedTrade();
 			return;
 		}
 
@@ -83,8 +89,15 @@ void nofTradeDonkey::Walked()
 		}
 	}
 	else
-		StartWalking(next_dir);
-
+	{
+		if(next_dir!=NO_PATH)
+			StartWalking(next_dir);
+		else
+		{
+			CancelTradeCaravane();
+			WanderFailedTrade();
+		}
+	}
 	if(successor)
 		successor->AddNextDir(next_dir);
 }
@@ -98,6 +111,7 @@ void nofTradeDonkey::AbrogateWorkplace()
 
 void nofTradeDonkey::Draw(int x, int y)
 {
+
 	if(job == JOB_PACKDONKEY)
 	{
 		// Wenn wir warten auf ein freies Plätzchen, müssen wir den stehend zeichnen!
@@ -132,10 +146,13 @@ void nofTradeDonkey::LostWork()
 /// Start wandering and informs the other successors about this
 void nofTradeDonkey::CancelTradeCaravane()
 {
+	next_dirs.clear();
+	next_dirs.push_front(REACHED_GOAL);
 	if(successor) 
 	{
 		successor->CancelTradeCaravane();
 		successor = NULL;
 	}
-	StartWanderingFailedTrade();
+	//DieFailedTrade();
+	//StartWanderingFailedTrade();
 }

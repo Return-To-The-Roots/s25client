@@ -603,7 +603,7 @@ void noFigure::WalkToGoalFailedTrade()
 					// Evtl wurde kein Lagerhaus gefunden und wir sollen rumirren, dann tun wir das gleich
 					if(fs == FS_WANDER)
 					{
-						Wander();
+						WanderFailedTrade();
 						return;
 					}
 					
@@ -930,6 +930,9 @@ void noFigure::Wander()
 void noFigure::WanderFailedTrade()
 {
 	// Sind wir noch auf der Suche nach einer Flagge?
+	DieFailedTrade();
+	return;
+	/*
 	if(wander_way != 0xFFFF)
 	{
 		// Soldaten sind härter im Nehmen
@@ -1060,7 +1063,7 @@ void noFigure::WanderFailedTrade()
 	else
 	{
 		WanderToFlagFailedTrade();
-	}
+	}*/
 }
 
 void noFigure::WanderToFlag()
@@ -1463,6 +1466,17 @@ void noFigure::Die()
 
 	// Sichtbarkeiten neu berechnen für Erkunder und Soldaten
 	CalcVisibilities(x,y);
+}
+void noFigure::DieFailedTrade()
+{
+	// Weg mit mir
+	gwg->RemoveFigure(this,x,y);
+	em->AddToKillList(this);
+	// ggf. Leiche hinlegen, falls da nix ist
+	if(!gwg->GetSpecObj<noBase>(x,y))
+		gwg->SetNO(new noSkeleton(x,y),x,y);	
+	// Sichtbarkeiten neu berechnen für Erkunder und Soldaten
+	//CalcVisibilities(x,y);
 }
 
 void noFigure::NodeFreed(const unsigned short x, const unsigned short y)

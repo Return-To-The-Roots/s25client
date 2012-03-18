@@ -92,7 +92,7 @@ public:
 	/// Gets the next direction the caravane has to take
 	unsigned char GetNextDir();
 	/// Assigns new start and goal positions and hence, a new route
-	void AssignNewGoal(const Point<MapCoord> new_goal);
+	void AssignNewGoal(const Point<MapCoord> new_goal, const Point<MapCoord> current);
 	
 
 };

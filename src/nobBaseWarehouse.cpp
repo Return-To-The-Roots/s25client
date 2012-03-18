@@ -1,4 +1,4 @@
-// $Id: nobBaseWarehouse.cpp 7682 2011-12-29 19:43:45Z marcus $
+// $Id: nobBaseWarehouse.cpp 7882 2012-03-18 22:18:36Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1438,9 +1438,9 @@ unsigned nobBaseWarehouse::GetAvailableFiguresForTrading(const Job job) const
 	if(!real_goods.people[JOB_HELPER]) return 0;
 
 	if(job == JOB_HELPER)
-		return real_goods.people[JOB_HELPER]-1; // need one as leader
+		return (real_goods.people[JOB_HELPER]-1)/2; // need one as leader
 	else
-		return real_goods.people[job]; 
+		return min(real_goods.people[job],real_goods.people[JOB_HELPER]-1); 
 }
 
 /// Starts a trade caravane from this warehouse
@@ -1465,20 +1465,39 @@ void nobBaseWarehouse::StartTradeCaravane(const GoodType gt,  Job job, const uns
 
 	// Also diminish the count of donkeys
 	if(job == JOB_NOTHING)
+	{
 		job = JOB_PACKDONKEY;
-
-	// Diminish the goods in the warehouse
-	--real_goods.people[JOB_HELPER];
-	this->players->getElement(player)->DecreaseInventoryJob(JOB_HELPER,1);
-	if(gt != GD_NOTHING) 
-	{ 
-		real_goods.goods[gt] -= count;
-		this->players->getElement(player)->DecreaseInventoryWare(gt,count);
+		// Diminish the goods in the warehouse
+		--real_goods.people[JOB_HELPER];
+		this->players->getElement(player)->DecreaseInventoryJob(JOB_HELPER,1);
+		if(gt != GD_NOTHING) 
+		{ 
+			real_goods.goods[gt] -= count;
+			this->players->getElement(player)->DecreaseInventoryWare(gt,count);
+		}
+		if(job != JOB_NOTHING) //now that we have removed the goods lets remove the donkeys
+		{ 
+			real_goods.people[job] -= count;
+			this->players->getElement(player)->DecreaseInventoryJob(job,count);
+		}
 	}
-	else if(job != JOB_NOTHING) 
-	{ 
-		real_goods.people[job] -= count;
-		this->players->getElement(player)->DecreaseInventoryJob(job,count);
+	else
+	{
+		--real_goods.people[JOB_HELPER];
+		this->players->getElement(player)->DecreaseInventoryJob(JOB_HELPER,1);
+		if(gt != GD_NOTHING) 
+		{ 
+			real_goods.goods[gt] -= count;
+			this->players->getElement(player)->DecreaseInventoryWare(gt,count);
+		}
+		if(job != JOB_NOTHING) //we shouldnt have had goods so lets remove the jobs & the helpers
+		{ 
+			real_goods.people[job] -= count;
+			this->players->getElement(player)->DecreaseInventoryJob(job,count);
+			real_goods.people[JOB_HELPER] -= count;
+			this->players->getElement(player)->DecreaseInventoryJob(JOB_HELPER,count);
+		}
 	}
+	
 }
 
