@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 7879 2012-03-18 22:15:56Z jh $
+// $Id: AIPlayerJH.cpp 7880 2012-03-18 22:17:30Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -126,16 +126,13 @@ void AIPlayerJH::RunGF(const unsigned gf)
 	unsigned numBldToTest = 20;
 	std::list<AIJH::Coords> bldPoses = construction.GetStoreHousePositions();
 	unsigned char randomstore=rand()%bldPoses.size();
-	std::list<AIJH::Coords>::iterator it2 = bldPoses.end();
 	for (std::list<AIJH::Coords>::iterator it = bldPoses.begin(); it != bldPoses.end(); it++)
-	{
-		//order ai to try building new military buildings close to the latest completed military buildings
-		it2--;
-		AddBuildJob(construction.ChooseMilitaryBuilding((*it2).x, (*it2).y));
+	{		
 		if(randomstore>0)
 			randomstore--;	
 		else
 		{
+			UpdateNodesAround((*it).x,(*it).y,15); //update the area we want to build in first 
 			for (unsigned int i = 0; i < numBldToTest; ++i)
 			{
 				if (construction.Wanted(bldToTest[i]))
@@ -153,8 +150,12 @@ void AIPlayerJH::RunGF(const unsigned gf)
 	if(milBuildings.size()<1)return;
 	randomstore=rand()%milBuildings.size();	
 	numBldToTest = 20;
+	std::list<Coords>::iterator it2 = milBuildings.end();
 	for (std::list<Coords>::iterator it = milBuildings.begin(); it != milBuildings.end(); it++)
 	{
+		//order ai to try building new military buildings close to the latest completed military buildings
+		it2--;
+		AddBuildJob(construction.ChooseMilitaryBuilding((*it2).x, (*it2).y));
 		if(randomstore>0)
 			randomstore--;
 		const nobMilitary *mil;
@@ -162,6 +163,7 @@ void AIPlayerJH::RunGF(const unsigned gf)
 			continue;
 		if(randomstore<=0)
 		{
+			UpdateNodesAround((*it).x,(*it).y,15); //update the area we want to build in first 
 			for (unsigned int i = 0; i < numBldToTest; ++i) 
 			{
 				if (construction.Wanted(bldToTest[i]))
@@ -169,7 +171,8 @@ void AIPlayerJH::RunGF(const unsigned gf)
 					AddBuildJob(bldToTest[i],(*it).x,(*it).y);
 				}
 			}
-
+			AddBuildJob(construction.ChooseMilitaryBuilding((*it).x, (*it).y));
+			break;
 		}
 	}
 
@@ -1168,6 +1171,8 @@ void AIPlayerJH::TryToAttack()
 	{
 		const nobMilitary *mil;
 		if (!(mil = aii->GetSpecObj<nobMilitary>((*it).x, (*it).y)))
+			//this means there is no military building although there should be - probably destroyed or just failed to save the right spot - lets try to remove it from the list
+			it=milBuildings.erase(it);
 			continue;
 
 		if (mil->GetFrontierDistance() == 0)
@@ -1321,9 +1326,13 @@ void AIPlayerJH::RemoveUnusedRoad(const noFlag *startFlag, unsigned char exclude
 	}
 
 	// if we found more than 1 road the flag is still in use.
-	if (finds >1)
+	if (finds>1)
+	{		
 		return;
+	}
 
+	// kill the flag
+	aii->DestroyFlag(startFlag);
 
 	MapCoord x = aii->GetXA(startFlag->GetX(), startFlag->GetY(), foundDir);
 	MapCoord y = aii->GetYA(startFlag->GetX(), startFlag->GetY(), foundDir);
@@ -1333,7 +1342,7 @@ void AIPlayerJH::RemoveUnusedRoad(const noFlag *startFlag, unsigned char exclude
 	while(true)
 	{
 		const noFlag *flag;
-
+		finds=0;
 		// flag found?
 		if ((flag = aii->GetSpecObj<noFlag>(x, y)))
 		{
@@ -1341,7 +1350,7 @@ void AIPlayerJH::RemoveUnusedRoad(const noFlag *startFlag, unsigned char exclude
 			break;
 		}
 		else
-		{
+		{			
 			// continue to follow the road
 			for (unsigned char nextDir = 0; nextDir < 6; ++nextDir)
 			{
@@ -1350,16 +1359,17 @@ void AIPlayerJH::RemoveUnusedRoad(const noFlag *startFlag, unsigned char exclude
 					x = aii->GetXA(x, y, nextDir);
 					y = aii->GetYA(x, y, nextDir);
 					prevDir = (nextDir + 3) % 6;
+					finds++;
 					break;
 				}
 			}
 		}
-		
-		// no more road to follow, stop it
-		break;
+		if(finds!=1)
+		{
+			// either found a split in the road (>1) or the road stopped (0) - both things shouldnt happen but just in case they do: break the loop.
+			break;
+		}
 	}
-	// kill it
-	aii->DestroyFlag(startFlag);
 }
 
 bool AIPlayerJH::SoldierAvailable()

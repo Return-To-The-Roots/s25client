@@ -1,4 +1,4 @@
-// $Id: AIConstruction.cpp 7879 2012-03-18 22:15:56Z jh $
+// $Id: AIConstruction.cpp 7880 2012-03-18 22:17:30Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -316,10 +316,7 @@ bool AIConstruction::Wanted(BuildingType type)
 		return false;
 	if ((type >= BLD_BARRACKS && type <= BLD_FORTRESS) || type == BLD_STOREHOUSE)
 		//todo: find a better way to determine that there is no risk in expanding than sawmill up and complete (everything else complete as well)
-		if(GetBuildingCount(BLD_BARRACKS)+GetBuildingCount(BLD_GUARDHOUSE)>0 || (GetBuildingCount(BLD_SAWMILL)>1&&aii->GetBuildingSites().size()<1))
-			return true;
-		else
-			return false;
+		return (GetBuildingCount(BLD_BARRACKS)+GetBuildingCount(BLD_GUARDHOUSE)+GetBuildingCount(BLD_FORTRESS)+GetBuildingCount(BLD_WATCHTOWER)>0 || (GetBuildingCount(BLD_SAWMILL)>1&&aii->GetBuildingSites().size()<1));		
 	return GetBuildingCount(type) < buildingsWanted[type];
 }
 
@@ -327,7 +324,7 @@ void AIConstruction::RefreshBuildingCount()
 {
 	aii->GetBuildingCount(buildingCounts);
 	//very low boards count or no military buildings -> usually start only
-	if((aii->GetInventory()->goods[GD_BOARDS] < 20 && GetBuildingCount(BLD_SAWMILL)<1)||GetBuildingCount(BLD_BARRACKS)+GetBuildingCount(BLD_GUARDHOUSE)<1)
+	if(GetBuildingCount(BLD_BARRACKS)+GetBuildingCount(BLD_GUARDHOUSE)+GetBuildingCount(BLD_FORTRESS)+GetBuildingCount(BLD_WATCHTOWER)<1)
 	{
 		buildingsWanted[BLD_FORESTER] = 1;
 		buildingsWanted[BLD_SAWMILL] = 2; //probably only has 1 saw+carpenter but if that is the case the ai will try to produce 1 additional saw very quickly
