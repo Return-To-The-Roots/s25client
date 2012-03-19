@@ -1,4 +1,4 @@
-// $Id: AIBase.h 7884 2012-03-18 22:19:43Z jh $
+// $Id: AIBase.h 7891 2012-03-19 10:55:17Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -63,7 +63,7 @@ public:
 
 	AIBase(const unsigned char playerid, const GameWorldBase * const gwb, const GameClientPlayer * const player,
 		const GameClientPlayerList * const players, const GlobalGameSettings * const ggs, const AI::Level level)
-		: playerid(playerid), gwb(gwb), player(player), players(players), ggs(ggs), level(level), aii(new AIInterface(gwb, player, players, &gcs, playerid)) {}
+		: playerid(playerid), gwb(gwb), player(player), players(players), level(level), aii(new AIInterface(gwb, player, players, &gcs, playerid)), ggs(ggs) {}
 
 	virtual ~AIBase() {}
 

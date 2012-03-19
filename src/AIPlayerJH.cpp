@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 7884 2012-03-18 22:19:43Z jh $
+// $Id: AIPlayerJH.cpp 7891 2012-03-19 10:55:17Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1103,7 +1103,7 @@ void AIPlayerJH::HandleNewMilitaryBuilingOccupied(const Coords& coords)
 		BLD_HUNTER	
 	};
 	std::list<AIJH::Coords> storeHousePoses = construction.GetStoreHousePositions();
-	bool storeclose=false;
+	//bool storeclose=false;
 	unsigned numBldToTest = 0;
 	//remove the storehouse from the building test list if we are close to another storehouse already
 	for (std::list<AIJH::Coords>::iterator it = storeHousePoses.begin(); it != storeHousePoses.end(); it++)

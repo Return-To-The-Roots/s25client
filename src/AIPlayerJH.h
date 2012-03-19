@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.h 7884 2012-03-18 22:19:43Z jh $
+// $Id: AIPlayerJH.h 7891 2012-03-19 10:55:17Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -154,7 +154,7 @@ protected:
 	void InitResourceMaps();
 
 	//returns true if we can get to the startflag in <maxlen without turning back
-	bool AIPlayerJH::IsFlagPartofCircle(const noFlag *startFlag,unsigned maxlen,const noFlag *curFlag,unsigned char excludeDir,bool init,std::vector<int> oldflagsx,std::vector<int> oldflagsy);
+	bool IsFlagPartofCircle(const noFlag *startFlag,unsigned maxlen,const noFlag *curFlag,unsigned char excludeDir,bool init,std::vector<int> oldflagsx,std::vector<int> oldflagsy);
 
 	//globally update a layer of the resource map
 	void RecalcResource(AIJH::Resource res);	
