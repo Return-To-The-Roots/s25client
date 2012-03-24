@@ -1,3 +1,165 @@
+s25rttr (20120319-7891.161) karmic; urgency=low
+
+  * Automatic Jenkins Build 161
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Mon, 19 Mar 2012 12:15:38 +0100
+
+s25rttr (20120319-7891) any; urgency=low
+
+  * fixes for compiling with gcc
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Mon, 19 Mar 2012 10:55:00 +0100
+
+s25rttr (20120319-7890.160) karmic; urgency=low
+
+  * Automatic Jenkins Build 160
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Mon, 19 Mar 2012 01:02:58 +0100
+
+s25rttr (20120319-7890) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Mon, 19 Mar 2012 00:00:00 +0100
+
+s25rttr (20120318-7889) any; urgency=low
+
+  * swap player now includes team
+    (by poc)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sun, 18 Mar 2012 22:22:00 +0100
+
+s25rttr (20120318-7888) any; urgency=low
+
+  * player swap now swaps aiType as well
+    (by poc)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sun, 18 Mar 2012 22:21:00 +0100
+
+s25rttr (20120318-7887) any; urgency=low
+
+  * new option: swap player position - should work for
+    unlimited&multiplayer
+    host has to press the button to swap host & target. (its a bit
+    complicated but you can switch any player to any slot you want)
+    unused "-failedtrade" functions turned to comments in
+    noFigure.h/cpp
+    (by poc)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sun, 18 Mar 2012 22:21:00 +0100
+
+s25rttr (20120318-7886) any; urgency=low
+
+  * new option: random start location (unlimted play/multiplayer
+    host)
+    (by poc)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sun, 18 Mar 2012 22:20:00 +0100
+
+s25rttr (20120318-7885) any; urgency=low
+
+  * bugfix: the last "capturing" soldier (for a full building) no
+    longer leaves the building
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sun, 18 Mar 2012 22:20:00 +0100
+
+s25rttr (20120318-7884) any; urgency=low
+
+  * ai now uses accurate, up to date resource maps instead of
+    estimating around
+    several other ai improvements: hunter out of resources, tool
+    settings and other minor updates.
+    (by poc)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sun, 18 Mar 2012 22:19:00 +0100
+
+s25rttr (20120318-7883) any; urgency=low
+
+  * trade window: you can no longer press the "send" button while
+    selecting a ware/job from the list
+    (by poc)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sun, 18 Mar 2012 22:19:00 +0100
+
+s25rttr (20120318-7882) any; urgency=low
+
+  * updated the trade addon
+    negative helpers / donkeys bug shouldnt happen anymore
+    caravan leader in enemy territory -> crash fixed (the caravan
+    will starve)
+    fixed roaming caravans that cant find a path to their goal. They
+    will try to walk back to your base, and if that fails starve.
+    players can no longer send a caravan containing 0 items/workers.
+    (by poc)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sun, 18 Mar 2012 22:18:00 +0100
+
+s25rttr (20120318-7881) any; urgency=low
+
+  * trade: failed trade caravans now return to base if possible, else
+    they "wander" losing their goods even if they reach a storehouse
+    later.
+    more ai updates
+    (by poc)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sun, 18 Mar 2012 22:18:00 +0100
+
+s25rttr (20120318-7880) any; urgency=low
+
+  * ai remove unused road should now remove the road up to a flag
+    that is still in use
+    ai build order updated again
+    (by poc)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sun, 18 Mar 2012 22:17:00 +0100
+
+s25rttr (20120318-7879) any; urgency=low
+
+  * ai should now complete the starter buildings
+    (2sawmill,1woodcutter,1forester,2quarry) before building anything
+    else
+    loading empty info text (charburner) no longer crashes the game
+    ai can have more buildings in construction at the same time
+    (should stop the ai from adding up a huge job-queue)
+    ai should expand a bit more agressive now
+    (by poc)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sun, 18 Mar 2012 22:15:00 +0100
+
+s25rttr (20120318-7878) any; urgency=low
+
+  * ai sets goods distribution values
+    distribution change now works for wood
+    (by poc)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sun, 18 Mar 2012 22:15:00 +0100
+
+s25rttr (20120318-7877) any; urgency=low
+
+  * ai buildorder changes
+    removed the "tree chopped down" event
+    (by poc)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sun, 18 Mar 2012 22:14:00 +0100
+
+s25rttr (20120318-7876) any; urgency=low
+
+  * chat messages no longer crash the game
+    map names including ö unicode 0xF6 no longer crasesh the game
+    (bad solution..)
+    cancel start in singleplayer -> unlimited no longer crashes the
+    game
+    ai players updated
+    (by poc)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sun, 18 Mar 2012 22:10:00 +0100
+
+s25rttr (20120218-7844) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 18 Feb 2012 23:00:00 +0100
+
 s25rttr (20120214-7839.159) karmic; urgency=low
 
   * Automatic Jenkins Build 159
