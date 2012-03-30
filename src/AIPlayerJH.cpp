@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 7891 2012-03-19 10:55:17Z jh $
+// $Id: AIPlayerJH.cpp 7906 2012-03-30 21:31:59Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1603,6 +1603,12 @@ void AIPlayerJH::RemoveUnusedRoad(const noFlag *startFlag, unsigned char exclude
 
 	// kill the flag
 	aii->DestroyFlag(startFlag);
+
+	// nothing found?
+	if (foundDir > 6)
+	{
+		return;
+	}
 
 	MapCoord x = aii->GetXA(startFlag->GetX(), startFlag->GetY(), foundDir);
 	MapCoord y = aii->GetYA(startFlag->GetX(), startFlag->GetY(), foundDir);
