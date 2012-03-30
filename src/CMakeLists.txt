@@ -1,5 +1,5 @@
 ################################################################################
-### $Id: CMakeLists.txt 7796 2012-01-28 20:47:22Z Demophobie $
+### $Id: CMakeLists.txt 7905 2012-03-30 19:46:56Z marcus $
 ################################################################################
 
 INCLUDE(FindBZip2)
@@ -430,7 +430,7 @@ IF ( "${COMPILEFOR}" STREQUAL "apple")
 ENDIF ( "${COMPILEFOR}" STREQUAL "apple")
 
 IF ( "${COMPILEFOR}" STREQUAL "windows")
-	TARGET_LINK_LIBRARIES(s25client ole32 ws2_32 shlwapi bz2 ${TARGET_LINK_LIBRARIES} )
+	TARGET_LINK_LIBRARIES(s25client ole32 ws2_32 shlwapi bz2 bfd iberty imagehlp ${TARGET_LINK_LIBRARIES} )
 ENDIF ( "${COMPILEFOR}" STREQUAL "windows")
 
 IF ( "${COMPILEFOR}" STREQUAL "linux")
