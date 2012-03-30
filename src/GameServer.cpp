@@ -1,4 +1,4 @@
-// $Id: GameServer.cpp 7713 2011-12-31 13:57:54Z marcus $
+// $Id: GameServer.cpp 7904 2012-03-30 19:43:51Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1393,7 +1393,7 @@ void GameServer::OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, std::lis
 		DebugInfo di;
 		di.SendAsyncLog(&async_log);
 		di.SendReplay();
-		di.SendStackTrace();
+//		di.SendStackTrace();
 	}
 
 	std::list<RandomEntry> *my = RANDOM.GetAsyncLog();
