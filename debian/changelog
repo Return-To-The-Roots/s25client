@@ -1,3 +1,45 @@
+s25rttr (20120331-7908.162) karmic; urgency=low
+
+  * Automatic Jenkins Build 162
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sat, 31 Mar 2012 01:10:27 +0200
+
+s25rttr (20120331-7908) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sat, 31 Mar 2012 00:00:00 +0200
+
+s25rttr (20120330-7907) any; urgency=low
+
+  * Added map "Insulaner 2" by Spike from #952358.
+
+ -- marcus  Fri, 30 Mar 2012 21:42:00 +0200
+
+s25rttr (20120330-7906) any; urgency=low
+
+  * Fix for #969275.
+
+ -- marcus  Fri, 30 Mar 2012 21:31:00 +0200
+
+s25rttr (20120330-7905) any; urgency=low
+
+  * Libraries for mingw debugging (windoze).
+
+ -- marcus  Fri, 30 Mar 2012 19:46:00 +0200
+
+s25rttr (20120330-7904) any; urgency=low
+
+  * Send async log without stacktrace.
+
+ -- marcus  Fri, 30 Mar 2012 19:43:00 +0200
+
+s25rttr (20120324-7897) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 24 Mar 2012 23:00:00 +0100
+
 s25rttr (20120319-7891.161) karmic; urgency=low
 
   * Automatic Jenkins Build 161
