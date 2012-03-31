@@ -1,5 +1,5 @@
 ################################################################################
-### $Id: c.windows.i386.cmake 7004 2011-01-27 19:04:08Z FloSoft $
+### $Id: c.windows.i386.cmake 7909 2012-03-31 12:26:40Z marcus $
 ################################################################################
 
 # this one is important
@@ -9,6 +9,8 @@ SET(CMAKE_SYSTEM_PROCESSOR i686)
 # specify the cross compiler
 SET_CCACHE(CMAKE_C_COMPILER i686-pc-mingw32-gcc)
 SET_CCACHE(CMAKE_CXX_COMPILER i686-pc-mingw32-g++)
+SET_CCACHE(CMAKE_RC_COMPILER i686-pc-mingw32-windres)
+
 SET(CMAKE_RANLIB i686-pc-mingw32-ranlib CACHE PATH "" FORCE)
 
 # find AR program
