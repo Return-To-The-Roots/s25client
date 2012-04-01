@@ -1,6 +1,6 @@
 #!/bin/bash
 ###############################################################################
-## $Id: postinstall.sh.cmake 7698 2011-12-30 11:44:36Z FloSoft $
+## $Id: postinstall.sh.cmake 7917 2012-04-01 12:10:48Z FloSoft $
 ###############################################################################
 
 # Editable Variables
@@ -138,14 +138,22 @@ rm -vf ${DESTDIR}${LIBDIR}/driver/audio/libaudio*.{a,lib}
 
 extract_debug_symbols()
 {
-    local FILE=$1
+	local FILE=$1
 
-    pushd ${DESTDIR}
-    mkdir -vp dbg/$(dirname $FILE)
-    objcopy --only-keep-debug $FILE dbg/$FILE.dbg
-    objcopy --strip-debug $FILE
-    objcopy --add-gnu-debuglink=dbg/$FILE.dbg $FILE
-    popd
+	pushd ${DESTDIR}
+	mkdir -vp dbg/$(dirname $FILE)
+	if [ "$COMPILEFOR" = "apple" ] ; then
+		echo "not supported"
+	elif [ "$COMPILEFOR" = "windows" ] ; then
+		${COMPILEARCH}-pc-mingw32-objcopy --only-keep-debug $FILE dbg/$FILE.dbg
+		${COMPILEARCH}-pc-mingw32-objcopy --strip-debug $FILE
+		${COMPILEARCH}-pc-mingw32-objcopy --add-gnu-debuglink=dbg/$FILE.dbg $FILE
+	elif [ "$COMPILEFOR" = "linux" ] ; then
+		objcopy --only-keep-debug $FILE dbg/$FILE.dbg
+		objcopy --strip-debug $FILE
+		objcopy --add-gnu-debuglink=dbg/$FILE.dbg $FILE
+	fi
+	popd
 }
 
 mecho --blue "## Extracting debug info from files and saving them into dbg"
@@ -155,13 +163,13 @@ if [ "$COMPILEFOR" = "apple" ] ; then
 	echo "extraction not supported ???"
 	i686-apple-darwin10-strip -S ${DESTDIR}bin/s25client
 	i686-apple-darwin10-strip -S ${DESTDIR}share/s25rttr/driver/video/libvideoSDL.dylib
-        i686-apple-darwin10-strip -S ${DESTDIR}share/s25rttr/driver/audio/libaudioSDL.dylib
-        i686-apple-darwin10-strip -S ${DESTDIR}share/s25rttr/RTTR/s25update
-        i686-apple-darwin10-strip -S ${DESTDIR}share/s25rttr/RTTR/sound-convert
-        i686-apple-darwin10-strip -S ${DESTDIR}share/s25rttr/RTTR/s-c_resample
+	i686-apple-darwin10-strip -S ${DESTDIR}share/s25rttr/driver/audio/libaudioSDL.dylib
+	i686-apple-darwin10-strip -S ${DESTDIR}share/s25rttr/RTTR/s25update
+	i686-apple-darwin10-strip -S ${DESTDIR}share/s25rttr/RTTR/sound-convert
+	i686-apple-darwin10-strip -S ${DESTDIR}share/s25rttr/RTTR/s-c_resample
 elif [ "$COMPILEFOR" = "windows" ] ; then
 	extract_debug_symbols s25client.exe
-        extract_debug_symbols driver/video/libvideoWinAPI.dll
+	extract_debug_symbols driver/video/libvideoWinAPI.dll
 	extract_debug_symbols driver/video/libvideoSDL.dll
 	extract_debug_symbols driver/audio/libaudioSDL.dll
 	extract_debug_symbols RTTR/s25update.exe
@@ -169,11 +177,11 @@ elif [ "$COMPILEFOR" = "windows" ] ; then
 	extract_debug_symbols RTTR/s-c_resample.exe
 elif [ "$COMPILEFOR" = "linux" ] ; then
 	extract_debug_symbols bin/s25client
-        extract_debug_symbols share/s25rttr/driver/video/libvideoSDL.so
-        extract_debug_symbols share/s25rttr/driver/audio/libaudioSDL.so
-        extract_debug_symbols share/s25rttr/RTTR/s25update
-        extract_debug_symbols share/s25rttr/RTTR/sound-convert
-        extract_debug_symbols share/s25rttr/RTTR/s-c_resample
+	extract_debug_symbols share/s25rttr/driver/video/libvideoSDL.so
+	extract_debug_symbols share/s25rttr/driver/audio/libaudioSDL.so
+	extract_debug_symbols share/s25rttr/RTTR/s25update
+	extract_debug_symbols share/s25rttr/RTTR/sound-convert
+	extract_debug_symbols share/s25rttr/RTTR/s-c_resample
 fi
 
 mecho --blue "## Performing additional tasks"
@@ -182,7 +190,7 @@ mecho --blue "## Performing additional tasks"
 if [ "$COMPILEFOR" = "apple" ] ; then
 	# app anlegen
 	mkdir -vp ${DESTDIR}s25client.app/Contents/{MacOS,Resources} || exit 1
-	
+
 	# frameworks kopieren
 	mkdir -vp ${DESTDIR}s25client.app/Contents/MacOS/Frameworks || exit 1
 	mkdir -vp ${DESTDIR}s25client.app/Contents/MacOS/Frameworks/{SDL,SDL_mixer}.framework || exit 1
@@ -191,14 +199,14 @@ if [ "$COMPILEFOR" = "apple" ] ; then
 		cp -r /Library/Frameworks/SDL.framework ${DESTDIR}s25client.app/Contents/MacOS/Frameworks || exit 1
 		cp -r /Library/Frameworks/SDL_mixer.framework ${DESTDIR}s25client.app/Contents/MacOS/Frameworks || exit 1
 	else
-                cp -r /usr/lib/apple/SDKs/Library/Frameworks/SDL.framework ${DESTDIR}s25client.app/Contents/MacOS/Frameworks || exit 1
-                cp -r /usr/lib/apple/SDKs/Library/Frameworks/SDL_mixer.framework ${DESTDIR}s25client.app/Contents/MacOS/Frameworks || exit 1
+		cp -r /usr/lib/apple/SDKs/Library/Frameworks/SDL.framework ${DESTDIR}s25client.app/Contents/MacOS/Frameworks || exit 1
+		cp -r /usr/lib/apple/SDKs/Library/Frameworks/SDL_mixer.framework ${DESTDIR}s25client.app/Contents/MacOS/Frameworks || exit 1
 	fi
-	
+
 	# remove headers and additional libraries from the frameworks
 	find ${DESTDIR}s25client.app/Contents/MacOS/Frameworks/ -name Headers -exec rm -rf {} \;
 	find ${DESTDIR}s25client.app/Contents/MacOS/Frameworks/ -name Resources -exec rm -rf {} \;
-	
+
 	# copy miniupnp
 	if [ -f /Developer/SDKs/MacOSX10.5.sdk/usr/lib/libminiupnpc.5.dylib ] ; then
 		cp -rv /Developer/SDKs/MacOSX10.5.sdk/usr/lib/libminiupnpc.5.dylib ${DESTDIR}s25client.app/Contents/MacOS || exit 1
@@ -218,12 +226,12 @@ if [ "$COMPILEFOR" = "apple" ] ; then
 	cp -v ${SRCDIR}/release/bin/macos/PkgInfo ${DESTDIR}s25client.app/Contents/ || exit 1
 	cp -v ${SRCDIR}/release/bin/macos/Info.plist ${DESTDIR}s25client.app/Contents/ || exit 1
 	mv -v ${DESTDIR}bin/* ${DESTDIR}s25client.app/Contents/MacOS/bin/ || exit 1
-	
+
 	# remove dirs if empty
 	rmdir ${DESTDIR}bin
 	rmdir ${DESTDIR}lib
-	
-	# RTTR-Ordner kopieren	
+
+	# RTTR-Ordner kopieren
 	mv -v ${DESTDIR}share ${DESTDIR}s25client.app/Contents/MacOS/ || exit 1
 
 elif [ "$COMPILEFOR" = "windows" ] ; then
@@ -248,7 +256,7 @@ elif [ "$COMPILEFOR" = "windows" ] ; then
 	cp -v ${mingw}/bin/libvorbisfile-3.dll ${DESTDIR} || exit 1
 	cp -v ${mingw}/bin/libcurl-4.dll ${DESTDIR}RTTR || exit 1
 	cp -v ${mingw}/bin/zlib1.dll ${DESTDIR}RTTR || exit 1
-	
+
 	rmdir --ignore-fail-on-non-empty -v ${DESTDIR}S2
 elif [ "$COMPILEFOR" = "linux" ] ; then
 	miniupnpc=/usr/lib/libminiupnpc.so
@@ -259,9 +267,9 @@ elif [ "$COMPILEFOR" = "linux" ] ; then
 			fi
 		;;
 		x86_64|*64)
-            if [ ! "$(uname -m)" = "$COMPILEARCH" ] ; then
-                miniupnpc=/usr/x86_64-pc-linux-gnu/lib/libminiupnpc.so
-            fi
+			if [ ! "$(uname -m)" = "$COMPILEARCH" ] ; then
+				miniupnpc=/usr/x86_64-pc-linux-gnu/lib/libminiupnpc.so
+			fi
 		;;
 	esac
 
