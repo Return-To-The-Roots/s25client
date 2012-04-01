@@ -7,11 +7,10 @@
   <Project Name="video-SDL" Path="../driver/video/SDL/codelite/video-SDL.project"/>
   <Project Name="s25client" Path="s25client.project" Active="Yes"/>
   <Project Name="libsiedler2" Path="../libsiedler2/codelite/libsiedler2.project" Active="No"/>
-  <Project Name="libendian" Path="../libsiedler2/libendian/codelite/libendian.project" Active="No"/>
   <Project Name="soundconvert" Path="../s-c/codelite/soundconvert.project" Active="No"/>
   <Project Name="libsiedler2" Path="../libsiedler2/codelite/libsiedler2.project"/>
-  <Project Name="libendian" Path="../libsiedler2/libendian/codelite/libendian.project"/>
   <Project Name="mygettext" Path="../mygettext/codelite/mygettext.project"/>
+  <Project Name="libendian" Path="/home/oliver/siedler25/libendian/codelite/libendian.project" Active="No"/>
   <BuildMatrix>
     <WorkspaceConfiguration Name="Debug" Selected="yes">
       <Project Name="video" ConfigName="Debug"/>
@@ -26,8 +25,9 @@
       <Project Name="libsiedler2" ConfigName="Debug"/>
       <Project Name="libendian" ConfigName="Debug"/>
       <Project Name="mygettext" ConfigName="Debug"/>
+      <Project Name="libendian" ConfigName="Debug"/>
     </WorkspaceConfiguration>
-    <WorkspaceConfiguration Name="Release" Selected="no">
+    <WorkspaceConfiguration Name="Release" Selected="yes">
       <Project Name="video" ConfigName="Release"/>
       <Project Name="audio" ConfigName="Release"/>
       <Project Name="mygettext" ConfigName="Release"/>
@@ -40,6 +40,7 @@
       <Project Name="libsiedler2" ConfigName="Release"/>
       <Project Name="libendian" ConfigName="Release"/>
       <Project Name="mygettext" ConfigName="Release"/>
+      <Project Name="libendian" ConfigName="Release"/>
     </WorkspaceConfiguration>
   </BuildMatrix>
 </CodeLite_Workspace>

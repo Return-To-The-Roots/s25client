@@ -9,8 +9,6 @@
   <Dependencies/>
   <VirtualDirectory Name="src">
     <File Name="../src/main.h"/>
-    <File Name="../src/oem.cpp"/>
-    <File Name="../src/oem.h"/>
     <File Name="../src/SDL.cpp"/>
     <File Name="../src/SDL.h"/>
     <File Name="../../../src/DriverInterface.cpp"/>

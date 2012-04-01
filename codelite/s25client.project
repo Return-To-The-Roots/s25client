@@ -55,13 +55,9 @@
       <File Name="../libutil/src/MessageInterface.h"/>
       <File Name="../libutil/src/MessageQueue.cpp"/>
       <File Name="../libutil/src/MessageQueue.h"/>
-      <File Name="../libutil/src/Messages.cpp"/>
-      <File Name="../libutil/src/Messages.h"/>
       <File Name="../libutil/src/MyTime.cpp"/>
       <File Name="../libutil/src/MyTime.h"/>
       <File Name="../libutil/src/Protocol.h"/>
-      <File Name="../libutil/src/SerializableArray.cpp"/>
-      <File Name="../libutil/src/SerializableArray.h"/>
       <File Name="../libutil/src/Singleton.h"/>
       <File Name="../libutil/src/Socket.cpp"/>
       <File Name="../libutil/src/Socket.h"/>
@@ -79,17 +75,11 @@
       <File Name="../liblobby/src/LobbyMessage.h"/>
       <File Name="../liblobby/src/LobbyMessageInterface.cpp"/>
       <File Name="../liblobby/src/LobbyMessageInterface.h"/>
-      <File Name="../liblobby/src/LobbyMessages.cpp"/>
-      <File Name="../liblobby/src/LobbyMessages.h"/>
-      <File Name="../liblobby/src/LobbyPlayerList.cpp"/>
-      <File Name="../liblobby/src/LobbyPlayerList.h"/>
       <File Name="../liblobby/src/LobbyProtocol.h"/>
       <File Name="../liblobby/src/liblobby.h"/>
       <File Name="../liblobby/src/main.h"/>
       <File Name="../liblobby/src/LobbyServerInfo.cpp"/>
       <File Name="../liblobby/src/LobbyServerInfo.h"/>
-      <File Name="../liblobby/src/LobbyServerList.cpp"/>
-      <File Name="../liblobby/src/LobbyServerList.h"/>
       <File Name="../liblobby/src/LobbyPlayerInfo.cpp"/>
       <File Name="../liblobby/src/LobbyPlayerInfo.h"/>
     </VirtualDirectory>
@@ -275,6 +265,8 @@
         <File Name="../src/iwMerchandiseStatistics.h"/>
         <File Name="../src/iwTrade.cpp"/>
         <File Name="../src/iwTrade.h"/>
+        <File Name="../src/iwObservate.cpp"/>
+        <File Name="../src/iwObservate.h"/>
       </VirtualDirectory>
       <File Name="../src/PostMsg.cpp"/>
       <File Name="../src/PostMsg.h"/>
@@ -469,7 +461,6 @@
       <File Name="../src/GameClientGF_Replay.cpp"/>
       <File Name="../src/GameClientPlayer.cpp"/>
       <File Name="../src/GameClientPlayer.h"/>
-      <File Name="../src/GameInterface.cpp"/>
       <File Name="../src/GameInterface.h"/>
       <File Name="../src/GameObject.cpp"/>
       <File Name="../src/GameObject.h"/>
@@ -479,7 +470,6 @@
       <File Name="../src/GameWorld.h"/>
       <File Name="../src/GameWorldBase.cpp"/>
       <File Name="../src/GameWorldGame.cpp"/>
-      <File Name="../src/GameWorldViewer.cpp"/>
       <File Name="../src/nobHarborBuilding.cpp"/>
       <File Name="../src/GlobalGameSettings.cpp"/>
       <File Name="../src/GlobalGameSettings.h"/>
@@ -525,6 +515,7 @@
         <File Name="../src/noGrainfield.h"/>
       </VirtualDirectory>
       <File Name="../src/TradeGraph.h"/>
+      <File Name="../src/GameWorldView.cpp"/>
     </VirtualDirectory>
     <VirtualDirectory Name="libutil">
       <File Name="../libutil/src/Serializer.cpp"/>
@@ -588,6 +579,8 @@
       <File Name="../src/GlobalVars.cpp"/>
       <File Name="../src/GlobalVars.h"/>
       <File Name="../src/TradeGraph.cpp"/>
+      <File Name="../src/Debug.cpp"/>
+      <File Name="../src/Debug.h"/>
     </VirtualDirectory>
     <File Name="../liblobby/src/LobbyInterface.h"/>
     <File Name="../liblobby/src/LobbyMessage.cpp"/>
@@ -624,6 +617,7 @@
       <File Name="../src/glArchivItem_Sound_Wave.h"/>
       <File Name="../src/glArchivItem_Sound_XMidi.cpp"/>
       <File Name="../src/glArchivItem_Sound_XMidi.h"/>
+      <File Name="../src/GameWorldViewer.cpp"/>
     </VirtualDirectory>
     <File Name="../build_version.cpp"/>
   </VirtualDirectory>
@@ -649,7 +643,7 @@
         <IncludePath Value="../libendian/src/"/>
       </Compiler>
       <Linker Options="">
-        <LibraryPath Value="../libsiedler2/libendian/codelite"/>
+        <LibraryPath Value="../libendian/codelite"/>
         <LibraryPath Value="../"/>
         <Library Value="GL"/>
         <Library Value="siedler2"/>
@@ -661,11 +655,13 @@
       <ResourceCompiler Options=""/>
     </GlobalSettings>
     <Configuration Name="Debug" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
-      <Compiler Options="-g" C_Options="-g" Required="yes" PreCompiledHeader=""/>
+      <Compiler Options="-g" C_Options="-g" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" UseDifferentPCHFlags="no" PCHFlags=""/>
       <Linker Options="" Required="yes"/>
       <ResourceCompiler Options="" Required="no"/>
-      <General OutputFile="../$(ProjectName)" IntermediateDirectory="./Debug" Command="./$(ProjectName)" CommandArguments="set environment LD_LIBRARY_PATH = ." UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="../" PauseExecWhenProcTerminates="yes"/>
-      <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;"/>
+      <General OutputFile="../$(ProjectName)" IntermediateDirectory="./Debug" Command="./$(ProjectName)" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="../" PauseExecWhenProcTerminates="yes"/>
+      <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
+        <![CDATA[]]>
+      </Environment>
       <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="">
         <PostConnectCommands/>
         <StartupCommands>set environment LD_LIBRARY_PATH = .</StartupCommands>
@@ -688,13 +684,15 @@
       </AdditionalRules>
     </Configuration>
     <Configuration Name="Release" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
-      <Compiler Options="-O3;-fno-strict-aliasing" C_Options="-O3;-fno-strict-aliasing" Required="yes" PreCompiledHeader="">
+      <Compiler Options="-O3;-fno-strict-aliasing" C_Options="-O3;-fno-strict-aliasing" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" UseDifferentPCHFlags="no" PCHFlags="">
         <IncludePath Value="."/>
       </Compiler>
       <Linker Options="-O3" Required="yes"/>
       <ResourceCompiler Options="" Required="no"/>
       <General OutputFile="../$(ProjectName)" IntermediateDirectory="./Release" Command="./$(ProjectName)" CommandArguments="set environment LD_LIBRARY_PATH = ." UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="../" PauseExecWhenProcTerminates="yes"/>
-      <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;"/>
+      <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
+        <![CDATA[]]>
+      </Environment>
       <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="">
         <PostConnectCommands/>
         <StartupCommands>set environment LD_LIBRARY_PATH = .</StartupCommands>
