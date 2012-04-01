@@ -1,4 +1,4 @@
-// $Id: dskMainMenu.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: dskMainMenu.cpp 7913 2012-04-01 07:24:31Z OLiver $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -67,7 +67,7 @@ dskMainMenu::dskMainMenu(void) : Desktop(LOADER.GetImageN("menu", 0))
 	// URL
 	AddText(1, 400, 600, _("http://www.siedler25.org"), COLOR_GREEN, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, NormalFont);
 	// Copyright
-	AddText(2, 800, 600, _("\xA9 2005 - 2011 Settlers Freaks"), COLOR_YELLOW, glArchivItem_Font::DF_RIGHT | glArchivItem_Font::DF_BOTTOM, NormalFont);
+	AddText(2, 800, 600, _("\xA9 2005 - 2012" Settlers Freaks"), COLOR_YELLOW, glArchivItem_Font::DF_RIGHT | glArchivItem_Font::DF_BOTTOM, NormalFont);
 
 	// "Einzelspieler"
 	AddTextButton(4, 115, 180, 220, 22, TC_GREEN2, _("Singleplayer"), NormalFont);
