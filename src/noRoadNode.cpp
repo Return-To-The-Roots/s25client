@@ -1,4 +1,4 @@
-// $Id: noRoadNode.cpp 7750 2012-01-04 02:48:18Z marcus $
+// $Id: noRoadNode.cpp 7915 2012-04-01 08:09:54Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -101,7 +101,7 @@ void noRoadNode::DestroyRoad(const unsigned char dir)
 		else
 			oflag = routes[dir]->GetF1();
 
-#ifndef _NDEBUG
+#ifndef NDEBUG
 		bool found = false;
 #endif
 		for(unsigned z = 0;z<6;++z)
@@ -109,14 +109,16 @@ void noRoadNode::DestroyRoad(const unsigned char dir)
 			if(oflag->routes[z] == routes[dir])
 			{
 				oflag->routes[z] = NULL;
-#ifndef _NDEBUG
+#ifndef NDEBUG
 				found = true;
 #endif
 				break;
 			}
 		}
 
+#ifndef NDEBUG
 		assert(found);
+#endif
 
 		RoadSegment * tmp = routes[dir];
 		routes[dir] = 0;
