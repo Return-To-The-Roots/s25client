@@ -1,6 +1,6 @@
 #!/bin/bash
 ###############################################################################
-## $Id: postinstall.sh.cmake 7917 2012-04-01 12:10:48Z FloSoft $
+## $Id: postinstall.sh.cmake 7920 2012-04-02 04:15:17Z FloSoft $
 ###############################################################################
 
 # Editable Variables
@@ -140,19 +140,41 @@ extract_debug_symbols()
 {
 	local FILE=$1
 
+	objcopy=""
+	case "$COMPILEFOR" in
+		windows)
+			objcopy="${objcopy}-pc-mingw32"
+		;;
+		linux)
+			objcopy="${objcopy}-pc-linux-gnu"
+		;;
+		apple)
+			echo "not supported"
+			return 1
+		;;
+	esac
+	objcopy="${objcopy}-objcopy"
+
+	case "$COMPILEARCH" in
+		i686|*86)
+			objcopy="i686${objcopy}"
+		;;
+		x86_64|*64)
+			objcopy="x86_64${objcopy}"
+		;;
+		powerpc|ppc)
+			objcopy="powerpc${objcopy}"
+		;;
+	esac
+
 	pushd ${DESTDIR}
 	mkdir -vp dbg/$(dirname $FILE)
-	if [ "$COMPILEFOR" = "apple" ] ; then
-		echo "not supported"
-	elif [ "$COMPILEFOR" = "windows" ] ; then
-		${COMPILEARCH}-pc-mingw32-objcopy --only-keep-debug $FILE dbg/$FILE.dbg
-		${COMPILEARCH}-pc-mingw32-objcopy --strip-debug $FILE
-		${COMPILEARCH}-pc-mingw32-objcopy --add-gnu-debuglink=dbg/$FILE.dbg $FILE
-	elif [ "$COMPILEFOR" = "linux" ] ; then
-		objcopy --only-keep-debug $FILE dbg/$FILE.dbg
-		objcopy --strip-debug $FILE
-		objcopy --add-gnu-debuglink=dbg/$FILE.dbg $FILE
-	fi
+		echo "${objcopy} --only-keep-debug $FILE dbg/$FILE.dbg"
+´		${objcopy} --only-keep-debug $FILE dbg/$FILE.dbg
+		echo "${objcopy} --strip-debug $FILE"
+		${objcopy} --strip-debug $FILE
+		echo "${objcopy} --add-gnu-debuglink=dbg/$FILE.dbg $FILE"
+		${objcopy} --add-gnu-debuglink=dbg/$FILE.dbg $FILE
 	popd
 }
 
