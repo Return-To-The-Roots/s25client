@@ -1,4 +1,4 @@
-// $Id: iwBuilding.cpp 7822 2012-02-07 16:37:05Z marcus $
+// $Id: iwBuilding.cpp 8030 2012-07-08 20:54:57Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -63,6 +63,7 @@ iwBuilding::iwBuilding(GameWorldViewer * const gwv,dskGameInterface *const gi,no
 	gwv(gwv), gi(gi), building(building)
 {
 	// Arbeitersymbol
+	AddImage(0, 28, 39, LOADER.GetMapImageN(2298));
 
         // Exception: charburner
 	// TODO: ugly!
