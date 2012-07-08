@@ -1,4 +1,4 @@
-// $Id: GameClient.cpp 7702 2011-12-30 20:11:27Z marcus $
+// $Id: GameClient.cpp 8031 2012-07-08 21:10:52Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1964,6 +1964,10 @@ void GameClient::AddPathfindingResult(const unsigned char dir, const unsigned * 
 /// Gibt zurück, ob Pathfinding-Results zur Verfügung stehen
 bool GameClient::ArePathfindingResultsAvailable() const
 {
+	// PathfindingResults are buggy. TODO. Until fixed: 
+	return false;
+
+
 	// Replaymodus?
 	if(replay_mode || (!replay_mode && !replayinfo.replay.pathfinding_results))
 	{
