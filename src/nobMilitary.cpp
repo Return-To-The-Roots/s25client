@@ -1,4 +1,4 @@
-// $Id: nobMilitary.cpp 7885 2012-03-18 22:20:10Z jh $
+// $Id: nobMilitary.cpp 8028 2012-07-08 20:39:37Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -405,14 +405,14 @@ void nobMilitary::RegulateTroops()
 		// Zu viel --> überflüssige Truppen nach Hause schicken		
 		// Zuerst die bestellten Soldaten wegschicken
 		// Schwache zuerst zurück
+		std::list<nofPassiveSoldier*> notNeededSoldiers;
 		if (gwg->GetPlayer(player)->military_settings[1] > MILITARY_SETTINGS_SCALE[1]/2)
 		{
 			for(list<nofPassiveSoldier*>::iterator it = ordered_troops.begin();diff&&ordered_troops.size();++diff,++it)
 			{
 				nofPassiveSoldier * soldier = *it;
 				ordered_troops.erase(&it);
-				soldier->NotNeeded();
-				
+				notNeededSoldiers.push_back(soldier);				
 			}
 		}
 		// Starke zuerst zurück
@@ -424,11 +424,17 @@ void nobMilitary::RegulateTroops()
 				{	
 					nofPassiveSoldier * soldier = *it;
 					ordered_troops.erase(&it);
-					soldier->NotNeeded();
+					notNeededSoldiers.push_back(soldier);
 				}
 
 				--it;
 			}
+		}
+
+		// send the not-needed-soldiers away
+		for (std::list<nofPassiveSoldier*>::iterator it = notNeededSoldiers.begin(); it != notNeededSoldiers.end(); it++)
+		{
+			(*it)->NotNeeded();
 		}
 
 		// Nur rausschicken, wenn es einen Weg zu einem Lagerhaus gibt!
