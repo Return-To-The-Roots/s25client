@@ -1,3 +1,49 @@
+s25rttr (20120709-8032.169) karmic; urgency=low
+
+  * Automatic Jenkins Build 169
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Mon, 09 Jul 2012 01:13:19 +0200
+
+s25rttr (20120709-8032) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Mon, 09 Jul 2012 00:00:00 +0200
+
+s25rttr (20120708-8031) any; urgency=low
+
+  * temporarily disabled use of precalculated pathfinding results in
+    replays (they are buggy and crash the replay in some
+    circumstances).
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sun, 08 Jul 2012 21:10:00 +0200
+
+s25rttr (20120708-8030) any; urgency=low
+
+  * re-added worker background symbol in iwBuilding (removed in rev
+    7821)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sun, 08 Jul 2012 20:54:00 +0200
+
+s25rttr (20120708-8029) any; urgency=low
+
+  * increased version of savegame and replay, fixing #963258,
+    introduced in about rev 7891
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sun, 08 Jul 2012 20:43:00 +0200
+
+s25rttr (20120708-8028) any; urgency=low
+
+  * fixed Bug #1016659
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sun, 08 Jul 2012 20:39:00 +0200
+
+s25rttr (20120407-7927) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 07 Apr 2012 22:00:00 +0200
+
 s25rttr (20120402-7921.168) karmic; urgency=low
 
   * Automatic Jenkins Build 168
