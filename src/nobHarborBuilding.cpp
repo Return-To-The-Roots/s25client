@@ -1,4 +1,4 @@
-// $Id: nobHarborBuilding.cpp 7682 2011-12-29 19:43:45Z marcus $
+// $Id: nobHarborBuilding.cpp 8040 2012-07-15 07:03:15Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -153,7 +153,7 @@ void nobHarborBuilding::Destroy()
 		it->attacker->StartWandering();
 		it->attacker->StartWalking(RANDOM.Rand(__FILE__,__LINE__,obj_id,6));
 	}
-	figures_for_ships.clear();
+	soldiers_for_ships.clear();
 	
 	
 
