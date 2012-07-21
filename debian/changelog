@@ -1,3 +1,27 @@
+s25rttr (20120716-8041.170) karmic; urgency=low
+
+  * Automatic Jenkins Build 170
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Mon, 16 Jul 2012 01:09:13 +0200
+
+s25rttr (20120716-8041) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Mon, 16 Jul 2012 00:00:00 +0200
+
+s25rttr (20120715-8040) any; urgency=low
+
+  * commit for Bug #1022396
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sun, 15 Jul 2012 07:03:00 +0200
+
+s25rttr (20120714-8039) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 14 Jul 2012 22:01:00 +0200
+
 s25rttr (20120709-8032.169) karmic; urgency=low
 
   * Automatic Jenkins Build 169
