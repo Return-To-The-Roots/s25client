@@ -1,4 +1,4 @@
-// $Id: GameClientPlayer.h 7702 2011-12-30 20:11:27Z marcus $
+// $Id: GameClientPlayer.h 8049 2012-07-22 17:23:19Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -147,7 +147,7 @@ public:
 	// Informationen über die Verteilung
 	struct
 	{
-		unsigned char percent_buildings[40];
+		unsigned char percent_buildings[BUILDING_TYPES_COUNT];
 		std::list<BuildingType> client_buildings; // alle Gebäude, die diese Ware bekommen, zusammengefasst
 		std::vector<unsigned char> goals;
 		unsigned selected_goal;

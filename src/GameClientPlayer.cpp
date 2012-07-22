@@ -1,4 +1,4 @@
-// $Id: GameClientPlayer.cpp 7882 2012-03-18 22:18:36Z jh $
+// $Id: GameClientPlayer.cpp 8049 2012-07-22 17:23:19Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -231,7 +231,10 @@ void GameClientPlayer::Serialize(SerializedGameData * sgd)
 
 	for(unsigned i = 0;i<WARE_TYPES_COUNT;++i)
 	{
-		sgd->PushRawData(distribution[i].percent_buildings,40);
+		for (unsigned bldType = 0; bldType < BUILDING_TYPES_COUNT; ++bldType)
+		{
+			sgd->PushUnsignedChar(distribution[i].percent_buildings[bldType]);
+		}
 		sgd->PushUnsignedInt(distribution[i].client_buildings.size());
 		for(std::list<BuildingType>::iterator it = distribution[i].client_buildings.begin();it!=distribution[i].client_buildings.end();++it)
 			sgd->PushUnsignedChar(*it);
@@ -340,7 +343,10 @@ void GameClientPlayer::Deserialize(SerializedGameData * sgd)
 
 	for(unsigned i = 0;i<WARE_TYPES_COUNT;++i)
 	{
-		sgd->PopRawData(distribution[i].percent_buildings,40);
+		for (unsigned bldType = 0; bldType < BUILDING_TYPES_COUNT; ++bldType)
+		{
+			distribution[i].percent_buildings[bldType] = sgd->PopUnsignedChar();
+		}
 		list_size = sgd->PopUnsignedInt();
 		for(unsigned z = 0;z<list_size;++z)
 			distribution[i].client_buildings.push_back(BuildingType(sgd->PopUnsignedChar()));
@@ -1389,7 +1395,7 @@ void GameClientPlayer::ChangeDistribution(const std::vector<unsigned char>& dist
 	distribution[GD_BOARDS].percent_buildings[BLD_METALWORKS] = distribution_settings[17];
 	distribution[GD_BOARDS].percent_buildings[BLD_SHIPYARD] = distribution_settings[18];
 
-	distribution[GD_WATER].percent_buildings[BLD_MILL] = distribution_settings[19];
+	distribution[GD_WATER].percent_buildings[BLD_BAKERY] = distribution_settings[19];
 	distribution[GD_WATER].percent_buildings[BLD_BREWERY] = distribution_settings[20];
 	distribution[GD_WATER].percent_buildings[BLD_PIGFARM] = distribution_settings[21];
 	distribution[GD_WATER].percent_buildings[BLD_DONKEYBREEDER] = distribution_settings[22];
