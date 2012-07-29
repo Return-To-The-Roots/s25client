@@ -1,4 +1,4 @@
-// $Id: noBaseBuilding.cpp 7884 2012-03-18 22:19:43Z jh $
+// $Id: noBaseBuilding.cpp 8060 2012-07-29 14:07:16Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -34,6 +34,7 @@
 #include "WindowManager.h"
 #include "SerializedGameData.h"
 #include "GameInterface.h"
+#include <iostream>
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -246,6 +247,12 @@ noFlag * noBaseBuilding::GetFlag() const
 
 void noBaseBuilding::WareNotNeeded(Ware * ware)
 {
+	if (!ware)
+	{
+		std::cerr << "Warning: Trying to remove non-existing ware. Please report this replay to https://bugs.launchpad.net/s25rttr/!" << std::endl;
+		return;
+	}
+
 	if(ware->LieInWarehouse())
 	{
 		// Bestellung im Lagerhaus stornieren
