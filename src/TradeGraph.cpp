@@ -207,10 +207,14 @@ unsigned char TradeRoute::RecalcLocalRoute()
 	{
 		global_pos = global_route.size();
 		next_dir = tg->gwg->FindTradePath(current_pos,goal,tg->player,TG_PF_LENGTH,false,&local_route);
+		local_pos = 0;
 	}
 	else
+	{
 		next_dir = tg->gwg->FindTradePath(current_pos,tg->GetNode(current_pos_tg).main_pos,tg->player,TG_PF_LENGTH,
 			false,&local_route);
+		local_pos = 0;
+	}
 	if(next_dir != 0xff)
 		return next_dir;
 	else

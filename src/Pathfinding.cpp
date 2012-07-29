@@ -1,4 +1,4 @@
-// $Id: Pathfinding.cpp 7779 2012-01-16 20:23:55Z marcus $
+// $Id: Pathfinding.cpp 8058 2012-07-29 12:09:42Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -557,6 +557,8 @@ bool GameWorldBase::CheckFreeRoute(const MapCoord x_start,const MapCoord y_start
 	FP_Node_OK_Callback IsNodeOK, FP_Node_OK_Callback IsNodeToDestOk,  MapCoord* x_dest, MapCoord* y_dest, const void * const param) const
 {
 	MapCoord x = x_start, y = y_start;
+		
+	assert(pos < route.size());
 
 	for(unsigned i = pos;i<route.size();++i)
 	{
