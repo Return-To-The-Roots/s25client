@@ -1,4 +1,4 @@
-// $Id: nobBaseMilitary.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: nobBaseMilitary.cpp 8059 2012-07-29 13:50:57Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -96,8 +96,8 @@ void nobBaseMilitary::Destroy_nobBaseMilitary()
 	{
 		gwg->AddFigure((*it),x,y);
 
-		if((*it)->DoJobWorks())
-			// Wenn er Job-Arbeiten verrichtet, ists ein ActiveSoldier --> dem muss extra noch Bescheid gesagt werden!
+		if((*it)->DoJobWorks() && dynamic_cast<nofActiveSoldier*>(*it))
+			// Wenn er Job-Arbeiten verrichtet, ists ein ActiveSoldier oder TradeDonkey --> dem Soldat muss extra noch Bescheid gesagt werden!
 			static_cast<nofActiveSoldier*>(*it)->HomeDestroyedAtBegin();
 		else
 		{
