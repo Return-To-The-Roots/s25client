@@ -1,4 +1,4 @@
-// $Id: nobHarborBuilding.cpp 8040 2012-07-15 07:03:15Z FloSoft $
+// $Id: nobHarborBuilding.cpp 8066 2012-07-30 18:34:08Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -239,8 +239,10 @@ const Point<int> BUILDER_POS[4] = { Point<int>(0,18), Point<int>(-8,17), Point<i
 const Point<int> BOARDS_POS[4] = { Point<int>(-70,-5), Point<int>(-55,-5), Point<int>(-50,-5), Point<int>(-60,-5) };
 /// Relative Position der Steintürme
 const Point<int> STONES_POS[4] = { Point<int>(-73,10), Point<int>(-60,10), Point<int>(-50,10), Point<int>(-60,10) };
-/// Relative Postion der Hafenfeuer
+/// Relative Postion der inneren Hafenfeuer
 const Point<int> FIRE_POS[4] = { Point<int>(36,-51), Point<int>(0,0), Point<int>(0,0), Point<int>(5,-80) };
+/// Relative Postion der äußeren Hafenfeuer
+const Point<int> EXTRAFIRE_POS[4] = { Point<int>(0,0), Point<int>(0,0), Point<int>(8,-115), Point<int>(0,0) };
 
 void nobHarborBuilding::Draw(int x,int y)
 {
@@ -255,6 +257,12 @@ void nobHarborBuilding::Draw(int x,int y)
 	else if (nation == NAT_AFRICANS || nation == NAT_VIKINGS)
 	{
 		LOADER.GetMapImageN(740+GameClient::inst().GetGlobalAnimation(8,5,2,obj_id+GetX()+GetY()))->Draw(x+FIRE_POS[nation].x,y+FIRE_POS[nation].y);
+	}
+
+	if (nation == NAT_ROMANS)
+	{
+		// Zusätzliches Feuer
+		LOADER.GetMapImageN(740+GameClient::inst().GetGlobalAnimation(8,5,2,obj_id+GetX()+GetY()))->Draw(x+EXTRAFIRE_POS[nation].x,y+EXTRAFIRE_POS[nation].y);
 	}
 
 	// Läuft gerade eine Expedition?
