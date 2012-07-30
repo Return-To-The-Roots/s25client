@@ -1,4 +1,4 @@
-// $Id: noShip.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: noShip.cpp 8064 2012-07-30 13:37:00Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -67,8 +67,8 @@ const Point<int> SHIPS_FLAG_POS[12] =
 	Point<int>(-6,-71),
 	Point<int>(-3,-71),
 	Point<int>(-7,-77),
-	Point<int>(-1,-70),
-	Point<int>(-1,-70),
+	Point<int>(-1,-71),
+	Point<int>(5,-63),
 
 	// Und wenn es fährt
 	Point<int>(3,-70),
