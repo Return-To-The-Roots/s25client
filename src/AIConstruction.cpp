@@ -1,4 +1,4 @@
-// $Id: AIConstruction.cpp 7884 2012-03-18 22:19:43Z jh $
+// $Id: AIConstruction.cpp 8070 2012-08-02 16:40:26Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -156,6 +156,10 @@ bool AIConstruction::ConnectFlagToRoadSytem(const noFlag *flag, std::vector<unsi
 	// Ziel, das möglichst schnell erreichbar sein soll 
 	//noFlag *targetFlag = gwb->GetSpecObj<nobHQ>(player->hqx, player->hqy)->GetFlag();
 	noFlag *targetFlag = FindTargetStoreHouseFlag(flag->GetX(), flag->GetY());
+
+	// Falls kein Lager mehr vorhanden ist, brauchen wir auch keinen Weg suchen
+	if (!targetFlag)
+		return false;
 
 	// Flaggen in der Umgebung holen
 	std::vector<const noFlag*> flags;
