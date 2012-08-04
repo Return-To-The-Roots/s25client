@@ -1,3 +1,94 @@
+s25rttr (20120803-8071.174) karmic; urgency=low
+
+  * Automatic Jenkins Build 174
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Fri, 03 Aug 2012 01:11:41 +0200
+
+s25rttr (20120803-8071) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Fri, 03 Aug 2012 00:00:00 +0200
+
+s25rttr (20120802-8070) any; urgency=low
+
+  * Fixing Bug #1032268, a path to a non-existing flag was searched
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Thu, 02 Aug 2012 16:40:00 +0200
+
+s25rttr (20120731-8067.173) karmic; urgency=low
+
+  * Automatic Jenkins Build 173
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 31 Jul 2012 01:08:35 +0200
+
+s25rttr (20120731-8067) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 31 Jul 2012 00:00:00 +0200
+
+s25rttr (20120730-8066) any; urgency=low
+
+  * Fixed #1011546 (Grafikbug beim römischen Hafengebäude). Danke
+    Spike :)
+
+ -- marcus  Mon, 30 Jul 2012 18:34:00 +0200
+
+s25rttr (20120730-8065) any; urgency=low
+
+  * That's what patches are for :P
+
+ -- marcus  Mon, 30 Jul 2012 13:39:00 +0200
+
+s25rttr (20120730-8064) any; urgency=low
+
+  * Fixes #1030846. Thanks to Spike.
+
+ -- marcus  Mon, 30 Jul 2012 13:37:00 +0200
+
+s25rttr (20120730-8061.172) karmic; urgency=low
+
+  * Automatic Jenkins Build 172
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Mon, 30 Jul 2012 01:09:50 +0200
+
+s25rttr (20120730-8061) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Mon, 30 Jul 2012 00:00:00 +0200
+
+s25rttr (20120729-8060) any; urgency=low
+
+  * Fixing crash of Bug #1007289, not resolving the cause, because
+    there is no replay to analyze the origin of a "null" ware. Added
+    warning + info to report replay if this happens again.
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sun, 29 Jul 2012 14:07:00 +0200
+
+s25rttr (20120729-8059) any; urgency=low
+
+  * Fixing Bug #1024161: TradeDonkey was casted into an ActiveSoldier
+    in the leave_house list on HQ destruction. Not sure if additional
+    methods for trade donkeys should be called.
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sun, 29 Jul 2012 13:50:00 +0200
+
+s25rttr (20120729-8058) any; urgency=low
+
+  * Fixing possible trade bug: after recalculating local_route,
+    local_pos was not resetted to 0. Occured while analyzing Bug
+    #1024161.
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sun, 29 Jul 2012 12:09:00 +0200
+
+s25rttr (20120728-8057) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 28 Jul 2012 22:01:00 +0200
+
 s25rttr (20120723-8050.171) karmic; urgency=low
 
   * Automatic Jenkins Build 171
