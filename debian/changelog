@@ -1,3 +1,27 @@
+s25rttr (20120824-8094.175) karmic; urgency=low
+
+  * Automatic Jenkins Build 175
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Fri, 24 Aug 2012 01:09:12 +0200
+
+s25rttr (20120824-8094) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Fri, 24 Aug 2012 00:00:00 +0200
+
+s25rttr (20120823-8093) any; urgency=low
+
+  * added map "Hochebene"
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Thu, 23 Aug 2012 16:59:00 +0200
+
+s25rttr (20120804-8074) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 04 Aug 2012 22:01:00 +0200
+
 s25rttr (20120803-8071.174) karmic; urgency=low
 
   * Automatic Jenkins Build 174
