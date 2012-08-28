@@ -1,4 +1,4 @@
-// $Id: SDL.cpp 7572 2011-10-07 09:46:58Z FloSoft $
+// $Id: SDL.cpp 8100 2012-08-28 18:42:23Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -189,6 +189,14 @@ bool VideoSDL::CreateScreen(unsigned short width, unsigned short height, const b
 
 	// TODO: Icon setzen
 
+
+	// GL-Attribute setzen
+	SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
+	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
+	SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
+	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 1);
+
 #ifdef _WIN32
 	// das spinnt ja total unter windows ...
 	this->fullscreen = false;
@@ -207,13 +215,6 @@ bool VideoSDL::CreateScreen(unsigned short width, unsigned short height, const b
 #ifdef _WIN32
 	SetWindowTextA(GetConsoleWindow(), title);
 #endif
-
-	// GL-Attribute setzen
-	SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
-	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
-	SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
-	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 32);
-	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
 	memset(keyboard, false, sizeof(bool) * 512);
 
