@@ -1,4 +1,4 @@
-// $Id: TerrainRenderer.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: TerrainRenderer.cpp 8103 2012-08-29 10:06:39Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -845,7 +845,6 @@ void TerrainRenderer::Draw(GameWorldView * gwv, unsigned int *water)
 
 	// Alphablending aus
 	glDisable(GL_BLEND);
-	glEnable(GL_TEXTURE_2D);
 
 	for(unsigned char i = 0; i < 16; ++i)
 	{

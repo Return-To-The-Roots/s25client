@@ -1,4 +1,4 @@
-// $Id: glArchivItem_Bitmap.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: glArchivItem_Bitmap.cpp 8103 2012-08-29 10:06:39Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -104,8 +104,6 @@ void glArchivItem_Bitmap::Draw(short dst_x, short dst_y, short dst_w, short dst_
 		dst_w = src_w;
 	if(dst_h == 0)
 		dst_h = src_h;
-
-	glEnable(GL_TEXTURE_2D);
 
 	glColor4ub( GetRed(color), GetGreen(color), GetBlue(color), GetAlpha(color));
 	glBindTexture(GL_TEXTURE_2D, texture);
@@ -219,8 +217,6 @@ void glArchivItem_Bitmap::GenerateTexture(void)
 	if(!palette)
 		setPalette(LOADER.GetPaletteN("pal5"));
 	
-	glEnable(GL_TEXTURE_2D);
-
 	glBindTexture(GL_TEXTURE_2D, texture);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);

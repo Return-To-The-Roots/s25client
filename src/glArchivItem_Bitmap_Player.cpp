@@ -1,4 +1,4 @@
-// $Id: glArchivItem_Bitmap_Player.cpp 7707 2011-12-30 22:22:21Z marcus $
+// $Id: glArchivItem_Bitmap_Player.cpp 8103 2012-08-29 10:06:39Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -49,8 +49,6 @@ void glArchivItem_Bitmap_Player::Draw(short dst_x, short dst_y, short dst_w, sho
 		dst_w = src_w;
 	if(dst_h == 0)
 		dst_h = src_h;
-
-	glEnable(GL_TEXTURE_2D);
 
 	glColor4ub( GetRed(color), GetGreen(color), GetBlue(color),  GetAlpha(color));
 	glBindTexture(GL_TEXTURE_2D, texture);

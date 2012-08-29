@@ -1,4 +1,4 @@
-// $Id: dskMainMenu.cpp 7914 2012-04-01 07:51:37Z OLiver $
+// $Id: dskMainMenu.cpp 8103 2012-08-29 10:06:39Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -148,5 +148,6 @@ void dskMainMenu::Msg_PaintAfter()
 		glVertex3f(700.0f, 600.0f,float(i));
 		glVertex3f(700.0f, 0.0f,float(i));
 		glEnd();
+		glEnable(GL_TEXTURE_2D);
 	}*/
 }

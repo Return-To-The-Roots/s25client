@@ -1,4 +1,4 @@
-// $Id: glArchivItem_Font.cpp 7879 2012-03-18 22:15:56Z jh $
+// $Id: glArchivItem_Font.cpp 8103 2012-08-29 10:06:39Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -376,8 +376,6 @@ void glArchivItem_Font::Draw(short x,
 		// unbind VBO
 		glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
 	}
-
-	glEnable(GL_TEXTURE_2D);
 
 	// Arrays aktivieren
 	glEnableClientState(GL_VERTEX_ARRAY);

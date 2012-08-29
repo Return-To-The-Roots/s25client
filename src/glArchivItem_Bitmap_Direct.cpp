@@ -1,4 +1,4 @@
-// $Id: glArchivItem_Bitmap_Direct.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: glArchivItem_Bitmap_Direct.cpp 8103 2012-08-29 10:06:39Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -80,7 +80,6 @@ void glArchivItem_Bitmap_Direct::tex_setPixel(unsigned short x, unsigned short y
 			else
 				this->palette->get(color, &buffer[0], &buffer[1], &buffer[2]);
 
-			glEnable(GL_TEXTURE_2D);
 			glBindTexture(GL_TEXTURE_2D, texture);
 			glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &buffer);
 		}
@@ -112,7 +111,6 @@ void glArchivItem_Bitmap_Direct::tex_setPixel(unsigned short x, unsigned short y
 		{
 			unsigned char buffer[4] = { r, g, b, a };
 			
-			glEnable(GL_TEXTURE_2D);
 			glBindTexture(GL_TEXTURE_2D, texture);
 			glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &buffer);
 		}

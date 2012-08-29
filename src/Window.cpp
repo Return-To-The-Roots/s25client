@@ -1,4 +1,4 @@
-// $Id: Window.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: Window.cpp 8103 2012-08-29 10:06:39Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1080,6 +1080,8 @@ void Window::Draw3D(const unsigned short x,
 
 		glEnd();
 	}
+
+	glEnable(GL_TEXTURE_2D);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
