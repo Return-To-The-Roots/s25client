@@ -1,4 +1,4 @@
-// $Id: Pathfinding.cpp 8058 2012-07-29 12:09:42Z jh $
+// $Id: Pathfinding.cpp 8106 2012-08-31 15:43:57Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -448,6 +448,16 @@ bool GameWorldBase::FindPathOnRoads(const noRoadNode * const start, const noRoad
 			// Neuer Weg für diesen neuen Knoten berechnen
 			unsigned new_way = pf_nodes[best_id].way + best->routes[i]->GetLength();
 
+			// evtl verboten?
+			if (best->routes[i] == forbidden)
+				continue;
+
+			// Keine Umwege über Gebäude, ausgenommen Häfen und Ziele
+			if ((i == 1) && (rna->GetGOT() != GOT_FLAG) && (rna != goal) && (rna->GetGOT() != GOT_NOB_HARBORBUILDING))
+			{
+				continue;
+			}
+
 			// Im Warenmodus müssen wir Strafpunkte für überlastete Träger hinzuaddieren,
 			// damit der Algorithmus auch Ausweichrouten auswählt
 			if (ware_mode)
@@ -459,10 +469,6 @@ bool GameWorldBase::FindPathOnRoads(const noRoadNode * const start, const noRoad
 			}
 
 			if (new_way > max)
-				continue;
-
-			// evtl verboten?
-			if (best->routes[i] == forbidden)
 				continue;
 
 			// Knoten schon auf dem Feld gebildet?
