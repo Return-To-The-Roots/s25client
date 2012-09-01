@@ -1,4 +1,4 @@
-// $Id: GameWorldGame.cpp 8123 2012-09-01 19:14:28Z jh $
+// $Id: GameWorldGame.cpp 8124 2012-09-01 19:15:43Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -401,6 +401,8 @@ void GameWorldGame::BuildRoad(const unsigned char playerid,const bool boat_road,
 			RemoveVisualRoad(start_x,start_y,route);
 			return;
 		}
+		//keine Flagge bisher aber spricht auch nix gegen ne neue Flagge -> Flagge aufstellen!
+		SetFlag(testx,testy,playerid,(route[route.size()-1]+3)%6);
 	}
 
 	// Evtl Zierobjekte abreiÃen (Anfangspunkt)
@@ -430,8 +432,8 @@ void GameWorldGame::BuildRoad(const unsigned char playerid,const bool boat_road,
 		}
 	}
 
-	if(GetNO(start_x,start_y)->GetType() != NOP_FLAG)
-		SetFlag(start_x,start_y,playerid,(route[route.size()-1]+3)%6);
+	/*if(GetNO(start_x,start_y)->GetType() != NOP_FLAG)
+		SetFlag(start_x,start_y,playerid,(route[route.size()-1]+3)%6);*/
 
 	RoadSegment * rs = new RoadSegment(boat_road?RoadSegment::RT_BOAT:RoadSegment::RT_NORMAL,
 		GetSpecObj<noFlag>(tmpx,tmpy),GetSpecObj<noFlag>(start_x,start_y),route);

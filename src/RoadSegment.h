@@ -1,4 +1,4 @@
-// $Id: RoadSegment.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: RoadSegment.h 8124 2012-09-01 19:15:43Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -105,6 +105,10 @@ public:
 	void TryGetDonkey();
 	/// Ein Träger muss kündigen, aus welchen Gründen auch immer.
 	void CarrierAbrogated(nofCarrier *carrier);
+	/// given a flag returns the other end location
+	noFlag* GetOtherFlag(const noFlag *flag);
+	/// given a flag returns last direction of the route towards the other flag
+	unsigned char GetOtherFlagDir(const noFlag *flag);
 
 protected:
 	/// zerstört das Objekt.

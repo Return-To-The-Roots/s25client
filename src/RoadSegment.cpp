@@ -1,4 +1,4 @@
-// $Id: RoadSegment.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: RoadSegment.cpp 8124 2012-09-01 19:15:43Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -289,7 +289,6 @@ bool RoadSegment::AreWareJobs(const bool flag, unsigned ct, const bool take_ware
 
 	return (jobs_count > 0);
 }
-
 ///////////////////////////////////////////////////////////////////////////////
 /**
  *  Eine Ware sagt Bescheid, dass sie über dem Weg getragen werden will.
@@ -414,4 +413,38 @@ void RoadSegment::CarrierAbrogated(nofCarrier *carrier)
 		// Kein Esel mehr da, versuchen, neuen zu bestellen
 		this->carrier[1] = gwg->GetPlayer(f1->GetPlayer())->OrderDonkey(this);
 	}
+}
+////////////////////////////////////////////////////////////////////////////////////////
+/**
+ * Return flag at the other end of the road
+ *
+ * @author PoC
+ */
+noFlag* RoadSegment::GetOtherFlag(const noFlag *flag)
+{
+	//is it a valid flag?
+	assert((flag->GetX()==f1->GetX()&&flag->GetY()==f1->GetY())||(flag->GetX()==f2->GetX()&&flag->GetY()==f2->GetY()));
+	if(flag->GetX()==f1->GetX()&&flag->GetY()==f1->GetY())
+		return gwg->GetSpecObj<noFlag>(f2->GetX(),f2->GetY());
+	if(flag->GetX()==f2->GetX()&&flag->GetY()==f2->GetY())
+		return gwg->GetSpecObj<noFlag>(f1->GetX(),f1->GetY());
+	//shouldnt get here or at least catch the assertion fail
+	return NULL;
+}
+////////////////////////////////////////////////////////////////////////////////////////
+/**
+ * Return last road direction to flag at the other end of the road
+ *
+ * @author PoC
+ */
+unsigned char RoadSegment::GetOtherFlagDir(const noFlag *flag)
+{
+	//is it a valid flag?
+	assert((flag->GetX()==f1->GetX()&&flag->GetY()==f1->GetY())||(flag->GetX()==f2->GetX()&&flag->GetY()==f2->GetY()));
+	if(flag->GetX()==f1->GetX()&&flag->GetY()==f1->GetY())
+		return route[route.size()-1];
+	if(flag->GetX()==f2->GetX()&&flag->GetY()==f2->GetY())
+		return (route[0]+3)%6;;
+	//shouldnt get here or at least catch the assertion fail
+	return 255;
 }

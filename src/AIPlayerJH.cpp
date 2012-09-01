@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 8123 2012-09-01 19:14:28Z jh $
+// $Id: AIPlayerJH.cpp 8124 2012-09-01 19:15:43Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -297,7 +297,7 @@ void AIPlayerJH::RunGF(const unsigned gf)
 
 bool AIPlayerJH::TestDefeat()
 {
-	if (!aii->GetHeadquarter()&&construction.GetBuildingCount(BLD_STOREHOUSE)+construction.GetBuildingCount(BLD_HARBORBUILDING)-construction.GetBuildingSitesCount(BLD_STOREHOUSE)-construction.GetBuildingSitesCount(BLD_STOREHOUSE)<1)
+	if (!aii->GetHeadquarter()&&((construction.GetBuildingCount(BLD_STOREHOUSE)+construction.GetBuildingCount(BLD_HARBORBUILDING))==(construction.GetBuildingSitesCount(BLD_STOREHOUSE)-construction.GetBuildingSitesCount(BLD_STOREHOUSE))))
 	{
 		defeated = true;
 		aii->Surrender();
@@ -1603,61 +1603,31 @@ bool AIPlayerJH::IsFlagPartofCircle(const noFlag *startFlag,unsigned maxlen,cons
 			testdir++;
 			continue;
 		}
-		if (aii->GetPointRoad(curFlag->GetX(), curFlag->GetY(), testdir)) //road towards testdir?
-		{ //follow road to next flag and ask again
-			unsigned char foundDir=testdir;
-			unsigned char prevDir=(testdir+3)%6;
-			MapCoord x = aii->GetXA(curFlag->GetX(), curFlag->GetY(), foundDir);
-			MapCoord y = aii->GetYA(curFlag->GetX(), curFlag->GetY(), foundDir);
-			unsigned char finds=0;
-			while(true)
+		if(testdir==1&&(aii->IsObjectTypeOnNode(aii->GetXA(curFlag->GetX(),curFlag->GetY(),1),aii->GetYA(curFlag->GetX(),curFlag->GetY(),1),NOP_BUILDING)||aii->IsObjectTypeOnNode(aii->GetXA(curFlag->GetX(),curFlag->GetY(),1),aii->GetYA(curFlag->GetX(),curFlag->GetY(),1),NOP_BUILDINGSITE)))
+		{
+			testdir++;
+			continue;
+		}
+		if(curFlag->routes[testdir])
+		{
+			const noFlag *flag=curFlag->routes[testdir]->GetOtherFlag(curFlag);
+			bool alreadyinlist=false;
+			for(unsigned i=0;i<oldflagsx.size();i++)
 			{
-				const noFlag *flag;
-				finds=0;
-				// flag found?
-				if ((flag = aii->GetSpecObj<noFlag>(x, y)))
+				if (flag->GetX()==oldflagsx[i]&&flag->GetY()==oldflagsy[i])
 				{
-					bool alreadyinlist=false;
-					for(unsigned i=0;i<oldflagsx.size();i++)
-					{
-						if (flag->GetX()==oldflagsx[i]&&flag->GetY()==oldflagsy[i])
-						{
-							alreadyinlist=true;
-							break;
-						}
-
-					}
-					if(!alreadyinlist)
-					{
-						oldflagsx.push_back(flag->GetX());
-						oldflagsy.push_back(flag->GetY());						
-						partofcircle=IsFlagPartofCircle(startFlag,maxlen-1,flag,prevDir,false,oldflagsx,oldflagsy);
-					}
-					break;
-				}
-				else
-				{			
-					// continue to follow the road
-					for (unsigned char nextDir = 0; nextDir < 6; ++nextDir)
-					{
-						if (aii->GetPointRoad(x, y, nextDir) && nextDir != prevDir)
-						{
-							x = aii->GetXA(x, y, nextDir);
-							y = aii->GetYA(x, y, nextDir);
-							prevDir = (nextDir + 3) % 6;
-							finds++;
-							break;
-						}
-					}
-				}
-				if(finds!=1)
-				{
-					// either found a split in the road (>1) or the road stopped (0) - both things shouldnt happen but just in case they do: break the loop.
+					alreadyinlist=true;
 					break;
 				}
 			}
+			if(!alreadyinlist)
+			{
+				oldflagsx.push_back(flag->GetX());
+				oldflagsy.push_back(flag->GetY());						
+				partofcircle=IsFlagPartofCircle(startFlag,maxlen-1,flag,(curFlag->routes[testdir]->GetOtherFlagDir(curFlag)+3)%6,false,oldflagsx,oldflagsy);
+			}
 		}
-		testdir++;
+		testdir++;		
 	}
 	return partofcircle;
 }
@@ -1691,7 +1661,13 @@ bool AIPlayerJH::RemoveUnusedRoad(const noFlag *startFlag, unsigned char exclude
 	{
 		if (dir == excludeDir)
 			continue;
-		if (aii->GetPointRoad(startFlag->GetX(), startFlag->GetY(), dir))
+		if(dir==1&&(aii->IsObjectTypeOnNode(aii->GetXA(startFlag->GetX(),startFlag->GetY(),1),aii->GetYA(startFlag->GetX(),startFlag->GetY(),1),NOP_BUILDING)||aii->IsObjectTypeOnNode(aii->GetXA(startFlag->GetX(),startFlag->GetY(),1),aii->GetYA(startFlag->GetX(),startFlag->GetY(),1),NOP_BUILDINGSITE)))
+		{
+			//the flag belongs to a building - update the pathing map around us and try to reconnect it (if we cant reconnect it -> burn it(burning takes place at the pathfinding job))
+			finds+=3;
+			return true;
+		}
+		if(startFlag->routes[dir])
 		{
 			finds++;
 			if(finds==1)
@@ -1699,18 +1675,8 @@ bool AIPlayerJH::RemoveUnusedRoad(const noFlag *startFlag, unsigned char exclude
 			else
 				if(finds==2)
 					foundDir2=dir;
-			if(dir==1&&(aii->IsObjectTypeOnNode(aii->GetXA(startFlag->GetX(),startFlag->GetY(),1),aii->GetYA(startFlag->GetX(),startFlag->GetY(),1),NOP_BUILDING)||aii->IsObjectTypeOnNode(aii->GetXA(startFlag->GetX(),startFlag->GetY(),1),aii->GetYA(startFlag->GetX(),startFlag->GetY(),1),NOP_BUILDINGSITE)))
-			{
-				//the flag belongs to a building - update the pathing map around us and try to reconnect it (if we cant reconnect it -> burn it(burning takes place at the pathfinding job))
-				finds+=3;
-				//UpdateNodesAroundNoBorder(startFlag->GetX(),startFlag->GetY(),20);
-				//construction.AddConnectFlagJob(startFlag);
-				return true;
-
-			}
-		}
+		}		
 	}
-
 	// if we found more than 1 road (or a building) the flag is still in use.	
 	if (finds>2)
 	{	
@@ -1741,80 +1707,11 @@ bool AIPlayerJH::RemoveUnusedRoad(const noFlag *startFlag, unsigned char exclude
 	{
 		return false;
 	}
-	// 1 road detected
-	MapCoord x = aii->GetXA(startFlag->GetX(), startFlag->GetY(), foundDir);
-	MapCoord y = aii->GetYA(startFlag->GetX(), startFlag->GetY(), foundDir);
-
-	unsigned char prevDir = (foundDir + 3) % 6;
-	// follow the (only) road to next flag and test it also
-	while(true)
-	{
-		const noFlag *flag;
-		finds=0;
-		// flag found?
-		if ((flag = aii->GetSpecObj<noFlag>(x, y)))
-		{
-			RemoveUnusedRoad(flag, prevDir,false);
-			break;
-		}
-		else
-		{			
-			// continue to follow the road
-			for (unsigned char nextDir = 0; nextDir < 6; ++nextDir)
-			{
-				if (aii->GetPointRoad(x, y, nextDir) && nextDir != prevDir)
-				{
-					x = aii->GetXA(x, y, nextDir);
-					y = aii->GetYA(x, y, nextDir);
-					prevDir = (nextDir + 3) % 6;
-					finds++;
-					break;
-				}
-			}
-		}
-		if(finds!=1)
-		{
-			// either found a split in the road (>1) or the road stopped (0) - both things shouldnt happen but just in case they do: break the loop.
-			break;
-		}
-	}
-	if(foundDir2!=0xFF)//remove road in the other path as well in case of a 2 way road remove
-	{
-		x = aii->GetXA(startFlag->GetX(), startFlag->GetY(), foundDir2);
-		y = aii->GetYA(startFlag->GetX(), startFlag->GetY(), foundDir2);
-		prevDir = (foundDir2 + 3) % 6;
-		while(true)
-	{
-		const noFlag *flag;
-		finds=0;
-		// flag found?
-		if ((flag = aii->GetSpecObj<noFlag>(x, y)))
-		{
-			RemoveUnusedRoad(flag, prevDir,false);
-			break;
-		}
-		else
-		{			
-			// continue to follow the road
-			for (unsigned char nextDir = 0; nextDir < 6; ++nextDir)
-			{
-				if (aii->GetPointRoad(x, y, nextDir) && nextDir != prevDir)
-				{
-					x = aii->GetXA(x, y, nextDir);
-					y = aii->GetYA(x, y, nextDir);
-					prevDir = (nextDir + 3) % 6;
-					finds++;
-					break;
-				}
-			}
-		}
-		if(finds!=1)
-		{
-			// either found a split in the road (>1) or the road stopped (0) - both things shouldnt happen but just in case they do: break the loop.
-			break;
-		}
-	}
-	}
+	// at least 1 road exists
+	RemoveUnusedRoad(startFlag->routes[foundDir]->GetOtherFlag(startFlag),(startFlag->routes[foundDir]->GetOtherFlagDir(startFlag)+3)%6,false);
+	// 2 roads exist
+	if(foundDir2!=0xFF)
+		RemoveUnusedRoad(startFlag->routes[foundDir2]->GetOtherFlag(startFlag),(startFlag->routes[foundDir2]->GetOtherFlagDir(startFlag)+3)%6,false);
 	return false;
 }
 
