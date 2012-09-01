@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 8121 2012-09-01 19:13:21Z jh $
+// $Id: AIPlayerJH.cpp 8122 2012-09-01 19:13:53Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -357,7 +357,7 @@ AIJH::Resource AIPlayerJH::CalcResource(MapCoord x, MapCoord y)
 		{
 			if (res==AIJH::WOOD)
 			{
-				if((gwb->GetSpecObj<noTree>(x,y))->type==5) //exclude ananas trees (because they are more of a "blocker" than a tree and only count as tree for animation&sound
+				if((gwb->GetSpecObj<noTree>(x,y))->type==5) //exclude pineapple (because they are more of a "blocker" than a tree and only count as tree for animation&sound)
 					res=AIJH::NOTHING;
 			}
 		}
@@ -1905,3 +1905,50 @@ void AIPlayerJH::InitStoreAndMilitarylists()
 		Chat(_("AI'm back"));
 }
 
+bool AIPlayerJH::ValidTreeinRange(MapCoord x,MapCoord y)
+{
+	unsigned max_radius = 6;
+	for(MapCoord tx=gwb->GetXA(x,y,0), r=1;r<=max_radius;tx=gwb->GetXA(tx,y,0),++r)
+	{
+		MapCoord tx2 = tx, ty2 = y;
+		for(unsigned i = 2;i<8;++i)
+		{
+			for(MapCoord r2=0;r2<r;gwb->GetPointA(tx2,ty2,i%6),++r2)
+			{
+				//point has tree & path is available?
+				if(gwb->GetNO(tx2,ty2)->GetType()==NOP_TREE)
+				{
+					//not already getting cut down or a freaking pineapple thingy?
+					if (!gwb->GetNode(tx2,ty2).reserved && (gwb->GetSpecObj<noTree>(tx2,ty2))->type!=5)
+					{
+						if(gwb->FindHumanPath(x,y,tx2,ty2,20) != 0xFF)
+							return true;;
+					} 
+				}
+			}
+		}
+	}
+	return false;
+}
+
+bool AIPlayerJH::ValidStoneinRange(MapCoord x,MapCoord y)
+{
+	unsigned max_radius = 8;
+	for(MapCoord tx=gwb->GetXA(x,y,0), r=1;r<=max_radius;tx=gwb->GetXA(tx,y,0),++r)
+	{
+		MapCoord tx2 = tx, ty2 = y;
+		for(unsigned i = 2;i<8;++i)
+		{
+			for(MapCoord r2=0;r2<r;gwb->GetPointA(tx2,ty2,i%6),++r2)
+			{
+				//point has tree & path is available?
+				if(gwb->GetNO(tx2,ty2)->GetType()==NOP_GRANITE)
+				{
+					if(gwb->FindHumanPath(x,y,tx2,ty2,20) != 0xFF)
+						return true;
+				}
+			}
+		}
+	}
+	return false;
+}

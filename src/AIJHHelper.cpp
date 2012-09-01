@@ -1,4 +1,4 @@
-// $Id: AIJHHelper.cpp 8120 2012-09-01 19:13:00Z jh $
+// $Id: AIJHHelper.cpp 8122 2012-09-01 19:13:53Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -147,6 +147,8 @@ void AIJH::BuildJob::TryToBuild()
 			{
 			unsigned numWoodcutter = aijh->GetConstruction()->GetBuildingCount(BLD_WOODCUTTER);
 			foundPos = aijh->FindBestPosition(bx, by, AIJH::WOOD, BQ_HUT, (numWoodcutter > 2) ? 20 : 1 + aijh->GetConstruction()->GetBuildingCount(BLD_WOODCUTTER) * 10, 15);
+			if(foundPos&&!aijh->ValidTreeinRange(bx,by))
+				foundPos=false;
 			break;
 			}
 		case BLD_FORESTER:
@@ -163,6 +165,8 @@ void AIJH::BuildJob::TryToBuild()
 			{
 			unsigned numQuarries = aijh->GetConstruction()->GetBuildingCount(BLD_QUARRY);
 			foundPos = aijh->FindBestPosition(bx, by, AIJH::STONES, BQ_HUT, (numQuarries > 4) ? 40 : 1 + aijh->GetConstruction()->GetBuildingCount(BLD_QUARRY) * 10, 15);
+			if(foundPos&&!aijh->ValidStoneinRange(bx,by))
+				foundPos=false;
 			break;
 			}
 		case BLD_BARRACKS:

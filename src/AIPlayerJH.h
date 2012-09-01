@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.h 8121 2012-09-01 19:13:21Z jh $
+// $Id: AIPlayerJH.h 8122 2012-09-01 19:13:53Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -242,6 +242,10 @@ protected:
 	bool SoldierAvailable();
 	
 	bool HuntablesinRange(unsigned x,unsigned y,unsigned min);
+
+	bool AIPlayerJH::ValidTreeinRange(MapCoord x,MapCoord y);
+
+	bool AIPlayerJH::ValidStoneinRange(MapCoord x,MapCoord y);
 
 
 protected:

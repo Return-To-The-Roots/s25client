@@ -1,4 +1,4 @@
-// $Id: AIConstruction.cpp 8121 2012-09-01 19:13:21Z jh $
+// $Id: AIConstruction.cpp 8122 2012-09-01 19:13:53Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -523,7 +523,7 @@ bool AIConstruction::BuildAlternativeRoad(const noFlag *flag, std::vector<unsign
 					temp=0;
 				}
 			}
-			if(size>4)
+			if(size>2)
 				continue;
 
 			// Lohnt sich die Straﬂe?
