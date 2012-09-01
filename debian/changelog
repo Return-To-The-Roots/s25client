@@ -1,3 +1,296 @@
+s25rttr (20120901-8135.179) karmic; urgency=low
+
+  * Automatic Jenkins Build 179
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sat, 01 Sep 2012 22:11:51 +0200
+
+s25rttr (20120901-8135) any; urgency=low
+
+  * Fixes for gcc
+
+ -- marcus  Sat, 01 Sep 2012 19:41:00 +0200
+
+s25rttr (20120901-8134) any; urgency=low
+
+  * AI: flags on roads are now placed in reaction to the event:
+    RoadConstructionComplete.
+    (by poc)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sat, 01 Sep 2012 19:22:00 +0200
+
+s25rttr (20120901-8133) any; urgency=low
+
+  * ai: updated the conditions for the 3rd forester
+    (by poc)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sat, 01 Sep 2012 19:22:00 +0200
+
+s25rttr (20120901-8132) any; urgency=low
+
+  * ai now keeps 2 Woodcutters for each Forester
+    (by poc)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sat, 01 Sep 2012 19:21:00 +0200
+
+s25rttr (20120901-8131) any; urgency=low
+
+  * fix for: Bug #1041329 (Wrong menu page by exiting "Unlimited
+    Play)
+    (by poc)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sat, 01 Sep 2012 19:21:00 +0200
+
+s25rttr (20120901-8130) any; urgency=low
+
+  * fixes a crash that occured after the ai lost it's hq
+    (by poc)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sat, 01 Sep 2012 19:20:00 +0200
+
+s25rttr (20120901-8129) any; urgency=low
+
+  * fix for the copy paste fail in 8127
+    (by poc)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sat, 01 Sep 2012 19:19:00 +0200
+
+s25rttr (20120901-8128) any; urgency=low
+
+  * fix for Bug #1043274 (invisible roads) (hope this catches all
+    remaining causes for this one)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sat, 01 Sep 2012 19:18:00 +0200
+
+s25rttr (20120901-8127) any; urgency=low
+
+  * fix for: #1037381 Attackers get stuck
+    ai will now build up to 5 sawmills, and as many woodcutters as
+    possible (no longer capped at 12)
+    (by poc)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sat, 01 Sep 2012 19:17:00 +0200
+
+s25rttr (20120901-8126) any; urgency=low
+
+  * Fix for: Bug #1042643: After defending a "full" building 1
+    soldier returns home
+    (by poc)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sat, 01 Sep 2012 19:16:00 +0200
+
+s25rttr (20120901-8125) any; urgency=low
+
+  * catches cases where the ai attempts to build a road on it's
+    border
+    (by poc)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sat, 01 Sep 2012 19:16:00 +0200
+
+s25rttr (20120901-8124) any; urgency=low
+
+  * ai road removal updates (road segment instead of following road)
+    (by poc)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sat, 01 Sep 2012 19:15:00 +0200
+
+s25rttr (20120901-8123) any; urgency=low
+
+  * fixes a road construction crash (#1039611 )
+    Improves the ai's road-circle removal code
+    (by poc)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sat, 01 Sep 2012 19:14:00 +0200
+
+s25rttr (20120901-8122) any; urgency=low
+
+  * AI: woodcutter & stonemason only get build when a valid
+    tree/stone is in range
+    AI: "alternative" roads are now capped at 3 steps without flag
+    (by poc)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sat, 01 Sep 2012 19:13:00 +0200
+
+s25rttr (20120901-8121) any; urgency=low
+
+  * might fix the ghostpath bug
+    ai pathfinder improved - distance without flag calculated & used
+    for picking the "best" path
+    (by poc)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sat, 01 Sep 2012 19:13:00 +0200
+
+s25rttr (20120901-8120) any; urgency=low
+
+  * fixed a crash in the ai check for useless military buildings
+    removed the initial expansion delay for the ai on anything but
+    low start resources
+    ai should no longer build new military structures far away from
+    the borders
+    (by poc)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sat, 01 Sep 2012 19:13:00 +0200
+
+s25rttr (20120901-8119) any; urgency=low
+
+  * AI now detects a difference between load game & new game
+    AI checks for possible attack targets a bit more often
+    (by poc)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sat, 01 Sep 2012 19:12:00 +0200
+
+s25rttr (20120901-8118) any; urgency=low
+
+  * AI values border over impassible terrain at 0
+    AI now detects a wider range of "useless" military buildings
+    (by poc)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sat, 01 Sep 2012 19:12:00 +0200
+
+s25rttr (20120901-8117) any; urgency=low
+
+  * AI now requires huntable animals to build Hunters
+    (by poc)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sat, 01 Sep 2012 19:11:00 +0200
+
+s25rttr (20120901-8116) any; urgency=low
+
+  * AI can build a Forester without finding a tree first
+    AI brewery count reduced to 1+armory/5 (old 1+armory/4)
+    AI mill count per farm increased in the very late game (20+farms)
+    (by poc)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sat, 01 Sep 2012 19:11:00 +0200
+
+s25rttr (20120901-8115) any; urgency=low
+
+  * AI now ignores pineapple trees
+    AI now ignores stones & trees on snow,swampland,lava,water (old:
+    swampland,lava,water)
+    AI no longer produces new tongs
+    (boy poc)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sat, 01 Sep 2012 19:11:00 +0200
+
+s25rttr (20120901-8114) any; urgency=low
+
+  * AI now detects redundant military buildings and removes them
+    (by poc)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sat, 01 Sep 2012 19:10:00 +0200
+
+s25rttr (20120901-8113) any; urgency=low
+
+  * team victory now ignores defeated allies
+    (by poc)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sat, 01 Sep 2012 19:10:00 +0200
+
+s25rttr (20120901-8112) any; urgency=low
+
+  * Enables team victory in games with "locked teams"
+    (by poc)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sat, 01 Sep 2012 19:09:00 +0200
+
+s25rttr (20120901-8111) any; urgency=low
+
+  * Game will now announce the winner in Singleplayer games
+    (by poc)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sat, 01 Sep 2012 19:08:00 +0200
+
+s25rttr (20120901-8110) any; urgency=low
+
+  * fixes Bug #1031128 (military buildings detect (dummy) harbor at
+    (0,0)
+    (by poc)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sat, 01 Sep 2012 19:05:00 +0200
+
+s25rttr (20120901-8109) any; urgency=low
+
+  * AI problem with Trees/Stones on Mountains solved
+    AI Forester construction requirements updated
+    Added all changes from the main build
+    (by poc)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sat, 01 Sep 2012 19:05:00 +0200
+
+s25rttr (20120901-8108) any; urgency=low
+
+  * #1044587 - fixes for the map Pangea.
+
+ -- marcus  Sat, 01 Sep 2012 09:38:00 +0200
+
+s25rttr (20120901-8107.178) karmic; urgency=low
+
+  * Automatic Jenkins Build 178
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sat, 01 Sep 2012 01:08:48 +0200
+
+s25rttr (20120901-8107) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sat, 01 Sep 2012 00:00:00 +0200
+
+s25rttr (20120831-8106) any; urgency=low
+
+  * Minor pathfinding improvements (do not push road segments leading
+    to buildings in todo list, except harbors and goal).
+
+ -- marcus  Fri, 31 Aug 2012 15:43:00 +0200
+
+s25rttr (20120830-8104.177) karmic; urgency=low
+
+  * Automatic Jenkins Build 177
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Thu, 30 Aug 2012 01:12:05 +0200
+
+s25rttr (20120830-8104) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Thu, 30 Aug 2012 00:00:00 +0200
+
+s25rttr (20120829-8103) any; urgency=low
+
+  * GL_TEXTURE_2D enabled by default. Reenabled it after disabling,
+    removed all unnecessary glEnable()s.
+
+ -- marcus  Wed, 29 Aug 2012 10:06:00 +0200
+
+s25rttr (20120829-8102.176) karmic; urgency=low
+
+  * Automatic Jenkins Build 176
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Wed, 29 Aug 2012 01:08:24 +0200
+
+s25rttr (20120829-8102) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Wed, 29 Aug 2012 00:00:00 +0200
+
+s25rttr (20120828-8101) any; urgency=low
+
+  * #1042841 - new map by Spikeone: Pangea
+
+ -- marcus  Tue, 28 Aug 2012 18:48:00 +0200
+
+s25rttr (20120828-8100) any; urgency=low
+
+  * [SDL] Attributes need to be set before changing video mode.
+
+ -- marcus  Tue, 28 Aug 2012 18:42:00 +0200
+
+s25rttr (20120825-8097) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 25 Aug 2012 22:01:00 +0200
+
 s25rttr (20120824-8094.175) karmic; urgency=low
 
   * Automatic Jenkins Build 175
