@@ -1,4 +1,4 @@
-// $Id: GameClient.cpp 8049 2012-07-22 17:23:19Z jh $
+// $Id: GameClient.cpp 8111 2012-09-01 19:08:53Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1226,7 +1226,7 @@ void GameClient::StatisticStep()
 		}
 
 		// Check objective if there is one and there are at least two players
-		if ((ggs.game_objective != GlobalGameSettings::GO_NONE) && (players.getCount() > 1))
+		if ((ggs.game_objective != GlobalGameSettings::GO_NONE))
 		{
 			// check winning condition
 			unsigned int max = 0, sum = 0, best = 0xFFFF;
