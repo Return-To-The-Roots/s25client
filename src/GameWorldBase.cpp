@@ -1,4 +1,4 @@
-// $Id: GameWorldBase.cpp 8110 2012-09-01 19:05:57Z jh $
+// $Id: GameWorldBase.cpp 8125 2012-09-01 19:16:12Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -326,6 +326,9 @@ bool GameWorldBase::RoadAvailable(const bool boat_road,const int x, const int y,
 		if(bm != noBase::BM_NOTBLOCKING)
 			 return 0;
 	}
+	//dont build on the border
+	if(GetNode(x,y).boundary_stones[0])
+		return 0;
 
 	
 
