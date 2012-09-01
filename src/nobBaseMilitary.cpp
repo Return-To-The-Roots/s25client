@@ -1,4 +1,4 @@
-// $Id: nobBaseMilitary.cpp 8059 2012-07-29 13:50:57Z jh $
+// $Id: nobBaseMilitary.cpp 8127 2012-09-01 19:17:50Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -233,7 +233,7 @@ void nobBaseMilitary::FindAnAttackerPlace(unsigned short &ret_x,unsigned short &
 
 		for(unsigned short i = 0;i<d;++i,ret_x+=(ret_y&1),--ret_y)
 		{
-			if(gwg->ValidWaitingAroundBuildingPoint(ret_x,ret_y,soldier))
+			if(gwg->ValidWaitingAroundBuildingPoint(ret_x,ret_y,soldier,x,y))
 			{
 				Node n = {ret_x,ret_y};
 				nodes.push_back(n);
@@ -241,7 +241,7 @@ void nobBaseMilitary::FindAnAttackerPlace(unsigned short &ret_x,unsigned short &
 		}
 		for(unsigned short i = 0;i<d;++i,++ret_x)
 		{
-			if(gwg->ValidWaitingAroundBuildingPoint(ret_x,ret_y,soldier))
+			if(gwg->ValidWaitingAroundBuildingPoint(ret_x,ret_y,soldier,x,y))
 			{
 				Node n = {ret_x,ret_y};
 				nodes.push_back(n);
@@ -249,7 +249,7 @@ void nobBaseMilitary::FindAnAttackerPlace(unsigned short &ret_x,unsigned short &
 		}
 		for(unsigned short i = 0;i<d;++i,ret_x+=(ret_y&1),++ret_y)
 		{
-			if(gwg->ValidWaitingAroundBuildingPoint(ret_x,ret_y,soldier))
+			if(gwg->ValidWaitingAroundBuildingPoint(ret_x,ret_y,soldier,x,y))
 			{
 				Node n = {ret_x,ret_y};
 				nodes.push_back(n);
@@ -257,7 +257,7 @@ void nobBaseMilitary::FindAnAttackerPlace(unsigned short &ret_x,unsigned short &
 		}
 		for(unsigned short i = 0;i<d;++i,ret_x-=!(ret_y&1),++ret_y)
 		{
-			if(gwg->ValidWaitingAroundBuildingPoint(ret_x,ret_y,soldier))
+			if(gwg->ValidWaitingAroundBuildingPoint(ret_x,ret_y,soldier,x,y))
 			{
 				Node n = {ret_x,ret_y};
 				nodes.push_back(n);
@@ -265,7 +265,7 @@ void nobBaseMilitary::FindAnAttackerPlace(unsigned short &ret_x,unsigned short &
 		}
 		for(unsigned short i = 0;i<d;++i,--ret_x)
 		{
-			if(gwg->ValidWaitingAroundBuildingPoint(ret_x,ret_y,soldier))
+			if(gwg->ValidWaitingAroundBuildingPoint(ret_x,ret_y,soldier,x,y))
 			{
 				Node n = {ret_x,ret_y};
 				nodes.push_back(n);
@@ -273,7 +273,7 @@ void nobBaseMilitary::FindAnAttackerPlace(unsigned short &ret_x,unsigned short &
 		}
 		for(unsigned short i = 0;i<d;++i,ret_x-=!(ret_y&1),--ret_y)
 		{
-			if(gwg->ValidWaitingAroundBuildingPoint(ret_x,ret_y,soldier))
+			if(gwg->ValidWaitingAroundBuildingPoint(ret_x,ret_y,soldier,x,y))
 			{
 				Node n = {ret_x,ret_y};
 				nodes.push_back(n);

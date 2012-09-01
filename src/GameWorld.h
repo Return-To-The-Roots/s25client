@@ -1,4 +1,4 @@
-// $Id: GameWorld.h 8114 2012-09-01 19:10:52Z jh $
+// $Id: GameWorld.h 8127 2012-09-01 19:17:50Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -809,7 +809,7 @@ public:
 	virtual void MilitaryBuildingCaptured(const MapCoord x, const MapCoord y, const unsigned char player) = 0;
 
 	/// Ist der Punkt ein geeigneter Platz zum Warten vor dem Militärgebäude
-	bool ValidWaitingAroundBuildingPoint(const MapCoord x, const MapCoord y, nofAttacker * attacker);
+	bool ValidWaitingAroundBuildingPoint(const MapCoord x, const MapCoord y, nofAttacker * attacker, const MapCoord goal_x, const MapCoord goal_y);
 	/// Geeigneter Punkt für Kämpfe?
 	bool ValidPointForFighting(const MapCoord x, const MapCoord y, const bool avoid_military_building_flags, nofActiveSoldier *exception = NULL);
 

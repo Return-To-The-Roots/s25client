@@ -1,4 +1,4 @@
-// $Id: GameWorldGame.cpp 8124 2012-09-01 19:15:43Z jh $
+// $Id: GameWorldGame.cpp 8127 2012-09-01 19:17:50Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1261,7 +1261,7 @@ void GameWorldGame::Armageddon(const unsigned char player)
 
 
 
-bool GameWorldGame::ValidWaitingAroundBuildingPoint(const MapCoord x, const MapCoord y, nofAttacker * attacker)
+bool GameWorldGame::ValidWaitingAroundBuildingPoint(const MapCoord x, const MapCoord y, nofAttacker * attacker, const MapCoord center_x, const MapCoord center_y)
 {
 	// Gültiger Punkt für Figuren?
 	if(!IsNodeForFigures(x,y))
@@ -1283,7 +1283,9 @@ bool GameWorldGame::ValidWaitingAroundBuildingPoint(const MapCoord x, const MapC
 		if((*it)->GetGOT() == GOT_FIGHTING)
 			return false;
 	}
-
+	// object wall or impassable terrain increasing my path to target length to a higher value than the direct distance? 
+	if(FindHumanPath(x,y,center_x,center_y,CalcDistance(x,y,center_x,center_y)) == 0xff)
+		return false;
 	return true;
 }
 
