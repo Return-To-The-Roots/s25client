@@ -1,4 +1,4 @@
-// $Id: nofDefender.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: nofDefender.h 8126 2012-09-01 19:16:47Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -80,6 +80,7 @@ public:		void Destroy() { Destroy_nofDefender(); }
 	/// Is the defender waiting at the flag for an attacker?
 	bool IsWaitingAtFlag() const
 	{ return (state == STATE_DEFENDING_WAITING); }
+	bool IsFightingAtFlag() const {return (state==STATE_FIGHTING);}
 	/// Informs the defender that a fight between him and an attacker has started
 	void FightStarted() 
 	{ state = STATE_FIGHTING; }

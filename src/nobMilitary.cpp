@@ -1,4 +1,4 @@
-// $Id: nobMilitary.cpp 8114 2012-09-01 19:10:52Z jh $
+// $Id: nobMilitary.cpp 8126 2012-09-01 19:16:47Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -398,8 +398,8 @@ void nobMilitary::RegulateTroops()
 		return;
 
 	// Zu viele oder zu wenig Truppen?
-	int diff;
-	if((diff = CalcTroopsCount() - int(troops.size()+ordered_troops.size()+troops_on_mission.size()+((defender)?1:0)
+	int diff;	
+	if((diff = CalcTroopsCount() - int(troops.size()+ordered_troops.size()+troops_on_mission.size()+(defender?(defender->IsWaitingAtFlag()||defender->IsFightingAtFlag())?1:0:0)
 	/*+ capturing_soldiers*/ + far_away_capturers.size())) < 0) //poc: this should only be >0 if we are being captured. capturing should be true until its the last soldier and this last one would count twice here and result in a returning soldier that shouldnt return.
 	{
 		// Zu viel --> überflüssige Truppen nach Hause schicken		
