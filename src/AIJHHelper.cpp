@@ -1,4 +1,4 @@
-// $Id: AIJHHelper.cpp 8117 2012-09-01 19:11:56Z jh $
+// $Id: AIJHHelper.cpp 8120 2012-09-01 19:13:00Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -169,7 +169,7 @@ void AIJH::BuildJob::TryToBuild()
 		case BLD_GUARDHOUSE:
 		case BLD_WATCHTOWER:
 		case BLD_FORTRESS:
-			foundPos = aijh->FindBestPosition(bx, by, AIJH::BORDERLAND, BUILDING_SIZE[type], 15, true);
+			foundPos = aijh->FindBestPosition(bx, by, AIJH::BORDERLAND, BUILDING_SIZE[type],1, 15, true);
 			break;
 		case BLD_GOLDMINE:
 			foundPos = aijh->FindBestPosition(bx, by, AIJH::GOLD, BQ_MINE, 15, true);

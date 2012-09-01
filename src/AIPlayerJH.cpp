@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 8119 2012-09-01 19:12:36Z jh $
+// $Id: AIPlayerJH.cpp 8120 2012-09-01 19:13:00Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -162,11 +162,12 @@ void AIPlayerJH::RunGF(const unsigned gf)
 		else
 		{
 			firsthouse=false;
-			if(lostmainstore)
+			if(lostmainstore&&aii->IsObjectTypeOnNode((*it).x,(*it).y,NOP_BUILDING))
 			{				
 				gcs.push_back(new gc::ChangeInventorySetting((*it).x, (*it).y, 0, 2, 0));
 				gcs.push_back(new gc::ChangeInventorySetting((*it).x, (*it).y, 0, 2, 16));
 				gcs.push_back(new gc::ChangeInventorySetting((*it).x, (*it).y, 0, 2, 21));
+				lostmainstore=false;
 			}
 		}
 		if(randomstore>0)
@@ -296,7 +297,7 @@ void AIPlayerJH::RunGF(const unsigned gf)
 
 bool AIPlayerJH::TestDefeat()
 {
-	if (!aii->GetHeadquarter()&&construction.GetStoreHousePositions().size()<1)
+	if (!aii->GetHeadquarter()&&construction.GetBuildingCount(BLD_STOREHOUSE)+construction.GetBuildingCount(BLD_HARBORBUILDING)-construction.GetBuildingSitesCount(BLD_STOREHOUSE)-construction.GetBuildingSitesCount(BLD_STOREHOUSE)<1)
 	{
 		defeated = true;
 		aii->Surrender();
@@ -1117,7 +1118,7 @@ void AIPlayerJH::HandleNewMilitaryBuilingOccupied(const Coords& coords)
 	MapCoord y = coords.y;
 	//kill bad flags we find
 	std::vector<const noFlag*> flags;
-	construction.FindFlags(flags, x, y, 15);	
+	construction.FindFlags(flags, x, y, 25);	
 	// Jede Flagge im umkreis testen auf kaputte wege
 	for(unsigned i=0; i<flags.size(); ++i)
 	{
@@ -1240,13 +1241,14 @@ void AIPlayerJH::HandleMilitaryBuilingLost(const Coords& coords)
 	}
 	//find all flags around the lost building and try to reconnect them if necessary 
 	std::vector<const noFlag*> flags;
-	construction.FindFlags(flags, x, y, 15);	
+	construction.FindFlags(flags, x, y, 25);	
 	// Jede Flagge testen...
 	for(unsigned i=0; i<flags.size(); ++i)
 	{
 		//excluding direction 7 means no excluded direction because there are only 6 valid directions
 		RemoveUnusedRoad(flags[i],255,true);
 	}	
+
 }
 
 void AIPlayerJH::HandleBuildingFinished(const Coords& coords, BuildingType bld)
@@ -1435,9 +1437,21 @@ void AIPlayerJH::TryToAttack()
 			continue;
 		}
 
-		if (mil->GetFrontierDistance() == 0)
+		if (mil->GetFrontierDistance() == 0)  //inland building? -> deactivate gold & skip it
+		{
+			if(!mil->IsGoldDisabled())
+			{
+				gcs.push_back(new gc::StopGold(mil->GetX(), mil->GetY()));
+			}
 			continue;
-
+		}
+		else
+		{
+			if(mil->IsGoldDisabled())		//combat building? -> activate gold
+			{
+				gcs.push_back(new gc::StopGold(mil->GetX(), mil->GetY()));
+			}
+		}
 		std::list<nobBaseMilitary *> buildings;
 		aii->GetMilitaryBuildings((*it).x, (*it).y, 2, buildings);
 		for(std::list<nobBaseMilitary*>::iterator it2 = buildings.begin(); it2 != buildings.end(); ++it2)

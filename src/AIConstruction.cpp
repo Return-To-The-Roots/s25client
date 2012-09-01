@@ -1,4 +1,4 @@
-// $Id: AIConstruction.cpp 8119 2012-09-01 19:12:36Z jh $
+// $Id: AIConstruction.cpp 8120 2012-09-01 19:13:00Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -321,8 +321,8 @@ bool AIConstruction::Wanted(BuildingType type)
 	if (type == BLD_CATAPULT && !aii->CanBuildCatapult())
 		return false;
 	if ((type >= BLD_BARRACKS && type <= BLD_FORTRESS) || type == BLD_STOREHOUSE)
-		//todo: find a better way to determine that there is no risk in expanding than sawmill up and complete (everything else complete as well)
-		return (GetBuildingCount(BLD_BARRACKS)+GetBuildingCount(BLD_GUARDHOUSE)+GetBuildingCount(BLD_FORTRESS)+GetBuildingCount(BLD_WATCHTOWER)>0 || (GetBuildingCount(BLD_SAWMILL)>1&&aii->GetBuildingSites().size()<2));		
+		//todo: find a better way to determine that there is no risk in expanding than sawmill up and complete
+		return (GetBuildingCount(BLD_BARRACKS)+GetBuildingCount(BLD_GUARDHOUSE)+GetBuildingCount(BLD_FORTRESS)+GetBuildingCount(BLD_WATCHTOWER)>0 || buildingCounts.building_counts[BLD_SAWMILL]>0 || aii->GetInventory()->goods[GD_BOARDS]>30);		
 	return GetBuildingCount(type) < buildingsWanted[type];
 }
 
@@ -332,7 +332,7 @@ void AIConstruction::RefreshBuildingCount()
 	//no military buildings -> usually start only
 	if(GetBuildingCount(BLD_BARRACKS)+GetBuildingCount(BLD_GUARDHOUSE)+GetBuildingCount(BLD_FORTRESS)+GetBuildingCount(BLD_WATCHTOWER)<1)
 	{
-		buildingsWanted[BLD_FORESTER] = 1;
+		buildingsWanted[BLD_FORESTER]=1;
 		buildingsWanted[BLD_SAWMILL] = 2; //probably only has 1 saw+carpenter but if that is the case the ai will try to produce 1 additional saw very quickly
 		buildingsWanted[BLD_WOODCUTTER] = 1;
 		buildingsWanted[BLD_QUARRY] = 2;
@@ -347,7 +347,7 @@ void AIConstruction::RefreshBuildingCount()
 	}
 	else
 	{
-		buildingsWanted[BLD_FORESTER]=(GetBuildingCount(BLD_SAWMILL)>2&&GetBuildingCount(BLD_SAWMILL)>GetBuildingCount(BLD_WOODCUTTER))||(aii->GetInventory()->goods[GD_BOARDS]<20&&GetBuildingCount(BLD_STOREHOUSE)>0)?2:1;
+		buildingsWanted[BLD_FORESTER]=(GetBuildingCount(BLD_SAWMILL)>2&&GetBuildingCount(BLD_SAWMILL)>GetBuildingCount(BLD_WOODCUTTER))||(aii->GetInventory()->goods[GD_BOARDS]<40&&GetBuildingCount(BLD_STOREHOUSE)>0)?aii->GetInventory()->goods[GD_BOARDS]<20&&GetBuildingCount(BLD_WOODCUTTER)<6&&GetBuildingCount(BLD_BARRACKS)+GetBuildingCount(BLD_GUARDHOUSE)+GetBuildingCount(BLD_FORTRESS)+GetBuildingCount(BLD_WATCHTOWER)>15?3:2:1;
 	//building types usually limited by profession+tool for profession with some arbitrary limit. Some buildings which are linked to others in a chain / profession-tool-rivalry have additional limits.
 	buildingsWanted[BLD_WOODCUTTER]=(aii->GetInventory()->goods[GD_AXE] + aii->GetInventory()->people[JOB_WOODCUTTER]<12) ? aii->GetInventory()->goods[GD_AXE] + aii->GetInventory()->people[JOB_WOODCUTTER] : 12;
 	if(GetBuildingCount(BLD_SAWMILL)*2<buildingsWanted[BLD_WOODCUTTER]&&GetBuildingCount(BLD_SAWMILL)<4)

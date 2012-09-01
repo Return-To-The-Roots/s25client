@@ -1,4 +1,4 @@
-// $Id: GameWorldGame.cpp 8118 2012-09-01 19:12:18Z jh $
+// $Id: GameWorldGame.cpp 8120 2012-09-01 19:13:00Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -824,7 +824,7 @@ bool GameWorldGame::TerritoryChange(const noBaseBuilding * const building,const 
 			if((prev_player=GetNode(tx,ty).owner) != (player=tr.GetOwner(x,y)))
 			{
 				// if gameobjective isnt 75% ai can ignore water/snow/lava/swamp
-				if(GameClient::inst().GetGGS().game_objective==GlobalGameSettings::GO_CONQUER3_4 || (GetNode(x,y).t1!=TT_WATER && GetNode(x,y).t1!=TT_LAVA && GetNode(x,y).t1!=TT_SWAMPLAND&& GetNode(x,y).t1!=TT_SNOW))
+				if(GameClient::inst().GetGGS().game_objective==GlobalGameSettings::GO_CONQUER3_4 || (GetNode(tx,ty).t1!=TT_WATER && GetNode(tx,ty).t1!=TT_LAVA && GetNode(tx,ty).t1!=TT_SWAMPLAND&& GetNode(tx,ty).t1!=TT_SNOW))
 					return false;					
 			}
 		}
