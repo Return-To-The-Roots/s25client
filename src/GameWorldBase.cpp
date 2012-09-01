@@ -1,4 +1,4 @@
-// $Id: GameWorldBase.cpp 7760 2012-01-05 20:19:33Z marcus $
+// $Id: GameWorldBase.cpp 8110 2012-09-01 19:05:57Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1375,7 +1375,7 @@ unsigned GameWorldBase::CalcHarborDistance(const unsigned habor_id1, const unsig
 unsigned GameWorldBase::CalcDistanceToNearestHarbor(const Point<MapCoord> pos) const
 {
 	unsigned min_distance = 0xffffffff;
-	for(unsigned i = 0;i<harbor_pos.size();++i)
+	for(unsigned i = 0;i<harbor_pos.size()-1;++i) //poc: harbor dummy at spot 0 ask Oliverr why 
 		min_distance = min(min_distance,this->CalcDistance(pos.x,pos.y,harbor_pos[i].x,harbor_pos[i].y));
 		
 	return min_distance;

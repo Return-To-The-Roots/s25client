@@ -1,4 +1,4 @@
-// $Id: GameWorld.cpp 7886 2012-03-18 22:20:44Z jh $
+// $Id: GameWorld.cpp 8110 2012-09-01 19:05:57Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -75,6 +75,7 @@ void GameWorld::Scan(glArchivItem_Map *map)
 	Init();
 
 	// Dummy-Hafenpos für Index 0 einfügen // ask Oliverr why!
+	// poc: if you ever remove this dummy go to GameWorldBase::CalcDistanceToNearestHarbor and fix the loop to include the first harbor again (think Ive seen other instances of dummyadjusted loops as well...)
 	GameWorldBase::HarborPos dummy = {0,0};
 	harbor_pos.push_back(dummy);
 
