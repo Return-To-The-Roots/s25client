@@ -1,4 +1,4 @@
-// $Id: GameWorldGame.cpp 8127 2012-09-01 19:17:50Z jh $
+// $Id: GameWorldGame.cpp 8134 2012-09-01 19:22:25Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -315,6 +315,7 @@ void GameWorldGame::DestroyBuilding(const MapCoord x, const MapCoord y, const un
 void GameWorldGame::BuildRoad(const unsigned char playerid,const bool boat_road,
 							  unsigned short start_x,unsigned short start_y, const std::vector<unsigned char>& route)
 {
+
 	// TODO: Verzögerungsbugabfrage, kann später ggf. weg
 	if(!GetSpecObj<noFlag>(start_x,start_y))
 	{
@@ -382,15 +383,12 @@ void GameWorldGame::BuildRoad(const unsigned char playerid,const bool boat_road,
 			return;
 		}
 		// TODO: Verzögerungsbugabfrage, kann später ggf. weg
-		// Abfragen, ob schon eine Flagge in der Nähe ist (keine Mini-1-Wege)
-		for(unsigned char i = 0;i<6;++i)
+		// kann Flagge hier nicht gebaut werden?
+		if(CalcBQ(testx,testy,playerid,true,false) != BQ_FLAG)
 		{
-			if(GetNO(GetXA(testx,testy,i), GetYA(testx,testy,i))->GetGOT() == GOT_FLAG)
-			{
 				// Dann Weg nicht bauen und ggf. das visuelle wieder zurückbauen
 				RemoveVisualRoad(start_x,start_y,route);
-				return;
-			}
+				return;			
 		}
 
 		// TODO: Verzögerungsbugabfrage, kann später ggf. weg
@@ -443,6 +441,8 @@ void GameWorldGame::BuildRoad(const unsigned char playerid,const bool boat_road,
 
 	// Der Wirtschaft mitteilen, dass eine neue StraÃe gebaut wurde, damit sie alles Näcige macht
 	GetPlayer(playerid)->NewRoad(rs);
+	// notify ai about the new road
+	GAMECLIENT.SendAIEvent(new AIEvent::Direction(AIEvent::RoadConstructionComplete, tmpx, tmpy,route[0]), playerid);
 
 }
 

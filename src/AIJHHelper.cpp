@@ -1,4 +1,4 @@
-// $Id: AIJHHelper.cpp 8122 2012-09-01 19:13:53Z jh $
+// $Id: AIJHHelper.cpp 8134 2012-09-01 19:22:25Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -461,6 +461,12 @@ void AIJH::EventJob::ExecuteJob()
 		{
 			AIEvent::Location *lvb = dynamic_cast<AIEvent::Location *>(ev);
 			aijh->HandleShipBuilt(AIPlayerJH::Coords(lvb->GetX(), lvb->GetY()));
+			status = AIJH::JOB_FINISHED;
+		}
+	case AIEvent::RoadConstructionComplete:
+		{
+			AIEvent::Direction *dvb = dynamic_cast<AIEvent::Direction *>(ev);
+			aijh->HandleRoadConstructionComplete(AIPlayerJH::Coords(dvb->GetX(), dvb->GetY()),dvb->GetDirection());
 			status = AIJH::JOB_FINISHED;
 		}
 	default:

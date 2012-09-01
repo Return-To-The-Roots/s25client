@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 8132 2012-09-01 19:21:47Z jh $
+// $Id: AIPlayerJH.cpp 8134 2012-09-01 19:22:25Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1216,8 +1216,29 @@ void AIPlayerJH::HandleBuilingDestroyed(const Coords& coords, BuildingType bld)
 {
 	MapCoord x = coords.x;
 	MapCoord y = coords.y;
-	UpdateNodesAroundNoBorder(x, y, 11); // todo: fix radius
-	//not sure but maybe we have to update resources if we lost a mine
+	UpdateNodesAroundNoBorder(x, y, 11);
+}
+
+void AIPlayerJH::HandleRoadConstructionComplete(const Coords& coords, unsigned char dir)
+{
+	//todo: detect "bad" roads and handle them
+	MapCoord x = coords.x;
+	MapCoord y = coords.y;
+	const noFlag *flag;
+	//does the flag still exist?
+	if(!(flag = aii->GetSpecObj<noFlag>(x, y)))
+		return;
+	//does the roadsegment still exist?
+	if(!flag->routes[dir])
+		return;
+	//set flags on our new road
+	for(unsigned i=0; i<flag->routes[dir]->GetLength(); ++i)
+		{
+			aii->GetPointA(x, y, flag->routes[dir]->GetDir(false,i));
+			{
+				aii->SetFlag(x, y);
+			}
+		}
 }
 
 void AIPlayerJH::HandleMilitaryBuilingLost(const Coords& coords)

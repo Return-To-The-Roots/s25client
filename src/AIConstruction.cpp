@@ -1,4 +1,4 @@
-// $Id: AIConstruction.cpp 8133 2012-09-01 19:22:06Z jh $
+// $Id: AIConstruction.cpp 8134 2012-09-01 19:22:25Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -263,17 +263,6 @@ bool AIConstruction::BuildRoad(const noRoadNode *start, const noRoadNode *target
 		MapCoord y = start->GetY();
 		aii->SetFlag(target->GetX(),target->GetY());
 		aii->BuildRoad(x, y, route);
-
-		// Flaggen auf der Straße setzen
-		for(unsigned i=0; i<route.size(); ++i)
-		{
-			aii->GetPointA(x, y, route[i]);
-			// Alle zwei Teilstücke versuchen eine Flagge zu bauen
-			if (i % 2 == 1)
-			{
-				aii->SetFlag(x, y);
-			}
-		}
 		return true;
 	}
 	return false;

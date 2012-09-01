@@ -1,4 +1,4 @@
-// $Id: AIEventManager.h 7884 2012-03-18 22:19:43Z jh $
+// $Id: AIEventManager.h 8134 2012-09-01 19:22:25Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -41,7 +41,8 @@ namespace AIEvent
 		ExpeditionWaiting,
 		TreeChopped,
 		ShipBuilt,
-		ResourceUsed
+		ResourceUsed,
+		RoadConstructionComplete
 	};
 
 
@@ -69,6 +70,16 @@ namespace AIEvent
 		MapCoord x, y;
 	};
 
+	class Direction : public Location
+	{
+	public:
+		Direction(AIEventType type, MapCoord x, MapCoord y, unsigned char direction) : Location(type, x, y), direction(direction) { }
+		~Direction() { }
+		unsigned char GetDirection() const { return direction; }
+
+	protected:
+		unsigned char direction;
+	};
 
 	class Building : public Location
 	{

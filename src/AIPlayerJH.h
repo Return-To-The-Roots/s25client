@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.h 8123 2012-09-01 19:14:28Z jh $
+// $Id: AIPlayerJH.h 8134 2012-09-01 19:22:25Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -205,6 +205,9 @@ protected:
 
 	// A new ship has been built -> handle it
 	void HandleShipBuilt(const Coords& coords);
+
+	// A new road has been built -> handle it
+	void HandleRoadConstructionComplete(const Coords& coords, unsigned char dir);
 
 	// Handle border event
 	void HandleBorderChanged(const Coords& coords);
