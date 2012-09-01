@@ -1,4 +1,4 @@
-// $Id: GameClient.cpp 8112 2012-09-01 19:09:30Z jh $
+// $Id: GameClient.cpp 8113 2012-09-01 19:10:25Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1241,7 +1241,7 @@ void GameClient::StatisticStep()
 					if(players[i].isDefeated())continue;
 					for(unsigned int j=0;j<players.getCount();++j)
 					{
-						if(i!=j&&players[j].IsAlly(i))
+						if(i!=j&&players[j].IsAlly(i)&&!players[j].isDefeated())
 						{
 							curteam=curteam|(1<<j);
 							teampoints+=players[j].GetStatisticCurrentValue(STAT_COUNTRY);	
