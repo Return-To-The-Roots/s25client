@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 8130 2012-09-01 19:20:34Z jh $
+// $Id: AIPlayerJH.cpp 8132 2012-09-01 19:21:47Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1365,16 +1365,43 @@ void AIPlayerJH::HandleTreeChopped(const Coords& coords)
 void AIPlayerJH::HandleNoMoreResourcesReachable(const Coords& coords, BuildingType bld)
 {
 	MapCoord x = coords.x;
-	MapCoord y = coords.y;
-	UpdateNodesAround(x, y, 11); // todo: fix radius
+	MapCoord y = coords.y;	
 
 	// Destroy old building (once)
 	
 	if (aii->IsObjectTypeOnNode(x, y, NOP_BUILDING))
+	{
+		//keep 2 woodcutters for each forester even if they sometimes run out of trees
+		if(bld==BLD_WOODCUTTER)
+		{
+			for (std::list<nobUsual *>::const_iterator it = aii->GetBuildings(BLD_FORESTER).begin(); it != aii->GetBuildings(BLD_FORESTER).end(); it++)
+			{
+				//is the forester somewhat close?
+				if(gwb->CalcDistance(x,y,(*it)->GetX(),(*it)->GetY())<6)
+					//then find it's 2 woodcutters
+				{
+					unsigned maxdist=gwb->CalcDistance(x,y,(*it)->GetX(),(*it)->GetY());
+					char betterwoodcutters=0;
+					for (std::list<nobUsual *>::const_iterator it2 = aii->GetBuildings(BLD_WOODCUTTER).begin(); it2 != aii->GetBuildings(BLD_WOODCUTTER).end()&&betterwoodcutters<2; it2++)
+					{
+						//dont count the woodcutter in question
+						if(x==(*it2)->GetX()&&y==(*it2)->GetY())
+							continue;
+						//closer or equally close to forester than woodcutter in question?
+						if(gwb->CalcDistance((*it2)->GetX(),(*it2)->GetY(),(*it)->GetX(),(*it)->GetY())<=maxdist)
+							betterwoodcutters++;
+					}
+					//couldnt find 2 closer woodcutter -> keep it alive
+					if(betterwoodcutters<2)
+						return;
+				}
+			}
+		}
 		gcs.push_back(new gc::DestroyBuilding(x, y));
+	}
 	else
 		return;
-	
+	UpdateNodesAround(x, y, 11); // todo: fix radius
 	RemoveUnusedRoad(aii->GetSpecObj<noFlag>(aii->GetXA(x,y,4),aii->GetYA(x,y,4)), 1,true);
 
 	// try to expand, maybe res blocked a passage
