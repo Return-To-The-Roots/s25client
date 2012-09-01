@@ -1,4 +1,4 @@
-// $Id: GameInterface.h 7702 2011-12-30 20:11:27Z marcus $
+// $Id: GameInterface.h 8112 2012-09-01 19:09:30Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -38,6 +38,7 @@ public:
 	virtual void GI_TreatyOfAllianceChanged() = 0;
 
 	virtual void GI_Winner(const unsigned player_id) = 0;
+	virtual void GI_TeamWinner(const unsigned player_id) = 0;
 };
 
 

@@ -1,4 +1,4 @@
-// $Id: GameClient.cpp 8111 2012-09-01 19:08:53Z jh $
+// $Id: GameClient.cpp 8112 2012-09-01 19:09:30Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1226,16 +1226,36 @@ void GameClient::StatisticStep()
 		}
 
 		// Check objective if there is one and there are at least two players
-		if ((ggs.game_objective != GlobalGameSettings::GO_NONE))
+		if (ggs.game_objective != GlobalGameSettings::GO_NONE)
 		{
 			// check winning condition
-			unsigned int max = 0, sum = 0, best = 0xFFFF;
+			unsigned int max = 0, sum = 0, best = 0xFFFF,maxteam=0,teampoints=0,curteam=0,bestteam=0xFFFF;
 
 			// Find out best player. Since at least 3/4 of the populated land is needed to win, we don't care about ties.
 			for (unsigned int i=0; i<players.getCount(); ++i)
 			{
+				if(ggs.lock_teams) //in games with locked team settings check for team victory
+				{
+					curteam=0;
+					teampoints=0;
+					if(players[i].isDefeated())continue;
+					for(unsigned int j=0;j<players.getCount();++j)
+					{
+						if(i!=j&&players[j].IsAlly(i))
+						{
+							curteam=curteam|(1<<j);
+							teampoints+=players[j].GetStatisticCurrentValue(STAT_COUNTRY);	
+						}
+					}
+					teampoints+=players[i].GetStatisticCurrentValue(STAT_COUNTRY);
+					curteam=curteam|(1<<i);
+					if(teampoints>maxteam&&teampoints-players[i].GetStatisticCurrentValue(STAT_COUNTRY)>0)
+					{
+						maxteam=teampoints;
+						bestteam=curteam;
+					}
+				}
 				unsigned int v = players[i].GetStatisticCurrentValue(STAT_COUNTRY);
-
 				if (v > max)
 				{
 					max = v;
@@ -1252,10 +1272,18 @@ void GameClient::StatisticStep()
 					{
 						ggs.game_objective = GlobalGameSettings::GO_NONE;
 					}
+					if ((maxteam * 4 >= sum * 3) && (bestteam != 0xFFFF))
+					{
+						ggs.game_objective = GlobalGameSettings::GO_NONE;
+					}
 					break;
 
 				case GlobalGameSettings::GO_TOTALDOMINATION:	// whole populated land
 					if ((max == sum) && (best != 0xFFFF))
+					{
+						ggs.game_objective = GlobalGameSettings::GO_NONE;
+					}
+					if ((maxteam == sum) && (bestteam != 0xFFFF))
 					{
 						ggs.game_objective = GlobalGameSettings::GO_NONE;
 					}
@@ -1267,7 +1295,14 @@ void GameClient::StatisticStep()
 			// We have a winner! Objective was changed to GO_NONE to avoid further checks.
 			if (ggs.game_objective == GlobalGameSettings::GO_NONE)
 			{
-				gw->GetGameInterface()->GI_Winner(best);
+				if(maxteam<=best)
+				{
+					gw->GetGameInterface()->GI_Winner(best);
+				}
+				else
+				{
+					gw->GetGameInterface()->GI_TeamWinner(bestteam);
+				}
 			}
 		}
 	}

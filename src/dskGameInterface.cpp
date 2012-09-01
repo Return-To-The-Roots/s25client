@@ -1,4 +1,4 @@
-// $Id: dskGameInterface.cpp 8109 2012-09-01 19:05:19Z jh $
+// $Id: dskGameInterface.cpp 8112 2012-09-01 19:09:30Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1319,6 +1319,39 @@ void dskGameInterface::GI_Winner(const unsigned player_id)
 {
 	char text[256];
 	snprintf(text, sizeof(text), _("Player '%s' is the winner!"), GameClient::inst().GetPlayer(player_id)->name.c_str());
+	messenger.AddMessage("", 0, CD_SYSTEM, text, COLOR_ORANGE);
+}
+///////////////////////////////////////////////////////////////////////////////
+/**
+ *  Ein Team hat das Spiel gewonnen.
+ *
+ *  @author poc
+ */
+void dskGameInterface::GI_TeamWinner(const unsigned player_id)
+{
+	int winnercount=0;
+	int winners[5];
+	for(int i=0;i<GameClient::inst().GetPlayerCount()&&winnercount<5;i++)
+	{
+		winners[winnercount]=i;
+		winnercount+=player_id&(1<<i)?1:0;
+	}
+	char text[256];
+	switch (winnercount)
+	{
+		case 2:
+			snprintf(text, sizeof(text), _("Team victory! '%s' and '%s' are the winners!"), GameClient::inst().GetPlayer(winners[0])->name.c_str(),GameClient::inst().GetPlayer(winners[1])->name.c_str());
+			break;
+		case 3:
+			snprintf(text, sizeof(text), _("Team victory! '%s' and '%s' and '%s' are the winners!"), GameClient::inst().GetPlayer(winners[0])->name.c_str(),GameClient::inst().GetPlayer(winners[1])->name.c_str(),GameClient::inst().GetPlayer(winners[2])->name.c_str());
+			break;
+		case 4:
+			snprintf(text, sizeof(text), _("Team victory! '%s' and '%s' and '%s' and '%s' are the winners!"), GameClient::inst().GetPlayer(winners[0])->name.c_str(),GameClient::inst().GetPlayer(winners[1])->name.c_str(),GameClient::inst().GetPlayer(winners[2])->name.c_str(),GameClient::inst().GetPlayer(winners[3])->name.c_str());
+			break;
+		default:
+			snprintf(text, sizeof(text), _("Team victory!"));
+			break;
+	}
 	messenger.AddMessage("", 0, CD_SYSTEM, text, COLOR_ORANGE);
 }
 
