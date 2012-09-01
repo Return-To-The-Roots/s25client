@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 8120 2012-09-01 19:13:00Z jh $
+// $Id: AIPlayerJH.cpp 8121 2012-09-01 19:13:21Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1117,6 +1117,8 @@ void AIPlayerJH::HandleNewMilitaryBuilingOccupied(const Coords& coords)
 	MapCoord x = coords.x;
 	MapCoord y = coords.y;
 	//kill bad flags we find
+	RemoveAllUnusedRoads(x,y);
+	/*
 	std::vector<const noFlag*> flags;
 	construction.FindFlags(flags, x, y, 25);	
 	// Jede Flagge im umkreis testen auf kaputte wege
@@ -1126,6 +1128,7 @@ void AIPlayerJH::HandleNewMilitaryBuilingOccupied(const Coords& coords)
 		RemoveUnusedRoad(flags[i],255,true);
 	}	
 	UpdateNodesAround(x, y, 15); // todo: fix radius
+	*/
 	construction.RefreshBuildingCount();
 	//is the captured building in our list(should be if be constructed it)
 	bool alreadyinlist=false;
@@ -1220,7 +1223,6 @@ void AIPlayerJH::HandleMilitaryBuilingLost(const Coords& coords)
 {
 	MapCoord x = coords.x;
 	MapCoord y = coords.y;
-	UpdateNodesAroundNoBorder(x, y, 15); // todo: fix radius
 	//remove from military building list if possible
 	for (std::list<Coords>::iterator it = milBuildings.begin(); it != milBuildings.end(); it++)
 	{
@@ -1239,7 +1241,9 @@ void AIPlayerJH::HandleMilitaryBuilingLost(const Coords& coords)
 		if(!aii->IsObjectTypeOnNode((*it).x,(*it).y,NOP_BUILDING)&&!aii->IsObjectTypeOnNode((*it).x,(*it).y,NOP_BUILDINGSITE))
 			return;
 	}
-	//find all flags around the lost building and try to reconnect them if necessary 
+	//find all flags around the lost building and try to reconnect them if necessary
+	RemoveAllUnusedRoads(x,y);
+	/*
 	std::vector<const noFlag*> flags;
 	construction.FindFlags(flags, x, y, 25);	
 	// Jede Flagge testen...
@@ -1248,6 +1252,8 @@ void AIPlayerJH::HandleMilitaryBuilingLost(const Coords& coords)
 		//excluding direction 7 means no excluded direction because there are only 6 valid directions
 		RemoveUnusedRoad(flags[i],255,true);
 	}	
+	UpdateNodesAroundNoBorder(x, y, 15); // todo: fix radius
+	*/
 
 }
 
@@ -1656,13 +1662,30 @@ bool AIPlayerJH::IsFlagPartofCircle(const noFlag *startFlag,unsigned maxlen,cons
 	return partofcircle;
 }
 
+void AIPlayerJH::RemoveAllUnusedRoads(MapCoord x,MapCoord y)
+{
+	std::vector<const noFlag*> flags;
+	construction.FindFlags(flags, x, y, 25);	
+	// Jede Flagge testen...
+	std::list<const noFlag*>reconnectflags;
+	for(unsigned i=0; i<flags.size(); ++i)
+	{
+		if(RemoveUnusedRoad(flags[i],255,true))
+			reconnectflags.push_back(flags[i]);
+	}	
+	UpdateNodesAroundNoBorder(x,y,25);
+	while(reconnectflags.size()>0)
+	{
+		construction.AddConnectFlagJob(reconnectflags.front());
+		reconnectflags.pop_front();
+	}
+}
 
-void AIPlayerJH::RemoveUnusedRoad(const noFlag *startFlag, unsigned char excludeDir,bool firstflag)
+bool AIPlayerJH::RemoveUnusedRoad(const noFlag *startFlag, unsigned char excludeDir,bool firstflag)
 {
 	unsigned char foundDir = 0xFF;
 	unsigned char foundDir2= 0xFF;
 	unsigned char finds = 0;
-
 	// Count roads from this flag...
 	for (unsigned char dir=0; dir < 6; ++dir)
 	{
@@ -1680,8 +1703,9 @@ void AIPlayerJH::RemoveUnusedRoad(const noFlag *startFlag, unsigned char exclude
 			{
 				//the flag belongs to a building - update the pathing map around us and try to reconnect it (if we cant reconnect it -> burn it(burning takes place at the pathfinding job))
 				finds+=3;
-				UpdateNodesAroundNoBorder(startFlag->GetX(),startFlag->GetY(),20);
-				construction.AddConnectFlagJob(startFlag);
+				//UpdateNodesAroundNoBorder(startFlag->GetX(),startFlag->GetY(),20);
+				//construction.AddConnectFlagJob(startFlag);
+				return true;
 
 			}
 		}
@@ -1690,7 +1714,7 @@ void AIPlayerJH::RemoveUnusedRoad(const noFlag *startFlag, unsigned char exclude
 	// if we found more than 1 road (or a building) the flag is still in use.	
 	if (finds>2)
 	{	
-		return;
+		return false;
 	}
 	else
 	{
@@ -1698,9 +1722,9 @@ void AIPlayerJH::RemoveUnusedRoad(const noFlag *startFlag, unsigned char exclude
 		{
 			std::vector<int> flagcheck;
 			if(!IsFlagPartofCircle(startFlag,10,startFlag,7,true,flagcheck,flagcheck))
-				return;
+				return false;
 			if(!firstflag)
-				return;
+				return false;
 		}
 	}
 
@@ -1710,9 +1734,9 @@ void AIPlayerJH::RemoveUnusedRoad(const noFlag *startFlag, unsigned char exclude
 	// nothing found?
 	if (foundDir > 6)
 	{
-		return;
+		return false;
 	}
-
+	// 1 road detected
 	MapCoord x = aii->GetXA(startFlag->GetX(), startFlag->GetY(), foundDir);
 	MapCoord y = aii->GetYA(startFlag->GetX(), startFlag->GetY(), foundDir);
 
@@ -1786,6 +1810,7 @@ void AIPlayerJH::RemoveUnusedRoad(const noFlag *startFlag, unsigned char exclude
 		}
 	}
 	}
+	return false;
 }
 
 bool AIPlayerJH::SoldierAvailable()

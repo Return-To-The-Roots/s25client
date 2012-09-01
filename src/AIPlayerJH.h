@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.h 8119 2012-09-01 19:12:36Z jh $
+// $Id: AIPlayerJH.h 8121 2012-09-01 19:13:21Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -234,7 +234,9 @@ protected:
 
 	void SetFarmedNodes(MapCoord x, MapCoord y);
 
-	void RemoveUnusedRoad(const noFlag *startFlag, unsigned char excludeDir = 0xFF, bool firstflag=true);
+	bool RemoveUnusedRoad(const noFlag *startFlag, unsigned char excludeDir = 0xFF, bool firstflag=true);
+	//finds all unused flags and roads, removes flags or reconnects them as neccessary
+	void RemoveAllUnusedRoads(MapCoord x,MapCoord y);
 
 	// check if there are free soldiers (in hq/storehouses)
 	bool SoldierAvailable();

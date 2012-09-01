@@ -1,4 +1,4 @@
-// $Id: AIConstruction.cpp 8120 2012-09-01 19:13:00Z jh $
+// $Id: AIConstruction.cpp 8121 2012-09-01 19:13:21Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -187,6 +187,25 @@ bool AIConstruction::ConnectFlagToRoadSytem(const noFlag *flag, std::vector<unsi
 		if (pathFound)
 		{
 			unsigned int distance = 0;
+			unsigned size=0;
+			//more than 5 nonflaggable spaces on the route -> not really valid path 
+			unsigned temp=0;
+			MapCoord tx=flag->GetX();
+			MapCoord ty=flag->GetY();
+			for(unsigned j=0;j<tmpRoute.size();++j)
+			{
+				aii->GetPointA(tx,ty,tmpRoute[j]);
+				if(aii->GetBuildingQuality(tx,ty)<1)
+					temp++;
+				else
+				{
+					if(size<temp)
+						size=temp;
+					temp=0;
+				}
+			}
+			if(size>5)
+				continue;
 
 			// Strecke von der potenziellen Zielfahne bis zum Lager
 			bool pathFound = aii->FindPathOnRoads(flags[i], targetFlag, &distance);
@@ -206,10 +225,10 @@ bool AIConstruction::ConnectFlagToRoadSytem(const noFlag *flag, std::vector<unsi
 			
 			// K¸rzer als der letzte? Nehmen! Existierende Strecke hˆher gewichten (2), damit mˆglichst kurze Baustrecken
 			// bevorzugt werden bei ‰hnlich langen Wegmˆglichkeiten
-			if (2 * length + distance < shortestLength)
+			if (2 * length + distance +10*size < shortestLength)
 			{
 				shortest = i;
-				shortestLength = 2 * length + distance;
+				shortestLength = 2 * length + distance + 10*size;
 				route = tmpRoute;
 			}
 		}
@@ -487,6 +506,25 @@ bool AIConstruction::BuildAlternativeRoad(const noFlag *flag, std::vector<unsign
 
 			// Aktuelle Strecke zu der Flagge
 			bool pathAvailable = aii->FindPathOnRoads(flags[i], flag, &oldLength);
+			unsigned size=0;
+			//more than 5 nonflaggable spaces on the route -> not really valid path 
+			unsigned temp=0;
+			MapCoord tx=flag->GetX();
+			MapCoord ty=flag->GetY();
+			for(unsigned j=0;j<route.size();++j)
+			{
+				aii->GetPointA(tx,ty,route[j]);
+				if(aii->GetBuildingQuality(tx,ty)<1)
+					temp++;
+				else
+				{
+					if(size<temp)
+						size=temp;
+					temp=0;
+				}
+			}
+			if(size>4)
+				continue;
 
 			// Lohnt sich die Straﬂe?
 			if (!pathAvailable || newLength * lengthFactor < oldLength)
