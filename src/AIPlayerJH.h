@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.h 8117 2012-09-01 19:11:56Z jh $
+// $Id: AIPlayerJH.h 8119 2012-09-01 19:12:36Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -154,6 +154,8 @@ protected:
 
 	/// Initialize the resource maps
 	void InitResourceMaps();
+	/// Initialize the Store and Military building lists (only required when loading games but the AI doesnt know whether its a load game or new game so this runs when the ai starts in both cases)
+	void AIPlayerJH::InitStoreAndMilitarylists();
 
 	//returns true if we can get to the startflag in <maxlen without turning back
 	bool IsFlagPartofCircle(const noFlag *startFlag,unsigned maxlen,const noFlag *curFlag,unsigned char excludeDir,bool init,std::vector<int> oldflagsx,std::vector<int> oldflagsy);

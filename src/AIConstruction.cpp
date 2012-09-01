@@ -1,4 +1,4 @@
-// $Id: AIConstruction.cpp 8116 2012-09-01 19:11:37Z jh $
+// $Id: AIConstruction.cpp 8119 2012-09-01 19:12:36Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -40,7 +40,7 @@ AIConstruction::AIConstruction(AIInterface *aii, AIPlayerJH *aijh)
 	InitBuildingsWanted();
 	if (!aijh->TestDefeat())
 	{
-		AddStoreHouse(aii->GetHeadquarter()->GetX(), aii->GetHeadquarter()->GetY());
+		AddStoreHouseFront(aii->GetHeadquarter()->GetX(), aii->GetHeadquarter()->GetY());
 	}
 }
 

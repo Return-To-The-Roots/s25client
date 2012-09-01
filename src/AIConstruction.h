@@ -1,4 +1,4 @@
-// $Id: AIConstruction.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: AIConstruction.h 8119 2012-09-01 19:12:36Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -94,6 +94,7 @@ public:
 	bool FindStoreHousePosition(MapCoord &x, MapCoord &y, unsigned radius);
 	
 	void AddStoreHouse(MapCoord x, MapCoord y) { storeHouses.push_back(AIJH::Coords(x, y)); }
+	void AddStoreHouseFront(MapCoord x,MapCoord y) {storeHouses.push_front(AIJH::Coords(x,y));}
 
 	noFlag *FindTargetStoreHouseFlag(MapCoord x, MapCoord y);
 

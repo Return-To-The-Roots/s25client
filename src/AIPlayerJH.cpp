@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 8118 2012-09-01 19:12:18Z jh $
+// $Id: AIPlayerJH.cpp 8119 2012-09-01 19:12:36Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -71,7 +71,7 @@ void AIPlayerJH::RunGF(const unsigned gf)
 		ExecuteAIJob();
 	}
 
-	if ((gf + playerid * 17) % 2000 == 0)
+	if ((gf + playerid * 17) % 1000 == 0)
 	{
 		//CheckExistingMilitaryBuildings();
 		TryToAttack();
@@ -224,11 +224,17 @@ void AIPlayerJH::RunGF(const unsigned gf)
 
 	
 	}
-
+	if (gf == 99)		
+	{
+		InitStoreAndMilitarylists();
+	}
 	if (gf == 100)
 	{
-		Chat(_("Hi, I'm an artifical player and I'm not very good yet!"));
-		Chat(_("And I may crash your game sometimes..."));
+		if(milBuildings.size()<1)
+		{
+			Chat(_("Hi, I'm an artifical player and I'm not very good yet!"));
+			Chat(_("And I may crash your game sometimes..."));
+		}
 
 		// Set military settings to some nicer default values
 		std::vector<unsigned char> milSettings;
@@ -1073,7 +1079,7 @@ double AIPlayerJH::GetDensity(MapCoord x, MapCoord y, AIJH::Resource res, int ra
 		unsigned short height = aii->GetMapHeight();
 	
 
-	// TODO: check warum das so ist, und ob das sinn macht!
+	// TODO: check warum das so ist, und ob das sinn macht! ist so weil der punkt dann außerhalb der karte liegen würde ... könnte trotzdem crashen wenn wir kein hq mehr haben ... mehr checks!
 	if (x >= width || y >= height)
 	{
 		x = aii->GetHeadquarter()->GetX();
@@ -1148,11 +1154,11 @@ void AIPlayerJH::HandleNewMilitaryBuilingOccupied(const Coords& coords)
 		{
 			gcs.push_back(new gc::StopGold(x, y));
 		}
-
-		if (!construction.IsConnectedToRoadSystem(mil->GetFlag()))
+		//should be done by now by the removeunusedroads code
+		/*if (!construction.IsConnectedToRoadSystem(mil->GetFlag()))
 		{
 			construction.AddConnectFlagJob(mil->GetFlag());
-		}
+		}*/
 	}
 
 	AddBuildJob(BLD_HARBORBUILDING, x, y);
@@ -1824,5 +1830,39 @@ bool AIPlayerJH::HuntablesinRange(unsigned x,unsigned y,unsigned min)
 		}
 	}
 	return false;
+}
+
+void AIPlayerJH::InitStoreAndMilitarylists()
+{
+	unsigned short width = aii->GetMapWidth();
+	unsigned short height = aii->GetMapHeight();
+	
+	for (unsigned short y=0; y<height; ++y)
+	{
+		for (unsigned short x=0; x<width; ++x)
+		{
+			const nobMilitary *mil;
+			if ((mil = aii->GetSpecObj<nobMilitary>(x, y))&&gwb->GetNode(x,y).owner-1==playerid)
+			{
+				milBuildings.push_back(Coords(x,y));
+				continue;
+			}
+			const nobBaseWarehouse *wh;
+			if ((wh=aii->GetSpecObj<nobBaseWarehouse>(x, y))&&gwb->GetNode(x,y).owner-1==playerid)
+			{
+				//if this building blocks beer/weapons/shields it is not our main storehouse so add it anywhere on our list - else add it in front
+				if(wh->CheckRealInventorySettings(0,2,0))
+					construction.AddStoreHouse(x,y);
+				else
+				{
+					if(x!=player->hqx||y!=player->hqy) //if it is on our hq spot it should already be in the list
+						construction.AddStoreHouseFront(x,y);
+				}
+				continue;
+			}			
+		}
+	}
+	if(milBuildings.size()>0||construction.GetStoreHousePositions().size()>1)
+		Chat(_("AI'm back"));
 }
 
