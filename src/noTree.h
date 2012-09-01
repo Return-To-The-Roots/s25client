@@ -1,4 +1,4 @@
-// $Id: noTree.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: noTree.h 8115 2012-09-01 19:11:19Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -42,12 +42,12 @@ class noTree : public noCoordBase
 {
 	/// Der Holzfäller ist Experte in Sachen Baum :)
 	friend class nofWoodcutter;
+	friend class AIPlayerJH;
 
 	/// Typ des Baumes (also welche Baumart)
 	unsigned char type;
 	/// Größe des Baumes (0-2, 3 = aufgewachsen!)
 	unsigned char size;
-
 	enum State
 	{
 		STATE_NOTHING, // Baum steht einfach nur rum

@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 8114 2012-09-01 19:10:52Z jh $
+// $Id: AIPlayerJH.cpp 8115 2012-09-01 19:11:19Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -31,6 +31,7 @@
 #include "noBuildingSite.h"
 #include "noShip.h"
 #include "noFlag.h"
+#include "noTree.h"
 
 #include "MapGeometry.h"
 
@@ -92,7 +93,7 @@ void AIPlayerJH::RunGF(const unsigned gf)
 		toolsettings[10] = (aii->GetInventory()->goods[GD_ROLLINGPIN]+aii->GetInventory()->people[JOB_BAKER]<construction.GetBuildingCount(BLD_BAKERY)+1)?1:0;										//rollingpin
 		toolsettings[5] =(toolsettings[4]<1&&toolsettings[3]<1&&toolsettings[6]<1&&toolsettings[2]<1&&(aii->GetInventory()->goods[GD_SHOVEL]<1))?1:0 ;												//shovel
 		toolsettings[1] =(toolsettings[4]<1&&toolsettings[3]<1&&toolsettings[6]<1&&toolsettings[2]<1&&(aii->GetInventory()->goods[GD_AXE]+aii->GetInventory()->people[JOB_WOODCUTTER]<12)&&aii->GetInventory()->goods[GD_AXE]<1)?1:0;		//axe
-		toolsettings[0] =(toolsettings[4]<1&&toolsettings[3]<1&&toolsettings[6]<1&&toolsettings[2]<1&&(aii->GetInventory()->goods[GD_TONGS]<1))?1:0;												//Tongs(metalworks)
+		toolsettings[0] =0;//(toolsettings[4]<1&&toolsettings[3]<1&&toolsettings[6]<1&&toolsettings[2]<1&&(aii->GetInventory()->goods[GD_TONGS]<1))?1:0;												//Tongs(metalworks)
 		toolsettings[7] = 0;																																										//rod & line 
 		toolsettings[11] = 0;																																										//bow
 		aii->SetToolSettings(toolsettings);		
@@ -342,11 +343,26 @@ AIJH::Resource AIPlayerJH::CalcResource(MapCoord x, MapCoord y)
 				res = AIJH::PLANTSPACE;
 			}
 		}
+		else
+		{
+			if (res==AIJH::WOOD)
+			{
+				if((gwb->GetSpecObj<noTree>(x,y))->type==5) //exclude ananas trees (because they are more of a "blocker" than a tree and only count as tree for animation&sound
+					res=AIJH::NOTHING;
+			}
+		}
 	}
 	else
 	{
 		if(aii->GetSurfaceResource(x,y)==AIJH::STONES||aii->GetSurfaceResource(x,y)==AIJH::WOOD)
-			res=AIJH::MULTIPLE;
+			if(aii->GetSubsurfaceResource(x,y)==AIJH::WOOD)
+			{
+				if((gwb->GetSpecObj<noTree>(x,y))->type!=5)
+					res=AIJH::MULTIPLE;
+			}
+			else
+				res=AIJH::MULTIPLE;
+			
 	}
 	if (res == AIJH::BLOCKED)
 	{
@@ -506,8 +522,8 @@ void AIPlayerJH::UpdateNodes()
 				nodes[i].owned = false;
 				nodes[i].bq = BQ_NOTHING;
 			}
-
-			nodes[i].res = CalcResource(x, y);
+			if(nodes[i].res!=AIJH::BLOCKED)
+				nodes[i].res = CalcResource(x, y);
 			nodes[i].border = aii->IsBorder(x, y);
 			nodes[i].farmed = false;
 		}
@@ -565,7 +581,7 @@ void AIPlayerJH::RecalcResource(AIJH::Resource restype)
 		{
 			unsigned i = y * width + x;
 			//resourceMaps[res][i] = 0;
-			if (nodes[i].res == (AIJH::Resource)res && (AIJH::Resource)res != AIJH::BORDERLAND && gwb->GetNode(x,y).t1!=TT_WATER && gwb->GetNode(x,y).t1!=TT_LAVA && gwb->GetNode(x,y).t1!=TT_SWAMPLAND )
+			if (nodes[i].res == (AIJH::Resource)res && (AIJH::Resource)res != AIJH::BORDERLAND && gwb->GetNode(x,y).t1!=TT_WATER && gwb->GetNode(x,y).t1!=TT_LAVA && gwb->GetNode(x,y).t1!=TT_SWAMPLAND&& gwb->GetNode(x,y).t1!=TT_SNOW )
 			{
 				ChangeResourceMap(x, y, AIJH::RES_RADIUS[res], resourceMaps[res], 1);
 			}
