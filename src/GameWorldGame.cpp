@@ -1,4 +1,4 @@
-// $Id: GameWorldGame.cpp 8120 2012-09-01 19:13:00Z jh $
+// $Id: GameWorldGame.cpp 8123 2012-09-01 19:14:28Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -375,7 +375,12 @@ void GameWorldGame::BuildRoad(const unsigned char playerid,const bool boat_road,
 	else
 	{
 		// Es ist keine Flagge dort, dann muss getestet werden, ob da wenigstens eine gebaut werden kann
-
+		//Test ob wir evtl genau auf der Grenze sind (zählt zum eigenen Land kann aber nix gebaut werden egal was bq is!)
+		if(GetNode(testx,testy).boundary_stones[0])
+		{
+			RemoveVisualRoad(start_x,start_y,route);
+			return;
+		}
 		// TODO: Verzögerungsbugabfrage, kann später ggf. weg
 		// Abfragen, ob schon eine Flagge in der Nähe ist (keine Mini-1-Wege)
 		for(unsigned char i = 0;i<6;++i)

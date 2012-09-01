@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 8122 2012-09-01 19:13:53Z jh $
+// $Id: AIPlayerJH.cpp 8123 2012-09-01 19:14:28Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1670,7 +1670,7 @@ void AIPlayerJH::RemoveAllUnusedRoads(MapCoord x,MapCoord y)
 	std::list<const noFlag*>reconnectflags;
 	for(unsigned i=0; i<flags.size(); ++i)
 	{
-		if(RemoveUnusedRoad(flags[i],255,true))
+		if(RemoveUnusedRoad(flags[i],255,true,false))
 			reconnectflags.push_back(flags[i]);
 	}	
 	UpdateNodesAroundNoBorder(x,y,25);
@@ -1681,7 +1681,7 @@ void AIPlayerJH::RemoveAllUnusedRoads(MapCoord x,MapCoord y)
 	}
 }
 
-bool AIPlayerJH::RemoveUnusedRoad(const noFlag *startFlag, unsigned char excludeDir,bool firstflag)
+bool AIPlayerJH::RemoveUnusedRoad(const noFlag *startFlag, unsigned char excludeDir,bool firstflag, bool allowcircle)
 {
 	unsigned char foundDir = 0xFF;
 	unsigned char foundDir2= 0xFF;
@@ -1720,10 +1720,15 @@ bool AIPlayerJH::RemoveUnusedRoad(const noFlag *startFlag, unsigned char exclude
 	{
 		if(finds==2)
 		{
-			std::vector<int> flagcheck;
-			if(!IsFlagPartofCircle(startFlag,10,startFlag,7,true,flagcheck,flagcheck))
-				return false;
-			if(!firstflag)
+			if(allowcircle)
+			{
+				std::vector<int> flagcheck;
+				if(!IsFlagPartofCircle(startFlag,10,startFlag,7,true,flagcheck,flagcheck))
+					return false;
+				if(!firstflag)
+					return false;
+			}
+			else
 				return false;
 		}
 	}

@@ -1,4 +1,4 @@
-// $Id: AIConstruction.cpp 8122 2012-09-01 19:13:53Z jh $
+// $Id: AIConstruction.cpp 8123 2012-09-01 19:14:28Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -204,7 +204,7 @@ bool AIConstruction::ConnectFlagToRoadSytem(const noFlag *flag, std::vector<unsi
 					temp=0;
 				}
 			}
-			if(size>5)
+			if(size>3)
 				continue;
 
 			// Strecke von der potenziellen Zielfahne bis zum Lager
@@ -442,7 +442,7 @@ void AIConstruction::RefreshBuildingCount()
 		if (GetBuildingCount(BLD_FARM) > 8) //quite the empire just scale mines with farms
 		{
 			buildingsWanted[BLD_IRONMINE] = (GetBuildingCount(BLD_FARM)/3>GetBuildingCount(BLD_IRONSMELTER)+1)?GetBuildingCount(BLD_IRONSMELTER)+1:GetBuildingCount(BLD_FARM)/3;
-			buildingsWanted[BLD_GOLDMINE] = (GetBuildingCount(BLD_MINT)+1>1)?2:1;
+			buildingsWanted[BLD_GOLDMINE] = (GetBuildingCount(BLD_MINT)>0)?GetBuildingCount(BLD_IRONSMELTER)>10&&GetBuildingCount(BLD_MINT)>1?3:2:1;
 			buildingsWanted[BLD_DONKEYBREEDER]=1;
 		}
 		else
@@ -450,8 +450,8 @@ void AIConstruction::RefreshBuildingCount()
 			buildingsWanted[BLD_IRONMINE]=(aii->GetInventory()->people[JOB_MINER]+aii->GetInventory()->goods[GD_PICKAXE]-(GetBuildingCount(BLD_COALMINE)+GetBuildingCount(BLD_GOLDMINE))>1&&GetBuildingCount(BLD_BAKERY)+GetBuildingCount(BLD_SLAUGHTERHOUSE)+GetBuildingCount(BLD_HUNTER)+GetBuildingCount(BLD_FISHERY)>4)?2:1;
 			buildingsWanted[BLD_GOLDMINE]=(aii->GetInventory()->people[JOB_MINER]>2)?1:0;			
 		}
-		if(aii->GetInventory()->goods[GD_STONES]<50 && GetBuildingCount(BLD_QUARRY)<1) //no more stones and no quarry -> try emergency granitemines.
-			buildingsWanted[BLD_GRANITEMINE] =(aii->GetInventory()->people[JOB_MINER]>6)? 2:1;
+		if(aii->GetInventory()->goods[GD_STONES]<50 && GetBuildingCount(BLD_QUARRY)<4) //no more stones and no quarry -> try emergency granitemines.
+			buildingsWanted[BLD_GRANITEMINE] =(aii->GetInventory()->people[JOB_MINER]>6)? 4-GetBuildingCount(BLD_QUARRY):1;
 		else
 			buildingsWanted[BLD_GRANITEMINE]=0;
 	}
