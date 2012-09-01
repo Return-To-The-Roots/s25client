@@ -1,4 +1,4 @@
-// $Id: GameClient.h 7680 2011-12-29 15:52:11Z marcus $
+// $Id: GameClient.h 8109 2012-09-01 19:05:19Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -114,6 +114,7 @@ public:
 	void Command_ToggleColor();
 	void Command_ToggleReady();
 
+	void IncreaseSpeed() { if(framesinfo.gf_length>10) {framesinfo.gf_length-=10;framesinfo.nwf_length=250/framesinfo.gf_length;}else{framesinfo.gf_length=70;framesinfo.nwf_length=250/framesinfo.gf_length;}} //poc
 	/// Lädt ein Replay und startet dementsprechend das Spiel (0 = alles OK, alles andere entsprechende Fehler-ID!)
 	unsigned StartReplay(const std::string &path, GameWorldViewer * &gwv);
 	/// Replay-Geschwindigkeit erhöhen/verringern

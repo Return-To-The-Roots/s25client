@@ -1,4 +1,4 @@
-// $Id: dskGameInterface.cpp 7702 2011-12-30 20:11:27Z marcus $
+// $Id: dskGameInterface.cpp 8109 2012-09-01 19:05:19Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -668,6 +668,16 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
 	case 'b': // Zur lezten Position zurückspringen
 		{
 			gwv->MoveToLastPosition();
+		} return true;
+	case 'v':
+		{
+			unsigned singleplayer=0,i=0;
+			while(i<GameClient::inst().GetPlayerCount()&&singleplayer<2)
+			{
+				if(GameClient::inst().GetPlayer(i)->ps==PS_OCCUPIED)singleplayer++;
+				i++;
+			}
+			if(singleplayer<2)GAMECLIENT.IncreaseSpeed();
 		} return true;
 	case 'c': // Gebäudenamen anzeigen
 		{

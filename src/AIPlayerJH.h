@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.h 7891 2012-03-19 10:55:17Z jh $
+// $Id: AIPlayerJH.h 8109 2012-09-01 19:05:19Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -142,6 +142,8 @@ protected:
 
 	/// Initializes the nodes on start of the game
 	void InitNodes();
+	/// Updates all nodes (takes a while so dont call it too often)
+	void UpdateNodes();
 
 	/// Updates the nodes around a position 
 	void UpdateNodesAround(MapCoord x, MapCoord y, unsigned radius);

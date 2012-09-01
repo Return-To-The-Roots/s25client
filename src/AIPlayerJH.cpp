@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 7906 2012-03-30 21:31:59Z marcus $
+// $Id: AIPlayerJH.cpp 8109 2012-09-01 19:05:19Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -99,6 +99,7 @@ void AIPlayerJH::RunGF(const unsigned gf)
 	}
 	if((gf+playerid*7)%200==0) // plan new buildings
 	{
+		UpdateNodes();
 		RecalcResource(AIJH::GOLD);
 		RecalcResource(AIJH::IRONORE);
 		RecalcResource(AIJH::COAL);
@@ -146,7 +147,14 @@ void AIPlayerJH::RunGF(const unsigned gf)
 		{
 			lostmainstore=(firsthouse);
 			it=construction.GetStoreHousePositions().erase(it);
-			break;
+			if(it==construction.GetStoreHousePositions().end())
+			{
+				break;
+			}
+			else
+			{
+				continue;
+			}
 		}
 		else
 		{
@@ -331,7 +339,11 @@ AIJH::Resource AIPlayerJH::CalcResource(MapCoord x, MapCoord y)
 			}
 		}
 	}
-
+	else
+	{
+		if(aii->GetSurfaceResource(x,y)==AIJH::STONES||aii->GetSurfaceResource(x,y)==AIJH::WOOD)
+			res=AIJH::MULTIPLE;
+	}
 	if (res == AIJH::BLOCKED)
 	{
 		res = AIJH::NOTHING; // nicht so ganz logisch... aber Blocked als res is doof TODO
@@ -469,7 +481,34 @@ void AIPlayerJH::InitNodes()
 	}
 }
 
+void AIPlayerJH::UpdateNodes()
+{
+	unsigned short width = aii->GetMapWidth();
+	unsigned short height = aii->GetMapHeight();
+	for (unsigned short y = 0; y < height; ++y)
+	{
+		for (unsigned short x = 0; x < width; ++x)
+		{
+			unsigned i = x + y * width;
 
+			// if reachable, we'll calc bq
+			if (nodes[i].reachable)
+			{
+				nodes[i].owned = true;
+				nodes[i].bq = aii->GetBuildingQuality(x, y);
+			}
+			else
+			{
+				nodes[i].owned = false;
+				nodes[i].bq = BQ_NOTHING;
+			}
+
+			nodes[i].res = CalcResource(x, y);
+			nodes[i].border = aii->IsBorder(x, y);
+			nodes[i].farmed = false;
+		}
+	}
+}
 
 void AIPlayerJH::InitResourceMaps()
 {
@@ -496,6 +535,11 @@ void AIPlayerJH::InitResourceMaps()
 				{
 					ChangeResourceMap(x, y, AIJH::RES_RADIUS[AIJH::BORDERLAND], resourceMaps[AIJH::BORDERLAND], 1);
 				}
+				if(nodes[i].res==AIJH::MULTIPLE)
+				{
+					if(aii->GetSubsurfaceResource(x,y)==(AIJH::Resource)res||aii->GetSurfaceResource(x,y)==(AIJH::Resource)res)
+						ChangeResourceMap(x, y, AIJH::RES_RADIUS[res], resourceMaps[res], 1);
+				}
 			}
 		}
 	}
@@ -521,15 +565,22 @@ void AIPlayerJH::RecalcResource(AIJH::Resource restype)
 			{
 				ChangeResourceMap(x, y, AIJH::RES_RADIUS[res], resourceMaps[res], 1);
 			}
-							// Grenzgebiet"ressource"
+			// Grenzgebiet"ressource"
 			else if (aii->IsBorder(x, y) && (AIJH::Resource)res == AIJH::BORDERLAND)
 			{
 				ChangeResourceMap(x, y, AIJH::RES_RADIUS[AIJH::BORDERLAND], resourceMaps[AIJH::BORDERLAND], 1);
+			}
+			if (nodes[i].res == AIJH::MULTIPLE && gwb->GetNode(x,y).t1!=TT_WATER && gwb->GetNode(x,y).t1!=TT_LAVA && gwb->GetNode(x,y).t1!=TT_SWAMPLAND )
+			{
+				if(aii->GetSubsurfaceResource(x,y)==(AIJH::Resource)res||aii->GetSurfaceResource(x,y)==(AIJH::Resource)res)
+						ChangeResourceMap(x, y, AIJH::RES_RADIUS[res], resourceMaps[res], 1);
 			}
 			if(res==AIJH::WOOD&&aii->IsBuildingOnNode(x,y,BLD_WOODCUTTER)) //existing woodcutters reduce wood rating
 				ChangeResourceMap(x, y, 7, resourceMaps[res], -10);
 			if(res==AIJH::PLANTSPACE&&aii->IsBuildingOnNode(x,y,BLD_FARM)) //existing farm reduce plantspace rating
 				ChangeResourceMap(x, y, 3, resourceMaps[res], -25);
+			if(res==AIJH::PLANTSPACE&&aii->IsBuildingOnNode(x,y,BLD_FORESTER)) //existing forester reduce plantspace rating
+				ChangeResourceMap(x, y, 6, resourceMaps[res], -25);
 		}
 	}
 }
@@ -793,7 +844,7 @@ void AIPlayerJH::UpdateNodesAround(MapCoord x, MapCoord y, unsigned radius)
 					nodes[i].bq = BQ_NOTHING;
 				}
 
-				AIJH::Resource res = CalcResource(tx2, ty2);
+				/*AIJH::Resource res = CalcResource(tx2, ty2);
 				if (res != nodes[i].res)
 				{
 					// Altes entfernen:
@@ -804,7 +855,7 @@ void AIPlayerJH::UpdateNodesAround(MapCoord x, MapCoord y, unsigned radius)
 						ChangeResourceMap(tx2, ty2, AIJH::RES_RADIUS[res], resourceMaps[res], 1);
 
 					nodes[i].res = res;
-				}
+				}*/
 
 				bool borderland = aii->IsBorder(tx2, ty2);
 				if (borderland != nodes[i].border)
@@ -1069,7 +1120,7 @@ void AIPlayerJH::HandleNewMilitaryBuilingOccupied(const Coords& coords)
 		}
 
 		// if near border and gold disabled (by addon): enable it
-		if (mil->GetFrontierDistance() != 0 && mil->IsGoldDisabled())
+		if (mil->GetFrontierDistance() && mil->IsGoldDisabled())
 		{
 			gcs.push_back(new gc::StopGold(x, y));
 		}
@@ -1138,7 +1189,7 @@ void AIPlayerJH::HandleMilitaryBuilingLost(const Coords& coords)
 {
 	MapCoord x = coords.x;
 	MapCoord y = coords.y;
-	UpdateNodesAroundNoBorder(x, y, 11); // todo: fix radius
+	UpdateNodesAroundNoBorder(x, y, 15); // todo: fix radius
 	//remove from military building list if possible
 	for (std::list<Coords>::iterator it = milBuildings.begin(); it != milBuildings.end(); it++)
 	{
@@ -1148,6 +1199,14 @@ void AIPlayerJH::HandleMilitaryBuilingLost(const Coords& coords)
 			//this means there is no military building although there should be - probably destroyed or that it is the one we just lost
 			it=milBuildings.erase(it);
 		}
+		if(it==milBuildings.end())
+			break;
+	}
+	if(construction.GetStoreHousePositions().size()<2) //check if we have a storehouse left - if we dont have one trying to find a path to one will crash
+	{
+		std::list<AIJH::Coords>::iterator it=construction.GetStoreHousePositions().begin()++;
+		if(!aii->IsObjectTypeOnNode((*it).x,(*it).y,NOP_BUILDING)&&!aii->IsObjectTypeOnNode((*it).x,(*it).y,NOP_BUILDINGSITE))
+			return;
 	}
 	//find all flags around the lost building and try to reconnect them if necessary 
 	std::vector<const noFlag*> flags;

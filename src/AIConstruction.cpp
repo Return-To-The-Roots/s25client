@@ -1,4 +1,4 @@
-// $Id: AIConstruction.cpp 8070 2012-08-02 16:40:26Z jh $
+// $Id: AIConstruction.cpp 8109 2012-09-01 19:05:19Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -347,7 +347,7 @@ void AIConstruction::RefreshBuildingCount()
 	}
 	else
 	{
-		buildingsWanted[BLD_FORESTER]=(GetBuildingCount(BLD_SAWMILL)>2&&GetBuildingCount(BLD_SAWMILL)>GetBuildingCount(BLD_WOODCUTTER))?2:1;
+		buildingsWanted[BLD_FORESTER]=(GetBuildingCount(BLD_SAWMILL)>2&&GetBuildingCount(BLD_SAWMILL)>GetBuildingCount(BLD_WOODCUTTER))||(aii->GetInventory()->goods[GD_BOARDS]<20&&GetBuildingCount(BLD_STOREHOUSE)>0)?2:1;
 	//building types usually limited by profession+tool for profession with some arbitrary limit. Some buildings which are linked to others in a chain / profession-tool-rivalry have additional limits.
 	buildingsWanted[BLD_WOODCUTTER]=(aii->GetInventory()->goods[GD_AXE] + aii->GetInventory()->people[JOB_WOODCUTTER]<12) ? aii->GetInventory()->goods[GD_AXE] + aii->GetInventory()->people[JOB_WOODCUTTER] : 12;
 	if(GetBuildingCount(BLD_SAWMILL)*2<buildingsWanted[BLD_WOODCUTTER]&&GetBuildingCount(BLD_SAWMILL)<4)
@@ -390,7 +390,7 @@ void AIConstruction::RefreshBuildingCount()
 	//brewery count = 1+(armory/4) if there is at least 1 armory
 	buildingsWanted[BLD_BREWERY] = (GetBuildingCount(BLD_ARMORY) > 0 && GetBuildingCount(BLD_FARM) > 0) ? 1+(GetBuildingCount(BLD_ARMORY)/4) : 0;
 	//metalworks is 1 if there is at least 1 smelter, 2 if mines are inexhaustible and we have at least 4 ironsmelters
-	buildingsWanted[BLD_METALWORKS] = (GetBuildingCount(BLD_IRONSMELTER) > 0) ? (aijh->ggs->isEnabled(ADDON_INEXHAUSTIBLE_MINES)&&GetBuildingCount(BLD_IRONSMELTER)>3)?2:1 : 0 ;
+	buildingsWanted[BLD_METALWORKS] = (GetBuildingCount(BLD_IRONSMELTER) > 0) ? 1 : 0 ;
 
 	buildingsWanted[BLD_MILL] = (buildingCounts.building_counts[BLD_FARM]<8)?(buildingCounts.building_counts[BLD_FARM] + 2) / 4:(buildingCounts.building_counts[BLD_FARM] ) / 4;
 	if (buildingsWanted[BLD_MILL]>GetBuildingCount(BLD_BAKERY)+1) buildingsWanted[BLD_MILL]=GetBuildingCount(BLD_BAKERY)+1;

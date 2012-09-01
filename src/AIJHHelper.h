@@ -1,4 +1,4 @@
-// $Id: AIJHHelper.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: AIJHHelper.h 8109 2012-09-01 19:05:19Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -59,6 +59,7 @@ enum Resource
 	PLANTSPACE,
 	BORDERLAND,
 	FISH,
+	MULTIPLE,
 	// special:
 	BLOCKED = 254,
 	NOTHING = 255
