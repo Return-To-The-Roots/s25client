@@ -1,4 +1,4 @@
-// $Id: AIJHHelper.cpp 8116 2012-09-01 19:11:37Z jh $
+// $Id: AIJHHelper.cpp 8117 2012-09-01 19:11:56Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -153,6 +153,12 @@ void AIJH::BuildJob::TryToBuild()
  			if (aijh->GetDensity(bx, by, AIJH::PLANTSPACE, 7) > 0.2)
 				foundPos = aijh->FindBestPosition(bx, by, AIJH::WOOD, BQ_HUT, 0, 15);
 			break;
+		case BLD_HUNTER:
+			{	//check if there are any animals in range
+				if(aijh->HuntablesinRange(bx,by,(2<<aijh->GetConstruction()->GetBuildingCount(BLD_HUNTER))))
+					foundPos=aijh->SimpleFindPosition(bx, by, BUILDING_SIZE[type], 15);
+				break;
+			}
 		case BLD_QUARRY:
 			{
 			unsigned numQuarries = aijh->GetConstruction()->GetBuildingCount(BLD_QUARRY);

@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.h 8109 2012-09-01 19:05:19Z jh $
+// $Id: AIPlayerJH.h 8117 2012-09-01 19:11:56Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -236,6 +236,8 @@ protected:
 
 	// check if there are free soldiers (in hq/storehouses)
 	bool SoldierAvailable();
+	
+	bool HuntablesinRange(unsigned x,unsigned y,unsigned min);
 
 
 protected:

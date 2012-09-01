@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 8115 2012-09-01 19:11:19Z jh $
+// $Id: AIPlayerJH.cpp 8117 2012-09-01 19:11:56Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -32,6 +32,7 @@
 #include "noShip.h"
 #include "noFlag.h"
 #include "noTree.h"
+#include "noAnimal.h"
 
 #include "MapGeometry.h"
 
@@ -132,9 +133,10 @@ void AIPlayerJH::RunGF(const unsigned gf)
 		BLD_IRONMINE,
 		BLD_COALMINE,
 		BLD_GRANITEMINE,
-		BLD_HARBORBUILDING
+		BLD_HARBORBUILDING,
+		BLD_HUNTER
 	};
-	unsigned numBldToTest = 21;
+	unsigned numBldToTest = 22;
 	//std::list<AIJH::Coords> bldPoses = construction.GetStoreHousePositions();
 	unsigned char randomstore=rand()%construction.GetStoreHousePositions().size();
 	bool firsthouse=true;
@@ -188,7 +190,7 @@ void AIPlayerJH::RunGF(const unsigned gf)
 	//now pick a random military building and try to build around that
 	if(milBuildings.size()<1)return;
 	randomstore=rand()%milBuildings.size();	
-	numBldToTest = 21;
+	numBldToTest = 22;
 	//std::list<Coords>::iterator it2 = milBuildings.end();
 	for (std::list<Coords>::iterator it = milBuildings.begin(); it != milBuildings.end(); it++)
 	{
@@ -1778,5 +1780,47 @@ bool AIPlayerJH::SoldierAvailable()
 		}
 	}
 	return (freeSoldiers != 0);
+}
+
+bool AIPlayerJH::HuntablesinRange(unsigned x,unsigned y,unsigned min)
+{
+	unsigned maxrange=50;
+	unsigned short fx,fy,lx,ly;
+	const unsigned short SQUARE_SIZE = 19;
+	unsigned huntablecount=0;
+	if(x > SQUARE_SIZE) fx = x-SQUARE_SIZE; else fx = 0;
+	if(y > SQUARE_SIZE) fy = y-SQUARE_SIZE; else fy = 0;
+	if(x+SQUARE_SIZE < aii->GetMapWidth()) lx = x+SQUARE_SIZE; else lx = aii->GetMapWidth()-1;
+	if(y+SQUARE_SIZE < aii->GetMapHeight()) ly = y+SQUARE_SIZE; else ly = aii->GetMapHeight()-1;
+	// Durchgehen und nach Tieren suchen
+	for(unsigned short py = fy;py<=ly;++py)
+	{
+		for(unsigned short px = fx;px<=lx;++px)
+		{
+			// Gibts hier was bewegliches?
+			if(gwb->GetFigures(px,py).size())
+			{
+				// Dann nach Tieren suchen
+				for(list<noBase*>::iterator it = gwb->GetFigures(px,py).begin();it.valid();++it)
+				{
+					if((*it)->GetType() == NOP_ANIMAL)
+					{
+						// Ist das Tier überhaupt zum Jagen geeignet?
+						if(!static_cast<noAnimal*>(*it)->CanHunted())
+							continue;
+						// Und komme ich hin?
+						if(gwb->FindHumanPath(x,y,static_cast<noAnimal*>(*it)->GetX(),static_cast<noAnimal*>(*it)->GetY(),maxrange) != 0xFF)
+							// Dann nehmen wir es
+						{
+							if(++huntablecount>=min)
+								return true;
+						}
+						
+					}	
+				}
+			}
+		}
+	}
+	return false;
 }
 
