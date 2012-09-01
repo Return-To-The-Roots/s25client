@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 8124 2012-09-01 19:15:43Z jh $
+// $Id: AIPlayerJH.cpp 8130 2012-09-01 19:20:34Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -802,10 +802,11 @@ bool AIPlayerJH::FindBestPosition(MapCoord &x, MapCoord &y, AIJH::Resource res, 
 	unsigned short width = aii->GetMapWidth();
 	unsigned short height = aii->GetMapHeight();
 
+	//outside of map bounds? -> search around our main storehouse!
 	if (x >= width || y >= height)
 	{
-		x = aii->GetHeadquarter()->GetX();
-		y = aii->GetHeadquarter()->GetY();
+		x = construction.GetStoreHousePositions().front().x;
+		y = construction.GetStoreHousePositions().front().y;
 	}
 
 	// TODO was besseres wär schön ;)
