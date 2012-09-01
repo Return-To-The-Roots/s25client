@@ -1,4 +1,4 @@
-// $Id: GameWorldBase.cpp 8128 2012-09-01 19:18:56Z jh $
+// $Id: GameWorldBase.cpp 8129 2012-09-01 19:19:58Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -562,12 +562,12 @@ void GameWorldBase::RemoveVisualRoad(unsigned short start_x, unsigned short star
 	for(unsigned z = 0;z<route.size();++z)
 	{
 		//poc: for players we would not need a check here but the ai commands are sometimes weird and have no previous check so before removing the "virtual" road we have to make sure that there isnt a real road!
-		for(unsigned char z = 0;z<6;++z)
+		for(unsigned char t = 0;t<6;++t)
 		{
 			// Other roads at this point?
-			if(GetPointRoad(start_x,start_y, z, false))
+			if(GetPointRoad(start_x,start_y, t, false))
 			{
-				(void) GetPointRoad(start_x,start_y, z, false);
+				(void) GetPointRoad(start_x,start_y, t, false);
 				GetPointA(start_x,start_y,route[z]);
 				continue;
 			}
