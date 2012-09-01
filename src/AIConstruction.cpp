@@ -1,4 +1,4 @@
-// $Id: AIConstruction.cpp 8109 2012-09-01 19:05:19Z jh $
+// $Id: AIConstruction.cpp 8116 2012-09-01 19:11:37Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -388,11 +388,11 @@ void AIConstruction::RefreshBuildingCount()
 	//armory count = smelter -metalworks if there is more than 1 smelter or 1 if there is just 1.
 	buildingsWanted[BLD_ARMORY] = (GetBuildingCount(BLD_IRONSMELTER)>1)?GetBuildingCount(BLD_IRONSMELTER)-GetBuildingCount(BLD_METALWORKS):GetBuildingCount(BLD_IRONSMELTER);
 	//brewery count = 1+(armory/4) if there is at least 1 armory
-	buildingsWanted[BLD_BREWERY] = (GetBuildingCount(BLD_ARMORY) > 0 && GetBuildingCount(BLD_FARM) > 0) ? 1+(GetBuildingCount(BLD_ARMORY)/4) : 0;
+	buildingsWanted[BLD_BREWERY] = (GetBuildingCount(BLD_ARMORY) > 0 && GetBuildingCount(BLD_FARM) > 0) ? 1+(GetBuildingCount(BLD_ARMORY)/5) : 0;
 	//metalworks is 1 if there is at least 1 smelter, 2 if mines are inexhaustible and we have at least 4 ironsmelters
 	buildingsWanted[BLD_METALWORKS] = (GetBuildingCount(BLD_IRONSMELTER) > 0) ? 1 : 0 ;
 
-	buildingsWanted[BLD_MILL] = (buildingCounts.building_counts[BLD_FARM]<8)?(buildingCounts.building_counts[BLD_FARM] + 2) / 4:(buildingCounts.building_counts[BLD_FARM] ) / 4;
+	buildingsWanted[BLD_MILL] = (buildingCounts.building_counts[BLD_FARM]<8)?(buildingCounts.building_counts[BLD_FARM] + 2) / 4:GetBuildingCount(BLD_FARM)<20?(buildingCounts.building_counts[BLD_FARM] ) / 4:(buildingCounts.building_counts[BLD_FARM] ) / 3;
 	if (buildingsWanted[BLD_MILL]>GetBuildingCount(BLD_BAKERY)+1) buildingsWanted[BLD_MILL]=GetBuildingCount(BLD_BAKERY)+1;
 	buildingsWanted[BLD_BAKERY] = (GetBuildingCount(BLD_MILL)>aii->GetInventory()->goods[GD_ROLLINGPIN] + aii->GetInventory()->people[JOB_BAKER])?aii->GetInventory()->goods[GD_ROLLINGPIN] + aii->GetInventory()->people[JOB_BAKER]:(GetBuildingCount(BLD_MILL));
 
@@ -513,7 +513,7 @@ bool AIConstruction::FindStoreHousePosition(MapCoord &x, MapCoord &y, unsigned r
 		const noBaseBuilding *bld;
 		if ((bld = aii->GetSpecObj<noBaseBuilding>((*it).x, (*it).y)))
 		{
-			if (bld->GetBuildingType() != BLD_STOREHOUSE && bld->GetBuildingType() != BLD_HEADQUARTERS)
+			if (bld->GetBuildingType() != BLD_STOREHOUSE && bld->GetBuildingType() != BLD_HEADQUARTERS && bld->GetBuildingType()!=BLD_HARBORBUILDING)
 				continue;
 
 			const noFlag *targetFlag = aii->GetSpecObj<noFlag>(fx,fy);
