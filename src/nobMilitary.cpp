@@ -1,4 +1,4 @@
-// $Id: nobMilitary.cpp 8028 2012-07-08 20:39:37Z jh $
+// $Id: nobMilitary.cpp 8114 2012-09-01 19:10:52Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -486,6 +486,16 @@ void nobMilitary::RegulateTroops()
 int nobMilitary::CalcTroopsCount()
 {
 	return (TROOPS_COUNT[nation][size]-1)*gwg->GetPlayer(player)->military_settings[4+frontier_distance]/MILITARY_SETTINGS_SCALE[4+frontier_distance] + 1;
+}
+
+bool nobMilitary::IsUseless() const
+{
+	if(frontier_distance||new_built)
+	{
+		return false;
+	}
+	return(gwg->TerritoryChange(this,MILITARY_RADIUS[size],true, false));
+	
 }
 
 void nobMilitary::TakeWare(Ware * ware)

@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 8109 2012-09-01 19:05:19Z jh $
+// $Id: AIPlayerJH.cpp 8114 2012-09-01 19:10:52Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -200,7 +200,7 @@ void AIPlayerJH::RunGF(const unsigned gf)
 		if (!(mil = aii->GetSpecObj<nobMilitary>((*it).x, (*it).y)))
 			continue;
 		if(randomstore<=0)
-		{
+		{			
 			UpdateNodesAroundNoBorder((*it).x,(*it).y,15); //update the area we want to build in first 
 			for (unsigned int i = 0; i < numBldToTest; i++) 
 			{
@@ -210,6 +210,10 @@ void AIPlayerJH::RunGF(const unsigned gf)
 				}
 			}
 			AddBuildJob(construction.ChooseMilitaryBuilding((*it).x, (*it).y),(*it).x, (*it).y);
+			if(mil->IsUseless()&&mil->IsDemolitionAllowed())
+			{
+				gcs.push_back(new gc::DestroyBuilding((*it).x, (*it).y));
+			}
 			break;
 		}
 	}
@@ -1094,7 +1098,7 @@ void AIPlayerJH::HandleNewMilitaryBuilingOccupied(const Coords& coords)
 		//excluding direction 255 means no excluded direction ... sometimes I used 7 for the same purpose so if you ever change the direction to count to include 7 this will fail in some spots :)
 		RemoveUnusedRoad(flags[i],255,true);
 	}	
-	UpdateNodesAround(x, y, 11); // todo: fix radius
+	UpdateNodesAround(x, y, 15); // todo: fix radius
 	construction.RefreshBuildingCount();
 	//is the captured building in our list(should be if be constructed it)
 	bool alreadyinlist=false;

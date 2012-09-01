@@ -1,4 +1,4 @@
-// $Id: nobMilitary.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: nobMilitary.h 8114 2012-09-01 19:10:52Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -115,6 +115,7 @@ public: void Serialize(SerializedGameData *sgd) const { Serialize_nobMilitary(sg
 	/// Wird von gegnerischem Gebäude aufgerufen, wenn sie neu gebaut worden sind und es so ein neues Gebäude im Umkreis gibt
 	/// setzt frontier_distance neu falls möglich und sendet ggf. Verstärkung
 	void NewEnemyMilitaryBuilding(const unsigned short distance);
+	bool IsUseless() const;
 	/// Gibt Distanz zurück
 	unsigned char GetFrontierDistance() const { return frontier_distance; }
 

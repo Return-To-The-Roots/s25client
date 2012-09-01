@@ -1,4 +1,4 @@
-// $Id: GameWorldGame.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: GameWorldGame.cpp 8114 2012-09-01 19:10:52Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -764,6 +764,71 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding * const building,const 
 	else
 		SetVisibilitiesAroundPoint(building->GetX(),building->GetY(),harborRadius+VISUALRANGE_MILITARY,
 			building->GetPlayer());
+}
+
+bool GameWorldGame::TerritoryChange(const noBaseBuilding * const building,const unsigned short radius, const bool destroyed, const bool newBuilt)
+{
+	std::list<nobBaseMilitary*> buildings; // Liste von Militärgebäuden in der Nähe
+
+	// alle Militärgebäude in der Nähe abgrasen
+	LookForMilitaryBuildings(buildings,building->GetX(),building->GetY(),3);
+
+	// Radius der noch draufaddiert wird auf den eigentlich ausreichenden Bereich, für das Eliminieren von
+	// herausragenden Landesteilen und damit Grenzsteinen
+	const int ADD_RADIUS = 2;
+
+	// Koordinaten erzeugen für TerritoryRegion 
+	int x1 = int(building->GetX())-(radius+ADD_RADIUS);
+	int y1 = int(building->GetY())-(radius+ADD_RADIUS);
+	int x2 = int(building->GetX())+(radius+ADD_RADIUS)+1;
+	int y2 = int(building->GetY())+(radius+ADD_RADIUS)+1;
+
+
+	TerritoryRegion tr(x1,y1,x2,y2,this);
+
+	buildings.sort(nobBaseMilitary::Compare);
+
+	// Alle Gebäude ihr Terrain in der Nähe neu berechnen
+	for(std::list<nobBaseMilitary*>::iterator it = buildings.begin();it!=buildings.end();++it)
+	{
+		// Ist es ein richtiges Militärgebäude?
+		if((*it)->GetBuildingType() >= BLD_BARRACKS && (*it)->GetBuildingType() <= BLD_FORTRESS)
+		{
+			// Wenn es noch nicht besetzt war(also gerade neu gebaut), darf es nicht mit einberechnet werden!
+			if(static_cast<nobMilitary*>(*it)->IsNewBuilt())
+				continue;
+		}
+
+		// Wenn das Gebäude abgerissen wird oder wenn es noch nicht besetzt war, natürlich nicht mit einberechnen
+		if(*it != building)
+		  tr.CalcTerritoryOfBuilding(*it);
+	}
+
+	// Baustellen von Häfen mit einschlieÃen
+	for(std::list<noBuildingSite*>::iterator it = harbor_building_sites_from_sea.begin();
+		it != harbor_building_sites_from_sea.end();++it)
+	{
+		if(*it != building || !destroyed)
+			tr.CalcTerritoryOfBuilding(*it);
+	}
+	// Daten von der TR kopieren in die richtige Karte, dabei zus. Grenzen korrigieren und Objekte zerstören, falls
+	// das Land davon jemanden anders nun gehört
+ 	for(int y = y1;y<y2;++y)
+	{
+		for(int x = x1;x<x2;++x)
+		{
+			unsigned char prev_player,player;
+			MapCoord tx,ty;
+			ConvertCoords(x,y,&tx,&ty);
+			// Wenn der Punkt den Besitz geändert hat
+			if((prev_player=GetNode(tx,ty).owner) != (player=tr.GetOwner(x,y)))
+			{
+				// Dann entsprechend zurückgeben
+				return false;
+			}
+		}
+	}
+	return true;	
 }
 
 void GameWorldGame::DestroyPlayerRests(const MapCoord x, const MapCoord y, const unsigned char new_player,const noBaseBuilding * exception)
