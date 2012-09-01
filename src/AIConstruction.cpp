@@ -1,4 +1,4 @@
-// $Id: AIConstruction.cpp 8127 2012-09-01 19:17:50Z jh $
+// $Id: AIConstruction.cpp 8133 2012-09-01 19:22:06Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -367,7 +367,7 @@ void AIConstruction::RefreshBuildingCount()
 	}
 	else
 	{
-		buildingsWanted[BLD_FORESTER]=(GetBuildingCount(BLD_SAWMILL)>2&&GetBuildingCount(BLD_SAWMILL)>GetBuildingCount(BLD_WOODCUTTER))||(aii->GetInventory()->goods[GD_BOARDS]<40&&GetBuildingCount(BLD_STOREHOUSE)>0)?aii->GetInventory()->goods[GD_BOARDS]<20&&GetBuildingCount(BLD_WOODCUTTER)<6&&buildingsWanted[BLD_WOODCUTTER]>5&&GetBuildingCount(BLD_BARRACKS)+GetBuildingCount(BLD_GUARDHOUSE)+GetBuildingCount(BLD_FORTRESS)+GetBuildingCount(BLD_WATCHTOWER)>15?3:2:1;
+		buildingsWanted[BLD_FORESTER]=(GetBuildingCount(BLD_SAWMILL)>2&&GetBuildingCount(BLD_SAWMILL)>GetBuildingCount(BLD_WOODCUTTER))||(aii->GetInventory()->goods[GD_BOARDS]<40&&GetBuildingCount(BLD_STOREHOUSE)>0)?aii->GetInventory()->goods[GD_BOARDS]<50&&GetBuildingCount(BLD_WOODCUTTER)<9&&buildingsWanted[BLD_WOODCUTTER]>8&&((GetBuildingCount(BLD_BARRACKS)+GetBuildingCount(BLD_GUARDHOUSE)+GetBuildingCount(BLD_FORTRESS)+GetBuildingCount(BLD_WATCHTOWER))>15)?3:2:1;
 		if(buildingsWanted[BLD_FORESTER]>(aii->GetInventory()->people[JOB_FORESTER]+aii->GetInventory()->goods[GD_SHOVEL]))buildingsWanted[BLD_FORESTER]=(aii->GetInventory()->people[JOB_FORESTER]+aii->GetInventory()->goods[GD_SHOVEL]);
 	//building types usually limited by profession+tool for profession with some arbitrary limit. Some buildings which are linked to others in a chain / profession-tool-rivalry have additional limits.
 	buildingsWanted[BLD_WOODCUTTER]=aii->GetInventory()->goods[GD_AXE] + aii->GetInventory()->people[JOB_WOODCUTTER] ;
