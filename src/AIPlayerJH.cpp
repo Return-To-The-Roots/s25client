@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 8117 2012-09-01 19:11:56Z jh $
+// $Id: AIPlayerJH.cpp 8118 2012-09-01 19:12:18Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -274,6 +274,7 @@ void AIPlayerJH::RunGF(const unsigned gf)
 		goodSettings[20] = 10; //water brewery
 		goodSettings[21] = 10; //water pigfarm
 		goodSettings[22] = 10; //water donkeybreeder
+		aii->SetDistribution(goodSettings);
 
 	}
 
@@ -589,8 +590,9 @@ void AIPlayerJH::RecalcResource(AIJH::Resource restype)
 			}
 			// Grenzgebiet"ressource"
 			else if (aii->IsBorder(x, y) && (AIJH::Resource)res == AIJH::BORDERLAND)
-			{
-				ChangeResourceMap(x, y, AIJH::RES_RADIUS[AIJH::BORDERLAND], resourceMaps[AIJH::BORDERLAND], 1);
+			{	//only count border area that is actually passable terrain
+				if(gwb->GetNode(x,y).t1!=TT_WATER && gwb->GetNode(x,y).t1!=TT_LAVA && gwb->GetNode(x,y).t1!=TT_SWAMPLAND&& gwb->GetNode(x,y).t1!=TT_SNOW)
+					ChangeResourceMap(x, y, AIJH::RES_RADIUS[AIJH::BORDERLAND], resourceMaps[AIJH::BORDERLAND], 1);
 			}
 			if (nodes[i].res == AIJH::MULTIPLE && gwb->GetNode(x,y).t1!=TT_WATER && gwb->GetNode(x,y).t1!=TT_LAVA && gwb->GetNode(x,y).t1!=TT_SWAMPLAND )
 			{

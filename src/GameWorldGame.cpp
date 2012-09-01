@@ -1,4 +1,4 @@
-// $Id: GameWorldGame.cpp 8114 2012-09-01 19:10:52Z jh $
+// $Id: GameWorldGame.cpp 8118 2012-09-01 19:12:18Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -823,8 +823,9 @@ bool GameWorldGame::TerritoryChange(const noBaseBuilding * const building,const 
 			// Wenn der Punkt den Besitz geändert hat
 			if((prev_player=GetNode(tx,ty).owner) != (player=tr.GetOwner(x,y)))
 			{
-				// Dann entsprechend zurückgeben
-				return false;
+				// if gameobjective isnt 75% ai can ignore water/snow/lava/swamp
+				if(GameClient::inst().GetGGS().game_objective==GlobalGameSettings::GO_CONQUER3_4 || (GetNode(x,y).t1!=TT_WATER && GetNode(x,y).t1!=TT_LAVA && GetNode(x,y).t1!=TT_SWAMPLAND&& GetNode(x,y).t1!=TT_SNOW))
+					return false;					
 			}
 		}
 	}
