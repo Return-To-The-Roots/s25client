@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 8134 2012-09-01 19:22:25Z jh $
+// $Id: AIPlayerJH.cpp 8135 2012-09-01 19:41:01Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -364,15 +364,17 @@ AIJH::Resource AIPlayerJH::CalcResource(MapCoord x, MapCoord y)
 	}
 	else
 	{
-		if(aii->GetSurfaceResource(x,y)==AIJH::STONES||aii->GetSurfaceResource(x,y)==AIJH::WOOD)
-			if(aii->GetSubsurfaceResource(x,y)==AIJH::WOOD)
+		if ((aii->GetSurfaceResource(x,y) == AIJH::STONES) || (aii->GetSurfaceResource(x,y) == AIJH::WOOD))
+		{
+			if (aii->GetSubsurfaceResource(x,y) == AIJH::WOOD)
 			{
-				if((gwb->GetSpecObj<noTree>(x,y))->type!=5)
-					res=AIJH::MULTIPLE;
+				if ((gwb->GetSpecObj<noTree>(x,y))->type != 5)
+					res = AIJH::MULTIPLE;
+			} else
+			{
+				res = AIJH::MULTIPLE;
 			}
-			else
-				res=AIJH::MULTIPLE;
-			
+		}
 	}
 	if (res == AIJH::BLOCKED)
 	{

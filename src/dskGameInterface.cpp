@@ -1,4 +1,4 @@
-// $Id: dskGameInterface.cpp 8124 2012-09-01 19:15:43Z jh $
+// $Id: dskGameInterface.cpp 8135 2012-09-01 19:41:01Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1329,7 +1329,7 @@ void dskGameInterface::GI_Winner(const unsigned player_id)
  */
 void dskGameInterface::GI_TeamWinner(const unsigned player_id)
 {
-	char winnercount=0;
+	unsigned winnercount=0;
 	char winners[5];
 	for(unsigned i=0;i<GameClient::inst().GetPlayerCount()&&winnercount<5;i++)
 	{
