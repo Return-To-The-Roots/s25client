@@ -1,4 +1,4 @@
-// $Id: dskSelectMap.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: dskSelectMap.cpp 8131 2012-09-01 19:21:00Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -236,10 +236,15 @@ void dskSelectMap::Msg_ButtonClick(const unsigned int ctrl_id)
 	{
 	case 3: // "Zurück"
 		{
-			if(LOBBYCLIENT.LoggedIn())
-				WindowManager::inst().Switch(new dskLobby);
+			if(csi.type==NP_LOCAL)
+				WindowManager::inst().Switch(new dskSinglePlayer);
 			else
-				WindowManager::inst().Switch(new dskDirectIP);
+			{
+				if(LOBBYCLIENT.LoggedIn())
+					WindowManager::inst().Switch(new dskLobby);
+				else
+					WindowManager::inst().Switch(new dskDirectIP);
+			}
 		} break;
 	case 4: // "Spiel laden..."
 		{
