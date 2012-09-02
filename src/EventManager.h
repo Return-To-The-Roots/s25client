@@ -1,4 +1,4 @@
-// $Id: EventManager.h 7701 2011-12-30 18:14:37Z marcus $
+// $Id: EventManager.h 8138 2012-09-02 13:59:35Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -41,12 +41,16 @@ public:
 		GameObject * obj;
 		unsigned int gf;
 		unsigned int gf_length;
+		unsigned int gf_next;
 		unsigned int id;
 
 	public:
 
 		Event(GameObject * const  obj, const unsigned int gf,const unsigned int gf_length,const unsigned int id)
-			: obj(obj), gf(gf), gf_length(gf_length), id(id) {}
+			: obj(obj), gf(gf), gf_length(gf_length), id(id)
+		{
+			gf_next = gf + gf_length;
+		}
 
 		Event(SerializedGameData * sgd, const unsigned obj_id);
 

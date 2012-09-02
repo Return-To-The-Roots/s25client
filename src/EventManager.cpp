@@ -1,4 +1,4 @@
-// $Id: EventManager.cpp 7670 2011-12-27 11:50:40Z marcus $
+// $Id: EventManager.cpp 8138 2012-09-02 13:59:35Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -96,10 +96,12 @@ EventManager::EventPointer EventManager::AddEvent(GameObject *obj, const unsigne
  */
 void EventManager::NextGF()
 {
+	unsigned int gfnr = GAMECLIENT.GetGFNumber();
+
 	// Events abfragen
 	for(std::list<Event*>::iterator it = eis.begin(); it != eis.end(); )
 	{
-		if((*it)->gf+(*it)->gf_length == GAMECLIENT.GetGFNumber())
+		if ((*it)->gf_next == gfnr)
 		{
 			assert((*it)->obj);
 			assert((*it)->obj->GetObjId() < GameObject::GetObjIDCounter());
@@ -146,6 +148,7 @@ gf(sgd->PopUnsignedInt()),
 gf_length(sgd->PopUnsignedInt()),
 id(sgd->PopUnsignedInt())
 {
+	gf_next = gf + gf_length;
 }
 
 
