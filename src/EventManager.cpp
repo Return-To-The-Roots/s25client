@@ -1,4 +1,4 @@
-// $Id: EventManager.cpp 8140 2012-09-03 10:23:34Z marcus $
+// $Id: EventManager.cpp 8141 2012-09-03 15:08:46Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -75,11 +75,14 @@ EventManager::EventPointer EventManager::AddEvent(SerializedGameData * sgd, cons
 	eis.push_back(event);
 	//assert(event->GetObjId() != 1220037 );
 	//assert(event->GetObjId() != 1560584 );
+
 	return event;
 }
 
 EventManager::EventPointer EventManager::AddEvent(GameObject *obj, const unsigned int gf_length, const unsigned int id, const unsigned gf_elapsed)
 {
+	assert(gf_length >= gf_elapsed);
+
 	// Anfang des Events in die Vergangenheit zurückverlegen
 	Event * event = new Event(obj, GAMECLIENT.GetGFNumber()-gf_elapsed, gf_length, id);
 	eis.push_back(event);
@@ -101,20 +104,24 @@ void EventManager::NextGF()
 	// Events abfragen
 	for (unsigned cnt = 0; cnt < eis.size();)
 	{
-		if (eis[cnt]->gf_next == gfnr)
+		Event *e = eis[cnt];
+
+		if (!e)
 		{
-			Event *e = eis[cnt];
+			// marked as removed -> remove
+			eis[cnt] = eis.back();
+			eis.pop_back();
+		} else if (e->gf_next == gfnr)
+		{
 			assert(e->obj);
 			assert(e->obj->GetObjId() < GameObject::GetObjIDCounter());
 
-			// normale Events
+			eis[cnt] = eis.back();
+			eis.pop_back();
+
 			e->obj->HandleEvent(e->id);
 
 			delete e;
-
-			eis[cnt] = eis[eis.size() - 1];
-
-			eis.pop_back();
 		} else
 		{
 			++cnt;
@@ -164,7 +171,7 @@ void EventManager::Serialize(SerializedGameData *sgd) const
 	// Nur Events speichern, die noch nicth vorher von anderen Objekten gespeichert wurden!
 	for(std::vector<Event*>::const_iterator it = eis.begin(); it != eis.end(); ++it)
 	{
-		if(!sgd->GetConstGameObject((*it)->GetObjId()))
+		if ((*it) && !sgd->GetConstGameObject((*it)->GetObjId()))
 			save_events.push_back(*it);
 	}
 
@@ -184,9 +191,9 @@ void EventManager::Deserialize(SerializedGameData *sgd)
 /// Ist ein Event mit bestimmter id für ein bestimmtes Objekt bereits vorhanden?
 bool EventManager::IsEventAcive(const GameObject * const obj, const unsigned id) const
 {
-	for(std::vector<Event*>::const_iterator it = eis.begin(); it != eis.end(); ++it)
+	for (std::vector<Event*>::const_iterator it = eis.begin(); it != eis.end(); ++it)
 	{
-		if((*it)->id == id && (*it)->obj == obj)
+		if ((*it) && ((*it)->id == id) && ((*it)->obj == obj))
 		{
 			return true;
 		}
@@ -202,21 +209,20 @@ void EventManager::RemoveEvent(EventPointer ep)
 		return;
 	}
 
+	delete ep;
+
 	unsigned sz = eis.size();
 
 	for (unsigned cnt = 0; cnt < sz; cnt++)
 	{
 		if (eis[cnt] == ep)
 		{
-			--sz;
-			eis[cnt] = eis[sz];
+			// ATTENTION: we only mark this as removed, otherwise this leads to unexpected behaviour!
+			eis[cnt] = NULL;
 
-			eis.pop_back();
-
+			// as this event can only occur once in our list, stop here.
 			break;
 		}
 	}
-
-	delete ep;
 }
 
