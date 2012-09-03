@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 8135 2012-09-01 19:41:01Z marcus $
+// $Id: AIPlayerJH.cpp 8142 2012-09-03 17:33:53Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -41,6 +41,7 @@
 
 #include "GameMessages.h"
 #include "GameServer.h"
+#include <set>
 
 // from Pathfinding.cpp
 bool IsPointOK_RoadPath(const GameWorldBase& gwb, const MapCoord x, const MapCoord y, const unsigned char dir, const void *param);
@@ -1480,8 +1481,9 @@ void AIPlayerJH::Chat(std::string message)
 
 void AIPlayerJH::TryToAttack() 
 {
-	std::vector<std::pair<const nobBaseMilitary *, unsigned> > potentialTargets;
+	std::set<const nobBaseMilitary *> potentialTargets;
 
+	// use own military buildings (except inland buildings) to search for enemy military buildings
 	for (std::list<Coords>::iterator it = milBuildings.begin(); it != milBuildings.end(); it++)
 	{
 		const nobMilitary *mil;
@@ -1509,6 +1511,8 @@ void AIPlayerJH::TryToAttack()
 				gcs.push_back(new gc::StopGold(mil->GetX(), mil->GetY()));
 			}
 		}
+
+		// get nearby enemy buildings and store in set of potential attacking targets
 		std::list<nobBaseMilitary *> buildings;
 		aii->GetMilitaryBuildings((*it).x, (*it).y, 2, buildings);
 		for(std::list<nobBaseMilitary*>::iterator it2 = buildings.begin(); it2 != buildings.end(); ++it2)
@@ -1518,53 +1522,87 @@ void AIPlayerJH::TryToAttack()
 			if (gwb->CalcDistance((*it).x, (*it).y, dest_x, dest_y) < BASE_ATTACKING_DISTANCE 
 				&& aii->IsPlayerAttackable((*it2)->GetPlayer()) && aii->IsVisible(dest_x, dest_y))
 			{
-				potentialTargets.push_back(std::make_pair((*it2), 0));
-
-				std::list<nobBaseMilitary *> myBuildings;
-				aii->GetMilitaryBuildings(dest_x, dest_y, 2, myBuildings);
-				for(std::list<nobBaseMilitary*>::iterator it3 = myBuildings.begin(); it3!=myBuildings.end(); ++it3)
-				{
-					if ((*it3)->GetPlayer() == playerid)
-					{
-						const nobMilitary *myMil;
-						myMil = dynamic_cast<const nobMilitary *>(*it3);
-						if (!myMil)
-							continue;
-
-						potentialTargets[potentialTargets.size() - 1].second += myMil->GetSoldiersForAttack(dest_x, dest_y, playerid);
-					}
-				}
+				potentialTargets.insert(*it2);
 			}
 		}
 	}
-	
+
+	std::vector<std::pair<const nobBaseMilitary *, unsigned> > potentialAttackersPerTarget(potentialTargets.size());
+	unsigned index = 0;
+
+	// check for each potential attacking target the number of available attacking soldiers
+	for (std::set<const nobBaseMilitary *>::iterator it = potentialTargets.begin(); it != potentialTargets.end(); it++)
+	{
+		const MapCoord dest_x = (*it)->GetX();
+		const MapCoord dest_y = (*it)->GetY();
+
+		// ask each of nearby own military buildings for soldiers to contribute to the potential attack
+		std::list<nobBaseMilitary *> myBuildings;
+		aii->GetMilitaryBuildings(dest_x, dest_y, 2, myBuildings);
+		for(std::list<nobBaseMilitary*>::iterator it3 = myBuildings.begin(); it3!=myBuildings.end(); ++it3)
+		{
+			potentialAttackersPerTarget[index].first = *it;
+
+			if ((*it3)->GetPlayer() == playerid)
+			{
+				const nobMilitary *myMil;
+				myMil = dynamic_cast<const nobMilitary *>(*it3);
+				if (!myMil)
+					continue;
+
+				potentialAttackersPerTarget[index].second += myMil->GetSoldiersForAttack(dest_x, dest_y, playerid);
+			}
+		}
+		index++;
+	}
+
+
+	// find maximum of potential attackers
 	unsigned max = 0;
 	unsigned maxIndex = 0;
 
 	for (unsigned i=0; i<potentialTargets.size(); ++i)
 	{
-		if (potentialTargets[i].second > max)
+		if (potentialAttackersPerTarget[i].second > max)
 		{
-			max = potentialTargets[i].second;
+			max = potentialAttackersPerTarget[i].second;
 			maxIndex = i;
 		}
 	}
 
+	// Attack! if possible
 	if (max > 0)
 	{
 		const nobMilitary *enemyTarget;
-		enemyTarget = dynamic_cast<const nobMilitary *>(potentialTargets[maxIndex].first);
+		enemyTarget = dynamic_cast<const nobMilitary *>(potentialAttackersPerTarget[maxIndex].first);
+		const unsigned numberOfAttackers = potentialAttackersPerTarget[maxIndex].second;
 		if (enemyTarget)
 		{
-			if (potentialTargets[maxIndex].second > enemyTarget->GetTroopsCount() && enemyTarget->GetTroopsCount() > 0)
-				gcs.push_back(new gc::Attack(potentialTargets[maxIndex].first->GetX(), potentialTargets[maxIndex].first->GetY(), 
-					potentialTargets[maxIndex].second, true));
+			if (numberOfAttackers > enemyTarget->GetTroopsCount() && enemyTarget->GetTroopsCount() > 0)
+			{
+				gcs.push_back(new gc::Attack(enemyTarget->GetX(), enemyTarget->GetY(),numberOfAttackers, true));
+				return;
+			}
 		}
 		else
 		{
-			// is wohl HQ?
-			gcs.push_back(new gc::Attack(potentialTargets[maxIndex].first->GetX(), potentialTargets[maxIndex].first->GetY(), 
-				potentialTargets[maxIndex].second, true));
+			// something different? HQ? 
+			const nobHQ *enemyHQ;
+			enemyHQ = dynamic_cast<const nobHQ *>(potentialAttackersPerTarget[maxIndex].first);
+			if (enemyHQ)
+			{
+				gcs.push_back(new gc::Attack(enemyHQ->GetX(), enemyHQ->GetY(), numberOfAttackers, true));
+				return;
+			}
+
+			// Harbor?
+			const nobHarborBuilding *enemyHarbor;
+			enemyHarbor = dynamic_cast<const nobHarborBuilding *>(potentialAttackersPerTarget[maxIndex].first);
+			if (enemyHarbor)
+			{
+				gcs.push_back(new gc::Attack(enemyHarbor->GetX(), enemyHarbor->GetY(), numberOfAttackers, true));
+				return;
+			}
 		}
 	}
 }
