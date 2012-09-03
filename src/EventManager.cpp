@@ -1,4 +1,4 @@
-// $Id: EventManager.cpp 8138 2012-09-02 13:59:35Z marcus $
+// $Id: EventManager.cpp 8140 2012-09-03 10:23:34Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -39,7 +39,7 @@
 
 EventManager::~EventManager()
 {
-	for(std::list<Event*>::iterator it = eis.begin(); it != eis.end(); ++it)
+	for(std::vector<Event*>::iterator it = eis.begin(); it != eis.end(); ++it)
 		delete (*it);
 
 	eis.clear();
@@ -99,27 +99,30 @@ void EventManager::NextGF()
 	unsigned int gfnr = GAMECLIENT.GetGFNumber();
 
 	// Events abfragen
-	for(std::list<Event*>::iterator it = eis.begin(); it != eis.end(); )
+	for (unsigned cnt = 0; cnt < eis.size();)
 	{
-		if ((*it)->gf_next == gfnr)
+		if (eis[cnt]->gf_next == gfnr)
 		{
-			assert((*it)->obj);
-			assert((*it)->obj->GetObjId() < GameObject::GetObjIDCounter());
+			Event *e = eis[cnt];
+			assert(e->obj);
+			assert(e->obj->GetObjId() < GameObject::GetObjIDCounter());
 
 			// normale Events
-			Event *go = *it;
-			(*it)->obj->HandleEvent((*it)->id);
+			e->obj->HandleEvent(e->id);
 
-			eis.erase(it++);
-			delete go;
+			delete e;
+
+			eis[cnt] = eis[eis.size() - 1];
+
+			eis.pop_back();
 		} else
 		{
-			++it;
+			++cnt;
 		}
 	}
 
 	// Kill-List durchgehen und Objekte in den Bytehimmel befördern
-	for(std::list<GameObject*>::iterator it = kill_list.begin(); it != kill_list.end(); ++it)
+	for (std::list<GameObject*>::iterator it = kill_list.begin(); it != kill_list.end(); ++it)
 	{
 		(*it)->Destroy();
 		delete (*it);
@@ -159,7 +162,7 @@ void EventManager::Serialize(SerializedGameData *sgd) const
 
 	std::list<const Event*> save_events;
 	// Nur Events speichern, die noch nicth vorher von anderen Objekten gespeichert wurden!
-	for(std::list<Event*>::const_iterator it = eis.begin(); it != eis.end(); ++it)
+	for(std::vector<Event*>::const_iterator it = eis.begin(); it != eis.end(); ++it)
 	{
 		if(!sgd->GetConstGameObject((*it)->GetObjId()))
 			save_events.push_back(*it);
@@ -181,17 +184,39 @@ void EventManager::Deserialize(SerializedGameData *sgd)
 /// Ist ein Event mit bestimmter id für ein bestimmtes Objekt bereits vorhanden?
 bool EventManager::IsEventAcive(const GameObject * const obj, const unsigned id) const
 {
-	bool hit = true;
-	for(std::list<Event*>::const_iterator it = eis.begin(); it != eis.end(); ++it)
+	for(std::vector<Event*>::const_iterator it = eis.begin(); it != eis.end(); ++it)
 	{
 		if((*it)->id == id && (*it)->obj == obj)
 		{
-			if(hit)
-				return true;
-			hit = true;
+			return true;
 		}
 	}
 	
 	return false;
+}
+
+void EventManager::RemoveEvent(EventPointer ep)
+{
+	if (ep == NULL)
+	{
+		return;
+	}
+
+	unsigned sz = eis.size();
+
+	for (unsigned cnt = 0; cnt < sz; cnt++)
+	{
+		if (eis[cnt] == ep)
+		{
+			--sz;
+			eis[cnt] = eis[sz];
+
+			eis.pop_back();
+
+			break;
+		}
+	}
+
+	delete ep;
 }
 

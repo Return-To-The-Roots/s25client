@@ -1,4 +1,4 @@
-// $Id: EventManager.h 8138 2012-09-02 13:59:35Z marcus $
+// $Id: EventManager.h 8140 2012-09-03 10:23:34Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -86,7 +86,7 @@ public:
 	/// Löscht alle Listen für Spielende
 	void Clear() { eis.clear(); kill_list.clear(); }
 	/// Event entfernen
-	void RemoveEvent(EventPointer ep) {  eis.remove(ep); delete ep; }
+	void RemoveEvent(EventPointer ep);
 	/// Objekt will gekillt werden
 	void AddToKillList(GameObject *obj) { assert(std::count(kill_list.begin(), kill_list.end(), obj) == 0); kill_list.push_back(obj); }
 
@@ -99,7 +99,7 @@ public:
 	bool IsEventAcive(const GameObject * const obj, const unsigned id) const;
 
 private:
-	std::list<Event*> eis;     ///< Liste der Events für die einzelnen Objekte
+	std::vector<Event*> eis;     ///< Liste der Events für die einzelnen Objekte
 	std::list<GameObject*> kill_list; ///< Liste mit Objekten die unmittelbar nach NextGF gekillt werden sollen
 };
 
