@@ -223,8 +223,10 @@ public:
 	void DestroyFlag(const noFlag *flag) { DestroyFlag(flag->GetX(), flag->GetY()); }
 
 	/// Attacks an enemy building
-	void Attack(MapCoord x, MapCoord y, unsigned numberOfSoldiers, bool useStrongest);
-	void Attack(const nobBaseMilitary *target, unsigned numberOfSoldiers, bool useStrongest) { Attack(target->GetX(), target->GetY(), numberOfSoldiers, useStrongest); }
+	void Attack(MapCoord x, MapCoord y, unsigned soldiers_count, bool strong_soldiers)
+	{
+		gcs->push_back(new gc::Attack(x, y, soldiers_count, strong_soldiers));
+	}
 
 	/// Builds a road from a starting point along a given route
 	void BuildRoad(MapCoord x, MapCoord y, const std::vector<Direction> &route) { gcs->push_back(new gc::BuildRoad(x, y, false, route)); }
@@ -245,7 +247,10 @@ public:
 	/// Stops production of a producer
 	void StopProduction(MapCoord x, MapCoord y) { gcs->push_back(new gc::StopProduction(x, y)); }
 
-
+	void ChangeInventorySetting(MapCoord x, MapCoord y, unsigned char category, unsigned char state, unsigned char type)
+	{
+		gcs->push_back(new gc::ChangeInventorySetting(x, y, category, state, type));
+	}
 };
 
 

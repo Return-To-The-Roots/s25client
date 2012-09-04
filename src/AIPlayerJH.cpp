@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 8142 2012-09-03 17:33:53Z jh $
+// $Id: AIPlayerJH.cpp 8145 2012-09-04 10:40:36Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -165,9 +165,9 @@ void AIPlayerJH::RunGF(const unsigned gf)
 			firsthouse=false;
 			if(lostmainstore&&aii->IsObjectTypeOnNode((*it).x,(*it).y,NOP_BUILDING))
 			{				
-				gcs.push_back(new gc::ChangeInventorySetting((*it).x, (*it).y, 0, 2, 0));
-				gcs.push_back(new gc::ChangeInventorySetting((*it).x, (*it).y, 0, 2, 16));
-				gcs.push_back(new gc::ChangeInventorySetting((*it).x, (*it).y, 0, 2, 21));
+				aii->ChangeInventorySetting((*it).x, (*it).y, 0, 2, 0);
+				aii->ChangeInventorySetting((*it).x, (*it).y, 0, 2, 16);
+				aii->ChangeInventorySetting((*it).x, (*it).y, 0, 2, 21);
 				lostmainstore=false;
 			}
 		}
@@ -217,7 +217,7 @@ void AIPlayerJH::RunGF(const unsigned gf)
 			AddBuildJob(construction.ChooseMilitaryBuilding((*it).x, (*it).y),(*it).x, (*it).y);
 			if(mil->IsUseless()&&mil->IsDemolitionAllowed())
 			{
-				gcs.push_back(new gc::DestroyBuilding((*it).x, (*it).y));
+				aii->DestroyBuilding((*it).x, (*it).y);
 			}
 			break;
 		}
@@ -1154,13 +1154,13 @@ void AIPlayerJH::HandleNewMilitaryBuilingOccupied(const Coords& coords)
 	{
 		if ((mil->GetBuildingType() == BLD_BARRACKS || mil->GetBuildingType() == BLD_GUARDHOUSE) && mil->GetFrontierDistance() == 0 && !mil->IsGoldDisabled())
 		{
-			gcs.push_back(new gc::StopGold(x, y));
+			aii->ToggleCoins(x, y);
 		}
 
 		// if near border and gold disabled (by addon): enable it
 		if (mil->GetFrontierDistance() && mil->IsGoldDisabled())
 		{
-			gcs.push_back(new gc::StopGold(x, y));
+			aii->ToggleCoins(x, y);
 		}
 		//should be done by now by the removeunusedroads code
 		/*if (!construction.IsConnectedToRoadSystem(mil->GetFlag()))
@@ -1296,9 +1296,9 @@ void AIPlayerJH::HandleBuildingFinished(const Coords& coords, BuildingType bld)
 
 		// stop beer, swords and shields -> hq only (todo: hq destroyed -> use another storehouse)
 		// can't do that on harbors... maybe production is on an island which is not the hq's
-		//gcs.push_back(new gc::ChangeInventorySetting(coords.x, coords.y, 0, 2, 0));
-		//gcs.push_back(new gc::ChangeInventorySetting(coords.x, coords.y, 0, 2, 16));
-		//gcs.push_back(new gc::ChangeInventorySetting(coords.x, coords.y, 0, 2, 21));
+		//aii->ChangeInventorySetting(coords.x, coords.y, 0, 2, 0);
+		//aii->ChangeInventorySetting(coords.x, coords.y, 0, 2, 16);
+		//aii->ChangeInventorySetting(coords.x, coords.y, 0, 2, 21);
 
 		aii->StartExpedition(coords.x, coords.y);
 		break;
@@ -1310,10 +1310,10 @@ void AIPlayerJH::HandleBuildingFinished(const Coords& coords, BuildingType bld)
 	case BLD_STOREHOUSE:
 		// stop beer, swords and shields -> hq only (todo: hq destroyed -> use another storehouse)
 		//aii->ChangeInventorySetting( TODO
-		gcs.push_back(new gc::ChangeInventorySetting(coords.x, coords.y, 0, 2, 0));
-		gcs.push_back(new gc::ChangeInventorySetting(coords.x, coords.y, 0, 2, 16));
-		gcs.push_back(new gc::ChangeInventorySetting(coords.x, coords.y, 0, 2, 21));
-		
+		aii->ChangeInventorySetting(coords.x, coords.y, 0, 2, 0);
+		aii->ChangeInventorySetting(coords.x, coords.y, 0, 2, 16);
+		aii->ChangeInventorySetting(coords.x, coords.y, 0, 2, 21);
+		break;
 	default:
 		break;
 	}
@@ -1421,7 +1421,7 @@ void AIPlayerJH::HandleNoMoreResourcesReachable(const Coords& coords, BuildingTy
 				}
 			}
 		}
-		gcs.push_back(new gc::DestroyBuilding(x, y));
+		aii->DestroyBuilding(x, y);
 	}
 	else
 		return;
@@ -1500,7 +1500,7 @@ void AIPlayerJH::TryToAttack()
 		{
 			if(!mil->IsGoldDisabled())
 			{
-				gcs.push_back(new gc::StopGold(mil->GetX(), mil->GetY()));
+				aii->ToggleCoins(mil->GetX(), mil->GetY());
 			}
 			continue;
 		}
@@ -1508,7 +1508,7 @@ void AIPlayerJH::TryToAttack()
 		{
 			if(mil->IsGoldDisabled())		//combat building? -> activate gold
 			{
-				gcs.push_back(new gc::StopGold(mil->GetX(), mil->GetY()));
+				aii->ToggleCoins(mil->GetX(), mil->GetY());
 			}
 		}
 
@@ -1580,7 +1580,7 @@ void AIPlayerJH::TryToAttack()
 		{
 			if (numberOfAttackers > enemyTarget->GetTroopsCount() && enemyTarget->GetTroopsCount() > 0)
 			{
-				gcs.push_back(new gc::Attack(enemyTarget->GetX(), enemyTarget->GetY(),numberOfAttackers, true));
+				aii->Attack(enemyTarget->GetX(), enemyTarget->GetY(),numberOfAttackers, true);
 				return;
 			}
 		}
@@ -1591,7 +1591,7 @@ void AIPlayerJH::TryToAttack()
 			enemyHQ = dynamic_cast<const nobHQ *>(potentialAttackersPerTarget[maxIndex].first);
 			if (enemyHQ)
 			{
-				gcs.push_back(new gc::Attack(enemyHQ->GetX(), enemyHQ->GetY(), numberOfAttackers, true));
+				aii->Attack(enemyHQ->GetX(), enemyHQ->GetY(), numberOfAttackers, true);
 				return;
 			}
 
@@ -1600,7 +1600,7 @@ void AIPlayerJH::TryToAttack()
 			enemyHarbor = dynamic_cast<const nobHarborBuilding *>(potentialAttackersPerTarget[maxIndex].first);
 			if (enemyHarbor)
 			{
-				gcs.push_back(new gc::Attack(enemyHarbor->GetX(), enemyHarbor->GetY(), numberOfAttackers, true));
+				aii->Attack(enemyHarbor->GetX(), enemyHarbor->GetY(), numberOfAttackers, true);
 				return;
 			}
 		}
