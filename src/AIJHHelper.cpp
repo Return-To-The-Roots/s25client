@@ -1,4 +1,4 @@
-// $Id: AIJHHelper.cpp 8134 2012-09-01 19:22:25Z jh $
+// $Id: AIJHHelper.cpp 8144 2012-09-04 10:22:54Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -451,24 +451,28 @@ void AIJH::EventJob::ExecuteJob()
 			aijh->HandleExpedition(AIPlayerJH::Coords(lvb->GetX(), lvb->GetY()));
 			status = AIJH::JOB_FINISHED;
 		}
+		break;
 	case AIEvent::TreeChopped:
 		{
 			AIEvent::Location *lvb = dynamic_cast<AIEvent::Location *>(ev);
 			aijh->HandleTreeChopped(AIPlayerJH::Coords(lvb->GetX(), lvb->GetY()));
 			status = AIJH::JOB_FINISHED;
 		}
+		break;
 	case AIEvent::ShipBuilt:
 		{
 			AIEvent::Location *lvb = dynamic_cast<AIEvent::Location *>(ev);
 			aijh->HandleShipBuilt(AIPlayerJH::Coords(lvb->GetX(), lvb->GetY()));
 			status = AIJH::JOB_FINISHED;
 		}
+		break;
 	case AIEvent::RoadConstructionComplete:
 		{
 			AIEvent::Direction *dvb = dynamic_cast<AIEvent::Direction *>(ev);
 			aijh->HandleRoadConstructionComplete(AIPlayerJH::Coords(dvb->GetX(), dvb->GetY()),dvb->GetDirection());
 			status = AIJH::JOB_FINISHED;
 		}
+		break;
 	default:
 		break;
 	}
