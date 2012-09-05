@@ -1,4 +1,4 @@
-// $Id: dskCredits.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: dskCredits.cpp 8147 2012-09-05 08:21:02Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -144,6 +144,15 @@ dskCredits::dskCredits(void) : Desktop(LOADER.GetImageN("setup013", 0))
 	this->entries.push_back(entry);
 	entry.lines.clear();
 
+	entry.title = "Marcus Ströbel (Maqs):";
+	entry.picId = -1;
+	entry.lastLine = "";
+	entry.lines.push_back(CreditsEntry::Line(_("Programming")));
+	entry.lines.push_back(CreditsEntry::Line(_("Quality Assurance")));
+
+	this->entries.push_back(entry);
+	entry.lines.clear();
+
 	entry.title = _("Additional Programming:");
 	entry.picId = -1;
 	entry.lastLine = "";
@@ -153,6 +162,7 @@ dskCredits::dskCredits(void) : Desktop(LOADER.GetImageN("setup013", 0))
 	entry.lines.push_back(CreditsEntry::Line("Divan"));
 	entry.lines.push_back(CreditsEntry::Line("Cat666"));
 	entry.lines.push_back(CreditsEntry::Line("Devil"));
+	entry.lines.push_back(CreditsEntry::Line("Ikhar Beq (PoC)"));
 
 	this->entries.push_back(entry);
 	entry.lines.clear();
