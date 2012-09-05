@@ -1,4 +1,4 @@
-// $Id: dskLobby.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: dskLobby.cpp 8151 2012-09-05 14:34:26Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -221,6 +221,12 @@ void dskLobby::UpdatePlayerList(bool first)
 	if(LOBBYCLIENT.refreshplayerlist == true)
 	{
 		LOBBYCLIENT.refreshplayerlist = false;
+
+		if ((playertable->GetRowCount() > 0) && (playertable->GetRowCount() < playerlist->getCount()))
+		{
+fprintf(stderr, "%u vs. %u\n", playertable->GetRowCount(), playerlist->getCount());
+			LOADER.GetSoundN("sound", 114)->Play(255,false);
+		}
 
 		playertable->DeleteAllItems();
 
