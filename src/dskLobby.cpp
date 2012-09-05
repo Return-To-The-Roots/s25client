@@ -1,4 +1,4 @@
-// $Id: dskLobby.cpp 8152 2012-09-05 15:36:27Z marcus $
+// $Id: dskLobby.cpp 8153 2012-09-05 15:38:24Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -224,7 +224,6 @@ void dskLobby::UpdatePlayerList(bool first)
 
 		if ((playertable->GetRowCount() > 0) && (playertable->GetRowCount() < playerlist->getCount()))
 		{
-fprintf(stderr, "%u vs. %u\n", playertable->GetRowCount(), playerlist->getCount());
 			LOADER.GetSoundN("sound", 114)->Play(255,false);
 		}
 
