@@ -1,4 +1,4 @@
-// $Id: glArchivItem_Bitmap.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: glArchivItem_Bitmap.h 8149 2012-09-05 09:14:38Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -55,20 +55,10 @@ public:
 protected:
 	/// Erzeugt die Textur.
 	virtual void GenerateTexture();
-	/// Zeichnet einen Vertex inkl Texturkoordinaten.
-	inline void DrawVertex(float x, float y, float tx, float ty)
-	{
-		glTexCoord2f(tx/tex_width, ty/tex_height);
-		glVertex2f(x, y);
-	}
+
 protected:
 	unsigned int texture; ///< Das GL-Textur-Handle
 	unsigned int filter;  ///< Der aktuell gewählte Texturfilter
-
-	typedef std::map<uint64_t, unsigned int> calllistmap;
-	typedef std::map<uint64_t, calllistmap> calllistmapmap;
-
-	calllistmapmap calllists;
 };
 
 #endif // !GLARCHIVITEM_BITMAP_INCLUDED
