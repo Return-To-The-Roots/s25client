@@ -1,4 +1,4 @@
-// $Id: glArchivItem_Bitmap_Player.cpp 8103 2012-08-29 10:06:39Z marcus $
+// $Id: glArchivItem_Bitmap_Player.cpp 8148 2012-09-05 08:23:36Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -50,106 +50,57 @@ void glArchivItem_Bitmap_Player::Draw(short dst_x, short dst_y, short dst_w, sho
 	if(dst_h == 0)
 		dst_h = src_h;
 
-	glColor4ub( GetRed(color), GetGreen(color), GetBlue(color),  GetAlpha(color));
-	glBindTexture(GL_TEXTURE_2D, texture);
-	
-	union sl {
-		unsigned short s[4];
-		uint64_t l;
+	struct GL_T2F_C4UB_V3F_Struct
+	{
+		GLfloat tx, ty;
+		GLubyte r, g, b, a;
+		GLfloat x, y, z;
 	};
 
-	sl dst;
-	dst.s[0] = 0; //dst_x;
-	dst.s[1] = 0; //dst_y;
-	dst.s[2] = dst_w;
-	dst.s[3] = dst_h;
+	GL_T2F_C4UB_V3F_Struct tmp[8];
 
-	sl src;
-	src.s[0] = src_x;
-	src.s[1] = src_y;
-	src.s[2] = src_w;
-	src.s[3] = src_h;
+	tmp[0].z = tmp[1].z = tmp[2].z = tmp[3].z = 0.0;
 
-	bool list1okay = false;
+	int x = -nx + dst_x;
+	int y = -ny + dst_y;
 
-	calllistmapmap::const_iterator mapmap = calllists.find(dst.l);
-	if(mapmap != calllists.end())
-	{
-		calllistmap::const_iterator map = mapmap->second.find(src.l);
-		if(map != mapmap->second.end() && glIsList(map->second))
-		{
-			glTranslatef((float)dst_x, (float)dst_y, 0);
-			glCallList(map->second);
-			glTranslatef((float)-dst_x, (float)-dst_y, 0);
-			list1okay = true;
-		}
-	}
+	tmp[0].x = tmp[1].x = x;
+	tmp[2].x = tmp[3].x = x + dst_w;
 
-	if(!list1okay)
-	{
-		unsigned int list = glGenLists(1);
+	tmp[0].y = tmp[3].y = y;
+	tmp[1].y = tmp[2].y = y + dst_h;
 
-		/*std::cout << "generateA " << list << " for " 
-			<< dst_x << "," << dst_y << "," << dst_w << "x" << dst_h << " and "
-			<< src_x << "," << src_y << "," << src_w << "x" << src_h 
-			<< std::endl;*/
+	tmp[0].tx = tmp[1].tx = (GLfloat)(src_x) / (GLfloat)tex_width / 2.0;
+	tmp[2].tx = tmp[3].tx = (GLfloat)(src_x + src_w) / (GLfloat)tex_width / 2.0;
 
-		glTranslatef((float)dst_x, (float)dst_y, 0);
+	tmp[0].ty = tmp[3].ty = (GLfloat)src_y / tex_height;
+	tmp[1].ty = tmp[2].ty = (GLfloat)(src_y + src_h) / tex_height;
 
-		glNewList(list, GL_COMPILE_AND_EXECUTE);
+	tmp[4] = tmp[0];
+	tmp[5] = tmp[1];
+	tmp[6] = tmp[2];
+	tmp[7] = tmp[3];
 
-		glBegin(GL_QUADS);
-		DrawVertex( (float)(-nx),         (float)(-ny),         (float)src_x/2.0f,         (float)src_y);
-		DrawVertex( (float)(-nx),         (float)(-ny + dst_h), (float)src_x/2.0f,         (float)(src_y+src_h));
-		DrawVertex( (float)(-nx + dst_w), (float)(-ny + dst_h), (float)(src_x+src_w)/2.0f, (float)(src_y+src_h));
-		DrawVertex( (float)(-nx + dst_w), (float)(-ny),         (float)(src_x+src_w)/2.0f, (float)src_y);
-		glEnd();
+	tmp[4].tx += 0.5;
+	tmp[5].tx += 0.5;
+	tmp[6].tx += 0.5;
+	tmp[7].tx += 0.5;
 
-		glEndList();
+	tmp[0].r = tmp[1].r = tmp[2].r = tmp[3].r = GetRed(color);
+	tmp[0].g = tmp[1].g = tmp[2].g = tmp[3].g = GetGreen(color);
+	tmp[0].b = tmp[1].b = tmp[2].b = tmp[3].b = GetBlue(color);
+	tmp[0].a = tmp[1].a = tmp[2].a = tmp[3].a = GetAlpha(color);
 
-		glTranslatef((float)-dst_x, (float)-dst_y, 0);
+	tmp[4].r = tmp[5].r = tmp[6].r = tmp[7].r = GetRed(player_color);
+	tmp[4].g = tmp[5].g = tmp[6].g = tmp[7].g = GetGreen(player_color);
+	tmp[4].b = tmp[5].b = tmp[6].b = tmp[7].b = GetBlue(player_color);
+	tmp[4].a = tmp[5].a = tmp[6].a = tmp[7].a = GetAlpha(player_color);
 
-		calllists[dst.l][src.l] = list;
-	}
-	
-	glColor4ub( GetRed(player_color), GetGreen(player_color), GetBlue(player_color),  GetAlpha(player_color));
+	glInterleavedArrays(GL_T2F_C4UB_V3F, 0, tmp);
 
-	src_x += tex_width;
+	glBindTexture(GL_TEXTURE_2D, texture);
 
-	src.s[0] = src_x;
-	src.s[1] = src_y;
-	src.s[2] = src_w;
-	src.s[3] = src_h;
-
-	mapmap = calllists.find(dst.l);
-	if(mapmap != calllists.end())
-	{
-		calllistmap::const_iterator map = mapmap->second.find(src.l);
-		if(map != mapmap->second.end() && glIsList(map->second))
-		{
-			glTranslatef((float)dst_x, (float)dst_y, 0);
-			glCallList(map->second);
-			glTranslatef((float)-dst_x, (float)-dst_y, 0);
-			return;
-		}
-	}
-
-	unsigned int list = glGenLists(1);
-
-	glTranslatef((float)dst_x, (float)dst_y, 0);
-
-	glNewList(list, GL_COMPILE_AND_EXECUTE);
-	glBegin(GL_QUADS);
-	DrawVertex( (float)(-nx),         (float)(-ny),         (float)src_x/2.0f,         (float)src_y);
-	DrawVertex( (float)(-nx),         (float)(-ny + dst_h), (float)src_x/2.0f,         (float)(src_y+src_h));
-	DrawVertex( (float)(-nx + dst_w), (float)(-ny + dst_h), (float)(src_x+src_w)/2.0f, (float)(src_y+src_h));
-	DrawVertex( (float)(-nx + dst_w), (float)(-ny),         (float)(src_x+src_w)/2.0f, (float)src_y);
-	glEnd();
-	glEndList();
-
-	glTranslatef((float)-dst_x, (float)-dst_y, 0);
-
-	calllists[dst.l][src.l] = list;
+	glDrawArrays(GL_QUADS, 0, 8);
 }
 
 void glArchivItem_Bitmap_Player::GenerateTexture(void)

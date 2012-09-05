@@ -1,4 +1,4 @@
-// $Id: glArchivItem_Font.cpp 8103 2012-08-29 10:06:39Z marcus $
+// $Id: glArchivItem_Font.cpp 8148 2012-09-05 08:23:36Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -377,11 +377,6 @@ void glArchivItem_Font::Draw(short x,
 		glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
 	}
 
-	// Arrays aktivieren
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-	glDisableClientState(GL_COLOR_ARRAY);
-
 	glInterleavedArrays(GL_T2F_V3F, 0, tmp);
 	glBindTexture(GL_TEXTURE_2D, ((format & DF_NO_OUTLINE) == DF_NO_OUTLINE) ? _font->GetTexture() : _font_outline->GetTexture());
 	glDrawArrays(GL_QUADS, 0, idx);
@@ -699,7 +694,6 @@ void glArchivItem_Font::initFont()
 	// Spezialpalette (blaue Spielerfarben sind Grau) verwenden,
 	// damit man per OpenGL einfärben kann!
 	_font->create(w, h, buffer, w, h, libsiedler2::FORMAT_RGBA, LOADER.GetPaletteN("colors"));
-	_font->setFilter(GL_NEAREST);
 
 	x = 1;
 	y = 1;
@@ -725,7 +719,6 @@ void glArchivItem_Font::initFont()
 	}
 
 	_font_outline->create(w, h, buffer, w, h, libsiedler2::FORMAT_RGBA, LOADER.GetPaletteN("colors"));
-	_font_outline->setFilter(GL_NEAREST);
 
 	/*ArchivInfo items;
 	items.pushC(_font);

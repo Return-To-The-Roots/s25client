@@ -1,4 +1,4 @@
-// $Id: TerrainRenderer.cpp 8103 2012-08-29 10:06:39Z marcus $
+// $Id: TerrainRenderer.cpp 8148 2012-09-05 08:23:36Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1037,6 +1037,7 @@ void TerrainRenderer::PrepareWaysPoint(GameWorldView *gwv, unsigned short tx, un
 		}
 	}
 }
+
 void TerrainRenderer::DrawWays(GameWorldView *gwv)
 {
 	const float begin_end_coords[24] =
