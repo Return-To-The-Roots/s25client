@@ -1,4 +1,4 @@
-// $Id: dskLobby.cpp 8151 2012-09-05 14:34:26Z marcus $
+// $Id: dskLobby.cpp 8152 2012-09-05 15:36:27Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -365,6 +365,27 @@ void dskLobby::LC_Chat(const std::string &player, const std::string &text)
 	// Zeit holen
 	char time_string[64];
 	TIME.FormatTime(time_string, "(%H:%i:%s)", NULL);
+
+	if (!player.compare("LobbyBot"))
+	{
+		std::string self = LOBBYCLIENT.GetUser();
+
+		if ((text.length() > (self.length() + 3)) && !text.compare(0, 1, " "))
+		{
+			if (!text.compare(1, self.length(), self))
+			{
+				if (!text.compare(self.length() + 1, 2, ": "))
+				{
+					WindowManager::inst().Show(new iwMsgbox("LobbyBot", text.substr(self.length() + 3), this, MSB_OK, MSB_EXCLAMATIONGREEN, 2));
+				} else if (!text.compare(self.length() + 1, 2, ", "))
+				{
+					GetCtrl<ctrlChat>(20)->AddMessage(time_string, player, color, text.substr(self.length() + 3), COLOR_YELLOW);
+				}
+			}
+
+			return;
+		}
+	}
 
 	GetCtrl<ctrlChat>(20)->AddMessage(time_string, player, color, text, COLOR_YELLOW);
 }
