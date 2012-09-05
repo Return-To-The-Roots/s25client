@@ -1,4 +1,4 @@
-// $Id: dskCredits.cpp 8147 2012-09-05 08:21:02Z marcus $
+// $Id: dskCredits.cpp 8150 2012-09-05 11:19:37Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -182,6 +182,7 @@ dskCredits::dskCredits(void) : Desktop(LOADER.GetImageN("setup013", 0))
 	entry.lines.push_back(CreditsEntry::Line("Sotham"));
 	entry.lines.push_back(CreditsEntry::Line("Fenan"));
 	entry.lines.push_back(CreditsEntry::Line("Phil Groenewold (Phil333)"));
+	entry.lines.push_back(CreditsEntry::Line("Marc Vester (xaser)"));
 
 	this->entries.push_back(entry);
 	entry.lines.clear();
