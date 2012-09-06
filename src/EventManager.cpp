@@ -1,4 +1,4 @@
-// $Id: EventManager.cpp 8141 2012-09-03 15:08:46Z marcus $
+// $Id: EventManager.cpp 8157 2012-09-06 09:39:49Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -119,7 +119,10 @@ void EventManager::NextGF()
 			eis[cnt] = eis.back();
 			eis.pop_back();
 
-			e->obj->HandleEvent(e->id);
+			if (e->obj)
+			{
+				e->obj->HandleEvent(e->id);
+			}
 
 			delete e;
 		} else
