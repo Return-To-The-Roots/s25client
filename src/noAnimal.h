@@ -1,4 +1,4 @@
-// $Id: noAnimal.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: noAnimal.h 8161 2012-09-06 12:58:16Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -20,24 +20,10 @@
 #ifndef NO_ANIMAL_H_
 #define NO_ANIMAL_H_
 
+#include "GameConsts.h"
 #include "noMovable.h"
 
 class nofHunter;
-
-
-/// Tierarten
-enum Species
-{
-	SPEC_POLARBEAR = 0,
-	SPEC_RABBITWHITE,
-	SPEC_RABBITGREY,
-	SPEC_FOX,
-	SPEC_STAG,
-	SPEC_DEER,
-	SPEC_DUCK,
-	SPEC_SHEEP,
-	SPEC_NOTHING
-};
 
 /// Klasse für die Tiere (ausgenommen Esel und Schweine natürlich)
 class noAnimal : public noMovable

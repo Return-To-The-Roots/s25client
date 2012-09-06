@@ -1,4 +1,4 @@
-// $Id: Loader.cpp 7835 2012-02-14 13:12:30Z FloSoft $
+// $Id: Loader.cpp 8161 2012-09-06 12:58:16Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -35,6 +35,8 @@
 #include "GameClient.h"
 #include "GameClientPlayer.h"
 #include "ListDir.h"
+
+#include "glSmartBitmap.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -401,6 +403,14 @@ bool Loader::SaveSettings()
 	return true;
 }
 
+glSmartBitmap Loader::animal_cache[SPEC_COUNT][6][ANIMAL_MAX_ANIMATION_STEPS] = {{{glSmartBitmap()}}};
+
+// building_cache[nation][type][skeleton?]
+glSmartBitmap Loader::building_cache[NATION_COUNT][BUILDING_TYPES_COUNT][2] = {{{glSmartBitmap()}}};
+
+// flag_cache[nation][type][animation]
+glSmartBitmap Loader::flag_cache[NATION_COUNT][3][8] = {{{glSmartBitmap()}}};
+
 ///////////////////////////////////////////////////////////////////////////////
 /**
  *  Lädt die Spieldateien.
@@ -456,6 +466,80 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool *nations)
 
 	map_gfx = &(this->files[MAP_GFXSET_Z[lastgfx]]);
 	tex_gfx = &(this->files[TEX_GFXSET[lastgfx]]);
+
+	for (unsigned species = 0; species < SPEC_COUNT; ++species)
+	{
+		for (unsigned dir = 0; dir < 6; ++dir)
+		{
+			for (unsigned ani_step = 0; ani_step < ANIMALCONSTS[species].animation_steps; ++ani_step)
+			{
+				glSmartBitmap &bmp = animal_cache[species][dir][ani_step];
+
+				bmp.add(LOADER.GetMapImageN(ANIMALCONSTS[species].walking_id + ANIMALCONSTS[species].animation_steps * ( (dir + 3) % 6) + ani_step));
+
+				if(ANIMALCONSTS[species].shadow_id)
+				{
+					if(species == SPEC_DUCK)
+						// Ente Sonderfall, da gibts nur einen Schatten für jede Richtung!
+						bmp.addShadow(LOADER.GetMapImageN(ANIMALCONSTS[species].shadow_id));
+					else
+						// ansonsten immer pro Richtung einen Schatten
+						bmp.addShadow(LOADER.GetMapImageN(ANIMALCONSTS[species].shadow_id+(dir+3)%6));
+				}
+
+				bmp.generateTexture();
+			}
+		}
+	}
+
+	for (unsigned nation = 0; nation < NATION_COUNT; ++nation)
+	{
+		for (unsigned type = 0; type < BUILDING_TYPES_COUNT; ++type)
+		{
+			glSmartBitmap &bmp = building_cache[nation][type][0];
+			glSmartBitmap &skel = building_cache[nation][type][1];
+
+			glArchivItem_Bitmap *bld = NULL;
+			glArchivItem_Bitmap *shadow = NULL;
+
+			if (type == BLD_CHARBURNER)
+			{
+				unsigned id = 1+nation*8;
+				if (gfxset == LT_WINTERWORLD)
+				{
+					id = 1 + nation * 8 + 5;
+				}
+
+				bmp.add(LOADER.GetImageN("charburner",id));
+				bmp.addShadow(LOADER.GetImageN("charburner",1+nation*8 + 1));
+				skel.add(LOADER.GetImageN("charburner",1+nation*8 + 2));
+				skel.addShadow(LOADER.GetImageN("charburner",1+nation*8 + 1));
+			} else
+			{
+				bmp.add(LOADER.GetNationImageN(nation, 250 + 5 * type));
+				bmp.addShadow(LOADER.GetNationImageN(nation, 250 + 5*type +1));
+				skel.add(LOADER.GetNationImageN(nation,250 + 5*type + 2));
+				skel.addShadow(LOADER.GetNationImageN(nation,250 + 5*type + 3));
+			}
+
+			bmp.generateTexture();
+			skel.generateTexture();
+		}
+
+		for (unsigned type = 0; type < 3; ++type)
+		{
+			for (unsigned ani_step = 0; ani_step < 8; ++ani_step)
+			{
+				// Flaggentyp berücksichtigen
+				int nr = ani_step + 100 + 20 * type;
+
+				glSmartBitmap &bmp = flag_cache[nation][type][ani_step];
+
+				bmp.add(static_cast<glArchivItem_Bitmap_Player *>(LOADER.GetNationImageN(nation, nr)));
+				bmp.addShadow(LOADER.GetNationImageN(nation, nr + 10));
+			}
+		}
+	}
 
 	return true;
 }

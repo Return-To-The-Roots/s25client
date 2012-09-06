@@ -1,4 +1,4 @@
-// $Id: Loader.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: Loader.h 8161 2012-09-06 12:58:16Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -24,6 +24,8 @@
 #include "../libutil/src/Singleton.h"
 #include "../libsiedler2/src/libsiedler2.h"
 #include "const_addons.h"
+
+class glSmartBitmap;
 
 /// Loader Klasse.
 class Loader : public Singleton<Loader>
@@ -99,6 +101,10 @@ public:
 	libsiedler2::ArchivInfo borders;
 	libsiedler2::ArchivInfo roads;
 	libsiedler2::ArchivInfo roads_points;
+
+	static glSmartBitmap animal_cache[8][6][8];
+	static glSmartBitmap building_cache[4][40][2];
+	static glSmartBitmap flag_cache[4][3][8];
 };
 
 ///////////////////////////////////////////////////////////////////////////////

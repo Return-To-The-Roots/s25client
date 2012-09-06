@@ -1,4 +1,4 @@
-// $Id: noAnimal.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: noAnimal.cpp 8161 2012-09-06 12:58:16Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -34,6 +34,7 @@
 #include "VideoDriverWrapper.h"
 #include "SerializedGameData.h"
 
+#include "glSmartBitmap.h"
 
 /// Konstruktor
 noAnimal::noAnimal(const Species species,const unsigned short x, const unsigned short y) : noMovable(NOP_ANIMAL,x,y)
@@ -69,38 +70,6 @@ void noAnimal::StartLiving()
 	StandardWalking();
 }
 
-/// Informationen über die  einzelnen Tierarten
-struct AnimalConst
-{
-	/// IDs in der map_lst, wo die Lauf-IDs von der jeweiligen Tierart beginnen
-	unsigned short walking_id;
-	/// IDs in der map_lst, wo die Schatten-IDs von der jeweiligen Tierart beginnen
-	unsigned short shadow_id;
-	/// IDs in der map_lst, wo die Totes-ID der jeweiligen Tierart liegt
-	unsigned short dead_id;
-	/// IDs in der map_lst, wo die Schatten-Totes-ID der jeweiligen Tierart liegt
-	unsigned short shadow_dead_id;
-	/// Anzahl Animationsschritte der einzelnen Tierarten
-	unsigned short animation_steps;
-	/// Schnelligkeit (Laufzeit in GF)
-	unsigned short speed;
-};
-
-// 0 bedeutet --> kein Bild!
-
-const AnimalConst ANIMALCONSTS[8] =
-{
-	{1600,0,1648,1649,8,20}, // Polarbär
-	{1700,0,1736,1737,6,20}, // Hase hell
-	{1740,0,1776,1777,6,20}, // Hase dunkel
-	{1800,1840,1836,0,6,20}, // Fuchs
-	{1850,1900,1898,0,8,20}, // Hirsch
-	{1910,1960,1958,0,8,20}, // Reh
-	{1970,1976,0,0,1,50}, // Ente
-	{2060,0,2072,2073,2,16} // Schaf
-};
-
-
 void noAnimal::Draw(int x, int y)
 {
 	// Tier zeichnen
@@ -120,22 +89,11 @@ void noAnimal::Draw(int x, int y)
 
 			// Interpolieren zwischen beiden Knotenpunkten
 			CalcWalkingRelative(x,y);
-			// Zeichnen
-			LOADER.GetMapImageN(ANIMALCONSTS[species].walking_id + 
-								ANIMALCONSTS[species].animation_steps * ( (dir + 3) % 6) +
-								GAMECLIENT.Interpolate(ASCENT_ANIMATION_STEPS[ascent], current_ev) % ANIMALCONSTS[species].animation_steps)
-				->Draw(x,y);
 
-			// ggf. Schatten zeichnen, falls es einen gibt
-			if(ANIMALCONSTS[species].shadow_id)
-			{
-				if(species == SPEC_DUCK)
-					// Ente Sonderfall, da gibts nur einen Schatten für jede Richtung!
-					LOADER.GetMapImageN(ANIMALCONSTS[species].shadow_id)->Draw(x,y,0,0,0,0,0,0,COLOR_SHADOW);
-				else
-					// ansonsten immer pro Richtung einen Schatten
-					LOADER.GetMapImageN(ANIMALCONSTS[species].shadow_id+(dir+3)%6)->Draw(x,y,0,0,0,0,0,0,COLOR_SHADOW);
-			}
+			unsigned ani_step = GAMECLIENT.Interpolate(ASCENT_ANIMATION_STEPS[ascent], current_ev) % ANIMALCONSTS[species].animation_steps;
+
+			// Zeichnen
+			Loader::animal_cache[species][dir][ani_step].draw(x, y);
 
 			// Bei Enten und Schafen: Soll ein Sound gespielt werden?
 			if(species == SPEC_DUCK || species == SPEC_SHEEP)

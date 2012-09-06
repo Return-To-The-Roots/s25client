@@ -1,4 +1,4 @@
-// $Id: noFlag.cpp 7674 2011-12-27 14:47:15Z marcus $
+// $Id: noFlag.cpp 8161 2012-09-06 12:58:16Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -34,6 +34,8 @@
 #include "nobMilitary.h"
 #include "SerializedGameData.h"
 #include "FOWObjects.h"
+
+#include "glSmartBitmap.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -185,19 +187,9 @@ void noFlag::Draw(int x, int y)
 		{-13, -5}
 	};
 
-	// Flaggentyp berücksichtigen
-	int nr = 0;
-	switch(flagtype)
-	{
-	case FT_NORMAL:	nr = 100; break;
-	case FT_LARGE:	nr = 120; break;
-	case FT_WATER:	nr = 140; break;
-	}
+	unsigned ani_step = GAMECLIENT.GetGlobalAnimation(8,2,1,ani_offset);
 
-	// Flagge
-	LOADER.GetNationImageN(gwg->GetPlayer(player)->nation, nr+GAMECLIENT.GetGlobalAnimation(8,2,1,ani_offset))->Draw(x,y,0,0,0,0,0,0, COLOR_WHITE, COLORS[gwg->GetPlayer(player)->color]);
-	// Schatten
-	LOADER.GetNationImageN(gwg->GetPlayer(player)->nation, nr+10+GAMECLIENT.GetGlobalAnimation(8,2,1,ani_offset))->Draw(x,y,0,0,0,0,0,0,COLOR_SHADOW);
+	Loader::flag_cache[gwg->GetPlayer(player)->nation][flagtype][ani_step].draw(x, y, COLORS[gwg->GetPlayer(player)->color]);
 
 	// Waren (von hinten anfangen zu zeichnen)
 	for(unsigned i = 8;i;--i)
