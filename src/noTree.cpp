@@ -1,4 +1,4 @@
-// $Id: noTree.cpp 8163 2012-09-06 14:13:01Z marcus $
+// $Id: noTree.cpp 8168 2012-09-06 22:14:22Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -113,9 +113,6 @@ void noTree::Draw( int x,	int y)
 			// Wenn er ausgewachsen ist, dann animiert zeichnen
 			Loader::tree_cache[type][GAMECLIENT.GetGlobalAnimation(8,7-GetX()%2,3+GetY()%3,GetX()*GetY()*10*type)].draw(x, y);
 
-//			LOADER.GetMapImageN(200+type*15+GAMECLIENT.GetGlobalAnimation(8,7-GetX()%2,3+GetY()%3,GetX()*GetY()*10*type))->Draw(x,y,0,0,0,0,0,0);
-//			LOADER.GetMapImageN(350+type*15+GAMECLIENT.GetGlobalAnimation(8,7-GetX()%2,3+GetY()%3,GetX()*GetY()*10*type))->Draw(x,y,0,0,0,0,0,0,COLOR_SHADOW);
-
 			// je mehr Bäume gezeichnet, desto mehr Vogelgezwitscher
 			++DRAW_COUNTER;
 		} break;
@@ -123,23 +120,21 @@ void noTree::Draw( int x,	int y)
 		{
 			// normal zeichnen, wächst nicht
 			Loader::tree_cache[type][8 + size].draw(x, y);
-//			LOADER.GetMapImageN(208+type*15+size)->Draw(x,y,0,0,0,0,0,0);
-//			LOADER.GetMapImageN(358+type*15+size)->Draw(x,y,0,0,0,0,0,0,COLOR_SHADOW);
 		} break;
 	case STATE_GROWING_GROW:
 		{
 			// alten Baum ausblenden
 			unsigned transparency = (GAMECLIENT.Interpolate(0xFF,event))<<24;
-			LOADER.GetMapImageN(208+type*15+size)->Draw(x,y,0,0,0,0,0,0,0xFFFFFFFF-transparency);
-			// neuen Baum einblenden
-			LOADER.GetMapImageN((size==2)?(200+type*15):(208+type*15+size+1))->Draw(x,y,0,0,0,0,0,0,transparency|0xFFFFFF);
 
-			// alten Schatten ausblenden
-			transparency = (GAMECLIENT.Interpolate(0x40,event))<<24;
-			LOADER.GetMapImageN(358+type*15+size)->Draw(x,y,0,0,0,0,0,0,0x40000000-transparency);
-			// neuen Schatten einblenden
-			LOADER.GetMapImageN((size==2)?(350+type*15):(358+type*15+size+1))->Draw(x,y,0,0,0,0,0,0,transparency);
+			Loader::tree_cache[type][8 + size].draw(x, y, 0xFFFFFFFF-transparency);
 
+			if (size == 2)
+			{
+				Loader::tree_cache[type][0].draw(x, y, transparency|0xFFFFFF);
+			} else
+			{
+				Loader::tree_cache[type][8 + size + 1].draw(x, y, transparency|0xFFFFFF);
+			}
 		} break;
 	case STATE_FALLING_FALL:
 		{
@@ -154,15 +149,10 @@ void noTree::Draw( int x,	int y)
 				i = 2;
 
 			Loader::tree_cache[type][11 + i].draw(x, y);
-//			LOADER.GetMapImageN(211+type*15+i)->Draw(x,y,0,0,0,0,0,0);
-//			LOADER.GetMapImageN(361+type*15+i)->Draw(x,y,0,0,0,0,0,0,COLOR_SHADOW);
 		} break;
 	case STATE_FALLING_FALLEN:
 		{
 			Loader::tree_cache[type][14].draw(x, y);
-
-//			LOADER.GetMapImageN(214+type*15)->Draw(x,y,0,0,0,0,0,0);
-//			LOADER.GetMapImageN(364+type*15)->Draw(x,y,0,0,0,0,0,0,COLOR_SHADOW);
 		} break;
 	}
 }
