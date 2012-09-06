@@ -1,4 +1,4 @@
-// $Id: Loader.cpp 8161 2012-09-06 12:58:16Z marcus $
+// $Id: Loader.cpp 8163 2012-09-06 14:13:01Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -411,6 +411,9 @@ glSmartBitmap Loader::building_cache[NATION_COUNT][BUILDING_TYPES_COUNT][2] = {{
 // flag_cache[nation][type][animation]
 glSmartBitmap Loader::flag_cache[NATION_COUNT][3][8] = {{{glSmartBitmap()}}};
 
+// 0 - 7 animation, 8 & 9 growing, 11 - 13 falling, 14 fallen
+glSmartBitmap Loader::tree_cache[9][15] = {{glSmartBitmap()}};
+
 ///////////////////////////////////////////////////////////////////////////////
 /**
  *  Lädt die Spieldateien.
@@ -499,9 +502,6 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool *nations)
 			glSmartBitmap &bmp = building_cache[nation][type][0];
 			glSmartBitmap &skel = building_cache[nation][type][1];
 
-			glArchivItem_Bitmap *bld = NULL;
-			glArchivItem_Bitmap *shadow = NULL;
-
 			if (type == BLD_CHARBURNER)
 			{
 				unsigned id = 1+nation*8;
@@ -537,7 +537,22 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool *nations)
 
 				bmp.add(static_cast<glArchivItem_Bitmap_Player *>(LOADER.GetNationImageN(nation, nr)));
 				bmp.addShadow(LOADER.GetNationImageN(nation, nr + 10));
+
+				bmp.generateTexture();
 			}
+		}
+	}
+
+	for (unsigned type = 0; type < 9; ++type)
+	{
+		for (unsigned ani_step = 0; ani_step < 8; ++ani_step)
+		{
+			glSmartBitmap &bmp = tree_cache[type][ani_step];
+
+			bmp.add(LOADER.GetMapImageN(200 + type * 15 + ani_step));
+			bmp.addShadow(LOADER.GetMapImageN(350 + type * 15 + ani_step));
+
+			bmp.generateTexture();
 		}
 	}
 

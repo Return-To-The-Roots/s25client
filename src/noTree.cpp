@@ -1,4 +1,4 @@
-// $Id: noTree.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: noTree.cpp 8163 2012-09-06 14:13:01Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -32,6 +32,8 @@
 #include "SerializedGameData.h"
 #include "FOWObjects.h"
 #include "GameInterface.h"
+
+#include "glSmartBitmap.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -100,6 +102,7 @@ produce_animals(sgd->PopBool())
 {
 }
 
+
 void noTree::Draw( int x,	int y)
 {
 	switch(state)
@@ -108,8 +111,10 @@ void noTree::Draw( int x,	int y)
 	case STATE_FALLING_WAIT:
 		{
 			// Wenn er ausgewachsen ist, dann animiert zeichnen
-			LOADER.GetMapImageN(200+type*15+GAMECLIENT.GetGlobalAnimation(8,7-GetX()%2,3+GetY()%3,GetX()*GetY()*10*type))->Draw(x,y,0,0,0,0,0,0);
-			LOADER.GetMapImageN(350+type*15+GAMECLIENT.GetGlobalAnimation(8,7-GetX()%2,3+GetY()%3,GetX()*GetY()*10*type))->Draw(x,y,0,0,0,0,0,0,COLOR_SHADOW);
+			Loader::tree_cache[type][GAMECLIENT.GetGlobalAnimation(8,7-GetX()%2,3+GetY()%3,GetX()*GetY()*10*type)].draw(x, y);
+
+//			LOADER.GetMapImageN(200+type*15+GAMECLIENT.GetGlobalAnimation(8,7-GetX()%2,3+GetY()%3,GetX()*GetY()*10*type))->Draw(x,y,0,0,0,0,0,0);
+//			LOADER.GetMapImageN(350+type*15+GAMECLIENT.GetGlobalAnimation(8,7-GetX()%2,3+GetY()%3,GetX()*GetY()*10*type))->Draw(x,y,0,0,0,0,0,0,COLOR_SHADOW);
 
 			// je mehr Bäume gezeichnet, desto mehr Vogelgezwitscher
 			++DRAW_COUNTER;
@@ -117,8 +122,9 @@ void noTree::Draw( int x,	int y)
 	case STATE_GROWING_WAIT:
 		{
 			// normal zeichnen, wächst nicht
-			LOADER.GetMapImageN(208+type*15+size)->Draw(x,y,0,0,0,0,0,0);
-			LOADER.GetMapImageN(358+type*15+size)->Draw(x,y,0,0,0,0,0,0,COLOR_SHADOW);
+			Loader::tree_cache[type][8 + size].draw(x, y);
+//			LOADER.GetMapImageN(208+type*15+size)->Draw(x,y,0,0,0,0,0,0);
+//			LOADER.GetMapImageN(358+type*15+size)->Draw(x,y,0,0,0,0,0,0,COLOR_SHADOW);
 		} break;
 	case STATE_GROWING_GROW:
 		{
@@ -147,13 +153,16 @@ void noTree::Draw( int x,	int y)
 			else
 				i = 2;
 
-			LOADER.GetMapImageN(211+type*15+i)->Draw(x,y,0,0,0,0,0,0);
-			LOADER.GetMapImageN(361+type*15+i)->Draw(x,y,0,0,0,0,0,0,COLOR_SHADOW);
+			Loader::tree_cache[type][11 + i].draw(x, y);
+//			LOADER.GetMapImageN(211+type*15+i)->Draw(x,y,0,0,0,0,0,0);
+//			LOADER.GetMapImageN(361+type*15+i)->Draw(x,y,0,0,0,0,0,0,COLOR_SHADOW);
 		} break;
 	case STATE_FALLING_FALLEN:
 		{
-			LOADER.GetMapImageN(214+type*15)->Draw(x,y,0,0,0,0,0,0);
-			LOADER.GetMapImageN(364+type*15)->Draw(x,y,0,0,0,0,0,0,COLOR_SHADOW);
+			Loader::tree_cache[type][14].draw(x, y);
+
+//			LOADER.GetMapImageN(214+type*15)->Draw(x,y,0,0,0,0,0,0);
+//			LOADER.GetMapImageN(364+type*15)->Draw(x,y,0,0,0,0,0,0,COLOR_SHADOW);
 		} break;
 	}
 }
