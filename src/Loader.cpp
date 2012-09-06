@@ -1,4 +1,4 @@
-// $Id: Loader.cpp 8163 2012-09-06 14:13:01Z marcus $
+// $Id: Loader.cpp 8164 2012-09-06 14:24:11Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -545,7 +545,7 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool *nations)
 
 	for (unsigned type = 0; type < 9; ++type)
 	{
-		for (unsigned ani_step = 0; ani_step < 8; ++ani_step)
+		for (unsigned ani_step = 0; ani_step < 15; ++ani_step)
 		{
 			glSmartBitmap &bmp = tree_cache[type][ani_step];
 
