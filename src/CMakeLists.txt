@@ -1,5 +1,5 @@
 ################################################################################
-### $Id: CMakeLists.txt 7905 2012-03-30 19:46:56Z marcus $
+### $Id: CMakeLists.txt 8160 2012-09-06 12:53:55Z marcus $
 ################################################################################
 
 INCLUDE(FindBZip2)
@@ -330,6 +330,7 @@ SET(SOURCES_GL
 	glArchivItem_Sound_Wave.cpp         glArchivItem_Sound_Wave.h
 	glArchivItem_Sound_XMidi.cpp        glArchivItem_Sound_XMidi.h
 	glArchivItem_Sound_Other.cpp        glArchivItem_Sound_Other.h
+	glSmartBitmap.cpp                   glSmartBitmap.h
    )
 
 ################################################################################
