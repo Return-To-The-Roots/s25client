@@ -1,4 +1,4 @@
-// $Id: Loader.cpp 8164 2012-09-06 14:24:11Z marcus $
+// $Id: Loader.cpp 8167 2012-09-06 22:06:03Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -403,7 +403,7 @@ bool Loader::SaveSettings()
 	return true;
 }
 
-glSmartBitmap Loader::animal_cache[SPEC_COUNT][6][ANIMAL_MAX_ANIMATION_STEPS] = {{{glSmartBitmap()}}};
+glSmartBitmap Loader::animal_cache[SPEC_COUNT][6][ANIMAL_MAX_ANIMATION_STEPS + 1] = {{{glSmartBitmap()}}};
 
 // building_cache[nation][type][skeleton?]
 glSmartBitmap Loader::building_cache[NATION_COUNT][BUILDING_TYPES_COUNT][2] = {{{glSmartBitmap()}}};
@@ -492,6 +492,20 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool *nations)
 
 				bmp.generateTexture();
 			}
+		}
+
+		glSmartBitmap &bmp = animal_cache[species][0][ANIMAL_MAX_ANIMATION_STEPS];
+
+		if (ANIMALCONSTS[species].dead_id)
+		{
+			bmp.add(LOADER.GetMapImageN(ANIMALCONSTS[species].dead_id));
+
+			if (ANIMALCONSTS[species].shadow_dead_id)
+			{
+				bmp.addShadow(LOADER.GetMapImageN(ANIMALCONSTS[species].shadow_dead_id));
+			}
+
+			bmp.generateTexture();
 		}
 	}
 

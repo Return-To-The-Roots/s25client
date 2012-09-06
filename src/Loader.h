@@ -1,4 +1,4 @@
-// $Id: Loader.h 8163 2012-09-06 14:13:01Z marcus $
+// $Id: Loader.h 8167 2012-09-06 22:06:03Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -102,7 +102,7 @@ public:
 	libsiedler2::ArchivInfo roads;
 	libsiedler2::ArchivInfo roads_points;
 
-	static glSmartBitmap animal_cache[8][6][8];
+	static glSmartBitmap animal_cache[8][6][9];
 	static glSmartBitmap building_cache[4][40][2];
 	static glSmartBitmap flag_cache[4][3][8];
 	static glSmartBitmap tree_cache[9][15];

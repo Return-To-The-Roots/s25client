@@ -1,4 +1,4 @@
-// $Id: noAnimal.cpp 8161 2012-09-06 12:58:16Z marcus $
+// $Id: noAnimal.cpp 8167 2012-09-06 22:06:03Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -63,7 +63,6 @@ sound_moment(0)
 {
 }
 
-
 void noAnimal::StartLiving()
 {
 	// anfangen zu laufen
@@ -116,56 +115,28 @@ void noAnimal::Draw(int x, int y)
 	case STATE_PAUSED:
 		{
 			// Stehend zeichnen
-			LOADER.GetMapImageN(ANIMALCONSTS[species].walking_id+ANIMALCONSTS[species].animation_steps*((dir+3)%6))->Draw(x,y);
-			// ggf. Schatten zeichnen, falls es einen gibt
-			if(ANIMALCONSTS[species].shadow_id)
-			{
-				if(species == SPEC_DUCK)
-					// Ente Sonderfall, da gibts nur einen Schatten für jede Richtung!
-					LOADER.GetMapImageN(ANIMALCONSTS[species].shadow_id)->Draw(x,y,0,0,0,0,0,0,COLOR_SHADOW);
-				else
-					// ansonsten immer pro Richtung einen Schatten
-					LOADER.GetMapImageN(ANIMALCONSTS[species].shadow_id+(dir+3)%6)->Draw(x,y,0,0,0,0,0,0,COLOR_SHADOW);
-			}
-
+			Loader::animal_cache[species][dir][0].draw(x, y);
 		} break;
 	case STATE_DEAD:
 		{
-			// Leiche zeichnen
-			LOADER.GetMapImageN(ANIMALCONSTS[species].dead_id)->Draw(x,y);
-			// ggf. Tot-Schatten zeichnen
-			if(ANIMALCONSTS[species].shadow_dead_id)
-				LOADER.GetMapImageN(ANIMALCONSTS[species].shadow_dead_id)->Draw(x,y,0,0,0,0,0,0,COLOR_SHADOW);
-
+			if (Loader::animal_cache[species][0][ANIMAL_MAX_ANIMATION_STEPS].isGenerated())
+			{
+				Loader::animal_cache[species][0][ANIMAL_MAX_ANIMATION_STEPS].draw(x, y);
+			}
 		} break;
 	case STATE_DISAPPEARING:
 		{
 			// Alpha-Wert ausrechnen
 			unsigned char alpha = 0xFF-GAMECLIENT.Interpolate(0xFF,current_ev);
-			// Gibts ein Leichenbild?
-			if(LOADER.GetMapImageN(ANIMALCONSTS[species].dead_id))
-			{
-				// Leiche zeichnen
-				LOADER.GetMapImageN(ANIMALCONSTS[species].dead_id)->Draw(x,y,0,0,0,0,0,0,SetAlpha(COLOR_WHITE, alpha));
-				// ggf. Tot-Schatten zeichnen
-				if(ANIMALCONSTS[species].shadow_dead_id)
-					LOADER.GetMapImageN(ANIMALCONSTS[species].shadow_dead_id)->Draw(x,y,0,0,0,0,0,0,SetAlpha(COLOR_SHADOW, alpha));
 
-			}
-			else
+			// Gibts ein Leichenbild?
+			if (Loader::animal_cache[species][0][ANIMAL_MAX_ANIMATION_STEPS].isGenerated())
+			{
+				Loader::animal_cache[species][0][ANIMAL_MAX_ANIMATION_STEPS].draw(x, y, SetAlpha(COLOR_WHITE, alpha));
+			} else if (dir < 6)
 			{
 				// Stehend zeichnen
-				LOADER.GetMapImageN(ANIMALCONSTS[species].walking_id+ANIMALCONSTS[species].animation_steps*((dir+3)%6))->Draw(x,y,0,0,0,0,0,0,SetAlpha(COLOR_WHITE, alpha));
-				// ggf. Schatten zeichnen, falls es einen gibt
-				if(ANIMALCONSTS[species].shadow_id)
-				{
-					if(species == SPEC_DUCK)
-						// Ente Sonderfall, da gibts nur einen Schatten für jede Richtung!
-						LOADER.GetMapImageN(ANIMALCONSTS[species].shadow_id)->Draw(x,y,0,0,0,0,0,0,SetAlpha(COLOR_SHADOW, alpha));
-					else
-						// ansonsten immer pro Richtung einen Schatten
-						LOADER.GetMapImageN(ANIMALCONSTS[species].shadow_id+(dir+3)%6)->Draw(x,y,0,0,0,0,0,0,SetAlpha(COLOR_SHADOW, alpha));
-				}
+				Loader::animal_cache[species][dir][0].draw(x, y, SetAlpha(COLOR_WHITE, alpha));
 			}
 
 		} break;
