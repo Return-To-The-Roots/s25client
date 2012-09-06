@@ -1,4 +1,4 @@
-// $Id: Desktop.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: Desktop.cpp 8156 2012-09-06 07:54:43Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -61,14 +61,16 @@ bool Desktop::Draw_(void)
 {
 	if(background)
 	{
+/*
 		short w,h;
 		double sW,sH, s;
 		sW = (double)VideoDriverWrapper::inst().GetScreenWidth() / background->getWidth();
 		sH = (double)VideoDriverWrapper::inst().GetScreenHeight() / background->getHeight();
-		s = (sW > sH ? sW : sH);
-		w = (short)(background->getWidth() * s);
-		h = (short)(background->getHeight() * s);
-		background->Draw(0, 0, w, h, 0, 0, 0, 0);
+		s = (sW < sH ? sW : sH);
+		w = (short)((double) background->getWidth() * s);
+		h = (short)((double) background->getHeight() * s);
+		background->Draw(0, 0, w, h, 0, 0, 0, 0);*/
+		background->Draw(0, 0, VideoDriverWrapper::inst().GetScreenWidth(), VideoDriverWrapper::inst().GetScreenHeight(), 0, 0, 0, 0);
 	}
 
 	DrawControls();
@@ -120,7 +122,7 @@ void Desktop::Msg_ScreenResize(const ScreenResizeEvent& sr)
 			ctrl->Resize(realwidth * sr.newWidth / 800, realheight * sr.newHeight / 600);
 		}
 	}
-
+fprintf(stderr, "RESIZE!\n");
 	// Individuelle Reaktion ist auch erlaubt
 	Resize(sr.newWidth, sr.newHeight);
 }
