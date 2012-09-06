@@ -1,4 +1,4 @@
-// $Id: noFlag.cpp 8161 2012-09-06 12:58:16Z marcus $
+// $Id: noFlag.cpp 8165 2012-09-06 21:24:06Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -189,7 +189,7 @@ void noFlag::Draw(int x, int y)
 
 	unsigned ani_step = GAMECLIENT.GetGlobalAnimation(8,2,1,ani_offset);
 
-	Loader::flag_cache[gwg->GetPlayer(player)->nation][flagtype][ani_step].draw(x, y, COLORS[gwg->GetPlayer(player)->color]);
+	Loader::flag_cache[gwg->GetPlayer(player)->nation][flagtype][ani_step].draw(x, y, 0xFFFFFFFF, COLORS[gwg->GetPlayer(player)->color]);
 
 	// Waren (von hinten anfangen zu zeichnen)
 	for(unsigned i = 8;i;--i)

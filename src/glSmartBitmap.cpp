@@ -132,11 +132,6 @@ void glSmartBitmap::generateTexture()
 			{
 				glArchivItem_Bitmap_Player *bmp = static_cast<glArchivItem_Bitmap_Player *>((*it).bmp);
 
-				if ((xo + bmp->getWidth() > w) || (yo + bmp->getHeight() > h))
-				{
-					fprintf(stderr, "%u,%u (%ux%u) in %u,%u\n", xo, yo, bmp->getWidth(), bmp->getHeight(), w, h);
-				}
-
 				bmp->print(buffer, stride, h, libsiedler2::FORMAT_RGBA, p_colors, 128,
 					xo, yo, 0, 0, 0, 0, false);
 
@@ -145,7 +140,6 @@ void glSmartBitmap::generateTexture()
 
 				break;
 			}
-
 			case TYPE_ARCHIVITEM_BITMAP_SHADOW:
 			{
 				glArchivItem_Bitmap *bmp = static_cast<glArchivItem_Bitmap *>((*it).bmp);
@@ -191,6 +185,7 @@ void glSmartBitmap::generateTexture()
 	delete[] buffer;
 
 	tmp[0].z = tmp[1].z = tmp[2].z = tmp[3].z = 0.0;
+	tmp[4].z = tmp[5].z = tmp[6].z = tmp[7].z = 0.0;
 
 	tmp[0].tx = tmp[1].tx = 0.0;
 	tmp[2].tx = tmp[3].tx = hasPlayer ? 0.5 : 1.0;
@@ -198,25 +193,24 @@ void glSmartBitmap::generateTexture()
 	tmp[0].ty = tmp[3].ty = 0.0;
 	tmp[1].ty = tmp[2].ty = 1.0;
 
-	tmp[0].r = tmp[1].r = tmp[2].r = tmp[3].r = 0xFF;
-	tmp[0].g = tmp[1].g = tmp[2].g = tmp[3].g = 0xFF;
-	tmp[0].b = tmp[1].b = tmp[2].b = tmp[3].b = 0xFF;
-	tmp[0].a = tmp[1].a = tmp[2].a = tmp[3].a = 0xFF;
-
 	tmp[4].tx = tmp[5].tx = 0.5;
 	tmp[6].tx = tmp[7].tx = 1.0;
+
+	tmp[4].ty = tmp[7].ty = 0.0;
+	tmp[5].ty = tmp[6].ty = 1.0;
 }
 
-void glSmartBitmap::draw(int x, int y, unsigned player_color)
+void glSmartBitmap::draw(int x, int y, unsigned color, unsigned player_color)
 {
 	bool player = false;
 
 	if (!texture)
 		generateTexture();
+
 	if (!texture)
 		return;
 
-	if ((GetAlpha(player_color) != 0x00) && hasPlayer)
+	if ((player_color != 0x00000000) && hasPlayer)
 	{
 		player = true;
 	}
@@ -227,9 +221,18 @@ void glSmartBitmap::draw(int x, int y, unsigned player_color)
 	tmp[0].y = tmp[3].y = y - ny;
 	tmp[1].y = tmp[2].y = y - ny + h;
 
+	tmp[0].r = tmp[1].r = tmp[2].r = tmp[3].r = GetRed(color);
+	tmp[0].g = tmp[1].g = tmp[2].g = tmp[3].g = GetGreen(color);
+	tmp[0].b = tmp[1].b = tmp[2].b = tmp[3].b = GetBlue(color);
+	tmp[0].a = tmp[1].a = tmp[2].a = tmp[3].a = GetAlpha(color);
 
 	if (player)
 	{
+		tmp[4].x = tmp[5].x = tmp[0].x;
+		tmp[6].x = tmp[7].x = tmp[2].x;
+		tmp[4].y = tmp[7].y = tmp[0].y;
+		tmp[5].y = tmp[6].y = tmp[1].y;
+
 		tmp[4].r = tmp[5].r = tmp[6].r = tmp[7].r = GetRed(player_color);
 		tmp[4].g = tmp[5].g = tmp[6].g = tmp[7].g = GetGreen(player_color);
 		tmp[4].b = tmp[5].b = tmp[6].b = tmp[7].b = GetBlue(player_color);

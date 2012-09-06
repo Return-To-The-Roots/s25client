@@ -77,7 +77,7 @@ public:
 
 	unsigned nextPowerOfTwo(unsigned k);
 	void generateTexture();
-	void draw(int x, int y, unsigned player_color = 0x00000000);
+	void draw(int x, int y, unsigned color = 0xFFFFFFFF, unsigned player_color = 0x00000000);
 
 	void add(glArchivItem_Bitmap *bmp) {if (bmp) items.push_back(glBitmapItem(bmp));}
 	void add(glArchivItem_Bitmap_Player *bmp) {if (bmp) items.push_back(glBitmapItem(bmp));}
