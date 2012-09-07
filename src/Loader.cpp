@@ -1,4 +1,4 @@
-// $Id: Loader.cpp 8171 2012-09-07 17:26:40Z marcus $
+// $Id: Loader.cpp 8173 2012-09-07 20:12:56Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -424,11 +424,17 @@ glSmartBitmap Loader::granite_cache[2][6];
 // Felder - 2 Typen, vier Größen
 glSmartBitmap Loader::grainfield_cache[2][4];
 
-// [ware][direction][animation_step][fat]
+// carrier_cache[ware][direction][animation_step][fat]
 glSmartBitmap Loader::carrier_cache[WARE_TYPES_COUNT][6][8][2];
 
-// [nation]
+// boundary_stone_cache[nation]
 glSmartBitmap Loader::boundary_stone_cache[NATION_COUNT];
+
+// boat_cache[direction][animation_step]
+glSmartBitmap Loader::boat_cache[6][8];
+
+// donkey_cache[direction][animation_step]
+glSmartBitmap Loader::donkey_cache[6][8];
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
@@ -486,6 +492,7 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool *nations)
 	map_gfx = &(this->files[MAP_GFXSET_Z[lastgfx]]);
 	tex_gfx = &(this->files[TEX_GFXSET[lastgfx]]);
 
+// Animals
 	for (unsigned species = 0; species < SPEC_COUNT; ++species)
 	{
 		for (unsigned dir = 0; dir < 6; ++dir)
@@ -626,6 +633,7 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool *nations)
 		bmp.generateTexture();
 	}
 
+// Trees
 	for (unsigned type = 0; type < 9; ++type)
 	{
 		for (unsigned ani_step = 0; ani_step < 15; ++ani_step)
@@ -639,7 +647,7 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool *nations)
 		}
 	}
 
-
+// Granite
 	for (unsigned type = 0; type < 2; ++type)
 	{
 		for (unsigned size = 0; size < 6; ++size)
@@ -653,6 +661,7 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool *nations)
 		}
 	}
 
+// Grainfields
 	for (unsigned type = 0; type < 2; ++type)
 	{
 		for (unsigned size = 0; size < 4; ++size)
@@ -661,6 +670,34 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool *nations)
 
 			bmp.add(LOADER.GetMapImageN(532+type*5+size));
 			bmp.addShadow(LOADER.GetMapImageN(632+type*5+size));
+
+			bmp.generateTexture();
+		}
+	}
+
+// Donkeys
+	for (unsigned dir = 0; dir < 6; ++dir)
+	{
+		for (unsigned ani_step = 0; ani_step < 8; ++ani_step)
+		{
+			glSmartBitmap &bmp = donkey_cache[dir][ani_step];
+
+			bmp.add(LOADER.GetMapImageN(2000+((dir+3)%6)*8+ani_step));
+			bmp.addShadow(LOADER.GetMapImageN(2048+dir%3));
+
+			bmp.generateTexture();
+		}
+	}
+
+// Boats
+	for (unsigned dir = 0; dir < 6; ++dir)
+	{
+		for (unsigned ani_step = 0; ani_step < 8; ++ani_step)
+		{
+			glSmartBitmap &bmp = boat_cache[dir][ani_step];
+
+			bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(LOADER.GetImageN("boat", ((dir+3)%6)*8+ani_step)));
+			bmp.addShadow(LOADER.GetMapImageN(2048+dir%3));
 
 			bmp.generateTexture();
 		}
