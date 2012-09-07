@@ -1,4 +1,4 @@
-// $Id: Desktop.cpp 8156 2012-09-06 07:54:43Z marcus $
+// $Id: Desktop.cpp 8171 2012-09-07 17:26:40Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -122,7 +122,7 @@ void Desktop::Msg_ScreenResize(const ScreenResizeEvent& sr)
 			ctrl->Resize(realwidth * sr.newWidth / 800, realheight * sr.newHeight / 600);
 		}
 	}
-fprintf(stderr, "RESIZE!\n");
+
 	// Individuelle Reaktion ist auch erlaubt
 	Resize(sr.newWidth, sr.newHeight);
 }

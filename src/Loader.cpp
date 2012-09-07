@@ -1,4 +1,4 @@
-// $Id: Loader.cpp 8170 2012-09-07 14:44:26Z marcus $
+// $Id: Loader.cpp 8171 2012-09-07 17:26:40Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -427,6 +427,9 @@ glSmartBitmap Loader::grainfield_cache[2][4];
 // [ware][direction][animation_step][fat]
 glSmartBitmap Loader::carrier_cache[WARE_TYPES_COUNT][6][8][2];
 
+// [nation]
+glSmartBitmap Loader::boundary_stone_cache[NATION_COUNT];
+
 ///////////////////////////////////////////////////////////////////////////////
 /**
  *  Lädt die Spieldateien.
@@ -522,8 +525,11 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool *nations)
 		}
 	}
 
+	glArchivItem_Bob *bob_jobs = LOADER.GetBobN("jobs");
+
 	for (unsigned nation = 0; nation < NATION_COUNT; ++nation)
 	{
+// BUILDINGS
 		for (unsigned type = 0; type < BUILDING_TYPES_COUNT; ++type)
 		{
 			glSmartBitmap &bmp = building_cache[nation][type][0];
@@ -553,6 +559,7 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool *nations)
 			skel.generateTexture();
 		}
 
+// FLAGS
 		for (unsigned type = 0; type < 3; ++type)
 		{
 			for (unsigned ani_step = 0; ani_step < 8; ++ani_step)
@@ -568,25 +575,8 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool *nations)
 				bmp.generateTexture();
 			}
 		}
-	}
 
-	for (unsigned type = 0; type < 9; ++type)
-	{
-		for (unsigned ani_step = 0; ani_step < 15; ++ani_step)
-		{
-			glSmartBitmap &bmp = tree_cache[type][ani_step];
-
-			bmp.add(LOADER.GetMapImageN(200 + type * 15 + ani_step));
-			bmp.addShadow(LOADER.GetMapImageN(350 + type * 15 + ani_step));
-
-			bmp.generateTexture();
-		}
-	}
-
-	glArchivItem_Bob *bob_jobs = LOADER.GetBobN("jobs");
-
-	for (unsigned nation = 0; nation < NATION_COUNT; ++nation)
-	{
+// Bobs from jobs.bob
 		for (unsigned job = 0; job < JOB_TYPES_COUNT + 1; ++job)
 		{
 			for (unsigned dir = 0; dir < 6; ++dir)
@@ -629,7 +619,26 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool *nations)
 				}
 			}
 		}
+
+		glSmartBitmap &bmp = boundary_stone_cache[nation];
+		bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(LOADER.GetNationImageN(nation, 0)));
+		bmp.addShadow(LOADER.GetNationImageN(nation, 1));
+		bmp.generateTexture();
 	}
+
+	for (unsigned type = 0; type < 9; ++type)
+	{
+		for (unsigned ani_step = 0; ani_step < 15; ++ani_step)
+		{
+			glSmartBitmap &bmp = tree_cache[type][ani_step];
+
+			bmp.add(LOADER.GetMapImageN(200 + type * 15 + ani_step));
+			bmp.addShadow(LOADER.GetMapImageN(350 + type * 15 + ani_step));
+
+			bmp.generateTexture();
+		}
+	}
+
 
 	for (unsigned type = 0; type < 2; ++type)
 	{
