@@ -1,4 +1,4 @@
-// $Id: Loader.cpp 8167 2012-09-06 22:06:03Z marcus $
+// $Id: Loader.cpp 8170 2012-09-07 14:44:26Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -37,6 +37,7 @@
 #include "ListDir.h"
 
 #include "glSmartBitmap.h"
+#include "JobConsts.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -414,6 +415,18 @@ glSmartBitmap Loader::flag_cache[NATION_COUNT][3][8] = {{{glSmartBitmap()}}};
 // 0 - 7 animation, 8 & 9 growing, 11 - 13 falling, 14 fallen
 glSmartBitmap Loader::tree_cache[9][15] = {{glSmartBitmap()}};
 
+// Bobs from jobs.bob: bob_jobs_cache[nation][job][direction][animation]
+glSmartBitmap Loader::bob_jobs_cache[NATION_COUNT][JOB_TYPES_COUNT + 1][6][8];
+
+// Granit - zwei Typen, sechs größen
+glSmartBitmap Loader::granite_cache[2][6];
+
+// Felder - 2 Typen, vier Größen
+glSmartBitmap Loader::grainfield_cache[2][4];
+
+// [ware][direction][animation_step][fat]
+glSmartBitmap Loader::carrier_cache[WARE_TYPES_COUNT][6][8][2];
+
 ///////////////////////////////////////////////////////////////////////////////
 /**
  *  Lädt die Spieldateien.
@@ -565,6 +578,80 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool *nations)
 
 			bmp.add(LOADER.GetMapImageN(200 + type * 15 + ani_step));
 			bmp.addShadow(LOADER.GetMapImageN(350 + type * 15 + ani_step));
+
+			bmp.generateTexture();
+		}
+	}
+
+	glArchivItem_Bob *bob_jobs = LOADER.GetBobN("jobs");
+
+	for (unsigned nation = 0; nation < NATION_COUNT; ++nation)
+	{
+		for (unsigned job = 0; job < JOB_TYPES_COUNT + 1; ++job)
+		{
+			for (unsigned dir = 0; dir < 6; ++dir)
+			{
+				for (unsigned ani_step = 0; ani_step < 8; ++ani_step)
+				{
+					bool fat = JOB_CONSTS[job].fat;
+					unsigned id = JOB_CONSTS[job].jobs_bob_id;
+					glSmartBitmap &bmp = bob_jobs_cache[nation][job][dir][ani_step];
+
+					if (job == JOB_SCOUT)
+					{
+						id = 35+NATION_RTTR_TO_S2[nation]*6;
+					} else if ((job >= JOB_PRIVATE) && (job <= JOB_GENERAL))
+					{
+						id = 30+NATION_RTTR_TO_S2[nation]*6+job-JOB_PRIVATE;
+					} else if (job == 0)
+					{
+						fat = false;
+					} else if (job == JOB_TYPES_COUNT)
+					{
+						fat = true;
+						id = 0;
+					}
+
+					unsigned int good = id*96 + ani_step*12 + ( (dir + 3) % 6 ) + fat*6;
+					unsigned int body = fat*48 + ( (dir + 3) % 6 )*8 + ani_step;
+
+					if(bob_jobs->getLink(good) == 92)
+					{
+						good -= fat*6;
+						body -= fat*48;
+					}
+
+					bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(bob_jobs->get(body)));
+					bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(bob_jobs->get(96+bob_jobs->getLink(good))));
+					bmp.addShadow(LOADER.GetMapImageN(900 + ( (dir + 3) % 6 ) * 8 + ani_step));
+
+					bmp.generateTexture();
+				}
+			}
+		}
+	}
+
+	for (unsigned type = 0; type < 2; ++type)
+	{
+		for (unsigned size = 0; size < 6; ++size)
+		{
+			glSmartBitmap &bmp = granite_cache[type][size];
+
+			bmp.add(LOADER.GetMapImageN(516 + type*6 + size));
+			bmp.addShadow(LOADER.GetMapImageN(616 + type*6 + size));
+
+			bmp.generateTexture();
+		}
+	}
+
+	for (unsigned type = 0; type < 2; ++type)
+	{
+		for (unsigned size = 0; size < 4; ++size)
+		{
+			glSmartBitmap &bmp = grainfield_cache[type][size];
+
+			bmp.add(LOADER.GetMapImageN(532+type*5+size));
+			bmp.addShadow(LOADER.GetMapImageN(632+type*5+size));
 
 			bmp.generateTexture();
 		}

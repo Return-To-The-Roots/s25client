@@ -150,9 +150,9 @@ void glSmartBitmap::generateTexture()
 				bmp->print(tmp, w, h, libsiedler2::FORMAT_RGBA, p_5, xo, yo, 0, 0, 0, 0);
 
 				unsigned idx = 0;
-				for (unsigned x = 0; x < w; ++x)
+				for (int x = 0; x < w; ++x)
 				{
-					for (unsigned y = 0; y < h; ++y)
+					for (int y = 0; y < h; ++y)
 					{
 						if (tmp[idx + 3] != 0x00)
 						{

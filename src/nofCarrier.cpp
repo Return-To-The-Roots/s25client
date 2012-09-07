@@ -1,4 +1,4 @@
-// $Id: nofCarrier.cpp 7664 2011-12-26 15:24:35Z marcus $
+// $Id: nofCarrier.cpp 8170 2012-09-07 14:44:26Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -35,6 +35,8 @@
 #include "noFlag.h"
 #include "noBaseBuilding.h"
 #include "JobConsts.h"
+
+#include "glSmartBitmap.h"
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -295,7 +297,7 @@ void nofCarrier::Draw(int x, int y)
 				if(carried_ware)
 					DrawWalking(x,y,LOADER.GetBobN("carrier"),(carried_ware->type==GD_SHIELDJAPANESE)?GD_SHIELDROMANS:carried_ware->type,fat);
 				else
-					DrawWalking(x,y,LOADER.GetBobN("jobs"),0,fat);
+					DrawWalkingBobJobs(x, y, fat ? JOB_TYPES_COUNT : 0);
 			}
 		} break;
 	case CT_DONKEY:
@@ -382,7 +384,7 @@ void nofCarrier::Draw(int x, int y)
 				// Wenn event = 0, dann sind wir mittem auf dem Weg angehalten!
 				unsigned ani_step = waiting_for_free_node?2:GAMECLIENT.Interpolate(ASCENT_ANIMATION_STEPS[ascent],current_ev)%8;
 			
-				CalcFigurRelative(x,y);		
+				CalcFigurRelative(x,y);
 
 				// ruderndes Boot zeichnen
 				LOADER.GetImageN("boat", ((dir+3)%6)*8+ani_step)->Draw(x,y,0,0,0,0,0,0,COLOR_WHITE, COLORS[gwg->GetPlayer(player)->color]);

@@ -1,4 +1,4 @@
-// $Id: nofBuilder.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: nofBuilder.cpp 8170 2012-09-07 14:44:26Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -328,7 +328,7 @@ void nofBuilder::Draw(int x, int y)
 	{
 	case STATE_FIGUREWORK:
 		{
-			DrawWalking(x,y,LOADER.GetBobN("jobs"),23,false);
+			DrawWalkingBobJobs(x, y, JOB_BUILDER);
 		} break;
 	case STATE_BUILDFREEWALK:
 	case STATE_WAITINGFREEWALK:

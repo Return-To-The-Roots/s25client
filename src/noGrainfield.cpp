@@ -1,4 +1,4 @@
-// $Id: noGrainfield.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: noGrainfield.cpp 8170 2012-09-07 14:44:26Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -27,6 +27,8 @@
 #include "Random.h"
 #include "GameWorld.h"
 #include "SerializedGameData.h"
+
+#include "glSmartBitmap.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -87,34 +89,24 @@ void noGrainfield::Draw( int x,	int y)
 	case STATE_GROWING_WAITING:
 	case STATE_NORMAL:
 		{
-			LOADER.GetMapImageN(532+type*5+size)->Draw(x,y);
-			LOADER.GetMapImageN(632+type*5+size)->Draw(x,y,0,0,0,0,0,0,COLOR_SHADOW);
+			Loader::grainfield_cache[type][size].draw(x, y);
 		} break;
 	case STATE_GROWING:
 		{
 			unsigned alpha = GAMECLIENT.Interpolate(0xFF,event);
 
 			// altes Feld ausblenden
-			LOADER.GetMapImageN(532+type*5+size)->Draw(x,y,0,0,0,0,0,0,SetAlpha(COLOR_WHITE, 0xFF-alpha));
+			Loader::grainfield_cache[type][size].draw(x, y, SetAlpha(COLOR_WHITE, 0xFF-alpha));
+
 			// neues Feld einblenden
-			LOADER.GetMapImageN(532+type*5+size+1)->Draw(x,y,0,0,0,0,0,0,SetAlpha(COLOR_WHITE, alpha));
-
-			// alten Schatten ausblenden
-			alpha = GAMECLIENT.Interpolate(0x40,event);
-			LOADER.GetMapImageN(632+type*5+size)->Draw(x,y,0,0,0,0,0,0,SetAlpha(0,0x40-alpha));
-			// neuen Schatten einblenden
-			LOADER.GetMapImageN(632+type*5+size+1)->Draw(x,y,0,0,0,0,0,0,SetAlpha(0,alpha));
-
+			Loader::grainfield_cache[type][size + 1].draw(x, y, SetAlpha(COLOR_WHITE, alpha));
 		} break;
 	case STATE_WITHERING:
 		{
 			unsigned alpha = GAMECLIENT.Interpolate(0xFF,event);
 
 			// Feld ausblenden
-			LOADER.GetMapImageN(532+type*5+size)->Draw(x,y,0,0,0,0,0,0,SetAlpha(0xFFFFFFFF,0xFF-alpha));
-			// Schatten ausblenden
-			alpha = GAMECLIENT.Interpolate(0x40,event);
-			LOADER.GetMapImageN(632+type*5+size)->Draw(x,y,0,0,0,0,0,0,SetAlpha(0,0x40-alpha));
+			Loader::grainfield_cache[type][size].draw(x, y, SetAlpha(COLOR_WHITE, 0xFF-alpha));
 		} break;
 	}
 

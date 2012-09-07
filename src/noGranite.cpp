@@ -1,4 +1,4 @@
-// $Id: noGranite.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: noGranite.cpp 8170 2012-09-07 14:44:26Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -26,6 +26,8 @@
 #include "EventManager.h"
 #include "SerializedGameData.h"
 #include "FOWObjects.h"
+
+#include "glSmartBitmap.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -55,8 +57,7 @@ state(sgd->PopUnsignedChar())
 
 void noGranite::Draw(int x, int y)
 {
-	LOADER.GetMapImageN(516 + type*6 + state)->Draw(x,y,0,0,0,0,0,0);
-	LOADER.GetMapImageN(616 + type*6 + state)->Draw(x,y,0,0,0,0,0,0,COLOR_SHADOW);
+	Loader::granite_cache[type][state].draw(x,y);
 }
 
 FOWObject * noGranite::CreateFOWObject() const

@@ -1,4 +1,4 @@
-// $Id: nofCarrier.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: nofCarrier.h 8170 2012-09-07 14:44:26Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -26,6 +26,7 @@
 class RoadSegment;
 class Ware;
 class noRoadNode;
+class glSmartBitmap;
 
 enum CarrierState
 {
@@ -40,8 +41,6 @@ enum CarrierState
 	CARRS_GOBACKFROMFLAG, // geht von der Flagge zurück, weil kein Platz mehr frei war
 	CARRS_BOATCARRIER_WANDERONWATER // Rumirren der Bootsträger auf dem Wasser, d.h. Paddeln zum 
 									// nächsten Ufer, nachdem der Wasserweg zerstört wurde
-
-
 };
 
 // Stellt einen Träcer da
@@ -157,8 +156,6 @@ public:		void Destroy() { Destroy_nofCarrier(); }
 	
 	/// Wird aufgerufen, wenn die Straße unter der Figur geteilt wurde (für abgeleitete Klassen)
 	void CorrectSplitData_Derived();
-
-
 };
 
 #endif

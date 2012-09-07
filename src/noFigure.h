@@ -1,4 +1,4 @@
-// $Id: noFigure.h 7887 2012-03-18 22:21:17Z jh $
+// $Id: noFigure.h 8170 2012-09-07 14:44:26Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -22,6 +22,7 @@
 #include "noMovable.h"
 #include "GlobalGameSettings.h"
 #include "MapConsts.h"
+#include "VideoDriverWrapper.h"
 
 class RoadSegment;
 class noRoadNode;
@@ -42,11 +43,12 @@ enum FigureState
 	FS_JOB
 };
 
+class glSmartBitmap;
+
 // Stellt einen Menschen dar
 class noFigure : public noMovable
 {
 protected:
-
 	FigureState fs; // aktueller Status
 	Job job; // Beruf(sart)
 	unsigned char player;
@@ -152,6 +154,8 @@ public:		void Destroy() { Destroy_noFigure(); }
 	void InitializeRoadWalking(const RoadSegment * const road, const unsigned short rs_pos, const bool rs_dir);
 	/// Gibt Job-Typ zurück
 	Job GetJobType() const { return job; }
+	/// Zeichnet eine Figur aus "jobs.bob", wenn sie läuft.
+	void DrawWalkingBobJobs(int x, int y, unsigned int id);
 	/// Zeichnet standardmäßig die Figur, wenn sie läuft 
 	void DrawWalking(int x, int y, glArchivItem_Bob *file, unsigned int item, bool fat);
 	/// Zeichnet standardmäßig die Figur, wenn sie läuft aus einem bestimmten normalen LST Archiv
@@ -227,7 +231,6 @@ public:		void Destroy() { Destroy_noFigure(); }
 	/// Examines the route (maybe harbor, road destroyed?) before start shipping
 	/// Returns (maybe new) destination harbor ((0,0) if he doesn't go by ship)
 	Point<MapCoord> ExamineRouteBeforeShipping();
-
 };
 
 

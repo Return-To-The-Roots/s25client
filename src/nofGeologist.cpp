@@ -1,4 +1,4 @@
-// $Id: nofGeologist.cpp 7887 2012-03-18 22:21:17Z jh $
+// $Id: nofGeologist.cpp 8170 2012-09-07 14:44:26Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -100,7 +100,7 @@ void nofGeologist::Draw(int x, int y)
 	case STATE_GOTOFLAG:
 		{
 			// normales Laufen zeichnen
-			DrawWalking(x,y,LOADER.GetBobN("jobs"),26,false);
+			DrawWalkingBobJobs(x, y, JOB_GEOLOGIST);
 		} break;
 	case STATE_GEOLOGIST_DIG:
 		{

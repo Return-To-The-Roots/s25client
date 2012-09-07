@@ -1,4 +1,4 @@
-// $Id: nofPlaner.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: nofPlaner.cpp 8170 2012-09-07 14:44:26Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -140,7 +140,8 @@ void nofPlaner::Draw(int x, int y)
 	case STATE_FIGUREWORK:
 	case STATE_WALKING:
 		{
-			DrawWalking(x,y,LOADER.GetBobN("jobs"),JOB_CONSTS[JOB_PLANER].jobs_bob_id,false);
+			DrawWalkingBobJobs(x, y, JOB_PLANER);
+//			DrawWalking(x,y,LOADER.GetBobN("jobs"),JOB_CONSTS[JOB_PLANER].jobs_bob_id,false);
 		} break;
 	case STATE_PLANING:
 		{

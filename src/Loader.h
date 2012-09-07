@@ -1,4 +1,4 @@
-// $Id: Loader.h 8167 2012-09-06 22:06:03Z marcus $
+// $Id: Loader.h 8170 2012-09-07 14:44:26Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -106,6 +106,10 @@ public:
 	static glSmartBitmap building_cache[4][40][2];
 	static glSmartBitmap flag_cache[4][3][8];
 	static glSmartBitmap tree_cache[9][15];
+	static glSmartBitmap bob_jobs_cache[4][33][6][8];
+	static glSmartBitmap granite_cache[2][6];
+	static glSmartBitmap grainfield_cache[2][4];
+	static glSmartBitmap carrier_cache[35][6][8][2];
 };
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -1,4 +1,4 @@
-// $Id: noBuildingSite.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: noBuildingSite.cpp 8170 2012-09-07 14:44:26Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -37,6 +37,8 @@
 #include "nofPlaner.h"
 
 #include "FOWObjects.h"
+
+#include "glSmartBitmap.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

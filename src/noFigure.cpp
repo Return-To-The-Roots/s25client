@@ -69,6 +69,8 @@
 
 #include "nobHarborBuilding.h"
 
+#include "glSmartBitmap.h"
+
 #include "Swap.h"
 #include "Random.h"
 
@@ -1375,6 +1377,19 @@ noFigure * CreateJob(const Job job_id,const unsigned short x, const unsigned sho
 	}
 }
 
+void noFigure::DrawWalkingBobJobs(int x, int y, unsigned int job)
+{
+	// Wenn wir warten auf ein freies Plätzchen, müssen wir den stehend zeichnen!
+	unsigned ani_step = waiting_for_free_node?2:GAMECLIENT.Interpolate(ASCENT_ANIMATION_STEPS[ascent],current_ev)%8;
+	
+	// Wenn man wartet, stehend zeichnen, es sei denn man wartet mittem auf dem Weg!
+	if(!waiting_for_free_node || pause_walked_gf)
+		CalcFigurRelative(x,y);
+
+	Loader::bob_jobs_cache[gwg->GetPlayer(player)->nation][job][dir][ani_step].draw(x, y, 0xFFFFFFFF, COLORS[gwg->GetPlayer(player)->color]);
+}
+
+
 void noFigure::DrawWalking(int x, int y, glArchivItem_Bob *file, unsigned int id, bool fat)
 {
 	// Wenn wir warten auf ein freies Plätzchen, müssen wir den stehend zeichnen!
@@ -1431,15 +1446,7 @@ void noFigure::DrawWalking(int x, int y)
 		} return;
 	default:
 		{
-			// Jobs-Bob-ID ermitteln
-			unsigned jobs_bob_id = JOB_CONSTS[job].jobs_bob_id;
-			// Späher völkerspezifisch zeichnen
-			if(job == JOB_SCOUT)
-				jobs_bob_id = 35+NATION_RTTR_TO_S2[gwg->GetPlayer(player)->nation]*6;
-			else if(job >= JOB_PRIVATE && job <= JOB_GENERAL)
-				jobs_bob_id = 30+NATION_RTTR_TO_S2[gwg->GetPlayer(player)->nation]*6+job-JOB_PRIVATE;
-
-			DrawWalking(x,y,LOADER.GetBobN("jobs"),jobs_bob_id,JOB_CONSTS[job].fat);
+			DrawWalkingBobJobs(x, y, job);
 		} return;
 	}
 	
