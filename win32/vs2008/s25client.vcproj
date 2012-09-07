@@ -48,7 +48,7 @@
 				ExceptionHandling="2"
 				SmallerTypeCheck="true"
 				RuntimeLibrary="3"
-				UsePrecompiledHeader="2"
+				UsePrecompiledHeader="0"
 				PrecompiledHeaderThrough="stdafx.h"
 				WarningLevel="3"
 				DebugInformationFormat="4"
@@ -66,7 +66,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/fixed:no"
-				AdditionalDependencies="Shlwapi.lib OpenGL32.lib libbz2.lib imagehlp.lib"
+				AdditionalDependencies="Shlwapi.lib OpenGL32.lib imagehlp.lib libbz2.lib"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				SubSystem="1"

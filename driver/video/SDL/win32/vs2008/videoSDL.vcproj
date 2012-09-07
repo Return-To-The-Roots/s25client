@@ -193,10 +193,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\oem.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\src\SDL.cpp"
 				>
 			</File>
