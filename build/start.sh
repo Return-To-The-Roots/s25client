@@ -9,6 +9,7 @@ BIN=src/s25client
 CMD=
 ARGS=
 BINARGS=
+BUGLE=
 
 while test $# != 0 ; do
 	case $1 in
@@ -54,6 +55,13 @@ while test $# != 0 ; do
 			CMD=valgrind
 			ARGS="$ARGS --tool=callgrind --instr-atstart=no"
 			;;
+		--bugle-chain)
+			BUGLE="$ac_optarg"
+			ac_shift=2
+			;;
+		bugle)
+			BUGLE=showcalltimes
+			;;
 		ddd)
 			CMD=ddd
 			;;
@@ -92,7 +100,11 @@ case $CMD in
 		;;
 esac
 
-$CMD $ARGS $BIN $BINARGS
+if [ -n "$BUGLE" ]; then
+	BUGLE_FILTERS="bugle/filters" BUGLE_STATISTICS="bugle/statistics" BUGLE_CHAIN="$BUGLE" LD_PRELOAD=libbugle.so $CMD $ARGS $BIN $BINARGS
+else
+	$CMD $ARGS $BIN $BINARGS
+fi
 
 exit $?
 
