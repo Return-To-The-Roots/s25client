@@ -117,8 +117,6 @@ public:
 	glSmartTexturePackerNode(int w, int h) : x(0), y(0), w(w), h(h), bmp(NULL) {child[0] = child[1] = NULL;}
 
 	bool insert(glSmartBitmap *b, unsigned char *buffer, unsigned gw, unsigned gh, unsigned reserve = 0);
-	int getFreeSpace();
-	void dump(int x = 0, int y = 0);
 	void destroy(unsigned reserve = 0);
 };
 

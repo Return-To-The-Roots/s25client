@@ -33,49 +33,6 @@
 	static char THIS_FILE[] = __FILE__;
 #endif
 
-void glSmartTexturePackerNode::dump(int x, int y)
-{
-	if (child[0] != NULL)
-	{
-		if (child[0]->h == h)
-		{
-			child[0]->dump(x, y);
-			child[1]->dump(x + child[0]->w, y);
-		} else
-		{
-			child[0]->dump(x, y);
-			child[1]->dump(x, y + child[0]->h);
-		}
-
-		return;
-	}
-
-	if (bmp != NULL)
-	{
-		fprintf(stderr, "%i,%i %ix%i\n", x, y, w, h);
-	}
-
-	return;
-}
-
-int glSmartTexturePackerNode::getFreeSpace()
-{
-/*
-TODO: make iterative
-
-	if (child[0] != NULL)
-	{
-		return(child[0]->getFreeSpace() + child[1]->getFreeSpace());
-	}
-
-	if (bmp == NULL)
-	{
-		return(w * h);
-	}
-*/
-	return(0);
-}
-
 bool glSmartTexturePackerNode::insert(glSmartBitmap *b, unsigned char *buffer, unsigned gw, unsigned gh, unsigned reserve)
 {
 	std::vector<glSmartTexturePackerNode*> todo;
@@ -237,8 +194,6 @@ bool glSmartTexturePacker::packHelper(std::vector<glSmartBitmap *> &list)
 			glSmartTexturePackerNode *root = new glSmartTexturePackerNode(w, h);
 
 			std::vector<glSmartBitmap *> left;
-
-			fprintf(stderr, "TOTAL of %i should%s fit in %ix%i (%i left)\n", total, maxTex ? " not" : "", w, h, root->getFreeSpace());
 
 			unsigned char *buffer = new unsigned char[w * h * 4];
 			memset(buffer, 0, w * h * 4);
