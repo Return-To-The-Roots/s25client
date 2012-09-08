@@ -23,6 +23,7 @@
 #include "glSmartBitmap.h"
 
 #include <climits>
+#include <list>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -72,85 +73,115 @@ int glSmartTexturePackerNode::getFreeSpace()
 	return(0);
 }
 
-bool glSmartTexturePackerNode::insert(glSmartBitmap *b, unsigned char *buffer, unsigned gw, unsigned gh)
+bool glSmartTexturePackerNode::insert(glSmartBitmap *b, unsigned char *buffer, unsigned gw, unsigned gh, unsigned reserve)
 {
-	if (child[0] != NULL)
-	{
-		return(child[0]->insert(b, buffer, gw, gh) || child[1]->insert(b, buffer, gw, gh));
-	}
+	std::vector<glSmartTexturePackerNode*> todo;
 
-	// we are a leaf and do already contain an image
-	if (bmp != NULL)
-	{
-		return(false);
-	}
+	todo.reserve(reserve);
+
+	todo.push_back(this);
 
 	int bw = b->getTexWidth();
 	int bh = b->getTexHeight();
 
-	// no space left for this item
-	if ((bw > w) || (bh > h))
+	while (!todo.empty())
 	{
-		return(false);
+		glSmartTexturePackerNode *current = todo.back();
+		todo.pop_back();
+
+		if (current->child[0] != NULL)
+		{
+			todo.push_back(current->child[0]);
+			todo.push_back(current->child[1]);
+			continue;
+		}
+
+		// we are a leaf and do already contain an image
+		if (current->bmp != NULL)
+		{
+			continue;
+		}
+
+		// no space left for this item
+		if ((bw > current->w) || (bh > current->h))
+		{
+			continue;
+		}
+
+		if ((bw == current->w) && (bh == current->h))
+		{
+			current->bmp = b;
+
+			b->drawTo(buffer, gw, gh, current->x, current->y);
+
+			b->tmp[0].tx = b->tmp[1].tx = (float) current->x / (float) gw;
+			b->tmp[2].tx = b->tmp[3].tx = b->isPlayer() ? (float) (current->x + current->w / 2) / (float) gw : (float) (current->x + current->w) / (float) gw;
+
+			b->tmp[0].ty = b->tmp[3].ty = b->tmp[4].ty = b->tmp[7].ty = (float) current->y / (float) gh;
+			b->tmp[1].ty = b->tmp[2].ty = b->tmp[5].ty = b->tmp[6].ty = (float) (current->y + current->h) / (float) gh;
+
+			b->tmp[4].tx = b->tmp[5].tx = (float) (current->x + current->w / 2) / (float) gw;
+			b->tmp[6].tx = b->tmp[7].tx = (float) (current->x + current->w) / (float) gw;
+
+			return(true);
+		}
+
+		current->child[0] = new glSmartTexturePackerNode();
+		current->child[1] = new glSmartTexturePackerNode();
+
+		int dw = current->w - bw;
+		int dh = current->h - bh;
+
+		if (dw > dh)
+		{
+			// split into left and right, put bitmap in left
+			current->child[0]->x = current->x;
+			current->child[1]->x = current->x + bw;
+			current->child[0]->y = current->child[1]->y = current->y;
+			current->child[0]->w = bw;
+			current->child[1]->w = current->w - bw;
+			current->child[0]->h = current->child[1]->h = current->h;
+		} else
+		{
+			// split into top and bottom, put bitmap in top
+			current->child[0]->x = current->child[1]->x = current->x;
+			current->child[0]->y = current->y;
+			current->child[1]->y = current->y + bh;
+			current->child[0]->w = current->child[1]->w = current->w;
+			current->child[0]->h = bh;
+			current->child[1]->h = current->h - bh;
+		}
+
+		todo.push_back(current->child[0]);
 	}
 
-	if ((bw == w) && (bh == h))
-	{
-		bmp = b;
-
-		bmp->drawTo(buffer, gw, gh, x, y);
-
-		bmp->tmp[0].tx = bmp->tmp[1].tx = (float) x / (float) gw;
-		bmp->tmp[2].tx = bmp->tmp[3].tx = bmp->isPlayer() ? (float) (x + w / 2) / (float) gw : (float) (x + w) / (float) gw;
-
-		bmp->tmp[0].ty = bmp->tmp[3].ty = bmp->tmp[4].ty = bmp->tmp[7].ty = (float) y / (float) gh;
-		bmp->tmp[1].ty = bmp->tmp[2].ty = bmp->tmp[5].ty = bmp->tmp[6].ty = (float) (y + h) / (float) gh;
-
-		bmp->tmp[4].tx = bmp->tmp[5].tx = (float) (x + w / 2) / (float) gw;
-		bmp->tmp[6].tx = bmp->tmp[7].tx = (float) (x + w) / (float) gw;
-
-		return(true);
-	}
-
-	child[0] = new glSmartTexturePackerNode();
-	child[1] = new glSmartTexturePackerNode();
-
-	int dw = w - bw;
-	int dh = h - bh;
-
-	if (dw > dh)
-	{
-		// split into left and right, put bitmap in left
-		child[0]->x = x;
-		child[1]->x = x + bw;
-		child[0]->y = child[1]->y = y;
-		child[0]->w = bw;
-		child[1]->w = w - bw;
-		child[0]->h = child[1]->h = h;
-	} else
-	{
-		// split into top and bottom, put bitmap in top
-		child[0]->x = child[1]->x = x;
-		child[0]->y = y;
-		child[1]->y = y + bh;
-		child[0]->w = child[1]->w = w;
-		child[0]->h = bh;
-		child[1]->h = h - bh;
-	}
-
-	return(child[0]->insert(b, buffer, gw, gh));
+	return(false);
 }
 
-glSmartTexturePackerNode::~glSmartTexturePackerNode()
+void glSmartTexturePackerNode::destroy(unsigned reserve)
 {
+	std::vector<glSmartTexturePackerNode*> todo;
+
+	todo.reserve(reserve);
+
 	if (child[0])
 	{
-		delete child[0];
+		todo.push_back(child[0]);
+		todo.push_back(child[1]);
 	}
 
-	if (child[1])
+	while (!todo.empty())
 	{
-		delete child[1];
+		glSmartTexturePackerNode *current = todo.back();
+		todo.pop_back();
+
+		if (current->child[0])
+		{
+			todo.push_back(current->child[0]);
+			todo.push_back(current->child[1]);
+		}
+
+		delete current;
 	}
 }
 
@@ -211,7 +242,7 @@ bool glSmartTexturePacker::packHelper(std::vector<glSmartBitmap *> &list)
 
 			for (std::vector<glSmartBitmap *>::const_iterator it = list.begin(); it != list.end(); ++it)
 			{
-				if (!root->insert((*it), buffer, w, h))
+				if (!root->insert((*it), buffer, w, h, list.size()))
 				{
 					left.push_back((*it));
 				} else
@@ -219,6 +250,9 @@ bool glSmartTexturePacker::packHelper(std::vector<glSmartBitmap *> &list)
 					(*it)->setSharedTexture(texture);
 				}
 			}
+
+			root->destroy(list.size());
+			delete root;
 
 			if (left.empty())
 			{
