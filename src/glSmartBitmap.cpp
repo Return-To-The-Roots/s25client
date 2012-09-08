@@ -60,6 +60,9 @@ void glSmartTexturePackerNode::dump(int x, int y)
 
 int glSmartTexturePackerNode::getFreeSpace()
 {
+/*
+TODO: make iterative
+
 	if (child[0] != NULL)
 	{
 		return(child[0]->getFreeSpace() + child[1]->getFreeSpace());
@@ -69,7 +72,7 @@ int glSmartTexturePackerNode::getFreeSpace()
 	{
 		return(w * h);
 	}
-
+*/
 	return(0);
 }
 
