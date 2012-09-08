@@ -1,4 +1,4 @@
-// $Id: nofCarrier.cpp 8173 2012-09-07 20:12:56Z marcus $
+// $Id: nofCarrier.cpp 8189 2012-09-08 22:16:06Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -355,11 +355,11 @@ void nofCarrier::Draw(int x, int y)
 			}
 			else if(state == CARRS_WAITFORWARE || (waiting_for_free_node && !pause_walked_gf && !carried_ware))
 			{
-				Loader::boat_cache[dir][0].draw(x, y);
+				Loader::boat_cache[dir][0].draw(x, y, 0xFFFFFFFF, COLORS[gwg->GetPlayer(player)->color]);
 			}
 			else if(state == CARRS_WAITFORWARESPACE || (waiting_for_free_node && !pause_walked_gf && carried_ware))
 			{
-				Loader::boat_cache[dir][0].draw(x, y);
+				Loader::boat_cache[dir][0].draw(x, y, 0xFFFFFFFF, COLORS[gwg->GetPlayer(player)->color]);
 		
 				// Ware im Boot zeichnen
 				LOADER.GetMapImageN(2350+carried_ware->type)
@@ -374,7 +374,7 @@ void nofCarrier::Draw(int x, int y)
 				CalcFigurRelative(x,y);
 
 				// ruderndes Boot zeichnen
-				Loader::boat_cache[dir][ani_step].draw(x, y);
+				Loader::boat_cache[dir][ani_step].draw(x, y, 0xFFFFFFFF, COLORS[gwg->GetPlayer(player)->color]);
 
 				// Läuft normal mit oder ohne Ware
 				if(carried_ware)

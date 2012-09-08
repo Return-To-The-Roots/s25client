@@ -297,19 +297,12 @@ bool glSmartTexturePacker::pack()
 {
 	for (std::vector<glSmartBitmap *>::const_iterator it = items.begin(); it != items.end(); ++it)
 	{
-		(*it)->generateTexture();
-	}
-
-	return(true);
-/*
-	for (std::vector<glSmartBitmap *>::const_iterator it = items.begin(); it != items.end(); ++it)
-	{
 		(*it)->calcDimensions();
 	}
 
 	std::sort(items.begin(), items.end(), sortSmartBitmap);
 
-	return(packHelper(items));*/
+	return(packHelper(items));
 }
 
 unsigned glSmartBitmap::nextPowerOfTwo(unsigned k)
@@ -426,15 +419,22 @@ void glSmartBitmap::drawTo(unsigned char *buffer, unsigned stride, unsigned heig
 					{
 						if (tmp[tmpIdx + 3] != 0x00)
 						{
-							buffer[idx++] = 0x00;
-							buffer[idx++] = 0x00;
-							buffer[idx++] = 0x00;
-							buffer[idx++] = 0x40;
-						} else
-						{
-							idx += 4;
+							if (buffer[idx + 3] == 0x00)
+							{
+								buffer[idx] = 0x00;
+								buffer[idx+1] = 0x00;
+								buffer[idx+2] = 0x00;
+								buffer[idx+3] = 0x40;
+/*							} else
+							{
+								buffer[idx] >>= 2;
+								buffer[idx+1] >>= 2;
+								buffer[idx+2] >>= 2;
+								buffer[idx+3] = 0xFF;*/
+							}
 						}
 
+						idx += 4;
 						tmpIdx += 4;
 					}
 				}

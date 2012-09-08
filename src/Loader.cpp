@@ -1,4 +1,4 @@
-// $Id: Loader.cpp 8175 2012-09-08 00:36:19Z marcus $
+// $Id: Loader.cpp 8189 2012-09-08 22:16:06Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -700,7 +700,7 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool *nations)
 			glSmartBitmap &bmp = boat_cache[dir][ani_step];
 
 			bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(LOADER.GetImageN("boat", ((dir+3)%6)*8+ani_step)));
-			bmp.addShadow(LOADER.GetMapImageN(2048+dir%3));
+			bmp.addShadow(dynamic_cast<glArchivItem_Bitmap*>(LOADER.GetMapImageN(2048+dir%3)));
 
 			stp.add(bmp);
 		}
