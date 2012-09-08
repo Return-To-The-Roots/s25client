@@ -1,3 +1,362 @@
+s25rttr (20120908-8183.192) karmic; urgency=low
+
+  * Automatic Jenkins Build 192
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sat, 08 Sep 2012 12:29:03 +0200
+
+s25rttr (20120908-8183) any; urgency=low
+
+  * Temporary reverting back from texture packer due to problems with
+    some cards
+
+ -- marcus  Sat, 08 Sep 2012 10:16:00 +0200
+
+s25rttr (20120908-8182) any; urgency=low
+
+  * Added glSmartBitmap to VS2010 project file
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sat, 08 Sep 2012 10:02:00 +0200
+
+s25rttr (20120908-8181) any; urgency=low
+
+  * Removed debug output, glSmartBitmap::dump(...),
+    glSmartBitmap::getFreeSpace(...).
+
+ -- marcus  Sat, 08 Sep 2012 08:25:00 +0200
+
+s25rttr (20120908-8180.191) karmic; urgency=low
+
+  * Automatic Jenkins Build 191
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sat, 08 Sep 2012 10:25:38 +0200
+
+s25rttr (20120908-8180.190) karmic; urgency=low
+
+  * Automatic Jenkins Build 190
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sat, 08 Sep 2012 10:14:57 +0200
+
+s25rttr (20120908-8180) any; urgency=low
+
+  * Removed getFreeSpace() content (TODO: make iterative)
+
+ -- marcus  Sat, 08 Sep 2012 08:05:00 +0200
+
+s25rttr (20120908-8179) any; urgency=low
+
+  * Iterative implementation of texture packer (may lead to stack
+    overflows otherwise)
+
+ -- marcus  Sat, 08 Sep 2012 07:39:00 +0200
+
+s25rttr (20120908-8178) any; urgency=low
+
+  * Removed keeping track of current texture again (2)
+
+ -- marcus  Sat, 08 Sep 2012 06:54:00 +0200
+
+s25rttr (20120908-8177) any; urgency=low
+
+  * Removed keeping track of current texture again
+
+ -- marcus  Sat, 08 Sep 2012 06:53:00 +0200
+
+s25rttr (20120908-8176.189) karmic; urgency=low
+
+  * Automatic Jenkins Build 189
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sat, 08 Sep 2012 02:58:34 +0200
+
+s25rttr (20120908-8176) any; urgency=low
+
+  * Do not delete any textures as VideoDriverWrapper keeps track of
+    them anyway
+
+ -- marcus  Sat, 08 Sep 2012 00:38:00 +0200
+
+s25rttr (20120908-8175) any; urgency=low
+
+  * Texture packer for glSmartBitmap, keep track of current texture
+    in VideoDriverWrapper()
+
+ -- marcus  Sat, 08 Sep 2012 00:36:00 +0200
+
+s25rttr (20120908-8174.188) karmic; urgency=low
+
+  * Automatic Jenkins Build 188
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sat, 08 Sep 2012 01:30:50 +0200
+
+s25rttr (20120908-8174) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sat, 08 Sep 2012 00:00:00 +0200
+
+s25rttr (20120907-8173) any; urgency=low
+
+  * Boats and donkeys glSmartBitmap()-tized.
+
+ -- marcus  Fri, 07 Sep 2012 20:12:00 +0200
+
+s25rttr (20120907-8172) any; urgency=low
+
+  * Added support for BuGLe (http://www.opengl.org/sdk/tools/BuGLe/)
+
+ -- marcus  Fri, 07 Sep 2012 17:36:00 +0200
+
+s25rttr (20120907-8171) any; urgency=low
+
+  * Draw boundary_stones using glSmartBitmap.
+
+ -- marcus  Fri, 07 Sep 2012 17:26:00 +0200
+
+s25rttr (20120907-8170) any; urgency=low
+
+  * More smart bitmaps (granite, grainfields)
+
+ -- marcus  Fri, 07 Sep 2012 14:44:00 +0200
+
+s25rttr (20120907-8169) any; urgency=low
+
+  * VS2008 Projekt mehr oder weniger wieder lauffähig
+
+ -- OLiver Siebert <oliver@siedler25.org>  Fri, 07 Sep 2012 09:19:00 +0200
+
+s25rttr (20120907-8168.187) karmic; urgency=low
+
+  * Automatic Jenkins Build 187
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Fri, 07 Sep 2012 01:32:21 +0200
+
+s25rttr (20120906-8168) any; urgency=low
+
+  * Tree fully functional via glSmartBitmap.
+
+ -- marcus  Thu, 06 Sep 2012 22:14:00 +0200
+
+s25rttr (20120906-8167) any; urgency=low
+
+  * Animals fully cached as glSmartBitmap :)
+
+ -- marcus  Thu, 06 Sep 2012 22:06:00 +0200
+
+s25rttr (20120906-8165) any; urgency=low
+
+  * Fixes
+
+ -- marcus  Thu, 06 Sep 2012 21:24:00 +0200
+
+s25rttr (20120906-8164) any; urgency=low
+
+  * Trees fall again :)
+
+ -- marcus  Thu, 06 Sep 2012 14:24:00 +0200
+
+s25rttr (20120906-8163) any; urgency=low
+
+  * Trees use glSmartBitmap (TODO: growing animation)
+
+ -- marcus  Thu, 06 Sep 2012 14:13:00 +0200
+
+s25rttr (20120906-8162) any; urgency=low
+
+  * 2 new maps by Merri, "ported" to RttR by Spike
+
+ -- marcus  Thu, 06 Sep 2012 13:31:00 +0200
+
+s25rttr (20120906-8161.186) karmic; urgency=low
+
+  * Automatic Jenkins Build 186
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Thu, 06 Sep 2012 15:27:43 +0200
+
+s25rttr (20120906-8161) any; urgency=low
+
+  * Some graphics rewritten to use glSmartBitmap.
+
+ -- marcus  Thu, 06 Sep 2012 12:58:00 +0200
+
+s25rttr (20120906-8160) any; urgency=low
+
+  * Added glSmartBitmap.cpp/.h.
+
+ -- marcus  Thu, 06 Sep 2012 12:53:00 +0200
+
+s25rttr (20120906-8158) any; urgency=low
+
+  * Fix for Random09, fixes #1046595. (by Spike)
+
+ -- marcus  Thu, 06 Sep 2012 10:21:00 +0200
+
+s25rttr (20120906-8157) any; urgency=low
+
+  * Sanity check in EventManager.
+
+ -- marcus  Thu, 06 Sep 2012 09:39:00 +0200
+
+s25rttr (20120906-8156) any; urgency=low
+
+  * Disabled desktop background trimming. What is this good for
+    anyway? (Fixes #849092)
+
+ -- marcus  Thu, 06 Sep 2012 07:54:00 +0200
+
+s25rttr (20120906-8155.185) karmic; urgency=low
+
+  * Automatic Jenkins Build 185
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Thu, 06 Sep 2012 02:07:06 +0200
+
+s25rttr (20120906-8155) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Thu, 06 Sep 2012 00:00:00 +0200
+
+s25rttr (20120906-8154.184) karmic; urgency=low
+
+  * Automatic Jenkins Build 184
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Thu, 06 Sep 2012 01:08:50 +0200
+
+s25rttr (20120906-8154) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Thu, 06 Sep 2012 00:00:00 +0200
+
+s25rttr (20120905-8153) any; urgency=low
+
+  * removed debugging stuff
+
+ -- marcus  Wed, 05 Sep 2012 15:38:00 +0200
+
+s25rttr (20120905-8152) any; urgency=low
+
+  * Some modifications for LobbyBot (should be implemented in Lobby
+    some day)
+
+ -- marcus  Wed, 05 Sep 2012 15:36:00 +0200
+
+s25rttr (20120905-8151) any; urgency=low
+
+  * Play sound when user joins lobby
+
+ -- marcus  Wed, 05 Sep 2012 14:34:00 +0200
+
+s25rttr (20120905-8150) any; urgency=low
+
+  * Added xaser to credits (map editor).
+
+ -- marcus  Wed, 05 Sep 2012 11:19:00 +0200
+
+s25rttr (20120905-8149) any; urgency=low
+
+  * Removed call lists from class, too.
+
+ -- marcus  Wed, 05 Sep 2012 09:14:00 +0200
+
+s25rttr (20120905-8148) any; urgency=low
+
+  * Replaced calllists for glArchivItem* by glInterleavedArray()s.
+    Removed unnecessary OpenGL state changes.
+
+ -- marcus  Wed, 05 Sep 2012 08:23:00 +0200
+
+s25rttr (20120905-8147) any; urgency=low
+
+  * Credits update.
+
+ -- marcus  Wed, 05 Sep 2012 08:21:00 +0200
+
+s25rttr (20120905-8146.183) karmic; urgency=low
+
+  * Automatic Jenkins Build 183
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Wed, 05 Sep 2012 01:09:57 +0200
+
+s25rttr (20120905-8146) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Wed, 05 Sep 2012 00:00:00 +0200
+
+s25rttr (20120904-8145) any; urgency=low
+
+  * Use AIInterface instead of adding GameCommands directly!
+
+ -- marcus  Tue, 04 Sep 2012 10:40:00 +0200
+
+s25rttr (20120904-8144) any; urgency=low
+
+  * Added missing "break;"s.
+
+ -- marcus  Tue, 04 Sep 2012 10:22:00 +0200
+
+s25rttr (20120904-8143.182) karmic; urgency=low
+
+  * Automatic Jenkins Build 182
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 04 Sep 2012 01:25:45 +0200
+
+s25rttr (20120904-8143) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 04 Sep 2012 00:00:00 +0200
+
+s25rttr (20120903-8142) any; urgency=low
+
+  * AIPlayerJH::TryToAttack: Do not check enemy buildings multiple
+    times for potential attack anymore.
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Mon, 03 Sep 2012 17:33:00 +0200
+
+s25rttr (20120903-8141) any; urgency=low
+
+  * Fixes...
+
+ -- marcus  Mon, 03 Sep 2012 15:08:00 +0200
+
+s25rttr (20120903-8140) any; urgency=low
+
+  * Speedup of EventManager (using vector with improved remove()).
+    Logic now runs at about twice the speed. :) TODO: stop
+    reallocation of Event class every time.
+
+ -- marcus  Mon, 03 Sep 2012 10:23:00 +0200
+
+s25rttr (20120903-8139.181) karmic; urgency=low
+
+  * Automatic Jenkins Build 181
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Mon, 03 Sep 2012 01:23:45 +0200
+
+s25rttr (20120903-8139) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Mon, 03 Sep 2012 00:00:00 +0200
+
+s25rttr (20120902-8138) any; urgency=low
+
+  * Minor optimizations.
+
+ -- marcus  Sun, 02 Sep 2012 13:59:00 +0200
+
+s25rttr (20120902-8137.180) karmic; urgency=low
+
+  * Automatic Jenkins Build 180
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sun, 02 Sep 2012 10:03:02 +0200
+
+s25rttr (20120901-8137) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 01 Sep 2012 22:01:00 +0200
+
 s25rttr (20120901-8135.179) karmic; urgency=low
 
   * Automatic Jenkins Build 179
