@@ -21,7 +21,6 @@
 // Header
 #include "main.h"
 #include "glSmartBitmap.h"
-#include "VideoDriverWrapper.h"
 
 #include <climits>
 
@@ -175,7 +174,7 @@ bool glSmartTexturePacker::packHelper(std::vector<glSmartBitmap *> &list)
 		return(false);
 	}
 
-	VideoDriverWrapper::inst().BindTexture(texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
@@ -457,7 +456,7 @@ void glSmartBitmap::generateTexture()
 
 	drawTo(buffer, stride, h);
 
-	VideoDriverWrapper::inst().BindTexture(texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -479,6 +478,9 @@ void glSmartBitmap::generateTexture()
 void glSmartBitmap::draw(int x, int y, unsigned color, unsigned player_color)
 {
 	bool player = false;
+
+	if (!texture)
+		generateTexture();
 
 	if (!texture)
 		return;
@@ -514,7 +516,7 @@ void glSmartBitmap::draw(int x, int y, unsigned color, unsigned player_color)
 
 	glInterleavedArrays(GL_T2F_C4UB_V3F, 0, tmp);
 
-	VideoDriverWrapper::inst().BindTexture(texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
 
 	glDrawArrays(GL_QUADS, 0, player ? 8 : 4);
 }
