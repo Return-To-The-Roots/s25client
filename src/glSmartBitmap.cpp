@@ -24,6 +24,7 @@
 
 #include <climits>
 #include <list>
+#include <cstdio>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -184,6 +185,9 @@ bool glSmartTexturePacker::packHelper(std::vector<glSmartBitmap *> &list)
 		total += (*it)->getTexWidth() * (*it)->getTexHeight();
 	}
 
+	w = glSmartBitmap::nextPowerOfTwo(w);
+	h = glSmartBitmap::nextPowerOfTwo(h);
+
 	bool maxTex = false;
 
 	do
@@ -209,6 +213,26 @@ bool glSmartTexturePacker::packHelper(std::vector<glSmartBitmap *> &list)
 				}
 			}
 
+/*
+			char tmp[10];
+			snprintf(tmp, sizeof(tmp), "%u.rgba", texture);
+
+			FILE *f = fopen(tmp, "w+");
+fprintf(stderr, "%u SIZE (%ix%i)\n", texture, w, h);
+
+			for (int y = 0; y < w; ++y)
+			{
+				for (int x = 0; x < h; ++x)
+				{
+					fputc(buffer[((y * w + x) << 2) + 2], f);
+					fputc(buffer[((y * w + x) << 2) + 1], f);
+					fputc(buffer[((y * w + x) << 2) + 0], f);
+					fputc(buffer[((y * w + x) << 2) + 3], f);
+				}
+			}
+
+			fclose(f);
+*/
 			root->destroy(list.size());
 			delete root;
 
@@ -273,12 +297,19 @@ bool glSmartTexturePacker::pack()
 {
 	for (std::vector<glSmartBitmap *>::const_iterator it = items.begin(); it != items.end(); ++it)
 	{
+		(*it)->generateTexture();
+	}
+
+	return(true);
+/*
+	for (std::vector<glSmartBitmap *>::const_iterator it = items.begin(); it != items.end(); ++it)
+	{
 		(*it)->calcDimensions();
 	}
 
 	std::sort(items.begin(), items.end(), sortSmartBitmap);
 
-	return(packHelper(items));
+	return(packHelper(items));*/
 }
 
 unsigned glSmartBitmap::nextPowerOfTwo(unsigned k)
