@@ -1,4 +1,4 @@
-// $Id: glArchivItem_Bitmap_Direct.cpp 8103 2012-08-29 10:06:39Z marcus $
+// $Id: glArchivItem_Bitmap_Direct.cpp 8175 2012-09-08 00:36:19Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -21,6 +21,7 @@
 // Header
 #include "main.h"
 #include "glArchivItem_Bitmap_Direct.h"
+#include "VideoDriverWrapper.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -80,7 +81,7 @@ void glArchivItem_Bitmap_Direct::tex_setPixel(unsigned short x, unsigned short y
 			else
 				this->palette->get(color, &buffer[0], &buffer[1], &buffer[2]);
 
-			glBindTexture(GL_TEXTURE_2D, texture);
+			VideoDriverWrapper::inst().BindTexture(texture);
 			glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &buffer);
 		}
 	}
@@ -111,7 +112,7 @@ void glArchivItem_Bitmap_Direct::tex_setPixel(unsigned short x, unsigned short y
 		{
 			unsigned char buffer[4] = { r, g, b, a };
 			
-			glBindTexture(GL_TEXTURE_2D, texture);
+			VideoDriverWrapper::inst().BindTexture(texture);
 			glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &buffer);
 		}
 	}

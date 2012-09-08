@@ -1,4 +1,4 @@
-// $Id: Minimap.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: Minimap.cpp 8175 2012-09-08 00:36:19Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -43,8 +43,6 @@ Minimap::Minimap(const unsigned short map_width, const unsigned short map_height
  */
 void Minimap::CreateMapTexture(const void *param)
 {
-	map.DeleteTexture();
-
 	if(!param)
 		return;
 
@@ -440,7 +438,7 @@ void IngameMinimap::BeforeDrawing()
  */
 void IngameMinimap::UpdateAll()
 {
-	map.DeleteTexture();
+//	map.DeleteTexture();
 	CreateMapTexture(&gwv);
 }
 

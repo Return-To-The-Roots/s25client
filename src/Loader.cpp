@@ -1,4 +1,4 @@
-// $Id: Loader.cpp 8173 2012-09-07 20:12:56Z marcus $
+// $Id: Loader.cpp 8175 2012-09-08 00:36:19Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -492,6 +492,8 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool *nations)
 	map_gfx = &(this->files[MAP_GFXSET_Z[lastgfx]]);
 	tex_gfx = &(this->files[TEX_GFXSET[lastgfx]]);
 
+	glSmartTexturePacker stp;
+
 // Animals
 	for (unsigned species = 0; species < SPEC_COUNT; ++species)
 	{
@@ -513,7 +515,7 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool *nations)
 						bmp.addShadow(LOADER.GetMapImageN(ANIMALCONSTS[species].shadow_id+(dir+3)%6));
 				}
 
-				bmp.generateTexture();
+				stp.add(bmp);
 			}
 		}
 
@@ -528,7 +530,7 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool *nations)
 				bmp.addShadow(LOADER.GetMapImageN(ANIMALCONSTS[species].shadow_dead_id));
 			}
 
-			bmp.generateTexture();
+			stp.add(bmp);
 		}
 	}
 
@@ -562,8 +564,8 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool *nations)
 				skel.addShadow(LOADER.GetNationImageN(nation,250 + 5*type + 3));
 			}
 
-			bmp.generateTexture();
-			skel.generateTexture();
+			stp.add(bmp);
+			stp.add(skel);
 		}
 
 // FLAGS
@@ -579,7 +581,7 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool *nations)
 				bmp.add(static_cast<glArchivItem_Bitmap_Player *>(LOADER.GetNationImageN(nation, nr)));
 				bmp.addShadow(LOADER.GetNationImageN(nation, nr + 10));
 
-				bmp.generateTexture();
+				stp.add(bmp);
 			}
 		}
 
@@ -622,7 +624,7 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool *nations)
 					bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(bob_jobs->get(96+bob_jobs->getLink(good))));
 					bmp.addShadow(LOADER.GetMapImageN(900 + ( (dir + 3) % 6 ) * 8 + ani_step));
 
-					bmp.generateTexture();
+					stp.add(bmp);
 				}
 			}
 		}
@@ -630,7 +632,8 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool *nations)
 		glSmartBitmap &bmp = boundary_stone_cache[nation];
 		bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(LOADER.GetNationImageN(nation, 0)));
 		bmp.addShadow(LOADER.GetNationImageN(nation, 1));
-		bmp.generateTexture();
+
+		stp.add(bmp);
 	}
 
 // Trees
@@ -643,7 +646,7 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool *nations)
 			bmp.add(LOADER.GetMapImageN(200 + type * 15 + ani_step));
 			bmp.addShadow(LOADER.GetMapImageN(350 + type * 15 + ani_step));
 
-			bmp.generateTexture();
+			stp.add(bmp);
 		}
 	}
 
@@ -657,7 +660,7 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool *nations)
 			bmp.add(LOADER.GetMapImageN(516 + type*6 + size));
 			bmp.addShadow(LOADER.GetMapImageN(616 + type*6 + size));
 
-			bmp.generateTexture();
+			stp.add(bmp);
 		}
 	}
 
@@ -671,7 +674,7 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool *nations)
 			bmp.add(LOADER.GetMapImageN(532+type*5+size));
 			bmp.addShadow(LOADER.GetMapImageN(632+type*5+size));
 
-			bmp.generateTexture();
+			stp.add(bmp);
 		}
 	}
 
@@ -685,7 +688,7 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool *nations)
 			bmp.add(LOADER.GetMapImageN(2000+((dir+3)%6)*8+ani_step));
 			bmp.addShadow(LOADER.GetMapImageN(2048+dir%3));
 
-			bmp.generateTexture();
+			stp.add(bmp);
 		}
 	}
 
@@ -699,9 +702,11 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool *nations)
 			bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(LOADER.GetImageN("boat", ((dir+3)%6)*8+ani_step)));
 			bmp.addShadow(LOADER.GetMapImageN(2048+dir%3));
 
-			bmp.generateTexture();
+			stp.add(bmp);
 		}
 	}
+
+	stp.pack();
 
 	return true;
 }

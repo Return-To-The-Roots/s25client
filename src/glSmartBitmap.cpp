@@ -21,6 +21,7 @@
 // Header
 #include "main.h"
 #include "glSmartBitmap.h"
+#include "VideoDriverWrapper.h"
 
 #include <climits>
 
@@ -31,6 +32,263 @@
 	#undef THIS_FILE
 	static char THIS_FILE[] = __FILE__;
 #endif
+
+void glSmartTexturePackerNode::dump(int x, int y)
+{
+	if (child[0] != NULL)
+	{
+		if (child[0]->h == h)
+		{
+			child[0]->dump(x, y);
+			child[1]->dump(x + child[0]->w, y);
+		} else
+		{
+			child[0]->dump(x, y);
+			child[1]->dump(x, y + child[0]->h);
+		}
+
+		return;
+	}
+
+	if (bmp != NULL)
+	{
+		fprintf(stderr, "%i,%i %ix%i\n", x, y, w, h);
+	}
+
+	return;
+}
+
+int glSmartTexturePackerNode::getFreeSpace()
+{
+	if (child[0] != NULL)
+	{
+		return(child[0]->getFreeSpace() + child[1]->getFreeSpace());
+	}
+
+	if (bmp == NULL)
+	{
+		return(w * h);
+	}
+
+	return(0);
+}
+
+bool glSmartTexturePackerNode::insert(glSmartBitmap *b, unsigned char *buffer, unsigned gw, unsigned gh)
+{
+	if (child[0] != NULL)
+	{
+		return(child[0]->insert(b, buffer, gw, gh) || child[1]->insert(b, buffer, gw, gh));
+	}
+
+	// we are a leaf and do already contain an image
+	if (bmp != NULL)
+	{
+		return(false);
+	}
+
+	int bw = b->getTexWidth();
+	int bh = b->getTexHeight();
+
+	// no space left for this item
+	if ((bw > w) || (bh > h))
+	{
+		return(false);
+	}
+
+	if ((bw == w) && (bh == h))
+	{
+		bmp = b;
+
+		bmp->drawTo(buffer, gw, gh, x, y);
+
+		bmp->tmp[0].tx = bmp->tmp[1].tx = (float) x / (float) gw;
+		bmp->tmp[2].tx = bmp->tmp[3].tx = bmp->isPlayer() ? (float) (x + w / 2) / (float) gw : (float) (x + w) / (float) gw;
+
+		bmp->tmp[0].ty = bmp->tmp[3].ty = bmp->tmp[4].ty = bmp->tmp[7].ty = (float) y / (float) gh;
+		bmp->tmp[1].ty = bmp->tmp[2].ty = bmp->tmp[5].ty = bmp->tmp[6].ty = (float) (y + h) / (float) gh;
+
+		bmp->tmp[4].tx = bmp->tmp[5].tx = (float) (x + w / 2) / (float) gw;
+		bmp->tmp[6].tx = bmp->tmp[7].tx = (float) (x + w) / (float) gw;
+
+		return(true);
+	}
+
+	child[0] = new glSmartTexturePackerNode();
+	child[1] = new glSmartTexturePackerNode();
+
+	int dw = w - bw;
+	int dh = h - bh;
+
+	if (dw > dh)
+	{
+		// split into left and right, put bitmap in left
+		child[0]->x = x;
+		child[1]->x = x + bw;
+		child[0]->y = child[1]->y = y;
+		child[0]->w = bw;
+		child[1]->w = w - bw;
+		child[0]->h = child[1]->h = h;
+	} else
+	{
+		// split into top and bottom, put bitmap in top
+		child[0]->x = child[1]->x = x;
+		child[0]->y = y;
+		child[1]->y = y + bh;
+		child[0]->w = child[1]->w = w;
+		child[0]->h = bh;
+		child[1]->h = h - bh;
+	}
+
+	return(child[0]->insert(b, buffer, gw, gh));
+}
+
+glSmartTexturePackerNode::~glSmartTexturePackerNode()
+{
+	if (child[0])
+	{
+		delete child[0];
+	}
+
+	if (child[1])
+	{
+		delete child[1];
+	}
+}
+
+bool glSmartTexturePacker::sortSmartBitmap(glSmartBitmap *a, glSmartBitmap *b)
+{
+	return((a->getTexWidth() * a->getTexHeight()) > (b->getTexWidth() * b->getTexHeight()));
+}
+
+bool glSmartTexturePacker::packHelper(std::vector<glSmartBitmap *> &list)
+{
+	int w = 0;
+	int h = 0;
+	int total = 0;
+
+	unsigned texture;
+
+	glGenTextures(1, &texture);
+
+	if (!texture)
+	{
+		return(false);
+	}
+
+	VideoDriverWrapper::inst().BindTexture(texture);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+	for (std::vector<glSmartBitmap *>::const_iterator it = list.begin(); it != list.end(); ++it)
+	{
+		if ((*it)->getTexWidth() > w)
+		{
+			w = (*it)->getTexWidth();
+		}
+
+		if ((*it)->getTexHeight() > h)
+		{
+			h = (*it)->getTexHeight();
+		}
+
+		total += (*it)->getTexWidth() * (*it)->getTexHeight();
+	}
+
+	bool maxTex = false;
+
+	do
+	{
+		// two possibilities: enough space OR maximum texture size reached
+		if ((w * h >= total) || maxTex)
+		{
+			glSmartTexturePackerNode *root = new glSmartTexturePackerNode(w, h);
+
+			std::vector<glSmartBitmap *> left;
+
+			fprintf(stderr, "TOTAL of %i should%s fit in %ix%i (%i left)\n", total, maxTex ? " not" : "", w, h, root->getFreeSpace());
+
+			unsigned char *buffer = new unsigned char[w * h * 4];
+			memset(buffer, 0, w * h * 4);
+
+			for (std::vector<glSmartBitmap *>::const_iterator it = list.begin(); it != list.end(); ++it)
+			{
+				if (!root->insert((*it), buffer, w, h))
+				{
+					left.push_back((*it));
+				} else
+				{
+					(*it)->setSharedTexture(texture);
+				}
+			}
+
+			if (left.empty())
+			{
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_BGRA, GL_UNSIGNED_BYTE, buffer);
+
+				delete[] buffer;
+
+				return(true);
+			} else if (maxTex)
+			{
+				packHelper(left);
+
+				left.clear();
+
+				delete[] buffer;
+
+				return(true);
+			}
+
+			left.clear();
+
+			delete[] buffer;
+		}
+
+		if (w <= h)
+		{
+			glTexImage2D(GL_PROXY_TEXTURE_2D, 0, GL_RGBA, w << 1, h, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
+
+			int tmp = 0;
+
+			glGetTexLevelParameteriv(GL_PROXY_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &tmp);
+
+			if (tmp == 0)
+			{
+				maxTex = true;
+			} else
+			{
+				w <<= 1;
+			}
+		} else if (h < w)
+		{
+			glTexImage2D(GL_PROXY_TEXTURE_2D, 0, GL_RGBA, w, h << 1, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
+
+			int tmp = 0;
+
+			glGetTexLevelParameteriv(GL_PROXY_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &tmp);
+
+			if (tmp == 0)
+			{
+				maxTex = true;
+			} else
+			{
+				h <<= 1;
+			}
+		}
+	} while (0 == 0);
+}
+
+bool glSmartTexturePacker::pack()
+{
+	for (std::vector<glSmartBitmap *>::const_iterator it = items.begin(); it != items.end(); ++it)
+	{
+		(*it)->calcDimensions();
+	}
+
+	std::sort(items.begin(), items.end(), sortSmartBitmap);
+
+	return(packHelper(items));
+}
 
 unsigned glSmartBitmap::nextPowerOfTwo(unsigned k)
 {
@@ -49,7 +307,7 @@ unsigned glSmartBitmap::nextPowerOfTwo(unsigned k)
 	return(k + 1);
 }
 
-void glSmartBitmap::generateTexture()
+void glSmartBitmap::calcDimensions()
 {
 	if (items.empty())
 	{
@@ -60,16 +318,6 @@ void glSmartBitmap::generateTexture()
 	int max_y = 0;
 
 	nx = ny = INT_MIN;
-
-	if (!texture)
-	{
-		glGenTextures(1, &texture);
-
-		if (!texture)
-		{
-			return;
-		}
-	}
 
 	hasPlayer = false;
 
@@ -101,15 +349,12 @@ void glSmartBitmap::generateTexture()
 		}
 	}
 
-	w = nextPowerOfTwo(nx + max_x);
-	h = nextPowerOfTwo(ny + max_y);
+	w = nx + max_x;
+	h = ny + max_y;
+}
 
-	// do we have a player-colored overlay?
-	unsigned stride = hasPlayer ? w * 2 : w;
-
-	unsigned char *buffer = new unsigned char[stride * h * 4];
-	memset(buffer, 0, stride * h * 4);
-
+void glSmartBitmap::drawTo(unsigned char *buffer, unsigned stride, unsigned height, int x_offset, int y_offset)
+{
 	libsiedler2::ArchivItem_Palette *p_colors = LOADER.GetPaletteN("colors");
 	libsiedler2::ArchivItem_Palette *p_5 = LOADER.GetPaletteN("pal5");
 
@@ -124,7 +369,7 @@ void glSmartBitmap::generateTexture()
 			{
 				glArchivItem_Bitmap *bmp = static_cast<glArchivItem_Bitmap *>((*it).bmp);
 
-				bmp->print(buffer, stride, h, libsiedler2::FORMAT_RGBA, p_5, xo, yo, 0, 0, 0, 0);
+				bmp->print(buffer, stride, height, libsiedler2::FORMAT_RGBA, p_5, xo + x_offset, yo + y_offset, 0, 0, 0, 0);
 
 				break;
 			}
@@ -132,11 +377,11 @@ void glSmartBitmap::generateTexture()
 			{
 				glArchivItem_Bitmap_Player *bmp = static_cast<glArchivItem_Bitmap_Player *>((*it).bmp);
 
-				bmp->print(buffer, stride, h, libsiedler2::FORMAT_RGBA, p_colors, 128,
-					xo, yo, 0, 0, 0, 0, false);
+				bmp->print(buffer, stride, height, libsiedler2::FORMAT_RGBA, p_colors, 128,
+					xo + x_offset, yo + y_offset, 0, 0, 0, 0, false);
 
-				bmp->print(buffer, stride, h, libsiedler2::FORMAT_RGBA, p_colors, 128,
-					xo + w, yo, 0, 0, 0, 0, true);
+				bmp->print(buffer, stride, height, libsiedler2::FORMAT_RGBA, p_colors, 128,
+					xo + w + x_offset, yo + y_offset, 0, 0, 0, 0, true);
 
 				break;
 			}
@@ -149,20 +394,26 @@ void glSmartBitmap::generateTexture()
 
 				bmp->print(tmp, w, h, libsiedler2::FORMAT_RGBA, p_5, xo, yo, 0, 0, 0, 0);
 
-				unsigned idx = 0;
-				for (int x = 0; x < w; ++x)
+				unsigned tmpIdx = 0;
+
+				for (int y = 0; y < h; ++y)
 				{
-					for (int y = 0; y < h; ++y)
+					unsigned idx = ((y_offset + y) * stride + x_offset) << 2;
+
+					for (int x = 0; x < w; ++x)
 					{
-						if (tmp[idx + 3] != 0x00)
+						if (tmp[tmpIdx + 3] != 0x00)
 						{
-							buffer[idx + 0] = 0x00;
-							buffer[idx + 1] = 0x00;
-							buffer[idx + 2] = 0x00;
-							buffer[idx + 3] = 0x40;
+							buffer[idx++] = 0x00;
+							buffer[idx++] = 0x00;
+							buffer[idx++] = 0x00;
+							buffer[idx++] = 0x40;
+						} else
+						{
+							idx += 4;
 						}
 
-						idx += 4;
+						tmpIdx += 4;
 					}
 				}
 
@@ -174,8 +425,39 @@ void glSmartBitmap::generateTexture()
 				break;
 		}
 	}
+}
 
-	glBindTexture(GL_TEXTURE_2D, texture);
+void glSmartBitmap::generateTexture()
+{
+	if (items.empty())
+	{
+		return;
+	}
+
+	if (!texture)
+	{
+		glGenTextures(1, &texture);
+
+		if (!texture)
+		{
+			return;
+		}
+	}
+
+	calcDimensions();
+
+	w = nextPowerOfTwo(w);
+	h = nextPowerOfTwo(h);
+
+	// do we have a player-colored overlay?
+	unsigned stride = hasPlayer ? w * 2 : w;
+
+	unsigned char *buffer = new unsigned char[stride * h * 4];
+	memset(buffer, 0, stride * h * 4);
+
+	drawTo(buffer, stride, h);
+
+	VideoDriverWrapper::inst().BindTexture(texture);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -184,28 +466,19 @@ void glSmartBitmap::generateTexture()
 
 	delete[] buffer;
 
-	tmp[0].z = tmp[1].z = tmp[2].z = tmp[3].z = 0.0;
-	tmp[4].z = tmp[5].z = tmp[6].z = tmp[7].z = 0.0;
-
 	tmp[0].tx = tmp[1].tx = 0.0;
 	tmp[2].tx = tmp[3].tx = hasPlayer ? 0.5 : 1.0;
 
-	tmp[0].ty = tmp[3].ty = 0.0;
-	tmp[1].ty = tmp[2].ty = 1.0;
+	tmp[0].ty = tmp[3].ty = tmp[4].ty = tmp[7].ty = 0.0;
+	tmp[1].ty = tmp[2].ty = tmp[5].ty = tmp[6].ty = 1.0;
 
 	tmp[4].tx = tmp[5].tx = 0.5;
 	tmp[6].tx = tmp[7].tx = 1.0;
-
-	tmp[4].ty = tmp[7].ty = 0.0;
-	tmp[5].ty = tmp[6].ty = 1.0;
 }
 
 void glSmartBitmap::draw(int x, int y, unsigned color, unsigned player_color)
 {
 	bool player = false;
-
-	if (!texture)
-		generateTexture();
 
 	if (!texture)
 		return;
@@ -241,7 +514,7 @@ void glSmartBitmap::draw(int x, int y, unsigned color, unsigned player_color)
 
 	glInterleavedArrays(GL_T2F_C4UB_V3F, 0, tmp);
 
-	glBindTexture(GL_TEXTURE_2D, texture);
+	VideoDriverWrapper::inst().BindTexture(texture);
 
 	glDrawArrays(GL_QUADS, 0, player ? 8 : 4);
 }

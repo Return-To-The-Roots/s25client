@@ -1,4 +1,4 @@
-// $Id: TerrainRenderer.cpp 8148 2012-09-05 08:23:36Z marcus $
+// $Id: TerrainRenderer.cpp 8175 2012-09-08 00:36:19Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -853,13 +853,13 @@ void TerrainRenderer::Draw(GameWorldView * gwv, unsigned int *water)
 			switch(i)
 			{
 			case TT_WATER:
-				glBindTexture(GL_TEXTURE_2D, GetImage(water, GAMECLIENT.GetGlobalAnimation(8, 5, 2, 0))->GetTexture());
+				VideoDriverWrapper::inst().BindTexture(GetImage(water, GAMECLIENT.GetGlobalAnimation(8, 5, 2, 0))->GetTexture());
 				break;
 			case TT_LAVA:
-				glBindTexture(GL_TEXTURE_2D, GetImage(lava, GAMECLIENT.GetGlobalAnimation(4, 5, 4, 0))->GetTexture());
+				VideoDriverWrapper::inst().BindTexture(GetImage(lava, GAMECLIENT.GetGlobalAnimation(4, 5, 4, 0))->GetTexture());
 				break;
 			default:
-				glBindTexture(GL_TEXTURE_2D, GetImage(textures, i)->GetTexture());
+				VideoDriverWrapper::inst().BindTexture(GetImage(textures, i)->GetTexture());
 			}
 
 			for(std::list<MapTile>::iterator it = sorted_textures[i].begin(); it != sorted_textures[i].end(); ++it)
@@ -887,7 +887,7 @@ void TerrainRenderer::Draw(GameWorldView * gwv, unsigned int *water)
 	{
 		if(sorted_borders[i].size())
 		{
-			glBindTexture(GL_TEXTURE_2D, GetImage(borders, i)->GetTexture());
+			VideoDriverWrapper::inst().BindTexture(GetImage(borders, i)->GetTexture());
 
 			for(std::list<BorderTile>::iterator it = sorted_borders[i].begin(); it != sorted_borders[i].end(); ++it)
 			{
@@ -1125,7 +1125,7 @@ void TerrainRenderer::DrawWays(GameWorldView *gwv)
 		}
 
 		glInterleavedArrays(GL_T2F_C3F_V3F, 0, tmp);
-		glBindTexture(GL_TEXTURE_2D, GetImage(roads, type)->GetTexture());
+		VideoDriverWrapper::inst().BindTexture(GetImage(roads, type)->GetTexture());
 		glDrawArrays(GL_QUADS, 0, i);
 
 		delete[] tmp;

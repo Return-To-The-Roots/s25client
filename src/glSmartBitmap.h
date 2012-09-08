@@ -53,10 +53,10 @@ private:
 	int w, h;
 	int nx, ny;
 
+	bool sharedTexture;
 	unsigned int texture;
 
 	bool hasPlayer;
-
 
 	struct GL_T2F_C4UB_V3F_Struct
 	{
@@ -65,23 +65,74 @@ private:
 		GLfloat x, y, z;
 	};
 
-	GL_T2F_C4UB_V3F_Struct tmp[8];
-
 	std::vector<glBitmapItem> items;
 
 public:
-	glSmartBitmap() : w(0), h(0), nx(0), ny(0), texture(0), hasPlayer(false) {}
-	~glSmartBitmap() {if (texture) glDeleteTextures(1, &texture);}
+	GL_T2F_C4UB_V3F_Struct tmp[8];
+
+	glSmartBitmap() : w(0), h(0), nx(0), ny(0), sharedTexture(false), texture(0), hasPlayer(false)
+	{
+		tmp[0].z = tmp[1].z = tmp[2].z = tmp[3].z = 0.0;
+		tmp[4].z = tmp[5].z = tmp[6].z = tmp[7].z = 0.0;
+	}
+	~glSmartBitmap() {if (texture && !sharedTexture) glDeleteTextures(1, &texture);}
+
+	inline int getWidth() {return(w);}
+	inline int getHeight() {return(h);}
+
+	inline int getTexWidth() {return(hasPlayer ? w << 1 : w);}
+	inline int getTexHeight() {return(h);}
 
 	inline bool isGenerated() {return(texture != 0);}
+	inline bool isPlayer() {return(hasPlayer);}
 
-	unsigned nextPowerOfTwo(unsigned k);
+	inline void setSharedTexture(unsigned tex) {sharedTexture = true; texture = tex;}
+
+	void calcDimensions();
+
 	void generateTexture();
 	void draw(int x, int y, unsigned color = 0xFFFFFFFF, unsigned player_color = 0x00000000);
+	void drawTo(unsigned char *buffer, unsigned stride, unsigned height, int x_offset = 0, int y_offset = 0);
 
 	void add(glArchivItem_Bitmap *bmp) {if (bmp) items.push_back(glBitmapItem(bmp));}
 	void add(glArchivItem_Bitmap_Player *bmp) {if (bmp) items.push_back(glBitmapItem(bmp));}
 	void addShadow(glArchivItem_Bitmap *bmp) {if (bmp) items.push_back(glBitmapItem(bmp, true));}
+
+	static unsigned nextPowerOfTwo(unsigned k);
+};
+
+class glSmartTexturePackerNode;
+
+class glSmartTexturePackerNode
+{
+	int x, y;
+	int w, h;
+
+	glSmartBitmap *bmp;
+
+	glSmartTexturePackerNode *child[2];
+
+public:
+	glSmartTexturePackerNode() : x(0), y(0), w(0), h(0), bmp(NULL) {child[0] = child[1] = NULL;}
+	glSmartTexturePackerNode(int w, int h) : x(0), y(0), w(w), h(h), bmp(NULL) {child[0] = child[1] = NULL;}
+	~glSmartTexturePackerNode();
+
+	bool insert(glSmartBitmap *b, unsigned char *buffer, unsigned gw, unsigned gh);
+	int getFreeSpace();
+	void dump(int x = 0, int y = 0);
+};
+
+class glSmartTexturePacker
+{
+private:
+	std::vector<glSmartBitmap *> items;
+
+	bool packHelper(std::vector<glSmartBitmap *> &list);
+	static bool sortSmartBitmap(glSmartBitmap *a, glSmartBitmap *b);
+public:
+	bool pack();
+
+	void add(glSmartBitmap& bmp) {items.push_back(&bmp);}
 };
 
 #endif
