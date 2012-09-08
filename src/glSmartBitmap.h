@@ -75,7 +75,7 @@ public:
 		tmp[0].z = tmp[1].z = tmp[2].z = tmp[3].z = 0.0;
 		tmp[4].z = tmp[5].z = tmp[6].z = tmp[7].z = 0.0;
 	}
-	~glSmartBitmap() {if (texture && !sharedTexture) glDeleteTextures(1, &texture);}
+	~glSmartBitmap() {/*if (texture && !sharedTexture) glDeleteTextures(1, &texture);*/}
 
 	inline int getWidth() {return(w);}
 	inline int getHeight() {return(h);}
