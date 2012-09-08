@@ -1,4 +1,4 @@
-// $Id: VideoDriverWrapper.cpp 8175 2012-09-08 00:36:19Z marcus $
+// $Id: VideoDriverWrapper.cpp 8178 2012-09-08 06:54:07Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -372,8 +372,6 @@ bool VideoDriverWrapper::Initialize()
 
 	// Buffer swappen um den leeren Buffer darzustellen
 	SwapBuffers();
-
-	texture_current = 0xFFFFFFFF;
 
 	return true;
 }
