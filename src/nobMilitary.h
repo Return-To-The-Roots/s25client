@@ -1,4 +1,4 @@
-// $Id: nobMilitary.h 8114 2012-09-01 19:10:52Z jh $
+// $Id: nobMilitary.h 8184 2012-09-08 11:51:47Z OLiver $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -59,6 +59,8 @@ class nobMilitary : public nobBaseMilitary
 	EventManager::EventPointer goldorder_event;
 	/// Beförderung-Event
 	EventManager::EventPointer upgrade_event;
+	/// Is the military building regulating its troops at the moment? (then block furthere RegulateTroop calls)
+	bool is_regulating_troops;
 
 public:
 

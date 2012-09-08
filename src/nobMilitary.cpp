@@ -1,4 +1,4 @@
-// $Id: nobMilitary.cpp 8126 2012-09-01 19:16:47Z jh $
+// $Id: nobMilitary.cpp 8184 2012-09-08 11:51:47Z OLiver $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -54,7 +54,8 @@
 #endif
 
 nobMilitary::nobMilitary(const BuildingType type,const unsigned short x, const unsigned short y,const unsigned char player,const Nation nation)
-: nobBaseMilitary(type,x,y,player,nation), new_built(true), coins(0), disable_coins(false), disable_coins_virtual(false), capturing(false), capturing_soldiers(0), goldorder_event(0), upgrade_event(0)
+: nobBaseMilitary(type,x,y,player,nation), new_built(true), coins(0), disable_coins(false), 
+disable_coins_virtual(false), capturing(false), capturing_soldiers(0), goldorder_event(0), upgrade_event(0), is_regulating_troops(false)
 {
 	// Gebäude entsprechend als Militärgebäude registrieren und in ein Militärquadrat eintragen
 	gwg->GetPlayer(player)->AddMilitaryBuilding(this);
@@ -162,7 +163,8 @@ size(sgd->PopUnsignedChar()),
 capturing(sgd->PopBool()),
 capturing_soldiers(sgd->PopUnsignedInt()),
 goldorder_event(sgd->PopObject<EventManager::Event>(GOT_EVENT)),
-upgrade_event(sgd->PopObject<EventManager::Event>(GOT_EVENT))
+upgrade_event(sgd->PopObject<EventManager::Event>(GOT_EVENT)),
+is_regulating_troops(false)
 {
 	sgd->PopObjectList(ordered_troops,GOT_NOF_PASSIVESOLDIER);
 	sgd->PopObjectList(ordered_coins,GOT_WARE);
@@ -397,6 +399,12 @@ void nobMilitary::RegulateTroops()
 	if(capturing)
 		return;
 
+	// Already regulate its troops => Don't call this method again
+	if(is_regulating_troops)
+		return;
+
+	is_regulating_troops = true;
+
 	// Zu viele oder zu wenig Truppen?
 	int diff;	
 	if((diff = CalcTroopsCount() - int(troops.size()+ordered_troops.size()+troops_on_mission.size()+(defender?(defender->IsWaitingAtFlag()||defender->IsFightingAtFlag())?1:0:0)
@@ -481,6 +489,8 @@ void nobMilitary::RegulateTroops()
 		}
 		gwg->GetPlayer(player)->OrderTroops(this,diff);
 	}
+
+	is_regulating_troops = false;
 }
 
 int nobMilitary::CalcTroopsCount()
