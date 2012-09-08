@@ -1,4 +1,4 @@
-// $Id: glArchivItem_Bitmap.cpp 8177 2012-09-08 06:53:47Z marcus $
+// $Id: glArchivItem_Bitmap.cpp 8185 2012-09-08 12:13:03Z OLiver $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -121,13 +121,13 @@ void glArchivItem_Bitmap::Draw(short dst_x, short dst_y, short dst_w, short dst_
 	int x = -nx + dst_x;
 	int y = -ny + dst_y;
 
-	tmp[0].x = tmp[1].x = x;
-	tmp[2].x = tmp[3].x = x + dst_w;
+	tmp[0].x = tmp[1].x = GLfloat(x);
+	tmp[2].x = tmp[3].x = GLfloat(x + dst_w);
 
-	tmp[0].y = tmp[3].y = y;
-	tmp[1].y = tmp[2].y = y + dst_h;
+	tmp[0].y = tmp[3].y = GLfloat(y);
+	tmp[1].y = tmp[2].y = GLfloat(y + dst_h);
 
-	tmp[0].z = tmp[1].z = tmp[2].z = tmp[3].z = 0.0;
+	tmp[0].z = tmp[1].z = tmp[2].z = tmp[3].z = 0.0f;
 
 	tmp[0].tx = tmp[1].tx = (GLfloat)src_x / tex_width;
 	tmp[2].tx = tmp[3].tx = (GLfloat)(src_x + src_w) / tex_width;

@@ -2441,6 +2441,14 @@
 						RelativePath="..\..\src\glArchivItem_Sound_XMidi.h"
 						>
 					</File>
+					<File
+						RelativePath="..\..\src\glSmartBitmap.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\glSmartBitmap.h"
+						>
+					</File>
 				</Filter>
 			</Filter>
 		</Filter>

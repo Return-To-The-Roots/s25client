@@ -488,14 +488,14 @@ void glSmartBitmap::generateTexture()
 
 	delete[] buffer;
 
-	tmp[0].tx = tmp[1].tx = 0.0;
-	tmp[2].tx = tmp[3].tx = hasPlayer ? 0.5 : 1.0;
+	tmp[0].tx = tmp[1].tx = 0.0f;
+	tmp[2].tx = tmp[3].tx = hasPlayer ? 0.5f : 1.0f;
 
-	tmp[0].ty = tmp[3].ty = tmp[4].ty = tmp[7].ty = 0.0;
-	tmp[1].ty = tmp[2].ty = tmp[5].ty = tmp[6].ty = 1.0;
+	tmp[0].ty = tmp[3].ty = tmp[4].ty = tmp[7].ty = 0.0f;
+	tmp[1].ty = tmp[2].ty = tmp[5].ty = tmp[6].ty = 1.0f;
 
-	tmp[4].tx = tmp[5].tx = 0.5;
-	tmp[6].tx = tmp[7].tx = 1.0;
+	tmp[4].tx = tmp[5].tx = 0.5f;
+	tmp[6].tx = tmp[7].tx = 1.0f;
 }
 
 void glSmartBitmap::draw(int x, int y, unsigned color, unsigned player_color)
@@ -513,11 +513,11 @@ void glSmartBitmap::draw(int x, int y, unsigned color, unsigned player_color)
 		player = true;
 	}
 
-	tmp[0].x = tmp[1].x = x - nx;
-	tmp[2].x = tmp[3].x = x - nx + w;
+	tmp[0].x = tmp[1].x = GLfloat(x - nx);
+	tmp[2].x = tmp[3].x = GLfloat(x - nx + w);
 
-	tmp[0].y = tmp[3].y = y - ny;
-	tmp[1].y = tmp[2].y = y - ny + h;
+	tmp[0].y = tmp[3].y = GLfloat(y - ny);
+	tmp[1].y = tmp[2].y = GLfloat(y - ny + h);
 
 	tmp[0].r = tmp[1].r = tmp[2].r = tmp[3].r = GetRed(color);
 	tmp[0].g = tmp[1].g = tmp[2].g = tmp[3].g = GetGreen(color);
