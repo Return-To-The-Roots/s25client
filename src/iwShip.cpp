@@ -1,4 +1,4 @@
-// $Id: iwShip.cpp 7707 2011-12-30 22:22:21Z marcus $
+// $Id: iwShip.cpp 8186 2012-09-08 13:26:41Z OLiver $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -270,6 +270,8 @@ void iwShip::DrawCargo()
 
 			if (i == JOB_PACKDONKEY)
 				LOADER.GetMapImageN(2016)->Draw(x,y);
+			else if(i == JOB_BOATCARRIER)
+				LOADER.LOADER.GetBobN("carrier")->Draw(GD_BOAT, 5, false, 0, x, y, COLORS[gwv->GetPlayer(ship->GetPlayer())->color]);
 			else
 				LOADER.GetBobN("jobs")->Draw(job_bobs_id, 5, JOB_CONSTS[i].fat, 0, x, y, COLORS[gwv->GetPlayer(ship->GetPlayer())->color]);
 

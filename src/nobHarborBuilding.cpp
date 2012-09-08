@@ -1,4 +1,4 @@
-// $Id: nobHarborBuilding.cpp 8066 2012-07-30 18:34:08Z marcus $
+// $Id: nobHarborBuilding.cpp 8186 2012-09-08 13:26:41Z OLiver $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -926,14 +926,26 @@ void nobHarborBuilding::ReceiveGoodsFromShip(const std::list<noFigure*> figures,
 	// Menschen zur Ausgehliste hinzufügen
 	for(std::list<noFigure*>::const_iterator it = figures.begin();it!=figures.end();++it)
 	{
-		++goods.people[(*it)->GetJobType()];
+		if((*it)->GetJobType() == JOB_BOATCARRIER)
+		{
+			++goods.people[JOB_HELPER];
+			++goods.goods[GD_BOAT];
+		}
+		else
+			++goods.people[(*it)->GetJobType()];
 
 		// Wenn es kein Ziel mehr hat, sprich keinen weiteren Weg, kann es direkt hier gelagert
 		// werden
 		if((*it)->HasNoGoal())
 		{
 			RemoveDependentFigure(*it);
-			++real_goods.people[(*it)->GetJobType()];
+			if((*it)->GetJobType() == JOB_BOATCARRIER)
+			{
+				++real_goods.people[JOB_HELPER];
+				++real_goods.goods[GD_BOAT];
+			}
+			else
+				++real_goods.people[(*it)->GetJobType()];
 			em->AddToKillList(*it);
 		}
 		else
