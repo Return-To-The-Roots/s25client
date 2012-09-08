@@ -220,6 +220,7 @@
     <ClInclude Include="..\..\src\glArchivItem_Sound_XMidi.h" />
     <ClInclude Include="..\..\src\GlobalGameSettings.h" />
     <ClInclude Include="..\..\src\GlobalVars.h" />
+    <ClInclude Include="..\..\src\glSmartBitmap.h" />
     <ClInclude Include="..\..\src\IngameWindow.h" />
     <ClInclude Include="..\..\src\iwAction.h" />
     <ClInclude Include="..\..\src\iwAddons.h" />
@@ -489,6 +490,7 @@
     <ClCompile Include="..\..\src\glArchivItem_Sound_XMidi.cpp" />
     <ClCompile Include="..\..\src\GlobalGameSettings.cpp" />
     <ClCompile Include="..\..\src\GlobalVars.cpp" />
+    <ClCompile Include="..\..\src\glSmartBitmap.cpp" />
     <ClCompile Include="..\..\src\IngameWindow.cpp" />
     <ClCompile Include="..\..\src\iwAction.cpp" />
     <ClCompile Include="..\..\src\iwAddons.cpp" />
