@@ -1,4 +1,4 @@
-// $Id: Loader.cpp 8190 2012-09-09 07:22:49Z marcus $
+// $Id: Loader.cpp 8194 2012-09-09 11:10:39Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -412,6 +412,8 @@ glSmartBitmap Loader::building_cache[NATION_COUNT][BUILDING_TYPES_COUNT][2] = {{
 // flag_cache[nation][type][animation]
 glSmartBitmap Loader::flag_cache[NATION_COUNT][3][8] = {{{glSmartBitmap()}}};
 
+glSmartBitmap Loader::building_flag_cache[8] = {glSmartBitmap()};
+
 // 0 - 7 animation, 8 & 9 growing, 11 - 13 falling, 14 fallen
 glSmartBitmap Loader::tree_cache[9][15] = {{glSmartBitmap()}};
 
@@ -637,6 +639,17 @@ void Loader::fillCaches()
 		glSmartBitmap &bmp = boundary_stone_cache[nation];
 		bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(LOADER.GetNationImageN(nation, 0)));
 		bmp.addShadow(LOADER.GetNationImageN(nation, 1));
+
+		stp.add(bmp);
+	}
+
+
+// BUILDING FLAG ANIMATION (for military buildings)
+	for (unsigned ani_step = 0; ani_step < 8; ++ani_step)
+	{
+		glSmartBitmap &bmp = building_flag_cache[ani_step];
+
+		bmp.add(static_cast<glArchivItem_Bitmap_Player *>(LOADER.GetMapImageN(3162+ani_step)));
 
 		stp.add(bmp);
 	}

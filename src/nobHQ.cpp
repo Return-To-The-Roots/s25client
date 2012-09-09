@@ -1,4 +1,4 @@
-// $Id: nobHQ.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: nobHQ.cpp 8194 2012-09-09 11:10:39Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -31,6 +31,7 @@
 #include "GameClientPlayer.h"
 #include "GlobalGameSettings.h"
 #include "Ware.h"
+#include "glSmartBitmap.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -377,15 +378,15 @@ void nobHQ::Draw(int x,int y)
 	// Gebäude an sich zeichnen
  	DrawBaseBuilding(x,y);
 
-
 	// 4 Fähnchen zeichnen
 	for(unsigned i = min<unsigned>(GetSoldiersCount()+
 		reserve_soldiers_available[0]+reserve_soldiers_available[1]+reserve_soldiers_available[2]+reserve_soldiers_available[3]+reserve_soldiers_available[4]
 	,4);i;--i)
 	{
-		glArchivItem_Bitmap *bitmap = LOADER.GetMapImageN(3162 + GAMECLIENT.GetGlobalAnimation(8, 80, 40, GetX() * GetY() * i));
-		if(bitmap)
-			bitmap->Draw(x+TROOPS_FLAGS_HQ[nation][0],y+TROOPS_FLAGS_HQ[nation][1]+(i-1)*3,0,0,0,0,0,0, COLOR_WHITE, COLORS[GAMECLIENT.GetPlayer(player)->color]);
+		Loader::building_flag_cache[GAMECLIENT.GetGlobalAnimation(8, 80, 40, GetX() * GetY() * i)].draw(
+			x+TROOPS_FLAGS_HQ[nation][0],
+			y+TROOPS_FLAGS_HQ[nation][1]+(i-1)*3,
+			COLOR_WHITE, COLORS[gwg->GetPlayer(player)->color]);
 	}
 }
 
