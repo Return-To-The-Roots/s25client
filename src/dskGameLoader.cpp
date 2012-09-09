@@ -1,4 +1,4 @@
-// $Id: dskGameLoader.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: dskGameLoader.cpp 8190 2012-09-09 07:22:49Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -149,6 +149,8 @@ void dskGameLoader::Msg_Timer(const unsigned int ctrl_id)
 					return;
 				}
 			}
+
+			LOADER.fillCaches();
 
 			text->SetText(_("Game crate was picked and spread out..."));
 			interval = 50;

@@ -1,4 +1,4 @@
-// $Id: Loader.h 8173 2012-09-07 20:12:56Z marcus $
+// $Id: Loader.h 8190 2012-09-09 07:22:49Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -42,6 +42,7 @@ public:
 	bool LoadFilesAtGame(unsigned char gfxset, bool *nations);
 	/// Lädt Dateien von Addons.
 	bool LoadFilesFromAddon(const AddonId id);
+	void fillCaches();
 	/// Lädt das Terrain.
 	bool CreateTerrainTextures(void);
 

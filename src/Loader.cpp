@@ -1,4 +1,4 @@
-// $Id: Loader.cpp 8189 2012-09-08 22:16:06Z marcus $
+// $Id: Loader.cpp 8190 2012-09-09 07:22:49Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -492,6 +492,11 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool *nations)
 	map_gfx = &(this->files[MAP_GFXSET_Z[lastgfx]]);
 	tex_gfx = &(this->files[TEX_GFXSET[lastgfx]]);
 
+	return true;
+}
+
+void Loader::fillCaches()
+{
 	glSmartTexturePacker stp;
 
 // Animals
@@ -547,7 +552,7 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool *nations)
 			if (type == BLD_CHARBURNER)
 			{
 				unsigned id = 1+nation*8;
-				if (gfxset == LT_WINTERWORLD)
+				if (lastgfx == LT_WINTERWORLD)
 				{
 					id = 1 + nation * 8 + 5;
 				}
@@ -707,8 +712,6 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool *nations)
 	}
 
 	stp.pack();
-
-	return true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
