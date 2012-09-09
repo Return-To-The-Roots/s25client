@@ -46,7 +46,7 @@ public:
 									   ADDONGROUP_MILITARY,
 									   gettext_noop("Adjust military strength"), 
 									   gettext_noop("Allows you to modify the strength increase of military ranks\n\n"),
-									   0
+									   1
 									  )
 	{
 		addOption(gettext_noop("Maximum strength"));
