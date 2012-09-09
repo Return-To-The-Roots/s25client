@@ -1,4 +1,4 @@
-// $Id: glArchivItem_Bitmap.cpp 8185 2012-09-08 12:13:03Z OLiver $
+// $Id: glArchivItem_Bitmap.cpp 8193 2012-09-09 10:52:49Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -105,7 +105,7 @@ void glArchivItem_Bitmap::Draw(short dst_x, short dst_y, short dst_w, short dst_
 	if(dst_h == 0)
 		dst_h = src_h;
 
-	glBindTexture(GL_TEXTURE_2D, texture);
+	VideoDriverWrapper::inst().BindTexture(texture);
 
 	assert(getBobType() != libsiedler2::BOBTYPE_BITMAP_PLAYER);
 
@@ -167,7 +167,8 @@ unsigned int glArchivItem_Bitmap::GetTexture()
  */
 void glArchivItem_Bitmap::DeleteTexture()
 {
-	glDeleteTextures(1, (const GLuint*)&texture);
+	VideoDriverWrapper::inst().DeleteTexture(texture);
+	//glDeleteTextures(1, (const GLuint*)&texture);
 	texture = 0;
 }
 
@@ -202,7 +203,7 @@ void glArchivItem_Bitmap::GenerateTexture(void)
 	if(!palette)
 		setPalette(LOADER.GetPaletteN("pal5"));
 	
-	glBindTexture(GL_TEXTURE_2D, texture);
+	VideoDriverWrapper::inst().BindTexture(texture);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);

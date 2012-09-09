@@ -1,4 +1,4 @@
-// $Id: glArchivItem_Bitmap_Player.cpp 8177 2012-09-08 06:53:47Z marcus $
+// $Id: glArchivItem_Bitmap_Player.cpp 8193 2012-09-09 10:52:49Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -98,7 +98,7 @@ void glArchivItem_Bitmap_Player::Draw(short dst_x, short dst_y, short dst_w, sho
 
 	glInterleavedArrays(GL_T2F_C4UB_V3F, 0, tmp);
 
-	glBindTexture(GL_TEXTURE_2D, texture);
+	VideoDriverWrapper::inst().BindTexture(texture);
 
 	glDrawArrays(GL_QUADS, 0, 8);
 }
@@ -115,7 +115,7 @@ void glArchivItem_Bitmap_Player::GenerateTexture(void)
 
 	unsigned char *buffer = new unsigned char[tex_width*2*tex_height*4];
 
-	glBindTexture(GL_TEXTURE_2D, texture);
+	VideoDriverWrapper::inst().BindTexture(texture);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);

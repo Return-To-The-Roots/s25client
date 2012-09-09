@@ -1,4 +1,4 @@
-// $Id: VideoDriverWrapper.cpp 8191 2012-09-09 10:24:48Z marcus $
+// $Id: VideoDriverWrapper.cpp 8193 2012-09-09 10:52:49Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -44,7 +44,7 @@
  *
  *  @author FloSoft
  */
-VideoDriverWrapper::VideoDriverWrapper() :  videodriver(NULL), texture_pos(0)
+VideoDriverWrapper::VideoDriverWrapper() :  videodriver(NULL), texture_pos(0), texture_current(0xFFFFFFFF)
 {
 	memset(texture_list, 0, sizeof(unsigned int)*100000);
 }

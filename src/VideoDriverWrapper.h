@@ -1,4 +1,4 @@
-// $Id: VideoDriverWrapper.h 8177 2012-09-08 06:53:47Z marcus $
+// $Id: VideoDriverWrapper.h 8193 2012-09-09 10:52:49Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -52,6 +52,9 @@ public:
 	void CleanUp();
 	// erstellt eine Textur
 	unsigned int GenerateTexture();
+	inline void BindTexture(unsigned int t) {if (t != texture_current) {texture_current = t; glBindTexture(GL_TEXTURE_2D, t);}}
+	inline void DeleteTexture(unsigned int t) {if (t == texture_current) {texture_current = 0xFFFFFFFF;} glDeleteTextures(1, &t);}
+
 	// Swapped den Buffer
 	bool SwapBuffers();
 	// liefert den Mausstatus (sollte nur beim Zeichnen der Maus verwendet werden, für alles andere die Mausmessages
@@ -106,6 +109,7 @@ private:
 
 	unsigned int texture_list[100000];
 	unsigned int texture_pos;
+	unsigned int texture_current;
 };
 
 

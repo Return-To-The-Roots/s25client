@@ -1,4 +1,4 @@
-// $Id: glArchivItem_Font.cpp 8177 2012-09-08 06:53:47Z marcus $
+// $Id: glArchivItem_Font.cpp 8193 2012-09-09 10:52:49Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -23,6 +23,7 @@
 #include "glArchivItem_Font.h"
 #include "Settings.h"
 #include "ExtensionList.h"
+#include "VideoDriverWrapper.h"
 
 #include <cmath>
 
@@ -378,7 +379,7 @@ void glArchivItem_Font::Draw(short x,
 	}
 
 	glInterleavedArrays(GL_T2F_V3F, 0, tmp);
-	glBindTexture(GL_TEXTURE_2D, ((format & DF_NO_OUTLINE) == DF_NO_OUTLINE) ? _font->GetTexture() : _font_outline->GetTexture());
+	VideoDriverWrapper::inst().BindTexture(((format & DF_NO_OUTLINE) == DF_NO_OUTLINE) ? _font->GetTexture() : _font_outline->GetTexture());
 	glDrawArrays(GL_QUADS, 0, idx);
 
 	delete[] tmp;
