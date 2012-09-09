@@ -1,4 +1,4 @@
-// $Id: Loader.cpp 8197 2012-09-09 18:35:22Z marcus $
+// $Id: Loader.cpp 8201 2012-09-09 22:02:44Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -733,6 +733,48 @@ void Loader::fillCaches()
 		}
 	}
 
+// carrier_cache[ware][direction][animation_step][fat]
+	glArchivItem_Bob *bob_carrier = LOADER.GetBobN("carrier");
+
+	for (unsigned ware = 0; ware < WARE_TYPES_COUNT; ++ware)
+	{
+		for (unsigned dir = 0; dir < 6; ++dir)
+		{
+			for (unsigned ani_step = 0; ani_step < 8; ++ani_step)
+			{
+				for (unsigned fat = 0; fat < 2; ++fat)
+				{
+					unsigned id;
+					glSmartBitmap &bmp = carrier_cache[ware][dir][ani_step][fat];
+
+					if (ware == GD_SHIELDJAPANESE)
+					{
+						id = GD_SHIELDROMANS;
+					} else
+					{
+						id = ware;
+					}
+
+					unsigned int good = id*96 + ani_step*12 + ( (dir + 3) % 6 ) + fat*6;
+					unsigned int body = fat*48 + ( (dir + 3) % 6 )*8 + ani_step;
+
+					if(bob_jobs->getLink(good) == 92)
+					{
+						good -= fat*6;
+						body -= fat*48;
+					}
+
+					bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(bob_carrier->get(body)));
+					bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(bob_carrier->get(96+bob_carrier->getLink(good))));
+					bmp.addShadow(LOADER.GetMapImageN(900 + ( (dir + 3) % 6 ) * 8 + ani_step));
+
+					stp.add(bmp);
+				}
+			}
+		}
+	}
+
+// gateway animation :)
 	{
 		libsiedler2::ArchivItem_Palette *palette = LOADER.GetPaletteN("pal5");
 		glArchivItem_Bitmap *image = LOADER.GetMapImageN(561);

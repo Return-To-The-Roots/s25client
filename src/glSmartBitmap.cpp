@@ -22,6 +22,7 @@
 #include "main.h"
 #include "glSmartBitmap.h"
 #include "VideoDriverWrapper.h"
+#include "Settings.h"
 
 #include <climits>
 #include <list>
@@ -297,14 +298,24 @@ bool glSmartTexturePacker::packHelper(std::vector<glSmartBitmap *> &list)
 
 bool glSmartTexturePacker::pack()
 {
-	for (std::vector<glSmartBitmap *>::const_iterator it = items.begin(); it != items.end(); ++it)
+	if (SETTINGS.video.shared_textures)
 	{
-		(*it)->calcDimensions();
+		for (std::vector<glSmartBitmap *>::const_iterator it = items.begin(); it != items.end(); ++it)
+		{
+			(*it)->calcDimensions();
+		}
+
+		std::sort(items.begin(), items.end(), sortSmartBitmap);
+
+		return(packHelper(items));
 	}
 
-	std::sort(items.begin(), items.end(), sortSmartBitmap);
+	for (std::vector<glSmartBitmap *>::const_iterator it = items.begin(); it != items.end(); ++it)
+	{
+		(*it)->generateTexture();
+	}
 
-	return(packHelper(items));
+	return(true);
 }
 
 unsigned glSmartBitmap::nextPowerOfTwo(unsigned k)

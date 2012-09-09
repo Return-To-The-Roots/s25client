@@ -1,4 +1,4 @@
-// $Id: dskOptions.cpp 7676 2011-12-28 12:16:43Z marcus $
+// $Id: dskOptions.cpp 8201 2012-09-09 22:02:44Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -210,6 +210,13 @@ dskOptions::dskOptions(void) : Desktop(LOADER.GetImageN("setup013", 0))
 			combo->SetSelection(combo->GetCount()-1);
 	}
 
+	groupGrafik->AddText(  74,  80, 320, _("Optimized Textures:"), COLOR_YELLOW, 0, NormalFont);
+	optiongroup = groupGrafik->AddOptionGroup(75, ctrlOptionGroup::CHECK, scale);
+
+	optiongroup->AddTextButton(76, 280, 315, 190, 22, TC_GREY,_("On"), NormalFont);
+	optiongroup->AddTextButton(77, 480, 315, 190, 22, TC_GREY, _("Off"), NormalFont);
+	
+
 	// "Audiotreiber"
 	groupSound->AddText(60,  80, 230, _("Sounddriver"), COLOR_YELLOW, 0, NormalFont);
 	combo = groupSound->AddComboBox(61, 280, 225, 390, 20, TC_GREY, NormalFont, 100);
@@ -327,6 +334,8 @@ dskOptions::dskOptions(void) : Desktop(LOADER.GetImageN("setup013", 0))
 	else
 		optiongroup->SetSelection(57);
 
+	optiongroup = groupGrafik->GetCtrl<ctrlOptionGroup>(75);
+	optiongroup->SetSelection( (SETTINGS.video.shared_textures ? 76 : 77) );
 	// }
 
 	// Sound
@@ -487,6 +496,15 @@ void dskOptions::Msg_Group_OptionGroupChange(const unsigned int group_id, const 
 			case 57: SETTINGS.video.vbo = false; break;
 			}
 		} break;
+	case 75:
+		{
+			switch(selection)
+			{
+			case 76: SETTINGS.video.shared_textures = true;  break;
+			case 77: SETTINGS.video.shared_textures = false; break;
+			}
+		} break;
+
 	case 63: // Musik
 		{
 			switch(selection)

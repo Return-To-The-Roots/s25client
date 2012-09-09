@@ -1,4 +1,4 @@
-// $Id: Settings.cpp 7676 2011-12-28 12:16:43Z marcus $
+// $Id: Settings.cpp 8201 2012-09-09 22:02:44Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -70,6 +70,7 @@ bool Settings::LoadDefaults()
 		video.fullscreen        = false;
 		video.vsync             = 0;
 		video.vbo               = false;
+		video.shared_textures	= true;
 	// }
 
 	// language
@@ -195,6 +196,7 @@ bool Settings::Load(void)
 		this->video.fullscreen = (video->getValueI("fullscreen") ? true : false);
 		this->video.vsync =       video->getValueI("vsync");
 		this->video.vbo =        (video->getValueI("vbo") ? true : false);
+		this->video.shared_textures = (video->getValueI("shared_textures") ? true : false);
 	// };
 
 	if(this->video.fullscreen_width == 0 || this->video.fullscreen_height == 0
@@ -343,6 +345,7 @@ void Settings::Save(void)
 		video->setValue("fullscreen", (this->video.fullscreen ? 1 : 0) );
 		video->setValue("vsync", this->video.vsync);
 		video->setValue("vbo", (this->video.vbo ? 1 : 0) );
+		video->setValue("shared_textures", (this->video.shared_textures ? 1 : 0));
 	// };
 
 	// language

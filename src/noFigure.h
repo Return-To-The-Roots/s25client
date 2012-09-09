@@ -1,4 +1,4 @@
-// $Id: noFigure.h 8170 2012-09-07 14:44:26Z marcus $
+// $Id: noFigure.h 8201 2012-09-09 22:02:44Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -154,6 +154,8 @@ public:		void Destroy() { Destroy_noFigure(); }
 	void InitializeRoadWalking(const RoadSegment * const road, const unsigned short rs_pos, const bool rs_dir);
 	/// Gibt Job-Typ zurück
 	Job GetJobType() const { return job; }
+	/// Zeichnet eine Figur aus "carrier.bob" beim Laufen.
+	void DrawWalkingBobCarrier(int x, int y, unsigned int ware, bool fat);
 	/// Zeichnet eine Figur aus "jobs.bob", wenn sie läuft.
 	void DrawWalkingBobJobs(int x, int y, unsigned int id);
 	/// Zeichnet standardmäßig die Figur, wenn sie läuft 

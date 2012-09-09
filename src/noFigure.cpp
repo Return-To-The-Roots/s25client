@@ -1377,6 +1377,20 @@ noFigure * CreateJob(const Job job_id,const unsigned short x, const unsigned sho
 	}
 }
 
+void noFigure::DrawWalkingBobCarrier(int x, int y, unsigned int ware, bool fat)
+{
+	// Wenn wir warten auf ein freies Plätzchen, müssen wir den stehend zeichnen!
+	unsigned ani_step = waiting_for_free_node?2:GAMECLIENT.Interpolate(ASCENT_ANIMATION_STEPS[ascent],current_ev)%8;
+	
+	// Wenn man wartet, stehend zeichnen, es sei denn man wartet mittem auf dem Weg!
+	if(!waiting_for_free_node || pause_walked_gf)
+		CalcFigurRelative(x,y);
+
+	Loader::carrier_cache[ware][dir][ani_step][fat].draw(x, y, COLOR_WHITE, COLORS[gwg->GetPlayer(player)->color]);
+}
+					
+
+
 void noFigure::DrawWalkingBobJobs(int x, int y, unsigned int job)
 {
 	// Wenn wir warten auf ein freies Plätzchen, müssen wir den stehend zeichnen!

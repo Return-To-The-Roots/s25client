@@ -1,4 +1,4 @@
-// $Id: nofCarrier.cpp 8195 2012-09-09 13:57:39Z marcus $
+// $Id: nofCarrier.cpp 8201 2012-09-09 22:02:44Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -278,24 +278,30 @@ void nofCarrier::Draw(int x, int y)
 				}
 
 				if(!animation)
+				{
+					Loader::bob_jobs_cache[gwg->GetPlayer(player)->nation][fat ? JOB_TYPES_COUNT : 0][dir][2].draw(x, y, COLOR_WHITE, COLORS[gwg->GetPlayer(player)->color]);
+				} else
 					// Steht und wartet (ohne Ware)
-					LOADER.GetBobN("jobs")->Draw(0,dir,fat,2,x,y,COLORS[gwg->GetPlayer(player)->color]);
+//					LOADER.GetBobN("jobs")->Draw(0,dir,fat,2,x,y,COLORS[gwg->GetPlayer(player)->color]);
 
 				DrawShadow(x,y,0,dir);
 			}
 			else if(state == CARRS_WAITFORWARESPACE || (waiting_for_free_node && !pause_walked_gf && carried_ware))
 			{
 				// Steht und wartet (mit Ware)
+				Loader::carrier_cache[carried_ware->type][dir][2][fat].draw(x, y, COLOR_WHITE, COLORS[gwg->GetPlayer(player)->color]);
+
 				// Japaner-Schild-Animation existiert leider nicht --> Römerschild nehmen
-				LOADER.GetBobN("carrier")->Draw((carried_ware->type==GD_SHIELDJAPANESE)?GD_SHIELDROMANS:carried_ware->type,
-					dir,fat,2,x,y,COLORS[gwg->GetPlayer(player)->color]);
-				DrawShadow(x,y,0,dir);
+//				LOADER.GetBobN("carrier")->Draw((carried_ware->type==GD_SHIELDJAPANESE)?GD_SHIELDROMANS:carried_ware->type,
+//					dir,fat,2,x,y,COLORS[gwg->GetPlayer(player)->color]);
+//				DrawShadow(x,y,0,dir);
 			}
 			else
 			{
 				// Läuft normal mit oder ohne Ware
 				if(carried_ware)
-					DrawWalking(x,y,LOADER.GetBobN("carrier"),(carried_ware->type==GD_SHIELDJAPANESE)?GD_SHIELDROMANS:carried_ware->type,fat);
+					DrawWalkingBobCarrier(x, y, carried_ware->type, fat);
+//					DrawWalking(x,y,LOADER.GetBobN("carrier"),(carried_ware->type==GD_SHIELDJAPANESE)?GD_SHIELDROMANS:carried_ware->type,fat);
 				else
 					DrawWalkingBobJobs(x, y, fat ? JOB_TYPES_COUNT : 0);
 			}
@@ -351,7 +357,8 @@ void nofCarrier::Draw(int x, int y)
 			if(state == CARRS_FIGUREWORK)
 			{
 				// Beim normalen Laufen Träger mit Boot über den Schultern zeichnen
-				DrawWalking(x,y,LOADER.GetBobN("carrier"),GD_BOAT,fat);
+				DrawWalkingBobCarrier(x, y, GD_BOAT, fat);
+//				DrawWalking(x,y,LOADER.GetBobN("carrier"),GD_BOAT,fat);
 			}
 			else if(state == CARRS_WAITFORWARE || (waiting_for_free_node && !pause_walked_gf && !carried_ware))
 			{

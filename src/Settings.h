@@ -1,4 +1,4 @@
-// $Id: Settings.h 7676 2011-12-28 12:16:43Z marcus $
+// $Id: Settings.h 8201 2012-09-09 22:02:44Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -53,6 +53,7 @@ public:
 		bool fullscreen;
 		unsigned short vsync;
 		bool vbo;
+		bool shared_textures;
 	} video;
 
 	struct {
