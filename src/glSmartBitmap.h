@@ -37,8 +37,8 @@ enum glBitmapItemType
 class glBitmapItem
 {
 public:
-	glBitmapItem(glArchivItem_Bitmap *b, bool shadow = false) {bmp = b; type = shadow ? TYPE_ARCHIVITEM_BITMAP_SHADOW : TYPE_ARCHIVITEM_BITMAP; b->getVisibleArea(x, y, w, h); nx = b->getNx() - x; ny = b->getNy() - y; w = b->getWidth(); h = b->getHeight();}
-	glBitmapItem(glArchivItem_Bitmap_Player *b) {bmp = b; type = TYPE_ARCHIVITEM_BITMAP_PLAYER; b->getVisibleArea(x, y, w, h); nx = b->getNx() - x; ny = b->getNy() - y; w = b->getWidth(); h = b->getHeight();}
+	glBitmapItem(glArchivItem_Bitmap *b, bool shadow = false) {bmp = b; type = shadow ? TYPE_ARCHIVITEM_BITMAP_SHADOW : TYPE_ARCHIVITEM_BITMAP; b->getVisibleArea(x, y, w, h); nx = b->getNx() - x; ny = b->getNy() - y;}
+	glBitmapItem(glArchivItem_Bitmap_Player *b) {bmp = b; type = TYPE_ARCHIVITEM_BITMAP_PLAYER; b->getVisibleArea(x, y, w, h); nx = b->getNx() - x; ny = b->getNy() - y;}
 
 	void *bmp;
 	glBitmapItemType type;

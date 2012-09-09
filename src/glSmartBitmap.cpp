@@ -219,9 +219,9 @@ bool glSmartTexturePacker::packHelper(std::vector<glSmartBitmap *> &list)
 
 			FILE *f = fopen(tmp, "w+");
 
-			for (int y = 0; y < w; ++y)
+			for (int y = 0; y < h; ++y)
 			{
-				for (int x = 0; x < h; ++x)
+				for (int x = 0; x < w; ++x)
 				{
 					fputc(buffer[((y * w + x) << 2) + 2], f);
 					fputc(buffer[((y * w + x) << 2) + 1], f);
