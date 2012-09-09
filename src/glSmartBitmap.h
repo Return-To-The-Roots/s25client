@@ -72,8 +72,8 @@ public:
 
 	glSmartBitmap() : w(0), h(0), nx(0), ny(0), sharedTexture(false), texture(0), hasPlayer(false)
 	{
-		tmp[0].z = tmp[1].z = tmp[2].z = tmp[3].z = 0.0;
-		tmp[4].z = tmp[5].z = tmp[6].z = tmp[7].z = 0.0;
+		tmp[0].z = tmp[1].z = tmp[2].z = tmp[3].z = 0.0f;
+		tmp[4].z = tmp[5].z = tmp[6].z = tmp[7].z = 0.0f;
 	}
 	~glSmartBitmap() {if (texture && !sharedTexture) glDeleteTextures(1, &texture);}
 

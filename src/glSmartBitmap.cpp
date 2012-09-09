@@ -214,11 +214,10 @@ bool glSmartTexturePacker::packHelper(std::vector<glSmartBitmap *> &list)
 			}
 
 /*
-			char tmp[10];
-			snprintf(tmp, sizeof(tmp), "%u.rgba", texture);
+			char tmp[100];
+			snprintf(tmp, sizeof(tmp), "%u-%ux%u.rgba", texture, w, h);
 
 			FILE *f = fopen(tmp, "w+");
-fprintf(stderr, "%u SIZE (%ix%i)\n", texture, w, h);
 
 			for (int y = 0; y < w; ++y)
 			{
@@ -236,6 +235,7 @@ fprintf(stderr, "%u SIZE (%ix%i)\n", texture, w, h);
 			root->destroy(list.size());
 			delete root;
 
+			// nothing left to do
 			if (left.empty())
 			{
 				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_BGRA, GL_UNSIGNED_BYTE, buffer);
@@ -245,11 +245,13 @@ fprintf(stderr, "%u SIZE (%ix%i)\n", texture, w, h);
 				return(true);
 			} else if (maxTex)
 			{
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_BGRA, GL_UNSIGNED_BYTE, buffer);
+
+				delete[] buffer;
+
 				packHelper(left);
 
 				left.clear();
-
-				delete[] buffer;
 
 				return(true);
 			}
@@ -500,18 +502,8 @@ void glSmartBitmap::generateTexture()
 
 void glSmartBitmap::draw(int x, int y, unsigned color, unsigned player_color)
 {
-	bool player = false;
-
-	if (!texture)
-		generateTexture();
-
 	if (!texture)
 		return;
-
-	if ((player_color != 0x00000000) && hasPlayer)
-	{
-		player = true;
-	}
 
 	tmp[0].x = tmp[1].x = GLfloat(x - nx);
 	tmp[2].x = tmp[3].x = GLfloat(x - nx + w);
@@ -524,7 +516,7 @@ void glSmartBitmap::draw(int x, int y, unsigned color, unsigned player_color)
 	tmp[0].b = tmp[1].b = tmp[2].b = tmp[3].b = GetBlue(color);
 	tmp[0].a = tmp[1].a = tmp[2].a = tmp[3].a = GetAlpha(color);
 
-	if (player)
+	if ((player_color != 0x00000000) && hasPlayer)
 	{
 		tmp[4].x = tmp[5].x = tmp[0].x;
 		tmp[6].x = tmp[7].x = tmp[2].x;
@@ -535,12 +527,16 @@ void glSmartBitmap::draw(int x, int y, unsigned color, unsigned player_color)
 		tmp[4].g = tmp[5].g = tmp[6].g = tmp[7].g = GetGreen(player_color);
 		tmp[4].b = tmp[5].b = tmp[6].b = tmp[7].b = GetBlue(player_color);
 		tmp[4].a = tmp[5].a = tmp[6].a = tmp[7].a = GetAlpha(player_color);
+
+		glInterleavedArrays(GL_T2F_C4UB_V3F, 0, tmp);
+		glBindTexture(GL_TEXTURE_2D, texture);
+		glDrawArrays(GL_QUADS, 0, 8);
+
+		return;
 	}
 
 	glInterleavedArrays(GL_T2F_C4UB_V3F, 0, tmp);
-
 	glBindTexture(GL_TEXTURE_2D, texture);
-
-	glDrawArrays(GL_QUADS, 0, player ? 8 : 4);
+	glDrawArrays(GL_QUADS, 0, 4);
 }
 
