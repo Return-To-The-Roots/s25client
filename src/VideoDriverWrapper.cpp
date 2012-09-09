@@ -1,4 +1,4 @@
-// $Id: VideoDriverWrapper.cpp 8178 2012-09-08 06:54:07Z marcus $
+// $Id: VideoDriverWrapper.cpp 8191 2012-09-09 10:24:48Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -350,6 +350,7 @@ bool VideoDriverWrapper::Initialize()
 
 	// Depthbuffer abschalten
 	glDisable(GL_DEPTH_TEST);
+	glDepthMask(GL_FALSE);
 
 	// Texturen anstellen
 	glEnable(GL_TEXTURE_2D);
