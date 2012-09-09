@@ -1,4 +1,4 @@
-// $Id: noStaticObject.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: noStaticObject.cpp 8197 2012-09-09 18:35:22Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -27,6 +27,9 @@
 #include "Loader.h"
 #include "GameWorld.h"
 #include "SerializedGameData.h"
+
+#include "glSmartBitmap.h"
+#include "GameClient.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -99,7 +102,11 @@ void noStaticObject::Draw(int x, int y)
 {
 	glArchivItem_Bitmap *bitmap = NULL, *shadow = NULL;
 
-	if(file == 0xFFFF)
+	if ((file == 0xFFFF) && (id == 561))
+	{
+		Loader::gateway_cache[GAMECLIENT.GetGlobalAnimation(4, 5, 4, 0) + 1].draw(x, y);
+		return;
+	} else	if (file == 0xFFFF)
 	{
 		bitmap = LOADER.GetMapImageN(id);
 		shadow = LOADER.GetMapImageN(id+100);

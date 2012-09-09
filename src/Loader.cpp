@@ -1,4 +1,4 @@
-// $Id: Loader.cpp 8194 2012-09-09 11:10:39Z marcus $
+// $Id: Loader.cpp 8197 2012-09-09 18:35:22Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -438,6 +438,9 @@ glSmartBitmap Loader::boat_cache[6][8];
 // donkey_cache[direction][animation_step]
 glSmartBitmap Loader::donkey_cache[6][8];
 
+// gateway animation
+glSmartBitmap Loader::gateway_cache[5];
+
 ///////////////////////////////////////////////////////////////////////////////
 /**
  *  Lädt die Spieldateien.
@@ -645,15 +648,21 @@ void Loader::fillCaches()
 
 
 // BUILDING FLAG ANIMATION (for military buildings)
+/*
 	for (unsigned ani_step = 0; ani_step < 8; ++ani_step)
 	{
 		glSmartBitmap &bmp = building_flag_cache[ani_step];
 
 		bmp.add(static_cast<glArchivItem_Bitmap_Player *>(LOADER.GetMapImageN(3162+ani_step)));
 
+		int a, b, c, d;
+		static_cast<glArchivItem_Bitmap_Player *>(LOADER.GetMapImageN(3162+ani_step))->getVisibleArea(a, b, c, d);
+		fprintf(stderr, "%i,%i (%ix%i)\n", a, b, c, d);
+
+
 		stp.add(bmp);
 	}
-
+*/
 // Trees
 	for (unsigned type = 0; type < 9; ++type)
 	{
@@ -723,6 +732,53 @@ void Loader::fillCaches()
 			stp.add(bmp);
 		}
 	}
+
+	{
+		libsiedler2::ArchivItem_Palette *palette = LOADER.GetPaletteN("pal5");
+		glArchivItem_Bitmap *image = LOADER.GetMapImageN(561);
+		glArchivItem_Bitmap *shadow = LOADER.GetMapImageN(661);
+
+		unsigned char start_index = 248;
+		unsigned char color_count = 4;
+		unsigned short width = image->getWidth();
+		unsigned short height = image->getHeight();
+
+		unsigned char *buffer = new unsigned char[width*height];
+
+		memset(buffer, 254, width*height);
+
+		image->print(buffer, width, height, libsiedler2::FORMAT_PALETTED, palette, 0, 0, 0, 0, width, height);
+
+		for(unsigned char i = 0; i < color_count; ++i)
+		{
+			glSmartBitmap &bmp = gateway_cache[i + 1];
+
+			for(unsigned int x = 0; x < width; ++x)
+			{
+				for(unsigned int y = 0; y < height; ++y)
+				{
+					if(buffer[y*width + x] >= start_index && buffer[y*width + x] < start_index+color_count)
+					{
+						if(++buffer[y*width + x] >= start_index+color_count)
+							buffer[y*width + x] = start_index;
+					}
+				}
+			}
+
+			glArchivItem_Bitmap_Raw *bitmap = new glArchivItem_Bitmap_Raw();
+			bitmap->create(width, height, buffer, width, height, libsiedler2::FORMAT_PALETTED, palette);
+			bitmap->setNx(image->getNx());
+			bitmap->setNy(image->getNy());
+
+			bmp.add(bitmap);
+			bmp.addShadow(shadow);
+
+			stp.add(bmp);
+		}
+
+		delete[] buffer;
+	}
+
 
 	stp.pack();
 }

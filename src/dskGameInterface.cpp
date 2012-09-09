@@ -1,4 +1,4 @@
-// $Id: dskGameInterface.cpp 8135 2012-09-01 19:41:01Z marcus $
+// $Id: dskGameInterface.cpp 8197 2012-09-09 18:35:22Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -618,6 +618,15 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
 	case KT_F3: // Koordinatenanzeige ein/aus vorläufig zu Debugzwecken
 		{
 			gwv->ShowCoordinates();
+		} return true;
+	case KT_F4:
+		{
+			MapNode& mn = gwv->GetNode(gwv->GetSelX(), gwv->GetSelY());
+			if (mn.obj)
+			{
+
+//				mn.obj->Draw(static_cast<int>(xpos),static_cast<int>(ypos));
+			}
 		} return true;
 	case KT_F8: // Tastaturbelegung
 		{

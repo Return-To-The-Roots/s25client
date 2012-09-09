@@ -1,4 +1,4 @@
-// $Id: GameWorld.cpp 8110 2012-09-01 19:05:57Z jh $
+// $Id: GameWorld.cpp 8197 2012-09-09 18:35:22Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -272,7 +272,9 @@ void GameWorld::Scan(glArchivItem_Map *map)
 					else if(lc == 0x16)
 						nodes[pos].obj = new noStaticObject(x, y, 560, 0xFFFF, 2);
 
-					// 0x17 fehlt ?
+					// das geöffnete Tor aus map_?_z.lst
+					else if(lc == 0x17)
+						nodes[pos].obj = new noStaticObject(x, y, 561, 0xFFFF, 2);
 
 					// Stalagmiten (mis1bobs)
 					else if(lc >= 0x18 && lc <= 0x1E)
