@@ -1,4 +1,4 @@
-// $Id: nofCarrier.cpp 8189 2012-09-08 22:16:06Z marcus $
+// $Id: nofCarrier.cpp 8195 2012-09-09 13:57:39Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -737,8 +737,7 @@ void nofCarrier::LostWork()
 			delete carried_ware;
 			carried_ware = 0;
 		 }
-		 
-		 
+
 		 // Is this a boat carrier (i.e. he is on the water)
 		 if(ct == CT_BOAT)
 		 {

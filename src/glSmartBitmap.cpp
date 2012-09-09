@@ -213,7 +213,6 @@ bool glSmartTexturePacker::packHelper(std::vector<glSmartBitmap *> &list)
 					(*it)->setSharedTexture(texture);
 				}
 			}
-
 /*
 			char tmp[100];
 			snprintf(tmp, sizeof(tmp), "%u-%ux%u.rgba", texture, w, h);
@@ -378,6 +377,11 @@ void glSmartBitmap::drawTo(unsigned char *buffer, unsigned stride, unsigned heig
 
 	for (std::vector<glBitmapItem>::const_iterator it = items.begin(); it != items.end(); ++it)
 	{
+		if (((*it).w == 0) || ((*it).h == 0))
+		{
+			continue;
+		}
+
 		unsigned xo = (nx - (*it).nx);
 		unsigned yo = (ny - (*it).ny);
 
@@ -387,7 +391,7 @@ void glSmartBitmap::drawTo(unsigned char *buffer, unsigned stride, unsigned heig
 			{
 				glArchivItem_Bitmap *bmp = static_cast<glArchivItem_Bitmap *>((*it).bmp);
 
-				bmp->print(buffer, stride, height, libsiedler2::FORMAT_RGBA, p_5, xo + x_offset, yo + y_offset, 0, 0, 0, 0);
+				bmp->print(buffer, stride, height, libsiedler2::FORMAT_RGBA, p_5, xo + x_offset, yo + y_offset, (*it).x, (*it).y, (*it).w, (*it).h);
 
 				break;
 			}
@@ -396,10 +400,10 @@ void glSmartBitmap::drawTo(unsigned char *buffer, unsigned stride, unsigned heig
 				glArchivItem_Bitmap_Player *bmp = static_cast<glArchivItem_Bitmap_Player *>((*it).bmp);
 
 				bmp->print(buffer, stride, height, libsiedler2::FORMAT_RGBA, p_colors, 128,
-					xo + x_offset, yo + y_offset, 0, 0, 0, 0, false);
+					xo + x_offset, yo + y_offset, (*it).x, (*it).y, (*it).w, (*it).h, false);
 
 				bmp->print(buffer, stride, height, libsiedler2::FORMAT_RGBA, p_colors, 128,
-					xo + w + x_offset, yo + y_offset, 0, 0, 0, 0, true);
+					xo + w + x_offset, yo + y_offset, (*it).x, (*it).y, (*it).w, (*it).h, true);
 
 				break;
 			}
@@ -410,7 +414,7 @@ void glSmartBitmap::drawTo(unsigned char *buffer, unsigned stride, unsigned heig
 				unsigned char *tmp = new unsigned char[w * h * 4];
 				memset(tmp, 0, w * h * 4);
 
-				bmp->print(tmp, w, h, libsiedler2::FORMAT_RGBA, p_5, xo, yo, 0, 0, 0, 0);
+				bmp->print(tmp, w, h, libsiedler2::FORMAT_RGBA, p_5, xo, yo, (*it).x, (*it).y, (*it).w, (*it).h);
 
 				unsigned tmpIdx = 0;
 
@@ -428,12 +432,6 @@ void glSmartBitmap::drawTo(unsigned char *buffer, unsigned stride, unsigned heig
 								buffer[idx+1] = 0x00;
 								buffer[idx+2] = 0x00;
 								buffer[idx+3] = 0x40;
-/*							} else
-							{
-								buffer[idx] >>= 2;
-								buffer[idx+1] >>= 2;
-								buffer[idx+2] >>= 2;
-								buffer[idx+3] = 0xFF;*/
 							}
 						}
 
