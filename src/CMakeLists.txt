@@ -1,5 +1,5 @@
 ################################################################################
-### $Id: CMakeLists.txt 8206 2012-09-10 12:30:08Z marcus $
+### $Id: CMakeLists.txt 8207 2012-09-10 13:33:58Z marcus $
 ################################################################################
 
 INCLUDE(FindBZip2)
@@ -450,7 +450,7 @@ ENDIF ( "${COMPILEFOR}" STREQUAL "apple")
 ADD_FLAGS(CMAKE_C_FLAGS -I${LUA_DIR}/include)
 ADD_FLAGS(CMAKE_CXX_FLAGS -I${LUA_DIR}/include)
 
-ADD_FLAGS(CMAKE_EXE_LINKER_FLAGS ${LUA_DIR}/liblua${LUA_VERSION}.staticlib)
+ADD_FLAGS(CMAKE_EXE_LINKER_FLAGS ${LUA_DIR}/liblua${LUA_VERSION}.a)
 
 ################################################################################
 
