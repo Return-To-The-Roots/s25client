@@ -1,5 +1,5 @@
 ################################################################################
-### $Id: CMakeLists.txt 8160 2012-09-06 12:53:55Z marcus $
+### $Id: CMakeLists.txt 8204 2012-09-10 11:38:06Z marcus $
 ################################################################################
 
 INCLUDE(FindBZip2)
@@ -421,6 +421,38 @@ IF ( "${COMPILEFOR}" STREQUAL "apple")
 	ADD_FLAGS(CMAKE_EXE_LINKER_FLAGS -framework OpenGL -L${CMAKE_SOURCE_DIR}/macos -lSDLmain)
 ENDIF ( "${COMPILEFOR}" STREQUAL "apple")
 
+################################################################################
+# LUA
+################################################################################
+
+SET(LUA_VERSION "52")
+
+IF ( "${COMPILEFOR}" STREQUAL "windows")
+    IF ( "${COMPILEARCH}" STREQUAL "i386" )
+	SET(LUA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../contrib/lua/win32")
+    ELSE ( "${COMPILEARCH}" STREQUAL "i386" )
+	SET(LUA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../contrib/lua/win64")
+    ENDIF ( "${COMPILEARCH}" STREQUAL "i386" )
+ENDIF ( "${COMPILEFOR}" STREQUAL "windows")
+
+IF ( "${COMPILEFOR}" STREQUAL "linux")
+    IF ( "${COMPILEARCH}" STREQUAL "i386" )
+	SET(LUA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../contrib/lua/lin32")
+    ELSE ( "${COMPILEARCH}" STREQUAL "i386" )
+	SET(LUA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../contrib/lua/lin64")
+    ENDIF ( "${COMPILEARCH}" STREQUAL "i386" )
+ENDIF ( "${COMPILEFOR}" STREQUAL "windows")
+
+IF ( "${COMPILEFOR}" STREQUAL "apple")
+    SET(LUA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../contrib/lua/mac")
+ENDIF ( "${COMPILEFOR}" STREQUAL "linux")
+
+ADD_FLAGS(CMAKE_C_FLAGS -I${LUA_DIR}/include)
+ADD_FLAGS(CMAKE_CXX_FLAGS -I${LUA_DIR}/include)
+
+ADD_FLAGS(CMAKE_EXE_LINKER_FLAGS ${LUA_DIR}/liblua${LUA_VERSION}.a)
+
+################################################################################
 
 ADD_EXECUTABLE(s25client ${s25client_SRCS})
 TARGET_LINK_LIBRARIES(s25client siedler2 lobby_c s25util mygettext ${BZIP2_LIBRARIES} ${OPENGL_gl_LIBRARY})
