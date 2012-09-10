@@ -1,4 +1,4 @@
-// $Id: Loader.cpp 8209 2012-09-10 14:55:39Z marcus $
+// $Id: Loader.cpp 8210 2012-09-10 18:41:02Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -47,9 +47,6 @@
 	static char THIS_FILE[] = __FILE__;
 #endif
 
-
-lua_State *Loader::L = NULL;
-
 ///////////////////////////////////////////////////////////////////////////////
 /**
  *  Konstruktor von @p Loader.
@@ -68,10 +65,6 @@ Loader::Loader(void) : lastgfx(0xFF)
  */
 Loader::~Loader(void)
 {
-	if (L)
-	{
-		lua_close(L);
-	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -503,15 +496,6 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool *nations)
 
 	map_gfx = &(this->files[MAP_GFXSET_Z[lastgfx]]);
 	tex_gfx = &(this->files[TEX_GFXSET[lastgfx]]);
-
-	if (L)
-	{
-		lua_close(L);
-	}
-
-	L = luaL_newstate();
-
-	luaL_openlibs(L);
 
 	return true;
 }
