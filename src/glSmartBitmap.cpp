@@ -310,11 +310,6 @@ bool glSmartTexturePacker::pack()
 		return(packHelper(items));
 	}
 
-	for (std::vector<glSmartBitmap *>::const_iterator it = items.begin(); it != items.end(); ++it)
-	{
-		(*it)->generateTexture();
-	}
-
 	return(true);
 }
 
@@ -513,7 +508,14 @@ void glSmartBitmap::generateTexture()
 void glSmartBitmap::draw(int x, int y, unsigned color, unsigned player_color)
 {
 	if (!texture)
-		return;
+	{
+		generateTexture();
+
+		if (!texture)
+		{
+			return;
+		}
+	}
 
 	tmp[0].x = tmp[1].x = GLfloat(x - nx);
 	tmp[2].x = tmp[3].x = GLfloat(x - nx + w);
