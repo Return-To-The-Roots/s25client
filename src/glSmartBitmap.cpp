@@ -172,6 +172,7 @@ bool glSmartTexturePacker::packHelper(std::vector<glSmartBitmap *> &list)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
+	// find space needed in total and biggest texture to store (as a start)
 	for (std::vector<glSmartBitmap *>::const_iterator it = list.begin(); it != list.end(); ++it)
 	{
 		if ((*it)->getTexWidth() > w)
@@ -187,9 +188,11 @@ bool glSmartTexturePacker::packHelper(std::vector<glSmartBitmap *> &list)
 		total += (*it)->getTexWidth() * (*it)->getTexHeight();
 	}
 
+	// most cards work much better with texture sizes of powers of two.
 	w = glSmartBitmap::nextPowerOfTwo(w);
 	h = glSmartBitmap::nextPowerOfTwo(h);
 
+	// maximum texture size reached?
 	bool maxTex = false;
 
 	do
@@ -197,20 +200,25 @@ bool glSmartTexturePacker::packHelper(std::vector<glSmartBitmap *> &list)
 		// two possibilities: enough space OR maximum texture size reached
 		if ((w * h >= total) || maxTex)
 		{
+			// texture packer
 			glSmartTexturePackerNode *root = new glSmartTexturePackerNode(w, h);
 
+			// list to store bitmaps we could not fit in our current texture
 			std::vector<glSmartBitmap *> left;
 
 			unsigned char *buffer = new unsigned char[w * h * 4];
 			memset(buffer, 0, w * h * 4);
 
+			// try storing bitmaps in the big texture
 			for (std::vector<glSmartBitmap *>::const_iterator it = list.begin(); it != list.end(); ++it)
 			{
 				if (!root->insert((*it), buffer, w, h, list.size()))
 				{
+					// inserting this bitmap failed? just remember it for next texture
 					left.push_back((*it));
 				} else
 				{
+					// tell or glSmartBitmap, that it uses a shared texture (so it won't try to delete/free it)
 					(*it)->setSharedTexture(texture);
 				}
 			}
@@ -233,35 +241,36 @@ bool glSmartTexturePacker::packHelper(std::vector<glSmartBitmap *> &list)
 
 			fclose(f);
 */
+			// free texture packer, as it is not needed any more
 			root->destroy(list.size());
 			delete root;
 
-			// nothing left to do
-			if (left.empty())
+			if (left.empty())	// nothing left, just generate texture and return success
 			{
 				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_BGRA, GL_UNSIGNED_BYTE, buffer);
 
 				delete[] buffer;
 
 				return(true);
-			} else if (maxTex)
+			} else if (maxTex)	// maximum texture size reached and something still left
 			{
+				// generate this texture and release the buffer
 				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_BGRA, GL_UNSIGNED_BYTE, buffer);
 
 				delete[] buffer;
 
-				packHelper(left);
-
-				left.clear();
-
-				return(true);
+				// recursively generate textures for what is left
+				return(packHelper(left));
 			}
 
+			// our pre-estimated size if the big texture was not enough for the algorithm to fit all textures in
+			// delete buffer and try again with an increased big texture
 			left.clear();
 
 			delete[] buffer;
 		}
 
+		// increase width or height, try whether opengl is able to handle textures that big
 		if (w <= h)
 		{
 			glTexImage2D(GL_PROXY_TEXTURE_2D, 0, GL_RGBA, w << 1, h, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
@@ -334,6 +343,8 @@ void glSmartBitmap::calcDimensions()
 {
 	if (items.empty())
 	{
+		nx = ny = 0;
+		w = h = 0;
 		return;
 	}
 
