@@ -1,4 +1,4 @@
-// $Id: Loader.h 8197 2012-09-09 18:35:22Z marcus $
+// $Id: Loader.h 8209 2012-09-10 14:55:39Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -24,6 +24,18 @@
 #include "../libutil/src/Singleton.h"
 #include "../libsiedler2/src/libsiedler2.h"
 #include "const_addons.h"
+
+
+///////////////////////////////////////////////////////////////////////////////
+// LUA
+
+extern "C" {
+#include "lua.h"
+#include "lualib.h"
+#include "lauxlib.h"
+}
+
+///////////////////////////////////////////////////////////////////////////////
 
 class glSmartBitmap;
 
@@ -116,6 +128,8 @@ public:
 	static glSmartBitmap boat_cache[6][8];
 	static glSmartBitmap donkey_cache[6][8];
 	static glSmartBitmap gateway_cache[5];
+
+	static lua_State *L;
 };
 
 ///////////////////////////////////////////////////////////////////////////////

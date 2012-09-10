@@ -1,5 +1,5 @@
 ################################################################################
-### $Id: CMakeLists.txt 8207 2012-09-10 13:33:58Z marcus $
+### $Id: CMakeLists.txt 8209 2012-09-10 14:55:39Z marcus $
 ################################################################################
 
 INCLUDE(FindBZip2)
@@ -450,12 +450,10 @@ ENDIF ( "${COMPILEFOR}" STREQUAL "apple")
 ADD_FLAGS(CMAKE_C_FLAGS -I${LUA_DIR}/include)
 ADD_FLAGS(CMAKE_CXX_FLAGS -I${LUA_DIR}/include)
 
-ADD_FLAGS(CMAKE_EXE_LINKER_FLAGS ${LUA_DIR}/liblua${LUA_VERSION}.a)
-
 ################################################################################
 
 ADD_EXECUTABLE(s25client ${s25client_SRCS})
-TARGET_LINK_LIBRARIES(s25client siedler2 lobby_c s25util mygettext ${BZIP2_LIBRARIES} ${OPENGL_gl_LIBRARY})
+TARGET_LINK_LIBRARIES(s25client siedler2 lobby_c s25util mygettext ${BZIP2_LIBRARIES} ${OPENGL_gl_LIBRARY} ${LUA_DIR}/liblua${LUA_VERSION}.a)
 
 IF ( "${COMPILEFOR}" STREQUAL "apple")
 	TARGET_LINK_LIBRARIES(s25client ${SDL_LIBRARY} SDLmain)

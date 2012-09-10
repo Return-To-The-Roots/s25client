@@ -24,6 +24,8 @@
 #include "VideoDriverWrapper.h"
 #include "Settings.h"
 
+#include "Loader.h"
+
 #include <climits>
 #include <list>
 #include <cstdio>

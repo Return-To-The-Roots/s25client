@@ -1,4 +1,4 @@
-// $Id: ctrlCheck.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: ctrlCheck.cpp 8209 2012-09-10 14:55:39Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -21,6 +21,7 @@
 // Header
 #include "main.h"
 #include "ctrlCheck.h"
+#include "Loader.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

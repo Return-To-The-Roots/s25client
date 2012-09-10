@@ -1,4 +1,4 @@
-// $Id: main.h 7522 2011-09-08 20:57:56Z FloSoft $
+// $Id: main.h 8209 2012-09-10 14:55:39Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -140,8 +140,6 @@
 typedef struct Rect {
 	unsigned short left,top,right,bottom;
 } Rect;
-
-#include "Loader.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 /**

@@ -1,4 +1,4 @@
-// $Id: glArchivItem_Font.cpp 8193 2012-09-09 10:52:49Z marcus $
+// $Id: glArchivItem_Font.cpp 8209 2012-09-10 14:55:39Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -24,6 +24,8 @@
 #include "Settings.h"
 #include "ExtensionList.h"
 #include "VideoDriverWrapper.h"
+
+#include "Loader.h"
 
 #include <cmath>
 

@@ -1,4 +1,4 @@
-// $Id: iwPleaseWait.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: iwPleaseWait.cpp 8209 2012-09-10 14:55:39Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -21,6 +21,8 @@
 // Header
 #include "main.h"
 #include "iwPleaseWait.h"
+
+#include "Loader.h"
 
 #include "GameManager.h"
 
