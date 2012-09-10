@@ -1,4 +1,4 @@
-// $Id: GameWorldBase.cpp 8129 2012-09-01 19:19:58Z jh $
+// $Id: GameWorldBase.cpp 8212 2012-09-10 21:09:43Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -324,25 +324,24 @@ bool GameWorldBase::RoadAvailable(const bool boat_road,const int x, const int y,
 	{
 		noBase::BlockingManner bm = GetNode(x,y).obj->GetBM();
 		if(bm != noBase::BM_NOTBLOCKING)
-			 return 0;
+			 return false;
 	}
+
 	//dont build on the border
 	if(GetNode(x,y).boundary_stones[0])
-		return 0;
-
-	
+		return false;
 
 	for(unsigned char z = 0;z<6;++z)
 	{
 		// Roads around charburner piles are not possible
 		if(GetNO(GetXA(x,y,z),GetYA(x,y,z))->GetBM() == noBase::BM_CHARBURNERPILE)
-			return 0;
+			return false;
 
 		// Other roads at this point?
 		if(GetPointRoad(x,y, z, visual))
 		{
 			(void) GetPointRoad(x,y, z, visual);
-			return 0;
+			return false;
 		}
 	}
 
@@ -350,10 +349,10 @@ bool GameWorldBase::RoadAvailable(const bool boat_road,const int x, const int y,
 	for(unsigned char i = 3;i<6;++i)
 	{
 		if(GetNO(GetXA(x,y,i),GetYA(x,y,i))->GetBM() == noBase::BM_CASTLE)		
-			return 0;
+			return false;
 	}
 
-	// Terrain (unterscheidne, ob Wasser und Landweg)
+	// Terrain (unterscheiden, ob Wasser und Landweg)
 	if(!boat_road)
 	{
 		unsigned flag_hits = 0;
@@ -368,7 +367,7 @@ bool GameWorldBase::RoadAvailable(const bool boat_road,const int x, const int y,
 		}
 
 		if(!flag_hits)
-			return 0;
+			return false;
 
 		// Richtung übergeben? Dann auch das zwischen den beiden Punkten beachten, damit
 		// man nicht über ein Wasser oder so hüpft
@@ -561,21 +560,9 @@ void GameWorldBase::RemoveVisualRoad(unsigned short start_x, unsigned short star
 	// Wieder zurückbauen
 	for(unsigned z = 0;z<route.size();++z)
 	{
-		//poc: for players we would not need a check here but the ai commands are sometimes weird and have no previous check so before removing the "virtual" road we have to make sure that there isnt a real road!
-		for(unsigned char t = 0;t<6;++t)
-		{
-			// Other roads at this point?
-			if(GetPointRoad(start_x,start_y, t, false))
-			{
-				(void) GetPointRoad(start_x,start_y, t, false);
-				GetPointA(start_x,start_y,route[z]);
-				continue;
-			}
-		}
 		SetPointVirtualRoad(start_x,start_y, route[z],0);
 		CalcRoad(start_x,start_y,GAMECLIENT.GetPlayerID());
 		GetPointA(start_x,start_y,route[z]);
-		
 	}
 }
 
