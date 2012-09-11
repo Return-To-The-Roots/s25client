@@ -97,7 +97,7 @@ int AIInterface::CalcResourceValue(MapCoord x,MapCoord y,AIJH::Resource res,char
 					//surface resource?
 					if(res==AIJH::PLANTSPACE||res==AIJH::BORDERLAND||res==AIJH::WOOD||res==AIJH::STONES)
 					{
-						if (GetSurfaceResource(tx2,ty2)==res||(res==AIJH::PLANTSPACE&&GetSurfaceResource(tx2,ty2)==AIJH::NOTHING)||(res==AIJH::BORDERLAND&&(IsBorder(tx2,ty2)||!IsOwnTerritory(tx2,ty2))))
+						if (GetSurfaceResource(tx2,ty2)==res||(res==AIJH::PLANTSPACE&&GetSurfaceResource(tx2,ty2)==AIJH::NOTHING&&gwb->GetNode(tx2,ty2).t1!=TT_DESERT&&gwb->GetNode(tx2,ty2).t1!=TT_MOUNTAINMEADOW&&gwb->GetNode(tx2,ty2).t1!=TT_MOUNTAIN1&&gwb->GetNode(tx2,ty2).t1!=TT_MOUNTAIN2&&gwb->GetNode(tx2,ty2).t1!=TT_MOUNTAIN3&&gwb->GetNode(tx2,ty2).t1!=TT_MOUNTAIN4)||(res==AIJH::BORDERLAND&&(IsBorder(tx2,ty2)||!IsOwnTerritory(tx2,ty2))))
 						{						
 							returnval+=(AIJH::RES_RADIUS[res]);
 						}
@@ -123,7 +123,7 @@ int AIInterface::CalcResourceValue(MapCoord x,MapCoord y,AIJH::Resource res,char
 		//surface resource?
 		if(res==AIJH::PLANTSPACE||res==AIJH::BORDERLAND||res==AIJH::WOOD||res==AIJH::STONES)
 		{
-			if (GetSurfaceResource(x,y)==res||(res==AIJH::PLANTSPACE&&GetSurfaceResource(x,y)==AIJH::NOTHING)||(res==AIJH::BORDERLAND&&(IsBorder(x,y)||!IsOwnTerritory(x,y))))
+			if (GetSurfaceResource(x,y)==res||(res==AIJH::PLANTSPACE&&GetSurfaceResource(x,y)==AIJH::NOTHING&&gwb->GetNode(x,y).t1!=TT_DESERT&&gwb->GetNode(x,y).t1!=TT_MOUNTAINMEADOW&&gwb->GetNode(x,y).t1!=TT_MOUNTAIN1&&gwb->GetNode(x,y).t1!=TT_MOUNTAIN2&&gwb->GetNode(x,y).t1!=TT_MOUNTAIN3&&gwb->GetNode(x,y).t1!=TT_MOUNTAIN4)||(res==AIJH::BORDERLAND&&(IsBorder(x,y)||!IsOwnTerritory(x,y))))
 			{						
 				returnval+=(AIJH::RES_RADIUS[res]);
 			}
@@ -160,7 +160,7 @@ int AIInterface::CalcResourceValue(MapCoord x,MapCoord y,AIJH::Resource res,char
 				//surface resource?
 				if(res==AIJH::PLANTSPACE||res==AIJH::BORDERLAND||res==AIJH::WOOD||res==AIJH::STONES)
 				{
-					if (GetSurfaceResource(tx,ty)==res||(res==AIJH::PLANTSPACE&&GetSurfaceResource(tx,ty)==AIJH::NOTHING)||(res==AIJH::BORDERLAND&&(IsBorder(tx,ty)||!IsOwnTerritory(tx,ty))))
+					if (GetSurfaceResource(tx,ty)==res||(res==AIJH::PLANTSPACE&&GetSurfaceResource(tx,ty)==AIJH::NOTHING&&gwb->GetNode(tx,ty).t1!=TT_DESERT&&gwb->GetNode(tx,ty).t1!=TT_MOUNTAINMEADOW&&gwb->GetNode(tx,ty).t1!=TT_MOUNTAIN1&&gwb->GetNode(tx,ty).t1!=TT_MOUNTAIN2&&gwb->GetNode(tx,ty).t1!=TT_MOUNTAIN3&&gwb->GetNode(tx,ty).t1!=TT_MOUNTAIN4)||(res==AIJH::BORDERLAND&&(IsBorder(tx,ty)||!IsOwnTerritory(tx,ty))))
 					{						
 						returnval+=(AIJH::RES_RADIUS[res]);
 					}
@@ -198,7 +198,7 @@ int AIInterface::CalcResourceValue(MapCoord x,MapCoord y,AIJH::Resource res,char
 				//surface resource?
 				if(res==AIJH::PLANTSPACE||res==AIJH::BORDERLAND||res==AIJH::WOOD||res==AIJH::STONES)
 				{
-					if (GetSurfaceResource(tx,ty)==res||(res==AIJH::PLANTSPACE&&GetSurfaceResource(tx,ty)==AIJH::NOTHING)||(res==AIJH::BORDERLAND&&(IsBorder(tx,ty)||!IsOwnTerritory(tx,ty))))
+					if (GetSurfaceResource(tx,ty)==res||(res==AIJH::PLANTSPACE&&GetSurfaceResource(tx,ty)==AIJH::NOTHING&&gwb->GetNode(x,y).t1!=TT_DESERT&&gwb->GetNode(x,y).t1!=TT_MOUNTAINMEADOW&&gwb->GetNode(x,y).t1!=TT_MOUNTAIN1&&gwb->GetNode(x,y).t1!=TT_MOUNTAIN2&&gwb->GetNode(x,y).t1!=TT_MOUNTAIN3&&gwb->GetNode(x,y).t1!=TT_MOUNTAIN4)||(res==AIJH::BORDERLAND&&(IsBorder(tx,ty)||!IsOwnTerritory(tx,ty))))
 					{						
 						returnval-=(AIJH::RES_RADIUS[res]);
 					}

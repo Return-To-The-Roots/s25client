@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 8223 2012-09-11 20:15:51Z marcus $
+// $Id: AIPlayerJH.cpp 8224 2012-09-11 20:23:20Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -866,8 +866,6 @@ void AIPlayerJH::UpdateNodesAround(MapCoord x, MapCoord y, unsigned radius)
 
 void AIPlayerJH::UpdateNodesAroundNoBorder(MapCoord x, MapCoord y, unsigned radius)
 {
-	unsigned width = aii->GetMapWidth();
-
 	UpdateReachableNodes(x, y, radius);
 	/*
 	for(MapCoord tx=aii->GetXA(x,y,0), r=1;r<=radius;tx=aii->GetXA(tx,y,0),++r)
