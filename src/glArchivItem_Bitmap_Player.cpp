@@ -1,4 +1,4 @@
-// $Id: glArchivItem_Bitmap_Player.cpp 8193 2012-09-09 10:52:49Z marcus $
+// $Id: glArchivItem_Bitmap_Player.cpp 8219 2012-09-11 19:17:44Z OLiver $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -64,14 +64,14 @@ void glArchivItem_Bitmap_Player::Draw(short dst_x, short dst_y, short dst_w, sho
 	int x = -nx + dst_x;
 	int y = -ny + dst_y;
 
-	tmp[0].x = tmp[1].x = x;
-	tmp[2].x = tmp[3].x = x + dst_w;
+	tmp[0].x = tmp[1].x = GLfloat(x);
+	tmp[2].x = tmp[3].x = GLfloat(x + dst_w);
 
-	tmp[0].y = tmp[3].y = y;
-	tmp[1].y = tmp[2].y = y + dst_h;
+	tmp[0].y = tmp[3].y = GLfloat(y);
+	tmp[1].y = tmp[2].y = GLfloat(y + dst_h);
 
-	tmp[0].tx = tmp[1].tx = (GLfloat)(src_x) / (GLfloat)tex_width / 2.0;
-	tmp[2].tx = tmp[3].tx = (GLfloat)(src_x + src_w) / (GLfloat)tex_width / 2.0;
+	tmp[0].tx = tmp[1].tx = (GLfloat)(src_x) / (GLfloat)tex_width / 2.0f;
+	tmp[2].tx = tmp[3].tx = (GLfloat)(src_x + src_w) / (GLfloat)tex_width / 2.0f;
 
 	tmp[0].ty = tmp[3].ty = (GLfloat)src_y / tex_height;
 	tmp[1].ty = tmp[2].ty = (GLfloat)(src_y + src_h) / tex_height;

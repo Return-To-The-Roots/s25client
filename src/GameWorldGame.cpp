@@ -1,4 +1,4 @@
-// $Id: GameWorldGame.cpp 8217 2012-09-11 18:43:08Z marcus $
+// $Id: GameWorldGame.cpp 8219 2012-09-11 19:17:44Z OLiver $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -307,8 +307,6 @@ void GameWorldGame::DestroyBuilding(const MapCoord x, const MapCoord y, const un
 		// Bauplätze drumrum neu berechnen
 		RecalcBQAroundPointBig(x,y);
 	}
-	else
-		LOG.lprintf("GameWorldGame::DestroyBuilding: WARNING: BuildingType not found!\n");
 }
 
 
