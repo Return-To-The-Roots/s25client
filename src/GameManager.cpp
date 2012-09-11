@@ -1,4 +1,4 @@
-// $Id: GameManager.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: GameManager.cpp 8215 2012-09-11 09:24:58Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -200,6 +200,11 @@ bool GameManager::Run()
 	WindowManager::inst().Draw();
 		
 	last_time = current_time;
+
+	if (GAMECLIENT.GetGFLength() < 30)
+	{
+		LOADER.GetImageN("io", 164)->Draw(VideoDriverWrapper::inst().GetScreenWidth() - 55, 35, 0, 0, 0, 0);
+	}
 
 	DrawCursor();
 
