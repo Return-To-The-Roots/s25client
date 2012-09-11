@@ -1,4 +1,4 @@
-// $Id: GameWorldGame.cpp 8216 2012-09-11 18:42:29Z marcus $
+// $Id: GameWorldGame.cpp 8217 2012-09-11 18:43:08Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -315,9 +315,6 @@ void GameWorldGame::DestroyBuilding(const MapCoord x, const MapCoord y, const un
 void GameWorldGame::BuildRoad(const unsigned char playerid,const bool boat_road,
 							  unsigned short start_x,unsigned short start_y, const std::vector<unsigned char>& route)
 {
-
-fprintf(stderr, "[%i] %i %ix%i\n", GAMECLIENT.GetGFNumber(), playerid, start_x, start_y);
-
 	// TODO: Verzögerungsbugabfrage, kann später ggf. weg
 	if(!GetSpecObj<noFlag>(start_x,start_y))
 	{
