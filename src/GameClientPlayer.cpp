@@ -1,4 +1,4 @@
-// $Id: GameClientPlayer.cpp 8049 2012-07-22 17:23:19Z jh $
+// $Id: GameClientPlayer.cpp 8222 2012-09-11 20:05:15Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -2070,6 +2070,12 @@ bool GameClientPlayer::FindHarborForUnloading(noShip * ship, const MapCoord star
 
 void GameClientPlayer::TestForEmergencyProgramm()
 {
+	// we are already defeated, do not even think about an emergency program - it's too late :-(
+	if (defeated)
+	{
+		return;
+	}
+
 	// In Lagern vorhandene Bretter und Steine zählen
 	unsigned boards = 0;
 	unsigned stones = 0;
