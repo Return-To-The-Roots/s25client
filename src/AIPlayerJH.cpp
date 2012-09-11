@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 8221 2012-09-11 20:01:32Z marcus $
+// $Id: AIPlayerJH.cpp 8223 2012-09-11 20:15:51Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -65,6 +65,66 @@ void AIPlayerJH::RunGF(const unsigned gf)
 
 	if (TestDefeat())
 		return;
+
+	if (gf == 1)
+	{
+		InitStoreAndMilitarylists();
+	}
+	if (gf == 100)
+	{
+		if(milBuildings.size()<1)
+		{
+			Chat(_("Hi, I'm an artifical player and I'm not very good yet!"));
+			Chat(_("And I may crash your game sometimes..."));
+		}
+
+		// Set military settings to some nicer default values
+		std::vector<unsigned char> milSettings;
+		milSettings.resize(8);
+		milSettings[0] = 10;
+		milSettings[1] = 5;
+		milSettings[2] = 5;
+		milSettings[3] = 5;
+		milSettings[4] = 1;
+		milSettings[5] = 8;
+		milSettings[6] = 8;
+		milSettings[7] = 8;
+		aii->SetMilitarySettings(milSettings);
+		//set good distribution settings 
+		std::vector<unsigned char> goodSettings;
+		goodSettings.resize(23);
+		goodSettings[0] = 10; //food granite
+		goodSettings[1] = 10; //food coal
+		goodSettings[2] = 10; //food iron
+		goodSettings[3] = 10; //food gold
+
+		goodSettings[4] = 10; //grain mill
+		goodSettings[5] = 10; //grain pigfarm
+		goodSettings[6] = 10; //grain donkeybreeder
+		goodSettings[7] = 10; //grain brewery
+		goodSettings[8] = 10; //grain charburner
+
+		goodSettings[9] = 10; //iron armory
+		goodSettings[10] = 10; //iron metalworks
+
+		goodSettings[11] = 10; //coal armory
+		goodSettings[12] = 10; //coal ironsmelter
+		goodSettings[13] = 10; //coal mint
+
+		goodSettings[14] = 10; //wood sawmill
+		goodSettings[15] = 10; //wood charburner
+
+		goodSettings[16] = 10; //boards new buildings
+		goodSettings[17] = 4; //boards metalworks
+		goodSettings[18] = 2; //boards shipyard
+
+		goodSettings[19] = 10; //water bakery
+		goodSettings[20] = 10; //water brewery
+		goodSettings[21] = 10; //water pigfarm
+		goodSettings[22] = 10; //water donkeybreeder
+		aii->SetDistribution(goodSettings);
+
+	}
 
 	if ((gf + (playerid * 11)) % 3 == 0) //try to complete a job on the list
 	{
@@ -136,155 +196,94 @@ void AIPlayerJH::RunGF(const unsigned gf)
 		BLD_GRANITEMINE,
 		BLD_HARBORBUILDING,
 		BLD_HUNTER
-	};
-	unsigned numBldToTest = 22;
-	//std::list<AIJH::Coords> bldPoses = construction.GetStoreHousePositions();
-	unsigned char randomstore=rand()%construction.GetStoreHousePositions().size();
-	bool firsthouse=true;
-	bool lostmainstore=false;
-	if(construction.GetStoreHousePositions().size()<1)
-		return;
-	for (std::list<AIJH::Coords>::iterator it = construction.GetStoreHousePositions().begin(); it != construction.GetStoreHousePositions().end(); it++)
-	{
-		//check if there still is a building if not remove from list
-		if(!aii->IsObjectTypeOnNode((*it).x,(*it).y,NOP_BUILDING)&&!aii->IsObjectTypeOnNode((*it).x,(*it).y,NOP_BUILDINGSITE))
+		};
+		unsigned numBldToTest = 22;
+		//std::list<AIJH::Coords> bldPoses = construction.GetStoreHousePositions();
+		unsigned char randomstore=rand()%construction.GetStoreHousePositions().size();
+		bool firsthouse=true;
+		bool lostmainstore=false;
+		if(construction.GetStoreHousePositions().size()<1)
+			return;
+		for (std::list<AIJH::Coords>::iterator it = construction.GetStoreHousePositions().begin(); it != construction.GetStoreHousePositions().end(); it++)
 		{
-			lostmainstore=(firsthouse);
-			it=construction.GetStoreHousePositions().erase(it);
-			if(it==construction.GetStoreHousePositions().end())
+			//check if there still is a building if not remove from list
+			if(!aii->IsObjectTypeOnNode((*it).x,(*it).y,NOP_BUILDING)&&!aii->IsObjectTypeOnNode((*it).x,(*it).y,NOP_BUILDINGSITE))
 			{
-				break;
+				lostmainstore=(firsthouse);
+				it=construction.GetStoreHousePositions().erase(it);
+				if(it==construction.GetStoreHousePositions().end())
+				{
+					break;
+				}
+				else
+				{
+					continue;
+				}
 			}
 			else
 			{
-				continue;
-			}
-		}
-		else
-		{
-			firsthouse=false;
-			if(lostmainstore&&aii->IsObjectTypeOnNode((*it).x,(*it).y,NOP_BUILDING))
-			{	
-				aii->ChangeInventorySetting((*it).x, (*it).y, 0, 2, 0);
-				aii->ChangeInventorySetting((*it).x, (*it).y, 0, 2, 16);
-				aii->ChangeInventorySetting((*it).x, (*it).y, 0, 2, 21);
-				lostmainstore=false;
-			}
-		}
-		if(randomstore>0)
-			randomstore--;	
-		else
-		{
-			UpdateNodesAroundNoBorder((*it).x,(*it).y,15); //update the area we want to build in first 
-			for (unsigned int i = 0; i < numBldToTest; i++)
-			{
-				if (construction.Wanted(bldToTest[i]))
-				{
-					AddBuildJob(bldToTest[i],(*it).x,(*it).y);
+				firsthouse=false;
+				if(lostmainstore&&aii->IsObjectTypeOnNode((*it).x,(*it).y,NOP_BUILDING))
+				{	
+					aii->ChangeInventorySetting((*it).x, (*it).y, 0, 2, 0);
+					aii->ChangeInventorySetting((*it).x, (*it).y, 0, 2, 16);
+					aii->ChangeInventorySetting((*it).x, (*it).y, 0, 2, 21);
+					lostmainstore=false;
 				}
 			}
-			if(gf>1500||aii->GetInventory()->goods[GD_BOARDS]>11)
-				AddBuildJob(construction.ChooseMilitaryBuilding((*it).x, (*it).y),(*it).x, (*it).y);			
-			break;
-		}
+			if(randomstore>0)
+				randomstore--;	
+			else
+			{
+				UpdateNodesAroundNoBorder((*it).x,(*it).y,15); //update the area we want to build in first 
+				for (unsigned int i = 0; i < numBldToTest; i++)
+				{
+					if (construction.Wanted(bldToTest[i]))
+					{
+						AddBuildJob(bldToTest[i],(*it).x,(*it).y);
+					}
+				}
+				if(gf>1500||aii->GetInventory()->goods[GD_BOARDS]>11)
+					AddBuildJob(construction.ChooseMilitaryBuilding((*it).x, (*it).y),(*it).x, (*it).y);			
+				break;
+			}
 		
-	}
-	//now pick a random military building and try to build around that
-	if(milBuildings.size()<1)return;
-	randomstore=rand()%milBuildings.size();	
-	numBldToTest = 22;
-	//std::list<Coords>::iterator it2 = milBuildings.end();
-	for (std::list<Coords>::iterator it = milBuildings.begin(); it != milBuildings.end(); it++)
-	{
-		//order ai to try building new military buildings close to the latest completed military buildings
-		//it2--;
-		//AddBuildJob(construction.ChooseMilitaryBuilding((*it2).x, (*it2).y),(*it2).x, (*it2).y);  //faster expansion when we have a huge empire BUT if we have lots of mil buildings this clogs the job queue FIX IT
-		if(randomstore>0)
-			randomstore--;
-		const nobMilitary *mil;
-		if (!(mil = aii->GetSpecObj<nobMilitary>((*it).x, (*it).y)))
-			continue;
-		if(randomstore<=0)
-		{			
-			UpdateNodesAroundNoBorder((*it).x,(*it).y,15); //update the area we want to build in first 
-			for (unsigned int i = 0; i < numBldToTest; i++) 
-			{
-				if (construction.Wanted(bldToTest[i]))
-				{
-					AddBuildJob(bldToTest[i],(*it).x,(*it).y);
-				}
-			}
-			AddBuildJob(construction.ChooseMilitaryBuilding((*it).x, (*it).y),(*it).x, (*it).y);
-			if(mil->IsUseless()&&mil->IsDemolitionAllowed())
-			{
-				aii->DestroyBuilding((*it).x, (*it).y);
-			}
-			break;
 		}
-	}
-
-
-	
-	}
-	if (gf == 99)		
-	{
-		InitStoreAndMilitarylists();
-	}
-	if (gf == 100)
-	{
-		if(milBuildings.size()<1)
+		//now pick a random military building and try to build around that
+		if(milBuildings.size()<1)return;
+		randomstore=rand()%milBuildings.size();	
+		numBldToTest = 22;
+		//std::list<Coords>::iterator it2 = milBuildings.end();
+		for (std::list<Coords>::iterator it = milBuildings.begin(); it != milBuildings.end(); it++)
 		{
-			Chat(_("Hi, I'm an artifical player and I'm not very good yet!"));
-			Chat(_("And I may crash your game sometimes..."));
+			//order ai to try building new military buildings close to the latest completed military buildings
+			//it2--;
+			//AddBuildJob(construction.ChooseMilitaryBuilding((*it2).x, (*it2).y),(*it2).x, (*it2).y);  //faster expansion when we have a huge empire BUT if we have lots of mil buildings this clogs the job queue FIX IT
+			if(randomstore>0)
+				randomstore--;
+			const nobMilitary *mil;
+			if (!(mil = aii->GetSpecObj<nobMilitary>((*it).x, (*it).y)))
+				continue;
+			if(randomstore<=0)
+			{			
+				UpdateNodesAroundNoBorder((*it).x,(*it).y,15); //update the area we want to build in first 
+				for (unsigned int i = 0; i < numBldToTest; i++) 
+				{
+					if (construction.Wanted(bldToTest[i]))
+					{
+						AddBuildJob(bldToTest[i],(*it).x,(*it).y);
+					}
+				}
+				AddBuildJob(construction.ChooseMilitaryBuilding((*it).x, (*it).y),(*it).x, (*it).y);
+				if(mil->IsUseless()&&mil->IsDemolitionAllowed())
+				{
+					aii->DestroyBuilding((*it).x, (*it).y);
+				}
+				break;
+			}
 		}
-
-		// Set military settings to some nicer default values
-		std::vector<unsigned char> milSettings;
-		milSettings.resize(8);
-		milSettings[0] = 10;
-		milSettings[1] = 5;
-		milSettings[2] = 5;
-		milSettings[3] = 5;
-		milSettings[4] = 1;
-		milSettings[5] = 8;
-		milSettings[6] = 8;
-		milSettings[7] = 8;
-		aii->SetMilitarySettings(milSettings);
-		//set good distribution settings 
-		std::vector<unsigned char> goodSettings;
-		goodSettings.resize(23);
-		goodSettings[0] = 10; //food granite
-		goodSettings[1] = 10; //food coal
-		goodSettings[2] = 10; //food iron
-		goodSettings[3] = 10; //food gold
-
-		goodSettings[4] = 10; //grain mill
-		goodSettings[5] = 10; //grain pigfarm
-		goodSettings[6] = 10; //grain donkeybreeder
-		goodSettings[7] = 10; //grain brewery
-		goodSettings[8] = 10; //grain charburner
-
-		goodSettings[9] = 10; //iron armory
-		goodSettings[10] = 10; //iron metalworks
-
-		goodSettings[11] = 10; //coal armory
-		goodSettings[12] = 10; //coal ironsmelter
-		goodSettings[13] = 10; //coal mint
-
-		goodSettings[14] = 10; //wood sawmill
-		goodSettings[15] = 10; //wood charburner
-
-		goodSettings[16] = 10; //boards new buildings
-		goodSettings[17] = 4; //boards metalworks
-		goodSettings[18] = 2; //boards shipyard
-
-		goodSettings[19] = 10; //water bakery
-		goodSettings[20] = 10; //water brewery
-		goodSettings[21] = 10; //water pigfarm
-		goodSettings[22] = 10; //water donkeybreeder
-		aii->SetDistribution(goodSettings);
-
 	}
+
 
 	// from time to time give some random build orders to keep alive
 	
@@ -862,11 +861,9 @@ bool AIPlayerJH::FindBestPosition(MapCoord &x, MapCoord &y, AIJH::Resource res, 
 
 void AIPlayerJH::UpdateNodesAround(MapCoord x, MapCoord y, unsigned radius)
 {
-	unsigned width = aii->GetMapWidth();
-
 	UpdateReachableNodes(x, y, radius);
-	
 }
+
 void AIPlayerJH::UpdateNodesAroundNoBorder(MapCoord x, MapCoord y, unsigned radius)
 {
 	unsigned width = aii->GetMapWidth();
@@ -893,7 +890,7 @@ void AIPlayerJH::UpdateNodesAroundNoBorder(MapCoord x, MapCoord y, unsigned radi
 					nodes[i].owned = false;
 					nodes[i].bq = BQ_NOTHING;
 				}
-				/*
+
 				AIJH::Resource res = CalcResource(tx2, ty2);
 				if (res != nodes[i].res)
 				{
@@ -905,8 +902,7 @@ void AIPlayerJH::UpdateNodesAroundNoBorder(MapCoord x, MapCoord y, unsigned radi
 						ChangeResourceMap(tx2, ty2, AIJH::RES_RADIUS[res], resourceMaps[res], 1);
 
 					nodes[i].res = res;
-				}*/			
-	/*
+				}
 			}
 		}
 	}*/
