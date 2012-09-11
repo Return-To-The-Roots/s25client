@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 8216 2012-09-11 18:42:29Z marcus $
+// $Id: AIPlayerJH.cpp 8221 2012-09-11 20:01:32Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1002,8 +1002,8 @@ bool AIPlayerJH::SimpleFindPosition(MapCoord &x, MapCoord &y, BuildingQuality si
 
 	if (x >= width || y >= height)
 	{
-		x = aii->GetHeadquarter()->GetX();
-		y = aii->GetHeadquarter()->GetY();
+		x = construction.GetStoreHousePositions().front().x;
+		y = construction.GetStoreHousePositions().front().x;
 	}
 
 	// TODO was besseres wär schön ;)
