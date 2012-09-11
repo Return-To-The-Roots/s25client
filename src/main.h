@@ -1,4 +1,4 @@
-// $Id: main.h 8209 2012-09-10 14:55:39Z marcus $
+// $Id: main.h 8216 2012-09-11 18:42:29Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -70,6 +70,7 @@
 
 #include <errno.h>
 #include <cstdlib>
+#include <csignal>
 #include <cstdio>
 #include <ctime>
 #include <cmath>
@@ -94,18 +95,20 @@
 
 #ifdef _WIN32
 
-#ifdef _MSC_VER
-	#define getch _getch
-#ifndef snprintf
-	#define snprintf _snprintf
-#endif
-	#ifndef assert
-		#define assert _ASSERT
+	#ifdef _MSC_VER
+		#define getch _getch
+		#ifndef snprintf
+			#define snprintf _snprintf
+		#endif
+		#ifndef assert
+			#define assert _ASSERT
+		#endif
 	#endif
-#endif
 
 	typedef int socklen_t;
+	#define BREAKPOINT ;
 #else
+	#define BREAKPOINT raise(SIGTRAP)
 	#define SOCKET int
 	#define INVALID_SOCKET -1
 	#define SOCKET_ERROR -1

@@ -1,4 +1,4 @@
-// $Id: noTree.h 8115 2012-09-01 19:11:19Z jh $
+// $Id: noTree.h 8216 2012-09-11 18:42:29Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -43,6 +43,7 @@ class noTree : public noCoordBase
 	/// Der Holzfäller ist Experte in Sachen Baum :)
 	friend class nofWoodcutter;
 	friend class AIPlayerJH;
+	friend class AIInterface;
 
 	/// Typ des Baumes (also welche Baumart)
 	unsigned char type;

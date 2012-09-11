@@ -1,4 +1,4 @@
-// $Id: AIJHHelper.cpp 8144 2012-09-04 10:22:54Z marcus $
+// $Id: AIJHHelper.cpp 8216 2012-09-11 18:42:29Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -123,17 +123,20 @@ void AIJH::BuildJob::TryToBuild()
 	{
 		// TODO: tmp solution for testing: only woodcutter
 		//hier machen für mehre gebäude
+		//erstmal wieder rausgenommen weil kaputt - todo: fix positionsearch 
 		if (type != BLD_WOODCUTTER)
 		{
 			searchMode = SEARCHMODE_RADIUS;
 		}
 		else
 		{
+			searchMode = SEARCHMODE_RADIUS;
+			/*
 			PositionSearch *search = aijh->CreatePositionSearch(bx, by, AIJH::WOOD, BQ_HUT, 20, BLD_WOODCUTTER, true);
 			SearchJob *job = new SearchJob(aijh, search);
 			aijh->AddJob(job, true);
 			status = AIJH::JOB_FINISHED;
-			return;
+			return;*/
 		}
 		
 	}
@@ -197,7 +200,7 @@ void AIJH::BuildJob::TryToBuild()
 			break;
 
 		case BLD_FARM:
-			foundPos = aijh->FindBestPosition(bx, by, AIJH::PLANTSPACE, BQ_CASTLE, 25, 12, true);
+			foundPos = aijh->FindBestPosition(bx, by, AIJH::PLANTSPACE, BQ_CASTLE, 85, 15, true);
 			break;
 
 		default:
@@ -292,7 +295,7 @@ void AIJH::BuildJob::BuildMainRoad()
 	{
 		// Wir sind angeschlossen, BQ für den eben gebauten Weg aktualisieren
 		//aijh->RecalcBQAround(target_x, target_y);
-		aijh->RecalcGround(target_x, target_y, route);
+		//aijh->RecalcGround(target_x, target_y, route);
 
 		switch(type)
 		{
@@ -329,7 +332,7 @@ void AIJH::BuildJob::BuildMainRoad()
 			break;
 
 		case BLD_FISHERY:
-			aijh->ChangeResourceMap(target_x, target_y, 10, aijh->resourceMaps[AIJH::FISH], -30);
+			//aijh->ChangeResourceMap(target_x, target_y, 10, aijh->resourceMaps[AIJH::FISH], -30);
 			break;
 		case BLD_STOREHOUSE:
 			aijh->GetConstruction()->AddStoreHouse(target_x, target_y);
@@ -338,8 +341,8 @@ void AIJH::BuildJob::BuildMainRoad()
 			aijh->GetConstruction()->AddStoreHouse(target_x, target_y);
 			break;
 		case BLD_FARM:
-			aijh->ChangeResourceMap(target_x, target_y, 5, aijh->resourceMaps[AIJH::PLANTSPACE], -30);
-			aijh->SetFarmedNodes(target_x, target_y);
+			//aijh->ChangeResourceMap(target_x, target_y, 5, aijh->resourceMaps[AIJH::PLANTSPACE], -30);
+			aijh->SetFarmedNodes(target_x, target_y,true);
 			break;
 
 		case BLD_MILL:
@@ -419,8 +422,10 @@ void AIJH::EventJob::ExecuteJob()
 		break;
 	case AIEvent::BuildingDestroyed:
 		{//todo maybe do sth about it?
-			//AIEvent::Building *evb = dynamic_cast<AIEvent::Building *>(ev);
-			//aijh->HandleBuilingDestroyed(AIPlayerJH::Coords(evb->GetX(), evb->GetY()),evb->GetBuildingType());
+			AIEvent::Building *evb = dynamic_cast<AIEvent::Building *>(ev);
+			//at least for farms ai has to remove "farmed"
+			if(evb->GetBuildingType()==BLD_FARM)
+				aijh->HandleBuilingDestroyed(AIPlayerJH::Coords(evb->GetX(), evb->GetY()),evb->GetBuildingType());
 			status = AIJH::JOB_FINISHED;
 		}
 		break;

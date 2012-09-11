@@ -73,13 +73,13 @@ public:
 
 	/// Returns x-coordinate of the neighbouring point with radius 2  in given direction (12 possible directions)
 	inline MapCoord GetXA2(MapCoord x, MapCoord y, Direction direction) { return gwb->GetXA2(x, y, direction); }
-
+	
 	/// Returns y-coordinate of the neighbouring point with radius 2 in given direction (12 possible directions)
 	inline MapCoord GetYA2(MapCoord x, MapCoord y, Direction direction) { return gwb->GetYA2(x, y, direction); }
 
 	/// Transforms coordinates of a point into a neighbour point in given direction
 	inline void GetPointA(MapCoord &x, MapCoord &y, Direction direction) { gwb->GetPointA(x, y, direction); }
-
+	
 	/// Get Distance between to points (wraps around at end of world)
 	unsigned GetDistance(MapCoord x1, MapCoord y1, MapCoord x2, MapCoord y2) const { return gwb->CalcDistance(x1, y1, x2, y2); }
 
@@ -93,6 +93,10 @@ public:
 
 	/// Returns the resource on top on a given spot (wood, stones, nothing)
 	AIJH::Resource GetSurfaceResource(MapCoord x, MapCoord y) const;
+
+	/// calculates the surface resource value on a given spot (wood/ stones/ farmland)
+	/// when given a direction and lastvalue the calculation will be much faster O(n) vs O(n^2)
+	int CalcResourceValue(MapCoord x, MapCoord y,AIJH::Resource res,char direction=-1,int lastval=0xffff) const;
 
 	/// Tests whether a given point is part of the border or not
 	bool IsBorder(MapCoord x, MapCoord y) const  { return gwb->GetNode(x, y).boundary_stones[0] == (playerID + 1); }

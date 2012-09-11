@@ -1,4 +1,4 @@
-// $Id: GameWorldBase.cpp 8212 2012-09-10 21:09:43Z marcus $
+// $Id: GameWorldBase.cpp 8216 2012-09-11 18:42:29Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -560,8 +560,12 @@ void GameWorldBase::RemoveVisualRoad(unsigned short start_x, unsigned short star
 	// Wieder zurückbauen
 	for(unsigned z = 0;z<route.size();++z)
 	{
-		SetPointVirtualRoad(start_x,start_y, route[z],0);
-		CalcRoad(start_x,start_y,GAMECLIENT.GetPlayerID());
+		if (!GetPointRoad(start_x,start_y, route[z], false))
+		{
+			SetPointVirtualRoad(start_x,start_y, route[z],0);
+			CalcRoad(start_x,start_y,GAMECLIENT.GetPlayerID());
+		}
+
 		GetPointA(start_x,start_y,route[z]);
 	}
 }
@@ -1376,7 +1380,7 @@ unsigned GameWorldBase::CalcHarborDistance(const unsigned habor_id1, const unsig
 unsigned GameWorldBase::CalcDistanceToNearestHarbor(const Point<MapCoord> pos) const
 {
 	unsigned min_distance = 0xffffffff;
-	for(unsigned i = 0;i<harbor_pos.size()-1;++i) //poc: harbor dummy at spot 0 ask Oliverr why 
+	for(unsigned i = 1;i<harbor_pos.size();++i) //poc: harbor dummy at spot 0 ask Oliverr why 
 		min_distance = min(min_distance,this->CalcDistance(pos.x,pos.y,harbor_pos[i].x,harbor_pos[i].y));
 		
 	return min_distance;

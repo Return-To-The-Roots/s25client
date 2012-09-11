@@ -24,6 +24,7 @@
 
 #include "nobHarborBuilding.h"
 #include "nobHQ.h"
+#include "noTree.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -59,17 +60,171 @@ AIJH::Resource AIInterface::GetSubsurfaceResource(MapCoord x, MapCoord y) const
 AIJH::Resource AIInterface::GetSurfaceResource(MapCoord x, MapCoord y) const
 {
 	NodalObjectType no = gwb->GetNO(x,y)->GetType();
-
+	//valid terrain?
+	if(gwb->GetNode(x,y).t1!=TT_WATER && gwb->GetNode(x,y).t1!=TT_LAVA && gwb->GetNode(x,y).t1!=TT_SWAMPLAND&& gwb->GetNode(x,y).t1!=TT_SNOW)
+	{
 	if (no == NOP_TREE)
-		return AIJH::WOOD;
+	{
+		//exclude pineapple because it's not a real tree
+		if ((gwb->GetSpecObj<noTree>(x,y))->type != 5)
+			return AIJH::WOOD;
+		else
+			return AIJH::BLOCKED;
+	}
 	else if(no == NOP_GRANITE)
 		return AIJH::STONES;
 	else if (no == NOP_NOTHING || no == NOP_ENVIRONMENT)
 		return AIJH::NOTHING;
 	else
 		return AIJH::BLOCKED;
+	}
+	else
+		return AIJH::BLOCKED;
 }
 
+int AIInterface::CalcResourceValue(MapCoord x,MapCoord y,AIJH::Resource res,char direction,int lastval) const
+{
+	int returnval=0;
+	if(direction==-1) //calculate complete value from scratch (3n^2+3n+1)
+	{
+		for(MapCoord tx=gwb->GetXA(x,y,0), r=1;r<=AIJH::RES_RADIUS[res];tx=gwb->GetXA(tx,y,0),++r)
+		{
+			MapCoord tx2 = tx, ty2 = y;
+			for(unsigned i = 2;i<8;++i)
+			{
+				for(MapCoord r2=0;r2<r;gwb->GetPointA(tx2,ty2,i%6),++r2)
+				{
+					//surface resource?
+					if(res==AIJH::PLANTSPACE||res==AIJH::BORDERLAND||res==AIJH::WOOD||res==AIJH::STONES)
+					{
+						if (GetSurfaceResource(tx2,ty2)==res||(res==AIJH::PLANTSPACE&&GetSurfaceResource(tx2,ty2)==AIJH::NOTHING)||(res==AIJH::BORDERLAND&&(IsBorder(tx2,ty2)||!IsOwnTerritory(tx2,ty2))))
+						{						
+							returnval+=(AIJH::RES_RADIUS[res]);
+						}
+						//another building using our "resource"? reduce rating!
+						if((res==AIJH::WOOD&&IsBuildingOnNode(tx2,ty2,BLD_WOODCUTTER))||(res==AIJH::PLANTSPACE&&IsBuildingOnNode(tx2,ty2,BLD_FORESTER)))
+							returnval-=(40);
+					}
+					//so it's a subsurface resource or something we dont calculate (multiple,blocked,nothing)
+					else
+					{
+						if (GetSubsurfaceResource(tx2,ty2)==res)
+						{
+							returnval+=(AIJH::RES_RADIUS[res]);						
+						}
+						//another building using our "resource"? reduce rating!
+						if((res==AIJH::FISH&&IsBuildingOnNode(tx2,ty2,BLD_FISHERY)))
+							returnval-=(90);
+					}
+				}
+			}
+		}
+		//add the center point value
+		//surface resource?
+		if(res==AIJH::PLANTSPACE||res==AIJH::BORDERLAND||res==AIJH::WOOD||res==AIJH::STONES)
+		{
+			if (GetSurfaceResource(x,y)==res||(res==AIJH::PLANTSPACE&&GetSurfaceResource(x,y)==AIJH::NOTHING)||(res==AIJH::BORDERLAND&&(IsBorder(x,y)||!IsOwnTerritory(x,y))))
+			{						
+				returnval+=(AIJH::RES_RADIUS[res]);
+			}
+			//another building using our "resource"? reduce rating!
+		if((res==AIJH::WOOD&&IsBuildingOnNode(x,y,BLD_WOODCUTTER))||(res==AIJH::PLANTSPACE&&IsBuildingOnNode(x,y,BLD_FORESTER)))
+			returnval-=(40);
+		}
+		//so it's a subsurface resource or something we dont calculate (multiple,blocked,nothing)
+		else
+		{
+			if (GetSubsurfaceResource(x,y)==res)
+			{
+				returnval+=(AIJH::RES_RADIUS[res]);						
+			}
+			//another building using our "resource"? reduce rating!
+			if((res==AIJH::FISH&&IsBuildingOnNode(x,y,BLD_FISHERY)))
+				returnval-=(90);
+		}
+	}
+	else//calculate different nodes only (4n+2 ?anyways much faster)
+	{
+		returnval+=lastval;
+		//add new points 
+		//first: go radius steps towards direction-1  
+		MapCoord tx=x,ty=y;
+		for(unsigned i=0;i<AIJH::RES_RADIUS[res];i++)
+			gwb->GetPointA(tx,ty,(direction+5)%6);
+		//then clockwise around at radius distance to get all new points
+		for(int i = direction+1;i<(direction+3);++i)
+		{
+			//add 1 extra step on the second side we check to complete the side
+			for(MapCoord r2=0;r2<AIJH::RES_RADIUS[res]||(r2<AIJH::RES_RADIUS[res]+1&&i==direction+2);++r2)
+			{
+				//surface resource?
+				if(res==AIJH::PLANTSPACE||res==AIJH::BORDERLAND||res==AIJH::WOOD||res==AIJH::STONES)
+				{
+					if (GetSurfaceResource(tx,ty)==res||(res==AIJH::PLANTSPACE&&GetSurfaceResource(tx,ty)==AIJH::NOTHING)||(res==AIJH::BORDERLAND&&(IsBorder(tx,ty)||!IsOwnTerritory(tx,ty))))
+					{						
+						returnval+=(AIJH::RES_RADIUS[res]);
+					}
+					//another building using our "resource"? reduce rating!
+					if((res==AIJH::WOOD&&IsBuildingOnNode(tx,ty,BLD_WOODCUTTER))||(res==AIJH::PLANTSPACE&&IsBuildingOnNode(tx,ty,BLD_FORESTER)))
+						returnval-=(40);
+				}
+				//so it's a subsurface resource or something we dont calculate (multiple,blocked,nothing)
+				else
+				{
+					if (GetSubsurfaceResource(tx,ty)==res)
+					{
+						returnval+=(AIJH::RES_RADIUS[res]);						
+					}
+					//another building using our "resource"? reduce rating!
+					if((res==AIJH::FISH&&IsBuildingOnNode(tx,ty,BLD_FISHERY)))
+						returnval-=(90);
+				}
+				gwb->GetPointA(tx,ty,i%6);
+			}
+		}
+		//now substract old points not in range of new point
+		//go to old center point:
+		tx=x;
+		ty=y;
+		gwb->GetPointA(tx,ty,(direction+3)%6);
+		//next: go to the first old point we have to substract
+		for(unsigned i=0;i<AIJH::RES_RADIUS[res];i++)
+			gwb->GetPointA(tx,ty,(direction+2)%6);
+		//now clockwise around at radius distance to remove all old points
+		for(int i = direction+4;i<(direction+6);++i)
+		{
+			for(MapCoord r2=0;r2<AIJH::RES_RADIUS[res]||(r2<AIJH::RES_RADIUS[res]+1&&i==direction+5);++r2)
+			{
+				//surface resource?
+				if(res==AIJH::PLANTSPACE||res==AIJH::BORDERLAND||res==AIJH::WOOD||res==AIJH::STONES)
+				{
+					if (GetSurfaceResource(tx,ty)==res||(res==AIJH::PLANTSPACE&&GetSurfaceResource(tx,ty)==AIJH::NOTHING)||(res==AIJH::BORDERLAND&&(IsBorder(tx,ty)||!IsOwnTerritory(tx,ty))))
+					{						
+						returnval-=(AIJH::RES_RADIUS[res]);
+					}
+					//another building using our "resource"? reduce rating!
+					if((res==AIJH::WOOD&&IsBuildingOnNode(tx,ty,BLD_WOODCUTTER))||(res==AIJH::PLANTSPACE&&IsBuildingOnNode(tx,ty,BLD_FORESTER)))
+						returnval+=(40);
+				}
+				//so it's a subsurface resource or something we dont calculate (multiple,blocked,nothing)
+				else
+				{
+					if (GetSubsurfaceResource(tx,ty)==res)
+					{
+						returnval-=(AIJH::RES_RADIUS[res]);						
+					}
+					//another building using our "resource"? reduce rating!
+					if((res==AIJH::FISH&&IsBuildingOnNode(tx,ty,BLD_FISHERY)))
+						returnval+=(90);
+				}
+				gwb->GetPointA(tx,ty,i%6);
+			}
+		}
+	}
+	//if(returnval<0&&lastval>=0&&res==AIJH::BORDERLAND)
+		//LOG.lprintf("AIInterface::CalcResourceValue - warning: negative returnvalue direction %i oldval %i\n", direction, lastval);
+	return returnval;
+}
 
 bool AIInterface::IsRoadPoint(MapCoord x, MapCoord y) const
 {

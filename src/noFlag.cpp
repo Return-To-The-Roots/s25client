@@ -1,4 +1,4 @@
-// $Id: noFlag.cpp 8165 2012-09-06 21:24:06Z marcus $
+// $Id: noFlag.cpp 8216 2012-09-11 18:42:29Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -36,6 +36,7 @@
 #include "FOWObjects.h"
 
 #include "glSmartBitmap.h"
+#include "GameServer.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -71,7 +72,16 @@ noFlag::noFlag(const unsigned short x, const unsigned short y,
 	noFlag *flag = gwg->GetRoadFlag(x, y, dir, dis_dir);
 
 	if(flag)
-		flag->routes[dir]->SplitRoad(this);
+	{
+		if (flag->routes[dir])
+		{
+			flag->routes[dir]->SplitRoad(this);
+		} else
+		{
+			fprintf(stderr, "%ix%i\n", x, y);
+			GAMESERVER.TogglePause();
+		}
+	}
 
 	// auf Wasseranteile prüfen
 	for(unsigned char i = 0; i < 6; ++i)

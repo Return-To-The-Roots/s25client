@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.h 8135 2012-09-01 19:41:01Z marcus $
+// $Id: AIPlayerJH.h 8216 2012-09-11 18:42:29Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -155,6 +155,7 @@ protected:
 	/// Initialize the resource maps
 	void InitResourceMaps();
 	/// Initialize the Store and Military building lists (only required when loading games but the AI doesnt know whether its a load game or new game so this runs when the ai starts in both cases)
+
 	void InitStoreAndMilitarylists();
 
 	//returns true if we can get to the startflag in <maxlen without turning back
@@ -235,7 +236,7 @@ protected:
 	void UpdateReachableNodes(MapCoord x, MapCoord y, unsigned radius);
 	void IterativeReachableNodeChecker(std::queue<std::pair<MapCoord, MapCoord> >& toCheck);
 
-	void SetFarmedNodes(MapCoord x, MapCoord y);
+	void SetFarmedNodes(MapCoord x, MapCoord y,bool set);
 
 	bool RemoveUnusedRoad(const noFlag *startFlag, unsigned char excludeDir = 0xFF, bool firstflag=true, bool allowcircle=true);
 	//finds all unused flags and roads, removes flags or reconnects them as neccessary
