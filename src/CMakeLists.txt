@@ -1,5 +1,5 @@
 ################################################################################
-### $Id: CMakeLists.txt 8209 2012-09-10 14:55:39Z marcus $
+### $Id: CMakeLists.txt 8226 2012-09-12 05:23:13Z FloSoft $
 ################################################################################
 
 INCLUDE(FindBZip2)
@@ -425,35 +425,43 @@ ENDIF ( "${COMPILEFOR}" STREQUAL "apple")
 # LUA
 ################################################################################
 
-SET(LUA_VERSION "52")
+#SET(LUA_VERSION "52")
 
-IF ( "${COMPILEFOR}" STREQUAL "windows")
-    IF ( "${COMPILEARCH}" STREQUAL "i386" )
-	SET(LUA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../contrib/lua/win32")
-    ELSE ( "${COMPILEARCH}" STREQUAL "i386" )
-	SET(LUA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../contrib/lua/win64")
-    ENDIF ( "${COMPILEARCH}" STREQUAL "i386" )
-ENDIF ( "${COMPILEFOR}" STREQUAL "windows")
+#IF ( "${COMPILEFOR}" STREQUAL "windows")
+#    IF ( "${COMPILEARCH}" STREQUAL "i386" )
+#	SET(LUA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../contrib/lua/win32")
+#    ELSE ( "${COMPILEARCH}" STREQUAL "i386" )
+#	SET(LUA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../contrib/lua/win64")
+#    ENDIF ( "${COMPILEARCH}" STREQUAL "i386" )
+#ENDIF ( "${COMPILEFOR}" STREQUAL "windows")
 
-IF ( "${COMPILEFOR}" STREQUAL "linux")
-    IF ( "${COMPILEARCH}" STREQUAL "i386" )
-	SET(LUA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../contrib/lua/lin32")
-    ELSE ( "${COMPILEARCH}" STREQUAL "i386" )
-	SET(LUA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../contrib/lua/lin64")
-    ENDIF ( "${COMPILEARCH}" STREQUAL "i386" )
-ENDIF ( "${COMPILEFOR}" STREQUAL "linux")
+#IF ( "${COMPILEFOR}" STREQUAL "linux")
+#    IF ( "${COMPILEARCH}" STREQUAL "i386" )
+#	SET(LUA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../contrib/lua/lin32")
+#    ELSE ( "${COMPILEARCH}" STREQUAL "i386" )
+#	SET(LUA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../contrib/lua/lin64")
+#    ENDIF ( "${COMPILEARCH}" STREQUAL "i386" )
+#ENDIF ( "${COMPILEFOR}" STREQUAL "linux")
 
-IF ( "${COMPILEFOR}" STREQUAL "apple")
-    SET(LUA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../contrib/lua/mac")
-ENDIF ( "${COMPILEFOR}" STREQUAL "apple")
+#IF ( "${COMPILEFOR}" STREQUAL "apple")
+#    SET(LUA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../contrib/lua/mac")
+#ENDIF ( "${COMPILEFOR}" STREQUAL "apple")
 
-ADD_FLAGS(CMAKE_C_FLAGS -I${LUA_DIR}/include)
-ADD_FLAGS(CMAKE_CXX_FLAGS -I${LUA_DIR}/include)
+#ADD_FLAGS(CMAKE_C_FLAGS -I${LUA_DIR}/include)
+#ADD_FLAGS(CMAKE_CXX_FLAGS -I${LUA_DIR}/include)
 
 ################################################################################
 
 ADD_EXECUTABLE(s25client ${s25client_SRCS})
-TARGET_LINK_LIBRARIES(s25client siedler2 lobby_c s25util mygettext ${BZIP2_LIBRARIES} ${OPENGL_gl_LIBRARY} ${LUA_DIR}/liblua${LUA_VERSION}.a)
+TARGET_LINK_LIBRARIES(s25client 
+	siedler2
+	lobby_c
+	s25util
+	mygettext
+	${BZIP2_LIBRARIES}
+	${OPENGL_gl_LIBRARY}
+	#${LUA_DIR}/liblua${LUA_VERSION}.a
+)
 
 IF ( "${COMPILEFOR}" STREQUAL "apple")
 	TARGET_LINK_LIBRARIES(s25client ${SDL_LIBRARY} SDLmain)
