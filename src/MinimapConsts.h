@@ -1,4 +1,4 @@
-// $Id: MinimapConsts.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: MinimapConsts.h 8229 2012-09-12 15:15:25Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -19,7 +19,7 @@
 #ifndef MINIMAP_CONSTS_H_
 #define MINIMAP_CONSTS_H_
 
-// Farben für die einzelnen Terrains
+// Farben für die einzelnen Terrains (ARGB)
 const unsigned TERRAIN_COLORS[3][16] =
 {
 	// Grünland
@@ -42,7 +42,7 @@ const unsigned TERRAIN_COLORS[3][16] =
 	},
 
 	// Ödland
-	{0xFFFFFFFF,//TT_SNOW = 0,
+	{0xFF860000,//TT_SNOW is lava, too. was 0xFFFFFFFF
 	0xFF9c7c64,//TT_DESERT,
 	0xFF001820,//TT_SWAMPLAND,
 	0xFF444850,//TT_MEADOW_FLOWERS,
@@ -56,12 +56,12 @@ const unsigned TERRAIN_COLORS[3][16] =
 	0xFF646048,//TT_MEADOW3,
 	0xFF88b028,//TT_STEPPE,
 	0xFF001820,//TT_MOUNTAINMEADOW,
-	0xFF1038a4,//TT_WATER,
-	0xFFc02020 //TT_LAVA
+	0xFF454520,//TT_WATER		was 0xFF1038a4,//TT_WATER,
+	0xFFC32020 //TT_LAVA		was 0xFFc02020 //TT_LAVA
 	},
 
 	// Winterwelt
-	{0xFFFFFFFF,//TT_SNOW = 0,
+	{0xFF00286C,//TT_SNOW = 0,	was 0xFFFFFFFF,//TT_SNOW = 0,
 	0xFF0070b0,//TT_DESERT,
 	0xFF00286c,//TT_SWAMPLAND,
 	0xFF7c84ac,//TT_MEADOW_FLOWERS,
