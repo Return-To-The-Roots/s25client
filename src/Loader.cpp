@@ -1,4 +1,4 @@
-// $Id: Loader.cpp 8210 2012-09-10 18:41:02Z marcus $
+// $Id: Loader.cpp 8228 2012-09-12 08:57:53Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -53,7 +53,7 @@
  *
  *  @author FloSoft
  */
-Loader::Loader(void) : lastgfx(0xFF)
+Loader::Loader(void) : lastgfx(0xFF), stp(NULL)
 {
 }
 
@@ -502,7 +502,12 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool *nations)
 
 void Loader::fillCaches()
 {
-	glSmartTexturePacker stp;
+	if (stp)
+	{
+		delete stp;
+	}
+
+	stp = new glSmartTexturePacker();
 
 // Animals
 	for (unsigned species = 0; species < SPEC_COUNT; ++species)
@@ -512,6 +517,8 @@ void Loader::fillCaches()
 			for (unsigned ani_step = 0; ani_step < ANIMALCONSTS[species].animation_steps; ++ani_step)
 			{
 				glSmartBitmap &bmp = animal_cache[species][dir][ani_step];
+
+				bmp.reset();
 
 				bmp.add(LOADER.GetMapImageN(ANIMALCONSTS[species].walking_id + ANIMALCONSTS[species].animation_steps * ( (dir + 3) % 6) + ani_step));
 
@@ -525,11 +532,13 @@ void Loader::fillCaches()
 						bmp.addShadow(LOADER.GetMapImageN(ANIMALCONSTS[species].shadow_id+(dir+3)%6));
 				}
 
-				stp.add(bmp);
+				stp->add(bmp);
 			}
 		}
 
 		glSmartBitmap &bmp = animal_cache[species][0][ANIMAL_MAX_ANIMATION_STEPS];
+
+		bmp.reset();
 
 		if (ANIMALCONSTS[species].dead_id)
 		{
@@ -540,7 +549,7 @@ void Loader::fillCaches()
 				bmp.addShadow(LOADER.GetMapImageN(ANIMALCONSTS[species].shadow_dead_id));
 			}
 
-			stp.add(bmp);
+			stp->add(bmp);
 		}
 	}
 
@@ -553,6 +562,9 @@ void Loader::fillCaches()
 		{
 			glSmartBitmap &bmp = building_cache[nation][type][0];
 			glSmartBitmap &skel = building_cache[nation][type][1];
+
+			bmp.reset();
+			skel.reset();
 
 			if (type == BLD_CHARBURNER)
 			{
@@ -574,8 +586,8 @@ void Loader::fillCaches()
 				skel.addShadow(LOADER.GetNationImageN(nation,250 + 5*type + 3));
 			}
 
-			stp.add(bmp);
-			stp.add(skel);
+			stp->add(bmp);
+			stp->add(skel);
 		}
 
 // FLAGS
@@ -588,10 +600,12 @@ void Loader::fillCaches()
 
 				glSmartBitmap &bmp = flag_cache[nation][type][ani_step];
 
+				bmp.reset();
+
 				bmp.add(static_cast<glArchivItem_Bitmap_Player *>(LOADER.GetNationImageN(nation, nr)));
 				bmp.addShadow(LOADER.GetNationImageN(nation, nr + 10));
 
-				stp.add(bmp);
+				stp->add(bmp);
 			}
 		}
 
@@ -605,6 +619,8 @@ void Loader::fillCaches()
 					bool fat = JOB_CONSTS[job].fat;
 					unsigned id = JOB_CONSTS[job].jobs_bob_id;
 					glSmartBitmap &bmp = bob_jobs_cache[nation][job][dir][ani_step];
+
+					bmp.reset();
 
 					if (job == JOB_SCOUT)
 					{
@@ -634,16 +650,19 @@ void Loader::fillCaches()
 					bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(bob_jobs->get(96+bob_jobs->getLink(good))));
 					bmp.addShadow(LOADER.GetMapImageN(900 + ( (dir + 3) % 6 ) * 8 + ani_step));
 
-					stp.add(bmp);
+					stp->add(bmp);
 				}
 			}
 		}
 
 		glSmartBitmap &bmp = boundary_stone_cache[nation];
+
+		bmp.reset();
+
 		bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(LOADER.GetNationImageN(nation, 0)));
 		bmp.addShadow(LOADER.GetNationImageN(nation, 1));
 
-		stp.add(bmp);
+		stp->add(bmp);
 	}
 
 
@@ -653,6 +672,8 @@ void Loader::fillCaches()
 	{
 		glSmartBitmap &bmp = building_flag_cache[ani_step];
 
+		bmp.reset();
+
 		bmp.add(static_cast<glArchivItem_Bitmap_Player *>(LOADER.GetMapImageN(3162+ani_step)));
 
 		int a, b, c, d;
@@ -660,7 +681,7 @@ void Loader::fillCaches()
 		fprintf(stderr, "%i,%i (%ix%i)\n", a, b, c, d);
 
 
-		stp.add(bmp);
+		stp->add(bmp);
 	}
 */
 // Trees
@@ -670,10 +691,12 @@ void Loader::fillCaches()
 		{
 			glSmartBitmap &bmp = tree_cache[type][ani_step];
 
+			bmp.reset();
+
 			bmp.add(LOADER.GetMapImageN(200 + type * 15 + ani_step));
 			bmp.addShadow(LOADER.GetMapImageN(350 + type * 15 + ani_step));
 
-			stp.add(bmp);
+			stp->add(bmp);
 		}
 	}
 
@@ -684,10 +707,12 @@ void Loader::fillCaches()
 		{
 			glSmartBitmap &bmp = granite_cache[type][size];
 
+			bmp.reset();
+
 			bmp.add(LOADER.GetMapImageN(516 + type*6 + size));
 			bmp.addShadow(LOADER.GetMapImageN(616 + type*6 + size));
 
-			stp.add(bmp);
+			stp->add(bmp);
 		}
 	}
 
@@ -698,10 +723,12 @@ void Loader::fillCaches()
 		{
 			glSmartBitmap &bmp = grainfield_cache[type][size];
 
+			bmp.reset();
+
 			bmp.add(LOADER.GetMapImageN(532+type*5+size));
 			bmp.addShadow(LOADER.GetMapImageN(632+type*5+size));
 
-			stp.add(bmp);
+			stp->add(bmp);
 		}
 	}
 
@@ -712,10 +739,12 @@ void Loader::fillCaches()
 		{
 			glSmartBitmap &bmp = donkey_cache[dir][ani_step];
 
+			bmp.reset();
+
 			bmp.add(LOADER.GetMapImageN(2000+((dir+3)%6)*8+ani_step));
 			bmp.addShadow(LOADER.GetMapImageN(2048+dir%3));
 
-			stp.add(bmp);
+			stp->add(bmp);
 		}
 	}
 
@@ -726,10 +755,12 @@ void Loader::fillCaches()
 		{
 			glSmartBitmap &bmp = boat_cache[dir][ani_step];
 
+			bmp.reset();
+
 			bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(LOADER.GetImageN("boat", ((dir+3)%6)*8+ani_step)));
 			bmp.addShadow(dynamic_cast<glArchivItem_Bitmap*>(LOADER.GetMapImageN(2048+dir%3)));
 
-			stp.add(bmp);
+			stp->add(bmp);
 		}
 	}
 
@@ -746,6 +777,8 @@ void Loader::fillCaches()
 				{
 					unsigned id;
 					glSmartBitmap &bmp = carrier_cache[ware][dir][ani_step][fat];
+
+					bmp.reset();
 
 					if (ware == GD_SHIELDJAPANESE)
 					{
@@ -768,7 +801,7 @@ void Loader::fillCaches()
 					bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(bob_carrier->get(96+bob_carrier->getLink(good))));
 					bmp.addShadow(LOADER.GetMapImageN(900 + ( (dir + 3) % 6 ) * 8 + ani_step));
 
-					stp.add(bmp);
+					stp->add(bmp);
 				}
 			}
 		}
@@ -776,53 +809,70 @@ void Loader::fillCaches()
 
 // gateway animation :)
 	{
+		const unsigned char start_index = 248;
+		const unsigned char color_count = 4;
+
 		libsiedler2::ArchivItem_Palette *palette = LOADER.GetPaletteN("pal5");
 		glArchivItem_Bitmap *image = LOADER.GetMapImageN(561);
 		glArchivItem_Bitmap *shadow = LOADER.GetMapImageN(661);
 
-		unsigned char start_index = 248;
-		unsigned char color_count = 4;
-		unsigned short width = image->getWidth();
-		unsigned short height = image->getHeight();
-
-		unsigned char *buffer = new unsigned char[width*height];
-
-		memset(buffer, 254, width*height);
-
-		image->print(buffer, width, height, libsiedler2::FORMAT_PALETTED, palette, 0, 0, 0, 0, width, height);
-
-		for(unsigned char i = 0; i < color_count; ++i)
+		if ((image != NULL) && (shadow != NULL) && (palette != NULL))
 		{
-			glSmartBitmap &bmp = gateway_cache[i + 1];
+			unsigned short width = image->getWidth();
+			unsigned short height = image->getHeight();
 
-			for(unsigned int x = 0; x < width; ++x)
+			unsigned char *buffer = new unsigned char[width*height];
+
+			memset(buffer, 254, width*height);
+
+			image->print(buffer, width, height, libsiedler2::FORMAT_PALETTED, palette, 0, 0, 0, 0, width, height);
+
+			for(unsigned char i = 0; i < color_count; ++i)
 			{
-				for(unsigned int y = 0; y < height; ++y)
+				glSmartBitmap &bmp = gateway_cache[i + 1];
+
+				bmp.reset();
+
+				for(unsigned int x = 0; x < width; ++x)
 				{
-					if(buffer[y*width + x] >= start_index && buffer[y*width + x] < start_index+color_count)
+					for(unsigned int y = 0; y < height; ++y)
 					{
-						if(++buffer[y*width + x] >= start_index+color_count)
-							buffer[y*width + x] = start_index;
+						if(buffer[y*width + x] >= start_index && buffer[y*width + x] < start_index+color_count)
+						{
+							if(++buffer[y*width + x] >= start_index+color_count)
+								buffer[y*width + x] = start_index;
+						}
 					}
 				}
+
+				glArchivItem_Bitmap_Raw *bitmap = new glArchivItem_Bitmap_Raw();
+				bitmap->create(width, height, buffer, width, height, libsiedler2::FORMAT_PALETTED, palette);
+				bitmap->setNx(image->getNx());
+				bitmap->setNy(image->getNy());
+
+				bmp.add(bitmap);
+				bmp.addShadow(shadow);
+
+				stp->add(bmp);
 			}
 
-			glArchivItem_Bitmap_Raw *bitmap = new glArchivItem_Bitmap_Raw();
-			bitmap->create(width, height, buffer, width, height, libsiedler2::FORMAT_PALETTED, palette);
-			bitmap->setNx(image->getNx());
-			bitmap->setNy(image->getNy());
+			delete[] buffer;
+		} else
+		{
+			for(unsigned char i = 0; i < color_count; ++i)
+			{
+				glSmartBitmap &bmp = gateway_cache[i + 1];
 
-			bmp.add(bitmap);
-			bmp.addShadow(shadow);
-
-			stp.add(bmp);
+				bmp.reset();
+			}
 		}
-
-		delete[] buffer;
 	}
 
-
-	stp.pack();
+	if (SETTINGS.video.shared_textures)
+	{
+		// generate mega texture
+		stp->pack();
+	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////

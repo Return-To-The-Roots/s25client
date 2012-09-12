@@ -150,6 +150,14 @@ void glSmartTexturePackerNode::destroy(unsigned reserve)
 	}
 }
 
+glSmartTexturePacker::~glSmartTexturePacker()
+{
+	for (std::vector<unsigned>::const_iterator it = textures.begin(); it != textures.end(); ++it)
+	{
+		VideoDriverWrapper::inst().DeleteTexture((*it));
+	}
+}
+
 bool glSmartTexturePacker::sortSmartBitmap(glSmartBitmap *a, glSmartBitmap *b)
 {
 	return((a->getTexWidth() * a->getTexHeight()) > (b->getTexWidth() * b->getTexHeight()));
@@ -159,16 +167,19 @@ bool glSmartTexturePacker::packHelper(std::vector<glSmartBitmap *> &list)
 {
 	int w = 0;
 	int h = 0;
+	int tmp = 0;
 	int total = 0;
 
 	unsigned texture;
 
-	glGenTextures(1, &texture);
+	texture = VideoDriverWrapper::inst().GenerateTexture();
 
 	if (!texture)
 	{
 		return(false);
 	}
+
+	textures.push_back(texture);
 
 	VideoDriverWrapper::inst().BindTexture(texture);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -194,6 +205,16 @@ bool glSmartTexturePacker::packHelper(std::vector<glSmartBitmap *> &list)
 	w = glSmartBitmap::nextPowerOfTwo(w);
 	h = glSmartBitmap::nextPowerOfTwo(h);
 
+	glTexImage2D(GL_PROXY_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
+
+
+	glGetTexLevelParameteriv(GL_PROXY_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &tmp);
+
+	if (tmp == 0)
+	{
+		return(false);
+	}
+
 	// maximum texture size reached?
 	bool maxTex = false;
 
@@ -209,6 +230,12 @@ bool glSmartTexturePacker::packHelper(std::vector<glSmartBitmap *> &list)
 			std::vector<glSmartBitmap *> left;
 
 			unsigned char *buffer = new unsigned char[w * h * 4];
+
+			if (buffer == NULL)
+			{
+				return(false);
+			}
+
 			memset(buffer, 0, w * h * 4);
 
 			// try storing bitmaps in the big texture
@@ -253,6 +280,13 @@ bool glSmartTexturePacker::packHelper(std::vector<glSmartBitmap *> &list)
 
 				delete[] buffer;
 
+				glGetTexLevelParameteriv(GL_PROXY_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &tmp);
+
+				if (tmp == 0)
+				{
+					return(false);
+				}
+
 				return(true);
 			} else if (maxTex)	// maximum texture size reached and something still left
 			{
@@ -260,6 +294,13 @@ bool glSmartTexturePacker::packHelper(std::vector<glSmartBitmap *> &list)
 				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_BGRA, GL_UNSIGNED_BYTE, buffer);
 
 				delete[] buffer;
+
+				glGetTexLevelParameteriv(GL_PROXY_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &tmp);
+
+				if (tmp == 0)
+				{
+					return(false);
+				}
 
 				// recursively generate textures for what is left
 				return(packHelper(left));
@@ -277,8 +318,6 @@ bool glSmartTexturePacker::packHelper(std::vector<glSmartBitmap *> &list)
 		{
 			glTexImage2D(GL_PROXY_TEXTURE_2D, 0, GL_RGBA, w << 1, h, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
 
-			int tmp = 0;
-
 			glGetTexLevelParameteriv(GL_PROXY_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &tmp);
 
 			if (tmp == 0)
@@ -291,8 +330,6 @@ bool glSmartTexturePacker::packHelper(std::vector<glSmartBitmap *> &list)
 		} else if (h < w)
 		{
 			glTexImage2D(GL_PROXY_TEXTURE_2D, 0, GL_RGBA, w, h << 1, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
-
-			int tmp = 0;
 
 			glGetTexLevelParameteriv(GL_PROXY_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &tmp);
 
@@ -309,19 +346,48 @@ bool glSmartTexturePacker::packHelper(std::vector<glSmartBitmap *> &list)
 
 bool glSmartTexturePacker::pack()
 {
-	if (SETTINGS.video.shared_textures)
+	for (std::vector<glSmartBitmap *>::const_iterator it = items.begin(); it != items.end(); ++it)
 	{
-		for (std::vector<glSmartBitmap *>::const_iterator it = items.begin(); it != items.end(); ++it)
-		{
-			(*it)->calcDimensions();
-		}
-
-		std::sort(items.begin(), items.end(), sortSmartBitmap);
-
-		return(packHelper(items));
+		(*it)->calcDimensions();
 	}
 
-	return(true);
+	std::sort(items.begin(), items.end(), sortSmartBitmap);
+
+	if (packHelper(items))
+	{
+		return(true);
+	}
+
+	// free all textures allocated by us
+	for (std::vector<unsigned>::const_iterator it = textures.begin(); it != textures.end(); ++it)
+	{
+		VideoDriverWrapper::inst().DeleteTexture((*it));
+	}
+
+	// reset glSmartBitmap textures
+	for (std::vector<glSmartBitmap *>::const_iterator it = items.begin(); it != items.end(); ++it)
+	{
+		(*it)->setSharedTexture(0);
+	}
+
+	return(false);
+}
+
+void glSmartBitmap::reset()
+{
+	if (texture && !sharedTexture)
+	{
+		VideoDriverWrapper::inst().DeleteTexture(texture);
+	}
+
+	items.clear();
+
+	texture = 0;
+}
+
+glSmartBitmap::~glSmartBitmap()
+{
+	reset();
 }
 
 unsigned glSmartBitmap::nextPowerOfTwo(unsigned k)
@@ -408,15 +474,13 @@ void glSmartBitmap::drawTo(unsigned char *buffer, unsigned stride, unsigned heig
 		{
 			case TYPE_ARCHIVITEM_BITMAP:
 			{
-				glArchivItem_Bitmap *bmp = static_cast<glArchivItem_Bitmap *>((*it).bmp);
-
-				bmp->print(buffer, stride, height, libsiedler2::FORMAT_RGBA, p_5, xo + x_offset, yo + y_offset, (*it).x, (*it).y, (*it).w, (*it).h);
+				(*it).bmp->print(buffer, stride, height, libsiedler2::FORMAT_RGBA, p_5, xo + x_offset, yo + y_offset, (*it).x, (*it).y, (*it).w, (*it).h);
 
 				break;
 			}
 			case TYPE_ARCHIVITEM_BITMAP_PLAYER:
 			{
-				glArchivItem_Bitmap_Player *bmp = static_cast<glArchivItem_Bitmap_Player *>((*it).bmp);
+				libsiedler2::baseArchivItem_Bitmap_Player *bmp = dynamic_cast<libsiedler2::baseArchivItem_Bitmap_Player *>((*it).bmp);
 
 				bmp->print(buffer, stride, height, libsiedler2::FORMAT_RGBA, p_colors, 128,
 					xo + x_offset, yo + y_offset, (*it).x, (*it).y, (*it).w, (*it).h, false);
@@ -428,12 +492,10 @@ void glSmartBitmap::drawTo(unsigned char *buffer, unsigned stride, unsigned heig
 			}
 			case TYPE_ARCHIVITEM_BITMAP_SHADOW:
 			{
-				glArchivItem_Bitmap *bmp = static_cast<glArchivItem_Bitmap *>((*it).bmp);
-
 				unsigned char *tmp = new unsigned char[w * h * 4];
 				memset(tmp, 0, w * h * 4);
 
-				bmp->print(tmp, w, h, libsiedler2::FORMAT_RGBA, p_5, xo, yo, (*it).x, (*it).y, (*it).w, (*it).h);
+				(*it).bmp->print(tmp, w, h, libsiedler2::FORMAT_RGBA, p_5, xo, yo, (*it).x, (*it).y, (*it).w, (*it).h);
 
 				unsigned tmpIdx = 0;
 
@@ -478,7 +540,7 @@ void glSmartBitmap::generateTexture()
 
 	if (!texture)
 	{
-		glGenTextures(1, &texture);
+		texture = VideoDriverWrapper::inst().GenerateTexture();
 
 		if (!texture)
 		{

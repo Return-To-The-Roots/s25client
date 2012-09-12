@@ -37,10 +37,10 @@ enum glBitmapItemType
 class glBitmapItem
 {
 public:
-	glBitmapItem(glArchivItem_Bitmap *b, bool shadow = false) {bmp = b; type = shadow ? TYPE_ARCHIVITEM_BITMAP_SHADOW : TYPE_ARCHIVITEM_BITMAP; b->getVisibleArea(x, y, w, h); nx = b->getNx() - x; ny = b->getNy() - y;}
-	glBitmapItem(glArchivItem_Bitmap_Player *b) {bmp = b; type = TYPE_ARCHIVITEM_BITMAP_PLAYER; b->getVisibleArea(x, y, w, h); nx = b->getNx() - x; ny = b->getNy() - y;}
+	glBitmapItem(libsiedler2::baseArchivItem_Bitmap *b, bool shadow = false) {bmp = b; type = shadow ? TYPE_ARCHIVITEM_BITMAP_SHADOW : TYPE_ARCHIVITEM_BITMAP; b->getVisibleArea(x, y, w, h); nx = b->getNx() - x; ny = b->getNy() - y;}
+	glBitmapItem(libsiedler2::baseArchivItem_Bitmap_Player *b) {bmp = b; type = TYPE_ARCHIVITEM_BITMAP_PLAYER; b->getVisibleArea(x, y, w, h); nx = b->getNx() - x; ny = b->getNy() - y;}
 
-	void *bmp;
+	libsiedler2::baseArchivItem_Bitmap *bmp;
 	glBitmapItemType type;
 
 	int nx, ny;
@@ -76,7 +76,8 @@ public:
 		tmp[0].z = tmp[1].z = tmp[2].z = tmp[3].z = 0.0f;
 		tmp[4].z = tmp[5].z = tmp[6].z = tmp[7].z = 0.0f;
 	}
-	~glSmartBitmap() {if (texture && !sharedTexture) glDeleteTextures(1, &texture);}
+	~glSmartBitmap();
+	void reset();
 
 	inline int getWidth() {return(w);}
 	inline int getHeight() {return(h);}
@@ -87,7 +88,7 @@ public:
 	inline bool isGenerated() {return(texture != 0);}
 	inline bool isPlayer() {return(hasPlayer);}
 
-	inline void setSharedTexture(unsigned tex) {sharedTexture = true; texture = tex;}
+	inline void setSharedTexture(unsigned tex) {if (tex != 0) {sharedTexture = true; texture = tex;} else {sharedTexture = false; texture = 0;}}
 
 	void calcDimensions();
 
@@ -95,9 +96,9 @@ public:
 	void draw(int x, int y, unsigned color = 0xFFFFFFFF, unsigned player_color = 0x00000000);
 	void drawTo(unsigned char *buffer, unsigned stride, unsigned height, int x_offset = 0, int y_offset = 0);
 
-	void add(glArchivItem_Bitmap *bmp) {if (bmp) items.push_back(glBitmapItem(bmp));}
-	void add(glArchivItem_Bitmap_Player *bmp) {if (bmp) items.push_back(glBitmapItem(bmp));}
-	void addShadow(glArchivItem_Bitmap *bmp) {if (bmp) items.push_back(glBitmapItem(bmp, true));}
+	void add(libsiedler2::baseArchivItem_Bitmap *bmp) {if (bmp) items.push_back(glBitmapItem(bmp));}
+	void add(libsiedler2::baseArchivItem_Bitmap_Player *bmp) {if (bmp) items.push_back(glBitmapItem(bmp));}
+	void addShadow(libsiedler2::baseArchivItem_Bitmap *bmp) {if (bmp) items.push_back(glBitmapItem(bmp, true));}
 
 	static unsigned nextPowerOfTwo(unsigned k);
 };
@@ -124,11 +125,14 @@ public:
 class glSmartTexturePacker
 {
 private:
+	std::vector<unsigned> textures;
 	std::vector<glSmartBitmap *> items;
 
 	bool packHelper(std::vector<glSmartBitmap *> &list);
 	static bool sortSmartBitmap(glSmartBitmap *a, glSmartBitmap *b);
 public:
+	~glSmartTexturePacker();
+
 	bool pack();
 
 	void add(glSmartBitmap& bmp) {items.push_back(&bmp);}
