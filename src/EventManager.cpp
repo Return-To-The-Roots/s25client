@@ -1,4 +1,4 @@
-// $Id: EventManager.cpp 8157 2012-09-06 09:39:49Z marcus $
+// $Id: EventManager.cpp 8230 2012-09-12 19:44:22Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -109,6 +109,8 @@ void EventManager::NextGF()
 		if (!e)
 		{
 			// marked as removed -> remove
+
+			// this should not be a problem, as there is at least one element in eis: e
 			eis[cnt] = eis.back();
 			eis.pop_back();
 		} else if (e->gf_next == gfnr)
@@ -116,6 +118,7 @@ void EventManager::NextGF()
 			assert(e->obj);
 			assert(e->obj->GetObjId() < GameObject::GetObjIDCounter());
 
+			// this should not be a problem, as there is at least one element in eis: e
 			eis[cnt] = eis.back();
 			eis.pop_back();
 
@@ -212,8 +215,6 @@ void EventManager::RemoveEvent(EventPointer ep)
 		return;
 	}
 
-	delete ep;
-
 	unsigned sz = eis.size();
 
 	for (unsigned cnt = 0; cnt < sz; cnt++)
@@ -222,6 +223,8 @@ void EventManager::RemoveEvent(EventPointer ep)
 		{
 			// ATTENTION: we only mark this as removed, otherwise this leads to unexpected behaviour!
 			eis[cnt] = NULL;
+
+			delete ep;
 
 			// as this event can only occur once in our list, stop here.
 			break;
