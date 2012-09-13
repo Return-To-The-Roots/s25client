@@ -1,4 +1,4 @@
-// $Id: GameServer.cpp 7904 2012-03-30 19:43:51Z marcus $
+// $Id: GameServer.cpp 8237 2012-09-13 17:29:19Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -120,7 +120,7 @@ GameServer::GameServer(void)
 {
 	status = SS_STOPPED;
 
-	async_player = -1;
+	async_player1 = async_player2 = -1;
 	framesinfo.Clear();
 	serverconfig.Clear();
 	mapinfo.Clear();
@@ -326,6 +326,20 @@ bool GameServer::Start()
 
 	// Zu sich selbst connecten als Host
 	GAMECLIENT.Connect("localhost", serverconfig.password, serverconfig.servertype, serverconfig.port, true, serverconfig.ipv6);
+
+// clear async logs if necessary
+	for (std::list<RandomEntry>::iterator it = async_player1_log.begin(); it != async_player1_log.end(); ++it)
+	{
+		delete[] it->src_name;
+	}
+
+	for (std::list<RandomEntry>::iterator it = async_player2_log.begin(); it != async_player2_log.end(); ++it)
+	{
+		delete[] it->src_name;
+	}
+
+	async_player1_log.clear();
+	async_player2_log.clear();
 
 	return true;
 }
@@ -863,8 +877,7 @@ void GameServer::ClientWatchDog()
 						unsigned char player_switch_old_id = 255,player_switch_new_id= 255;
 
 						// Checksumme des ersten Spielers als Richtwert
-						bool took_checksum = false;
-						int checksum = 0;
+						GameServerPlayer *firstPlayer = NULL;
 
 						for(client = 0; client < serverconfig.playercount; ++client)
 						{
@@ -876,10 +889,9 @@ void GameServer::ClientWatchDog()
 								player->NotLagging();
 
 								// Checksumme des ersten Spielers als Richtwert
-								if(!took_checksum)
+								if(firstPlayer == NULL)
 								{
-									checksum = player->gc_queue.front().checksum;
-									took_checksum = true;
+									firstPlayer = player;
 								}
 
 								// Checksumme merken, da die Nachricht dann wieder entfernt wird
@@ -902,21 +914,25 @@ void GameServer::ClientWatchDog()
 								//LOG.lprintf("%d = %d - %d\n", framesinfo.nr, checksum, Random::inst().GetCurrentRandomValue());
 
 								// Checksummen nicht gleich?
-								if(player->checksum != checksum)
+								if (player->checksum != firstPlayer->checksum)
 								{
 									// Checksummenliste erzeugen
 									std::vector<int> checksums;
 									for(unsigned int i = 0; i < players.getCount(); ++i)
 										checksums.push_back(players.getElement(i)->checksum);
 
-									// AsyncLog des asynchronen Players anfordern
-									if (async_player == -1)
+									// AsyncLog der asynchronen Player anfordern
+									if (async_player1 == -1)
 									{
-										GameServerPlayer *player = &players[client];
+										async_player1 = client;
+										async_player1_done = false;
 										player->send_queue.push(new GameMessage_GetAsyncLog(client));
 										player->send_queue.flush(&player->so);
 
-										async_player = client;
+										async_player2 = firstPlayer->getPlayerID();
+										async_player2_done = false;
+										firstPlayer->send_queue.push(new GameMessage_GetAsyncLog(firstPlayer->getPlayerID()));
+										firstPlayer->send_queue.flush(&firstPlayer->so);
 									}
 
 									// Async-Meldung rausgeben.
@@ -1364,110 +1380,149 @@ void GameServer::OnNMSGameCommand(const GameMessage_GameCommand& msg)
 		SendToAll(GameMessage_GameCommand(msg.player,msg.checksum,std::vector<gc::GameCommand*>()));
 }
 
-void GameServer::OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, std::list<RandomEntry> *his, bool last)
+void GameServer::OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, std::list<RandomEntry> *in, bool last)
 {
-	if (msg.player != async_player)
+	if (msg.player == async_player1)
 	{
-		for (std::list<RandomEntry>::iterator it = his->begin(); it != his->end(); ++it)
+		for (std::list<RandomEntry>::iterator it = in->begin(); it != in->end(); ++it)
+		{
+			async_player1_log.push_back(*it);
+		}
+
+		if (last)
+		{
+			LOG.lprintf("Received async logs from %u (%lu entries).\n", async_player1, async_player1_log.size());
+			async_player1_done = true;
+		}
+	} else if (msg.player == async_player2)
+	{
+		for (std::list<RandomEntry>::iterator it = in->begin(); it != in->end(); ++it)
+		{
+			async_player2_log.push_back(*it);
+		}
+
+		if (last)
+		{
+			LOG.lprintf("Received async logs from %u (%lu entries).\n", async_player2, async_player2_log.size());
+			async_player2_done = true;
+		}
+	} else
+	{
+		for (std::list<RandomEntry>::iterator it = in->begin(); it != in->end(); ++it)
 		{
 			delete[] it->src_name;
 		}
-		return;
-	}
 
-	for (std::list<RandomEntry>::iterator it = his->begin(); it != his->end(); ++it)
-	{
-		async_log.push_back(*it);
+		LOG.lprintf("Received async log from %u, but did not expect it!\n", msg.player);
+
+		return;
 	}
 
 	// list is not yet complete, keep it coming...
-	if (!last)
+	if ((!async_player1_done) || (!async_player2_done))
 	{
 		return;
 	}
 
-	LOG.lprintf("Received async log from %u containing %lu entries.\n", msg.player, async_log.size());
+	LOG.lprintf("Async logs received completely.\n");
 		
-	if (SETTINGS.global.submit_debug_data)
-	{
-		DebugInfo di;
-		di.SendAsyncLog(&async_log);
-		di.SendReplay();
-//		di.SendStackTrace();
-	}
-
-	std::list<RandomEntry> *my = RANDOM.GetAsyncLog();
-	his = &async_log;
-
-	std::list<RandomEntry>::iterator my_it = my->begin();
-	std::list<RandomEntry>::iterator his_it = his->begin();
+	std::list<RandomEntry>::iterator it1 = async_player1_log.begin();
+	std::list<RandomEntry>::iterator it2 = async_player2_log.begin();
 
 	// compare counters, adjust them so we're comparing the same counter numbers
-	if (my_it->counter > his_it->counter)
+	if (it1->counter > it2->counter)
 	{
-		for(; his_it != his->end(); ++his_it)
+		for(; it2 != async_player2_log.end(); ++it2)
 		{
-			if (his_it->counter == my_it->counter)
+			if (it2->counter == it1->counter)
 				break;
 		}
-	} else if (my_it->counter < his_it->counter)
+	} else if (it1->counter < it2->counter)
 	{
-		for(; my_it != my->end(); ++my_it)
+		for(; it1 != async_player1_log.end(); ++it1)
 		{
-			if (his_it->counter == my_it->counter)
+			if (it2->counter == it1->counter)
 				break;
 		}
 	}
 
 	// count identical lines
 	unsigned identical = 0;
-	while ((my_it != my->end()) && (his_it != his->end()) && (my_it->max == his_it->max) && (my_it->value == his_it->value) && (my_it->obj_id == his_it->obj_id))
+	while ((it1 != async_player2_log.end()) && (it2 != async_player2_log.end()) && 
+		(it1->max == it2->max) && (it1->value == it2->value) && (it1->obj_id == it2->obj_id))
 	{
-		++identical; ++my_it; ++his_it;
+		++identical; ++it1; ++it2;
+	}
+
+	if (identical)
+	{
+		// make iterators pointing to the last identical element
+		--it1; --it2;
+	}
+
+	LOG.lprintf("Skipped %u identical async log entries.\n", identical - 1);
+
+	if (SETTINGS.global.submit_debug_data)
+	{
+		DebugInfo di;
+		LOG.lprintf("Sending async logs %s.\n",
+			di.SendAsyncLog(it1, it2, async_player1_log, async_player2_log, identical) ? "succeeded" : "failed");
+
+		di.SendReplay();
 	}
 
 	char filename[256], time_str[80];
 	unser_time_t temp = TIME.CurrentTime();
 	TIME.FormatTime(time_str, "async_%Y-%m-%d_%H-%i-%s", &temp);
 
-	sprintf(filename,"%s%s-%u.log",  GetFilePath(FILE_PATHS[47]).c_str(), time_str, rand()%100);
-
+	// open async log
+	snprintf(filename, sizeof(filename), "%s%s.log", GetFilePath(FILE_PATHS[47]).c_str(), time_str);
 	FILE *file = fopen(filename,"w");
 
-	sprintf(filename,"%s%s.sav", GetFilePath(FILE_PATHS[85]).c_str(), time_str);
-
-	GameClient::inst().WriteSaveHeader(filename);
-
-	// if there were any identical lines, include only the last one
-	if (identical)
+	if (file != NULL)
 	{
-		--my_it; --his_it;
+		// if there were any identical lines, include only the last one
+		if (identical)
+		{
+			// write last common line
+			fprintf(file, "[I]: %u:R(%d)=%d,z=%d | %s Z: %u|id=%u\n", it1->counter, it1->max, (it1->value * it1->max) / 32768, it1->value, it1->src_name, it1->src_line, it1->obj_id);
 
-		// write last common line
-		fprintf(file, "[I]: %u:R(%d)=%d,z=%d | %s Z: %u|id=%u\n", my_it->counter, my_it->max, (my_it->value * my_it->max) / 32768, my_it->value, my_it->src_name, my_it->src_line, my_it->obj_id);
+			++it1; ++it2;
+		}
 
-		++my_it; ++his_it;
+		while ((it1 != async_player1_log.end()) && (it2 != async_player2_log.end()))
+		{
+			fprintf(file, "[S]: %u:R(%d)=%d,z=%d | %s Z: %u|id=%u\n", it1->counter, it1->max, (it1->value * it1->max) / 32768, it1->value, it1->src_name, it1->src_line, it1->obj_id);
+			fprintf(file, "[C]: %u:R(%d)=%d,z=%d | %s Z: %u|id=%u\n", it2->counter, it2->max, (it2->value * it2->max) / 32768, it2->value, it2->src_name, it2->src_line, it2->obj_id);
+
+			++it1;
+			++it2;
+		}
+
+		fclose(file);
+
+		LOG.lprintf("Async log saved at \"%s\"\n", filename);
+	} else
+	{
+		LOG.lprintf("Failed to save async log at \"%s\"\n", filename);
 	}
 
-	while ((my_it != my->end()) && (his_it != his->end()))
-	{
-		fprintf(file, "[S]: %u:R(%d)=%d,z=%d | %s Z: %u|id=%u\n", my_it->counter, my_it->max, (my_it->value * my_it->max) / 32768, my_it->value, my_it->src_name, my_it->src_line, my_it->obj_id);
-		fprintf(file, "[C]: %u:R(%d)=%d,z=%d | %s Z: %u|id=%u\n", his_it->counter, his_it->max, (his_it->value * his_it->max) / 32768, his_it->value, his_it->src_name, his_it->src_line, his_it->obj_id);
-
-		++my_it;
-		++his_it;
-	}
-
-	fclose(file);
-
-	LOG.lprintf("Async log saved at \"%s\"\n",filename);
-
-	for (std::list<RandomEntry>::iterator it = async_log.begin(); it != async_log.end(); ++it)
+	for (std::list<RandomEntry>::iterator it = async_player1_log.begin(); it != async_player1_log.end(); ++it)
 	{
 		delete[] it->src_name;
 	}
 
-	async_log.clear();
+	for (std::list<RandomEntry>::iterator it = async_player2_log.begin(); it != async_player2_log.end(); ++it)
+	{
+		delete[] it->src_name;
+	}
+
+	async_player1_log.clear();
+	async_player2_log.clear();
+
+	// write async save
+	snprintf(filename, sizeof(filename), "%s%s.sav", GetFilePath(FILE_PATHS[85]).c_str(), time_str);
+	GameClient::inst().WriteSaveHeader(filename);
 
 	KickPlayer(msg.player, NP_ASYNC, 0);
 }

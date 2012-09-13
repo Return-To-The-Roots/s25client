@@ -250,102 +250,74 @@ bool DebugInfo::SendStackTrace()
 
 bool DebugInfo::SendReplay()
 {
+	LOG.lprintf("Sending replay...\n");
+
 	// Replay mode is on, no recording of replays active
 	if (!GAMECLIENT.IsReplayModeOn())
 	{
 		Replay rpl = GAMECLIENT.GetReplay();
 
-		rpl.GetFile()->Flush();
+		BinaryFile *f = rpl.GetFile();
 
-		FILE *f = fopen(rpl.GetFileName().c_str(), "rb");
+		f->Flush();
 
-		if (f != NULL)
+		unsigned replay_len = f->Tell();
+
+		LOG.lprintf("- Replay length: %u\n", replay_len);
+
+		char *replay = new char[replay_len];
+
+		f->Seek(0, SEEK_SET);
+
+		f->ReadRawData(replay, replay_len);
+
+		unsigned int compressed_len = replay_len * 2 + 600;
+		char *compressed = new char[compressed_len];
+
+		// send size of replay via socket
+		if (!SendString("Replay"))
 		{
-			// find out size of replay file by seeking to its end
-			fseek(f, 0, SEEK_END);
-
-			unsigned in_len = ftell(f);
-			char *in = new char[in_len];
-
-			fseek(f, 0, SEEK_SET);
-			if (fread(in, in_len, 1, f) != in_len)
-			{
-				fclose(f);
-				delete[] in;
-
-				return(false);
-			}
-
-			fclose(f);
-
-			unsigned int out_len = in_len * 2 + 600;
-			char *out = new char[out_len];
-
-			// send size of replay via socket
-			if (!SendString("Replay"))
-			{
-				return(false);
-			}
-
-			if (BZ2_bzBuffToBuffCompress(out, (unsigned int*)&out_len, in, in_len, 9, 0, 250) == BZ_OK)
-			{
-				if (!SendString(out, out_len))
-				{
-					delete[] in;
-					delete[] out;
-				
-					return(false);
-				}
-			} else
-			{
-				if (!SendUnsigned(0))
-				{
-					delete[] in;
-					delete[] out;
-				
-					return(false);
-				}
-			}
-
-			delete[] in;
-			delete[] out;
+			return(false);
 		}
+
+		LOG.lprintf("- Compressing...\n");
+		if (BZ2_bzBuffToBuffCompress(compressed, (unsigned int *) &compressed_len, replay, replay_len, 9, 0, 250) == BZ_OK)
+		{
+			LOG.lprintf("- Sending...\n");
+
+			if (SendString(compressed, compressed_len))
+			{
+				delete[] replay;
+				delete[] compressed;
+
+				LOG.lprintf("-> success\n");
+
+				return(true);
+			}
+
+			LOG.lprintf("-> Sending replay failed :(\n");
+		} else
+		{
+			LOG.lprintf("-> BZ2 compression failed.\n");
+		}
+
+		(void) SendUnsigned(0);
+
+		delete[] replay;
+		delete[] compressed;
+
+		return(false);
+	} else
+	{
+		LOG.lprintf("-> Already in replay mode, do not send replay\n");
 	}
 
 	return(true);
 }
 
-bool DebugInfo::SendAsyncLog(std::list<RandomEntry> *other)
+bool DebugInfo::SendAsyncLog(std::list<RandomEntry>::iterator first_a, std::list<RandomEntry>::iterator first_b,
+		std::list<RandomEntry> &a, std::list<RandomEntry> &b, unsigned identical)
 {
-	std::list<RandomEntry> *my = RANDOM.GetAsyncLog();
-
-	std::list<RandomEntry>::iterator my_it = my->begin();
-	std::list<RandomEntry>::iterator other_it = other->begin();
-
-	// compare counters, adjust them so we're comparing the same counter numbers
-	if (my_it->counter > other_it->counter)
-	{
-		for(; other_it != other->end(); ++other_it)
-		{
-			if (other_it->counter == my_it->counter)
-				break;
-		}
-	} else if (my_it->counter < other_it->counter)
-	{
-		for(; my_it != my->end(); ++my_it)
-		{
-			if (other_it->counter == my_it->counter)
-				break;
-		}
-	}
-
-	// count identical lines
-	unsigned identical = 0;
-	while ((my_it != my->end()) && (other_it != other->end()) && (my_it->max == other_it->max) && (my_it->value == other_it->value) && (my_it->obj_id == other_it->obj_id))
-	{
-		++identical; ++my_it; ++other_it;
-	}
-
 	if (!SendString("AsyncLog"))
 	{
 		return(false);
@@ -355,71 +327,64 @@ bool DebugInfo::SendAsyncLog(std::list<RandomEntry> *other)
 	unsigned len =  4;
 	unsigned cnt = 0;
 
-	std::list<RandomEntry>::iterator my_start_it = my_it;
-	std::list<RandomEntry>::iterator other_start_it = other_it;
+	std::list<RandomEntry>::iterator it_a = first_a;
+	std::list<RandomEntry>::iterator it_b = first_b;
 
 	// if there were any identical lines, include only the last one
 	if (identical)
 	{
-		--my_it;
+		len += 4 + 4 + 4 + strlen(it_a->src_name) + 1 + 4 + 4 + 4;
 
-		len += 4 + 4 + 4 + strlen(my_it->src_name) + 1 + 4 + 4 + 4;
-		cnt++;
-
-		++my_it;
+		++cnt; ++it_a; ++it_b;
 	}
 
-	while ((my_it != my->end()) && (other_it != other->end()))
+	while ((it_a != a.end()) && (it_b != b.end()))
 	{
-		len += 4 + 4 + 4 + strlen(my_it->src_name) + 1 + 4 + 4 + 4;
-		len += 4 + 4 + 4 + strlen(other_it->src_name) + 1 + 4 + 4 + 4;
+		len += 4 + 4 + 4 + strlen(it_a->src_name) + 1 + 4 + 4 + 4;
+		len += 4 + 4 + 4 + strlen(it_b->src_name) + 1 + 4 + 4 + 4;
 
 		cnt += 2;
 
-		++my_it;
-		++other_it;
+		++it_a; ++it_b;
 	}
 
-	my_it = my_start_it;
-	other_it = other_start_it;
-
 	if (!SendUnsigned(len))			return(false);
-	if (!SendUnsigned(identical))		return(false);
+	if (!SendUnsigned(identical))			return(false);
 	if (!SendUnsigned(cnt))			return(false);
+
+	it_a = first_a;
+	it_b = first_b;
 
 	// if there were any identical lines, include only the last one
 	if (identical)
 	{
-		--my_it;
+		if (!SendUnsigned(it_a->counter))	return(false);
+		if (!SendSigned(it_a->max))		return(false);
+		if (!SendSigned(it_a->value))		return(false);
+		if (!SendString(it_a->src_name))	return(false);
+		if (!SendUnsigned(it_a->src_line))	return(false);
+		if (!SendUnsigned(it_a->obj_id))	return(false);
 
-		if (!SendUnsigned(my_it->counter))	return(false);
-		if (!SendSigned(my_it->max))		return(false);
-		if (!SendSigned(my_it->value))		return(false);
-		if (!SendString(my_it->src_name))	return(false);
-		if (!SendUnsigned(my_it->src_line))	return(false);
-		if (!SendUnsigned(my_it->obj_id))	return(false);
-
-		++my_it;
+		++it_a; ++it_b;
 	}
 
-	while ((my_it != my->end()) && (other_it != other->end()))
+	while ((it_a != a.end()) && (it_b != b.end()))
 	{
-		if (!SendUnsigned(my_it->counter))	return(false);
-		if (!SendSigned(my_it->max))		return(false);
-		if (!SendSigned(my_it->value))		return(false);
-		if (!SendString(my_it->src_name))	return(false);
-		if (!SendUnsigned(my_it->src_line))	return(false);
-		if (!SendUnsigned(my_it->obj_id))	return(false);
+		if (!SendUnsigned(it_a->counter))	return(false);
+		if (!SendSigned(it_a->max))		return(false);
+		if (!SendSigned(it_a->value))		return(false);
+		if (!SendString(it_a->src_name))	return(false);
+		if (!SendUnsigned(it_a->src_line))	return(false);
+		if (!SendUnsigned(it_a->obj_id))	return(false);
 
-		if (!SendUnsigned(other_it->counter))	return(false);
-		if (!SendSigned(other_it->max))		return(false);
-		if (!SendSigned(other_it->value))	return(false);
-		if (!SendString(other_it->src_name))	return(false);
-		if (!SendUnsigned(other_it->src_line))	return(false);
-		if (!SendUnsigned(other_it->obj_id))	return(false);
+		if (!SendUnsigned(it_b->counter))	return(false);
+		if (!SendSigned(it_b->max))		return(false);
+		if (!SendSigned(it_b->value))		return(false);
+		if (!SendString(it_b->src_name))	return(false);
+		if (!SendUnsigned(it_b->src_line))	return(false);
+		if (!SendUnsigned(it_b->obj_id))	return(false);
 
-		++my_it;
-		++other_it;
+		++it_a; ++it_b;
 	}
 
 	return(true);

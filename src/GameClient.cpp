@@ -1,4 +1,4 @@
-// $Id: GameClient.cpp 8113 2012-09-01 19:10:25Z jh $
+// $Id: GameClient.cpp 8237 2012-09-13 17:29:19Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1180,7 +1180,7 @@ void GameClient::OnNMSGetAsyncLog(const GameMessage_GetAsyncLog& msg)
 	{
 		part.push_back(*it);
 
-		if (part.size() == 100)
+		if (part.size() == 10)
 		{
 			send_queue.push(new GameMessage_SendAsyncLog(&part, false));
 			part.clear();

@@ -48,7 +48,8 @@ public:
 	bool SendStackTrace();
 #endif
 	bool SendReplay();
-	bool SendAsyncLog(std::list<RandomEntry> *other);
+	bool SendAsyncLog(std::list<RandomEntry>::iterator first_a, std::list<RandomEntry>::iterator first_b,
+		std::list<RandomEntry> &a, std::list<RandomEntry> &b, unsigned identical);
 
 private:
 

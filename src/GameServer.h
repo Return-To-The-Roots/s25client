@@ -1,4 +1,4 @@
-// $Id: GameServer.h 7678 2011-12-28 17:05:25Z marcus $
+// $Id: GameServer.h 8237 2012-09-13 17:29:19Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -185,9 +185,10 @@ private:
 	/// Alle KI-Spieler und ihre Daten (NULL, falls ein solcher Spieler nicht existiert)
 	std::vector<AIBase*> ai_players;
 
-	/// AsyncLog des Spielers, der das ASYNC ausgeloest hat
-	std::list<RandomEntry> async_log;
-	int async_player;
+	/// AsyncLogs of two async players
+	int async_player1, async_player2;
+	bool async_player1_done, async_player2_done;
+	std::list<RandomEntry> async_player1_log, async_player2_log;
 
 	public:
 		AIBase *GetAIPlayer(unsigned playerID) { return ai_players[playerID]; }
