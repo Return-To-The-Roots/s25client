@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.h 8216 2012-09-11 18:42:29Z marcus $
+// $Id: AIPlayerJH.h 8234 2012-09-13 12:49:32Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -210,6 +210,9 @@ protected:
 	// A new road has been built -> handle it
 	void HandleRoadConstructionComplete(const Coords& coords, unsigned char dir);
 
+	// A road construction has failed -> handle it
+	void HandleRoadConstructionFailed(const Coords& coords, unsigned char dir);
+
 	// Handle border event
 	void HandleBorderChanged(const Coords& coords);
 
@@ -238,6 +241,7 @@ protected:
 
 	void SetFarmedNodes(MapCoord x, MapCoord y,bool set);
 
+	//removes a no longer used road(and its flags) returns true when there is a building at the flag that might need a new connection
 	bool RemoveUnusedRoad(const noFlag *startFlag, unsigned char excludeDir = 0xFF, bool firstflag=true, bool allowcircle=true);
 	//finds all unused flags and roads, removes flags or reconnects them as neccessary
 	void RemoveAllUnusedRoads(MapCoord x,MapCoord y);

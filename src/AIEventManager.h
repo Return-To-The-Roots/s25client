@@ -1,4 +1,4 @@
-// $Id: AIEventManager.h 8134 2012-09-01 19:22:25Z jh $
+// $Id: AIEventManager.h 8234 2012-09-13 12:49:32Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -42,7 +42,8 @@ namespace AIEvent
 		TreeChopped,
 		ShipBuilt,
 		ResourceUsed,
-		RoadConstructionComplete
+		RoadConstructionComplete,
+		RoadConstructionFailed
 	};
 
 

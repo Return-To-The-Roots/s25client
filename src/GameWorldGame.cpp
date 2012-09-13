@@ -1,4 +1,4 @@
-// $Id: GameWorldGame.cpp 8219 2012-09-11 19:17:44Z OLiver $
+// $Id: GameWorldGame.cpp 8234 2012-09-13 12:49:32Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -317,6 +317,8 @@ void GameWorldGame::BuildRoad(const unsigned char playerid,const bool boat_road,
 	if(!GetSpecObj<noFlag>(start_x,start_y))
 	{
 		RemoveVisualRoad(start_x,start_y,route);
+		// tell ai: road construction failed
+		GAMECLIENT.SendAIEvent(new AIEvent::Direction(AIEvent::RoadConstructionFailed, start_x, start_y,route[0]), playerid);
 		return;
 	}
 	// Falscher Spieler?
@@ -324,6 +326,8 @@ void GameWorldGame::BuildRoad(const unsigned char playerid,const bool boat_road,
 	{
 		// Dann Weg nicht bauen und ggf. das visuelle wieder zurückbauen
 		RemoveVisualRoad(start_x,start_y,route);
+		// tell ai: road construction failed
+		GAMECLIENT.SendAIEvent(new AIEvent::Direction(AIEvent::RoadConstructionFailed, start_x, start_y,route[0]), playerid);
 		return;
 	}
 
@@ -345,11 +349,14 @@ void GameWorldGame::BuildRoad(const unsigned char playerid,const bool boat_road,
 			// Nein? Dann prüfen ob genau der gewünscht Weg schon da ist und ansonsten den visuellen wieder zurückbauen
 			if (RoadAlreadyBuilt(boat_road, start_x, start_y, route))
 			{
+				//LOG.lprintf("duplicate road player %i at %i %i\n", playerid, start_x,start_y);
 				return;
 			}
 			else
 			{
 				RemoveVisualRoad(start_x,start_y,route);
+				// tell ai: road construction failed
+				GAMECLIENT.SendAIEvent(new AIEvent::Direction(AIEvent::RoadConstructionFailed, tmpx, tmpy,route[0]), playerid);
 				return;
 			}
 		}
@@ -367,6 +374,8 @@ void GameWorldGame::BuildRoad(const unsigned char playerid,const bool boat_road,
 		{
 			// Dann Weg nicht bauen und ggf. das visuelle wieder zurückbauen
 			RemoveVisualRoad(start_x,start_y,route);
+			// tell ai: road construction failed
+			GAMECLIENT.SendAIEvent(new AIEvent::Direction(AIEvent::RoadConstructionFailed, tmpx, tmpy,route[0]), playerid);
 			return;
 		}
 	}
@@ -377,6 +386,8 @@ void GameWorldGame::BuildRoad(const unsigned char playerid,const bool boat_road,
 		if(GetNode(testx,testy).boundary_stones[0])
 		{
 			RemoveVisualRoad(start_x,start_y,route);
+			// tell ai: road construction failed
+			GAMECLIENT.SendAIEvent(new AIEvent::Direction(AIEvent::RoadConstructionFailed, tmpx, tmpy,route[0]), playerid);
 			return;
 		}
 		// TODO: Verzögerungsbugabfrage, kann später ggf. weg
@@ -385,6 +396,8 @@ void GameWorldGame::BuildRoad(const unsigned char playerid,const bool boat_road,
 		{
 				// Dann Weg nicht bauen und ggf. das visuelle wieder zurückbauen
 				RemoveVisualRoad(start_x,start_y,route);
+				// tell ai: road construction failed
+				GAMECLIENT.SendAIEvent(new AIEvent::Direction(AIEvent::RoadConstructionFailed, tmpx, tmpy,route[0]), playerid);
 				return;			
 		}
 
@@ -394,6 +407,8 @@ void GameWorldGame::BuildRoad(const unsigned char playerid,const bool boat_road,
 		{
 			// Dann Weg nicht bauen und ggf. das visuelle wieder zurückbauen
 			RemoveVisualRoad(start_x,start_y,route);
+			// tell ai: road construction failed
+			GAMECLIENT.SendAIEvent(new AIEvent::Direction(AIEvent::RoadConstructionFailed, tmpx, tmpy,route[0]), playerid);
 			return;
 		}
 		//keine Flagge bisher aber spricht auch nix gegen ne neue Flagge -> Flagge aufstellen!

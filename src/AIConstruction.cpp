@@ -1,4 +1,4 @@
-// $Id: AIConstruction.cpp 8221 2012-09-11 20:01:32Z marcus $
+// $Id: AIConstruction.cpp 8234 2012-09-13 12:49:32Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -236,6 +236,7 @@ bool AIConstruction::ConnectFlagToRoadSytem(const noFlag *flag, std::vector<unsi
 
 	if (found)
 	{
+		//LOG.lprintf("ai build main road player %i at %i %i\n", flag->GetPlayer(), flag->GetX(),flag->GetY());
 		return BuildRoad(flag, flags[shortest], route);
 	}
 	return false;
@@ -469,6 +470,7 @@ void AIConstruction::InitBuildingsWanted()
 
 bool AIConstruction::BuildAlternativeRoad(const noFlag *flag, std::vector<unsigned char> &route)
 {
+	//LOG.lprintf("ai build alt road player %i at %i %i\n", flag->GetPlayer(), flag->GetX(),flag->GetY());
 	// Radius in dem nach würdigen Fahnen gesucht wird
 	const unsigned short maxRoadLength = 10;
 	// Faktor um den der Weg kürzer sein muss als ein vorhander Pfad, um gebaut zu werden
@@ -478,6 +480,15 @@ bool AIConstruction::BuildAlternativeRoad(const noFlag *flag, std::vector<unsign
 	// Flaggen in der Umgebung holen
 	std::vector<const noFlag*> flags;
 	FindFlags(flags, flag->GetX(), flag->GetY(), maxRoadLength);
+	std::vector<unsigned char>mainroad=route;
+	//targetflag for mainroad
+	MapCoord tx=flag->GetX(),tx2;
+	MapCoord ty=flag->GetY(),ty2;
+	for(unsigned i=0;i<mainroad.size();i++)
+	{
+		aii->GetPointA(tx,ty,mainroad[i]);
+	}	
+	const noFlag*mainflag=aii->GetSpecObj<noFlag>(tx,ty);
 
 	// Jede Flagge testen...
 	for(unsigned i=0; i<flags.size(); ++i)
@@ -496,14 +507,33 @@ bool AIConstruction::BuildAlternativeRoad(const noFlag *flag, std::vector<unsign
 
 			// Aktuelle Strecke zu der Flagge
 			bool pathAvailable = aii->FindPathOnRoads(flags[i], flag, &oldLength);
+			if(!pathAvailable&&mainflag)
+			{
+				pathAvailable=aii->FindPathOnRoads(flags[i],mainflag,&oldLength);
+				if(pathAvailable)
+					oldLength+=mainroad.size();
+			}
+			bool crossmainpath=false;
 			unsigned size=0;
 			//more than 5 nonflaggable spaces on the route -> not really valid path 
 			unsigned temp=0;
-			MapCoord tx=flag->GetX();
-			MapCoord ty=flag->GetY();
+			tx=flag->GetX();
+			ty=flag->GetY();
 			for(unsigned j=0;j<route.size();++j)
 			{
 				aii->GetPointA(tx,ty,route[j]);
+				tx2=flag->GetX();
+				ty2=flag->GetY();
+				//check if we cross the planned main road
+				for(unsigned k=0;k<mainroad.size();++k)
+				{
+					aii->GetPointA(tx2,ty2,mainroad[k]);
+					if(tx2==tx&&ty2==ty)
+					{
+						crossmainpath=true;
+						break;
+					}
+				}
 				if(aii->GetBuildingQuality(tx,ty)<1)
 					temp++;
 				else
@@ -513,7 +543,7 @@ bool AIConstruction::BuildAlternativeRoad(const noFlag *flag, std::vector<unsign
 					temp=0;
 				}
 			}
-			if(size>2)
+			if(size>2||crossmainpath)
 				continue;
 
 			// Lohnt sich die Straße?

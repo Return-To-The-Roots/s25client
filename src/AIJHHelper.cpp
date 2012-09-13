@@ -1,4 +1,4 @@
-// $Id: AIJHHelper.cpp 8216 2012-09-11 18:42:29Z marcus $
+// $Id: AIJHHelper.cpp 8234 2012-09-13 12:49:32Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -288,11 +288,10 @@ void AIJH::BuildJob::BuildMainRoad()
 		else
 		{
 			// Warten bis Weg da ist...
-			return;
+			//return;
 		}
 	}
-	else
-	{
+	
 		// Wir sind angeschlossen, BQ für den eben gebauten Weg aktualisieren
 		//aijh->RecalcBQAround(target_x, target_y);
 		//aijh->RecalcGround(target_x, target_y, route);
@@ -370,8 +369,8 @@ void AIJH::BuildJob::BuildMainRoad()
 		}
 
 		status = AIJH::JOB_EXECUTING_ROAD2;
-		return;
-	}
+		return TryToBuildSecondaryRoad();
+	
 }
 	
 void AIJH::BuildJob::TryToBuildSecondaryRoad()
@@ -475,6 +474,13 @@ void AIJH::EventJob::ExecuteJob()
 		{
 			AIEvent::Direction *dvb = dynamic_cast<AIEvent::Direction *>(ev);
 			aijh->HandleRoadConstructionComplete(AIPlayerJH::Coords(dvb->GetX(), dvb->GetY()),dvb->GetDirection());
+			status = AIJH::JOB_FINISHED;
+		}
+		break;
+	case AIEvent::RoadConstructionFailed:
+		{
+			AIEvent::Direction *dvb = dynamic_cast<AIEvent::Direction *>(ev);
+			aijh->HandleRoadConstructionFailed(AIPlayerJH::Coords(dvb->GetX(), dvb->GetY()),dvb->GetDirection());
 			status = AIJH::JOB_FINISHED;
 		}
 		break;

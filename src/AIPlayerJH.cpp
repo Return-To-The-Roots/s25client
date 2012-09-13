@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 8224 2012-09-11 20:23:20Z marcus $
+// $Id: AIPlayerJH.cpp 8234 2012-09-13 12:49:32Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1196,6 +1196,24 @@ void AIPlayerJH::HandleRoadConstructionComplete(const Coords& coords, unsigned c
 		}
 }
 
+void AIPlayerJH::HandleRoadConstructionFailed(const Coords& coords, unsigned char dir)
+{
+	MapCoord x = coords.x;
+	MapCoord y = coords.y;
+	const noFlag *flag;
+	//does the flag still exist?
+	if(!(flag = aii->GetSpecObj<noFlag>(x, y)))
+		return;
+	//is it our flag?
+	if(flag->GetPlayer() != playerid)
+	{
+		return;
+	}
+	//if it isnt a useless flag AND it has no current road connection then retry to build a road.
+	if(RemoveUnusedRoad(flag, 255,true,false))
+		construction.AddConnectFlagJob(flag);
+}
+
 void AIPlayerJH::HandleMilitaryBuilingLost(const Coords& coords)
 {
 	MapCoord x = coords.x;
@@ -1717,7 +1735,7 @@ bool AIPlayerJH::RemoveUnusedRoad(const noFlag *startFlag, unsigned char exclude
 					foundDir2=dir;
 		}		
 	}
-	// if we found more than 1 road (or a building) the flag is still in use.	
+	// if we found more than 1 road -> the flag is still in use.	
 	if (finds>2)
 	{	
 		return false;
