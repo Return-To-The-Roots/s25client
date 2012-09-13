@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 8234 2012-09-13 12:49:32Z marcus $
+// $Id: AIPlayerJH.cpp 8235 2012-09-13 12:50:03Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -72,7 +72,7 @@ void AIPlayerJH::RunGF(const unsigned gf)
 	}
 	if (gf == 100)
 	{
-		if(milBuildings.size()<1)
+		if(aii->GetMilitaryBuildings().size()<1)
 		{
 			Chat(_("Hi, I'm an artifical player and I'm not very good yet!"));
 			Chat(_("And I may crash your game sometimes..."));
@@ -138,10 +138,10 @@ void AIPlayerJH::RunGF(const unsigned gf)
 		TryToAttack();
 	}
 
-	if ((gf + playerid * 13) % 100 == 0)
-	{
-		CheckNewMilitaryBuildings();
-	}
+	//if ((gf + playerid * 13) % 100 == 0)
+	//{
+	//	CheckNewMilitaryBuildings();
+	//}
 	if((gf+playerid*11)%1500==0) //update tool creation settings
 	{
 		std::vector<unsigned char> toolsettings;
@@ -250,10 +250,30 @@ void AIPlayerJH::RunGF(const unsigned gf)
 		
 		}
 		//now pick a random military building and try to build around that
-		if(milBuildings.size()<1)return;
-		randomstore=rand()%milBuildings.size();	
+		if(aii->GetMilitaryBuildings().size()<1)return;
+		if(aii->GetMilitaryBuildings().size()<2)
+			randomstore=0;
+		else
+			randomstore=rand()%(aii->GetMilitaryBuildings().size()-1);
 		numBldToTest = 22;
-		//std::list<Coords>::iterator it2 = milBuildings.end();
+		//std::list<Coords>::iterator it2 = milBuildings.end();		
+		std::list<nobMilitary*>::const_iterator it = aii->GetMilitaryBuildings().begin();
+		std::advance(it,randomstore);
+		MapCoord tx=(*it)->GetX(),ty=(*it)->GetY();
+		UpdateReachableNodes(tx, ty, 15);
+		for (unsigned int i = 0; i < numBldToTest; i++) 
+		{
+			if (construction.Wanted(bldToTest[i]))
+			{
+				AddBuildJob(bldToTest[i],tx,ty);
+			}
+		}
+		AddBuildJob(construction.ChooseMilitaryBuilding(tx, ty),tx, ty);
+		if((*it)->IsUseless()&&(*it)->IsDemolitionAllowed())
+		{
+			aii->DestroyBuilding(tx, ty);
+		}
+		/*
 		for (std::list<Coords>::iterator it = milBuildings.begin(); it != milBuildings.end(); it++)
 		{
 			//order ai to try building new military buildings close to the latest completed military buildings
@@ -281,7 +301,7 @@ void AIPlayerJH::RunGF(const unsigned gf)
 				}
 				break;
 			}
-		}
+		}*/
 	}
 
 
@@ -971,6 +991,7 @@ void AIPlayerJH::RecalcBQAround(const MapCoord x, const MapCoord y)
 
 void AIPlayerJH::CheckNewMilitaryBuildings()
 {
+	/*
 	for (std::list<Coords>::iterator it = milBuildingSites.begin(); it != milBuildingSites.end(); it++)
 	{
 		const nobMilitary *mil;
@@ -984,7 +1005,7 @@ void AIPlayerJH::CheckNewMilitaryBuildings()
 				break;
 			}
 		}
-	}
+	}*/
 }
 
 bool AIPlayerJH::SimpleFindPosition(MapCoord &x, MapCoord &y, BuildingQuality size, int radius)
@@ -1086,7 +1107,7 @@ void AIPlayerJH::HandleNewMilitaryBuilingOccupied(const Coords& coords)
 	*/
 	construction.RefreshBuildingCount();
 	//is the captured building in our list(should be if be constructed it)
-	bool alreadyinlist=false;
+	/*bool alreadyinlist=false;
 	for (std::list<Coords>::iterator it = milBuildings.begin(); it != milBuildings.end(); it++)
 	{		
 		if (((*it).x==x&&(*it).y==y))	
@@ -1099,7 +1120,7 @@ void AIPlayerJH::HandleNewMilitaryBuilingOccupied(const Coords& coords)
 	//if it wasnt in the list add it to the list
 	if(!alreadyinlist)
 		milBuildings.push_back(coords);
-
+		*/
 	const nobMilitary *mil = aii->GetSpecObj<nobMilitary>(x, y);
 	if (mil)
 	{
@@ -1219,6 +1240,7 @@ void AIPlayerJH::HandleMilitaryBuilingLost(const Coords& coords)
 	MapCoord x = coords.x;
 	MapCoord y = coords.y;
 	//remove from military building list if possible
+	/*
 	for (std::list<Coords>::iterator it = milBuildings.begin(); it != milBuildings.end(); it++)
 	{
 		const nobMilitary *mil;
@@ -1229,7 +1251,7 @@ void AIPlayerJH::HandleMilitaryBuilingLost(const Coords& coords)
 		}
 		if(it==milBuildings.end())
 			break;
-	}
+	}*/
 	if(construction.GetStoreHousePositions().size()<2) //check if we have a storehouse left - if we dont have one trying to find a path to one will crash
 	{
 		std::list<AIJH::Coords>::iterator it=construction.GetStoreHousePositions().begin()++;
@@ -1278,8 +1300,7 @@ void AIPlayerJH::HandleBuildingFinished(const Coords& coords, BuildingType bld)
 		break;
 
 	case BLD_STOREHOUSE:
-		// stop beer, swords and shields -> hq only (todo: hq destroyed -> use another storehouse)
-		//aii->ChangeInventorySetting( TODO
+		// stop beer, swords and shields -> hq only 
 		aii->ChangeInventorySetting(coords.x, coords.y, 0, 2, 0);
 		aii->ChangeInventorySetting(coords.x, coords.y, 0, 2, 16);
 		aii->ChangeInventorySetting(coords.x, coords.y, 0, 2, 21);
@@ -1454,18 +1475,9 @@ void AIPlayerJH::TryToAttack()
 	std::set<const nobBaseMilitary *> potentialTargets;
 
 	// use own military buildings (except inland buildings) to search for enemy military buildings
-	for (std::list<Coords>::iterator it = milBuildings.begin(); it != milBuildings.end(); it++)
+	for (std::list<nobMilitary*>::const_iterator it = aii->GetMilitaryBuildings().begin(); it != aii->GetMilitaryBuildings().end(); it++)
 	{
-		const nobMilitary *mil;
-		if (!(mil = aii->GetSpecObj<nobMilitary>((*it).x, (*it).y)))	
-		{
-			//this means there is no military building although there should be - probably destroyed or just failed to save the right spot - lets try to remove it from the list
-			it=milBuildings.erase(it);
-			if(it==milBuildings.end())
-				break;
-			continue;
-		}
-
+		const nobMilitary* mil=(*it);
 		if (mil->GetFrontierDistance() == 0)  //inland building? -> deactivate gold & skip it
 		{
 			if(!mil->IsGoldDisabled())
@@ -1483,12 +1495,12 @@ void AIPlayerJH::TryToAttack()
 		}
 		// get nearby enemy buildings and store in set of potential attacking targets
 		std::list<nobBaseMilitary *> buildings;
-		aii->GetMilitaryBuildings((*it).x, (*it).y, 2, buildings);
+		aii->GetMilitaryBuildings((*it)->GetX(), (*it)->GetY(), 2, buildings);
 		for(std::list<nobBaseMilitary*>::iterator it2 = buildings.begin(); it2 != buildings.end(); ++it2)
 		{
 			MapCoord dest_x = (*it2)->GetX();
 			MapCoord dest_y = (*it2)->GetY();
-			if (gwb->CalcDistance((*it).x, (*it).y, dest_x, dest_y) < BASE_ATTACKING_DISTANCE 
+			if (gwb->CalcDistance((*it)->GetX(), (*it)->GetY(), dest_x, dest_y) < BASE_ATTACKING_DISTANCE 
 				&& aii->IsPlayerAttackable((*it2)->GetPlayer()) && aii->IsVisible(dest_x, dest_y))
 			{
 				potentialTargets.insert(*it2);
@@ -1840,12 +1852,12 @@ void AIPlayerJH::InitStoreAndMilitarylists()
 	{
 		for (unsigned short x=0; x<width; ++x)
 		{
-			const nobMilitary *mil;
+			/*const nobMilitary *mil;
 			if ((mil = aii->GetSpecObj<nobMilitary>(x, y))&&gwb->GetNode(x,y).owner-1==playerid)
 			{
 				milBuildings.push_back(Coords(x,y));
 				continue;
-			}
+			}*/
 			const nobBaseWarehouse *wh;
 			if ((wh=aii->GetSpecObj<nobBaseWarehouse>(x, y))&&gwb->GetNode(x,y).owner-1==playerid)
 			{
@@ -1864,7 +1876,7 @@ void AIPlayerJH::InitStoreAndMilitarylists()
 				SetFarmedNodes(x,y,true);
 		}		
 	}
-	if(milBuildings.size()>0||construction.GetStoreHousePositions().size()>1)
+	if(aii->GetMilitaryBuildings().size()>0||construction.GetStoreHousePositions().size()>1)
 			Chat(_("AI'm back"));
 }
 

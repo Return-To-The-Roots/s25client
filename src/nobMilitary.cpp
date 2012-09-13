@@ -1,4 +1,4 @@
-// $Id: nobMilitary.cpp 8197 2012-09-09 18:35:22Z marcus $
+// $Id: nobMilitary.cpp 8235 2012-09-13 12:50:03Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -636,6 +636,8 @@ void nobMilitary::AddPassiveSoldier(nofPassiveSoldier * soldier)
 		CloseDoor();
 		// Fanfarensound abspieln, falls das Militärgebäude im Sichtbereich ist und unseres ist
 		gwg->MilitaryBuildingCaptured(x,y,player);
+		// AIEvent senden an besitzer
+		GameClient::inst().SendAIEvent(new AIEvent::Building(AIEvent::BuildingConquered, x, y, type), player);
 	}
 	else
 	{

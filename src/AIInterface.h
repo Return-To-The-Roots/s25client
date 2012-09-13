@@ -156,6 +156,9 @@ public:
 	// Returns a list to buildings of a given type
 	const std::list<nobUsual*>& GetBuildings(const BuildingType type) const { return player->GetBuildings(type); }
 
+	// Returns a list containing all military buildings
+	const std::list<nobMilitary*>& GetMilitaryBuildings() const {return player->GetMilitaryBuildings();}
+
 	// Retrieves the current counts of all buildings
 	void GetBuildingCount(BuildingCount &counts) const { player->GetBuildingCount(counts); }
 

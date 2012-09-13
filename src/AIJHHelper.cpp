@@ -1,4 +1,4 @@
-// $Id: AIJHHelper.cpp 8234 2012-09-13 12:49:32Z marcus $
+// $Id: AIJHHelper.cpp 8235 2012-09-13 12:50:03Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -312,7 +312,7 @@ void AIJH::BuildJob::BuildMainRoad()
 		case BLD_WATCHTOWER:
 		case BLD_FORTRESS:
 			//aijh->ChangeResourceMap(target_x, target_y, 8, aijh->resourceMaps[AIJH::BORDERLAND], -8);
-			aijh->milBuildingSites.push_back(AIPlayerJH::Coords(target_x, target_y));
+			//aijh->milBuildingSites.push_back(AIPlayerJH::Coords(target_x, target_y));
 		case BLD_GOLDMINE:
 			//if(!(aijh->ggs->isEnabled(ADDON_INEXHAUSTIBLE_MINES))) //ask the ai to recalculate the resourcemap instead of the old way to just change it this way its accurate
 			//	aijh->ChangeResourceMap(target_x, target_y, 4, aijh->resourceMaps[AIJH::GOLD], -30);
