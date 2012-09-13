@@ -1,4 +1,4 @@
-// $Id: nobHarborBuilding.cpp 8239 2012-09-13 21:23:26Z marcus $
+// $Id: nobHarborBuilding.cpp 8240 2012-09-13 21:31:20Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -684,15 +684,7 @@ bool nobHarborBuilding::IsExplorationExpeditionReady() const
 		return false;
 	// Alles da?
 	if(exploration_expedition.scouts < SCOUTS_EXPLORATION_EXPEDITION)
-	{
-		if (exploration_expedition.scouts + real_goods.people[JOB_SCOUT] < SCOUTS_EXPLORATION_EXPEDITION)
-		{
-			return false;
-		}
-
-		real_goods.people[JOB_SCOUT] -= SCOUTS_EXPLORATION_EXPEDITION - exploration_expedition.scouts;
-		exploration_expedition.scouts = SCOUTS_EXPLORATION_EXPEDITION;
-	}
+		return false;
 
 	return true;
 }
@@ -709,6 +701,12 @@ void nobHarborBuilding::CheckExpeditionReady()
 /// Prüft, ob eine Expedition von den Spähern her vollständig ist und ruft ggf. das Schiff
 void nobHarborBuilding::CheckExplorationExpeditionReady()
 {
+	if ((exploration_expedition.scouts < SCOUTS_EXPLORATION_EXPEDITION) && (exploration_expedition.scouts + real_goods.people[JOB_SCOUT] >= SCOUTS_EXPLORATION_EXPEDITION))
+	{
+		real_goods.people[JOB_SCOUT] -= SCOUTS_EXPLORATION_EXPEDITION - exploration_expedition.scouts;
+		exploration_expedition.scouts = SCOUTS_EXPLORATION_EXPEDITION;
+	}
+
 	// Alles da?
 	// Dann bestellen wir mal das Schiff
 	if(IsExplorationExpeditionReady())
