@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.h 8234 2012-09-13 12:49:32Z marcus $
+// $Id: AIPlayerJH.h 8236 2012-09-13 14:31:58Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -156,6 +156,7 @@ protected:
 	void InitResourceMaps();
 	/// Initialize the Store and Military building lists (only required when loading games but the AI doesnt know whether its a load game or new game so this runs when the ai starts in both cases)
 
+	//now used to init farm space around farms ... lazy legacy
 	void InitStoreAndMilitarylists();
 
 	//returns true if we can get to the startflag in <maxlen without turning back

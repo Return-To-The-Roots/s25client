@@ -1,4 +1,4 @@
-// $Id: GameClientPlayer.h 8049 2012-07-22 17:23:19Z jh $
+// $Id: GameClientPlayer.h 8236 2012-09-13 14:31:58Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -257,6 +257,8 @@ public:
 	const std::list<noBuildingSite*>& GetBuildingSites() const { return building_sites; }
 
 	const std::list<nobMilitary *>& GetMilitaryBuildings() const { return military_buildings; }
+
+	const std::list<nobBaseWarehouse*>&GetStorehouses()const {return warehouses;}
 
 	/// Gibt Liste von Gebäuden des Spieler zurück
 	const std::list<nobUsual*>& GetBuildings(const BuildingType type) const;

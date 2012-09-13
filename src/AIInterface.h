@@ -159,6 +159,9 @@ public:
 	// Returns a list containing all military buildings
 	const std::list<nobMilitary*>& GetMilitaryBuildings() const {return player->GetMilitaryBuildings();}
 
+	// Returns a list containing all storehouses and harbors and the hq
+	const std::list<nobBaseWarehouse*>& GetStorehouses() const {return player->GetStorehouses();}
+
 	// Retrieves the current counts of all buildings
 	void GetBuildingCount(BuildingCount &counts) const { player->GetBuildingCount(counts); }
 

@@ -1,4 +1,4 @@
-// $Id: AIJHHelper.cpp 8235 2012-09-13 12:50:03Z marcus $
+// $Id: AIJHHelper.cpp 8236 2012-09-13 14:31:58Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -149,25 +149,25 @@ void AIJH::BuildJob::TryToBuild()
 		case BLD_WOODCUTTER:
 			{
 			unsigned numWoodcutter = aijh->GetConstruction()->GetBuildingCount(BLD_WOODCUTTER);
-			foundPos = aijh->FindBestPosition(bx, by, AIJH::WOOD, BQ_HUT, (numWoodcutter > 2) ? 20 : 1 + aijh->GetConstruction()->GetBuildingCount(BLD_WOODCUTTER) * 10, 15);
+			foundPos = aijh->FindBestPosition(bx, by, AIJH::WOOD, BQ_HUT, (numWoodcutter > 2) ? 20 : 1 + aijh->GetConstruction()->GetBuildingCount(BLD_WOODCUTTER) * 10, 11);
 			if(foundPos&&!aijh->ValidTreeinRange(bx,by))
 				foundPos=false;
 			break;
 			}
 		case BLD_FORESTER:
  			if (aijh->GetDensity(bx, by, AIJH::PLANTSPACE, 7) > 0.2)
-				foundPos = aijh->FindBestPosition(bx, by, AIJH::WOOD, BQ_HUT, 0, 15);
+				foundPos = aijh->FindBestPosition(bx, by, AIJH::WOOD, BQ_HUT, 0, 11);
 			break;
 		case BLD_HUNTER:
 			{	//check if there are any animals in range
 				if(aijh->HuntablesinRange(bx,by,(2<<aijh->GetConstruction()->GetBuildingCount(BLD_HUNTER))))
-					foundPos=aijh->SimpleFindPosition(bx, by, BUILDING_SIZE[type], 15);
+					foundPos=aijh->SimpleFindPosition(bx, by, BUILDING_SIZE[type], 11);
 				break;
 			}
 		case BLD_QUARRY:
 			{
 			unsigned numQuarries = aijh->GetConstruction()->GetBuildingCount(BLD_QUARRY);
-			foundPos = aijh->FindBestPosition(bx, by, AIJH::STONES, BQ_HUT, (numQuarries > 4) ? 40 : 1 + aijh->GetConstruction()->GetBuildingCount(BLD_QUARRY) * 10, 15);
+			foundPos = aijh->FindBestPosition(bx, by, AIJH::STONES, BQ_HUT, (numQuarries > 4) ? 40 : 1 + aijh->GetConstruction()->GetBuildingCount(BLD_QUARRY) * 10, 11);
 			if(foundPos&&!aijh->ValidStoneinRange(bx,by))
 				foundPos=false;
 			break;
@@ -176,35 +176,35 @@ void AIJH::BuildJob::TryToBuild()
 		case BLD_GUARDHOUSE:
 		case BLD_WATCHTOWER:
 		case BLD_FORTRESS:
-			foundPos = aijh->FindBestPosition(bx, by, AIJH::BORDERLAND, BUILDING_SIZE[type],1, 15, true);
+			foundPos = aijh->FindBestPosition(bx, by, AIJH::BORDERLAND, BUILDING_SIZE[type],1, 11, true);
 			break;
 		case BLD_GOLDMINE:
-			foundPos = aijh->FindBestPosition(bx, by, AIJH::GOLD, BQ_MINE, 15, true);
+			foundPos = aijh->FindBestPosition(bx, by, AIJH::GOLD, BQ_MINE, 11, true);
 			break;
 		case BLD_COALMINE:
-			foundPos = aijh->FindBestPosition(bx, by, AIJH::COAL, BQ_MINE, 15, true);
+			foundPos = aijh->FindBestPosition(bx, by, AIJH::COAL, BQ_MINE, 11, true);
 			break;
 		case BLD_IRONMINE:
-			foundPos = aijh->FindBestPosition(bx, by, AIJH::IRONORE, BQ_MINE, 15, true);
+			foundPos = aijh->FindBestPosition(bx, by, AIJH::IRONORE, BQ_MINE, 11, true);
 			break;
 		case BLD_GRANITEMINE:
-			foundPos = aijh->FindBestPosition(bx, by, AIJH::GRANITE, BQ_MINE, 15, true);
+			foundPos = aijh->FindBestPosition(bx, by, AIJH::GRANITE, BQ_MINE, 11, true);
 			break;
 
 		case BLD_FISHERY:
-			foundPos = aijh->FindBestPosition(bx, by, AIJH::FISH, BQ_HUT, 15, true);
+			foundPos = aijh->FindBestPosition(bx, by, AIJH::FISH, BQ_HUT, 11, true);
 			break;
 		case BLD_STOREHOUSE:
-			if(aijh->GetConstruction()->FindStoreHousePosition(bx, by, 15))
-				foundPos = aijh->SimpleFindPosition(bx, by, BUILDING_SIZE[BLD_STOREHOUSE], 15);
+			//if(aijh->GetConstruction()->FindStoreHousePosition(bx, by, 15))
+			foundPos = aijh->SimpleFindPosition(bx, by, BUILDING_SIZE[BLD_STOREHOUSE], 11);
 			break;
 
 		case BLD_FARM:
-			foundPos = aijh->FindBestPosition(bx, by, AIJH::PLANTSPACE, BQ_CASTLE, 85, 15, true);
+			foundPos = aijh->FindBestPosition(bx, by, AIJH::PLANTSPACE, BQ_CASTLE, 85, 11, true);
 			break;
 
 		default:
-			foundPos = aijh->SimpleFindPosition(bx, by, BUILDING_SIZE[type], 15);
+			foundPos = aijh->SimpleFindPosition(bx, by, BUILDING_SIZE[type], 11);
 			break;
 		}
 	}
@@ -334,10 +334,10 @@ void AIJH::BuildJob::BuildMainRoad()
 			//aijh->ChangeResourceMap(target_x, target_y, 10, aijh->resourceMaps[AIJH::FISH], -30);
 			break;
 		case BLD_STOREHOUSE:
-			aijh->GetConstruction()->AddStoreHouse(target_x, target_y);
+			//aijh->GetConstruction()->AddStoreHouse(target_x, target_y);
 			break;
 		case BLD_HARBORBUILDING:
-			aijh->GetConstruction()->AddStoreHouse(target_x, target_y);
+			//aijh->GetConstruction()->AddStoreHouse(target_x, target_y);
 			break;
 		case BLD_FARM:
 			//aijh->ChangeResourceMap(target_x, target_y, 5, aijh->resourceMaps[AIJH::PLANTSPACE], -30);

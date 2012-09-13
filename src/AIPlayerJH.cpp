@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 8235 2012-09-13 12:50:03Z marcus $
+// $Id: AIPlayerJH.cpp 8236 2012-09-13 14:31:58Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -64,9 +64,8 @@ void AIPlayerJH::RunGF(const unsigned gf)
 		return;
 
 	if (TestDefeat())
-		return;
-
-	if (gf == 1)
+		return;	
+	if (gf == 40)
 	{
 		InitStoreAndMilitarylists();
 	}
@@ -162,15 +161,6 @@ void AIPlayerJH::RunGF(const unsigned gf)
 	}
 	if((gf+playerid*7)%200==0) // plan new buildings
 	{
-		//UpdateNodes();
-		//RecalcResource(AIJH::GOLD);
-		//RecalcResource(AIJH::IRONORE);
-		//RecalcResource(AIJH::COAL);
-		//RecalcResource(AIJH::GRANITE);
-		//RecalcResource(AIJH::BORDERLAND);
-		//RecalcResource(AIJH::WOOD);
-		//RecalcResource(AIJH::STONES);
-		//RecalcResource(AIJH::PLANTSPACE);
 		construction.RefreshBuildingCount();		
 		//pick a random storehouse and try to build one of these buildings around it (checks if we actually want more of the building type)
 		BuildingType bldToTest[] = {
@@ -198,68 +188,48 @@ void AIPlayerJH::RunGF(const unsigned gf)
 		BLD_HUNTER
 		};
 		unsigned numBldToTest = 22;
-		//std::list<AIJH::Coords> bldPoses = construction.GetStoreHousePositions();
-		unsigned char randomstore=rand()%construction.GetStoreHousePositions().size();
+		unsigned char randomstore;
+		if(aii->GetStorehouses().size()>1)
+			randomstore=rand()%(aii->GetStorehouses().size()-1);
+		else
+			randomstore=0;
 		bool firsthouse=true;
 		bool lostmainstore=false;
-		if(construction.GetStoreHousePositions().size()<1)
+		if(aii->GetStorehouses().size()<1)
 			return;
-		for (std::list<AIJH::Coords>::iterator it = construction.GetStoreHousePositions().begin(); it != construction.GetStoreHousePositions().end(); it++)
+		//collect swords,shields and beer in first storehouse!
+		nobBaseWarehouse* wh=(*aii->GetStorehouses().begin());
+		if(!wh->CheckRealInventorySettings(0,8,0))
 		{
-			//check if there still is a building if not remove from list
-			if(!aii->IsObjectTypeOnNode((*it).x,(*it).y,NOP_BUILDING)&&!aii->IsObjectTypeOnNode((*it).x,(*it).y,NOP_BUILDINGSITE))
-			{
-				lostmainstore=(firsthouse);
-				it=construction.GetStoreHousePositions().erase(it);
-				if(it==construction.GetStoreHousePositions().end())
-				{
-					break;
-				}
-				else
-				{
-					continue;
-				}
-			}
-			else
-			{
-				firsthouse=false;
-				if(lostmainstore&&aii->IsObjectTypeOnNode((*it).x,(*it).y,NOP_BUILDING))
-				{	
-					aii->ChangeInventorySetting((*it).x, (*it).y, 0, 2, 0);
-					aii->ChangeInventorySetting((*it).x, (*it).y, 0, 2, 16);
-					aii->ChangeInventorySetting((*it).x, (*it).y, 0, 2, 21);
-					lostmainstore=false;
-				}
-			}
-			if(randomstore>0)
-				randomstore--;	
-			else
-			{
-				UpdateNodesAroundNoBorder((*it).x,(*it).y,15); //update the area we want to build in first 
-				for (unsigned int i = 0; i < numBldToTest; i++)
-				{
-					if (construction.Wanted(bldToTest[i]))
-					{
-						AddBuildJob(bldToTest[i],(*it).x,(*it).y);
-					}
-				}
-				if(gf>1500||aii->GetInventory()->goods[GD_BOARDS]>11)
-					AddBuildJob(construction.ChooseMilitaryBuilding((*it).x, (*it).y),(*it).x, (*it).y);			
-				break;
-			}
-		
+			aii->ChangeInventorySetting(wh->GetX(),wh->GetY(),0,8,0);
+			aii->ChangeInventorySetting(wh->GetX(),wh->GetY(),0,8,16);
+			aii->ChangeInventorySetting(wh->GetX(),wh->GetY(),0,8,21);
 		}
-		//now pick a random military building and try to build around that
+		//go to the picked random warehouse and try to build around it
+		std::list<nobBaseWarehouse*>::const_iterator it=aii->GetStorehouses().begin();
+		std::advance(it,randomstore);
+		UpdateNodesAroundNoBorder((*it)->GetX(),(*it)->GetY(),15); //update the area we want to build in first 
+		for (unsigned int i = 0; i < numBldToTest; i++)
+		{
+			if (construction.Wanted(bldToTest[i]))
+			{
+				AddBuildJob(bldToTest[i],(*it)->GetX(),(*it)->GetY());
+			}
+		}
+		if(gf>1500||aii->GetInventory()->goods[GD_BOARDS]>11)
+			AddBuildJob(construction.ChooseMilitaryBuilding((*it)->GetX(), (*it)->GetY()),(*it)->GetX(), (*it)->GetY());
+
+
+		//now pick a random military building and try to build around that as well
 		if(aii->GetMilitaryBuildings().size()<1)return;
 		if(aii->GetMilitaryBuildings().size()<2)
 			randomstore=0;
 		else
 			randomstore=rand()%(aii->GetMilitaryBuildings().size()-1);
-		numBldToTest = 22;
-		//std::list<Coords>::iterator it2 = milBuildings.end();		
-		std::list<nobMilitary*>::const_iterator it = aii->GetMilitaryBuildings().begin();
-		std::advance(it,randomstore);
-		MapCoord tx=(*it)->GetX(),ty=(*it)->GetY();
+		numBldToTest = 22;	
+		std::list<nobMilitary*>::const_iterator it2 = aii->GetMilitaryBuildings().begin();
+		std::advance(it2,randomstore);
+		MapCoord tx=(*it2)->GetX(),ty=(*it2)->GetY();
 		UpdateReachableNodes(tx, ty, 15);
 		for (unsigned int i = 0; i < numBldToTest; i++) 
 		{
@@ -269,55 +239,16 @@ void AIPlayerJH::RunGF(const unsigned gf)
 			}
 		}
 		AddBuildJob(construction.ChooseMilitaryBuilding(tx, ty),tx, ty);
-		if((*it)->IsUseless()&&(*it)->IsDemolitionAllowed())
+		if((*it2)->IsUseless()&&(*it2)->IsDemolitionAllowed())
 		{
 			aii->DestroyBuilding(tx, ty);
-		}
-		/*
-		for (std::list<Coords>::iterator it = milBuildings.begin(); it != milBuildings.end(); it++)
-		{
-			//order ai to try building new military buildings close to the latest completed military buildings
-			//it2--;
-			//AddBuildJob(construction.ChooseMilitaryBuilding((*it2).x, (*it2).y),(*it2).x, (*it2).y);  //faster expansion when we have a huge empire BUT if we have lots of mil buildings this clogs the job queue FIX IT
-			if(randomstore>0)
-				randomstore--;
-			const nobMilitary *mil;
-			if (!(mil = aii->GetSpecObj<nobMilitary>((*it).x, (*it).y)))
-				continue;
-			if(randomstore<=0)
-			{			
-				UpdateNodesAroundNoBorder((*it).x,(*it).y,15); //update the area we want to build in first 
-				for (unsigned int i = 0; i < numBldToTest; i++) 
-				{
-					if (construction.Wanted(bldToTest[i]))
-					{
-						AddBuildJob(bldToTest[i],(*it).x,(*it).y);
-					}
-				}
-				AddBuildJob(construction.ChooseMilitaryBuilding((*it).x, (*it).y),(*it).x, (*it).y);
-				if(mil->IsUseless()&&mil->IsDemolitionAllowed())
-				{
-					aii->DestroyBuilding((*it).x, (*it).y);
-				}
-				break;
-			}
-		}*/
+		}		
 	}
-
-
-	// from time to time give some random build orders to keep alive
-	
-	/*if ((gf % 3000) == 2999)
-	{
-		if (construction.Wanted(BLD_WOODCUTTER)) AddBuildJob(new AIJH::BuildJob(this, BLD_WOODCUTTER, AIJH::SEARCHMODE_GLOBAL));
-		if (construction.Wanted(BLD_QUARRY)) AddBuildJob(new AIJH::BuildJob(this, BLD_QUARRY, AIJH::SEARCHMODE_GLOBAL));
-		if (SoldierAvailable()) AddBuildJob(new AIJH::BuildJob(this, BLD_GUARDHOUSE, AIJH::SEARCHMODE_GLOBAL));
-	}*/
 }
 
 bool AIPlayerJH::TestDefeat()
 {
-	if (!aii->GetHeadquarter()&&((construction.GetBuildingCount(BLD_STOREHOUSE)+construction.GetBuildingCount(BLD_HARBORBUILDING))==(construction.GetBuildingSitesCount(BLD_STOREHOUSE)-construction.GetBuildingSitesCount(BLD_STOREHOUSE))))
+	if (!aii->GetStorehouses().size())
 	{
 		defeated = true;
 		aii->Surrender();
@@ -805,8 +736,8 @@ bool AIPlayerJH::FindBestPosition(MapCoord &x, MapCoord &y, AIJH::Resource res, 
 	//outside of map bounds? -> search around our main storehouse!
 	if (x >= width || y >= height)
 	{
-		x = construction.GetStoreHousePositions().front().x;
-		y = construction.GetStoreHousePositions().front().y;
+		x = aii->GetStorehouses().front()->GetX();
+		y = aii->GetStorehouses().front()->GetY();
 	}
 
 	// TODO was besseres wär schön ;)
@@ -1017,8 +948,8 @@ bool AIPlayerJH::SimpleFindPosition(MapCoord &x, MapCoord &y, BuildingQuality si
 
 	if (x >= width || y >= height)
 	{
-		x = construction.GetStoreHousePositions().front().x;
-		y = construction.GetStoreHousePositions().front().x;
+		x = aii->GetStorehouses().front()->GetX();
+		y = aii->GetStorehouses().front()->GetY();
 	}
 
 	// TODO was besseres wär schön ;)
@@ -1059,8 +990,8 @@ double AIPlayerJH::GetDensity(MapCoord x, MapCoord y, AIJH::Resource res, int ra
 	// TODO: check warum das so ist, und ob das sinn macht! ist so weil der punkt dann außerhalb der karte liegen würde ... könnte trotzdem crashen wenn wir kein hq mehr haben ... mehr checks!
 	if (x >= width || y >= height)
 	{
-		x = construction.GetStoreHousePositions().front().x;
-		y = construction.GetStoreHousePositions().front().y;
+		x = aii->GetStorehouses().front()->GetX();
+		y = aii->GetStorehouses().front()->GetY();
 	}
 
 
@@ -1094,33 +1025,7 @@ void AIPlayerJH::HandleNewMilitaryBuilingOccupied(const Coords& coords)
 	MapCoord y = coords.y;
 	//kill bad flags we find
 	RemoveAllUnusedRoads(x,y);
-	/*
-	std::vector<const noFlag*> flags;
-	construction.FindFlags(flags, x, y, 25);	
-	// Jede Flagge im umkreis testen auf kaputte wege
-	for(unsigned i=0; i<flags.size(); ++i)
-	{
-		//excluding direction 255 means no excluded direction ... sometimes I used 7 for the same purpose so if you ever change the direction to count to include 7 this will fail in some spots :)
-		RemoveUnusedRoad(flags[i],255,true);
-	}	
-	UpdateNodesAround(x, y, 15); // todo: fix radius
-	*/
 	construction.RefreshBuildingCount();
-	//is the captured building in our list(should be if be constructed it)
-	/*bool alreadyinlist=false;
-	for (std::list<Coords>::iterator it = milBuildings.begin(); it != milBuildings.end(); it++)
-	{		
-		if (((*it).x==x&&(*it).y==y))	
-		{
-			//already in our list break the search
-			alreadyinlist=true;
-			break;
-		}
-	}
-	//if it wasnt in the list add it to the list
-	if(!alreadyinlist)
-		milBuildings.push_back(coords);
-		*/
 	const nobMilitary *mil = aii->GetSpecObj<nobMilitary>(x, y);
 	if (mil)
 	{
@@ -1134,11 +1039,6 @@ void AIPlayerJH::HandleNewMilitaryBuilingOccupied(const Coords& coords)
 		{
 			aii->ToggleCoins(x, y);
 		}
-		//should be done by now by the removeunusedroads code
-		/*if (!construction.IsConnectedToRoadSystem(mil->GetFlag()))
-		{
-			construction.AddConnectFlagJob(mil->GetFlag());
-		}*/
 	}
 
 	AddBuildJob(BLD_HARBORBUILDING, x, y);
@@ -1163,20 +1063,28 @@ void AIPlayerJH::HandleNewMilitaryBuilingOccupied(const Coords& coords)
 		BLD_FARM,
 		BLD_HUNTER	
 	};
-	std::list<AIJH::Coords> storeHousePoses = construction.GetStoreHousePositions();
-	//bool storeclose=false;
 	unsigned numBldToTest = 0;
 	//remove the storehouse from the building test list if we are close to another storehouse already
-	for (std::list<AIJH::Coords>::iterator it = storeHousePoses.begin(); it != storeHousePoses.end(); it++)
+	for (std::list<nobBaseWarehouse*>::const_iterator it = aii->GetStorehouses().begin(); it != aii->GetStorehouses().end(); it++)
 	{
-		if (gwb->CalcDistance((*it).x, (*it).y, x, y) < 20)
+		if (gwb->CalcDistance((*it)->GetX(), (*it)->GetY(), x, y) < 20)
 		{
 			numBldToTest = 1;
 			break;
-		}
-		
+		}		
 	}
-	
+	//same is true for warehouses which are still in production
+	for(std::list<noBuildingSite*>::const_iterator it=aii->GetBuildingSites().begin();it!=aii->GetBuildingSites().end();it++)
+	{
+		if((*it)->GetBuildingType()==BLD_STOREHOUSE||(*it)->GetBuildingType()==BLD_HARBORBUILDING)
+		{
+			if (gwb->CalcDistance((*it)->GetX(), (*it)->GetY(), x, y) < 20)
+			{
+				numBldToTest = 1;
+				break;
+			}
+		}
+	}	
 
 	for (unsigned int i = numBldToTest; i < 10; ++i)
 	{
@@ -1239,38 +1147,11 @@ void AIPlayerJH::HandleMilitaryBuilingLost(const Coords& coords)
 {
 	MapCoord x = coords.x;
 	MapCoord y = coords.y;
-	//remove from military building list if possible
-	/*
-	for (std::list<Coords>::iterator it = milBuildings.begin(); it != milBuildings.end(); it++)
-	{
-		const nobMilitary *mil;
-		if (!(mil = aii->GetSpecObj<nobMilitary>((*it).x, (*it).y))||((*it).x==x&&(*it).y==y))	
-		{
-			//this means there is no military building although there should be - probably destroyed or that it is the one we just lost
-			it=milBuildings.erase(it);
-		}
-		if(it==milBuildings.end())
-			break;
-	}*/
-	if(construction.GetStoreHousePositions().size()<2) //check if we have a storehouse left - if we dont have one trying to find a path to one will crash
-	{
-		std::list<AIJH::Coords>::iterator it=construction.GetStoreHousePositions().begin()++;
-		if(!aii->IsObjectTypeOnNode((*it).x,(*it).y,NOP_BUILDING)&&!aii->IsObjectTypeOnNode((*it).x,(*it).y,NOP_BUILDINGSITE))
-			return;
+	if(!aii->GetStorehouses().size()) //check if we have a storehouse left - if we dont have one trying to find a path to one will crash
+	{		
+		return;
 	}
-	//find all flags around the lost building and try to reconnect them if necessary
 	RemoveAllUnusedRoads(x,y);
-	/*
-	std::vector<const noFlag*> flags;
-	construction.FindFlags(flags, x, y, 25);	
-	// Jede Flagge testen...
-	for(unsigned i=0; i<flags.size(); ++i)
-	{
-		//excluding direction 7 means no excluded direction because there are only 6 valid directions
-		RemoveUnusedRoad(flags[i],255,true);
-	}	
-	UpdateNodesAroundNoBorder(x, y, 15); // todo: fix radius
-	*/
 
 }
 
@@ -1300,10 +1181,6 @@ void AIPlayerJH::HandleBuildingFinished(const Coords& coords, BuildingType bld)
 		break;
 
 	case BLD_STOREHOUSE:
-		// stop beer, swords and shields -> hq only 
-		aii->ChangeInventorySetting(coords.x, coords.y, 0, 2, 0);
-		aii->ChangeInventorySetting(coords.x, coords.y, 0, 2, 16);
-		aii->ChangeInventorySetting(coords.x, coords.y, 0, 2, 21);
 		break;
 	default:
 		break;
@@ -1789,20 +1666,31 @@ bool AIPlayerJH::SoldierAvailable()
 {
 	std::list<AIJH::Coords> storeHousePoses = construction.GetStoreHousePositions();
 	unsigned freeSoldiers = 0;
-	for (std::list<AIJH::Coords>::iterator it = storeHousePoses.begin(); it != storeHousePoses.end(); it++)
+	for (std::list<nobBaseWarehouse*>::const_iterator it = aii->GetStorehouses().begin(); it != aii->GetStorehouses().end(); it++)
 	{
-		const nobBaseWarehouse *nbw = aii->GetSpecObj<nobBaseWarehouse>(it->x, it->y);
-		if (nbw)
-		{
-			const Goods *g = nbw->GetInventory();
-			freeSoldiers += (g->people[JOB_PRIVATE] + g->people[JOB_PRIVATEFIRSTCLASS] + g->people[JOB_SERGEANT] + g->people[JOB_OFFICER] + g->people[JOB_GENERAL]);
-		}
+		freeSoldiers += ((*it)->GetInventory()->people[JOB_PRIVATE] + (*it)->GetInventory()->people[JOB_PRIVATEFIRSTCLASS] + (*it)->GetInventory()->people[JOB_SERGEANT] + (*it)->GetInventory()->people[JOB_OFFICER] + (*it)->GetInventory()->people[JOB_GENERAL]);
+		if(freeSoldiers!=0)
+			return true;
 	}
 	return (freeSoldiers != 0);
 }
 
 bool AIPlayerJH::HuntablesinRange(unsigned x,unsigned y,unsigned min)
 {
+	//check first if no other hunter(or hunter buildingsite) is nearby
+	for(std::list<nobUsual*>::const_iterator it=aii->GetBuildings(BLD_HUNTER).begin();it!=aii->GetBuildings(BLD_HUNTER).end();it++)
+	{
+		if(gwb->CalcDistance((*it)->GetX(),(*it)->GetY(),x,y)<15)
+			return false;
+	}
+	for(std::list<noBuildingSite*>::const_iterator it=aii->GetBuildingSites().begin();it!=aii->GetBuildingSites().end();it++)
+	{
+		if((*it)->GetBuildingType()==BLD_HUNTER)
+		{
+			if(gwb->CalcDistance((*it)->GetX(),(*it)->GetY(),x,y)<15)
+				return false;
+		}
+	}
 	unsigned maxrange=50;
 	unsigned short fx,fy,lx,ly;
 	const unsigned short SQUARE_SIZE = 19;
@@ -1845,38 +1733,11 @@ bool AIPlayerJH::HuntablesinRange(unsigned x,unsigned y,unsigned min)
 
 void AIPlayerJH::InitStoreAndMilitarylists()
 {
-	unsigned short width = aii->GetMapWidth();
-	unsigned short height = aii->GetMapHeight();
-	
-	for (unsigned short y=0; y<height; ++y)
+	for(std::list<nobUsual*>::const_iterator it=aii->GetBuildings(BLD_FARM).begin();it!=aii->GetBuildings(BLD_FARM).end();it++)
 	{
-		for (unsigned short x=0; x<width; ++x)
-		{
-			/*const nobMilitary *mil;
-			if ((mil = aii->GetSpecObj<nobMilitary>(x, y))&&gwb->GetNode(x,y).owner-1==playerid)
-			{
-				milBuildings.push_back(Coords(x,y));
-				continue;
-			}*/
-			const nobBaseWarehouse *wh;
-			if ((wh=aii->GetSpecObj<nobBaseWarehouse>(x, y))&&gwb->GetNode(x,y).owner-1==playerid)
-			{
-				//if this building blocks beer/weapons/shields it is not our main storehouse so add it anywhere on our list - else add it in front
-				if(wh->CheckRealInventorySettings(0,2,0))
-					construction.AddStoreHouse(x,y);
-				else
-				{
-					if(x!=player->hqx||y!=player->hqy) //if it is on our hq spot it should already be in the list
-						construction.AddStoreHouseFront(x,y);
-				}
-				continue;
-			}	
-			//farm on this point? set nodes around it as "farmed" ... todo: not quite the right spot for this...
-			if(aii->IsBuildingOnNode(x,y,BLD_FARM))
-				SetFarmedNodes(x,y,true);
-		}		
+		SetFarmedNodes((*it)->GetX(),(*it)->GetY(),true);
 	}
-	if(aii->GetMilitaryBuildings().size()>0||construction.GetStoreHousePositions().size()>1)
+	if(aii->GetMilitaryBuildings().size()>0||aii->GetStorehouses().size()>1)
 			Chat(_("AI'm back"));
 }
 

@@ -1,4 +1,4 @@
-// $Id: AIConstruction.cpp 8234 2012-09-13 12:49:32Z marcus $
+// $Id: AIConstruction.cpp 8236 2012-09-13 14:31:58Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -559,6 +559,7 @@ bool AIConstruction::BuildAlternativeRoad(const noFlag *flag, std::vector<unsign
 
 bool AIConstruction::FindStoreHousePosition(MapCoord &x, MapCoord &y, unsigned radius)
 {
+	//currently unused - if you want to use this again you will have to use aii->gestorehouses() instead of storeHouses!
 	// max distance to warehouse/hq
 	const unsigned maxDistance = 20;
 
@@ -598,31 +599,22 @@ bool AIConstruction::FindStoreHousePosition(MapCoord &x, MapCoord &y, unsigned r
 noFlag *AIConstruction::FindTargetStoreHouseFlag(MapCoord x, MapCoord y)
 {
 	unsigned minDistance = std::numeric_limits<unsigned>::max();
-	AIJH::Coords minTarget(0xFF,0xFF);
+	nobBaseWarehouse* minTarget;
 	bool found = false;
-	const noBaseBuilding *bld;
-	for (std::list<AIJH::Coords>::iterator it = storeHouses.begin(); it != storeHouses.end(); it++)
+	for (std::list<nobBaseWarehouse*>::const_iterator it = aii->GetStorehouses().begin(); it != aii->GetStorehouses().end(); it++)
 	{
-		if ((bld = aii->GetSpecObj<noBaseBuilding>((*it).x, (*it).y)))
+		unsigned dist = aii->GetDistance(x, y, (*it)->GetX(), (*it)->GetY());
+		if (dist < minDistance)
 		{
-			if (bld->GetBuildingType() != BLD_STOREHOUSE && bld->GetBuildingType() != BLD_HEADQUARTERS)
-				continue;
-		
-			unsigned dist = aii->GetDistance(x, y, (*it).x, (*it).y);
-
-			if (dist < minDistance)
-			{
-				minDistance = dist;
-				minTarget = *it;
-				found = true;
-			}
-		}
+			minDistance = dist;
+			minTarget = *it;
+			found = true;
+		}		
 	}
 	if (!found)
 		return NULL;
 	else
 	{
-		bld = aii->GetSpecObj<noBaseBuilding>(minTarget.x, minTarget.y);
-		return bld->GetFlag();
+		return minTarget->GetFlag();
 	}
 }
