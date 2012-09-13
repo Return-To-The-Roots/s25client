@@ -1,4 +1,4 @@
-// $Id: EventManager.cpp 8230 2012-09-12 19:44:22Z marcus $
+// $Id: EventManager.cpp 8238 2012-09-13 20:26:00Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -118,9 +118,8 @@ void EventManager::NextGF()
 			assert(e->obj);
 			assert(e->obj->GetObjId() < GameObject::GetObjIDCounter());
 
-			// this should not be a problem, as there is at least one element in eis: e
-			eis[cnt] = eis.back();
-			eis.pop_back();
+			// mark as removed
+			eis[cnt] = NULL;
 
 			if (e->obj)
 			{
