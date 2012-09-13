@@ -1,4 +1,4 @@
-// $Id: iwPostWindow.cpp 7707 2011-12-30 22:22:21Z marcus $
+// $Id: iwPostWindow.cpp 8232 2012-09-13 10:03:01Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -90,6 +90,8 @@ iwPostWindow::iwPostWindow(GameWorldViewer& gwv)
 
 	currentMessage = 0;
 	DisplayPostMessage();
+
+	lastSize = GameClient::inst().GetPostMessages().size();
 }
 
 void iwPostWindow::Msg_ButtonClick(const unsigned int ctrl_id)
