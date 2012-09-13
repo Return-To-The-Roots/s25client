@@ -1,4 +1,4 @@
-// $Id: glArchivItem_Font.cpp 8209 2012-09-10 14:55:39Z marcus $
+// $Id: glArchivItem_Font.cpp 8233 2012-09-13 10:46:35Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -722,6 +722,8 @@ void glArchivItem_Font::initFont()
 	}
 
 	_font_outline->create(w, h, buffer, w, h, libsiedler2::FORMAT_RGBA, LOADER.GetPaletteN("colors"));
+
+	delete[] buffer;
 
 	/*ArchivInfo items;
 	items.pushC(_font);
