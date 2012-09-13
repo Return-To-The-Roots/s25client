@@ -171,6 +171,8 @@ public:
 	// Returns the number of ships
 	unsigned GetShipCount() const { return player->GetShipCount(); }
 
+	//returns distance
+	unsigned CalcDistance(MapCoord x1,MapCoord y1,MapCoord x2,MapCoord y2){return gwb->CalcDistance(x1,y1,x2,y2);}	
 
 	/// Returns the ID of a given ship
 	unsigned GetShipID(const noShip *ship) const { return player->GetShipID(ship); }

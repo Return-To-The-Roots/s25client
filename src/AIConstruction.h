@@ -1,4 +1,4 @@
-// $Id: AIConstruction.h 8119 2012-09-01 19:12:36Z jh $
+// $Id: AIConstruction.h 8241 2012-09-13 21:34:29Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -91,7 +91,7 @@ public:
 	/// Tries to build a second road to a flag, which is in any way better than the first one
 	bool BuildAlternativeRoad(const noFlag *flag, std::vector<unsigned char> &route);
 
-	bool FindStoreHousePosition(MapCoord &x, MapCoord &y, unsigned radius);
+	bool OtherStoreInRadius(MapCoord &x, MapCoord &y, unsigned radius);
 	
 	void AddStoreHouse(MapCoord x, MapCoord y) { storeHouses.push_back(AIJH::Coords(x, y)); }
 	void AddStoreHouseFront(MapCoord x,MapCoord y) {storeHouses.push_front(AIJH::Coords(x,y));}

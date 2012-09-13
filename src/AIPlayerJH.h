@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.h 8236 2012-09-13 14:31:58Z marcus $
+// $Id: AIPlayerJH.h 8241 2012-09-13 21:34:29Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -184,6 +184,8 @@ protected:
 	bool FindBestPosition(MapCoord &x, MapCoord &y, AIJH::Resource res, BuildingQuality size, int minimum, int radius = -1, bool inTerritory = true);
 	bool FindBestPosition(MapCoord &x, MapCoord &y, AIJH::Resource res, BuildingQuality size, int radius = -1, bool inTerritory = true) 
 	{ return FindBestPosition(x,y,res,size,1,radius,inTerritory); }
+	///finds the best position for a resource that cannot increase (fish,iron,coal,gold,granite,stones)
+	bool FindBestPositionDiminishingResource(MapCoord &x, MapCoord &y, AIJH::Resource res, BuildingQuality size, int minimum, int radius = -1, bool inTerritory = true);
 
 	/// Finds a position for the desired building size
 	bool SimpleFindPosition(MapCoord &x, MapCoord &y, BuildingQuality size, int radius = -1);
@@ -230,6 +232,9 @@ protected:
 
 	/// Tries to attack the enemy
 	void TryToAttack();
+
+	/// returns true when a building of the given type is closer to the given position than min (ONLY NOBUSUAL (=no warehouse/military))
+	bool BuildingNearby(MapCoord x,MapCoord y,BuildingType bld,unsigned min);
 
 	/// Update BQ and farming ground around new building site + road
 	void RecalcGround(MapCoord x_building, MapCoord y_building, std::vector<unsigned char> &route_road);

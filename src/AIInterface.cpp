@@ -25,6 +25,7 @@
 #include "nobHarborBuilding.h"
 #include "nobHQ.h"
 #include "noTree.h"
+#include "GameWorld.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -60,23 +61,24 @@ AIJH::Resource AIInterface::GetSubsurfaceResource(MapCoord x, MapCoord y) const
 AIJH::Resource AIInterface::GetSurfaceResource(MapCoord x, MapCoord y) const
 {
 	NodalObjectType no = gwb->GetNO(x,y)->GetType();
+	unsigned char t1=gwb->GetNode(x,y).t1;
 	//valid terrain?
-	if(gwb->GetNode(x,y).t1!=TT_WATER && gwb->GetNode(x,y).t1!=TT_LAVA && gwb->GetNode(x,y).t1!=TT_SWAMPLAND&& gwb->GetNode(x,y).t1!=TT_SNOW)
+	if(t1!=TT_WATER && t1!=TT_LAVA && t1!=TT_SWAMPLAND&& t1!=TT_SNOW)
 	{
-	if (no == NOP_TREE)
-	{
-		//exclude pineapple because it's not a real tree
-		if ((gwb->GetSpecObj<noTree>(x,y))->type != 5)
-			return AIJH::WOOD;
+		if (no == NOP_TREE)
+		{
+			//exclude pineapple because it's not a real tree
+			if ((gwb->GetSpecObj<noTree>(x,y))->type != 5)
+				return AIJH::WOOD;
+			else
+				return AIJH::BLOCKED;
+		}
+		else if(no == NOP_GRANITE)
+			return AIJH::STONES;
+		else if (no == NOP_NOTHING || no == NOP_ENVIRONMENT)
+			return AIJH::NOTHING;
 		else
 			return AIJH::BLOCKED;
-	}
-	else if(no == NOP_GRANITE)
-		return AIJH::STONES;
-	else if (no == NOP_NOTHING || no == NOP_ENVIRONMENT)
-		return AIJH::NOTHING;
-	else
-		return AIJH::BLOCKED;
 	}
 	else
 		return AIJH::BLOCKED;
@@ -97,13 +99,18 @@ int AIInterface::CalcResourceValue(MapCoord x,MapCoord y,AIJH::Resource res,char
 					//surface resource?
 					if(res==AIJH::PLANTSPACE||res==AIJH::BORDERLAND||res==AIJH::WOOD||res==AIJH::STONES)
 					{
-						if (GetSurfaceResource(tx2,ty2)==res||(res==AIJH::PLANTSPACE&&GetSurfaceResource(tx2,ty2)==AIJH::NOTHING&&gwb->GetNode(tx2,ty2).t1!=TT_DESERT&&gwb->GetNode(tx2,ty2).t1!=TT_MOUNTAINMEADOW&&gwb->GetNode(tx2,ty2).t1!=TT_MOUNTAIN1&&gwb->GetNode(tx2,ty2).t1!=TT_MOUNTAIN2&&gwb->GetNode(tx2,ty2).t1!=TT_MOUNTAIN3&&gwb->GetNode(tx2,ty2).t1!=TT_MOUNTAIN4)||(res==AIJH::BORDERLAND&&(IsBorder(tx2,ty2)||!IsOwnTerritory(tx2,ty2))))
+						AIJH::Resource tres=GetSurfaceResource(tx2,ty2);
+						unsigned char t1=gwb->GetNode(tx2,ty2).t1;
+						if (tres==res||(res==AIJH::PLANTSPACE&&tres==AIJH::NOTHING&&t1!=TT_DESERT&&t1!=TT_MOUNTAINMEADOW&&t1!=TT_MOUNTAIN1&&t1!=TT_MOUNTAIN2&&t1!=TT_MOUNTAIN3&&t1!=TT_MOUNTAIN4)||(res==AIJH::BORDERLAND&&(IsBorder(tx2,ty2)||!IsOwnTerritory(tx2,ty2))))
 						{						
 							returnval+=(AIJH::RES_RADIUS[res]);
 						}
 						//another building using our "resource"? reduce rating!
-						if((res==AIJH::WOOD&&IsBuildingOnNode(tx2,ty2,BLD_WOODCUTTER))||(res==AIJH::PLANTSPACE&&IsBuildingOnNode(tx2,ty2,BLD_FORESTER)))
-							returnval-=(40);
+						if(res==AIJH::WOOD||res==AIJH::PLANTSPACE)
+						{
+							if((res==AIJH::WOOD&&IsBuildingOnNode(tx2,ty2,BLD_WOODCUTTER))||(res==AIJH::PLANTSPACE&&IsBuildingOnNode(tx2,ty2,BLD_FORESTER)))
+								returnval-=(40);
+						}
 					}
 					//so it's a subsurface resource or something we dont calculate (multiple,blocked,nothing)
 					else
@@ -112,9 +119,6 @@ int AIInterface::CalcResourceValue(MapCoord x,MapCoord y,AIJH::Resource res,char
 						{
 							returnval+=(AIJH::RES_RADIUS[res]);						
 						}
-						//another building using our "resource"? reduce rating!
-						if((res==AIJH::FISH&&IsBuildingOnNode(tx2,ty2,BLD_FISHERY)))
-							returnval-=(90);
 					}
 				}
 			}
@@ -123,13 +127,18 @@ int AIInterface::CalcResourceValue(MapCoord x,MapCoord y,AIJH::Resource res,char
 		//surface resource?
 		if(res==AIJH::PLANTSPACE||res==AIJH::BORDERLAND||res==AIJH::WOOD||res==AIJH::STONES)
 		{
-			if (GetSurfaceResource(x,y)==res||(res==AIJH::PLANTSPACE&&GetSurfaceResource(x,y)==AIJH::NOTHING&&gwb->GetNode(x,y).t1!=TT_DESERT&&gwb->GetNode(x,y).t1!=TT_MOUNTAINMEADOW&&gwb->GetNode(x,y).t1!=TT_MOUNTAIN1&&gwb->GetNode(x,y).t1!=TT_MOUNTAIN2&&gwb->GetNode(x,y).t1!=TT_MOUNTAIN3&&gwb->GetNode(x,y).t1!=TT_MOUNTAIN4)||(res==AIJH::BORDERLAND&&(IsBorder(x,y)||!IsOwnTerritory(x,y))))
-			{						
+			AIJH::Resource tres=GetSurfaceResource(x,y);
+			unsigned char t1=gwb->GetNode(x,y).t1;
+			if (tres==res||(res==AIJH::PLANTSPACE&&tres==AIJH::NOTHING&&t1!=TT_DESERT&&t1!=TT_MOUNTAINMEADOW&&t1!=TT_MOUNTAIN1&&t1!=TT_MOUNTAIN2&&t1!=TT_MOUNTAIN3&&t1!=TT_MOUNTAIN4)||(res==AIJH::BORDERLAND&&(IsBorder(x,y)||!IsOwnTerritory(x,y))))
+			{
 				returnval+=(AIJH::RES_RADIUS[res]);
 			}
 			//another building using our "resource"? reduce rating!
-		if((res==AIJH::WOOD&&IsBuildingOnNode(x,y,BLD_WOODCUTTER))||(res==AIJH::PLANTSPACE&&IsBuildingOnNode(x,y,BLD_FORESTER)))
-			returnval-=(40);
+			if(res==AIJH::WOOD||res==AIJH::PLANTSPACE)
+			{
+				if((res==AIJH::WOOD&&IsBuildingOnNode(x,y,BLD_WOODCUTTER))||(res==AIJH::PLANTSPACE&&IsBuildingOnNode(x,y,BLD_FORESTER)))
+				returnval-=(40);
+			}
 		}
 		//so it's a subsurface resource or something we dont calculate (multiple,blocked,nothing)
 		else
@@ -138,9 +147,6 @@ int AIInterface::CalcResourceValue(MapCoord x,MapCoord y,AIJH::Resource res,char
 			{
 				returnval+=(AIJH::RES_RADIUS[res]);						
 			}
-			//another building using our "resource"? reduce rating!
-			if((res==AIJH::FISH&&IsBuildingOnNode(x,y,BLD_FISHERY)))
-				returnval-=(90);
 		}
 	}
 	else//calculate different nodes only (4n+2 ?anyways much faster)
@@ -160,13 +166,18 @@ int AIInterface::CalcResourceValue(MapCoord x,MapCoord y,AIJH::Resource res,char
 				//surface resource?
 				if(res==AIJH::PLANTSPACE||res==AIJH::BORDERLAND||res==AIJH::WOOD||res==AIJH::STONES)
 				{
-					if (GetSurfaceResource(tx,ty)==res||(res==AIJH::PLANTSPACE&&GetSurfaceResource(tx,ty)==AIJH::NOTHING&&gwb->GetNode(tx,ty).t1!=TT_DESERT&&gwb->GetNode(tx,ty).t1!=TT_MOUNTAINMEADOW&&gwb->GetNode(tx,ty).t1!=TT_MOUNTAIN1&&gwb->GetNode(tx,ty).t1!=TT_MOUNTAIN2&&gwb->GetNode(tx,ty).t1!=TT_MOUNTAIN3&&gwb->GetNode(tx,ty).t1!=TT_MOUNTAIN4)||(res==AIJH::BORDERLAND&&(IsBorder(tx,ty)||!IsOwnTerritory(tx,ty))))
+					AIJH::Resource tres=GetSurfaceResource(tx,ty);
+					unsigned char t1=gwb->GetNode(tx,ty).t1;
+					if (tres==res||(res==AIJH::PLANTSPACE&&tres==AIJH::NOTHING&&t1!=TT_DESERT&&t1!=TT_MOUNTAINMEADOW&&t1!=TT_MOUNTAIN1&&t1!=TT_MOUNTAIN2&&t1!=TT_MOUNTAIN3&&t1!=TT_MOUNTAIN4)||(res==AIJH::BORDERLAND&&(IsBorder(tx,ty)||!IsOwnTerritory(tx,ty))))
 					{						
 						returnval+=(AIJH::RES_RADIUS[res]);
 					}
 					//another building using our "resource"? reduce rating!
-					if((res==AIJH::WOOD&&IsBuildingOnNode(tx,ty,BLD_WOODCUTTER))||(res==AIJH::PLANTSPACE&&IsBuildingOnNode(tx,ty,BLD_FORESTER)))
-						returnval-=(40);
+					if(res==AIJH::WOOD||res==AIJH::PLANTSPACE)
+					{
+						if((res==AIJH::WOOD&&IsBuildingOnNode(tx,ty,BLD_WOODCUTTER))||(res==AIJH::PLANTSPACE&&IsBuildingOnNode(tx,ty,BLD_FORESTER)))
+							returnval-=(40);
+					}
 				}
 				//so it's a subsurface resource or something we dont calculate (multiple,blocked,nothing)
 				else
@@ -175,9 +186,6 @@ int AIInterface::CalcResourceValue(MapCoord x,MapCoord y,AIJH::Resource res,char
 					{
 						returnval+=(AIJH::RES_RADIUS[res]);						
 					}
-					//another building using our "resource"? reduce rating!
-					if((res==AIJH::FISH&&IsBuildingOnNode(tx,ty,BLD_FISHERY)))
-						returnval-=(90);
 				}
 				gwb->GetPointA(tx,ty,i%6);
 			}
@@ -198,13 +206,18 @@ int AIInterface::CalcResourceValue(MapCoord x,MapCoord y,AIJH::Resource res,char
 				//surface resource?
 				if(res==AIJH::PLANTSPACE||res==AIJH::BORDERLAND||res==AIJH::WOOD||res==AIJH::STONES)
 				{
-					if (GetSurfaceResource(tx,ty)==res||(res==AIJH::PLANTSPACE&&GetSurfaceResource(tx,ty)==AIJH::NOTHING&&gwb->GetNode(x,y).t1!=TT_DESERT&&gwb->GetNode(x,y).t1!=TT_MOUNTAINMEADOW&&gwb->GetNode(x,y).t1!=TT_MOUNTAIN1&&gwb->GetNode(x,y).t1!=TT_MOUNTAIN2&&gwb->GetNode(x,y).t1!=TT_MOUNTAIN3&&gwb->GetNode(x,y).t1!=TT_MOUNTAIN4)||(res==AIJH::BORDERLAND&&(IsBorder(tx,ty)||!IsOwnTerritory(tx,ty))))
+					AIJH::Resource tres=GetSurfaceResource(tx,ty);
+					unsigned char t1=gwb->GetNode(tx,ty).t1;
+					if (tres==res||(res==AIJH::PLANTSPACE&&tres==AIJH::NOTHING&&t1!=TT_DESERT&&t1!=TT_MOUNTAINMEADOW&&t1!=TT_MOUNTAIN1&&t1!=TT_MOUNTAIN2&&t1!=TT_MOUNTAIN3&&t1!=TT_MOUNTAIN4)||(res==AIJH::BORDERLAND&&(IsBorder(tx,ty)||!IsOwnTerritory(tx,ty))))
 					{						
 						returnval-=(AIJH::RES_RADIUS[res]);
 					}
 					//another building using our "resource"? reduce rating!
-					if((res==AIJH::WOOD&&IsBuildingOnNode(tx,ty,BLD_WOODCUTTER))||(res==AIJH::PLANTSPACE&&IsBuildingOnNode(tx,ty,BLD_FORESTER)))
-						returnval+=(40);
+					if(res==AIJH::WOOD||res==AIJH::PLANTSPACE)
+					{
+						if((res==AIJH::WOOD&&IsBuildingOnNode(tx,ty,BLD_WOODCUTTER))||(res==AIJH::PLANTSPACE&&IsBuildingOnNode(tx,ty,BLD_FORESTER)))
+							returnval+=(40);
+					}
 				}
 				//so it's a subsurface resource or something we dont calculate (multiple,blocked,nothing)
 				else
@@ -213,9 +226,6 @@ int AIInterface::CalcResourceValue(MapCoord x,MapCoord y,AIJH::Resource res,char
 					{
 						returnval-=(AIJH::RES_RADIUS[res]);						
 					}
-					//another building using our "resource"? reduce rating!
-					if((res==AIJH::FISH&&IsBuildingOnNode(tx,ty,BLD_FISHERY)))
-						returnval+=(90);
 				}
 				gwb->GetPointA(tx,ty,i%6);
 			}

@@ -1,4 +1,4 @@
-// $Id: AIConstruction.cpp 8236 2012-09-13 14:31:58Z marcus $
+// $Id: AIConstruction.cpp 8241 2012-09-13 21:34:29Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -27,6 +27,7 @@
 #include "MapGeometry.h"
 #include "nobHQ.h"
 #include "AIPlayerJH.h"
+#include "noBuildingSite.h"
 
 // from Pathfinding.cpp
 bool IsPointOK_RoadPath(const GameWorldBase& gwb, const MapCoord x, const MapCoord y, const unsigned char dir, const void *param);
@@ -557,43 +558,22 @@ bool AIConstruction::BuildAlternativeRoad(const noFlag *flag, std::vector<unsign
 	return false;
 }
 
-bool AIConstruction::FindStoreHousePosition(MapCoord &x, MapCoord &y, unsigned radius)
+bool AIConstruction::OtherStoreInRadius(MapCoord &x, MapCoord &y, unsigned radius)
 {
-	//currently unused - if you want to use this again you will have to use aii->gestorehouses() instead of storeHouses!
-	// max distance to warehouse/hq
-	const unsigned maxDistance = 20;
-
-	MapCoord fx = aii->GetXA(x,y,4);
-	MapCoord fy = aii->GetYA(x,y,4);
-
-	unsigned minDist = std::numeric_limits<unsigned>::max();
-	for (std::list<AIJH::Coords>::iterator it = storeHouses.begin(); it != storeHouses.end(); it++)
+	for (std::list<nobBaseWarehouse*>::const_iterator it = aii->GetStorehouses().begin(); it != aii->GetStorehouses().end(); it++)
 	{
-		const noBaseBuilding *bld;
-		if ((bld = aii->GetSpecObj<noBaseBuilding>((*it).x, (*it).y)))
+		if(aii->CalcDistance((*it)->GetX(),(*it)->GetY(),x,y)<radius)
+			return true;
+	}
+	for(std::list<noBuildingSite*>::const_iterator it=aii->GetBuildingSites().begin();it!=aii->GetBuildingSites().end();it++)
+	{
+		if((*it)->GetBuildingType()==BLD_STOREHOUSE||(*it)->GetBuildingType()==BLD_HARBORBUILDING)
 		{
-			if (bld->GetBuildingType() != BLD_STOREHOUSE && bld->GetBuildingType() != BLD_HEADQUARTERS && bld->GetBuildingType()!=BLD_HARBORBUILDING)
-				continue;
-
-			const noFlag *targetFlag = aii->GetSpecObj<noFlag>(fx,fy);
-			unsigned dist;
-			bool pathAvailable = aii->FindPathOnRoads(bld->GetFlag(), targetFlag, &dist);
-
-			if (!pathAvailable)
-				continue;
-
-			if (dist < minDist)
-			{
-				minDist = dist;
-			}
-			if (minDist <= maxDistance)
-			{
-				return false;
-			}
+			if(aii->CalcDistance((*it)->GetX(),(*it)->GetY(),x,y)<radius)
+				return true;
 		}
 	}
-	//assert(false); // fix pos berechnung für lagerhaus beim aufruf, nicht hier
-	return true; //SimpleFindPosition(x, y, BUILDING_SIZE[BLD_STOREHOUSE], radius);
+	return false;
 }
 
 noFlag *AIConstruction::FindTargetStoreHouseFlag(MapCoord x, MapCoord y)

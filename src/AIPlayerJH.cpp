@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 8236 2012-09-13 14:31:58Z marcus $
+// $Id: AIPlayerJH.cpp 8241 2012-09-13 21:34:29Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -726,8 +726,133 @@ PositionSearchState AIPlayerJH::FindGoodPosition(PositionSearch *search, bool be
 }
 
 
+bool AIPlayerJH::FindBestPositionDiminishingResource(MapCoord &x, MapCoord &y, AIJH::Resource res, BuildingQuality size, int minimum, int radius, bool inTerritory)
+{
+	bool fixed=ggs->isEnabled(ADDON_INEXHAUSTIBLE_MINES)&&(res==AIJH::IRONORE||res==AIJH::COAL||res==AIJH::GOLD||res==AIJH::GRANITE);
+	unsigned short width = aii->GetMapWidth();
+	unsigned short height = aii->GetMapHeight();
+	int temp=0;
+	bool lastcirclevaluecalculated=false;
+	bool lastvaluecalculated=false;
+	//to avoid having to calculate a value twice and still move left on the same level without any problems we use this variable to remember the first calculation we did in the circle.
+	int circlestartvalue=0;
+	//outside of map bounds? -> search around our main storehouse!
+	if (x >= width || y >= height)
+	{
+		x = aii->GetStorehouses().front()->GetX();
+		y = aii->GetStorehouses().front()->GetY();
+	}
+
+	// TODO was besseres wär schön ;)
+	if (radius == -1)
+		radius = 11;
+
+	int best_x = 0, best_y = 0, best_value;
+	best_value = -1;
+
+	for(MapCoord tx=aii->GetXA(x,y,0), r=1;r<=radius;tx=aii->GetXA(tx,y,0),++r)
+	{
+		MapCoord tx2 = tx, ty2 = y;
+		for(unsigned i = 2;i<8;++i)
+		{
+			for(MapCoord r2=0;r2<r;++r2)
+			{
+				unsigned n = tx2 + ty2 * width;
+				if(fixed)
+					temp=resourceMaps[res][n];
+				else
+				{
+					//only do a complete calculation for the first point or when moving outward and the last value is unknown
+					if((r<2||!lastcirclevaluecalculated)&&r2<1&&i<3&&resourceMaps[res][n])
+					{
+						temp=aii->CalcResourceValue(tx2,ty2,res);	
+						circlestartvalue=temp;
+						lastcirclevaluecalculated=true;
+						lastvaluecalculated=true;
+					}					
+					else
+					{
+						//was there ever anything? if not skip it!
+						if(!resourceMaps[res][n])
+						{
+							if(r2<1&&i<3)
+								lastcirclevaluecalculated=false;
+							lastvaluecalculated=false;
+							temp=resourceMaps[res][n];
+						}
+						else
+						{
+							//temp=aii->CalcResourceValue(tx2,ty2,res);
+							//circle not yet started? -> last direction was outward (left=0)
+							if(r2<1&&i<3)
+							{
+								temp=aii->CalcResourceValue(tx2,ty2,res,0,circlestartvalue);
+								circlestartvalue=temp;
+							}
+							else 
+							{
+								if(lastvaluecalculated)
+								{
+									if(r2>0)//we moved direction i%6
+										temp=aii->CalcResourceValue(tx2,ty2,res,i%6,temp);
+									else //last step was the previous direction
+										temp=aii->CalcResourceValue(tx2,ty2,res,(i-1)%6,temp);
+								}
+								else
+								{
+									temp=aii->CalcResourceValue(tx2,ty2,res);
+									lastvaluecalculated=true;
+								}								
+							}
+						}						
+					}
+					//copy the value to the resource map
+					resourceMaps[res][n]=temp;
+				}				
+				if (temp > best_value)					
+				{				
+					if (!nodes[n].reachable || (inTerritory && !aii->IsOwnTerritory(tx2,ty2)) || nodes[n].farmed)
+					{
+						aii->GetPointA(tx2,ty2,i%6);
+						continue;
+					}
+					//special case fish -> check for other fishery buildings
+					if(res==AIJH::FISH)
+					{
+						if(BuildingNearby(tx2,ty2,BLD_FISHERY,6))
+						{
+							aii->GetPointA(tx2,ty2,i%6);
+							continue;
+						}
+					}
+					BuildingQuality bq=aii->GetBuildingQuality(tx2,ty2);
+					if ( (bq >= size && bq < BQ_MINE) // normales Gebäude
+						|| (bq == size))	// auch Bergwerke					
+					{
+						best_x = tx2;
+						best_y = ty2;
+						best_value = temp;
+						//TODO: calculate "perfect" rating and instantly return if we got that already
+					}					
+				}
+				aii->GetPointA(tx2,ty2,i%6);
+			}
+		}
+	}
+
+	if (best_value >= minimum)
+	{
+		x = best_x;
+		y = best_y;
+		return true;
+	}
+	return false;
+}
+
 bool AIPlayerJH::FindBestPosition(MapCoord &x, MapCoord &y, AIJH::Resource res, BuildingQuality size, int minimum, int radius, bool inTerritory)
 {
+	if(res==AIJH::IRONORE||res==AIJH::COAL||res==AIJH::GOLD||res==AIJH::GRANITE||res==AIJH::STONES||res==AIJH::FISH)
+		return FindBestPositionDiminishingResource(x,y,res,size,minimum,radius,inTerritory);
 	unsigned short width = aii->GetMapWidth();
 	unsigned short height = aii->GetMapHeight();
 	int temp=0;
@@ -742,7 +867,7 @@ bool AIPlayerJH::FindBestPosition(MapCoord &x, MapCoord &y, AIJH::Resource res, 
 
 	// TODO was besseres wär schön ;)
 	if (radius == -1)
-		radius = 30;
+		radius = 11;
 
 	int best_x = 0, best_y = 0, best_value;
 	best_value = -1;
@@ -787,8 +912,9 @@ bool AIPlayerJH::FindBestPosition(MapCoord &x, MapCoord &y, AIJH::Resource res, 
 						aii->GetPointA(tx2,ty2,i%6);
 						continue;
 					}
-					if ( (aii->GetBuildingQuality(tx2,ty2) >= size && aii->GetBuildingQuality(tx2,ty2) < BQ_MINE) // normales Gebäude
-						|| (aii->GetBuildingQuality(tx2,ty2) == size))	// auch Bergwerke					
+					BuildingQuality bq=aii->GetBuildingQuality(tx2,ty2);
+					if ( (bq >= size && bq < BQ_MINE) // normales Gebäude
+						|| (bq == size))	// auch Bergwerke					
 					{
 						best_x = tx2;
 						best_y = ty2;
@@ -967,8 +1093,9 @@ bool AIPlayerJH::SimpleFindPosition(MapCoord &x, MapCoord &y, BuildingQuality si
 
 				if (!nodes[i].reachable || !aii->IsOwnTerritory(tx2,ty2) || nodes[i].farmed)
 					continue;
-				if ( (aii->GetBuildingQuality(tx2,ty2)>= size && aii->GetBuildingQuality(tx2,ty2) < BQ_MINE) // normales Gebäude
-					|| (aii->GetBuildingQuality(tx2,ty2) == size))	// auch Bergwerke
+				BuildingQuality bq=aii->GetBuildingQuality(tx2,ty2);
+				if ( (bq>= size && bq < BQ_MINE) // normales Gebäude
+					|| (bq == size))	// auch Bergwerke
 				{
 					x = tx2;
 					y = ty2;
@@ -1678,19 +1805,8 @@ bool AIPlayerJH::SoldierAvailable()
 bool AIPlayerJH::HuntablesinRange(unsigned x,unsigned y,unsigned min)
 {
 	//check first if no other hunter(or hunter buildingsite) is nearby
-	for(std::list<nobUsual*>::const_iterator it=aii->GetBuildings(BLD_HUNTER).begin();it!=aii->GetBuildings(BLD_HUNTER).end();it++)
-	{
-		if(gwb->CalcDistance((*it)->GetX(),(*it)->GetY(),x,y)<15)
-			return false;
-	}
-	for(std::list<noBuildingSite*>::const_iterator it=aii->GetBuildingSites().begin();it!=aii->GetBuildingSites().end();it++)
-	{
-		if((*it)->GetBuildingType()==BLD_HUNTER)
-		{
-			if(gwb->CalcDistance((*it)->GetX(),(*it)->GetY(),x,y)<15)
-				return false;
-		}
-	}
+	if(BuildingNearby(x,y,BLD_HUNTER,15))
+		return false;
 	unsigned maxrange=50;
 	unsigned short fx,fy,lx,ly;
 	const unsigned short SQUARE_SIZE = 19;
@@ -1784,6 +1900,26 @@ bool AIPlayerJH::ValidStoneinRange(MapCoord x,MapCoord y)
 						return true;
 				}
 			}
+		}
+	}
+	return false;
+}
+
+bool AIPlayerJH::BuildingNearby(MapCoord x,MapCoord y,BuildingType bld,unsigned min)
+{
+	//assert not a military building
+	assert(bld>=10);
+	for(std::list<nobUsual*>::const_iterator it=aii->GetBuildings(bld).begin();it!=aii->GetBuildings(bld).end();it++)
+	{
+		if(gwb->CalcDistance(x,y,(*it)->GetX(),(*it)->GetY())<min)
+			return true;
+	}
+	for(std::list<noBuildingSite*>::const_iterator it=aii->GetBuildingSites().begin();it!=aii->GetBuildingSites().end();it++)
+	{
+		if((*it)->GetBuildingType()==bld)
+		{
+			if(gwb->CalcDistance(x,y,(*it)->GetX(),(*it)->GetY())<min)
+				return true;
 		}
 	}
 	return false;
