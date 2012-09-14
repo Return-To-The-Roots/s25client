@@ -1,4 +1,4 @@
-// $Id: main.cpp 7750 2012-01-04 02:48:18Z marcus $
+// $Id: main.cpp 8247 2012-09-14 09:40:33Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -135,7 +135,7 @@ int mkdir_p(const std::string dir)
 #ifdef _WIN32
 static LONG WINAPI WinExceptionHandler(LPEXCEPTION_POINTERS info)
 {
-	if (SETTINGS.global.submit_debug_data ||
+	if ((SETTINGS.global.submit_debug_data == 1) ||
 		MessageBoxA(NULL,
 		_("RttR crashed. Would you like to send debug information to RttR to help us avoiding this crash in the future? Thank you very much!"),
 		_("Error"), MB_YESNO | MB_ICONERROR | MB_TASKMODAL | MB_SETFOREGROUND) == IDYES)
@@ -155,7 +155,7 @@ static LONG WINAPI WinExceptionHandler(LPEXCEPTION_POINTERS info)
 #else
 void LinExceptionHandler(int sig)
 {
-	if (SETTINGS.global.submit_debug_data)
+	if (SETTINGS.global.submit_debug_data == 1)
 	{
 		DebugInfo di;
 

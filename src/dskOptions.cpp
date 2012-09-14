@@ -1,4 +1,4 @@
-// $Id: dskOptions.cpp 8201 2012-09-09 22:02:44Z marcus $
+// $Id: dskOptions.cpp 8247 2012-09-14 09:40:33Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -164,7 +164,7 @@ dskOptions::dskOptions(void) : Desktop(LOADER.GetImageN("setup013", 0))
 	optiongroup->AddTextButton(72, 480, 355, 190, 22, TC_GREY, _("On"), NormalFont);
 	optiongroup->AddTextButton(73, 280, 355, 190, 22, TC_GREY, _("Off"), NormalFont);
 
-	optiongroup->SetSelection( (SETTINGS.global.submit_debug_data ? 72 : 73) );
+	optiongroup->SetSelection( ((SETTINGS.global.submit_debug_data == 1) ? 72 : 73) );
 
 	if(GLOBALVARS.ext_vbo == false) // VBO unterstützt?
 		optiongroup->AddText(  56, 280, 230, _("not supported"), COLOR_YELLOW, 0, NormalFont);
@@ -529,8 +529,8 @@ void dskOptions::Msg_Group_OptionGroupChange(const unsigned int group_id, const 
 		{
 			switch(selection)
 			{
-			case 72: SETTINGS.global.submit_debug_data = true; break;
-			case 73: SETTINGS.global.submit_debug_data = false; break;
+			case 72: SETTINGS.global.submit_debug_data = 1; break;
+			case 73: SETTINGS.global.submit_debug_data = 2; break;
 			}
 		} break;
 	}

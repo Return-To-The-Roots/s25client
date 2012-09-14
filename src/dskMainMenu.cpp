@@ -1,4 +1,4 @@
-// $Id: dskMainMenu.cpp 8103 2012-08-29 10:06:39Z marcus $
+// $Id: dskMainMenu.cpp 8247 2012-09-14 09:40:33Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -27,12 +27,15 @@
 #include "GlobalVars.h"
 #include "controls.h"
 
+#include "Settings.h"
+
 #include "dskAboutRTTR.h"
 #include "dskSinglePlayer.h"
 #include "dskMultiPlayer.h"
 #include "dskOptions.h"
 #include "dskIntro.h"
 #include "dskCredits.h"
+#include "iwMsgbox.h"
 
 #include "ListDir.h"
 #include "iwTextfile.h"
@@ -86,10 +89,38 @@ dskMainMenu::dskMainMenu(void) : Desktop(LOADER.GetImageN("menu", 0))
 
 	AddImage(11, 20, 20, LOADER.GetImageN("logo", 0));
 
+	if (SETTINGS.global.submit_debug_data == 0)
+	{
+		AddTimer(20, 250);
+	}
+
 	/*AddText(20, 50, 450, _("Font Test"), COLOR_YELLOW, glArchivItem_Font::DF_LEFT, SmallFont);
 	AddText(21, 50, 470, _("Font Test"), COLOR_YELLOW, glArchivItem_Font::DF_LEFT, NormalFont);
 	AddText(22, 50, 490, _("Font Test"), COLOR_YELLOW, glArchivItem_Font::DF_LEFT, LargeFont);*/
 	//  !\"#$%&'()*+,-./0123456789:;<=>?@abcdefghijklmnopqrstuvwxyz\\_ABCDEFGHIJKLMNOPQRSTUVWXYZ«¸È‚‰‡ÂÁÍÎËÔÓÏ©ƒ≈ÙˆÚ˚˘÷‹·ÌÛ˙Ò
+}
+
+void dskMainMenu::Msg_Timer(const unsigned int ctrl_id)
+{
+	GetCtrl<ctrlTimer>(ctrl_id)->Stop();
+	WindowManager::inst().Show( new iwMsgbox(_("Submit debug data?"), _("RttR now supports sending debug data. Would you like to help us improving this game by sending debug data?"), this, MSB_YESNO, MSB_QUESTIONRED, 100) );
+}
+
+void dskMainMenu::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr)
+{
+        // Sollen alle Replays gel<F6>scht werden?
+        if (msgbox_id == 100)
+        {
+		if (mbr == MSR_YES)
+		{
+			SETTINGS.global.submit_debug_data = 1;
+		} else
+		{
+			SETTINGS.global.submit_debug_data = 2;
+		}
+
+		SETTINGS.Save();
+        }
 }
 
 ///////////////////////////////////////////////////////////////////////////////

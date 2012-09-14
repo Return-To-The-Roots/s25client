@@ -1,4 +1,4 @@
-// $Id: Settings.h 8201 2012-09-09 22:02:44Z marcus $
+// $Id: Settings.h 8247 2012-09-14 09:40:33Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -42,7 +42,7 @@ protected:
 
 public:
 	struct {
-		bool submit_debug_data;
+		unsigned int submit_debug_data;
 	} global;
 
 	struct {

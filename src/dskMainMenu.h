@@ -1,4 +1,4 @@
-// $Id: dskMainMenu.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: dskMainMenu.h 8247 2012-09-14 09:40:33Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -32,6 +32,8 @@ public:
 	dskMainMenu(void);
 
 	void Msg_ButtonClick(const unsigned int ctrl_id);
+	void Msg_Timer(const unsigned int ctrl_id);
+	void Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr);
 };
 
 #endif // !dskMAINMENU_H_INCLUDED

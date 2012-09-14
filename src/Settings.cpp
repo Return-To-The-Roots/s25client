@@ -1,4 +1,4 @@
-// $Id: Settings.cpp 8201 2012-09-09 22:02:44Z marcus $
+// $Id: Settings.cpp 8247 2012-09-14 09:40:33Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -58,7 +58,8 @@ bool Settings::LoadDefaults()
 
 	// global
 	// {
-		global.submit_debug_data = false;
+		// 0 = ask user at start,1 = enabled, 2 = disabled
+		global.submit_debug_data = 0;
 	// }
 
 	// video
@@ -184,7 +185,7 @@ bool Settings::Load(void)
 		if(strcmp(global->getValue("gameversion"), GetWindowRevision()) != 0)
 			warning("Your application version has changed - please recheck your settings!\n");
 
-		this->global.submit_debug_data = (global->getValueI("submit_debug_data") ? true : false);
+		this->global.submit_debug_data = global->getValueI("submit_debug_data");
 	// };
 
 	// video
@@ -333,7 +334,7 @@ void Settings::Save(void)
 	// {
 		global->setValue("version", SETTINGS_VERSION);
 		global->setValue("gameversion", GetWindowRevision());
-		global->setValue("submit_debug_data", (this->global.submit_debug_data ? 1 : 0));
+		global->setValue("submit_debug_data", this->global.submit_debug_data);
 	// };
 
 	// video
