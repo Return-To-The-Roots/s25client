@@ -1,4 +1,4 @@
-// $Id: AIJHHelper.cpp 8241 2012-09-13 21:34:29Z marcus $
+// $Id: AIJHHelper.cpp 8243 2012-09-14 06:58:57Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -91,7 +91,7 @@ void AIJH::BuildJob::ExecuteJob()
 	if (status == AIJH::JOB_FAILED || status == AIJH::JOB_FINISHED)
 		return;
 
-	if ((target_x != 0xFFFF) && aii->IsMilitaryBuildingNearNode(target_x, target_y) && type >= BLD_BARRACKS && type <= BLD_FORTRESS)
+	if ((target_x != 0xFFFF) && aii->IsMilitaryBuildingNearNode(target_x, target_y, aijh->GetPlayerID()) && type >= BLD_BARRACKS && type <= BLD_FORTRESS)
 	{
 		status = AIJH::JOB_FAILED;
 #ifdef DEBUG_AI

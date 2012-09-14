@@ -1,4 +1,4 @@
-// $Id: GameWorldBase.cpp 8216 2012-09-11 18:42:29Z marcus $
+// $Id: GameWorldBase.cpp 8243 2012-09-14 06:58:57Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -433,7 +433,7 @@ void GameWorldBase::CalcRoad(const MapCoord x, const MapCoord y,const unsigned c
 		SetBQ(GetXA(x,y,i),GetYA(x,y,i),GAMECLIENT.GetPlayerID());
 }
 
-bool GameWorldBase::IsMilitaryBuildingNearNode(const MapCoord nx, const MapCoord ny) const
+bool GameWorldBase::IsMilitaryBuildingNearNode(const MapCoord nx, const MapCoord ny, const unsigned char player) const
 {
 	// Im Umkreis von 4 Punkten ein Militärgebäude suchen
 	MapCoord x = nx,y = ny;
@@ -447,7 +447,7 @@ bool GameWorldBase::IsMilitaryBuildingNearNode(const MapCoord nx, const MapCoord
 		{
 			for(unsigned short i = 0;i<r;++i)
 			{
-				if(IsMilitaryBuilding(x,y))
+				if(IsMilitaryBuilding(x,y) && (GetNode(x, y).owner == player + 1))
 					return true;
 				// Nach rechts oben anfangen
 				this->GetPointA(x,y,(2+dir)%6);

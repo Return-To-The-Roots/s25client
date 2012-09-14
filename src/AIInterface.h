@@ -124,7 +124,7 @@ public:
 	/// Tests whether the ai player can see a point
 	bool IsVisible(MapCoord x, MapCoord y) const { return gwb->GetNode(x, y).fow[playerID].visibility == VIS_VISIBLE; }
 
-	bool IsMilitaryBuildingNearNode(MapCoord x, MapCoord y) const { return gwb->IsMilitaryBuildingNearNode(x, y); }
+	bool IsMilitaryBuildingNearNode(MapCoord x, MapCoord y, const unsigned char player) const { return gwb->IsMilitaryBuildingNearNode(x, y, player); }
 
 	/// Returns building quality on a given spot
 	BuildingQuality GetBuildingQuality(MapCoord x, MapCoord y) const { return gwb->CalcBQ(x, y, playerID); }

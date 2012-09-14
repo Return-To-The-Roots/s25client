@@ -1,4 +1,4 @@
-// $Id: GameWorld.h 8127 2012-09-01 19:17:50Z jh $
+// $Id: GameWorld.h 8243 2012-09-14 06:58:57Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -306,7 +306,7 @@ public:
 	/// Ist eine Flagge irgendwo um x,y ?
 	bool FlagNear(const int x, const int y) const;
 	/// Prüft, ob sich in unmittelbarer Nähe (im Radius von 4) Militärgebäude befinden
-	bool IsMilitaryBuildingNearNode(const MapCoord nx, const MapCoord ny) const;
+	bool IsMilitaryBuildingNearNode(const MapCoord nx, const MapCoord ny, const unsigned char player) const;
 
 	/// setzt den virtuellen StraÃŸen-Wert an der Stelle X,Y (berichtigt).
 	void SetVirtualRoad(const MapCoord x, const MapCoord y, unsigned char dir, unsigned char type);

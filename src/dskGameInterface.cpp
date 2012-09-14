@@ -1,4 +1,4 @@
-// $Id: dskGameInterface.cpp 8213 2012-09-10 21:19:36Z marcus $
+// $Id: dskGameInterface.cpp 8243 2012-09-14 06:58:57Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -449,7 +449,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
 
 				// Prüfen, ob sich Militärgebäude in der Nähe befinden, wenn nein, können auch eigene
 				// Militärgebäude gebaut werden
-				enable_military_buildings = !gwv->IsMilitaryBuildingNearNode(cselx,csely);
+				enable_military_buildings = !gwv->IsMilitaryBuildingNearNode(cselx, csely, GAMECLIENT.GetPlayerID());
 			}
 			else if(gwv->GetNode(gwv->GetSelX(),gwv->GetSelY()).bq == BQ_FLAG)
 				action_tabs.setflag = true;

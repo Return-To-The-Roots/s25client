@@ -1,4 +1,4 @@
-// $Id: GameWorldGame.cpp 8234 2012-09-13 12:49:32Z marcus $
+// $Id: GameWorldGame.cpp 8243 2012-09-14 06:58:57Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -255,7 +255,7 @@ void GameWorldGame::SetBuildingSite(const BuildingType type,const MapCoord x, co
 	// Wenn das ein Militärgebäude ist und andere Militärgebäude bereits in der Nähe sind, darf dieses nicht gebaut werden
 	if(type >= BLD_BARRACKS && type <= BLD_FORTRESS)
 	{
-		if(IsMilitaryBuildingNearNode(x,y))
+		if(IsMilitaryBuildingNearNode(x, y, player))
 			return;
 	}
 	
