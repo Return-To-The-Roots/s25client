@@ -1,4 +1,4 @@
-// $Id: noFlag.cpp 8216 2012-09-11 18:42:29Z marcus $
+// $Id: noFlag.cpp 8246 2012-09-14 09:39:25Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -76,10 +76,6 @@ noFlag::noFlag(const unsigned short x, const unsigned short y,
 		if (flag->routes[dir])
 		{
 			flag->routes[dir]->SplitRoad(this);
-		} else
-		{
-			fprintf(stderr, "%ix%i\n", x, y);
-			GAMESERVER.TogglePause();
 		}
 	}
 
