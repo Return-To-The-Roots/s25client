@@ -1,4 +1,4 @@
-// $Id: main.cpp 8247 2012-09-14 09:40:33Z marcus $
+// $Id: main.cpp 8249 2012-09-14 10:11:19Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -33,7 +33,7 @@
 // This is for catching crashes and reporting bugs, it does not slow down anything.
 #include "Debug.h"
 
-#ifndef _NDEBUG
+#ifndef NDEBUG
 #include "GameWorld.h"
 #include "GameServer.h"
 #include "iwDirectIPCreate.h"
@@ -265,7 +265,7 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 
-#ifndef _NDEBUG
+#ifndef NDEBUG
 	if (argc > 1)
 	{
 		CreateServerInfo csi;
