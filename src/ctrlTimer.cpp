@@ -1,4 +1,4 @@
-// $Id: ctrlTimer.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: ctrlTimer.cpp 8245 2012-09-14 09:32:45Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -104,6 +104,9 @@ void ctrlTimer::Msg_PaintBefore()
 	{
 		parent->Msg_Timer(GetID());
 
-		timer = VideoDriverWrapper::inst().GetTickCount();
+		if (timer != 0)
+		{
+			timer = VideoDriverWrapper::inst().GetTickCount();
+		}
 	}
 } 
