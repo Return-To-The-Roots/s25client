@@ -1,4 +1,4 @@
-// $Id: main.cpp 8249 2012-09-14 10:11:19Z marcus $
+// $Id: main.cpp 8268 2012-09-15 22:08:04Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -144,8 +144,8 @@ static LONG WINAPI WinExceptionHandler(LPEXCEPTION_POINTERS info)
 
 		DebugInfo di;
 
-		di.SendStackTrace(info->ContextRecord);
 		di.SendReplay();
+		di.SendStackTrace(info->ContextRecord);
 	}
 
 	abort();
@@ -159,8 +159,8 @@ void LinExceptionHandler(int sig)
 	{
 		DebugInfo di;
 
-		di.SendStackTrace();
 		di.SendReplay();
+		di.SendStackTrace();
 	}
 
 	abort();
