@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 8241 2012-09-13 21:34:29Z marcus $
+// $Id: AIPlayerJH.cpp 8255 2012-09-15 08:15:26Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -145,7 +145,7 @@ void AIPlayerJH::RunGF(const unsigned gf)
 	{
 		std::vector<unsigned char> toolsettings;
 		toolsettings.resize(12);
-		toolsettings[2] = (aii->GetInventory()->goods[GD_SAW] + aii->GetInventory()->people[JOB_CARPENTER]<2)?4:0;																					//saw
+		toolsettings[2] = (aii->GetInventory()->goods[GD_SAW] + aii->GetInventory()->people[JOB_CARPENTER]<2)?4:aii->GetInventory()->goods[GD_SAW]<1?1:0;																					//saw
 		toolsettings[3] = (aii->GetInventory()->goods[GD_PICKAXE]<1)?1:0;																															//pickaxe
 		toolsettings[4] = (aii->GetInventory()->goods[GD_HAMMER]<1)?1:0;																															//hammer
 		toolsettings[6] = (aii->GetInventory()->goods[GD_CRUCIBLE]+aii->GetInventory()->people[JOB_IRONFOUNDER]<construction.GetBuildingCount(BLD_IRONSMELTER)+1)?1:0;;								//crucible
@@ -164,6 +164,8 @@ void AIPlayerJH::RunGF(const unsigned gf)
 		construction.RefreshBuildingCount();		
 		//pick a random storehouse and try to build one of these buildings around it (checks if we actually want more of the building type)
 		BuildingType bldToTest[] = {
+		BLD_HARBORBUILDING,
+		BLD_SHIPYARD,		
 		BLD_SAWMILL,
 		BLD_FORESTER,
 		BLD_IRONSMELTER,
@@ -187,12 +189,9 @@ void AIPlayerJH::RunGF(const unsigned gf)
 		BLD_HARBORBUILDING,
 		BLD_HUNTER
 		};
-		unsigned numBldToTest = 22;
+		unsigned numBldToTest = 24;
 		unsigned char randomstore;
-		if(aii->GetStorehouses().size()>1)
-			randomstore=rand()%(aii->GetStorehouses().size()-1);
-		else
-			randomstore=0;
+		randomstore=rand()%(aii->GetStorehouses().size());
 		bool firsthouse=true;
 		bool lostmainstore=false;
 		if(aii->GetStorehouses().size()<1)
@@ -211,6 +210,12 @@ void AIPlayerJH::RunGF(const unsigned gf)
 		UpdateNodesAroundNoBorder((*it)->GetX(),(*it)->GetY(),15); //update the area we want to build in first 
 		for (unsigned int i = 0; i < numBldToTest; i++)
 		{
+			//only 1 shipyard for each harbor
+			if(bldToTest[i]==BLD_SHIPYARD)
+			{
+				if(BuildingNearby((*it)->GetX(),(*it)->GetY(),BLD_SHIPYARD,8)||!HarborPosClose((*it)->GetX(), (*it)->GetY(),8))
+					continue;
+			}
 			if (construction.Wanted(bldToTest[i]))
 			{
 				AddBuildJob(bldToTest[i],(*it)->GetX(),(*it)->GetY());
@@ -222,17 +227,20 @@ void AIPlayerJH::RunGF(const unsigned gf)
 
 		//now pick a random military building and try to build around that as well
 		if(aii->GetMilitaryBuildings().size()<1)return;
-		if(aii->GetMilitaryBuildings().size()<2)
-			randomstore=0;
-		else
-			randomstore=rand()%(aii->GetMilitaryBuildings().size()-1);
-		numBldToTest = 22;	
+		randomstore=rand()%(aii->GetMilitaryBuildings().size());
+		numBldToTest = 24;	
 		std::list<nobMilitary*>::const_iterator it2 = aii->GetMilitaryBuildings().begin();
 		std::advance(it2,randomstore);
 		MapCoord tx=(*it2)->GetX(),ty=(*it2)->GetY();
 		UpdateReachableNodes(tx, ty, 15);
 		for (unsigned int i = 0; i < numBldToTest; i++) 
 		{
+			if(bldToTest[i]==BLD_SHIPYARD)
+			{
+				//only 1 shipyard for each harbor
+				if(BuildingNearby((*it)->GetX(),(*it)->GetY(),BLD_SHIPYARD,8)||!HarborPosClose((*it)->GetX(), (*it)->GetY(),8))
+					continue;
+			}
 			if (construction.Wanted(bldToTest[i]))
 			{
 				AddBuildJob(bldToTest[i],tx,ty);
@@ -825,6 +833,12 @@ bool AIPlayerJH::FindBestPositionDiminishingResource(MapCoord &x, MapCoord &y, A
 							continue;
 						}
 					}
+					//dont build next to harborspots
+					if(HarborPosClose(tx2,ty2,3,true))
+					{
+						aii->GetPointA(tx2,ty2,i%6);
+						continue;
+					}					
 					BuildingQuality bq=aii->GetBuildingQuality(tx2,ty2);
 					if ( (bq >= size && bq < BQ_MINE) // normales Gebäude
 						|| (bq == size))	// auch Bergwerke					
@@ -912,6 +926,11 @@ bool AIPlayerJH::FindBestPosition(MapCoord &x, MapCoord &y, AIJH::Resource res, 
 						aii->GetPointA(tx2,ty2,i%6);
 						continue;
 					}
+					if(HarborPosClose(tx2,ty2,3,true))
+					{
+						aii->GetPointA(tx2,ty2,i%6);
+						continue;
+					}
 					BuildingQuality bq=aii->GetBuildingQuality(tx2,ty2);
 					if ( (bq >= size && bq < BQ_MINE) // normales Gebäude
 						|| (bq == size))	// auch Bergwerke					
@@ -944,43 +963,6 @@ void AIPlayerJH::UpdateNodesAround(MapCoord x, MapCoord y, unsigned radius)
 void AIPlayerJH::UpdateNodesAroundNoBorder(MapCoord x, MapCoord y, unsigned radius)
 {
 	UpdateReachableNodes(x, y, radius);
-	/*
-	for(MapCoord tx=aii->GetXA(x,y,0), r=1;r<=radius;tx=aii->GetXA(tx,y,0),++r)
-	{
-		MapCoord tx2 = tx, ty2 = y;
-		for(unsigned i = 2;i<8;++i)
-		{
-			for(MapCoord r2=0;r2<r;aii->GetPointA(tx2,ty2,i%6),++r2)
-			{
-				unsigned i = tx2 + ty2 * width;
-
-				nodes[i].owned = aii->IsOwnTerritory(tx2, ty2);
-
-				if (nodes[i].owned)
-				{
-					nodes[i].bq = aii->GetBuildingQuality(tx2, ty2);
-				}
-				else
-				{
-					nodes[i].owned = false;
-					nodes[i].bq = BQ_NOTHING;
-				}
-
-				AIJH::Resource res = CalcResource(tx2, ty2);
-				if (res != nodes[i].res)
-				{
-					// Altes entfernen:
-					if (nodes[i].res != AIJH::NOTHING)
-						ChangeResourceMap(tx2, ty2, AIJH::RES_RADIUS[nodes[i].res], resourceMaps[nodes[i].res], -1);
-					// Neues Hinzufügen:
-					if (res != AIJH::NOTHING)
-						ChangeResourceMap(tx2, ty2, AIJH::RES_RADIUS[res], resourceMaps[res], 1);
-
-					nodes[i].res = res;
-				}
-			}
-		}
-	}*/
 }
 
 void AIPlayerJH::ExecuteAIJob()
@@ -1027,42 +1009,10 @@ void AIPlayerJH::ExecuteAIJob()
 
 void AIPlayerJH::RecalcBQAround(const MapCoord x, const MapCoord y)
 {
-	/*
-	unsigned width = aii->GetMapWidth();
-
-	// Drumherum BQ neu berechnen, da diese sich ja jetzt hätten ändern können
-	unsigned index = x + y * width;
-
-	nodes[index].bq = aii->GetBuildingQuality(x,y);
-	for(unsigned char i = 0;i<6;++i)
-	{
-		index = aii->GetXA(x,y,i) + aii->GetYA(x,y,i) * width;
-		nodes[index].bq = aii->GetBuildingQuality(aii->GetXA(x,y,i), aii->GetYA(x,y,i));
-	}
-	for(unsigned i = 0;i<12;++i)
-	{
-		index = aii->GetXA2(x,y,i) + aii->GetYA2(x,y,i) * width;
-		nodes[index].bq = aii->GetBuildingQuality(aii->GetXA2(x,y,i),aii->GetYA2(x,y,i));
-	}*/
 }
 
 void AIPlayerJH::CheckNewMilitaryBuildings()
 {
-	/*
-	for (std::list<Coords>::iterator it = milBuildingSites.begin(); it != milBuildingSites.end(); it++)
-	{
-		const nobMilitary *mil;
-		if ((mil = aii->GetSpecObj<nobMilitary>((*it).x, (*it).y)))
-		{
-			if (!mil->IsNewBuilt())
-			{
-				HandleNewMilitaryBuilingOccupied(*it);
-				milBuildings.push_back(Coords(mil->GetX(), mil->GetY()));
-				milBuildingSites.erase(it);
-				break;
-			}
-		}
-	}*/
 }
 
 bool AIPlayerJH::SimpleFindPosition(MapCoord &x, MapCoord &y, BuildingQuality size, int radius)
@@ -1093,6 +1043,11 @@ bool AIPlayerJH::SimpleFindPosition(MapCoord &x, MapCoord &y, BuildingQuality si
 
 				if (!nodes[i].reachable || !aii->IsOwnTerritory(tx2,ty2) || nodes[i].farmed)
 					continue;
+				if(HarborPosClose(tx2,ty2,3,true))
+				{
+					if(size!=BQ_HARBOR)
+						continue;
+				}
 				BuildingQuality bq=aii->GetBuildingQuality(tx2,ty2);
 				if ( (bq>= size && bq < BQ_MINE) // normales Gebäude
 					|| (bq == size))	// auch Bergwerke
@@ -1288,11 +1243,15 @@ void AIPlayerJH::HandleBuildingFinished(const Coords& coords, BuildingType bld)
 	{
 	case BLD_HARBORBUILDING:
 		UpdateNodesAround(coords.x, coords.y, 8); // todo: fix radius
-
-		AddBuildJob(BLD_BARRACKS, coords.x, coords.y);
-		AddBuildJob(BLD_WOODCUTTER, coords.x, coords.y);
-		AddBuildJob(BLD_SAWMILL, coords.x, coords.y);
-		AddBuildJob(BLD_QUARRY, coords.x, coords.y);
+		//if(!BuildingNearby(coords.x,coords.y,BLD_SHIPYARD,8))
+		//{
+		//	AddBuildJob(BLD_SHIPYARD, coords.x, coords.y);
+		//}
+		//AddBuildJob(BLD_HARBORBUILDING, coords.x, coords.y);
+		//AddBuildJob(BLD_BARRACKS, coords.x, coords.y);
+		//AddBuildJob(BLD_WOODCUTTER, coords.x, coords.y);
+		//AddBuildJob(BLD_SAWMILL, coords.x, coords.y);
+		//AddBuildJob(BLD_QUARRY, coords.x, coords.y);
 
 		// stop beer, swords and shields -> hq only (todo: hq destroyed -> use another storehouse)
 		// can't do that on harbors... maybe production is on an island which is not the hq's
@@ -1919,6 +1878,20 @@ bool AIPlayerJH::BuildingNearby(MapCoord x,MapCoord y,BuildingType bld,unsigned 
 		if((*it)->GetBuildingType()==bld)
 		{
 			if(gwb->CalcDistance(x,y,(*it)->GetX(),(*it)->GetY())<min)
+				return true;
+		}
+	}
+	return false;
+}
+
+bool AIPlayerJH::HarborPosClose(MapCoord x,MapCoord y,unsigned range,bool onlyempty)
+{
+	//skip harbordummy ... ask oliver why there has to be a dummy
+	for (unsigned i=1;i<gwb->GetHarborPointCount();i++)
+	{
+		if(gwb->CalcDistance(x,y,gwb->GetHarborPoint(i).x,gwb->GetHarborPoint(i).y)<range)
+		{
+			if(!onlyempty||!aii->IsBuildingOnNode(gwb->GetHarborPoint(i).x,gwb->GetHarborPoint(i).y,BLD_HARBORBUILDING))
 				return true;
 		}
 	}

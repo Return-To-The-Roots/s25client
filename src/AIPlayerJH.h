@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.h 8241 2012-09-13 21:34:29Z marcus $
+// $Id: AIPlayerJH.h 8255 2012-09-15 08:15:26Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -232,6 +232,9 @@ protected:
 
 	/// Tries to attack the enemy
 	void TryToAttack();
+
+	/// checks distance to all harborpositions
+	bool HarborPosClose(MapCoord x,MapCoord y,unsigned range,bool onlyempty=false);
 
 	/// returns true when a building of the given type is closer to the given position than min (ONLY NOBUSUAL (=no warehouse/military))
 	bool BuildingNearby(MapCoord x,MapCoord y,BuildingType bld,unsigned min);

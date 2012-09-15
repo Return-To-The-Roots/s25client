@@ -1,4 +1,4 @@
-// $Id: AIJHHelper.cpp 8243 2012-09-14 06:58:57Z marcus $
+// $Id: AIJHHelper.cpp 8255 2012-09-15 08:15:26Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -82,10 +82,10 @@ void AIJH::BuildJob::ExecuteJob()
 	}
 
 	// Evil harbour-hack
-	if (type == BLD_HARBORBUILDING && status == AIJH::JOB_FINISHED && target_x != 0xFFFF)
-	{
-		aijh->AddBuildJob(BLD_SHIPYARD, target_x, target_y, true);
-	}
+	//if (type == BLD_HARBORBUILDING && status == AIJH::JOB_FINISHED && target_x != 0xFFFF)
+	//{
+	//	aijh->AddBuildJob(BLD_SHIPYARD, target_x, target_y, true);
+	//}
 
 	// Fertig?
 	if (status == AIJH::JOB_FAILED || status == AIJH::JOB_FINISHED)

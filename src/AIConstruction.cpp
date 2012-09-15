@@ -1,4 +1,4 @@
-// $Id: AIConstruction.cpp 8241 2012-09-13 21:34:29Z marcus $
+// $Id: AIConstruction.cpp 8255 2012-09-15 08:15:26Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -341,7 +341,7 @@ void AIConstruction::RefreshBuildingCount()
 {
 	aii->GetBuildingCount(buildingCounts);
 	//no military buildings -> usually start only
-	if(GetBuildingCount(BLD_BARRACKS)+GetBuildingCount(BLD_GUARDHOUSE)+GetBuildingCount(BLD_FORTRESS)+GetBuildingCount(BLD_WATCHTOWER)<1)
+	if(aii->GetMilitaryBuildings().size()<1&&aii->GetStorehouses().size()<2)
 	{
 		buildingsWanted[BLD_FORESTER]=1;
 		buildingsWanted[BLD_SAWMILL] = 2; //probably only has 1 saw+carpenter but if that is the case the ai will try to produce 1 additional saw very quickly
@@ -387,10 +387,12 @@ void AIConstruction::RefreshBuildingCount()
 	}
 	else
 	{
-		if (aii->GetInventory()->goods[GD_SAW] + aii->GetInventory()->people[JOB_CARPENTER]>3)
-			buildingsWanted[BLD_SAWMILL] = aii->GetInventory()->goods[GD_WOOD]>50&&(aii->GetInventory()->goods[GD_SAW] + aii->GetInventory()->people[JOB_CARPENTER])>4?5:4;
+		if(aii->GetMilitaryBuildings().size()>10)
+			buildingsWanted[BLD_SAWMILL]=min<int>((aii->GetInventory()->goods[GD_SAW] + aii->GetInventory()->people[JOB_CARPENTER]),(aii->GetMilitaryBuildings().size()-5));
 		else
-			buildingsWanted[BLD_SAWMILL] = aii->GetInventory()->goods[GD_SAW] + aii->GetInventory()->people[JOB_CARPENTER];
+			buildingsWanted[BLD_SAWMILL]=min<int>((aii->GetInventory()->goods[GD_SAW] + aii->GetInventory()->people[JOB_CARPENTER]),(aii->GetMilitaryBuildings().size()));
+		if(aii->GetInventory()->goods[GD_WOOD]<30)
+			buildingsWanted[BLD_SAWMILL]=GetBuildingCount(BLD_SAWMILL);
 	}
 	//ironsmelters limited by ironmines or crucibles
 	buildingsWanted[BLD_IRONSMELTER]=(aii->GetInventory()->goods[GD_CRUCIBLE] + aii->GetInventory()->people[JOB_IRONFOUNDER]>=GetBuildingCount(BLD_IRONMINE))?GetBuildingCount(BLD_IRONMINE) : aii->GetInventory()->goods[GD_CRUCIBLE] + aii->GetInventory()->people[JOB_IRONFOUNDER];
@@ -466,7 +468,7 @@ void AIConstruction::InitBuildingsWanted()
 	buildingsWanted[BLD_HUNTER] = 2;
 	buildingsWanted[BLD_FARM] = aii->GetInventory()->goods[GD_SCYTHE] + aii->GetInventory()->people[JOB_FARMER];
 	buildingsWanted[BLD_HARBORBUILDING] = 99;
-	buildingsWanted[BLD_SHIPYARD] = 1;
+	buildingsWanted[BLD_SHIPYARD] = 99;
 }
 
 bool AIConstruction::BuildAlternativeRoad(const noFlag *flag, std::vector<unsigned char> &route)
