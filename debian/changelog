@@ -1,3 +1,588 @@
+s25rttr (20120915-8263.217) karmic; urgency=low
+
+  * Automatic Jenkins Build 217
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sat, 15 Sep 2012 21:17:19 +0200
+
+s25rttr (20120915-8263) any; urgency=low
+
+  * AIpoc 8168
+    
+    ai military settings fix
+
+ -- marcus  Sat, 15 Sep 2012 18:56:00 +0200
+
+s25rttr (20120915-8262) any; urgency=low
+
+  * Do not let the user choose maps with more than the supported
+    number of players
+
+ -- marcus  Sat, 15 Sep 2012 17:32:00 +0200
+
+s25rttr (20120915-8261) any; urgency=low
+
+  * AIpoc 8165 & 8166
+    
+    ai ignores borderland on impassible terrain once again
+    ai shipyard positioning fix
+    ai now updates military settings
+    
+    fixed some comments for GameWorldGame::TerritoryChange()
+
+ -- marcus  Sat, 15 Sep 2012 17:27:00 +0200
+
+s25rttr (20120915-8260) any; urgency=low
+
+  * Changed algorithm for random locations to work for any number of
+    players (fixed)
+
+ -- marcus  Sat, 15 Sep 2012 17:03:00 +0200
+
+s25rttr (20120915-8259) any; urgency=low
+
+  * Changed algorithm for random locations to work for any number of
+    players
+
+ -- marcus  Sat, 15 Sep 2012 16:46:00 +0200
+
+s25rttr (20120915-8258) any; urgency=low
+
+  * 1 = 2
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sat, 15 Sep 2012 16:03:00 +0200
+
+s25rttr (20120915-8255) any; urgency=low
+
+  * AIpoc r8164
+    
+    ai should no longer build anything on or near harbor positions
+    except harbors
+    ai can now build more than 5 sawmills
+
+ -- marcus  Sat, 15 Sep 2012 08:15:00 +0200
+
+s25rttr (20120915-8254) any; urgency=low
+
+  * Added RTTR/MAPS/SEA/Landung3.swd
+
+ -- marcus  Sat, 15 Sep 2012 07:34:00 +0200
+
+s25rttr (20120915-8253.209) karmic; urgency=low
+
+  * Automatic Jenkins Build 209
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sat, 15 Sep 2012 20:18:15 +0200
+
+s25rttr (20120915-8253.208) karmic; urgency=low
+
+  * Automatic Jenkins Build 208
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sat, 15 Sep 2012 09:33:34 +0200
+
+s25rttr (20120915-8253.207) karmic; urgency=low
+
+  * Automatic Jenkins Build 207
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sat, 15 Sep 2012 08:56:15 +0200
+
+s25rttr (20120915-8253) any; urgency=low
+
+  * Mapfix: Landung3 (by Spike)
+
+ -- marcus  Sat, 15 Sep 2012 06:15:00 +0200
+
+s25rttr (20120915-8252) any; urgency=low
+
+  * Missing bracket in GameServer fixed (windows nightly did not
+    compile)
+
+ -- marcus  Sat, 15 Sep 2012 06:12:00 +0200
+
+s25rttr (20120915-8251.206) karmic; urgency=low
+
+  * Automatic Jenkins Build 206
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sat, 15 Sep 2012 01:25:26 +0200
+
+s25rttr (20120915-8251) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sat, 15 Sep 2012 00:00:00 +0200
+
+s25rttr (20120914-8250) any; urgency=low
+
+  * Disabled Trade addon
+
+ -- marcus  Fri, 14 Sep 2012 10:35:00 +0200
+
+s25rttr (20120914-8249) any; urgency=low
+
+  * Include debug stuff only if NDEBUG is not defined
+
+ -- marcus  Fri, 14 Sep 2012 10:11:00 +0200
+
+s25rttr (20120914-8248) any; urgency=low
+
+  * Updated gettext strings
+
+ -- marcus  Fri, 14 Sep 2012 09:41:00 +0200
+
+s25rttr (20120914-8247) any; urgency=low
+
+  * Ask whether sending debug data would be okay for the user when
+    there is no setting yet
+
+ -- marcus  Fri, 14 Sep 2012 09:40:00 +0200
+
+s25rttr (20120914-8246) any; urgency=low
+
+  * Removed debug data from noFlag.cpp
+
+ -- marcus  Fri, 14 Sep 2012 09:39:00 +0200
+
+s25rttr (20120914-8245) any; urgency=low
+
+  * ctrlTimers may be stopped inside the callback now
+
+ -- marcus  Fri, 14 Sep 2012 09:32:00 +0200
+
+s25rttr (20120914-8243) any; urgency=low
+
+  * Fix for #1008418: "Enemy military building prevents building your
+    own"
+
+ -- marcus  Fri, 14 Sep 2012 06:58:00 +0200
+
+s25rttr (20120914-8242.205) karmic; urgency=low
+
+  * Automatic Jenkins Build 205
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Fri, 14 Sep 2012 01:27:57 +0200
+
+s25rttr (20120914-8242) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Fri, 14 Sep 2012 00:00:00 +0200
+
+s25rttr (20120913-8241) any; urgency=low
+
+  * AIpoc 8162
+    
+    ai position calculation improved
+    ai Storehouse spam in 1ms mode fixed
+
+ -- marcus  Thu, 13 Sep 2012 21:34:00 +0200
+
+s25rttr (20120913-8240) any; urgency=low
+
+  * Fix for r8239. (Did not compile, thanks to "const")
+
+ -- marcus  Thu, 13 Sep 2012 21:31:00 +0200
+
+s25rttr (20120913-8239) any; urgency=low
+
+  * Fix for #1030854: scouts coming back from exploration expedition
+    did not join a waiting one
+
+ -- marcus  Thu, 13 Sep 2012 21:23:00 +0200
+
+s25rttr (20120913-8238) any; urgency=low
+
+  * Possible fix for "WTF bug"
+
+ -- marcus  Thu, 13 Sep 2012 20:26:00 +0200
+
+s25rttr (20120913-8237) any; urgency=low
+
+  * Fixed sending of async logs and replays on async if enabled
+
+ -- marcus  Thu, 13 Sep 2012 17:29:00 +0200
+
+s25rttr (20120913-8236) any; urgency=low
+
+  * AIpoc 8161
+    
+    ai no longer maintains it's own storehouse list instead it just
+    uses the player's list
+    ai search radius decreased from 15 to 11 (11 = fortress range)
+    ai will no longer build 2+ hunters next to each other
+    ai will no longer block shield,sword,beer in all-1 warehouses
+    instead it will use the "collect" option
+
+ -- marcus  Thu, 13 Sep 2012 14:31:00 +0200
+
+s25rttr (20120913-8235) any; urgency=low
+
+  * AIpoc 8160
+
+ -- marcus  Thu, 13 Sep 2012 12:50:00 +0200
+
+s25rttr (20120913-8234) any; urgency=low
+
+  * AIpoc 8159
+
+ -- marcus  Thu, 13 Sep 2012 12:49:00 +0200
+
+s25rttr (20120913-8233) any; urgency=low
+
+  * Fixed memory leak in glArchivItem_Font.cpp
+
+ -- marcus  Thu, 13 Sep 2012 10:46:00 +0200
+
+s25rttr (20120913-8232) any; urgency=low
+
+  * iwPostWindow::lastSize uninitialized. Fixed it.
+
+ -- marcus  Thu, 13 Sep 2012 10:03:00 +0200
+
+s25rttr (20120913-8231.204) karmic; urgency=low
+
+  * Automatic Jenkins Build 204
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Thu, 13 Sep 2012 01:10:50 +0200
+
+s25rttr (20120913-8231) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Thu, 13 Sep 2012 00:00:00 +0200
+
+s25rttr (20120912-8230) any; urgency=low
+
+  * Possible race condition in EventManager
+
+ -- marcus  Wed, 12 Sep 2012 19:44:00 +0200
+
+s25rttr (20120912-8229) any; urgency=low
+
+  * minimap color fixes
+
+ -- marcus  Wed, 12 Sep 2012 15:15:00 +0200
+
+s25rttr (20120912-8228.203) karmic; urgency=low
+
+  * Automatic Jenkins Build 203
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Wed, 12 Sep 2012 13:19:37 +0200
+
+s25rttr (20120912-8228) any; urgency=low
+
+  * glSmartBitmap/glSmartTaxturePacker fallback and crash fixes
+
+ -- marcus  Wed, 12 Sep 2012 08:57:00 +0200
+
+s25rttr (20120912-8227) any; urgency=low
+
+  * NULL-texture is 0 again, not 0xFFFFFFFF
+
+ -- marcus  Wed, 12 Sep 2012 08:30:00 +0200
+
+s25rttr (20120912-8226.202) karmic; urgency=low
+
+  * Automatic Jenkins Build 202
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Wed, 12 Sep 2012 07:46:58 +0200
+
+s25rttr (20120912-8226) any; urgency=low
+
+  * commentd out lua
+
+ -- Florian Doersch <flosoft@siedler25.org>  Wed, 12 Sep 2012 05:23:00 +0200
+
+s25rttr (20120911-8224.201) karmic; urgency=low
+
+  * Automatic Jenkins Build 201
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 11 Sep 2012 23:56:08 +0200
+
+s25rttr (20120911-8224) any; urgency=low
+
+  * AI plantspace fix
+
+ -- marcus  Tue, 11 Sep 2012 20:23:00 +0200
+
+s25rttr (20120911-8223) any; urgency=low
+
+  * Initialize AI at first GF
+
+ -- marcus  Tue, 11 Sep 2012 20:15:00 +0200
+
+s25rttr (20120911-8222) any; urgency=low
+
+  * No emergency program for defeated players
+
+ -- marcus  Tue, 11 Sep 2012 20:05:00 +0200
+
+s25rttr (20120911-8221) any; urgency=low
+
+  * Fixed crashes where AI does not have a headquarter anymore
+
+ -- marcus  Tue, 11 Sep 2012 20:01:00 +0200
+
+s25rttr (20120911-8220) any; urgency=low
+
+  * Removed change of nwf_length from GameClient::IncreaseSpeed
+
+ -- marcus  Tue, 11 Sep 2012 19:58:00 +0200
+
+s25rttr (20120911-8219) any; urgency=low
+
+  * removed "BuildingType not found" spam, fixed cast warnings
+
+ -- OLiver Siebert <oliver@siedler25.org>  Tue, 11 Sep 2012 19:17:00 +0200
+
+s25rttr (20120911-8218) any; urgency=low
+
+  * Show "v"-key icon only ingame
+
+ -- marcus  Tue, 11 Sep 2012 18:48:00 +0200
+
+s25rttr (20120911-8217) any; urgency=low
+
+  * Forgot to remove debug output :(
+
+ -- marcus  Tue, 11 Sep 2012 18:43:00 +0200
+
+s25rttr (20120911-8216) any; urgency=low
+
+  * Further AI changes by PoC, bugfixes...
+
+ -- marcus  Tue, 11 Sep 2012 18:42:00 +0200
+
+s25rttr (20120911-8215) any; urgency=low
+
+  * Added speed icon for gf length < 30ms
+
+ -- marcus  Tue, 11 Sep 2012 09:24:00 +0200
+
+s25rttr (20120911-8214.200) karmic; urgency=low
+
+  * Automatic Jenkins Build 200
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 11 Sep 2012 01:32:54 +0200
+
+s25rttr (20120911-8214) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 11 Sep 2012 00:00:00 +0200
+
+s25rttr (20120910-8213) any; urgency=low
+
+  * Even more speed with "v".
+
+ -- marcus  Mon, 10 Sep 2012 21:19:00 +0200
+
+s25rttr (20120910-8212) any; urgency=low
+
+  * Fixex road building bug.
+
+ -- marcus  Mon, 10 Sep 2012 21:09:00 +0200
+
+s25rttr (20120910-8211) any; urgency=low
+
+  * Added Lua 5.2.1 x86 static libraries (from
+    http://sourceforge.net/projects/luabinaries/files/5.2.1/Windows%20Libraries/Static/)
+    for windows in VS2010 project & contrib archive.
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Mon, 10 Sep 2012 20:04:00 +0200
+
+s25rttr (20120910-8210) any; urgency=low
+
+  * Removed lua stuff (for release, will be back later)
+
+ -- marcus  Mon, 10 Sep 2012 18:41:00 +0200
+
+s25rttr (20120910-8209) any; urgency=low
+
+  * Added LUA interpreter to Loader, for use in running games.
+    Removed Loader.h from main.h.
+
+ -- marcus  Mon, 10 Sep 2012 14:55:00 +0200
+
+s25rttr (20120910-8208) any; urgency=low
+
+  * Update warning for lua
+
+ -- marcus  Mon, 10 Sep 2012 13:42:00 +0200
+
+s25rttr (20120910-8207) any; urgency=low
+
+  * .staticlib renamed back to .a (TODO: MSVC, binaries can be found
+    here:
+    http://sourceforge.net/projects/luabinaries/files/5.2.1/Windows%20Libraries/Static/)
+
+ -- marcus  Mon, 10 Sep 2012 13:33:00 +0200
+
+s25rttr (20120910-8206) any; urgency=low
+
+  * Renamed .a to .staticlib for simplicity
+
+ -- marcus  Mon, 10 Sep 2012 12:30:00 +0200
+
+s25rttr (20120910-8205.199) karmic; urgency=low
+
+  * Automatic Jenkins Build 199
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Mon, 10 Sep 2012 14:00:48 +0200
+
+s25rttr (20120910-8205) any; urgency=low
+
+  * LUA support (CMakeList.txt fix)
+
+ -- marcus  Mon, 10 Sep 2012 11:45:00 +0200
+
+s25rttr (20120910-8204) any; urgency=low
+
+  * LUA support (to be test-compiled)
+
+ -- marcus  Mon, 10 Sep 2012 11:38:00 +0200
+
+s25rttr (20120910-8203) any; urgency=low
+
+  * Documentation/comments added
+
+ -- marcus  Mon, 10 Sep 2012 11:05:00 +0200
+
+s25rttr (20120910-8202.198) karmic; urgency=low
+
+  * Automatic Jenkins Build 198
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Mon, 10 Sep 2012 12:42:18 +0200
+
+s25rttr (20120910-8202) any; urgency=low
+
+  * Do not generate textures at start of game when optimized textures
+    are disabled (this may solve problems starting the game on
+    systems with too few texture memory available)
+
+ -- marcus  Mon, 10 Sep 2012 09:54:00 +0200
+
+s25rttr (20120910-8201.197) karmic; urgency=low
+
+  * Automatic Jenkins Build 197
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Mon, 10 Sep 2012 01:17:01 +0200
+
+s25rttr (20120909-8201) any; urgency=low
+
+  * Added carriers to mega texture. Made usage of mega texture
+    optional.
+
+ -- marcus  Sun, 09 Sep 2012 22:02:00 +0200
+
+s25rttr (20120909-8199.196) karmic; urgency=low
+
+  * Automatic Jenkins Build 196
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sun, 09 Sep 2012 21:20:06 +0200
+
+s25rttr (20120909-8199) any; urgency=low
+
+  * Adjusted default military strengh to medium. Fixes #695380.
+
+ -- marcus  Sun, 09 Sep 2012 19:03:00 +0200
+
+s25rttr (20120909-8197) any; urgency=low
+
+  * Fixes and animated open gateway added.
+
+ -- marcus  Sun, 09 Sep 2012 18:35:00 +0200
+
+s25rttr (20120909-8196) any; urgency=low
+
+  * Fix for tight texture packing
+
+ -- marcus  Sun, 09 Sep 2012 16:18:00 +0200
+
+s25rttr (20120909-8195) any; urgency=low
+
+  * Shrink individual texture size to the smallest size possible
+    (eliminates fully transparent borders)
+
+ -- marcus  Sun, 09 Sep 2012 13:57:00 +0200
+
+s25rttr (20120909-8194.195) karmic; urgency=low
+
+  * Automatic Jenkins Build 195
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sun, 09 Sep 2012 13:29:10 +0200
+
+s25rttr (20120909-8194) any; urgency=low
+
+  * Added building flags to Loader, now uses glSmartBitmap
+
+ -- marcus  Sun, 09 Sep 2012 11:10:00 +0200
+
+s25rttr (20120909-8193.194) karmic; urgency=low
+
+  * Automatic Jenkins Build 194
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sun, 09 Sep 2012 12:56:23 +0200
+
+s25rttr (20120909-8193) any; urgency=low
+
+  * track texture usage, do not call glBindTexture unless necessary
+
+ -- marcus  Sun, 09 Sep 2012 10:52:00 +0200
+
+s25rttr (20120909-8192) any; urgency=low
+
+  * Texture packing now working with cards that do not support huge
+    textures
+
+ -- marcus  Sun, 09 Sep 2012 10:26:00 +0200
+
+s25rttr (20120909-8191) any; urgency=low
+
+  * Disable writing to depth buffer, as it is disabled anyway
+
+ -- marcus  Sun, 09 Sep 2012 10:24:00 +0200
+
+s25rttr (20120909-8190) any; urgency=low
+
+  * culture-specific catapult graphics addon working again
+
+ -- marcus  Sun, 09 Sep 2012 07:22:00 +0200
+
+s25rttr (20120909-8189.193) karmic; urgency=low
+
+  * Automatic Jenkins Build 193
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sun, 09 Sep 2012 01:03:04 +0200
+
+s25rttr (20120908-8189) any; urgency=low
+
+  * Fixes for #1047896 and shadows
+
+ -- marcus  Sat, 08 Sep 2012 22:16:00 +0200
+
+s25rttr (20120908-8188) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 08 Sep 2012 22:01:00 +0200
+
+s25rttr (20120908-8186) any; urgency=low
+
+  * Fixed #1047787, #768869
+
+ -- OLiver Siebert <oliver@siedler25.org>  Sat, 08 Sep 2012 13:26:00 +0200
+
+s25rttr (20120908-8185) any; urgency=low
+
+  * added glSmartBitmap to VS2008 project, fixed cast warnings
+
+ -- OLiver Siebert <oliver@siedler25.org>  Sat, 08 Sep 2012 12:13:00 +0200
+
+s25rttr (20120908-8184) any; urgency=low
+
+  * Fixed #897407
+
+ -- OLiver Siebert <oliver@siedler25.org>  Sat, 08 Sep 2012 11:51:00 +0200
+
 s25rttr (20120908-8183.192) karmic; urgency=low
 
   * Automatic Jenkins Build 192
