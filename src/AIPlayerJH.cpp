@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 8261 2012-09-15 17:27:45Z marcus $
+// $Id: AIPlayerJH.cpp 8263 2012-09-15 18:56:25Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -166,7 +166,7 @@ void AIPlayerJH::RunGF(const unsigned gf)
 		milSettings[2] = 4;
 		milSettings[3] = 5;
 		milSettings[4] = 0;													//interior 1 soldier each
-		milSettings[5] = (unsigned char)max<int>(min<int>(max<int>((SoldierAvailable()/10),8),SoldierAvailable()/10),4);	//inland min 50% max 100% depending on how many soldiers are available
+		milSettings[5] = (unsigned char)max<int>(min<int>((SoldierAvailable()/10),8),4);	//inland min 50% max 100% depending on how many soldiers are available
 		milSettings[6] = NoEnemyHarbor()?((SoldierAvailable()>10)?4:0):8;		//harbor points: enemy harbors exist? 100% if not 50% or 0% depending on our available recruits
 		milSettings[7] = 8;														//front: 100%
 		aii->SetMilitarySettings(milSettings);
