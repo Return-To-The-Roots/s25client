@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 8263 2012-09-15 18:56:25Z marcus $
+// $Id: AIPlayerJH.cpp 8265 2012-09-15 21:41:10Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1488,6 +1488,12 @@ void AIPlayerJH::TryToAttack()
 		aii->GetMilitaryBuildings((*it)->GetX(), (*it)->GetY(), 2, buildings);
 		for(std::list<nobBaseMilitary*>::iterator it2 = buildings.begin(); it2 != buildings.end(); ++it2)
 		{
+			const nobMilitary *enemyTarget;
+			enemyTarget = dynamic_cast<const nobMilitary *>((*it2));
+
+			if (enemyTarget && enemyTarget->IsNewBuilt())
+				continue;
+
 			MapCoord dest_x = (*it2)->GetX();
 			MapCoord dest_y = (*it2)->GetY();
 			if (gwb->CalcDistance((*it)->GetX(), (*it)->GetY(), dest_x, dest_y) < BASE_ATTACKING_DISTANCE 
