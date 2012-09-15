@@ -1,4 +1,4 @@
-// $Id: dskSelectMap.cpp 8131 2012-09-01 19:21:00Z jh $
+// $Id: dskSelectMap.cpp 8262 2012-09-15 17:32:44Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -413,6 +413,9 @@ void dskSelectMap::FillTable(const std::string& filename, void *param)
 	{
 		const libsiedler2::ArchivItem_Map_Header *header = &(dynamic_cast<const glArchivItem_Map *>(map.get(0))->getHeader());
 		assert(header);
+
+		if (header->getPlayer() > MAX_PLAYERS)
+			return;
 
 		// Und Zeilen vorbereiten
 		snprintf(players, 64, _("%d Player"), header->getPlayer());
