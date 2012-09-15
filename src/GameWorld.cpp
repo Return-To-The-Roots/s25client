@@ -1,4 +1,4 @@
-// $Id: GameWorld.cpp 8259 2012-09-15 16:46:22Z marcus $
+// $Id: GameWorld.cpp 8260 2012-09-15 17:03:06Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -37,6 +37,7 @@
 #include "Random.h"
 #include "TradeGraph.h"
 #include <queue>
+#include <algorithm>
 
 #include "WindowManager.h"
 #include "SoundManager.h"
@@ -169,6 +170,7 @@ void GameWorld::Scan(glArchivItem_Map *map)
 		}
 	}
 
+	std::vector< Point<MapCoord> > headquarter_positions;
 
 	// Objekte auslesen
 	for(unsigned y = 0;y<height;++y)
@@ -183,6 +185,8 @@ void GameWorld::Scan(glArchivItem_Map *map)
 			// Player Startpos (provisorisch)
 			case 0x80:
 				{
+					headquarter_positions.push_back(Point<MapCoord>(x, y));
+
 					if(lc < GAMECLIENT.GetPlayerCount())
 					{
 						GetPlayer(lc)->hqx = x;
@@ -364,31 +368,14 @@ void GameWorld::Scan(glArchivItem_Map *map)
 	}
 
 	//random locations? -> randomize them :)
-	if (GameClient::inst().GetGGS().random_location && (GAMECLIENT.GetPlayerCount() > 1))
+	if (GameClient::inst().GetGGS().random_location)
 	{
-		for (unsigned i = GAMECLIENT.GetPlayerCount() + RANDOM.Rand(__FILE__, __LINE__, 0, GAMECLIENT.GetPlayerCount() * 2); i > 0; --i)
+		std::random_shuffle(headquarter_positions.begin(), headquarter_positions.end());
+
+		for (unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
 		{
-			unsigned one = 0;
-			unsigned other = 0;
-
-			do
-			{
-				one = RANDOM.Rand(__FILE__,__LINE__, 0, GAMECLIENT.GetPlayerCount() - 1);
-			} while ((GetPlayer(one)->ps != PS_OCCUPIED) && (GetPlayer(one)->ps != PS_KI));
-
-			do
-			{
-				other = RANDOM.Rand(__FILE__,__LINE__, 0, GAMECLIENT.GetPlayerCount() - 1);
-			} while ((other != one) && (GetPlayer(other)->ps != PS_OCCUPIED) && (GetPlayer(other)->ps != PS_KI));
-
-			unsigned short x = GetPlayer(one)->hqx;
-			unsigned short y = GetPlayer(one)->hqy;
-
-			GetPlayer(one)->hqx = GetPlayer(other)->hqx;
-			GetPlayer(one)->hqy = GetPlayer(other)->hqy;
-
-			GetPlayer(other)->hqx = x;
-			GetPlayer(other)->hqy = y;
+			GetPlayer(i)->hqx = headquarter_positions.at(i).x;
+			GetPlayer(i)->hqy = headquarter_positions.at(i).y;
 		}
 	}
 
