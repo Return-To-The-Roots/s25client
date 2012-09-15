@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 8265 2012-09-15 21:41:10Z marcus $
+// $Id: AIPlayerJH.cpp 8270 2012-09-15 23:18:49Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -169,14 +169,15 @@ void AIPlayerJH::RunGF(const unsigned gf)
 		milSettings[5] = (unsigned char)max<int>(min<int>((SoldierAvailable()/10),8),4);	//inland min 50% max 100% depending on how many soldiers are available
 		milSettings[6] = NoEnemyHarbor()?((SoldierAvailable()>10)?4:0):8;		//harbor points: enemy harbors exist? 100% if not 50% or 0% depending on our available recruits
 		milSettings[7] = 8;														//front: 100%
-		aii->SetMilitarySettings(milSettings);
+		if(player->military_settings[5]!=milSettings[5]||player->military_settings[6]!=milSettings[6]) //only send the command if we want to change something
+			aii->SetMilitarySettings(milSettings);
 		//check for useless sawmills
 		if(aii->GetBuildings(BLD_SAWMILL).size()>2)
 		{
 			int burns=0;
 			for(std::list<nobUsual*>::const_iterator it=aii->GetBuildings(BLD_SAWMILL).begin();it!=aii->GetBuildings(BLD_SAWMILL).end();it++)
 			{
-				if(*(*it)->GetProduktivityPointer()<1&&(*it)->HasWorker()&&(*it)->GetWares(0)<1&&(aii->GetBuildings(BLD_SAWMILL).size()-burns)>2)
+				if(*(*it)->GetProduktivityPointer()<1&&(*it)->HasWorker()&&(*it)->GetWares(0)<1&&(aii->GetBuildings(BLD_SAWMILL).size()-burns)>2&&!(*it)->AreThereAnyOrderedWares())
 				{
 					aii->DestroyBuilding((*it));					
 					RemoveUnusedRoad(aii->GetSpecObj<noFlag>(aii->GetXA((*it)->GetX(),(*it)->GetY(),4),aii->GetYA((*it)->GetX(),(*it)->GetY(),4)), 1,true);
@@ -217,8 +218,6 @@ void AIPlayerJH::RunGF(const unsigned gf)
 		unsigned numBldToTest = 23;
 		unsigned char randomstore;
 		randomstore=rand()%(aii->GetStorehouses().size());
-		bool firsthouse=true;
-		bool lostmainstore=false;
 		if(aii->GetStorehouses().size()<1)
 			return;
 		//collect swords,shields and beer in first storehouse!
@@ -253,7 +252,6 @@ void AIPlayerJH::RunGF(const unsigned gf)
 		//now pick a random military building and try to build around that as well
 		if(aii->GetMilitaryBuildings().size()<1)return;
 		randomstore=rand()%(aii->GetMilitaryBuildings().size());
-		numBldToTest = 23;	
 		std::list<nobMilitary*>::const_iterator it2 = aii->GetMilitaryBuildings().begin();
 		std::advance(it2,randomstore);
 		MapCoord tx=(*it2)->GetX(),ty=(*it2)->GetY();
@@ -1797,7 +1795,7 @@ bool AIPlayerJH::HuntablesinRange(unsigned x,unsigned y,unsigned min)
 	//check first if no other hunter(or hunter buildingsite) is nearby
 	if(BuildingNearby(x,y,BLD_HUNTER,15))
 		return false;
-	unsigned maxrange=50;
+	unsigned maxrange=25;
 	unsigned short fx,fy,lx,ly;
 	const unsigned short SQUARE_SIZE = 19;
 	unsigned huntablecount=0;

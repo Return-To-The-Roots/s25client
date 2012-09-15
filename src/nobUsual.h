@@ -1,4 +1,4 @@
-// $Id: nobUsual.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: nobUsual.h 8270 2012-09-15 23:18:49Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -102,6 +102,9 @@ public: void Serialize(SerializedGameData *sgd) const { Serialize_nobUsual(sgd);
 
 	/// Wird aufgerufen, wenn eine neue Ware zum dem Gebäude geliefert wird (nicht wenn sie bestellt wurde vom Gebäude!)
 	void TakeWare(Ware * ware);
+
+	/// Bestellte Waren
+	inline unsigned AreThereAnyOrderedWares(){return ordered_wares->size();}
 
 	/// Gibt Pointer auf Produktivität zurück
 	const unsigned short * GetProduktivityPointer() const { return &productivity; }
