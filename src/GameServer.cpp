@@ -1,4 +1,4 @@
-// $Id: GameServer.cpp 8247 2012-09-14 09:40:33Z marcus $
+// $Id: GameServer.cpp 8252 2012-09-15 06:12:54Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1464,7 +1464,7 @@ void GameServer::OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, std::lis
 
 	if ((SETTINGS.global.submit_debug_data == 1)
 #ifdef _WIN32
-		|| MessageBoxA(NULL,
+		|| (MessageBoxA(NULL,
 		_("The game clients are out of sync. Would you like to send debug information to RttR to help us avoiding this in the future? Thank you very much!"),
 		_("Error"), MB_YESNO | MB_ICONERROR | MB_TASKMODAL | MB_SETFOREGROUND) == IDYES)
 #endif

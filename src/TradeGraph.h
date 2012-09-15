@@ -3,6 +3,7 @@
 
 #include "MapConsts.h"
 #include <memory.h>
+#include "GameConsts.h"
 
 class GameWorldGame;
 class TradeGraph;
@@ -28,12 +29,12 @@ struct TradeGraphNode
 	/// Direction not possible, even in the future (water, lava, swamp etc.)
 	bool not_possible_forever[8];
 	/// Is the route running over any player territory?
-	bool dont_run_over_player_territory[8];
+	bool dont_run_over_player_territory[MAX_PLAYERS];
 
 	TradeGraphNode() : main_pos(0xffff,0xffff)
 	{ 
 		for(unsigned i = 0;i<8;++i) dirs[i] = NO_EDGE;
-		memset(dont_run_over_player_territory,0,8*sizeof(bool));
+		memset(dont_run_over_player_territory,0,MAX_PLAYERS*sizeof(bool));
 	}
 
 	void Deserialize(SerializedGameData *sgd);

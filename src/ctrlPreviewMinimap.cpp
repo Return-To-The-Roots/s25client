@@ -1,4 +1,4 @@
-// $Id: ctrlPreviewMinimap.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: ctrlPreviewMinimap.cpp 8252 2012-09-15 06:12:54Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -73,7 +73,7 @@ ctrlPreviewMinimap::ctrlPreviewMinimap(Window *parent,
 				if(s2map->GetMapDataAt(MAP_TYPE, x, y) == 0x80)
 				{
 					unsigned player = s2map->GetMapDataAt(MAP_LANDSCAPE, x, y);
-					assert(player < 8);
+					assert(player < MAX_PLAYERS);
 					players[player].x = x;
 					players[player].y = y;
 				}

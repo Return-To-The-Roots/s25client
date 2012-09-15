@@ -1,4 +1,4 @@
-// $Id: ctrlPreviewMinimap.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: ctrlPreviewMinimap.h 8252 2012-09-15 06:12:54Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -22,14 +22,13 @@
 #include "ctrlMinimap.h"
 #include "Minimap.h"
 #include "MapConsts.h"
+#include "GameConsts.h"
 
 /// Übersichtskarte (MapPreview)
 class ctrlPreviewMinimap : public ctrlMinimap
 {
 	/// Minimap
 	PreviewMinimap minimap;
-	/// Maximale Anzahl der Spieler
-	static const unsigned MAX_PLAYERS = 8;
 	/// Startpositionen der Spieler
 	struct Player
 	{
