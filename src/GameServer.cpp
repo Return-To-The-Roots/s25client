@@ -1,4 +1,4 @@
-// $Id: GameServer.cpp 8252 2012-09-15 06:12:54Z marcus $
+// $Id: GameServer.cpp 8258 2012-09-15 16:03:30Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1448,7 +1448,7 @@ void GameServer::OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, std::lis
 
 	// count identical lines
 	unsigned identical = 0;
-	while ((it1 != async_player2_log.end()) && (it2 != async_player2_log.end()) && 
+	while ((it1 != async_player1_log.end()) && (it2 != async_player2_log.end()) && 
 		(it1->max == it2->max) && (it1->value == it2->value) && (it1->obj_id == it2->obj_id))
 	{
 		++identical; ++it1; ++it2;
