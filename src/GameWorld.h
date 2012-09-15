@@ -1,4 +1,4 @@
-// $Id: GameWorld.h 8243 2012-09-14 06:58:57Z marcus $
+// $Id: GameWorld.h 8261 2012-09-15 17:27:45Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -389,6 +389,9 @@ public:
 	/// Ermittelt, ob ein Punkt Küstenpunkt ist, d.h. Zugang zu einem schiffbaren Meer hat 
 	/// und gibt ggf. die Meeres-ID zurück, ansonsten 0
 	unsigned short IsCoastalPoint(const MapCoord x, const MapCoord y) const;
+	/// Ermittelt, ob ein Punkt Küstenpunkt ist, d.h. Zugang zu einem schiffbaren Meer, an dem auch mindestens 1 Hafenplatz liegt, hat 
+	/// und gibt ggf. die Meeres-ID zurück, ansonsten 0
+	unsigned short IsCoastalPointToSeaWithHarbor(const MapCoord x, const MapCoord y) const;
 		/// Grenzt der Hafen an ein bestimmtes Meer an?
 	bool IsAtThisSea(const unsigned harbor_id, const unsigned short sea_id) const;
 	/// Gibt den Punkt eines bestimmtes Meeres um den Hafen herum an, sodass Schiffe diesen anfahren kÃ¶nnen
@@ -781,8 +784,7 @@ public:
 	/// Berechnet das Land in einem bestimmten Bereich (um ein neues, abgerissenes oder eingenommenes
 	/// Militärgebäude rum) neu, destroyed gibt an, ob building abgerissen wurde und somit nicht einberechnet werden soll
 	void RecalcTerritory(const noBaseBuilding * const building,const unsigned short radius, const bool destroyed, const bool newBuilt);
-	/// Berechnet das Land in einem bestimmten Bereich (um ein neues, abgerissenes oder eingenommenes
-	/// Militärgebäude rum) neu und gibt zurück ob sich etwas verändern würde
+	/// Berechnet das Land in einem bestimmten Bereich um ein aktuelles Militärgebäude rum neu und gibt zurück ob sich etwas verändern würde (auf für ki wichtigem untergrund) wenn das Gebäude zerstört werden würde
 	bool TerritoryChange(const noBaseBuilding * const building,const unsigned short radius, const bool destroyed, const bool newBuilt);
 	/// Greift ein Militärgebäude auf x,y an (entsendet dafür die Soldaten etc.)
 	void Attack(const unsigned char player_attacker, const MapCoord x, const MapCoord y, const unsigned short soldiers_count, const bool strong_soldiers);

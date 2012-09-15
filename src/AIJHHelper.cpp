@@ -1,4 +1,4 @@
-// $Id: AIJHHelper.cpp 8255 2012-09-15 08:15:26Z marcus $
+// $Id: AIJHHelper.cpp 8261 2012-09-15 17:27:45Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -198,7 +198,11 @@ void AIJH::BuildJob::TryToBuild()
 			if(!aijh->GetConstruction()->OtherStoreInRadius(bx, by, 15))
 				foundPos = aijh->SimpleFindPosition(bx, by, BUILDING_SIZE[BLD_STOREHOUSE], 11);
 			break;
-
+		case BLD_SHIPYARD:
+			foundPos = aijh->SimpleFindPosition(bx, by, BUILDING_SIZE[type], 11);
+			if(aijh->IsInvalidShipyardPosition(bx,by))
+				foundPos = false;
+			break;
 		case BLD_FARM:
 			foundPos = aijh->FindBestPosition(bx, by, AIJH::PLANTSPACE, BQ_CASTLE, 85, 11, true);
 			break;

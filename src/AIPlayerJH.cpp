@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 8255 2012-09-15 08:15:26Z marcus $
+// $Id: AIPlayerJH.cpp 8261 2012-09-15 17:27:45Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -80,14 +80,14 @@ void AIPlayerJH::RunGF(const unsigned gf)
 		// Set military settings to some nicer default values
 		std::vector<unsigned char> milSettings;
 		milSettings.resize(8);
-		milSettings[0] = 10;
-		milSettings[1] = 5;
-		milSettings[2] = 5;
-		milSettings[3] = 5;
-		milSettings[4] = 1;
-		milSettings[5] = 8;
-		milSettings[6] = 8;
-		milSettings[7] = 8;
+		milSettings[0] = 10;	//recruits 0-10
+		milSettings[1] = 5;		//defense 0-5
+		milSettings[2] = 4;		//defenders 0-5
+		milSettings[3] = 5;		//attackers 0-5
+		milSettings[4] = 0;		//inland buildings (0 bar) 0-8
+		milSettings[5] = 8;		//center buildings (1 bar) 0-8
+		milSettings[6] = 8;		//harbor buildings (? bar) 0-8
+		milSettings[7] = 8;		//border buildings (2 bar) 0-8
 		aii->SetMilitarySettings(milSettings);
 		//set good distribution settings 
 		std::vector<unsigned char> goodSettings;
@@ -141,8 +141,8 @@ void AIPlayerJH::RunGF(const unsigned gf)
 	//{
 	//	CheckNewMilitaryBuildings();
 	//}
-	if((gf+playerid*11)%1500==0) //update tool creation settings
-	{
+	if((gf+playerid*11)%150==0) 
+	{	//update tool creation settings
 		std::vector<unsigned char> toolsettings;
 		toolsettings.resize(12);
 		toolsettings[2] = (aii->GetInventory()->goods[GD_SAW] + aii->GetInventory()->people[JOB_CARPENTER]<2)?4:aii->GetInventory()->goods[GD_SAW]<1?1:0;																					//saw
@@ -157,7 +157,33 @@ void AIPlayerJH::RunGF(const unsigned gf)
 		toolsettings[0] =0;//(toolsettings[4]<1&&toolsettings[3]<1&&toolsettings[6]<1&&toolsettings[2]<1&&(aii->GetInventory()->goods[GD_TONGS]<1))?1:0;												//Tongs(metalworks)
 		toolsettings[7] = 0;																																										//rod & line 
 		toolsettings[11] = 0;																																										//bow
-		aii->SetToolSettings(toolsettings);		
+		aii->SetToolSettings(toolsettings);	
+		// Set military settings to some currently required values
+		std::vector<unsigned char> milSettings;
+		milSettings.resize(8);
+		milSettings[0] = 10;
+		milSettings[1] = 5;
+		milSettings[2] = 4;
+		milSettings[3] = 5;
+		milSettings[4] = 0;													//interior 1 soldier each
+		milSettings[5] = (unsigned char)max<int>(min<int>(max<int>((SoldierAvailable()/10),8),SoldierAvailable()/10),4);	//inland min 50% max 100% depending on how many soldiers are available
+		milSettings[6] = NoEnemyHarbor()?((SoldierAvailable()>10)?4:0):8;		//harbor points: enemy harbors exist? 100% if not 50% or 0% depending on our available recruits
+		milSettings[7] = 8;														//front: 100%
+		aii->SetMilitarySettings(milSettings);
+		//check for useless sawmills
+		if(aii->GetBuildings(BLD_SAWMILL).size()>2)
+		{
+			int burns=0;
+			for(std::list<nobUsual*>::const_iterator it=aii->GetBuildings(BLD_SAWMILL).begin();it!=aii->GetBuildings(BLD_SAWMILL).end();it++)
+			{
+				if(*(*it)->GetProduktivityPointer()<1&&(*it)->HasWorker()&&(*it)->GetWares(0)<1&&(aii->GetBuildings(BLD_SAWMILL).size()-burns)>2)
+				{
+					aii->DestroyBuilding((*it));					
+					RemoveUnusedRoad(aii->GetSpecObj<noFlag>(aii->GetXA((*it)->GetX(),(*it)->GetY(),4),aii->GetYA((*it)->GetX(),(*it)->GetY(),4)), 1,true);
+					burns++;
+				}
+			}
+		}
 	}
 	if((gf+playerid*7)%200==0) // plan new buildings
 	{
@@ -186,10 +212,9 @@ void AIPlayerJH::RunGF(const unsigned gf)
 		BLD_IRONMINE,
 		BLD_COALMINE,
 		BLD_GRANITEMINE,
-		BLD_HARBORBUILDING,
 		BLD_HUNTER
 		};
-		unsigned numBldToTest = 24;
+		unsigned numBldToTest = 23;
 		unsigned char randomstore;
 		randomstore=rand()%(aii->GetStorehouses().size());
 		bool firsthouse=true;
@@ -213,7 +238,7 @@ void AIPlayerJH::RunGF(const unsigned gf)
 			//only 1 shipyard for each harbor
 			if(bldToTest[i]==BLD_SHIPYARD)
 			{
-				if(BuildingNearby((*it)->GetX(),(*it)->GetY(),BLD_SHIPYARD,8)||!HarborPosClose((*it)->GetX(), (*it)->GetY(),8))
+				if(IsInvalidShipyardPosition((*it)->GetX(),(*it)->GetY()))
 					continue;
 			}
 			if (construction.Wanted(bldToTest[i]))
@@ -228,7 +253,7 @@ void AIPlayerJH::RunGF(const unsigned gf)
 		//now pick a random military building and try to build around that as well
 		if(aii->GetMilitaryBuildings().size()<1)return;
 		randomstore=rand()%(aii->GetMilitaryBuildings().size());
-		numBldToTest = 24;	
+		numBldToTest = 23;	
 		std::list<nobMilitary*>::const_iterator it2 = aii->GetMilitaryBuildings().begin();
 		std::advance(it2,randomstore);
 		MapCoord tx=(*it2)->GetX(),ty=(*it2)->GetY();
@@ -238,7 +263,7 @@ void AIPlayerJH::RunGF(const unsigned gf)
 			if(bldToTest[i]==BLD_SHIPYARD)
 			{
 				//only 1 shipyard for each harbor
-				if(BuildingNearby((*it)->GetX(),(*it)->GetY(),BLD_SHIPYARD,8)||!HarborPosClose((*it)->GetX(), (*it)->GetY(),8))
+				if(IsInvalidShipyardPosition(tx,ty))
 					continue;
 			}
 			if (construction.Wanted(bldToTest[i]))
@@ -1124,6 +1149,8 @@ void AIPlayerJH::HandleNewMilitaryBuilingOccupied(const Coords& coords)
 	}
 
 	AddBuildJob(BLD_HARBORBUILDING, x, y);
+	if(!IsInvalidShipyardPosition(x,y))
+		AddBuildJob(BLD_SHIPYARD, x, y);
 	if (SoldierAvailable())
 	{
 		AddBuildJob(construction.ChooseMilitaryBuilding(x, y), x, y);
@@ -1748,17 +1775,15 @@ bool AIPlayerJH::RemoveUnusedRoad(const noFlag *startFlag, unsigned char exclude
 	return false;
 }
 
-bool AIPlayerJH::SoldierAvailable()
+unsigned AIPlayerJH::SoldierAvailable()
 {
 	std::list<AIJH::Coords> storeHousePoses = construction.GetStoreHousePositions();
 	unsigned freeSoldiers = 0;
 	for (std::list<nobBaseWarehouse*>::const_iterator it = aii->GetStorehouses().begin(); it != aii->GetStorehouses().end(); it++)
 	{
 		freeSoldiers += ((*it)->GetInventory()->people[JOB_PRIVATE] + (*it)->GetInventory()->people[JOB_PRIVATEFIRSTCLASS] + (*it)->GetInventory()->people[JOB_SERGEANT] + (*it)->GetInventory()->people[JOB_OFFICER] + (*it)->GetInventory()->people[JOB_GENERAL]);
-		if(freeSoldiers!=0)
-			return true;
 	}
-	return (freeSoldiers != 0);
+	return freeSoldiers;
 }
 
 bool AIPlayerJH::HuntablesinRange(unsigned x,unsigned y,unsigned min)
@@ -1887,7 +1912,7 @@ bool AIPlayerJH::BuildingNearby(MapCoord x,MapCoord y,BuildingType bld,unsigned 
 bool AIPlayerJH::HarborPosClose(MapCoord x,MapCoord y,unsigned range,bool onlyempty)
 {
 	//skip harbordummy ... ask oliver why there has to be a dummy
-	for (unsigned i=1;i<gwb->GetHarborPointCount();i++)
+	for (unsigned i=1;i<=gwb->GetHarborPointCount();i++)
 	{
 		if(gwb->CalcDistance(x,y,gwb->GetHarborPoint(i).x,gwb->GetHarborPoint(i).y)<range)
 		{
@@ -1896,4 +1921,25 @@ bool AIPlayerJH::HarborPosClose(MapCoord x,MapCoord y,unsigned range,bool onlyem
 		}
 	}
 	return false;
+}
+
+bool AIPlayerJH::NoEnemyHarbor()
+{
+	for(unsigned i=1;i<=gwb->GetHarborPointCount();i++)
+	{
+		if(aii->IsBuildingOnNode(gwb->GetHarborPoint(i).x,gwb->GetHarborPoint(i).y,BLD_HARBORBUILDING)&&!aii->IsOwnTerritory(gwb->GetHarborPoint(i).x,gwb->GetHarborPoint(i).y))
+		{
+			//LOG.lprintf("found a harbor at spot %i ",i);
+			return false;
+		}
+	}
+	return true;
+}
+
+bool AIPlayerJH::IsInvalidShipyardPosition(MapCoord x,MapCoord y)
+{
+	if (BuildingNearby(x,y,BLD_SHIPYARD,20)||!HarborPosClose(x, y,8))
+		return true;
+	return false;
+
 }

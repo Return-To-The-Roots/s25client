@@ -1,4 +1,4 @@
-// $Id: GameWorldGame.cpp 8243 2012-09-14 06:58:57Z marcus $
+// $Id: GameWorldGame.cpp 8261 2012-09-15 17:27:45Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -830,8 +830,7 @@ bool GameWorldGame::TerritoryChange(const noBaseBuilding * const building,const 
 		if(*it != building || !destroyed)
 			tr.CalcTerritoryOfBuilding(*it);
 	}
-	// Daten von der TR kopieren in die richtige Karte, dabei zus. Grenzen korrigieren und Objekte zerstören, falls
-	// das Land davon jemanden anders nun gehört
+	// schaun ob sich was ändern würd im berechneten gebiet
  	for(int y = y1;y<y2;++y)
 	{
 		for(int x = x1;x<x2;++x)
@@ -839,11 +838,11 @@ bool GameWorldGame::TerritoryChange(const noBaseBuilding * const building,const 
 			unsigned char prev_player,player;
 			MapCoord tx,ty;
 			ConvertCoords(x,y,&tx,&ty);
-			// Wenn der Punkt den Besitz geändert hat
 			if((prev_player=GetNode(tx,ty).owner) != (player=tr.GetOwner(x,y)))
 			{
-				// if gameobjective isnt 75% ai can ignore water/snow/lava/swamp
-				if(GameClient::inst().GetGGS().game_objective==GlobalGameSettings::GO_CONQUER3_4 || (GetNode(tx,ty).t1!=TT_WATER && GetNode(tx,ty).t1!=TT_LAVA && GetNode(tx,ty).t1!=TT_SWAMPLAND&& GetNode(tx,ty).t1!=TT_SNOW))
+				// if gameobjective isnt 75% ai can ignore water/snow/lava/swamp terrain (because it wouldnt help win the game)
+				unsigned char t1=GetNode(tx,ty).t1;
+				if(GameClient::inst().GetGGS().game_objective==GlobalGameSettings::GO_CONQUER3_4 || (t1!=TT_WATER && t1!=TT_LAVA && t1!=TT_SWAMPLAND&& t1!=TT_SNOW))
 					return false;					
 			}
 		}

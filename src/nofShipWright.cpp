@@ -185,6 +185,7 @@ void nofShipWright::StartWalkingToShip(const unsigned char first_dir)
 }
 
 /// Ist ein bestimmter Punkt auf der Karte für den Schiffsbau geeignet
+/// poc: differene to original game: points at a sea which cant have a harbor are invalid (original as long as there is 1 harborpoint at any sea on the map any sea is valid)
 bool nofShipWright::IsPointGood(const MapCoord x, const MapCoord y) const
 {
 	// Auf Wegen nicht bauen
@@ -195,7 +196,7 @@ bool nofShipWright::IsPointGood(const MapCoord x, const MapCoord y) const
 	}
 
 	return (gwg->IsPlayerTerritory(x,y) &&
-	gwg->IsCoastalPoint(x,y) && (gwg->GetNO(x,y)->GetType() == NOP_ENVIRONMENT
+	gwg->IsCoastalPointToSeaWithHarbor(x,y) && (gwg->GetNO(x,y)->GetType() == NOP_ENVIRONMENT
 								|| gwg->GetNO(x,y)->GetType() == NOP_NOTHING));
 }
 

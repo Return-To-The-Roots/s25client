@@ -1,4 +1,4 @@
-// $Id: GameWorldBase.cpp 8243 2012-09-14 06:58:57Z marcus $
+// $Id: GameWorldBase.cpp 8261 2012-09-15 17:27:45Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1188,6 +1188,20 @@ unsigned short GameWorldBase::IsCoastalPoint(const MapCoord x, const MapCoord y)
 		}
 	}
 
+	return false;
+}
+
+unsigned short GameWorldBase::IsCoastalPointToSeaWithHarbor(const MapCoord x, const MapCoord y) const
+{
+	short sea=IsCoastalPoint(x,y);
+	if(sea)
+	{
+		for(unsigned i=1;i<harbor_pos.size();i++)
+		{
+			if(IsAtThisSea(i,sea))
+				return sea;
+		}
+	}
 	return false;
 }
 

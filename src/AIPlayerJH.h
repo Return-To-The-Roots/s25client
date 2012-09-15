@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.h 8255 2012-09-15 08:15:26Z marcus $
+// $Id: AIPlayerJH.h 8261 2012-09-15 17:27:45Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -256,13 +256,17 @@ protected:
 	void RemoveAllUnusedRoads(MapCoord x,MapCoord y);
 
 	// check if there are free soldiers (in hq/storehouses)
-	bool SoldierAvailable();
+	unsigned SoldierAvailable();
 	
 	bool HuntablesinRange(unsigned x,unsigned y,unsigned min);
 
 	bool ValidTreeinRange(MapCoord x,MapCoord y);
 
 	bool ValidStoneinRange(MapCoord x,MapCoord y);
+
+	bool NoEnemyHarbor();
+
+	bool IsInvalidShipyardPosition(MapCoord x,MapCoord y);
 
 
 protected:
