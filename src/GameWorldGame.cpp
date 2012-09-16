@@ -1,4 +1,4 @@
-// $Id: GameWorldGame.cpp 8261 2012-09-15 17:27:45Z marcus $
+// $Id: GameWorldGame.cpp 8277 2012-09-16 17:59:43Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1940,6 +1940,8 @@ bool GameWorldGame::FoundColony(const unsigned harbor_point, const unsigned char
 	
 	// BQ neu berechnen (evtl durch RecalcTerritory noch nicht geschehen)
 	RecalcBQAroundPointBig(pos.x,pos.y);
+	//notify the ai
+	GameClient::inst().SendAIEvent(new AIEvent::Location(AIEvent::NewColonyFounded, pos.x, pos.y), player);
 
 	return true;
 }

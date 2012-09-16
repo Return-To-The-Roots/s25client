@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.h 8261 2012-09-15 17:27:45Z marcus $
+// $Id: AIPlayerJH.h 8277 2012-09-16 17:59:43Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -226,6 +226,9 @@ protected:
 
 	// Handle chopped tree, test for new space
 	void HandleTreeChopped(const Coords& coords);
+
+	// Handle new colony 
+	void HandleNewColonyFounded(const Coords& coords);
 
 	/// Sends a chat messsage to all players
 	void Chat(std::string message);

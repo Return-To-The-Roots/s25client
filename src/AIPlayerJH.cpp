@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 8276 2012-09-16 15:47:32Z marcus $
+// $Id: AIPlayerJH.cpp 8277 2012-09-16 17:59:43Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -72,7 +72,7 @@ void AIPlayerJH::RunGF(const unsigned gf)
 	}
 	if (gf == 100)
 	{
-		if(aii->GetMilitaryBuildings().size()<1)
+		if(aii->GetMilitaryBuildings().size()<1&&aii->GetStorehouses().size()<2)
 		{
 			Chat(_("Hi, I'm an artifical player and I'm not very good yet!"));
 			Chat(_("And I may crash your game sometimes..."));
@@ -1301,6 +1301,12 @@ void AIPlayerJH::HandleBuildingFinished(const Coords& coords, BuildingType bld)
 		break;
 	}
 
+}
+
+void AIPlayerJH::HandleNewColonyFounded(const Coords& coords)
+{
+	MapCoord x=aii->GetXA(coords.x,coords.y,4),y=aii->GetYA(coords.x,coords.y,4);
+	construction.AddConnectFlagJob(aii->GetSpecObj<noFlag>(x,y));
 }
 
 void AIPlayerJH::HandleExpedition(const Coords& coords)

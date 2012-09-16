@@ -1,4 +1,4 @@
-// $Id: AIJHHelper.cpp 8276 2012-09-16 15:47:32Z marcus $
+// $Id: AIJHHelper.cpp 8277 2012-09-16 17:59:43Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -445,6 +445,13 @@ void AIJH::EventJob::ExecuteJob()
 		{
 			AIEvent::Location *lvb = dynamic_cast<AIEvent::Location *>(ev);
 			aijh->HandleTreeChopped(AIPlayerJH::Coords(lvb->GetX(), lvb->GetY()));
+			status = AIJH::JOB_FINISHED;
+		}
+		break;
+	case AIEvent::NewColonyFounded:
+		{
+			AIEvent::Location *lvb = dynamic_cast<AIEvent::Location *>(ev);
+			aijh->HandleNewColonyFounded(AIPlayerJH::Coords(lvb->GetX(), lvb->GetY()));
 			status = AIJH::JOB_FINISHED;
 		}
 		break;
