@@ -1,4 +1,4 @@
-// $Id: nobMilitary.h 8184 2012-09-08 11:51:47Z OLiver $
+// $Id: nobMilitary.h 8273 2012-09-16 13:26:46Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -159,8 +159,12 @@ public: void Serialize(SerializedGameData *sgd) const { Serialize_nobMilitary(sg
 	unsigned GetSoldiersForAttack(const MapCoord dest_x, const MapCoord dest_y, const unsigned char player_attacker) const;
 	/// Gibt die Soldaten zurück, die für einen Angriff auf ein bestimmtes Ziel zur Verfügung stehen
 	void GetSoldiersForAttack(const MapCoord dest_x, const MapCoord dest_y, 
-	const unsigned char player_attacker, std::vector<nofPassiveSoldier*> * soldiers) const;
-
+		const unsigned char player_attacker, std::vector<nofPassiveSoldier*> * soldiers) const;
+	/// Gibt die Stärke der Soldaten zurück, die für einen Angriff auf ein bestimmtes Ziel zur Verfügung stehen
+	unsigned GetSoldiersStrengthForAttack(const MapCoord dest_x, const MapCoord dest_y,
+		const unsigned char player_attacker, unsigned &soldiers_count) const;
+	/// Gibt die Stärke eines Militärgebäudes zurück
+	unsigned GetSoldiersStrength() const;
 
 	/// Gebäude wird vom Gegner eingenommen, player ist die neue Spieler-ID
 	void Capture(const unsigned char new_owner);

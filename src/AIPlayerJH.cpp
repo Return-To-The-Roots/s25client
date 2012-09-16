@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 8271 2012-09-16 11:54:26Z marcus $
+// $Id: AIPlayerJH.cpp 8273 2012-09-16 13:26:46Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1529,7 +1529,8 @@ void AIPlayerJH::TryToAttack()
 		const MapCoord dest_x = (*target)->GetX();
 		const MapCoord dest_y = (*target)->GetY();
 
-		unsigned numberOfAttackers = 0;
+		unsigned attackersCount = 0;
+		unsigned attackersStrength = 0;
 
 		// ask each of nearby own military buildings for soldiers to contribute to the potential attack
 		std::list<nobBaseMilitary *> myBuildings;
@@ -1540,27 +1541,33 @@ void AIPlayerJH::TryToAttack()
 			{
 				const nobMilitary *myMil;
 				myMil = dynamic_cast<const nobMilitary *>(*it3);
-				if (!myMil)
+				if (!myMil || myMil->IsUnderAttack())
 					continue;
 
-				numberOfAttackers += myMil->GetSoldiersForAttack(dest_x, dest_y, playerid);
+				unsigned newAttackers;
+				attackersStrength += myMil->GetSoldiersStrengthForAttack(dest_x, dest_y, playerid, newAttackers);
+				attackersCount += newAttackers;
 			}
 		}
 
-		if (numberOfAttackers == 0)
+		if (attackersCount == 0)
 			continue;
 
 		if ((*target)->GetGOT() == GOT_NOB_MILITARY)
 		{
 			const nobMilitary *enemyTarget = dynamic_cast<const nobMilitary *>((*target));
 
-			if (enemyTarget && ((numberOfAttackers <= enemyTarget->GetTroopsCount()) || (enemyTarget->GetTroopsCount() == 0)))
+			if (enemyTarget && ((attackersStrength <= enemyTarget->GetSoldiersStrength()) || (enemyTarget->GetTroopsCount() == 0)))
 			{
 				continue;
 			}
 		}
 
-		aii->Attack(dest_x, dest_y, numberOfAttackers, true);
+		if ((*target)->DefendersAvailable() && (attackersCount < 3))
+		{
+		}
+
+		aii->Attack(dest_x, dest_y, attackersCount, true);
 
 		return;
 	}

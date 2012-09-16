@@ -1,4 +1,4 @@
-// $Id: nobMilitary.cpp 8235 2012-09-13 12:50:03Z marcus $
+// $Id: nobMilitary.cpp 8273 2012-09-16 13:26:46Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -774,6 +774,35 @@ void nobMilitary::GetSoldiersForAttack(const MapCoord dest_x, const MapCoord des
 	
 }
 
+/// Gibt die Stärke der Soldaten zurück, die für einen Angriff auf ein bestimmtes Ziel zur Verfügung stehen
+unsigned nobMilitary::GetSoldiersStrengthForAttack(const MapCoord dest_x, const MapCoord dest_y, 
+	const unsigned char player_attacker, unsigned &count) const
+{
+	unsigned strength = 0;
+
+	unsigned soldiers_count = GetSoldiersForAttack(dest_x, dest_y, player_attacker);
+	count = soldiers_count;
+
+	for(list<nofPassiveSoldier*>::const_iterator it = troops.end();it.valid() && soldiers_count;--it, --soldiers_count)
+	{
+		strength += HITPOINTS[nation][(*it)->GetRank()];
+	}
+
+	return(strength);
+}
+
+/// Gibt die Stärke eines Militärgebäudes zurück
+unsigned nobMilitary::GetSoldiersStrength() const
+{
+	unsigned strength = 0;
+
+	for(list<nofPassiveSoldier*>::const_iterator it = troops.end(); it.valid(); --it)
+	{
+		strength += HITPOINTS[nation][(*it)->GetRank()];
+	}
+
+	return(strength);
+}
 
 nofDefender * nobMilitary::ProvideDefender(nofAttacker * const attacker)
 {

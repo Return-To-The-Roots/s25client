@@ -1,4 +1,4 @@
-// $Id: nobBaseMilitary.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: nobBaseMilitary.h 8273 2012-09-16 13:26:46Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -139,6 +139,8 @@ public: void Serialize(SerializedGameData *sgd) const { Serialize_nobBaseMilitar
 
 	/// Sind noch Truppen drinne, die dieses Gebäude verteidigen können
 	virtual bool DefendersAvailable() const = 0;
+
+	bool IsUnderAttack() const {return(aggressors.size() > 0);};
 
 	/// Debugging
 	bool Test(nofAttacker * attacker); 
