@@ -1,4 +1,4 @@
-// $Id: GameClientPlayer.cpp 8222 2012-09-11 20:05:15Z marcus $
+// $Id: GameClientPlayer.cpp 8278 2012-09-16 21:08:50Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -2071,7 +2071,7 @@ bool GameClientPlayer::FindHarborForUnloading(noShip * ship, const MapCoord star
 void GameClientPlayer::TestForEmergencyProgramm()
 {
 	// we are already defeated, do not even think about an emergency program - it's too late :-(
-	if (defeated)
+	if (defeated || !warehouses.size())
 	{
 		return;
 	}
