@@ -1,4 +1,4 @@
-// $Id: AIJHHelper.cpp 8261 2012-09-15 17:27:45Z marcus $
+// $Id: AIJHHelper.cpp 8276 2012-09-16 15:47:32Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -303,59 +303,40 @@ void AIJH::BuildJob::BuildMainRoad()
 		switch(type)
 		{
 		case BLD_WOODCUTTER:
-			//aijh->ChangeResourceMap(target_x, target_y, 7, aijh->resourceMaps[AIJH::WOOD], -15);
 			break;
 		case BLD_FORESTER:
-			//aijh->ChangeResourceMap(target_x, target_y, 7, aijh->resourceMaps[AIJH::WOOD], 15);
 			break;
 		case BLD_QUARRY:
-			//aijh->ChangeResourceMap(target_x, target_y, 7, aijh->resourceMaps[AIJH::STONES], -15);
 			break;
 		case BLD_BARRACKS:
 		case BLD_GUARDHOUSE:
 		case BLD_WATCHTOWER:
 		case BLD_FORTRESS:
-			//aijh->ChangeResourceMap(target_x, target_y, 8, aijh->resourceMaps[AIJH::BORDERLAND], -8);
-			//aijh->milBuildingSites.push_back(AIPlayerJH::Coords(target_x, target_y));
+			break;
 		case BLD_GOLDMINE:
-			//if(!(aijh->ggs->isEnabled(ADDON_INEXHAUSTIBLE_MINES))) //ask the ai to recalculate the resourcemap instead of the old way to just change it this way its accurate
-			//	aijh->ChangeResourceMap(target_x, target_y, 4, aijh->resourceMaps[AIJH::GOLD], -30);
 			break;
 		case BLD_COALMINE:
-			//if(!(aijh->ggs->isEnabled(ADDON_INEXHAUSTIBLE_MINES)))
-			//	aijh->ChangeResourceMap(target_x, target_y, 4, aijh->resourceMaps[AIJH::COAL], -30);
 			break;
 		case BLD_IRONMINE:
 			//if(!(aijh->ggs->isEnabled(ADDON_INEXHAUSTIBLE_MINES)))
-			//	aijh->ChangeResourceMap(target_x, target_y, 4, aijh->resourceMaps[AIJH::IRONORE], -30);
 			break;
 		case BLD_GRANITEMINE:
-			//if(!(aijh->ggs->isEnabled(ADDON_INEXHAUSTIBLE_MINES)))
-			//	aijh->ChangeResourceMap(target_x, target_y, 4, aijh->resourceMaps[AIJH::GRANITE], -30);
 			break;
-
 		case BLD_FISHERY:
-			//aijh->ChangeResourceMap(target_x, target_y, 10, aijh->resourceMaps[AIJH::FISH], -30);
 			break;
 		case BLD_STOREHOUSE:
-			//aijh->GetConstruction()->AddStoreHouse(target_x, target_y);
 			break;
 		case BLD_HARBORBUILDING:
-			//aijh->GetConstruction()->AddStoreHouse(target_x, target_y);
 			break;
 		case BLD_FARM:
-			//aijh->ChangeResourceMap(target_x, target_y, 5, aijh->resourceMaps[AIJH::PLANTSPACE], -30);
 			aijh->SetFarmedNodes(target_x, target_y,true);
 			break;
-
 		case BLD_MILL:
 			aijh->AddBuildJob(new AIJH::BuildJob(aijh, BLD_BAKERY, target_x, target_y));
 			break;
-
 		case BLD_PIGFARM:
 			aijh->AddBuildJob(new AIJH::BuildJob(aijh, BLD_SLAUGHTERHOUSE, target_x, target_y));
 			break;
-
 		case BLD_BAKERY:
 		case BLD_SLAUGHTERHOUSE:
 		case BLD_BREWERY:

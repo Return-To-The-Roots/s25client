@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 8273 2012-09-16 13:26:46Z marcus $
+// $Id: AIPlayerJH.cpp 8276 2012-09-16 15:47:32Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1293,6 +1293,9 @@ void AIPlayerJH::HandleBuildingFinished(const Coords& coords, BuildingType bld)
 		break;
 
 	case BLD_STOREHOUSE:
+		break;
+	case BLD_WOODCUTTER:		
+		AddBuildJob(BLD_SAWMILL, coords.x, coords.y);
 		break;
 	default:
 		break;
