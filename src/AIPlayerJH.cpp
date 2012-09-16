@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 8270 2012-09-15 23:18:49Z marcus $
+// $Id: AIPlayerJH.cpp 8271 2012-09-16 11:54:26Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -42,6 +42,7 @@
 #include "GameMessages.h"
 #include "GameServer.h"
 #include <set>
+#include <algorithm>
 
 // from Pathfinding.cpp
 bool IsPointOK_RoadPath(const GameWorldBase& gwb, const MapCoord x, const MapCoord y, const unsigned char dir, const void *param);
@@ -131,7 +132,7 @@ void AIPlayerJH::RunGF(const unsigned gf)
 		ExecuteAIJob();
 	}
 
-	if ((gf + playerid * 17) % 1000 == 0)
+	if ((gf + playerid * 17) % 100 == 0)
 	{
 		//CheckExistingMilitaryBuildings();
 		TryToAttack();
@@ -1460,7 +1461,8 @@ void AIPlayerJH::Chat(std::string message)
 
 void AIPlayerJH::TryToAttack() 
 {
-	std::set<const nobBaseMilitary *> potentialTargets;
+	unsigned hq_or_harbor_without_soldiers = 0;
+	std::deque<const nobBaseMilitary *> potentialTargets;
 
 	// use own military buildings (except inland buildings) to search for enemy military buildings
 	for (std::list<nobMilitary*>::const_iterator it = aii->GetMilitaryBuildings().begin(); it != aii->GetMilitaryBuildings().end(); it++)
@@ -1481,43 +1483,59 @@ void AIPlayerJH::TryToAttack()
 				aii->ToggleCoins(mil->GetX(), mil->GetY());
 			}
 		}
+
 		// get nearby enemy buildings and store in set of potential attacking targets
 		std::list<nobBaseMilitary *> buildings;
-		aii->GetMilitaryBuildings((*it)->GetX(), (*it)->GetY(), 2, buildings);
-		for(std::list<nobBaseMilitary*>::iterator it2 = buildings.begin(); it2 != buildings.end(); ++it2)
+
+		MapCoord src_x = (*it)->GetX();
+		MapCoord src_y = (*it)->GetY();
+
+		aii->GetMilitaryBuildings(src_x, src_y, 2, buildings);
+		for(std::list<nobBaseMilitary*>::iterator target = buildings.begin(); target != buildings.end(); ++target)
 		{
-			const nobMilitary *enemyTarget;
-			enemyTarget = dynamic_cast<const nobMilitary *>((*it2));
-
-			if (enemyTarget && enemyTarget->IsNewBuilt())
-				continue;
-
-			MapCoord dest_x = (*it2)->GetX();
-			MapCoord dest_y = (*it2)->GetY();
-			if (gwb->CalcDistance((*it)->GetX(), (*it)->GetY(), dest_x, dest_y) < BASE_ATTACKING_DISTANCE 
-				&& aii->IsPlayerAttackable((*it2)->GetPlayer()) && aii->IsVisible(dest_x, dest_y))
+			if ((*target)->GetGOT() == GOT_NOB_MILITARY)
 			{
-				potentialTargets.insert(*it2);
+				const nobMilitary *enemyTarget = dynamic_cast<const nobMilitary *>((*target));
+
+				if (enemyTarget && enemyTarget->IsNewBuilt())
+					continue;
+			}
+
+			MapCoord dest_x = (*target)->GetX();
+			MapCoord dest_y = (*target)->GetY();
+
+			if (gwb->CalcDistance(src_x, src_y, dest_x, dest_y) < BASE_ATTACKING_DISTANCE 
+				&& aii->IsPlayerAttackable((*target)->GetPlayer()) && aii->IsVisible(dest_x, dest_y))
+			{
+				if (((*target)->GetGOT() != GOT_NOB_MILITARY) && (!(*target)->DefendersAvailable()))
+				{
+					// headquarter or harbor without any troops :)
+					hq_or_harbor_without_soldiers++;
+					potentialTargets.push_front(*target);
+				} else
+				{
+					potentialTargets.push_back(*target);
+				}
 			}
 		}
 	}
 
-	std::vector<std::pair<const nobBaseMilitary *, unsigned> > potentialAttackersPerTarget(potentialTargets.size());
-	unsigned index = 0;
+	// shuffle everything but headquarters and harbors without any troops in them
+	std::random_shuffle(potentialTargets.begin() + hq_or_harbor_without_soldiers, potentialTargets.end());
 
 	// check for each potential attacking target the number of available attacking soldiers
-	for (std::set<const nobBaseMilitary *>::iterator it = potentialTargets.begin(); it != potentialTargets.end(); it++)
+	for (std::deque<const nobBaseMilitary *>::iterator target = potentialTargets.begin(); target != potentialTargets.end(); target++)
 	{
-		const MapCoord dest_x = (*it)->GetX();
-		const MapCoord dest_y = (*it)->GetY();
+		const MapCoord dest_x = (*target)->GetX();
+		const MapCoord dest_y = (*target)->GetY();
+
+		unsigned numberOfAttackers = 0;
 
 		// ask each of nearby own military buildings for soldiers to contribute to the potential attack
 		std::list<nobBaseMilitary *> myBuildings;
 		aii->GetMilitaryBuildings(dest_x, dest_y, 2, myBuildings);
 		for(std::list<nobBaseMilitary*>::iterator it3 = myBuildings.begin(); it3!=myBuildings.end(); ++it3)
 		{
-			potentialAttackersPerTarget[index].first = *it;
-
 			if ((*it3)->GetPlayer() == playerid)
 			{
 				const nobMilitary *myMil;
@@ -1525,60 +1543,26 @@ void AIPlayerJH::TryToAttack()
 				if (!myMil)
 					continue;
 
-				potentialAttackersPerTarget[index].second += myMil->GetSoldiersForAttack(dest_x, dest_y, playerid);
+				numberOfAttackers += myMil->GetSoldiersForAttack(dest_x, dest_y, playerid);
 			}
 		}
-		index++;
-	}
 
+		if (numberOfAttackers == 0)
+			continue;
 
-	// find maximum of potential attackers
-	unsigned max = 0;
-	unsigned maxIndex = 0;
-
-	for (unsigned i=0; i<potentialTargets.size(); ++i)
-	{
-		if (potentialAttackersPerTarget[i].second > max)
+		if ((*target)->GetGOT() == GOT_NOB_MILITARY)
 		{
-			max = potentialAttackersPerTarget[i].second;
-			maxIndex = i;
-		}
-	}
+			const nobMilitary *enemyTarget = dynamic_cast<const nobMilitary *>((*target));
 
-	// Attack! if possible
-	if (max > 0)
-	{
-		const nobMilitary *enemyTarget;
-		enemyTarget = dynamic_cast<const nobMilitary *>(potentialAttackersPerTarget[maxIndex].first);
-		const unsigned numberOfAttackers = potentialAttackersPerTarget[maxIndex].second;
-		if (enemyTarget)
-		{
-			if (numberOfAttackers > enemyTarget->GetTroopsCount() && enemyTarget->GetTroopsCount() > 0)
+			if (enemyTarget && ((numberOfAttackers <= enemyTarget->GetTroopsCount()) || (enemyTarget->GetTroopsCount() == 0)))
 			{
-				aii->Attack(enemyTarget->GetX(), enemyTarget->GetY(),numberOfAttackers, true);
-				return;
+				continue;
 			}
 		}
-		else
-		{
-			// something different? HQ? 
-			const nobHQ *enemyHQ;
-			enemyHQ = dynamic_cast<const nobHQ *>(potentialAttackersPerTarget[maxIndex].first);
-			if (enemyHQ)
-			{
-				aii->Attack(enemyHQ->GetX(), enemyHQ->GetY(), numberOfAttackers, true);
-				return;
-			}
 
-			// Harbor?
-			const nobHarborBuilding *enemyHarbor;
-			enemyHarbor = dynamic_cast<const nobHarborBuilding *>(potentialAttackersPerTarget[maxIndex].first);
-			if (enemyHarbor)
-			{
-				aii->Attack(enemyHarbor->GetX(), enemyHarbor->GetY(), numberOfAttackers, true);
-				return;
-			}
-		}
+		aii->Attack(dest_x, dest_y, numberOfAttackers, true);
+
+		return;
 	}
 }
 
