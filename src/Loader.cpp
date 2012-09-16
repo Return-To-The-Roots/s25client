@@ -1,4 +1,4 @@
-// $Id: Loader.cpp 8228 2012-09-12 08:57:53Z marcus $
+// $Id: Loader.cpp 8274 2012-09-16 15:08:22Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -622,16 +622,13 @@ void Loader::fillCaches()
 
 					bmp.reset();
 
-					if (job == JOB_SCOUT)
+					if ((job == JOB_SCOUT) || ((job >= JOB_PRIVATE) && (job <= JOB_GENERAL)))
 					{
-						id = 35+NATION_RTTR_TO_S2[nation]*6;
-					} else if ((job >= JOB_PRIVATE) && (job <= JOB_GENERAL))
-					{
-						id = 30+NATION_RTTR_TO_S2[nation]*6+job-JOB_PRIVATE;
+						id += NATION_RTTR_TO_S2[nation] * 6;
 					} else if (job == 0)
 					{
 						fat = false;
-					} else if (job == JOB_TYPES_COUNT)
+					} else if (job == JOB_TYPES_COUNT)	// used for fat carrier, so that we do not need an additional sub-array
 					{
 						fat = true;
 						id = 0;
