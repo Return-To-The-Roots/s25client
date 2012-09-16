@@ -1,4 +1,4 @@
-// $Id: EventManager.cpp 8238 2012-09-13 20:26:00Z marcus $
+// $Id: EventManager.cpp 8279 2012-09-16 21:11:43Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -39,7 +39,7 @@
 
 EventManager::~EventManager()
 {
-	for(std::vector<Event*>::iterator it = eis.begin(); it != eis.end(); ++it)
+	for(std::list<Event*>::iterator it = eis.begin(); it != eis.end(); ++it)
 		delete (*it);
 
 	eis.clear();
@@ -102,34 +102,24 @@ void EventManager::NextGF()
 	unsigned int gfnr = GAMECLIENT.GetGFNumber();
 
 	// Events abfragen
-	for (unsigned cnt = 0; cnt < eis.size();)
+	for (std::list<Event*>::iterator it = eis.begin(); it != eis.end(); )
 	{
-		Event *e = eis[cnt];
-
-		if (!e)
+		if ((*it)->gf_next == gfnr)
 		{
-			// marked as removed -> remove
+			assert((*it)->obj);
+			assert((*it)->obj->GetObjId() < GameObject::GetObjIDCounter());
 
-			// this should not be a problem, as there is at least one element in eis: e
-			eis[cnt] = eis.back();
-			eis.pop_back();
-		} else if (e->gf_next == gfnr)
-		{
-			assert(e->obj);
-			assert(e->obj->GetObjId() < GameObject::GetObjIDCounter());
-
-			// mark as removed
-			eis[cnt] = NULL;
-
-			if (e->obj)
+			if ((*it)->obj)
 			{
-				e->obj->HandleEvent(e->id);
+				(*it)->obj->HandleEvent((*it)->id);
 			}
 
-			delete e;
+			delete (*it);
+
+			it = eis.erase(it);
 		} else
 		{
-			++cnt;
+			++it;
 		}
 	}
 
@@ -174,7 +164,7 @@ void EventManager::Serialize(SerializedGameData *sgd) const
 
 	std::list<const Event*> save_events;
 	// Nur Events speichern, die noch nicth vorher von anderen Objekten gespeichert wurden!
-	for(std::vector<Event*>::const_iterator it = eis.begin(); it != eis.end(); ++it)
+	for(std::list<Event*>::const_iterator it = eis.begin(); it != eis.end(); ++it)
 	{
 		if ((*it) && !sgd->GetConstGameObject((*it)->GetObjId()))
 			save_events.push_back(*it);
@@ -196,7 +186,7 @@ void EventManager::Deserialize(SerializedGameData *sgd)
 /// Ist ein Event mit bestimmter id für ein bestimmtes Objekt bereits vorhanden?
 bool EventManager::IsEventAcive(const GameObject * const obj, const unsigned id) const
 {
-	for (std::vector<Event*>::const_iterator it = eis.begin(); it != eis.end(); ++it)
+	for (std::list<Event*>::const_iterator it = eis.begin(); it != eis.end(); ++it)
 	{
 		if ((*it) && ((*it)->id == id) && ((*it)->obj == obj))
 		{
@@ -214,20 +204,22 @@ void EventManager::RemoveEvent(EventPointer ep)
 		return;
 	}
 
-	unsigned sz = eis.size();
+	std::list<Event*>::iterator it = eis.begin();
 
-	for (unsigned cnt = 0; cnt < sz; cnt++)
+	while (it != eis.end())
 	{
-		if (eis[cnt] == ep)
+		if ((*it) == ep)
 		{
-			// ATTENTION: we only mark this as removed, otherwise this leads to unexpected behaviour!
-			eis[cnt] = NULL;
-
-			delete ep;
-
-			// as this event can only occur once in our list, stop here.
-			break;
+			it = eis.erase(it);
+		} else
+		{
+			 ++it;
 		}
+	}
+
+	if (it == eis.end())
+	{
+		delete ep;
 	}
 }
 

@@ -1,4 +1,4 @@
-// $Id: EventManager.h 8140 2012-09-03 10:23:34Z marcus $
+// $Id: EventManager.h 8279 2012-09-16 21:11:43Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -99,7 +99,7 @@ public:
 	bool IsEventAcive(const GameObject * const obj, const unsigned id) const;
 
 private:
-	std::vector<Event*> eis;     ///< Liste der Events für die einzelnen Objekte
+	std::list<Event*> eis;     ///< Liste der Events für die einzelnen Objekte
 	std::list<GameObject*> kill_list; ///< Liste mit Objekten die unmittelbar nach NextGF gekillt werden sollen
 };
 
