@@ -1,4 +1,4 @@
-// $Id: dskGameInterface.cpp 8243 2012-09-14 06:58:57Z marcus $
+// $Id: dskGameInterface.cpp 8297 2012-09-17 22:22:20Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -650,7 +650,7 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
 
 	case '1':	case '2':	case '3': // Spieler umschalten
 	case '4':	case '5':	case '6':
-	case '7':
+	case '7':	case '8':
 		{
 			if(GameClient::inst().IsReplayModeOn())
 				GameClient::inst().ChangeReplayPlayer(ke.c-'1');
