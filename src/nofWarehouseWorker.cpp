@@ -1,4 +1,4 @@
-// $Id: nofWarehouseWorker.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: nofWarehouseWorker.cpp 8286 2012-09-17 15:29:22Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -117,7 +117,6 @@ void nofWarehouseWorker::GoalReached()
 			// Ware ablegen
 			gwg->GetSpecObj<noFlag>(x,y)->AddWare(carried_ware);
 			
-
 			// Ich trage keine Ware mehr
 			carried_ware = 0;
 		}
@@ -129,7 +128,9 @@ void nofWarehouseWorker::GoalReached()
 	{
 		// Ware aufnehmen
 		carried_ware = gwg->GetSpecObj<noFlag>(x,y)->SelectWare(1,false,this);
-		carried_ware->Carry(gwg->GetSpecObj<noRoadNode>(gwg->GetXA(x,y,1),gwg->GetYA(x,y,1)));
+
+		if (carried_ware)
+			carried_ware->Carry(gwg->GetSpecObj<noRoadNode>(gwg->GetXA(x,y,1),gwg->GetYA(x,y,1)));
 	}
 
 	// Wieder ins Schloss gehen

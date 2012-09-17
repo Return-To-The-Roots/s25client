@@ -1,4 +1,4 @@
-// $Id: noFlag.cpp 8246 2012-09-14 09:39:25Z marcus $
+// $Id: noFlag.cpp 8286 2012-09-17 15:29:22Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -338,10 +338,10 @@ Ware *noFlag::SelectWare(const unsigned char dir, const bool swap_wares, const n
  		}
 	}
 
-	assert(best_ware);
+/*	assert(best_ware);
 	if(!best_ware)
 		LOG.lprintf("Achtung: Bug im Spiel: noFlag::SelectWare: best_ware = 0!\n");
-
+*/
 	return best_ware;
 }
 
