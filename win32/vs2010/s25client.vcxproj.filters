@@ -287,9 +287,6 @@
     <ClInclude Include="..\..\src\dskSinglePlayer.h">
       <Filter>Quelldateien\Game\GUI\desktops</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\dskUnlimitedPlay.h">
-      <Filter>Quelldateien\Game\GUI\desktops</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\ExtensionList.h">
       <Filter>Quelldateien\Loader\Driver</Filter>
     </ClInclude>
@@ -920,6 +917,7 @@
     <ClInclude Include="..\..\src\Debug.h">
       <Filter>Quelldateien\Debug</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\glSmartBitmap.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Addons.cpp">
@@ -1082,9 +1080,6 @@
       <Filter>Quelldateien\Game\GUI\desktops</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\dskSplash.cpp">
-      <Filter>Quelldateien\Game\GUI\desktops</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\dskUnlimitedPlay.cpp">
       <Filter>Quelldateien\Game\GUI\desktops</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\ExtensionList.cpp">
@@ -1680,6 +1675,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Debug.cpp">
       <Filter>Quelldateien\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\glSmartBitmap.cpp">
+      <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

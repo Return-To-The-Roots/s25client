@@ -177,7 +177,6 @@
     <ClInclude Include="..\..\src\dskSelectMap.h" />
     <ClInclude Include="..\..\src\dskSinglePlayer.h" />
     <ClInclude Include="..\..\src\dskSplash.h" />
-    <ClInclude Include="..\..\src\dskUnlimitedPlay.h" />
     <ClInclude Include="..\..\src\EventManager.h" />
     <ClInclude Include="..\..\src\ExtensionList.h" />
     <ClInclude Include="..\..\src\FileChecksum.h" />
@@ -444,7 +443,6 @@
     <ClCompile Include="..\..\src\dskSelectMap.cpp" />
     <ClCompile Include="..\..\src\dskSinglePlayer.cpp" />
     <ClCompile Include="..\..\src\dskSplash.cpp" />
-    <ClCompile Include="..\..\src\dskUnlimitedPlay.cpp" />
     <ClCompile Include="..\..\src\EventManager.cpp" />
     <ClCompile Include="..\..\src\ExtensionList.cpp" />
     <ClCompile Include="..\..\src\FileChecksum.cpp" />
