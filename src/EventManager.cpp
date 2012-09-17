@@ -1,4 +1,4 @@
-// $Id: EventManager.cpp 8279 2012-09-16 21:11:43Z marcus $
+// $Id: EventManager.cpp 8283 2012-09-17 12:34:46Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -104,19 +104,25 @@ void EventManager::NextGF()
 	// Events abfragen
 	for (std::list<Event*>::iterator it = eis.begin(); it != eis.end(); )
 	{
-		if ((*it)->gf_next == gfnr)
-		{
-			assert((*it)->obj);
-			assert((*it)->obj->GetObjId() < GameObject::GetObjIDCounter());
+		Event *e = *it;
 
-			if ((*it)->obj)
+		if (!e)
+		{
+			it = eis.erase(it);
+		} else if (e->gf_next == gfnr)
+		{
+
+			assert(e->obj);
+			assert(e->obj->GetObjId() < GameObject::GetObjIDCounter());
+
+			if (e->obj)
 			{
-				(*it)->obj->HandleEvent((*it)->id);
+				e->obj->HandleEvent(e->id);
 			}
 
-			delete (*it);
-
 			it = eis.erase(it);
+
+			delete e;
 		} else
 		{
 			++it;
@@ -210,16 +216,26 @@ void EventManager::RemoveEvent(EventPointer ep)
 	{
 		if ((*it) == ep)
 		{
-			it = eis.erase(it);
-		} else
-		{
-			 ++it;
+			(*it) = NULL;
+
+			// delete first occurrence
+			delete ep;
+
+			break;
 		}
+
+		++it;
 	}
 
-	if (it == eis.end())
+	// NULL any further findings
+	while (it != eis.end())
 	{
-		delete ep;
+		if ((*it) == ep)
+		{
+			(*it) = NULL;
+		}
+
+		++it;
 	}
 }
 
