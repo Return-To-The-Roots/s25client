@@ -1,4 +1,4 @@
-// $Id: GameWorldGame.cpp 8277 2012-09-16 17:59:43Z marcus $
+// $Id: GameWorldGame.cpp 8288 2012-09-17 21:16:15Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -841,9 +841,19 @@ bool GameWorldGame::TerritoryChange(const noBaseBuilding * const building,const 
 			if((prev_player=GetNode(tx,ty).owner) != (player=tr.GetOwner(x,y)))
 			{
 				// if gameobjective isnt 75% ai can ignore water/snow/lava/swamp terrain (because it wouldnt help win the game)
-				unsigned char t1=GetNode(tx,ty).t1;
-				if(GameClient::inst().GetGGS().game_objective==GlobalGameSettings::GO_CONQUER3_4 || (t1!=TT_WATER && t1!=TT_LAVA && t1!=TT_SWAMPLAND&& t1!=TT_SNOW))
-					return false;					
+				if(GameClient::inst().GetGGS().game_objective==GlobalGameSettings::GO_CONQUER3_4)
+					return false;
+				unsigned char t1=GetNode(tx,ty).t1,t2=GetNode(tx,ty).t2;
+				if((t1!=TT_WATER && t1!=TT_LAVA && t1!=TT_SWAMPLAND&& t1!=TT_SNOW)&&(t2!=TT_WATER && t2!=TT_LAVA && t2!=TT_SWAMPLAND&& t2!=TT_SNOW))
+					return false;
+				//also check neighboring nodes for their terrain since border will still count as player territory but not allow any buildings !
+				for(int j=0;j<6;j++)
+				{
+					t1=GetNode(GetXA(tx,ty,j),GetYA(tx,ty,j)).t1;
+					t2=GetNode(GetXA(tx,ty,j),GetYA(tx,ty,j)).t2;
+					if((t1!=TT_WATER && t1!=TT_LAVA && t1!=TT_SWAMPLAND&& t1!=TT_SNOW)||(t2!=TT_WATER && t2!=TT_LAVA && t2!=TT_SWAMPLAND&& t2!=TT_SNOW))
+						return false;
+				}
 			}
 		}
 	}

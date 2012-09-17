@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 8281 2012-09-17 09:48:36Z marcus $
+// $Id: AIPlayerJH.cpp 8288 2012-09-17 21:16:15Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -838,9 +838,24 @@ bool AIPlayerJH::FindBestPositionDiminishingResource(MapCoord &x, MapCoord &y, A
 							}
 						}						
 					}
+					//if(resourceMaps[res][n])
+						//assert(temp==aii->CalcResourceValue(tx2,ty2,res));
 					//copy the value to the resource map
 					resourceMaps[res][n]=temp;
-				}				
+				}	
+				if(res==AIJH::FISH||res==AIJH::STONES)
+				{
+					//remove permanently invalid spots to speed up future checks
+					unsigned char t1=gwb->GetNode(tx2,ty2).t1;
+					if(t1==TT_DESERT||t1==TT_SNOW||t1==TT_LAVA||t1==TT_WATER||t1==TT_SWAMPLAND||t1==TT_MOUNTAIN1||t1==TT_MOUNTAIN2||t1==TT_MOUNTAIN3||t1==TT_MOUNTAIN4)
+						resourceMaps[res][n]=0;
+				}
+				else //= granite,gold,iron,coal
+				{
+					unsigned char t1=gwb->GetNode(tx2,ty2).t1;
+					if(t1!=TT_MOUNTAIN1&&t1!=TT_MOUNTAIN2&&t1!=TT_MOUNTAIN3&&t1!=TT_MOUNTAIN4)
+						resourceMaps[res][n]=0;
+				}
 				if (temp > best_value)					
 				{				
 					if (!nodes[n].reachable || (inTerritory && !aii->IsOwnTerritory(tx2,ty2)) || nodes[n].farmed)
@@ -1223,14 +1238,34 @@ void AIPlayerJH::HandleRoadConstructionComplete(const Coords& coords, unsigned c
 	//does the roadsegment still exist?
 	if(!flag->routes[dir])
 		return;
-	//set flags on our new road
-	for(unsigned i=0; i<flag->routes[dir]->GetLength(); ++i)
+	//check if this road leads to a warehouseflag and if it does start setting flags from the warehouseflag else from the new flag
+	//goal is to move roadsegments with a length of more than 2 away from the warehouse 
+	MapCoord tx=flag->routes[dir]->GetOtherFlag(flag)->GetX();
+	MapCoord ty=flag->routes[dir]->GetOtherFlag(flag)->GetY();
+	tx=gwb->GetXA(tx,ty,1);
+	ty=gwb->GetYA(tx,ty,1);
+	if(aii->IsBuildingOnNode(tx,ty,BLD_STOREHOUSE)||aii->IsBuildingOnNode(tx,ty,BLD_HARBORBUILDING)||aii->IsBuildingOnNode(tx,ty,BLD_HEADQUARTERS))
+	{
+		gwb->GetPointA(tx,ty,4);
+		for(unsigned i=0; i<flag->routes[dir]->GetLength(); ++i)
+		{
+			aii->GetPointA(tx, ty, flag->routes[dir]->GetDir(true,i));
+			{
+				aii->SetFlag(tx, ty);
+			}
+		}
+	}
+	else
+	{
+	//set flags on our new road starting from the new flag
+		for(unsigned i=0; i<flag->routes[dir]->GetLength(); ++i)
 		{
 			aii->GetPointA(x, y, flag->routes[dir]->GetDir(false,i));
 			{
 				aii->SetFlag(x, y);
 			}
 		}
+	}
 }
 
 void AIPlayerJH::HandleRoadConstructionFailed(const Coords& coords, unsigned char dir)
@@ -1949,4 +1984,30 @@ bool AIPlayerJH::IsInvalidShipyardPosition(MapCoord x,MapCoord y)
 		return true;
 	return false;
 
+}
+
+bool AIPlayerJH::ValidFishInRange(MapCoord x,MapCoord y)
+{
+	unsigned max_radius = 5;
+	for(MapCoord tx=gwb->GetXA(x,y,0), r=1;r<=max_radius;tx=gwb->GetXA(tx,y,0),++r)
+	{
+		MapCoord tx2 = tx, ty2 = y;
+		for(unsigned i = 2;i<8;++i)
+		{
+			for(MapCoord r2=0;r2<r;gwb->GetPointA(tx2,ty2,i%6),++r2)
+			{				
+				if(gwb->GetNode(tx2,ty2).resources>0x80&&gwb->GetNode(tx2,ty2).resources<0x90) //fish on current spot?
+				{
+					//LOG.lprintf("found fish at %i,%i ",tx2,ty2);
+					//try to find a path to a neighboring node on the coast
+					for(int j=0;j<6;j++)
+					{
+						if(gwb->FindHumanPath(x,y,gwb->GetXA(tx2,ty2,j),gwb->GetYA(tx2,ty2,j),10) != 0xFF)
+							return true;				
+					}
+				}
+			}
+		}
+	}
+	return false;
 }

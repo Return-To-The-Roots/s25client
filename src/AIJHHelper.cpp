@@ -1,4 +1,4 @@
-// $Id: AIJHHelper.cpp 8277 2012-09-16 17:59:43Z marcus $
+// $Id: AIJHHelper.cpp 8288 2012-09-17 21:16:15Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -155,7 +155,7 @@ void AIJH::BuildJob::TryToBuild()
 			break;
 			}
 		case BLD_FORESTER:
- 			if (aijh->GetDensity(bx, by, AIJH::PLANTSPACE, 7) > 0.2)
+ 			if (aijh->GetDensity(bx, by, AIJH::PLANTSPACE, 7) > 0.3)
 				foundPos = aijh->FindBestPosition(bx, by, AIJH::WOOD, BQ_HUT, 0, 11);
 			break;
 		case BLD_HUNTER:
@@ -169,7 +169,10 @@ void AIJH::BuildJob::TryToBuild()
 			unsigned numQuarries = aijh->GetConstruction()->GetBuildingCount(BLD_QUARRY);
 			foundPos = aijh->FindBestPosition(bx, by, AIJH::STONES, BQ_HUT, (numQuarries > 4) ? 40 : 1 + aijh->GetConstruction()->GetBuildingCount(BLD_QUARRY) * 10, 11);
 			if(foundPos&&!aijh->ValidStoneinRange(bx,by))
+			{
 				foundPos=false;
+				aijh->SetResourceMap(AIJH::STONES,bx+(by*aii->GetMapHeight()),0);
+			}
 			break;
 			}
 		case BLD_BARRACKS:
@@ -193,6 +196,11 @@ void AIJH::BuildJob::TryToBuild()
 
 		case BLD_FISHERY:
 			foundPos = aijh->FindBestPosition(bx, by, AIJH::FISH, BQ_HUT, 11, true);
+			if(foundPos&&!aijh->ValidFishInRange(bx,by))
+			{
+				aijh->SetResourceMap(AIJH::FISH,bx+(by*aii->GetMapHeight()),0);
+				foundPos=false;
+			}
 			break;
 		case BLD_STOREHOUSE:
 			if(!aijh->GetConstruction()->OtherStoreInRadius(bx, by, 15))

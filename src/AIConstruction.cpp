@@ -1,4 +1,4 @@
-// $Id: AIConstruction.cpp 8255 2012-09-15 08:15:26Z marcus $
+// $Id: AIConstruction.cpp 8288 2012-09-17 21:16:15Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -333,7 +333,7 @@ bool AIConstruction::Wanted(BuildingType type)
 		return false;
 	if ((type >= BLD_BARRACKS && type <= BLD_FORTRESS) || type == BLD_STOREHOUSE)
 		//todo: find a better way to determine that there is no risk in expanding than sawmill up and complete
-		return (GetBuildingCount(BLD_BARRACKS)+GetBuildingCount(BLD_GUARDHOUSE)+GetBuildingCount(BLD_FORTRESS)+GetBuildingCount(BLD_WATCHTOWER)>0 || buildingCounts.building_counts[BLD_SAWMILL]>0 || aii->GetInventory()->goods[GD_BOARDS]>30);		
+		return (GetBuildingCount(BLD_BARRACKS)+GetBuildingCount(BLD_GUARDHOUSE)+GetBuildingCount(BLD_FORTRESS)+GetBuildingCount(BLD_WATCHTOWER)>0 || buildingCounts.building_counts[BLD_SAWMILL]>0 || (aii->GetInventory()->goods[GD_BOARDS]>30&&GetBuildingCount(BLD_SAWMILL)>0));		
 	return GetBuildingCount(type) < buildingsWanted[type];
 }
 

@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.h 8277 2012-09-16 17:59:43Z marcus $
+// $Id: AIPlayerJH.h 8288 2012-09-17 21:16:15Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -267,9 +267,13 @@ protected:
 
 	bool ValidStoneinRange(MapCoord x,MapCoord y);
 
+	bool ValidFishInRange(MapCoord x,MapCoord y);
+
 	bool NoEnemyHarbor();
 
 	bool IsInvalidShipyardPosition(MapCoord x,MapCoord y);
+
+	void SetResourceMap(AIJH::Resource res,unsigned nodenumber,int newvalue){resourceMaps[res][nodenumber]=newvalue;}
 
 
 protected:

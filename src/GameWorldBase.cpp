@@ -1,4 +1,4 @@
-// $Id: GameWorldBase.cpp 8272 2012-09-16 12:16:30Z marcus $
+// $Id: GameWorldBase.cpp 8288 2012-09-17 21:16:15Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -922,14 +922,6 @@ unsigned short GameWorldBase::GetXA(const MapCoord x, const MapCoord y, unsigned
 
 	// never reached, but compiler likes to complain :)
 	return(0);
-}
-
-void GameWorldBase::GetPointA(MapCoord& x, MapCoord& y, unsigned dir) const
-{
-	// We can just overwrite x, as it is not used in GetYA anyway.
-	// Only y is important for GetXA!
-	x = GetXA(x, y, dir);
-	y = GetYA(x, y, dir);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

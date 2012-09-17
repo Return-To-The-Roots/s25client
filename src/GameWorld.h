@@ -1,4 +1,4 @@
-// $Id: GameWorld.h 8285 2012-09-17 14:14:02Z marcus $
+// $Id: GameWorld.h 8288 2012-09-17 21:16:15Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -226,7 +226,7 @@ public:
 	/// Wie GetYA, bloÃŸ 2. AuÃŸenschale (dir zwischen 0 bis 11)
 	MapCoord GetYA2(const MapCoord x, const MapCoord y, unsigned dir) const;
 	/// Wandelt einen Punkt in einen Nachbarpunkt um
-	void GetPointA(MapCoord& x, MapCoord& y, unsigned dir) const;
+	inline void GetPointA(MapCoord& x, MapCoord& y, unsigned dir) const {x = GetXA(x, y, dir); y = GetYA(x, y, dir);}
 	/// Returns neighbouring point
 	inline Point<MapCoord> GetPointA(Point<MapCoord> p,const unsigned dir) const
 	{ GetPointA(p.x,p.y,dir); return p; }
