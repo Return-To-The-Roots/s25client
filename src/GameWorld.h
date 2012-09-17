@@ -1,4 +1,4 @@
-// $Id: GameWorld.h 8282 2012-09-17 12:33:37Z marcus $
+// $Id: GameWorld.h 8285 2012-09-17 14:14:02Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -879,6 +879,7 @@ private:
 	/// Erstellt Objekte anhand der ausgelesenen S2map
 	void Scan(glArchivItem_Map *map);
 
+	/// random function using RANDOM.Rand(...) for std::random_shuffle
 	static ptrdiff_t myRandom(ptrdiff_t max);
 };
 

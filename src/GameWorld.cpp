@@ -1,4 +1,4 @@
-// $Id: GameWorld.cpp 8282 2012-09-17 12:33:37Z marcus $
+// $Id: GameWorld.cpp 8285 2012-09-17 14:14:02Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -67,6 +67,7 @@ bool GameWorld::LoadMap(const std::string& filename)
 	return true;
 }
 
+// random function using RANDOM.Rand(...) for std::random_shuffle
 ptrdiff_t GameWorld::myRandom(ptrdiff_t max)
 {
 	return(RANDOM.Rand(__FILE__, __LINE__, 0, max));
