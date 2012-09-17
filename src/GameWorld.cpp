@@ -1,4 +1,4 @@
-// $Id: GameWorld.cpp 8260 2012-09-15 17:03:06Z marcus $
+// $Id: GameWorld.cpp 8282 2012-09-17 12:33:37Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -65,6 +65,11 @@ bool GameWorld::LoadMap(const std::string& filename)
 			GetPlayer(GameClient::inst().GetPlayerID())->hqy);
 
 	return true;
+}
+
+ptrdiff_t GameWorld::myRandom(ptrdiff_t max)
+{
+	return(RANDOM.Rand(__FILE__, __LINE__, 0, max));
 }
 
 void GameWorld::Scan(glArchivItem_Map *map)
@@ -370,7 +375,8 @@ void GameWorld::Scan(glArchivItem_Map *map)
 	//random locations? -> randomize them :)
 	if (GameClient::inst().GetGGS().random_location)
 	{
-		std::random_shuffle(headquarter_positions.begin(), headquarter_positions.end());
+		ptrdiff_t (*p_myrandom)(ptrdiff_t) = myRandom;
+		std::random_shuffle(headquarter_positions.begin(), headquarter_positions.end(), p_myrandom);
 
 		for (unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
 		{

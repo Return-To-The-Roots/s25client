@@ -1,4 +1,4 @@
-// $Id: GameWorld.h 8261 2012-09-15 17:27:45Z marcus $
+// $Id: GameWorld.h 8282 2012-09-17 12:33:37Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -30,6 +30,7 @@
 #include "TerrainRenderer.h"
 #include "main.h"
 #include <vector>
+#include <cstddef>
 #include "GamePlayerList.h"
 #include "TradeGraph.h"
 
@@ -186,7 +187,7 @@ protected:
 	std::list<noBuildingSite*> harbor_building_sites_from_sea;
 
 	GameClientPlayerList *players;
-	
+
 public:
 	unsigned int map_size;
 
@@ -878,7 +879,7 @@ private:
 	/// Erstellt Objekte anhand der ausgelesenen S2map
 	void Scan(glArchivItem_Map *map);
 
-
+	static ptrdiff_t myRandom(ptrdiff_t max);
 };
 
 
