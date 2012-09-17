@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 8277 2012-09-16 17:59:43Z marcus $
+// $Id: AIPlayerJH.cpp 8281 2012-09-17 09:48:36Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1675,6 +1675,9 @@ bool AIPlayerJH::IsFlagPartofCircle(const noFlag *startFlag,unsigned maxlen,cons
 		if(curFlag->routes[testdir])
 		{
 			const noFlag *flag=curFlag->routes[testdir]->GetOtherFlag(curFlag);
+			if (!flag)
+				return(false);
+
 			bool alreadyinlist=false;
 			for(unsigned i=0;i<oldflagsx.size();i++)
 			{
