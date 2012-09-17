@@ -472,6 +472,7 @@ void dskUnlimitedPlay::Msg_ButtonClick(const unsigned int ctrl_id)
 	case 85:
 	case 86:
 	case 87:
+	case 88:
 	case 80: //swap 
 		{
 			LOG.lprintf("dskHostGame: swap button pressed\n");

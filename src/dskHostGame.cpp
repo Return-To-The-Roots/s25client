@@ -1,4 +1,4 @@
-// $Id: dskHostGame.cpp 7887 2012-03-18 22:21:17Z jh $
+// $Id: dskHostGame.cpp 8284 2012-09-17 12:49:31Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -486,6 +486,7 @@ void dskHostGame::Msg_ButtonClick(const unsigned int ctrl_id)
 	case 85:
 	case 86:
 	case 87:
+	case 88:
 	case 80: //swap 
 		{
 			LOG.lprintf("dskHostGame: swap button pressed\n");
