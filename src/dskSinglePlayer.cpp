@@ -1,4 +1,4 @@
-// $Id: dskSinglePlayer.cpp 7710 2011-12-30 23:41:29Z marcus $
+// $Id: dskSinglePlayer.cpp 8287 2012-09-17 16:36:57Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -29,7 +29,6 @@
 #include "GameSavegame.h"
 
 #include "dskMainMenu.h"
-#include "dskUnlimitedPlay.h"
 #include "dskSelectMap.h"
 #include "iwPlayReplay.h"
 #include "iwSave.h"

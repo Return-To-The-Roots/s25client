@@ -1,4 +1,4 @@
-// $Id: dskSelectMap.cpp 8262 2012-09-15 17:32:44Z marcus $
+// $Id: dskSelectMap.cpp 8287 2012-09-17 16:36:57Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -35,7 +35,6 @@
 #include "dskHostGame.h"
 #include "dskLobby.h"
 #include "dskSinglePlayer.h"
-#include "dskUnlimitedPlay.h"
 
 #include "iwMsgbox.h"
 #include "iwSave.h"
@@ -328,10 +327,7 @@ void dskSelectMap::CI_NextConnectState(const ConnectState cs)
 	{
 	case CS_FINISHED:
 	{
-		if (csi.type == NP_LOCAL)
-			WindowManager::inst().Switch(new dskUnlimitedPlay);
-		else
-			WindowManager::inst().Switch(new dskHostGame);
+		WindowManager::inst().Switch(new dskHostGame((csi.type == NP_LOCAL)));
 	} break;
 	default: 
 		break;

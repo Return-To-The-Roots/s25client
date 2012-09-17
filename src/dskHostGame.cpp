@@ -1,4 +1,4 @@
-// $Id: dskHostGame.cpp 8284 2012-09-17 12:49:31Z marcus $
+// $Id: dskHostGame.cpp 8287 2012-09-17 16:36:57Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -32,6 +32,7 @@
 
 #include "dskDirectIP.h"
 #include "dskLobby.h"
+#include "dskSinglePlayer.h"
 #include "iwMsgbox.h"
 #include "iwAddons.h"
 
@@ -50,8 +51,8 @@
  *  @author Devil
  *  @author FloSoft
  */
-dskHostGame::dskHostGame() :
-	Desktop(LOADER.GetImageN("setup015", 0)), temppunkte(0), has_countdown(false)
+dskHostGame::dskHostGame(bool single_player) :
+	Desktop(LOADER.GetImageN("setup015", 0)), temppunkte(0), has_countdown(false), single_player(single_player)
 {
 	// Kartenname
 	AddText(0, 400, 5,GAMECLIENT.GetGameName().c_str(), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, LargeFont);
@@ -66,10 +67,14 @@ dskHostGame::dskHostGame() :
 	AddText(13, 355, 40, _("Color"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, NormalFont);
 	// "Team"
 	AddText(14, 405, 40, _("Team"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, NormalFont);
-	// "Bereit"
-	AddText(15, 465, 40, _("Ready?"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, NormalFont);
-	// "Ping"
-	AddText(16, 515, 40, _("Ping"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, NormalFont);
+
+	if (!single_player)
+	{
+		// "Bereit"
+		AddText(15, 465, 40, _("Ready?"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, NormalFont);
+		// "Ping"
+		AddText(16, 515, 40, _("Ping"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, NormalFont);
+	}
 	// "Swap"
 	if(GAMECLIENT.IsHost()&&!GAMECLIENT.IsSavegame())
 		AddText(24, 10, 40, _("Swap"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, NormalFont);
@@ -77,10 +82,13 @@ dskHostGame::dskHostGame() :
 	if(GAMECLIENT.IsSavegame())
 		AddText(17, 645, 40, _("Past player"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, NormalFont);
 
-	// Chatfenster
-	AddChatCtrl(1, 20, 310, 360, 218, TC_GREY, NormalFont);
-	// Edit für Chatfenster
-	AddEdit(4, 20, 530, 360, 22, TC_GREY, NormalFont);
+	if (!single_player)
+	{
+		// Chatfenster
+		AddChatCtrl(1, 20, 310, 360, 218, TC_GREY, NormalFont);
+		// Edit für Chatfenster
+		AddEdit(4, 20, 530, 360, 22, TC_GREY, NormalFont);
+	}
 
 	// "Spiel starten"
 	AddTextButton(2, 600, 560, 180, 22, TC_GREEN2, (GAMECLIENT.IsHost() ? _("Start game") : _("Ready")), NormalFont);
@@ -164,6 +172,16 @@ dskHostGame::dskHostGame() :
 		}
 	}
 
+	if (single_player)
+	{
+		// Setze initial auf KI
+		for (unsigned char i = 0; i < GAMECLIENT.GetPlayerCount(); i++)
+		{
+			if (!GAMECLIENT.GetPlayer(i)->is_host)
+				GAMESERVER.TogglePlayerState(i);
+		}
+	}
+
 	// Alle Spielercontrols erstellen
 	for(unsigned char i = GAMECLIENT.GetPlayerCount(); i; --i)
 		UpdatePlayerRow(i-1);
@@ -182,6 +200,7 @@ dskHostGame::dskHostGame() :
 		LOBBYCLIENT.SendServerJoinRequest();
 		LOBBYCLIENT.SendRankingInfoRequest(GAMECLIENT.GetPlayer(GAMECLIENT.GetPlayerID())->name);
 	}
+
 	GAMECLIENT.SetInterface(this);
 }
 
@@ -339,7 +358,10 @@ void dskHostGame::UpdatePlayerRow(const unsigned row)
 void dskHostGame::Msg_PaintBefore()
 {
 	// Chatfenster Fokus geben
-	GetCtrl<ctrlEdit>(4)->SetFocus();
+	if (!single_player)
+	{
+		GetCtrl<ctrlEdit>(4)->SetFocus();
+	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -491,14 +513,14 @@ void dskHostGame::Msg_ButtonClick(const unsigned int ctrl_id)
 		{
 			LOG.lprintf("dskHostGame: swap button pressed\n");
 			unsigned char p=0;
-			while(true)
+			while (true)
 			{
-				if(GAMECLIENT.GetPlayer(p)->is_host)
+				if (GAMECLIENT.GetPlayer(p)->is_host)
 				{
 					LOG.lprintf("dskHostGame: host detected\n");
 					break;
 				}
-				if(p>8)
+				if(p > MAX_PLAYERS)
 				{
 					LOG.lprintf("dskHostGame: could not find host\n");
 					break;
@@ -506,7 +528,8 @@ void dskHostGame::Msg_ButtonClick(const unsigned int ctrl_id)
 				else
 					p++;
 			}
-			if(p<8)
+
+			if (p < MAX_PLAYERS)
 			{
 				GameServer::inst().SwapPlayer(p,ctrl_id-81);
 				CI_PlayersSwapped(p,ctrl_id-81);
@@ -519,7 +542,10 @@ void dskHostGame::Msg_ButtonClick(const unsigned int ctrl_id)
 
 			GAMECLIENT.Stop();
 
-			if(LOBBYCLIENT.LoggedIn())
+			if (single_player)
+			{
+				WindowManager::inst().Switch(new dskSinglePlayer);
+			} else if(LOBBYCLIENT.LoggedIn())
 				WindowManager::inst().Switch(new dskLobby);
 			else
 				// Hauptmenü zeigen
@@ -583,6 +609,11 @@ void dskHostGame::CI_Countdown(int countdown)
 {
 	has_countdown = true;
 
+	if (single_player)
+	{
+		return;
+	}
+
 	std::stringstream message;
 
 	if (countdown == 10)
@@ -608,6 +639,11 @@ void dskHostGame::CI_Countdown(int countdown)
  */
 void dskHostGame::CI_CancelCountdown()
 {
+	if (single_player)
+	{
+		return;
+	}
+
 	GetCtrl<ctrlChat>(1)->AddMessage("", "", 0xFFCC2222, _("Start aborted"), 0xFFFFCC00);
 	
 	has_countdown = false;
@@ -630,7 +666,10 @@ void dskHostGame::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult 
 		{
 			GAMECLIENT.Stop();
 
-			if(LOBBYCLIENT.LoggedIn()) // steht die Lobbyverbindung noch?
+			if (single_player)
+			{
+				WindowManager::inst().Switch(new dskSinglePlayer);
+			} else if(LOBBYCLIENT.LoggedIn()) // steht die Lobbyverbindung noch?
 				WindowManager::inst().Switch(new dskLobby);
 			else
 				WindowManager::inst().Switch(new dskDirectIP);
@@ -871,6 +910,9 @@ void dskHostGame::CI_GameStarted(GameWorldViewer *gwv)
  */
 void dskHostGame::CI_PSChanged(const unsigned player_id, const PlayerState ps)
 {
+	if ((single_player) && (ps == PS_FREE))
+		GAMESERVER.TogglePlayerState(player_id);
+
 	UpdatePlayerRow(player_id);
 }
 
@@ -978,7 +1020,7 @@ void dskHostGame::CI_GGSChanged(const GlobalGameSettings& ggs)
  */
 void dskHostGame::CI_Chat(const unsigned player_id, const ChatDestination cd, const std::string& msg)
 {
-	if(player_id != 0xFFFFFFFF) // Keine Lobby-Nachrichten anzeigen
+	if ((player_id != 0xFFFFFFFF) && !single_player) // Keine Lobby-Nachrichten anzeigen
 	{
 		// Zeit holen
 		char time_string[64];
