@@ -1,4 +1,4 @@
-// $Id: GameWorldGame.cpp 8288 2012-09-17 21:16:15Z marcus $
+// $Id: GameWorldGame.cpp 8298 2012-09-18 07:28:57Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -943,7 +943,6 @@ void GameWorldGame::RoadNodeAvailable(const MapCoord x, const MapCoord y)
 		// Koordinaten um den Punkt herum
 		MapCoord xa = GetXA(x,y,i), ya = GetYA(x,y,i);
 
-		
 		// Figuren Bescheid sagen, es können auch auf den Weg gestoppte sein, die müssen auch berücksichtigt 
 		// werden, daher die *From-Methode
 		list<noBase*> objects;
@@ -952,23 +951,11 @@ void GameWorldGame::RoadNodeAvailable(const MapCoord x, const MapCoord y)
 		// Auch Figuren da, die rumlaufen können?
 		if(objects.size())
 		{
-	
 			for(list<noBase*>::iterator it = objects.begin();it.valid();++it)
 			{
 				if((*it)->GetType() == NOP_FIGURE)
 					static_cast<noFigure*>(*it)->NodeFreed(x,y);
 			}
-
-
-			//// Achtung: Hier können Iteratoren gelöscht werden in NodeFreed, daher Sicherheitsschleife!
-			//list<noBase*>::iterator next_it;
-			//for(list<noBase*>::iterator it = GetFigures(xa,ya).begin();
-			//	it.valid();it = next_it)
-			//{
-			//	next_it = it.GetNext();
-			//	if((*it)->GetType() == NOP_FIGURE)
-			//		static_cast<noFigure*>(*it)->NodeFreed(x,y);
-			//}
 		}
 	}
 }
@@ -1176,6 +1163,9 @@ bool GameWorldGame::IsRoadNodeForFigures(const MapCoord x, const MapCoord y,cons
 	for(list<noBase*>::iterator it = objects.begin();it.valid();++it)
 	{
 		// andere wartende Figuren
+/*
+		ATTENTION! This leads to figures on the same node blocking each other. -> Ghost jams
+
 		if((*it)->GetType() == NOP_FIGURE)
 		{
 			noFigure * fig = static_cast<noFigure*>(*it);
@@ -1183,7 +1173,7 @@ bool GameWorldGame::IsRoadNodeForFigures(const MapCoord x, const MapCoord y,cons
 			// AuÃerdem muss auch die Position stimmen, sonst spinnt der ggf. rum, da 
 			if(fig->IsWaitingForFreeNode() && (fig->GetDir()+3)%6 != dir)
 				return false;
-		}
+		}*/
 
 		// Kampf
 		if((*it)->GetGOT() == GOT_FIGHTING)
