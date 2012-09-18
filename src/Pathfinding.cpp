@@ -1,4 +1,4 @@
-// $Id: Pathfinding.cpp 8106 2012-08-31 15:43:57Z marcus $
+// $Id: Pathfinding.cpp 8300 2012-09-18 18:17:09Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -94,14 +94,15 @@ struct PathfindingPoint {
 public:
 	/// Die beiden Koordinaten des Punktes
 	MapCoord x,y;
-	unsigned distance;
+	unsigned id, distance;
 
 public:
 	/// Konstruktoren
-	PathfindingPoint(const MapCoord sx, const MapCoord sy)
+	PathfindingPoint(const MapCoord sx, const MapCoord sy, const unsigned sid)
 	{
 		x = sx;
 		y = sy;
+		id = sid;
 		distance = gwb->CalcDistance(x,y,dst_x,dst_y);
 	}
 
@@ -122,15 +123,15 @@ public:
 	{
 		// Weglängen schätzen für beide Punkte, indem man den bisherigen Weg mit der Luftlinie vom aktullen 
 		// Punkt zum Ziel addiert und auf diese Weise den kleinsten Weg auswählt
-		unsigned way1 = pf_nodes[gwb->MakeCoordID(x,y)].way + distance;
-		unsigned way2 = pf_nodes[gwb->MakeCoordID(two.x,two.y)].way + two.distance;
+		unsigned way1 = pf_nodes[id].way + distance;
+		unsigned way2 = pf_nodes[two.id].way + two.distance;
 
 		// Wenn die Wegkosten gleich sind, vergleichen wir die Koordinaten, da wir für std::set eine streng
 		// monoton steigende Folge brauchen
 		if(way1 == way2)
-			return (gwb->MakeCoordID(x,y) < gwb->MakeCoordID(two.x,two.y) );
+			return (id < two.id);
 		else
-			return (way1<way2);
+			return (way1 < way2);
 	}
 };
 
@@ -188,8 +189,8 @@ bool GameWorldBase::FindFreePath(const MapCoord x_start,const MapCoord y_start,
 	PathfindingPoint::Init(x_dest,y_dest,this);
 
 	// Anfangsknoten einfügen
-	unsigned start_id = MakeCoordID(x_start,y_start);
-	std::pair< std::set<PathfindingPoint>::iterator, bool > ret = todo.insert(PathfindingPoint(x_start,y_start));
+	unsigned start_id = MakeCoordID(x_start, y_start);
+	std::pair< std::set<PathfindingPoint>::iterator, bool > ret = todo.insert(PathfindingPoint(x_start, y_start, start_id));
 	// Und mit entsprechenden Werten füllen
 	pf_nodes[start_id].it_p = ret.first;
 	pf_nodes[start_id].prev = INVALID_PREV;
@@ -208,7 +209,7 @@ bool GameWorldBase::FindFreePath(const MapCoord x_start,const MapCoord y_start,
 
 		// ID des besten Punktes ausrechnen
 
-		unsigned best_id = MakeCoordID(best.x,best.y);
+		unsigned best_id = best.id;
 
 		// Dieser Knoten wurde aus dem set entfernt, daher wird der entsprechende Iterator
 		// auf das Ende (also nicht definiert) gesetzt, quasi als "NULL"-Ersatz
@@ -243,7 +244,7 @@ bool GameWorldBase::FindFreePath(const MapCoord x_start,const MapCoord y_start,
 
 		// Bei Zufälliger Richtung anfangen (damit man nicht immer denselben Weg geht, besonders für die Soldaten wichtig)
 		unsigned start = random_route?RANDOM.Rand("pf",__LINE__,y_start*GetWidth()+x_start,6):0;
-		
+
 		// Knoten in alle 6 Richtungen bilden
 		for(unsigned z = start;z<start+6;++z)
 		{
@@ -254,7 +255,7 @@ bool GameWorldBase::FindFreePath(const MapCoord x_start,const MapCoord y_start,
 				ya = GetYA(best.x,best.y,i);
 
 			// ID des umliegenden Knotens bilden
-			unsigned xaid = MakeCoordID(xa,ya);
+			unsigned xaid = MakeCoordID(xa, ya);
 
 			// Knoten schon auf dem Feld gebildet?
 			if (pf_nodes[xaid].lastVisited == currentVisit)
@@ -265,7 +266,7 @@ bool GameWorldBase::FindFreePath(const MapCoord x_start,const MapCoord y_start,
 					pf_nodes[xaid].way  = pf_nodes[best_id].way+1;
 					pf_nodes[xaid].prev = best_id;
 					todo.erase(pf_nodes[xaid].it_p);
-					ret = todo.insert(PathfindingPoint(xa,ya));
+					ret = todo.insert(PathfindingPoint(xa, ya, xaid));
 					pf_nodes[xaid].it_p = ret.first;
 					pf_nodes[xaid].dir = i;
 				}
@@ -294,7 +295,7 @@ bool GameWorldBase::FindFreePath(const MapCoord x_start,const MapCoord y_start,
 			pf_nodes[xaid].dir = i;
 			pf_nodes[xaid].prev = best_id;
 
-			ret = todo.insert(PathfindingPoint(xa,ya));
+			ret = todo.insert(PathfindingPoint(xa,ya, xaid));
 			pf_nodes[xaid].it_p = ret.first;
 		}
 	}
