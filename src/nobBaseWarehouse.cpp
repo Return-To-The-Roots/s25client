@@ -1,4 +1,4 @@
-// $Id: nobBaseWarehouse.cpp 7882 2012-03-18 22:18:36Z jh $
+// $Id: nobBaseWarehouse.cpp 8299 2012-09-18 07:30:42Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -290,10 +290,42 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
 				return;
 			}
 
+			// Fight or something in front of the house and we are not defending?
+			if (!gwg->IsRoadNodeForFigures(gwg->GetXA(x,y,4), gwg->GetYA(x,y,4), 4))
+			{
+				// there's a fight
+				bool found = false;
+
+				// try to find a defender and make him leave the house first
+				for(list<noFigure*>::iterator it = leave_house.begin();it.valid();++it)
+				{
+					if (((*it)->GetGOT() == GOT_NOF_AGGRESSIVEDEFENDER) ||
+						((*it)->GetGOT() == GOT_NOF_DEFENDER))
+					{
+						// remove defender from list, insert him again in front of all others
+						leave_house.erase(it);
+						leave_house.push_front(*it);
+
+						found = true;
+
+						break;
+					}
+				}
+
+				// no defender found? trigger next leaving event :)
+				if (!found)
+				{
+					go_out = false;
+					AddLeavingEvent();
+					return;
+				}
+			}
+
 			// Figuren kommen zuerst raus
 			if(leave_house.size())
 			{
 				noFigure * fig = *leave_house.begin();
+
 				gwg->AddFigure(fig,x,y);
 
 				/// Aktive Soldaten laufen nicht im Wegenetz, die das Haus verteidigen!
@@ -465,6 +497,13 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
 	// Auslagerevent
 	case 3:
 		{
+			// Fight or something in front of the house? Try again later!
+			if (!gwg->IsRoadNodeForFigures(gwg->GetXA(x,y,4), gwg->GetYA(x,y,4), 4))
+			{
+				empty_event = em->AddEvent(this,EMPTY_INTERVAL,3);
+				return;
+			}
+
 			empty_event = 0;
 
 			list<unsigned> type_list;
