@@ -1,3 +1,296 @@
+s25rttr (20120919-8301.224) karmic; urgency=low
+
+  * Automatic Jenkins Build 224
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Wed, 19 Sep 2012 01:10:08 +0200
+
+s25rttr (20120919-8301) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Wed, 19 Sep 2012 00:00:00 +0200
+
+s25rttr (20120918-8300) any; urgency=low
+
+  * Minor free pathfinding improvements
+
+ -- marcus  Tue, 18 Sep 2012 18:17:00 +0200
+
+s25rttr (20120918-8299) any; urgency=low
+
+  * Stop sending out of wares and people (except soldieres) in case
+    of a fight in front of the HQ/storehouse/harbor
+
+ -- marcus  Tue, 18 Sep 2012 07:30:00 +0200
+
+s25rttr (20120918-8298) any; urgency=low
+
+  * Stop ghost jams from happening, fixes #1052234.
+
+ -- marcus  Tue, 18 Sep 2012 07:28:00 +0200
+
+s25rttr (20120918-8297.223) karmic; urgency=low
+
+  * Automatic Jenkins Build 223
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 18 Sep 2012 01:28:28 +0200
+
+s25rttr (20120917-8297) any; urgency=low
+
+  * AIpoc 8179
+    
+    allows switching to player 8 (replay / dummy)
+
+ -- marcus  Mon, 17 Sep 2012 22:22:00 +0200
+
+s25rttr (20120917-8296) any; urgency=low
+
+  * AIpoc 8178
+    
+    win32/vs2010 project & project filers updated
+
+ -- marcus  Mon, 17 Sep 2012 22:21:00 +0200
+
+s25rttr (20120917-8295) any; urgency=low
+
+  * Fix for Landung3 (by Spike)
+
+ -- marcus  Mon, 17 Sep 2012 22:05:00 +0200
+
+s25rttr (20120917-8293) any; urgency=low
+
+  * "Drachenebene" fixed by Spike
+
+ -- marcus  Mon, 17 Sep 2012 21:55:00 +0200
+
+s25rttr (20120917-8292) any; urgency=low
+
+  * "Die Vier Inseln" fixed by Spike
+
+ -- marcus  Mon, 17 Sep 2012 21:44:00 +0200
+
+s25rttr (20120917-8291) any; urgency=low
+
+  * map-fix: Demo v016 rmp (by Spike)
+
+ -- marcus  Mon, 17 Sep 2012 21:41:00 +0200
+
+s25rttr (20120917-8290) any; urgency=low
+
+  * Added new map "Coast of Death" by Spike
+
+ -- marcus  Mon, 17 Sep 2012 21:40:00 +0200
+
+s25rttr (20120917-8289) any; urgency=low
+
+  * Added new map "Landstreicher" by Giant & Hubertus
+
+ -- marcus  Mon, 17 Sep 2012 21:37:00 +0200
+
+s25rttr (20120917-8288) any; urgency=low
+
+  * AIpoc 8175 & 8176
+    
+    part 1 of fix for Bug #1051052 (no new fishery without valid fish
+    in the area)
+    ai will no longer expand without at least starting a sawmill
+    first
+    
+    When the ai builds a road towards a warehouse it should now set
+    flags starting from the warehouseflag to move any possible length
+    3 segment away from the warehouse
+    Improved ai findbestposition
+
+ -- marcus  Mon, 17 Sep 2012 21:16:00 +0200
+
+s25rttr (20120917-8287) any; urgency=low
+
+  * Removed dskUnlimitedPlay.*, replaced by new single_player flag in
+    dskHostGame. Fixes #975382
+
+ -- marcus  Mon, 17 Sep 2012 16:36:00 +0200
+
+s25rttr (20120917-8286) any; urgency=low
+
+  * Fixed nofWarehouseWorker::GoalReached() crash
+
+ -- marcus  Mon, 17 Sep 2012 15:29:00 +0200
+
+s25rttr (20120917-8285) any; urgency=low
+
+  * Comments for GameWorld::myRandom(...)
+
+ -- marcus  Mon, 17 Sep 2012 14:14:00 +0200
+
+s25rttr (20120917-8284) any; urgency=low
+
+  * AIpoc 8174
+    
+    fixes swap player for player 8 in unlimited & mulitplayer games
+
+ -- marcus  Mon, 17 Sep 2012 12:49:00 +0200
+
+s25rttr (20120917-8283) any; urgency=low
+
+  * Fix for possible race condition in EventManager.
+
+ -- marcus  Mon, 17 Sep 2012 12:34:00 +0200
+
+s25rttr (20120917-8282) any; urgency=low
+
+  * Switching headquarter positions did not use RANDOM.Rand(). Fixed.
+
+ -- marcus  Mon, 17 Sep 2012 12:33:00 +0200
+
+s25rttr (20120917-8281) any; urgency=low
+
+  * Fixed possible crash in AIPlayerJH.cpp
+
+ -- marcus  Mon, 17 Sep 2012 09:48:00 +0200
+
+s25rttr (20120917-8280.222) karmic; urgency=low
+
+  * Automatic Jenkins Build 222
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Mon, 17 Sep 2012 01:26:46 +0200
+
+s25rttr (20120917-8280) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Mon, 17 Sep 2012 00:00:00 +0200
+
+s25rttr (20120916-8279) any; urgency=low
+
+  * EventManager using std::list again, fixes #1051674
+
+ -- marcus  Sun, 16 Sep 2012 21:11:00 +0200
+
+s25rttr (20120916-8278) any; urgency=low
+
+  * No emergency program if there are no warehouses (incl. HQ)
+
+ -- marcus  Sun, 16 Sep 2012 21:08:00 +0200
+
+s25rttr (20120916-8277) any; urgency=low
+
+  * AIpoc 8173
+    
+    the ai will now try to connect harbors founded from sea to
+    existing roadsystems
+
+ -- marcus  Sun, 16 Sep 2012 17:59:00 +0200
+
+s25rttr (20120916-8276.221) karmic; urgency=low
+
+  * Automatic Jenkins Build 221
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sun, 16 Sep 2012 18:13:12 +0200
+
+s25rttr (20120916-8276) any; urgency=low
+
+  * AIpoc 8172
+    
+    ai will now build sawmills next to new woodcutters a bit more
+    often
+
+ -- marcus  Sun, 16 Sep 2012 15:47:00 +0200
+
+s25rttr (20120916-8275) any; urgency=low
+
+  * Fix for scouts and soldiers not drawn correctly
+
+ -- marcus  Sun, 16 Sep 2012 15:43:00 +0200
+
+s25rttr (20120916-8274) any; urgency=low
+
+  * removed unnecessary calculations from Loader
+
+ -- marcus  Sun, 16 Sep 2012 15:08:00 +0200
+
+s25rttr (20120916-8273) any; urgency=low
+
+  * AI attack now takes into account soldier strength (at least
+    somehow ;))
+    AI does not start attacks from buildings being attacked
+    themselves
+
+ -- marcus  Sun, 16 Sep 2012 13:26:00 +0200
+
+s25rttr (20120916-8272) any; urgency=low
+
+  * Improvement of GameWorldBase::GetPointA (suggested by poc)
+
+ -- marcus  Sun, 16 Sep 2012 12:16:00 +0200
+
+s25rttr (20120916-8271.220) karmic; urgency=low
+
+  * Automatic Jenkins Build 220
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sun, 16 Sep 2012 14:04:08 +0200
+
+s25rttr (20120916-8271) any; urgency=low
+
+  * Less CPU hungry AI attacks
+
+ -- marcus  Sun, 16 Sep 2012 11:54:00 +0200
+
+s25rttr (20120916-8270.219) karmic; urgency=low
+
+  * Automatic Jenkins Build 219
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sun, 16 Sep 2012 01:45:55 +0200
+
+s25rttr (20120916-8270.218) karmic; urgency=low
+
+  * Automatic Jenkins Build 218
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sun, 16 Sep 2012 01:26:14 +0200
+
+s25rttr (20120915-8270) any; urgency=low
+
+  * AIpoc 8170
+    
+    ai checks for huntable creatures in a much smaller radius around
+    possible new hunter locations now
+    ai removes sawmills a bit more reluctantly
+    ai only submits new military settings when they are actually
+    different
+
+ -- marcus  Sat, 15 Sep 2012 23:18:00 +0200
+
+s25rttr (20120915-8269) any; urgency=low
+
+  * Fixed charburner stopped sign offsets
+
+ -- marcus  Sat, 15 Sep 2012 23:12:00 +0200
+
+s25rttr (20120915-8268) any; urgency=low
+
+  * Send replay before stack trace, as stack traces may still not
+    work and crash
+
+ -- marcus  Sat, 15 Sep 2012 22:08:00 +0200
+
+s25rttr (20120915-8266) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 15 Sep 2012 22:00:00 +0200
+
+s25rttr (20120915-8265) any; urgency=low
+
+  * Do not even try to attack military buildings that are not yet
+    occupied
+
+ -- marcus  Sat, 15 Sep 2012 21:41:00 +0200
+
+s25rttr (20120915-8264) any; urgency=low
+
+  * noBaseBuilding::IsWarehouse() was not true for harbors
+
+ -- marcus  Sat, 15 Sep 2012 21:07:00 +0200
+
 s25rttr (20120915-8263.217) karmic; urgency=low
 
   * Automatic Jenkins Build 217
