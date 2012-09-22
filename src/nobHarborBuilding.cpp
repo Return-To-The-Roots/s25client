@@ -1,4 +1,4 @@
-// $Id: nobHarborBuilding.cpp 8240 2012-09-13 21:31:20Z marcus $
+// $Id: nobHarborBuilding.cpp 8305 2012-09-22 12:34:54Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -554,7 +554,7 @@ void nobHarborBuilding::ShipArrived(noShip * ship)
 			{
 				wares.push_back(*it);
 				(*it)->StartShipJourney();
-				--goods.goods[(*it)->type];
+				--goods.goods[ConvertShields((*it)->type)];
 				it = wares_for_ships.erase(it);
 				
 			}
@@ -1156,6 +1156,9 @@ void nobHarborBuilding::WareDontWantToTravelByShip(Ware * ware)
 	{
 		// Dann hier gleich einliefern
 		AddWare(ware);
+		// and dont forget to reduce our visual count - addware will increase both and the ware waiting for a ship added to the visual count!
+		--goods.goods[ConvertShields(ware->type)];
+
 	}
 	// Oder will sie wieder raus?
 	else

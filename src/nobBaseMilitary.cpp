@@ -1,4 +1,4 @@
-// $Id: nobBaseMilitary.cpp 8127 2012-09-01 19:17:50Z jh $
+// $Id: nobBaseMilitary.cpp 8305 2012-09-22 12:34:54Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -54,7 +54,7 @@ nobBaseMilitary::nobBaseMilitary(const BuildingType type,const unsigned short x,
 
 nobBaseMilitary::~nobBaseMilitary()
 {
-	for(list<noFigure*>::iterator it = leave_house.begin();it.valid();++it)
+	for(std::list<noFigure*>::iterator it = leave_house.begin();it!=leave_house.end();++it)
 		delete (*it);
 }
 
@@ -92,7 +92,7 @@ void nobBaseMilitary::Destroy_nobBaseMilitary()
 	em->RemoveEvent(leaving_event);
 
 	// Soldaten, die noch in der Warteschlange hängen, rausschicken
-	for(list<noFigure*>::iterator it = leave_house.begin();it.valid();++it)
+	for(std::list<noFigure*>::iterator it = leave_house.begin();it!=leave_house.end();++it)
 	{
 		gwg->AddFigure((*it),x,y);
 
@@ -446,7 +446,7 @@ bool nobBaseMilitary::TestOnMission(nofActiveSoldier * soldier)
 void nobBaseMilitary::CancelJobs()
 {
 	// Soldaten, die noch in der Warteschlange hängen, rausschicken
-	for(list<noFigure*>::iterator it = leave_house.begin();it.valid();++it)
+	for(std::list<noFigure*>::iterator it = leave_house.begin();it!=leave_house.end();++it)
 	{
 		// Nur Soldaten nehmen (Job-Arbeiten) und keine (normalen) Verteidiger, da diese ja rauskommen
 		// sollen zum Kampf
@@ -461,8 +461,11 @@ void nobBaseMilitary::CancelJobs()
 			as->InformTargetsAboutCancelling();
 			// Wieder in das Haus verfrachten
 			this->AddActiveSoldier(as);
+			it=leave_house.erase(it);
+			if(it==leave_house.end())
+				break;
 
-			leave_house.erase(&it);
+			//leave_house.erase(&it);
 		}
 	}
 

@@ -1,4 +1,4 @@
-// $Id: GameClientPlayer.cpp 8278 2012-09-16 21:08:50Z marcus $
+// $Id: GameClientPlayer.cpp 8305 2012-09-22 12:34:54Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1766,7 +1766,7 @@ void GameClientPlayer::MakeStartPacts()
 	for(unsigned i = 0;i<GameClient::inst().GetPlayerCount();++i)
 	{
 		GameClientPlayer * p = GameClient::inst().GetPlayer(i);
-		if(team == p->team && team >= TM_TEAM1 && team <= TM_TEAM4)
+		if(GetFixedTeam(team) == GetFixedTeam(p->team) && GetFixedTeam(team) >= TM_TEAM1 && GetFixedTeam(team) <= TM_TEAM4)
 		{
 			for(unsigned z = 0;z<PACTS_COUNT;++z)
 			{
@@ -1779,6 +1779,14 @@ void GameClientPlayer::MakeStartPacts()
 	}
 }
 
+Team GameClientPlayer::GetFixedTeam(Team rawteam)
+{
+	if(rawteam==TM_RANDOMTEAM)
+		return TM_TEAM1;
+	if(rawteam>TM_TEAM4)
+		return Team(rawteam-3);
+	return rawteam;
+}
 
 bool GameClientPlayer::IsWareDependent(Ware * ware)
 {

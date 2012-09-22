@@ -256,6 +256,16 @@ bool AIInterface::FindFreePathForNewRoad(MapCoord startX, MapCoord startY, MapCo
 	return gwb->FindFreePath(startX, startY, targetX, targetY, false, 100, route, length, NULL, IsPointOK_RoadPath, NULL, (void *) &boat,false);
 }
 
+bool AIInterface::CalcBQSumDifference(MapCoord x,MapCoord y,MapCoord tx,MapCoord ty)
+{
+	unsigned s1=0,s2=0;
+	if(gwb->CalcBQ(x,y,playerID)!=BQ_DANGER)
+		s1+=gwb->CalcBQ(x,y,playerID);
+	if(gwb->CalcBQ(tx,ty,playerID)!=BQ_DANGER)
+		s2+=gwb->CalcBQ(tx,ty,playerID);
+	//LOG.lprintf("AIInterface::bqdiff - s1 %i,%i,%i s2 %i,%i,%i\n", x,y,s1,tx,ty,s2);
+	return s2<s1;
+}
 
 bool AIInterface::FindPathOnRoads(const noRoadNode *start, const noRoadNode *target, unsigned *length) const
 {

@@ -1,4 +1,4 @@
-// $Id: GameClientPlayer.h 8236 2012-09-13 14:31:58Z marcus $
+// $Id: GameClientPlayer.h 8305 2012-09-22 12:34:54Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -392,6 +392,8 @@ public:
 	unsigned GetRemainingPactTime(const PactType pt, const unsigned char other_player) const;
 	/// Setzt die initialen Bündnisse ahand der Teams
 	void MakeStartPacts();
+	/// returns fixed team number for randomteam players
+	Team GetFixedTeam(Team rawteam);
 	/// Testet die Bündnisse, ob sie nicht schon abgelaufen sind
 	void TestPacts();
 

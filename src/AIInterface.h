@@ -126,6 +126,11 @@ public:
 
 	bool IsMilitaryBuildingNearNode(MapCoord x, MapCoord y, const unsigned char player) const { return gwb->IsMilitaryBuildingNearNode(x, y, player); }
 
+	bool RoadAvailable(MapCoord x,MapCoord y,unsigned char dir,bool boat_road=false){return gwb->RoadAvailable(boat_road,x,y,dir,false);}
+
+	///returns true when the buildingqulity at the 2nd point is lower than the bq on the first point
+	bool CalcBQSumDifference(MapCoord x,MapCoord y,MapCoord tx,MapCoord ty);
+
 	/// Returns building quality on a given spot
 	BuildingQuality GetBuildingQuality(MapCoord x, MapCoord y) const { return gwb->CalcBQ(x, y, playerID); }
 
@@ -159,6 +164,9 @@ public:
 	// Returns a list containing all military buildings
 	const std::list<nobMilitary*>& GetMilitaryBuildings() const {return player->GetMilitaryBuildings();}
 
+	//returns a list containing all harbors
+	const std::list<nobHarborBuilding*>&GetHarbors() const{return player->GetHarbors();}
+
 	// Returns a list containing all storehouses and harbors and the hq
 	const std::list<nobBaseWarehouse*>& GetStorehouses() const {return player->GetStorehouses();}
 
@@ -183,6 +191,7 @@ public:
 	/// Tests whether there is a possibility to start a expedtion in a given direction from a given position, assuming a given starting harbor
 	bool IsExplorationDirectionPossible(MapCoord x, MapCoord y, unsigned int originHarborID, Direction direction) const;
 
+	void SetDefenders(MapCoord x,MapCoord y,unsigned char rank,unsigned char count){gcs->push_back(new gc::ChangeReserve(x,y,rank,count));}
 
 	// "Set" commands, to send commands to the game
 
@@ -239,6 +248,9 @@ public:
 	{
 		gcs->push_back(new gc::Attack(x, y, soldiers_count, strong_soldiers));
 	}
+
+	/// Sea-Attacks an enemy building
+	void SeaAttack(MapCoord x,MapCoord y,unsigned soldiers_count,bool strong_soldiers){gcs->push_back(new gc::SeaAttack(x,y,soldiers_count,strong_soldiers));}
 
 	/// Builds a road from a starting point along a given route
 	void BuildRoad(MapCoord x, MapCoord y, const std::vector<Direction> &route) { gcs->push_back(new gc::BuildRoad(x, y, false, route)); }

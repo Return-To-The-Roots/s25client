@@ -1,4 +1,4 @@
-// $Id: nobMilitary.cpp 8273 2012-09-16 13:26:46Z marcus $
+// $Id: nobMilitary.cpp 8305 2012-09-22 12:34:54Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -361,6 +361,7 @@ void nobMilitary::LookForEnemyBuildings(const nobBaseMilitary * const exception)
 	if(frontier_distance <= 1)
 		if(gwg->CalcDistanceToNearestHarbor(Point<MapCoord>(x,y)) < SEAATTACK_DISTANCE+2)
 	{
+		//if(gwg->IsAHarborInSeaAttackDistance(Point<MapCoord>(x,y)))
 			frontier_distance = 2;
 	}
 

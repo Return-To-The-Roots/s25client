@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 8288 2012-09-17 21:16:15Z marcus $
+// $Id: AIPlayerJH.cpp 8305 2012-09-22 12:34:54Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -137,6 +137,12 @@ void AIPlayerJH::RunGF(const unsigned gf)
 		//CheckExistingMilitaryBuildings();
 		TryToAttack();
 	}
+
+/*	if ((gf +41+ playerid * 17) % 100 == 0)
+	{
+		//CheckExistingMilitaryBuildings();
+		TrySeaAttack();
+	}*/
 
 	//if ((gf + playerid * 13) % 100 == 0)
 	//{
@@ -1304,6 +1310,7 @@ void AIPlayerJH::HandleBuildingFinished(const Coords& coords, BuildingType bld)
 	{
 	case BLD_HARBORBUILDING:
 		UpdateNodesAround(coords.x, coords.y, 8); // todo: fix radius
+		aii->SetDefenders(coords.x,coords.y,0,1); //order 1 defender to stay in the harborbuilding
 		//if(!BuildingNearby(coords.x,coords.y,BLD_SHIPYARD,8))
 		//{
 		//	AddBuildJob(BLD_SHIPYARD, coords.x, coords.y);
@@ -1467,12 +1474,21 @@ void AIPlayerJH::HandleNoMoreResourcesReachable(const Coords& coords, BuildingTy
 void AIPlayerJH::HandleShipBuilt(const Coords& coords)
 {
 	// Stop building ships if reached a maximum (TODO: make variable)
-	if (aii->GetShipCount() > 5)
+	if (aii->GetShipCount() > 6||aii->GetShipCount()>=(3*aii->GetBuildings(BLD_SHIPYARD).size()))
 	{
+		MapCoord x=coords.x,y=coords.y;
+		unsigned mindist=255;
+		nobUsual* shipyard;
 		for (std::list<nobUsual *>::const_iterator it = aii->GetBuildings(BLD_SHIPYARD).begin(); it != aii->GetBuildings(BLD_SHIPYARD).end(); it++)
 		{
-			aii->StopProduction((*it)->GetX(), (*it)->GetY());
+			if(aii->CalcDistance((*it)->GetX(),(*it)->GetY(),x,y)<mindist)
+			{
+				mindist=aii->CalcDistance((*it)->GetX(),(*it)->GetY(),x,y);
+				shipyard=*it;
+			}			
 		}
+		if(mindist<12)//might have been destroyed by now and anything further away than 12 should be wrong anyways
+			aii->StopProduction((shipyard)->GetX(), (shipyard)->GetY());
 	}
 }
 
@@ -1617,6 +1633,157 @@ void AIPlayerJH::TryToAttack()
 	}
 }
 
+void AIPlayerJH::TrySeaAttack()
+{
+	if(aii->GetShipCount()<1)
+		return;
+	if(aii->GetHarbors().size()<1)
+		return;
+	std::vector<int> invalidseas;
+	std::deque<const nobBaseMilitary *> potentialTargets;
+	std::vector<int> searcharoundharborspots; 
+	unsigned lol=SEAATTACK_DISTANCE;
+	//first check all harbors there might be some undefended ones - start at 1 to skip the harbor dummy
+	for(unsigned i=1;i<gwb->GetHarborPointCount();i++)
+	{
+		const nobHarborBuilding* hb;
+		if(hb=aii->GetSpecObj<nobHarborBuilding>(gwb->GetHarborPoint(i).x,gwb->GetHarborPoint(i).y))
+		{
+			if(aii->IsVisible(hb->GetX(),hb->GetY()))
+			{
+				if(aii->IsPlayerAttackable(hb->GetPlayer()))
+				{
+					//marked as invalid sea?
+					unsigned short sea_ids[6];
+					gwb->GetSeaIDs(i,sea_ids);
+					bool invalid=false;
+					for(unsigned r=0;r<6;r++)
+					{
+						if(std::find(invalidseas.begin(),invalidseas.end(),sea_ids[r])!=invalidseas.end())
+						{
+							invalid=true;
+							break;
+						}
+					}
+					if(!invalid)
+					{
+						if(!hb->DefendersAvailable()) //no defenders?
+						{
+							std::list<GameWorldBase::PotentialSeaAttacker> attackers;
+							gwb->GetAvailableSoldiersForSeaAttack(playerid,gwb->GetHarborPoint(i).x,gwb->GetHarborPoint(i).y,&attackers);						
+							if(attackers.size()) //try to attack it!
+							{
+								aii->SeaAttack(hb->GetX(),hb->GetY(),attackers.size(),true);
+								return;
+							}
+							else//no attackers in this sea_id -> remember that 
+							{
+								for (unsigned z=0;z<6;z++)
+								{
+									if(sea_ids[z])
+										invalidseas.push_back(sea_ids[z]);
+								}
+							}
+						}
+						else//can defend itself add to possible target list if we could attack it else add it to invalid sea_ids list :)
+						{
+							std::list<GameWorldBase::PotentialSeaAttacker> attackers;
+							gwb->GetAvailableSoldiersForSeaAttack(playerid,gwb->GetHarborPoint(i).x,gwb->GetHarborPoint(i).y,&attackers);
+							if(!attackers.size())
+							{
+								for (unsigned z=0;z<6;z++)
+								{
+									if(sea_ids[z])
+										invalidseas.push_back(sea_ids[z]);
+								}
+							}
+							else
+							{
+								potentialTargets.push_back(hb);
+								//LOG.lprintf("found a defended harbor we can attack at %i,%i \n",hb->GetX(),hb->GetY());
+							}
+						}
+					}//invalid -> nothing else to do
+				}
+				else//cant attack the harbor -> add to list
+				{
+					searcharoundharborspots.push_back(i);
+				}
+			}
+			//else: not visible for player no need to look any further here
+		}
+		else//no harbor -> add to list
+		{
+			searcharoundharborspots.push_back(i);
+			//LOG.lprintf("found an unused harborspot we have to look around of at %i,%i \n",gwb->GetHarborPoint(i).x,gwb->GetHarborPoint(i).y);
+		}
+	}
+	//add all military buildings around still valid harborspots (unused or used by ally)
+	for(unsigned i=0;i<searcharoundharborspots.size();i++)
+	{
+		//first check if the harborspot we are checking for is in one of the invalidseas!
+		unsigned short sea_ids[6];
+		gwb->GetSeaIDs(i,sea_ids);
+		bool invalid=false;
+		for(unsigned z=0;z<6;z++)
+		{
+			if(std::find(invalidseas.begin(),invalidseas.end(),sea_ids[z])!=invalidseas.end())
+			{
+				invalid=true;
+				break;
+			}
+		}
+		if(invalid)
+			continue;
+		//now add all military buildings around the harborspot to our list of potential targets
+		std::list<nobBaseMilitary *> buildings;
+		aii->GetMilitaryBuildings(gwb->GetHarborPoint(searcharoundharborspots[i]).x,gwb->GetHarborPoint(searcharoundharborspots[i]).y,2,buildings);
+		for(std::list<nobBaseMilitary*>::const_iterator it=buildings.begin();it!=buildings.end();it++)
+		{
+			if(aii->IsPlayerAttackable((*it)->GetPlayer())&&aii->IsVisible((*it)->GetX(),(*it)->GetY()))
+			{
+				const nobMilitary *enemyTarget = dynamic_cast<const nobMilitary *>((*it));
+
+				if (enemyTarget && enemyTarget->IsNewBuilt())
+					continue;
+				potentialTargets.push_back((*it));
+				if (((*it)->GetGOT() != GOT_NOB_MILITARY) && (!(*it)->DefendersAvailable()))
+				{
+					std::list<GameWorldBase::PotentialSeaAttacker> attackers;
+					gwb->GetAvailableSoldiersForSeaAttack(playerid,(*it)->GetX(),(*it)->GetY(),&attackers);
+					if(attackers.size()) //try to attack it!
+					{
+						aii->SeaAttack((*it)->GetX(),(*it)->GetY(),attackers.size(),true);
+						return;
+					}
+					else//cant attack so add the seas we are looking from to the invalid seas
+					{
+						for(unsigned z=0;z<6;z++)
+						{
+							invalidseas.push_back(sea_ids[z]);
+						}
+						continue;//go to next harborspot we wont be able to attack anything from this harborspot anyways
+					}
+				} else
+				{
+					potentialTargets.push_back(*it);
+				}
+			}
+		}
+	}
+	//now we have a deque full of available targets that are available for attack -> shuffle and attack the first one we can attack
+	std::random_shuffle(potentialTargets.begin(),potentialTargets.end());
+	for(std::deque<const nobBaseMilitary*>::iterator it=potentialTargets.begin();it!=potentialTargets.end();it++)
+	{
+		std::list<GameWorldBase::PotentialSeaAttacker> attackers;
+		gwb->GetAvailableSoldiersForSeaAttack(playerid,(*it)->GetX(),(*it)->GetY(),&attackers);
+		if(attackers.size()) //try to attack it!
+		{
+			aii->SeaAttack((*it)->GetX(),(*it)->GetY(),attackers.size(),true);
+			return;
+		}
+	}
+}
 
 void AIPlayerJH::RecalcGround(MapCoord x_building, MapCoord y_building, std::vector<unsigned char> &route_road)
 {

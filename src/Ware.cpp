@@ -1,4 +1,4 @@
-// $Id: Ware.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: Ware.cpp 8305 2012-09-22 12:34:54Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -165,7 +165,7 @@ void Ware::GoalDestroyed()
 	{
 		// Ware ist unterwegs, Lagerhaus finden und Ware dort einliefern
 		assert(location);
-		assert(location->GetPlayer() < 7);
+		assert(location->GetPlayer() < MAX_PLAYERS);
 
 		// Wird sie gerade aus einem Lagerhaus rausgetragen?
 		if(location->GetGOT() == GOT_NOB_STOREHOUSE || 

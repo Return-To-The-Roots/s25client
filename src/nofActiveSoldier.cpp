@@ -1,4 +1,4 @@
-// $Id: nofActiveSoldier.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: nofActiveSoldier.cpp 8305 2012-09-22 12:34:54Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -76,6 +76,13 @@ void nofActiveSoldier::GoalReached()
 {
 	// We reached the military building
 	// Add myself to the building
+	if(!building)
+	{		
+		if((building=gwg->GetSpecObj<nobMilitary>(this->GetX(),this->GetY())) != NULL)
+			LOG.lprintf("nofActiveSoldier::GoalRoached() - no valid 'building' but found one at soldier's position (%i,%i)\n",this->GetX(),this->GetY());
+		else
+			LOG.lprintf("nofActiveSoldier::GoalRoached() - no valid 'building' also didnt find one at soldier's position (%i,%i)\n",this->GetX(),this->GetY());
+	}
 	static_cast<nobMilitary*>(building)->AddActiveSoldier(this);
 
 	// And remove myself from the map

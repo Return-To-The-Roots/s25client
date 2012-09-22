@@ -1,4 +1,4 @@
-// $Id: GameServer.cpp 8258 2012-09-15 16:03:30Z jh $
+// $Id: GameServer.cpp 8305 2012-09-22 12:34:54Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -44,7 +44,6 @@
 
 #include "Settings.h"
 #include "Debug.h"
-
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
@@ -530,8 +529,8 @@ bool GameServer::StartGame()
 			break;
 	}
 
-	framesinfo.nwf_length = i;
-
+	framesinfo.nwf_length = i;	
+	
 	// Mond malen
 	LOADER.GetImageN("resource", 33)->Draw(VideoDriverWrapper::inst().GetMouseX(), VideoDriverWrapper::inst().GetMouseY() - 40, 0, 0, 0, 0, 0, 0);
 	VideoDriverWrapper::inst().SwapBuffers();
@@ -671,7 +670,38 @@ void GameServer::TogglePlayerTeam(unsigned char client)
 		return;
 
 	// team wechseln
-	OnNMSPlayerToggleTeam(GameMessage_Player_Toggle_Team(client,Team((player->team+1)%TEAM_COUNT)));
+	//random team special case
+	//switch from random team?
+	if(player->team==TM_RANDOMTEAM||player->team==TM_RANDOMTEAM2||player->team==TM_RANDOMTEAM3||player->team==TM_RANDOMTEAM4)
+		OnNMSPlayerToggleTeam(GameMessage_Player_Toggle_Team(client,Team((TM_RANDOMTEAM+1)%TEAM_COUNT)));
+	else 
+	{
+		if(player->team==TM_NOTEAM) //switch to random team?
+		{
+			int rand=RANDOM.Rand(__FILE__, __LINE__, 0, 4);
+			switch(rand)
+			{
+			case 0:
+				OnNMSPlayerToggleTeam(GameMessage_Player_Toggle_Team(client,TM_RANDOMTEAM));
+				break;				
+			case 1:
+				OnNMSPlayerToggleTeam(GameMessage_Player_Toggle_Team(client,TM_RANDOMTEAM2));
+				break;
+			case 2:
+				OnNMSPlayerToggleTeam(GameMessage_Player_Toggle_Team(client,TM_RANDOMTEAM3));
+				break;
+			case 3:
+				OnNMSPlayerToggleTeam(GameMessage_Player_Toggle_Team(client,TM_RANDOMTEAM4));
+				break;
+			default:
+				OnNMSPlayerToggleTeam(GameMessage_Player_Toggle_Team(client,TM_RANDOMTEAM));
+				break;
+			}
+			
+		}
+		else
+			OnNMSPlayerToggleTeam(GameMessage_Player_Toggle_Team(client,Team((player->team+1)%TEAM_COUNT)));
+	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////

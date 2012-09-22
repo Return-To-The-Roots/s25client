@@ -1,4 +1,4 @@
-// $Id: iwMilitaryBuilding.cpp 7711 2011-12-31 00:08:36Z marcus $
+// $Id: iwMilitaryBuilding.cpp 8305 2012-09-22 12:34:54Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -96,7 +96,7 @@ void iwMilitaryBuilding::Msg_PaintAfter()
 	for(list<nofPassiveSoldier*>::iterator it = building->troops.begin();it.valid();++it)
 		soldiers.push_back((*it)->GetRank());
 
-	for(list<noFigure*>::iterator it = building->leave_house.begin();it.valid();++it)
+	for(std::list<noFigure*>::iterator it = building->leave_house.begin();it!=building->leave_house.end();++it)
 	{
 		if((*it)->GetGOT() == GOT_NOF_ATTACKER ||
 			(*it)->GetGOT() == GOT_NOF_AGGRESSIVEDEFENDER ||

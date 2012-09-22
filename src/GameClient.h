@@ -1,4 +1,4 @@
-// $Id: GameClient.h 8249 2012-09-14 10:11:19Z marcus $
+// $Id: GameClient.h 8305 2012-09-22 12:34:54Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -110,7 +110,7 @@ public:
 	void Command_SetFlag2(int x, int y, unsigned char player);
 	void Command_Chat(const std::string& text, const ChatDestination cd );
 	void Command_ToggleNation();
-	void Command_ToggleTeam();
+	void Command_ToggleTeam(Team newteam);
 	void Command_ToggleColor();
 	void Command_ToggleReady();
 

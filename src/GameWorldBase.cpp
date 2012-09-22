@@ -1,4 +1,4 @@
-// $Id: GameWorldBase.cpp 8288 2012-09-17 21:16:15Z marcus $
+// $Id: GameWorldBase.cpp 8305 2012-09-22 12:34:54Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1389,6 +1389,20 @@ unsigned GameWorldBase::CalcDistanceToNearestHarbor(const Point<MapCoord> pos) c
 	return min_distance;
 }
 
+/// returns true when a harborpoint is in SEAATTACK_DISTANCE for figures!
+bool GameWorldBase::IsAHarborInSeaAttackDistance(const Point<MapCoord> pos) const
+{
+	for(unsigned i = 1;i<harbor_pos.size();++i) //poc: harbor dummy at spot 0 ask Oliverr why 
+	{
+		if(CalcDistance(pos.x,pos.y,harbor_pos[i].x,harbor_pos[i].y)<SEAATTACK_DISTANCE)
+		{
+			if(FindHumanPath(pos.x,pos.y,harbor_pos[i].x,harbor_pos[i].y,SEAATTACK_DISTANCE!=0xff))
+				return true;
+		}
+	}		
+	return false;
+}
+
 
 /// Komperator zum Sortieren
 bool GameWorldBase::PotentialSeaAttacker::operator<(const GameWorldBase::PotentialSeaAttacker& pa) const
@@ -1398,6 +1412,57 @@ bool GameWorldBase::PotentialSeaAttacker::operator<(const GameWorldBase::Potenti
 		return distance < pa.distance;
 	else
 		return soldier->GetRank() > pa.soldier->GetRank();
+}
+
+/// returns all sea_ids from which a given building can be attacked by sea
+void GameWorldBase::GetValidSeaIDsAroundMilitaryBuildingForAttack(const MapCoord x,const MapCoord y, std::vector<bool> * use_seas, const unsigned char player_attacker,std::vector<unsigned>*harbor_points) const
+{
+	assert(use_seas);
+	// Nach Hafenpunkten in der Nähe des angegriffenen Gebäudes suchen
+	// Alle unsere Häfen durchgehen
+	for(unsigned i = 1;i<harbor_pos.size();++i)
+
+	{
+		MapCoord harbor_x = harbor_pos[i].x, harbor_y = harbor_pos[i].y;
+		
+		if(CalcDistance(harbor_x,harbor_y,x,y) <= SEAATTACK_DISTANCE)
+		{
+			//target isnt the harbor pos AND there is an enemy harbor? -> done for this harbor pos
+			const nobHarborBuilding *hb=GetSpecObj<nobHarborBuilding>(x,y);
+			if(!(x == harbor_x && y == harbor_y) && hb && players->getElement(player_attacker)->IsPlayerAttackable(GetNode(x,y).owner-1))
+			{
+				continue;
+			}
+			else
+			{
+				// Ist Ziel der Hafenspot? -> add sea_ids
+				if(x == harbor_x && y == harbor_y)
+				{
+					harbor_points->push_back(i);
+					unsigned short sea_ids[6];
+					GetSeaIDs(i,sea_ids);
+					for(unsigned z = 0;z<6;++z)
+					{
+						if(sea_ids[z])
+							use_seas->at(sea_ids[z]) = true;
+					}
+				}			
+				//so our target building is in range of a free or allied harbor pos but not the harborspot - now lets see if we can findhumanpath
+				else if(FindHumanPath(x,y,harbor_x,harbor_y,SEAATTACK_DISTANCE) != 0xff)				
+				{
+					harbor_points->push_back(i);
+					unsigned short sea_ids[6];
+					GetSeaIDs(i,sea_ids);
+					for(unsigned z = 0;z<6;++z)
+					{
+						if(sea_ids[z])
+							use_seas->at(sea_ids[z]) = true;
+					}
+				}
+			}
+		}
+	}
+
 }
 
 /// Liefert Hafenpunkte im Umkreis von einem bestimmten Militärgebäude
@@ -1433,11 +1498,15 @@ void GameWorldBase::GetAvailableSoldiersForSeaAttack(const unsigned char player_
 		&& GetNO(x,y)->GetGOT() !=  GOT_NOB_MILITARY)
 		return;
 		
-	bool use_seas[512];
-	memset(use_seas,0,512);
+	//bool use_seas[512];
+	//memset(use_seas,0,512);
+	std::vector<bool>use_seas;
+	use_seas.resize(seas.size());
 	
 	// Mögliche Hafenpunkte in der Nähe des Gebäudes
 	std::vector< unsigned > defender_harbors;
+	GetValidSeaIDsAroundMilitaryBuildingForAttack(x,y,&use_seas,player_attacker,&defender_harbors);
+	/*
 	
 	GetHarborPointsAroundMilitaryBuilding(x,y,&defender_harbors);
 	// Nach Hafenpunkten in der Nähe des angegriffenen Gebäudes suchen
@@ -1468,7 +1537,7 @@ void GameWorldBase::GetAvailableSoldiersForSeaAttack(const unsigned char player_
 				use_seas[sea_ids[z]] = true;
 		}
 	}
-	
+	*/
 	
 	// Liste alle Militärgebäude des Angreifers, die Soldaten liefern
 	std::vector<nobHarborBuilding::SeaAttackerBuilding> buildings;

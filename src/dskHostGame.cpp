@@ -1,4 +1,4 @@
-// $Id: dskHostGame.cpp 8287 2012-09-17 16:36:57Z marcus $
+// $Id: dskHostGame.cpp 8305 2012-09-22 12:34:54Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -35,6 +35,7 @@
 #include "dskSinglePlayer.h"
 #include "iwMsgbox.h"
 #include "iwAddons.h"
+#include "Random.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -437,8 +438,26 @@ void dskHostGame::Msg_Group_ButtonClick(const unsigned int group_id, const unsig
 				GAMESERVER.TogglePlayerTeam(player_id);
 			if(player_id == GAMECLIENT.GetPlayerID())
 			{
-				GAMECLIENT.Command_ToggleTeam();
-				GAMECLIENT.GetLocalPlayer()->team = Team((GAMECLIENT.GetLocalPlayer()->team + 1) % TEAM_COUNT);
+				if(GAMECLIENT.GetLocalPlayer()->team>1) // team: 1->2->3->4->0
+				{
+					GAMECLIENT.GetLocalPlayer()->team = Team((GAMECLIENT.GetLocalPlayer()->team + 1) % TEAM_COUNT);
+				}
+				else
+				{
+					if(GAMECLIENT.GetLocalPlayer()->team==0) // 0(noteam)->randomteam(1-4)
+					{						
+						int rnd=RANDOM.Rand(__FILE__, __LINE__, 0, 4);
+						if(!rnd)
+							GAMECLIENT.GetLocalPlayer()->team = TM_RANDOMTEAM;
+						else
+							GAMECLIENT.GetLocalPlayer()->team = Team(rnd+5);
+					}
+					else //any randomteam -> team 1
+					{
+						GAMECLIENT.GetLocalPlayer()->team = TM_TEAM1;
+					}
+				}
+				GAMECLIENT.Command_ToggleTeam(GAMECLIENT.GetLocalPlayer()->team);
 				ChangeTeam(GAMECLIENT.GetPlayerID(),GAMECLIENT.GetLocalPlayer()->team);
 			}
 		} break;
@@ -764,8 +783,8 @@ void dskHostGame::UpdateGGS()
  */
 void dskHostGame::ChangeTeam(const unsigned i, const unsigned char nr)
 {
-	const std::string teams[6] =
-	{ "-","?", "1","2","3","4", };
+	const std::string teams[9] =
+	{ "-","?", "1","2","3","4","?","?","?"};
 
 	GetCtrl<ctrlGroup>(58-i)->GetCtrl<ctrlBaseText>(5)->SetText(teams[nr]);
 }

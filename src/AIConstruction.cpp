@@ -1,4 +1,4 @@
-// $Id: AIConstruction.cpp 8288 2012-09-17 21:16:15Z marcus $
+// $Id: AIConstruction.cpp 8305 2012-09-22 12:34:54Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -238,9 +238,61 @@ bool AIConstruction::ConnectFlagToRoadSytem(const noFlag *flag, std::vector<unsi
 	if (found)
 	{
 		//LOG.lprintf("ai build main road player %i at %i %i\n", flag->GetPlayer(), flag->GetX(),flag->GetY());
-		return BuildRoad(flag, flags[shortest], route);
+		return MinorRoadImprovements(flag, flags[shortest], route);
 	}
 	return false;
+}
+
+bool AIConstruction::MinorRoadImprovements(const noRoadNode *start,const noRoadNode *target,std::vector<unsigned char>&route)
+{	
+	//bool done=false;
+	MapCoord x=start->GetX(),y=start->GetY();
+	/*for(unsigned i=0;i<route.size();i++)
+	{
+		LOG.lprintf(" %i",route[i]);
+	}
+	LOG.lprintf("\n");*/
+	for(unsigned i=0;i<(route.size()-1);i++)
+	{
+		if(((route[i]+1)%6==route[i+1])||((route[i]+5)%6==route[i+1])) //switching current and next route element will result in the same position after building both
+		{
+			MapCoord tx=x,ty=y;			
+			aii->GetPointA(tx,ty,route[i+1]);
+			aii->GetPointA(x,y,route[i]);
+			if(aii->RoadAvailable(tx,ty,route[i+1])&&aii->IsOwnTerritory(tx,ty)) //can the alternative road be build?
+			{
+				if(aii->CalcBQSumDifference(x,y,tx,ty)) //does the alternative road block a lower buildingquality point than the normal planned route?
+				{
+					//LOG.lprintf("AIConstruction::road improvements p%i from %i,%i moved node %i,%i to %i,%i i:%i, i+1:%i\n",playerID, start->GetX(),start->GetY(),x,y,tx,ty,route[i],route[i+1]);
+					x=tx; //we move the alternative path so move x&y and switch the route entries
+					y=ty;
+					if((route[i]+1)%6==route[i+1])
+					{	
+						route[i]=(route[i]+1)%6;
+						route[i+1]=(route[i+1]+5)%6;
+					}
+					else
+					{						
+						route[i]=(route[i]+5)%6;
+						route[i+1]=(route[i+1]+1)%6;
+					}
+					//done=true;
+				}
+			}
+		}
+		else
+			aii->GetPointA(x,y,route[i]);
+	}
+	/*if(done)
+	{
+		LOG.lprintf("final road\n");
+		for(unsigned i=0;i<route.size();i++)
+		{
+			LOG.lprintf(" %i",route[i]);
+		}
+		LOG.lprintf("\n");
+	}*/
+	return BuildRoad(start,target,route);
 }
 
 bool AIConstruction::BuildRoad(const noRoadNode *start, const noRoadNode *target, std::vector<unsigned char> &route)
@@ -300,13 +352,15 @@ BuildingType AIConstruction::ChooseMilitaryBuilding(MapCoord x, MapCoord y)
 			// avoid to build catapults in the beginning (no expansion)
 			unsigned  militaryBuildingCount = GetBuildingCount(BLD_BARRACKS) + GetBuildingCount(BLD_GUARDHOUSE)
 				+ GetBuildingCount(BLD_WATCHTOWER) + GetBuildingCount(BLD_FORTRESS);
-
-			if (randmil % 8 == 0 && aii->CanBuildCatapult() && militaryBuildingCount > 3)
+			if (randmil % 8 == 0 && aii->CanBuildCatapult() && militaryBuildingCount > 3&&distance<15)
 				bld = BLD_CATAPULT;
-			else if (randmil % 2 == 0)
-				bld = BLD_FORTRESS;
 			else
-				bld = BLD_WATCHTOWER;
+			{
+				if (randmil % 2 == 0)
+					bld = BLD_FORTRESS;			
+				else
+					bld = BLD_WATCHTOWER;
+			}
 			//slim chance for a guardhouse instead of tower or fortress so we can expand towards an enemy even if there are no big building spots in that direction
 			if(randmil%10==0)
 				bld=BLD_GUARDHOUSE;
@@ -329,8 +383,8 @@ unsigned AIConstruction::GetBuildingSitesCount(BuildingType type)
 
 bool AIConstruction::Wanted(BuildingType type)
 {
-	if (type == BLD_CATAPULT && !aii->CanBuildCatapult())
-		return false;
+	if (type == BLD_CATAPULT)
+		return aii->CanBuildCatapult()&&(aii->GetInventory()->goods[GD_STONES]>50);
 	if ((type >= BLD_BARRACKS && type <= BLD_FORTRESS) || type == BLD_STOREHOUSE)
 		//todo: find a better way to determine that there is no risk in expanding than sawmill up and complete
 		return (GetBuildingCount(BLD_BARRACKS)+GetBuildingCount(BLD_GUARDHOUSE)+GetBuildingCount(BLD_FORTRESS)+GetBuildingCount(BLD_WATCHTOWER)>0 || buildingCounts.building_counts[BLD_SAWMILL]>0 || (aii->GetInventory()->goods[GD_BOARDS]>30&&GetBuildingCount(BLD_SAWMILL)>0));		

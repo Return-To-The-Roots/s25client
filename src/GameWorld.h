@@ -1,4 +1,4 @@
-// $Id: GameWorld.h 8288 2012-09-17 21:16:15Z marcus $
+// $Id: GameWorld.h 8305 2012-09-22 12:34:54Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -406,6 +406,8 @@ public:
 	unsigned CalcHarborDistance(const unsigned habor_id1, const unsigned harbor_id2) const;
 	/// Bestimmt für einen beliebigen Punkt auf der Karte die Entfernung zum nächsten Hafenpunkt
 	unsigned CalcDistanceToNearestHarbor(const Point<MapCoord> pos) const;
+	/// returns true when a harborpoint is in SEAATTACK_DISTANCE for figures!
+	bool IsAHarborInSeaAttackDistance(const Point<MapCoord> pos) const;
 	
 	
 
@@ -429,10 +431,12 @@ public:
 	
 	/// Liefert Hafenpunkte im Umkreis von einem bestimmten Militärgebäude
 	void GetHarborPointsAroundMilitaryBuilding(const MapCoord x, const MapCoord y, std::vector<unsigned> * harbor_points) const;
-
+	/// returns all sea_ids from which a given building can be attacked by sea
+	void GetValidSeaIDsAroundMilitaryBuildingForAttack(const MapCoord x,const MapCoord y, std::vector<bool> * use_seas, const unsigned char player_attacker,std::vector<unsigned>*harbor_points)const;
 	/// Sucht verfügbare Soldaten, um dieses Militärgebäude mit einem Seeangriff anzugreifen
 	void GetAvailableSoldiersForSeaAttack(const unsigned char player_attacker, 
-	const MapCoord x, const MapCoord y, std::list<PotentialSeaAttacker> * attackers) const;
+		const MapCoord x, const MapCoord y, std::list<PotentialSeaAttacker> * attackers) const;
+
 
 protected:
 

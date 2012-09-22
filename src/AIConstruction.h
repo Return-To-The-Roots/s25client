@@ -1,4 +1,4 @@
-// $Id: AIConstruction.h 8241 2012-09-13 21:34:29Z marcus $
+// $Id: AIConstruction.h 8305 2012-09-22 12:34:54Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -61,6 +61,9 @@ public:
 
 	/// Builds a street between two roadnodes and sets flags on it, if route is empty, it will be calculated
 	bool BuildRoad(const noRoadNode *start, const noRoadNode *target, std::vector<unsigned char> &route);
+
+	/// whenever a given route contains 2 segment alternatives these get tested for their buildquality and the one with the lower bq is picked for the final path
+	bool MinorRoadImprovements(const noRoadNode *start, const noRoadNode *target, std::vector<unsigned char> &route);
 
 	/// Checks whether a flag is connected to the road system or not (connected = has path to HQ)
 	bool IsConnectedToRoadSystem(const noFlag *flag);

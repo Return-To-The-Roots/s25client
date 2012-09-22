@@ -1,4 +1,4 @@
-// $Id: nobBaseMilitary.h 8273 2012-09-16 13:26:46Z marcus $
+// $Id: nobBaseMilitary.h 8305 2012-09-22 12:34:54Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -39,7 +39,7 @@ class nobBaseMilitary : public noBuilding
 protected:
 
 	/// Liste von Figuren, die das Gebäude verlassen wollen (damit nicht alle auf einmal rauskommen)
-	list<noFigure*> leave_house;
+	std::list<noFigure*> leave_house;
 	/// Event, damit nicht alle auf einmal rauskommen
 	EventManager::EventPointer leaving_event;
 	/// Geht gerade jemand raus? (damit nicht alle auf einmal rauskommen), für Lager- und Militärhäuser

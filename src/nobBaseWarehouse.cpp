@@ -1,4 +1,4 @@
-// $Id: nobBaseWarehouse.cpp 8299 2012-09-18 07:30:42Z marcus $
+// $Id: nobBaseWarehouse.cpp 8305 2012-09-22 12:34:54Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -297,14 +297,14 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
 				bool found = false;
 
 				// try to find a defender and make him leave the house first
-				for(list<noFigure*>::iterator it = leave_house.begin();it.valid();++it)
+				for(std::list<noFigure*>::iterator it = leave_house.begin();it!=leave_house.end();++it)
 				{
 					if (((*it)->GetGOT() == GOT_NOF_AGGRESSIVEDEFENDER) ||
 						((*it)->GetGOT() == GOT_NOF_DEFENDER))
 					{
 						// remove defender from list, insert him again in front of all others
-						leave_house.erase(it);
 						leave_house.push_front(*it);
+						leave_house.erase(it);
 
 						found = true;
 
@@ -699,7 +699,7 @@ void nobBaseWarehouse::AddWaitingWare(Ware * ware)
 	// Wenn gerade keiner rausgeht, muss neues Event angemeldet werden
 	AddLeavingEvent();
 	// Die visuelle Warenanzahl wieder erhöhen
-	++goods.goods[ware->type];
+	++goods.goods[ConvertShields(ware->type)];
 }
 
 bool nobBaseWarehouse::FreePlaceAtFlag()
@@ -872,7 +872,8 @@ void nobBaseWarehouse::CancelWare(Ware * ware)
 void nobBaseWarehouse::CancelFigure(noFigure * figure)
 {
 	// Figure aus den Waiting-Wares entfernen
-	leave_house.erase(figure);
+	leave_house.erase(std::find(leave_house.begin(),leave_house.end(),figure));
+	//leave_house.erase(figure);
 	AddFigure(figure,false);
 }
 
@@ -1031,7 +1032,7 @@ nofDefender * nobBaseWarehouse::ProvideDefender(nofAttacker * const attacker)
 	}
 
 	// Kein Soldat gefunden, als letzten Hoffnung die Soldaten nehmen, die ggf in der Warteschlange noch hängen
-	for(list<noFigure*>::iterator it = leave_house.begin();it.valid();++it)
+	for(std::list<noFigure*>::iterator it = leave_house.begin();it!=leave_house.end();++it)
 	{
 		// Soldat?
 		if((*it)->GetGOT() == GOT_NOF_AGGRESSIVEDEFENDER)
@@ -1043,7 +1044,8 @@ nofDefender * nobBaseWarehouse::ProvideDefender(nofAttacker * const attacker)
 			nofDefender * soldier = new nofDefender(x,y,player,this,static_cast<nofAggressiveDefender*>(*it)->GetRank(),attacker);
 			(*it)->Destroy();
 			delete *it;
-			leave_house.erase(&it);
+			leave_house.erase(it);
+			//leave_house.erase(&it);
 			return soldier;
 		}
 		else if((*it)->GetGOT() == GOT_NOF_PASSIVESOLDIER)
@@ -1052,7 +1054,8 @@ nofDefender * nobBaseWarehouse::ProvideDefender(nofAttacker * const attacker)
 			nofDefender * soldier = new nofDefender(x,y,player,this,static_cast<nofPassiveSoldier*>(*it)->GetRank(),attacker);
 			(*it)->Destroy();
 			delete *it;
-			leave_house.erase(&it);
+			leave_house.erase(it);
+			//leave_house.erase(&it);
 			return soldier;
 		}
 	}

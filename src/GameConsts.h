@@ -1,4 +1,4 @@
-// $Id: GameConsts.h 8161 2012-09-06 12:58:16Z marcus $
+// $Id: GameConsts.h 8305 2012-09-22 12:34:54Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -43,11 +43,14 @@ enum Team
 	TM_TEAM1,
 	TM_TEAM2,
 	TM_TEAM3,
-	TM_TEAM4
+	TM_TEAM4,
+	TM_RANDOMTEAM2,
+	TM_RANDOMTEAM3,
+	TM_RANDOMTEAM4
 };
 
 /// Anzahl der Team-Optionen
-const unsigned TEAM_COUNT = 6;
+const unsigned TEAM_COUNT = 6; //teamrandom2,3,4 dont count
 
 // Bauqualitäten
 enum BuildingQuality

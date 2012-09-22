@@ -1,4 +1,4 @@
-// $Id: AIJHHelper.cpp 8288 2012-09-17 21:16:15Z marcus $
+// $Id: AIJHHelper.cpp 8305 2012-09-22 12:34:54Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -208,13 +208,17 @@ void AIJH::BuildJob::TryToBuild()
 			break;
 		case BLD_SHIPYARD:
 			foundPos = aijh->SimpleFindPosition(bx, by, BUILDING_SIZE[type], 11);
-			if(aijh->IsInvalidShipyardPosition(bx,by))
+			if(foundPos&&aijh->IsInvalidShipyardPosition(bx,by))
 				foundPos = false;
 			break;
 		case BLD_FARM:
 			foundPos = aijh->FindBestPosition(bx, by, AIJH::PLANTSPACE, BQ_CASTLE, 85, 11, true);
 			break;
-
+		case BLD_CATAPULT:
+			foundPos = aijh->SimpleFindPosition(bx, by, BUILDING_SIZE[type], 11);
+			if(foundPos&&aijh->BuildingNearby(bx,by,BLD_CATAPULT,8))
+				foundPos=false;
+			break;
 		default:
 			foundPos = aijh->SimpleFindPosition(bx, by, BUILDING_SIZE[type], 11);
 			break;
@@ -485,6 +489,7 @@ void AIJH::EventJob::ExecuteJob()
 		}
 		break;
 	default:
+		//status = AIJH::JOB_FAILED;
 		break;
 	}
 
@@ -547,6 +552,7 @@ void AIJH::ConnectJob::ExecuteJob()
 
 void AIJH::SearchJob::ExecuteJob()
 {
+	status = JOB_FAILED;
 	PositionSearchState state = aijh->FindGoodPosition(search, true);
 
 	if (state == SEARCH_IN_PROGRESS)

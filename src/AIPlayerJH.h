@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.h 8288 2012-09-17 21:16:15Z marcus $
+// $Id: AIPlayerJH.h 8305 2012-09-22 12:34:54Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -235,6 +235,8 @@ protected:
 
 	/// Tries to attack the enemy
 	void TryToAttack();
+	/// sea attack
+	void TrySeaAttack();
 
 	/// checks distance to all harborpositions
 	bool HarborPosClose(MapCoord x,MapCoord y,unsigned range,bool onlyempty=false);
