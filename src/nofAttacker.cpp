@@ -1039,6 +1039,12 @@ void nofAttacker::StartReturnViaShip()
 	on_ship = true;
 }
 
+/// notify sea attackers that they wont return home
+void nofAttacker::HomeHarborLost()
+{
+	goal=0; //this in combination with telling the home building that the soldier is lost should work just fine
+}
+
 /// Für Schiffsangreifer: Sagt dem Schiff Bescheid, dass wir nicht mehr kommen
 void nofAttacker::CancelAtShip()
 {

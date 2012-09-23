@@ -1,4 +1,4 @@
-// $Id: noShip.cpp 8065 2012-07-30 13:39:45Z marcus $
+// $Id: noShip.cpp 8308 2012-09-23 10:05:22Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -376,6 +376,7 @@ void noShip::HandleEvent(const unsigned int id)
 			case STATE_TRANSPORT_UNLOADING:
 				{
 					// Hafen herausfinden 
+					remaining_sea_attackers=0; //can be 1 in case we had sea attackers on board - set to 1 for a special check when the return harbor is destroyed to set the returning attackers goal to 0
 					Point<MapCoord> goal_pos(gwg->GetHarborPoint(goal_harbor_id));
 					noBase * hb = gwg->GetNO(goal_pos.x,goal_pos.y);
 					if(hb->GetGOT() == GOT_NOB_HARBORBUILDING)
@@ -827,6 +828,12 @@ void noShip::HandleState_TransportDriving()
 			// Das Schiff muss einen Notlandeplatz ansteuern
 			for(std::list<noFigure*>::iterator it = figures.begin();it!=figures.end();++it)
 				(*it)->Abrogate();
+			if(remaining_sea_attackers)
+			{
+				remaining_sea_attackers=0;
+				for(std::list<noFigure*>::iterator it = figures.begin();it!=figures.end();++it)
+					static_cast<nofAttacker*>(*it)->HomeHarborLost();
+			}
 			for(std::list<Ware*>::iterator it = wares.begin();it!=wares.end();++it)
 			{
 				(*it)->NotifyGoalAboutLostWare();
@@ -1115,6 +1122,8 @@ void noShip::SeaAttackerWishesNoReturn()
 	// Alle Soldaten an Bord 
 	if(remaining_sea_attackers == 0)
 	{
+		//set it to 1 so we "know" that we are driving back not any transport but a group of sea attackers (reset @ handleevent unload transport, used when target harbor dies to set the soldiers goal to 0)
+		remaining_sea_attackers=1;
 		// Andere Events ggf. erstmal abmelden
 		em->RemoveEvent(current_ev);
 		if(figures.size())

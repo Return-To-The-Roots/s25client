@@ -1,4 +1,4 @@
-// $Id: noShip.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: noShip.h 8308 2012-09-23 10:05:22Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -81,7 +81,8 @@ class noShip : public noMovable
 	/// um sein Zeug auszuladen
 	bool lost;
 	/// Bei Schiffen im STATE_SEAATTACK_WAITING: 
-	/// Anzahl der Soldaten, die noch kommen müssten
+	/// Anzahl der Soldaten, die noch kommen müssten 
+	/// For ships in STATE_TRANSPORT_x a 1 indicates that the ship is carrying returning soldiers from a sea attack
 	unsigned remaining_sea_attackers;
 	/// Heimathafen der Schiffs-Angreifer
 	unsigned home_harbor;

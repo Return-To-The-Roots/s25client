@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 8305 2012-09-22 12:34:54Z marcus $
+// $Id: AIPlayerJH.cpp 8308 2012-09-23 10:05:22Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1228,8 +1228,53 @@ void AIPlayerJH::HandleBuilingDestroyed(const Coords& coords, BuildingType bld)
 {
 	MapCoord x = coords.x;
 	MapCoord y = coords.y;
-	if(bld==BLD_FARM)
+	switch (bld)
+	{
+	case BLD_FARM:
 		SetFarmedNodes(x,y,false);
+		break;
+	case BLD_HARBORBUILDING:
+	{
+		//destroy all other buildings around the harborspot in range 2 so we can rebuild the harbor ... 
+		MapCoord x=coords.x,y=coords.y;
+		gwb->GetPointA(x,y,0);
+		for(int i=2;i<8;i++) //range 1
+		{
+			const noBaseBuilding* bb;
+			const noBuildingSite* bs;
+			if(bb=aii->GetSpecObj<noBaseBuilding>(x,y))
+			{
+				aii->DestroyBuilding(x,y);
+			}
+			if(bs=aii->GetSpecObj<noBuildingSite>(x,y))
+			{
+				aii->DestroyFlag(gwb->GetXA(x,y,4),gwb->GetYA(x,y,4));
+			}
+			gwb->GetPointA(x,y,i%6);
+		}		
+		gwb->GetPointA(x,y,0);
+		for(int i=2;i<8;i++) //range 2
+		{
+			for(int r=0;r<2;r++)
+			{
+				const noBaseBuilding* bb;
+				const noBuildingSite* bs;
+				if(bb=aii->GetSpecObj<noBaseBuilding>(x,y))
+				{
+					aii->DestroyBuilding(x,y);
+				}
+				if(bs=aii->GetSpecObj<noBuildingSite>(x,y))
+				{
+					aii->DestroyFlag(gwb->GetXA(x,y,4),gwb->GetYA(x,y,4));
+				}
+				gwb->GetPointA(x,y,i%6);
+			}
+		}
+		break;
+	default:
+		break;
+	}
+
 }
 
 void AIPlayerJH::HandleRoadConstructionComplete(const Coords& coords, unsigned char dir)
