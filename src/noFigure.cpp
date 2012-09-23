@@ -1580,6 +1580,9 @@ void noFigure::CalcVisibilities(const MapCoord x, const MapCoord y)
 /// Informiert die Figur, dass für sie eine Schiffsreise beginnt
 void noFigure::StartShipJourney(const Point<MapCoord> goal)
 {
+	// remove us from where we are, so nobody will ever draw us :)
+	gwg->RemoveFigure(this, this->x, this->y);
+
 	x = goal.x;
 	y = goal.y;
 	on_ship = true;

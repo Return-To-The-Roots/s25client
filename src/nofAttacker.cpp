@@ -1034,6 +1034,9 @@ void nofAttacker::StartAttackOnOtherIsland(const MapCoord ship_x, const MapCoord
 /// Sagt Schiffsangreifern, dass sie mit dem Schiff zurück fahren
 void nofAttacker::StartReturnViaShip()
 {
+	// remove us from where we are, so nobody will ever draw us :)
+	gwg->RemoveFigure(this, this->x, this->y);
+
 	goal = building;
 	state = STATE_FIGUREWORK;
 	on_ship = true;
