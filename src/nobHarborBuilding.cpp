@@ -1,4 +1,4 @@
-// $Id: nobHarborBuilding.cpp 8305 2012-09-22 12:34:54Z marcus $
+// $Id: nobHarborBuilding.cpp 8309 2012-09-23 10:06:05Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -520,50 +520,92 @@ void nobHarborBuilding::ShipArrived(noShip * ship)
 	else if(wares_for_ships.size() || figures_for_ships.size())
 	{
 		// Das Ziel wird nach der ersten Figur bzw. ersten Ware gewählt
+		// actually since the wares might not yet have informed the harbor that their target harbor was destroyed we pick the first figure/ware with a valid target instead
 		Point<MapCoord> dest;
-		if(figures_for_ships.size())
-			dest = figures_for_ships.begin()->dest;
-		else
-			dest = (*wares_for_ships.begin())->GetNextHarbor();
-
-
-		std::list<noFigure*> figures;
-
-		// Figuren auswählen, die zu diesem Ziel wollen
-		for(std::list<FigureForShip>::iterator it = figures_for_ships.begin();
-			it!=figures_for_ships.end() && figures.size() < SHIP_CAPACITY[players->getElement(player)->nation];)
+		bool gotdest=false;
+		for(std::list<FigureForShip>::iterator it=figures_for_ships.begin();it!=figures_for_ships.end();it++)
 		{
-			if(it->dest == dest)
+			noBase * nb = gwg->GetNO(it->dest.x,it->dest.y);
+			if(nb->GetGOT() == GOT_NOB_HARBORBUILDING)
 			{
-				figures.push_back(it->fig);
-				it->fig->StartShipJourney(dest);
-				--goods.people[it->fig->GetJobType()];
-				it = figures_for_ships.erase(it);
-				
+				dest=it->dest;
+				gotdest=true;
+				break;
 			}
-			else
-				++it;
 		}
-
-		// Und noch die Waren auswählen
-		std::list<Ware*> wares;
-		for(std::list<Ware*>::iterator it = wares_for_ships.begin();
-			it!=wares_for_ships.end() && figures.size()+wares.size() < SHIP_CAPACITY[players->getElement(player)->nation];)
+		for(std::list<Ware*>::iterator it=wares_for_ships.begin();!gotdest&&it!=wares_for_ships.end();it++)
 		{
-			if((*it)->GetNextHarbor() == dest)
+			noBase * nb = gwg->GetNO((*it)->GetNextHarbor().x,(*it)->GetNextHarbor().y);
+			if(nb->GetGOT() == GOT_NOB_HARBORBUILDING)
 			{
-				wares.push_back(*it);
-				(*it)->StartShipJourney();
-				--goods.goods[ConvertShields((*it)->type)];
-				it = wares_for_ships.erase(it);
-				
+				dest=(*it)->GetNextHarbor();
+				gotdest=true;
+				break;
 			}
-			else
-				++it;
 		}
+		if(gotdest)
+		{
+			std::list<noFigure*> figures;
 
-		// Und das Schiff starten lassen
-		ship->PrepareTransport(dest,figures,wares);
+			// Figuren auswählen, die zu diesem Ziel wollen
+			for(std::list<FigureForShip>::iterator it = figures_for_ships.begin();
+				it!=figures_for_ships.end() && figures.size() < SHIP_CAPACITY[players->getElement(player)->nation];)
+			{
+				if(it->dest == dest)
+				{
+					figures.push_back(it->fig);
+					it->fig->StartShipJourney(dest);
+					--goods.people[it->fig->GetJobType()];
+					it = figures_for_ships.erase(it);
+				
+				}
+				else
+					++it;
+			}
+
+			// Und noch die Waren auswählen
+			std::list<Ware*> wares;
+			for(std::list<Ware*>::iterator it = wares_for_ships.begin();
+				it!=wares_for_ships.end() && figures.size()+wares.size() < SHIP_CAPACITY[players->getElement(player)->nation];)
+			{
+				if((*it)->GetNextHarbor() == dest)
+				{
+					wares.push_back(*it);
+					(*it)->StartShipJourney();
+					--goods.goods[ConvertShields((*it)->type)];
+					it = wares_for_ships.erase(it);
+				
+				}
+				else
+					++it;
+			}
+
+			// Und das Schiff starten lassen
+			ship->PrepareTransport(dest,figures,wares);
+		}// Oder vielleicht Schiffs-Angreifer? (copy paste of the last part)
+		else if(soldiers_for_ships.size())
+		{
+			// Ein Ziel (das des ersten Soldaten in der Liste) auswählen und alle übrigen
+			// Soldaten mit dem gleichen Ziel mit auf das Schiff laden
+			std::list<noFigure*> attackers;
+			Point<MapCoord> ship_dest = soldiers_for_ships.begin()->dest;
+			
+			for(std::list<SoldierForShip>::iterator it = soldiers_for_ships.begin();it!=soldiers_for_ships.end();)
+			{
+				if(it->dest == ship_dest)
+				{
+					--goods.people[it->attacker->GetJobType()];
+					attackers.push_back(it->attacker);
+					it = soldiers_for_ships.erase(it);
+					
+				}
+				else
+					++it;
+			
+			}
+			
+			ship->PrepareSeaAttack(ship_dest,attackers);
+		}
 		
 	}
 	// Oder vielleicht Schiffs-Angreifer?

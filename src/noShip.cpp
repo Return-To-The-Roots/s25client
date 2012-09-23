@@ -1,4 +1,4 @@
-// $Id: noShip.cpp 8308 2012-09-23 10:05:22Z marcus $
+// $Id: noShip.cpp 8309 2012-09-23 10:06:05Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1122,12 +1122,12 @@ void noShip::SeaAttackerWishesNoReturn()
 	// Alle Soldaten an Bord 
 	if(remaining_sea_attackers == 0)
 	{
-		//set it to 1 so we "know" that we are driving back not any transport but a group of sea attackers (reset @ handleevent unload transport, used when target harbor dies to set the soldiers goal to 0)
-		remaining_sea_attackers=1;
 		// Andere Events ggf. erstmal abmelden
 		em->RemoveEvent(current_ev);
 		if(figures.size())
 		{
+			//set it to 1 so we "know" that we are driving back not any transport but a group of sea attackers (reset @ handleevent unload transport, used when target harbor dies to set the soldiers goal to 0)
+			remaining_sea_attackers=1;
 			// Wieder nach Hause fahren
 			goal_harbor_id = home_harbor;
 			StartDrivingToHarborPlace();
