@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 8308 2012-09-23 10:05:22Z marcus $
+// $Id: AIPlayerJH.cpp 8311 2012-09-23 14:19:15Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1242,11 +1242,11 @@ void AIPlayerJH::HandleBuilingDestroyed(const Coords& coords, BuildingType bld)
 		{
 			const noBaseBuilding* bb;
 			const noBuildingSite* bs;
-			if(bb=aii->GetSpecObj<noBaseBuilding>(x,y))
+			if((bb=aii->GetSpecObj<noBaseBuilding>(x,y)))
 			{
 				aii->DestroyBuilding(x,y);
 			}
-			if(bs=aii->GetSpecObj<noBuildingSite>(x,y))
+			if((bs=aii->GetSpecObj<noBuildingSite>(x,y)))
 			{
 				aii->DestroyFlag(gwb->GetXA(x,y,4),gwb->GetYA(x,y,4));
 			}
@@ -1259,11 +1259,11 @@ void AIPlayerJH::HandleBuilingDestroyed(const Coords& coords, BuildingType bld)
 			{
 				const noBaseBuilding* bb;
 				const noBuildingSite* bs;
-				if(bb=aii->GetSpecObj<noBaseBuilding>(x,y))
+				if((bb=aii->GetSpecObj<noBaseBuilding>(x,y)))
 				{
 					aii->DestroyBuilding(x,y);
 				}
-				if(bs=aii->GetSpecObj<noBuildingSite>(x,y))
+				if((bs=aii->GetSpecObj<noBuildingSite>(x,y)))
 				{
 					aii->DestroyFlag(gwb->GetXA(x,y,4),gwb->GetYA(x,y,4));
 				}
@@ -1271,6 +1271,7 @@ void AIPlayerJH::HandleBuilingDestroyed(const Coords& coords, BuildingType bld)
 			}
 		}
 		break;
+	}
 	default:
 		break;
 	}
@@ -1692,7 +1693,7 @@ void AIPlayerJH::TrySeaAttack()
 	for(unsigned i=1;i<gwb->GetHarborPointCount();i++)
 	{
 		const nobHarborBuilding* hb;
-		if(hb=aii->GetSpecObj<nobHarborBuilding>(gwb->GetHarborPoint(i).x,gwb->GetHarborPoint(i).y))
+		if((hb=aii->GetSpecObj<nobHarborBuilding>(gwb->GetHarborPoint(i).x,gwb->GetHarborPoint(i).y)))
 		{
 			if(aii->IsVisible(hb->GetX(),hb->GetY()))
 			{
