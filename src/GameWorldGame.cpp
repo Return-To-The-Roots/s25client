@@ -1,4 +1,4 @@
-// $Id: GameWorldGame.cpp 8298 2012-09-18 07:28:57Z marcus $
+// $Id: GameWorldGame.cpp 8313 2012-09-23 22:35:12Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1930,6 +1930,14 @@ bool GameWorldGame::FoundColony(const unsigned harbor_point, const unsigned char
 		return false;
 
 	Point<MapCoord> pos(GetHarborPoint(harbor_point));
+
+	noBase *no = GetSpecObj<noBase>(pos.x, pos.y);
+
+	if(no)
+	{
+		no->Destroy();
+		delete no;
+	}
 
 	// Hafenbaustelle errichten
 	noBuildingSite * bs = new noBuildingSite(pos.x,pos.y,player);
