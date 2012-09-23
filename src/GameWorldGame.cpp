@@ -1,4 +1,4 @@
-// $Id: GameWorldGame.cpp 8313 2012-09-23 22:35:12Z marcus $
+// $Id: GameWorldGame.cpp 8315 2012-09-23 22:43:27Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1943,6 +1943,8 @@ bool GameWorldGame::FoundColony(const unsigned harbor_point, const unsigned char
 	noBuildingSite * bs = new noBuildingSite(pos.x,pos.y,player);
 	SetNO(bs,pos.x,pos.y);
 	AddHarborBuildingSiteFromSea(bs);
+
+	gi->GI_UpdateMinimap(pos.x,pos.y);
 
 	RecalcTerritory(bs,HARBOR_ALONE_RADIUS,false,true);
 	
