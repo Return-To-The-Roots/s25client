@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 8311 2012-09-23 14:19:15Z marcus $
+// $Id: AIPlayerJH.cpp 8314 2012-09-23 22:39:51Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1438,7 +1438,6 @@ void AIPlayerJH::HandleExpedition(const Coords& coords)
 			aii->CancelExpedition(ship);
 		}
 	}
-
 }
 
 void AIPlayerJH::HandleTreeChopped(const Coords& coords)
@@ -1688,7 +1687,6 @@ void AIPlayerJH::TrySeaAttack()
 	std::vector<int> invalidseas;
 	std::deque<const nobBaseMilitary *> potentialTargets;
 	std::vector<int> searcharoundharborspots; 
-	unsigned lol=SEAATTACK_DISTANCE;
 	//first check all harbors there might be some undefended ones - start at 1 to skip the harbor dummy
 	for(unsigned i=1;i<gwb->GetHarborPointCount();i++)
 	{

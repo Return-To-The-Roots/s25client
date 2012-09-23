@@ -1,4 +1,4 @@
-// $Id: AIJHHelper.cpp 8305 2012-09-22 12:34:54Z marcus $
+// $Id: AIJHHelper.cpp 8314 2012-09-23 22:39:51Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -420,7 +420,7 @@ void AIJH::EventJob::ExecuteJob()
 		{//todo maybe do sth about it?
 			AIEvent::Building *evb = dynamic_cast<AIEvent::Building *>(ev);
 			//at least for farms ai has to remove "farmed"
-			if(evb->GetBuildingType()==BLD_FARM)
+			if(evb->GetBuildingType()==BLD_FARM||evb->GetBuildingType()==BLD_HARBORBUILDING)
 				aijh->HandleBuilingDestroyed(AIPlayerJH::Coords(evb->GetX(), evb->GetY()),evb->GetBuildingType());
 			status = AIJH::JOB_FINISHED;
 		}

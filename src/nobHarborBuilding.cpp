@@ -1,4 +1,4 @@
-// $Id: nobHarborBuilding.cpp 8309 2012-09-23 10:06:05Z marcus $
+// $Id: nobHarborBuilding.cpp 8314 2012-09-23 22:39:51Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1224,6 +1224,7 @@ nofDefender * nobHarborBuilding::ProvideDefender(nofAttacker * const attacker)
 		nofAttacker * defender_attacker = soldiers_for_ships.begin()->attacker;
 		defender = new nofDefender(x,y,player,this,defender_attacker->GetRank(),attacker);
 		defender_attacker->CancelSeaAttack();
+		defender_attacker->Abrogate();
 		defender_attacker->Destroy();
 		delete defender_attacker;
 		soldiers_for_ships.pop_front();
