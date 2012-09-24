@@ -1,4 +1,4 @@
-// $Id: nobUsual.cpp 7673 2011-12-27 14:11:15Z marcus $
+// $Id: nobUsual.cpp 8319 2012-09-24 00:48:36Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -513,10 +513,24 @@ void nobUsual::ConsumeWares()
 	{
 		if(ware_type == 3)
 		{
-
 			// 2 Waren verbrauchen
 			--wares[0];
 			--wares[1];
+
+			// try to get wares from warehouses
+			Ware *w;
+
+			if ((wares[0] < 2) &&
+				(w = gwg->GetPlayer(player)->OrderWare(USUAL_BUILDING_CONSTS[type-10].wares_needed[0], this)))
+			{
+				ordered_wares[0].push_back(w);
+			}
+
+			if ((wares[1] < 2) &&
+				(w = gwg->GetPlayer(player)->OrderWare(USUAL_BUILDING_CONSTS[type-10].wares_needed[1], this)))
+			{
+				ordered_wares[1].push_back(w);
+			}
 
 			gwg->GetPlayer(player)->DecreaseInventoryWare(USUAL_BUILDING_CONSTS[type-10].wares_needed[0],1);
 			gwg->GetPlayer(player)->DecreaseInventoryWare(USUAL_BUILDING_CONSTS[type-10].wares_needed[1],1);
@@ -525,6 +539,18 @@ void nobUsual::ConsumeWares()
 		{
 			// Bestand verringern
 			--wares[ware_type];
+
+			// try to get ware from warehouses
+			if (wares[ware_type] < 2)
+			{
+				Ware * w = gwg->GetPlayer(player)->OrderWare(USUAL_BUILDING_CONSTS[type-10].wares_needed[ware_type], this);
+
+				if (w)
+				{
+					ordered_wares[ware_type].push_back(w);
+				}
+			}
+
 			// Inventur entsprechend verringern
 			gwg->GetPlayer(player)->DecreaseInventoryWare(USUAL_BUILDING_CONSTS[type-10].wares_needed[ware_type],1);
 		}
