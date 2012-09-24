@@ -1,4 +1,4 @@
-// $Id: nobHarborBuilding.cpp 8314 2012-09-23 22:39:51Z marcus $
+// $Id: nobHarborBuilding.cpp 8317 2012-09-24 00:09:34Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1086,10 +1086,6 @@ void nobHarborBuilding::GetAttackerBuildingsForSeaAttack(std::vector<SeaAttacker
 		if((*it)->GetPlayer() != player || gwg->CalcDistance((*it)->GetX(),(*it)->GetY(),x,y) > BASE_ATTACKING_DISTANCE)
 			continue;
 
-		// Weg vom Hafen zum Militärgebäude berechnen
-		if(!gwg->FindFreePath((*it)->GetX(),(*it)->GetY(),x,y,false,BASE_ATTACKING_DISTANCE*2,NULL,NULL,NULL,NULL,NULL,NULL,false))
-			continue;
-			
 		// Entfernung zwischen Hafen und möglichen Zielhafenpunkt ausrechnen
 		unsigned min_distance = 0xffffffff;
 		for(unsigned i = 0;i<defender_harbors.size();++i)
