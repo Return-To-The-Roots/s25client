@@ -1,4 +1,4 @@
-// $Id: BurnedWarehouse.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: BurnedWarehouse.cpp 8321 2012-09-24 17:11:28Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -181,9 +181,11 @@ void BurnedWarehouse::HandleEvent(const unsigned int id)
 	{
 		// fertig, sich selbst töten
 		em->AddToKillList(this);
+#ifndef NDEBUG
 		// Prüfen, ob alle evakuiert wurden und keiner mehr an Board ist
 		for(unsigned i = 0;i<30;++i)
 			assert(people[i] == 0);
+#endif
 	}
 	else
 	{

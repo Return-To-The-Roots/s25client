@@ -1,4 +1,4 @@
-// $Id: noShip.cpp 8309 2012-09-23 10:06:05Z marcus $
+// $Id: noShip.cpp 8321 2012-09-24 17:11:28Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -886,9 +886,6 @@ void noShip::PrepareTransport(Point<MapCoord> goal, const std::list<noFigure*>& 
 
 	this->figures = figures;
 	this->wares = wares;
-
-	for(std::list<Ware*>::const_iterator it = this->wares.begin();it!=this->wares.end();++it)
-		assert((*it)->GetObjId() != 1197877);
 
 	state = STATE_TRANSPORT_LOADING;
 	current_ev = em->AddEvent(this,LOADING_TIME,1);
