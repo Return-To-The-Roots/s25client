@@ -1025,7 +1025,7 @@ void nofAttacker::StartAttackOnOtherIsland(const MapCoord ship_x, const MapCoord
 	this->ship_obj_id = ship_id;
 
 	state = STATE_ATTACKING_WALKINGTOGOAL;
-
+	on_ship=false;
 	// Normal weiterlaufen
 	MissAttackingWalk();
 }
