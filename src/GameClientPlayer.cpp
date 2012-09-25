@@ -1,4 +1,4 @@
-// $Id: GameClientPlayer.cpp 8305 2012-09-22 12:34:54Z marcus $
+// $Id: GameClientPlayer.cpp 8324 2012-09-25 11:43:26Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1808,11 +1808,11 @@ void GameClientPlayer::RegisterShip(noShip * ship)
 }
 
 /// Schiff für Hafen bestellen
-void GameClientPlayer::OrderShip(nobHarborBuilding * hb)
+bool GameClientPlayer::OrderShip(nobHarborBuilding * hb)
 {
 	// Erstmal prüfen, ob der Hafen das Schiff wirklich braucht, ggf. fahren ja schon welche hin
 	if(GetShipsToHarbor(hb) >= hb->GetNeededShipsCount())
-		return;
+		return(false);
 
 	// Schiff mit der besten Weglänge bestimmen
 	noShip * best = 0;
@@ -1836,7 +1836,7 @@ void GameClientPlayer::OrderShip(nobHarborBuilding * hb)
 					// Dann nehmen wir das gleich
 					ships[i]->AssignHarborId(hb->GetHarborPosID());
 					hb->ShipArrived(ships[i]);
-					return;
+					return(true);
 				}
 
 				unsigned length;
@@ -1859,13 +1859,10 @@ void GameClientPlayer::OrderShip(nobHarborBuilding * hb)
 	{
 		// Dann bekommt das gleich der Hafen
 		best->GoToHarbor(hb,best_route);
+		return(true);
 	}
-	//else
-	//{
-	//	// Ansonsten in die Liste aufnehmen, damit der Hafen irgendwann mal sein Schiff bekommt
-	//	// wenn mal wieder eines Zeit hat
-	//	ships_needed.push_back(hb);
-	//}
+
+	return(false);
 }
 //
 ///// Meldet EIN bestelltes Schiff wieder ab
@@ -1952,7 +1949,6 @@ void GameClientPlayer::GetJobForShip(noShip * ship)
 	if(best)
 		// Dann bekommt das gleich der Hafen
 		ship->GoToHarbor(best,best_route);
-
 }
 
 

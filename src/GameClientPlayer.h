@@ -1,4 +1,4 @@
-// $Id: GameClientPlayer.h 8305 2012-09-22 12:34:54Z marcus $
+// $Id: GameClientPlayer.h 8324 2012-09-25 11:43:26Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -343,9 +343,8 @@ public:
 	void RemoveShip(noShip * ship);
 	/// Versucht, für ein untätiges Schiff eine Arbeit zu suchen
 	void GetJobForShip(noShip * ship);
-	/// Schiff für Hafen bestellen, zweiter Parameter gibt an, ob das Schiff in einer Jobliste
-	/// vermerkt werden soll, also unbedingt eins gebraucht wird 
-	void OrderShip(nobHarborBuilding * hb);
+	/// Schiff für Hafen bestellen. Wenn ein Schiff kommt, true.
+	bool OrderShip(nobHarborBuilding * hb);
 	/// Gibt die ID eines Schiffes zurück
 	unsigned GetShipID(const noShip * const ship) const;
 	/// Gibt ein Schiff anhand der ID zurück bzw. NULL, wenn keines mit der ID existiert

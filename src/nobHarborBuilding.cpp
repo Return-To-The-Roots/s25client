@@ -1,4 +1,4 @@
-// $Id: nobHarborBuilding.cpp 8318 2012-09-24 00:22:12Z marcus $
+// $Id: nobHarborBuilding.cpp 8324 2012-09-25 11:43:26Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -37,6 +37,8 @@
 #include "nobMilitary.h"
 #include "nofAttacker.h"
 #include "nofDefender.h"
+
+#include <set>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -627,7 +629,6 @@ void nobHarborBuilding::ShipArrived(noShip * ship)
 			}
 			else
 				++it;
-			
 		}
 		
 		ship->PrepareSeaAttack(ship_dest,attackers);
@@ -737,7 +738,7 @@ void nobHarborBuilding::CheckExpeditionReady()
 	// Alles da?
 	// Dann bestellen wir mal das Schiff
 	if(IsExpeditionReady())
-		players->getElement(player)->OrderShip(this);
+		OrderShip();
 }
 
 /// Prüft, ob eine Expedition von den Spähern her vollständig ist und ruft ggf. das Schiff
@@ -752,14 +753,14 @@ void nobHarborBuilding::CheckExplorationExpeditionReady()
 	// Alles da?
 	// Dann bestellen wir mal das Schiff
 	if(IsExplorationExpeditionReady())
-		players->getElement(player)->OrderShip(this);
+		OrderShip();
 }
 
 /// Schiff konnte nicht mehr kommen
 void nobHarborBuilding::ShipLost(noShip * ship)
 {
 	// Neues Schiff bestellen
-	players->getElement(player)->OrderShip(this);
+	OrderShip();
 }
 
 /// Gibt die Hafenplatz-ID zurück, auf der der Hafen steht
@@ -843,7 +844,7 @@ void nobHarborBuilding::AddFigureForShip(noFigure * fig, Point<MapCoord> dest)
 {
 	FigureForShip ffs = { fig, dest };
 	figures_for_ships.push_back(ffs);
-	players->getElement(player)->OrderShip(this);
+	OrderShip();
 	// Anzahl visuell erhöhen
 	++goods.people[fig->GetJobType()];
 }
@@ -855,7 +856,7 @@ void nobHarborBuilding::AddWareForShip(Ware * ware)
 	// Anzahl visuell erhöhen
 	++goods.goods[ConvertShields(ware->type)];
 	ware->WaitForShip(this);
-	players->getElement(player)->OrderShip(this);
+	OrderShip();
 	
 }
 
@@ -870,9 +871,31 @@ unsigned nobHarborBuilding::GetNeededShipsCount() const
 	// Erkundungs-Expedition -> noch ein Schiff
 	if(IsExplorationExpeditionReady())
 		++count;
-	// Evtl. Waren und Figuren -> noch ein Schiff
-	if(figures_for_ships.size() > 0 || wares_for_ships.size() > 0)
-		++count;
+	// Evtl. Waren und Figuren -> noch ein Schiff pro Ziel
+	if ((figures_for_ships.size() > 0) || (wares_for_ships.size() > 0))
+	{
+		// Die verschiedenen Zielhäfen -> Für jeden Hafen ein Schiff ordern
+		std::vector< Point<MapCoord> > destinations;
+
+		for (std::list<FigureForShip>::const_iterator it = figures_for_ships.begin(); it != figures_for_ships.end(); ++it)
+		{
+			if (std::find(destinations.begin(), destinations.end(), it->dest) == destinations.end())
+			{
+				destinations.push_back(it->dest);
+				++count;
+			}
+		}
+
+		for (std::list<Ware*>::const_iterator it = wares_for_ships.begin(); it != wares_for_ships.end(); ++it)
+		{
+			if (std::find(destinations.begin(), destinations.end(), (*it)->GetNextHarbor())
+				== destinations.end())
+			{
+				destinations.push_back((*it)->GetNextHarbor());
+				++count;
+			}
+		}
+	}
 	// Evtl. Angreifer, die noch verschifft werden müssen
 	if(soldiers_for_ships.size())
 	{
@@ -913,11 +936,16 @@ int nobHarborBuilding::GetNeedForShip(unsigned ships_coming) const
 		else
 			--ships_coming;
 	}
-	if((figures_for_ships.size() > 0 || wares_for_ships.size() > 0) && ships_coming == 0)
-		points += (figures_for_ships.size()+wares_for_ships.size())*5;
-	else if((figures_for_ships.size() > 0 || wares_for_ships.size() > 0) && ships_coming)
-		--ships_coming;
-		
+	if ((figures_for_ships.size() > 0) || (wares_for_ships.size() > 0))
+	{
+		if (ships_coming)
+		{
+			--ships_coming;
+		} else
+		{
+			points += (figures_for_ships.size()+wares_for_ships.size())*5;
+		}
+	}
 		
 	if(soldiers_for_ships.size() > 0 && ships_coming == 0)
 		points += (soldiers_for_ships.size()*10);
@@ -925,6 +953,28 @@ int nobHarborBuilding::GetNeedForShip(unsigned ships_coming) const
 	return points;
 }
 
+// try to order any ship that might be needed and is not ordered yet
+void nobHarborBuilding::OrderShip()
+{
+	unsigned needed = GetNeededShipsCount();
+	unsigned ordered = players->getElement(player)->GetShipsToHarbor(this);
+
+	if (ordered < needed)
+	{
+		// need to order more ships
+		needed -= ordered;
+
+		while (needed)
+		{
+			if (players->getElement(player)->OrderShip(this) == false)
+			{
+				break;
+			}
+
+			needed--;
+		}
+	}
+}
 
 /// Abgeleitete kann eine gerade erzeugte Ware ggf. sofort verwenden 
 /// (muss in dem Fall true zurückgeben)
@@ -1138,7 +1188,7 @@ void nobHarborBuilding::AddSeaAttacker(nofAttacker * attacker)
 	SoldierForShip sfs = { attacker, gwg->GetHarborPoint(best_harbor_point) };
 	soldiers_for_ships.push_back(sfs);
 	
-	players->getElement(player)->OrderShip(this);
+	OrderShip();
 	++goods.people[attacker->GetJobType()];
 }
 

@@ -1,4 +1,4 @@
-// $Id: nobHarborBuilding.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: nobHarborBuilding.h 8324 2012-09-25 11:43:26Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -78,7 +78,6 @@ class nobHarborBuilding : public nobBaseWarehouse
 	};
 	std::list<SoldierForShip> soldiers_for_ships;
 
-
 private:
 
 	/// Bestellt die zusätzlichen erforderlichen Waren für eine Expedition
@@ -98,10 +97,13 @@ private:
 	bool UseFigureAtOnce(noFigure * fig, noRoadNode* const goal); 
 	/// Bestellte Figur, die sich noch inder Warteschlange befindet, kommt nicht mehr und will rausgehauen werden
 	void CancelFigure(noFigure * figure);
-	
+	/// Bestellt ein Schiff zum Hafen, sofern dies nötig ist
+	void OrderShip();
+
 	/// Stellt Verteidiger zur Verfügung
 	virtual nofDefender * ProvideDefender(nofAttacker * const attacker);
 
+	unsigned ordered_ships;
 public:
 
 	nobHarborBuilding(const unsigned short x, const unsigned short y,const unsigned char player,const Nation nation);

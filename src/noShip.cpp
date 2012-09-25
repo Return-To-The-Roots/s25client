@@ -1,4 +1,4 @@
-// $Id: noShip.cpp 8321 2012-09-24 17:11:28Z marcus $
+// $Id: noShip.cpp 8324 2012-09-25 11:43:26Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -384,9 +384,17 @@ void noShip::HandleEvent(const unsigned int id)
 						static_cast<nobHarborBuilding*>(hb)->ReceiveGoodsFromShip(figures,wares);
 						figures.clear();
 						wares.clear();
-						// Wieder idlen und ggf. neuen Job suchen
-						StartIdling();
-						players->getElement(player)->GetJobForShip(this);
+
+						// Hafen bescheid sagen, dass er das Schiff nun nutzen kann
+						static_cast<nobHarborBuilding*>(hb)->ShipArrived(this);
+
+						// Hafen hat keinen Job für uns?
+						if (state == STATE_TRANSPORT_UNLOADING)
+						{
+							// Wieder idlen und ggf. neuen Job suchen
+							StartIdling();
+							players->getElement(player)->GetJobForShip(this);
+						}
 					}
 					else
 					{
@@ -521,14 +529,14 @@ void noShip::HandleState_GoToHarbor()
 				noBase * nb = gwg->GetNO(goal.x,goal.y);
 				if(nb->GetGOT() == GOT_NOB_HARBORBUILDING)
 					static_cast<nobHarborBuilding*>(nb)->ShipArrived(this);
-
-				
 			} break;
 		case NO_ROUTE_FOUND:
 			{
 				Point<MapCoord> goal(gwg->GetHarborPoint(goal_harbor_id));
 				// Dem Hafen Bescheid sagen
 				gwg->GetSpecObj<nobHarborBuilding>(goal.x,goal.y)->ShipLost(this);
+				// Ziel aktualisieren
+				goal_harbor_id = 0;
 				// Nichts machen und idlen
 				StartIdling();
 			} break;
