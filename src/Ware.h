@@ -1,4 +1,4 @@
-// $Id: Ware.h 8323 2012-09-25 11:41:55Z marcus $
+// $Id: Ware.h 8327 2012-09-25 18:53:28Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -20,13 +20,7 @@
 #ifndef WARE_H_
 #define WARE_H_
 
-// Enumforwarddeklaration bei VC nutzen
-#ifdef _MSC_VER
-enum GoodType;
-#else
 #include "GameConsts.h"
-#endif
-
 #include "GameObject.h"
 #include "MapConsts.h"
 #include "noRoadNode.h"
