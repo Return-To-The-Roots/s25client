@@ -1,4 +1,4 @@
-// $Id: dskHostGame.cpp 8305 2012-09-22 12:34:54Z marcus $
+// $Id: dskHostGame.cpp 8325 2012-09-25 12:50:57Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -173,7 +173,7 @@ dskHostGame::dskHostGame(bool single_player) :
 		}
 	}
 
-	if (single_player)
+	if (single_player&&!GAMECLIENT.IsSavegame())
 	{
 		// Setze initial auf KI
 		for (unsigned char i = 0; i < GAMECLIENT.GetPlayerCount(); i++)

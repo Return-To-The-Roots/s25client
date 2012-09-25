@@ -1,4 +1,4 @@
-// $Id: GameServer.cpp 8305 2012-09-22 12:34:54Z marcus $
+// $Id: GameServer.cpp 8325 2012-09-25 12:50:57Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -299,9 +299,23 @@ bool GameServer::Start()
 						host_found = true;
 					}
 				}
-				// KI-Spieler? Namen erzeugen
+				// KI-Spieler? Namen erzeugen und typ finden
+				//warning: if you ever add new ai types - it is not enough that the server knows about the ai! when the host joins his server he will get ONMSPLAYERLIST which also doesnt include the aitype!
 				else if(players[i].ps == PS_KI)
-					SetAIName(i);
+				{					
+					if(!strncmp(save.players[i].name.c_str(),"Computer",7))		
+					{
+						LOG.lprintf("loading aijh: %s \n",save.players[i].name.c_str());
+						players[i].aiType=AI_JH;
+						players[i].rating=666;
+					}
+					else
+					{
+						LOG.lprintf("loading default - dummy: %s \n",save.players[i].name.c_str());
+						players[i].aiType=AI_DUMMY;
+					}
+					players[i].name=save.players[i].name;
+				}
 			}
 
 			// Einstellungen aus dem Savegame für die Addons werden in Load geladen
@@ -1058,7 +1072,7 @@ void GameServer::WaitForClients(void)
 					// platz reservieren
 					players[client].reserve(&socket, client);
 					playerid = client;
-
+					//LOG.lprintf("new socket, about to tell him about his playerid: %i \n",playerid);
 					// schleife beenden
 					break;
 				}
