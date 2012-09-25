@@ -1,4 +1,4 @@
-// $Id: GameObject.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: GameObject.h 8323 2012-09-25 11:41:55Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -20,6 +20,9 @@
 #define GAMEOBJECT_H_INCLUDED
 
 #pragma once
+
+#include <string>
+#include <sstream>
 
 class SerializedGameData;
 class GameWorldGame;
@@ -142,6 +145,7 @@ public:
 	static void SetObjIDCounter(const unsigned obj_id_counter) 
 	{ GameObject::obj_id_counter = obj_id_counter; }
 
+	virtual std::string ToString() const {std::stringstream s; s << "GameObject(" << obj_id << ")"; return s.str();}
 protected: 
 
 	/// Serialisierungsfunktion.

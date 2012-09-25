@@ -1,4 +1,4 @@
-// $Id: Ware.h 7760 2012-01-05 20:19:33Z marcus $
+// $Id: Ware.h 8323 2012-09-25 11:41:55Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -29,8 +29,8 @@ enum GoodType;
 
 #include "GameObject.h"
 #include "MapConsts.h"
+#include "noRoadNode.h"
 
-class noRoadNode;
 class noBaseBuilding;
 class GameWorld;
 class nobHarborBuilding;
@@ -115,6 +115,52 @@ public:
 	/// Beginnt damit auf ein Schiff im Hafen zu warten
 	void WaitForShip(nobHarborBuilding * hb);
 
+	std::string ToString() const {std::stringstream s; s << "Ware(" << obj_id << "): type=" << GoodType2String(type) << ", location=" << location->GetX() << "," << location->GetY(); return s.str();}
+
+	static std::string GoodType2String(GoodType value)
+	{
+		switch (value)
+		{
+		        case GD_AXE: return("GD_AXE");
+		        case GD_BEER: return("GD_BEER");
+		        case GD_BOARDS: return("GD_BOARDS");
+		        case GD_BOAT: return("GD_BOAT");
+		        case GD_BOW: return("GD_BOW");
+		        case GD_BREAD: return("GD_BREAD");
+		        case GD_CLEAVER: return("GD_CLEAVER");
+		        case GD_COAL: return("GD_COAL");
+		        case GD_COINS: return("GD_COINS");
+		        case GD_CRUCIBLE: return("GD_CRUCIBLE");
+		        case GD_FISH: return("GD_FISH");
+		        case GD_FLOUR: return("GD_FLOUR");
+		        case GD_GOLD: return("GD_GOLD");
+		        case GD_GRAIN: return("GD_GRAIN");
+		        case GD_HAM: return("GD_HAM");
+		        case GD_HAMMER: return("GD_HAMMER");
+		        case GD_IRON: return("GD_IRON");
+		        case GD_IRONORE: return("GD_IRONORE");
+		        case GD_MEAT: return("GD_MEAT");
+		        case GD_NOTHING: return("GD_NOTHING");
+		        case GD_PICKAXE: return("GD_PICKAXE");
+		        case GD_RODANDLINE: return("GD_RODANDLINE");
+		        case GD_ROLLINGPIN: return("GD_ROLLINGPIN");
+		        case GD_SAW: return("GD_SAW");
+		        case GD_SCYTHE: return("GD_SCYTHE");
+		        case GD_SHIELDAFRICANS: return("GD_SHIELDAFRICANS");
+		        case GD_SHIELDJAPANESE: return("GD_SHIELDJAPANESE");
+		        case GD_SHIELDROMANS: return("GD_SHIELDROMANS");
+		        case GD_SHIELDVIKINGS: return("GD_SHIELDVIKINGS");
+		        case GD_SHOVEL: return("GD_SHOVEL");
+		        case GD_STONES: return("GD_STONES");
+		        case GD_SWORD: return("GD_SWORD");
+		        case GD_TONGS: return("GD_TONGS");
+		        case GD_WATER: return("GD_WATER");
+		        case GD_WATEREMPTY: return("GD_WATEREMPTY");
+		        case GD_WOOD: return("GD_WOOD");
+		}
+
+		return("unknown");
+	}
 };
 
 
