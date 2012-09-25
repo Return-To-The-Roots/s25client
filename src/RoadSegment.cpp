@@ -1,4 +1,4 @@
-// $Id: RoadSegment.cpp 8124 2012-09-01 19:15:43Z jh $
+// $Id: RoadSegment.cpp 8328 2012-09-25 19:02:33Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -73,6 +73,10 @@ RoadSegment::RoadSegment(SerializedGameData *sgd, const unsigned int obj_id)
 
 	for(unsigned short i =0; i < route.size(); ++i)
 		route[i] = sgd->PopUnsignedChar();
+
+	// tell the noRoadNodes about our existance
+	f1->routes[route[0]] = this;
+	f2->routes[(route[route.size() - 1] + 3) % 6] = this;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

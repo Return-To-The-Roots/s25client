@@ -1,4 +1,4 @@
-// $Id: SerializedGameData.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: SerializedGameData.cpp 8328 2012-09-25 19:02:33Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -307,7 +307,7 @@ GameObject * SerializedGameData::PopObject_(GO_Type got)
 	// Obj-ID holen
 	unsigned obj_id = PopUnsignedInt();
 
-	// Obj-ID = 0 ? Dann Null-Pointer zurückgeben
+	// Obj-ID = 0 ? Dann Null-Pointer zurueckgeben
 	if(!obj_id)
 		return 0;
 

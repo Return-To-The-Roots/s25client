@@ -1,4 +1,4 @@
-// $Id: noRoadNode.cpp 7915 2012-04-01 08:09:54Z marcus $
+// $Id: noRoadNode.cpp 8328 2012-09-25 19:02:33Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -62,15 +62,34 @@ void noRoadNode::Serialize_noRoadNode(SerializedGameData * sgd) const
 	Serialize_noCoordBase(sgd);
 
 	sgd->PushUnsignedChar(player);
-	for(unsigned i = 0;i<6;++i)
-		sgd->PushObject(routes[i],true);
+
+	// the trick only seems to work for flags
+	if (this->GetGOT() == GOT_FLAG)
+	{
+		// this is a trick:
+		// -> initialize routes for flag with NULL
+		// -> RoadSegment will set these later
+		for (unsigned i = 0; i < 6; ++i)
+		{
+			sgd->PushObject(NULL, true);
+		}
+	} else
+	{
+		for (unsigned i = 0; i < 6; ++i)
+		{
+			sgd->PushObject(routes[i],true);
+		}
+	}
 }
 
 noRoadNode::noRoadNode(SerializedGameData * sgd, const unsigned obj_id) : noCoordBase(sgd,obj_id),
 player(sgd->PopUnsignedChar())
 {
-	for(unsigned i = 0;i<6;++i)
+	for (unsigned i = 0;i<6;++i)
+	{
 		routes[i] = sgd->PopObject<RoadSegment>(GOT_ROADSEGMENT);
+	}
+
 	coord_id = gwg->MakeCoordID(x, y);
 }
 
