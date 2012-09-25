@@ -1,4 +1,4 @@
-// $Id: dskSinglePlayer.cpp 8287 2012-09-17 16:36:57Z marcus $
+// $Id: dskSinglePlayer.cpp 8326 2012-09-25 12:58:15Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -121,13 +121,6 @@ void dskSinglePlayer::Msg_ButtonClick(const unsigned int ctrl_id)
 				if(pos == std::string::npos)
 					return;
 				std::string extracted_filename = path.substr(pos+1);
-
-				// Unterstriche in OEM-Unterstrich umwandeln, damit die korrekt angezeigt werden
-				for(unsigned int i = 0; i < extracted_filename.length(); ++i)
-				{
-					if(extracted_filename[i] == '_')
-						extracted_filename[i]  = '^';
-				}
 
 				// ".sav" am Ende weg
 				assert(extracted_filename.length() >= 4);

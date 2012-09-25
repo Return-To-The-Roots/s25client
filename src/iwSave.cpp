@@ -1,4 +1,4 @@
-// $Id: iwSave.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: iwSave.cpp 8326 2012-09-25 12:58:15Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -146,13 +146,6 @@ void iwSaveLoad::FillSaveTable(const std::string& filename, void *param)
 	if(pos == std::string::npos)
 		return;
 	std::string extracted_filename = filename.substr(pos+1);
-
-	// Unterstriche in OEM-Unterstrich umwandeln, damit die korrekt angezeigt werden
-	for(unsigned int i = 0; i < extracted_filename.length(); ++i)
-	{
-		if(extracted_filename[i] == '_')
-			extracted_filename[i]  = '^';
-	}
 
 	// ".sav" am Ende weg
 	assert(extracted_filename.length() >= 4);
