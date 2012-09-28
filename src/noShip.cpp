@@ -1,4 +1,4 @@
-// $Id: noShip.cpp 8324 2012-09-25 11:43:26Z marcus $
+// $Id: noShip.cpp 8334 2012-09-28 23:12:07Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -835,7 +835,11 @@ void noShip::HandleState_TransportDriving()
 			// nun nicht mehr kommen
 			// Das Schiff muss einen Notlandeplatz ansteuern
 			for(std::list<noFigure*>::iterator it = figures.begin();it!=figures.end();++it)
+			{
 				(*it)->Abrogate();
+				(*it)->SetGoalToNULL();
+			}
+
 			if(remaining_sea_attackers)
 			{
 				remaining_sea_attackers=0;
@@ -851,12 +855,15 @@ void noShip::HandleState_TransportDriving()
 			// Neuen Hafen suchen
 			if(players->getElement(player)->FindHarborForUnloading
 				(this,x,y,&goal_harbor_id,&route,NULL))
+			{
+				
 				HandleState_TransportDriving();
-			else
+			} else
+			{
 				// Ansonsten als verloren markieren, damit uns später Bescheid gesagt wird
 				// wenn es einen neuen Hafen gibt
 				lost = true;
-			
+			}
 		} break;
 	}
 }
@@ -1098,7 +1105,9 @@ void noShip::HarborDestroyed(nobHarborBuilding * hb)
 
 				// Waren und Figure über verändertes Ziel informieren
 				for(std::list<noFigure*>::iterator it = figures.begin();it!=figures.end();++it)
+				{
 					(*it)->StartShipJourney(gwg->GetHarborPoint(goal_harbor_id));
+				}
 			}
 			else
 			{

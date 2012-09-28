@@ -1,4 +1,4 @@
-// $Id: noFigure.h 8201 2012-09-09 22:02:44Z marcus $
+// $Id: noFigure.h 8334 2012-09-28 23:12:07Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -119,9 +119,6 @@ protected:
 	/// Herumirren after failed traderoute
 	void WanderFailedTrade();
 
-	/// Ziel zurückgeben
-	noRoadNode * GetGoal() const { return goal; }
-
 	virtual void AbrogateWorkplace() = 0;
 	
 public:
@@ -143,6 +140,11 @@ public:		void Destroy() { Destroy_noFigure(); }
 	public:		void Serialize(SerializedGameData *sgd) const { Serialize_noFigure(sgd); }
 
 	void HandleEvent(const unsigned int id);
+
+	/// Ziel setzen
+	void SetGoalToNULL() { goal = NULL; }
+	/// Ziel zurückgeben
+	noRoadNode * GetGoal() const { return goal; }
 
 	/// Getter
 	bool GetRoadDir() const { return rs_dir; }

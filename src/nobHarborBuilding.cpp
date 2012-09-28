@@ -1,4 +1,4 @@
-// $Id: nobHarborBuilding.cpp 8324 2012-09-25 11:43:26Z marcus $
+// $Id: nobHarborBuilding.cpp 8334 2012-09-28 23:12:07Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1034,24 +1034,26 @@ void nobHarborBuilding::ReceiveGoodsFromShip(const std::list<noFigure*> figures,
 
 		// Wenn es kein Ziel mehr hat, sprich keinen weiteren Weg, kann es direkt hier gelagert
 		// werden
-		if((*it)->HasNoGoal())
+		if ((*it)->HasNoGoal() || ((*it)->GetGoal() == this))
 		{
-			RemoveDependentFigure(*it);
-			if((*it)->GetJobType() == JOB_BOATCARRIER)
+			AddFigure(*it, false);
+		} else
+		{
+			Point<MapCoord> next_harbor = (*it)->ExamineRouteBeforeShipping();
+			unsigned char next_dir = (*it)->GetDir();
+
+			if (next_dir == 4)
 			{
-				++real_goods.people[JOB_HELPER];
-				++real_goods.goods[GD_BOAT];
+				AddLeavingFigure(*it);
+				(*it)->ShipJourneyEnded();
+			} else if (next_dir == SHIP_DIR)
+			{
+				AddFigureForShip(*it, next_harbor);
+			} else
+			{
+				AddFigure(*it, false);
 			}
-			else
-				++real_goods.people[(*it)->GetJobType()];
-			em->AddToKillList(*it);
 		}
-		else
-		{
-			AddLeavingFigure(*it);
-			(*it)->ShipJourneyEnded();
-		}
-		
 	}
 
 	// Waren zur Warteliste hinzufügen

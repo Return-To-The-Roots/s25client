@@ -1,4 +1,4 @@
-// $Id: Ware.cpp 8332 2012-09-28 07:45:39Z marcus $
+// $Id: Ware.cpp 8334 2012-09-28 23:12:07Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -330,8 +330,23 @@ bool Ware::ShipJorneyEnded(nobHarborBuilding * hb)
 {
 	state = STATE_WAITINWAREHOUSE;
 	location = hb;
-	return (goal != NULL);
-	
+
+	if (goal == NULL)
+	{
+		return(false);
+	}
+
+	next_dir = gwg->FindPathForWareOnRoads(location,goal,NULL,&next_harbor);
+
+// TODO: SHIP_DIR? order ship etc.
+	if ((next_dir == 0xFF) || (next_dir == SHIP_DIR))
+	{
+		goal->WareLost(this);
+		goal = NULL;
+		return(false);
+	}
+
+	return(true);
 }
 
 /// Beginnt damit auf ein Schiff im Hafen zu warten
