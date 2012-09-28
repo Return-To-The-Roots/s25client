@@ -1,4 +1,4 @@
-// $Id: Ware.cpp 8305 2012-09-22 12:34:54Z marcus $
+// $Id: Ware.cpp 8332 2012-09-28 07:45:39Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -322,6 +322,7 @@ bool Ware::FindRouteFromWarehouse()
 void Ware::StartShipJourney()
 {
 	state = STATE_ONSHIP;
+	location=0;
 }
 
 /// Informiert Ware, dass Schiffsreise beendet ist und die Ware nun in einem Hafengebäude liegt
