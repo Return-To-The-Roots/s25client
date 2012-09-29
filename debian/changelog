@@ -1,3 +1,251 @@
+s25rttr (20120929-8333.230) karmic; urgency=low
+
+  * Automatic Jenkins Build 230
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sat, 29 Sep 2012 01:09:43 +0200
+
+s25rttr (20120929-8333) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sat, 29 Sep 2012 00:00:00 +0200
+
+s25rttr (20120928-8332) any; urgency=low
+
+  * AIpoc 8197
+    
+    wares on a ship set their current location to 0
+    fixes crash when saving while wares with their source harbor
+    destroyed are on ships.
+
+ -- marcus  Fri, 28 Sep 2012 07:45:00 +0200
+
+s25rttr (20120926-8329.229) karmic; urgency=low
+
+  * Automatic Jenkins Build 229
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Wed, 26 Sep 2012 01:28:53 +0200
+
+s25rttr (20120926-8329) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Wed, 26 Sep 2012 00:00:00 +0200
+
+s25rttr (20120925-8328) any; urgency=low
+
+  * Fix for #1051719. RoadSegment now sets noRoadNode::routes[] ->
+    less recursion. Compatible with old save game files.
+
+ -- marcus  Tue, 25 Sep 2012 19:02:00 +0200
+
+s25rttr (20120925-8327) any; urgency=low
+
+  * removed forward declaration of enum, replaced by include of
+    GameConsts.h
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Tue, 25 Sep 2012 18:53:00 +0200
+
+s25rttr (20120925-8326) any; urgency=low
+
+  * Fixes #1054751: "^" instead of "_" in filenames.
+
+ -- marcus  Tue, 25 Sep 2012 12:58:00 +0200
+
+s25rttr (20120925-8325) any; urgency=low
+
+  * AIpoc 8194
+    
+    fix for bug #969599
+
+ -- marcus  Tue, 25 Sep 2012 12:50:00 +0200
+
+s25rttr (20120925-8324) any; urgency=low
+
+  * Fixed #1056076. Ships should now do what they are supposed to do.
+
+ -- marcus  Tue, 25 Sep 2012 11:43:00 +0200
+
+s25rttr (20120925-8323) any; urgency=low
+
+  * ToString() for GameObject and Ware (to be continued)
+
+ -- marcus  Tue, 25 Sep 2012 11:41:00 +0200
+
+s25rttr (20120925-8322.228) karmic; urgency=low
+
+  * Automatic Jenkins Build 228
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 25 Sep 2012 01:09:17 +0200
+
+s25rttr (20120925-8322) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 25 Sep 2012 00:00:00 +0200
+
+s25rttr (20120924-8321) any; urgency=low
+
+  * removed some old debug leftovers
+
+ -- marcus  Mon, 24 Sep 2012 17:11:00 +0200
+
+s25rttr (20120924-8320) any; urgency=low
+
+  * AIpoc 8193
+    
+    sea attackers are now informed about not being on a ship anymore
+    when they start their attack on the target shore
+
+ -- marcus  Mon, 24 Sep 2012 14:16:00 +0200
+
+s25rttr (20120924-8319.227) karmic; urgency=low
+
+  * Automatic Jenkins Build 227
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Mon, 24 Sep 2012 03:19:16 +0200
+
+s25rttr (20120924-8319) any; urgency=low
+
+  * If there are only one or even not a single ware of one type left
+    at a nobUsual, try to order one from a warehouse. Fixes #1053667.
+
+ -- marcus  Mon, 24 Sep 2012 00:48:00 +0200
+
+s25rttr (20120924-8318) any; urgency=low
+
+  * Fix for r8317
+
+ -- marcus  Mon, 24 Sep 2012 00:22:00 +0200
+
+s25rttr (20120924-8317) any; urgency=low
+
+  * Fix for sea attack bug #1054747: soldiers refused to run to the
+    start harbor
+
+ -- marcus  Mon, 24 Sep 2012 00:09:00 +0200
+
+s25rttr (20120924-8316.226) karmic; urgency=low
+
+  * Automatic Jenkins Build 226
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Mon, 24 Sep 2012 01:14:43 +0200
+
+s25rttr (20120923-8316) any; urgency=low
+
+  * Remove figures that are on a ship from node figure lists. Should
+    fix #998447.
+
+ -- marcus  Sun, 23 Sep 2012 23:08:00 +0200
+
+s25rttr (20120923-8315) any; urgency=low
+
+  * Update minimap after founding colonies.
+
+ -- marcus  Sun, 23 Sep 2012 22:43:00 +0200
+
+s25rttr (20120923-8314) any; urgency=low
+
+  * AIpoc 8188
+    
+    fixes a crash that occured when a building got captured that once
+    had sent a sea attacker who got redefined as a harbor defender
+    fix for a bug in the ai behavior: remove buildings around a
+    destroyed harbor
+
+ -- marcus  Sun, 23 Sep 2012 22:39:00 +0200
+
+s25rttr (20120923-8313) any; urgency=low
+
+  * Remove old objects before founding new colonies (noSkeletons tend
+    to remove themselves using an Event later ;))
+
+ -- marcus  Sun, 23 Sep 2012 22:35:00 +0200
+
+s25rttr (20120923-8311) any; urgency=low
+
+  * Compile fixes
+
+ -- marcus  Sun, 23 Sep 2012 14:19:00 +0200
+
+s25rttr (20120923-8310) any; urgency=low
+
+  * Another Landung3 fix by Spike ;)
+
+ -- marcus  Sun, 23 Sep 2012 10:46:00 +0200
+
+s25rttr (20120923-8309) any; urgency=low
+
+  * AIpoc 8187
+    
+    little fix for the last version
+    fixes a crash that occured when a harbor was destroyed and a ware
+    having this harbor as destination was loaded to a ship before the
+    event changed the destination of the ware
+
+ -- marcus  Sun, 23 Sep 2012 10:06:00 +0200
+
+s25rttr (20120923-8308) any; urgency=low
+
+  * AIpoc 8186
+    
+    when the ai loses a harbor it will now remove all nearby
+    buildings to make sure that the harbor can be rebuild
+    returning sea attackers on a ship will now reset their 'goal'
+    when their home harbor is destroyed
+    
+    + fixes for src/AIPlayerJH.cpp
+
+ -- marcus  Sun, 23 Sep 2012 10:05:00 +0200
+
+s25rttr (20120923-8307.225) karmic; urgency=low
+
+  * Automatic Jenkins Build 225
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sun, 23 Sep 2012 01:31:00 +0200
+
+s25rttr (20120923-8307) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sun, 23 Sep 2012 00:00:00 +0200
+
+s25rttr (20120922-8306) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 22 Sep 2012 22:00:00 +0200
+
+s25rttr (20120922-8305) any; urgency=low
+
+  * AIpoc 8181, 8182, 8184, 8185 (mainly bugfixes)
+    
+    Minor ai roadconstruction improvements
+    AI will now build catapults without save&load
+    AI will now set 1 defender for each harbor
+    AI will now build 3 ships for each shipyard until it has 7 ships
+    after that each new shipyard will only produce 1 ship
+    
+    selecting team ?(random) will put you in a random team now
+    
+    ai sea attacks (have been removed from this patch, since too slow
+    atm)
+    list leave_house replaced by std::list leave_house
+    patch for a crash when sea-attacking soldiers returned home after
+    the harbor they used to initiate the attack was lost (todo: find
+    better solution)
+    slight improvement for GetAvailableSoldiersForSeaAttack
+    fixed an assert in ware.cpp <7 to <MAX_PLAYERS
+    
+    Shields returning to a warehouse from a full flag will now be
+    added to the correct visual counter
+    Shields loaded to a ship will now reduce the correct visiual
+    counter in the harbor
+    Wares waiting for a Ship in a Harbor will now no longer count
+    double for the visual counter after they lost their path to goal.
+
+ -- marcus  Sat, 22 Sep 2012 12:34:00 +0200
+
 s25rttr (20120919-8301.224) karmic; urgency=low
 
   * Automatic Jenkins Build 224
