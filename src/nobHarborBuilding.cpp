@@ -1,4 +1,4 @@
-// $Id: nobHarborBuilding.cpp 8334 2012-09-28 23:12:07Z marcus $
+// $Id: nobHarborBuilding.cpp 8335 2012-09-29 12:23:44Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1186,7 +1186,16 @@ void nobHarborBuilding::AddSeaAttacker(nofAttacker * attacker)
 			best_harbor_point = harbor_points[i];
 		}
 	}
-	
+
+	// no harbor point found? tell attacker that the goal has been destroyed.
+	if (best_harbor_point == 0xffffffff)
+	{
+		// TODO: true or false?
+		AddFigure(attacker, false);
+		attacker->AttackedGoalDestroyed();
+		return;
+	}
+
 	SoldierForShip sfs = { attacker, gwg->GetHarborPoint(best_harbor_point) };
 	soldiers_for_ships.push_back(sfs);
 	
