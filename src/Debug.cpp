@@ -30,17 +30,10 @@
 		typedef WINBOOL (IMAGEAPI *SymCleanupType)(HANDLE hProcess);
 		typedef NTSYSAPI VOID (NTAPI *RtlCaptureContextType)(PCONTEXT ContextRecord);
 
-#		ifdef _WIN64
-			typedef WINBOOL (IMAGEAPI *StackWalkType)(DWORD MachineType,HANDLE hProcess,HANDLE hThread,LPSTACKFRAME64 StackFrame,PVOID ContextRecord,PREAD_PROCESS_MEMORY_ROUTINE64 ReadMemoryRoutine,PFUNCTION_TABLE_ACCESS_ROUTINE64 FunctionTableAccessRoutine,PGET_MODULE_BASE_ROUTINE64 GetModuleBaseRoutine,PTRANSLATE_ADDRESS_ROUTINE64 TranslateAddress);
-			typedef PVOID (IMAGEAPI *SymFunctionTableAccessType)(HANDLE hProcess,DWORD64 AddrBase);
-			typedef DWORD64 (IMAGEAPI *SymGetModuleBaseType)(HANDLE hProcess,DWORD64 qwAddr);
-#		else
-			typedef WINBOOL (IMAGEAPI *StackWalkType)(DWORD MachineType,HANDLE hProcess,HANDLE hThread,LPSTACKFRAME StackFrame,PVOID ContextRecord,PREAD_PROCESS_MEMORY_ROUTINE ReadMemoryRoutine,PFUNCTION_TABLE_ACCESS_ROUTINE FunctionTableAccessRoutine,PGET_MODULE_BASE_ROUTINE GetModuleBaseRoutine,PTRANSLATE_ADDRESS_ROUTINE TranslateAddress);
-			typedef PVOID (IMAGEAPI *SymFunctionTableAccessType)(HANDLE hProcess,DWORD AddrBase);
-			typedef DWORD (IMAGEAPI *SymGetModuleBaseType)(HANDLE hProcess,DWORD dwAddr);
-#		endif
+		typedef WINBOOL (IMAGEAPI *StackWalkType)(DWORD MachineType,HANDLE hProcess,HANDLE hThread,LPSTACKFRAME64 StackFrame,PVOID ContextRecord,PREAD_PROCESS_MEMORY_ROUTINE64 ReadMemoryRoutine,PFUNCTION_TABLE_ACCESS_ROUTINE64 FunctionTableAccessRoutine,PGET_MODULE_BASE_ROUTINE64 GetModuleBaseRoutine,PTRANSLATE_ADDRESS_ROUTINE64 TranslateAddress);
 #	else
 #		undef CaptureStackBackTrace
+#		pragma comment(lib, "dbgHelp.lib")
 #	endif
 #endif
 
@@ -132,16 +125,20 @@ bool DebugInfo::SendString(const char *str, unsigned len)
 	}
 #endif
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 bool DebugInfo::SendStackTrace(LPCONTEXT ctx)
 #else
 bool DebugInfo::SendStackTrace()
 #endif
 {
-	void *stacktrace[128];
-
+	const unsigned int maxTrace = 256;
+	void *stacktrace[maxTrace];
+	
 #ifdef _WIN32
-/*	CONTEXT context;
+
+#ifndef _MSC_VER
+	CONTEXT context;
+	LPCONTEXT ctx = NULL;
 
 	HMODULE kernel32 = LoadLibrary("kernel32.dll");
 	HMODULE dbghelp = LoadLibrary("dbghelp.dll");
@@ -156,94 +153,86 @@ bool DebugInfo::SendStackTrace()
 	SymInitializeType SymInitialize = (SymInitializeType)(GetProcAddress(dbghelp, "SymInitialize"));
 	SymCleanupType SymCleanup = (SymCleanupType)(GetProcAddress(dbghelp, "SymCleanup"));
 
-	StackWalkType StackWalk = (StackWalkType)(GetProcAddress(dbghelp, "StackWalk64"));
-	if (StackWalk == NULL)
-	{
-		StackWalk = (StackWalkType)(GetProcAddress(dbghelp, "StackWalk"));
-	}
+	StackWalkType StackWalk64 = (StackWalkType)(GetProcAddress(dbghelp, "StackWalk64"));
+	PFUNCTION_TABLE_ACCESS_ROUTINE64 SymFunctionTableAccess64 = (PFUNCTION_TABLE_ACCESS_ROUTINE64)(GetProcAddress(dbghelp, "SymFunctionTableAccess64"));
+	PGET_MODULE_BASE_ROUTINE64 SymGetModuleBase64 = (PGET_MODULE_BASE_ROUTINE64)(GetProcAddress(dbghelp, "SymGetModuleBase64"));
 
-	SymFunctionTableAccessType SymFunctionTableAccess = (SymFunctionTableAccessType)(GetProcAddress(dbghelp, "SymFunctionTableAccess64"));
-	if (SymFunctionTableAccess == NULL)
-	{
-		SymFunctionTableAccess = (SymFunctionTableAccessType)(GetProcAddress(dbghelp, "SymFunctionTableAccess"));
-	}
-
-	SymGetModuleBaseType SymGetModuleBase = (SymGetModuleBaseType)(GetProcAddress(dbghelp, "SymGetModuleBase64"));
-	if (SymGetModuleBase == NULL)
-	{
-		SymGetModuleBase = (SymGetModuleBaseType)(GetProcAddress(dbghelp, "SymGetModuleBase"));
-	}
-
-	if ((SymInitialize == NULL) || (StackWalk == NULL) || (SymFunctionTableAccess == NULL) || (SymGetModuleBase == NULL) || (RtlCaptureContext == NULL))
+	if ((SymInitialize == NULL) || (StackWalk64 == NULL) || (SymFunctionTableAccess64 == NULL) || (SymGetModuleBase64 == NULL) || (RtlCaptureContext == NULL))
 	{
 		return(false);
 	}
+#endif
 
 	if (!SymInitialize(GetCurrentProcess(), NULL, true))
 	{
 		return(false);
 	}
 
-	ctx->ContextFlags = CONTEXT_FULL;
-
+#ifndef _MSC_VER
 	if (ctx == NULL)
 	{
+		context.ContextFlags = CONTEXT_FULL;
 		RtlCaptureContext(&context);
 		ctx = &context;
 	}
-
-        STACKFRAME frame;
-        memset(&frame, 0, sizeof(frame));
-
-#ifdef _WIN64
-        frame.AddrPC.Offset = ctx->Rip;
-        frame.AddrStack.Offset = ctx->Rsp;
-        frame.AddrFrame.Offset = ctx->Rbp;
-#else
-        frame.AddrPC.Offset = ctx->Eip;
-        frame.AddrStack.Offset = ctx->Esp;
-        frame.AddrFrame.Offset = ctx->Ebp;
 #endif
 
-        frame.AddrPC.Mode = AddrModeFlat;
-        frame.AddrStack.Mode = AddrModeFlat;
-        frame.AddrFrame.Mode = AddrModeFlat;
+    STACKFRAME64 frame;
+    memset(&frame, 0, sizeof(frame));
+
+#ifdef _WIN64
+    frame.AddrPC.Offset = ctx->Rip;
+    frame.AddrStack.Offset = ctx->Rsp;
+    frame.AddrFrame.Offset = ctx->Rbp;
+#else
+    frame.AddrPC.Offset = ctx->Eip;
+    frame.AddrStack.Offset = ctx->Esp;
+    frame.AddrFrame.Offset = ctx->Ebp;
+#endif
+
+    frame.AddrPC.Mode = AddrModeFlat;
+    frame.AddrStack.Mode = AddrModeFlat;
+    frame.AddrFrame.Mode = AddrModeFlat;
 
 	HANDLE process = GetCurrentProcess();
 	HANDLE thread = GetCurrentThread();
 
 	unsigned num_frames = 0;
-        while (StackWalk(
+    while (StackWalk64(
 #ifdef _WIN64
 		IMAGE_FILE_MACHINE_AMD64,
 #else
 		IMAGE_FILE_MACHINE_I386, 
 #endif
                 process, thread, &frame, 
-                ctx, NULL, FunctionTableAccess, SymGetModuleBase, NULL) && (num_frames < 128))
+                ctx, NULL, SymFunctionTableAccess64, SymGetModuleBase64, NULL) && (num_frames < maxTrace))
 	{
+		LOG.lprintf("Reading stack frame %d\n", num_frames);
 		stacktrace[num_frames++] = (void *) frame.AddrPC.Offset;
 	}
 
 	SymCleanup(GetCurrentProcess());
-*/
-	CaptureStackBackTraceType CaptureStackBackTrace = (CaptureStackBackTraceType)(GetProcAddress(LoadLibraryA("kernel32.dll"), "RtlCaptureStackBackTrace"));
+
+	/*CaptureStackBackTraceType CaptureStackBackTrace = (CaptureStackBackTraceType)(GetProcAddress(LoadLibraryA("kernel32.dll"), "RtlCaptureStackBackTrace"));
 
 	if (CaptureStackBackTrace == NULL)
 	{
 		return(false);
 	}
 
-	unsigned num_frames = CaptureStackBackTrace(0, 62, stacktrace, NULL);
+	unsigned num_frames = CaptureStackBackTrace(0, maxTrace, stacktrace, NULL);
+	LOG.lprintf("Read Frames %d\n", num_frames);
+	*/
 #else
-	unsigned num_frames = backtrace(stacktrace, sizeof(stacktrace) / sizeof(stacktrace[0]));
+	unsigned num_frames = backtrace(stacktrace, maxTrace);
 #endif
-	if (!SendString("StackTrace"))
-	{
-		return(false);
-	}
 
-	num_frames *=  sizeof(void *);
+	LOG.lprintf("Will now send %d stack frames\n", num_frames);
+
+	if (!SendString("StackTrace"))
+		return(false);
+
+	num_frames *= sizeof(void *);
 
 	return(SendString((char *) &stacktrace, num_frames));
 }

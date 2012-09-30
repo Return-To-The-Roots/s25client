@@ -1,4 +1,4 @@
-// $Id: main.cpp 8268 2012-09-15 22:08:04Z marcus $
+// $Id: main.cpp 8359 2012-09-30 16:17:34Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -133,7 +133,18 @@ int mkdir_p(const std::string dir)
 }
 
 #ifdef _WIN32
-static LONG WINAPI WinExceptionHandler(LPEXCEPTION_POINTERS info)
+#ifdef _MSC_VER
+LONG WINAPI 
+#else
+void
+#endif
+	WinExceptionHandler(
+#ifdef _MSC_VER
+	LPEXCEPTION_POINTERS info
+#else
+	int sig
+#endif
+	)
 {
 	if ((SETTINGS.global.submit_debug_data == 1) ||
 		MessageBoxA(NULL,
@@ -145,12 +156,21 @@ static LONG WINAPI WinExceptionHandler(LPEXCEPTION_POINTERS info)
 		DebugInfo di;
 
 		di.SendReplay();
-		di.SendStackTrace(info->ContextRecord);
+		di.SendStackTrace(
+#ifdef _MSC_VER
+			info->ContextRecord
+#endif
+		);
 	}
 
-	abort();
+	if(SETTINGS.global.submit_debug_data == 0)
+		MessageBoxA(NULL, _("RttR crashed. Please restart the application!"), _("Error"), MB_OK | MB_ICONERROR | MB_TASKMODAL | MB_SETFOREGROUND);
 
+	_exit(1);
+
+#ifdef _MSC_VER
 	return(EXCEPTION_EXECUTE_HANDLER);
+#endif
 }
 #else
 void LinExceptionHandler(int sig)
@@ -165,9 +185,7 @@ void LinExceptionHandler(int sig)
 
 	abort();
 }
-
 #endif
-
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
@@ -202,7 +220,12 @@ int main(int argc, char *argv[])
 	// Set UTF-8 console charset
 	SetConsoleOutputCP(CP_UTF8);
 
+#ifndef _MSC_VER
+	signal(SIGSEGV, WinExceptionHandler);
+#else
 	SetUnhandledExceptionFilter(WinExceptionHandler);
+#endif
+	//AddVectoredExceptionHandler(1, WinExceptionHandler);
 #else
 	struct sigaction sa;
 	sa.sa_handler = HandlerRoutine;

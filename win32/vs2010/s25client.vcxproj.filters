@@ -917,7 +917,9 @@
     <ClInclude Include="..\..\src\Debug.h">
       <Filter>Quelldateien\Debug</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\glSmartBitmap.h" />
+    <ClInclude Include="..\..\src\glSmartBitmap.h">
+      <Filter>Quelldateien\Loader\libsiedler2</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Addons.cpp">
@@ -1677,7 +1679,7 @@
       <Filter>Quelldateien\Debug</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\glSmartBitmap.cpp">
-      <Filter>Quelldateien</Filter>
+      <Filter>Quelldateien\Loader\libsiedler2</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

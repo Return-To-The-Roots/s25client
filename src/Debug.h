@@ -42,7 +42,7 @@ public:
 	bool SendUnsigned(unsigned i);
 	bool SendString(const char *str, unsigned len = 0);
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 	bool SendStackTrace(LPCONTEXT ctx = NULL);
 #else
 	bool SendStackTrace();
@@ -50,12 +50,6 @@ public:
 	bool SendReplay();
 	bool SendAsyncLog(std::list<RandomEntry>::iterator first_a, std::list<RandomEntry>::iterator first_b,
 		std::list<RandomEntry> &a, std::list<RandomEntry> &b, unsigned identical);
-
-private:
-
-#ifdef _WIN32
-	void* CALLBACK FunctionTableAccess(HANDLE hProcess, DWORD64 AddrBase);
-#endif
 };
 
 #endif

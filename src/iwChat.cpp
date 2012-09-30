@@ -1,4 +1,4 @@
-// $Id: iwChat.cpp 8249 2012-09-14 10:11:19Z marcus $
+// $Id: iwChat.cpp 8359 2012-09-30 16:17:34Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -82,7 +82,7 @@ void iwChat::Msg_EditEnter(const unsigned int ctrl_id)
 	if(chat_dest != 0 && chat_dest != 1 && chat_dest != 2)
 		chat_dest = 0;
 
-#ifndef NDEBUG
+/*#ifndef NDEBUG
 	if (edit->GetText() == "apocalypsis")
 	{
 		GameClient::inst().AddGC(new gc::CheatArmageddon);
@@ -103,7 +103,7 @@ void iwChat::Msg_EditEnter(const unsigned int ctrl_id)
 
 		return;
 	}
-#endif
+*/#endif
 
 	GAMECLIENT.Command_Chat(edit->GetText(), ChatDestination(chat_dest+1));
 
