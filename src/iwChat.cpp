@@ -1,4 +1,4 @@
-// $Id: iwChat.cpp 8359 2012-09-30 16:17:34Z FloSoft $
+// $Id: iwChat.cpp 8360 2012-09-30 16:22:11Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -103,7 +103,7 @@ void iwChat::Msg_EditEnter(const unsigned int ctrl_id)
 
 		return;
 	}
-*/#endif
+#endif*/
 
 	GAMECLIENT.Command_Chat(edit->GetText(), ChatDestination(chat_dest+1));
 
