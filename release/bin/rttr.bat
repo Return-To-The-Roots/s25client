@@ -4,7 +4,7 @@ IF EXIST RTTR\s25update.exe GOTO UPDATE
 GOTO START
 
 :UPDATE
-RTTR\s25update.exe --dir %CD%
+RTTR\s25update.exe --stable --dir %CD%
 
 :START
 s25client.exe
