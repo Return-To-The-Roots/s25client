@@ -1,5 +1,5 @@
 ################################################################################
-### $Id: CMakeLists.txt 7751 2012-01-04 02:54:09Z marcus $
+### $Id: CMakeLists.txt 8361 2012-09-30 16:52:07Z FloSoft $
 ################################################################################
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6.0)
@@ -131,10 +131,10 @@ ADD_CUSTOM_TARGET(create_nightly
 				  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
 )
 
-#ADD_CUSTOM_TARGET(create_stable
-#				  COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/release/create_release.sh" "stable" "${CMAKE_SOURCE_DIR}"
-#				  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
-#)
+ADD_CUSTOM_TARGET(create_stable
+				  COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/release/create_release.sh" "stable" "${CMAKE_SOURCE_DIR}"
+				  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
+)
 
 # preinstall script
 INSTALL(SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/cmake/preinstall.cmake")
