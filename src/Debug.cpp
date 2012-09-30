@@ -33,6 +33,7 @@
 		typedef WINBOOL (IMAGEAPI *StackWalkType)(DWORD MachineType,HANDLE hProcess,HANDLE hThread,LPSTACKFRAME64 StackFrame,PVOID ContextRecord,PREAD_PROCESS_MEMORY_ROUTINE64 ReadMemoryRoutine,PFUNCTION_TABLE_ACCESS_ROUTINE64 FunctionTableAccessRoutine,PGET_MODULE_BASE_ROUTINE64 GetModuleBaseRoutine,PTRANSLATE_ADDRESS_ROUTINE64 TranslateAddress);
 #	else
 #		undef CaptureStackBackTrace
+#		pragma comment(lib, "dbgHelp.lib")
 #	endif
 #endif
 
@@ -135,6 +136,7 @@ bool DebugInfo::SendStackTrace()
 #ifdef _WIN32
 	CONTEXT context;
 
+#ifndef _MSC_VER
 	HMODULE kernel32 = LoadLibrary("kernel32.dll");
 	HMODULE dbghelp = LoadLibrary("dbghelp.dll");
 
@@ -148,14 +150,15 @@ bool DebugInfo::SendStackTrace()
 	SymInitializeType SymInitialize = (SymInitializeType)(GetProcAddress(dbghelp, "SymInitialize"));
 	SymCleanupType SymCleanup = (SymCleanupType)(GetProcAddress(dbghelp, "SymCleanup"));
 
-	StackWalkType StackWalk = (StackWalkType)(GetProcAddress(dbghelp, "StackWalk64"));
+	StackWalkType StackWalk64 = (StackWalkType)(GetProcAddress(dbghelp, "StackWalk64"));
 	PFUNCTION_TABLE_ACCESS_ROUTINE64 SymFunctionTableAccess = (PFUNCTION_TABLE_ACCESS_ROUTINE64)(GetProcAddress(dbghelp, "SymFunctionTableAccess64"));
-	PGET_MODULE_BASE_ROUTINE64 SymGetModuleBase = (PGET_MODULE_BASE_ROUTINE64)(GetProcAddress(dbghelp, "SymGetModuleBase64"));
+	PGET_MODULE_BASE_ROUTINE64 SymGetModuleBase64 = (PGET_MODULE_BASE_ROUTINE64)(GetProcAddress(dbghelp, "SymGetModuleBase64"));
 
-	if ((SymInitialize == NULL) || (StackWalk == NULL) || (SymFunctionTableAccess == NULL) || (SymGetModuleBase == NULL) || (RtlCaptureContext == NULL))
+	if ((SymInitialize == NULL) || (StackWalk64 == NULL) || (SymFunctionTableAccess == NULL) || (SymGetModuleBase64 == NULL) || (RtlCaptureContext == NULL))
 	{
 		return(false);
 	}
+#endif
 
 	if (!SymInitialize(GetCurrentProcess(), NULL, true))
 	{
@@ -191,14 +194,14 @@ bool DebugInfo::SendStackTrace()
 	HANDLE thread = GetCurrentThread();
 
 	unsigned num_frames = 0;
-        while (StackWalk(
+        while (StackWalk64(
 #ifdef _WIN64
 		IMAGE_FILE_MACHINE_AMD64,
 #else
 		IMAGE_FILE_MACHINE_I386, 
 #endif
                 process, thread, &frame, 
-                ctx, NULL, FunctionTableAccess, SymGetModuleBase, NULL) && (num_frames < sizeof(stacktrace) / sizeof(stacktrace[0])))
+                ctx, NULL, FunctionTableAccess, SymGetModuleBase64, NULL) && (num_frames < sizeof(stacktrace) / sizeof(stacktrace[0])))
 	{
 		stacktrace[num_frames++] = (void *) frame.AddrPC.Offset;
 	}
