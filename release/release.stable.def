@@ -3,5 +3,5 @@ ARCHIVE=/srv/apache/siedler25.org/nightly/s25client/archive/stable/$(date +%Y)
 UPLOADTARGET=root@tyra.ra-doersch.de:/www/siedler25.org/www/uploads/stable
 UPLOADSCRIPT="ssh root@tyra.ra-doersch.de /usr/bin/php -q /www/siedler25.org/www/docs/cron/stablesql.php"
 UPLOADTO=stable/
-UPLOADURL=http://www.siedler25.org/uploads/stable/
+UPLOADURL=http://www.siedler25.org/uploads/stable/0.8/
 UPLOADFILE=/srv/apache/siedler25.org/nightly/s25client/stable/
