@@ -1,4 +1,4 @@
-// $Id: nofFarmhand.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: nofFarmhand.cpp 8349 2012-09-30 14:08:25Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -111,7 +111,7 @@ void nofFarmhand::HandleDerivedEvent(const unsigned int id)
 			// Available points: 1st class and 2st class
 			list< Point<MapCoord> > available_points[3];
 			
-			unsigned max_radius = (job == JOB_CHARBURNER) ? 2 : RADIUS[job-JOB_WOODCUTTER];
+			unsigned max_radius = (job == JOB_CHARBURNER) ? 3 : RADIUS[job-JOB_WOODCUTTER];
 			bool points_found = false;
 			bool wait = false;
 
