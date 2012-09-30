@@ -168,12 +168,14 @@ bool DebugInfo::SendStackTrace()
 		return(false);
 	}
 
+#ifndef _MSC_VER
 	if (ctx == NULL)
 	{
 		context.ContextFlags = CONTEXT_FULL;
 		RtlCaptureContext(&context);
 		ctx = &context;
 	}
+#endif
 
     STACKFRAME64 frame;
     memset(&frame, 0, sizeof(frame));
@@ -205,7 +207,7 @@ bool DebugInfo::SendStackTrace()
                 process, thread, &frame, 
                 ctx, NULL, SymFunctionTableAccess64, SymGetModuleBase64, NULL) && (num_frames < maxTrace))
 	{
-		LOG.lprintf("Reading Frame %d\n", num_frames);
+		LOG.lprintf("Reading stack frame %d\n", num_frames);
 		stacktrace[num_frames++] = (void *) frame.AddrPC.Offset;
 	}
 
@@ -224,12 +226,13 @@ bool DebugInfo::SendStackTrace()
 #else
 	unsigned num_frames = backtrace(stacktrace, maxTrace);
 #endif
-	if (!SendString("StackTrace"))
-	{
-		return(false);
-	}
 
-	num_frames *=  sizeof(void *);
+	LOG.lprintf("Will now send %d stack frames\n", num_frames);
+
+	if (!SendString("StackTrace"))
+		return(false);
+
+	num_frames *= sizeof(void *);
 
 	return(SendString((char *) &stacktrace, num_frames));
 }

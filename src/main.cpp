@@ -1,4 +1,4 @@
-// $Id: main.cpp 8354 2012-09-30 15:49:28Z FloSoft $
+// $Id: main.cpp 8357 2012-09-30 16:12:35Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -134,9 +134,9 @@ int mkdir_p(const std::string dir)
 
 #ifdef _WIN32
 #ifdef _MSC_VER
-static LONG WINAPI 
+LONG WINAPI 
 #else
-static void
+void
 #endif
 	WinExceptionHandler(
 #ifdef _MSC_VER
@@ -160,14 +160,13 @@ static void
 #ifdef _MSC_VER
 			info->ContextRecord
 #endif
-			);
+		);
 	}
-	
+
 	if(SETTINGS.global.submit_debug_data == 0)
 		MessageBoxA(NULL, _("RttR crashed. Please restart the application!"), _("Error"), MB_OK | MB_ICONERROR | MB_TASKMODAL | MB_SETFOREGROUND);
 
 	_exit(1);
-	abort();
 
 #ifdef _MSC_VER
 	return(EXCEPTION_EXECUTE_HANDLER);
@@ -186,9 +185,7 @@ void LinExceptionHandler(int sig)
 
 	abort();
 }
-
 #endif
-
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
