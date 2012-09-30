@@ -30,15 +30,7 @@
 		typedef WINBOOL (IMAGEAPI *SymCleanupType)(HANDLE hProcess);
 		typedef NTSYSAPI VOID (NTAPI *RtlCaptureContextType)(PCONTEXT ContextRecord);
 
-#		ifdef _WIN64
-			typedef WINBOOL (IMAGEAPI *StackWalkType)(DWORD MachineType,HANDLE hProcess,HANDLE hThread,LPSTACKFRAME64 StackFrame,PVOID ContextRecord,PREAD_PROCESS_MEMORY_ROUTINE64 ReadMemoryRoutine,PFUNCTION_TABLE_ACCESS_ROUTINE64 FunctionTableAccessRoutine,PGET_MODULE_BASE_ROUTINE64 GetModuleBaseRoutine,PTRANSLATE_ADDRESS_ROUTINE64 TranslateAddress);
-			typedef PVOID (IMAGEAPI *SymFunctionTableAccessType)(HANDLE hProcess,DWORD64 AddrBase);
-			typedef DWORD64 (IMAGEAPI *SymGetModuleBaseType)(HANDLE hProcess,DWORD64 qwAddr);
-#		else
-			typedef WINBOOL (IMAGEAPI *StackWalkType)(DWORD MachineType,HANDLE hProcess,HANDLE hThread,LPSTACKFRAME StackFrame,PVOID ContextRecord,PREAD_PROCESS_MEMORY_ROUTINE ReadMemoryRoutine,PFUNCTION_TABLE_ACCESS_ROUTINE FunctionTableAccessRoutine,PGET_MODULE_BASE_ROUTINE GetModuleBaseRoutine,PTRANSLATE_ADDRESS_ROUTINE TranslateAddress);
-			typedef PVOID (IMAGEAPI *SymFunctionTableAccessType)(HANDLE hProcess,DWORD AddrBase);
-			typedef DWORD (IMAGEAPI *SymGetModuleBaseType)(HANDLE hProcess,DWORD dwAddr);
-#		endif
+		typedef WINBOOL (IMAGEAPI *StackWalkType)(DWORD MachineType,HANDLE hProcess,HANDLE hThread,LPSTACKFRAME64 StackFrame,PVOID ContextRecord,PREAD_PROCESS_MEMORY_ROUTINE64 ReadMemoryRoutine,PFUNCTION_TABLE_ACCESS_ROUTINE64 FunctionTableAccessRoutine,PGET_MODULE_BASE_ROUTINE64 GetModuleBaseRoutine,PTRANSLATE_ADDRESS_ROUTINE64 TranslateAddress);
 #	else
 #		undef CaptureStackBackTrace
 #	endif
@@ -138,10 +130,10 @@ bool DebugInfo::SendStackTrace(LPCONTEXT ctx)
 bool DebugInfo::SendStackTrace()
 #endif
 {
-	void *stacktrace[128];
+	void *stacktrace[256];
 
 #ifdef _WIN32
-/*	CONTEXT context;
+	CONTEXT context;
 
 	HMODULE kernel32 = LoadLibrary("kernel32.dll");
 	HMODULE dbghelp = LoadLibrary("dbghelp.dll");
@@ -157,22 +149,8 @@ bool DebugInfo::SendStackTrace()
 	SymCleanupType SymCleanup = (SymCleanupType)(GetProcAddress(dbghelp, "SymCleanup"));
 
 	StackWalkType StackWalk = (StackWalkType)(GetProcAddress(dbghelp, "StackWalk64"));
-	if (StackWalk == NULL)
-	{
-		StackWalk = (StackWalkType)(GetProcAddress(dbghelp, "StackWalk"));
-	}
-
-	SymFunctionTableAccessType SymFunctionTableAccess = (SymFunctionTableAccessType)(GetProcAddress(dbghelp, "SymFunctionTableAccess64"));
-	if (SymFunctionTableAccess == NULL)
-	{
-		SymFunctionTableAccess = (SymFunctionTableAccessType)(GetProcAddress(dbghelp, "SymFunctionTableAccess"));
-	}
-
-	SymGetModuleBaseType SymGetModuleBase = (SymGetModuleBaseType)(GetProcAddress(dbghelp, "SymGetModuleBase64"));
-	if (SymGetModuleBase == NULL)
-	{
-		SymGetModuleBase = (SymGetModuleBaseType)(GetProcAddress(dbghelp, "SymGetModuleBase"));
-	}
+	PFUNCTION_TABLE_ACCESS_ROUTINE64 SymFunctionTableAccess = (PFUNCTION_TABLE_ACCESS_ROUTINE64)(GetProcAddress(dbghelp, "SymFunctionTableAccess64"));
+	PGET_MODULE_BASE_ROUTINE64 SymGetModuleBase = (PGET_MODULE_BASE_ROUTINE64)(GetProcAddress(dbghelp, "SymGetModuleBase64"));
 
 	if ((SymInitialize == NULL) || (StackWalk == NULL) || (SymFunctionTableAccess == NULL) || (SymGetModuleBase == NULL) || (RtlCaptureContext == NULL))
 	{
@@ -192,7 +170,7 @@ bool DebugInfo::SendStackTrace()
 		ctx = &context;
 	}
 
-        STACKFRAME frame;
+        STACKFRAME64 frame;
         memset(&frame, 0, sizeof(frame));
 
 #ifdef _WIN64
@@ -220,13 +198,13 @@ bool DebugInfo::SendStackTrace()
 		IMAGE_FILE_MACHINE_I386, 
 #endif
                 process, thread, &frame, 
-                ctx, NULL, FunctionTableAccess, SymGetModuleBase, NULL) && (num_frames < 128))
+                ctx, NULL, FunctionTableAccess, SymGetModuleBase, NULL) && (num_frames < sizeof(stacktrace) / sizeof(stacktrace[0])))
 	{
 		stacktrace[num_frames++] = (void *) frame.AddrPC.Offset;
 	}
 
 	SymCleanup(GetCurrentProcess());
-*/
+/*
 	CaptureStackBackTraceType CaptureStackBackTrace = (CaptureStackBackTraceType)(GetProcAddress(LoadLibraryA("kernel32.dll"), "RtlCaptureStackBackTrace"));
 
 	if (CaptureStackBackTrace == NULL)
@@ -235,6 +213,7 @@ bool DebugInfo::SendStackTrace()
 	}
 
 	unsigned num_frames = CaptureStackBackTrace(0, 62, stacktrace, NULL);
+*/
 #else
 	unsigned num_frames = backtrace(stacktrace, sizeof(stacktrace) / sizeof(stacktrace[0]));
 #endif

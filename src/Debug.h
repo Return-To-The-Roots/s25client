@@ -50,12 +50,6 @@ public:
 	bool SendReplay();
 	bool SendAsyncLog(std::list<RandomEntry>::iterator first_a, std::list<RandomEntry>::iterator first_b,
 		std::list<RandomEntry> &a, std::list<RandomEntry> &b, unsigned identical);
-
-private:
-
-#ifdef _WIN32
-	void* CALLBACK FunctionTableAccess(HANDLE hProcess, DWORD64 AddrBase);
-#endif
 };
 
 #endif
