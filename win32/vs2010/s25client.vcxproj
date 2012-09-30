@@ -57,7 +57,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>lua52.lib;opengl32.lib;shlwapi.lib;libbz2.lib;$(OutDir)\libendian.lib;$(OutDir)\libsiedler2.lib;$(OutDir)\libutil.lib;$(OutDir)\mygettext.lib;$(OutDir)\liblobby_c.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;shlwapi.lib;libbz2.lib;$(OutDir)\libendian.lib;$(OutDir)\libsiedler2.lib;$(OutDir)\libutil.lib;$(OutDir)\mygettext.lib;$(OutDir)\liblobby_c.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>"$(OutDir)prebuild-mutex.exe" "prebuild" "$(SolutionName)" "$(ProjectName)" "$(ProjectDir)\..\.." "$(OutDir)"</Command>
