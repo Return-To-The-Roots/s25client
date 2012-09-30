@@ -125,18 +125,21 @@ bool DebugInfo::SendString(const char *str, unsigned len)
 	}
 #endif
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 bool DebugInfo::SendStackTrace(LPCONTEXT ctx)
 #else
 bool DebugInfo::SendStackTrace()
 #endif
 {
-	void *stacktrace[256];
-
+	const unsigned int maxTrace = 256;
+	void *stacktrace[maxTrace];
+	
 #ifdef _WIN32
-	CONTEXT context;
 
 #ifndef _MSC_VER
+	CONTEXT context;
+	LPCONTEXT ctx = NULL;
+
 	HMODULE kernel32 = LoadLibrary("kernel32.dll");
 	HMODULE dbghelp = LoadLibrary("dbghelp.dll");
 
@@ -151,10 +154,10 @@ bool DebugInfo::SendStackTrace()
 	SymCleanupType SymCleanup = (SymCleanupType)(GetProcAddress(dbghelp, "SymCleanup"));
 
 	StackWalkType StackWalk64 = (StackWalkType)(GetProcAddress(dbghelp, "StackWalk64"));
-	PFUNCTION_TABLE_ACCESS_ROUTINE64 SymFunctionTableAccess = (PFUNCTION_TABLE_ACCESS_ROUTINE64)(GetProcAddress(dbghelp, "SymFunctionTableAccess64"));
+	PFUNCTION_TABLE_ACCESS_ROUTINE64 SymFunctionTableAccess64 = (PFUNCTION_TABLE_ACCESS_ROUTINE64)(GetProcAddress(dbghelp, "SymFunctionTableAccess64"));
 	PGET_MODULE_BASE_ROUTINE64 SymGetModuleBase64 = (PGET_MODULE_BASE_ROUTINE64)(GetProcAddress(dbghelp, "SymGetModuleBase64"));
 
-	if ((SymInitialize == NULL) || (StackWalk64 == NULL) || (SymFunctionTableAccess == NULL) || (SymGetModuleBase64 == NULL) || (RtlCaptureContext == NULL))
+	if ((SymInitialize == NULL) || (StackWalk64 == NULL) || (SymFunctionTableAccess64 == NULL) || (SymGetModuleBase64 == NULL) || (RtlCaptureContext == NULL))
 	{
 		return(false);
 	}
@@ -165,60 +168,61 @@ bool DebugInfo::SendStackTrace()
 		return(false);
 	}
 
-	ctx->ContextFlags = CONTEXT_FULL;
-
 	if (ctx == NULL)
 	{
+		context.ContextFlags = CONTEXT_FULL;
 		RtlCaptureContext(&context);
 		ctx = &context;
 	}
 
-        STACKFRAME64 frame;
-        memset(&frame, 0, sizeof(frame));
+    STACKFRAME64 frame;
+    memset(&frame, 0, sizeof(frame));
 
 #ifdef _WIN64
-        frame.AddrPC.Offset = ctx->Rip;
-        frame.AddrStack.Offset = ctx->Rsp;
-        frame.AddrFrame.Offset = ctx->Rbp;
+    frame.AddrPC.Offset = ctx->Rip;
+    frame.AddrStack.Offset = ctx->Rsp;
+    frame.AddrFrame.Offset = ctx->Rbp;
 #else
-        frame.AddrPC.Offset = ctx->Eip;
-        frame.AddrStack.Offset = ctx->Esp;
-        frame.AddrFrame.Offset = ctx->Ebp;
+    frame.AddrPC.Offset = ctx->Eip;
+    frame.AddrStack.Offset = ctx->Esp;
+    frame.AddrFrame.Offset = ctx->Ebp;
 #endif
 
-        frame.AddrPC.Mode = AddrModeFlat;
-        frame.AddrStack.Mode = AddrModeFlat;
-        frame.AddrFrame.Mode = AddrModeFlat;
+    frame.AddrPC.Mode = AddrModeFlat;
+    frame.AddrStack.Mode = AddrModeFlat;
+    frame.AddrFrame.Mode = AddrModeFlat;
 
 	HANDLE process = GetCurrentProcess();
 	HANDLE thread = GetCurrentThread();
 
 	unsigned num_frames = 0;
-        while (StackWalk64(
+    while (StackWalk64(
 #ifdef _WIN64
 		IMAGE_FILE_MACHINE_AMD64,
 #else
 		IMAGE_FILE_MACHINE_I386, 
 #endif
                 process, thread, &frame, 
-                ctx, NULL, FunctionTableAccess, SymGetModuleBase64, NULL) && (num_frames < sizeof(stacktrace) / sizeof(stacktrace[0])))
+                ctx, NULL, SymFunctionTableAccess64, SymGetModuleBase64, NULL) && (num_frames < maxTrace))
 	{
+		LOG.lprintf("Reading Frame %d\n", num_frames);
 		stacktrace[num_frames++] = (void *) frame.AddrPC.Offset;
 	}
 
 	SymCleanup(GetCurrentProcess());
-/*
-	CaptureStackBackTraceType CaptureStackBackTrace = (CaptureStackBackTraceType)(GetProcAddress(LoadLibraryA("kernel32.dll"), "RtlCaptureStackBackTrace"));
+
+	/*CaptureStackBackTraceType CaptureStackBackTrace = (CaptureStackBackTraceType)(GetProcAddress(LoadLibraryA("kernel32.dll"), "RtlCaptureStackBackTrace"));
 
 	if (CaptureStackBackTrace == NULL)
 	{
 		return(false);
 	}
 
-	unsigned num_frames = CaptureStackBackTrace(0, 62, stacktrace, NULL);
-*/
+	unsigned num_frames = CaptureStackBackTrace(0, maxTrace, stacktrace, NULL);
+	LOG.lprintf("Read Frames %d\n", num_frames);
+	*/
 #else
-	unsigned num_frames = backtrace(stacktrace, sizeof(stacktrace) / sizeof(stacktrace[0]));
+	unsigned num_frames = backtrace(stacktrace, maxTrace);
 #endif
 	if (!SendString("StackTrace"))
 	{

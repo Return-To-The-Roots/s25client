@@ -1,4 +1,4 @@
-// $Id: main.cpp 8350 2012-09-30 14:10:53Z FloSoft $
+// $Id: main.cpp 8354 2012-09-30 15:49:28Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -133,7 +133,18 @@ int mkdir_p(const std::string dir)
 }
 
 #ifdef _WIN32
-static LONG WINAPI WinExceptionHandler(LPEXCEPTION_POINTERS info)
+#ifdef _MSC_VER
+static LONG WINAPI 
+#else
+static void
+#endif
+	WinExceptionHandler(
+#ifdef _MSC_VER
+	LPEXCEPTION_POINTERS info
+#else
+	int sig
+#endif
+	)
 {
 	if ((SETTINGS.global.submit_debug_data == 1) ||
 		MessageBoxA(NULL,
@@ -145,7 +156,11 @@ static LONG WINAPI WinExceptionHandler(LPEXCEPTION_POINTERS info)
 		DebugInfo di;
 
 		di.SendReplay();
-		di.SendStackTrace(info->ContextRecord);
+		di.SendStackTrace(
+#ifdef _MSC_VER
+			info->ContextRecord
+#endif
+			);
 	}
 	
 	if(SETTINGS.global.submit_debug_data == 0)
@@ -154,7 +169,9 @@ static LONG WINAPI WinExceptionHandler(LPEXCEPTION_POINTERS info)
 	_exit(1);
 	abort();
 
+#ifdef _MSC_VER
 	return(EXCEPTION_EXECUTE_HANDLER);
+#endif
 }
 #else
 void LinExceptionHandler(int sig)
@@ -206,7 +223,12 @@ int main(int argc, char *argv[])
 	// Set UTF-8 console charset
 	SetConsoleOutputCP(CP_UTF8);
 
+#ifndef _MSC_VER
+	signal(SIGSEGV, WinExceptionHandler);
+#else
 	SetUnhandledExceptionFilter(WinExceptionHandler);
+#endif
+	//AddVectoredExceptionHandler(1, WinExceptionHandler);
 #else
 	struct sigaction sa;
 	sa.sa_handler = HandlerRoutine;

@@ -42,7 +42,7 @@ public:
 	bool SendUnsigned(unsigned i);
 	bool SendString(const char *str, unsigned len = 0);
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 	bool SendStackTrace(LPCONTEXT ctx = NULL);
 #else
 	bool SendStackTrace();
