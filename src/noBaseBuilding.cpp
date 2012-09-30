@@ -1,4 +1,4 @@
-// $Id: noBaseBuilding.cpp 8060 2012-07-29 14:07:16Z jh $
+// $Id: noBaseBuilding.cpp 8351 2012-09-30 14:14:48Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -112,8 +112,8 @@ noBaseBuilding::~noBaseBuilding()
 void noBaseBuilding::Destroy_noBaseBuilding()
 {
 	DestroyAllRoads();
-	//notify the ai about this?
-	//GAMECLIENT.SendAIEvent(new AIEvent::Building(AIEvent::BuildingDestroyed, x, y, type), player);
+	//notify the ai about this
+	GAMECLIENT.SendAIEvent(new AIEvent::Building(AIEvent::BuildingDestroyed, x, y, type), player);
 
 	gwg->GetGameInterface()->GI_UpdateMinimap(x, y);
 
