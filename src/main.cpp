@@ -1,4 +1,4 @@
-// $Id: main.cpp 8268 2012-09-15 22:08:04Z marcus $
+// $Id: main.cpp 8350 2012-09-30 14:10:53Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -147,7 +147,11 @@ static LONG WINAPI WinExceptionHandler(LPEXCEPTION_POINTERS info)
 		di.SendReplay();
 		di.SendStackTrace(info->ContextRecord);
 	}
+	
+	if(SETTINGS.global.submit_debug_data == 0)
+		MessageBoxA(NULL, _("RttR crashed. Please restart the application!"), _("Error"), MB_OK | MB_ICONERROR | MB_TASKMODAL | MB_SETFOREGROUND);
 
+	_exit(1);
 	abort();
 
 	return(EXCEPTION_EXECUTE_HANDLER);
