@@ -39,7 +39,7 @@
 
 DebugInfo::DebugInfo() : Socket()
 {
-	Connect("188.40.245.45", 4123, false, (Socket::PROXY_TYPE)SETTINGS.proxy.typ, SETTINGS.proxy.proxy, SETTINGS.proxy.port);
+	Connect("debug.rttr.info", 4123, false, (Socket::PROXY_TYPE)SETTINGS.proxy.typ, SETTINGS.proxy.proxy, SETTINGS.proxy.port);
 
 	Send("RTTRDBG", 7);
 
