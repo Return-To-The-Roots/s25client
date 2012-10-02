@@ -1,4 +1,4 @@
-// $Id: nobMilitary.cpp 8305 2012-09-22 12:34:54Z marcus $
+// $Id: nobMilitary.cpp 8370 2012-10-02 23:46:40Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -55,7 +55,7 @@
 
 nobMilitary::nobMilitary(const BuildingType type,const unsigned short x, const unsigned short y,const unsigned char player,const Nation nation)
 : nobBaseMilitary(type,x,y,player,nation), new_built(true), coins(0), disable_coins(false), 
-disable_coins_virtual(false), capturing(false), capturing_soldiers(0), goldorder_event(0), upgrade_event(0), is_regulating_troops(false)
+disable_coins_virtual(false), capturing(false), capturing_soldiers(0), goldorder_event(0), upgrade_event(0), is_regulating_troops(false), captured_not_built(false)
 {
 	// Gebäude entsprechend als Militärgebäude registrieren und in ein Militärquadrat eintragen
 	gwg->GetPlayer(player)->AddMilitaryBuilding(this);
@@ -136,7 +136,21 @@ void nobMilitary::Serialize_nobMilitary(SerializedGameData * sgd) const
 {
 	Serialize_nobBaseMilitary(sgd);
 
-	sgd->PushBool(new_built);
+	unsigned char bitfield = 0;
+
+	if (new_built)
+	{
+		bitfield |= (1 << 0);
+	}
+
+	// reverse for compatibility :)
+	if (!captured_not_built)
+	{
+		bitfield |= (1 << 1);
+	}
+
+	sgd->PushUnsignedChar(bitfield);
+
 	sgd->PushUnsignedChar(coins);
 	sgd->PushBool(disable_coins);
 	sgd->PushBool(disable_coins_virtual);
@@ -154,18 +168,27 @@ void nobMilitary::Serialize_nobMilitary(SerializedGameData * sgd) const
 }
 
 nobMilitary::nobMilitary(SerializedGameData * sgd, const unsigned obj_id) : nobBaseMilitary(sgd,obj_id),
-new_built(sgd->PopBool()),
-coins(sgd->PopUnsignedChar()),
-disable_coins(sgd->PopBool()),
-disable_coins_virtual(sgd->PopBool()),
-frontier_distance(sgd->PopUnsignedChar()),
-size(sgd->PopUnsignedChar()),
-capturing(sgd->PopBool()),
-capturing_soldiers(sgd->PopUnsignedInt()),
-goldorder_event(sgd->PopObject<EventManager::Event>(GOT_EVENT)),
-upgrade_event(sgd->PopObject<EventManager::Event>(GOT_EVENT)),
-is_regulating_troops(false)
+	is_regulating_troops(false)
 {
+	// use a bitfield instead of 1 unsigned char per boolean
+	// mainly for compatibility :-)
+
+	unsigned char bitfield = sgd->PopBool();
+
+	new_built = bitfield & (1 << 0);
+	captured_not_built = !(bitfield & (1 << 1));
+
+	coins = sgd->PopUnsignedChar();
+	disable_coins = sgd->PopBool();
+	disable_coins_virtual = sgd->PopBool();
+	frontier_distance = sgd->PopUnsignedChar();
+	size = sgd->PopUnsignedChar();
+	capturing = sgd->PopBool();
+	capturing_soldiers = sgd->PopUnsignedInt();
+	goldorder_event = sgd->PopObject<EventManager::Event>(GOT_EVENT);
+	upgrade_event = sgd->PopObject<EventManager::Event>(GOT_EVENT);
+
+
 	sgd->PopObjectList(ordered_troops,GOT_NOF_PASSIVESOLDIER);
 	sgd->PopObjectList(ordered_coins,GOT_WARE);
 	sgd->PopObjectList(troops,GOT_NOF_PASSIVESOLDIER);
@@ -835,6 +858,8 @@ nofDefender * nobMilitary::ProvideDefender(nofAttacker * const attacker)
 
 void nobMilitary::Capture(const unsigned char new_owner)
 {
+	captured_not_built = true;
+
 	// Goldmünzen in der Inventur vom alten Spieler abziehen und dem neuen hinzufügen
 	gwg->GetPlayer(player)->DecreaseInventoryWare(GD_COINS,coins);
 	gwg->GetPlayer(new_owner)->IncreaseInventoryWare(GD_COINS,coins);

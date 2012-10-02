@@ -1,4 +1,4 @@
-// $Id: TerritoryRegion.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: TerritoryRegion.h 8370 2012-10-02 23:46:40Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -19,6 +19,10 @@
 
 #ifndef TERRITORY_REGION_H_
 #define TERRITORY_REGION_H_
+
+#include <vector>
+
+#include "GameWorld.h"
 
 /// TerritoryRegion ist ein Rechteck aus der Karte quasi "ausgeschnitten", die für die Berechnung bei Militärgebäuden-
 /// aktionen (Neubau, Übernahme, Abriss) benötigt wird von RecalcTerritory
@@ -45,9 +49,11 @@ class TerritoryRegion
 	const GameWorldBase * const gwb;
 
 private:
+	/// Check whether the point x, y is part of the polygon
+	static bool IsPointInPolygon(const GameWorldBase *gwb, std::vector< Point<MapCoord> > &polygon, MapCoord x, MapCoord y);
 
 	/// Testet einen Punkt, ob der neue Spieler ihn übernehmen kann und übernimmt ihn ggf.
-	void TestNode( int x, int y,const unsigned char player, const unsigned char radius);
+	void TestNode( int x, int y,const unsigned char player, const unsigned char radius, const bool check_barriers);
 	/// Unterfunktionen von AdjustBorders, vergleicht 2 Punkte, ob sie von unterschiedlichen Spielern sind und setzt
 	/// Punkt ggf. zu gar keinem Spieler, 2. Funktion wird für Punkte im 2er Abstand verwendet, da es dort ein bisschen anders läuft!
 	void AdjustNodes(const unsigned short x1, const unsigned short y1, const unsigned short x2, const unsigned short y2);
@@ -58,6 +64,8 @@ public:
 
 	TerritoryRegion(const int x1, const int y1, const int x2, const int y2, const GameWorldBase * const gwb);
 	~TerritoryRegion();
+
+	static bool IsPointValid(const GameWorldBase *gwb, std::vector< Point<MapCoord> > &polygon, MapCoord x, MapCoord y);
 
 	/// Berechnet ein Militärgebäude mit ein
 	void CalcTerritoryOfBuilding(const noBaseBuilding * const building);

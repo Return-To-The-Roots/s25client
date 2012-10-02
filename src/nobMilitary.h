@@ -1,4 +1,4 @@
-// $Id: nobMilitary.h 8273 2012-09-16 13:26:46Z marcus $
+// $Id: nobMilitary.h 8370 2012-10-02 23:46:40Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -61,7 +61,8 @@ class nobMilitary : public nobBaseMilitary
 	EventManager::EventPointer upgrade_event;
 	/// Is the military building regulating its troops at the moment? (then block furthere RegulateTroop calls)
 	bool is_regulating_troops;
-
+	/// This building was captured by its current owner. This flag is set once and never to be changed again
+	bool captured_not_built;
 public:
 
 	/// Soldatenbesatzung
@@ -205,6 +206,8 @@ public: void Serialize(SerializedGameData *sgd) const { Serialize_nobMilitary(sg
 
 	/// Darf das Militärgebäude abgerissen werden (Abriss-Verbot berücksichtigen)?
 	bool IsDemolitionAllowed() const;
+
+	bool WasCapturedOnce() const {return(captured_not_built);}
 
 	virtual void UnlinkAggressor(nofAttacker * soldier);
 };

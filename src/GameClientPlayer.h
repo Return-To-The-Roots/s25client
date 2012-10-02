@@ -1,4 +1,4 @@
-// $Id: GameClientPlayer.h 8324 2012-09-25 11:43:26Z marcus $
+// $Id: GameClientPlayer.h 8370 2012-10-02 23:46:40Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -106,7 +106,13 @@ private:
 	/// Liste mit Punkten, die schon von Schiffen entdeckt wurden
 	std::vector< Point<MapCoord> > enemies_discovered_by_ships;
 	
-
+	/** Polygon(s) defining the area the player may have territory in.
+	 *  No elements means no restrictions.
+	 *  Multiple polygons may be specified, see
+	 *  - http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
+	 *  The area is not allowed to shrink! This will lead to crashes!
+	 */
+	std::vector< Point<MapCoord> > restricted_area;
 
 	/// Liste, welchen nächsten 10 Angreifern Verteidiger entgegenlaufen sollen
 	bool defenders[5];
@@ -163,6 +169,8 @@ public:
 	std::vector <unsigned char> military_settings;
 	/// Werkzeugeinstellungen (in der Reihenfolge wie im Fenster!)
 	std::vector <unsigned char> tools_settings;
+
+	std::vector< Point<MapCoord> > &GetRestrictedArea() {return(restricted_area);}
 
 private:
 
