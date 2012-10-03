@@ -1,4 +1,4 @@
-// $Id: SDL.cpp 8100 2012-08-28 18:42:23Z marcus $
+// $Id: SDL.cpp 8371 2012-10-03 10:32:02Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -200,6 +200,8 @@ bool VideoSDL::CreateScreen(unsigned short width, unsigned short height, const b
 #ifdef _WIN32
 	// das spinnt ja total unter windows ...
 	this->fullscreen = false;
+#else
+	this->fullscreen = fullscreen;
 #endif
 
 	// Videomodus setzen
@@ -220,7 +222,6 @@ bool VideoSDL::CreateScreen(unsigned short width, unsigned short height, const b
 
 	this->screenWidth  = width;
 	this->screenHeight = height;
-	this->fullscreen = fullscreen;
 
 	SDL_ShowCursor(SDL_DISABLE);
 
@@ -248,11 +249,12 @@ bool VideoSDL::ResizeScreen(unsigned short width, unsigned short height, const b
 
 	this->screenWidth  = width;
 	this->screenHeight = height;
-	this->fullscreen = fullscreen;
 
 #ifdef _WIN32
 	// das spinnt ja total unter windows ...
 	this->fullscreen = false;
+#else
+	this->fullscreen = fullscreen;
 #endif
 
 	// Videomodus setzen
