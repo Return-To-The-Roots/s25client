@@ -1,6 +1,6 @@
 #!/bin/bash
 ###############################################################################
-## $Id: postinstall.sh.cmake 8389 2012-10-04 16:24:12Z FloSoft $
+## $Id: postinstall.sh.cmake 8390 2012-10-04 16:44:24Z marcus $
 ###############################################################################
 
 # Editable Variables
@@ -258,15 +258,15 @@ if [ "$COMPILEFOR" = "apple" ] ; then
 
 elif [ "$COMPILEFOR" = "windows" ] ; then
 	mingw=/usr
-	lua=${SRCDIR}/contrib/lua
+	lua=""
 	case "$COMPILEARCH" in
 		i686|*86)
 			mingw=/usr/i686-pc-mingw32
-			lua=${lua}/win32
+			lua=win32
 		;;
 		x86_64|*64)
 			mingw=/usr/x86_64-pc-mingw32
-			lua=${lua}/win64
+			lua=win64
 		;;
 	esac
 	
