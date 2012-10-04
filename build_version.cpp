@@ -1,4 +1,4 @@
-// $Id: build_version.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: build_version.cpp 8373 2012-10-04 13:26:23Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -19,7 +19,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include <main.h>
+//#include <main.h>
 
 #include <build_version.h>
 #include <cstring>
