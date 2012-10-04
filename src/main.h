@@ -1,4 +1,4 @@
-// $Id: main.h 8216 2012-09-11 18:42:29Z marcus $
+// $Id: main.h 8374 2012-10-04 13:29:17Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -84,6 +84,13 @@
 #include <sstream>
 
 #include <bzlib.h>
+
+extern "C"
+{
+    #include "lua.h"
+    #include "lualib.h"
+    #include "lauxlib.h"
+}
 
 #ifdef __APPLE__
 	#include <OpenGL/gl.h>

@@ -1,4 +1,4 @@
-// $Id: GameClientPlayer.cpp 8370 2012-10-02 23:46:40Z marcus $
+// $Id: GameClientPlayer.cpp 8374 2012-10-04 13:29:17Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -71,18 +71,10 @@ GameClientPlayer::GameClientPlayer(const unsigned playerid) : GamePlayerInfo(pla
 	// Erstmal kein HQ (leerer Spieler) wie das bei manchen Karten der Fall ist
 	hqy = hqx = 0xFFFF;
 
-/*
-	// restricted area test for Atomium (3 Teams)
-	if (playerid == 3)
+	for (unsigned i = 0; i < BUILDING_TYPES_COUNT; ++i)
 	{
-		restricted_area.push_back(Point<MapCoord>(158,85));
-		restricted_area.push_back(Point<MapCoord>(162,84));
-		restricted_area.push_back(Point<MapCoord>(176,94));
-		restricted_area.push_back(Point<MapCoord>(186,105));
-		restricted_area.push_back(Point<MapCoord>(155,128));
-		restricted_area.push_back(Point<MapCoord>(144,94));
+		building_enabled[i] = true;
 	}
-*/
 
 	// Verteilung mit Standardwerten füllen bei Waren mit nur einem Ziel (wie z.B. Mehl, Holz...)
 	distribution[GD_FLOUR].client_buildings.push_back(BLD_BAKERY);

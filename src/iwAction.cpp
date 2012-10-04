@@ -1,4 +1,4 @@
-// $Id: iwAction.cpp 7759 2012-01-05 20:11:47Z marcus $
+// $Id: iwAction.cpp 8374 2012-10-04 13:29:17Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -184,7 +184,15 @@ iwAction::iwAction(dskGameInterface *const gi, GameWorldViewer * const gwv, cons
 		for (unsigned char i = 0; i < 4; ++i)
 		{
 			for(unsigned char j = 0; j < building_count_max; ++j)
-				building_available[i][j] = ( j < building_count[i]);
+			{
+				if (j < building_count[i])
+				{
+					building_available[i][j] = GAMECLIENT.GetLocalPlayer()->IsBuildingEnabled(building_icons[i][j]);
+				} else
+				{
+					building_available[i][j] = false;
+				}
+			}
 		}
 		
 		// Now deactivate those we don't want

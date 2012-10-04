@@ -1,4 +1,4 @@
-// $Id: GameWorld.h 8305 2012-09-22 12:34:54Z marcus $
+// $Id: GameWorld.h 8374 2012-10-04 13:29:17Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -452,7 +452,18 @@ protected:
 	unsigned GetNextHarborPoint(const MapCoord x, const MapCoord y, const unsigned origin_harbor_id, const unsigned char dir,
 										   const unsigned char player, bool (GameWorldBase::*IsPointOK)(const unsigned, const unsigned char, const unsigned short) const) const;
 
+	lua_State *lua;
 
+	static int LUA_DisableBuilding(lua_State *L);
+	static int LUA_EnableBuilding(lua_State *L);
+	static int LUA_SetRestrictedArea(lua_State *L);
+	static int LUA_AddWares(lua_State *L);
+	static int LUA_AddPeople(lua_State *L);
+
+public:
+	void EventExplored(unsigned player, MapCoord x, MapCoord y);
+	void EventOccupied(unsigned player, MapCoord x, MapCoord y);
+	void EventStart();
 };
 
 class GameWorldView

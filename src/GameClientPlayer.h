@@ -1,4 +1,4 @@
-// $Id: GameClientPlayer.h 8370 2012-10-02 23:46:40Z marcus $
+// $Id: GameClientPlayer.h 8374 2012-10-04 13:29:17Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -114,6 +114,8 @@ private:
 	 */
 	std::vector< Point<MapCoord> > restricted_area;
 
+	bool building_enabled[BUILDING_TYPES_COUNT];
+
 	/// Liste, welchen nächsten 10 Angreifern Verteidiger entgegenlaufen sollen
 	bool defenders[5];
 	unsigned short defenders_pos;
@@ -170,6 +172,9 @@ public:
 	/// Werkzeugeinstellungen (in der Reihenfolge wie im Fenster!)
 	std::vector <unsigned char> tools_settings;
 
+	void EnableBuilding(BuildingType type) {building_enabled[type] = true;}
+	void DisableBuilding(BuildingType type) {building_enabled[type] = false;}
+	bool IsBuildingEnabled(BuildingType type) {return(building_enabled[type]);}
 	std::vector< Point<MapCoord> > &GetRestrictedArea() {return(restricted_area);}
 
 private:

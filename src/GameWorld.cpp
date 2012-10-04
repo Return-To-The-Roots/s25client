@@ -1,4 +1,4 @@
-// $Id: GameWorld.cpp 8285 2012-09-17 14:14:02Z marcus $
+// $Id: GameWorld.cpp 8374 2012-10-04 13:29:17Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -42,17 +42,26 @@
 #include "WindowManager.h"
 #include "SoundManager.h"
 
-
 /// Lädt eine Karte
 bool GameWorld::LoadMap(const std::string& filename)
 {
 	// Map laden
 	libsiedler2::ArchivInfo ai;
+
 	// Karteninformationen laden
 	if(libsiedler2::loader::LoadMAP(filename.c_str(), &ai) != 0)
 		return false;
 
 	glArchivItem_Map *map = static_cast<glArchivItem_Map*>(ai.get(0));
+
+	std::string lua_file = filename.substr(0, filename.length() - 3);
+	lua_file.append("lua");
+
+	if (luaL_dofile(lua, lua_file.c_str()))
+	{
+		fprintf(stderr, "LUA ERROR: '%s'!\n", lua_tostring(lua, -1));
+		lua_pop(lua, 1);
+	}
 
 	Scan(map);
 
@@ -63,6 +72,8 @@ bool GameWorld::LoadMap(const std::string& filename)
 	if(GetPlayer(GameClient::inst().GetPlayerID())->hqx != 0xFFFF)
 		this->MoveToMapObject(GetPlayer(GameClient::inst().GetPlayerID())->hqx,
 			GetPlayer(GameClient::inst().GetPlayerID())->hqy);
+
+	EventStart();
 
 	return true;
 }

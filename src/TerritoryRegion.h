@@ -1,4 +1,4 @@
-// $Id: TerritoryRegion.h 8370 2012-10-02 23:46:40Z marcus $
+// $Id: TerritoryRegion.h 8374 2012-10-04 13:29:17Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -46,11 +46,11 @@ class TerritoryRegion
 		unsigned char radius;
 	} * nodes;
 	
-	const GameWorldBase * const gwb;
+	GameWorldBase * const gwb;
 
 private:
 	/// Check whether the point x, y is part of the polygon
-	static bool IsPointInPolygon(const GameWorldBase *gwb, std::vector< Point<MapCoord> > &polygon, MapCoord x, MapCoord y);
+	static bool IsPointInPolygon(GameWorldBase *gwb, std::vector< Point<MapCoord> > &polygon, MapCoord x, MapCoord y);
 
 	/// Testet einen Punkt, ob der neue Spieler ihn übernehmen kann und übernimmt ihn ggf.
 	void TestNode( int x, int y,const unsigned char player, const unsigned char radius, const bool check_barriers);
@@ -62,10 +62,10 @@ private:
 public:
 
 
-	TerritoryRegion(const int x1, const int y1, const int x2, const int y2, const GameWorldBase * const gwb);
+	TerritoryRegion(const int x1, const int y1, const int x2, const int y2, GameWorldBase * const gwb);
 	~TerritoryRegion();
 
-	static bool IsPointValid(const GameWorldBase *gwb, std::vector< Point<MapCoord> > &polygon, MapCoord x, MapCoord y);
+	static bool IsPointValid(GameWorldBase *gwb, std::vector< Point<MapCoord> > &polygon, MapCoord x, MapCoord y);
 
 	/// Berechnet ein Militärgebäude mit ein
 	void CalcTerritoryOfBuilding(const noBaseBuilding * const building);

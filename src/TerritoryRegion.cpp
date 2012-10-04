@@ -1,4 +1,4 @@
-// $Id: TerritoryRegion.cpp 8370 2012-10-02 23:46:40Z marcus $
+// $Id: TerritoryRegion.cpp 8374 2012-10-04 13:29:17Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -35,7 +35,7 @@
 	static char THIS_FILE[] = __FILE__;
 #endif
 
-TerritoryRegion::TerritoryRegion(const int x1, const int y1, const int x2, const int y2, const GameWorldBase * const gwb)
+TerritoryRegion::TerritoryRegion(const int x1, const int y1, const int x2, const int y2, GameWorldBase * const gwb)
 : x1(x1), y1(y1), x2(x2), y2(y2), width(x2-x1), height(y2-y1), gwb(gwb)
 {
 	// Feld erzeugen
@@ -51,7 +51,7 @@ TerritoryRegion::~TerritoryRegion()
 	delete [] nodes;
 }
 
-bool TerritoryRegion::IsPointInPolygon(const GameWorldBase *gwb, std::vector< Point<MapCoord> > &polygon, MapCoord x, MapCoord y)
+bool TerritoryRegion::IsPointInPolygon(GameWorldBase *gwb, std::vector< Point<MapCoord> > &polygon, MapCoord x, MapCoord y)
 {
 // Adapted from http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
 // The site contains a lot of details and information.
@@ -72,7 +72,7 @@ bool TerritoryRegion::IsPointInPolygon(const GameWorldBase *gwb, std::vector< Po
 	return(ret);
 }
 
-bool TerritoryRegion::IsPointValid(const GameWorldBase *gwb, std::vector< Point<MapCoord> > &polygon, MapCoord x, MapCoord y)
+bool TerritoryRegion::IsPointValid(GameWorldBase *gwb, std::vector< Point<MapCoord> > &polygon, MapCoord x, MapCoord y)
 {
 	// This is for specifying polyons that wrap around corners:
 	// - e.g. w=64, h=64, polygon = {(40,40), (40,80), (80,80), (80,40)}
@@ -107,10 +107,11 @@ void TerritoryRegion::TestNode( int x,  int y,const unsigned char player, const 
 	
 	/// Wenn das Militargebäude jetzt näher dran ist, dann geht dieser Punkt in den Besitz vom jeweiligen Spieler
 	/// oder wenn es halt gar nicht besetzt ist
- 	if(radius < nodes[(y-y1)*(x2-x1)+(x-x1)].radius || !nodes[(y-y1)*(x2-x1)+(x-x1)].owner)
+	unsigned idx = (y-y1)*(x2-x1)+(x-x1);
+ 	if(radius < nodes[idx].radius || !nodes[(y-y1)*(x2-x1)+(x-x1)].owner)
 	{
-		nodes[(y-y1)*(x2-x1)+(x-x1)].owner = player+1;
-		nodes[(y-y1)*(x2-x1)+(x-x1)].radius = radius;
+		nodes[idx].owner = player+1;
+		nodes[idx].radius = radius;
 	}
 }
 
