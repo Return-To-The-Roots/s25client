@@ -1,6 +1,6 @@
 #!/bin/bash
 ###############################################################################
-## $Id: postinstall.sh.cmake 7921 2012-04-02 05:00:49Z FloSoft $
+## $Id: postinstall.sh.cmake 8389 2012-10-04 16:24:12Z FloSoft $
 ###############################################################################
 
 # Editable Variables
@@ -258,15 +258,19 @@ if [ "$COMPILEFOR" = "apple" ] ; then
 
 elif [ "$COMPILEFOR" = "windows" ] ; then
 	mingw=/usr
+	lua=${SRCDIR}/contrib/lua
 	case "$COMPILEARCH" in
 		i686|*86)
 			mingw=/usr/i686-pc-mingw32
+			lua=${lua}/win32
 		;;
 		x86_64|*64)
 			mingw=/usr/x86_64-pc-mingw32
+			lua=${lua}/win64
 		;;
 	esac
-
+	
+	cp -v ${SRCDIR}/contrib/lua/${lua}/lua52.dll ${DESTDIR} || exit 1
 	cp -v ${mingw}/bin/libgcc_s_sjlj-1.dll ${DESTDIR} || exit 1
 	cp -v ${mingw}/bin/libminiupnpc-5.dll ${DESTDIR} || exit 1
 	cp -v ${mingw}/bin/libiconv-2.dll ${DESTDIR} || exit 1
