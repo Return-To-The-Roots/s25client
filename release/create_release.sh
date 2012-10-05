@@ -136,7 +136,7 @@ if [ $CHANGED -eq 1 ] || [ ! -f $ARCHDIR/packed/s25rttr.tar.bz2 ] ; then
 		fi
 		
 		echo "uploading file to $UPLOADTARGET$UPLOADTO"
-		ssh $UPLOADHOST "mkdir -p $UPLOADTARGET$UPLOADTO"
+		ssh $UPLOADHOST "mkdir -vp $UPLOADTARGET$UPLOADTO"
 		scp $ARCHIVE/s25rttr_$VERSION-${REVISION}_$ARCH.tar.bz2 $UPLOADTARGET$UPLOADTO
 		if [ ! -z "$UPLOADTARGET" ] ; then
 			echo "${UPLOADURL}${UPLOADTO}s25rttr_$VERSION-${REVISION}_$ARCH.tar.bz2" >> ${UPLOADFILE}rapidshare.txt
