@@ -131,7 +131,7 @@ if [ $CHANGED -eq 1 ] || [ ! -f $ARCHDIR/packed/s25rttr.tar.bz2 ] ; then
 
 	# do upload
 	if [ ! "$NOUPLOAD" = "1" ] && [ ! -z "$UPLOADTARGET" ] ; then
-		if [ -z "$UPLOADTO" ]
+		if [ -z "$UPLOADTO" ] ; then
 			UPLOADTO="$VERSION/"
 		fi
 		
