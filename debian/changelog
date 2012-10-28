@@ -1,3 +1,45 @@
+s25rttr (20121028-8465.242) karmic; urgency=low
+
+  * Automatic Jenkins Build 242
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sun, 28 Oct 2012 10:46:40 +0100
+
+s25rttr (20121028-8465) any; urgency=low
+
+  * add liblua5.2-dev to deps
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sun, 28 Oct 2012 09:36:00 +0100
+
+s25rttr (20121028-8464.241) karmic; urgency=low
+
+  * Automatic Jenkins Build 241
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sun, 28 Oct 2012 01:10:25 +0200
+
+s25rttr (20121028-8464) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sun, 28 Oct 2012 00:00:00 +0200
+
+s25rttr (20121027-8463) any; urgency=low
+
+  * added lua52.lib also for debug version (VS2010)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sat, 27 Oct 2012 19:43:00 +0200
+
+s25rttr (20121027-8462) any; urgency=low
+
+  * added lua52.lib dependency to s25client VS2010 project
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sat, 27 Oct 2012 19:15:00 +0200
+
+s25rttr (20121020-8452) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 20 Oct 2012 22:00:00 +0200
+
 s25rttr (20121015-8445.240) karmic; urgency=low
 
   * Automatic Jenkins Build 240
