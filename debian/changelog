@@ -1,3 +1,99 @@
+s25rttr (20121102-8480.248) karmic; urgency=low
+
+  * Automatic Jenkins Build 248
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Fri, 02 Nov 2012 01:33:33 +0100
+
+s25rttr (20121102-8480) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Fri, 02 Nov 2012 00:00:00 +0100
+
+s25rttr (20121101-8479) any; urgency=low
+
+  * tabstops
+
+ -- Florian Doersch <flosoft@siedler25.org>  Thu, 01 Nov 2012 11:21:00 +0100
+
+s25rttr (20121101-8478.247) karmic; urgency=low
+
+  * Automatic Jenkins Build 247
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Thu, 01 Nov 2012 01:30:45 +0100
+
+s25rttr (20121101-8478) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Thu, 01 Nov 2012 00:00:00 +0100
+
+s25rttr (20121031-8474.246) karmic; urgency=low
+
+  * Automatic Jenkins Build 246
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Wed, 31 Oct 2012 11:48:40 +0100
+
+s25rttr (20121031-8474.--help) karmic; urgency=low
+
+  * Automatic Jenkins Build --help
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Wed, 31 Oct 2012 11:47:16 +0100
+
+s25rttr (20121031-8474.245) karmic; urgency=low
+
+  * Automatic Jenkins Build 245
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Wed, 31 Oct 2012 11:40:52 +0100
+
+s25rttr (20121031-8474) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Wed, 31 Oct 2012 00:00:00 +0100
+
+s25rttr (20121031-8472.244) karmic; urgency=low
+
+  * Automatic Jenkins Build 244
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Wed, 31 Oct 2012 09:29:42 +0100
+
+s25rttr (20121031-8472) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Wed, 31 Oct 2012 00:00:00 +0100
+
+s25rttr (20121031-8471) any; urgency=low
+
+  * verbose error
+
+ -- Florian Doersch <flosoft@siedler25.org>  Wed, 31 Oct 2012 08:22:00 +0100
+
+s25rttr (20121029-8468.243) karmic; urgency=low
+
+  * Automatic Jenkins Build 243
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Mon, 29 Oct 2012 01:09:42 +0100
+
+s25rttr (20121029-8468) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Mon, 29 Oct 2012 00:00:00 +0100
+
+s25rttr (20121028-8467) any; urgency=low
+
+  * restore contrib :/
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sun, 28 Oct 2012 16:15:00 +0100
+
+s25rttr (20121028-8466) any; urgency=low
+
+  * removed lpia aka architecture any
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sun, 28 Oct 2012 16:13:00 +0100
+
 s25rttr (20121028-8465.242) karmic; urgency=low
 
   * Automatic Jenkins Build 242
