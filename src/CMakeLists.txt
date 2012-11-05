@@ -1,5 +1,5 @@
 ################################################################################
-### $Id: CMakeLists.txt 8479 2012-11-01 11:21:30Z FloSoft $
+### $Id: CMakeLists.txt 8485 2012-11-05 21:02:17Z FloSoft $
 ################################################################################
 
 INCLUDE(FindBZip2)
@@ -101,7 +101,7 @@ SET(SOURCES_INGAMEWINDOWS
 	iwMinimap.cpp                       iwMinimap.h
 	iwMsgbox.cpp                        iwMsgbox.h
 	iwMusicPlayer.cpp                   iwMusicPlayer.h
-		iwObservate.cpp                     iwObservate.h
+	iwObservate.cpp                     iwObservate.h
 	iwOptionsWindow.cpp                 iwOptionsWindow.h
 	iwPlayReplay.cpp                    iwPlayReplay.h
 	iwPleaseWait.cpp                    iwPleaseWait.h
@@ -116,7 +116,7 @@ SET(SOURCES_INGAMEWINDOWS
 	iwStatistics.cpp                    iwStatistics.h
 	iwTextfile.cpp                      iwTextfile.h
 	iwTools.cpp                         iwTools.h
-	iwTrade.cpp			    iwTrade.h
+	iwTrade.cpp                         iwTrade.h
 	iwTransport.cpp                     iwTransport.h
 	iwWares.cpp                         iwWares.h
 	iwMerchandiseStatistics.cpp         iwMerchandiseStatistics.h
@@ -158,7 +158,7 @@ SET(SOURCES_NO
 	noSkeleton.cpp                      noSkeleton.h
 	noStaticObject.cpp                  noStaticObject.h
 	noTree.cpp                          noTree.h
-	noCharburnerPile.cpp				noCharburnerPile.h
+	noCharburnerPile.cpp                noCharburnerPile.h
    )
 
 SET(SOURCES_NOB
@@ -208,13 +208,13 @@ SET(SOURCES_NOF
 	nofShipWright.cpp                   nofShipWright.h
 	nofSoldier.cpp                      nofSoldier.h
 	nofStonemason.cpp                   nofStonemason.h
-	nofTradeLeader.cpp		    nofTradeLeader.h
-	nofTradeDonkey.cpp		    nofTradeDonkey.h
+	nofTradeLeader.cpp                  nofTradeLeader.h
+	nofTradeDonkey.cpp                  nofTradeDonkey.h
 	nofWarehouseWorker.cpp              nofWarehouseWorker.h
 	nofWellguy.cpp                      nofWellguy.h
 	nofWoodcutter.cpp                   nofWoodcutter.h
 	nofWorkman.cpp                      nofWorkman.h
-	nofCharburner.cpp		    		nofCharburner.h
+	nofCharburner.cpp                   nofCharburner.h
 	)
 
 SET(SOURCES_OTHER
@@ -240,7 +240,7 @@ SET(SOURCES_OTHER
 	GameSavedFile.cpp                   GameSavedFile.h
 	GameReplay.cpp                      GameReplay.h
 	GameSavegame.cpp                    GameSavegame.h
-	                                    GameInterface.h
+										GameInterface.h
 	GameManager.cpp                     GameManager.h
 	GameMessage.cpp                     GameMessage.h
 	GameMessageInterface.cpp            GameMessageInterface.h
@@ -292,7 +292,7 @@ SET(SOURCES_OTHER
 										Swap.h
 	TerrainRenderer.cpp                 TerrainRenderer.h
 	TerritoryRegion.cpp                 TerritoryRegion.h
-	TradeGraph.cpp			    TradeGraph.h
+	TradeGraph.cpp                      TradeGraph.h
 	Ware.cpp                            Ware.h
 	Window.cpp                          Window.h
 	WindowManager.cpp                   WindowManager.h
@@ -428,23 +428,31 @@ SET(LUA_VERSION "52")
 
 IF ( "${COMPILEFOR}" STREQUAL "windows")
 	IF ( "${COMPILEARCH}" STREQUAL "i386" )
-	SET(LUA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../contrib/lua/win32")
+		SET(LUA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../contrib/lua/win32")
 	ELSE ( "${COMPILEARCH}" STREQUAL "i386" )
-	SET(LUA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../contrib/lua/win64")
+		SET(LUA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../contrib/lua/win64")
 	ENDIF ( "${COMPILEARCH}" STREQUAL "i386" )
 ENDIF ( "${COMPILEFOR}" STREQUAL "windows")
 
 IF ( "${COMPILEFOR}" STREQUAL "linux")
+	ADD_FLAGS(CMAKE_C_FLAGS -I/usr/include/lua5.2)
+	ADD_FLAGS(CMAKE_CXX_FLAGS -I/usr/include/lua5.2)
 	IF ( "${COMPILEARCH}" STREQUAL "i386" )
-	SET(LUA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../contrib/lua/lin32")
+		SET(LUA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../contrib/lua/lin32")
 	ELSE ( "${COMPILEARCH}" STREQUAL "i386" )
-	SET(LUA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../contrib/lua/lin64")
+		SET(LUA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../contrib/lua/lin64")
 	ENDIF ( "${COMPILEARCH}" STREQUAL "i386" )
 ENDIF ( "${COMPILEFOR}" STREQUAL "linux")
 
 IF ( "${COMPILEFOR}" STREQUAL "apple")
 	SET(LUA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../contrib/lua/mac")
 ENDIF ( "${COMPILEFOR}" STREQUAL "apple")
+
+SET(LUA_LIB "${LUA_DIR}/liblua${LUA_VERSION}.a")
+
+IF ( NOT EXISTS "${LUA_LIB}" )
+	SET(LUA_LIB "/usr/lib/liblua5.2.a")
+ENDIF ( NOT EXISTS "${LUA_LIB}" )
 
 ADD_FLAGS(CMAKE_C_FLAGS -I${LUA_DIR}/include)
 ADD_FLAGS(CMAKE_CXX_FLAGS -I${LUA_DIR}/include)
@@ -459,7 +467,7 @@ TARGET_LINK_LIBRARIES(s25client
 	mygettext
 	${BZIP2_LIBRARIES}
 	${OPENGL_gl_LIBRARY}
-	${LUA_DIR}/liblua${LUA_VERSION}.a
+	${LUA_LIB}
 )
 
 IF ( "${COMPILEFOR}" STREQUAL "apple")
