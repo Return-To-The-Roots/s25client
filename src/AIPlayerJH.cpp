@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 8314 2012-09-23 22:39:51Z marcus $
+// $Id: AIPlayerJH.cpp 8490 2012-11-06 07:32:46Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1523,7 +1523,7 @@ void AIPlayerJH::HandleShipBuilt(const Coords& coords)
 	{
 		MapCoord x=coords.x,y=coords.y;
 		unsigned mindist=255;
-		nobUsual* shipyard;
+		nobUsual* shipyard = NULL;
 		for (std::list<nobUsual *>::const_iterator it = aii->GetBuildings(BLD_SHIPYARD).begin(); it != aii->GetBuildings(BLD_SHIPYARD).end(); it++)
 		{
 			if(aii->CalcDistance((*it)->GetX(),(*it)->GetY(),x,y)<mindist)
@@ -1532,8 +1532,8 @@ void AIPlayerJH::HandleShipBuilt(const Coords& coords)
 				shipyard=*it;
 			}			
 		}
-		if(mindist<12)//might have been destroyed by now and anything further away than 12 should be wrong anyways
-			aii->StopProduction((shipyard)->GetX(), (shipyard)->GetY());
+		if(shipyard && mindist < 12)//might have been destroyed by now and anything further away than 12 should be wrong anyways
+			aii->StopProduction( shipyard->GetX(), shipyard->GetY() );
 	}
 }
 
