@@ -1,4 +1,4 @@
-// $Id: AIConstruction.cpp 8305 2012-09-22 12:34:54Z marcus $
+// $Id: AIConstruction.cpp 8489 2012-11-06 07:31:43Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -635,7 +635,7 @@ bool AIConstruction::OtherStoreInRadius(MapCoord &x, MapCoord &y, unsigned radiu
 noFlag *AIConstruction::FindTargetStoreHouseFlag(MapCoord x, MapCoord y)
 {
 	unsigned minDistance = std::numeric_limits<unsigned>::max();
-	nobBaseWarehouse* minTarget;
+	nobBaseWarehouse* minTarget = NULL;
 	bool found = false;
 	for (std::list<nobBaseWarehouse*>::const_iterator it = aii->GetStorehouses().begin(); it != aii->GetStorehouses().end(); it++)
 	{
