@@ -1,5 +1,5 @@
 ################################################################################
-### $Id: CMakeLists.txt 8485 2012-11-05 21:02:17Z FloSoft $
+### $Id: CMakeLists.txt 8488 2012-11-06 07:31:03Z FloSoft $
 ################################################################################
 
 INCLUDE(FindBZip2)
@@ -435,8 +435,6 @@ IF ( "${COMPILEFOR}" STREQUAL "windows")
 ENDIF ( "${COMPILEFOR}" STREQUAL "windows")
 
 IF ( "${COMPILEFOR}" STREQUAL "linux")
-	ADD_FLAGS(CMAKE_C_FLAGS -I/usr/include/lua5.2)
-	ADD_FLAGS(CMAKE_CXX_FLAGS -I/usr/include/lua5.2)
 	IF ( "${COMPILEARCH}" STREQUAL "i386" )
 		SET(LUA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../contrib/lua/lin32")
 	ELSE ( "${COMPILEARCH}" STREQUAL "i386" )
@@ -450,9 +448,13 @@ ENDIF ( "${COMPILEFOR}" STREQUAL "apple")
 
 SET(LUA_LIB "${LUA_DIR}/liblua${LUA_VERSION}.a")
 
+MESSAGE(STATUS "Checking LUA library at ${LUA_LIB}")
 IF ( NOT EXISTS "${LUA_LIB}" )
 	SET(LUA_LIB "/usr/lib/liblua5.2.a")
+	ADD_FLAGS(CMAKE_C_FLAGS -I/usr/include/lua5.2)
+	ADD_FLAGS(CMAKE_CXX_FLAGS -I/usr/include/lua5.2)
 ENDIF ( NOT EXISTS "${LUA_LIB}" )
+MESSAGE(STATUS "Using LUA library from ${LUA_LIB}")
 
 ADD_FLAGS(CMAKE_C_FLAGS -I${LUA_DIR}/include)
 ADD_FLAGS(CMAKE_CXX_FLAGS -I${LUA_DIR}/include)
