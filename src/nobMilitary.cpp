@@ -1,4 +1,4 @@
-// $Id: nobMilitary.cpp 8370 2012-10-02 23:46:40Z marcus $
+// $Id: nobMilitary.cpp 8496 2012-11-10 00:08:26Z OLiver $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -173,7 +173,7 @@ nobMilitary::nobMilitary(SerializedGameData * sgd, const unsigned obj_id) : nobB
 	// use a bitfield instead of 1 unsigned char per boolean
 	// mainly for compatibility :-)
 
-	unsigned char bitfield = sgd->PopBool();
+	unsigned char bitfield = sgd->PopUnsignedChar();
 
 	new_built = bitfield & (1 << 0);
 	captured_not_built = !(bitfield & (1 << 1));
