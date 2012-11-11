@@ -1,5 +1,5 @@
 ################################################################################
-### $Id: CMakeLists.txt 8488 2012-11-06 07:31:03Z FloSoft $
+### $Id: CMakeLists.txt 8500 2012-11-11 19:54:45Z marcus $
 ################################################################################
 
 INCLUDE(FindBZip2)
@@ -406,6 +406,8 @@ IF ( "${COMPILEFOR}" STREQUAL "windows")
 					   COMMAND ${WINDRES} -I${CMAKE_CURRENT_SOURCE_DIR}/../win32/ -i${CMAKE_CURRENT_SOURCE_DIR}/../win32/s25client.rc -o ${CMAKE_CURRENT_BINARY_DIR}/s25client.res.o)
 
 	SET(s25client_SRCS ${s25client_SRCS} ${CMAKE_CURRENT_BINARY_DIR}/s25client.res.o)
+
+	ADD_FLAGS(CMAKE_EXE_LINKER_FLAGS -Wl,--stack,8388608)
 ENDIF ( "${COMPILEFOR}" STREQUAL "windows")
 
 IF ( "${COMPILEFOR}" STREQUAL "apple")
