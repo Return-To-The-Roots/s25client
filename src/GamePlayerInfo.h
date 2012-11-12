@@ -1,4 +1,4 @@
-// $Id: GamePlayerInfo.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: GamePlayerInfo.h 8503 2012-11-12 12:31:37Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -94,6 +94,8 @@ public:
 	unsigned int rating;
 	
 	int checksum;
+	unsigned obj_cnt;
+	unsigned obj_id_cnt;
 	bool ready;
 };
 
