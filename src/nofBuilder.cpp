@@ -1,4 +1,4 @@
-// $Id: nofBuilder.cpp 8170 2012-09-07 14:44:26Z marcus $
+// $Id: nofBuilder.cpp 8511 2012-11-13 20:02:32Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -118,7 +118,6 @@ void nofBuilder::AbrogateWorkplace()
 void nofBuilder::LostWork()
 {
 	building_site = 0;
-
 
 	if(state == STATE_FIGUREWORK)
 		GoHome();
@@ -304,6 +303,8 @@ void nofBuilder::StartFreewalk()
 	dir = *possible_directions[RANDOM.Rand(__FILE__,__LINE__,obj_id,possible_directions.size())];
 
 	// Und dort auch hinlaufen
+	em->RemoveEvent(current_ev);
+
 	current_ev = em->AddEvent(this,(state==STATE_WAITINGFREEWALK)?24:17,1);
 
 	// Zukünftigen Platz berechnen
