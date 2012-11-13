@@ -1,4 +1,4 @@
-// $Id: EventManager.h 8279 2012-09-16 21:11:43Z marcus $
+// $Id: EventManager.h 8507 2012-11-13 12:08:02Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -87,6 +87,8 @@ public:
 	void Clear() { eis.clear(); kill_list.clear(); }
 	/// Event entfernen
 	void RemoveEvent(EventPointer ep);
+	/// Alle Events eines Obekts entfernen
+	void RemoveAllEventsOfObject(GameObject *obj);
 	/// Objekt will gekillt werden
 	void AddToKillList(GameObject *obj) { assert(std::count(kill_list.begin(), kill_list.end(), obj) == 0); kill_list.push_back(obj); }
 

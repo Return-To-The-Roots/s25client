@@ -1,4 +1,4 @@
-// $Id: EventManager.cpp 8283 2012-09-17 12:34:46Z marcus $
+// $Id: EventManager.cpp 8507 2012-11-13 12:08:02Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -201,6 +201,21 @@ bool EventManager::IsEventAcive(const GameObject * const obj, const unsigned id)
 	}
 	
 	return false;
+}
+
+void EventManager::RemoveAllEventsOfObject(GameObject *obj)
+{
+	// Events abfragen
+	for (std::list<Event*>::iterator it = eis.begin(); it != eis.end(); )
+	{
+		if ((*it)->obj == obj)
+		{
+			it = eis.erase(it);
+		} else
+		{
+			++it;
+		}
+	}
 }
 
 void EventManager::RemoveEvent(EventPointer ep)
