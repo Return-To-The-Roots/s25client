@@ -1,4 +1,4 @@
-// $Id: EventManager.cpp 8507 2012-11-13 12:08:02Z marcus $
+// $Id: EventManager.cpp 8510 2012-11-13 20:00:13Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -208,8 +208,10 @@ void EventManager::RemoveAllEventsOfObject(GameObject *obj)
 	// Events abfragen
 	for (std::list<Event*>::iterator it = eis.begin(); it != eis.end(); )
 	{
-		if ((*it)->obj == obj)
+		if ((*it) && ((*it)->obj == obj))
 		{
+//			BREAKPOINT;
+
 			it = eis.erase(it);
 		} else
 		{
@@ -218,39 +220,21 @@ void EventManager::RemoveAllEventsOfObject(GameObject *obj)
 	}
 }
 
-void EventManager::RemoveEvent(EventPointer ep)
+void EventManager::RemoveEvent(EventPointer &ep)
 {
 	if (ep == NULL)
 	{
 		return;
 	}
 
-	std::list<Event*>::iterator it = eis.begin();
-
-	while (it != eis.end())
-	{
-		if ((*it) == ep)
-		{
-			(*it) = NULL;
-
-			// delete first occurrence
-			delete ep;
-
-			break;
-		}
-
-		++it;
-	}
-
-	// NULL any further findings
-	while (it != eis.end())
+	for (std::list<Event*>::iterator it = eis.begin(); it != eis.end(); ++it)
 	{
 		if ((*it) == ep)
 		{
 			(*it) = NULL;
 		}
-
-		++it;
 	}
+
+	ep = NULL;
 }
 

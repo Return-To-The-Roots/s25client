@@ -1,4 +1,4 @@
-// $Id: noMovable.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: noMovable.h 8510 2012-11-13 20:00:13Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -54,7 +54,7 @@ public:
 	noMovable(SerializedGameData * sgd, const unsigned obj_id);
 
 	/// Aufräummethoden
-protected:	void Destroy_noMovable() { Destroy_noCoordBase(); }
+protected:	void Destroy_noMovable() { em->RemoveEvent(current_ev); Destroy_noCoordBase(); }
 public:		void Destroy() { Destroy_noMovable(); }
 
 	/// Serialisierungsfunktionen

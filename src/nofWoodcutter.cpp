@@ -1,4 +1,4 @@
-// $Id: nofWoodcutter.cpp 7877 2012-03-18 22:14:43Z jh $
+// $Id: nofWoodcutter.cpp 8510 2012-11-13 20:00:13Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -110,9 +110,10 @@ unsigned short nofWoodcutter::GetCarryID() const
 /// Abgeleitete Klasse informieren, wenn sie anfängt zu arbeiten (Vorbereitungen)
 void nofWoodcutter::WorkStarted()
 {
-	assert(gwg->GetSpecObj<noTree>(dest_x,dest_y)->GetType() == NOP_TREE);
-
-	gwg->GetSpecObj<noTree>(dest_x,dest_y)->FallSoon();
+	if (gwg->GetSpecObj<noTree>(dest_x,dest_y))
+	{
+		gwg->GetSpecObj<noTree>(dest_x,dest_y)->FallSoon();
+	}
 }
 
 /// Abgeleitete Klasse informieren, wenn fertig ist mit Arbeiten
