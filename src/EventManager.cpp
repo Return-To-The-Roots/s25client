@@ -1,4 +1,4 @@
-// $Id: EventManager.cpp 8510 2012-11-13 20:00:13Z marcus $
+// $Id: EventManager.cpp 8513 2012-11-13 21:27:37Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -120,9 +120,12 @@ void EventManager::NextGF()
 				e->obj->HandleEvent(e->id);
 			}
 
-			it = eis.erase(it);
+			if (*it)
+			{
+				delete *it;
+			}
 
-			delete e;
+			it = eis.erase(it);
 		} else
 		{
 			++it;
@@ -227,13 +230,25 @@ void EventManager::RemoveEvent(EventPointer &ep)
 		return;
 	}
 
+	unsigned cnt = 0;
 	for (std::list<Event*>::iterator it = eis.begin(); it != eis.end(); ++it)
 	{
 		if ((*it) == ep)
 		{
 			(*it) = NULL;
+
+			if (cnt > 0)
+			{
+				fprintf(stderr, "one event in event list more than one time: %u!\n", cnt);
+			}
+
+			cnt++;
+
+//			break;
 		}
 	}
+
+	delete ep;
 
 	ep = NULL;
 }
