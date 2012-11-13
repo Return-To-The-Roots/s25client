@@ -1,4 +1,4 @@
-// $Id: EventManager.cpp 8513 2012-11-13 21:27:37Z marcus $
+// $Id: EventManager.cpp 8514 2012-11-13 21:36:55Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -237,7 +237,10 @@ void EventManager::RemoveEvent(EventPointer &ep)
 		{
 			(*it) = NULL;
 
-			if (cnt > 0)
+			if (cnt == 0)
+			{
+				delete ep;
+			} else
 			{
 				fprintf(stderr, "one event in event list more than one time: %u!\n", cnt);
 			}
@@ -247,8 +250,6 @@ void EventManager::RemoveEvent(EventPointer &ep)
 //			break;
 		}
 	}
-
-	delete ep;
 
 	ep = NULL;
 }
