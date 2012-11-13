@@ -1,4 +1,4 @@
-// $Id: noMovable.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: noMovable.cpp 8512 2012-11-13 20:43:37Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -199,7 +199,6 @@ void noMovable::PauseWalking()
 	pause_event_length = current_ev->gf_length;
 	// Event abmelden
 	em->RemoveEvent(current_ev);
-	current_ev = 0;
 	moving = false;
 
 	// Achtung, evtl wird er gleich in dem gf gestoppt, wo er auch losgelaufen war
