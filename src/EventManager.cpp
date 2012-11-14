@@ -1,4 +1,4 @@
-// $Id: EventManager.cpp 8514 2012-11-13 21:36:55Z marcus $
+// $Id: EventManager.cpp 8516 2012-11-14 00:03:22Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -120,12 +120,9 @@ void EventManager::NextGF()
 				e->obj->HandleEvent(e->id);
 			}
 
-			if (*it)
-			{
-				delete *it;
-			}
-
 			it = eis.erase(it);
+
+			delete e;
 		} else
 		{
 			++it;
@@ -206,51 +203,39 @@ bool EventManager::IsEventAcive(const GameObject * const obj, const unsigned id)
 	return false;
 }
 
-void EventManager::RemoveAllEventsOfObject(GameObject *obj)
-{
-	// Events abfragen
-	for (std::list<Event*>::iterator it = eis.begin(); it != eis.end(); )
-	{
-		if ((*it) && ((*it)->obj == obj))
-		{
-//			BREAKPOINT;
-
-			it = eis.erase(it);
-		} else
-		{
-			++it;
-		}
-	}
-}
-
-void EventManager::RemoveEvent(EventPointer &ep)
+void EventManager::RemoveEvent(EventPointer ep)
 {
 	if (ep == NULL)
 	{
 		return;
 	}
 
-	unsigned cnt = 0;
-	for (std::list<Event*>::iterator it = eis.begin(); it != eis.end(); ++it)
+	std::list<Event*>::iterator it = eis.begin();
+
+	while (it != eis.end())
 	{
 		if ((*it) == ep)
 		{
 			(*it) = NULL;
 
-			if (cnt == 0)
-			{
-				delete ep;
-			} else
-			{
-				fprintf(stderr, "one event in event list more than one time: %u!\n", cnt);
-			}
+			// delete first occurrence
+			delete ep;
 
-			cnt++;
-
-//			break;
+			break;
 		}
+
+		++it;
 	}
 
-	ep = NULL;
+	// NULL any further findings
+	while (it != eis.end())
+	{
+		if ((*it) == ep)
+		{
+			(*it) = NULL;
+		}
+
+		++it;
+	}
 }
 

@@ -1,4 +1,4 @@
-// $Id: noTree.cpp 8509 2012-11-13 19:16:14Z marcus $
+// $Id: noTree.cpp 8516 2012-11-14 00:03:22Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -76,7 +76,6 @@ noTree::~noTree()
 
 void noTree::Destroy_noTree()
 {
-	em->RemoveEvent(event);
 	em->RemoveEvent(produce_animal_event);
 	Destroy_noCoordBase();
 }
@@ -236,7 +235,6 @@ FOWObject * noTree::CreateFOWObject() const
 void noTree::FallSoon()
 {
 	// Warten bis der Holzfäller fertig ist und der Baum dann umfällt
-	em->RemoveEvent(event);
 	event = em->AddEvent(this,105);
 	state = STATE_FALLING_WAIT;
 }
