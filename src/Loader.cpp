@@ -1,4 +1,4 @@
-// $Id: Loader.cpp 8274 2012-09-16 15:08:22Z marcus $
+// $Id: Loader.cpp 8545 2012-12-05 09:16:32Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -609,29 +609,36 @@ void Loader::fillCaches()
 			}
 		}
 
-// Bobs from jobs.bob
+// Bobs from jobs.bob. Job = JOB_TYPES_COUNT is used for fat carriers. See below.
 		for (unsigned job = 0; job < JOB_TYPES_COUNT + 1; ++job)
 		{
 			for (unsigned dir = 0; dir < 6; ++dir)
 			{
 				for (unsigned ani_step = 0; ani_step < 8; ++ani_step)
 				{
-					bool fat = JOB_CONSTS[job].fat;
-					unsigned id = JOB_CONSTS[job].jobs_bob_id;
+					bool fat;
+					unsigned id;
+
 					glSmartBitmap &bmp = bob_jobs_cache[nation][job][dir][ani_step];
 
 					bmp.reset();
 
-					if ((job == JOB_SCOUT) || ((job >= JOB_PRIVATE) && (job <= JOB_GENERAL)))
-					{
-						id += NATION_RTTR_TO_S2[nation] * 6;
-					} else if (job == 0)
-					{
-						fat = false;
-					} else if (job == JOB_TYPES_COUNT)	// used for fat carrier, so that we do not need an additional sub-array
+					if (job == JOB_TYPES_COUNT)	// used for fat carrier, so that we do not need an additional sub-array
 					{
 						fat = true;
 						id = 0;
+					} else
+					{
+						id = JOB_CONSTS[job].jobs_bob_id;
+
+						if ((job == JOB_SCOUT) || ((job >= JOB_PRIVATE) && (job <= JOB_GENERAL)))
+						{
+							id += NATION_RTTR_TO_S2[nation] * 6;
+							fat = JOB_CONSTS[job].fat;
+						} else if (job == 0)
+						{
+							fat = false;
+						}
 					}
 
 					unsigned int good = id*96 + ani_step*12 + ( (dir + 3) % 6 ) + fat*6;
@@ -639,8 +646,8 @@ void Loader::fillCaches()
 
 					if(bob_jobs->getLink(good) == 92)
 					{
-						good -= fat*6;
-						body -= fat*48;
+						good -= fat * 6;
+						body -= fat * 48;
 					}
 
 					bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(bob_jobs->get(body)));
@@ -661,7 +668,6 @@ void Loader::fillCaches()
 
 		stp->add(bmp);
 	}
-
 
 // BUILDING FLAG ANIMATION (for military buildings)
 /*
