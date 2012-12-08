@@ -1,3 +1,27 @@
+s25rttr (20121206-8546.261) karmic; urgency=low
+
+  * Automatic Jenkins Build 261
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Thu, 06 Dec 2012 01:09:32 +0100
+
+s25rttr (20121206-8546) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Thu, 06 Dec 2012 00:00:00 +0100
+
+s25rttr (20121205-8545) any; urgency=low
+
+  * Fixed bug in Loader.cpp, found by GoGi.
+
+ -- marcus  Wed, 05 Dec 2012 09:16:00 +0100
+
+s25rttr (20121117-8524) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 17 Nov 2012 23:00:00 +0100
+
 s25rttr (20121116-8522.260) karmic; urgency=low
 
   * Automatic Jenkins Build 260
