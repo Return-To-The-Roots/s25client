@@ -1,4 +1,4 @@
-// $Id: Loader.cpp 8545 2012-12-05 09:16:32Z marcus $
+// $Id: Loader.cpp 8573 2012-12-31 12:06:20Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -630,14 +630,11 @@ void Loader::fillCaches()
 					} else
 					{
 						id = JOB_CONSTS[job].jobs_bob_id;
+						fat = JOB_CONSTS[job].fat;
 
 						if ((job == JOB_SCOUT) || ((job >= JOB_PRIVATE) && (job <= JOB_GENERAL)))
 						{
 							id += NATION_RTTR_TO_S2[nation] * 6;
-							fat = JOB_CONSTS[job].fat;
-						} else if (job == 0)
-						{
-							fat = false;
 						}
 					}
 
