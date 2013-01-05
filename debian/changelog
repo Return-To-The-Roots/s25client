@@ -1,3 +1,28 @@
+s25rttr (20130101-8574.262) karmic; urgency=low
+
+  * Automatic Jenkins Build 262
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 01 Jan 2013 01:10:14 +0100
+
+s25rttr (20130101-8574) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 01 Jan 2013 00:00:00 +0100
+
+s25rttr (20121231-8573) any; urgency=low
+
+  * Fixed brain fail in Loader.cpp ("fat" undefined in certain cases
+    - thanks, jh!)
+
+ -- marcus  Mon, 31 Dec 2012 12:06:00 +0100
+
+s25rttr (20121208-8549) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 08 Dec 2012 23:00:00 +0100
+
 s25rttr (20121206-8546.261) karmic; urgency=low
 
   * Automatic Jenkins Build 261
