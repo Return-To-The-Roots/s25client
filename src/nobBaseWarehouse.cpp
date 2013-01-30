@@ -1,4 +1,4 @@
-// $Id: nobBaseWarehouse.cpp 8305 2012-09-22 12:34:54Z marcus $
+// $Id: nobBaseWarehouse.cpp 8607 2013-01-30 16:25:25Z OLiver $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -627,7 +627,7 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
 					// Soll dieser Typ von Mensch bestellt werden?
 					if(inventory_settings_real.figures[i] & 8)
 					{
-						storing_wanted = false;
+						storing_wanted = true;
 
 						// Lagerhaus suchen, das diesen Job enthält
 						nobBaseWarehouse * wh = players->getElement(player)
