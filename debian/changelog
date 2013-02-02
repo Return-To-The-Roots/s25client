@@ -1,3 +1,39 @@
+s25rttr (20130131-8608.265) karmic; urgency=low
+
+  * Automatic Jenkins Build 265
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Thu, 31 Jan 2013 01:10:05 +0100
+
+s25rttr (20130131-8608) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Thu, 31 Jan 2013 00:00:00 +0100
+
+s25rttr (20130130-8607) any; urgency=low
+
+  * Fixed warehouse collecting function
+
+ -- OLiver Siebert <oliver@siedler25.org>  Wed, 30 Jan 2013 16:25:00 +0100
+
+s25rttr (20130129-8605.264) karmic; urgency=low
+
+  * Automatic Jenkins Build 264
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 29 Jan 2013 15:23:10 +0100
+
+s25rttr (20130129-8605) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 29 Jan 2013 00:00:00 +0100
+
+s25rttr (20130126-8602) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 26 Jan 2013 23:00:00 +0100
+
 s25rttr (20130121-8596.263) karmic; urgency=low
 
   * Automatic Jenkins Build 263
