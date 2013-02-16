@@ -1,4 +1,4 @@
-// $Id: nobHarborBuilding.cpp 8335 2012-09-29 12:23:44Z marcus $
+// $Id: nobHarborBuilding.cpp 8627 2013-02-16 20:59:52Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -819,6 +819,9 @@ void nobHarborBuilding::GetShipConnections(std::vector<ShipConnection>& connecti
 		// Then good-bye
 		return;
 
+	// Is the harbor being destroyed right now?
+	if (IsBeingDestroyedNow())
+		return;
 
 	std::vector<nobHarborBuilding*> harbor_buildings;
 	for(unsigned short sea_id = 0;sea_id<6;++sea_id)
@@ -1321,6 +1324,20 @@ void nobHarborBuilding::ExamineShipRouteOfPeople()
 		else
 			// Otherwise figure want to travel by ship, do nothing!
 			++it;
+	}
+}
+
+bool nobHarborBuilding::IsBeingDestroyedNow() const
+{
+	// check if this harbor is in the known harbors. if not, it is probably being destroyed right now.
+	const std::list<nobHarborBuilding*> allHarbors = gwg->GetPlayer(player)->GetHarbors();
+	if (std::find(allHarbors.begin(), allHarbors.end(), this) == allHarbors.end())
+	{
+		return true;
+	}
+	else
+	{
+		return false;
 	}
 }
 

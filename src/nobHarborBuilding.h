@@ -1,4 +1,4 @@
-// $Id: nobHarborBuilding.h 8324 2012-09-25 11:43:26Z marcus $
+// $Id: nobHarborBuilding.h 8627 2013-02-16 20:59:52Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -203,6 +203,10 @@ public:
 
 	/// People waiting for a ship have to examine their route if a road was destroyed
 	void ExamineShipRouteOfPeople();
+
+	/// Is the harbor just being destroyed right now?
+	bool IsBeingDestroyedNow() const;
+
 
 
 };
