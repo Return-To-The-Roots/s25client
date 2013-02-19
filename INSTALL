@@ -1,5 +1,5 @@
 -------------------------------------------------------------------------------
-$Id: INSTALL 6944 2010-12-24 07:56:07Z FloSoft $
+$Id: INSTALL 8633 2013-02-19 12:00:50Z FloSoft $
 -------------------------------------------------------------------------------
 
 Conditions:
@@ -28,6 +28,8 @@ Options:
                          "." - relative paths work
 --arch=x                 compile for architecture x
                          x = "system.platform", i.e apple.universal
+                         use "c.system.platform" to use special cross-compile
+                         rules (if not detected automatically)
 --disable-arch=x         disables on specific architecture x
                          x = platform, i.e ppc
                          can be supplied multiple times
