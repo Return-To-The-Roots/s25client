@@ -1,4 +1,4 @@
-// $Id: Pathfinding.cpp 8300 2012-09-18 18:17:09Z marcus $
+// $Id: Pathfinding.cpp 8668 2013-03-23 11:25:44Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -66,13 +66,10 @@ struct PathfindingPoint;
 /// Die Knoten können im Array mit einer eindeutigen ID (gebildet aus y*Kartenbreite+x) identifiziert werden
 struct NewNode
 {
-	NewNode() : way(0), count_nodes(0), dir(0), prev(INVALID_PREV), /*visited(false),*/ lastVisited(0) {}
+	NewNode() : way(0), dir(0), prev(INVALID_PREV), lastVisited(0) {}
 
 	/// Wegkosten, die vom Startpunkt bis zu diesem Knoten bestehen
 	unsigned way;
-	/// Anzahl der Knoten bis zu diesem Punkt, was sich von way unterscheiden kann bei der
-	/// straßengebundenen Wegfindung
-	unsigned count_nodes;
 	/// Die Richtung, über die dieser Knoten erreicht wurde
 	unsigned char dir;
 	/// ID (gebildet aus y*Kartenbreite+x) des Vorgänngerknotens
@@ -134,32 +131,6 @@ public:
 			return (way1 < way2);
 	}
 };
-
-// Vergleichsoperator für das straßengebundene Pathfinding, wird genauso wie das freie Pathfinding
-// gehandelt, nur dass wir noRoadNodes statt direkt Points vergleichen
-bool RoadNodeComperator::operator()(const noRoadNode* const rn1, const noRoadNode* const rn2) const
-{
-	if (rn1->estimate == rn2->estimate)
-	{
-		// Wenn die Wegkosten gleich sind, vergleichen wir die Koordinaten, da wir für std::set eine streng
-		// monoton steigende Folge brauchen
-		return (rn1->coord_id < rn2->coord_id);
-	}
-
-	return (rn1->estimate < rn2->estimate);
-}
-
-bool RoadNodeComperatorInv::operator()(const noRoadNode* const rn1, const noRoadNode* const rn2) const
-{
-	if (rn1->estimate == rn2->estimate)
-	{
-		// Wenn die Wegkosten gleich sind, vergleichen wir die Koordinaten, da wir für std::set eine streng
-		// monoton steigende Folge brauchen
-		return (rn1->coord_id > rn2->coord_id);
-	}
-
-	return (rn1->estimate > rn2->estimate);
-}
 
 /// Definitionen siehe oben
 MapCoord PathfindingPoint::dst_x = 0;
@@ -328,6 +299,34 @@ public:
 	}
 };
 
+// a 'second' current_visit for road pathfinding
+unsigned current_visit_on_roads = 0;
+
+// Vergleichsoperator für das straßengebundene Pathfinding, wird genauso wie das freie Pathfinding
+// gehandelt, nur dass wir noRoadNodes statt direkt Points vergleichen
+bool RoadNodeComperator::operator()(const noRoadNode* const rn1, const noRoadNode* const rn2) const
+{
+	if (rn1->estimate == rn2->estimate)
+	{
+		// Wenn die Wegkosten gleich sind, vergleichen wir die Koordinaten, da wir für std::set eine streng
+		// monoton steigende Folge brauchen
+		return (rn1->coord_id < rn2->coord_id);
+	}
+
+	return (rn1->estimate < rn2->estimate);
+}
+
+bool RoadNodeComperatorInv::operator()(const noRoadNode* const rn1, const noRoadNode* const rn2) const
+{
+	if (rn1->estimate == rn2->estimate)
+	{
+		// Wenn die Wegkosten gleich sind, vergleichen wir die Koordinaten, da wir für std::set eine streng
+		// monoton steigende Folge brauchen
+		return (rn1->coord_id > rn2->coord_id);
+	}
+
+	return (rn1->estimate > rn2->estimate);
+}
 
 openlist_container<const noRoadNode*, std::vector<const noRoadNode*>, RoadNodeComperatorInv> todo;
 
@@ -356,35 +355,34 @@ bool GameWorldBase::FindPathOnRoads(const noRoadNode * const start, const noRoad
 		return false;
 	}
 
-	// increase currentVisit, so we don't have to clear the visited-states at every run
-	currentVisit++;
+	// increase current_visit_on_roads, so we don't have to clear the visited-states at every run
+	current_visit_on_roads++;
 
 	// if the counter reaches its maxium, tidy up
-	if (currentVisit == std::numeric_limits<unsigned>::max() - 1)
+	if (current_visit_on_roads == std::numeric_limits<unsigned>::max())
 	{
-		for (unsigned i = 0; i < (maxMapSize*maxMapSize); ++i)
+		for (int idx = width * height; idx >= 0; --idx)
 		{
-			pf_nodes[i].lastVisited = 0;
-		}
-		currentVisit = 1;
-	}
+			const noRoadNode *node = dynamic_cast<const noRoadNode *>(nodes[idx].obj);
 
-	// Erst einmal wieder aufräumen
-	PathfindingPoint::Init(goal->GetX(), goal->GetY(), this);
+			if (node)
+			{
+				node->last_visit = 0;
+			}
+		}
+
+		current_visit_on_roads = 1;
+	}
 
 	// Anfangsknoten einfügen
 	todo.clear();
 
-	unsigned start_id = start->coord_id;
-	start->distance = start->estimate = CalcDistance(start->GetX(), start->GetY(), PathfindingPoint::dst_x, PathfindingPoint::dst_y);
+	start->distance = start->estimate = CalcDistance(start->GetX(), start->GetY(), goal->GetX(), goal->GetY());
+	start->last_visit = current_visit_on_roads;
+	start->prev = NULL;
+	start->cost = start->dir = 0;
 
 	todo.push(start);
-
-	pf_nodes[start_id].prev = INVALID_PREV;
-	pf_nodes[start_id].lastVisited = currentVisit;
-	pf_nodes[start_id].way = 0;
-	pf_nodes[start_id].count_nodes = 0;
-	pf_nodes[start_id].dir = 0;
 
 	while (todo.size())
 	{
@@ -394,41 +392,39 @@ bool GameWorldBase::FindPathOnRoads(const noRoadNode * const start, const noRoad
 		// Knoten behandelt --> raus aus der todo Liste
 		todo.pop();
 
-		// ID des bisher besten Knotens bilden
-		unsigned best_id = best->coord_id;
-		
 		// Ziel erreicht, allerdings keine Nullwege erlauben?
-		if (best == goal &&  pf_nodes[best_id].way)
+		if (best == goal && best->cost)
 		{
-			// Ziel erreicht!
-			unsigned char first_dir_tmp = 0xff;
-
 			// Jeweils die einzelnen Angaben zurückgeben, falls gewünscht (Pointer übergeben)
 			if (length)
-				*length = pf_nodes[best_id].way;
-
-			// Route rekonstruieren und ggf. die erste Richtung speichern, falls gewünscht
-			for(unsigned z = pf_nodes[best_id].count_nodes-1;best_id!=start_id;--z,best_id = pf_nodes[best_id].prev)
 			{
-				if (z == 0)
-				{
-					first_dir_tmp = pf_nodes[best_id].dir;
-
-					if (next_harbor)
-					{
-						next_harbor->x = best_id%width;
-						next_harbor->y = best_id/width;
-					}
-				}
-				
+				*length = best->cost;
 			}
-			
+
+			const noRoadNode *last = best;
+
+			while (best != start)
+			{
+				last = best;
+				best = best->prev;
+			}
+
 			if (first_dir)
-				*first_dir = first_dir_tmp;
+			{
+				*first_dir = (unsigned char) last->dir;
+			}
+
+			if (next_harbor)
+			{
+				next_harbor->x = last->GetX();
+				next_harbor->y = last->GetY();
+			}
 
 			// Fertig, es wurde ein Pfad gefunden
 			if (record)
-				GameClient::inst().AddPathfindingResult(first_dir_tmp, length, next_harbor);
+			{
+				GameClient::inst().AddPathfindingResult((unsigned char) last->dir, length, next_harbor);
+			}
 
 			return true;
 		}
@@ -437,24 +433,21 @@ bool GameWorldBase::FindPathOnRoads(const noRoadNode * const start, const noRoad
 		for (unsigned i = 0; i < 6; ++i)
 		{
 			// Gibt es auch einen solchen Weg bzw. Nachbarflagge?
-			noRoadNode *rna = best->GetNeighbour(i);
+			noRoadNode *neighbour = best->GetNeighbour(i);
 
 			// Wenn nicht, brauchen wir mit dieser Richtung gar nicht weiter zu machen
-			if (!rna)
+			if (!neighbour)
 				continue;
 			
-			// ID des umliegenden Knotens
-			unsigned xaid = rna->coord_id;
-
 			// Neuer Weg für diesen neuen Knoten berechnen
-			unsigned new_way = pf_nodes[best_id].way + best->routes[i]->GetLength();
+			unsigned cost = best->cost + best->routes[i]->GetLength();
 
 			// evtl verboten?
 			if (best->routes[i] == forbidden)
 				continue;
 
 			// Keine Umwege über Gebäude, ausgenommen Häfen und Ziele
-			if ((i == 1) && (rna->GetGOT() != GOT_FLAG) && (rna != goal) && (rna->GetGOT() != GOT_NOB_HARBORBUILDING))
+			if ((i == 1) && (neighbour->GetGOT() != GOT_FLAG) && (neighbour != goal) && (neighbour->GetGOT() != GOT_NOB_HARBORBUILDING))
 			{
 				continue;
 			}
@@ -463,43 +456,41 @@ bool GameWorldBase::FindPathOnRoads(const noRoadNode * const start, const noRoad
 			// damit der Algorithmus auch Ausweichrouten auswählt
 			if (ware_mode)
 			{
-				new_way += best->GetPunishmentPoints(i);
+				cost += best->GetPunishmentPoints(i);
 			} else if (best->routes[i]->GetRoadType() == RoadSegment::RT_BOAT)	// evtl Wasserstraße?
 			{
 				continue;
 			}
 
-			if (new_way > max)
+			if (cost > max)
 				continue;
 
 			// Knoten schon auf dem Feld gebildet?
-			if (pf_nodes[xaid].lastVisited == currentVisit)
+			if (neighbour->last_visit == current_visit_on_roads)
 			{
 				// Dann nur ggf. Weg und Vorgänger korrigieren, falls der Weg kürzer ist
-				if (new_way < pf_nodes[xaid].way)
+				if (cost < neighbour->cost)
 				{
-					pf_nodes[xaid].way  = new_way;
-					pf_nodes[xaid].prev = best_id;
-					rna->estimate = rna->distance + new_way;
-					todo.rearrange(rna);
-					pf_nodes[xaid].dir = i;
-					pf_nodes[xaid].count_nodes = pf_nodes[best_id].count_nodes + 1;
+					neighbour->cost = cost;
+					neighbour->prev = best;
+					neighbour->estimate = neighbour->distance + cost;
+					todo.rearrange(neighbour);
+					neighbour->dir = i;
 				}
 
 				continue;
 			}
 
 			// Alles in Ordnung, Knoten kann gebildet werden
-			pf_nodes[xaid].lastVisited = currentVisit;
-			pf_nodes[xaid].count_nodes = pf_nodes[best_id].count_nodes + 1;
-			pf_nodes[xaid].way = new_way;
-			pf_nodes[xaid].dir = i;
-			pf_nodes[xaid].prev = best_id;
+			neighbour->last_visit = current_visit_on_roads;
+			neighbour->cost = cost;
+			neighbour->dir = i;
+			neighbour->prev = best;
 
-			rna->distance = CalcDistance(rna->GetX(), rna->GetY(), PathfindingPoint::dst_x, PathfindingPoint::dst_y);
-			rna->estimate = rna->distance + new_way;
+			neighbour->distance = CalcDistance(neighbour->GetX(), neighbour->GetY(), goal->GetX(), goal->GetY());
+			neighbour->estimate = neighbour->distance + cost;
 
-			todo.push(rna);
+			todo.push(neighbour);
 		}
 
 		// Stehen wir hier auf einem Hafenplatz
@@ -510,41 +501,37 @@ bool GameWorldBase::FindPathOnRoads(const noRoadNode * const start, const noRoad
 
 			for (unsigned i = 0; i < scs.size(); ++i)
 			{
-				// ID des umliegenden Knotens bilden
-				unsigned xaid = scs[i].dest->coord_id;
-
 				// Neuer Weg für diesen neuen Knoten berechnen
-				unsigned new_way = pf_nodes[best_id].way  + scs[i].way_costs;
+				unsigned cost = best->cost + scs[i].way_costs;
 
-				if (new_way > max)
+				if (cost > max)
 					continue;
 
 				// Knoten schon auf dem Feld gebildet?
-				if (pf_nodes[xaid].lastVisited == currentVisit)
+				if (scs[i].dest->last_visit == current_visit_on_roads)
 				{
 					// Dann nur ggf. Weg und Vorgänger korrigieren, falls der Weg kürzer ist
-					if (new_way < pf_nodes[xaid].way)
+					if (cost < scs[i].dest->cost)
 					{
-						pf_nodes[xaid].way  = new_way;
-						pf_nodes[xaid].prev = best_id;
-						scs[i].dest->estimate = scs[i].dest->distance + new_way;
+						scs[i].dest->dir = 100;
+						scs[i].dest->cost = cost;
+						scs[i].dest->prev = best;
+						scs[i].dest->estimate = scs[i].dest->distance + cost;
 						todo.rearrange(scs[i].dest);
-						pf_nodes[xaid].dir = 100;
-						pf_nodes[xaid].count_nodes = pf_nodes[best_id].count_nodes + 1;
 					}
 
 					continue;
 				}
 
 				// Alles in Ordnung, Knoten kann gebildet werden
-				pf_nodes[xaid].lastVisited = currentVisit;
-				pf_nodes[xaid].count_nodes = pf_nodes[best_id].count_nodes + 1;
-				pf_nodes[xaid].way = new_way;
-				pf_nodes[xaid].dir = 100;
-				pf_nodes[xaid].prev = best_id;
+				scs[i].dest->last_visit = current_visit_on_roads;
 
-				scs[i].dest->distance = CalcDistance(scs[i].dest->GetX(), scs[i].dest->GetY(), PathfindingPoint::dst_x, PathfindingPoint::dst_y);
-				scs[i].dest->estimate = scs[i].dest->distance + new_way;
+				scs[i].dest->dir = 100;
+				scs[i].dest->prev = best;
+				scs[i].dest->cost = cost;
+
+				scs[i].dest->distance = CalcDistance(scs[i].dest->GetX(), scs[i].dest->GetY(), goal->GetX(), goal->GetY());
+				scs[i].dest->estimate = scs[i].dest->distance + cost;
 
 				todo.push(scs[i].dest);
 			}

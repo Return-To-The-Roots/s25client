@@ -1,4 +1,4 @@
-// $Id: noRoadNode.h 7672 2011-12-27 14:02:13Z marcus $
+// $Id: noRoadNode.h 8668 2013-03-23 11:25:44Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -44,10 +44,18 @@ public:
 	RoadSegment	* routes[6];
 
 // For Pathfinding
-	mutable unsigned distance;
 	mutable unsigned coord_id;
+	// cost from start
+	mutable unsigned cost;
+	// distance to target
+	mutable unsigned distance;
+	// estimated total distance (cost + distance)
 	mutable unsigned estimate;
 
+	mutable unsigned last_visit;
+
+	mutable const noRoadNode *prev;
+	mutable unsigned dir;
 public:
 
 	noRoadNode(const NodalObjectType nop,const unsigned short x, const unsigned short y,const unsigned char player);
