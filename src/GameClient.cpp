@@ -1,4 +1,4 @@
-// $Id: GameClient.cpp 8325 2012-09-25 12:50:57Z marcus $
+// $Id: GameClient.cpp 8667 2013-03-23 11:17:49Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -427,7 +427,8 @@ void GameClient::StartGame(const unsigned int random_init)
  */
 void GameClient::RealStart()
 {
-	framesinfo.pause = false;
+//	framesinfo.pause = false;
+	framesinfo.pause = replay_mode;
 
 	/// Wenn Replay, evtl erstes Command vom Start-Frame auslesen, was sonst ignoriert werden würde
 	if(replay_mode)
@@ -1717,6 +1718,8 @@ void GameClient::SkipGF(unsigned int gf)
 	if(gf <= framesinfo.nr)
 		return;
 
+	unsigned start_ticks = VideoDriverWrapper::inst().GetTickCount();
+
 	// Spiel entpausieren
 	SetReplayPause(false);
 
@@ -1747,8 +1750,16 @@ void GameClient::SkipGF(unsigned int gf)
 		ExecuteGameFrame(true);
 	}
 
+	unsigned ticks = VideoDriverWrapper::inst().GetTickCount() - start_ticks;
+
 	// Spiel pausieren
 	SetReplayPause(true);
+
+	char text[256];
+
+	snprintf(text, sizeof(text), _("Replay finished (%.3f seconds)."), (double) ticks / 1000.0);
+
+	ci->CI_Chat(playerid, CD_SYSTEM, text);
 }
 
 unsigned GameClient::WriteSaveHeader(const std::string& filename)
