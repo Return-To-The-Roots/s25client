@@ -1,4 +1,4 @@
-// $Id: nobMilitary.cpp 8496 2012-11-10 00:08:26Z OLiver $
+// $Id: nobMilitary.cpp 8736 2013-05-16 12:58:22Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -495,7 +495,9 @@ void nobMilitary::RegulateTroops()
 						troops.erase(&it);
 					}
 
-					--it;
+					// qx: it wird durch erase dekrementiert
+
+//					--it;
 				}
 			}
 		}
