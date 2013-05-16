@@ -1,4 +1,4 @@
-// $Id: iwTools.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: iwTools.h 8737 2013-05-16 15:42:35Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -44,6 +44,14 @@ private:
 	void Msg_ButtonClick(const unsigned int ctrl_id);
 	void Msg_ProgressChange(const unsigned int ctrl_id, const unsigned short position);
 	void Msg_Timer(const unsigned int ctrl_id);
+
+	//qx:tools
+	unsigned int m_Updated;
+    static unsigned int m_UpdateReq;
+    void UpdateTexts();
+    void Msg_PaintBefore();
+public:
+	static void UpdateOrders();
 };
 
 #endif // !iwTOOLS_H_INCLUDED

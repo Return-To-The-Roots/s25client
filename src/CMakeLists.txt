@@ -1,5 +1,5 @@
 ################################################################################
-### $Id: CMakeLists.txt 8500 2012-11-11 19:54:45Z marcus $
+### $Id: CMakeLists.txt 8737 2013-05-16 15:42:35Z marcus $
 ################################################################################
 
 INCLUDE(FindBZip2)
@@ -307,6 +307,7 @@ SET(SOURCES_OTHER
 										AddonInexhaustibleMines.h
 										AddonDefenderBehavior.h
 										AddonAIDebugWindow.h
+										AddonToolOrdering.h
 										const_addons.h
 	win32_nanosleep.cpp                 win32_nanosleep.h
 	Debug.cpp                           Debug.h

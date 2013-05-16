@@ -1,4 +1,4 @@
-// $Id: GameCommands.cpp 8502 2012-11-12 12:29:45Z marcus $
+// $Id: GameCommands.cpp 8737 2013-05-16 15:42:35Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -124,6 +124,15 @@ void ChangeMilitary::Execute(GameWorldGame& gwg, GameClientPlayer& player, const
 void ChangeTools::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
 {
 	player.ChangeToolsSettings(data);
+
+	for (unsigned i = 0; i < TOOL_COUNT; ++i)
+	{
+        player.tools_ordered[i] = std::max(std::min( player.tools_ordered[i] + orders[i], 99 ), 0);
+        player.tools_ordered_delta[i] -= orders[i];
+
+        if (orders[i] != 0)
+            std::cout << ">> Committing an order of " << (int)orders[i] << " for tool #" << i << std::endl;
+	}
 }
 void CallGeologist::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
 {

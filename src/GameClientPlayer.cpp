@@ -1,4 +1,4 @@
-// $Id: GameClientPlayer.cpp 8374 2012-10-04 13:29:17Z marcus $
+// $Id: GameClientPlayer.cpp 8737 2013-05-16 15:42:35Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -168,6 +168,12 @@ GameClientPlayer::GameClientPlayer(const unsigned playerid) : GamePlayerInfo(pla
 	GAMECLIENT.visual_settings.military_settings = military_settings;
 	GAMECLIENT.visual_settings.tools_settings = tools_settings;
 
+	// qx:tools
+	for (unsigned i = 0; i < TOOL_COUNT; ++i)
+        tools_ordered[i] = 0;
+	for (unsigned i = 0; i < TOOL_COUNT; ++i)
+        tools_ordered_delta[i] = 0;
+
 	// Standardeinstellungen kopieren
 	GAMECLIENT.default_settings = GAMECLIENT.visual_settings;
 
@@ -261,6 +267,10 @@ void GameClientPlayer::Serialize(SerializedGameData * sgd)
 
 	for(unsigned i = 0;i<12;++i)
 		sgd->PushUnsignedChar(tools_settings[i]);
+
+    //qx:tools
+	for (unsigned i = 0; i < TOOL_COUNT; ++i)
+		sgd->PushUnsignedChar(tools_ordered[i]);
 
 	for(unsigned i = 0;i<WARE_TYPES_COUNT;++i)
 		sgd->PushUnsignedInt(global_inventory.goods[i]);
@@ -384,6 +394,12 @@ void GameClientPlayer::Deserialize(SerializedGameData * sgd)
 
 	for(unsigned i = 0;i<12;++i)
 		tools_settings[i] = sgd->PopUnsignedChar();
+
+    // qx:tools
+	for (unsigned i = 0; i < TOOL_COUNT; ++i)
+		tools_ordered[i] = sgd->PopUnsignedChar();
+	for (unsigned i = 0; i < TOOL_COUNT; ++i)
+		tools_ordered_delta[i] = 0;
 
 	for(unsigned i = 0;i<WARE_TYPES_COUNT;++i)
 		global_inventory.goods[i] = sgd->PopUnsignedInt();

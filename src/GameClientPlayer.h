@@ -1,4 +1,4 @@
-// $Id: GameClientPlayer.h 8374 2012-10-04 13:29:17Z marcus $
+// $Id: GameClientPlayer.h 8737 2013-05-16 15:42:35Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -171,6 +171,9 @@ public:
 	std::vector <unsigned char> military_settings;
 	/// Werkzeugeinstellungen (in der Reihenfolge wie im Fenster!)
 	std::vector <unsigned char> tools_settings;
+	// qx:tools
+	unsigned char tools_ordered[TOOL_COUNT];
+	signed char tools_ordered_delta[TOOL_COUNT];
 
 	void EnableBuilding(BuildingType type) {building_enabled[type] = true;}
 	void DisableBuilding(BuildingType type) {building_enabled[type] = false;}

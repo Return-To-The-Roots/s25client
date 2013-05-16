@@ -1,4 +1,4 @@
-// $Id: GameConsts.h 8305 2012-09-22 12:34:54Z marcus $
+// $Id: GameConsts.h 8737 2013-05-16 15:42:35Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -184,6 +184,8 @@ enum GoodType
 };
 // Anzahl an unterschiedlichen Warentypen
 const unsigned WARE_TYPES_COUNT = GD_NOTHING;
+// qx:tools
+const unsigned TOOL_COUNT = 12;
 
 const std::string WARE_NAMES[36] = 
 {

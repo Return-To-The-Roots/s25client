@@ -1,4 +1,4 @@
-// $Id: iwTools.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: iwTools.cpp 8737 2013-05-16 15:42:35Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -28,6 +28,9 @@
 
 #include "GameCommands.h"
 
+#include <sstream>
+#include <iostream>
+
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
@@ -42,8 +45,8 @@
  *
  *  @author OLiver
  */
-iwTools::iwTools(void)
-	: IngameWindow(CGI_TOOLS, 0xFFFE, 0xFFFE, 166, 432, _("Tools"), LOADER.GetImageN("io", 5)),
+iwTools::iwTools(void)                      // qx:tools
+	: IngameWindow(CGI_TOOLS, 0xFFFE, 0xFFFE, 166 + (GameClient::inst().GetGGS().isEnabled(ADDON_TOOL_ORDERING) ? 46 : 0), 432, _("Tools"), LOADER.GetImageN("io", 5)),
 	settings_changed(false)
 {
 	// Einzelne Balken
@@ -60,10 +63,24 @@ iwTools::iwTools(void)
 	AddProgress(10, 17, 305, 132, 26, TC_GREY, 161, 160, 5, _("Rolling pin"), 4,4, 0, _("Less often"), _("More often"));
 	AddProgress(11, 17, 333, 132, 26, TC_GREY, 163, 162, 5, _("Bow"), 4,4, 0, _("Less often"), _("More often"));
 
+	if (GameClient::inst().GetGGS().isEnabled(ADDON_TOOL_ORDERING))
+	{
+		// qx:tools
+		for (unsigned i = 0; i < TOOL_COUNT; ++i)
+		{
+			AddImageButton(100+i*2, 174, 25   +i*28, 20, 13, TC_GREY, LOADER.GetImageN("io",  33), "+1");
+			AddImageButton(101+i*2, 174, 25+13+i*28, 20, 13, TC_GREY, LOADER.GetImageN("io",  34), "-1");
+			std::stringstream str;
+			str << std::max(0, int( GAMECLIENT.GetLocalPlayer()->tools_ordered[i] + GAMECLIENT.GetLocalPlayer()->tools_ordered_delta[i] ));
+			AddDeepening  (200+i, 151, 25+ 4+i*28, 20, 18, TC_GREY,str.str(),NormalFont,COLOR_YELLOW);
+		}
+	}
+    m_Updated = GAMECLIENT.GetGFNumber();
+
 	// Info
 	AddImageButton(12,  18, 384, 30, 32, TC_GREY, LOADER.GetImageN("io",  21), _("Help"));
 	// Standard
-	AddImageButton(13, 118, 384, 30, 32, TC_GREY, LOADER.GetImageN("io", 191), _("Default"));
+	AddImageButton(13, 118+(GameClient::inst().GetGGS().isEnabled(ADDON_TOOL_ORDERING) ? 46 : 0), 384, 30, 32, TC_GREY, LOADER.GetImageN("io", 191), _("Default"));
 
 	// Einstellungen festlegen
 	for(unsigned char i = 0; i < 12; ++i)
@@ -85,27 +102,85 @@ void iwTools::TransmitSettings()
 	{
 		// Einstellungen speichern
 		for(unsigned char i = 0; i < 12; ++i)
-			GAMECLIENT.visual_settings.tools_settings[i] = 
+			GAMECLIENT.visual_settings.tools_settings[i] =
 			(unsigned char)GetCtrl<ctrlProgress>(i)->GetPosition();
 
-		GAMECLIENT.AddGC(new gc::ChangeTools(GAMECLIENT.visual_settings.tools_settings));
+		GAMECLIENT.AddGC(new gc::ChangeTools(GAMECLIENT.visual_settings.tools_settings, GAMECLIENT.GetLocalPlayer()->tools_ordered_delta));
 
 		settings_changed = false;
 	}
 }
 
+// qx:tools
+void iwTools::UpdateTexts()
+{
+	if (GameClient::inst().GetGGS().isEnabled(ADDON_TOOL_ORDERING))
+	{
+		for (unsigned i = 0; i < TOOL_COUNT; ++i)
+		{
+			ctrlDeepening * field = GetCtrl<ctrlDeepening>(200+i);
+			std::stringstream str;
+			str << std::max(0, int( GAMECLIENT.GetLocalPlayer()->tools_ordered[i] + GAMECLIENT.GetLocalPlayer()->tools_ordered_delta[i] ));
+			field->SetText(str.str());
+		}
+	}
+}
+unsigned int iwTools::m_UpdateReq = 0;
+void iwTools::UpdateOrders()
+{
+    m_UpdateReq = GAMECLIENT.GetGFNumber();
+}
+
+void iwTools::Msg_PaintBefore()
+{
+    if (m_Updated < m_UpdateReq)
+    {
+        UpdateTexts();
+        m_Updated = m_UpdateReq;
+    }
+}
+
 void iwTools::Msg_ButtonClick(const unsigned int ctrl_id)
 {
-	switch(ctrl_id)
-	{
-	default: return;
-	case 13: // Standard
-		{
-			GAMECLIENT.visual_settings.tools_settings = GAMECLIENT.default_settings.tools_settings;
-			UpdateSettings();
-			settings_changed = true;
-		} break;
-	}
+    // qx:tools
+    if ( ctrl_id >= 100 && ctrl_id < (100 + 2*TOOL_COUNT) )
+    {
+        unsigned int tool = (ctrl_id - 100) / 2;
+        GameClientPlayer * me = GAMECLIENT.GetLocalPlayer();
+
+        if (ctrl_id & 0x1)
+        { // dec
+            if ( (me->tools_ordered[tool] + me->tools_ordered_delta[tool]) > 0 )
+            {
+                --GAMECLIENT.GetLocalPlayer()->tools_ordered_delta[tool];
+                settings_changed = true;
+            }
+        }
+        else
+        { // inc
+            if ( (GAMECLIENT.GetLocalPlayer()->tools_ordered[tool] + GAMECLIENT.GetLocalPlayer()->tools_ordered_delta[tool]) < 100 )
+            {
+                ++GAMECLIENT.GetLocalPlayer()->tools_ordered_delta[tool];
+                settings_changed = true;
+            }
+        }
+
+        ctrlDeepening * field = GetCtrl<ctrlDeepening>(200+tool);
+        std::stringstream txt;
+        txt << int(GAMECLIENT.GetLocalPlayer()->tools_ordered[tool] + GAMECLIENT.GetLocalPlayer()->tools_ordered_delta[tool]);
+        field->SetText(txt.str());
+    }
+    else
+        switch(ctrl_id)
+        {
+        default: return;
+        case 13: // Standard
+            {
+                GAMECLIENT.visual_settings.tools_settings = GAMECLIENT.default_settings.tools_settings;
+                UpdateSettings();
+                settings_changed = true;
+            } break;
+        }
 }
 
 void iwTools::Msg_ProgressChange(const unsigned int ctrl_id, const unsigned short position)
@@ -117,7 +192,7 @@ void iwTools::Msg_ProgressChange(const unsigned int ctrl_id, const unsigned shor
 void iwTools::Msg_Timer(const unsigned int ctrl_id)
 {
 	if(GAMECLIENT.IsReplayModeOn())
-		// Im Replay aktualisieren wir die Werte 
+		// Im Replay aktualisieren wir die Werte
 		UpdateSettings();
 	else
 		// Im normalen Spielmodus schicken wir den ganzen Spaﬂ ab

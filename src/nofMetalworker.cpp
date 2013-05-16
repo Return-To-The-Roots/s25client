@@ -1,4 +1,4 @@
-// $Id: nofMetalworker.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: nofMetalworker.cpp 8737 2013-05-16 15:42:35Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -29,6 +29,8 @@
 #include "nobUsual.h"
 #include "Random.h"
 #include "SoundManager.h"
+
+#include "iwTools.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -113,6 +115,19 @@ const GoodType TOOLS_SETTINGS_IDS[12] =
 
 GoodType nofMetalworker::ProduceWare()
 {
+    // qx:tools
+    {
+        for (unsigned i = 0; i < TOOL_COUNT; ++i)
+        {
+            if (gwg->GetPlayer(player)->tools_ordered[i] > 0)
+            {
+                --gwg->GetPlayer(player)->tools_ordered[i];
+                iwTools::UpdateOrders();
+                return TOOLS_SETTINGS_IDS[i];
+            }
+        }
+    }
+
 	// Je nach Werkzeugeinstellungen zufällig ein Werkzeug produzieren, je größer der Balken,
 	// desto höher jeweils die Wahrscheinlichkeit
 	unsigned short all_size = 0;

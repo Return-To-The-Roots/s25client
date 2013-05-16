@@ -371,20 +371,43 @@ class ChangeTools : public GameCommand
 	static const unsigned DATA_SIZE = 12;
 	/// Daten der Distribution (einzelne Prozente der Waren in Gebäuden)
 	std::vector<unsigned char> data;
+
+	signed char orders[TOOL_COUNT];
 public:
-	ChangeTools(const std::vector<unsigned char>& data) 
-		: GameCommand(CHANGETOOLS), data(data) { assert(data.size() == DATA_SIZE); }
-	ChangeTools(Serializer * ser) 
+	ChangeTools(const std::vector<unsigned char>& data, signed char * order_delta = 0)
+		: GameCommand(CHANGETOOLS), data(data)
+    {
+        assert(data.size() == DATA_SIZE);
+
+        if (order_delta != 0)
+        {
+            for (unsigned i = 0; i < TOOL_COUNT; ++i)
+                orders[i] = order_delta[i];
+        }
+        else
+        {
+            for (unsigned i = 0; i < TOOL_COUNT; ++i)
+                orders[i] = 0;
+        }
+    }
+
+	ChangeTools(Serializer * ser)
 		: GameCommand(CHANGETOOLS), data(DATA_SIZE)
 	{
 		for(unsigned i = 0;i<DATA_SIZE;++i)
 			data[i] = ser->PopUnsignedChar();
+
+        for (unsigned i = 0; i < TOOL_COUNT; ++i)
+            orders[i] = (signed char)ser->PopSignedChar();
 	}
 
 	virtual void Serialize(Serializer *ser) const
 	{
 		for(unsigned i = 0;i<DATA_SIZE;++i)
 			ser->PushUnsignedChar(data[i]);
+
+        for (unsigned i = 0; i < TOOL_COUNT; ++i)
+            ser->PushSignedChar(orders[i]);
 	}
 
 	/// Führt das GameCommand aus

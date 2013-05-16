@@ -1,4 +1,4 @@
-// $Id: GlobalGameSettings.cpp 8726 2013-05-16 12:41:29Z marcus $
+// $Id: GlobalGameSettings.cpp 8737 2013-05-16 15:42:35Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -47,6 +47,8 @@
 #include "AddonNoCoinsDefault.h"
 
 #include "AddonAdjustMilitaryStrength.h"
+
+#include "AddonToolOrdering.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
@@ -125,6 +127,8 @@ void GlobalGameSettings::reset(bool recreate)
 		registerAddon(new AddonNoCoinsDefault);
 
 		registerAddon(new AddonAdjustMilitaryStrength);
+
+		registerAddon(new AddonToolOrdering);
 	}
 }
 

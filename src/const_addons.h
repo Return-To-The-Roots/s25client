@@ -1,4 +1,4 @@
-// $Id: const_addons.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: const_addons.h 8737 2013-05-16 15:42:35Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -29,6 +29,7 @@
 // 003 jh
 // 004 Kaffeepause (https://launchpad.net/~haw)
 // 005 CS2001
+// 006 quixui
 //
 
 // Do not forget to add your Addon to AddonManager::reset!
@@ -61,7 +62,9 @@ enum AddonId
 
 	ADDON_NO_COINS_DEFAULT			= 0x00400000,
 
-	ADDON_ADJUST_MILITARY_STRENGTH	= 0x00500000
+	ADDON_ADJUST_MILITARY_STRENGTH	= 0x00500000,
+
+	ADDON_TOOL_ORDERING             = 0x00600001
 };
 
 enum AddonGroup
