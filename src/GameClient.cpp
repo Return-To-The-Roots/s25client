@@ -1,4 +1,4 @@
-// $Id: GameClient.cpp 8667 2013-03-23 11:17:49Z marcus $
+// $Id: GameClient.cpp 8726 2013-05-16 12:41:29Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -2052,3 +2052,11 @@ unsigned GameClient::GetTournamentModeDuration() const
 		return 0;
 }
 
+#include <iostream>
+
+void GameClient::LoadGGS()
+{
+    std::cout << "Loading settings...";
+    ggs.LoadSettings();
+    std::cout << "Done." << std::endl;
+}

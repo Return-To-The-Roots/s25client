@@ -1,4 +1,4 @@
-// $Id: GlobalGameSettings.h 7886 2012-03-18 22:20:44Z jh $
+// $Id: GlobalGameSettings.h 8726 2013-05-16 12:41:29Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -20,7 +20,7 @@
 #define GlobalGameSettings_H_INCLUDED
 
 #include "Addons.h"
-
+#include <iostream>
 #pragma once
 
 class GlobalGameSettings
@@ -80,14 +80,7 @@ public:
 		return it->status;
 	}
 
-	void setSelection(AddonId id, unsigned int selection)
-	{
-		std::vector<item>::iterator it = std::find(addons.begin(), addons.end(), id);
-		if(it == addons.end())
-			return;
-
-		it->status = selection;
-	}
+	void setSelection(AddonId id, unsigned int selection);
 
 	/// loads the saved addon configuration from the SETTINGS.
 	void LoadSettings();

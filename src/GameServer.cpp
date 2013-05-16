@@ -1,4 +1,4 @@
-// $Id: GameServer.cpp 8725 2013-05-16 12:30:38Z marcus $
+// $Id: GameServer.cpp 8726 2013-05-16 12:41:29Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -264,6 +264,8 @@ bool GameServer::Start()
 
 			// Standardeinstellungen aus den SETTINGS für die Addons laden
 			//GameClient::inst().GetGGS().LoadSettings();
+			GameClient::inst().LoadGGS();
+			ggs = GameClient::inst().GetGGS();
 		} break;
 	case MAPTYPE_SAVEGAME:
 		{

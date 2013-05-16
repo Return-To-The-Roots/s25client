@@ -1,4 +1,4 @@
-// $Id: GlobalGameSettings.cpp 8365 2012-10-01 08:52:33Z marcus $
+// $Id: GlobalGameSettings.cpp 8726 2013-05-16 12:41:29Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -214,4 +214,17 @@ void GlobalGameSettings::Deserialize(Serializer *ser)
 
 		LOG.write("\t%d=%d\n", addon, status);
 	}
+}
+
+
+void GlobalGameSettings::setSelection(AddonId id, unsigned int selection)
+{
+    std::vector<item>::iterator it = std::find(addons.begin(), addons.end(), id);
+    if(it == addons.end())
+    {
+        std::cout << "Addon 0x" << std::hex << id << std::dec << " not found!"<< std::endl;
+        return;
+    }
+
+    it->status = selection;
 }

@@ -1,4 +1,4 @@
-// $Id: dskHostGame.cpp 8325 2012-09-25 12:50:57Z marcus $
+// $Id: dskHostGame.cpp 8726 2013-05-16 12:41:29Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -193,6 +193,7 @@ dskHostGame::dskHostGame(bool single_player) :
 			AddTextButton(80+i, 5, 80+(i-1)*30, 10, 22, TC_RED1, _("-"), NormalFont);;
 	}
 	// GGS aktualisieren, zum ersten Mal
+	GameClient::inst().LoadGGS();
 	this->CI_GGSChanged(GameClient::inst().GetGGS());
 
 	LOBBYCLIENT.SetInterface(this);
@@ -213,7 +214,7 @@ dskHostGame::dskHostGame(bool single_player) :
  */
 void dskHostGame::Resize_(unsigned short width, unsigned short height)
 {
-	// Text unter der PreviewMinimap verschieben, dessen Höhe von der Höhe der 
+	// Text unter der PreviewMinimap verschieben, dessen Höhe von der Höhe der
 	// PreviewMinimap abhängt, welche sich gerade geändert hat.
 	ctrlPreviewMinimap *preview = GetCtrl<ctrlPreviewMinimap>(70);
 	ctrlText *text = GetCtrl<ctrlText>(71);
@@ -224,7 +225,7 @@ void dskHostGame::Resize_(unsigned short width, unsigned short height)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
@@ -265,7 +266,7 @@ void dskHostGame::UpdatePlayerRow(const unsigned row)
 			name = _("Closed");
 		} break;
 	}
-	
+
 	if(GetCtrl<ctrlPreviewMinimap>(70))
 	{
 		if(player->ps == PS_OCCUPIED || player->ps == PS_KI)
@@ -367,7 +368,7 @@ void dskHostGame::Msg_PaintBefore()
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
@@ -445,7 +446,7 @@ void dskHostGame::Msg_Group_ButtonClick(const unsigned int group_id, const unsig
 				else
 				{
 					if(GAMECLIENT.GetLocalPlayer()->team==0) // 0(noteam)->randomteam(1-4)
-					{						
+					{
 						int rnd=RANDOM.Rand(__FILE__, __LINE__, 0, 4);
 						if(!rnd)
 							GAMECLIENT.GetLocalPlayer()->team = TM_RANDOMTEAM;
@@ -466,7 +467,7 @@ void dskHostGame::Msg_Group_ButtonClick(const unsigned int group_id, const unsig
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
@@ -481,7 +482,7 @@ void dskHostGame::Msg_Group_CheckboxChange(const unsigned int group_id, const un
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
@@ -512,7 +513,7 @@ void dskHostGame::Msg_Group_ComboSelectItem(const unsigned int group_id, const u
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
@@ -528,7 +529,7 @@ void dskHostGame::Msg_ButtonClick(const unsigned int ctrl_id)
 	case 86:
 	case 87:
 	case 88:
-	case 80: //swap 
+	case 80: //swap
 		{
 			LOG.lprintf("dskHostGame: swap button pressed\n");
 			unsigned char p=0;
@@ -571,7 +572,7 @@ void dskHostGame::Msg_ButtonClick(const unsigned int ctrl_id)
 				WindowManager::inst().Switch(new dskDirectIP);
 
 		} break;
-	
+
 	case 2: // Starten
 		{
 			ctrlTextButton *ready = GetCtrl<ctrlTextButton>(2);
@@ -608,7 +609,7 @@ void dskHostGame::Msg_ButtonClick(const unsigned int ctrl_id)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
@@ -620,7 +621,7 @@ void dskHostGame::Msg_EditEnter(const unsigned int ctrl_id)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author FloSoft
  */
@@ -641,10 +642,10 @@ void dskHostGame::CI_Countdown(int countdown)
 		GetCtrl<ctrlChat>(1)->AddMessage("", "", 0, _("Don't forget to check the addon configuration!"), 0xFFFFDD00);
 		GetCtrl<ctrlChat>(1)->AddMessage("", "", 0, "", 0xFFFFCC00);
 	}
-	
+
 	if(countdown > 0)
 		message << " " << countdown;
-	else 
+	else
 		message << _("Starting game, please wait");
 
 	GetCtrl<ctrlChat>(1)->AddMessage("", "", 0, message.str(), 0xFFFFBB00);
@@ -652,7 +653,7 @@ void dskHostGame::CI_Countdown(int countdown)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author FloSoft
  */
@@ -664,7 +665,7 @@ void dskHostGame::CI_CancelCountdown()
 	}
 
 	GetCtrl<ctrlChat>(1)->AddMessage("", "", 0xFFCC2222, _("Start aborted"), 0xFFFFCC00);
-	
+
 	has_countdown = false;
 
 	if(GAMECLIENT.IsHost())
@@ -673,14 +674,14 @@ void dskHostGame::CI_CancelCountdown()
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author FloSoft
  */
 void dskHostGame::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr)
 {
 	switch(msgbox_id)
-	{ 
+	{
 	case 0: // Verbindung zu Server verloren?
 		{
 			GAMECLIENT.Stop();
@@ -703,7 +704,7 @@ void dskHostGame::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult 
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
@@ -727,7 +728,7 @@ void dskHostGame::Msg_ComboSelectItem(const unsigned int ctrl_id, const unsigned
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
@@ -750,7 +751,7 @@ void dskHostGame::Msg_CheckboxChange(const unsigned int ctrl_id, const bool chec
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
@@ -777,7 +778,7 @@ void dskHostGame::UpdateGGS()
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
@@ -791,7 +792,7 @@ void dskHostGame::ChangeTeam(const unsigned i, const unsigned char nr)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
@@ -813,7 +814,7 @@ void dskHostGame::ChangeReady(const unsigned int player, const bool ready)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
@@ -826,7 +827,7 @@ void dskHostGame::ChangeNation(const unsigned i, const Nation nation)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
@@ -846,7 +847,7 @@ void dskHostGame::ChangePing(const unsigned i)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
@@ -861,7 +862,7 @@ void dskHostGame::ChangeColor(const unsigned i, const unsigned char color)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
@@ -877,7 +878,7 @@ void dskHostGame::TogglePlayerReady(unsigned char player, bool ready)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
@@ -900,7 +901,7 @@ void dskHostGame::CI_NewPlayer(const unsigned player_id)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
@@ -911,7 +912,7 @@ void dskHostGame::CI_PlayerLeft(const unsigned player_id)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
@@ -923,7 +924,7 @@ void dskHostGame::CI_GameStarted(GameWorldViewer *gwv)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
@@ -937,7 +938,7 @@ void dskHostGame::CI_PSChanged(const unsigned player_id, const PlayerState ps)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
@@ -948,7 +949,7 @@ void dskHostGame::CI_NationChanged(const unsigned player_id, const Nation nation
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
@@ -959,7 +960,7 @@ void dskHostGame::CI_TeamChanged(const unsigned player_id, const unsigned char t
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
@@ -970,7 +971,7 @@ void dskHostGame::CI_ColorChanged(const unsigned player_id, const unsigned char 
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
@@ -981,7 +982,7 @@ void dskHostGame::CI_PingChanged(const unsigned player_id, const unsigned short 
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
@@ -992,7 +993,7 @@ void dskHostGame::CI_ReadyChanged(const unsigned player_id, const bool ready)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
@@ -1005,14 +1006,14 @@ void dskHostGame::CI_PlayersSwapped(const unsigned player1, const unsigned playe
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
 void dskHostGame::CI_GGSChanged(const GlobalGameSettings& ggs)
 {
 	this->ggs = ggs;
-	
+
 	// Geschwindigkeit
 	GetCtrl<ctrlComboBox>(43)->SetSelection(static_cast<unsigned short>(ggs.game_speed));
 	// Ziel
@@ -1033,7 +1034,7 @@ void dskHostGame::CI_GGSChanged(const GlobalGameSettings& ggs)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
@@ -1052,7 +1053,7 @@ void dskHostGame::CI_Chat(const unsigned player_id, const ChatDestination cd, co
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
@@ -1086,7 +1087,7 @@ void dskHostGame::LC_RankingInfo(const LobbyPlayerInfo &player)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/** 
+/**
  *  (Lobby-)Status: Benutzerdefinierter Fehler (kann auch Conn-Loss o.ä sein)
  *
  *  @author FloSoft

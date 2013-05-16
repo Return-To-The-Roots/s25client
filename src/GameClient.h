@@ -1,4 +1,4 @@
-// $Id: GameClient.h 8305 2012-09-22 12:34:54Z marcus $
+// $Id: GameClient.h 8726 2013-05-16 12:41:29Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -72,6 +72,7 @@ public:
 
 	/// Gibt GGS zurück
 	const GlobalGameSettings& GetGGS() const { return ggs; }
+	void LoadGGS();
 
 	bool Connect(const std::string& server, const std::string& password, unsigned char servertyp, unsigned short port, bool host, bool use_ipv6);
 	void Run();
