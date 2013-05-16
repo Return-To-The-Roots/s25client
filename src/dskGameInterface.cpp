@@ -1,4 +1,4 @@
-// $Id: dskGameInterface.cpp 8297 2012-09-17 22:22:20Z marcus $
+// $Id: dskGameInterface.cpp 8730 2013-05-16 12:48:48Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1349,7 +1349,7 @@ void dskGameInterface::GI_TeamWinner(const unsigned player_id)
 			snprintf(text, sizeof(text), _("Team victory! '%s' and '%s' and '%s' and '%s' are the winners!"), GameClient::inst().GetPlayer(winners[0])->name.c_str(),GameClient::inst().GetPlayer(winners[1])->name.c_str(),GameClient::inst().GetPlayer(winners[2])->name.c_str(),GameClient::inst().GetPlayer(winners[3])->name.c_str());
 			break;
 		default:
-			snprintf(text, sizeof(text), _("Team victory!"));
+			snprintf(text, sizeof(text), "%s", _("Team victory!"));
 			break;
 	}
 	messenger.AddMessage("", 0, CD_SYSTEM, text, COLOR_ORANGE);
