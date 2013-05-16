@@ -9,7 +9,7 @@
 #include "GameClient.h"
 #include "Random.h"
 
-nofShipWright::nofShipWright(const unsigned short x, const unsigned short y,const unsigned char player,nobUsual * workplace) 
+nofShipWright::nofShipWright(const unsigned short x, const unsigned short y,const unsigned char player,nobUsual * workplace)
 		: nofWorkman(JOB_SHIPWRIGHT,x,y,player,workplace), dest_x(0xFFFF), dest_y(0xFFFF)
 {}
 
@@ -53,20 +53,20 @@ void nofShipWright::HandleDerivedEvent(const unsigned int id)
 
 							if(!obj)
 								continue;
-				
+
 							// Schiff?
 							if(obj->GetGOT() == GOT_SHIPBUILDINGSITE)
 							{
 								// Platz noch nicht reserviert und gehört das Schiff auch mir?
-								unsigned first_dir = 0xFF;
-								if(!gwg->GetNode(x,y).reserved && 
+								unsigned char first_dir = 0xFF;
+								if(!gwg->GetNode(x,y).reserved &&
 									static_cast<noShipBuildingSite*>(obj)->GetPlayer() == player &&
 									(first_dir=gwg->FindHumanPath(flag_x,flag_y,tx2,ty2,SHIPWRIGHT_WALKING_DISTANCE)) != 0xFF)
 								{
 									ShipPoint p = {tx2,ty2, first_dir};
 									available_points.push_back(p);
 
-								
+
 								}
 							}
 						}
@@ -152,7 +152,7 @@ void nofShipWright::HandleDerivedEvent(const unsigned int id)
 	}
 }
 
-nofShipWright::nofShipWright(SerializedGameData * sgd, const unsigned obj_id) 
+nofShipWright::nofShipWright(SerializedGameData * sgd, const unsigned obj_id)
 : nofWorkman(sgd,obj_id),
 dest_x(sgd->PopUnsignedShort()),
 dest_y(sgd->PopUnsignedShort())
@@ -212,7 +212,7 @@ void nofShipWright::WalkToWorkpoint()
 		current_ev = em->AddEvent(this,WORKING_TIME_SHIPS,1);
 	}
 	// Weg suchen und gucken ob der Punkt noch in Ordnung ist
-	else if((dir = gwg->FindHumanPath(x,y,dest_x,dest_y,20)) == 0xFF || (!IsPointGood(dest_x,dest_y) 
+	else if((dir = gwg->FindHumanPath(x,y,dest_x,dest_y,20)) == 0xFF || (!IsPointGood(dest_x,dest_y)
 		&& gwg->GetGOT(dest_x,dest_y) != GOT_SHIPBUILDINGSITE))
 	{
 		// Punkt freigeben
@@ -314,11 +314,11 @@ void nofShipWright::WalkedDerived()
 
 const unsigned ANIMATION[42] =
 { 299, 300, 301, 302,
-  299, 300, 301, 302, 
+  299, 300, 301, 302,
   299, 300, 301, 302,
   303, 303, 304, 304, 305, 305, 306, 306, 307, 307,
   299, 300, 301, 302,
-  299, 300, 301, 302, 
+  299, 300, 301, 302,
   308, 309, 310, 311, 312, 313,
   308, 309, 310, 311, 312, 313 };
 

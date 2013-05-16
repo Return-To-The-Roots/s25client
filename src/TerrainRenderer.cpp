@@ -1,4 +1,4 @@
-// $Id: TerrainRenderer.cpp 8193 2012-09-09 10:52:49Z marcus $
+// $Id: TerrainRenderer.cpp 8728 2013-05-16 12:45:55Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -98,7 +98,7 @@ float TerrainRenderer::GetTerrainXAround(int x,  int y, const unsigned dir)
 float TerrainRenderer::GetTerrainYAround(int x,  int y, const unsigned dir)
 {
 	unsigned short tx,ty;
-	
+
 	GetPointAround(x,y,dir);
 
 	int xo,yo;
@@ -122,7 +122,7 @@ float TerrainRenderer::GetBXAround(int x, int y, const unsigned char triangle, c
 float TerrainRenderer::GetBYAround(int x, int y, const unsigned char triangle, const unsigned char dir)
 {
 	unsigned short tx,ty;
-	
+
 	GetPointAround(x,y,dir);
 
 	int xo,yo;
@@ -353,7 +353,7 @@ void TerrainRenderer::UpdateTrianglePos(const MapCoord x, const MapCoord y,const
 	if(update && SETTINGS.video.vbo)
 	{
 		glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo_vertices);
-		glBufferSubDataARB(GL_ARRAY_BUFFER_ARB,(pos-1) * 3 * 2 * sizeof(float), 
+		glBufferSubDataARB(GL_ARRAY_BUFFER_ARB,(pos-1) * 3 * 2 * sizeof(float),
 			2 * 3 * 2 * sizeof(float), &gl_vertices[pos-1]);
 	}
 }
@@ -372,12 +372,12 @@ void TerrainRenderer::UpdateTriangleColor(const MapCoord x, const MapCoord y,con
 	gl_colors[pos].colors[1].r = gl_colors[pos].colors[1].g = gl_colors[pos].colors[1].b = GetColor(gwv->GetXA(x,y,4), gwv->GetYA(x,y,4));
 	gl_colors[pos].colors[2].r = gl_colors[pos].colors[2].g = gl_colors[pos].colors[2].b = GetColor(gwv->GetXA(x,y,3), gwv->GetYA(x,y,3));
 
-	
+
 	/// Bei Vertexbuffern das die Daten aktualisieren
 	if(update && SETTINGS.video.vbo)
 	{
 		glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo_colors);
-		glBufferSubDataARB(GL_ARRAY_BUFFER_ARB,(pos-1) * 3 * 3 * sizeof(float), 
+		glBufferSubDataARB(GL_ARRAY_BUFFER_ARB,(pos-1) * 3 * 3 * sizeof(float),
 			2 * 3 * 3 * sizeof(float), &gl_colors[pos-1]);
 	}
 }
@@ -404,12 +404,12 @@ void TerrainRenderer::UpdateTriangleTerrain(const MapCoord x, const MapCoord y,c
 	gl_texcoords[pos].pos[2].x = (t2 == 14 || t2 == 15) ? 0.0f      : 0.47f;
 	gl_texcoords[pos].pos[2].y = (t2 == 14 || t2 == 15) ? 0.445312f : 0.0f;
 
-	
+
 	/// Bei Vertexbuffern das die Daten aktualisieren
 	if(update && SETTINGS.video.vbo)
 	{
 		glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo_texcoords);
-		glBufferSubDataARB(GL_ARRAY_BUFFER_ARB,(pos-1) * 3 * 2 * sizeof(float), 
+		glBufferSubDataARB(GL_ARRAY_BUFFER_ARB,(pos-1) * 3 * 2 * sizeof(float),
 			2 * 3 * 2 * sizeof(float), &gl_texcoords[pos-1]);
 	}
 }
@@ -418,7 +418,7 @@ void TerrainRenderer::UpdateTriangleTerrain(const MapCoord x, const MapCoord y,c
 void TerrainRenderer::UpdateBorderTrianglePos(const MapCoord x, const MapCoord y,const GameWorldViewer * gwv, const bool update)
 {
 	unsigned int pos = y * width + x;
-	
+
 	// Für VBO-Aktualisierung:
 	// Erzeugte Ränder zählen
 	unsigned count_borders = 0;
@@ -512,7 +512,7 @@ void TerrainRenderer::UpdateBorderTrianglePos(const MapCoord x, const MapCoord y
 	if(update && SETTINGS.video.vbo)
 	{
 		glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo_vertices);
-		glBufferSubDataARB(GL_ARRAY_BUFFER_ARB,first_offset * 3 * 2 * sizeof(float), 
+		glBufferSubDataARB(GL_ARRAY_BUFFER_ARB,first_offset * 3 * 2 * sizeof(float),
 			count_borders * 3 * 2  * sizeof(float), &gl_vertices[first_offset]);
 	}
 }
@@ -520,7 +520,7 @@ void TerrainRenderer::UpdateBorderTrianglePos(const MapCoord x, const MapCoord y
 void TerrainRenderer::UpdateBorderTriangleColor(const MapCoord x, const MapCoord y,const GameWorldViewer * gwv, const bool update)
 {
 	unsigned int pos = y * width + x;
-	
+
 	// Für VBO-Aktualisierung:
 	// Erzeugte Ränder zählen
 	unsigned count_borders = 0;
@@ -590,7 +590,7 @@ void TerrainRenderer::UpdateBorderTriangleColor(const MapCoord x, const MapCoord
 	if(update && SETTINGS.video.vbo)
 	{
 		glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo_colors);
-		glBufferSubDataARB(GL_ARRAY_BUFFER_ARB,first_offset * 3 * 3 * sizeof(float), 
+		glBufferSubDataARB(GL_ARRAY_BUFFER_ARB,first_offset * 3 * 3 * sizeof(float),
 			count_borders * 3 * 3 * sizeof(float), &gl_colors[first_offset]);
 	}
 }
@@ -598,7 +598,7 @@ void TerrainRenderer::UpdateBorderTriangleColor(const MapCoord x, const MapCoord
 void TerrainRenderer::UpdateBorderTriangleTerrain(const MapCoord x, const MapCoord y,const GameWorldViewer * gwv, const bool update)
 {
 	unsigned int pos = y * width + x;
-	
+
 	// Für VBO-Aktualisierung:
 	// Erzeugte Ränder zählen
 	unsigned count_borders = 0;
@@ -673,7 +673,7 @@ void TerrainRenderer::UpdateBorderTriangleTerrain(const MapCoord x, const MapCoo
 	if(update && SETTINGS.video.vbo)
 	{
 		glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo_texcoords);
-		glBufferSubDataARB(GL_ARRAY_BUFFER_ARB,first_offset * 3 * 2 * sizeof(float), 
+		glBufferSubDataARB(GL_ARRAY_BUFFER_ARB,first_offset * 3 * 2 * sizeof(float),
 			count_borders * 3 * 2  * sizeof(float), &gl_texcoords[first_offset]);
 	}
 }
@@ -782,7 +782,7 @@ void TerrainRenderer::Draw(GameWorldView * gwv, unsigned int *water)
 					else
 					{
 						last_border = tiles[i];
-						BorderTile tmp = { offsets[i], 1, xo, yo};
+						BorderTile tmp = { (int)offsets[ i ], 1, xo, yo};
 						sorted_borders[last_border-1].push_back(tmp);
 					}
 					++offset;
@@ -985,7 +985,7 @@ void TerrainRenderer::PrepareWaysPoint(GameWorldView *gwv, unsigned short tx, un
 		{
 			float xpos2 = GetTerrainX(gwv->GetGameWorldViewer()->GetXA(tx,ty,3+dir),gwv->GetGameWorldViewer()->GetYA(tx,ty,3+dir))-gwv->GetXOffset()+xo;
 			float ypos2 = GetTerrainY(gwv->GetGameWorldViewer()->GetXA(tx,ty,3+dir),gwv->GetGameWorldViewer()->GetYA(tx,ty,3+dir))-gwv->GetYOffset()+yo;
-			
+
 			// Gehen wir über einen Kartenrand (horizontale Richung?)
 			if(abs(xpos-xpos2) >= gwv->GetGameWorldViewer()->GetWidth() * TR_W / 2)
 			{
@@ -1016,7 +1016,7 @@ void TerrainRenderer::PrepareWaysPoint(GameWorldView *gwv, unsigned short tx, un
 
 					// Prüfen, ob Bergwerge gezeichnet werden müssen, indem man guckt, ob der Weg einen
 					// Berg "streift" oder auch eine Bergwiese
-					if(( (t1 >= TT_MOUNTAIN1 && t1 <= TT_MOUNTAIN4) || t1 == TT_MOUNTAINMEADOW) 
+					if(( (t1 >= TT_MOUNTAIN1 && t1 <= TT_MOUNTAIN4) || t1 == TT_MOUNTAINMEADOW)
 						|| ( (t2 >= TT_MOUNTAIN1  && t2 <= TT_MOUNTAIN4) || t2 == TT_MOUNTAINMEADOW))
 						type = 3;
 
@@ -1137,10 +1137,10 @@ void TerrainRenderer::AltitudeChanged(const MapCoord x, const MapCoord y, const 
 	// den selbst sowieso die Punkte darum updaten, da sich bei letzteren die Schattierung geändert haben könnte
 	UpdateVertexPos(x,y,gwv);
 	UpdateVertexColor(x,y,gwv);
-	
+
 	for(unsigned i = 0;i<6;++i)
 		UpdateVertexColor(gwv->GetXA(x,y,i),gwv->GetYA(x,y,i),gwv);
-	
+
 
 	// und für die Ränder
 	UpdateBorderVertex(x,y,gwv);
@@ -1151,7 +1151,7 @@ void TerrainRenderer::AltitudeChanged(const MapCoord x, const MapCoord y, const 
 	// den selbst sowieso die Punkte darum updaten, da sich bei letzteren die Schattierung geändert haben könnte
 	UpdateTrianglePos(x,y,gwv,true);
 	UpdateTriangleColor(x,y,gwv,true);
-	
+
 	for(unsigned i = 0;i<6;++i)
 	{
 		UpdateTrianglePos(gwv->GetXA(x,y,i),gwv->GetYA(x,y,i),gwv,true);
@@ -1163,7 +1163,7 @@ void TerrainRenderer::AltitudeChanged(const MapCoord x, const MapCoord y, const 
 	// Punkte auch geändert werden könnten
 	for(unsigned i = 0;i<12;++i)
 		UpdateTriangleColor(gwv->GetXA2(x,y,i),gwv->GetYA2(x,y,i),gwv,true);
-	
+
 
 	// und für die Ränder
 	UpdateBorderTrianglePos(x,y,gwv,true);
@@ -1188,7 +1188,7 @@ void TerrainRenderer::VisibilityChanged(const MapCoord x, const MapCoord y, cons
 	UpdateVertexColor(x,y,gwv);
 	for(unsigned i = 0;i<6;++i)
 		UpdateVertexColor(gwv->GetXA(x,y,i),gwv->GetYA(x,y,i),gwv);
-	
+
 	// und für die Ränder
 	UpdateBorderVertex(x,y,gwv);
 	for(unsigned i = 0;i<6;++i)
@@ -1240,7 +1240,7 @@ void TerrainRenderer::UpdateAllColors(const GameWorldViewer * gwv)
 		}
 	}
 
-	
+
 	if(SETTINGS.video.vbo)
 	{
 		// Generiere und Binde den Color Buffer

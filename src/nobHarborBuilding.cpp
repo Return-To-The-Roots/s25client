@@ -1,4 +1,4 @@
-// $Id: nobHarborBuilding.cpp 8627 2013-02-16 20:59:52Z jh $
+// $Id: nobHarborBuilding.cpp 8728 2013-05-16 12:45:55Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -435,10 +435,17 @@ void nobHarborBuilding::OrderExpeditionWares()
 	unsigned boards = 0, stones = 0;
 	for(list<Ware*>::iterator it = dependent_wares.begin();it.valid();++it)
 	{
-		if((*it)->type == GD_BOARDS)
-			++boards;
-		if((*it)->type == GD_STONES)
-			++stones;
+		if (*it == 0) // qx: check for bug #1132707
+		{
+			std::cout << "Error: Iterator to 0-Ware" << std::endl;
+		}
+		else
+		{
+            if((*it)->type == GD_BOARDS)
+                ++boards;
+            if((*it)->type == GD_STONES)
+                ++stones;
+		}
 	}
 
 	// Prüfen, ob jeweils noch weitere Waren bestellt werden müssen
