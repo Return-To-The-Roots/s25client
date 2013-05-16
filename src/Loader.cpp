@@ -1,4 +1,4 @@
-// $Id: Loader.cpp 8727 2013-05-16 12:42:40Z marcus $
+// $Id: Loader.cpp 8729 2013-05-16 12:47:45Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -458,13 +458,13 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool *nations)
 
 	const unsigned int files_count = 4 + 5 + 6 + 4 + 1 + 1;
 
-	unsigned int files[files_count] = { 
+	unsigned int files[files_count] = {
 		0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, // ?afr_z.lst, ?jap_z.lst, ?rom_z.lst, ?vik_z.lst
 		26, 44, 45, 86, 92,                             // rom_bobs.lst, carrier.bob, jobs.bob, boat.lst, boot_z.lst
 		58, 59, 60, 61, 62, 63,                         // mis0bobs.lst, mis1bobs.lst, mis2bobs.lst, mis3bobs.lst, mis4bobs.lst, mis5bobs.lst
 		35, 36, 37, 38,                                 // afr_icon.lst, jap_icon.lst, rom_icon.lst, vik_icon.lst
-		23 + gfxset,                                    // map_?_z.lst
-		20 + gfxset                                     // tex?.lbm
+		23u + gfxset,                                    // map_?_z.lst
+		20u + gfxset                                     // tex?.lbm
 	};
 
 	for(unsigned char i = 0; i < NATION_COUNT; ++i)
