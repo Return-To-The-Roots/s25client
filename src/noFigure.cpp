@@ -102,7 +102,8 @@ const unsigned short WANDER_RADIUS_SOLDIERS = 15;
 
 noFigure::noFigure(const Job job,const unsigned short x, const unsigned short y,const unsigned char player, noRoadNode * const goal)
 :	noMovable(NOP_FIGURE,x,y), fs(FS_GOTOGOAL), job(job), player(player), cur_rs(0),
-	rs_pos(0),rs_dir(0), on_ship(false), goal(goal), waiting_for_free_node(false), last_id(0xFFFFFFFF)
+	rs_pos(0),rs_dir(0), on_ship(false), goal(goal), waiting_for_free_node(false),
+	flag_x(0xFFFF), flag_y(0xFFFF),	last_id(0xFFFFFFFF)
 
 {
 	//if(GetVisualRange())
