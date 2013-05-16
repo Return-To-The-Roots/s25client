@@ -1,4 +1,4 @@
-// $Id: iwStatistics.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: iwStatistics.cpp 8735 2013-05-16 12:55:07Z marcus $
 //
 // Copyright (c) 2005-2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -133,8 +133,8 @@ iwStatistics::iwStatistics()
 	AddImageButton(25, 18, 288, 30, 32, TC_GREY, LOADER.GetImageN("io",21), _("Help"));
 
 	// Aktuelle Überschrift über der Statistik
-	headline = AddText(30, 130, 120, _("Size of country"), MakeColor(255,136,96,52), 
-		glArchivItem_Font::DF_CENTER|glArchivItem_Font::DF_BOTTOM, LOADER.GetFontN("resource", 0));
+	headline = AddText(30, 130, 120, _("Size of country"), MakeColor(255,136,96,52),
+		glArchivItem_Font::DF_CENTER|glArchivItem_Font::DF_BOTTOM|glArchivItem_Font::DF_NO_OUTLINE, NormalFont); // qx: fix for bug #1106952
 
 	// Aktueller Maximalwert an der y-Achse
 	maxValue = AddText(31, 211, 125, "1", MakeColor(255,136,96,52), 
