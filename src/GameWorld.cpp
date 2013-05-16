@@ -1,4 +1,4 @@
-// $Id: GameWorld.cpp 8374 2012-10-04 13:29:17Z marcus $
+// $Id: GameWorld.cpp 8732 2013-05-16 12:52:21Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -99,19 +99,19 @@ void GameWorld::Scan(glArchivItem_Map *map)
 	harbor_pos.push_back(dummy);
 
 	// Andere Sachen setzen
-	for(unsigned y = 0;y<height;++y)
+	for(unsigned short y = 0;y<height;++y)
 	{
-		for(unsigned x = 0;x<width;++x)
+		for(unsigned short x = 0;x<width;++x)
 		{
 			MapNode& node = nodes[y*width+x];
 
 			node.roads[2] = node.roads[1] = node.roads[0] = 0;
 			node.roads_real[2] = node.roads_real[1] = node.roads_real[0] = false;
 			node.altitude = map->GetMapDataAt(MAP_ALTITUDE, x, y);
-			// Aufpassen, dass die Terrainindizes im Rahmen liegen, ansonsten 0 nehmen, unbekanntes Terrain (Bsp. 
+			// Aufpassen, dass die Terrainindizes im Rahmen liegen, ansonsten 0 nehmen, unbekanntes Terrain (Bsp.
 			// Karte "Drachenebene")
 			unsigned char t1 = map->GetMapDataAt(MAP_TERRAIN1, x, y), t2 = map->GetMapDataAt(MAP_TERRAIN2, x, y);
-			
+
 			// Hafenplatz?
 			if(t1 >= 0x40 && t1 <= 0x54)
 			{
@@ -123,14 +123,14 @@ void GameWorld::Scan(glArchivItem_Map *map)
 			}
 			else
 				node.harbor_id = 0;
-				
-	
+
+
 
 			node.t1 = (t1<20)?TERRAIN_INDIZES[t1]:0;
 			node.t2 = (t2<20)?TERRAIN_INDIZES[t2]:0;
 
 			node.resources = map->GetMapDataAt(MAP_RESOURCES, x, y);
-			
+
 			// Wasser?
 			if(node.resources == 0x20 || node.resources == 0x21)
 			{
@@ -146,13 +146,13 @@ void GameWorld::Scan(glArchivItem_Map *map)
 				else
 					node.resources = 0x27; // 7 Wasser
 			}
-			
+
 			node.reserved = false;
 			node.owner = 0;
 			for(unsigned i = 0;i<4;++i)
 				node.boundary_stones[i] = 0;
 			node.sea_id = 0;
-			
+
 			// FOW-Zeug initialisieren
 			for(unsigned i = 0;i<GameClient::inst().GetPlayerCount();++i)
 			{
@@ -175,7 +175,7 @@ void GameWorld::Scan(glArchivItem_Map *map)
 						node.fow[i].visibility = VIS_FOW;
 					} break;
 				}
-		
+
 				node.fow[i].last_update_time = 0;
 				node.fow[i].object = NULL;
 				node.fow[i].roads[0] = node.fow[i].roads[1] =
@@ -503,7 +503,7 @@ void GameWorld::Scan(glArchivItem_Map *map)
 			}
 		}
 	}
-		
+
 }
 
 void GameWorld::Serialize(SerializedGameData *sgd) const
@@ -595,7 +595,7 @@ void GameWorld::Serialize(SerializedGameData *sgd) const
 			}
 		}
 	}
-	
+
 	sgd->PushObjectList(harbor_building_sites_from_sea,true);
 }
 
@@ -748,7 +748,7 @@ void GameWorld::MilitaryBuildingCaptured(const unsigned short x, const MapCoord 
 					LOADER.GetSoundN("sound", 110)->Play(255,false);
 		/*	}
 		}*/
-		
+
 	}
 }
 
