@@ -1,4 +1,4 @@
-// $Id: main.cpp 8357 2012-09-30 16:12:35Z FloSoft $
+// $Id: main.cpp 8725 2013-05-16 12:30:38Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -113,7 +113,7 @@ int mkdir_p(const std::string dir)
 	)
 	{
 		size_t slash = dir.rfind('/');
-		if (slash != std::string::npos) 
+		if (slash != std::string::npos)
 		{
 			std::string prefix = dir.substr(0, slash);
 			if(mkdir_p(prefix) == 0)
@@ -134,7 +134,7 @@ int mkdir_p(const std::string dir)
 
 #ifdef _WIN32
 #ifdef _MSC_VER
-LONG WINAPI 
+LONG WINAPI
 #else
 void
 #endif
@@ -242,7 +242,7 @@ int main(int argc, char *argv[])
 	// diverse dirs anlegen
 	const unsigned int dir_count = 7;
 	unsigned int dirs[dir_count] = { 94, 47, 48, 51, 85, 98, 99 }; // settingsdir muss zuerst angelegt werden (94)
-	
+
 #ifdef _WIN32
 	if(IsDir(GetFilePath("~/Siedler II.5 RttR")))
 		MoveFileA(GetFilePath("~/Siedler II.5 RttR").c_str(), GetFilePath(FILE_PATHS[94]).c_str());
@@ -273,7 +273,7 @@ int main(int argc, char *argv[])
 
 	// Exit-Handler initialisieren
 	atexit(&ExitHandler);
-	
+
 	// Socketzeug initialisieren
 	if(!Socket::Initialize())
 	{
@@ -297,6 +297,7 @@ int main(int argc, char *argv[])
 		csi.port = 3665;
 		csi.type = NP_LOCAL;
 		csi.ipv6 = false;
+		csi.use_upnp = false;
 
 		printf("loading game!\n");
 
@@ -309,7 +310,7 @@ int main(int argc, char *argv[])
 				GameWorldViewer *gwv;
 				unsigned int error = GAMECLIENT.StartReplay(argv[1], gwv);
 
-				std::string replay_errors[] = 
+				std::string replay_errors[] =
 				{
 					_("Error while playing replay!"),
 					_("Error while opening file!"),

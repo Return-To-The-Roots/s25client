@@ -1,4 +1,4 @@
-// $Id: Settings.h 8247 2012-09-14 09:40:33Z marcus $
+// $Id: Settings.h 8725 2013-05-16 12:30:38Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -43,6 +43,7 @@ protected:
 public:
 	struct {
 		unsigned int submit_debug_data;
+		unsigned int use_upnp;
 	} global;
 
 	struct {
@@ -95,7 +96,7 @@ public:
 		unsigned int autosave_interval;
 		bool revert_mouse;
 	} interface;
-	
+
 	struct {
 		bool scale_statistics;
 	} ingame;

@@ -1,4 +1,4 @@
-// $Id: iwDirectIPCreate.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: iwDirectIPCreate.cpp 8725 2013-05-16 12:30:38Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -133,7 +133,7 @@ void iwDirectIPCreate::Msg_EditEnter(const unsigned int ctrl_id)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author FloSoft
  */
@@ -187,6 +187,7 @@ void iwDirectIPCreate::Msg_ButtonClick(const unsigned int ctrl_id)
 			csi.port = static_cast<unsigned short>(atoi(port->GetText().c_str()));
 			csi.type = server_type;
 			csi.ipv6 = SETTINGS.server.ipv6;
+			csi.use_upnp = (SETTINGS.global.use_upnp == 1);
 
 			// Map auswählen
 			WindowManager::inst().Switch(new dskSelectMap(csi));
@@ -199,7 +200,7 @@ void iwDirectIPCreate::Msg_ButtonClick(const unsigned int ctrl_id)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/** 
+/**
  *  Setzt den Text und Schriftfarbe vom Textfeld und den Status des
  *  Buttons.
  *
@@ -216,7 +217,7 @@ void iwDirectIPCreate::SetText(const std::string& text, unsigned int color, bool
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/** 
+/**
  *  Status: Benutzerdefinierter Fehler
  *
  *  @author FloSoft

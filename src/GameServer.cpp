@@ -1,4 +1,4 @@
-// $Id: GameServer.cpp 8503 2012-11-12 12:31:37Z marcus $
+// $Id: GameServer.cpp 8725 2013-05-16 12:30:38Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -146,6 +146,7 @@ bool GameServer::TryToStart(const CreateServerInfo& csi, const std::string& map_
 	serverconfig.servertype = csi.type;
 	serverconfig.port = csi.port;
 	serverconfig.ipv6 = csi.ipv6;
+	serverconfig.use_upnp = csi.use_upnp;
 	mapinfo.map_type = map_type;
 
 	// Titel der Karte (nicht der Dateiname!)
@@ -330,7 +331,7 @@ bool GameServer::Start()
 	status = SS_CONFIG;
 
 	// und das socket in listen-modus schicken
-	if(!serversocket.Listen(serverconfig.port, serverconfig.ipv6))
+	if(!serversocket.Listen(serverconfig.port, serverconfig.ipv6, serverconfig.use_upnp))
 	{
 		LOG.lprintf("GameServer::Start: ERROR: Listening on port %d failed!\n", serverconfig.port);
 		LOG.getlasterror("Fehler");

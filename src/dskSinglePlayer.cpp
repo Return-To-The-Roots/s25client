@@ -1,4 +1,4 @@
-// $Id: dskSinglePlayer.cpp 8326 2012-09-25 12:58:15Z marcus $
+// $Id: dskSinglePlayer.cpp 8725 2013-05-16 12:30:38Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -134,9 +134,10 @@ void dskSinglePlayer::Msg_ButtonClick(const unsigned int ctrl_id)
 				csi.port = 3665;
 				csi.type = NP_LOCAL;
 				csi.ipv6 = false;
+				csi.use_upnp = false;
 
 				WindowManager::inst().Switch(new dskSelectMap(csi));
-			
+
 				if(GAMESERVER.TryToStart(csi, path, MAPTYPE_SAVEGAME))
 				{
 					WindowManager::inst().Draw();
@@ -184,6 +185,7 @@ void dskSinglePlayer::PrepareSinglePlayerServer()
 	csi.port = 3665;
 	csi.type = NP_LOCAL;
 	csi.ipv6 = false;
+	csi.use_upnp = false;
 
 	WindowManager::inst().Switch(new dskSelectMap(csi));
 }
@@ -196,6 +198,7 @@ void dskSinglePlayer::PrepareLoadGame()
 	csi.port = 3665;
 	csi.type = NP_LOCAL;
 	csi.ipv6 = false;
+	csi.use_upnp = false;
 
 	WindowManager::inst().Switch(new dskSelectMap(csi));
 	WindowManager::inst().Draw();

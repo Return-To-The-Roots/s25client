@@ -1,4 +1,4 @@
-// $Id: iwDirectIPCreate.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: iwDirectIPCreate.h 8725 2013-05-16 12:30:38Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -32,6 +32,7 @@ struct CreateServerInfo
 	std::string gamename;  ///< Name des Servers.
 	std::string password;  ///< Passwort des Servers.
 	bool ipv6;             ///< Soll IPv6 verwendet werden?
+	bool use_upnp;
 };
 
 class iwDirectIPCreate : public IngameWindow, public LobbyInterface

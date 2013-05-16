@@ -1,4 +1,4 @@
-// $Id: Settings.cpp 8247 2012-09-14 09:40:33Z marcus $
+// $Id: Settings.cpp 8725 2013-05-16 12:30:38Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -41,7 +41,7 @@ const std::string Settings::SETTINGS_SECTION_NAMES[] = {
 };
 
 const unsigned char Settings::SCREEN_REFRESH_RATES_COUNT = 14;
-const unsigned short Settings::SCREEN_REFRESH_RATES[] = { 
+const unsigned short Settings::SCREEN_REFRESH_RATES[] = {
 	0, 1, 25, 30, 50, 60, 75, 80, 100, 120, 150, 180, 200, 240
 };
 
@@ -60,6 +60,7 @@ bool Settings::LoadDefaults()
 	// {
 		// 0 = ask user at start,1 = enabled, 2 = disabled
 		global.submit_debug_data = 0;
+		global.use_upnp = 2;
 	// }
 
 	// video
@@ -186,6 +187,8 @@ bool Settings::Load(void)
 			warning("Your application version has changed - please recheck your settings!\n");
 
 		this->global.submit_debug_data = global->getValueI("submit_debug_data");
+		this->global.use_upnp = global->getValueI("use_upnp");
+
 	// };
 
 	// video
@@ -335,6 +338,7 @@ void Settings::Save(void)
 		global->setValue("version", SETTINGS_VERSION);
 		global->setValue("gameversion", GetWindowRevision());
 		global->setValue("submit_debug_data", this->global.submit_debug_data);
+		global->setValue("use_upnp", this->global.use_upnp);
 	// };
 
 	// video
@@ -424,6 +428,6 @@ void Settings::Save(void)
 			addons->addValue(name.str().c_str(), value.str().c_str());
 		}
 	// }
-		
+
 	LOADER.SaveSettings();
 }

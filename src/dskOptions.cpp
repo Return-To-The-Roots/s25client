@@ -1,4 +1,4 @@
-// $Id: dskOptions.cpp 8247 2012-09-14 09:40:33Z marcus $
+// $Id: dskOptions.cpp 8725 2013-05-16 12:30:38Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -71,7 +71,7 @@ dskOptions::dskOptions(void) : Desktop(LOADER.GetImageN("setup013", 0))
 {
 	// Zurück
 	AddTextButton(0, 300, 550, 200, 22,   TC_RED1, _("Back"),NormalFont);
-	
+
 	// "Optionen"
 	AddText(1, 400, 10, _("Options"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, LargeFont);
 
@@ -166,6 +166,14 @@ dskOptions::dskOptions(void) : Desktop(LOADER.GetImageN("setup013", 0))
 
 	optiongroup->SetSelection( ((SETTINGS.global.submit_debug_data == 1) ? 72 : 73) );
 
+	// qx:upnp switch
+	groupAllgemein->AddText(9999, 80, 390, _("Use UPnP"), COLOR_YELLOW, 0, NormalFont);
+	ctrlOptionGroup *upnp = groupAllgemein->AddOptionGroup(9998, ctrlOptionGroup::CHECK, scale);
+	upnp->AddTextButton(10002, 280, 385, 190, 22, TC_GREY, _("Off"), NormalFont);
+	upnp->AddTextButton(10001, 480, 385, 190, 22, TC_GREY, _("On"), NormalFont);
+	upnp->SetSelection( (SETTINGS.global.use_upnp == 1) ? 10001 : 10002 );
+
+
 	if(GLOBALVARS.ext_vbo == false) // VBO unterstützt?
 		optiongroup->AddText(  56, 280, 230, _("not supported"), COLOR_YELLOW, 0, NormalFont);
 	else
@@ -215,7 +223,7 @@ dskOptions::dskOptions(void) : Desktop(LOADER.GetImageN("setup013", 0))
 
 	optiongroup->AddTextButton(76, 280, 315, 190, 22, TC_GREY,_("On"), NormalFont);
 	optiongroup->AddTextButton(77, 480, 315, 190, 22, TC_GREY, _("Off"), NormalFont);
-	
+
 
 	// "Audiotreiber"
 	groupSound->AddText(60,  80, 230, _("Sounddriver"), COLOR_YELLOW, 0, NormalFont);
@@ -239,7 +247,7 @@ dskOptions::dskOptions(void) : Desktop(LOADER.GetImageN("setup013", 0))
 
 	ctrlProgress *Mvolume = groupSound->AddProgress(72, 480, 75, 190, 22, TC_GREY, 139, 138, 10);
 	Mvolume->SetPosition(SETTINGS.sound.musik_volume*10/255);
-	
+
 	// Effekte
 	groupSound->AddText(  66,  80, 130, _("Effects"), COLOR_YELLOW, 0, NormalFont);
 	optiongroup = groupSound->AddOptionGroup(67, ctrlOptionGroup::CHECK, scale);
@@ -251,7 +259,7 @@ dskOptions::dskOptions(void) : Desktop(LOADER.GetImageN("setup013", 0))
 
 	// Musicplayer-Button
 	groupSound->AddTextButton(71,280,175,190,22,TC_GREY,_("Music player"),NormalFont);
-	
+
 	// "Allgemein" auswählen
 	optiongroup = GetCtrl<ctrlOptionGroup>(10);
 	optiongroup->SetSelection(11, true);
@@ -275,7 +283,7 @@ dskOptions::dskOptions(void) : Desktop(LOADER.GetImageN("setup013", 0))
 			groupGrafik->GetCtrl<ctrlComboBox>(41)->AddString(str);
 
 			// Ist das die aktuelle Auflösung? Dann selektieren
-			if(video_modes[i].width == SETTINGS.video.fullscreen_width && 
+			if(video_modes[i].width == SETTINGS.video.fullscreen_width &&
 				video_modes[i].height == SETTINGS.video.fullscreen_height)
 				groupGrafik->GetCtrl<ctrlComboBox>(41)->SetSelection(i);
 		}
@@ -296,12 +304,12 @@ dskOptions::dskOptions(void) : Desktop(LOADER.GetImageN("setup013", 0))
 	{
 		switch(Settings::SCREEN_REFRESH_RATES[i])
 		{
-		case 0: 
+		case 0:
 			{
 				groupGrafik->GetCtrl<ctrlComboBox>(51)->AddString(_("Disabled"));
 				groupGrafik->GetCtrl<ctrlComboBox>(51)->SetSelection(0);
 			} break;
-		case 1: 
+		case 1:
 			{
 				if(GLOBALVARS.ext_swapcontrol)
 					groupGrafik->GetCtrl<ctrlComboBox>(51)->AddString(_("Dynamic (Limits to display refresh rate, works with most drivers)"));
@@ -310,7 +318,7 @@ dskOptions::dskOptions(void) : Desktop(LOADER.GetImageN("setup013", 0))
 			} break;
 		default:
 			{
-				// frameratebegrenzungen mit Bildabstand kleiner 13ms 
+				// frameratebegrenzungen mit Bildabstand kleiner 13ms
 				// wird unter windows nicht mehr aufgelöst
 #ifdef _WIN32
 				if(960 / Settings::SCREEN_REFRESH_RATES[i] > 13)
@@ -434,7 +442,7 @@ void dskOptions::Msg_Group_ComboSelectItem(const unsigned int group_id, const un
 			// 2: Framerates
 			switch(selection)
 			{
-			case 0: 
+			case 0:
 				{
 					SETTINGS.video.vsync = 0;
 				} break;
@@ -533,6 +541,14 @@ void dskOptions::Msg_Group_OptionGroupChange(const unsigned int group_id, const 
 			case 73: SETTINGS.global.submit_debug_data = 2; break;
 			}
 		} break;
+	case 9998:
+		{
+			switch(selection)
+			{
+			case 10001: SETTINGS.global.use_upnp = 1; break;
+			case 10002: SETTINGS.global.use_upnp = 0; break;
+			}
+		} break;
 	}
 }
 
@@ -570,12 +586,12 @@ void dskOptions::Msg_ButtonClick(const unsigned int ctrl_id)
 
 			// Name abspeichern
 			SETTINGS.lobby.name = groupAllgemein->GetCtrl<ctrlEdit>(31)->GetText();
-			// Proxy abspeichern, überprüfung der einstellung übernimmt SETTINGS.Save()d	
+			// Proxy abspeichern, überprüfung der einstellung übernimmt SETTINGS.Save()d
 			SETTINGS.proxy.proxy = groupAllgemein->GetCtrl<ctrlEdit>(37)->GetText();
 			SETTINGS.proxy.port = atoi(groupAllgemein->GetCtrl<ctrlEdit>(371)->GetText().c_str());
 
 			SETTINGS.Save();
-			
+
 			// Auflösung/Vollbildmodus geändert?
 #ifdef _WIN32
 			if((SETTINGS.video.fullscreen_width != VideoDriverWrapper::inst().GetScreenWidth()
@@ -588,11 +604,11 @@ void dskOptions::Msg_ButtonClick(const unsigned int ctrl_id)
 				                                            SETTINGS.video.fullscreen))
 				{
 					WindowManager::inst().Show(new iwMsgbox(_("Sorry!"), _("You need to restart your game to change the screen resolution!"), this, MSB_OK, MSB_EXCLAMATIONGREEN, 1));
-		
+
 				}
 			}
 #else
-			if((SETTINGS.video.fullscreen && 
+			if((SETTINGS.video.fullscreen &&
 			   (SETTINGS.video.fullscreen_width != VideoDriverWrapper::inst().GetScreenWidth()
 			    ||
 			    SETTINGS.video.fullscreen_height != VideoDriverWrapper::inst().GetScreenHeight())
@@ -603,11 +619,11 @@ void dskOptions::Msg_ButtonClick(const unsigned int ctrl_id)
 				                                            SETTINGS.video.fullscreen))
 				{
 					WindowManager::inst().Show(new iwMsgbox(_("Sorry!"), _("You need to restart your game to change the screen resolution!"), this, MSB_OK, MSB_EXCLAMATIONGREEN, 1));
-			
+
 				}
 			}
 #endif
-			if(SETTINGS.driver.video != VideoDriverWrapper::inst().GetName() || 
+			if(SETTINGS.driver.video != VideoDriverWrapper::inst().GetName() ||
 				SETTINGS.driver.audio != AudioDriverWrapper::inst().GetName())
 			{
 				WindowManager::inst().Show(new iwMsgbox(_("Sorry!"), _("You need to restart your game to change the video or audio driver!"), this, MSB_OK, MSB_EXCLAMATIONGREEN, 1));
@@ -620,7 +636,7 @@ void dskOptions::Msg_ButtonClick(const unsigned int ctrl_id)
 		{
 			ggs.LoadSettings();
 			WindowManager::inst().Show(new iwAddons(&ggs));
-			
+
 		} break;
 	}
 }
