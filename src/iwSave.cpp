@@ -1,4 +1,4 @@
-// $Id: iwSave.cpp 8326 2012-09-25 12:58:15Z marcus $
+// $Id: iwSave.cpp 8733 2013-05-16 12:53:46Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -120,11 +120,14 @@ void iwSaveLoad::RefreshTable()
 	std::string tmp = GetFilePath(FILE_PATHS[85]);
 	tmp += "*.sav";
 	ListDir(tmp.c_str(), false,iwSave::FillSaveTable, GetCtrl<ctrlTable>(0));
+
+    // qx: Nach Zeit Sortieren
+	GetCtrl<ctrlTable>(0)->SortRows(2);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
