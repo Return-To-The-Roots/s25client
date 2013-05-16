@@ -1,4 +1,4 @@
-// $Id: GameObject.cpp 8516 2012-11-14 00:03:22Z marcus $
+// $Id: GameObject.cpp 8734 2013-05-16 12:54:28Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -22,6 +22,8 @@
 #include "main.h"
 #include "GameObject.h"
 #include "SerializedGameData.h"
+
+#include <iostream>
 
 #include "GamePlayerList.h"
 
@@ -71,6 +73,15 @@ GameObject::GameObject(const GameObject& go) : obj_id(go.obj_id)
 {
 	// ein Objekt mehr
 	++obj_counter;
+}
+
+void GameObject::Destroy()
+{
+}
+
+void GameObject::Serialize(SerializedGameData *sgd) const
+{
+    std::cout << "ERROR: GameObject::Serialize called." << std::endl; // qx
 }
 
 ///////////////////////////////////////////////////////////////////////////////
