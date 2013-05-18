@@ -1,3 +1,105 @@
+s25rttr (20130517-8738.272) karmic; urgency=low
+
+  * Automatic Jenkins Build 272
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Fri, 17 May 2013 01:38:24 +0200
+
+s25rttr (20130517-8738) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Fri, 17 May 2013 00:00:00 +0200
+
+s25rttr (20130516-8737) any; urgency=low
+
+  * Tool Ordering (by quixui)
+
+ -- marcus  Thu, 16 May 2013 15:42:00 +0200
+
+s25rttr (20130516-8736.271) karmic; urgency=low
+
+  * Automatic Jenkins Build 271
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Thu, 16 May 2013 15:32:14 +0200
+
+s25rttr (20130516-8736) any; urgency=low
+
+  * Fix for skipping soldiers withdrawing from buildings. (by quixui)
+
+ -- marcus  Thu, 16 May 2013 12:58:00 +0200
+
+s25rttr (20130516-8735) any; urgency=low
+
+  * Umlaut fixes. (by quixui)
+
+ -- marcus  Thu, 16 May 2013 12:55:00 +0200
+
+s25rttr (20130516-8734) any; urgency=low
+
+  * Fix for possible calls to pure virtual functions. (by quixui)
+
+ -- marcus  Thu, 16 May 2013 12:54:00 +0200
+
+s25rttr (20130516-8733) any; urgency=low
+
+  * Sort Save/Load menus by time. (by quixui)
+
+ -- marcus  Thu, 16 May 2013 12:53:00 +0200
+
+s25rttr (20130516-8732) any; urgency=low
+
+  * Fix type comparison warning. (by quixui)
+
+ -- marcus  Thu, 16 May 2013 12:52:00 +0200
+
+s25rttr (20130516-8731) any; urgency=low
+
+  * Fix for invalid initial flag coords. (by quixui)
+
+ -- marcus  Thu, 16 May 2013 12:51:00 +0200
+
+s25rttr (20130516-8730) any; urgency=low
+
+  * Fix snprintf warning in dskGameInterface.cpp. (by quixui)
+
+ -- marcus  Thu, 16 May 2013 12:48:00 +0200
+
+s25rttr (20130516-8729) any; urgency=low
+
+  * More compiler warning fixes. (by quixui)
+
+ -- marcus  Thu, 16 May 2013 12:47:00 +0200
+
+s25rttr (20130516-8728) any; urgency=low
+
+  * Fix compiler warnings. (by quixui)
+
+ -- marcus  Thu, 16 May 2013 12:45:00 +0200
+
+s25rttr (20130516-8727) any; urgency=low
+
+  * Invisible buildings fix. Fixes #1085693. (by quixui)
+
+ -- marcus  Thu, 16 May 2013 12:42:00 +0200
+
+s25rttr (20130516-8726) any; urgency=low
+
+  * GGS Loading fix. Fixes #899098. (by quixui)
+
+ -- marcus  Thu, 16 May 2013 12:41:00 +0200
+
+s25rttr (20130516-8725) any; urgency=low
+
+  * UPnP switch in options (by quixui) 2/2
+
+ -- marcus  Thu, 16 May 2013 12:30:00 +0200
+
+s25rttr (20130330-8676) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 30 Mar 2013 23:00:00 +0100
+
 s25rttr (20130324-8669.270) karmic; urgency=low
 
   * Automatic Jenkins Build 270
