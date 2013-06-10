@@ -1,4 +1,4 @@
-// $Id: nofActiveSoldier.cpp 8305 2012-09-22 12:34:54Z marcus $
+// $Id: nofActiveSoldier.cpp 8766 2013-06-10 17:54:18Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -390,7 +390,18 @@ void nofActiveSoldier::MeetingEnemy()
 	else
 	{
 		dir = gwg->FindHumanPath(x,y,fight_spot.x,fight_spot.y,MAX_ATTACKING_RUN_DISTANCE);
-		StartWalking(dir);
+		if (dir != 255)
+		{
+			StartWalking(dir);
+		}
+		else
+		{
+			// qx: Couldnt find a way from current location to fighting spot -> cancel fight (Fix for #1189150)
+			enemy->FreeFightEnded();
+			enemy = NULL;
+			FreeFightEnded();
+			Walked();
+		}
 		return;
 	}
 
