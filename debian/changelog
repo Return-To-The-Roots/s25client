@@ -1,3 +1,27 @@
+s25rttr (20130611-8767.274) karmic; urgency=low
+
+  * Automatic Jenkins Build 274
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 11 Jun 2013 01:08:43 +0200
+
+s25rttr (20130611-8767) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 11 Jun 2013 00:00:00 +0200
+
+s25rttr (20130610-8766) any; urgency=low
+
+  * Fix for #1189150 (by quixui)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Mon, 10 Jun 2013 17:54:00 +0200
+
+s25rttr (20130525-8749) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 25 May 2013 22:00:00 +0200
+
 s25rttr (20130522-8745.273) karmic; urgency=low
 
   * Automatic Jenkins Build 273
