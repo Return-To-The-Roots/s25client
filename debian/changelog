@@ -1,3 +1,33 @@
+s25rttr (20130702-8791.275) karmic; urgency=low
+
+  * Automatic Jenkins Build 275
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 02 Jul 2013 01:09:19 +0200
+
+s25rttr (20130702-8791) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 02 Jul 2013 00:00:00 +0200
+
+s25rttr (20130701-8790) any; urgency=low
+
+  * Minor fix and [LobbyBot]-test :)
+
+ -- marcus  Mon, 01 Jul 2013 11:05:00 +0200
+
+s25rttr (20130701-8789) any; urgency=low
+
+  * Added "header to nofShipWright.cpp
+
+ -- marcus  Mon, 01 Jul 2013 08:47:00 +0200
+
+s25rttr (20130615-8772) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 15 Jun 2013 22:00:00 +0200
+
 s25rttr (20130611-8767.274) karmic; urgency=low
 
   * Automatic Jenkins Build 274
