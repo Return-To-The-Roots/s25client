@@ -1,5 +1,5 @@
 ################################################################################
-### $Id: CMakeLists.txt 8287 2012-09-17 16:36:57Z marcus $
+### $Id: CMakeLists.txt 8822 2013-08-01 09:11:15Z FloSoft $
 ################################################################################
 
 INCLUDE(FindBZip2)
@@ -101,7 +101,7 @@ SET(SOURCES_INGAMEWINDOWS
 	iwMinimap.cpp                       iwMinimap.h
 	iwMsgbox.cpp                        iwMsgbox.h
 	iwMusicPlayer.cpp                   iwMusicPlayer.h
-        iwObservate.cpp                     iwObservate.h
+	iwObservate.cpp                     iwObservate.h
 	iwOptionsWindow.cpp                 iwOptionsWindow.h
 	iwPlayReplay.cpp                    iwPlayReplay.h
 	iwPleaseWait.cpp                    iwPleaseWait.h
@@ -116,7 +116,7 @@ SET(SOURCES_INGAMEWINDOWS
 	iwStatistics.cpp                    iwStatistics.h
 	iwTextfile.cpp                      iwTextfile.h
 	iwTools.cpp                         iwTools.h
-	iwTrade.cpp			    iwTrade.h
+	iwTrade.cpp                         iwTrade.h
 	iwTransport.cpp                     iwTransport.h
 	iwWares.cpp                         iwWares.h
 	iwMerchandiseStatistics.cpp         iwMerchandiseStatistics.h
@@ -131,7 +131,7 @@ SET(SOURCES_AI
 	AIConstruction.cpp                  AIConstruction.h
 	AIInterface.cpp                     AIInterface.h
    )
-   
+
 SET(SOURCES_NO
 	noAnimal.cpp                        noAnimal.h
 	noBase.cpp                          noBase.h
@@ -158,9 +158,9 @@ SET(SOURCES_NO
 	noSkeleton.cpp                      noSkeleton.h
 	noStaticObject.cpp                  noStaticObject.h
 	noTree.cpp                          noTree.h
-	noCharburnerPile.cpp				noCharburnerPile.h
+	noCharburnerPile.cpp                noCharburnerPile.h
    )
-   
+
 SET(SOURCES_NOB
 	nobBaseMilitary.cpp                 nobBaseMilitary.h
 	nobBaseWarehouse.cpp                nobBaseWarehouse.h
@@ -171,7 +171,7 @@ SET(SOURCES_NOB
 	nobStorehouse.cpp                   nobStorehouse.h
 	nobUsual.cpp                        nobUsual.h
    )
-   
+
 SET(SOURCES_NOF
 	nofActiveSoldier.cpp                nofActiveSoldier.h
 	nofAggressiveDefender.cpp           nofAggressiveDefender.h
@@ -208,13 +208,13 @@ SET(SOURCES_NOF
 	nofShipWright.cpp                   nofShipWright.h
 	nofSoldier.cpp                      nofSoldier.h
 	nofStonemason.cpp                   nofStonemason.h
-	nofTradeLeader.cpp		    nofTradeLeader.h
-	nofTradeDonkey.cpp		    nofTradeDonkey.h
+	nofTradeLeader.cpp                  nofTradeLeader.h
+	nofTradeDonkey.cpp                  nofTradeDonkey.h
 	nofWarehouseWorker.cpp              nofWarehouseWorker.h
 	nofWellguy.cpp                      nofWellguy.h
 	nofWoodcutter.cpp                   nofWoodcutter.h
 	nofWorkman.cpp                      nofWorkman.h
-	nofCharburner.cpp		    		nofCharburner.h
+	nofCharburner.cpp                   nofCharburner.h
 	)
 
 SET(SOURCES_OTHER
@@ -240,14 +240,14 @@ SET(SOURCES_OTHER
 	GameSavedFile.cpp                   GameSavedFile.h
 	GameReplay.cpp                      GameReplay.h
 	GameSavegame.cpp                    GameSavegame.h
-	                                    GameInterface.h
+										GameInterface.h
 	GameManager.cpp                     GameManager.h
 	GameMessage.cpp                     GameMessage.h
 	GameMessageInterface.cpp            GameMessageInterface.h
 	GameCommands.cpp                    GameCommands.h
 	GameObject.cpp                      GameObject.h
 	GamePlayerInfo.cpp                  GamePlayerInfo.h
-	GameProtocol.h          
+	GameProtocol.h
 	GameServer.cpp                      GameServer.h
 	GameServerPlayer.cpp                GameServerPlayer.h
 	GameWorld.cpp                       GameWorld.h
@@ -292,7 +292,7 @@ SET(SOURCES_OTHER
 										Swap.h
 	TerrainRenderer.cpp                 TerrainRenderer.h
 	TerritoryRegion.cpp                 TerritoryRegion.h
-	TradeGraph.cpp			    TradeGraph.h
+	TradeGraph.cpp                      TradeGraph.h
 	Ware.cpp                            Ware.h
 	Window.cpp                          Window.h
 	WindowManager.cpp                   WindowManager.h
@@ -334,7 +334,7 @@ SET(SOURCES_GL
 
 ################################################################################
 
-GETTEXT_CREATE_TRANSLATIONS(../RTTR/languages/rttr.pot ALL 
+GETTEXT_CREATE_TRANSLATIONS(../RTTR/languages/rttr.pot ALL
 							../RTTR/languages/rttr-de.po
 							../RTTR/languages/rttr-es.po
 							../RTTR/languages/rttr-sv.po
@@ -363,13 +363,13 @@ GETTEXT_CREATE_TRANSLATIONS(../RTTR/languages/rttr.pot ALL
 SET(SOURCES_BZIP "")
 IF ( "${COMPILEFOR}" STREQUAL "windows" )
 	IF( IS_DIRECTORY "${CMAKE_SOURCE_DIR}/contrib/bzip2-1.0.3" )
-		SET(SOURCES_BZIP 
+		SET(SOURCES_BZIP
 			${CMAKE_SOURCE_DIR}/contrib/bzip2-1.0.3/blocksort.c
-			${CMAKE_SOURCE_DIR}/contrib/bzip2-1.0.3/huffman.c 
+			${CMAKE_SOURCE_DIR}/contrib/bzip2-1.0.3/huffman.c
 			${CMAKE_SOURCE_DIR}/contrib/bzip2-1.0.3/crctable.c
-			${CMAKE_SOURCE_DIR}/contrib/bzip2-1.0.3/randtable.c 
+			${CMAKE_SOURCE_DIR}/contrib/bzip2-1.0.3/randtable.c
 			${CMAKE_SOURCE_DIR}/contrib/bzip2-1.0.3/compress.c
-			${CMAKE_SOURCE_DIR}/contrib/bzip2-1.0.3/decompress.c 
+			${CMAKE_SOURCE_DIR}/contrib/bzip2-1.0.3/decompress.c
 			${CMAKE_SOURCE_DIR}/contrib/bzip2-1.0.3/bzlib.c
 		)
 	ENDIF( IS_DIRECTORY "${CMAKE_SOURCE_DIR}/contrib/bzip2-1.0.3" )
@@ -378,13 +378,13 @@ ENDIF ( "${COMPILEFOR}" STREQUAL "windows" )
 INCLUDE(AddFileDependencies)
 ADD_FILE_DEPENDENCIES(../build_version.cpp ${CMAKE_BINARY_DIR}/build_version.h)
 
-SET(s25client_SRCS 
+SET(s25client_SRCS
 	../build_version.cpp
-	${SOURCES_CONTROLS} 
-	${SOURCES_DESKTOPS} 
+	${SOURCES_CONTROLS}
+	${SOURCES_DESKTOPS}
 	${SOURCES_GL}
-	${SOURCES_BZIP} 
-	${SOURCES_INGAMEWINDOWS} 
+	${SOURCES_BZIP}
+	${SOURCES_INGAMEWINDOWS}
 	${SOURCES_OTHER}
 	${SOURCES_AI}
 	${SOURCES_NO}
@@ -395,17 +395,19 @@ SET(s25client_SRCS
 IF ( "${COMPILEFOR}" STREQUAL "windows")
 	ADD_DEFINITIONS("-DAFX_TARG_DEU")
 
-    IF ( "${COMPILEARCH}" STREQUAL "i386" )
-        FIND_PROGRAM(WINDRES NAMES windres i686-pc-mingw32-windres i686-mingw32-windres i586-mingw32msvc-windres DOC "path to mingw's windres executable")
-    ELSE ( "${COMPILEARCH}" STREQUAL "i386" )
-        FIND_PROGRAM(WINDRES NAMES windres x86_64-pc-mingw32-windres x86_64-mingw32-windres amd64-mingw32msvc-windres DOC "path to mingw's windres executable")
-    ENDIF ( "${COMPILEARCH}" STREQUAL "i386" )
-	
+	IF ( "${COMPILEARCH}" STREQUAL "i386" )
+		FIND_PROGRAM(WINDRES NAMES windres i686-pc-mingw32-windres i686-mingw32-windres i586-mingw32msvc-windres DOC "path to mingw's windres executable")
+	ELSE ( "${COMPILEARCH}" STREQUAL "i386" )
+		FIND_PROGRAM(WINDRES NAMES windres x86_64-pc-mingw32-windres x86_64-mingw32-windres amd64-mingw32msvc-windres DOC "path to mingw's windres executable")
+	ENDIF ( "${COMPILEARCH}" STREQUAL "i386" )
+
 	# Add Icon to Application
-	ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/s25client.res.o 
+	ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/s25client.res.o
 					   COMMAND ${WINDRES} -I${CMAKE_CURRENT_SOURCE_DIR}/../win32/ -i${CMAKE_CURRENT_SOURCE_DIR}/../win32/s25client.rc -o ${CMAKE_CURRENT_BINARY_DIR}/s25client.res.o)
 
 	SET(s25client_SRCS ${s25client_SRCS} ${CMAKE_CURRENT_BINARY_DIR}/s25client.res.o)
+
+	ADD_FLAGS(CMAKE_EXE_LINKER_FLAGS -Wl,--stack,8388608)
 ENDIF ( "${COMPILEFOR}" STREQUAL "windows")
 
 IF ( "${COMPILEFOR}" STREQUAL "apple")
@@ -452,7 +454,7 @@ ENDIF ( "${COMPILEFOR}" STREQUAL "apple")
 ################################################################################
 
 ADD_EXECUTABLE(s25client ${s25client_SRCS})
-TARGET_LINK_LIBRARIES(s25client 
+TARGET_LINK_LIBRARIES(s25client
 	siedler2
 	lobby_c
 	s25util

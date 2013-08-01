@@ -1,4 +1,4 @@
-// $Id: GameServer.cpp 8325 2012-09-25 12:50:57Z marcus $
+// $Id: GameServer.cpp 8822 2013-08-01 09:11:15Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -940,6 +940,8 @@ void GameServer::ClientWatchDog()
 
 								// Checksumme merken, da die Nachricht dann wieder entfernt wird
 								player->checksum = player->gc_queue.front().checksum;
+								player->obj_cnt = player->gc_queue.front().obj_cnt;
+								player->obj_id_cnt = player->gc_queue.front().obj_id_cnt;
 
 								for(std::vector<gc::GameCommand*>::iterator it = player->gc_queue.front().gcs.begin();
 									it != player->gc_queue.front().gcs.end();++it)
@@ -958,8 +960,13 @@ void GameServer::ClientWatchDog()
 								//LOG.lprintf("%d = %d - %d\n", framesinfo.nr, checksum, Random::inst().GetCurrentRandomValue());
 
 								// Checksummen nicht gleich?
-								if (player->checksum != firstPlayer->checksum)
+								if (	(player->checksum != firstPlayer->checksum) ||
+									(player->obj_cnt != firstPlayer->obj_cnt) ||
+									(player->obj_id_cnt != firstPlayer->obj_id_cnt))
 								{
+									LOG.lprintf("%u = C%i:%i O:%u;%u I:%u:%u\n", framesinfo.nr, player->checksum, firstPlayer->checksum,
+										player->obj_cnt, firstPlayer->obj_cnt, player->obj_id_cnt, firstPlayer->obj_id_cnt);
+
 									// Checksummenliste erzeugen
 									std::vector<int> checksums;
 									for(unsigned int i = 0; i < players.getCount(); ++i)

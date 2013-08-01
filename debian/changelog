@@ -1,3 +1,533 @@
+s25rttr (20121106-8491.251) karmic; urgency=low
+
+  * Automatic Jenkins Build 251
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 06 Nov 2012 09:40:48 +0100
+
+s25rttr (20121106-8491.250) karmic; urgency=low
+
+  * Automatic Jenkins Build 250
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 06 Nov 2012 09:23:30 +0100
+
+s25rttr (20121106-8491) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 06 Nov 2012 00:00:00 +0100
+
+s25rttr (20121106-8490) any; urgency=low
+
+  * fix warning and possible crash
+
+ -- Florian Doersch <flosoft@siedler25.org>  Tue, 06 Nov 2012 07:32:00 +0100
+
+s25rttr (20121106-8489) any; urgency=low
+
+  * remove warning
+
+ -- Florian Doersch <flosoft@siedler25.org>  Tue, 06 Nov 2012 07:31:00 +0100
+
+s25rttr (20121106-8488) any; urgency=low
+
+  * fix lua includes
+
+ -- Florian Doersch <flosoft@siedler25.org>  Tue, 06 Nov 2012 07:31:00 +0100
+
+s25rttr (20121106-8486.249) karmic; urgency=low
+
+  * Automatic Jenkins Build 249
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 06 Nov 2012 01:23:42 +0100
+
+s25rttr (20121106-8486) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 06 Nov 2012 00:00:00 +0100
+
+s25rttr (20121105-8485) any; urgency=low
+
+  * add check for local lua if contrib not found - for debian
+    packages
+
+ -- Florian Doersch <flosoft@siedler25.org>  Mon, 05 Nov 2012 21:02:00 +0100
+
+s25rttr (20121103-8482) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 03 Nov 2012 23:00:00 +0100
+
+s25rttr (20121102-8480.248) karmic; urgency=low
+
+  * Automatic Jenkins Build 248
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Fri, 02 Nov 2012 01:33:33 +0100
+
+s25rttr (20121102-8480) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Fri, 02 Nov 2012 00:00:00 +0100
+
+s25rttr (20121101-8479) any; urgency=low
+
+  * tabstops
+
+ -- Florian Doersch <flosoft@siedler25.org>  Thu, 01 Nov 2012 11:21:00 +0100
+
+s25rttr (20121101-8478.247) karmic; urgency=low
+
+  * Automatic Jenkins Build 247
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Thu, 01 Nov 2012 01:30:45 +0100
+
+s25rttr (20121101-8478) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Thu, 01 Nov 2012 00:00:00 +0100
+
+s25rttr (20121031-8474.246) karmic; urgency=low
+
+  * Automatic Jenkins Build 246
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Wed, 31 Oct 2012 11:48:40 +0100
+
+s25rttr (20121031-8474.--help) karmic; urgency=low
+
+  * Automatic Jenkins Build --help
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Wed, 31 Oct 2012 11:47:16 +0100
+
+s25rttr (20121031-8474.245) karmic; urgency=low
+
+  * Automatic Jenkins Build 245
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Wed, 31 Oct 2012 11:40:52 +0100
+
+s25rttr (20121031-8474) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Wed, 31 Oct 2012 00:00:00 +0100
+
+s25rttr (20121031-8472.244) karmic; urgency=low
+
+  * Automatic Jenkins Build 244
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Wed, 31 Oct 2012 09:29:42 +0100
+
+s25rttr (20121031-8472) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Wed, 31 Oct 2012 00:00:00 +0100
+
+s25rttr (20121031-8471) any; urgency=low
+
+  * verbose error
+
+ -- Florian Doersch <flosoft@siedler25.org>  Wed, 31 Oct 2012 08:22:00 +0100
+
+s25rttr (20121029-8468.243) karmic; urgency=low
+
+  * Automatic Jenkins Build 243
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Mon, 29 Oct 2012 01:09:42 +0100
+
+s25rttr (20121029-8468) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Mon, 29 Oct 2012 00:00:00 +0100
+
+s25rttr (20121028-8467) any; urgency=low
+
+  * restore contrib :/
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sun, 28 Oct 2012 16:15:00 +0100
+
+s25rttr (20121028-8466) any; urgency=low
+
+  * removed lpia aka architecture any
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sun, 28 Oct 2012 16:13:00 +0100
+
+s25rttr (20121028-8465.242) karmic; urgency=low
+
+  * Automatic Jenkins Build 242
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sun, 28 Oct 2012 10:46:40 +0100
+
+s25rttr (20121028-8465) any; urgency=low
+
+  * add liblua5.2-dev to deps
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sun, 28 Oct 2012 09:36:00 +0100
+
+s25rttr (20121028-8464.241) karmic; urgency=low
+
+  * Automatic Jenkins Build 241
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sun, 28 Oct 2012 01:10:25 +0200
+
+s25rttr (20121028-8464) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sun, 28 Oct 2012 00:00:00 +0200
+
+s25rttr (20121027-8463) any; urgency=low
+
+  * added lua52.lib also for debug version (VS2010)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sat, 27 Oct 2012 19:43:00 +0200
+
+s25rttr (20121027-8462) any; urgency=low
+
+  * added lua52.lib dependency to s25client VS2010 project
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sat, 27 Oct 2012 19:15:00 +0200
+
+s25rttr (20121020-8452) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 20 Oct 2012 22:00:00 +0200
+
+s25rttr (20121015-8445.240) karmic; urgency=low
+
+  * Automatic Jenkins Build 240
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Mon, 15 Oct 2012 01:16:00 +0200
+
+s25rttr (20121015-8445) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Mon, 15 Oct 2012 00:00:00 +0200
+
+s25rttr (20121013-8432) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 13 Oct 2012 22:00:00 +0200
+
+s25rttr (20121008-8407.239) karmic; urgency=low
+
+  * Automatic Jenkins Build 239
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Mon, 08 Oct 2012 01:16:14 +0200
+
+s25rttr (20121008-8407) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Mon, 08 Oct 2012 00:00:00 +0200
+
+s25rttr (20121006-8404) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 06 Oct 2012 22:00:00 +0200
+
+s25rttr (20121006-8403.238) karmic; urgency=low
+
+  * Automatic Jenkins Build 238
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sat, 06 Oct 2012 01:15:56 +0200
+
+s25rttr (20121006-8403) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sat, 06 Oct 2012 00:00:00 +0200
+
+s25rttr (20121005-8400) any; urgency=low
+
+  * fix upload again ...
+
+ -- Florian Doersch <flosoft@siedler25.org>  Fri, 05 Oct 2012 12:50:00 +0200
+
+s25rttr (20121005-8398) any; urgency=low
+
+  * fix script bug *damn!*
+
+ -- Florian Doersch <flosoft@siedler25.org>  Fri, 05 Oct 2012 12:42:00 +0200
+
+s25rttr (20121005-8396) any; urgency=low
+
+  * fix upload scripts
+
+ -- Florian Doersch <flosoft@siedler25.org>  Fri, 05 Oct 2012 12:29:00 +0200
+
+s25rttr (20121005-8395.237) karmic; urgency=low
+
+  * Automatic Jenkins Build 237
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Fri, 05 Oct 2012 09:06:12 +0200
+
+s25rttr (20121005-8395) any; urgency=low
+
+  * added archive
+
+ -- Florian Doersch <flosoft@siedler25.org>  Fri, 05 Oct 2012 06:59:00 +0200
+
+s25rttr (20121005-8394) any; urgency=low
+
+  * added version information
+
+ -- Florian Doersch <flosoft@siedler25.org>  Fri, 05 Oct 2012 06:58:00 +0200
+
+s25rttr (20121005-8393) any; urgency=low
+
+  * created universal library
+
+ -- Florian Doersch <flosoft@siedler25.org>  Fri, 05 Oct 2012 06:57:00 +0200
+
+s25rttr (20121005-8392.236) karmic; urgency=low
+
+  * Automatic Jenkins Build 236
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Fri, 05 Oct 2012 01:11:27 +0200
+
+s25rttr (20121005-8392) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Fri, 05 Oct 2012 00:00:00 +0200
+
+s25rttr (20121004-8390) any; urgency=low
+
+  * Fixes for postinstall.sh.cmake
+
+ -- marcus  Thu, 04 Oct 2012 16:44:00 +0200
+
+s25rttr (20121004-8389) any; urgency=low
+
+  * copy lua dll
+
+ -- Florian Doersch <flosoft@siedler25.org>  Thu, 04 Oct 2012 16:24:00 +0200
+
+s25rttr (20121004-8374) any; urgency=low
+
+  * Basics for LUA map scripting.
+    See
+    http://www.rttr.info/index.php?com=forum&mod=forum&action=thread&id=1045.
+
+ -- marcus  Thu, 04 Oct 2012 13:29:00 +0200
+
+s25rttr (20121004-8373) any; urgency=low
+
+  * Removed main.h from build_version.cpp.
+
+ -- marcus  Thu, 04 Oct 2012 13:26:00 +0200
+
+s25rttr (20121004-8372.235) karmic; urgency=low
+
+  * Automatic Jenkins Build 235
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Thu, 04 Oct 2012 01:01:06 +0200
+
+s25rttr (20121004-8372) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Thu, 04 Oct 2012 00:00:00 +0200
+
+s25rttr (20121003-8371) any; urgency=low
+
+  * Fix for fullscreen not working at start.
+
+ -- marcus  Wed, 03 Oct 2012 10:32:00 +0200
+
+s25rttr (20121002-8370) any; urgency=low
+
+  * Implemented restricted areas to be used in missions etc.
+    
+    GameClientPlayers may now have a restricted area for their
+    territory specified by one or more polygons in 'restricted_area'.
+    No elements means no restrictions. See source for how to store
+    polygons.
+    nobMilitary now has a flag captured_not_built that is set once a
+    building gets captured.
+    We do not check whether the area gained by captured buildings is
+    inside the restricted area, so that capturing is still possible.
+    Everything else gets clipped to the restricted area.
+
+ -- marcus  Tue, 02 Oct 2012 23:46:00 +0200
+
+s25rttr (20121002-8368.234) karmic; urgency=low
+
+  * Automatic Jenkins Build 234
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 02 Oct 2012 01:01:56 +0200
+
+s25rttr (20121002-8368) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 02 Oct 2012 00:00:00 +0200
+
+s25rttr (20121001-8367) any; urgency=low
+
+  * Re-added LUA to includes and libs
+
+ -- marcus  Mon, 01 Oct 2012 09:00:00 +0200
+
+s25rttr (20121001-8366) any; urgency=low
+
+  * Use hostname instead of ip for automated bug reporting
+
+ -- marcus  Mon, 01 Oct 2012 08:53:00 +0200
+
+s25rttr (20121001-8365) any; urgency=low
+
+  * Re-enabled trade for nightly
+
+ -- marcus  Mon, 01 Oct 2012 08:52:00 +0200
+
+s25rttr (20121001-8364.233) karmic; urgency=low
+
+  * Automatic Jenkins Build 233
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Mon, 01 Oct 2012 01:02:23 +0200
+
+s25rttr (20121001-8364) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Mon, 01 Oct 2012 00:00:00 +0200
+
+s25rttr (20120930-8362) any; urgency=low
+
+  * beautify script
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sun, 30 Sep 2012 17:02:00 +0200
+
+s25rttr (20120930-8361) any; urgency=low
+
+  * remerged 0.8->trunk for release scripts
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sun, 30 Sep 2012 16:52:00 +0200
+
+s25rttr (20120930-8358) any; urgency=low
+
+  * Clean up
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sun, 30 Sep 2012 16:12:00 +0200
+
+s25rttr (20120930-8357) any; urgency=low
+
+  * clean up
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sun, 30 Sep 2012 16:12:00 +0200
+
+s25rttr (20120930-8356) any; urgency=low
+
+  * language update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sun, 30 Sep 2012 16:09:00 +0200
+
+s25rttr (20120930-8355) any; urgency=low
+
+  * commonized search path (yes relative paths work!)
+    updated to current source
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sun, 30 Sep 2012 16:07:00 +0200
+
+s25rttr (20120930-8354) any; urgency=low
+
+  * check in
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sun, 30 Sep 2012 15:49:00 +0200
+
+s25rttr (20120930-8353) any; urgency=low
+
+  * add libdbghelp.a for mingw
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sun, 30 Sep 2012 14:27:00 +0200
+
+s25rttr (20120930-8352) any; urgency=low
+
+  * Empty log message
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sun, 30 Sep 2012 14:23:00 +0200
+
+s25rttr (20120930-8351) any; urgency=low
+
+  * Notify AI of destroyed buildings
+
+ -- marcus  Sun, 30 Sep 2012 14:14:00 +0200
+
+s25rttr (20120930-8350) any; urgency=low
+
+  * exit without crash report
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sun, 30 Sep 2012 14:10:00 +0200
+
+s25rttr (20120930-8349) any; urgency=low
+
+  * Charburner bug #833183 fixed
+
+ -- marcus  Sun, 30 Sep 2012 14:08:00 +0200
+
+s25rttr (20120930-8347) any; urgency=low
+
+  * fix msvc build
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sun, 30 Sep 2012 13:45:00 +0200
+
+s25rttr (20120930-8345.232) karmic; urgency=low
+
+  * Automatic Jenkins Build 232
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sun, 30 Sep 2012 15:05:25 +0200
+
+s25rttr (20120930-8345) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sun, 30 Sep 2012 00:00:00 +0200
+
+s25rttr (20120930-8344) any; urgency=low
+
+  * Use StackWalk for crash reporting
+
+ -- marcus  Sun, 30 Sep 2012 12:37:00 +0200
+
+s25rttr (20120930-8337.231) karmic; urgency=low
+
+  * Automatic Jenkins Build 231
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sun, 30 Sep 2012 01:20:08 +0200
+
+s25rttr (20120930-8337) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sun, 30 Sep 2012 00:00:00 +0200
+
+s25rttr (20120929-8336) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 29 Sep 2012 22:00:00 +0200
+
+s25rttr (20120929-8335) any; urgency=low
+
+  * Crash fix for nobHarborBuilding::AddSeaAttacker
+
+ -- marcus  Sat, 29 Sep 2012 12:23:00 +0200
+
+s25rttr (20120928-8334) any; urgency=low
+
+  * Some shipping fixes/improvements.
+
+ -- marcus  Fri, 28 Sep 2012 23:12:00 +0200
+
 s25rttr (20120929-8333.230) karmic; urgency=low
 
   * Automatic Jenkins Build 230

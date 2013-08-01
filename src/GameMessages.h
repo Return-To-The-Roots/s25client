@@ -1,4 +1,4 @@
-// $Id: GameMessages.h 7678 2011-12-28 17:05:25Z marcus $
+// $Id: GameMessages.h 8822 2013-08-01 09:11:15Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -24,6 +24,7 @@
 #include "GameProtocol.h"
 #include "GamePlayerList.h"
 #include "GameCommands.h"
+#include "GameObject.h"
 #include "GlobalGameSettings.h"
 #include "Random.h"
 
@@ -757,6 +758,8 @@ class GameMessage_GameCommand : public GameMessage
 public:
 	/// Checksumme, die der Spieler übermittelt
 	unsigned checksum;
+	unsigned obj_cnt;
+	unsigned obj_id_cnt;
 	/// Die einzelnen GameCommands
 	std::vector<gc::GameCommand*> gcs;
 
@@ -768,6 +771,8 @@ public:
 		: GameMessage(NMS_GAMECOMMANDS, player)
 	{
 		PushUnsignedInt(checksum);
+		PushUnsignedInt(GameObject::GetObjCount());
+		PushUnsignedInt(GameObject::GetObjIDCounter());
 		PushUnsignedInt(gcs.size());
 
 		for(unsigned i = 0;i<gcs.size();++i)
@@ -781,6 +786,8 @@ public:
 	GameMessage_GameCommand(const unsigned char * const data, const unsigned length) 
 		: GameMessage(NMS_GAMECOMMANDS,data,length),
 			checksum(PopUnsignedInt()),
+			obj_cnt(PopUnsignedInt()),
+			obj_id_cnt(PopUnsignedInt()),
 			gcs(PopUnsignedInt())
 	{
 		for(unsigned i = 0;i<gcs.size();++i)
@@ -794,6 +801,8 @@ public:
 	void Run(MessageInterface *callback) 
 	{ 
 		checksum = PopUnsignedInt();
+		obj_cnt = PopUnsignedInt();
+		obj_id_cnt = PopUnsignedInt();
 		gcs.resize(PopUnsignedInt());
 		for(unsigned i = 0;i<gcs.size();++i)
 		{

@@ -1,4 +1,4 @@
-// $Id: GameCommands.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: GameCommands.cpp 8822 2013-08-01 09:11:15Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -245,7 +245,7 @@ void ExpeditionCommand::Execute(GameWorldGame& gwg, GameClientPlayer& player, co
 	}
 }
 
-/// Führt das GameCommand aus
+/// Fuehrt das GameCommand aus
 void TradeOverLand::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
 {
 	noBase * nob = gwg.GetNO(x,y);
