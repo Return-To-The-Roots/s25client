@@ -1,4 +1,4 @@
-// $Id: iwAction.cpp 8374 2012-10-04 13:29:17Z marcus $
+// $Id: iwAction.cpp 8845 2013-08-17 10:25:04Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -128,7 +128,7 @@ iwAction::iwAction(dskGameInterface *const gi, GameWorldViewer * const gwv, cons
 			} break;
 		}
 
-		// Gebäudeicons dem TabCtrl hinzufügen
+		// add building icons to TabCtrl
 		const unsigned char building_count_max = 14;
 		const unsigned building_count[4] = { 9, 13, 6, 4 };
 		const BuildingType building_icons[4][building_count_max] =
