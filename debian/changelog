@@ -1,3 +1,34 @@
+s25rttr (20130817-8847.279) karmic; urgency=low
+
+  * Automatic Jenkins Build 279
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sat, 17 Aug 2013 16:36:54 +0200
+
+s25rttr (20130817-8847) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sat, 17 Aug 2013 00:00:00 +0200
+
+s25rttr (20130817-8846) any; urgency=low
+
+  * Wishlist #554605 by Szekta / tehKaiN: Indicate where military
+    buildings could be build & MSVC10 fixes
+
+ -- marcus  Sat, 17 Aug 2013 11:54:00 +0200
+
+s25rttr (20130817-8845) any; urgency=low
+
+  * Minimal translation for testing.
+
+ -- marcus  Sat, 17 Aug 2013 10:25:00 +0200
+
+s25rttr (20130810-8836) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 10 Aug 2013 22:00:00 +0200
+
 s25rttr (20130804-8829.278) karmic; urgency=low
 
   * Automatic Jenkins Build 278
