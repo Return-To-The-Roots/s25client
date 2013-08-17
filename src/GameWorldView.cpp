@@ -109,20 +109,36 @@ void GameWorldView::Draw(const unsigned char player, unsigned * water, const boo
 			DrawBoundaryStone(x,y,tx,ty,xpos,ypos, visibility);
 
 			/// Nur bei Sichtbaren Stellen zeichnen
+			// Visible terrain
 			if(visibility == VIS_VISIBLE)
 			{
 				////////////////////////////////////////////////
 
 				///////////////////////////////////////
-				//// Figuren und Menschen malen
+				// Draw objects and people 
 
-				// Knotenobjekt zeichnen
+				// Draw objects - buildings, trees, stones, decoration sprites, etc.
 				MapNode& mn = gwv->GetNode(tx,ty);
 				if(mn.obj)
+				{
 					mn.obj->Draw(static_cast<int>(xpos),static_cast<int>(ypos));
+					if(false) //TODO: military aid - display icon overlay of attack possibility
+					{
+						noBuilding* building = gwv->GetSpecObj<noBuilding>(tx,ty);
+						if(mn.owner != GAMECLIENT.GetPlayerID()+1 //not belonging to current player
+							&& gwv->GetNO(tx,ty)->GetType() == NOP_BUILDING //is a building
+							&& !GameClient::inst().GetLocalPlayer()->IsAlly(building->GetPlayer())) //not an ally
+						{
+							BuildingType bt = building->GetBuildingType();
+							if(bt >= BLD_BARRACKS && bt <= BLD_FORTRESS || bt == BLD_HEADQUARTERS || bt == BLD_HARBORBUILDING) //is it a military building?
+								if(gwv->GetAvailableSoldiersForAttack(GAMECLIENT.GetPlayerID(), tx, ty)) //soldiers available for attack?
+									LOADER.GetImageN("map_new",20000)->Draw(static_cast<int>(xpos)+1,static_cast<int>(ypos)-5, 0, 0, 0, 0, 0, 0);;
+						}
+					}
+				}
 
 
-				// Menschen
+				// People
 				if(mn.figures.size())
 				{
 					for(list<noBase*>::iterator it = mn.figures.begin(); it.valid(); ++it)
@@ -139,10 +155,23 @@ void GameWorldView::Draw(const unsigned char player, unsigned * water, const boo
 
 				////////////////////////////////////////////////
 
+				//Construction aid mode
 				if(show_bq && gwv->GetNode(tx,ty).bq && gwv->GetNode(tx,ty).bq < 7)
-				LOADER.GetMapImageN(49+gwv->GetNode(tx,ty).bq)->Draw(static_cast<int>(xpos),static_cast<int>(ypos), 0, 0, 0, 0, 0, 0);
+				{
+					BuildingQuality bq = gwv->GetNode(tx,ty).bq;
+					glArchivItem_Bitmap* bm = LOADER.GetMapImageN(49+bq);
+					//Draw building quality icon
+					bm->Draw(static_cast<int>(xpos),static_cast<int>(ypos), 0, 0, 0, 0, 0, 0);
+					//Show ability to construct military buildings
+					if(GameClient::inst().GetGGS().isEnabled(ADDON_MILITARY_AID))
+					{
+						if(!gwv->IsMilitaryBuildingNearNode(tx,ty,GAMECLIENT.GetPlayerID()) && (bq == BQ_HUT || bq == BQ_HOUSE || bq == BQ_CASTLE || bq == BQ_HARBOR))
+							LOADER.GetImageN("map_new",20000)->Draw(static_cast<int>(xpos)+(1),static_cast<int>(ypos)-bm->getHeight()-5, 0, 0, 0, 0, 0, 0);
+					}
+				}
 			}
 			// im Nebel die FOW-Objekte zeichnen
+			// Fog of war
 			else if(visibility == VIS_FOW)
 			{
 				const FOWObject * fowobj = gwv->GetYoungestFOWObject(Point<MapCoord>(tx,ty));
@@ -206,13 +235,14 @@ void GameWorldView::Draw(const unsigned char player, unsigned * water, const boo
 			between_lines[i].obj->Draw(between_lines[i].pos.x,between_lines[i].pos.y);
 	}
 
+	// Names & Productivity overlay
 	if(show_names || show_productivity)
 	{
 		for(int x = fx; x < lx; ++x)
 		{
 			for(int y = fy; y < ly; ++y)
 			{
-				// Koordinaten transformieren
+				// Coordinate transform
 				unsigned short tx,ty;
 				int xo,yo;
 				gwv->GetTerrainRenderer()->ConvertCoords(x,y,tx,ty,&xo,&yo);
@@ -226,13 +256,13 @@ void GameWorldView::Draw(const unsigned char player, unsigned * water, const boo
 				{
 					noBaseBuilding *no = gwv->GetSpecObj<noBaseBuilding>(tx, ty);
 
-					// nur eigene Objekte anzeigen
+					// Is object not belonging to local player?
 					if(no->GetPlayer() != GAMECLIENT.GetPlayerID())
 						continue;
 
 					int py = ypos - 10;
 
-					// Name von Objekt zeichnen
+					// Draw object name
 					if(show_names)
 					{
 						unsigned int color = (no->GetGOT() == GOT_BUILDINGSITE) ? COLOR_GREY : COLOR_YELLOW;
@@ -240,70 +270,77 @@ void GameWorldView::Draw(const unsigned char player, unsigned * water, const boo
 						py += SmallFont->getHeight();
 					}
 
+					//Draw productivity/soldiers
 					if(show_productivity)
 					{
-						// Baustelle?
-						if(got == GOT_BUILDINGSITE)
+						switch(got)
 						{
-							noBuildingSite *n = static_cast<noBuildingSite*>(no);
-							if(n)
+							case GOT_BUILDINGSITE: // Is object a building construction site?
 							{
-								char text[256];
-								unsigned int color = COLOR_GREY;
-
-								unsigned short p = n->GetBuildProgress();
-								snprintf(text, 256, "(%d %%)", p);
-								SmallFont->Draw(xpos, py, text, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, color);
-							}
-						}
-						// Normales Gebäude?
-						else if(got == GOT_NOB_USUAL || got == GOT_NOB_SHIPYARD)
-						{
-							nobUsual *n = dynamic_cast<nobUsual*>(no);
-							if(n)
-							{
-								char text[256];
-								unsigned int color = COLOR_RED;
-
-								if(!n->HasWorker())
-									snprintf(text, 256, "%s", _("(House unoccupied)"));
-								else if(n->IsProductionDisabledVirtual())
-									snprintf(text, 256, "%s", _("(stopped)"));
-								else
+								noBuildingSite *n = static_cast<noBuildingSite*>(no);
+								if(n)
 								{
-									// Bei Katapult und Spähturm keine Produktivität anzeigen!
-									if(n->GetBuildingType() == BLD_CATAPULT || n->GetBuildingType() == BLD_LOOKOUTTOWER)
-										text[0] = 0;
+									char text[256];
+									unsigned int color = COLOR_GREY;
+
+									unsigned short p = n->GetBuildProgress();
+									snprintf(text, 256, "(%d %%)", p);
+									SmallFont->Draw(xpos, py, text, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, color);
+								}
+							}
+							break;
+
+							case GOT_NOB_USUAL: // Is it a normal building or shipyard?
+							case GOT_NOB_SHIPYARD:
+							{
+								nobUsual *n = dynamic_cast<nobUsual*>(no);
+								if(n)
+								{
+									char text[256];
+									unsigned int color = COLOR_RED;
+
+									if(!n->HasWorker())
+										snprintf(text, 256, "%s", _("(House unoccupied)"));
+									else if(n->IsProductionDisabledVirtual())
+										snprintf(text, 256, "%s", _("(stopped)"));
 									else
 									{
-										unsigned short p = *n->GetProduktivityPointer();
-										snprintf(text, 256, "(%d %%)", p);
-										if(p >= 60)
-											color = 0xFF00E000;
-										else if(p >= 30)
-											color = 0xFFFFFF00;
-										else if(p >= 20)
-											color = 0xFFFF8000;
+										// Catapult and Lookout tower doesn't have productivity!
+										if(n->GetBuildingType() == BLD_CATAPULT || n->GetBuildingType() == BLD_LOOKOUTTOWER)
+											text[0] = 0;
+										else
+										{
+											unsigned short p = *n->GetProduktivityPointer();
+											snprintf(text, 256, "(%d %%)", p);
+											if(p >= 60)
+												color = 0xFF00E000;
+											else if(p >= 30)
+												color = 0xFFFFFF00;
+											else if(p >= 20)
+												color = 0xFFFF8000;
+										}
 									}
+									SmallFont->Draw(xpos, py, text, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, color);
 								}
-								SmallFont->Draw(xpos, py, text, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, color);
 							}
-						}
-						// Militärgebäude?
-						else if(got == GOT_NOB_MILITARY)
-						{
-							// Dann kommt noch die Soldatenanzahl drunter
-							unsigned soldiers_count = static_cast<nobMilitary*>(no)->GetTroopsCount();
-							char str[64];
-							if(soldiers_count == 1)
-								strcpy(str,_("(1 soldier)"));
-							else
-								sprintf(str,_("(%d soldiers)"),soldiers_count);
+							break;
+
+							case GOT_NOB_MILITARY: // Is it a military building?
+							{
+								// Display amount of soldiers
+								unsigned soldiers_count = static_cast<nobMilitary*>(no)->GetTroopsCount();
+								char str[64];
+								if(soldiers_count == 1)
+									strcpy(str,_("(1 soldier)"));
+								else
+									sprintf(str,_("(%d soldiers)"),soldiers_count);
 
 
-							SmallFont->Draw(xpos, py, str, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, 
-								(soldiers_count>0) ? COLOR_YELLOW : COLOR_RED);
-							py += SmallFont->getHeight();
+								SmallFont->Draw(xpos, py, str, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, 
+									(soldiers_count>0) ? COLOR_YELLOW : COLOR_RED);
+								py += SmallFont->getHeight();
+							}
+							break;
 						}
 					}
 				}
@@ -311,9 +348,9 @@ void GameWorldView::Draw(const unsigned char player, unsigned * water, const boo
 		}
 	}
 
-	/// GUI-Symbole auf der Map zeichnen
+	// GUI-Symbole auf der Map zeichnen
 
-	/// Falls im StraÃenbaumodus: Punkte um den aktuellen StraÃenbaupunkt herum ermitteln
+	// Falls im StraÃenbaumodus: Punkte um den aktuellen StraÃenbaupunkt herum ermitteln
 	unsigned short road_points[6*2];
 
 	if(rb.mode)
@@ -329,7 +366,7 @@ void GameWorldView::Draw(const unsigned char player, unsigned * water, const boo
 	{
 		for(int y = fy; y < ly; ++y)
 		{
-			// Koordinaten transformieren
+			// Coordinates transform
 			unsigned short tx,ty;
 			int xo,yo;
 			gwv->GetTerrainRenderer()->ConvertCoords(x,y,tx,ty,&xo,&yo);
@@ -337,7 +374,7 @@ void GameWorldView::Draw(const unsigned char player, unsigned * water, const boo
 			int xpos = (int)(gwv->GetTerrainRenderer()->GetTerrainX(tx,ty) - xoffset +xo);
 			int ypos = (int)(gwv->GetTerrainRenderer()->GetTerrainY(tx,ty) - yoffset +yo);
 
-			/// Aktueller Punkt unter der Maus
+			/// Current point indicated by Mouse
 			if(selx == tx && sely == ty)
 			{
 				// Mauszeiger am boten
@@ -359,7 +396,7 @@ void GameWorldView::Draw(const unsigned char player, unsigned * water, const boo
 				LOADER.GetMapImageN(mid)->Draw(xpos,ypos, 0, 0, 0, 0, 0, 0);
 			}
 
-			/// Aktuell selektierter Punkt
+			// Currently selected point
 			if(draw_selected && selected_x == tx && selected_y == ty)
 				LOADER.GetMapImageN(20)->Draw(xpos,ypos, 0, 0, 0, 0, 0, 0);
 

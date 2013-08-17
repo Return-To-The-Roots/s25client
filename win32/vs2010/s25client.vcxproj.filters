@@ -920,6 +920,9 @@
     <ClInclude Include="..\..\src\glSmartBitmap.h">
       <Filter>Quelldateien\Loader\libsiedler2</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\AddonMilitaryAid.h">
+      <Filter>Quelldateien\Game\Addons</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Addons.cpp">

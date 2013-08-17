@@ -1,4 +1,4 @@
-// $Id: main.h 8374 2012-10-04 13:29:17Z marcus $
+// $Id: main.h 8846 2013-08-17 11:54:47Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -197,6 +197,7 @@ struct Point
 const char *GetWindowTitle();
 const char *GetWindowVersion();
 const char *GetWindowRevision();
+const char *GetCurrentYear();
 
 const unsigned oo = 0xffffffff;
 

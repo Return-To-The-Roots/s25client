@@ -109,6 +109,7 @@
     <ClInclude Include="..\..\src\AddonLimitCatapults.h" />
     <ClInclude Include="..\..\src\AddonManualRoadEnlargement.h" />
     <ClInclude Include="..\..\src\AddonMaxWaterwayLength.h" />
+    <ClInclude Include="..\..\src\AddonMilitaryAid.h" />
     <ClInclude Include="..\..\src\AddonNoCoinsDefault.h" />
     <ClInclude Include="..\..\src\AddonRefundMaterials.h" />
     <ClInclude Include="..\..\src\AddonRefundOnEmergency.h" />

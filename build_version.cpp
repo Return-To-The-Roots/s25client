@@ -1,4 +1,4 @@
-// $Id: build_version.cpp 8373 2012-10-04 13:26:23Z marcus $
+// $Id: build_version.cpp 8846 2013-08-17 11:54:47Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -54,4 +54,12 @@ const char *GetWindowRevision()
 	std::memset(revision, 0, 256);
 	std::strncpy(revision, WINDOW_REVISION, 256);
 	return revision;
+}
+
+const char *GetCurrentYear() //nasty but works, if versioning principle changes, we should make it use date function
+{
+	static char year[5];
+	std::memset(year,0,5);
+	std::strncpy(year, WINDOW_VERSION, 4);
+	return year;
 }

@@ -1,4 +1,4 @@
-// $Id: MapConsts.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: MapConsts.h 8846 2013-08-17 11:54:47Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -126,9 +126,9 @@ const unsigned char BORDER_TABLES[3][16][16][2] =
 /// Sichtbarkeit für ALLE Spieler
 enum Visibility
 {
-	VIS_INVISIBLE = 0, /// Schwarz
-	VIS_FOW, /// unter Nebel des Krieges
-	VIS_VISIBLE /// vollständig sichtbar
+	VIS_INVISIBLE = 0, /// Darkness
+	VIS_FOW, /// Fog of war
+	VIS_VISIBLE /// Visible
 };
 
 /// Granittyp

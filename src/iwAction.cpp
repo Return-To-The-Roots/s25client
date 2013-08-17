@@ -1,4 +1,4 @@
-// $Id: iwAction.cpp 8845 2013-08-17 10:25:04Z marcus $
+// $Id: iwAction.cpp 8846 2013-08-17 11:54:47Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -70,25 +70,25 @@ iwAction::iwAction(dskGameInterface *const gi, GameWorldViewer * const gwv, cons
 	gi(gi), gwv(gwv), selected_x(selected_x), selected_y(selected_y), last_x(mouse_x), last_y(mouse_y)
 {
 	/*
-		TAB_FLAG	1 = Straßenbau
-		TAB_FLAG	2 = Wasserbau
-		TAB_FLAG	3 = Flagge abreißen
-		TAB_FLAG	4 = Geologe rufen
-		TAB_FLAG	5 = Späher rufen
+		TAB_FLAG	1 = Land road
+		TAB_FLAG	2 = Waterway
+		TAB_FLAG	3 = Pull down flag
+		TAB_FLAG	4 = Send geologist
+		TAB_FLAG	5 = Send scout
 
-		TAB_CUTROAD	1 = Straße abreißen
+		TAB_CUTROAD	1 = Cut Road
 
-		TAB_BUILD   100-108, 200-212, 300-303, 400-403 = Gebäude
+		TAB_BUILD   100-108, 200-212, 300-303, 400-403 = Buildings
 
-		TAB_SETFLAG 1 = Flagge setzen
+		TAB_SETFLAG 1 = Erect flag
 
 		TAB_WATCH   1 =
 		TAB_WATCH   2 =
 		TAB_WATCH   3 = zum HQ
 
-		TAB_ATTACK  1 = Weniger Soldaten
-		TAB_ATTACK  2 = Mehr Soldaten
-		TAB_ATTACK  3 = Optionengruppe Stark/Schwach
+		TAB_ATTACK  1 = Less soldiers
+		TAB_ATTACK  2 = More soldiers
+		TAB_ATTACK  3 = Option group: Better/Weaker
 		TAB_ATTACK  4 = Angriff
 		TAB_ATTACK  10-14 = Direktauswahl Anzahl
 	*/
@@ -103,29 +103,16 @@ iwAction::iwAction(dskGameInterface *const gi, GameWorldViewer * const gwv, cons
 
 		ctrlTab *build_tab = group->AddTabCtrl(1, 0, 45, 180);
 
-		// Gebäudetabs hinzufügen
-		switch(tabs.build_tabs)
+		// Building tabs
+		if(tabs.build_tabs == Tabs::BT_MINE) //mines
+			build_tab->AddTab(LOADER.GetImageN("io", 76), _("-> Dig mines"), Tabs::BT_MINE);
+		else
 		{
-		case Tabs::BT_HUT:
-			{
-				build_tab->AddTab(LOADER.GetImageN("io", 67), _("-> Build hut"), Tabs::BT_HUT);
-			} break;
-		case Tabs::BT_HOUSE:
-			{
-				build_tab->AddTab(LOADER.GetImageN("io", 67), _("-> Build hut"), Tabs::BT_HUT);
+			build_tab->AddTab(LOADER.GetImageN("io", 67), _("-> Build hut"), Tabs::BT_HUT);
+			if(tabs.build_tabs >= Tabs::BT_HOUSE)
 				build_tab->AddTab(LOADER.GetImageN("io", 68), _("-> Build house"), Tabs::BT_HOUSE);
-			} break;
-		case Tabs::BT_CASTLE:
-		case Tabs::BT_HARBOR:
-			{
-				build_tab->AddTab(LOADER.GetImageN("io", 67), _("-> Build hut"), Tabs::BT_HUT);
-				build_tab->AddTab(LOADER.GetImageN("io", 68), _("-> Build house"), Tabs::BT_HOUSE);
+			if(tabs.build_tabs >= Tabs::BT_CASTLE) //castle & harbor
 				build_tab->AddTab(LOADER.GetImageN("io", 69), _("-> Build castle"), Tabs::BT_CASTLE);
-			} break;
-		case Tabs::BT_MINE:
-			{
-				build_tab->AddTab(LOADER.GetImageN("io", 76), _("-> Dig mines"), Tabs::BT_MINE);
-			} break;
 		}
 
 		// add building icons to TabCtrl
@@ -267,14 +254,14 @@ iwAction::iwAction(dskGameInterface *const gi, GameWorldViewer * const gwv, cons
 
 		switch(params)
 		{
-		case AWFT_NORMAL: // normale Flagge
+		case AWFT_NORMAL: // normal Flag
 			{
 				group->AddImageButton(1,  0, 45, 45, 36, TC_GREY, LOADER.GetImageN("io",  65), _("Build road"));
 				group->AddImageButton(3,  45, 45, 45, 36, TC_GREY, LOADER.GetImageN("io", 118), _("Pull down flag"));
 				group->AddImageButton(4, 90, 45, 45, 36, TC_GREY, LOADER.GetImageN("io",  20), _("Call in geologist"));
 				group->AddImageButton(5, 135, 45, 45, 36, TC_GREY, LOADER.GetImageN("io",  96), _("Send out scout"));
 			} break;
-		case AWFT_WATERFLAG: // Wasserflagge
+		case AWFT_WATERFLAG: // Water flag
 			{
 				group->AddImageButton(1,  0, 45, 36, 36, TC_GREY, LOADER.GetImageN("io",  65), _("Build road"));
 				group->AddImageButton(2,  36, 45, 36, 36, TC_GREY, LOADER.GetImageN("io",  95), _("Build waterway"));
@@ -282,11 +269,11 @@ iwAction::iwAction(dskGameInterface *const gi, GameWorldViewer * const gwv, cons
 				group->AddImageButton(4, 108, 45, 36, 36, TC_GREY, LOADER.GetImageN("io",  20), _("Call in geologist"));
 				group->AddImageButton(5, 144, 45, 36, 36, TC_GREY, LOADER.GetImageN("io",  96), _("Send out scout"));
 			} break;
-		case AWFT_HQ: // Haupthaus
+		case AWFT_HQ: // HQ
 			{
 				group->AddImageButton(1, 0, 45, 180, 36, TC_GREY, LOADER.GetImageN("io", 65), _("Build road"));
 			} break;
-		case AWFT_STOREHOUSE: // Lagerhaus
+		case AWFT_STOREHOUSE: // Storehouse
 			{
 				group->AddImageButton(1,0,45,90,36,TC_GREY, LOADER.GetImageN("io", 65), _("Build road"));
 				group->AddImageButton(3,90,45,90,36,TC_GREY, LOADER.GetImageN("io", 118), _("Demolish house"));

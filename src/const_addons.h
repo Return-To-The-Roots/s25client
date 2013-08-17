@@ -1,4 +1,4 @@
-// $Id: const_addons.h 8737 2013-05-16 15:42:35Z marcus $
+// $Id: const_addons.h 8846 2013-08-17 11:54:47Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -30,9 +30,10 @@
 // 004 Kaffeepause (https://launchpad.net/~haw)
 // 005 CS2001
 // 006 quixui
+// 007 KaiN (https://launchpad.net/~Szekta)
 //
 
-// Do not forget to add your Addon to AddonManager::reset!
+// Do not forget to add your Addon to GlobalGameSettings::reset @ GlobalGameSettings.cpp!
 // Never use a number twice!
 
 enum AddonId
@@ -64,7 +65,9 @@ enum AddonId
 
 	ADDON_ADJUST_MILITARY_STRENGTH	= 0x00500000,
 
-	ADDON_TOOL_ORDERING             = 0x00600001
+	ADDON_TOOL_ORDERING             = 0x00600001,
+
+	ADDON_MILITARY_AID				= 0x00700000
 };
 
 enum AddonGroup

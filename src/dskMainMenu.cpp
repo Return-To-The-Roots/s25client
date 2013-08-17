@@ -1,4 +1,4 @@
-// $Id: dskMainMenu.cpp 8247 2012-09-14 09:40:33Z marcus $
+// $Id: dskMainMenu.cpp 8846 2013-08-17 11:54:47Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -70,7 +70,7 @@ dskMainMenu::dskMainMenu(void) : Desktop(LOADER.GetImageN("menu", 0))
 	// URL
 	AddText(1, 400, 600, _("http://www.siedler25.org"), COLOR_GREEN, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, NormalFont);
 	// Copyright
-	AddText(2, 800, 600, _("© 2005 - 2012 Settlers Freaks"), COLOR_YELLOW, glArchivItem_Font::DF_RIGHT | glArchivItem_Font::DF_BOTTOM, NormalFont);
+	AddVarText(2, 800, 600, _("© 2005 - %s Settlers Freaks"), COLOR_YELLOW, glArchivItem_Font::DF_RIGHT | glArchivItem_Font::DF_BOTTOM, NormalFont, 1, GetCurrentYear());
 
 	// "Einzelspieler"
 	AddTextButton(4, 115, 180, 220, 22, TC_GREEN2, _("Singleplayer"), NormalFont);
@@ -134,15 +134,15 @@ void dskMainMenu::Msg_ButtonClick(const unsigned int ctrl_id)
 {
 	switch(ctrl_id)
 	{
-	case 4: // "Einzelspieler"
+	case 4: // "Single Player"
 		{
 			WindowManager::inst().Switch(new dskSinglePlayer);
 		} break;
-	case 5: // "Mehrspieler"
+	case 5: // "Multiplayer"
 		{
 			WindowManager::inst().Switch(new dskMultiPlayer);
 		} break;
-	case 6: // "Optionen"
+	case 6: // "Options"
 		{
 			WindowManager::inst().Switch(new dskOptions);
 		} break;
@@ -154,14 +154,14 @@ void dskMainMenu::Msg_ButtonClick(const unsigned int ctrl_id)
 		{
 			WindowManager::inst().Switch(new dskCredits);
 		} break;
-	case 9: // "Programm verlassen"
+	case 9: // "Quit"
 		{
 			GLOBALVARS.notdone = false;
 		} break;
-        case 10: // "Readme"
-                {
+    case 10: // "Readme"
+        {
 			WindowManager::inst().Show(new iwTextfile("readme.txt",_("Readme!")));
-                } break;
+        } break;
 
 	}
 }

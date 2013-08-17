@@ -1,4 +1,4 @@
-// $Id: iwAddons.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: iwAddons.cpp 8846 2013-08-17 11:54:47Z marcus $
 //
 // Copyright (c) 2005-2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -158,9 +158,11 @@ void iwAddons::Msg_ButtonClick(const unsigned int ctrl_id)
 /// Aktualisiert die Addons, die angezeigt werden sollen
 void iwAddons::UpdateView(const unsigned short selection)
 {
+	//LOG.lprintf("\nUpdateView start\n");
 	ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(6);
 	unsigned short y = 90;
 	unsigned short inthiscategory = 0;
+	//LOG.lprintf("Page range: %u - %u\n", scrollbar->GetPos(), (unsigned int)(scrollbar->GetPos()+scrollbar->GetPageSize()));
 	for(unsigned int i = 0; i < ggs->getCount(); ++i)
 	{
 		unsigned int id = 10 + 20*(ggs->getCount()-i-1);
@@ -169,15 +171,21 @@ void iwAddons::UpdateView(const unsigned short selection)
 
 		if(!addon)
 			continue;
-
 		unsigned int groups = addon->getGroups();
 
 		if( (groups & selection) == selection)
+			{
 			++inthiscategory;
-
-		if( ((groups & selection) != selection) || i < scrollbar->GetPos() 
-		|| i > (unsigned int)(scrollbar->GetPos()+scrollbar->GetPageSize()) )
+			//LOG.lprintf("ADD  addon: %s - falls in this category \n",addon->getName().c_str());
+			}
+		//hide addon's gui if addon is beyond selected group or is beyond current page scope
+		if( ((groups & selection) != selection) || inthiscategory-1 < scrollbar->GetPos()
+		|| inthiscategory-1 > (unsigned int)(scrollbar->GetPos()+scrollbar->GetPageSize()) )
 		{
+			//if((groups & selection) != selection)
+			//	LOG.lprintf("HIDE addon: %s - category mismatch\n",addon->getName().c_str());
+			//else
+			//	LOG.lprintf("HIDE addon: %s - no available space on page\n",addon->getName().c_str());
 			addon->hideGui(this, id);
 			continue;
 		}
@@ -189,6 +197,7 @@ void iwAddons::UpdateView(const unsigned short selection)
 		_inthiscategory = inthiscategory;
 		scrollbar->SetRange(inthiscategory);
 	}
+	//LOG.lprintf("UpdateView end\n");
 }
 
 ///////////////////////////////////////////////////////////////////////////////
