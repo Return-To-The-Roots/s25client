@@ -1,4 +1,4 @@
-// $Id: EventManager.cpp 8516 2012-11-14 00:03:22Z marcus $
+// $Id: EventManager.cpp 8852 2013-08-18 19:05:05Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -27,6 +27,8 @@
 #include "SerializedGameData.h"
 
 #include <list>
+
+//#include <execinfo.h>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -59,13 +61,28 @@ EventManager::EventPointer EventManager::AddEvent(GameObject *obj, const unsigne
 {
 	assert(obj);
 	assert(gf_length);
-	//assert(!IsEventAcive(obj,0));
+
+	if (IsEventActive(obj, id))
+	{
+		LOG.lprintf("EventManager::AddEvent1(): already active: %u %u\n", obj->GetGOT(), id);
+/*
+		const unsigned int maxTrace = 256;
+		void *stacktrace[maxTrace];
+		unsigned num_frames = backtrace(stacktrace, maxTrace);
+
+		char **sym = backtrace_symbols(stacktrace, num_frames);
+		unsigned i;
+
+		for (i = 1; i < num_frames; i++)
+		{
+			LOG.lprintf(" %x %s\n", stacktrace[i], sym[i]);
+		}*/
+	}
 
 	// Event eintragen
 	Event * event = new Event(obj, GAMECLIENT.GetGFNumber(), gf_length, id);
 	eis.push_back(event);
-	
-	//assert(event->GetObjId() != 1220037 );
+
 	return event;
 }
 
@@ -73,8 +90,6 @@ EventManager::EventPointer EventManager::AddEvent(SerializedGameData * sgd, cons
 {
 	Event * event = new Event(sgd,obj_id);
 	eis.push_back(event);
-	//assert(event->GetObjId() != 1220037 );
-	//assert(event->GetObjId() != 1560584 );
 
 	return event;
 }
@@ -83,11 +98,15 @@ EventManager::EventPointer EventManager::AddEvent(GameObject *obj, const unsigne
 {
 	assert(gf_length >= gf_elapsed);
 
+	if (IsEventActive(obj, id))
+	{
+		LOG.lprintf("EventManager::AddEvent2(): already active: %u %u\n", obj->GetGOT(), id);
+	}
+
 	// Anfang des Events in die Vergangenheit zurückverlegen
 	Event * event = new Event(obj, GAMECLIENT.GetGFNumber()-gf_elapsed, gf_length, id);
 	eis.push_back(event);
-	//assert(event->GetObjId() != 1220037 );
-	//assert(event->GetObjId() != 1560584 );
+
 	return event;
 }
 
@@ -115,12 +134,17 @@ void EventManager::NextGF()
 			assert(e->obj);
 			assert(e->obj->GetObjId() < GameObject::GetObjIDCounter());
 
+			it = eis.erase(it);
+
 			if (e->obj)
 			{
 				e->obj->HandleEvent(e->id);
+			} else
+			{
+				LOG.lprintf("EventManager::NextGF(): event with NULL object!\n");
 			}
 
-			it = eis.erase(it);
+//			it = eis.erase(it);
 
 			delete e;
 		} else
@@ -190,7 +214,7 @@ void EventManager::Deserialize(SerializedGameData *sgd)
 }
 
 /// Ist ein Event mit bestimmter id für ein bestimmtes Objekt bereits vorhanden?
-bool EventManager::IsEventAcive(const GameObject * const obj, const unsigned id) const
+bool EventManager::IsEventActive(const GameObject * const obj, const unsigned id) const
 {
 	for (std::list<Event*>::const_iterator it = eis.begin(); it != eis.end(); ++it)
 	{
@@ -201,6 +225,25 @@ bool EventManager::IsEventAcive(const GameObject * const obj, const unsigned id)
 	}
 	
 	return false;
+}
+
+void EventManager::RemoveAllEventsOfObject(GameObject *obj)
+{
+	// Events abfragen
+	for (std::list<Event*>::iterator it = eis.begin(); it != eis.end(); )
+	{
+		if (!*it)
+		{
+			++it;
+		} else if ((*it)->obj == obj)
+		{
+			it = eis.erase(it);
+			LOG.lprintf("EventManager::RemoveAllEventsOfObject(): still objects left!\n");
+		} else
+		{
+			++it;
+		}
+	}
 }
 
 void EventManager::RemoveEvent(EventPointer ep)
@@ -232,6 +275,7 @@ void EventManager::RemoveEvent(EventPointer ep)
 	{
 		if ((*it) == ep)
 		{
+			LOG.lprintf("EventManager::RemoveEvent(): duplicate!\n");
 			(*it) = NULL;
 		}
 

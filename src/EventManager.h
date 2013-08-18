@@ -1,4 +1,4 @@
-// $Id: EventManager.h 8516 2012-11-14 00:03:22Z marcus $
+// $Id: EventManager.h 8852 2013-08-18 19:05:05Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -96,8 +96,9 @@ public:
 	void Deserialize(SerializedGameData *sgd);
 	
 	/// Ist ein Event mit bestimmter id für ein bestimmtes Objekt bereits vorhanden?
-	bool IsEventAcive(const GameObject * const obj, const unsigned id) const;
+	bool IsEventActive(const GameObject * const obj, const unsigned id) const;
 
+	void RemoveAllEventsOfObject(GameObject *obj);
 private:
 	std::list<Event*> eis;     ///< Liste der Events für die einzelnen Objekte
 	std::list<GameObject*> kill_list; ///< Liste mit Objekten die unmittelbar nach NextGF gekillt werden sollen

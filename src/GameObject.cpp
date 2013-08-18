@@ -1,4 +1,4 @@
-// $Id: GameObject.cpp 8734 2013-05-16 12:54:28Z marcus $
+// $Id: GameObject.cpp 8852 2013-08-18 19:05:05Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -22,6 +22,7 @@
 #include "main.h"
 #include "GameObject.h"
 #include "SerializedGameData.h"
+#include "EventManager.h"
 
 #include <iostream>
 
@@ -94,4 +95,6 @@ GameObject::~GameObject()
 {
 	// ein Objekt weniger
 	--obj_counter;
+
+	em->RemoveAllEventsOfObject(this);
 }
