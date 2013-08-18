@@ -341,6 +341,9 @@ void GameWorldView::Draw(const unsigned char player, unsigned * water, const boo
 								py += SmallFont->getHeight();
 							}
 							break;
+
+							default:
+								break;
 						}
 					}
 				}
