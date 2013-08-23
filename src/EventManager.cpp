@@ -1,4 +1,4 @@
-// $Id: EventManager.cpp 8852 2013-08-18 19:05:05Z marcus $
+// $Id: EventManager.cpp 8859 2013-08-23 19:55:36Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -62,22 +62,11 @@ EventManager::EventPointer EventManager::AddEvent(GameObject *obj, const unsigne
 	assert(obj);
 	assert(gf_length);
 
-	if (IsEventActive(obj, id))
+/*	if (IsEventActive(obj, id))
 	{
 		LOG.lprintf("EventManager::AddEvent1(): already active: %u %u\n", obj->GetGOT(), id);
-/*
-		const unsigned int maxTrace = 256;
-		void *stacktrace[maxTrace];
-		unsigned num_frames = backtrace(stacktrace, maxTrace);
 
-		char **sym = backtrace_symbols(stacktrace, num_frames);
-		unsigned i;
-
-		for (i = 1; i < num_frames; i++)
-		{
-			LOG.lprintf(" %x %s\n", stacktrace[i], sym[i]);
-		}*/
-	}
+	}*/
 
 	// Event eintragen
 	Event * event = new Event(obj, GAMECLIENT.GetGFNumber(), gf_length, id);
@@ -98,10 +87,10 @@ EventManager::EventPointer EventManager::AddEvent(GameObject *obj, const unsigne
 {
 	assert(gf_length >= gf_elapsed);
 
-	if (IsEventActive(obj, id))
+/*	if (IsEventActive(obj, id))
 	{
 		LOG.lprintf("EventManager::AddEvent2(): already active: %u %u\n", obj->GetGOT(), id);
-	}
+	}*/
 
 	// Anfang des Events in die Vergangenheit zurückverlegen
 	Event * event = new Event(obj, GAMECLIENT.GetGFNumber()-gf_elapsed, gf_length, id);
@@ -139,9 +128,9 @@ void EventManager::NextGF()
 			if (e->obj)
 			{
 				e->obj->HandleEvent(e->id);
-			} else
+/*			} else
 			{
-				LOG.lprintf("EventManager::NextGF(): event with NULL object!\n");
+				LOG.lprintf("EventManager::NextGF(): event with NULL object!\n");*/
 			}
 
 //			it = eis.erase(it);
@@ -227,6 +216,7 @@ bool EventManager::IsEventActive(const GameObject * const obj, const unsigned id
 	return false;
 }
 
+// only used for debugging purposes
 void EventManager::RemoveAllEventsOfObject(GameObject *obj)
 {
 	// Events abfragen
