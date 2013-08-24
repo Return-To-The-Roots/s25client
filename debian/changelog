@@ -1,3 +1,59 @@
+s25rttr (20130824-8860.281) karmic; urgency=low
+
+  * Automatic Jenkins Build 281
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sat, 24 Aug 2013 01:14:17 +0200
+
+s25rttr (20130824-8860) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sat, 24 Aug 2013 00:00:00 +0200
+
+s25rttr (20130823-8859) any; urgency=low
+
+  * Removed debugging stuff.
+
+ -- marcus  Fri, 23 Aug 2013 19:55:00 +0200
+
+s25rttr (20130818-8853.280) karmic; urgency=low
+
+  * Automatic Jenkins Build 280
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sun, 18 Aug 2013 22:32:55 +0200
+
+s25rttr (20130818-8853) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sun, 18 Aug 2013 00:00:00 +0200
+
+s25rttr (20130818-8852) any; urgency=low
+
+  * Event-still-active-after-Object-destroyed test, NULL-Object-Event
+    test, duplicate-Event test
+
+ -- marcus  Sun, 18 Aug 2013 19:05:00 +0200
+
+s25rttr (20130818-8851) any; urgency=low
+
+  * Add "default:" for switch(...) to avoid compiler warnings.
+
+ -- marcus  Sun, 18 Aug 2013 19:02:00 +0200
+
+s25rttr (20130818-8850) any; urgency=low
+
+  * New maps! #1208626 #1208256 #1208255 #1208254 #1208253 #1208247
+    #1208246 #1208245 #1208244
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sun, 18 Aug 2013 18:06:00 +0200
+
+s25rttr (20130817-8848) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 17 Aug 2013 22:00:00 +0200
+
 s25rttr (20130817-8847.279) karmic; urgency=low
 
   * Automatic Jenkins Build 279
