@@ -1,4 +1,4 @@
-// $Id: GameWorldBase.cpp 8374 2012-10-04 13:29:17Z marcus $
+// $Id: GameWorldBase.cpp 8866 2013-08-24 22:00:01Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1636,7 +1636,7 @@ int GameWorldBase::LUA_EnableBuilding(lua_State *L)
 	}
 
 	// player
-	unsigned pnr = luaL_checknumber(L, 1);
+	unsigned pnr = (unsigned) luaL_checknumber(L, 1);
 
 	if (pnr >= GAMECLIENT.GetPlayerCount())
 	{
@@ -1680,7 +1680,7 @@ int GameWorldBase::LUA_DisableBuilding(lua_State *L)
 	}
 
 	// player
-	unsigned pnr = luaL_checknumber(L, 1);
+	unsigned pnr = (unsigned) luaL_checknumber(L, 1);
 
 	if (pnr >= GAMECLIENT.GetPlayerCount())
 	{
@@ -1725,7 +1725,7 @@ int GameWorldBase::LUA_SetRestrictedArea(lua_State *L)
 	}
 
 	// player
-	unsigned pnr = luaL_checknumber(L, 1);
+	unsigned pnr = (unsigned) luaL_checknumber(L, 1);
 
 	if (pnr >= GAMECLIENT.GetPlayerCount())
 	{
@@ -1743,8 +1743,8 @@ int GameWorldBase::LUA_SetRestrictedArea(lua_State *L)
 	unsigned cnt = 2;
 	for (argc >>= 1; argc > 0; --argc)
 	{
-		MapCoord x = luaL_checknumber(L, cnt++);
-		MapCoord y = luaL_checknumber(L, cnt++);
+		MapCoord x = (MapCoord) luaL_checknumber(L, cnt++);
+		MapCoord y = (MapCoord) luaL_checknumber(L, cnt++);
 		fprintf(stderr, "RESTRICTED AREA - %u, %u\n", x, y);
 
 		restricted_area.push_back(Point<MapCoord>(x, y));
@@ -1766,7 +1766,7 @@ int GameWorldBase::LUA_AddWares(lua_State *L)
 	}
 
 	// player
-	unsigned pnr = luaL_checknumber(L, 1);
+	unsigned pnr = (unsigned) luaL_checknumber(L, 1);
 
 	if (pnr >= GAMECLIENT.GetPlayerCount())
 	{
@@ -1791,8 +1791,8 @@ int GameWorldBase::LUA_AddWares(lua_State *L)
 	unsigned cnt = 2;
 	for (argc >>= 1; argc > 0; --argc)
 	{
-		unsigned type = luaL_checknumber(L, cnt++);
-		unsigned count = luaL_checknumber(L, cnt++);
+		unsigned type = (unsigned) luaL_checknumber(L, cnt++);
+		unsigned count = (unsigned) luaL_checknumber(L, cnt++);
 
 		if (type < WARE_TYPES_COUNT)
 		{
@@ -1819,7 +1819,7 @@ int GameWorldBase::LUA_AddPeople(lua_State *L)
 	}
 
 	// player
-	unsigned pnr = luaL_checknumber(L, 1);
+	unsigned pnr = (unsigned) luaL_checknumber(L, 1);
 
 	if (pnr >= GAMECLIENT.GetPlayerCount())
 	{
@@ -1844,8 +1844,8 @@ int GameWorldBase::LUA_AddPeople(lua_State *L)
 	unsigned cnt = 2;
 	for (argc >>= 1; argc > 0; --argc)
 	{
-		unsigned type = luaL_checknumber(L, cnt++);
-		unsigned count = luaL_checknumber(L, cnt++);
+		unsigned type = (unsigned) luaL_checknumber(L, cnt++);
+		unsigned count = (unsigned) luaL_checknumber(L, cnt++);
 
 		if (type < JOB_TYPES_COUNT)
 		{
