@@ -1,4 +1,4 @@
-// $Id: GameClientPlayer.cpp 8737 2013-05-16 15:42:35Z marcus $
+// $Id: GameClientPlayer.cpp 8863 2013-08-24 09:49:58Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -663,26 +663,51 @@ void GameClientPlayer::RecalcDistributionOfWare(const GoodType ware)
 
 	distribution[ware].goals.clear();
 	distribution[ware].goals.resize(goal_count);
-	for(unsigned i = 0;i<goal_count;++i)
-		distribution[ware].goals[i] = 0;
 
-	// In Array schreiben
-	float position;
-	unsigned  pos;
+//	LOG.lprintf("goal_count[%u] = %u\n", ware, goal_count);
+
+	unsigned pos = 0;
+
+	// just drop them in the list, the distribution will be handled by going through this list using a prime as step (see GameClientPlayer::FindClientForWare)
 	for(std::list<BuildingWhichWantWare>::iterator it = bwww_list.begin();it!=bwww_list.end();++it)
 	{
-		position = 0;
-
-		// Distanz zwischen zwei gleichen Gebäuden
-		float dist = float(goal_count) / float(it->count);
-
-		// Möglichst gleichmäÃige Verteilung der Gebäude auf das Array berechnen
-		for(unsigned char i = 0; i < it->count; ++i, position = std::fmod(position + dist, float(goal_count)) )
+		for (unsigned char i = 0; i < it->count; ++i)
 		{
-			for(pos = unsigned(position + .5f); distribution[ware].goals[pos] != 0; pos = (pos + 1) % goal_count);
-			distribution[ware].goals[pos] = it->building;
+			distribution[ware].goals[pos++] = it->building;
 		}
+
+//		LOG.lprintf("\t[%u] = %u\n", it->building, it->count);
 	}
+
+/*
+	for(std::list<BuildingWhichWantWare>::iterator it = bwww_list.begin();it!=bwww_list.end();++it)
+	{
+		it->count = 0;
+	}
+
+	distribution[ware].selected_goal = 0;
+
+	LOG.lprintf("distribution\n");
+	for (unsigned i = 0; i < distribution[ware].goals.size(); i++)
+	{
+		distribution[ware].selected_goal = (distribution[ware].selected_goal + 907) % unsigned(distribution[ware].goals.size());
+
+		for(std::list<BuildingWhichWantWare>::iterator it = bwww_list.begin();it!=bwww_list.end();++it)
+		{
+			if (it->building == distribution[ware].goals[distribution[ware].selected_goal])
+			{
+				it->count++;
+			}
+		}
+		LOG.lprintf("\t[%u] %u\n", i, distribution[ware].goals[distribution[ware].selected_goal]);
+	}
+
+	LOG.lprintf("TEST\n");
+	for(std::list<BuildingWhichWantWare>::iterator it = bwww_list.begin();it!=bwww_list.end();++it)
+	{
+
+		LOG.lprintf("\t[%u] = %u\n", it->building, it->count);
+	}*/
 
 	// Und ordentlich schütteln ;)
 	//RandomShuffle(distribution[ware].goals,distribution[ware].goal_count);
@@ -958,7 +983,7 @@ noBaseBuilding * GameClientPlayer::FindClientForWare(Ware * ware)
 						if ((*i)->GetBuildingType() == static_cast<BuildingType>(distribution[gt].goals[distribution[gt].selected_goal]))
 						{
 								points += 300;
-						} else
+						} else if (points >= 300) // avoid overflows (async!)
 						{
 							points -= 300;
 						}
@@ -1006,7 +1031,7 @@ noBaseBuilding * GameClientPlayer::FindClientForWare(Ware * ware)
 	}
 
 	if(bb && distribution[gt].goals.size())
-		distribution[gt].selected_goal = (distribution[gt].selected_goal + 1) % unsigned(distribution[gt].goals.size());
+		distribution[gt].selected_goal = (distribution[gt].selected_goal + 907) % unsigned(distribution[gt].goals.size());
 
 	// Wenn kein Abnehmer gefunden wurde, muss es halt in ein Lagerhaus
 	if(!bb)
