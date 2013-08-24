@@ -1,4 +1,4 @@
-// $Id: Loader.cpp 8729 2013-05-16 12:47:45Z marcus $
+// $Id: Loader.cpp 8861 2013-08-24 08:46:06Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -65,6 +65,10 @@ Loader::Loader(void) : lastgfx(0xFF), stp(NULL)
  */
 Loader::~Loader(void)
 {
+	if (stp)
+	{
+		delete stp;
+	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////
