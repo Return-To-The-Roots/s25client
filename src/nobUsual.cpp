@@ -1,4 +1,4 @@
-// $Id: nobUsual.cpp 8319 2012-09-24 00:48:36Z marcus $
+// $Id: nobUsual.cpp 8864 2013-08-24 10:10:49Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -592,10 +592,15 @@ unsigned nobUsual::CalcDistributionPoints(noRoadNode * start,const GoodType type
 		return 0;
 
 	// 10000 als Basis wählen, damit man auch noch was abziehen kann
-	unsigned short points = 10000;
+	unsigned points = 10000;
 
 	// Wenn hier schon Waren drin sind oder welche bestellt sind, wirkt sich das natürlich negativ auf die "Wichtigkeit" aus
 	points -= (wares[id]+ordered_wares[id].size())*30;
+
+	if (points > 10000) // "underflow" ;)
+	{
+		return(0);
+	}
 
 	return points;
 }

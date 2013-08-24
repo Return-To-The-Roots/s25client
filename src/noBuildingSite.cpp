@@ -1,4 +1,4 @@
-// $Id: noBuildingSite.cpp 8170 2012-09-07 14:44:26Z marcus $
+// $Id: noBuildingSite.cpp 8864 2013-08-24 10:10:49Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -346,7 +346,7 @@ unsigned noBuildingSite::CalcDistributionPoints(noRoadNode * start,const GoodTyp
 		return 0;
 
 	// 10000 als Basis wählen, damit man auch noch was abziehen kann
-	unsigned short points = 10000;
+	unsigned points = 10000;
 
 	// Baumaterial mit einberechnen (wer noch am wenigsten braucht, soll mehr Punkte kriegen, da ja möglichst
 	// zuerst Gebäude fertiggestellt werden sollten)
@@ -356,6 +356,12 @@ unsigned noBuildingSite::CalcDistributionPoints(noRoadNode * start,const GoodTyp
 
 	// Baupriorität mit einberechnen (niedriger = höhere Priorität, daher - !)
 	points -= gwg->GetPlayer(player)->GetBuidingSitePriority(this)*30;
+
+	if (points > 10000) // "underflow" ;)
+	{
+		return(0);
+	}
+
 	return points;
 }
 
