@@ -1,4 +1,4 @@
-// $Id: nofWarehouseWorker.cpp 8286 2012-09-17 15:29:22Z marcus $
+// $Id: nofWarehouseWorker.cpp 8862 2013-08-24 08:47:37Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -31,6 +31,8 @@
 #include "Random.h"
 #include "EventManager.h"
 #include "SerializedGameData.h"
+
+#include "glSmartBitmap.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -93,11 +95,12 @@ void nofWarehouseWorker::Draw(int x, int y)
 {
 	// Trage ich ne Ware oder nicht?
 	if(carried_ware)
-		// Japaner-Schild-Animation existiert leider nicht --> Römerschild nehmen
-		DrawWalking(x,y,LOADER.GetBobN("carrier"),(carried_ware->type==GD_SHIELDJAPANESE)
-		?GD_SHIELDROMANS:carried_ware->type,fat);
+		DrawWalkingBobCarrier(x, y, carried_ware->type, fat);
+//		// Japaner-Schild-Animation existiert leider nicht --> Römerschild nehmen
+//		DrawWalking(x,y,LOADER.GetBobN("carrier"),(carried_ware->type==GD_SHIELDJAPANESE) ? GD_SHIELDROMANS:carried_ware->type,fat);
 	else
-		DrawWalking(x,y,LOADER.GetBobN("jobs"),0,fat);
+		DrawWalkingBobJobs(x, y, fat ? JOB_TYPES_COUNT : 0);
+//		DrawWalking(x,y,LOADER.GetBobN("jobs"),0,fat);
 }
 
 void nofWarehouseWorker::GoalReached()

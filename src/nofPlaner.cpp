@@ -1,4 +1,4 @@
-// $Id: nofPlaner.cpp 8170 2012-09-07 14:44:26Z marcus $
+// $Id: nofPlaner.cpp 8862 2013-08-24 08:47:37Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -30,6 +30,8 @@
 #include "Random.h"
 #include "JobConsts.h"
 #include "SoundManager.h"
+
+#include "glSmartBitmap.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

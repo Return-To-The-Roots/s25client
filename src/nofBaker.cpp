@@ -1,4 +1,4 @@
-// $Id: nofBaker.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: nofBaker.cpp 8862 2013-08-24 08:47:37Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -28,6 +28,8 @@
 #include "GameClient.h"
 #include "nobUsual.h"
 #include "SoundManager.h"
+
+#include "glSmartBitmap.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -76,19 +78,22 @@ void nofBaker::DrawWorking(int x, int y)
 
 
     if(now_id<2){  //hinauslaufen teil 1
-        LOADER.GetNationImageN(workplace->GetNation(),250+5*BLD_BAKERY+4)->Draw(x,y,0,0,0,0,0,0);
-        LOADER.GetBobN("jobs")->Draw(17,walkdirection[wpNation][0],true,now_id%8,walkx,walky,COLORS[plColor]);
+        LOADER.GetNationImageN(wpNation,250+5*BLD_BAKERY+4)->Draw(x,y,0,0,0,0,0,0);
+	Loader::bob_jobs_cache[wpNation][JOB_BAKER][walkdirection[wpNation][0]][now_id%8].draw(walkx, walky, COLOR_WHITE, COLORS[plColor]);
+//        LOADER.GetBobN("jobs")->Draw(17,walkdirection[wpNation][0],true,now_id%8,walkx,walky,COLORS[plColor]);
     }
     if((now_id>=2) && (now_id<4) ){  //hinauslaufen teil 2
-        LOADER.GetNationImageN(workplace->GetNation(),250+5*BLD_BAKERY+4)->Draw(x,y,0,0,0,0,0,0);
-        LOADER.GetBobN("jobs")->Draw(17,walkdirection[wpNation][1],true,now_id%8,walkx,walky,COLORS[plColor]);
+        LOADER.GetNationImageN(wpNation,250+5*BLD_BAKERY+4)->Draw(x,y,0,0,0,0,0,0);
+	Loader::bob_jobs_cache[wpNation][JOB_BAKER][walkdirection[wpNation][1]][now_id%8].draw(walkx, walky, COLOR_WHITE, COLORS[plColor]);
+//        LOADER.GetBobN("jobs")->Draw(17,walkdirection[wpNation][1],true,now_id%8,walkx,walky,COLORS[plColor]);
     }
     if((now_id>=4) && (now_id<8) ){  //hinauslaufen teil 3
-        LOADER.GetBobN("jobs")->Draw(17,walkdirection[wpNation][2],true,now_id%8,walkx,walky,COLORS[plColor]);
+	Loader::bob_jobs_cache[wpNation][JOB_BAKER][walkdirection[wpNation][2]][now_id%8].draw(walkx, walky, COLOR_WHITE, COLORS[plColor]);
+//        LOADER.GetBobN("jobs")->Draw(17,walkdirection[wpNation][2],true,now_id%8,walkx,walky,COLORS[plColor]);
     }
     if((now_id>=8) && (now_id<16) ){ //brot in den ofen schieben
         LOADER.GetImageN("rom_bobs", 182+(now_id%8))
-            ->Draw(x+offsets[workplace->GetNation()][0],y+offsets[wpNation][1],0,0,0,0,0,0,COLOR_WHITE, COLORS[plColor]);
+            ->Draw(x+offsets[wpNation][0],y+offsets[wpNation][1],0,0,0,0,0,0,COLOR_WHITE, COLORS[plColor]);
 
 		// "Brot-rein/raus"-Sound
 		if((now_id%8) == 4)
@@ -99,11 +104,11 @@ void nofBaker::DrawWorking(int x, int y)
     }
     if((now_id>=16) && (now_id<max_id-16) ){ //warten
         LOADER.GetImageN("rom_bobs", 189)
-            ->Draw(x+offsets[workplace->GetNation()][0],y+offsets[wpNation][1],0,0,0,0,0,0,COLOR_WHITE, COLORS[plColor]);
+            ->Draw(x+offsets[wpNation][0],y+offsets[wpNation][1],0,0,0,0,0,0,COLOR_WHITE, COLORS[plColor]);
     }
     if((now_id>=max_id-16) && (now_id<max_id-8) ){ //brot aus dem ofen holen
         LOADER.GetImageN("rom_bobs", 182+7-(now_id%8))
-            ->Draw(x+offsets[workplace->GetNation()][0],y+offsets[wpNation][1],0,0,0,0,0,0,COLOR_WHITE, COLORS[plColor]);
+            ->Draw(x+offsets[wpNation][0],y+offsets[wpNation][1],0,0,0,0,0,0,COLOR_WHITE, COLORS[plColor]);
 
 		// "Brot-rein/raus"-Sound
 		if((now_id%8) == 4)
@@ -113,15 +118,18 @@ void nofBaker::DrawWorking(int x, int y)
 		}
     }
     if((now_id>=max_id-8) && (now_id<max_id-4) ){ //reingehn teil 1
-        LOADER.GetBobN("jobs")->Draw(17,walkdirection[wpNation][3],true,now_id%8,walkx_r,walky_r,COLORS[plColor]);
+	Loader::bob_jobs_cache[wpNation][JOB_BAKER][walkdirection[wpNation][3]][now_id%8].draw(walkx_r, walky_r, COLOR_WHITE, COLORS[plColor]);
+//        LOADER.GetBobN("jobs")->Draw(17,walkdirection[wpNation][3],true,now_id%8,walkx_r,walky_r,COLORS[plColor]);
     }
     if((now_id>=max_id-4) && (now_id<max_id-2) ){ //reingehn teil 1
-        LOADER.LOADER.GetNationImageN(workplace->GetNation(),250+5*BLD_BAKERY+4)->Draw(x,y,0,0,0,0,0,0);
-        LOADER.GetBobN("jobs")->Draw(17,walkdirection[wpNation][4],true,now_id%8,walkx_r,walky_r,COLORS[plColor]);
+        LOADER.LOADER.GetNationImageN(wpNation,250+5*BLD_BAKERY+4)->Draw(x,y,0,0,0,0,0,0);
+	Loader::bob_jobs_cache[wpNation][JOB_BAKER][walkdirection[wpNation][4]][now_id%8].draw(walkx_r, walky_r, COLOR_WHITE, COLORS[plColor]);
+//        LOADER.GetBobN("jobs")->Draw(17,walkdirection[wpNation][4],true,now_id%8,walkx_r,walky_r,COLORS[plColor]);
     }
     if((now_id>=max_id-2) && (now_id<max_id) ){ //reingehn teil 2
-        LOADER.LOADER.GetNationImageN(workplace->GetNation(),250+5*BLD_BAKERY+4)->Draw(x,y,0,0,0,0,0,0);
-        LOADER.GetBobN("jobs")->Draw(17,walkdirection[wpNation][5],true,now_id%8,walkx_r,walky_r,COLORS[plColor]);
+        LOADER.LOADER.GetNationImageN(wpNation,250+5*BLD_BAKERY+4)->Draw(x,y,0,0,0,0,0,0);
+	Loader::bob_jobs_cache[wpNation][JOB_BAKER][walkdirection[wpNation][5]][now_id%8].draw(walkx_r, walky_r, COLOR_WHITE, COLORS[plColor]);
+//        LOADER.GetBobN("jobs")->Draw(17,walkdirection[wpNation][5],true,now_id%8,walkx_r,walky_r,COLORS[plColor]);
     }
 
 }

@@ -1,4 +1,4 @@
-// $Id: nofActiveSoldier.cpp 8766 2013-06-10 17:54:18Z jh $
+// $Id: nofActiveSoldier.cpp 8862 2013-08-24 08:47:37Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -31,6 +31,8 @@
 #include "noFighting.h"
 #include "GameClient.h"
 #include "SerializedGameData.h"
+
+#include "glSmartBitmap.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -166,9 +168,7 @@ void nofActiveSoldier::Draw(int x, int y)
 	case STATE_DEFENDING_WAITING:
 		{
 			// Draw waiting states
-			LOADER.GetBobN("jobs")->Draw(30+NATION_RTTR_TO_S2[GAMECLIENT.GetPlayer(player)->nation]*6+job-JOB_PRIVATE,
-				dir,false,2,x,y,COLORS[GAMECLIENT.GetPlayer(player)->color]);
-			DrawShadow(x,y,2,dir);
+			Loader::bob_jobs_cache[GAMECLIENT.GetPlayer(player)->nation][job][dir][2].draw(x,y,COLOR_WHITE,COLORS[GAMECLIENT.GetPlayer(player)->color]);
 		} break;
 	case STATE_FIGUREWORK:
 	case STATE_MEETENEMY:
@@ -184,7 +184,7 @@ void nofActiveSoldier::Draw(int x, int y)
 	case STATE_SEAATTACKING_RETURNTOSHIP:
 		{
 			// Draw walking states
-			DrawSoldierWalking(x,y);
+			DrawWalking(x,y);
 		} break;
 	}
 }

@@ -1,4 +1,4 @@
-// $Id: noFighting.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: noFighting.cpp 8862 2013-08-24 08:47:37Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -33,6 +33,7 @@
 #include "SoundManager.h"
 #include "SerializedGameData.h"
 
+#include "glSmartBitmap.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -396,9 +397,7 @@ void noFighting::Draw(int x, int y)
 		
 			for(unsigned i = 0;i<2;++i)
 			{
-				LOADER.GetBobN("jobs")->Draw(30+NATION_RTTR_TO_S2[gwg->GetPlayer(soldiers[i]->GetPlayer())->nation]*6+soldiers[i]->GetRank()
-					,(i==0)?0:3,false,GAMECLIENT.Interpolate(8,current_ev),x + ((i == 0)?(-x_diff):x_diff),y,COLORS[gwg->GetPlayer(soldiers[i]->GetPlayer())->color]);
-				soldiers[i]->DrawShadow(x + ((i == 0)?(-x_diff):x_diff),y,GAMECLIENT.Interpolate(8,current_ev),soldiers[i]->GetDir());
+				Loader::bob_jobs_cache[gwg->GetPlayer(soldiers[i]->GetPlayer())->nation][soldiers[i]->GetRank() + JOB_PRIVATE][(i == 0) ? 0 : 3][GAMECLIENT.Interpolate(8,current_ev)].draw(x + ((i == 0)?(-x_diff):x_diff),y,COLOR_WHITE,COLORS[gwg->GetPlayer(soldiers[i]->GetPlayer())->color]);
 			}
 
 		} break;

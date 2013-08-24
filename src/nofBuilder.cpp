@@ -1,4 +1,4 @@
-// $Id: nofBuilder.cpp 8516 2012-11-14 00:03:22Z marcus $
+// $Id: nofBuilder.cpp 8862 2013-08-24 08:47:37Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -40,6 +40,7 @@
 #include "SerializedGameData.h"
 #include "AIEventManager.h"
 
+#include "glSmartBitmap.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -337,8 +338,9 @@ void nofBuilder::Draw(int x, int y)
 			x+=(GAMECLIENT.Interpolate(rel_x,next_rel_x,current_ev)+building_site->GetDoorPointX());
 			y+=(GAMECLIENT.Interpolate(rel_y,next_rel_y,current_ev)+building_site->GetDoorPointY());
 
-			LOADER.GetBobN("jobs")->Draw(23,dir,false,GAMECLIENT.Interpolate(12,current_ev)%8,x,y,COLORS[gwg->GetPlayer(player)->color]);
-			DrawShadow(x,y,GAMECLIENT.Interpolate(12,current_ev)%8,dir);
+			Loader::bob_jobs_cache[building_site->GetNation()][JOB_BUILDER][dir][GAMECLIENT.Interpolate(12,current_ev)%8].draw(x, y, COLOR_WHITE, COLORS[gwg->GetPlayer(player)->color]);
+//			LOADER.GetBobN("jobs")->Draw(23,dir,false,GAMECLIENT.Interpolate(12,current_ev)%8,x,y,COLORS[gwg->GetPlayer(player)->color]);
+//			DrawShadow(x,y,GAMECLIENT.Interpolate(12,current_ev)%8,dir);
 
 			/*LOADER.GetBobN("jobs")->Draw(23,dir,false,GAMECLIENT.Interpolate((state==STATE_WAITINGFREEWALK)?8:5,current_ev),x,y,COLORS[gwg->GetPlayer(player)->color]);
 			DrawShadow(x,y,GAMECLIENT.Interpolate(16,current_ev)%8);*/

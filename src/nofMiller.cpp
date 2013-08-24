@@ -1,4 +1,4 @@
-// $Id: nofMiller.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: nofMiller.cpp 8862 2013-08-24 08:47:37Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -28,6 +28,8 @@
 #include "nobUsual.h"
 #include "VideoDriverWrapper.h"
 #include "SoundManager.h"
+
+#include "glSmartBitmap.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -63,11 +65,13 @@ void nofMiller::DrawWorking(int x, int y)
 
     if(now_id<4){  //hinauslaufen teil 1
         LOADER.GetNationImageN(workplace->GetNation(),250+5*BLD_MILL+4)->Draw(x,y,0,0,0,0,0,0);
-        LOADER.GetBobN("jobs")->Draw(16,4,true,now_id%8,x+walkoffsets[now_id%8][0],y+walkoffsets[now_id%8][1],COLORS[gwg->GetPlayer(player)->color]);
+	Loader::bob_jobs_cache[workplace->GetNation()][JOB_MILLER][4][now_id%8].draw(x+walkoffsets[now_id%8][0], y+walkoffsets[now_id%8][1], COLOR_WHITE, COLORS[gwg->GetPlayer(player)->color]);
+//        LOADER.GetBobN("jobs")->Draw(16,4,true,now_id%8,x+walkoffsets[now_id%8][0],y+walkoffsets[now_id%8][1],COLORS[gwg->GetPlayer(player)->color]);
         rotate_sails=false;
     }
     if( (now_id>=4) && (now_id<8) ){  //hinauslaufen teil 2
-        LOADER.GetBobN("jobs")->Draw(16,3,true,now_id%8,x+walkoffsets[now_id%8][0],y+walkoffsets[now_id%8][1],COLORS[gwg->GetPlayer(player)->color]);
+	Loader::bob_jobs_cache[workplace->GetNation()][JOB_MILLER][3][now_id%8].draw(x+walkoffsets[now_id%8][0], y+walkoffsets[now_id%8][1], COLOR_WHITE, COLORS[gwg->GetPlayer(player)->color]);
+//        LOADER.GetBobN("jobs")->Draw(16,3,true,now_id%8,x+walkoffsets[now_id%8][0],y+walkoffsets[now_id%8][1],COLORS[gwg->GetPlayer(player)->color]);
     }
     if( (now_id>=8) && (now_id<16)){  //hinsetzen
         LOADER.GetImageN("rom_bobs", 166+(now_id%8))
@@ -82,11 +86,13 @@ void nofMiller::DrawWorking(int x, int y)
             ->Draw(x+offsets_sitdown[workplace->GetNation()][0],y+offsets_sitdown[workplace->GetNation()][1],0,0,0,0,0,0, COLOR_WHITE, COLORS[gwg->GetPlayer(workplace->GetPlayer())->color]);
     }
     if( (now_id>=max_id-8) && (now_id<max_id-4)){  //zurücklaufen teil 1
-        LOADER.GetBobN("jobs")->Draw(16,0,true,now_id%8,x+walkoffsets[7-(now_id%8)][0],y+walkoffsets[7-(now_id%8)][1],COLORS[gwg->GetPlayer(player)->color]);
+	Loader::bob_jobs_cache[workplace->GetNation()][JOB_MILLER][0][now_id%8].draw(x+walkoffsets[7-(now_id%8)][0], y+walkoffsets[7-(now_id%8)][1], COLOR_WHITE, COLORS[gwg->GetPlayer(player)->color]);
+//        LOADER.GetBobN("jobs")->Draw(16,0,true,now_id%8,x+walkoffsets[7-(now_id%8)][0],y+walkoffsets[7-(now_id%8)][1],COLORS[gwg->GetPlayer(player)->color]);
     }
     if( (now_id>=max_id-4) && (now_id<max_id)){  //zurücklaufen teil 2
         LOADER.GetNationImageN(workplace->GetNation(),250+5*BLD_MILL+4)->Draw(x,y,0,0,0,0,0,0);
-        LOADER.GetBobN("jobs")->Draw(16,1,true,now_id%8,x+walkoffsets[7-(now_id%8)][0],y+walkoffsets[7-(now_id%8)][1],COLORS[gwg->GetPlayer(player)->color]);
+	Loader::bob_jobs_cache[workplace->GetNation()][JOB_MILLER][1][now_id%8].draw(x+walkoffsets[7-(now_id%8)][0], y+walkoffsets[7-(now_id%8)][1], COLOR_WHITE, COLORS[gwg->GetPlayer(player)->color]);
+//        LOADER.GetBobN("jobs")->Draw(16,1,true,now_id%8,x+walkoffsets[7-(now_id%8)][0],y+walkoffsets[7-(now_id%8)][1],COLORS[gwg->GetPlayer(player)->color]);
         rotate_sails=false;
     }
 

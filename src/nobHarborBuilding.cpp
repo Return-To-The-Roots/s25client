@@ -1,4 +1,4 @@
-// $Id: nobHarborBuilding.cpp 8728 2013-05-16 12:45:55Z marcus $
+// $Id: nobHarborBuilding.cpp 8862 2013-08-24 08:47:37Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -37,6 +37,8 @@
 #include "nobMilitary.h"
 #include "nofAttacker.h"
 #include "nofDefender.h"
+
+#include "glSmartBitmap.h"
 
 #include <set>
 
@@ -295,15 +297,17 @@ void nobHarborBuilding::Draw(int x,int y)
 
 			if(id < 500)
 			{
-				LOADER.GetBobN("jobs")->Draw(23,0,false,walking_id,right_point-walking_distance,
-					y+BUILDER_POS[nation].y,COLORS[gwg->GetPlayer(player)->color]);
+				Loader::bob_jobs_cache[nation][JOB_BUILDER][0][walking_id].draw(right_point-walking_distance, y+BUILDER_POS[nation].y, COLOR_WHITE, COLORS[gwg->GetPlayer(player)->color]);
+//				LOADER.GetBobN("jobs")->Draw(23,0,false,walking_id,right_point-walking_distance,
+//					y+BUILDER_POS[nation].y,COLORS[gwg->GetPlayer(player)->color]);
 				//DrawShadow(right_point-walking_distance,y,walking_id,0);
 			}
 			else
 			{
-				LOADER.GetBobN("jobs")->Draw(23,3,false,walking_id,
-					right_point-WALKING_DISTANCE+walking_distance,y+BUILDER_POS[nation].y,
-					COLORS[gwg->GetPlayer(player)->color]);
+				Loader::bob_jobs_cache[nation][JOB_BUILDER][3][walking_id].draw(right_point-WALKING_DISTANCE+walking_distance, y+BUILDER_POS[nation].y, COLOR_WHITE, COLORS[gwg->GetPlayer(player)->color]);
+//				LOADER.GetBobN("jobs")->Draw(23,3,false,walking_id,
+//					right_point-WALKING_DISTANCE+walking_distance,y+BUILDER_POS[nation].y,
+//					COLORS[gwg->GetPlayer(player)->color]);
 				//DrawShadow(right_point-WALKING_DISTANCE+walking_distance,y,walking_id,0);
 			}		
 		}

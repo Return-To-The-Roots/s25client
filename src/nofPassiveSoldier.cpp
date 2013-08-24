@@ -1,4 +1,4 @@
-// $Id: nofPassiveSoldier.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: nofPassiveSoldier.cpp 8862 2013-08-24 08:47:37Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -78,7 +78,7 @@ healing_event(sgd->PopObject<EventManager::Event>(GOT_EVENT))
 void nofPassiveSoldier::Draw(int x, int y)
 {
 	// Soldat normal laufend zeichnen
-	DrawSoldierWalking(x,y);
+	DrawWalking(x,y);
 }
 
 void nofPassiveSoldier::HandleDerivedEvent(const unsigned int id)

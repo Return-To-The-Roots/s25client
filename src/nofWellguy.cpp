@@ -1,4 +1,4 @@
-// $Id: nofWellguy.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: nofWellguy.cpp 8862 2013-08-24 08:47:37Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -27,6 +27,8 @@
 #include "GameClient.h"
 #include "nobUsual.h"
 #include "SoundManager.h"
+
+#include "glSmartBitmap.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -76,14 +78,17 @@ void nofWellguy::DrawWorking(int x, int y)
 
     if(now_id<2){ //laufen 1
         if(wpNation==2) LOADER.GetNationImageN(workplace->GetNation(),250+5*BLD_WELL+4)->Draw(x,y,0,0,0,0,0,0);
-        LOADER.GetBobN("carrier")->Draw(10,walkdirection[wpNation][0],false,now_id%8,walkx,walky,COLORS[plColor]);
+	Loader::carrier_cache[10][walkdirection[wpNation][0]][now_id%8][false].draw(walkx, walky, COLOR_WHITE, COLORS[plColor]);
+//        LOADER.GetBobN("carrier")->Draw(10,walkdirection[wpNation][0],false,now_id%8,walkx,walky,COLORS[plColor]);
     }
 	else if( (now_id>=2)&&(now_id<4) ){ //laufen 2
         if(wpNation==2)LOADER.GetNationImageN(workplace->GetNation(),250+5*BLD_WELL+4)->Draw(x,y,0,0,0,0,0,0);
-        LOADER.GetBobN("carrier")->Draw(10,walkdirection[wpNation][1],false,now_id%8,walkx,walky,COLORS[plColor]);
+	Loader::carrier_cache[10][walkdirection[wpNation][1]][now_id%8][false].draw(walkx, walky, COLOR_WHITE, COLORS[plColor]);
+ //       LOADER.GetBobN("carrier")->Draw(10,walkdirection[wpNation][1],false,now_id%8,walkx,walky,COLORS[plColor]);
     }
     else if( (now_id>=4)&&(now_id<8) ){ //laufen 3
-        LOADER.GetBobN("carrier")->Draw(10,walkdirection[wpNation][2],false,now_id%8,walkx,walky,COLORS[plColor]);
+	Loader::carrier_cache[10][walkdirection[wpNation][2]][now_id%8][false].draw(walkx, walky, COLOR_WHITE, COLORS[plColor]);
+//        LOADER.GetBobN("carrier")->Draw(10,walkdirection[wpNation][2],false,now_id%8,walkx,walky,COLORS[plColor]);
     }
     else if( (now_id>=8)&&(now_id<16) ){ //eimer runter lassen
         if(now_id==8){
@@ -103,15 +108,18 @@ void nofWellguy::DrawWorking(int x, int y)
             ->Draw(x+offsets[workplace->GetNation()][0],y+offsets[wpNation][1],0,0,0,0,0,0, COLOR_WHITE, COLORS[plColor]);
     }
     else if( (now_id>=max_id-8)&&(now_id<max_id-4) ){ //laufen 3
-        LOADER.GetBobN("carrier")->Draw(11,walkdirection[wpNation][3],false,now_id%8,walkx_r,walky_r,COLORS[plColor]);
+	Loader::carrier_cache[11][walkdirection[wpNation][3]][now_id%8][false].draw(walkx_r, walky_r, COLOR_WHITE, COLORS[plColor]);
+//        LOADER.GetBobN("carrier")->Draw(11,walkdirection[wpNation][3],false,now_id%8,walkx_r,walky_r,COLORS[plColor]);
     }
     else if( (now_id>=max_id-4)&&(now_id<max_id-2) ){ //laufen 2
         if(wpNation==2) LOADER.GetNationImageN(workplace->GetNation(),250+5*BLD_WELL+4)->Draw(x,y,0,0,0,0,0,0);
-        LOADER.GetBobN("carrier")->Draw(11,walkdirection[wpNation][4],false,now_id%8,walkx_r,walky_r,COLORS[plColor]);
+	Loader::carrier_cache[11][walkdirection[wpNation][4]][now_id%8][false].draw(walkx_r, walky_r, COLOR_WHITE, COLORS[plColor]);
+//        LOADER.GetBobN("carrier")->Draw(11,walkdirection[wpNation][4],false,now_id%8,walkx_r,walky_r,COLORS[plColor]);
     }
     else if(now_id>=max_id-2){ //laufen 1
         if(wpNation==2) LOADER.GetNationImageN(workplace->GetNation(),250+5*BLD_WELL+4)->Draw(x,y,0,0,0,0,0,0);
-        LOADER.GetBobN("carrier")->Draw(11,walkdirection[wpNation][5],false,now_id%8,walkx_r,walky_r,COLORS[plColor]);
+	Loader::carrier_cache[11][walkdirection[wpNation][5]][now_id%8][false].draw(walkx_r, walky_r, COLOR_WHITE, COLORS[plColor]);
+//        LOADER.GetBobN("carrier")->Draw(11,walkdirection[wpNation][5],false,now_id%8,walkx_r,walky_r,COLORS[plColor]);
     }
 
 

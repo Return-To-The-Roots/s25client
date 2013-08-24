@@ -1,4 +1,4 @@
-// $Id: nofWoodcutter.cpp 8516 2012-11-14 00:03:22Z marcus $
+// $Id: nofWoodcutter.cpp 8862 2013-08-24 08:47:37Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -32,6 +32,8 @@
 #include "SoundManager.h"
 #include "AIEventManager.h"
 
+#include "glSmartBitmap.h"
+
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
@@ -58,8 +60,10 @@ void nofWoodcutter::DrawWorking(int x,int y)
 	if(i < 10)
 	{
 		// 1. Ein Stück vom Baum nach links laufen
-		LOADER.GetBobN("jobs")->Draw(5,0,false,i%8,x-i,y,COLORS[gwg->GetPlayer(player)->color]);
-		DrawShadow(x-i,y,static_cast<unsigned char>(i%8),dir);
+		Loader::bob_jobs_cache[gwg->GetPlayer(player)->nation][JOB_WOODCUTTER][0][i%8].draw(x-i,y,COLOR_WHITE,COLORS[gwg->GetPlayer(player)->color]);
+
+//		LOADER.GetBobN("jobs")->Draw(5,0,false,i%8,x-i,y,COLORS[gwg->GetPlayer(player)->color]);
+//		DrawShadow(x-i,y,static_cast<unsigned char>(i%8),dir);
 	}
 	else if(i < 82)
 	{
@@ -87,15 +91,18 @@ void nofWoodcutter::DrawWorking(int x,int y)
 	else if(i<115)
 	{
 		// 4. Wieder zurückgehen nach rechts
-		LOADER.GetBobN("jobs")->Draw(5,3,false,(i-105)%8,x-(9-(i-105)),y,COLORS[gwg->GetPlayer(player)->color]);
-		DrawShadow(x-(9-(i-95)),y,static_cast<unsigned char>((i-105)%8),dir);
+		Loader::bob_jobs_cache[gwg->GetPlayer(player)->nation][JOB_WOODCUTTER][3][(i-105)%8].draw(x-(9-(i-105)),y,COLOR_WHITE,COLORS[gwg->GetPlayer(player)->color]);
+
+//		LOADER.GetBobN("jobs")->Draw(5,3,false,(i-105)%8,x-(9-(i-105)),y,COLORS[gwg->GetPlayer(player)->color]);
+//		DrawShadow(x-(9-(i-95)),y,static_cast<unsigned char>((i-105)%8),dir);
 	}
 	else
 	{
 		// 5. kurz am Baum warten (quasi Baumstamm in die Hand nehmen)
-		LOADER.GetBobN("jobs")->Draw(5,3,false,1,x,y,COLORS[gwg->GetPlayer(player)->color]);
-		DrawShadow(x,y,1,dir);
+		Loader::bob_jobs_cache[gwg->GetPlayer(player)->nation][JOB_WOODCUTTER][3][1].draw(x,y,COLOR_WHITE,COLORS[gwg->GetPlayer(player)->color]);
 
+//		LOADER.GetBobN("jobs")->Draw(5,3,false,1,x,y,COLORS[gwg->GetPlayer(player)->color]);
+//		DrawShadow(x,y,1,dir);
 	}
 
 
