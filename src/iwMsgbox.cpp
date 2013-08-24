@@ -1,4 +1,4 @@
-// $Id: iwMsgbox.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: iwMsgbox.cpp 8865 2013-08-24 21:56:19Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -85,28 +85,6 @@ iwMsgbox::iwMsgbox(const std::string& title, const std::string& text, Window *pa
 			AddButton(0, width / 2 - 45 - 6 - 90, _("Yes"), TC_GREEN2);
 			AddButton(1, width / 2 - 45, _("No"), TC_RED1);
 			AddButton(2, width / 2 + 45 + 6, _("Cancel"), TC_GREY);
-			VideoDriverWrapper::inst().SetMousePos(GetX() + width / 2 + 6 + 90, GetY() + 110);
-		} break;
-	}
-
-
-	// Mauszeiger auf einen Button springen
-	switch(button)
-	{
-	case MSB_OK:
-		{
-			VideoDriverWrapper::inst().SetMousePos(GetX() + width / 2, GetY() + 110);
-		} break;
-	case MSB_OKCANCEL:
-		{
-			VideoDriverWrapper::inst().SetMousePos(GetX() + width / 2 + 3 + 45, GetY() + 110);
-		} break;
-	case MSB_YESNO:
-		{
-			VideoDriverWrapper::inst().SetMousePos(GetX() + width / 2 + 3 + 45, GetY() + 110);
-		} break;
-	case MSB_YESNOCANCEL:
-		{
 			VideoDriverWrapper::inst().SetMousePos(GetX() + width / 2 + 6 + 90, GetY() + 110);
 		} break;
 	}
