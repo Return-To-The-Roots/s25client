@@ -1,4 +1,4 @@
-// $Id: GameMessages.h 8503 2012-11-12 12:31:37Z marcus $
+// $Id: GameMessages.h 8870 2013-08-25 09:46:04Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -643,7 +643,7 @@ public:
 		PushUnsignedInt(ziplength);
 		PushUnsignedInt(normal_length);
 
-		LOG.write(">>> NMS_PLAYER_SWAP\n");
+		LOG.write(">>> NMS_MAP_INFO\n");
 	}
 	void Run(MessageInterface *callback) 
 	{ 
@@ -653,7 +653,7 @@ public:
 		ziplength = PopUnsignedInt();
 		normal_length = PopUnsignedInt();
 
-		LOG.write("<<< NMS_PLAYER_SWAP\n");
+		LOG.write("<<< NMS_MAP_INFO\n");
 		GetInterface(callback)->OnNMSMapInfo(*this);
 	}
 };
@@ -695,12 +695,12 @@ public:
 	{
 		PushUnsignedInt(checksum);
 
-		LOG.write(">>> NMS_MAP_DATA\n");
+		LOG.write(">>> NMS_MAP_CHECKSUM\n");
 	}
 	void Run(MessageInterface *callback) 
 	{ 
 		checksum = PopUnsignedInt();
-		LOG.write("<<< NMS_MAP_DATA\n");
+		LOG.write("<<< NMS_MAP_CHECKSUM\n");
 		GetInterface(callback)->OnNMSMapChecksum(*this);
 	}
 };
