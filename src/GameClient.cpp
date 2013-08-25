@@ -1,4 +1,4 @@
-// $Id: GameClient.cpp 8726 2013-05-16 12:41:29Z marcus $
+// $Id: GameClient.cpp 8872 2013-08-25 18:00:20Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -452,6 +452,8 @@ void GameClient::ExitGame()
 	em = 0;
 
 	players.clear();
+
+	GameObject::SetPointers(gw, em, &players);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
