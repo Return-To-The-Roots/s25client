@@ -1,4 +1,4 @@
-// $Id: noBuildingSite.cpp 8864 2013-08-24 10:10:49Z marcus $
+// $Id: noBuildingSite.cpp 8871 2013-08-25 09:51:08Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -448,8 +448,8 @@ unsigned char noBuildingSite::GetBuildProgress(bool percent) const
 	if(!percent)
 		return build_progress;
 
-	double costs = BUILDING_COSTS[nation][type].boards*8 + BUILDING_COSTS[nation][type].stones*8;
-	double progress = (build_progress / costs) * 100.0;
+	unsigned costs = BUILDING_COSTS[nation][type].boards*8 + BUILDING_COSTS[nation][type].stones*8;
+	unsigned progress = (((unsigned) build_progress) * 100) / costs;
 
 	return (unsigned char)progress;
 }
