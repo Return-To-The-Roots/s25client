@@ -1,4 +1,4 @@
-// $Id: noBuildingSite.cpp 8874 2013-08-26 20:15:38Z marcus $
+// $Id: noBuildingSite.cpp 8876 2013-08-26 20:22:42Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -239,9 +239,6 @@ void noBuildingSite::Draw(int x, int y)
 			p1 = min<unsigned int>(build_progress,BUILDING_COSTS[nation][GetBuildingType()].boards*4);
 			p2 = BUILDING_COSTS[nation][GetBuildingType()].boards*4;
 		}
-
-		glArchivItem_Bitmap *image;
-		unsigned short progress, build_height;
 
 		Loader::building_cache[nation][type][1].drawPercent(x, y, p1 * 100 / p2);
 
