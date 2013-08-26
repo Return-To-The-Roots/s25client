@@ -1,4 +1,4 @@
-// $Id: SDL.cpp 7834 2012-02-14 10:29:08Z FloSoft $
+// $Id: SDL.cpp 8877 2013-08-26 20:30:09Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -174,24 +174,24 @@ Sound *AudioSDL::LoadEffect(unsigned int data_type, unsigned char *data, unsigne
 	SoundSDL_Effect * sd = new SoundSDL_Effect();
 	
 	char file[512];
-	if(!tempname(file, 512))
-		return false;
+	if (!tempname(file, 512))
+		return(NULL);
 
 	strncat(file, ".wav", 512);
 	
 	FILE *dat = fopen(file, "wb");
-	if(!dat)
-		return false;
+	if (!dat)
+		return(NULL);
 
-	if(fwrite(data, 1, size, dat) != size)
-		return false;
+	if (fwrite(data, 1, size, dat) != size)
+		return(NULL);
 	
 	fclose(dat);
 
 	switch(data_type)
 	{
 	default:
-		return false;
+		return(NULL);
 
 	case AudioDriver::AD_WAVE:
 		{
@@ -206,7 +206,7 @@ Sound *AudioSDL::LoadEffect(unsigned int data_type, unsigned char *data, unsigne
 	{
 		fprintf(stderr, "%s\n", Mix_GetError());
 		delete sd;
-		return NULL;
+		return(NULL);
 	}
 
 	sd->SetNr((int)sounds.size());
@@ -232,13 +232,13 @@ Sound *AudioSDL::LoadMusic(unsigned int data_type, unsigned char *data, unsigned
 	SoundSDL_Music * sd = new SoundSDL_Music;
 
 	char file[512];
-	if(!tempname(file, 512))
-		return false;
+	if (!tempname(file, 512))
+		return(NULL);
 
 	switch(data_type)
 	{
 	default:
-		return false;
+		return(NULL);
 
 	case AudioDriver::AD_MIDI:
 		{
@@ -265,11 +265,11 @@ Sound *AudioSDL::LoadMusic(unsigned int data_type, unsigned char *data, unsigned
 	}
 
 	FILE *dat = fopen(file, "wb");
-	if(!dat)
-		return false;
+	if (!dat)
+		return(NULL);
 
-	if(fwrite(data, 1, size, dat) != size)
-		return false;
+	if (fwrite(data, 1, size, dat) != size)
+		return(NULL);
 
 	fclose(dat);
 
@@ -281,7 +281,7 @@ Sound *AudioSDL::LoadMusic(unsigned int data_type, unsigned char *data, unsigned
 	{
 		fprintf(stderr, "%s\n", Mix_GetError());
 		delete sd;
-		return NULL;
+		return(NULL);
 	}
 	
 	sd->SetNr((int)sounds.size());

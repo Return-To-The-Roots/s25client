@@ -1,4 +1,4 @@
-// $Id: VideoDriverWrapper.cpp 8227 2012-09-12 08:30:21Z marcus $
+// $Id: VideoDriverWrapper.cpp 8877 2013-08-26 20:30:09Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -478,10 +478,10 @@ unsigned int VideoDriverWrapper::GetTickCount()
  */
 void *VideoDriverWrapper::loadExtension(const char *extension)
 {
-	if(videodriver == NULL)
+	if (videodriver == NULL)
 	{
 		fatal_error("Kein Videotreiber ausgewaehlt!\n");
-		return false;
+		return(NULL);
 	}
 
 	return videodriver->GetFunction(extension);
