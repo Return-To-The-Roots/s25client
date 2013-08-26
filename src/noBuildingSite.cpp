@@ -1,4 +1,4 @@
-// $Id: noBuildingSite.cpp 8871 2013-08-25 09:51:08Z marcus $
+// $Id: noBuildingSite.cpp 8874 2013-08-26 20:15:38Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -243,26 +243,7 @@ void noBuildingSite::Draw(int x, int y)
 		glArchivItem_Bitmap *image;
 		unsigned short progress, build_height;
 
-		// Normal
-		image = GetBuildingSkeletonImage();
-		if(image)
-		{
-			progress = p1*image->getHeight() / p2;
-			build_height = image->getHeight() - progress;
-			if(progress != 0)
-				image->Draw(x, y+build_height, 0, 0, 0, build_height, 0, progress);
-
-		}
-
-		// Schatten
-		image = GetBuildingSkeletonImageShadow();
-		if(image)
-		{
-			progress = p1*image->getHeight() / p2;
-			build_height = image->getHeight() - progress;
-			if(progress != 0)
-				image->Draw(x, y+build_height, 0, 0, 0, build_height, 0, progress, COLOR_SHADOW);
-		}
+		Loader::building_cache[nation][type][1].drawPercent(x, y, p1 * 100 / p2);
 
 		// Das richtige Haus
 		if(BUILDING_COSTS[nation][GetBuildingType()].stones)
@@ -278,25 +259,7 @@ void noBuildingSite::Draw(int x, int y)
 			p2 = BUILDING_COSTS[nation][GetBuildingType()].boards*4;
 		}
 
-		// Normal
-		image = GetBuildingImage();
-		if(image)
-		{
-			progress = p1*image->getHeight() / p2;
-			build_height = image->getHeight() - progress;
-			if(progress != 0)
-				image->Draw(x, y+build_height, 0, 0, 0, build_height, 0, progress);
-		}
-
-
-		image =  GetBuildingImageShadow();
-		if(image)
-		{
-			progress = p1*image->getHeight() / p2;
-			build_height = image->getHeight() - progress;
-			if(progress != 0)
-				image->Draw(x, y+build_height, 0, 0, 0, build_height, 0, progress, COLOR_SHADOW);
-		}
+		Loader::building_cache[nation][type][0].drawPercent(x, y, p1 * 100 / p2);
 	}
 
 	//char number[256];

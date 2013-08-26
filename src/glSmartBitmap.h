@@ -94,6 +94,8 @@ public:
 
 	void generateTexture();
 	void draw(int x, int y, unsigned color = 0xFFFFFFFF, unsigned player_color = 0x00000000);
+	void drawPercent(int x, int y, unsigned percent, unsigned color = 0xFFFFFFFF, unsigned player_color = 0x00000000);
+
 	void drawTo(unsigned char *buffer, unsigned stride, unsigned height, int x_offset = 0, int y_offset = 0);
 
 	void add(libsiedler2::baseArchivItem_Bitmap *bmp) {if (bmp) items.push_back(glBitmapItem(bmp));}
