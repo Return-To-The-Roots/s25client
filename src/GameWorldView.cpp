@@ -122,17 +122,21 @@ void GameWorldView::Draw(const unsigned char player, unsigned * water, const boo
 				if(mn.obj)
 				{
 					mn.obj->Draw(static_cast<int>(xpos),static_cast<int>(ypos));
-					if(false) //TODO: military aid - display icon overlay of attack possibility
+					if (false) //TODO: military aid - display icon overlay of attack possibility
 					{
 						noBuilding* building = gwv->GetSpecObj<noBuilding>(tx,ty);
-						if(mn.owner != GAMECLIENT.GetPlayerID()+1 //not belonging to current player
+						if (mn.owner != GAMECLIENT.GetPlayerID()+1 //not belonging to current player
 							&& gwv->GetNO(tx,ty)->GetType() == NOP_BUILDING //is a building
 							&& !GameClient::inst().GetLocalPlayer()->IsAlly(building->GetPlayer())) //not an ally
 						{
 							BuildingType bt = building->GetBuildingType();
-							if(bt >= BLD_BARRACKS && bt <= BLD_FORTRESS || bt == BLD_HEADQUARTERS || bt == BLD_HARBORBUILDING) //is it a military building?
+							if ((bt >= BLD_BARRACKS && bt <= BLD_FORTRESS)
+								|| bt == BLD_HEADQUARTERS
+								|| bt == BLD_HARBORBUILDING) //is it a military building?
+							{
 								if(gwv->GetAvailableSoldiersForAttack(GAMECLIENT.GetPlayerID(), tx, ty)) //soldiers available for attack?
 									LOADER.GetImageN("map_new",20000)->Draw(static_cast<int>(xpos)+1,static_cast<int>(ypos)-5, 0, 0, 0, 0, 0, 0);;
+							}
 						}
 					}
 				}

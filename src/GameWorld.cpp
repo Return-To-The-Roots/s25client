@@ -1,4 +1,4 @@
-// $Id: GameWorld.cpp 8732 2013-05-16 12:52:21Z marcus $
+// $Id: GameWorld.cpp 8878 2013-08-26 20:30:44Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -671,9 +671,9 @@ void GameWorld::Deserialize(SerializedGameData *sgd)
 		nodes[i].sea_id = sgd->PopUnsignedShort();
 		nodes[i].harbor_id = sgd->PopUnsignedInt();
 
-		if(nodes[i].harbor_id)
+		if (nodes[i].harbor_id)
 		{
-			GameWorldBase::HarborPos  p = {i%width,i/width};
+			GameWorldBase::HarborPos  p = {(MapCoord) (i % width), (MapCoord) (i / width)};
 			harbor_pos.push_back(p);
 		}
 	}
