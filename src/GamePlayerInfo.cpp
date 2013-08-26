@@ -1,4 +1,4 @@
-// $Id: GamePlayerInfo.cpp 8109 2012-09-01 19:05:19Z jh $
+// $Id: GamePlayerInfo.cpp 8875 2013-08-26 20:21:00Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -41,7 +41,7 @@ GamePlayerInfo::GamePlayerInfo(const unsigned playerid) :
 	ps(PS_FREE),
 	aiType(AI_DUMMY),
 	is_host(false),
-	nation(NAT_AFRICANS),
+	nation(NAT_ROMANS),
 	team(TM_NOTEAM),
 	color(0),
 	ping(0),
