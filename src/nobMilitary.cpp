@@ -1,4 +1,4 @@
-// $Id: nobMilitary.cpp 8736 2013-05-16 12:58:22Z marcus $
+// $Id: nobMilitary.cpp 8913 2013-08-27 18:33:36Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -470,7 +470,7 @@ void nobMilitary::RegulateTroops()
 		}
 
 		// Nur rausschicken, wenn es einen Weg zu einem Lagerhaus gibt!
-		if(gwg->GetPlayer(player)->FindWarehouse(this,FW::NoCondition,0,true,0,false))
+		if(gwg->GetPlayer(player)->FindWarehouse(this,FW::NoCondition,0,true,(void*)0,false))
 		{
 			// Dann den Rest (einer muss immer noch drinbleiben!)
 			// erst die schwachen Soldaten raus

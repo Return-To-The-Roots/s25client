@@ -1,4 +1,4 @@
-// $Id: GameClientPlayer.h 8737 2013-05-16 15:42:35Z marcus $
+// $Id: GameClientPlayer.h 8913 2013-08-27 18:33:36Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -207,12 +207,47 @@ public:
 	/*/// liefert das aktuelle (komplette) inventar.
 	void GetInventory(unsigned int *wares, unsigned int *figures);*/
 
+	template <class ParamType>
+	struct IsWarehouseGood
+	{
+		typedef bool (*Check)(nobBaseWarehouse*,typename const ParamType*);
+	};
 
 	/// Sucht ein nächstgelegenes Warenhaus für den Punkt 'start', das die Bedingung der Ãbergebenen Funktion
 	/// IsWarehouseGood erfüllt, als letzen Parameter erhält jene Funktion param
 	/// - forbidden ist ein optionales StraÃenstück, das nicht betreten werden darf,
 	/// - to_wh muss auf true gesetzt werden, wenn es zum Lagerhaus geht, ansonsten auf false, in length wird die Wegeslänge zurückgegeben
-	nobBaseWarehouse * FindWarehouse(const noRoadNode * const start,bool (*IsWarehouseGood)(nobBaseWarehouse*,const void*),const RoadSegment * const forbidden,const bool to_wh,const void * param,const bool use_boat_roads,unsigned * const length = 0);
+	template< typename ParamType, typename Check >
+	nobBaseWarehouse * FindWarehouse(const noRoadNode * const start,Check isWarehouseGood,const RoadSegment * const forbidden,const bool to_wh,const ParamType &param,const bool use_boat_roads,unsigned * const length = NULL)
+	{
+		nobBaseWarehouse * best	= 0;
+
+		//	unsigned char path = 0xFF, tpath = 0xFF;
+		unsigned tlength = 0xFFFFFFFF,best_length = 0xFFFFFFFF;
+
+		for(std::list<nobBaseWarehouse*>::iterator w = warehouses.begin(); w!=warehouses.end(); ++w)
+		{
+			// Lagerhaus geeignet?
+			if(isWarehouseGood(*w,param))
+			{
+				// Bei der erlaubten Benutzung von BootsstraÃen Waren-Pathfinding benutzen
+				if(gwg->FindPathOnRoads(to_wh ? start : *w, to_wh ? *w : start,use_boat_roads,&tlength,NULL, NULL,forbidden))
+				{
+					if(tlength < best_length || !best)
+					{
+						//					path = tpath;
+						best_length = tlength;
+						best = (*w);
+					}
+				}
+			}
+		}
+
+		if(length)
+			*length = best_length;
+
+		return best;
+	}
 	/// Gibt dem Spieler bekannt, das eine neue StraÃe gebaut wurde
 	void NewRoad(RoadSegment * const rs);
 	/// Neue StraÃe hinzufügen

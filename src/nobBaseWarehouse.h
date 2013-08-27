@@ -1,4 +1,4 @@
-// $Id: nobBaseWarehouse.h 7682 2011-12-29 19:43:45Z marcus $
+// $Id: nobBaseWarehouse.h 8913 2013-08-27 18:33:36Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -259,23 +259,24 @@ public: void Serialize(SerializedGameData *sgd) const { Serialize_nobBaseWarehou
 namespace FW
 {
 	struct Param_Ware { GoodType type; unsigned count; };
-	bool Condition_Ware(nobBaseWarehouse * wh, const void * param);
+	bool Condition_Ware(nobBaseWarehouse * wh, const Param_Ware * param);
 	struct Param_Job { Job type; unsigned count; };
-	bool Condition_Job(nobBaseWarehouse * wh, const void * param);
+	bool Condition_Job(nobBaseWarehouse * wh, const Param_Job * param);
 	struct Param_WareAndJob { Param_Ware ware; Param_Job job; };
-	bool Condition_WareAndJob(nobBaseWarehouse * wh, const void * param);
+	bool Condition_WareAndJob(nobBaseWarehouse * wh, const Param_WareAndJob * param);
 
-	bool Condition_Troops(nobBaseWarehouse * wh, const void * param); // param = &unsigned --> count
-	bool Condition_StoreWare(nobBaseWarehouse * wh, const void * param); // param = &GoodType -> Warentyp
-	bool Condition_StoreFigure(nobBaseWarehouse * wh, const void * param); // param = &Job -> Jobtyp
+	bool Condition_Troops(nobBaseWarehouse * wh, const unsigned int * param); // param = &unsigned --> count
+	bool Condition_StoreWare(nobBaseWarehouse * wh, const GoodType * param); // param = &GoodType -> Warentyp
+	bool Condition_StoreFigure(nobBaseWarehouse * wh, const Job * param); // param = &Job -> Jobtyp
 
 	// Die Lagerhäuser lagern die jeweiligen Waren ein
-	bool Condition_WantStoreWare(nobBaseWarehouse * wh, const void * param); // param = &GoodType -> Warentyp
-	bool Condition_WantStoreFigure(nobBaseWarehouse * wh, const void * param); // param = &Job -> Jobtyp
+	bool Condition_WantStoreWare(nobBaseWarehouse * wh, const GoodType * param); // param = &GoodType -> Warentyp
+	bool Condition_WantStoreFigure(nobBaseWarehouse * wh, const Job * param); // param = &Job -> Jobtyp
 
 	// Lagerhäuser enthalten die jeweilien Waren, liefern sie aber NICHT gleichzeitig ein
-	bool Condition_StoreAndDontWantWare(nobBaseWarehouse * wh, const void * param); // param = &GoodType -> Warentyp
-	bool Condition_StoreAndDontWantFigure(nobBaseWarehouse * wh, const void * param); // param = &Job -> Jobtyp
+	bool Condition_StoreAndDontWantWare(nobBaseWarehouse * wh, const GoodType * param); // param = &GoodType -> Warentyp
+	bool Condition_StoreAndDontWantFigure(nobBaseWarehouse * wh, const Job * param); // param = &Job -> Jobtyp
+
 
 
 	bool NoCondition(nobBaseWarehouse * wh, const void * param);
