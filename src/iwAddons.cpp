@@ -1,4 +1,4 @@
-// $Id: iwAddons.cpp 8846 2013-08-17 11:54:47Z marcus $
+// $Id: iwAddons.cpp 8900 2013-08-27 18:23:35Z jh $
 //
 // Copyright (c) 2005-2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -179,8 +179,8 @@ void iwAddons::UpdateView(const unsigned short selection)
 			//LOG.lprintf("ADD  addon: %s - falls in this category \n",addon->getName().c_str());
 			}
 		//hide addon's gui if addon is beyond selected group or is beyond current page scope
-		if( ((groups & selection) != selection) || inthiscategory-1 < scrollbar->GetPos()
-		|| inthiscategory-1 > (unsigned int)(scrollbar->GetPos()+scrollbar->GetPageSize()) )
+		if( ((groups & selection) != selection) || inthiscategory < scrollbar->GetPos() + 1
+		|| inthiscategory > (unsigned int)(scrollbar->GetPos()+scrollbar->GetPageSize()) + 1 )
 		{
 			//if((groups & selection) != selection)
 			//	LOG.lprintf("HIDE addon: %s - category mismatch\n",addon->getName().c_str());
