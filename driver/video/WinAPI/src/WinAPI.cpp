@@ -1,4 +1,4 @@
-// $Id: WinAPI.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: WinAPI.cpp 8902 2013-08-27 18:25:03Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -23,6 +23,7 @@
 #include "WinAPI.h"
 
 #include "../../../../win32/resource.h"
+#include "../../../../build_version.h"
 #include <VideoInterface.h>
 
 ///////////////////////////////////////////////////////////////////////////////

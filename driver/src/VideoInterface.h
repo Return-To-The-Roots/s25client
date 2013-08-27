@@ -1,4 +1,4 @@
-// $Id: VideoInterface.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: VideoInterface.h 8902 2013-08-27 18:25:03Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -42,9 +42,5 @@ DRIVERDLLAPI VideoDriver *CreateVideoInstance(VideoDriverLoaderInterface * CallB
 
 /// 
 typedef VideoDriver *(*PDRIVER_CREATEVIDEOINSTANCE)(VideoDriverLoaderInterface *);
-
-const char *GetWindowTitle();
-const char *GetWindowVersion();
-const char *GetWindowRevision();
 
 #endif // !VIDEOINTERFACE_H_INCLUDED

@@ -1,4 +1,4 @@
-// $Id: AudioInterface.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: AudioInterface.h 8902 2013-08-27 18:25:03Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -41,9 +41,5 @@ DRIVERDLLAPI AudioDriver *CreateAudioInstance(AudioDriverLoaderInterface * CallB
 
 /// 
 typedef AudioDriver *(*PDRIVER_CREATEAUDIOINSTANCE)(AudioDriverLoaderInterface *, void * );
-
-const char *GetWindowTitle();
-const char *GetWindowVersion();
-const char *GetWindowRevision();
 
 #endif // !AUDIOINTERFACE_H_INCLUDED

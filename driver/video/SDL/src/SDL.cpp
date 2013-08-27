@@ -1,4 +1,4 @@
-// $Id: SDL.cpp 8371 2012-10-03 10:32:02Z marcus $
+// $Id: SDL.cpp 8902 2013-08-27 18:25:03Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -22,6 +22,7 @@
 #include "main.h"
 #include "SDL.h"
 #include <VideoInterface.h>
+#include "../../../../build_version.h"
 
 #ifdef _WIN32
 #include "../../../../win32/resource.h"
