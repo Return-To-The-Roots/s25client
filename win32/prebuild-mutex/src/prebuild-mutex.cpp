@@ -1,4 +1,4 @@
-// $Id: prebuild-mutex.cpp 7836 2012-02-14 13:12:50Z FloSoft $
+// $Id: prebuild-mutex.cpp 8897 2013-08-27 18:11:17Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -27,8 +27,13 @@
 #include <vector>
 #include <iostream>
 #include <algorithm>
+#include <sys/stat.h>
 
 using namespace std;
+
+#define CONTRIBDIR "contrib"
+#define RELEASEDIR "win32\\bin"
+#define DORELEASE
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
@@ -36,7 +41,7 @@ using namespace std;
  *
  *  @author FloSoft
  */
-bool existfile(std::string file)
+bool existfile(string file)
 {
 	FILE *f = fopen(file.c_str(), "r");
 	if(!f)
@@ -46,15 +51,22 @@ bool existfile(std::string file)
 	return true;
 }
 
+bool existDir(string dir)
+{
+	DWORD dwAttrib = GetFileAttributesA(dir.c_str());
+
+	return (dwAttrib != INVALID_FILE_ATTRIBUTES && (dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 /**
  *  führt einen angegebenen (shell)befehl aus
  *
  *  @author FloSoft
  */
-void exec(std::string cmd)
+void exec(string cmd)
 {
-	//std::cout << "executing \"" << cmd << "\"" << std::endl;
+	//cout << "executing \"" << cmd << "\"" << endl;
 	system(cmd.c_str());
 }
 
@@ -64,15 +76,15 @@ void exec(std::string cmd)
  *
  *  @author FloSoft
  */
-void copyfile(std::string file, std::string from, std::string to, std::string tofile = "")
+void copyfile(string file, string from, string to, string tofile = "")
 {
 	if(tofile.empty())
 		tofile = file;
 
-	std::cout << "copying file \"" << file << "\" from \"" << from << "\" to file \"" << tofile << "\" in \"" << to << "\": ";
+	cout << "copying file \"" << file << "\" from \"" << from << "\" to file \"" << tofile << "\" in \"" << to << "\": ";
 	from += file;
 	to += tofile;
-	std::cout << (CopyFileA(from.c_str(), to.c_str(), FALSE) ? "ok" : "failed") << std::endl;
+	cout << (CopyFileA(from.c_str(), to.c_str(), FALSE) ? "ok" : "failed") << endl;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -80,18 +92,18 @@ void copyfile(std::string file, std::string from, std::string to, std::string to
  *  usage: argv[0] $uniqueid $workingdir $binarydir
  *  example:
  *
- *  "$(OutDir)prebuild-mutex.exe" "prebuild" "$(SolutionName)" "$(ProjectName)" "$(ProjectDir)..\..\.." "$(OutDir)"
- *  "$(OutDir)prebuild-mutex.exe" "postbuild" "$(SolutionName)" "$(ProjectName)" "$(ProjectDir)..\..\.." "$(OutDir)"
+ *  "$(OutDir)prebuild-mutex.exe" "prebuild" "$(SolutionName)" "$(ProjectName)" "$(ProjectDir)..\.." "$(OutDir)"
+ *  "$(OutDir)prebuild-mutex.exe" "postbuild" "$(SolutionName)" "$(ProjectName)" "$(ProjectDir)..\.." "$(OutDir)" "$(SolutionDir)..\..\contrib"
  *
  *  @author FloSoft
  */
 int main(int argc, char *argv[])
 {
-	srand((unsigned int)std::time(NULL));
+	srand((unsigned int)time(NULL));
 
-	if(argc < 4)
+	if(argc < 6)
 	{
-		std::cout << "Usage: " << argv[0] << " pre-/postbuild $workingdir $binarydir" << std::endl;
+		cout << "Usage: " << argv[0] << " pre-/postbuild $SolutionName $ProjectName $workingdir $binarydir" << endl;
 		return 1;
 	}
 
@@ -109,17 +121,25 @@ int main(int argc, char *argv[])
 	string working = args.at(4);
 	string binary = args.at(5);
 
-	std::replace(working.begin(), working.end(), '"', '\\');
-	std::replace(binary.begin(), binary.end(), '"', '\\');
+	replace(working.begin(), working.end(), '"', '\\');
+	replace(binary.begin(), binary.end(), '"', '\\');
 
 	if(working.at(working.length()-1) != '\\')
 		working += "\\";
 	if(binary.at(binary.length()-1) != '\\')
 		binary += "\\";
 
-	std::cout << (prebuild ? "prebuild" : "postbuild") << "-mutex for " << project << " started" << std::endl;
-	//std::cout << "working in " << working << std::endl;
-	//std::cout << "binary dir is " << binary << std::endl;
+	string contribDir = working + CONTRIBDIR;
+	string releaseDir = working + RELEASEDIR;
+
+	if(contribDir.at(contribDir.length()-1) != '\\')
+		contribDir += "\\";
+	if(releaseDir.at(releaseDir.length()-1) != '\\')
+		releaseDir += "\\";
+
+	cout << (prebuild ? "prebuild" : "postbuild") << "-mutex for " << project << " started" << endl;
+	cout << "working dir is " << working << endl;
+	cout << "binary dir is " << binary << endl;
 
 	SetCurrentDirectoryA(working.c_str());
 
@@ -149,16 +169,16 @@ int main(int argc, char *argv[])
 						if(!existfile(working + "build_paths.h"))
 							copyfile("build_paths.h.in", working, working, "build_paths.h");
 
-						std::string cmd;
+						string cmd;
 
 						cmd = "\"" + binary + "version.exe\"";
 						exec(cmd);
 
 						if(project == "s25client")
 						{
-							std::cout << "creating language files" << std::endl;
+							cout << "creating language files" << endl;
 
-							std::vector<std::string> langs;
+							vector<string> langs;
 
 							HANDLE hFile;
 							WIN32_FIND_DATAA wfd;
@@ -168,7 +188,7 @@ int main(int argc, char *argv[])
 							{
 								do
 								{
-									std::string lang = wfd.cFileName;
+									string lang = wfd.cFileName;
 									lang = lang.substr(0, lang.find_last_of('.'));
 									langs.push_back(lang);
 								} while(FindNextFileA(hFile, &wfd));
@@ -176,9 +196,9 @@ int main(int argc, char *argv[])
 								FindClose(hFile);
 							}
 
-							for(std::vector<std::string>::iterator it = langs.begin(); it != langs.end(); ++it)
+							for(vector<string>::iterator it = langs.begin(); it != langs.end(); ++it)
 							{
-								std::cout << "creating language " << (*it) << std::endl;
+								cout << "creating language " << (*it) << endl;
 
 								cmd = "msgmerge --sort-output --no-wrap --quiet --update --backup=none -s RTTR/languages/" + (*it) + ".po RTTR/languages/rttr.pot";
 								exec(cmd);

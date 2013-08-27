@@ -1,12 +1,12 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libsiedler2", "..\..\libsiedler2\win32\vs2010\libsiedler2.vcxproj", "{C83446CC-0FF8-4C4A-A1B7-C77E038F62E8}"
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libsiedler2", "..\..\libsiedler2\win32\vs2012\libsiedler2.vcxproj", "{C83446CC-0FF8-4C4A-A1B7-C77E038F62E8}"
 	ProjectSection(ProjectDependencies) = postProject
 		{D2810389-AA34-49CD-A5BB-E0D609E7C785} = {D2810389-AA34-49CD-A5BB-E0D609E7C785}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libendian", "..\..\libendian\win32\vs2010\libendian.vcxproj", "{D2810389-AA34-49CD-A5BB-E0D609E7C785}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libendian", "..\..\libendian\win32\vs2012\libendian.vcxproj", "{D2810389-AA34-49CD-A5BB-E0D609E7C785}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "s25client", "s25client.vcxproj", "{B42E552A-1422-446A-96F9-0D649B078DCB}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -26,57 +26,57 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "s25client", "s25client.vcxp
 		{670970FB-E516-416C-9A75-85BBB4F22B38} = {670970FB-E516-416C-9A75-85BBB4F22B38}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mygettext", "..\..\mygettext\win32\vs2010\mygettext.vcxproj", "{82550E90-5270-4BB7-B598-A3E65F654289}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mygettext", "..\..\mygettext\win32\vs2012\mygettext.vcxproj", "{82550E90-5270-4BB7-B598-A3E65F654289}"
 	ProjectSection(ProjectDependencies) = postProject
 		{D2810389-AA34-49CD-A5BB-E0D609E7C785} = {D2810389-AA34-49CD-A5BB-E0D609E7C785}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libutil", "..\..\libutil\win32\vs2010\libutil.vcxproj", "{C757122F-B02F-43D6-8607-B6A683566A2C}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libutil", "..\..\libutil\win32\vs2012\libutil.vcxproj", "{C757122F-B02F-43D6-8607-B6A683566A2C}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "liblobby_c", "..\..\liblobby\win32\vs2010\liblobby_c.vcxproj", "{E7A063E4-0030-4B82-8553-0E665EC38954}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "liblobby_c", "..\..\liblobby\win32\vs2012\liblobby_c.vcxproj", "{E7A063E4-0030-4B82-8553-0E665EC38954}"
 	ProjectSection(ProjectDependencies) = postProject
 		{C757122F-B02F-43D6-8607-B6A683566A2C} = {C757122F-B02F-43D6-8607-B6A683566A2C}
 		{82550E90-5270-4BB7-B598-A3E65F654289} = {82550E90-5270-4BB7-B598-A3E65F654289}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "version", "..\..\version\win32\vs2010\version.vcxproj", "{BED59EEF-E62E-488D-9F62-5FA112523A1B}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "version", "..\..\version\win32\vs2012\version.vcxproj", "{BED59EEF-E62E-488D-9F62-5FA112523A1B}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "prebuild-mutex", "..\prebuild-mutex\win32\vs2010\prebuild-mutex.vcxproj", "{D3091697-933A-4473-AA94-D264CBB2C273}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "prebuild-mutex", "..\prebuild-mutex\win32\vs2012\prebuild-mutex.vcxproj", "{D3091697-933A-4473-AA94-D264CBB2C273}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "s25update", "..\..\s25update\win32\vs2010\s25update.vcxproj", "{C00BA80B-0562-4B13-A7CA-E301C15B1E19}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "s25update", "..\..\s25update\win32\vs2012\s25update.vcxproj", "{C00BA80B-0562-4B13-A7CA-E301C15B1E19}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "audio", "..\..\driver\win32\vs2010\audio.vcxproj", "{8216129F-D4E9-4720-84D6-156555D6BCF7}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "audio", "..\..\driver\win32\vs2012\audio.vcxproj", "{8216129F-D4E9-4720-84D6-156555D6BCF7}"
 	ProjectSection(ProjectDependencies) = postProject
 		{D3091697-933A-4473-AA94-D264CBB2C273} = {D3091697-933A-4473-AA94-D264CBB2C273}
 		{BED59EEF-E62E-488D-9F62-5FA112523A1B} = {BED59EEF-E62E-488D-9F62-5FA112523A1B}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "video", "..\..\driver\win32\vs2010\video.vcxproj", "{670970FB-E516-416C-9A75-85BBB4F22B38}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "video", "..\..\driver\win32\vs2012\video.vcxproj", "{670970FB-E516-416C-9A75-85BBB4F22B38}"
 	ProjectSection(ProjectDependencies) = postProject
 		{D3091697-933A-4473-AA94-D264CBB2C273} = {D3091697-933A-4473-AA94-D264CBB2C273}
 		{8216129F-D4E9-4720-84D6-156555D6BCF7} = {8216129F-D4E9-4720-84D6-156555D6BCF7}
 		{BED59EEF-E62E-488D-9F62-5FA112523A1B} = {BED59EEF-E62E-488D-9F62-5FA112523A1B}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sound-convert", "..\..\s-c\win32\vs2010\sound-convert.vcxproj", "{B1D788CC-2348-4A61-B275-DBBC37A4D7D1}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sound-convert", "..\..\s-c\win32\vs2012\sound-convert.vcxproj", "{B1D788CC-2348-4A61-B275-DBBC37A4D7D1}"
 	ProjectSection(ProjectDependencies) = postProject
 		{2C131B16-6FA4-4940-AE47-61F885320F4E} = {2C131B16-6FA4-4940-AE47-61F885320F4E}
 		{C83446CC-0FF8-4C4A-A1B7-C77E038F62E8} = {C83446CC-0FF8-4C4A-A1B7-C77E038F62E8}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "s-c_resample", "..\..\s-c\resample-1.8.1\win32\vs2010\s-c_resample.vcxproj", "{2C131B16-6FA4-4940-AE47-61F885320F4E}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "s-c_resample", "..\..\s-c\resample-1.8.1\win32\vs2012\s-c_resample.vcxproj", "{2C131B16-6FA4-4940-AE47-61F885320F4E}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "videoWinAPI", "..\..\driver\video\WinAPI\win32\vs2010\videoWinAPI.vcxproj", "{3846E8B9-88FB-4382-82CB-6BE739B63544}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "videoWinAPI", "..\..\driver\video\WinAPI\win32\vs2012\videoWinAPI.vcxproj", "{3846E8B9-88FB-4382-82CB-6BE739B63544}"
 	ProjectSection(ProjectDependencies) = postProject
 		{670970FB-E516-416C-9A75-85BBB4F22B38} = {670970FB-E516-416C-9A75-85BBB4F22B38}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "videoSDL", "..\..\driver\video\SDL\win32\vs2010\videoSDL.vcxproj", "{7EFF02CB-F412-4DB0-966C-4DB7464EC1D7}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "videoSDL", "..\..\driver\video\SDL\win32\vs2012\videoSDL.vcxproj", "{7EFF02CB-F412-4DB0-966C-4DB7464EC1D7}"
 	ProjectSection(ProjectDependencies) = postProject
 		{670970FB-E516-416C-9A75-85BBB4F22B38} = {670970FB-E516-416C-9A75-85BBB4F22B38}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "audioSDL", "..\..\driver\audio\SDL\win32\vs2010\audioSDL.vcxproj", "{DB36C30F-F1D4-4639-9965-365F76D48488}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "audioSDL", "..\..\driver\audio\SDL\win32\vs2012\audioSDL.vcxproj", "{DB36C30F-F1D4-4639-9965-365F76D48488}"
 	ProjectSection(ProjectDependencies) = postProject
 		{8216129F-D4E9-4720-84D6-156555D6BCF7} = {8216129F-D4E9-4720-84D6-156555D6BCF7}
 	EndProjectSection
