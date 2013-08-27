@@ -1,4 +1,4 @@
-// $Id: dskSplash.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: dskSplash.cpp 8909 2013-08-27 18:30:17Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -54,6 +54,7 @@
  */
 dskSplash::dskSplash() : Desktop(LOADER.GetImageN("splash", 0))
 {
+	background->setFilter(GL_LINEAR);
 	GAMEMANAGER.SetCursor(CURSOR_NONE);
 	AddTimer(0, 5000);
 }
