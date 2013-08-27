@@ -1,4 +1,4 @@
-// $Id: WinAPI.cpp 8902 2013-08-27 18:25:03Z jh $
+// $Id: WinAPI.cpp 8919 2013-08-27 19:22:46Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -23,7 +23,7 @@
 #include "WinAPI.h"
 
 #include "../../../../win32/resource.h"
-#include "../../../../build_version.h"
+#include <build_version.h>
 #include <VideoInterface.h>
 
 ///////////////////////////////////////////////////////////////////////////////
