@@ -1,5 +1,5 @@
 ################################################################################
-### $Id: CMakeLists.txt 8737 2013-05-16 15:42:35Z marcus $
+### $Id: CMakeLists.txt 8884 2013-08-27 15:59:01Z marcus $
 ################################################################################
 
 INCLUDE(FindBZip2)
@@ -308,6 +308,17 @@ SET(SOURCES_OTHER
 										AddonDefenderBehavior.h
 										AddonAIDebugWindow.h
 										AddonToolOrdering.h
+										AddonAdjustMilitaryStrength.h
+										AddonCatapultGraphics.h
+										AddonExhaustibleWells.h
+										AddonManualRoadEnlargement.h
+										AddonNoCoinsDefault.h
+										AddonTrade.h
+										AddonRefundMaterials.h
+										AddonCharburner.h
+										AddonDemolitionProhibition.h
+										AddonMilitaryAid.h
+										AddonRefundOnEmergency.h
 										const_addons.h
 	win32_nanosleep.cpp                 win32_nanosleep.h
 	Debug.cpp                           Debug.h
