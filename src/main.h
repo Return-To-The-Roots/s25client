@@ -1,4 +1,4 @@
-// $Id: main.h 8904 2013-08-27 18:26:06Z jh $
+// $Id: main.h 8911 2013-08-27 18:31:07Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -34,6 +34,7 @@
 	#ifndef __CYGWIN__
 		#include <conio.h>
 	#endif
+
 
 #ifdef _MSC_VER
 	#include <crtdbg.h>

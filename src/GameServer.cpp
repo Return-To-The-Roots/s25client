@@ -1,4 +1,4 @@
-// $Id: GameServer.cpp 8910 2013-08-27 18:30:35Z jh $
+// $Id: GameServer.cpp 8911 2013-08-27 18:31:07Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -106,7 +106,7 @@ GameServer::CountDown::CountDown()
 	Clear();
 }
 
-void GameServer::CountDown::Clear(int time = 2)
+void GameServer::CountDown::Clear(int time)
 {
 	do_countdown = false;
 	countdown = time;
