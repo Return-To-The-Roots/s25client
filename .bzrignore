@@ -17,3 +17,7 @@ Release
 ./RTTR/s25update.exe
 ./win32/bin/*
 ./RTTR/libcurld.dll
+.svn
+.bzrignore
+backup_*
+!/contrib
