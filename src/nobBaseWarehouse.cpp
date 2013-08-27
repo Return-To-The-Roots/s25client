@@ -1,4 +1,4 @@
-// $Id: nobBaseWarehouse.cpp 8913 2013-08-27 18:33:36Z jh $
+// $Id: nobBaseWarehouse.cpp 8918 2013-08-27 19:15:17Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -555,9 +555,8 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
 			{
 				// Figur
 				type-=WARE_TYPES_COUNT;
-				Job figure = (Job) type;
 
-				nobBaseWarehouse * wh = gwg->GetPlayer(player)->FindWarehouse(this,FW::Condition_StoreFigure,0,true,&figure,false);
+				nobBaseWarehouse * wh = gwg->GetPlayer(player)->FindWarehouse(this,FW::Condition_StoreFigure,0,true,&type,false);
 				nofPassiveWorker * fig = new nofPassiveWorker(Job(type),x,y,player,NULL);
 				
 				if(wh)
@@ -603,9 +602,8 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
 					storing_wanted = true;
 
 					// Lagerhaus suchen, das diese Ware enthält
-					GoodType good = (GoodType) i;
 					nobBaseWarehouse * wh = players->getElement(player)
-						->FindWarehouse(this,FW::Condition_StoreAndDontWantWare,NULL,false,&good,false);
+						->FindWarehouse(this,FW::Condition_StoreAndDontWantWare,NULL,false,(void*)&i,false);
 					// Gefunden?
 					if(wh)
 					{
@@ -632,9 +630,8 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
 						storing_wanted = true;
 
 						// Lagerhaus suchen, das diesen Job enthält
-						Job job = (Job) i;
 						nobBaseWarehouse * wh = players->getElement(player)
-							->FindWarehouse(this,FW::Condition_StoreAndDontWantFigure,NULL,false,&job,false);
+							->FindWarehouse(this,FW::Condition_StoreAndDontWantFigure,NULL,false,(void*)&i,false);
 						// Gefunden?
 						if(wh)
 						{
@@ -1106,23 +1103,23 @@ void nobBaseWarehouse::TryStopRecruiting()
 }
 
 
-bool FW::Condition_Ware(nobBaseWarehouse * wh, const Param_Ware * param)
+bool FW::Condition_Ware(nobBaseWarehouse * wh, const void * param)
 {
-	return (wh->GetRealWaresCount(param->type) >= param->count);
+	return (wh->GetRealWaresCount(static_cast<const Param_Ware*>(param)->type) >= static_cast<const Param_Ware*>(param)->count);
 }
 
-bool FW::Condition_Job(nobBaseWarehouse * wh, const Param_Job * param)
+bool FW::Condition_Job(nobBaseWarehouse * wh, const void * param)
 {
-	if(wh->GetRealFiguresCount(param->type) >= param->count)
+	if(wh->GetRealFiguresCount(static_cast<const Param_Job*>(param)->type) >= static_cast<const Param_Job*>(param)->count)
 		return true;
 	else
 	{
 		// die entsprechende Figur ist nicht vorhanden, wenn das Werkzeug der Figur und ein Mann (Träger) zum Rekrutieren
 		// da ist, geht das auch, nur bei Eseln nicht !!
-		bool tool_available = (JOB_CONSTS[param->type].tool != GD_NOTHING) ? 
-			(wh->GetRealWaresCount(JOB_CONSTS[param->type].tool)>0) : true;
+		bool tool_available = (JOB_CONSTS[static_cast<const Param_Job*>(param)->type].tool != GD_NOTHING) ? 
+			(wh->GetRealWaresCount(JOB_CONSTS[static_cast<const Param_Job*>(param)->type].tool)>0) : true;
 
-		if(param->type == JOB_PACKDONKEY)
+		if(static_cast<const Param_Job*>(param)->type == JOB_PACKDONKEY)
 			tool_available = false;
 
 		if( wh->GetRealFiguresCount(JOB_HELPER) && tool_available)
@@ -1134,15 +1131,15 @@ bool FW::Condition_Job(nobBaseWarehouse * wh, const Param_Job * param)
 
 
 
-bool FW::Condition_WareAndJob(nobBaseWarehouse * wh, const Param_WareAndJob * param)
+bool FW::Condition_WareAndJob(nobBaseWarehouse * wh, const void * param)
 {
-	return (Condition_Ware(wh,&param->ware) &&
-		Condition_Job(wh,&param->job));
+	return (Condition_Ware(wh,&static_cast<const Param_WareAndJob*>(param)->ware) &&
+		Condition_Job(wh,&static_cast<const Param_WareAndJob*>(param)->job));
 }
 
-bool FW::Condition_Troops(nobBaseWarehouse * wh, const unsigned * param)
+bool FW::Condition_Troops(nobBaseWarehouse * wh, const void * param)
 {
-	return (wh->GetSoldiersCount() >= *param);
+	return (wh->GetSoldiersCount() >= *static_cast<const unsigned*>(param));
 }
 
 bool FW::NoCondition(nobBaseWarehouse * wh, const void * param)
@@ -1150,50 +1147,55 @@ bool FW::NoCondition(nobBaseWarehouse * wh, const void * param)
 	return true;
 }
 
-bool FW::Condition_StoreWare(nobBaseWarehouse * wh, const GoodType * param)
+bool FW::Condition_StoreWare(nobBaseWarehouse * wh, const void * param)
 {
 	// Einlagern darf nicht verboten sein
 	// Schilder beachten!
-	return (!wh->CheckRealInventorySettings(0, 2, ConvertShields(*param)));
+	if(*static_cast<const GoodType*>(param) == GD_SHIELDVIKINGS || *static_cast<const GoodType*>(param) == GD_SHIELDAFRICANS || 
+		*static_cast<const GoodType*>(param) == GD_SHIELDJAPANESE)
+		return (!wh->CheckRealInventorySettings(0,2,GD_SHIELDROMANS));
+	else
+		return (!wh->CheckRealInventorySettings(0,2,*static_cast<const GoodType*>(param)));
 }
 
 
-bool FW::Condition_StoreFigure(nobBaseWarehouse * wh, const Job * param)
+bool FW::Condition_StoreFigure(nobBaseWarehouse * wh, const void * param)
 {
 	// Einlagern darf nicht verboten sein, Bootstypen zu normalen Trägern machen
-	if(*param == JOB_BOATCARRIER)
+	if(*static_cast<const Job*>(param) == JOB_BOATCARRIER)
 		return (!wh->CheckRealInventorySettings(1,2,JOB_HELPER));
 	else
-		return (!wh->CheckRealInventorySettings(1,2,*param));
+		return (!wh->CheckRealInventorySettings(1,2,*static_cast<const Job*>(param)));
 }
 
-bool FW::Condition_WantStoreFigure(nobBaseWarehouse * wh, const Job * param)
+bool FW::Condition_WantStoreFigure(nobBaseWarehouse * wh, const void * param)
 {
 	// Einlagern muss gewollt sein
-	Job job = (*param == JOB_BOATCARRIER) ? JOB_HELPER : *param;
+	Job job = (*static_cast<const Job*>(param) == JOB_BOATCARRIER) ? JOB_HELPER : *static_cast<const Job*>(param);
 	return (wh->CheckRealInventorySettings(1,8,job));
 }
 
-bool FW::Condition_WantStoreWare(nobBaseWarehouse * wh, const GoodType * param)
+bool FW::Condition_WantStoreWare(nobBaseWarehouse * wh, const void * param)
 {
 	// Einlagern muss gewollt sein
 	// Schilder beachten!
-	GoodType gt = ConvertShields(*param);
+	GoodType gt = ConvertShields(*static_cast<const GoodType*>(param));
 	return (wh->CheckRealInventorySettings(0,8,gt));
 }
 
 // Lagerhäuser enthalten die jeweilien Waren, liefern sie aber NICHT gleichzeitig ein
-bool FW::Condition_StoreAndDontWantWare(nobBaseWarehouse * wh, const GoodType * param)
+bool FW::Condition_StoreAndDontWantWare(nobBaseWarehouse * wh, const void * param)
 {
-	Param_Ware pw = { *param, 1 };
+	Param_Ware pw = { *static_cast<const GoodType*>(param), 1 };
 	return (Condition_Ware(wh,&pw) && !Condition_WantStoreWare(wh,param));
-}
+}// param = &GoodType -> Warentyp
 
-bool FW::Condition_StoreAndDontWantFigure(nobBaseWarehouse * wh, const Job * param)
+bool FW::Condition_StoreAndDontWantFigure(nobBaseWarehouse * wh, const void * param)
 {
-	Param_Job pj = { *param, 1 };
+	Param_Job pj = { *static_cast<const Job*>(param), 1 };
 	return (Condition_Job(wh,&pj) && !Condition_WantStoreFigure(wh,param));
 }
+// param = &Job -> Jobtyp
 
 
 

@@ -1,4 +1,4 @@
-// $Id: GameClientPlayer.cpp 8913 2013-08-27 18:33:36Z jh $
+// $Id: GameClientPlayer.cpp 8918 2013-08-27 19:15:17Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -448,6 +448,38 @@ void GameClientPlayer::SwapPlayer(GameClientPlayer& two)
 
 	Swap(this->is_lagging,two.is_lagging);
 	Swap(this->gc_queue,two.gc_queue);
+}
+
+nobBaseWarehouse * GameClientPlayer::FindWarehouse(const noRoadNode * const start,bool (*IsWarehouseGood)(nobBaseWarehouse*,const void*),
+												   const RoadSegment * const forbidden,const bool to_wh,const void * param,const bool use_boat_roads,unsigned * const length)
+{
+	nobBaseWarehouse * best	= 0;
+
+//	unsigned char path = 0xFF, tpath = 0xFF;
+	unsigned tlength = 0xFFFFFFFF,best_length = 0xFFFFFFFF;
+
+	for(std::list<nobBaseWarehouse*>::iterator w = warehouses.begin(); w!=warehouses.end(); ++w)
+	{
+		// Lagerhaus geeignet?
+		if(IsWarehouseGood(*w,param))
+		{
+			// Bei der erlaubten Benutzung von BootsstraÃen Waren-Pathfinding benutzen
+			if(gwg->FindPathOnRoads(to_wh ? start : *w, to_wh ? *w : start,use_boat_roads,&tlength,NULL, NULL,forbidden))
+			{
+				if(tlength < best_length || !best)
+				{
+//					path = tpath;
+					best_length = tlength;
+					best = (*w);
+				}
+			}
+		}
+	}
+
+	if(length)
+		*length = best_length;
+
+	return best;
 }
 
 void GameClientPlayer::NewRoad(RoadSegment * const rs)
