@@ -1,4 +1,4 @@
-// $Id: GameServer.cpp 8726 2013-05-16 12:41:29Z marcus $
+// $Id: GameServer.cpp 8910 2013-08-27 18:30:35Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -106,10 +106,10 @@ GameServer::CountDown::CountDown()
 	Clear();
 }
 
-void GameServer::CountDown::Clear()
+void GameServer::CountDown::Clear(int time = 2)
 {
 	do_countdown = false;
-	countdown = 2;
+	countdown = time;
 	lasttime = 0;
 }
 
@@ -457,6 +457,8 @@ bool GameServer::StartCountdown()
 	GameServerPlayer *player = NULL;
 	unsigned char client = 0xFF;
 
+	int playerCount = 0;
+
 	// Alle Spieler da?
 	for(client = 0; client < serverconfig.playercount; ++client)
 	{
@@ -467,6 +469,8 @@ bool GameServer::StartCountdown()
 			return false;
 		else if(player->ps != PS_LOCKED && player->ps != PS_KI && !player->ready)
 			return false;
+		if(player->ps == PS_OCCUPIED)
+			playerCount++;
 	}
 
 	bool reserved_colors[PLAYER_COLORS_COUNT];
@@ -487,8 +491,8 @@ bool GameServer::StartCountdown()
 		}
 	}
 
-	// Countdown starten
-	countdown.Clear();
+	// Countdown starten (except its single player)
+	countdown.Clear((playerCount>1) ? 2 : -1);
 	countdown.do_countdown = true;
 
 	return true;

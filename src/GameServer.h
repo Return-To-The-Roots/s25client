@@ -1,4 +1,4 @@
-// $Id: GameServer.h 8725 2013-05-16 12:30:38Z marcus $
+// $Id: GameServer.h 8910 2013-08-27 18:30:35Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -176,7 +176,7 @@ private:
 	{
 	public:
 		CountDown();
-		void Clear();
+		void Clear(int time = 2);
 
 		bool do_countdown;
 		int countdown;
