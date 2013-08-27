@@ -1,4 +1,4 @@
-// $Id: GameWorldBase.cpp 8866 2013-08-24 22:00:01Z marcus $
+// $Id: GameWorldBase.cpp 8888 2013-08-27 17:50:58Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1651,7 +1651,7 @@ int GameWorldBase::LUA_EnableBuilding(lua_State *L)
 	while (cnt <= argc)
 	{
 		// building type
-		unsigned building_type = luaL_checknumber(L, cnt++);
+		unsigned building_type = (unsigned) luaL_checknumber(L, cnt++);
 
 		if (building_type < BUILDING_TYPES_COUNT)
 		{
@@ -1695,7 +1695,7 @@ int GameWorldBase::LUA_DisableBuilding(lua_State *L)
 	while (cnt <= argc)
 	{
 		// building type
-		unsigned building_type = luaL_checknumber(L, cnt++);
+		unsigned building_type = (unsigned) luaL_checknumber(L, cnt++);
 
 		if (building_type < BUILDING_TYPES_COUNT)
 		{
