@@ -1,4 +1,4 @@
-// $Id: main.h 8846 2013-08-17 11:54:47Z marcus $
+// $Id: main.h 8904 2013-08-27 18:26:06Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -134,6 +134,7 @@ extern "C"
 ///////////////////////////////////////////////////////////////////////////////
 // Eigene Header
 #include <build_paths.h>
+#include <build_version.h>
 #include "../libutil/src/libutil.h"
 #include "../mygettext/src/mygettext.h"
 #include "../liblobby/src/liblobby.h"
@@ -193,11 +194,6 @@ struct Point
 	bool operator==(const Point<T> second) const
 	{ return (x == second.x && y == second.y); }
 };
-
-const char *GetWindowTitle();
-const char *GetWindowVersion();
-const char *GetWindowRevision();
-const char *GetCurrentYear();
 
 const unsigned oo = 0xffffffff;
 
