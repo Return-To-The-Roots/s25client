@@ -1,4 +1,4 @@
-// $Id: nofActiveSoldier.cpp 8862 2013-08-24 08:47:37Z marcus $
+// $Id: nofActiveSoldier.cpp 8916 2013-08-27 18:50:05Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -184,7 +184,7 @@ void nofActiveSoldier::Draw(int x, int y)
 	case STATE_SEAATTACKING_RETURNTOSHIP:
 		{
 			// Draw walking states
-			DrawWalking(x,y);
+			DrawSoldierWalking(x,y);
 		} break;
 	}
 }

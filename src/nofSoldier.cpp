@@ -1,4 +1,4 @@
-// $Id: nofSoldier.cpp 8862 2013-08-24 08:47:37Z marcus $
+// $Id: nofSoldier.cpp 8916 2013-08-27 18:50:05Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -68,6 +68,11 @@ nofSoldier::nofSoldier(SerializedGameData * sgd, const unsigned obj_id) : noFigu
 		building = 0;
 
 	hitpoints = sgd->PopUnsignedChar();
+}
+
+void nofSoldier::DrawSoldierWalking(int x, int y)
+{
+	DrawWalking(x,y,LOADER.GetBobN("jobs"),30+NATION_RTTR_TO_S2[gwg->GetPlayer(player)->nation]*6+job-JOB_PRIVATE,false);
 }
 
 void nofSoldier::AbrogateWorkplace()

@@ -1394,6 +1394,12 @@ void noFigure::DrawWalkingBobCarrier(int x, int y, unsigned int ware, bool fat)
 
 void noFigure::DrawWalkingBobJobs(int x, int y, unsigned int job)
 {
+	if ((job == JOB_SCOUT) || ((job >= JOB_PRIVATE) && (job <= JOB_GENERAL)))
+	{
+		DrawWalking(x,y,LOADER.GetBobN("jobs"),JOB_CONSTS[job].jobs_bob_id + NATION_RTTR_TO_S2[gwg->GetPlayer(player)->nation]*6,false);
+		return;
+	}
+
 	// Wenn wir warten auf ein freies Plätzchen, müssen wir den stehend zeichnen!
 	unsigned ani_step = waiting_for_free_node?2:GAMECLIENT.Interpolate(ASCENT_ANIMATION_STEPS[ascent],current_ev)%8;
 	
