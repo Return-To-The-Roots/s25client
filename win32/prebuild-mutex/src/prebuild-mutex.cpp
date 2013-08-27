@@ -1,4 +1,4 @@
-// $Id: prebuild-mutex.cpp 8897 2013-08-27 18:11:17Z jh $
+// $Id: prebuild-mutex.cpp 8901 2013-08-27 18:24:03Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -211,15 +211,53 @@ int main(int argc, char *argv[])
 					{
 						if(project == "s25client")
 						{
+							const int DLLCOUNT = 8;
+							char* dlls[DLLCOUNT] = {"libiconv2.dll", "libogg-0.dll", "libvorbis-0.dll", "libvorbisfile-3.dll", "mikmod.dll", "SDL.dll", "SDL_mixer.dll" , "smpeg.dll" };
 							copyfile("sound-convert.exe", binary, working + "RTTR\\");
 							copyfile("s-c_resample.exe", binary, working + "RTTR\\");
-							copyfile("libsiedler2.dll", binary, working + "RTTR\\");
+							copyfile("s25update.exe", binary, working + "RTTR\\");
+							string contribDirSub = contribDir + "full-contrib-msvc2010\\bin\\";
+							if(existDir(contribDir))
+							{
+								copyfile( "lua52.dll", contribDir + "lua\\win32\\", binary);
+								if(existDir(contribDirSub))
+								{
+									for(int i = 0; i < DLLCOUNT; i++)
+										copyfile( dlls[i], contribDirSub, binary);
+#ifdef _DEBUG
+									copyfile("libcurld.dll", contribDirSub, working + "RTTR\\");
+#else
+									copyfile("libcurl.dll", contribDirSub, working + "RTTR\\");
+#endif
+								}
+							}
+#ifdef DORELEASE
+							if(existDir(releaseDir))
+								exec("rd /S /Q \"" + releaseDir + "\"");
+							exec("mkdir \"" + releaseDir + "\"");
+							exec("mkdir \"" + releaseDir + "driver\"");
+							exec("mkdir \"" + releaseDir + "driver\\audio\"");
+							exec("mkdir \"" + releaseDir + "driver\\video\"");
+							exec("xcopy /E /C /I /Y /Q \"" + working + "RTTR\" \"" + releaseDir + "RTTR\"");
+							copyfile("s25client.exe", binary, releaseDir);
+							exec("copy \"" + working + "driver\\audio\\*.dll\" \"" + releaseDir + "driver\\audio\\\"");
+							exec("copy \"" + working + "driver\\video\\*.dll\" \"" + releaseDir + "driver\\video\\\"");
+							if(existDir(contribDir))
+							{
+								copyfile( "lua52.dll", contribDir + "lua\\win32\\", releaseDir);
+								if(existDir(contribDirSub))
+								{
+									for(int i = 0; i < DLLCOUNT; i++)
+										copyfile( dlls[i], contribDirSub, releaseDir);
+								}
+							}
+#endif
 						}
 					}
 				}
 
-				std::cout << (prebuild ? "prebuild" : "postbuild") << "-mutex for " << project << " finished" << std::endl;
-				std::cout << std::endl;
+				cout << (prebuild ? "prebuild" : "postbuild") << "-mutex for " << project << " finished" << endl;
+				cout << endl;
 
 				ReleaseMutex(mHandle);
 				return 0;
