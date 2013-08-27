@@ -1,4 +1,4 @@
-// $Id: GlobalGameSettings.cpp 8885 2013-08-27 16:34:31Z marcus $
+// $Id: GlobalGameSettings.cpp 8920 2013-08-27 19:40:37Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -51,9 +51,6 @@
 #include "AddonToolOrdering.h"
 
 #include "AddonMilitaryAid.h"
-
-#include "AddonAsyncDebug.h"
-
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
@@ -136,8 +133,6 @@ void GlobalGameSettings::reset(bool recreate)
 		registerAddon(new AddonToolOrdering);
 		
 		registerAddon(new AddonMilitaryAid);
-
-		registerAddon(new AddonAsyncDebug);
 	}
 }
 

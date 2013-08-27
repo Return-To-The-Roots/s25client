@@ -1,4 +1,4 @@
-// $Id: GameSavegame.cpp 8885 2013-08-27 16:34:31Z marcus $
+// $Id: GameSavegame.cpp 8920 2013-08-27 19:40:37Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -25,7 +25,7 @@
 /// Kleine Signatur am Anfang "RTTRSAVE", die ein gültiges S25 RTTR Savegame kennzeichnet
 const char Savegame::SAVE_SIGNATURE[8] = {'R','T','T','R','S','A','V','E'};
 /// Version des Savegame-Formates
-const unsigned short Savegame::SAVE_VERSION = 26;
+const unsigned short Savegame::SAVE_VERSION = 25;
 
 ///////////////////////////////////////////////////////////////////////////////
 /**

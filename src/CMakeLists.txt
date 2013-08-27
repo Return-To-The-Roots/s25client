@@ -1,5 +1,5 @@
 ################################################################################
-### $Id: CMakeLists.txt 8885 2013-08-27 16:34:31Z marcus $
+### $Id: CMakeLists.txt 8920 2013-08-27 19:40:37Z marcus $
 ################################################################################
 
 INCLUDE(FindBZip2)
@@ -315,7 +315,6 @@ SET(SOURCES_OTHER
 										AddonNoCoinsDefault.h
 										AddonTrade.h
 										AddonRefundMaterials.h
-										AddonAsyncDebug.h
 										AddonCharburner.h
 										AddonDemolitionProhibition.h
 										AddonMilitaryAid.h

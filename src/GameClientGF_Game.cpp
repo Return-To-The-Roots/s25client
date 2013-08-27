@@ -1,4 +1,4 @@
-// $Id: GameClientGF_Game.cpp 8885 2013-08-27 16:34:31Z marcus $
+// $Id: GameClientGF_Game.cpp 8920 2013-08-27 19:40:37Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -23,7 +23,6 @@
 #include "GameClient.h"
 #include "Random.h"
 #include "GameMessages.h"
-#include "FileChecksum.h"
 
 void GameClient::ExecuteGameFrame_Game()
 {
@@ -61,31 +60,7 @@ void GameClient::ExecuteGameFrame_Game()
 	// Frame ausführen
 	NextGF();
 
-//	LOG.lprintf("%d = %d - %d\n", framesinfo.nr / framesinfo.nwf_length, checksum, Random::inst().GetCurrentRandomValue());
-
-	// calculate checksums
-	if (GameClient::inst().GetGGS().isEnabled(ADDON_ASYNC_DEBUG))
-	{
-		size_t idx = framesinfo.nr % (framesinfo.nwf_length * 2);
-		unsigned i = 0;
-
-		// walk GFs of this NWF to compute checksums
-		for (; i < framesinfo.nwf_length; ++i)
-		{
-			if (idx == 0)
-			{
-				idx = framesinfo.nwf_length * 2 - 1;
-			} else
-			{
-				idx--;
-			}
-
-			// calculate checksum
-			unsigned int cs = CalcChecksumOfBuffer(async_debug[idx].GetData(), async_debug[idx].GetLength());
-
-//			LOG.lprintf("\t%u (%u)\n", async_debug[idx].GetLength(), cs);
-		}
-	}
+	//LOG.lprintf("%d = %d - %d\n", framesinfo.nr / framesinfo.nwf_length, checksum, Random::inst().GetCurrentRandomValue());
 
 	// Stehen eigene Commands an, die gesendet werden müssen?
 	send_queue.push(new GameMessage_GameCommand(playerid,checksum,gcs));

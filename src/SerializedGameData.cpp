@@ -1,4 +1,4 @@
-// $Id: SerializedGameData.cpp 8885 2013-08-27 16:34:31Z marcus $
+// $Id: SerializedGameData.cpp 8920 2013-08-27 19:40:37Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -196,8 +196,6 @@ void SerializedGameData::MakeSnapshot(GameWorld *const gw, EventManager *const e
 {
 	// Buffer erzeugen
 	Clear();
-
-	objects_count = 0;
 
 	// Objektreferenzen reservieren
 	objects_write = new const GameObject*[GameObject::GetObjCount()];
