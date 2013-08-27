@@ -1,5 +1,5 @@
 -------------------------------------------------------------------------------
-$Id: INSTALL 8633 2013-02-19 12:00:50Z FloSoft $
+$Id: INSTALL 8883 2013-08-27 06:39:09Z FloSoft $
 -------------------------------------------------------------------------------
 
 Conditions:
@@ -41,3 +41,36 @@ Options:
 ./cleanup.sh             Cleans all files created by cmake.sh and make
 
 -------------------------------------------------------------------------------
+
+
+Windows:
+
+Extract "contrib\full-contrib-msvc2010.rar".
+
+Now open "win32\vs2010\s25client.sln" with Visual Studio 2010
+
+After that, use "View" "Other Windows" "Property Manager" to 
+add the property-manager to your vs2010 view - in it, open one 
+loaded project of your choice, and double click on "Microsoft.Cpp.Win32.user"
+
+It should start on the entry "VC Directories"
+Now add following paths:
+ExecutableDirs: "path/to/s25rttr/contrib/full-contrib-msvc2010/bin"
+IncludeDirs: "path/to/s25rttr/contrib/full-contrib-msvc2010/include"
+LibraryDirs: "path/to/s25rttr/contrib/full-contrib-msvc2010/lib"
+
+and press OK
+If you press "Build" "Build Solution" now, it should create the complete project.
+
+To debug within visual studio 2010,
+you should either put
+
+#define GAMEDIR "path/to/s2"
+
+into your build_paths.h or copy "DATA" and "GFX" from your settlers 2 installation to 
+the same directory, where "build_paths.h" is.
+
+For both variants, you have to put "$(SolutionDir)\..\.." into "Working Directory" in 
+"Project Properties / Debugging"
+
+
