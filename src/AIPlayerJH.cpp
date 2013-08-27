@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 8490 2012-11-06 07:32:46Z FloSoft $
+// $Id: AIPlayerJH.cpp 8912 2013-08-27 18:33:18Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1108,7 +1108,7 @@ bool AIPlayerJH::SimpleFindPosition(MapCoord &x, MapCoord &y, BuildingQuality si
 	return false;
 }
 
-double AIPlayerJH::GetDensity(MapCoord x, MapCoord y, AIJH::Resource res, int radius)
+unsigned AIPlayerJH::GetDensity(MapCoord x, MapCoord y, AIJH::Resource res, int radius)
 {
 		unsigned short width = aii->GetMapWidth();
 		unsigned short height = aii->GetMapHeight();
@@ -1143,7 +1143,7 @@ double AIPlayerJH::GetDensity(MapCoord x, MapCoord y, AIJH::Resource res, int ra
 		}
 	}
 
-	return (all != 0) ? good/(double)all : 0.0;
+	return (all != 0) ? (good * 100)/all : 0;
 }
 
 void AIPlayerJH::HandleNewMilitaryBuilingOccupied(const Coords& coords)

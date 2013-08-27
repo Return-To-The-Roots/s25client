@@ -1,4 +1,4 @@
-// $Id: AIJHHelper.cpp 8314 2012-09-23 22:39:51Z marcus $
+// $Id: AIJHHelper.cpp 8912 2013-08-27 18:33:18Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -155,7 +155,7 @@ void AIJH::BuildJob::TryToBuild()
 			break;
 			}
 		case BLD_FORESTER:
- 			if (aijh->GetDensity(bx, by, AIJH::PLANTSPACE, 7) > 0.3)
+ 			if (aijh->GetDensity(bx, by, AIJH::PLANTSPACE, 7) > 30)
 				foundPos = aijh->FindBestPosition(bx, by, AIJH::WOOD, BQ_HUT, 0, 11);
 			break;
 		case BLD_HUNTER:
