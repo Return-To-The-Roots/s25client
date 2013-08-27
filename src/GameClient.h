@@ -1,4 +1,4 @@
-// $Id: GameClient.h 8726 2013-05-16 12:41:29Z marcus $
+// $Id: GameClient.h 8885 2013-08-27 16:34:31Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -383,6 +383,9 @@ private:
 
 	/// Spiel-Log für Asyncs
 	FILE * game_log;
+
+	// additional async debug data (ADDON_ASYNC_DEBUG)
+	std::vector<SerializedGameData> async_debug;
 };
 
 ///////////////////////////////////////////////////////////////////////////////

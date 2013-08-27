@@ -1,4 +1,4 @@
-// $Id: GameClient.cpp 8872 2013-08-25 18:00:20Z marcus $
+// $Id: GameClient.cpp 8885 2013-08-27 16:34:31Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -867,6 +867,11 @@ inline void GameClient::OnNMSServerStart(const GameMessage_Server_Start& msg)
 
 	// Nothing-Command für ersten Network-Frame senden
 	SendNothingNC(0);
+
+	if (GameClient::inst().GetGGS().isEnabled(ADDON_ASYNC_DEBUG))
+	{
+		async_debug.resize(framesinfo.nwf_length * 2);
+	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1443,6 +1448,11 @@ void GameClient::ExecuteGameFrame(const bool skipping)
 /// Führt notwendige Dinge für nächsten GF aus
 void GameClient::NextGF()
 {
+	if (!replay_mode && GameClient::inst().GetGGS().isEnabled(ADDON_ASYNC_DEBUG))
+	{
+		async_debug[framesinfo.nr % (framesinfo.nwf_length * 2)].MakeSnapshot(gw, em);
+	}
+
 	// Statistiken aktualisieren
 	StatisticStep();
 	//  EventManager Bescheid sagen
