@@ -1,3 +1,357 @@
+s25rttr (20130828-8921.290) karmic; urgency=low
+
+  * Automatic Jenkins Build 290
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Wed, 28 Aug 2013 01:39:06 +0200
+
+s25rttr (20130828-8921) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Wed, 28 Aug 2013 00:00:00 +0200
+
+s25rttr (20130827-8920.289) karmic; urgency=low
+
+  * Automatic Jenkins Build 289
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 27 Aug 2013 21:55:06 +0200
+
+s25rttr (20130827-8920) any; urgency=low
+
+  * Reverted 8885 (async debug addon).
+
+ -- marcus  Tue, 27 Aug 2013 19:40:00 +0200
+
+s25rttr (20130827-8919) any; urgency=low
+
+  * Make the source compile again #3
+
+ -- marcus  Tue, 27 Aug 2013 19:22:00 +0200
+
+s25rttr (20130827-8918) any; urgency=low
+
+  * Make the source compile again #2
+
+ -- marcus  Tue, 27 Aug 2013 19:15:00 +0200
+
+s25rttr (20130827-8917) any; urgency=low
+
+  * Make the source compile again #1
+
+ -- marcus  Tue, 27 Aug 2013 19:10:00 +0200
+
+s25rttr (20130827-8916) any; urgency=low
+
+  * Reverted removal of DrawSoldierWalking(...) - untested, as trunk
+    does not compile on linux.
+
+ -- marcus  Tue, 27 Aug 2013 18:50:00 +0200
+
+s25rttr (20130827-8914) any; urgency=low
+
+  * Add Convert scripts
+    (by Flamefire)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Tue, 27 Aug 2013 18:34:00 +0200
+
+s25rttr (20130827-8913) any; urgency=low
+
+  * Type safety for checkWareHouse
+    (by Flamefire)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Tue, 27 Aug 2013 18:33:00 +0200
+
+s25rttr (20130827-8912) any; urgency=low
+
+  * Don't use floats in AI
+    (by Flamefire)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Tue, 27 Aug 2013 18:33:00 +0200
+
+s25rttr (20130827-8911) any; urgency=low
+
+  * Compile error and whitespace fixes
+    (by Flamefire)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Tue, 27 Aug 2013 18:31:00 +0200
+
+s25rttr (20130827-8910) any; urgency=low
+
+  * No wait on single player
+    (by Flamefire)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Tue, 27 Aug 2013 18:30:00 +0200
+
+s25rttr (20130827-8909) any; urgency=low
+
+  * Move splash.bmp to avoid double loading
+    (by Flamefire)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Tue, 27 Aug 2013 18:30:00 +0200
+
+s25rttr (20130827-8905) any; urgency=low
+
+  * Faster compile (Multi processor usage. Only 1/3 of compile time)
+    (by Flamefire)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Tue, 27 Aug 2013 18:27:00 +0200
+
+s25rttr (20130827-8904) any; urgency=low
+
+  * Fix concurency problem with build_version.h
+    (by Flamefire)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Tue, 27 Aug 2013 18:26:00 +0200
+
+s25rttr (20130827-8902) any; urgency=low
+
+  * Fix concurency problem with build_version.h
+    (by Flamefire)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Tue, 27 Aug 2013 18:25:00 +0200
+
+s25rttr (20130827-8901) any; urgency=low
+
+  * Create a fully prepared RTTR bin folder for release and execute
+    Also copy dlls to required positions
+    (by Flamefire)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Tue, 27 Aug 2013 18:24:00 +0200
+
+s25rttr (20130827-8900) any; urgency=low
+
+  * Fix unsigned problem (possible underflow and compiler warning)
+    (by Flamefire)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Tue, 27 Aug 2013 18:23:00 +0200
+
+s25rttr (20130827-8899) any; urgency=low
+
+  * Add VS2012 folders
+    (by Flamefire)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Tue, 27 Aug 2013 18:22:00 +0200
+
+s25rttr (20130827-8898) any; urgency=low
+
+  * Add VS2012 folders
+    (by Flamefire)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Tue, 27 Aug 2013 18:11:00 +0200
+
+s25rttr (20130827-8897) any; urgency=low
+
+  * Add VS2012 foldersAdd VS2012 folders
+    Fix some compile warnings
+    (by Flamefire)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Tue, 27 Aug 2013 18:11:00 +0200
+
+s25rttr (20130827-8888) any; urgency=low
+
+  * Fix build errors
+    (by Flamefire)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Tue, 27 Aug 2013 17:50:00 +0200
+
+s25rttr (20130827-8885.288) karmic; urgency=low
+
+  * Automatic Jenkins Build 288
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 27 Aug 2013 19:05:22 +0200
+
+s25rttr (20130827-8885) any; urgency=low
+
+  * Added async debug Addon. Network part is still missing, so this
+    is just to demonstrate "performance".
+
+ -- marcus  Tue, 27 Aug 2013 16:34:00 +0200
+
+s25rttr (20130827-8884) any; urgency=low
+
+  * Added missing addons to CMakeList.
+
+ -- marcus  Tue, 27 Aug 2013 15:59:00 +0200
+
+s25rttr (20130827-8883) any; urgency=low
+
+  * remove old vs2008 and codelite project files
+    
+    add installation faq from FAQ1315 for windows into INSTALL file
+
+ -- Florian Doersch <flosoft@siedler25.org>  Tue, 27 Aug 2013 06:39:00 +0200
+
+s25rttr (20130827-8882) any; urgency=low
+
+  * again ...
+
+ -- Florian Doersch <flosoft@siedler25.org>  Tue, 27 Aug 2013 06:28:00 +0200
+
+s25rttr (20130827-8881) any; urgency=low
+
+  * fix blocked .bzrignore
+
+ -- Florian Doersch <flosoft@siedler25.org>  Tue, 27 Aug 2013 06:26:00 +0200
+
+s25rttr (20130827-8880.287) karmic; urgency=low
+
+  * Automatic Jenkins Build 287
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 27 Aug 2013 01:21:48 +0200
+
+s25rttr (20130827-8880.286) karmic; urgency=low
+
+  * Automatic Jenkins Build 286
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 27 Aug 2013 01:19:47 +0200
+
+s25rttr (20130827-8880) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 27 Aug 2013 00:00:00 +0200
+
+s25rttr (20130826-8879) any; urgency=low
+
+  * Add bzrignore
+    (by Flamefire)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Mon, 26 Aug 2013 21:33:00 +0200
+
+s25rttr (20130826-8878) any; urgency=low
+
+  * Get rid of a few compiler warnings.
+
+ -- marcus  Mon, 26 Aug 2013 20:30:00 +0200
+
+s25rttr (20130826-8877) any; urgency=low
+
+  * "false" is not a pointer type. ;)
+
+ -- marcus  Mon, 26 Aug 2013 20:30:00 +0200
+
+s25rttr (20130826-8876) any; urgency=low
+
+  * Removed (now) unused variables from noBuildingSite.
+
+ -- marcus  Mon, 26 Aug 2013 20:22:00 +0200
+
+s25rttr (20130826-8875) any; urgency=low
+
+  * Make Romans the default nation.
+
+ -- marcus  Mon, 26 Aug 2013 20:21:00 +0200
+
+s25rttr (20130826-8874) any; urgency=low
+
+  * Added glSmartBitmap::drawPercent(...). Building sites are now
+    drawn using the glSmartBitmap cache.
+
+ -- marcus  Mon, 26 Aug 2013 20:15:00 +0200
+
+s25rttr (20130826-8873.285) karmic; urgency=low
+
+  * Automatic Jenkins Build 285
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Mon, 26 Aug 2013 01:10:52 +0200
+
+s25rttr (20130826-8873.284) karmic; urgency=low
+
+  * Automatic Jenkins Build 284
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Mon, 26 Aug 2013 01:09:13 +0200
+
+s25rttr (20130826-8873) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Mon, 26 Aug 2013 00:00:00 +0200
+
+s25rttr (20130825-8872) any; urgency=low
+
+  * Clear pointers on free, fixing possible segfault (flamefire
+    r8878)
+
+ -- marcus  Sun, 25 Aug 2013 18:00:00 +0200
+
+s25rttr (20130825-8871.283) karmic; urgency=low
+
+  * Automatic Jenkins Build 283
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sun, 25 Aug 2013 14:24:17 +0200
+
+s25rttr (20130825-8871) any; urgency=low
+
+  * Avoid using floats in noBuildingSite::GetBuildProgress (part of
+    flamefire r8876)
+
+ -- marcus  Sun, 25 Aug 2013 09:51:00 +0200
+
+s25rttr (20130825-8870) any; urgency=low
+
+  * Fix wrong GameMessage logs (flamefire r8875)
+
+ -- marcus  Sun, 25 Aug 2013 09:46:00 +0200
+
+s25rttr (20130825-8869.282) karmic; urgency=low
+
+  * Automatic Jenkins Build 282
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sun, 25 Aug 2013 01:13:28 +0200
+
+s25rttr (20130825-8869) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sun, 25 Aug 2013 00:00:00 +0200
+
+s25rttr (20130824-8867) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 24 Aug 2013 22:00:00 +0200
+
+s25rttr (20130824-8866) any; urgency=low
+
+  * Fix build errors and warnings (flamefire r8835 /
+    GameWorldBase.cpp only)
+
+ -- marcus  Sat, 24 Aug 2013 22:00:00 +0200
+
+s25rttr (20130824-8865) any; urgency=low
+
+  * Fixed duplicates in message box (flamefire r8839).
+
+ -- marcus  Sat, 24 Aug 2013 21:56:00 +0200
+
+s25rttr (20130824-8864) any; urgency=low
+
+  * Avoid unnecessary implicit type conversions and "underflows" of
+    unsigned types in CalcDistributionPoints(...). (possible async)
+
+ -- marcus  Sat, 24 Aug 2013 10:10:00 +0200
+
+s25rttr (20130824-8863) any; urgency=low
+
+  * Avoid GameClientPlayer::RecalcDistributionOfWare(...) madness,
+    featuring another possible async fix.
+
+ -- marcus  Sat, 24 Aug 2013 09:49:00 +0200
+
+s25rttr (20130824-8862) any; urgency=low
+
+  * Use glSmartBitmap cache wherever possible (comments should be
+    removed soon).
+
+ -- marcus  Sat, 24 Aug 2013 08:47:00 +0200
+
+s25rttr (20130824-8861) any; urgency=low
+
+  * Delete glSmartTexturePacker to get rid of allocated textures in
+    ~Loader().
+
+ -- marcus  Sat, 24 Aug 2013 08:46:00 +0200
+
 s25rttr (20130824-8860.281) karmic; urgency=low
 
   * Automatic Jenkins Build 281
