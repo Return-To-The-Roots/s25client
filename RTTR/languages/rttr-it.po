@@ -2,15 +2,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Siedler II.5 RttR\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-09-14 11:35+0100\n"
+"POT-Creation-Date: 2012-09-30 18:06+0100\n"
 "PO-Revision-Date: 2012-04-05 11:38+0000\n"
 "Last-Translator: Milo Casagrande <milo.casagrande@gmail.com>\n"
 "Language-Team: Siedler II.5 RttR <sf-team@siedler25.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-09-30 16:08+0000\n"
-"X-Generator: Launchpad (build 16049)\n"
+"X-Launchpad-Export-Date: 2013-10-12 07:28+0000\n"
+"X-Generator: Launchpad (build 16799)\n"
 "X-Poedit-Country: ITALY\n"
 "X-Poedit-Language: Italian\n"
 "X-Poedit-SourceCharset: iso-8859-15\n"
@@ -18,595 +18,35 @@ msgstr ""
 "X-Poedit-Basepath: F:\\programmierung\\Projekte\\siedler15\\s25client\\"
 "trunk\n"
 
-#: /home/marcus/trunk-neu/src/noShip.cpp:286
-msgid "A ship is ready for an expedition."
+#: ../../src/AIPlayerJH.cpp:2094
+msgid "AI'm back"
 msgstr ""
 
-#: /home/marcus/trunk-neu/src/noShip.cpp:455
-msgid "A ship disovered an enemy territory"
+#: ../../src/AIPlayerJH.cpp:78
+msgid "And I may crash your game sometimes..."
 msgstr ""
 
-#: /home/marcus/trunk-neu/src/noShip.cpp:733
-msgid "A ship has reached the destination of its expedition."
+#: ../../src/AIPlayerJH.cpp:77
+msgid "Hi, I'm an artifical player and I'm not very good yet!"
 msgstr ""
 
-#: /home/marcus/trunk-neu/src/dskCredits.cpp:69
-msgid "Back"
-msgstr "Indietro"
+#: ../../src/Addons.cpp:168
+msgid "Use"
+msgstr "Usa"
 
-#: /home/marcus/trunk-neu/src/dskCredits.cpp:72
-msgid "Return To The Roots"
-msgstr "Ritorna a The Roots"
-
-#: /home/marcus/trunk-neu/src/dskCredits.cpp:75
-msgid "Credits"
-msgstr "Ringraziamenti"
-
-#: /home/marcus/trunk-neu/src/dskCredits.cpp:81
-#: /home/marcus/trunk-neu/src/dskCredits.cpp:94
-msgid "Project management"
-msgstr "Gestione progetto"
-
-#: /home/marcus/trunk-neu/src/dskCredits.cpp:82
-msgid "Server management"
-msgstr "Mantenimento server"
-
-#: /home/marcus/trunk-neu/src/dskCredits.cpp:83
-#: /home/marcus/trunk-neu/src/dskCredits.cpp:95
-#: /home/marcus/trunk-neu/src/dskCredits.cpp:131
-#: /home/marcus/trunk-neu/src/dskCredits.cpp:150
-msgid "Programming"
-msgstr "Programmazione"
-
-#: /home/marcus/trunk-neu/src/dskCredits.cpp:84
-#: /home/marcus/trunk-neu/src/dskCredits.cpp:104
-#: /home/marcus/trunk-neu/src/dskCredits.cpp:113
-msgid "Website Administration"
+#: ../../src/AIPlayerJH.cpp:293
+msgid "You win"
 msgstr ""
 
-#: /home/marcus/trunk-neu/src/dskCredits.cpp:85
-#: /home/marcus/trunk-neu/src/dskCredits.cpp:105
-msgid "Website Programming"
-msgstr ""
-
-#: /home/marcus/trunk-neu/src/dskCredits.cpp:86
-#: /home/marcus/trunk-neu/src/dskCredits.cpp:96
-#: /home/marcus/trunk-neu/src/dskCredits.cpp:114
-#: /home/marcus/trunk-neu/src/dskCredits.cpp:122
-#: /home/marcus/trunk-neu/src/dskCredits.cpp:141
-#: /home/marcus/trunk-neu/src/dskCredits.cpp:151
-msgid "Quality Assurance"
-msgstr ""
-
-#: /home/marcus/trunk-neu/src/dskCredits.cpp:123
-#: /home/marcus/trunk-neu/src/dskCredits.cpp:142
-msgid "Mapping"
-msgstr "Mappatura"
-
-#: /home/marcus/trunk-neu/src/dskCredits.cpp:132
-msgid "Artificial Intelligence (AI)"
-msgstr "Intelligenza Artificiale (IA)"
-
-#: /home/marcus/trunk-neu/src/dskCredits.cpp:140
-msgid "Additional graphics"
-msgstr "Grafica aggiuntiva"
-
-#: /home/marcus/trunk-neu/src/dskCredits.cpp:156
-msgid "Additional Programming:"
-msgstr "Programmazione aggiuntiva:"
-
-#: /home/marcus/trunk-neu/src/dskCredits.cpp:170
-msgid "Additional Graphics:"
-msgstr ""
-
-#: /home/marcus/trunk-neu/src/dskCredits.cpp:178
-msgid "Other Support:"
-msgstr "Altro Supporto:"
-
-#: /home/marcus/trunk-neu/src/dskCredits.cpp:190
-msgid "Donators"
-msgstr "Donatori"
-
-#: /home/marcus/trunk-neu/src/dskCredits.cpp:192
-msgid "various anonymous donators"
-msgstr "vari donatori anonimi"
-
-#: /home/marcus/trunk-neu/src/dskCredits.cpp:210
-msgid "Thank you for your donations!"
-msgstr "Grazie per la vostra donazione!"
-
-#: /home/marcus/trunk-neu/src/dskCredits.cpp:215
-msgid "We hope you enjoy playing Return To The Roots!"
-msgstr ""
-
-#: /home/marcus/trunk-neu/src/dskCredits.cpp:217
-msgid "Thank you!"
-msgstr "Grazie!"
-
-#: /home/marcus/trunk-neu/src/dskCredits.cpp:218
-msgid "THE END"
-msgstr "LA FINE"
-
-#: /home/marcus/trunk-neu/src/iwAction.cpp:69
-msgid "Activity window"
-msgstr "Attività"
-
-#: /home/marcus/trunk-neu/src/iwAction.cpp:102
-#: /home/marcus/trunk-neu/src/iwAction.cpp:116
-#: /home/marcus/trunk-neu/src/iwAction.cpp:122
-msgid "-> Build house"
-msgstr "-> Costruisci un edificio"
-
-#: /home/marcus/trunk-neu/src/iwAction.cpp:111
-#: /home/marcus/trunk-neu/src/iwAction.cpp:115
-#: /home/marcus/trunk-neu/src/iwAction.cpp:121
-msgid "-> Build hut"
-msgstr "-> Costruisci una baracca"
-
-#: /home/marcus/trunk-neu/src/iwAction.cpp:123
-msgid "-> Build castle"
-msgstr "-> Costruisci un castello"
-
-#: /home/marcus/trunk-neu/src/iwAction.cpp:127
-msgid "-> Dig mines"
-msgstr "-> Scava una miniera"
-
-#: /home/marcus/trunk-neu/src/iwAction.cpp:234
-msgid ""
-"\n"
-"Costs: "
-msgstr ""
-"\n"
-"Costi: "
-
-#: /home/marcus/trunk-neu/src/iwAction.cpp:236
-msgid " boards"
-msgstr ""
-
-#: /home/marcus/trunk-neu/src/iwAction.cpp:241
-msgid " stones"
-msgstr " pietre"
-
-#: /home/marcus/trunk-neu/src/iwAction.cpp:258
-#: /home/marcus/trunk-neu/src/iwAction.cpp:292
-#: /home/marcus/trunk-neu/src/iwAction.cpp:302
-msgid "Erect flag"
-msgstr "Alza la bandiera"
-
-#: /home/marcus/trunk-neu/src/iwAction.cpp:264
-#: /home/marcus/trunk-neu/src/iwAction.cpp:271
-#: /home/marcus/trunk-neu/src/iwAction.cpp:279
-#: /home/marcus/trunk-neu/src/iwAction.cpp:283
-msgid "Build road"
-msgstr "Costruisci una strada"
-
-#: /home/marcus/trunk-neu/src/iwAction.cpp:265
-#: /home/marcus/trunk-neu/src/iwAction.cpp:273
-msgid "Pull down flag"
-msgstr "Abbatti la bandiera"
-
-#: /home/marcus/trunk-neu/src/iwAction.cpp:266
-#: /home/marcus/trunk-neu/src/iwAction.cpp:274
-msgid "Call in geologist"
-msgstr "Chiama un geologo"
-
-#: /home/marcus/trunk-neu/src/iwAction.cpp:267
-#: /home/marcus/trunk-neu/src/iwAction.cpp:275
-msgid "Send out scout"
-msgstr "Invia un esploratore"
-
-#: /home/marcus/trunk-neu/src/iwAction.cpp:272
-msgid "Build waterway"
-msgstr "Costruisci una via d'acqua"
-
-#: /home/marcus/trunk-neu/src/iwAction.cpp:284
-#: /home/marcus/trunk-neu/src/iwBuilding.cpp:88
-msgid "Demolish house"
-msgstr "Demolisci l'edificio"
-
-#: /home/marcus/trunk-neu/src/iwAction.cpp:308
-#: /home/marcus/trunk-neu/src/iwAction.cpp:315
-msgid "Dig up road"
-msgstr "Distruggi la strada"
-
-#: /home/marcus/trunk-neu/src/iwAction.cpp:320
-#: /home/marcus/trunk-neu/src/iwAction.cpp:328
-msgid "Attack options"
-msgstr "Opzioni di attacco"
-
-#: /home/marcus/trunk-neu/src/iwAction.cpp:339
-msgid "Display options"
-msgstr "Opzioni del display"
-
-#: /home/marcus/trunk-neu/src/iwAction.cpp:341
-msgid "Observation window"
-msgstr "Finestra di osservazione"
-
-#: /home/marcus/trunk-neu/src/iwAction.cpp:342
-msgid "House names"
-msgstr "Nomi degli edifici"
-
-#: /home/marcus/trunk-neu/src/iwAction.cpp:343
-msgid "Go to headquarters"
-msgstr "Vai al quartier generale"
-
-#: /home/marcus/trunk-neu/src/iwAction.cpp:367
-msgid "Upgrade to donkey road"
-msgstr ""
-
-#: /home/marcus/trunk-neu/src/iwAction.cpp:387
-msgid "Attack not possible."
-msgstr "Attacco non possibile"
-
-#: /home/marcus/trunk-neu/src/iwAction.cpp:394
-msgid "Less attackers"
-msgstr "Meno attaccanti"
-
-#: /home/marcus/trunk-neu/src/iwAction.cpp:395
-msgid "More attackers"
-msgstr "Piu attaccanti"
-
-#: /home/marcus/trunk-neu/src/iwAction.cpp:399
-msgid "Weak attackers"
-msgstr "Attaccanti deboli"
-
-#: /home/marcus/trunk-neu/src/iwAction.cpp:400
-msgid "Strong attackers"
-msgstr "Attaccanti forti"
-
-#: /home/marcus/trunk-neu/src/iwAction.cpp:409
-msgid "Number of attackers"
-msgstr "Numero di attaccanti"
-
-#: /home/marcus/trunk-neu/src/iwAction.cpp:412
-msgid "Attack!"
-msgstr "Attacco!"
-
-#: /home/marcus/trunk-neu/src/iwBuilding.cpp:86
-msgid "Help"
-msgstr "Aiuto"
-
-#: /home/marcus/trunk-neu/src/iwBuilding.cpp:103
-msgid "Go to place"
-msgstr "Via a"
-
-#: /home/marcus/trunk-neu/src/iwBuilding.cpp:113
-#: /home/marcus/trunk-neu/src/iwBuilding.cpp:207
-msgid "(House unoccupied)"
-msgstr "(Edificio non occupato)"
-
-#: /home/marcus/trunk-neu/src/dskUnlimitedPlay.cpp:63
-msgid "Player Name"
-msgstr "Nome del giocatore"
-
-#: /home/marcus/trunk-neu/src/dskUnlimitedPlay.cpp:65
-msgid "Classification"
-msgstr "Classifica"
-
-#: /home/marcus/trunk-neu/src/dskUnlimitedPlay.cpp:67
-msgid "Race"
-msgstr "Razza"
-
-#: /home/marcus/trunk-neu/src/dskUnlimitedPlay.cpp:69
-msgid "Color"
-msgstr "Colore"
-
-#: /home/marcus/trunk-neu/src/dskUnlimitedPlay.cpp:71
-msgid "Team"
-msgstr "Squadra"
-
-#: /home/marcus/trunk-neu/src/dskUnlimitedPlay.cpp:74
-msgid "Swap"
-msgstr ""
-
-#: /home/marcus/trunk-neu/src/dskUnlimitedPlay.cpp:77
-msgid "Past player"
-msgstr "Giocatore precedente"
-
-#: /home/marcus/trunk-neu/src/dskUnlimitedPlay.cpp:80
-#: /home/marcus/trunk-neu/src/dskUnlimitedPlay.cpp:516
-#: /home/marcus/trunk-neu/src/dskUnlimitedPlay.cpp:713
-msgid "Start game"
-msgstr "Inizia il gioco"
-
-#: /home/marcus/trunk-neu/src/dskUnlimitedPlay.cpp:80
-#: /home/marcus/trunk-neu/src/dskUnlimitedPlay.cpp:530
-#: /home/marcus/trunk-neu/src/dskUnlimitedPlay.cpp:715
-msgid "Ready"
-msgstr "Pronto"
-
-#: /home/marcus/trunk-neu/src/dskUnlimitedPlay.cpp:83
-msgid "Return"
-msgstr "Indietro"
-
-#: /home/marcus/trunk-neu/src/dskUnlimitedPlay.cpp:86
-msgid "Lock teams:"
-msgstr "Blocca le squadre:"
-
-#: /home/marcus/trunk-neu/src/dskUnlimitedPlay.cpp:88
-msgid "Shared team view"
-msgstr "Vista condivisa"
-
-#: /home/marcus/trunk-neu/src/dskUnlimitedPlay.cpp:90
-msgid "Random start locations"
-msgstr ""
-
-#: /home/marcus/trunk-neu/src/dskUnlimitedPlay.cpp:93
-msgid "Addons:"
-msgstr "Addons:"
-
-#: /home/marcus/trunk-neu/src/dskUnlimitedPlay.cpp:94
-msgid "Change Settings..."
-msgstr "Cambia i settaggi..."
-
-#: /home/marcus/trunk-neu/src/dskUnlimitedPlay.cpp:94
-msgid "View Settings..."
-msgstr "Guarda i settaggi..."
-
-#: /home/marcus/trunk-neu/src/dskUnlimitedPlay.cpp:101
-msgid "Exploration:"
-msgstr "Esplorazione"
-
-#: /home/marcus/trunk-neu/src/dskUnlimitedPlay.cpp:103
-msgid "Off (all visible)"
-msgstr "Off (tutto visibile)"
-
-#: /home/marcus/trunk-neu/src/dskUnlimitedPlay.cpp:104
-msgid "Classic (Settlers 2)"
-msgstr "Classica (Settlers 2)"
-
-#: /home/marcus/trunk-neu/src/dskUnlimitedPlay.cpp:105
-msgid "Fog of War"
-msgstr "Nebbia di Guerra"
-
-#: /home/marcus/trunk-neu/src/dskUnlimitedPlay.cpp:106
-msgid "FoW - all explored"
-msgstr "NdG - tutto esplorato"
-
-#: /home/marcus/trunk-neu/src/dskUnlimitedPlay.cpp:109
-msgid "Goods at start:"
-msgstr "Scorte all'avvio:"
-
-#: /home/marcus/trunk-neu/src/dskUnlimitedPlay.cpp:111
-msgid "Very Low"
-msgstr "Molto basso"
-
-#: /home/marcus/trunk-neu/src/dskUnlimitedPlay.cpp:112
-msgid "Low"
-msgstr "Poche"
-
-#: /home/marcus/trunk-neu/src/dskUnlimitedPlay.cpp:113
-#: /home/marcus/trunk-neu/src/dskUnlimitedPlay.cpp:128
-msgid "Normal"
-msgstr "Normali"
-
-#: /home/marcus/trunk-neu/src/dskUnlimitedPlay.cpp:114
-msgid "A lot"
-msgstr "Tante"
-
-#: /home/marcus/trunk-neu/src/dskUnlimitedPlay.cpp:117
-msgid "Goals:"
-msgstr "Obiettivi:"
-
-#: /home/marcus/trunk-neu/src/dskUnlimitedPlay.cpp:119
-msgid "None"
-msgstr "Nessuno"
-
-#: /home/marcus/trunk-neu/src/dskUnlimitedPlay.cpp:120
-msgid "Conquer 3/4 of map"
-msgstr "Conquistare 3/4 della mappa"
-
-#: /home/marcus/trunk-neu/src/dskUnlimitedPlay.cpp:121
-msgid "Total domination"
-msgstr "Dominio totale"
-
-#: /home/marcus/trunk-neu/src/dskUnlimitedPlay.cpp:124
-msgid "Speed:"
-msgstr "Velocità:"
-
-#: /home/marcus/trunk-neu/src/dskUnlimitedPlay.cpp:126
-msgid "Very slow"
-msgstr "Molto lento"
-
-#: /home/marcus/trunk-neu/src/dskUnlimitedPlay.cpp:127
-msgid "Slow"
-msgstr "Lento"
-
-#: /home/marcus/trunk-neu/src/dskUnlimitedPlay.cpp:129
-msgid "Fast"
-msgstr "Veloce"
-
-#: /home/marcus/trunk-neu/src/dskUnlimitedPlay.cpp:130
-msgid "Very fast"
-msgstr "Molto veloce"
-
-#: /home/marcus/trunk-neu/src/dskUnlimitedPlay.cpp:145
-msgid "Map: "
-msgstr "Mappa: "
-
-#: /home/marcus/trunk-neu/src/dskUnlimitedPlay.cpp:157
-#: /home/marcus/trunk-neu/src/dskUnlimitedPlay.cpp:267
-#: /home/marcus/trunk-neu/src/dskUnlimitedPlay.cpp:276
-msgid "-"
-msgstr "-"
-
-#: /home/marcus/trunk-neu/src/dskUnlimitedPlay.cpp:223
-msgid "Open"
-msgstr "Aperta"
-
-#: /home/marcus/trunk-neu/src/dskUnlimitedPlay.cpp:228
-msgid "Closed"
-msgstr "Chiusa"
-
-#: /home/marcus/trunk-neu/src/dskUnlimitedPlay.cpp:257
-#: /home/marcus/trunk-neu/src/dskUnlimitedPlay.cpp:284
-#, c-format
-msgid "%d"
-msgstr "%d"
-
-#: /home/marcus/trunk-neu/src/dskUnlimitedPlay.cpp:257
-msgid "n/a"
-msgstr ""
-
-#: /home/marcus/trunk-neu/src/dskUnlimitedPlay.cpp:263
-#: /home/marcus/trunk-neu/src/dskUnlimitedPlay.cpp:272
-#: /home/marcus/trunk-neu/src/dskUnlimitedPlay.cpp:728
-msgid "Africans"
-msgstr "Africani"
-
-#: /home/marcus/trunk-neu/src/dskUnlimitedPlay.cpp:520
-#: /home/marcus/trunk-neu/src/dskUnlimitedPlay.cpp:713
-msgid "Cancel start"
-msgstr ""
-
-#: /home/marcus/trunk-neu/src/dskUnlimitedPlay.cpp:523
-#: /home/marcus/trunk-neu/src/dskUnlimitedPlay.cpp:963
-#: /home/marcus/trunk-neu/src/iwMusicPlayer.cpp:117
-#: /home/marcus/trunk-neu/src/iwMusicPlayer.cpp:147
-#: /home/marcus/trunk-neu/src/iwMusicPlayer.cpp:190
-#: /home/marcus/trunk-neu/src/iwMusicPlayer.cpp:335
-#: /home/marcus/trunk-neu/src/iwMusicPlayer.cpp:360
-msgid "Error"
-msgstr "Errore"
-
-#: /home/marcus/trunk-neu/src/dskUnlimitedPlay.cpp:523
-msgid ""
-"Game can only be started as soon as everybody has a unique color,everyone is "
-"ready and all free slots are closed."
-msgstr ""
-"Il gioco può iniziare appena ognuno ha il suo colore, tutti sono pronti e "
-"tutti gli slot liberi sono chiusi."
-
-#: /home/marcus/trunk-neu/src/dskUnlimitedPlay.cpp:715
-msgid "Not Ready"
-msgstr "Non Pronto"
-
-#: /home/marcus/trunk-neu/src/dskUnlimitedPlay.cpp:728
-msgid "Japaneses"
-msgstr "Giapponesi"
-
-#: /home/marcus/trunk-neu/src/dskUnlimitedPlay.cpp:728
-msgid "Romans"
-msgstr "Romani"
-
-#: /home/marcus/trunk-neu/src/dskUnlimitedPlay.cpp:728
-msgid "Vikings"
-msgstr "Vichinghi"
-
-#: /home/marcus/trunk-neu/src/dskUnlimitedPlay.cpp:963
-#: /home/marcus/trunk-neu/src/dskGameInterface.cpp:1138
-msgid "Lost connection to server!"
-msgstr "Persa la connessione con il server!"
-
-#: /home/marcus/trunk-neu/src/noShipBuildingSite.cpp:138
-msgid "A new ship is ready"
-msgstr ""
-
-#: /home/marcus/trunk-neu/src/iwDemolishBuilding.cpp:43
-msgid "Demolish?"
-msgstr "Demolire?"
-
-#: /home/marcus/trunk-neu/src/iwMusicPlayer.cpp:44
-msgid "OK"
-msgstr "OK"
-
-#: /home/marcus/trunk-neu/src/iwMusicPlayer.cpp:45
-msgid "Abort"
-msgstr "Annulla"
-
-#: /home/marcus/trunk-neu/src/iwMusicPlayer.cpp:65
-msgid "Music player"
-msgstr "Music player"
-
-#: /home/marcus/trunk-neu/src/iwMusicPlayer.cpp:70
-msgid "Playlist:"
-msgstr "Playlist:"
-
-#: /home/marcus/trunk-neu/src/iwMusicPlayer.cpp:76
-msgid "Add"
-msgstr "Aggiungi"
-
-#: /home/marcus/trunk-neu/src/iwMusicPlayer.cpp:77
-msgid "Remove"
-msgstr "Rimuovi"
-
-#: /home/marcus/trunk-neu/src/iwMusicPlayer.cpp:82
-#: /home/marcus/trunk-neu/src/iwMusicPlayer.cpp:212
-msgid "Add track"
-msgstr "Aggiungi registrazione"
-
-#: /home/marcus/trunk-neu/src/iwMusicPlayer.cpp:83
-#: /home/marcus/trunk-neu/src/iwMusicPlayer.cpp:218
-msgid "Add directory of tracks"
-msgstr ""
-
-#: /home/marcus/trunk-neu/src/iwMusicPlayer.cpp:84
-msgid "Remove track"
-msgstr "Salva registrazione"
-
-#: /home/marcus/trunk-neu/src/iwMusicPlayer.cpp:85
-msgid "Upwards"
-msgstr "In alto"
-
-#: /home/marcus/trunk-neu/src/iwMusicPlayer.cpp:86
-msgid "Downwards"
-msgstr "In basso"
-
-#: /home/marcus/trunk-neu/src/iwMusicPlayer.cpp:88
-msgid "Less repeats"
-msgstr "Meno ripetizioni"
-
-#: /home/marcus/trunk-neu/src/iwMusicPlayer.cpp:89
-msgid "More repeats"
-msgstr "Più ripetizioni"
-
-#: /home/marcus/trunk-neu/src/iwMusicPlayer.cpp:90
-#: /home/marcus/trunk-neu/src/iwMusicPlayer.cpp:283
-msgid "Playback in this order"
-msgstr "Suona in quest'ordine"
-
-#: /home/marcus/trunk-neu/src/iwMusicPlayer.cpp:117
-#: /home/marcus/trunk-neu/src/iwMusicPlayer.cpp:360
-msgid "The specified file couldn't be saved!"
-msgstr "Non è stato possibile salvare il file specificato"
-
-#: /home/marcus/trunk-neu/src/iwMusicPlayer.cpp:147
-msgid "The specified file couldn't be loaded!"
-msgstr "Non è stato possibile caricare il file specificato"
-
-#: /home/marcus/trunk-neu/src/iwMusicPlayer.cpp:175
-msgid "Specify the playlist name"
-msgstr "Specifica il nome della playlist"
-
-#: /home/marcus/trunk-neu/src/iwMusicPlayer.cpp:190
-msgid "You are not allowed to delete the standard playlist!"
-msgstr "Non hai il permesso di cancellare la playlist standard"
-
-#: /home/marcus/trunk-neu/src/iwMusicPlayer.cpp:283
-msgid "Random playback"
-msgstr "Playback casuale"
-
-#: /home/marcus/trunk-neu/src/iwMusicPlayer.cpp:335
-msgid "The specified file couldn't be opened!"
-msgstr "Non è stato possibile aprire  il file specificato"
-
-#: /home/marcus/trunk-neu/src/dskGameInterface.cpp:105
-msgid "Map"
-msgstr "Mappa"
-
-#: /home/marcus/trunk-neu/src/dskGameInterface.cpp:107
-msgid "Main selection"
-msgstr "Menu principale"
-
-#: /home/marcus/trunk-neu/src/dskGameInterface.cpp:109
-msgid "Construction aid mode"
-msgstr "Aiuto per le costruzioni"
-
-#: /home/marcus/trunk-neu/src/dskGameInterface.cpp:111
-msgid "Post office"
-msgstr "Ufficio postale"
-
-#: /home/marcus/trunk-neu/src/dskGameInterface.cpp:249
+#: ../../src/ctrlProgress.cpp:75
+msgid "Less"
+msgstr "Meno"
+
+#: ../../src/ctrlProgress.cpp:76
+msgid "More"
+msgstr "Piu"
+
+#: ../../src/dskGameInterface.cpp:249
 #, c-format
 msgid ""
 "(Replay-Mode) Current GF: %u (End at: %u) / GF length: %u ms / NWF length: "
@@ -615,7 +55,60 @@ msgstr ""
 "(Modalita Replay) Attuale GF: %u (Fine a: %u) / GF lunghezza: %u ms / NWF "
 "lunghezza: %u gf (%u ms)"
 
-#: /home/marcus/trunk-neu/src/dskGameInterface.cpp:251
+#: ../../src/dskGameInterface.cpp:1040
+#: ../../src/dskGameInterface.cpp:1090
+#: ../../src/dskGameInterface.cpp:1119
+#, c-format
+msgid "<%s> "
+msgstr "<%s> "
+
+#: ../../src/dskGameInterface.cpp:1055
+msgid "A auto-savegame is created..."
+msgstr "Salvata automaticamente una partita..."
+
+#: ../../src/dskCredits.cpp:170
+msgid "Additional Graphics:"
+msgstr ""
+
+#: ../../src/dskCredits.cpp:156
+msgid "Additional Programming:"
+msgstr "Programmazione aggiuntiva:"
+
+#: ../../src/dskCredits.cpp:140
+msgid "Additional graphics"
+msgstr "Grafica aggiuntiva"
+
+#: ../../src/dskGameLoader.cpp:175
+msgid "And let's go!"
+msgstr "Andiamo!"
+
+#: ../../src/dskCredits.cpp:132
+msgid "Artificial Intelligence (AI)"
+msgstr "Intelligenza Artificiale (IA)"
+
+#. "Zurück"
+#. ZurÃŒck
+#. "Zurück"
+#: ../../src/dskAboutRTTR.cpp:55
+#: ../../src/dskCredits.cpp:69
+#: ../../src/dskDirectIP.cpp:65
+msgid "Back"
+msgstr "Indietro"
+
+#: ../../src/dskGameInterface.cpp:109
+msgid "Construction aid mode"
+msgstr "Aiuto per le costruzioni"
+
+#: ../../src/dskDirectIP.cpp:61
+msgid "Create Game"
+msgstr "Crea Gioco"
+
+#. "Credits"
+#: ../../src/dskCredits.cpp:75
+msgid "Credits"
+msgstr "Ringraziamenti"
+
+#: ../../src/dskGameInterface.cpp:251
 #, c-format
 msgid ""
 "Current GF: %u / GF length: %u ms / NWF length: %u gf (%u ms) /  Ping: %u ms"
@@ -623,1501 +116,956 @@ msgstr ""
 "Attuale GF: %u / GF lunghezza: %u ms / NWF lunghezza: %u gf (%u ms) /  Ping: "
 "%u ms"
 
-#: /home/marcus/trunk-neu/src/dskGameInterface.cpp:403
+#: ../../src/dskCredits.cpp:190
+msgid "Donators"
+msgstr "Donatori"
+
+#: ../../src/dskGameLoader.cpp:199
+msgid "Error"
+msgstr "Errore"
+
+#: ../../src/dskGameLoader.cpp:148
+msgid "Failed to load addon objects."
+msgstr ""
+
+#: ../../src/dskGameLoader.cpp:140
+msgid "Failed to load map objects."
+msgstr "Problemi nel caricamento dei map objects."
+
+#: ../../src/dskGameLoader.cpp:163
+msgid "Failed to load terrain data."
+msgstr "Problemi nel caricamento dei dati del terreno."
+
+#: ../../src/dskGameLoader.cpp:155
+msgid "Game crate was picked and spread out..."
+msgstr "La cassa del gioco è stata presa e distribuita..."
+
+#: ../../src/dskGameInterface.cpp:1091
+msgid "Game was paused."
+msgstr "Partita interrotta."
+
+#: ../../src/dskGameInterface.cpp:1120
+msgid "Game was resumed."
+msgstr "Partita ricominciata"
+
+#. WindowManager::inst().Show(new iwTrade(gwv,this,gwv->GetSpecObj<nobHQ>(cselx,csely)));
+#: ../../src/dskGameInterface.cpp:403
 msgid "Headquarters"
 msgstr "Quartier generale"
 
-#: /home/marcus/trunk-neu/src/dskGameInterface.cpp:624
+#: ../../src/dskDirectIP.cpp:62
+msgid "Join Game"
+msgstr "Unisciti alla partita"
+
+#: ../../src/dskGameInterface.cpp:624
 msgid "Keyboard layout"
 msgstr "Layout di tastiera"
 
-#: /home/marcus/trunk-neu/src/dskGameInterface.cpp:628
-msgid "Readme!"
-msgstr "Leggimi!"
+#: ../../src/dskGameInterface.cpp:1151
+msgid "Lost connection to lobby!"
+msgstr "Persa connessione con il gruppo!"
 
-#: /home/marcus/trunk-neu/src/dskGameInterface.cpp:1010
-#, c-format
-msgid "Player '%s' left the game!"
-msgstr "Il giocatore '%s' ha lasciato il gioco!"
+#: ../../src/dskGameInterface.cpp:1138
+msgid "Lost connection to server!"
+msgstr "Persa la connessione con il server!"
 
-#: /home/marcus/trunk-neu/src/dskGameInterface.cpp:1013
-#, c-format
-msgid "Player '%s' joined the game!"
-msgstr "Il giocatore '%s' si è unito al gioco!"
+#: ../../src/dskGameInterface.cpp:107
+msgid "Main selection"
+msgstr "Menu principale"
 
-#: /home/marcus/trunk-neu/src/dskGameInterface.cpp:1027
+#: ../../src/dskGameInterface.cpp:105
+msgid "Map"
+msgstr "Mappa"
+
+#: ../../src/dskGameLoader.cpp:122
+msgid "Map was loaded and pinned at the wall..."
+msgstr "La mappa è stata caricata e appesa al muro..."
+
+#: ../../src/dskCredits.cpp:123
+#: ../../src/dskCredits.cpp:142
+msgid "Mapping"
+msgstr "Mappatura"
+
+#: ../../src/dskGameInterface.cpp:1027
 #, c-format
 msgid "Note: Game settings changed by the server%s"
 msgstr "Nota: Settaggi del gioco cambiati dal server%s"
 
-#: /home/marcus/trunk-neu/src/dskGameInterface.cpp:1040
-#: /home/marcus/trunk-neu/src/dskGameInterface.cpp:1090
-#: /home/marcus/trunk-neu/src/dskGameInterface.cpp:1119
-#, c-format
-msgid "<%s> "
-msgstr "<%s> "
+#: ../../src/dskCredits.cpp:178
+msgid "Other Support:"
+msgstr "Altro Supporto:"
 
-#: /home/marcus/trunk-neu/src/dskGameInterface.cpp:1053
+#: ../../src/dskGameInterface.cpp:1321
+#, c-format
+msgid "Player '%s' is the winner!"
+msgstr ""
+
+#. Im Spiel anzeigen, dass die KI das Spiel betreten hat
+#: ../../src/dskGameInterface.cpp:1013
+#, c-format
+msgid "Player '%s' joined the game!"
+msgstr "Il giocatore '%s' si è unito al gioco!"
+
+#: ../../src/dskGameInterface.cpp:1010
+#, c-format
+msgid "Player '%s' left the game!"
+msgstr "Il giocatore '%s' ha lasciato il gioco!"
+
+#: ../../src/dskGameInterface.cpp:1175
+#, c-format
+msgid "Player '%s' switched to player '%s'"
+msgstr "Il Giocatore '%s' è diventato il Giocatore '%s'"
+
+#: ../../src/dskGameInterface.cpp:1198
+#, c-format
+msgid "Player '%s' was defeated!"
+msgstr "Il Giocatore '%s' è stato sconfitto!"
+
+#: ../../src/dskGameInterface.cpp:111
+msgid "Post office"
+msgstr "Ufficio postale"
+
+#: ../../src/dskCredits.cpp:83
+#: ../../src/dskCredits.cpp:95
+#: ../../src/dskCredits.cpp:131
+#: ../../src/dskCredits.cpp:150
+msgid "Programming"
+msgstr "Programmazione"
+
+#: ../../src/dskCredits.cpp:81
+#: ../../src/dskCredits.cpp:94
+msgid "Project management"
+msgstr "Gestione progetto"
+
+#: ../../src/dskCredits.cpp:86
+#: ../../src/dskCredits.cpp:96
+#: ../../src/dskCredits.cpp:114
+#: ../../src/dskCredits.cpp:122
+#: ../../src/dskCredits.cpp:141
+#: ../../src/dskCredits.cpp:151
+msgid "Quality Assurance"
+msgstr ""
+
+#: ../../src/dskGameInterface.cpp:628
+msgid "Readme!"
+msgstr "Leggimi!"
+
+#. "Die Siedler II.5 RTTR"
+#: ../../src/dskCredits.cpp:72
+msgid "Return To The Roots"
+msgstr "Ritorna a The Roots"
+
+#. Version
+#: ../../src/dskDirectIP.cpp:53
+#, c-format
+msgid "Return To The Roots - v%s-%s"
+msgstr "Ritorna A The Roots - v%s-%s"
+
+#: ../../src/dskGameInterface.cpp:1090
+#: ../../src/dskGameInterface.cpp:1119
+msgid "SYSTEM"
+msgstr "SYSTEM"
+
+#: ../../src/dskCredits.cpp:82
+msgid "Server management"
+msgstr "Mantenimento server"
+
+#: ../../src/dskDirectIP.cpp:79
+msgid "Sorry!"
+msgstr "Mi dispiace!"
+
+#: ../../src/dskCredits.cpp:218
+msgid "THE END"
+msgstr "LA FINE"
+
+#: ../../src/dskGameInterface.cpp:1352
+#, c-format
+msgid "Team victory!"
+msgstr ""
+
+#: ../../src/dskGameInterface.cpp:1349
+#, c-format
+msgid "Team victory! '%s' and '%s' and '%s' and '%s' are the winners!"
+msgstr ""
+
+#: ../../src/dskGameInterface.cpp:1346
+#, c-format
+msgid "Team victory! '%s' and '%s' and '%s' are the winners!"
+msgstr ""
+
+#: ../../src/dskGameInterface.cpp:1343
+#, c-format
+msgid "Team victory! '%s' and '%s' are the winners!"
+msgstr ""
+
+#: ../../src/dskCredits.cpp:210
+msgid "Thank you for your donations!"
+msgstr "Grazie per la vostra donazione!"
+
+#: ../../src/dskCredits.cpp:217
+msgid "Thank you!"
+msgstr "Grazie!"
+
+#: ../../src/dskGameInterface.cpp:1053
 msgid "The Game is not in sync. Checksums of some players don't match."
 msgstr ""
 "La partita non è sincronizzata. Il checksum di alcuni giocatori non "
 "corrisponde."
 
-#: /home/marcus/trunk-neu/src/dskGameInterface.cpp:1055
-msgid "A auto-savegame is created..."
-msgstr "Salvata automaticamente una partita..."
+#: ../../src/dskGameLoader.cpp:132
+msgid "Tribal chiefs assembled around the table..."
+msgstr "I capi tribù si sono riuniti attorno al tavolo..."
 
-#: /home/marcus/trunk-neu/src/dskGameInterface.cpp:1090
-#: /home/marcus/trunk-neu/src/dskGameInterface.cpp:1119
-msgid "SYSTEM"
-msgstr "SYSTEM"
-
-#: /home/marcus/trunk-neu/src/dskGameInterface.cpp:1091
-msgid "Game was paused."
-msgstr "Partita interrotta."
-
-#: /home/marcus/trunk-neu/src/dskGameInterface.cpp:1120
-msgid "Game was resumed."
-msgstr "Partita ricominciata"
-
-#: /home/marcus/trunk-neu/src/dskGameInterface.cpp:1151
-msgid "Lost connection to lobby!"
-msgstr "Persa connessione con il gruppo!"
-
-#: /home/marcus/trunk-neu/src/dskGameInterface.cpp:1175
-#, c-format
-msgid "Player '%s' switched to player '%s'"
-msgstr "Il Giocatore '%s' è diventato il Giocatore '%s'"
-
-#: /home/marcus/trunk-neu/src/dskGameInterface.cpp:1198
-#, c-format
-msgid "Player '%s' was defeated!"
-msgstr "Il Giocatore '%s' è stato sconfitto!"
-
-#: /home/marcus/trunk-neu/src/dskGameInterface.cpp:1321
-#, c-format
-msgid "Player '%s' is the winner!"
+#: ../../src/dskCredits.cpp:215
+msgid "We hope you enjoy playing Return To The Roots!"
 msgstr ""
 
-#: /home/marcus/trunk-neu/src/dskGameInterface.cpp:1343
-#, c-format
-msgid "Team victory! '%s' and '%s' are the winners!"
+#: ../../src/dskCredits.cpp:84
+#: ../../src/dskCredits.cpp:104
+#: ../../src/dskCredits.cpp:113
+msgid "Website Administration"
 msgstr ""
 
-#: /home/marcus/trunk-neu/src/dskGameInterface.cpp:1346
-#, c-format
-msgid "Team victory! '%s' and '%s' and '%s' are the winners!"
+#: ../../src/dskCredits.cpp:85
+#: ../../src/dskCredits.cpp:105
+msgid "Website Programming"
 msgstr ""
 
-#: /home/marcus/trunk-neu/src/dskGameInterface.cpp:1349
-#, c-format
-msgid "Team victory! '%s' and '%s' and '%s' and '%s' are the winners!"
-msgstr ""
+#. TODO: richtige Messages senden, um das zu laden /*GetMap()->GenerateOpenGL();*/
+#: ../../src/dskGameLoader.cpp:169
+msgid "World was put together and glued..."
+msgstr "Il mondo è stato assemblato e incollato..."
 
-#: /home/marcus/trunk-neu/src/dskGameInterface.cpp:1352
-#, c-format
-msgid "Team victory!"
-msgstr ""
-
-#: /home/marcus/trunk-neu/src/nobMilitary.cpp:630
-msgid "Military building occupied"
-msgstr "Edificio militare occupato"
-
-#: /home/marcus/trunk-neu/src/nobMilitary.cpp:890
-msgid "Military building lost"
-msgstr "Edificio militare perduto"
-
-#: /home/marcus/trunk-neu/src/nobMilitary.cpp:893
-msgid "Military building captured"
-msgstr "Edificio militare catturato"
-
-#: /home/marcus/trunk-neu/src/nobMilitary.cpp:1141
-msgid "A catapult is firing upon us!"
-msgstr "Siamo sotto il tiro di una catapulta!"
-
-#: /home/marcus/trunk-neu/src/iwTrade.cpp:59
-msgid "Trade"
-msgstr ""
-
-#: /home/marcus/trunk-neu/src/iwTrade.cpp:64
-#, c-format
-msgid "Trade with %s"
-msgstr ""
-
-#: /home/marcus/trunk-neu/src/iwTrade.cpp:74
-msgid "Wares"
-msgstr ""
-
-#: /home/marcus/trunk-neu/src/iwTrade.cpp:75
-msgid "Settlers"
-msgstr ""
-
-#: /home/marcus/trunk-neu/src/iwTrade.cpp:94
-msgid "Ware you like to trade"
-msgstr ""
-
-#: /home/marcus/trunk-neu/src/iwTrade.cpp:98
-msgid "Send"
-msgstr ""
-
-#: /home/marcus/trunk-neu/src/dskDirectIP.cpp:53
-#: /home/marcus/trunk-neu/src/dskLobby.cpp:61
-#, c-format
-msgid "Return To The Roots - v%s-%s"
-msgstr "Ritorna A The Roots - v%s-%s"
-
-#: /home/marcus/trunk-neu/src/dskDirectIP.cpp:56
-#: /home/marcus/trunk-neu/src/dskLobby.cpp:63
-msgid "http://www.siedler25.org"
-msgstr "http://www.siedler25.org"
-
-#: /home/marcus/trunk-neu/src/dskDirectIP.cpp:59
-#: /home/marcus/trunk-neu/src/dskLobby.cpp:65
-msgid "© 2005 - 2011 Settlers Freaks"
-msgstr "© 2005 - 2011 Settlers Freaks"
-
-#: /home/marcus/trunk-neu/src/dskDirectIP.cpp:61
-msgid "Create Game"
-msgstr "Crea Gioco"
-
-#: /home/marcus/trunk-neu/src/dskDirectIP.cpp:62
-msgid "Join Game"
-msgstr "Unisciti alla partita"
-
-#: /home/marcus/trunk-neu/src/dskDirectIP.cpp:79
-#: /home/marcus/trunk-neu/src/dskLobby.cpp:158
-msgid "Sorry!"
-msgstr "Mi dispiace!"
-
-#: /home/marcus/trunk-neu/src/dskDirectIP.cpp:79
-#: /home/marcus/trunk-neu/src/dskLobby.cpp:158
+#: ../../src/dskDirectIP.cpp:79
 msgid ""
 "You can't create a game while a proxy server is active\n"
 "Disable the use of a proxy server first!"
 msgstr ""
 
-#: /home/marcus/trunk-neu/src/dskLobby.cpp:70
-msgid "Connect"
-msgstr "Connetti"
+#. URL
+#: ../../src/dskDirectIP.cpp:56
+msgid "http://www.siedler25.org"
+msgstr "http://www.siedler25.org"
 
-#: /home/marcus/trunk-neu/src/dskLobby.cpp:72
-msgid "Internet Ranking"
-msgstr "Classifica Internet"
+#: ../../src/dskCredits.cpp:192
+msgid "various anonymous donators"
+msgstr "vari donatori anonimi"
 
-#: /home/marcus/trunk-neu/src/dskLobby.cpp:74
-msgid "Add Server"
-msgstr "Aggiungi Server"
+#. Copyright
+#: ../../src/dskDirectIP.cpp:59
+msgid "© 2005 - 2011 Settlers Freaks"
+msgstr "© 2005 - 2011 Settlers Freaks"
 
-#: /home/marcus/trunk-neu/src/dskLobby.cpp:77
-msgid "ID"
-msgstr "ID"
+#: ../../src/GameClient.cpp:610
+msgid " (AI)"
+msgstr " (AI)"
 
-#: /home/marcus/trunk-neu/src/dskLobby.cpp:77
-msgid "Server"
-msgstr "Server"
-
-#: /home/marcus/trunk-neu/src/dskLobby.cpp:77
-msgid "Player"
-msgstr "Giocatore"
-
-#: /home/marcus/trunk-neu/src/dskLobby.cpp:77
-#: /home/marcus/trunk-neu/src/dskLobby.cpp:79
-msgid "Version"
-msgstr "Versione"
-
-#: /home/marcus/trunk-neu/src/dskLobby.cpp:77
-msgid "Ping"
-msgstr "Ping"
-
-#: /home/marcus/trunk-neu/src/dskLobby.cpp:79
-msgid "Name"
-msgstr "Nome"
-
-#: /home/marcus/trunk-neu/src/dskLobby.cpp:79
-msgid "Points"
-msgstr "Punti"
-
-#: /home/marcus/trunk-neu/src/nobHarborBuilding.cpp:104
-msgid "New harbor building finished"
-msgstr ""
-
-#: /home/marcus/trunk-neu/src/nofAttacker.cpp:289
-msgid "Our headquarters was destroyed!"
-msgstr ""
-
-#: /home/marcus/trunk-neu/src/nofAttacker.cpp:292
-msgid "This harbor building was destroyed"
-msgstr ""
-
-#: /home/marcus/trunk-neu/src/nofAttacker.cpp:655
-msgid "We are under attack!"
-msgstr "Siamo sotto attacco!"
-
-#: /home/marcus/trunk-neu/src/main.cpp:140
-msgid ""
-"RttR crashed. Would you like to send debug information to RttR to help us "
-"avoiding this crash in the future? Thank you very much!"
-msgstr ""
-
-#: /home/marcus/trunk-neu/src/main.cpp:272
-msgid "Unlimited Play"
-msgstr ""
-
-#: /home/marcus/trunk-neu/src/main.cpp:291
-msgid "Error while playing replay!"
-msgstr "Errore durante il gioco replay"
-
-#: /home/marcus/trunk-neu/src/main.cpp:292
-msgid "Error while opening file!"
-msgstr "Errore all'apertura del file"
-
-#: /home/marcus/trunk-neu/src/main.cpp:293
-msgid "Invalid Replay!"
-msgstr "Replay invalido"
-
-#: /home/marcus/trunk-neu/src/main.cpp:294
-msgid "Error: Replay is too old!"
-msgstr "Errore: il Replay è troppo vecchio!"
-
-#: /home/marcus/trunk-neu/src/main.cpp:295
-msgid "Program version is too old to play that replay!"
-msgstr "La versione del programma è troppo vecchia per giocare questo Replay"
-
-#: /home/marcus/trunk-neu/src/main.cpp:297
-msgid "Temporary map file was not found!"
-msgstr "File temporaneo della mappa non trovato!"
-
-#: /home/marcus/trunk-neu/src/iwShip.cpp:60
-msgid "Ship register"
-msgstr "Registro navale"
-
-#: /home/marcus/trunk-neu/src/iwShip.cpp:72
-msgid "Found colony"
-msgstr "Trovata una colonia"
-
-#: /home/marcus/trunk-neu/src/iwShip.cpp:80
-msgid "Return to harbor"
-msgstr ""
-
-#: /home/marcus/trunk-neu/src/iwShip.cpp:109
-msgid "No ships available"
-msgstr "Non ci sono navi disponibili"
-
-#: /home/marcus/trunk-neu/src/iwDirectIPConnect.cpp:55
-msgid "IP Address of Host:"
-msgstr "Indirizzo IP dell'host:"
-
-#: /home/marcus/trunk-neu/src/iwDirectIPConnect.cpp:59
-msgid "Server-Port:"
-msgstr "Porta:"
-
-#: /home/marcus/trunk-neu/src/iwDirectIPConnect.cpp:63
-msgid "Password (if needed):"
-msgstr "Password (se necessaria):"
-
-#: /home/marcus/trunk-neu/src/iwDirectIPConnect.cpp:67
-msgid "Use IPv6:"
-msgstr "Usa IPv6"
-
-#: /home/marcus/trunk-neu/src/iwDirectIPConnect.cpp:70
-msgid "IPv4"
-msgstr "IPv4"
-
-#: /home/marcus/trunk-neu/src/iwDirectIPConnect.cpp:71
-msgid "IPv6"
-msgstr "IPv6"
-
-#: /home/marcus/trunk-neu/src/iwDirectIPConnect.cpp:156
-msgid "Invalid port. The valid port-range is 1 to 65535!"
-msgstr "Porta non valida. Le porte valide vanno da 1 a 65535!"
-
-#: /home/marcus/trunk-neu/src/iwDirectIPConnect.cpp:167
-msgid "Connecting with Host..."
-msgstr "Connessione con l'host..."
-
-#: /home/marcus/trunk-neu/src/iwDirectIPConnect.cpp:173
-msgid "Connection failed!"
-msgstr "Connessione fallita!"
-
-#: /home/marcus/trunk-neu/src/iwDirectIPConnect.cpp:258
-msgid "This Server is full!"
-msgstr "Il server è pieno!"
-
-#: /home/marcus/trunk-neu/src/iwDirectIPConnect.cpp:259
-msgid "Wrong Password!"
-msgstr "Password errata!"
-
-#: /home/marcus/trunk-neu/src/iwDirectIPConnect.cpp:260
-msgid "Wrong client version"
-msgstr "Versione del client errata"
-
-#: /home/marcus/trunk-neu/src/iwDirectIPConnect.cpp:261
-msgid "Connection to Host closed!"
-msgstr "Connessione con l'host chiusa!"
-
-#: /home/marcus/trunk-neu/src/iwDirectIPConnect.cpp:262
-msgid "Too short Message received!"
-msgstr "Ricevuto un messaggio troppo corto!"
-
-#: /home/marcus/trunk-neu/src/iwDirectIPConnect.cpp:263
-msgid "Wrong Server Type!"
-msgstr "Tipo di server errato!"
-
-#: /home/marcus/trunk-neu/src/iwDirectIPConnect.cpp:279
-msgid "Waiting for Reply..."
-msgstr "In attesa di risposta..."
-
-#: /home/marcus/trunk-neu/src/iwDirectIPConnect.cpp:280
-msgid "Checking Password..."
-msgstr "Controllo della password..."
-
-#: /home/marcus/trunk-neu/src/iwDirectIPConnect.cpp:281
-msgid "Checking Map..."
-msgstr "Controllo della Mappa"
-
-#: /home/marcus/trunk-neu/src/iwDirectIPConnect.cpp:282
-msgid "Waiting for Playerinfo..."
-msgstr "In attesa delle informazioni del Giocatore..."
-
-#: /home/marcus/trunk-neu/src/dskHostGame.cpp:70
-msgid "Ready?"
-msgstr "Pronto?"
-
-#: /home/marcus/trunk-neu/src/dskHostGame.cpp:135
+#. / Einstufung nur bei Lobbyspielen anzeigen @todo Einstufung ( "%d" )
+#. Ping ( "%d" )
+#: ../../src/dskHostGame.cpp:294
+#: ../../src/dskHostGame.cpp:321
 #, c-format
-msgid "Tournament: %u minutes"
-msgstr ""
+msgid "%d"
+msgstr "%d"
 
-#: /home/marcus/trunk-neu/src/dskHostGame.cpp:589
-msgid "You have 10 seconds until game starts"
-msgstr ""
-
-#: /home/marcus/trunk-neu/src/dskHostGame.cpp:590
-msgid "Don't forget to check the addon configuration!"
-msgstr ""
-
-#: /home/marcus/trunk-neu/src/dskHostGame.cpp:597
-msgid "Starting game, please wait"
-msgstr "Esecuzione gioco, attendere"
-
-#: /home/marcus/trunk-neu/src/dskHostGame.cpp:610
-msgid "Start aborted"
-msgstr "Avvio cancellato"
-
-#: /home/marcus/trunk-neu/src/iwStatistics.cpp:46
-msgid "Statistics"
-msgstr "Statistiche"
-
-#: /home/marcus/trunk-neu/src/iwStatistics.cpp:116
-#: /home/marcus/trunk-neu/src/iwStatistics.cpp:136
-#: /home/marcus/trunk-neu/src/iwStatistics.cpp:211
-msgid "Size of country"
-msgstr "Dimensioni del territorio"
-
-#: /home/marcus/trunk-neu/src/iwStatistics.cpp:117
-#: /home/marcus/trunk-neu/src/iwStatistics.cpp:215
-#: /home/marcus/trunk-neu/src/iwBuildings.cpp:79
-msgid "Buildings"
-msgstr "Edifici"
-
-#: /home/marcus/trunk-neu/src/iwStatistics.cpp:118
-#: /home/marcus/trunk-neu/src/iwStatistics.cpp:219
-msgid "Inhabitants"
-msgstr "Abitanti"
-
-#: /home/marcus/trunk-neu/src/iwStatistics.cpp:119
-#: /home/marcus/trunk-neu/src/iwStatistics.cpp:223
-msgid "Merchandise"
-msgstr "Mercanzie"
-
-#: /home/marcus/trunk-neu/src/iwStatistics.cpp:120
-#: /home/marcus/trunk-neu/src/iwStatistics.cpp:227
-msgid "Military strength"
-msgstr "Potenza militare"
-
-#: /home/marcus/trunk-neu/src/iwStatistics.cpp:121
-#: /home/marcus/trunk-neu/src/iwStatistics.cpp:231
-msgid "Gold"
-msgstr "Oro"
-
-#: /home/marcus/trunk-neu/src/iwStatistics.cpp:122
-#: /home/marcus/trunk-neu/src/iwStatistics.cpp:235
-msgid "Productivity"
-msgstr "Produttività"
-
-#: /home/marcus/trunk-neu/src/iwStatistics.cpp:123
-#: /home/marcus/trunk-neu/src/iwStatistics.cpp:239
-msgid "Vanquished enemies"
-msgstr "Nemici sconfitti"
-
-#: /home/marcus/trunk-neu/src/iwStatistics.cpp:127
-msgid "15 m"
-msgstr "15 m"
-
-#: /home/marcus/trunk-neu/src/iwStatistics.cpp:128
-msgid "1 h"
-msgstr "1 ora"
-
-#: /home/marcus/trunk-neu/src/iwStatistics.cpp:129
-msgid "4 h"
-msgstr "4 ore"
-
-#: /home/marcus/trunk-neu/src/iwStatistics.cpp:130
-msgid "16 h"
-msgstr "16 ore"
-
-#: /home/marcus/trunk-neu/src/iwMsgbox.cpp:72
-#: /home/marcus/trunk-neu/src/iwMsgbox.cpp:87
-msgid "Cancel"
-msgstr "Annulla"
-
-#: /home/marcus/trunk-neu/src/iwMsgbox.cpp:78
-#: /home/marcus/trunk-neu/src/iwMsgbox.cpp:85
-msgid "Yes"
-msgstr "Si"
-
-#: /home/marcus/trunk-neu/src/iwMsgbox.cpp:79
-#: /home/marcus/trunk-neu/src/iwMsgbox.cpp:86
-msgid "No"
-msgstr "No"
-
-#: /home/marcus/trunk-neu/src/iwMilitaryBuilding.cpp:176
-msgid "Demolition ist not allowed because the building is under attack!"
-msgstr "La demolizione non è permessa perche l'edificio è sotto attacco!"
-
-#: /home/marcus/trunk-neu/src/iwMilitaryBuilding.cpp:177
-msgid ""
-"Demolition ist not allowed because the building is located in border area!"
-msgstr "La demolizione non è permessa perche l'edificio è vicino al confine!"
-
-#: /home/marcus/trunk-neu/src/iwMilitaryBuilding.cpp:180
-msgid "Demolition not possible"
-msgstr "La demolizione non è permessa"
-
-#: /home/marcus/trunk-neu/src/dskSelectMap.cpp:101
-msgid "Author"
-msgstr "Autore"
-
-#: /home/marcus/trunk-neu/src/dskSelectMap.cpp:101
-msgid "Type"
-msgstr "Tipo"
-
-#: /home/marcus/trunk-neu/src/dskSelectMap.cpp:101
-msgid "Size"
-msgstr "Dimensioni"
-
-#: /home/marcus/trunk-neu/src/dskSelectMap.cpp:104
-msgid "Selection of maps"
-msgstr "Seleziona una mappa"
-
-#: /home/marcus/trunk-neu/src/dskSelectMap.cpp:109
-msgid "Load game..."
-msgstr "Carica una partita..."
-
-#: /home/marcus/trunk-neu/src/dskSelectMap.cpp:111
-msgid "Continue"
-msgstr "Continua"
-
-#: /home/marcus/trunk-neu/src/dskSelectMap.cpp:115
-msgid "Old maps"
-msgstr "Vecchie"
-
-#: /home/marcus/trunk-neu/src/dskSelectMap.cpp:117
-msgid "New maps"
-msgstr "Nuove"
-
-#: /home/marcus/trunk-neu/src/dskSelectMap.cpp:119
-msgid "Own maps"
-msgstr "Personali"
-
-#: /home/marcus/trunk-neu/src/dskSelectMap.cpp:121
-msgid "Continents"
-msgstr "Continenti"
-
-#: /home/marcus/trunk-neu/src/dskSelectMap.cpp:123
-msgid "Campaign"
-msgstr "Campagna"
-
-#: /home/marcus/trunk-neu/src/dskSelectMap.cpp:125
-msgid "RTTR"
-msgstr "RTTR"
-
-#: /home/marcus/trunk-neu/src/dskSelectMap.cpp:127
-msgid "Other"
-msgstr "Altro"
-
-#: /home/marcus/trunk-neu/src/dskSelectMap.cpp:129
-msgid "Sea"
-msgstr "Mare"
-
-#: /home/marcus/trunk-neu/src/dskSelectMap.cpp:131
-msgid "Played"
-msgstr "Giocate"
-
-#: /home/marcus/trunk-neu/src/dskSelectMap.cpp:135
-msgid "Mapfile: "
-msgstr "File di mappa: "
-
-#: /home/marcus/trunk-neu/src/dskSelectMap.cpp:357
-msgid "Incomplete message was received!"
-msgstr "Ricevuto un messaggio incompleto!"
-
-#: /home/marcus/trunk-neu/src/dskSelectMap.cpp:418
+#. Und Zeilen vorbereiten
+#: ../../src/dskSelectMap.cpp:417
 #, c-format
 msgid "%d Player"
 msgstr "%d Giocatore"
 
-#: /home/marcus/trunk-neu/src/dskSelectMap.cpp:423
+#. Team
+#: ../../src/dskHostGame.cpp:193
+#: ../../src/dskHostGame.cpp:304
+#: ../../src/dskHostGame.cpp:313
+msgid "-"
+msgstr "-"
+
+#: ../../src/dskHostGame.cpp:129
+msgid "A lot"
+msgstr "Tante"
+
+#. "Server hinzufügen"
+#: ../../src/dskLobby.cpp:74
+msgid "Add Server"
+msgstr "Aggiungi Server"
+
+#: ../../src/dskOptions.cpp:80
+msgid "Addons"
+msgstr ""
+
+#. "Enhancements"
+#: ../../src/dskHostGame.cpp:108
+msgid "Addons:"
+msgstr "Addons:"
+
+#. Volk
+#: ../../src/dskHostGame.cpp:300
+#: ../../src/dskHostGame.cpp:309
+#: ../../src/dskHostGame.cpp:823
+msgid "Africans"
+msgstr "Africani"
+
+#: ../../src/dskSelectMap.cpp:100
+msgid "Author"
+msgstr "Autore"
+
+#: ../../src/GameClient.cpp:1416
+#: ../../src/GameClient.cpp:1420
+msgid "Auto-Save"
+msgstr "Salvataggio automatico"
+
+#. "Kampagne"
+#: ../../src/dskSelectMap.cpp:122
+#: ../../src/dskSinglePlayer.cpp:75
+msgid "Campaign"
+msgstr "Campagna"
+
+#: ../../src/dskHostGame.cpp:584
+#: ../../src/dskHostGame.cpp:808
+msgid "Cancel start"
+msgstr ""
+
+#: ../../src/dskHostGame.cpp:109
+msgid "Change Settings..."
+msgstr "Cambia i settaggi..."
+
+#: ../../src/dskHostGame.cpp:119
+msgid "Classic (Settlers 2)"
+msgstr "Classica (Settlers 2)"
+
+#. "Einstufung"
+#: ../../src/dskHostGame.cpp:64
+msgid "Classification"
+msgstr "Classifica"
+
+#. Geschlossen
+#: ../../src/dskHostGame.cpp:265
+msgid "Closed"
+msgstr "Chiusa"
+
+#. "Farbe"
+#: ../../src/dskHostGame.cpp:68
+msgid "Color"
+msgstr "Colore"
+
+#. "Allgemein"
+#: ../../src/dskOptions.cpp:83
+msgid "Common"
+msgstr "Comuni"
+
+#: ../../src/GameClient.cpp:608
+#, c-format
+msgid "Computer %u"
+msgstr "Computer %u"
+
+#. "Verbinden"
+#: ../../src/dskLobby.cpp:70
+msgid "Connect"
+msgstr "Connetti"
+
+#. Kein Spielziel
+#: ../../src/dskHostGame.cpp:135
+msgid "Conquer 3/4 of map"
+msgstr "Conquistare 3/4 della mappa"
+
+#. "Kontinente"
+#: ../../src/dskSelectMap.cpp:120
+msgid "Continents"
+msgstr "Continenti"
+
+#. "Weiter"
+#: ../../src/dskSelectMap.cpp:110
+msgid "Continue"
+msgstr "Continua"
+
+#. "Direkte IP"
+#: ../../src/dskMultiPlayer.cpp:69
+msgid "Direct IP"
+msgstr "IP diretto"
+
+#: ../../src/dskOptions.cpp:301
+msgid "Disabled"
+msgstr "Disabilitato"
+
+#: ../../src/dskHostGame.cpp:641
+msgid "Don't forget to check the addon configuration!"
+msgstr ""
+
+#: ../../src/GameClient.cpp:621
+#, c-format
+msgid "Dummy %u"
+msgstr ""
+
+#: ../../src/dskOptions.cpp:307
+msgid "Dynamic (Limits to display refresh rate, works with most drivers)"
+msgstr ""
+
+#. Effekte
+#: ../../src/dskOptions.cpp:244
+msgid "Effects"
+msgstr "Effetti"
+
+#. umgedrehte Reihenfolge, damit die Listen nicht dahinter sind
+#. "Aufklärung"
+#: ../../src/dskHostGame.cpp:116
+msgid "Exploration:"
+msgstr "Esplorazione"
+
+#. Normal
+#: ../../src/dskHostGame.cpp:155
+msgid "Fast"
+msgstr "Veloce"
+
+#: ../../src/dskHostGame.cpp:121
+msgid "FoW - all explored"
+msgstr "NdG - tutto esplorato"
+
+#: ../../src/dskHostGame.cpp:120
+msgid "Fog of War"
+msgstr "Nebbia di Guerra"
+
+#: ../../src/dskOptions.cpp:182
+msgid "Fullscreen"
+msgstr "Schermo intero"
+
+#. "Auflösung"
+#: ../../src/dskOptions.cpp:176
+msgid "Fullscreen resolution:"
+msgstr ""
+
+#: ../../src/dskHostGame.cpp:587
+msgid ""
+"Game can only be started as soon as everybody has a unique color,everyone is "
+"ready and all free slots are closed."
+msgstr ""
+"Il gioco può iniziare appena ognuno ha il suo colore, tutti sono pronti e "
+"tutti gli slot liberi sono chiusi."
+
+#. "Spielziel"
+#: ../../src/dskHostGame.cpp:132
+msgid "Goals:"
+msgstr "Obiettivi:"
+
+#. "Waren zu Beginn"
+#: ../../src/dskHostGame.cpp:124
+msgid "Goods at start:"
+msgstr "Scorte all'avvio:"
+
+#. "Grafik"
+#: ../../src/dskOptions.cpp:85
+msgid "Graphics"
+msgstr "Grafica"
+
+#. "Grafiktreiber"
+#: ../../src/dskOptions.cpp:200
+msgid "Graphics Driver"
+msgstr "Driver Grafico"
+
+#: ../../src/dskSelectMap.cpp:422
 msgid "Greenland"
 msgstr "Terra verde"
 
-#: /home/marcus/trunk-neu/src/dskSelectMap.cpp:424
-msgid "Wasteland"
-msgstr "Terra"
+#. Gameserver-Tabelle - "ID", "Server", "Karte", "Spieler", "Version", "Ping"
+#: ../../src/dskLobby.cpp:77
+msgid "ID"
+msgstr "ID"
 
-#: /home/marcus/trunk-neu/src/dskSelectMap.cpp:425
-msgid "Winter world"
-msgstr "Terre degradate"
+#: ../../src/dskOptions.cpp:130
+msgid "IPv4"
+msgstr "IPv4"
 
-#: /home/marcus/trunk-neu/src/iwPlayReplay.cpp:61
-msgid "Play Replay"
-msgstr "Gioca Replay"
+#: ../../src/dskOptions.cpp:129
+msgid "IPv6"
+msgstr "IPv6"
 
-#: /home/marcus/trunk-neu/src/iwPlayReplay.cpp:63
-msgid "Filename"
-msgstr "Nome del file"
+#: ../../src/dskSelectMap.cpp:353
+msgid "Incomplete message was received!"
+msgstr "Ricevuto un messaggio incompleto!"
 
-#: /home/marcus/trunk-neu/src/iwPlayReplay.cpp:63
-msgid "Stocktaking date"
-msgstr "Stocktaking date"
+#. "Internet - Lobby"
+#: ../../src/dskMultiPlayer.cpp:65
+msgid "Internet Lobby"
+msgstr "Internet Lobby"
 
-#: /home/marcus/trunk-neu/src/iwPlayReplay.cpp:63
-msgid "Length"
-msgstr "Lunghezza"
+#. "Internet Ranking"
+#: ../../src/dskLobby.cpp:72
+msgid "Internet Ranking"
+msgstr "Classifica Internet"
 
-#: /home/marcus/trunk-neu/src/iwPlayReplay.cpp:66
-msgid "Start"
-msgstr "Avvio"
-
-#: /home/marcus/trunk-neu/src/iwPlayReplay.cpp:68
-#: /home/marcus/trunk-neu/src/iwPlayReplay.cpp:93
-msgid "Clear"
-msgstr "Ripulisci"
-
-#: /home/marcus/trunk-neu/src/iwPlayReplay.cpp:93
-msgid "Are you sure to remove all replays?"
-msgstr "Sei sicuro di voler cancellare tutti i Replays?"
-
-#: /home/marcus/trunk-neu/src/iwStorehouse.cpp:43
-msgid "Storehouse"
-msgstr "Magazzino"
-
-#: /home/marcus/trunk-neu/src/iwRoadWindow.cpp:50
-msgid "Interrupt road building"
-msgstr "Interrompi la costruzione della strada"
-
-#: /home/marcus/trunk-neu/src/iwMinimap.cpp:53
-msgid "Outline map"
-msgstr "Contorno della mappa"
-
-#: /home/marcus/trunk-neu/src/PostMsg.cpp:104
-msgid "treaty of alliance"
-msgstr "trattato di alleanza"
-
-#: /home/marcus/trunk-neu/src/PostMsg.cpp:105
-msgid "non-aggression pact"
-msgstr "patto di non-aggressione"
-
-#: /home/marcus/trunk-neu/src/PostMsg.cpp:115
-#, c-format
-msgid "The player '%s' offers you a %s."
-msgstr "Il giocatore '%s' ti offre un %s."
-
-#: /home/marcus/trunk-neu/src/PostMsg.cpp:120
-msgid "Duration: Forever"
-msgstr "Durata: Per sempre"
-
-#: /home/marcus/trunk-neu/src/PostMsg.cpp:122
-#, c-format
-msgid "Duration: %u GF (%s)"
-msgstr "Durata: %u GF (%s)"
-
-#: /home/marcus/trunk-neu/src/PostMsg.cpp:134
-#, c-format
-msgid ""
-"The player '%s' want to cancel the '%s' between you both primaturely. Do you "
-"agree?"
-msgstr ""
-"Il giocatore '%s' vuole annullare prematuramente il '%s' fra di voi. Sei "
-"d'accordo?"
-
-#: /home/marcus/trunk-neu/src/PostMsg.cpp:157
-#, c-format
-msgid "The %s between player '%s' and you has been concluded."
-msgstr "Il %s fra il giocatore '%s' e te e stato concluso."
-
-#: /home/marcus/trunk-neu/src/PostMsg.cpp:160
-#, c-format
-msgid "The %s between player '%s' and you has been cancelled."
-msgstr "Il %s fra il giocatore '%s' e te e stato annullato."
-
-#: /home/marcus/trunk-neu/src/dskGameLoader.cpp:122
-msgid "Map was loaded and pinned at the wall..."
-msgstr "La mappa è stata caricata e appesa al muro..."
-
-#: /home/marcus/trunk-neu/src/dskGameLoader.cpp:132
-msgid "Tribal chiefs assembled around the table..."
-msgstr "I capi tribù si sono riuniti attorno al tavolo..."
-
-#: /home/marcus/trunk-neu/src/dskGameLoader.cpp:140
-msgid "Failed to load map objects."
-msgstr "Problemi nel caricamento dei map objects."
-
-#: /home/marcus/trunk-neu/src/dskGameLoader.cpp:148
-msgid "Failed to load addon objects."
-msgstr ""
-
-#: /home/marcus/trunk-neu/src/dskGameLoader.cpp:155
-msgid "Game crate was picked and spread out..."
-msgstr "La cassa del gioco è stata presa e distribuita..."
-
-#: /home/marcus/trunk-neu/src/dskGameLoader.cpp:163
-msgid "Failed to load terrain data."
-msgstr "Problemi nel caricamento dei dati del terreno."
-
-#: /home/marcus/trunk-neu/src/dskGameLoader.cpp:169
-msgid "World was put together and glued..."
-msgstr "Il mondo è stato assemblato e incollato..."
-
-#: /home/marcus/trunk-neu/src/dskGameLoader.cpp:175
-msgid "And let's go!"
-msgstr "Andiamo!"
-
-#: /home/marcus/trunk-neu/src/iwInventory.cpp:46
-msgid "Stock"
-msgstr "Scorta"
-
-#: /home/marcus/trunk-neu/src/dskMainMenu.cpp:73
-msgid "© 2005 - 2012 Settlers Freaks"
-msgstr ""
-
-#: /home/marcus/trunk-neu/src/dskMainMenu.cpp:76
-msgid "Singleplayer"
-msgstr "Giocatore singolo"
-
-#: /home/marcus/trunk-neu/src/dskMainMenu.cpp:78
-msgid "Multiplayer"
-msgstr "Gioco di gruppo"
-
-#: /home/marcus/trunk-neu/src/dskMainMenu.cpp:80
-msgid "Options"
-msgstr "Opzioni"
-
-#: /home/marcus/trunk-neu/src/dskMainMenu.cpp:82
+#. "Intro"
+#: ../../src/dskMainMenu.cpp:82
 msgid "Intro"
 msgstr "Introduzione"
 
-#: /home/marcus/trunk-neu/src/dskMainMenu.cpp:84
-msgid "Readme"
-msgstr "Leggimi"
+#: ../../src/dskHostGame.cpp:823
+msgid "Japaneses"
+msgstr "Giapponesi"
 
-#: /home/marcus/trunk-neu/src/dskMainMenu.cpp:88
+#. Tastaturlayout
+#: ../../src/dskOptions.cpp:122
+msgid "Keyboard layout:"
+msgstr "Layout di tastiera"
+
+#. "Sprache"
+#: ../../src/dskOptions.cpp:103
+msgid "Language:"
+msgstr "Lingua"
+
+#. "VSync"
+#: ../../src/dskOptions.cpp:186
+msgid "Limit Framerate:"
+msgstr ""
+
+#. "Spiel laden"
+#: ../../src/dskSinglePlayer.cpp:79
+msgid "Load game"
+msgstr "Carica gioco"
+
+#. "Spiel laden..."
+#: ../../src/dskSelectMap.cpp:108
+msgid "Load game..."
+msgstr "Carica una partita..."
+
+#. "Teams sperren"
+#: ../../src/dskHostGame.cpp:101
+msgid "Lock teams:"
+msgstr "Blocca le squadre:"
+
+#: ../../src/dskHostGame.cpp:127
+msgid "Low"
+msgstr "Poche"
+
+#. Titel der Karte, Y-Position relativ je nach Höhe der Minimap festlegen, daher nochmals danach
+#. verschieben, da diese Position sonst skaliert wird!
+#: ../../src/dskHostGame.cpp:171
+#: ../../src/dskSelectMap.cpp:133
+msgid "Map: "
+msgstr "Mappa: "
+
+#: ../../src/dskSelectMap.cpp:134
+msgid "Mapfile: "
+msgstr "File di mappa: "
+
+#. "Vollbild"
+#: ../../src/dskOptions.cpp:180
+msgid "Mode:"
+msgstr "Modalità:"
+
+#. "Mehrspieler"
+#: ../../src/dskMainMenu.cpp:78
+msgid "Multiplayer"
+msgstr "Gioco di gruppo"
+
+#. Musik
+#: ../../src/dskOptions.cpp:235
+msgid "Music"
+msgstr "Musica"
+
+#. Musicplayer-Button
+#: ../../src/dskOptions.cpp:253
+msgid "Music player"
+msgstr "Music player"
+
+#. Spieler-Tabelle - "Name", "Punkte", "Version"
+#. Die Tabelle für die Maps
+#: ../../src/dskLobby.cpp:79
+#: ../../src/dskSelectMap.cpp:100
+msgid "Name"
+msgstr "Nome"
+
+#. Allgemein
+#. {
+#. "Name"
+#: ../../src/dskOptions.cpp:98
+msgid "Name in Game:"
+msgstr "Nome durante il gioco:"
+
+#. "Netzwerk / LAN"
+#: ../../src/dskMultiPlayer.cpp:67
+msgid "Network/LAN"
+msgstr "Network/LAN"
+
+#. "Neue"
+#: ../../src/dskSelectMap.cpp:116
+msgid "New maps"
+msgstr "Nuove"
+
+#: ../../src/dskOptions.cpp:146
+msgid "No Proxy"
+msgstr "Nessun Proxy"
+
+#: ../../src/dskHostGame.cpp:134
+msgid "None"
+msgstr "Nessuno"
+
+#. Langsam
+#: ../../src/dskHostGame.cpp:128
+#: ../../src/dskHostGame.cpp:154
+msgid "Normal"
+msgstr "Normali"
+
+#: ../../src/dskHostGame.cpp:810
+msgid "Not Ready"
+msgstr "Non Pronto"
+
+#. / @todo Hier dann Auswahl zwischen Kampagne(n) und "Freies Spiel"
+#: ../../src/dskSinglePlayer.cpp:162
+msgid "Not available"
+msgstr "Non disponibile"
+
+#: ../../src/dskOptions.cpp:165
+#: ../../src/dskOptions.cpp:173
+#: ../../src/dskOptions.cpp:197
+#: ../../src/dskOptions.cpp:217
+#: ../../src/dskOptions.cpp:238
+#: ../../src/dskOptions.cpp:247
+msgid "Off"
+msgstr "Off"
+
+#: ../../src/dskHostGame.cpp:118
+msgid "Off (all visible)"
+msgstr "Off (tutto visibile)"
+
+#. "Alte"
+#: ../../src/dskSelectMap.cpp:114
+msgid "Old maps"
+msgstr "Vecchie"
+
+#: ../../src/dskOptions.cpp:164
+#: ../../src/dskOptions.cpp:172
+#: ../../src/dskOptions.cpp:196
+#: ../../src/dskOptions.cpp:216
+#: ../../src/dskOptions.cpp:237
+#: ../../src/dskOptions.cpp:246
+msgid "On"
+msgstr "On"
+
+#. Offen
+#: ../../src/dskHostGame.cpp:260
+msgid "Open"
+msgstr "Aperta"
+
+#: ../../src/dskOptions.cpp:213
+msgid "Optimized Textures:"
+msgstr ""
+
+#. "Optionen"
+#: ../../src/dskMainMenu.cpp:80
+#: ../../src/dskOptions.cpp:76
+msgid "Options"
+msgstr "Opzioni"
+
+#. "Andere"
+#: ../../src/dskSelectMap.cpp:126
+msgid "Other"
+msgstr "Altro"
+
+#. "Eigene"
+#: ../../src/dskSelectMap.cpp:118
+msgid "Own maps"
+msgstr "Personali"
+
+#: ../../src/dskHostGame.cpp:84
+msgid "Past player"
+msgstr "Giocatore precedente"
+
+#. "Ping"
+#: ../../src/dskHostGame.cpp:77
+#: ../../src/dskLobby.cpp:77
+msgid "Ping"
+msgstr "Ping"
+
+#. "Replay abspielen"
+#: ../../src/dskSinglePlayer.cpp:73
+msgid "Play Replay"
+msgstr "Gioca Replay"
+
+#. "Heruntergeladene"
+#: ../../src/dskSelectMap.cpp:130
+msgid "Played"
+msgstr "Giocate"
+
+#: ../../src/dskLobby.cpp:77
+#: ../../src/dskSelectMap.cpp:100
+msgid "Player"
+msgstr "Giocatore"
+
+#. "Spielername"
+#: ../../src/dskHostGame.cpp:62
+msgid "Player Name"
+msgstr "Nome del giocatore"
+
+#: ../../src/dskSinglePlayer.cpp:162
+msgid "Please use 'Unlimited Play' to create a Singleplayer game."
+msgstr ""
+
+#: ../../src/dskLobby.cpp:79
+msgid "Points"
+msgstr "Punti"
+
+#. Proxyserver
+#: ../../src/dskOptions.cpp:137
+msgid "Proxyserver:"
+msgstr "Server Proxy:"
+
+#. Proxytyp
+#: ../../src/dskOptions.cpp:144
+msgid "Proxytyp:"
+msgstr ""
+
+#. "Programm verlassen"
+#: ../../src/dskMainMenu.cpp:88
 msgid "Quit program"
 msgstr "Esci dal programma"
 
-#: /home/marcus/trunk-neu/src/dskMainMenu.cpp:106
-msgid "Submit debug data?"
+#. "RTTR"
+#: ../../src/dskSelectMap.cpp:124
+msgid "RTTR"
+msgstr "RTTR"
+
+#. "Volk"
+#: ../../src/dskHostGame.cpp:66
+msgid "Race"
+msgstr "Razza"
+
+#. "Random Start Locations"
+#: ../../src/dskHostGame.cpp:105
+msgid "Random start locations"
 msgstr ""
 
-#: /home/marcus/trunk-neu/src/dskMainMenu.cpp:106
+#. "ReadMe"
+#: ../../src/dskMainMenu.cpp:84
+#: ../../src/dskOptions.cpp:123
+msgid "Readme"
+msgstr "Leggimi"
+
+#: ../../src/dskHostGame.cpp:95
+#: ../../src/dskHostGame.cpp:594
+#: ../../src/dskHostGame.cpp:810
+msgid "Ready"
+msgstr "Pronto"
+
+#. "Bereit"
+#: ../../src/dskHostGame.cpp:75
+msgid "Ready?"
+msgstr "Pronto?"
+
+#. "Letztes Spiel fortsetzen"
+#: ../../src/dskSinglePlayer.cpp:71
+msgid "Resume last game"
+msgstr "Continua l'ultimo gioco"
+
+#. "Zurück"
+#: ../../src/dskHostGame.cpp:98
+msgid "Return"
+msgstr "Indietro"
+
+#: ../../src/dskHostGame.cpp:823
+msgid "Romans"
+msgstr "Romani"
+
+#: ../../src/dskMainMenu.cpp:106
 msgid ""
 "RttR now supports sending debug data. Would you like to help us improving "
 "this game by sending debug data?"
 msgstr ""
 
-#: /home/marcus/trunk-neu/src/SerializedGameData.cpp:235
-msgid "An error occured while saving which was suppressed!"
-msgstr ""
-"Si è verificato un errore durante il salvataggio (che è stato annullato)!"
-
-#: /home/marcus/trunk-neu/src/iwMilitary.cpp:46
-msgid "Military"
-msgstr "Esercito"
-
-#: /home/marcus/trunk-neu/src/iwMilitary.cpp:50
-msgid "Fewer recruits"
-msgstr "Meno reclutamento"
-
-#: /home/marcus/trunk-neu/src/iwMilitary.cpp:50
-msgid "More recruits"
-msgstr "Piu reclutamento"
-
-#: /home/marcus/trunk-neu/src/iwMilitary.cpp:51
-msgid "Weak defense"
-msgstr "Difesa debole"
-
-#: /home/marcus/trunk-neu/src/iwMilitary.cpp:51
-msgid "Strong defense"
-msgstr "Difesa forte"
-
-#: /home/marcus/trunk-neu/src/iwMilitary.cpp:52
-msgid "Fewer defenders"
-msgstr "Meno difensori"
-
-#: /home/marcus/trunk-neu/src/iwMilitary.cpp:52
-msgid "More defenders"
-msgstr "Piu difensori"
-
-#: /home/marcus/trunk-neu/src/iwMilitary.cpp:54
-msgid "Interior"
-msgstr "Zone interne"
-
-#: /home/marcus/trunk-neu/src/iwMilitary.cpp:55
-msgid "Center of country"
-msgstr "Zone centrali"
-
-#: /home/marcus/trunk-neu/src/iwMilitary.cpp:56
-msgid "Near harbor points"
-msgstr ""
-
-#: /home/marcus/trunk-neu/src/iwMilitary.cpp:58
-msgid "Border areas"
-msgstr "Zone di confine"
-
-#: /home/marcus/trunk-neu/src/iwMilitary.cpp:62
-#: /home/marcus/trunk-neu/src/iwDistribution.cpp:180
-msgid "Default"
-msgstr "Default"
-
-#: /home/marcus/trunk-neu/src/nofScout_LookoutTower.cpp:83
-msgid "Lookout-tower occupied"
-msgstr "Torre di Guardia occupata"
-
-#: /home/marcus/trunk-neu/src/iwDistribution.cpp:57
-msgid "Distribution of goods"
-msgstr "Distribuzione delle mercanzie"
-
-#: /home/marcus/trunk-neu/src/iwDistribution.cpp:69
-msgid "Foodstuff"
-msgstr "Cibo"
-
-#: /home/marcus/trunk-neu/src/iwDistribution.cpp:71
-msgid "Granite mine"
-msgstr "Cava di granito"
-
-#: /home/marcus/trunk-neu/src/iwDistribution.cpp:74
-msgid "Coal mine"
-msgstr "Miniera di carbone"
-
-#: /home/marcus/trunk-neu/src/iwDistribution.cpp:77
-msgid "Iron mine"
-msgstr "Miniera di ferro"
-
-#: /home/marcus/trunk-neu/src/iwDistribution.cpp:80
-msgid "Gold mine"
-msgstr "Miniera d'oro"
-
-#: /home/marcus/trunk-neu/src/iwDistribution.cpp:84
-msgid "Grain"
-msgstr "Grano"
-
-#: /home/marcus/trunk-neu/src/iwDistribution.cpp:87
-msgid "Mill"
-msgstr "Mulino"
-
-#: /home/marcus/trunk-neu/src/iwDistribution.cpp:90
-#: /home/marcus/trunk-neu/src/iwDistribution.cpp:158
-msgid "Pig farm"
-msgstr "Porcilaia"
-
-#: /home/marcus/trunk-neu/src/iwDistribution.cpp:93
-#: /home/marcus/trunk-neu/src/iwDistribution.cpp:161
-msgid "Donkey breeding"
-msgstr "Asineria"
-
-#: /home/marcus/trunk-neu/src/iwDistribution.cpp:96
-#: /home/marcus/trunk-neu/src/iwDistribution.cpp:155
-msgid "Brewery"
-msgstr "Birreria"
-
-#: /home/marcus/trunk-neu/src/iwDistribution.cpp:99
-#: /home/marcus/trunk-neu/src/iwDistribution.cpp:132
-msgid "Charburner"
-msgstr ""
-
-#: /home/marcus/trunk-neu/src/iwDistribution.cpp:103
-msgid "Iron"
-msgstr "Acciaio"
-
-#: /home/marcus/trunk-neu/src/iwDistribution.cpp:106
-#: /home/marcus/trunk-neu/src/iwDistribution.cpp:116
-msgid "Armory"
-msgstr "Armeria"
-
-#: /home/marcus/trunk-neu/src/iwDistribution.cpp:109
-#: /home/marcus/trunk-neu/src/iwDistribution.cpp:142
-msgid "Metalworks"
-msgstr "Officina"
-
-#: /home/marcus/trunk-neu/src/iwDistribution.cpp:113
-msgid "Coal"
-msgstr "Carbone"
-
-#: /home/marcus/trunk-neu/src/iwDistribution.cpp:119
-msgid "Iron smelter"
-msgstr "Fonderia"
-
-#: /home/marcus/trunk-neu/src/iwDistribution.cpp:122
-msgid "Mint"
-msgstr "Zecca"
-
-#: /home/marcus/trunk-neu/src/iwDistribution.cpp:126
-msgid "Wood"
-msgstr "Tronchi"
-
-#: /home/marcus/trunk-neu/src/iwDistribution.cpp:129
-msgid "Sawmill"
-msgstr "Segheria"
-
-#: /home/marcus/trunk-neu/src/iwDistribution.cpp:136
-msgid "Boards"
-msgstr "Assi"
-
-#: /home/marcus/trunk-neu/src/iwDistribution.cpp:139
-msgid "Construction"
-msgstr "Costruzione"
-
-#: /home/marcus/trunk-neu/src/iwDistribution.cpp:145
-msgid "Shipyard"
-msgstr "Cantiere navale"
-
-#: /home/marcus/trunk-neu/src/iwDistribution.cpp:149
-msgid "Water"
-msgstr "Acqua"
-
-#: /home/marcus/trunk-neu/src/iwDistribution.cpp:152
-msgid "Bakery"
-msgstr "Forno"
-
-#: /home/marcus/trunk-neu/src/GameServer.cpp:1468
-msgid ""
-"The game clients are out of sync. Would you like to send debug information "
-"to RttR to help us avoiding this in the future? Thank you very much!"
-msgstr ""
-
-#: /home/marcus/trunk-neu/src/GameServer.cpp:1577
-#, c-format
-msgid "Dummy %u"
-msgstr ""
-
-#: /home/marcus/trunk-neu/src/GameServer.cpp:1579
-#, c-format
-msgid "Computer %u"
-msgstr "Computer %u"
-
-#: /home/marcus/trunk-neu/src/GameServer.cpp:1582
-msgid " (AI)"
-msgstr " (AI)"
-
-#: /home/marcus/trunk-neu/src/iwBuildOrder.cpp:45
-msgid "Building sequence"
-msgstr "Sequenza degli edifici"
-
-#: /home/marcus/trunk-neu/src/iwBuildOrder.cpp:55
-msgid "Top"
-msgstr "Alto"
-
-#: /home/marcus/trunk-neu/src/iwBuildOrder.cpp:57
-msgid "Up"
-msgstr "Su"
-
-#: /home/marcus/trunk-neu/src/iwBuildOrder.cpp:59
-msgid "Down"
-msgstr "Giù"
-
-#: /home/marcus/trunk-neu/src/iwBuildOrder.cpp:61
-msgid "Bottom"
-msgstr "Basso"
-
-#: /home/marcus/trunk-neu/src/iwBuildOrder.cpp:67
-msgid "Sequence of given order"
-msgstr "Secondo gli ordini impartiti"
-
-#: /home/marcus/trunk-neu/src/iwBuildOrder.cpp:68
-msgid "After the following order"
-msgstr "Secondo il seguente ordine"
-
-#: /home/marcus/trunk-neu/src/dskMultiPlayer.cpp:65
-msgid "Internet Lobby"
-msgstr "Internet Lobby"
-
-#: /home/marcus/trunk-neu/src/dskMultiPlayer.cpp:67
-msgid "Network/LAN"
-msgstr "Network/LAN"
-
-#: /home/marcus/trunk-neu/src/dskMultiPlayer.cpp:69
-msgid "Direct IP"
-msgstr "IP diretto"
-
-#: /home/marcus/trunk-neu/src/iwPleaseWait.cpp:46
-#: /home/marcus/trunk-neu/src/iwPleaseWait.cpp:49
-msgid "Please wait..."
-msgstr "Attendere prego..."
-
-#: /home/marcus/trunk-neu/src/iwChat.cpp:48
-msgid "Chat Window"
-msgstr "Finestra di Chat"
-
-#: /home/marcus/trunk-neu/src/iwChat.cpp:55
-msgid "All"
-msgstr "Tutto"
-
-#: /home/marcus/trunk-neu/src/iwChat.cpp:57
-msgid "Allies"
-msgstr "Alleati"
-
-#: /home/marcus/trunk-neu/src/iwChat.cpp:59
-msgid "Enemies"
-msgstr "Nemici"
-
-#: /home/marcus/trunk-neu/src/nofGeologist.cpp:495
-msgid "Found iron ore"
-msgstr "Trovato del ferro!"
-
-#: /home/marcus/trunk-neu/src/nofGeologist.cpp:497
-msgid "Found gold"
-msgstr "Trovato dell'oro!"
-
-#: /home/marcus/trunk-neu/src/nofGeologist.cpp:499
-msgid "Found coal"
-msgstr "Trovato del carbone!"
-
-#: /home/marcus/trunk-neu/src/nofGeologist.cpp:501
-msgid "Found granite"
-msgstr "Trovato del granito!"
-
-#: /home/marcus/trunk-neu/src/nofGeologist.cpp:503
-msgid "Found water"
-msgstr "Trovata dell'acqua!"
-
-#: /home/marcus/trunk-neu/src/GameWorldGame.cpp:619
-msgid "Lost land by this building"
-msgstr "Territorio perduto a causa di questo edificio"
-
-#: /home/marcus/trunk-neu/src/ctrlProgress.cpp:75
-msgid "Less"
-msgstr "Meno"
-
-#: /home/marcus/trunk-neu/src/ctrlProgress.cpp:76
-msgid "More"
-msgstr "Piu"
-
-#: /home/marcus/trunk-neu/src/iwDirectIPCreate.cpp:55
-msgid "Game's Name:"
-msgstr "Nome della partita:"
-
-#: /home/marcus/trunk-neu/src/iwDirectIPCreate.cpp:63
-msgid "Password:"
-msgstr "Password:"
-
-#: /home/marcus/trunk-neu/src/iwDirectIPCreate.cpp:83
-msgid "'s Game"
-msgstr "'s game"
-
-#: /home/marcus/trunk-neu/src/iwDirectIPCreate.cpp:169
-msgid "Please enter a name for the game"
-msgstr "Inserire un nome per la partita"
-
-#: /home/marcus/trunk-neu/src/dskSinglePlayer.cpp:72
-msgid "Resume last game"
-msgstr "Continua l'ultimo gioco"
-
-#: /home/marcus/trunk-neu/src/dskSinglePlayer.cpp:80
-msgid "Load game"
-msgstr "Carica gioco"
-
-#: /home/marcus/trunk-neu/src/dskSinglePlayer.cpp:170
-msgid "Not available"
-msgstr "Non disponibile"
-
-#: /home/marcus/trunk-neu/src/dskSinglePlayer.cpp:170
-msgid "Please use 'Unlimited Play' to create a Singleplayer game."
-msgstr ""
-
-#: /home/marcus/trunk-neu/src/iwBuildingSite.cpp:57
-msgid "Order of building site"
-msgstr "Ordine di costruzione"
-
-#: /home/marcus/trunk-neu/src/iwPostWindow.cpp:84
-#: /home/marcus/trunk-neu/src/iwPostWindow.cpp:275
-msgid "No letters!"
-msgstr "Nessun messaggio"
-
-#: /home/marcus/trunk-neu/src/iwPostWindow.cpp:298
-msgid "Message"
-msgstr "messaggio"
-
-#: /home/marcus/trunk-neu/src/iwPostWindow.cpp:298
-msgid "of"
-msgstr "di"
-
-#: /home/marcus/trunk-neu/src/nobStorehouse.cpp:57
-msgid "New storehouse finished"
-msgstr "Pronto un nuovo magazzino"
-
-#: /home/marcus/trunk-neu/src/iwLobbyRanking.cpp:81
-msgid "Lost"
-msgstr "Perduto"
-
-#: /home/marcus/trunk-neu/src/iwLobbyRanking.cpp:81
-msgid "Won"
-msgstr "Vinto"
-
-#: /home/marcus/trunk-neu/src/GameWorldView.cpp:271
-msgid "(stopped)"
-msgstr "(fermato)"
-
-#: /home/marcus/trunk-neu/src/GameWorldView.cpp:299
-msgid "(1 soldier)"
-msgstr "(1 soldato)"
-
-#: /home/marcus/trunk-neu/src/GameWorldView.cpp:301
-#, c-format
-msgid "(%d soldiers)"
-msgstr "(%d soldati)"
-
-#: /home/marcus/trunk-neu/src/iwSave.cpp:67
-msgid "Time"
-msgstr "Tempo"
-
-#: /home/marcus/trunk-neu/src/iwSave.cpp:67
-msgid "Start GF"
-msgstr "Avvia GF"
-
-#: /home/marcus/trunk-neu/src/iwSave.cpp:197
-msgid "Save game!"
-msgstr "Salva la partita!"
-
-#: /home/marcus/trunk-neu/src/iwSave.cpp:203
-msgid "Auto-Save every:"
-msgstr "Salvataggio automatico ogni:"
-
-#: /home/marcus/trunk-neu/src/iwSave.cpp:207
-msgid "Disabled"
-msgstr "Disabilitato"
-
-#: /home/marcus/trunk-neu/src/iwSave.cpp:257
-msgid "Load game!"
-msgstr "Carica una partita!"
-
-#: /home/marcus/trunk-neu/src/AIPlayerJH.cpp:76
-msgid "Hi, I'm an artifical player and I'm not very good yet!"
-msgstr ""
-
-#: /home/marcus/trunk-neu/src/AIPlayerJH.cpp:77
-msgid "And I may crash your game sometimes..."
-msgstr ""
-
-#: /home/marcus/trunk-neu/src/AIPlayerJH.cpp:255
-msgid "You win"
-msgstr ""
-
-#: /home/marcus/trunk-neu/src/AIPlayerJH.cpp:1857
-msgid "AI'm back"
-msgstr ""
-
-#: /home/marcus/trunk-neu/src/GameClientPlayer.cpp:2099
-msgid "The emergency program has been activated."
-msgstr "Il programma d'emergenza è stato attivato"
-
-#: /home/marcus/trunk-neu/src/GameClientPlayer.cpp:2109
-msgid "The emergency program has been deactivated."
-msgstr ""
-
-#: /home/marcus/trunk-neu/src/iwDiplomacy.cpp:76
-msgid "Diplomacy"
-msgstr "Diplomazia"
-
-#: /home/marcus/trunk-neu/src/iwDiplomacy.cpp:81
-msgid "Treaties"
-msgstr "Trattati"
-
-#: /home/marcus/trunk-neu/src/iwDiplomacy.cpp:106
-msgid "Treaty of alliance"
-msgstr "Trattato di alleanza"
-
-#: /home/marcus/trunk-neu/src/iwDiplomacy.cpp:115
-msgid "Non-aggression pact"
-msgstr "Patto di non aggressione"
-
-#: /home/marcus/trunk-neu/src/iwDiplomacy.cpp:194
-msgid "Teams locked"
-msgstr ""
-
-#: /home/marcus/trunk-neu/src/iwDiplomacy.cpp:194
-msgid "As the teams are locked, you cannot make treaties of any kind."
-msgstr ""
-
-#: /home/marcus/trunk-neu/src/iwDiplomacy.cpp:231
-msgid "Suggest treaty of alliance"
-msgstr "Suggerisci un trattato di alleanza"
-
-#: /home/marcus/trunk-neu/src/iwDiplomacy.cpp:232
-msgid "Suggest non-aggression pact"
-msgstr "Suggerisci un patto di non-aggressione"
-
-#: /home/marcus/trunk-neu/src/iwDiplomacy.cpp:250
-msgid "Short-run"
-msgstr "Breve termine"
-
-#: /home/marcus/trunk-neu/src/iwDiplomacy.cpp:251
-msgid "Medium-term"
-msgstr "Medio termine"
-
-#: /home/marcus/trunk-neu/src/iwDiplomacy.cpp:252
-msgid "Long-run"
-msgstr "Lungo termine"
-
-#: /home/marcus/trunk-neu/src/iwDiplomacy.cpp:272
-msgid "Contract type:"
-msgstr "Tipo di contratto:"
-
-#: /home/marcus/trunk-neu/src/iwDiplomacy.cpp:274
-msgid "To player:"
-msgstr "Con il Giocatore:"
-
-#: /home/marcus/trunk-neu/src/iwDiplomacy.cpp:276
-msgid "Duration:"
-msgstr "Durata:"
-
-#: /home/marcus/trunk-neu/src/iwDiplomacy.cpp:290
-msgid "Eternal"
-msgstr "Per sempre"
-
-#: /home/marcus/trunk-neu/src/iwDiplomacy.cpp:292
-msgid "Confirm"
-msgstr "Conferma"
-
-#: /home/marcus/trunk-neu/src/nofFarmhand.cpp:202
-msgid "No more stones in range"
-msgstr "Non ci sono più pietre"
-
-#: /home/marcus/trunk-neu/src/nofFarmhand.cpp:209
-msgid "No more fishes in range"
-msgstr "Non ci sono più pesci"
-
-#: /home/marcus/trunk-neu/src/iwTools.cpp:46
-msgid "Tools"
-msgstr "Strumenti"
-
-#: /home/marcus/trunk-neu/src/iwTools.cpp:50
-msgid "Tongs"
-msgstr "Chiave inglese"
-
-#: /home/marcus/trunk-neu/src/iwTools.cpp:50
-#: /home/marcus/trunk-neu/src/iwTools.cpp:51
-#: /home/marcus/trunk-neu/src/iwTools.cpp:52
-#: /home/marcus/trunk-neu/src/iwTools.cpp:53
-#: /home/marcus/trunk-neu/src/iwTools.cpp:54
-#: /home/marcus/trunk-neu/src/iwTools.cpp:55
-#: /home/marcus/trunk-neu/src/iwTools.cpp:56
-#: /home/marcus/trunk-neu/src/iwTools.cpp:57
-#: /home/marcus/trunk-neu/src/iwTools.cpp:58
-#: /home/marcus/trunk-neu/src/iwTools.cpp:59
-#: /home/marcus/trunk-neu/src/iwTools.cpp:60
-#: /home/marcus/trunk-neu/src/iwTools.cpp:61
-msgid "Less often"
-msgstr "Meno spesso"
-
-#: /home/marcus/trunk-neu/src/iwTools.cpp:50
-#: /home/marcus/trunk-neu/src/iwTools.cpp:51
-#: /home/marcus/trunk-neu/src/iwTools.cpp:52
-#: /home/marcus/trunk-neu/src/iwTools.cpp:53
-#: /home/marcus/trunk-neu/src/iwTools.cpp:54
-#: /home/marcus/trunk-neu/src/iwTools.cpp:55
-#: /home/marcus/trunk-neu/src/iwTools.cpp:56
-#: /home/marcus/trunk-neu/src/iwTools.cpp:57
-#: /home/marcus/trunk-neu/src/iwTools.cpp:58
-#: /home/marcus/trunk-neu/src/iwTools.cpp:59
-#: /home/marcus/trunk-neu/src/iwTools.cpp:60
-#: /home/marcus/trunk-neu/src/iwTools.cpp:61
-msgid "More often"
-msgstr "Più spesso"
-
-#: /home/marcus/trunk-neu/src/iwTools.cpp:51
-msgid "Axe"
-msgstr "Ascia"
-
-#: /home/marcus/trunk-neu/src/iwTools.cpp:52
-msgid "Saw"
-msgstr "Sega"
-
-#: /home/marcus/trunk-neu/src/iwTools.cpp:53
-msgid "Pick-axe"
-msgstr "Piccone"
-
-#: /home/marcus/trunk-neu/src/iwTools.cpp:54
-msgid "Hammer"
-msgstr "Martello"
-
-#: /home/marcus/trunk-neu/src/iwTools.cpp:55
-msgid "Shovel"
-msgstr "Vanga"
-
-#: /home/marcus/trunk-neu/src/iwTools.cpp:56
-msgid "Crucible"
-msgstr "Crogiolo"
-
-#: /home/marcus/trunk-neu/src/iwTools.cpp:57
-msgid "Rod and line"
-msgstr "Amo e lenza"
-
-#: /home/marcus/trunk-neu/src/iwTools.cpp:58
-msgid "Scythe"
-msgstr "Falce"
-
-#: /home/marcus/trunk-neu/src/iwTools.cpp:59
-msgid "Cleaver"
-msgstr "Mannaia"
-
-#: /home/marcus/trunk-neu/src/iwTools.cpp:60
-msgid "Rolling pin"
-msgstr "Matterello"
-
-#: /home/marcus/trunk-neu/src/iwTools.cpp:61
-msgid "Bow"
-msgstr "Arco"
-
-#: /home/marcus/trunk-neu/src/dskOptions.cpp:80
-msgid "Addons"
-msgstr ""
-
-#: /home/marcus/trunk-neu/src/dskOptions.cpp:83
-msgid "Common"
-msgstr "Comuni"
-
-#: /home/marcus/trunk-neu/src/dskOptions.cpp:85
-msgid "Graphics"
-msgstr "Grafica"
-
-#: /home/marcus/trunk-neu/src/dskOptions.cpp:87
-msgid "Sound/Music"
-msgstr "Suoni/Musica"
-
-#: /home/marcus/trunk-neu/src/dskOptions.cpp:98
-msgid "Name in Game:"
-msgstr "Nome durante il gioco:"
-
-#: /home/marcus/trunk-neu/src/dskOptions.cpp:103
-msgid "Language:"
-msgstr "Lingua"
-
-#: /home/marcus/trunk-neu/src/dskOptions.cpp:122
-msgid "Keyboard layout:"
-msgstr "Layout di tastiera"
-
-#: /home/marcus/trunk-neu/src/dskOptions.cpp:137
-msgid "Proxyserver:"
-msgstr "Server Proxy:"
-
-#: /home/marcus/trunk-neu/src/dskOptions.cpp:144
-msgid "Proxytyp:"
-msgstr ""
-
-#: /home/marcus/trunk-neu/src/dskOptions.cpp:146
-msgid "No Proxy"
-msgstr "Nessun Proxy"
-
-#: /home/marcus/trunk-neu/src/dskOptions.cpp:147
+#. "Andere"
+#: ../../src/dskSelectMap.cpp:128
+msgid "Sea"
+msgstr "Mare"
+
+#. "Karten Auswahl"
+#: ../../src/dskSelectMap.cpp:103
+msgid "Selection of maps"
+msgstr "Seleziona una mappa"
+
+#: ../../src/dskLobby.cpp:77
+msgid "Server"
+msgstr "Server"
+
+#. "Gemeinsame Team-Sicht"
+#: ../../src/dskHostGame.cpp:103
+msgid "Shared team view"
+msgstr "Vista condivisa"
+
+#. "Einzelspieler"
+#: ../../src/dskMainMenu.cpp:76
+msgid "Singleplayer"
+msgstr "Giocatore singolo"
+
+#: ../../src/dskSelectMap.cpp:100
+msgid "Size"
+msgstr "Dimensioni"
+
+#. Sehr Langsam
+#: ../../src/dskHostGame.cpp:153
+msgid "Slow"
+msgstr "Lento"
+
+#: ../../src/dskOptions.cpp:147
 msgid "Socks v4"
 msgstr "Socks v4"
 
-#: /home/marcus/trunk-neu/src/dskOptions.cpp:162
-msgid "Submit debug data:"
-msgstr ""
+#. "Sound"
+#: ../../src/dskOptions.cpp:87
+msgid "Sound/Music"
+msgstr "Suoni/Musica"
 
-#: /home/marcus/trunk-neu/src/dskOptions.cpp:164
-#: /home/marcus/trunk-neu/src/dskOptions.cpp:172
-#: /home/marcus/trunk-neu/src/dskOptions.cpp:196
-#: /home/marcus/trunk-neu/src/dskOptions.cpp:216
-#: /home/marcus/trunk-neu/src/dskOptions.cpp:237
-#: /home/marcus/trunk-neu/src/dskOptions.cpp:246
-msgid "On"
-msgstr "On"
-
-#: /home/marcus/trunk-neu/src/dskOptions.cpp:165
-#: /home/marcus/trunk-neu/src/dskOptions.cpp:173
-#: /home/marcus/trunk-neu/src/dskOptions.cpp:197
-#: /home/marcus/trunk-neu/src/dskOptions.cpp:217
-#: /home/marcus/trunk-neu/src/dskOptions.cpp:238
-#: /home/marcus/trunk-neu/src/dskOptions.cpp:247
-msgid "Off"
-msgstr "Off"
-
-#: /home/marcus/trunk-neu/src/dskOptions.cpp:170
-#: /home/marcus/trunk-neu/src/dskOptions.cpp:194
-msgid "not supported"
-msgstr "non supportato"
-
-#: /home/marcus/trunk-neu/src/dskOptions.cpp:176
-msgid "Fullscreen resolution:"
-msgstr ""
-
-#: /home/marcus/trunk-neu/src/dskOptions.cpp:180
-msgid "Mode:"
-msgstr "Modalità:"
-
-#: /home/marcus/trunk-neu/src/dskOptions.cpp:182
-msgid "Fullscreen"
-msgstr "Schermo intero"
-
-#: /home/marcus/trunk-neu/src/dskOptions.cpp:183
-msgid "Windowed"
-msgstr "Finestra"
-
-#: /home/marcus/trunk-neu/src/dskOptions.cpp:186
-msgid "Limit Framerate:"
-msgstr ""
-
-#: /home/marcus/trunk-neu/src/dskOptions.cpp:190
-msgid "Vertex Buffer Objects:"
-msgstr "Vertex Buffer Objects:"
-
-#: /home/marcus/trunk-neu/src/dskOptions.cpp:200
-msgid "Graphics Driver"
-msgstr "Driver Grafico"
-
-#: /home/marcus/trunk-neu/src/dskOptions.cpp:213
-msgid "Optimized Textures:"
-msgstr ""
-
-#: /home/marcus/trunk-neu/src/dskOptions.cpp:221
+#. "Audiotreiber"
+#: ../../src/dskOptions.cpp:221
 msgid "Sounddriver"
 msgstr "Driver Suono"
 
-#: /home/marcus/trunk-neu/src/dskOptions.cpp:235
-msgid "Music"
-msgstr "Musica"
+#. "Geschwindigkeit"
+#: ../../src/dskHostGame.cpp:150
+msgid "Speed:"
+msgstr "Velocità:"
 
-#: /home/marcus/trunk-neu/src/dskOptions.cpp:244
-msgid "Effects"
-msgstr "Effetti"
+#: ../../src/dskHostGame.cpp:666
+msgid "Start aborted"
+msgstr "Avvio cancellato"
 
-#: /home/marcus/trunk-neu/src/dskOptions.cpp:307
-msgid "Dynamic (Limits to display refresh rate, works with most drivers)"
+#. "Spiel starten"
+#: ../../src/dskHostGame.cpp:95
+#: ../../src/dskHostGame.cpp:580
+#: ../../src/dskHostGame.cpp:808
+msgid "Start game"
+msgstr "Inizia il gioco"
+
+#: ../../src/dskHostGame.cpp:648
+msgid "Starting game, please wait"
+msgstr "Esecuzione gioco, attendere"
+
+#. }
+#: ../../src/dskOptions.cpp:162
+msgid "Submit debug data:"
 msgstr ""
 
-#: /home/marcus/trunk-neu/src/dskOptions.cpp:590
-#: /home/marcus/trunk-neu/src/dskOptions.cpp:605
+#: ../../src/dskMainMenu.cpp:106
+msgid "Submit debug data?"
+msgstr ""
+
+#: ../../src/dskHostGame.cpp:81
+msgid "Swap"
+msgstr ""
+
+#. "Team"
+#: ../../src/dskHostGame.cpp:70
+msgid "Team"
+msgstr "Squadra"
+
+#: ../../src/dskSinglePlayer.cpp:146
+#: ../../src/dskSinglePlayer.cpp:150
+msgid "The specified file couldn't be loaded!"
+msgstr "Non è stato possibile caricare il file specificato"
+
+#. Besitz 3/4 des Landes
+#: ../../src/dskHostGame.cpp:136
+msgid "Total domination"
+msgstr "Dominio totale"
+
+#: ../../src/dskHostGame.cpp:144
+#, c-format
+msgid "Tournament: %u minutes"
+msgstr ""
+
+#: ../../src/dskSelectMap.cpp:100
+msgid "Type"
+msgstr "Tipo"
+
+#. "Freies Spiel"
+#: ../../src/dskSinglePlayer.cpp:77
+#: ../../src/dskSinglePlayer.cpp:182
+#: ../../src/dskSinglePlayer.cpp:194
+msgid "Unlimited Play"
+msgstr ""
+
+#. IPv4/6
+#: ../../src/dskOptions.cpp:126
+msgid "Use IPv6:"
+msgstr "Usa IPv6"
+
+#: ../../src/dskLobby.cpp:77
+#: ../../src/dskLobby.cpp:79
+msgid "Version"
+msgstr "Versione"
+
+#. "VBO"
+#: ../../src/dskOptions.cpp:190
+msgid "Vertex Buffer Objects:"
+msgstr "Vertex Buffer Objects:"
+
+#: ../../src/dskHostGame.cpp:126
+msgid "Very Low"
+msgstr "Molto basso"
+
+#. Schnell
+#: ../../src/dskHostGame.cpp:156
+msgid "Very fast"
+msgstr "Molto veloce"
+
+#: ../../src/dskHostGame.cpp:152
+msgid "Very slow"
+msgstr "Molto lento"
+
+#: ../../src/dskHostGame.cpp:109
+msgid "View Settings..."
+msgstr "Guarda i settaggi..."
+
+#: ../../src/dskHostGame.cpp:823
+msgid "Vikings"
+msgstr "Vichinghi"
+
+#: ../../src/dskSelectMap.cpp:423
+msgid "Wasteland"
+msgstr "Terra"
+
+#: ../../src/dskOptions.cpp:183
+msgid "Windowed"
+msgstr "Finestra"
+
+#: ../../src/dskSelectMap.cpp:424
+msgid "Winter world"
+msgstr "Terre degradate"
+
+#: ../../src/dskHostGame.cpp:640
+msgid "You have 10 seconds until game starts"
+msgstr ""
+
+#: ../../src/dskOptions.cpp:590
+#: ../../src/dskOptions.cpp:605
 msgid "You need to restart your game to change the screen resolution!"
 msgstr "Devi riavviare il gioco per cambiare la risoluzione dello schermo!"
 
-#: /home/marcus/trunk-neu/src/dskOptions.cpp:613
+#: ../../src/dskOptions.cpp:613
 msgid "You need to restart your game to change the video or audio driver!"
 msgstr "Devi riavviare il gioco per cambiare il diver audio o video!"
 
-#: /home/marcus/trunk-neu/src/iwEndgame.cpp:48
-msgid "End game?"
-msgstr "Fine del gioco?"
-
-#: /home/marcus/trunk-neu/src/iwTextfile.cpp:72
-msgid "The readme file was not found!"
-msgstr "Il file Leggimi non è stato trovato!"
-
-#: /home/marcus/trunk-neu/src/iwAIDebug.cpp:49
-msgid "AI Debug"
-msgstr ""
-
-#: /home/marcus/trunk-neu/src/iwAIDebug.cpp:148
-msgid "No current job"
-msgstr ""
-
-#: /home/marcus/trunk-neu/src/iwLobbyConnect.cpp:50
-msgid "Connecting to Lobby"
-msgstr "Connessione con la lobby"
-
-#: /home/marcus/trunk-neu/src/iwLobbyConnect.cpp:53
-msgid "Username:"
-msgstr "Username:"
-
-#: /home/marcus/trunk-neu/src/iwLobbyConnect.cpp:64
-msgid "Email Address:"
-msgstr "Indirizzo e-mail:"
-
-#: /home/marcus/trunk-neu/src/iwLobbyConnect.cpp:69
-msgid "Save Password?"
-msgstr "Salvare la password?"
-
-#: /home/marcus/trunk-neu/src/iwLobbyConnect.cpp:88
-msgid "Register"
-msgstr "Registra"
-
-#: /home/marcus/trunk-neu/src/iwLobbyConnect.cpp:222
-msgid ""
-"To register, you have to create a valid board account at "
-"http://forum.siedler25.org at the moment.\n"
-msgstr ""
-
-#: /home/marcus/trunk-neu/src/iwLobbyConnect.cpp:319
-msgid "Registration successful!"
-msgstr "Registrazione effettuata!"
-
-#: /home/marcus/trunk-neu/src/GameClient.cpp:1409
-#: /home/marcus/trunk-neu/src/GameClient.cpp:1413
-msgid "Auto-Save"
-msgstr "Salvataggio automatico"
-
-#: /home/marcus/trunk-neu/src/GameClient.cpp:1735
+#. text oben noch hinschreiben
+#: ../../src/GameClient.cpp:1742
 #, c-format
 msgid "current GF: %u - still fast forwarding: %d GFs left (%d %%)"
 msgstr ""
 "l'attuale GF: %u - sta ancora inoltrando velocemente: %d GFs rimasti (%d %%)"
 
-#: /home/marcus/trunk-neu/src/iwWares.cpp:188
-msgid "Next page"
-msgstr "Pagina successiva"
-
-#: /home/marcus/trunk-neu/src/iwMerchandiseStatistics.cpp:73
-msgid "Stones"
-msgstr "Pietre"
-
-#: /home/marcus/trunk-neu/src/iwMerchandiseStatistics.cpp:74
-msgid "Food"
-msgstr "Cibo"
-
-#: /home/marcus/trunk-neu/src/iwMerchandiseStatistics.cpp:76
-msgid "Beer"
-msgstr "Birra"
-
-#: /home/marcus/trunk-neu/src/iwMerchandiseStatistics.cpp:80
-msgid "Ironore"
+#: ../../src/dskHostGame.cpp:294
+msgid "n/a"
 msgstr ""
 
-#: /home/marcus/trunk-neu/src/iwMerchandiseStatistics.cpp:83
-msgid "Coins"
-msgstr "Monete"
+#. VBO unterstützt?
+#: ../../src/dskOptions.cpp:170
+#: ../../src/dskOptions.cpp:194
+msgid "not supported"
+msgstr "non supportato"
 
-#: /home/marcus/trunk-neu/src/iwMerchandiseStatistics.cpp:85
-msgid "Weapons"
-msgstr "Armi"
-
-#: /home/marcus/trunk-neu/src/iwMerchandiseStatistics.cpp:86
-msgid "Boats"
-msgstr "Barche"
-
-#: /home/marcus/trunk-neu/src/iwMerchandiseStatistics.cpp:92
-msgid "Delete all"
+#. Copyright
+#: ../../src/dskMainMenu.cpp:73
+msgid "© 2005 - 2012 Settlers Freaks"
 msgstr ""
 
-#: /home/marcus/trunk-neu/src/GameClientGF_Replay.cpp:81
-#, c-format
-msgid ""
-"Warning: The played replay is not in sync with the original match. (GF: %u)"
-msgstr ""
-"Attenzione: Il Replay giocato non è sincronizzato con la partita originale. "
-"(GF: %u);"
-
-#: /home/marcus/trunk-neu/src/GameClientGF_Replay.cpp:122
+#: ../../src/GameClientGF_Replay.cpp:122
 #, c-format
 msgid ""
 "Notice: The played replay has ended. (GF: %u, %dh %dmin %ds, TF: %u, "
@@ -2126,225 +1074,1497 @@ msgstr ""
 "Avviso: il Replay giocato è finito. (GF: %u, %dh %dmin %ds, TF: %u, AVG_FPS: "
 "%u)"
 
-#: /home/marcus/trunk-neu/src/iwHQ.cpp:52
-msgid "Reserve"
-msgstr "Riserva"
+#: ../../src/GameClientPlayer.cpp:2103
+msgid "The emergency program has been activated."
+msgstr "Il programma d'emergenza è stato attivato"
 
-#: /home/marcus/trunk-neu/src/iwHQ.cpp:68
+#: ../../src/GameClientPlayer.cpp:2113
+msgid "The emergency program has been deactivated."
+msgstr ""
+
+#: ../../src/GameServer.cpp:1512
+msgid ""
+"The game clients are out of sync. Would you like to send debug information "
+"to RttR to help us avoiding this in the future? Thank you very much!"
+msgstr ""
+
+#: ../../src/GameClientGF_Replay.cpp:81
+#, c-format
+msgid ""
+"Warning: The played replay is not in sync with the original match. (GF: %u)"
+msgstr ""
+"Attenzione: Il Replay giocato non è sincronizzato con la partita originale. "
+"(GF: %u);"
+
+#: ../../src/GameWorldView.cpp:301
+#, c-format
+msgid "(%d soldiers)"
+msgstr "(%d soldati)"
+
+#: ../../src/GameWorldView.cpp:299
+msgid "(1 soldier)"
+msgstr "(1 soldato)"
+
+#: ../../src/GameWorldView.cpp:269
+msgid "(House unoccupied)"
+msgstr "(Edificio non occupato)"
+
+#: ../../src/GameWorldView.cpp:271
+msgid "(stopped)"
+msgstr "(fermato)"
+
+#: ../../src/GameWorldGame.cpp:619
+msgid "Lost land by this building"
+msgstr "Territorio perduto a causa di questo edificio"
+
+#: ../../src/iwAction.cpp:234
+msgid ""
+"\n"
+"Costs: "
+msgstr ""
+"\n"
+"Costi: "
+
+#: ../../src/iwAction.cpp:236
+msgid " boards"
+msgstr ""
+
+#: ../../src/iwAction.cpp:241
+msgid " stones"
+msgstr " pietre"
+
+#: ../../src/iwAction.cpp:123
+msgid "-> Build castle"
+msgstr "-> Costruisci un castello"
+
+#: ../../src/iwAction.cpp:102
+#: ../../src/iwAction.cpp:116
+#: ../../src/iwAction.cpp:122
+msgid "-> Build house"
+msgstr "-> Costruisci un edificio"
+
+#: ../../src/iwAction.cpp:111
+#: ../../src/iwAction.cpp:115
+#: ../../src/iwAction.cpp:121
+msgid "-> Build hut"
+msgstr "-> Costruisci una baracca"
+
+#: ../../src/iwAction.cpp:127
+msgid "-> Dig mines"
+msgstr "-> Scava una miniera"
+
+#: ../../src/iwAIDebug.cpp:49
+msgid "AI Debug"
+msgstr ""
+
+#: ../../src/iwAction.cpp:69
+msgid "Activity window"
+msgstr "Attività"
+
+#: ../../src/iwAddons.cpp:46
+msgid "Additional features:"
+msgstr ""
+
+#: ../../src/iwAddons.cpp:44
+msgid "Addon Settings"
+msgstr "Opzioni Aggiuntive"
+
+#. "Alle"
+#: ../../src/iwAddons.cpp:59
+msgid "All"
+msgstr "Tutto"
+
+#: ../../src/iwAddons.cpp:49
+msgid "Apply Changes"
+msgstr "Applica i cambiamenti"
+
+#. Angriff nicht  mÃ¶glich!
+#: ../../src/iwAction.cpp:387
+msgid "Attack not possible."
+msgstr "Attacco non possibile"
+
+#: ../../src/iwAction.cpp:320
+#: ../../src/iwAction.cpp:328
+msgid "Attack options"
+msgstr "Opzioni di attacco"
+
+#. Angriffsbutton
+#: ../../src/iwAction.cpp:412
+msgid "Attack!"
+msgstr "Attacco!"
+
+#: ../../src/iwAction.cpp:264
+#: ../../src/iwAction.cpp:271
+#: ../../src/iwAction.cpp:279
+#: ../../src/iwAction.cpp:283
+msgid "Build road"
+msgstr "Costruisci una strada"
+
+#: ../../src/iwAction.cpp:272
+msgid "Build waterway"
+msgstr "Costruisci una via d'acqua"
+
+#. / Konstruktor von @p iwMilitary.
+#: ../../src/iwBuildings.cpp:79
+msgid "Buildings"
+msgstr "Edifici"
+
+#: ../../src/iwAction.cpp:266
+#: ../../src/iwAction.cpp:274
+msgid "Call in geologist"
+msgstr "Chiama un geologo"
+
+#: ../../src/iwAddons.cpp:51
+msgid "Close Without Saving"
+msgstr "Chiudi senza salvare"
+
+#. Einlagern
+#: ../../src/iwBaseWarehouse.cpp:62
+msgid "Collect"
+msgstr "Colleziona"
+
+#. Abreißen
+#: ../../src/iwAction.cpp:284
+#: ../../src/iwBaseWarehouse.cpp:112
+#: ../../src/iwBuilding.cpp:88
+msgid "Demolish house"
+msgstr "Demolisci l'edificio"
+
+#: ../../src/iwAction.cpp:308
+#: ../../src/iwAction.cpp:315
+msgid "Dig up road"
+msgstr "Distruggi la strada"
+
+#: ../../src/iwAction.cpp:339
+msgid "Display options"
+msgstr "Opzioni del display"
+
+#. "Wirtschaft"
+#: ../../src/iwAddons.cpp:63
+msgid "Economy"
+msgstr ""
+
+#: ../../src/iwAction.cpp:258
+#: ../../src/iwAction.cpp:292
+#: ../../src/iwAction.cpp:302
+msgid "Erect flag"
+msgstr "Alza la bandiera"
+
+#. "Spielverhalten"
+#: ../../src/iwAddons.cpp:65
+msgid "Gameplay"
+msgstr ""
+
+#: ../../src/iwAction.cpp:343
+msgid "Go to headquarters"
+msgstr "Vai al quartier generale"
+
+#. "Gehe Zu Ort"
+#. "Gehe Zum Ort"
+#. "Gehe Zu Ort"
+#: ../../src/iwBaseWarehouse.cpp:73
+#: ../../src/iwBuilding.cpp:103
+#: ../../src/iwBuildingSite.cpp:65
+msgid "Go to place"
+msgstr "Via a"
+
+#. Info
+#. Hilfe-Button
+#: ../../src/iwBuilding.cpp:86
+#: ../../src/iwBuildingProductivities.cpp:106
+#: ../../src/iwBuildings.cpp:92
+msgid "Help"
+msgstr "Aiuto"
+
+#: ../../src/iwAction.cpp:342
+msgid "House names"
+msgstr "Nomi degli edifici"
+
+#. Minus und Plus - Button
+#: ../../src/iwAction.cpp:394
+msgid "Less attackers"
+msgstr "Meno attaccanti"
+
+#. "Militär"
+#: ../../src/iwAddons.cpp:61
+msgid "Military"
+msgstr "Esercito"
+
+#: ../../src/iwAction.cpp:395
+msgid "More attackers"
+msgstr "Piu attaccanti"
+
+#: ../../src/iwAIDebug.cpp:148
+msgid "No current job"
+msgstr ""
+
+#: ../../src/iwAction.cpp:409
+msgid "Number of attackers"
+msgstr "Numero di attaccanti"
+
+#: ../../src/iwAction.cpp:341
+msgid "Observation window"
+msgstr "Finestra di osservazione"
+
+#. Gebäudename
+#: ../../src/iwBuildingSite.cpp:57
+msgid "Order of building site"
+msgstr "Ordine di costruzione"
+
+#: ../../src/iwBuildingProductivities.cpp:85
+msgid "Productivity"
+msgstr "Produttività"
+
+#: ../../src/iwAction.cpp:265
+#: ../../src/iwAction.cpp:273
+msgid "Pull down flag"
+msgstr "Abbatti la bandiera"
+
+#. Alle auswählen bzw setzen!
+#: ../../src/iwBaseWarehouse.cpp:71
+msgid "Select all"
+msgstr "Seleziona tutto"
+
+#: ../../src/iwAction.cpp:267
+#: ../../src/iwAction.cpp:275
+msgid "Send out scout"
+msgstr "Invia un esploratore"
+
+#. Einlagern verbieten
+#: ../../src/iwBaseWarehouse.cpp:66
+msgid "Stop storage"
+msgstr "Non immagazzinare più"
+
+#: ../../src/iwAction.cpp:400
+msgid "Strong attackers"
+msgstr "Attaccanti forti"
+
+#. Auslagern
+#: ../../src/iwBaseWarehouse.cpp:64
+msgid "Take out of store"
+msgstr "Tira fuori dal magazzino"
+
+#: ../../src/iwAction.cpp:367
+msgid "Upgrade to donkey road"
+msgstr ""
+
+#: ../../src/iwAddons.cpp:54
+msgid "Use S2 Defaults"
+msgstr ""
+
+#: ../../src/iwAction.cpp:399
+msgid "Weak attackers"
+msgstr "Attaccanti deboli"
+
+#. Anzahl-Text
+#: ../../src/iwHQ.cpp:68
 #, c-format
 msgid "%u/%u"
 msgstr "%u/%u"
 
-#: /home/marcus/trunk-neu/src/languages.cpp:71
-msgid "System language"
-msgstr "Lingua del sistema"
+#: ../../src/iwDirectIPCreate.cpp:83
+msgid "'s Game"
+msgstr "'s game"
 
-#: /home/marcus/trunk-neu/src/iwTransport.cpp:64
-msgid "Iron ore"
-msgstr "Ferro"
-
-#: /home/marcus/trunk-neu/src/iwTransport.cpp:82
-msgid "Transport"
-msgstr "Trasporto"
-
-#: /home/marcus/trunk-neu/src/iwSettings.cpp:53
-msgid "Settings"
-msgstr ""
-
-#: /home/marcus/trunk-neu/src/iwSettings.cpp:58
-msgid "Statistics Scale"
-msgstr ""
-
-#: /home/marcus/trunk-neu/src/iwSkipGFs.cpp:44
-msgid "Skip GameFrames"
-msgstr "Salta i GameFrames"
-
-#: /home/marcus/trunk-neu/src/iwSkipGFs.cpp:47
-msgid "to GameFrame:"
-msgstr "al GameFrame:"
-
-#: /home/marcus/trunk-neu/src/iwBaseWarehouse.cpp:62
-msgid "Collect"
-msgstr "Colleziona"
-
-#: /home/marcus/trunk-neu/src/iwBaseWarehouse.cpp:64
-msgid "Take out of store"
-msgstr "Tira fuori dal magazzino"
-
-#: /home/marcus/trunk-neu/src/iwBaseWarehouse.cpp:66
-msgid "Stop storage"
-msgstr "Non immagazzinare più"
-
-#: /home/marcus/trunk-neu/src/iwBaseWarehouse.cpp:71
-msgid "Select all"
-msgstr "Seleziona tutto"
-
-#: /home/marcus/trunk-neu/src/Addons.cpp:168
-msgid "Use"
-msgstr "Usa"
-
-#: /home/marcus/trunk-neu/src/iwOptionsWindow.cpp:59
-msgid "Game menu"
-msgstr "Menu del gioco"
-
-#: /home/marcus/trunk-neu/src/iwOptionsWindow.cpp:77
-msgid "Load 'ReadMe' file"
-msgstr "Carica il file 'Leggimi'"
-
-#: /home/marcus/trunk-neu/src/iwOptionsWindow.cpp:105
-msgid "Advanced"
-msgstr ""
-
-#: /home/marcus/trunk-neu/src/iwOptionsWindow.cpp:108
-#: /home/marcus/trunk-neu/src/iwSurrender.cpp:52
-msgid "Surrender"
-msgstr "Mi arrendo"
-
-#: /home/marcus/trunk-neu/src/iwOptionsWindow.cpp:110
-msgid "End game"
-msgstr "Fine della partita"
-
-#: /home/marcus/trunk-neu/src/iwMainMenu.cpp:74
-msgid "General statistics"
-msgstr "Statistiche generali"
-
-#: /home/marcus/trunk-neu/src/iwMainMenu.cpp:75
-msgid "Merchandise statistics"
-msgstr "Statistiche sulle mercanzie"
-
-#: /home/marcus/trunk-neu/src/iwMainMenu.cpp:97
+#: ../../src/iwMainMenu.cpp:97
 msgid "AI Debug Window"
 msgstr ""
 
-#: /home/marcus/trunk-neu/src/iwSurrender.cpp:49
-msgid "Surrender game?"
-msgstr "Ti arrendi?"
+#. "Reihenfolge der Auftraggebung"
+#: ../../src/iwBuildOrder.cpp:68
+msgid "After the following order"
+msgstr "Secondo il seguente ordine"
 
-#: /home/marcus/trunk-neu/src/iwSurrender.cpp:54
-msgid "Destroy all buildings and surrender"
-msgstr "Distruggo tutti gli edifici e mi arrendo"
+#. "Verbündete"
+#: ../../src/iwChat.cpp:57
+msgid "Allies"
+msgstr "Alleati"
 
-#: /home/marcus/trunk-neu/src/iwSurrender.cpp:56
-msgid "Don't surrender"
-msgstr "Non mi arrendo"
+#. Schmiede
+#: ../../src/iwDistribution.cpp:106
+#: ../../src/iwDistribution.cpp:116
+msgid "Armory"
+msgstr "Armeria"
 
-#: /home/marcus/trunk-neu/src/iwHarborBuilding.cpp:47
-msgid "Harbor building"
-msgstr "Porto"
-
-#: /home/marcus/trunk-neu/src/iwHarborBuilding.cpp:53
-msgid "Expedition"
-msgstr "Spedizione"
-
-#: /home/marcus/trunk-neu/src/iwHarborBuilding.cpp:56
-#: /home/marcus/trunk-neu/src/iwHarborBuilding.cpp:96
-#: /home/marcus/trunk-neu/src/iwHarborBuilding.cpp:127
-msgid "Start expedition"
-msgstr "Invia la spedizione"
-
-#: /home/marcus/trunk-neu/src/iwHarborBuilding.cpp:60
-msgid "Exploration expedition"
+#: ../../src/iwDiplomacy.cpp:194
+msgid "As the teams are locked, you cannot make treaties of any kind."
 msgstr ""
 
-#: /home/marcus/trunk-neu/src/iwHarborBuilding.cpp:63
-msgid "Start exporation expedition"
-msgstr ""
+#. Bäckerei
+#: ../../src/iwDistribution.cpp:152
+msgid "Bakery"
+msgstr "Forno"
 
-#: /home/marcus/trunk-neu/src/iwHarborBuilding.cpp:91
-#: /home/marcus/trunk-neu/src/iwHarborBuilding.cpp:122
+#. Brettergruppe
+#: ../../src/iwDistribution.cpp:136
+msgid "Boards"
+msgstr "Assi"
+
+#. Nach ganz unten
+#: ../../src/iwBuildOrder.cpp:61
+msgid "Bottom"
+msgstr "Basso"
+
+#. Brauerei
+#: ../../src/iwDistribution.cpp:96
+#: ../../src/iwDistribution.cpp:155
+msgid "Brewery"
+msgstr "Birreria"
+
+#: ../../src/iwBuildOrder.cpp:45
+#: ../../src/iwMainMenu.cpp:90
+msgid "Building sequence"
+msgstr "Sequenza degli edifici"
+
+#: ../../src/iwHarborBuilding.cpp:91
+#: ../../src/iwHarborBuilding.cpp:122
 msgid "Cancel expedition"
 msgstr ""
 
-#: /home/marcus/trunk-neu/src/iwLobbyServerInfo.cpp:73
-msgid "Server Information"
-msgstr "Informazioni sul Server"
+#. Charburner
+#: ../../src/iwDistribution.cpp:99
+#: ../../src/iwDistribution.cpp:132
+msgid "Charburner"
+msgstr ""
 
-#: /home/marcus/trunk-neu/src/iwLobbyServerInfo.cpp:75
-msgid "Map Name:"
-msgstr "Nome della mappa:"
+#: ../../src/iwChat.cpp:48
+msgid "Chat Window"
+msgstr "Finestra di Chat"
 
-#: /home/marcus/trunk-neu/src/iwLobbyServerInfo.cpp:77
-msgid "Server Name:"
-msgstr "Nome del Server:"
+#: ../../src/iwDirectIPConnect.cpp:281
+msgid "Checking Map..."
+msgstr "Controllo della Mappa"
 
-#: /home/marcus/trunk-neu/src/iwLobbyServerInfo.cpp:79
+#: ../../src/iwDirectIPConnect.cpp:280
+msgid "Checking Password..."
+msgstr "Controllo della password..."
+
+#. Kohlegruppe
+#: ../../src/iwDistribution.cpp:113
+msgid "Coal"
+msgstr "Carbone"
+
+#. Kohlebergwerk
+#: ../../src/iwDistribution.cpp:74
+msgid "Coal mine"
+msgstr "Miniera di carbone"
+
+#: ../../src/iwDiplomacy.cpp:292
+msgid "Confirm"
+msgstr "Conferma"
+
+#: ../../src/iwLobbyConnect.cpp:50
+msgid "Connecting to Lobby"
+msgstr "Connessione con la lobby"
+
+#. Text auf "Verbinde mit Host..." setzen und Button deaktivieren
+#: ../../src/iwDirectIPConnect.cpp:167
+#: ../../src/iwLobbyConnect.cpp:207
+msgid "Connecting with Host..."
+msgstr "Connessione con l'host..."
+
+#. Text auf "Verbindung fehlgeschlagen" setzen und Button aktivieren
+#: ../../src/iwDirectIPConnect.cpp:173
+#: ../../src/iwLobbyConnect.cpp:216
+msgid "Connection failed!"
+msgstr "Connessione fallita!"
+
+#: ../../src/iwDirectIPConnect.cpp:261
+msgid "Connection to Host closed!"
+msgstr "Connessione con l'host chiusa!"
+
+#. Baustellen
+#: ../../src/iwDistribution.cpp:139
+msgid "Construction"
+msgstr "Costruzione"
+
+#: ../../src/iwDiplomacy.cpp:272
+msgid "Contract type:"
+msgstr "Tipo di contratto:"
+
+#. Standard
+#. Standardbelegung
+#: ../../src/iwBuildOrder.cpp:74
+#: ../../src/iwDistribution.cpp:180
+msgid "Default"
+msgstr "Default"
+
+#: ../../src/iwDemolishBuilding.cpp:43
+msgid "Demolish?"
+msgstr "Demolire?"
+
+#. Diplomatie (todo: besseres Bild suchen)
+#: ../../src/iwDiplomacy.cpp:76
+#: ../../src/iwMainMenu.cpp:93
+msgid "Diplomacy"
+msgstr "Diplomazia"
+
+#. Verteilung
+#: ../../src/iwDistribution.cpp:57
+#: ../../src/iwMainMenu.cpp:67
+msgid "Distribution of goods"
+msgstr "Distribuzione delle mercanzie"
+
+#. Eselzucht
+#: ../../src/iwDistribution.cpp:93
+#: ../../src/iwDistribution.cpp:161
+msgid "Donkey breeding"
+msgstr "Asineria"
+
+#. Runter
+#: ../../src/iwBuildOrder.cpp:59
+msgid "Down"
+msgstr "Giù"
+
+#: ../../src/iwDiplomacy.cpp:276
+msgid "Duration:"
+msgstr "Durata:"
+
+#. Emailadresse
+#: ../../src/iwLobbyConnect.cpp:64
+msgid "Email Address:"
+msgstr "Indirizzo e-mail:"
+
+#: ../../src/iwEndgame.cpp:48
+msgid "End game?"
+msgstr "Fine del gioco?"
+
+#. "Feinde"
+#: ../../src/iwChat.cpp:59
+msgid "Enemies"
+msgstr "Nemici"
+
+#. Option "ewig" noch hinzufügen
+#: ../../src/iwDiplomacy.cpp:290
+msgid "Eternal"
+msgstr "Per sempre"
+
+#. "Expedition"-Ãberschrift
+#: ../../src/iwHarborBuilding.cpp:53
+msgid "Expedition"
+msgstr "Spedizione"
+
+#. "Expedition"-Ãberschrift
+#: ../../src/iwHarborBuilding.cpp:60
+msgid "Exploration expedition"
+msgstr ""
+
+#. Nahrungsgruppe
+#: ../../src/iwDistribution.cpp:69
+msgid "Foodstuff"
+msgstr "Cibo"
+
+#. "Name des Spiels"
+#: ../../src/iwDirectIPCreate.cpp:55
+msgid "Game's Name:"
+msgstr "Nome della partita:"
+
+#. Statistiken
+#: ../../src/iwMainMenu.cpp:74
+msgid "General statistics"
+msgstr "Statistiche generali"
+
+#. Goldbergwerk
+#: ../../src/iwDistribution.cpp:80
+msgid "Gold mine"
+msgstr "Miniera d'oro"
+
+#. Getreidegruppe
+#: ../../src/iwDistribution.cpp:84
+msgid "Grain"
+msgstr "Grano"
+
+#. Granitbergwerk
+#: ../../src/iwDistribution.cpp:71
+msgid "Granite mine"
+msgstr "Cava di granito"
+
+#: ../../src/iwHarborBuilding.cpp:47
+msgid "Harbor building"
+msgstr "Porto"
+
+#: ../../src/iwLobbyServerInfo.cpp:79
 msgid "Host:"
 msgstr "Host:"
 
-#: /home/marcus/trunk-neu/src/iwLobbyServerInfo.cpp:81
+#. "IP - Adresse vom Host"
+#: ../../src/iwDirectIPConnect.cpp:55
+msgid "IP Address of Host:"
+msgstr "Indirizzo IP dell'host:"
+
+#: ../../src/iwDirectIPConnect.cpp:156
+#: ../../src/iwDirectIPCreate.cpp:177
+msgid "Invalid port. The valid port-range is 1 to 65535!"
+msgstr "Porta non valida. Le porte valide vanno da 1 a 65535!"
+
+#. Eisengruppe
+#: ../../src/iwDistribution.cpp:103
+msgid "Iron"
+msgstr "Acciaio"
+
+#. Eisenbergwerk
+#: ../../src/iwDistribution.cpp:77
+msgid "Iron mine"
+msgstr "Miniera di ferro"
+
+#. Eisenschmelze
+#: ../../src/iwDistribution.cpp:119
+msgid "Iron smelter"
+msgstr "Fonderia"
+
+#: ../../src/iwDiplomacy.cpp:252
+msgid "Long-run"
+msgstr "Lungo termine"
+
+#: ../../src/iwLobbyRanking.cpp:81
+msgid "Lost"
+msgstr "Perduto"
+
+#: ../../src/iwLobbyServerInfo.cpp:75
+msgid "Map Name:"
+msgstr "Nome della mappa:"
+
+#: ../../src/iwDiplomacy.cpp:251
+msgid "Medium-term"
+msgstr "Medio termine"
+
+#: ../../src/iwMainMenu.cpp:75
+msgid "Merchandise statistics"
+msgstr "Statistiche sulle mercanzie"
+
+#. Schlosserei
+#: ../../src/iwDistribution.cpp:109
+#: ../../src/iwDistribution.cpp:142
+msgid "Metalworks"
+msgstr "Officina"
+
+#. Mühle
+#: ../../src/iwDistribution.cpp:87
+msgid "Mill"
+msgstr "Mulino"
+
+#. Münzprägerei
+#: ../../src/iwDistribution.cpp:122
+msgid "Mint"
+msgstr "Zecca"
+
+#: ../../src/iwLobbyConnect.cpp:72
+msgid "No"
+msgstr "No"
+
+#: ../../src/iwDiplomacy.cpp:115
+msgid "Non-aggression pact"
+msgstr "Patto di non aggressione"
+
+#. "Passwort (falls vorhanden)"
+#: ../../src/iwDirectIPConnect.cpp:63
+msgid "Password (if needed):"
+msgstr "Password (se necessaria):"
+
+#. "Passwort"
+#. Passwort
+#: ../../src/iwDirectIPCreate.cpp:63
+#: ../../src/iwLobbyConnect.cpp:59
+msgid "Password:"
+msgstr "Password:"
+
+#. Schweinezucht
+#: ../../src/iwDistribution.cpp:90
+#: ../../src/iwDistribution.cpp:158
+msgid "Pig farm"
+msgstr "Porcilaia"
+
+#: ../../src/iwDirectIPCreate.cpp:169
+msgid "Please enter a name for the game"
+msgstr "Inserire un nome per la partita"
+
+#. Registrieren
+#: ../../src/iwLobbyConnect.cpp:88
+msgid "Register"
+msgstr "Registra"
+
+#. Registrierung erfolgreich
+#: ../../src/iwLobbyConnect.cpp:319
+msgid "Registration successful!"
+msgstr "Registrazione effettuata!"
+
+#. "Reserve"-Überschrift
+#: ../../src/iwHQ.cpp:52
+msgid "Reserve"
+msgstr "Riserva"
+
+#. Passwort speichern ja/nein
+#: ../../src/iwLobbyConnect.cpp:69
+msgid "Save Password?"
+msgstr "Salvare la password?"
+
+#. Sawmill
+#: ../../src/iwDistribution.cpp:129
+msgid "Sawmill"
+msgstr "Segheria"
+
+#: ../../src/iwBuildOrder.cpp:67
+msgid "Sequence of given order"
+msgstr "Secondo gli ordini impartiti"
+
+#: ../../src/iwLobbyServerInfo.cpp:73
+msgid "Server Information"
+msgstr "Informazioni sul Server"
+
+#: ../../src/iwLobbyServerInfo.cpp:77
+msgid "Server Name:"
+msgstr "Nome del Server:"
+
+#. "Server-Port"
+#: ../../src/iwDirectIPConnect.cpp:59
+#: ../../src/iwDirectIPCreate.cpp:59
+msgid "Server-Port:"
+msgstr "Porta:"
+
+#. Schiffe
+#: ../../src/iwMainMenu.cpp:86
+msgid "Ship register"
+msgstr "Registro navale"
+
+#. Werft
+#: ../../src/iwDistribution.cpp:145
+msgid "Shipyard"
+msgstr "Cantiere navale"
+
+#: ../../src/iwDiplomacy.cpp:250
+msgid "Short-run"
+msgstr "Breve termine"
+
+#. "Starten"
+#: ../../src/iwDirectIPCreate.cpp:78
+msgid "Start"
+msgstr "Avvio"
+
+#. Button zum Expedition starten
+#: ../../src/iwHarborBuilding.cpp:56
+#: ../../src/iwHarborBuilding.cpp:96
+#: ../../src/iwHarborBuilding.cpp:127
+msgid "Start expedition"
+msgstr "Invia la spedizione"
+
+#. Button zum Expedition starten
+#: ../../src/iwHarborBuilding.cpp:63
+msgid "Start exporation expedition"
+msgstr ""
+
+#. Inventur
+#: ../../src/iwInventory.cpp:46
+#: ../../src/iwMainMenu.cpp:79
+msgid "Stock"
+msgstr "Scorta"
+
+#: ../../src/iwDiplomacy.cpp:232
+msgid "Suggest non-aggression pact"
+msgstr "Suggerisci un patto di non-aggressione"
+
+#: ../../src/iwDiplomacy.cpp:231
+msgid "Suggest treaty of alliance"
+msgstr "Suggerisci un trattato di alleanza"
+
+#: ../../src/iwDiplomacy.cpp:194
+msgid "Teams locked"
+msgstr ""
+
+#: ../../src/iwDirectIPConnect.cpp:258
+msgid "This Server is full!"
+msgstr "Il server è pieno!"
+
+#: ../../src/iwDiplomacy.cpp:274
+msgid "To player:"
+msgstr "Con il Giocatore:"
+
+#: ../../src/iwLobbyConnect.cpp:222
+msgid ""
+"To register, you have to create a valid board account at "
+"http://forum.siedler25.org at the moment.\n"
+msgstr ""
+
+#: ../../src/iwDirectIPConnect.cpp:262
+msgid "Too short Message received!"
+msgstr "Ricevuto un messaggio troppo corto!"
+
+#. Werkzeugproduktion
+#: ../../src/iwMainMenu.cpp:71
+msgid "Tools"
+msgstr "Strumenti"
+
+#. Nach ganz oben
+#: ../../src/iwBuildOrder.cpp:55
+msgid "Top"
+msgstr "Alto"
+
+#. Transport
+#: ../../src/iwMainMenu.cpp:69
+msgid "Transport"
+msgstr "Trasporto"
+
+#: ../../src/iwDiplomacy.cpp:81
+msgid "Treaties"
+msgstr "Trattati"
+
+#: ../../src/iwDiplomacy.cpp:106
+msgid "Treaty of alliance"
+msgstr "Trattato di alleanza"
+
+#. Hoch
+#: ../../src/iwBuildOrder.cpp:57
+msgid "Up"
+msgstr "Su"
+
+#. Benutzername
+#: ../../src/iwLobbyConnect.cpp:53
+msgid "Username:"
+msgstr "Username:"
+
+#: ../../src/iwLobbyServerInfo.cpp:81
 msgid "Version:"
 msgstr "Versione:"
 
-#: /home/marcus/trunk-neu/src/nofBuildingWorker.cpp:404
+#: ../../src/iwDirectIPConnect.cpp:282
+msgid "Waiting for Playerinfo..."
+msgstr "In attesa delle informazioni del Giocatore..."
+
+#: ../../src/iwDirectIPConnect.cpp:279
+#: ../../src/iwLobbyConnect.cpp:332
+msgid "Waiting for Reply..."
+msgstr "In attesa di risposta..."
+
+#. Wasserbüffel äh -gruppe ;-)
+#: ../../src/iwDistribution.cpp:149
+msgid "Water"
+msgstr "Acqua"
+
+#: ../../src/iwLobbyRanking.cpp:81
+msgid "Won"
+msgstr "Vinto"
+
+#. Wood group
+#: ../../src/iwDistribution.cpp:126
+msgid "Wood"
+msgstr "Tronchi"
+
+#: ../../src/iwDirectIPConnect.cpp:259
+msgid "Wrong Password!"
+msgstr "Password errata!"
+
+#: ../../src/iwDirectIPConnect.cpp:263
+msgid "Wrong Server Type!"
+msgstr "Tipo di server errato!"
+
+#: ../../src/iwDirectIPConnect.cpp:260
+msgid "Wrong client version"
+msgstr "Versione del client errata"
+
+#. nein
+#: ../../src/iwLobbyConnect.cpp:73
+msgid "Yes"
+msgstr "Si"
+
+#: ../../src/iwMerchandiseStatistics.cpp:97
+msgid "1 h"
+msgstr "1 ora"
+
+#: ../../src/iwMerchandiseStatistics.cpp:96
+msgid "15 m"
+msgstr "15 m"
+
+#: ../../src/iwMerchandiseStatistics.cpp:99
+msgid "16 h"
+msgstr "16 ore"
+
+#: ../../src/iwMerchandiseStatistics.cpp:98
+msgid "4 h"
+msgstr "4 ore"
+
+#: ../../src/iwMusicPlayer.cpp:45
+msgid "Abort"
+msgstr "Annulla"
+
+#: ../../src/iwMusicPlayer.cpp:76
+msgid "Add"
+msgstr "Aggiungi"
+
+#: ../../src/iwMusicPlayer.cpp:83
+#: ../../src/iwMusicPlayer.cpp:218
+msgid "Add directory of tracks"
+msgstr ""
+
+#. AddTextButton(5,b1->GetX(false),320,button_width,22,TC_GREEN2,_("Save"),NormalFont);
+#. AddTextButton(6,b2->GetX(false),320,button_width,22,TC_GREEN2,_("Load"),NormalFont);
+#. Buttons fÃŒr die MusikstÃŒcke
+#: ../../src/iwMusicPlayer.cpp:82
+#: ../../src/iwMusicPlayer.cpp:212
+msgid "Add track"
+msgstr "Aggiungi registrazione"
+
+#. Advanced Options
+#: ../../src/iwOptionsWindow.cpp:105
+msgid "Advanced"
+msgstr ""
+
+#: ../../src/iwPlayReplay.cpp:93
+msgid "Are you sure to remove all replays?"
+msgstr "Sei sicuro di voler cancellare tutti i Replays?"
+
+#. Autospeicherzeug
+#: ../../src/iwSave.cpp:196
+msgid "Auto-Save every:"
+msgstr "Salvataggio automatico ogni:"
+
+#: ../../src/iwMerchandiseStatistics.cpp:76
+msgid "Beer"
+msgstr "Birra"
+
+#: ../../src/iwMerchandiseStatistics.cpp:86
+msgid "Boats"
+msgstr "Barche"
+
+#: ../../src/iwMilitary.cpp:58
+msgid "Border areas"
+msgstr "Zone di confine"
+
+#: ../../src/iwMsgbox.cpp:72
+#: ../../src/iwMsgbox.cpp:87
+msgid "Cancel"
+msgstr "Annulla"
+
+#: ../../src/iwMilitary.cpp:55
+msgid "Center of country"
+msgstr "Zone centrali"
+
+#. Aufräumen
+#. Sicherheitsabfrage, ob der Benutzer auch wirklich alle löschen möchte
+#: ../../src/iwPlayReplay.cpp:68
+#: ../../src/iwPlayReplay.cpp:93
+msgid "Clear"
+msgstr "Ripulisci"
+
+#: ../../src/iwMerchandiseStatistics.cpp:83
+msgid "Coins"
+msgstr "Monete"
+
+#. Mülleimer
+#: ../../src/iwMerchandiseStatistics.cpp:92
+msgid "Delete all"
+msgstr ""
+
+#: ../../src/iwMilitaryBuilding.cpp:177
+msgid ""
+"Demolition ist not allowed because the building is located in border area!"
+msgstr "La demolizione non è permessa perche l'edificio è vicino al confine!"
+
+#: ../../src/iwMilitaryBuilding.cpp:176
+msgid "Demolition ist not allowed because the building is under attack!"
+msgstr "La demolizione non è permessa perche l'edificio è sotto attacco!"
+
+#: ../../src/iwMilitaryBuilding.cpp:180
+msgid "Demolition not possible"
+msgstr "La demolizione non è permessa"
+
+#: ../../src/iwMusicPlayer.cpp:86
+msgid "Downwards"
+msgstr "In basso"
+
+#. "Spiel beenden"
+#: ../../src/iwOptionsWindow.cpp:110
+msgid "End game"
+msgstr "Fine della partita"
+
+#: ../../src/iwPlayReplay.cpp:119
+msgid "Error while opening file!"
+msgstr "Errore all'apertura del file"
+
+#: ../../src/iwPlayReplay.cpp:118
+#: ../../src/iwPlayReplay.cpp:128
+msgid "Error while playing replay!"
+msgstr "Errore durante il gioco replay"
+
+#: ../../src/iwPlayReplay.cpp:121
+msgid "Error: Replay is too old!"
+msgstr "Errore: il Replay è troppo vecchio!"
+
+#: ../../src/iwMilitary.cpp:52
+msgid "Fewer defenders"
+msgstr "Meno difensori"
+
+#. Einzelne Balken
+#: ../../src/iwMilitary.cpp:50
+msgid "Fewer recruits"
+msgstr "Meno reclutamento"
+
+#: ../../src/iwPlayReplay.cpp:63
+#: ../../src/iwSave.cpp:67
+msgid "Filename"
+msgstr "Nome del file"
+
+#: ../../src/iwMerchandiseStatistics.cpp:74
+msgid "Food"
+msgstr "Cibo"
+
+#. "Gehe Zu Ort"
+#. Die Expeditionsweiterfahrbuttons
+#: ../../src/iwShip.cpp:72
+msgid "Found colony"
+msgstr "Trovata una colonia"
+
+#: ../../src/iwOptionsWindow.cpp:59
+msgid "Game menu"
+msgstr "Menu del gioco"
+
+#: ../../src/iwMerchandiseStatistics.cpp:81
+msgid "Gold"
+msgstr "Oro"
+
+#: ../../src/iwMilitary.cpp:54
+msgid "Interior"
+msgstr "Zone interne"
+
+#. Bau abbrechen
+#: ../../src/iwRoadWindow.cpp:50
+msgid "Interrupt road building"
+msgstr "Interrompi la costruzione della strada"
+
+#: ../../src/iwPlayReplay.cpp:120
+msgid "Invalid Replay!"
+msgstr "Replay invalido"
+
+#. untere Reihe
+#: ../../src/iwMerchandiseStatistics.cpp:80
+msgid "Ironore"
+msgstr ""
+
+#: ../../src/iwPlayReplay.cpp:63
+msgid "Length"
+msgstr "Lunghezza"
+
+#: ../../src/iwMusicPlayer.cpp:88
+msgid "Less repeats"
+msgstr "Meno ripetizioni"
+
+#: ../../src/iwOptionsWindow.cpp:77
+msgid "Load 'ReadMe' file"
+msgstr "Carica il file 'Leggimi'"
+
+#. /////////////////////////////////////////////////////////////////////////////
+#. *
+#. *
+#. *
+#. *  @author OLiver
+#. 
+#: ../../src/iwOptionsWindow.cpp:81
+#: ../../src/iwSave.cpp:250
+msgid "Load game!"
+msgstr "Carica una partita!"
+
+#: ../../src/iwMerchandiseStatistics.cpp:63
+msgid "Merchandise"
+msgstr "Mercanzie"
+
+#: ../../src/iwPostWindow.cpp:298
+msgid "Message"
+msgstr "messaggio"
+
+#: ../../src/iwMilitary.cpp:52
+msgid "More defenders"
+msgstr "Piu difensori"
+
+#: ../../src/iwMilitary.cpp:50
+msgid "More recruits"
+msgstr "Piu reclutamento"
+
+#: ../../src/iwMusicPlayer.cpp:89
+msgid "More repeats"
+msgstr "Più ripetizioni"
+
+#: ../../src/iwMilitary.cpp:56
+msgid "Near harbor points"
+msgstr ""
+
+#: ../../src/iwPostWindow.cpp:84
+#: ../../src/iwPostWindow.cpp:275
+msgid "No letters!"
+msgstr "Nessun messaggio"
+
+#: ../../src/iwShip.cpp:109
+msgid "No ships available"
+msgstr "Non ci sono navi disponibili"
+
+#. OK-Button
+#: ../../src/iwMsgbox.cpp:65
+#: ../../src/iwMsgbox.cpp:71
+#: ../../src/iwMusicPlayer.cpp:44
+#: ../../src/iwSkipGFs.cpp:54
+msgid "OK"
+msgstr "OK"
+
+#: ../../src/iwMinimap.cpp:53
+msgid "Outline map"
+msgstr "Contorno della mappa"
+
+#: ../../src/iwMusicPlayer.cpp:90
+#: ../../src/iwMusicPlayer.cpp:283
+msgid "Playback in this order"
+msgstr "Suona in quest'ordine"
+
+#: ../../src/iwMusicPlayer.cpp:70
+msgid "Playlist:"
+msgstr "Playlist:"
+
+#. /////////////////////////////////////////////////////////////////////////////
+#. *
+#. *  Konstruktor von @p iwPleaseWait.
+#. *
+#. *  Fenster wird modal geöffnet, damit man ggf. einen "Weiter"-Button nicht
+#. *  mehrfach betätigen kann.
+#. *
+#. *  @author OLiver
+#. 
+#: ../../src/iwPleaseWait.cpp:46
+#: ../../src/iwPleaseWait.cpp:49
+msgid "Please wait..."
+msgstr "Attendere prego..."
+
+#: ../../src/iwPlayReplay.cpp:122
+msgid "Program version is too old to play that replay!"
+msgstr "La versione del programma è troppo vecchia per giocare questo Replay"
+
+#: ../../src/iwMusicPlayer.cpp:283
+msgid "Random playback"
+msgstr "Playback casuale"
+
+#: ../../src/iwMusicPlayer.cpp:77
+msgid "Remove"
+msgstr "Rimuovi"
+
+#: ../../src/iwMusicPlayer.cpp:84
+msgid "Remove track"
+msgstr "Salva registrazione"
+
+#. Expedition abbrechen
+#: ../../src/iwShip.cpp:80
+msgid "Return to harbor"
+msgstr ""
+
+#. /////////////////////////////////////////////////////////////////////////////
+#. *
+#. *
+#. *
+#. *  @author OLiver
+#. 
+#: ../../src/iwOptionsWindow.cpp:85
+#: ../../src/iwSave.cpp:190
+msgid "Save game!"
+msgstr "Salva la partita!"
+
+#: ../../src/iwSettings.cpp:53
+msgid "Settings"
+msgstr ""
+
+#: ../../src/iwSkipGFs.cpp:44
+msgid "Skip GameFrames"
+msgstr "Salta i GameFrames"
+
+#: ../../src/iwMusicPlayer.cpp:175
+msgid "Specify the playlist name"
+msgstr "Specifica il nome della playlist"
+
+#: ../../src/iwSave.cpp:67
+msgid "Start GF"
+msgstr "Avvia GF"
+
+#: ../../src/iwSettings.cpp:58
+msgid "Statistics Scale"
+msgstr ""
+
+#: ../../src/iwPlayReplay.cpp:63
+msgid "Stocktaking date"
+msgstr "Stocktaking date"
+
+#: ../../src/iwMerchandiseStatistics.cpp:73
+msgid "Stones"
+msgstr "Pietre"
+
+#: ../../src/iwMilitary.cpp:51
+msgid "Strong defense"
+msgstr "Difesa forte"
+
+#. "Spiel aufgeben"
+#: ../../src/iwOptionsWindow.cpp:108
+msgid "Surrender"
+msgstr "Mi arrendo"
+
+#: ../../src/iwPlayReplay.cpp:124
+msgid "Temporary map file was not found!"
+msgstr "File temporaneo della mappa non trovato!"
+
+#: ../../src/iwMusicPlayer.cpp:335
+msgid "The specified file couldn't be opened!"
+msgstr "Non è stato possibile aprire  il file specificato"
+
+#: ../../src/iwMusicPlayer.cpp:117
+#: ../../src/iwMusicPlayer.cpp:360
+msgid "The specified file couldn't be saved!"
+msgstr "Non è stato possibile salvare il file specificato"
+
+#: ../../src/iwSave.cpp:67
+msgid "Time"
+msgstr "Tempo"
+
+#: ../../src/iwMusicPlayer.cpp:85
+msgid "Upwards"
+msgstr "In alto"
+
+#. pitch: 4, 4
+#: ../../src/iwMilitary.cpp:51
+msgid "Weak defense"
+msgstr "Difesa debole"
+
+#: ../../src/iwMerchandiseStatistics.cpp:85
+msgid "Weapons"
+msgstr "Armi"
+
+#: ../../src/iwMusicPlayer.cpp:190
+msgid "You are not allowed to delete the standard playlist!"
+msgstr "Non hai il permesso di cancellare la playlist standard"
+
+#: ../../src/iwPostWindow.cpp:298
+msgid "of"
+msgstr "di"
+
+#. Text vor Editfeld
+#: ../../src/iwSkipGFs.cpp:47
+msgid "to GameFrame:"
+msgstr "al GameFrame:"
+
+#: ../../src/iwTools.cpp:51
+msgid "Axe"
+msgstr "Ascia"
+
+#: ../../src/iwTools.cpp:61
+msgid "Bow"
+msgstr "Arco"
+
+#: ../../src/iwTools.cpp:59
+msgid "Cleaver"
+msgstr "Mannaia"
+
+#: ../../src/iwTools.cpp:56
+msgid "Crucible"
+msgstr "Crogiolo"
+
+#. Ok + Abbrennen
+#: ../../src/iwSurrender.cpp:54
+msgid "Destroy all buildings and surrender"
+msgstr "Distruggo tutti gli edifici e mi arrendo"
+
+#. Abbrechen
+#: ../../src/iwSurrender.cpp:56
+msgid "Don't surrender"
+msgstr "Non mi arrendo"
+
+#: ../../src/iwTools.cpp:54
+msgid "Hammer"
+msgstr "Martello"
+
+#: ../../src/iwStatistics.cpp:118
+#: ../../src/iwStatistics.cpp:219
+msgid "Inhabitants"
+msgstr "Abitanti"
+
+#: ../../src/iwTransport.cpp:64
+msgid "Iron ore"
+msgstr "Ferro"
+
+#: ../../src/iwTools.cpp:50
+#: ../../src/iwTools.cpp:51
+#: ../../src/iwTools.cpp:52
+#: ../../src/iwTools.cpp:53
+#: ../../src/iwTools.cpp:54
+#: ../../src/iwTools.cpp:55
+#: ../../src/iwTools.cpp:56
+#: ../../src/iwTools.cpp:57
+#: ../../src/iwTools.cpp:58
+#: ../../src/iwTools.cpp:59
+#: ../../src/iwTools.cpp:60
+#: ../../src/iwTools.cpp:61
+msgid "Less often"
+msgstr "Meno spesso"
+
+#: ../../src/iwStatistics.cpp:120
+#: ../../src/iwStatistics.cpp:227
+msgid "Military strength"
+msgstr "Potenza militare"
+
+#: ../../src/iwTools.cpp:50
+#: ../../src/iwTools.cpp:51
+#: ../../src/iwTools.cpp:52
+#: ../../src/iwTools.cpp:53
+#: ../../src/iwTools.cpp:54
+#: ../../src/iwTools.cpp:55
+#: ../../src/iwTools.cpp:56
+#: ../../src/iwTools.cpp:57
+#: ../../src/iwTools.cpp:58
+#: ../../src/iwTools.cpp:59
+#: ../../src/iwTools.cpp:60
+#: ../../src/iwTools.cpp:61
+msgid "More often"
+msgstr "Più spesso"
+
+#. "Blättern"
+#: ../../src/iwWares.cpp:188
+msgid "Next page"
+msgstr "Pagina successiva"
+
+#: ../../src/iwTools.cpp:53
+msgid "Pick-axe"
+msgstr "Piccone"
+
+#: ../../src/iwTools.cpp:57
+msgid "Rod and line"
+msgstr "Amo e lenza"
+
+#: ../../src/iwTools.cpp:60
+msgid "Rolling pin"
+msgstr "Matterello"
+
+#: ../../src/main.cpp:167
+msgid "RttR crashed. Please restart the application!"
+msgstr ""
+
+#: ../../src/main.cpp:151
+msgid ""
+"RttR crashed. Would you like to send debug information to RttR to help us "
+"avoiding this crash in the future? Thank you very much!"
+msgstr ""
+
+#: ../../src/iwTools.cpp:52
+msgid "Saw"
+msgstr "Sega"
+
+#: ../../src/iwTools.cpp:58
+msgid "Scythe"
+msgstr "Falce"
+
+#: ../../src/iwTrade.cpp:98
+msgid "Send"
+msgstr ""
+
+#: ../../src/iwTrade.cpp:75
+msgid "Settlers"
+msgstr ""
+
+#: ../../src/iwTools.cpp:55
+msgid "Shovel"
+msgstr "Vanga"
+
+#. Aktuelle Überschrift über der Statistik
+#: ../../src/iwStatistics.cpp:116
+#: ../../src/iwStatistics.cpp:136
+#: ../../src/iwStatistics.cpp:211
+msgid "Size of country"
+msgstr "Dimensioni del territorio"
+
+#: ../../src/iwStatistics.cpp:46
+msgid "Statistics"
+msgstr "Statistiche"
+
+#: ../../src/iwStorehouse.cpp:43
+msgid "Storehouse"
+msgstr "Magazzino"
+
+#: ../../src/iwSurrender.cpp:49
+msgid "Surrender game?"
+msgstr "Ti arrendi?"
+
+#. Systemsprache hinzufügen
+#: ../../src/languages.cpp:71
+msgid "System language"
+msgstr "Lingua del sistema"
+
+#. immer noch nichts gefunden? --> Dann Fehlermeldung
+#: ../../src/iwTextfile.cpp:72
+msgid "The readme file was not found!"
+msgstr "Il file Leggimi non è stato trovato!"
+
+#. Einzelne Balken
+#: ../../src/iwTools.cpp:50
+msgid "Tongs"
+msgstr "Chiave inglese"
+
+#: ../../src/iwTrade.cpp:59
+msgid "Trade"
+msgstr ""
+
+#: ../../src/iwTrade.cpp:64
+#, c-format
+msgid "Trade with %s"
+msgstr ""
+
+#: ../../src/iwStatistics.cpp:123
+#: ../../src/iwStatistics.cpp:239
+msgid "Vanquished enemies"
+msgstr "Nemici sconfitti"
+
+#: ../../src/iwTrade.cpp:94
+msgid "Ware you like to trade"
+msgstr ""
+
+#. Ware or figure?
+#: ../../src/iwTrade.cpp:74
+msgid "Wares"
+msgstr ""
+
+#: ../../src/nobMilitary.cpp:1171
+msgid "A catapult is firing upon us!"
+msgstr "Siamo sotto il tiro di una catapulta!"
+
+#: ../../src/nobMilitary.cpp:923
+msgid "Military building captured"
+msgstr "Edificio militare catturato"
+
+#: ../../src/nobMilitary.cpp:920
+msgid "Military building lost"
+msgstr "Edificio militare perduto"
+
+#: ../../src/nobMilitary.cpp:631
+msgid "Military building occupied"
+msgstr "Edificio militare occupato"
+
+#: ../../src/nobHarborBuilding.cpp:106
+msgid "New harbor building finished"
+msgstr ""
+
+#: ../../src/nobStorehouse.cpp:57
+msgid "New storehouse finished"
+msgstr "Pronto un nuovo magazzino"
+
+#: ../../src/nofAttacker.cpp:289
+msgid "Our headquarters was destroyed!"
+msgstr ""
+
+#: ../../src/nofAttacker.cpp:292
+msgid "This harbor building was destroyed"
+msgstr ""
+
+#: ../../src/nofBuildingWorker.cpp:404
 msgid "This mine is exhausted"
 msgstr "Questa miniera è esaurita"
 
-#: /home/marcus/trunk-neu/src/nofBuildingWorker.cpp:406
+#: ../../src/nofBuildingWorker.cpp:406
 msgid "This well is dried out"
 msgstr ""
 
-#: /home/marcus/trunk-neu/src/iwAddons.cpp:44
-msgid "Addon Settings"
-msgstr "Opzioni Aggiuntive"
+#: ../../src/nofAttacker.cpp:654
+msgid "We are under attack!"
+msgstr "Siamo sotto attacco!"
 
-#: /home/marcus/trunk-neu/src/iwAddons.cpp:46
-msgid "Additional features:"
+#: ../../src/nofGeologist.cpp:499
+msgid "Found coal"
+msgstr "Trovato del carbone!"
+
+#: ../../src/nofGeologist.cpp:497
+msgid "Found gold"
+msgstr "Trovato dell'oro!"
+
+#: ../../src/nofGeologist.cpp:501
+msgid "Found granite"
+msgstr "Trovato del granito!"
+
+#: ../../src/nofGeologist.cpp:495
+msgid "Found iron ore"
+msgstr "Trovato del ferro!"
+
+#: ../../src/nofGeologist.cpp:503
+msgid "Found water"
+msgstr "Trovata dell'acqua!"
+
+#: ../../src/nofFarmhand.cpp:209
+msgid "No more fishes in range"
+msgstr "Non ci sono più pesci"
+
+#: ../../src/nofFarmhand.cpp:202
+msgid "No more stones in range"
+msgstr "Non ci sono più pietre"
+
+#: ../../src/nofScout_LookoutTower.cpp:83
+msgid "Lookout-tower occupied"
+msgstr "Torre di Guardia occupata"
+
+#: ../../src/noShipBuildingSite.cpp:138
+msgid "A new ship is ready"
 msgstr ""
 
-#: /home/marcus/trunk-neu/src/iwAddons.cpp:49
-msgid "Apply Changes"
-msgstr "Applica i cambiamenti"
-
-#: /home/marcus/trunk-neu/src/iwAddons.cpp:51
-msgid "Close Without Saving"
-msgstr "Chiudi senza salvare"
-
-#: /home/marcus/trunk-neu/src/iwAddons.cpp:54
-msgid "Use S2 Defaults"
+#: ../../src/noShip.cpp:464
+msgid "A ship disovered an enemy territory"
 msgstr ""
 
-#: /home/marcus/trunk-neu/src/iwAddons.cpp:63
-msgid "Economy"
+#: ../../src/noShip.cpp:742
+msgid "A ship has reached the destination of its expedition."
 msgstr ""
 
-#: /home/marcus/trunk-neu/src/iwAddons.cpp:65
-msgid "Gameplay"
+#: ../../src/noShip.cpp:286
+msgid "A ship is ready for an expedition."
 msgstr ""
 
-#: /home/marcus/trunk-neu/src/AddonExhaustibleWells.h:37
-msgid "Exhaustible Wells"
-msgstr ""
+#: ../../src/PostMsg.cpp:122
+#, c-format
+msgid "Duration: %u GF (%s)"
+msgstr "Durata: %u GF (%s)"
 
-#: /home/marcus/trunk-neu/src/AddonExhaustibleWells.h:38
+#: ../../src/PostMsg.cpp:120
+msgid "Duration: Forever"
+msgstr "Durata: Per sempre"
+
+#: ../../src/PostMsg.cpp:160
+#, c-format
+msgid "The %s between player '%s' and you has been cancelled."
+msgstr "Il %s fra il giocatore '%s' e te e stato annullato."
+
+#: ../../src/PostMsg.cpp:157
+#, c-format
+msgid "The %s between player '%s' and you has been concluded."
+msgstr "Il %s fra il giocatore '%s' e te e stato concluso."
+
+#: ../../src/PostMsg.cpp:115
+#, c-format
+msgid "The player '%s' offers you a %s."
+msgstr "Il giocatore '%s' ti offre un %s."
+
+#: ../../src/PostMsg.cpp:134
+#, c-format
 msgid ""
-"Allows to have limited water.\n"
-"\n"
-"Wells will now dry out."
+"The player '%s' want to cancel the '%s' between you both primaturely. Do you "
+"agree?"
+msgstr ""
+"Il giocatore '%s' vuole annullare prematuramente il '%s' fra di voi. Sei "
+"d'accordo?"
+
+#: ../../src/PostMsg.cpp:105
+msgid "non-aggression pact"
+msgstr "patto di non-aggressione"
+
+#: ../../src/PostMsg.cpp:104
+msgid "treaty of alliance"
+msgstr "trattato di alleanza"
+
+#: ../../src/AddonAIDebugWindow.h:38
+msgid "AI Debugging Window"
 msgstr ""
 
-#: /home/marcus/trunk-neu/src/AddonDemolitionProhibition.h:37
-msgid "Disable Demolition of military buildings"
+#: ../../src/AddonCatapultGraphics.h:40
+msgid "Adds new graphics for catapults to the game."
 msgstr ""
 
-#: /home/marcus/trunk-neu/src/AddonDemolitionProhibition.h:38
-msgid ""
-"Allows to disable the demolition of military buildings under attack or near "
-"frontiers."
+#: ../../src/AddonAdjustMilitaryStrength.h:47
+msgid "Adjust military strength"
 msgstr ""
 
-#: /home/marcus/trunk-neu/src/AddonDemolitionProhibition.h:43
-msgid "Active if attacked"
-msgstr ""
-
-#: /home/marcus/trunk-neu/src/AddonDemolitionProhibition.h:44
-msgid "Active near frontiers"
-msgstr ""
-
-#: /home/marcus/trunk-neu/src/AddonChangeGoldDeposits.h:38
-msgid "Change gold deposits"
-msgstr ""
-
-#: /home/marcus/trunk-neu/src/AddonChangeGoldDeposits.h:39
+#: ../../src/AddonChangeGoldDeposits.h:39
 msgid ""
 "Allows to play games without gold.\n"
 "\n"
@@ -2355,42 +2575,220 @@ msgid ""
 "allows you to utilize the additional coal not needed for minting anymore."
 msgstr ""
 
-#: /home/marcus/trunk-neu/src/AddonChangeGoldDeposits.h:47
-msgid "No change"
+#: ../../src/AddonAdjustMilitaryStrength.h:48
+msgid ""
+"Allows you to modify the strength increase of military ranks\n"
+"\n"
 msgstr ""
 
-#: /home/marcus/trunk-neu/src/AddonChangeGoldDeposits.h:48
-msgid "Remove gold completely"
+#: ../../src/SerializedGameData.cpp:235
+msgid "An error occured while saving which was suppressed!"
+msgstr ""
+"Si è verificato un errore durante il salvataggio (che è stato annullato)!"
+
+#: ../../src/AddonChangeGoldDeposits.h:38
+msgid "Change gold deposits"
 msgstr ""
 
-#: /home/marcus/trunk-neu/src/AddonChangeGoldDeposits.h:49
-msgid "Convert to iron ore"
-msgstr ""
-
-#: /home/marcus/trunk-neu/src/AddonChangeGoldDeposits.h:50
+#: ../../src/AddonChangeGoldDeposits.h:50
 msgid "Convert to coal"
 msgstr ""
 
-#: /home/marcus/trunk-neu/src/AddonChangeGoldDeposits.h:51
+#: ../../src/AddonChangeGoldDeposits.h:51
 msgid "Convert to granite"
 msgstr ""
 
-#: /home/marcus/trunk-neu/src/AddonCustomBuildSequence.h:37
-msgid "Custom build sequence"
+#: ../../src/AddonChangeGoldDeposits.h:49
+msgid "Convert to iron ore"
 msgstr ""
 
-#: /home/marcus/trunk-neu/src/AddonCustomBuildSequence.h:38
+#: ../../src/AddonAIDebugWindow.h:39
+msgid ""
+"Enable AI Debugging Window\n"
+"(possible cheating)"
+msgstr ""
+
+#: ../../src/AddonAdjustMilitaryStrength.h:52
+msgid "Maximum strength"
+msgstr ""
+
+#: ../../src/AddonAdjustMilitaryStrength.h:53
+msgid "Medium strength"
+msgstr ""
+
+#: ../../src/AddonAdjustMilitaryStrength.h:54
+msgid "Minimum strength"
+msgstr ""
+
+#: ../../src/AddonChangeGoldDeposits.h:47
+msgid "No change"
+msgstr ""
+
+#: ../../src/AddonCatapultGraphics.h:39
+msgid "Race specific catapult graphics"
+msgstr ""
+
+#: ../../src/AddonChangeGoldDeposits.h:48
+msgid "Remove gold completely"
+msgstr ""
+
+#: ../../src/AddonLimitCatapults.h:51
+msgid "10 catapults"
+msgstr ""
+
+#: ../../src/AddonLimitCatapults.h:52
+msgid "20 catapults"
+msgstr ""
+
+#: ../../src/AddonLimitCatapults.h:49
+msgid "3 catapults"
+msgstr ""
+
+#: ../../src/AddonLimitCatapults.h:53
+msgid "30 catapults"
+msgstr ""
+
+#: ../../src/AddonLimitCatapults.h:50
+msgid "5 catapults"
+msgstr ""
+
+#: ../../src/AddonDemolitionProhibition.h:43
+msgid "Active if attacked"
+msgstr ""
+
+#: ../../src/AddonDemolitionProhibition.h:44
+msgid "Active near frontiers"
+msgstr ""
+
+#: ../../src/AddonCustomBuildSequence.h:38
 msgid ""
 "Allows every player to control whether building sites\n"
 "should be supplied in sequence of given order or in a definable\n"
 "sequence based on the building type."
 msgstr ""
 
-#: /home/marcus/trunk-neu/src/AddonMaxWaterwayLength.h:37
-msgid "Set maximum waterway length"
+#: ../../src/AddonCharburner.h:37
+msgid "Allows to build the charburner."
 msgstr ""
 
-#: /home/marcus/trunk-neu/src/AddonMaxWaterwayLength.h:38
+#: ../../src/AddonDefenderBehavior.h:39
+msgid ""
+"Allows to change the military setting 'defender'.\n"
+"\n"
+"You can choose to disallow any changes to that setting\n"
+"or you can limit the amount of reoccupying troops\n"
+"(during an attack) according to the defender setting."
+msgstr ""
+
+#: ../../src/AddonDemolitionProhibition.h:38
+msgid ""
+"Allows to disable the demolition of military buildings under attack or near "
+"frontiers."
+msgstr ""
+
+#: ../../src/AddonExhaustibleWells.h:38
+msgid ""
+"Allows to have limited water.\n"
+"\n"
+"Wells will now dry out."
+msgstr ""
+
+#: ../../src/AddonInexhaustibleMines.h:38
+msgid ""
+"Allows to have unlimited resources.\n"
+"\n"
+"Mines will never be depleted."
+msgstr ""
+
+#: ../../src/AddonTrade.h:37
+msgid "Allows to send wares/figures to allied warehouses"
+msgstr ""
+
+#: ../../src/AddonRefundOnEmergency.h:39
+msgid ""
+"Allows you to get building materials back if the building is destroyed\n"
+"and your emergency program is active."
+msgstr ""
+
+#: ../../src/AddonRefundMaterials.h:38
+msgid ""
+"Allows you to get building materials back if the building is destroyed."
+msgstr ""
+
+#: ../../src/AddonManualRoadEnlargement.h:38
+msgid ""
+"Allows you to manually upgrade your roads\n"
+"and build donkey roads directly."
+msgstr ""
+
+#: ../../src/AddonDefenderBehavior.h:38
+msgid "Change defender behavior"
+msgstr ""
+
+#: ../../src/AddonStatisticsVisibility.h:37
+msgid "Change the visibility of your ingame statistics"
+msgstr ""
+
+#: ../../src/AddonCustomBuildSequence.h:37
+msgid "Custom build sequence"
+msgstr ""
+
+#: ../../src/AddonStatisticsVisibility.h:38
+msgid ""
+"Decides to whom your statistics is visible.\n"
+"\n"
+"\"Allies\" applies to team members as well as to allies by treaty."
+msgstr ""
+
+#: ../../src/AddonDemolitionProhibition.h:37
+msgid "Disable Demolition of military buildings"
+msgstr ""
+
+#: ../../src/AddonNoCoinsDefault.h:19
+msgid "Disable coins by default"
+msgstr ""
+
+#: ../../src/AddonDefenderBehavior.h:47
+msgid "Disallow change"
+msgstr ""
+
+#: ../../src/AddonCharburner.h:36
+msgid "Enable charburner"
+msgstr ""
+
+#: ../../src/AddonStatisticsVisibility.h:44
+msgid "Everyone"
+msgstr ""
+
+#: ../../src/AddonExhaustibleWells.h:37
+msgid "Exhaustible Wells"
+msgstr ""
+
+#: ../../src/AddonRefundMaterials.h:46
+msgid "Get all back"
+msgstr ""
+
+#: ../../src/AddonInexhaustibleMines.h:37
+msgid "Inexhaustible Mines"
+msgstr ""
+
+#: ../../src/AddonLimitCatapults.h:37
+msgid "Limit count of catapults"
+msgstr ""
+
+#: ../../src/AddonLimitCatapults.h:38
+msgid ""
+"Limits the count of catapults per player.\n"
+"\n"
+"Proportional uses 0.125 catapult per barrack (you need 8 baracks for one "
+"catapult)\n"
+"                  0.25           per guardhouse (4 guardhouses per "
+"catapult)\n"
+"                  0.5            per watchtower (2 watchtower per catapult)\n"
+"                  1              per fortress (1 fortress per catapult)\n"
+msgstr ""
+
+#: ../../src/AddonMaxWaterwayLength.h:38
 msgid ""
 "Limits the distance settlers may travel per boat.\n"
 "\n"
@@ -2403,357 +2801,280 @@ msgid ""
 "and Unlimited."
 msgstr ""
 
-#: /home/marcus/trunk-neu/src/AddonMaxWaterwayLength.h:49
-msgid "Short"
-msgstr ""
-
-#: /home/marcus/trunk-neu/src/AddonMaxWaterwayLength.h:51
+#: ../../src/AddonMaxWaterwayLength.h:51
 msgid "Long"
 msgstr ""
 
-#: /home/marcus/trunk-neu/src/AddonMaxWaterwayLength.h:52
+#: ../../src/AddonMaxWaterwayLength.h:52
 msgid "Longer"
 msgstr ""
 
-#: /home/marcus/trunk-neu/src/AddonMaxWaterwayLength.h:53
-msgid "Very long"
+#: ../../src/AddonManualRoadEnlargement.h:37
+msgid "Manual road enlargement"
 msgstr ""
 
-#: /home/marcus/trunk-neu/src/AddonMaxWaterwayLength.h:54
-msgid "Unlimited"
+#: ../../src/AddonLimitCatapults.h:48
+msgid "No catapults"
 msgstr ""
 
-#: /home/marcus/trunk-neu/src/AddonInexhaustibleMines.h:37
-msgid "Inexhaustible Mines"
+#: ../../src/AddonRefundMaterials.h:42
+msgid "No refund"
 msgstr ""
 
-#: /home/marcus/trunk-neu/src/AddonInexhaustibleMines.h:38
-msgid ""
-"Allows to have unlimited resources.\n"
-"\n"
-"Mines will never be depleted."
+#: ../../src/AddonStatisticsVisibility.h:46
+msgid "Nobody else but you"
 msgstr ""
 
-#: /home/marcus/trunk-neu/src/AddonCatapultGraphics.h:39
-msgid "Race specific catapult graphics"
+#: ../../src/AddonLimitCatapults.h:47
+msgid "Proportional"
 msgstr ""
 
-#: /home/marcus/trunk-neu/src/AddonCatapultGraphics.h:40
-msgid "Adds new graphics for catapults to the game."
-msgstr ""
-
-#: /home/marcus/trunk-neu/src/AddonNoCoinsDefault.h:19
-msgid "Disable coins by default"
-msgstr ""
-
-#: /home/marcus/trunk-neu/src/AddonNoCoinsDefault.h:20
+#: ../../src/AddonNoCoinsDefault.h:20
 msgid ""
 "Receiving coins is disabled\n"
 "for military buildings by default."
 msgstr ""
 
-#: /home/marcus/trunk-neu/src/AddonAdjustMilitaryStrength.h:47
-msgid "Adjust military strength"
+#: ../../src/AddonDefenderBehavior.h:48
+msgid "Reduce reoccupying troops accordingly"
 msgstr ""
 
-#: /home/marcus/trunk-neu/src/AddonAdjustMilitaryStrength.h:48
+#: ../../src/AddonRefundMaterials.h:43
+msgid "Refund 25%"
+msgstr ""
+
+#: ../../src/AddonRefundMaterials.h:44
+msgid "Refund 50%"
+msgstr ""
+
+#: ../../src/AddonRefundMaterials.h:45
+msgid "Refund 75%"
+msgstr ""
+
+#: ../../src/AddonRefundMaterials.h:37
+msgid "Refund materials when building is destroyed"
+msgstr ""
+
+#: ../../src/AddonRefundOnEmergency.h:38
+msgid "Refund materials when emergency program is active"
+msgstr ""
+
+#: ../../src/AddonMaxWaterwayLength.h:37
+msgid "Set maximum waterway length"
+msgstr ""
+
+#: ../../src/AddonMaxWaterwayLength.h:49
+msgid "Short"
+msgstr ""
+
+#: ../../src/AddonLimitCatapults.h:46
+#: ../../src/AddonMaxWaterwayLength.h:54
+msgid "Unlimited"
+msgstr ""
+
+#: ../../src/AddonMaxWaterwayLength.h:53
+msgid "Very long"
+msgstr ""
+
+#: ../../src/BuildingConsts.h:357
 msgid ""
-"Allows you to modify the strength increase of military ranks\n"
-"\n"
+"A gold mine allows you to prospect for valuable gold deposits. For this, it "
+"is necessary to ensure that the miners are provided with plenty of food."
 msgstr ""
+"Una miniera d'oro ti permette di sfruttare preziosi giacimenti auriferi. Per "
+"questo, è necessario assicurare ai minatori abbondanza di alimenti."
 
-#: /home/marcus/trunk-neu/src/AddonAdjustMilitaryStrength.h:52
-msgid "Maximum strength"
-msgstr ""
-
-#: /home/marcus/trunk-neu/src/AddonAdjustMilitaryStrength.h:53
-msgid "Medium strength"
-msgstr ""
-
-#: /home/marcus/trunk-neu/src/AddonAdjustMilitaryStrength.h:54
-msgid "Minimum strength"
-msgstr ""
-
-#: /home/marcus/trunk-neu/src/AddonStatisticsVisibility.h:37
-msgid "Change the visibility of your ingame statistics"
-msgstr ""
-
-#: /home/marcus/trunk-neu/src/AddonStatisticsVisibility.h:38
+#: ../../src/BuildingConsts.h:510
 msgid ""
-"Decides to whom your statistics is visible.\n"
-"\n"
-"\"Allies\" applies to team members as well as to allies by treaty."
+"A well supplies water to the bakery, brewery, donkey breeder and pig farm."
 msgstr ""
+"Un pozzo fornisce acqua al fornaio, alla birreria e agli allevamenti di "
+"asini e di maiali."
 
-#: /home/marcus/trunk-neu/src/AddonStatisticsVisibility.h:44
-msgid "Everyone"
-msgstr ""
-
-#: /home/marcus/trunk-neu/src/AddonStatisticsVisibility.h:46
-msgid "Nobody else but you"
-msgstr ""
-
-#: /home/marcus/trunk-neu/src/GameConsts.h:202
-msgid "Boat"
-msgstr "Barca"
-
-#: /home/marcus/trunk-neu/src/GameConsts.h:203
-msgid "Sword"
-msgstr "Spada"
-
-#: /home/marcus/trunk-neu/src/GameConsts.h:205
-msgid "Flour"
-msgstr "Farina"
-
-#: /home/marcus/trunk-neu/src/GameConsts.h:206
-msgid "Fish"
-msgstr "Pesce"
-
-#: /home/marcus/trunk-neu/src/GameConsts.h:207
-msgid "Bread"
-msgstr "Pane"
-
-#: /home/marcus/trunk-neu/src/GameConsts.h:208
-msgid "Shield"
-msgstr "Scudo"
-
-#: /home/marcus/trunk-neu/src/GameConsts.h:219
-msgid "Meat"
-msgstr "Carne"
-
-#: /home/marcus/trunk-neu/src/GameConsts.h:220
-msgid "Ham"
-msgstr "Prosciutto"
-
-#: /home/marcus/trunk-neu/src/GameConsts.h:278
-msgid "Barracks"
-msgstr "Casermetta"
-
-#: /home/marcus/trunk-neu/src/GameConsts.h:279
-msgid "Guardhouse"
-msgstr "Posto di Guardia"
-
-#: /home/marcus/trunk-neu/src/GameConsts.h:281
-msgid "Watchtower"
-msgstr "Torre di Guardia"
-
-#: /home/marcus/trunk-neu/src/GameConsts.h:286
-msgid "Fortress"
-msgstr "Fortezza"
-
-#: /home/marcus/trunk-neu/src/GameConsts.h:291
-msgid "Lookout tower"
-msgstr "Torre d'avvistamento"
-
-#: /home/marcus/trunk-neu/src/GameConsts.h:293
-msgid "Catapult"
-msgstr "Catapulta"
-
-#: /home/marcus/trunk-neu/src/GameConsts.h:294
-msgid "Woodcutter"
-msgstr "Taglialegna"
-
-#: /home/marcus/trunk-neu/src/GameConsts.h:295
-msgid "Fishery"
-msgstr "Pescatore"
-
-#: /home/marcus/trunk-neu/src/GameConsts.h:296
-msgid "Quarry"
-msgstr "Cava"
-
-#: /home/marcus/trunk-neu/src/GameConsts.h:297
-msgid "Forester"
-msgstr "Forestale"
-
-#: /home/marcus/trunk-neu/src/GameConsts.h:298
-msgid "Slaughterhouse"
-msgstr "Mattatoio"
-
-#: /home/marcus/trunk-neu/src/GameConsts.h:299
-msgid "Hunter"
-msgstr "Cacciatore"
-
-#: /home/marcus/trunk-neu/src/GameConsts.h:312
-msgid "Well"
-msgstr "Pozzo"
-
-#: /home/marcus/trunk-neu/src/GameConsts.h:314
-msgid "Farm"
-msgstr "Fattoria"
-
-#: /home/marcus/trunk-neu/src/GameConsts.h:363
-msgid "Helper"
-msgstr "Aiutante"
-
-#: /home/marcus/trunk-neu/src/GameConsts.h:364
-msgid "Woodchopper"
-msgstr "Taglialegna"
-
-#: /home/marcus/trunk-neu/src/GameConsts.h:365
-msgid "Fisher"
-msgstr "Pescatore"
-
-#: /home/marcus/trunk-neu/src/GameConsts.h:366
-msgid "Ranger"
-msgstr "Ranger"
-
-#: /home/marcus/trunk-neu/src/GameConsts.h:367
-msgid "Carpenter"
-msgstr "Carpentiere"
-
-#: /home/marcus/trunk-neu/src/GameConsts.h:368
-msgid "Stonemason"
-msgstr "Muratore"
-
-#: /home/marcus/trunk-neu/src/GameConsts.h:369
-msgid "Huntsman"
-msgstr "Cacciatore"
-
-#: /home/marcus/trunk-neu/src/GameConsts.h:370
-msgid "Farmer"
-msgstr "Contadino"
-
-#: /home/marcus/trunk-neu/src/GameConsts.h:371
-msgid "Miller"
-msgstr "Mugnaio"
-
-#: /home/marcus/trunk-neu/src/GameConsts.h:372
-msgid "Baker"
-msgstr "Fornaio"
-
-#: /home/marcus/trunk-neu/src/GameConsts.h:373
-msgid "Butcher"
-msgstr "Macellaio"
-
-#: /home/marcus/trunk-neu/src/GameConsts.h:374
-msgid "Miner"
-msgstr "Minatore"
-
-#: /home/marcus/trunk-neu/src/GameConsts.h:375
-msgid "Brewer"
-msgstr "Birraio"
-
-#: /home/marcus/trunk-neu/src/GameConsts.h:376
-msgid "Pig breeder"
-msgstr "Allevatore di maiali"
-
-#: /home/marcus/trunk-neu/src/GameConsts.h:377
-msgid "Donkey breeder"
-msgstr "Allevatore di asini"
-
-#: /home/marcus/trunk-neu/src/GameConsts.h:378
-msgid "Iron founder"
-msgstr "Trovato del ferrro"
-
-#: /home/marcus/trunk-neu/src/GameConsts.h:379
-msgid "Minter"
-msgstr "Coniatore"
-
-#: /home/marcus/trunk-neu/src/GameConsts.h:380
-msgid "Metalworker"
-msgstr "Ferramenta"
-
-#: /home/marcus/trunk-neu/src/GameConsts.h:381
-msgid "Armorer"
-msgstr "Armaiolo"
-
-#: /home/marcus/trunk-neu/src/GameConsts.h:382
-msgid "Builder"
-msgstr "Costruttore"
-
-#: /home/marcus/trunk-neu/src/GameConsts.h:383
-msgid "Planer"
-msgstr "Livellatore"
-
-#: /home/marcus/trunk-neu/src/GameConsts.h:384
-msgid "Private"
-msgstr "Soldato semplice"
-
-#: /home/marcus/trunk-neu/src/GameConsts.h:385
-msgid "Private first class"
-msgstr "Caporale"
-
-#: /home/marcus/trunk-neu/src/GameConsts.h:386
-msgid "Sergeant"
-msgstr "Sergente"
-
-#: /home/marcus/trunk-neu/src/GameConsts.h:387
-msgid "Officer"
-msgstr "Ufficiale"
-
-#: /home/marcus/trunk-neu/src/GameConsts.h:388
-msgid "General"
-msgstr "Generale"
-
-#: /home/marcus/trunk-neu/src/GameConsts.h:389
-msgid "Geologist"
-msgstr "Geologo"
-
-#: /home/marcus/trunk-neu/src/GameConsts.h:390
-msgid "Shipwright"
-msgstr "Costruttore di navi"
-
-#: /home/marcus/trunk-neu/src/GameConsts.h:391
-msgid "Scout"
-msgstr "Esploratore"
-
-#: /home/marcus/trunk-neu/src/GameConsts.h:392
-msgid "Pack donkey"
-msgstr "Asino da soma"
-
-#: /home/marcus/trunk-neu/src/AddonCharburner.h:36
-msgid "Enable charburner"
-msgstr ""
-
-#: /home/marcus/trunk-neu/src/AddonCharburner.h:37
-msgid "Allows to build the charburner."
-msgstr ""
-
-#: /home/marcus/trunk-neu/src/AddonLimitCatapults.h:37
-msgid "Limit count of catapults"
-msgstr ""
-
-#: /home/marcus/trunk-neu/src/AddonLimitCatapults.h:38
+#: ../../src/BuildingConsts.h:382
 msgid ""
-"Limits the count of catapults per player.\n"
-"\n"
-"Proportional uses 0.125 catapult per barrack (you need 8 baracks for one "
-"catapult)\n"
-"                  0.25           per guardhouse (4 guardhouses per "
-"catapult)\n"
-"                  0.5            per watchtower (2 watchtower per catapult)\n"
-"                  1              per fortress (1 fortress per catapult)\n"
+"A woodcutter provides the sawmill with logs. A forester is able to replant "
+"the depleted forest."
+msgstr ""
+"Un taglialegna rifirnisce la segheria di tronchi. Un forestale può "
+"ripiantare la foresta tagliata."
+
+#: ../../src/BuildingConsts.h:350
+msgid ""
+"Deep within the mountains, miners dig for iron ore. They will obviously need "
+"a lot of food for the strenuous work."
+msgstr ""
+"Nella profondità delle montagne, i minatori scavano il ferro. Ovviamente per "
+"questo estenuante lavoro hanno bisogno di una gran quantità di cibo."
+
+#: ../../src/BuildingConsts.h:366
+msgid ""
+"From the lookout tower you can see far into previously unexplored lands."
+msgstr ""
+"Dalla torre d'esplorazione puoi guardare lontano all'interno di  terre "
+"sconosciute."
+
+#: ../../src/BuildingConsts.h:454
+msgid ""
+"Grain and water are needed for rearing pigs. The meat thus obtained can then "
+"be processed by a butcher."
+msgstr ""
+"Grano e acqua sono necessari per l'allevamento dei maiali. La carne ottenuta "
+"può quindi essere lavorata dal macellaio."
+
+#: ../../src/BuildingConsts.h:516
+msgid ""
+"It is possible to build small rowing boats as well as huge cargo ships in a "
+"shipyard. The boards required for this are skillfully worked by shipwrights."
+msgstr ""
+"In un cantiere navale è possibile costruire sia piccole barche a remi che "
+"grandi navi da carico. Le assi richieste sono lavorate con competenza dai "
+"carpentieri navali."
+
+#: ../../src/BuildingConsts.h:417
+msgid "Meat the hunter acquires is used to feed the miners."
+msgstr "La carne procurata dal cacciatore è usata per nutrire i minatori."
+
+#: ../../src/BuildingConsts.h:442
+msgid ""
+"Raw iron ore is smelted in the iron smelters with the help of coal. The "
+"processed iron is then used to making weapons (in the Armory) and tools (in "
+"the metalworks)."
+msgstr ""
+"Il ferro grezzo viene lavorato nella fonderia usando il carbone. L'acciaio "
+"ricavato viene usato per fabbricare armi (nell'armeria) e attrezzi "
+"(nell'officina)."
+
+#: ../../src/BuildingConsts.h:541
+msgid ""
+"Ships can only be loaded and unloaded in a harbor. Expeditions can also be "
+"prepared here. You can release certain merchandise from the storehouse, as "
+"and when required. Alternatively, the storage function can be disabled. To "
+"do this, first choose the relevant icon followed by the desired merchandise "
+"or job symbol."
 msgstr ""
 
-#: /home/marcus/trunk-neu/src/AddonLimitCatapults.h:47
-msgid "Proportional"
+#: ../../src/BuildingConsts.h:375
+msgid ""
+"Thanks to its immense strength, the catapults represents an effective weapon "
+"against enemy military buildings."
 msgstr ""
+"Grazie alla sua forza immensa, la catapulta rappresenta un'arma efficace "
+"contro gli edifici militari nemici."
 
-#: /home/marcus/trunk-neu/src/AddonLimitCatapults.h:48
-msgid "No catapults"
+#: ../../src/BuildingConsts.h:429
+msgid ""
+"The armory produces swords and strong shields. This equipment is vital for "
+"your soldiers."
 msgstr ""
+"L'armeria produce spade e robusti scudi. Questo equipaggiamento è vitale per "
+"i tuoi soldati."
 
-#: /home/marcus/trunk-neu/src/AddonLimitCatapults.h:49
-msgid "3 catapults"
+#: ../../src/BuildingConsts.h:276
+msgid ""
+"The barracks is a very small hut which can be used by your soldiers as "
+"quarters. Using the gold coin button you can stop the delivery of gold coins "
+"to the soldiers stationed here. However, without gold coins the soldiers "
+"here can not train and improve their skills."
 msgstr ""
+"La casermetta è un piccolo ricovero che può essere usato per acquartierare i "
+"tuoi soldati. Usando il pulsante delle monete d'oro puoi fermare la consegna "
+"delle monete ai soldati che stazionano qui. Comunque, senza monete d'oro i "
+"soldati non possono addestrarsi e migliorare le loro capacità."
 
-#: /home/marcus/trunk-neu/src/AddonLimitCatapults.h:50
-msgid "5 catapults"
+#: ../../src/BuildingConsts.h:422
+msgid ""
+"The brewer produces fine beer from grain and water. This drink is needed to "
+"fill the soldiers with courage."
 msgstr ""
+"Il birraio produce un'ottima birra usando grano e acqua. La bevanda è "
+"necessaria per infondere coraggio ai soldati."
 
-#: /home/marcus/trunk-neu/src/AddonLimitCatapults.h:51
-msgid "10 catapults"
+#: ../../src/BuildingConsts.h:410
+msgid ""
+"The butcher processes the livestock delivered into nutritious ham on which "
+"you miners are fed."
 msgstr ""
+"Il macellaio lavora la carne che gli viene consegnata e la trasforma in "
+"nutrienti prosciutti per i tuoi minatori."
 
-#: /home/marcus/trunk-neu/src/AddonLimitCatapults.h:52
-msgid "20 catapults"
+#: ../../src/BuildingConsts.h:495
+msgid ""
+"The carpenter turns the woodcutter's logs into made-to-measure planks. These "
+"form the basic for building houses and ships."
 msgstr ""
+"Nella segheria i tronchi del taglialegna vengono trasformati in assi su "
+"misura. Queste sono fondamentali per costruire edifici e navi."
 
-#: /home/marcus/trunk-neu/src/AddonLimitCatapults.h:53
-msgid "30 catapults"
+#: ../../src/BuildingConsts.h:435
+msgid ""
+"The countless tools which your workers need are made in the metalworks. This "
+"requires boards and iron."
 msgstr ""
+"Gli innumerevoli attrezzi di cui i tuoi lavoratori hanno bisogno vengono "
+"prodotti nell'officina. Questa richiede assi ed acciaio."
 
-#: /home/marcus/trunk-neu/src/BuildingConsts.h:253
+#: ../../src/BuildingConsts.h:320
+msgid ""
+"The defensive capabilities and size of the fortress are unsurpassed. This "
+"stronghold ensures that other valuable buildings and commodities are "
+"protected. Using the gold coin button you can stop the delivery of gold "
+"coins to the soldiers stationed here. However, without gold coins the "
+"soldiers here can not train and improve their skills."
+msgstr ""
+"Le capacità difensive e le dimensioni della fortezza non hanno rivali. "
+"Questo caposaldo assicura protezione agli altri edifici di valore e alle "
+"materie prime. Usando il pulsante delle monete d'oro puoi fermare la "
+"consegna delle monete ai soldati che stazionano qui. Comunque, senza monete "
+"d'oro i soldati non possono addestrarsi e migliorare le loro capacità."
+
+#: ../../src/BuildingConsts.h:525
+msgid ""
+"The farmer plants and harvests grain in the surrounding fields. A windmill "
+"then processes the harvested grain into flour or can be used to feed the "
+"pigs."
+msgstr ""
+"Il contadino semina e raccoglie il grano nei campi circostanti. Il grano "
+"prodotto può essere macinato dal mulino, oppure usato per nutrire i maiali."
+
+#: ../../src/BuildingConsts.h:389
+msgid ""
+"The fish man is responsible for finding water rich in fish. His fish feed a "
+"great many miners."
+msgstr ""
+"Il pescatore è responsabile di cercare acque pescose. I suoi pesci sono un "
+"ottimo alimento per molti minatori."
+
+#: ../../src/BuildingConsts.h:487
+msgid ""
+"The flour produced at the windmill can be combined with water in the bakery "
+"to make oven-fresh bread. It's your miners' favorite!"
+msgstr ""
+"La farina prodotta dal mulino viene impastata con l'acqua per sfornare pane "
+"fresco. E' il preferito dai tuoi minatori!"
+
+#: ../../src/BuildingConsts.h:480
+msgid ""
+"The grain is ground in the windmill. The flour from the windmill is later "
+"used at the bakery to bake bread."
+msgstr ""
+"Il grano viene macinato nel mulino. La farina del mulino viene quindi usata "
+"dal fornaio per fare il pane."
+
+#: ../../src/BuildingConsts.h:288
+msgid ""
+"The guardhouse is a comfortable place for the military which is also "
+"protected by solid stone walls. Using the gold coin button you can stop the "
+"delivery of gold coins to the soldiers stationed here. However, without gold "
+"coins the soldiers here can not train and improve their skills."
+msgstr ""
+"Il posto di guardia è una comoda costruzione per i militari, che sono anche "
+"protetti da solide mura di pietra. Usando il pulsante delle monete d'oro "
+"puoi fermare la consegna delle monete ai soldati che stazionano qui. "
+"Comunque, senza monete d'oro i soldati non possono addestrarsi e migliorare "
+"le loro capacità."
+
+#: ../../src/BuildingConsts.h:253
 msgid ""
 "The headquarters represents the center of your realm. The large amount of "
 "storage space available means a great many things can be safely stored here. "
@@ -2775,65 +3096,7 @@ msgstr ""
 "primo indica il numero di uomini presenti attualmente, il secondo il numero "
 "richiesto. "
 
-#: /home/marcus/trunk-neu/src/BuildingConsts.h:276
-msgid ""
-"The barracks is a very small hut which can be used by your soldiers as "
-"quarters. Using the gold coin button you can stop the delivery of gold coins "
-"to the soldiers stationed here. However, without gold coins the soldiers "
-"here can not train and improve their skills."
-msgstr ""
-"La casermetta è un piccolo ricovero che può essere usato per acquartierare i "
-"tuoi soldati. Usando il pulsante delle monete d'oro puoi fermare la consegna "
-"delle monete ai soldati che stazionano qui. Comunque, senza monete d'oro i "
-"soldati non possono addestrarsi e migliorare le loro capacità."
-
-#: /home/marcus/trunk-neu/src/BuildingConsts.h:288
-msgid ""
-"The guardhouse is a comfortable place for the military which is also "
-"protected by solid stone walls. Using the gold coin button you can stop the "
-"delivery of gold coins to the soldiers stationed here. However, without gold "
-"coins the soldiers here can not train and improve their skills."
-msgstr ""
-"Il posto di guardia è una comoda costruzione per i militari, che sono anche "
-"protetti da solide mura di pietra. Usando il pulsante delle monete d'oro "
-"puoi fermare la consegna delle monete ai soldati che stazionano qui. "
-"Comunque, senza monete d'oro i soldati non possono addestrarsi e migliorare "
-"le loro capacità."
-
-#: /home/marcus/trunk-neu/src/BuildingConsts.h:304
-msgid ""
-"The watchtower with its large amount of space is best suited for stationing "
-"a large number of your troops. Using the gold coin button you can stop the "
-"delivery of gold coins to the soldiers stationed here. However, without gold "
-"coins the soldiers here can not train and improve their skills."
-msgstr ""
-"La torre di guardia, con il suo grande spazio, si adatta bene a ricevere un "
-"gran numero dei tuoi soldati. Usando il pulsante delle monete d'oro puoi "
-"fermare la consegna delle monete ai soldati che stazionano qui. Comunque, "
-"senza monete d'oro i soldati non possono addestrarsi e migliorare le loro "
-"capacità."
-
-#: /home/marcus/trunk-neu/src/BuildingConsts.h:320
-msgid ""
-"The defensive capabilities and size of the fortress are unsurpassed. This "
-"stronghold ensures that other valuable buildings and commodities are "
-"protected. Using the gold coin button you can stop the delivery of gold "
-"coins to the soldiers stationed here. However, without gold coins the "
-"soldiers here can not train and improve their skills."
-msgstr ""
-"Le capacità difensive e le dimensioni della fortezza non hanno rivali. "
-"Questo caposaldo assicura protezione agli altri edifici di valore e alle "
-"materie prime. Usando il pulsante delle monete d'oro puoi fermare la "
-"consegna delle monete ai soldati che stazionano qui. Comunque, senza monete "
-"d'oro i soldati non possono addestrarsi e migliorare le loro capacità."
-
-#: /home/marcus/trunk-neu/src/BuildingConsts.h:335
-msgid ""
-"The quarrying of stone in a granite mine guarantees the supply of stone for "
-"buildings. However, even a granite mine has to feed its workers."
-msgstr ""
-
-#: /home/marcus/trunk-neu/src/BuildingConsts.h:343
+#: ../../src/BuildingConsts.h:343
 msgid ""
 "The mining of coal supports the metalworks and smithy. This hard work "
 "requires an adequate supply of food."
@@ -2841,54 +3104,29 @@ msgstr ""
 "La miniera di carbone alimenta i lavori della fonderia e dell'officina. "
 "Questo duro lavoro richiede un'alimentazione adeguata."
 
-#: /home/marcus/trunk-neu/src/BuildingConsts.h:350
+#: ../../src/BuildingConsts.h:503
 msgid ""
-"Deep within the mountains, miners dig for iron ore. They will obviously need "
-"a lot of food for the strenuous work."
+"The mint is responsible for producing valuable gold coins. These precious "
+"objects are produced using coal and gold."
 msgstr ""
-"Nella profondità delle montagne, i minatori scavano il ferro. Ovviamente per "
-"questo estenuante lavoro hanno bisogno di una gran quantità di cibo."
+"La zecca è responsabile del conio di monete d'oro. Questi preziosi oggetti "
+"sono prodotti utilizzando oro e carbone."
 
-#: /home/marcus/trunk-neu/src/BuildingConsts.h:357
+#: ../../src/BuildingConsts.h:533
 msgid ""
-"A gold mine allows you to prospect for valuable gold deposits. For this, it "
-"is necessary to ensure that the miners are provided with plenty of food."
+"The pack donkeys bred here are used to transport your merchandise more "
+"efficiently. They are reared on water and grain."
 msgstr ""
-"Una miniera d'oro ti permette di sfruttare preziosi giacimenti auriferi. Per "
-"questo, è necessario assicurare ai minatori abbondanza di alimenti."
+"Gli asini da soma allevati qui sono usati per trasportare le tue mercanzie "
+"in modo più efficace. Essi vengono nutriti con grano ed acqua."
 
-#: /home/marcus/trunk-neu/src/BuildingConsts.h:366
+#: ../../src/BuildingConsts.h:335
 msgid ""
-"From the lookout tower you can see far into previously unexplored lands."
+"The quarrying of stone in a granite mine guarantees the supply of stone for "
+"buildings. However, even a granite mine has to feed its workers."
 msgstr ""
-"Dalla torre d'esplorazione puoi guardare lontano all'interno di  terre "
-"sconosciute."
 
-#: /home/marcus/trunk-neu/src/BuildingConsts.h:375
-msgid ""
-"Thanks to its immense strength, the catapults represents an effective weapon "
-"against enemy military buildings."
-msgstr ""
-"Grazie alla sua forza immensa, la catapulta rappresenta un'arma efficace "
-"contro gli edifici militari nemici."
-
-#: /home/marcus/trunk-neu/src/BuildingConsts.h:382
-msgid ""
-"A woodcutter provides the sawmill with logs. A forester is able to replant "
-"the depleted forest."
-msgstr ""
-"Un taglialegna rifirnisce la segheria di tronchi. Un forestale può "
-"ripiantare la foresta tagliata."
-
-#: /home/marcus/trunk-neu/src/BuildingConsts.h:389
-msgid ""
-"The fish man is responsible for finding water rich in fish. His fish feed a "
-"great many miners."
-msgstr ""
-"Il pescatore è responsabile di cercare acque pescose. I suoi pesci sono un "
-"ottimo alimento per molti minatori."
-
-#: /home/marcus/trunk-neu/src/BuildingConsts.h:395
+#: ../../src/BuildingConsts.h:395
 msgid ""
 "The stonemason works the stone near his quarry into bricks. These are needed "
 "mainly for building houses and as ammunition for catapults."
@@ -2896,69 +3134,7 @@ msgstr ""
 "Il cavatore squadra le pietre vicino alla sua cava. Le pietre sono "
 "necessarie per le costruzioni e come proiettili per le catapulte."
 
-#: /home/marcus/trunk-neu/src/BuildingConsts.h:403
-msgid ""
-"Within his area, the forester ensures the survival of the forest. He plants "
-"all types of trees."
-msgstr ""
-"Dentro la sua zona, il forestale assicura la sopravvivenza della foresta. "
-"Egli pianta ogni tipo di alberi."
-
-#: /home/marcus/trunk-neu/src/BuildingConsts.h:410
-msgid ""
-"The butcher processes the livestock delivered into nutritious ham on which "
-"you miners are fed."
-msgstr ""
-"Il macellaio lavora la carne che gli viene consegnata e la trasforma in "
-"nutrienti prosciutti per i tuoi minatori."
-
-#: /home/marcus/trunk-neu/src/BuildingConsts.h:417
-msgid "Meat the hunter acquires is used to feed the miners."
-msgstr "La carne procurata dal cacciatore è usata per nutrire i minatori."
-
-#: /home/marcus/trunk-neu/src/BuildingConsts.h:422
-msgid ""
-"The brewer produces fine beer from grain and water. This drink is needed to "
-"fill the soldiers with courage."
-msgstr ""
-"Il birraio produce un'ottima birra usando grano e acqua. La bevanda è "
-"necessaria per infondere coraggio ai soldati."
-
-#: /home/marcus/trunk-neu/src/BuildingConsts.h:429
-msgid ""
-"The armory produces swords and strong shields. This equipment is vital for "
-"your soldiers."
-msgstr ""
-"L'armeria produce spade e robusti scudi. Questo equipaggiamento è vitale per "
-"i tuoi soldati."
-
-#: /home/marcus/trunk-neu/src/BuildingConsts.h:435
-msgid ""
-"The countless tools which your workers need are made in the metalworks. This "
-"requires boards and iron."
-msgstr ""
-"Gli innumerevoli attrezzi di cui i tuoi lavoratori hanno bisogno vengono "
-"prodotti nell'officina. Questa richiede assi ed acciaio."
-
-#: /home/marcus/trunk-neu/src/BuildingConsts.h:442
-msgid ""
-"Raw iron ore is smelted in the iron smelters with the help of coal. The "
-"processed iron is then used to making weapons (in the Armory) and tools (in "
-"the metalworks)."
-msgstr ""
-"Il ferro grezzo viene lavorato nella fonderia usando il carbone. L'acciaio "
-"ricavato viene usato per fabbricare armi (nell'armeria) e attrezzi "
-"(nell'officina)."
-
-#: /home/marcus/trunk-neu/src/BuildingConsts.h:454
-msgid ""
-"Grain and water are needed for rearing pigs. The meat thus obtained can then "
-"be processed by a butcher."
-msgstr ""
-"Grano e acqua sono necessari per l'allevamento dei maiali. La carne ottenuta "
-"può quindi essere lavorata dal macellaio."
-
-#: /home/marcus/trunk-neu/src/BuildingConsts.h:461
+#: ../../src/BuildingConsts.h:461
 msgid ""
 "The storehouse can help reduce long transportation journeys and is suited to "
 "the temporary storage of merchandise and inhabitants. You can release "
@@ -2973,160 +3149,247 @@ msgstr ""
 "Per far ciò, scegli prima l'icona adatta, seguita dal simbolo della merce o "
 "del lavoratore richiesto."
 
-#: /home/marcus/trunk-neu/src/BuildingConsts.h:480
+#: ../../src/BuildingConsts.h:304
 msgid ""
-"The grain is ground in the windmill. The flour from the windmill is later "
-"used at the bakery to bake bread."
+"The watchtower with its large amount of space is best suited for stationing "
+"a large number of your troops. Using the gold coin button you can stop the "
+"delivery of gold coins to the soldiers stationed here. However, without gold "
+"coins the soldiers here can not train and improve their skills."
 msgstr ""
-"Il grano viene macinato nel mulino. La farina del mulino viene quindi usata "
-"dal fornaio per fare il pane."
+"La torre di guardia, con il suo grande spazio, si adatta bene a ricevere un "
+"gran numero dei tuoi soldati. Usando il pulsante delle monete d'oro puoi "
+"fermare la consegna delle monete ai soldati che stazionano qui. Comunque, "
+"senza monete d'oro i soldati non possono addestrarsi e migliorare le loro "
+"capacità."
 
-#: /home/marcus/trunk-neu/src/BuildingConsts.h:487
+#: ../../src/BuildingConsts.h:403
 msgid ""
-"The flour produced at the windmill can be combined with water in the bakery "
-"to make oven-fresh bread. It's your miners' favorite!"
+"Within his area, the forester ensures the survival of the forest. He plants "
+"all types of trees."
 msgstr ""
-"La farina prodotta dal mulino viene impastata con l'acqua per sfornare pane "
-"fresco. E' il preferito dai tuoi minatori!"
+"Dentro la sua zona, il forestale assicura la sopravvivenza della foresta. "
+"Egli pianta ogni tipo di alberi."
 
-#: /home/marcus/trunk-neu/src/BuildingConsts.h:495
-msgid ""
-"The carpenter turns the woodcutter's logs into made-to-measure planks. These "
-"form the basic for building houses and ships."
-msgstr ""
-"Nella segheria i tronchi del taglialegna vengono trasformati in assi su "
-"misura. Queste sono fondamentali per costruire edifici e navi."
+#: ../../src/GameConsts.h:384
+msgid "Armorer"
+msgstr "Armaiolo"
 
-#: /home/marcus/trunk-neu/src/BuildingConsts.h:503
-msgid ""
-"The mint is responsible for producing valuable gold coins. These precious "
-"objects are produced using coal and gold."
-msgstr ""
-"La zecca è responsabile del conio di monete d'oro. Questi preziosi oggetti "
-"sono prodotti utilizzando oro e carbone."
+#: ../../src/GameConsts.h:375
+msgid "Baker"
+msgstr "Fornaio"
 
-#: /home/marcus/trunk-neu/src/BuildingConsts.h:510
-msgid ""
-"A well supplies water to the bakery, brewery, donkey breeder and pig farm."
-msgstr ""
-"Un pozzo fornisce acqua al fornaio, alla birreria e agli allevamenti di "
-"asini e di maiali."
+#: ../../src/GameConsts.h:281
+msgid "Barracks"
+msgstr "Casermetta"
 
-#: /home/marcus/trunk-neu/src/BuildingConsts.h:516
-msgid ""
-"It is possible to build small rowing boats as well as huge cargo ships in a "
-"shipyard. The boards required for this are skillfully worked by shipwrights."
-msgstr ""
-"In un cantiere navale è possibile costruire sia piccole barche a remi che "
-"grandi navi da carico. Le assi richieste sono lavorate con competenza dai "
-"carpentieri navali."
+#. Bogen
+#. 15
+#: ../../src/GameConsts.h:205
+msgid "Boat"
+msgstr "Barca"
 
-#: /home/marcus/trunk-neu/src/BuildingConsts.h:525
-msgid ""
-"The farmer plants and harvests grain in the surrounding fields. A windmill "
-"then processes the harvested grain into flour or can be used to feed the "
-"pigs."
-msgstr ""
-"Il contadino semina e raccoglie il grano nei campi circostanti. Il grano "
-"prodotto può essere macinato dal mulino, oppure usato per nutrire i maiali."
+#. Fisch
+#. 20
+#: ../../src/GameConsts.h:210
+msgid "Bread"
+msgstr "Pane"
 
-#: /home/marcus/trunk-neu/src/BuildingConsts.h:533
-msgid ""
-"The pack donkeys bred here are used to transport your merchandise more "
-"efficiently. They are reared on water and grain."
-msgstr ""
-"Gli asini da soma allevati qui sono usati per trasportare le tue mercanzie "
-"in modo più efficace. Essi vengono nutriti con grano ed acqua."
+#: ../../src/GameConsts.h:378
+msgid "Brewer"
+msgstr "Birraio"
 
-#: /home/marcus/trunk-neu/src/BuildingConsts.h:541
-msgid ""
-"Ships can only be loaded and unloaded in a harbor. Expeditions can also be "
-"prepared here. You can release certain merchandise from the storehouse, as "
-"and when required. Alternatively, the storage function can be disabled. To "
-"do this, first choose the relevant icon followed by the desired merchandise "
-"or job symbol."
-msgstr ""
+#: ../../src/GameConsts.h:385
+msgid "Builder"
+msgstr "Costruttore"
 
-#: /home/marcus/trunk-neu/src/AddonDefenderBehavior.h:38
-msgid "Change defender behavior"
-msgstr ""
+#: ../../src/GameConsts.h:376
+msgid "Butcher"
+msgstr "Macellaio"
 
-#: /home/marcus/trunk-neu/src/AddonDefenderBehavior.h:39
-msgid ""
-"Allows to change the military setting 'defender'.\n"
-"\n"
-"You can choose to disallow any changes to that setting\n"
-"or you can limit the amount of reoccupying troops\n"
-"(during an attack) according to the defender setting."
-msgstr ""
+#: ../../src/GameConsts.h:370
+msgid "Carpenter"
+msgstr "Carpentiere"
 
-#: /home/marcus/trunk-neu/src/AddonDefenderBehavior.h:47
-msgid "Disallow change"
-msgstr ""
+#: ../../src/GameConsts.h:296
+msgid "Catapult"
+msgstr "Catapulta"
 
-#: /home/marcus/trunk-neu/src/AddonDefenderBehavior.h:48
-msgid "Reduce reoccupying troops accordingly"
-msgstr ""
+#: ../../src/GameConsts.h:380
+msgid "Donkey breeder"
+msgstr "Allevatore di asini"
 
-#: /home/marcus/trunk-neu/src/AddonAIDebugWindow.h:38
-msgid "AI Debugging Window"
-msgstr ""
+#: ../../src/GameConsts.h:317
+msgid "Farm"
+msgstr "Fattoria"
 
-#: /home/marcus/trunk-neu/src/AddonAIDebugWindow.h:39
-msgid ""
-"Enable AI Debugging Window\n"
-"(possible cheating)"
-msgstr ""
+#: ../../src/GameConsts.h:373
+msgid "Farmer"
+msgstr "Contadino"
 
-#: /home/marcus/trunk-neu/src/AddonManualRoadEnlargement.h:37
-msgid "Manual road enlargement"
-msgstr ""
+#. Mehl
+#. 19
+#: ../../src/GameConsts.h:209
+msgid "Fish"
+msgstr "Pesce"
 
-#: /home/marcus/trunk-neu/src/AddonManualRoadEnlargement.h:38
-msgid ""
-"Allows you to manually upgrade your roads\n"
-"and build donkey roads directly."
-msgstr ""
+#: ../../src/GameConsts.h:368
+msgid "Fisher"
+msgstr "Pescatore"
 
-#: /home/marcus/trunk-neu/src/AddonRefundOnEmergency.h:38
-msgid "Refund materials when emergency program is active"
-msgstr ""
+#: ../../src/GameConsts.h:298
+msgid "Fishery"
+msgstr "Pescatore"
 
-#: /home/marcus/trunk-neu/src/AddonRefundOnEmergency.h:39
-msgid ""
-"Allows you to get building materials back if the building is destroyed\n"
-"and your emergency program is active."
-msgstr ""
+#. Eisen
+#. 18
+#: ../../src/GameConsts.h:208
+msgid "Flour"
+msgstr "Farina"
 
-#: /home/marcus/trunk-neu/src/AddonTrade.h:37
-msgid "Allows to send wares/figures to allied warehouses"
-msgstr ""
+#: ../../src/GameConsts.h:300
+msgid "Forester"
+msgstr "Forestale"
 
-#: /home/marcus/trunk-neu/src/AddonRefundMaterials.h:37
-msgid "Refund materials when building is destroyed"
-msgstr ""
+#: ../../src/GameConsts.h:289
+msgid "Fortress"
+msgstr "Fortezza"
 
-#: /home/marcus/trunk-neu/src/AddonRefundMaterials.h:38
-msgid ""
-"Allows you to get building materials back if the building is destroyed."
-msgstr ""
+#: ../../src/GameConsts.h:391
+msgid "General"
+msgstr "Generale"
 
-#: /home/marcus/trunk-neu/src/AddonRefundMaterials.h:42
-msgid "No refund"
-msgstr ""
+#: ../../src/GameConsts.h:392
+msgid "Geologist"
+msgstr "Geologo"
 
-#: /home/marcus/trunk-neu/src/AddonRefundMaterials.h:43
-msgid "Refund 25%"
-msgstr ""
+#: ../../src/GameConsts.h:282
+msgid "Guardhouse"
+msgstr "Posto di Guardia"
 
-#: /home/marcus/trunk-neu/src/AddonRefundMaterials.h:44
-msgid "Refund 50%"
-msgstr ""
+#. Fleisch
+#. 33
+#: ../../src/GameConsts.h:223
+msgid "Ham"
+msgstr "Prosciutto"
 
-#: /home/marcus/trunk-neu/src/AddonRefundMaterials.h:45
-msgid "Refund 75%"
-msgstr ""
+#: ../../src/GameConsts.h:366
+msgid "Helper"
+msgstr "Aiutante"
 
-#: /home/marcus/trunk-neu/src/AddonRefundMaterials.h:46
-msgid "Get all back"
-msgstr ""
+#: ../../src/GameConsts.h:302
+msgid "Hunter"
+msgstr "Cacciatore"
+
+#: ../../src/GameConsts.h:372
+msgid "Huntsman"
+msgstr "Cacciatore"
+
+#: ../../src/GameConsts.h:381
+msgid "Iron founder"
+msgstr "Trovato del ferrro"
+
+#: ../../src/GameConsts.h:294
+msgid "Lookout tower"
+msgstr "Torre d'avvistamento"
+
+#. Kohle
+#. 32
+#: ../../src/GameConsts.h:222
+msgid "Meat"
+msgstr "Carne"
+
+#: ../../src/GameConsts.h:383
+msgid "Metalworker"
+msgstr "Ferramenta"
+
+#: ../../src/GameConsts.h:374
+msgid "Miller"
+msgstr "Mugnaio"
+
+#: ../../src/GameConsts.h:377
+msgid "Miner"
+msgstr "Minatore"
+
+#: ../../src/GameConsts.h:382
+msgid "Minter"
+msgstr "Coniatore"
+
+#: ../../src/GameConsts.h:390
+msgid "Officer"
+msgstr "Ufficiale"
+
+#: ../../src/GameConsts.h:395
+msgid "Pack donkey"
+msgstr "Asino da soma"
+
+#: ../../src/GameConsts.h:379
+msgid "Pig breeder"
+msgstr "Allevatore di maiali"
+
+#: ../../src/GameConsts.h:386
+msgid "Planer"
+msgstr "Livellatore"
+
+#: ../../src/GameConsts.h:387
+msgid "Private"
+msgstr "Soldato semplice"
+
+#: ../../src/GameConsts.h:388
+msgid "Private first class"
+msgstr "Caporale"
+
+#: ../../src/GameConsts.h:299
+msgid "Quarry"
+msgstr "Cava"
+
+#: ../../src/GameConsts.h:369
+msgid "Ranger"
+msgstr "Ranger"
+
+#: ../../src/GameConsts.h:394
+msgid "Scout"
+msgstr "Esploratore"
+
+#: ../../src/GameConsts.h:389
+msgid "Sergeant"
+msgstr "Sergente"
+
+#. Brot
+#. 21
+#: ../../src/GameConsts.h:211
+msgid "Shield"
+msgstr "Scudo"
+
+#: ../../src/GameConsts.h:393
+msgid "Shipwright"
+msgstr "Costruttore di navi"
+
+#: ../../src/GameConsts.h:301
+msgid "Slaughterhouse"
+msgstr "Mattatoio"
+
+#: ../../src/GameConsts.h:371
+msgid "Stonemason"
+msgstr "Muratore"
+
+#. Boot
+#. 16
+#: ../../src/GameConsts.h:206
+msgid "Sword"
+msgstr "Spada"
+
+#: ../../src/GameConsts.h:284
+msgid "Watchtower"
+msgstr "Torre di Guardia"
+
+#: ../../src/GameConsts.h:315
+msgid "Well"
+msgstr "Pozzo"
+
+#: ../../src/GameConsts.h:367
+msgid "Woodchopper"
+msgstr "Taglialegna"
+
+#: ../../src/GameConsts.h:297
+msgid "Woodcutter"
+msgstr "Taglialegna"

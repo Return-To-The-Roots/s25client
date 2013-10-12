@@ -1,3 +1,4 @@
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: Return To The Roots\n"
@@ -9,11 +10,11 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-09-07 13:44+0000\n"
-"X-Generator: Launchpad (build 13861)\n"
+"X-Launchpad-Export-Date: 2013-10-12 07:28+0000\n"
+"X-Generator: Launchpad (build 16799)\n"
+"X-Poedit-SearchPath-0: ../../src\n"
 "X-Poedit-SourceCharset: iso-8859-15\n"
 "X-Poedit-Basepath: src\n"
-"X-Poedit-SearchPath-0: ../../src\n"
 
 #: ../../src/AIPlayerJH.cpp:2094
 msgid "AI'm back"
@@ -45,7 +46,9 @@ msgstr ""
 
 #: ../../src/dskGameInterface.cpp:249
 #, c-format
-msgid "(Replay-Mode) Current GF: %u (End at: %u) / GF length: %u ms / NWF length: %u gf (%u ms)"
+msgid ""
+"(Replay-Mode) Current GF: %u (End at: %u) / GF length: %u ms / NWF length: "
+"%u gf (%u ms)"
 msgstr ""
 
 #: ../../src/dskGameInterface.cpp:1040
@@ -103,7 +106,8 @@ msgstr ""
 
 #: ../../src/dskGameInterface.cpp:251
 #, c-format
-msgid "Current GF: %u / GF length: %u ms / NWF length: %u gf (%u ms) /  Ping: %u ms"
+msgid ""
+"Current GF: %u / GF length: %u ms / NWF length: %u gf (%u ms) /  Ping: %u ms"
 msgstr ""
 
 #: ../../src/dskCredits.cpp:190
@@ -523,7 +527,9 @@ msgid "Fullscreen resolution:"
 msgstr ""
 
 #: ../../src/dskHostGame.cpp:587
-msgid "Game can only be started as soon as everybody has a unique color,everyone is ready and all free slots are closed."
+msgid ""
+"Game can only be started as soon as everybody has a unique color,everyone is "
+"ready and all free slots are closed."
 msgstr ""
 
 #. "Spielziel"
@@ -850,7 +856,9 @@ msgid "Romans"
 msgstr ""
 
 #: ../../src/dskMainMenu.cpp:106
-msgid "RttR now supports sending debug data. Would you like to help us improving this game by sending debug data?"
+msgid ""
+"RttR now supports sending debug data. Would you like to help us improving "
+"this game by sending debug data?"
 msgstr ""
 
 #. "Andere"
@@ -1048,7 +1056,9 @@ msgstr ""
 
 #: ../../src/GameClientGF_Replay.cpp:122
 #, c-format
-msgid "Notice: The played replay has ended. (GF: %u, %dh %dmin %ds, TF: %u, AVG_FPS: %u)"
+msgid ""
+"Notice: The played replay has ended. (GF: %u, %dh %dmin %ds, TF: %u, "
+"AVG_FPS: %u)"
 msgstr ""
 
 #: ../../src/GameClientPlayer.cpp:2103
@@ -1060,12 +1070,15 @@ msgid "The emergency program has been deactivated."
 msgstr ""
 
 #: ../../src/GameServer.cpp:1512
-msgid "The game clients are out of sync. Would you like to send debug information to RttR to help us avoiding this in the future? Thank you very much!"
+msgid ""
+"The game clients are out of sync. Would you like to send debug information "
+"to RttR to help us avoiding this in the future? Thank you very much!"
 msgstr ""
 
 #: ../../src/GameClientGF_Replay.cpp:81
 #, c-format
-msgid "Warning: The played replay is not in sync with the original match. (GF: %u)"
+msgid ""
+"Warning: The played replay is not in sync with the original match. (GF: %u)"
 msgstr ""
 
 #: ../../src/GameWorldView.cpp:301
@@ -1749,7 +1762,9 @@ msgid "To player:"
 msgstr ""
 
 #: ../../src/iwLobbyConnect.cpp:222
-msgid "To register, you have to create a valid board account at http://forum.siedler25.org at the moment.\n"
+msgid ""
+"To register, you have to create a valid board account at "
+"http://forum.siedler25.org at the moment.\n"
 msgstr ""
 
 #: ../../src/iwDirectIPConnect.cpp:262
@@ -1922,7 +1937,8 @@ msgid "Delete all"
 msgstr ""
 
 #: ../../src/iwMilitaryBuilding.cpp:177
-msgid "Demolition ist not allowed because the building is located in border area!"
+msgid ""
+"Demolition ist not allowed because the building is located in border area!"
 msgstr ""
 
 #: ../../src/iwMilitaryBuilding.cpp:176
@@ -2022,7 +2038,7 @@ msgstr ""
 #. *
 #. *
 #. *  @author OLiver
-#.
+#. 
 #: ../../src/iwOptionsWindow.cpp:81
 #: ../../src/iwSave.cpp:250
 msgid "Load game!"
@@ -2090,7 +2106,7 @@ msgstr ""
 #. *  mehrfach betätigen kann.
 #. *
 #. *  @author OLiver
-#.
+#. 
 #: ../../src/iwPleaseWait.cpp:46
 #: ../../src/iwPleaseWait.cpp:49
 msgid "Please wait..."
@@ -2122,7 +2138,7 @@ msgstr ""
 #. *
 #. *
 #. *  @author OLiver
-#.
+#. 
 #: ../../src/iwOptionsWindow.cpp:85
 #: ../../src/iwSave.cpp:190
 msgid "Save game!"
@@ -2304,7 +2320,9 @@ msgid "RttR crashed. Please restart the application!"
 msgstr ""
 
 #: ../../src/main.cpp:151
-msgid "RttR crashed. Would you like to send debug information to RttR to help us avoiding this crash in the future? Thank you very much!"
+msgid ""
+"RttR crashed. Would you like to send debug information to RttR to help us "
+"avoiding this crash in the future? Thank you very much!"
 msgstr ""
 
 #: ../../src/iwTools.cpp:52
@@ -2502,7 +2520,9 @@ msgstr ""
 
 #: ../../src/PostMsg.cpp:134
 #, c-format
-msgid "The player '%s' want to cancel the '%s' between you both primaturely. Do you agree?"
+msgid ""
+"The player '%s' want to cancel the '%s' between you both primaturely. Do you "
+"agree?"
 msgstr ""
 
 #: ../../src/PostMsg.cpp:105
@@ -2641,7 +2661,9 @@ msgid ""
 msgstr ""
 
 #: ../../src/AddonDemolitionProhibition.h:38
-msgid "Allows to disable the demolition of military buildings under attack or near frontiers."
+msgid ""
+"Allows to disable the demolition of military buildings under attack or near "
+"frontiers."
 msgstr ""
 
 #: ../../src/AddonExhaustibleWells.h:38
@@ -2669,7 +2691,8 @@ msgid ""
 msgstr ""
 
 #: ../../src/AddonRefundMaterials.h:38
-msgid "Allows you to get building materials back if the building is destroyed."
+msgid ""
+"Allows you to get building materials back if the building is destroyed."
 msgstr ""
 
 #: ../../src/AddonManualRoadEnlargement.h:38
@@ -2737,8 +2760,10 @@ msgstr ""
 msgid ""
 "Limits the count of catapults per player.\n"
 "\n"
-"Proportional uses 0.125 catapult per barrack (you need 8 baracks for one catapult)\n"
-"                  0.25           per guardhouse (4 guardhouses per catapult)\n"
+"Proportional uses 0.125 catapult per barrack (you need 8 baracks for one "
+"catapult)\n"
+"                  0.25           per guardhouse (4 guardhouses per "
+"catapult)\n"
 "                  0.5            per watchtower (2 watchtower per catapult)\n"
 "                  1              per fortress (1 fortress per catapult)\n"
 msgstr ""
@@ -2832,31 +2857,43 @@ msgid "Very long"
 msgstr ""
 
 #: ../../src/BuildingConsts.h:357
-msgid "A gold mine allows you to prospect for valuable gold deposits. For this, it is necessary to ensure that the miners are provided with plenty of food."
+msgid ""
+"A gold mine allows you to prospect for valuable gold deposits. For this, it "
+"is necessary to ensure that the miners are provided with plenty of food."
 msgstr ""
 
 #: ../../src/BuildingConsts.h:510
-msgid "A well supplies water to the bakery, brewery, donkey breeder and pig farm."
+msgid ""
+"A well supplies water to the bakery, brewery, donkey breeder and pig farm."
 msgstr ""
 
 #: ../../src/BuildingConsts.h:382
-msgid "A woodcutter provides the sawmill with logs. A forester is able to replant the depleted forest."
+msgid ""
+"A woodcutter provides the sawmill with logs. A forester is able to replant "
+"the depleted forest."
 msgstr ""
 
 #: ../../src/BuildingConsts.h:350
-msgid "Deep within the mountains, miners dig for iron ore. They will obviously need a lot of food for the strenuous work."
+msgid ""
+"Deep within the mountains, miners dig for iron ore. They will obviously need "
+"a lot of food for the strenuous work."
 msgstr ""
 
 #: ../../src/BuildingConsts.h:366
-msgid "From the lookout tower you can see far into previously unexplored lands."
+msgid ""
+"From the lookout tower you can see far into previously unexplored lands."
 msgstr ""
 
 #: ../../src/BuildingConsts.h:454
-msgid "Grain and water are needed for rearing pigs. The meat thus obtained can then be processed by a butcher."
+msgid ""
+"Grain and water are needed for rearing pigs. The meat thus obtained can then "
+"be processed by a butcher."
 msgstr ""
 
 #: ../../src/BuildingConsts.h:516
-msgid "It is possible to build small rowing boats as well as huge cargo ships in a shipyard. The boards required for this are skillfully worked by shipwrights."
+msgid ""
+"It is possible to build small rowing boats as well as huge cargo ships in a "
+"shipyard. The boards required for this are skillfully worked by shipwrights."
 msgstr ""
 
 #: ../../src/BuildingConsts.h:417
@@ -2864,99 +2901,171 @@ msgid "Meat the hunter acquires is used to feed the miners."
 msgstr ""
 
 #: ../../src/BuildingConsts.h:442
-msgid "Raw iron ore is smelted in the iron smelters with the help of coal. The processed iron is then used to making weapons (in the Armory) and tools (in the metalworks)."
+msgid ""
+"Raw iron ore is smelted in the iron smelters with the help of coal. The "
+"processed iron is then used to making weapons (in the Armory) and tools (in "
+"the metalworks)."
 msgstr ""
 
 #: ../../src/BuildingConsts.h:541
-msgid "Ships can only be loaded and unloaded in a harbor. Expeditions can also be prepared here. You can release certain merchandise from the storehouse, as and when required. Alternatively, the storage function can be disabled. To do this, first choose the relevant icon followed by the desired merchandise or job symbol."
+msgid ""
+"Ships can only be loaded and unloaded in a harbor. Expeditions can also be "
+"prepared here. You can release certain merchandise from the storehouse, as "
+"and when required. Alternatively, the storage function can be disabled. To "
+"do this, first choose the relevant icon followed by the desired merchandise "
+"or job symbol."
 msgstr ""
 
 #: ../../src/BuildingConsts.h:375
-msgid "Thanks to its immense strength, the catapults represents an effective weapon against enemy military buildings."
+msgid ""
+"Thanks to its immense strength, the catapults represents an effective weapon "
+"against enemy military buildings."
 msgstr ""
 
 #: ../../src/BuildingConsts.h:429
-msgid "The armory produces swords and strong shields. This equipment is vital for your soldiers."
+msgid ""
+"The armory produces swords and strong shields. This equipment is vital for "
+"your soldiers."
 msgstr ""
 
 #: ../../src/BuildingConsts.h:276
-msgid "The barracks is a very small hut which can be used by your soldiers as quarters. Using the gold coin button you can stop the delivery of gold coins to the soldiers stationed here. However, without gold coins the soldiers here can not train and improve their skills."
+msgid ""
+"The barracks is a very small hut which can be used by your soldiers as "
+"quarters. Using the gold coin button you can stop the delivery of gold coins "
+"to the soldiers stationed here. However, without gold coins the soldiers "
+"here can not train and improve their skills."
 msgstr ""
 
 #: ../../src/BuildingConsts.h:422
-msgid "The brewer produces fine beer from grain and water. This drink is needed to fill the soldiers with courage."
+msgid ""
+"The brewer produces fine beer from grain and water. This drink is needed to "
+"fill the soldiers with courage."
 msgstr ""
 
 #: ../../src/BuildingConsts.h:410
-msgid "The butcher processes the livestock delivered into nutritious ham on which you miners are fed."
+msgid ""
+"The butcher processes the livestock delivered into nutritious ham on which "
+"you miners are fed."
 msgstr ""
 
 #: ../../src/BuildingConsts.h:495
-msgid "The carpenter turns the woodcutter's logs into made-to-measure planks. These form the basic for building houses and ships."
+msgid ""
+"The carpenter turns the woodcutter's logs into made-to-measure planks. These "
+"form the basic for building houses and ships."
 msgstr ""
 
 #: ../../src/BuildingConsts.h:435
-msgid "The countless tools which your workers need are made in the metalworks. This requires boards and iron."
+msgid ""
+"The countless tools which your workers need are made in the metalworks. This "
+"requires boards and iron."
 msgstr ""
 
 #: ../../src/BuildingConsts.h:320
-msgid "The defensive capabilities and size of the fortress are unsurpassed. This stronghold ensures that other valuable buildings and commodities are protected. Using the gold coin button you can stop the delivery of gold coins to the soldiers stationed here. However, without gold coins the soldiers here can not train and improve their skills."
+msgid ""
+"The defensive capabilities and size of the fortress are unsurpassed. This "
+"stronghold ensures that other valuable buildings and commodities are "
+"protected. Using the gold coin button you can stop the delivery of gold "
+"coins to the soldiers stationed here. However, without gold coins the "
+"soldiers here can not train and improve their skills."
 msgstr ""
 
 #: ../../src/BuildingConsts.h:525
-msgid "The farmer plants and harvests grain in the surrounding fields. A windmill then processes the harvested grain into flour or can be used to feed the pigs."
+msgid ""
+"The farmer plants and harvests grain in the surrounding fields. A windmill "
+"then processes the harvested grain into flour or can be used to feed the "
+"pigs."
 msgstr ""
 
 #: ../../src/BuildingConsts.h:389
-msgid "The fish man is responsible for finding water rich in fish. His fish feed a great many miners."
+msgid ""
+"The fish man is responsible for finding water rich in fish. His fish feed a "
+"great many miners."
 msgstr ""
 
 #: ../../src/BuildingConsts.h:487
-msgid "The flour produced at the windmill can be combined with water in the bakery to make oven-fresh bread. It's your miners' favorite!"
+msgid ""
+"The flour produced at the windmill can be combined with water in the bakery "
+"to make oven-fresh bread. It's your miners' favorite!"
 msgstr ""
 
 #: ../../src/BuildingConsts.h:480
-msgid "The grain is ground in the windmill. The flour from the windmill is later used at the bakery to bake bread."
+msgid ""
+"The grain is ground in the windmill. The flour from the windmill is later "
+"used at the bakery to bake bread."
 msgstr ""
 
 #: ../../src/BuildingConsts.h:288
-msgid "The guardhouse is a comfortable place for the military which is also protected by solid stone walls. Using the gold coin button you can stop the delivery of gold coins to the soldiers stationed here. However, without gold coins the soldiers here can not train and improve their skills."
+msgid ""
+"The guardhouse is a comfortable place for the military which is also "
+"protected by solid stone walls. Using the gold coin button you can stop the "
+"delivery of gold coins to the soldiers stationed here. However, without gold "
+"coins the soldiers here can not train and improve their skills."
 msgstr ""
 
 #: ../../src/BuildingConsts.h:253
-msgid "The headquarters represents the center of your realm. The large amount of storage space available means a great many things can be safely stored here. You can release certain merchandise from the headquarters, as and when required or stop its storage. To do this, first choose the corresponding icon followed by the desired merchandise or job symbol. On the third page, you can adjust the number of reserve soldiers who are responsible for guarding the headquarters. There are two values given: the first value indicates the current number of men, the second value indicates the desired number. "
+msgid ""
+"The headquarters represents the center of your realm. The large amount of "
+"storage space available means a great many things can be safely stored here. "
+"You can release certain merchandise from the headquarters, as and when "
+"required or stop its storage. To do this, first choose the corresponding "
+"icon followed by the desired merchandise or job symbol. On the third page, "
+"you can adjust the number of reserve soldiers who are responsible for "
+"guarding the headquarters. There are two values given: the first value "
+"indicates the current number of men, the second value indicates the desired "
+"number. "
 msgstr ""
 
 #: ../../src/BuildingConsts.h:343
-msgid "The mining of coal supports the metalworks and smithy. This hard work requires an adequate supply of food."
+msgid ""
+"The mining of coal supports the metalworks and smithy. This hard work "
+"requires an adequate supply of food."
 msgstr ""
 
 #: ../../src/BuildingConsts.h:503
-msgid "The mint is responsible for producing valuable gold coins. These precious objects are produced using coal and gold."
+msgid ""
+"The mint is responsible for producing valuable gold coins. These precious "
+"objects are produced using coal and gold."
 msgstr ""
 
 #: ../../src/BuildingConsts.h:533
-msgid "The pack donkeys bred here are used to transport your merchandise more efficiently. They are reared on water and grain."
+msgid ""
+"The pack donkeys bred here are used to transport your merchandise more "
+"efficiently. They are reared on water and grain."
 msgstr ""
 
 #: ../../src/BuildingConsts.h:335
-msgid "The quarrying of stone in a granite mine guarantees the supply of stone for buildings. However, even a granite mine has to feed its workers."
+msgid ""
+"The quarrying of stone in a granite mine guarantees the supply of stone for "
+"buildings. However, even a granite mine has to feed its workers."
 msgstr ""
 
 #: ../../src/BuildingConsts.h:395
-msgid "The stonemason works the stone near his quarry into bricks. These are needed mainly for building houses and as ammunition for catapults."
+msgid ""
+"The stonemason works the stone near his quarry into bricks. These are needed "
+"mainly for building houses and as ammunition for catapults."
 msgstr ""
 
 #: ../../src/BuildingConsts.h:461
-msgid "The storehouse can help reduce long transportation journeys and is suited to the temporary storage of merchandise and inhabitants. You can release certain merchandise from the storehouse, as and when required. Alternatively, the storage function can be disabled. To do this, first choose the relevant icon followed by the desired merchandise or job symbol."
+msgid ""
+"The storehouse can help reduce long transportation journeys and is suited to "
+"the temporary storage of merchandise and inhabitants. You can release "
+"certain merchandise from the storehouse, as and when required. "
+"Alternatively, the storage function can be disabled. To do this, first "
+"choose the relevant icon followed by the desired merchandise or job symbol."
 msgstr ""
 
 #: ../../src/BuildingConsts.h:304
-msgid "The watchtower with its large amount of space is best suited for stationing a large number of your troops. Using the gold coin button you can stop the delivery of gold coins to the soldiers stationed here. However, without gold coins the soldiers here can not train and improve their skills."
+msgid ""
+"The watchtower with its large amount of space is best suited for stationing "
+"a large number of your troops. Using the gold coin button you can stop the "
+"delivery of gold coins to the soldiers stationed here. However, without gold "
+"coins the soldiers here can not train and improve their skills."
 msgstr ""
 
 #: ../../src/BuildingConsts.h:403
-msgid "Within his area, the forester ensures the survival of the forest. He plants all types of trees."
+msgid ""
+"Within his area, the forester ensures the survival of the forest. He plants "
+"all types of trees."
 msgstr ""
 
 #: ../../src/GameConsts.h:384
@@ -3182,4 +3291,3 @@ msgstr ""
 #: ../../src/GameConsts.h:297
 msgid "Woodcutter"
 msgstr ""
-
