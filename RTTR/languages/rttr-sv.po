@@ -6,6 +6,7 @@ msgstr ""
 "PO-Revision-Date: 2012-11-14 16:53+0000\n"
 "Last-Translator: Stefan Kriwanek (Divan) <Unknown>\n"
 "Language-Team: Siedler II.5 RttR <sf-team@siedler25.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -17,353 +18,29 @@ msgstr ""
 "X-Poedit-SearchPath-0: /storage/RTTR/svn/trunk/src\n"
 "X-Poedit-Basepath: /storage/RTTR/svn/trunk/src\n"
 
-#: ../../src/AIPlayerJH.cpp:2094
-msgid "AI'm back"
-msgstr "AI'm back"
-
-#: ../../src/AIPlayerJH.cpp:78
-msgid "And I may crash your game sometimes..."
-msgstr "Och ibland kraschar jag ditt spel..."
-
-#: ../../src/AIPlayerJH.cpp:77
-msgid "Hi, I'm an artifical player and I'm not very good yet!"
-msgstr "Hej, jag är en artificiell spelare och jag är inte så bra än!"
-
-#: ../../src/Addons.cpp:168
-msgid "Use"
-msgstr "Använd"
-
-#: ../../src/AIPlayerJH.cpp:293
-msgid "You win"
-msgstr "Du vinner"
-
-#: ../../src/ctrlProgress.cpp:75
-msgid "Less"
-msgstr "Mindre"
-
-#: ../../src/ctrlProgress.cpp:76
-msgid "More"
-msgstr "Mer"
-
-#: ../../src/dskGameInterface.cpp:249
-#, c-format
+#: ../../src/iwAction.cpp:234
 msgid ""
-"(Replay-Mode) Current GF: %u (End at: %u) / GF length: %u ms / NWF length: "
-"%u gf (%u ms)"
+"\n"
+"Costs: "
 msgstr ""
-"(Replay-sätt) Nuvarande GF: %u (avslutas: %u) / GF-längd: %u ms / NWF-längd: "
-"%u gf (%u ms)"
-
-#: ../../src/dskGameInterface.cpp:1040
-#: ../../src/dskGameInterface.cpp:1090
-#: ../../src/dskGameInterface.cpp:1119
-#, c-format
-msgid "<%s> "
-msgstr "<%s> "
-
-#: ../../src/dskGameInterface.cpp:1055
-msgid "A auto-savegame is created..."
-msgstr "Autosparning skapas..."
-
-#: ../../src/dskCredits.cpp:170
-msgid "Additional Graphics:"
-msgstr "Ytterligare grafik:"
-
-#: ../../src/dskCredits.cpp:156
-msgid "Additional Programming:"
-msgstr "Ytterligare programmering:"
-
-#: ../../src/dskCredits.cpp:140
-msgid "Additional graphics"
-msgstr "Ytterligare grafik"
-
-#: ../../src/dskGameLoader.cpp:175
-msgid "And let's go!"
-msgstr "Nu kör vi!"
-
-#: ../../src/dskCredits.cpp:132
-msgid "Artificial Intelligence (AI)"
-msgstr "Artificiell intelligens (AI)"
-
-#. "Zurück"
-#. ZurÃŒck
-#. "Zurück"
-#: ../../src/dskAboutRTTR.cpp:55
-#: ../../src/dskCredits.cpp:69
-#: ../../src/dskDirectIP.cpp:65
-msgid "Back"
-msgstr "Tillbaka"
-
-#: ../../src/dskGameInterface.cpp:109
-msgid "Construction aid mode"
-msgstr "Byggningshjälp"
-
-#: ../../src/dskDirectIP.cpp:61
-msgid "Create Game"
-msgstr "Starta server"
-
-#. "Credits"
-#: ../../src/dskCredits.cpp:75
-msgid "Credits"
-msgstr "Credits"
-
-#: ../../src/dskGameInterface.cpp:251
-#, c-format
-msgid ""
-"Current GF: %u / GF length: %u ms / NWF length: %u gf (%u ms) /  Ping: %u ms"
-msgstr ""
-"Nuvarande GF: %u / GF-längd: %u ms / NWF-längd: %u gf (%u ms) / Ping: %u ms"
-
-#: ../../src/dskCredits.cpp:190
-msgid "Donators"
-msgstr "Givare"
-
-#: ../../src/dskGameLoader.cpp:199
-msgid "Error"
-msgstr "Fel"
-
-#: ../../src/dskGameLoader.cpp:148
-msgid "Failed to load addon objects."
-msgstr "Misslyckades med att ladda tilläggsobjekt."
-
-#: ../../src/dskGameLoader.cpp:140
-msgid "Failed to load map objects."
-msgstr "Fel vid laddning av kartobjekterna."
-
-#: ../../src/dskGameLoader.cpp:163
-msgid "Failed to load terrain data."
-msgstr "Fel vid laddning av landskapsinformationen."
-
-#: ../../src/dskGameLoader.cpp:155
-msgid "Game crate was picked and spread out..."
-msgstr "Spelkista hittat och utspritt..."
-
-#: ../../src/dskGameInterface.cpp:1091
-msgid "Game was paused."
-msgstr "Spelet pausat."
-
-#: ../../src/dskGameInterface.cpp:1120
-msgid "Game was resumed."
-msgstr "Spelet fortsätts."
-
-#. WindowManager::inst().Show(new iwTrade(gwv,this,gwv->GetSpecObj<nobHQ>(cselx,csely)));
-#: ../../src/dskGameInterface.cpp:403
-msgid "Headquarters"
-msgstr "Högkvarter"
-
-#: ../../src/dskDirectIP.cpp:62
-msgid "Join Game"
-msgstr "Gå med"
-
-#: ../../src/dskGameInterface.cpp:624
-msgid "Keyboard layout"
-msgstr "Tangentbordslayout"
-
-#: ../../src/dskGameInterface.cpp:1151
-msgid "Lost connection to lobby!"
-msgstr "Koppling till lobbyn är avbryten!"
-
-#: ../../src/dskGameInterface.cpp:1138
-msgid "Lost connection to server!"
-msgstr "Koppling till servern är avbryten!"
-
-#: ../../src/dskGameInterface.cpp:107
-msgid "Main selection"
-msgstr "Huvudmeny"
-
-#: ../../src/dskGameInterface.cpp:105
-msgid "Map"
-msgstr "Karta"
-
-#: ../../src/dskGameLoader.cpp:122
-msgid "Map was loaded and pinned at the wall..."
-msgstr "Kartan laddad och upprollad..."
-
-#: ../../src/dskCredits.cpp:123
-#: ../../src/dskCredits.cpp:142
-msgid "Mapping"
-msgstr "Kartläggning"
-
-#: ../../src/dskGameInterface.cpp:1027
-#, c-format
-msgid "Note: Game settings changed by the server%s"
-msgstr "Obs: Spelinställningar har ändrats av servern%s"
-
-#: ../../src/dskCredits.cpp:178
-msgid "Other Support:"
-msgstr "Övrig hjälp:"
-
-#: ../../src/dskGameInterface.cpp:1321
-#, c-format
-msgid "Player '%s' is the winner!"
-msgstr "Spelare '%s' har vunnit!"
-
-#. Im Spiel anzeigen, dass die KI das Spiel betreten hat
-#: ../../src/dskGameInterface.cpp:1013
-#, c-format
-msgid "Player '%s' joined the game!"
-msgstr "Spelare '%s' går med i spelet!"
-
-#: ../../src/dskGameInterface.cpp:1010
-#, c-format
-msgid "Player '%s' left the game!"
-msgstr "Spelare '%s' lämnade spelet!"
-
-#: ../../src/dskGameInterface.cpp:1175
-#, c-format
-msgid "Player '%s' switched to player '%s'"
-msgstr "Spelare '%s' böt mot '%s'"
-
-#: ../../src/dskGameInterface.cpp:1198
-#, c-format
-msgid "Player '%s' was defeated!"
-msgstr "Spelare '%s' besegrades!"
-
-#: ../../src/dskGameInterface.cpp:111
-msgid "Post office"
-msgstr "Postkontor"
-
-#: ../../src/dskCredits.cpp:83
-#: ../../src/dskCredits.cpp:95
-#: ../../src/dskCredits.cpp:131
-#: ../../src/dskCredits.cpp:150
-msgid "Programming"
-msgstr "Programmering"
-
-#: ../../src/dskCredits.cpp:81
-#: ../../src/dskCredits.cpp:94
-msgid "Project management"
-msgstr "Projekthantering"
-
-#: ../../src/dskCredits.cpp:86
-#: ../../src/dskCredits.cpp:96
-#: ../../src/dskCredits.cpp:114
-#: ../../src/dskCredits.cpp:122
-#: ../../src/dskCredits.cpp:141
-#: ../../src/dskCredits.cpp:151
-msgid "Quality Assurance"
-msgstr "Kvalitetssäkring"
-
-#: ../../src/dskGameInterface.cpp:628
-msgid "Readme!"
-msgstr "Läs mig!"
-
-#. "Die Siedler II.5 RTTR"
-#: ../../src/dskCredits.cpp:72
-msgid "Return To The Roots"
-msgstr "Return To The Roots"
-
-#. Version
-#: ../../src/dskDirectIP.cpp:53
-#, c-format
-msgid "Return To The Roots - v%s-%s"
-msgstr "Return To The Roots - v%s-%s"
-
-#: ../../src/dskGameInterface.cpp:1090
-#: ../../src/dskGameInterface.cpp:1119
-msgid "SYSTEM"
-msgstr "SYSTEM"
-
-#: ../../src/dskCredits.cpp:82
-msgid "Server management"
-msgstr "Serverhantering"
-
-#: ../../src/dskDirectIP.cpp:79
-msgid "Sorry!"
-msgstr "Tyvärr!"
-
-#: ../../src/dskCredits.cpp:218
-msgid "THE END"
-msgstr "SLUT"
-
-#: ../../src/dskGameInterface.cpp:1352
-#, c-format
-msgid "Team victory!"
-msgstr "Lagseger!"
-
-#: ../../src/dskGameInterface.cpp:1349
-#, c-format
-msgid "Team victory! '%s' and '%s' and '%s' and '%s' are the winners!"
-msgstr "Lagseger!  '%s', '%s', '%s' och '%s' har vunnit!"
-
-#: ../../src/dskGameInterface.cpp:1346
-#, c-format
-msgid "Team victory! '%s' and '%s' and '%s' are the winners!"
-msgstr "Lagseger! '%s', '%s' och '%s' har vunnit!"
-
-#: ../../src/dskGameInterface.cpp:1343
-#, c-format
-msgid "Team victory! '%s' and '%s' are the winners!"
-msgstr "Lagseger! '%s' och '%s' har vunnit!"
-
-#: ../../src/dskCredits.cpp:210
-msgid "Thank you for your donations!"
-msgstr "Tack till alla givare!"
-
-#: ../../src/dskCredits.cpp:217
-msgid "Thank you!"
-msgstr "Tack!"
-
-#: ../../src/dskGameInterface.cpp:1053
-msgid "The Game is not in sync. Checksums of some players don't match."
-msgstr ""
-"Spelet är inte synkroniserad. Kontrollsummorna av några spelare "
-"överensstämmer inte."
-
-#: ../../src/dskGameLoader.cpp:132
-msgid "Tribal chiefs assembled around the table..."
-msgstr "Hövdingarna samlade runt bordet..."
-
-#: ../../src/dskCredits.cpp:215
-msgid "We hope you enjoy playing Return To The Roots!"
-msgstr "Vi hoppas du får glädje av att spela Return To The Roots!"
-
-#: ../../src/dskCredits.cpp:84
-#: ../../src/dskCredits.cpp:104
-#: ../../src/dskCredits.cpp:113
-msgid "Website Administration"
-msgstr "Hemsidesadministration"
-
-#: ../../src/dskCredits.cpp:85
-#: ../../src/dskCredits.cpp:105
-msgid "Website Programming"
-msgstr "Hemsidesprogrammering"
-
-#. TODO: richtige Messages senden, um das zu laden /*GetMap()->GenerateOpenGL();*/
-#: ../../src/dskGameLoader.cpp:169
-msgid "World was put together and glued..."
-msgstr "Världen pusslats och har klistrat ihop..."
-
-#: ../../src/dskDirectIP.cpp:79
-msgid ""
-"You can't create a game while a proxy server is active\n"
-"Disable the use of a proxy server first!"
-msgstr ""
-"Du kan inte skapa ett spel när en proxyserver är aktiv.\n"
-"Inaktivera användandet av en proxyserver först!"
-
-#. URL
-#: ../../src/dskDirectIP.cpp:56
-msgid "http://www.siedler25.org"
-msgstr "http://www.siedler25.org"
-
-#: ../../src/dskCredits.cpp:192
-msgid "various anonymous donators"
-msgstr "olika anonyma gåvor"
-
-#. Copyright
-#: ../../src/dskDirectIP.cpp:59
-msgid "© 2005 - 2011 Settlers Freaks"
-msgstr "© 2005 - 2011 Settlers Freaks"
+"\n"
+"Kostnad: "
 
 #: ../../src/GameClient.cpp:610
 msgid " (AI)"
 msgstr " (AI)"
 
+#: ../../src/iwAction.cpp:236
+msgid " boards"
+msgstr " brädor"
+
+#: ../../src/iwAction.cpp:241
+msgid " stones"
+msgstr " stenar"
+
 #. / Einstufung nur bei Lobbyspielen anzeigen @todo Einstufung ( "%d" )
 #. Ping ( "%d" )
-#: ../../src/dskHostGame.cpp:294
-#: ../../src/dskHostGame.cpp:321
+#: ../../src/dskHostGame.cpp:294 ../../src/dskHostGame.cpp:321
 #, c-format
 msgid "%d"
 msgstr "%d"
@@ -374,733 +51,15 @@ msgstr "%d"
 msgid "%d Player"
 msgstr "%d spelare"
 
-#. Team
-#: ../../src/dskHostGame.cpp:193
-#: ../../src/dskHostGame.cpp:304
-#: ../../src/dskHostGame.cpp:313
-msgid "-"
-msgstr "-"
-
-#: ../../src/dskHostGame.cpp:129
-msgid "A lot"
-msgstr "Hög"
-
-#. "Server hinzufügen"
-#: ../../src/dskLobby.cpp:74
-msgid "Add Server"
-msgstr "Starta server"
-
-#: ../../src/dskOptions.cpp:80
-msgid "Addons"
-msgstr "Tillägg"
-
-#. "Enhancements"
-#: ../../src/dskHostGame.cpp:108
-msgid "Addons:"
-msgstr "Tillägg:"
-
-#. Volk
-#: ../../src/dskHostGame.cpp:300
-#: ../../src/dskHostGame.cpp:309
-#: ../../src/dskHostGame.cpp:823
-msgid "Africans"
-msgstr "Nubier"
-
-#: ../../src/dskSelectMap.cpp:100
-msgid "Author"
-msgstr "Författare"
-
-#: ../../src/GameClient.cpp:1416
-#: ../../src/GameClient.cpp:1420
-msgid "Auto-Save"
-msgstr "Autosparning"
-
-#. "Kampagne"
-#: ../../src/dskSelectMap.cpp:122
-#: ../../src/dskSinglePlayer.cpp:75
-msgid "Campaign"
-msgstr "Fälttåg"
-
-#: ../../src/dskHostGame.cpp:584
-#: ../../src/dskHostGame.cpp:808
-msgid "Cancel start"
-msgstr "Avbryt start"
-
-#: ../../src/dskHostGame.cpp:109
-msgid "Change Settings..."
-msgstr "Ändra inställningar..."
-
-#: ../../src/dskHostGame.cpp:119
-msgid "Classic (Settlers 2)"
-msgstr "Klassiskt (Settlers 2)"
-
-#. "Einstufung"
-#: ../../src/dskHostGame.cpp:64
-msgid "Classification"
-msgstr "Klassificering"
-
-#. Geschlossen
-#: ../../src/dskHostGame.cpp:265
-msgid "Closed"
-msgstr "Stängd"
-
-#. "Farbe"
-#: ../../src/dskHostGame.cpp:68
-msgid "Color"
-msgstr "Färg"
-
-#. "Allgemein"
-#: ../../src/dskOptions.cpp:83
-msgid "Common"
-msgstr "Allmän"
-
-#: ../../src/GameClient.cpp:608
+#. Anzahl-Text
+#: ../../src/iwHQ.cpp:68
 #, c-format
-msgid "Computer %u"
-msgstr "Dator %u"
-
-#. "Verbinden"
-#: ../../src/dskLobby.cpp:70
-msgid "Connect"
-msgstr "Koppla"
-
-#. Kein Spielziel
-#: ../../src/dskHostGame.cpp:135
-msgid "Conquer 3/4 of map"
-msgstr "Erövring av 3/4 av jorden"
-
-#. "Kontinente"
-#: ../../src/dskSelectMap.cpp:120
-msgid "Continents"
-msgstr "Världsdelar"
-
-#. "Weiter"
-#: ../../src/dskSelectMap.cpp:110
-msgid "Continue"
-msgstr "Fortsätt"
-
-#. "Direkte IP"
-#: ../../src/dskMultiPlayer.cpp:69
-msgid "Direct IP"
-msgstr "Direkt med IP-adressen"
-
-#: ../../src/dskOptions.cpp:301
-msgid "Disabled"
-msgstr "inte aktiverat"
-
-#: ../../src/dskHostGame.cpp:641
-msgid "Don't forget to check the addon configuration!"
-msgstr "Glömt inte att kontrollera inställningar för tillägg!"
-
-#: ../../src/GameClient.cpp:621
-#, c-format
-msgid "Dummy %u"
-msgstr "Test %u"
-
-#: ../../src/dskOptions.cpp:307
-msgid "Dynamic (Limits to display refresh rate, works with most drivers)"
-msgstr ""
-"Dynamisk (begränsningar för skärmens uppdateringshastighet, fungerar med de "
-"flesta drivrutiner)"
-
-#. Effekte
-#: ../../src/dskOptions.cpp:244
-msgid "Effects"
-msgstr "Effekter:"
-
-#. umgedrehte Reihenfolge, damit die Listen nicht dahinter sind
-#. "Aufklärung"
-#: ../../src/dskHostGame.cpp:116
-msgid "Exploration:"
-msgstr "Sikte:"
-
-#. Normal
-#: ../../src/dskHostGame.cpp:155
-msgid "Fast"
-msgstr "Fort"
-
-#: ../../src/dskHostGame.cpp:121
-msgid "FoW - all explored"
-msgstr "Krigsdimma - allt synligt"
-
-#: ../../src/dskHostGame.cpp:120
-msgid "Fog of War"
-msgstr "Krigsdimma"
-
-#: ../../src/dskOptions.cpp:182
-msgid "Fullscreen"
-msgstr "Hela bildskärmen"
-
-#. "Auflösung"
-#: ../../src/dskOptions.cpp:176
-msgid "Fullscreen resolution:"
-msgstr "Upplösning vid helskärm:"
-
-#: ../../src/dskHostGame.cpp:587
-msgid ""
-"Game can only be started as soon as everybody has a unique color,everyone is "
-"ready and all free slots are closed."
-msgstr ""
-"Spelet kan först startas när alla spelare har egen färg, är klara och alla "
-"öppna platser är stängda."
-
-#. "Spielziel"
-#: ../../src/dskHostGame.cpp:132
-msgid "Goals:"
-msgstr "Mål:"
-
-#. "Waren zu Beginn"
-#: ../../src/dskHostGame.cpp:124
-msgid "Goods at start:"
-msgstr "Varor till början:"
-
-#. "Grafik"
-#: ../../src/dskOptions.cpp:85
-msgid "Graphics"
-msgstr "Grafik"
-
-#. "Grafiktreiber"
-#: ../../src/dskOptions.cpp:200
-msgid "Graphics Driver"
-msgstr "Drivrutin:"
-
-#: ../../src/dskSelectMap.cpp:422
-msgid "Greenland"
-msgstr "Gröna ängar"
-
-#. Gameserver-Tabelle - "ID", "Server", "Karte", "Spieler", "Version", "Ping"
-#: ../../src/dskLobby.cpp:77
-msgid "ID"
-msgstr "ID"
-
-#: ../../src/dskOptions.cpp:130
-msgid "IPv4"
-msgstr "IPv4"
-
-#: ../../src/dskOptions.cpp:129
-msgid "IPv6"
-msgstr "IPv6"
-
-#: ../../src/dskSelectMap.cpp:353
-msgid "Incomplete message was received!"
-msgstr "Ofullständigt meddelande erhållits."
-
-#. "Internet - Lobby"
-#: ../../src/dskMultiPlayer.cpp:65
-msgid "Internet Lobby"
-msgstr "Internet-Lobby"
-
-#. "Internet Ranking"
-#: ../../src/dskLobby.cpp:72
-msgid "Internet Ranking"
-msgstr "Internet-Ranking"
-
-#. "Intro"
-#: ../../src/dskMainMenu.cpp:82
-msgid "Intro"
-msgstr "Intro"
-
-#: ../../src/dskHostGame.cpp:823
-msgid "Japaneses"
-msgstr "Japaner"
-
-#. Tastaturlayout
-#: ../../src/dskOptions.cpp:122
-msgid "Keyboard layout:"
-msgstr "Tangentbordslayout:"
-
-#. "Sprache"
-#: ../../src/dskOptions.cpp:103
-msgid "Language:"
-msgstr "Språk:"
-
-#. "VSync"
-#: ../../src/dskOptions.cpp:186
-msgid "Limit Framerate:"
-msgstr "Begränsa bildhastighet:"
-
-#. "Spiel laden"
-#: ../../src/dskSinglePlayer.cpp:79
-msgid "Load game"
-msgstr "Ladda spel"
-
-#. "Spiel laden..."
-#: ../../src/dskSelectMap.cpp:108
-msgid "Load game..."
-msgstr "Ladda ett spel..."
-
-#. "Teams sperren"
-#: ../../src/dskHostGame.cpp:101
-msgid "Lock teams:"
-msgstr "Låsa teamen"
-
-#: ../../src/dskHostGame.cpp:127
-msgid "Low"
-msgstr "Låg"
-
-#. Titel der Karte, Y-Position relativ je nach Höhe der Minimap festlegen, daher nochmals danach
-#. verschieben, da diese Position sonst skaliert wird!
-#: ../../src/dskHostGame.cpp:171
-#: ../../src/dskSelectMap.cpp:133
-msgid "Map: "
-msgstr "Karta: "
-
-#: ../../src/dskSelectMap.cpp:134
-msgid "Mapfile: "
-msgstr "Kartfil: "
-
-#. "Vollbild"
-#: ../../src/dskOptions.cpp:180
-msgid "Mode:"
-msgstr "Sätt:"
-
-#. "Mehrspieler"
-#: ../../src/dskMainMenu.cpp:78
-msgid "Multiplayer"
-msgstr "Flera spelare"
-
-#. Musik
-#: ../../src/dskOptions.cpp:235
-msgid "Music"
-msgstr "Musik:"
-
-#. Musicplayer-Button
-#: ../../src/dskOptions.cpp:253
-msgid "Music player"
-msgstr "Musikspelare"
-
-#. Spieler-Tabelle - "Name", "Punkte", "Version"
-#. Die Tabelle für die Maps
-#: ../../src/dskLobby.cpp:79
-#: ../../src/dskSelectMap.cpp:100
-msgid "Name"
-msgstr "Namn"
-
-#. Allgemein
-#. {
-#. "Name"
-#: ../../src/dskOptions.cpp:98
-msgid "Name in Game:"
-msgstr "Namn i spelet:"
-
-#. "Netzwerk / LAN"
-#: ../../src/dskMultiPlayer.cpp:67
-msgid "Network/LAN"
-msgstr "Nätverk/LAN"
-
-#. "Neue"
-#: ../../src/dskSelectMap.cpp:116
-msgid "New maps"
-msgstr "Nya kartor"
-
-#: ../../src/dskOptions.cpp:146
-msgid "No Proxy"
-msgstr "Ingen proxy"
-
-#: ../../src/dskHostGame.cpp:134
-msgid "None"
-msgstr "Inget"
-
-#. Langsam
-#: ../../src/dskHostGame.cpp:128
-#: ../../src/dskHostGame.cpp:154
-msgid "Normal"
-msgstr "Lagom"
-
-#: ../../src/dskHostGame.cpp:810
-msgid "Not Ready"
-msgstr "Inte klar"
-
-#. / @todo Hier dann Auswahl zwischen Kampagne(n) und "Freies Spiel"
-#: ../../src/dskSinglePlayer.cpp:162
-msgid "Not available"
-msgstr "Ej tillgängligt"
-
-#: ../../src/dskOptions.cpp:165
-#: ../../src/dskOptions.cpp:173
-#: ../../src/dskOptions.cpp:197
-#: ../../src/dskOptions.cpp:217
-#: ../../src/dskOptions.cpp:238
-#: ../../src/dskOptions.cpp:247
-msgid "Off"
-msgstr "Av"
-
-#: ../../src/dskHostGame.cpp:118
-msgid "Off (all visible)"
-msgstr "Av (allt synligt)"
-
-#. "Alte"
-#: ../../src/dskSelectMap.cpp:114
-msgid "Old maps"
-msgstr "Gamla kartor"
-
-#: ../../src/dskOptions.cpp:164
-#: ../../src/dskOptions.cpp:172
-#: ../../src/dskOptions.cpp:196
-#: ../../src/dskOptions.cpp:216
-#: ../../src/dskOptions.cpp:237
-#: ../../src/dskOptions.cpp:246
-msgid "On"
-msgstr "På"
-
-#. Offen
-#: ../../src/dskHostGame.cpp:260
-msgid "Open"
-msgstr "Öppen"
-
-#: ../../src/dskOptions.cpp:213
-msgid "Optimized Textures:"
-msgstr "Optimerade texturer"
-
-#. "Optionen"
-#: ../../src/dskMainMenu.cpp:80
-#: ../../src/dskOptions.cpp:76
-msgid "Options"
-msgstr "Alternativ"
-
-#. "Andere"
-#: ../../src/dskSelectMap.cpp:126
-msgid "Other"
-msgstr "Övriga"
-
-#. "Eigene"
-#: ../../src/dskSelectMap.cpp:118
-msgid "Own maps"
-msgstr "Egna kartor"
-
-#: ../../src/dskHostGame.cpp:84
-msgid "Past player"
-msgstr "Sista spelare"
-
-#. "Ping"
-#: ../../src/dskHostGame.cpp:77
-#: ../../src/dskLobby.cpp:77
-msgid "Ping"
-msgstr "Ping"
-
-#. "Replay abspielen"
-#: ../../src/dskSinglePlayer.cpp:73
-msgid "Play Replay"
-msgstr "Visa replay"
-
-#. "Heruntergeladene"
-#: ../../src/dskSelectMap.cpp:130
-msgid "Played"
-msgstr "Spelat"
-
-#: ../../src/dskLobby.cpp:77
-#: ../../src/dskSelectMap.cpp:100
-msgid "Player"
-msgstr "Spelare"
-
-#. "Spielername"
-#: ../../src/dskHostGame.cpp:62
-msgid "Player Name"
-msgstr "Spelare"
-
-#: ../../src/dskSinglePlayer.cpp:162
-msgid "Please use 'Unlimited Play' to create a Singleplayer game."
-msgstr "Vänligen välj 'Fritt Spel' för att skapa ett enspelarspel."
-
-#: ../../src/dskLobby.cpp:79
-msgid "Points"
-msgstr "Poäng"
-
-#. Proxyserver
-#: ../../src/dskOptions.cpp:137
-msgid "Proxyserver:"
-msgstr "Proxyserver:"
-
-#. Proxytyp
-#: ../../src/dskOptions.cpp:144
-msgid "Proxytyp:"
-msgstr "Proxytyp:"
-
-#. "Programm verlassen"
-#: ../../src/dskMainMenu.cpp:88
-msgid "Quit program"
-msgstr "Avsluta"
-
-#. "RTTR"
-#: ../../src/dskSelectMap.cpp:124
-msgid "RTTR"
-msgstr "RTTR"
-
-#. "Volk"
-#: ../../src/dskHostGame.cpp:66
-msgid "Race"
-msgstr "Folk"
-
-#. "Random Start Locations"
-#: ../../src/dskHostGame.cpp:105
-msgid "Random start locations"
-msgstr "Slumpmässig startposition"
-
-#. "ReadMe"
-#: ../../src/dskMainMenu.cpp:84
-#: ../../src/dskOptions.cpp:123
-msgid "Readme"
-msgstr "Läs mig"
-
-#: ../../src/dskHostGame.cpp:95
-#: ../../src/dskHostGame.cpp:594
-#: ../../src/dskHostGame.cpp:810
-msgid "Ready"
-msgstr "Klar"
-
-#. "Bereit"
-#: ../../src/dskHostGame.cpp:75
-msgid "Ready?"
-msgstr "Klar?"
-
-#. "Letztes Spiel fortsetzen"
-#: ../../src/dskSinglePlayer.cpp:71
-msgid "Resume last game"
-msgstr "Fortsätt senaste spel"
-
-#. "Zurück"
-#: ../../src/dskHostGame.cpp:98
-msgid "Return"
-msgstr "Tillbaka"
-
-#: ../../src/dskHostGame.cpp:823
-msgid "Romans"
-msgstr "Romare"
-
-#: ../../src/dskMainMenu.cpp:106
-msgid ""
-"RttR now supports sending debug data. Would you like to help us improving "
-"this game by sending debug data?"
-msgstr ""
-"RttR stödjer nu att man skickar in debug data. Vill du hjälpa oss att "
-"förbättra spelet genom att skicka in debug data?"
-
-#. "Andere"
-#: ../../src/dskSelectMap.cpp:128
-msgid "Sea"
-msgstr "Hav"
-
-#. "Karten Auswahl"
-#: ../../src/dskSelectMap.cpp:103
-msgid "Selection of maps"
-msgstr "Val av karta"
-
-#: ../../src/dskLobby.cpp:77
-msgid "Server"
-msgstr "Server"
-
-#. "Gemeinsame Team-Sicht"
-#: ../../src/dskHostGame.cpp:103
-msgid "Shared team view"
-msgstr "Gemensam syn i teamen"
-
-#. "Einzelspieler"
-#: ../../src/dskMainMenu.cpp:76
-msgid "Singleplayer"
-msgstr "En spelare"
-
-#: ../../src/dskSelectMap.cpp:100
-msgid "Size"
-msgstr "Storlek"
-
-#. Sehr Langsam
-#: ../../src/dskHostGame.cpp:153
-msgid "Slow"
-msgstr "Långsamt"
-
-#: ../../src/dskOptions.cpp:147
-msgid "Socks v4"
-msgstr "Socks v4"
-
-#. "Sound"
-#: ../../src/dskOptions.cpp:87
-msgid "Sound/Music"
-msgstr "Ljud/musik"
-
-#. "Audiotreiber"
-#: ../../src/dskOptions.cpp:221
-msgid "Sounddriver"
-msgstr "Drivrutin:"
-
-#. "Geschwindigkeit"
-#: ../../src/dskHostGame.cpp:150
-msgid "Speed:"
-msgstr "Hastighet:"
-
-#: ../../src/dskHostGame.cpp:666
-msgid "Start aborted"
-msgstr "Start avbröts"
-
-#. "Spiel starten"
-#: ../../src/dskHostGame.cpp:95
-#: ../../src/dskHostGame.cpp:580
-#: ../../src/dskHostGame.cpp:808
-msgid "Start game"
-msgstr "Starta spel"
-
-#: ../../src/dskHostGame.cpp:648
-msgid "Starting game, please wait"
-msgstr "Spelet startas, vänligen vänta"
-
-#. }
-#: ../../src/dskOptions.cpp:162
-msgid "Submit debug data:"
-msgstr "Skicka data för felsökning:"
-
-#: ../../src/dskMainMenu.cpp:106
-msgid "Submit debug data?"
-msgstr "Skicka in debug data?"
-
-#: ../../src/dskHostGame.cpp:81
-msgid "Swap"
-msgstr "Växla"
-
-#. "Team"
-#: ../../src/dskHostGame.cpp:70
-msgid "Team"
-msgstr "Team"
-
-#: ../../src/dskSinglePlayer.cpp:146
-#: ../../src/dskSinglePlayer.cpp:150
-msgid "The specified file couldn't be loaded!"
-msgstr "Den angivna filen kunde inte laddas!"
-
-#. Besitz 3/4 des Landes
-#: ../../src/dskHostGame.cpp:136
-msgid "Total domination"
-msgstr "Envälde"
-
-#: ../../src/dskHostGame.cpp:144
-#, c-format
-msgid "Tournament: %u minutes"
-msgstr "Turnering: %u minuter"
-
-#: ../../src/dskSelectMap.cpp:100
-msgid "Type"
-msgstr "Typ"
-
-#. "Freies Spiel"
-#: ../../src/dskSinglePlayer.cpp:77
-#: ../../src/dskSinglePlayer.cpp:182
-#: ../../src/dskSinglePlayer.cpp:194
-msgid "Unlimited Play"
-msgstr "Fritt Spel"
-
-#. IPv4/6
-#: ../../src/dskOptions.cpp:126
-msgid "Use IPv6:"
-msgstr "Använd IPv6:"
-
-#: ../../src/dskLobby.cpp:77
-#: ../../src/dskLobby.cpp:79
-msgid "Version"
-msgstr "Version"
-
-#. "VBO"
-#: ../../src/dskOptions.cpp:190
-msgid "Vertex Buffer Objects:"
-msgstr "Vertex Buffer Objects:"
-
-#: ../../src/dskHostGame.cpp:126
-msgid "Very Low"
-msgstr "Mycket Låg"
-
-#. Schnell
-#: ../../src/dskHostGame.cpp:156
-msgid "Very fast"
-msgstr "Fortast"
-
-#: ../../src/dskHostGame.cpp:152
-msgid "Very slow"
-msgstr "Långsamast"
-
-#: ../../src/dskHostGame.cpp:109
-msgid "View Settings..."
-msgstr "Visa Inställningar"
-
-#: ../../src/dskHostGame.cpp:823
-msgid "Vikings"
-msgstr "Vikingar"
-
-#: ../../src/dskSelectMap.cpp:423
-msgid "Wasteland"
-msgstr "Öken"
-
-#: ../../src/dskOptions.cpp:183
-msgid "Windowed"
-msgstr "I fönster"
-
-#: ../../src/dskSelectMap.cpp:424
-msgid "Winter world"
-msgstr "Winterlandskap"
-
-#: ../../src/dskHostGame.cpp:640
-msgid "You have 10 seconds until game starts"
-msgstr "Spelet börjar om 10 sekunder"
-
-#: ../../src/dskOptions.cpp:590
-#: ../../src/dskOptions.cpp:605
-msgid "You need to restart your game to change the screen resolution!"
-msgstr "Du måste starta om spelet för att ändra skärmupplösningen!"
-
-#: ../../src/dskOptions.cpp:613
-msgid "You need to restart your game to change the video or audio driver!"
-msgstr ""
-"Du måste starta om spelet för att ändra drivrutin för bild eller ljud!"
-
-#. text oben noch hinschreiben
-#: ../../src/GameClient.cpp:1742
-#, c-format
-msgid "current GF: %u - still fast forwarding: %d GFs left (%d %%)"
-msgstr "aktuell GF: %u - snabbspolar: %d GF:s kvar (%d %%)"
-
-#: ../../src/dskHostGame.cpp:294
-msgid "n/a"
-msgstr "ej tillgängligt"
-
-#. VBO unterstützt?
-#: ../../src/dskOptions.cpp:170
-#: ../../src/dskOptions.cpp:194
-msgid "not supported"
-msgstr "stöds inte"
-
-#. Copyright
-#: ../../src/dskMainMenu.cpp:73
-msgid "© 2005 - 2012 Settlers Freaks"
-msgstr "© 2005 - 2012 Settlers Freaks"
-
-#: ../../src/GameClientGF_Replay.cpp:122
-#, c-format
-msgid ""
-"Notice: The played replay has ended. (GF: %u, %dh %dmin %ds, TF: %u, "
-"AVG_FPS: %u)"
-msgstr ""
-"Obs: Den uppspelade återuppspelningen har avslutats. (GF: %u, %dh %dmin %ds, "
-"TF: %u, AVG_FPS: %u)"
-
-#: ../../src/GameClientPlayer.cpp:2103
-msgid "The emergency program has been activated."
-msgstr "Krisprogrammet har aktiverats."
-
-#: ../../src/GameClientPlayer.cpp:2113
-msgid "The emergency program has been deactivated."
-msgstr "Krisprogrammet har deaktiverats."
-
-#: ../../src/GameServer.cpp:1512
-msgid ""
-"The game clients are out of sync. Would you like to send debug information "
-"to RttR to help us avoiding this in the future? Thank you very much!"
-msgstr ""
-"Spelklienterna har tappat kontakten med varandra. Vill du skicka in debug "
-"information till RttR så att vi kan undvika framtida problem av detta slag? "
-"Tack på förhand!"
-
-#: ../../src/GameClientGF_Replay.cpp:81
-#, c-format
-msgid ""
-"Warning: The played replay is not in sync with the original match. (GF: %u)"
-msgstr ""
-"Varning: Replayet är inte synchroniserad med ursprungliga spelet. (GF: %u)"
+msgid "%u/%u"
+msgstr "%u/%u"
+
+#: ../../src/iwDirectIPCreate.cpp:83
+msgid "'s Game"
+msgstr "s Spel"
 
 #: ../../src/GameWorldView.cpp:301
 #, c-format
@@ -1115,42 +74,31 @@ msgstr "(1 soldat)"
 msgid "(House unoccupied)"
 msgstr "(Ledigt hus)"
 
+#: ../../src/dskGameInterface.cpp:249
+#, c-format
+msgid "(Replay-Mode) Current GF: %u (End at: %u) / GF length: %u ms / NWF length: %u gf (%u ms)"
+msgstr "(Replay-sätt) Nuvarande GF: %u (avslutas: %u) / GF-längd: %u ms / NWF-längd: %u gf (%u ms)"
+
 #: ../../src/GameWorldView.cpp:271
 msgid "(stopped)"
 msgstr "(stoppat)"
 
-#: ../../src/GameWorldGame.cpp:619
-msgid "Lost land by this building"
-msgstr "Vi förlorade land på grund av denna byggnad"
-
-#: ../../src/iwAction.cpp:234
-msgid ""
-"\n"
-"Costs: "
-msgstr ""
-"\n"
-"Kostnad: "
-
-#: ../../src/iwAction.cpp:236
-msgid " boards"
-msgstr " brädor"
-
-#: ../../src/iwAction.cpp:241
-msgid " stones"
-msgstr " stenar"
+#. Team
+#: ../../src/dskHostGame.cpp:193 ../../src/dskHostGame.cpp:304
+#: ../../src/dskHostGame.cpp:313
+msgid "-"
+msgstr "-"
 
 #: ../../src/iwAction.cpp:123
 msgid "-> Build castle"
 msgstr "-> Bygga gods"
 
-#: ../../src/iwAction.cpp:102
-#: ../../src/iwAction.cpp:116
+#: ../../src/iwAction.cpp:102 ../../src/iwAction.cpp:116
 #: ../../src/iwAction.cpp:122
 msgid "-> Build house"
 msgstr "-> Bygga hus"
 
-#: ../../src/iwAction.cpp:111
-#: ../../src/iwAction.cpp:115
+#: ../../src/iwAction.cpp:111 ../../src/iwAction.cpp:115
 #: ../../src/iwAction.cpp:121
 msgid "-> Build hut"
 msgstr "Bygg hydda"
@@ -1159,723 +107,13 @@ msgstr "Bygg hydda"
 msgid "-> Dig mines"
 msgstr "-> Gräva gruva"
 
-#: ../../src/iwAIDebug.cpp:49
-msgid "AI Debug"
-msgstr "AI-avlusning"
-
-#: ../../src/iwAction.cpp:69
-msgid "Activity window"
-msgstr "Aktivitets-fönster"
-
-#: ../../src/iwAddons.cpp:46
-msgid "Additional features:"
-msgstr "Ytterligare funktioner:"
-
-#: ../../src/iwAddons.cpp:44
-msgid "Addon Settings"
-msgstr "Inställningar för tillägg"
-
-#. "Alle"
-#: ../../src/iwAddons.cpp:59
-msgid "All"
-msgstr "Alla"
-
-#: ../../src/iwAddons.cpp:49
-msgid "Apply Changes"
-msgstr "Verkställ Ändringar"
-
-#. Angriff nicht  mÃ¶glich!
-#: ../../src/iwAction.cpp:387
-msgid "Attack not possible."
-msgstr "Angrepp omöjligt!"
-
-#: ../../src/iwAction.cpp:320
-#: ../../src/iwAction.cpp:328
-msgid "Attack options"
-msgstr "Angreppsalternativ"
-
-#. Angriffsbutton
-#: ../../src/iwAction.cpp:412
-msgid "Attack!"
-msgstr "Angrepp!"
-
-#: ../../src/iwAction.cpp:264
-#: ../../src/iwAction.cpp:271
-#: ../../src/iwAction.cpp:279
-#: ../../src/iwAction.cpp:283
-msgid "Build road"
-msgstr "Bygg en väg"
-
-#: ../../src/iwAction.cpp:272
-msgid "Build waterway"
-msgstr "Bygg vattenväg"
-
-#. / Konstruktor von @p iwMilitary.
-#: ../../src/iwBuildings.cpp:79
-msgid "Buildings"
-msgstr "Byggnader"
-
-#: ../../src/iwAction.cpp:266
-#: ../../src/iwAction.cpp:274
-msgid "Call in geologist"
-msgstr "Kalla på en geolog"
-
-#: ../../src/iwAddons.cpp:51
-msgid "Close Without Saving"
-msgstr "Stäng utan att spara"
-
-#. Einlagern
-#: ../../src/iwBaseWarehouse.cpp:62
-msgid "Collect"
-msgstr "Samla in"
-
-#. Abreißen
-#: ../../src/iwAction.cpp:284
-#: ../../src/iwBaseWarehouse.cpp:112
-#: ../../src/iwBuilding.cpp:88
-msgid "Demolish house"
-msgstr "Riv huset"
-
-#: ../../src/iwAction.cpp:308
-#: ../../src/iwAction.cpp:315
-msgid "Dig up road"
-msgstr "Riv vägen"
-
-#: ../../src/iwAction.cpp:339
-msgid "Display options"
-msgstr "Displayalternativ"
-
-#. "Wirtschaft"
-#: ../../src/iwAddons.cpp:63
-msgid "Economy"
-msgstr "Ekonomi"
-
-#: ../../src/iwAction.cpp:258
-#: ../../src/iwAction.cpp:292
-#: ../../src/iwAction.cpp:302
-msgid "Erect flag"
-msgstr "Sätta fana"
-
-#. "Spielverhalten"
-#: ../../src/iwAddons.cpp:65
-msgid "Gameplay"
-msgstr "Spelkänsla"
-
-#: ../../src/iwAction.cpp:343
-msgid "Go to headquarters"
-msgstr "Gå till högkvartern"
-
-#. "Gehe Zu Ort"
-#. "Gehe Zum Ort"
-#. "Gehe Zu Ort"
-#: ../../src/iwBaseWarehouse.cpp:73
-#: ../../src/iwBuilding.cpp:103
-#: ../../src/iwBuildingSite.cpp:65
-msgid "Go to place"
-msgstr "Gå hit"
-
-#. Info
-#. Hilfe-Button
-#: ../../src/iwBuilding.cpp:86
-#: ../../src/iwBuildingProductivities.cpp:106
-#: ../../src/iwBuildings.cpp:92
-msgid "Help"
-msgstr "Hjälp"
-
-#: ../../src/iwAction.cpp:342
-msgid "House names"
-msgstr "Husnamn"
-
-#. Minus und Plus - Button
-#: ../../src/iwAction.cpp:394
-msgid "Less attackers"
-msgstr "Färre angripare"
-
-#. "Militär"
-#: ../../src/iwAddons.cpp:61
-msgid "Military"
-msgstr "Militär alternativ"
-
-#: ../../src/iwAction.cpp:395
-msgid "More attackers"
-msgstr "Fler angripare"
-
-#: ../../src/iwAIDebug.cpp:148
-msgid "No current job"
-msgstr "Inget aktuellt jobb"
-
-#: ../../src/iwAction.cpp:409
-msgid "Number of attackers"
-msgstr "Antal angrippare"
-
-#: ../../src/iwAction.cpp:341
-msgid "Observation window"
-msgstr "Observationsfönster"
-
-#. Gebäudename
-#: ../../src/iwBuildingSite.cpp:57
-msgid "Order of building site"
-msgstr "Uppdrag för byggning"
-
-#: ../../src/iwBuildingProductivities.cpp:85
-msgid "Productivity"
-msgstr "Produktivitet"
-
-#: ../../src/iwAction.cpp:265
-#: ../../src/iwAction.cpp:273
-msgid "Pull down flag"
-msgstr "Riv fanan"
-
-#. Alle auswählen bzw setzen!
-#: ../../src/iwBaseWarehouse.cpp:71
-msgid "Select all"
-msgstr "Välj ut alla"
-
-#: ../../src/iwAction.cpp:267
-#: ../../src/iwAction.cpp:275
-msgid "Send out scout"
-msgstr "Skicka en spejare"
-
-#. Einlagern verbieten
-#: ../../src/iwBaseWarehouse.cpp:66
-msgid "Stop storage"
-msgstr "Stoppa inläggning"
-
-#: ../../src/iwAction.cpp:400
-msgid "Strong attackers"
-msgstr "Starka angripare"
-
-#. Auslagern
-#: ../../src/iwBaseWarehouse.cpp:64
-msgid "Take out of store"
-msgstr "Lagra ut"
-
-#: ../../src/iwAction.cpp:367
-msgid "Upgrade to donkey road"
-msgstr "Uppgradera till åsneväg"
-
-#: ../../src/iwAddons.cpp:54
-msgid "Use S2 Defaults"
-msgstr "Använd S2:s standardinställningar"
-
-#: ../../src/iwAction.cpp:399
-msgid "Weak attackers"
-msgstr "Svaga angripare"
-
-#. Anzahl-Text
-#: ../../src/iwHQ.cpp:68
-#, c-format
-msgid "%u/%u"
-msgstr "%u/%u"
-
-#: ../../src/iwDirectIPCreate.cpp:83
-msgid "'s Game"
-msgstr "s Spel"
-
-#: ../../src/iwMainMenu.cpp:97
-msgid "AI Debug Window"
-msgstr "Avlusningsfönster för AI"
-
-#. "Reihenfolge der Auftraggebung"
-#: ../../src/iwBuildOrder.cpp:68
-msgid "After the following order"
-msgstr "Använd den här ordningsföljden"
-
-#. "Verbündete"
-#: ../../src/iwChat.cpp:57
-msgid "Allies"
-msgstr "Vänner"
-
-#. Schmiede
-#: ../../src/iwDistribution.cpp:106
-#: ../../src/iwDistribution.cpp:116
-msgid "Armory"
-msgstr "Vapensmedja"
-
-#: ../../src/iwDiplomacy.cpp:194
-msgid "As the teams are locked, you cannot make treaties of any kind."
-msgstr "Eftersom lagen är låsta kan du inte göra någon form av avtal."
-
-#. Bäckerei
-#: ../../src/iwDistribution.cpp:152
-msgid "Bakery"
-msgstr "Bageri"
-
-#. Brettergruppe
-#: ../../src/iwDistribution.cpp:136
-msgid "Boards"
-msgstr "Brädor"
-
-#. Nach ganz unten
-#: ../../src/iwBuildOrder.cpp:61
-msgid "Bottom"
-msgstr "Slut"
-
-#. Brauerei
-#: ../../src/iwDistribution.cpp:96
-#: ../../src/iwDistribution.cpp:155
-msgid "Brewery"
-msgstr "Bryggeri"
-
-#: ../../src/iwBuildOrder.cpp:45
-#: ../../src/iwMainMenu.cpp:90
-msgid "Building sequence"
-msgstr "Byggordning"
-
-#: ../../src/iwHarborBuilding.cpp:91
-#: ../../src/iwHarborBuilding.cpp:122
-msgid "Cancel expedition"
-msgstr "Avbryt expedition"
-
-#. Charburner
-#: ../../src/iwDistribution.cpp:99
-#: ../../src/iwDistribution.cpp:132
-msgid "Charburner"
-msgstr "Kolarbostad"
-
-#: ../../src/iwChat.cpp:48
-msgid "Chat Window"
-msgstr "Chatfönster"
-
-#: ../../src/iwDirectIPConnect.cpp:281
-msgid "Checking Map..."
-msgstr "Kontrollerar Kartan..."
-
-#: ../../src/iwDirectIPConnect.cpp:280
-msgid "Checking Password..."
-msgstr "Kontrollerar lösenordet..."
-
-#. Kohlegruppe
-#: ../../src/iwDistribution.cpp:113
-msgid "Coal"
-msgstr "Kol"
-
-#. Kohlebergwerk
-#: ../../src/iwDistribution.cpp:74
-msgid "Coal mine"
-msgstr "Kolgruva"
-
-#: ../../src/iwDiplomacy.cpp:292
-msgid "Confirm"
-msgstr "Bekräfta"
-
-#: ../../src/iwLobbyConnect.cpp:50
-msgid "Connecting to Lobby"
-msgstr "Koppla till internet-lobby"
-
-#. Text auf "Verbinde mit Host..." setzen und Button deaktivieren
-#: ../../src/iwDirectIPConnect.cpp:167
-#: ../../src/iwLobbyConnect.cpp:207
-msgid "Connecting with Host..."
-msgstr "Kopplar till servern..."
-
-#. Text auf "Verbindung fehlgeschlagen" setzen und Button aktivieren
-#: ../../src/iwDirectIPConnect.cpp:173
-#: ../../src/iwLobbyConnect.cpp:216
-msgid "Connection failed!"
-msgstr "Koppling slog fel!"
-
-#: ../../src/iwDirectIPConnect.cpp:261
-msgid "Connection to Host closed!"
-msgstr "Koppling till servern är avbryten!"
-
-#. Baustellen
-#: ../../src/iwDistribution.cpp:139
-msgid "Construction"
-msgstr "Byggplatser"
-
-#: ../../src/iwDiplomacy.cpp:272
-msgid "Contract type:"
-msgstr "Kontrakttyp:"
-
-#. Standard
-#. Standardbelegung
-#: ../../src/iwBuildOrder.cpp:74
-#: ../../src/iwDistribution.cpp:180
-msgid "Default"
-msgstr "Standard"
-
-#: ../../src/iwDemolishBuilding.cpp:43
-msgid "Demolish?"
-msgstr "Riva huset?"
-
-#. Diplomatie (todo: besseres Bild suchen)
-#: ../../src/iwDiplomacy.cpp:76
-#: ../../src/iwMainMenu.cpp:93
-msgid "Diplomacy"
-msgstr "Diplomati"
-
-#. Verteilung
-#: ../../src/iwDistribution.cpp:57
-#: ../../src/iwMainMenu.cpp:67
-msgid "Distribution of goods"
-msgstr "Fördelning av varorna"
-
-#. Eselzucht
-#: ../../src/iwDistribution.cpp:93
-#: ../../src/iwDistribution.cpp:161
-msgid "Donkey breeding"
-msgstr "Åsneuppfödning"
-
-#. Runter
-#: ../../src/iwBuildOrder.cpp:59
-msgid "Down"
-msgstr "Ner"
-
-#: ../../src/iwDiplomacy.cpp:276
-msgid "Duration:"
-msgstr "Varaktighet:"
-
-#. Emailadresse
-#: ../../src/iwLobbyConnect.cpp:64
-msgid "Email Address:"
-msgstr "Emailadress:"
-
-#: ../../src/iwEndgame.cpp:48
-msgid "End game?"
-msgstr "Avsluta spelet?"
-
-#. "Feinde"
-#: ../../src/iwChat.cpp:59
-msgid "Enemies"
-msgstr "Fiende"
-
-#. Option "ewig" noch hinzufügen
-#: ../../src/iwDiplomacy.cpp:290
-msgid "Eternal"
-msgstr "Evig"
-
-#. "Expedition"-Ãberschrift
-#: ../../src/iwHarborBuilding.cpp:53
-msgid "Expedition"
-msgstr "Expedition"
-
-#. "Expedition"-Ãberschrift
-#: ../../src/iwHarborBuilding.cpp:60
-msgid "Exploration expedition"
-msgstr "Upptäcksresa"
-
-#. Nahrungsgruppe
-#: ../../src/iwDistribution.cpp:69
-msgid "Foodstuff"
-msgstr "Mat"
-
-#. "Name des Spiels"
-#: ../../src/iwDirectIPCreate.cpp:55
-msgid "Game's Name:"
-msgstr "Spelnamn:"
-
-#. Statistiken
-#: ../../src/iwMainMenu.cpp:74
-msgid "General statistics"
-msgstr "Allmän statistik"
-
-#. Goldbergwerk
-#: ../../src/iwDistribution.cpp:80
-msgid "Gold mine"
-msgstr "Guldgruva"
-
-#. Getreidegruppe
-#: ../../src/iwDistribution.cpp:84
-msgid "Grain"
-msgstr "Säd"
-
-#. Granitbergwerk
-#: ../../src/iwDistribution.cpp:71
-msgid "Granite mine"
-msgstr "Granitgruva"
-
-#: ../../src/iwHarborBuilding.cpp:47
-msgid "Harbor building"
-msgstr "Hamnanläggning"
-
-#: ../../src/iwLobbyServerInfo.cpp:79
-msgid "Host:"
-msgstr "Host:"
-
-#. "IP - Adresse vom Host"
-#: ../../src/iwDirectIPConnect.cpp:55
-msgid "IP Address of Host:"
-msgstr "IP-adress av servern:"
-
-#: ../../src/iwDirectIPConnect.cpp:156
-#: ../../src/iwDirectIPCreate.cpp:177
-msgid "Invalid port. The valid port-range is 1 to 65535!"
-msgstr "Ogiltig port. Giltiga porter liggar mellan 1 och 65535!"
-
-#. Eisengruppe
-#: ../../src/iwDistribution.cpp:103
-msgid "Iron"
-msgstr "Järn"
-
-#. Eisenbergwerk
-#: ../../src/iwDistribution.cpp:77
-msgid "Iron mine"
-msgstr "Järngruva"
-
-#. Eisenschmelze
-#: ../../src/iwDistribution.cpp:119
-msgid "Iron smelter"
-msgstr "Smältverk"
-
-#: ../../src/iwDiplomacy.cpp:252
-msgid "Long-run"
-msgstr "Lång tid"
-
-#: ../../src/iwLobbyRanking.cpp:81
-msgid "Lost"
-msgstr "Förlorad"
-
-#: ../../src/iwLobbyServerInfo.cpp:75
-msgid "Map Name:"
-msgstr "Namn av kartan:"
-
-#: ../../src/iwDiplomacy.cpp:251
-msgid "Medium-term"
-msgstr "Mellanlång tid"
-
-#: ../../src/iwMainMenu.cpp:75
-msgid "Merchandise statistics"
-msgstr "Statistik över varorna"
-
-#. Schlosserei
-#: ../../src/iwDistribution.cpp:109
-#: ../../src/iwDistribution.cpp:142
-msgid "Metalworks"
-msgstr "Verktygssmedja"
-
-#. Mühle
-#: ../../src/iwDistribution.cpp:87
-msgid "Mill"
-msgstr "Kvarn"
-
-#. Münzprägerei
-#: ../../src/iwDistribution.cpp:122
-msgid "Mint"
-msgstr "Myntort"
-
-#: ../../src/iwLobbyConnect.cpp:72
-msgid "No"
-msgstr "Nej"
-
-#: ../../src/iwDiplomacy.cpp:115
-msgid "Non-aggression pact"
-msgstr "Icke-angreppspakt"
-
-#. "Passwort (falls vorhanden)"
-#: ../../src/iwDirectIPConnect.cpp:63
-msgid "Password (if needed):"
-msgstr "Lösenord (om det finns):"
-
-#. "Passwort"
-#. Passwort
-#: ../../src/iwDirectIPCreate.cpp:63
-#: ../../src/iwLobbyConnect.cpp:59
-msgid "Password:"
-msgstr "Lösenord:"
-
-#. Schweinezucht
-#: ../../src/iwDistribution.cpp:90
-#: ../../src/iwDistribution.cpp:158
-msgid "Pig farm"
-msgstr "Grisuppfödning"
-
-#: ../../src/iwDirectIPCreate.cpp:169
-msgid "Please enter a name for the game"
-msgstr "Var snäll och anger nanm för spelet"
-
-#. Registrieren
-#: ../../src/iwLobbyConnect.cpp:88
-msgid "Register"
-msgstr "Registrera"
-
-#. Registrierung erfolgreich
-#: ../../src/iwLobbyConnect.cpp:319
-msgid "Registration successful!"
-msgstr "Registrering lyckades!"
-
-#. "Reserve"-Überschrift
-#: ../../src/iwHQ.cpp:52
-msgid "Reserve"
-msgstr "Reserv"
-
-#. Passwort speichern ja/nein
-#: ../../src/iwLobbyConnect.cpp:69
-msgid "Save Password?"
-msgstr "Spara lösenord?"
-
-#. Sawmill
-#: ../../src/iwDistribution.cpp:129
-msgid "Sawmill"
-msgstr "Sågverk"
-
-#: ../../src/iwBuildOrder.cpp:67
-msgid "Sequence of given order"
-msgstr "Ordningsföljd av uppdragsgivningen"
-
-#: ../../src/iwLobbyServerInfo.cpp:73
-msgid "Server Information"
-msgstr "Serverinformation"
-
-#: ../../src/iwLobbyServerInfo.cpp:77
-msgid "Server Name:"
-msgstr "Servernamn:"
-
-#. "Server-Port"
-#: ../../src/iwDirectIPConnect.cpp:59
-#: ../../src/iwDirectIPCreate.cpp:59
-msgid "Server-Port:"
-msgstr "Server-port:"
-
-#. Schiffe
-#: ../../src/iwMainMenu.cpp:86
-msgid "Ship register"
-msgstr "Skeppsförteckning"
-
-#. Werft
-#: ../../src/iwDistribution.cpp:145
-msgid "Shipyard"
-msgstr "Skeppsvarv"
-
-#: ../../src/iwDiplomacy.cpp:250
-msgid "Short-run"
-msgstr "Kort tid"
-
-#. "Starten"
-#: ../../src/iwDirectIPCreate.cpp:78
-msgid "Start"
-msgstr "Starta"
-
-#. Button zum Expedition starten
-#: ../../src/iwHarborBuilding.cpp:56
-#: ../../src/iwHarborBuilding.cpp:96
-#: ../../src/iwHarborBuilding.cpp:127
-msgid "Start expedition"
-msgstr "Påbörja expedition"
-
-#. Button zum Expedition starten
-#: ../../src/iwHarborBuilding.cpp:63
-msgid "Start exporation expedition"
-msgstr "Påbörja upptäcksresa"
-
-#. Inventur
-#: ../../src/iwInventory.cpp:46
-#: ../../src/iwMainMenu.cpp:79
-msgid "Stock"
-msgstr "Förråd"
-
-#: ../../src/iwDiplomacy.cpp:232
-msgid "Suggest non-aggression pact"
-msgstr "Föreslå icke-angreppspakt"
-
-#: ../../src/iwDiplomacy.cpp:231
-msgid "Suggest treaty of alliance"
-msgstr "Föreslå alliansfördrag"
-
-#: ../../src/iwDiplomacy.cpp:194
-msgid "Teams locked"
-msgstr "Team låsta"
-
-#: ../../src/iwDirectIPConnect.cpp:258
-msgid "This Server is full!"
-msgstr "Servern är fyllt!"
-
-#: ../../src/iwDiplomacy.cpp:274
-msgid "To player:"
-msgstr "Till spelare:"
-
-#: ../../src/iwLobbyConnect.cpp:222
-msgid ""
-"To register, you have to create a valid board account at "
-"http://forum.siedler25.org at the moment.\n"
-msgstr ""
-"För att registrera dig måste du skapa ett giltigt forumkonto på "
-"http://forum.siedler25.org för tillfället.\n"
-
-#: ../../src/iwDirectIPConnect.cpp:262
-msgid "Too short Message received!"
-msgstr "För kort meddelande erhållits."
-
-#. Werkzeugproduktion
-#: ../../src/iwMainMenu.cpp:71
-msgid "Tools"
-msgstr "Verktyg"
-
-#. Nach ganz oben
-#: ../../src/iwBuildOrder.cpp:55
-msgid "Top"
-msgstr "Början"
-
-#. Transport
-#: ../../src/iwMainMenu.cpp:69
-msgid "Transport"
-msgstr "Transport"
-
-#: ../../src/iwDiplomacy.cpp:81
-msgid "Treaties"
-msgstr "Fördrag"
-
-#: ../../src/iwDiplomacy.cpp:106
-msgid "Treaty of alliance"
-msgstr "Alliansfördrag"
-
-#. Hoch
-#: ../../src/iwBuildOrder.cpp:57
-msgid "Up"
-msgstr "Upp"
-
-#. Benutzername
-#: ../../src/iwLobbyConnect.cpp:53
-msgid "Username:"
-msgstr "Nickname:"
-
-#: ../../src/iwLobbyServerInfo.cpp:81
-msgid "Version:"
-msgstr "Version:"
-
-#: ../../src/iwDirectIPConnect.cpp:282
-msgid "Waiting for Playerinfo..."
-msgstr "Väntar på spelarinformation..."
-
-#: ../../src/iwDirectIPConnect.cpp:279
-#: ../../src/iwLobbyConnect.cpp:332
-msgid "Waiting for Reply..."
-msgstr "Väntar på svar..."
-
-#. Wasserbüffel äh -gruppe ;-)
-#: ../../src/iwDistribution.cpp:149
-msgid "Water"
-msgstr "Vatten"
-
-#: ../../src/iwLobbyRanking.cpp:81
-msgid "Won"
-msgstr "Vann"
-
-#. Wood group
-#: ../../src/iwDistribution.cpp:126
-msgid "Wood"
-msgstr "Trä"
-
-#: ../../src/iwDirectIPConnect.cpp:259
-msgid "Wrong Password!"
-msgstr "Ogiltig lösenord!"
-
-#: ../../src/iwDirectIPConnect.cpp:263
-msgid "Wrong Server Type!"
-msgstr "Fel typ av servern!"
-
-#: ../../src/iwDirectIPConnect.cpp:260
-msgid "Wrong client version"
-msgstr "Fel version av klienten"
-
-#. nein
-#: ../../src/iwLobbyConnect.cpp:73
-msgid "Yes"
-msgstr "Ja"
-
 #: ../../src/iwMerchandiseStatistics.cpp:97
 msgid "1 h"
 msgstr "1 h"
+
+#: ../../src/AddonLimitCatapults.h:51
+msgid "10 catapults"
+msgstr "10 katapulter"
 
 #: ../../src/iwMerchandiseStatistics.cpp:96
 msgid "15 m"
@@ -1885,625 +123,47 @@ msgstr "15 m"
 msgid "16 h"
 msgstr "16 h"
 
+#: ../../src/AddonLimitCatapults.h:52
+msgid "20 catapults"
+msgstr "20 katapulter"
+
+#: ../../src/AddonLimitCatapults.h:49
+msgid "3 catapults"
+msgstr "3 katapulter"
+
+#: ../../src/AddonLimitCatapults.h:53
+msgid "30 catapults"
+msgstr "30 katapulter"
+
 #: ../../src/iwMerchandiseStatistics.cpp:98
 msgid "4 h"
 msgstr "4 h"
 
-#: ../../src/iwMusicPlayer.cpp:45
-msgid "Abort"
-msgstr "Avbryt"
-
-#: ../../src/iwMusicPlayer.cpp:76
-msgid "Add"
-msgstr "Lägg till"
-
-#: ../../src/iwMusicPlayer.cpp:83
-#: ../../src/iwMusicPlayer.cpp:218
-msgid "Add directory of tracks"
-msgstr "Lägg till katalog med spår"
-
-#. AddTextButton(5,b1->GetX(false),320,button_width,22,TC_GREEN2,_("Save"),NormalFont);
-#. AddTextButton(6,b2->GetX(false),320,button_width,22,TC_GREEN2,_("Load"),NormalFont);
-#. Buttons fÃŒr die MusikstÃŒcke
-#: ../../src/iwMusicPlayer.cpp:82
-#: ../../src/iwMusicPlayer.cpp:212
-msgid "Add track"
-msgstr "Lägg till spår"
-
-#. Advanced Options
-#: ../../src/iwOptionsWindow.cpp:105
-msgid "Advanced"
-msgstr "Avancerat"
-
-#: ../../src/iwPlayReplay.cpp:93
-msgid "Are you sure to remove all replays?"
-msgstr "Vill du ta bort alla replayer?"
-
-#. Autospeicherzeug
-#: ../../src/iwSave.cpp:196
-msgid "Auto-Save every:"
-msgstr "Autosparning var:"
-
-#: ../../src/iwMerchandiseStatistics.cpp:76
-msgid "Beer"
-msgstr "Öl"
-
-#: ../../src/iwMerchandiseStatistics.cpp:86
-msgid "Boats"
-msgstr "Båtar"
-
-#: ../../src/iwMilitary.cpp:58
-msgid "Border areas"
-msgstr "Vid riksgränsen"
-
-#: ../../src/iwMsgbox.cpp:72
-#: ../../src/iwMsgbox.cpp:87
-msgid "Cancel"
-msgstr "Avbryt"
-
-#: ../../src/iwMilitary.cpp:55
-msgid "Center of country"
-msgstr "Förort"
-
-#. Aufräumen
-#. Sicherheitsabfrage, ob der Benutzer auch wirklich alle löschen möchte
-#: ../../src/iwPlayReplay.cpp:68
-#: ../../src/iwPlayReplay.cpp:93
-msgid "Clear"
-msgstr "Töm"
-
-#: ../../src/iwMerchandiseStatistics.cpp:83
-msgid "Coins"
-msgstr "Mynt"
-
-#. Mülleimer
-#: ../../src/iwMerchandiseStatistics.cpp:92
-msgid "Delete all"
-msgstr "Radera allt"
-
-#: ../../src/iwMilitaryBuilding.cpp:177
-msgid ""
-"Demolition ist not allowed because the building is located in border area!"
-msgstr "Det är förbjudet att riva ett hus vid riksgränsen."
-
-#: ../../src/iwMilitaryBuilding.cpp:176
-msgid "Demolition ist not allowed because the building is under attack!"
-msgstr "Det är förbjudet att riva ett hus som angrips."
-
-#: ../../src/iwMilitaryBuilding.cpp:180
-msgid "Demolition not possible"
-msgstr "Rivningen förbjuden"
-
-#: ../../src/iwMusicPlayer.cpp:86
-msgid "Downwards"
-msgstr "Neråt"
-
-#. "Spiel beenden"
-#: ../../src/iwOptionsWindow.cpp:110
-msgid "End game"
-msgstr "Avsluta spelet"
-
-#: ../../src/iwPlayReplay.cpp:119
-msgid "Error while opening file!"
-msgstr "Fel vid öppning av filen!"
-
-#: ../../src/iwPlayReplay.cpp:118
-#: ../../src/iwPlayReplay.cpp:128
-msgid "Error while playing replay!"
-msgstr "Fel vid"
-
-#: ../../src/iwPlayReplay.cpp:121
-msgid "Error: Replay is too old!"
-msgstr "Fel: Replayversionen är för gammal!"
-
-#: ../../src/iwMilitary.cpp:52
-msgid "Fewer defenders"
-msgstr "Färre försvarare"
-
-#. Einzelne Balken
-#: ../../src/iwMilitary.cpp:50
-msgid "Fewer recruits"
-msgstr "Färre rekryter"
-
-#: ../../src/iwPlayReplay.cpp:63
-#: ../../src/iwSave.cpp:67
-msgid "Filename"
-msgstr "Filnamn"
-
-#: ../../src/iwMerchandiseStatistics.cpp:74
-msgid "Food"
-msgstr "Mat"
-
-#. "Gehe Zu Ort"
-#. Die Expeditionsweiterfahrbuttons
-#: ../../src/iwShip.cpp:72
-msgid "Found colony"
-msgstr "Grunda koloni"
-
-#: ../../src/iwOptionsWindow.cpp:59
-msgid "Game menu"
-msgstr "Spelfönster"
-
-#: ../../src/iwMerchandiseStatistics.cpp:81
-msgid "Gold"
-msgstr "Guld"
-
-#: ../../src/iwMilitary.cpp:54
-msgid "Interior"
-msgstr "Inland"
-
-#. Bau abbrechen
-#: ../../src/iwRoadWindow.cpp:50
-msgid "Interrupt road building"
-msgstr "Avbryt vägsbyggning"
-
-#: ../../src/iwPlayReplay.cpp:120
-msgid "Invalid Replay!"
-msgstr "Ogiltig replay!"
-
-#. untere Reihe
-#: ../../src/iwMerchandiseStatistics.cpp:80
-msgid "Ironore"
-msgstr "Järnmalm"
-
-#: ../../src/iwPlayReplay.cpp:63
-msgid "Length"
-msgstr "Längd"
-
-#: ../../src/iwMusicPlayer.cpp:88
-msgid "Less repeats"
-msgstr "Färre upprepningar"
-
-#: ../../src/iwOptionsWindow.cpp:77
-msgid "Load 'ReadMe' file"
-msgstr "Ladda 'läs mig'-fil"
-
-#. /////////////////////////////////////////////////////////////////////////////
-#. *
-#. *
-#. *
-#. *  @author OLiver
-#. 
-#: ../../src/iwOptionsWindow.cpp:81
-#: ../../src/iwSave.cpp:250
-msgid "Load game!"
-msgstr "Ladda spel!"
-
-#: ../../src/iwMerchandiseStatistics.cpp:63
-msgid "Merchandise"
-msgstr "Varor"
-
-#: ../../src/iwPostWindow.cpp:298
-msgid "Message"
-msgstr "Meddelande"
-
-#: ../../src/iwMilitary.cpp:52
-msgid "More defenders"
-msgstr "Fler försvarare"
-
-#: ../../src/iwMilitary.cpp:50
-msgid "More recruits"
-msgstr "Fler rekryter"
-
-#: ../../src/iwMusicPlayer.cpp:89
-msgid "More repeats"
-msgstr "Fler upprepningar"
-
-#: ../../src/iwMilitary.cpp:56
-msgid "Near harbor points"
-msgstr "Nära hamnpunkter"
-
-#: ../../src/iwPostWindow.cpp:84
-#: ../../src/iwPostWindow.cpp:275
-msgid "No letters!"
-msgstr "Inga brev!"
-
-#: ../../src/iwShip.cpp:109
-msgid "No ships available"
-msgstr "Inga skepp tillgängliga"
-
-#. OK-Button
-#: ../../src/iwMsgbox.cpp:65
-#: ../../src/iwMsgbox.cpp:71
-#: ../../src/iwMusicPlayer.cpp:44
-#: ../../src/iwSkipGFs.cpp:54
-msgid "OK"
-msgstr "OK"
-
-#: ../../src/iwMinimap.cpp:53
-msgid "Outline map"
-msgstr "Översiktskarta"
-
-#: ../../src/iwMusicPlayer.cpp:90
-#: ../../src/iwMusicPlayer.cpp:283
-msgid "Playback in this order"
-msgstr "Spela upp i denna ordning"
-
-#: ../../src/iwMusicPlayer.cpp:70
-msgid "Playlist:"
-msgstr "Spellista:"
-
-#. /////////////////////////////////////////////////////////////////////////////
-#. *
-#. *  Konstruktor von @p iwPleaseWait.
-#. *
-#. *  Fenster wird modal geöffnet, damit man ggf. einen "Weiter"-Button nicht
-#. *  mehrfach betätigen kann.
-#. *
-#. *  @author OLiver
-#. 
-#: ../../src/iwPleaseWait.cpp:46
-#: ../../src/iwPleaseWait.cpp:49
-msgid "Please wait..."
-msgstr "Var god vänta..."
-
-#: ../../src/iwPlayReplay.cpp:122
-msgid "Program version is too old to play that replay!"
-msgstr "Programversionen är för gammal för att visa replayn!"
-
-#: ../../src/iwMusicPlayer.cpp:283
-msgid "Random playback"
-msgstr "Slumpmässig uppspelning"
-
-#: ../../src/iwMusicPlayer.cpp:77
-msgid "Remove"
-msgstr "Ta bort"
-
-#: ../../src/iwMusicPlayer.cpp:84
-msgid "Remove track"
-msgstr "Ta bort spår"
-
-#. Expedition abbrechen
-#: ../../src/iwShip.cpp:80
-msgid "Return to harbor"
-msgstr "Återvänd till hamnen"
-
-#. /////////////////////////////////////////////////////////////////////////////
-#. *
-#. *
-#. *
-#. *  @author OLiver
-#. 
-#: ../../src/iwOptionsWindow.cpp:85
-#: ../../src/iwSave.cpp:190
-msgid "Save game!"
-msgstr "Spara spel!"
-
-#: ../../src/iwSettings.cpp:53
-msgid "Settings"
-msgstr "Inställningar"
-
-#: ../../src/iwSkipGFs.cpp:44
-msgid "Skip GameFrames"
-msgstr "Hoppa över GF"
-
-#: ../../src/iwMusicPlayer.cpp:175
-msgid "Specify the playlist name"
-msgstr "Ange spellistans namn"
-
-#: ../../src/iwSave.cpp:67
-msgid "Start GF"
-msgstr "Start-GF"
-
-#: ../../src/iwSettings.cpp:58
-msgid "Statistics Scale"
-msgstr "Skala Statistik"
-
-#: ../../src/iwPlayReplay.cpp:63
-msgid "Stocktaking date"
-msgstr "Inspeling"
-
-#: ../../src/iwMerchandiseStatistics.cpp:73
-msgid "Stones"
-msgstr "Stenar"
-
-#: ../../src/iwMilitary.cpp:51
-msgid "Strong defense"
-msgstr "Starka försvarare"
-
-#. "Spiel aufgeben"
-#: ../../src/iwOptionsWindow.cpp:108
-msgid "Surrender"
-msgstr "Ge upp"
-
-#: ../../src/iwPlayReplay.cpp:124
-msgid "Temporary map file was not found!"
-msgstr "Temporärt kartafil kunde inte hittas!"
-
-#: ../../src/iwMusicPlayer.cpp:335
-msgid "The specified file couldn't be opened!"
-msgstr "Den angivna filen kunde inte öppnas!"
-
-#: ../../src/iwMusicPlayer.cpp:117
-#: ../../src/iwMusicPlayer.cpp:360
-msgid "The specified file couldn't be saved!"
-msgstr "Den angivna filen kunde inte sparas!"
-
-#: ../../src/iwSave.cpp:67
-msgid "Time"
-msgstr "Tid"
-
-#: ../../src/iwMusicPlayer.cpp:85
-msgid "Upwards"
-msgstr "Uppåt"
-
-#. pitch: 4, 4
-#: ../../src/iwMilitary.cpp:51
-msgid "Weak defense"
-msgstr "Svaga försvarare"
-
-#: ../../src/iwMerchandiseStatistics.cpp:85
-msgid "Weapons"
-msgstr "Vapen"
-
-#: ../../src/iwMusicPlayer.cpp:190
-msgid "You are not allowed to delete the standard playlist!"
-msgstr "Du får inte ta bort standardspellistan!"
-
-#: ../../src/iwPostWindow.cpp:298
-msgid "of"
-msgstr "av"
-
-#. Text vor Editfeld
-#: ../../src/iwSkipGFs.cpp:47
-msgid "to GameFrame:"
-msgstr "till GF:"
-
-#: ../../src/iwTools.cpp:51
-msgid "Axe"
-msgstr "Yxa"
-
-#: ../../src/iwTools.cpp:61
-msgid "Bow"
-msgstr "Båge"
-
-#: ../../src/iwTools.cpp:59
-msgid "Cleaver"
-msgstr "Köttyxa"
-
-#: ../../src/iwTools.cpp:56
-msgid "Crucible"
-msgstr "Smältdegel"
-
-#. Ok + Abbrennen
-#: ../../src/iwSurrender.cpp:54
-msgid "Destroy all buildings and surrender"
-msgstr "Förstör alla byggnader och ge upp"
-
-#. Abbrechen
-#: ../../src/iwSurrender.cpp:56
-msgid "Don't surrender"
-msgstr "Ge inte upp"
-
-#: ../../src/iwTools.cpp:54
-msgid "Hammer"
-msgstr "Hammare"
-
-#: ../../src/iwStatistics.cpp:118
-#: ../../src/iwStatistics.cpp:219
-msgid "Inhabitants"
-msgstr "Invånare"
-
-#: ../../src/iwTransport.cpp:64
-msgid "Iron ore"
-msgstr "Järnmalm"
-
-#: ../../src/iwTools.cpp:50
-#: ../../src/iwTools.cpp:51
-#: ../../src/iwTools.cpp:52
-#: ../../src/iwTools.cpp:53
-#: ../../src/iwTools.cpp:54
-#: ../../src/iwTools.cpp:55
-#: ../../src/iwTools.cpp:56
-#: ../../src/iwTools.cpp:57
-#: ../../src/iwTools.cpp:58
-#: ../../src/iwTools.cpp:59
-#: ../../src/iwTools.cpp:60
-#: ../../src/iwTools.cpp:61
-msgid "Less often"
-msgstr "mindre ofta"
-
-#: ../../src/iwStatistics.cpp:120
-#: ../../src/iwStatistics.cpp:227
-msgid "Military strength"
-msgstr "Militärmakt"
-
-#: ../../src/iwTools.cpp:50
-#: ../../src/iwTools.cpp:51
-#: ../../src/iwTools.cpp:52
-#: ../../src/iwTools.cpp:53
-#: ../../src/iwTools.cpp:54
-#: ../../src/iwTools.cpp:55
-#: ../../src/iwTools.cpp:56
-#: ../../src/iwTools.cpp:57
-#: ../../src/iwTools.cpp:58
-#: ../../src/iwTools.cpp:59
-#: ../../src/iwTools.cpp:60
-#: ../../src/iwTools.cpp:61
-msgid "More often"
-msgstr "Oftare"
-
-#. "Blättern"
-#: ../../src/iwWares.cpp:188
-msgid "Next page"
-msgstr "Näst sida"
-
-#: ../../src/iwTools.cpp:53
-msgid "Pick-axe"
-msgstr "Korp"
-
-#: ../../src/iwTools.cpp:57
-msgid "Rod and line"
-msgstr "Fiskespö"
-
-#: ../../src/iwTools.cpp:60
-msgid "Rolling pin"
-msgstr "Kavel"
-
-#: ../../src/main.cpp:167
-msgid "RttR crashed. Please restart the application!"
-msgstr "RttR kraschade. Vänligen starta om spelet!"
-
-#: ../../src/main.cpp:151
-msgid ""
-"RttR crashed. Would you like to send debug information to RttR to help us "
-"avoiding this crash in the future? Thank you very much!"
-msgstr ""
-"RttR kraschade. Vill du skicka felsökningsinformation till RttR så vi kan "
-"försöka undvika problemet i framtiden? Tack så mycket!"
-
-#: ../../src/iwTools.cpp:52
-msgid "Saw"
-msgstr "Såg"
-
-#: ../../src/iwTools.cpp:58
-msgid "Scythe"
-msgstr "Lie"
-
-#: ../../src/iwTrade.cpp:98
-msgid "Send"
-msgstr "Skicka"
-
-#: ../../src/iwTrade.cpp:75
-msgid "Settlers"
-msgstr "Nybyggare"
-
-#: ../../src/iwTools.cpp:55
-msgid "Shovel"
-msgstr "Spade"
-
-#. Aktuelle Überschrift über der Statistik
-#: ../../src/iwStatistics.cpp:116
-#: ../../src/iwStatistics.cpp:136
-#: ../../src/iwStatistics.cpp:211
-msgid "Size of country"
-msgstr "Storlek på landområde"
-
-#: ../../src/iwStatistics.cpp:46
-msgid "Statistics"
-msgstr "Statistik"
-
-#: ../../src/iwStorehouse.cpp:43
-msgid "Storehouse"
-msgstr "Förrådshus"
-
-#: ../../src/iwSurrender.cpp:49
-msgid "Surrender game?"
-msgstr "Ge upp spel?"
-
-#. Systemsprache hinzufügen
-#: ../../src/languages.cpp:71
-msgid "System language"
-msgstr "Systemets språk"
-
-#. immer noch nichts gefunden? --> Dann Fehlermeldung
-#: ../../src/iwTextfile.cpp:72
-msgid "The readme file was not found!"
-msgstr "Readme-filen hittades inte!"
-
-#. Einzelne Balken
-#: ../../src/iwTools.cpp:50
-msgid "Tongs"
-msgstr "Tång"
-
-#: ../../src/iwTrade.cpp:59
-msgid "Trade"
-msgstr "Handel"
-
-#: ../../src/iwTrade.cpp:64
+#: ../../src/AddonLimitCatapults.h:50
+msgid "5 catapults"
+msgstr "5 katapulter"
+
+#: ../../src/dskGameInterface.cpp:1040 ../../src/dskGameInterface.cpp:1090
+#: ../../src/dskGameInterface.cpp:1119
 #, c-format
-msgid "Trade with %s"
-msgstr "Handla med %s"
+msgid "<%s> "
+msgstr "<%s> "
 
-#: ../../src/iwStatistics.cpp:123
-#: ../../src/iwStatistics.cpp:239
-msgid "Vanquished enemies"
-msgstr "Besegrade fiender"
-
-#: ../../src/iwTrade.cpp:94
-msgid "Ware you like to trade"
-msgstr "Vara du vill handla med"
-
-#. Ware or figure?
-#: ../../src/iwTrade.cpp:74
-msgid "Wares"
-msgstr "Varor"
+#: ../../src/dskGameInterface.cpp:1055
+msgid "A auto-savegame is created..."
+msgstr "Autosparning skapas..."
 
 #: ../../src/nobMilitary.cpp:1171
 msgid "A catapult is firing upon us!"
 msgstr "En katapult skjuter på oss!"
 
-#: ../../src/nobMilitary.cpp:923
-msgid "Military building captured"
-msgstr "Militärbyggnad erövrad"
+#: ../../src/BuildingConsts.h:357
+msgid "A gold mine allows you to prospect for valuable gold deposits. For this, it is necessary to ensure that the miners are provided with plenty of food."
+msgstr "En guldgruva låter dig gräva efter värdefulla guldfyndigheter. För detta behöver gruvarbetarna rikligt med mat."
 
-#: ../../src/nobMilitary.cpp:920
-msgid "Military building lost"
-msgstr "Militärbyggnad förlorad"
-
-#: ../../src/nobMilitary.cpp:631
-msgid "Military building occupied"
-msgstr "Militärbyggnad besatt"
-
-#: ../../src/nobHarborBuilding.cpp:106
-msgid "New harbor building finished"
-msgstr "Ny hamnanläggning färdig"
-
-#: ../../src/nobStorehouse.cpp:57
-msgid "New storehouse finished"
-msgstr "Nytt förrådshus färdigt"
-
-#: ../../src/nofAttacker.cpp:289
-msgid "Our headquarters was destroyed!"
-msgstr "Vårt högkvarter förstördes!"
-
-#: ../../src/nofAttacker.cpp:292
-msgid "This harbor building was destroyed"
-msgstr "Denna hamnanläggning förstördes"
-
-#: ../../src/nofBuildingWorker.cpp:404
-msgid "This mine is exhausted"
-msgstr "Den här gruvan har sinat"
-
-#: ../../src/nofBuildingWorker.cpp:406
-msgid "This well is dried out"
-msgstr "Den här brunnen har sinat"
-
-#: ../../src/nofAttacker.cpp:654
-msgid "We are under attack!"
-msgstr "Vi är anfallna!"
-
-#: ../../src/nofGeologist.cpp:499
-msgid "Found coal"
-msgstr "Kol har hittats"
-
-#: ../../src/nofGeologist.cpp:497
-msgid "Found gold"
-msgstr "Hittade guld"
-
-#: ../../src/nofGeologist.cpp:501
-msgid "Found granite"
-msgstr "Hittade granit"
-
-#: ../../src/nofGeologist.cpp:495
-msgid "Found iron ore"
-msgstr "Hittade järnmalm"
-
-#: ../../src/nofGeologist.cpp:503
-msgid "Found water"
-msgstr "Hittade vatten"
-
-#: ../../src/nofFarmhand.cpp:209
-msgid "No more fishes in range"
-msgstr "Ingen mer fisk inom räckhåll"
-
-#: ../../src/nofFarmhand.cpp:202
-msgid "No more stones in range"
-msgstr "Ingen mer sten inom räckhåll"
-
-#: ../../src/nofScout_LookoutTower.cpp:83
-msgid "Lookout-tower occupied"
-msgstr "Utkikspost besatt"
+#: ../../src/dskHostGame.cpp:129
+msgid "A lot"
+msgstr "Hög"
 
 #: ../../src/noShipBuildingSite.cpp:138
 msgid "A new ship is ready"
@@ -2521,49 +181,94 @@ msgstr "Ett skepp har nått sin expeditions slutmål."
 msgid "A ship is ready for an expedition."
 msgstr "Ett skepp är redo för en expedition."
 
-#: ../../src/PostMsg.cpp:122
-#, c-format
-msgid "Duration: %u GF (%s)"
-msgstr "Varaktighet: %u GF (%s)"
+#: ../../src/BuildingConsts.h:510
+msgid "A well supplies water to the bakery, brewery, donkey breeder and pig farm."
+msgstr "Brunnen levererar vatten till bageriet, bryggeriet, gris- och åsneuppfödningen."
 
-#: ../../src/PostMsg.cpp:120
-msgid "Duration: Forever"
-msgstr "Varaktighet: För evigt"
+#: ../../src/BuildingConsts.h:382
+msgid "A woodcutter provides the sawmill with logs. A forester is able to replant the depleted forest."
+msgstr "Skogshuggaren förbereder trä till sågverket. En skogvaktare kan plantera ny skog på."
 
-#: ../../src/PostMsg.cpp:160
-#, c-format
-msgid "The %s between player '%s' and you has been cancelled."
-msgstr "Fördraget %s mellan spelaren '%s' och dig har avbrutits."
+#: ../../src/iwAIDebug.cpp:49
+msgid "AI Debug"
+msgstr "AI-avlusning"
 
-#: ../../src/PostMsg.cpp:157
-#, c-format
-msgid "The %s between player '%s' and you has been concluded."
-msgstr "Fördraget %s mellan spelaren '%s' och dig har löpt ut."
-
-#: ../../src/PostMsg.cpp:115
-#, c-format
-msgid "The player '%s' offers you a %s."
-msgstr "Spelaren '%s' erbjuder dig fördraget %s."
-
-#: ../../src/PostMsg.cpp:134
-#, c-format
-msgid ""
-"The player '%s' want to cancel the '%s' between you both primaturely. Do you "
-"agree?"
-msgstr ""
-"Spelaren '%s' vill avbryta fördraget '%s' mellan er i förtid. Accepterar du?"
-
-#: ../../src/PostMsg.cpp:105
-msgid "non-aggression pact"
-msgstr "icke-angreppspakt"
-
-#: ../../src/PostMsg.cpp:104
-msgid "treaty of alliance"
-msgstr "alliansfördrag"
+#: ../../src/iwMainMenu.cpp:97
+msgid "AI Debug Window"
+msgstr "Avlusningsfönster för AI"
 
 #: ../../src/AddonAIDebugWindow.h:38
 msgid "AI Debugging Window"
 msgstr "Avlusningsfönster för AI"
+
+#: ../../src/AIPlayerJH.cpp:2094
+msgid "AI'm back"
+msgstr "AI'm back"
+
+#: ../../src/iwMusicPlayer.cpp:45
+msgid "Abort"
+msgstr "Avbryt"
+
+#: ../../src/AddonDemolitionProhibition.h:43
+msgid "Active if attacked"
+msgstr "Verksam vid angrepp"
+
+#: ../../src/AddonDemolitionProhibition.h:44
+msgid "Active near frontiers"
+msgstr "Verksam vid gränsen"
+
+#: ../../src/iwAction.cpp:69
+msgid "Activity window"
+msgstr "Aktivitets-fönster"
+
+#: ../../src/iwMusicPlayer.cpp:76
+msgid "Add"
+msgstr "Lägg till"
+
+#. "Server hinzufügen"
+#: ../../src/dskLobby.cpp:74
+msgid "Add Server"
+msgstr "Starta server"
+
+#: ../../src/iwMusicPlayer.cpp:83 ../../src/iwMusicPlayer.cpp:218
+msgid "Add directory of tracks"
+msgstr "Lägg till katalog med spår"
+
+#. AddTextButton(5,b1->GetX(false),320,button_width,22,TC_GREEN2,_("Save"),NormalFont);
+#. AddTextButton(6,b2->GetX(false),320,button_width,22,TC_GREEN2,_("Load"),NormalFont);
+#. Buttons fÃŒr die MusikstÃŒcke
+#: ../../src/iwMusicPlayer.cpp:82 ../../src/iwMusicPlayer.cpp:212
+msgid "Add track"
+msgstr "Lägg till spår"
+
+#: ../../src/dskCredits.cpp:170
+msgid "Additional Graphics:"
+msgstr "Ytterligare grafik:"
+
+#: ../../src/dskCredits.cpp:156
+msgid "Additional Programming:"
+msgstr "Ytterligare programmering:"
+
+#: ../../src/iwAddons.cpp:46
+msgid "Additional features:"
+msgstr "Ytterligare funktioner:"
+
+#: ../../src/dskCredits.cpp:140
+msgid "Additional graphics"
+msgstr "Ytterligare grafik"
+
+#: ../../src/iwAddons.cpp:44
+msgid "Addon Settings"
+msgstr "Inställningar för tillägg"
+
+#: ../../src/dskOptions.cpp:80
+msgid "Addons"
+msgstr "Tillägg"
+
+#. "Enhancements"
+#: ../../src/dskHostGame.cpp:108
+msgid "Addons:"
+msgstr "Tillägg:"
 
 #: ../../src/AddonCatapultGraphics.h:40
 msgid "Adds new graphics for catapults to the game."
@@ -2573,112 +278,31 @@ msgstr "Lägger till ny grafik för katapulter i spelet."
 msgid "Adjust military strength"
 msgstr "Justera militär styrka"
 
-#: ../../src/AddonChangeGoldDeposits.h:39
-msgid ""
-"Allows to play games without gold.\n"
-"\n"
-"You can choose to remove gold resources completely,\n"
-"to convert them into iron ore, coal or granite.\n"
-"\n"
-"You'll probably want to convert gold to iron ore, as this (on most maps)\n"
-"allows you to utilize the additional coal not needed for minting anymore."
-msgstr ""
-"Möjliggör spel utan guld.\n"
-"\n"
-"Du kan välja att avlägsna guldresurser helt,\n"
-"att omvandla dem till järnmalm, kol eller granit.\n"
-"\n"
-"Du vill troligtvis omvandla guld till järnmalm, då detta (på de flesta "
-"kartor)\n"
-"låter dig använda den extra kolen som inte behövs för myntslagning längre."
+#. Advanced Options
+#: ../../src/iwOptionsWindow.cpp:105
+msgid "Advanced"
+msgstr "Avancerat"
 
-#: ../../src/AddonAdjustMilitaryStrength.h:48
-msgid ""
-"Allows you to modify the strength increase of military ranks\n"
-"\n"
-msgstr ""
-"Låter dig justera styrkeökningen för militära grader\n"
-"\n"
+#. Volk
+#: ../../src/dskHostGame.cpp:300 ../../src/dskHostGame.cpp:309
+#: ../../src/dskHostGame.cpp:823
+msgid "Africans"
+msgstr "Nubier"
 
-#: ../../src/SerializedGameData.cpp:235
-msgid "An error occured while saving which was suppressed!"
-msgstr "Fel vid sparning som hoppats över!"
+#. "Reihenfolge der Auftraggebung"
+#: ../../src/iwBuildOrder.cpp:68
+msgid "After the following order"
+msgstr "Använd den här ordningsföljden"
 
-#: ../../src/AddonChangeGoldDeposits.h:38
-msgid "Change gold deposits"
-msgstr "Ändra guldfyndigheter"
+#. "Alle"
+#: ../../src/iwAddons.cpp:59
+msgid "All"
+msgstr "Alla"
 
-#: ../../src/AddonChangeGoldDeposits.h:50
-msgid "Convert to coal"
-msgstr "Omvandla till kol"
-
-#: ../../src/AddonChangeGoldDeposits.h:51
-msgid "Convert to granite"
-msgstr "Omvandla till granit"
-
-#: ../../src/AddonChangeGoldDeposits.h:49
-msgid "Convert to iron ore"
-msgstr "Omvandla till järnmalm"
-
-#: ../../src/AddonAIDebugWindow.h:39
-msgid ""
-"Enable AI Debugging Window\n"
-"(possible cheating)"
-msgstr ""
-"Aktivera Avlusningsfönster för AI\n"
-"(fusk möjligt)"
-
-#: ../../src/AddonAdjustMilitaryStrength.h:52
-msgid "Maximum strength"
-msgstr "Maximal styrka"
-
-#: ../../src/AddonAdjustMilitaryStrength.h:53
-msgid "Medium strength"
-msgstr "Medelstyrka"
-
-#: ../../src/AddonAdjustMilitaryStrength.h:54
-msgid "Minimum strength"
-msgstr "Minimal styrka"
-
-#: ../../src/AddonChangeGoldDeposits.h:47
-msgid "No change"
-msgstr "Ingen ändring"
-
-#: ../../src/AddonCatapultGraphics.h:39
-msgid "Race specific catapult graphics"
-msgstr "Kulturspecifik katapultgrafik"
-
-#: ../../src/AddonChangeGoldDeposits.h:48
-msgid "Remove gold completely"
-msgstr "Ta bort gult helt"
-
-#: ../../src/AddonLimitCatapults.h:51
-msgid "10 catapults"
-msgstr "10 katapulter"
-
-#: ../../src/AddonLimitCatapults.h:52
-msgid "20 catapults"
-msgstr "20 katapulter"
-
-#: ../../src/AddonLimitCatapults.h:49
-msgid "3 catapults"
-msgstr "3 katapulter"
-
-#: ../../src/AddonLimitCatapults.h:53
-msgid "30 catapults"
-msgstr "30 katapulter"
-
-#: ../../src/AddonLimitCatapults.h:50
-msgid "5 catapults"
-msgstr "5 katapulter"
-
-#: ../../src/AddonDemolitionProhibition.h:43
-msgid "Active if attacked"
-msgstr "Verksam vid angrepp"
-
-#: ../../src/AddonDemolitionProhibition.h:44
-msgid "Active near frontiers"
-msgstr "Verksam vid gränsen"
+#. "Verbündete"
+#: ../../src/iwChat.cpp:57
+msgid "Allies"
+msgstr "Vänner"
 
 #: ../../src/AddonCustomBuildSequence.h:38
 msgid ""
@@ -2709,12 +333,8 @@ msgstr ""
 "(under ett anfall) efter försvararinställningen."
 
 #: ../../src/AddonDemolitionProhibition.h:38
-msgid ""
-"Allows to disable the demolition of military buildings under attack or near "
-"frontiers."
-msgstr ""
-"Möjliggör inaktivering av rivning av militärbyggnader som är under anfall "
-"eller nära gränsen."
+msgid "Allows to disable the demolition of military buildings under attack or near frontiers."
+msgstr "Möjliggör inaktivering av rivning av militärbyggnader som är under anfall eller nära gränsen."
 
 #: ../../src/AddonExhaustibleWells.h:38
 msgid ""
@@ -2736,6 +356,24 @@ msgstr ""
 "\n"
 "Gruvor sinar aldrig."
 
+#: ../../src/AddonChangeGoldDeposits.h:39
+msgid ""
+"Allows to play games without gold.\n"
+"\n"
+"You can choose to remove gold resources completely,\n"
+"to convert them into iron ore, coal or granite.\n"
+"\n"
+"You'll probably want to convert gold to iron ore, as this (on most maps)\n"
+"allows you to utilize the additional coal not needed for minting anymore."
+msgstr ""
+"Möjliggör spel utan guld.\n"
+"\n"
+"Du kan välja att avlägsna guldresurser helt,\n"
+"att omvandla dem till järnmalm, kol eller granit.\n"
+"\n"
+"Du vill troligtvis omvandla guld till järnmalm, då detta (på de flesta kartor)\n"
+"låter dig använda den extra kolen som inte behövs för myntslagning längre."
+
 #: ../../src/AddonTrade.h:37
 msgid "Allows to send wares/figures to allied warehouses"
 msgstr "Möjliggör transport av varor/figurer till allierades förrådshus."
@@ -2749,8 +387,7 @@ msgstr ""
 "och ditt krisprogram är aktivt."
 
 #: ../../src/AddonRefundMaterials.h:38
-msgid ""
-"Allows you to get building materials back if the building is destroyed."
+msgid "Allows you to get building materials back if the building is destroyed."
 msgstr "Låter dig få tillbaka byggmaterial om byggnaden förstörs."
 
 #: ../../src/AddonManualRoadEnlargement.h:38
@@ -2761,13 +398,388 @@ msgstr ""
 "Låter dig manuellt uppgradera dina vägar\n"
 "och bygga åsnevägar direkt."
 
+#: ../../src/AddonAdjustMilitaryStrength.h:48
+msgid ""
+"Allows you to modify the strength increase of military ranks\n"
+"\n"
+msgstr ""
+"Låter dig justera styrkeökningen för militära grader\n"
+"\n"
+
+#: ../../src/SerializedGameData.cpp:235
+msgid "An error occured while saving which was suppressed!"
+msgstr "Fel vid sparning som hoppats över!"
+
+#: ../../src/AIPlayerJH.cpp:78
+msgid "And I may crash your game sometimes..."
+msgstr "Och ibland kraschar jag ditt spel..."
+
+#: ../../src/dskGameLoader.cpp:175
+msgid "And let's go!"
+msgstr "Nu kör vi!"
+
+#: ../../src/iwAddons.cpp:49
+msgid "Apply Changes"
+msgstr "Verkställ Ändringar"
+
+#: ../../src/iwPlayReplay.cpp:93
+msgid "Are you sure to remove all replays?"
+msgstr "Vill du ta bort alla replayer?"
+
+#: ../../src/GameConsts.h:384
+msgid "Armorer"
+msgstr "Vapensmed"
+
+#. Schmiede
+#: ../../src/iwDistribution.cpp:106 ../../src/iwDistribution.cpp:116
+msgid "Armory"
+msgstr "Vapensmedja"
+
+#: ../../src/dskCredits.cpp:132
+msgid "Artificial Intelligence (AI)"
+msgstr "Artificiell intelligens (AI)"
+
+#: ../../src/iwDiplomacy.cpp:194
+msgid "As the teams are locked, you cannot make treaties of any kind."
+msgstr "Eftersom lagen är låsta kan du inte göra någon form av avtal."
+
+#. Angriff nicht  mÃ¶glich!
+#: ../../src/iwAction.cpp:387
+msgid "Attack not possible."
+msgstr "Angrepp omöjligt!"
+
+#: ../../src/iwAction.cpp:320 ../../src/iwAction.cpp:328
+msgid "Attack options"
+msgstr "Angreppsalternativ"
+
+#. Angriffsbutton
+#: ../../src/iwAction.cpp:412
+msgid "Attack!"
+msgstr "Angrepp!"
+
+#: ../../src/dskSelectMap.cpp:100
+msgid "Author"
+msgstr "Författare"
+
+#: ../../src/GameClient.cpp:1416 ../../src/GameClient.cpp:1420
+msgid "Auto-Save"
+msgstr "Autosparning"
+
+#. Autospeicherzeug
+#: ../../src/iwSave.cpp:196
+msgid "Auto-Save every:"
+msgstr "Autosparning var:"
+
+#: ../../src/iwTools.cpp:51
+msgid "Axe"
+msgstr "Yxa"
+
+#. "Zurück"
+#. ZurÃŒck
+#. "Zurück"
+#: ../../src/dskAboutRTTR.cpp:55 ../../src/dskCredits.cpp:69
+#: ../../src/dskDirectIP.cpp:65
+msgid "Back"
+msgstr "Tillbaka"
+
+#: ../../src/GameConsts.h:375
+msgid "Baker"
+msgstr "Bagare"
+
+#. Bäckerei
+#: ../../src/iwDistribution.cpp:152
+msgid "Bakery"
+msgstr "Bageri"
+
+#: ../../src/GameConsts.h:281
+msgid "Barracks"
+msgstr "Barack"
+
+#: ../../src/iwMerchandiseStatistics.cpp:76
+msgid "Beer"
+msgstr "Öl"
+
+#. Brettergruppe
+#: ../../src/iwDistribution.cpp:136
+msgid "Boards"
+msgstr "Brädor"
+
+#. Bogen
+#. 15
+#: ../../src/GameConsts.h:205
+msgid "Boat"
+msgstr "Båt"
+
+#: ../../src/iwMerchandiseStatistics.cpp:86
+msgid "Boats"
+msgstr "Båtar"
+
+#: ../../src/iwMilitary.cpp:58
+msgid "Border areas"
+msgstr "Vid riksgränsen"
+
+#. Nach ganz unten
+#: ../../src/iwBuildOrder.cpp:61
+msgid "Bottom"
+msgstr "Slut"
+
+#: ../../src/iwTools.cpp:61
+msgid "Bow"
+msgstr "Båge"
+
+#. Fisch
+#. 20
+#: ../../src/GameConsts.h:210
+msgid "Bread"
+msgstr "Bröd"
+
+#: ../../src/GameConsts.h:378
+msgid "Brewer"
+msgstr "Bryggare"
+
+#. Brauerei
+#: ../../src/iwDistribution.cpp:96 ../../src/iwDistribution.cpp:155
+msgid "Brewery"
+msgstr "Bryggeri"
+
+#: ../../src/iwAction.cpp:264 ../../src/iwAction.cpp:271
+#: ../../src/iwAction.cpp:279 ../../src/iwAction.cpp:283
+msgid "Build road"
+msgstr "Bygg en väg"
+
+#: ../../src/iwAction.cpp:272
+msgid "Build waterway"
+msgstr "Bygg vattenväg"
+
+#: ../../src/GameConsts.h:385
+msgid "Builder"
+msgstr "Byggare"
+
+#: ../../src/iwBuildOrder.cpp:45 ../../src/iwMainMenu.cpp:90
+msgid "Building sequence"
+msgstr "Byggordning"
+
+#. / Konstruktor von @p iwMilitary.
+#: ../../src/iwBuildings.cpp:79
+msgid "Buildings"
+msgstr "Byggnader"
+
+#: ../../src/GameConsts.h:376
+msgid "Butcher"
+msgstr "Slaktare"
+
+#: ../../src/iwAction.cpp:266 ../../src/iwAction.cpp:274
+msgid "Call in geologist"
+msgstr "Kalla på en geolog"
+
+#. "Kampagne"
+#: ../../src/dskSelectMap.cpp:122 ../../src/dskSinglePlayer.cpp:75
+msgid "Campaign"
+msgstr "Fälttåg"
+
+#: ../../src/iwMsgbox.cpp:72 ../../src/iwMsgbox.cpp:87
+msgid "Cancel"
+msgstr "Avbryt"
+
+#: ../../src/iwHarborBuilding.cpp:91 ../../src/iwHarborBuilding.cpp:122
+msgid "Cancel expedition"
+msgstr "Avbryt expedition"
+
+#: ../../src/dskHostGame.cpp:584 ../../src/dskHostGame.cpp:808
+msgid "Cancel start"
+msgstr "Avbryt start"
+
+#: ../../src/GameConsts.h:370
+msgid "Carpenter"
+msgstr "Timmerman"
+
+#: ../../src/GameConsts.h:296
+msgid "Catapult"
+msgstr "Katapult"
+
+#: ../../src/iwMilitary.cpp:55
+msgid "Center of country"
+msgstr "Förort"
+
+#: ../../src/dskHostGame.cpp:109
+msgid "Change Settings..."
+msgstr "Ändra inställningar..."
+
 #: ../../src/AddonDefenderBehavior.h:38
 msgid "Change defender behavior"
 msgstr "Ändra försvararbeteende."
 
+#: ../../src/AddonChangeGoldDeposits.h:38
+msgid "Change gold deposits"
+msgstr "Ändra guldfyndigheter"
+
 #: ../../src/AddonStatisticsVisibility.h:37
 msgid "Change the visibility of your ingame statistics"
 msgstr "Ändra synlighet för din statistik i spelet"
+
+#. Charburner
+#: ../../src/iwDistribution.cpp:99 ../../src/iwDistribution.cpp:132
+msgid "Charburner"
+msgstr "Kolarbostad"
+
+#: ../../src/iwChat.cpp:48
+msgid "Chat Window"
+msgstr "Chatfönster"
+
+#: ../../src/iwDirectIPConnect.cpp:281
+msgid "Checking Map..."
+msgstr "Kontrollerar Kartan..."
+
+#: ../../src/iwDirectIPConnect.cpp:280
+msgid "Checking Password..."
+msgstr "Kontrollerar lösenordet..."
+
+#: ../../src/dskHostGame.cpp:119
+msgid "Classic (Settlers 2)"
+msgstr "Klassiskt (Settlers 2)"
+
+#. "Einstufung"
+#: ../../src/dskHostGame.cpp:64
+msgid "Classification"
+msgstr "Klassificering"
+
+#. Aufräumen
+#. Sicherheitsabfrage, ob der Benutzer auch wirklich alle löschen möchte
+#: ../../src/iwPlayReplay.cpp:68 ../../src/iwPlayReplay.cpp:93
+msgid "Clear"
+msgstr "Töm"
+
+#: ../../src/iwTools.cpp:59
+msgid "Cleaver"
+msgstr "Köttyxa"
+
+#: ../../src/iwAddons.cpp:51
+msgid "Close Without Saving"
+msgstr "Stäng utan att spara"
+
+#. Geschlossen
+#: ../../src/dskHostGame.cpp:265
+msgid "Closed"
+msgstr "Stängd"
+
+#. Kohlegruppe
+#: ../../src/iwDistribution.cpp:113
+msgid "Coal"
+msgstr "Kol"
+
+#. Kohlebergwerk
+#: ../../src/iwDistribution.cpp:74
+msgid "Coal mine"
+msgstr "Kolgruva"
+
+#: ../../src/iwMerchandiseStatistics.cpp:83
+msgid "Coins"
+msgstr "Mynt"
+
+#. Einlagern
+#: ../../src/iwBaseWarehouse.cpp:62
+msgid "Collect"
+msgstr "Samla in"
+
+#. "Farbe"
+#: ../../src/dskHostGame.cpp:68
+msgid "Color"
+msgstr "Färg"
+
+#. "Allgemein"
+#: ../../src/dskOptions.cpp:83
+msgid "Common"
+msgstr "Allmän"
+
+#: ../../src/GameClient.cpp:608
+#, c-format
+msgid "Computer %u"
+msgstr "Dator %u"
+
+#: ../../src/iwDiplomacy.cpp:292
+msgid "Confirm"
+msgstr "Bekräfta"
+
+#. "Verbinden"
+#: ../../src/dskLobby.cpp:70
+msgid "Connect"
+msgstr "Koppla"
+
+#: ../../src/iwLobbyConnect.cpp:50
+msgid "Connecting to Lobby"
+msgstr "Koppla till internet-lobby"
+
+#. Text auf "Verbinde mit Host..." setzen und Button deaktivieren
+#: ../../src/iwDirectIPConnect.cpp:167 ../../src/iwLobbyConnect.cpp:207
+msgid "Connecting with Host..."
+msgstr "Kopplar till servern..."
+
+#. Text auf "Verbindung fehlgeschlagen" setzen und Button aktivieren
+#: ../../src/iwDirectIPConnect.cpp:173 ../../src/iwLobbyConnect.cpp:216
+msgid "Connection failed!"
+msgstr "Koppling slog fel!"
+
+#: ../../src/iwDirectIPConnect.cpp:261
+msgid "Connection to Host closed!"
+msgstr "Koppling till servern är avbryten!"
+
+#. Kein Spielziel
+#: ../../src/dskHostGame.cpp:135
+msgid "Conquer 3/4 of map"
+msgstr "Erövring av 3/4 av jorden"
+
+#. Baustellen
+#: ../../src/iwDistribution.cpp:139
+msgid "Construction"
+msgstr "Byggplatser"
+
+#: ../../src/dskGameInterface.cpp:109
+msgid "Construction aid mode"
+msgstr "Byggningshjälp"
+
+#. "Kontinente"
+#: ../../src/dskSelectMap.cpp:120
+msgid "Continents"
+msgstr "Världsdelar"
+
+#. "Weiter"
+#: ../../src/dskSelectMap.cpp:110
+msgid "Continue"
+msgstr "Fortsätt"
+
+#: ../../src/iwDiplomacy.cpp:272
+msgid "Contract type:"
+msgstr "Kontrakttyp:"
+
+#: ../../src/AddonChangeGoldDeposits.h:50
+msgid "Convert to coal"
+msgstr "Omvandla till kol"
+
+#: ../../src/AddonChangeGoldDeposits.h:51
+msgid "Convert to granite"
+msgstr "Omvandla till granit"
+
+#: ../../src/AddonChangeGoldDeposits.h:49
+msgid "Convert to iron ore"
+msgstr "Omvandla till järnmalm"
+
+#: ../../src/dskDirectIP.cpp:61
+msgid "Create Game"
+msgstr "Starta server"
+
+#. "Credits"
+#: ../../src/dskCredits.cpp:75
+msgid "Credits"
+msgstr "Credits"
+
+#: ../../src/iwTools.cpp:56
+msgid "Crucible"
+msgstr "Smältdegel"
+
+#: ../../src/dskGameInterface.cpp:251
+#, c-format
+msgid "Current GF: %u / GF length: %u ms / NWF length: %u gf (%u ms) /  Ping: %u ms"
+msgstr "Nuvarande GF: %u / GF-längd: %u ms / NWF-längd: %u gf (%u ms) / Ping: %u ms"
 
 #: ../../src/AddonCustomBuildSequence.h:37
 msgid "Custom build sequence"
@@ -2783,6 +795,62 @@ msgstr ""
 "\n"
 "\"Allierade\" gäller för både lagmedlemmar och allierade via fördrag."
 
+#: ../../src/BuildingConsts.h:350
+msgid "Deep within the mountains, miners dig for iron ore. They will obviously need a lot of food for the strenuous work."
+msgstr "Djupt under bergen gräver gruvarbetarna efter järnmalm. De behöver förstås mycket mat för att klara av detta tunga arbete."
+
+#. Standard
+#. Standardbelegung
+#: ../../src/iwBuildOrder.cpp:74 ../../src/iwDistribution.cpp:180
+msgid "Default"
+msgstr "Standard"
+
+#. Mülleimer
+#: ../../src/iwMerchandiseStatistics.cpp:92
+msgid "Delete all"
+msgstr "Radera allt"
+
+#. Abreißen
+#: ../../src/iwAction.cpp:284 ../../src/iwBaseWarehouse.cpp:112
+#: ../../src/iwBuilding.cpp:88
+msgid "Demolish house"
+msgstr "Riv huset"
+
+#: ../../src/iwDemolishBuilding.cpp:43
+msgid "Demolish?"
+msgstr "Riva huset?"
+
+#: ../../src/iwMilitaryBuilding.cpp:177
+msgid "Demolition ist not allowed because the building is located in border area!"
+msgstr "Det är förbjudet att riva ett hus vid riksgränsen."
+
+#: ../../src/iwMilitaryBuilding.cpp:176
+msgid "Demolition ist not allowed because the building is under attack!"
+msgstr "Det är förbjudet att riva ett hus som angrips."
+
+#: ../../src/iwMilitaryBuilding.cpp:180
+msgid "Demolition not possible"
+msgstr "Rivningen förbjuden"
+
+#. Ok + Abbrennen
+#: ../../src/iwSurrender.cpp:54
+msgid "Destroy all buildings and surrender"
+msgstr "Förstör alla byggnader och ge upp"
+
+#: ../../src/iwAction.cpp:308 ../../src/iwAction.cpp:315
+msgid "Dig up road"
+msgstr "Riv vägen"
+
+#. Diplomatie (todo: besseres Bild suchen)
+#: ../../src/iwDiplomacy.cpp:76 ../../src/iwMainMenu.cpp:93
+msgid "Diplomacy"
+msgstr "Diplomati"
+
+#. "Direkte IP"
+#: ../../src/dskMultiPlayer.cpp:69
+msgid "Direct IP"
+msgstr "Direkt med IP-adressen"
+
 #: ../../src/AddonDemolitionProhibition.h:37
 msgid "Disable Demolition of military buildings"
 msgstr "Inaktivera rivning av militärbyggnader"
@@ -2791,13 +859,142 @@ msgstr "Inaktivera rivning av militärbyggnader"
 msgid "Disable coins by default"
 msgstr "Inaktivera mynt som förval"
 
+#: ../../src/dskOptions.cpp:301
+msgid "Disabled"
+msgstr "inte aktiverat"
+
 #: ../../src/AddonDefenderBehavior.h:47
 msgid "Disallow change"
 msgstr "Förbjud ändring"
 
+#: ../../src/iwAction.cpp:339
+msgid "Display options"
+msgstr "Displayalternativ"
+
+#. Verteilung
+#: ../../src/iwDistribution.cpp:57 ../../src/iwMainMenu.cpp:67
+msgid "Distribution of goods"
+msgstr "Fördelning av varorna"
+
+#: ../../src/dskHostGame.cpp:641
+msgid "Don't forget to check the addon configuration!"
+msgstr "Glömt inte att kontrollera inställningar för tillägg!"
+
+#. Abbrechen
+#: ../../src/iwSurrender.cpp:56
+msgid "Don't surrender"
+msgstr "Ge inte upp"
+
+#: ../../src/dskCredits.cpp:190
+msgid "Donators"
+msgstr "Givare"
+
+#: ../../src/GameConsts.h:380
+msgid "Donkey breeder"
+msgstr "Åsneuppfödare"
+
+#. Eselzucht
+#: ../../src/iwDistribution.cpp:93 ../../src/iwDistribution.cpp:161
+msgid "Donkey breeding"
+msgstr "Åsneuppfödning"
+
+#. Runter
+#: ../../src/iwBuildOrder.cpp:59
+msgid "Down"
+msgstr "Ner"
+
+#: ../../src/iwMusicPlayer.cpp:86
+msgid "Downwards"
+msgstr "Neråt"
+
+#: ../../src/GameClient.cpp:621
+#, c-format
+msgid "Dummy %u"
+msgstr "Test %u"
+
+#: ../../src/iwDiplomacy.cpp:276
+msgid "Duration:"
+msgstr "Varaktighet:"
+
+#: ../../src/PostMsg.cpp:122
+#, c-format
+msgid "Duration: %u GF (%s)"
+msgstr "Varaktighet: %u GF (%s)"
+
+#: ../../src/PostMsg.cpp:120
+msgid "Duration: Forever"
+msgstr "Varaktighet: För evigt"
+
+#: ../../src/dskOptions.cpp:307
+msgid "Dynamic (Limits to display refresh rate, works with most drivers)"
+msgstr "Dynamisk (begränsningar för skärmens uppdateringshastighet, fungerar med de flesta drivrutiner)"
+
+#. "Wirtschaft"
+#: ../../src/iwAddons.cpp:63
+msgid "Economy"
+msgstr "Ekonomi"
+
+#. Effekte
+#: ../../src/dskOptions.cpp:244
+msgid "Effects"
+msgstr "Effekter:"
+
+#. Emailadresse
+#: ../../src/iwLobbyConnect.cpp:64
+msgid "Email Address:"
+msgstr "Emailadress:"
+
+#: ../../src/AddonAIDebugWindow.h:39
+msgid ""
+"Enable AI Debugging Window\n"
+"(possible cheating)"
+msgstr ""
+"Aktivera Avlusningsfönster för AI\n"
+"(fusk möjligt)"
+
 #: ../../src/AddonCharburner.h:36
 msgid "Enable charburner"
 msgstr "Använd kolarbostad."
+
+#. "Spiel beenden"
+#: ../../src/iwOptionsWindow.cpp:110
+msgid "End game"
+msgstr "Avsluta spelet"
+
+#: ../../src/iwEndgame.cpp:48
+msgid "End game?"
+msgstr "Avsluta spelet?"
+
+#. "Feinde"
+#: ../../src/iwChat.cpp:59
+msgid "Enemies"
+msgstr "Fiende"
+
+#: ../../src/iwAction.cpp:258 ../../src/iwAction.cpp:292
+#: ../../src/iwAction.cpp:302
+msgid "Erect flag"
+msgstr "Sätta fana"
+
+#: ../../src/dskGameLoader.cpp:199
+msgid "Error"
+msgstr "Fel"
+
+#: ../../src/iwPlayReplay.cpp:119
+msgid "Error while opening file!"
+msgstr "Fel vid öppning av filen!"
+
+#: ../../src/iwPlayReplay.cpp:118 ../../src/iwPlayReplay.cpp:128
+msgid "Error while playing replay!"
+msgstr "Fel vid"
+
+#: ../../src/iwPlayReplay.cpp:121
+msgid "Error: Replay is too old!"
+msgstr "Fel: Replayversionen är för gammal!"
+
+#. Option "ewig" noch hinzufügen
+#: ../../src/iwDiplomacy.cpp:290
+msgid "Eternal"
+msgstr "Evig"
 
 #: ../../src/AddonStatisticsVisibility.h:44
 msgid "Everyone"
@@ -2807,13 +1004,448 @@ msgstr "Alla"
 msgid "Exhaustible Wells"
 msgstr "Sinande brunnar"
 
+#. "Expedition"-Ãberschrift
+#: ../../src/iwHarborBuilding.cpp:53
+msgid "Expedition"
+msgstr "Expedition"
+
+#. "Expedition"-Ãberschrift
+#: ../../src/iwHarborBuilding.cpp:60
+msgid "Exploration expedition"
+msgstr "Upptäcksresa"
+
+#. umgedrehte Reihenfolge, damit die Listen nicht dahinter sind
+#. "Aufklärung"
+#: ../../src/dskHostGame.cpp:116
+msgid "Exploration:"
+msgstr "Sikte:"
+
+#: ../../src/dskGameLoader.cpp:148
+msgid "Failed to load addon objects."
+msgstr "Misslyckades med att ladda tilläggsobjekt."
+
+#: ../../src/dskGameLoader.cpp:140
+msgid "Failed to load map objects."
+msgstr "Fel vid laddning av kartobjekterna."
+
+#: ../../src/dskGameLoader.cpp:163
+msgid "Failed to load terrain data."
+msgstr "Fel vid laddning av landskapsinformationen."
+
+#: ../../src/GameConsts.h:317
+msgid "Farm"
+msgstr "Bondgård"
+
+#: ../../src/GameConsts.h:373
+msgid "Farmer"
+msgstr "Bonde"
+
+#. Normal
+#: ../../src/dskHostGame.cpp:155
+msgid "Fast"
+msgstr "Fort"
+
+#: ../../src/iwMilitary.cpp:52
+msgid "Fewer defenders"
+msgstr "Färre försvarare"
+
+#. Einzelne Balken
+#: ../../src/iwMilitary.cpp:50
+msgid "Fewer recruits"
+msgstr "Färre rekryter"
+
+#: ../../src/iwPlayReplay.cpp:63 ../../src/iwSave.cpp:67
+msgid "Filename"
+msgstr "Filnamn"
+
+#. Mehl
+#. 19
+#: ../../src/GameConsts.h:209
+msgid "Fish"
+msgstr "Fisk"
+
+#: ../../src/GameConsts.h:368
+msgid "Fisher"
+msgstr "Fiskare"
+
+#: ../../src/GameConsts.h:298
+msgid "Fishery"
+msgstr "Fiskeri"
+
+#. Eisen
+#. 18
+#: ../../src/GameConsts.h:208
+msgid "Flour"
+msgstr "Mjöl"
+
+#: ../../src/dskHostGame.cpp:121
+msgid "FoW - all explored"
+msgstr "Krigsdimma - allt synligt"
+
+#: ../../src/dskHostGame.cpp:120
+msgid "Fog of War"
+msgstr "Krigsdimma"
+
+#: ../../src/iwMerchandiseStatistics.cpp:74
+msgid "Food"
+msgstr "Mat"
+
+#. Nahrungsgruppe
+#: ../../src/iwDistribution.cpp:69
+msgid "Foodstuff"
+msgstr "Mat"
+
+#: ../../src/GameConsts.h:300
+msgid "Forester"
+msgstr "Skogvakteri"
+
+#: ../../src/GameConsts.h:289
+msgid "Fortress"
+msgstr "Borg"
+
+#: ../../src/nofGeologist.cpp:499
+msgid "Found coal"
+msgstr "Kol har hittats"
+
+#. "Gehe Zu Ort"
+#. Die Expeditionsweiterfahrbuttons
+#: ../../src/iwShip.cpp:72
+msgid "Found colony"
+msgstr "Grunda koloni"
+
+#: ../../src/nofGeologist.cpp:497
+msgid "Found gold"
+msgstr "Hittade guld"
+
+#: ../../src/nofGeologist.cpp:501
+msgid "Found granite"
+msgstr "Hittade granit"
+
+#: ../../src/nofGeologist.cpp:495
+msgid "Found iron ore"
+msgstr "Hittade järnmalm"
+
+#: ../../src/nofGeologist.cpp:503
+msgid "Found water"
+msgstr "Hittade vatten"
+
+#: ../../src/BuildingConsts.h:366
+msgid "From the lookout tower you can see far into previously unexplored lands."
+msgstr "En spejare kan titta långt in i landet från en utkikspost."
+
+#: ../../src/dskOptions.cpp:182
+msgid "Fullscreen"
+msgstr "Hela bildskärmen"
+
+#. "Auflösung"
+#: ../../src/dskOptions.cpp:176
+msgid "Fullscreen resolution:"
+msgstr "Upplösning vid helskärm:"
+
+#: ../../src/dskHostGame.cpp:587
+msgid "Game can only be started as soon as everybody has a unique color,everyone is ready and all free slots are closed."
+msgstr "Spelet kan först startas när alla spelare har egen färg, är klara och alla öppna platser är stängda."
+
+#: ../../src/dskGameLoader.cpp:155
+msgid "Game crate was picked and spread out..."
+msgstr "Spelkista hittat och utspritt..."
+
+#: ../../src/iwOptionsWindow.cpp:59
+msgid "Game menu"
+msgstr "Spelfönster"
+
+#: ../../src/dskGameInterface.cpp:1091
+msgid "Game was paused."
+msgstr "Spelet pausat."
+
+#: ../../src/dskGameInterface.cpp:1120
+msgid "Game was resumed."
+msgstr "Spelet fortsätts."
+
+#. "Name des Spiels"
+#: ../../src/iwDirectIPCreate.cpp:55
+msgid "Game's Name:"
+msgstr "Spelnamn:"
+
+#. "Spielverhalten"
+#: ../../src/iwAddons.cpp:65
+msgid "Gameplay"
+msgstr "Spelkänsla"
+
+#: ../../src/GameConsts.h:391
+msgid "General"
+msgstr "General"
+
+#. Statistiken
+#: ../../src/iwMainMenu.cpp:74
+msgid "General statistics"
+msgstr "Allmän statistik"
+
+#: ../../src/GameConsts.h:392
+msgid "Geologist"
+msgstr "Geolog"
+
 #: ../../src/AddonRefundMaterials.h:46
 msgid "Get all back"
 msgstr "Få allt tillbaka"
 
+#: ../../src/iwAction.cpp:343
+msgid "Go to headquarters"
+msgstr "Gå till högkvartern"
+
+#. "Gehe Zu Ort"
+#. "Gehe Zum Ort"
+#. "Gehe Zu Ort"
+#: ../../src/iwBaseWarehouse.cpp:73 ../../src/iwBuilding.cpp:103
+#: ../../src/iwBuildingSite.cpp:65
+msgid "Go to place"
+msgstr "Gå hit"
+
+#. "Spielziel"
+#: ../../src/dskHostGame.cpp:132
+msgid "Goals:"
+msgstr "Mål:"
+
+#: ../../src/iwMerchandiseStatistics.cpp:81
+msgid "Gold"
+msgstr "Guld"
+
+#. Goldbergwerk
+#: ../../src/iwDistribution.cpp:80
+msgid "Gold mine"
+msgstr "Guldgruva"
+
+#. "Waren zu Beginn"
+#: ../../src/dskHostGame.cpp:124
+msgid "Goods at start:"
+msgstr "Varor till början:"
+
+#. Getreidegruppe
+#: ../../src/iwDistribution.cpp:84
+msgid "Grain"
+msgstr "Säd"
+
+#: ../../src/BuildingConsts.h:454
+msgid "Grain and water are needed for rearing pigs. The meat thus obtained can then be processed by a butcher."
+msgstr "Grisuppfödaren behöver vatten och säd för att föda upp feta grisar. En slaktare kan portionera köttet åt gruvarbetarna."
+
+#. Granitbergwerk
+#: ../../src/iwDistribution.cpp:71
+msgid "Granite mine"
+msgstr "Granitgruva"
+
+#. "Grafik"
+#: ../../src/dskOptions.cpp:85
+msgid "Graphics"
+msgstr "Grafik"
+
+#. "Grafiktreiber"
+#: ../../src/dskOptions.cpp:200
+msgid "Graphics Driver"
+msgstr "Drivrutin:"
+
+#: ../../src/dskSelectMap.cpp:422
+msgid "Greenland"
+msgstr "Gröna ängar"
+
+#: ../../src/GameConsts.h:282
+msgid "Guardhouse"
+msgstr "Vaktstuga"
+
+#. Fleisch
+#. 33
+#: ../../src/GameConsts.h:223
+msgid "Ham"
+msgstr "Gris"
+
+#: ../../src/iwTools.cpp:54
+msgid "Hammer"
+msgstr "Hammare"
+
+#: ../../src/iwHarborBuilding.cpp:47
+msgid "Harbor building"
+msgstr "Hamnanläggning"
+
+#. WindowManager::inst().Show(new iwTrade(gwv,this,gwv->GetSpecObj<nobHQ>(cselx,csely)));
+#: ../../src/dskGameInterface.cpp:403
+msgid "Headquarters"
+msgstr "Högkvarter"
+
+#. Info
+#. Hilfe-Button
+#: ../../src/iwBuilding.cpp:86 ../../src/iwBuildingProductivities.cpp:106
+#: ../../src/iwBuildings.cpp:92
+msgid "Help"
+msgstr "Hjälp"
+
+#: ../../src/GameConsts.h:366
+msgid "Helper"
+msgstr "Hjälpare"
+
+#: ../../src/AIPlayerJH.cpp:77
+msgid "Hi, I'm an artifical player and I'm not very good yet!"
+msgstr "Hej, jag är en artificiell spelare och jag är inte så bra än!"
+
+#: ../../src/iwLobbyServerInfo.cpp:79
+msgid "Host:"
+msgstr "Host:"
+
+#: ../../src/iwAction.cpp:342
+msgid "House names"
+msgstr "Husnamn"
+
+#: ../../src/GameConsts.h:302
+msgid "Hunter"
+msgstr "Jägarshydda"
+
+#: ../../src/GameConsts.h:372
+msgid "Huntsman"
+msgstr "Jägare"
+
+#. Gameserver-Tabelle - "ID", "Server", "Karte", "Spieler", "Version", "Ping"
+#: ../../src/dskLobby.cpp:77
+msgid "ID"
+msgstr "ID"
+
+#. "IP - Adresse vom Host"
+#: ../../src/iwDirectIPConnect.cpp:55
+msgid "IP Address of Host:"
+msgstr "IP-adress av servern:"
+
+#: ../../src/dskOptions.cpp:130
+msgid "IPv4"
+msgstr "IPv4"
+
+#: ../../src/dskOptions.cpp:129
+msgid "IPv6"
+msgstr "IPv6"
+
+#: ../../src/dskSelectMap.cpp:353
+msgid "Incomplete message was received!"
+msgstr "Ofullständigt meddelande erhållits."
+
 #: ../../src/AddonInexhaustibleMines.h:37
 msgid "Inexhaustible Mines"
 msgstr "Aldrig sinande gruvor"
+
+#: ../../src/iwStatistics.cpp:118 ../../src/iwStatistics.cpp:219
+msgid "Inhabitants"
+msgstr "Invånare"
+
+#: ../../src/iwMilitary.cpp:54
+msgid "Interior"
+msgstr "Inland"
+
+#. "Internet - Lobby"
+#: ../../src/dskMultiPlayer.cpp:65
+msgid "Internet Lobby"
+msgstr "Internet-Lobby"
+
+#. "Internet Ranking"
+#: ../../src/dskLobby.cpp:72
+msgid "Internet Ranking"
+msgstr "Internet-Ranking"
+
+#. Bau abbrechen
+#: ../../src/iwRoadWindow.cpp:50
+msgid "Interrupt road building"
+msgstr "Avbryt vägsbyggning"
+
+#. "Intro"
+#: ../../src/dskMainMenu.cpp:82
+msgid "Intro"
+msgstr "Intro"
+
+#: ../../src/iwPlayReplay.cpp:120
+msgid "Invalid Replay!"
+msgstr "Ogiltig replay!"
+
+#: ../../src/iwDirectIPConnect.cpp:156 ../../src/iwDirectIPCreate.cpp:177
+msgid "Invalid port. The valid port-range is 1 to 65535!"
+msgstr "Ogiltig port. Giltiga porter liggar mellan 1 och 65535!"
+
+#. Eisengruppe
+#: ../../src/iwDistribution.cpp:103
+msgid "Iron"
+msgstr "Järn"
+
+#: ../../src/GameConsts.h:381
+msgid "Iron founder"
+msgstr "Järnsmältare"
+
+#. Eisenbergwerk
+#: ../../src/iwDistribution.cpp:77
+msgid "Iron mine"
+msgstr "Järngruva"
+
+#: ../../src/iwTransport.cpp:64
+msgid "Iron ore"
+msgstr "Järnmalm"
+
+#. Eisenschmelze
+#: ../../src/iwDistribution.cpp:119
+msgid "Iron smelter"
+msgstr "Smältverk"
+
+#. untere Reihe
+#: ../../src/iwMerchandiseStatistics.cpp:80
+msgid "Ironore"
+msgstr "Järnmalm"
+
+#: ../../src/BuildingConsts.h:516
+msgid "It is possible to build small rowing boats as well as huge cargo ships in a shipyard. The boards required for this are skillfully worked by shipwrights."
+msgstr "I skeppsvarven byggs såväl små roddbåtar som stora fraktskepp. Därtill bearbetar skeppsbyggaren bräden skickligt."
+
+#: ../../src/dskHostGame.cpp:823
+msgid "Japaneses"
+msgstr "Japaner"
+
+#: ../../src/dskDirectIP.cpp:62
+msgid "Join Game"
+msgstr "Gå med"
+
+#: ../../src/dskGameInterface.cpp:624
+msgid "Keyboard layout"
+msgstr "Tangentbordslayout"
+
+#. Tastaturlayout
+#: ../../src/dskOptions.cpp:122
+msgid "Keyboard layout:"
+msgstr "Tangentbordslayout:"
+
+#. "Sprache"
+#: ../../src/dskOptions.cpp:103
+msgid "Language:"
+msgstr "Språk:"
+
+#: ../../src/iwPlayReplay.cpp:63
+msgid "Length"
+msgstr "Längd"
+
+#: ../../src/ctrlProgress.cpp:75
+msgid "Less"
+msgstr "Mindre"
+
+#. Minus und Plus - Button
+#: ../../src/iwAction.cpp:394
+msgid "Less attackers"
+msgstr "Färre angripare"
+
+#: ../../src/iwTools.cpp:50 ../../src/iwTools.cpp:51 ../../src/iwTools.cpp:52
+#: ../../src/iwTools.cpp:53 ../../src/iwTools.cpp:54 ../../src/iwTools.cpp:55
+#: ../../src/iwTools.cpp:56 ../../src/iwTools.cpp:57 ../../src/iwTools.cpp:58
+#: ../../src/iwTools.cpp:59 ../../src/iwTools.cpp:60 ../../src/iwTools.cpp:61
+msgid "Less often"
+msgstr "mindre ofta"
+
+#: ../../src/iwMusicPlayer.cpp:88
+msgid "Less repeats"
+msgstr "Färre upprepningar"
+
+#. "VSync"
+#: ../../src/dskOptions.cpp:186
+msgid "Limit Framerate:"
+msgstr "Begränsa bildhastighet:"
 
 #: ../../src/AddonLimitCatapults.h:37
 msgid "Limit count of catapults"
@@ -2823,17 +1455,14 @@ msgstr "Begränsa antalet katapulter"
 msgid ""
 "Limits the count of catapults per player.\n"
 "\n"
-"Proportional uses 0.125 catapult per barrack (you need 8 baracks for one "
-"catapult)\n"
-"                  0.25           per guardhouse (4 guardhouses per "
-"catapult)\n"
+"Proportional uses 0.125 catapult per barrack (you need 8 baracks for one catapult)\n"
+"                  0.25           per guardhouse (4 guardhouses per catapult)\n"
 "                  0.5            per watchtower (2 watchtower per catapult)\n"
 "                  1              per fortress (1 fortress per catapult)\n"
 msgstr ""
 "Begränsar antalet katapulter per spelare.\n"
 "\n"
-"Proportionellt använder 0,125 katapulter per barack (du behöver 8 baracker "
-"för en katapult)\n"
+"Proportionellt använder 0,125 katapulter per barack (du behöver 8 baracker för en katapult)\n"
 "                  0,25 per vaktstuga (4 vaktstugor per katapult)\n"
 "                  0.5 per vakttorn (2 vakttorn per katapult)\n"
 "                  1 per borg (1 borg per katapult)\n"
@@ -2860,33 +1489,672 @@ msgstr ""
 "Mycket långt: 21 rutor\n"
 "och Obegränsat."
 
+#: ../../src/iwOptionsWindow.cpp:77
+msgid "Load 'ReadMe' file"
+msgstr "Ladda 'läs mig'-fil"
+
+#. "Spiel laden"
+#: ../../src/dskSinglePlayer.cpp:79
+msgid "Load game"
+msgstr "Ladda spel"
+
+#. /////////////////////////////////////////////////////////////////////////////
+#. *
+#. *
+#. *
+#. *  @author OLiver
+#.
+#: ../../src/iwOptionsWindow.cpp:81 ../../src/iwSave.cpp:250
+msgid "Load game!"
+msgstr "Ladda spel!"
+
+#. "Spiel laden..."
+#: ../../src/dskSelectMap.cpp:108
+msgid "Load game..."
+msgstr "Ladda ett spel..."
+
+#. "Teams sperren"
+#: ../../src/dskHostGame.cpp:101
+msgid "Lock teams:"
+msgstr "Låsa teamen"
+
 #: ../../src/AddonMaxWaterwayLength.h:51
 msgid "Long"
 msgstr "Långt"
+
+#: ../../src/iwDiplomacy.cpp:252
+msgid "Long-run"
+msgstr "Lång tid"
 
 #: ../../src/AddonMaxWaterwayLength.h:52
 msgid "Longer"
 msgstr "Längre"
 
+#: ../../src/GameConsts.h:294
+msgid "Lookout tower"
+msgstr "Utkikspost"
+
+#: ../../src/nofScout_LookoutTower.cpp:83
+msgid "Lookout-tower occupied"
+msgstr "Utkikspost besatt"
+
+#: ../../src/iwLobbyRanking.cpp:81
+msgid "Lost"
+msgstr "Förlorad"
+
+#: ../../src/dskGameInterface.cpp:1151
+msgid "Lost connection to lobby!"
+msgstr "Koppling till lobbyn är avbryten!"
+
+#: ../../src/dskGameInterface.cpp:1138
+msgid "Lost connection to server!"
+msgstr "Koppling till servern är avbryten!"
+
+#: ../../src/GameWorldGame.cpp:619
+msgid "Lost land by this building"
+msgstr "Vi förlorade land på grund av denna byggnad"
+
+#: ../../src/dskHostGame.cpp:127
+msgid "Low"
+msgstr "Låg"
+
+#: ../../src/dskGameInterface.cpp:107
+msgid "Main selection"
+msgstr "Huvudmeny"
+
 #: ../../src/AddonManualRoadEnlargement.h:37
 msgid "Manual road enlargement"
 msgstr "Manuell vägbreddning"
+
+#: ../../src/dskGameInterface.cpp:105
+msgid "Map"
+msgstr "Karta"
+
+#: ../../src/iwLobbyServerInfo.cpp:75
+msgid "Map Name:"
+msgstr "Namn av kartan:"
+
+#: ../../src/dskGameLoader.cpp:122
+msgid "Map was loaded and pinned at the wall..."
+msgstr "Kartan laddad och upprollad..."
+
+#. Titel der Karte, Y-Position relativ je nach Höhe der Minimap festlegen, daher nochmals danach
+#. verschieben, da diese Position sonst skaliert wird!
+#: ../../src/dskHostGame.cpp:171 ../../src/dskSelectMap.cpp:133
+msgid "Map: "
+msgstr "Karta: "
+
+#: ../../src/dskSelectMap.cpp:134
+msgid "Mapfile: "
+msgstr "Kartfil: "
+
+#: ../../src/dskCredits.cpp:123 ../../src/dskCredits.cpp:142
+msgid "Mapping"
+msgstr "Kartläggning"
+
+#: ../../src/AddonAdjustMilitaryStrength.h:52
+msgid "Maximum strength"
+msgstr "Maximal styrka"
+
+#. Kohle
+#. 32
+#: ../../src/GameConsts.h:222
+msgid "Meat"
+msgstr "Kött"
+
+#: ../../src/BuildingConsts.h:417
+msgid "Meat the hunter acquires is used to feed the miners."
+msgstr "Dina gruvarbetare älskar köttet som jägaren skaffar."
+
+#: ../../src/AddonAdjustMilitaryStrength.h:53
+msgid "Medium strength"
+msgstr "Medelstyrka"
+
+#: ../../src/iwDiplomacy.cpp:251
+msgid "Medium-term"
+msgstr "Mellanlång tid"
+
+#: ../../src/iwMerchandiseStatistics.cpp:63
+msgid "Merchandise"
+msgstr "Varor"
+
+#: ../../src/iwMainMenu.cpp:75
+msgid "Merchandise statistics"
+msgstr "Statistik över varorna"
+
+#: ../../src/iwPostWindow.cpp:298
+msgid "Message"
+msgstr "Meddelande"
+
+#: ../../src/GameConsts.h:383
+msgid "Metalworker"
+msgstr "Verktygssmed"
+
+#. Schlosserei
+#: ../../src/iwDistribution.cpp:109 ../../src/iwDistribution.cpp:142
+msgid "Metalworks"
+msgstr "Verktygssmedja"
+
+#. "Militär"
+#: ../../src/iwAddons.cpp:61
+msgid "Military"
+msgstr "Militär alternativ"
+
+#: ../../src/nobMilitary.cpp:923
+msgid "Military building captured"
+msgstr "Militärbyggnad erövrad"
+
+#: ../../src/nobMilitary.cpp:920
+msgid "Military building lost"
+msgstr "Militärbyggnad förlorad"
+
+#: ../../src/nobMilitary.cpp:631
+msgid "Military building occupied"
+msgstr "Militärbyggnad besatt"
+
+#: ../../src/iwStatistics.cpp:120 ../../src/iwStatistics.cpp:227
+msgid "Military strength"
+msgstr "Militärmakt"
+
+#. Mühle
+#: ../../src/iwDistribution.cpp:87
+msgid "Mill"
+msgstr "Kvarn"
+
+#: ../../src/GameConsts.h:374
+msgid "Miller"
+msgstr "Mjölnare"
+
+#: ../../src/GameConsts.h:377
+msgid "Miner"
+msgstr "Gruvarbetare"
+
+#: ../../src/AddonAdjustMilitaryStrength.h:54
+msgid "Minimum strength"
+msgstr "Minimal styrka"
+
+#. Münzprägerei
+#: ../../src/iwDistribution.cpp:122
+msgid "Mint"
+msgstr "Myntort"
+
+#: ../../src/GameConsts.h:382
+msgid "Minter"
+msgstr "Myntpräglare"
+
+#. "Vollbild"
+#: ../../src/dskOptions.cpp:180
+msgid "Mode:"
+msgstr "Sätt:"
+
+#: ../../src/ctrlProgress.cpp:76
+msgid "More"
+msgstr "Mer"
+
+#: ../../src/iwAction.cpp:395
+msgid "More attackers"
+msgstr "Fler angripare"
+
+#: ../../src/iwMilitary.cpp:52
+msgid "More defenders"
+msgstr "Fler försvarare"
+
+#: ../../src/iwTools.cpp:50 ../../src/iwTools.cpp:51 ../../src/iwTools.cpp:52
+#: ../../src/iwTools.cpp:53 ../../src/iwTools.cpp:54 ../../src/iwTools.cpp:55
+#: ../../src/iwTools.cpp:56 ../../src/iwTools.cpp:57 ../../src/iwTools.cpp:58
+#: ../../src/iwTools.cpp:59 ../../src/iwTools.cpp:60 ../../src/iwTools.cpp:61
+msgid "More often"
+msgstr "Oftare"
+
+#: ../../src/iwMilitary.cpp:50
+msgid "More recruits"
+msgstr "Fler rekryter"
+
+#: ../../src/iwMusicPlayer.cpp:89
+msgid "More repeats"
+msgstr "Fler upprepningar"
+
+#. "Mehrspieler"
+#: ../../src/dskMainMenu.cpp:78
+msgid "Multiplayer"
+msgstr "Flera spelare"
+
+#. Musik
+#: ../../src/dskOptions.cpp:235
+msgid "Music"
+msgstr "Musik:"
+
+#. Musicplayer-Button
+#: ../../src/dskOptions.cpp:253
+msgid "Music player"
+msgstr "Musikspelare"
+
+#. Spieler-Tabelle - "Name", "Punkte", "Version"
+#. Die Tabelle für die Maps
+#: ../../src/dskLobby.cpp:79 ../../src/dskSelectMap.cpp:100
+msgid "Name"
+msgstr "Namn"
+
+#. Allgemein
+#. {
+#. "Name"
+#: ../../src/dskOptions.cpp:98
+msgid "Name in Game:"
+msgstr "Namn i spelet:"
+
+#: ../../src/iwMilitary.cpp:56
+msgid "Near harbor points"
+msgstr "Nära hamnpunkter"
+
+#. "Netzwerk / LAN"
+#: ../../src/dskMultiPlayer.cpp:67
+msgid "Network/LAN"
+msgstr "Nätverk/LAN"
+
+#: ../../src/nobHarborBuilding.cpp:106
+msgid "New harbor building finished"
+msgstr "Ny hamnanläggning färdig"
+
+#. "Neue"
+#: ../../src/dskSelectMap.cpp:116
+msgid "New maps"
+msgstr "Nya kartor"
+
+#: ../../src/nobStorehouse.cpp:57
+msgid "New storehouse finished"
+msgstr "Nytt förrådshus färdigt"
+
+#. "Blättern"
+#: ../../src/iwWares.cpp:188
+msgid "Next page"
+msgstr "Näst sida"
+
+#: ../../src/iwLobbyConnect.cpp:72
+msgid "No"
+msgstr "Nej"
+
+#: ../../src/dskOptions.cpp:146
+msgid "No Proxy"
+msgstr "Ingen proxy"
 
 #: ../../src/AddonLimitCatapults.h:48
 msgid "No catapults"
 msgstr "Inga katapulter"
 
+#: ../../src/AddonChangeGoldDeposits.h:47
+msgid "No change"
+msgstr "Ingen ändring"
+
+#: ../../src/iwAIDebug.cpp:148
+msgid "No current job"
+msgstr "Inget aktuellt jobb"
+
+#: ../../src/iwPostWindow.cpp:84 ../../src/iwPostWindow.cpp:275
+msgid "No letters!"
+msgstr "Inga brev!"
+
+#: ../../src/nofFarmhand.cpp:209
+msgid "No more fishes in range"
+msgstr "Ingen mer fisk inom räckhåll"
+
+#: ../../src/nofFarmhand.cpp:202
+msgid "No more stones in range"
+msgstr "Ingen mer sten inom räckhåll"
+
 #: ../../src/AddonRefundMaterials.h:42
 msgid "No refund"
 msgstr "Återfå inget"
+
+#: ../../src/iwShip.cpp:109
+msgid "No ships available"
+msgstr "Inga skepp tillgängliga"
 
 #: ../../src/AddonStatisticsVisibility.h:46
 msgid "Nobody else but you"
 msgstr "Ingen annan än du"
 
+#: ../../src/iwDiplomacy.cpp:115
+msgid "Non-aggression pact"
+msgstr "Icke-angreppspakt"
+
+#: ../../src/dskHostGame.cpp:134
+msgid "None"
+msgstr "Inget"
+
+#. Langsam
+#: ../../src/dskHostGame.cpp:128 ../../src/dskHostGame.cpp:154
+msgid "Normal"
+msgstr "Lagom"
+
+#: ../../src/dskHostGame.cpp:810
+msgid "Not Ready"
+msgstr "Inte klar"
+
+#. / @todo Hier dann Auswahl zwischen Kampagne(n) und "Freies Spiel"
+#: ../../src/dskSinglePlayer.cpp:162
+msgid "Not available"
+msgstr "Ej tillgängligt"
+
+#: ../../src/dskGameInterface.cpp:1027
+#, c-format
+msgid "Note: Game settings changed by the server%s"
+msgstr "Obs: Spelinställningar har ändrats av servern%s"
+
+#: ../../src/GameClientGF_Replay.cpp:122
+#, c-format
+msgid "Notice: The played replay has ended. (GF: %u, %dh %dmin %ds, TF: %u, AVG_FPS: %u)"
+msgstr "Obs: Den uppspelade återuppspelningen har avslutats. (GF: %u, %dh %dmin %ds, TF: %u, AVG_FPS: %u)"
+
+#: ../../src/iwAction.cpp:409
+msgid "Number of attackers"
+msgstr "Antal angrippare"
+
+#. OK-Button
+#: ../../src/iwMsgbox.cpp:65 ../../src/iwMsgbox.cpp:71
+#: ../../src/iwMusicPlayer.cpp:44 ../../src/iwSkipGFs.cpp:54
+msgid "OK"
+msgstr "OK"
+
+#: ../../src/iwAction.cpp:341
+msgid "Observation window"
+msgstr "Observationsfönster"
+
+#: ../../src/dskOptions.cpp:165 ../../src/dskOptions.cpp:173
+#: ../../src/dskOptions.cpp:197 ../../src/dskOptions.cpp:217
+#: ../../src/dskOptions.cpp:238 ../../src/dskOptions.cpp:247
+msgid "Off"
+msgstr "Av"
+
+#: ../../src/dskHostGame.cpp:118
+msgid "Off (all visible)"
+msgstr "Av (allt synligt)"
+
+#: ../../src/GameConsts.h:390
+msgid "Officer"
+msgstr "Officer"
+
+#. "Alte"
+#: ../../src/dskSelectMap.cpp:114
+msgid "Old maps"
+msgstr "Gamla kartor"
+
+#: ../../src/dskOptions.cpp:164 ../../src/dskOptions.cpp:172
+#: ../../src/dskOptions.cpp:196 ../../src/dskOptions.cpp:216
+#: ../../src/dskOptions.cpp:237 ../../src/dskOptions.cpp:246
+msgid "On"
+msgstr "På"
+
+#. Offen
+#: ../../src/dskHostGame.cpp:260
+msgid "Open"
+msgstr "Öppen"
+
+#: ../../src/dskOptions.cpp:213
+msgid "Optimized Textures:"
+msgstr "Optimerade texturer"
+
+#. "Optionen"
+#: ../../src/dskMainMenu.cpp:80 ../../src/dskOptions.cpp:76
+msgid "Options"
+msgstr "Alternativ"
+
+#. Gebäudename
+#: ../../src/iwBuildingSite.cpp:57
+msgid "Order of building site"
+msgstr "Uppdrag för byggning"
+
+#. "Andere"
+#: ../../src/dskSelectMap.cpp:126
+msgid "Other"
+msgstr "Övriga"
+
+#: ../../src/dskCredits.cpp:178
+msgid "Other Support:"
+msgstr "Övrig hjälp:"
+
+#: ../../src/nofAttacker.cpp:289
+msgid "Our headquarters was destroyed!"
+msgstr "Vårt högkvarter förstördes!"
+
+#: ../../src/iwMinimap.cpp:53
+msgid "Outline map"
+msgstr "Översiktskarta"
+
+#. "Eigene"
+#: ../../src/dskSelectMap.cpp:118
+msgid "Own maps"
+msgstr "Egna kartor"
+
+#: ../../src/GameConsts.h:395
+msgid "Pack donkey"
+msgstr "Packåsna"
+
+#. "Passwort (falls vorhanden)"
+#: ../../src/iwDirectIPConnect.cpp:63
+msgid "Password (if needed):"
+msgstr "Lösenord (om det finns):"
+
+#. "Passwort"
+#. Passwort
+#: ../../src/iwDirectIPCreate.cpp:63 ../../src/iwLobbyConnect.cpp:59
+msgid "Password:"
+msgstr "Lösenord:"
+
+#: ../../src/dskHostGame.cpp:84
+msgid "Past player"
+msgstr "Sista spelare"
+
+#: ../../src/iwTools.cpp:53
+msgid "Pick-axe"
+msgstr "Korp"
+
+#: ../../src/GameConsts.h:379
+msgid "Pig breeder"
+msgstr "Grisuppfödare"
+
+#. Schweinezucht
+#: ../../src/iwDistribution.cpp:90 ../../src/iwDistribution.cpp:158
+msgid "Pig farm"
+msgstr "Grisuppfödning"
+
+#. "Ping"
+#: ../../src/dskHostGame.cpp:77 ../../src/dskLobby.cpp:77
+msgid "Ping"
+msgstr "Ping"
+
+#: ../../src/GameConsts.h:386
+msgid "Planer"
+msgstr "Planerare"
+
+#. "Replay abspielen"
+#: ../../src/dskSinglePlayer.cpp:73
+msgid "Play Replay"
+msgstr "Visa replay"
+
+#: ../../src/iwMusicPlayer.cpp:90 ../../src/iwMusicPlayer.cpp:283
+msgid "Playback in this order"
+msgstr "Spela upp i denna ordning"
+
+#. "Heruntergeladene"
+#: ../../src/dskSelectMap.cpp:130
+msgid "Played"
+msgstr "Spelat"
+
+#: ../../src/dskLobby.cpp:77 ../../src/dskSelectMap.cpp:100
+msgid "Player"
+msgstr "Spelare"
+
+#: ../../src/dskGameInterface.cpp:1321
+#, c-format
+msgid "Player '%s' is the winner!"
+msgstr "Spelare '%s' har vunnit!"
+
+#. Im Spiel anzeigen, dass die KI das Spiel betreten hat
+#: ../../src/dskGameInterface.cpp:1013
+#, c-format
+msgid "Player '%s' joined the game!"
+msgstr "Spelare '%s' går med i spelet!"
+
+#: ../../src/dskGameInterface.cpp:1010
+#, c-format
+msgid "Player '%s' left the game!"
+msgstr "Spelare '%s' lämnade spelet!"
+
+#: ../../src/dskGameInterface.cpp:1175
+#, c-format
+msgid "Player '%s' switched to player '%s'"
+msgstr "Spelare '%s' böt mot '%s'"
+
+#: ../../src/dskGameInterface.cpp:1198
+#, c-format
+msgid "Player '%s' was defeated!"
+msgstr "Spelare '%s' besegrades!"
+
+#. "Spielername"
+#: ../../src/dskHostGame.cpp:62
+msgid "Player Name"
+msgstr "Spelare"
+
+#: ../../src/iwMusicPlayer.cpp:70
+msgid "Playlist:"
+msgstr "Spellista:"
+
+#: ../../src/iwDirectIPCreate.cpp:169
+msgid "Please enter a name for the game"
+msgstr "Var snäll och anger nanm för spelet"
+
+#: ../../src/dskSinglePlayer.cpp:162
+msgid "Please use 'Unlimited Play' to create a Singleplayer game."
+msgstr "Vänligen välj 'Fritt Spel' för att skapa ett enspelarspel."
+
+#. /////////////////////////////////////////////////////////////////////////////
+#. *
+#. *  Konstruktor von @p iwPleaseWait.
+#. *
+#. *  Fenster wird modal geöffnet, damit man ggf. einen "Weiter"-Button nicht
+#. *  mehrfach betätigen kann.
+#. *
+#. *  @author OLiver
+#.
+#: ../../src/iwPleaseWait.cpp:46 ../../src/iwPleaseWait.cpp:49
+msgid "Please wait..."
+msgstr "Var god vänta..."
+
+#: ../../src/dskLobby.cpp:79
+msgid "Points"
+msgstr "Poäng"
+
+#: ../../src/dskGameInterface.cpp:111
+msgid "Post office"
+msgstr "Postkontor"
+
+#: ../../src/GameConsts.h:387
+msgid "Private"
+msgstr "Menig"
+
+#: ../../src/GameConsts.h:388
+msgid "Private first class"
+msgstr "Korpral"
+
+#: ../../src/iwBuildingProductivities.cpp:85
+msgid "Productivity"
+msgstr "Produktivitet"
+
+#: ../../src/iwPlayReplay.cpp:122
+msgid "Program version is too old to play that replay!"
+msgstr "Programversionen är för gammal för att visa replayn!"
+
+#: ../../src/dskCredits.cpp:83 ../../src/dskCredits.cpp:95
+#: ../../src/dskCredits.cpp:131 ../../src/dskCredits.cpp:150
+msgid "Programming"
+msgstr "Programmering"
+
+#: ../../src/dskCredits.cpp:81 ../../src/dskCredits.cpp:94
+msgid "Project management"
+msgstr "Projekthantering"
+
 #: ../../src/AddonLimitCatapults.h:47
 msgid "Proportional"
 msgstr "Proportionellt"
+
+#. Proxyserver
+#: ../../src/dskOptions.cpp:137
+msgid "Proxyserver:"
+msgstr "Proxyserver:"
+
+#. Proxytyp
+#: ../../src/dskOptions.cpp:144
+msgid "Proxytyp:"
+msgstr "Proxytyp:"
+
+#: ../../src/iwAction.cpp:265 ../../src/iwAction.cpp:273
+msgid "Pull down flag"
+msgstr "Riv fanan"
+
+#: ../../src/dskCredits.cpp:86 ../../src/dskCredits.cpp:96
+#: ../../src/dskCredits.cpp:114 ../../src/dskCredits.cpp:122
+#: ../../src/dskCredits.cpp:141 ../../src/dskCredits.cpp:151
+msgid "Quality Assurance"
+msgstr "Kvalitetssäkring"
+
+#: ../../src/GameConsts.h:299
+msgid "Quarry"
+msgstr "Stenbrott"
+
+#. "Programm verlassen"
+#: ../../src/dskMainMenu.cpp:88
+msgid "Quit program"
+msgstr "Avsluta"
+
+#. "RTTR"
+#: ../../src/dskSelectMap.cpp:124
+msgid "RTTR"
+msgstr "RTTR"
+
+#. "Volk"
+#: ../../src/dskHostGame.cpp:66
+msgid "Race"
+msgstr "Folk"
+
+#: ../../src/AddonCatapultGraphics.h:39
+msgid "Race specific catapult graphics"
+msgstr "Kulturspecifik katapultgrafik"
+
+#: ../../src/iwMusicPlayer.cpp:283
+msgid "Random playback"
+msgstr "Slumpmässig uppspelning"
+
+#. "Random Start Locations"
+#: ../../src/dskHostGame.cpp:105
+msgid "Random start locations"
+msgstr "Slumpmässig startposition"
+
+#: ../../src/GameConsts.h:369
+msgid "Ranger"
+msgstr "Skogvaktare"
+
+#: ../../src/BuildingConsts.h:442
+msgid "Raw iron ore is smelted in the iron smelters with the help of coal. The processed iron is then used to making weapons (in the Armory) and tools (in the metalworks)."
+msgstr "Rå järnmalm smälts ner i smältverket med hjälp av kol. Det behandlade järnet används sedan till vapen (i vapensmedjan) och verktyg (i verktygssmedjan)."
+
+#. "ReadMe"
+#: ../../src/dskMainMenu.cpp:84 ../../src/dskOptions.cpp:123
+msgid "Readme"
+msgstr "Läs mig"
+
+#: ../../src/dskGameInterface.cpp:628
+msgid "Readme!"
+msgstr "Läs mig!"
+
+#: ../../src/dskHostGame.cpp:95 ../../src/dskHostGame.cpp:594
+#: ../../src/dskHostGame.cpp:810
+msgid "Ready"
+msgstr "Klar"
+
+#. "Bereit"
+#: ../../src/dskHostGame.cpp:75
+msgid "Ready?"
+msgstr "Klar?"
 
 #: ../../src/AddonNoCoinsDefault.h:20
 msgid ""
@@ -2920,490 +2188,187 @@ msgstr "Återfå material när byggnaden förstörs"
 msgid "Refund materials when emergency program is active"
 msgstr "Återfå material när krisprogrammet är aktivt"
 
-#: ../../src/AddonMaxWaterwayLength.h:37
-msgid "Set maximum waterway length"
-msgstr "Ange maximal längd på vattenväg"
-
-#: ../../src/AddonMaxWaterwayLength.h:49
-msgid "Short"
-msgstr "Kort"
-
-#: ../../src/AddonLimitCatapults.h:46
-#: ../../src/AddonMaxWaterwayLength.h:54
-msgid "Unlimited"
-msgstr "Obegränsat"
-
-#: ../../src/AddonMaxWaterwayLength.h:53
-msgid "Very long"
-msgstr "Mycket långt"
-
-#: ../../src/BuildingConsts.h:357
-msgid ""
-"A gold mine allows you to prospect for valuable gold deposits. For this, it "
-"is necessary to ensure that the miners are provided with plenty of food."
-msgstr ""
-"En guldgruva låter dig gräva efter värdefulla guldfyndigheter. För detta "
-"behöver gruvarbetarna rikligt med mat."
-
-#: ../../src/BuildingConsts.h:510
-msgid ""
-"A well supplies water to the bakery, brewery, donkey breeder and pig farm."
-msgstr ""
-"Brunnen levererar vatten till bageriet, bryggeriet, gris- och "
-"åsneuppfödningen."
-
-#: ../../src/BuildingConsts.h:382
-msgid ""
-"A woodcutter provides the sawmill with logs. A forester is able to replant "
-"the depleted forest."
-msgstr ""
-"Skogshuggaren förbereder trä till sågverket. En skogvaktare kan plantera ny "
-"skog på."
-
-#: ../../src/BuildingConsts.h:350
-msgid ""
-"Deep within the mountains, miners dig for iron ore. They will obviously need "
-"a lot of food for the strenuous work."
-msgstr ""
-"Djupt under bergen gräver gruvarbetarna efter järnmalm. De behöver förstås "
-"mycket mat för att klara av detta tunga arbete."
-
-#: ../../src/BuildingConsts.h:366
-msgid ""
-"From the lookout tower you can see far into previously unexplored lands."
-msgstr "En spejare kan titta långt in i landet från en utkikspost."
-
-#: ../../src/BuildingConsts.h:454
-msgid ""
-"Grain and water are needed for rearing pigs. The meat thus obtained can then "
-"be processed by a butcher."
-msgstr ""
-"Grisuppfödaren behöver vatten och säd för att föda upp feta grisar. En "
-"slaktare kan portionera köttet åt gruvarbetarna."
-
-#: ../../src/BuildingConsts.h:516
-msgid ""
-"It is possible to build small rowing boats as well as huge cargo ships in a "
-"shipyard. The boards required for this are skillfully worked by shipwrights."
-msgstr ""
-"I skeppsvarven byggs såväl små roddbåtar som stora fraktskepp. Därtill "
-"bearbetar skeppsbyggaren bräden skickligt."
-
-#: ../../src/BuildingConsts.h:417
-msgid "Meat the hunter acquires is used to feed the miners."
-msgstr "Dina gruvarbetare älskar köttet som jägaren skaffar."
-
-#: ../../src/BuildingConsts.h:442
-msgid ""
-"Raw iron ore is smelted in the iron smelters with the help of coal. The "
-"processed iron is then used to making weapons (in the Armory) and tools (in "
-"the metalworks)."
-msgstr ""
-"Rå järnmalm smälts ner i smältverket med hjälp av kol. Det behandlade järnet "
-"används sedan till vapen (i vapensmedjan) och verktyg (i verktygssmedjan)."
-
-#: ../../src/BuildingConsts.h:541
-msgid ""
-"Ships can only be loaded and unloaded in a harbor. Expeditions can also be "
-"prepared here. You can release certain merchandise from the storehouse, as "
-"and when required. Alternatively, the storage function can be disabled. To "
-"do this, first choose the relevant icon followed by the desired merchandise "
-"or job symbol."
-msgstr ""
-"Skepp kan bara lastas och lastas ur i en hamn. Expeditioner kan också "
-"förberedas här. Du kan lämna ut vissa varor från förrådshuset om och när det "
-"behövs. Alternativt kan lagringsfunktionen inaktiveras. För att göra detta "
-"väljer du först den relevanta ikonen och sedan den önskade varan eller "
-"jobbsymbolen."
-
-#: ../../src/BuildingConsts.h:375
-msgid ""
-"Thanks to its immense strength, the catapults represents an effective weapon "
-"against enemy military buildings."
-msgstr ""
-"Tack vare sin enorma styrka är katapulten ett effektivt vapen mot fiendliga "
-"militärbyggnader."
-
-#: ../../src/BuildingConsts.h:429
-msgid ""
-"The armory produces swords and strong shields. This equipment is vital for "
-"your soldiers."
-msgstr ""
-"Vapensmedjan producerar starka svärdar och sköldar. De behövs för att kunna "
-"rekrytera soldater av ditt folk."
-
-#: ../../src/BuildingConsts.h:276
-msgid ""
-"The barracks is a very small hut which can be used by your soldiers as "
-"quarters. Using the gold coin button you can stop the delivery of gold coins "
-"to the soldiers stationed here. However, without gold coins the soldiers "
-"here can not train and improve their skills."
-msgstr ""
-"Baracken är en mycket liten hydda, som tjänar som bostad till dina soldater. "
-"Med hjälp av myntknappen kan du stoppa leveransen av guldmynt till de här "
-"stationerade soldaterna. Fast, utan mynt kan soldaterna inte träna och "
-"utveckla sina färdigheter."
-
-#: ../../src/BuildingConsts.h:422
-msgid ""
-"The brewer produces fine beer from grain and water. This drink is needed to "
-"fill the soldiers with courage."
-msgstr ""
-"Bryggaren brygger gott öl av säd och vatten. Det behövs för att motiverar "
-"nya rekryter."
-
-#: ../../src/BuildingConsts.h:410
-msgid ""
-"The butcher processes the livestock delivered into nutritious ham on which "
-"you miners are fed."
-msgstr "Slaktaren gör skinka av grisar."
-
-#: ../../src/BuildingConsts.h:495
-msgid ""
-"The carpenter turns the woodcutter's logs into made-to-measure planks. These "
-"form the basic for building houses and ships."
-msgstr ""
-"Timmermannen förvandlar skogshuggarens trästockar till utmätta brädor. Dessa "
-"utgör grunden till hus- och skeppsbygge."
-
-#: ../../src/BuildingConsts.h:435
-msgid ""
-"The countless tools which your workers need are made in the metalworks. This "
-"requires boards and iron."
-msgstr ""
-"Verktygssmeden tillverkar de otaliga verktygen som dina arbetare behöver. "
-"Han behöver brädor och järn."
-
-#: ../../src/BuildingConsts.h:320
-msgid ""
-"The defensive capabilities and size of the fortress are unsurpassed. This "
-"stronghold ensures that other valuable buildings and commodities are "
-"protected. Using the gold coin button you can stop the delivery of gold "
-"coins to the soldiers stationed here. However, without gold coins the "
-"soldiers here can not train and improve their skills."
-msgstr ""
-"Försvarsmöjligheterna och utrymmet i borgen är oöverträffade. Denna fästning "
-"ser till att andra värdefulla byggnader och varor är säkra. Med hjälp av "
-"myntknappen kan du stoppa leveransen av guldmynt till de här stationerade "
-"soldaterna. Fast, utan mynt kan soldaterna inte träna och utveckla sina "
-"färdigheter."
-
-#: ../../src/BuildingConsts.h:525
-msgid ""
-"The farmer plants and harvests grain in the surrounding fields. A windmill "
-"then processes the harvested grain into flour or can be used to feed the "
-"pigs."
-msgstr ""
-"Bonden skördar korn på fälten omkring bondgården. Antingen mals säden i "
-"kvarnen eller så matas grisar och åsnar med den."
-
-#: ../../src/BuildingConsts.h:389
-msgid ""
-"The fish man is responsible for finding water rich in fish. His fish feed a "
-"great many miners."
-msgstr ""
-"I större vatten metar fiskaren efter fisk. Fisken försöjer många "
-"gruvarbetare."
-
-#: ../../src/BuildingConsts.h:487
-msgid ""
-"The flour produced at the windmill can be combined with water in the bakery "
-"to make oven-fresh bread. It's your miners' favorite!"
-msgstr ""
-"Mjölet som produceras i kvarnen kan tillsammans med vatten bakas ut till "
-"ugnsvarmt bröd. Det är gruvarbetarnas favorit."
-
-#: ../../src/BuildingConsts.h:480
-msgid ""
-"The grain is ground in the windmill. The flour from the windmill is later "
-"used at the bakery to bake bread."
-msgstr "Säd mals i kvarnen. Mjölet behövs i bageriet för att baka bröd."
-
-#: ../../src/BuildingConsts.h:288
-msgid ""
-"The guardhouse is a comfortable place for the military which is also "
-"protected by solid stone walls. Using the gold coin button you can stop the "
-"delivery of gold coins to the soldiers stationed here. However, without gold "
-"coins the soldiers here can not train and improve their skills."
-msgstr ""
-"Vaktstugan är en bekväm plats för soldaterna som skyddas av stadiga "
-"stenväggar. Med hjälp av myntknappen kan du stoppa leveransen av guldmynt "
-"till de här stationerade soldaterna. Fast, utan mynt kan soldaterna inte "
-"träna och utveckla sina färdigheter."
-
-#: ../../src/BuildingConsts.h:253
-msgid ""
-"The headquarters represents the center of your realm. The large amount of "
-"storage space available means a great many things can be safely stored here. "
-"You can release certain merchandise from the headquarters, as and when "
-"required or stop its storage. To do this, first choose the corresponding "
-"icon followed by the desired merchandise or job symbol. On the third page, "
-"you can adjust the number of reserve soldiers who are responsible for "
-"guarding the headquarters. There are two values given: the first value "
-"indicates the current number of men, the second value indicates the desired "
-"number. "
-msgstr ""
-"Högkvarteret representerar ditt rikes centrum. Den stora lagringskapaciteten "
-"möjliggör säker lagring av många saker här. Du kan lämna ut vissa varor från "
-"högkvarteret om och när det behövs eller stoppa lagring. För att göra detta "
-"väljer du först den relevanta ikonen och sedan den önskade varan eller "
-"jobbsymbolen. På den tredje sidan kan du justera antalet reservsoldater som "
-"har ansvar för att skydda högkvarteret. Två värden ges: det första värdet "
-"anger aktuellt antal soldater och det andra värdet anger önskat antal. "
-
-#: ../../src/BuildingConsts.h:343
-msgid ""
-"The mining of coal supports the metalworks and smithy. This hard work "
-"requires an adequate supply of food."
-msgstr ""
-"Kolbrytningen försörjer verktygssmedjan och vapensmedjan. Det hårde arbetet "
-"i gruvan kräver en tillräcklig matförsörjning."
-
-#: ../../src/BuildingConsts.h:503
-msgid ""
-"The mint is responsible for producing valuable gold coins. These precious "
-"objects are produced using coal and gold."
-msgstr ""
-"Myntpräglaren är ansvarig för att prägla guldmynt. Dessa dyrbara objekt "
-"tillverkas av guld med hjälp av kol."
-
-#: ../../src/BuildingConsts.h:533
-msgid ""
-"The pack donkeys bred here are used to transport your merchandise more "
-"efficiently. They are reared on water and grain."
-msgstr ""
-"Dina varor transporteras effektivare med packåsnorna som uppföds här. "
-"Uppfödaren behöver vatten och säd."
-
-#: ../../src/BuildingConsts.h:335
-msgid ""
-"The quarrying of stone in a granite mine guarantees the supply of stone for "
-"buildings. However, even a granite mine has to feed its workers."
-msgstr ""
-"Brytningen av sten i en granitgruva förser byggnader med sten. Även en "
-"granitgruva måste förse sina arbetare med mat."
-
-#: ../../src/BuildingConsts.h:395
-msgid ""
-"The stonemason works the stone near his quarry into bricks. These are needed "
-"mainly for building houses and as ammunition for catapults."
-msgstr ""
-"Stenhuggaren bryter ner stenar nära stenbrottet till stenblock. De behövs "
-"till nästan alla byggarbeten och som ammunition till katapulter."
-
-#: ../../src/BuildingConsts.h:461
-msgid ""
-"The storehouse can help reduce long transportation journeys and is suited to "
-"the temporary storage of merchandise and inhabitants. You can release "
-"certain merchandise from the storehouse, as and when required. "
-"Alternatively, the storage function can be disabled. To do this, first "
-"choose the relevant icon followed by the desired merchandise or job symbol."
-msgstr ""
-"Förrådshuset kan hjälpa till att förkorta transportvägar och att temporärt "
-"lagra varor och folk. Du kan lagra ut några eller stoppa inläggning av dem. "
-"Därtill, välj först den adekvata symbolen och sedan varan eller yrket."
-
-#: ../../src/BuildingConsts.h:304
-msgid ""
-"The watchtower with its large amount of space is best suited for stationing "
-"a large number of your troops. Using the gold coin button you can stop the "
-"delivery of gold coins to the soldiers stationed here. However, without gold "
-"coins the soldiers here can not train and improve their skills."
-msgstr ""
-"Vakttornet med dess stora utrymme är lämpligast att stationera många "
-"soldater i. Med hjälp av myntknappen kan du stoppa leveransen av guldmynt "
-"till de här stationerade soldaterna. Fast, utan mynt kan soldaterna inte "
-"träna och utveckla sina färdigheter."
-
-#: ../../src/BuildingConsts.h:403
-msgid ""
-"Within his area, the forester ensures the survival of the forest. He plants "
-"all types of trees."
-msgstr "Skogvaktaren planterar alla sorters träd i sin omgivning."
-
-#: ../../src/GameConsts.h:384
-msgid "Armorer"
-msgstr "Vapensmed"
-
-#: ../../src/GameConsts.h:375
-msgid "Baker"
-msgstr "Bagare"
-
-#: ../../src/GameConsts.h:281
-msgid "Barracks"
-msgstr "Barack"
-
-#. Bogen
-#. 15
-#: ../../src/GameConsts.h:205
-msgid "Boat"
-msgstr "Båt"
-
-#. Fisch
-#. 20
-#: ../../src/GameConsts.h:210
-msgid "Bread"
-msgstr "Bröd"
-
-#: ../../src/GameConsts.h:378
-msgid "Brewer"
-msgstr "Bryggare"
-
-#: ../../src/GameConsts.h:385
-msgid "Builder"
-msgstr "Byggare"
-
-#: ../../src/GameConsts.h:376
-msgid "Butcher"
-msgstr "Slaktare"
-
-#: ../../src/GameConsts.h:370
-msgid "Carpenter"
-msgstr "Timmerman"
-
-#: ../../src/GameConsts.h:296
-msgid "Catapult"
-msgstr "Katapult"
-
-#: ../../src/GameConsts.h:380
-msgid "Donkey breeder"
-msgstr "Åsneuppfödare"
-
-#: ../../src/GameConsts.h:317
-msgid "Farm"
-msgstr "Bondgård"
-
-#: ../../src/GameConsts.h:373
-msgid "Farmer"
-msgstr "Bonde"
-
-#. Mehl
-#. 19
-#: ../../src/GameConsts.h:209
-msgid "Fish"
-msgstr "Fisk"
-
-#: ../../src/GameConsts.h:368
-msgid "Fisher"
-msgstr "Fiskare"
-
-#: ../../src/GameConsts.h:298
-msgid "Fishery"
-msgstr "Fiskeri"
-
-#. Eisen
-#. 18
-#: ../../src/GameConsts.h:208
-msgid "Flour"
-msgstr "Mjöl"
-
-#: ../../src/GameConsts.h:300
-msgid "Forester"
-msgstr "Skogvakteri"
-
-#: ../../src/GameConsts.h:289
-msgid "Fortress"
-msgstr "Borg"
-
-#: ../../src/GameConsts.h:391
-msgid "General"
-msgstr "General"
-
-#: ../../src/GameConsts.h:392
-msgid "Geologist"
-msgstr "Geolog"
-
-#: ../../src/GameConsts.h:282
-msgid "Guardhouse"
-msgstr "Vaktstuga"
-
-#. Fleisch
-#. 33
-#: ../../src/GameConsts.h:223
-msgid "Ham"
-msgstr "Gris"
-
-#: ../../src/GameConsts.h:366
-msgid "Helper"
-msgstr "Hjälpare"
-
-#: ../../src/GameConsts.h:302
-msgid "Hunter"
-msgstr "Jägarshydda"
-
-#: ../../src/GameConsts.h:372
-msgid "Huntsman"
-msgstr "Jägare"
-
-#: ../../src/GameConsts.h:381
-msgid "Iron founder"
-msgstr "Järnsmältare"
-
-#: ../../src/GameConsts.h:294
-msgid "Lookout tower"
-msgstr "Utkikspost"
-
-#. Kohle
-#. 32
-#: ../../src/GameConsts.h:222
-msgid "Meat"
-msgstr "Kött"
-
-#: ../../src/GameConsts.h:383
-msgid "Metalworker"
-msgstr "Verktygssmed"
-
-#: ../../src/GameConsts.h:374
-msgid "Miller"
-msgstr "Mjölnare"
-
-#: ../../src/GameConsts.h:377
-msgid "Miner"
-msgstr "Gruvarbetare"
-
-#: ../../src/GameConsts.h:382
-msgid "Minter"
-msgstr "Myntpräglare"
-
-#: ../../src/GameConsts.h:390
-msgid "Officer"
-msgstr "Officer"
-
-#: ../../src/GameConsts.h:395
-msgid "Pack donkey"
-msgstr "Packåsna"
-
-#: ../../src/GameConsts.h:379
-msgid "Pig breeder"
-msgstr "Grisuppfödare"
-
-#: ../../src/GameConsts.h:386
-msgid "Planer"
-msgstr "Planerare"
-
-#: ../../src/GameConsts.h:387
-msgid "Private"
-msgstr "Menig"
-
-#: ../../src/GameConsts.h:388
-msgid "Private first class"
-msgstr "Korpral"
-
-#: ../../src/GameConsts.h:299
-msgid "Quarry"
-msgstr "Stenbrott"
-
-#: ../../src/GameConsts.h:369
-msgid "Ranger"
-msgstr "Skogvaktare"
+#. Registrieren
+#: ../../src/iwLobbyConnect.cpp:88
+msgid "Register"
+msgstr "Registrera"
+
+#. Registrierung erfolgreich
+#: ../../src/iwLobbyConnect.cpp:319
+msgid "Registration successful!"
+msgstr "Registrering lyckades!"
+
+#: ../../src/iwMusicPlayer.cpp:77
+msgid "Remove"
+msgstr "Ta bort"
+
+#: ../../src/AddonChangeGoldDeposits.h:48
+msgid "Remove gold completely"
+msgstr "Ta bort gult helt"
+
+#: ../../src/iwMusicPlayer.cpp:84
+msgid "Remove track"
+msgstr "Ta bort spår"
+
+#. "Reserve"-Überschrift
+#: ../../src/iwHQ.cpp:52
+msgid "Reserve"
+msgstr "Reserv"
+
+#. "Letztes Spiel fortsetzen"
+#: ../../src/dskSinglePlayer.cpp:71
+msgid "Resume last game"
+msgstr "Fortsätt senaste spel"
+
+#. "Zurück"
+#: ../../src/dskHostGame.cpp:98
+msgid "Return"
+msgstr "Tillbaka"
+
+#. "Die Siedler II.5 RTTR"
+#: ../../src/dskCredits.cpp:72
+msgid "Return To The Roots"
+msgstr "Return To The Roots"
+
+#. Version
+#: ../../src/dskDirectIP.cpp:53
+#, c-format
+msgid "Return To The Roots - v%s-%s"
+msgstr "Return To The Roots - v%s-%s"
+
+#. Expedition abbrechen
+#: ../../src/iwShip.cpp:80
+msgid "Return to harbor"
+msgstr "Återvänd till hamnen"
+
+#: ../../src/iwTools.cpp:57
+msgid "Rod and line"
+msgstr "Fiskespö"
+
+#: ../../src/iwTools.cpp:60
+msgid "Rolling pin"
+msgstr "Kavel"
+
+#: ../../src/dskHostGame.cpp:823
+msgid "Romans"
+msgstr "Romare"
+
+#: ../../src/main.cpp:167
+msgid "RttR crashed. Please restart the application!"
+msgstr "RttR kraschade. Vänligen starta om spelet!"
+
+#: ../../src/main.cpp:151
+msgid "RttR crashed. Would you like to send debug information to RttR to help us avoiding this crash in the future? Thank you very much!"
+msgstr "RttR kraschade. Vill du skicka felsökningsinformation till RttR så vi kan försöka undvika problemet i framtiden? Tack så mycket!"
+
+#: ../../src/dskMainMenu.cpp:106
+msgid "RttR now supports sending debug data. Would you like to help us improving this game by sending debug data?"
+msgstr "RttR stödjer nu att man skickar in debug data. Vill du hjälpa oss att förbättra spelet genom att skicka in debug data?"
+
+#: ../../src/dskGameInterface.cpp:1090 ../../src/dskGameInterface.cpp:1119
+msgid "SYSTEM"
+msgstr "SYSTEM"
+
+#. Passwort speichern ja/nein
+#: ../../src/iwLobbyConnect.cpp:69
+msgid "Save Password?"
+msgstr "Spara lösenord?"
+
+#. /////////////////////////////////////////////////////////////////////////////
+#. *
+#. *
+#. *
+#. *  @author OLiver
+#.
+#: ../../src/iwOptionsWindow.cpp:85 ../../src/iwSave.cpp:190
+msgid "Save game!"
+msgstr "Spara spel!"
+
+#: ../../src/iwTools.cpp:52
+msgid "Saw"
+msgstr "Såg"
+
+#. Sawmill
+#: ../../src/iwDistribution.cpp:129
+msgid "Sawmill"
+msgstr "Sågverk"
 
 #: ../../src/GameConsts.h:394
 msgid "Scout"
 msgstr "Spejare"
 
+#: ../../src/iwTools.cpp:58
+msgid "Scythe"
+msgstr "Lie"
+
+#. "Andere"
+#: ../../src/dskSelectMap.cpp:128
+msgid "Sea"
+msgstr "Hav"
+
+#. Alle auswählen bzw setzen!
+#: ../../src/iwBaseWarehouse.cpp:71
+msgid "Select all"
+msgstr "Välj ut alla"
+
+#. "Karten Auswahl"
+#: ../../src/dskSelectMap.cpp:103
+msgid "Selection of maps"
+msgstr "Val av karta"
+
+#: ../../src/iwTrade.cpp:98
+msgid "Send"
+msgstr "Skicka"
+
+#: ../../src/iwAction.cpp:267 ../../src/iwAction.cpp:275
+msgid "Send out scout"
+msgstr "Skicka en spejare"
+
+#: ../../src/iwBuildOrder.cpp:67
+msgid "Sequence of given order"
+msgstr "Ordningsföljd av uppdragsgivningen"
+
 #: ../../src/GameConsts.h:389
 msgid "Sergeant"
 msgstr "Sergeant"
+
+#: ../../src/dskLobby.cpp:77
+msgid "Server"
+msgstr "Server"
+
+#: ../../src/iwLobbyServerInfo.cpp:73
+msgid "Server Information"
+msgstr "Serverinformation"
+
+#: ../../src/iwLobbyServerInfo.cpp:77
+msgid "Server Name:"
+msgstr "Servernamn:"
+
+#: ../../src/dskCredits.cpp:82
+msgid "Server management"
+msgstr "Serverhantering"
+
+#. "Server-Port"
+#: ../../src/iwDirectIPConnect.cpp:59 ../../src/iwDirectIPCreate.cpp:59
+msgid "Server-Port:"
+msgstr "Server-port:"
+
+#: ../../src/AddonMaxWaterwayLength.h:37
+msgid "Set maximum waterway length"
+msgstr "Ange maximal längd på vattenväg"
+
+#: ../../src/iwSettings.cpp:53
+msgid "Settings"
+msgstr "Inställningar"
+
+#: ../../src/iwTrade.cpp:75
+msgid "Settlers"
+msgstr "Nybyggare"
+
+#. "Gemeinsame Team-Sicht"
+#: ../../src/dskHostGame.cpp:103
+msgid "Shared team view"
+msgstr "Gemensam syn i teamen"
 
 #. Brot
 #. 21
@@ -3411,17 +2376,196 @@ msgstr "Sergeant"
 msgid "Shield"
 msgstr "Sköld"
 
+#. Schiffe
+#: ../../src/iwMainMenu.cpp:86
+msgid "Ship register"
+msgstr "Skeppsförteckning"
+
+#: ../../src/BuildingConsts.h:541
+msgid "Ships can only be loaded and unloaded in a harbor. Expeditions can also be prepared here. You can release certain merchandise from the storehouse, as and when required. Alternatively, the storage function can be disabled. To do this, first choose the relevant icon followed by the desired merchandise or job symbol."
+msgstr "Skepp kan bara lastas och lastas ur i en hamn. Expeditioner kan också förberedas här. Du kan lämna ut vissa varor från förrådshuset om och när det behövs. Alternativt kan lagringsfunktionen inaktiveras. För att göra detta väljer du först den relevanta ikonen och sedan den önskade varan eller jobbsymbolen."
+
 #: ../../src/GameConsts.h:393
 msgid "Shipwright"
 msgstr "Skeppsbyggare"
+
+#. Werft
+#: ../../src/iwDistribution.cpp:145
+msgid "Shipyard"
+msgstr "Skeppsvarv"
+
+#: ../../src/AddonMaxWaterwayLength.h:49
+msgid "Short"
+msgstr "Kort"
+
+#: ../../src/iwDiplomacy.cpp:250
+msgid "Short-run"
+msgstr "Kort tid"
+
+#: ../../src/iwTools.cpp:55
+msgid "Shovel"
+msgstr "Spade"
+
+#. "Einzelspieler"
+#: ../../src/dskMainMenu.cpp:76
+msgid "Singleplayer"
+msgstr "En spelare"
+
+#: ../../src/dskSelectMap.cpp:100
+msgid "Size"
+msgstr "Storlek"
+
+#. Aktuelle Überschrift über der Statistik
+#: ../../src/iwStatistics.cpp:116 ../../src/iwStatistics.cpp:136
+#: ../../src/iwStatistics.cpp:211
+msgid "Size of country"
+msgstr "Storlek på landområde"
+
+#: ../../src/iwSkipGFs.cpp:44
+msgid "Skip GameFrames"
+msgstr "Hoppa över GF"
 
 #: ../../src/GameConsts.h:301
 msgid "Slaughterhouse"
 msgstr "Slakteri"
 
+#. Sehr Langsam
+#: ../../src/dskHostGame.cpp:153
+msgid "Slow"
+msgstr "Långsamt"
+
+#: ../../src/dskOptions.cpp:147
+msgid "Socks v4"
+msgstr "Socks v4"
+
+#: ../../src/dskDirectIP.cpp:79
+msgid "Sorry!"
+msgstr "Tyvärr!"
+
+#. "Sound"
+#: ../../src/dskOptions.cpp:87
+msgid "Sound/Music"
+msgstr "Ljud/musik"
+
+#. "Audiotreiber"
+#: ../../src/dskOptions.cpp:221
+msgid "Sounddriver"
+msgstr "Drivrutin:"
+
+#: ../../src/iwMusicPlayer.cpp:175
+msgid "Specify the playlist name"
+msgstr "Ange spellistans namn"
+
+#. "Geschwindigkeit"
+#: ../../src/dskHostGame.cpp:150
+msgid "Speed:"
+msgstr "Hastighet:"
+
+#. "Starten"
+#: ../../src/iwDirectIPCreate.cpp:78
+msgid "Start"
+msgstr "Starta"
+
+#: ../../src/iwSave.cpp:67
+msgid "Start GF"
+msgstr "Start-GF"
+
+#: ../../src/dskHostGame.cpp:666
+msgid "Start aborted"
+msgstr "Start avbröts"
+
+#. Button zum Expedition starten
+#: ../../src/iwHarborBuilding.cpp:56 ../../src/iwHarborBuilding.cpp:96
+#: ../../src/iwHarborBuilding.cpp:127
+msgid "Start expedition"
+msgstr "Påbörja expedition"
+
+#. Button zum Expedition starten
+#: ../../src/iwHarborBuilding.cpp:63
+msgid "Start exporation expedition"
+msgstr "Påbörja upptäcksresa"
+
+#. "Spiel starten"
+#: ../../src/dskHostGame.cpp:95 ../../src/dskHostGame.cpp:580
+#: ../../src/dskHostGame.cpp:808
+msgid "Start game"
+msgstr "Starta spel"
+
+#: ../../src/dskHostGame.cpp:648
+msgid "Starting game, please wait"
+msgstr "Spelet startas, vänligen vänta"
+
+#: ../../src/iwStatistics.cpp:46
+msgid "Statistics"
+msgstr "Statistik"
+
+#: ../../src/iwSettings.cpp:58
+msgid "Statistics Scale"
+msgstr "Skala Statistik"
+
+#. Inventur
+#: ../../src/iwInventory.cpp:46 ../../src/iwMainMenu.cpp:79
+msgid "Stock"
+msgstr "Förråd"
+
+#: ../../src/iwPlayReplay.cpp:63
+msgid "Stocktaking date"
+msgstr "Inspeling"
+
 #: ../../src/GameConsts.h:371
 msgid "Stonemason"
 msgstr "Stenhuggare"
+
+#: ../../src/iwMerchandiseStatistics.cpp:73
+msgid "Stones"
+msgstr "Stenar"
+
+#. Einlagern verbieten
+#: ../../src/iwBaseWarehouse.cpp:66
+msgid "Stop storage"
+msgstr "Stoppa inläggning"
+
+#: ../../src/iwStorehouse.cpp:43
+msgid "Storehouse"
+msgstr "Förrådshus"
+
+#: ../../src/iwAction.cpp:400
+msgid "Strong attackers"
+msgstr "Starka angripare"
+
+#: ../../src/iwMilitary.cpp:51
+msgid "Strong defense"
+msgstr "Starka försvarare"
+
+#. }
+#: ../../src/dskOptions.cpp:162
+msgid "Submit debug data:"
+msgstr "Skicka data för felsökning:"
+
+#: ../../src/dskMainMenu.cpp:106
+msgid "Submit debug data?"
+msgstr "Skicka in debug data?"
+
+#: ../../src/iwDiplomacy.cpp:232
+msgid "Suggest non-aggression pact"
+msgstr "Föreslå icke-angreppspakt"
+
+#: ../../src/iwDiplomacy.cpp:231
+msgid "Suggest treaty of alliance"
+msgstr "Föreslå alliansfördrag"
+
+#. "Spiel aufgeben"
+#: ../../src/iwOptionsWindow.cpp:108
+msgid "Surrender"
+msgstr "Ge upp"
+
+#: ../../src/iwSurrender.cpp:49
+msgid "Surrender game?"
+msgstr "Ge upp spel?"
+
+#: ../../src/dskHostGame.cpp:81
+msgid "Swap"
+msgstr "Växla"
 
 #. Boot
 #. 16
@@ -3429,13 +2573,457 @@ msgstr "Stenhuggare"
 msgid "Sword"
 msgstr "Svärd"
 
+#. Systemsprache hinzufügen
+#: ../../src/languages.cpp:71
+msgid "System language"
+msgstr "Systemets språk"
+
+#: ../../src/dskCredits.cpp:218
+msgid "THE END"
+msgstr "SLUT"
+
+#. Auslagern
+#: ../../src/iwBaseWarehouse.cpp:64
+msgid "Take out of store"
+msgstr "Lagra ut"
+
+#. "Team"
+#: ../../src/dskHostGame.cpp:70
+msgid "Team"
+msgstr "Team"
+
+#: ../../src/dskGameInterface.cpp:1352
+#, c-format
+msgid "Team victory!"
+msgstr "Lagseger!"
+
+#: ../../src/dskGameInterface.cpp:1349
+#, c-format
+msgid "Team victory! '%s' and '%s' and '%s' and '%s' are the winners!"
+msgstr "Lagseger!  '%s', '%s', '%s' och '%s' har vunnit!"
+
+#: ../../src/dskGameInterface.cpp:1346
+#, c-format
+msgid "Team victory! '%s' and '%s' and '%s' are the winners!"
+msgstr "Lagseger! '%s', '%s' och '%s' har vunnit!"
+
+#: ../../src/dskGameInterface.cpp:1343
+#, c-format
+msgid "Team victory! '%s' and '%s' are the winners!"
+msgstr "Lagseger! '%s' och '%s' har vunnit!"
+
+#: ../../src/iwDiplomacy.cpp:194
+msgid "Teams locked"
+msgstr "Team låsta"
+
+#: ../../src/iwPlayReplay.cpp:124
+msgid "Temporary map file was not found!"
+msgstr "Temporärt kartafil kunde inte hittas!"
+
+#: ../../src/dskCredits.cpp:210
+msgid "Thank you for your donations!"
+msgstr "Tack till alla givare!"
+
+#: ../../src/dskCredits.cpp:217
+msgid "Thank you!"
+msgstr "Tack!"
+
+#: ../../src/BuildingConsts.h:375
+msgid "Thanks to its immense strength, the catapults represents an effective weapon against enemy military buildings."
+msgstr "Tack vare sin enorma styrka är katapulten ett effektivt vapen mot fiendliga militärbyggnader."
+
+#: ../../src/PostMsg.cpp:160
+#, c-format
+msgid "The %s between player '%s' and you has been cancelled."
+msgstr "Fördraget %s mellan spelaren '%s' och dig har avbrutits."
+
+#: ../../src/PostMsg.cpp:157
+#, c-format
+msgid "The %s between player '%s' and you has been concluded."
+msgstr "Fördraget %s mellan spelaren '%s' och dig har löpt ut."
+
+#: ../../src/dskGameInterface.cpp:1053
+msgid "The Game is not in sync. Checksums of some players don't match."
+msgstr "Spelet är inte synkroniserad. Kontrollsummorna av några spelare överensstämmer inte."
+
+#: ../../src/BuildingConsts.h:429
+msgid "The armory produces swords and strong shields. This equipment is vital for your soldiers."
+msgstr "Vapensmedjan producerar starka svärdar och sköldar. De behövs för att kunna rekrytera soldater av ditt folk."
+
+#: ../../src/BuildingConsts.h:276
+msgid "The barracks is a very small hut which can be used by your soldiers as quarters. Using the gold coin button you can stop the delivery of gold coins to the soldiers stationed here. However, without gold coins the soldiers here can not train and improve their skills."
+msgstr "Baracken är en mycket liten hydda, som tjänar som bostad till dina soldater. Med hjälp av myntknappen kan du stoppa leveransen av guldmynt till de här stationerade soldaterna. Fast, utan mynt kan soldaterna inte träna och utveckla sina färdigheter."
+
+#: ../../src/BuildingConsts.h:422
+msgid "The brewer produces fine beer from grain and water. This drink is needed to fill the soldiers with courage."
+msgstr "Bryggaren brygger gott öl av säd och vatten. Det behövs för att motiverar nya rekryter."
+
+#: ../../src/BuildingConsts.h:410
+msgid "The butcher processes the livestock delivered into nutritious ham on which you miners are fed."
+msgstr "Slaktaren gör skinka av grisar."
+
+#: ../../src/BuildingConsts.h:495
+msgid "The carpenter turns the woodcutter's logs into made-to-measure planks. These form the basic for building houses and ships."
+msgstr "Timmermannen förvandlar skogshuggarens trästockar till utmätta brädor. Dessa utgör grunden till hus- och skeppsbygge."
+
+#: ../../src/BuildingConsts.h:435
+msgid "The countless tools which your workers need are made in the metalworks. This requires boards and iron."
+msgstr "Verktygssmeden tillverkar de otaliga verktygen som dina arbetare behöver. Han behöver brädor och järn."
+
+#: ../../src/BuildingConsts.h:320
+msgid "The defensive capabilities and size of the fortress are unsurpassed. This stronghold ensures that other valuable buildings and commodities are protected. Using the gold coin button you can stop the delivery of gold coins to the soldiers stationed here. However, without gold coins the soldiers here can not train and improve their skills."
+msgstr "Försvarsmöjligheterna och utrymmet i borgen är oöverträffade. Denna fästning ser till att andra värdefulla byggnader och varor är säkra. Med hjälp av myntknappen kan du stoppa leveransen av guldmynt till de här stationerade soldaterna. Fast, utan mynt kan soldaterna inte träna och utveckla sina färdigheter."
+
+#: ../../src/GameClientPlayer.cpp:2103
+msgid "The emergency program has been activated."
+msgstr "Krisprogrammet har aktiverats."
+
+#: ../../src/GameClientPlayer.cpp:2113
+msgid "The emergency program has been deactivated."
+msgstr "Krisprogrammet har deaktiverats."
+
+#: ../../src/BuildingConsts.h:525
+msgid "The farmer plants and harvests grain in the surrounding fields. A windmill then processes the harvested grain into flour or can be used to feed the pigs."
+msgstr "Bonden skördar korn på fälten omkring bondgården. Antingen mals säden i kvarnen eller så matas grisar och åsnar med den."
+
+#: ../../src/BuildingConsts.h:389
+msgid "The fish man is responsible for finding water rich in fish. His fish feed a great many miners."
+msgstr "I större vatten metar fiskaren efter fisk. Fisken försöjer många gruvarbetare."
+
+#: ../../src/BuildingConsts.h:487
+msgid "The flour produced at the windmill can be combined with water in the bakery to make oven-fresh bread. It's your miners' favorite!"
+msgstr "Mjölet som produceras i kvarnen kan tillsammans med vatten bakas ut till ugnsvarmt bröd. Det är gruvarbetarnas favorit."
+
+#: ../../src/GameServer.cpp:1512
+msgid "The game clients are out of sync. Would you like to send debug information to RttR to help us avoiding this in the future? Thank you very much!"
+msgstr "Spelklienterna har tappat kontakten med varandra. Vill du skicka in debug information till RttR så att vi kan undvika framtida problem av detta slag? Tack på förhand!"
+
+#: ../../src/BuildingConsts.h:480
+msgid "The grain is ground in the windmill. The flour from the windmill is later used at the bakery to bake bread."
+msgstr "Säd mals i kvarnen. Mjölet behövs i bageriet för att baka bröd."
+
+#: ../../src/BuildingConsts.h:288
+msgid "The guardhouse is a comfortable place for the military which is also protected by solid stone walls. Using the gold coin button you can stop the delivery of gold coins to the soldiers stationed here. However, without gold coins the soldiers here can not train and improve their skills."
+msgstr "Vaktstugan är en bekväm plats för soldaterna som skyddas av stadiga stenväggar. Med hjälp av myntknappen kan du stoppa leveransen av guldmynt till de här stationerade soldaterna. Fast, utan mynt kan soldaterna inte träna och utveckla sina färdigheter."
+
+#: ../../src/BuildingConsts.h:253
+msgid "The headquarters represents the center of your realm. The large amount of storage space available means a great many things can be safely stored here. You can release certain merchandise from the headquarters, as and when required or stop its storage. To do this, first choose the corresponding icon followed by the desired merchandise or job symbol. On the third page, you can adjust the number of reserve soldiers who are responsible for guarding the headquarters. There are two values given: the first value indicates the current number of men, the second value indicates the desired number. "
+msgstr "Högkvarteret representerar ditt rikes centrum. Den stora lagringskapaciteten möjliggör säker lagring av många saker här. Du kan lämna ut vissa varor från högkvarteret om och när det behövs eller stoppa lagring. För att göra detta väljer du först den relevanta ikonen och sedan den önskade varan eller jobbsymbolen. På den tredje sidan kan du justera antalet reservsoldater som har ansvar för att skydda högkvarteret. Två värden ges: det första värdet anger aktuellt antal soldater och det andra värdet anger önskat antal. "
+
+#: ../../src/BuildingConsts.h:343
+msgid "The mining of coal supports the metalworks and smithy. This hard work requires an adequate supply of food."
+msgstr "Kolbrytningen försörjer verktygssmedjan och vapensmedjan. Det hårde arbetet i gruvan kräver en tillräcklig matförsörjning."
+
+#: ../../src/BuildingConsts.h:503
+msgid "The mint is responsible for producing valuable gold coins. These precious objects are produced using coal and gold."
+msgstr "Myntpräglaren är ansvarig för att prägla guldmynt. Dessa dyrbara objekt tillverkas av guld med hjälp av kol."
+
+#: ../../src/BuildingConsts.h:533
+msgid "The pack donkeys bred here are used to transport your merchandise more efficiently. They are reared on water and grain."
+msgstr "Dina varor transporteras effektivare med packåsnorna som uppföds här. Uppfödaren behöver vatten och säd."
+
+#: ../../src/PostMsg.cpp:115
+#, c-format
+msgid "The player '%s' offers you a %s."
+msgstr "Spelaren '%s' erbjuder dig fördraget %s."
+
+#: ../../src/PostMsg.cpp:134
+#, c-format
+msgid "The player '%s' want to cancel the '%s' between you both primaturely. Do you agree?"
+msgstr "Spelaren '%s' vill avbryta fördraget '%s' mellan er i förtid. Accepterar du?"
+
+#: ../../src/BuildingConsts.h:335
+msgid "The quarrying of stone in a granite mine guarantees the supply of stone for buildings. However, even a granite mine has to feed its workers."
+msgstr "Brytningen av sten i en granitgruva förser byggnader med sten. Även en granitgruva måste förse sina arbetare med mat."
+
+#. immer noch nichts gefunden? --> Dann Fehlermeldung
+#: ../../src/iwTextfile.cpp:72
+msgid "The readme file was not found!"
+msgstr "Readme-filen hittades inte!"
+
+#: ../../src/dskSinglePlayer.cpp:146 ../../src/dskSinglePlayer.cpp:150
+msgid "The specified file couldn't be loaded!"
+msgstr "Den angivna filen kunde inte laddas!"
+
+#: ../../src/iwMusicPlayer.cpp:335
+msgid "The specified file couldn't be opened!"
+msgstr "Den angivna filen kunde inte öppnas!"
+
+#: ../../src/iwMusicPlayer.cpp:117 ../../src/iwMusicPlayer.cpp:360
+msgid "The specified file couldn't be saved!"
+msgstr "Den angivna filen kunde inte sparas!"
+
+#: ../../src/BuildingConsts.h:395
+msgid "The stonemason works the stone near his quarry into bricks. These are needed mainly for building houses and as ammunition for catapults."
+msgstr "Stenhuggaren bryter ner stenar nära stenbrottet till stenblock. De behövs till nästan alla byggarbeten och som ammunition till katapulter."
+
+#: ../../src/BuildingConsts.h:461
+msgid "The storehouse can help reduce long transportation journeys and is suited to the temporary storage of merchandise and inhabitants. You can release certain merchandise from the storehouse, as and when required. Alternatively, the storage function can be disabled. To do this, first choose the relevant icon followed by the desired merchandise or job symbol."
+msgstr "Förrådshuset kan hjälpa till att förkorta transportvägar och att temporärt lagra varor och folk. Du kan lagra ut några eller stoppa inläggning av dem. Därtill, välj först den adekvata symbolen och sedan varan eller yrket."
+
+#: ../../src/BuildingConsts.h:304
+msgid "The watchtower with its large amount of space is best suited for stationing a large number of your troops. Using the gold coin button you can stop the delivery of gold coins to the soldiers stationed here. However, without gold coins the soldiers here can not train and improve their skills."
+msgstr "Vakttornet med dess stora utrymme är lämpligast att stationera många soldater i. Med hjälp av myntknappen kan du stoppa leveransen av guldmynt till de här stationerade soldaterna. Fast, utan mynt kan soldaterna inte träna och utveckla sina färdigheter."
+
+#: ../../src/iwDirectIPConnect.cpp:258
+msgid "This Server is full!"
+msgstr "Servern är fyllt!"
+
+#: ../../src/nofAttacker.cpp:292
+msgid "This harbor building was destroyed"
+msgstr "Denna hamnanläggning förstördes"
+
+#: ../../src/nofBuildingWorker.cpp:404
+msgid "This mine is exhausted"
+msgstr "Den här gruvan har sinat"
+
+#: ../../src/nofBuildingWorker.cpp:406
+msgid "This well is dried out"
+msgstr "Den här brunnen har sinat"
+
+#: ../../src/iwSave.cpp:67
+msgid "Time"
+msgstr "Tid"
+
+#: ../../src/iwDiplomacy.cpp:274
+msgid "To player:"
+msgstr "Till spelare:"
+
+#: ../../src/iwLobbyConnect.cpp:222
+msgid "To register, you have to create a valid board account at http://forum.siedler25.org at the moment.\n"
+msgstr "För att registrera dig måste du skapa ett giltigt forumkonto på http://forum.siedler25.org för tillfället.\n"
+
+#. Einzelne Balken
+#: ../../src/iwTools.cpp:50
+msgid "Tongs"
+msgstr "Tång"
+
+#: ../../src/iwDirectIPConnect.cpp:262
+msgid "Too short Message received!"
+msgstr "För kort meddelande erhållits."
+
+#. Werkzeugproduktion
+#: ../../src/iwMainMenu.cpp:71
+msgid "Tools"
+msgstr "Verktyg"
+
+#. Nach ganz oben
+#: ../../src/iwBuildOrder.cpp:55
+msgid "Top"
+msgstr "Början"
+
+#. Besitz 3/4 des Landes
+#: ../../src/dskHostGame.cpp:136
+msgid "Total domination"
+msgstr "Envälde"
+
+#: ../../src/dskHostGame.cpp:144
+#, c-format
+msgid "Tournament: %u minutes"
+msgstr "Turnering: %u minuter"
+
+#: ../../src/iwTrade.cpp:59
+msgid "Trade"
+msgstr "Handel"
+
+#: ../../src/iwTrade.cpp:64
+#, c-format
+msgid "Trade with %s"
+msgstr "Handla med %s"
+
+#. Transport
+#: ../../src/iwMainMenu.cpp:69
+msgid "Transport"
+msgstr "Transport"
+
+#: ../../src/iwDiplomacy.cpp:81
+msgid "Treaties"
+msgstr "Fördrag"
+
+#: ../../src/iwDiplomacy.cpp:106
+msgid "Treaty of alliance"
+msgstr "Alliansfördrag"
+
+#: ../../src/dskGameLoader.cpp:132
+msgid "Tribal chiefs assembled around the table..."
+msgstr "Hövdingarna samlade runt bordet..."
+
+#: ../../src/dskSelectMap.cpp:100
+msgid "Type"
+msgstr "Typ"
+
+#: ../../src/AddonLimitCatapults.h:46 ../../src/AddonMaxWaterwayLength.h:54
+msgid "Unlimited"
+msgstr "Obegränsat"
+
+#. "Freies Spiel"
+#: ../../src/dskSinglePlayer.cpp:77 ../../src/dskSinglePlayer.cpp:182
+#: ../../src/dskSinglePlayer.cpp:194
+msgid "Unlimited Play"
+msgstr "Fritt Spel"
+
+#. Hoch
+#: ../../src/iwBuildOrder.cpp:57
+msgid "Up"
+msgstr "Upp"
+
+#: ../../src/iwAction.cpp:367
+msgid "Upgrade to donkey road"
+msgstr "Uppgradera till åsneväg"
+
+#: ../../src/iwMusicPlayer.cpp:85
+msgid "Upwards"
+msgstr "Uppåt"
+
+#: ../../src/Addons.cpp:168
+msgid "Use"
+msgstr "Använd"
+
+#. IPv4/6
+#: ../../src/dskOptions.cpp:126
+msgid "Use IPv6:"
+msgstr "Använd IPv6:"
+
+#: ../../src/iwAddons.cpp:54
+msgid "Use S2 Defaults"
+msgstr "Använd S2:s standardinställningar"
+
+#. Benutzername
+#: ../../src/iwLobbyConnect.cpp:53
+msgid "Username:"
+msgstr "Nickname:"
+
+#: ../../src/iwStatistics.cpp:123 ../../src/iwStatistics.cpp:239
+msgid "Vanquished enemies"
+msgstr "Besegrade fiender"
+
+#: ../../src/dskLobby.cpp:77 ../../src/dskLobby.cpp:79
+msgid "Version"
+msgstr "Version"
+
+#: ../../src/iwLobbyServerInfo.cpp:81
+msgid "Version:"
+msgstr "Version:"
+
+#. "VBO"
+#: ../../src/dskOptions.cpp:190
+msgid "Vertex Buffer Objects:"
+msgstr "Vertex Buffer Objects:"
+
+#: ../../src/dskHostGame.cpp:126
+msgid "Very Low"
+msgstr "Mycket Låg"
+
+#. Schnell
+#: ../../src/dskHostGame.cpp:156
+msgid "Very fast"
+msgstr "Fortast"
+
+#: ../../src/AddonMaxWaterwayLength.h:53
+msgid "Very long"
+msgstr "Mycket långt"
+
+#: ../../src/dskHostGame.cpp:152
+msgid "Very slow"
+msgstr "Långsamast"
+
+#: ../../src/dskHostGame.cpp:109
+msgid "View Settings..."
+msgstr "Visa Inställningar"
+
+#: ../../src/dskHostGame.cpp:823
+msgid "Vikings"
+msgstr "Vikingar"
+
+#: ../../src/iwDirectIPConnect.cpp:282
+msgid "Waiting for Playerinfo..."
+msgstr "Väntar på spelarinformation..."
+
+#: ../../src/iwDirectIPConnect.cpp:279 ../../src/iwLobbyConnect.cpp:332
+msgid "Waiting for Reply..."
+msgstr "Väntar på svar..."
+
+#: ../../src/iwTrade.cpp:94
+msgid "Ware you like to trade"
+msgstr "Vara du vill handla med"
+
+#. Ware or figure?
+#: ../../src/iwTrade.cpp:74
+msgid "Wares"
+msgstr "Varor"
+
+#: ../../src/GameClientGF_Replay.cpp:81
+#, c-format
+msgid "Warning: The played replay is not in sync with the original match. (GF: %u)"
+msgstr "Varning: Replayet är inte synchroniserad med ursprungliga spelet. (GF: %u)"
+
+#: ../../src/dskSelectMap.cpp:423
+msgid "Wasteland"
+msgstr "Öken"
+
 #: ../../src/GameConsts.h:284
 msgid "Watchtower"
 msgstr "Vakttorn"
 
+#. Wasserbüffel äh -gruppe ;-)
+#: ../../src/iwDistribution.cpp:149
+msgid "Water"
+msgstr "Vatten"
+
+#: ../../src/nofAttacker.cpp:654
+msgid "We are under attack!"
+msgstr "Vi är anfallna!"
+
+#: ../../src/dskCredits.cpp:215
+msgid "We hope you enjoy playing Return To The Roots!"
+msgstr "Vi hoppas du får glädje av att spela Return To The Roots!"
+
+#: ../../src/iwAction.cpp:399
+msgid "Weak attackers"
+msgstr "Svaga angripare"
+
+#. pitch: 4, 4
+#: ../../src/iwMilitary.cpp:51
+msgid "Weak defense"
+msgstr "Svaga försvarare"
+
+#: ../../src/iwMerchandiseStatistics.cpp:85
+msgid "Weapons"
+msgstr "Vapen"
+
+#: ../../src/dskCredits.cpp:84 ../../src/dskCredits.cpp:104
+#: ../../src/dskCredits.cpp:113
+msgid "Website Administration"
+msgstr "Hemsidesadministration"
+
+#: ../../src/dskCredits.cpp:85 ../../src/dskCredits.cpp:105
+msgid "Website Programming"
+msgstr "Hemsidesprogrammering"
+
 #: ../../src/GameConsts.h:315
 msgid "Well"
 msgstr "Brunn"
+
+#: ../../src/dskOptions.cpp:183
+msgid "Windowed"
+msgstr "I fönster"
+
+#: ../../src/dskSelectMap.cpp:424
+msgid "Winter world"
+msgstr "Winterlandskap"
+
+#: ../../src/BuildingConsts.h:403
+msgid "Within his area, the forester ensures the survival of the forest. He plants all types of trees."
+msgstr "Skogvaktaren planterar alla sorters träd i sin omgivning."
+
+#: ../../src/iwLobbyRanking.cpp:81
+msgid "Won"
+msgstr "Vann"
+
+#. Wood group
+#: ../../src/iwDistribution.cpp:126
+msgid "Wood"
+msgstr "Trä"
 
 #: ../../src/GameConsts.h:367
 msgid "Woodchopper"
@@ -3444,3 +3032,104 @@ msgstr "Skogshuggare"
 #: ../../src/GameConsts.h:297
 msgid "Woodcutter"
 msgstr "Skogshuggeri"
+
+#. TODO: richtige Messages senden, um das zu laden /*GetMap()->GenerateOpenGL();*/
+#: ../../src/dskGameLoader.cpp:169
+msgid "World was put together and glued..."
+msgstr "Världen pusslats och har klistrat ihop..."
+
+#: ../../src/iwDirectIPConnect.cpp:259
+msgid "Wrong Password!"
+msgstr "Ogiltig lösenord!"
+
+#: ../../src/iwDirectIPConnect.cpp:263
+msgid "Wrong Server Type!"
+msgstr "Fel typ av servern!"
+
+#: ../../src/iwDirectIPConnect.cpp:260
+msgid "Wrong client version"
+msgstr "Fel version av klienten"
+
+#. nein
+#: ../../src/iwLobbyConnect.cpp:73
+msgid "Yes"
+msgstr "Ja"
+
+#: ../../src/iwMusicPlayer.cpp:190
+msgid "You are not allowed to delete the standard playlist!"
+msgstr "Du får inte ta bort standardspellistan!"
+
+#: ../../src/dskDirectIP.cpp:79
+msgid ""
+"You can't create a game while a proxy server is active\n"
+"Disable the use of a proxy server first!"
+msgstr ""
+"Du kan inte skapa ett spel när en proxyserver är aktiv.\n"
+"Inaktivera användandet av en proxyserver först!"
+
+#: ../../src/dskHostGame.cpp:640
+msgid "You have 10 seconds until game starts"
+msgstr "Spelet börjar om 10 sekunder"
+
+#: ../../src/dskOptions.cpp:590 ../../src/dskOptions.cpp:605
+msgid "You need to restart your game to change the screen resolution!"
+msgstr "Du måste starta om spelet för att ändra skärmupplösningen!"
+
+#: ../../src/dskOptions.cpp:613
+msgid "You need to restart your game to change the video or audio driver!"
+msgstr "Du måste starta om spelet för att ändra drivrutin för bild eller ljud!"
+
+#: ../../src/AIPlayerJH.cpp:293
+msgid "You win"
+msgstr "Du vinner"
+
+#. text oben noch hinschreiben
+#: ../../src/GameClient.cpp:1742
+#, c-format
+msgid "current GF: %u - still fast forwarding: %d GFs left (%d %%)"
+msgstr "aktuell GF: %u - snabbspolar: %d GF:s kvar (%d %%)"
+
+#. URL
+#: ../../src/dskDirectIP.cpp:56
+msgid "http://www.siedler25.org"
+msgstr "http://www.siedler25.org"
+
+#: ../../src/dskHostGame.cpp:294
+msgid "n/a"
+msgstr "ej tillgängligt"
+
+#: ../../src/PostMsg.cpp:105
+msgid "non-aggression pact"
+msgstr "icke-angreppspakt"
+
+#. VBO unterstützt?
+#: ../../src/dskOptions.cpp:170 ../../src/dskOptions.cpp:194
+msgid "not supported"
+msgstr "stöds inte"
+
+#: ../../src/iwPostWindow.cpp:298
+msgid "of"
+msgstr "av"
+
+#. Text vor Editfeld
+#: ../../src/iwSkipGFs.cpp:47
+msgid "to GameFrame:"
+msgstr "till GF:"
+
+#: ../../src/PostMsg.cpp:104
+msgid "treaty of alliance"
+msgstr "alliansfördrag"
+
+#: ../../src/dskCredits.cpp:192
+msgid "various anonymous donators"
+msgstr "olika anonyma gåvor"
+
+#. Copyright
+#: ../../src/dskDirectIP.cpp:59
+msgid "© 2005 - 2011 Settlers Freaks"
+msgstr "© 2005 - 2011 Settlers Freaks"
+
+#. Copyright
+#: ../../src/dskMainMenu.cpp:73
+msgid "© 2005 - 2012 Settlers Freaks"
+msgstr "© 2005 - 2012 Settlers Freaks"
