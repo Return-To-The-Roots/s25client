@@ -5,4 +5,9 @@
 #define WINDOW_VERSION "0.8.1"
 #define WINDOW_REVISION "0"
 
+const char *GetWindowTitle();
+const char *GetWindowVersion();
+const char *GetWindowRevision();
+const char *GetCurrentYear();
+
 #endif // VERSION_H_INCLUDED
