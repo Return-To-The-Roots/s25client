@@ -1,3 +1,39 @@
+s25rttr (20131210-9034.293) karmic; urgency=low
+
+  * Automatic Jenkins Build 293
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 10 Dec 2013 16:06:57 +0100
+
+s25rttr (20131210-9034) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 10 Dec 2013 00:00:00 +0100
+
+s25rttr (20131129-9023.292) karmic; urgency=low
+
+  * Automatic Jenkins Build 292
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Fri, 29 Nov 2013 01:06:59 +0100
+
+s25rttr (20131129-9023) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Fri, 29 Nov 2013 00:00:00 +0100
+
+s25rttr (20131128-9022) any; urgency=low
+
+  * Fixed .desktop file conformity (patch from Mailaender)
+
+ -- Florian Doersch <flosoft@siedler25.org>  Thu, 28 Nov 2013 07:18:00 +0100
+
+s25rttr (20131012-8973) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 12 Oct 2013 22:00:00 +0200
+
 s25rttr (20131012-8972.291) karmic; urgency=low
 
   * Automatic Jenkins Build 291
