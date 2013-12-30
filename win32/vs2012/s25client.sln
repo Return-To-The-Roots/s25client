@@ -2,18 +2,11 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libsiedler2", "..\..\libsiedler2\win32\vs2012\libsiedler2.vcxproj", "{C83446CC-0FF8-4C4A-A1B7-C77E038F62E8}"
-	ProjectSection(ProjectDependencies) = postProject
-		{D2810389-AA34-49CD-A5BB-E0D609E7C785} = {D2810389-AA34-49CD-A5BB-E0D609E7C785}
-	EndProjectSection
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libendian", "..\..\libendian\win32\vs2012\libendian.vcxproj", "{D2810389-AA34-49CD-A5BB-E0D609E7C785}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "s25client", "s25client.vcxproj", "{B42E552A-1422-446A-96F9-0D649B078DCB}"
 	ProjectSection(ProjectDependencies) = postProject
-		{C00BA80B-0562-4B13-A7CA-E301C15B1E19} = {C00BA80B-0562-4B13-A7CA-E301C15B1E19}
 		{DB36C30F-F1D4-4639-9965-365F76D48488} = {DB36C30F-F1D4-4639-9965-365F76D48488}
 		{C757122F-B02F-43D6-8607-B6A683566A2C} = {C757122F-B02F-43D6-8607-B6A683566A2C}
-		{D2810389-AA34-49CD-A5BB-E0D609E7C785} = {D2810389-AA34-49CD-A5BB-E0D609E7C785}
 		{82550E90-5270-4BB7-B598-A3E65F654289} = {82550E90-5270-4BB7-B598-A3E65F654289}
 		{D3091697-933A-4473-AA94-D264CBB2C273} = {D3091697-933A-4473-AA94-D264CBB2C273}
 		{8216129F-D4E9-4720-84D6-156555D6BCF7} = {8216129F-D4E9-4720-84D6-156555D6BCF7}
@@ -27,9 +20,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "s25client", "s25client.vcxp
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mygettext", "..\..\mygettext\win32\vs2012\mygettext.vcxproj", "{82550E90-5270-4BB7-B598-A3E65F654289}"
-	ProjectSection(ProjectDependencies) = postProject
-		{D2810389-AA34-49CD-A5BB-E0D609E7C785} = {D2810389-AA34-49CD-A5BB-E0D609E7C785}
-	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libutil", "..\..\libutil\win32\vs2012\libutil.vcxproj", "{C757122F-B02F-43D6-8607-B6A683566A2C}"
 EndProject
@@ -81,6 +71,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "audioSDL", "..\..\driver\au
 		{8216129F-D4E9-4720-84D6-156555D6BCF7} = {8216129F-D4E9-4720-84D6-156555D6BCF7}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libendian", "..\..\libendian\win32\vs2012\libendian\libendian.vcxproj", "{60185982-A6D6-4C57-8D2B-9113FBFC0F02}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -91,10 +83,6 @@ Global
 		{C83446CC-0FF8-4C4A-A1B7-C77E038F62E8}.Debug|Win32.Build.0 = Debug|Win32
 		{C83446CC-0FF8-4C4A-A1B7-C77E038F62E8}.Release|Win32.ActiveCfg = Release|Win32
 		{C83446CC-0FF8-4C4A-A1B7-C77E038F62E8}.Release|Win32.Build.0 = Release|Win32
-		{D2810389-AA34-49CD-A5BB-E0D609E7C785}.Debug|Win32.ActiveCfg = Debug|Win32
-		{D2810389-AA34-49CD-A5BB-E0D609E7C785}.Debug|Win32.Build.0 = Debug|Win32
-		{D2810389-AA34-49CD-A5BB-E0D609E7C785}.Release|Win32.ActiveCfg = Release|Win32
-		{D2810389-AA34-49CD-A5BB-E0D609E7C785}.Release|Win32.Build.0 = Release|Win32
 		{B42E552A-1422-446A-96F9-0D649B078DCB}.Debug|Win32.ActiveCfg = Debug|Win32
 		{B42E552A-1422-446A-96F9-0D649B078DCB}.Debug|Win32.Build.0 = Debug|Win32
 		{B42E552A-1422-446A-96F9-0D649B078DCB}.Release|Win32.ActiveCfg = Release|Win32
@@ -151,6 +139,10 @@ Global
 		{DB36C30F-F1D4-4639-9965-365F76D48488}.Debug|Win32.Build.0 = Debug|Win32
 		{DB36C30F-F1D4-4639-9965-365F76D48488}.Release|Win32.ActiveCfg = Release|Win32
 		{DB36C30F-F1D4-4639-9965-365F76D48488}.Release|Win32.Build.0 = Release|Win32
+		{60185982-A6D6-4C57-8D2B-9113FBFC0F02}.Debug|Win32.ActiveCfg = Debug|Win32
+		{60185982-A6D6-4C57-8D2B-9113FBFC0F02}.Debug|Win32.Build.0 = Debug|Win32
+		{60185982-A6D6-4C57-8D2B-9113FBFC0F02}.Release|Win32.ActiveCfg = Release|Win32
+		{60185982-A6D6-4C57-8D2B-9113FBFC0F02}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

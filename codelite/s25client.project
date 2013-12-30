@@ -1,0 +1,718 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CodeLite_Project Name="s25client">
+  <Plugins>
+    <Plugin Name="qmake">
+      <![CDATA[00020001N0005Debug0000000000000001N0007Release000000000000]]>
+    </Plugin>
+  </Plugins>
+  <Description/>
+  <Dependencies/>
+  <VirtualDirectory Name="src">
+    <File Name="../src/list.h"/>
+    <File Name="../src/SoundManager.cpp"/>
+    <File Name="../src/SerializedGameData.h"/>
+    <File Name="../src/Swap.h"/>
+    <File Name="../src/Messenger.cpp"/>
+    <File Name="../src/Socket.h"/>
+    <File Name="../src/signale.cpp"/>
+    <File Name="../src/PointDistance.h"/>
+    <File Name="../src/WindowManager.h"/>
+    <File Name="../src/strlwr.h"/>
+    <File Name="../src/Random.cpp"/>
+    <File Name="../src/RoadSegment.h"/>
+    <File Name="../src/main.cpp"/>
+    <File Name="../src/main.h"/>
+    <File Name="../src/Loader.cpp"/>
+    <File Name="../src/ListDir.h"/>
+    <File Name="../src/signale.h"/>
+    <File Name="../src/WindowManager.cpp"/>
+    <File Name="../src/MapGeometry.cpp"/>
+    <File Name="../src/SoundManager.h"/>
+    <File Name="../src/ListDir.cpp"/>
+    <File Name="../src/Loader.h"/>
+    <File Name="../src/VideoDriverLoaderInterface.h"/>
+    <File Name="../src/VideoDriverWrapper.cpp"/>
+    <File Name="../src/Window.cpp"/>
+    <File Name="../src/Random.h"/>
+    <File Name="../src/languages.cpp"/>
+    <File Name="../src/Window.h"/>
+    <File Name="../src/Messenger.h"/>
+    <File Name="../src/Settings.h"/>
+    <File Name="../src/Messages.h"/>
+    <File Name="../src/SocketSet.h"/>
+    <File Name="../src/Time.h"/>
+    <File Name="../src/MusicPlayer.cpp"/>
+    <File Name="../src/macros.h"/>
+    <File Name="../src/VideoDriverWrapper.h"/>
+    <File Name="../src/languages.h"/>
+    <File Name="../build_version.h"/>
+    <VirtualDirectory Name="libutil">
+      <File Name="../libutil/src/Log.cpp"/>
+      <File Name="../libutil/src/Log.h"/>
+      <File Name="../libutil/src/Message.cpp"/>
+      <File Name="../libutil/src/Message.h"/>
+      <File Name="../libutil/src/MessageInterface.cpp"/>
+      <File Name="../libutil/src/MessageInterface.h"/>
+      <File Name="../libutil/src/MessageQueue.cpp"/>
+      <File Name="../libutil/src/MessageQueue.h"/>
+      <File Name="../libutil/src/MyTime.cpp"/>
+      <File Name="../libutil/src/MyTime.h"/>
+      <File Name="../libutil/src/Protocol.h"/>
+      <File Name="../libutil/src/Singleton.h"/>
+      <File Name="../libutil/src/Socket.cpp"/>
+      <File Name="../libutil/src/Socket.h"/>
+      <File Name="../libutil/src/SocketSet.cpp"/>
+      <File Name="../libutil/src/SocketSet.h"/>
+      <File Name="../libutil/src/libutil.h"/>
+      <File Name="../libutil/src/main.h"/>
+      <File Name="../libutil/src/BinaryFile.cpp"/>
+      <File Name="../libutil/src/BinaryFile.h"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="lobby">
+      <File Name="../liblobby/src/LobbyClient.cpp"/>
+      <File Name="../liblobby/src/LobbyClient.h"/>
+      <File Name="../liblobby/src/LobbyInterface.cpp"/>
+      <File Name="../liblobby/src/LobbyMessage.h"/>
+      <File Name="../liblobby/src/LobbyMessageInterface.cpp"/>
+      <File Name="../liblobby/src/LobbyMessageInterface.h"/>
+      <File Name="../liblobby/src/LobbyProtocol.h"/>
+      <File Name="../liblobby/src/liblobby.h"/>
+      <File Name="../liblobby/src/main.h"/>
+      <File Name="../liblobby/src/LobbyServerInfo.cpp"/>
+      <File Name="../liblobby/src/LobbyServerInfo.h"/>
+      <File Name="../liblobby/src/LobbyPlayerInfo.cpp"/>
+      <File Name="../liblobby/src/LobbyPlayerInfo.h"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="GUI">
+      <VirtualDirectory Name="Controls">
+        <File Name="../src/ctrlBuildingIcon.cpp"/>
+        <File Name="../src/ctrlBuildingIcon.h"/>
+        <File Name="../src/ctrlButton.cpp"/>
+        <File Name="../src/ctrlButton.h"/>
+        <File Name="../src/ctrlChat.cpp"/>
+        <File Name="../src/ctrlChat.h"/>
+        <File Name="../src/ctrlCheck.cpp"/>
+        <File Name="../src/ctrlCheck.h"/>
+        <File Name="../src/ctrlComboBox.cpp"/>
+        <File Name="../src/ctrlComboBox.h"/>
+        <File Name="../src/ctrlDeepening.cpp"/>
+        <File Name="../src/ctrlDeepening.h"/>
+        <File Name="../src/ctrlEdit.cpp"/>
+        <File Name="../src/ctrlEdit.h"/>
+        <File Name="../src/ctrlGroup.cpp"/>
+        <File Name="../src/ctrlGroup.h"/>
+        <File Name="../src/ctrlImage.cpp"/>
+        <File Name="../src/ctrlImage.h"/>
+        <File Name="../src/ctrlIngameMinimap.cpp"/>
+        <File Name="../src/ctrlIngameMinimap.h"/>
+        <File Name="../src/ctrlList.cpp"/>
+        <File Name="../src/ctrlList.h"/>
+        <File Name="../src/ctrlMinimap.cpp"/>
+        <File Name="../src/ctrlMinimap.h"/>
+        <File Name="../src/ctrlMultiline.cpp"/>
+        <File Name="../src/ctrlMultiline.h"/>
+        <File Name="../src/ctrlOptionGroup.cpp"/>
+        <File Name="../src/ctrlOptionGroup.h"/>
+        <File Name="../src/ctrlPercent.cpp"/>
+        <File Name="../src/ctrlPercent.h"/>
+        <File Name="../src/ctrlPreviewMinimap.cpp"/>
+        <File Name="../src/ctrlPreviewMinimap.h"/>
+        <File Name="../src/ctrlProgress.cpp"/>
+        <File Name="../src/ctrlProgress.h"/>
+        <File Name="../src/ctrlRectangle.cpp"/>
+        <File Name="../src/ctrlRectangle.h"/>
+        <File Name="../src/ctrlScrollBar.cpp"/>
+        <File Name="../src/ctrlScrollBar.h"/>
+        <File Name="../src/ctrlTab.cpp"/>
+        <File Name="../src/ctrlTab.h"/>
+        <File Name="../src/ctrlTable.cpp"/>
+        <File Name="../src/ctrlTable.h"/>
+        <File Name="../src/ctrlText.cpp"/>
+        <File Name="../src/ctrlText.h"/>
+        <File Name="../src/ctrlTimer.cpp"/>
+        <File Name="../src/ctrlTimer.h"/>
+        <File Name="../src/ctrlVarDeepening.cpp"/>
+        <File Name="../src/ctrlVarDeepening.h"/>
+        <File Name="../src/ctrlVarText.cpp"/>
+        <File Name="../src/ctrlVarText.h"/>
+        <File Name="../src/ctrlMultiSelectGroup.cpp"/>
+        <File Name="../src/ctrlMultiSelectGroup.h"/>
+        <File Name="../src/noShip.cpp"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="Desktops">
+        <File Name="../src/dskAboutRTTR.cpp"/>
+        <File Name="../src/dskAboutRTTR.h"/>
+        <File Name="../src/dskCredits.cpp"/>
+        <File Name="../src/dskCredits.h"/>
+        <File Name="../src/dskDirectIP.cpp"/>
+        <File Name="../src/dskDirectIP.h"/>
+        <File Name="../src/dskGameInterface.cpp"/>
+        <File Name="../src/dskGameInterface.h"/>
+        <File Name="../src/dskGameLoader.cpp"/>
+        <File Name="../src/dskGameLoader.h"/>
+        <File Name="../src/dskHostGame.cpp"/>
+        <File Name="../src/dskHostGame.h"/>
+        <File Name="../src/dskIntro.cpp"/>
+        <File Name="../src/dskIntro.h"/>
+        <File Name="../src/dskLobby.cpp"/>
+        <File Name="../src/dskLobby.h"/>
+        <File Name="../src/dskMainMenu.cpp"/>
+        <File Name="../src/dskMainMenu.h"/>
+        <File Name="../src/dskMultiPlayer.cpp"/>
+        <File Name="../src/dskMultiPlayer.h"/>
+        <File Name="../src/dskOptions.cpp"/>
+        <File Name="../src/dskOptions.h"/>
+        <File Name="../src/dskSelectMap.cpp"/>
+        <File Name="../src/dskSelectMap.h"/>
+        <File Name="../src/dskSinglePlayer.cpp"/>
+        <File Name="../src/dskSinglePlayer.h"/>
+        <File Name="../src/dskSplash.cpp"/>
+        <File Name="../src/dskSplash.h"/>
+        <File Name="../src/dskUnlimitedPlay.cpp"/>
+        <File Name="../src/dskUnlimitedPlay.h"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="IngameWindows">
+        <File Name="../src/iwStatistics.cpp"/>
+        <File Name="../src/iwStatistics.h"/>
+        <File Name="../src/iwSurrender.cpp"/>
+        <File Name="../src/iwSurrender.h"/>
+        <File Name="../src/iwDiplomacy.cpp"/>
+        <File Name="../src/iwDiplomacy.h"/>
+        <File Name="../src/iwAction.cpp"/>
+        <File Name="../src/iwAction.h"/>
+        <File Name="../src/iwBaseWarehouse.cpp"/>
+        <File Name="../src/iwBaseWarehouse.h"/>
+        <File Name="../src/iwBuilding.cpp"/>
+        <File Name="../src/iwBuilding.h"/>
+        <File Name="../src/iwBuildingProductivities.cpp"/>
+        <File Name="../src/iwBuildingProductivities.h"/>
+        <File Name="../src/iwBuildings.cpp"/>
+        <File Name="../src/iwBuildings.h"/>
+        <File Name="../src/iwBuildingSite.cpp"/>
+        <File Name="../src/iwBuildingSite.h"/>
+        <File Name="../src/iwBuildOrder.cpp"/>
+        <File Name="../src/iwBuildOrder.h"/>
+        <File Name="../src/iwChat.cpp"/>
+        <File Name="../src/iwChat.h"/>
+        <File Name="../src/iwDemolishBuilding.cpp"/>
+        <File Name="../src/iwDemolishBuilding.h"/>
+        <File Name="../src/iwDirectIPConnect.cpp"/>
+        <File Name="../src/iwDirectIPConnect.h"/>
+        <File Name="../src/iwDirectIPCreate.cpp"/>
+        <File Name="../src/iwDirectIPCreate.h"/>
+        <File Name="../src/iwDistribution.cpp"/>
+        <File Name="../src/iwDistribution.h"/>
+        <File Name="../src/iwEndgame.cpp"/>
+        <File Name="../src/iwEndgame.h"/>
+        <File Name="../src/iwHelp.cpp"/>
+        <File Name="../src/iwHelp.h"/>
+        <File Name="../src/iwHQ.cpp"/>
+        <File Name="../src/iwHQ.h"/>
+        <File Name="../src/iwInventory.cpp"/>
+        <File Name="../src/iwInventory.h"/>
+        <File Name="../src/iwLobbyConnect.cpp"/>
+        <File Name="../src/iwLobbyConnect.h"/>
+        <File Name="../src/iwLobbyRanking.cpp"/>
+        <File Name="../src/iwLobbyRanking.h"/>
+        <File Name="../src/iwLobbyServerInfo.cpp"/>
+        <File Name="../src/iwLobbyServerInfo.h"/>
+        <File Name="../src/iwMainMenu.cpp"/>
+        <File Name="../src/iwMainMenu.h"/>
+        <File Name="../src/iwMilitary.cpp"/>
+        <File Name="../src/iwMilitary.h"/>
+        <File Name="../src/iwMilitaryBuilding.cpp"/>
+        <File Name="../src/iwMilitaryBuilding.h"/>
+        <File Name="../src/iwMinimap.cpp"/>
+        <File Name="../src/iwMinimap.h"/>
+        <File Name="../src/iwMsgbox.cpp"/>
+        <File Name="../src/iwMsgbox.h"/>
+        <File Name="../src/iwMusicPlayer.cpp"/>
+        <File Name="../src/iwMusicPlayer.h"/>
+        <File Name="../src/iwOptionsWindow.cpp"/>
+        <File Name="../src/iwOptionsWindow.h"/>
+        <File Name="../src/iwPlayReplay.cpp"/>
+        <File Name="../src/iwPlayReplay.h"/>
+        <File Name="../src/iwPostWindow.cpp"/>
+        <File Name="../src/iwPostWindow.h"/>
+        <File Name="../src/iwRoadWindow.cpp"/>
+        <File Name="../src/iwRoadWindow.h"/>
+        <File Name="../src/iwSave.cpp"/>
+        <File Name="../src/iwSave.h"/>
+        <File Name="../src/iwSkipGFs.cpp"/>
+        <File Name="../src/iwSkipGFs.h"/>
+        <File Name="../src/iwStorehouse.cpp"/>
+        <File Name="../src/iwStorehouse.h"/>
+        <File Name="../src/iwTextfile.cpp"/>
+        <File Name="../src/iwTextfile.h"/>
+        <File Name="../src/iwTools.cpp"/>
+        <File Name="../src/iwTools.h"/>
+        <File Name="../src/iwTransport.cpp"/>
+        <File Name="../src/iwTransport.h"/>
+        <File Name="../src/iwWares.cpp"/>
+        <File Name="../src/iwWares.h"/>
+        <File Name="../src/iwHarborBuilding.cpp"/>
+        <File Name="../src/iwHarborBuilding.h"/>
+        <File Name="../src/iwPleaseWait.cpp"/>
+        <File Name="../src/iwPleaseWait.h"/>
+        <File Name="../src/iwShip.h"/>
+        <File Name="../src/iwSettings.cpp"/>
+        <File Name="../src/iwSettings.h"/>
+        <File Name="../src/iwAddons.cpp"/>
+        <File Name="../src/iwAddons.h"/>
+        <File Name="../src/iwAIDebug.cpp"/>
+        <File Name="../src/iwAIDebug.h"/>
+        <File Name="../src/iwMerchandiseStatistics.cpp"/>
+        <File Name="../src/iwMerchandiseStatistics.h"/>
+        <File Name="../src/iwTrade.cpp"/>
+        <File Name="../src/iwTrade.h"/>
+        <File Name="../src/iwObservate.cpp"/>
+        <File Name="../src/iwObservate.h"/>
+      </VirtualDirectory>
+      <File Name="../src/PostMsg.cpp"/>
+      <File Name="../src/PostMsg.h"/>
+      <File Name="../src/const_gui_ids.h"/>
+      <File Name="../src/controls.h"/>
+      <File Name="../src/customborderbuilder.cpp"/>
+      <File Name="../src/customborderbuilder.h"/>
+      <File Name="../src/Desktop.cpp"/>
+      <File Name="../src/Desktop.h"/>
+      <File Name="../src/IngameWindow.cpp"/>
+      <File Name="../src/IngameWindow.h"/>
+      <File Name="../src/MouseAndKeys.h"/>
+      <File Name="../src/iwShip.cpp"/>
+      <File Name="../src/nofAttacker.cpp"/>
+      <File Name="../src/nofHunter.cpp"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="Spiel">
+      <File Name="../src/BurnedWarehouse.cpp"/>
+      <File Name="../src/BurnedWarehouse.h"/>
+      <File Name="../src/CatapultStone.cpp"/>
+      <File Name="../src/CatapultStone.h"/>
+      <File Name="../src/nobHarborBuilding.h"/>
+      <File Name="../src/noShip.h"/>
+      <File Name="../src/noShipBuildingSite.cpp"/>
+      <File Name="../src/noShipBuildingSite.h"/>
+      <File Name="../src/nobShipYard.cpp"/>
+      <File Name="../src/nobShipYard.h"/>
+      <File Name="../src/nofShipWright.cpp"/>
+      <File Name="../src/ClientInterface.cpp"/>
+      <File Name="../src/ClientInterface.h"/>
+      <File Name="../src/nofStonemason.h"/>
+      <File Name="../src/nofActiveSoldier.cpp"/>
+      <File Name="../src/noDisappearingMapEnvObject.cpp"/>
+      <File Name="../src/noStaticObject.h"/>
+      <File Name="../src/noNothing.h"/>
+      <File Name="../src/nobHQ.cpp"/>
+      <File Name="../src/nofFlagWorker.cpp"/>
+      <File Name="../src/noMovable.h"/>
+      <File Name="../src/noCoordBase.cpp"/>
+      <File Name="../src/nofDonkeybreeder.h"/>
+      <File Name="../src/noBaseBuilding.h"/>
+      <File Name="../src/noStaticObject.cpp"/>
+      <File Name="../src/nofAttacker.h"/>
+      <File Name="../src/nofGeologist.cpp"/>
+      <File Name="../src/nofDonkeybreeder.cpp"/>
+      <File Name="../src/nofFarmhand.h"/>
+      <File Name="../src/noSkeleton.cpp"/>
+      <File Name="../src/nofBuildingWorker.h"/>
+      <File Name="../src/nofBaker.h"/>
+      <File Name="../src/nofIronfounder.h"/>
+      <File Name="../src/noTree.h"/>
+      <File Name="../src/nofButcher.h"/>
+      <File Name="../src/noDisappearingEnvObject.h"/>
+      <File Name="../src/noRoadNode.cpp"/>
+      <File Name="../src/nobBaseMilitary.cpp"/>
+      <File Name="../src/noFlag.cpp"/>
+      <File Name="../src/nofWoodcutter.h"/>
+      <File Name="../src/nobMilitary.cpp"/>
+      <File Name="../src/nobStorehouse.cpp"/>
+      <File Name="../src/nofCarrier.h"/>
+      <File Name="../src/nofHunter.h"/>
+      <File Name="../src/nobUsual.cpp"/>
+      <File Name="../src/noFigure.h"/>
+      <File Name="../src/nofCarpenter.cpp"/>
+      <File Name="../src/Ware.h"/>
+      <File Name="../src/Ware.cpp"/>
+      <File Name="../src/noExtension.cpp"/>
+      <File Name="../src/noDisappearingEnvObject.cpp"/>
+      <File Name="../src/nobBaseMilitary.h"/>
+      <File Name="../src/nofIronfounder.cpp"/>
+      <File Name="../src/noDisappearingMapEnvObject.h"/>
+      <File Name="../src/nofPassiveSoldier.cpp"/>
+      <File Name="../src/noFire.h"/>
+      <File Name="../src/noBase.h"/>
+      <File Name="../src/noRoadNode.h"/>
+      <File Name="../src/nofWarehouseWorker.h"/>
+      <File Name="../src/noSkeleton.h"/>
+      <File Name="../src/noMovable.cpp"/>
+      <File Name="../src/nofFlagWorker.h"/>
+      <File Name="../src/nofWarehouseWorker.cpp"/>
+      <File Name="../src/noAnimal.cpp"/>
+      <File Name="../src/MapGeometry.h"/>
+      <File Name="../src/nofDefender.cpp"/>
+      <File Name="../src/nofPassiveWorker.cpp"/>
+      <File Name="../src/nofPassiveWorker.h"/>
+      <File Name="../src/nofWorkman.h"/>
+      <File Name="../src/nofCatapultMan.cpp"/>
+      <File Name="../src/noCoordBase.h"/>
+      <File Name="../src/noNothing.cpp"/>
+      <File Name="../src/noGranite.cpp"/>
+      <File Name="../src/nofAggressiveDefender.cpp"/>
+      <File Name="../src/noAnimal.h"/>
+      <File Name="../src/nofCatapultMan.h"/>
+      <File Name="../src/nofMinter.h"/>
+      <File Name="../src/nofSoldier.h"/>
+      <File Name="../src/nofArmorer.h"/>
+      <File Name="../src/TerritoryRegion.cpp"/>
+      <File Name="../src/nofPlaner.h"/>
+      <File Name="../src/nofScout_LookoutTower.cpp"/>
+      <File Name="../src/noGranite.h"/>
+      <File Name="../src/nobBaseWarehouse.cpp"/>
+      <File Name="../src/nofMinter.cpp"/>
+      <File Name="../src/nobStorehouse.h"/>
+      <File Name="../src/nofActiveSoldier.h"/>
+      <File Name="../src/nofFarmer.h"/>
+      <File Name="../src/noBuilding.h"/>
+      <File Name="../src/nofCarpenter.h"/>
+      <File Name="../src/nofWoodcutter.cpp"/>
+      <File Name="../src/RoadSegment.cpp"/>
+      <File Name="../src/noFire.cpp"/>
+      <File Name="../src/noEnvObject.h"/>
+      <File Name="../src/nobBaseWarehouse.h"/>
+      <File Name="../src/noSign.cpp"/>
+      <File Name="../src/nofButcher.cpp"/>
+      <File Name="../src/nofMiller.cpp"/>
+      <File Name="../src/nofMetalworker.h"/>
+      <File Name="../src/noBuildingSite.h"/>
+      <File Name="../src/noBaseBuilding.cpp"/>
+      <File Name="../src/NodalObjectTypes.h"/>
+      <File Name="../src/nofMiner.cpp"/>
+      <File Name="../src/nofFarmer.cpp"/>
+      <File Name="../src/Minimap.h"/>
+      <File Name="../src/TerrainRenderer.cpp"/>
+      <File Name="../src/noBuilding.cpp"/>
+      <File Name="../src/nofPlaner.cpp"/>
+      <File Name="../src/nofPassiveSoldier.h"/>
+      <File Name="../src/Pathfinding.cpp"/>
+      <File Name="../src/noFighting.h"/>
+      <File Name="../src/nofWellguy.h"/>
+      <File Name="../src/nofWorkman.cpp"/>
+      <File Name="../src/noFighting.cpp"/>
+      <File Name="../src/MusicPlayer.h"/>
+      <File Name="../src/nofScout_Free.h"/>
+      <File Name="../src/nofDefender.h"/>
+      <File Name="../src/TerritoryRegion.h"/>
+      <File Name="../src/noTree.cpp"/>
+      <File Name="../src/Node.h"/>
+      <File Name="../src/nofSoldier.cpp"/>
+      <File Name="../src/nofGeologist.h"/>
+      <File Name="../src/noBase.cpp"/>
+      <File Name="../src/nofFisher.cpp"/>
+      <File Name="../src/nofFisher.h"/>
+      <File Name="../src/noEnvObject.cpp"/>
+      <File Name="../src/nofAggressiveDefender.h"/>
+      <File Name="../src/nofPigbreeder.cpp"/>
+      <File Name="../src/nofCarrier.cpp"/>
+      <File Name="../src/TerrainRenderer.h"/>
+      <File Name="../src/nobHQ.h"/>
+      <File Name="../src/noBuildingSite.cpp"/>
+      <File Name="../src/SerializedGameData.cpp"/>
+      <File Name="../src/nofShipWright.h"/>
+      <File Name="../src/nofBaker.cpp"/>
+      <File Name="../src/Settings.cpp"/>
+      <File Name="../src/nofBuilder.cpp"/>
+      <File Name="../src/nofBuildingWorker.cpp"/>
+      <File Name="../src/nofMiner.h"/>
+      <File Name="../src/nofMetalworker.cpp"/>
+      <File Name="../src/noExtension.h"/>
+      <File Name="../src/noFlag.h"/>
+      <File Name="../src/nobUsual.h"/>
+      <File Name="../src/nofArmorer.cpp"/>
+      <File Name="../src/nobMilitary.h"/>
+      <File Name="../src/nofStonemason.cpp"/>
+      <File Name="../src/nofBrewer.h"/>
+      <File Name="../src/nofScout_LookoutTower.h"/>
+      <File Name="../src/Minimap.cpp"/>
+      <File Name="../src/nofScout_Free.cpp"/>
+      <File Name="../src/noFigure.cpp"/>
+      <File Name="../src/noSign.h"/>
+      <File Name="../src/nofBrewer.cpp"/>
+      <File Name="../src/nofBuilder.h"/>
+      <File Name="../src/nofWellguy.cpp"/>
+      <File Name="../src/MinimapConsts.h"/>
+      <File Name="../src/nofMiller.h"/>
+      <File Name="../src/nofPigbreeder.h"/>
+      <VirtualDirectory Name="Konstanten">
+        <File Name="../src/BuildingConsts.h"/>
+        <File Name="../src/DoorConsts.h"/>
+        <File Name="../src/GameConsts.h"/>
+        <File Name="../src/JobConsts.h"/>
+        <File Name="../src/MapConsts.h"/>
+        <File Name="../src/MilitaryConsts.h"/>
+      </VirtualDirectory>
+      <File Name="../src/EventManager.cpp"/>
+      <File Name="../src/EventManager.h"/>
+      <File Name="../src/FOWObjects.cpp"/>
+      <File Name="../src/FOWObjects.h"/>
+      <File Name="../src/GameClient.cpp"/>
+      <File Name="../src/GameClient.h"/>
+      <File Name="../src/GameClientCommands.cpp"/>
+      <File Name="../src/GameClientGF_Game.cpp"/>
+      <File Name="../src/GameClientGF_Replay.cpp"/>
+      <File Name="../src/GameClientPlayer.cpp"/>
+      <File Name="../src/GameClientPlayer.h"/>
+      <File Name="../src/GameInterface.h"/>
+      <File Name="../src/GameObject.cpp"/>
+      <File Name="../src/GameObject.h"/>
+      <File Name="../src/GamePlayerInfo.cpp"/>
+      <File Name="../src/GamePlayerInfo.h"/>
+      <File Name="../src/GameWorld.cpp"/>
+      <File Name="../src/GameWorld.h"/>
+      <File Name="../src/GameWorldBase.cpp"/>
+      <File Name="../src/GameWorldGame.cpp"/>
+      <File Name="../src/nobHarborBuilding.cpp"/>
+      <File Name="../src/GlobalGameSettings.cpp"/>
+      <File Name="../src/GlobalGameSettings.h"/>
+      <VirtualDirectory Name="Addons">
+        <File Name="../src/AddonChangeGoldDeposits.h"/>
+        <File Name="../src/AddonCustomBuildSequence.h"/>
+        <File Name="../src/AddonExhaustibleWells.h"/>
+        <File Name="../src/AddonInexhaustibleMines.h"/>
+        <File Name="../src/AddonLimitCatapults.h"/>
+        <File Name="../src/AddonMaxWaterwayLength.h"/>
+        <File Name="../src/AddonRefundMaterials.h"/>
+        <File Name="../src/Addons.cpp"/>
+        <File Name="../src/Addons.h"/>
+        <File Name="../src/AddonStatisticsVisibility.h"/>
+        <File Name="../src/AddonDefenderBehavior.h"/>
+        <File Name="../src/AddonDemolitionProhibition.h"/>
+        <File Name="../src/AddonManualRoadEnlargement.h"/>
+        <File Name="../src/AddonRefundOnEmergency.h"/>
+        <File Name="../src/AddonCharburner.h"/>
+        <File Name="../src/const_addons.h"/>
+        <File Name="../src/nofFarmhand.cpp"/>
+        <File Name="../src/nofTradeDonkey.cpp"/>
+        <File Name="../src/nofTradeLeader.cpp"/>
+      </VirtualDirectory>
+      <File Name="../src/GameReplay.cpp"/>
+      <File Name="../src/GameReplay.h"/>
+      <File Name="../src/GameSavedFile.cpp"/>
+      <File Name="../src/GameSavedFile.h"/>
+      <File Name="../src/GameSavegame.cpp"/>
+      <File Name="../src/GameSavegame.h"/>
+      <VirtualDirectory Name="Menschen">
+        <File Name="../src/nofCharburner.h"/>
+        <File Name="../src/nofForester.cpp"/>
+        <File Name="../src/nofForester.h"/>
+        <File Name="../src/nofCharburner.cpp"/>
+        <File Name="../src/nofTradeDonkey.h"/>
+        <File Name="../src/nofTradeLeader.h"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="Objekte">
+        <File Name="../src/noCharburnerPile.cpp"/>
+        <File Name="../src/noCharburnerPile.h"/>
+        <File Name="../src/noGrainfield.cpp"/>
+        <File Name="../src/noGrainfield.h"/>
+      </VirtualDirectory>
+      <File Name="../src/TradeGraph.h"/>
+      <File Name="../src/GameWorldView.cpp"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="libutil">
+      <File Name="../libutil/src/Serializer.cpp"/>
+      <File Name="../libutil/src/Serializer.h"/>
+      <File Name="../libutil/src/files.cpp"/>
+      <File Name="../libutil/src/files.h"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="Netzwerk">
+      <File Name="../src/GameMessageInterface.cpp"/>
+      <File Name="../src/GameMessageInterface.h"/>
+      <File Name="../src/GameMessages.cpp"/>
+      <File Name="../src/GameMessages.h"/>
+      <File Name="../src/GameCommands.cpp"/>
+      <File Name="../src/GameCommands.h"/>
+      <File Name="../src/GameMessage.cpp"/>
+      <File Name="../src/GameMessage.h"/>
+      <File Name="../src/GameProtocol.h"/>
+      <File Name="../src/GameServer.cpp"/>
+      <File Name="../src/GameServer.h"/>
+      <File Name="../src/GameServerPlayer.cpp"/>
+      <File Name="../src/GameServerPlayer.h"/>
+      <File Name="../libutil/src/UPnP.cpp"/>
+      <File Name="../libutil/src/UPnP.h"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="KI">
+      <File Name="../src/AIBase.h"/>
+      <File Name="../src/AIPlayer.cpp"/>
+      <File Name="../src/AIPlayer.h"/>
+      <File Name="../src/AIEventManager.cpp"/>
+      <File Name="../src/AIEventManager.h"/>
+      <File Name="../src/AIJHHelper.cpp"/>
+      <File Name="../src/AIJHHelper.h"/>
+      <File Name="../src/AIPlayerJH.cpp"/>
+      <File Name="../src/AIPlayerJH.h"/>
+      <File Name="../src/AIConstruction.cpp"/>
+      <File Name="../src/AIConstruction.h"/>
+      <File Name="../src/AIResourceMap.cpp"/>
+      <File Name="../src/AIResourceMap.h"/>
+      <File Name="../src/AIInterface.cpp"/>
+      <File Name="../src/AIInterface.h"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="Treiber">
+      <File Name="../src/AudioDriverLoaderInterface.h"/>
+      <File Name="../src/AudioDriverWrapper.cpp"/>
+      <File Name="../src/AudioDriverWrapper.h"/>
+      <File Name="../src/DriverWrapper.cpp"/>
+      <File Name="../src/DriverWrapper.h"/>
+      <File Name="../src/ExtensionList.cpp"/>
+      <File Name="../src/ExtensionList.h"/>
+      <File Name="../src/GammaTable.h"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="Allgemein">
+      <File Name="../src/CollisionDetection.cpp"/>
+      <File Name="../src/CollisionDetection.h"/>
+      <File Name="../libutil/src/error.cpp"/>
+      <File Name="../libutil/src/error.h"/>
+      <File Name="../src/FileChecksum.cpp"/>
+      <File Name="../src/FileChecksum.h"/>
+      <File Name="../src/GameManager.cpp"/>
+      <File Name="../src/GameManager.h"/>
+      <File Name="../src/GlobalVars.cpp"/>
+      <File Name="../src/GlobalVars.h"/>
+      <File Name="../src/TradeGraph.cpp"/>
+      <File Name="../src/Debug.cpp"/>
+      <File Name="../src/Debug.h"/>
+    </VirtualDirectory>
+    <File Name="../liblobby/src/LobbyInterface.h"/>
+    <File Name="../liblobby/src/LobbyMessage.cpp"/>
+    <VirtualDirectory Name="Loader">
+      <File Name="../src/glAllocator.cpp"/>
+      <File Name="../src/glAllocator.h"/>
+      <File Name="../src/glArchivItem_Bitmap.cpp"/>
+      <File Name="../src/glArchivItem_Bitmap.h"/>
+      <File Name="../src/glArchivItem_Bitmap_Direct.cpp"/>
+      <File Name="../src/glArchivItem_Bitmap_Direct.h"/>
+      <File Name="../src/glArchivItem_Bitmap_Player.cpp"/>
+      <File Name="../src/glArchivItem_Bitmap_Player.h"/>
+      <File Name="../src/glArchivItem_Bitmap_Raw.cpp"/>
+      <File Name="../src/glArchivItem_Bitmap_Raw.h"/>
+      <File Name="../src/glArchivItem_Bitmap_RLE.cpp"/>
+      <File Name="../src/glArchivItem_Bitmap_RLE.h"/>
+      <File Name="../src/glArchivItem_Bitmap_Shadow.cpp"/>
+      <File Name="../src/glArchivItem_Bitmap_Shadow.h"/>
+      <File Name="../src/glArchivItem_Bob.cpp"/>
+      <File Name="../src/glArchivItem_Bob.h"/>
+      <File Name="../src/glArchivItem_Font.cpp"/>
+      <File Name="../src/glArchivItem_Font.h"/>
+      <File Name="../src/glArchivItem_Map.cpp"/>
+      <File Name="../src/glArchivItem_Map.h"/>
+      <File Name="../src/glArchivItem_Music.cpp"/>
+      <File Name="../src/glArchivItem_Music.h"/>
+      <File Name="../src/glArchivItem_Sound.cpp"/>
+      <File Name="../src/glArchivItem_Sound.h"/>
+      <File Name="../src/glArchivItem_Sound_Midi.cpp"/>
+      <File Name="../src/glArchivItem_Sound_Midi.h"/>
+      <File Name="../src/glArchivItem_Sound_Other.cpp"/>
+      <File Name="../src/glArchivItem_Sound_Other.h"/>
+      <File Name="../src/glArchivItem_Sound_Wave.cpp"/>
+      <File Name="../src/glArchivItem_Sound_Wave.h"/>
+      <File Name="../src/glArchivItem_Sound_XMidi.cpp"/>
+      <File Name="../src/glArchivItem_Sound_XMidi.h"/>
+      <File Name="../src/GameWorldViewer.cpp"/>
+    </VirtualDirectory>
+    <File Name="../build_version.cpp"/>
+  </VirtualDirectory>
+  <Dependencies Name="Release"/>
+  <Dependencies Name="Debug">
+    <Project Name="audio"/>
+    <Project Name="audio-SDL"/>
+    <Project Name="video"/>
+    <Project Name="video-SDL"/>
+    <Project Name="libendian"/>
+    <Project Name="libsiedler2"/>
+    <Project Name="mygettext"/>
+  </Dependencies>
+  <Settings Type="Executable">
+    <GlobalSettings>
+      <Compiler Options="-Wall;-Werror" C_Options="-Wall;-Werror">
+        <IncludePath Value="."/>
+        <IncludePath Value="../"/>
+        <IncludePath Value="../libsiedler2/src/"/>
+        <IncludePath Value="../liblobby/src/"/>
+        <IncludePath Value="../liblobby/libutil/src/"/>
+        <IncludePath Value="../mygettext/src/"/>
+        <IncludePath Value="../libendian/src/"/>
+      </Compiler>
+      <Linker Options="">
+        <LibraryPath Value="../libendian/codelite"/>
+        <LibraryPath Value="../"/>
+        <Library Value="GL"/>
+        <Library Value="siedler2"/>
+        <Library Value="mygettext"/>
+        <Library Value="endian"/>
+        <Library Value="bz2"/>
+        <Library Value="libminiupnpc"/>
+      </Linker>
+      <ResourceCompiler Options=""/>
+    </GlobalSettings>
+    <Configuration Name="Debug" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
+      <Compiler Options="-g" C_Options="-g" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" UseDifferentPCHFlags="no" PCHFlags=""/>
+      <Linker Options="" Required="yes"/>
+      <ResourceCompiler Options="" Required="no"/>
+      <General OutputFile="../$(ProjectName)" IntermediateDirectory="./Debug" Command="./$(ProjectName)" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="../" PauseExecWhenProcTerminates="yes"/>
+      <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
+        <![CDATA[]]>
+      </Environment>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="">
+        <PostConnectCommands/>
+        <StartupCommands>set environment LD_LIBRARY_PATH = .</StartupCommands>
+      </Debugger>
+      <PreBuild/>
+      <PostBuild/>
+      <CustomBuild Enabled="no">
+        <RebuildCommand/>
+        <CleanCommand/>
+        <BuildCommand/>
+        <PreprocessFileCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
+        <ThirdPartyToolName>None</ThirdPartyToolName>
+        <WorkingDirectory/>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild/>
+        <CustomPreBuild/>
+      </AdditionalRules>
+    </Configuration>
+    <Configuration Name="Release" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
+      <Compiler Options="-O3;-fno-strict-aliasing" C_Options="-O3;-fno-strict-aliasing" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" UseDifferentPCHFlags="no" PCHFlags="">
+        <IncludePath Value="."/>
+      </Compiler>
+      <Linker Options="-O3" Required="yes"/>
+      <ResourceCompiler Options="" Required="no"/>
+      <General OutputFile="../$(ProjectName)" IntermediateDirectory="./Release" Command="./$(ProjectName)" CommandArguments="set environment LD_LIBRARY_PATH = ." UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="../" PauseExecWhenProcTerminates="yes"/>
+      <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
+        <![CDATA[]]>
+      </Environment>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="">
+        <PostConnectCommands/>
+        <StartupCommands>set environment LD_LIBRARY_PATH = .</StartupCommands>
+      </Debugger>
+      <PreBuild/>
+      <PostBuild/>
+      <CustomBuild Enabled="no">
+        <RebuildCommand/>
+        <CleanCommand/>
+        <BuildCommand/>
+        <PreprocessFileCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
+        <ThirdPartyToolName>None</ThirdPartyToolName>
+        <WorkingDirectory/>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild/>
+        <CustomPreBuild/>
+      </AdditionalRules>
+    </Configuration>
+  </Settings>
+</CodeLite_Project>

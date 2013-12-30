@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CodeLite_Workspace Name="s25client" Database="./s25client.tags">
+  <Project Name="video" Path="../driver/codelite/video.project"/>
+  <Project Name="audio" Path="../driver/codelite/audio.project" Active="No"/>
+  <Project Name="mygettext" Path="../mygettext/codelite/mygettext.project"/>
+  <Project Name="audio-SDL" Path="../driver/audio/SDL/codelite/audio-SDL.project" Active="No"/>
+  <Project Name="video-SDL" Path="../driver/video/SDL/codelite/video-SDL.project"/>
+  <Project Name="s25client" Path="s25client.project" Active="Yes"/>
+  <Project Name="libsiedler2" Path="../libsiedler2/codelite/libsiedler2.project" Active="No"/>
+  <Project Name="soundconvert" Path="../s-c/codelite/soundconvert.project" Active="No"/>
+  <Project Name="libsiedler2" Path="../libsiedler2/codelite/libsiedler2.project"/>
+  <Project Name="mygettext" Path="../mygettext/codelite/mygettext.project"/>
+  <Project Name="libendian" Path="/home/oliver/siedler25/libendian/codelite/libendian.project" Active="No"/>
+  <BuildMatrix>
+    <WorkspaceConfiguration Name="Debug" Selected="yes">
+      <Project Name="video" ConfigName="Debug"/>
+      <Project Name="audio" ConfigName="Debug"/>
+      <Project Name="mygettext" ConfigName="Debug"/>
+      <Project Name="audio-SDL" ConfigName="Debug"/>
+      <Project Name="video-SDL" ConfigName="Debug"/>
+      <Project Name="s25client" ConfigName="Debug"/>
+      <Project Name="libsiedler2" ConfigName="Debug"/>
+      <Project Name="libendian" ConfigName="Debug"/>
+      <Project Name="soundconvert" ConfigName="Debug"/>
+      <Project Name="libsiedler2" ConfigName="Debug"/>
+      <Project Name="libendian" ConfigName="Debug"/>
+      <Project Name="mygettext" ConfigName="Debug"/>
+      <Project Name="libendian" ConfigName="Debug"/>
+    </WorkspaceConfiguration>
+    <WorkspaceConfiguration Name="Release" Selected="yes">
+      <Project Name="video" ConfigName="Release"/>
+      <Project Name="audio" ConfigName="Release"/>
+      <Project Name="mygettext" ConfigName="Release"/>
+      <Project Name="audio-SDL" ConfigName="Release"/>
+      <Project Name="video-SDL" ConfigName="Release"/>
+      <Project Name="s25client" ConfigName="Release"/>
+      <Project Name="libsiedler2" ConfigName="Release"/>
+      <Project Name="libendian" ConfigName="Release"/>
+      <Project Name="soundconvert" ConfigName="Release"/>
+      <Project Name="libsiedler2" ConfigName="Release"/>
+      <Project Name="libendian" ConfigName="Release"/>
+      <Project Name="mygettext" ConfigName="Release"/>
+      <Project Name="libendian" ConfigName="Release"/>
+    </WorkspaceConfiguration>
+  </BuildMatrix>
+</CodeLite_Workspace>
