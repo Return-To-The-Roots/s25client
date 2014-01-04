@@ -1,3 +1,28 @@
+s25rttr (20131231-9057.294) karmic; urgency=low
+
+  * Automatic Jenkins Build 294
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 31 Dec 2013 01:13:18 +0100
+
+s25rttr (20131231-9057) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 31 Dec 2013 00:00:00 +0100
+
+s25rttr (20131230-9056) any; urgency=low
+
+  * vs2012 project repaired (quick and dirty), restored old deleted
+    vs2008 and codelite project files
+
+ -- OLiver Siebert <oliver@siedler25.org>  Mon, 30 Dec 2013 00:12:00 +0100
+
+s25rttr (20131214-9039) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 14 Dec 2013 23:00:00 +0100
+
 s25rttr (20131210-9034.293) karmic; urgency=low
 
   * Automatic Jenkins Build 293
