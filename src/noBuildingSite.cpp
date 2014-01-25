@@ -1,4 +1,4 @@
-// $Id: noBuildingSite.cpp 8876 2013-08-26 20:22:42Z marcus $
+// $Id: noBuildingSite.cpp 9096 2014-01-25 10:38:31Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -130,19 +130,23 @@ void noBuildingSite::Destroy_noBuildingSite()
 
 	gwg->RecalcBQAroundPointBig(x,y);
 
-	// Baustelle wieder aus der Liste entfernen
+	// Baustelle wieder aus der Liste entfernen - dont forget about expedition harbor status 
+	bool expeditionharbor=IsHarborBuildingSiteFromSea();
 	gwg->GetPlayer(player)->RemoveBuildingSite(this);
 
 	// Hafenbaustelle?
-	if(IsHarborBuildingSiteFromSea())
+	if(expeditionharbor)
 	{
-		// Ggf. aus der Liste mit den vom Schiff aus gegründeten Baustellen streichen
-		gwg->RemoveHarborBuildingSiteFromSea(this);
-		// Land neu berechnen
+		//LOG.lprintf("harbor building site from sea destroyed/removed");
+		// Ggf. aus der Liste mit den vom Schiff aus gegründeten Baustellen streichen - no longer required as this is done in gwg->GetPlayer(player)->RemoveBuildingSite(this);
+		//gwg->RemoveHarborBuildingSiteFromSea(this);
+
+		Destroy_noBaseBuilding();
+		// Land neu berechnen nach zerstören weil da schon straßen etc entfernt werden
 		gwg->RecalcTerritory(this,HARBOR_ALONE_RADIUS,true,false);
 	}
-
-	Destroy_noBaseBuilding();
+	else
+		Destroy_noBaseBuilding();
 }
 
 void noBuildingSite::Serialize_noBuildingSite(SerializedGameData * sgd) const
