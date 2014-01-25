@@ -1,4 +1,4 @@
-// $Id: AIConstruction.cpp 9084 2014-01-25 10:31:51Z marcus $
+// $Id: AIConstruction.cpp 9086 2014-01-25 10:33:12Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -509,7 +509,7 @@ void AIConstruction::RefreshBuildingCount()
 		buildingsWanted[BLD_COALMINE]=(GetBuildingCount(BLD_IRONMINE)>0)?(GetBuildingCount(BLD_IRONMINE)*2)-1+GetBuildingCount(BLD_GOLDMINE):(GetBuildingCount(BLD_GOLDMINE)>0)?GetBuildingCount(BLD_GOLDMINE):1;
 		if (GetBuildingCount(BLD_FARM) > 7) //quite the empire just scale mines with farms
 		{
-			buildingsWanted[BLD_IRONMINE] = (GetBuildingCount(BLD_FARM)*3/5>GetBuildingCount(BLD_IRONSMELTER)+1)?GetBuildingCount(BLD_IRONSMELTER)+1:GetBuildingCount(BLD_FARM)*3/5;
+			buildingsWanted[BLD_IRONMINE] = (GetBuildingCount(BLD_FARM)*2/5>GetBuildingCount(BLD_IRONSMELTER)+1)?GetBuildingCount(BLD_IRONSMELTER)+1:GetBuildingCount(BLD_FARM)*2/5;
 			buildingsWanted[BLD_GOLDMINE] = (GetBuildingCount(BLD_MINT)>0)?GetBuildingCount(BLD_IRONSMELTER)>6&&GetBuildingCount(BLD_MINT)>1?GetBuildingCount(BLD_IRONSMELTER)>10?4:3:2:1;
 			buildingsWanted[BLD_DONKEYBREEDER]=1;
 		}
