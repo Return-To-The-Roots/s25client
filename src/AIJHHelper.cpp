@@ -1,4 +1,4 @@
-// $Id: AIJHHelper.cpp 8912 2013-08-27 18:33:18Z jh $
+// $Id: AIJHHelper.cpp 9088 2014-01-25 10:34:31Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -205,6 +205,11 @@ void AIJH::BuildJob::TryToBuild()
 		case BLD_STOREHOUSE:
 			if(!aijh->GetConstruction()->OtherStoreInRadius(bx, by, 15))
 				foundPos = aijh->SimpleFindPosition(bx, by, BUILDING_SIZE[BLD_STOREHOUSE], 11);
+			break;
+		case BLD_HARBORBUILDING:
+			foundPos = aijh->SimpleFindPosition(bx,by,BUILDING_SIZE[type],11);
+			if(foundPos&&!aijh->HarborPosRelevant(aijh->gwb->GetHarborPointID(bx,by))) //bad harborspot detected DO NOT USE
+				foundPos=false;
 			break;
 		case BLD_SHIPYARD:
 			foundPos = aijh->SimpleFindPosition(bx, by, BUILDING_SIZE[type], 11);

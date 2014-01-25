@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.h 8912 2013-08-27 18:33:18Z jh $
+// $Id: AIPlayerJH.h 9088 2014-01-25 10:34:31Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -241,6 +241,9 @@ protected:
 
 	/// checks distance to all harborpositions
 	bool HarborPosClose(MapCoord x,MapCoord y,unsigned range,bool onlyempty=false);
+
+	/// checks if there is at least 1 sea id connected to the harbor spot with at least 2 harbor spots!
+	bool AIPlayerJH::HarborPosRelevant(unsigned harborid);
 
 	/// returns true when a building of the given type is closer to the given position than min (ONLY NOBUSUAL (=no warehouse/military))
 	bool BuildingNearby(MapCoord x,MapCoord y,BuildingType bld,unsigned min);

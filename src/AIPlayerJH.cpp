@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 9084 2014-01-25 10:31:51Z marcus $
+// $Id: AIPlayerJH.cpp 9088 2014-01-25 10:34:31Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -2183,10 +2183,34 @@ bool AIPlayerJH::HarborPosClose(MapCoord x,MapCoord y,unsigned range,bool onlyem
 	//skip harbordummy ... ask oliver why there has to be a dummy
 	for (unsigned i=1;i<=gwb->GetHarborPointCount();i++)
 	{
-		if(gwb->CalcDistance(x,y,gwb->GetHarborPoint(i).x,gwb->GetHarborPoint(i).y)<range)
+		if(gwb->CalcDistance(x,y,gwb->GetHarborPoint(i).x,gwb->GetHarborPoint(i).y)<range && HarborPosRelevant(i))//in range and valid for ai - as in actually at a sea with more than 1 harbor spot
 		{
 			if(!onlyempty||!aii->IsBuildingOnNode(gwb->GetHarborPoint(i).x,gwb->GetHarborPoint(i).y,BLD_HARBORBUILDING))
 				return true;
+		}
+	}
+	return false;
+}
+
+bool AIPlayerJH::HarborPosRelevant(unsigned harborid)
+{
+	if(harborid<1||harborid>gwb->GetHarborPointCount()) //not a real harbor - shouldnt happen...
+	{
+		assert(false);
+		return false;
+	}
+	//get sea ids of harbor id given - is there at least 1 sea id? if so check for other harbors with the same id!
+	unsigned short sea_ids[6];
+	gwb->GetSeaIDs(harborid,sea_ids);
+	for(unsigned r=0;r<6;r++)
+	{
+		if(sea_ids[r]>0)//there is a sea id? -> check all other harbors to find if there is another at the same id!
+		{
+			for(unsigned i=1;i<=gwb->GetHarborPointCount();i++) //start at 1 harbor dummy yadayada :>
+			{
+				if(i!=harborid && gwb->IsAtThisSea(i,sea_ids[r]))
+					return true;
+			}
 		}
 	}
 	return false;
