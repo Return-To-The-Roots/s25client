@@ -1,4 +1,4 @@
-// $Id: noShip.cpp 9085 2014-01-25 10:32:40Z marcus $
+// $Id: noShip.cpp 9099 2014-01-25 10:39:46Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -658,12 +658,12 @@ void noShip::ContinueExpedition(const unsigned char dir)
 void noShip::CancelExpedition()
 {
 	// Zum Heimathafen zurückkehren
-	
 	// Oder sind wir schon dort?
 	if(goal_harbor_id == home_harbor)
 	{
 		route.clear();
 		pos = 0;
+		state=STATE_EXPEDITION_DRIVING; //just in case the home harbor was destroyed
 		HandleState_ExpeditionDriving();
 	}
 	else
@@ -732,6 +732,23 @@ void noShip::HandleState_ExpeditionDriving()
 			Point<MapCoord> goal(gwg->GetHarborPoint(goal_harbor_id));
 			// Nichts machen und idlen
 			StartIdling();
+		} break;
+	case HARBOR_DOESNT_EXIST: //should only happen when an expedition is cancelled and the home harbor no longer exists
+		{
+			// Kein Heimathafen mehr?
+			// Das Schiff muss einen Notlandeplatz ansteuern
+			if(players->getElement(player)->FindHarborForUnloading
+				(this,x,y,&goal_harbor_id,&route,NULL))
+			{
+				//set new home=goal so we will actually unload once we reach the goal
+				home_harbor=goal_harbor_id;
+				HandleState_ExpeditionDriving();
+			} else
+			{
+				// Ansonsten als verloren markieren, damit uns später Bescheid gesagt wird
+				// wenn es einen neuen Hafen gibt
+				lost = true;
+			}
 		} break;
 	}
 }
