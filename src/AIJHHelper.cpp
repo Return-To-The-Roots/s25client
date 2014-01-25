@@ -1,4 +1,4 @@
-// $Id: AIJHHelper.cpp 9088 2014-01-25 10:34:31Z marcus $
+// $Id: AIJHHelper.cpp 9090 2014-01-25 10:35:32Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -155,7 +155,7 @@ void AIJH::BuildJob::TryToBuild()
 			break;
 			}
 		case BLD_FORESTER:
- 			if (aijh->GetDensity(bx, by, AIJH::PLANTSPACE, 7) > 30)
+			if (aijh->GetDensity(bx, by, AIJH::PLANTSPACE, 7) > 30 || (aijh->GetDensity(bx, by, AIJH::PLANTSPACE, 7) > 15 && aijh->GetConstruction()->GetBuildingCount(BLD_FORESTER)<2))
 				foundPos = aijh->FindBestPosition(bx, by, AIJH::WOOD, BQ_HUT, 0, 11);
 			break;
 		case BLD_HUNTER:
@@ -322,6 +322,7 @@ void AIJH::BuildJob::BuildMainRoad()
 		case BLD_WOODCUTTER:
 			break;
 		case BLD_FORESTER:
+			aijh->AddBuildJob(new AIJH::BuildJob(aijh, BLD_WOODCUTTER, target_x, target_y));
 			break;
 		case BLD_QUARRY:
 			break;
@@ -345,6 +346,7 @@ void AIJH::BuildJob::BuildMainRoad()
 			break;
 		case BLD_HARBORBUILDING:
 			break;
+		case BLD_CHARBURNER:
 		case BLD_FARM:
 			aijh->SetFarmedNodes(target_x, target_y,true);
 			break;

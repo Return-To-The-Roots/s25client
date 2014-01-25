@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 9088 2014-01-25 10:34:31Z marcus $
+// $Id: AIPlayerJH.cpp 9090 2014-01-25 10:35:32Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -220,9 +220,10 @@ void AIPlayerJH::RunGF(const unsigned gf)
 		BLD_IRONMINE,
 		BLD_COALMINE,
 		BLD_GRANITEMINE,
-		BLD_HUNTER
+		BLD_HUNTER,
+		BLD_CHARBURNER
 		};
-		unsigned numBldToTest = 23;
+		unsigned numBldToTest = 24;
 		unsigned char randomstore;
 		randomstore=rand()%(aii->GetStorehouses().size());
 		if(aii->GetStorehouses().size()<1)
@@ -1575,7 +1576,7 @@ void AIPlayerJH::TryToAttack()
 	unsigned limit=40;
 	if(aii->GetMilitaryBuildings().size()>40)
 	{
-		skip=rand()%(aii->GetMilitaryBuildings().size()/40+1)*40; 
+		skip=max<unsigned>((rand()%((aii->GetMilitaryBuildings().size()/40)+1))*40,1)-1; 
 	}
 	for (std::list<nobMilitary*>::const_iterator it = aii->GetMilitaryBuildings().begin(); limit>0 && it != aii->GetMilitaryBuildings().end(); it++)
 	{
@@ -1777,7 +1778,7 @@ void AIPlayerJH::TrySeaAttack()
 	unsigned limit=15;
 	unsigned skip=0;
 	if(searcharoundharborspots.size()>15)
-		skip=rand()%(searcharoundharborspots.size()/15+1)*15;
+		skip=max<int>(rand()%(searcharoundharborspots.size()/15+1)*15,1)-1;
 	for(unsigned i=skip;i<searcharoundharborspots.size() && limit>0 ;i++)
 	{
 		limit--;
@@ -2103,6 +2104,10 @@ bool AIPlayerJH::HuntablesinRange(unsigned x,unsigned y,unsigned min)
 void AIPlayerJH::InitStoreAndMilitarylists()
 {
 	for(std::list<nobUsual*>::const_iterator it=aii->GetBuildings(BLD_FARM).begin();it!=aii->GetBuildings(BLD_FARM).end();it++)
+	{
+		SetFarmedNodes((*it)->GetX(),(*it)->GetY(),true);
+	}
+	for(std::list<nobUsual*>::const_iterator it=aii->GetBuildings(BLD_CHARBURNER).begin();it!=aii->GetBuildings(BLD_CHARBURNER).end();it++)
 	{
 		SetFarmedNodes((*it)->GetX(),(*it)->GetY(),true);
 	}
