@@ -1,4 +1,4 @@
-// $Id: AIConstruction.cpp 9092 2014-01-25 10:36:23Z marcus $
+// $Id: AIConstruction.cpp 9094 2014-01-25 10:37:37Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -460,23 +460,10 @@ void AIConstruction::RefreshBuildingCount()
 			//>6miners = build up to 6 depending on resources, else max out at miners/2
 			buildingsWanted[BLD_QUARRY]=(aii->GetInventory()->goods[GD_PICKAXE] + aii->GetInventory()->people[JOB_STONEMASON]<6) ? ((aii->GetInventory()->people[JOB_MINER]>6)?aii->GetInventory()->goods[GD_PICKAXE] + aii->GetInventory()->people[JOB_STONEMASON]:aii->GetInventory()->people[JOB_MINER]/2) : 6;		
 		}
-		//sawmills limited by woodcutters and carpenter+saws
-		if(GetBuildingCount(BLD_WOODCUTTER) < 6)
-		{
-			if (aii->GetInventory()->goods[GD_SAW] + aii->GetInventory()->people[JOB_CARPENTER]>1 + GetBuildingCount(BLD_WOODCUTTER) / 2)
-				buildingsWanted[BLD_SAWMILL] = 1 + GetBuildingCount(BLD_WOODCUTTER) / 2;
-			else
-				buildingsWanted[BLD_SAWMILL] = aii->GetInventory()->goods[GD_SAW] + aii->GetInventory()->people[JOB_CARPENTER];
-		}
-		else
-		{
-			if(aii->GetMilitaryBuildings().size()>10)
-				buildingsWanted[BLD_SAWMILL]=min<int>((aii->GetInventory()->goods[GD_SAW] + aii->GetInventory()->people[JOB_CARPENTER]),(aii->GetMilitaryBuildings().size()-5));
-			else
-				buildingsWanted[BLD_SAWMILL]=min<int>((aii->GetInventory()->goods[GD_SAW] + aii->GetInventory()->people[JOB_CARPENTER]),(aii->GetMilitaryBuildings().size()));
-			if(aii->GetInventory()->goods[GD_WOOD]<30)
-				buildingsWanted[BLD_SAWMILL]=GetBuildingCount(BLD_SAWMILL);
-		}
+		//sawmills limited by woodcutters and carpenter+saws reduced by charburners minimum of 2
+		resourcelimit=aii->GetInventory()->people[JOB_CARPENTER]+aii->GetInventory()->goods[GD_SAW];
+		buildingsWanted[BLD_SAWMILL]=max<int>(min<int>((GetBuildingCount(BLD_WOODCUTTER)-(GetBuildingCount(BLD_CHARBURNER)*2)) / 2,resourcelimit),2); //min 2 
+		
 		//ironsmelters limited by ironmines or crucibles
 		buildingsWanted[BLD_IRONSMELTER]=(aii->GetInventory()->goods[GD_CRUCIBLE] + aii->GetInventory()->people[JOB_IRONFOUNDER]>=GetBuildingCount(BLD_IRONMINE))?GetBuildingCount(BLD_IRONMINE) : aii->GetInventory()->goods[GD_CRUCIBLE] + aii->GetInventory()->people[JOB_IRONFOUNDER];
 		
@@ -541,7 +528,7 @@ void AIConstruction::RefreshBuildingCount()
 				if(aijh->ggs->isEnabled(ADDON_CHARBURNER) && (GetBuildingCount(BLD_COALMINE)<1 && (GetBuildingCount(BLD_IRONMINE)+GetBuildingCount(BLD_GOLDMINE)>0)))
 					buildingsWanted[BLD_CHARBURNER]=min<int>(1,resourcelimit);
 			}
-			if(aii->GetInventory()->goods[GD_STONES]<50 && GetBuildingCount(BLD_QUARRY)<4) //no more stones and no quarry -> try emergency granitemines.
+			if(aii->GetInventory()->goods[GD_STONES]<(50+GetBuildingCount(BLD_CATAPULT)*4) && GetBuildingCount(BLD_QUARRY)<4) //no more stones and no quarry -> try emergency granitemines.
 				buildingsWanted[BLD_GRANITEMINE] =(aii->GetInventory()->people[JOB_MINER]>6)? 5-GetBuildingCount(BLD_QUARRY):1;
 			else
 				buildingsWanted[BLD_GRANITEMINE]=0;

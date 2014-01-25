@@ -1,4 +1,4 @@
-// $Id: nobBaseWarehouse.h 8918 2013-08-27 19:15:17Z marcus $
+// $Id: nobBaseWarehouse.h 9094 2014-01-25 10:37:37Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -151,8 +151,8 @@ public: void Serialize(SerializedGameData *sgd) const { Serialize_nobBaseWarehou
 	void ChangeRealInventorySetting(unsigned char category,unsigned char state,unsigned char type);
 	/// Verändert alle Ein/Auslagerungseinstellungen einer Kategorie (also Waren oder Figuren)(real)
 	void ChangeAllRealInventorySettings(unsigned char category,unsigned char state);
-	/// Gibt Ein/Auslagerungseinstellungen zurück (real)
-	bool CheckRealInventorySettings(unsigned char category,unsigned char state,unsigned char type) const
+	/// Gibt Ein/Auslagerungseinstellungen zurück (real), cannot check for state 0
+	bool CheckRealInventorySettings(unsigned char category,unsigned char state,unsigned char type) const 
 	{ return ((((category == 0)?inventory_settings_real.wares[type]:inventory_settings_real.figures[type]) & state) == state); }
 
 	/// Lässt einen bestimmten Waren/Job-Typ ggf auslagern

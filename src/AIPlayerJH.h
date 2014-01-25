@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.h 9088 2014-01-25 10:34:31Z marcus $
+// $Id: AIPlayerJH.h 9094 2014-01-25 10:37:37Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -139,6 +139,9 @@ protected:
 
 	/// Checks the list of military buildingsites and puts the coordinates into the list of military buildings if building is finished
 	void CheckNewMilitaryBuildings();
+
+	/// blocks goods in each warehouse that has at least limit amount of that good - if all warehouses have enough they unblock
+	void AIPlayerJH::DistributeGoodsByBlocking(unsigned goodnumber,unsigned limit);
 
 	/// Initializes the nodes on start of the game
 	void InitNodes();

@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 9090 2014-01-25 10:35:32Z marcus $
+// $Id: AIPlayerJH.cpp 9094 2014-01-25 10:37:37Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -232,11 +232,14 @@ void AIPlayerJH::RunGF(const unsigned gf)
 		nobBaseWarehouse* wh=(*aii->GetStorehouses().begin());
 		if(!wh->CheckRealInventorySettings(0,8,0))
 		{
-			aii->ChangeInventorySetting(wh->GetX(),wh->GetY(),0,8,0);
-			aii->ChangeInventorySetting(wh->GetX(),wh->GetY(),0,8,16);
-			aii->ChangeInventorySetting(wh->GetX(),wh->GetY(),0,8,21);
+			aii->ChangeInventorySetting(wh->GetX(),wh->GetY(),0,8,0); //8 = collect, 2 = block
+			aii->ChangeInventorySetting(wh->GetX(),wh->GetY(),0,8,16); //x of warehouse, y of warehouse, "pagenumber", "setting", good or figure number (check the lists)
+			aii->ChangeInventorySetting(wh->GetX(),wh->GetY(),0,8,21); //checks stuff with: return (current setting & compare setting == compare setting); <- so dont check for setting 0
 			aii->ChangeInventorySetting(wh->GetX(),wh->GetY(),1,8,0);
 		}
+		//unlimited when every warehouse has at least that amount
+		DistributeGoodsByBlocking(23,30); //30 boards for each warehouse - block after that - should speed up expansion
+		DistributeGoodsByBlocking(24,50); //50 stones for each warehouse - block after that - should limit losses in case a warehouse is destroyed
 		//go to the picked random warehouse and try to build around it
 		std::list<nobBaseWarehouse*>::const_iterator it=aii->GetStorehouses().begin();
 		std::advance(it,randomstore);
@@ -1060,6 +1063,45 @@ void AIPlayerJH::RecalcBQAround(const MapCoord x, const MapCoord y)
 
 void AIPlayerJH::CheckNewMilitaryBuildings()
 {
+}
+
+void AIPlayerJH::DistributeGoodsByBlocking(unsigned goodnumber,unsigned limit)
+{
+	bool validgoalexists=false;
+	for(std::list<nobBaseWarehouse*>::const_iterator it=aii->GetStorehouses().begin();it!=aii->GetStorehouses().end();it++)
+	{
+		if ((*it)->GetInventory()->goods[goodnumber]<=limit)
+		{
+			validgoalexists=true;
+			break;
+		}
+	}
+	if (!validgoalexists) // more than limit everywhere -> unblock everywhere
+	{
+		for(std::list<nobBaseWarehouse*>::const_iterator it=aii->GetStorehouses().begin();it!=aii->GetStorehouses().end();it++)
+		{
+			if((*it)->CheckRealInventorySettings(0,2,goodnumber)) //page,setting,goodnumber - not unblocked then issue command to unblock
+				aii->ChangeInventorySetting((*it)->GetX(),(*it)->GetY(),0,2,goodnumber); //page,setting,goodnumber (settings: 0 nothing,2 block,8collect)
+		}
+	}
+	else // valid goal exists -> block where at least limit goods are stored and unblock the others
+	{
+		for(std::list<nobBaseWarehouse*>::const_iterator it=aii->GetStorehouses().begin();it!=aii->GetStorehouses().end();it++)
+		{
+			if((*it)->GetInventory()->goods[goodnumber]<=limit) //not at limit - unblock it
+			{
+				if((*it)->CheckRealInventorySettings(0,2,goodnumber)) //page,setting,goodnumber - not unblocked then issue command to unblock
+				{
+					aii->ChangeInventorySetting((*it)->GetX(),(*it)->GetY(),0,2,goodnumber); //page,setting,goodnumber (settings: 2 block,8collect)
+				}
+			}
+			else // at limit - block it
+			{
+				if(!(*it)->CheckRealInventorySettings(0,2,goodnumber)) //already blocked?
+					aii->ChangeInventorySetting((*it)->GetX(),(*it)->GetY(),0,2,goodnumber);
+			}				
+		}
+	}
 }
 
 bool AIPlayerJH::SimpleFindPosition(MapCoord &x, MapCoord &y, BuildingQuality size, int radius)

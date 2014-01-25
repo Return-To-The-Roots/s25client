@@ -271,6 +271,7 @@ public:
 	/// Stops production of a producer
 	void StopProduction(MapCoord x, MapCoord y) { gcs->push_back(new gc::StopProduction(x, y)); }
 
+	/// changes inventory settings for a warehouse by XOR with old settings (self fixing stupid settings)
 	void ChangeInventorySetting(MapCoord x, MapCoord y, unsigned char category, unsigned char state, unsigned char type)
 	{
 		gcs->push_back(new gc::ChangeInventorySetting(x, y, category, state, type));
