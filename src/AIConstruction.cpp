@@ -1,4 +1,4 @@
-// $Id: AIConstruction.cpp 9091 2014-01-25 10:36:00Z marcus $
+// $Id: AIConstruction.cpp 9092 2014-01-25 10:36:23Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -537,6 +537,9 @@ void AIConstruction::RefreshBuildingCount()
 			{		//probably still limited in food supply	go up to 4 coal 1 gold 2 iron (gold+coal->coin, iron+coal->tool, iron+coal+coal->weapon)				
 				buildingsWanted[BLD_IRONMINE]=(aii->GetInventory()->people[JOB_MINER]+aii->GetInventory()->goods[GD_PICKAXE]-(GetBuildingCount(BLD_COALMINE)+GetBuildingCount(BLD_GOLDMINE))>1&&GetBuildingCount(BLD_BAKERY)+GetBuildingCount(BLD_SLAUGHTERHOUSE)+GetBuildingCount(BLD_HUNTER)+GetBuildingCount(BLD_FISHERY)>4)?2:1;
 				buildingsWanted[BLD_GOLDMINE]=(aii->GetInventory()->people[JOB_MINER]>2)?1:0;	
+				resourcelimit=aii->GetInventory()->people[JOB_CHARBURNER]+aii->GetInventory()->goods[GD_SHOVEL];
+				if(aijh->ggs->isEnabled(ADDON_CHARBURNER) && (GetBuildingCount(BLD_COALMINE)<1 && (GetBuildingCount(BLD_IRONMINE)+GetBuildingCount(BLD_GOLDMINE)>0)))
+					buildingsWanted[BLD_CHARBURNER]=min<int>(1,resourcelimit);
 			}
 			if(aii->GetInventory()->goods[GD_STONES]<50 && GetBuildingCount(BLD_QUARRY)<4) //no more stones and no quarry -> try emergency granitemines.
 				buildingsWanted[BLD_GRANITEMINE] =(aii->GetInventory()->people[JOB_MINER]>6)? 5-GetBuildingCount(BLD_QUARRY):1;
