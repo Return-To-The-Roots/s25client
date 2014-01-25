@@ -1,4 +1,4 @@
-// $Id: noShip.cpp 8334 2012-09-28 23:12:07Z marcus $
+// $Id: noShip.cpp 9085 2014-01-25 10:32:40Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -320,15 +320,9 @@ void noShip::HandleEvent(const unsigned int id)
 					}
 					else
 					{
-						// Erstmal verloren
-						// Neuen Hafen suchen
-						if(players->getElement(player)->FindHarborForUnloading
-							(this,x,y,&goal_harbor_id,&route,NULL))
-							HandleState_ExpeditionDriving();
-						else
-							// Ansonsten als verloren markieren, damit uns später Bescheid gesagt wird
-							// wenn es einen neuen Hafen gibt
-							lost = true;
+						// target harbor for unloading doesnt exist anymore -> set state to driving and handle the new state
+						state=STATE_EXPEDITION_DRIVING;
+						HandleState_ExpeditionDriving();						
 					}
 					
 				} break;
@@ -353,15 +347,9 @@ void noShip::HandleEvent(const unsigned int id)
 					}
 					else
 					{
-						// Erstmal verloren
-						// Neuen Hafen suchen
-						if(players->getElement(player)->FindHarborForUnloading
-							(this,x,y,&goal_harbor_id,&route,NULL))
-							HandleState_ExplorationExpeditionDriving();
-						else
-							// Ansonsten als verloren markieren, damit uns später Bescheid gesagt wird
-							// wenn es einen neuen Hafen gibt
-							lost = true;
+						// target harbor for unloading doesnt exist anymore -> set state to driving and handle the new state
+						state=STATE_EXPLORATIONEXPEDITION_DRIVING;
+						HandleState_ExplorationExpeditionDriving();						
 					}
 					
 					// Sichtbarkeiten neu berechnen
@@ -398,15 +386,9 @@ void noShip::HandleEvent(const unsigned int id)
 					}
 					else
 					{
-						// Erstmal verloren
-						// Neuen Hafen suchen
-						if(players->getElement(player)->FindHarborForUnloading
-							(this,x,y,&goal_harbor_id,&route,NULL))
-							HandleState_ExplorationExpeditionDriving();
-						else
-							// Ansonsten als verloren markieren, damit uns später Bescheid gesagt wird
-							// wenn es einen neuen Hafen gibt
-							lost = true;
+						// target harbor for unloading doesnt exist anymore -> set state to driving and handle the new state
+						state=STATE_TRANSPORT_DRIVING;
+						HandleState_TransportDriving();	
 					}
 
 					
@@ -1233,8 +1215,7 @@ void noShip::NewHarborBuilt(nobHarborBuilding * hb)
 		case STATE_TRANSPORT_DRIVING:
 			{
 				Driven();
-			} break;
-
+			}break;			 	
 		default: assert(false); // Das darf eigentlich nicht passieren
 		}
 		
