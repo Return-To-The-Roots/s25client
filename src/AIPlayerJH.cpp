@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 8912 2013-08-27 18:33:18Z jh $
+// $Id: AIPlayerJH.cpp 9084 2014-01-25 10:31:51Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -138,11 +138,11 @@ void AIPlayerJH::RunGF(const unsigned gf)
 		TryToAttack();
 	}
 
-/*	if ((gf +41+ playerid * 17) % 100 == 0)
+	if ((gf +41+ playerid * 17) % 100 == 0)
 	{
 		//CheckExistingMilitaryBuildings();
 		TrySeaAttack();
-	}*/
+	}
 
 	//if ((gf + playerid * 13) % 100 == 0)
 	//{
@@ -157,11 +157,11 @@ void AIPlayerJH::RunGF(const unsigned gf)
 		toolsettings[4] = (aii->GetInventory()->goods[GD_HAMMER]<1)?1:0;																															//hammer
 		toolsettings[6] = (aii->GetInventory()->goods[GD_CRUCIBLE]+aii->GetInventory()->people[JOB_IRONFOUNDER]<construction.GetBuildingCount(BLD_IRONSMELTER)+1)?1:0;;								//crucible
 		toolsettings[8]=(toolsettings[4]<1&&toolsettings[3]<1&&toolsettings[6]<1&&toolsettings[2]<1&&(aii->GetInventory()->goods[GD_SCYTHE] <1))?1:0;												//scythe
-		toolsettings[9] = (aii->GetInventory()->goods[GD_CLEAVER]+aii->GetInventory()->people[JOB_BUTCHER]<construction.GetBuildingCount(BLD_SLAUGHTERHOUSE)+1)?1:0;								//cleaver
 		toolsettings[10] = (aii->GetInventory()->goods[GD_ROLLINGPIN]+aii->GetInventory()->people[JOB_BAKER]<construction.GetBuildingCount(BLD_BAKERY)+1)?1:0;										//rollingpin
 		toolsettings[5] =(toolsettings[4]<1&&toolsettings[3]<1&&toolsettings[6]<1&&toolsettings[2]<1&&(aii->GetInventory()->goods[GD_SHOVEL]<1))?1:0 ;												//shovel
 		toolsettings[1] =(toolsettings[4]<1&&toolsettings[3]<1&&toolsettings[6]<1&&toolsettings[2]<1&&(aii->GetInventory()->goods[GD_AXE]+aii->GetInventory()->people[JOB_WOODCUTTER]<12)&&aii->GetInventory()->goods[GD_AXE]<1)?1:0;		//axe
 		toolsettings[0] =0;//(toolsettings[4]<1&&toolsettings[3]<1&&toolsettings[6]<1&&toolsettings[2]<1&&(aii->GetInventory()->goods[GD_TONGS]<1))?1:0;												//Tongs(metalworks)
+		toolsettings[9] =0; //(aii->GetInventory()->goods[GD_CLEAVER]+aii->GetInventory()->people[JOB_BUTCHER]<construction.GetBuildingCount(BLD_SLAUGHTERHOUSE)+1)?1:0;								//cleaver
 		toolsettings[7] = 0;																																										//rod & line 
 		toolsettings[11] = 0;																																										//bow
 		aii->SetToolSettings(toolsettings);	
@@ -234,6 +234,7 @@ void AIPlayerJH::RunGF(const unsigned gf)
 			aii->ChangeInventorySetting(wh->GetX(),wh->GetY(),0,8,0);
 			aii->ChangeInventorySetting(wh->GetX(),wh->GetY(),0,8,16);
 			aii->ChangeInventorySetting(wh->GetX(),wh->GetY(),0,8,21);
+			aii->ChangeInventorySetting(wh->GetX(),wh->GetY(),1,8,0);
 		}
 		//go to the picked random warehouse and try to build around it
 		std::list<nobBaseWarehouse*>::const_iterator it=aii->GetStorehouses().begin();
@@ -1570,8 +1571,18 @@ void AIPlayerJH::TryToAttack()
 	std::deque<const nobBaseMilitary *> potentialTargets;
 
 	// use own military buildings (except inland buildings) to search for enemy military buildings
-	for (std::list<nobMilitary*>::const_iterator it = aii->GetMilitaryBuildings().begin(); it != aii->GetMilitaryBuildings().end(); it++)
+	unsigned skip=0; //when the ai has many buildings the ai will not check the complete list every time
+	unsigned limit=40;
+	if(aii->GetMilitaryBuildings().size()>40)
 	{
+		skip=rand()%(aii->GetMilitaryBuildings().size()/40+1)*40; 
+	}
+	for (std::list<nobMilitary*>::const_iterator it = aii->GetMilitaryBuildings().begin(); limit>0 && it != aii->GetMilitaryBuildings().end(); it++)
+	{
+		limit--;
+		if(skip>0)
+			std::advance(it,skip);
+		skip=0;
 		const nobMilitary* mil=(*it);
 		if (mil->GetFrontierDistance() == 0)  //inland building? -> deactivate gold & skip it
 		{
@@ -1686,7 +1697,7 @@ void AIPlayerJH::TrySeaAttack()
 		return;
 	std::vector<int> invalidseas;
 	std::deque<const nobBaseMilitary *> potentialTargets;
-	std::vector<int> searcharoundharborspots; 
+	std::vector<int> searcharoundharborspots; 	
 	//first check all harbors there might be some undefended ones - start at 1 to skip the harbor dummy
 	for(unsigned i=1;i<gwb->GetHarborPointCount();i++)
 	{
@@ -1763,8 +1774,13 @@ void AIPlayerJH::TrySeaAttack()
 		}
 	}
 	//add all military buildings around still valid harborspots (unused or used by ally)
-	for(unsigned i=0;i<searcharoundharborspots.size();i++)
+	unsigned limit=15;
+	unsigned skip=0;
+	if(searcharoundharborspots.size()>15)
+		skip=rand()%(searcharoundharborspots.size()/15+1)*15;
+	for(unsigned i=skip;i<searcharoundharborspots.size() && limit>0 ;i++)
 	{
+		limit--;
 		//first check if the harborspot we are checking for is in one of the invalidseas!
 		unsigned short sea_ids[6];
 		gwb->GetSeaIDs(i,sea_ids);

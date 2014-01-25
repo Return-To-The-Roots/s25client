@@ -1,4 +1,4 @@
-// $Id: AIConstruction.cpp 8489 2012-11-06 07:31:43Z FloSoft $
+// $Id: AIConstruction.cpp 9084 2014-01-25 10:31:51Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -352,8 +352,28 @@ BuildingType AIConstruction::ChooseMilitaryBuilding(MapCoord x, MapCoord y)
 			// avoid to build catapults in the beginning (no expansion)
 			unsigned  militaryBuildingCount = GetBuildingCount(BLD_BARRACKS) + GetBuildingCount(BLD_GUARDHOUSE)
 				+ GetBuildingCount(BLD_WATCHTOWER) + GetBuildingCount(BLD_FORTRESS);
-			if (randmil % 8 == 0 && aii->CanBuildCatapult() && militaryBuildingCount > 3&&distance<15)
+			//another catapult within "min" radius? ->dont build here!
+			unsigned min=20;
+			nobBaseWarehouse* wh=(*aii->GetStorehouses().begin());
+			if (aii->CalcDistance(x,y,wh->GetX(),wh->GetY())<min)
+				min=0;
+			for(std::list<nobMilitary*>::const_iterator it=aii->GetMilitaryBuildings().begin(); min>0 && it!=aii->GetMilitaryBuildings().end();it++)
+			{
+				if(aii->CalcDistance(x,y,(*it)->GetX(),(*it)->GetY())<min && (*it)->GetType()==BLD_CATAPULT)		
+					min=0;
+			}
+			for(std::list<noBuildingSite*>::const_iterator it=aii->GetBuildingSites().begin(); min>0 && it!=aii->GetBuildingSites().end();it++)
+			{
+				if((*it)->GetBuildingType()==bld)
+				{
+				if(aii->CalcDistance(x,y,(*it)->GetX(),(*it)->GetY())<min)
+					min=0;
+				}
+			}
+			if (min>0 && randmil % 8 == 0 && aii->CanBuildCatapult() && militaryBuildingCount > 5 && aii->GetInventory()->goods[GD_STONES]>50+(4*GetBuildingCount(BLD_CATAPULT)))
+			{				
 				bld = BLD_CATAPULT;
+			}
 			else
 			{
 				if (randmil % 2 == 0)
@@ -384,7 +404,7 @@ unsigned AIConstruction::GetBuildingSitesCount(BuildingType type)
 bool AIConstruction::Wanted(BuildingType type)
 {
 	if (type == BLD_CATAPULT)
-		return aii->CanBuildCatapult()&&(aii->GetInventory()->goods[GD_STONES]>50);
+		return aii->CanBuildCatapult()&&(aii->GetInventory()->goods[GD_STONES]>50+(4*GetBuildingCount(BLD_CATAPULT)));
 	if ((type >= BLD_BARRACKS && type <= BLD_FORTRESS) || type == BLD_STOREHOUSE)
 		//todo: find a better way to determine that there is no risk in expanding than sawmill up and complete
 		return (GetBuildingCount(BLD_BARRACKS)+GetBuildingCount(BLD_GUARDHOUSE)+GetBuildingCount(BLD_FORTRESS)+GetBuildingCount(BLD_WATCHTOWER)>0 || buildingCounts.building_counts[BLD_SAWMILL]>0 || (aii->GetInventory()->goods[GD_BOARDS]>30&&GetBuildingCount(BLD_SAWMILL)>0));		
@@ -459,7 +479,7 @@ void AIConstruction::RefreshBuildingCount()
 	//metalworks is 1 if there is at least 1 smelter, 2 if mines are inexhaustible and we have at least 4 ironsmelters
 	buildingsWanted[BLD_METALWORKS] = (GetBuildingCount(BLD_IRONSMELTER) > 0) ? 1 : 0 ;
 
-	buildingsWanted[BLD_MILL] = (buildingCounts.building_counts[BLD_FARM]<8)?(buildingCounts.building_counts[BLD_FARM] + 2) / 4:(buildingCounts.building_counts[BLD_FARM] ) / 4;
+	buildingsWanted[BLD_MILL] = buildingCounts.building_counts[BLD_FARM]-(buildingCounts.building_counts[BLD_PIGFARM] + buildingCounts.building_counts[BLD_DONKEYBREEDER] + buildingCounts.building_counts[BLD_BREWERY]);
 	if (buildingsWanted[BLD_MILL]>GetBuildingCount(BLD_BAKERY)+1) buildingsWanted[BLD_MILL]=GetBuildingCount(BLD_BAKERY)+1;
 	buildingsWanted[BLD_BAKERY] = (GetBuildingCount(BLD_MILL)>aii->GetInventory()->goods[GD_ROLLINGPIN] + aii->GetInventory()->people[JOB_BAKER])?aii->GetInventory()->goods[GD_ROLLINGPIN] + aii->GetInventory()->people[JOB_BAKER]:(GetBuildingCount(BLD_MILL));
 
@@ -487,10 +507,10 @@ void AIConstruction::RefreshBuildingCount()
 	{ 
 		//coalmine count now depends on iron & gold not linked to food or material supply - might have to add a material check if this makes problems
 		buildingsWanted[BLD_COALMINE]=(GetBuildingCount(BLD_IRONMINE)>0)?(GetBuildingCount(BLD_IRONMINE)*2)-1+GetBuildingCount(BLD_GOLDMINE):(GetBuildingCount(BLD_GOLDMINE)>0)?GetBuildingCount(BLD_GOLDMINE):1;
-		if (GetBuildingCount(BLD_FARM) > 8) //quite the empire just scale mines with farms
+		if (GetBuildingCount(BLD_FARM) > 7) //quite the empire just scale mines with farms
 		{
-			buildingsWanted[BLD_IRONMINE] = (GetBuildingCount(BLD_FARM)/3>GetBuildingCount(BLD_IRONSMELTER)+1)?GetBuildingCount(BLD_IRONSMELTER)+1:GetBuildingCount(BLD_FARM)/3;
-			buildingsWanted[BLD_GOLDMINE] = (GetBuildingCount(BLD_MINT)>0)?GetBuildingCount(BLD_IRONSMELTER)>10&&GetBuildingCount(BLD_MINT)>1?3:2:1;
+			buildingsWanted[BLD_IRONMINE] = (GetBuildingCount(BLD_FARM)*3/5>GetBuildingCount(BLD_IRONSMELTER)+1)?GetBuildingCount(BLD_IRONSMELTER)+1:GetBuildingCount(BLD_FARM)*3/5;
+			buildingsWanted[BLD_GOLDMINE] = (GetBuildingCount(BLD_MINT)>0)?GetBuildingCount(BLD_IRONSMELTER)>6&&GetBuildingCount(BLD_MINT)>1?GetBuildingCount(BLD_IRONSMELTER)>10?4:3:2:1;
 			buildingsWanted[BLD_DONKEYBREEDER]=1;
 		}
 		else
@@ -499,7 +519,7 @@ void AIConstruction::RefreshBuildingCount()
 			buildingsWanted[BLD_GOLDMINE]=(aii->GetInventory()->people[JOB_MINER]>2)?1:0;			
 		}
 		if(aii->GetInventory()->goods[GD_STONES]<50 && GetBuildingCount(BLD_QUARRY)<4) //no more stones and no quarry -> try emergency granitemines.
-			buildingsWanted[BLD_GRANITEMINE] =(aii->GetInventory()->people[JOB_MINER]>6)? 4-GetBuildingCount(BLD_QUARRY):1;
+			buildingsWanted[BLD_GRANITEMINE] =(aii->GetInventory()->people[JOB_MINER]>6)? 5-GetBuildingCount(BLD_QUARRY):1;
 		else
 			buildingsWanted[BLD_GRANITEMINE]=0;
 	}
