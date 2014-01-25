@@ -1,3 +1,161 @@
+s25rttr (20140125-9101.295) karmic; urgency=low
+
+  * Automatic Jenkins Build 295
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sat, 25 Jan 2014 18:09:35 +0100
+
+s25rttr (20140125-9101) any; urgency=low
+
+  * Fix for #1070085: Readme Fenster zu klein (by nevik
+    (hai-kataker))
+
+ -- marcus  Sat, 25 Jan 2014 16:56:00 +0100
+
+s25rttr (20140125-9100) any; urgency=low
+
+  * Compile fixes for AIpoc
+
+ -- marcus  Sat, 25 Jan 2014 16:55:00 +0100
+
+s25rttr (20140125-9099) any; urgency=low
+
+  * AIpoc r9067
+    fix for Bug #1271789: expedition ship with lost home harbor
+    crashes game on new order
+
+ -- marcus  Sat, 25 Jan 2014 10:39:00 +0100
+
+s25rttr (20140125-9098) any; urgency=low
+
+  * AIpoc r9066
+    a 7 player array limit changed to MAX_PLAYERS for stat window
+
+ -- marcus  Sat, 25 Jan 2014 10:39:00 +0100
+
+s25rttr (20140125-9097) any; urgency=low
+
+  * AIpoc r9065
+    fix for Bug #1271791: shipyard destruction crashes game
+
+ -- marcus  Sat, 25 Jan 2014 10:39:00 +0100
+
+s25rttr (20140125-9096) any; urgency=low
+
+  * AIpoc r9064
+    fix for Bug #1267147: abgerissene Hafenbaustelle behält Land
+
+ -- marcus  Sat, 25 Jan 2014 10:38:00 +0100
+
+s25rttr (20140125-9095) any; urgency=low
+
+  * AIpoc r9063
+    fix for Bug #1266819: cannot send expedition to valid harbor spot
+
+ -- marcus  Sat, 25 Jan 2014 10:38:00 +0100
+
+s25rttr (20140125-9094) any; urgency=low
+
+  * AIpoc r9062
+    ai will now store boards and stones a bit more efficient
+    updated ai construction requirements for sawmill & granite mine
+
+ -- marcus  Sat, 25 Jan 2014 10:37:00 +0100
+
+s25rttr (20140125-9093) any; urgency=low
+
+  * AIpoc r9061
+    fix for Bug #1264778: building capture crash (error in soldier
+    list)
+    also allows sea attacks from harbor a to harbor a
+
+ -- marcus  Sat, 25 Jan 2014 10:37:00 +0100
+
+s25rttr (20140125-9092) any; urgency=low
+
+  * AIpoc r9060
+    ai: changed charburner construction requirements
+
+ -- marcus  Sat, 25 Jan 2014 10:36:00 +0100
+
+s25rttr (20140125-9091) any; urgency=low
+
+  * AIpoc r9059
+    ai no longer sometimes constructs endless mills & bakeries for no
+    good reason
+
+ -- marcus  Sat, 25 Jan 2014 10:36:00 +0100
+
+s25rttr (20140125-9090) any; urgency=low
+
+  * AIpoc r9058
+    ai changes:
+    - different requirements for foresters and reduced area
+    requirements for the first forester
+    - can build charburners now
+
+ -- marcus  Sat, 25 Jan 2014 10:35:00 +0100
+
+s25rttr (20140125-9089) any; urgency=low
+
+  * AIpoc r9057
+    ai now builds slightly more mines per farm when mines are
+    exhaustible
+
+ -- marcus  Sat, 25 Jan 2014 10:35:00 +0100
+
+s25rttr (20140125-9088) any; urgency=low
+
+  * AIpoc r9056
+    ai now ignores harborspots that are not a sea or at a sea with
+    just 1 harborspot
+
+ -- marcus  Sat, 25 Jan 2014 10:34:00 +0100
+
+s25rttr (20140125-9087) any; urgency=low
+
+  * AIpoc r9055
+    fix for Bug #1264645: goods delivered by ship for a new
+    expedition fail to register
+
+ -- marcus  Sat, 25 Jan 2014 10:33:00 +0100
+
+s25rttr (20140125-9086) any; urgency=low
+
+  * AIpoc 9054
+    1 iron mine for every 0.4 farms (old 1 for every 0.6 farms)
+
+ -- marcus  Sat, 25 Jan 2014 10:33:00 +0100
+
+s25rttr (20140125-9085) any; urgency=low
+
+  * AIpoc r9053
+    fix for Bug #1264747: destruction of only harbor at sea id during
+    unloading of a transport will crash the game upon completion of a
+    new harbor at this sea id
+
+ -- marcus  Sat, 25 Jan 2014 10:32:00 +0100
+
+s25rttr (20140125-9084) any; urgency=low
+
+  * AIpoc r9052
+    ai 'collects' helpers in the main building (or primary
+    warehouse/harbor) to allow faster recruitment
+    ai no longer produces 'cleavers', mills & bakery exclusive once
+    start-resource cleavers are in use
+    ai builds a 3rd mint earlier and can now get a 4th mint
+    ai: catapults should get constructed a bit more often now
+    ai: land attack - added a limit to the target check to avoid lags
+    in situations where the ai has many possible targets
+    ai: sea attack - enabled
+
+ -- marcus  Sat, 25 Jan 2014 10:31:00 +0100
+
+s25rttr (20140104-9062) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 04 Jan 2014 23:00:00 +0100
+
 s25rttr (20131231-9057.294) karmic; urgency=low
 
   * Automatic Jenkins Build 294
