@@ -1,4 +1,4 @@
-// $Id: iwStatistics.cpp 8735 2013-05-16 12:55:07Z marcus $
+// $Id: iwStatistics.cpp 9098 2014-01-25 10:39:24Z marcus $
 //
 // Copyright (c) 2005-2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -45,7 +45,7 @@ static char THIS_FILE[] = __FILE__;
 iwStatistics::iwStatistics()
 : IngameWindow(CGI_STATISTICS, 0xFFFE, 0xFFFE, 252, 336, _("Statistics"), LOADER.GetImageN("resource", 41))
 {
-	activePlayers = std::vector<bool>(7);
+	activePlayers = std::vector<bool>(MAX_PLAYERS);
 
 	// Spieler zählen
 	numPlayingPlayers = 0;
