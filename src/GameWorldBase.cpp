@@ -1,4 +1,4 @@
-// $Id: GameWorldBase.cpp 9093 2014-01-25 10:37:13Z marcus $
+// $Id: GameWorldBase.cpp 9095 2014-01-25 10:38:01Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1357,21 +1357,25 @@ bool GameWorldBase::IsHarborPointFree(const unsigned harbor_id, const unsigned c
 	if(!at_sea)
 		return false;
 
-	// Überprüfen, ob das Gebiet in einem bestimmten Radius entweder vom Spieler oder gar nicht besetzt ist
-	for(MapCoord tx=GetXA(coords.x,coords.y,0), r=1;r<=4;tx=GetXA(tx,coords.y,0),++r)
+	// Überprüfen, ob das Gebiet in einem bestimmten Radius entweder vom Spieler oder gar nicht besetzt ist außer wenn der Hafen und die Flagge im Spielergebiet liegen
+	MapCoord tx3=coords.x, ty3=coords.y;
+	GetPointA(tx3,ty3,4);
+	if(GetNode(coords.x,coords.y).owner!=player+1 || GetNode(tx3,ty3).owner!=player+1)
 	{
-		MapCoord tx2 = tx, ty2 = coords.y;
-		for(unsigned i = 2;i<8;++i)
+		for(MapCoord tx=GetXA(coords.x,coords.y,0), r=1;r<=4;tx=GetXA(tx,coords.y,0),++r)
 		{
-			for(MapCoord r2=0;r2<r;GetPointA(tx2,ty2,i%6),++r2)
+			MapCoord tx2 = tx, ty2 = coords.y;
+			for(unsigned i = 2;i<8;++i)
 			{
-				unsigned char owner = GetNode(tx2,ty2).owner;
-				if(owner != 0 && owner != player+1)
-					return false;
+				for(MapCoord r2=0;r2<r;GetPointA(tx2,ty2,i%6),++r2)
+				{
+					unsigned char owner = GetNode(tx2,ty2).owner;
+					if(owner != 0 && owner != player+1)
+						return false;
+				}
 			}
 		}
 	}
-
 
 	return (CalcBQ(coords.x,coords.y,0,false,false,true) == BQ_HARBOR);
 }
