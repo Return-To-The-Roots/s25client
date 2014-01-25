@@ -1030,6 +1030,15 @@ void nofAttacker::StartAttackOnOtherIsland(const MapCoord ship_x, const MapCoord
 	MissAttackingWalk();
 }
 
+/// Sea attacker enters harbor and finds no shipping route or no longer has a valid target: set state,target,goal,building to 0 to avoid future problems (and add to harbor inventory)
+void nofAttacker::SeaAttackFailedBeforeLaunch()
+{
+	attacked_goal = 0;
+	goal = 0;
+	building = 0;
+	state = STATE_FIGUREWORK;
+}
+
 /// Sagt Schiffsangreifern, dass sie mit dem Schiff zurück fahren
 void nofAttacker::StartReturnViaShip()
 {

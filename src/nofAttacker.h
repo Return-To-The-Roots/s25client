@@ -1,4 +1,4 @@
-// $Id: nofAttacker.h 8308 2012-09-23 10:05:22Z marcus $
+// $Id: nofAttacker.h 9093 2014-01-25 10:37:13Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -72,8 +72,7 @@ private:
 	/// Geht zum STATE_ATTACKING_WAITINGFORDEFENDER über und meldet gleichzeitig ein Block-Event an
 	void SwitchStateAttackingWaitingForDefender();
 
-	/// Sagt den verschiedenen Zielen Bescheid, dass wir doch nicht mehr kommen können
-	void InformTargetsAboutCancelling();
+	
 
 	
 
@@ -86,8 +85,8 @@ private:
 	void FreeFightEnded();
 
 public:
-
-
+	/// Sagt den verschiedenen Zielen Bescheid, dass wir doch nicht mehr kommen können
+	void InformTargetsAboutCancelling();
 	/// Normaler Konstruktor für Angreifer
 	nofAttacker(nofPassiveSoldier * other,nobBaseMilitary * const attacked_goal);
 	/// Konstruktor für Schiffs-Angreifer, die zuerst einmal zu einem Hafen laufen müssen
@@ -161,6 +160,8 @@ public:		void Destroy() { Destroy_nofAttacker(); }
 	void StartAttackOnOtherIsland(const MapCoord ship_x, const MapCoord ship_y, const unsigned ship_id);
 	/// Sagt Schiffsangreifern, dass sie mit dem Schiff zurück fahren
 	void StartReturnViaShip();
+	/// Sea attacker enters harbor and finds no shipping route or no longer has a valid target: return home soon on a road
+	void SeaAttackFailedBeforeLaunch();
 	/// notify sea attackers that they wont return home
 	void HomeHarborLost();
 	/// Sagt Bescheid, dass sich die Angreifer nun auf dem Schiff befinden

@@ -1,4 +1,4 @@
-// $Id: nobHarborBuilding.cpp 9087 2014-01-25 10:33:54Z marcus $
+// $Id: nobHarborBuilding.cpp 9093 2014-01-25 10:37:13Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1241,12 +1241,14 @@ void nobHarborBuilding::AddSeaAttacker(nofAttacker * attacker)
 		}
 	}
 
-	// no harbor point found? tell attacker that the goal has been destroyed.
+	// no harbor to target (should not happen) or no target (might happen very very rarely not sure)
 	if (best_harbor_point == 0xffffffff)
 	{
-		// TODO: true or false?
-		AddFigure(attacker, false);
-		attacker->AttackedGoalDestroyed();
+		// notify target about noShow, notify home that soldier wont return, add to inventory
+		attacker->InformTargetsAboutCancelling();
+		attacker->CancelAtHomeMilitaryBuilding();
+		attacker->SeaAttackFailedBeforeLaunch(); //set state, remove target & home
+		AddFigure(attacker, true);	
 		return;
 	}
 

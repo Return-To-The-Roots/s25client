@@ -1,4 +1,4 @@
-// $Id: GameWorldBase.cpp 8888 2013-08-27 17:50:58Z jh $
+// $Id: GameWorldBase.cpp 9093 2014-01-25 10:37:13Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1395,6 +1395,8 @@ void GameWorldBase::GetSeaIDs(const unsigned harbor_id, unsigned short * sea_ids
 /// Berechnet die Entfernung zwischen 2 Hafenpunkten
 unsigned GameWorldBase::CalcHarborDistance(const unsigned habor_id1, const unsigned harbor_id2) const
 {
+	if (habor_id1==harbor_id2) //special case: distance to self 
+		return 0;
 	const HarborPos& hp = harbor_pos[habor_id1];
 	for(unsigned i = 0;i<6;++i)
 	{
