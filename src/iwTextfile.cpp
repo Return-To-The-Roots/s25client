@@ -1,6 +1,7 @@
-// $Id: iwTextfile.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: iwTextfile.cpp 9101 2014-01-25 16:56:10Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2013 Nevik Rehnel (hai.kataker at gmx.de)
 //
 // This file is part of Return To The Roots.
 //
@@ -74,18 +75,23 @@ iwTextfile::iwTextfile(const std::string& filename, const std::string& title)
 			return;
 		}	
 	}
-	// Erste Zeile auslesen und die Breite des Fensters und des Multilinecontrols danach bestimmen
-	std::string line;
-	std::getline(file, line);
-	file.seekg(0);
-	unsigned short first_line_width = NormalFont->getWidth(line);
-	SetWidth(first_line_width + 20 + 30);
-	text->SetWidth(first_line_width + 30);
+
+	std::string line; // buffer for one line
+	unsigned short max_line_width = 0; // use this to find max length of lines, to set window width
+	unsigned short current_line_width;
 
 	while(!file.eof())
 	{
-		std::getline(file, line);
-		text->AddString(line.c_str(), COLOR_YELLOW, false);
+		std::getline(file, line); // get next line
+		text->AddString(line.c_str(), COLOR_YELLOW, false); // add this line to the window contents
+		current_line_width = NormalFont->getWidth(line); // get the width of line in normal font
+		if (current_line_width > max_line_width) // if wider than max, re-set max
+		{
+			max_line_width = current_line_width;
+		}
 	}
 	file.close();
+
+	SetWidth(max_line_width + 20 + 30); // set window width to our determined max width
+	text->SetWidth(max_line_width + 30);
 }
