@@ -1,4 +1,4 @@
-// $Id: AIConstruction.cpp 9094 2014-01-25 10:37:37Z marcus $
+// $Id: AIConstruction.cpp 9100 2014-01-25 16:55:02Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -359,7 +359,7 @@ BuildingType AIConstruction::ChooseMilitaryBuilding(MapCoord x, MapCoord y)
 				min=0;
 			for(std::list<nobMilitary*>::const_iterator it=aii->GetMilitaryBuildings().begin(); min>0 && it!=aii->GetMilitaryBuildings().end();it++)
 			{
-				if(aii->CalcDistance(x,y,(*it)->GetX(),(*it)->GetY())<min && (*it)->GetType()==BLD_CATAPULT)		
+				if(aii->CalcDistance(x,y,(*it)->GetX(),(*it)->GetY())<min && (*it)->GetBuildingType()==BLD_CATAPULT)		
 					min=0;
 			}
 			for(std::list<noBuildingSite*>::const_iterator it=aii->GetBuildingSites().begin(); min>0 && it!=aii->GetBuildingSites().end();it++)
@@ -415,7 +415,8 @@ void AIConstruction::RefreshBuildingCount()
 {
 	unsigned resourcelimit=0; //variables to make this more readable for humans
 	unsigned bonuswant=0;
-	unsigned foodusers=GetBuildingCount(BLD_IRONMINE)+GetBuildingCount(BLD_COALMINE)+GetBuildingCount(BLD_GRANITEMINE)+GetBuildingCount(BLD_GOLDMINE)+GetBuildingCount(BLD_CHARBURNER);
+// not used:
+//	unsigned foodusers=GetBuildingCount(BLD_IRONMINE)+GetBuildingCount(BLD_COALMINE)+GetBuildingCount(BLD_GRANITEMINE)+GetBuildingCount(BLD_GOLDMINE)+GetBuildingCount(BLD_CHARBURNER);
 
 	aii->GetBuildingCount(buildingCounts);
 	//no military buildings -> usually start only
@@ -441,7 +442,7 @@ void AIConstruction::RefreshBuildingCount()
 		//foresters
 		resourcelimit=aii->GetInventory()->people[JOB_FORESTER]+aii->GetInventory()->goods[GD_SHOVEL]+1; //bonuswant for foresters depends on addon settings for mines,wells,charburner
 		bonuswant=GetBuildingCount(BLD_CHARBURNER)+((!aijh->ggs->isEnabled(ADDON_INEXHAUSTIBLE_MINES)&&((GetBuildingCount(BLD_IRONMINE)+GetBuildingCount(BLD_COALMINE)+GetBuildingCount(BLD_GOLDMINE))>6))?1:0)+((aijh->ggs->isEnabled(ADDON_EXHAUSTIBLE_WELLS)&&GetBuildingCount(BLD_WELL)>3)?1:0);
-		buildingsWanted[BLD_FORESTER]=max<int>((min((aii->GetMilitaryBuildings().size()>23?3:(aii->GetMilitaryBuildings().size()/8)+1)+bonuswant,resourcelimit)),1);
+		buildingsWanted[BLD_FORESTER]=max<int>((min<int>((aii->GetMilitaryBuildings().size()>23?3:(aii->GetMilitaryBuildings().size()/8)+1)+bonuswant,resourcelimit)),1);
 		
 		//woodcutters
 		buildingsWanted[BLD_WOODCUTTER]=aii->GetInventory()->goods[GD_AXE] + aii->GetInventory()->people[JOB_WOODCUTTER]+1;

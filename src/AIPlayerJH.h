@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.h 9094 2014-01-25 10:37:37Z marcus $
+// $Id: AIPlayerJH.h 9100 2014-01-25 16:55:02Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -141,7 +141,7 @@ protected:
 	void CheckNewMilitaryBuildings();
 
 	/// blocks goods in each warehouse that has at least limit amount of that good - if all warehouses have enough they unblock
-	void AIPlayerJH::DistributeGoodsByBlocking(unsigned goodnumber,unsigned limit);
+	void DistributeGoodsByBlocking(unsigned goodnumber,unsigned limit);
 
 	/// Initializes the nodes on start of the game
 	void InitNodes();
@@ -246,7 +246,7 @@ protected:
 	bool HarborPosClose(MapCoord x,MapCoord y,unsigned range,bool onlyempty=false);
 
 	/// checks if there is at least 1 sea id connected to the harbor spot with at least 2 harbor spots!
-	bool AIPlayerJH::HarborPosRelevant(unsigned harborid);
+	bool HarborPosRelevant(unsigned harborid);
 
 	/// returns true when a building of the given type is closer to the given position than min (ONLY NOBUSUAL (=no warehouse/military))
 	bool BuildingNearby(MapCoord x,MapCoord y,BuildingType bld,unsigned min);
