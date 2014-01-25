@@ -1,4 +1,4 @@
-// $Id: nobHarborBuilding.cpp 8862 2013-08-24 08:47:37Z marcus $
+// $Id: nobHarborBuilding.cpp 9087 2014-01-25 10:33:54Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -667,7 +667,7 @@ void nobHarborBuilding::AddWare(Ware * ware)
 			|| (ware->type == GD_STONES && expedition.stones < BUILDING_COSTS[nation][BLD_HARBORBUILDING].stones))
 		{
 			if(ware->type == GD_BOARDS) ++expedition.boards;
-			else if(ware->type == GD_STONES) ++expedition.stones;
+			else ++expedition.stones;
 
 			// Ware nicht mehr abhängig
 			RemoveDependentWare(ware);
@@ -1050,8 +1050,30 @@ void nobHarborBuilding::ReceiveGoodsFromShip(const std::list<noFigure*> figures,
 		// werden
 		if ((*it)->HasNoGoal() || ((*it)->GetGoal() == this))
 		{
-			AddFigure(*it, false);
-		} else
+			//required for expedition / exploration?
+			// Brauchen wir einen Bauarbeiter für die Expedition?
+			if((*it)->GetJobType() == JOB_BUILDER && expedition.active && !expedition.builder)
+			{
+				--goods.people[(*it)->GetJobType()]; //reduce visual count again 
+				nobBaseWarehouse::RemoveDependentFigure((*it));
+				em->AddToKillList((*it));
+				expedition.builder = true;
+				CheckExpeditionReady();
+			}
+			// Brauchen wir einen Spähter für die Expedition?
+			else if((*it)->GetJobType() == JOB_SCOUT && exploration_expedition.active && !IsExplorationExpeditionReady())
+			{
+				nobBaseWarehouse::RemoveDependentFigure((*it));
+				em->AddToKillList((*it));
+				++exploration_expedition.scouts;
+				CheckExplorationExpeditionReady();
+			}
+			else	//not required for expedition / exploration:	
+			{
+				AddFigure(*it, false);
+			}
+		} 
+		else //figure has a different goal
 		{
 			Point<MapCoord> next_harbor = (*it)->ExamineRouteBeforeShipping();
 			unsigned char next_dir = (*it)->GetDir();
@@ -1073,10 +1095,10 @@ void nobHarborBuilding::ReceiveGoodsFromShip(const std::list<noFigure*> figures,
 	// Waren zur Warteliste hinzufügen
 	for(std::list<Ware*>::const_iterator it = wares.begin();it!=wares.end();++it)
 	{
-		// Optische Warenwerte entsprechend erhöhen
-		++goods.goods[ConvertShields((*it)->type)];
 		if((*it)->ShipJorneyEnded(this))
 		{
+			// Optische Warenwerte entsprechend erhöhen
+			++goods.goods[ConvertShields((*it)->type)];
 			
 			// Ware will die weitere Reise antreten, also muss sie zur Liste der rausgetragenen Waren
 			// hinzugefügt werden
@@ -1084,11 +1106,29 @@ void nobHarborBuilding::ReceiveGoodsFromShip(const std::list<noFigure*> figures,
 		}
 		else
 		{
-			// Ansonsten fügen wir die Ware einfach zu unserem Inventar dazu
-			RemoveDependentWare(*it);
-			++real_goods.goods[ConvertShields((*it)->type)];
-			players->getElement(player)->RemoveWare(*it);
-			delete *it;
+			// add to harbor inventory unless ...
+			// required for an expedition?
+			if(expedition.active)
+			{ //board or stones and still required for the expedition?
+				if(((*it)->type == GD_BOARDS && expedition.boards < BUILDING_COSTS[nation][BLD_HARBORBUILDING].boards)	|| ((*it)->type == GD_STONES && expedition.stones < BUILDING_COSTS[nation][BLD_HARBORBUILDING].stones))
+				{	// use it for expedition and reduce count
+					if((*it)->type == GD_BOARDS) ++expedition.boards;
+					else ++expedition.stones;					
+					RemoveDependentWare(*it);
+					gwg->GetPlayer(player)->RemoveWare((*it));
+					//remove item
+					delete *it;
+					CheckExpeditionReady();					
+				}
+				else
+				{
+					nobBaseWarehouse::AddWare(*it);
+				}			
+			}
+			else 
+			{
+				nobBaseWarehouse::AddWare(*it);
+			}
 		}
 	}
 
