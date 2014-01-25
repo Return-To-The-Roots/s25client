@@ -1,4 +1,4 @@
-// $Id: AIConstruction.cpp 9090 2014-01-25 10:35:32Z marcus $
+// $Id: AIConstruction.cpp 9091 2014-01-25 10:36:00Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -491,10 +491,10 @@ void AIConstruction::RefreshBuildingCount()
 		//metalworks is 1 if there is at least 1 smelter, 2 if mines are inexhaustible and we have at least 4 ironsmelters
 		buildingsWanted[BLD_METALWORKS] = (GetBuildingCount(BLD_IRONSMELTER) > 0) ? 1 : 0 ;
 			
-		buildingsWanted[BLD_MILL] = buildingCounts.building_counts[BLD_FARM]-(buildingCounts.building_counts[BLD_PIGFARM] + buildingCounts.building_counts[BLD_DONKEYBREEDER] + buildingCounts.building_counts[BLD_BREWERY]);
-		if (buildingsWanted[BLD_MILL]>GetBuildingCount(BLD_BAKERY)+1)
-			buildingsWanted[BLD_MILL]=GetBuildingCount(BLD_BAKERY)+1;
-		buildingsWanted[BLD_BAKERY] = (GetBuildingCount(BLD_MILL)>aii->GetInventory()->goods[GD_ROLLINGPIN] + aii->GetInventory()->people[JOB_BAKER])?aii->GetInventory()->goods[GD_ROLLINGPIN] + aii->GetInventory()->people[JOB_BAKER]:(GetBuildingCount(BLD_MILL));
+		buildingsWanted[BLD_MILL] = min(buildingCounts.building_counts[BLD_FARM]-(buildingCounts.building_counts[BLD_PIGFARM] + buildingCounts.building_counts[BLD_DONKEYBREEDER] + buildingCounts.building_counts[BLD_BREWERY]),GetBuildingCount(BLD_BAKERY)+1);
+
+		resourcelimit=aii->GetInventory()->people[JOB_BAKER]+aii->GetInventory()->goods[GD_ROLLINGPIN]+1;
+		buildingsWanted[BLD_BAKERY] = min<unsigned>(GetBuildingCount(BLD_MILL),resourcelimit);
 
 		buildingsWanted[BLD_PIGFARM] = (buildingCounts.building_counts[BLD_FARM]<8)?buildingCounts.building_counts[BLD_FARM] / 4:(buildingCounts.building_counts[BLD_FARM]-2) / 4;
 		if (buildingsWanted[BLD_PIGFARM]>GetBuildingCount(BLD_SLAUGHTERHOUSE)+1)
