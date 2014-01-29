@@ -1,5 +1,5 @@
 ################################################################################
-### $Id: CMakeLists.txt 9117 2014-01-29 13:52:31Z marcus $
+### $Id: CMakeLists.txt 9121 2014-01-29 13:57:52Z marcus $
 ################################################################################
 
 INCLUDE(FindBZip2)
@@ -299,12 +299,15 @@ SET(SOURCES_OTHER
 	FOWObjects.cpp                      FOWObjects.h
 	PostMsg.cpp                         PostMsg.h
 	Addons.cpp                          Addons.h
+										AddonAsyncDebug.h
 										AddonChangeGoldDeposits.h
 										AddonMaxWaterwayLength.h
+										AddonMaxRank.h
 										AddonCustomBuildSequence.h
 										AddonStatisticsVisibility.h
 										AddonLimitCatapults.h
 										AddonInexhaustibleMines.h
+										AddonInexhaustibleGraniteMines.h
 										AddonDefenderBehavior.h
 										AddonAIDebugWindow.h
 										AddonToolOrdering.h
