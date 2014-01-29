@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 9113 2014-01-29 12:49:32Z marcus $
+// $Id: AIPlayerJH.cpp 9114 2014-01-29 12:49:57Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -240,8 +240,11 @@ void AIPlayerJH::RunGF(const unsigned gf)
 		{
 			aii->ChangeInventorySetting(wh->GetX(),wh->GetY(),0,8,0); //8 = collect, 2 = block
 			aii->ChangeInventorySetting(wh->GetX(),wh->GetY(),0,8,16); //x of warehouse, y of warehouse, "pagenumber", "setting", good or figure number (check the lists)
-			aii->ChangeInventorySetting(wh->GetX(),wh->GetY(),0,8,21); //checks stuff with: return (current setting & compare setting == compare setting); <- so dont check for setting 0
-			aii->ChangeInventorySetting(wh->GetX(),wh->GetY(),1,8,0);
+			aii->ChangeInventorySetting(wh->GetX(),wh->GetY(),0,8,21); //checks stuff with: return (current setting & compare setting == compare setting); <- so dont check for setting 0			
+		}
+		if((wh->CheckRealInventorySettings(1,8,0) && wh->GetInventory()->people[JOB_HELPER]>50) || (!wh->CheckRealInventorySettings(1,8,0) && !wh->GetInventory()->people[JOB_HELPER]>50))
+		{
+			aii->ChangeInventorySetting(wh->GetX(),wh->GetY(),1,8,0); //less than 50 helpers - collect them: more than 50 stop collecting
 		}
 		//unlimited when every warehouse has at least that amount
 		DistributeGoodsByBlocking(23,30); //30 boards for each warehouse - block after that - should speed up expansion
