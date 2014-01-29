@@ -966,6 +966,12 @@
     <ClInclude Include="..\..\src\WindowManager.h">
       <Filter>Headerdateien\Game\GUI</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\AddonMilitaryAid.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\AddonInexhaustibleGraniteMines.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Addons.cpp">
