@@ -1,4 +1,4 @@
-// $Id: noShip.cpp 9108 2014-01-29 12:46:06Z marcus $
+// $Id: noShip.cpp 9116 2014-01-29 12:51:12Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -743,6 +743,7 @@ void noShip::HandleState_ExpeditionDriving()
 				(this,x,y,&goal_harbor_id,&route,NULL))
 			{
 				//set new home=goal so we will actually unload once we reach the goal
+				pos=0;
 				home_harbor=goal_harbor_id;
 				HandleState_ExpeditionDriving();
 			} else
