@@ -1,4 +1,4 @@
-// $Id: noShip.cpp 9116 2014-01-29 12:51:12Z marcus $
+// $Id: noShip.cpp 9119 2014-01-29 13:53:18Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -741,10 +741,9 @@ void noShip::HandleState_ExpeditionDriving()
 			// Das Schiff muss einen Notlandeplatz ansteuern
 			if(players->getElement(player)->FindHarborForUnloading
 				(this,x,y,&goal_harbor_id,&route,NULL))
-			{
-				//set new home=goal so we will actually unload once we reach the goal
+			{				
 				pos=0;
-				home_harbor=goal_harbor_id;
+				home_harbor=goal_harbor_id; //set new home=goal so we will actually unload once we reach the goal
 				HandleState_ExpeditionDriving();
 			} else
 			{
@@ -836,6 +835,7 @@ void noShip::HandleState_TransportDriving()
 			// Dann müssen alle Leute ihren Heimatgebäuden Bescheid geben, dass sie
 			// nun nicht mehr kommen
 			// Das Schiff muss einen Notlandeplatz ansteuern
+			//LOG.lprintf("transport goal harbor doesnt exist player %i state %i pos %u,%u \n",player,state,x,y);
 			for(std::list<noFigure*>::iterator it = figures.begin();it!=figures.end();++it)
 			{
 				(*it)->Abrogate();
@@ -858,7 +858,7 @@ void noShip::HandleState_TransportDriving()
 			if(players->getElement(player)->FindHarborForUnloading
 				(this,x,y,&goal_harbor_id,&route,NULL))
 			{
-				
+				pos=0;
 				HandleState_TransportDriving();
 			} else
 			{
@@ -978,15 +978,8 @@ void noShip::HandleState_SeaAttackReturn()
 				static_cast<nofAttacker*>(*it)->CancelAtHomeMilitaryBuilding();
 
 			state = STATE_TRANSPORT_DRIVING;
-			
-			// Neuen Hafen suchen
-			if(players->getElement(player)->FindHarborForUnloading
-				(this,x,y,&goal_harbor_id,&route,NULL))
-				HandleState_TransportDriving();
-			else
-				lost = true;
+			HandleState_TransportDriving();
 
-			
 		} break;
 	case NO_ROUTE_FOUND:
 		{
@@ -1006,9 +999,14 @@ void noShip::StartDrivingToHarborPlace()
 	// Versuchen, Weg zu finden
 	if(!gwg->FindShipPath(x,y,coastal_x,coastal_y,&route,NULL))
 	{
-		// todo
-		LOG.lprintf("Achtung: Bug im Spiel: noShip::StartDrivingToHarborPlace: Schiff hat keinen Weg gefunden!\n");
-		return;
+		if(coastal_x==x && coastal_y==y)
+			route.clear();
+		else
+		{
+			// todo
+			LOG.lprintf("Achtung: Bug im Spiel: noShip::StartDrivingToHarborPlace: Schiff hat keinen Weg gefunden! player %i state %i pos %u,%u \n",player,state,x,y);
+			return;
+		}
 	}
 	pos = 0;
 }
@@ -1040,83 +1038,25 @@ void noShip::HarborDestroyed(nobHarborBuilding * hb)
 			
 			// Waren und Figure über verändertes Ziel informieren
 			for(std::list<noFigure*>::iterator it = figures.begin();it!=figures.end();++it)
-				(*it)->StartShipJourney(gwg->GetHarborPoint(goal_harbor_id));
-		}
-		
-		else if(((state >= STATE_TRANSPORT_LOADING && state <= STATE_TRANSPORT_UNLOADING)))
+			{
+				(*it)->Abrogate();
+				(*it)->SetGoalToNULL();
+			}
+			for(std::list<Ware*>::iterator it = wares.begin();it!=wares.end();++it)
+			{
+				(*it)->NotifyGoalAboutLostWare();
+				(*it)->goal = NULL;
+			}
+		}		
+		else
 		{
-			// Punkt von dem aus berechnet werden soll, ist normalerweise der normale Standpunkt des Schiffes,
-			// allderdings der nächste Punkt, wenn das Schiff gerade am fahren ist (der Zielpunkt der aktuellen
-			// Bewegung
-			MapCoord current_x = x, current_y = y;
-			if(state == STATE_TRANSPORT_DRIVING)
+			if(state == STATE_TRANSPORT_UNLOADING)
 			{
-				current_x = gwg->GetXA(x,y,dir);
-				current_y = gwg->GetYA(x,y,dir);
-			}
-
-			// Neues Ziel suchen, wo wir ankern können
-			if(players->getElement(player)->FindHarborForUnloading(this,current_x,current_y,&goal_harbor_id,&route,hb))
-			{
-
-				switch(state)
-				{
-				default: return;
-				case STATE_TRANSPORT_LOADING: // Schiff wird mit Waren/Figuren erst noch beladen, bleibt also für kurze Zeit am Hafen
-					{
-						state = STATE_TRANSPORT_DRIVING;
-						// Hafen suchen, wo wir gerade ankern
-						for(unsigned i = 0;i<6;++i)
-						{
-							noBase * nob = gwg->GetNO(gwg->GetXA(x,y,i),gwg->GetYA(x,y,i));
-							if(nob->GetGOT() == GOT_NOB_HARBORBUILDING && nob != hb)
-							{
-								// Waren wieder abladen
-								static_cast<nobHarborBuilding*>(nob)->ReceiveGoodsFromShip(figures,wares);
-								// Neuen Job für mich suchen
-								StartIdling();
-								goal_harbor_id = 0;
-								players->getElement(player)->GetJobForShip(this);
-								return;
-							}
-						}
-						
-						pos = 0;
-						
-						HandleState_TransportDriving();
-					} break;
-				case STATE_TRANSPORT_DRIVING: /// Schiff transportiert Waren/Figuren von einen Ort zum anderen
-					{
-						// Route wird wieder von vorne abgearbeitet
-						pos = 0;
-
-					} break;
-				case STATE_TRANSPORT_UNLOADING: /// Entlädt Schiff am Zielhafen, kurze Zeit ankern, bevor Waren im Hafengebäude ankommen..
-					{
-						// Event zum Abladen abmelden
-						em->RemoveEvent(current_ev);
-						current_ev = NULL;
-						// Route wird wieder von vorne abgearbeitet
-						pos = 0;
-						state = STATE_TRANSPORT_DRIVING;
-						
-						HandleState_TransportDriving();
-					} break;
-
-				}
-
-				// Waren und Figure über verändertes Ziel informieren
-				for(std::list<noFigure*>::iterator it = figures.begin();it!=figures.end();++it)
-				{
-					(*it)->StartShipJourney(gwg->GetHarborPoint(goal_harbor_id));
-				}
-			}
-			else
-			{
-				/*// Kein Ziel gefunden, also erstmal idlen
-				StartIdling();
+				// Event zum Abladen abmelden
 				em->RemoveEvent(current_ev);
-				current_ev = NULL;*/
+				current_ev = NULL;
+				state = STATE_TRANSPORT_DRIVING;
+				HandleState_TransportDriving();	//finds our goal harbor doesnt exist anymore picks a new one if available etc					
 			}
 		}
 	}
@@ -1222,7 +1162,7 @@ void noShip::NewHarborBuilt(nobHarborBuilding * hb)
 		// Liegt der Hafen auch am Meer von diesem Schiff?
 		if(!gwg->IsAtThisSea(hb->GetHarborPosID(),sea_id))
 			return;
-		
+		//LOG.lprintf("lost ship has new goal harbor player %i state %i pos %u,%u \n",player,state,x,y);
 		home_harbor = goal_harbor_id = hb->GetHarborPosID();
 		lost = false;
 		
