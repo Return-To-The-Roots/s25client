@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 9107 2014-01-29 12:45:21Z marcus $
+// $Id: AIPlayerJH.cpp 9108 2014-01-29 12:46:06Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1406,6 +1406,7 @@ void AIPlayerJH::HandleBuildingFinished(const Coords& coords, BuildingType bld)
 	{
 	case BLD_HARBORBUILDING:
 		UpdateNodesAround(coords.x, coords.y, 8); // todo: fix radius
+		RemoveAllUnusedRoads(coords.x,coords.y); // repair & reconnect road system - required when a colony gets a new harbor by expedition
 		aii->SetDefenders(coords.x,coords.y,0,1); //order 1 defender to stay in the harborbuilding
 
 		//if there are positions free start an expedition!

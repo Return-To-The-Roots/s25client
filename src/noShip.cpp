@@ -1,4 +1,4 @@
-// $Id: noShip.cpp 9099 2014-01-25 10:39:46Z marcus $
+// $Id: noShip.cpp 9108 2014-01-29 12:46:06Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -689,6 +689,8 @@ void noShip::FoundColony()
 		// Neue Arbeit suchen
 		players->getElement(player)->GetJobForShip(this);
 	}
+	else //colony founding FAILED - notify ai
+		GAMECLIENT.SendAIEvent(new AIEvent::Location(AIEvent::ExpeditionWaiting, x, y), player);
 
 }
 
