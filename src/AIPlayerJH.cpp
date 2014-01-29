@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 9108 2014-01-29 12:46:06Z marcus $
+// $Id: AIPlayerJH.cpp 9111 2014-01-29 12:48:43Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -234,7 +234,7 @@ void AIPlayerJH::RunGF(const unsigned gf)
 		randomstore=rand()%(aii->GetStorehouses().size());
 		if(aii->GetStorehouses().size()<1)
 			return;
-		//collect swords,shields and beer in first storehouse!
+		//collect swords,shields,helpers and beer in first storehouse!
 		nobBaseWarehouse* wh=(*aii->GetStorehouses().begin());
 		if(!wh->CheckRealInventorySettings(0,8,0))
 		{
@@ -1736,6 +1736,7 @@ void AIPlayerJH::TrySeaAttack()
 		return;
 	std::vector<int> invalidseas;
 	std::deque<const nobBaseMilitary *> potentialTargets;
+	std::deque<const nobBaseMilitary *> undefendedTargets;
 	std::vector<int> searcharoundharborspots; 	
 	//first check all harbors there might be some undefended ones - start at 1 to skip the harbor dummy
 	for(unsigned i=1;i<gwb->GetHarborPointCount();i++)
@@ -1767,8 +1768,7 @@ void AIPlayerJH::TrySeaAttack()
 							gwb->GetAvailableSoldiersForSeaAttack(playerid,gwb->GetHarborPoint(i).x,gwb->GetHarborPoint(i).y,&attackers);						
 							if(attackers.size()) //try to attack it!
 							{
-								aii->SeaAttack(hb->GetX(),hb->GetY(),attackers.size(),true);
-								return;
+								undefendedTargets.push_back(hb);
 							}
 							else//no attackers in this sea_id -> remember that 
 							{
@@ -1810,6 +1810,21 @@ void AIPlayerJH::TrySeaAttack()
 		{
 			searcharoundharborspots.push_back(i);
 			//LOG.lprintf("found an unused harborspot we have to look around of at %i,%i \n",gwb->GetHarborPoint(i).x,gwb->GetHarborPoint(i).y);
+		}
+	}
+	//any undefendedTargets? -> pick one by random
+	if(undefendedTargets.size()>0)
+	{
+		std::random_shuffle(undefendedTargets.begin(),undefendedTargets.end());
+		for(std::deque<const nobBaseMilitary*>::iterator it=undefendedTargets.begin();it!=undefendedTargets.end();it++)
+		{
+			std::list<GameWorldBase::PotentialSeaAttacker> attackers;
+			gwb->GetAvailableSoldiersForSeaAttack(playerid,(*it)->GetX(),(*it)->GetY(),&attackers);
+			if(attackers.size()) //try to attack it!
+			{
+				aii->SeaAttack((*it)->GetX(),(*it)->GetY(),attackers.size(),true);
+				return;
+			}
 		}
 	}
 	//add all military buildings around still valid harborspots (unused or used by ally)
