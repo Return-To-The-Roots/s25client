@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 9114 2014-01-29 12:49:57Z marcus $
+// $Id: AIPlayerJH.cpp 9115 2014-01-29 12:50:40Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1565,7 +1565,7 @@ void AIPlayerJH::HandleNoMoreResourcesReachable(const Coords& coords, BuildingTy
 void AIPlayerJH::HandleShipBuilt(const Coords& coords)
 {
 	// Stop building ships if reached a maximum (TODO: make variable)
-	if (aii->GetShipCount() > 6||aii->GetShipCount()>=(3*aii->GetBuildings(BLD_SHIPYARD).size()))
+	if (((aii->GetShipCount() > 6||aii->GetShipCount()>=(3*aii->GetBuildings(BLD_SHIPYARD).size())) && GetCountofAIRelevantSeaIds()>1)||(GetCountofAIRelevantSeaIds()<2 && aii->GetShipCount() > gwb->GetHarborPointCount()))
 	{
 		MapCoord x=coords.x,y=coords.y;
 		unsigned mindist=255;
@@ -2335,4 +2335,36 @@ bool AIPlayerJH::ValidFishInRange(MapCoord x,MapCoord y)
 		}
 	}
 	return false;
+}
+
+unsigned AIPlayerJH::GetCountofAIRelevantSeaIds()
+{
+	std::list<unsigned short>validseaids;
+	std::list<unsigned short>onetimeuseseaids;
+	unsigned short sea_ids[6];
+	for(unsigned i=1;i<=gwb->GetHarborPointCount();i++)
+	{
+		//get sea ids of harbor id given		
+		gwb->GetSeaIDs(i,sea_ids);
+		for(unsigned r=0;r<6;r++)
+		{
+			if(sea_ids[r]>0)//there is a sea id? -> check if it is already a validid or a once found id
+			{
+				if(std::find(validseaids.begin(),validseaids.end(),sea_ids[r])==validseaids.end()) //not yet in validseas?
+				{
+					if(std::find(onetimeuseseaids.begin(),onetimeuseseaids.end(),sea_ids[r])==onetimeuseseaids.end()) //not yet in onetimeuseseaids?
+						onetimeuseseaids.push_back(sea_ids[r]);
+					else
+					{
+						//LOG.lprintf("found a second harbor at sea id %i \n",sea_ids[r]);
+						onetimeuseseaids.remove(sea_ids[r]);
+						validseaids.push_back(sea_ids[r]);
+					}
+				}
+				else
+					continue;
+			}
+		}
+	}
+	return validseaids.size();
 }

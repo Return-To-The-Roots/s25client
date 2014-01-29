@@ -1,4 +1,4 @@
-// $Id: AIConstruction.cpp 9112 2014-01-29 12:49:08Z marcus $
+// $Id: AIConstruction.cpp 9115 2014-01-29 12:50:40Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -555,7 +555,7 @@ void AIConstruction::InitBuildingsWanted()
 	buildingsWanted[BLD_HUNTER] = 2;
 	buildingsWanted[BLD_FARM] = aii->GetInventory()->goods[GD_SCYTHE] + aii->GetInventory()->people[JOB_FARMER];
 	buildingsWanted[BLD_HARBORBUILDING] = 99;
-	buildingsWanted[BLD_SHIPYARD] = 99;
+	buildingsWanted[BLD_SHIPYARD] = aijh->GetCountofAIRelevantSeaIds()==1?1:99;
 }
 
 bool AIConstruction::BuildAlternativeRoad(const noFlag *flag, std::vector<unsigned char> &route)

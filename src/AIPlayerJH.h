@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.h 9107 2014-01-29 12:45:21Z marcus $
+// $Id: AIPlayerJH.h 9115 2014-01-29 12:50:40Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -112,6 +112,9 @@ public:
 
 	/// Test whether the player should resign or not
 	bool TestDefeat();
+
+	///return number of sea_ids with at least 2 harbor spots
+	unsigned GetCountofAIRelevantSeaIds();
 protected:
 	struct Coords
 	{
