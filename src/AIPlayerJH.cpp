@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 9111 2014-01-29 12:48:43Z marcus $
+// $Id: AIPlayerJH.cpp 9113 2014-01-29 12:49:32Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1074,15 +1074,18 @@ void AIPlayerJH::CheckNewMilitaryBuildings()
 void AIPlayerJH::DistributeGoodsByBlocking(unsigned goodnumber,unsigned limit)
 {
 	bool validgoalexists=false;
-	for(std::list<nobBaseWarehouse*>::const_iterator it=aii->GetStorehouses().begin();it!=aii->GetStorehouses().end();it++)
+	if (aii->GetHarbors().size() < (aii->GetStorehouses().size()/2)) //dont distribute on maps that are mostly sea maps - harbors are too difficult to defend and have to handle quite a lot of traffic already
 	{
-		if ((*it)->GetInventory()->goods[goodnumber]<=limit)
+		for(std::list<nobBaseWarehouse*>::const_iterator it=aii->GetStorehouses().begin();it!=aii->GetStorehouses().end();it++)
 		{
-			validgoalexists=true;
-			break;
+			if ((*it)->GetInventory()->goods[goodnumber]<=limit)
+			{
+				validgoalexists=true;
+				break;
+			}
 		}
 	}
-	if (!validgoalexists) // more than limit everywhere -> unblock everywhere
+	if (!validgoalexists) // more than limit everywhere (or sea map) -> unblock everywhere
 	{
 		for(std::list<nobBaseWarehouse*>::const_iterator it=aii->GetStorehouses().begin();it!=aii->GetStorehouses().end();it++)
 		{
