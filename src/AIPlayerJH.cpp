@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 9115 2014-01-29 12:50:40Z marcus $
+// $Id: AIPlayerJH.cpp 9117 2014-01-29 13:52:31Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1455,8 +1455,11 @@ void AIPlayerJH::HandleExpedition(const Coords& coords)
 		{
 			if(static_cast<noShip*>(*it)->GetPlayer() == playerid)
 			{
-				if (static_cast<noShip*>(*it)->IsOnExpedition())
+				if (static_cast<noShip*>(*it)->IsWaitingForExpeditionInstructions())
+				{
 					ship = static_cast<noShip*>(*it);
+					break;
+				}
 			}
 		}
 	}

@@ -1,5 +1,5 @@
 ################################################################################
-### $Id: CMakeLists.txt 8920 2013-08-27 19:40:37Z marcus $
+### $Id: CMakeLists.txt 9117 2014-01-29 13:52:31Z marcus $
 ################################################################################
 
 INCLUDE(FindBZip2)
@@ -482,6 +482,7 @@ TARGET_LINK_LIBRARIES(s25client
 	s25util
 	mygettext
 	${BZIP2_LIBRARIES}
+	pthread
 	${OPENGL_gl_LIBRARY}
 	${LUA_LIB}
 )
