@@ -1,4 +1,4 @@
-// $Id: nofBuildingWorker.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: nofBuildingWorker.cpp 9109 2014-01-29 12:47:23Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -356,6 +356,9 @@ void nofBuildingWorker::LostWork()
  */
 bool nofBuildingWorker::GetResources(unsigned char type)
 {
+	//this makes granite mines work everywhere
+	if (type == 0 && GameClient::inst().GetGGS().isEnabled(ADDON_INEXHAUSTIBLE_GRANITEMINES))
+		return true;
 	// in Map-Resource-Koordinaten konvertieren
 	type = RESOURCES_MINE_TO_MAP[type];
 

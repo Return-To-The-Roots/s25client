@@ -1,4 +1,4 @@
-// $Id: const_addons.h 8920 2013-08-27 19:40:37Z marcus $
+// $Id: const_addons.h 9109 2014-01-29 12:47:23Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -67,7 +67,8 @@ enum AddonId
 
 	ADDON_TOOL_ORDERING             = 0x00600001,
 
-	ADDON_MILITARY_AID				= 0x00700000
+	ADDON_MILITARY_AID				= 0x00700000,
+	ADDON_INEXHAUSTIBLE_GRANITEMINES= 0x00800000
 };
 
 enum AddonGroup
