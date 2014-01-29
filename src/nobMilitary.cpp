@@ -1,4 +1,4 @@
-// $Id: nobMilitary.cpp 8918 2013-08-27 19:15:17Z marcus $
+// $Id: nobMilitary.cpp 9120 2014-01-29 13:54:18Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -288,8 +288,8 @@ void nobMilitary::HandleEvent(const unsigned int id)
 			// Wenn der nachfolgende (schwächere) Soldat einen niedrigeren Rang hat,
 			// wird dieser ebenfalls befördert usw.!
 
-			// Rang des letzten beförderten Soldaten, 4 am Anfang setzen, damit keine Generäle befördert werden
-			unsigned char last_rank = 4;
+			// Rang des letzten beförderten Soldaten, 4-MaxRank am Anfang setzen, damit keiner über den maximalen Rang befördert wird
+			unsigned char last_rank = 4-GameClient::inst().GetGGS().getSelection(ADDON_MAX_RANK);
 
 			for(list<nofPassiveSoldier*>::iterator it = troops.end();it.valid();--it)
 			{
@@ -305,7 +305,7 @@ void nobMilitary::HandleEvent(const unsigned int id)
 			}
 
 			// Wurde jemand befördert?
-			if(last_rank < 4)
+			if(last_rank < 4-GameClient::inst().GetGGS().getSelection(ADDON_MAX_RANK))
 			{
 				// Goldmünze verbrauchen
 				--coins;
@@ -1104,8 +1104,8 @@ unsigned nobMilitary::CalcCoinsPoints()
 	// Beförderbare Soldaten zählen
 	for(list<nofPassiveSoldier*>::iterator it = troops.begin();it.valid();++it)
 	{
-		// Solange es kein General (4) ist, kann der Soldat noch befördert werden
-		if((*it)->GetRank() < 4)
+		// Solange es kein Max Rank (default 4) ist, kann der Soldat noch befördert werden
+		if((*it)->GetRank() < 4-GameClient::inst().GetGGS().getSelection(ADDON_MAX_RANK))
 			points+=20;
 	}
 
@@ -1161,7 +1161,7 @@ void nobMilitary::PrepareUpgrading()
 
 	for(list<nofPassiveSoldier*>::iterator it = troops.begin();it.valid();++it)
 	{
-		if((*it)->GetRank() < 4)
+		if((*it)->GetRank() < 4-GameClient::inst().GetGGS().getSelection(ADDON_MAX_RANK))
 		{
 			// es wurde ein Soldat gefunden, der befördert werden kann
 			soldiers_available = true;

@@ -1,4 +1,4 @@
-// $Id: AIConstruction.cpp 9115 2014-01-29 12:50:40Z marcus $
+// $Id: AIConstruction.cpp 9120 2014-01-29 13:54:18Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -536,6 +536,10 @@ void AIConstruction::RefreshBuildingCount()
 			else
 				buildingsWanted[BLD_GRANITEMINE]=0;
 		}
+	}
+	if(aijh->ggs->getSelection(ADDON_MAX_RANK)>3)
+	{
+		buildingsWanted[BLD_GOLDMINE]=0; // max rank is 0 = private / recruit ==> gold is useless!
 	}
 }
 
