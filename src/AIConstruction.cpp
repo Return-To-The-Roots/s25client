@@ -1,4 +1,4 @@
-// $Id: AIConstruction.cpp 9107 2014-01-29 12:45:21Z marcus $
+// $Id: AIConstruction.cpp 9112 2014-01-29 12:49:08Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -531,7 +531,7 @@ void AIConstruction::RefreshBuildingCount()
 				if(aijh->ggs->isEnabled(ADDON_CHARBURNER) && (GetBuildingCount(BLD_COALMINE)<1 && (GetBuildingCount(BLD_IRONMINE)+GetBuildingCount(BLD_GOLDMINE)>0)))
 					buildingsWanted[BLD_CHARBURNER]=min<int>(1,resourcelimit);
 			}
-			if(aii->GetInventory()->goods[GD_STONES]<(50+GetBuildingCount(BLD_CATAPULT)*4) && GetBuildingCount(BLD_QUARRY)<4) //no more stones and no quarry -> try emergency granitemines.
+			if(GetBuildingCount(BLD_QUARRY)<4) //no quarry -> try granitemines.
 				buildingsWanted[BLD_GRANITEMINE] =(aii->GetInventory()->people[JOB_MINER]>6)? 5-GetBuildingCount(BLD_QUARRY):1;
 			else
 				buildingsWanted[BLD_GRANITEMINE]=0;

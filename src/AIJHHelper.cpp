@@ -1,4 +1,4 @@
-// $Id: AIJHHelper.cpp 9090 2014-01-25 10:35:32Z marcus $
+// $Id: AIJHHelper.cpp 9112 2014-01-29 12:49:08Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -191,7 +191,10 @@ void AIJH::BuildJob::TryToBuild()
 			foundPos = aijh->FindBestPosition(bx, by, AIJH::IRONORE, BQ_MINE, 11, true);
 			break;
 		case BLD_GRANITEMINE:
-			foundPos = aijh->FindBestPosition(bx, by, AIJH::GRANITE, BQ_MINE, 11, true);
+			if(!aijh->ggs->isEnabled(ADDON_INEXHAUSTIBLE_GRANITEMINES)) //inexhaustible granite mines do not require granite
+				foundPos = aijh->FindBestPosition(bx, by, AIJH::GRANITE, BQ_MINE, 11, true);
+			else
+				foundPos = aijh->SimpleFindPosition(bx, by, BQ_MINE, 11);
 			break;
 
 		case BLD_FISHERY:
