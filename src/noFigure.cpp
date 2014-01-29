@@ -1542,7 +1542,18 @@ void noFigure::Abrogate()
 {
 	// Arbeisplatz oder Laghaus Bescheid sagen
 	if(fs == FS_GOHOME)
-		static_cast<nobBaseWarehouse*>(goal)->RemoveDependentFigure(this);
+	{
+		if(goal) //goal might by NULL if goal was a harbor that got destroyed during sea travel
+			static_cast<nobBaseWarehouse*>(goal)->RemoveDependentFigure(this);
+		else 
+		{
+			if(!on_ship) //no goal but going home - should not happen
+			{
+				LOG.lprintf("noFigure::Abrogate - GOHOME figure has no goal and is not on a ship - player %i state %i pos %u,%u \n",player,fs,x,y);
+				//assert(false);
+			}
+		}
+	}
 	else
 		AbrogateWorkplace();
 }
