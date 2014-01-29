@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 9094 2014-01-25 10:37:37Z marcus $
+// $Id: AIPlayerJH.cpp 9107 2014-01-29 12:45:21Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -144,10 +144,16 @@ void AIPlayerJH::RunGF(const unsigned gf)
 		TrySeaAttack();
 	}
 
-	//if ((gf + playerid * 13) % 100 == 0)
-	//{
-	//	CheckNewMilitaryBuildings();
-	//}
+	if ((gf + playerid * 13) % 1500 == 0) // check expeditions (order new / cancel)
+	{
+		for(std::list<nobHarborBuilding*>::const_iterator it=aii->GetHarbors().begin();it!=aii->GetHarbors().end();it++)
+		{
+			if(((*it)->IsExpeditionActive() && !HarborPosRelevant((*it)->GetHarborPosID(),true))||(!(*it)->IsExpeditionActive() && HarborPosRelevant((*it)->GetHarborPosID(),true))) //harbor is collecting for expedition and shouldnt OR not collecting and should -> toggle expedition
+			{	
+				aii->StartExpedition((*it)->GetX(), (*it)->GetY()); //command is more of a toggle despite it's name
+			}
+		}			
+	}
 	if((gf+playerid*11)%150==0) 
 	{	//update tool creation settings
 		std::vector<unsigned char> toolsettings;
@@ -1401,23 +1407,12 @@ void AIPlayerJH::HandleBuildingFinished(const Coords& coords, BuildingType bld)
 	case BLD_HARBORBUILDING:
 		UpdateNodesAround(coords.x, coords.y, 8); // todo: fix radius
 		aii->SetDefenders(coords.x,coords.y,0,1); //order 1 defender to stay in the harborbuilding
-		//if(!BuildingNearby(coords.x,coords.y,BLD_SHIPYARD,8))
-		//{
-		//	AddBuildJob(BLD_SHIPYARD, coords.x, coords.y);
-		//}
-		//AddBuildJob(BLD_HARBORBUILDING, coords.x, coords.y);
-		//AddBuildJob(BLD_BARRACKS, coords.x, coords.y);
-		//AddBuildJob(BLD_WOODCUTTER, coords.x, coords.y);
-		//AddBuildJob(BLD_SAWMILL, coords.x, coords.y);
-		//AddBuildJob(BLD_QUARRY, coords.x, coords.y);
 
-		// stop beer, swords and shields -> hq only (todo: hq destroyed -> use another storehouse)
-		// can't do that on harbors... maybe production is on an island which is not the hq's
-		//aii->ChangeInventorySetting(coords.x, coords.y, 0, 2, 0);
-		//aii->ChangeInventorySetting(coords.x, coords.y, 0, 2, 16);
-		//aii->ChangeInventorySetting(coords.x, coords.y, 0, 2, 21);
-
-		aii->StartExpedition(coords.x, coords.y);
+		//if there are positions free start an expedition!
+		if(HarborPosRelevant(gwb->GetHarborPointID(coords.x,coords.y),true))
+		{
+			aii->StartExpedition(coords.x, coords.y);
+		}		
 		break;
 
 	case BLD_SHIPYARD:
@@ -2239,7 +2234,7 @@ bool AIPlayerJH::HarborPosClose(MapCoord x,MapCoord y,unsigned range,bool onlyem
 	return false;
 }
 
-bool AIPlayerJH::HarborPosRelevant(unsigned harborid)
+bool AIPlayerJH::HarborPosRelevant(unsigned harborid,bool onlyempty)
 {
 	if(harborid<1||harborid>gwb->GetHarborPointCount()) //not a real harbor - shouldnt happen...
 	{
@@ -2256,7 +2251,17 @@ bool AIPlayerJH::HarborPosRelevant(unsigned harborid)
 			for(unsigned i=1;i<=gwb->GetHarborPointCount();i++) //start at 1 harbor dummy yadayada :>
 			{
 				if(i!=harborid && gwb->IsAtThisSea(i,sea_ids[r]))
-					return true;
+				{
+					if(onlyempty) //check if the spot is actually free for colonization?
+					{
+						if(gwb->IsHarborPointFree(i,playerid,sea_ids[r]))
+						{
+							return true;
+						}
+					}
+					else
+						return true;
+				}
 			}
 		}
 	}

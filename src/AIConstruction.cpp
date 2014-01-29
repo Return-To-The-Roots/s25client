@@ -1,4 +1,4 @@
-// $Id: AIConstruction.cpp 9100 2014-01-25 16:55:02Z marcus $
+// $Id: AIConstruction.cpp 9107 2014-01-29 12:45:21Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -353,13 +353,13 @@ BuildingType AIConstruction::ChooseMilitaryBuilding(MapCoord x, MapCoord y)
 			unsigned  militaryBuildingCount = GetBuildingCount(BLD_BARRACKS) + GetBuildingCount(BLD_GUARDHOUSE)
 				+ GetBuildingCount(BLD_WATCHTOWER) + GetBuildingCount(BLD_FORTRESS);
 			//another catapult within "min" radius? ->dont build here!
-			unsigned min=20;
+			unsigned min=16;
 			nobBaseWarehouse* wh=(*aii->GetStorehouses().begin());
 			if (aii->CalcDistance(x,y,wh->GetX(),wh->GetY())<min)
 				min=0;
-			for(std::list<nobMilitary*>::const_iterator it=aii->GetMilitaryBuildings().begin(); min>0 && it!=aii->GetMilitaryBuildings().end();it++)
+			for(std::list<nobUsual*>::const_iterator it=aii->GetBuildings(BLD_CATAPULT).begin(); min>0 && it!=aii->GetBuildings(BLD_CATAPULT).end();it++)
 			{
-				if(aii->CalcDistance(x,y,(*it)->GetX(),(*it)->GetY())<min && (*it)->GetBuildingType()==BLD_CATAPULT)		
+				if(aii->CalcDistance(x,y,(*it)->GetX(),(*it)->GetY())<min)
 					min=0;
 			}
 			for(std::list<noBuildingSite*>::const_iterator it=aii->GetBuildingSites().begin(); min>0 && it!=aii->GetBuildingSites().end();it++)
@@ -415,8 +415,7 @@ void AIConstruction::RefreshBuildingCount()
 {
 	unsigned resourcelimit=0; //variables to make this more readable for humans
 	unsigned bonuswant=0;
-// not used:
-//	unsigned foodusers=GetBuildingCount(BLD_IRONMINE)+GetBuildingCount(BLD_COALMINE)+GetBuildingCount(BLD_GRANITEMINE)+GetBuildingCount(BLD_GOLDMINE)+GetBuildingCount(BLD_CHARBURNER);
+	//unsigned foodusers=GetBuildingCount(BLD_IRONMINE)+GetBuildingCount(BLD_COALMINE)+GetBuildingCount(BLD_GRANITEMINE)+GetBuildingCount(BLD_GOLDMINE)+GetBuildingCount(BLD_CHARBURNER);
 
 	aii->GetBuildingCount(buildingCounts);
 	//no military buildings -> usually start only
@@ -479,7 +478,10 @@ void AIConstruction::RefreshBuildingCount()
 		//metalworks is 1 if there is at least 1 smelter, 2 if mines are inexhaustible and we have at least 4 ironsmelters
 		buildingsWanted[BLD_METALWORKS] = (GetBuildingCount(BLD_IRONSMELTER) > 0) ? 1 : 0 ;
 			
-		buildingsWanted[BLD_MILL] = min(buildingCounts.building_counts[BLD_FARM]-(buildingCounts.building_counts[BLD_PIGFARM] + buildingCounts.building_counts[BLD_DONKEYBREEDER] + buildingCounts.building_counts[BLD_BREWERY]),GetBuildingCount(BLD_BAKERY)+1);
+		if(buildingCounts.building_counts[BLD_FARM] >= buildingCounts.building_counts[BLD_PIGFARM] + buildingCounts.building_counts[BLD_DONKEYBREEDER] + buildingCounts.building_counts[BLD_BREWERY])
+			buildingsWanted[BLD_MILL] = min(buildingCounts.building_counts[BLD_FARM]-(buildingCounts.building_counts[BLD_PIGFARM] + buildingCounts.building_counts[BLD_DONKEYBREEDER] + buildingCounts.building_counts[BLD_BREWERY]),GetBuildingCount(BLD_BAKERY)+1);
+		else
+			buildingsWanted[BLD_MILL]=buildingCounts.building_counts[BLD_MILL];
 
 		resourcelimit=aii->GetInventory()->people[JOB_BAKER]+aii->GetInventory()->goods[GD_ROLLINGPIN]+1;
 		buildingsWanted[BLD_BAKERY] = min<unsigned>(GetBuildingCount(BLD_MILL),resourcelimit);
