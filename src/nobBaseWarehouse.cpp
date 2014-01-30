@@ -1,4 +1,4 @@
-// $Id: nobBaseWarehouse.cpp 8918 2013-08-27 19:15:17Z marcus $
+// $Id: nobBaseWarehouse.cpp 9123 2014-01-30 11:36:17Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1190,10 +1190,11 @@ bool FW::Condition_StoreAndDontWantWare(nobBaseWarehouse * wh, const void * para
 	return (Condition_Ware(wh,&pw) && !Condition_WantStoreWare(wh,param));
 }// param = &GoodType -> Warentyp
 
+// Warehouse does not collect the job and has job in store
 bool FW::Condition_StoreAndDontWantFigure(nobBaseWarehouse * wh, const void * param)
 {
-	Param_Job pj = { *static_cast<const Job*>(param), 1 };
-	return (Condition_Job(wh,&pj) && !Condition_WantStoreFigure(wh,param));
+	Job job = *static_cast<const Job*>(param);
+	return ((wh->GetRealFiguresCount(job) >= 1) && !Condition_WantStoreFigure(wh,param));
 }
 // param = &Job -> Jobtyp
 

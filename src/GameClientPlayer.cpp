@@ -1,4 +1,4 @@
-// $Id: GameClientPlayer.cpp 8918 2013-08-27 19:15:17Z marcus $
+// $Id: GameClientPlayer.cpp 9123 2014-01-30 11:36:17Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -463,7 +463,7 @@ nobBaseWarehouse * GameClientPlayer::FindWarehouse(const noRoadNode * const star
 		// Lagerhaus geeignet?
 		if(IsWarehouseGood(*w,param))
 		{
-			// Bei der erlaubten Benutzung von BootsstraÃen Waren-Pathfinding benutzen
+			// Bei der erlaubten Benutzung von BootsstraÃen Waren-Pathfinding benutzen wenns zu nem Lagerhaus gehn soll start <-> ziel tauschen bei der wegfindung
 			if(gwg->FindPathOnRoads(to_wh ? start : *w, to_wh ? *w : start,use_boat_roads,&tlength,NULL, NULL,forbidden))
 			{
 				if(tlength < best_length || !best)
