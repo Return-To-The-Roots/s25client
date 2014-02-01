@@ -1,3 +1,156 @@
+s25rttr (20140131-9124.297) karmic; urgency=low
+
+  * Automatic Jenkins Build 297
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Fri, 31 Jan 2014 01:10:29 +0100
+
+s25rttr (20140131-9124) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Fri, 31 Jan 2014 00:00:00 +0100
+
+s25rttr (20140130-9123) any; urgency=low
+
+  * AIpoc 9081
+    fix for bug: collecting workers fails
+    requirement for bug:
+    - warehouses a,b,c;
+    - a collects job x, b contains at least 1 tool for job x and no
+    job x, c contains job x
+    - distance (a,b) < distance (a,c)
+
+ -- marcus  Thu, 30 Jan 2014 11:36:00 +0100
+
+s25rttr (20140129-9121.296) karmic; urgency=low
+
+  * Automatic Jenkins Build 296
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Wed, 29 Jan 2014 15:30:16 +0100
+
+s25rttr (20140129-9121) any; urgency=low
+
+  * src/CMakeLists.txt update / added missing files
+
+ -- marcus  Wed, 29 Jan 2014 13:57:00 +0100
+
+s25rttr (20140129-9120) any; urgency=low
+
+  * AIpoc 9080
+    new addon: max rank
+    ai checks the selection in the new addon and when max rank is set
+    to private no resources are wasted on goldmines/mints
+    vs2010 project files updated to include the new addon file
+
+ -- marcus  Wed, 29 Jan 2014 13:54:00 +0100
+
+s25rttr (20140129-9119) any; urgency=low
+
+  * AIpoc 9079
+    ship trouble handling changed
+
+ -- marcus  Wed, 29 Jan 2014 13:53:00 +0100
+
+s25rttr (20140129-9118) any; urgency=low
+
+  * AIpoc r9078
+    fix for bug: destruction of a goal harbor of a GOHOME figure on a
+    ship results in crash
+
+ -- marcus  Wed, 29 Jan 2014 13:52:00 +0100
+
+s25rttr (20140129-9117) any; urgency=low
+
+  * AIpoc r9077
+    fix for bug: ai attempts to give expedition order to a ship not
+    waiting for expedition orders
+
+ -- marcus  Wed, 29 Jan 2014 13:52:00 +0100
+
+s25rttr (20140129-9116) any; urgency=low
+
+  * AIpoc r9076
+    reset pos for route of ships when during the return travel of a
+    canceled expedition the home harbor is lost
+
+ -- marcus  Wed, 29 Jan 2014 12:51:00 +0100
+
+s25rttr (20140129-9115) any; urgency=low
+
+  * AIpoc r9075
+    ai will now only construct 1 shipyard on maps with just 1 sea
+
+ -- marcus  Wed, 29 Jan 2014 12:50:00 +0100
+
+s25rttr (20140129-9114) any; urgency=low
+
+  * AIpoc 9074
+    ai now only collects helpers when necessary
+
+ -- marcus  Wed, 29 Jan 2014 12:49:00 +0100
+
+s25rttr (20140129-9113) any; urgency=low
+
+  * AIpoc 9073
+    ai - dont distribute wares on sea maps
+
+ -- marcus  Wed, 29 Jan 2014 12:49:00 +0100
+
+s25rttr (20140129-9112) any; urgency=low
+
+  * AIpoc 9072
+    explained to the ai how to use the inexhaustible granite mines
+    addon
+
+ -- marcus  Wed, 29 Jan 2014 12:49:00 +0100
+
+s25rttr (20140129-9111) any; urgency=low
+
+  * AIpoc 9071
+    ai sea attacks on undefended harbors no longer sort by harbor id
+    - now ai attacks a random undefended target instead
+
+ -- marcus  Wed, 29 Jan 2014 12:48:00 +0100
+
+s25rttr (20140129-9110) any; urgency=low
+
+  * AIpoc r9070
+    win32 stuff
+
+ -- marcus  Wed, 29 Jan 2014 12:48:00 +0100
+
+s25rttr (20140129-9109) any; urgency=low
+
+  * AIpoc r9070
+    Spikeone: addon inexhaustible granite mines
+    updated vs2010 project files
+
+ -- marcus  Wed, 29 Jan 2014 12:47:00 +0100
+
+s25rttr (20140129-9108) any; urgency=low
+
+  * AIpoc r9069
+    notify ai about failed founding of a colony (location blocked
+    after command was issued but prior to next network frame)
+    ai should now at least sometimes reconnect a roadsystem to a
+    harbor rebuild by expedition
+
+ -- marcus  Wed, 29 Jan 2014 12:46:00 +0100
+
+s25rttr (20140129-9107) any; urgency=low
+
+  * AIpoc r9068
+    ai expedition start/cancel handling added
+    catapult cluster construction fixed
+
+ -- marcus  Wed, 29 Jan 2014 12:45:00 +0100
+
+s25rttr (20140125-9102) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 25 Jan 2014 23:00:00 +0100
+
 s25rttr (20140125-9101.295) karmic; urgency=low
 
   * Automatic Jenkins Build 295
