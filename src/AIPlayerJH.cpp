@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 9117 2014-01-29 13:52:31Z marcus $
+// $Id: AIPlayerJH.cpp 9130 2014-02-02 14:33:08Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -242,7 +242,7 @@ void AIPlayerJH::RunGF(const unsigned gf)
 			aii->ChangeInventorySetting(wh->GetX(),wh->GetY(),0,8,16); //x of warehouse, y of warehouse, "pagenumber", "setting", good or figure number (check the lists)
 			aii->ChangeInventorySetting(wh->GetX(),wh->GetY(),0,8,21); //checks stuff with: return (current setting & compare setting == compare setting); <- so dont check for setting 0			
 		}
-		if((wh->CheckRealInventorySettings(1,8,0) && wh->GetInventory()->people[JOB_HELPER]>50) || (!wh->CheckRealInventorySettings(1,8,0) && !wh->GetInventory()->people[JOB_HELPER]>50))
+		if((wh->CheckRealInventorySettings(1,8,0) && (wh->GetInventory()->people[JOB_HELPER]>50)) || (!wh->CheckRealInventorySettings(1,8,0) && !(wh->GetInventory()->people[JOB_HELPER]>50)))
 		{
 			aii->ChangeInventorySetting(wh->GetX(),wh->GetY(),1,8,0); //less than 50 helpers - collect them: more than 50 stop collecting
 		}

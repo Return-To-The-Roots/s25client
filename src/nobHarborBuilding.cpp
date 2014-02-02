@@ -1,4 +1,4 @@
-// $Id: nobHarborBuilding.cpp 9129 2014-02-02 14:32:28Z marcus $
+// $Id: nobHarborBuilding.cpp 9130 2014-02-02 14:33:08Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -128,8 +128,17 @@ void nobHarborBuilding::Destroy()
 		// Und Bauarbeiter (später) rausschicken
 		if(expedition.builder)
 			++real_goods.people[JOB_BUILDER];
+		else
+			gwg->GetPlayer(player)->OneJobNotWanted(JOB_BUILDER,this);
 	}
-
+	//cancel order for scouts
+	if(exploration_expedition.active)
+	{
+		for(int i=exploration_expedition.scouts; i<SCOUTS_EXPLORATION_EXPEDITION; i++)
+		{
+			gwg->GetPlayer(player)->OneJobNotWanted(JOB_SCOUT,this);
+		}
+	}
 	// Waiting Wares löschen
 	for(std::list<Ware*>::iterator it = wares_for_ships.begin();it!=wares_for_ships.end();++it)
 	{
@@ -355,7 +364,7 @@ void nobHarborBuilding::StartExpedition()
 		}
 		else //todo falls noch nicht da - unterscheiden ob unterwegs oder nur bestellt - falls bestellt stornieren sonst informieren damit kein ersatz geschickt wird falls was nicht klappt aufm weg
 		{
-
+			gwg->GetPlayer(player)->OneJobNotWanted(JOB_BUILDER,this);
 		}
 
 		return;
@@ -426,7 +435,11 @@ void nobHarborBuilding::StartExplorationExpedition()
 	{
 		// Dann diese stoppen
 		exploration_expedition.active = false;
-		//todo notify scouts on their way, cancel order for scouts
+		// cancel order for scouts
+		for(int i=exploration_expedition.scouts; i<SCOUTS_EXPLORATION_EXPEDITION; i++)
+		{
+			gwg->GetPlayer(player)->OneJobNotWanted(JOB_SCOUT,this);
+		}
 		// Erkunder zurücktransferieren
 		if(exploration_expedition.scouts)
 		{
@@ -629,7 +642,7 @@ void nobHarborBuilding::ShipArrived(noShip * ship)
 		}
 		for(std::list<Ware*>::iterator it=wares_for_ships.begin();!gotdest&&it!=wares_for_ships.end();it++)
 		{
-			noBase * nb = gwg->GetNO((*it)->GetNextHarbor().x,(*it)->GetNextHarbor().y);
+			noBase * nb = gwg->GetNO((*it)->GetNextHarbor().x,(*it)->GetNextHarbor().y);			
 			if(nb->GetGOT() == GOT_NOB_HARBORBUILDING && gwg->GetNode((*it)->GetNextHarbor().x,(*it)->GetNextHarbor().y).owner==player+1)
 			{
 				dest=(*it)->GetNextHarbor();

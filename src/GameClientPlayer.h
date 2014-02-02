@@ -1,4 +1,4 @@
-// $Id: GameClientPlayer.h 8918 2013-08-27 19:15:17Z marcus $
+// $Id: GameClientPlayer.h 9130 2014-02-02 14:33:08Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -240,6 +240,8 @@ public:
 	void AddJobWanted(const Job job,noRoadNode * workplace);
 	/// Entfernt ihn wieder aus der Liste (wenn er dann doch nich mehr gebraucht wird)
 	void JobNotWanted(noRoadNode * workplace);
+	/// Entfernt einen ausgesuchten Job wieder aus der Liste (wenn er dann doch nich mehr gebraucht wird)
+	void OneJobNotWanted(const Job job,noRoadNode * workplace);
 	/// Versucht für alle Arbeitsplätze eine Arbeitskraft zu suchen
 	void FindWarehouseForAllJobs(const Job job);
 	/// Versucht für alle verlorenen Waren ohne Ziel Lagerhaus zu finden

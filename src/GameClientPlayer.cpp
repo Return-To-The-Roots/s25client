@@ -1,4 +1,4 @@
-// $Id: GameClientPlayer.cpp 9123 2014-01-30 11:36:17Z marcus $
+// $Id: GameClientPlayer.cpp 9130 2014-02-02 14:33:08Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -752,6 +752,18 @@ void GameClientPlayer::JobNotWanted(noRoadNode * workplace)
 	for(std::list<JobNeeded>::iterator it = jobs_wanted.begin(); it!=jobs_wanted.end(); ++it)
 	{
 		if(it->workplace == workplace)
+		{
+			jobs_wanted.erase(it);
+			return;
+		}
+	}
+}
+
+void GameClientPlayer::OneJobNotWanted(const Job job,noRoadNode * workplace)
+{
+	for(std::list<JobNeeded>::iterator it = jobs_wanted.begin(); it!=jobs_wanted.end(); ++it)
+	{
+		if(it->workplace == workplace && it->job == job)
 		{
 			jobs_wanted.erase(it);
 			return;
