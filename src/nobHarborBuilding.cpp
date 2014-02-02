@@ -1,4 +1,4 @@
-// $Id: nobHarborBuilding.cpp 9093 2014-01-25 10:37:13Z marcus $
+// $Id: nobHarborBuilding.cpp 9128 2014-02-02 14:31:58Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -353,6 +353,10 @@ void nobHarborBuilding::StartExpedition()
 			// Evtl. Abnehmer für die Figur wieder finden
 			gwg->GetPlayer(player)->FindWarehouseForAllJobs(JOB_BUILDER);
 		}
+		else //todo falls noch nicht da - unterscheiden ob unterwegs oder nur bestellt - falls bestellt stornieren sonst informieren damit kein ersatz geschickt wird falls was nicht klappt aufm weg
+		{
+
+		}
 
 		return;
 	}
@@ -377,9 +381,32 @@ void nobHarborBuilding::StartExpedition()
 	}
 	else
 	{
+		bool convert=true;
 		expedition.builder = false;
-		// Bauarbeiter bestellen
-		gwg->GetPlayer(player)->AddJobWanted(JOB_BUILDER,this);
+		//got a builder in ANY storehouse?
+		for(std::list<nobBaseWarehouse*>::const_iterator it=gwg->GetPlayer(player)->GetStorehouses().begin();it!=gwg->GetPlayer(player)->GetStorehouses().end();it++)
+		{
+			if((*it)->GetRealFiguresCount(JOB_BUILDER))
+			{
+				convert=false;
+				break;
+			}
+		}
+		if(convert && real_goods.goods[GD_HAMMER] && real_goods.people[JOB_HELPER]>1) //maybe have a hammer & helper to create our own builder?
+		{
+			--real_goods.goods[GD_HAMMER];
+			--goods.goods[GD_HAMMER];
+			gwg->GetPlayer(player)->DecreaseInventoryWare(GD_HAMMER,1);
+			--real_goods.people[JOB_HELPER];
+			--goods.people[JOB_HELPER];
+			gwg->GetPlayer(player)->DecreaseInventoryJob(JOB_HELPER,1);
+			
+			gwg->GetPlayer(player)->IncreaseInventoryJob(JOB_BUILDER,1);
+			expedition.builder=true;
+		}		
+		// not in harbor, and didnt have to or couldnt convert so order a builder
+		if(!expedition.builder)
+			gwg->GetPlayer(player)->AddJobWanted(JOB_BUILDER,this);
 	}
 
 	// Ggf. Waren bestellen, die noch fehlen
@@ -399,7 +426,7 @@ void nobHarborBuilding::StartExplorationExpedition()
 	{
 		// Dann diese stoppen
 		exploration_expedition.active = false;
-
+		//todo notify scouts on their way, cancel order for scouts
 		// Erkunder zurücktransferieren
 		if(exploration_expedition.scouts)
 		{
@@ -422,10 +449,39 @@ void nobHarborBuilding::StartExplorationExpedition()
 
 		real_goods.people[JOB_SCOUT] -= exploration_expedition.scouts;
 	}
-
-	// Den Rest bestellen
-	for(unsigned i = exploration_expedition.scouts;i<SCOUTS_EXPLORATION_EXPEDITION;++i)
-		gwg->GetPlayer(player)->AddJobWanted(JOB_SCOUT,this);
+	if(exploration_expedition.scouts < SCOUTS_EXPLORATION_EXPEDITION)
+	{
+		unsigned missing=SCOUTS_EXPLORATION_EXPEDITION-exploration_expedition.scouts;
+		//got scouts in ANY storehouse?
+		for(std::list<nobBaseWarehouse*>::const_iterator it=gwg->GetPlayer(player)->GetStorehouses().begin();it!=gwg->GetPlayer(player)->GetStorehouses().end();it++)
+		{
+			if((*it)->GetRealFiguresCount(JOB_SCOUT))
+			{
+				(*it)->GetRealFiguresCount(JOB_SCOUT)>=missing ? missing=0 : missing -= (*it)->GetRealFiguresCount(JOB_SCOUT);
+				if (!missing)
+					break;
+			}
+		}
+		while(missing && real_goods.goods[GD_BOW] && real_goods.people[JOB_HELPER]>1) //maybe have bows & helpers to create our own scouts?
+		{
+			--real_goods.goods[GD_BOW];
+			--goods.goods[GD_BOW];
+			gwg->GetPlayer(player)->DecreaseInventoryWare(GD_BOW,1);
+			--real_goods.people[JOB_HELPER];
+			--goods.people[JOB_HELPER];
+			gwg->GetPlayer(player)->DecreaseInventoryJob(JOB_HELPER,1);
+			
+			++goods.people[JOB_SCOUT];
+			gwg->GetPlayer(player)->IncreaseInventoryJob(JOB_SCOUT,1);
+			missing--;
+			exploration_expedition.scouts++;
+		}		
+		// not in harbor, and didnt have to or couldnt convert so order scouts
+		// Den Rest bestellen
+		for(unsigned i = exploration_expedition.scouts;i<SCOUTS_EXPLORATION_EXPEDITION;++i)
+			gwg->GetPlayer(player)->AddJobWanted(JOB_SCOUT,this);
+	}
+	
 		
 	CheckExplorationExpeditionReady();
 
@@ -435,6 +491,8 @@ void nobHarborBuilding::StartExplorationExpedition()
 /// Bestellt die zusätzlichen erforderlichen Waren für eine Expedition
 void nobHarborBuilding::OrderExpeditionWares()
 {
+	if(!expedition.active) //expedition no longer active?
+		return;
 	// Waren in der Bestellungsliste mit beachten
 	unsigned boards = 0, stones = 0;
 	for(list<Ware*>::iterator it = dependent_wares.begin();it.valid();++it)
