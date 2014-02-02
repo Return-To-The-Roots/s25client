@@ -1,4 +1,4 @@
-// $Id: nobHarborBuilding.cpp 9128 2014-02-02 14:31:58Z marcus $
+// $Id: nobHarborBuilding.cpp 9129 2014-02-02 14:32:28Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -564,9 +564,30 @@ void nobHarborBuilding::WareLost(Ware * ware)
 /// Schiff ist angekommen
 void nobHarborBuilding::ShipArrived(noShip * ship)
 {
-	// Verfügbare Aufgaben abklappern
-
-	// Steht Expedition zum Start bereit?
+	// get a new job - priority is given according to this list: attack,expedition,exploration,transport
+	// any attackers ready?
+	if(soldiers_for_ships.size())
+	{
+		// load all soldiers that share the same target as the first soldier in the list
+		std::list<noFigure*> attackers;
+		Point<MapCoord> ship_dest = soldiers_for_ships.begin()->dest;
+		
+		for(std::list<SoldierForShip>::iterator it = soldiers_for_ships.begin();it!=soldiers_for_ships.end();)
+		{
+			if(it->dest == ship_dest)
+			{
+				--goods.people[it->attacker->GetJobType()];
+				attackers.push_back(it->attacker);
+				it = soldiers_for_ships.erase(it);				
+			}
+			else
+				++it;		
+		}
+		
+		ship->PrepareSeaAttack(ship_dest,attackers);
+		return;
+	}
+	//Expedition ready?
 	if(expedition.active && expedition.builder 
 		&& expedition.boards == BUILDING_COSTS[nation][BLD_HARBORBUILDING].boards
 		&& expedition.stones == BUILDING_COSTS[nation][BLD_HARBORBUILDING].stones)
@@ -575,9 +596,10 @@ void nobHarborBuilding::ShipArrived(noShip * ship)
 		expedition.active = false;
 		// Expedition starten
 		ship->StartExpedition();
+		return;
 	}
-	// Oder auch eine Erkundungs-Expedition
-	else if(IsExplorationExpeditionReady())
+	// Exploration-Expedition ready?
+	if(IsExplorationExpeditionReady())
 	{
 		// Aufräumen am Hafen
 		exploration_expedition.active = false;
@@ -585,10 +607,11 @@ void nobHarborBuilding::ShipArrived(noShip * ship)
 		ship->StartExplorationExpedition();
 		assert(goods.people[JOB_SCOUT] >= exploration_expedition.scouts);
 		goods.people[JOB_SCOUT] -= exploration_expedition.scouts;
+		return;
 		
 	}
 	// Gibt es Waren oder Figuren, die ein Schiff von hier aus nutzen wollen?
-	else if(wares_for_ships.size() || figures_for_ships.size())
+	if(wares_for_ships.size() || figures_for_ships.size())
 	{
 		// Das Ziel wird nach der ersten Figur bzw. ersten Ware gewählt
 		// actually since the wares might not yet have informed the harbor that their target harbor was destroyed we pick the first figure/ware with a valid target instead
@@ -597,7 +620,7 @@ void nobHarborBuilding::ShipArrived(noShip * ship)
 		for(std::list<FigureForShip>::iterator it=figures_for_ships.begin();it!=figures_for_ships.end();it++)
 		{
 			noBase * nb = gwg->GetNO(it->dest.x,it->dest.y);
-			if(nb->GetGOT() == GOT_NOB_HARBORBUILDING)
+			if(nb->GetGOT() == GOT_NOB_HARBORBUILDING && gwg->GetNode(it->dest.x,it->dest.y).owner==player+1) //target is a harbor and owned by the same player
 			{
 				dest=it->dest;
 				gotdest=true;
@@ -607,7 +630,7 @@ void nobHarborBuilding::ShipArrived(noShip * ship)
 		for(std::list<Ware*>::iterator it=wares_for_ships.begin();!gotdest&&it!=wares_for_ships.end();it++)
 		{
 			noBase * nb = gwg->GetNO((*it)->GetNextHarbor().x,(*it)->GetNextHarbor().y);
-			if(nb->GetGOT() == GOT_NOB_HARBORBUILDING)
+			if(nb->GetGOT() == GOT_NOB_HARBORBUILDING && gwg->GetNode((*it)->GetNextHarbor().x,(*it)->GetNextHarbor().y).owner==player+1)
 			{
 				dest=(*it)->GetNextHarbor();
 				gotdest=true;
@@ -652,55 +675,8 @@ void nobHarborBuilding::ShipArrived(noShip * ship)
 			}
 
 			// Und das Schiff starten lassen
-			ship->PrepareTransport(dest,figures,wares);
-		}// Oder vielleicht Schiffs-Angreifer? (copy paste of the last part)
-		else if(soldiers_for_ships.size())
-		{
-			// Ein Ziel (das des ersten Soldaten in der Liste) auswählen und alle übrigen
-			// Soldaten mit dem gleichen Ziel mit auf das Schiff laden
-			std::list<noFigure*> attackers;
-			Point<MapCoord> ship_dest = soldiers_for_ships.begin()->dest;
-			
-			for(std::list<SoldierForShip>::iterator it = soldiers_for_ships.begin();it!=soldiers_for_ships.end();)
-			{
-				if(it->dest == ship_dest)
-				{
-					--goods.people[it->attacker->GetJobType()];
-					attackers.push_back(it->attacker);
-					it = soldiers_for_ships.erase(it);
-					
-				}
-				else
-					++it;
-			
-			}
-			
-			ship->PrepareSeaAttack(ship_dest,attackers);
-		}
-		
-	}
-	// Oder vielleicht Schiffs-Angreifer?
-	else if(soldiers_for_ships.size())
-	{
-		// Ein Ziel (das des ersten Soldaten in der Liste) auswählen und alle übrigen
-		// Soldaten mit dem gleichen Ziel mit auf das Schiff laden
-		std::list<noFigure*> attackers;
-		Point<MapCoord> ship_dest = soldiers_for_ships.begin()->dest;
-		
-		for(std::list<SoldierForShip>::iterator it = soldiers_for_ships.begin();it!=soldiers_for_ships.end();)
-		{
-			if(it->dest == ship_dest)
-			{
-				--goods.people[it->attacker->GetJobType()];
-				attackers.push_back(it->attacker);
-				it = soldiers_for_ships.erase(it);
-				
-			}
-			else
-				++it;
-		}
-		
-		ship->PrepareSeaAttack(ship_dest,attackers);
+			ship->PrepareTransport(dest,figures,wares);			
+		}		
 	}
 }
 
