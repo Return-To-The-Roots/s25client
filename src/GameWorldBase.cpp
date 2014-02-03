@@ -1,4 +1,4 @@
-// $Id: GameWorldBase.cpp 9095 2014-01-25 10:38:01Z marcus $
+// $Id: GameWorldBase.cpp 9132 2014-02-03 15:36:20Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -692,17 +692,10 @@ BuildingQuality GameWorldBase::CalcBQ(const MapCoord x, const MapCoord y,const u
 					val = BQ_FLAG;
 			}
 		}
-	}
-	else
+	} else if ((th=GetNodeAround(x,y,4).altitude) > ph)
 	{
-		for(unsigned i = 0;i<6;++i)
-		{
-			if(i > 3 && i!=5 && (th=GetNodeAround(x,y,i).altitude) > ph)
-			{
-				if(th - ph > 3)
-					val = BQ_FLAG;
-			}
-		}
+		if(th - ph > 3)
+			val = BQ_FLAG;
 	}
 
 	//////////////////////////////////////////
@@ -776,13 +769,6 @@ BuildingQuality GameWorldBase::CalcBQ(const MapCoord x, const MapCoord y,const u
 		return BQ_NOTHING;
 	if(GetNO(GetXA(x,y,5),GetYA(x,y,5))->GetBM() == noBase::BM_FLAG)
 		return BQ_NOTHING;
-
-
-	if(val != BQ_FLAG)
-	{
-		if(GetNO(GetXA(x,y,5),GetYA(x,y,5))->GetBM() == noBase::BM_FLAG)
-			val = BQ_FLAG;
-	}
 
 	// Gebäude
 	if(val == BQ_CASTLE)
