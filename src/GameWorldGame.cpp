@@ -1,4 +1,4 @@
-// $Id: GameWorldGame.cpp 8374 2012-10-04 13:29:17Z marcus $
+// $Id: GameWorldGame.cpp 9134 2014-02-04 08:26:41Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1783,19 +1783,6 @@ unsigned short GameWorldGame::GetHarborPosID(const MapCoord x, const MapCoord y)
 	return 0;
 }
 
-// Struktur für die Breitensuche zum Finden der jeweiligen Hafenpos-Nachbarn
-struct DepthFirstSearchNode
-{
-	// Richtige Position des Punktes
-	Point<int> real_pos;
-	// Vorgänger
-	Point<MapCoord> pre;
-	// Entfernung bis hierhin
-	unsigned way;
-	// Von welcher Richtung wir gekommen sind
-	unsigned char dir;
-};
-
 /// Bestimmt die Schifffahrtrichtung, in der ein Punkt relativ zu einem anderen liegt 
 unsigned char GameWorldGame::GetShipDir(Point<int> pos1, Point<int> pos2)
 {
@@ -1830,101 +1817,102 @@ unsigned char GameWorldGame::GetShipDir(Point<int> pos1, Point<int> pos2)
 	
 }
 
-/// Berechnet für alle Hafenpunkt jeweils die Richtung und Entfernung zu allen anderen Hafenpunkten
-/// über die Kartenränder hinweg
+// class for finding harbor neighbors
+class CalcHarborPosNeighborsNode
+{
+public:
+	CalcHarborPosNeighborsNode() {}
+	CalcHarborPosNeighborsNode(MapCoord x, MapCoord y, unsigned way) : x(x), y(y), way(way) {}
+
+	MapCoord x, y;
+	unsigned way;
+};
+
+/// Calculate the distance from each harbor to the others
 void GameWorldGame::CalcHarborPosNeighbors()
 {
-	std::vector<DepthFirstSearchNode> nodes(width*height);
-	
-	for(unsigned i = 1;i<harbor_pos.size();++i)
+	// A high performance open list:
+	// - open list is sorted through the way we insert points (we always only add score + 1 to the end of the list)
+	// - completed points are just skipped (todo_offset)
+	size_t todo_offset = 0;
+	size_t todo_length = 0;
+	std::vector<CalcHarborPosNeighborsNode> todo_list(width*height);
+
+	// pre-calculate sea-points, as IsSeaPoint is rather expensive
+	std::vector<unsigned int> flags_init(width * height);
+
+	for (size_t x = 0; x < width; x++)
 	{
-		// Häfen, die gefunden wurden
-		std::vector<bool> visited_harbor_pos(harbor_pos.size(),false);
-		// Den Ausgangshafen als gefunden setzen, damit wir diesen nicht als Nachbar ansehen
-		visited_harbor_pos[i] = true;
-		// Breitensuche von diesem Punkt aus durchführen
-		std::vector<bool> visited(width*height,false);
-		std::queue< Point<MapCoord> > todo;
-
-		Point<MapCoord> start(harbor_pos[i].x,harbor_pos[i].y);
-		todo.push(start);
-		nodes[start.y*width+start.x].way = 0;
-		nodes[start.y*width+start.x].real_pos = Point<int>(start.x,start.y);
-
-		// Knoten zählen (Startknoten schon mit inbegriffen)
-		//unsigned count = 0; (war unused - nötig für irgendwas? - jh)
-		
-		// Am Anfang müssen wir auch Küstenpunkte zulassen
-		bool coastal_points = true;
-
-		while(!todo.empty())
+		for (size_t y = 0; y < height; y++)
 		{
-			Point<MapCoord> p = todo.front();
-			todo.pop();
+			flags_init[y * width + x] = IsSeaPoint(x, y) ? 1 : 0;
+		}
+	}
 
-			if(visited[p.y*width+p.x])
-				continue;
+	for (size_t i = 1; i < harbor_pos.size(); ++i)
+	{
+		todo_offset = 0;
+		todo_length = 0;
 
-			for(unsigned char d = 0;d<6;++d)
+		// Copy sea points to working flags. Possible values are
+		// 0 - visited or no sea point
+		// 1 - sea point, not already visited
+		// n - harbor_pos[n - 1]
+		std::vector<unsigned int> flags(flags_init);
+
+		// add another entry, so that we can use the value from 'flags' directly.
+		std::vector<bool> found(harbor_pos.size() + 1, false);
+
+		// mark points around harbors
+		for (size_t nr = 1; nr < harbor_pos.size(); ++nr)
+		{
+			/* Mark sea points belonging to harbor_pos[nr]:
+
+			As sea points are only those fully surrounded by sea, we have to go two
+			steps away from a harbor point to find them -> GetXA2/GetYA2.
+			*/
+			for (size_t d = 0; d < 12; ++d)
 			{
-				MapCoord xa,ya;
-				xa = GetXA(p.x,p.y,d);
-				ya = GetYA(p.x,p.y,d);
+				MapCoord xa = GetXA2(harbor_pos[nr].x, harbor_pos[nr].y, d);
+				MapCoord ya = GetYA2(harbor_pos[nr].x, harbor_pos[nr].y, d);
 
-				// Ist das dort auch ein Meerespunkt?
-				if(!IsSeaPoint(xa,ya) && !(coastal_points && IsCoastalPoint(xa,ya)))
-					continue;
-
-				if(!visited[ya*width+xa])
+				if (nr == i)
 				{
-					Point<MapCoord> add(xa,ya);
-					todo.push(add);
-					nodes[ya*width+xa].pre = p;
-					nodes[ya*width+xa].way = nodes[p.y*width+p.x].way+1;
-					nodes[ya*width+xa].real_pos = GetPointAround(nodes[p.y*width+p.x].real_pos,d);
-					nodes[ya*width+xa].dir = d;
-					visited[p.y*width+p.x] = true;
-					
-					// Umliegende Punkte prüfen, ob sie Küstenpunkte sind
-					for(unsigned dd = 0;dd<6;++dd)
-					{
-						MapCoord x = GetXA(xa,ya,dd), y = GetYA(xa,ya,dd);
-						
-						if(IsCoastalPoint(x,y))
-						{
-							// Dann wieder prüfen, ob der Küstenpunkt auch zu einem Hafenpunkt gehört
-							unsigned short harbor_pos_id;
-							if((harbor_pos_id = GetHarborPosID(x,y)))
-							{
-								// Prüfen, ob es dieser Hafen nicht schon einmal besucht wurde
-								if(!visited_harbor_pos[harbor_pos_id])
-								{
-									// Dann tragen wir ihn als neuen Nachbarn ein
-									unsigned char dir = GetShipDir(Point<int>(start.x,start.y),GetPointAround(nodes[ya*width+xa].real_pos,dd));
-
-								/*	// Weg zurückverfolgen
-									Point<MapCoord> current_pos(xa,ya);
-									std::vector<unsigned char> path(nodes[p.y*width+p.x].way+1);
-
-									path[nodes[p.y*width+p.x].way] = dd;
-									for(unsigned z = nodes[p.y*width+p.x].way;z>0;--z)
-									{
-										path[z-1] = nodes[current_pos.y*width+current_pos.x].dir;
-										GetPointA(current_pos.x,current_pos.y,(path[z-1]+3)%6);
-									}*/
-
-									harbor_pos[i].neighbors[dir].push_back(HarborPos::Neighbor(harbor_pos_id,nodes[ya*width+xa].way+1));
-									visited_harbor_pos[harbor_pos_id] = true;
-									
-								}
-							}
-						}
-						
-					}
+					// This is our start harbor. Add the sea points around it to our todo list.
+					todo_list[todo_length++] = CalcHarborPosNeighborsNode(xa, ya, 0);
+					flags[ya * width + ya] = 0;	// Mark them as visited (flags = 0) to avoid finding a way to our start harbor.
+				} else
+				{
+					flags[ya * width + xa] = nr + 1;
 				}
 			}
+		}
 
-			coastal_points = false;
+		while (todo_length)
+		{
+			CalcHarborPosNeighborsNode p = todo_list[todo_offset];
+			todo_offset++;
+			todo_length--;
+
+			for (size_t d = 0; d < 6; ++d)
+			{
+				MapCoord xa = GetXA(p.x, p.y, d);
+				MapCoord ya = GetYA(p.x, p.y, d);
+				size_t idx = xa + ya * width;
+
+				if ((flags[idx] > 1) && !found[flags[idx]])	// found harbor we haven't already found
+				{
+					harbor_pos[i].neighbors[GetShipDir(Point<int>(harbor_pos[i].x, harbor_pos[i].y), Point<int>(xa, ya))].push_back(HarborPos::Neighbor(flags[idx] - 1, p.way + 1));
+
+					found[flags[idx]] = 1;
+				} else if (flags[idx])	// this detects any sea point plus harbors we already visited
+				{
+					todo_list[todo_offset + todo_length] = CalcHarborPosNeighborsNode(xa, ya, p.way + 1);
+					todo_length++;
+
+					flags[idx] = 0;	// mark as visited, so we do not go here again
+				}
+			}
 		}
 	}
 }
