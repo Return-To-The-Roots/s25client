@@ -1,3 +1,82 @@
+s25rttr (20140204-9134.300) karmic; urgency=low
+
+  * Automatic Jenkins Build 300
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 04 Feb 2014 15:09:05 +0100
+
+s25rttr (20140204-9134) any; urgency=low
+
+  * Speed up loading games with lots of harbors, like the world map
+    by Spike.
+
+ -- marcus  Tue, 04 Feb 2014 08:26:00 +0100
+
+s25rttr (20140204-9133.299) karmic; urgency=low
+
+  * Automatic Jenkins Build 299
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 04 Feb 2014 01:10:39 +0100
+
+s25rttr (20140204-9133) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 04 Feb 2014 00:00:00 +0100
+
+s25rttr (20140203-9132) any; urgency=low
+
+  * Some cleanup in GameWorldBase::CalcBQ(..)
+
+ -- marcus  Mon, 03 Feb 2014 15:36:00 +0100
+
+s25rttr (20140203-9131.298) karmic; urgency=low
+
+  * Automatic Jenkins Build 298
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Mon, 03 Feb 2014 01:27:15 +0100
+
+s25rttr (20140203-9131) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Mon, 03 Feb 2014 00:00:00 +0100
+
+s25rttr (20140202-9130) any; urgency=low
+
+  * AIpoc r9085
+    a harbor will now cancel the jobs wanted for
+    expedition/exploration when the harbor is destroyed or the
+    expedition canceled
+
+ -- marcus  Sun, 02 Feb 2014 14:33:00 +0100
+
+s25rttr (20140202-9129) any; urgency=low
+
+  * AIpoc r9083
+    new priority for ships to be used:
+    attack,expedition,explore,transport
+    transport: added an additional check for destination harbors not
+    just to exist but also belong to the same player
+
+ -- marcus  Sun, 02 Feb 2014 14:32:00 +0100
+
+s25rttr (20140202-9128) any; urgency=low
+
+  * AIpoc 9082
+    expedition & exploration_expedition can now convert hammers&bows
+    in the harbor to figures required should there be not enough
+    figures in warehouses
+    a harbor wil now actually stop ordering boards & stones when an
+    expedition is canceled
+
+ -- marcus  Sun, 02 Feb 2014 14:31:00 +0100
+
+s25rttr (20140201-9126) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 01 Feb 2014 23:00:00 +0100
+
 s25rttr (20140131-9124.297) karmic; urgency=low
 
   * Automatic Jenkins Build 297
