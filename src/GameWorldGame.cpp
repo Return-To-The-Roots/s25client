@@ -1,4 +1,4 @@
-// $Id: GameWorldGame.cpp 9134 2014-02-04 08:26:41Z marcus $
+// $Id: GameWorldGame.cpp 9144 2014-02-11 16:33:28Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1876,19 +1876,22 @@ void GameWorldGame::CalcHarborPosNeighbors()
 				MapCoord xa = GetXA2(harbor_pos[nr].x, harbor_pos[nr].y, d);
 				MapCoord ya = GetYA2(harbor_pos[nr].x, harbor_pos[nr].y, d);
 
-				if (nr == i)
+				if (flags[ya * width + xa] == 1)
 				{
-					// This is our start harbor. Add the sea points around it to our todo list.
-					todo_list[todo_length++] = CalcHarborPosNeighborsNode(xa, ya, 0);
-					flags[ya * width + ya] = 0;	// Mark them as visited (flags = 0) to avoid finding a way to our start harbor.
-				} else
-				{
-					flags[ya * width + xa] = nr + 1;
+					if (nr == i)
+					{
+						// This is our start harbor. Add the sea points around it to our todo list.
+						todo_list[todo_length++] = CalcHarborPosNeighborsNode(xa, ya, 0);
+						flags[ya * width + xa] = 0;	// Mark them as visited (flags = 0) to avoid finding a way to our start harbor.
+					} else
+					{
+						flags[ya * width + xa] = nr + 1;
+					}
 				}
 			}
 		}
 
-		while (todo_length)
+		while (todo_length)	// as long as there are sea points on our todo list...
 		{
 			CalcHarborPosNeighborsNode p = todo_list[todo_offset];
 			todo_offset++;
@@ -1904,7 +1907,12 @@ void GameWorldGame::CalcHarborPosNeighbors()
 				{
 					harbor_pos[i].neighbors[GetShipDir(Point<int>(harbor_pos[i].x, harbor_pos[i].y), Point<int>(xa, ya))].push_back(HarborPos::Neighbor(flags[idx] - 1, p.way + 1));
 
+					todo_list[todo_offset + todo_length] = CalcHarborPosNeighborsNode(xa, ya, p.way + 1);
+					todo_length++;
+
 					found[flags[idx]] = 1;
+
+					flags[idx] = 0;	// mark as visited, so we do not go here again
 				} else if (flags[idx])	// this detects any sea point plus harbors we already visited
 				{
 					todo_list[todo_offset + todo_length] = CalcHarborPosNeighborsNode(xa, ya, p.way + 1);
