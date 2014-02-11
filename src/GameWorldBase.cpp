@@ -1,4 +1,4 @@
-// $Id: GameWorldBase.cpp 9132 2014-02-03 15:36:20Z marcus $
+// $Id: GameWorldBase.cpp 9146 2014-02-11 16:45:23Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1450,9 +1450,9 @@ void GameWorldBase::GetValidSeaIDsAroundMilitaryBuildingForAttack(const MapCoord
 		if(CalcDistance(harbor_x,harbor_y,x,y) <= SEAATTACK_DISTANCE)
 		{
 			//target isnt the harbor pos AND there is an enemy harbor? -> done for this harbor pos
-			const nobHarborBuilding *hb=GetSpecObj<nobHarborBuilding>(x,y);
-			if(!(x == harbor_x && y == harbor_y) && hb && players->getElement(player_attacker)->IsPlayerAttackable(GetNode(x,y).owner-1))
-			{
+			const nobHarborBuilding *hb=GetSpecObj<nobHarborBuilding>(harbor_x,harbor_y);
+			if(!(x == harbor_x && y == harbor_y) && hb && players->getElement(player_attacker)->IsPlayerAttackable(GetNode(harbor_x,harbor_y).owner-1))
+			{				
 				continue;
 			}
 			else
