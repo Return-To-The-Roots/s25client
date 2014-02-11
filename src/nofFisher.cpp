@@ -1,4 +1,4 @@
-// $Id: nofFisher.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: nofFisher.cpp 9149 2014-02-11 16:49:01Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -141,7 +141,8 @@ void nofFisher::WorkFinished()
 	// Wenn ich einen Fisch gefangen habe, den Fisch "abbauen" und in die Hand nehmen
 	if(successful)
 	{
-		--(gwg->GetNode(gwg->GetXA(x,y,fishing_dir),gwg->GetYA(x,y,fishing_dir)).resources);
+		if(!GameClient::inst().GetGGS().isEnabled(ADDON_INEXHAUSTIBLE_FISH))
+			--(gwg->GetNode(gwg->GetXA(x,y,fishing_dir),gwg->GetYA(x,y,fishing_dir)).resources);
 		ware = GD_FISH;
 	}
 	else

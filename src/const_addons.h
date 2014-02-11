@@ -1,4 +1,4 @@
-// $Id: const_addons.h 9148 2014-02-11 16:48:29Z marcus $
+// $Id: const_addons.h 9149 2014-02-11 16:49:01Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -71,7 +71,8 @@ enum AddonId
 	ADDON_MILITARY_AID				= 0x00700000,
 	ADDON_INEXHAUSTIBLE_GRANITEMINES= 0x00800000,
 	ADDON_MAX_RANK					= 0x00900000,
-	ADDON_SEA_ATTACK				= 0x00900001
+	ADDON_SEA_ATTACK				= 0x00900001,
+	ADDON_INEXHAUSTIBLE_FISH		= 0x00900002
 };
 
 enum AddonGroup
