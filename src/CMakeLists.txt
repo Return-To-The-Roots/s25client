@@ -1,5 +1,5 @@
 ################################################################################
-### $Id: CMakeLists.txt 9121 2014-01-29 13:57:52Z marcus $
+### $Id: CMakeLists.txt 9150 2014-02-11 16:51:55Z marcus $
 ################################################################################
 
 INCLUDE(FindBZip2)
@@ -306,6 +306,7 @@ SET(SOURCES_OTHER
 										AddonCustomBuildSequence.h
 										AddonStatisticsVisibility.h
 										AddonLimitCatapults.h
+										AddonInexhaustibleFish.h
 										AddonInexhaustibleMines.h
 										AddonInexhaustibleGraniteMines.h
 										AddonDefenderBehavior.h
@@ -316,6 +317,7 @@ SET(SOURCES_OTHER
 										AddonExhaustibleWells.h
 										AddonManualRoadEnlargement.h
 										AddonNoCoinsDefault.h
+										AddonSeaAttack.h
 										AddonTrade.h
 										AddonRefundMaterials.h
 										AddonCharburner.h
