@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.h 9115 2014-01-29 12:50:40Z marcus $
+// $Id: AIPlayerJH.h 9145 2014-02-11 16:44:23Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -144,7 +144,7 @@ protected:
 	void CheckNewMilitaryBuildings();
 
 	/// blocks goods in each warehouse that has at least limit amount of that good - if all warehouses have enough they unblock
-	void DistributeGoodsByBlocking(unsigned goodnumber,unsigned limit);
+	void DistributeGoodsByBlocking(unsigned char goodnumber,unsigned limit);
 
 	/// Initializes the nodes on start of the game
 	void InitNodes();

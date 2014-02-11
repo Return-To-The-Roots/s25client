@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 9130 2014-02-02 14:33:08Z marcus $
+// $Id: AIPlayerJH.cpp 9145 2014-02-11 16:44:23Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -230,7 +230,7 @@ void AIPlayerJH::RunGF(const unsigned gf)
 		BLD_CHARBURNER
 		};
 		unsigned numBldToTest = 24;
-		unsigned char randomstore;
+		unsigned int randomstore;
 		randomstore=rand()%(aii->GetStorehouses().size());
 		if(aii->GetStorehouses().size()<1)
 			return;
@@ -1074,7 +1074,7 @@ void AIPlayerJH::CheckNewMilitaryBuildings()
 {
 }
 
-void AIPlayerJH::DistributeGoodsByBlocking(unsigned goodnumber,unsigned limit)
+void AIPlayerJH::DistributeGoodsByBlocking(unsigned char goodnumber,unsigned limit)
 {
 	bool validgoalexists=false;
 	if (aii->GetHarbors().size() < (aii->GetStorehouses().size()/2)) //dont distribute on maps that are mostly sea maps - harbors are too difficult to defend and have to handle quite a lot of traffic already
@@ -1746,7 +1746,7 @@ void AIPlayerJH::TrySeaAttack()
 	std::vector<int> invalidseas;
 	std::deque<const nobBaseMilitary *> potentialTargets;
 	std::deque<const nobBaseMilitary *> undefendedTargets;
-	std::vector<int> searcharoundharborspots; 	
+	std::vector<int> searcharoundharborspots;
 	//first check all harbors there might be some undefended ones - start at 1 to skip the harbor dummy
 	for(unsigned i=1;i<gwb->GetHarborPointCount();i++)
 	{
