@@ -1,4 +1,4 @@
-// $Id: noShip.cpp 9119 2014-01-29 13:53:18Z marcus $
+// $Id: noShip.cpp 9147 2014-02-11 16:46:05Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1004,7 +1004,7 @@ void noShip::StartDrivingToHarborPlace()
 		else
 		{
 			// todo
-			LOG.lprintf("Achtung: Bug im Spiel: noShip::StartDrivingToHarborPlace: Schiff hat keinen Weg gefunden! player %i state %i pos %u,%u \n",player,state,x,y);
+			LOG.lprintf("Achtung: Bug im Spiel: noShip::StartDrivingToHarborPlace: Schiff hat keinen Weg gefunden! player %i state %i pos %u,%u goal coastal %u,%u goal-id %i goalpos %u,%u \n",player,state,x,y,coastal_x,coastal_y,goal_harbor_id,gwg->GetHarborPoint(goal_harbor_id).x,gwg->GetHarborPoint(goal_harbor_id).y);
 			return;
 		}
 	}
