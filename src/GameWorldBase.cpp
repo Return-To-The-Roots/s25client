@@ -1,4 +1,4 @@
-// $Id: GameWorldBase.cpp 9146 2014-02-11 16:45:23Z marcus $
+// $Id: GameWorldBase.cpp 9148 2014-02-11 16:48:29Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1449,9 +1449,9 @@ void GameWorldBase::GetValidSeaIDsAroundMilitaryBuildingForAttack(const MapCoord
 		
 		if(CalcDistance(harbor_x,harbor_y,x,y) <= SEAATTACK_DISTANCE)
 		{
-			//target isnt the harbor pos AND there is an enemy harbor? -> done for this harbor pos
+			//target isnt the harbor pos AND there is an enemy harbor AND the sea attack addon is set to block on enemy harbor? -> done for this harbor pos
 			const nobHarborBuilding *hb=GetSpecObj<nobHarborBuilding>(harbor_x,harbor_y);
-			if(!(x == harbor_x && y == harbor_y) && hb && players->getElement(player_attacker)->IsPlayerAttackable(GetNode(harbor_x,harbor_y).owner-1))
+			if(!(x == harbor_x && y == harbor_y) && hb && (players->getElement(player_attacker)->IsPlayerAttackable(GetNode(harbor_x,harbor_y).owner-1) && GameClient::inst().GetGGS().getSelection(ADDON_SEA_ATTACK)==1))
 			{				
 				continue;
 			}
@@ -1528,39 +1528,7 @@ void GameWorldBase::GetAvailableSoldiersForSeaAttack(const unsigned char player_
 	// Mögliche Hafenpunkte in der Nähe des Gebäudes
 	std::vector< unsigned > defender_harbors;
 	GetValidSeaIDsAroundMilitaryBuildingForAttack(x,y,&use_seas,player_attacker,&defender_harbors);
-	/*
-	
-	GetHarborPointsAroundMilitaryBuilding(x,y,&defender_harbors);
-	// Nach Hafenpunkten in der Nähe des angegriffenen Gebäudes suchen
-	// Alle unsere Häfen durchgehen
-	for(unsigned i = 0;i<defender_harbors.size();++i)
-	{
-		unsigned harbor_id = defender_harbors[i];
-
-		// Steht an dieser Stelle ein Hafengeäude?
-		Point<MapCoord> harbor_pos = GetHarborPoint(harbor_id);
-		const noBase * hb = GetNO(harbor_pos.x,harbor_pos.y);
-		if(hb->GetGOT() == GOT_NOB_HARBORBUILDING)
-		{
-			// Gehört dem Feind dieser Hafen und ist dieser Hafen nicht unser Ziel?
-			if(players->getElement(player_attacker)->IsPlayerAttackable(static_cast<const nobHarborBuilding*>(hb)->GetPlayer())
-				&& !(harbor_pos.x == x && harbor_pos.y == y))
-			{
-				// Dann können wir hier nicht landen
-				continue;
-			}
-		}
-
-		unsigned short sea_ids[6];
-		GetSeaIDs(harbor_id,sea_ids);
-		for(unsigned z = 0;z<6;++z)
-		{
-			if(sea_ids[z])
-				use_seas[sea_ids[z]] = true;
-		}
-	}
-	*/
-	
+		
 	// Liste alle Militärgebäude des Angreifers, die Soldaten liefern
 	std::vector<nobHarborBuilding::SeaAttackerBuilding> buildings;
 	

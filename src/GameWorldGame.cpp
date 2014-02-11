@@ -1,4 +1,4 @@
-// $Id: GameWorldGame.cpp 9144 2014-02-11 16:33:28Z marcus $
+// $Id: GameWorldGame.cpp 9148 2014-02-11 16:48:29Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1102,6 +1102,9 @@ void GameWorldGame::Attack(const unsigned char player_attacker, const MapCoord x
 
 void  GameWorldGame::AttackViaSea(const unsigned char player_attacker, const MapCoord x, const MapCoord y, const unsigned short soldiers_count, const bool strong_soldiers)
 {
+	//sea attack abgeschaltet per addon?
+	if(GameClient::inst().GetGGS().getSelection(ADDON_SEA_ATTACK)==2)
+		return;
 	// Verzögerungsbug-Abfrage:
 	// Existiert das angegriffenen Gebäude überhaupt noch?
 	if(GetNO(x,y)->GetGOT() != GOT_NOB_MILITARY && GetNO(x,y)->GetGOT() != GOT_NOB_HQ

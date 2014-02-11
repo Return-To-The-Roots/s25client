@@ -1,4 +1,4 @@
-// $Id: const_addons.h 9120 2014-01-29 13:54:18Z marcus $
+// $Id: const_addons.h 9148 2014-02-11 16:48:29Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -31,7 +31,8 @@
 // 005 CS2001
 // 006 quixui
 // 007 KaiN (https://launchpad.net/~Szekta)
-//
+// 008 Spikeone
+// 009 PoC
 
 // Do not forget to add your Addon to GlobalGameSettings::reset @ GlobalGameSettings.cpp!
 // Never use a number twice!
@@ -69,7 +70,8 @@ enum AddonId
 
 	ADDON_MILITARY_AID				= 0x00700000,
 	ADDON_INEXHAUSTIBLE_GRANITEMINES= 0x00800000,
-	ADDON_MAX_RANK					= 0x00900000
+	ADDON_MAX_RANK					= 0x00900000,
+	ADDON_SEA_ATTACK				= 0x00900001
 };
 
 enum AddonGroup

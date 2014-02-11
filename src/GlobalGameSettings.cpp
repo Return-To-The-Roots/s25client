@@ -1,4 +1,4 @@
-// $Id: GlobalGameSettings.cpp 9120 2014-01-29 13:54:18Z marcus $
+// $Id: GlobalGameSettings.cpp 9148 2014-02-11 16:48:29Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -53,6 +53,7 @@
 #include "AddonMilitaryAid.h"
 #include "AddonInexhaustibleGraniteMines.h"
 #include "AddonMaxRank.h"
+#include "AddonSeaAttack.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
@@ -137,6 +138,7 @@ void GlobalGameSettings::reset(bool recreate)
 		registerAddon(new AddonMilitaryAid);
 		registerAddon(new AddonInexhaustibleGraniteMines);
 		registerAddon(new AddonMaxRank);
+		registerAddon(new AddonSeaAttack);
 	}
 }
 

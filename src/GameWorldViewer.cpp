@@ -1,4 +1,4 @@
-// $Id: GameWorldViewer.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: GameWorldViewer.cpp 9148 2014-02-11 16:48:29Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -204,6 +204,8 @@ noShip * GameWorldViewer::GetShip(const MapCoord x, const MapCoord y, const unsi
 unsigned GameWorldViewer::GetAvailableSoldiersForSeaAttackCount(const unsigned char player_attacker, 
 											const MapCoord x, const MapCoord y) const
 {
+	if(GameClient::inst().GetGGS().getSelection(ADDON_SEA_ATTACK)==2) //deactivated by addon?
+		return 0;
 	std::list<GameWorldBase::PotentialSeaAttacker> attackers;
 	GetAvailableSoldiersForSeaAttack(player_attacker,x,y,&attackers);
 	return unsigned(attackers.size());

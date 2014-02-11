@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 9145 2014-02-11 16:44:23Z marcus $
+// $Id: AIPlayerJH.cpp 9148 2014-02-11 16:48:29Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -140,8 +140,8 @@ void AIPlayerJH::RunGF(const unsigned gf)
 
 	if ((gf +41+ playerid * 17) % 100 == 0)
 	{
-		//CheckExistingMilitaryBuildings();
-		TrySeaAttack();
+		if(ggs->getSelection(ADDON_SEA_ATTACK)<2) //not deactivated by addon? -> go ahead
+			TrySeaAttack();
 	}
 
 	if ((gf + playerid * 13) % 1500 == 0) // check expeditions (order new / cancel)
