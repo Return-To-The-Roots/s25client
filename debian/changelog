@@ -1,3 +1,79 @@
+s25rttr (20140211-9150.301) karmic; urgency=low
+
+  * Automatic Jenkins Build 301
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 11 Feb 2014 19:08:12 +0100
+
+s25rttr (20140211-9150) any; urgency=low
+
+  * AIpoc r9093
+    
+    new addon files that missed the upload in 9091 & 9092
+    changes in CMakeLists.txt (Marcus)
+
+ -- marcus  Tue, 11 Feb 2014 16:51:00 +0100
+
+s25rttr (20140211-9149) any; urgency=low
+
+  * AIpoc r9092
+    
+    inehaustible fish addon as requested in Bug #1277438: [wish]
+    inexhaustible fishes
+    +updated vs2010 project files
+
+ -- marcus  Tue, 11 Feb 2014 16:49:00 +0100
+
+s25rttr (20140211-9148) any; urgency=low
+
+  * AIpoc r9091
+    
+    sea attack now as addon with 3 settings:
+    - enemy harbors don't block
+    - enemy harbors block (default)
+    - no sea attacks
+    also includes updated vs2010 project files to include the new
+    addon
+
+ -- marcus  Tue, 11 Feb 2014 16:48:00 +0100
+
+s25rttr (20140211-9147) any; urgency=low
+
+  * AIpoc r9090
+    
+    report more details when ship pathfinding fails
+
+ -- marcus  Tue, 11 Feb 2014 16:46:00 +0100
+
+s25rttr (20140211-9146) any; urgency=low
+
+  * AIpoc r9089
+    
+    fixed sea attack conditions: there has to be a harbor position in
+    seaattack distance (15 free walk) that does not have an enemy
+    harbor build on it (no harbor or allied harbor)
+
+ -- marcus  Tue, 11 Feb 2014 16:45:00 +0100
+
+s25rttr (20140211-9145) any; urgency=low
+
+  * AIpoc r9088
+    
+    2 conversions removed
+
+ -- marcus  Tue, 11 Feb 2014 16:44:00 +0100
+
+s25rttr (20140211-9144) any; urgency=low
+
+  * Fixes for new harbor distance calculation.
+
+ -- marcus  Tue, 11 Feb 2014 16:33:00 +0100
+
+s25rttr (20140208-9140) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 08 Feb 2014 23:00:00 +0100
+
 s25rttr (20140204-9134.300) karmic; urgency=low
 
   * Automatic Jenkins Build 300
