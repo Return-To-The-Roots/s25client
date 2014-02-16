@@ -1,4 +1,4 @@
-// $Id: GameClientPlayer.h 9130 2014-02-02 14:33:08Z marcus $
+// $Id: GameClientPlayer.h 9161 2014-02-16 10:19:30Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -382,6 +382,9 @@ public:
 	/// i.e. there is a sufficient distance to older locations
 	/// Returns true if yes and false if not
 	bool ShipDiscoveredHostileTerritory(const Point<MapCoord> location);
+
+	///Gibt liste der Schiffe zurück
+	const std::vector<noShip*>&GetShips() const {return ships;}
 
 	/// Gibt eine Liste der verfügbaren Häfen zurück
 	const std::list<nobHarborBuilding*>& GetHarbors() const { return harbors; }

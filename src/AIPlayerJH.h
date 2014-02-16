@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.h 9145 2014-02-11 16:44:23Z marcus $
+// $Id: AIPlayerJH.h 9161 2014-02-16 10:19:30Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -230,6 +230,7 @@ protected:
 	void HandleBuildingFinished(const Coords& coords, BuildingType bld);
 
 	void HandleExpedition(const Coords& coords);
+	void HandleExpedition(const noShip *ship);
 
 	// Handle chopped tree, test for new space
 	void HandleTreeChopped(const Coords& coords);

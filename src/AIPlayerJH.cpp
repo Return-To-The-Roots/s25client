@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 9148 2014-02-11 16:48:29Z marcus $
+// $Id: AIPlayerJH.cpp 9161 2014-02-16 10:19:30Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -152,7 +152,13 @@ void AIPlayerJH::RunGF(const unsigned gf)
 			{	
 				aii->StartExpedition((*it)->GetX(), (*it)->GetY()); //command is more of a toggle despite it's name
 			}
-		}			
+		}	
+		//find lost expedition ships - ai should get a notice and catch them all but just in case some fell through the system
+		for(std::vector<noShip*>::const_iterator it=aii->GetShips().begin();it!=aii->GetShips().end();it++)
+		{
+			if((*it)->IsWaitingForExpeditionInstructions())
+				HandleExpedition(*it);
+		}
 	}
 	if((gf+playerid*11)%150==0) 
 	{	//update tool creation settings
@@ -1443,6 +1449,28 @@ void AIPlayerJH::HandleNewColonyFounded(const Coords& coords)
 	construction.AddConnectFlagJob(aii->GetSpecObj<noFlag>(x,y));
 }
 
+void AIPlayerJH::HandleExpedition(const noShip *ship)
+{		
+	if(!ship->IsWaitingForExpeditionInstructions())
+		return;
+	if (ship->IsAbleToFoundColony())
+		aii->FoundColony(ship);
+	else
+	{
+		unsigned char start = rand() % 6;
+		for(unsigned char i = start; i < start + 6; ++i)
+		{
+			if (aii->IsExplorationDirectionPossible(ship->GetX(),ship->GetY(), ship->GetCurrentHarbor(), i%6))
+			{
+				aii->TravelToNextSpot(i%6, ship);
+				return;
+			}
+		}
+		// no direction possible, sad, stop it
+		aii->CancelExpedition(ship);
+	}
+}
+
 void AIPlayerJH::HandleExpedition(const Coords& coords)
 {
 	list<noBase*> objs;
@@ -1463,29 +1491,9 @@ void AIPlayerJH::HandleExpedition(const Coords& coords)
 			}
 		}
 	}
-
-
-	//const noShip *ship = gwb->GetSpecObj<noShip>(coords.x, coords.y);
 	if (ship)
 	{
-		if (ship->IsAbleToFoundColony())
-			aii->FoundColony(ship);
-		else
-		{
-			unsigned char start = rand() % 6;
-
-			for(unsigned char i = start; i < start + 6; ++i)
-			{
-				if (aii->IsExplorationDirectionPossible(coords.x, coords.y, ship->GetCurrentHarbor(), i%6))
-				{
-					aii->TravelToNextSpot(i%6, ship);
-					return;
-				}
-			}
-
-			// no direction possible, sad, stop it
-			aii->CancelExpedition(ship);
-		}
+		HandleExpedition(ship);		
 	}
 }
 

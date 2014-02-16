@@ -179,6 +179,9 @@ public:
 	// Returns the number of ships
 	unsigned GetShipCount() const { return player->GetShipCount(); }
 
+	// Returns the list of ships
+	const std::vector<noShip*>&GetShips() const {return player->GetShips();}
+
 	//returns distance
 	unsigned CalcDistance(MapCoord x1,MapCoord y1,MapCoord x2,MapCoord y2){return gwb->CalcDistance(x1,y1,x2,y2);}	
 
