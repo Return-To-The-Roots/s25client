@@ -1,4 +1,4 @@
-// $Id: Pathfinding.cpp 8668 2013-03-23 11:25:44Z marcus $
+// $Id: Pathfinding.cpp 9163 2014-02-17 11:44:35Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -132,6 +132,82 @@ public:
 	}
 };
 
+
+#define GetXYA(x, y, dx, dy, dir) \
+	{ \
+		switch (dir) \
+		{ \
+			case 0: \
+				if (!x) \
+					dx = width - 1; \
+				else \
+					dx = x - 1; \
+				dy = y; \
+				break; \
+			case 1: \
+				if (y & 1) \
+					dx = x; \
+				else if (!x) \
+					dx = width - 1; \
+				else \
+					dx = x - 1; \
+				if (y > 0) \
+					dy = y - 1; \
+				else \
+					dy = height - 1; \
+				break; \
+			case 2: \
+				if (y & 1) \
+					if (x == width - 1) \
+						dx = 0; \
+					else \
+						dx = x + 1; \
+				else \
+					dx = x; \
+				if (y > 0) \
+					dy = y - 1; \
+				else \
+					dy = height - 1; \
+				break; \
+			case 3: \
+				if (x == width - 1) \
+					dx = 0; \
+				else \
+					dx = x + 1; \
+				dy = y; \
+				break; \
+			case 4: \
+				if (y & 1) \
+					if (x == width - 1) \
+						dx = 0; \
+					else \
+						dx = x + 1; \
+				else \
+					dx = x; \
+				if (y == height - 1) \
+					dy = 0; \
+				else \
+					dy = y + 1; \
+				break; \
+			case 5: \
+				if (y & 1) \
+					dx = x; \
+				else if (!x) \
+					dx = width - 1; \
+				else \
+					dx = x - 1; \
+				if (y == height - 1) \
+					dy = 0; \
+				else \
+					dy = y + 1; \
+				break; \
+			default: \
+				break; \
+		} \
+	}
+
+
+
 /// Definitionen siehe oben
 MapCoord PathfindingPoint::dst_x = 0;
 MapCoord PathfindingPoint::dst_y = 0;
@@ -217,13 +293,14 @@ bool GameWorldBase::FindFreePath(const MapCoord x_start,const MapCoord y_start,
 		unsigned start = random_route?RANDOM.Rand("pf",__LINE__,y_start*GetWidth()+x_start,6):0;
 
 		// Knoten in alle 6 Richtungen bilden
-		for(unsigned z = start;z<start+6;++z)
+		for(unsigned z = start + 3; z < start + 9; ++z)
 		{
-			unsigned i = (z+3)%6;
+			unsigned i = z % 6;
 
 			// Koordinaten des entsprechenden umliegenden Punktes bilden
-			MapCoord xa = GetXA(best.x,best.y,i),
-				ya = GetYA(best.x,best.y,i);
+			MapCoord xa, ya;
+
+			GetXYA(best.x, best.y, xa, ya, i);
 
 			// ID des umliegenden Knotens bilden
 			unsigned xaid = MakeCoordID(xa, ya);
@@ -438,19 +515,24 @@ bool GameWorldBase::FindPathOnRoads(const noRoadNode * const start, const noRoad
 			// Wenn nicht, brauchen wir mit dieser Richtung gar nicht weiter zu machen
 			if (!neighbour)
 				continue;
-			
-			// Neuer Weg für diesen neuen Knoten berechnen
-			unsigned cost = best->cost + best->routes[i]->GetLength();
+
+			// this eliminates 1/6 of all nodes and avoids cost calculation and further checks,
+			// therefore - and because the profiler says so - it is more efficient that way
+			if (neighbour == best->prev)
+				continue;
 
 			// evtl verboten?
 			if (best->routes[i] == forbidden)
 				continue;
 
 			// Keine Umwege über Gebäude, ausgenommen Häfen und Ziele
-			if ((i == 1) && (neighbour->GetGOT() != GOT_FLAG) && (neighbour != goal) && (neighbour->GetGOT() != GOT_NOB_HARBORBUILDING))
+			if ((i == 1) && (neighbour != goal) && (neighbour->GetGOT() != GOT_FLAG) && (neighbour->GetGOT() != GOT_NOB_HARBORBUILDING))
 			{
 				continue;
 			}
+
+			// Neuer Weg für diesen neuen Knoten berechnen
+			unsigned cost = best->cost + best->routes[i]->GetLength();
 
 			// Im Warenmodus müssen wir Strafpunkte für überlastete Träger hinzuaddieren,
 			// damit der Algorithmus auch Ausweichrouten auswählt
