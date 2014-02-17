@@ -1,4 +1,4 @@
-// $Id: GameWorldViewer.cpp 9148 2014-02-11 16:48:29Z marcus $
+// $Id: GameWorldViewer.cpp 9164 2014-02-17 11:45:14Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -157,10 +157,12 @@ unsigned char GameWorldViewer::GetVisibleRoad(const MapCoord x, const MapCoord y
 {
 	if(visibility == VIS_VISIBLE)
 		// Normal die sichtbaren StraÃen zurückliefern
-		return GetPointRoad(x,y,dir,true);
+		return GetRoad(x, y, dir, true);
+//		return GetPointRoad(x,y,dir,true);
 	else if(visibility == VIS_FOW)
 		// entsprechende FoW-StraÃe liefern
-		return GetPointFOWRoad(x,y,dir,GetYoungestFOWNodePlayer(Point<MapCoord>(x,y)));
+//		return GetPointFOWRoad(x,y,dir,GetYoungestFOWNodePlayer(Point<MapCoord>(x,y)));
+		return GetNode(x,y).fow[GetYoungestFOWNodePlayer(Point<MapCoord>(x,y))].roads[dir];
 	else
 		// Unsichtbar -> keine StraÃe zeichnen
 		return 0;

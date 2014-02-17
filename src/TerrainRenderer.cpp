@@ -1,4 +1,4 @@
-// $Id: TerrainRenderer.cpp 8728 2013-05-16 12:45:55Z marcus $
+// $Id: TerrainRenderer.cpp 9164 2014-02-17 11:45:14Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -979,12 +979,15 @@ void TerrainRenderer::PrepareWaysPoint(GameWorldView *gwv, unsigned short tx, un
 
 	Visibility visibility = gwv->GetGameWorldViewer()->GetVisibility(tx,ty);
 
-	for(unsigned char dir = 0;dir<3;++dir)
+	for(unsigned dir = 0; dir < 3; ++dir)
 	{
-		if ((type = gwv->GetGameWorldViewer()->GetVisibleRoad(tx,ty, dir+3, visibility)))
+		if ((type = gwv->GetGameWorldViewer()->GetVisibleRoad(tx,ty, dir, visibility)))
 		{
-			float xpos2 = GetTerrainX(gwv->GetGameWorldViewer()->GetXA(tx,ty,3+dir),gwv->GetGameWorldViewer()->GetYA(tx,ty,3+dir))-gwv->GetXOffset()+xo;
-			float ypos2 = GetTerrainY(gwv->GetGameWorldViewer()->GetXA(tx,ty,3+dir),gwv->GetGameWorldViewer()->GetYA(tx,ty,3+dir))-gwv->GetYOffset()+yo;
+			MapCoord xa = gwv->GetGameWorldViewer()->GetXA(tx, ty, 3 + dir);
+			MapCoord ya = gwv->GetGameWorldViewer()->GetYA(tx, ty, 3 + dir);
+
+			float xpos2 = GetTerrainX(xa, ya) - gwv->GetXOffset() + xo;
+			float ypos2 = GetTerrainY(xa, ya) - gwv->GetYOffset() + yo;
 
 			// Gehen wir über einen Kartenrand (horizontale Richung?)
 			if(abs(xpos-xpos2) >= gwv->GetGameWorldViewer()->GetWidth() * TR_W / 2)
@@ -1011,8 +1014,8 @@ void TerrainRenderer::PrepareWaysPoint(GameWorldView *gwv, unsigned short tx, un
 			case RoadSegment::RT_DONKEY:
 			case RoadSegment::RT_NORMAL:
 				{
-					unsigned t1 = gwv->GetGameWorldViewer()->GetTerrainAround(tx,ty, dir + 2);
-					unsigned t2 = gwv->GetGameWorldViewer()->GetTerrainAround(tx,ty, dir + 3);
+					unsigned t1 = gwv->GetGameWorldViewer()->GetTerrainAround(tx, ty, dir + 2);
+					unsigned t2 = gwv->GetGameWorldViewer()->GetTerrainAround(tx, ty, dir + 3);
 
 					// Prüfen, ob Bergwerge gezeichnet werden müssen, indem man guckt, ob der Weg einen
 					// Berg "streift" oder auch eine Bergwiese
@@ -1030,7 +1033,7 @@ void TerrainRenderer::PrepareWaysPoint(GameWorldView *gwv, unsigned short tx, un
 			gwv->sorted_roads[type].push_back(
 				PreparedRoad(type,
 					xpos, ypos, xpos2, ypos2,
-					GetColor(tx, ty), GetColor(gwv->GetGameWorldViewer()->GetXA(tx,ty,3+dir),gwv->GetGameWorldViewer()->GetYA(tx,ty,3+dir)),
+					GetColor(tx, ty), GetColor(xa, ya),
 					dir
 				)
 			);

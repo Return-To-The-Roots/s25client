@@ -1,4 +1,4 @@
-// $Id: Minimap.cpp 8177 2012-09-08 06:53:47Z marcus $
+// $Id: Minimap.cpp 9164 2014-02-17 11:45:14Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -344,7 +344,7 @@ unsigned IngameMinimap::CalcTerrainColor(const MapCoord x, const MapCoord y, con
  */
 bool IngameMinimap::IsRoad(const MapCoord x, const MapCoord y, const Visibility visibility)
 {
-	for(unsigned i = 0;i<6;++i)
+	for(unsigned i = 0;i<3;++i)
 	{
 		if(gwv.GetVisibleRoad(x,y,i,visibility))
 			return true;
