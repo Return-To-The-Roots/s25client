@@ -1,4 +1,4 @@
-// $Id: AIConstruction.cpp 9120 2014-01-29 13:54:18Z marcus $
+// $Id: AIConstruction.cpp 9166 2014-02-18 18:14:12Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -532,7 +532,11 @@ void AIConstruction::RefreshBuildingCount()
 					buildingsWanted[BLD_CHARBURNER]=min<int>(1,resourcelimit);
 			}
 			if(GetBuildingCount(BLD_QUARRY)<4) //no quarry -> try granitemines.
+			{
 				buildingsWanted[BLD_GRANITEMINE] =(aii->GetInventory()->people[JOB_MINER]>6)? 5-GetBuildingCount(BLD_QUARRY):1;
+				if(buildingsWanted[BLD_GRANITEMINE]>(GetBuildingCount(BLD_BARRACKS)+GetBuildingCount(BLD_GUARDHOUSE)+GetBuildingCount(BLD_FORTRESS)+GetBuildingCount(BLD_WATCHTOWER))/3)//limit granitemines to military / 3
+					buildingsWanted[BLD_GRANITEMINE]=(GetBuildingCount(BLD_BARRACKS)+GetBuildingCount(BLD_GUARDHOUSE)+GetBuildingCount(BLD_FORTRESS)+GetBuildingCount(BLD_WATCHTOWER))/3;
+			}
 			else
 				buildingsWanted[BLD_GRANITEMINE]=0;
 		}
