@@ -1,4 +1,4 @@
-// $Id: GameWorld.h 8374 2012-10-04 13:29:17Z marcus $
+// $Id: GameWorld.h 9167 2014-02-18 18:14:42Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -433,9 +433,12 @@ public:
 	void GetHarborPointsAroundMilitaryBuilding(const MapCoord x, const MapCoord y, std::vector<unsigned> * harbor_points) const;
 	/// returns all sea_ids from which a given building can be attacked by sea
 	void GetValidSeaIDsAroundMilitaryBuildingForAttack(const MapCoord x,const MapCoord y, std::vector<bool> * use_seas, const unsigned char player_attacker,std::vector<unsigned>*harbor_points)const;
+	/// returns all sea_ids found in the given vector from which a given building can be attacked by sea
+	void GetValidSeaIDsAroundMilitaryBuildingForAttackCompare(const MapCoord x,const MapCoord y, std::vector<unsigned short> * use_seas, const unsigned char player_attacker)const;
 	/// Sucht verfügbare Soldaten, um dieses Militärgebäude mit einem Seeangriff anzugreifen
-	void GetAvailableSoldiersForSeaAttack(const unsigned char player_attacker, 
-		const MapCoord x, const MapCoord y, std::list<PotentialSeaAttacker> * attackers) const;
+	void GetAvailableSoldiersForSeaAttack(const unsigned char player_attacker, const MapCoord x, const MapCoord y, std::list<PotentialSeaAttacker> * attackers) const;
+	/// Gibt Anzahl oder geschätzte Stärke(rang summe + anzahl) der verfügbaren Soldaten die zu einem Schiffsangriff starten können von einer bestimmten sea id aus
+	unsigned int GetAvailableSoldiersForSeaAttackAtSea(const unsigned char player_attacker, unsigned short seaid, bool count=true) const;
 
 
 protected:

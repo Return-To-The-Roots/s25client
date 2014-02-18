@@ -1,4 +1,4 @@
-// $Id: nobHarborBuilding.cpp 9130 2014-02-02 14:33:08Z marcus $
+// $Id: nobHarborBuilding.cpp 9167 2014-02-18 18:14:42Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1221,7 +1221,37 @@ void nobHarborBuilding::CancelFigure(noFigure * figure)
 	
 }
 
+///Gibt verfügbare Angreifer zurück
+void nobHarborBuilding::GetAttackerBuildingsForSeaIdAttack(std::vector<SeaAttackerBuilding>*buildings)
+{
+	std::list<nobBaseMilitary*> all_buildings;
+	gwg->LookForMilitaryBuildings(all_buildings,x,y,3);
 
+	// Und zählen
+	for(std::list<nobBaseMilitary*>::iterator it = all_buildings.begin();it!=all_buildings.end();++it)
+	{
+		if((*it)->GetGOT() != GOT_NOB_MILITARY)
+			continue;
+			
+		// Liegt er auch im groben Raster und handelt es sich um den gleichen Besitzer?
+		if((*it)->GetPlayer() != player || gwg->CalcDistance((*it)->GetX(),(*it)->GetY(),x,y) > BASE_ATTACKING_DISTANCE)
+			continue;
+		// Gebäude suchen, vielleicht schon vorhanden? Dann können wir uns den pathfinding Aufwand sparen!
+		std::vector<SeaAttackerBuilding>::iterator it2 = std::find(buildings->begin(), buildings->end(),static_cast<nobMilitary*>(*it));
+		// in liste gefunden? 
+		if(it2 != buildings->end())
+		{
+			// Dann zum nächsten test
+			continue;			
+		}
+		// Weg vom Hafen zum Militärgebäude berechnen
+		if(!gwg->FindFreePath((*it)->GetX(),(*it)->GetY(),x,y,false,MAX_ATTACKING_RUN_DISTANCE,NULL,NULL,NULL,NULL,NULL,NULL,false))
+			continue;		
+		//neues Gebäude mit weg und allem -> in die Liste!
+		SeaAttackerBuilding sab = { static_cast<nobMilitary*>(*it), this ,0};
+		buildings->push_back(sab);
+	}
+}
 /// Gibt die Angreifergebäude zurück, die dieser Hafen für einen Seeangriff zur Verfügung stellen kann
 void nobHarborBuilding::GetAttackerBuildingsForSeaAttack(std::vector<SeaAttackerBuilding> * buildings,
 											const std::vector<unsigned>& defender_harbors)

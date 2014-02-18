@@ -1,4 +1,4 @@
-// $Id: nobHarborBuilding.h 8627 2013-02-16 20:59:52Z jh $
+// $Id: nobHarborBuilding.h 9167 2014-02-18 18:14:42Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -197,6 +197,8 @@ public:
 	/// defender_harbors sind dabei mögliche Zielhäfen
 	void GetAttackerBuildingsForSeaAttack(std::vector<SeaAttackerBuilding> * buildings,
 											const std::vector<unsigned>& defender_harbors);
+	///Gibt verfügbare Angreifer zurück
+	void GetAttackerBuildingsForSeaIdAttack(std::vector<SeaAttackerBuilding>*buildings);
 											
 	/// Fügt einen Schiffs-Angreifer zum Hafen hinzu
 	void AddSeaAttacker(nofAttacker * attacker);

@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 9161 2014-02-16 10:19:30Z marcus $
+// $Id: AIPlayerJH.cpp 9167 2014-02-18 18:14:42Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1751,10 +1751,37 @@ void AIPlayerJH::TrySeaAttack()
 		return;
 	if(aii->GetHarbors().size()<1)
 		return;
+	std::vector<unsigned short>seaidswithattackers;
+	std::vector<unsigned int>attackersatseaid;
 	std::vector<int> invalidseas;
 	std::deque<const nobBaseMilitary *> potentialTargets;
 	std::deque<const nobBaseMilitary *> undefendedTargets;
 	std::vector<int> searcharoundharborspots;
+	//all seaids with at least 1 ship count available attackers for later checks
+	for(std::vector<noShip*>::const_iterator it=aii->GetShips().begin();it!=aii->GetShips().end();it++)
+	{
+		//sea id not already listed as valid or invalid?
+		if(std::find(seaidswithattackers.begin(),seaidswithattackers.end(),(*it)->GetSeaID())==seaidswithattackers.end() && std::find(invalidseas.begin(),invalidseas.end(),(*it)->GetSeaID())==invalidseas.end())
+		{
+			unsigned int attackercount = gwb->GetAvailableSoldiersForSeaAttackAtSea(playerid,(*it)->GetSeaID(),false);			
+			if(attackercount) //got attackers at this sea id? -> add to valid list
+			{
+				seaidswithattackers.push_back((*it)->GetSeaID());
+				attackersatseaid.push_back(attackercount);
+			}
+			else //not listed but no attackers? ->invalid
+			{
+				invalidseas.push_back((*it)->GetSeaID());
+			}
+		}
+	}
+	if(seaidswithattackers.size()<1) //no sea ids with attackers? skip the rest
+		return;
+	/*else
+	{
+		for(unsigned i=0;i<seaidswithattackers.size();i++)
+			LOG.lprintf("attackers at sea ids for player %i, sea id %i, count %i \n",playerid, seaidswithattackers[i], attackersatseaid[i]);
+	}*/
 	//first check all harbors there might be some undefended ones - start at 1 to skip the harbor dummy
 	for(unsigned i=1;i<gwb->GetHarborPointCount();i++)
 	{
@@ -1765,58 +1792,19 @@ void AIPlayerJH::TrySeaAttack()
 			{
 				if(aii->IsPlayerAttackable(hb->GetPlayer()))
 				{
-					//marked as invalid sea?
-					unsigned short sea_ids[6];
-					gwb->GetSeaIDs(i,sea_ids);
-					bool invalid=false;
-					for(unsigned r=0;r<6;r++)
-					{
-						if(std::find(invalidseas.begin(),invalidseas.end(),sea_ids[r])!=invalidseas.end())
-						{
-							invalid=true;
-							break;
-						}
-					}
-					if(!invalid)
+					//attackers for this building?	
+					std::vector<unsigned short> testseaidswithattackers(seaidswithattackers);
+					gwb->GetValidSeaIDsAroundMilitaryBuildingForAttackCompare(gwb->GetHarborPoint(i).x,gwb->GetHarborPoint(i).y,&testseaidswithattackers,playerid);
+					if(testseaidswithattackers.size()) //harbor can be attacked?
 					{
 						if(!hb->DefendersAvailable()) //no defenders?
-						{
-							std::list<GameWorldBase::PotentialSeaAttacker> attackers;
-							gwb->GetAvailableSoldiersForSeaAttack(playerid,gwb->GetHarborPoint(i).x,gwb->GetHarborPoint(i).y,&attackers);						
-							if(attackers.size()) //try to attack it!
-							{
-								undefendedTargets.push_back(hb);
-							}
-							else//no attackers in this sea_id -> remember that 
-							{
-								for (unsigned z=0;z<6;z++)
-								{
-									if(sea_ids[z])
-										invalidseas.push_back(sea_ids[z]);
-								}
-							}
-						}
-						else//can defend itself add to possible target list if we could attack it else add it to invalid sea_ids list :)
-						{
-							std::list<GameWorldBase::PotentialSeaAttacker> attackers;
-							gwb->GetAvailableSoldiersForSeaAttack(playerid,gwb->GetHarborPoint(i).x,gwb->GetHarborPoint(i).y,&attackers);
-							if(!attackers.size())
-							{
-								for (unsigned z=0;z<6;z++)
-								{
-									if(sea_ids[z])
-										invalidseas.push_back(sea_ids[z]);
-								}
-							}
-							else
-							{
-								potentialTargets.push_back(hb);
-								//LOG.lprintf("found a defended harbor we can attack at %i,%i \n",hb->GetX(),hb->GetY());
-							}
-						}
-					}//invalid -> nothing else to do
+							undefendedTargets.push_back(hb);
+						else //todo: maybe only attack this when there is a fair win chance for the attackers?
+							potentialTargets.push_back(hb);
+						//LOG.lprintf("found a defended harbor we can attack at %i,%i \n",hb->GetX(),hb->GetY());	
+					}			
 				}
-				else//cant attack the harbor -> add to list
+				else//cant attack player owning the harbor -> add to list
 				{
 					searcharoundharborspots.push_back(i);
 				}
@@ -1839,7 +1827,7 @@ void AIPlayerJH::TrySeaAttack()
 			gwb->GetAvailableSoldiersForSeaAttack(playerid,(*it)->GetX(),(*it)->GetY(),&attackers);
 			if(attackers.size()) //try to attack it!
 			{
-				aii->SeaAttack((*it)->GetX(),(*it)->GetY(),attackers.size(),true);
+				aii->SeaAttack((*it)->GetX(),(*it)->GetY(),1,true);
 				return;
 			}
 		}
@@ -1852,20 +1840,6 @@ void AIPlayerJH::TrySeaAttack()
 	for(unsigned i=skip;i<searcharoundharborspots.size() && limit>0 ;i++)
 	{
 		limit--;
-		//first check if the harborspot we are checking for is in one of the invalidseas!
-		unsigned short sea_ids[6];
-		gwb->GetSeaIDs(i,sea_ids);
-		bool invalid=false;
-		for(unsigned z=0;z<6;z++)
-		{
-			if(std::find(invalidseas.begin(),invalidseas.end(),sea_ids[z])!=invalidseas.end())
-			{
-				invalid=true;
-				break;
-			}
-		}
-		if(invalid)
-			continue;
 		//now add all military buildings around the harborspot to our list of potential targets
 		std::list<nobBaseMilitary *> buildings;
 		aii->GetMilitaryBuildings(gwb->GetHarborPoint(searcharoundharborspots[i]).x,gwb->GetHarborPoint(searcharoundharborspots[i]).y,2,buildings);
@@ -1876,42 +1850,53 @@ void AIPlayerJH::TrySeaAttack()
 				const nobMilitary *enemyTarget = dynamic_cast<const nobMilitary *>((*it));
 
 				if (enemyTarget && enemyTarget->IsNewBuilt())
-					continue;
-				potentialTargets.push_back((*it));
-				if (((*it)->GetGOT() != GOT_NOB_MILITARY) && (!(*it)->DefendersAvailable()))
-				{
-					std::list<GameWorldBase::PotentialSeaAttacker> attackers;
-					gwb->GetAvailableSoldiersForSeaAttack(playerid,(*it)->GetX(),(*it)->GetY(),&attackers);
-					if(attackers.size()) //try to attack it!
+					continue;				
+				if (((*it)->GetGOT() != GOT_NOB_MILITARY) && (!(*it)->DefendersAvailable())) //undefended headquarter(or unlikely as it is a harbor...) - priority list!
+				{	
+					std::vector<unsigned short> testseaidswithattackers(seaidswithattackers);
+					gwb->GetValidSeaIDsAroundMilitaryBuildingForAttackCompare((*it)->GetX(),(*it)->GetY(),&testseaidswithattackers,playerid);
+					if(testseaidswithattackers.size())
 					{
-						aii->SeaAttack((*it)->GetX(),(*it)->GetY(),attackers.size(),true);
-						return;
-					}
-					else//cant attack so add the seas we are looking from to the invalid seas
-					{
-						for(unsigned z=0;z<6;z++)
-						{
-							invalidseas.push_back(sea_ids[z]);
-						}
-						continue;//go to next harborspot we wont be able to attack anything from this harborspot anyways
-					}
-				} else
-				{
+						undefendedTargets.push_back(*it);
+					}//else - no attackers - do nothing					
+				} 
+				else //normal target - check is done after random shuffle so we dont have to check every possible target and instead only enough to get 1 good one
+				{	
 					potentialTargets.push_back(*it);
 				}
+			} //not attackable or no vision of region - do nothing
+		}
+	}
+	//now we have a deque full of available and maybe undefended targets that are available for attack -> shuffle and attack the first one we can attack("should" be the first we check...)
+	//any undefendedTargets? -> pick one by random
+	if(undefendedTargets.size()>0)
+	{
+		std::random_shuffle(undefendedTargets.begin(),undefendedTargets.end());
+		for(std::deque<const nobBaseMilitary*>::iterator it=undefendedTargets.begin();it!=undefendedTargets.end();it++)
+		{
+			std::list<GameWorldBase::PotentialSeaAttacker> attackers;
+			gwb->GetAvailableSoldiersForSeaAttack(playerid,(*it)->GetX(),(*it)->GetY(),&attackers);
+			if(attackers.size()) //try to attack it!
+			{
+				aii->SeaAttack((*it)->GetX(),(*it)->GetY(),1,true);
+				return;
 			}
 		}
 	}
-	//now we have a deque full of available targets that are available for attack -> shuffle and attack the first one we can attack
 	std::random_shuffle(potentialTargets.begin(),potentialTargets.end());
 	for(std::deque<const nobBaseMilitary*>::iterator it=potentialTargets.begin();it!=potentialTargets.end();it++)
 	{
-		std::list<GameWorldBase::PotentialSeaAttacker> attackers;
-		gwb->GetAvailableSoldiersForSeaAttack(playerid,(*it)->GetX(),(*it)->GetY(),&attackers);
-		if(attackers.size()) //try to attack it!
-		{
-			aii->SeaAttack((*it)->GetX(),(*it)->GetY(),attackers.size(),true);
-			return;
+		std::vector<unsigned short> testseaidswithattackers(seaidswithattackers); //TODO: decide if it is worth attacking the target and not just "possible"
+		gwb->GetValidSeaIDsAroundMilitaryBuildingForAttackCompare((*it)->GetX(),(*it)->GetY(),&testseaidswithattackers,playerid); //test only if we should have attackers from one of our valid sea ids
+		if(testseaidswithattackers.size()>0) //only do the final check if it will probably be a good result
+		{	
+			std::list<GameWorldBase::PotentialSeaAttacker> attackers; 
+			gwb->GetAvailableSoldiersForSeaAttack(playerid,(*it)->GetX(),(*it)->GetY(),&attackers); //now get a final list of attackers and attack it
+			if(attackers.size()) 
+			{
+				aii->SeaAttack((*it)->GetX(),(*it)->GetY(),attackers.size(),true);
+				return;
+			}
 		}
 	}
 }
