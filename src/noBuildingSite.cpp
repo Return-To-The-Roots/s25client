@@ -1,4 +1,4 @@
-// $Id: noBuildingSite.cpp 9096 2014-01-25 10:38:31Z marcus $
+// $Id: noBuildingSite.cpp 9179 2014-02-20 17:48:31Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -298,15 +298,15 @@ void noBuildingSite::Abrogate()
 	gwg->GetPlayer(player)->AddJobWanted((state == STATE_PLANING) ? JOB_PLANER : JOB_BUILDER,this);
 }
 
-unsigned noBuildingSite::CalcDistributionPoints(noRoadNode * start,const GoodType type)
+unsigned noBuildingSite::CalcDistributionPoints(noRoadNode * start,const GoodType goodtype)
 {
 	// Beim Planieren brauchen wir noch gar nichts
 	if(state == STATE_PLANING)
 		return 0;
 
 	// Wenn wir schon genug Baumaterial haben, brauchen wir nichts mehr
-	if((BUILDING_COSTS[nation][this->type].boards == ordered_boards.size() + boards + used_boards && type == GD_BOARDS) ||
-		(BUILDING_COSTS[nation][this->type].stones == ordered_stones.size() + stones + used_stones && type == GD_STONES))
+	if((BUILDING_COSTS[nation][this->type].boards == ordered_boards.size() + boards + used_boards && goodtype == GD_BOARDS) ||
+		(BUILDING_COSTS[nation][this->type].stones == ordered_stones.size() + stones + used_stones && goodtype == GD_STONES))
 		return 0;
 
 	// 10000 als Basis wählen, damit man auch noch was abziehen kann
