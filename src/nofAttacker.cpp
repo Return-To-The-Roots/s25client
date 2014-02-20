@@ -635,8 +635,7 @@ void nofAttacker::MissAttackingWalk()
 void nofAttacker::ReachedDestination()
 {
 	// Sind wir direkt an der Flagge?
-	if(x == attacked_goal->GetX() + (attacked_goal->GetY()&1)  &&
-		y == attacked_goal->GetY()+1)
+	if(x==attacked_goal->GetFlag()->GetX() && y==attacked_goal->GetFlag()->GetY())
 	{
 		// Building already captured? Continue capturing
 		// This can only be a far away attacker
