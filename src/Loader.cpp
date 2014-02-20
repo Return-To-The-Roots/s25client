@@ -1,4 +1,4 @@
-// $Id: Loader.cpp 8861 2013-08-24 08:46:06Z marcus $
+// $Id: Loader.cpp 9178 2014-02-20 17:47:00Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -795,11 +795,11 @@ void Loader::fillCaches()
 					unsigned int good = id*96 + ani_step*12 + ( (dir + 3) % 6 ) + fat*6;
 					unsigned int body = fat*48 + ( (dir + 3) % 6 )*8 + ani_step;
 
-					if(bob_jobs->getLink(good) == 92)
+					/*if(bob_jobs->getLink(good) == 92)
 					{
 						good -= fat*6;
 						body -= fat*48;
-					}
+					}*/
 
 					bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(bob_carrier->get(body)));
 					bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(bob_carrier->get(96+bob_carrier->getLink(good))));
