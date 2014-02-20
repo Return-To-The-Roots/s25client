@@ -1,4 +1,4 @@
-// $Id: nofActiveSoldier.cpp 8916 2013-08-27 18:50:05Z marcus $
+// $Id: nofActiveSoldier.cpp 9177 2014-02-20 17:45:20Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -168,7 +168,8 @@ void nofActiveSoldier::Draw(int x, int y)
 	case STATE_DEFENDING_WAITING:
 		{
 			// Draw waiting states
-			Loader::bob_jobs_cache[GAMECLIENT.GetPlayer(player)->nation][job][dir][2].draw(x,y,COLOR_WHITE,COLORS[GAMECLIENT.GetPlayer(player)->color]);
+			//Loader::bob_jobs_cache[GAMECLIENT.GetPlayer(player)->nation][job][dir][2].draw(x,y,COLOR_WHITE,COLORS[GAMECLIENT.GetPlayer(player)->color]);
+			DrawSoldierWalking(x,y,true); //cannot draw from Soldiers & Scouts from Loader::bob_jobs_cache v9102
 		} break;
 	case STATE_FIGUREWORK:
 	case STATE_MEETENEMY:

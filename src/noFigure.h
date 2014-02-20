@@ -1,4 +1,4 @@
-// $Id: noFigure.h 8334 2012-09-28 23:12:07Z marcus $
+// $Id: noFigure.h 9177 2014-02-20 17:45:20Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -161,7 +161,7 @@ public:		void Destroy() { Destroy_noFigure(); }
 	/// Zeichnet eine Figur aus "jobs.bob", wenn sie l‰uft.
 	void DrawWalkingBobJobs(int x, int y, unsigned int id);
 	/// Zeichnet standardm‰ﬂig die Figur, wenn sie l‰uft 
-	void DrawWalking(int x, int y, glArchivItem_Bob *file, unsigned int item, bool fat);
+	void DrawWalking(int x, int y, glArchivItem_Bob *file, unsigned int item, bool fat, bool waitingsoldier=false);
 	/// Zeichnet standardm‰ﬂig die Figur, wenn sie l‰uft aus einem bestimmten normalen LST Archiv
 	void DrawWalking(int x, int y, const char * const file, unsigned int id);
 	/// Zeichnet standardm‰ﬂig die Figur, wenn sie l‰uft, nimmt automatisch richtige Job-ID/Datei

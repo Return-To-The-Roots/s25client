@@ -1,4 +1,4 @@
-// $Id: nofSoldier.h 8916 2013-08-27 18:50:05Z marcus $
+// $Id: nofSoldier.h 9177 2014-02-20 17:45:20Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -37,7 +37,7 @@ protected:
 protected:
 
 	/// Zeichnet den Soldaten beim ganz normalen Laufen
-	void DrawSoldierWalking(int x, int y);
+	void DrawSoldierWalking(int x, int y, bool waitingsoldier=false);
 
 private:
 	/// wenn man beim Arbeitsplatz "kündigen" soll, man das Laufen zum Ziel unterbrechen muss (warum auch immer)

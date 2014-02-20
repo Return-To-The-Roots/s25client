@@ -1411,13 +1411,13 @@ void noFigure::DrawWalkingBobJobs(int x, int y, unsigned int job)
 }
 
 
-void noFigure::DrawWalking(int x, int y, glArchivItem_Bob *file, unsigned int id, bool fat)
+void noFigure::DrawWalking(int x, int y, glArchivItem_Bob *file, unsigned int id, bool fat, bool waitingsoldier)
 {
 	// Wenn wir warten auf ein freies Plätzchen, müssen wir den stehend zeichnen!
-	unsigned ani_step = waiting_for_free_node?2:GAMECLIENT.Interpolate(ASCENT_ANIMATION_STEPS[ascent],current_ev)%8;
+	unsigned ani_step = waiting_for_free_node||waitingsoldier?2:GAMECLIENT.Interpolate(ASCENT_ANIMATION_STEPS[ascent],current_ev)%8;
 	
 	// Wenn man wartet, stehend zeichnen, es sei denn man wartet mittem auf dem Weg!
-	if(!waiting_for_free_node || pause_walked_gf)
+	if(!waitingsoldier && (!waiting_for_free_node || pause_walked_gf))
 		CalcFigurRelative(x,y);
 	if(file)
 		file->Draw(id, dir, fat, ani_step, x, y, COLORS[gwg->GetPlayer(player)->color]);
