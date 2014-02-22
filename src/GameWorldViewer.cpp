@@ -1,4 +1,4 @@
-// $Id: GameWorldViewer.cpp 9164 2014-02-17 11:45:14Z marcus $
+// $Id: GameWorldViewer.cpp 9190 2014-02-22 19:21:04Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -39,7 +39,6 @@
 #include "Settings.h"
 
 #include "GameServer.h"
-#include "AIPlayerJH.h"
 
 GameWorldViewer::GameWorldViewer() : scroll(false), sx(0), sy(0), view(GameWorldView(this, 0, 0, VideoDriverWrapper::inst().GetScreenWidth(), VideoDriverWrapper::inst().GetScreenHeight()))
 {
@@ -169,37 +168,47 @@ unsigned char GameWorldViewer::GetVisibleRoad(const MapCoord x, const MapCoord y
 }
 
 
-/// Gibt das erste Schiff, was gefunden wird von diesem Spieler, zurück, ansonsten NULL, falls es nicht
-/// existiert
+/// Return a ship at this position owned by the given player. Prefers ships that need instructions.
 noShip * GameWorldViewer::GetShip(const MapCoord x, const MapCoord y, const unsigned char player) const
 {
-	for(unsigned i = 0;i<7;++i)
+	noShip *ship = NULL;
+
+	for (unsigned i = 0; i < 7; ++i)
 	{
-		Point<MapCoord> pa(x,y);
-		if(i > 0)
+		Point<MapCoord> pa;
+
+		if (i == 6)
 		{
-			pa.x = GetXA(x,y,i-1);
-			pa.y = GetYA(x,y,i-1);
+			pa = Point<MapCoord>(x,y);
+		} else
+		{
+			pa.x = GetXA(x, y, i);
+			pa.y = GetYA(x, y, i);
 		}
-		for(list<noBase*>::iterator it = GetFigures(pa.x,pa.y).begin();it.valid();++it)
+
+		for(list<noBase*>::iterator it = GetFigures(pa.x,pa.y).begin(); it.valid(); ++it)
 		{
 			if((*it)->GetGOT() == GOT_SHIP)
 			{
-				noShip * ship = static_cast<noShip*>(*it);
-				if(ship->GetPlayer() == player)
+				noShip *tmp = static_cast<noShip*>(*it);
+
+				if (tmp->GetPlayer() == player)
 				{
-					if((ship->GetX() == x && ship->GetY() ==y) ||
-					ship->GetDestinationForCurrentMove() == Point<MapCoord>(x,y))
-						return static_cast<noShip*>(*it);
+					if (((tmp->GetX() == x) && (tmp->GetY() == y)) || (tmp->GetDestinationForCurrentMove() == Point<MapCoord>(x,y)))
+					{
+						if (tmp->IsWaitingForExpeditionInstructions())
+						{
+							return(tmp);
+						}
+
+						ship = tmp;
+					}
 				}
 			}
 		}
-		
-		
 	}
-	
 
-	return NULL;
+	return(ship);
 }
 
 /// Gibt die verfügbar Anzahl der Angreifer für einen Seeangriff zurück
