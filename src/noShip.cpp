@@ -1,4 +1,4 @@
-// $Id: noShip.cpp 9147 2014-02-11 16:46:05Z marcus $
+// $Id: noShip.cpp 9186 2014-02-22 13:22:44Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -37,7 +37,6 @@
 #include "AIEventManager.h"
 #include "nofAttacker.h"
 
-const unsigned SHIP_SPEED = 20;
 const unsigned int ship_count = 55;
 
 /// Zeit zum Beladen des Schiffes
@@ -429,7 +428,9 @@ void noShip::HandleEvent(const unsigned int id)
 
 void noShip::StartDriving(const unsigned char dir)
 {
-	StartMoving(dir,SHIP_SPEED);
+	const unsigned SHIP_SPEEDS[] = {35, 25, 20, 10, 5};
+
+	StartMoving(dir, SHIP_SPEEDS[GAMECLIENT.GetGGS().getSelection(ADDON_SHIP_SPEED)]);
 }
 
 void noShip::Driven()

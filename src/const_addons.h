@@ -1,4 +1,4 @@
-// $Id: const_addons.h 9149 2014-02-11 16:49:01Z marcus $
+// $Id: const_addons.h 9186 2014-02-22 13:22:44Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -33,6 +33,7 @@
 // 007 KaiN (https://launchpad.net/~Szekta)
 // 008 Spikeone
 // 009 PoC
+// 00A Marcus
 
 // Do not forget to add your Addon to GlobalGameSettings::reset @ GlobalGameSettings.cpp!
 // Never use a number twice!
@@ -72,7 +73,8 @@ enum AddonId
 	ADDON_INEXHAUSTIBLE_GRANITEMINES= 0x00800000,
 	ADDON_MAX_RANK					= 0x00900000,
 	ADDON_SEA_ATTACK				= 0x00900001,
-	ADDON_INEXHAUSTIBLE_FISH		= 0x00900002
+	ADDON_INEXHAUSTIBLE_FISH		= 0x00900002,
+	ADDON_SHIP_SPEED			= 0x00A00000
 };
 
 enum AddonGroup

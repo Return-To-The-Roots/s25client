@@ -1,4 +1,4 @@
-// $Id: GlobalGameSettings.cpp 9149 2014-02-11 16:49:01Z marcus $
+// $Id: GlobalGameSettings.cpp 9186 2014-02-22 13:22:44Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -55,6 +55,8 @@
 #include "AddonMaxRank.h"
 #include "AddonSeaAttack.h"
 #include "AddonInexhaustibleFish.h"
+
+#include "AddonShipSpeed.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
@@ -141,6 +143,8 @@ void GlobalGameSettings::reset(bool recreate)
 		registerAddon(new AddonMaxRank);
 		registerAddon(new AddonSeaAttack);
 		registerAddon(new AddonInexhaustibleFish);
+
+		registerAddon(new AddonShipSpeed);
 	}
 }
 

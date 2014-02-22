@@ -1,5 +1,5 @@
 ################################################################################
-### $Id: CMakeLists.txt 9150 2014-02-11 16:51:55Z marcus $
+### $Id: CMakeLists.txt 9186 2014-02-22 13:22:44Z marcus $
 ################################################################################
 
 INCLUDE(FindBZip2)
@@ -324,6 +324,7 @@ SET(SOURCES_OTHER
 										AddonDemolitionProhibition.h
 										AddonMilitaryAid.h
 										AddonRefundOnEmergency.h
+										AddonShipSpeed.h
 										const_addons.h
 	win32_nanosleep.cpp                 win32_nanosleep.h
 	Debug.cpp                           Debug.h
