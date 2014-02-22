@@ -1,3 +1,177 @@
+s25rttr (20140222-9189.307) karmic; urgency=low
+
+  * Automatic Jenkins Build 307
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sat, 22 Feb 2014 16:20:30 +0100
+
+s25rttr (20140222-9189.306) karmic; urgency=low
+
+  * Automatic Jenkins Build 306
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sat, 22 Feb 2014 15:58:59 +0100
+
+s25rttr (20140222-9189) any; urgency=low
+
+  * Fix for mingw
+
+ -- marcus  Sat, 22 Feb 2014 14:42:00 +0100
+
+s25rttr (20140222-9188) any; urgency=low
+
+  * Fix for bug #1282661: nearby idle ships will not be ordered if
+    there are enough ships already driving to that harbor.
+    (experimental?)
+
+ -- marcus  Sat, 22 Feb 2014 13:27:00 +0100
+
+s25rttr (20140222-9187) any; urgency=low
+
+  * Could not hurt to include the addon file itself...
+
+ -- marcus  Sat, 22 Feb 2014 13:26:00 +0100
+
+s25rttr (20140222-9186) any; urgency=low
+
+  * Addon to set ship speed. May need some tuning though... :)
+
+ -- marcus  Sat, 22 Feb 2014 13:22:00 +0100
+
+s25rttr (20140222-9185) any; urgency=low
+
+  * Avoid signed/unsigned conversion in nobHarborBuilding.cpp
+
+ -- marcus  Sat, 22 Feb 2014 13:17:00 +0100
+
+s25rttr (20140221-9180.305) karmic; urgency=low
+
+  * Automatic Jenkins Build 305
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Fri, 21 Feb 2014 01:22:55 +0100
+
+s25rttr (20140221-9180) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Fri, 21 Feb 2014 00:00:00 +0100
+
+s25rttr (20140220-9179) any; urgency=low
+
+  * AIpoc r9104
+    
+    fix for Bug #1281228: letztes Brett "vergessen"
+
+ -- marcus  Thu, 20 Feb 2014 17:48:00 +0100
+
+s25rttr (20140220-9178) any; urgency=low
+
+  * AIpoc r9103
+    
+    fix for Bug #1281196: "Dicke" Träger werden zu "Dünnen"
+    applies to: helpers(carriers),boat-helpers while walking to goal,
+    well workers, warehouse helpers
+
+ -- marcus  Thu, 20 Feb 2014 17:47:00 +0100
+
+s25rttr (20140220-9177) any; urgency=low
+
+  * AIpoc r9102
+    
+    fix for Bug #1281224: Grafibug: Wartende Soldaten
+    noFigure DrawWalkingBobJobs excludes soldiers (and scouts) from
+    being drawn from Loader::bob_jobs_cache so there is probably a
+    reason for it - this fix circuments the problem in a similar way
+    
+    TODO: updated/rewrite caches accordingly ;-)
+
+ -- marcus  Thu, 20 Feb 2014 17:45:00 +0100
+
+s25rttr (20140220-9176) any; urgency=low
+
+  * AIpoc 9101
+    
+    fix for bug #913493 Soldat wartet vor Festung (pos X:0)
+
+ -- marcus  Thu, 20 Feb 2014 17:42:00 +0100
+
+s25rttr (20140219-9171.304) karmic; urgency=low
+
+  * Automatic Jenkins Build 304
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Wed, 19 Feb 2014 01:29:50 +0100
+
+s25rttr (20140219-9171) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Wed, 19 Feb 2014 00:00:00 +0100
+
+s25rttr (20140218-9167) any; urgency=low
+
+  * AIpoc r9097
+    
+    ai: sea attack: reduce calculation effort for target selection
+
+ -- marcus  Tue, 18 Feb 2014 18:14:00 +0100
+
+s25rttr (20140218-9166) any; urgency=low
+
+  * AIpoc 9096
+    
+    ai: limit granite mines to military buildings / 3
+
+ -- marcus  Tue, 18 Feb 2014 18:14:00 +0100
+
+s25rttr (20140218-9165.303) karmic; urgency=low
+
+  * Automatic Jenkins Build 303
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 18 Feb 2014 01:09:46 +0100
+
+s25rttr (20140218-9165) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 18 Feb 2014 00:00:00 +0100
+
+s25rttr (20140217-9164) any; urgency=low
+
+  * TerrainRenderer speed-up
+
+ -- marcus  Mon, 17 Feb 2014 11:45:00 +0100
+
+s25rttr (20140217-9163) any; urgency=low
+
+  * Pathfinding speed-up
+
+ -- marcus  Mon, 17 Feb 2014 11:44:00 +0100
+
+s25rttr (20140217-9162.302) karmic; urgency=low
+
+  * Automatic Jenkins Build 302
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Mon, 17 Feb 2014 01:34:47 +0100
+
+s25rttr (20140217-9162) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Mon, 17 Feb 2014 00:00:00 +0100
+
+s25rttr (20140216-9161) any; urgency=low
+
+  * AIpoc r9095
+    
+    ai now checks all ships from time to time looking for lost
+    expeditions
+
+ -- marcus  Sun, 16 Feb 2014 10:19:00 +0100
+
+s25rttr (20140215-9159) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 15 Feb 2014 23:00:00 +0100
+
 s25rttr (20140211-9150.301) karmic; urgency=low
 
   * Automatic Jenkins Build 301
