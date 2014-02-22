@@ -1,4 +1,4 @@
-// $Id: GameClientPlayer.cpp 9188 2014-02-22 13:27:33Z marcus $
+// $Id: GameClientPlayer.cpp 9189 2014-02-22 14:42:19Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -46,6 +46,7 @@
 #include "SerializedGameData.h"
 #include "GameMessages.h"
 
+#include <stdint.h>
 #include <limits>
 
 ///////////////////////////////////////////////////////////////////////////////
