@@ -1,4 +1,4 @@
-// $Id: GameClientPlayer.cpp 9130 2014-02-02 14:33:08Z marcus $
+// $Id: GameClientPlayer.cpp 9188 2014-02-22 13:27:33Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -45,6 +45,8 @@
 
 #include "SerializedGameData.h"
 #include "GameMessages.h"
+
+#include <limits>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -1865,58 +1867,97 @@ void GameClientPlayer::RegisterShip(noShip * ship)
 	GetJobForShip(ship);
 }
 
+struct ShipForHarbor
+{
+	noShip *ship;
+	uint32_t estimate;
+
+	ShipForHarbor(noShip *ship, uint32_t estimate) : ship(ship), estimate(estimate) {}
+
+	bool operator<(const ShipForHarbor b) const
+	{
+		return(estimate < b.estimate);
+	}
+};
+
 /// Schiff für Hafen bestellen
 bool GameClientPlayer::OrderShip(nobHarborBuilding * hb)
 {
-	// Erstmal prüfen, ob der Hafen das Schiff wirklich braucht, ggf. fahren ja schon welche hin
-	if(GetShipsToHarbor(hb) >= hb->GetNeededShipsCount())
-		return(false);
+	std::vector<ShipForHarbor> sfh;
 
-	// Schiff mit der besten Weglänge bestimmen
-	noShip * best = 0;
-	unsigned best_length = 0xFFFFFFFF;
-	std::vector<unsigned char> best_route;
-
-	// Beste Weglänge, die ein Schiff zurücklegen muss, welches gerade nichts zu tun hat
-	for(unsigned i = 0;i<ships.size();++i)
+	// we need more ships than those that are already on their way? limit search to idle ships
+	if (GetShipsToHarbor(hb) < hb->GetNeededShipsCount())
 	{
-		// Hat das Schiff gerade nichts zu tun und liegen wir am gleichen Meer?
-		if(ships[i]->IsIdling())
+		for (std::vector<noShip*>::iterator it = ships.begin(); it != ships.end(); ++it)
 		{
-			if(gwg->IsAtThisSea(gwg->GetHarborPointID(hb->GetX(),hb->GetY()),ships[i]->GetSeaID()))
+			if ((*it)->IsIdling() && gwg->IsAtThisSea(gwg->GetHarborPointID(hb->GetX(), hb->GetY()), (*it)->GetSeaID()))
 			{
-				MapCoord dest_x,dest_y;
-				gwg->GetCoastalPoint(hb->GetHarborPosID(),&dest_x,&dest_y,ships[i]->GetSeaID());
-
-				// Steht das Schiff vielleicht schon genau an der gewünschten Stelle?
-				if(ships[i]->GetX() == dest_x && ships[i]->GetY() == dest_y)
+					sfh.push_back(ShipForHarbor(*it, gwg->CalcDistance(hb->GetX(), hb->GetY(), (*it)->GetX(), (*it)->GetY())));
+			}
+		}
+	} else
+	{
+		for (std::vector<noShip*>::iterator it = ships.begin(); it != ships.end(); ++it)
+		{
+			if ((*it)->IsIdling())
+			{
+				if (gwg->IsAtThisSea(gwg->GetHarborPointID(hb->GetX(), hb->GetY()), (*it)->GetSeaID()))
 				{
-					// Dann nehmen wir das gleich
-					ships[i]->AssignHarborId(hb->GetHarborPosID());
-					hb->ShipArrived(ships[i]);
-					return(true);
+					sfh.push_back(ShipForHarbor(*it, gwg->CalcDistance(hb->GetX(), hb->GetY(), (*it)->GetX(), (*it)->GetY())));
 				}
-
-				unsigned length;
-				std::vector<unsigned char> route;
-				if(gwg->FindShipPath(ships[i]->GetX(),ships[i]->GetY(),dest_x,dest_y,&route,&length))
-				{
-					if(length < best_length)
-					{
-						best = ships[i];
-						best_length = length;
-						best_route = route;
-					}
-				}
+			} else if ((*it)->IsGoingToHarbor(hb))
+			{
+				sfh.push_back(ShipForHarbor(*it, gwg->CalcDistance(hb->GetX(), hb->GetY(), (*it)->GetX(), (*it)->GetY())));
 			}
 		}
 	}
 
-	// Eins gefunden?
-	if(best)
+	std::sort(sfh.begin(), sfh.end());
+
+	noShip *best_ship = NULL;
+	uint32_t best_distance = std::numeric_limits<uint32_t>::max();
+	std::vector<unsigned char> best_route;
+
+	for (std::vector<ShipForHarbor>::iterator it = sfh.begin(); it != sfh.end(); ++it)
 	{
-		// Dann bekommt das gleich der Hafen
-		best->GoToHarbor(hb,best_route);
+		uint32_t distance;
+		std::vector<unsigned char> route;
+
+		// the estimate (air-line distance) for this and all other ships in the list is already worse than what we found? disregard the rest
+		if ((*it).estimate >= best_distance)
+		{
+			break;
+		}
+
+		MapCoord dest_x,dest_y;
+		noShip *ship = (*it).ship;
+
+		gwg->GetCoastalPoint(hb->GetHarborPosID(), &dest_x, &dest_y, ship->GetSeaID());
+
+		// ship already there?
+		if ((ship->GetX() == dest_x) && (ship->GetY() == dest_y))
+		{
+			ship->AssignHarborId(hb->GetHarborPosID());
+			hb->ShipArrived(ship);
+			return(true);
+		}
+
+		if (gwg->FindShipPath(ship->GetX(), ship->GetY(), dest_x, dest_y, &route, &distance))
+		{
+			if (distance < best_distance)
+			{
+				best_ship = ship;
+				best_distance = distance;
+				best_route = route;
+			}
+		}
+	}
+
+	// only order ships not already on their way
+	if (best_ship && best_ship->IsIdling())
+	{
+		best_ship->GoToHarbor(hb, best_route);
+
 		return(true);
 	}
 
