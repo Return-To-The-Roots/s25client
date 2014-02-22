@@ -1,4 +1,4 @@
-// $Id: nobHarborBuilding.cpp 9167 2014-02-18 18:14:42Z marcus $
+// $Id: nobHarborBuilding.cpp 9185 2014-02-22 13:17:20Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -132,9 +132,9 @@ void nobHarborBuilding::Destroy()
 			gwg->GetPlayer(player)->OneJobNotWanted(JOB_BUILDER,this);
 	}
 	//cancel order for scouts
-	if(exploration_expedition.active)
+	if (exploration_expedition.active)
 	{
-		for(int i=exploration_expedition.scouts; i<SCOUTS_EXPLORATION_EXPEDITION; i++)
+		for (unsigned i = exploration_expedition.scouts; i < SCOUTS_EXPLORATION_EXPEDITION; i++)
 		{
 			gwg->GetPlayer(player)->OneJobNotWanted(JOB_SCOUT,this);
 		}
@@ -436,7 +436,7 @@ void nobHarborBuilding::StartExplorationExpedition()
 		// Dann diese stoppen
 		exploration_expedition.active = false;
 		// cancel order for scouts
-		for(int i=exploration_expedition.scouts; i<SCOUTS_EXPLORATION_EXPEDITION; i++)
+		for (unsigned i = exploration_expedition.scouts; i < SCOUTS_EXPLORATION_EXPEDITION; i++)
 		{
 			gwg->GetPlayer(player)->OneJobNotWanted(JOB_SCOUT,this);
 		}
