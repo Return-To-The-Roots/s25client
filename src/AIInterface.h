@@ -122,7 +122,7 @@ public:
 	bool IsBuildingOnNode(MapCoord x, MapCoord y, BuildingType bld) const { return (gwb->GetNO(x,y)->GetType()==NOP_BUILDING||gwb->GetNO(x,y)->GetType()==NOP_BUILDINGSITE)?(gwb->GetSpecObj<noBaseBuilding>(x,y)->GetBuildingType()==bld):false;; }
 
 	/// Tests whether the ai player can see a point
-	bool IsVisible(MapCoord x, MapCoord y) const { return gwb->GetNode(x, y).fow[playerID].visibility == VIS_VISIBLE; }
+	bool IsVisible(MapCoord x, MapCoord y) const { return gwb->CalcWithAllyVisiblity(x,y,playerID) == VIS_VISIBLE; }
 
 	bool IsMilitaryBuildingNearNode(MapCoord x, MapCoord y, const unsigned char player) const { return gwb->IsMilitaryBuildingNearNode(x, y, player); }
 
