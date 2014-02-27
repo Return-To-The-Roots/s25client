@@ -1,4 +1,4 @@
-// $Id: Loader.cpp 9202 2014-02-27 10:50:29Z marcus $
+// $Id: Loader.cpp 9204 2014-02-27 12:34:29Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -474,18 +474,18 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool *nations)
 	for(unsigned char i = 0; i < NATIVE_NATION_COUNT; ++i)
 	{
 		// ggf. Völker-Grafiken laden
-		if(nations[i])
+		if(nations[i] || ((i == 2) && (nations[4])))
 			files[i] = 27 + i + (gfxset == 2)*NATIVE_NATION_COUNT;
 	}
 
 	// dateien ggf nur einmal laden - qx: wozu? performance is hier echt egal -> fixing bug #1085693 
-	if ((nations[4]) && !LoadFilesFromArray(files_count, files, true))
+	if (!LoadFilesFromArray(files_count, files, true))
 	{
 		lastgfx = 0xFF;
 		return false;
 	}
 
-	if(!LoadFileOrDir(RTTRDIR "/LSTS/GAME/Babylonier/", 0, true))
+	if ((nations[4]) && !LoadFileOrDir(RTTRDIR "/LSTS/GAME/Babylonier/", 0, true))
 	{
 		lastgfx = 0xFF;
 		return false;
@@ -630,6 +630,7 @@ void Loader::fillCaches()
 				{
 					bool fat;
 					unsigned id;
+					unsigned short overlayOffset = 96;
 
 					glSmartBitmap &bmp = bob_jobs_cache[nation][job][dir][ani_step];
 
@@ -646,21 +647,35 @@ void Loader::fillCaches()
 
 						if ((job == JOB_SCOUT) || ((job >= JOB_PRIVATE) && (job <= JOB_GENERAL)))
 						{
-							id += NATION_RTTR_TO_S2[nation] * 6;
+							if (nation < NATIVE_NATION_COUNT)
+							{
+								id += NATION_RTTR_TO_S2[nation] * 6;
+							} else if (nation == NAT_BABYLONIANS)
+							{
+								// replace babylonians by romans
+								id += NATION_RTTR_TO_S2[NAT_ROMANS] * 6;
+/*
+								//Offsets to new job imgs
+								overlayOffset = (job == JOB_SCOUT) ? 1740 : 1655;
+
+								//8 Frames * 6 Directions * 6 Types
+								overlayOffset += (nation - NATIVE_NATION_COUNT) * (8 * 6 * 6);
+*/
+							}
 						}
 					}
 
 					unsigned int good = id*96 + ani_step*12 + ( (dir + 3) % 6 ) + fat*6;
 					unsigned int body = fat*48 + ( (dir + 3) % 6 )*8 + ani_step;
 
-					if(bob_jobs->getLink(good) == 92)
+					if (bob_jobs->getLink(good) == 92)
 					{
 						good -= fat * 6;
 						body -= fat * 48;
 					}
 
 					bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(bob_jobs->get(body)));
-					bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(bob_jobs->get(96+bob_jobs->getLink(good))));
+					bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(bob_jobs->get(overlayOffset + bob_jobs->getLink(good))));
 					bmp.addShadow(LOADER.GetMapImageN(900 + ( (dir + 3) % 6 ) * 8 + ani_step));
 
 					stp->add(bmp);
