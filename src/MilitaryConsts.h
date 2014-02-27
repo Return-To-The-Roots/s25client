@@ -1,4 +1,4 @@
-// $Id: MilitaryConsts.h 9207 2014-02-27 16:34:49Z marcus $
+// $Id: MilitaryConsts.h 9208 2014-02-27 17:18:32Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -75,7 +75,7 @@ const signed char TROOPS_FLAGS[NATION_COUNT][4][2] =
 	{{-9,-49},{14,-59},{16,-63},{0,-44}},
 	{{-24,-36},{9,-62},{-2,-80},{23,-75}},
 	{{-5,-50},{-5,-51},{-9,-74},{-12,-58}},
-	{{-30,-47},{-10,-60},{16,-71},{-47,-63}}
+	{{-30,-47},{-10,-60},{16,-71},{-46,-64}}
 };
 
 /// Anzahl an Militäreinstellungen

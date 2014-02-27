@@ -1,4 +1,4 @@
-// $Id: BuildingConsts.h 9206 2014-02-27 13:06:29Z marcus $
+// $Id: BuildingConsts.h 9208 2014-02-27 17:18:32Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -185,33 +185,168 @@ const SmokeConst BUILDING_SMOKE_CONSTS[NATION_COUNT][30] =
 {
 	// Nubier
 	{
-		{0,0,0},{0,0,0},{0,0,0},{0,0,0},{0,0,0},{0,0,0},{0,0,0},{0,0,0},{0,0,0},{1,3,-32},
-		{0,0,0},{0,0,0},{0,0,0},{0,0,0},{1,-32,-23},{4,-26,-47},{2,-20,-37},{2,-22,-57},{0,0,0},{0,0,0}, 
-		{0,0,0},{0,0,0},{4,27,-39},{0,0,0},{1,17,-52},{0,0,0},{0,0,0},{0,0,0},{0,0,0},{0,0,0}   
+		{0,0,0}, // BLD_GRANITEMINE
+		{0,0,0}, // BLD_COALMINE
+		{0,0,0}, // BLD_IRONMINE
+		{0,0,0}, // BLD_GOLDMINE
+		{0,0,0}, // BLD_LOOKOUTTOWER
+		{0,0,0}, // BLD_NOTHING7
+		{0,0,0}, // BLD_CATAPULT
+		{0,0,0}, // BLD_WOODCUTTER
+		{0,0,0}, // BLD_FISHERY
+		{1,3,-32}, // BLD_QUARRY
+		{0,0,0}, // BLD_FORESTER
+		{0,0,0}, // BLD_SLAUGHTERHOUSE
+		{0,0,0}, // BLD_HUNTER
+		{0,0,0}, // BLD_BREWERY
+		{1,-32,-23}, // BLD_ARMORY
+		{4,-26,-47}, // BLD_METALWORKS
+		{2,-20,-37}, // BLD_IRONSMELTER
+		{2,-22,-57}, // BLD_CHARBURNER
+		{0,0,0}, // BLD_PIGFARM
+		{0,0,0}, // BLD_STOREHOUSE
+		{0,0,0}, // BLD_NOTHING9
+		{0,0,0}, // BLD_MILL
+		{4,27,-39}, // BLD_BAKERY
+		{0,0,0}, // BLD_SAWMILL
+		{1,17,-52}, // BLD_MINT
+		{0,0,0}, // BLD_WELL
+		{0,0,0}, // BLD_SHIPYARD
+		{0,0,0}, // BLD_FARM
+		{0,0,0}, // BLD_DONKEYBREEDER
+		{0,0,0} // BLD_HARBORBUILDING
 	},
 	// Japaner
 	{
-		{0,0,0},{0,0,0},{0,0,0},{0,0,0},{0,0,0},{0,0,0},{0,0,0},{0,0,0},{0,0,0},{0,0,0},
-		{0,0,0},{0,0,0},{0,0,0},{0,0,0},{1,-22,-43},{0,0,0},{0,0,0},{2,-33,-57},{0,0,0},{0,0,0},
-		{0,0,0},{0,0,0},{4,-30,-39},{0,0,0},{3,18,-58},{0,0,0},{0,0,0},{0,0,0},{0,0,0},{0,0,0} 
+		{0,0,0}, // BLD_GRANITEMINE
+		{0,0,0}, // BLD_COALMINE
+		{0,0,0}, // BLD_IRONMINE
+		{0,0,0}, // BLD_GOLDMINE
+		{0,0,0}, // BLD_LOOKOUTTOWER
+		{0,0,0}, // BLD_NOTHING7
+		{0,0,0}, // BLD_CATAPULT
+		{0,0,0}, // BLD_WOODCUTTER
+		{0,0,0}, // BLD_FISHERY
+		{0,0,0}, // BLD_QUARRY
+		{0,0,0}, // BLD_FORESTER
+		{0,0,0}, // BLD_SLAUGHTERHOUSE
+		{0,0,0}, // BLD_HUNTER
+		{0,0,0}, // BLD_BREWERY
+		{1,-22,-43}, // BLD_ARMORY
+		{0,0,0}, // BLD_METALWORKS
+		{0,0,0}, // BLD_IRONSMELTER
+		{2,-33,-57}, // BLD_CHARBURNER
+		{0,0,0}, // BLD_PIGFARM
+		{0,0,0}, // BLD_STOREHOUSE
+		{0,0,0}, // BLD_NOTHING9
+		{0,0,0}, // BLD_MILL
+		{4,-30,-39}, // BLD_BAKERY
+		{0,0,0}, // BLD_SAWMILL
+		{3,18,-58}, // BLD_MINT
+		{0,0,0}, // BLD_WELL
+		{0,0,0}, // BLD_SHIPYARD
+		{0,0,0}, // BLD_FARM
+		{0,0,0}, // BLD_DONKEYBREEDER
+		{0,0,0} // BLD_HARBORBUILDING
 	},
 	// Römer
 	{
-		{0,0,0},{0,0,0},{0,0,0},{0,0,0},{0,0,0},{0,0,0},{0,0,0},{0,0,0},{0,0,0},{0,0,0},
-		{0,0,0},{0,0,0},{0,0,0},{1,-26,-45},{2,-36,-34},{0,0,0},{1,-16,-34},{2,-44,-50},{0,0,0},{0,0,0},
-		{0,0,0},{0,0,0},{4,-15,-26},{0,0,0},{4,20,-50},{0,0,0},{0,0,0},{0,0,0},{0,0,0},{0,0,0} 
+		{0,0,0}, // BLD_GRANITEMINE
+		{0,0,0}, // BLD_COALMINE
+		{0,0,0}, // BLD_IRONMINE
+		{0,0,0}, // BLD_GOLDMINE
+		{0,0,0}, // BLD_LOOKOUTTOWER
+		{0,0,0}, // BLD_NOTHING7
+		{0,0,0}, // BLD_CATAPULT
+		{0,0,0}, // BLD_WOODCUTTER
+		{0,0,0}, // BLD_FISHERY
+		{0,0,0}, // BLD_QUARRY
+		{0,0,0}, // BLD_FORESTER
+		{0,0,0}, // BLD_SLAUGHTERHOUSE
+		{0,0,0}, // BLD_HUNTER
+		{1,-26,-45}, // BLD_BREWERY
+		{2,-36,-34}, // BLD_ARMORY
+		{0,0,0}, // BLD_METALWORKS
+		{1,-16,-34}, // BLD_IRONSMELTER
+		{2,-44,-50}, // BLD_CHARBURNER
+		{0,0,0}, // BLD_PIGFARM
+		{0,0,0}, // BLD_STOREHOUSE
+		{0,0,0}, // BLD_NOTHING9
+		{0,0,0}, // BLD_MILL
+		{4,-15,-26}, // BLD_BAKERY
+		{0,0,0}, // BLD_SAWMILL
+		{4,20,-50}, // BLD_MINT
+		{0,0,0}, // BLD_WELL
+		{0,0,0}, // BLD_SHIPYARD
+		{0,0,0}, // BLD_FARM
+		{0,0,0}, // BLD_DONKEYBREEDER
+		{0,0,0} // BLD_HARBORBUILDING
 	},
 	// Wikinger
 	{
-		{0,0,0},{0,0,0},{0,0,0},{0,0,0},{0,0,0},{0,0,0},{0,0,0},{1,2,-36},{1,4,-36},{1,0,-34},
-		{1,-5,-29},{1,7,-41},{1,-6,-38},{3,5,-39},{3,-23,-36},{1,-9,-35},{2,-2,-38},{2,-22,-55},{2,-30,-37},{0,0,0}, 
-		{0,0,0},{0,0,0},{4,-21,-26},{1,-11,-45},{1,16,-38},{0,0,0},{0,0,0},{1,-17,-48},{4,-27,-40},{0,0,0}   
+		{0,0,0}, // BLD_GRANITEMINE
+		{0,0,0}, // BLD_COALMINE
+		{0,0,0}, // BLD_IRONMINE
+		{0,0,0}, // BLD_GOLDMINE
+		{0,0,0}, // BLD_LOOKOUTTOWER
+		{0,0,0}, // BLD_NOTHING7
+		{0,0,0}, // BLD_CATAPULT
+		{1,2,-36}, // BLD_WOODCUTTER
+		{1,4,-36}, // BLD_FISHERY
+		{1,0,-34}, // BLD_QUARRY
+		{1,-5,-29}, // BLD_FORESTER
+		{1,7,-41}, // BLD_SLAUGHTERHOUSE
+		{1,-6,-38}, // BLD_HUNTER
+		{3,5,-39}, // BLD_BREWERY
+		{3,-23,-36}, // BLD_ARMORY
+		{1,-9,-35}, // BLD_METALWORKS
+		{2,-2,-38}, // BLD_IRONSMELTER
+		{2,-22,-55}, // BLD_CHARBURNER
+		{2,-30,-37}, // BLD_PIGFARM
+		{0,0,0}, // BLD_STOREHOUSE
+		{0,0,0}, // BLD_NOTHING9
+		{0,0,0}, // BLD_MILL
+		{4,-21,-26}, // BLD_BAKERY
+		{1,-11,-45}, // BLD_SAWMILL
+		{1,16,-38}, // BLD_MINT
+		{0,0,0}, // BLD_WELL
+		{0,0,0}, // BLD_SHIPYARD
+		{1,-17,-48}, // BLD_FARM
+		{4,-27,-40}, // BLD_DONKEYBREEDER
+		{0,0,0} // BLD_HARBORBUILDING
 	},
 	// Babylonier
 	{
-		{0,0,0},{0,0,0},{0,0,0},{0,0,0},{0,0,0},{0,0,0},{0,0,0},{0,0,0},{0,0,0},{0,0,0},
-		{0,0,0},{0,0,0},{0,0,0},{0,0,0},{1,-24,-45},{0,0,0},{0,0,0},{2,-33,-57},{0,0,0},{0,0,0},
-		{0,0,0},{0,0,0},{4,-27,-32},{0,0,0},{3,10,-58},{0,0,0},{0,0,0},{0,0,0},{0,0,0},{0,0,0}
+		{0,0,0}, // BLD_GRANITEMINE
+		{0,0,0}, // BLD_COALMINE
+		{0,0,0}, // BLD_IRONMINE
+		{0,0,0}, // BLD_GOLDMINE
+		{0,0,0}, // BLD_LOOKOUTTOWER
+		{0,0,0}, // BLD_NOTHING7
+		{0,0,0}, // BLD_CATAPULT
+		{0,0,0}, // BLD_WOODCUTTER
+		{0,0,0}, // BLD_FISHERY
+		{0,0,0}, // BLD_QUARRY
+		{0,0,0}, // BLD_FORESTER
+		{0,0,0}, // BLD_SLAUGHTERHOUSE
+		{0,0,0}, // BLD_HUNTER
+		{2,-18,-42}, // BLD_BREWERY
+		{1,-23,-45}, // BLD_ARMORY
+		{0,0,0}, // BLD_METALWORKS
+		{2,-27,-41}, // BLD_IRONSMELTER
+		{0,0,0}, // BLD_CHARBURNER
+		{0,0,0}, // BLD_PIGFARM
+		{0,0,0}, // BLD_STOREHOUSE
+		{0,0,0}, // BLD_NOTHING9
+		{0,0,0}, // BLD_MILL
+		{4,-27,-32}, // BLD_BAKERY
+		{0,0,0}, // BLD_SAWMILL
+		{3,11,-58}, // BLD_MINT
+		{0,0,0}, // BLD_WELL
+		{0,0,0}, // BLD_SHIPYARD
+		{0,0,0}, // BLD_FARM
+		{0,0,0}, // BLD_DONKEYBREEDER
+		{0,0,0} // BLD_HARBORBUILDING
 	}
 };
 

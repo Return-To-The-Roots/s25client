@@ -1,4 +1,4 @@
-// $Id: nofMetalworker.cpp 8737 2013-05-16 15:42:35Z marcus $
+// $Id: nofMetalworker.cpp 9208 2014-02-27 17:18:32Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -52,8 +52,7 @@ nofMetalworker::nofMetalworker(SerializedGameData * sgd, const unsigned obj_id) 
 
 void nofMetalworker::DrawWorking(int x, int y)
 {
-	signed char offsets[
-		4][2] = { {-11,-13},{31,5},{32,6},{30,10} };
+	signed char offsets[NATION_COUNT][2] = { {-11,-13},{31,5},{32,6},{30,10},{28,5} };
 
 	unsigned now_id;
 
