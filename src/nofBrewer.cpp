@@ -1,4 +1,4 @@
-// $Id: nofBrewer.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: nofBrewer.cpp 9199 2014-02-27 10:21:26Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -48,7 +48,7 @@ nofBrewer::nofBrewer(SerializedGameData * sgd, const unsigned obj_id) : nofWorkm
 
 void nofBrewer::DrawWorking(int x, int y)
 {
-	signed char offsets[4][2] = { {10,17},{10,17},{10,17},{10,17} };
+	signed char offsets[NATION_COUNT][2] = { {10,17},{10,17},{10,17},{10,17},{10,17} };
 
 	unsigned now_id = GAMECLIENT.Interpolate(128,current_ev);
 

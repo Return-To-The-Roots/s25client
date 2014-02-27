@@ -1,4 +1,4 @@
-// $Id: noShip.h 8308 2012-09-23 10:05:22Z marcus $
+// $Id: noShip.h 9199 2014-02-27 10:21:26Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -26,8 +26,8 @@
 
 class nobHarborBuilding;
 
-/// Maximale Beladung eines Schiffs abhängig vom Volk des Spielers
-const unsigned SHIP_CAPACITY[NATION_COUNT] = { 40, 40, 40, 40 };
+#define SHIP_CAPACITY 40
+
 
 class noFigure;
 class Ware;

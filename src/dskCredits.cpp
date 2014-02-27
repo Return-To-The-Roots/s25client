@@ -1,4 +1,4 @@
-// $Id: dskCredits.cpp 8150 2012-09-05 11:19:37Z marcus $
+// $Id: dskCredits.cpp 9199 2014-02-27 10:21:26Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -220,7 +220,7 @@ dskCredits::dskCredits(void) : Desktop(LOADER.GetImageN("setup013", 0))
 	this->entries.push_back(entry);
 	entry.lines.clear();
 
-	bool nations[] = { true, true, true, true };
+	bool nations[NATION_COUNT] = { true, true, true, true, false };
 
 	LOADER.LoadFilesAtGame(0, nations);
 

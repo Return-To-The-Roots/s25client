@@ -1,4 +1,4 @@
-// $Id: nobUsual.cpp 8864 2013-08-24 10:10:49Z marcus $
+// $Id: nobUsual.cpp 9199 2014-02-27 10:21:26Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -222,9 +222,9 @@ void nobUsual::Draw(int x,int y)
 	{
 		// Für alle Völker jeweils
 		// X-Position der Esel
-		const int DONKEY_X[4][3] = {{13,26,39},{3,16,30},{2,15,29},{7,18,30},};
+		const int DONKEY_X[NATION_COUNT][3] = {{13,26,39},{3,16,30},{2,15,29},{7,18,30},{3,16,30}};
 		// Y-Position
-		const int DONKEY_Y[4] = {-9,-17,-21,-17};
+		const int DONKEY_Y[NATION_COUNT] = {-9,-17,-21,-17, -17};
 		// Animations-IDS des Esels
 		const unsigned char DONKEY_ANIMATION[] = 
 		{ 0,1,2,3,4,5,6,7,7,7,6,5,4,4,5,6,5,7,6,5,4,3,2,1,0 };
@@ -253,12 +253,13 @@ void nobUsual::Draw(int x,int y)
 	else if(type == BLD_PIGFARM && this->HasWorker())
 	{
 		// Position der 5 Schweinchen für alle 4 Völker (1. ist das große Schwein)
-		const int PIG_POSITIONS[4][5][2] =
+		const int PIG_POSITIONS[NATION_COUNT][5][2] =
 		{  //  gr. S. 1.klS 2. klS usw
 			{ {3,-8}, {17,3}, {-12,4}, {-2,10}, {-22,11} }, // Afrikaner
 			{ {-16,0}, {-37,0}, {-32,8}, {-16,10}, {-22,18} }, // Japaner
 			{ {-15,0}, {-4,9}, {-22,10}, {2,19}, {-15,20} }, // Römer
-			{ {5,-5}, {25,-12}, {-7,7}, {-23,11}, {-10,14} }  // Wikinger
+			{ {5,-5}, {25,-12}, {-7,7}, {-23,11}, {-10,14} },  // Wikinger
+			{ {-16,0}, {-37,0}, {-32,8}, {-16,10}, {-22,18} } // Babylonier
 		};
 
 

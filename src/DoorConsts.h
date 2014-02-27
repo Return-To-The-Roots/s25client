@@ -1,4 +1,4 @@
-// $Id: DoorConsts.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: DoorConsts.h 9199 2014-02-27 10:21:26Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -23,7 +23,7 @@
 
 // Konstanten fr den Punkt, ab dem die Träcer "verschwinden" bei einem Gebäcde, jeweils als Y-Angabe
 
-const signed char DOOR_CONSTS[4][40] =
+const signed char DOOR_CONSTS[NATION_COUNT][40] =
 {
 	// Nubier
 	{5,
@@ -193,7 +193,12 @@ const signed char DOOR_CONSTS[4][40] =
 	16,
 	-6,
 	-2,
-	10}
+	10},
+
+
+	{9, 1, 5, 0,      12,     0,      0,      0,      0,      7,      8,      8,      8,      8,      5,      0,      10,     9,      5,      3,      9,      10,     3,      12,     10,     13,     7,      0,      -8,
+     14,     0,      11,     10,     9,      11,     11,     15,     -7,     -5,     16}
+
 };
 
 #endif

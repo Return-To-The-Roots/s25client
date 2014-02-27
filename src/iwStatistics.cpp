@@ -1,4 +1,4 @@
-// $Id: iwStatistics.cpp 9098 2014-01-25 10:39:24Z marcus $
+// $Id: iwStatistics.cpp 9199 2014-02-27 10:21:26Z marcus $
 //
 // Copyright (c) 2005-2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -77,6 +77,9 @@ iwStatistics::iwStatistics()
 			break;
 		case NAT_VIKINGS: AddImageButton(1+i, startX + pos * 34 - 17, 45-23, 34, 47, TC_GREEN1, LOADER.GetImageN("io", 256), GameClient::inst().GetPlayer(i)->name)->SetBorder(false);
 			break;
+		case NAT_BABYLONIANS: AddImageButton(1+i, startX + pos * 34 - 17, 45-23, 34, 47, TC_GREEN1, LOADER.GetImageN("io", 256), GameClient::inst().GetPlayer(i)->name)->SetBorder(false);
+			break;
+		case NAT_COUNT:
 		case NAT_INVALID:
 			break;
 		}

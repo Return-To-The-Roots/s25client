@@ -1,4 +1,4 @@
-// $Id: dskHostGame.cpp 8726 2013-05-16 12:41:29Z marcus $
+// $Id: dskHostGame.cpp 9199 2014-02-27 10:21:26Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -394,7 +394,7 @@ void dskHostGame::Msg_Group_ButtonClick(const unsigned int group_id, const unsig
 			if(player_id == GAMECLIENT.GetPlayerID())
 			{
 					GAMECLIENT.Command_ToggleNation();
-					GAMECLIENT.GetLocalPlayer()->nation = Nation((unsigned(GAMECLIENT.GetLocalPlayer()->nation) + 1) % 4);
+					GAMECLIENT.GetLocalPlayer()->nation = Nation((unsigned(GAMECLIENT.GetLocalPlayer()->nation) + 1) % NATION_COUNT);
 					ChangeNation(GAMECLIENT.GetPlayerID(),GAMECLIENT.GetLocalPlayer()->nation);
 				}
 			} break;
@@ -820,8 +820,8 @@ void dskHostGame::ChangeReady(const unsigned int player, const bool ready)
  */
 void dskHostGame::ChangeNation(const unsigned i, const Nation nation)
 {
-	const std::string nations[4] =
-	{ _("Africans"), _("Japaneses"), _("Romans"), _("Vikings") };
+	const std::string nations[NATION_COUNT] =
+	{ _("Africans"), _("Japaneses"), _("Romans"), _("Vikings"), _("Babylonians") };
 	GetCtrl<ctrlGroup>(58-i)->GetCtrl<ctrlBaseText>(3)->SetText(nations[nation]);
 }
 

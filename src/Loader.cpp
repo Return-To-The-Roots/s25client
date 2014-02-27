@@ -1,4 +1,4 @@
-// $Id: Loader.cpp 9178 2014-02-20 17:47:00Z marcus $
+// $Id: Loader.cpp 9199 2014-02-27 10:21:26Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -460,7 +460,7 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool *nations)
 {
 	assert(gfxset <= 2);
 
-	const unsigned int files_count = 4 + 5 + 6 + 4 + 1 + 1;
+	const unsigned int files_count = NATIVE_NATION_COUNT + 5 + 6 + 4 + 1 + 1;
 
 	unsigned int files[files_count] = {
 		0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, // ?afr_z.lst, ?jap_z.lst, ?rom_z.lst, ?vik_z.lst
@@ -471,15 +471,21 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool *nations)
 		20u + gfxset                                     // tex?.lbm
 	};
 
-	for(unsigned char i = 0; i < NATION_COUNT; ++i)
+	for(unsigned char i = 0; i < NATIVE_NATION_COUNT; ++i)
 	{
 		// ggf. Völker-Grafiken laden
 		if(nations[i])
-			files[i] = 27 + i + (gfxset == 2)*NATION_COUNT;
+			files[i] = 27 + i + (gfxset == 2)*NATIVE_NATION_COUNT;
 	}
 
 	// dateien ggf nur einmal laden - qx: wozu? performance is hier echt egal -> fixing bug #1085693 
-	if(!LoadFilesFromArray(files_count, files, true))
+	if(if(nations[4]) && !LoadFilesFromArray(files_count, files, true))
+	{
+		lastgfx = 0xFF;
+		return false;
+	}
+
+	if(!LoadFileOrDir(RTTRDIR "/LSTS/GAME/Babylonier/", 0, true))
 	{
 		lastgfx = 0xFF;
 		return false;
@@ -492,6 +498,8 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool *nations)
 	}
 
 	lastgfx = gfxset;
+
+	
 
 	for (unsigned int nation = 0; nation < NATION_COUNT; ++nation)
 	{

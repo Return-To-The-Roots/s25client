@@ -1,4 +1,4 @@
-// $Id: nofCarpenter.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: nofCarpenter.cpp 9199 2014-02-27 10:21:26Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -48,7 +48,7 @@ nofCarpenter::nofCarpenter(SerializedGameData * sgd, const unsigned obj_id) : no
 
 void nofCarpenter::DrawWorking(int x, int y)
 {
-	signed char offsets[4][2] = { {30,3},{38,3},{30,8},{17,-2} };
+	signed char offsets[NATION_COUNT][2] = { {30,3},{38,3},{30,8},{17,-2},{38,3} };
 
 	unsigned now_id;
 

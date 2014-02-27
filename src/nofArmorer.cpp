@@ -1,4 +1,4 @@
-// $Id: nofArmorer.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: nofArmorer.cpp 9199 2014-02-27 10:21:26Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -57,7 +57,7 @@ sword_shield(sgd->PopBool())
 
 void nofArmorer::DrawWorking(int x, int y)
 {
-	signed char offsets[4][2] = { {-10,15},{-11,9},{-14,16},{-19,1} };
+	signed char offsets[NATION_COUNT][2] = { {-10,15},{-11,9},{-14,16},{-19,1},{-11,9} };
 
     unsigned int max_id = 280;
 	unsigned now_id = GAMECLIENT.Interpolate(max_id,current_ev);

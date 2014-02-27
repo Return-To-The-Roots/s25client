@@ -1,4 +1,4 @@
-// $Id: GameConsts.h 8737 2013-05-16 15:42:35Z marcus $
+// $Id: GameConsts.h 9199 2014-02-27 10:21:26Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -23,6 +23,8 @@
 /// Maximale Anzahl an Spielern 
 const unsigned MAX_PLAYERS = 8;
 
+#define NATIVE_NATION_COUNT	4
+
 #include "mygettext.h"
 
 /// Völker
@@ -32,6 +34,8 @@ enum Nation
 	NAT_JAPANESES,
 	NAT_ROMANS,
 	NAT_VIKINGS,
+	NAT_BABYLONIANS,
+	NAT_COUNT,
 	NAT_INVALID = 0xFFFFFFFF
 };
 

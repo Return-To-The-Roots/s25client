@@ -1,4 +1,4 @@
-// $Id: nofMiller.cpp 8862 2013-08-24 08:47:37Z marcus $
+// $Id: nofMiller.cpp 9199 2014-02-27 10:21:26Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -55,8 +55,8 @@ nofMiller::nofMiller(SerializedGameData * sgd, const unsigned obj_id) : nofWorkm
 
 void nofMiller::DrawWorking(int x, int y)
 {
-	signed char offsets[4][2] = { {20,8},{20,8},{20,8},{20,8} };
-	signed char offsets_sitdown[4][2] = { {23,8},{23,8},{23,8},{23,8} };
+	signed char offsets[NATION_COUNT][2] = { {20,8},{20,8},{20,8},{20,8},{20,8} };
+	signed char offsets_sitdown[NATION_COUNT][2] = { {23,8},{23,8},{23,8},{23,8},{23,8} };
 	signed char walkoffsets[8][2] = { {8,8},{10,9},{12,10},{14,11},{16,10},{18,9},{20,8},{22,8} };
 
     unsigned int max_id = 120;

@@ -1,4 +1,4 @@
-// $Id: nofBaker.cpp 8862 2013-08-24 08:47:37Z marcus $
+// $Id: nofBaker.cpp 9199 2014-02-27 10:21:26Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -50,15 +50,17 @@ nofBaker::nofBaker(SerializedGameData * sgd, const unsigned obj_id) : nofWorkman
 
 void nofBaker::DrawWorking(int x, int y)
 {
-	signed char offsets[4][2] = { {40,-4},{-16,8},{-5,9},{-8,7} };
-	signed char walkoffsets[4][8][2] = { //nation, schrit, x-y
+	signed char offsets[NATION_COUNT][2] = { {40,-4},{-16,8},{-5,9},{-8,7},{-16,8} };
+	signed char walkoffsets[NATION_COUNT][8][2] = { //nation, schrit, x-y
 	    { {10,10},{17,12},{24,14},{32,14},{34,9},{36,4},{38,-1},{40,-4} },
 	    { {9,11},{11,13},{7,17},{3,20},{-1,17},{-5,14},{-9,12},{-13,10} },
 	    { {9,9},{11,11},{9,13},{7,15},{4,13},{1,11},{-2,9},{-5,9} },
-	    { {9,11},{11,13},{9,15},{7,17},{4,15},{1,13},{-2,11},{-5,9} }
+	    { {9,11},{11,13},{9,15},{7,17},{4,15},{1,13},{-2,11},{-5,9} },
+            { {9,11},{11,13},{7,17},{3,20},{-1,17},{-5,14},{-9,12},{-13,10} }
 	    };
-    signed char walkdirection[4][6]= {
+    signed char walkdirection[NATION_COUNT][6]= {
         {3,3,2,5,0,0},
+        {4,5,0,3,2,1},
         {4,5,0,3,2,1},
         {4,5,0,3,2,1},
         {4,5,0,3,2,1}
@@ -138,3 +140,4 @@ GoodType nofBaker::ProduceWare()
 {
 	return GD_BREAD;
 }
+

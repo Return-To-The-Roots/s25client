@@ -1,4 +1,4 @@
-// $Id: Loader.h 8228 2012-09-12 08:57:53Z marcus $
+// $Id: Loader.h 9199 2014-02-27 10:21:26Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -109,15 +109,15 @@ public:
 	glSmartTexturePacker *stp;
 
 	static glSmartBitmap animal_cache[8][6][9];
-	static glSmartBitmap building_cache[4][40][2];
-	static glSmartBitmap flag_cache[4][3][8];
+	static glSmartBitmap building_cache[NATION_COUNT][40][2];
+	static glSmartBitmap flag_cache[NATION_COUNT][3][8];
 	static glSmartBitmap building_flag_cache[8];
 	static glSmartBitmap tree_cache[9][15];
-	static glSmartBitmap bob_jobs_cache[4][33][6][8];
+	static glSmartBitmap bob_jobs_cache[NATION_COUNT][33][6][8];
 	static glSmartBitmap granite_cache[2][6];
 	static glSmartBitmap grainfield_cache[2][4];
 	static glSmartBitmap carrier_cache[35][6][8][2];
-	static glSmartBitmap boundary_stone_cache[4];
+	static glSmartBitmap boundary_stone_cache[NATION_COUNT];
 	static glSmartBitmap boat_cache[6][8];
 	static glSmartBitmap donkey_cache[6][8];
 	static glSmartBitmap gateway_cache[5];

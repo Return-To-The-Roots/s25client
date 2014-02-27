@@ -1,4 +1,4 @@
-// $Id: nobHarborBuilding.cpp 9185 2014-02-22 13:17:20Z marcus $
+// $Id: nobHarborBuilding.cpp 9199 2014-02-27 10:21:26Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -246,16 +246,16 @@ nobHarborBuilding::nobHarborBuilding(SerializedGameData * sgd, const unsigned ob
 
 }
 
-// Relative Position des Bauarbeiters 
-const Point<int> BUILDER_POS[4] = { Point<int>(0,18), Point<int>(-8,17), Point<int>(0,15), Point<int>(-18,17) };
+// Relative Position des Bauarbeiters
+const Point<int> BUILDER_POS[NATION_COUNT] = { Point<int>(0,18), Point<int>(-8,17), Point<int>(0,15), Point<int>(-18,17), Point<int>(-18,17) };
 /// Relative Position der Brettertürme
-const Point<int> BOARDS_POS[4] = { Point<int>(-70,-5), Point<int>(-55,-5), Point<int>(-50,-5), Point<int>(-60,-5) };
+const Point<int> BOARDS_POS[NATION_COUNT] = { Point<int>(-70,-5), Point<int>(-55,-5), Point<int>(-50,-5), Point<int>(-60,-5), Point<int>(-60,-5) };
 /// Relative Position der Steintürme
-const Point<int> STONES_POS[4] = { Point<int>(-73,10), Point<int>(-60,10), Point<int>(-50,10), Point<int>(-60,10) };
+const Point<int> STONES_POS[NATION_COUNT] = { Point<int>(-73,10), Point<int>(-60,10), Point<int>(-50,10), Point<int>(-60,10), Point<int>(-60,10) };
 /// Relative Postion der inneren Hafenfeuer
-const Point<int> FIRE_POS[4] = { Point<int>(36,-51), Point<int>(0,0), Point<int>(0,0), Point<int>(5,-80) };
+const Point<int> FIRE_POS[NATION_COUNT] = { Point<int>(36,-51), Point<int>(0,0), Point<int>(0,0), Point<int>(5,-80), Point<int>(5,-80) };
 /// Relative Postion der äußeren Hafenfeuer
-const Point<int> EXTRAFIRE_POS[4] = { Point<int>(0,0), Point<int>(0,0), Point<int>(8,-115), Point<int>(0,0) };
+const Point<int> EXTRAFIRE_POS[NATION_COUNT] = { Point<int>(0,0), Point<int>(0,0), Point<int>(8,-115), Point<int>(0,0), Point<int>(0,0) };
 
 void nobHarborBuilding::Draw(int x,int y)
 {
@@ -656,7 +656,7 @@ void nobHarborBuilding::ShipArrived(noShip * ship)
 
 			// Figuren auswählen, die zu diesem Ziel wollen
 			for(std::list<FigureForShip>::iterator it = figures_for_ships.begin();
-				it!=figures_for_ships.end() && figures.size() < SHIP_CAPACITY[players->getElement(player)->nation];)
+				it!=figures_for_ships.end() && figures.size() < SHIP_CAPACITY;)
 			{
 				if(it->dest == dest)
 				{
@@ -673,7 +673,7 @@ void nobHarborBuilding::ShipArrived(noShip * ship)
 			// Und noch die Waren auswählen
 			std::list<Ware*> wares;
 			for(std::list<Ware*>::iterator it = wares_for_ships.begin();
-				it!=wares_for_ships.end() && figures.size()+wares.size() < SHIP_CAPACITY[players->getElement(player)->nation];)
+				it!=wares_for_ships.end() && figures.size()+wares.size() < SHIP_CAPACITY;)
 			{
 				if((*it)->GetNextHarbor() == dest)
 				{

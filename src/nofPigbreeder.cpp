@@ -1,4 +1,4 @@
-// $Id: nofPigbreeder.cpp 8862 2013-08-24 08:47:37Z marcus $
+// $Id: nofPigbreeder.cpp 9199 2014-02-27 10:21:26Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -50,8 +50,8 @@ nofPigbreeder::nofPigbreeder(SerializedGameData * sgd, const unsigned obj_id) : 
 void nofPigbreeder::DrawWorking(int x, int y)
 {
     //148
-	signed char offsets[4][2] = { {10,2},{10,2},{10,2},{10,2} };
-	signed char walkstart[4][2] = { {-6,-6},{-6,-6},{-6,-6},{-6,-6} };
+	signed char offsets[NATION_COUNT][2] = { {10,2},{10,2},{10,2},{10,2},{10,2} };
+	signed char walkstart[NATION_COUNT][2] = { {-6,-6},{-6,-6},{-6,-6},{-6,-6},{-6,-6} };
 
     unsigned int max_id = 240;
 	int now_id = GAMECLIENT.Interpolate(max_id,current_ev);

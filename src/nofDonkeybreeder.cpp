@@ -1,4 +1,4 @@
-// $Id: nofDonkeybreeder.cpp 8862 2013-08-24 08:47:37Z marcus $
+// $Id: nofDonkeybreeder.cpp 9199 2014-02-27 10:21:26Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -71,8 +71,8 @@ void nofDonkeybreeder::DrawWorking(int x, int y)
 {
 	/// @todo KA was da gemacht werden muss
 	const Nation nation = workplace->GetNation();
-	const signed char walk_start[4][2] = { {2,2},{-6,-6},{-7,-7},{-7,-7} };
-	const signed char walk_length[4] = { 22,19,19,23 };
+	const signed char walk_start[NATION_COUNT][2] = { {2,2},{-6,-6},{-7,-7},{-7,-7},{-6,-6} };
+	const signed char walk_length[NATION_COUNT] = { 22,19,19,23,19 };
 	const unsigned int color = COLORS[gwg->GetPlayer(player)->color];
 
 	unsigned now_id = GAMECLIENT.Interpolate(9600,current_ev);

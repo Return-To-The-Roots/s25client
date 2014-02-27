@@ -1,4 +1,4 @@
-// $Id: nofMinter.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: nofMinter.cpp 9199 2014-02-27 10:21:26Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -52,8 +52,7 @@ nofMinter::nofMinter(SerializedGameData * sgd, const unsigned obj_id) : nofWorkm
 
 void nofMinter::DrawWorking(int x, int y)
 {
-//	signed char offsets[4][2] = { {22,-12},{28,1},{19,-11},{19,-20} };
-	signed char offsets[4][2] = { {19,-20},{19,-11},{22,-12},{28,1} };
+	signed char offsets[NATION_COUNT][2] = { {19,-20},{19,-11},{22,-12},{28,1},{19,-11} };
 
 	unsigned now_id = GAMECLIENT.Interpolate(136,current_ev);
 
