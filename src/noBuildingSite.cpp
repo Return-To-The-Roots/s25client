@@ -1,4 +1,4 @@
-// $Id: noBuildingSite.cpp 9199 2014-02-27 10:21:26Z marcus $
+// $Id: noBuildingSite.cpp 9202 2014-02-27 10:50:29Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -244,7 +244,6 @@ void noBuildingSite::Draw(int x, int y)
 			p2 = BUILDING_COSTS[nation][GetBuildingType()].boards*4;
 		}
 
-LOG.lprintf("BUILDING CACHE TYPE: %u %u%%\n", type, p1 * 100 / p2);
 		Loader::building_cache[nation][type][1].drawPercent(x, y, p1 * 100 / p2);
 
 		// Das richtige Haus

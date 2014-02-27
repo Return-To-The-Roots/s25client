@@ -1,4 +1,4 @@
-// $Id: Loader.cpp 9199 2014-02-27 10:21:26Z marcus $
+// $Id: Loader.cpp 9202 2014-02-27 10:50:29Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -479,7 +479,7 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool *nations)
 	}
 
 	// dateien ggf nur einmal laden - qx: wozu? performance is hier echt egal -> fixing bug #1085693 
-	if(if(nations[4]) && !LoadFilesFromArray(files_count, files, true))
+	if ((nations[4]) && !LoadFilesFromArray(files_count, files, true))
 	{
 		lastgfx = 0xFF;
 		return false;
