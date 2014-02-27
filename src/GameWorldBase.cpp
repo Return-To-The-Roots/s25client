@@ -1,4 +1,4 @@
-// $Id: GameWorldBase.cpp 9167 2014-02-18 18:14:42Z marcus $
+// $Id: GameWorldBase.cpp 9200 2014-02-27 10:23:27Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1637,11 +1637,19 @@ unsigned int GameWorldBase::GetAvailableSoldiersForSeaAttackAtSea(const unsigned
 void GameWorldBase::GetAvailableSoldiersForSeaAttack(const unsigned char player_attacker, const MapCoord x, const MapCoord y, 
 	std::list<GameWorldBase::PotentialSeaAttacker> * attackers) const
 {
+	//sea attack abgeschaltet per addon?
+	if(GameClient::inst().GetGGS().getSelection(ADDON_SEA_ATTACK)==2)
+		return;
 	// Ist das Ziel auch ein richtiges Militärgebäude?
 	if(GetNO(x,y)->GetGOT() != GOT_NOB_HARBORBUILDING && GetNO(x,y)->GetGOT() !=  GOT_NOB_HQ 
 		&& GetNO(x,y)->GetGOT() !=  GOT_NOB_MILITARY)
 		return;
-		
+	// Auch noch ein Gebäude von einem Feind (nicht inzwischen eingenommen)?
+	if(!GetPlayer(player_attacker)->IsPlayerAttackable(GetSpecObj<noBuilding>(x,y)->GetPlayer()))
+		return;	
+	// Prüfen, ob der angreifende Spieler das Gebäude überhaupt sieht (Cheatvorsorge)
+	if(CalcWithAllyVisiblity(x,y,player_attacker) != VIS_VISIBLE)
+		return;
 	//bool use_seas[512];
 	//memset(use_seas,0,512);
 	std::vector<bool>use_seas;
