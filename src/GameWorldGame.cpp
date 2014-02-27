@@ -1,4 +1,4 @@
-// $Id: GameWorldGame.cpp 9148 2014-02-11 16:48:29Z marcus $
+// $Id: GameWorldGame.cpp 9201 2014-02-27 10:24:02Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1632,7 +1632,7 @@ const unsigned char moving_dir, Point<MapCoord> * enemy_territory)
 		this->GetPointA(ttx,tty,dir);
 		// Sichtbarkeit und für FOW-Gebiet vorherigen Besitzer merken
 		// (d.h. der dort  zuletzt war, als es für Spieler player sichtbar war)
-		Visibility old_vis = GetNode(ttx,tty).fow[player].visibility;
+		Visibility old_vis = CalcWithAllyVisiblity(ttx,tty,player);
 		unsigned char old_owner = GetNode(ttx,tty).fow[player].owner;
 		SetVisibility(ttx,tty,player);
 		// Neues feindliches Gebiet entdeckt?
@@ -1642,7 +1642,7 @@ const unsigned char moving_dir, Point<MapCoord> * enemy_territory)
 		if(current_owner && (old_vis == VIS_INVISIBLE ||
 			(old_vis == VIS_FOW && old_owner != current_owner)))
 		{
-			if(GameClient::inst().GetPlayer(player)->IsPlayerAttackable(current_owner) && enemy_territory)
+			if(GameClient::inst().GetPlayer(player)->IsPlayerAttackable(current_owner-1) && enemy_territory)
 			{
 				enemy_territory->x = ttx;
 				enemy_territory->y = tty;
@@ -1658,7 +1658,7 @@ const unsigned char moving_dir, Point<MapCoord> * enemy_territory)
 		this->GetPointA(ttx,tty,dir);
 		// Sichtbarkeit und für FOW-Gebiet vorherigen Besitzer merken
 		// (d.h. der dort  zuletzt war, als es für Spieler player sichtbar war)
-		Visibility old_vis = GetNode(ttx,tty).fow[player].visibility;
+		Visibility old_vis = CalcWithAllyVisiblity(ttx,tty,player);
 		unsigned char old_owner = GetNode(ttx,tty).fow[player].owner;
 		SetVisibility(ttx,tty,player);
 		// Neues feindliches Gebiet entdeckt?
@@ -1668,7 +1668,7 @@ const unsigned char moving_dir, Point<MapCoord> * enemy_territory)
 		if(current_owner && (old_vis == VIS_INVISIBLE ||
 			(old_vis == VIS_FOW && old_owner != current_owner)))
 		{
-			if(GameClient::inst().GetPlayer(player)->IsPlayerAttackable(current_owner) && enemy_territory)
+			if(GameClient::inst().GetPlayer(player)->IsPlayerAttackable(current_owner-1) && enemy_territory)
 			{
 				enemy_territory->x = ttx;
 				enemy_territory->y = tty;
