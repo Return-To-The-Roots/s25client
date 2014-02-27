@@ -1,4 +1,4 @@
-// $Id: iwBuilding.cpp 8030 2012-07-08 20:54:57Z jh $
+// $Id: iwBuilding.cpp 9207 2014-02-27 16:34:49Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -66,11 +66,13 @@ iwBuilding::iwBuilding(GameWorldViewer * const gwv,dskGameInterface *const gi,no
 	AddImage(0, 28, 39, LOADER.GetMapImageN(2298));
 
         // Exception: charburner
-	// TODO: ugly!
-        if(building->GetBuildingType() != BLD_CHARBURNER)
+        if (building->GetBuildingType() != BLD_CHARBURNER)
+	{
                 AddImage(1, 28, 39, LOADER.GetMapImageN(2300 + USUAL_BUILDING_CONSTS[building->GetBuildingType()-10].job));
-        else
-	        AddImage(1, 28, 39, LOADER.GetImageN("charburner",51));
+	} else
+	{
+	        AddImage(1, 28, 39, LOADER.GetImageN("io_new", 5));
+	}
 
 	// Gebäudesymbol
 	AddImage(1, 117, 114, building->GetBuildingImage());

@@ -186,7 +186,7 @@ void iwTrade::Msg_ComboSelectItem(const unsigned ctrl_id, const unsigned short s
 				glArchivItem_Bitmap * image = LOADER.GetMapImageN(2300 + jobs[selection]);
 				// Exception: charburner
 				if(jobs[selection] == JOB_CHARBURNER)
-					image = LOADER.GetImageN("charburner",51);
+					image = LOADER.GetImageN("io_new", 5);
 				GetCtrl<ctrlImage>(5)->SetImage(image);
 
 					// Get the number of available wares/figures

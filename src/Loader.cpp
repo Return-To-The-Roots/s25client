@@ -1,4 +1,4 @@
-// $Id: Loader.cpp 9204 2014-02-27 12:34:29Z marcus $
+// $Id: Loader.cpp 9207 2014-02-27 16:34:49Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -580,16 +580,13 @@ void Loader::fillCaches()
 
 			if (type == BLD_CHARBURNER)
 			{
-				unsigned id = 1+nation*8;
-				if (lastgfx == LT_WINTERWORLD)
-				{
-					id = 1 + nation * 8 + 5;
-				}
+				unsigned id = nation * 8;
 
-				bmp.add(LOADER.GetImageN("charburner",id));
-				bmp.addShadow(LOADER.GetImageN("charburner",1+nation*8 + 1));
-				skel.add(LOADER.GetImageN("charburner",1+nation*8 + 2));
-				skel.addShadow(LOADER.GetImageN("charburner",1+nation*8 + 1));
+				bmp.add(LOADER.GetImageN("charburner", id + ((lastgfx == LT_WINTERWORLD) ? 6 : 1)));
+				bmp.addShadow(LOADER.GetImageN("charburner", id + 2));
+
+				skel.add(LOADER.GetImageN("charburner", id + 3));
+				skel.addShadow(LOADER.GetImageN("charburner", id + 4));
 			} else
 			{
 				bmp.add(LOADER.GetNationImageN(nation, 250 + 5 * type));

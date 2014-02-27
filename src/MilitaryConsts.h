@@ -1,4 +1,4 @@
-// $Id: MilitaryConsts.h 9199 2014-02-27 10:21:26Z marcus $
+// $Id: MilitaryConsts.h 9207 2014-02-27 16:34:49Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -82,7 +82,7 @@ const signed char TROOPS_FLAGS[NATION_COUNT][4][2] =
 const unsigned MILITARY_SETTINGS_COUNT = 8;
 
 /// Skalierung der einzelnen Militäreinstellungen (maximale Werte)
-const unsigned MILITARY_SETTINGS_SCALE[MILITARY_SETTINGS_COUNT] = 
+const unsigned MILITARY_SETTINGS_SCALE[MILITARY_SETTINGS_COUNT] =
 {
 	10,
 	5,
@@ -95,12 +95,12 @@ const unsigned MILITARY_SETTINGS_SCALE[MILITARY_SETTINGS_COUNT] =
 };
 
 // Besatzungsflaggen für die HQs
-const signed char TROOPS_FLAGS_HQ[4][2] =
+const signed char TROOPS_FLAGS_HQ[NATION_COUNT][2] =
 {
-	{-12,-102},{-19,-94},{-18,-112},{20,-54},
+	{-12,-102},{-19,-94},{-18,-112},{20,-54},{-34,-81}
 };
 
-/// Grenzflaggen (4 Völker x 4 GröÃen x 2 X+Y) - ab 3162 
+/// Grenzflaggen (4 Völker x 4 GröÃen x 2 X+Y) - ab 3162
 const signed char BORDER_FLAGS[NATION_COUNT][4][2] =
 {
 	{{-6,-36},{7,-48},{-18,-28},{-47,-64}},

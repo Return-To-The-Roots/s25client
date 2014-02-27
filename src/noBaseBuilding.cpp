@@ -1,4 +1,4 @@
-// $Id: noBaseBuilding.cpp 8351 2012-09-30 14:14:48Z marcus $
+// $Id: noBaseBuilding.cpp 9207 2014-02-27 16:34:49Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -305,13 +305,8 @@ noBase::BlockingManner noBaseBuilding::GetBM() const
 /// Gibt ein Bild zurück für das normale Gebäude
 glArchivItem_Bitmap * noBaseBuilding::GetBuildingImage() const
 {
-	if(type == BLD_CHARBURNER)
-	{
-		unsigned id = 1+nation*8;
-		if(gwg->GetLandscapeType() == LT_WINTERWORLD)
-			id = 1+nation*8+5;
-		return LOADER.GetImageN("charburner",id);
-	}
+	if (type == BLD_CHARBURNER)
+		return LOADER.GetImageN("charburner", nation * 8 + ((gwg->GetLandscapeType() == LT_WINTERWORLD) ? 6 : 1));
 	else
 		return LOADER.GetNationImageN(nation, 250 + 5*type);
 }
@@ -319,8 +314,8 @@ glArchivItem_Bitmap * noBaseBuilding::GetBuildingImage() const
 /// Gibt ein Bild zurück für das Gebäudegerüst
 glArchivItem_Bitmap * noBaseBuilding::GetBuildingSkeletonImage() const
 {
-	if(type == BLD_CHARBURNER)
-		return LOADER.GetImageN("charburner",1+nation*8 + 2);
+	if (type == BLD_CHARBURNER)
+		return LOADER.GetImageN("charburner", nation * 8 + 3);
 	else
 		return LOADER.GetNationImageN(nation,250 + 5*type + 2);
 }
@@ -328,8 +323,8 @@ glArchivItem_Bitmap * noBaseBuilding::GetBuildingSkeletonImage() const
 /// Gibt ein Bild zurück für das normale Gebäude
 glArchivItem_Bitmap * noBaseBuilding::GetBuildingImageShadow() const
 {
-	if(type == BLD_CHARBURNER)
-		return LOADER.GetImageN("charburner",1+nation*8 + 1);
+	if (type == BLD_CHARBURNER)
+		return LOADER.GetImageN("charburner", nation * 8 + 2);
 	else
 		return LOADER.GetNationImageN(nation, 250 + 5*type +1);
 }
@@ -337,8 +332,8 @@ glArchivItem_Bitmap * noBaseBuilding::GetBuildingImageShadow() const
 /// Gibt ein Bild zurück für das Gebäudegerüst
 glArchivItem_Bitmap * noBaseBuilding::GetBuildingSkeletonImageShadow() const
 {
-	if(type == BLD_CHARBURNER)
-		return LOADER.GetImageN("charburner",1+nation*8 + 3);
+	if (type == BLD_CHARBURNER)
+		return LOADER.GetImageN("charburner", nation * 8 + 4);
 	else
 		return LOADER.GetNationImageN(nation,250 + 5*type + 3);
 }
@@ -346,17 +341,9 @@ glArchivItem_Bitmap * noBaseBuilding::GetBuildingSkeletonImageShadow() const
 /// Gibt ein Bild zurück für die Tür des Gebäudes
 glArchivItem_Bitmap * noBaseBuilding::GetDoorImage() const
 {
-	if(type == BLD_CHARBURNER)
-	{
-		unsigned id = 1+nation*8+4;
-		if(gwg->GetLandscapeType() == LT_WINTERWORLD)
-			id = 1+nation*8+6;
-		return LOADER.GetImageN("charburner",id);
-	}
+	if (type == BLD_CHARBURNER)
+		return LOADER.GetImageN("charburner", nation * 8 + ((gwg->GetLandscapeType() == LT_WINTERWORLD) ? 7 : 5));
 	else
 		return LOADER.GetNationImageN(nation, 250+5*type+4);
 }
-
-
-
 
