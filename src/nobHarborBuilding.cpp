@@ -1,4 +1,4 @@
-// $Id: nobHarborBuilding.cpp 9199 2014-02-27 10:21:26Z marcus $
+// $Id: nobHarborBuilding.cpp 9205 2014-02-27 12:53:11Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -253,7 +253,7 @@ const Point<int> BOARDS_POS[NATION_COUNT] = { Point<int>(-70,-5), Point<int>(-55
 /// Relative Position der Steintürme
 const Point<int> STONES_POS[NATION_COUNT] = { Point<int>(-73,10), Point<int>(-60,10), Point<int>(-50,10), Point<int>(-60,10), Point<int>(-60,10) };
 /// Relative Postion der inneren Hafenfeuer
-const Point<int> FIRE_POS[NATION_COUNT] = { Point<int>(36,-51), Point<int>(0,0), Point<int>(0,0), Point<int>(5,-80), Point<int>(5,-80) };
+const Point<int> FIRE_POS[NATION_COUNT] = { Point<int>(36,-51), Point<int>(0,0), Point<int>(0,0), Point<int>(5,-80), Point<int>(0,0) };
 /// Relative Postion der äußeren Hafenfeuer
 const Point<int> EXTRAFIRE_POS[NATION_COUNT] = { Point<int>(0,0), Point<int>(0,0), Point<int>(8,-115), Point<int>(0,0), Point<int>(0,0) };
 
@@ -263,7 +263,7 @@ void nobHarborBuilding::Draw(int x,int y)
 	DrawBaseBuilding(x,y);
 
 	// Hafenfeuer zeichnen // TODO auch für nicht-römer machen
-	if (nation == NAT_ROMANS || nation == NAT_JAPANESES)
+	if (nation == NAT_ROMANS || nation == NAT_JAPANESES || nation == NAT_BABYLONIANS)
 	{
 		LOADER.GetNationImageN(nation, 500 + 5 * GameClient::inst().GetGlobalAnimation(8,2,1,obj_id+GetX()+GetY()))->Draw(x+FIRE_POS[nation].x,y+FIRE_POS[nation].y,0,0,0,0,0,0);
 	}
