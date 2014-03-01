@@ -1,3 +1,151 @@
+s25rttr (20140301-9211.313) karmic; urgency=low
+
+  * Automatic Jenkins Build 313
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sat, 01 Mar 2014 01:10:42 +0100
+
+s25rttr (20140301-9211) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sat, 01 Mar 2014 00:00:00 +0100
+
+s25rttr (20140228-9210) any; urgency=low
+
+  * Babylonian ship names
+
+ -- marcus  Fri, 28 Feb 2014 20:41:00 +0100
+
+s25rttr (20140227-9208.312) karmic; urgency=low
+
+  * Automatic Jenkins Build 312
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Thu, 27 Feb 2014 18:47:26 +0100
+
+s25rttr (20140227-9208) any; urgency=low
+
+  * More Babylonian adjustments for flags/smoke/workers.
+
+ -- marcus  Thu, 27 Feb 2014 17:18:00 +0100
+
+s25rttr (20140227-9207) any; urgency=low
+
+  * Charburner and race-specific catapults for Babylonians.
+
+ -- marcus  Thu, 27 Feb 2014 16:34:00 +0100
+
+s25rttr (20140227-9206.311) karmic; urgency=low
+
+  * Automatic Jenkins Build 311
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Thu, 27 Feb 2014 14:28:15 +0100
+
+s25rttr (20140227-9206) any; urgency=low
+
+  * Babylonian smoke fixes (bakery, armory, mint)
+
+ -- marcus  Thu, 27 Feb 2014 13:06:00 +0100
+
+s25rttr (20140227-9205) any; urgency=low
+
+  * Harbor building fire for Babylonians
+
+ -- marcus  Thu, 27 Feb 2014 12:53:00 +0100
+
+s25rttr (20140227-9204.310) karmic; urgency=low
+
+  * Automatic Jenkins Build 310
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Thu, 27 Feb 2014 13:42:49 +0100
+
+s25rttr (20140227-9204) any; urgency=low
+
+  * More babylon-related fixes..
+
+ -- marcus  Thu, 27 Feb 2014 12:34:00 +0100
+
+s25rttr (20140227-9203.309) karmic; urgency=low
+
+  * Automatic Jenkins Build 309
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Thu, 27 Feb 2014 12:14:15 +0100
+
+s25rttr (20140227-9203) any; urgency=low
+
+  * wbab_z - renamed 363.shadownx26.ny32.bmp to
+    363.shadow.nx26.ny32.bmp
+
+ -- marcus  Thu, 27 Feb 2014 11:06:00 +0100
+
+s25rttr (20140227-9202) any; urgency=low
+
+  * Fixes
+
+ -- marcus  Thu, 27 Feb 2014 10:50:00 +0100
+
+s25rttr (20140227-9201) any; urgency=low
+
+  * AIpoc r9114
+    
+    fix for bug #1283476 Exploration Expedition findet Freunde als
+    Enemy Territory
+    owner 0 = no owner and owner 1 is player 0
+    also include ally vision in the test so no msg gets send for
+    enemy terrain spotted that is already visible by shared vision
+
+ -- marcus  Thu, 27 Feb 2014 10:24:00 +0100
+
+s25rttr (20140227-9200) any; urgency=low
+
+  * AIpoc r9113
+    
+    now checks the same things as the actual attack:
+    - attackable,
+    - visible (when opening the dialog window - not updated),
+    - military target,
+    - not deactivated by addon
+
+ -- marcus  Thu, 27 Feb 2014 10:23:00 +0100
+
+s25rttr (20140227-9199) any; urgency=low
+
+  * Babylonians (experimental) 2/2
+
+ -- marcus  Thu, 27 Feb 2014 10:21:00 +0100
+
+s25rttr (20140223-9193.308) karmic; urgency=low
+
+  * Automatic Jenkins Build 308
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sun, 23 Feb 2014 01:08:06 +0100
+
+s25rttr (20140223-9193) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sun, 23 Feb 2014 00:00:00 +0100
+
+s25rttr (20140222-9192) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 22 Feb 2014 23:00:00 +0100
+
+s25rttr (20140222-9191) any; urgency=low
+
+  * AIpoc r9111
+    
+    ai IsVisible now uses CalcWithAllyVisiblity
+
+ -- marcus  Sat, 22 Feb 2014 19:24:00 +0100
+
+s25rttr (20140222-9190) any; urgency=low
+
+  * When clicking on a spot with more than one ship, prefer those
+    needing instructions from the user.
+
+ -- marcus  Sat, 22 Feb 2014 19:21:00 +0100
+
 s25rttr (20140222-9189.307) karmic; urgency=low
 
   * Automatic Jenkins Build 307
