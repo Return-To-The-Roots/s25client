@@ -1,4 +1,4 @@
-// $Id: GLFW.cpp 6458 2010-05-31 11:38:51Z FloSoft $
+// $Id: GLFW.cpp 9258 2014-03-21 07:22:17Z FloSoft $
 //
 // Copyright (c) 2005-2009 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -22,6 +22,7 @@
 #include "main.h"
 #include "GLFW.h"
 #include <VideoInterface.h>
+#include <build_version.h>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
