@@ -1,3 +1,93 @@
+s25rttr (20140322-9266.320) precise; urgency=low
+
+  * Automatic Jenkins Build 320
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sat, 22 Mar 2014 01:10:37 +0100
+
+s25rttr (20140322-9266) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sat, 22 Mar 2014 00:00:00 +0100
+
+s25rttr (20140321-9259.319) precise; urgency=low
+
+  * Automatic Jenkins Build 319
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Fri, 21 Mar 2014 08:33:16 +0100
+
+s25rttr (20140321-9259) any; urgency=low
+
+  * change source format to native
+
+ -- Florian Doersch <flosoft@siedler25.org>  Fri, 21 Mar 2014 07:33:00 +0100
+
+s25rttr (20140321-9258.318) precise; urgency=low
+
+  * Automatic Jenkins Build 318
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Fri, 21 Mar 2014 08:28:41 +0100
+
+s25rttr (20140321-9258.318) precise; urgency=low
+
+  * Automatic Jenkins Build 318
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Fri, 21 Mar 2014 08:23:37 +0100
+
+s25rttr (20140321-9258) any; urgency=low
+
+  * add build_version.h
+
+ -- Florian Doersch <flosoft@siedler25.org>  Fri, 21 Mar 2014 07:22:00 +0100
+
+s25rttr (20140321-9257.317) precise; urgency=low
+
+  * Automatic Jenkins Build 317
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Fri, 21 Mar 2014 01:10:20 +0100
+
+s25rttr (20140321-9257) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Fri, 21 Mar 2014 00:00:00 +0100
+
+s25rttr (20140320-9256.316) precise; urgency=low
+
+  * Automatic Jenkins Build 316
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Thu, 20 Mar 2014 17:13:42 +0100
+
+s25rttr (20140320-9256) any; urgency=low
+
+  * change to precise
+
+ -- Florian Doersch <flosoft@siedler25.org>  Thu, 20 Mar 2014 16:04:00 +0100
+
+s25rttr (20140320-9255.315) karmic; urgency=low
+
+  * Automatic Jenkins Build 315
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Thu, 20 Mar 2014 17:02:36 +0100
+
+s25rttr (20140320-9255.314) karmic; urgency=low
+
+  * Automatic Jenkins Build 314
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Thu, 20 Mar 2014 01:13:54 +0100
+
+s25rttr (20140320-9255) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Thu, 20 Mar 2014 00:00:00 +0100
+
+s25rttr (20140301-9215) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 01 Mar 2014 23:00:00 +0100
+
 s25rttr (20140301-9211.313) karmic; urgency=low
 
   * Automatic Jenkins Build 313
