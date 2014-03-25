@@ -168,10 +168,11 @@ if [ $CHANGED -eq 1 ] || [ ! -f $ARCHDIR/packed/s25rttr.tar.bz2 ] ; then
 	mv -v $F $ARCHNEWDIR/updater/files || exit 1
 
 	# create human version notifier
-	echo $REVISION > $ARCHNEWDIR/revision-${REVISION} || exit 1
-	echo $VERSION > $ARCHNEWDIR/version-$VERSION || exit 1
-	echo $REVISION > $ARCHNEWDIR/revision || exit 1
-	echo $VERSION > $ARCHNEWDIR/version || exit 1
+	echo "$REVISION" > $ARCHNEWDIR/revision-${REVISION} || exit 1
+	echo "$VERSION"  > $ARCHNEWDIR/version-$VERSION || exit 1
+	echo "$REVISION" > $ARCHNEWDIR/revision || exit 1
+	echo "$VERSION"  > $ARCHNEWDIR/version || exit 1
+	echo "${VERSION}-${REVISION}" > $ARCHNEWDIR/full-version || exit 1
 
 	
 	# rotate trees
