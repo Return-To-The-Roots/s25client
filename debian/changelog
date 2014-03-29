@@ -1,3 +1,33 @@
+s25rttr (20140326-9301.321) precise; urgency=low
+
+  * Automatic Jenkins Build 321
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Wed, 26 Mar 2014 01:11:07 +0100
+
+s25rttr (20140326-9301) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Wed, 26 Mar 2014 00:00:00 +0100
+
+s25rttr (20140325-9298) any; urgency=low
+
+  * optimize last commit
+
+ -- Florian Doersch <flosoft@siedler25.org>  Tue, 25 Mar 2014 18:01:00 +0100
+
+s25rttr (20140325-9297) any; urgency=low
+
+  * generate version and revision file with content
+
+ -- Florian Doersch <flosoft@siedler25.org>  Tue, 25 Mar 2014 17:58:00 +0100
+
+s25rttr (20140322-9274) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 22 Mar 2014 23:00:00 +0100
+
 s25rttr (20140322-9266.320) precise; urgency=low
 
   * Automatic Jenkins Build 320
