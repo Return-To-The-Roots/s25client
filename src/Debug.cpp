@@ -247,7 +247,13 @@ bool DebugInfo::SendReplay()
 	{
 		Replay rpl = GAMECLIENT.GetReplay();
 
+		if(!rpl.IsValid())
+			return true;
+
 		BinaryFile *f = rpl.GetFile();
+
+		if(!f) // no replay to send
+			return true;
 
 		f->Flush();
 
@@ -267,7 +273,7 @@ bool DebugInfo::SendReplay()
 		// send size of replay via socket
 		if (!SendString("Replay"))
 		{
-			return(false);
+			return false;
 		}
 
 		LOG.lprintf("- Compressing...\n");
@@ -282,7 +288,7 @@ bool DebugInfo::SendReplay()
 
 				LOG.lprintf("-> success\n");
 
-				return(true);
+				return true;
 			}
 
 			LOG.lprintf("-> Sending replay failed :(\n");
@@ -291,18 +297,19 @@ bool DebugInfo::SendReplay()
 			LOG.lprintf("-> BZ2 compression failed.\n");
 		}
 
-		(void) SendUnsigned(0);
+		SendUnsigned(0);
 
 		delete[] replay;
 		delete[] compressed;
 
-		return(false);
-	} else
+		return false;
+	}
+	else
 	{
 		LOG.lprintf("-> Already in replay mode, do not send replay\n");
 	}
 
-	return(true);
+	return true;
 }
 
 bool DebugInfo::SendAsyncLog(std::list<RandomEntry>::iterator first_a, std::list<RandomEntry>::iterator first_b,
