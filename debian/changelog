@@ -1,3 +1,27 @@
+s25rttr (20140415-9338.322) precise; urgency=low
+
+  * Automatic Jenkins Build 322
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 15 Apr 2014 01:09:23 +0200
+
+s25rttr (20140415-9338) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 15 Apr 2014 00:00:00 +0200
+
+s25rttr (20140414-9337) any; urgency=low
+
+  * fix sending debug info replay
+
+ -- Florian Doersch <flosoft@siedler25.org>  Mon, 14 Apr 2014 15:54:00 +0200
+
+s25rttr (20140329-9317) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 29 Mar 2014 23:00:00 +0100
+
 s25rttr (20140326-9301.321) precise; urgency=low
 
   * Automatic Jenkins Build 321
