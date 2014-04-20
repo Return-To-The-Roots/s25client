@@ -1,4 +1,4 @@
-// $Id: dskHostGame.cpp 9199 2014-02-27 10:21:26Z marcus $
+// $Id: dskHostGame.cpp 9351 2014-04-20 08:31:31Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -201,6 +201,12 @@ dskHostGame::dskHostGame(bool single_player) :
 	{
 		LOBBYCLIENT.SendServerJoinRequest();
 		LOBBYCLIENT.SendRankingInfoRequest(GAMECLIENT.GetPlayer(GAMECLIENT.GetPlayerID())->name);
+		for(unsigned char i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
+		{
+			GameClientPlayer* player = GAMECLIENT.GetPlayer(i);
+			if(player->ps == PS_OCCUPIED)
+				LOBBYCLIENT.SendRankingInfoRequest(player->name);
+		}
 	}
 
 	GAMECLIENT.SetInterface(this);

@@ -1,4 +1,4 @@
-// $Id: GameClient.cpp 8920 2013-08-27 19:40:37Z marcus $
+// $Id: GameClient.cpp 9351 2014-04-20 08:31:31Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -522,12 +522,18 @@ void GameClient::OnNMSPlayerList(const GameMessage_Player_List& msg)
 		players[i].ping = msg.gpl[i].ping;
 		players[i].rating = msg.gpl[i].rating;
 		players[i].ps = msg.gpl[i].ps;
-		if(players[i].ps==PS_KI)
+		if(players[i].ps == PS_KI)
 		{
-			if(!strncmp(players[i].name.c_str(),"Computer",7))			
-				players[i].aiType=AI_JH;
+			if(!strncmp(players[i].name.c_str(), "Computer", 7))
+			{
+				players[i].aiType = AI_JH;
+				players[i].rating = 666;
+			}
 			else
-				players[i].aiType=AI_DUMMY;
+			{
+				players[i].aiType = AI_DUMMY;
+				players[i].rating = 0;
+			}
 		}
 	
 		GamePlayerInfo *player = players.getElement(i);
