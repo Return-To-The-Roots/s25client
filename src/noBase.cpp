@@ -1,4 +1,4 @@
-// $Id: noBase.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: noBase.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -23,30 +23,30 @@
 #include "noBase.h"
 #include "SerializedGameData.h"
 
-noBase::noBase(SerializedGameData * sgd,const unsigned obj_id) : GameObject(sgd,obj_id)
+noBase::noBase(SerializedGameData* sgd, const unsigned obj_id) : GameObject(sgd, obj_id)
 {
-	nop = NodalObjectType(sgd->PopUnsignedChar());
+    nop = NodalObjectType(sgd->PopUnsignedChar());
 }
 
-void noBase::Serialize_noBase(SerializedGameData * sgd) const
+void noBase::Serialize_noBase(SerializedGameData* sgd) const
 {
-	Serialize_GameObject(sgd);
+    Serialize_GameObject(sgd);
 
-	sgd->PushUnsignedChar(static_cast<unsigned char>(nop));
+    sgd->PushUnsignedChar(static_cast<unsigned char>(nop));
 }
 
-FOWObject * noBase::CreateFOWObject() const
+FOWObject* noBase::CreateFOWObject() const
 {
-	return NULL;
+    return NULL;
 }
 
 noBase::BlockingManner noBase::GetBM() const
 {
-	return BM_NOTBLOCKING;
+    return BM_NOTBLOCKING;
 }
 
 /// Gibt zurück, ob sich das angegebene Objekt zwischen zwei Punkten bewegt
 bool noBase::IsMoving() const
 {
-	return false;
+    return false;
 }

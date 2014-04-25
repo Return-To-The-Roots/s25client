@@ -1,4 +1,4 @@
-// $Id: iwLobbyServerInfo.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: iwLobbyServerInfo.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -30,9 +30,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -43,24 +43,24 @@
  */
 void iwLobbyServerInfo::UpdateServerInfo()
 {
-	static char host[512];
+    static char host[512];
 
-	if(LOBBYCLIENT.refreshserverinfo == true)
-	{
-		LOBBYCLIENT.refreshserverinfo = false;
+    if(LOBBYCLIENT.refreshserverinfo == true)
+    {
+        LOBBYCLIENT.refreshserverinfo = false;
 
-		serverinfo = LOBBYCLIENT.GetServerInfo();
+        serverinfo = LOBBYCLIENT.GetServerInfo();
 
-		SetTitle(serverinfo->getName());
+        SetTitle(serverinfo->getName());
 
-		GetCtrl<ctrlEdit>(1)->SetText(serverinfo->getMap());
-		GetCtrl<ctrlEdit>(4)->SetText(serverinfo->getName());
+        GetCtrl<ctrlEdit>(1)->SetText(serverinfo->getMap());
+        GetCtrl<ctrlEdit>(4)->SetText(serverinfo->getName());
 
-		snprintf(host, 512, "%s:%d", serverinfo->getHost().c_str(), serverinfo->getPort());
-		GetCtrl<ctrlEdit>(6)->SetText(host);
+        snprintf(host, 512, "%s:%d", serverinfo->getHost().c_str(), serverinfo->getPort());
+        GetCtrl<ctrlEdit>(6)->SetText(host);
 
-		GetCtrl<ctrlEdit>(8)->SetText(serverinfo->getVersion());
-	}
+        GetCtrl<ctrlEdit>(8)->SetText(serverinfo->getVersion());
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -70,35 +70,35 @@ void iwLobbyServerInfo::UpdateServerInfo()
  *  @author Devil
  */
 iwLobbyServerInfo::iwLobbyServerInfo(void)
-	: IngameWindow(CGI_LOBBYSERVERINFO, 0xFFFF, 0xFFFF, 260, 260, _("Server Information"), LOADER.GetImageN("resource", 41))
+    : IngameWindow(CGI_LOBBYSERVERINFO, 0xFFFF, 0xFFFF, 260, 260, _("Server Information"), LOADER.GetImageN("resource", 41))
 {
-	AddText(0, 30,  40, _("Map Name:"), COLOR_YELLOW, 0, NormalFont);
-	AddEdit(1, 30,  60, 200, 22, TC_GREEN2, NormalFont, 0, false, true);
-	AddText(3, 30,  90, _("Server Name:"), COLOR_YELLOW, 0, NormalFont);
-	AddEdit(4, 30, 110, 200, 22, TC_GREEN2, NormalFont, 0, false, true);
-	AddText(5, 30, 140, _("Host:"), COLOR_YELLOW, 0, NormalFont);
-	AddEdit(6, 30, 160, 200, 22, TC_GREEN2, NormalFont, 0, false, true);
-	AddText(7, 30, 190, _("Version:"), COLOR_YELLOW, 0, NormalFont);
-	AddEdit(8, 30, 210, 200, 22, TC_GREEN2, NormalFont, 0, false, true);
+    AddText(0, 30,  40, _("Map Name:"), COLOR_YELLOW, 0, NormalFont);
+    AddEdit(1, 30,  60, 200, 22, TC_GREEN2, NormalFont, 0, false, true);
+    AddText(3, 30,  90, _("Server Name:"), COLOR_YELLOW, 0, NormalFont);
+    AddEdit(4, 30, 110, 200, 22, TC_GREEN2, NormalFont, 0, false, true);
+    AddText(5, 30, 140, _("Host:"), COLOR_YELLOW, 0, NormalFont);
+    AddEdit(6, 30, 160, 200, 22, TC_GREEN2, NormalFont, 0, false, true);
+    AddText(7, 30, 190, _("Version:"), COLOR_YELLOW, 0, NormalFont);
+    AddEdit(8, 30, 210, 200, 22, TC_GREEN2, NormalFont, 0, false, true);
 
-	AddTimer(9, 5000);
-	AddTimer(10, 1000);
+    AddTimer(9, 5000);
+    AddTimer(10, 1000);
 }
 
 
 void iwLobbyServerInfo::Msg_Timer(const unsigned int ctrl_id)
 {
-	switch(ctrl_id)
-	{
-	case 9: // alle 5 Sek
-		{
-			LOBBYCLIENT.SendServerInfoRequest(server);
-		} break;
-	case 10: // alle Sek
-		{
-			UpdateServerInfo();
-		} break;
-	}
+    switch(ctrl_id)
+    {
+        case 9: // alle 5 Sek
+        {
+            LOBBYCLIENT.SendServerInfoRequest(server);
+        } break;
+        case 10: // alle Sek
+        {
+            UpdateServerInfo();
+        } break;
+    }
 }
 
 
@@ -108,8 +108,8 @@ void iwLobbyServerInfo::Msg_Timer(const unsigned int ctrl_id)
  *
  *  @author Devil
  */
-void iwLobbyServerInfo::Set(const LobbyServerInfo *serverinfo, unsigned int server)
+void iwLobbyServerInfo::Set(const LobbyServerInfo* serverinfo, unsigned int server)
 {
-	this->serverinfo = serverinfo;
-	this->server = server;
+    this->serverinfo = serverinfo;
+    this->server = server;
 }

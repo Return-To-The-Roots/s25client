@@ -1,4 +1,4 @@
-// $Id: iwMilitaryBuilding.cpp 8305 2012-09-22 12:34:54Z marcus $
+// $Id: iwMilitaryBuilding.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -41,9 +41,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -52,131 +52,131 @@
  *
  *  @author OLiver
  */
-iwMilitaryBuilding::iwMilitaryBuilding(GameWorldViewer * const gwv,nobMilitary *const building)
-: IngameWindow(building->CreateGUIID(), (unsigned short)-2, (unsigned short)-2, 226, 194, _(BUILDING_NAMES[building->GetBuildingType()]), LOADER.GetImageN("resource", 41)),
-	building(building), gwv(gwv) 
+iwMilitaryBuilding::iwMilitaryBuilding(GameWorldViewer* const gwv, nobMilitary* const building)
+    : IngameWindow(building->CreateGUIID(), (unsigned short) - 2, (unsigned short) - 2, 226, 194, _(BUILDING_NAMES[building->GetBuildingType()]), LOADER.GetImageN("resource", 41)),
+      building(building), gwv(gwv)
 {
-	// Schwert
-	AddImage(0, 28, 39, LOADER.GetMapImageN(2298));
-	AddImage(1, 28, 39, LOADER.GetMapImageN(2250 + GD_SWORD));
+    // Schwert
+    AddImage(0, 28, 39, LOADER.GetMapImageN(2298));
+    AddImage(1, 28, 39, LOADER.GetMapImageN(2250 + GD_SWORD));
 
-	// Schild
-	AddImage(2, 196, 39, LOADER.GetMapImageN(2298));
-	AddImage(3, 196, 39, LOADER.GetMapImageN(2250 + GD_SHIELDROMANS));
+    // Schild
+    AddImage(2, 196, 39, LOADER.GetMapImageN(2298));
+    AddImage(3, 196, 39, LOADER.GetMapImageN(2250 + GD_SHIELDROMANS));
 
-	// Hilfe
-	AddImageButton(4,  16, 147, 30, 32, TC_GREY, LOADER.GetImageN("io",  21));
-	// Abreißen
-	AddImageButton(5,  50, 147, 34, 32, TC_GREY, LOADER.GetImageN("io",  23));
-	// Gold an/aus (227,226)
-	AddImageButton(6,  90, 147, 32, 32, TC_GREY, LOADER.GetImageN("io", ((building->IsGoldDisabledVirtual())?226:227)));
-	// "Gehe Zu Ort"
-	AddImageButton(7, 179, 147, 30, 32, TC_GREY, LOADER.GetImageN("io", 107), _("Go to place"));
+    // Hilfe
+    AddImageButton(4,  16, 147, 30, 32, TC_GREY, LOADER.GetImageN("io",  21));
+    // Abreißen
+    AddImageButton(5,  50, 147, 34, 32, TC_GREY, LOADER.GetImageN("io",  23));
+    // Gold an/aus (227,226)
+    AddImageButton(6,  90, 147, 32, 32, TC_GREY, LOADER.GetImageN("io", ((building->IsGoldDisabledVirtual()) ? 226 : 227)));
+    // "Gehe Zu Ort"
+    AddImageButton(7, 179, 147, 30, 32, TC_GREY, LOADER.GetImageN("io", 107), _("Go to place"));
 
-	// Gebäudebild
-	AddImage(8, 117, 114, LOADER.GetNationImageN(building->GetNation(), 250 + 5*building->GetBuildingType()));
+    // Gebäudebild
+    AddImage(8, 117, 114, LOADER.GetNationImageN(building->GetNation(), 250 + 5 * building->GetBuildingType()));
 }
 
 void iwMilitaryBuilding::Msg_PaintAfter()
 {
-	// Schatten des Gebäudes (muss hier gezeichnet werden wegen schwarz und halbdurchsichtig)
-	LOADER.GetNationImageN(building->GetNation(), 250 + 5 * building->GetBuildingType()+1)->Draw(GetX()+117, GetY()+114, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+    // Schatten des Gebäudes (muss hier gezeichnet werden wegen schwarz und halbdurchsichtig)
+    LOADER.GetNationImageN(building->GetNation(), 250 + 5 * building->GetBuildingType() + 1)->Draw(GetX() + 117, GetY() + 114, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
 
-	// Schwarzer Untergrund für Goldanzeige
-	DrawRectangle(GetX()+width/2-22*GOLD_COUNT[building->nation][building->size]/2,GetY()+60,22*GOLD_COUNT[building->nation][building->size],24,0x96000000);
-	// Gold
-	for(unsigned short i = 0; i < GOLD_COUNT[building->nation][building->size]; ++i)
-		LOADER.GetMapImageN(2278)->Draw(GetX() + width / 2 - 22 * GOLD_COUNT[building->nation][building->size] / 2 + 12 + i*22, GetY() + 72, 0, 0, 0, 0, 0, 0, ( i >= building->coins ? 0xFFA0A0A0 : 0xFFFFFFFF) );
+    // Schwarzer Untergrund für Goldanzeige
+    DrawRectangle(GetX() + width / 2 - 22 * GOLD_COUNT[building->nation][building->size] / 2, GetY() + 60, 22 * GOLD_COUNT[building->nation][building->size], 24, 0x96000000);
+    // Gold
+    for(unsigned short i = 0; i < GOLD_COUNT[building->nation][building->size]; ++i)
+        LOADER.GetMapImageN(2278)->Draw(GetX() + width / 2 - 22 * GOLD_COUNT[building->nation][building->size] / 2 + 12 + i * 22, GetY() + 72, 0, 0, 0, 0, 0, 0, ( i >= building->coins ? 0xFFA0A0A0 : 0xFFFFFFFF) );
 
-	// Schwarzer Untergrund für Soldatenanzeige
-	DrawRectangle(GetX() + width / 2 - 22 * TROOPS_COUNT[building->nation][building->size] / 2, GetY() + 98 , 22 * TROOPS_COUNT[building->nation][building->size], 24, 0x96000000);
-	
-	// Sammeln aus der Rausgeh-Liste und denen, die wirklich noch drinne sind
-	list<unsigned> soldiers;
-	for(list<nofPassiveSoldier*>::iterator it = building->troops.begin();it.valid();++it)
-		soldiers.push_back((*it)->GetRank());
+    // Schwarzer Untergrund für Soldatenanzeige
+    DrawRectangle(GetX() + width / 2 - 22 * TROOPS_COUNT[building->nation][building->size] / 2, GetY() + 98 , 22 * TROOPS_COUNT[building->nation][building->size], 24, 0x96000000);
 
-	for(std::list<noFigure*>::iterator it = building->leave_house.begin();it!=building->leave_house.end();++it)
-	{
-		if((*it)->GetGOT() == GOT_NOF_ATTACKER ||
-			(*it)->GetGOT() == GOT_NOF_AGGRESSIVEDEFENDER ||
-			(*it)->GetGOT() == GOT_NOF_DEFENDER ||
-			(*it)->GetGOT() == GOT_NOF_PASSIVESOLDIER)
-		{
-			soldiers.insert_ordered(static_cast<nofSoldier*>(*it)->GetRank());
-		}
-	}
+    // Sammeln aus der Rausgeh-Liste und denen, die wirklich noch drinne sind
+    list<unsigned> soldiers;
+    for(list<nofPassiveSoldier*>::iterator it = building->troops.begin(); it.valid(); ++it)
+        soldiers.push_back((*it)->GetRank());
 
-	// Soldaten zeichnen
-	unsigned short i = 0;
-	for(list<unsigned>::iterator it = soldiers.begin();it.valid();++it,++i)
-		LOADER.GetMapImageN(2321 + *it)->Draw(GetX() + width / 2 - 22 * TROOPS_COUNT[building->nation][building->size] / 2 + 12 + i * 22, GetY() + 110, 0, 0, 0, 0, 0, 0);
-} 
+    for(std::list<noFigure*>::iterator it = building->leave_house.begin(); it != building->leave_house.end(); ++it)
+    {
+        if((*it)->GetGOT() == GOT_NOF_ATTACKER ||
+                (*it)->GetGOT() == GOT_NOF_AGGRESSIVEDEFENDER ||
+                (*it)->GetGOT() == GOT_NOF_DEFENDER ||
+                (*it)->GetGOT() == GOT_NOF_PASSIVESOLDIER)
+        {
+            soldiers.insert_ordered(static_cast<nofSoldier*>(*it)->GetRank());
+        }
+    }
+
+    // Soldaten zeichnen
+    unsigned short i = 0;
+    for(list<unsigned>::iterator it = soldiers.begin(); it.valid(); ++it, ++i)
+        LOADER.GetMapImageN(2321 + *it)->Draw(GetX() + width / 2 - 22 * TROOPS_COUNT[building->nation][building->size] / 2 + 12 + i * 22, GetY() + 110, 0, 0, 0, 0, 0, 0);
+}
 
 
 void iwMilitaryBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
 {
-	switch(ctrl_id)
-	{
-	case 4: // Hilfe
-		{
-			WindowManager::inst().Show(new iwHelp(GUI_ID(CGI_HELPBUILDING+building->GetBuildingType()),_(BUILDING_NAMES[building->GetBuildingType()]),
-				_(BUILDING_HELP_STRINGS[building->GetBuildingType()])));
-		} break;
-	case 5: // Gebäude abbrennen
-		{
-			// Darf das Gebäude abgerissen werden?
-			if(!building->IsDemolitionAllowed())
-			{
-				// Messagebox anzeigen
-				DemolitionNotAllowed();
-			}
-			else
-			{
-				// Abreißen?
-				Close();
-				WindowManager::inst().Show(new iwDemolishBuilding(gwv, building));
-			}
-		} break;
-	case 6: // Gold einstellen/erlauben
-		{
-			if(!GameClient::inst().IsReplayModeOn() && !GameClient::inst().IsPaused())
-			{
-				// visuell anzeigen
-				building->StopGoldVirtual();
-				// NC senden
-				GAMECLIENT.AddGC(new gc::StopGold(building->GetX(), building->GetY()));
-				// anderes Bild auf dem Button
-				if(building->IsGoldDisabledVirtual())
-					GetCtrl<ctrlImageButton>(6)->SetImage(LOADER.GetImageN("io", 226));
-				else
-					GetCtrl<ctrlImageButton>(6)->SetImage(LOADER.GetImageN("io", 227));
-			}
-		} break;
-	case 7: // "Gehe Zu Ort"
-		{
-			gwv->MoveToMapObject(building->GetX(), building->GetY());
-		} break;
-	}
+    switch(ctrl_id)
+    {
+        case 4: // Hilfe
+        {
+            WindowManager::inst().Show(new iwHelp(GUI_ID(CGI_HELPBUILDING + building->GetBuildingType()), _(BUILDING_NAMES[building->GetBuildingType()]),
+                                                  _(BUILDING_HELP_STRINGS[building->GetBuildingType()])));
+        } break;
+        case 5: // Gebäude abbrennen
+        {
+            // Darf das Gebäude abgerissen werden?
+            if(!building->IsDemolitionAllowed())
+            {
+                // Messagebox anzeigen
+                DemolitionNotAllowed();
+            }
+            else
+            {
+                // Abreißen?
+                Close();
+                WindowManager::inst().Show(new iwDemolishBuilding(gwv, building));
+            }
+        } break;
+        case 6: // Gold einstellen/erlauben
+        {
+            if(!GameClient::inst().IsReplayModeOn() && !GameClient::inst().IsPaused())
+            {
+                // visuell anzeigen
+                building->StopGoldVirtual();
+                // NC senden
+                GAMECLIENT.AddGC(new gc::StopGold(building->GetX(), building->GetY()));
+                // anderes Bild auf dem Button
+                if(building->IsGoldDisabledVirtual())
+                    GetCtrl<ctrlImageButton>(6)->SetImage(LOADER.GetImageN("io", 226));
+                else
+                    GetCtrl<ctrlImageButton>(6)->SetImage(LOADER.GetImageN("io", 227));
+            }
+        } break;
+        case 7: // "Gehe Zu Ort"
+        {
+            gwv->MoveToMapObject(building->GetX(), building->GetY());
+        } break;
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
 void iwMilitaryBuilding::DemolitionNotAllowed()
 {
-	// Meldung auswählen, je nach Einstellung
-	std::string msg;
-	switch(GameClient::inst().GetGGS().getSelection(ADDON_DEMOLITION_PROHIBITION))
-	{
-	default: assert(false); break;
-	case 1: msg = _("Demolition ist not allowed because the building is under attack!"); break;
-	case 2: msg = _("Demolition ist not allowed because the building is located in border area!"); break;
-	}
+    // Meldung auswählen, je nach Einstellung
+    std::string msg;
+    switch(GameClient::inst().GetGGS().getSelection(ADDON_DEMOLITION_PROHIBITION))
+    {
+        default: assert(false); break;
+        case 1: msg = _("Demolition ist not allowed because the building is under attack!"); break;
+        case 2: msg = _("Demolition ist not allowed because the building is located in border area!"); break;
+    }
 
-	WindowManager::inst().Show(new iwMsgbox(_("Demolition not possible"), msg, NULL, MSB_OK, MSB_EXCLAMATIONRED));
+    WindowManager::inst().Show(new iwMsgbox(_("Demolition not possible"), msg, NULL, MSB_OK, MSB_EXCLAMATIONRED));
 }
 

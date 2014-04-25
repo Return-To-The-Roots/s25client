@@ -1,4 +1,4 @@
-// $Id: GamePlayerInfo.cpp 8875 2013-08-26 20:21:00Z marcus $
+// $Id: GamePlayerInfo.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -28,42 +28,42 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
 // Konstruktor
 GamePlayerInfo::GamePlayerInfo(const unsigned playerid) :
-	playerid(playerid),
-	defeated(false),
-	ps(PS_FREE),
-	aiType(AI_DUMMY),
-	is_host(false),
-	nation(NAT_ROMANS),
-	team(TM_NOTEAM),
-	color(0),
-	ping(0),
-	rating(0),
-	ready(false)
+    playerid(playerid),
+    defeated(false),
+    ps(PS_FREE),
+    aiType(AI_DUMMY),
+    is_host(false),
+    nation(NAT_ROMANS),
+    team(TM_NOTEAM),
+    color(0),
+    ping(0),
+    rating(0),
+    ready(false)
 {
 }
 
 /// Deserialisierungskonstruktor
-GamePlayerInfo::GamePlayerInfo(const unsigned playerid, Serializer * ser) :
-	playerid(playerid),
-	ps(PlayerState(ser->PopUnsignedChar())),
-	aiType(AI_DUMMY),
-	name(ser->PopString()),
-	origin_name(ser->PopString()),
-	is_host(ser->PopBool()),
-	nation(Nation(ser->PopUnsignedChar())),
-	team(Team(ser->PopUnsignedChar())),
-	color(ser->PopUnsignedChar()),
-	ping(ser->PopUnsignedInt()),
-	rating(ser->PopUnsignedInt()),
-	ready(ser->PopBool())
+GamePlayerInfo::GamePlayerInfo(const unsigned playerid, Serializer* ser) :
+    playerid(playerid),
+    ps(PlayerState(ser->PopUnsignedChar())),
+    aiType(AI_DUMMY),
+    name(ser->PopString()),
+    origin_name(ser->PopString()),
+    is_host(ser->PopBool()),
+    nation(Nation(ser->PopUnsignedChar())),
+    team(Team(ser->PopUnsignedChar())),
+    color(ser->PopUnsignedChar()),
+    ping(ser->PopUnsignedInt()),
+    rating(ser->PopUnsignedInt()),
+    ready(ser->PopBool())
 {
 }
 
@@ -77,41 +77,41 @@ GamePlayerInfo::~GamePlayerInfo(void)
 // Rausschmeisser
 void GamePlayerInfo::clear(void)
 {
-	name = "";
-	defeated = false;
-	ps = PS_FREE;
-	/*nation = team = color = 0;*/
-	ping = rating  = 0;
-	ready = false;
+    name = "";
+    defeated = false;
+    ps = PS_FREE;
+    /*nation = team = color = 0;*/
+    ping = rating  = 0;
+    ready = false;
 }
 
 /// serialisiert die Daten.
-void GamePlayerInfo::serialize(Serializer * ser) const
+void GamePlayerInfo::serialize(Serializer* ser) const
 {
-	ser->PushUnsignedChar(static_cast<unsigned char>(ps));
-	ser->PushString(name);
-	ser->PushString(origin_name);
-	ser->PushBool(is_host);
-	ser->PushUnsignedChar(static_cast<unsigned char>(nation));
-	ser->PushUnsignedChar(team);
-	ser->PushUnsignedChar(color);
-	ser->PushUnsignedInt(ping);
-	ser->PushUnsignedInt(rating);
-	ser->PushBool(ready);
-	
+    ser->PushUnsignedChar(static_cast<unsigned char>(ps));
+    ser->PushString(name);
+    ser->PushString(origin_name);
+    ser->PushBool(is_host);
+    ser->PushUnsignedChar(static_cast<unsigned char>(nation));
+    ser->PushUnsignedChar(team);
+    ser->PushUnsignedChar(color);
+    ser->PushUnsignedInt(ping);
+    ser->PushUnsignedInt(rating);
+    ser->PushBool(ready);
+
 }
 
 void GamePlayerInfo::SwapPlayer(GamePlayerInfo& two)
 {
-	/// Besiegt?
-	Swap(ps,two.ps);
-	Swap(aiType,two.aiType);
-	Swap(defeated,two.defeated);
-	Swap(name,two.name);
-	Swap(is_host,two.is_host);
-	Swap(ping,two.ping);
-	Swap(rating,two.rating);
-	Swap(checksum,two.checksum);
-	Swap(ready,two.ready);
+    /// Besiegt?
+    Swap(ps, two.ps);
+    Swap(aiType, two.aiType);
+    Swap(defeated, two.defeated);
+    Swap(name, two.name);
+    Swap(is_host, two.is_host);
+    Swap(ping, two.ping);
+    Swap(rating, two.rating);
+    Swap(checksum, two.checksum);
+    Swap(ready, two.ready);
 }
 

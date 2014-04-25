@@ -1,4 +1,4 @@
-// $Id: SoundSDL_Effect.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: SoundSDL_Effect.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -26,13 +26,13 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
-/** 
+/**
  *  Konstruktor von @p SoundSDL_Effect.
  *
  *  @author FloSoft
@@ -42,19 +42,19 @@ SoundSDL_Effect::SoundSDL_Effect() : sound(NULL)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/** 
+/**
  *  Destruktor von @p SoundSDL_Effect.
  *
  *  @author FloSoft
  */
 SoundSDL_Effect::~SoundSDL_Effect(void)
 {
-	if(sound)
-		Mix_FreeChunk(sound);
+    if(sound)
+        Mix_FreeChunk(sound);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/** 
+/**
  *  Abspielen Starten.
  *
  *  @param[in] volume Lautstärke (0-254) für den Sound
@@ -66,28 +66,28 @@ SoundSDL_Effect::~SoundSDL_Effect(void)
  */
 //int SoundSDL_Effect::Play(unsigned char volume, const unsigned char volume, const bool loop)
 //{
-//	int channel = Mix_PlayChannel(-1, sound, (loop ? -1 : 0));
+//  int channel = Mix_PlayChannel(-1, sound, (loop ? -1 : 0));
 //
-//	if(channel == -1)
-//	{
-//		fprintf(stderr, "%s\n", Mix_GetError());
-//		return 0xFFFFFFFF;
-//	}
+//  if(channel == -1)
+//  {
+//      fprintf(stderr, "%s\n", Mix_GetError());
+//      return 0xFFFFFFFF;
+//  }
 //
-//	Mix_SetPanning(channel, volume, volume);
+//  Mix_SetPanning(channel, volume, volume);
 //
-//	return channel;
+//  return channel;
 //}
 
 ///////////////////////////////////////////////////////////////////////////////
-/** 
+/**
  *  Abspielen Stoppen.
- * 
+ *
  *  @param[in] channel Channel der gestoppt werden soll (-1 für alle)
  *
  *  @author FloSoft
  */
 //void SoundSDL_Effect::Stop(int channel)
 //{
-//	Mix_HaltChannel(channel);
+//  Mix_HaltChannel(channel);
 //}

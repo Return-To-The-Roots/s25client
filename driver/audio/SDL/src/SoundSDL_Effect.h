@@ -1,4 +1,4 @@
-// $Id: SoundSDL_Effect.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: SoundSDL_Effect.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -25,18 +25,18 @@ class AudioSDL;
 
 class SoundSDL_Effect : public Sound
 {
-	friend class AudioSDL;
+        friend class AudioSDL;
 
-public:
-	/// Konstruktor von @p SoundSDL_Effect.
-	SoundSDL_Effect();
+    public:
+        /// Konstruktor von @p SoundSDL_Effect.
+        SoundSDL_Effect();
 
-	/// Destruktor von @p SoundSDL_Effect.
-	~SoundSDL_Effect(void);
+        /// Destruktor von @p SoundSDL_Effect.
+        ~SoundSDL_Effect(void);
 
 
-private:
-	Mix_Chunk *sound; ///< Das PCM-Handle.
+    private:
+        Mix_Chunk* sound; ///< Das PCM-Handle.
 };
 
 #endif // !SOUNDSDL_EFFECT_H_INCLUDED

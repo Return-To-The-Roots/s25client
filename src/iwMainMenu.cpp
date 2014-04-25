@@ -1,4 +1,4 @@
-// $Id: iwMainMenu.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: iwMainMenu.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -48,9 +48,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -59,45 +59,45 @@
  *
  *  @author OLiver
 */
-iwMainMenu::iwMainMenu(GameWorldViewer * const gwv, dskGameInterface * const gi)
-	: IngameWindow(CGI_MAINSELECTION, 0xFFFF, 0xFFFF, 190, 286, _("Main selection"), LOADER.GetImageN("io", 5)),
-	gwv(gwv), gi(gi)
+iwMainMenu::iwMainMenu(GameWorldViewer* const gwv, dskGameInterface* const gi)
+    : IngameWindow(CGI_MAINSELECTION, 0xFFFF, 0xFFFF, 190, 286, _("Main selection"), LOADER.GetImageN("io", 5)),
+      gwv(gwv), gi(gi)
 {
-	// Verteilung
-	AddImageButton( 0,  12,  22,  53, 44, TC_GREY, LOADER.GetImageN("io", 134), _("Distribution of goods"));
-	// Transport
-	AddImageButton( 1,  68,  22,  53, 44, TC_GREY, LOADER.GetImageN("io", 198), _("Transport"));
-	// Werkzeugproduktion
-	AddImageButton( 2, 124,  22,  53, 44, TC_GREY, LOADER.GetImageN("io", 137), _("Tools"));
+    // Verteilung
+    AddImageButton( 0,  12,  22,  53, 44, TC_GREY, LOADER.GetImageN("io", 134), _("Distribution of goods"));
+    // Transport
+    AddImageButton( 1,  68,  22,  53, 44, TC_GREY, LOADER.GetImageN("io", 198), _("Transport"));
+    // Werkzeugproduktion
+    AddImageButton( 2, 124,  22,  53, 44, TC_GREY, LOADER.GetImageN("io", 137), _("Tools"));
 
-	// Statistiken
-	AddImageButton( 3,  12,  70,  39, 44, TC_GREY, LOADER.GetImageN("io", 166), _("General statistics"));
-	AddImageButton( 4,  54,  70,  39, 44, TC_GREY, LOADER.GetImageN("io", 135), _("Merchandise statistics"));
-	AddImageButton( 5,  96,  70,  39, 44, TC_GREY, LOADER.GetImageN("io", 132), _("Buildings"));
+    // Statistiken
+    AddImageButton( 3,  12,  70,  39, 44, TC_GREY, LOADER.GetImageN("io", 166), _("General statistics"));
+    AddImageButton( 4,  54,  70,  39, 44, TC_GREY, LOADER.GetImageN("io", 135), _("Merchandise statistics"));
+    AddImageButton( 5,  96,  70,  39, 44, TC_GREY, LOADER.GetImageN("io", 132), _("Buildings"));
 
-	// Inventur
-	AddImageButton( 6, 138,  70,  39, 44, TC_GREY, LOADER.GetImageN("io", 214), _("Stock"));
+    // Inventur
+    AddImageButton( 6, 138,  70,  39, 44, TC_GREY, LOADER.GetImageN("io", 214), _("Stock"));
 
-	// Gebäude
-	AddImageButton( 7,  12, 118,  53, 44, TC_GREY, LOADER.GetImageN("io", 136), _("Productivity"));
-	// Militär
-	AddImageButton( 8,  68, 118,  53, 44, TC_GREY, LOADER.GetImageN("io", 133), _("Military"));
-	// Schiffe
-	AddImageButton( 9, 124, 118,  53, 44, TC_GREY, LOADER.GetImageN("io", 175), _("Ship register"));
+    // Gebäude
+    AddImageButton( 7,  12, 118,  53, 44, TC_GREY, LOADER.GetImageN("io", 136), _("Productivity"));
+    // Militär
+    AddImageButton( 8,  68, 118,  53, 44, TC_GREY, LOADER.GetImageN("io", 133), _("Military"));
+    // Schiffe
+    AddImageButton( 9, 124, 118,  53, 44, TC_GREY, LOADER.GetImageN("io", 175), _("Ship register"));
 
-	// Baureihenfolge
-	if(GameClient::inst().GetGGS().isEnabled(ADDON_CUSTOM_BUILD_SEQUENCE))
-		AddImageButton( 10,  12, 166,  53, 44, TC_GREY, LOADER.GetImageN("io", 24), _("Building sequence"));
-	
-	// Diplomatie (todo: besseres Bild suchen)
-	AddImageButton( 11,  68, 166,  53, 44, TC_GREY, LOADER.GetImageN("io", 190), _("Diplomacy"));
+    // Baureihenfolge
+    if(GameClient::inst().GetGGS().isEnabled(ADDON_CUSTOM_BUILD_SEQUENCE))
+        AddImageButton( 10,  12, 166,  53, 44, TC_GREY, LOADER.GetImageN("io", 24), _("Building sequence"));
 
-	// AI-Debug
-	if(GameClient::inst().IsHost() && GameClient::inst().GetGGS().isEnabled(ADDON_AI_DEBUG_WINDOW))
-		AddImageButton( 13,  80, 210,  20, 20, TC_GREY, NULL, _("AI Debug Window"));
+    // Diplomatie (todo: besseres Bild suchen)
+    AddImageButton( 11,  68, 166,  53, 44, TC_GREY, LOADER.GetImageN("io", 190), _("Diplomacy"));
 
-	// Optionen
-	AddImageButton(30,  12, 231, 165, 32, TC_GREY, LOADER.GetImageN("io",  37), _("Options"));
+    // AI-Debug
+    if(GameClient::inst().IsHost() && GameClient::inst().GetGGS().isEnabled(ADDON_AI_DEBUG_WINDOW))
+        AddImageButton( 13,  80, 210,  20, 20, TC_GREY, NULL, _("AI Debug Window"));
+
+    // Optionen
+    AddImageButton(30,  12, 231, 165, 32, TC_GREY, LOADER.GetImageN("io",  37), _("Options"));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -108,64 +108,64 @@ iwMainMenu::iwMainMenu(GameWorldViewer * const gwv, dskGameInterface * const gi)
 */
 void iwMainMenu::Msg_ButtonClick(const unsigned int ctrl_id)
 {
-	switch(ctrl_id)
-	{
-	case 0: // Verteilung
-		{
-			WindowManager::inst().Show(new iwDistribution);
-		} break;
-	case 1: // Transport
-		{
-			WindowManager::inst().Show(new iwTransport);
-		} break;
-	case 2: // Werkzeugproduktion
-		{
-			WindowManager::inst().Show(new iwTools);
-		} break;
-	case 3: // Statistik
-		{
-			WindowManager::inst().Show(new iwStatistics);
-		} break;
-	case 4: // Warenstatistik
-		{
-			WindowManager::inst().Show(new iwMerchandiseStatistics);
-		} break;
-	case 5: // Gebäudestatistik
-		{
-			WindowManager::inst().Show(new iwBuildings);
-		} break;
-	case 6: // Inventur
-		{
-			WindowManager::inst().Show(new iwInventory);
-		} break;
-	case 7: // Produktivitäten
-		{
-			WindowManager::inst().Show(new iwBuildingProductivities);
-		} break;
-	case 8: // Militär
-		{
-			WindowManager::inst().Show(new iwMilitary);
-		} break;
-	case 9: // Schiffe
-		{
-			WindowManager::inst().Show(new iwShip(gwv, gi, GAMECLIENT.GetLocalPlayer()->GetShipByID(0)));
-		} break;
-	case 10: // Baureihenfolge
-		{
-			WindowManager::inst().Show(new iwBuildOrder);
-		} break;
-	case 11: // Diplomatie
-		{
-			WindowManager::inst().Show(new iwDiplomacy);
-		} break;
-	case 13: // AI Debug
-		{
-			if(GAMECLIENT.IsHost())
-				WindowManager::inst().Show(new iwAIDebug(gwv));
-		} break;	
-	case 30: // Optionen
-		{
-			WindowManager::inst().Show(new iwOptionsWindow(this->gi));
-		} break;
-	}
-} 
+    switch(ctrl_id)
+    {
+        case 0: // Verteilung
+        {
+            WindowManager::inst().Show(new iwDistribution);
+        } break;
+        case 1: // Transport
+        {
+            WindowManager::inst().Show(new iwTransport);
+        } break;
+        case 2: // Werkzeugproduktion
+        {
+            WindowManager::inst().Show(new iwTools);
+        } break;
+        case 3: // Statistik
+        {
+            WindowManager::inst().Show(new iwStatistics);
+        } break;
+        case 4: // Warenstatistik
+        {
+            WindowManager::inst().Show(new iwMerchandiseStatistics);
+        } break;
+        case 5: // Gebäudestatistik
+        {
+            WindowManager::inst().Show(new iwBuildings);
+        } break;
+        case 6: // Inventur
+        {
+            WindowManager::inst().Show(new iwInventory);
+        } break;
+        case 7: // Produktivitäten
+        {
+            WindowManager::inst().Show(new iwBuildingProductivities);
+        } break;
+        case 8: // Militär
+        {
+            WindowManager::inst().Show(new iwMilitary);
+        } break;
+        case 9: // Schiffe
+        {
+            WindowManager::inst().Show(new iwShip(gwv, gi, GAMECLIENT.GetLocalPlayer()->GetShipByID(0)));
+        } break;
+        case 10: // Baureihenfolge
+        {
+            WindowManager::inst().Show(new iwBuildOrder);
+        } break;
+        case 11: // Diplomatie
+        {
+            WindowManager::inst().Show(new iwDiplomacy);
+        } break;
+        case 13: // AI Debug
+        {
+            if(GAMECLIENT.IsHost())
+                WindowManager::inst().Show(new iwAIDebug(gwv));
+        } break;
+        case 30: // Optionen
+        {
+            WindowManager::inst().Show(new iwOptionsWindow(this->gi));
+        } break;
+    }
+}

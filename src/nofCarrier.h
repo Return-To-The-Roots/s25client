@@ -1,4 +1,4 @@
-// $Id: nofCarrier.h 8170 2012-09-07 14:44:26Z marcus $
+// $Id: nofCarrier.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -30,132 +30,132 @@ class glSmartBitmap;
 
 enum CarrierState
 {
-	CARRS_FIGUREWORK = 0, // Aufgaben der Figur
-	CARRS_WAITFORWARE, // auf Weg auf Ware warten
-	CARRS_GOTOMIDDLEOFROAD, // zur Mitte seines Weges gehen
-	CARRS_FETCHWARE, // Ware holen
-	CARRS_CARRYWARE, // Ware zur Flagge tragen
-	CARRS_CARRYWARETOBUILDING, // Ware zum Gebäude schaffen
-	CARRS_LEAVEBUILDING, // kommt aus Gebäude wieder raus (bzw kommt von Baustelle zurück) zum Weg
-	CARRS_WAITFORWARESPACE, // wartet vor der Flagge auf einen freien Platz
-	CARRS_GOBACKFROMFLAG, // geht von der Flagge zurück, weil kein Platz mehr frei war
-	CARRS_BOATCARRIER_WANDERONWATER // Rumirren der Bootsträger auf dem Wasser, d.h. Paddeln zum 
-									// nächsten Ufer, nachdem der Wasserweg zerstört wurde
+    CARRS_FIGUREWORK = 0, // Aufgaben der Figur
+    CARRS_WAITFORWARE, // auf Weg auf Ware warten
+    CARRS_GOTOMIDDLEOFROAD, // zur Mitte seines Weges gehen
+    CARRS_FETCHWARE, // Ware holen
+    CARRS_CARRYWARE, // Ware zur Flagge tragen
+    CARRS_CARRYWARETOBUILDING, // Ware zum Gebäude schaffen
+    CARRS_LEAVEBUILDING, // kommt aus Gebäude wieder raus (bzw kommt von Baustelle zurück) zum Weg
+    CARRS_WAITFORWARESPACE, // wartet vor der Flagge auf einen freien Platz
+    CARRS_GOBACKFROMFLAG, // geht von der Flagge zurück, weil kein Platz mehr frei war
+    CARRS_BOATCARRIER_WANDERONWATER // Rumirren der Bootsträger auf dem Wasser, d.h. Paddeln zum
+    // nächsten Ufer, nachdem der Wasserweg zerstört wurde
 };
 
 // Stellt einen Träcer da
 class nofCarrier : public noFigure
 {
-public:
+    public:
 
-	/// Träger-"Typ"
-	enum CarrierType
-	{
-		CT_NORMAL, // Normaler Träger
-		CT_DONKEY, // Esel
-		CT_BOAT // Träger mit Boot
-	};
+        /// Träger-"Typ"
+        enum CarrierType
+        {
+            CT_NORMAL, // Normaler Träger
+            CT_DONKEY, // Esel
+            CT_BOAT // Träger mit Boot
+        };
 
-private:
+    private:
 
-	CarrierType ct;
-	/// Was der Träger gerade so treibt
-	CarrierState state;
-	/// Ist er dick?
-	bool fat;
-	// Weg, auf dem er arbeitet
-	RoadSegment * workplace;
-	/// Ware, die er gerade trägt (0 = nichts)
-	Ware * carried_ware;
-	/// Rechne-Produktivität-aus-Event
-	EventManager::EventPointer productivity_ev;
-	// Letzte errechnete Produktivität
-	unsigned productivity;
-	/// Wieviel GF von einer bestimmten Anzahl in diesem Event-Zeitraum gearbeitet wurde
-	unsigned worked_gf;
-	/// Zu welchem GF das letzte Mal das Arbeiten angefangen wurde
-	unsigned since_working_gf;
-	/// Bestimmt GF der nächsten Trägeranimation
-	unsigned next_animation;
-	/// For boat carriers: path to the shore
-	std::vector<unsigned char> * shore_path;
+        CarrierType ct;
+        /// Was der Träger gerade so treibt
+        CarrierState state;
+        /// Ist er dick?
+        bool fat;
+        // Weg, auf dem er arbeitet
+        RoadSegment* workplace;
+        /// Ware, die er gerade trägt (0 = nichts)
+        Ware* carried_ware;
+        /// Rechne-Produktivität-aus-Event
+        EventManager::EventPointer productivity_ev;
+        // Letzte errechnete Produktivität
+        unsigned productivity;
+        /// Wieviel GF von einer bestimmten Anzahl in diesem Event-Zeitraum gearbeitet wurde
+        unsigned worked_gf;
+        /// Zu welchem GF das letzte Mal das Arbeiten angefangen wurde
+        unsigned since_working_gf;
+        /// Bestimmt GF der nächsten Trägeranimation
+        unsigned next_animation;
+        /// For boat carriers: path to the shore
+        std::vector<unsigned char> * shore_path;
 
-private:
+    private:
 
-	void GoalReached();
-	void Walked();
-	void AbrogateWorkplace();
-	void HandleDerivedEvent(const unsigned int id);
+        void GoalReached();
+        void Walked();
+        void AbrogateWorkplace();
+        void HandleDerivedEvent(const unsigned int id);
 
-	/// Nach dem Tragen der Ware, guckt der Träger an beiden Flagge, obs Waren gibt, holt/trägt diese ggf oder geht ansonsten wieder in die Mitte
-	void LookForWares();
-	/// Nimmt eine Ware auf an der aktuellen Flagge und dreht sich um, um sie zu tragen (fetch_dir ist die Richtung der Waren, die der Träger aufnehmen will)
-	void FetchWare(const bool swap_wares);
+        /// Nach dem Tragen der Ware, guckt der Träger an beiden Flagge, obs Waren gibt, holt/trägt diese ggf oder geht ansonsten wieder in die Mitte
+        void LookForWares();
+        /// Nimmt eine Ware auf an der aktuellen Flagge und dreht sich um, um sie zu tragen (fetch_dir ist die Richtung der Waren, die der Träger aufnehmen will)
+        void FetchWare(const bool swap_wares);
 
-	/// Prüft, ob die getragene Ware dann von dem Weg zum Gebäude will
-	bool WantInBuilding(bool *calculated);
+        /// Prüft, ob die getragene Ware dann von dem Weg zum Gebäude will
+        bool WantInBuilding(bool* calculated);
 
-	/// Für Produktivitätsmessungen: fängt an zu arbeiten
-	void StartWorking();
-	/// Für Produktivitätsmessungen: hört auf zu arbeiten
-	void StopWorking();
+        /// Für Produktivitätsmessungen: fängt an zu arbeiten
+        void StartWorking();
+        /// Für Produktivitätsmessungen: hört auf zu arbeiten
+        void StopWorking();
 
-	/// Bestimmt neuen Animationszeitpunkt
-	void SetNewAnimationMoment();
-	
-	/// Boat carrier paddles to the coast after his road was destroyed
-	void WanderOnWater();
-	
-public:
+        /// Bestimmt neuen Animationszeitpunkt
+        void SetNewAnimationMoment();
 
-	nofCarrier(const CarrierType ct, const unsigned short x, const unsigned short y,const unsigned char player,RoadSegment * workplace,noRoadNode * const goal);
-	nofCarrier(SerializedGameData * sgd, const unsigned obj_id);
+        /// Boat carrier paddles to the coast after his road was destroyed
+        void WanderOnWater();
 
-	~nofCarrier();
+    public:
 
-	/// Serialisierungsfunktionen
-	protected:	void Serialize_nofCarrier(SerializedGameData * sgd) const;
-	public:		void Serialize(SerializedGameData *sgd) const { Serialize_nofCarrier(sgd); }
+        nofCarrier(const CarrierType ct, const unsigned short x, const unsigned short y, const unsigned char player, RoadSegment* workplace, noRoadNode* const goal);
+        nofCarrier(SerializedGameData* sgd, const unsigned obj_id);
 
-		/// Aufräummethoden
-protected:	void Destroy_nofCarrier();
-public:		void Destroy() { Destroy_nofCarrier(); }
+        ~nofCarrier();
 
-	GO_Type GetGOT() const { return GOT_NOF_CARRIER; }
+        /// Serialisierungsfunktionen
+    protected:  void Serialize_nofCarrier(SerializedGameData* sgd) const;
+    public:     void Serialize(SerializedGameData* sgd) const { Serialize_nofCarrier(sgd); }
 
-	/// Gibt Träger-Typ zurück
-	CarrierType GetCarrierType() const { return ct; }
-	/// Was macht der Träger gerade?
-	CarrierState GetCarrierState() const { return state; }
-	/// Gibt Träger-Produktivität in % zurück
-	unsigned GetProductivity() const { return productivity; }
+        /// Aufräummethoden
+    protected:  void Destroy_nofCarrier();
+    public:     void Destroy() { Destroy_nofCarrier(); }
 
-	void Draw(int x, int y);
+        GO_Type GetGOT() const { return GOT_NOF_CARRIER; }
 
-	/// Wird aufgerufen, wenn der Weg des Trägers abgerissen wurde
-	void LostWork();
+        /// Gibt Träger-Typ zurück
+        CarrierType GetCarrierType() const { return ct; }
+        /// Was macht der Träger gerade?
+        CarrierState GetCarrierState() const { return state; }
+        /// Gibt Träger-Produktivität in % zurück
+        unsigned GetProductivity() const { return productivity; }
 
-	/// Wird aufgerufen, wenn der Arbeitsplatz des Trägers durch eine Flagge geteilt wurde
-	/// der Träger sucht sich damit einen der beiden als neuen Arbeitsplatz, geht zur Mitte und ruft einen neuen Träger
-	/// für das 2. Wegstück
-	void RoadSplitted(RoadSegment * rs1, RoadSegment * rs2);
+        void Draw(int x, int y);
 
-	/// Sagt dem Träger Bescheid, dass es an einer Flagge noch eine Ware zu transportieren gibt
-	bool AddWareJob(const noRoadNode * rn);
-	/// Das Gegnteil von AddWareJob: wenn eine Ware nicht mehr transportiert werden will, sagt sie dem Träger Bescheid,
-	/// damit er nicht unnötig dort hinläuft zur Flagge
-	void RemoveWareJob();
+        /// Wird aufgerufen, wenn der Weg des Trägers abgerissen wurde
+        void LostWork();
 
-	/// Benachrichtigt den Träger, wenn an einer auf seinem Weg an einer Flagge wieder ein freier Platz ist
-	/// gibt zurück, ob der Träger diesen freien Platz auch nutzen wird
-	bool SpaceAtFlag(const bool flag);
+        /// Wird aufgerufen, wenn der Arbeitsplatz des Trägers durch eine Flagge geteilt wurde
+        /// der Träger sucht sich damit einen der beiden als neuen Arbeitsplatz, geht zur Mitte und ruft einen neuen Träger
+        /// für das 2. Wegstück
+        void RoadSplitted(RoadSegment* rs1, RoadSegment* rs2);
 
-	/// Gibt erste Flagge des Arbeitsweges zurück, falls solch einer existiert
-	noRoadNode * GetFirstFlag() const;
-	noRoadNode * GetSecondFlag() const;
-	
-	/// Wird aufgerufen, wenn die Straße unter der Figur geteilt wurde (für abgeleitete Klassen)
-	void CorrectSplitData_Derived();
+        /// Sagt dem Träger Bescheid, dass es an einer Flagge noch eine Ware zu transportieren gibt
+        bool AddWareJob(const noRoadNode* rn);
+        /// Das Gegnteil von AddWareJob: wenn eine Ware nicht mehr transportiert werden will, sagt sie dem Träger Bescheid,
+        /// damit er nicht unnötig dort hinläuft zur Flagge
+        void RemoveWareJob();
+
+        /// Benachrichtigt den Träger, wenn an einer auf seinem Weg an einer Flagge wieder ein freier Platz ist
+        /// gibt zurück, ob der Träger diesen freien Platz auch nutzen wird
+        bool SpaceAtFlag(const bool flag);
+
+        /// Gibt erste Flagge des Arbeitsweges zurück, falls solch einer existiert
+        noRoadNode* GetFirstFlag() const;
+        noRoadNode* GetSecondFlag() const;
+
+        /// Wird aufgerufen, wenn die Straße unter der Figur geteilt wurde (für abgeleitete Klassen)
+        void CorrectSplitData_Derived();
 };
 
 #endif

@@ -1,4 +1,4 @@
-// $Id: AddonManualRoadEnlargement.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: AddonManualRoadEnlargement.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -31,16 +31,16 @@
  */
 class AddonManualRoadEnlargement : public AddonBool
 {
-public:
-	AddonManualRoadEnlargement() : AddonBool(ADDON_MANUAL_ROAD_ENLARGEMENT,
-											 ADDONGROUP_ECONOMY,
-											 gettext_noop("Manual road enlargement"), 
-											 gettext_noop("Allows you to manually upgrade your roads\n"
-														  "and build donkey roads directly."),
-											 0
-										 )
-	{
-	}
+    public:
+        AddonManualRoadEnlargement() : AddonBool(ADDON_MANUAL_ROAD_ENLARGEMENT,
+                    ADDONGROUP_ECONOMY,
+                    gettext_noop("Manual road enlargement"),
+                    gettext_noop("Allows you to manually upgrade your roads\n"
+                                 "and build donkey roads directly."),
+                    0
+                                                    )
+        {
+        }
 };
 
 #endif // !ADDONMANUALROADENLARGEMENT_H_INCLUDED

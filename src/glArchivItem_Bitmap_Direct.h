@@ -1,4 +1,4 @@
-// $Id: glArchivItem_Bitmap_Direct.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: glArchivItem_Bitmap_Direct.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -24,26 +24,26 @@
 /// Klasse für GL-Direct-Bitmaps.
 class glArchivItem_Bitmap_Direct : public glArchivItem_Bitmap
 {
-public:
-	/// Konstruktor von @p glArchivItem_Bitmap_Direct.
-	glArchivItem_Bitmap_Direct(void);
-	/// Kopierkonstruktor von @p glArchivItem_Bitmap_Direct.
-	glArchivItem_Bitmap_Direct(const glArchivItem_Bitmap_Direct *item);
+    public:
+        /// Konstruktor von @p glArchivItem_Bitmap_Direct.
+        glArchivItem_Bitmap_Direct(void);
+        /// Kopierkonstruktor von @p glArchivItem_Bitmap_Direct.
+        glArchivItem_Bitmap_Direct(const glArchivItem_Bitmap_Direct* item);
 
-	/// setzt einen Pixel auf einen bestimmten Wert.
-	virtual void tex_setPixel(unsigned short x, unsigned short y, unsigned char color, const libsiedler2::ArchivItem_Palette *palette);
-	/// setzt einen Pixel auf einen bestimmten Wert.
-	virtual void tex_setPixel(unsigned short x, unsigned short y, unsigned char r, unsigned char g, unsigned char b, unsigned char a);
-
-	
-	/// liefert die Farbwerte eines Pixels als uc-Array: {r,g,b,a}
-	unsigned char * tex_getPixel(const unsigned short x, const unsigned short y);
+        /// setzt einen Pixel auf einen bestimmten Wert.
+        virtual void tex_setPixel(unsigned short x, unsigned short y, unsigned char color, const libsiedler2::ArchivItem_Palette* palette);
+        /// setzt einen Pixel auf einen bestimmten Wert.
+        virtual void tex_setPixel(unsigned short x, unsigned short y, unsigned char r, unsigned char g, unsigned char b, unsigned char a);
 
 
-	/// lädt die Bilddaten aus einer Datei.
-	virtual int load(FILE *file, const libsiedler2::ArchivItem_Palette *palette) { return 254; }
-	/// schreibt die Bilddaten in eine Datei.
-	virtual int write(FILE *file, const libsiedler2::ArchivItem_Palette *palette) const { return 254; }
+        /// liefert die Farbwerte eines Pixels als uc-Array: {r,g,b,a}
+        unsigned char* tex_getPixel(const unsigned short x, const unsigned short y);
+
+
+        /// lädt die Bilddaten aus einer Datei.
+        virtual int load(FILE* file, const libsiedler2::ArchivItem_Palette* palette) { return 254; }
+        /// schreibt die Bilddaten in eine Datei.
+        virtual int write(FILE* file, const libsiedler2::ArchivItem_Palette* palette) const { return 254; }
 };
 
 #endif // !GLARCHIVITEM_BITMAP_DIRECT_H_INCLUDED

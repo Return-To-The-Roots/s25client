@@ -1,4 +1,4 @@
-// $Id: IngameWindow.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: IngameWindow.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -26,85 +26,85 @@
 
 class IngameWindow : public Window
 {
-	
-	/// For each id we save the last posistion of the window
-	static std::vector< Point<unsigned short> > last_pos;
-public:
-	/// Konstruktor von @p IngameWindow.
-	IngameWindow(unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, const std::string& title, glArchivItem_Bitmap *background, bool modal = false, bool close_on_right_click = true);
-	/// Destruktor von @p IngameWindow.
-	~IngameWindow(void);
 
-	/// setzt die Fenster-ID.
-	void SetID(unsigned int id) { this->id = id; }
-	/// liefert die Fenster-ID.
-	unsigned int GetID(void) { return id; }
+        /// For each id we save the last posistion of the window
+        static std::vector< Point<unsigned short> > last_pos;
+    public:
+        /// Konstruktor von @p IngameWindow.
+        IngameWindow(unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, const std::string& title, glArchivItem_Bitmap* background, bool modal = false, bool close_on_right_click = true);
+        /// Destruktor von @p IngameWindow.
+        ~IngameWindow(void);
 
-	/// setzt den Hintergrund.
-	void SetBackground(glArchivItem_Bitmap *background) { this->background = background; }
-	/// liefert den Hintergrund.
-	glArchivItem_Bitmap *GetBackground(void) { return background; }
+        /// setzt die Fenster-ID.
+        void SetID(unsigned int id) { this->id = id; }
+        /// liefert die Fenster-ID.
+        unsigned int GetID(void) { return id; }
 
-	/// setzt den Fenstertitel.
-	void SetTitle(const std::string& title) { this->title = title; }
-	/// liefert den Fenstertitel.
-	const std::string& GetTitle(void) { return title; }
+        /// setzt den Hintergrund.
+        void SetBackground(glArchivItem_Bitmap* background) { this->background = background; }
+        /// liefert den Hintergrund.
+        glArchivItem_Bitmap* GetBackground(void) { return background; }
 
-	/// setzt die ausgeklappte Höhe des Fensters.
-	void SetIwHeight(unsigned short height) { this->iwHeight = height; if(!minimized) this->height = height; }
-	/// liefert die ausgeklappte Höhe des Fensters.
-	unsigned short GetIwHeight(void) const { return iwHeight; }
+        /// setzt den Fenstertitel.
+        void SetTitle(const std::string& title) { this->title = title; }
+        /// liefert den Fenstertitel.
+        const std::string& GetTitle(void) { return title; }
 
-	/// merkt das Fenster zum Schließen vor.
-	void Close(bool closeme = true) { this->closeme = closeme; }
-	/// soll das Fenster geschlossen werden.
-	bool ShouldBeClosed() { return closeme; }
+        /// setzt die ausgeklappte Höhe des Fensters.
+        void SetIwHeight(unsigned short height) { this->iwHeight = height; if(!minimized) this->height = height; }
+        /// liefert die ausgeklappte Höhe des Fensters.
+        unsigned short GetIwHeight(void) const { return iwHeight; }
 
-	/// minimiert das Fenster.
-	void SetMinimized(bool minimized = true);
-	/// ist das Fenster minimiert?
-	bool GetMinimized() { return minimized; }
+        /// merkt das Fenster zum Schließen vor.
+        void Close(bool closeme = true) { this->closeme = closeme; }
+        /// soll das Fenster geschlossen werden.
+        bool ShouldBeClosed() { return closeme; }
 
-	/// Fenster wird bei Rechtsklick geschlossen?
-	void SetCloseOnRightClick(bool close_on_right_click) {this->close_on_right_click = close_on_right_click;}
-	bool GetCloseOnRightClick() {return(close_on_right_click);}
+        /// minimiert das Fenster.
+        void SetMinimized(bool minimized = true);
+        /// ist das Fenster minimiert?
+        bool GetMinimized() { return minimized; }
 
-	/// "modalisiert" das Fenster.
-	void SetModal(bool modal = true) { this->modal = modal; }
-	/// ist das Fenster ein modales Fenster?
-	bool GetModal(void) { return modal; }
+        /// Fenster wird bei Rechtsklick geschlossen?
+        void SetCloseOnRightClick(bool close_on_right_click) {this->close_on_right_click = close_on_right_click;}
+        bool GetCloseOnRightClick() {return(close_on_right_click);}
 
-	void MouseLeftDown(const MouseCoords& mc);
-	void MouseLeftUp(const MouseCoords& mc);
-	void MouseMove(const MouseCoords& mc);
+        /// "modalisiert" das Fenster.
+        void SetModal(bool modal = true) { this->modal = modal; }
+        /// ist das Fenster ein modales Fenster?
+        bool GetModal(void) { return modal; }
 
-protected:
-	virtual bool Draw_(void);
+        void MouseLeftDown(const MouseCoords& mc);
+        void MouseLeftUp(const MouseCoords& mc);
+        void MouseMove(const MouseCoords& mc);
 
-	/// Verschiebt Fenster in die Bildschirmmitte
-	void MoveToCenter();
-	/// Verschiebt Fenster neben die Maus
-	void MoveNextToMouse();
+    protected:
+        virtual bool Draw_(void);
 
-	/// Weiterleitung von Nachrichten erlaubt oder nicht?
-	bool IsMessageRelayAllowed() const;
+        /// Verschiebt Fenster in die Bildschirmmitte
+        void MoveToCenter();
+        /// Verschiebt Fenster neben die Maus
+        void MoveNextToMouse();
 
-protected:
-	unsigned short iwHeight;
-	std::string title;
-	glArchivItem_Bitmap *background;
-	unsigned short last_x;
-	unsigned short last_y;
-	bool last_down;
-	bool last_down2;
-	ButtonState button_state[2];
+        /// Weiterleitung von Nachrichten erlaubt oder nicht?
+        bool IsMessageRelayAllowed() const;
 
-private:
-	bool modal;
-	bool closeme;
-	bool minimized;
-	bool move;
-	bool close_on_right_click;
+    protected:
+        unsigned short iwHeight;
+        std::string title;
+        glArchivItem_Bitmap* background;
+        unsigned short last_x;
+        unsigned short last_y;
+        bool last_down;
+        bool last_down2;
+        ButtonState button_state[2];
+
+    private:
+        bool modal;
+        bool closeme;
+        bool minimized;
+        bool move;
+        bool close_on_right_click;
 };
 
 #endif // !INGAMEWINDOW_H_INCLUDED

@@ -1,4 +1,4 @@
-// $Id: AIEventManager.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: AIEventManager.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -30,12 +30,12 @@ AIEventManager::~AIEventManager(void)
 {
 }
 
-AIEvent::Base *AIEventManager::GetEvent()
+AIEvent::Base* AIEventManager::GetEvent()
 {
-	if (events.empty())
-		return NULL;
-	
-	AIEvent::Base *ev = events.front();
-	events.pop();
-	return ev;
+    if (events.empty())
+        return NULL;
+
+    AIEvent::Base* ev = events.front();
+    events.pop();
+    return ev;
 }

@@ -1,4 +1,4 @@
-// $Id: nofMetalworker.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: nofMetalworker.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -27,19 +27,19 @@ class nobUsualBuilding;
 /// Klasse für den Schreiner
 class nofMetalworker : public nofWorkman
 {
-	/// Zeichnet ihn beim Arbeiten
-	void DrawWorking(int x, int y);
-	/// Gibt die ID in JOBS.BOB zurück, wenn der Beruf Waren rausträgt (bzw rein)
-	unsigned short GetCarryID() const;
-	/// Der Arbeiter erzeugt eine Ware
-	GoodType ProduceWare();
+        /// Zeichnet ihn beim Arbeiten
+        void DrawWorking(int x, int y);
+        /// Gibt die ID in JOBS.BOB zurück, wenn der Beruf Waren rausträgt (bzw rein)
+        unsigned short GetCarryID() const;
+        /// Der Arbeiter erzeugt eine Ware
+        GoodType ProduceWare();
 
-public:
+    public:
 
-	nofMetalworker(const unsigned short x, const unsigned short y,const unsigned char player,nobUsual * workplace);
-	nofMetalworker(SerializedGameData * sgd, const unsigned obj_id);
+        nofMetalworker(const unsigned short x, const unsigned short y, const unsigned char player, nobUsual* workplace);
+        nofMetalworker(SerializedGameData* sgd, const unsigned obj_id);
 
-	GO_Type GetGOT() const { return GOT_NOF_METALWORKER; }
+        GO_Type GetGOT() const { return GOT_NOF_METALWORKER; }
 };
 
 #endif

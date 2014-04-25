@@ -1,4 +1,4 @@
-// $Id: noMovable.h 8516 2012-11-14 00:03:22Z marcus $
+// $Id: noMovable.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -27,54 +27,54 @@
 #include "MapConsts.h"
 
 /// Anzahl Animationsschritte bei dem jeweiligen Anstieg
-const unsigned short ASCENT_ANIMATION_STEPS[7] = {16,16,16,16,24,32,48};
+const unsigned short ASCENT_ANIMATION_STEPS[7] = {16, 16, 16, 16, 24, 32, 48};
 
 class noMovable : public noCoordBase
 {
-protected:
+    protected:
 
-	unsigned char dir; // Richtung, in die es gerade läcft
-	unsigned char ascent; // Anstieg beim Laufen (0-2 runter, 3 gerade, 4-6 hoch)
-	EventManager::EventPointer current_ev;
-	/// Falls er unterwegs angehalten ist: wie weit war er schon gelaufen (0 wenn nicht)
-	unsigned pause_walked_gf;
-	/// Wenn er angehalten hat, wie lange das Laufevent war
-	unsigned pause_event_length;
-	/// Läuft es gerade (zum Debuggen)
-	bool moving;
+        unsigned char dir; // Richtung, in die es gerade läcft
+        unsigned char ascent; // Anstieg beim Laufen (0-2 runter, 3 gerade, 4-6 hoch)
+        EventManager::EventPointer current_ev;
+        /// Falls er unterwegs angehalten ist: wie weit war er schon gelaufen (0 wenn nicht)
+        unsigned pause_walked_gf;
+        /// Wenn er angehalten hat, wie lange das Laufevent war
+        unsigned pause_event_length;
+        /// Läuft es gerade (zum Debuggen)
+        bool moving;
 
-protected:
+    protected:
 
-	/// Pausiert ein gerade laufendes Wesen
-	void PauseWalking();
+        /// Pausiert ein gerade laufendes Wesen
+        void PauseWalking();
 
-public:
+    public:
 
-	noMovable(const NodalObjectType nop,const unsigned short x, const unsigned short y);
-	noMovable(SerializedGameData * sgd, const unsigned obj_id);
+        noMovable(const NodalObjectType nop, const unsigned short x, const unsigned short y);
+        noMovable(SerializedGameData* sgd, const unsigned obj_id);
 
-	/// Aufräummethoden
-protected:	void Destroy_noMovable() { Destroy_noCoordBase(); }
-public:		void Destroy() { Destroy_noMovable(); }
+        /// Aufräummethoden
+    protected:  void Destroy_noMovable() { Destroy_noCoordBase(); }
+    public:     void Destroy() { Destroy_noMovable(); }
 
-	/// Serialisierungsfunktionen
-	protected:	void Serialize_noMovable(SerializedGameData * sgd) const;
-	public:		void Serialize(SerializedGameData *sgd) const { Serialize_noMovable(sgd); }
+        /// Serialisierungsfunktionen
+    protected:  void Serialize_noMovable(SerializedGameData* sgd) const;
+    public:     void Serialize(SerializedGameData* sgd) const { Serialize_noMovable(sgd); }
 
-	/// In aktueller Richtung ein Stück zurücklegen
-	void Walk();
-	// Starten zu Laufen, Event anmelden
-	void StartMoving(const unsigned char dir, unsigned gf_length);
-	// Interpoliert die Positon zwischen zwei Knotenpunkten
-	void CalcRelative(int &x, int &y,int x1 = 0, int y1 = 0,int x2 = 0,int y2 = 0);
-	/// Interpoliert fürs Laufen zwischen zwei Kartenpunkten
-	void CalcWalkingRelative(int &x, int &y);
-	// Steht er in der zwischen 2 Wegpunkten?
-	bool IsStandingBetweenNodes() const { return (pause_walked_gf>0) ? true : false; }
-	/// Gibt die Position zurück, wo wir uns hinbewegen (selbe Position, wenn Schiff steht)
-	Point<MapCoord> GetDestinationForCurrentMove() const;
-		/// Gibt zurück, ob sich das angegebene Objekt zwischen zwei Punkten bewegt
-	bool IsMoving() const;
+        /// In aktueller Richtung ein Stück zurücklegen
+        void Walk();
+        // Starten zu Laufen, Event anmelden
+        void StartMoving(const unsigned char dir, unsigned gf_length);
+        // Interpoliert die Positon zwischen zwei Knotenpunkten
+        void CalcRelative(int& x, int& y, int x1 = 0, int y1 = 0, int x2 = 0, int y2 = 0);
+        /// Interpoliert fürs Laufen zwischen zwei Kartenpunkten
+        void CalcWalkingRelative(int& x, int& y);
+        // Steht er in der zwischen 2 Wegpunkten?
+        bool IsStandingBetweenNodes() const { return (pause_walked_gf > 0) ? true : false; }
+        /// Gibt die Position zurück, wo wir uns hinbewegen (selbe Position, wenn Schiff steht)
+        Point<MapCoord> GetDestinationForCurrentMove() const;
+        /// Gibt zurück, ob sich das angegebene Objekt zwischen zwei Punkten bewegt
+        bool IsMoving() const;
 
 };
 

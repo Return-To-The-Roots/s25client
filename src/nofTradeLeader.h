@@ -28,43 +28,43 @@ class nobBaseWarehouse;
 /// Leader of a trade caravane
 class nofTradeLeader : public noFigure
 {
-	/// Route of this caravane
-	TradeRoute tr;
-	/// Successor (NULL if this is the one behind the leader)
-	nofTradeDonkey * successor;
-	/// The start and home warehosue
-	Point<MapCoord> start, goal;
+        /// Route of this caravane
+        TradeRoute tr;
+        /// Successor (NULL if this is the one behind the leader)
+        nofTradeDonkey* successor;
+        /// The start and home warehosue
+        Point<MapCoord> start, goal;
 
-private:
+    private:
 
-	unsigned char fails;
-	void GoalReached();
-	void Walked();
-	void HandleDerivedEvent(const unsigned int id);
-	void AbrogateWorkplace();
+        unsigned char fails;
+        void GoalReached();
+        void Walked();
+        void HandleDerivedEvent(const unsigned int id);
+        void AbrogateWorkplace();
 
-	/// Tries to go to the home ware house, otherwise start wandering
-	void TryToGoHome();
-	/// Start wandering and informs the other successors about this
-	void CancelTradeCaravane();
+        /// Tries to go to the home ware house, otherwise start wandering
+        void TryToGoHome();
+        /// Start wandering and informs the other successors about this
+        void CancelTradeCaravane();
 
-public:
+    public:
 
-	nofTradeLeader(const MapCoord x, const MapCoord y,const unsigned char player,const TradeRoute& tr, const Point<MapCoord>  start, const Point<MapCoord> goal);
-	nofTradeLeader(SerializedGameData * sgd, const unsigned obj_id);
+        nofTradeLeader(const MapCoord x, const MapCoord y, const unsigned char player, const TradeRoute& tr, const Point<MapCoord>  start, const Point<MapCoord> goal);
+        nofTradeLeader(SerializedGameData* sgd, const unsigned obj_id);
 
-	void Serialize(SerializedGameData *sgd) const;
+        void Serialize(SerializedGameData* sgd) const;
 
-	GO_Type GetGOT() const { return GOT_NOF_TRADELEADER; }
+        GO_Type GetGOT() const { return GOT_NOF_TRADELEADER; }
 
-	void Draw(int x, int y);
+        void Draw(int x, int y);
 
-	/// Wird aufgerufen, wenn die Flagge abgerissen wurde
-	void LostWork();
+        /// Wird aufgerufen, wenn die Flagge abgerissen wurde
+        void LostWork();
 
-	/// Sets the sucessor in the caravane
-	void SetSuccessor(nofTradeDonkey * const successor) 
-	{ this->successor = successor; }
+        /// Sets the sucessor in the caravane
+        void SetSuccessor(nofTradeDonkey* const successor)
+        { this->successor = successor; }
 };
 
 

@@ -1,4 +1,4 @@
-// $Id: dskGameLoader.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: dskGameLoader.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -28,26 +28,26 @@
 
 class GameWorldViewer;
 
-class dskGameLoader : 
-	public Desktop, 
-	public ClientInterface,
-	public LobbyInterface
+class dskGameLoader :
+    public Desktop,
+    public ClientInterface,
+    public LobbyInterface
 {
-public:
-	/// Konstruktor von @p dskGameLoader.
-	dskGameLoader(GameWorldViewer * gwv);
-	/// Destruktor von @p dskGameLoader.
-	~dskGameLoader();
+    public:
+        /// Konstruktor von @p dskGameLoader.
+        dskGameLoader(GameWorldViewer* gwv);
+        /// Destruktor von @p dskGameLoader.
+        ~dskGameLoader();
 
-	void LC_Status_Error(const std::string &error);
+        void LC_Status_Error(const std::string& error);
 
-private:
-	void Msg_MsgBoxResult(const unsigned int msgbox_id, const MsgboxResult mbr);
-	void Msg_Timer(const unsigned int ctrl_id);
+    private:
+        void Msg_MsgBoxResult(const unsigned int msgbox_id, const MsgboxResult mbr);
+        void Msg_Timer(const unsigned int ctrl_id);
 
-	unsigned int position;
-	/// Falls ein Savegame geladen wird --> Pointer darauf
-	GameWorldViewer *gwv;
+        unsigned int position;
+        /// Falls ein Savegame geladen wird --> Pointer darauf
+        GameWorldViewer* gwv;
 };
 
 #endif // !dskGAMELOADER_H_INCLUDED

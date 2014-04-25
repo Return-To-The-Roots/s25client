@@ -1,4 +1,4 @@
-// $Id: noCoordBase.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: noCoordBase.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -24,21 +24,21 @@
 #include "SerializedGameData.h"
 #include "GameWorld.h"
 
-void noCoordBase::Serialize_noCoordBase(SerializedGameData * sgd) const 
+void noCoordBase::Serialize_noCoordBase(SerializedGameData* sgd) const
 {
-	Serialize_noBase(sgd);
+    Serialize_noBase(sgd);
 
-	sgd->PushUnsignedShort(x);
-	sgd->PushUnsignedShort(y);
+    sgd->PushUnsignedShort(x);
+    sgd->PushUnsignedShort(y);
 }
 
-noCoordBase::noCoordBase(SerializedGameData * sgd, const unsigned obj_id) : noBase(sgd,obj_id),
-x(sgd->PopUnsignedShort()),
-y(sgd->PopUnsignedShort())
+noCoordBase::noCoordBase(SerializedGameData* sgd, const unsigned obj_id) : noBase(sgd, obj_id),
+    x(sgd->PopUnsignedShort()),
+    y(sgd->PopUnsignedShort())
 {
 }
 
 unsigned noCoordBase::CreateGUIID() const
 {
-	return gwg->CreateGUIID(x,y);
+    return gwg->CreateGUIID(x, y);
 }

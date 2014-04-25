@@ -1,4 +1,4 @@
-// $Id: nofDonkeybreeder.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: nofDonkeybreeder.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -28,22 +28,22 @@ class nobUsualBuilding;
 /// Klasse für den Eselzüchter
 class nofDonkeybreeder : public nofWorkman
 {
-public:
-	nofDonkeybreeder(unsigned short x, unsigned short y, unsigned char player, nobUsual *workplace);
-	nofDonkeybreeder(SerializedGameData *sgd, unsigned int obj_id);
+    public:
+        nofDonkeybreeder(unsigned short x, unsigned short y, unsigned char player, nobUsual* workplace);
+        nofDonkeybreeder(SerializedGameData* sgd, unsigned int obj_id);
 
-	GO_Type GetGOT() const { return GOT_NOF_DONKEYBREEDER; }
+        GO_Type GetGOT() const { return GOT_NOF_DONKEYBREEDER; }
 
-private:
-	/// Zeichnet ihn beim Arbeiten.
-	void DrawWorking(int x, int y);
-	/// Der Arbeiter erzeugt eine Ware.
-	GoodType ProduceWare();
-	/// Wird aufgerufen, wenn er fertig mit arbeiten ist
-	void WorkFinished();
+    private:
+        /// Zeichnet ihn beim Arbeiten.
+        void DrawWorking(int x, int y);
+        /// Der Arbeiter erzeugt eine Ware.
+        GoodType ProduceWare();
+        /// Wird aufgerufen, wenn er fertig mit arbeiten ist
+        void WorkFinished();
 
-	/// Gibt die ID in JOBS.BOB zurück, wenn der Beruf Waren rausträgt (bzw rein)
-	unsigned short GetCarryID() const { return 0; }
+        /// Gibt die ID in JOBS.BOB zurück, wenn der Beruf Waren rausträgt (bzw rein)
+        unsigned short GetCarryID() const { return 0; }
 };
 
 #endif // !NOFDONKEYBREEDER_H_INCLUDED

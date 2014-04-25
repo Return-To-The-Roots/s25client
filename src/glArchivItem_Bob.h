@@ -1,4 +1,4 @@
-// $Id: glArchivItem_Bob.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: glArchivItem_Bob.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -24,14 +24,14 @@
 /// Klasse für GL-Bobfiles.
 class glArchivItem_Bob : public libsiedler2::ArchivItem_Bob
 {
-public:
-	/// Konstruktor von @p glArchivItem_Bob.
-	glArchivItem_Bob(void) : ArchivItem_Bob() {};
-	/// Kopierkonstruktor von @p glArchivItem_Bob.
-	glArchivItem_Bob(const glArchivItem_Bob *item) : ArchivItem_Bob(item) {};
+    public:
+        /// Konstruktor von @p glArchivItem_Bob.
+        glArchivItem_Bob(void) : ArchivItem_Bob() {};
+        /// Kopierkonstruktor von @p glArchivItem_Bob.
+        glArchivItem_Bob(const glArchivItem_Bob* item) : ArchivItem_Bob(item) {};
 
-	/// Zeichnet einen Animationsstep.
-	void Draw(unsigned int item, unsigned int direction, bool fat, unsigned int animationstep, short x, short y, unsigned int color);
+        /// Zeichnet einen Animationsstep.
+        void Draw(unsigned int item, unsigned int direction, bool fat, unsigned int animationstep, short x, short y, unsigned int color);
 };
 
 #endif // !GLARCHIVITEM_BOB_H_INCLUDED

@@ -1,4 +1,4 @@
-// $Id: iwMerchandiseStatistics.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: iwMerchandiseStatistics.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -26,36 +26,36 @@
 /// Fenster mit den Warenstatistiken.
 class iwMerchandiseStatistics : public IngameWindow
 {
-	
 
-public:
-	iwMerchandiseStatistics();
-	~iwMerchandiseStatistics();
-  
-private:
-	/// Malt die bunten Kästchen über den Buttons
-	void DrawRectangles();
-	/// Zeichnet das Achsensystem
-	void DrawAxis();
-	/// Zeichnet die Statistikdaten (TODO)
-	void DrawStatistic();
 
-	// Die Farben für die einzelnen Warenlinien
-	static const unsigned int BarColors[14];
+    public:
+        iwMerchandiseStatistics();
+        ~iwMerchandiseStatistics();
 
-	// Aktueller Zeitbereich
-	StatisticTime currentTime;
+    private:
+        /// Malt die bunten Kästchen über den Buttons
+        void DrawRectangles();
+        /// Zeichnet das Achsensystem
+        void DrawAxis();
+        /// Zeichnet die Statistikdaten (TODO)
+        void DrawStatistic();
 
-	// Textelemente für die verschiedenen Zeitbereiche
-	std::vector<ctrlText*> timeAnnotations;
+        // Die Farben für die einzelnen Warenlinien
+        static const unsigned int BarColors[14];
 
-	// Maximalwert der y-Achse
-	ctrlText *maxValue;
+        // Aktueller Zeitbereich
+        StatisticTime currentTime;
 
-	// Durchgereichte Methoden vom Window
-	void Msg_PaintAfter();
-	void Msg_OptionGroupChange(const unsigned int ctrl_id, const unsigned short selection);
-	void Msg_ButtonClick(const unsigned int ctrl_id);
+        // Textelemente für die verschiedenen Zeitbereiche
+        std::vector<ctrlText*> timeAnnotations;
+
+        // Maximalwert der y-Achse
+        ctrlText* maxValue;
+
+        // Durchgereichte Methoden vom Window
+        void Msg_PaintAfter();
+        void Msg_OptionGroupChange(const unsigned int ctrl_id, const unsigned short selection);
+        void Msg_ButtonClick(const unsigned int ctrl_id);
 
 
 };

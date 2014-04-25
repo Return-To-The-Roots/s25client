@@ -1,4 +1,4 @@
-// $Id: Sound.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: Sound.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -23,33 +23,34 @@
 /// Basisklasse für einen Sound.
 class Sound
 {
-public:
-	/// Konstruktor von @p Sound.
-	Sound();
+    public:
+        /// Konstruktor von @p Sound.
+        Sound();
 
-	/// Destruktor von @p Sound.
-	virtual ~Sound(void);
+        /// Destruktor von @p Sound.
+        virtual ~Sound(void);
 
-	void SetNr(int nr) { this->nr = nr; }
-	int GetNr() { return nr; }
+        void SetNr(int nr) { this->nr = nr; }
+        int GetNr() { return nr; }
 
-	void SetType(unsigned int type) { this->type = (SoundType)type; }
-	unsigned int GetType() { return type; }
+        void SetType(unsigned int type) { this->type = (SoundType)type; }
+        unsigned int GetType() { return type; }
 
-	bool IsMusic() { return (type == SD_MUSIC); }
-	bool IsEffect() { return (type == SD_EFFECT); }
+        bool IsMusic() { return (type == SD_MUSIC); }
+        bool IsEffect() { return (type == SD_EFFECT); }
 
-public:
-	enum SoundType {
-		SD_UNKNOWN = 0,
-		SD_MUSIC,
-		SD_EFFECT
-	};
+    public:
+        enum SoundType
+        {
+            SD_UNKNOWN = 0,
+            SD_MUSIC,
+            SD_EFFECT
+        };
 
-protected:
+    protected:
 
-	int nr;
-	SoundType type;
+        int nr;
+        SoundType type;
 };
 
 #endif // !SOUND_H_INCLUDED

@@ -1,4 +1,4 @@
-// $Id: AudioInterface.h 8902 2013-08-27 18:25:03Z jh $
+// $Id: AudioInterface.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -26,20 +26,20 @@
 // Makros / Defines
 #undef DRIVERDLLAPI
 #ifdef _WIN32
-#	if defined _USRDLL || defined _LIB || defined BUILD_DLL
-#		define DRIVERDLLAPI extern "C" __declspec(dllexport)
-#		define class        class __declspec(dllexport)
-#	else
-#		define DRIVERDLLAPI extern "C" __declspec(dllimport)
-#	endif // !_USRDLL
+#   if defined _USRDLL || defined _LIB || defined BUILD_DLL
+#       define DRIVERDLLAPI extern "C" __declspec(dllexport)
+#       define class        class __declspec(dllexport)
+#   else
+#       define DRIVERDLLAPI extern "C" __declspec(dllimport)
+#   endif // !_USRDLL
 #else
-#	define DRIVERDLLAPI extern "C"
+#   define DRIVERDLLAPI extern "C"
 #endif // !_WIN32
 
 /// Instanzierungsfunktion der Treiber.
-DRIVERDLLAPI AudioDriver *CreateAudioInstance(AudioDriverLoaderInterface * CallBack, void * device_dependent);
+DRIVERDLLAPI AudioDriver* CreateAudioInstance(AudioDriverLoaderInterface* CallBack, void* device_dependent);
 
-/// 
-typedef AudioDriver *(*PDRIVER_CREATEAUDIOINSTANCE)(AudioDriverLoaderInterface *, void * );
+///
+typedef AudioDriver* (*PDRIVER_CREATEAUDIOINSTANCE)(AudioDriverLoaderInterface*, void* );
 
 #endif // !AUDIOINTERFACE_H_INCLUDED

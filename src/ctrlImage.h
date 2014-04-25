@@ -1,4 +1,4 @@
-// $Id: ctrlImage.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: ctrlImage.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -25,20 +25,20 @@
 
 class ctrlImage : public Window
 {
-public:
-	ctrlImage(Window *parent, unsigned int id, unsigned short x, unsigned short y, glArchivItem_Bitmap *image, const std::string& tooltip);
-	virtual ~ctrlImage();
+    public:
+        ctrlImage(Window* parent, unsigned int id, unsigned short x, unsigned short y, glArchivItem_Bitmap* image, const std::string& tooltip);
+        virtual ~ctrlImage();
 
-	void SetImage(glArchivItem_Bitmap *image) { this->image = image; }
+        void SetImage(glArchivItem_Bitmap* image) { this->image = image; }
 
-	virtual bool Msg_MouseMove(const MouseCoords& mc);
+        virtual bool Msg_MouseMove(const MouseCoords& mc);
 
-protected:
-	virtual bool Draw_(void);
+    protected:
+        virtual bool Draw_(void);
 
-private:
-	glArchivItem_Bitmap *image;
-	std::string tooltip;
+    private:
+        glArchivItem_Bitmap* image;
+        std::string tooltip;
 };
 
 #endif // !CTRLIMAGE_H_INCLUDED

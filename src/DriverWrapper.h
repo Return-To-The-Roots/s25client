@@ -1,4 +1,4 @@
-// $Id: DriverWrapper.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: DriverWrapper.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -25,45 +25,45 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // DriverWrapper
-class DriverWrapper 
+class DriverWrapper
 {
-public:
-	enum DriverType
-	{
-		DT_VIDEO = 0,
-		DT_AUDIO
-	};
+    public:
+        enum DriverType
+        {
+            DT_VIDEO = 0,
+            DT_AUDIO
+        };
 
-	class DriverItem
-	{
-	public:
-		DriverItem(std::string file, std::string name) : file(file), name(name) {}
-		const std::string &GetFile() { return file; }
-		const std::string &GetName() { return name; }
+        class DriverItem
+        {
+            public:
+                DriverItem(std::string file, std::string name) : file(file), name(name) {}
+                const std::string& GetFile() { return file; }
+                const std::string& GetName() { return name; }
 
-	private:
-		std::string file, name;
-	};
+            private:
+                std::string file, name;
+        };
 
-public:
-	/// Konstruktor von @p DriverWrapper
-	DriverWrapper(void);
-	/// Destruktor von @p DriverWrapper
-	~DriverWrapper(void);
+    public:
+        /// Konstruktor von @p DriverWrapper
+        DriverWrapper(void);
+        /// Destruktor von @p DriverWrapper
+        ~DriverWrapper(void);
 
-	/// Läd einen Treiber in die Treiber DLL, versucht, "preference" zu nehmen
-	bool Load(const DriverType dt, std::string& preference);
-	/// Gibt eine Treiber-Handle wieder frei
-	void Unload();
-	/// Gibt Adresse auf eine bestimmte Funktion zurück
-	void * GetDLLFunction(const std::string& name);
-	
-	/// Läd eine Liste von verfügbaren Treibern
-	static void LoadDriverList(const DriverType dt, list<DriverItem>& driver_list);
+        /// Läd einen Treiber in die Treiber DLL, versucht, "preference" zu nehmen
+        bool Load(const DriverType dt, std::string& preference);
+        /// Gibt eine Treiber-Handle wieder frei
+        void Unload();
+        /// Gibt Adresse auf eine bestimmte Funktion zurück
+        void* GetDLLFunction(const std::string& name);
 
-private:
-	/// Handle auf die DLL
-	HINSTANCE dll;
+        /// Läd eine Liste von verfügbaren Treibern
+        static void LoadDriverList(const DriverType dt, list<DriverItem>& driver_list);
+
+    private:
+        /// Handle auf die DLL
+        HINSTANCE dll;
 };
 
 #endif // DRIVERWRAPPER_H_INCLUDED

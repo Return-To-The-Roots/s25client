@@ -1,4 +1,4 @@
-// $Id: nofCarpenter.cpp 9199 2014-02-27 10:21:26Z marcus $
+// $Id: nofCarpenter.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -32,40 +32,40 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
-nofCarpenter::nofCarpenter(const unsigned short x, const unsigned short y,const unsigned char player,nobUsual * workplace)
-: nofWorkman(JOB_CARPENTER,x,y,player,workplace)
+nofCarpenter::nofCarpenter(const unsigned short x, const unsigned short y, const unsigned char player, nobUsual* workplace)
+    : nofWorkman(JOB_CARPENTER, x, y, player, workplace)
 {
 }
 
-nofCarpenter::nofCarpenter(SerializedGameData * sgd, const unsigned obj_id) : nofWorkman(sgd,obj_id)
+nofCarpenter::nofCarpenter(SerializedGameData* sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id)
 {
 }
 
 void nofCarpenter::DrawWorking(int x, int y)
 {
-	signed char offsets[NATION_COUNT][2] = { {30,3},{38,3},{30,8},{17,-2},{38,3} };
+    signed char offsets[NATION_COUNT][2] = { {30, 3}, {38, 3}, {30, 8}, {17, -2}, {38, 3} };
 
-	unsigned now_id;
+    unsigned now_id;
 
-	LOADER.GetImageN("rom_bobs", 32+((now_id = GAMECLIENT.Interpolate(136,current_ev))%8))
-		->Draw(x+offsets[workplace->GetNation()][0],y+offsets[workplace->GetNation()][1],0,0,0,0,0,0,COLOR_WHITE, COLORS[gwg->GetPlayer(workplace->GetPlayer())->color]);
+    LOADER.GetImageN("rom_bobs", 32 + ((now_id = GAMECLIENT.Interpolate(136, current_ev)) % 8))
+    ->Draw(x + offsets[workplace->GetNation()][0], y + offsets[workplace->GetNation()][1], 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(workplace->GetPlayer())->color]);
 
-	// Evtl Sound abspielen
-	if(now_id%8 == 3 || now_id%8 == 7)
-	{
-		SoundManager::inst().PlayNOSound(54+((now_id)%8)/4,this,now_id/4);
-		was_sounding = true;
-	}
+    // Evtl Sound abspielen
+    if(now_id % 8 == 3 || now_id % 8 == 7)
+    {
+        SoundManager::inst().PlayNOSound(54 + ((now_id) % 8) / 4, this, now_id / 4);
+        was_sounding = true;
+    }
 
-	last_id = now_id;
+    last_id = now_id;
 }
 
 GoodType nofCarpenter::ProduceWare()
 {
-	return GD_BOARDS;
+    return GD_BOARDS;
 }

@@ -1,4 +1,4 @@
-// $Id: dskSplash.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: dskSplash.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -26,16 +26,16 @@
 /// Klasse des Splashscreen Desktops.
 class dskSplash : public Desktop
 {
-public:
-	/// Konstruktor von @p dskSplash.
-	dskSplash();
-	/// Destruktor von @p dskSplash.
-	~dskSplash();
+    public:
+        /// Konstruktor von @p dskSplash.
+        dskSplash();
+        /// Destruktor von @p dskSplash.
+        ~dskSplash();
 
-private:
+    private:
 
-	void Msg_Timer(const unsigned int ctrl_id);
-	bool Msg_LeftDown(const MouseCoords& mc);
+        void Msg_Timer(const unsigned int ctrl_id);
+        bool Msg_LeftDown(const MouseCoords& mc);
 };
 
 #endif // !dskSPLASH_H_INCLUDED

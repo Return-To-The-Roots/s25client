@@ -1,4 +1,4 @@
-// $Id: AIPlayer.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: AIPlayer.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -24,9 +24,9 @@
 #include "GameWorld.h"
 #include "GameCommands.h"
 
-AIPlayer::AIPlayer(const unsigned char playerid, const GameWorldBase * const gwb, const GameClientPlayer * const player,
-		const GameClientPlayerList * const players, const GlobalGameSettings * const ggs,
-		const AI::Level level) : AIBase(playerid, gwb, player, players, ggs, level)
+AIPlayer::AIPlayer(const unsigned char playerid, const GameWorldBase* const gwb, const GameClientPlayer* const player,
+                   const GameClientPlayerList* const players, const GlobalGameSettings* const ggs,
+                   const AI::Level level) : AIBase(playerid, gwb, player, players, ggs, level)
 {
 }
 

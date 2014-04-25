@@ -1,4 +1,4 @@
-// $Id: MusicPlayer.cpp 8209 2012-09-10 14:55:39Z marcus $
+// $Id: MusicPlayer.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -28,7 +28,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
@@ -45,22 +45,22 @@ Playlist::Playlist() : repeats(1), random(false)
  */
 void Playlist::Prepare()
 {
-	if(songs.size())
-	{
-		order.clear();
+    if(songs.size())
+    {
+        order.clear();
 
-		// Abspielreihenfolge erstmal normal festlegen
-		order.resize(songs.size() * repeats);
+        // Abspielreihenfolge erstmal normal festlegen
+        order.resize(songs.size() * repeats);
 
-		// normale Reihenfolge
-		for(unsigned int i = 0; i < songs.size() * repeats; ++i)
-			order[i] = i % songs.size();
+        // normale Reihenfolge
+        for(unsigned int i = 0; i < songs.size() * repeats; ++i)
+            order[i] = i % songs.size();
 
-		// Bei Zufall nochmal mischen
-		if(random)
-			std::random_shuffle(order.begin(), order.end());
+        // Bei Zufall nochmal mischen
+        if(random)
+            std::random_shuffle(order.begin(), order.end());
 
-	}
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -71,31 +71,31 @@ void Playlist::Prepare()
  */
 bool Playlist::SaveAs(const std::string filename, const bool overwrite)
 {
-	if(!overwrite)
-	{
-		std::ifstream in(filename.c_str());
-		if(in.good())
-		{
-			// Datei existiert und wir sollen sie nicht überschreiben
-			in.close();
-			return false;
-		}
-	}
+    if(!overwrite)
+    {
+        std::ifstream in(filename.c_str());
+        if(in.good())
+        {
+            // Datei existiert und wir sollen sie nicht überschreiben
+            in.close();
+            return false;
+        }
+    }
 
-	std::ofstream out(filename.c_str());
-	if(!out.good())
-		return false;
+    std::ofstream out(filename.c_str());
+    if(!out.good())
+        return false;
 
-	out << repeats << " ";
-	out << (random ? "random" : "ordered") << std::endl;
+    out << repeats << " ";
+    out << (random ? "random" : "ordered") << std::endl;
 
-	// songs reinschreiben
-	for(unsigned int i = 0; i< songs.size(); ++i)
-		out << songs[i] << "\n";
+    // songs reinschreiben
+    for(unsigned int i = 0; i < songs.size(); ++i)
+        out << songs[i] << "\n";
 
-	out.close();
+    out.close();
 
-	return true;
+    return true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -106,60 +106,60 @@ bool Playlist::SaveAs(const std::string filename, const bool overwrite)
  */
 bool Playlist::Load(const std::string filename)
 {
-	if(filename.length() == 0)
-		return false;
+    if(filename.length() == 0)
+        return false;
 
-	LOG.lprintf("lade \"%s\"\n", filename.c_str());
+    LOG.lprintf("lade \"%s\"\n", filename.c_str());
 
-	std::ifstream in(filename.c_str());
+    std::ifstream in(filename.c_str());
 
-	if(in.fail())
-		return false;
+    if(in.fail())
+        return false;
 
-	std::string line, random_str;
-	std::stringstream sline;
+    std::string line, random_str;
+    std::stringstream sline;
 
-	if(!std::getline(in, line))
-		return false;
-	printf("%s\n", line.c_str());
-	sline.clear();
-	sline << line;
-	sline >> repeats;
-	sline >> random_str;
+    if(!std::getline(in, line))
+        return false;
+    printf("%s\n", line.c_str());
+    sline.clear();
+    sline << line;
+    sline >> repeats;
+    sline >> random_str;
 
-	random = (random_str == "random_playback" || random_str == "random");
+    random = (random_str == "random_playback" || random_str == "random");
 
-	// Liste leeren von evtl vorherigen Stücken
-	/*songs.clear();
-	order.clear();*/
+    // Liste leeren von evtl vorherigen Stücken
+    /*songs.clear();
+    order.clear();*/
 
-	while(true)
-	{
-		std::getline(in, line);
+    while(true)
+    {
+        std::getline(in, line);
 
-		// Carriage returns & Line feeds aus der Zeile ggf. rausfiltern
-		std::string::size_type k = 0;
-		while((k = line.find('\r', k)) != std::string::npos) 
-			line.erase(k, 1);
-		k = 0;
-		while((k = line.find('\n', k)) != std::string::npos) 
-			line.erase(k, 1);
+        // Carriage returns & Line feeds aus der Zeile ggf. rausfiltern
+        std::string::size_type k = 0;
+        while((k = line.find('\r', k)) != std::string::npos)
+            line.erase(k, 1);
+        k = 0;
+        while((k = line.find('\n', k)) != std::string::npos)
+            line.erase(k, 1);
 
-		// bei leeren Zeilen oder bei eof aufhören
-		if(line.length() == 0 || in.eof())
-		{
-			in.close();
+        // bei leeren Zeilen oder bei eof aufhören
+        if(line.length() == 0 || in.eof())
+        {
+            in.close();
 
-			// geladen, also zum Abspielen vorbereiten
-			Prepare();
+            // geladen, also zum Abspielen vorbereiten
+            Prepare();
 
-			return true;
-		}
+            return true;
+        }
 
-		songs.push_back(line);
-	}
+        songs.push_back(line);
+    }
 
-	return false;
+    return false;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -168,11 +168,11 @@ bool Playlist::Load(const std::string filename)
  *
  *  @author OLiver
  */
-void Playlist::FillMusicPlayer(iwMusicPlayer *window) const
+void Playlist::FillMusicPlayer(iwMusicPlayer* window) const
 {
-	window->SetSegments(songs);
-	window->SetRepeats(repeats);
-	window->SetRandomPlayback(random);
+    window->SetSegments(songs);
+    window->SetRepeats(repeats);
+    window->SetRandomPlayback(random);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -183,30 +183,30 @@ void Playlist::FillMusicPlayer(iwMusicPlayer *window) const
  */
 void Playlist::ReadMusicPlayer(const iwMusicPlayer* const window)
 {
-	repeats = window->GetRepeats();
-	random = window->GetRandomPlayback();
-	window->GetSegments(songs);
+    repeats = window->GetRepeats();
+    random = window->GetRandomPlayback();
+    window->GetSegments(songs);
 
-	// zum Abspielen vorbereiten
-	Prepare();
+    // zum Abspielen vorbereiten
+    Prepare();
 }
 
 // Wählt den Start-Song aus
 void Playlist::SetStartSong(const unsigned id)
 {
-	for(unsigned i = 0;i<order.size();++i)
-	{
-		if(order[i] == id)
-		{
-			std::swap(order[0],order[i]);
-			return;
-		}
-	}
+    for(unsigned i = 0; i < order.size(); ++i)
+    {
+        if(order[i] == id)
+        {
+            std::swap(order[0], order[i]);
+            return;
+        }
+    }
 }
 
 /////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
@@ -222,9 +222,9 @@ MusicPlayer::MusicPlayer() : playing(false)
  */
 void MusicPlayer::Play()
 {
-	playing = true;
+    playing = true;
 
-	PlayNext();
+    PlayNext();
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -235,8 +235,8 @@ void MusicPlayer::Play()
  */
 void MusicPlayer::Stop()
 {
-	AudioDriverWrapper::inst().StopMusic();
-	playing = false;
+    AudioDriverWrapper::inst().StopMusic();
+    playing = false;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -247,51 +247,51 @@ void MusicPlayer::Stop()
  */
 void MusicPlayer::PlayNext()
 {
-	std::string song = list.getNextSong();
+    std::string song = list.getNextSong();
 
-	// Am Ende der Liste angekommen?
-	if(song == "")
-	{
-		Stop();
-		return;
-	}
+    // Am Ende der Liste angekommen?
+    if(song == "")
+    {
+        Stop();
+        return;
+    }
 
-	// Evtl ein Siedlerstück ("sNN")?
-	if(song.length() == 3)
-	{
-		unsigned int nr = atoi(song.substr(1).c_str());
-		if( nr <= 14)
-		{
-			// Siedlerstück abspielen (falls es geladen wurde)
-			if(GetMusic(sng_lst, nr-1))
-				GetMusic(sng_lst, nr-1)->Play(1);
-		}
-		return;
-	}
+    // Evtl ein Siedlerstück ("sNN")?
+    if(song.length() == 3)
+    {
+        unsigned int nr = atoi(song.substr(1).c_str());
+        if( nr <= 14)
+        {
+            // Siedlerstück abspielen (falls es geladen wurde)
+            if(GetMusic(sng_lst, nr - 1))
+                GetMusic(sng_lst, nr - 1)->Play(1);
+        }
+        return;
+    }
 
-	// anderes benutzerdefiniertes Stück abspielen
-	// in "sng" speichern, daher evtl. altes Stück erstmal löschen
-	sng.clear();
-	
-	LOG.lprintf("lade \"%s\": ", song.c_str());
+    // anderes benutzerdefiniertes Stück abspielen
+    // in "sng" speichern, daher evtl. altes Stück erstmal löschen
+    sng.clear();
 
-	// Neues Stück laden
-	if(libsiedler2::loader::LoadSND(song.c_str(), &sng) != 0 )
-	{
-		Stop();
-		return;
-	}
+    LOG.lprintf("lade \"%s\": ", song.c_str());
 
-	// Und abspielen
-	dynamic_cast<glArchivItem_Music*>(sng.get(0))->Play(1);
+    // Neues Stück laden
+    if(libsiedler2::loader::LoadSND(song.c_str(), &sng) != 0 )
+    {
+        Stop();
+        return;
+    }
+
+    // Und abspielen
+    dynamic_cast<glArchivItem_Music*>(sng.get(0))->Play(1);
 }
 
 
 /// schaltet einen Song weiter und liefert den Dateinamen des aktuellen Songs
-const std::string Playlist::getNextSong()	
+const std::string Playlist::getNextSong()
 {
-	const std::string tmp(getCurrentSong());
-	if(order.size())
-		order.erase(order.begin());
-	return tmp;
+    const std::string tmp(getCurrentSong());
+    if(order.size())
+        order.erase(order.begin());
+    return tmp;
 }

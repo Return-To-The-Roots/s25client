@@ -1,4 +1,4 @@
-// $Id: ctrlTab.cpp 8209 2012-09-10 14:55:39Z marcus $
+// $Id: ctrlTab.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -30,9 +30,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -41,81 +41,81 @@
  *
  *  @author OLiver
  */
-ctrlTab::ctrlTab(Window *parent,
-				 unsigned int id,
-				 unsigned short x, 
-				 unsigned short y,
-				 unsigned short width)
-	: Window(x, y, id, parent, width, 45),
-	tab_count(0), tab_selection(0)
+ctrlTab::ctrlTab(Window* parent,
+                 unsigned int id,
+                 unsigned short x,
+                 unsigned short y,
+                 unsigned short width)
+    : Window(x, y, id, parent, width, 45),
+      tab_count(0), tab_selection(0)
 {
-	memset(tabs, 0, MAX_TAB_COUNT * sizeof(unsigned int));
+    memset(tabs, 0, MAX_TAB_COUNT * sizeof(unsigned int));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
 void ctrlTab::Msg_ButtonClick(const unsigned int ctrl_id)
 {
-	SetSelection(ctrl_id, true);
-} 
+    SetSelection(ctrl_id, true);
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
 bool ctrlTab::Msg_LeftDown(const MouseCoords& mc)
 {
-	return RelayMouseMessage(&Window::Msg_LeftDown, mc);
+    return RelayMouseMessage(&Window::Msg_LeftDown, mc);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
 bool ctrlTab::Msg_LeftUp(const MouseCoords& mc)
 {
-	return RelayMouseMessage(&Window::Msg_LeftUp, mc);
+    return RelayMouseMessage(&Window::Msg_LeftUp, mc);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author Divan
  */
 bool ctrlTab::Msg_WheelUp(const MouseCoords& mc)
 {
-	return RelayMouseMessage(&Window::Msg_WheelUp,mc);
+    return RelayMouseMessage(&Window::Msg_WheelUp, mc);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author Divan
  */
 bool ctrlTab::Msg_WheelDown(const MouseCoords& mc)
 {
-	return RelayMouseMessage(&Window::Msg_WheelDown,mc);
+    return RelayMouseMessage(&Window::Msg_WheelDown, mc);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
 bool ctrlTab::Msg_MouseMove(const MouseCoords& mc)
 {
-	return RelayMouseMessage(&Window::Msg_MouseMove, mc);
+    return RelayMouseMessage(&Window::Msg_MouseMove, mc);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -124,21 +124,21 @@ bool ctrlTab::Msg_MouseMove(const MouseCoords& mc)
  *
  *  @author OLiver
  */
-ctrlGroup *ctrlTab::AddTab(glArchivItem_Bitmap *image, std::string tooltip, const unsigned int id)
+ctrlGroup* ctrlTab::AddTab(glArchivItem_Bitmap* image, std::string tooltip, const unsigned int id)
 {
-	if(tab_count < MAX_TAB_COUNT)
-	{
-		if(AddImageButton(tab_count, 36*tab_count, 0, 36, 45, TC_RED1, image, tooltip) != NULL)
-		{
-			tabs[tab_count++] = id;
-			ctrlGroup *group = AddGroup(MAX_TAB_COUNT + 1 + id);
-			group->SetVisible(false);
+    if(tab_count < MAX_TAB_COUNT)
+    {
+        if(AddImageButton(tab_count, 36 * tab_count, 0, 36, 45, TC_RED1, image, tooltip) != NULL)
+        {
+            tabs[tab_count++] = id;
+            ctrlGroup* group = AddGroup(MAX_TAB_COUNT + 1 + id);
+            group->SetVisible(false);
 
-			return group;
-		}
-	}
+            return group;
+        }
+    }
 
-	return NULL;
+    return NULL;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -149,13 +149,13 @@ ctrlGroup *ctrlTab::AddTab(glArchivItem_Bitmap *image, std::string tooltip, cons
  */
 void ctrlTab::DeleteAllTabs(void)
 {
-	for(unsigned int i = 0; i < tab_count; ++i)
-		DeleteCtrl(i);
+    for(unsigned int i = 0; i < tab_count; ++i)
+        DeleteCtrl(i);
 
-	memset(tabs, 0, MAX_TAB_COUNT * sizeof(unsigned int));
+    memset(tabs, 0, MAX_TAB_COUNT * sizeof(unsigned int));
 
-	tab_selection = 0;
-	tab_count = 0;
+    tab_selection = 0;
+    tab_count = 0;
 }
 ///////////////////////////////////////////////////////////////////////////////
 /**
@@ -165,50 +165,50 @@ void ctrlTab::DeleteAllTabs(void)
  */
 void ctrlTab::SetSelection(unsigned short nr, bool notify)
 {
-	/// Eltern informieren, dass Tab geändert wurde
-	parent->Msg_TabChange(GetID(), tabs[nr]);
+    /// Eltern informieren, dass Tab geändert wurde
+    parent->Msg_TabChange(GetID(), tabs[nr]);
 
-	// Farbe des alten Buttons ändern
-	ctrlButton *button;
-	
-	button = GetCtrl<ctrlButton>(tab_selection);
-	if(button)
-		button->SetTexture(TC_RED1);
+    // Farbe des alten Buttons ändern
+    ctrlButton* button;
 
-	// Steuerelemente auf der alten Tabseite ausblenden
-	GetCtrl<ctrlGroup>(tabs[tab_selection] + MAX_TAB_COUNT + 1)->SetVisible(false);
+    button = GetCtrl<ctrlButton>(tab_selection);
+    if(button)
+        button->SetTexture(TC_RED1);
 
-	// Umwählen
-	tab_selection = nr;
+    // Steuerelemente auf der alten Tabseite ausblenden
+    GetCtrl<ctrlGroup>(tabs[tab_selection] + MAX_TAB_COUNT + 1)->SetVisible(false);
 
-	// Farbe des neuen Buttons ändern
-	button = GetCtrl<ctrlButton>(tab_selection);
-	if(button)
-		button->SetTexture(TC_GREEN1);
+    // Umwählen
+    tab_selection = nr;
 
-	// Steuerelemente auf der neuen Tabseite einblenden
-	GetCtrl<ctrlGroup>(tabs[nr] + MAX_TAB_COUNT + 1)->SetVisible(true);
+    // Farbe des neuen Buttons ändern
+    button = GetCtrl<ctrlButton>(tab_selection);
+    if(button)
+        button->SetTexture(TC_GREEN1);
+
+    // Steuerelemente auf der neuen Tabseite einblenden
+    GetCtrl<ctrlGroup>(tabs[nr] + MAX_TAB_COUNT + 1)->SetVisible(true);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Gibt Tab-Group zurück, über die die Steuerelemente der Tab angesprochen 
+ *  Gibt Tab-Group zurück, über die die Steuerelemente der Tab angesprochen
  *  werden können
  *
  *  @author OLiver
  */
-ctrlGroup *ctrlTab::GetGroup(const unsigned int tab_id)
+ctrlGroup* ctrlTab::GetGroup(const unsigned int tab_id)
 {
-	//unsigned int real_id = 0xffffffff;
-	//
-	//for(unsigned short i = 0; i < tab_count; ++i)
-	//	if(tabs[i] == tab_id)
-	//		real_id = i;
-	//
-	//if(real_id == 0xffffffff)
-	//	return NULL;
+    //unsigned int real_id = 0xffffffff;
+    //
+    //for(unsigned short i = 0; i < tab_count; ++i)
+    //  if(tabs[i] == tab_id)
+    //      real_id = i;
+    //
+    //if(real_id == 0xffffffff)
+    //  return NULL;
 
-	return GetCtrl<ctrlGroup>(MAX_TAB_COUNT + 1 + tab_id);
+    return GetCtrl<ctrlGroup>(MAX_TAB_COUNT + 1 + tab_id);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -221,169 +221,169 @@ ctrlGroup *ctrlTab::GetGroup(const unsigned int tab_id)
  */
 bool ctrlTab::Draw_(void)
 {
-	DrawControls();
+    DrawControls();
 
-	LOADER.GetImageN("io", 3)->Draw(GetX() + tab_count*36, GetY(), 0, 0, 0, 0, width - tab_count*36, 45);
-	
-	Draw3D(GetX(), GetY()+32, width, 13, TC_GREEN1, 0);
+    LOADER.GetImageN("io", 3)->Draw(GetX() + tab_count * 36, GetY(), 0, 0, 0, 0, width - tab_count * 36, 45);
 
-	ctrlButton *button = GetCtrl<ctrlButton>(tab_selection);
-	if(button)
-		button->Draw();
-	
-	return true;
+    Draw3D(GetX(), GetY() + 32, width, 13, TC_GREEN1, 0);
+
+    ctrlButton* button = GetCtrl<ctrlButton>(tab_selection);
+    if(button)
+        button->Draw();
+
+    return true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
 void ctrlTab::Msg_Group_ButtonClick(const unsigned int group_id, const unsigned int ctrl_id)
 {
-	parent->Msg_Group_ButtonClick(this->id, ctrl_id);
+    parent->Msg_Group_ButtonClick(this->id, ctrl_id);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
 void ctrlTab::Msg_Group_EditEnter(const unsigned int group_id, const unsigned int ctrl_id)
 {
-	parent->Msg_Group_EditEnter(this->id, ctrl_id);
+    parent->Msg_Group_EditEnter(this->id, ctrl_id);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
 void ctrlTab::Msg_Group_EditChange(const unsigned int group_id, const unsigned int ctrl_id)
 {
-	parent->Msg_Group_EditChange(this->id, ctrl_id);
+    parent->Msg_Group_EditChange(this->id, ctrl_id);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
 void ctrlTab::Msg_Group_TabChange(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short tab_id)
 {
-	parent->Msg_Group_TabChange(this->id, ctrl_id, tab_id);
+    parent->Msg_Group_TabChange(this->id, ctrl_id, tab_id);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
 void ctrlTab::Msg_Group_ListSelectItem(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short selection)
 {
-	parent->Msg_Group_ListSelectItem(this->id, ctrl_id, selection);
+    parent->Msg_Group_ListSelectItem(this->id, ctrl_id, selection);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
 void ctrlTab::Msg_Group_ComboSelectItem(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short selection)
 {
-	parent->Msg_Group_ComboSelectItem(this->id, ctrl_id, selection);
+    parent->Msg_Group_ComboSelectItem(this->id, ctrl_id, selection);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
 void ctrlTab::Msg_Group_CheckboxChange(const unsigned int group_id, const unsigned int ctrl_id, const bool checked)
 {
-	parent->Msg_Group_CheckboxChange(this->id, ctrl_id, checked);
+    parent->Msg_Group_CheckboxChange(this->id, ctrl_id, checked);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
 void ctrlTab::Msg_Group_ProgressChange(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short position)
 {
-	parent->Msg_Group_ProgressChange(this->id, ctrl_id, position);
+    parent->Msg_Group_ProgressChange(this->id, ctrl_id, position);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
 void ctrlTab::Msg_Group_ScrollShow(const unsigned int group_id, const unsigned int ctrl_id, const bool visible)
 {
-	parent->Msg_Group_ScrollShow(this->id, ctrl_id, visible);
+    parent->Msg_Group_ScrollShow(this->id, ctrl_id, visible);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
 void ctrlTab::Msg_Group_OptionGroupChange(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short selection)
 {
-	parent->Msg_Group_OptionGroupChange(this->id, ctrl_id, selection);
+    parent->Msg_Group_OptionGroupChange(this->id, ctrl_id, selection);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
 void ctrlTab::Msg_Group_Timer(const unsigned int group_id, const unsigned int ctrl_id)
 {
-	parent->Msg_Group_Timer(this->id, ctrl_id);
+    parent->Msg_Group_Timer(this->id, ctrl_id);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
 void ctrlTab::Msg_Group_TableSelectItem(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short selection)
 {
-	parent->Msg_Group_TableSelectItem(this->id, ctrl_id, selection);
+    parent->Msg_Group_TableSelectItem(this->id, ctrl_id, selection);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
 void ctrlTab::Msg_Group_TableRightButton(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short selection)
 {
-	parent->Msg_Group_TableRightButton(this->id, ctrl_id, selection);
+    parent->Msg_Group_TableRightButton(this->id, ctrl_id, selection);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
 void ctrlTab::Msg_Group_TableLeftButton(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short selection)
 {
-	parent->Msg_Group_TableLeftButton(this->id, ctrl_id, selection);
+    parent->Msg_Group_TableLeftButton(this->id, ctrl_id, selection);
 }

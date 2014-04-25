@@ -1,4 +1,4 @@
-// $Id: ctrlVarText.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: ctrlVarText.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -25,15 +25,15 @@
 
 class ctrlVarText : public ctrlText
 {
-public:
-	ctrlVarText(Window *parent, unsigned int id, unsigned short x, unsigned short y, const std::string& formatstr, unsigned int color, unsigned int format, glArchivItem_Font *font, unsigned int count, va_list liste);
-	virtual ~ctrlVarText(void);
+    public:
+        ctrlVarText(Window* parent, unsigned int id, unsigned short x, unsigned short y, const std::string& formatstr, unsigned int color, unsigned int format, glArchivItem_Font* font, unsigned int count, va_list liste);
+        virtual ~ctrlVarText(void);
 
-protected:
-	virtual bool Draw_(void);
+    protected:
+        virtual bool Draw_(void);
 
-protected:
-	void **vars;
+    protected:
+        void** vars;
 };
 
 #endif // !CTRL_VARTEXT_H_INCLUDED

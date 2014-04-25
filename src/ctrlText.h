@@ -1,4 +1,4 @@
-// $Id: ctrlText.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: ctrlText.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -27,38 +27,38 @@
 /// Basisklasse für Controls mit Texten wie auch Buttons, damit diese alle einheitlich verändert werden können
 class ctrlBaseText
 {
-public:
+    public:
 
-	ctrlBaseText(const std::string& text, const unsigned color, glArchivItem_Font *font);
+        ctrlBaseText(const std::string& text, const unsigned color, glArchivItem_Font* font);
 
-	/// Setzt Text
-	void SetText(const std::string& text) { this->text = text; }
-	/// Setzt Schriftart
-	void SetFont(glArchivItem_Font *font) { this->font = font; }
-	/// Setzt Textfarbe
-	void SetColor(const unsigned color) { this->color = color; }
+        /// Setzt Text
+        void SetText(const std::string& text) { this->text = text; }
+        /// Setzt Schriftart
+        void SetFont(glArchivItem_Font* font) { this->font = font; }
+        /// Setzt Textfarbe
+        void SetColor(const unsigned color) { this->color = color; }
 
-	/// Gibt Text zurück
-	const std::string& GetText() const { return text; }
+        /// Gibt Text zurück
+        const std::string& GetText() const { return text; }
 
-protected:
+    protected:
 
-	std::string text;
-	unsigned int color;
-	glArchivItem_Font *font;
+        std::string text;
+        unsigned int color;
+        glArchivItem_Font* font;
 };
 
 
 class ctrlText : public Window, public ctrlBaseText
 {
-public:
-	ctrlText(Window *parent, unsigned int id, unsigned short x, unsigned short y, const std::string& text, unsigned int color, unsigned int format, glArchivItem_Font *font);
-protected:
-	virtual bool Draw_(void);
+    public:
+        ctrlText(Window* parent, unsigned int id, unsigned short x, unsigned short y, const std::string& text, unsigned int color, unsigned int format, glArchivItem_Font* font);
+    protected:
+        virtual bool Draw_(void);
 
-protected:
-	
-	unsigned int format;
+    protected:
+
+        unsigned int format;
 };
 
 #endif // !CTRLTEXT_H_INCLUDED

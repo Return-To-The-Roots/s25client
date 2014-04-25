@@ -1,4 +1,4 @@
-// $Id: iwLobbyConnect.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: iwLobbyConnect.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -26,25 +26,25 @@
 
 class iwLobbyConnect : public IngameWindow, public LobbyInterface
 {
-public:
-	iwLobbyConnect();
-	~iwLobbyConnect();
+    public:
+        iwLobbyConnect();
+        ~iwLobbyConnect();
 
-	void LC_LoggedIn(const std::string &email);
-	void LC_Registered(void);
+        void LC_LoggedIn(const std::string& email);
+        void LC_Registered(void);
 
-	void LC_Status_Waiting(void);
-	void LC_Status_Error(const std::string &error);
+        void LC_Status_Waiting(void);
+        void LC_Status_Error(const std::string& error);
 
-protected:
-	void Msg_EditChange(const unsigned int ctrl_id);
-	void Msg_EditEnter(const unsigned int ctrl_id);
-	void Msg_ButtonClick(const unsigned int ctrl_id);
-	void Msg_OptionGroupChange(const unsigned int ctrl_id, const unsigned short selection);
+    protected:
+        void Msg_EditChange(const unsigned int ctrl_id);
+        void Msg_EditEnter(const unsigned int ctrl_id);
+        void Msg_ButtonClick(const unsigned int ctrl_id);
+        void Msg_OptionGroupChange(const unsigned int ctrl_id, const unsigned short selection);
 
-private:
-	void SetText(std::string text, unsigned int color, bool button);
-	void LobbyForm(std::string& user, std::string& pass, std::string& email);
+    private:
+        void SetText(std::string text, unsigned int color, bool button);
+        void LobbyForm(std::string& user, std::string& pass, std::string& email);
 };
 
 #endif // WP_LOBBYCONNECT_H_INCLUDED

@@ -1,4 +1,4 @@
-// $Id: win32_nanosleep.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: win32_nanosleep.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -22,22 +22,22 @@
 #pragma once
 
 #ifdef _WIN32
-	typedef unsigned int useconds_t;
+typedef unsigned int useconds_t;
 
 #ifndef _TIMESPEC_DEFINED
-	#define _TIMESPEC_DEFINED
-	typedef struct timespec
-	{
-	    unsigned int tv_sec;	// Seconds.
-	    long int tv_nsec;		// Nanoseconds.
-	} timespec_t;
+#define _TIMESPEC_DEFINED
+typedef struct timespec
+{
+    unsigned int tv_sec;    // Seconds.
+    long int tv_nsec;       // Nanoseconds.
+} timespec_t;
 #endif
 
 /// Sleep at least some number of microseconds.
 int usleep (useconds_t microseconds);
 
 /// nanosleep replacement for windows.
-int nanosleep(const timespec_t *requested_delay, timespec_t *remaining_delay);
+int nanosleep(const timespec_t* requested_delay, timespec_t* remaining_delay);
 
 #endif // _WIN32
 

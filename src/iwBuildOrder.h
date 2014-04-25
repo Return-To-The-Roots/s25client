@@ -1,4 +1,4 @@
-// $Id: iwBuildOrder.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: iwBuildOrder.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -25,23 +25,23 @@
 
 class iwBuildOrder : public IngameWindow
 {
-	/// Einstellungen nach dem letzten Netzwerk-Versenden nochmal verändert?
-	bool settings_changed;
-public:
+        /// Einstellungen nach dem letzten Netzwerk-Versenden nochmal verändert?
+        bool settings_changed;
+    public:
 
-	iwBuildOrder(void);
-	~iwBuildOrder();
+        iwBuildOrder(void);
+        ~iwBuildOrder();
 
-private:
+    private:
 
-	/// Updatet die Steuerelemente mit den aktuellen Einstellungen aus dem Spiel
-	void UpdateSettings();
-	/// Sendet veränderte Einstellungen (an den Client), falls sie verändert wurden
-	void TransmitSettings();
+        /// Updatet die Steuerelemente mit den aktuellen Einstellungen aus dem Spiel
+        void UpdateSettings();
+        /// Sendet veränderte Einstellungen (an den Client), falls sie verändert wurden
+        void TransmitSettings();
 
-	void Msg_Timer(const unsigned int ctrl_id);
-	void Msg_ListSelectItem(const unsigned int ctrl_id, const unsigned short selection);
-	void Msg_ButtonClick(const unsigned int ctrl_id);
+        void Msg_Timer(const unsigned int ctrl_id);
+        void Msg_ListSelectItem(const unsigned int ctrl_id, const unsigned short selection);
+        void Msg_ButtonClick(const unsigned int ctrl_id);
 };
 
 #endif // !iwBUILDORDER_H_INCLUDED

@@ -1,4 +1,4 @@
-// $Id: nofCharburner.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: nofCharburner.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -24,46 +24,46 @@
 
 class nofCharburner : public nofFarmhand
 {
-	/// Is he harvesting a charburner pile (or planting?) 
-	bool harvest;
-	/// If stacking wood pile: Determines which ware he carries (wood or grain?) 
-	enum WareType
-	{
-		WT_WOOD,
-		WT_GRAIN
-	} wt;
-private:
+        /// Is he harvesting a charburner pile (or planting?)
+        bool harvest;
+        /// If stacking wood pile: Determines which ware he carries (wood or grain?)
+        enum WareType
+        {
+            WT_WOOD,
+            WT_GRAIN
+        } wt;
+    private:
 
-	/// Malt den Arbeiter beim Arbeiten
-	void DrawWorking(int x,int y);
-	/// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren rausträgt (bzw rein)
-	unsigned short GetCarryID() const;
+        /// Malt den Arbeiter beim Arbeiten
+        void DrawWorking(int x, int y);
+        /// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren rausträgt (bzw rein)
+        unsigned short GetCarryID() const;
 
-	/// Abgeleitete Klasse informieren, wenn sie anfängt zu arbeiten (Vorbereitungen)
-	void WorkStarted();
-	/// Abgeleitete Klasse informieren, wenn fertig ist mit Arbeiten
-	void WorkFinished();
+        /// Abgeleitete Klasse informieren, wenn sie anfängt zu arbeiten (Vorbereitungen)
+        void WorkStarted();
+        /// Abgeleitete Klasse informieren, wenn fertig ist mit Arbeiten
+        void WorkFinished();
 
-	/// Returns the quality of this working point or determines if the worker can work here at all
-	PointQuality GetPointQuality(const MapCoord x, const MapCoord y);
+        /// Returns the quality of this working point or determines if the worker can work here at all
+        PointQuality GetPointQuality(const MapCoord x, const MapCoord y);
 
-	/// Inform derived class about the start of the whole working process (at the beginning when walking out of the house)
-	void WalkingStarted();
+        /// Inform derived class about the start of the whole working process (at the beginning when walking out of the house)
+        void WalkingStarted();
 
-	/// Draws the figure while returning home / entering the building (often carrying wares)
-	void DrawReturnStates(const int x, const int y);
-	/// Draws the charburner while walking
-	/// (overriding standard method of nofFarmhand)
-	void DrawOtherStates(const int x, const int y);
+        /// Draws the figure while returning home / entering the building (often carrying wares)
+        void DrawReturnStates(const int x, const int y);
+        /// Draws the charburner while walking
+        /// (overriding standard method of nofFarmhand)
+        void DrawOtherStates(const int x, const int y);
 
-public:
+    public:
 
-	nofCharburner(const MapCoord x, MapCoord y,const unsigned char player,nobUsual * workplace);
-	nofCharburner(SerializedGameData * sgd, const unsigned obj_id);
+        nofCharburner(const MapCoord x, MapCoord y, const unsigned char player, nobUsual* workplace);
+        nofCharburner(SerializedGameData* sgd, const unsigned obj_id);
 
-	void Serialize(SerializedGameData *sgd) const;
+        void Serialize(SerializedGameData* sgd) const;
 
-	GO_Type GetGOT() const { return GOT_NOF_CHARBURNER; }
+        GO_Type GetGOT() const { return GOT_NOF_CHARBURNER; }
 
 };
 

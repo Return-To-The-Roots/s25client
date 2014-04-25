@@ -1,4 +1,4 @@
-// $Id: glArchivItem_Bitmap_Shadow.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: glArchivItem_Bitmap_Shadow.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -24,12 +24,12 @@
 /// Klasse für GL-Shadow-Bitmaps.
 class glArchivItem_Bitmap_Shadow : public libsiedler2::baseArchivItem_Bitmap_Shadow, public glArchivItem_Bitmap
 {
-public:
-	/// Konstruktor von @p glArchivItem_Bitmap_Shadow.
-	glArchivItem_Bitmap_Shadow(void) : baseArchivItem_Bitmap(), baseArchivItem_Bitmap_Shadow(), glArchivItem_Bitmap() {}
+    public:
+        /// Konstruktor von @p glArchivItem_Bitmap_Shadow.
+        glArchivItem_Bitmap_Shadow(void) : baseArchivItem_Bitmap(), baseArchivItem_Bitmap_Shadow(), glArchivItem_Bitmap() {}
 
-	/// Kopierkonstruktor von @p glArchivItem_Bitmap_Shadow.
-	glArchivItem_Bitmap_Shadow(const glArchivItem_Bitmap_Shadow *item) : baseArchivItem_Bitmap(item), baseArchivItem_Bitmap_Shadow(item), glArchivItem_Bitmap(item) {}
+        /// Kopierkonstruktor von @p glArchivItem_Bitmap_Shadow.
+        glArchivItem_Bitmap_Shadow(const glArchivItem_Bitmap_Shadow* item) : baseArchivItem_Bitmap(item), baseArchivItem_Bitmap_Shadow(item), glArchivItem_Bitmap(item) {}
 };
 
 #endif // !GLARCHIVITEM_BITMAP_SHADOW_H_INCLUDED

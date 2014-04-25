@@ -1,4 +1,4 @@
-// $Id: iwPlayReplay.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: iwPlayReplay.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -26,23 +26,23 @@
 /// Klasse des Replay-Listen-Fensters.
 class iwPlayReplay : public IngameWindow
 {
-public:
-	/// Konstruktor von @p iwPlayReplay.
-	iwPlayReplay();
+    public:
+        /// Konstruktor von @p iwPlayReplay.
+        iwPlayReplay();
 
-private:
+    private:
 
-	void Msg_ButtonClick(const unsigned int ctrl_id);
-	void Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr);
-	void Msg_TableChooseItem(const unsigned ctrl_id, const unsigned short selection);
+        void Msg_ButtonClick(const unsigned int ctrl_id);
+        void Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr);
+        void Msg_TableChooseItem(const unsigned ctrl_id, const unsigned short selection);
 
-	/// Callbackfunktion zum Eintragen einer Replay-Zeile in der Tabelle.
-	static void FillReplayTable(const std::string& filename, void *param);
-	/// Callbackfunktion zum löschen aller Replays
-	static void RemoveReplay(const std::string& filename,void *param);
-	
-	/// Startet das Replay (aktuell ausgewählter Eintrag)
-	void StartReplay();
+        /// Callbackfunktion zum Eintragen einer Replay-Zeile in der Tabelle.
+        static void FillReplayTable(const std::string& filename, void* param);
+        /// Callbackfunktion zum löschen aller Replays
+        static void RemoveReplay(const std::string& filename, void* param);
+
+        /// Startet das Replay (aktuell ausgewählter Eintrag)
+        void StartReplay();
 };
 
 #endif // !iwPLAYREPLAY_H_INCLUDED

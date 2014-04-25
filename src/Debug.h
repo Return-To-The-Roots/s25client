@@ -25,31 +25,31 @@
 #include "Random.h"
 
 #ifdef _WIN32
-#	include <windows.h>
-#	include <dbghelp.h>
+#   include <windows.h>
+#   include <dbghelp.h>
 #else
-#	include <execinfo.h>
+#   include <execinfo.h>
 #endif
 
 class DebugInfo : Socket
 {
-public:
-	DebugInfo();
-	~DebugInfo();
+    public:
+        DebugInfo();
+        ~DebugInfo();
 
-	bool Send(const void *buffer, int length);
-	bool SendSigned(signed i);
-	bool SendUnsigned(unsigned i);
-	bool SendString(const char *str, unsigned len = 0);
+        bool Send(const void* buffer, int length);
+        bool SendSigned(signed i);
+        bool SendUnsigned(unsigned i);
+        bool SendString(const char* str, unsigned len = 0);
 
 #ifdef _MSC_VER
-	bool SendStackTrace(LPCONTEXT ctx = NULL);
+        bool SendStackTrace(LPCONTEXT ctx = NULL);
 #else
-	bool SendStackTrace();
+        bool SendStackTrace();
 #endif
-	bool SendReplay();
-	bool SendAsyncLog(std::list<RandomEntry>::iterator first_a, std::list<RandomEntry>::iterator first_b,
-		std::list<RandomEntry> &a, std::list<RandomEntry> &b, unsigned identical);
+        bool SendReplay();
+        bool SendAsyncLog(std::list<RandomEntry>::iterator first_a, std::list<RandomEntry>::iterator first_b,
+                          std::list<RandomEntry> &a, std::list<RandomEntry> &b, unsigned identical);
 };
 
 #endif

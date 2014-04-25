@@ -1,4 +1,4 @@
-// $Id: Node.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: Node.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -24,70 +24,70 @@ class noRoadNode;
 
 class Node
 {
-public:
+    public:
 
-	Node()
-	{
-		x = 0;
-		y = 0;
-		way = 0;
-		prev = NULL;
-		dir = 0;
-		memset(next, 0, sizeof(Node*)*6);
-	}
+        Node()
+        {
+            x = 0;
+            y = 0;
+            way = 0;
+            prev = NULL;
+            dir = 0;
+            memset(next, 0, sizeof(Node*) * 6);
+        }
 
-	Node(const int x, const int y, const unsigned way,Node * const prev,const unsigned dir)
-	{
-		this->x = x;
-		this->y = y;
-		this->way = way;
-		this->prev = prev;
-		this->dir = dir;
-		memset(next, 0, sizeof(Node*)*6);
-	}
-	~Node() { Clear(); }
+        Node(const int x, const int y, const unsigned way, Node* const prev, const unsigned dir)
+        {
+            this->x = x;
+            this->y = y;
+            this->way = way;
+            this->prev = prev;
+            this->dir = dir;
+            memset(next, 0, sizeof(Node*) * 6);
+        }
+        ~Node() { Clear(); }
 
-	void Clear();
+        void Clear();
 
-	int x, y;
-	unsigned way;
-	unsigned char dir;
-	Node * prev;
-	Node * next[6];
+        int x, y;
+        unsigned way;
+        unsigned char dir;
+        Node* prev;
+        Node* next[6];
 };
 
 class FlagNode
 {
-public:
+    public:
 
-	FlagNode()
-	{
-		flag = NULL;
-		way = 0;
-		prev = NULL;
-		dir = 0;
-		realway = 0;
-		memset(next,0,sizeof(FlagNode*)*6);
-	}
+        FlagNode()
+        {
+            flag = NULL;
+            way = 0;
+            prev = NULL;
+            dir = 0;
+            realway = 0;
+            memset(next, 0, sizeof(FlagNode*) * 6);
+        }
 
-	FlagNode(const noRoadNode * const flag, const unsigned way,FlagNode * const prev,const unsigned dir,const unsigned realway)
-	{
-		this->flag = flag;
-		this->way = way;
-		this->prev = prev;
-		this->dir = dir;
-		this->realway = realway;
-		memset(next,0,sizeof(FlagNode*)*6);
-	}
-	~FlagNode() { Clear(); }
+        FlagNode(const noRoadNode* const flag, const unsigned way, FlagNode* const prev, const unsigned dir, const unsigned realway)
+        {
+            this->flag = flag;
+            this->way = way;
+            this->prev = prev;
+            this->dir = dir;
+            this->realway = realway;
+            memset(next, 0, sizeof(FlagNode*) * 6);
+        }
+        ~FlagNode() { Clear(); }
 
-	void Clear();
+        void Clear();
 
-	const noRoadNode * flag;
-	unsigned way,realway;
-	unsigned char dir;
-	FlagNode * prev;
-	FlagNode * next[6];
+        const noRoadNode* flag;
+        unsigned way, realway;
+        unsigned char dir;
+        FlagNode* prev;
+        FlagNode* next[6];
 };
 
 

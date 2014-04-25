@@ -1,4 +1,4 @@
-// $Id: iwChat.cpp 8344 2012-09-30 12:37:30Z marcus $
+// $Id: iwChat.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -31,9 +31,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
 unsigned char iwChat::chat_dest = 0;
@@ -45,68 +45,71 @@ unsigned char iwChat::chat_dest = 0;
  *  @author OLiver
  */
 iwChat::iwChat()
-	: IngameWindow(CGI_CHAT, 0xFFFF, 0xFFFF, 300, 150, _("Chat Window"), LOADER.GetImageN("resource", 41))
+    : IngameWindow(CGI_CHAT, 0xFFFF, 0xFFFF, 300, 150, _("Chat Window"), LOADER.GetImageN("resource", 41))
 {
-	// Eingabefeld für Chattext
-	AddEdit(0, 20, 30, 260, 22, TC_GREY, NormalFont);
+    // Eingabefeld für Chattext
+    AddEdit(0, 20, 30, 260, 22, TC_GREY, NormalFont);
 
-	ctrlOptionGroup *group = AddOptionGroup(1, ctrlOptionGroup::CHECK);
-	// "Alle"
-	group->AddTextButton(0,  20,  80, 260, 22, TC_GREY, _("All"),NormalFont);
-	// "Verbündete"
-	group->AddTextButton(1,  20, 112, 125, 22, TC_GREEN2, _("Allies"),NormalFont);
-	// "Feinde"
-	group->AddTextButton(2, 155, 112, 125, 22, TC_RED1, _("Enemies"),NormalFont);
+    ctrlOptionGroup* group = AddOptionGroup(1, ctrlOptionGroup::CHECK);
+    // "Alle"
+    group->AddTextButton(0,  20,  80, 260, 22, TC_GREY, _("All"), NormalFont);
+    // "Verbündete"
+    group->AddTextButton(1,  20, 112, 125, 22, TC_GREEN2, _("Allies"), NormalFont);
+    // "Feinde"
+    group->AddTextButton(2, 155, 112, 125, 22, TC_RED1, _("Enemies"), NormalFont);
 
-	// Entspr. vom letzten Mal auswählen auswählen
-	group->SetSelection(chat_dest);
+    // Entspr. vom letzten Mal auswählen auswählen
+    group->SetSelection(chat_dest);
 }
 
 void iwChat::Msg_PaintBefore()
 {
-	GetCtrl<ctrlEdit>(0)->SetFocus();
+    GetCtrl<ctrlEdit>(0)->SetFocus();
 }
 
 void iwChat::Msg_OptionGroupChange(const unsigned int ctrl_id, const unsigned short selection)
 {
-	chat_dest = static_cast<unsigned char>(selection);
-	GetCtrl<ctrlEdit>(0)->SetFocus();
+    chat_dest = static_cast<unsigned char>(selection);
+    GetCtrl<ctrlEdit>(0)->SetFocus();
 }
 
 void iwChat::Msg_EditEnter(const unsigned int ctrl_id)
 {
-	Close();
+    Close();
 
-	ctrlEdit *edit = GetCtrl<ctrlEdit>(0);
-	
-	if(chat_dest != 0 && chat_dest != 1 && chat_dest != 2)
-		chat_dest = 0;
+    ctrlEdit* edit = GetCtrl<ctrlEdit>(0);
+
+    if(chat_dest != 0 && chat_dest != 1 && chat_dest != 2)
+        chat_dest = 0;
 
 //#ifndef NDEBUG
-	if (edit->GetText() == "apocalypsis")
-	{
-		GameClient::inst().AddGC(new gc::CheatArmageddon);
-		return;
-	} else if (edit->GetText() == "surrender")
-	{
-		GameClient::inst().AddGC(new gc::Surrender);
-		return;
-	} else if (edit->GetText() == "async!")
-	{
-		(void) RANDOM.Rand(__FILE__, __LINE__, 0, 255);
-		return;
-	} else if (edit->GetText() == "segfault!")
-	{
-		char *x = NULL;
+    if (edit->GetText() == "apocalypsis")
+    {
+        GameClient::inst().AddGC(new gc::CheatArmageddon);
+        return;
+    }
+    else if (edit->GetText() == "surrender")
+    {
+        GameClient::inst().AddGC(new gc::Surrender);
+        return;
+    }
+    else if (edit->GetText() == "async!")
+    {
+        (void) RANDOM.Rand(__FILE__, __LINE__, 0, 255);
+        return;
+    }
+    else if (edit->GetText() == "segfault!")
+    {
+        char* x = NULL;
 
-		*x = 1;
+        *x = 1;
 
-		return;
-	}
+        return;
+    }
 //#endif
 
-	GAMECLIENT.Command_Chat(edit->GetText(), ChatDestination(chat_dest+1));
+    GAMECLIENT.Command_Chat(edit->GetText(), ChatDestination(chat_dest + 1));
 
-	edit->SetText("");
+    edit->SetText("");
 }
 

@@ -1,4 +1,4 @@
-// $Id: AddonDefenderBehavior.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: AddonDefenderBehavior.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -32,21 +32,21 @@
  */
 class AddonDefenderBehavior : public AddonList
 {
-public:
-	AddonDefenderBehavior() : AddonList(ADDON_DEFENDER_BEHAVIOR, 
-										  ADDONGROUP_MILITARY,
-											gettext_noop("Change defender behavior"), 
-											gettext_noop("Allows to change the military setting 'defender'.\n\n"
-														 "You can choose to disallow any changes to that setting\n"
-														 "or you can limit the amount of reoccupying troops\n"
-														 "(during an attack) according to the defender setting."),
-											0
-										 )
-	{
-		addOption(gettext_noop("No change"));
-		addOption(gettext_noop("Disallow change"));
-		addOption(gettext_noop("Reduce reoccupying troops accordingly"));
-	}
+    public:
+        AddonDefenderBehavior() : AddonList(ADDON_DEFENDER_BEHAVIOR,
+                                                ADDONGROUP_MILITARY,
+                                                gettext_noop("Change defender behavior"),
+                                                gettext_noop("Allows to change the military setting 'defender'.\n\n"
+                                                        "You can choose to disallow any changes to that setting\n"
+                                                        "or you can limit the amount of reoccupying troops\n"
+                                                        "(during an attack) according to the defender setting."),
+                                                0
+                                               )
+        {
+            addOption(gettext_noop("No change"));
+            addOption(gettext_noop("Disallow change"));
+            addOption(gettext_noop("Reduce reoccupying troops accordingly"));
+        }
 };
 
 #endif // !ADDONDEFENDERBEHAVIOR_H_INCLUDED

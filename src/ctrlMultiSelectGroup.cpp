@@ -1,4 +1,4 @@
-// $Id: ctrlMultiSelectGroup.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: ctrlMultiSelectGroup.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -25,9 +25,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -36,12 +36,12 @@
  *
  *  @author jh
  */
-ctrlMultiSelectGroup::ctrlMultiSelectGroup(Window *parent,
-								 unsigned int id,
-								 int select_type,
-								 bool scale)
-	: ctrlGroup(parent, id, scale),
-	selection(std::set<unsigned short>()), select_type(select_type)
+ctrlMultiSelectGroup::ctrlMultiSelectGroup(Window* parent,
+        unsigned int id,
+        int select_type,
+        bool scale)
+    : ctrlGroup(parent, id, scale),
+      selection(std::set<unsigned short>()), select_type(select_type)
 {
 }
 
@@ -53,9 +53,9 @@ ctrlMultiSelectGroup::ctrlMultiSelectGroup(Window *parent,
  */
 bool ctrlMultiSelectGroup::Draw_(void)
 {
-	DrawControls();
+    DrawControls();
 
-	return true;
+    return true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -66,20 +66,20 @@ bool ctrlMultiSelectGroup::Draw_(void)
  */
 void ctrlMultiSelectGroup::AddSelection(unsigned short selection, bool notify)
 {
-	// Neuen Button auswählen
-	ctrlButton *button = GetCtrl<ctrlButton>(selection);
-	assert(button);
-	switch(select_type)
-	{
-	case ILLUMINATE: button->SetIlluminated(true); break;
-	case CHECK:      button->SetCheck(true);       break;
-	case SHOW:       button->SetVisible(false);     break;
-	}
+    // Neuen Button auswählen
+    ctrlButton* button = GetCtrl<ctrlButton>(selection);
+    assert(button);
+    switch(select_type)
+    {
+        case ILLUMINATE: button->SetIlluminated(true); break;
+        case CHECK:      button->SetCheck(true);       break;
+        case SHOW:       button->SetVisible(false);     break;
+    }
 
-	this->selection.insert(selection);
+    this->selection.insert(selection);
 
-	if(notify && parent)
-		parent->Msg_OptionGroupChange(GetID(), selection);
+    if(notify && parent)
+        parent->Msg_OptionGroupChange(GetID(), selection);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -90,20 +90,20 @@ void ctrlMultiSelectGroup::AddSelection(unsigned short selection, bool notify)
  */
 void ctrlMultiSelectGroup::RemoveSelection(unsigned short selection, bool notify)
 {
-	// Neuen Button auswählen
-	ctrlButton *button = GetCtrl<ctrlButton>(selection);
-	assert(button);
-	switch(select_type)
-	{
-	case ILLUMINATE: button->SetIlluminated(false); break;
-	case CHECK:      button->SetCheck(false);       break;
-	case SHOW:       button->SetVisible(true);		  break;
-	}
+    // Neuen Button auswählen
+    ctrlButton* button = GetCtrl<ctrlButton>(selection);
+    assert(button);
+    switch(select_type)
+    {
+        case ILLUMINATE: button->SetIlluminated(false); break;
+        case CHECK:      button->SetCheck(false);       break;
+        case SHOW:       button->SetVisible(true);        break;
+    }
 
-	this->selection.erase(selection);
+    this->selection.erase(selection);
 
-	if(notify && parent)
-		parent->Msg_OptionGroupChange(GetID(), selection);
+    if(notify && parent)
+        parent->Msg_OptionGroupChange(GetID(), selection);
 }
 
 
@@ -115,79 +115,79 @@ void ctrlMultiSelectGroup::RemoveSelection(unsigned short selection, bool notify
  */
 void ctrlMultiSelectGroup::ToggleSelection(unsigned short selection, bool notify)
 {
-	if (IsSelected(selection))
-		RemoveSelection(selection, notify);
-	else
-		AddSelection(selection, notify);
+    if (IsSelected(selection))
+        RemoveSelection(selection, notify);
+    else
+        AddSelection(selection, notify);
 }
 
 bool ctrlMultiSelectGroup::IsSelected(unsigned short selection) const
 {
-	return (this->selection.count(selection) == 1);
+    return (this->selection.count(selection) == 1);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author jh
  */
 void ctrlMultiSelectGroup::Msg_ButtonClick(const unsigned int ctrl_id)
 {
-	ToggleSelection(ctrl_id, true);
-} 
+    ToggleSelection(ctrl_id, true);
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
 bool ctrlMultiSelectGroup::Msg_LeftDown(const MouseCoords& mc)
 {
-	return RelayMouseMessage(&Window::Msg_LeftDown, mc);
-} 
+    return RelayMouseMessage(&Window::Msg_LeftDown, mc);
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
 bool ctrlMultiSelectGroup::Msg_LeftUp(const MouseCoords& mc)
 {
-	return RelayMouseMessage(&Window::Msg_LeftUp, mc);
+    return RelayMouseMessage(&Window::Msg_LeftUp, mc);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author Divan
  */
 bool ctrlMultiSelectGroup::Msg_WheelUp(const MouseCoords& mc)
 {
-	return RelayMouseMessage(&Window::Msg_WheelUp,mc);
+    return RelayMouseMessage(&Window::Msg_WheelUp, mc);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author Divan
  */
 bool ctrlMultiSelectGroup::Msg_WheelDown(const MouseCoords& mc)
 {
-	return RelayMouseMessage(&Window::Msg_WheelDown,mc);
+    return RelayMouseMessage(&Window::Msg_WheelDown, mc);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
 bool ctrlMultiSelectGroup::Msg_MouseMove(const MouseCoords& mc)
 {
-	return RelayMouseMessage(&Window::Msg_MouseMove, mc);
+    return RelayMouseMessage(&Window::Msg_MouseMove, mc);
 }

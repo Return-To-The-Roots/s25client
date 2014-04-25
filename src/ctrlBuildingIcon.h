@@ -1,4 +1,4 @@
-// $Id: ctrlBuildingIcon.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: ctrlBuildingIcon.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -26,23 +26,23 @@
 
 class ctrlBuildingIcon : public ctrlButton
 {
-public:
-	/// Konstruktor von @p ctrlBuildingIcon.
-	ctrlBuildingIcon(Window *const parent, const unsigned int id, const unsigned short x, const unsigned short y,
-		const BuildingType type, const Nation nation, const unsigned short size = 36,  const std::string& tooltip = "");
-	/// liefert den GebäudeTyp des Icons.
-	BuildingType GetType() const { return type; }
+    public:
+        /// Konstruktor von @p ctrlBuildingIcon.
+        ctrlBuildingIcon(Window* const parent, const unsigned int id, const unsigned short x, const unsigned short y,
+                         const BuildingType type, const Nation nation, const unsigned short size = 36,  const std::string& tooltip = "");
+        /// liefert den GebäudeTyp des Icons.
+        BuildingType GetType() const { return type; }
 
-protected:
-	/// zeichnet das Fenster.
-	virtual bool Draw_(void);
-	void DrawContent() const;
+    protected:
+        /// zeichnet das Fenster.
+        virtual bool Draw_(void);
+        void DrawContent() const;
 
-protected:
-	const BuildingType type;       ///< der GebäudeType des Icons.
-	const Nation nation;	   ///< Volk
-	const unsigned short size; ///< die Größe des Icons
-	
+    protected:
+        const BuildingType type;       ///< der GebäudeType des Icons.
+        const Nation nation;       ///< Volk
+        const unsigned short size; ///< die Größe des Icons
+
 };
 
 #endif // !CTRLBUILDINGICON_H_INCLUDED

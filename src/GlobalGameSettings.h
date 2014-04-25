@@ -1,4 +1,4 @@
-// $Id: GlobalGameSettings.h 8726 2013-05-16 12:41:29Z marcus $
+// $Id: GlobalGameSettings.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -25,93 +25,93 @@
 
 class GlobalGameSettings
 {
-public:
-	GlobalGameSettings();
-	GlobalGameSettings(const GlobalGameSettings& ggs);
-	~GlobalGameSettings();
+    public:
+        GlobalGameSettings();
+        GlobalGameSettings(const GlobalGameSettings& ggs);
+        ~GlobalGameSettings();
 
-	void operator=(const GlobalGameSettings& ggs);
+        void operator=(const GlobalGameSettings& ggs);
 
-	/// Serialisierung und Deserialisierung
-	void Serialize(Serializer * ser) const;
-	void Deserialize(Serializer * ser);
+        /// Serialisierung und Deserialisierung
+        void Serialize(Serializer* ser) const;
+        void Deserialize(Serializer* ser);
 
-public:
-	enum GameSpeed { GS_VERYSLOW = 0,GS_SLOW , GS_NORMAL, GS_FAST, GS_VERYFAST } game_speed;
-	enum GameObjective { GO_NONE = 0, GO_CONQUER3_4, GO_TOTALDOMINATION } game_objective;
-	enum StartWares {SWR_VLOW = 0, SWR_LOW, SWR_NORMAL, SWR_ALOT} start_wares;
-	bool lock_teams;
-	enum Exploration { EXP_DISABLED = 0, EXP_CLASSIC, EXP_FOGOFWAR, EXP_FOGOFWARE_EXPLORED } exploration;
-	bool team_view;
-	bool random_location;
+    public:
+        enum GameSpeed { GS_VERYSLOW = 0, GS_SLOW , GS_NORMAL, GS_FAST, GS_VERYFAST } game_speed;
+        enum GameObjective { GO_NONE = 0, GO_CONQUER3_4, GO_TOTALDOMINATION } game_objective;
+        enum StartWares {SWR_VLOW = 0, SWR_LOW, SWR_NORMAL, SWR_ALOT} start_wares;
+        bool lock_teams;
+        enum Exploration { EXP_DISABLED = 0, EXP_CLASSIC, EXP_FOGOFWAR, EXP_FOGOFWARE_EXPLORED } exploration;
+        bool team_view;
+        bool random_location;
 
-	/// clears the addon memory.
-	void reset(bool recreate = true);
+        /// clears the addon memory.
+        void reset(bool recreate = true);
 
-	const Addon *getAddon(unsigned int nr, unsigned int &status) const
-	{
-		if(nr >= addons.size())
-			return NULL;
+        const Addon* getAddon(unsigned int nr, unsigned int& status) const
+        {
+            if(nr >= addons.size())
+                return NULL;
 
-		const item *i = &addons.at(nr);
+            const item* i = &addons.at(nr);
 
-		if(!i->addon)
-			return NULL;
+            if(!i->addon)
+                return NULL;
 
-		status = i->status;
-		return i->addon;
-	}
+            status = i->status;
+            return i->addon;
+        }
 
-	unsigned int getCount() const { return addons.size(); }
+        unsigned int getCount() const { return addons.size(); }
 
-	bool isEnabled(AddonId id) const
-	{
-		std::vector<item>::const_iterator it = std::find(addons.begin(), addons.end(), id);
-		if(it == addons.end() || it->status == it->addon->getDefaultStatus())
-			return false;
-		return true;
-	}
+        bool isEnabled(AddonId id) const
+        {
+            std::vector<item>::const_iterator it = std::find(addons.begin(), addons.end(), id);
+            if(it == addons.end() || it->status == it->addon->getDefaultStatus())
+                return false;
+            return true;
+        }
 
-	unsigned int getSelection(AddonId id) const
-	{
-		std::vector<item>::const_iterator it = std::find(addons.begin(), addons.end(), id);
-		if(it == addons.end())
-			return 0;
-		return it->status;
-	}
+        unsigned int getSelection(AddonId id) const
+        {
+            std::vector<item>::const_iterator it = std::find(addons.begin(), addons.end(), id);
+            if(it == addons.end())
+                return 0;
+            return it->status;
+        }
 
-	void setSelection(AddonId id, unsigned int selection);
+        void setSelection(AddonId id, unsigned int selection);
 
-	/// loads the saved addon configuration from the SETTINGS.
-	void LoadSettings();
-	/// saves the current addon configuration to the SETTINGS.
-	void SaveSettings() const;
+        /// loads the saved addon configuration from the SETTINGS.
+        void LoadSettings();
+        /// saves the current addon configuration to the SETTINGS.
+        void SaveSettings() const;
 
-private:
-	void registerAddon(Addon *addon)
-	{
-		if(!addon)
-			return;
+    private:
+        void registerAddon(Addon* addon)
+        {
+            if(!addon)
+                return;
 
-		if(std::find(addons.begin(), addons.end(), addon->getId()) == addons.end())
-			addons.push_back(item(addon));
+            if(std::find(addons.begin(), addons.end(), addon->getId()) == addons.end())
+                addons.push_back(item(addon));
 
-		std::sort(addons.begin(), addons.end());
-	}
+            std::sort(addons.begin(), addons.end());
+        }
 
-	struct item
-	{
-		item(void) : addon(NULL), status(0) {}
-		item(Addon *addon) : addon(addon), status(addon->getDefaultStatus()) {}
+        struct item
+        {
+            item(void) : addon(NULL), status(0) {}
+            item(Addon* addon) : addon(addon), status(addon->getDefaultStatus()) {}
 
-		Addon *addon;
-		unsigned int status;
+            Addon* addon;
+            unsigned int status;
 
-		bool operator==(const AddonId &o) const { return (addon ? addon->getId() == o : false); }
-		bool operator<(const item &o) const { return (addon->getName().compare(o.addon->getName()) < 0); }
-	};
+            bool operator==(const AddonId& o) const { return (addon ? addon->getId() == o : false); }
+            bool operator<(const item& o) const { return (addon->getName().compare(o.addon->getName()) < 0); }
+        };
 
-	std::vector<item> addons;
+        std::vector<item> addons;
 };
 
 #endif // !GlobalGameSettings_H_INCLUDED

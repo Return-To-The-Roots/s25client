@@ -1,4 +1,4 @@
-// $Id: GameClientCommands.cpp 8305 2012-09-22 12:34:54Z marcus $
+// $Id: GameClientCommands.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -39,9 +39,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
 
@@ -55,7 +55,7 @@
  */
 void GameClient::Command_SetFlag2(int x, int y, unsigned char player)
 {
-	gw->SetFlag(x, y, player);
+    gw->SetFlag(x, y, player);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -69,11 +69,11 @@ void GameClient::Command_SetFlag2(int x, int y, unsigned char player)
  */
 void GameClient::Command_Chat(const std::string& text, const ChatDestination cd)
 {
-	// Replaymodus oder kein Text --> nichts senden
-	if(GameClient::inst().IsReplayModeOn() || text.length() == 0)
-		return;
+    // Replaymodus oder kein Text --> nichts senden
+    if(GameClient::inst().IsReplayModeOn() || text.length() == 0)
+        return;
 
-	send_queue.push(new GameMessage_Server_Chat(playerid,cd,text));
+    send_queue.push(new GameMessage_Server_Chat(playerid, cd, text));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -84,8 +84,8 @@ void GameClient::Command_Chat(const std::string& text, const ChatDestination cd)
  */
 void GameClient::Command_ToggleNation()
 {
-	send_queue.push(new GameMessage_Player_Toggle_Nation
-		(0xff,Nation((this->GetLocalPlayer()->nation+1)%NATION_COUNT)));
+    send_queue.push(new GameMessage_Player_Toggle_Nation
+                    (0xff, Nation((this->GetLocalPlayer()->nation + 1) % NATION_COUNT)));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -96,7 +96,7 @@ void GameClient::Command_ToggleNation()
  */
 void GameClient::Command_ToggleTeam(Team newteam)
 {
-	send_queue.push(new GameMessage_Player_Toggle_Team(0xff,newteam));
+    send_queue.push(new GameMessage_Player_Toggle_Team(0xff, newteam));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -107,7 +107,7 @@ void GameClient::Command_ToggleTeam(Team newteam)
  */
 void GameClient::Command_ToggleReady()
 {
-	send_queue.push(new GameMessage_Player_Ready(0xFF, GetLocalPlayer()->ready ));
+    send_queue.push(new GameMessage_Player_Ready(0xFF, GetLocalPlayer()->ready ));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -118,7 +118,7 @@ void GameClient::Command_ToggleReady()
  */
 void GameClient::Command_ToggleColor()
 {
-	send_queue.push(new GameMessage_Player_Toggle_Color(0xFF,0xFF));
+    send_queue.push(new GameMessage_Player_Toggle_Color(0xFF, 0xFF));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -133,73 +133,73 @@ void GameClient::Command_ToggleColor()
  */
 void GameClient::ChangePlayer(const unsigned char old_id, const unsigned char new_id)
 {
-	// ID auch innerhalb der Spielerzahl?
-	if(new_id >= players.getCount())
-		return;
+    // ID auch innerhalb der Spielerzahl?
+    if(new_id >= players.getCount())
+        return;
 
-	// Gleiche ID - wäre unsinnig zu wechseln
-	if(old_id == new_id)
-		return;
+    // Gleiche ID - wäre unsinnig zu wechseln
+    if(old_id == new_id)
+        return;
 
-	// old_id muss richtiger Spieler, new_id KI sein, ansonsten geht das natürlich nicht
-	if( !(players[old_id].ps == PS_OCCUPIED && players[new_id].ps == PS_KI) )
-		return;
+    // old_id muss richtiger Spieler, new_id KI sein, ansonsten geht das natürlich nicht
+    if( !(players[old_id].ps == PS_OCCUPIED && players[new_id].ps == PS_KI) )
+        return;
 
-	players[old_id].ps = PS_KI;
-	players[new_id].ps = PS_OCCUPIED;
+    players[old_id].ps = PS_KI;
+    players[new_id].ps = PS_OCCUPIED;
 
-	// Wenn wir betroffen waren, unsere ID neu setzen und BQ neu berechnen
-	if(playerid == old_id)
-	{
-		playerid = new_id;
+    // Wenn wir betroffen waren, unsere ID neu setzen und BQ neu berechnen
+    if(playerid == old_id)
+    {
+        playerid = new_id;
 
-		// BQ überall neu berechnen
-		for(unsigned y = 0; y < gw->GetHeight(); ++y)
-		{
-			for(unsigned x = 0; x < gw->GetWidth(); ++x)
-				gw->SetBQ(x, y, new_id);
-		}
+        // BQ überall neu berechnen
+        for(unsigned y = 0; y < gw->GetHeight(); ++y)
+        {
+            for(unsigned x = 0; x < gw->GetWidth(); ++x)
+                gw->SetBQ(x, y, new_id);
+        }
 
-		// Visuelle Einstellungen vom Spieler wieder holen
-		GetVisualSettings();
+        // Visuelle Einstellungen vom Spieler wieder holen
+        GetVisualSettings();
 
-		//// zum HQ hinscrollen
-		//gw->MoveToMapObject(player->hqx,player->hqy);
-		//GameClientPlayer *player = players[playerid]; // wegen GCC-Fehlermeldung auskommentiert
-	}
+        //// zum HQ hinscrollen
+        //gw->MoveToMapObject(player->hqx,player->hqy);
+        //GameClientPlayer *player = players[playerid]; // wegen GCC-Fehlermeldung auskommentiert
+    }
 
-	// GUI Bescheid sagen (um z.B. Schatten neu zu berechnen)
-	if(ci)
-		ci->CI_PlayersSwapped(old_id,new_id);
+    // GUI Bescheid sagen (um z.B. Schatten neu zu berechnen)
+    if(ci)
+        ci->CI_PlayersSwapped(old_id, new_id);
 }
 
 void GameClient::ChangeReplayPlayer(const unsigned new_id)
 {
-	unsigned old_id = playerid;
+    unsigned old_id = playerid;
 
-	if(old_id == new_id)
-		// Unsinn auf den selben Spieler zu wechseln
-		return;
-	// Auch innerhalb der gültigen Spieler?
-	if(new_id >= GameClient::inst().GetPlayerCount())
-		return;
-	// Und ein richtiger ehemaliger Spieler?
-	if(GameClient::inst().GetPlayer(new_id)->ps != PS_KI &&
-		GameClient::inst().GetPlayer(new_id)->ps != PS_OCCUPIED)
-		return;
+    if(old_id == new_id)
+        // Unsinn auf den selben Spieler zu wechseln
+        return;
+    // Auch innerhalb der gültigen Spieler?
+    if(new_id >= GameClient::inst().GetPlayerCount())
+        return;
+    // Und ein richtiger ehemaliger Spieler?
+    if(GameClient::inst().GetPlayer(new_id)->ps != PS_KI &&
+            GameClient::inst().GetPlayer(new_id)->ps != PS_OCCUPIED)
+        return;
 
 
-	playerid = new_id;
+    playerid = new_id;
 
-	// BQ überall neu berechnen
-	for(unsigned y = 0; y < gw->GetHeight(); ++y)
-	{
-		for(unsigned x = 0; x < gw->GetWidth(); ++x)
-			gw->SetBQ(x, y, new_id);
-	}
+    // BQ überall neu berechnen
+    for(unsigned y = 0; y < gw->GetHeight(); ++y)
+    {
+        for(unsigned x = 0; x < gw->GetWidth(); ++x)
+            gw->SetBQ(x, y, new_id);
+    }
 
-	// GUI Bescheid sagen (um z.B. Schatten neu zu berechnen)
-	if(ci)
-		ci->CI_PlayersSwapped(old_id,new_id);
+    // GUI Bescheid sagen (um z.B. Schatten neu zu berechnen)
+    if(ci)
+        ci->CI_PlayersSwapped(old_id, new_id);
 }
 

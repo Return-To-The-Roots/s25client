@@ -1,4 +1,4 @@
-// $Id: GameServerPlayer.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: GameServerPlayer.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -28,36 +28,36 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Konstruktor
 GameServerPlayer::GameServerPlayer(const unsigned playerid)
-	: GamePlayerInfo(playerid),
-	connecttime(0),
-	last_command_timeout(0),
-	pinging(false),
-	send_queue(&GameMessage::create_game),
-	recv_queue(&GameMessage::create_game),
-	lastping(0), 
-	temp_ul(0),
-	temp_ui(0)
+    : GamePlayerInfo(playerid),
+      connecttime(0),
+      last_command_timeout(0),
+      pinging(false),
+      send_queue(&GameMessage::create_game),
+      recv_queue(&GameMessage::create_game),
+      lastping(0),
+      temp_ul(0),
+      temp_ui(0)
 {
 }
 
-GameServerPlayer::GameServerPlayer(const unsigned playerid, Serializer *ser)
-	: GamePlayerInfo(playerid, ser),
-	connecttime(0),
-	last_command_timeout(0),
-	pinging(false),
-	send_queue(&GameMessage::create_game),
-	recv_queue(&GameMessage::create_game),
-	lastping(0), 
-	temp_ul(0),
-	temp_ui(0)
+GameServerPlayer::GameServerPlayer(const unsigned playerid, Serializer* ser)
+    : GamePlayerInfo(playerid, ser),
+      connecttime(0),
+      last_command_timeout(0),
+      pinging(false),
+      send_queue(&GameMessage::create_game),
+      recv_queue(&GameMessage::create_game),
+      lastping(0),
+      temp_ul(0),
+      temp_ui(0)
 {
 }
 
@@ -65,115 +65,115 @@ GameServerPlayer::GameServerPlayer(const unsigned playerid, Serializer *ser)
 /// Destruktor
 GameServerPlayer::~GameServerPlayer()
 {
-	so.Close();
+    so.Close();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /// pingt ggf den Spieler
 void GameServerPlayer::doPing()
 {
-	if( (ps == PS_OCCUPIED) && (pinging == false) && ( ( VideoDriverWrapper::inst().GetTickCount() - lastping ) > 1000 ) )
-	{
-		pinging = true;
-		
-		lastping = VideoDriverWrapper::inst().GetTickCount();
+    if( (ps == PS_OCCUPIED) && (pinging == false) && ( ( VideoDriverWrapper::inst().GetTickCount() - lastping ) > 1000 ) )
+    {
+        pinging = true;
 
-		// Ping Nachricht senden
-		send_queue.push(new GameMessage_Ping(0xFF));
-	}
+        lastping = VideoDriverWrapper::inst().GetTickCount();
+
+        // Ping Nachricht senden
+        send_queue.push(new GameMessage_Ping(0xFF));
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /// prüft auf Ping-Timeout beim verbinden
 void GameServerPlayer::doTimeout()
 {
-	if( (ps == PS_RESERVED) && ( ( VideoDriverWrapper::inst().GetTickCount() - connecttime ) > PING_TIMEOUT ) )
-	{
-		puts("aaahh");
-		LOG.lprintf("SERVER: Reserved slot %d freed due to ping timeout\n", playerid);
+    if( (ps == PS_RESERVED) && ( ( VideoDriverWrapper::inst().GetTickCount() - connecttime ) > PING_TIMEOUT ) )
+    {
+        puts("aaahh");
+        LOG.lprintf("SERVER: Reserved slot %d freed due to ping timeout\n", playerid);
 
-		/*// Todesnachricht absetzen
-		Message_Dead dm();
-		dm.send(&so);*/
+        /*// Todesnachricht absetzen
+        Message_Dead dm();
+        dm.send(&so);*/
 
-		// und aufräumen
-		clear();
-	}
+        // und aufräumen
+        clear();
+    }
 }
 
 /** /////////////////////////////////////////////////////////////////////////////
 // setzt den Player auf "reserviert"
 // @param sock Socket
 // @param id Spieler-ID                                                        */
-void GameServerPlayer::reserve(Socket *sock, unsigned char id)
+void GameServerPlayer::reserve(Socket* sock, unsigned char id)
 {
-	clear();
-	
-	playerid = id;
+    clear();
 
-	connecttime = VideoDriverWrapper::inst().GetTickCount();
+    playerid = id;
 
-	so = *sock;
-	
-	ps = PS_RESERVED;
+    connecttime = VideoDriverWrapper::inst().GetTickCount();
+
+    so = *sock;
+
+    ps = PS_RESERVED;
 }
 
 void GameServerPlayer::clear()
 {
-	GamePlayerInfo::clear();
+    GamePlayerInfo::clear();
 
-	connecttime = 0;
-	last_command_timeout = 0;
-	pinging = false;
-	send_queue.clear();
-	recv_queue.clear();
-	lastping = 0;
-	temp_ul = 0;
-	temp_ui = 0;
-	so.Close();
+    connecttime = 0;
+    last_command_timeout = 0;
+    pinging = false;
+    send_queue.clear();
+    recv_queue.clear();
+    lastping = 0;
+    temp_ul = 0;
+    temp_ui = 0;
+    so.Close();
 }
 
 unsigned GameServerPlayer::GetTimeOut() const
 {
-	// Nach 34 Sekunden kicken (34 damit ab 30 erst die Meldung kommt, sonst kommt sie andauernd)
-	const int timeout = 34 - int(TIME.CurrentTime() - last_command_timeout) / 1000;
-	return (timeout >= 0 ? timeout : 0);
+    // Nach 34 Sekunden kicken (34 damit ab 30 erst die Meldung kommt, sonst kommt sie andauernd)
+    const int timeout = 34 - int(TIME.CurrentTime() - last_command_timeout) / 1000;
+    return (timeout >= 0 ? timeout : 0);
 }
 
 /// Tauscht Spieler
 void GameServerPlayer::SwapPlayer(GameServerPlayer& two)
 {
-	GamePlayerInfo::SwapPlayer(two);
+    GamePlayerInfo::SwapPlayer(two);
 
-	Swap(this->connecttime, two.connecttime);
-	Swap(this->last_command_timeout, two.last_command_timeout);
+    Swap(this->connecttime, two.connecttime);
+    Swap(this->last_command_timeout, two.last_command_timeout);
 
-	Swap(this->so, two.so);
-	Swap(this->pinging, two.pinging);
+    Swap(this->so, two.so);
+    Swap(this->pinging, two.pinging);
 
-	Swap(this->send_queue, two.send_queue);
-	Swap(this->recv_queue, two.recv_queue);
-	Swap(this->gc_queue,two.gc_queue);
+    Swap(this->send_queue, two.send_queue);
+    Swap(this->recv_queue, two.recv_queue);
+    Swap(this->gc_queue, two.gc_queue);
 
-	Swap(this->lastping, two.lastping);
+    Swap(this->lastping, two.lastping);
 
-	Swap(this->temp_ul, two.temp_ul);
-	Swap(this->temp_ui, two.temp_ui);
+    Swap(this->temp_ul, two.temp_ul);
+    Swap(this->temp_ui, two.temp_ui);
 }
 
 /// Spieler laggt
 void GameServerPlayer::Lagging()
 {
-	// Laggt neu?
-	if(!last_command_timeout)
-		// Anfangs des Laggens merken
-		last_command_timeout = TIME.CurrentTime();
+    // Laggt neu?
+    if(!last_command_timeout)
+        // Anfangs des Laggens merken
+        last_command_timeout = TIME.CurrentTime();
 }
 
 /// Spieler laggt nicht (mehr)
 void GameServerPlayer::NotLagging()
 {
-	/// Laggt nicht mehr
-	last_command_timeout = 0;
+    /// Laggt nicht mehr
+    last_command_timeout = 0;
 }
 

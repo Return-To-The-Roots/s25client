@@ -1,4 +1,4 @@
-// $Id: iwAIDebug.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: iwAIDebug.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -30,22 +30,22 @@ class GameWorldViewer;
 
 class iwAIDebug : public IngameWindow
 {
-public:
-	iwAIDebug(GameWorldViewer * const gwv);
+    public:
+        iwAIDebug(GameWorldViewer* const gwv);
 
-private:
-	void Msg_ComboSelectItem(const unsigned int ctrl_id, const unsigned short select);
-	//void Msg_ButtonClick(const unsigned int ctrl_id);
-	//void Msg_ProgressChange(const unsigned int ctrl_id, const unsigned short position);
-	void Msg_PaintBefore();
+    private:
+        void Msg_ComboSelectItem(const unsigned int ctrl_id, const unsigned short select);
+        //void Msg_ButtonClick(const unsigned int ctrl_id);
+        //void Msg_ProgressChange(const unsigned int ctrl_id, const unsigned short position);
+        void Msg_PaintBefore();
 
-private:
-	std::vector<AIPlayerJH *> ais;
-	ctrlList *jobs;
-	unsigned selection;
-	unsigned overlay;
-	ctrlText *text;
-	GameWorldViewer *gwv;
+    private:
+        std::vector<AIPlayerJH*> ais;
+        ctrlList* jobs;
+        unsigned selection;
+        unsigned overlay;
+        ctrlText* text;
+        GameWorldViewer* gwv;
 };
 
 #endif

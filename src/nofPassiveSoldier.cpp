@@ -1,4 +1,4 @@
-// $Id: nofPassiveSoldier.cpp 8916 2013-08-27 18:50:05Z marcus $
+// $Id: nofPassiveSoldier.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -32,23 +32,23 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
 nofPassiveSoldier::nofPassiveSoldier(const nofSoldier& soldier) : nofSoldier(soldier),
-	healing_event(0)
+    healing_event(0)
 {
-	// Soldat von einer Mission nach Hause gekommen --> ggf heilen!
-	Heal();
-	// Laufevent nullen, laufen ja nicht mehr
-	current_ev = 0;
+    // Soldat von einer Mission nach Hause gekommen --> ggf heilen!
+    Heal();
+    // Laufevent nullen, laufen ja nicht mehr
+    current_ev = 0;
 }
 
-nofPassiveSoldier::nofPassiveSoldier(const unsigned short x, const unsigned short y,const unsigned char player,
-									 nobBaseMilitary * const goal,nobBaseMilitary * const home,const unsigned char rank)
-									 : nofSoldier(x,y,player,goal,home,rank), healing_event(0)
+nofPassiveSoldier::nofPassiveSoldier(const unsigned short x, const unsigned short y, const unsigned char player,
+                                     nobBaseMilitary* const goal, nobBaseMilitary* const home, const unsigned char rank)
+    : nofSoldier(x, y, player, goal, home, rank), healing_event(0)
 {
 }
 
@@ -60,128 +60,128 @@ nofPassiveSoldier::~nofPassiveSoldier()
 
 void nofPassiveSoldier::Destroy_nofPassiveSoldier()
 {
-	em->RemoveEvent(healing_event);
+    em->RemoveEvent(healing_event);
 }
 
-void nofPassiveSoldier::Serialize_nofPassiveSoldier(SerializedGameData * sgd) const
+void nofPassiveSoldier::Serialize_nofPassiveSoldier(SerializedGameData* sgd) const
 {
-	Serialize_nofSoldier(sgd);
+    Serialize_nofSoldier(sgd);
 
-	sgd->PushObject(healing_event,true);
+    sgd->PushObject(healing_event, true);
 }
 
-nofPassiveSoldier::nofPassiveSoldier(SerializedGameData * sgd, const unsigned obj_id) : nofSoldier(sgd,obj_id),
-healing_event(sgd->PopObject<EventManager::Event>(GOT_EVENT))
+nofPassiveSoldier::nofPassiveSoldier(SerializedGameData* sgd, const unsigned obj_id) : nofSoldier(sgd, obj_id),
+    healing_event(sgd->PopObject<EventManager::Event>(GOT_EVENT))
 {
 }
 
 void nofPassiveSoldier::Draw(int x, int y)
 {
-	// Soldat normal laufend zeichnen
-	DrawSoldierWalking(x,y);
+    // Soldat normal laufend zeichnen
+    DrawSoldierWalking(x, y);
 }
 
 void nofPassiveSoldier::HandleDerivedEvent(const unsigned int id)
 {
-	switch(id)
-	{
-	// "Heilungs-Event"
-	case 1:
-		{
-			healing_event = 0;
+    switch(id)
+    {
+            // "Heilungs-Event"
+        case 1:
+        {
+            healing_event = 0;
 
-			// Sind wir noch im Haus?
-			if(fs == FS_JOB)
-			{
-				// Dann uns heilen, wenn wir nicht schon gesund sind
-				if(hitpoints < HITPOINTS[gwg->GetPlayer(player)->nation][job-JOB_PRIVATE])
-				{
-					++hitpoints;
+            // Sind wir noch im Haus?
+            if(fs == FS_JOB)
+            {
+                // Dann uns heilen, wenn wir nicht schon gesund sind
+                if(hitpoints < HITPOINTS[gwg->GetPlayer(player)->nation][job - JOB_PRIVATE])
+                {
+                    ++hitpoints;
 
-					// Sind wir immer noch nicht gesund? Dann neues Event anmelden!
-					if(hitpoints < HITPOINTS[gwg->GetPlayer(player)->nation][job-JOB_PRIVATE])
-						healing_event = em->AddEvent(this,CONVALESCE_TIME+RANDOM.Rand(__FILE__,__LINE__,obj_id,CONVALESCE_TIME_RANDOM),1);
-				}
-			}
+                    // Sind wir immer noch nicht gesund? Dann neues Event anmelden!
+                    if(hitpoints < HITPOINTS[gwg->GetPlayer(player)->nation][job - JOB_PRIVATE])
+                        healing_event = em->AddEvent(this, CONVALESCE_TIME + RANDOM.Rand(__FILE__, __LINE__, obj_id, CONVALESCE_TIME_RANDOM), 1);
+                }
+            }
 
-		} break;
-	}
+        } break;
+    }
 }
 
 void nofPassiveSoldier::Heal()
 {
-	// Schon ein Event angemeldet?
-	// Dann muss dieses entfernt werden, wahrscheinlich war er zuvor draußen gewesen
-	if(healing_event)
-	{
-		em->RemoveEvent(healing_event);
-		healing_event = 0;
-	}
+    // Schon ein Event angemeldet?
+    // Dann muss dieses entfernt werden, wahrscheinlich war er zuvor draußen gewesen
+    if(healing_event)
+    {
+        em->RemoveEvent(healing_event);
+        healing_event = 0;
+    }
 
-	// Ist er verletzt?
-	// Dann muss er geheilt werden
-	if(hitpoints < HITPOINTS[gwg->GetPlayer(player)->nation][job-JOB_PRIVATE])
-		healing_event = em->AddEvent(this,CONVALESCE_TIME+RANDOM.Rand(__FILE__,__LINE__,obj_id,CONVALESCE_TIME_RANDOM),1);
+    // Ist er verletzt?
+    // Dann muss er geheilt werden
+    if(hitpoints < HITPOINTS[gwg->GetPlayer(player)->nation][job - JOB_PRIVATE])
+        healing_event = em->AddEvent(this, CONVALESCE_TIME + RANDOM.Rand(__FILE__, __LINE__, obj_id, CONVALESCE_TIME_RANDOM), 1);
 }
 
 void nofPassiveSoldier::GoalReached()
 {
-	// im Militärgebäude angekommen
+    // im Militärgebäude angekommen
 
-	// mich hinzufügen
-	static_cast<nobMilitary*>(building)->AddPassiveSoldier(this);
+    // mich hinzufügen
+    static_cast<nobMilitary*>(building)->AddPassiveSoldier(this);
 
-	// und wir können uns auch aus der Laufliste erstmal entfernen
-	gwg->RemoveFigure(this,x,y);
+    // und wir können uns auch aus der Laufliste erstmal entfernen
+    gwg->RemoveFigure(this, x, y);
 }
 
 void nofPassiveSoldier::InBuildingDestroyed()
 {
-	building = 0;
+    building = 0;
 
-	// Auf die Karte setzen
-	gwg->AddFigure(this,x,y);
-	// Erstmal in zufällige Richtung rammeln
-	StartWandering();
+    // Auf die Karte setzen
+    gwg->AddFigure(this, x, y);
+    // Erstmal in zufällige Richtung rammeln
+    StartWandering();
 
-	StartWalking(RANDOM.Rand(__FILE__,__LINE__,obj_id,6));
-	
+    StartWalking(RANDOM.Rand(__FILE__, __LINE__, obj_id, 6));
+
 }
 
 void nofPassiveSoldier::LeaveBuilding()
 {
-	// Nach Hause in ein Lagerhaus gehen
-	rs_dir = true;
-	rs_pos = 1;
-	cur_rs = building->routes[4];
-	GoHome();
+    // Nach Hause in ein Lagerhaus gehen
+    rs_dir = true;
+    rs_pos = 1;
+    cur_rs = building->routes[4];
+    GoHome();
 
-	building = 0;
+    building = 0;
 }
 
 
 void nofPassiveSoldier::Upgrade()
 {
-	// Einen Rang höher
-	job = Job(unsigned(job)+1);
+    // Einen Rang höher
+    job = Job(unsigned(job) + 1);
 
-	// wieder heilen bzw. Hitpoints anpasen
-	hitpoints = HITPOINTS[gwg->GetPlayer(player)->nation][job-JOB_PRIVATE];
+    // wieder heilen bzw. Hitpoints anpasen
+    hitpoints = HITPOINTS[gwg->GetPlayer(player)->nation][job - JOB_PRIVATE];
 
-	// Inventur entsprechend erhöhen und verringern
-	gwg->GetPlayer(player)->IncreaseInventoryJob(job,1);
-	gwg->GetPlayer(player)->DecreaseInventoryJob(Job(unsigned(job)-1),1);
+    // Inventur entsprechend erhöhen und verringern
+    gwg->GetPlayer(player)->IncreaseInventoryJob(job, 1);
+    gwg->GetPlayer(player)->DecreaseInventoryJob(Job(unsigned(job) - 1), 1);
 }
 
 void nofPassiveSoldier::Walked()
 {
-	// Das dürfte nich passiern!
-	assert(false);
+    // Das dürfte nich passiern!
+    assert(false);
 }
 
 void nofPassiveSoldier::NotNeeded()
 {
-	building = 0;
-	GoHome();
+    building = 0;
+    GoHome();
 }
 

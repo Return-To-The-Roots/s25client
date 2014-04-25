@@ -1,4 +1,4 @@
-// $Id: noCoordBase.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: noCoordBase.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -27,35 +27,35 @@
 class noCoordBase : public noBase
 {
 
-public:
+    public:
 
-	/// Konstruktor von @p noCoordBase.
-	noCoordBase(const NodalObjectType nop, const MapCoord x, const MapCoord y) : noBase(nop), x(x), y(y) {}
-	noCoordBase(SerializedGameData * sgd, const unsigned obj_id);
+        /// Konstruktor von @p noCoordBase.
+        noCoordBase(const NodalObjectType nop, const MapCoord x, const MapCoord y) : noBase(nop), x(x), y(y) {}
+        noCoordBase(SerializedGameData* sgd, const unsigned obj_id);
 
-	/// Aufräummethoden
-protected:	void Destroy_noCoordBase(void) { Destroy_noBase(); }
-public:		void Destroy(void) { Destroy_noCoordBase(); }
+        /// Aufräummethoden
+    protected:  void Destroy_noCoordBase(void) { Destroy_noBase(); }
+    public:     void Destroy(void) { Destroy_noCoordBase(); }
 
-	/// Serialisierungsfunktionen
-	protected:	void Serialize_noCoordBase(SerializedGameData * sgd) const;
-	public:		void Serialize(SerializedGameData *sgd) const { Serialize_noCoordBase(sgd); }
+        /// Serialisierungsfunktionen
+    protected:  void Serialize_noCoordBase(SerializedGameData* sgd) const;
+    public:     void Serialize(SerializedGameData* sgd) const { Serialize_noCoordBase(sgd); }
 
-	/// liefert die X-Koordinate.
-	MapCoord GetX(void) const { return x; }
-	/// liefert die Y-Koordinate.
-	MapCoord GetY(void) const { return y; }
+        /// liefert die X-Koordinate.
+        MapCoord GetX(void) const { return x; }
+        /// liefert die Y-Koordinate.
+        MapCoord GetY(void) const { return y; }
 
-	/// Returns position
-	Point<MapCoord> GetPos() const
-	{ return Point<MapCoord>(x,y); }
+        /// Returns position
+        Point<MapCoord> GetPos() const
+        { return Point<MapCoord>(x, y); }
 
-	/// Liefert GUI-ID zurück für die Fenster
-	unsigned CreateGUIID() const;
+        /// Liefert GUI-ID zurück für die Fenster
+        unsigned CreateGUIID() const;
 
-protected:
-	MapCoord x; ///< X-Koordinate
-	MapCoord y; ///< Y-Koordinate
+    protected:
+        MapCoord x; ///< X-Koordinate
+        MapCoord y; ///< Y-Koordinate
 };
 
 #endif // !NOCOORDBASE_H_INCLUDED

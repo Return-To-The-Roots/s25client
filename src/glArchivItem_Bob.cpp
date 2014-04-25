@@ -1,4 +1,4 @@
-// $Id: glArchivItem_Bob.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: glArchivItem_Bob.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -25,9 +25,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -38,18 +38,18 @@
  */
 void glArchivItem_Bob::Draw(unsigned int item, unsigned int direction, bool fat, unsigned int animationstep, short x, short y, unsigned int color)
 {
-	unsigned int good = item*96 + animationstep*12 + ( (direction + 3) % 6 ) + fat*6;
-	unsigned int body = fat*48 + ( (direction + 3) % 6 )*8 + animationstep;
-	if(links[good] == 92)
-	{
-		good -= fat*6;
-		body -= fat*48;
-	}
+    unsigned int good = item * 96 + animationstep * 12 + ( (direction + 3) % 6 ) + fat * 6;
+    unsigned int body = fat * 48 + ( (direction + 3) % 6 ) * 8 + animationstep;
+    if(links[good] == 92)
+    {
+        good -= fat * 6;
+        body -= fat * 48;
+    }
 
-	glArchivItem_Bitmap_Player *koerper = dynamic_cast<glArchivItem_Bitmap_Player*>(get(body));
-	if(koerper)
-		koerper->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, color);
-	glArchivItem_Bitmap_Player *ware = dynamic_cast<glArchivItem_Bitmap_Player*>(get(96+links[good]));
-	if(ware)
-		ware->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, color);
+    glArchivItem_Bitmap_Player* koerper = dynamic_cast<glArchivItem_Bitmap_Player*>(get(body));
+    if(koerper)
+        koerper->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, color);
+    glArchivItem_Bitmap_Player* ware = dynamic_cast<glArchivItem_Bitmap_Player*>(get(96 + links[good]));
+    if(ware)
+        ware->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, color);
 }

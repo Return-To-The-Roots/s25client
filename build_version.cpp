@@ -1,4 +1,4 @@
-// $Id: build_version.cpp 8846 2013-08-17 11:54:47Z marcus $
+// $Id: build_version.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -27,39 +27,39 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
-const char *GetWindowTitle()
+const char* GetWindowTitle()
 {
-	static char title[256];
-	std::memset(title, 0, 256);
-	std::strncpy(title, WINDOW_TITLE, 256);
-	return title;
+    static char title[256];
+    std::memset(title, 0, 256);
+    std::strncpy(title, WINDOW_TITLE, 256);
+    return title;
 }
 
-const char *GetWindowVersion()
+const char* GetWindowVersion()
 {
-	static char version[256];
-	std::memset(version, 0, 256);
-	std::strncpy(version, WINDOW_VERSION, 256);
-	return version;
+    static char version[256];
+    std::memset(version, 0, 256);
+    std::strncpy(version, WINDOW_VERSION, 256);
+    return version;
 }
 
-const char *GetWindowRevision()
+const char* GetWindowRevision()
 {
-	static char revision[256];
-	std::memset(revision, 0, 256);
-	std::strncpy(revision, WINDOW_REVISION, 256);
-	return revision;
+    static char revision[256];
+    std::memset(revision, 0, 256);
+    std::strncpy(revision, WINDOW_REVISION, 256);
+    return revision;
 }
 
-const char *GetCurrentYear() //nasty but works, if versioning principle changes, we should make it use date function
+const char* GetCurrentYear() //nasty but works, if versioning principle changes, we should make it use date function
 {
-	static char year[5];
-	std::memset(year,0,5);
-	std::strncpy(year, WINDOW_VERSION, 4);
-	return year;
+    static char year[5];
+    std::memset(year, 0, 5);
+    std::strncpy(year, WINDOW_VERSION, 4);
+    return year;
 }

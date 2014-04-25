@@ -1,4 +1,4 @@
-// $Id: nofWorkman.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: nofWorkman.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -27,33 +27,33 @@
 /// Warten -- Arbeiten -- Warten -- Ware raustragen -- wieder reinkommen -- ...
 class nofWorkman : public nofBuildingWorker
 {
-private:
+    private:
 
-	// Funktionen, die nur von der Basisklasse  aufgerufen werden, wenn...
-	virtual void WalkedDerived(); // man gelaufen ist
-	/// Gibt den Warentyp zurück, welche der Arbeiter erzeugen will
-	virtual GoodType ProduceWare() = 0;
-	/// Abgeleitete Klasse informieren, wenn man fertig ist mit Arbeiten
-	virtual void WorkFinished();
+        // Funktionen, die nur von der Basisklasse  aufgerufen werden, wenn...
+        virtual void WalkedDerived(); // man gelaufen ist
+        /// Gibt den Warentyp zurück, welche der Arbeiter erzeugen will
+        virtual GoodType ProduceWare() = 0;
+        /// Abgeleitete Klasse informieren, wenn man fertig ist mit Arbeiten
+        virtual void WorkFinished();
 
-protected:
+    protected:
 
-	/// Entsprechende Methoden für die Abwicklung der einzelnen Zustände
-	/// Nach erstem Warten, sprich der Arbeiter muss versuchen, neu anfangen zu arbeiten
-	void HandleStateWaiting1();
-	void HandleStateWaiting2();
-	void HandleStateWork();
+        /// Entsprechende Methoden für die Abwicklung der einzelnen Zustände
+        /// Nach erstem Warten, sprich der Arbeiter muss versuchen, neu anfangen zu arbeiten
+        void HandleStateWaiting1();
+        void HandleStateWaiting2();
+        void HandleStateWork();
 
-public:
+    public:
 
-	nofWorkman(const Job job,const unsigned short x, const unsigned short y,const unsigned char player,nobUsual * workplace);
-	nofWorkman(SerializedGameData * sgd, const unsigned obj_id);
+        nofWorkman(const Job job, const unsigned short x, const unsigned short y, const unsigned char player, nobUsual* workplace);
+        nofWorkman(SerializedGameData* sgd, const unsigned obj_id);
 
-	/// Serialisierungsfunktionen
-	protected:	void Serialize_nofWorkman(SerializedGameData * sgd) const;
-	public:		void Serialize(SerializedGameData *sgd) const { Serialize_nofWorkman(sgd); }
+        /// Serialisierungsfunktionen
+    protected:  void Serialize_nofWorkman(SerializedGameData* sgd) const;
+    public:     void Serialize(SerializedGameData* sgd) const { Serialize_nofWorkman(sgd); }
 
-	virtual void HandleDerivedEvent(const unsigned int id);
+        virtual void HandleDerivedEvent(const unsigned int id);
 
 
 };

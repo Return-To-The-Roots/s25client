@@ -1,4 +1,4 @@
-// $Id: nofGeologist.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: nofGeologist.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -26,59 +26,59 @@ class noFlag;
 
 class nofGeologist : public nofFlagWorker
 {
-private:
+    private:
 
-	/// Schilder, die er noch aufstellen sollte (max 15 abarbeiten)
-	unsigned short signs;
-	/// Punkte, die noch in Frage kommen
-	struct Point { unsigned short x,y; };
-	list<Point> available_nodes;
-	/// Punkt, zu dem er gerade geht
-	Point node_goal;
+        /// Schilder, die er noch aufstellen sollte (max 15 abarbeiten)
+        unsigned short signs;
+        /// Punkte, die noch in Frage kommen
+        struct Point { unsigned short x, y; };
+        list<Point> available_nodes;
+        /// Punkt, zu dem er gerade geht
+        Point node_goal;
 
-	/// maximaler Radius wie weit die Geologen sich von der Flagge entfernen würde
-	static const unsigned short MAX_RADIUS = 10;
+        /// maximaler Radius wie weit die Geologen sich von der Flagge entfernen würde
+        static const unsigned short MAX_RADIUS = 10;
 
-  std::vector<bool> resAlreadyFound;
+        std::vector<bool> resAlreadyFound;
 
-private:
+    private:
 
-	void GoalReached();
-	void Walked();
-	void HandleDerivedEvent(const unsigned int id);
+        void GoalReached();
+        void Walked();
+        void HandleDerivedEvent(const unsigned int id);
 
-	/// Kann man an diesem Punkt ein Schild aufstellen?
-	bool IsNodeGood(const unsigned short x, const unsigned short y);
-	/// Sucht im Umkreis von der Flagge neue Punkte wo man graben könnte
-	void LookForNewNodes();
-	/// Nimmt den Punkt mit in die Liste auf, wenn er geeignet ist
-	void TestNode(const unsigned short x, const unsigned short y);
-	/// Bestimmt einen neuen Punkt,wo man hingehen kann, falls es keinen mehr gibt, wird ein ungültiger
-	/// Iterator gesetzt, liefert die Richtung in die man zum Punkt gehen muss, zurück
-	unsigned char GetNextNode();
-	/// Sucht sich einen neuen Punkt und geht dorthin oder geht wieder nach Hause wenn alle Schilder aufgestellt wurden
-	/// oder es keinen Punkt mehr gibt
-	void GoToNextNode();
-	/// Setzt das Schild, wenn noch was frei ist
-	void SetSign(const unsigned char resources);
+        /// Kann man an diesem Punkt ein Schild aufstellen?
+        bool IsNodeGood(const unsigned short x, const unsigned short y);
+        /// Sucht im Umkreis von der Flagge neue Punkte wo man graben könnte
+        void LookForNewNodes();
+        /// Nimmt den Punkt mit in die Liste auf, wenn er geeignet ist
+        void TestNode(const unsigned short x, const unsigned short y);
+        /// Bestimmt einen neuen Punkt,wo man hingehen kann, falls es keinen mehr gibt, wird ein ungültiger
+        /// Iterator gesetzt, liefert die Richtung in die man zum Punkt gehen muss, zurück
+        unsigned char GetNextNode();
+        /// Sucht sich einen neuen Punkt und geht dorthin oder geht wieder nach Hause wenn alle Schilder aufgestellt wurden
+        /// oder es keinen Punkt mehr gibt
+        void GoToNextNode();
+        /// Setzt das Schild, wenn noch was frei ist
+        void SetSign(const unsigned char resources);
 
-	bool IsSignInArea(unsigned char type) const;
+        bool IsSignInArea(unsigned char type) const;
 
-public:
+    public:
 
-	nofGeologist(const unsigned short x, const unsigned short y,const unsigned char player,noRoadNode * goal);
-	nofGeologist(SerializedGameData * sgd, const unsigned obj_id);
+        nofGeologist(const unsigned short x, const unsigned short y, const unsigned char player, noRoadNode* goal);
+        nofGeologist(SerializedGameData* sgd, const unsigned obj_id);
 
-	/// Serialisierungsfunktionen
-	protected:	void Serialize_nofGeologist(SerializedGameData * sgd) const;
-	public:		void Serialize(SerializedGameData *sgd) const { Serialize_nofGeologist(sgd); }
+        /// Serialisierungsfunktionen
+    protected:  void Serialize_nofGeologist(SerializedGameData* sgd) const;
+    public:     void Serialize(SerializedGameData* sgd) const { Serialize_nofGeologist(sgd); }
 
-	GO_Type GetGOT() const { return GOT_NOF_GEOLOGIST; }
+        GO_Type GetGOT() const { return GOT_NOF_GEOLOGIST; }
 
-	void Draw(int x, int y);
+        void Draw(int x, int y);
 
-	/// Wird aufgerufen, wenn die Flagge abgerissen wurde
-	void LostWork();
+        /// Wird aufgerufen, wenn die Flagge abgerissen wurde
+        void LostWork();
 
 };
 

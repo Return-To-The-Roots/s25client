@@ -1,4 +1,4 @@
-// $Id: nofIronfounder.cpp 9208 2014-02-27 17:18:32Z marcus $
+// $Id: nofIronfounder.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -31,42 +31,42 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
-nofIronfounder::nofIronfounder(const unsigned short x, const unsigned short y,const unsigned char player,nobUsual * workplace)
-: nofWorkman(JOB_IRONFOUNDER,x,y,player,workplace)
+nofIronfounder::nofIronfounder(const unsigned short x, const unsigned short y, const unsigned char player, nobUsual* workplace)
+    : nofWorkman(JOB_IRONFOUNDER, x, y, player, workplace)
 {
 }
 
-nofIronfounder::nofIronfounder(SerializedGameData * sgd, const unsigned obj_id) : nofWorkman(sgd,obj_id)
+nofIronfounder::nofIronfounder(SerializedGameData* sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id)
 {
 }
 
 void nofIronfounder::DrawWorking(int x, int y)
 {
-	signed char offsets[5][2] = { {-22,12},{-23,3},{-19,8},{-18,4},{-38,-1} };
+    signed char offsets[5][2] = { { -22, 12}, { -23, 3}, { -19, 8}, { -18, 4}, { -38, -1} };
 
-	unsigned now_id = GAMECLIENT.Interpolate(272,current_ev);
+    unsigned now_id = GAMECLIENT.Interpolate(272, current_ev);
 
 
-	if(now_id<182)
-	{
-		LOADER.GetImageN("rom_bobs", 100+(now_id%8))
-			->Draw(x+offsets[workplace->GetNation()][0],y+offsets[workplace->GetNation()][1],0,0,0,0,0,0, COLOR_WHITE, COLORS[gwg->GetPlayer(workplace->GetPlayer())->color]);
+    if(now_id < 182)
+    {
+        LOADER.GetImageN("rom_bobs", 100 + (now_id % 8))
+        ->Draw(x + offsets[workplace->GetNation()][0], y + offsets[workplace->GetNation()][1], 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(workplace->GetPlayer())->color]);
 
-		// Evtl Sound abspielen
-		if(now_id%16 == 3)
-		{
-			SoundManager::inst().PlayNOSound(58,this,now_id/16);
-			was_sounding = true;
-		}
-	}
+        // Evtl Sound abspielen
+        if(now_id % 16 == 3)
+        {
+            SoundManager::inst().PlayNOSound(58, this, now_id / 16);
+            was_sounding = true;
+        }
+    }
 }
 
 GoodType nofIronfounder::ProduceWare()
 {
-	return GD_IRON;
+    return GD_IRON;
 }

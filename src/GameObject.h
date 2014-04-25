@@ -1,4 +1,4 @@
-// $Id: GameObject.h 8323 2012-09-25 11:41:55Z marcus $
+// $Id: GameObject.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -34,135 +34,135 @@ class GameClientPlayerList;
 /// items at the end of the list.
 enum GO_Type
 {
-	GOT_UNKNOWN = 0,
-	GOT_NOTHING,
-	GOT_NOB_HQ,
-	GOT_NOB_MILITARY,
-	GOT_NOB_STOREHOUSE,
-	GOT_NOB_USUAL,
-	GOT_NOB_SHIPYARD,
-	GOT_NOB_HARBORBUILDING,
-	GOT_BUILDINGSITE,
-	GOT_NOF_AGGRESSIVEDEFENDER,
-	GOT_NOF_ATTACKER,
-	GOT_NOF_DEFENDER,
-	GOT_NOF_PASSIVESOLDIER,
-	GOT_NOF_WELLGUY,
-	GOT_NOF_CARRIER,
-	GOT_NOF_WOODCUTTER,
-	GOT_NOF_FISHER,
-	GOT_NOF_FORESTER,
-	GOT_NOF_CARPENTER,
-	GOT_NOF_STONEMASON,
-	GOT_NOF_HUNTER,
-	GOT_NOF_FARMER,
-	GOT_NOF_MILLER,
-	GOT_NOF_BAKER,
-	GOT_NOF_BUTCHER,
-	GOT_NOF_MINER,
-	GOT_NOF_BREWER,
-	GOT_NOF_PIGBREEDER,
-	GOT_NOF_DONKEYBREEDER,
-	GOT_NOF_IRONFOUNDER,
-	GOT_NOF_MINTER,
-	GOT_NOF_METALWORKER,
-	GOT_NOF_ARMORER,
-	GOT_NOF_BUILDER,
-	GOT_NOF_PLANER,
-	GOT_NOF_GEOLOGIST,
-	GOT_NOF_SHIPWRIGHT,
-	GOT_NOF_SCOUT_FREE,
-	GOT_NOF_SCOUT_LOOKOUTTOWER,
-	GOT_NOF_WAREHOUSEWORKER,
-	GOT_NOF_CATAPULTMAN,
-	GOT_NOF_PASSIVEWORKER,
-	GOT_NOF_CHARBURNER,
-	GOT_EXTENSION,
-	GOT_ENVOBJECT,
-	GOT_FIRE,
-	GOT_FLAG,
-	GOT_GRAINFIELD,
-	GOT_GRANITE,
-	GOT_SIGN,
-	GOT_SKELETON,
-	GOT_STATICOBJECT,
-	GOT_DISAPPEARINGMAPENVOBJECT,
-	GOT_TREE,
-	GOT_ANIMAL,
-	GOT_FIGHTING,
-	GOT_EVENT,
-	GOT_ROADSEGMENT,
-	GOT_WARE,
-	GOT_CATAPULTSTONE,
-	GOT_BURNEDWAREHOUSE,
-	GOT_SHIPBUILDINGSITE,
-	GOT_SHIP,
-	GOT_CHARBURNERPILE,
-	GOT_NOF_TRADELEADER,
-	GOT_NOF_TRADEDONKEY
+    GOT_UNKNOWN = 0,
+    GOT_NOTHING,
+    GOT_NOB_HQ,
+    GOT_NOB_MILITARY,
+    GOT_NOB_STOREHOUSE,
+    GOT_NOB_USUAL,
+    GOT_NOB_SHIPYARD,
+    GOT_NOB_HARBORBUILDING,
+    GOT_BUILDINGSITE,
+    GOT_NOF_AGGRESSIVEDEFENDER,
+    GOT_NOF_ATTACKER,
+    GOT_NOF_DEFENDER,
+    GOT_NOF_PASSIVESOLDIER,
+    GOT_NOF_WELLGUY,
+    GOT_NOF_CARRIER,
+    GOT_NOF_WOODCUTTER,
+    GOT_NOF_FISHER,
+    GOT_NOF_FORESTER,
+    GOT_NOF_CARPENTER,
+    GOT_NOF_STONEMASON,
+    GOT_NOF_HUNTER,
+    GOT_NOF_FARMER,
+    GOT_NOF_MILLER,
+    GOT_NOF_BAKER,
+    GOT_NOF_BUTCHER,
+    GOT_NOF_MINER,
+    GOT_NOF_BREWER,
+    GOT_NOF_PIGBREEDER,
+    GOT_NOF_DONKEYBREEDER,
+    GOT_NOF_IRONFOUNDER,
+    GOT_NOF_MINTER,
+    GOT_NOF_METALWORKER,
+    GOT_NOF_ARMORER,
+    GOT_NOF_BUILDER,
+    GOT_NOF_PLANER,
+    GOT_NOF_GEOLOGIST,
+    GOT_NOF_SHIPWRIGHT,
+    GOT_NOF_SCOUT_FREE,
+    GOT_NOF_SCOUT_LOOKOUTTOWER,
+    GOT_NOF_WAREHOUSEWORKER,
+    GOT_NOF_CATAPULTMAN,
+    GOT_NOF_PASSIVEWORKER,
+    GOT_NOF_CHARBURNER,
+    GOT_EXTENSION,
+    GOT_ENVOBJECT,
+    GOT_FIRE,
+    GOT_FLAG,
+    GOT_GRAINFIELD,
+    GOT_GRANITE,
+    GOT_SIGN,
+    GOT_SKELETON,
+    GOT_STATICOBJECT,
+    GOT_DISAPPEARINGMAPENVOBJECT,
+    GOT_TREE,
+    GOT_ANIMAL,
+    GOT_FIGHTING,
+    GOT_EVENT,
+    GOT_ROADSEGMENT,
+    GOT_WARE,
+    GOT_CATAPULTSTONE,
+    GOT_BURNEDWAREHOUSE,
+    GOT_SHIPBUILDINGSITE,
+    GOT_SHIP,
+    GOT_CHARBURNERPILE,
+    GOT_NOF_TRADELEADER,
+    GOT_NOF_TRADEDONKEY
 };
 
 /// Basisklasse für alle Spielobjekte
 class GameObject
 {
-public:
-	/// Konstruktor von @p GameObject.
-	GameObject(void);
-	/// Deserialisierungskonstruktor
-	GameObject(SerializedGameData * sgd, const unsigned obj_id);
-	/// Copy-Konstruktor
-	GameObject(const GameObject& go);
-	/// Destruktor von @p GameObject.
-	virtual ~GameObject(void);
+    public:
+        /// Konstruktor von @p GameObject.
+        GameObject(void);
+        /// Deserialisierungskonstruktor
+        GameObject(SerializedGameData* sgd, const unsigned obj_id);
+        /// Copy-Konstruktor
+        GameObject(const GameObject& go);
+        /// Destruktor von @p GameObject.
+        virtual ~GameObject(void);
 
-	/// zerstört das Objekt.
-	virtual void Destroy(void) = 0;
+        /// zerstört das Objekt.
+        virtual void Destroy(void) = 0;
 
-	/// Benachrichtigen, wenn neuer GF erreicht wurde.
-	virtual void HandleEvent(const unsigned int id) {}
+        /// Benachrichtigen, wenn neuer GF erreicht wurde.
+        virtual void HandleEvent(const unsigned int id) {}
 
-	/// Gibt Objekt-ID zurück.
-	unsigned GetObjId() const { return obj_id; }
+        /// Gibt Objekt-ID zurück.
+        unsigned GetObjId() const { return obj_id; }
 
-	/// Serialisierungsfunktion.
-	virtual void Serialize(SerializedGameData *sgd) const = 0;
-	/// Liefert den GOT (siehe oben)
-	virtual GO_Type GetGOT(void) const = 0;
+        /// Serialisierungsfunktion.
+        virtual void Serialize(SerializedGameData* sgd) const = 0;
+        /// Liefert den GOT (siehe oben)
+        virtual GO_Type GetGOT(void) const = 0;
 
-	/// Setzt Pointer auf GameWorld und EventManager
-	static void SetPointers(GameWorldGame * const gwg,EventManager * const em, GameClientPlayerList* players) 
-	{ GameObject::gwg = gwg; GameObject::em = em; GameObject::players = players; }
-	/// setzt den Objekt und Objekt-ID-Counter zurück
-	static void ResetCounter(void) { obj_id_counter = 1; obj_counter = 0; };
-	/// Gibt Anzahl Objekte zurück.
-	static unsigned GetObjCount() { return obj_counter; }
-	/// Setzt Anzahl der Objekte (NUR FÃœR DAS LADEN!)
-	static void SetObjCount(const unsigned obj_count) 
-	{ obj_counter = obj_count; }
-	/// Gibt Obj-ID-Counter zurück (NUR FÃœR DAS SPEICHERN!)
-	static unsigned GetObjIDCounter() { return obj_id_counter; }
-	/// Setzt Counter (NUR FÃœR DAS LADEN!)
-	static void SetObjIDCounter(const unsigned obj_id_counter) 
-	{ GameObject::obj_id_counter = obj_id_counter; }
+        /// Setzt Pointer auf GameWorld und EventManager
+        static void SetPointers(GameWorldGame* const gwg, EventManager* const em, GameClientPlayerList* players)
+        { GameObject::gwg = gwg; GameObject::em = em; GameObject::players = players; }
+        /// setzt den Objekt und Objekt-ID-Counter zurück
+        static void ResetCounter(void) { obj_id_counter = 1; obj_counter = 0; };
+        /// Gibt Anzahl Objekte zurück.
+        static unsigned GetObjCount() { return obj_counter; }
+        /// Setzt Anzahl der Objekte (NUR FÃœR DAS LADEN!)
+        static void SetObjCount(const unsigned obj_count)
+        { obj_counter = obj_count; }
+        /// Gibt Obj-ID-Counter zurück (NUR FÃœR DAS SPEICHERN!)
+        static unsigned GetObjIDCounter() { return obj_id_counter; }
+        /// Setzt Counter (NUR FÃœR DAS LADEN!)
+        static void SetObjIDCounter(const unsigned obj_id_counter)
+        { GameObject::obj_id_counter = obj_id_counter; }
 
-	virtual std::string ToString() const {std::stringstream s; s << "GameObject(" << obj_id << ")"; return s.str();}
-protected: 
+        virtual std::string ToString() const {std::stringstream s; s << "GameObject(" << obj_id << ")"; return s.str();}
+    protected:
 
-	/// Serialisierungsfunktion.
-	void Serialize_GameObject(SerializedGameData *sgd) const {}
-	
-protected:
-	const unsigned int obj_id; ///< eindeutige Objekt-ID
+        /// Serialisierungsfunktion.
+        void Serialize_GameObject(SerializedGameData* sgd) const {}
 
-	/// Zugriff auf übrige Spielwelt
-	static GameWorldGame *gwg;
-	static EventManager *em;
-	static GameClientPlayerList *players;
+    protected:
+        const unsigned int obj_id; ///< eindeutige Objekt-ID
 
-private:
+        /// Zugriff auf übrige Spielwelt
+        static GameWorldGame* gwg;
+        static EventManager* em;
+        static GameClientPlayerList* players;
 
-	static unsigned obj_id_counter; ///< Objekt-ID-Counter
-	static unsigned obj_counter;    ///< Objekt-Counter
+    private:
+
+        static unsigned obj_id_counter; ///< Objekt-ID-Counter
+        static unsigned obj_counter;    ///< Objekt-Counter
 };
 
 #endif /// GAMEOBJECT_H_INCLUDED

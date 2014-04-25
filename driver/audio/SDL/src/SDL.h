@@ -1,4 +1,4 @@
-// $Id: SDL.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: SDL.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -24,54 +24,54 @@
 /// Klasse für den SDL Audiotreiber.
 class AudioSDL : public AudioDriver
 {
-private:
+    private:
 
-	/// Welche Sounds werden in den Channels gerade gespielt?
-	unsigned channels[CHANNEL_COUNT];
-	/// Lautstärke der Effekte.
-	unsigned char master_effects_volume;
-	/// Lautstärke der Musik.
-	unsigned char master_music_volume;
+        /// Welche Sounds werden in den Channels gerade gespielt?
+        unsigned channels[CHANNEL_COUNT];
+        /// Lautstärke der Effekte.
+        unsigned char master_effects_volume;
+        /// Lautstärke der Musik.
+        unsigned char master_music_volume;
 
-public:
-	/// Konstruktor von @p AudioSDL.
-	AudioSDL(AudioDriverLoaderInterface * adli);
+    public:
+        /// Konstruktor von @p AudioSDL.
+        AudioSDL(AudioDriverLoaderInterface* adli);
 
-	/// Destruktor von @p AudioSDL.
-	~AudioSDL(void);
+        /// Destruktor von @p AudioSDL.
+        ~AudioSDL(void);
 
-	/// Funktion zum Auslesen des Treibernamens.
-	const char *GetName(void) const;
+        /// Funktion zum Auslesen des Treibernamens.
+        const char* GetName(void) const;
 
-	/// Treiberinitialisierungsfunktion.
-	bool Initialize(void);
+        /// Treiberinitialisierungsfunktion.
+        bool Initialize(void);
 
-	/// Treiberaufräumfunktion.
-	void CleanUp(void);
+        /// Treiberaufräumfunktion.
+        void CleanUp(void);
 
-	Sound *LoadEffect(unsigned int data_type, unsigned char *data, unsigned long size);
-	Sound *LoadMusic(unsigned int data_type, unsigned char *data, unsigned long size);
+        Sound* LoadEffect(unsigned int data_type, unsigned char* data, unsigned long size);
+        Sound* LoadMusic(unsigned int data_type, unsigned char* data, unsigned long size);
 
-	/// Spielt Sound ab
-	unsigned int PlayEffect(Sound *sound, const unsigned char volume, const bool loop);
-	/// Spielt Midi ab
-	void PlayMusic(Sound * sound, const unsigned repeats);
-	/// Stoppt die Musik.
-	void StopMusic(void);
-	/// Wird der Sound (noch) abgespielt?
-	bool IsEffectPlaying(const unsigned play_id);
-	/// Stoppt einen Sound
-	void StopEffect(const unsigned play_id); 
-	/// Verändert die Lautstärke von einem abgespielten Sound (falls er noch abgespielt wird)
-	void ChangeVolume(const unsigned play_id,const unsigned char volume);
+        /// Spielt Sound ab
+        unsigned int PlayEffect(Sound* sound, const unsigned char volume, const bool loop);
+        /// Spielt Midi ab
+        void PlayMusic(Sound* sound, const unsigned repeats);
+        /// Stoppt die Musik.
+        void StopMusic(void);
+        /// Wird der Sound (noch) abgespielt?
+        bool IsEffectPlaying(const unsigned play_id);
+        /// Stoppt einen Sound
+        void StopEffect(const unsigned play_id);
+        /// Verändert die Lautstärke von einem abgespielten Sound (falls er noch abgespielt wird)
+        void ChangeVolume(const unsigned play_id, const unsigned char volume);
 
-	void SetMasterEffectVolume(unsigned char volume);
-	void SetMasterMusicVolume(unsigned char volume);
+        void SetMasterEffectVolume(unsigned char volume);
+        void SetMasterMusicVolume(unsigned char volume);
 
-private:
+    private:
 
-	/// Callback für Audiotreiber
-	static void MusicFinished();
+        /// Callback für Audiotreiber
+        static void MusicFinished();
 };
 
 #endif // !SDL_H_INCLUDED

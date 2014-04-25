@@ -31,54 +31,54 @@ class SerializedGameData;
 /// Einfache Post-Nachricht, nur mit Text.
 class PostMsg
 {
-public:
-  PostMsg(const std::string& text, PostMessageCategory cat);
-  PostMsg(SerializedGameData * sgd);
-  virtual ~PostMsg();
+    public:
+        PostMsg(const std::string& text, PostMessageCategory cat);
+        PostMsg(SerializedGameData* sgd);
+        virtual ~PostMsg();
 
-  const std::string &GetText() const { return text; }
-  PostMessageType GetType() const { return type; }
-  PostMessageCategory GetCategory() const { return cat; }
-  unsigned GetSendFrame() const { return sendFrame; }
-  virtual void Serialize(SerializedGameData *sgd);
+        const std::string& GetText() const { return text; }
+        PostMessageType GetType() const { return type; }
+        PostMessageCategory GetCategory() const { return cat; }
+        unsigned GetSendFrame() const { return sendFrame; }
+        virtual void Serialize(SerializedGameData* sgd);
 
-protected:
-  std::string text;
-  PostMessageType type;
-  PostMessageCategory cat;
-  unsigned sendFrame;
+    protected:
+        std::string text;
+        PostMessageType type;
+        PostMessageCategory cat;
+        unsigned sendFrame;
 };
 
 /// Post-Nachricht mit Text und einem Goto-Knopf der zu einem bestimmten Kartenpunkt führt
 class PostMsgWithLocation : public PostMsg
 {
-public:
-  PostMsgWithLocation(const std::string& text, PostMessageCategory cat, MapCoord x, MapCoord y);
-  PostMsgWithLocation(SerializedGameData * sgd);
+    public:
+        PostMsgWithLocation(const std::string& text, PostMessageCategory cat, MapCoord x, MapCoord y);
+        PostMsgWithLocation(SerializedGameData* sgd);
 
-  MapCoord GetX() const { return x; }
-  MapCoord GetY() const { return y; }
-  virtual void Serialize(SerializedGameData *sgd);
-  
-private:
-  MapCoord x;
-  MapCoord y;
+        MapCoord GetX() const { return x; }
+        MapCoord GetY() const { return y; }
+        virtual void Serialize(SerializedGameData* sgd);
+
+    private:
+        MapCoord x;
+        MapCoord y;
 };
 
 /// Post-Nachricht mit Bild, Text und Goto-Button
 class ImagePostMsgWithLocation : public PostMsgWithLocation
 {
-public:
-  ImagePostMsgWithLocation(const std::string& text, PostMessageCategory cat, MapCoord x, MapCoord y, BuildingType senderBuilding, Nation senderNation);
-	ImagePostMsgWithLocation(const std::string& text, PostMessageCategory cat, MapCoord x, MapCoord y, Nation senderNation);
-  ImagePostMsgWithLocation(SerializedGameData * sgd);
+    public:
+        ImagePostMsgWithLocation(const std::string& text, PostMessageCategory cat, MapCoord x, MapCoord y, BuildingType senderBuilding, Nation senderNation);
+        ImagePostMsgWithLocation(const std::string& text, PostMessageCategory cat, MapCoord x, MapCoord y, Nation senderNation);
+        ImagePostMsgWithLocation(SerializedGameData* sgd);
 
-  glArchivItem_Bitmap *GetImage_() const; 
-  virtual void Serialize(SerializedGameData *sgd);
+        glArchivItem_Bitmap* GetImage_() const;
+        virtual void Serialize(SerializedGameData* sgd);
 
-private:
-  BuildingType senderBuilding;
-  Nation senderNation;
+    private:
+        BuildingType senderBuilding;
+        Nation senderNation;
 };
 
 class iwPostWindow;
@@ -86,68 +86,68 @@ class iwPostWindow;
 /// Diplomatie-Post-Nachricht, mit Annehmen- und Ablehnen-Knopf
 class DiplomacyPostQuestion : public PostMsg
 {
-	friend class iwPostWindow;
-public:
-		/// Typ der Diplomatienachricht
-	enum Type
-	{
-		ACCEPT, /// Nachricht, die den Spieler fragt, ob ein anderer Spieler den Vertrag akzeptiert
-		CANCEL /// Nachricht, die den Spieler fragt, ob ein bestehender Vertrag aufgelöst werden soll
-	};
+        friend class iwPostWindow;
+    public:
+        /// Typ der Diplomatienachricht
+        enum Type
+        {
+            ACCEPT, /// Nachricht, die den Spieler fragt, ob ein anderer Spieler den Vertrag akzeptiert
+            CANCEL /// Nachricht, die den Spieler fragt, ob ein bestehender Vertrag aufgelöst werden soll
+        };
 
-	/// Vertrag akzeptieren
-	DiplomacyPostQuestion(const unsigned id, const unsigned char player, const PactType pt, const unsigned duration);
-	/// Vertrag auflösen
-	DiplomacyPostQuestion(const unsigned id, const unsigned char player, const PactType pt);
-	DiplomacyPostQuestion(SerializedGameData * sgd);
+        /// Vertrag akzeptieren
+        DiplomacyPostQuestion(const unsigned id, const unsigned char player, const PactType pt, const unsigned duration);
+        /// Vertrag auflösen
+        DiplomacyPostQuestion(const unsigned id, const unsigned char player, const PactType pt);
+        DiplomacyPostQuestion(SerializedGameData* sgd);
 
-	unsigned GetPlayerID() const { return player; }
-	virtual void Serialize(SerializedGameData *sgd);
+        unsigned GetPlayerID() const { return player; }
+        virtual void Serialize(SerializedGameData* sgd);
 
-private:
-	/// Typ der Diplomatienachricht
-	Type dp_type;
+    private:
+        /// Typ der Diplomatienachricht
+        Type dp_type;
 
-	/// ID des Vertrages (= normalerweise die GF-Nummer, zu der es vorgeschlagen wurde)
-	unsigned id;
-	/// Spieler, den das Bündnis betrifft
-	unsigned char player;
-	/// Vertragsart
-	PactType pt;
+        /// ID des Vertrages (= normalerweise die GF-Nummer, zu der es vorgeschlagen wurde)
+        unsigned id;
+        /// Spieler, den das Bündnis betrifft
+        unsigned char player;
+        /// Vertragsart
+        PactType pt;
 };
 
-/// 
+///
 class DiplomacyPostInfo : public PostMsg
 {
-	friend class iwPostWindow;
-public:
-	enum Type
-	{
-		ACCEPT, /// Nachricht, die den Spieler fragt, ob ein anderer Spieler den Vertrag akzeptiert
-		CANCEL /// Nachricht, die den Spieler fragt, ob ein bestehender Vertrag aufgelöst werden soll
-	};
+        friend class iwPostWindow;
+    public:
+        enum Type
+        {
+            ACCEPT, /// Nachricht, die den Spieler fragt, ob ein anderer Spieler den Vertrag akzeptiert
+            CANCEL /// Nachricht, die den Spieler fragt, ob ein bestehender Vertrag aufgelöst werden soll
+        };
 
-	DiplomacyPostInfo(const unsigned char other_player, const Type dp_type, const PactType pt);
-	DiplomacyPostInfo(SerializedGameData * sgd);
+        DiplomacyPostInfo(const unsigned char other_player, const Type dp_type, const PactType pt);
+        DiplomacyPostInfo(SerializedGameData* sgd);
 
-	virtual void Serialize(SerializedGameData *sgd);
+        virtual void Serialize(SerializedGameData* sgd);
 
-	/// Typ der Diplomatienachricht
-	
+        /// Typ der Diplomatienachricht
+
 };
 
 class noShip;
 
 class ShipPostMsg : public ImagePostMsgWithLocation
 {
-public:
-	ShipPostMsg(const std::string& text, PostMessageCategory cat, Nation senderNation, MapCoord x, MapCoord y);
-	glArchivItem_Bitmap *GetImage_() const; 
-	MapCoord GetX() const;
-  MapCoord GetY() const;
+    public:
+        ShipPostMsg(const std::string& text, PostMessageCategory cat, Nation senderNation, MapCoord x, MapCoord y);
+        glArchivItem_Bitmap* GetImage_() const;
+        MapCoord GetX() const;
+        MapCoord GetY() const;
 
-private:
-	noShip *ship;
+    private:
+        noShip* ship;
 
 };
 

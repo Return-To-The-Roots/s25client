@@ -1,4 +1,4 @@
-// $Id: nofPassiveSoldier.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: nofPassiveSoldier.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -28,56 +28,56 @@ class nofAttacker;
 /// übernehmen
 class nofPassiveSoldier : public nofSoldier
 {
-private:
+    private:
 
-	/// "Heilungs-Event"
-	EventManager::EventPointer healing_event;
+        /// "Heilungs-Event"
+        EventManager::EventPointer healing_event;
 
-private:
+    private:
 
-	/// Eventhandling
-	void HandleDerivedEvent(const unsigned int id);
+        /// Eventhandling
+        void HandleDerivedEvent(const unsigned int id);
 
-	// informieren, wenn ...
-	void GoalReached(); // das Ziel erreicht wurde
+        // informieren, wenn ...
+        void GoalReached(); // das Ziel erreicht wurde
 
-	/// wenn man gelaufen ist
-	void Walked();
-	/// Prüft die Gesundheit des Soldaten und meldet, falls erforderlich, ein Heilungs-Event an
-	void Heal();
+        /// wenn man gelaufen ist
+        void Walked();
+        /// Prüft die Gesundheit des Soldaten und meldet, falls erforderlich, ein Heilungs-Event an
+        void Heal();
 
 
-public:
+    public:
 
-	nofPassiveSoldier(const nofSoldier& soldier);
-	nofPassiveSoldier(const unsigned short x, const unsigned short y,const unsigned char player,nobBaseMilitary * const goal,nobBaseMilitary * const home,const unsigned char rank);
-	nofPassiveSoldier(SerializedGameData * sgd, const unsigned obj_id);
+        nofPassiveSoldier(const nofSoldier& soldier);
+        nofPassiveSoldier(const unsigned short x, const unsigned short y, const unsigned char player, nobBaseMilitary* const goal, nobBaseMilitary* const home, const unsigned char rank);
+        nofPassiveSoldier(SerializedGameData* sgd, const unsigned obj_id);
 
-	~nofPassiveSoldier();
+        ~nofPassiveSoldier();
 
-	/// Aufräummethoden
-	protected:	void Destroy_nofPassiveSoldier();
-	public:		void Destroy() { Destroy_nofPassiveSoldier(); }
+        /// Aufräummethoden
+    protected:  void Destroy_nofPassiveSoldier();
+    public:     void Destroy() { Destroy_nofPassiveSoldier(); }
 
-	/// Serialisierungsfunktionen
-	protected:	void Serialize_nofPassiveSoldier(SerializedGameData * sgd) const;
-	public:		void Serialize(SerializedGameData *sgd) const { Serialize_nofPassiveSoldier(sgd); }
+        /// Serialisierungsfunktionen
+    protected:  void Serialize_nofPassiveSoldier(SerializedGameData* sgd) const;
+    public:     void Serialize(SerializedGameData* sgd) const { Serialize_nofPassiveSoldier(sgd); }
 
-	GO_Type GetGOT() const { return GOT_NOF_PASSIVESOLDIER; }
+        GO_Type GetGOT() const { return GOT_NOF_PASSIVESOLDIER; }
 
-	// Zeichnet den Soldaten
-	void Draw(int x, int y);
+        // Zeichnet den Soldaten
+        void Draw(int x, int y);
 
-	/// wenn Militärgebäude abgerissen wurde und sich der Soldat im Gebäude befand
-	void InBuildingDestroyed();
-	/// Sagt einem in einem Militärgebäude sitzenden Soldaten, dass er raus nach Hause gehen soll
-	void LeaveBuilding();
+        /// wenn Militärgebäude abgerissen wurde und sich der Soldat im Gebäude befand
+        void InBuildingDestroyed();
+        /// Sagt einem in einem Militärgebäude sitzenden Soldaten, dass er raus nach Hause gehen soll
+        void LeaveBuilding();
 
-	/// Befördert einen Soldaten
-	void Upgrade();
+        /// Befördert einen Soldaten
+        void Upgrade();
 
-	/// Soldat befindet sich auf dem Hinweg zum Militärgebäude und wird nich länger gebraucht
-	void NotNeeded();
+        /// Soldat befindet sich auf dem Hinweg zum Militärgebäude und wird nich länger gebraucht
+        void NotNeeded();
 };
 
 #endif // !NOF_PASSIVESOLDIER_H_

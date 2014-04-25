@@ -1,4 +1,4 @@
-// $Id: Messenger.cpp 7876 2012-03-18 22:10:38Z jh $
+// $Id: Messenger.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -28,107 +28,107 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
 /// Chat-Destination-String, der entsprechend angezeigt wird
-const std::string CD_STRINGS[4] = 
+const std::string CD_STRINGS[4] =
 {
-	"", "(All) ", "(Team) ", "(Enemies) "
+    "", "(All) ", "(Team) ", "(Enemies) "
 };
 
 /// Farbe für die einzelnen CDs
 const unsigned CD_COLORS[4] =
 {
-	0, COLOR_WHITE, COLOR_GREEN, COLOR_RED
+    0, COLOR_WHITE, COLOR_GREEN, COLOR_RED
 };
 
 Messenger::~Messenger()
 {
 }
 
-/// Zeit, die 
+/// Zeit, die
 void Messenger::Draw()
 {
-	unsigned y = 100;
-	for(std::list<Messenger::Msg>::iterator it = messages.begin(); it != messages.end(); ++it, y+=LargeFont->getHeight())
-	{
-		unsigned diff = VideoDriverWrapper::inst().GetTickCount() - it->starttime;
-		if(diff > 20000)
-		{
-			messages.erase(it++);
-			if(it!=messages.end())
-				continue;
-			else
-				break;
-		
-		}
+    unsigned y = 100;
+    for(std::list<Messenger::Msg>::iterator it = messages.begin(); it != messages.end(); ++it, y += LargeFont->getHeight())
+    {
+        unsigned diff = VideoDriverWrapper::inst().GetTickCount() - it->starttime;
+        if(diff > 20000)
+        {
+            messages.erase(it++);
+            if(it != messages.end())
+                continue;
+            else
+                break;
 
-		// Transparenz der Schrift ausrechnen, da sie am Ende ausgeblendet wird
-		unsigned transparency = 0xFF;
-		if(diff > 18000)
-			transparency = (transparency - transparency*(diff-18000)/2000);
+        }
+
+        // Transparenz der Schrift ausrechnen, da sie am Ende ausgeblendet wird
+        unsigned transparency = 0xFF;
+        if(diff > 18000)
+            transparency = (transparency - transparency * (diff - 18000) / 2000);
 
 
-		// Auf Alphaposition verschieben (höchstes Byte)
-		transparency=transparency<<24;
+        // Auf Alphaposition verschieben (höchstes Byte)
+        transparency = transparency << 24;
 
-		std::string cd_str = (it->cd==CD_SYSTEM)?"":_(CD_STRINGS[it->cd]);
+        std::string cd_str = (it->cd == CD_SYSTEM) ? "" : _(CD_STRINGS[it->cd]);
 
-		
-		LargeFont->Draw(20,y,it->author,0,(it->color_author&0x00FFFFFF)|transparency);
-		LargeFont->Draw(20+LargeFont->getWidth(it->author,static_cast<unsigned>(it->author.length())),y,cd_str,0,(CD_COLORS[it->cd]&0x00FFFFFF)|transparency);
-		LargeFont->Draw(20+LargeFont->getWidth(it->author,static_cast<unsigned>(it->author.length()))+
-			+LargeFont->getWidth(cd_str,static_cast<unsigned>(cd_str.length())),y,
-			it->msg,0,(it->color_msg&0x00FFFFFF)|transparency);
-	}
+
+        LargeFont->Draw(20, y, it->author, 0, (it->color_author & 0x00FFFFFF) | transparency);
+        LargeFont->Draw(20 + LargeFont->getWidth(it->author, static_cast<unsigned>(it->author.length())), y, cd_str, 0, (CD_COLORS[it->cd] & 0x00FFFFFF) | transparency);
+        LargeFont->Draw(20 + LargeFont->getWidth(it->author, static_cast<unsigned>(it->author.length())) +
+                        +LargeFont->getWidth(cd_str, static_cast<unsigned>(cd_str.length())), y,
+                        it->msg, 0, (it->color_msg & 0x00FFFFFF) | transparency);
+    }
 }
 
-void Messenger::AddMessage(const std::string& author, const unsigned color_author, const ChatDestination cd, const std::string& msg,const unsigned color_msg)
+void Messenger::AddMessage(const std::string& author, const unsigned color_author, const ChatDestination cd, const std::string& msg, const unsigned color_msg)
 {
-	LOG.lcprintf(color_author, "%s", author.c_str());
-	LOG.lcprintf(CD_COLORS[cd], "%s", CD_STRINGS[cd].c_str());
-	LOG.lprintf("%s\n", msg.c_str());
+    LOG.lcprintf(color_author, "%s", author.c_str());
+    LOG.lcprintf(CD_COLORS[cd], "%s", CD_STRINGS[cd].c_str());
+    LOG.lprintf("%s\n", msg.c_str());
 
-	glArchivItem_Font::WrapInfo wi;
+    glArchivItem_Font::WrapInfo wi;
 
-	// in Zeilen aufteilen, damit alles auf den Bildschirm passt
-	LargeFont->GetWrapInfo(msg.c_str(),VideoDriverWrapper::inst().GetScreenWidth()-60
-		-LargeFont->getWidth(author.c_str())-((cd==CD_SYSTEM)?0:LargeFont->getWidth(_(CD_STRINGS[cd]))),
-		VideoDriverWrapper::inst().GetScreenWidth()-60,wi);
+    // in Zeilen aufteilen, damit alles auf den Bildschirm passt
+    LargeFont->GetWrapInfo(msg.c_str(), VideoDriverWrapper::inst().GetScreenWidth() - 60
+                           - LargeFont->getWidth(author.c_str()) - ((cd == CD_SYSTEM) ? 0 : LargeFont->getWidth(_(CD_STRINGS[cd]))),
+                           VideoDriverWrapper::inst().GetScreenWidth() - 60, wi);
 
-	// Message-Strings erzeugen aus den WrapInfo
-	std::string * strings = new std::string[wi.positions.size()];
+    // Message-Strings erzeugen aus den WrapInfo
+    std::string* strings = new std::string[wi.positions.size()];
 
-	wi.CreateSingleStrings(msg.c_str(), strings);
-	
-	for(unsigned i = 0; i < wi.positions.size(); ++i)
-	{
-		Messenger::Msg tmp;
+    wi.CreateSingleStrings(msg.c_str(), strings);
 
-		// Nur in erster Zeile den Autor und die ChatDest.!
-		if(i == 0)
-		{
-			tmp.author = author;
-			tmp.cd = cd;
-		}
-		else
-			tmp.cd = CD_SYSTEM;
+    for(unsigned i = 0; i < wi.positions.size(); ++i)
+    {
+        Messenger::Msg tmp;
 
-		tmp.msg = strings[i];
+        // Nur in erster Zeile den Autor und die ChatDest.!
+        if(i == 0)
+        {
+            tmp.author = author;
+            tmp.cd = cd;
+        }
+        else
+            tmp.cd = CD_SYSTEM;
 
-		tmp.width = LargeFont->getWidth(msg.c_str());
-		if(i == 0)
-			tmp.width+=LargeFont->getWidth(author.c_str());
+        tmp.msg = strings[i];
 
-		tmp.color_author = color_author;
-		tmp.color_msg = color_msg;
-		tmp.starttime = VideoDriverWrapper::inst().GetTickCount();
+        tmp.width = LargeFont->getWidth(msg.c_str());
+        if(i == 0)
+            tmp.width += LargeFont->getWidth(author.c_str());
 
-		messages.push_back(tmp);
-	}
+        tmp.color_author = color_author;
+        tmp.color_msg = color_msg;
+        tmp.starttime = VideoDriverWrapper::inst().GetTickCount();
 
-	delete [] strings;
+        messages.push_back(tmp);
+    }
+
+    delete [] strings;
 }

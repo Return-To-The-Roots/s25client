@@ -1,4 +1,4 @@
-// $Id: GameObject.cpp 8859 2013-08-23 19:55:36Z marcus $
+// $Id: GameObject.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -31,9 +31,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -45,9 +45,9 @@
 unsigned int GameObject::obj_id_counter = 1;
 unsigned int GameObject::obj_counter = 0;
 
-GameWorldGame *GameObject::gwg = NULL;
-EventManager *GameObject::em = NULL;
-GameClientPlayerList *GameObject::players = NULL;
+GameWorldGame* GameObject::gwg = NULL;
+EventManager* GameObject::em = NULL;
+GameClientPlayerList* GameObject::players = NULL;
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
@@ -59,28 +59,28 @@ GameClientPlayerList *GameObject::players = NULL;
  */
 GameObject::GameObject(void) : obj_id(obj_id_counter++)
 {
-	// ein Objekt mehr
-	++obj_counter;
+    // ein Objekt mehr
+    ++obj_counter;
 }
 
-GameObject::GameObject(SerializedGameData * sgd, const unsigned obj_id) : obj_id(obj_id)
+GameObject::GameObject(SerializedGameData* sgd, const unsigned obj_id) : obj_id(obj_id)
 {
-	// ein Objekt mehr
-	++obj_counter;
-	sgd->AddObject(this);
+    // ein Objekt mehr
+    ++obj_counter;
+    sgd->AddObject(this);
 }
 
 GameObject::GameObject(const GameObject& go) : obj_id(go.obj_id)
 {
-	// ein Objekt mehr
-	++obj_counter;
+    // ein Objekt mehr
+    ++obj_counter;
 }
 
 void GameObject::Destroy()
 {
 }
 
-void GameObject::Serialize(SerializedGameData *sgd) const
+void GameObject::Serialize(SerializedGameData* sgd) const
 {
     std::cout << "ERROR: GameObject::Serialize called." << std::endl; // qx
 }
@@ -93,14 +93,14 @@ void GameObject::Serialize(SerializedGameData *sgd) const
  */
 GameObject::~GameObject()
 {
-	// ein Objekt weniger
-	--obj_counter;
+    // ein Objekt weniger
+    --obj_counter;
 
-	/*
-	if (em)
-	{
-		// only for debugging purposes
-		em->RemoveAllEventsOfObject(this);
-	}
-	*/
+    /*
+    if (em)
+    {
+        // only for debugging purposes
+        em->RemoveAllEventsOfObject(this);
+    }
+    */
 }

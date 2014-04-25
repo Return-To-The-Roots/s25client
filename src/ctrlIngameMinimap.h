@@ -1,4 +1,4 @@
-// $Id: ctrlIngameMinimap.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: ctrlIngameMinimap.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -27,37 +27,37 @@ class IngameMinimap;
 /// Minimap-Control für Ingame
 class ctrlIngameMinimap : public ctrlMinimap
 {
-	/// Zeiger auf Minimap (die im Spiel dauerhaft!! gespeichert werden muss)
-	IngameMinimap * minimap;
-	/// Referenz auf GameWorldViewer, für das Gescrolle
-	GameWorldViewer& gwv;
+        /// Zeiger auf Minimap (die im Spiel dauerhaft!! gespeichert werden muss)
+        IngameMinimap* minimap;
+        /// Referenz auf GameWorldViewer, für das Gescrolle
+        GameWorldViewer& gwv;
 
-public:
+    public:
 
-	ctrlIngameMinimap( Window *parent, 
-				 const unsigned int id, 
-				 const unsigned short x, 
-				 const unsigned short y, 
-				 const unsigned short width, 
-				 const unsigned short height,
-				 const unsigned short padding_x,
-				 const unsigned short padding_y,
-				 IngameMinimap * minimap,
-				 GameWorldViewer& gwv);
+        ctrlIngameMinimap( Window* parent,
+                           const unsigned int id,
+                           const unsigned short x,
+                           const unsigned short y,
+                           const unsigned short width,
+                           const unsigned short height,
+                           const unsigned short padding_x,
+                           const unsigned short padding_y,
+                           IngameMinimap* minimap,
+                           GameWorldViewer& gwv);
 
-	/// Zeichnet die MapPreview
-	bool Draw_();
+        /// Zeichnet die MapPreview
+        bool Draw_();
 
-	bool Msg_LeftDown(const MouseCoords& mc);
-	bool Msg_MouseMove(const MouseCoords& mc);
+        bool Msg_LeftDown(const MouseCoords& mc);
+        bool Msg_MouseMove(const MouseCoords& mc);
 
-	/// Setzt Breite und Höhe des Controls
-	void SetDisplaySize(const unsigned short width, const unsigned short height);
+        /// Setzt Breite und Höhe des Controls
+        void SetDisplaySize(const unsigned short width, const unsigned short height);
 
-	/// Die einzelnen Dinge umschalten
-	void ToggleTerritory();
-	void ToggleHouses();
-	void ToggleRoads();
+        /// Die einzelnen Dinge umschalten
+        void ToggleTerritory();
+        void ToggleHouses();
+        void ToggleRoads();
 };
 
 

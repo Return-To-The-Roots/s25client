@@ -24,35 +24,35 @@
 ///////////////////////////////////////////////////////////////////////////////
 /**
  *  limit max rank of soldiers
- *	
- *	rank 4 General Default
- *	
- *	rank 3 Officer
  *
- *	rank 2 Sergeant
+ *  rank 4 General Default
  *
- *	rank 1 Privatefirstclass
+ *  rank 3 Officer
  *
- *	rank 0 Private
+ *  rank 2 Sergeant
+ *
+ *  rank 1 Privatefirstclass
+ *
+ *  rank 0 Private
  *
  *  @author poc
  */
 class AddonMaxRank : public AddonList
 {
-public:
-	AddonMaxRank() : AddonList(ADDON_MAX_RANK, 
-									   ADDONGROUP_MILITARY,
-									   gettext_noop("Set max rank"), 
-									   gettext_noop("Allows you to select the highest rank for soldiers\n\n"),
-									   0
-									  )
-	{
-		addOption(gettext_noop("General (4)"));
-		addOption(gettext_noop("Officer (3)"));
-		addOption(gettext_noop("Sergeant (2)"));	
-		addOption(gettext_noop("Privatefc (1)"));
-		addOption(gettext_noop("Private (0)"));
-	}
+    public:
+        AddonMaxRank() : AddonList(ADDON_MAX_RANK,
+                                       ADDONGROUP_MILITARY,
+                                       gettext_noop("Set max rank"),
+                                       gettext_noop("Allows you to select the highest rank for soldiers\n\n"),
+                                       0
+                                      )
+        {
+            addOption(gettext_noop("General (4)"));
+            addOption(gettext_noop("Officer (3)"));
+            addOption(gettext_noop("Sergeant (2)"));
+            addOption(gettext_noop("Privatefc (1)"));
+            addOption(gettext_noop("Private (0)"));
+        }
 };
 
 #endif

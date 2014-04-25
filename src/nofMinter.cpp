@@ -1,4 +1,4 @@
-// $Id: nofMinter.cpp 9208 2014-02-27 17:18:32Z marcus $
+// $Id: nofMinter.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -31,49 +31,49 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
-nofMinter::nofMinter(const unsigned short x, const unsigned short y,const unsigned char player,nobUsual * workplace)
-: nofWorkman(JOB_MINTER,x,y,player,workplace)
+nofMinter::nofMinter(const unsigned short x, const unsigned short y, const unsigned char player, nobUsual* workplace)
+    : nofWorkman(JOB_MINTER, x, y, player, workplace)
 {
 }
 
-void nofMinter::Serialize_nofMinter(SerializedGameData * sgd) const
+void nofMinter::Serialize_nofMinter(SerializedGameData* sgd) const
 {
-	Serialize_nofWorkman(sgd);
+    Serialize_nofWorkman(sgd);
 }
 
-nofMinter::nofMinter(SerializedGameData * sgd, const unsigned obj_id) : nofWorkman(sgd,obj_id)
+nofMinter::nofMinter(SerializedGameData* sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id)
 {
 }
 
 void nofMinter::DrawWorking(int x, int y)
 {
-	signed char offsets[NATION_COUNT][2] = { {19,-20},{19,-11},{22,-12},{28,1},{13,-9} };
+    signed char offsets[NATION_COUNT][2] = { {19, -20}, {19, -11}, {22, -12}, {28, 1}, {13, -9} };
 
-	unsigned now_id = GAMECLIENT.Interpolate(136,current_ev);
+    unsigned now_id = GAMECLIENT.Interpolate(136, current_ev);
 
-	if(now_id < 91)
-	{
-		LOADER.GetImageN("rom_bobs", 84+(now_id)%8)
-			->Draw(x+offsets[workplace->GetNation()][0],y+offsets[workplace->GetNation()][1],0,0,0,0,0,0, COLOR_WHITE, COLORS[gwg->GetPlayer(workplace->GetPlayer())->color]);
+    if(now_id < 91)
+    {
+        LOADER.GetImageN("rom_bobs", 84 + (now_id) % 8)
+        ->Draw(x + offsets[workplace->GetNation()][0], y + offsets[workplace->GetNation()][1], 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(workplace->GetPlayer())->color]);
 
-		// Evtl Sound abspielen
-		if(now_id%8 == 3)
-		{
-			SoundManager::inst().PlayNOSound(58,this,now_id);
-			was_sounding = true;
-		}
-	}
+        // Evtl Sound abspielen
+        if(now_id % 8 == 3)
+        {
+            SoundManager::inst().PlayNOSound(58, this, now_id);
+            was_sounding = true;
+        }
+    }
 
-	last_id = now_id;
+    last_id = now_id;
 }
 
 GoodType nofMinter::ProduceWare()
 {
-	gwg->GetPlayer(player)->ChangeStatisticValue(STAT_GOLD, 1);
-	return GD_COINS;
+    gwg->GetPlayer(player)->ChangeStatisticValue(STAT_GOLD, 1);
+    return GD_COINS;
 }

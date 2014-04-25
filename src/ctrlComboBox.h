@@ -1,4 +1,4 @@
-// $Id: ctrlComboBox.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: ctrlComboBox.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -25,41 +25,41 @@
 #include "ctrlList.h"
 
 class ctrlComboBox : public Window
-{	
-public:
-	ctrlComboBox(Window *parent, unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, glArchivItem_Font *font, unsigned short max_list_height, bool readonly);
-	
-	void Resize_(unsigned short width, unsigned short height);
+{
+    public:
+        ctrlComboBox(Window* parent, unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, glArchivItem_Font* font, unsigned short max_list_height, bool readonly);
 
-	void AddString(const std::string& text);
-	void DeleteAllItems();
+        void Resize_(unsigned short width, unsigned short height);
 
-	void SetSelection(unsigned short selection);
-	unsigned short GetSelection() const { return selection; };
-	unsigned short GetCount() const { return GetCtrl<ctrlList>(0)->GetLineCount(); }
-	const std::string& GetText(unsigned short item) const { return GetCtrl<ctrlList>(0)->GetItemText(item); }
+        void AddString(const std::string& text);
+        void DeleteAllItems();
 
-	virtual void Msg_PaintAfter();
-	virtual bool Msg_MouseMove(const MouseCoords& mc);
-	virtual bool Msg_LeftDown(const MouseCoords& mc);
-	virtual bool Msg_LeftUp(const MouseCoords& mc);
-	virtual bool Msg_RightDown(const MouseCoords& mc);
-	virtual bool Msg_WheelUp(const MouseCoords& mc);
-	virtual bool Msg_WheelDown(const MouseCoords& mc);
-	virtual void Msg_ListSelectItem(const unsigned int ctrl_id, const unsigned short selection);
+        void SetSelection(unsigned short selection);
+        unsigned short GetSelection() const { return selection; };
+        unsigned short GetCount() const { return GetCtrl<ctrlList>(0)->GetLineCount(); }
+        const std::string& GetText(unsigned short item) const { return GetCtrl<ctrlList>(0)->GetItemText(item); }
 
-protected:
-	virtual bool Draw_(void);
+        virtual void Msg_PaintAfter();
+        virtual bool Msg_MouseMove(const MouseCoords& mc);
+        virtual bool Msg_LeftDown(const MouseCoords& mc);
+        virtual bool Msg_LeftUp(const MouseCoords& mc);
+        virtual bool Msg_RightDown(const MouseCoords& mc);
+        virtual bool Msg_WheelUp(const MouseCoords& mc);
+        virtual bool Msg_WheelDown(const MouseCoords& mc);
+        virtual void Msg_ListSelectItem(const unsigned int ctrl_id, const unsigned short selection);
 
-	void ShowList(bool show);
+    protected:
+        virtual bool Draw_(void);
 
-private:
-	TextureColor tc;
-	glArchivItem_Font *font;
-	unsigned short max_list_height;
-	bool readonly;
-	unsigned short selection;
-	bool last_show;
+        void ShowList(bool show);
+
+    private:
+        TextureColor tc;
+        glArchivItem_Font* font;
+        unsigned short max_list_height;
+        bool readonly;
+        unsigned short selection;
+        bool last_show;
 };
 
 #endif // CTRLCOMBOBOX_H_INCLUDED

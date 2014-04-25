@@ -1,4 +1,4 @@
-// $Id: iwMilitaryBuilding.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: iwMilitaryBuilding.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -28,19 +28,19 @@ class GameWorldViewer;
 
 class iwMilitaryBuilding : public IngameWindow
 {
-private:
-	nobMilitary *const building;
-	GameWorldViewer * const gwv;
+    private:
+        nobMilitary* const building;
+        GameWorldViewer* const gwv;
 
-public:
-	iwMilitaryBuilding(GameWorldViewer * const gwv,nobMilitary *const building);
+    public:
+        iwMilitaryBuilding(GameWorldViewer* const gwv, nobMilitary* const building);
 
-	/// Zeigt Messagebox an, dass das Militärgebäude nicht abgerissen werden kann (Abriss-Verbot)
-	static void DemolitionNotAllowed();
+        /// Zeigt Messagebox an, dass das Militärgebäude nicht abgerissen werden kann (Abriss-Verbot)
+        static void DemolitionNotAllowed();
 
-private:
-	void Msg_PaintAfter();
-	void Msg_ButtonClick(const unsigned int ctrl_id);
+    private:
+        void Msg_PaintAfter();
+        void Msg_ButtonClick(const unsigned int ctrl_id);
 };
 
 #endif // !iwMILITARYBUILDING_H_INCLUDED

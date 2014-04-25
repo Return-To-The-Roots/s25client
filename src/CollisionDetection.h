@@ -1,4 +1,4 @@
-// $Id: CollisionDetection.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: CollisionDetection.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -24,14 +24,14 @@
 struct Rect;
 
 // Punkt in einem Rechteck
-bool Coll(const int x, const int y, const Rect &rect);
+bool Coll(const int x, const int y, const Rect& rect);
 // Punkt in einem Rechteck
-bool Coll(const int x, const int y, const int rx,const int ry, const int rwidth,const int rheight);
+bool Coll(const int x, const int y, const int rx, const int ry, const int rwidth, const int rheight);
 // 1D (2 Linien)
 bool Coll(const int left1, const int right1, const int left2, const int right2);
 // 2D (2 Rechtecke)
-bool CollEdges(const Rect &rect1, const Rect &rect2);
+bool CollEdges(const Rect& rect1, const Rect& rect2);
 // 2D (2 Rechtecke)
-bool Coll(const Rect &rect1, const Rect &rec2);
+bool Coll(const Rect& rect1, const Rect& rec2);
 
 #endif // COLLISIONDETECTION_H_INCLUDED

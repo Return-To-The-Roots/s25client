@@ -1,4 +1,4 @@
-// $Id: ctrlPreviewMinimap.h 8252 2012-09-15 06:12:54Z marcus $
+// $Id: ctrlPreviewMinimap.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -27,47 +27,47 @@
 /// Übersichtskarte (MapPreview)
 class ctrlPreviewMinimap : public ctrlMinimap
 {
-	/// Minimap
-	PreviewMinimap minimap;
-	/// Startpositionen der Spieler
-	struct Player
-	{
-		Player();
-		/// Map-Koordinaten der Startposition
-		unsigned short x,y;
-		/// Farbe
-		unsigned color;
-	} players[MAX_PLAYERS];
+        /// Minimap
+        PreviewMinimap minimap;
+        /// Startpositionen der Spieler
+        struct Player
+        {
+            Player();
+            /// Map-Koordinaten der Startposition
+            unsigned short x, y;
+            /// Farbe
+            unsigned color;
+        } players[MAX_PLAYERS];
 
-public:
+    public:
 
-	ctrlPreviewMinimap( Window *parent, 
-				 const unsigned int id, 
-				 const unsigned short x, 
-				 const unsigned short y, 
-				 const unsigned short width, 
-				 const unsigned short height,
-				 glArchivItem_Map *s2map);
+        ctrlPreviewMinimap( Window* parent,
+                            const unsigned int id,
+                            const unsigned short x,
+                            const unsigned short y,
+                            const unsigned short width,
+                            const unsigned short height,
+                            glArchivItem_Map* s2map);
 
-	/// Zeichnet die MapPreview
-	bool Draw_();
+        /// Zeichnet die MapPreview
+        bool Draw_();
 
-	/// Setzt die (Start-)Farbe eines Spielers bzw. löscht diesen (color = 0)
-	void SetPlayerColor(const unsigned id, const unsigned color)
-	{
-		players[id].color = color;
+        /// Setzt die (Start-)Farbe eines Spielers bzw. löscht diesen (color = 0)
+        void SetPlayerColor(const unsigned id, const unsigned color)
+        {
+            players[id].color = color;
 
-///		if (players[id].color == COLOR_GHOST)			Demo's Ghost Farbe
-///			players[id].color = MakeColor(255,150,150,150);	
+///     if (players[id].color == COLOR_GHOST)           Demo's Ghost Farbe
+///         players[id].color = MakeColor(255,150,150,150);
 
-	}
+        }
 
-	void SetMap(glArchivItem_Map *s2map)
-	{
-		if(s2map)
-			SetDisplaySize(width, height, s2map->getHeader().getWidth(), s2map->getHeader().getHeight());
-		minimap.SetMap(s2map);
-	}
+        void SetMap(glArchivItem_Map* s2map)
+        {
+            if(s2map)
+                SetDisplaySize(width, height, s2map->getHeader().getWidth(), s2map->getHeader().getHeight());
+            minimap.SetMap(s2map);
+        }
 };
 
 

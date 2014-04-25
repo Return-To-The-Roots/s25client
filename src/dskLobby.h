@@ -1,4 +1,4 @@
-// $Id: dskLobby.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: dskLobby.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -31,38 +31,38 @@ class iwDirectIPCreate;
 class LobbyServerList;
 class LobbyPlayerList;
 
-class dskLobby : 
-	public Desktop, 
-	public ClientInterface,
-	public LobbyInterface
+class dskLobby :
+    public Desktop,
+    public ClientInterface,
+    public LobbyInterface
 {
-private:
-	const LobbyServerList *serverlist;
-	const LobbyPlayerList *playerlist;
-	iwLobbyServerInfo *serverinfo;
-	iwDirectIPCreate *servercreate;
+    private:
+        const LobbyServerList* serverlist;
+        const LobbyPlayerList* playerlist;
+        iwLobbyServerInfo* serverinfo;
+        iwDirectIPCreate* servercreate;
 
-public:
-	dskLobby();
+    public:
+        dskLobby();
 
-	void UpdatePlayerList(bool first = false);
-	void UpdateServerList(bool first = false);
+        void UpdatePlayerList(bool first = false);
+        void UpdateServerList(bool first = false);
 
-	void LC_Connected(void);
+        void LC_Connected(void);
 
-	void LC_Status_ConnectionLost(void);
-	void LC_Status_IncompleteMessage(void);
-	void LC_Status_Error(const std::string &error);
+        void LC_Status_ConnectionLost(void);
+        void LC_Status_IncompleteMessage(void);
+        void LC_Status_Error(const std::string& error);
 
-	void LC_Chat(const std::string &player, const std::string &text);
+        void LC_Chat(const std::string& player, const std::string& text);
 
-protected:
-	void Msg_Timer(const unsigned int ctrl_id);
-	void Msg_PaintBefore();
-	void Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr);
-	void Msg_ButtonClick(const unsigned int ctrl_id);
-	void Msg_EditEnter(const unsigned int ctrl_id);
-	void Msg_TableRightButton(const unsigned int ctrl_id, const unsigned short selection);
+    protected:
+        void Msg_Timer(const unsigned int ctrl_id);
+        void Msg_PaintBefore();
+        void Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr);
+        void Msg_ButtonClick(const unsigned int ctrl_id);
+        void Msg_EditEnter(const unsigned int ctrl_id);
+        void Msg_TableRightButton(const unsigned int ctrl_id, const unsigned short selection);
 };
 
 #endif // dskLOBBY_H_INCLUDED

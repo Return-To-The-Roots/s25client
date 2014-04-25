@@ -1,4 +1,4 @@
-// $Id: Desktop.cpp 8171 2012-09-07 17:26:40Z marcus $
+// $Id: Desktop.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -28,24 +28,24 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
-/** 
+/**
  *  Konstruktor für einen Spieldesktop
  *
  *  @param[in] background Hintergrund des Desktops
  *
  *  @author OLiver
  */
-Desktop::Desktop(glArchivItem_Bitmap *background)
-	: Window(), background(background)
+Desktop::Desktop(glArchivItem_Bitmap* background)
+    : Window(), background(background)
 {
-	SetScale(true);
-	Resize(VideoDriverWrapper::inst().GetScreenWidth(), VideoDriverWrapper::inst().GetScreenWidth());
+    SetScale(true);
+    Resize(VideoDriverWrapper::inst().GetScreenWidth(), VideoDriverWrapper::inst().GetScreenWidth());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -59,23 +59,23 @@ Desktop::Desktop(glArchivItem_Bitmap *background)
  */
 bool Desktop::Draw_(void)
 {
-	if(background)
-	{
-/*
-		short w,h;
-		double sW,sH, s;
-		sW = (double)VideoDriverWrapper::inst().GetScreenWidth() / background->getWidth();
-		sH = (double)VideoDriverWrapper::inst().GetScreenHeight() / background->getHeight();
-		s = (sW < sH ? sW : sH);
-		w = (short)((double) background->getWidth() * s);
-		h = (short)((double) background->getHeight() * s);
-		background->Draw(0, 0, w, h, 0, 0, 0, 0);*/
-		background->Draw(0, 0, VideoDriverWrapper::inst().GetScreenWidth(), VideoDriverWrapper::inst().GetScreenHeight(), 0, 0, 0, 0);
-	}
+    if(background)
+    {
+        /*
+                short w,h;
+                double sW,sH, s;
+                sW = (double)VideoDriverWrapper::inst().GetScreenWidth() / background->getWidth();
+                sH = (double)VideoDriverWrapper::inst().GetScreenHeight() / background->getHeight();
+                s = (sW < sH ? sW : sH);
+                w = (short)((double) background->getWidth() * s);
+                h = (short)((double) background->getHeight() * s);
+                background->Draw(0, 0, w, h, 0, 0, 0, 0);*/
+        background->Draw(0, 0, VideoDriverWrapper::inst().GetScreenWidth(), VideoDriverWrapper::inst().GetScreenHeight(), 0, 0, 0, 0);
+    }
 
-	DrawControls();
+    DrawControls();
 
-	return true;
+    return true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -86,7 +86,7 @@ bool Desktop::Draw_(void)
  */
 void Desktop::Show(void)
 {
-	WindowManager::inst().Switch(this);
+    WindowManager::inst().Switch(this);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -98,32 +98,32 @@ void Desktop::Show(void)
 void Desktop::Msg_ScreenResize(const ScreenResizeEvent& sr)
 {
 // Keep the following block the same as in ctrlGroup class:
-	// Für skalierte Desktops ist alles einfach, die brauchen im besten Fall gar nichts selbst implementieren
-	if (scale)
-	{
-		//Zunächst an die Kinder weiterleiten
-		for(std::map<unsigned int,Window*>::iterator it = idmap.begin(); it != idmap.end(); ++it)
-		if(it->second)
-		{
-			Window* ctrl = it->second;
-			// unskalierte Position und Größe bekommen
-			unsigned realx = ctrl->GetX() * 800 / sr.oldWidth;
-			unsigned realy = ctrl->GetY() * 600 / sr.oldHeight;
-			unsigned realwidth  = ctrl->GetWidth()  * 800 / sr.oldWidth;
-			unsigned realheight = ctrl->GetHeight() * 600 / sr.oldHeight;
-			// Rundungsfehler?
-			if (realx * sr.oldWidth  / 800 < ctrl->GetX()) ++realx;
-			if (realy * sr.oldHeight / 600 < ctrl->GetY()) ++realy;
-			if (realwidth  * sr.oldWidth  / 800 < ctrl->GetWidth())  ++realwidth;
-			if (realheight * sr.oldHeight / 600 < ctrl->GetHeight()) ++realheight;
-			// Und los
-			ctrl->Move(realx * sr.newWidth  / 800, realy * sr.newHeight / 600);
-			ctrl->Msg_ScreenResize(sr);
-			ctrl->Resize(realwidth * sr.newWidth / 800, realheight * sr.newHeight / 600);
-		}
-	}
+    // Für skalierte Desktops ist alles einfach, die brauchen im besten Fall gar nichts selbst implementieren
+    if (scale)
+    {
+        //Zunächst an die Kinder weiterleiten
+        for(std::map<unsigned int, Window*>::iterator it = idmap.begin(); it != idmap.end(); ++it)
+            if(it->second)
+            {
+                Window* ctrl = it->second;
+                // unskalierte Position und Größe bekommen
+                unsigned realx = ctrl->GetX() * 800 / sr.oldWidth;
+                unsigned realy = ctrl->GetY() * 600 / sr.oldHeight;
+                unsigned realwidth  = ctrl->GetWidth()  * 800 / sr.oldWidth;
+                unsigned realheight = ctrl->GetHeight() * 600 / sr.oldHeight;
+                // Rundungsfehler?
+                if (realx * sr.oldWidth  / 800 < ctrl->GetX()) ++realx;
+                if (realy * sr.oldHeight / 600 < ctrl->GetY()) ++realy;
+                if (realwidth  * sr.oldWidth  / 800 < ctrl->GetWidth())  ++realwidth;
+                if (realheight * sr.oldHeight / 600 < ctrl->GetHeight()) ++realheight;
+                // Und los
+                ctrl->Move(realx * sr.newWidth  / 800, realy * sr.newHeight / 600);
+                ctrl->Msg_ScreenResize(sr);
+                ctrl->Resize(realwidth * sr.newWidth / 800, realheight * sr.newHeight / 600);
+            }
+    }
 
-	// Individuelle Reaktion ist auch erlaubt
-	Resize(sr.newWidth, sr.newHeight);
+    // Individuelle Reaktion ist auch erlaubt
+    Resize(sr.newWidth, sr.newHeight);
 }
 

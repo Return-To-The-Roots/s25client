@@ -1,4 +1,4 @@
-// $Id: AddonCatapultGraphics.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: AddonCatapultGraphics.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -33,15 +33,15 @@
  */
 class AddonCatapultGraphics : public AddonBool
 {
-public:
-	AddonCatapultGraphics() : AddonBool(ADDON_CATAPULT_GRAPHICS, 
-									  ADDONGROUP_GAMEPLAY,
-									  gettext_noop("Race specific catapult graphics"), 
-									  gettext_noop("Adds new graphics for catapults to the game."),
-									  0
-									 )
-	{
-	}
+    public:
+        AddonCatapultGraphics() : AddonBool(ADDON_CATAPULT_GRAPHICS,
+                                                ADDONGROUP_GAMEPLAY,
+                                                gettext_noop("Race specific catapult graphics"),
+                                                gettext_noop("Adds new graphics for catapults to the game."),
+                                                0
+                                               )
+        {
+        }
 };
 
 #endif // !ADDONCATAPULTGRAPHICS_H_INCLUDED

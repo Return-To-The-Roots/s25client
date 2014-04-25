@@ -1,4 +1,4 @@
-// $Id: noExtension.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: noExtension.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -24,20 +24,20 @@
 #include "SerializedGameData.h"
 
 
-void noExtension::Serialize_noExtension(SerializedGameData * sgd) const 
+void noExtension::Serialize_noExtension(SerializedGameData* sgd) const
 {
-	Serialize_noBase(sgd);
+    Serialize_noBase(sgd);
 
-	sgd->PushObject(base,false);
+    sgd->PushObject(base, false);
 }
 
-noExtension::noExtension(SerializedGameData * sgd, const unsigned obj_id) : noBase(sgd,obj_id),
-base(sgd->PopObject<noBase>(GOT_UNKNOWN))
+noExtension::noExtension(SerializedGameData* sgd, const unsigned obj_id) : noBase(sgd, obj_id),
+    base(sgd->PopObject<noBase>(GOT_UNKNOWN))
 {
 }
 
 noExtension::~noExtension()
 {
-	assert(true);
+    assert(true);
 }
 

@@ -1,4 +1,4 @@
-// $Id: ctrlEdit.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: ctrlEdit.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -25,52 +25,52 @@
 
 class ctrlEdit : public Window
 {
-public:
-	/// Konstruktor von @p ctrlEdit.
-	ctrlEdit(Window *parent, unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, glArchivItem_Font *font, unsigned short maxlength = 0, bool password = false, bool disabled = false, bool notify = false);
-	/// setzt den Text.
-	void SetText(const std::string& text);
-	void SetText(const unsigned int text);
+    public:
+        /// Konstruktor von @p ctrlEdit.
+        ctrlEdit(Window* parent, unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, glArchivItem_Font* font, unsigned short maxlength = 0, bool password = false, bool disabled = false, bool notify = false);
+        /// setzt den Text.
+        void SetText(const std::string& text);
+        void SetText(const unsigned int text);
 
-	const std::string GetText(void) const;
-	const std::wstring& GetWText(void) const { return text; }
-	void SetFocus(bool focus = true) { newfocus = focus; }
-	void SetDisabled(bool disabled = true) { this->disabled = disabled; }
-	void SetNotify(bool notify = true) { this->notify = notify; }
-	void SetMaxLength(unsigned short maxlength = 0) { this->maxlength = maxlength; }
-	void SetNumberOnly(const bool activated) {this->number_only = activated; }
+        const std::string GetText(void) const;
+        const std::wstring& GetWText(void) const { return text; }
+        void SetFocus(bool focus = true) { newfocus = focus; }
+        void SetDisabled(bool disabled = true) { this->disabled = disabled; }
+        void SetNotify(bool notify = true) { this->notify = notify; }
+        void SetMaxLength(unsigned short maxlength = 0) { this->maxlength = maxlength; }
+        void SetNumberOnly(const bool activated) {this->number_only = activated; }
 
-	virtual void Msg_PaintAfter();
-	virtual bool Msg_LeftDown(const MouseCoords& mc);
-	virtual bool Msg_LeftDown_After(const MouseCoords& mc);
-	virtual bool Msg_KeyDown(const KeyEvent& ke);
+        virtual void Msg_PaintAfter();
+        virtual bool Msg_LeftDown(const MouseCoords& mc);
+        virtual bool Msg_LeftDown_After(const MouseCoords& mc);
+        virtual bool Msg_KeyDown(const KeyEvent& ke);
 
-protected:
-	virtual bool Draw_(void);
+    protected:
+        virtual bool Draw_(void);
 
-private:
-	void AddChar(unsigned int c);
-	void RemoveChar(void);
-	void Notify(void);
+    private:
+        void AddChar(unsigned int c);
+        void RemoveChar(void);
+        void Notify(void);
 
-	void CursorLeft() { if(cursor_pos == 0) return; --cursor_pos; Notify(); };
-	void CursorRight() { if(cursor_pos == text.length()) return; ++cursor_pos; Notify(); };
+        void CursorLeft() { if(cursor_pos == 0) return; --cursor_pos; Notify(); };
+        void CursorRight() { if(cursor_pos == text.length()) return; ++cursor_pos; Notify(); };
 
-private:
-	unsigned short maxlength;
-	TextureColor tc;
-	glArchivItem_Font *font;
-	bool password;
-	bool disabled;
-	bool focus;
-	bool newfocus;
-	bool notify;
+    private:
+        unsigned short maxlength;
+        TextureColor tc;
+        glArchivItem_Font* font;
+        bool password;
+        bool disabled;
+        bool focus;
+        bool newfocus;
+        bool notify;
 
-	std::wstring text;
-	unsigned cursor_pos;
-	unsigned view_start;
+        std::wstring text;
+        unsigned cursor_pos;
+        unsigned view_start;
 
-	bool number_only;
+        bool number_only;
 };
 
 #endif // !CTRLEDIT_H_INCLUDED

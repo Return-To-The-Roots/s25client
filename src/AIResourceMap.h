@@ -1,4 +1,4 @@
-// $Id: AIResourceMap.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: AIResourceMap.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -27,31 +27,31 @@
 
 class AIResourceMap
 {
-public:
-	AIResourceMap(const GameWorldBase * const gwb, const std::vector<AIJH::Node> &nodes);
-	~AIResourceMap();
+    public:
+        AIResourceMap(const GameWorldBase* const gwb, const std::vector<AIJH::Node> &nodes);
+        ~AIResourceMap();
 
-	/// Initialize the resource map
-	void Init();
+        /// Initialize the resource map
+        void Init();
 
-	/// Changes a single resource map around point x,y in radius; to every point around x,y distanceFromCenter * value is added
-	void ChangeResourceMap(MapCoord x, MapCoord y, unsigned radius, int value);
+        /// Changes a single resource map around point x,y in radius; to every point around x,y distanceFromCenter * value is added
+        void ChangeResourceMap(MapCoord x, MapCoord y, unsigned radius, int value);
 
-	/// Finds a good position for a specific resource in an area using the resource maps, 
-	/// first position satisfying threshold is returned, returns false if no such position found
-	bool FindGoodPosition(MapCoord &x, MapCoord &y, int threshold, BuildingQuality size, int radius = -1, bool inTerritory = true);
+        /// Finds a good position for a specific resource in an area using the resource maps,
+        /// first position satisfying threshold is returned, returns false if no such position found
+        bool FindGoodPosition(MapCoord& x, MapCoord& y, int threshold, BuildingQuality size, int radius = -1, bool inTerritory = true);
 
-	/// Finds the best position for a specific resource in an area using the resource maps, 
-	/// satisfying the minimum value, returns false if no such position is found
-	bool FindBestPosition(MapCoord &x, MapCoord &y, BuildingQuality size, int minimum, int radius = -1, bool inTerritory = true);
-	bool FindBestPosition(MapCoord &x, MapCoord &y, BuildingQuality size, int radius = -1, bool inTerritory = true) 
-	{ return FindBestPosition(x,y,size,1,radius,inTerritory); }
+        /// Finds the best position for a specific resource in an area using the resource maps,
+        /// satisfying the minimum value, returns false if no such position is found
+        bool FindBestPosition(MapCoord& x, MapCoord& y, BuildingQuality size, int minimum, int radius = -1, bool inTerritory = true);
+        bool FindBestPosition(MapCoord& x, MapCoord& y, BuildingQuality size, int radius = -1, bool inTerritory = true)
+        { return FindBestPosition(x, y, size, 1, radius, inTerritory); }
 
-private:
-	std::vector<int> map;
-	const GameWorldBase * const gwb;
-	const std::vector<AIJH::Node> &nodes;
-	AIJH::Resource res;
+    private:
+        std::vector<int> map;
+        const GameWorldBase* const gwb;
+        const std::vector<AIJH::Node> &nodes;
+        AIJH::Resource res;
 };
 
 #endif //! AIRESOURCEMAP_H_INCLUDED

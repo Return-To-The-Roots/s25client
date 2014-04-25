@@ -1,4 +1,4 @@
-// $Id: GamePlayerInfo.h 8503 2012-11-12 12:31:37Z marcus $
+// $Id: GamePlayerInfo.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -28,75 +28,75 @@ class Serializer;
 
 enum PlayerState
 {
-	PS_FREE = 0,
-	PS_RESERVED,
-	PS_OCCUPIED,
-	PS_LOCKED,
-	PS_KI
+    PS_FREE = 0,
+    PS_RESERVED,
+    PS_OCCUPIED,
+    PS_LOCKED,
+    PS_KI
 };
 
 enum AIType
 {
-	AI_DUMMY = 0,
-	AI_JH
+    AI_DUMMY = 0,
+    AI_JH
 };
 
 class GamePlayerInfo
 {
-public:
-	GamePlayerInfo(const unsigned playerid);
-	/// Deserialisierungskonstruktor
-	GamePlayerInfo(const unsigned playerid, Serializer * ser);
+    public:
+        GamePlayerInfo(const unsigned playerid);
+        /// Deserialisierungskonstruktor
+        GamePlayerInfo(const unsigned playerid, Serializer* ser);
 
-	virtual ~GamePlayerInfo();
+        virtual ~GamePlayerInfo();
 
-	void clear();
+        void clear();
 
-	/// Spielerplatz belegt?
-	bool isValid() const { return (ps == PS_RESERVED || ps == PS_OCCUPIED); }
+        /// Spielerplatz belegt?
+        bool isValid() const { return (ps == PS_RESERVED || ps == PS_OCCUPIED); }
 
-	/// Ist Spieler besiegt?
-	bool isDefeated() const { return defeated; }
+        /// Ist Spieler besiegt?
+        bool isDefeated() const { return defeated; }
 
-	/// serialisiert die Daten.
-	void serialize(Serializer * ser) const;
+        /// serialisiert die Daten.
+        void serialize(Serializer* ser) const;
 
-	unsigned getPlayerID() const { return playerid; }
+        unsigned getPlayerID() const { return playerid; }
 
-protected:
-	/// Wechselt Spieler
-	void SwapPlayer(GamePlayerInfo& two);
-	
-protected:
-	/// Player-ID
-	unsigned playerid;
-	/// Besiegt?
-	bool defeated;
+    protected:
+        /// Wechselt Spieler
+        void SwapPlayer(GamePlayerInfo& two);
 
-public:
-	/// Spielertyp (Mensch, KI oder geschlossen..?)
-	PlayerState ps;
-	/// Wenn KI, was für eine?
-	AIType aiType;
-	
-	/// Spielername
-	std::string name;
-	/// ehemaliger Spielername bei einem geladenen Spiel
-	std::string origin_name;
+    protected:
+        /// Player-ID
+        unsigned playerid;
+        /// Besiegt?
+        bool defeated;
 
-	bool is_host;
+    public:
+        /// Spielertyp (Mensch, KI oder geschlossen..?)
+        PlayerState ps;
+        /// Wenn KI, was für eine?
+        AIType aiType;
 
-	Nation nation;
-	Team team;
-	unsigned char color;
+        /// Spielername
+        std::string name;
+        /// ehemaliger Spielername bei einem geladenen Spiel
+        std::string origin_name;
 
-	unsigned ping;
-	unsigned int rating;
-	
-	int checksum;
-	unsigned obj_cnt;
-	unsigned obj_id_cnt;
-	bool ready;
+        bool is_host;
+
+        Nation nation;
+        Team team;
+        unsigned char color;
+
+        unsigned ping;
+        unsigned int rating;
+
+        int checksum;
+        unsigned obj_cnt;
+        unsigned obj_id_cnt;
+        bool ready;
 };
 
 #endif // GAMEPLAYERINFO_H_INCLUDED

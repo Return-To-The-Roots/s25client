@@ -1,4 +1,4 @@
-// $Id: nofBuilder.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: nofBuilder.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -26,64 +26,64 @@ class noBuildingSite;
 
 class nofBuilder : public noFigure
 {
-private:
+    private:
 
-	// Wie weit der Bauarbeiter maximal in alle vier richtungen laufen darf (in Pixeln, rel..)
-	static const short LEFT_MAX = -28;
-	static const short RIGHT_MAX = 28;
-	static const short UP_MAX = 0;
-	static const short DOWN_MAX = 16;
-
-
-	enum BuilderState
-	{
-		STATE_FIGUREWORK = 0,
-		STATE_WAITINGFREEWALK, // Bauarbeiter geht auf und ab und wartet auf Rohstoffe
-		STATE_BUILDFREEWALK, // Bauarbeiter geht auf und ab und baut
-		STATE_BUILD // Bauarbeiter "baut" gerade (hämmert auf Gebäude ein)
-	} state;
-
-	/// Baustelle des Bauarbeiters
-	noBuildingSite * building_site;
+        // Wie weit der Bauarbeiter maximal in alle vier richtungen laufen darf (in Pixeln, rel..)
+        static const short LEFT_MAX = -28;
+        static const short RIGHT_MAX = 28;
+        static const short UP_MAX = 0;
+        static const short DOWN_MAX = 16;
 
 
-	//EventManager::EventPointer current_ev;
+        enum BuilderState
+        {
+            STATE_FIGUREWORK = 0,
+            STATE_WAITINGFREEWALK, // Bauarbeiter geht auf und ab und wartet auf Rohstoffe
+            STATE_BUILDFREEWALK, // Bauarbeiter geht auf und ab und baut
+            STATE_BUILD // Bauarbeiter "baut" gerade (hämmert auf Gebäude ein)
+        } state;
 
-	/// X,Y relativ zur Baustelle in Pixeln
-	/// next ist der angesteuerte Punkt
-	short rel_x, rel_y;
-	short next_rel_x, next_rel_y;
+        /// Baustelle des Bauarbeiters
+        noBuildingSite* building_site;
 
-	/// Wie viele Bauschritte noch verfügbar sind, bis der nächste Rohstoff geholt werden muss
-	unsigned char building_steps_available;
 
-private:
+        //EventManager::EventPointer current_ev;
 
-	void GoalReached();
-	void Walked();
-	void AbrogateWorkplace();
-	void HandleDerivedEvent(const unsigned int id);
+        /// X,Y relativ zur Baustelle in Pixeln
+        /// next ist der angesteuerte Punkt
+        short rel_x, rel_y;
+        short next_rel_x, next_rel_y;
 
-	/// In neue Richtung laufen (Freewalk)
-	void StartFreewalk();
-	/// "Frisst" eine passende Ware (falls vorhanden, gibt true in dem Fall zurück!) von der Baustelle, d.h nimmt sie in die Hand und erhöht die building_steps_avaible
-	bool ChooseWare();
+        /// Wie viele Bauschritte noch verfügbar sind, bis der nächste Rohstoff geholt werden muss
+        unsigned char building_steps_available;
 
-public:
+    private:
 
-	nofBuilder(const unsigned short x, const unsigned short y,const unsigned char player,noRoadNode * building_site);
-	nofBuilder(SerializedGameData * sgd, const unsigned obj_id);
+        void GoalReached();
+        void Walked();
+        void AbrogateWorkplace();
+        void HandleDerivedEvent(const unsigned int id);
 
-	/// Serialisierungsfunktionen
-	protected:	void Serialize_nofBuilder(SerializedGameData * sgd) const;
-	public:		void Serialize(SerializedGameData *sgd) const { Serialize_nofBuilder(sgd); }
+        /// In neue Richtung laufen (Freewalk)
+        void StartFreewalk();
+        /// "Frisst" eine passende Ware (falls vorhanden, gibt true in dem Fall zurück!) von der Baustelle, d.h nimmt sie in die Hand und erhöht die building_steps_avaible
+        bool ChooseWare();
 
-	GO_Type GetGOT() const { return GOT_NOF_BUILDER; }
+    public:
 
-	void Draw(int x, int y);
+        nofBuilder(const unsigned short x, const unsigned short y, const unsigned char player, noRoadNode* building_site);
+        nofBuilder(SerializedGameData* sgd, const unsigned obj_id);
 
-	// Wird von der Baustelle aus aufgerufen, um den Bauarbeiter zu sagen, dass er gehen kann
-	void LostWork();
+        /// Serialisierungsfunktionen
+    protected:  void Serialize_nofBuilder(SerializedGameData* sgd) const;
+    public:     void Serialize(SerializedGameData* sgd) const { Serialize_nofBuilder(sgd); }
+
+        GO_Type GetGOT() const { return GOT_NOF_BUILDER; }
+
+        void Draw(int x, int y);
+
+        // Wird von der Baustelle aus aufgerufen, um den Bauarbeiter zu sagen, dass er gehen kann
+        void LostWork();
 };
 
 

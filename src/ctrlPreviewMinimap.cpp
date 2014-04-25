@@ -1,4 +1,4 @@
-// $Id: ctrlPreviewMinimap.cpp 8252 2012-09-15 06:12:54Z marcus $
+// $Id: ctrlPreviewMinimap.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -28,14 +28,14 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
@@ -45,41 +45,41 @@ ctrlPreviewMinimap::Player::Player() : x(0), y(0), color(0)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
-ctrlPreviewMinimap::ctrlPreviewMinimap(Window *parent, 
-				 const unsigned int id, 
-				 const unsigned short x, 
-				 const unsigned short y, 
-				 unsigned short width, 
-				 unsigned short height,
-				 glArchivItem_Map * s2map) :
-	ctrlMinimap(parent, id, x, y, width, height, 2, 2, s2map ? s2map->getHeader().getWidth() : width, s2map ? s2map->getHeader().getHeight() : height), 
-	minimap(s2map)
+ctrlPreviewMinimap::ctrlPreviewMinimap(Window* parent,
+                                       const unsigned int id,
+                                       const unsigned short x,
+                                       const unsigned short y,
+                                       unsigned short width,
+                                       unsigned short height,
+                                       glArchivItem_Map* s2map) :
+    ctrlMinimap(parent, id, x, y, width, height, 2, 2, s2map ? s2map->getHeader().getWidth() : width, s2map ? s2map->getHeader().getHeight() : height),
+    minimap(s2map)
 {
-	if(s2map)
-	{
-		unsigned short map_width = s2map->getHeader().getWidth();
-		unsigned short map_height = s2map->getHeader().getHeight();
+    if(s2map)
+    {
+        unsigned short map_width = s2map->getHeader().getWidth();
+        unsigned short map_height = s2map->getHeader().getHeight();
 
-		// Startpositionen merken
-		for(unsigned short y = 0; y < map_height; ++y)
-		{
-			for(unsigned short x = 0; x < map_width; ++x)
-			{
-				// Startposition eines Spielers an dieser Stelle?
-				if(s2map->GetMapDataAt(MAP_TYPE, x, y) == 0x80)
-				{
-					unsigned player = s2map->GetMapDataAt(MAP_LANDSCAPE, x, y);
-					assert(player < MAX_PLAYERS);
-					players[player].x = x;
-					players[player].y = y;
-				}
-			}
-		}
-	}
+        // Startpositionen merken
+        for(unsigned short y = 0; y < map_height; ++y)
+        {
+            for(unsigned short x = 0; x < map_width; ++x)
+            {
+                // Startposition eines Spielers an dieser Stelle?
+                if(s2map->GetMapDataAt(MAP_TYPE, x, y) == 0x80)
+                {
+                    unsigned player = s2map->GetMapDataAt(MAP_LANDSCAPE, x, y);
+                    assert(player < MAX_PLAYERS);
+                    players[player].x = x;
+                    players[player].y = y;
+                }
+            }
+        }
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -90,23 +90,23 @@ ctrlPreviewMinimap::ctrlPreviewMinimap(Window *parent,
  */
 bool ctrlPreviewMinimap::Draw_()
 {
-	// Button drumrum zeichnen
-	Draw3D(GetX()+GetLeft()-2,GetY()+GetTop()-2, GetWidthShow()+4,GetHeightShow()+4,TC_GREY,0,false,false);
+    // Button drumrum zeichnen
+    Draw3D(GetX() + GetLeft() - 2, GetY() + GetTop() - 2, GetWidthShow() + 4, GetHeightShow() + 4, TC_GREY, 0, false, false);
 
-	// Map ansich zeichnen
-	DrawMap(minimap);
+    // Map ansich zeichnen
+    DrawMap(minimap);
 
-	// Startpositionen zeichnen
-	for(unsigned i = 0;i<MAX_PLAYERS;++i)
-	{
-		// Spieler anwesend?
-		if(players[i].color)
-		{
-			// Zeichnen
-			DrawRectangle(GetX()+CalcMapCoordX(players[i].x)-2,
-			              GetY()+CalcMapCoordY(players[i].y)-2,4,4,players[i].color);
-		}
-	}
+    // Startpositionen zeichnen
+    for(unsigned i = 0; i < MAX_PLAYERS; ++i)
+    {
+        // Spieler anwesend?
+        if(players[i].color)
+        {
+            // Zeichnen
+            DrawRectangle(GetX() + CalcMapCoordX(players[i].x) - 2,
+                          GetY() + CalcMapCoordY(players[i].y) - 2, 4, 4, players[i].color);
+        }
+    }
 
-	return true;
+    return true;
 }

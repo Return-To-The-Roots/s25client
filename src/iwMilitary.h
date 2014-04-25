@@ -1,4 +1,4 @@
-// $Id: iwMilitary.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: iwMilitary.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -26,25 +26,25 @@
 /// Fenster mit den Militäreinstellungen.
 class iwMilitary : public IngameWindow
 {
-	/// Einstellungen nach dem letzten Netzwerk-Versenden nochmal verändert?
-	bool settings_changed;
+        /// Einstellungen nach dem letzten Netzwerk-Versenden nochmal verändert?
+        bool settings_changed;
 
-public:
+    public:
 
-	/// Konstruktor von @p iwMilitary.
-	iwMilitary();
-	~iwMilitary();
+        /// Konstruktor von @p iwMilitary.
+        iwMilitary();
+        ~iwMilitary();
 
-private:
+    private:
 
-	/// Updatet die Steuerelemente mit den aktuellen Einstellungen aus dem Spiel
-	void UpdateSettings();
-	/// Sendet veränderte Einstellungen (an den Client), falls sie verändert wurden
-	void TransmitSettings();
+        /// Updatet die Steuerelemente mit den aktuellen Einstellungen aus dem Spiel
+        void UpdateSettings();
+        /// Sendet veränderte Einstellungen (an den Client), falls sie verändert wurden
+        void TransmitSettings();
 
-	void Msg_Timer(const unsigned int ctrl_id);
-	void Msg_ProgressChange(const unsigned int ctrl_id, const unsigned short position);
-	void Msg_ButtonClick(const unsigned ctrl_id);
+        void Msg_Timer(const unsigned int ctrl_id);
+        void Msg_ProgressChange(const unsigned int ctrl_id, const unsigned short position);
+        void Msg_ButtonClick(const unsigned ctrl_id);
 };
 
 #endif // !iwMILITARY_H_INCLUDED

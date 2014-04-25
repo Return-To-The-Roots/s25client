@@ -1,4 +1,4 @@
-// $Id: noShipBuildingSite.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: noShipBuildingSite.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -35,14 +35,14 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
 noShipBuildingSite::noShipBuildingSite(const unsigned short x, const unsigned short y, const unsigned char player)
-	: noCoordBase(NOP_ENVIRONMENT,x,y), 
-	player(player), progress(0)
+    : noCoordBase(NOP_ENVIRONMENT, x, y),
+      player(player), progress(0)
 {
 }
 
@@ -52,22 +52,22 @@ noShipBuildingSite::~noShipBuildingSite()
 
 void noShipBuildingSite::Destroy()
 {
-	gwg->SetNO(NULL, x, y);
-	
-	Destroy_noCoordBase();
+    gwg->SetNO(NULL, x, y);
+
+    Destroy_noCoordBase();
 }
 
-void noShipBuildingSite::Serialize(SerializedGameData * sgd) const
+void noShipBuildingSite::Serialize(SerializedGameData* sgd) const
 {
-	Serialize_noCoordBase(sgd);
+    Serialize_noCoordBase(sgd);
 
-	sgd->PushUnsignedChar(player);
-	sgd->PushUnsignedChar(progress);
+    sgd->PushUnsignedChar(player);
+    sgd->PushUnsignedChar(progress);
 }
 
-noShipBuildingSite::noShipBuildingSite(SerializedGameData * sgd, const unsigned obj_id) : noCoordBase(sgd,obj_id),
-player(sgd->PopUnsignedChar()),
-progress(sgd->PopUnsignedChar())
+noShipBuildingSite::noShipBuildingSite(SerializedGameData* sgd, const unsigned obj_id) : noCoordBase(sgd, obj_id),
+    player(sgd->PopUnsignedChar()),
+    progress(sgd->PopUnsignedChar())
 {
 }
 
@@ -78,41 +78,41 @@ const unsigned PROGRESS_PARTS[3] =
 //const unsigned TOTAL_PROGRESS = PROGRESS_PARTS[0] + PROGRESS_PARTS[1] + PROGRESS_PARTS[2];
 
 void noShipBuildingSite::Draw(int x, int y)
-{	
-	if(progress < PROGRESS_PARTS[0]+PROGRESS_PARTS[1])
-	{
-		glArchivItem_Bitmap * image = LOADER.GetImageN("boot_z", 24);
-		unsigned height = min(image->getHeight() * unsigned(progress) / PROGRESS_PARTS[0],
-			unsigned(image->getHeight()));
-		image->Draw(x,y+(image->getHeight()-height),0,0,0,(image->getHeight()-height),0,height);
-		image =  LOADER.GetImageN("boot_z", 25);
-		height = min(image->getHeight() * unsigned(progress) / PROGRESS_PARTS[0],
-			unsigned(image->getHeight()));
-		image->Draw(x,y+(image->getHeight()-height),0,0,0,(image->getHeight()-height),0,height,COLOR_SHADOW);
-	}
-	if(progress > PROGRESS_PARTS[0])
-	{
-		unsigned real_progress = progress - PROGRESS_PARTS[0];
-		glArchivItem_Bitmap * image =  LOADER.GetImageN("boot_z", 26);
-		unsigned height = min(image->getHeight() * unsigned(real_progress) / PROGRESS_PARTS[1],
-			unsigned(image->getHeight()));
-		image->Draw(x,y+(image->getHeight()-height),0,0,0,(image->getHeight()-height),0,height);
-		image =  LOADER.GetImageN("boot_z", 27);
-		height = min(image->getHeight() * unsigned(real_progress) / PROGRESS_PARTS[1],
-			unsigned(image->getHeight()));
-		image->Draw(x,y+(image->getHeight()-height),0,0,0,(image->getHeight()-height),0,height,COLOR_SHADOW);
-	}
-	if(progress > PROGRESS_PARTS[0]+PROGRESS_PARTS[1])
-	{
-		unsigned real_progress = progress - PROGRESS_PARTS[0] - PROGRESS_PARTS[1];
-		glArchivItem_Bitmap * image =  LOADER.GetImageN("boot_z", 28);
-		unsigned height = image->getHeight() * unsigned(real_progress) / PROGRESS_PARTS[2];
-		image->Draw(x,y+(image->getHeight()-height),0,0,0,(image->getHeight()-height),0,height);
-		image =  LOADER.GetImageN("boot_z", 29);
-		height = image->getHeight() * unsigned(real_progress) / PROGRESS_PARTS[2];
-		image->Draw(x,y+(image->getHeight()-height),0,0,0,(image->getHeight()-height),0,height,COLOR_SHADOW);
+{
+    if(progress < PROGRESS_PARTS[0] + PROGRESS_PARTS[1])
+    {
+        glArchivItem_Bitmap* image = LOADER.GetImageN("boot_z", 24);
+        unsigned height = min(image->getHeight() * unsigned(progress) / PROGRESS_PARTS[0],
+                              unsigned(image->getHeight()));
+        image->Draw(x, y + (image->getHeight() - height), 0, 0, 0, (image->getHeight() - height), 0, height);
+        image =  LOADER.GetImageN("boot_z", 25);
+        height = min(image->getHeight() * unsigned(progress) / PROGRESS_PARTS[0],
+                     unsigned(image->getHeight()));
+        image->Draw(x, y + (image->getHeight() - height), 0, 0, 0, (image->getHeight() - height), 0, height, COLOR_SHADOW);
+    }
+    if(progress > PROGRESS_PARTS[0])
+    {
+        unsigned real_progress = progress - PROGRESS_PARTS[0];
+        glArchivItem_Bitmap* image =  LOADER.GetImageN("boot_z", 26);
+        unsigned height = min(image->getHeight() * unsigned(real_progress) / PROGRESS_PARTS[1],
+                              unsigned(image->getHeight()));
+        image->Draw(x, y + (image->getHeight() - height), 0, 0, 0, (image->getHeight() - height), 0, height);
+        image =  LOADER.GetImageN("boot_z", 27);
+        height = min(image->getHeight() * unsigned(real_progress) / PROGRESS_PARTS[1],
+                     unsigned(image->getHeight()));
+        image->Draw(x, y + (image->getHeight() - height), 0, 0, 0, (image->getHeight() - height), 0, height, COLOR_SHADOW);
+    }
+    if(progress > PROGRESS_PARTS[0] + PROGRESS_PARTS[1])
+    {
+        unsigned real_progress = progress - PROGRESS_PARTS[0] - PROGRESS_PARTS[1];
+        glArchivItem_Bitmap* image =  LOADER.GetImageN("boot_z", 28);
+        unsigned height = image->getHeight() * unsigned(real_progress) / PROGRESS_PARTS[2];
+        image->Draw(x, y + (image->getHeight() - height), 0, 0, 0, (image->getHeight() - height), 0, height);
+        image =  LOADER.GetImageN("boot_z", 29);
+        height = image->getHeight() * unsigned(real_progress) / PROGRESS_PARTS[2];
+        image->Draw(x, y + (image->getHeight() - height), 0, 0, 0, (image->getHeight() - height), 0, height, COLOR_SHADOW);
 
-	}
+    }
 }
 
 
@@ -120,25 +120,25 @@ void noShipBuildingSite::Draw(int x, int y)
 /// Das Schiff wird um eine Stufe weitergebaut
 void noShipBuildingSite::MakeBuildStep()
 {
-	++progress;
+    ++progress;
 
-	// Schiff fertiggestellt?
-	if(progress > PROGRESS_PARTS[0] + PROGRESS_PARTS[1] + PROGRESS_PARTS[2])
-	{
-		// Mich vernichten
-		em->AddToKillList(this);
-		gwg->SetNO(NULL,x,y);
-		// ein fertiges Schiff stattdessen hinsetzen
-		new noShip(x,y,player);
-		// BQ neu berechnen, da Schiff nicht mehr blockiert
-		gwg->RecalcBQAroundPointBig(x,y);
+    // Schiff fertiggestellt?
+    if(progress > PROGRESS_PARTS[0] + PROGRESS_PARTS[1] + PROGRESS_PARTS[2])
+    {
+        // Mich vernichten
+        em->AddToKillList(this);
+        gwg->SetNO(NULL, x, y);
+        // ein fertiges Schiff stattdessen hinsetzen
+        new noShip(x, y, player);
+        // BQ neu berechnen, da Schiff nicht mehr blockiert
+        gwg->RecalcBQAroundPointBig(x, y);
 
-		// Spieler über Fertigstellung benachrichtigen
-		if(GameClient::inst().GetPlayerID() == this->player)
-			GAMECLIENT.SendPostMessage(new ShipPostMsg(_("A new ship is ready"), PMC_GENERAL, GAMECLIENT.GetPlayer(player)->nation, x, y));
+        // Spieler über Fertigstellung benachrichtigen
+        if(GameClient::inst().GetPlayerID() == this->player)
+            GAMECLIENT.SendPostMessage(new ShipPostMsg(_("A new ship is ready"), PMC_GENERAL, GAMECLIENT.GetPlayer(player)->nation, x, y));
 
-		// KI Event senden
-		GAMECLIENT.SendAIEvent(new AIEvent::Location(AIEvent::ShipBuilt, x, y), player);
-	}
-		
+        // KI Event senden
+        GAMECLIENT.SendAIEvent(new AIEvent::Location(AIEvent::ShipBuilt, x, y), player);
+    }
+
 }

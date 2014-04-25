@@ -1,4 +1,4 @@
-// $Id: glAllocator.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: glAllocator.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -39,6 +39,6 @@
 #include "glArchivItem_Font.h"
 #include "glArchivItem_Map.h"
 
-libsiedler2::ArchivItem *glAllocator(unsigned short type, unsigned short subtype, const libsiedler2::ArchivItem *item);
+libsiedler2::ArchivItem* glAllocator(unsigned short type, unsigned short subtype, const libsiedler2::ArchivItem* item);
 
 #endif // !GLALLOCATOR_H_INCLUDED

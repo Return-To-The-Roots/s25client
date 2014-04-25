@@ -1,4 +1,4 @@
-// $Id: iwBuildings.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: iwBuildings.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -30,38 +30,38 @@ const unsigned BUILDINGS_COUNT = 32;
 /// Reihenfolge der Gebäude
 const BuildingType bts[BUILDINGS_COUNT] =
 {
-	BLD_BARRACKS,
-	BLD_GUARDHOUSE,
-	BLD_WATCHTOWER,
-	BLD_FORTRESS,
-	BLD_GRANITEMINE,
-	BLD_COALMINE,
-	BLD_IRONMINE,
-	BLD_GOLDMINE,
-	BLD_LOOKOUTTOWER,
-	BLD_CATAPULT,
-	BLD_WOODCUTTER,
-	BLD_FISHERY,
-	BLD_QUARRY,
-	BLD_FORESTER,
-	BLD_SLAUGHTERHOUSE,
-	BLD_HUNTER,
-	BLD_BREWERY,
-	BLD_ARMORY,
-	BLD_METALWORKS,
-	BLD_IRONSMELTER,
-	BLD_PIGFARM,
-	BLD_STOREHOUSE,
-	BLD_MILL,
-	BLD_BAKERY,
-	BLD_SAWMILL,
-	BLD_MINT,
-	BLD_WELL,
-	BLD_SHIPYARD,
-	BLD_FARM,
-	BLD_DONKEYBREEDER,
-	BLD_CHARBURNER,
-	BLD_HARBORBUILDING
+    BLD_BARRACKS,
+    BLD_GUARDHOUSE,
+    BLD_WATCHTOWER,
+    BLD_FORTRESS,
+    BLD_GRANITEMINE,
+    BLD_COALMINE,
+    BLD_IRONMINE,
+    BLD_GOLDMINE,
+    BLD_LOOKOUTTOWER,
+    BLD_CATAPULT,
+    BLD_WOODCUTTER,
+    BLD_FISHERY,
+    BLD_QUARRY,
+    BLD_FORESTER,
+    BLD_SLAUGHTERHOUSE,
+    BLD_HUNTER,
+    BLD_BREWERY,
+    BLD_ARMORY,
+    BLD_METALWORKS,
+    BLD_IRONSMELTER,
+    BLD_PIGFARM,
+    BLD_STOREHOUSE,
+    BLD_MILL,
+    BLD_BAKERY,
+    BLD_SAWMILL,
+    BLD_MINT,
+    BLD_WELL,
+    BLD_SHIPYARD,
+    BLD_FARM,
+    BLD_DONKEYBREEDER,
+    BLD_CHARBURNER,
+    BLD_HARBORBUILDING
 };
 
 
@@ -78,39 +78,39 @@ const unsigned short font_distance_y = 20;
 /// Konstruktor von @p iwMilitary.
 iwBuildings::iwBuildings() : IngameWindow(CGI_BUILDINGS, 0xFFFE, 0xFFFE, 185, 480, _("Buildings"), LOADER.GetImageN("resource", 41))
 {
-	// Symbole für die einzelnen Gebäude erstellen
-	for(unsigned short y = 0;y<BUILDINGS_COUNT/4 + (BUILDINGS_COUNT%4 > 0 ? 1 : 0);++y)
-	{
-		for(unsigned short x = 0;x<((y==BUILDINGS_COUNT/4)?BUILDINGS_COUNT%4:4);++x)
-		{
-			AddImage(y*4+x,first_x+icon_distance_x*x,first_y+icon_distance_y*y,
-				LOADER.GetImageN(NATION_ICON_IDS[GameClient::inst().GetLocalPlayer()->nation],bts[y*4+x]),_(BUILDING_NAMES[bts[y*4+x]]));
-		}
-	}
+    // Symbole für die einzelnen Gebäude erstellen
+    for(unsigned short y = 0; y < BUILDINGS_COUNT / 4 + (BUILDINGS_COUNT % 4 > 0 ? 1 : 0); ++y)
+    {
+        for(unsigned short x = 0; x < ((y == BUILDINGS_COUNT / 4) ? BUILDINGS_COUNT % 4 : 4); ++x)
+        {
+            AddImage(y * 4 + x, first_x + icon_distance_x * x, first_y + icon_distance_y * y,
+                     LOADER.GetImageN(NATION_ICON_IDS[GameClient::inst().GetLocalPlayer()->nation], bts[y * 4 + x]), _(BUILDING_NAMES[bts[y * 4 + x]]));
+        }
+    }
 
-	// Hilfe-Button
-	AddImageButton(32,width-14-30,height-20-32,30,32,TC_GREY, LOADER.GetImageN("io",21), _("Help"));
+    // Hilfe-Button
+    AddImageButton(32, width - 14 - 30, height - 20 - 32, 30, 32, TC_GREY, LOADER.GetImageN("io", 21), _("Help"));
 
 }
 
 /// Anzahlen der Gebäude zeichnen
 void iwBuildings::Msg_PaintAfter()
 {
-	// Anzahlen herausfinden
-	BuildingCount bc;
+    // Anzahlen herausfinden
+    BuildingCount bc;
 
-	GameClient::inst().GetLocalPlayer()->GetBuildingCount(bc);
+    GameClient::inst().GetLocalPlayer()->GetBuildingCount(bc);
 
-	// Anzahlen unter die Gebäude schreiben
-	for(unsigned short y = 0;y<BUILDINGS_COUNT/4 + (BUILDINGS_COUNT%4 > 0 ? 1 : 0);++y)
-	{
-		for(unsigned short x = 0;x<((y==BUILDINGS_COUNT/4)?BUILDINGS_COUNT%4:4);++x)
-		{
-			char txt[64];
-			sprintf(txt,"%u/%u",bc.building_counts[bts[y*4+x]],bc.building_site_counts[bts[y*4+x]]);
-			NormalFont->Draw(GetX()+first_x+icon_distance_x*x,GetY()+first_y+icon_distance_y*y + font_distance_y, txt,
-				glArchivItem_Font::DF_CENTER,COLOR_YELLOW);
+    // Anzahlen unter die Gebäude schreiben
+    for(unsigned short y = 0; y < BUILDINGS_COUNT / 4 + (BUILDINGS_COUNT % 4 > 0 ? 1 : 0); ++y)
+    {
+        for(unsigned short x = 0; x < ((y == BUILDINGS_COUNT / 4) ? BUILDINGS_COUNT % 4 : 4); ++x)
+        {
+            char txt[64];
+            sprintf(txt, "%u/%u", bc.building_counts[bts[y * 4 + x]], bc.building_site_counts[bts[y * 4 + x]]);
+            NormalFont->Draw(GetX() + first_x + icon_distance_x * x, GetY() + first_y + icon_distance_y * y + font_distance_y, txt,
+                             glArchivItem_Font::DF_CENTER, COLOR_YELLOW);
 
-		}
-	}
+        }
+    }
 }

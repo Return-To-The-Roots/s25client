@@ -1,4 +1,4 @@
-// $Id: AIJHHelper.h 8109 2012-09-01 19:05:19Z jh $
+// $Id: AIJHHelper.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -41,163 +41,163 @@ namespace gc { class GameCommand; }
 
 namespace AIJH
 {
-struct Coords
-{
-	MapCoord x;
-	MapCoord y;
-	Coords(MapCoord x, MapCoord y) : x(x), y(y) { }
-};
+    struct Coords
+    {
+        MapCoord x;
+        MapCoord y;
+        Coords(MapCoord x, MapCoord y) : x(x), y(y) { }
+    };
 
-enum Resource
-{
-	WOOD,
-	STONES,
-	GOLD,
-	IRONORE,
-	COAL,
-	GRANITE,
-	PLANTSPACE,
-	BORDERLAND,
-	FISH,
-	MULTIPLE,
-	// special:
-	BLOCKED = 254,
-	NOTHING = 255
-};
+    enum Resource
+    {
+        WOOD,
+        STONES,
+        GOLD,
+        IRONORE,
+        COAL,
+        GRANITE,
+        PLANTSPACE,
+        BORDERLAND,
+        FISH,
+        MULTIPLE,
+        // special:
+        BLOCKED = 254,
+        NOTHING = 255
+    };
 
-const unsigned RES_TYPE_COUNT = 9;
-const unsigned RES_RADIUS[RES_TYPE_COUNT] = 
-{
-	8, // Wood
-	8, // Stones
-	2, // Gold
-	2, // Ironore
-	2, // Coal
-	2, // Granite
-	3, // Plantspace
-	5, // Borderland
-	5 // Fish
-};
+    const unsigned RES_TYPE_COUNT = 9;
+    const unsigned RES_RADIUS[RES_TYPE_COUNT] =
+    {
+        8, // Wood
+        8, // Stones
+        2, // Gold
+        2, // Ironore
+        2, // Coal
+        2, // Granite
+        3, // Plantspace
+        5, // Borderland
+        5 // Fish
+    };
 
-struct Node
-{
-	bool owned;
-	bool reachable;
-	BuildingQuality bq;
-	Resource res;
-	bool border;
-	bool farmed;
-};
+    struct Node
+    {
+        bool owned;
+        bool reachable;
+        BuildingQuality bq;
+        Resource res;
+        bool border;
+        bool farmed;
+    };
 
-enum JobStatus
-{
-	JOB_WAITING,
-	JOB_EXECUTING_START,
-	JOB_EXECUTING_ROAD1,
-	JOB_EXECUTING_ROAD2,
-	JOB_EXECUTING_ROAD2_2,
-	JOB_FINISHED,
-	JOB_FAILED
-};
+    enum JobStatus
+    {
+        JOB_WAITING,
+        JOB_EXECUTING_START,
+        JOB_EXECUTING_ROAD1,
+        JOB_EXECUTING_ROAD2,
+        JOB_EXECUTING_ROAD2_2,
+        JOB_FINISHED,
+        JOB_FAILED
+    };
 
-enum SearchMode
-{
-	SEARCHMODE_NONE,
-	SEARCHMODE_RADIUS,
-	SEARCHMODE_GLOBAL
-};
+    enum SearchMode
+    {
+        SEARCHMODE_NONE,
+        SEARCHMODE_RADIUS,
+        SEARCHMODE_GLOBAL
+    };
 
-class Job
-{
-	friend class iwAIDebug;
-public:
-	Job(AIPlayerJH *aijh);
-	virtual ~Job() { }
-	virtual void ExecuteJob() { return; }
-	JobStatus GetStatus() { return status; }
-protected:
-	AIPlayerJH *aijh;
-	AIInterface *aii;
-	JobStatus status;
-};
+    class Job
+    {
+            friend class iwAIDebug;
+        public:
+            Job(AIPlayerJH* aijh);
+            virtual ~Job() { }
+            virtual void ExecuteJob() { return; }
+            JobStatus GetStatus() { return status; }
+        protected:
+            AIPlayerJH* aijh;
+            AIInterface* aii;
+            JobStatus status;
+    };
 
-class BuildJob : public Job
-{
-	friend class iwAIDebug;
-public:
-	BuildJob(AIPlayerJH *aijh, BuildingType type, MapCoord around_x, MapCoord around_y, SearchMode searchMode = SEARCHMODE_RADIUS) 
-		: Job(aijh), type(type), target_x(0xFFFF), target_y(0xFFFF), around_x(around_x), around_y(around_y), searchMode(searchMode) { }
-	BuildJob(AIPlayerJH *aijh, BuildingType type, SearchMode searchMode = SEARCHMODE_RADIUS) 
-		: Job(aijh), type(type), target_x(0xFFFF), target_y(0xFFFF), around_x(0xFFFF), around_y(0xFFFF), searchMode(searchMode) { }
+    class BuildJob : public Job
+    {
+            friend class iwAIDebug;
+        public:
+            BuildJob(AIPlayerJH* aijh, BuildingType type, MapCoord around_x, MapCoord around_y, SearchMode searchMode = SEARCHMODE_RADIUS)
+                : Job(aijh), type(type), target_x(0xFFFF), target_y(0xFFFF), around_x(around_x), around_y(around_y), searchMode(searchMode) { }
+            BuildJob(AIPlayerJH* aijh, BuildingType type, SearchMode searchMode = SEARCHMODE_RADIUS)
+                : Job(aijh), type(type), target_x(0xFFFF), target_y(0xFFFF), around_x(0xFFFF), around_y(0xFFFF), searchMode(searchMode) { }
 
-	~BuildJob() { }
-	virtual void ExecuteJob();
-	inline BuildingType GetType() const { return type; }
-	inline MapCoord GetTargetX() const { return target_x; }
-	inline MapCoord GetTargetY() const { return target_y; }
-private:
-	BuildingType type;
-	MapCoord target_x, target_y;
-	MapCoord around_x, around_y;
-	 SearchMode searchMode;
-	std::vector<unsigned char> route;
+            ~BuildJob() { }
+            virtual void ExecuteJob();
+            inline BuildingType GetType() const { return type; }
+            inline MapCoord GetTargetX() const { return target_x; }
+            inline MapCoord GetTargetY() const { return target_y; }
+        private:
+            BuildingType type;
+            MapCoord target_x, target_y;
+            MapCoord around_x, around_y;
+            SearchMode searchMode;
+            std::vector<unsigned char> route;
 
-	void TryToBuild();
-	void BuildMainRoad();
-	void TryToBuildSecondaryRoad();
-};
+            void TryToBuild();
+            void BuildMainRoad();
+            void TryToBuildSecondaryRoad();
+    };
 
-class ExpandJob : public Job
-{
-	friend class iwAIDebug;
-public:
-	ExpandJob(AIPlayerJH *aijh) : Job(aijh) { }
-	~ExpandJob() { }
-	void ExecuteJob();
-private:
-	BuildingType type;
-	MapCoord target_x, target_y;
-	std::vector<unsigned char> route;
-};
-
-
-class ConnectJob : public Job
-{
-	friend class iwAIDebug;
-public:
-	ConnectJob(AIPlayerJH *aijh, MapCoord flag_x, MapCoord flag_y) 
-		: Job(aijh), flag_x(flag_x), flag_y(flag_y), target_x(0xFFFF), target_y(0xFFFF) { }
-	~ConnectJob() { }
-	virtual void ExecuteJob();
-private:
-	MapCoord flag_x, flag_y, target_x, target_y;
-	std::vector<unsigned char> route;
-};
-
-class EventJob : public Job
-{
-	friend class iwAIDebug;
-public:
-	EventJob(AIPlayerJH *aijh, AIEvent::Base *ev) : Job(aijh), ev(ev) { }
-	~EventJob() { delete ev; }
-	void ExecuteJob();
-	inline AIEvent::Base *GetEvent() const { return ev; }
-private:
-	AIEvent::Base *ev;
-};
+    class ExpandJob : public Job
+    {
+            friend class iwAIDebug;
+        public:
+            ExpandJob(AIPlayerJH* aijh) : Job(aijh) { }
+            ~ExpandJob() { }
+            void ExecuteJob();
+        private:
+            BuildingType type;
+            MapCoord target_x, target_y;
+            std::vector<unsigned char> route;
+    };
 
 
-class SearchJob : public Job
-{
-	friend class iwAIDebug;
-public:
-	SearchJob(AIPlayerJH *aijh, PositionSearch* search) : Job(aijh), search(search) { }
-	~SearchJob();
-	void ExecuteJob();
+    class ConnectJob : public Job
+    {
+            friend class iwAIDebug;
+        public:
+            ConnectJob(AIPlayerJH* aijh, MapCoord flag_x, MapCoord flag_y)
+                : Job(aijh), flag_x(flag_x), flag_y(flag_y), target_x(0xFFFF), target_y(0xFFFF) { }
+            ~ConnectJob() { }
+            virtual void ExecuteJob();
+        private:
+            MapCoord flag_x, flag_y, target_x, target_y;
+            std::vector<unsigned char> route;
+    };
 
-private:
-	PositionSearch *search;
-};
+    class EventJob : public Job
+    {
+            friend class iwAIDebug;
+        public:
+            EventJob(AIPlayerJH* aijh, AIEvent::Base* ev) : Job(aijh), ev(ev) { }
+            ~EventJob() { delete ev; }
+            void ExecuteJob();
+            inline AIEvent::Base* GetEvent() const { return ev; }
+        private:
+            AIEvent::Base* ev;
+    };
+
+
+    class SearchJob : public Job
+    {
+            friend class iwAIDebug;
+        public:
+            SearchJob(AIPlayerJH* aijh, PositionSearch* search) : Job(aijh), search(search) { }
+            ~SearchJob();
+            void ExecuteJob();
+
+        private:
+            PositionSearch* search;
+    };
 
 }
 

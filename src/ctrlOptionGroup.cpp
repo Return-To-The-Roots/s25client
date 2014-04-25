@@ -1,4 +1,4 @@
-// $Id: ctrlOptionGroup.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: ctrlOptionGroup.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -25,9 +25,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -36,12 +36,12 @@
  *
  *  @author OLiver
  */
-ctrlOptionGroup::ctrlOptionGroup(Window *parent,
-								 unsigned int id,
-								 int select_type,
-								 bool scale)
-	: ctrlGroup(parent, id, scale),
-	selection(0xFFFF), select_type(select_type)
+ctrlOptionGroup::ctrlOptionGroup(Window* parent,
+                                 unsigned int id,
+                                 int select_type,
+                                 bool scale)
+    : ctrlGroup(parent, id, scale),
+      selection(0xFFFF), select_type(select_type)
 {
 }
 
@@ -53,9 +53,9 @@ ctrlOptionGroup::ctrlOptionGroup(Window *parent,
  */
 bool ctrlOptionGroup::Draw_(void)
 {
-	DrawControls();
+    DrawControls();
 
-	return true;
+    return true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -66,100 +66,100 @@ bool ctrlOptionGroup::Draw_(void)
  */
 void ctrlOptionGroup::SetSelection(unsigned short selection, bool notify)
 {
-	// Aktuellen ausgewählten Button wieder normal machen
-	if(this->selection != 0xFFFF)
-	{
-		ctrlButton *button = GetCtrl<ctrlButton>(this->selection);
-		assert(button);
-		switch(select_type)
-		{
-		case ILLUMINATE: button->SetIlluminated(false); break;
-		case CHECK:      button->SetCheck(false);       break;
-		case SHOW:       button->SetVisible(true);     break;
-		}
-	}
+    // Aktuellen ausgewählten Button wieder normal machen
+    if(this->selection != 0xFFFF)
+    {
+        ctrlButton* button = GetCtrl<ctrlButton>(this->selection);
+        assert(button);
+        switch(select_type)
+        {
+            case ILLUMINATE: button->SetIlluminated(false); break;
+            case CHECK:      button->SetCheck(false);       break;
+            case SHOW:       button->SetVisible(true);     break;
+        }
+    }
 
-	// Neuen Button auswählen
-	if(selection != 0xFFFF)
-	{
-		ctrlButton *button = GetCtrl<ctrlButton>(selection);
-		assert(button);
-		switch(select_type)
-		{
-		case ILLUMINATE: button->SetIlluminated(true); break;
-		case CHECK:      button->SetCheck(true);       break;
-		case SHOW:       button->SetVisible(false);     break;
-		}
-	}
+    // Neuen Button auswählen
+    if(selection != 0xFFFF)
+    {
+        ctrlButton* button = GetCtrl<ctrlButton>(selection);
+        assert(button);
+        switch(select_type)
+        {
+            case ILLUMINATE: button->SetIlluminated(true); break;
+            case CHECK:      button->SetCheck(true);       break;
+            case SHOW:       button->SetVisible(false);     break;
+        }
+    }
 
-	this->selection = selection;
+    this->selection = selection;
 
-	if(notify && parent)
-		parent->Msg_OptionGroupChange(GetID(), selection);
+    if(notify && parent)
+        parent->Msg_OptionGroupChange(GetID(), selection);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
 void ctrlOptionGroup::Msg_ButtonClick(const unsigned int ctrl_id)
 {
-	SetSelection(ctrl_id, true);
-} 
+    SetSelection(ctrl_id, true);
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
 bool ctrlOptionGroup::Msg_LeftDown(const MouseCoords& mc)
 {
-	return RelayMouseMessage(&Window::Msg_LeftDown, mc);
-} 
+    return RelayMouseMessage(&Window::Msg_LeftDown, mc);
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
 bool ctrlOptionGroup::Msg_LeftUp(const MouseCoords& mc)
 {
-	return RelayMouseMessage(&Window::Msg_LeftUp, mc);
+    return RelayMouseMessage(&Window::Msg_LeftUp, mc);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author Divan
  */
 bool ctrlOptionGroup::Msg_WheelUp(const MouseCoords& mc)
 {
-	return RelayMouseMessage(&Window::Msg_WheelUp,mc);
+    return RelayMouseMessage(&Window::Msg_WheelUp, mc);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author Divan
  */
 bool ctrlOptionGroup::Msg_WheelDown(const MouseCoords& mc)
 {
-	return RelayMouseMessage(&Window::Msg_WheelDown,mc);
+    return RelayMouseMessage(&Window::Msg_WheelDown, mc);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
 bool ctrlOptionGroup::Msg_MouseMove(const MouseCoords& mc)
 {
-	return RelayMouseMessage(&Window::Msg_MouseMove, mc);
+    return RelayMouseMessage(&Window::Msg_MouseMove, mc);
 }

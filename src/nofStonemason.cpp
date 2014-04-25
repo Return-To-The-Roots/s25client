@@ -1,4 +1,4 @@
-// $Id: nofStonemason.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: nofStonemason.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -34,41 +34,41 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
-nofStonemason::nofStonemason(const unsigned short x, const unsigned short y,const unsigned char player,nobUsual * workplace)
-: nofFarmhand(JOB_STONEMASON,x,y,player,workplace)
+nofStonemason::nofStonemason(const unsigned short x, const unsigned short y, const unsigned char player, nobUsual* workplace)
+    : nofFarmhand(JOB_STONEMASON, x, y, player, workplace)
 {
 }
 
-nofStonemason::nofStonemason(SerializedGameData * sgd, const unsigned obj_id) : nofFarmhand(sgd,obj_id)
+nofStonemason::nofStonemason(SerializedGameData* sgd, const unsigned obj_id) : nofFarmhand(sgd, obj_id)
 {
 }
 
 /// Malt den Arbeiter beim Arbeiten
-void nofStonemason::DrawWorking(int x,int y)
+void nofStonemason::DrawWorking(int x, int y)
 {
-	unsigned now_id;
+    unsigned now_id;
 
-	// Stein hauen
-	LOADER.GetImageN("rom_bobs", 40+(now_id=GAMECLIENT.Interpolate(64,current_ev))%8)
-		->Draw(x,y,0,0,0,0,0,0, COLOR_WHITE, COLORS[gwg->GetPlayer(player)->color]);
+    // Stein hauen
+    LOADER.GetImageN("rom_bobs", 40 + (now_id = GAMECLIENT.Interpolate(64, current_ev)) % 8)
+    ->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(player)->color]);
 
-	if(now_id%8 == 5)
-	{
-		SoundManager::inst().PlayNOSound(56,this,now_id);
-		was_sounding = true;
-	}
+    if(now_id % 8 == 5)
+    {
+        SoundManager::inst().PlayNOSound(56, this, now_id);
+        was_sounding = true;
+    }
 
 }
 
 /// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren rausträgt (bzw rein)
 unsigned short nofStonemason::GetCarryID() const
 {
-	return 63;
+    return 63;
 }
 
 /// Abgeleitete Klasse informieren, wenn sie anfängt zu arbeiten (Vorbereitungen)
@@ -79,32 +79,32 @@ void nofStonemason::WorkStarted()
 /// Abgeleitete Klasse informieren, wenn fertig ist mit Arbeiten
 void nofStonemason::WorkFinished()
 {
-	// Stein abhauen (wenn er nur noch ganz klein ist, dann wird er von der Landkarte getilgt)
-	if(gwg->GetSpecObj<noGranite>(x,y)->IsSmall())
-	{
-		// Granitklötzchen löschen
-		gwg->GetSpecObj<noGranite>(x,y)->Destroy();
-		delete gwg->GetSpecObj<noGranite>(x,y);
-		gwg->SetNO(0,x,y);
+    // Stein abhauen (wenn er nur noch ganz klein ist, dann wird er von der Landkarte getilgt)
+    if(gwg->GetSpecObj<noGranite>(x, y)->IsSmall())
+    {
+        // Granitklötzchen löschen
+        gwg->GetSpecObj<noGranite>(x, y)->Destroy();
+        delete gwg->GetSpecObj<noGranite>(x, y);
+        gwg->SetNO(0, x, y);
 
-		// Minimap Bescheid geben (Granitglötzchen muss weg)
-		gwg->GetGameInterface()->GI_UpdateMinimap(x,y);
+        // Minimap Bescheid geben (Granitglötzchen muss weg)
+        gwg->GetGameInterface()->GI_UpdateMinimap(x, y);
 
-		// Drumherum BQ neu berechnen, da diese sich ja jetzt hätten ändern können
-		gwg->RecalcBQAroundPoint(x,y);
-	}
-	else
-		// ansonsten wird er um 1 kleiner
-		gwg->GetSpecObj<noGranite>(x,y)->Hew();
+        // Drumherum BQ neu berechnen, da diese sich ja jetzt hätten ändern können
+        gwg->RecalcBQAroundPoint(x, y);
+    }
+    else
+        // ansonsten wird er um 1 kleiner
+        gwg->GetSpecObj<noGranite>(x, y)->Hew();
 
-	// Stein in die Hand nehmen
-	ware = GD_STONES;
+    // Stein in die Hand nehmen
+    ware = GD_STONES;
 }
 
 /// Returns the quality of this working point or determines if the worker can work here at all
 nofFarmhand::PointQuality nofStonemason::GetPointQuality(const MapCoord x, const MapCoord y)
 {
-	// An dieser Position muss es nur Stein geben
-	return ((gwg->GetNO(x,y)->GetType() == NOP_GRANITE) ? PQ_CLASS1 : PQ_NOTPOSSIBLE);
+    // An dieser Position muss es nur Stein geben
+    return ((gwg->GetNO(x, y)->GetType() == NOP_GRANITE) ? PQ_CLASS1 : PQ_NOTPOSSIBLE);
 }
 

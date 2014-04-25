@@ -1,4 +1,4 @@
-// $Id: AddonRefundOnEmergency.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: AddonRefundOnEmergency.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -25,23 +25,23 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Addon for refunding materials soon as a building gets destroyed and 
+ *  Addon for refunding materials soon as a building gets destroyed and
  *  the emergency program is active
  *
  *  @author FloSoft
  */
 class AddonRefundOnEmergency : public AddonBool
 {
-public:
-	AddonRefundOnEmergency() : AddonBool(ADDON_REFUND_ON_EMERGENCY, 
-										 ADDONGROUP_ECONOMY,
-										 gettext_noop("Refund materials when emergency program is active"), 
-										 gettext_noop("Allows you to get building materials back if the building is destroyed\n"
-													  "and your emergency program is active."),
-										 0
-										)
-	{
-	}
+    public:
+        AddonRefundOnEmergency() : AddonBool(ADDON_REFUND_ON_EMERGENCY,
+                                                 ADDONGROUP_ECONOMY,
+                                                 gettext_noop("Refund materials when emergency program is active"),
+                                                 gettext_noop("Allows you to get building materials back if the building is destroyed\n"
+                                                         "and your emergency program is active."),
+                                                 0
+                                                )
+        {
+        }
 };
 
 #endif // !ADDONREFUNDONEMERGENCY_H_INCLUDED

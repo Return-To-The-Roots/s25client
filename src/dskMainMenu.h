@@ -1,4 +1,4 @@
-// $Id: dskMainMenu.h 8247 2012-09-14 09:40:33Z marcus $
+// $Id: dskMainMenu.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -26,14 +26,14 @@
 /// Klasse des Hauptmenü Desktops.
 class dskMainMenu : public Desktop
 {
-	void Msg_PaintAfter();
-public:
-	/// Konstruktor von @p dskMainMenu.
-	dskMainMenu(void);
+        void Msg_PaintAfter();
+    public:
+        /// Konstruktor von @p dskMainMenu.
+        dskMainMenu(void);
 
-	void Msg_ButtonClick(const unsigned int ctrl_id);
-	void Msg_Timer(const unsigned int ctrl_id);
-	void Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr);
+        void Msg_ButtonClick(const unsigned int ctrl_id);
+        void Msg_Timer(const unsigned int ctrl_id);
+        void Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr);
 };
 
 #endif // !dskMAINMENU_H_INCLUDED

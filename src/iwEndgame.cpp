@@ -1,4 +1,4 @@
-// $Id: iwEndgame.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: iwEndgame.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -33,9 +33,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -45,33 +45,33 @@
  *  @author OLiver
  */
 iwEndgame::iwEndgame(void)
-	: IngameWindow(CGI_ENDGAME, 0xFFFF, 0xFFFF, 240, 100, _("End game?"), LOADER.GetImageN("resource", 41))
+    : IngameWindow(CGI_ENDGAME, 0xFFFF, 0xFFFF, 240, 100, _("End game?"), LOADER.GetImageN("resource", 41))
 {
-	// Ok
-	AddImageButton(0,  16, 24, 71, 57, TC_GREEN2, LOADER.GetImageN("io", 32));
-	// Abbrechen
-	AddImageButton(1,  88, 24, 71, 57, TC_RED1, LOADER.GetImageN("io", 40));
-	// Ok + Speichern
-	AddImageButton(2, 160, 24, 65, 57, TC_GREY, LOADER.GetImageN("io", 47));
+    // Ok
+    AddImageButton(0,  16, 24, 71, 57, TC_GREEN2, LOADER.GetImageN("io", 32));
+    // Abbrechen
+    AddImageButton(1,  88, 24, 71, 57, TC_RED1, LOADER.GetImageN("io", 40));
+    // Ok + Speichern
+    AddImageButton(2, 160, 24, 65, 57, TC_GREY, LOADER.GetImageN("io", 47));
 }
 
 
 void iwEndgame::Msg_ButtonClick(const unsigned int ctrl_id)
 {
-	switch(ctrl_id)
-	{
-	case 0: // OK
-		{
-			GAMEMANAGER.ShowMenu();
-			GameClient::inst().ExitGame();
-		} break;
-	case 1: // Abbrechen
-		{
-			Close();
-		} break;
-	case 2: // OK + Speichern
-		{
-			WindowManager::inst().Show(new iwSave());
-		} break;
-	}
+    switch(ctrl_id)
+    {
+        case 0: // OK
+        {
+            GAMEMANAGER.ShowMenu();
+            GameClient::inst().ExitGame();
+        } break;
+        case 1: // Abbrechen
+        {
+            Close();
+        } break;
+        case 2: // OK + Speichern
+        {
+            WindowManager::inst().Show(new iwSave());
+        } break;
+    }
 }

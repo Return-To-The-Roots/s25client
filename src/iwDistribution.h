@@ -1,4 +1,4 @@
-// $Id: iwDistribution.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: iwDistribution.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -25,35 +25,36 @@
 
 class iwDistribution : public IngameWindow
 {
-private:
+    private:
 
-	enum {
-		TAB_FOOD = 1,
-		TAB_CORN,
-		TAB_IRON,
-		TAB_COAL,
-		TAB_WOOD,
-		TAB_BOARD,
-		TAB_WATER
-	};
+        enum
+        {
+            TAB_FOOD = 1,
+            TAB_CORN,
+            TAB_IRON,
+            TAB_COAL,
+            TAB_WOOD,
+            TAB_BOARD,
+            TAB_WATER
+        };
 
-	/// Einstellungen nach dem letzten Netzwerk-Versenden nochmal verändert?
-	bool settings_changed;
-public:
+        /// Einstellungen nach dem letzten Netzwerk-Versenden nochmal verändert?
+        bool settings_changed;
+    public:
 
-	iwDistribution(void);
-	~iwDistribution();
+        iwDistribution(void);
+        ~iwDistribution();
 
-private:
+    private:
 
-	/// Updatet die Steuerelemente mit den aktuellen Einstellungen aus dem Spiel
-	void UpdateSettings();
-	/// Sendet veränderte Einstellungen (an den Client), falls sie verändert wurden
-	void TransmitSettings();
+        /// Updatet die Steuerelemente mit den aktuellen Einstellungen aus dem Spiel
+        void UpdateSettings();
+        /// Sendet veränderte Einstellungen (an den Client), falls sie verändert wurden
+        void TransmitSettings();
 
-	void Msg_Group_ProgressChange(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short position);
-	void Msg_Timer(const unsigned int ctrl_id);
-	void Msg_ButtonClick(const unsigned ctrl_id);
+        void Msg_Group_ProgressChange(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short position);
+        void Msg_Timer(const unsigned int ctrl_id);
+        void Msg_ButtonClick(const unsigned ctrl_id);
 
 };
 

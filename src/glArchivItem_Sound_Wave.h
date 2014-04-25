@@ -1,4 +1,4 @@
-// $Id: glArchivItem_Sound_Wave.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: glArchivItem_Sound_Wave.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -23,15 +23,15 @@
 
 class glArchivItem_Sound_Wave : public libsiedler2::baseArchivItem_Sound_Wave, public glArchivItem_Sound
 {
-public:
-	/// Konstruktor von @p glArchivItem_Sound_Wave.
-	glArchivItem_Sound_Wave(void) : baseArchivItem_Sound(), baseArchivItem_Sound_Wave(), glArchivItem_Sound() {}
+    public:
+        /// Konstruktor von @p glArchivItem_Sound_Wave.
+        glArchivItem_Sound_Wave(void) : baseArchivItem_Sound(), baseArchivItem_Sound_Wave(), glArchivItem_Sound() {}
 
-	/// Kopierkonstruktor von @p glArchivItem_Sound_Wave.
-	glArchivItem_Sound_Wave(const glArchivItem_Sound_Wave *item) : baseArchivItem_Sound(item), baseArchivItem_Sound_Wave(item), glArchivItem_Sound(item) {}
+        /// Kopierkonstruktor von @p glArchivItem_Sound_Wave.
+        glArchivItem_Sound_Wave(const glArchivItem_Sound_Wave* item) : baseArchivItem_Sound(item), baseArchivItem_Sound_Wave(item), glArchivItem_Sound(item) {}
 
-	/// Spielt den Sound ab.
-	unsigned Play(const unsigned char volume,const bool loop);
+        /// Spielt den Sound ab.
+        unsigned Play(const unsigned char volume, const bool loop);
 };
 
 #endif // !GLARCHIVITEM_SOUND_WAVE_H_INCLUDED

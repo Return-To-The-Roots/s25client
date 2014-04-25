@@ -1,4 +1,4 @@
-// $Id: AudioDriverWrapper.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: AudioDriverWrapper.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -27,57 +27,57 @@
 class AudioDriver;
 
 #define MAX_DRIVER_COUNT 20
-const char * const EMPTY_STR = "";
+const char* const EMPTY_STR = "";
 
 ///////////////////////////////////////////////////////////////////////////////
 // DriverWrapper
 class AudioDriverWrapper : public Singleton<AudioDriverWrapper>, public AudioDriverLoaderInterface
 {
-public:
-	/// Konstruktor von @p DriverWrapper
-	AudioDriverWrapper();
+    public:
+        /// Konstruktor von @p DriverWrapper
+        AudioDriverWrapper();
 
-	~AudioDriverWrapper();
+        ~AudioDriverWrapper();
 
-	/// Läd den Treiber
-	bool LoadDriver(void);
+        /// Läd den Treiber
+        bool LoadDriver(void);
 
-	/// Lädt einen Sound.
-	Sound *LoadEffect(unsigned int data_type, unsigned char *data, unsigned int size);
-	Sound *LoadMusic(unsigned int data_type, unsigned char *data, unsigned int size);
+        /// Lädt einen Sound.
+        Sound* LoadEffect(unsigned int data_type, unsigned char* data, unsigned int size);
+        Sound* LoadMusic(unsigned int data_type, unsigned char* data, unsigned int size);
 
-	/// Spielt einen Sound
-	unsigned PlayEffect(Sound * sound, const unsigned char volume, const bool loop);
-	/// Stoppt einen Sound
-	void StopEffect(const unsigned int play_id); 
+        /// Spielt einen Sound
+        unsigned PlayEffect(Sound* sound, const unsigned char volume, const bool loop);
+        /// Stoppt einen Sound
+        void StopEffect(const unsigned int play_id);
 
-	/// Spielt Midi ab
-	void PlayMusic(Sound * sound, const unsigned repeats)
-	{ if(audiodriver) audiodriver->PlayMusic(sound,repeats); }
-	/// Stoppt die Musik.
-	void StopMusic(void) 
-	{ if(audiodriver) audiodriver->StopMusic();  }
-	/// Wird ein Sound (noch) abgespielt?
-	bool IsEffectPlaying(const unsigned play_id) 
-	{ if(audiodriver) return audiodriver->IsEffectPlaying(play_id); else return false; }
-	/// Verändert die Lautstärke von einem abgespielten Sound (falls er noch abgespielt wird)
-	void ChangeVolume(const unsigned play_id,const unsigned char volume)
-	{ if(audiodriver) audiodriver->ChangeVolume(play_id, volume); }
+        /// Spielt Midi ab
+        void PlayMusic(Sound* sound, const unsigned repeats)
+        { if(audiodriver) audiodriver->PlayMusic(sound, repeats); }
+        /// Stoppt die Musik.
+        void StopMusic(void)
+        { if(audiodriver) audiodriver->StopMusic();  }
+        /// Wird ein Sound (noch) abgespielt?
+        bool IsEffectPlaying(const unsigned play_id)
+        { if(audiodriver) return audiodriver->IsEffectPlaying(play_id); else return false; }
+        /// Verändert die Lautstärke von einem abgespielten Sound (falls er noch abgespielt wird)
+        void ChangeVolume(const unsigned play_id, const unsigned char volume)
+        { if(audiodriver) audiodriver->ChangeVolume(play_id, volume); }
 
-	 void SetMasterEffectVolume(unsigned char volume)
-	 { if(audiodriver) audiodriver->SetMasterEffectVolume(volume); }
-	 void SetMasterMusicVolume(unsigned char volume)
-	{ if(audiodriver) audiodriver->SetMasterMusicVolume(volume); }
+        void SetMasterEffectVolume(unsigned char volume)
+        { if(audiodriver) audiodriver->SetMasterEffectVolume(volume); }
+        void SetMasterMusicVolume(unsigned char volume)
+        { if(audiodriver) audiodriver->SetMasterMusicVolume(volume); }
 
-	const char *GetName(void) const { if(audiodriver) return audiodriver->GetName();	return EMPTY_STR; }
-private:
+        const char* GetName(void) const { if(audiodriver) return audiodriver->GetName();    return EMPTY_STR; }
+    private:
 
-	void Msg_MusicFinished();
+        void Msg_MusicFinished();
 
-private:
+    private:
 
-	DriverWrapper driver_wrapper;
-	AudioDriver *audiodriver;
+        DriverWrapper driver_wrapper;
+        AudioDriver* audiodriver;
 };
 
 #endif

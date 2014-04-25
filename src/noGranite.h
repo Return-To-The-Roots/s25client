@@ -1,4 +1,4 @@
-// $Id: noGranite.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: noGranite.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -25,35 +25,35 @@
 
 class noGranite : public noBase
 {
-	GraniteType type; // Welcher Typ ( gibt 2 )
-	unsigned char state; // Status, 0 - 5, von sehr wenig bis sehr viel
+        GraniteType type; // Welcher Typ ( gibt 2 )
+        unsigned char state; // Status, 0 - 5, von sehr wenig bis sehr viel
 
-public:
+    public:
 
-	noGranite(const GraniteType type, const unsigned char state);
-	noGranite(SerializedGameData * sgd, const unsigned obj_id);
+        noGranite(const GraniteType type, const unsigned char state);
+        noGranite(SerializedGameData* sgd, const unsigned obj_id);
 
-	/// Aufräummethoden
-protected:	void Destroy_noGranite() { Destroy_noBase(); }
-public:		void Destroy() { Destroy_noGranite(); }
+        /// Aufräummethoden
+    protected:  void Destroy_noGranite() { Destroy_noBase(); }
+    public:     void Destroy() { Destroy_noGranite(); }
 
-	/// Serialisierungsfunktionen
-	protected:	void Serialize_noGranite(SerializedGameData * sgd) const;
-	public:		void Serialize(SerializedGameData *sgd) const { Serialize_noGranite(sgd); }
+        /// Serialisierungsfunktionen
+    protected:  void Serialize_noGranite(SerializedGameData* sgd) const;
+    public:     void Serialize(SerializedGameData* sgd) const { Serialize_noGranite(sgd); }
 
-	GO_Type GetGOT() const { return GOT_GRANITE; }
+        GO_Type GetGOT() const { return GOT_GRANITE; }
 
-	void Draw(int x, int y);
+        void Draw(int x, int y);
 
-	BlockingManner GetBM() const { return BM_GRANITE; }
+        BlockingManner GetBM() const { return BM_GRANITE; }
 
-	/// Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung" für den Fog of War
-	FOWObject * CreateFOWObject() const;
+        /// Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung" für den Fog of War
+        FOWObject* CreateFOWObject() const;
 
-	/// "Bearbeitet" den Granitglotz --> haut ein Stein ab
-	void Hew();
-	/// Gibt true zurück, falls der Granitblock nur noch 1 Stein groß ist und damit dann vernichtet werden kann
-	bool IsSmall() const { return (state == 0); }
+        /// "Bearbeitet" den Granitglotz --> haut ein Stein ab
+        void Hew();
+        /// Gibt true zurück, falls der Granitblock nur noch 1 Stein groß ist und damit dann vernichtet werden kann
+        bool IsSmall() const { return (state == 0); }
 
 };
 

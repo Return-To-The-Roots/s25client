@@ -1,4 +1,4 @@
-// $Id: ctrlTimer.cpp 8245 2012-09-14 09:32:45Z marcus $
+// $Id: ctrlTimer.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -27,9 +27,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -54,12 +54,12 @@
  *
  *  @author FloSoft
  */
-ctrlTimer::ctrlTimer(Window *parent,
-					 unsigned int id,
-					 unsigned int timeout)
-	: Window(0, 0, id, parent)
+ctrlTimer::ctrlTimer(Window* parent,
+                     unsigned int id,
+                     unsigned int timeout)
+    : Window(0, 0, id, parent)
 {
-	Start(timeout);
+    Start(timeout);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -70,10 +70,10 @@ ctrlTimer::ctrlTimer(Window *parent,
  */
 void ctrlTimer::Start(unsigned int timeout)
 {
-	this->timeout = timeout;
+    this->timeout = timeout;
 
-	// timer initialisieren
-	timer = VideoDriverWrapper::inst().GetTickCount();
+    // timer initialisieren
+    timer = VideoDriverWrapper::inst().GetTickCount();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -84,7 +84,7 @@ void ctrlTimer::Start(unsigned int timeout)
  */
 void ctrlTimer::Stop(void)
 {
-	timer = 0;
+    timer = 0;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -95,18 +95,18 @@ void ctrlTimer::Stop(void)
  */
 void ctrlTimer::Msg_PaintBefore()
 {
-	// timer ist deaktiviert, nix tun
-	if(timer == 0)
-		return;
-	
-	// Bei Timeout weiterschalten
-	if(VideoDriverWrapper::inst().GetTickCount() - timer > timeout)
-	{
-		parent->Msg_Timer(GetID());
+    // timer ist deaktiviert, nix tun
+    if(timer == 0)
+        return;
 
-		if (timer != 0)
-		{
-			timer = VideoDriverWrapper::inst().GetTickCount();
-		}
-	}
-} 
+    // Bei Timeout weiterschalten
+    if(VideoDriverWrapper::inst().GetTickCount() - timer > timeout)
+    {
+        parent->Msg_Timer(GetID());
+
+        if (timer != 0)
+        {
+            timer = VideoDriverWrapper::inst().GetTickCount();
+        }
+    }
+}

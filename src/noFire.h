@@ -1,4 +1,4 @@
-// $Id: noFire.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: noFire.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -26,40 +26,40 @@
 // Klasse für ein brennendes Gebäude
 class noFire : public noCoordBase
 {
-	/// Größe des Feuers: klein (0) oder groß (1)
-	unsigned char size;
-	/// "Todesevent" (also bis es abgebrannt ist) speichern, damit dann interpoliert wird
-	EventManager::EventPointer dead_event;
-	/// Wurden Feuersounds abgespielt
-	bool was_sounding;
-	/// Letzter Feuersound-Zeitpunkt
-	unsigned last_sound;
-	/// Intervall zum nächsten Feuersound
-	unsigned next_interval;
+        /// Größe des Feuers: klein (0) oder groß (1)
+        unsigned char size;
+        /// "Todesevent" (also bis es abgebrannt ist) speichern, damit dann interpoliert wird
+        EventManager::EventPointer dead_event;
+        /// Wurden Feuersounds abgespielt
+        bool was_sounding;
+        /// Letzter Feuersound-Zeitpunkt
+        unsigned last_sound;
+        /// Intervall zum nächsten Feuersound
+        unsigned next_interval;
 
 
-public:
+    public:
 
-	noFire(const unsigned short x, const unsigned short y, const unsigned char size);
-	noFire(SerializedGameData * sgd, const unsigned obj_id);
+        noFire(const unsigned short x, const unsigned short y, const unsigned char size);
+        noFire(SerializedGameData* sgd, const unsigned obj_id);
 
-	~noFire();
-	/// Aufräummethoden
-protected:	void Destroy_noFire();
-public:		void Destroy() { Destroy_noFire(); }
+        ~noFire();
+        /// Aufräummethoden
+    protected:  void Destroy_noFire();
+    public:     void Destroy() { Destroy_noFire(); }
 
-	/// Serialisierungsfunktionen
-	protected:	void Serialize_noFire(SerializedGameData * sgd) const;
-	public:		void Serialize(SerializedGameData *sgd) const { Serialize_noFire(sgd); }
+        /// Serialisierungsfunktionen
+    protected:  void Serialize_noFire(SerializedGameData* sgd) const;
+    public:     void Serialize(SerializedGameData* sgd) const { Serialize_noFire(sgd); }
 
-	GO_Type GetGOT() const { return GOT_FIRE; }
+        GO_Type GetGOT() const { return GOT_FIRE; }
 
-	BlockingManner GetBM() const { return BM_GRANITE; }
+        BlockingManner GetBM() const { return BM_GRANITE; }
 
-	/// Zeichnen
-	void Draw(int x, int y);
-	/// Benachrichtigen, wenn neuer gf erreicht wurde
-	void HandleEvent(const unsigned int id);
+        /// Zeichnen
+        void Draw(int x, int y);
+        /// Benachrichtigen, wenn neuer gf erreicht wurde
+        void HandleEvent(const unsigned int id);
 
 };
 

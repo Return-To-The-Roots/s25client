@@ -1,4 +1,4 @@
-// $Id: GameCommands.cpp 8737 2013-05-16 15:42:35Z marcus $
+// $Id: GameCommands.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -32,126 +32,126 @@
 
 using namespace gc;
 
-GameCommand * GameCommand::CreateGameCommand(const Type gst, Serializer * ser)
+GameCommand* GameCommand::CreateGameCommand(const Type gst, Serializer* ser)
 {
-	switch(gst)
-	{
-	default: return NULL;
+    switch(gst)
+    {
+        default: return NULL;
 
-	case SETFLAG: return new SetFlag(ser);
-	case DESTROYFLAG: return new DestroyFlag(ser);
-	case BUILDROAD: return new BuildRoad(ser);
-	case DESTROYROAD: return new DestroyRoad(ser);
-	case CHANGEDISTRIBUTION: return new ChangeDistribution(ser);
-	case CHANGEBUILDORDER: return new ChangeBuildOrder(ser);
-	case SETBUILDINGSITE: return new SetBuildingSite(ser);
-	case DESTROYBUILDING: return new DestroyBuilding(ser);
-	case CHANGETRANSPORT: return new ChangeTransport(ser);
-	case CHANGEMILITARY: return new ChangeMilitary(ser);
-	case CHANGETOOLS: return new ChangeTools(ser);
-	case CALLGEOLOGIST: return new CallGeologist(ser);
-	case CALLSCOUT: return new CallScout(ser);
-	case ATTACK: return new Attack(ser);
-	case SEAATTACK: return new SeaAttack(ser);
-	case SWITCHPLAYER: return new SwitchPlayer(ser);
-	case STOPGOLD: return new StopGold(ser);
-	case STOPPRODUCTION: return new StopProduction(ser);
-	case CHANGEINVENTORYSETTING: return new ChangeInventorySetting(ser);
-	case CHANGEALLINVENTORYSETTINGS: return new ChangeAllInventorySettings(ser);
-	case CHANGERESERVE: return new ChangeReserve(ser);
-	case SUGGESTPACT: return new SuggestPact(ser);
-	case ACCEPTPACT: return new AcceptPact(ser);
-	case CANCELPACT: return new CancelPact(ser);
-	case CHANGESHIPYARDMODE: return new ChangeShipYardMode(ser);
-	case STARTEXPEDITION: return new StartExpedition(ser);
-	case STARTEXPLORATIONEXPEDITION: return new StartExplorationExpedition(ser);
-	case EXPEDITION_COMMAND: return new ExpeditionCommand(ser);
-	case TRADEOVERLAND: return new TradeOverLand(ser);
-	case SURRENDER: return new Surrender(ser);
-	case CHEAT_ARMAGEDDON: return new CheatArmageddon(ser);
-	case DESTROYALL: return new DestroyAll(ser);
-	case UPGRADEROAD: return new UpgradeRoad(ser);
-	}
+        case SETFLAG: return new SetFlag(ser);
+        case DESTROYFLAG: return new DestroyFlag(ser);
+        case BUILDROAD: return new BuildRoad(ser);
+        case DESTROYROAD: return new DestroyRoad(ser);
+        case CHANGEDISTRIBUTION: return new ChangeDistribution(ser);
+        case CHANGEBUILDORDER: return new ChangeBuildOrder(ser);
+        case SETBUILDINGSITE: return new SetBuildingSite(ser);
+        case DESTROYBUILDING: return new DestroyBuilding(ser);
+        case CHANGETRANSPORT: return new ChangeTransport(ser);
+        case CHANGEMILITARY: return new ChangeMilitary(ser);
+        case CHANGETOOLS: return new ChangeTools(ser);
+        case CALLGEOLOGIST: return new CallGeologist(ser);
+        case CALLSCOUT: return new CallScout(ser);
+        case ATTACK: return new Attack(ser);
+        case SEAATTACK: return new SeaAttack(ser);
+        case SWITCHPLAYER: return new SwitchPlayer(ser);
+        case STOPGOLD: return new StopGold(ser);
+        case STOPPRODUCTION: return new StopProduction(ser);
+        case CHANGEINVENTORYSETTING: return new ChangeInventorySetting(ser);
+        case CHANGEALLINVENTORYSETTINGS: return new ChangeAllInventorySettings(ser);
+        case CHANGERESERVE: return new ChangeReserve(ser);
+        case SUGGESTPACT: return new SuggestPact(ser);
+        case ACCEPTPACT: return new AcceptPact(ser);
+        case CANCELPACT: return new CancelPact(ser);
+        case CHANGESHIPYARDMODE: return new ChangeShipYardMode(ser);
+        case STARTEXPEDITION: return new StartExpedition(ser);
+        case STARTEXPLORATIONEXPEDITION: return new StartExplorationExpedition(ser);
+        case EXPEDITION_COMMAND: return new ExpeditionCommand(ser);
+        case TRADEOVERLAND: return new TradeOverLand(ser);
+        case SURRENDER: return new Surrender(ser);
+        case CHEAT_ARMAGEDDON: return new CheatArmageddon(ser);
+        case DESTROYALL: return new DestroyAll(ser);
+        case UPGRADEROAD: return new UpgradeRoad(ser);
+    }
 
-	return NULL;
+    return NULL;
 }
 
 void SetFlag::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
 {
-	gwg.SetFlag(x,y,playerid);
+    gwg.SetFlag(x, y, playerid);
 }
 
 void DestroyFlag::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
 {
-	gwg.DestroyFlag(x,y);
+    gwg.DestroyFlag(x, y);
 }
 void BuildRoad::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
 {
-	gwg.BuildRoad(playerid,boat_road,x,y,route);
+    gwg.BuildRoad(playerid, boat_road, x, y, route);
 }
 void DestroyRoad::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
 {
-	gwg.DestroyRoad(x,y,start_dir);
+    gwg.DestroyRoad(x, y, start_dir);
 }
 void UpgradeRoad::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
 {
-	gwg.UpgradeRoad(x,y,start_dir);
+    gwg.UpgradeRoad(x, y, start_dir);
 }
 void ChangeDistribution::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
 {
-	player.ChangeDistribution(data);
+    player.ChangeDistribution(data);
 }
 void ChangeBuildOrder::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
 {
-	player.ChangeBuildOrder(order_type,data);
+    player.ChangeBuildOrder(order_type, data);
 }
 void SetBuildingSite::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
 {
-	gwg.SetBuildingSite(bt,x,y,playerid);
+    gwg.SetBuildingSite(bt, x, y, playerid);
 }
 void DestroyBuilding::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
 {
-	gwg.DestroyBuilding(x,y,playerid);
+    gwg.DestroyBuilding(x, y, playerid);
 }
 void ChangeTransport::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
 {
-	player.ConvertTransportData(data);
+    player.ConvertTransportData(data);
 }
 void ChangeMilitary::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
 {
-	player.ChangeMilitarySettings(data);
+    player.ChangeMilitarySettings(data);
 }
 void ChangeTools::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
 {
-	player.ChangeToolsSettings(data);
+    player.ChangeToolsSettings(data);
 
-	for (unsigned i = 0; i < TOOL_COUNT; ++i)
-	{
+    for (unsigned i = 0; i < TOOL_COUNT; ++i)
+    {
         player.tools_ordered[i] = std::max(std::min( player.tools_ordered[i] + orders[i], 99 ), 0);
         player.tools_ordered_delta[i] -= orders[i];
 
         if (orders[i] != 0)
             std::cout << ">> Committing an order of " << (int)orders[i] << " for tool #" << i << std::endl;
-	}
+    }
 }
 void CallGeologist::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
 {
-	if(gwg.GetNO(x,y)->GetGOT() == GOT_FLAG)
-		player.CallFlagWorker(x,y,JOB_GEOLOGIST);
+    if(gwg.GetNO(x, y)->GetGOT() == GOT_FLAG)
+        player.CallFlagWorker(x, y, JOB_GEOLOGIST);
 }
 void CallScout::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
 {
-	if(gwg.GetNO(x,y)->GetGOT() == GOT_FLAG)
-		player.CallFlagWorker(x,y,JOB_SCOUT);
+    if(gwg.GetNO(x, y)->GetGOT() == GOT_FLAG)
+        player.CallFlagWorker(x, y, JOB_SCOUT);
 }
 void Attack::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
 {
-	gwg.Attack(playerid,x,y,soldiers_count,strong_soldiers);
+    gwg.Attack(playerid, x, y, soldiers_count, strong_soldiers);
 }
 
 void SeaAttack::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
 {
-	gwg.AttackViaSea(playerid,x,y,soldiers_count,strong_soldiers);
+    gwg.AttackViaSea(playerid, x, y, soldiers_count, strong_soldiers);
 }
 
 void SwitchPlayer::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
@@ -159,105 +159,105 @@ void SwitchPlayer::Execute(GameWorldGame& gwg, GameClientPlayer& player, const u
 }
 void StopGold::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
 {
-	if(gwg.GetNO(x,y)->GetGOT() == GOT_NOB_MILITARY)
-	{
-		if(gwg.GetSpecObj<nobMilitary>(x,y)->GetPlayer() == playerid)
-			gwg.GetSpecObj<nobMilitary>(x,y)->StopGold();
-	}
+    if(gwg.GetNO(x, y)->GetGOT() == GOT_NOB_MILITARY)
+    {
+        if(gwg.GetSpecObj<nobMilitary>(x, y)->GetPlayer() == playerid)
+            gwg.GetSpecObj<nobMilitary>(x, y)->StopGold();
+    }
 }
 void StopProduction::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
 {
-	if(gwg.GetNO(x,y)->GetGOT() == GOT_NOB_USUAL || gwg.GetNO(x,y)->GetGOT() == GOT_NOB_SHIPYARD)
-		gwg.GetSpecObj<nobUsual>(x,y)->StopProduction();
+    if(gwg.GetNO(x, y)->GetGOT() == GOT_NOB_USUAL || gwg.GetNO(x, y)->GetGOT() == GOT_NOB_SHIPYARD)
+        gwg.GetSpecObj<nobUsual>(x, y)->StopProduction();
 }
 void ChangeInventorySetting::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
 {
-	if(gwg.GetNO(x,y)->GetType() == NOP_BUILDING)
-		gwg.GetSpecObj<nobBaseWarehouse>(x,y)
-		->ChangeRealInventorySetting(category,state,type);
+    if(gwg.GetNO(x, y)->GetType() == NOP_BUILDING)
+        gwg.GetSpecObj<nobBaseWarehouse>(x, y)
+        ->ChangeRealInventorySetting(category, state, type);
 }
 void ChangeAllInventorySettings::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
 {
-	if(gwg.GetNO(x,y)->GetType() == NOP_BUILDING)
-		gwg.GetSpecObj<nobBaseWarehouse>(x,y)
-		->ChangeAllRealInventorySettings(category,state);
+    if(gwg.GetNO(x, y)->GetType() == NOP_BUILDING)
+        gwg.GetSpecObj<nobBaseWarehouse>(x, y)
+        ->ChangeAllRealInventorySettings(category, state);
 }
 void ChangeReserve::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
 {
-	if(gwg.GetNO(x,y)->GetType() == NOP_BUILDING)
-		gwg.GetSpecObj<nobBaseWarehouse>(x,y)->SetRealReserve(rank,count);
-	
+    if(gwg.GetNO(x, y)->GetType() == NOP_BUILDING)
+        gwg.GetSpecObj<nobBaseWarehouse>(x, y)->SetRealReserve(rank, count);
+
 }
 void Surrender::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
 {
-	player.Surrender();
+    player.Surrender();
 }
 
 void CheatArmageddon::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
 {
-	gwg.Armageddon();
+    gwg.Armageddon();
 }
 
 void DestroyAll::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
 {
-	 gwg.Armageddon(playerid);
+    gwg.Armageddon(playerid);
 }
 
 void SuggestPact::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
 {
-	player.SuggestPact(this->player,pt,duration);
+    player.SuggestPact(this->player, pt, duration);
 }
 
 void AcceptPact::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
 {
-	::GameClient::inst().GetPlayer(this->player)->AcceptPact(id,pt,playerid);
+    ::GameClient::inst().GetPlayer(this->player)->AcceptPact(id, pt, playerid);
 }
 
 void CancelPact::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
 {
-	player.CancelPact(pt,this->player);
+    player.CancelPact(pt, this->player);
 }
 
 void ChangeShipYardMode::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
 {
-	if(gwg.GetNO(x,y)->GetGOT() == GOT_NOB_SHIPYARD)
-		gwg.GetSpecObj<nobShipYard>(x,y)->ToggleMode();
+    if(gwg.GetNO(x, y)->GetGOT() == GOT_NOB_SHIPYARD)
+        gwg.GetSpecObj<nobShipYard>(x, y)->ToggleMode();
 }
 
 void StartExpedition::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
 {
-	if(gwg.GetNO(x,y)->GetGOT() == GOT_NOB_HARBORBUILDING)
-		gwg.GetSpecObj<nobHarborBuilding>(x,y)->StartExpedition();
+    if(gwg.GetNO(x, y)->GetGOT() == GOT_NOB_HARBORBUILDING)
+        gwg.GetSpecObj<nobHarborBuilding>(x, y)->StartExpedition();
 }
 
 void StartExplorationExpedition::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
 {
-	if(gwg.GetNO(x,y)->GetGOT() == GOT_NOB_HARBORBUILDING)
-		gwg.GetSpecObj<nobHarborBuilding>(x,y)->StartExplorationExpedition();
+    if(gwg.GetNO(x, y)->GetGOT() == GOT_NOB_HARBORBUILDING)
+        gwg.GetSpecObj<nobHarborBuilding>(x, y)->StartExplorationExpedition();
 }
 
 void ExpeditionCommand::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
 {
-	noShip * ship = player.GetShipByID(this->ship_id);
-	if(!ship)
-		return;
-		
-	if(this->action == FOUNDCOLONY)
-	{
-		ship->FoundColony();
-	}
-	else if(this->action == CANCELEXPEDITION)
-		ship->CancelExpedition();
-	else
-	{
-		ship->ContinueExpedition(action-2);
-	}
+    noShip* ship = player.GetShipByID(this->ship_id);
+    if(!ship)
+        return;
+
+    if(this->action == FOUNDCOLONY)
+    {
+        ship->FoundColony();
+    }
+    else if(this->action == CANCELEXPEDITION)
+        ship->CancelExpedition();
+    else
+    {
+        ship->ContinueExpedition(action - 2);
+    }
 }
 
 /// Fuehrt das GameCommand aus
 void TradeOverLand::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
 {
-	noBase * nob = gwg.GetNO(x,y);
-	if(nob->GetGOT() == GOT_NOB_HARBORBUILDING || nob->GetGOT() == GOT_NOB_HQ || nob->GetGOT() == GOT_NOB_STOREHOUSE)
-		player.Trade(static_cast<nobBaseWarehouse*>(nob),gt,job,count);
+    noBase* nob = gwg.GetNO(x, y);
+    if(nob->GetGOT() == GOT_NOB_HARBORBUILDING || nob->GetGOT() == GOT_NOB_HQ || nob->GetGOT() == GOT_NOB_STOREHOUSE)
+        player.Trade(static_cast<nobBaseWarehouse*>(nob), gt, job, count);
 }

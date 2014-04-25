@@ -1,4 +1,4 @@
-// $Id: nofSoldier.h 9177 2014-02-20 17:45:20Z marcus $
+// $Id: nofSoldier.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -27,42 +27,42 @@ class nobBaseMilitary;
 /// Basisklasse für alle Soldatentypen
 class nofSoldier : public noFigure
 {
-protected:
+    protected:
 
-	/// Heimatgebäude, ist bei Soldaten aus HQs das HQ!
-	nobBaseMilitary * building;
-	/// Hitpoints
-	unsigned char hitpoints;
+        /// Heimatgebäude, ist bei Soldaten aus HQs das HQ!
+        nobBaseMilitary* building;
+        /// Hitpoints
+        unsigned char hitpoints;
 
-protected:
+    protected:
 
-	/// Zeichnet den Soldaten beim ganz normalen Laufen
-	void DrawSoldierWalking(int x, int y, bool waitingsoldier=false);
+        /// Zeichnet den Soldaten beim ganz normalen Laufen
+        void DrawSoldierWalking(int x, int y, bool waitingsoldier = false);
 
-private:
-	/// wenn man beim Arbeitsplatz "kündigen" soll, man das Laufen zum Ziel unterbrechen muss (warum auch immer)
-	void AbrogateWorkplace(); 
+    private:
+        /// wenn man beim Arbeitsplatz "kündigen" soll, man das Laufen zum Ziel unterbrechen muss (warum auch immer)
+        void AbrogateWorkplace();
 
-public:
+    public:
 
-	nofSoldier(const unsigned short x, const unsigned short y,const unsigned char player,
-		nobBaseMilitary * const goal,nobBaseMilitary * const home,const unsigned char rank);
-	nofSoldier(const unsigned short x, const unsigned short y,const unsigned char player,
-		nobBaseMilitary * const home,const unsigned char rank);
-	nofSoldier(SerializedGameData * sgd, const unsigned obj_id);
+        nofSoldier(const unsigned short x, const unsigned short y, const unsigned char player,
+                   nobBaseMilitary* const goal, nobBaseMilitary* const home, const unsigned char rank);
+        nofSoldier(const unsigned short x, const unsigned short y, const unsigned char player,
+                   nobBaseMilitary* const home, const unsigned char rank);
+        nofSoldier(SerializedGameData* sgd, const unsigned obj_id);
 
-	/// Aufräummethoden
-protected:	void Destroy_nofSoldier() { Destroy_noFigure(); }
-public:		void Destroy() { Destroy_nofSoldier(); }
+        /// Aufräummethoden
+    protected:  void Destroy_nofSoldier() { Destroy_noFigure(); }
+    public:     void Destroy() { Destroy_nofSoldier(); }
 
-	/// Serialisierungsfunktionen
-	protected:	void Serialize_nofSoldier(SerializedGameData * sgd) const;
-	public:		void Serialize(SerializedGameData *sgd) const { Serialize_nofSoldier(sgd); }
+        /// Serialisierungsfunktionen
+    protected:  void Serialize_nofSoldier(SerializedGameData* sgd) const;
+    public:     void Serialize(SerializedGameData* sgd) const { Serialize_nofSoldier(sgd); }
 
-	/// Liefert Rang des Soldaten
-	unsigned char GetRank() const { return (job-JOB_PRIVATE); }
+        /// Liefert Rang des Soldaten
+        unsigned char GetRank() const { return (job - JOB_PRIVATE); }
 
-	
+
 };
 
 

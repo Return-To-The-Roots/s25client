@@ -1,4 +1,4 @@
-// $Id: nofFarmer.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: nofFarmer.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -24,40 +24,40 @@
 
 class nofFarmer : public nofFarmhand
 {
-private:
+    private:
 
-	/// Was soll gemacht werden: Ernten oder Sähen?
-	bool harvest;
-private:
+        /// Was soll gemacht werden: Ernten oder Sähen?
+        bool harvest;
+    private:
 
-	/// Malt den Arbeiter beim Arbeiten
-	void DrawWorking(int x,int y);
-	/// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren rausträgt (bzw rein)
-	unsigned short GetCarryID() const;
+        /// Malt den Arbeiter beim Arbeiten
+        void DrawWorking(int x, int y);
+        /// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren rausträgt (bzw rein)
+        unsigned short GetCarryID() const;
 
-	/// Abgeleitete Klasse informieren, wenn sie anfängt zu arbeiten (Vorbereitungen)
-	void WorkStarted();
-	/// Abgeleitete Klasse informieren, wenn fertig ist mit Arbeiten
-	void WorkFinished();
-	/// Abgeleitete Klasse informieren, wenn Arbeiten abgebrochen werden müssen
-	void WorkAborted_Farmhand();
+        /// Abgeleitete Klasse informieren, wenn sie anfängt zu arbeiten (Vorbereitungen)
+        void WorkStarted();
+        /// Abgeleitete Klasse informieren, wenn fertig ist mit Arbeiten
+        void WorkFinished();
+        /// Abgeleitete Klasse informieren, wenn Arbeiten abgebrochen werden müssen
+        void WorkAborted_Farmhand();
 
-	/// Returns the quality of this working point or determines if the worker can work here at all
-	PointQuality GetPointQuality(const MapCoord x, const MapCoord y);
+        /// Returns the quality of this working point or determines if the worker can work here at all
+        PointQuality GetPointQuality(const MapCoord x, const MapCoord y);
 
-    bool checkSurrounding(unsigned short x, unsigned short y, int type);
+        bool checkSurrounding(unsigned short x, unsigned short y, int type);
 
-public:
+    public:
 
-	nofFarmer(const unsigned short x, const unsigned short y,const unsigned char player,nobUsual * workplace);
-	nofFarmer(SerializedGameData * sgd, const unsigned obj_id);
+        nofFarmer(const unsigned short x, const unsigned short y, const unsigned char player, nobUsual* workplace);
+        nofFarmer(SerializedGameData* sgd, const unsigned obj_id);
 
 
-	/// Serialisierungsfunktionen
-	protected:	void Serialize_nofFarmer(SerializedGameData * sgd) const;
-	public:		void Serialize(SerializedGameData *sgd) const { Serialize_nofFarmer(sgd); }
+        /// Serialisierungsfunktionen
+    protected:  void Serialize_nofFarmer(SerializedGameData* sgd) const;
+    public:     void Serialize(SerializedGameData* sgd) const { Serialize_nofFarmer(sgd); }
 
-	GO_Type GetGOT() const { return GOT_NOF_FARMER; }
+        GO_Type GetGOT() const { return GOT_NOF_FARMER; }
 
 
 };

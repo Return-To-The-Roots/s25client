@@ -1,4 +1,4 @@
-// $Id: noGranite.cpp 8170 2012-09-07 14:44:26Z marcus $
+// $Id: noGranite.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -32,41 +32,41 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
 noGranite::noGranite(const GraniteType type, const unsigned char state) : noBase(NOP_GRANITE), type(type), state(state)
 {
 }
 
-void noGranite::Serialize_noGranite(SerializedGameData * sgd) const
+void noGranite::Serialize_noGranite(SerializedGameData* sgd) const
 {
-	Serialize_noBase(sgd);
+    Serialize_noBase(sgd);
 
-	sgd->PushUnsignedChar(static_cast<unsigned char>(type));
-	sgd->PushUnsignedChar(state);
+    sgd->PushUnsignedChar(static_cast<unsigned char>(type));
+    sgd->PushUnsignedChar(state);
 }
 
-noGranite::noGranite(SerializedGameData * sgd, const unsigned obj_id) : noBase(sgd,obj_id),
-type(GraniteType(sgd->PopUnsignedChar())),
-state(sgd->PopUnsignedChar())
+noGranite::noGranite(SerializedGameData* sgd, const unsigned obj_id) : noBase(sgd, obj_id),
+    type(GraniteType(sgd->PopUnsignedChar())),
+    state(sgd->PopUnsignedChar())
 {
 }
 
 void noGranite::Draw(int x, int y)
 {
-	Loader::granite_cache[type][state].draw(x,y);
+    Loader::granite_cache[type][state].draw(x, y);
 }
 
-FOWObject * noGranite::CreateFOWObject() const
+FOWObject* noGranite::CreateFOWObject() const
 {
-	return new fowGranite(type,state);
+    return new fowGranite(type, state);
 }
 
 void noGranite::Hew()
 {
-	if(state)
-		--state;
+    if(state)
+        --state;
 }

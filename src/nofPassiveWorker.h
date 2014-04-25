@@ -1,4 +1,4 @@
-// $Id: nofPassiveWorker.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: nofPassiveWorker.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -28,25 +28,26 @@ class noFlag;
 /// und z.B. zum Auslagern benutzt wird ober beim Abbrennen eines Lagerhaus
 class nofPassiveWorker : public noFigure
 {
-private:
-	
-	/// von noFigure aufgerufen
-	void Walked(); // wenn man gelaufen ist
-	void GoalReached(); // wenn das Ziel erreicht wurde
-	void AbrogateWorkplace();
-	void HandleDerivedEvent(const unsigned int id); /// Für alle restlichen Events, die nicht von noFigure behandelt werden
-	
-public:
+    private:
 
-	nofPassiveWorker(const Job job,const unsigned short x, const unsigned short y,const unsigned char player,noRoadNode * goal);
-	nofPassiveWorker(SerializedGameData * sgd, const unsigned obj_id);
+        /// von noFigure aufgerufen
+        void Walked(); // wenn man gelaufen ist
+        void GoalReached(); // wenn das Ziel erreicht wurde
+        void AbrogateWorkplace();
+        void HandleDerivedEvent(const unsigned int id); /// Für alle restlichen Events, die nicht von noFigure behandelt werden
 
-	/// Zeichnen
-	void Draw(int x, int y);
-	
-	GO_Type GetGOT() const {
-		 return GOT_NOF_PASSIVEWORKER;
-	}
+    public:
+
+        nofPassiveWorker(const Job job, const unsigned short x, const unsigned short y, const unsigned char player, noRoadNode* goal);
+        nofPassiveWorker(SerializedGameData* sgd, const unsigned obj_id);
+
+        /// Zeichnen
+        void Draw(int x, int y);
+
+        GO_Type GetGOT() const
+        {
+            return GOT_NOF_PASSIVEWORKER;
+        }
 };
 
 

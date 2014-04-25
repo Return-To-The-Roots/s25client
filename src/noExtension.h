@@ -1,4 +1,4 @@
-// $Id: noExtension.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: noExtension.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -26,28 +26,28 @@
 // Große Gebäude erstrecken sich über 4 Felder, die restlichen 3 werden mit dieser Klasse gefüllt
 class noExtension : public noBase
 {
-public:
-	noExtension(noBase *const base)	: noBase(NOP_EXTENSION), base(base) {}
-	noExtension(SerializedGameData * sgd, const unsigned obj_id);
-	~noExtension();
+    public:
+        noExtension(noBase* const base) : noBase(NOP_EXTENSION), base(base) {}
+        noExtension(SerializedGameData* sgd, const unsigned obj_id);
+        ~noExtension();
 
-	void Destroy() { Destroy_noExtension(); }
-	noBase *GetBaseObject() const { return base; }
-	void Draw(int x, int y) {}
+        void Destroy() { Destroy_noExtension(); }
+        noBase* GetBaseObject() const { return base; }
+        void Draw(int x, int y) {}
 
-	/// Serialisierungsfunktionen
-	protected:	void Serialize_noExtension(SerializedGameData * sgd) const;
-	public:		void Serialize(SerializedGameData *sgd) const { Serialize_noExtension(sgd); }
+        /// Serialisierungsfunktionen
+    protected:  void Serialize_noExtension(SerializedGameData* sgd) const;
+    public:     void Serialize(SerializedGameData* sgd) const { Serialize_noExtension(sgd); }
 
-	GO_Type GetGOT() const { return GOT_EXTENSION; }
+        GO_Type GetGOT() const { return GOT_EXTENSION; }
 
-	BlockingManner GetBM() const { return BM_SINGLEBLOCKING; }
+        BlockingManner GetBM() const { return BM_SINGLEBLOCKING; }
 
-protected:
-	void Destroy_noExtension() { Destroy_noBase(); }
+    protected:
+        void Destroy_noExtension() { Destroy_noBase(); }
 
-private:
-	noBase *base;
+    private:
+        noBase* base;
 };
 
 #endif // !NOEXTENSION_H_INCLUDED

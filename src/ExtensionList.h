@@ -1,4 +1,4 @@
-// $Id: ExtensionList.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: ExtensionList.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -22,38 +22,38 @@
 #pragma once
 
 #ifdef _WIN32
-	#include <windows.h>
+#include <windows.h>
 #endif // _WIN32
 
 #ifdef __APPLE__
-	#include <OpenGL/gl.h>
-	#include <OpenGL/glext.h>
+#include <OpenGL/gl.h>
+#include <OpenGL/glext.h>
 
-	#define GL_COMBINE_EXT                    0x8570
-	#define GL_RGB_SCALE_EXT                  0x8573
+#define GL_COMBINE_EXT                    0x8570
+#define GL_RGB_SCALE_EXT                  0x8573
 #else
-	#include <GL/gl.h>
-	#include <GL/glext.h>
+#include <GL/gl.h>
+#include <GL/glext.h>
 #endif // !__APPLE__
 
 // WGL_EXT_swap_control
 #ifdef _WIN32
-	typedef BOOL (APIENTRY *PFNWGLSWAPINTERVALFARPROC)(int);
+typedef BOOL (APIENTRY* PFNWGLSWAPINTERVALFARPROC)(int);
 #else
-	typedef int (*PFNWGLSWAPINTERVALFARPROC)(int);
+typedef int (*PFNWGLSWAPINTERVALFARPROC)(int);
 #endif
 
 extern PFNWGLSWAPINTERVALFARPROC wglSwapIntervalEXT;
 
 #ifndef __APPLE__
-	// GL_ARB_vertex_buffer_object
-	extern PFNGLBINDBUFFERARBPROC glBindBufferARB; // VBO Bind-Prozedur
-	extern PFNGLDELETEBUFFERSARBPROC glDeleteBuffersARB; // VBO Lösch-Prozedur
-	extern PFNGLGENBUFFERSARBPROC glGenBuffersARB; // VBO Namens Generations-Prozedur
-	extern PFNGLBUFFERDATAARBPROC glBufferDataARB; // VBO Daten-Lade-Prozedur
-	extern PFNGLBUFFERSUBDATAARBPROC glBufferSubDataARB; /// VBO Daten-Änder-Prozedur
-	// GL_EXT_paletted_texture
-	extern PFNGLCOLORTABLEEXTPROC glColorTableEXT;
+// GL_ARB_vertex_buffer_object
+extern PFNGLBINDBUFFERARBPROC glBindBufferARB; // VBO Bind-Prozedur
+extern PFNGLDELETEBUFFERSARBPROC glDeleteBuffersARB; // VBO Lösch-Prozedur
+extern PFNGLGENBUFFERSARBPROC glGenBuffersARB; // VBO Namens Generations-Prozedur
+extern PFNGLBUFFERDATAARBPROC glBufferDataARB; // VBO Daten-Lade-Prozedur
+extern PFNGLBUFFERSUBDATAARBPROC glBufferSubDataARB; /// VBO Daten-Änder-Prozedur
+// GL_EXT_paletted_texture
+extern PFNGLCOLORTABLEEXTPROC glColorTableEXT;
 #endif // !__APPLE__
 
 #endif // EXTENSIONLIST_H_INCLUDED

@@ -1,4 +1,4 @@
-// $Id: dskAboutRTTR.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: dskAboutRTTR.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -30,9 +30,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -51,21 +51,21 @@
  */
 dskAboutRTTR::dskAboutRTTR(void) : Desktop(LOADER.GetImageN("menu", 0))
 {
-	// "Zurück"
-	AddTextButton(0, 300, 550, 200, 22, TC_RED1, _("Back"),NormalFont);
+    // "Zurück"
+    AddTextButton(0, 300, 550, 200, 22, TC_RED1, _("Back"), NormalFont);
 
-	AddImage(11, 20, 20, LOADER.GetImageN("logo", 0));
+    AddImage(11, 20, 20, LOADER.GetImageN("logo", 0));
 }
 
 
 void dskAboutRTTR::Msg_ButtonClick(const unsigned int ctrl_id)
 {
-	switch(ctrl_id)
-	{
-	case 0: // "Zurück"
-		{
-			WindowManager::inst().Switch(new dskMainMenu);
-		} break;
-	}
+    switch(ctrl_id)
+    {
+        case 0: // "Zurück"
+        {
+            WindowManager::inst().Switch(new dskMainMenu);
+        } break;
+    }
 }
 

@@ -1,4 +1,4 @@
-// $Id: dskCredits.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: dskCredits.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -28,50 +28,53 @@
 /// Klasse des Credits Desktops.
 class dskCredits : public Desktop
 {
-public:
-	/// Konstruktor von @p dskCredits.
-	dskCredits();
-	~dskCredits();
+    public:
+        /// Konstruktor von @p dskCredits.
+        dskCredits();
+        ~dskCredits();
 
-private:
-	bool Msg_KeyDown(const KeyEvent& ke);
-	void Msg_PaintAfter();
-	void Msg_ButtonClick(const unsigned ctrl_id);
+    private:
+        bool Msg_KeyDown(const KeyEvent& ke);
+        void Msg_PaintAfter();
+        void Msg_ButtonClick(const unsigned ctrl_id);
 
-	bool Close(void);
+        bool Close(void);
 
-	struct CreditsEntry {
-		std::string title;
-		std::string lastLine;
-		int picId;
-		struct Line {
-			Line(std::string l, unsigned int c = 0) : line(l), column(c) { }
-			std::string line;
-			unsigned int column;
-		};
-		std::list<Line> lines;
-	};
+        struct CreditsEntry
+        {
+            std::string title;
+            std::string lastLine;
+            int picId;
+            struct Line
+            {
+                Line(std::string l, unsigned int c = 0) : line(l), column(c) { }
+                std::string line;
+                unsigned int column;
+            };
+            std::list<Line> lines;
+        };
 
-	std::list<CreditsEntry> entries;
-	std::list<dskCredits::CreditsEntry>::iterator it;
+        std::list<CreditsEntry> entries;
+        std::list<dskCredits::CreditsEntry>::iterator it;
 
-	struct Bob {
-		unsigned int id;
-		bool hasWare;
-		bool isFat;
-		unsigned int direction;
-		unsigned char speed;
-		unsigned int animationStep;
-		short x;
-		short y;
-		unsigned int color;
-	};
+        struct Bob
+        {
+            unsigned int id;
+            bool hasWare;
+            bool isFat;
+            unsigned int direction;
+            unsigned char speed;
+            unsigned int animationStep;
+            short x;
+            short y;
+            unsigned int color;
+        };
 
-	std::list<Bob> bobs;
+        std::list<Bob> bobs;
 
-	unsigned int startTime;
-	unsigned int bobTime;
-	unsigned int bobSpawnTime;
+        unsigned int startTime;
+        unsigned int bobTime;
+        unsigned int bobSpawnTime;
 };
 
 #endif // !dskCREDITS_H_INCLUDED

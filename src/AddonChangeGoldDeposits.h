@@ -1,4 +1,4 @@
-// $Id: AddonChangeGoldDeposits.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: AddonChangeGoldDeposits.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -32,24 +32,24 @@
  */
 class AddonChangeGoldDeposits : public AddonList
 {
-public:
-	AddonChangeGoldDeposits() : AddonList(ADDON_CHANGE_GOLD_DEPOSITS, 
-										  ADDONGROUP_MILITARY|ADDONGROUP_ECONOMY,
-											gettext_noop("Change gold deposits"), 
-											gettext_noop("Allows to play games without gold.\n\n"
-														 "You can choose to remove gold resources completely,\n"
-														 "to convert them into iron ore, coal or granite.\n\n"
-														 "You'll probably want to convert gold to iron ore, as this (on most maps)\n"
-														 "allows you to utilize the additional coal not needed for minting anymore."),
-											0
-										 )
-	{
-		addOption(gettext_noop("No change"));
-		addOption(gettext_noop("Remove gold completely"));
-		addOption(gettext_noop("Convert to iron ore"));
-		addOption(gettext_noop("Convert to coal"));
-		addOption(gettext_noop("Convert to granite"));	
-	}
+    public:
+        AddonChangeGoldDeposits() : AddonList(ADDON_CHANGE_GOLD_DEPOSITS,
+                                                  ADDONGROUP_MILITARY | ADDONGROUP_ECONOMY,
+                                                  gettext_noop("Change gold deposits"),
+                                                  gettext_noop("Allows to play games without gold.\n\n"
+                                                          "You can choose to remove gold resources completely,\n"
+                                                          "to convert them into iron ore, coal or granite.\n\n"
+                                                          "You'll probably want to convert gold to iron ore, as this (on most maps)\n"
+                                                          "allows you to utilize the additional coal not needed for minting anymore."),
+                                                  0
+                                                 )
+        {
+            addOption(gettext_noop("No change"));
+            addOption(gettext_noop("Remove gold completely"));
+            addOption(gettext_noop("Convert to iron ore"));
+            addOption(gettext_noop("Convert to coal"));
+            addOption(gettext_noop("Convert to granite"));
+        }
 };
 
 #endif // !ADDONCHANGEGOLDDEPOSITS_H_INCLUDED

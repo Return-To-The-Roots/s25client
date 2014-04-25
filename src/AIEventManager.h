@@ -1,4 +1,4 @@
-// $Id: AIEventManager.h 8277 2012-09-16 17:59:43Z marcus $
+// $Id: AIEventManager.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -28,87 +28,87 @@
 
 namespace AIEvent
 {
-	enum AIEventType
-	{
-		BuildingDestroyed,
-		BuildingConquered,
-		BuildingLost,
-		BuildingOccupied,
-		BorderChanged,
-		TerritoryLost,
-		NoMoreResourcesReachable,
-		BuildingFinished,
-		ExpeditionWaiting,
-		TreeChopped,
-		ShipBuilt,
-		ResourceUsed,
-		RoadConstructionComplete,
-		RoadConstructionFailed,
-		NewColonyFounded
-	};
+    enum AIEventType
+    {
+        BuildingDestroyed,
+        BuildingConquered,
+        BuildingLost,
+        BuildingOccupied,
+        BorderChanged,
+        TerritoryLost,
+        NoMoreResourcesReachable,
+        BuildingFinished,
+        ExpeditionWaiting,
+        TreeChopped,
+        ShipBuilt,
+        ResourceUsed,
+        RoadConstructionComplete,
+        RoadConstructionFailed,
+        NewColonyFounded
+    };
 
 
-	class Base
-	{
-	public:
-		Base(AIEventType type) : type(type) { }
-		virtual ~Base() { }
-		AIEventType GetType() const { return type; }
+    class Base
+    {
+        public:
+            Base(AIEventType type) : type(type) { }
+            virtual ~Base() { }
+            AIEventType GetType() const { return type; }
 
-	protected:
-		AIEventType type;
-	};
+        protected:
+            AIEventType type;
+    };
 
 
-	class Location : public Base
-	{
-	public:
-		Location(AIEventType type, MapCoord x, MapCoord y) : Base(type), x(x), y(y) { }
-		~Location() { }
-		MapCoord GetX() const { return x; }
-		MapCoord GetY() const { return y; }
+    class Location : public Base
+    {
+        public:
+            Location(AIEventType type, MapCoord x, MapCoord y) : Base(type), x(x), y(y) { }
+            ~Location() { }
+            MapCoord GetX() const { return x; }
+            MapCoord GetY() const { return y; }
 
-	protected:
-		MapCoord x, y;
-	};
+        protected:
+            MapCoord x, y;
+    };
 
-	class Direction : public Location
-	{
-	public:
-		Direction(AIEventType type, MapCoord x, MapCoord y, unsigned char direction) : Location(type, x, y), direction(direction) { }
-		~Direction() { }
-		unsigned char GetDirection() const { return direction; }
+    class Direction : public Location
+    {
+        public:
+            Direction(AIEventType type, MapCoord x, MapCoord y, unsigned char direction) : Location(type, x, y), direction(direction) { }
+            ~Direction() { }
+            unsigned char GetDirection() const { return direction; }
 
-	protected:
-		unsigned char direction;
-	};
+        protected:
+            unsigned char direction;
+    };
 
-	class Building : public Location
-	{
-	public:
-		Building(AIEventType type, MapCoord x, MapCoord y, BuildingType building) : Location(type, x, y), building(building) { }
-		~Building() { }
-		BuildingType GetBuildingType() const { return building; }
+    class Building : public Location
+    {
+        public:
+            Building(AIEventType type, MapCoord x, MapCoord y, BuildingType building) : Location(type, x, y), building(building) { }
+            ~Building() { }
+            BuildingType GetBuildingType() const { return building; }
 
-	protected:
-		BuildingType building;
-	};
+        protected:
+            BuildingType building;
+    };
 
 
 }
 
 class AIEventManager
 {
-public:
-	AIEventManager(void);
-	~AIEventManager(void);
-	void AddAIEvent(AIEvent::Base *ev) { events.push(ev); }
-	AIEvent::Base *GetEvent();
-	bool EventAvailable() const { return events.size() > 0; }
-	unsigned GetEventNum() const { return events.size(); }
+    public:
+        AIEventManager(void);
+        ~AIEventManager(void);
+        void AddAIEvent(AIEvent::Base* ev) { events.push(ev); }
+        AIEvent::Base* GetEvent();
+        bool EventAvailable() const { return events.size() > 0; }
+        unsigned GetEventNum() const { return events.size(); }
 
-protected:
-	std::queue<AIEvent::Base *> events;
+    protected:
+        std::queue<AIEvent::Base*> events;
 };
 
 

@@ -1,4 +1,4 @@
-// $Id: ctrlDeepening.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: ctrlDeepening.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -26,33 +26,33 @@
 
 class ctrlDeepening : public ctrlText
 {
-public:
-	ctrlDeepening(Window *parent, unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, const std::string& text, glArchivItem_Font *font, unsigned int color);
+    public:
+        ctrlDeepening(Window* parent, unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, const std::string& text, glArchivItem_Font* font, unsigned int color);
 
-protected:
-	virtual bool Draw_(void);
-	/// Abgeleitete Klassen müssen erweiterten Inhalt zeichnen
-	virtual void DrawContent() const {}
+    protected:
+        virtual bool Draw_(void);
+        /// Abgeleitete Klassen müssen erweiterten Inhalt zeichnen
+        virtual void DrawContent() const {}
 
-private:
-	TextureColor tc;
+    private:
+        TextureColor tc;
 };
 
 /// Colored Deepening
 class ctrlColorDeepening : public ctrlDeepening, public ColorControlInterface
 {
-public:
-	ctrlColorDeepening(Window *parent, unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, unsigned int fillColor);
+    public:
+        ctrlColorDeepening(Window* parent, unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, unsigned int fillColor);
 
-	/// Setzt die Farbe des Controls
-	virtual void SetColor(const unsigned int fill_color);
+        /// Setzt die Farbe des Controls
+        virtual void SetColor(const unsigned int fill_color);
 
-protected:
-	void DrawContent() const;
+    protected:
+        void DrawContent() const;
 
-protected:
-	unsigned short width, height;
-	unsigned int fillColor;
+    protected:
+        unsigned short width, height;
+        unsigned int fillColor;
 };
 
 #endif // !CTRLDEEPENING_H_INCLUDED

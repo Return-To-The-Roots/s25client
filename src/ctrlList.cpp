@@ -1,4 +1,4 @@
-// $Id: ctrlList.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: ctrlList.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -28,9 +28,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -39,20 +39,20 @@
  *
  *  @author OLiver
  */
-ctrlList::ctrlList(Window *parent, 
-				   unsigned int id,
-				   unsigned short x,
-				   unsigned short y,
-				   unsigned short width,
-				   unsigned short height,
-				   TextureColor tc,
-				   glArchivItem_Font *font)
-	: Window(x, y, id, parent, width, height),
-	tc(tc), font(font), selection(0xFFFF), mouseover(0xFFFF)
+ctrlList::ctrlList(Window* parent,
+                   unsigned int id,
+                   unsigned short x,
+                   unsigned short y,
+                   unsigned short width,
+                   unsigned short height,
+                   TextureColor tc,
+                   glArchivItem_Font* font)
+    : Window(x, y, id, parent, width, height),
+      tc(tc), font(font), selection(0xFFFF), mouseover(0xFFFF)
 {
-	pagesize = (height - 4) / font->getHeight();
-	
-	AddScrollBar(0, width - 20, 0, 20, height, 20, tc, pagesize);
+    pagesize = (height - 4) / font->getHeight();
+
+    AddScrollBar(0, width - 20, 0, 20, height, 20, tc, pagesize);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -63,151 +63,151 @@ ctrlList::ctrlList(Window *parent,
  */
 ctrlList::~ctrlList()
 {
-	DeleteAllItems();
+    DeleteAllItems();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author FloSoft
  */
 bool ctrlList::Msg_MouseMove(const MouseCoords& mc)
 {
-	ctrlScrollBar *scrollbar = GetCtrl<ctrlScrollBar>(0);
+    ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
 
-	// Wenn Maus in der Liste
-	if(Coll(mc.x, mc.y, GetX() + 2, GetY() + 2, width - 22, height - 4))
-	{
-		// Neue Selektierung
-		mouseover = (mc.y - (GetY() + 2) ) / font->getHeight();
-		WindowManager::inst().SetToolTip(this, 
-			((font->getWidth(GetItemText(mouseover)) > width - 22) ?
-			  GetItemText(mouseover) : ""));
-		return true;
-	}
+    // Wenn Maus in der Liste
+    if(Coll(mc.x, mc.y, GetX() + 2, GetY() + 2, width - 22, height - 4))
+    {
+        // Neue Selektierung
+        mouseover = (mc.y - (GetY() + 2) ) / font->getHeight();
+        WindowManager::inst().SetToolTip(this,
+                                         ((font->getWidth(GetItemText(mouseover)) > width - 22) ?
+                                          GetItemText(mouseover) : ""));
+        return true;
+    }
 
-	// Mouse-Over deaktivieren und Tooltip entfernen
-	mouseover = 0xFFFF;
-	WindowManager::inst().SetToolTip(this, "");
+    // Mouse-Over deaktivieren und Tooltip entfernen
+    mouseover = 0xFFFF;
+    WindowManager::inst().SetToolTip(this, "");
 
-	// Für die Scrollbar weiterleiten
-	return scrollbar->Msg_MouseMove(mc);
+    // Für die Scrollbar weiterleiten
+    return scrollbar->Msg_MouseMove(mc);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author FloSoft
  */
 bool ctrlList::Msg_LeftDown(const MouseCoords& mc)
 {
-	ctrlScrollBar *scrollbar = GetCtrl<ctrlScrollBar>(0);
+    ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
 
-	// Wenn Maus in der Liste
-	if(Coll(mc.x, mc.y, GetX() + 2, GetY() + 2, width - 22, height - 4))
-	{
-		// Tooltip löschen, sonst bleibt er ewig
-		WindowManager::inst().SetToolTip(this, "");
+    // Wenn Maus in der Liste
+    if(Coll(mc.x, mc.y, GetX() + 2, GetY() + 2, width - 22, height - 4))
+    {
+        // Tooltip löschen, sonst bleibt er ewig
+        WindowManager::inst().SetToolTip(this, "");
 
-		// aktuellen Eintrag selektieren
-		selection = mouseover + scrollbar->GetPos();
-		
-		if(parent) parent->Msg_ListSelectItem(id,selection);
-		// Doppelklick? Dann noch einen extra Eventhandler aufrufen
-		if(mc.dbl_click && parent) parent->Msg_ListChooseItem(id,selection);
+        // aktuellen Eintrag selektieren
+        selection = mouseover + scrollbar->GetPos();
 
-		return true;
-	}
+        if(parent) parent->Msg_ListSelectItem(id, selection);
+        // Doppelklick? Dann noch einen extra Eventhandler aufrufen
+        if(mc.dbl_click && parent) parent->Msg_ListChooseItem(id, selection);
 
-	// Für die Scrollbar weiterleiten
-	return scrollbar->Msg_LeftDown(mc);
+        return true;
+    }
+
+    // Für die Scrollbar weiterleiten
+    return scrollbar->Msg_LeftDown(mc);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author FloSoft
  */
 bool ctrlList::Msg_RightDown(const MouseCoords& mc)
 {
-	ctrlScrollBar *scrollbar = GetCtrl<ctrlScrollBar>(0);
+    ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
 
-	// Wenn Maus in der Liste
-	if(Coll(mc.x, mc.y, GetX() + 2, GetY() + 2, width - 22, height - 4))
-	{
-		// Tooltip löschen, sonst bleibt er ewig
-		WindowManager::inst().SetToolTip(this, "");
+    // Wenn Maus in der Liste
+    if(Coll(mc.x, mc.y, GetX() + 2, GetY() + 2, width - 22, height - 4))
+    {
+        // Tooltip löschen, sonst bleibt er ewig
+        WindowManager::inst().SetToolTip(this, "");
 
-		// aktuellen Eintrag selektieren
-		selection = mouseover + scrollbar->GetPos();
-		parent->Msg_ListSelectItem(id,selection);
+        // aktuellen Eintrag selektieren
+        selection = mouseover + scrollbar->GetPos();
+        parent->Msg_ListSelectItem(id, selection);
 
-		return true;
-	}
+        return true;
+    }
 
-	// Für die Scrollbar weiterleiten
-	return scrollbar->Msg_RightDown(mc);
+    // Für die Scrollbar weiterleiten
+    return scrollbar->Msg_RightDown(mc);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author FloSoft
  */
 bool ctrlList::Msg_LeftUp(const MouseCoords& mc)
 {
-	ctrlScrollBar *scrollbar = GetCtrl<ctrlScrollBar>(0);
+    ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
 
-	// Für die Scrollbar weiterleiten
-	return scrollbar->Msg_LeftUp(mc);
-} 
+    // Für die Scrollbar weiterleiten
+    return scrollbar->Msg_LeftUp(mc);
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author Divan
  */
 bool ctrlList::Msg_WheelUp(const MouseCoords& mc)
 {
-	// Forward to ScrollBar
-	ctrlScrollBar *scrollbar = GetCtrl<ctrlScrollBar>(0);
+    // Forward to ScrollBar
+    ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
 
-	// If mouse in list or scrollbar
-	if(Coll(mc.x, mc.y, GetX() + 2, GetY() + 2, width - /*2*/2, height - 4))
-	{
-		// Simulate Button Click
-		scrollbar->Msg_ButtonClick(0);
-		return true;
-	}
-	
-	return false;
+    // If mouse in list or scrollbar
+    if(Coll(mc.x, mc.y, GetX() + 2, GetY() + 2, width - /*2*/2, height - 4))
+    {
+        // Simulate Button Click
+        scrollbar->Msg_ButtonClick(0);
+        return true;
+    }
+
+    return false;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author Divan
  */
 bool ctrlList::Msg_WheelDown(const MouseCoords& mc)
 {
-	// Forward to ScrollBar
-	ctrlScrollBar *scrollbar = GetCtrl<ctrlScrollBar>(0);
+    // Forward to ScrollBar
+    ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
 
-	// If mouse in list
-	if(Coll(mc.x, mc.y, GetX() + 2, GetY() + 2, width - /*2*/2, height - 4))
-	{
-		// Simulate Button Click
-		scrollbar->Msg_ButtonClick(1);
-		return true;
-	}
+    // If mouse in list
+    if(Coll(mc.x, mc.y, GetX() + 2, GetY() + 2, width - /*2*/2, height - 4))
+    {
+        // Simulate Button Click
+        scrollbar->Msg_ButtonClick(1);
+        return true;
+    }
 
-	return false;
+    return false;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -220,29 +220,29 @@ bool ctrlList::Msg_WheelDown(const MouseCoords& mc)
  */
 bool ctrlList::Draw_(void)
 {
-	ctrlScrollBar *scrollbar = GetCtrl<ctrlScrollBar>(0);
+    ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
 
-	// Box malen
-	Draw3D(GetX(), GetY(), width, height, tc, 2);
+    // Box malen
+    Draw3D(GetX(), GetY(), width, height, tc, 2);
 
-	// Scrolleiste zeichnen
-	DrawControls();
+    // Scrolleiste zeichnen
+    DrawControls();
 
-	// Wieviele Linien anzeigen?
-	unsigned show_lines = (pagesize > lines.size() ? unsigned(lines.size()) : pagesize);
+    // Wieviele Linien anzeigen?
+    unsigned show_lines = (pagesize > lines.size() ? unsigned(lines.size()) : pagesize);
 
-	// Listeneinträge zeichnen
-	for(unsigned short i = 0;i < show_lines; ++i)
-	{
-		// Schwarze Markierung, wenn die Maus drauf ist
-		if(i == mouseover)
-			DrawRectangle(GetX() + 2, GetY() + 2 + i * font->getHeight(), width - 22, font->getHeight(), 0x80000000);
+    // Listeneinträge zeichnen
+    for(unsigned short i = 0; i < show_lines; ++i)
+    {
+        // Schwarze Markierung, wenn die Maus drauf ist
+        if(i == mouseover)
+            DrawRectangle(GetX() + 2, GetY() + 2 + i * font->getHeight(), width - 22, font->getHeight(), 0x80000000);
 
-		// Text an sich
-		font->Draw(GetX() + 2, GetY() + 2 + i*font->getHeight(), lines[i+scrollbar->GetPos()], 0, (selection == i + scrollbar->GetPos() ? 0xFFFFAA00 : 0xFFFFFF00), 0, width - 22);
-	}
+        // Text an sich
+        font->Draw(GetX() + 2, GetY() + 2 + i * font->getHeight(), lines[i + scrollbar->GetPos()], 0, (selection == i + scrollbar->GetPos() ? 0xFFFFAA00 : 0xFFFFFF00), 0, width - 22);
+    }
 
-	return true;
+    return true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -253,10 +253,10 @@ bool ctrlList::Draw_(void)
  */
 void ctrlList::AddString(const std::string& text)
 {
-	// lines-Array ggf vergrößern
-	lines.push_back(text);
+    // lines-Array ggf vergrößern
+    lines.push_back(text);
 
-	GetCtrl<ctrlScrollBar>(0)->SetRange(static_cast<unsigned short>(lines.size()));
+    GetCtrl<ctrlScrollBar>(0)->SetRange(static_cast<unsigned short>(lines.size()));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -267,7 +267,7 @@ void ctrlList::AddString(const std::string& text)
  */
 void ctrlList::SetString(const std::string& text, const unsigned id)
 {
-	lines[id] = text;
+    lines[id] = text;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -278,8 +278,8 @@ void ctrlList::SetString(const std::string& text, const unsigned id)
  */
 void ctrlList::DeleteAllItems()
 {
-	lines.clear();
-	selection = 0xFFFF;
+    lines.clear();
+    selection = 0xFFFF;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -294,10 +294,10 @@ void ctrlList::DeleteAllItems()
  */
 const std::string& ctrlList::GetItemText(unsigned short line) const
 {
-	if(line < lines.size())
-		return lines.at(line);
+    if(line < lines.size())
+        return lines.at(line);
 
-	return EMPTY_STRING;
+    return EMPTY_STRING;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -311,20 +311,20 @@ const std::string& ctrlList::GetItemText(unsigned short line) const
  */
 void ctrlList::Resize_(unsigned short width, unsigned short height)
 {
-	ctrlScrollBar *scrollbar = GetCtrl<ctrlScrollBar>(0);
-	scrollbar->Move(width - 20, 0);
-	scrollbar->Resize(20, height);
+    ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
+    scrollbar->Move(width - 20, 0);
+    scrollbar->Resize(20, height);
 
-	pagesize = (height-4) / font->getHeight();
+    pagesize = (height - 4) / font->getHeight();
 
-	scrollbar->SetPageSize(pagesize);
+    scrollbar->SetPageSize(pagesize);
 
-	// If the size was enlarged we have to check that we don't try to
-	// display more lines than present
-	if(height > this->height)
-	while(lines.size() - scrollbar->GetPos() < pagesize 
-	      && scrollbar->GetPos() > 0)
-		scrollbar->SetPos(scrollbar->GetPos()-1);
+    // If the size was enlarged we have to check that we don't try to
+    // display more lines than present
+    if(height > this->height)
+        while(lines.size() - scrollbar->GetPos() < pagesize
+                && scrollbar->GetPos() > 0)
+            scrollbar->SetPos(scrollbar->GetPos() - 1);
 
 }
 
@@ -336,14 +336,14 @@ void ctrlList::Resize_(unsigned short width, unsigned short height)
  */
 void ctrlList::Swap(unsigned short first, unsigned short second)
 {
-	// Evtl Selection auf das jeweilige Element beibehalten?
-	if(first == selection)
-		selection = second;
-	else if(second == selection)
-		selection = first;
+    // Evtl Selection auf das jeweilige Element beibehalten?
+    if(first == selection)
+        selection = second;
+    else if(second == selection)
+        selection = first;
 
-	// Strings vertauschen
-	::Swap(lines[first], lines[second]);
+    // Strings vertauschen
+    ::Swap(lines[first], lines[second]);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -354,14 +354,14 @@ void ctrlList::Swap(unsigned short first, unsigned short second)
  */
 void ctrlList::Remove(const unsigned short index)
 {
-	if(index < lines.size())
-	{
-		lines.erase(lines.begin() + index);
+    if(index < lines.size())
+    {
+        lines.erase(lines.begin() + index);
 
-		// Ggf. selection korrigieren
-		if(selection)
-			--selection;
-		else
-			selection = 0xFFFF;
-	}
+        // Ggf. selection korrigieren
+        if(selection)
+            --selection;
+        else
+            selection = 0xFFFF;
+    }
 }

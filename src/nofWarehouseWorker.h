@@ -1,4 +1,4 @@
-// $Id: nofWarehouseWorker.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: nofWarehouseWorker.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -37,56 +37,56 @@ class nobBaseWarehouse;
 /// Der "Warehouse-Worker" ist ein einfacher(er) Träger, der die Waren aus dem Lagerhaus holt
 class nofWarehouseWorker : public noFigure
 {
-	// Mein Lagerhaus, in dem ich arbeite, darf auch mal ein bisschen was an mir ändern
-	friend class nobBaseWarehouse;
+        // Mein Lagerhaus, in dem ich arbeite, darf auch mal ein bisschen was an mir ändern
+        friend class nobBaseWarehouse;
 
-private:
+    private:
 
-	// Die Ware, die er gerade trägt (GD_NOTHING wenn er nix trägt?)
-	Ware * carried_ware;
+        // Die Ware, die er gerade trägt (GD_NOTHING wenn er nix trägt?)
+        Ware* carried_ware;
 
-	// Aufgabe, die der Warenhaustyp hat (Ware raustragen (0) oder reinholen)
-	const bool task;
+        // Aufgabe, die der Warenhaustyp hat (Ware raustragen (0) oder reinholen)
+        const bool task;
 
-	// Bin ich fett? (werde immer mal dünn oder fett, damits nicht immer gleich aussieht, wenn jemand rauskommt)
-	bool fat;
-	
+        // Bin ich fett? (werde immer mal dünn oder fett, damits nicht immer gleich aussieht, wenn jemand rauskommt)
+        bool fat;
 
-private:
 
-	void GoalReached();
-	void Walked();
-	/// wenn man beim Arbeitsplatz "kündigen" soll, man das Laufen zum Ziel unterbrechen muss (warum auch immer)
-	void AbrogateWorkplace(); 
+    private:
 
-	void HandleDerivedEvent(const unsigned int id);
+        void GoalReached();
+        void Walked();
+        /// wenn man beim Arbeitsplatz "kündigen" soll, man das Laufen zum Ziel unterbrechen muss (warum auch immer)
+        void AbrogateWorkplace();
 
-	
+        void HandleDerivedEvent(const unsigned int id);
 
-public:
 
-	nofWarehouseWorker(const unsigned short x, const unsigned short y, const unsigned char player,Ware * ware,const bool task);
-	nofWarehouseWorker(SerializedGameData * sgd, const unsigned obj_id);
 
-	~nofWarehouseWorker();
+    public:
 
-		/// Aufräummethoden
-protected:	void Destroy_nofWarehouseWorker();
-public:		void Destroy() { Destroy_nofWarehouseWorker(); }
+        nofWarehouseWorker(const unsigned short x, const unsigned short y, const unsigned char player, Ware* ware, const bool task);
+        nofWarehouseWorker(SerializedGameData* sgd, const unsigned obj_id);
 
-		/// Serialisierungsfunktionen
-	protected:	void Serialize_nofWarehouseWorker(SerializedGameData * sgd) const;
-	public:		void Serialize(SerializedGameData *sgd) const { Serialize_nofWarehouseWorker(sgd); }
+        ~nofWarehouseWorker();
 
-	GO_Type GetGOT() const { return GOT_NOF_WAREHOUSEWORKER; }
+        /// Aufräummethoden
+    protected:  void Destroy_nofWarehouseWorker();
+    public:     void Destroy() { Destroy_nofWarehouseWorker(); }
 
-	void Draw(int x, int y);
+        /// Serialisierungsfunktionen
+    protected:  void Serialize_nofWarehouseWorker(SerializedGameData* sgd) const;
+    public:     void Serialize(SerializedGameData* sgd) const { Serialize_nofWarehouseWorker(sgd); }
 
-	// Ware nach draußen bringen (von Lagerhaus aus aufgerufen)
-	void CarryWare(Ware * ware);
-	
-	/// Mitglied von nem Lagerhaus(Lagerhausarbeiter, die die Träger-Bestände nicht beeinflussen?)
-	bool MemberOfWarehouse() const { return true; }
+        GO_Type GetGOT() const { return GOT_NOF_WAREHOUSEWORKER; }
+
+        void Draw(int x, int y);
+
+        // Ware nach draußen bringen (von Lagerhaus aus aufgerufen)
+        void CarryWare(Ware* ware);
+
+        /// Mitglied von nem Lagerhaus(Lagerhausarbeiter, die die Träger-Bestände nicht beeinflussen?)
+        bool MemberOfWarehouse() const { return true; }
 
 };
 

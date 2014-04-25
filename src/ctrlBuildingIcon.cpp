@@ -1,4 +1,4 @@
-// $Id: ctrlBuildingIcon.cpp 8209 2012-09-10 14:55:39Z marcus $
+// $Id: ctrlBuildingIcon.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -26,9 +26,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -37,16 +37,16 @@
  *
  *  @author OLiver
  */
-ctrlBuildingIcon::ctrlBuildingIcon(Window * const parent,
-								   const unsigned int id,
-								   const unsigned short x,
-								   const unsigned short y,
-								   const BuildingType type,
-								   const Nation nation,
-								   const unsigned short size,
-								   const std::string& tooltip)
-	: ctrlButton(parent, id, x, y, size, size, TC_GREY,tooltip),
-	type(type), nation(nation), size(size)
+ctrlBuildingIcon::ctrlBuildingIcon(Window* const parent,
+                                   const unsigned int id,
+                                   const unsigned short x,
+                                   const unsigned short y,
+                                   const BuildingType type,
+                                   const Nation nation,
+                                   const unsigned short size,
+                                   const std::string& tooltip)
+    : ctrlButton(parent, id, x, y, size, size, TC_GREY, tooltip),
+      type(type), nation(nation), size(size)
 {}
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -57,17 +57,17 @@ ctrlBuildingIcon::ctrlBuildingIcon(Window * const parent,
  */
 bool ctrlBuildingIcon::Draw_(void)
 {
-	// Prüfen, ob bei gehighlighteten Button die Maus auch noch über dem Button ist
-	TestMouseOver();
+    // Prüfen, ob bei gehighlighteten Button die Maus auch noch über dem Button ist
+    TestMouseOver();
 
-	if(state == BUTTON_HOVER || state == BUTTON_PRESSED)
-		LOADER.GetImageN("io", 0)->Draw(GetX(), GetY(), size, size, size, size, 0, 0);
+    if(state == BUTTON_HOVER || state == BUTTON_PRESSED)
+        LOADER.GetImageN("io", 0)->Draw(GetX(), GetY(), size, size, size, size, 0, 0);
 
-	glArchivItem_Bitmap * image = LOADER.GetImageN(NATION_ICON_IDS[nation], type);
-	if(image)
-		image->Draw(GetX() + size / 2, GetY() + size / 2, 0, 0, 0, 0, 0, 0, (state == BUTTON_PRESSED ? 0xFFFFFF00 : 0xFFFFFFFF));
+    glArchivItem_Bitmap* image = LOADER.GetImageN(NATION_ICON_IDS[nation], type);
+    if(image)
+        image->Draw(GetX() + size / 2, GetY() + size / 2, 0, 0, 0, 0, 0, 0, (state == BUTTON_PRESSED ? 0xFFFFFF00 : 0xFFFFFFFF));
 
-	return true;
+    return true;
 }
 
 

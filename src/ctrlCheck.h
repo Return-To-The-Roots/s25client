@@ -1,4 +1,4 @@
-// $Id: ctrlCheck.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: ctrlCheck.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -25,25 +25,25 @@
 
 class ctrlCheck : public Window
 {
-public:
-	ctrlCheck(Window *parent, unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, const std::string& text, glArchivItem_Font *font, bool readonly);
+    public:
+        ctrlCheck(Window* parent, unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, const std::string& text, glArchivItem_Font* font, bool readonly);
 
-	void SetCheck(bool check) { this->check = check; }
-	bool GetCheck() const { return check; }
-	void SetReadOnly(bool readonly) { this->readonly = readonly; }
-	bool GetReadOnly() const { return readonly; }
+        void SetCheck(bool check) { this->check = check; }
+        bool GetCheck() const { return check; }
+        void SetReadOnly(bool readonly) { this->readonly = readonly; }
+        bool GetReadOnly() const { return readonly; }
 
-	virtual bool Msg_LeftDown(const MouseCoords& mc);
+        virtual bool Msg_LeftDown(const MouseCoords& mc);
 
-protected:
-	virtual bool Draw_(void);
+    protected:
+        virtual bool Draw_(void);
 
-private:
-	TextureColor tc;
-	std::string text;
-	glArchivItem_Font *font;
-	bool check;
-	bool readonly;
+    private:
+        TextureColor tc;
+        std::string text;
+        glArchivItem_Font* font;
+        bool check;
+        bool readonly;
 };
 
 #endif // !CTRLCHECK_H_INCLUDED

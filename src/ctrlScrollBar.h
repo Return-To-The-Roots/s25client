@@ -1,4 +1,4 @@
-// $Id: ctrlScrollBar.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: ctrlScrollBar.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -25,42 +25,42 @@
 
 class ctrlScrollBar : public Window
 {
-public:
-	ctrlScrollBar(Window *parent,unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, unsigned short button_height, TextureColor tc, unsigned short pagesize);
-	void SetPos(unsigned short scroll_pos);
-	void SetRange(unsigned short scroll_range);
-	void SetPageSize(unsigned short pagesize);
+    public:
+        ctrlScrollBar(Window* parent, unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, unsigned short button_height, TextureColor tc, unsigned short pagesize);
+        void SetPos(unsigned short scroll_pos);
+        void SetRange(unsigned short scroll_range);
+        void SetPageSize(unsigned short pagesize);
 
-	unsigned short GetPageSize() const { return pagesize; }
-	unsigned short GetPos() const { return scroll_pos; }
+        unsigned short GetPageSize() const { return pagesize; }
+        unsigned short GetPos() const { return scroll_pos; }
 
-	virtual bool Msg_LeftUp(const MouseCoords& mc);
-	virtual bool Msg_LeftDown(const MouseCoords& mc);
-	virtual bool Msg_MouseMove(const MouseCoords& mc);
-	virtual void Msg_ButtonClick(const unsigned int ctrl_id);
+        virtual bool Msg_LeftUp(const MouseCoords& mc);
+        virtual bool Msg_LeftDown(const MouseCoords& mc);
+        virtual bool Msg_MouseMove(const MouseCoords& mc);
+        virtual void Msg_ButtonClick(const unsigned int ctrl_id);
 
-protected:
-	virtual bool Draw_(void);
+    protected:
+        virtual bool Draw_(void);
 
-	void Resize_(unsigned short width, unsigned short height);
+        void Resize_(unsigned short width, unsigned short height);
 
-private:
-	void CalculatePosition() { scroll_pos = (scrollbar_pos * scroll_range / scroll_height); }
-	void CalculateScrollBar(unsigned short height = 0);
+    private:
+        void CalculatePosition() { scroll_pos = (scrollbar_pos * scroll_range / scroll_height); }
+        void CalculateScrollBar(unsigned short height = 0);
 
-private:
-	unsigned short button_height;
-	TextureColor tc;
-	unsigned short pagesize;
+    private:
+        unsigned short button_height;
+        TextureColor tc;
+        unsigned short pagesize;
 
-	bool move;
-	unsigned short scroll_range;
-	unsigned short scroll_pos;
-	unsigned short scroll_height;
-	unsigned short scrollbar_height;
-	unsigned short scrollbar_pos;
+        bool move;
+        unsigned short scroll_range;
+        unsigned short scroll_pos;
+        unsigned short scroll_height;
+        unsigned short scrollbar_height;
+        unsigned short scrollbar_pos;
 
-	int last_y;
+        int last_y;
 };
 
 #endif // !CTRLSCROLLBAR_H_INCLUDED

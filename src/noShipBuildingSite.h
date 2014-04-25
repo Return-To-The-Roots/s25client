@@ -1,4 +1,4 @@
-// $Id: noShipBuildingSite.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: noShipBuildingSite.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -24,33 +24,33 @@
 /// Menschliches Skelett (Zierobjekt, das sich automatisch umwandelt und dann verschwindet)
 class noShipBuildingSite: public noCoordBase
 {
-public:
+    public:
 
-	noShipBuildingSite(const unsigned short x, const unsigned short y, const unsigned char player);
-	noShipBuildingSite(SerializedGameData * sgd, const unsigned obj_id);
-	~noShipBuildingSite();
-	void Destroy();
-	void Serialize(SerializedGameData *sgd) const;
-	GO_Type GetGOT() const { return GOT_SHIPBUILDINGSITE; }
+        noShipBuildingSite(const unsigned short x, const unsigned short y, const unsigned char player);
+        noShipBuildingSite(SerializedGameData* sgd, const unsigned obj_id);
+        ~noShipBuildingSite();
+        void Destroy();
+        void Serialize(SerializedGameData* sgd) const;
+        GO_Type GetGOT() const { return GOT_SHIPBUILDINGSITE; }
 
-	/// Gibt den Eigentümer zurück
-	unsigned char GetPlayer() const { return player; }
+        /// Gibt den Eigentümer zurück
+        unsigned char GetPlayer() const { return player; }
 
-	/// Das Schiff wird um eine Stufe weitergebaut
-	void MakeBuildStep();
+        /// Das Schiff wird um eine Stufe weitergebaut
+        void MakeBuildStep();
 
-	BlockingManner GetBM() const { return BM_HUT; }
+        BlockingManner GetBM() const { return BM_HUT; }
 
-protected:	
+    protected:
 
-	void Draw(int x, int y);
+        void Draw(int x, int y);
 
-private:
+    private:
 
-	/// Spieler, dem dieses Schiff gehört
-	unsigned char player;
-	/// Baufortschritt des Schiffes
-	unsigned char progress;
+        /// Spieler, dem dieses Schiff gehört
+        unsigned char player;
+        /// Baufortschritt des Schiffes
+        unsigned char progress;
 
 };
 

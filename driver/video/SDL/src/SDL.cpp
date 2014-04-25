@@ -1,4 +1,4 @@
-// $Id: SDL.cpp 8917 2013-08-27 19:10:22Z marcus $
+// $Id: SDL.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -38,7 +38,7 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
-/** 
+/**
  *  Instanzierungsfunktion von @p VideoSDL.
  *
  *  @param[in] CallBack DriverCallback für Rückmeldungen.
@@ -47,22 +47,22 @@ static char THIS_FILE[] = __FILE__;
  *
  *  @author FloSoft
  */
-DRIVERDLLAPI VideoDriver *CreateVideoInstance(VideoDriverLoaderInterface * CallBack)
+DRIVERDLLAPI VideoDriver* CreateVideoInstance(VideoDriverLoaderInterface* CallBack)
 {
-	return new VideoSDL(CallBack);
+    return new VideoSDL(CallBack);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/** 
+/**
  *  Namensfunktion von @p VideoSDL.
  *
  *  @return liefert den Namen des Treibers.
  *
  *  @author OLiver
  */
-DRIVERDLLAPI const char *GetDriverName(void)
+DRIVERDLLAPI const char* GetDriverName(void)
 {
-	return "(SDL) OpenGL via SDL-Library";
+    return "(SDL) OpenGL via SDL-Library";
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -87,47 +87,47 @@ DRIVERDLLAPI const char *GetDriverName(void)
  *
  *  @author FloSoft
  */
-static VideoSDL *pVideoSDL = NULL;
+static VideoSDL* pVideoSDL = NULL;
 
 ///////////////////////////////////////////////////////////////////////////////
-/** 
+/**
  *  Konstruktor von @p VideoSDL.
  *
  *  @param[in] CallBack DriverCallback für Rückmeldungen.
  *
  *  @author FloSoft
  */
-VideoSDL::VideoSDL(VideoDriverLoaderInterface * CallBack) : VideoDriver(CallBack), screen(NULL)
+VideoSDL::VideoSDL(VideoDriverLoaderInterface* CallBack) : VideoDriver(CallBack), screen(NULL)
 {
-	pVideoSDL = this;
+    pVideoSDL = this;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/** 
+/**
  *  Destruktor von @p VideoSDL.
  *
  *  @author FloSoft
  */
 VideoSDL::~VideoSDL(void)
 {
-	pVideoSDL = NULL;
+    pVideoSDL = NULL;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/** 
+/**
  *  Funktion zum Auslesen des Treibernamens.
  *
  *  @return liefert den Treibernamen zurück
  *
  *  @author FloSoft
  */
-const char *VideoSDL::GetName(void) const
+const char* VideoSDL::GetName(void) const
 {
-	return GetDriverName();
+    return GetDriverName();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/** 
+/**
  *  Treiberinitialisierungsfunktion.
  *
  *  @return @p true bei Erfolg, @p false bei Fehler
@@ -136,41 +136,41 @@ const char *VideoSDL::GetName(void) const
  */
 bool VideoSDL::Initialize(void)
 {
-	if( SDL_InitSubSystem( SDL_INIT_VIDEO ) < 0 )
-	{
-		fprintf(stderr, "%s\n", SDL_GetError());
-		initialized = false;
-		return false;
-	}
+    if( SDL_InitSubSystem( SDL_INIT_VIDEO ) < 0 )
+    {
+        fprintf(stderr, "%s\n", SDL_GetError());
+        initialized = false;
+        return false;
+    }
 
-	initialized = true;
+    initialized = true;
 
-	// Unicode-Support einschalten
-	SDL_EnableUNICODE(1);
+    // Unicode-Support einschalten
+    SDL_EnableUNICODE(1);
 
-	// Key-Repeat einschalten
-	SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
+    // Key-Repeat einschalten
+    SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
 
-	return initialized;
+    return initialized;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/** 
+/**
  *  Treiberaufräumfunktion.
  *
  *  @author FloSoft
  */
 void VideoSDL::CleanUp(void)
 {
-	// Fenster vernichten
-	SDL_QuitSubSystem(SDL_INIT_VIDEO);
+    // Fenster vernichten
+    SDL_QuitSubSystem(SDL_INIT_VIDEO);
 
-	// nun sind wir nicht mehr initalisiert
-	initialized = false;
+    // nun sind wir nicht mehr initalisiert
+    initialized = false;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/** 
+/**
  *  Erstellt das Fenster mit entsprechenden Werten.
  *
  *  @param[in] width      Breite des Fensters
@@ -183,54 +183,54 @@ void VideoSDL::CleanUp(void)
  */
 bool VideoSDL::CreateScreen(unsigned short width, unsigned short height, const bool fullscreen)
 {
-	char title[512];
+    char title[512];
 
-	if(!initialized)
-		return false;
+    if(!initialized)
+        return false;
 
-	// TODO: Icon setzen
+    // TODO: Icon setzen
 
 
-	// GL-Attribute setzen
-	SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
-	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
-	SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
-	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 1);
+    // GL-Attribute setzen
+    SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
+    SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
+    SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+    SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 1);
 
 #ifdef _WIN32
-	// das spinnt ja total unter windows ...
-	this->fullscreen = false;
+    // das spinnt ja total unter windows ...
+    this->fullscreen = false;
 #else
-	this->fullscreen = fullscreen;
+    this->fullscreen = fullscreen;
 #endif
 
-	// Videomodus setzen
-	if(!(screen = SDL_SetVideoMode(width, height, 32, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_OPENGL | (this->fullscreen ? SDL_FULLSCREEN : SDL_RESIZABLE))))
-	{
-		fprintf(stderr, "%s\n", SDL_GetError());
-		return false;
-	}
+    // Videomodus setzen
+    if(!(screen = SDL_SetVideoMode(width, height, 32, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_OPENGL | (this->fullscreen ? SDL_FULLSCREEN : SDL_RESIZABLE))))
+    {
+        fprintf(stderr, "%s\n", SDL_GetError());
+        return false;
+    }
 
-	sprintf(title, "%s - v%s-%s", GetWindowTitle(), GetWindowVersion(), GetWindowRevision());
-	SDL_WM_SetCaption(title, 0);
+    sprintf(title, "%s - v%s-%s", GetWindowTitle(), GetWindowVersion(), GetWindowRevision());
+    SDL_WM_SetCaption(title, 0);
 
 #ifdef _WIN32
-	SetWindowTextA(GetConsoleWindow(), title);
+    SetWindowTextA(GetConsoleWindow(), title);
 #endif
 
-	memset(keyboard, false, sizeof(bool) * 512);
+    memset(keyboard, false, sizeof(bool) * 512);
 
-	this->screenWidth  = width;
-	this->screenHeight = height;
+    this->screenWidth  = width;
+    this->screenHeight = height;
 
-	SDL_ShowCursor(SDL_DISABLE);
+    SDL_ShowCursor(SDL_DISABLE);
 
-	return true;
+    return true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/** 
+/**
  *  Erstellt oder verändert das Fenster mit entsprechenden Werten.
  *
  *  @param[in] width      Breite des Fensters
@@ -245,44 +245,44 @@ bool VideoSDL::CreateScreen(unsigned short width, unsigned short height, const b
  */
 bool VideoSDL::ResizeScreen(unsigned short width, unsigned short height, const bool fullscreen)
 {
-	if(!initialized)
-		return false;
+    if(!initialized)
+        return false;
 
-	this->screenWidth  = width;
-	this->screenHeight = height;
+    this->screenWidth  = width;
+    this->screenHeight = height;
 
 #ifdef _WIN32
-	// das spinnt ja total unter windows ...
-	this->fullscreen = false;
+    // das spinnt ja total unter windows ...
+    this->fullscreen = false;
 #else
-	this->fullscreen = fullscreen;
+    this->fullscreen = fullscreen;
 #endif
 
-	// Videomodus setzen
-	if(!(screen = SDL_SetVideoMode(width, height, 32, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_OPENGL | (this->fullscreen ? SDL_FULLSCREEN : SDL_RESIZABLE))))
-	{
-		fprintf(stderr, "%s\n", SDL_GetError());
-		return false;
-	}
+    // Videomodus setzen
+    if(!(screen = SDL_SetVideoMode(width, height, 32, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_OPENGL | (this->fullscreen ? SDL_FULLSCREEN : SDL_RESIZABLE))))
+    {
+        fprintf(stderr, "%s\n", SDL_GetError());
+        return false;
+    }
 
-	return true;
+    return true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/** 
+/**
  *  Schliesst das Fenster.
  *
  *  @author FloSoft
  */
 void VideoSDL::DestroyScreen(void)
 {
-	// Fenster schliessen
-	CleanUp();
-	Initialize();
+    // Fenster schliessen
+    CleanUp();
+    Initialize();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/** 
+/**
  *  Wechselt die OpenGL-Puffer.
  *
  *  @return @p true bei Erfolg, @p false bei Fehler
@@ -291,14 +291,14 @@ void VideoSDL::DestroyScreen(void)
  */
 bool VideoSDL::SwapBuffers(void)
 {
-	// Puffer wechseln
-	SDL_GL_SwapBuffers();
+    // Puffer wechseln
+    SDL_GL_SwapBuffers();
 
-	return true;
+    return true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/** 
+/**
  *  Die Nachrichtenschleife.
  *
  *  @return @p true bei Erfolg, @p false bei Fehler
@@ -307,133 +307,133 @@ bool VideoSDL::SwapBuffers(void)
  */
 bool VideoSDL::MessageLoop(void)
 {
-	SDL_Event ev;
+    SDL_Event ev;
 
-	static bool mouse_motion = 0;
+    static bool mouse_motion = 0;
 
-	while(SDL_PollEvent(&ev))
-	{
-		switch(ev.type)
-		{
-		default:
-			break;
+    while(SDL_PollEvent(&ev))
+    {
+        switch(ev.type)
+        {
+            default:
+                break;
 
-		case SDL_QUIT:
-			return false;
+            case SDL_QUIT:
+                return false;
 
-		case SDL_VIDEORESIZE:
-			{
-				screenWidth = ev.resize.w;
-				screenHeight = ev.resize.h;
+            case SDL_VIDEORESIZE:
+            {
+                screenWidth = ev.resize.w;
+                screenHeight = ev.resize.h;
 
-				CallBack->ScreenResized(screenWidth, screenHeight);
-			} break;	
+                CallBack->ScreenResized(screenWidth, screenHeight);
+            } break;
 
-		case SDL_KEYDOWN:
-			{
-				KeyEvent ke = { KT_INVALID, 0, false, false, false };
+            case SDL_KEYDOWN:
+            {
+                KeyEvent ke = { KT_INVALID, 0, false, false, false };
 
-				switch(ev.key.keysym.sym)
-				{
-				default:
-					{
-						// Die 12 F-Tasten
-						if(ev.key.keysym.sym >= SDLK_F1 && ev.key.keysym.sym <= SDLK_F12)
-							ke.kt = static_cast<KeyType>(KT_F1 + ev.key.keysym.sym-SDLK_F1);
-					} break;
-				case SDLK_RETURN:    ke.kt = KT_RETURN; break;
-				case SDLK_SPACE:     ke.kt = KT_SPACE; break;
-				case SDLK_LEFT:      ke.kt = KT_LEFT; break;
-				case SDLK_RIGHT:     ke.kt = KT_RIGHT; break;
-				case SDLK_UP:        ke.kt = KT_UP; break;
-				case SDLK_DOWN:      ke.kt = KT_DOWN; break;
-				case SDLK_BACKSPACE: ke.kt = KT_BACKSPACE; break;
-				case SDLK_DELETE:    ke.kt = KT_DELETE; break;
-				case SDLK_LSHIFT:    ke.kt = KT_SHIFT; break;
-				case SDLK_RSHIFT:    ke.kt = KT_SHIFT; break;
-				case SDLK_TAB:       ke.kt = KT_TAB; break;
-				case SDLK_HOME:		 ke.kt = KT_HOME; break;
-				case SDLK_END:		 ke.kt = KT_END; break;
-				case SDLK_ESCAPE:	 ke.kt = KT_ESCAPE; break;
-				case SDLK_BACKQUOTE: ev.key.keysym.unicode = '^'; break;
-				}
+                switch(ev.key.keysym.sym)
+                {
+                    default:
+                    {
+                        // Die 12 F-Tasten
+                        if(ev.key.keysym.sym >= SDLK_F1 && ev.key.keysym.sym <= SDLK_F12)
+                            ke.kt = static_cast<KeyType>(KT_F1 + ev.key.keysym.sym - SDLK_F1);
+                    } break;
+                    case SDLK_RETURN:    ke.kt = KT_RETURN; break;
+                    case SDLK_SPACE:     ke.kt = KT_SPACE; break;
+                    case SDLK_LEFT:      ke.kt = KT_LEFT; break;
+                    case SDLK_RIGHT:     ke.kt = KT_RIGHT; break;
+                    case SDLK_UP:        ke.kt = KT_UP; break;
+                    case SDLK_DOWN:      ke.kt = KT_DOWN; break;
+                    case SDLK_BACKSPACE: ke.kt = KT_BACKSPACE; break;
+                    case SDLK_DELETE:    ke.kt = KT_DELETE; break;
+                    case SDLK_LSHIFT:    ke.kt = KT_SHIFT; break;
+                    case SDLK_RSHIFT:    ke.kt = KT_SHIFT; break;
+                    case SDLK_TAB:       ke.kt = KT_TAB; break;
+                    case SDLK_HOME:      ke.kt = KT_HOME; break;
+                    case SDLK_END:       ke.kt = KT_END; break;
+                    case SDLK_ESCAPE:    ke.kt = KT_ESCAPE; break;
+                    case SDLK_BACKQUOTE: ev.key.keysym.unicode = '^'; break;
+                }
 
-				/// Strg, Alt, usw gedrückt?
-				if(ev.key.keysym.mod & KMOD_CTRL) ke.ctrl = true;
-				if(ev.key.keysym.mod & KMOD_SHIFT) ke.shift = true;
-				if(ev.key.keysym.mod & KMOD_ALT) ke.alt = true;
+                /// Strg, Alt, usw gedrückt?
+                if(ev.key.keysym.mod & KMOD_CTRL) ke.ctrl = true;
+                if(ev.key.keysym.mod & KMOD_SHIFT) ke.shift = true;
+                if(ev.key.keysym.mod & KMOD_ALT) ke.alt = true;
 
-				if(ke.kt == KT_INVALID)
-				{
-					ke.kt = KT_CHAR;
-					ke.c = ev.key.keysym.unicode;
-				}
-				
-				CallBack->Msg_KeyDown(ke);
-			} break;
-		case SDL_MOUSEBUTTONDOWN:
-			{
-				mouse_xy.x = ev.button.x;
-				mouse_xy.y = ev.button.y;
+                if(ke.kt == KT_INVALID)
+                {
+                    ke.kt = KT_CHAR;
+                    ke.c = ev.key.keysym.unicode;
+                }
 
-				if(/*!mouse_xy.ldown && */(ev.button.button == SDL_BUTTON_LEFT))
-				{
-					mouse_xy.ldown = true;
-					CallBack->Msg_LeftDown(mouse_xy);
-				}
-				if(/*!mouse_xy.rdown &&*/ (ev.button.button == SDL_BUTTON_RIGHT))
-				{
-					mouse_xy.rdown = true;
-					CallBack->Msg_RightDown(mouse_xy);
-				}
-			} break;
-		case SDL_MOUSEBUTTONUP:
-			{
-				mouse_xy.x = ev.button.x;
-				mouse_xy.y = ev.button.y;
+                CallBack->Msg_KeyDown(ke);
+            } break;
+            case SDL_MOUSEBUTTONDOWN:
+            {
+                mouse_xy.x = ev.button.x;
+                mouse_xy.y = ev.button.y;
 
-				if(/*mouse_xy.ldown &&*/ (ev.button.button == SDL_BUTTON_LEFT))
-				{
-					mouse_xy.ldown = false;
-					CallBack->Msg_LeftUp(mouse_xy);
-				}
-				if(/*mouse_xy.rdown &&*/ (ev.button.button == SDL_BUTTON_RIGHT))
-				{
-					mouse_xy.rdown = false;
-					CallBack->Msg_RightUp(mouse_xy);
-				}
-				if(ev.button.button == SDL_BUTTON_WHEELUP)
-				{
-					CallBack->Msg_WheelUp(mouse_xy);
-				}
-				if(ev.button.button == SDL_BUTTON_WHEELDOWN)
-				{
-					CallBack->Msg_WheelDown(mouse_xy);
-				}
+                if(/*!mouse_xy.ldown && */(ev.button.button == SDL_BUTTON_LEFT))
+                {
+                    mouse_xy.ldown = true;
+                    CallBack->Msg_LeftDown(mouse_xy);
+                }
+                if(/*!mouse_xy.rdown &&*/ (ev.button.button == SDL_BUTTON_RIGHT))
+                {
+                    mouse_xy.rdown = true;
+                    CallBack->Msg_RightDown(mouse_xy);
+                }
+            } break;
+            case SDL_MOUSEBUTTONUP:
+            {
+                mouse_xy.x = ev.button.x;
+                mouse_xy.y = ev.button.y;
 
-			} break;
-		case SDL_MOUSEMOTION:
-			{
-				if(!mouse_motion)
-				{
-					mouse_xy.x = ev.motion.x;
-					mouse_xy.y = ev.motion.y;
+                if(/*mouse_xy.ldown &&*/ (ev.button.button == SDL_BUTTON_LEFT))
+                {
+                    mouse_xy.ldown = false;
+                    CallBack->Msg_LeftUp(mouse_xy);
+                }
+                if(/*mouse_xy.rdown &&*/ (ev.button.button == SDL_BUTTON_RIGHT))
+                {
+                    mouse_xy.rdown = false;
+                    CallBack->Msg_RightUp(mouse_xy);
+                }
+                if(ev.button.button == SDL_BUTTON_WHEELUP)
+                {
+                    CallBack->Msg_WheelUp(mouse_xy);
+                }
+                if(ev.button.button == SDL_BUTTON_WHEELDOWN)
+                {
+                    CallBack->Msg_WheelDown(mouse_xy);
+                }
 
-					mouse_motion = 1;
-					CallBack->Msg_MouseMove(mouse_xy);
-				}
+            } break;
+            case SDL_MOUSEMOTION:
+            {
+                if(!mouse_motion)
+                {
+                    mouse_xy.x = ev.motion.x;
+                    mouse_xy.y = ev.motion.y;
+
+                    mouse_motion = 1;
+                    CallBack->Msg_MouseMove(mouse_xy);
+                }
 
 
-			} break;
-		}
-	}
+            } break;
+        }
+    }
 
-	mouse_motion = 0;
-	return true;
+    mouse_motion = 0;
+    return true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/** 
+/**
  *  Funktion zum Auslesen des TickCounts.
  *
  *  @return liefert den TickCount
@@ -442,11 +442,11 @@ bool VideoSDL::MessageLoop(void)
  */
 unsigned long VideoSDL::GetTickCount(void) const
 {
-	return SDL_GetTicks();
+    return SDL_GetTicks();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/** 
+/**
  *   Listet verfügbare Videomodi auf
  *
  *  @param[in,out] video_modes Der Vector mit den Videomodes
@@ -455,18 +455,18 @@ unsigned long VideoSDL::GetTickCount(void) const
  */
 void VideoSDL::ListVideoModes(std::vector<VideoMode>& video_modes) const
 {
-	SDL_Rect** modes = SDL_ListModes(NULL, SDL_FULLSCREEN|SDL_HWSURFACE);
+    SDL_Rect** modes = SDL_ListModes(NULL, SDL_FULLSCREEN | SDL_HWSURFACE);
 
-	for (unsigned int i = 0; modes[i]; ++i)
-	{
-		VideoMode vm = { modes[i]->w, modes[i]->h };
-		if(std::find(video_modes.begin(), video_modes.end(), vm) == video_modes.end())
-			video_modes.push_back(vm);
-	}
+    for (unsigned int i = 0; modes[i]; ++i)
+    {
+        VideoMode vm = { modes[i]->w, modes[i]->h };
+        if(std::find(video_modes.begin(), video_modes.end(), vm) == video_modes.end())
+            video_modes.push_back(vm);
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/** 
+/**
  *  Funktion zum Holen einer Subfunktion.
  *
  *  @param[in] function Name der Funktion welche geholt werden soll.
@@ -475,13 +475,13 @@ void VideoSDL::ListVideoModes(std::vector<VideoMode>& video_modes) const
  *
  *  @author FloSoft
  */
-void *VideoSDL::GetFunction(const char *function) const
+void* VideoSDL::GetFunction(const char* function) const
 {
-	return SDL_GL_GetProcAddress(function);
+    return SDL_GL_GetProcAddress(function);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/** 
+/**
  *  Funktion zum Setzen der Mauskoordinaten.
  *
  *  @param[in] x X-Koordinate
@@ -491,13 +491,13 @@ void *VideoSDL::GetFunction(const char *function) const
  */
 void VideoSDL::SetMousePos(int x, int y)
 {
-	mouse_xy.x = x;
-	mouse_xy.y = y;
-	SDL_WarpMouse(x, y);
+    mouse_xy.x = x;
+    mouse_xy.y = y;
+    SDL_WarpMouse(x, y);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/** 
+/**
  *  Funktion zum Setzen der X-Koordinate der Maus.
  *
  *  @param[in] x X-Koordinate
@@ -506,11 +506,11 @@ void VideoSDL::SetMousePos(int x, int y)
  */
 void VideoSDL::SetMousePosX(int x)
 {
-	SetMousePos(x, mouse_xy.y);
+    SetMousePos(x, mouse_xy.y);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/** 
+/**
  *  Funktion zum Setzen der Y-Koordinate der Maus.
  *
  *  @param[in] y Y-Koordinate
@@ -519,32 +519,32 @@ void VideoSDL::SetMousePosX(int x)
  */
 void VideoSDL::SetMousePosY(int y)
 {
-	SetMousePos(mouse_xy.x, y);
+    SetMousePos(mouse_xy.x, y);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/** 
+/**
  *  Get state of the modifier keys
  *
  *  @author Divan
  */
 KeyEvent VideoSDL::GetModKeyState(void) const
 {
-	const SDLMod modifiers = SDL_GetModState();
-	const KeyEvent ke = { KT_INVALID, 0, ( (modifiers & KMOD_CTRL) != 0), ( (modifiers & KMOD_SHIFT) != 0), ( (modifiers & KMOD_ALT) != 0)};
-	return ke;
+    const SDLMod modifiers = SDL_GetModState();
+    const KeyEvent ke = { KT_INVALID, 0, ( (modifiers& KMOD_CTRL) != 0), ( (modifiers& KMOD_SHIFT) != 0), ( (modifiers& KMOD_ALT) != 0)};
+    return ke;
 }
 
 /// Gibt Pointer auf ein Fenster zurück (device-dependent!), HWND unter Windows
-void * VideoSDL::GetWindowPointer() const
+void* VideoSDL::GetWindowPointer() const
 {
 #ifdef WIN32
-	SDL_SysWMinfo wmInfo;
-	SDL_VERSION(&wmInfo.version);
-	SDL_GetWMInfo(&wmInfo);
-	//return (void*)wmInfo.info.win.window;
-	return (void*)wmInfo.window;
+    SDL_SysWMinfo wmInfo;
+    SDL_VERSION(&wmInfo.version);
+    SDL_GetWMInfo(&wmInfo);
+    //return (void*)wmInfo.info.win.window;
+    return (void*)wmInfo.window;
 #else
-	return NULL;
+    return NULL;
 #endif
 }

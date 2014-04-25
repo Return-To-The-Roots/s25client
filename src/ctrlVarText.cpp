@@ -1,4 +1,4 @@
-// $Id: ctrlVarText.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: ctrlVarText.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -25,9 +25,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -47,28 +47,28 @@
  *
  *  @author FloSoft
  */
-ctrlVarText::ctrlVarText(Window *parent, 
-						 unsigned int id, 
-						 unsigned short x, 
-						 unsigned short y, 
-						 const std::string& formatstr, 
-						 unsigned int color, 
-						 unsigned int format, 
-						 glArchivItem_Font *font,
-						 unsigned int count,
-						 va_list liste)
-	: ctrlText(parent, id, x, y, formatstr, color, format, font)
+ctrlVarText::ctrlVarText(Window* parent,
+                         unsigned int id,
+                         unsigned short x,
+                         unsigned short y,
+                         const std::string& formatstr,
+                         unsigned int color,
+                         unsigned int format,
+                         glArchivItem_Font* font,
+                         unsigned int count,
+                         va_list liste)
+    : ctrlText(parent, id, x, y, formatstr, color, format, font)
 {
-	// Pointerliste einlesen
-	if(count > 0)
-	{
-		// Pointerliste anlegen
-		vars = new void*[count];
+    // Pointerliste einlesen
+    if(count > 0)
+    {
+        // Pointerliste anlegen
+        vars = new void*[count];
 
-		// und zuweisen
-		for(unsigned int i = 0; i < count; ++i)
-			vars[i] = va_arg(liste, void*);
-	}
+        // und zuweisen
+        for(unsigned int i = 0; i < count; ++i)
+            vars[i] = va_arg(liste, void*);
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -79,8 +79,8 @@ ctrlVarText::ctrlVarText(Window *parent,
  */
 ctrlVarText::~ctrlVarText()
 {
-	// Pointerliste aufräumen
-	delete[] vars;
+    // Pointerliste aufräumen
+    delete[] vars;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -93,48 +93,48 @@ ctrlVarText::~ctrlVarText()
  */
 bool ctrlVarText::Draw_(void)
 {
-	char buffer[1025];
+    char buffer[1025];
 
-	for(unsigned int i = 0, j = 0, k = 0; i < text.length() && j < 1024; ++i)
-	{
-		if(text[i] == '%')
-		{
-			++i;
-			char temp[1025];
-			switch(text[i])
-			{
-			case 'd':
-			case 'u':
-				{
-					snprintf(temp, 1024, (text[i]=='d') ? "%d" : "%u", *(int*)vars[k++]);
-					for(unsigned int x = 0; x < strlen(temp); ++x)
-						buffer[j++] = temp[x];
-				} break;
-			case 's':
-				{
-					snprintf(temp, 1024, "%s", (char*)vars[k++]);
-					for(unsigned int x = 0; x < strlen(temp); ++x)
-						buffer[j++] = temp[x];
-				} break;
-			default:
-				{
-					buffer[j++] = text[i-1];
-					buffer[j++] = text[i];
-				} break;
-			}
-		}
-		else
-			buffer[j++] = text[i];
-		buffer[j] = '\0';
-	}
-	// variablen Inhalt erzeugen
-	//vsnprintf(buffer, 1024, text, *(va_list*)&vars);
+    for(unsigned int i = 0, j = 0, k = 0; i < text.length() && j < 1024; ++i)
+    {
+        if(text[i] == '%')
+        {
+            ++i;
+            char temp[1025];
+            switch(text[i])
+            {
+                case 'd':
+                case 'u':
+                {
+                    snprintf(temp, 1024, (text[i] == 'd') ? "%d" : "%u", *(int*)vars[k++]);
+                    for(unsigned int x = 0; x < strlen(temp); ++x)
+                        buffer[j++] = temp[x];
+                } break;
+                case 's':
+                {
+                    snprintf(temp, 1024, "%s", (char*)vars[k++]);
+                    for(unsigned int x = 0; x < strlen(temp); ++x)
+                        buffer[j++] = temp[x];
+                } break;
+                default:
+                {
+                    buffer[j++] = text[i - 1];
+                    buffer[j++] = text[i];
+                } break;
+            }
+        }
+        else
+            buffer[j++] = text[i];
+        buffer[j] = '\0';
+    }
+    // variablen Inhalt erzeugen
+    //vsnprintf(buffer, 1024, text, *(va_list*)&vars);
 
-	// letzte byte nullen (safety, vsnprintf schreibt bei zu großem string kein null-terminator)
-	buffer[1024] = '\0';
+    // letzte byte nullen (safety, vsnprintf schreibt bei zu großem string kein null-terminator)
+    buffer[1024] = '\0';
 
-	// und zeichnen
-	font->Draw( GetX(), GetY(), buffer, format, color);
+    // und zeichnen
+    font->Draw( GetX(), GetY(), buffer, format, color);
 
-	return true;
+    return true;
 }

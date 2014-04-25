@@ -1,4 +1,4 @@
-// $Id: FileChecksum.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: FileChecksum.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -27,42 +27,42 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
-unsigned int CalcChecksumOfFile(const char * const path)
+unsigned int CalcChecksumOfFile(const char* const path)
 {
-	FILE * dat = fopen(path,"rb");
-	if(!dat)
-		return 0;
+    FILE* dat = fopen(path, "rb");
+    if(!dat)
+        return 0;
 
-	fseek(dat,0,SEEK_END);
-	unsigned int length = (int)ftell(dat);
-	fseek(dat,0,SEEK_SET);
+    fseek(dat, 0, SEEK_END);
+    unsigned int length = (int)ftell(dat);
+    fseek(dat, 0, SEEK_SET);
 
-	unsigned int checksum = 0;
+    unsigned int checksum = 0;
 
-	for(unsigned int i = 0;i<length;++i)
-		checksum += fgetc(dat);
+    for(unsigned int i = 0; i < length; ++i)
+        checksum += fgetc(dat);
 
-	fclose(dat);
+    fclose(dat);
 
-	return checksum;
+    return checksum;
 }
 
-unsigned int CalcChecksumOfBuffer(const unsigned char *buffer, unsigned int size)
+unsigned int CalcChecksumOfBuffer(const unsigned char* buffer, unsigned int size)
 {
-	if(buffer == NULL || size == 0)
-		return 0;
-		
-	unsigned int checksum = 0;
-	for(unsigned int i = 0; i < size; ++i)
-	{
-		//LOG.lprintf("%d - %d\n", i, checksum);
-		checksum += (unsigned int)buffer[i];
-	}
-	return checksum;
+    if(buffer == NULL || size == 0)
+        return 0;
+
+    unsigned int checksum = 0;
+    for(unsigned int i = 0; i < size; ++i)
+    {
+        //LOG.lprintf("%d - %d\n", i, checksum);
+        checksum += (unsigned int)buffer[i];
+    }
+    return checksum;
 }
 

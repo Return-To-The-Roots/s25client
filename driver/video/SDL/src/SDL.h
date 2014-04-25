@@ -1,4 +1,4 @@
-// $Id: SDL.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: SDL.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -26,63 +26,63 @@
 /// Klasse für den SDL Videotreiber.
 class VideoSDL : public VideoDriver
 {
-public:
-	/// Konstruktor von @p VideoSDL.
-	VideoSDL(VideoDriverLoaderInterface * CallBack);
+    public:
+        /// Konstruktor von @p VideoSDL.
+        VideoSDL(VideoDriverLoaderInterface* CallBack);
 
-	/// Destruktor von @p VideoSDL.
-	~VideoSDL(void);
+        /// Destruktor von @p VideoSDL.
+        ~VideoSDL(void);
 
-	/// Funktion zum Auslesen des Treibernamens.
-	const char *GetName(void) const;
+        /// Funktion zum Auslesen des Treibernamens.
+        const char* GetName(void) const;
 
-	/// Treiberinitialisierungsfunktion.
-	bool Initialize(void);
+        /// Treiberinitialisierungsfunktion.
+        bool Initialize(void);
 
-	/// Treiberaufräumfunktion.
-	void CleanUp(void);
+        /// Treiberaufräumfunktion.
+        void CleanUp(void);
 
-	/// Erstellt das Fenster mit entsprechenden Werten.
-	bool CreateScreen(unsigned short width, unsigned short height, const bool fullscreen);
+        /// Erstellt das Fenster mit entsprechenden Werten.
+        bool CreateScreen(unsigned short width, unsigned short height, const bool fullscreen);
 
-	/// Erstellt oder verändert das Fenster mit entsprechenden Werten.
-	bool ResizeScreen(unsigned short width, unsigned short height, const bool fullscreen);
+        /// Erstellt oder verändert das Fenster mit entsprechenden Werten.
+        bool ResizeScreen(unsigned short width, unsigned short height, const bool fullscreen);
 
-	/// Schliesst das Fenster.
-	void DestroyScreen(void);
+        /// Schliesst das Fenster.
+        void DestroyScreen(void);
 
-	/// Wechselt die OpenGL-Puffer.
-	bool SwapBuffers(void);
+        /// Wechselt die OpenGL-Puffer.
+        bool SwapBuffers(void);
 
-	/// Die Nachrichtenschleife.
-	bool MessageLoop(void);
+        /// Die Nachrichtenschleife.
+        bool MessageLoop(void);
 
-	/// Funktion zum Auslesen des TickCounts.
-	unsigned long GetTickCount(void) const;
+        /// Funktion zum Auslesen des TickCounts.
+        unsigned long GetTickCount(void) const;
 
-	/// Funktion zum Holen einer Subfunktion.
-	void *GetFunction(const char *function) const;
+        /// Funktion zum Holen einer Subfunktion.
+        void* GetFunction(const char* function) const;
 
-	/// Listet verfügbare Videomodi auf
-	void ListVideoModes(std::vector<VideoMode>& video_modes) const;
+        /// Listet verfügbare Videomodi auf
+        void ListVideoModes(std::vector<VideoMode>& video_modes) const;
 
-	/// Funktion zum Setzen der Mauskoordinaten.
-	void SetMousePos(int x, int y);
+        /// Funktion zum Setzen der Mauskoordinaten.
+        void SetMousePos(int x, int y);
 
-	/// Funktion zum Setzen der X-Koordinate der Maus.
-	void SetMousePosX(int x);
+        /// Funktion zum Setzen der X-Koordinate der Maus.
+        void SetMousePosX(int x);
 
-	/// Funktion zum Setzen der Y-Koordinate der Maus.
-	void SetMousePosY(int y);
+        /// Funktion zum Setzen der Y-Koordinate der Maus.
+        void SetMousePosY(int y);
 
-	/// Get state of the modifier keys
-	KeyEvent GetModKeyState(void) const;
+        /// Get state of the modifier keys
+        KeyEvent GetModKeyState(void) const;
 
-	/// Gibt Pointer auf ein Fenster zurück (device-dependent!), HWND unter Windows
-	void * GetWindowPointer() const;
+        /// Gibt Pointer auf ein Fenster zurück (device-dependent!), HWND unter Windows
+        void* GetWindowPointer() const;
 
-private:
-	SDL_Surface *screen; ///< Das Fenster-SDL-Surface.
+    private:
+        SDL_Surface* screen; ///< Das Fenster-SDL-Surface.
 };
 
 #endif // !SDL_H_INCLUDED

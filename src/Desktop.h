@@ -1,4 +1,4 @@
-// $Id: Desktop.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: Desktop.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -26,17 +26,17 @@
 /// Desktopklasse für Spielmenü-Haupthintergrundflächen.
 class Desktop : public Window
 {
-public:
-	Desktop(glArchivItem_Bitmap *background);
-	void Show(void);
+    public:
+        Desktop(glArchivItem_Bitmap* background);
+        void Show(void);
 
-	void Msg_ScreenResize(const ScreenResizeEvent& sr);
+        void Msg_ScreenResize(const ScreenResizeEvent& sr);
 
-protected:
-	bool Draw_(void);
+    protected:
+        bool Draw_(void);
 
-protected:
-	glArchivItem_Bitmap *background;
+    protected:
+        glArchivItem_Bitmap* background;
 };
 
 #endif // !DESKTOP_H_INCLUDED

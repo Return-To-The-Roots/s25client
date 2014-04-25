@@ -1,4 +1,4 @@
-// $Id: noStaticObject.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: noStaticObject.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -25,38 +25,38 @@
 
 class noStaticObject : public noCoordBase
 {
-public:
-	noStaticObject(unsigned short x, unsigned short y, unsigned short id, unsigned short file = 0xFFFF, unsigned char size = 0, NodalObjectType type = NOP_OBJECT);
-	noStaticObject(SerializedGameData * sgd, const unsigned obj_id);
+    public:
+        noStaticObject(unsigned short x, unsigned short y, unsigned short id, unsigned short file = 0xFFFF, unsigned char size = 0, NodalObjectType type = NOP_OBJECT);
+        noStaticObject(SerializedGameData* sgd, const unsigned obj_id);
 
-	void Destroy() { Destroy_noStaticObject(); }
+        void Destroy() { Destroy_noStaticObject(); }
 
-	/// gibt die Item-ID zurück (nr in der jeweiligen File)
-	unsigned short GetItemID() const { return id; }
-	/// gibt die Nr der File zurück)
-	unsigned short GetItemFile() const { return file; }
-	/// gibt die Größe des Objekts zurück.
-	unsigned char GetSize(void) const { return size; }
+        /// gibt die Item-ID zurück (nr in der jeweiligen File)
+        unsigned short GetItemID() const { return id; }
+        /// gibt die Nr der File zurück)
+        unsigned short GetItemFile() const { return file; }
+        /// gibt die Größe des Objekts zurück.
+        unsigned char GetSize(void) const { return size; }
 
-	virtual BlockingManner GetBM() const { return BlockingManner(unsigned(BM_HUT) + size); }
+        virtual BlockingManner GetBM() const { return BlockingManner(unsigned(BM_HUT) + size); }
 
-	/// zeichnet das Objekt.
-	void Draw(int x, int y);
+        /// zeichnet das Objekt.
+        void Draw(int x, int y);
 
-	/// Serialisierungsfunktionen
-	protected:	void Serialize_noStaticObject(SerializedGameData * sgd) const;
-	public:		void Serialize(SerializedGameData *sgd) const { Serialize_noStaticObject(sgd); }
+        /// Serialisierungsfunktionen
+    protected:  void Serialize_noStaticObject(SerializedGameData* sgd) const;
+    public:     void Serialize(SerializedGameData* sgd) const { Serialize_noStaticObject(sgd); }
 
-	GO_Type GetGOT() const { return GOT_STATICOBJECT; }
+        GO_Type GetGOT() const { return GOT_STATICOBJECT; }
 
-protected:
-	void Destroy_noStaticObject();
+    protected:
+        void Destroy_noStaticObject();
 
-protected:
+    protected:
 
-	unsigned short id;
-	unsigned short file;
-	unsigned char size;
+        unsigned short id;
+        unsigned short file;
+        unsigned char size;
 };
 
 #endif // !NOSTATICOBJECT_H_INCLUDED

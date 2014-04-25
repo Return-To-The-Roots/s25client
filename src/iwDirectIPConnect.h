@@ -1,4 +1,4 @@
-// $Id: iwDirectIPConnect.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: iwDirectIPConnect.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -26,24 +26,24 @@
 
 class iwDirectIPConnect : public IngameWindow, public ClientInterface
 {
-private:
-	unsigned int server_type;
+    private:
+        unsigned int server_type;
 
-public:
-	iwDirectIPConnect(unsigned int server_type);
-	void SetHost(const char *text);
-	void SetPort(unsigned short port);
+    public:
+        iwDirectIPConnect(unsigned int server_type);
+        void SetHost(const char* text);
+        void SetPort(unsigned short port);
 
-private:
-	void SetText(const std::string& text, unsigned int color, bool button);
+    private:
+        void SetText(const std::string& text, unsigned int color, bool button);
 
-	void Msg_EditChange(const unsigned int ctrl_id);
-	void Msg_EditEnter(const unsigned int ctrl_id);
-	void Msg_ButtonClick(const unsigned int ctrl_id);
-	void Msg_OptionGroupChange(const unsigned int ctrl_id, const unsigned short selection);
+        void Msg_EditChange(const unsigned int ctrl_id);
+        void Msg_EditEnter(const unsigned int ctrl_id);
+        void Msg_ButtonClick(const unsigned int ctrl_id);
+        void Msg_OptionGroupChange(const unsigned int ctrl_id, const unsigned short selection);
 
-	void CI_Error(const ClientError ce);
-	void CI_NextConnectState(const ConnectState cs);
+        void CI_Error(const ClientError ce);
+        void CI_NextConnectState(const ConnectState cs);
 
 };
 

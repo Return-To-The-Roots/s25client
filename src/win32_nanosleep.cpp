@@ -1,4 +1,4 @@
-// $Id: win32_nanosleep.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: win32_nanosleep.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -34,45 +34,45 @@
  */
 int usleep (useconds_t microseconds)
 {
-	int err = 0;
+    int err = 0;
 
-	if ( microseconds )
-	{
-		static const useconds_t one_second = 1000000;
-		static SOCKET sock = SOCKET_ERROR;
+    if ( microseconds )
+    {
+        static const useconds_t one_second = 1000000;
+        static SOCKET sock = SOCKET_ERROR;
 
-		timeval tv_delay;
-		fd_set set;
-		
-		if(sock == SOCKET_ERROR)
-			sock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
+        timeval tv_delay;
+        fd_set set;
 
-		FD_ZERO(&set);
-		FD_SET(sock, &set);
+        if(sock == SOCKET_ERROR)
+            sock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
 
-		tv_delay.tv_sec = microseconds / one_second;
-		tv_delay.tv_usec = microseconds % one_second;
+        FD_ZERO(&set);
+        FD_SET(sock, &set);
 
-		err = select(0, NULL, NULL, &set, &tv_delay);
-	}
-	return err;
+        tv_delay.tv_sec = microseconds / one_second;
+        tv_delay.tv_usec = microseconds % one_second;
+
+        err = select(0, NULL, NULL, &set, &tv_delay);
+    }
+    return err;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
  *  nanosleep replacement for windows.
  */
-int nanosleep(const timespec_t *requested_delay, timespec_t *remaining_delay)
+int nanosleep(const timespec_t* requested_delay, timespec_t* remaining_delay)
 {
- const useconds_t one_second = 1000000;
-	const useconds_t nano_per_micro = 1000;
-	useconds_t micro_delay;
+    const useconds_t one_second = 1000000;
+    const useconds_t nano_per_micro = 1000;
+    useconds_t micro_delay;
 
-	micro_delay = requested_delay->tv_sec * one_second
-				+ ( requested_delay->tv_nsec + nano_per_micro - 1 )
-				/ nano_per_micro;
+    micro_delay = requested_delay->tv_sec * one_second
+                  + ( requested_delay->tv_nsec + nano_per_micro - 1 )
+                  / nano_per_micro;
 
-	return usleep (micro_delay); 
+    return usleep (micro_delay);
 }
 
 #endif // !_WIN32

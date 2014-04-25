@@ -1,4 +1,4 @@
-// $Id: AddonCustomBuildSequence.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: AddonCustomBuildSequence.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -31,17 +31,17 @@
  */
 class AddonCustomBuildSequence : public AddonBool
 {
-public:
-	AddonCustomBuildSequence() : AddonBool(ADDON_CUSTOM_BUILD_SEQUENCE,
-										   ADDONGROUP_ECONOMY|ADDONGROUP_GAMEPLAY,
-										   gettext_noop("Custom build sequence"), 
-										   gettext_noop("Allows every player to control whether building sites\n"
-														"should be supplied in sequence of given order or in a definable\n"
-														"sequence based on the building type."),
-										   0
-										  )
-	{
-	}
+    public:
+        AddonCustomBuildSequence() : AddonBool(ADDON_CUSTOM_BUILD_SEQUENCE,
+                                                   ADDONGROUP_ECONOMY | ADDONGROUP_GAMEPLAY,
+                                                   gettext_noop("Custom build sequence"),
+                                                   gettext_noop("Allows every player to control whether building sites\n"
+                                                           "should be supplied in sequence of given order or in a definable\n"
+                                                           "sequence based on the building type."),
+                                                   0
+                                                  )
+        {
+        }
 };
 
 #endif // !ADDONCUSTOMBUILDSEQUENCE_H_INCLUDED

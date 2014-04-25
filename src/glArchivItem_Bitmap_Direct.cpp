@@ -1,4 +1,4 @@
-// $Id: glArchivItem_Bitmap_Direct.cpp 8193 2012-09-09 10:52:49Z marcus $
+// $Id: glArchivItem_Bitmap_Direct.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -26,30 +26,30 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
-/** 
+/**
  *  Konstruktor von @p glArchivItem_Bitmap_Direct.
  *
  *  @author FloSoft
  */
 glArchivItem_Bitmap_Direct::glArchivItem_Bitmap_Direct(void)
-	: baseArchivItem_Bitmap(), glArchivItem_Bitmap()
+    : baseArchivItem_Bitmap(), glArchivItem_Bitmap()
 {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/** 
+/**
  *  Kopierkonstruktor von @p glArchivItem_Bitmap_Direct.
  *
  *  @author FloSoft
  */
-glArchivItem_Bitmap_Direct::glArchivItem_Bitmap_Direct(const glArchivItem_Bitmap_Direct *item)
-	: baseArchivItem_Bitmap(item), glArchivItem_Bitmap(item)
+glArchivItem_Bitmap_Direct::glArchivItem_Bitmap_Direct(const glArchivItem_Bitmap_Direct* item)
+    : baseArchivItem_Bitmap(item), glArchivItem_Bitmap(item)
 {
 }
 
@@ -64,27 +64,27 @@ glArchivItem_Bitmap_Direct::glArchivItem_Bitmap_Direct(const glArchivItem_Bitmap
  *
  *  @author FloSoft
  */
-void glArchivItem_Bitmap_Direct::tex_setPixel(unsigned short x, unsigned short y, unsigned char color, const libsiedler2::ArchivItem_Palette *palette)
+void glArchivItem_Bitmap_Direct::tex_setPixel(unsigned short x, unsigned short y, unsigned char color, const libsiedler2::ArchivItem_Palette* palette)
 {
-	// Pixel in Puffer setzen
-	libsiedler2::baseArchivItem_Bitmap::tex_setPixel(x, y, color, palette);
+    // Pixel in Puffer setzen
+    libsiedler2::baseArchivItem_Bitmap::tex_setPixel(x, y, color, palette);
 
-	// Ist eine GL-Textur bereits erzeugt? Wenn ja, Pixel in Textur austauschen
-	if(texture != 0)
-	{
-		if(x < tex_width && y < tex_height)
-		{
-			unsigned char buffer[4] = { 0x00, 0x00, 0x00, 0xFF };
-			
-			if(color == libsiedler2::TRANSPARENT_INDEX)
-				buffer[3] = 0x00;
-			else
-				this->palette->get(color, &buffer[0], &buffer[1], &buffer[2]);
+    // Ist eine GL-Textur bereits erzeugt? Wenn ja, Pixel in Textur austauschen
+    if(texture != 0)
+    {
+        if(x < tex_width && y < tex_height)
+        {
+            unsigned char buffer[4] = { 0x00, 0x00, 0x00, 0xFF };
 
-			VideoDriverWrapper::inst().BindTexture(texture);
-			glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &buffer);
-		}
-	}
+            if(color == libsiedler2::TRANSPARENT_INDEX)
+                buffer[3] = 0x00;
+            else
+                this->palette->get(color, &buffer[0], &buffer[1], &buffer[2]);
+
+            VideoDriverWrapper::inst().BindTexture(texture);
+            glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &buffer);
+        }
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -102,25 +102,25 @@ void glArchivItem_Bitmap_Direct::tex_setPixel(unsigned short x, unsigned short y
  */
 void glArchivItem_Bitmap_Direct::tex_setPixel(unsigned short x, unsigned short y, unsigned char r, unsigned char g, unsigned char b, unsigned char a)
 {
-	// Pixel in Puffer setzen
-	libsiedler2::baseArchivItem_Bitmap::tex_setPixel(x, y, r, g, b, a);
+    // Pixel in Puffer setzen
+    libsiedler2::baseArchivItem_Bitmap::tex_setPixel(x, y, r, g, b, a);
 
-	// Ist ein GL-Textur bereits erzeugt? Wenn ja, Pixel in Textur austauschen
-	if(texture != 0)
-	{
-		if(x < tex_width && y < tex_height)
-		{
-			unsigned char buffer[4] = { r, g, b, a };
-			
-			VideoDriverWrapper::inst().BindTexture(texture);
-			glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &buffer);
-		}
-	}
+    // Ist ein GL-Textur bereits erzeugt? Wenn ja, Pixel in Textur austauschen
+    if(texture != 0)
+    {
+        if(x < tex_width && y < tex_height)
+        {
+            unsigned char buffer[4] = { r, g, b, a };
+
+            VideoDriverWrapper::inst().BindTexture(texture);
+            glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &buffer);
+        }
+    }
 }
 
 /// liefert die Farbwerte eines Pixels als uc-Array: {r,g,b,a}
-unsigned char * glArchivItem_Bitmap_Direct::tex_getPixel(const unsigned short x, const unsigned short y)
+unsigned char* glArchivItem_Bitmap_Direct::tex_getPixel(const unsigned short x, const unsigned short y)
 {
-	return &tex_data[y*tex_width+x];
+    return &tex_data[y * tex_width + x];
 }
 

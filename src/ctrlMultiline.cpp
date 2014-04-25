@@ -1,4 +1,4 @@
-// $Id: ctrlMultiline.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: ctrlMultiline.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -27,9 +27,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __Line__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __Line__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -38,19 +38,19 @@
  *
  *  @author OLiver
  */
-ctrlMultiline::ctrlMultiline(Window *parent,
-							 unsigned int id,
-							 unsigned short x,
-							 unsigned short y,
-							 unsigned short width,
-							 unsigned short height,
-							 TextureColor tc,
-							 glArchivItem_Font *font,
-							 unsigned int format)
-	: Window(x, y, id, parent, width, height),
-	tc(tc), font(font), format(format), lines_in_control((height-4) / font->getHeight()), draw_box(true)
+ctrlMultiline::ctrlMultiline(Window* parent,
+                             unsigned int id,
+                             unsigned short x,
+                             unsigned short y,
+                             unsigned short width,
+                             unsigned short height,
+                             TextureColor tc,
+                             glArchivItem_Font* font,
+                             unsigned int format)
+    : Window(x, y, id, parent, width, height),
+      tc(tc), font(font), format(format), lines_in_control((height - 4) / font->getHeight()), draw_box(true)
 {
-	AddScrollBar(0, width - SCROLLBAR_WIDTH, 0, SCROLLBAR_WIDTH, height, SCROLLBAR_WIDTH, tc, lines_in_control);
+    AddScrollBar(0, width - SCROLLBAR_WIDTH, 0, SCROLLBAR_WIDTH, height, SCROLLBAR_WIDTH, tc, lines_in_control);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -61,15 +61,16 @@ ctrlMultiline::ctrlMultiline(Window *parent,
  */
 void ctrlMultiline::AddString(const std::string& str, unsigned int color, bool scroll)
 {
-	Line line = { str, color };
-	lines.push_back(line);
+    Line line = { str, color };
+    lines.push_back(line);
 
-	ctrlScrollBar *scrollbar = GetCtrl<ctrlScrollBar>(0);
-	scrollbar->SetRange(unsigned(lines.size()));
+    ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
+    scrollbar->SetRange(unsigned(lines.size()));
 
-	if (scroll && (scrollbar->GetPos() == (unsigned(lines.size()) - 1) - lines_in_control)) {
-		scrollbar->SetPos(scrollbar->GetPos() + 1);
-	}
+    if (scroll && (scrollbar->GetPos() == (unsigned(lines.size()) - 1) - lines_in_control))
+    {
+        scrollbar->SetPos(scrollbar->GetPos() + 1);
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -80,115 +81,115 @@ void ctrlMultiline::AddString(const std::string& str, unsigned int color, bool s
  */
 bool ctrlMultiline::Draw_(void)
 {
-	if(draw_box)
-		Draw3D(GetX(), GetY(), width, height, tc, 2);
+    if(draw_box)
+        Draw3D(GetX(), GetY(), width, height, tc, 2);
 
-	DrawControls();
+    DrawControls();
 
-	unsigned show_lines = std::min(lines_in_control,unsigned(lines.size())); 
+    unsigned show_lines = std::min(lines_in_control, unsigned(lines.size()));
 
-	ctrlScrollBar *scrollbar = GetCtrl<ctrlScrollBar>(0);
+    ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
 
-	for(unsigned short i = 0; i < show_lines; ++i)
-		font->Draw(GetX() + 2, GetY() + 2 + i * font->getHeight(), lines[i + scrollbar->GetPos()].str, format, lines[i + scrollbar->GetPos()].color);
+    for(unsigned short i = 0; i < show_lines; ++i)
+        font->Draw(GetX() + 2, GetY() + 2 + i * font->getHeight(), lines[i + scrollbar->GetPos()].str, format, lines[i + scrollbar->GetPos()].color);
 
-	return true;
+    return true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
-bool ctrlMultiline::Msg_LeftDown(const MouseCoords& mc) 
+bool ctrlMultiline::Msg_LeftDown(const MouseCoords& mc)
 {
-	return GetCtrl<Window>(0)->Msg_LeftDown(mc);
+    return GetCtrl<Window>(0)->Msg_LeftDown(mc);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
 bool ctrlMultiline::Msg_LeftUp(const MouseCoords& mc)
 {
-	return GetCtrl<Window>(0)->Msg_LeftUp(mc);
+    return GetCtrl<Window>(0)->Msg_LeftUp(mc);
 }
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author Divan
  */
 bool ctrlMultiline::Msg_WheelUp(const MouseCoords& mc)
 {
-	// Forward to ScrollBar
-	ctrlScrollBar *scrollbar = GetCtrl<ctrlScrollBar>(0);
+    // Forward to ScrollBar
+    ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
 
-	//If mouse in list
-	if(Coll(mc.x, mc.y, GetX() + 2, GetY() + 2, width - /*2*/2, height - 4))
-	{
-		// Simulate three Button Clicks
-		scrollbar->Msg_ButtonClick(0);
-		scrollbar->Msg_ButtonClick(0);
-		scrollbar->Msg_ButtonClick(0);
-		return true;
-	}
-	else
-		return false;
+    //If mouse in list
+    if(Coll(mc.x, mc.y, GetX() + 2, GetY() + 2, width - /*2*/2, height - 4))
+    {
+        // Simulate three Button Clicks
+        scrollbar->Msg_ButtonClick(0);
+        scrollbar->Msg_ButtonClick(0);
+        scrollbar->Msg_ButtonClick(0);
+        return true;
+    }
+    else
+        return false;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author Divan
  */
 bool ctrlMultiline::Msg_WheelDown(const MouseCoords& mc)
 {
-	// Forward to ScrollBar
-	ctrlScrollBar *scrollbar = GetCtrl<ctrlScrollBar>(0);
+    // Forward to ScrollBar
+    ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
 
-	// If mouse in list
-	if(Coll(mc.x, mc.y, GetX() + 2, GetY() + 2, width - /*2*/2, height - 4))
-	{
-		// Simulate three Button Clicks
-		scrollbar->Msg_ButtonClick(1);
-		scrollbar->Msg_ButtonClick(1);
-		scrollbar->Msg_ButtonClick(1);
-		return true;
-	}
-	else
-		return false;
+    // If mouse in list
+    if(Coll(mc.x, mc.y, GetX() + 2, GetY() + 2, width - /*2*/2, height - 4))
+    {
+        // Simulate three Button Clicks
+        scrollbar->Msg_ButtonClick(1);
+        scrollbar->Msg_ButtonClick(1);
+        scrollbar->Msg_ButtonClick(1);
+        return true;
+    }
+    else
+        return false;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
 bool ctrlMultiline::Msg_MouseMove(const MouseCoords& mc)
 {
-	return GetCtrl<Window>(0)->Msg_MouseMove(mc);
+    return GetCtrl<Window>(0)->Msg_MouseMove(mc);
 }
 
 
 void ctrlMultiline::Resize_(unsigned short width, unsigned short height)
 {
-	// Position der Scrollbar anpassen
-	GetCtrl<ctrlScrollBar>(0)->Move(width - SCROLLBAR_WIDTH,0);
+    // Position der Scrollbar anpassen
+    GetCtrl<ctrlScrollBar>(0)->Move(width - SCROLLBAR_WIDTH, 0);
 }
 
 /// Textzeile ersetzen. Klappt bestimmt nicht mit Scrollbar-Kram
 void ctrlMultiline::SetLine(const unsigned index, const std::string& str, unsigned int color)
 {
-	if (index < lines.size())
-	{
-		Line line = { str, color };
-		lines[index] = line;
-	}
+    if (index < lines.size())
+    {
+        Line line = { str, color };
+        lines[index] = line;
+    }
 }

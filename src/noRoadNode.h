@@ -1,4 +1,4 @@
-// $Id: noRoadNode.h 8668 2013-03-23 11:25:44Z marcus $
+// $Id: noRoadNode.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -35,55 +35,55 @@ enum Job;
 // Basisklasse für Gebäude und Flagge (alles, was als "Straßenknoten" dient
 class noRoadNode : public noCoordBase
 {
-protected:
+    protected:
 
-	unsigned char player;
+        unsigned char player;
 
-public:
+    public:
 
-	RoadSegment	* routes[6];
+        RoadSegment* routes[6];
 
 // For Pathfinding
-	mutable unsigned coord_id;
-	// cost from start
-	mutable unsigned cost;
-	// distance to target
-	mutable unsigned distance;
-	// estimated total distance (cost + distance)
-	mutable unsigned estimate;
+        mutable unsigned coord_id;
+        // cost from start
+        mutable unsigned cost;
+        // distance to target
+        mutable unsigned distance;
+        // estimated total distance (cost + distance)
+        mutable unsigned estimate;
 
-	mutable unsigned last_visit;
+        mutable unsigned last_visit;
 
-	mutable const noRoadNode *prev;
-	mutable unsigned dir;
-public:
+        mutable const noRoadNode* prev;
+        mutable unsigned dir;
+    public:
 
-	noRoadNode(const NodalObjectType nop,const unsigned short x, const unsigned short y,const unsigned char player);
-	noRoadNode(SerializedGameData * sgd, const unsigned obj_id);
+        noRoadNode(const NodalObjectType nop, const unsigned short x, const unsigned short y, const unsigned char player);
+        noRoadNode(SerializedGameData* sgd, const unsigned obj_id);
 
-	virtual ~noRoadNode();
-	/// Aufräummethoden
-protected:	void Destroy_noRoadNode();
-public:		void Destroy() { Destroy_noRoadNode(); }
+        virtual ~noRoadNode();
+        /// Aufräummethoden
+    protected:  void Destroy_noRoadNode();
+    public:     void Destroy() { Destroy_noRoadNode(); }
 
-	/// Serialisierungsfunktionen
-	protected:	void Serialize_noRoadNode(SerializedGameData * sgd) const;
-	public:		void Serialize(SerializedGameData *sgd) const { Serialize_noRoadNode(sgd); }
+        /// Serialisierungsfunktionen
+    protected:  void Serialize_noRoadNode(SerializedGameData* sgd) const;
+    public:     void Serialize(SerializedGameData* sgd) const { Serialize_noRoadNode(sgd); }
 
-	inline noRoadNode * GetNeighbour(const unsigned char dir) const {if(!routes[dir]) return 0; return((routes[dir]->GetF1() == this) ? routes[dir]->GetF2() : routes[dir]->GetF1());}
+        inline noRoadNode* GetNeighbour(const unsigned char dir) const {if(!routes[dir]) return 0; return((routes[dir]->GetF1() == this) ? routes[dir]->GetF2() : routes[dir]->GetF1());}
 
-	void DestroyRoad(const unsigned char dir);
-	void UpgradeRoad(const unsigned char dir);
-	/// Vernichtet Alle Straße um diesen Knoten
-	void DestroyAllRoads();
+        void DestroyRoad(const unsigned char dir);
+        void UpgradeRoad(const unsigned char dir);
+        /// Vernichtet Alle Straße um diesen Knoten
+        void DestroyAllRoads();
 
-	unsigned char GetPlayer() const { return player; }
+        unsigned char GetPlayer() const { return player; }
 
-	/// Legt eine Ware am Objekt ab (an allen Straßenknoten (Gebäude, Baustellen und Flaggen) kann man Waren ablegen
-	virtual void AddWare(Ware * ware) = 0;
+        /// Legt eine Ware am Objekt ab (an allen Straßenknoten (Gebäude, Baustellen und Flaggen) kann man Waren ablegen
+        virtual void AddWare(Ware* ware) = 0;
 
-	/// Nur für Flagge, Gebäude können 0 zurückgeben, gibt Wegstrafpunkte für das Pathfinden für Waren, die in eine bestimmte Richtung noch transportiert werden müssen
-	virtual unsigned short GetPunishmentPoints(const unsigned char dir) const { return 0; }
+        /// Nur für Flagge, Gebäude können 0 zurückgeben, gibt Wegstrafpunkte für das Pathfinden für Waren, die in eine bestimmte Richtung noch transportiert werden müssen
+        virtual unsigned short GetPunishmentPoints(const unsigned char dir) const { return 0; }
 
 };
 

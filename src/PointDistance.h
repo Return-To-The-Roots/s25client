@@ -1,4 +1,4 @@
-// $Id: PointDistance.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: PointDistance.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -21,6 +21,6 @@
 #define POINT_DISTANCE_H_
 
 // Berechnet den Abstand zwischen 2 Punkten (2D)
-int PointDistance(const int x1,const int y1,const int x2,const int y2) { return abs(x1-x2)+abs(y1-y2); }
+int PointDistance(const int x1, const int y1, const int x2, const int y2) { return abs(x1 - x2) + abs(y1 - y2); }
 
 #endif

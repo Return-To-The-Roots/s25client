@@ -1,4 +1,4 @@
-// $Id: iwSave.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: iwSave.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -27,52 +27,52 @@
 /// Fenster fürs Speichern UND(!) Laden von Spielständen
 class iwSaveLoad : public IngameWindow
 {
-public:
-	/// Konstruktor von @p iwSave.
-	iwSaveLoad(const unsigned short add_height, const std::string& window_title);
+    public:
+        /// Konstruktor von @p iwSave.
+        iwSaveLoad(const unsigned short add_height, const std::string& window_title);
 
-protected:
-	/// Aktualisiert die Tabelle
-	void RefreshTable();
+    protected:
+        /// Aktualisiert die Tabelle
+        void RefreshTable();
 
-private:
-	/// Speichert bzw. läd die angegebene Datei
-	virtual void SaveLoad() = 0;
+    private:
+        /// Speichert bzw. läd die angegebene Datei
+        virtual void SaveLoad() = 0;
 
-	void Msg_EditEnter(const unsigned int ctrl_id);
-	void Msg_ButtonClick(const unsigned int ctrl_id);
-	void Msg_TableSelectItem(const unsigned int ctrl_id, const unsigned short selection);
-	
-	/// Callbackfunktion zum Eintragen eines Spielstandes in die Tabelle
-	static void FillSaveTable(const std::string& filename, void *param);
+        void Msg_EditEnter(const unsigned int ctrl_id);
+        void Msg_ButtonClick(const unsigned int ctrl_id);
+        void Msg_TableSelectItem(const unsigned int ctrl_id, const unsigned short selection);
+
+        /// Callbackfunktion zum Eintragen eines Spielstandes in die Tabelle
+        static void FillSaveTable(const std::string& filename, void* param);
 };
 
 class iwSave: public iwSaveLoad
 {
-public:
-	iwSave();
+    public:
+        iwSave();
 
-private:
-	// Speichert Datei
-	void SaveLoad();
+    private:
+        // Speichert Datei
+        void SaveLoad();
 
-	void Msg_ComboSelectItem(const unsigned int ctrl_id, const unsigned short selection);
+        void Msg_ComboSelectItem(const unsigned int ctrl_id, const unsigned short selection);
 };
 
 
 class iwLoad: public iwSaveLoad
 {
-	/// Informationen zum Erstellen des Servers
-	const CreateServerInfo csi;
-public:
-	iwLoad(const CreateServerInfo& csi);
+        /// Informationen zum Erstellen des Servers
+        const CreateServerInfo csi;
+    public:
+        iwLoad(const CreateServerInfo& csi);
 
-private:
-	/// Handle double click on the table
-	void Msg_TableChooseItem(const unsigned ctrl_id, const unsigned short selection);
-	
-	// Läd Datei
-	void SaveLoad();
+    private:
+        /// Handle double click on the table
+        void Msg_TableChooseItem(const unsigned ctrl_id, const unsigned short selection);
+
+        // Läd Datei
+        void SaveLoad();
 };
 
 #endif // !iwSAVE_H_INCLUDED

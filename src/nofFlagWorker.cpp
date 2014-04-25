@@ -1,4 +1,4 @@
-// $Id: nofFlagWorker.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: nofFlagWorker.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -31,109 +31,109 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
-nofFlagWorker::nofFlagWorker(const Job job,const unsigned short x, const unsigned short y,const unsigned char player,noRoadNode * goal)
-: noFigure(job,x,y,player,goal), flag(0), state(STATE_FIGUREWORK)
+nofFlagWorker::nofFlagWorker(const Job job, const unsigned short x, const unsigned short y, const unsigned char player, noRoadNode* goal)
+    : noFigure(job, x, y, player, goal), flag(0), state(STATE_FIGUREWORK)
 {
-	// Flagge als Ziel, dann arbeiten wir auch, ansonsten kanns aber auch nur ein Lagerhaus oder Null sein, wenn ein
-	// Lagerhaus abgerissen wurde oder ausgelagert wurde etc., dann auch den nicht als Flag-Worker registrieren
-	if(goal)
-	{
-		if(goal->GetGOT() == GOT_FLAG)
-		{
-			this->flag = static_cast<noFlag*>(goal);
-			gwg->GetPlayer(player)->RegisterFlagWorker(this);
-		}
-		else
-			this->flag = 0;
-	}
-	else
-		this->flag = 0;
+    // Flagge als Ziel, dann arbeiten wir auch, ansonsten kanns aber auch nur ein Lagerhaus oder Null sein, wenn ein
+    // Lagerhaus abgerissen wurde oder ausgelagert wurde etc., dann auch den nicht als Flag-Worker registrieren
+    if(goal)
+    {
+        if(goal->GetGOT() == GOT_FLAG)
+        {
+            this->flag = static_cast<noFlag*>(goal);
+            gwg->GetPlayer(player)->RegisterFlagWorker(this);
+        }
+        else
+            this->flag = 0;
+    }
+    else
+        this->flag = 0;
 }
 
-nofFlagWorker::nofFlagWorker(SerializedGameData * sgd, const unsigned obj_id)
- : noFigure(sgd,obj_id), flag(sgd->PopObject<noFlag>(GOT_FLAG)), state(State(sgd->PopUnsignedChar()))
+nofFlagWorker::nofFlagWorker(SerializedGameData* sgd, const unsigned obj_id)
+    : noFigure(sgd, obj_id), flag(sgd->PopObject<noFlag>(GOT_FLAG)), state(State(sgd->PopUnsignedChar()))
 {
 }
 
-void nofFlagWorker::Serialize_nofFlagWorker(SerializedGameData * sgd) const
+void nofFlagWorker::Serialize_nofFlagWorker(SerializedGameData* sgd) const
 {
-	Serialize_noFigure(sgd);
+    Serialize_noFigure(sgd);
 
-	sgd->PushObject(flag,true);
-	sgd->PushUnsignedChar(static_cast<unsigned char>(state));
+    sgd->PushObject(flag, true);
+    sgd->PushUnsignedChar(static_cast<unsigned char>(state));
 }
 
 void nofFlagWorker::Destroy_nofFlagWorker()
-{ 
-	Destroy_noFigure();
+{
+    Destroy_noFigure();
 }
 
 void nofFlagWorker::AbrogateWorkplace()
 {
-	flag = 0;
-	/// uns entfernen, da wir wieder umdrehen müssen
-	gwg->GetPlayer(player)->RemoveFlagWorker(this);
+    flag = 0;
+    /// uns entfernen, da wir wieder umdrehen müssen
+    gwg->GetPlayer(player)->RemoveFlagWorker(this);
 }
 
 /// Geht wieder zurück zur Flagge und dann nach Hause
 void nofFlagWorker::GoToFlag()
 {
-	// Zur Flagge zurücklaufen
+    // Zur Flagge zurücklaufen
 
-	// Bin ich an der Fahne?
-	if(x == flag->GetX() && y == flag->GetY())
-	{
-		// nach Hause gehen
-		if(nobBaseWarehouse * wh = gwg->GetPlayer(player)->FindWarehouse(flag,FW::Condition_StoreFigure,0,true,&job,false))
-		{
-			GoHome(wh);
-			// Vorgaukeln, dass wir ein Stück Straße bereits geschafft haben
-			// damit wir mit WalkToGoal weiter bis zum Ziel laufen können
-			cur_rs = &emulated_wanderroad;
-			rs_pos = 0;
-			WalkToGoal();
-		}
-		else 
-		{
-			// Weg führt nicht mehr zum Lagerhaus, dann rumirren
-			StartWandering();
-			Wander();
-		}
+    // Bin ich an der Fahne?
+    if(x == flag->GetX() && y == flag->GetY())
+    {
+        // nach Hause gehen
+        if(nobBaseWarehouse* wh = gwg->GetPlayer(player)->FindWarehouse(flag, FW::Condition_StoreFigure, 0, true, &job, false))
+        {
+            GoHome(wh);
+            // Vorgaukeln, dass wir ein Stück Straße bereits geschafft haben
+            // damit wir mit WalkToGoal weiter bis zum Ziel laufen können
+            cur_rs = &emulated_wanderroad;
+            rs_pos = 0;
+            WalkToGoal();
+        }
+        else
+        {
+            // Weg führt nicht mehr zum Lagerhaus, dann rumirren
+            StartWandering();
+            Wander();
+        }
 
-		
-		// Da wir quasi "freiwillig" nach Hause gegangen sind ohne das Abreißen der Flagge, auch manuell wieder
-		// "abmelden"
-		gwg->GetPlayer(player)->RemoveFlagWorker(this);
 
-		state = STATE_FIGUREWORK;
+        // Da wir quasi "freiwillig" nach Hause gegangen sind ohne das Abreißen der Flagge, auch manuell wieder
+        // "abmelden"
+        gwg->GetPlayer(player)->RemoveFlagWorker(this);
 
-		flag = 0;
-		
-	}
-	else
-	{
-		// Weg suchen
-		dir = gwg->FindHumanPath(x,y,flag->GetX(),flag->GetY(),40);
+        state = STATE_FIGUREWORK;
 
-		// Wenns keinen gibt, rumirren, ansonsten hinlaufen
-		if(dir == 0xFF)
-		{
-			Abrogate();
-			StartWandering();
-			Wander();
-			state = STATE_FIGUREWORK;
+        flag = 0;
 
-			flag = 0;
-		}
-		else
-		{
-			StartWalking(dir);
-		}
-	}
+    }
+    else
+    {
+        // Weg suchen
+        dir = gwg->FindHumanPath(x, y, flag->GetX(), flag->GetY(), 40);
+
+        // Wenns keinen gibt, rumirren, ansonsten hinlaufen
+        if(dir == 0xFF)
+        {
+            Abrogate();
+            StartWandering();
+            Wander();
+            state = STATE_FIGUREWORK;
+
+            flag = 0;
+        }
+        else
+        {
+            StartWalking(dir);
+        }
+    }
 }
 

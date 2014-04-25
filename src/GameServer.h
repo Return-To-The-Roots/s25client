@@ -1,4 +1,4 @@
-// $Id: GameServer.h 8910 2013-08-27 18:30:35Z jh $
+// $Id: GameServer.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -41,159 +41,159 @@ class AIBase;
 
 class GameServer : public Singleton<GameServer>, public GameMessageInterface
 {
-public:
-	GameServer(void);
-	~GameServer(void);
+    public:
+        GameServer(void);
+        ~GameServer(void);
 
-	/// "Versucht" den Server zu starten (muss ggf. erst um Erlaubnis beim LobbyClient fragen)
-	bool TryToStart(const CreateServerInfo& csi, const std::string& map_path, const MapType map_type);
-	/// Startet den Server, muss vorher TryToStart aufgerufen werden!
-	bool Start();
+        /// "Versucht" den Server zu starten (muss ggf. erst um Erlaubnis beim LobbyClient fragen)
+        bool TryToStart(const CreateServerInfo& csi, const std::string& map_path, const MapType map_type);
+        /// Startet den Server, muss vorher TryToStart aufgerufen werden!
+        bool Start();
 
-	void Run(void);
-	void Stop(void);
+        void Run(void);
+        void Stop(void);
 
-	bool StartGame(void);
-	bool StartCountdown(void);
-	void CancelCountdown(void);
+        bool StartGame(void);
+        bool StartCountdown(void);
+        void CancelCountdown(void);
 
-	bool TogglePause();
+        bool TogglePause();
 
-	void TogglePlayerNation(unsigned char client);
-	void TogglePlayerTeam(unsigned char client);
-	void TogglePlayerColor(unsigned char client);
-	void TogglePlayerState(unsigned char client);
-	void ChangeGlobalGameSettings(const GlobalGameSettings& ggs);
+        void TogglePlayerNation(unsigned char client);
+        void TogglePlayerTeam(unsigned char client);
+        void TogglePlayerColor(unsigned char client);
+        void TogglePlayerState(unsigned char client);
+        void ChangeGlobalGameSettings(const GlobalGameSettings& ggs);
 
-	/// Lässt einen Spieler wechseln (nur zu Debugzwecken)
-	void ChangePlayer(const unsigned char old_id, const unsigned char new_id);
+        /// Lässt einen Spieler wechseln (nur zu Debugzwecken)
+        void ChangePlayer(const unsigned char old_id, const unsigned char new_id);
 
-	/// Tauscht Spieler(positionen) bei Savegames in dskHostGame
-	void SwapPlayer(const unsigned char player1, const unsigned char player2);
+        /// Tauscht Spieler(positionen) bei Savegames in dskHostGame
+        void SwapPlayer(const unsigned char player1, const unsigned char player2);
 
-	void AIChat(const GameMessage &msg) { SendToAll(msg); }
+        void AIChat(const GameMessage& msg) { SendToAll(msg); }
 
-protected:
+    protected:
 
-	void SendToAll(const GameMessage& msg);
-	void KickPlayer(unsigned char playerid, unsigned char cause, unsigned short param);
-	void KickPlayer(NS_PlayerKicked npk);
+        void SendToAll(const GameMessage& msg);
+        void KickPlayer(unsigned char playerid, unsigned char cause, unsigned short param);
+        void KickPlayer(NS_PlayerKicked npk);
 
-	void ClientWatchDog(void);
-	void WaitForClients(void);
-	void FillPlayerQueues(void);
+        void ClientWatchDog(void);
+        void WaitForClients(void);
+        void FillPlayerQueues(void);
 
-	/// Sendet ein NC-Paket ohne Befehle
-	void SendNothingNC(const unsigned int &id);
+        /// Sendet ein NC-Paket ohne Befehle
+        void SendNothingNC(const unsigned int& id);
 
-	/// Generiert einen KI-Namen
-	void SetAIName(const unsigned player_id);
+        /// Generiert einen KI-Namen
+        void SetAIName(const unsigned player_id);
 
-private:
-	void OnNMSPong(const GameMessage_Pong& msg);
-	void OnNMSServerType(const GameMessage_Server_Type& msg);
-	void OnNMSServerPassword(const GameMessage_Server_Password& msg);
-	void OnNMSServerChat(const GameMessage_Server_Chat& msg);
-	void OnNMSPlayerName(const GameMessage_Player_Name& msg);
-	void OnNMSPlayerToggleNation(const GameMessage_Player_Toggle_Nation& msg);
-	void OnNMSPlayerToggleTeam(const GameMessage_Player_Toggle_Team& msg);
-	void OnNMSPlayerToggleColor(const GameMessage_Player_Toggle_Color& msg);
-	void OnNMSPlayerReady(const GameMessage_Player_Ready& msg);
-	void OnNMSMapChecksum(const GameMessage_Map_Checksum& msg);
-	void OnNMSGameCommand(const GameMessage_GameCommand& msg);
+    private:
+        void OnNMSPong(const GameMessage_Pong& msg);
+        void OnNMSServerType(const GameMessage_Server_Type& msg);
+        void OnNMSServerPassword(const GameMessage_Server_Password& msg);
+        void OnNMSServerChat(const GameMessage_Server_Chat& msg);
+        void OnNMSPlayerName(const GameMessage_Player_Name& msg);
+        void OnNMSPlayerToggleNation(const GameMessage_Player_Toggle_Nation& msg);
+        void OnNMSPlayerToggleTeam(const GameMessage_Player_Toggle_Team& msg);
+        void OnNMSPlayerToggleColor(const GameMessage_Player_Toggle_Color& msg);
+        void OnNMSPlayerReady(const GameMessage_Player_Ready& msg);
+        void OnNMSMapChecksum(const GameMessage_Map_Checksum& msg);
+        void OnNMSGameCommand(const GameMessage_GameCommand& msg);
 
-	void OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, std::list<RandomEntry> *his, bool last);
+        void OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, std::list<RandomEntry> *his, bool last);
 
-private:
-	enum ServerState
-	{
-		SS_STOPPED = 0,
-		SS_CONFIG,
-		SS_GAME
-	} status;
+    private:
+        enum ServerState
+        {
+            SS_STOPPED = 0,
+            SS_CONFIG,
+            SS_GAME
+        } status;
 
-	class FramesInfo
-	{
-	public:
+        class FramesInfo
+        {
+            public:
 
-		FramesInfo();
-		void Clear();
+                FramesInfo();
+                void Clear();
 
-		/// Aktueller nwf
-		unsigned int nr;
-		/// Länge der Network-Frames in ms (gf-Länge * nwf_length des Clients)
-		unsigned int nwf_length;
-		/// Aktueller GF
-		unsigned gf_nr;
-		/// GF-Länge in ms
-		unsigned gf_length;
+                /// Aktueller nwf
+                unsigned int nr;
+                /// Länge der Network-Frames in ms (gf-Länge * nwf_length des Clients)
+                unsigned int nwf_length;
+                /// Aktueller GF
+                unsigned gf_nr;
+                /// GF-Länge in ms
+                unsigned gf_length;
 
-		unsigned int lasttime;
-		unsigned int lastmsgtime;
-		unsigned int pausetime;
-		bool pause;
-	} framesinfo;
+                unsigned int lasttime;
+                unsigned int lastmsgtime;
+                unsigned int pausetime;
+                bool pause;
+        } framesinfo;
 
-	class ServerConfig
-	{
-	public:
+        class ServerConfig
+        {
+            public:
 
-		ServerConfig();
-		void Clear();
+                ServerConfig();
+                void Clear();
 
-		unsigned char servertype;
-		unsigned char playercount;
-		std::string gamename;
-		std::string password;
-		std::string mapname;
-		unsigned short port;
-		bool ipv6;
-		bool use_upnp;
-	} serverconfig;
+                unsigned char servertype;
+                unsigned char playercount;
+                std::string gamename;
+                std::string password;
+                std::string mapname;
+                unsigned short port;
+                bool ipv6;
+                bool use_upnp;
+        } serverconfig;
 
-	class MapInfo
-	{
-	public:
+        class MapInfo
+        {
+            public:
 
-		MapInfo();
-		void Clear();
+                MapInfo();
+                void Clear();
 
-		unsigned int partcount;
-		unsigned int ziplength;
-		unsigned int length;
-		unsigned int checksum;
-		std::string name;
-		unsigned char *zipdata;
-		MapType map_type;
-	} mapinfo;
+                unsigned int partcount;
+                unsigned int ziplength;
+                unsigned int length;
+                unsigned int checksum;
+                std::string name;
+                unsigned char* zipdata;
+                MapType map_type;
+        } mapinfo;
 
-	Socket serversocket;
-	GameServerPlayerList players;
-	GlobalGameSettings ggs;
+        Socket serversocket;
+        GameServerPlayerList players;
+        GlobalGameSettings ggs;
 
-	/// der Spielstartcountdown
-	class CountDown
-	{
-	public:
-		CountDown();
-		void Clear(int time = 2);
+        /// der Spielstartcountdown
+        class CountDown
+        {
+            public:
+                CountDown();
+                void Clear(int time = 2);
 
-		bool do_countdown;
-		int countdown;
-		unsigned int lasttime;
-	} countdown;
+                bool do_countdown;
+                int countdown;
+                unsigned int lasttime;
+        } countdown;
 
-	/// Alle KI-Spieler und ihre Daten (NULL, falls ein solcher Spieler nicht existiert)
-	std::vector<AIBase*> ai_players;
+        /// Alle KI-Spieler und ihre Daten (NULL, falls ein solcher Spieler nicht existiert)
+        std::vector<AIBase*> ai_players;
 
-	/// AsyncLogs of two async players
-	int async_player1, async_player2;
-	bool async_player1_done, async_player2_done;
-	std::list<RandomEntry> async_player1_log, async_player2_log;
+        /// AsyncLogs of two async players
+        int async_player1, async_player2;
+        bool async_player1_done, async_player2_done;
+        std::list<RandomEntry> async_player1_log, async_player2_log;
 
-	public:
-		AIBase *GetAIPlayer(unsigned playerID) { return ai_players[playerID]; }
-		void SendAIEvent(AIEvent::Base *ev, unsigned receiver);
+    public:
+        AIBase* GetAIPlayer(unsigned playerID) { return ai_players[playerID]; }
+        void SendAIEvent(AIEvent::Base* ev, unsigned receiver);
 
 };
 

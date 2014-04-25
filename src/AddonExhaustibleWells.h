@@ -1,4 +1,4 @@
-// $Id: AddonExhaustibleWells.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: AddonExhaustibleWells.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -31,16 +31,16 @@
  */
 class AddonExhaustibleWells : public AddonBool
 {
-public:
-	AddonExhaustibleWells() : AddonBool(ADDON_EXHAUSTIBLE_WELLS,
-										  ADDONGROUP_ECONOMY,
-										  gettext_noop("Exhaustible Wells"), 
-										  gettext_noop("Allows to have limited water.\n\n"
-													   "Wells will now dry out."),
-										  0
-										 )
-	{
-	}
+    public:
+        AddonExhaustibleWells() : AddonBool(ADDON_EXHAUSTIBLE_WELLS,
+                                                ADDONGROUP_ECONOMY,
+                                                gettext_noop("Exhaustible Wells"),
+                                                gettext_noop("Allows to have limited water.\n\n"
+                                                        "Wells will now dry out."),
+                                                0
+                                               )
+        {
+        }
 };
 
 #endif // !ADDONEXHAUSTIBLEWELLS_H_INCLUDED

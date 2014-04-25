@@ -1,4 +1,4 @@
-// $Id: strlwr.h 6458 2010-05-31 11:38:51Z FloSoft $
+// $Id: strlwr.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005-2009 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -23,26 +23,26 @@
 
 /*
 FUNCTION
-	<<strlwr>>---force string to lower case
-	
+    <<strlwr>>---force string to lower case
+
 INDEX
-	strlwr
+    strlwr
 
 ANSI_SYNOPSIS
-	#include <strlwr.h>
-	char *strlwr(char *<[str]>);
+    #include <strlwr.h>
+    char *strlwr(char *<[str]>);
 
 TRAD_SYNOPSIS
-	#include <string.h>
-	char *strlwr(<[str]>)
-	char *<[str]>;
+    #include <string.h>
+    char *strlwr(<[str]>)
+    char *<[str]>;
 
 DESCRIPTION
-	<<strlwr>> converts each characters in the string at <[str]> to
-	lower case.
+    <<strlwr>> converts each characters in the string at <[str]> to
+    lower case.
 
 RETURNS
-	<<strlwr>> returns its argument, <[str]>.
+    <<strlwr>> returns its argument, <[str]>.
 
 PORTABILITY
 <<strlwr>> is not widely portable.
@@ -50,24 +50,24 @@ PORTABILITY
 <<strlwr>> requires no supporting OS subroutines.
 
 QUICKREF
-	strlwr
+    strlwr
 */
 
 #include <string.h>
 #include <ctype.h>
 
-inline char *strlwr(char *str)
+inline char* strlwr(char* str)
 {
-	char *ret = str;
+    char* ret = str;
 
-	while (*str != '\0')
-	{
-		if (isupper (*str))
-			*str = tolower (*str);
-		++str;
-	}
+    while (*str != '\0')
+    {
+        if (isupper (*str))
+            *str = tolower (*str);
+        ++str;
+    }
 
-	return ret;
+    return ret;
 }
 
 #endif // !STRLWR_H_INCLUDED

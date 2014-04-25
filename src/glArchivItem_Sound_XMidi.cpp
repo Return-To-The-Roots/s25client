@@ -1,4 +1,4 @@
-// $Id: glArchivItem_Sound_XMidi.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: glArchivItem_Sound_XMidi.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -29,9 +29,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -45,17 +45,17 @@
  */
 void glArchivItem_Sound_XMidi::Play(const unsigned repeats)
 {
-	if(SETTINGS.sound.musik == false)
-		return;
+    if(SETTINGS.sound.musik == false)
+        return;
 
-	if(sound == NULL)
-	{
-		if(tracklist[0].getMid() == NULL)
-			tracklist[0].XMid2Mid();
-		
-		sound = AudioDriverWrapper::inst().LoadMusic(AudioDriver::AD_MIDI, tracklist[0].getMid(true), tracklist[0].getMidLength(true));
-	}
+    if(sound == NULL)
+    {
+        if(tracklist[0].getMid() == NULL)
+            tracklist[0].XMid2Mid();
 
-	if(sound != NULL)
-		 AudioDriverWrapper::inst().PlayMusic(sound, repeats);
+        sound = AudioDriverWrapper::inst().LoadMusic(AudioDriver::AD_MIDI, tracklist[0].getMid(true), tracklist[0].getMidLength(true));
+    }
+
+    if(sound != NULL)
+        AudioDriverWrapper::inst().PlayMusic(sound, repeats);
 }

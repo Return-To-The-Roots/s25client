@@ -1,4 +1,4 @@
-// $Id: iwMainMenu.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: iwMainMenu.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -28,17 +28,17 @@ class dskGameInterface;
 
 class iwMainMenu : public IngameWindow
 {
-	// Interface für das Spiel (brauchen einige Fenster)
-	GameWorldViewer * gwv;
-	/// Spielinterface-Fenster (brauchen einige Fenster)
-	dskGameInterface * gi;
+        // Interface für das Spiel (brauchen einige Fenster)
+        GameWorldViewer* gwv;
+        /// Spielinterface-Fenster (brauchen einige Fenster)
+        dskGameInterface* gi;
 
-public:
-	/// Konstruktor von @p iwMainMenu.
-	iwMainMenu(GameWorldViewer * const gwv, dskGameInterface * const gi);
-private:
+    public:
+        /// Konstruktor von @p iwMainMenu.
+        iwMainMenu(GameWorldViewer* const gwv, dskGameInterface* const gi);
+    private:
 
-	void Msg_ButtonClick(const unsigned int ctrl_id);
+        void Msg_ButtonClick(const unsigned int ctrl_id);
 };
 
 #endif // !iwMAINMENU_H_INCLUDED

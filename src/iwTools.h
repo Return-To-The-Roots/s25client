@@ -1,4 +1,4 @@
-// $Id: iwTools.h 8737 2013-05-16 15:42:35Z marcus $
+// $Id: iwTools.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -26,32 +26,32 @@
 /// Fenster mit den Militäreinstellungen.
 class iwTools : public IngameWindow
 {
-	/// Einstellungen nach dem letzten Netzwerk-Versenden nochmal verändert?
-	bool settings_changed;
+        /// Einstellungen nach dem letzten Netzwerk-Versenden nochmal verändert?
+        bool settings_changed;
 
-public:
+    public:
 
-	iwTools();
-	~iwTools();
+        iwTools();
+        ~iwTools();
 
-private:
+    private:
 
-	/// Updatet die Steuerelemente mit den aktuellen Einstellungen aus dem Spiel
-	void UpdateSettings();
-	/// Sendet veränderte Einstellungen (an den Client), falls sie verändert wurden
-	void TransmitSettings();
+        /// Updatet die Steuerelemente mit den aktuellen Einstellungen aus dem Spiel
+        void UpdateSettings();
+        /// Sendet veränderte Einstellungen (an den Client), falls sie verändert wurden
+        void TransmitSettings();
 
-	void Msg_ButtonClick(const unsigned int ctrl_id);
-	void Msg_ProgressChange(const unsigned int ctrl_id, const unsigned short position);
-	void Msg_Timer(const unsigned int ctrl_id);
+        void Msg_ButtonClick(const unsigned int ctrl_id);
+        void Msg_ProgressChange(const unsigned int ctrl_id, const unsigned short position);
+        void Msg_Timer(const unsigned int ctrl_id);
 
-	//qx:tools
-	unsigned int m_Updated;
-    static unsigned int m_UpdateReq;
-    void UpdateTexts();
-    void Msg_PaintBefore();
-public:
-	static void UpdateOrders();
+        //qx:tools
+        unsigned int m_Updated;
+        static unsigned int m_UpdateReq;
+        void UpdateTexts();
+        void Msg_PaintBefore();
+    public:
+        static void UpdateOrders();
 };
 
 #endif // !iwTOOLS_H_INCLUDED

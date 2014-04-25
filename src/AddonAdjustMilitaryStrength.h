@@ -24,35 +24,35 @@
 ///////////////////////////////////////////////////////////////////////////////
 /**
  *  Addon for changing military strength of higher ranks.
- *	
- *	Default behaviour: (Maximum strength)
- *	- Dice rolling
- *	- Rank+3
- *	
- *	Medium strength:
- *	- Dice rolling
- *	- Rank + 8
  *
- *	Minimum strength
- *	- Dice rolling
- *	- All ranks get same dice
+ *  Default behaviour: (Maximum strength)
+ *  - Dice rolling
+ *  - Rank+3
+ *
+ *  Medium strength:
+ *  - Dice rolling
+ *  - Rank + 8
+ *
+ *  Minimum strength
+ *  - Dice rolling
+ *  - All ranks get same dice
  *
  *  @author CS2001
  */
 class AddonAdjustMilitaryStrength : public AddonList
 {
-public:
-	AddonAdjustMilitaryStrength() : AddonList(ADDON_ADJUST_MILITARY_STRENGTH, 
-									   ADDONGROUP_MILITARY,
-									   gettext_noop("Adjust military strength"), 
-									   gettext_noop("Allows you to modify the strength increase of military ranks\n\n"),
-									   1
-									  )
-	{
-		addOption(gettext_noop("Maximum strength"));
-		addOption(gettext_noop("Medium strength"));
-		addOption(gettext_noop("Minimum strength"));	
-	}
+    public:
+        AddonAdjustMilitaryStrength() : AddonList(ADDON_ADJUST_MILITARY_STRENGTH,
+                    ADDONGROUP_MILITARY,
+                    gettext_noop("Adjust military strength"),
+                    gettext_noop("Allows you to modify the strength increase of military ranks\n\n"),
+                    1
+                                                     )
+        {
+            addOption(gettext_noop("Maximum strength"));
+            addOption(gettext_noop("Medium strength"));
+            addOption(gettext_noop("Minimum strength"));
+        }
 };
 
 #endif // !ADDONADJUSTMILITARYSTRENGTH_H_INCLUDED

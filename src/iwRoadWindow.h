@@ -1,4 +1,4 @@
-// $Id: iwRoadWindow.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: iwRoadWindow.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -27,18 +27,18 @@ class dskGameInterface;
 
 class iwRoadWindow : public IngameWindow
 {
-private:
-	dskGameInterface *const GameInterface;
-	unsigned short last_x;
-	unsigned short last_y;
+    private:
+        dskGameInterface* const GameInterface;
+        unsigned short last_x;
+        unsigned short last_y;
 
-public:
-	iwRoadWindow(dskGameInterface *const gi,bool flagpossible,int mouse_x,int mouse_y);
-	~iwRoadWindow();
+    public:
+        iwRoadWindow(dskGameInterface* const gi, bool flagpossible, int mouse_x, int mouse_y);
+        ~iwRoadWindow();
 
-private:
+    private:
 
-	void Msg_ButtonClick(const unsigned int ctrl_id);
+        void Msg_ButtonClick(const unsigned int ctrl_id);
 };
 
 #endif // !iwROADWINDOW_H_INCLUDED

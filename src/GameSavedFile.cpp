@@ -1,4 +1,4 @@
-// $Id: GameSavedFile.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: GameSavedFile.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -42,7 +42,7 @@ SavedFile::SavedFile() : save_time(0), player_count(0), players(0)
  */
 SavedFile::~SavedFile()
 {
-	delete[] players;
+    delete[] players;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -52,14 +52,14 @@ SavedFile::~SavedFile()
  */
 void SavedFile::WriteVersion(BinaryFile& file, unsigned int signature_length, const char* signature, unsigned short version)
 {
-	// Signatur schreiben
-	file.WriteRawData(signature,signature_length);
+    // Signatur schreiben
+    file.WriteRawData(signature, signature_length);
 
-	// Version vom Programm reinschreiben (mal 0 mit reinschreiben, damits ne runde 8 ergibt!)
-	file.WriteRawData(GetWindowRevision(), 8);
+    // Version vom Programm reinschreiben (mal 0 mit reinschreiben, damits ne runde 8 ergibt!)
+    file.WriteRawData(GetWindowRevision(), 8);
 
-	// Version des Save-Formats
-	file.WriteUnsignedShort(version);
+    // Version des Save-Formats
+    file.WriteUnsignedShort(version);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -69,31 +69,31 @@ void SavedFile::WriteVersion(BinaryFile& file, unsigned int signature_length, co
  */
 bool SavedFile::ValidateFile(BinaryFile& file, unsigned int signature_length, const char* signature, unsigned short version)
 {
-	char read_signature[32];
+    char read_signature[32];
 
-	file.ReadRawData(read_signature,signature_length);
+    file.ReadRawData(read_signature, signature_length);
 
-	// Signatur überprüfen
-	if(memcmp(read_signature, signature, signature_length))
-	{
-		// unterscheiden sich! --> raus
-		LOG.lprintf("SavedFile::Load: ERROR: Not a valid file!\n");
-		return false;
-	}
+    // Signatur überprüfen
+    if(memcmp(read_signature, signature, signature_length))
+    {
+        // unterscheiden sich! --> raus
+        LOG.lprintf("SavedFile::Load: ERROR: Not a valid file!\n");
+        return false;
+    }
 
-	// Programmversion überspringen
-	file.Seek(8, SEEK_CUR);
+    // Programmversion überspringen
+    file.Seek(8, SEEK_CUR);
 
-	// Version überprüfen
-	unsigned short read_version = file.ReadUnsignedShort();
-	if(read_version != version)
-	{
-		// anderes Dateiformat --> raus
-		LOG.lprintf("SavedFile::Load: ERROR: Old file version (version: %u; expected: %u)!\n",read_version,version);
-		return false;
-	}
+    // Version überprüfen
+    unsigned short read_version = file.ReadUnsignedShort();
+    if(read_version != version)
+    {
+        // anderes Dateiformat --> raus
+        LOG.lprintf("SavedFile::Load: ERROR: Old file version (version: %u; expected: %u)!\n", read_version, version);
+        return false;
+    }
 
-	return true;
+    return true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -103,19 +103,19 @@ bool SavedFile::ValidateFile(BinaryFile& file, unsigned int signature_length, co
  */
 void SavedFile::WritePlayerData(BinaryFile& file)
 {
-	// Spielerdaten
-	for(unsigned char i = 0; i < player_count; ++i)
-	{
-		file.WriteUnsignedInt(players[i].ps);
+    // Spielerdaten
+    for(unsigned char i = 0; i < player_count; ++i)
+    {
+        file.WriteUnsignedInt(players[i].ps);
 
-		if(players[i].ps != PS_LOCKED)
-		{
-			file.WriteShortString(players[i].name);
-			file.WriteUnsignedChar(players[i].nation);
-			file.WriteUnsignedChar(players[i].color);
-			file.WriteUnsignedChar(players[i].team);
-		}
-	}
+        if(players[i].ps != PS_LOCKED)
+        {
+            file.WriteShortString(players[i].name);
+            file.WriteUnsignedChar(players[i].nation);
+            file.WriteUnsignedChar(players[i].color);
+            file.WriteUnsignedChar(players[i].team);
+        }
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -125,22 +125,22 @@ void SavedFile::WritePlayerData(BinaryFile& file)
  */
 void SavedFile::ReadPlayerData(BinaryFile& file)
 {
-	// ggf. wieder löschen
-	delete[] players;
+    // ggf. wieder löschen
+    delete[] players;
 
-	players = new SavedFile::Player[player_count];
-	for(unsigned char i = 0; i < player_count; ++i)
-	{
-		players[i].ps = file.ReadUnsignedInt();
+    players = new SavedFile::Player[player_count];
+    for(unsigned char i = 0; i < player_count; ++i)
+    {
+        players[i].ps = file.ReadUnsignedInt();
 
-		if(players[i].ps != PS_LOCKED)
-		{
-			file.ReadShortString(players[i].name);			
-			players[i].nation = Nation(file.ReadUnsignedChar());
-			players[i].color = file.ReadUnsignedChar();
-			players[i].team = file.ReadUnsignedChar();
-		}
-	}
+        if(players[i].ps != PS_LOCKED)
+        {
+            file.ReadShortString(players[i].name);
+            players[i].nation = Nation(file.ReadUnsignedChar());
+            players[i].color = file.ReadUnsignedChar();
+            players[i].team = file.ReadUnsignedChar();
+        }
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -151,11 +151,11 @@ void SavedFile::ReadPlayerData(BinaryFile& file)
  */
 void SavedFile::WriteGGS(BinaryFile& file)
 {
-	Serializer ser;
-	ggs.Serialize(&ser);
+    Serializer ser;
+    ggs.Serialize(&ser);
 
-	file.WriteUnsignedInt(ser.GetLength());
-	file.WriteRawData(ser.GetData(),ser.GetLength());
+    file.WriteUnsignedInt(ser.GetLength());
+    file.WriteRawData(ser.GetData(), ser.GetLength());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -166,14 +166,14 @@ void SavedFile::WriteGGS(BinaryFile& file)
  */
 void SavedFile::ReadGGS(BinaryFile& file)
 {
-	unsigned length = file.ReadUnsignedInt();
-	unsigned char *buffer = new unsigned char[length];
+    unsigned length = file.ReadUnsignedInt();
+    unsigned char* buffer = new unsigned char[length];
 
-	file.ReadRawData(buffer, length);
-	Serializer ser(buffer, length);
-	
-	ggs.Deserialize(&ser);
-	
-	delete[] buffer;
+    file.ReadRawData(buffer, length);
+    Serializer ser(buffer, length);
+
+    ggs.Deserialize(&ser);
+
+    delete[] buffer;
 }
 

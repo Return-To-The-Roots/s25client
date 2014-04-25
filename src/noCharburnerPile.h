@@ -1,4 +1,4 @@
-// $Id: noCharburnerPile.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: noCharburnerPile.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -26,66 +26,66 @@
 /// The wood/coal piles made by the charburner
 class noCharburnerPile : public noCoordBase
 {
-public:
-		/// Status
-	enum State
-	{
-		STATE_WOOD, // Wood stack is constructed
-		STATE_SMOLDERING, // Smolder slightly
-		STATE_REMOVECOVER, // Charburner removes the earth cover
-		STATE_HARVEST // Coal is "harvested"
-	};
+    public:
+        /// Status
+        enum State
+        {
+            STATE_WOOD, // Wood stack is constructed
+            STATE_SMOLDERING, // Smolder slightly
+            STATE_REMOVECOVER, // Charburner removes the earth cover
+            STATE_HARVEST // Coal is "harvested"
+        };
 
-private:
+    private:
 
-	/// Status
-	State state;
+        /// Status
+        State state;
 
-	/// Current (graphical) step
-	unsigned short step;
-	/// Current step of the step (same graphics during the different sub steps) 
-	unsigned short sub_step;
+        /// Current (graphical) step
+        unsigned short step;
+        /// Current step of the step (same graphics during the different sub steps)
+        unsigned short sub_step;
 
-	/// Event for glowing
-	EventManager::EventPointer event;
+        /// Event for glowing
+        EventManager::EventPointer event;
 
-public:
+    public:
 
-	noCharburnerPile(const unsigned short x, const unsigned short y);
-	noCharburnerPile(SerializedGameData * sgd, const unsigned obj_id);
+        noCharburnerPile(const unsigned short x, const unsigned short y);
+        noCharburnerPile(SerializedGameData* sgd, const unsigned obj_id);
 
-	~noCharburnerPile();
+        ~noCharburnerPile();
 
-	/// Aufräummethoden
-protected:	void Destroy_noCharburnerPile();
-public:		void Destroy() { Destroy_noCharburnerPile(); }
+        /// Aufräummethoden
+    protected:  void Destroy_noCharburnerPile();
+    public:     void Destroy() { Destroy_noCharburnerPile(); }
 
-	/// Serialisierungsfunktionen
-	protected:	void Serialize_noCharburnerPile(SerializedGameData * sgd) const;
-	public:		void Serialize(SerializedGameData *sgd) const { Serialize_noCharburnerPile(sgd); }
+        /// Serialisierungsfunktionen
+    protected:  void Serialize_noCharburnerPile(SerializedGameData* sgd) const;
+    public:     void Serialize(SerializedGameData* sgd) const { Serialize_noCharburnerPile(sgd); }
 
-	GO_Type GetGOT() const { return GOT_CHARBURNERPILE; }
+        GO_Type GetGOT() const { return GOT_CHARBURNERPILE; }
 
-	void Draw(int x,int y);
-	void HandleEvent(const unsigned int id);
+        void Draw(int x, int y);
+        void HandleEvent(const unsigned int id);
 
-	BlockingManner GetBM() const { return BM_CHARBURNERPILE; }
+        BlockingManner GetBM() const { return BM_CHARBURNERPILE; }
 
-	/// Get the current state of the charburner pile
-	State GetState() const { return state; }
+        /// Get the current state of the charburner pile
+        State GetState() const { return state; }
 
-	/// Charburner has worked on it --> Goto next step
-	void NextStep();
+        /// Charburner has worked on it --> Goto next step
+        void NextStep();
 
-	/// Dertermines if the charburner pile needs wood or grain 
-	/// Only graphical "effect", dertermines which ware the charburner will be carrying
-	enum WareType
-	{
-		WT_WOOD,
-		WT_GRAIN
-	};
-	WareType GetNeededWareType() const;
-	
+        /// Dertermines if the charburner pile needs wood or grain
+        /// Only graphical "effect", dertermines which ware the charburner will be carrying
+        enum WareType
+        {
+            WT_WOOD,
+            WT_GRAIN
+        };
+        WareType GetNeededWareType() const;
+
 };
 
 

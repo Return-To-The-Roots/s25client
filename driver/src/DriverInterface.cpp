@@ -1,4 +1,4 @@
-// $Id: DriverInterface.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: DriverInterface.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -31,13 +31,13 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 #ifdef _WIN32
-#	define DRIVERDLLAPI extern "C" __declspec(dllexport)
+#   define DRIVERDLLAPI extern "C" __declspec(dllexport)
 #else
-#	define DRIVERDLLAPI extern "C"
+#   define DRIVERDLLAPI extern "C"
 #endif // !_WIN32
 
 ///////////////////////////////////////////////////////////////////////////////
-/** 
+/**
  *  API-Versions-Lieferfunktion
  *
  *  @return liefert die API-Version des Treibers
@@ -46,7 +46,7 @@ static char THIS_FILE[] = __FILE__;
  */
 DRIVERDLLAPI unsigned int GetDriverAPIVersion(void)
 {
-	return DRIVERAPIVERSION;
+    return DRIVERAPIVERSION;
 }
 
 

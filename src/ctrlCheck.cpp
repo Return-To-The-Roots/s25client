@@ -1,4 +1,4 @@
-// $Id: ctrlCheck.cpp 8209 2012-09-10 14:55:39Z marcus $
+// $Id: ctrlCheck.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -26,9 +26,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -37,18 +37,18 @@
  *
  *  @author OLiver
  */
-ctrlCheck::ctrlCheck(Window *parent,
-					 unsigned int id, 
-					 unsigned short x, 
-					 unsigned short y, 
-					 unsigned short width, 
-					 unsigned short height, 
-					 TextureColor tc,
-					 const std::string& text, 
-					 glArchivItem_Font *font, 
-					 bool readonly)
-	: Window(x, y, id, parent, width, height),
-	tc(tc), text(text), font(font), check(false), readonly(readonly)
+ctrlCheck::ctrlCheck(Window* parent,
+                     unsigned int id,
+                     unsigned short x,
+                     unsigned short y,
+                     unsigned short width,
+                     unsigned short height,
+                     TextureColor tc,
+                     const std::string& text,
+                     glArchivItem_Font* font,
+                     bool readonly)
+    : Window(x, y, id, parent, width, height),
+      tc(tc), text(text), font(font), check(false), readonly(readonly)
 {
 }
 
@@ -65,36 +65,36 @@ ctrlCheck::ctrlCheck(Window *parent,
 
 bool ctrlCheck::Msg_LeftDown(const MouseCoords& mc)
 {
-	if(!readonly && Coll(mc.x, mc.y, GetX(), GetY(), width, height))
-	{
-		check = !check;
-		parent->Msg_CheckboxChange(GetID(),check);
-		return true;
-	}
+    if(!readonly && Coll(mc.x, mc.y, GetX(), GetY(), width, height))
+    {
+        check = !check;
+        parent->Msg_CheckboxChange(GetID(), check);
+        return true;
+    }
 
-	return false;
+    return false;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
  *  zeichnet das Fenster.
- * 
+ *
  *  @author OLiver
  */
 bool ctrlCheck::Draw_(void)
 {
-	const unsigned short box_size = 20;
-	unsigned short distance = (height - box_size) / 2;
+    const unsigned short box_size = 20;
+    unsigned short distance = (height - box_size) / 2;
 
-	Draw3D(GetX(), GetY(), width, height, tc, 2);
+    Draw3D(GetX(), GetY(), width, height, tc, 2);
 
-	if(font)
-		font->Draw(GetX()+4, GetY()+height/2, text, glArchivItem_Font::DF_VCENTER, (check ? COLOR_YELLOW : 0xFFBBBBBB) );
+    if(font)
+        font->Draw(GetX() + 4, GetY() + height / 2, text, glArchivItem_Font::DF_VCENTER, (check ? COLOR_YELLOW : 0xFFBBBBBB) );
 
-	Draw3D(GetX() + width - distance - box_size, GetY() + distance, box_size, box_size, tc, 2);
+    Draw3D(GetX() + width - distance - box_size, GetY() + distance, box_size, box_size, tc, 2);
 
-	if(check)
-		LOADER.GetImageN("io", 32)->Draw(GetX() + width - distance - box_size/2, GetY() + distance + box_size/2, 0, 0, 0, 0, 0, 0);
+    if(check)
+        LOADER.GetImageN("io", 32)->Draw(GetX() + width - distance - box_size / 2, GetY() + distance + box_size / 2, 0, 0, 0, 0, 0, 0);
 
-	return true;
+    return true;
 }

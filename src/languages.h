@@ -1,4 +1,4 @@
-// $Id: languages.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: languages.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -25,43 +25,43 @@
 
 class Languages: public Singleton<Languages>
 {
-public:
-	struct Language
-	{
-		Language(std::string name, std::string code) : name(name), code(code) {}
+    public:
+        struct Language
+        {
+            Language(std::string name, std::string code) : name(name), code(code) {}
 
-		static bool compare(const Language& o1, const Language& o2) 
-		{
-			if (o1.name < o2.name) 
-				return true;
+            static bool compare(const Language& o1, const Language& o2)
+            {
+                if (o1.name < o2.name)
+                    return true;
 
-			if (o1.name == o2.name) 
-			{
-				if (o1.code < o2.code)
-					return true;
-			}
-			return false;
-		}
+                if (o1.name == o2.name)
+                {
+                    if (o1.code < o2.code)
+                        return true;
+                }
+                return false;
+            }
 
-		std::string name;
-		std::string code;  // "normaler" locale-code
-	};
+            std::string name;
+            std::string code;  // "normaler" locale-code
+        };
 
-public:
-	Languages() : loaded(false) {}
+    public:
+        Languages() : loaded(false) {}
 
-	void setLanguage(const std::string& lang_code);
-	const std::string setLanguage(unsigned int i);
+        void setLanguage(const std::string& lang_code);
+        const std::string setLanguage(unsigned int i);
 
-	unsigned int getCount(void);
-	const Language &getLanguage(unsigned int i);
+        unsigned int getCount(void);
+        const Language& getLanguage(unsigned int i);
 
-protected:
-	void loadLanguages(void);
+    protected:
+        void loadLanguages(void);
 
-private:
-	std::vector<Language> languages;
-	bool loaded;
+    private:
+        std::vector<Language> languages;
+        bool loaded;
 };
 
 ///////////////////////////////////////////////////////////////////////////////

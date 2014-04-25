@@ -1,4 +1,4 @@
-// $Id: Random.h 7768 2012-01-08 13:40:06Z marcus $
+// $Id: Random.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -26,58 +26,58 @@
 
 struct RandomEntry
 {
-	unsigned counter;
-	int max;
-	int value;
-	const char *src_name;
-	unsigned src_line;
-	unsigned obj_id;
+    unsigned counter;
+    int max;
+    int value;
+    const char* src_name;
+    unsigned src_line;
+    unsigned obj_id;
 
-	RandomEntry(unsigned counter, int max, int value, const char *src_name, unsigned int src_line, unsigned obj_id) : counter(counter), max(max), value(value), src_name(src_name), src_line(src_line), obj_id(obj_id) {};
-	RandomEntry() : counter(0), max(0), value(0), src_name(NULL), src_line(0), obj_id(0) {};
+    RandomEntry(unsigned counter, int max, int value, const char* src_name, unsigned int src_line, unsigned obj_id) : counter(counter), max(max), value(value), src_name(src_name), src_line(src_line), obj_id(obj_id) {};
+    RandomEntry() : counter(0), max(0), value(0), src_name(NULL), src_line(0), obj_id(0) {};
 };
 
 class Random : public Singleton<Random>
 {
-	unsigned counter;
-//	std::list<RandomEntry> async_log;
-	RandomEntry async_log[1024];
+        unsigned counter;
+//  std::list<RandomEntry> async_log;
+        RandomEntry async_log[1024];
 
-public:
+    public:
 
-	/// Konstruktor von @p Random.
-	Random();
-	/// Initialisiert den Zufallszahlengenerator.
-	void Init(const unsigned int init);
-	/// Erzeugt eine Zufallszahl.
-	int Rand(const char * const src_name, const unsigned src_line,const unsigned obj_id,const int max);
+        /// Konstruktor von @p Random.
+        Random();
+        /// Initialisiert den Zufallszahlengenerator.
+        void Init(const unsigned int init);
+        /// Erzeugt eine Zufallszahl.
+        int Rand(const char* const src_name, const unsigned src_line, const unsigned obj_id, const int max);
 
-	template <typename T>
-	void Shuffle(T *const elements, unsigned int length, unsigned int repeat = 3)
-	{
-		for(unsigned int i = 0; i < repeat; ++i)
-		{
-			for(unsigned int j = 0; j < length; j++)
-			{
-				unsigned int to = Rand(__FILE__,__LINE__,0,length);
-	 
-				T temp = elements[i];
-				elements[i] = elements[to];
-				elements[to] = temp;
-			}
-		}
-	}
+        template <typename T>
+        void Shuffle(T* const elements, unsigned int length, unsigned int repeat = 3)
+        {
+            for(unsigned int i = 0; i < repeat; ++i)
+            {
+                for(unsigned int j = 0; j < length; j++)
+                {
+                    unsigned int to = Rand(__FILE__, __LINE__, 0, length);
 
-	/// Gibt aktuelle Zufallszahl zurück
-	int GetCurrentRandomValue() const { return zahl; }
+                    T temp = elements[i];
+                    elements[i] = elements[to];
+                    elements[to] = temp;
+                }
+            }
+        }
 
-	std::list<RandomEntry> *GetAsyncLog();
+        /// Gibt aktuelle Zufallszahl zurück
+        int GetCurrentRandomValue() const { return zahl; }
 
-	/// Speichere Log
-	void SaveLog(const char * const filename);
+        std::list<RandomEntry> *GetAsyncLog();
 
-private:
-	int zahl; ///< Die aktuelle Zufallszahl.
+        /// Speichere Log
+        void SaveLog(const char* const filename);
+
+    private:
+        int zahl; ///< Die aktuelle Zufallszahl.
 };
 
 ///////////////////////////////////////////////////////////////////////////////

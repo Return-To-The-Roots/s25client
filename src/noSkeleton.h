@@ -1,4 +1,4 @@
-// $Id: noSkeleton.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: noSkeleton.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -27,32 +27,32 @@
 /// Menschliches Skelett (Zierobjekt, das sich automatisch umwandelt und dann verschwindet)
 class noSkeleton: public noCoordBase
 {
-public:
+    public:
 
-	noSkeleton(const unsigned short x, const unsigned short y);
-	noSkeleton(SerializedGameData * sgd, const unsigned obj_id);
+        noSkeleton(const unsigned short x, const unsigned short y);
+        noSkeleton(SerializedGameData* sgd, const unsigned obj_id);
 
-	~noSkeleton();
+        ~noSkeleton();
 
-	void Destroy() { Destroy_noSkeleton(); }
+        void Destroy() { Destroy_noSkeleton(); }
 
-	/// Serialisierungsfunktionen
-	protected:	void Serialize_noSkeleton(SerializedGameData * sgd) const;
-	public:		void Serialize(SerializedGameData *sgd) const { Serialize_noSkeleton(sgd); }
+        /// Serialisierungsfunktionen
+    protected:  void Serialize_noSkeleton(SerializedGameData* sgd) const;
+    public:     void Serialize(SerializedGameData* sgd) const { Serialize_noSkeleton(sgd); }
 
-	GO_Type GetGOT() const { return GOT_SKELETON; }
+        GO_Type GetGOT() const { return GOT_SKELETON; }
 
-protected:	
-	void Destroy_noSkeleton();
+    protected:
+        void Destroy_noSkeleton();
 
-	void Draw(int x, int y);
-	void HandleEvent(const unsigned int id);
+        void Draw(int x, int y);
+        void HandleEvent(const unsigned int id);
 
-private:
-	/// Type des Skeletts (0 = ganz "frisch", 1 - schon etwas verdorrt)
-	unsigned char type;
-	/// EventPointer, damit der dann gelöscht werden kann, falls das Skelett von außerhalb gelöscht wird
-	EventManager::EventPointer current_event;
+    private:
+        /// Type des Skeletts (0 = ganz "frisch", 1 - schon etwas verdorrt)
+        unsigned char type;
+        /// EventPointer, damit der dann gelöscht werden kann, falls das Skelett von außerhalb gelöscht wird
+        EventManager::EventPointer current_event;
 };
 
 #endif // !NOSKELETON_H_INCLUDED

@@ -1,4 +1,4 @@
-// $Id: AddonStatisticsVisibility.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: AddonStatisticsVisibility.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -31,20 +31,20 @@
  */
 class AddonStatisticsVisibility : public AddonList
 {
-public:
-	AddonStatisticsVisibility() : AddonList(ADDON_STATISTICS_VISIBILITY, 
-											ADDONGROUP_OTHER,
-											gettext_noop("Change the visibility of your ingame statistics"), 
-											gettext_noop("Decides to whom your statistics is visible.\n\n"
-														 "\"Allies\" applies to team members as well as "
-														 "to allies by treaty."),
-											0
-										   )
-	{
-		addOption(gettext_noop("Everyone"));
-		addOption(gettext_noop("Allies"));
-		addOption(gettext_noop("Nobody else but you"));	
-	}
+    public:
+        AddonStatisticsVisibility() : AddonList(ADDON_STATISTICS_VISIBILITY,
+                                                    ADDONGROUP_OTHER,
+                                                    gettext_noop("Change the visibility of your ingame statistics"),
+                                                    gettext_noop("Decides to whom your statistics is visible.\n\n"
+                                                            "\"Allies\" applies to team members as well as "
+                                                            "to allies by treaty."),
+                                                    0
+                                                   )
+        {
+            addOption(gettext_noop("Everyone"));
+            addOption(gettext_noop("Allies"));
+            addOption(gettext_noop("Nobody else but you"));
+        }
 };
 
 #endif // !ADDONSTATISTICSVISIBILITY_H_INCLUDED

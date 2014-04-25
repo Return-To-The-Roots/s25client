@@ -1,4 +1,4 @@
-// $Id: signale.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: signale.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -27,9 +27,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -41,43 +41,44 @@
 #ifdef _WIN32
 BOOL WINAPI HandlerRoutine(DWORD dwCtrlType)
 {
-	switch(dwCtrlType)
-	{
-	case CTRL_BREAK_EVENT:
-	case CTRL_CLOSE_EVENT:
-	case CTRL_C_EVENT:
-		{
-			GLOBALVARS.notdone = false;
-			return TRUE;
-		} break;
-	}
-	return FALSE;
+    switch(dwCtrlType)
+    {
+        case CTRL_BREAK_EVENT:
+        case CTRL_CLOSE_EVENT:
+        case CTRL_C_EVENT:
+        {
+            GLOBALVARS.notdone = false;
+            return TRUE;
+        } break;
+    }
+    return FALSE;
 }
 #else
 bool killme = false;
-void HandlerRoutine(int sig) 
+void HandlerRoutine(int sig)
 {
-	
-	int c;
-	if(sig != SIGINT)
-		return;
-	else {
-		if(!killme)
-			LOG.lprintf("Wollen Sie das Programm beenden (j/n) : ");
-		else
-			LOG.lprintf("Wollen Sie das Programm killen (j/n) : ");
 
-		c = getchar();
-		if(c == 'j' || c == 1079565930)
-		{
-			if(killme == true)
-				exit(1);
+    int c;
+    if(sig != SIGINT)
+        return;
+    else
+    {
+        if(!killme)
+            LOG.lprintf("Wollen Sie das Programm beenden (j/n) : ");
+        else
+            LOG.lprintf("Wollen Sie das Programm killen (j/n) : ");
 
-			killme = true;
-			GLOBALVARS.notdone = false;
-		}
-		else
-			return;
-	}
+        c = getchar();
+        if(c == 'j' || c == 1079565930)
+        {
+            if(killme == true)
+                exit(1);
+
+            killme = true;
+            GLOBALVARS.notdone = false;
+        }
+        else
+            return;
+    }
 }
 #endif // _WIN32

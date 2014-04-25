@@ -1,4 +1,4 @@
-// $Id: nofArmorer.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: nofArmorer.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -27,28 +27,28 @@ class nobUsualBuilding;
 /// Klasse für den Schmied
 class nofArmorer : public nofWorkman
 {
-private:
+    private:
 
-	/// Bestimmt, was der Schmied als nächstes schmieden soll (immer Schwert-Schild im Wechsel)
-	bool sword_shield;
+        /// Bestimmt, was der Schmied als nächstes schmieden soll (immer Schwert-Schild im Wechsel)
+        bool sword_shield;
 
-private:
-	void DrawWorking(int x, int y);
-	/// Gibt die ID in JOBS.BOB zurück, wenn der Beruf Waren rausträgt (bzw rein)
-	unsigned short GetCarryID() const;
-	/// Der Arbeiter erzeugt eine Ware
-	GoodType ProduceWare();
+    private:
+        void DrawWorking(int x, int y);
+        /// Gibt die ID in JOBS.BOB zurück, wenn der Beruf Waren rausträgt (bzw rein)
+        unsigned short GetCarryID() const;
+        /// Der Arbeiter erzeugt eine Ware
+        GoodType ProduceWare();
 
-public:
+    public:
 
-	nofArmorer(const unsigned short x, const unsigned short y,const unsigned char player,nobUsual * workplace);
-	nofArmorer(SerializedGameData * sgd, const unsigned obj_id);
+        nofArmorer(const unsigned short x, const unsigned short y, const unsigned char player, nobUsual* workplace);
+        nofArmorer(SerializedGameData* sgd, const unsigned obj_id);
 
-	/// Serialisierungsfunktionen
-	protected:	void Serialize_nofArmorer(SerializedGameData * sgd) const;
-	public:		void Serialize(SerializedGameData *sgd) const { Serialize_nofArmorer(sgd); }
+        /// Serialisierungsfunktionen
+    protected:  void Serialize_nofArmorer(SerializedGameData* sgd) const;
+    public:     void Serialize(SerializedGameData* sgd) const { Serialize_nofArmorer(sgd); }
 
-	GO_Type GetGOT() const { return GOT_NOF_ARMORER; }
+        GO_Type GetGOT() const { return GOT_NOF_ARMORER; }
 };
 
 #endif

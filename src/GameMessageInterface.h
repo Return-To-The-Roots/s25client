@@ -1,4 +1,4 @@
-// $Id: GameMessageInterface.h 7678 2011-12-28 17:05:25Z marcus $
+// $Id: GameMessageInterface.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -65,50 +65,50 @@ class GameMessage_SendAsyncLog;
 
 class GameMessageInterface : public MessageInterface
 {
-protected:
-	virtual ~GameMessageInterface() {}
+    protected:
+        virtual ~GameMessageInterface() {}
 
-public:
-	virtual void OnNMSPing(const GameMessage_Ping& msg);
-	virtual void OnNMSPong(const GameMessage_Pong& msg);
+    public:
+        virtual void OnNMSPing(const GameMessage_Ping& msg);
+        virtual void OnNMSPong(const GameMessage_Pong& msg);
 
-	virtual void OnNMSServerType(const GameMessage_Server_Type& msg);
-	virtual void OnNMSServerTypeOK(const GameMessage_Server_TypeOK& msg);
-	virtual void OnNMSServerPassword(const GameMessage_Server_Password& msg);
-	virtual void OnNMSServerName(const GameMessage_Server_Name& msg);
-	virtual void OnNMSServerStart(const GameMessage_Server_Start& msg);
-	virtual void OnNMSServerChat(const GameMessage_Server_Chat& msg);
-	virtual void OnNMSServerAsync(const GameMessage_Server_Async& msg);
-	virtual void OnNMSServerCountdown(const GameMessage_Server_Countdown& msg);
-	virtual void OnNMSServerCancelCountdown(const GameMessage_Server_CancelCountdown& msg);
+        virtual void OnNMSServerType(const GameMessage_Server_Type& msg);
+        virtual void OnNMSServerTypeOK(const GameMessage_Server_TypeOK& msg);
+        virtual void OnNMSServerPassword(const GameMessage_Server_Password& msg);
+        virtual void OnNMSServerName(const GameMessage_Server_Name& msg);
+        virtual void OnNMSServerStart(const GameMessage_Server_Start& msg);
+        virtual void OnNMSServerChat(const GameMessage_Server_Chat& msg);
+        virtual void OnNMSServerAsync(const GameMessage_Server_Async& msg);
+        virtual void OnNMSServerCountdown(const GameMessage_Server_Countdown& msg);
+        virtual void OnNMSServerCancelCountdown(const GameMessage_Server_CancelCountdown& msg);
 
-	virtual void OnNMSPlayerId(const GameMessage_Player_Id& msg);
-	virtual void OnNMSPlayerName(const GameMessage_Player_Name& msg);
-	virtual void OnNMSPlayerList(const GameMessage_Player_List& msg);
-	virtual void OnNMSPlayerToggleState(const GameMessage_Player_Toggle_State& msg);
-	virtual void OnNMSPlayerToggleNation(const GameMessage_Player_Toggle_Nation& msg);
-	virtual void OnNMSPlayerToggleTeam(const GameMessage_Player_Toggle_Team& msg);
-	virtual void OnNMSPlayerToggleColor(const GameMessage_Player_Toggle_Color& msg);
-	virtual void OnNMSPlayerKicked(const GameMessage_Player_Kicked& msg);
-	virtual void OnNMSPlayerPing(const GameMessage_Player_Ping& msg);
-	virtual void OnNMSPlayerNew(const GameMessage_Player_New& msg);
-	virtual void OnNMSPlayerReady(const GameMessage_Player_Ready& msg);
-	virtual void OnNMSPlayerSwap(const GameMessage_Player_Swap& msg);
+        virtual void OnNMSPlayerId(const GameMessage_Player_Id& msg);
+        virtual void OnNMSPlayerName(const GameMessage_Player_Name& msg);
+        virtual void OnNMSPlayerList(const GameMessage_Player_List& msg);
+        virtual void OnNMSPlayerToggleState(const GameMessage_Player_Toggle_State& msg);
+        virtual void OnNMSPlayerToggleNation(const GameMessage_Player_Toggle_Nation& msg);
+        virtual void OnNMSPlayerToggleTeam(const GameMessage_Player_Toggle_Team& msg);
+        virtual void OnNMSPlayerToggleColor(const GameMessage_Player_Toggle_Color& msg);
+        virtual void OnNMSPlayerKicked(const GameMessage_Player_Kicked& msg);
+        virtual void OnNMSPlayerPing(const GameMessage_Player_Ping& msg);
+        virtual void OnNMSPlayerNew(const GameMessage_Player_New& msg);
+        virtual void OnNMSPlayerReady(const GameMessage_Player_Ready& msg);
+        virtual void OnNMSPlayerSwap(const GameMessage_Player_Swap& msg);
 
-	virtual void OnNMSMapInfo(const GameMessage_Map_Info& msg);
-	virtual void OnNMSMapData(const GameMessage_Map_Data& msg);
-	virtual void OnNMSMapChecksum(const GameMessage_Map_Checksum& msg);
-	virtual void OnNMSMapChecksumOK(const GameMessage_Map_ChecksumOK& msg);
+        virtual void OnNMSMapInfo(const GameMessage_Map_Info& msg);
+        virtual void OnNMSMapData(const GameMessage_Map_Data& msg);
+        virtual void OnNMSMapChecksum(const GameMessage_Map_Checksum& msg);
+        virtual void OnNMSMapChecksumOK(const GameMessage_Map_ChecksumOK& msg);
 
 
-	virtual void OnNMSPause(const GameMessage_Pause& msg);
-	virtual void OnNMSServerDone(const GameMessage_Server_NWFDone& msg);
-	virtual void OnNMSGameCommand(const GameMessage_GameCommand& msg);
+        virtual void OnNMSPause(const GameMessage_Pause& msg);
+        virtual void OnNMSServerDone(const GameMessage_Server_NWFDone& msg);
+        virtual void OnNMSGameCommand(const GameMessage_GameCommand& msg);
 
-	virtual void OnNMSGGSChange(const GameMessage_GGSChange& msg);
+        virtual void OnNMSGGSChange(const GameMessage_GGSChange& msg);
 
-	virtual void OnNMSGetAsyncLog(const GameMessage_GetAsyncLog& msg);
-	virtual void OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, std::list<RandomEntry> *his, bool last);
+        virtual void OnNMSGetAsyncLog(const GameMessage_GetAsyncLog& msg);
+        virtual void OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, std::list<RandomEntry> *his, bool last);
 };
 
 #endif //!GAMEMESSAGEINTERFACE_H_INCLUDED

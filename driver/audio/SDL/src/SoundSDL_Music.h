@@ -1,4 +1,4 @@
-// $Id: SoundSDL_Music.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: SoundSDL_Music.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -25,19 +25,19 @@ class AudioSDL;
 
 class SoundSDL_Music : public Sound
 {
-	friend class AudioSDL;
-public:
-	/// Konstruktor von @p SoundSDL_Music.
-	SoundSDL_Music();
+        friend class AudioSDL;
+    public:
+        /// Konstruktor von @p SoundSDL_Music.
+        SoundSDL_Music();
 
-	/// Destruktor von @p SoundSDL_Music.
-	~SoundSDL_Music(void);
+        /// Destruktor von @p SoundSDL_Music.
+        ~SoundSDL_Music(void);
 
-private:
+    private:
 
-	static SoundSDL_Music *mthis;
-	Mix_Music *music;  ///< Das Music-Handle.
-	
+        static SoundSDL_Music* mthis;
+        Mix_Music* music;  ///< Das Music-Handle.
+
 };
 
 #endif // !SOUNDSDL_MUSIC_H_INCLUDED

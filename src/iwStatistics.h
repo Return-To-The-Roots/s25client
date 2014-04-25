@@ -1,4 +1,4 @@
-// $Id: iwStatistics.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: iwStatistics.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -27,28 +27,28 @@
 class iwStatistics : public IngameWindow
 {
 
-public:
+    public:
 
-	/// Konstruktor von @p iwStatistics.
-	iwStatistics();
-	~iwStatistics();
-  
-private:
+        /// Konstruktor von @p iwStatistics.
+        iwStatistics();
+        ~iwStatistics();
 
-  StatisticType currentView;
-  StatisticTime currentTime;
-  ctrlText *headline;
-  ctrlText *maxValue;
-  ctrlText *minValue;
-  std::vector<ctrlText*> timeAnnotations;
-  std::vector<bool> activePlayers;
-  unsigned numPlayingPlayers;
+    private:
 
-  void Msg_ButtonClick(const unsigned int ctrl_id);
-  void Msg_PaintAfter();
-  void Msg_OptionGroupChange(const unsigned int ctrl_id, const unsigned short selection);
-  void DrawStatistic(StatisticType type);
-  void DrawAxis();
+        StatisticType currentView;
+        StatisticTime currentTime;
+        ctrlText* headline;
+        ctrlText* maxValue;
+        ctrlText* minValue;
+        std::vector<ctrlText*> timeAnnotations;
+        std::vector<bool> activePlayers;
+        unsigned numPlayingPlayers;
+
+        void Msg_ButtonClick(const unsigned int ctrl_id);
+        void Msg_PaintAfter();
+        void Msg_OptionGroupChange(const unsigned int ctrl_id, const unsigned short selection);
+        void DrawStatistic(StatisticType type);
+        void DrawAxis();
 };
 
 #endif // !iwSTATISTICS_H_INCLUDED

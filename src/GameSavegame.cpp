@@ -1,4 +1,4 @@
-// $Id: GameSavegame.cpp 8920 2013-08-27 19:40:37Z marcus $
+// $Id: GameSavegame.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -23,7 +23,7 @@
 #include "GameSavegame.h"
 
 /// Kleine Signatur am Anfang "RTTRSAVE", die ein gültiges S25 RTTR Savegame kennzeichnet
-const char Savegame::SAVE_SIGNATURE[8] = {'R','T','T','R','S','A','V','E'};
+const char Savegame::SAVE_SIGNATURE[8] = {'R', 'T', 'T', 'R', 'S', 'A', 'V', 'E'};
 /// Version des Savegame-Formates
 const unsigned short Savegame::SAVE_VERSION = 25;
 
@@ -52,16 +52,16 @@ Savegame::~Savegame()
  */
 bool Savegame::Save(const std::string& filename)
 {
-	BinaryFile file;
-	
-	if(!file.Open(filename.c_str(),OFM_WRITE))
-		return false;
+    BinaryFile file;
 
-	bool ret = Save(file);
+    if(!file.Open(filename.c_str(), OFM_WRITE))
+        return false;
 
-	file.Close();
+    bool ret = Save(file);
 
-	return ret;
+    file.Close();
+
+    return ret;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -71,42 +71,42 @@ bool Savegame::Save(const std::string& filename)
  */
 bool Savegame::Save(BinaryFile& file)
 {
-	// Versionszeug schreiben
-	WriteVersion(file,8,SAVE_SIGNATURE,SAVE_VERSION);
+    // Versionszeug schreiben
+    WriteVersion(file, 8, SAVE_SIGNATURE, SAVE_VERSION);
 
-	// Timestamp der Aufzeichnung (TODO: Little/Big Endian unterscheidung)
-	file.WriteRawData(&save_time,8);
+    // Timestamp der Aufzeichnung (TODO: Little/Big Endian unterscheidung)
+    file.WriteRawData(&save_time, 8);
 
-	// Mapname
-	file.WriteShortString(map_name);
+    // Mapname
+    file.WriteShortString(map_name);
 
-	// Anzahl Spieler
-	file.WriteUnsignedChar(player_count);
+    // Anzahl Spieler
+    file.WriteUnsignedChar(player_count);
 
-	// Größe der Spielerdaten (später ausfüllen)
-	unsigned players_size = 0;
-	unsigned players_pos = file.Tell();
-	file.WriteUnsignedInt(players_size);
+    // Größe der Spielerdaten (später ausfüllen)
+    unsigned players_size = 0;
+    unsigned players_pos = file.Tell();
+    file.WriteUnsignedInt(players_size);
 
-	// Spielerdaten
-	WritePlayerData(file);
+    // Spielerdaten
+    WritePlayerData(file);
 
-	// Wieder zurückspringen und Größe des Spielerblocks eintragen
-	unsigned new_pos = file.Tell();
-	file.Seek(players_pos,SEEK_SET);
-	file.WriteUnsignedInt(new_pos-players_pos-4);
-	file.Seek(new_pos,SEEK_SET);
+    // Wieder zurückspringen und Größe des Spielerblocks eintragen
+    unsigned new_pos = file.Tell();
+    file.Seek(players_pos, SEEK_SET);
+    file.WriteUnsignedInt(new_pos - players_pos - 4);
+    file.Seek(new_pos, SEEK_SET);
 
-	// GGS
-	WriteGGS(file);
+    // GGS
+    WriteGGS(file);
 
-	// Start-GF
-	file.WriteUnsignedInt(start_gf);
+    // Start-GF
+    file.WriteUnsignedInt(start_gf);
 
-	// Serialisiertes Spielzeug reinschreiben
-	sgd.WriteToFile(file);
+    // Serialisiertes Spielzeug reinschreiben
+    sgd.WriteToFile(file);
 
-	return true;
+    return true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -114,18 +114,18 @@ bool Savegame::Save(BinaryFile& file)
  *
  *  @author OLiver
  */
-bool Savegame::Load(const std::string&  filename,const bool load_players,const bool load_sgd)
+bool Savegame::Load(const std::string&  filename, const bool load_players, const bool load_sgd)
 {
-	BinaryFile file;
-	
-	if(!file.Open(filename.c_str(),OFM_READ))
-		return false;
+    BinaryFile file;
 
-	bool ret = Load(file,load_players,load_sgd);
+    if(!file.Open(filename.c_str(), OFM_READ))
+        return false;
 
-	file.Close();
+    bool ret = Load(file, load_players, load_sgd);
 
-	return ret;
+    file.Close();
+
+    return ret;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -133,51 +133,51 @@ bool Savegame::Load(const std::string&  filename,const bool load_players,const b
  *
  *  @author OLiver
  */
-bool Savegame::Load(BinaryFile& file,const bool load_players,const bool load_sgd)
+bool Savegame::Load(BinaryFile& file, const bool load_players, const bool load_sgd)
 {
-	// Signatur und Version einlesen
-	if(!ValidateFile(file,8,SAVE_SIGNATURE,SAVE_VERSION))
-	{
-		LOG.lprintf("Savegame::Load: ERROR: File is not a valid RTTR savegame!\n");
-		return false;
-	}
+    // Signatur und Version einlesen
+    if(!ValidateFile(file, 8, SAVE_SIGNATURE, SAVE_VERSION))
+    {
+        LOG.lprintf("Savegame::Load: ERROR: File is not a valid RTTR savegame!\n");
+        return false;
+    }
 
-	// Zeitstempel
-	file.ReadRawData(&save_time,8);
+    // Zeitstempel
+    file.ReadRawData(&save_time, 8);
 
-	// Map-Name
-	file.ReadShortString(map_name);
+    // Map-Name
+    file.ReadShortString(map_name);
 
-	// Anzahl Spieler
-	player_count = file.ReadUnsignedChar();
+    // Anzahl Spieler
+    player_count = file.ReadUnsignedChar();
 
-	// Spielerzeug
-	if(load_players)
-	{
-		// Größe des Spielerblocks überspringen
-		file.Seek(4,SEEK_CUR);
+    // Spielerzeug
+    if(load_players)
+    {
+        // Größe des Spielerblocks überspringen
+        file.Seek(4, SEEK_CUR);
 
-		ReadPlayerData(file);
-	}
-	else
-	{
-		// Überspringen
-		players = 0;
-		unsigned player_size = file.ReadUnsignedInt();
-		file.Seek(player_size,SEEK_CUR);
-	}
+        ReadPlayerData(file);
+    }
+    else
+    {
+        // Überspringen
+        players = 0;
+        unsigned player_size = file.ReadUnsignedInt();
+        file.Seek(player_size, SEEK_CUR);
+    }
 
-	// GGS
-	ReadGGS(file);
+    // GGS
+    ReadGGS(file);
 
-	// Start-GF
-	start_gf = file.ReadUnsignedInt();
+    // Start-GF
+    start_gf = file.ReadUnsignedInt();
 
-	if(load_sgd)
-	{
-		// Serialisiertes Spielzeug lesen
-		sgd.ReadFromFile(file);
-	}
+    if(load_sgd)
+    {
+        // Serialisiertes Spielzeug lesen
+        sgd.ReadFromFile(file);
+    }
 
-	return true;
+    return true;
 }

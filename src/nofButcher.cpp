@@ -1,4 +1,4 @@
-// $Id: nofButcher.cpp 9199 2014-02-27 10:21:26Z marcus $
+// $Id: nofButcher.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -32,39 +32,39 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
-nofButcher::nofButcher(const unsigned short x, const unsigned short y,const unsigned char player,nobUsual * workplace)
-: nofWorkman(JOB_BUTCHER,x,y,player,workplace)
+nofButcher::nofButcher(const unsigned short x, const unsigned short y, const unsigned char player, nobUsual* workplace)
+    : nofWorkman(JOB_BUTCHER, x, y, player, workplace)
 {
 }
 
-nofButcher::nofButcher(SerializedGameData * sgd, const unsigned obj_id) : nofWorkman(sgd,obj_id)
+nofButcher::nofButcher(SerializedGameData* sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id)
 {
 }
 
 void nofButcher::DrawWorking(int x, int y)
 {
-	signed char offsets[NATION_COUNT][2] = { {38,2},{-3,5},{21,-1},{26,-5},{-3,5} };
+    signed char offsets[NATION_COUNT][2] = { {38, 2}, { -3, 5}, {21, -1}, {26, -5}, { -3, 5} };
 
-	unsigned now_id;
+    unsigned now_id;
 
-	LOADER.GetImageN("rom_bobs", 160+(now_id = GAMECLIENT.Interpolate(136,current_ev))%6)
-		->Draw(x+offsets[workplace->GetNation()][0],y+offsets[workplace->GetNation()][1],0,0,0,0,0,0,COLOR_WHITE, COLORS[gwg->GetPlayer(workplace->GetPlayer())->color]);
+    LOADER.GetImageN("rom_bobs", 160 + (now_id = GAMECLIENT.Interpolate(136, current_ev)) % 6)
+    ->Draw(x + offsets[workplace->GetNation()][0], y + offsets[workplace->GetNation()][1], 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(workplace->GetPlayer())->color]);
 
-	if(now_id%6 == 5)
-	{
-		SoundManager::inst().PlayNOSound(66,this,now_id/6);
-		was_sounding = true;
-	}
+    if(now_id % 6 == 5)
+    {
+        SoundManager::inst().PlayNOSound(66, this, now_id / 6);
+        was_sounding = true;
+    }
 
-	last_id = now_id;
+    last_id = now_id;
 }
 
 GoodType nofButcher::ProduceWare()
 {
-	return GD_MEAT;
+    return GD_MEAT;
 }

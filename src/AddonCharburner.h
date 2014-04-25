@@ -1,4 +1,4 @@
-// $Id: AddonCharburner.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: AddonCharburner.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -30,15 +30,15 @@
  */
 class AddonCharburner : public AddonBool
 {
-public:
-	AddonCharburner() : AddonBool(ADDON_CHARBURNER,
-										  ADDONGROUP_ECONOMY,
-										  gettext_noop("Enable charburner"), 
-										  gettext_noop("Allows to build the charburner."),
-										  0
-										 )
-	{
-	}
+    public:
+        AddonCharburner() : AddonBool(ADDON_CHARBURNER,
+                                          ADDONGROUP_ECONOMY,
+                                          gettext_noop("Enable charburner"),
+                                          gettext_noop("Allows to build the charburner."),
+                                          0
+                                         )
+        {
+        }
 };
 
 #endif // !ADDONEXHAUSTIBLEWELLS_H_INCLUDED

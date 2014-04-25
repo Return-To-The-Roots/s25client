@@ -1,4 +1,4 @@
-// $Id: nofHunter.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: nofHunter.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -28,57 +28,57 @@ class noAnimal;
 /// Klasse für den Jäger, der Tiere jagt und Nahrung produziert
 class nofHunter : public nofBuildingWorker
 {
-private:
+    private:
 
-	/// Tier, das gejagt wird
-	noAnimal * animal;
-	/// Punkt, von dem aus geschossen wird
-	unsigned short shooting_x,shooting_y;
-	/// Richtung, in die geschossen wird
-	unsigned char shooting_dir;
+        /// Tier, das gejagt wird
+        noAnimal* animal;
+        /// Punkt, von dem aus geschossen wird
+        unsigned short shooting_x, shooting_y;
+        /// Richtung, in die geschossen wird
+        unsigned char shooting_dir;
 
-private:
+    private:
 
-	/// Funktionen, die nur von der Basisklasse (noFigure) aufgerufen werden, wenn man gelaufen ist
-	void WalkedDerived();
-	/// Malt den Arbeiter beim Arbeiten
-	void DrawWorking(int x,int y);
-	/// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren rausträgt (bzw rein)
-	unsigned short GetCarryID() const { return 89; }
+        /// Funktionen, die nur von der Basisklasse (noFigure) aufgerufen werden, wenn man gelaufen ist
+        void WalkedDerived();
+        /// Malt den Arbeiter beim Arbeiten
+        void DrawWorking(int x, int y);
+        /// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren rausträgt (bzw rein)
+        unsigned short GetCarryID() const { return 89; }
 
-	/// Trifft Vorbereitungen fürs nach Hause - Laufen
-	void StartWalkingHome();
-	/// Läuft wieder zu seiner Hütte zurück
-	void WalkHome();
+        /// Trifft Vorbereitungen fürs nach Hause - Laufen
+        void StartWalkingHome();
+        /// Läuft wieder zu seiner Hütte zurück
+        void WalkHome();
 
-	/// Prüft, ob der Schießpunkt geeignet ist
-	bool IsShootingPointGood(const unsigned short x, const unsigned short y);
+        /// Prüft, ob der Schießpunkt geeignet ist
+        bool IsShootingPointGood(const unsigned short x, const unsigned short y);
 
-	/// Wenn jeweils gelaufen wurde oder ein Event abgelaufen ist, je nach aktuellem Status folgende Funktionen ausführen
-	void HandleStateChasing();
-	void HandleStateFindingShootingPoint();
-	void HandleStateShooting();
-	void HandleStateWalkingToCadaver();
-	void HandleStateEviscerating();
+        /// Wenn jeweils gelaufen wurde oder ein Event abgelaufen ist, je nach aktuellem Status folgende Funktionen ausführen
+        void HandleStateChasing();
+        void HandleStateFindingShootingPoint();
+        void HandleStateShooting();
+        void HandleStateWalkingToCadaver();
+        void HandleStateEviscerating();
 
-public:
+    public:
 
-	nofHunter(const unsigned short x, const unsigned short y,const unsigned char player,nobUsual * workplace);
-	nofHunter(SerializedGameData * sgd, const unsigned obj_id);
-	~nofHunter() {/* assert(obj_id != 266501);*/ }
+        nofHunter(const unsigned short x, const unsigned short y, const unsigned char player, nobUsual* workplace);
+        nofHunter(SerializedGameData* sgd, const unsigned obj_id);
+        ~nofHunter() {/* assert(obj_id != 266501);*/ }
 
-	/// Serialisierungsfunktionen
-	protected:	void Serialize_nofHunter(SerializedGameData * sgd) const;
-	public:		void Serialize(SerializedGameData *sgd) const { Serialize_nofHunter(sgd); }
+        /// Serialisierungsfunktionen
+    protected:  void Serialize_nofHunter(SerializedGameData* sgd) const;
+    public:     void Serialize(SerializedGameData* sgd) const { Serialize_nofHunter(sgd); }
 
-	GO_Type GetGOT() const { return GOT_NOF_HUNTER; }
+        GO_Type GetGOT() const { return GOT_NOF_HUNTER; }
 
-	void HandleDerivedEvent(const unsigned int id);
+        void HandleDerivedEvent(const unsigned int id);
 
-	/// das Tier ist nicht mehr verfügbar (von selbst gestorben o.Ä.)
-	void AnimalLost();
-	/// wird aufgerufen, wenn die Arbeit abgebrochen wird (von nofBuildingWorker aufgerufen)
-	void WorkAborted();
+        /// das Tier ist nicht mehr verfügbar (von selbst gestorben o.Ä.)
+        void AnimalLost();
+        /// wird aufgerufen, wenn die Arbeit abgebrochen wird (von nofBuildingWorker aufgerufen)
+        void WorkAborted();
 };
 
 #endif

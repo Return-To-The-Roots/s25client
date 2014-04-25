@@ -1,4 +1,4 @@
-// $Id: ctrlTable.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: ctrlTable.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -25,81 +25,83 @@
 
 class ctrlTable : public Window
 {
-public:
-	ctrlTable(Window *parent, unsigned int id, unsigned short x, unsigned short y, unsigned short width,  unsigned short height, TextureColor tc, glArchivItem_Font *font, unsigned short column_count, va_list liste);
-	virtual ~ctrlTable(void);
+    public:
+        ctrlTable(Window* parent, unsigned int id, unsigned short x, unsigned short y, unsigned short width,  unsigned short height, TextureColor tc, glArchivItem_Font* font, unsigned short column_count, va_list liste);
+        virtual ~ctrlTable(void);
 
-	/// löscht alle Items.
-	void DeleteAllItems(void);
-	/// setzt die Auswahl.
-	void SetSelection(unsigned short selection, bool left = true);
-	/// fügt eine Zeile hinzu.
-	void AddRow(unsigned int alwaysnull, ...);
-	/// liefert den Wert eines Feldes.
-	const std::string &GetItemText(unsigned short row, unsigned short column) const;
-	/// sortiert die Zeilen.
-	void SortRows(unsigned short column, bool *direction = NULL);
-	unsigned short GetSortColumn() { return sort_column; }
-	bool GetSortDirection() { return sort_direction; }
-	unsigned short GetRowCount() { return static_cast<unsigned short>(rows.size()); }
-	unsigned short GetColumnCount() { return static_cast<unsigned short>(columns.size()); }
-	unsigned short GetSelection(bool left = true) { return (left ? row_l_selection : row_r_selection); }
-	
-	virtual bool Msg_LeftDown(const MouseCoords& mc);
-	virtual bool Msg_RightDown(const MouseCoords& mc);
-	virtual bool Msg_LeftUp(const MouseCoords& mc);
-	virtual bool Msg_WheelUp(const MouseCoords& mc);
-	virtual bool Msg_WheelDown(const MouseCoords& mc);
-	virtual bool Msg_MouseMove(const MouseCoords& mc);
-	virtual void Msg_ButtonClick(const unsigned int ctrl_id);
-	virtual void Msg_ScrollShow(const unsigned int ctrl_id, const bool visible);
-	virtual bool Msg_KeyDown(const KeyEvent& ke);
+        /// löscht alle Items.
+        void DeleteAllItems(void);
+        /// setzt die Auswahl.
+        void SetSelection(unsigned short selection, bool left = true);
+        /// fügt eine Zeile hinzu.
+        void AddRow(unsigned int alwaysnull, ...);
+        /// liefert den Wert eines Feldes.
+        const std::string& GetItemText(unsigned short row, unsigned short column) const;
+        /// sortiert die Zeilen.
+        void SortRows(unsigned short column, bool* direction = NULL);
+        unsigned short GetSortColumn() { return sort_column; }
+        bool GetSortDirection() { return sort_direction; }
+        unsigned short GetRowCount() { return static_cast<unsigned short>(rows.size()); }
+        unsigned short GetColumnCount() { return static_cast<unsigned short>(columns.size()); }
+        unsigned short GetSelection(bool left = true) { return (left ? row_l_selection : row_r_selection); }
 
-	enum SortType
-	{
-		SRT_STRING,
-		SRT_MAPSIZE,
-		SRT_NUMBER,
-		SRT_DATE,
-		SRT_DEFAULT
-	};
+        virtual bool Msg_LeftDown(const MouseCoords& mc);
+        virtual bool Msg_RightDown(const MouseCoords& mc);
+        virtual bool Msg_LeftUp(const MouseCoords& mc);
+        virtual bool Msg_WheelUp(const MouseCoords& mc);
+        virtual bool Msg_WheelDown(const MouseCoords& mc);
+        virtual bool Msg_MouseMove(const MouseCoords& mc);
+        virtual void Msg_ButtonClick(const unsigned int ctrl_id);
+        virtual void Msg_ScrollShow(const unsigned int ctrl_id, const bool visible);
+        virtual bool Msg_KeyDown(const KeyEvent& ke);
 
-protected:
+        enum SortType
+        {
+            SRT_STRING,
+            SRT_MAPSIZE,
+            SRT_NUMBER,
+            SRT_DATE,
+            SRT_DEFAULT
+        };
 
-	virtual bool Draw_(void);
+    protected:
 
-	/// Größe ändern
-	void Resize_(unsigned short width, unsigned short height);
-	/// Setzt die Breite und Position der Buttons ohne Scrolleiste
-	void ResetButtonWidths();
+        virtual bool Draw_(void);
 
-private:
-	TextureColor tc;
-	glArchivItem_Font *font;
+        /// Größe ändern
+        void Resize_(unsigned short width, unsigned short height);
+        /// Setzt die Breite und Position der Buttons ohne Scrolleiste
+        void ResetButtonWidths();
 
-	unsigned short header_height;
-	unsigned short line_count;
+    private:
+        TextureColor tc;
+        glArchivItem_Font* font;
 
-	struct COLUMN {
-		/// Breite der Spalten in Promille von der Tabellenlänge
-		unsigned short width;
-		std::string title;
-		SortType sortType;
-	};
-	std::vector<COLUMN> columns;
+        unsigned short header_height;
+        unsigned short line_count;
 
-	unsigned short row_l_selection;
-	unsigned short row_r_selection;
+        struct COLUMN
+        {
+            /// Breite der Spalten in Promille von der Tabellenlänge
+            unsigned short width;
+            std::string title;
+            SortType sortType;
+        };
+        std::vector<COLUMN> columns;
 
-	unsigned short sort_column;
-	bool sort_direction;
+        unsigned short row_l_selection;
+        unsigned short row_r_selection;
 
-	struct ROW {
-		std::vector<std::string> columns;
-	};
-	std::vector<ROW> rows;
+        unsigned short sort_column;
+        bool sort_direction;
 
-	int Compare(const std::string &a, const std::string &b, SortType sortType);
+        struct ROW
+        {
+            std::vector<std::string> columns;
+        };
+        std::vector<ROW> rows;
+
+        int Compare(const std::string& a, const std::string& b, SortType sortType);
 };
 
 #endif // !CTRLTABLE_H_INCLUDED

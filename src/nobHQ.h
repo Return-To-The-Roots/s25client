@@ -1,4 +1,4 @@
-// $Id: nobHQ.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: nobHQ.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -25,28 +25,28 @@
 
 class nobHQ : public nobBaseWarehouse
 {
-public:
+    public:
 
 
-	nobHQ(const unsigned short x, const unsigned short y,const unsigned char player,const Nation nation);
-	nobHQ(SerializedGameData * sgd, const unsigned obj_id);
+        nobHQ(const unsigned short x, const unsigned short y, const unsigned char player, const Nation nation);
+        nobHQ(SerializedGameData* sgd, const unsigned obj_id);
 
-	/// Aufräummethoden
-protected:	void Destroy_nobHQ();
-public:		void Destroy() { Destroy_nobHQ(); }
+        /// Aufräummethoden
+    protected:  void Destroy_nobHQ();
+    public:     void Destroy() { Destroy_nobHQ(); }
 
-	/// Serialisierungsfunktionen
-protected: void Serialize_nobHQ(SerializedGameData * sgd) const;
-public: void Serialize(SerializedGameData *sgd) const { Serialize_nobHQ(sgd); }
+        /// Serialisierungsfunktionen
+    protected: void Serialize_nobHQ(SerializedGameData* sgd) const;
+    public: void Serialize(SerializedGameData* sgd) const { Serialize_nobHQ(sgd); }
 
-	GO_Type GetGOT() const { return GOT_NOB_HQ; }
+        GO_Type GetGOT() const { return GOT_NOB_HQ; }
 
 
-	void Draw(int x, int y);
+        void Draw(int x, int y);
 
-	MapCoord GetMilitaryRadius() const { return MILITARY_RADIUS[4]; }
+        MapCoord GetMilitaryRadius() const { return MILITARY_RADIUS[4]; }
 
-	void HandleEvent(const unsigned int id);
+        void HandleEvent(const unsigned int id);
 
 };
 

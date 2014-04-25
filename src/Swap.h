@@ -1,4 +1,4 @@
-// $Id: Swap.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: Swap.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -24,9 +24,9 @@
 template<typename T>
 void Swap(T& a, T& b)
 {
-	T t(a);
-	a = b;
-	b = t;
+    T t(a);
+    a = b;
+    b = t;
 }
 
 #endif // !SWAP_H_INCLUDED

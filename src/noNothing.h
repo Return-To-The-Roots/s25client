@@ -1,4 +1,4 @@
-// $Id: noNothing.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: noNothing.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -25,20 +25,20 @@
 
 class noNothing : public noBase
 {
-public:
-	/// Konstruktor von @p noNothing.
-	noNothing();
+    public:
+        /// Konstruktor von @p noNothing.
+        noNothing();
 
-protected:	void Destroy_noNothing() { Destroy_noBase(); }
-public:		void Destroy() { Destroy_noNothing(); }
+    protected:  void Destroy_noNothing() { Destroy_noBase(); }
+    public:     void Destroy() { Destroy_noNothing(); }
 
-	/// Serialisierungsfunktionen
-	public:		void Serialize(SerializedGameData *sgd) const {}
+        /// Serialisierungsfunktionen
+    public:     void Serialize(SerializedGameData* sgd) const {}
 
-	GO_Type GetGOT() const { return GOT_UNKNOWN; }
+        GO_Type GetGOT() const { return GOT_UNKNOWN; }
 
-	/// An x,y zeichnen.
-	void Draw(int x, int y);
+        /// An x,y zeichnen.
+        void Draw(int x, int y);
 };
 
 #endif // !NONOTHING_H_INCLUDED

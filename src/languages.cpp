@@ -1,4 +1,4 @@
-// $Id: languages.cpp 8209 2012-09-10 14:55:39Z marcus $
+// $Id: languages.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -30,113 +30,113 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
-/** 
- *  
+/**
+ *
  *
  *  @author FloSoft
  */
 void Languages::loadLanguages()
 {
-	unsigned int count = LOADER.GetInfoN("lang")->getCount();
+    unsigned int count = LOADER.GetInfoN("lang")->getCount();
 
-	// abrunden
-	count -= (count % 2);
+    // abrunden
+    count -= (count % 2);
 
-	for(unsigned int i = 0; i < count; i += 2)
-	{
-		libsiedler2::ArchivItem_Text *n = dynamic_cast<libsiedler2::ArchivItem_Text*>(LOADER.GetInfoN("lang")->get(i));
-		libsiedler2::ArchivItem_Text *c = dynamic_cast<libsiedler2::ArchivItem_Text*>(LOADER.GetInfoN("lang")->get(i+1));
+    for(unsigned int i = 0; i < count; i += 2)
+    {
+        libsiedler2::ArchivItem_Text* n = dynamic_cast<libsiedler2::ArchivItem_Text*>(LOADER.GetInfoN("lang")->get(i));
+        libsiedler2::ArchivItem_Text* c = dynamic_cast<libsiedler2::ArchivItem_Text*>(LOADER.GetInfoN("lang")->get(i + 1));
 
-		if(!n)
-			continue;
+        if(!n)
+            continue;
 
-		Language l(n->getText(), "");
+        Language l(n->getText(), "");
 
-		if(c)
-			l.code = c->getText();
+        if(c)
+            l.code = c->getText();
 
-		languages.push_back(l);
-	}
+        languages.push_back(l);
+    }
 
-	// Sprachen sortieren
-	std::sort(languages.begin(), languages.end(), Language::compare);
+    // Sprachen sortieren
+    std::sort(languages.begin(), languages.end(), Language::compare);
 
-	// Systemsprache hinzufügen
-	Language l(gettext_noop("System language"), "");
-	languages.insert(languages.begin(), l);
+    // Systemsprache hinzufügen
+    Language l(gettext_noop("System language"), "");
+    languages.insert(languages.begin(), l);
 
-	loaded = true;
+    loaded = true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/** 
- *  
+/**
+ *
  *
  *  @author FloSoft
  */
-const Languages::Language &Languages::getLanguage(unsigned int i)
+const Languages::Language& Languages::getLanguage(unsigned int i)
 {
-	if(!loaded)
-		loadLanguages();
+    if(!loaded)
+        loadLanguages();
 
-	if(i < languages.size())
-		return languages.at(i); 
+    if(i < languages.size())
+        return languages.at(i);
 
-	return languages.at(0);
+    return languages.at(0);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/** 
- *  
+/**
+ *
  *
  *  @author FloSoft
  */
 unsigned int Languages::getCount(void)
 {
-	if(!loaded)
-		loadLanguages();
-	
-	return unsigned(languages.size()); 
+    if(!loaded)
+        loadLanguages();
+
+    return unsigned(languages.size());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/** 
- *  
+/**
+ *
  *
  *  @author FloSoft
  *  @author OLiver
  */
 void Languages::setLanguage(const std::string& lang_code)
 {
-	Settings::inst().language.language = lang_code;
+    Settings::inst().language.language = lang_code;
 
-	std::string locale = mysetlocale(LC_ALL, lang_code.c_str());
-	if(Settings::inst().language.language.length() == 0)
-		Settings::inst().language.language = locale;
+    std::string locale = mysetlocale(LC_ALL, lang_code.c_str());
+    if(Settings::inst().language.language.length() == 0)
+        Settings::inst().language.language = locale;
 
-	const char *domain = "rttr";
-	bind_textdomain_codeset(domain, "UTF-8");
-	bindtextdomain(domain, FILE_PATHS[15]);
-	textdomain(domain);
+    const char* domain = "rttr";
+    bind_textdomain_codeset(domain, "UTF-8");
+    bindtextdomain(domain, FILE_PATHS[15]);
+    textdomain(domain);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/** 
- *  
+/**
+ *
  *
  *  @author FloSoft
  */
 const std::string Languages::setLanguage(unsigned int i)
 {
-	const Language l = getLanguage(i);
+    const Language l = getLanguage(i);
 
-	setLanguage(l.code);
+    setLanguage(l.code);
 
-	return l.code;
+    return l.code;
 }

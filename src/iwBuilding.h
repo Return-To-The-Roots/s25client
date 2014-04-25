@@ -1,4 +1,4 @@
-// $Id: iwBuilding.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: iwBuilding.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -29,19 +29,19 @@ class GameWorldViewer;
 
 class iwBuilding : public IngameWindow
 {
-	GameWorldViewer * const gwv;
-	dskGameInterface *const gi; ///< Das GameInterface
-	nobUsual *const building;              ///< Das zugehörige Gebäudeobjekt
+        GameWorldViewer* const gwv;
+        dskGameInterface* const gi; ///< Das GameInterface
+        nobUsual* const building;              ///< Das zugehörige Gebäudeobjekt
 
-public:
-	/// Konstruktor von @p iwBuilding.
-	iwBuilding(GameWorldViewer * const gwv,dskGameInterface *const gi,nobUsual *const building);
+    public:
+        /// Konstruktor von @p iwBuilding.
+        iwBuilding(GameWorldViewer* const gwv, dskGameInterface* const gi, nobUsual* const building);
 
-private:
+    private:
 
-	void Msg_PaintBefore();
-	void Msg_PaintAfter();
-	void Msg_ButtonClick(const unsigned int ctrl_id);
+        void Msg_PaintBefore();
+        void Msg_PaintAfter();
+        void Msg_ButtonClick(const unsigned int ctrl_id);
 };
 
 #endif // !iwBUILDING_H_INCLUDED

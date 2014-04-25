@@ -1,4 +1,4 @@
-// $Id: iwMsgbox.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: iwMsgbox.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -26,30 +26,30 @@
 
 class iwMsgbox : public IngameWindow
 {
-	/// Fenster, von dem aus die Box aufgerufen wurde
-	Window *parent;
-	/// Buttons, die auf der Box erscheinen sollen
-	MsgboxButton button;
-	/// ID für die Msgbox, um unterschiedliche 
-	unsigned int msgboxid;
+        /// Fenster, von dem aus die Box aufgerufen wurde
+        Window* parent;
+        /// Buttons, die auf der Box erscheinen sollen
+        MsgboxButton button;
+        /// ID für die Msgbox, um unterschiedliche
+        unsigned int msgboxid;
 
-	/// (Haupt)Text, der angezeigt werden soll
-	const std::string& text;
-	/// Einzelne Stringzeilen, die durch die Umbrechung ggf. zu Stande kommen
-	std::string * strings;
-	/// Anzahl der Stringzeilen
-	unsigned lines_count;
+        /// (Haupt)Text, der angezeigt werden soll
+        const std::string& text;
+        /// Einzelne Stringzeilen, die durch die Umbrechung ggf. zu Stande kommen
+        std::string* strings;
+        /// Anzahl der Stringzeilen
+        unsigned lines_count;
 
-public:
-	iwMsgbox(const std::string& title, const std::string& text, Window *parent, MsgboxButton button, unsigned short icon, unsigned int msgboxid = 0);
-	~iwMsgbox();
+    public:
+        iwMsgbox(const std::string& title, const std::string& text, Window* parent, MsgboxButton button, unsigned short icon, unsigned int msgboxid = 0);
+        ~iwMsgbox();
 
-private:
+    private:
 
-	void AddButton(unsigned short id, int x, const std::string& text, const TextureColor tc);
+        void AddButton(unsigned short id, int x, const std::string& text, const TextureColor tc);
 
-	void Msg_ButtonClick(const unsigned int ctrl_id);
-	void Msg_PaintAfter();
+        void Msg_ButtonClick(const unsigned int ctrl_id);
+        void Msg_PaintAfter();
 };
 
 #endif // !iwMSGBOX_H_INCLUDED

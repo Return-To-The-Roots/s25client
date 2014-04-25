@@ -1,4 +1,4 @@
-// $Id: noFire.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: noFire.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -34,16 +34,16 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
 noFire::noFire(const unsigned short x, const unsigned short y, const unsigned char size)
-: noCoordBase(NOP_FIRE,x,y),size(size), was_sounding(false), last_sound(0), next_interval(0)
+    : noCoordBase(NOP_FIRE, x, y), size(size), was_sounding(false), last_sound(0), next_interval(0)
 {
-	// Bestimmte Zeit lang brennen
-	dead_event = em->AddEvent(this,3700);
+    // Bestimmte Zeit lang brennen
+    dead_event = em->AddEvent(this, 3700);
 }
 noFire::~noFire()
 {
@@ -51,66 +51,66 @@ noFire::~noFire()
 
 void noFire::Destroy_noFire()
 {
-	// nix mehr hier
-	gwg->SetNO(0,x,y);
-	// Bauplätze drumrum neu berechnen
-	gwg->RecalcBQAroundPoint(x,y);
+    // nix mehr hier
+    gwg->SetNO(0, x, y);
+    // Bauplätze drumrum neu berechnen
+    gwg->RecalcBQAroundPoint(x, y);
 
-	// Evtl Sounds vernichten
-	SoundManager::inst().WorkingFinished(this);
+    // Evtl Sounds vernichten
+    SoundManager::inst().WorkingFinished(this);
 
-	Destroy_noCoordBase();
+    Destroy_noCoordBase();
 }
 
-void noFire::Serialize_noFire(SerializedGameData * sgd) const
+void noFire::Serialize_noFire(SerializedGameData* sgd) const
 {
-	Serialize_noCoordBase(sgd);
+    Serialize_noCoordBase(sgd);
 
-	sgd->PushUnsignedChar(size);
-	sgd->PushObject(dead_event,true);
+    sgd->PushUnsignedChar(size);
+    sgd->PushObject(dead_event, true);
 }
 
-noFire::noFire(SerializedGameData * sgd, const unsigned obj_id) : noCoordBase(sgd,obj_id),
-size(sgd->PopUnsignedChar()),
-dead_event(sgd->PopObject<EventManager::Event>(GOT_EVENT)),
-was_sounding(false),
-last_sound(0),
-next_interval(0)
+noFire::noFire(SerializedGameData* sgd, const unsigned obj_id) : noCoordBase(sgd, obj_id),
+    size(sgd->PopUnsignedChar()),
+    dead_event(sgd->PopObject<EventManager::Event>(GOT_EVENT)),
+    was_sounding(false),
+    last_sound(0),
+    next_interval(0)
 {
 }
 
 void noFire::Draw(int x, int y)
 {
-	//// Die ersten 2 Drittel (zeitlich) brennen, das 3. Drittel Schutt daliegen lassen
-	unsigned id = GAMECLIENT.Interpolate(1000,dead_event);
+    //// Die ersten 2 Drittel (zeitlich) brennen, das 3. Drittel Schutt daliegen lassen
+    unsigned id = GAMECLIENT.Interpolate(1000, dead_event);
 
-	if(id < 666)
-	{
-		// Loderndes Feuer
-		LOADER.GetMapImageN(2500+size*8+id%8)->Draw(x,y,0,0,0,0,0,0);
-		LOADER.GetMapImageN(2530+size*8+id%8)->Draw(x,y,0,0,0,0,0,0,0xC0101010);
+    if(id < 666)
+    {
+        // Loderndes Feuer
+        LOADER.GetMapImageN(2500 + size * 8 + id % 8)->Draw(x, y, 0, 0, 0, 0, 0, 0);
+        LOADER.GetMapImageN(2530 + size * 8 + id % 8)->Draw(x, y, 0, 0, 0, 0, 0, 0, 0xC0101010);
 
-		// Feuersound abspielen in zufälligen Intervallen
-		if(VideoDriverWrapper::inst().GetTickCount() - last_sound > next_interval)
-		{
-			SoundManager::inst().PlayNOSound(96,this,id);
-			was_sounding = true;
+        // Feuersound abspielen in zufälligen Intervallen
+        if(VideoDriverWrapper::inst().GetTickCount() - last_sound > next_interval)
+        {
+            SoundManager::inst().PlayNOSound(96, this, id);
+            was_sounding = true;
 
-			last_sound = VideoDriverWrapper::inst().GetTickCount();
-			next_interval = 500+rand()%1400;
-		}
-	}
-	else
-	{
-		// Schutt
-		LOADER.GetMapImageN(2524+size)->Draw(x,y,0,0,0,0,0,0);
-	}
+            last_sound = VideoDriverWrapper::inst().GetTickCount();
+            next_interval = 500 + rand() % 1400;
+        }
+    }
+    else
+    {
+        // Schutt
+        LOADER.GetMapImageN(2524 + size)->Draw(x, y, 0, 0, 0, 0, 0, 0);
+    }
 }
 
 /// Benachrichtigen, wenn neuer gf erreicht wurde
 void noFire::HandleEvent(const unsigned int id)
 {
-	// Todesevent --> uns vernichten
-	dead_event = 0;
-	em->AddToKillList(this);
+    // Todesevent --> uns vernichten
+    dead_event = 0;
+    em->AddToKillList(this);
 }

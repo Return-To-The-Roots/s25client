@@ -1,4 +1,4 @@
-// $Id: iwShip.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: iwShip.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -29,22 +29,22 @@ class GameWorldViewer;
 
 class iwShip : public IngameWindow
 {
-	GameWorldViewer * const gwv;
-	dskGameInterface *const gi; ///< Das GameInterface
-	unsigned ship_id; /// ID des Schiffes, welches gerade angezeigt wird
-	unsigned char player; /// Besitzer des Schiffes, den wir für die Umwandlung ID->richtiges Schiff brauchen
+        GameWorldViewer* const gwv;
+        dskGameInterface* const gi; ///< Das GameInterface
+        unsigned ship_id; /// ID des Schiffes, welches gerade angezeigt wird
+        unsigned char player; /// Besitzer des Schiffes, den wir für die Umwandlung ID->richtiges Schiff brauchen
 
-public:
-	/// Konstruktor von @p iwBuilding.
-	iwShip(GameWorldViewer * const gwv,dskGameInterface *const gi,noShip *const ship);
+    public:
+        /// Konstruktor von @p iwBuilding.
+        iwShip(GameWorldViewer* const gwv, dskGameInterface* const gi, noShip* const ship);
 
-private:
+    private:
 
-	void Msg_PaintBefore();
-	void Msg_PaintAfter();
-	void Msg_ButtonClick(const unsigned int ctrl_id);
+        void Msg_PaintBefore();
+        void Msg_PaintAfter();
+        void Msg_ButtonClick(const unsigned int ctrl_id);
 
-	void DrawCargo();
+        void DrawCargo();
 };
 
 #endif // !iwSHIP_H_INCLUDED

@@ -1,4 +1,4 @@
-// $Id: nofWoodcutter.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: nofWoodcutter.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -24,33 +24,33 @@
 
 class nofWoodcutter : public nofFarmhand
 {
-private:
+    private:
 
-	/// Malt den Arbeiter beim Arbeiten
-	void DrawWorking(int x,int y);
-	/// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren rausträgt (bzw rein)
-	unsigned short GetCarryID() const;
+        /// Malt den Arbeiter beim Arbeiten
+        void DrawWorking(int x, int y);
+        /// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren rausträgt (bzw rein)
+        unsigned short GetCarryID() const;
 
-	/// Abgeleitete Klasse informieren, wenn sie anfängt zu arbeiten (Vorbereitungen)
-	void WorkStarted();
-	/// Abgeleitete Klasse informieren, wenn fertig ist mit Arbeiten
-	void WorkFinished();
-	
+        /// Abgeleitete Klasse informieren, wenn sie anfängt zu arbeiten (Vorbereitungen)
+        void WorkStarted();
+        /// Abgeleitete Klasse informieren, wenn fertig ist mit Arbeiten
+        void WorkFinished();
 
-	/// Returns the quality of this working point or determines if the worker can work here at all
-	PointQuality GetPointQuality(const MapCoord x, const MapCoord y);
 
-	/// wird aufgerufen, wenn die Arbeit abgebrochen wird (von nofBuildingWorker aufgerufen)
-	void WorkAborted_Farmhand();
-	
-public:
+        /// Returns the quality of this working point or determines if the worker can work here at all
+        PointQuality GetPointQuality(const MapCoord x, const MapCoord y);
 
-	nofWoodcutter(const unsigned short x, const unsigned short y,const unsigned char player,nobUsual * workplace);
-	nofWoodcutter(SerializedGameData * sgd, const unsigned obj_id);
+        /// wird aufgerufen, wenn die Arbeit abgebrochen wird (von nofBuildingWorker aufgerufen)
+        void WorkAborted_Farmhand();
 
-	GO_Type GetGOT() const { return GOT_NOF_WOODCUTTER; }
+    public:
 
-	
+        nofWoodcutter(const unsigned short x, const unsigned short y, const unsigned char player, nobUsual* workplace);
+        nofWoodcutter(SerializedGameData* sgd, const unsigned obj_id);
+
+        GO_Type GetGOT() const { return GOT_NOF_WOODCUTTER; }
+
+
 
 
 

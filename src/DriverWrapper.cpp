@@ -1,4 +1,4 @@
-// $Id: DriverWrapper.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: DriverWrapper.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -32,9 +32,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -55,7 +55,7 @@ DriverWrapper::DriverWrapper() :  dll(0)
  */
 DriverWrapper::~DriverWrapper()
 {
-	Unload();
+    Unload();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -66,11 +66,11 @@ DriverWrapper::~DriverWrapper()
  */
 void DriverWrapper::Unload()
 {
-	if(dll)
-	{
-		FreeLibrary(dll);
-		dll = 0;
-	}
+    if(dll)
+    {
+        FreeLibrary(dll);
+        dll = 0;
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -81,48 +81,48 @@ void DriverWrapper::Unload()
  */
 bool DriverWrapper::Load(const DriverType dt, std::string& preference)
 {
-	// ggf. aufräumen vorher
-	Unload();
+    // ggf. aufräumen vorher
+    Unload();
 
-	/// Verfügbare Treiber auflisten
-	list<DriverItem> drivers;
-	const std::string DIRECTORY[2] = { "video", "audio" };
+    /// Verfügbare Treiber auflisten
+    list<DriverItem> drivers;
+    const std::string DIRECTORY[2] = { "video", "audio" };
 
-	LoadDriverList(dt, drivers);
+    LoadDriverList(dt, drivers);
 
-	LOG.lprintf("%u %s drivers found!\n", unsigned(drivers.size()), DIRECTORY[dt].c_str());
+    LOG.lprintf("%u %s drivers found!\n", unsigned(drivers.size()), DIRECTORY[dt].c_str());
 
-	// Welche gefunden?
-	if(!drivers.size())
-		return false;
+    // Welche gefunden?
+    if(!drivers.size())
+        return false;
 
-	/// Suche, ob der Treiber dabei ist, den wir wünschen
-	for(list<DriverItem>::iterator it = drivers.begin(); it.valid(); ++it)
-	{
-		if(it->GetName() == preference)
-		{
-			// Dann den gleich nehmen
-			dll = LoadLibraryA(it->GetFile().c_str());
-			break;
-		}
-	}
+    /// Suche, ob der Treiber dabei ist, den wir wünschen
+    for(list<DriverItem>::iterator it = drivers.begin(); it.valid(); ++it)
+    {
+        if(it->GetName() == preference)
+        {
+            // Dann den gleich nehmen
+            dll = LoadLibraryA(it->GetFile().c_str());
+            break;
+        }
+    }
 
-	// ersten Treiber laden
-	if(!dll)
-	{
-		dll = LoadLibraryA(drivers.begin()->GetFile().c_str());
+    // ersten Treiber laden
+    if(!dll)
+    {
+        dll = LoadLibraryA(drivers.begin()->GetFile().c_str());
 
-		// Standardwert zuweisen
-		preference = drivers.begin()->GetName();
-	}
+        // Standardwert zuweisen
+        preference = drivers.begin()->GetName();
+    }
 
-	if(!dll)
-	{
-		fatal_error("kritischer Treiberfehler: DLL konnte nicht geladen werden\n");
-		return false;
-	}
+    if(!dll)
+    {
+        fatal_error("kritischer Treiberfehler: DLL konnte nicht geladen werden\n");
+        return false;
+    }
 
-	return true;
+    return true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -131,9 +131,9 @@ bool DriverWrapper::Load(const DriverType dt, std::string& preference)
  *
  *  @author OLiver
  */
-void *DriverWrapper::GetDLLFunction(const std::string& name)
+void* DriverWrapper::GetDLLFunction(const std::string& name)
 {
-	return (void*)GetProcAddress(dll,name.c_str());
+    return (void*)GetProcAddress(dll, name.c_str());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -144,72 +144,72 @@ void *DriverWrapper::GetDLLFunction(const std::string& name)
  */
 void DriverWrapper::LoadDriverList(const DriverType dt, list<DriverItem>& driver_list)
 {
-	/// Verfügbare Treiber auflisten
-	std::list<std::string> driver_files;
+    /// Verfügbare Treiber auflisten
+    std::list<std::string> driver_files;
 
-	const std::string DIRECTORY[2] = { "video", "audio" };
+    const std::string DIRECTORY[2] = { "video", "audio" };
 
-	std::string path = GetFilePath(FILE_PATHS[46]) + DIRECTORY[dt] + "/" + 
+    std::string path = GetFilePath(FILE_PATHS[46]) + DIRECTORY[dt] + "/" +
 #ifdef _WIN32
-		"*.dll";
+                       "*.dll";
 #else
-#	ifdef __APPLE__
-		"*.dylib";
-#	else
-		"*.so";
-#	endif // !__APPLE__
+#   ifdef __APPLE__
+                       "*.dylib";
+#   else
+                       "*.so";
+#   endif // !__APPLE__
 #endif // !_WIN32
 
-	LOG.lprintf("searching for drivers in %s\n", path.c_str());
-	ListDir(path, false, 0, 0, &driver_files);
+    LOG.lprintf("searching for drivers in %s\n", path.c_str());
+    ListDir(path, false, 0, 0, &driver_files);
 
-	/// Welcher Treiber letzendliche genommen wird
-	std::string choice;
+    /// Welcher Treiber letzendliche genommen wird
+    std::string choice;
 
-	HINSTANCE dll;
-	for(std::list<std::string>::iterator it = driver_files.begin(); it != driver_files.end(); ++it)
-	{
-		std::string path(*it);
+    HINSTANCE dll;
+    for(std::list<std::string>::iterator it = driver_files.begin(); it != driver_files.end(); ++it)
+    {
+        std::string path(*it);
 
 #ifdef _WIN32
-		// check filename to "rls_*" / "dbg_*", to allow not specialized drivers (for cygwin builds)
-		size_t filepos = path.find_last_of("/\\");
-		if(filepos != std::string::npos)
-		{
-			std::string file = path.substr(filepos+1);
+        // check filename to "rls_*" / "dbg_*", to allow not specialized drivers (for cygwin builds)
+        size_t filepos = path.find_last_of("/\\");
+        if(filepos != std::string::npos)
+        {
+            std::string file = path.substr(filepos + 1);
 #ifdef _DEBUG
-			if(file.substr(0, 4) == "rls_" || file.substr(0, 8) == "Release_")
+            if(file.substr(0, 4) == "rls_" || file.substr(0, 8) == "Release_")
 #else
-			if(file.substr(0, 4) == "dbg_" || file.substr(0, 6) == "Debug_")
+            if(file.substr(0, 4) == "dbg_" || file.substr(0, 6) == "Debug_")
 #endif
-				continue;
-		}
+                continue;
+        }
 #endif
 
-		if( (dll = LoadLibraryA(path.c_str())) )
-		{
-			PDRIVER_GETDRIVERAPIVERSION GetDriverAPIVersion = pto2ptf<PDRIVER_GETDRIVERAPIVERSION>((void*)GetProcAddress(dll, "GetDriverAPIVersion"));
+        if( (dll = LoadLibraryA(path.c_str())) )
+        {
+            PDRIVER_GETDRIVERAPIVERSION GetDriverAPIVersion = pto2ptf<PDRIVER_GETDRIVERAPIVERSION>((void*)GetProcAddress(dll, "GetDriverAPIVersion"));
 
-			if(GetDriverAPIVersion && GetDriverAPIVersion() == DRIVERAPIVERSION)
-			{
-				PDRIVER_GETDRIVERNAME GetDriverName = pto2ptf<PDRIVER_GETDRIVERNAME>((void*)GetProcAddress(dll, "GetDriverName"));
+            if(GetDriverAPIVersion && GetDriverAPIVersion() == DRIVERAPIVERSION)
+            {
+                PDRIVER_GETDRIVERNAME GetDriverName = pto2ptf<PDRIVER_GETDRIVERNAME>((void*)GetProcAddress(dll, "GetDriverName"));
 
-				if(GetDriverName)
-				{
-					PDRIVER_CREATEAUDIOINSTANCE CreateAudioInstance = pto2ptf<PDRIVER_CREATEAUDIOINSTANCE>((void*)GetProcAddress(dll, "CreateAudioInstance"));
-					PDRIVER_CREATEVIDEOINSTANCE CreateVideoInstance = pto2ptf<PDRIVER_CREATEVIDEOINSTANCE>((void*)GetProcAddress(dll, "CreateVideoInstance"));
+                if(GetDriverName)
+                {
+                    PDRIVER_CREATEAUDIOINSTANCE CreateAudioInstance = pto2ptf<PDRIVER_CREATEAUDIOINSTANCE>((void*)GetProcAddress(dll, "CreateAudioInstance"));
+                    PDRIVER_CREATEVIDEOINSTANCE CreateVideoInstance = pto2ptf<PDRIVER_CREATEVIDEOINSTANCE>((void*)GetProcAddress(dll, "CreateVideoInstance"));
 
-					if((dt == DT_VIDEO && CreateVideoInstance) || (dt == DT_AUDIO && CreateAudioInstance))
-					{
-						DriverItem di(*it, GetDriverName());
-						driver_list.push_back(di);
-					}
-				}
-			}
+                    if((dt == DT_VIDEO && CreateVideoInstance) || (dt == DT_AUDIO && CreateAudioInstance))
+                    {
+                        DriverItem di(*it, GetDriverName());
+                        driver_list.push_back(di);
+                    }
+                }
+            }
 
-			FreeLibrary(dll);
-			dll = 0;
-		}
-	}
+            FreeLibrary(dll);
+            dll = 0;
+        }
+    }
 }
 

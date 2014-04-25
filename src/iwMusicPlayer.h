@@ -1,4 +1,4 @@
-// $Id: iwMusicPlayer.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: iwMusicPlayer.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -24,52 +24,52 @@
 /// Fenster zum Einstellen des Musik-Players
 class iwMusicPlayer : public IngameWindow
 {
-	/// Kleines Fenster zur Eingabe von Text
-	class InputWindow  : public IngameWindow
-	{
-		/// Fenster, von dem aus die Box aufgerufen wurde
-		iwMusicPlayer *parent;
-		const unsigned win_id;
-	public:
+        /// Kleines Fenster zur Eingabe von Text
+        class InputWindow  : public IngameWindow
+        {
+                /// Fenster, von dem aus die Box aufgerufen wurde
+                iwMusicPlayer* parent;
+                const unsigned win_id;
+            public:
 
-		InputWindow(iwMusicPlayer * parent,const unsigned win_id,const std::string& title);
+                InputWindow(iwMusicPlayer* parent, const unsigned win_id, const std::string& title);
 
-		void Msg_ButtonClick(const unsigned int ctrl_id);
-		void Msg_EditEnter(const unsigned int ctrl_id);
-	};
-	
-	/// Merken, ob Veränderungen an den Musikeinstellungen durchgeführt wurden und ob deswegen
-	/// beim Schließen des Fensters das ganze neu gestartet werden muss
-	bool changed;
+                void Msg_ButtonClick(const unsigned int ctrl_id);
+                void Msg_EditEnter(const unsigned int ctrl_id);
+        };
 
-public:
+        /// Merken, ob Veränderungen an den Musikeinstellungen durchgeführt wurden und ob deswegen
+        /// beim Schließen des Fensters das ganze neu gestartet werden muss
+        bool changed;
 
-	iwMusicPlayer();
-	~iwMusicPlayer();
+    public:
 
-	/// Setzt Werte
-	void SetSegments(const std::vector<std::string>& segments);
-	void SetRepeats(const unsigned repeats);
-	void SetRandomPlayback(const bool random_playback);
+        iwMusicPlayer();
+        ~iwMusicPlayer();
 
-	/// Gibt Werte zurück
-	void GetSegments(std::vector<std::string>& segments) const;
-	unsigned GetRepeats() const;
-	bool GetRandomPlayback() const;
+        /// Setzt Werte
+        void SetSegments(const std::vector<std::string>& segments);
+        void SetRepeats(const unsigned repeats);
+        void SetRandomPlayback(const bool random_playback);
 
-	/// Updatet die Playlist- Combo, selektiert entsprechenden Eintrag, falls vorhanden
-	void UpdatePlaylistCombo(const std::string& highlight_entry);
+        /// Gibt Werte zurück
+        void GetSegments(std::vector<std::string>& segments) const;
+        unsigned GetRepeats() const;
+        bool GetRandomPlayback() const;
 
-	/// Hilfsfunktion, die vollständigen Pfad zu einem Combobox-Eintrag liefert
-	static std::string GetFullPlaylistPath(const std::string& combo_str);
+        /// Updatet die Playlist- Combo, selektiert entsprechenden Eintrag, falls vorhanden
+        void UpdatePlaylistCombo(const std::string& highlight_entry);
 
-private:
+        /// Hilfsfunktion, die vollständigen Pfad zu einem Combobox-Eintrag liefert
+        static std::string GetFullPlaylistPath(const std::string& combo_str);
 
-	void Msg_ListChooseItem(const unsigned int ctrl_id, const unsigned short selection);
-	void Msg_ComboSelectItem(const unsigned ctrl_id, const unsigned short selection);
-	void Msg_ButtonClick(const unsigned int ctrl_id);
+    private:
 
-	void Msg_Input(const unsigned int win_id,const std::string& msg);
+        void Msg_ListChooseItem(const unsigned int ctrl_id, const unsigned short selection);
+        void Msg_ComboSelectItem(const unsigned ctrl_id, const unsigned short selection);
+        void Msg_ButtonClick(const unsigned int ctrl_id);
+
+        void Msg_Input(const unsigned int win_id, const std::string& msg);
 
 
 };

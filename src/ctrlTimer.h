@@ -1,4 +1,4 @@
-// $Id: ctrlTimer.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: ctrlTimer.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -25,20 +25,20 @@
 
 class ctrlTimer : public Window
 {
-public:
-	ctrlTimer(Window *parent, unsigned int id, unsigned int timeout);
+    public:
+        ctrlTimer(Window* parent, unsigned int id, unsigned int timeout);
 
-	void Start(unsigned int timeout);
-	void Stop(void);
+        void Start(unsigned int timeout);
+        void Stop(void);
 
-	virtual void Msg_PaintBefore();
+        virtual void Msg_PaintBefore();
 
-protected:
-	virtual bool Draw_(void) { return true; };
+    protected:
+        virtual bool Draw_(void) { return true; };
 
-private:
-	unsigned int timeout;
-	unsigned int timer;
+    private:
+        unsigned int timeout;
+        unsigned int timer;
 };
 
 #endif // !CTRLTIMER_H_INCLUDED

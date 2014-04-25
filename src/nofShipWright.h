@@ -1,4 +1,4 @@
-// $Id: nofShipWright.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: nofShipWright.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -25,41 +25,41 @@
 /// Schiffsbauer - erstmal nur provisorisch, da er nur Boote baut
 class nofShipWright : public nofWorkman
 {
-	/// Punkt, an dem das Schiff steht, an dem er gerade arbeitet
-	MapCoord dest_x, dest_y;
-private:
-	/// Zeichnet ihn beim Arbeiten
-	void DrawWorking(int x, int y);
-	/// Gibt die ID in JOBS.BOB zurück, wenn der Beruf Waren rausträgt (bzw rein)
-	unsigned short GetCarryID() const { return 90; }
-	/// Der Arbeiter erzeugt eine Ware
-	GoodType ProduceWare() { return GD_BOAT; }
+        /// Punkt, an dem das Schiff steht, an dem er gerade arbeitet
+        MapCoord dest_x, dest_y;
+    private:
+        /// Zeichnet ihn beim Arbeiten
+        void DrawWorking(int x, int y);
+        /// Gibt die ID in JOBS.BOB zurück, wenn der Beruf Waren rausträgt (bzw rein)
+        unsigned short GetCarryID() const { return 90; }
+        /// Der Arbeiter erzeugt eine Ware
+        GoodType ProduceWare() { return GD_BOAT; }
 
-	/// Startet das Laufen zu der Arbeitsstelle, dem Schiff
-	void StartWalkingToShip(const unsigned char first_dir);
+        /// Startet das Laufen zu der Arbeitsstelle, dem Schiff
+        void StartWalkingToShip(const unsigned char first_dir);
 
-	/// Ist ein bestimmter Punkt auf der Karte für den Schiffsbau geeignet
-	bool IsPointGood(const MapCoord x, const MapCoord y) const;
+        /// Ist ein bestimmter Punkt auf der Karte für den Schiffsbau geeignet
+        bool IsPointGood(const MapCoord x, const MapCoord y) const;
 
-	/// Der Schiffsbauer hat einen Bauschritt bewältigt und geht wieder zurück zum Haus
-	void WorkFinished();
+        /// Der Schiffsbauer hat einen Bauschritt bewältigt und geht wieder zurück zum Haus
+        void WorkFinished();
 
-	void WalkToWorkpoint();
-	void StartWalkingHome();
-	void WalkHome();
-	void WorkAborted();
-	void WalkedDerived();
+        void WalkToWorkpoint();
+        void StartWalkingHome();
+        void WalkHome();
+        void WorkAborted();
+        void WalkedDerived();
 
-	/// Zeichnen der Figur in sonstigen Arbeitslagen
-	void DrawOtherStates(const int x, const int y);
+        /// Zeichnen der Figur in sonstigen Arbeitslagen
+        void DrawOtherStates(const int x, const int y);
 
-public:
+    public:
 
-	nofShipWright(const unsigned short x, const unsigned short y,const unsigned char player,nobUsual * workplace);
-	nofShipWright(SerializedGameData * sgd, const unsigned obj_id);
-	GO_Type GetGOT() const { return GOT_NOF_SHIPWRIGHT; }
-	void HandleDerivedEvent(const unsigned int id);
-	void Serialize(SerializedGameData *sgd) const;
+        nofShipWright(const unsigned short x, const unsigned short y, const unsigned char player, nobUsual* workplace);
+        nofShipWright(SerializedGameData* sgd, const unsigned obj_id);
+        GO_Type GetGOT() const { return GOT_NOF_SHIPWRIGHT; }
+        void HandleDerivedEvent(const unsigned int id);
+        void Serialize(SerializedGameData* sgd) const;
 };
 
 

@@ -1,4 +1,4 @@
-// $Id: dskSelectMap.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: dskSelectMap.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -29,40 +29,40 @@
 
 struct CreateServerInfo;
 
-class dskSelectMap : 
-	public Desktop, 
-	public ClientInterface,
-	public LobbyInterface
+class dskSelectMap :
+    public Desktop,
+    public ClientInterface,
+    public LobbyInterface
 {
-	/// Kartenpfad
-	std::string map_path;
+        /// Kartenpfad
+        std::string map_path;
 
-public:
-	/// Konstruktor von @p dskSelectMap.
-	dskSelectMap(const CreateServerInfo& csi);
-	~dskSelectMap();
+    public:
+        /// Konstruktor von @p dskSelectMap.
+        dskSelectMap(const CreateServerInfo& csi);
+        ~dskSelectMap();
 
-private:
-	/// Callbackfunktion zum Eintragen einer Karte in der Tabelle.
-	static void FillTable(const std::string& filename, void *param);
+    private:
+        /// Callbackfunktion zum Eintragen einer Karte in der Tabelle.
+        static void FillTable(const std::string& filename, void* param);
 
-	void Msg_OptionGroupChange(const unsigned int ctrl_id, const unsigned short selection);
-	void Msg_ButtonClick(const unsigned int ctrl_id);
-	void Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr);
-	void Msg_TableSelectItem(const unsigned int ctrl_id, const unsigned short selection);
-	void Msg_TableChooseItem(const unsigned ctrl_id, const unsigned short selection);
+        void Msg_OptionGroupChange(const unsigned int ctrl_id, const unsigned short selection);
+        void Msg_ButtonClick(const unsigned int ctrl_id);
+        void Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr);
+        void Msg_TableSelectItem(const unsigned int ctrl_id, const unsigned short selection);
+        void Msg_TableChooseItem(const unsigned ctrl_id, const unsigned short selection);
 
-	void CI_NextConnectState(const ConnectState cs);
-	void CI_Error(const ClientError ce);
+        void CI_NextConnectState(const ConnectState cs);
+        void CI_Error(const ClientError ce);
 
-	void LC_Created(void);
-	void LC_Status_Error(const std::string &error);
-	
-	/// Startet das Spiel mit einer bestimmten Auswahl in der Tabelle
-	void StartServer();
+        void LC_Created(void);
+        void LC_Status_Error(const std::string& error);
 
-private:
-	CreateServerInfo csi;
+        /// Startet das Spiel mit einer bestimmten Auswahl in der Tabelle
+        void StartServer();
+
+    private:
+        CreateServerInfo csi;
 };
 
 #endif //!dskSELECTMAP_H_INCLUDED

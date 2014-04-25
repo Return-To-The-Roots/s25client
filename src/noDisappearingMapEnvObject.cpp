@@ -1,4 +1,4 @@
-// $Id: noDisappearingMapEnvObject.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: noDisappearingMapEnvObject.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -30,9 +30,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -46,22 +46,22 @@
  *
  *  @author OLiver
  */
-noDisappearingMapEnvObject::noDisappearingMapEnvObject(const unsigned short x, 
-			   const unsigned short y, 
-			   const unsigned short map_id)
-	: noDisappearingEnvObject(x,y,4000,1000), map_id(map_id)
+noDisappearingMapEnvObject::noDisappearingMapEnvObject(const unsigned short x,
+        const unsigned short y,
+        const unsigned short map_id)
+    : noDisappearingEnvObject(x, y, 4000, 1000), map_id(map_id)
 {
 }
 
-void noDisappearingMapEnvObject::Serialize_noDisappearingMapEnvObject(SerializedGameData * sgd) const
+void noDisappearingMapEnvObject::Serialize_noDisappearingMapEnvObject(SerializedGameData* sgd) const
 {
-	Serialize_noDisappearingEnvObject(sgd);
+    Serialize_noDisappearingEnvObject(sgd);
 
-	sgd->PushUnsignedShort(map_id);
+    sgd->PushUnsignedShort(map_id);
 }
 
-noDisappearingMapEnvObject::noDisappearingMapEnvObject(SerializedGameData * sgd, const unsigned obj_id) 
-: noDisappearingEnvObject(sgd,obj_id), map_id(sgd->PopUnsignedShort())
+noDisappearingMapEnvObject::noDisappearingMapEnvObject(SerializedGameData* sgd, const unsigned obj_id)
+    : noDisappearingEnvObject(sgd, obj_id), map_id(sgd->PopUnsignedShort())
 {
 }
 
@@ -73,15 +73,15 @@ noDisappearingMapEnvObject::noDisappearingMapEnvObject(SerializedGameData * sgd,
  */
 void noDisappearingMapEnvObject::Draw(int x, int y)
 {
-	// Bild
-	LOADER.GetMapImageN(map_id)->Draw(x, y, 0, 0, 0, 0, 0, 0, GetDrawColor());
-	// Schatten
-	LOADER.GetMapImageN(map_id+100)->Draw(x, y, 0, 0, 0, 0, 0, 0, GetDrawShadowColor());
+    // Bild
+    LOADER.GetMapImageN(map_id)->Draw(x, y, 0, 0, 0, 0, 0, 0, GetDrawColor());
+    // Schatten
+    LOADER.GetMapImageN(map_id + 100)->Draw(x, y, 0, 0, 0, 0, 0, 0, GetDrawShadowColor());
 }
 
 void noDisappearingMapEnvObject::HandleEvent(const unsigned int id)
 {
-	HandleEvent_noDisappearingEnvObject(id);
+    HandleEvent_noDisappearingEnvObject(id);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -92,5 +92,5 @@ void noDisappearingMapEnvObject::HandleEvent(const unsigned int id)
  */
 void noDisappearingMapEnvObject::Destroy_noDisappearingMapEnvObject(void)
 {
-	Destroy_noDisappearingEnvObject();
+    Destroy_noDisappearingEnvObject();
 }

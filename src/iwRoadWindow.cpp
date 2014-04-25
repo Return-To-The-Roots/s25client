@@ -1,4 +1,4 @@
-// $Id: iwRoadWindow.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: iwRoadWindow.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -31,9 +31,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -42,51 +42,51 @@
  *
  *  @author OLiver
  */
-iwRoadWindow::iwRoadWindow(dskGameInterface *const GameInterface, bool flagpossible, int mouse_x, int mouse_y)
-	: IngameWindow(CGI_ROADWINDOW, mouse_x, mouse_y, 200, 100, _("Activity window"), LOADER.GetImageN("io", 1)),
-	GameInterface(GameInterface), last_x(mouse_x), last_y(mouse_y)
+iwRoadWindow::iwRoadWindow(dskGameInterface* const GameInterface, bool flagpossible, int mouse_x, int mouse_y)
+    : IngameWindow(CGI_ROADWINDOW, mouse_x, mouse_y, 200, 100, _("Activity window"), LOADER.GetImageN("io", 1)),
+      GameInterface(GameInterface), last_x(mouse_x), last_y(mouse_y)
 {
-	// Bau abbrechen
-	ctrlButton *cancel = AddImageButton(1, 10, 20, 36, 36, TC_GREY, LOADER.GetImageN("io", 110), _("Interrupt road building"));
+    // Bau abbrechen
+    ctrlButton* cancel = AddImageButton(1, 10, 20, 36, 36, TC_GREY, LOADER.GetImageN("io", 110), _("Interrupt road building"));
 
-	if(flagpossible)
-	{
-		// Flagge platzieren
-		AddImageButton(0, 10, 20, 36, 36, TC_GREY, LOADER.GetImageN("io", 70), _("Erect flag"));
-		// Abbrechenbutton daneben schieben
-		cancel->Move(46, 20);
-	}
+    if(flagpossible)
+    {
+        // Flagge platzieren
+        AddImageButton(0, 10, 20, 36, 36, TC_GREY, LOADER.GetImageN("io", 70), _("Erect flag"));
+        // Abbrechenbutton daneben schieben
+        cancel->Move(46, 20);
+    }
 
-	if(x + GetWidth() > VideoDriverWrapper::inst().GetScreenWidth())
-		x = mouse_x - GetWidth() - 40;
-	if(y + GetIwHeight() > VideoDriverWrapper::inst().GetScreenHeight())
-		y = mouse_y - GetIwHeight() - 40;
+    if(x + GetWidth() > VideoDriverWrapper::inst().GetScreenWidth())
+        x = mouse_x - GetWidth() - 40;
+    if(y + GetIwHeight() > VideoDriverWrapper::inst().GetScreenHeight())
+        y = mouse_y - GetIwHeight() - 40;
 
-	VideoDriverWrapper::inst().SetMousePos(GetX()+20,GetY()+45);
+    VideoDriverWrapper::inst().SetMousePos(GetX() + 20, GetY() + 45);
 }
 
 iwRoadWindow::~iwRoadWindow()
 {
-	GameInterface->RoadWindowClosed();
+    GameInterface->RoadWindowClosed();
 }
 
 void iwRoadWindow::Msg_ButtonClick(const unsigned int ctrl_id)
 {
-	switch(ctrl_id)
-	{
-	case 0: // Flagge & Weg bauen
-		{
-			GameInterface->CommandBuildRoad();
-		} break;
-	case 1: // Bau abbrechen
-		{
-			GameInterface->ActivateRoadMode(RM_DISABLED);
-		} break;
-	}
+    switch(ctrl_id)
+    {
+        case 0: // Flagge & Weg bauen
+        {
+            GameInterface->CommandBuildRoad();
+        } break;
+        case 1: // Bau abbrechen
+        {
+            GameInterface->ActivateRoadMode(RM_DISABLED);
+        } break;
+    }
 
-	// Maus an vorherige Stelle setzen
-	VideoDriverWrapper::inst().SetMousePos(last_x, last_y);
+    // Maus an vorherige Stelle setzen
+    VideoDriverWrapper::inst().SetMousePos(last_x, last_y);
 
-	// und fenster schlieﬂen
-	Close();
+    // und fenster schlieﬂen
+    Close();
 }

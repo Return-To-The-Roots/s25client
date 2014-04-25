@@ -1,4 +1,4 @@
-// $Id: Msgbox.h 6458 2010-05-31 11:38:51Z FloSoft $
+// $Id: Msgbox.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005-2009 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -23,27 +23,27 @@
 
 enum MsgboxButton
 {
-	MSB_OK,
-	MSB_OKCANCEL,
-	MSB_YESNO,
-	MSB_YESNOCANCEL
+    MSB_OK,
+    MSB_OKCANCEL,
+    MSB_YESNO,
+    MSB_YESNOCANCEL
 };
 
 enum MsgboxIcon
 {
-	MSB_QUESTIONGREEN =	72,
-	MSB_EXCLAMATIONGREEN,
-	MSB_QUESTIONRED,
-	MSB_EXCLAMATIONRED
+    MSB_QUESTIONGREEN = 72,
+    MSB_EXCLAMATIONGREEN,
+    MSB_QUESTIONRED,
+    MSB_EXCLAMATIONRED
 };
 
 enum MsgboxResult
 {
-	MSR_OK = 0,
-	MSR_CANCEL,
-	MSR_YES,
-	MSR_NO,
-	MSR_NOTHING = 0xFFFFFFFF
+    MSR_OK = 0,
+    MSR_CANCEL,
+    MSR_YES,
+    MSR_NO,
+    MSR_NOTHING = 0xFFFFFFFF
 };
 
 #endif //!MSGBOX_H_INCLUDED

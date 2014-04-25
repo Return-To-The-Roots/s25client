@@ -1,4 +1,4 @@
-// $Id: iwBuildingSite.h 7704 2011-12-30 20:49:00Z marcus $
+// $Id: iwBuildingSite.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -28,17 +28,17 @@ class GameWorldViewer;
 
 class iwBuildingSite : public IngameWindow
 {
-public:
-	iwBuildingSite(GameWorldViewer * const gwv,const noBuildingSite * const buildingsite);
+    public:
+        iwBuildingSite(GameWorldViewer* const gwv, const noBuildingSite* const buildingsite);
 
-protected:
-	void Msg_ButtonClick(const unsigned int ctrl_id);
-	void Msg_PaintBefore();
-	void Msg_PaintAfter();
+    protected:
+        void Msg_ButtonClick(const unsigned int ctrl_id);
+        void Msg_PaintBefore();
+        void Msg_PaintAfter();
 
-private:
-	GameWorldViewer *const gwv;
-	const noBuildingSite* buildingsite;
+    private:
+        GameWorldViewer* const gwv;
+        const noBuildingSite* buildingsite;
 };
 
 #endif // !iwBUILDINGSITE_H_INCLUDED

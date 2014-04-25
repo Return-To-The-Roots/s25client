@@ -1,4 +1,4 @@
-// $Id: macros.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: macros.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -36,28 +36,28 @@
 #define LargeFont ( LOADER.GetFontN("outline_fonts", 2) )
 
 #if defined _WIN32 && defined _MSC_VER
-#	define GetBobFile(file) ( dynamic_cast<glArchivItem_Bob*>(LOADER.##file##.get(0) ) )
-#	define GetImage(type, nr) ( dynamic_cast<glArchivItem_Bitmap*>( LOADER.##type##.get(nr) ) )
-#	define GetPlayerImage(type, nr) ( dynamic_cast<glArchivItem_Bitmap_Player*>( LOADER.##type##.get(nr) ) )
-#	define GetFont(type, nr)  ( dynamic_cast<glArchivItem_Font*>( LOADER.##type##.get(nr) ) )
-#	define GetSound(type, nr) ( dynamic_cast<glArchivItem_Sound*>( LOADER.##type##.get(nr) ) )
-#	define GetMusic(type, nr) ( dynamic_cast<glArchivItem_Music*>( LOADER.##type##.get(nr) ) )
-#	define GetTxtItem(type, nr) ( dynamic_cast<libsiedler2::ArchivItem_Text*>( LOADER.##type##.get(nr) ) )
+#   define GetBobFile(file) ( dynamic_cast<glArchivItem_Bob*>(LOADER.##file##.get(0) ) )
+#   define GetImage(type, nr) ( dynamic_cast<glArchivItem_Bitmap*>( LOADER.##type##.get(nr) ) )
+#   define GetPlayerImage(type, nr) ( dynamic_cast<glArchivItem_Bitmap_Player*>( LOADER.##type##.get(nr) ) )
+#   define GetFont(type, nr)  ( dynamic_cast<glArchivItem_Font*>( LOADER.##type##.get(nr) ) )
+#   define GetSound(type, nr) ( dynamic_cast<glArchivItem_Sound*>( LOADER.##type##.get(nr) ) )
+#   define GetMusic(type, nr) ( dynamic_cast<glArchivItem_Music*>( LOADER.##type##.get(nr) ) )
+#   define GetTxtItem(type, nr) ( dynamic_cast<libsiedler2::ArchivItem_Text*>( LOADER.##type##.get(nr) ) )
 
-#	ifdef _DEBUG
-#		define GetTxt(type, nr) ( (LOADER.##type##.get(nr) ? dynamic_cast<const libsiedler2::ArchivItem_Text*>( LOADER.##type##.get(nr) )->getText() : "String ID " #type " (" #nr ") missing"))
-#	else
-#		define GetTxt(type, nr) ( dynamic_cast<const libsiedler2::ArchivItem_Text*>( LOADER.##type##.get(nr) )->getText() )
-#	endif
+#   ifdef _DEBUG
+#       define GetTxt(type, nr) ( (LOADER.##type##.get(nr) ? dynamic_cast<const libsiedler2::ArchivItem_Text*>( LOADER.##type##.get(nr) )->getText() : "String ID " #type " (" #nr ") missing"))
+#   else
+#       define GetTxt(type, nr) ( dynamic_cast<const libsiedler2::ArchivItem_Text*>( LOADER.##type##.get(nr) )->getText() )
+#   endif
 #else
-#	define GetBobFile(file) ( dynamic_cast<glArchivItem_Bob*>(LOADER.file.get(0) ) )
-#	define GetImage(type, nr) ( dynamic_cast<glArchivItem_Bitmap*>( LOADER.type.get(nr) ) )
-#	define GetPlayerImage(type, nr) ( dynamic_cast<glArchivItem_Bitmap_Player*>( LOADER.type.get(nr) ) )
-#	define GetFont(type, nr)  ( dynamic_cast<glArchivItem_Font*>( LOADER.type.get(nr) ) )
-#	define GetTxt(type, nr)   ( dynamic_cast<const libsiedler2::ArchivItem_Text*>( LOADER.type.get(nr) )->getText() )
-#	define GetSound(type, nr) ( dynamic_cast<glArchivItem_Sound*>( LOADER.type.get(nr) ) )
-#	define GetMusic(type, nr) ( dynamic_cast<glArchivItem_Music*>( LOADER.type.get(nr) ) )
-#	define GetTxtItem(type, nr) ( dynamic_cast<libsiedler2::ArchivItem_Text*>( LOADER.type.get(nr) ) )
+#   define GetBobFile(file) ( dynamic_cast<glArchivItem_Bob*>(LOADER.file.get(0) ) )
+#   define GetImage(type, nr) ( dynamic_cast<glArchivItem_Bitmap*>( LOADER.type.get(nr) ) )
+#   define GetPlayerImage(type, nr) ( dynamic_cast<glArchivItem_Bitmap_Player*>( LOADER.type.get(nr) ) )
+#   define GetFont(type, nr)  ( dynamic_cast<glArchivItem_Font*>( LOADER.type.get(nr) ) )
+#   define GetTxt(type, nr)   ( dynamic_cast<const libsiedler2::ArchivItem_Text*>( LOADER.type.get(nr) )->getText() )
+#   define GetSound(type, nr) ( dynamic_cast<glArchivItem_Sound*>( LOADER.type.get(nr) ) )
+#   define GetMusic(type, nr) ( dynamic_cast<glArchivItem_Music*>( LOADER.type.get(nr) ) )
+#   define GetTxtItem(type, nr) ( dynamic_cast<libsiedler2::ArchivItem_Text*>( LOADER.type.get(nr) ) )
 #endif // !_WIN32 || !_MSC_VER
 
 #endif // !MACROS_H_INCLUDED

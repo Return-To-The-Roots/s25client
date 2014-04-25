@@ -1,4 +1,4 @@
-// $Id: ctrlRectangle.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: ctrlRectangle.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -24,11 +24,11 @@
 /// Interface für Klassen, in denen eine Farbe angezeigt wird
 class ColorControlInterface
 {
-public:
-	virtual ~ColorControlInterface(void) { }
+    public:
+        virtual ~ColorControlInterface(void) { }
 
-	/// Setzt die Farbe des Controls
-	virtual void SetColor(const unsigned int fill_color) = 0; 
+        /// Setzt die Farbe des Controls
+        virtual void SetColor(const unsigned int fill_color) = 0;
 };
 
 

@@ -1,4 +1,4 @@
-// $Id: iwPleaseWait.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: iwPleaseWait.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -26,11 +26,11 @@
 /// Bitte-Warten Fenster, welches aufgerufen wird, nachdem der Server gestartet wurde bis zum Weitergehen
 class iwPleaseWait : public IngameWindow
 {
-public:
-	/// Konstruktor von @p iwPleaseWait.
-	iwPleaseWait(void);
-	/// Destruktor von @p iwPleaseWait.
-	~iwPleaseWait();
+    public:
+        /// Konstruktor von @p iwPleaseWait.
+        iwPleaseWait(void);
+        /// Destruktor von @p iwPleaseWait.
+        ~iwPleaseWait();
 };
 
 #endif // !iwPLEASEWAIT_H_INCLUDED

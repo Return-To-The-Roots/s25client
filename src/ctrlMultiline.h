@@ -1,4 +1,4 @@
-// $Id: ctrlMultiline.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: ctrlMultiline.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -23,54 +23,54 @@
 
 class ctrlMultiline : public Window
 {
-public:
+    public:
 
-	/// Breite der Scrollbar
-	static const unsigned short SCROLLBAR_WIDTH = 20;
+        /// Breite der Scrollbar
+        static const unsigned short SCROLLBAR_WIDTH = 20;
 
-public:
-	ctrlMultiline(Window *parent, unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, glArchivItem_Font *font, unsigned int format = 0);
+    public:
+        ctrlMultiline(Window* parent, unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, glArchivItem_Font* font, unsigned int format = 0);
 
-	//void AddText(const std::string& text, unsigned int color);
-	void AddString(const std::string& str, unsigned int color, bool scroll = true);
-	unsigned GetLineCount() { return unsigned(lines.size()); }
-	/// Gibt den index-ten Eintrag zurück
-	const std::string& GetLine(const unsigned index) const { return lines[index].str; }
-	void SetLine(const unsigned index, const std::string& str, unsigned int color);
+        //void AddText(const std::string& text, unsigned int color);
+        void AddString(const std::string& str, unsigned int color, bool scroll = true);
+        unsigned GetLineCount() { return unsigned(lines.size()); }
+        /// Gibt den index-ten Eintrag zurück
+        const std::string& GetLine(const unsigned index) const { return lines[index].str; }
+        void SetLine(const unsigned index, const std::string& str, unsigned int color);
 
-	/// Schaltet Box ein und aus
-	void EnableBox(const bool enable) { draw_box = enable; }
+        /// Schaltet Box ein und aus
+        void EnableBox(const bool enable) { draw_box = enable; }
 
-	virtual bool Msg_LeftDown(const MouseCoords& mc);
-	virtual bool Msg_LeftUp(const MouseCoords& mc);
-	virtual bool Msg_WheelUp(const MouseCoords& mc);
-	virtual bool Msg_WheelDown(const MouseCoords& mc);
-	virtual bool Msg_MouseMove(const MouseCoords& mc);
+        virtual bool Msg_LeftDown(const MouseCoords& mc);
+        virtual bool Msg_LeftUp(const MouseCoords& mc);
+        virtual bool Msg_WheelUp(const MouseCoords& mc);
+        virtual bool Msg_WheelDown(const MouseCoords& mc);
+        virtual bool Msg_MouseMove(const MouseCoords& mc);
 
-protected:
-	virtual bool Draw_(void);
+    protected:
+        virtual bool Draw_(void);
 
-	void Resize_(unsigned short width, unsigned short height);
+        void Resize_(unsigned short width, unsigned short height);
 
-private:
+    private:
 
-	TextureColor tc;
-	glArchivItem_Font *font;
-	unsigned int format;
+        TextureColor tc;
+        glArchivItem_Font* font;
+        unsigned int format;
 
-	
-	struct Line
-	{
-		std::string str;
-		unsigned int color;
-	};
-	/// Die ganzen Strings
-	std::vector<Line> lines;
-	/// Anzahl der Zeilen, die in das Control passen
-	unsigned lines_in_control;
 
-	/// Soll die Box gezeichnet werden?
-	bool draw_box;
+        struct Line
+        {
+            std::string str;
+            unsigned int color;
+        };
+        /// Die ganzen Strings
+        std::vector<Line> lines;
+        /// Anzahl der Zeilen, die in das Control passen
+        unsigned lines_in_control;
+
+        /// Soll die Box gezeichnet werden?
+        bool draw_box;
 };
 
 #endif /// !CTRLMULTILINE_H_INCLUDED

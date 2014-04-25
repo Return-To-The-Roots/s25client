@@ -24,29 +24,29 @@
 ///////////////////////////////////////////////////////////////////////////////
 /**
  *  settings for sea attacks
- *	
- *	enemy harbors do not block attacks
- *	
- *	enemy harbors block attacks
  *
- *	no sea attacks
+ *  enemy harbors do not block attacks
+ *
+ *  enemy harbors block attacks
+ *
+ *  no sea attacks
  *
  *  @author poc
  */
 class AddonSeaAttack : public AddonList
 {
-public:
-	AddonSeaAttack() : AddonList(ADDON_SEA_ATTACK, 
-									   ADDONGROUP_MILITARY,
-									   gettext_noop("Sea attack settings"), 
-									   gettext_noop("set restriction level for sea attacks\n\n"),
-									   1
-									  )
-	{
-		addOption(gettext_noop("enemy harbors don't block"));
-		addOption(gettext_noop("enemy harbors block"));
-		addOption(gettext_noop("no sea attacks"));
-	}
+    public:
+        AddonSeaAttack() : AddonList(ADDON_SEA_ATTACK,
+                                         ADDONGROUP_MILITARY,
+                                         gettext_noop("Sea attack settings"),
+                                         gettext_noop("set restriction level for sea attacks\n\n"),
+                                         1
+                                        )
+        {
+            addOption(gettext_noop("enemy harbors don't block"));
+            addOption(gettext_noop("enemy harbors block"));
+            addOption(gettext_noop("no sea attacks"));
+        }
 };
 
 #endif

@@ -1,4 +1,4 @@
-// $Id: nofPlaner.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: nofPlaner.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -27,47 +27,47 @@ class noBuildingSite;
 /// Der Planierer
 class nofPlaner : public noFigure
 {
-	/// Was der Planierer gerade so schönes macht
-	enum PlanerState
-	{
-		STATE_FIGUREWORK = 0,
-		STATE_WALKING, /// läuft zum nächsten Punkt, um zu graben
-		STATE_PLANING /// planiert einen Punkt (Abspielen der Animation
-	} state;
+        /// Was der Planierer gerade so schönes macht
+        enum PlanerState
+        {
+            STATE_FIGUREWORK = 0,
+            STATE_WALKING, /// läuft zum nächsten Punkt, um zu graben
+            STATE_PLANING /// planiert einen Punkt (Abspielen der Animation
+        } state;
 
-	/// Arbeitsstelle des Planierers
-	noBuildingSite * building_site;
+        /// Arbeitsstelle des Planierers
+        noBuildingSite* building_site;
 
-	/// Wie rum er geht
-	enum PlaningDir
-	{
-		PD_NOTWORKING, 
-		PD_CLOCKWISE, /// Uhrzeigersinn
-		PD_COUNTERCLOCKWISE /// entgegen Uhrzeigersinn
-	} pd;
+        /// Wie rum er geht
+        enum PlaningDir
+        {
+            PD_NOTWORKING,
+            PD_CLOCKWISE, /// Uhrzeigersinn
+            PD_COUNTERCLOCKWISE /// entgegen Uhrzeigersinn
+        } pd;
 
-private:
+    private:
 
-	void GoalReached();
-	void Walked();
-	void AbrogateWorkplace();
-	void HandleDerivedEvent(const unsigned int id);
+        void GoalReached();
+        void Walked();
+        void AbrogateWorkplace();
+        void HandleDerivedEvent(const unsigned int id);
 
-public:
+    public:
 
-	nofPlaner(const unsigned short x, const unsigned short y,const unsigned char player,noBuildingSite * building_site);
-	nofPlaner(SerializedGameData * sgd, const unsigned obj_id);
+        nofPlaner(const unsigned short x, const unsigned short y, const unsigned char player, noBuildingSite* building_site);
+        nofPlaner(SerializedGameData* sgd, const unsigned obj_id);
 
-	/// Serialisierungsfunktionen
-	protected:	void Serialize_nofPlaner(SerializedGameData * sgd) const;
-	public:		void Serialize(SerializedGameData *sgd) const { Serialize_nofPlaner(sgd); }
+        /// Serialisierungsfunktionen
+    protected:  void Serialize_nofPlaner(SerializedGameData* sgd) const;
+    public:     void Serialize(SerializedGameData* sgd) const { Serialize_nofPlaner(sgd); }
 
-	GO_Type GetGOT() const { return GOT_NOF_PLANER; }
+        GO_Type GetGOT() const { return GOT_NOF_PLANER; }
 
-	void Draw(int x, int y);
+        void Draw(int x, int y);
 
-	/// Wird von der Baustelle aus aufgerufen, um den Bauarbeiter zu sagen, dass er gehen kann
-	void LostWork();
+        /// Wird von der Baustelle aus aufgerufen, um den Bauarbeiter zu sagen, dass er gehen kann
+        void LostWork();
 };
 
 

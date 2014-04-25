@@ -1,4 +1,4 @@
-// $Id: nobStorehouse.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: nobStorehouse.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -25,24 +25,24 @@
 class nobStorehouse : public nobBaseWarehouse
 {
 
-public:
+    public:
 
-	nobStorehouse(const unsigned short x, const unsigned short y,const unsigned char player,const Nation nation);
-	nobStorehouse(SerializedGameData * sgd, const unsigned obj_id);
+        nobStorehouse(const unsigned short x, const unsigned short y, const unsigned char player, const Nation nation);
+        nobStorehouse(SerializedGameData* sgd, const unsigned obj_id);
 
-	/// Aufräummethoden
-protected:	void Destroy_nobStorehouse();
-public:		void Destroy() { Destroy_nobStorehouse(); }
+        /// Aufräummethoden
+    protected:  void Destroy_nobStorehouse();
+    public:     void Destroy() { Destroy_nobStorehouse(); }
 
-	/// Serialisierungsfunktionen
-protected: void Serialize_nobStorehouse(SerializedGameData * sgd) const;
-public: void Serialize(SerializedGameData *sgd) const { Serialize_nobStorehouse(sgd); }
+        /// Serialisierungsfunktionen
+    protected: void Serialize_nobStorehouse(SerializedGameData* sgd) const;
+    public: void Serialize(SerializedGameData* sgd) const { Serialize_nobStorehouse(sgd); }
 
-	GO_Type GetGOT() const { return GOT_NOB_STOREHOUSE; }
+        GO_Type GetGOT() const { return GOT_NOB_STOREHOUSE; }
 
-	void Draw(int x, int y);
+        void Draw(int x, int y);
 
-	void HandleEvent(const unsigned int id);
+        void HandleEvent(const unsigned int id);
 };
 
 

@@ -1,4 +1,4 @@
-// $Id: noSign.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: noSign.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -30,9 +30,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -46,25 +46,25 @@
  *
  *  @author OLiver
  */
-noSign::noSign(const unsigned short x, 
-			   const unsigned short y, 
-			   const unsigned char type, 
-			   const unsigned char quantity)
-	: noDisappearingEnvObject(x,y,8500,500), type(type), quantity(quantity)
+noSign::noSign(const unsigned short x,
+               const unsigned short y,
+               const unsigned char type,
+               const unsigned char quantity)
+    : noDisappearingEnvObject(x, y, 8500, 500), type(type), quantity(quantity)
 {
 }
 
-void noSign::Serialize_noSign(SerializedGameData * sgd) const
+void noSign::Serialize_noSign(SerializedGameData* sgd) const
 {
-	Serialize_noDisappearingEnvObject(sgd);
+    Serialize_noDisappearingEnvObject(sgd);
 
-	sgd->PushUnsignedChar(type);
-	sgd->PushUnsignedChar(quantity);
+    sgd->PushUnsignedChar(type);
+    sgd->PushUnsignedChar(quantity);
 }
 
-noSign::noSign(SerializedGameData * sgd, const unsigned obj_id) : noDisappearingEnvObject(sgd,obj_id),
-type(sgd->PopUnsignedChar()),
-quantity(sgd->PopUnsignedChar())
+noSign::noSign(SerializedGameData* sgd, const unsigned obj_id) : noDisappearingEnvObject(sgd, obj_id),
+    type(sgd->PopUnsignedChar()),
+    quantity(sgd->PopUnsignedChar())
 {
 }
 
@@ -76,23 +76,23 @@ quantity(sgd->PopUnsignedChar())
  */
 void noSign::Draw(int x, int y)
 {
-	// Wenns verschwindet, muss es immer transparenter werden
-	unsigned color = GetDrawColor();
-		
-	// Schild selbst
-	if(type != 5)
-		LOADER.GetMapImageN(680 + type*3 + quantity)->Draw(x, y, 0, 0, 0, 0, 0, 0, color);
-	else
-		// leeres Schild
-		LOADER.GetMapImageN(695)->Draw(x, y, 0, 0, 0, 0, 0, 0, color);
+    // Wenns verschwindet, muss es immer transparenter werden
+    unsigned color = GetDrawColor();
 
-	// Schatten des Schildes
-	LOADER.GetMapImageN(700)->Draw(x, y, 0, 0, 0, 0, 0, 0, GetDrawShadowColor());
+    // Schild selbst
+    if(type != 5)
+        LOADER.GetMapImageN(680 + type * 3 + quantity)->Draw(x, y, 0, 0, 0, 0, 0, 0, color);
+    else
+        // leeres Schild
+        LOADER.GetMapImageN(695)->Draw(x, y, 0, 0, 0, 0, 0, 0, color);
+
+    // Schatten des Schildes
+    LOADER.GetMapImageN(700)->Draw(x, y, 0, 0, 0, 0, 0, 0, GetDrawShadowColor());
 }
 
 void noSign::HandleEvent(const unsigned int id)
 {
-	HandleEvent_noDisappearingEnvObject(id);
+    HandleEvent_noDisappearingEnvObject(id);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -103,5 +103,5 @@ void noSign::HandleEvent(const unsigned int id)
  */
 void noSign::Destroy_noSign(void)
 {
-	Destroy_noDisappearingEnvObject();
+    Destroy_noDisappearingEnvObject();
 }

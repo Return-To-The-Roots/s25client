@@ -32,24 +32,24 @@ class dskGameInterface;
 /// Fenster, welches eine Sicherheitsabfrage vor dem Abreißen eines Gebäudes durchführt
 class iwObservate : public IngameWindow
 {
-	GameWorldView *view;
+        GameWorldView* view;
 
-	const unsigned short selected_x, selected_y;
-	short last_x, last_y;
+        const unsigned short selected_x, selected_y;
+        short last_x, last_y;
 
-	// Scrolling
-	bool scroll;
-	int sx, sy;
-	
-public:
-	iwObservate(GameWorldViewer * const gwv,const unsigned short selected_x, const unsigned short selected_y);
+        // Scrolling
+        bool scroll;
+        int sx, sy;
 
-private:
-	bool Draw_();
-	void Msg_ButtonClick(const unsigned int ctrl_id);
-	bool Msg_MouseMove(const MouseCoords& mc);
-	bool Msg_RightDown(const MouseCoords& mc);
-	bool Msg_RightUp(const MouseCoords& mc);
+    public:
+        iwObservate(GameWorldViewer* const gwv, const unsigned short selected_x, const unsigned short selected_y);
+
+    private:
+        bool Draw_();
+        void Msg_ButtonClick(const unsigned int ctrl_id);
+        bool Msg_MouseMove(const MouseCoords& mc);
+        bool Msg_RightDown(const MouseCoords& mc);
+        bool Msg_RightUp(const MouseCoords& mc);
 };
 
 #endif // !iwOBSERVATE_H_INCLUDED

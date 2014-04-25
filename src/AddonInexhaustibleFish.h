@@ -13,15 +13,15 @@
 */
 class AddonInexhaustibleFish : public AddonBool
 {
-public:
-	AddonInexhaustibleFish() : AddonBool(ADDON_INEXHAUSTIBLE_FISH,
-		ADDONGROUP_ECONOMY,
-		gettext_noop("Inexhaustible Fish"),
-		gettext_noop("Deactivates reduction of fish population.\n"),
-		0
-		)
-	{
-	}
+    public:
+        AddonInexhaustibleFish() : AddonBool(ADDON_INEXHAUSTIBLE_FISH,
+                                                 ADDONGROUP_ECONOMY,
+                                                 gettext_noop("Inexhaustible Fish"),
+                                                 gettext_noop("Deactivates reduction of fish population.\n"),
+                                                 0
+                                                )
+        {
+        }
 };
 
 #endif

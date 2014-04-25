@@ -1,4 +1,4 @@
-// $Id: nofFisher.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: nofFisher.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -24,37 +24,37 @@
 
 class nofFisher : public nofFarmhand
 {
-	/// Richtung, in die er fischt
-	unsigned char fishing_dir;
-	/// Fängt er einen Fisch?
-	bool successful;
-private:
+        /// Richtung, in die er fischt
+        unsigned char fishing_dir;
+        /// Fängt er einen Fisch?
+        bool successful;
+    private:
 
-	/// Malt den Arbeiter beim Arbeiten
-	void DrawWorking(int x,int y);
-	/// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren rausträgt (bzw rein)
-	unsigned short GetCarryID() const;
+        /// Malt den Arbeiter beim Arbeiten
+        void DrawWorking(int x, int y);
+        /// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren rausträgt (bzw rein)
+        unsigned short GetCarryID() const;
 
-	/// Abgeleitete Klasse informieren, wenn sie anfängt zu arbeiten (Vorbereitungen)
-	void WorkStarted();
-	/// Abgeleitete Klasse informieren, wenn fertig ist mit Arbeiten
-	void WorkFinished();
+        /// Abgeleitete Klasse informieren, wenn sie anfängt zu arbeiten (Vorbereitungen)
+        void WorkStarted();
+        /// Abgeleitete Klasse informieren, wenn fertig ist mit Arbeiten
+        void WorkFinished();
 
-	/// Returns the quality of this working point or determines if the worker can work here at all
-	PointQuality GetPointQuality(const MapCoord x, const MapCoord y);
+        /// Returns the quality of this working point or determines if the worker can work here at all
+        PointQuality GetPointQuality(const MapCoord x, const MapCoord y);
 
-public:
+    public:
 
-	nofFisher(const unsigned short x, const unsigned short y,const unsigned char player,nobUsual * workplace);
-	nofFisher(SerializedGameData * sgd, const unsigned obj_id);
+        nofFisher(const unsigned short x, const unsigned short y, const unsigned char player, nobUsual* workplace);
+        nofFisher(SerializedGameData* sgd, const unsigned obj_id);
 
-	~nofFisher() {}
+        ~nofFisher() {}
 
-	/// Serialisierungsfunktionen
-	protected:	void Serialize_nofFisher(SerializedGameData * sgd) const;
-	public:		void Serialize(SerializedGameData *sgd) const { Serialize_nofFisher(sgd); }
+        /// Serialisierungsfunktionen
+    protected:  void Serialize_nofFisher(SerializedGameData* sgd) const;
+    public:     void Serialize(SerializedGameData* sgd) const { Serialize_nofFisher(sgd); }
 
-	GO_Type GetGOT() const { return GOT_NOF_FISHER; }
+        GO_Type GetGOT() const { return GOT_NOF_FISHER; }
 
 
 };

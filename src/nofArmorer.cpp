@@ -1,4 +1,4 @@
-// $Id: nofArmorer.cpp 9199 2014-02-27 10:21:26Z marcus $
+// $Id: nofArmorer.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -33,84 +33,84 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
-nofArmorer::nofArmorer(const unsigned short x, const unsigned short y,const unsigned char player,nobUsual * workplace)
-: nofWorkman(JOB_ARMORER,x,y,player,workplace), sword_shield(false)
+nofArmorer::nofArmorer(const unsigned short x, const unsigned short y, const unsigned char player, nobUsual* workplace)
+    : nofWorkman(JOB_ARMORER, x, y, player, workplace), sword_shield(false)
 {
 }
 
-void nofArmorer::Serialize_nofArmorer(SerializedGameData * sgd) const
+void nofArmorer::Serialize_nofArmorer(SerializedGameData* sgd) const
 {
-	Serialize_nofWorkman(sgd);
+    Serialize_nofWorkman(sgd);
 
-	sgd->PushBool(sword_shield);
+    sgd->PushBool(sword_shield);
 }
 
-nofArmorer::nofArmorer(SerializedGameData * sgd, const unsigned obj_id) : nofWorkman(sgd,obj_id),
-sword_shield(sgd->PopBool())
+nofArmorer::nofArmorer(SerializedGameData* sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id),
+    sword_shield(sgd->PopBool())
 {
 }
 
 void nofArmorer::DrawWorking(int x, int y)
 {
-	signed char offsets[NATION_COUNT][2] = { {-10,15},{-11,9},{-14,16},{-19,1},{-11,9} };
+    signed char offsets[NATION_COUNT][2] = { { -10, 15}, { -11, 9}, { -14, 16}, { -19, 1}, { -11, 9} };
 
     unsigned int max_id = 280;
-	unsigned now_id = GAMECLIENT.Interpolate(max_id,current_ev);
-	unsigned char wpNation = workplace->GetNation();
-	unsigned int plColor = GAMECLIENT.GetPlayer(player)->color;
+    unsigned now_id = GAMECLIENT.Interpolate(max_id, current_ev);
+    unsigned char wpNation = workplace->GetNation();
+    unsigned int plColor = GAMECLIENT.GetPlayer(player)->color;
 
-	if(now_id < 200)
-	{
-        LOADER.GetImageN("rom_bobs", 16+(now_id%8))
-            ->Draw(x+offsets[workplace->GetNation()][0],y+offsets[wpNation][1],0,0,0,0,0,0,COLOR_WHITE, COLORS[plColor]);
+    if(now_id < 200)
+    {
+        LOADER.GetImageN("rom_bobs", 16 + (now_id % 8))
+        ->Draw(x + offsets[workplace->GetNation()][0], y + offsets[wpNation][1], 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[plColor]);
 
-		if((now_id%8) == 5)
-		{
-			SoundManager::inst().PlayNOSound(52,this,now_id/8);
-			was_sounding = true;
-		}
-	}
+        if((now_id % 8) == 5)
+        {
+            SoundManager::inst().PlayNOSound(52, this, now_id / 8);
+            was_sounding = true;
+        }
+    }
 }
 
 unsigned short nofArmorer::GetCarryID() const
 {
-	if(sword_shield)
-		return 56;
-	else
-	{
-		// Je nach Nation einen bestimmtem Schild fertigen
-		switch(GAMECLIENT.GetPlayer(player)->nation)
-		{
-		case 0: return 60;
-		case 1: return 58;
-		case 2: return 57;
-		case 3: return 59;
-		default: return 0;
-		}
-	}
+    if(sword_shield)
+        return 56;
+    else
+    {
+        // Je nach Nation einen bestimmtem Schild fertigen
+        switch(GAMECLIENT.GetPlayer(player)->nation)
+        {
+            case 0: return 60;
+            case 1: return 58;
+            case 2: return 57;
+            case 3: return 59;
+            default: return 0;
+        }
+    }
 }
 
 GoodType nofArmorer::ProduceWare()
 {
-	sword_shield = !sword_shield;
+    sword_shield = !sword_shield;
 
-	if(sword_shield)
-		return GD_SWORD;
-	else
-	{
-		// Je nach Nation einen bestimmtem Schild fertigen
-		switch(GAMECLIENT.GetPlayer(player)->nation)
-		{
-		case 0: return GD_SHIELDAFRICANS;
-		case 1: return GD_SHIELDJAPANESE;
-		case 2: return GD_SHIELDROMANS;
-		case 3: return GD_SHIELDVIKINGS;
-		default: return GD_NOTHING;
-		}
-	}
+    if(sword_shield)
+        return GD_SWORD;
+    else
+    {
+        // Je nach Nation einen bestimmtem Schild fertigen
+        switch(GAMECLIENT.GetPlayer(player)->nation)
+        {
+            case 0: return GD_SHIELDAFRICANS;
+            case 1: return GD_SHIELDJAPANESE;
+            case 2: return GD_SHIELDROMANS;
+            case 3: return GD_SHIELDVIKINGS;
+            default: return GD_NOTHING;
+        }
+    }
 }

@@ -1,4 +1,4 @@
-// $Id: GlobalVars.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: GlobalVars.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -25,9 +25,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -37,7 +37,7 @@
  *  @author FloSoft
  */
 GlobalVars::GlobalVars(void)
-	: notdone(true), ingame(false),
-	ext_vbo(false), ext_swapcontrol(false)
+    : notdone(true), ingame(false),
+      ext_vbo(false), ext_swapcontrol(false)
 {
 }

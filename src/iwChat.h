@@ -1,4 +1,4 @@
-// $Id: iwChat.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: iwChat.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -25,18 +25,18 @@
 
 class iwChat : public IngameWindow
 {
-private:
-	/// Chat-Destination auch merken, wenn das Fenster zugegangen ist
-	static unsigned char chat_dest;
+    private:
+        /// Chat-Destination auch merken, wenn das Fenster zugegangen ist
+        static unsigned char chat_dest;
 
-public:
-	iwChat();
+    public:
+        iwChat();
 
-private:
+    private:
 
-	void Msg_PaintBefore();
-	void Msg_OptionGroupChange(const unsigned int ctrl_id, const unsigned short selection);
-	void Msg_EditEnter(const unsigned int ctrl_id);
+        void Msg_PaintBefore();
+        void Msg_OptionGroupChange(const unsigned int ctrl_id, const unsigned short selection);
+        void Msg_EditEnter(const unsigned int ctrl_id);
 };
 
 #endif // !iwCHAT_H_INCLUDED

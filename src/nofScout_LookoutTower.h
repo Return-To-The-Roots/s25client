@@ -1,4 +1,4 @@
-// $Id: nofScout_LookoutTower.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: nofScout_LookoutTower.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -24,32 +24,32 @@
 /// Späher, der in einem Spähturm "arbeitet"
 class nofScout_LookoutTower : public nofBuildingWorker
 {
-private:
+    private:
 
-	/// Funktionen, die nur von der Basisklasse (noFigure) aufgerufen werden, wenn man gelaufen ist
-	void WalkedDerived();
-	/// Malt den Arbeiter beim Arbeiten
-	void DrawWorking(int x,int y);
-	/// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren rausträgt (bzw rein)
-	unsigned short GetCarryID() const { return 0; }
-	 /// Arbeit musste wegen Arbeitsplatzverlust abgebrochen werden
-	void WorkAborted();
-	/// Arbeitsplatz wurde erreicht
-	void WorkplaceReached();
+        /// Funktionen, die nur von der Basisklasse (noFigure) aufgerufen werden, wenn man gelaufen ist
+        void WalkedDerived();
+        /// Malt den Arbeiter beim Arbeiten
+        void DrawWorking(int x, int y);
+        /// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren rausträgt (bzw rein)
+        unsigned short GetCarryID() const { return 0; }
+        /// Arbeit musste wegen Arbeitsplatzverlust abgebrochen werden
+        void WorkAborted();
+        /// Arbeitsplatz wurde erreicht
+        void WorkplaceReached();
 
 
-public:
+    public:
 
-	nofScout_LookoutTower(const unsigned short x, const unsigned short y,const unsigned char player,nobUsual * workplace);
-	nofScout_LookoutTower(SerializedGameData * sgd, const unsigned obj_id);
+        nofScout_LookoutTower(const unsigned short x, const unsigned short y, const unsigned char player, nobUsual* workplace);
+        nofScout_LookoutTower(SerializedGameData* sgd, const unsigned obj_id);
 
-	/// Serialisierungsfunktionen
-	protected:	void Serialize_nofScout_LookoutTower(SerializedGameData * sgd) const;
-	public:		void Serialize(SerializedGameData *sgd) const { Serialize_nofScout_LookoutTower(sgd); }
+        /// Serialisierungsfunktionen
+    protected:  void Serialize_nofScout_LookoutTower(SerializedGameData* sgd) const;
+    public:     void Serialize(SerializedGameData* sgd) const { Serialize_nofScout_LookoutTower(sgd); }
 
-	GO_Type GetGOT() const { return GOT_NOF_SCOUT_LOOKOUTTOWER; }
+        GO_Type GetGOT() const { return GOT_NOF_SCOUT_LOOKOUTTOWER; }
 
-	void HandleDerivedEvent(const unsigned int id);
+        void HandleDerivedEvent(const unsigned int id);
 };
 
 

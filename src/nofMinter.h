@@ -1,4 +1,4 @@
-// $Id: nofMinter.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: nofMinter.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -27,23 +27,23 @@ class nobUsualBuilding;
 /// Klasse für den Schreiner
 class nofMinter : public nofWorkman
 {
-	/// Zeichnet ihn beim Arbeiten
-	void DrawWorking(int x, int y);
-	/// Gibt die ID in JOBS.BOB zurück, wenn der Beruf Waren rausträgt (bzw rein)
-	unsigned short GetCarryID() const { return 64; }
-	/// Der Arbeiter erzeugt eine Ware
-	GoodType ProduceWare();
+        /// Zeichnet ihn beim Arbeiten
+        void DrawWorking(int x, int y);
+        /// Gibt die ID in JOBS.BOB zurück, wenn der Beruf Waren rausträgt (bzw rein)
+        unsigned short GetCarryID() const { return 64; }
+        /// Der Arbeiter erzeugt eine Ware
+        GoodType ProduceWare();
 
-public:
+    public:
 
-	nofMinter(const unsigned short x, const unsigned short y,const unsigned char player,nobUsual * workplace);
-	nofMinter(SerializedGameData * sgd, const unsigned obj_id);
+        nofMinter(const unsigned short x, const unsigned short y, const unsigned char player, nobUsual* workplace);
+        nofMinter(SerializedGameData* sgd, const unsigned obj_id);
 
 /// Serialisierungsfunktionen
-	protected:	void Serialize_nofMinter(SerializedGameData * sgd) const;
-	public:		void Serialize(SerializedGameData *sgd) const { Serialize_nofMinter(sgd); }
+    protected:  void Serialize_nofMinter(SerializedGameData* sgd) const;
+    public:     void Serialize(SerializedGameData* sgd) const { Serialize_nofMinter(sgd); }
 
-	GO_Type GetGOT() const { return GOT_NOF_MINTER; }
+        GO_Type GetGOT() const { return GOT_NOF_MINTER; }
 };
 
 #endif

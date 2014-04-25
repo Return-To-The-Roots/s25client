@@ -1,4 +1,4 @@
-// $Id: glArchivItem_Sound.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: glArchivItem_Sound.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -25,20 +25,20 @@
 
 class glArchivItem_Sound : public virtual libsiedler2::baseArchivItem_Sound
 {
-public:
-	/// Konstruktor von @p glArchivItem_Sound.
-	glArchivItem_Sound(void);
-	/// Kopiekonstruktor von @p glArchivItem_Sound.
-	glArchivItem_Sound(const glArchivItem_Sound *item);
+    public:
+        /// Konstruktor von @p glArchivItem_Sound.
+        glArchivItem_Sound(void);
+        /// Kopiekonstruktor von @p glArchivItem_Sound.
+        glArchivItem_Sound(const glArchivItem_Sound* item);
 
-	/// Destruktor von @p glArchivItem_Sound.
-	virtual ~glArchivItem_Sound(void);
+        /// Destruktor von @p glArchivItem_Sound.
+        virtual ~glArchivItem_Sound(void);
 
-	/// Spielt die Musik ab.
-	virtual	unsigned Play(const unsigned char volume,const bool loop) = 0;
+        /// Spielt die Musik ab.
+        virtual unsigned Play(const unsigned char volume, const bool loop) = 0;
 
-protected:
-	Sound *sound; ///< Der Sound.
+    protected:
+        Sound* sound; ///< Der Sound.
 };
 
 #endif // !GLARCHIVITEM_SOUND_INCLUDED

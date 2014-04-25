@@ -1,4 +1,4 @@
-// $Id: dskSinglePlayer.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: dskSinglePlayer.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -26,14 +26,14 @@
 /// Klasse des Einzelspieler Desktops.
 class dskSinglePlayer : public Desktop
 {
-public:
-	/// Konstruktor von @p dskSinglePlayer.
-	dskSinglePlayer();
-private:
+    public:
+        /// Konstruktor von @p dskSinglePlayer.
+        dskSinglePlayer();
+    private:
 
-	void Msg_ButtonClick(const unsigned int ctrl_id);
-	void PrepareSinglePlayerServer();
-	void PrepareLoadGame();
+        void Msg_ButtonClick(const unsigned int ctrl_id);
+        void PrepareSinglePlayerServer();
+        void PrepareLoadGame();
 };
 
 #endif // !dskSINGLEPLAYER_H_INCLUDED

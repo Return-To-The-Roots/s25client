@@ -1,4 +1,4 @@
-// $Id: AudioDriverLoaderInterface.h 6458 2010-05-31 11:38:51Z FloSoft $
+// $Id: AudioDriverLoaderInterface.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005-2009 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -21,10 +21,10 @@
 
 class AudioDriverLoaderInterface
 {
-public:
-	virtual ~AudioDriverLoaderInterface() {};
+    public:
+        virtual ~AudioDriverLoaderInterface() {};
 
-	virtual void Msg_MusicFinished() = 0;
+        virtual void Msg_MusicFinished() = 0;
 };
 
 #endif // !DRIVERLOADERINTERFACE_H_INCLUDED

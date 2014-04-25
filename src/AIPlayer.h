@@ -1,4 +1,4 @@
-// $Id: AIPlayer.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: AIPlayer.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -26,14 +26,14 @@
 /// Klasse für die standardmäßige (vorerst) KI
 class AIPlayer : public AIBase
 {
-public:
-	AIPlayer(const unsigned char playerid, const GameWorldBase * const gwb, const GameClientPlayer * const player,
-		const GameClientPlayerList * const players, const GlobalGameSettings * const ggs,
-		const AI::Level level);
+    public:
+        AIPlayer(const unsigned char playerid, const GameWorldBase* const gwb, const GameClientPlayer* const player,
+                 const GameClientPlayerList* const players, const GlobalGameSettings* const ggs,
+                 const AI::Level level);
 
-	/// Wird jeden GF aufgerufen und die KI kann hier entsprechende Handlungen vollziehen
-	/// gf ist die GF-Zahl vom Spiel
-	void RunGF(const unsigned gf);
+        /// Wird jeden GF aufgerufen und die KI kann hier entsprechende Handlungen vollziehen
+        /// gf ist die GF-Zahl vom Spiel
+        void RunGF(const unsigned gf);
 };
 
 #endif //!AIPLAYER_H_INCLUDED

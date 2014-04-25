@@ -1,4 +1,4 @@
-// $Id: VideoDriver.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: VideoDriver.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -30,97 +30,98 @@
 /// Basisklasse für einen Videotreiber.
 class VideoDriver
 {
-public:
-	/// Konstruktor von @p Videotreiber.
-	VideoDriver(VideoDriverLoaderInterface * CallBack);
+    public:
+        /// Konstruktor von @p Videotreiber.
+        VideoDriver(VideoDriverLoaderInterface* CallBack);
 
-	/// Destruktor von @p Videotreiber.
-	virtual ~VideoDriver(void);
+        /// Destruktor von @p Videotreiber.
+        virtual ~VideoDriver(void);
 
-	/// Funktion zum Auslesen des Treibernamens.
-	virtual const char *GetName(void) const;
+        /// Funktion zum Auslesen des Treibernamens.
+        virtual const char* GetName(void) const;
 
-	/// Treiberinitialisierungsfunktion.
-	virtual bool Initialize(void);
+        /// Treiberinitialisierungsfunktion.
+        virtual bool Initialize(void);
 
-	/// Treiberaufräumfunktion.
-	virtual void CleanUp(void);
+        /// Treiberaufräumfunktion.
+        virtual void CleanUp(void);
 
-	/// Erstellt das Fenster mit entsprechenden Werten.
-	virtual bool CreateScreen(unsigned short width, unsigned short height, const bool fullscreen);
+        /// Erstellt das Fenster mit entsprechenden Werten.
+        virtual bool CreateScreen(unsigned short width, unsigned short height, const bool fullscreen);
 
-	/// Erstellt oder verändert das Fenster mit entsprechenden Werten.
-	virtual bool ResizeScreen(unsigned short width, unsigned short height, const bool fullscreen);
+        /// Erstellt oder verändert das Fenster mit entsprechenden Werten.
+        virtual bool ResizeScreen(unsigned short width, unsigned short height, const bool fullscreen);
 
-	/// Schliesst das Fenster.
-	virtual void DestroyScreen(void);
+        /// Schliesst das Fenster.
+        virtual void DestroyScreen(void);
 
-	/// Wechselt die OpenGL-Puffer.
-	virtual bool SwapBuffers(void);
+        /// Wechselt die OpenGL-Puffer.
+        virtual bool SwapBuffers(void);
 
-	/// Die Nachrichtenschleife.
-	virtual bool MessageLoop(void);
+        /// Die Nachrichtenschleife.
+        virtual bool MessageLoop(void);
 
-	/// Funktion zum Auslesen des TickCounts.
-	virtual unsigned long GetTickCount(void) const;
+        /// Funktion zum Auslesen des TickCounts.
+        virtual unsigned long GetTickCount(void) const;
 
-	/// Funktion zum Holen einer Subfunktion.
-	virtual void *GetFunction(const char *function) const;
+        /// Funktion zum Holen einer Subfunktion.
+        virtual void* GetFunction(const char* function) const;
 
-	/// Listet verfügbare Videomodi auf
-	struct VideoMode {
-		unsigned short width;
-		unsigned short height; 
+        /// Listet verfügbare Videomodi auf
+        struct VideoMode
+        {
+            unsigned short width;
+            unsigned short height;
 
-		bool operator==(const VideoMode& o)	{	return (width == o.width && height == o.height);	}
-	};
-	virtual void ListVideoModes(std::vector<VideoMode>& video_modes) const;
+            bool operator==(const VideoMode& o) {   return (width == o.width && height == o.height);    }
+        };
+        virtual void ListVideoModes(std::vector<VideoMode>& video_modes) const;
 
-	/// Funktion zum Auslesen der Mauskoordinaten.
-	virtual void GetMousePos(int &x, int &y) const;
+        /// Funktion zum Auslesen der Mauskoordinaten.
+        virtual void GetMousePos(int& x, int& y) const;
 
-	/// Funktion zum Setzen der Mauskoordinaten.
-	virtual void SetMousePos(int x, int y);
+        /// Funktion zum Setzen der Mauskoordinaten.
+        virtual void SetMousePos(int x, int y);
 
-	/// Funktion zum Auslesen der X-Koordinate der Maus.
-	virtual int GetMousePosX() const;
+        /// Funktion zum Auslesen der X-Koordinate der Maus.
+        virtual int GetMousePosX() const;
 
-	/// Funktion zum Setzen der X-Koordinate der Maus.
-	virtual void SetMousePosX(int x);
+        /// Funktion zum Setzen der X-Koordinate der Maus.
+        virtual void SetMousePosX(int x);
 
-	/// Funktion zum Auslesen der Y-Koordinate der Maus.
-	virtual int GetMousePosY() const;
+        /// Funktion zum Auslesen der Y-Koordinate der Maus.
+        virtual int GetMousePosY() const;
 
-	/// Funktion zum Setzen der Y-Koordinate der Maus.
-	virtual void SetMousePosY(int y);
+        /// Funktion zum Setzen der Y-Koordinate der Maus.
+        virtual void SetMousePosY(int y);
 
-	/// Funktion zum Auslesen ob die Linke Maustaste gedrückt ist.
-	virtual bool GetMouseStateL(void) const;
+        /// Funktion zum Auslesen ob die Linke Maustaste gedrückt ist.
+        virtual bool GetMouseStateL(void) const;
 
-	/// Funktion zum Auslesen ob die Rechte Maustaste gedrückt ist.
-	virtual bool GetMouseStateR(void) const;
+        /// Funktion zum Auslesen ob die Rechte Maustaste gedrückt ist.
+        virtual bool GetMouseStateR(void) const;
 
-	//
-	unsigned short GetScreenWidth()  const { return screenWidth;  }
-	unsigned short GetScreenHeight() const { return screenHeight; }
-	bool IsFullscreen() const { return fullscreen; }
-	
-	/// Get state of the modifier keys
-	virtual KeyEvent GetModKeyState(void) const = 0;// { const KeyEvent ke = {KT_INVALID,0,false,false,false}; return ke; }
+        //
+        unsigned short GetScreenWidth()  const { return screenWidth;  }
+        unsigned short GetScreenHeight() const { return screenHeight; }
+        bool IsFullscreen() const { return fullscreen; }
 
-	/// Gibt Pointer auf ein Fenster zurück (device-dependent!), HWND unter Windows
-	virtual void * GetWindowPointer() const = 0;
+        /// Get state of the modifier keys
+        virtual KeyEvent GetModKeyState(void) const = 0;// { const KeyEvent ke = {KT_INVALID,0,false,false,false}; return ke; }
 
-	/// prüft auf Initialisierung.
-	bool IsInitialized() { return initialized; }
+        /// Gibt Pointer auf ein Fenster zurück (device-dependent!), HWND unter Windows
+        virtual void* GetWindowPointer() const = 0;
 
-protected:
-	VideoDriverLoaderInterface * CallBack; ///< Das DriverCallback für Rückmeldungen.
-	bool initialized;            ///< Initialisierungsstatus.
-	MouseCoords mouse_xy;        ///< Status der Maus.
-	bool keyboard[512];          ///< Status der Tastatur;
-	unsigned short screenWidth;  ///< aktuelle Bildschirm-/Fensterbreite
-	unsigned short screenHeight; ///< aktuelle Bildschirm-/Fensterhöhe
-	bool fullscreen;             ///< Vollbild an/aus?
+        /// prüft auf Initialisierung.
+        bool IsInitialized() { return initialized; }
+
+    protected:
+        VideoDriverLoaderInterface* CallBack;  ///< Das DriverCallback für Rückmeldungen.
+        bool initialized;            ///< Initialisierungsstatus.
+        MouseCoords mouse_xy;        ///< Status der Maus.
+        bool keyboard[512];          ///< Status der Tastatur;
+        unsigned short screenWidth;  ///< aktuelle Bildschirm-/Fensterbreite
+        unsigned short screenHeight; ///< aktuelle Bildschirm-/Fensterhöhe
+        bool fullscreen;             ///< Vollbild an/aus?
 };
 #endif // !VIDEODRIVER_H_INCLUDED

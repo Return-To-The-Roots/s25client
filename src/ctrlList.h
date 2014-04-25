@@ -1,4 +1,4 @@
-// $Id: ctrlList.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: ctrlList.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -25,61 +25,61 @@
 
 class ctrlList : public Window
 {
-public:
-	/// Konstruktor von @p ctrlList.
-	ctrlList(Window *parent, unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, glArchivItem_Font *font);
-	/// Destruktor von @p ctrlList.
-	virtual ~ctrlList(void);
+    public:
+        /// Konstruktor von @p ctrlList.
+        ctrlList(Window* parent, unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, glArchivItem_Font* font);
+        /// Destruktor von @p ctrlList.
+        virtual ~ctrlList(void);
 
-	/// Größe verändern
-	void Resize_(unsigned short width, unsigned short height);
+        /// Größe verändern
+        void Resize_(unsigned short width, unsigned short height);
 
-	/// Neuen String zur Listbox hinzufügen.
-	void AddString(const std::string& text);
-	/// Verändert einen String
-	void SetString(const std::string& text, const unsigned id);
-	/// Listbox leeren.
-	void DeleteAllItems(void);
-	/// liefert den Wert einer Zeile.
-	const std::string& GetItemText(unsigned short line) const;
-	/// liefert den Wert der aktuell gewählten Zeile.
-	const std::string& GetSelItemText(void) const { return GetItemText(selection); };
-	/// Vertauscht zwei Zeilen.
-	void Swap(unsigned short first, unsigned short second);
-	/// Löscht ein Element
-	void Remove(const unsigned short index);
+        /// Neuen String zur Listbox hinzufügen.
+        void AddString(const std::string& text);
+        /// Verändert einen String
+        void SetString(const std::string& text, const unsigned id);
+        /// Listbox leeren.
+        void DeleteAllItems(void);
+        /// liefert den Wert einer Zeile.
+        const std::string& GetItemText(unsigned short line) const;
+        /// liefert den Wert der aktuell gewählten Zeile.
+        const std::string& GetSelItemText(void) const { return GetItemText(selection); };
+        /// Vertauscht zwei Zeilen.
+        void Swap(unsigned short first, unsigned short second);
+        /// Löscht ein Element
+        void Remove(const unsigned short index);
 
-	unsigned short GetLineCount(void) const { return static_cast<unsigned short>(lines.size()); }
-	unsigned short GetSelection(void) const { return static_cast<unsigned short>(selection); };
-	void SetSelection(unsigned short selection) 
-	{
-		if(selection != this->selection && selection < lines.size())
-		{ 
-			this->selection = selection;
-			if(parent)
-				parent->Msg_ListSelectItem(id, selection);
-		}
-	}
-	
-	virtual bool Msg_MouseMove(const MouseCoords& mc);
-	virtual bool Msg_LeftDown(const MouseCoords& mc);
-	virtual bool Msg_RightDown(const MouseCoords& mc);
-	virtual bool Msg_LeftUp(const MouseCoords& mc);
-	virtual bool Msg_WheelUp(const MouseCoords& mc);
-	virtual bool Msg_WheelDown(const MouseCoords& mc);
-protected:
-	/// Zeichenmethode.
-	virtual bool Draw_(void);
+        unsigned short GetLineCount(void) const { return static_cast<unsigned short>(lines.size()); }
+        unsigned short GetSelection(void) const { return static_cast<unsigned short>(selection); };
+        void SetSelection(unsigned short selection)
+        {
+            if(selection != this->selection && selection < lines.size())
+            {
+                this->selection = selection;
+                if(parent)
+                    parent->Msg_ListSelectItem(id, selection);
+            }
+        }
 
-private:
-	TextureColor tc;
-	glArchivItem_Font *font;
+        virtual bool Msg_MouseMove(const MouseCoords& mc);
+        virtual bool Msg_LeftDown(const MouseCoords& mc);
+        virtual bool Msg_RightDown(const MouseCoords& mc);
+        virtual bool Msg_LeftUp(const MouseCoords& mc);
+        virtual bool Msg_WheelUp(const MouseCoords& mc);
+        virtual bool Msg_WheelDown(const MouseCoords& mc);
+    protected:
+        /// Zeichenmethode.
+        virtual bool Draw_(void);
 
-	std::vector<std::string> lines;
+    private:
+        TextureColor tc;
+        glArchivItem_Font* font;
 
-	unsigned short selection;
-	unsigned short mouseover;
-	unsigned int pagesize;
+        std::vector<std::string> lines;
+
+        unsigned short selection;
+        unsigned short mouseover;
+        unsigned int pagesize;
 
 };
 

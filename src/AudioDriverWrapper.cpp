@@ -1,4 +1,4 @@
-// $Id: AudioDriverWrapper.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: AudioDriverWrapper.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -29,9 +29,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
 /// Konstruktor von @p DriverWrapper
@@ -41,30 +41,30 @@ AudioDriverWrapper::AudioDriverWrapper() : audiodriver(0)
 
 AudioDriverWrapper::~AudioDriverWrapper()
 {
-	delete audiodriver;
+    delete audiodriver;
 }
 
 /// Lädt den Treiber
 bool AudioDriverWrapper::LoadDriver(void)
 {
-	// DLL laden
-	if(!driver_wrapper.Load(DriverWrapper::DT_AUDIO, SETTINGS.driver.audio))
-		return false;
+    // DLL laden
+    if(!driver_wrapper.Load(DriverWrapper::DT_AUDIO, SETTINGS.driver.audio))
+        return false;
 
-	PDRIVER_CREATEAUDIOINSTANCE CreateAudioInstance = pto2ptf<PDRIVER_CREATEAUDIOINSTANCE>(driver_wrapper.GetDLLFunction("CreateAudioInstance"));
+    PDRIVER_CREATEAUDIOINSTANCE CreateAudioInstance = pto2ptf<PDRIVER_CREATEAUDIOINSTANCE>(driver_wrapper.GetDLLFunction("CreateAudioInstance"));
 
-	// Instanz erzeugen
-	if(!(audiodriver = CreateAudioInstance(this, VideoDriverWrapper::inst().GetWindowPointer())))
-		return false;
+    // Instanz erzeugen
+    if(!(audiodriver = CreateAudioInstance(this, VideoDriverWrapper::inst().GetWindowPointer())))
+        return false;
 
-	if(!audiodriver->Initialize())
-	{
-		delete audiodriver;
-		audiodriver = NULL;
-		return false;
-	}
+    if(!audiodriver->Initialize())
+    {
+        delete audiodriver;
+        audiodriver = NULL;
+        return false;
+    }
 
-	return true;
+    return true;
 }
 
 
@@ -81,42 +81,42 @@ bool AudioDriverWrapper::LoadDriver(void)
  *
  *  @author FloSoft
  */
-Sound *AudioDriverWrapper::LoadMusic(unsigned int data_type, unsigned char *data, unsigned int size)
+Sound* AudioDriverWrapper::LoadMusic(unsigned int data_type, unsigned char* data, unsigned int size)
 {
-	if(audiodriver == NULL)
-		return NULL;
+    if(audiodriver == NULL)
+        return NULL;
 
-	return audiodriver->LoadMusic(data_type, data, size);
+    return audiodriver->LoadMusic(data_type, data, size);
 }
 
-Sound *AudioDriverWrapper::LoadEffect(unsigned int data_type, unsigned char *data, unsigned int size)
+Sound* AudioDriverWrapper::LoadEffect(unsigned int data_type, unsigned char* data, unsigned int size)
 {
-	if(audiodriver == NULL)
-		return NULL;
+    if(audiodriver == NULL)
+        return NULL;
 
-	return audiodriver->LoadEffect(data_type, data, size);
+    return audiodriver->LoadEffect(data_type, data, size);
 }
 
 
-unsigned AudioDriverWrapper::PlayEffect(Sound * sound, const unsigned char volume, const bool loop)
+unsigned AudioDriverWrapper::PlayEffect(Sound* sound, const unsigned char volume, const bool loop)
 {
-	if(audiodriver == NULL)
-		return 0;
+    if(audiodriver == NULL)
+        return 0;
 
-	return audiodriver->PlayEffect(sound, volume, loop);
+    return audiodriver->PlayEffect(sound, volume, loop);
 }
 
 void AudioDriverWrapper::StopEffect(const unsigned int play_id)
 {
-	if(audiodriver == NULL)
-		return;
+    if(audiodriver == NULL)
+        return;
 
-	return audiodriver->StopEffect(play_id);
+    return audiodriver->StopEffect(play_id);
 }
 
 void AudioDriverWrapper::Msg_MusicFinished()
 {
-	// MusicManager Bescheid sagen
-	MusicPlayer::inst().MusicFinished();
+    // MusicManager Bescheid sagen
+    MusicPlayer::inst().MusicFinished();
 }
 

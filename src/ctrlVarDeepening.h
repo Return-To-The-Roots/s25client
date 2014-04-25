@@ -1,4 +1,4 @@
-// $Id: ctrlVarDeepening.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: ctrlVarDeepening.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -25,14 +25,14 @@
 
 class ctrlVarDeepening : public ctrlVarText
 {
-public:
-	ctrlVarDeepening(Window *parent, unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc,  const std::string& text, glArchivItem_Font *font, unsigned int color, unsigned int count, va_list liste);
+    public:
+        ctrlVarDeepening(Window* parent, unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc,  const std::string& text, glArchivItem_Font* font, unsigned int color, unsigned int count, va_list liste);
 
-protected:
-	virtual bool Draw_(void);
+    protected:
+        virtual bool Draw_(void);
 
-private:
-	TextureColor tc;
+    private:
+        TextureColor tc;
 };
 
 #endif // !CTRLVARDEEPENING_H_INCLUDED

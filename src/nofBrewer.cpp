@@ -1,4 +1,4 @@
-// $Id: nofBrewer.cpp 9199 2014-02-27 10:21:26Z marcus $
+// $Id: nofBrewer.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -32,39 +32,39 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
-nofBrewer::nofBrewer(const unsigned short x, const unsigned short y,const unsigned char player,nobUsual * workplace)
-: nofWorkman(JOB_BREWER,x,y,player,workplace)
+nofBrewer::nofBrewer(const unsigned short x, const unsigned short y, const unsigned char player, nobUsual* workplace)
+    : nofWorkman(JOB_BREWER, x, y, player, workplace)
 {
 }
 
-nofBrewer::nofBrewer(SerializedGameData * sgd, const unsigned obj_id) : nofWorkman(sgd,obj_id)
+nofBrewer::nofBrewer(SerializedGameData* sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id)
 {
 }
 
 void nofBrewer::DrawWorking(int x, int y)
 {
-	signed char offsets[NATION_COUNT][2] = { {10,17},{10,17},{10,17},{10,17},{10,17} };
+    signed char offsets[NATION_COUNT][2] = { {10, 17}, {10, 17}, {10, 17}, {10, 17}, {10, 17} };
 
-	unsigned now_id = GAMECLIENT.Interpolate(128,current_ev);
+    unsigned now_id = GAMECLIENT.Interpolate(128, current_ev);
 
-	if(now_id < 16)
-		LOADER.GetImageN("rom_bobs", now_id)
-			->Draw(x+offsets[workplace->GetNation()][0],y+offsets[workplace->GetNation()][1],0,0,0,0,0,0,COLOR_WHITE, COLORS[GAMECLIENT.GetPlayer(workplace->GetPlayer())->color]);
+    if(now_id < 16)
+        LOADER.GetImageN("rom_bobs", now_id)
+        ->Draw(x + offsets[workplace->GetNation()][0], y + offsets[workplace->GetNation()][1], 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[GAMECLIENT.GetPlayer(workplace->GetPlayer())->color]);
 
-	if(now_id == 5)
-	{
-		SoundManager::inst().PlayNOSound(51,this,0);
-		was_sounding = true;
-	}
-	last_id = now_id;
+    if(now_id == 5)
+    {
+        SoundManager::inst().PlayNOSound(51, this, 0);
+        was_sounding = true;
+    }
+    last_id = now_id;
 }
 
 GoodType nofBrewer::ProduceWare()
 {
-	return GD_BEER;
+    return GD_BEER;
 }

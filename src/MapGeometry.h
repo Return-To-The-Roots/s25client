@@ -24,8 +24,8 @@
 
 /// Ermittelt Abstand zwischen 2 Punkten auf der Map
 unsigned CalcRawDistance(const int x1, const int y1,
-					  const int x2, const int y2);
-					  
+                         const int x2, const int y2);
+
 
 Point<int> GetPointAround(Point<int> p, unsigned dir);
 

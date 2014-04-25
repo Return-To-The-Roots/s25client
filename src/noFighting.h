@@ -1,4 +1,4 @@
-// $Id: noFighting.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: noFighting.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -28,46 +28,46 @@ class nofActiveSoldier;
 /// Kampf an einem Punkt zwischen 2 Soldaten, der erstgenannt ist immer der, der links steht
 class noFighting : public noBase
 {
-	/// die kämpfenden Soldaten
-	nofActiveSoldier * soldiers[2];
-	// Wer ist an der Reihe mit angreifen (2 = Beginn des Kampfes)
-	unsigned char turn;
-	/// Verteidigungsanimation (3 = keine Verteidigung,  Treffer)
-	unsigned char defending_animation;
-	/// Event
-	EventManager::EventPointer current_ev;
-	/// Spieler des Soldaten, der gewonnen hat
-	unsigned char player_won;
+        /// die kämpfenden Soldaten
+        nofActiveSoldier* soldiers[2];
+        // Wer ist an der Reihe mit angreifen (2 = Beginn des Kampfes)
+        unsigned char turn;
+        /// Verteidigungsanimation (3 = keine Verteidigung,  Treffer)
+        unsigned char defending_animation;
+        /// Event
+        EventManager::EventPointer current_ev;
+        /// Spieler des Soldaten, der gewonnen hat
+        unsigned char player_won;
 
-private:
+    private:
 
-	/// Bestimmt, ob der Angreifer erfolgreich angreift oder ob der Verteidiger sich verteidigt usw
-	/// bereitet also alles für eine solche Angrifsseinheit vor
-	void StartAttack();
+        /// Bestimmt, ob der Angreifer erfolgreich angreift oder ob der Verteidiger sich verteidigt usw
+        /// bereitet also alles für eine solche Angrifsseinheit vor
+        void StartAttack();
 
-public:
+    public:
 
-	noFighting(nofActiveSoldier * soldier1,nofActiveSoldier * soldier2);
-	noFighting(SerializedGameData * sgd, const unsigned obj_id);
+        noFighting(nofActiveSoldier* soldier1, nofActiveSoldier* soldier2);
+        noFighting(SerializedGameData* sgd, const unsigned obj_id);
 
-	/// Aufräummethoden
-protected:	void Destroy_noFighting();
-public:		void Destroy() { Destroy_noFighting(); }
+        /// Aufräummethoden
+    protected:  void Destroy_noFighting();
+    public:     void Destroy() { Destroy_noFighting(); }
 
-	/// Serialisierungsfunktionen
-	protected:	void Serialize_noFighting(SerializedGameData * sgd) const;
-	public:		void Serialize(SerializedGameData *sgd) const { Serialize_noFighting(sgd); }
+        /// Serialisierungsfunktionen
+    protected:  void Serialize_noFighting(SerializedGameData* sgd) const;
+    public:     void Serialize(SerializedGameData* sgd) const { Serialize_noFighting(sgd); }
 
-	GO_Type GetGOT() const { return GOT_FIGHTING; }
+        GO_Type GetGOT() const { return GOT_FIGHTING; }
 
-	void Draw(int x, int y);
-	void HandleEvent(const unsigned int id);
+        void Draw(int x, int y);
+        void HandleEvent(const unsigned int id);
 
-	/// Dürfen andern Figuren diesen Kampf schon durchqueren?
-	bool IsActive() const;
+        /// Dürfen andern Figuren diesen Kampf schon durchqueren?
+        bool IsActive() const;
 
-	/// Prüfen, ob ein Soldat von einem bestimmten Spieler in den Kampf verwickelt ist
-	bool IsSoldierOfPlayer(const unsigned char player) const;
+        /// Prüfen, ob ein Soldat von einem bestimmten Spieler in den Kampf verwickelt ist
+        bool IsSoldierOfPlayer(const unsigned char player) const;
 
 };
 

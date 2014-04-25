@@ -1,4 +1,4 @@
-// $Id: nofFisher.cpp 9149 2014-02-11 16:49:01Z marcus $
+// $Id: nofFisher.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -33,104 +33,104 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
-nofFisher::nofFisher(const unsigned short x, const unsigned short y,const unsigned char player,nobUsual * workplace)
-: nofFarmhand(JOB_FISHER,x,y,player,workplace), fishing_dir(0), successful(false)
+nofFisher::nofFisher(const unsigned short x, const unsigned short y, const unsigned char player, nobUsual* workplace)
+    : nofFarmhand(JOB_FISHER, x, y, player, workplace), fishing_dir(0), successful(false)
 {
 }
 
-void nofFisher::Serialize_nofFisher(SerializedGameData * sgd) const
+void nofFisher::Serialize_nofFisher(SerializedGameData* sgd) const
 {
-	Serialize_nofFarmhand(sgd);
+    Serialize_nofFarmhand(sgd);
 
-	sgd->PushUnsignedChar(fishing_dir);
-	sgd->PushBool(successful);
+    sgd->PushUnsignedChar(fishing_dir);
+    sgd->PushBool(successful);
 }
 
-nofFisher::nofFisher(SerializedGameData * sgd, const unsigned obj_id) : nofFarmhand(sgd,obj_id),
-fishing_dir(sgd->PopUnsignedChar()),
-successful(sgd->PopBool())
+nofFisher::nofFisher(SerializedGameData* sgd, const unsigned obj_id) : nofFarmhand(sgd, obj_id),
+    fishing_dir(sgd->PopUnsignedChar()),
+    successful(sgd->PopBool())
 {
 }
 
 /// Malt den Arbeiter beim Arbeiten
-void nofFisher::DrawWorking(int x,int y)
+void nofFisher::DrawWorking(int x, int y)
 {
-	unsigned short id = GAMECLIENT.Interpolate(232,current_ev);
-	unsigned short draw_id;
+    unsigned short id = GAMECLIENT.Interpolate(232, current_ev);
+    unsigned short draw_id;
 
-	if(id<16)
-	{
-		// Angel reinlassen
-		if(fishing_dir < 3)
-			draw_id = 1566+8*fishing_dir+(id/2);
-		else
-			draw_id = 108+8*(fishing_dir-3)+(id/2);
+    if(id < 16)
+    {
+        // Angel reinlassen
+        if(fishing_dir < 3)
+            draw_id = 1566 + 8 * fishing_dir + (id / 2);
+        else
+            draw_id = 108 + 8 * (fishing_dir - 3) + (id / 2);
 
-		if(id/2 == 1)
-		{
-			SoundManager::inst().PlayNOSound(62,this,0);
-			was_sounding = true;
-		}
-	}
-	else if(id < 216)
-	{
-		// Angel im Wasser hängen lassen und warten
-		draw_id = 1590+8*((fishing_dir+3)%6)+(id%8);
-	}
-	else
-	{
-		// Angel wieder rausholn
-		if(successful)
-			// Mit Fisch an der Angel
-			draw_id = 1638+8*((fishing_dir+3)%6)+(id-216)/2;
-		else
-		{
-			// Ohne Fisch (wie das Reinlassen, bloß umgekehrt)
-			if(fishing_dir < 3)
-				draw_id = 1566+8*fishing_dir+7-+(id-216)/2;
-			else
-				draw_id = 108+8*(fishing_dir-3)+7-(id-216)/2;
-		}
+        if(id / 2 == 1)
+        {
+            SoundManager::inst().PlayNOSound(62, this, 0);
+            was_sounding = true;
+        }
+    }
+    else if(id < 216)
+    {
+        // Angel im Wasser hängen lassen und warten
+        draw_id = 1590 + 8 * ((fishing_dir + 3) % 6) + (id % 8);
+    }
+    else
+    {
+        // Angel wieder rausholn
+        if(successful)
+            // Mit Fisch an der Angel
+            draw_id = 1638 + 8 * ((fishing_dir + 3) % 6) + (id - 216) / 2;
+        else
+        {
+            // Ohne Fisch (wie das Reinlassen, bloß umgekehrt)
+            if(fishing_dir < 3)
+                draw_id = 1566 + 8 * fishing_dir + 7 - +(id - 216) / 2;
+            else
+                draw_id = 108 + 8 * (fishing_dir - 3) + 7 - (id - 216) / 2;
+        }
 
-		if((id-216)/2 == 1)
-		{
-			SoundManager::inst().PlayNOSound(62,this,1);
-			was_sounding = true;
-		}
-	}
+        if((id - 216) / 2 == 1)
+        {
+            SoundManager::inst().PlayNOSound(62, this, 1);
+            was_sounding = true;
+        }
+    }
 
-	LOADER.GetImageN("rom_bobs", draw_id)->Draw(x,y,0,0,0,0,0,0, COLOR_WHITE, COLORS[gwg->GetPlayer(player)->color]);
-	DrawShadow(x,y,0,fishing_dir);
+    LOADER.GetImageN("rom_bobs", draw_id)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(player)->color]);
+    DrawShadow(x, y, 0, fishing_dir);
 }
 
 /// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren rausträgt (bzw rein)
 unsigned short nofFisher::GetCarryID() const
 {
-	return 70;
+    return 70;
 }
 
 /// Abgeleitete Klasse informieren, wenn sie anfängt zu arbeiten (Vorbereitungen)
 void nofFisher::WorkStarted()
 {
-	unsigned char doffset = RANDOM.Rand(__FILE__,__LINE__,obj_id,6);
-	// Punkt mit Fisch suchen (mit zufälliger Richtung beginnen)
-	fishing_dir = 0xFF;
-	for(unsigned char i = 0;i<6;++i)
-	{
-		fishing_dir = (i+doffset)%6;
-		if(gwg->GetNode(gwg->GetXA(x,y,fishing_dir),gwg->GetYA(x,y,fishing_dir)).resources > 0x80 && 
-			gwg->GetNode(gwg->GetXA(x,y,fishing_dir),gwg->GetYA(x,y,fishing_dir)).resources < 0x90)
-			break;
-	}
+    unsigned char doffset = RANDOM.Rand(__FILE__, __LINE__, obj_id, 6);
+    // Punkt mit Fisch suchen (mit zufälliger Richtung beginnen)
+    fishing_dir = 0xFF;
+    for(unsigned char i = 0; i < 6; ++i)
+    {
+        fishing_dir = (i + doffset) % 6;
+        if(gwg->GetNode(gwg->GetXA(x, y, fishing_dir), gwg->GetYA(x, y, fishing_dir)).resources > 0x80 &&
+                gwg->GetNode(gwg->GetXA(x, y, fishing_dir), gwg->GetYA(x, y, fishing_dir)).resources < 0x90)
+            break;
+    }
 
-	// Wahrscheinlichkeit, einen Fisch zu fangen sinkt mit abnehmendem Bestand
-	unsigned short probability = 40+(gwg->GetNode(gwg->GetXA(x,y,fishing_dir),gwg->GetYA(x,y,fishing_dir)).resources-0x80)*10;
-	successful = (RANDOM.Rand(__FILE__,__LINE__,obj_id,100) < probability);
+    // Wahrscheinlichkeit, einen Fisch zu fangen sinkt mit abnehmendem Bestand
+    unsigned short probability = 40 + (gwg->GetNode(gwg->GetXA(x, y, fishing_dir), gwg->GetYA(x, y, fishing_dir)).resources - 0x80) * 10;
+    successful = (RANDOM.Rand(__FILE__, __LINE__, obj_id, 100) < probability);
 }
 
 
@@ -138,32 +138,32 @@ void nofFisher::WorkStarted()
 /// Abgeleitete Klasse informieren, wenn fertig ist mit Arbeiten
 void nofFisher::WorkFinished()
 {
-	// Wenn ich einen Fisch gefangen habe, den Fisch "abbauen" und in die Hand nehmen
-	if(successful)
-	{
-		if(!GameClient::inst().GetGGS().isEnabled(ADDON_INEXHAUSTIBLE_FISH))
-			--(gwg->GetNode(gwg->GetXA(x,y,fishing_dir),gwg->GetYA(x,y,fishing_dir)).resources);
-		ware = GD_FISH;
-	}
-	else
-		ware = GD_NOTHING;
+    // Wenn ich einen Fisch gefangen habe, den Fisch "abbauen" und in die Hand nehmen
+    if(successful)
+    {
+        if(!GameClient::inst().GetGGS().isEnabled(ADDON_INEXHAUSTIBLE_FISH))
+            --(gwg->GetNode(gwg->GetXA(x, y, fishing_dir), gwg->GetYA(x, y, fishing_dir)).resources);
+        ware = GD_FISH;
+    }
+    else
+        ware = GD_NOTHING;
 }
 
 /// Returns the quality of this working point or determines if the worker can work here at all
 nofFarmhand::PointQuality nofFisher::GetPointQuality(const MapCoord x, const MapCoord y)
 {
-	// Der Punkt muss passierbar sein für Figuren
-	if(!gwg->IsNodeForFigures(x,y))
-		return PQ_NOTPOSSIBLE;
+    // Der Punkt muss passierbar sein für Figuren
+    if(!gwg->IsNodeForFigures(x, y))
+        return PQ_NOTPOSSIBLE;
 
-	// irgendwo drumherum muss es Fisch geben
-	for(unsigned char i = 0;i<6;++i)
-	{
-		if(gwg->GetNode(gwg->GetXA(x,y,i),gwg->GetYA(x,y,i)).resources > 0x80 && 
-			gwg->GetNode(gwg->GetXA(x,y,i),gwg->GetYA(x,y,i)).resources < 0x90)
-			return PQ_CLASS1;
-	}
+    // irgendwo drumherum muss es Fisch geben
+    for(unsigned char i = 0; i < 6; ++i)
+    {
+        if(gwg->GetNode(gwg->GetXA(x, y, i), gwg->GetYA(x, y, i)).resources > 0x80 &&
+                gwg->GetNode(gwg->GetXA(x, y, i), gwg->GetYA(x, y, i)).resources < 0x90)
+            return PQ_CLASS1;
+    }
 
-	return PQ_NOTPOSSIBLE;
+    return PQ_NOTPOSSIBLE;
 }
 

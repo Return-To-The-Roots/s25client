@@ -1,4 +1,4 @@
-// $Id: noBuildingSite.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: noBuildingSite.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -35,78 +35,78 @@ class nofPlaner;
 /// repräsentiert eine Baustelle
 class noBuildingSite : public noBaseBuilding
 {
-	friend class nofBuilder;
+        friend class nofBuilder;
 
-	/// Typ/Status der Baustelle
-	enum State
-	{
-		STATE_PLANING = 0, // Baustelle muss erst noch planiert werden
-		STATE_BUILDING
-	} state;
-	/// Planierer
-	nofPlaner * planer;
-	/// Bauarbeiter, der an dieser Baustelle arbeitet
-	nofBuilder * builder;
-	/// Bretter und Steine, die hier liegen
-	unsigned char boards, stones;
-	/// Bretter und Steine, die schon verbaut wurden
-	unsigned char used_boards,used_stones;
-	/// Gibt den Baufortschritt an, wie hoch das Gebäude schon gebaut ist, gemessen in 8 Stufen für jede verbaute Ware
-	unsigned char build_progress;
-	/// Bestellte Bretter und Steine, d.h. Steine/Bretter, die noch "bestellt" wurden, aber noch nicht da sind
-	list<Ware*> ordered_boards, ordered_stones;
-	
-public:
-	unsigned char getUsedBoards() const { return used_boards; }
-	unsigned char getUsedStones() const { return used_stones; }
-	unsigned char getBoards() const { return boards; }
-	unsigned char getStones() const { return stones; }
+        /// Typ/Status der Baustelle
+        enum State
+        {
+            STATE_PLANING = 0, // Baustelle muss erst noch planiert werden
+            STATE_BUILDING
+        } state;
+        /// Planierer
+        nofPlaner* planer;
+        /// Bauarbeiter, der an dieser Baustelle arbeitet
+        nofBuilder* builder;
+        /// Bretter und Steine, die hier liegen
+        unsigned char boards, stones;
+        /// Bretter und Steine, die schon verbaut wurden
+        unsigned char used_boards, used_stones;
+        /// Gibt den Baufortschritt an, wie hoch das Gebäude schon gebaut ist, gemessen in 8 Stufen für jede verbaute Ware
+        unsigned char build_progress;
+        /// Bestellte Bretter und Steine, d.h. Steine/Bretter, die noch "bestellt" wurden, aber noch nicht da sind
+        list<Ware*> ordered_boards, ordered_stones;
 
-	noBuildingSite(const BuildingType type,const unsigned short x, const unsigned short y, const unsigned char player);
-	/// Konstruktor für Hafenbaustellen vom Schiff aus
-	noBuildingSite(const unsigned short x, const unsigned short y, const unsigned char player);
-	noBuildingSite(SerializedGameData * sgd, const unsigned obj_id);
+    public:
+        unsigned char getUsedBoards() const { return used_boards; }
+        unsigned char getUsedStones() const { return used_stones; }
+        unsigned char getBoards() const { return boards; }
+        unsigned char getStones() const { return stones; }
 
-	~noBuildingSite();
+        noBuildingSite(const BuildingType type, const unsigned short x, const unsigned short y, const unsigned char player);
+        /// Konstruktor für Hafenbaustellen vom Schiff aus
+        noBuildingSite(const unsigned short x, const unsigned short y, const unsigned char player);
+        noBuildingSite(SerializedGameData* sgd, const unsigned obj_id);
 
-	/// Aufräummethoden
-protected:	void Destroy_noBuildingSite();
-public:		void Destroy() { Destroy_noBuildingSite(); }
+        ~noBuildingSite();
 
-	/// Serialisierungsfunktionen
-	protected:	void Serialize_noBuildingSite(SerializedGameData * sgd) const;
-	public:		void Serialize(SerializedGameData *sgd) const { Serialize_noBuildingSite(sgd); }
+        /// Aufräummethoden
+    protected:  void Destroy_noBuildingSite();
+    public:     void Destroy() { Destroy_noBuildingSite(); }
 
-	GO_Type GetGOT() const { return GOT_BUILDINGSITE; }
+        /// Serialisierungsfunktionen
+    protected:  void Serialize_noBuildingSite(SerializedGameData* sgd) const;
+    public:     void Serialize(SerializedGameData* sgd) const { Serialize_noBuildingSite(sgd); }
 
-	void Draw(int x, int y);
+        GO_Type GetGOT() const { return GOT_BUILDINGSITE; }
 
-	/// Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung" für den Fog of War
-	FOWObject * CreateFOWObject() const;
+        void Draw(int x, int y);
 
-	void AddWare(Ware * ware);
-	void GotWorker(Job job, noFigure * worker);
+        /// Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung" für den Fog of War
+        FOWObject* CreateFOWObject() const;
 
-	/// Fordert Baumaterial an
-	void OrderConstructionMaterial();
-	/// Wird aufgerufen, wenn der Bauarbeiter kündigt
-	void Abrogate();
-	/// Eine bestellte Ware konnte doch nicht kommen
-	void WareLost(Ware * ware);
-	/// Gibt den Bau-Fortschritt zurück
-	unsigned char GetBuildProgress(bool percent = true) const;
+        void AddWare(Ware* ware);
+        void GotWorker(Job job, noFigure* worker);
 
-	unsigned CalcDistributionPoints(noRoadNode * start,const GoodType type);
+        /// Fordert Baumaterial an
+        void OrderConstructionMaterial();
+        /// Wird aufgerufen, wenn der Bauarbeiter kündigt
+        void Abrogate();
+        /// Eine bestellte Ware konnte doch nicht kommen
+        void WareLost(Ware* ware);
+        /// Gibt den Bau-Fortschritt zurück
+        unsigned char GetBuildProgress(bool percent = true) const;
 
-	/// Wird aufgerufen, wenn eine neue Ware zum dem Gebäude geliefert wird (nicht wenn sie bestellt wurde vom Gebäude!)
-	void TakeWare(Ware * ware);
-	/// Gibt zurück, ob die Baustelle fertiggestellt ist
-	bool IsBuildingComplete();
+        unsigned CalcDistributionPoints(noRoadNode* start, const GoodType type);
 
-	/// Aufgerufen, wenn Planierung beendet wurde
-	void PlaningFinished(); 
-	/// Gibt zurück, ob eine bestimmte Baustellen eine Baustelle ist, die vom Schiff aus errichtet wurde
-	bool IsHarborBuildingSiteFromSea() const;
+        /// Wird aufgerufen, wenn eine neue Ware zum dem Gebäude geliefert wird (nicht wenn sie bestellt wurde vom Gebäude!)
+        void TakeWare(Ware* ware);
+        /// Gibt zurück, ob die Baustelle fertiggestellt ist
+        bool IsBuildingComplete();
+
+        /// Aufgerufen, wenn Planierung beendet wurde
+        void PlaningFinished();
+        /// Gibt zurück, ob eine bestimmte Baustellen eine Baustelle ist, die vom Schiff aus errichtet wurde
+        bool IsHarborBuildingSiteFromSea() const;
 
 
 };

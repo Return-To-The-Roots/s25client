@@ -1,4 +1,4 @@
-// $Id: GameClientGF_Game.cpp 8920 2013-08-27 19:40:37Z marcus $
+// $Id: GameClientGF_Game.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -26,50 +26,50 @@
 
 void GameClient::ExecuteGameFrame_Game()
 {
-	// Geschickte Network Commands der Spieler ausführen und ggf. im Replay aufzeichnen
+    // Geschickte Network Commands der Spieler ausführen und ggf. im Replay aufzeichnen
 
-	// Bei evtl. Spielerwechsel die IDs speichern, die "gewechselt" werden sollen
-	unsigned char player_switch_old_id = 255, player_switch_new_id= 255;
+    // Bei evtl. Spielerwechsel die IDs speichern, die "gewechselt" werden sollen
+    unsigned char player_switch_old_id = 255, player_switch_new_id = 255;
 
-	int checksum = Random::inst().GetCurrentRandomValue();
+    int checksum = Random::inst().GetCurrentRandomValue();
 
-	for(unsigned char i = 0; i < players.getCount(); ++i)
-	{
-		if(players[i].ps == PS_OCCUPIED || players[i].ps == PS_KI)
-		{
-			GameMessage_GameCommand& msg = players[i].gc_queue.front();
+    for(unsigned char i = 0; i < players.getCount(); ++i)
+    {
+        if(players[i].ps == PS_OCCUPIED || players[i].ps == PS_KI)
+        {
+            GameMessage_GameCommand& msg = players[i].gc_queue.front();
 
-			// Command im Replay aufzeichnen (wenn nicht gerade eins schon läuft xD)
-			// Nur Commands reinschreiben, KEINE PLATZHALTER (nc_count = 0)
-			if(msg.gcs.size() > 0 && !replay_mode)
-			{
-				// Aktuelle Checksumme reinschreiben
-				GameMessage_GameCommand tmp(msg.player,checksum,msg.gcs);
-				replayinfo.replay.AddGameCommand(framesinfo.nr, tmp.GetLength(), tmp.GetData());
-			}
+            // Command im Replay aufzeichnen (wenn nicht gerade eins schon läuft xD)
+            // Nur Commands reinschreiben, KEINE PLATZHALTER (nc_count = 0)
+            if(msg.gcs.size() > 0 && !replay_mode)
+            {
+                // Aktuelle Checksumme reinschreiben
+                GameMessage_GameCommand tmp(msg.player, checksum, msg.gcs);
+                replayinfo.replay.AddGameCommand(framesinfo.nr, tmp.GetLength(), tmp.GetData());
+            }
 
-			// Das ganze Zeug soll die andere Funktion ausführen
-			ExecuteAllGCs(msg,&player_switch_old_id,&player_switch_new_id);
+            // Das ganze Zeug soll die andere Funktion ausführen
+            ExecuteAllGCs(msg, &player_switch_old_id, &player_switch_new_id);
 
-			// Nachricht abwerfen :)
-			players[i].gc_queue.pop_front();
+            // Nachricht abwerfen :)
+            players[i].gc_queue.pop_front();
 
-		}
-	}
+        }
+    }
 
-	// Frame ausführen
-	NextGF();
+    // Frame ausführen
+    NextGF();
 
-	//LOG.lprintf("%d = %d - %d\n", framesinfo.nr / framesinfo.nwf_length, checksum, Random::inst().GetCurrentRandomValue());
+    //LOG.lprintf("%d = %d - %d\n", framesinfo.nr / framesinfo.nwf_length, checksum, Random::inst().GetCurrentRandomValue());
 
-	// Stehen eigene Commands an, die gesendet werden müssen?
-	send_queue.push(new GameMessage_GameCommand(playerid,checksum,gcs));
+    // Stehen eigene Commands an, die gesendet werden müssen?
+    send_queue.push(new GameMessage_GameCommand(playerid, checksum, gcs));
 
-	// alles gesendet --> Liste löschen
-	gcs.clear();
+    // alles gesendet --> Liste löschen
+    gcs.clear();
 
 
-	// Evtl Spieler wechseln?
-	if(player_switch_old_id != 255)
-		ChangePlayer(player_switch_old_id, player_switch_new_id);
+    // Evtl Spieler wechseln?
+    if(player_switch_old_id != 255)
+        ChangePlayer(player_switch_old_id, player_switch_new_id);
 }

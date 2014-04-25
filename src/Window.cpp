@@ -1,4 +1,4 @@
-// $Id: Window.cpp 8103 2012-08-29 10:06:39Z marcus $
+// $Id: Window.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -29,9 +29,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -41,7 +41,7 @@
  *  @author OLiver
  */
 Window::Window(void)
-	: x(0), y(0), width(0), height(0), id(0), parent(NULL), active(false), visible(true), scale(false), tooltip("")
+    : x(0), y(0), width(0), height(0), id(0), parent(NULL), active(false), visible(true), scale(false), tooltip("")
 {
 }
 
@@ -56,14 +56,14 @@ Window::Window(void)
  *
  *  @author OLiver
  */
-Window::Window(unsigned short x, 
-			   unsigned short y, 
-			   unsigned int id, 
-			   Window *parent, 
-			   unsigned short width, 
-			   unsigned short height, 
-			   const std::string& tooltip)
-	: x(x), y(y), width(width), height(height), id(id), parent(parent), active(false), visible(true), scale(false), tooltip(tooltip)
+Window::Window(unsigned short x,
+               unsigned short y,
+               unsigned int id,
+               Window* parent,
+               unsigned short width,
+               unsigned short height,
+               const std::string& tooltip)
+    : x(x), y(y), width(width), height(height), id(id), parent(parent), active(false), visible(true), scale(false), tooltip(tooltip)
 {
 }
 
@@ -75,9 +75,9 @@ Window::Window(unsigned short x,
  */
 Window::~Window(void)
 {
-	// Steuerelemente aufräumen
-	for(std::map<unsigned int,Window*>::iterator it = idmap.begin();it != idmap.end();++it)
-		delete it->second;
+    // Steuerelemente aufräumen
+    for(std::map<unsigned int, Window*>::iterator it = idmap.begin(); it != idmap.end(); ++it)
+        delete it->second;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -88,10 +88,10 @@ Window::~Window(void)
  */
 bool Window::Draw(void)
 {
-	if(visible)
-		return Draw_();
+    if(visible)
+        return Draw_();
 
-	return true;
+    return true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -106,21 +106,21 @@ bool Window::Draw(void)
  */
 unsigned short Window::GetX(bool absolute) const
 {
-	if(!absolute)
-		return x;
+    if(!absolute)
+        return x;
 
-	unsigned short abs_x = x;
-	const Window *temp = this;
+    unsigned short abs_x = x;
+    const Window* temp = this;
 
-	// Relative Koordinaten in absolute umrechnen
-	// ( d.h. Koordinaten von allen Eltern zusammenaddieren )
-	while(temp->parent)
-	{
-		temp = temp->parent;
-		abs_x += temp->x;
-	}
+    // Relative Koordinaten in absolute umrechnen
+    // ( d.h. Koordinaten von allen Eltern zusammenaddieren )
+    while(temp->parent)
+    {
+        temp = temp->parent;
+        abs_x += temp->x;
+    }
 
-	return abs_x;
+    return abs_x;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -135,21 +135,21 @@ unsigned short Window::GetX(bool absolute) const
  */
 unsigned short Window::GetY(bool absolute) const
 {
-	if(!absolute)
-		return y;
+    if(!absolute)
+        return y;
 
-	unsigned short abs_y = y;
-	const Window *temp = this;
+    unsigned short abs_y = y;
+    const Window* temp = this;
 
-	// Relative Koordinaten in absolute umrechnen
-	// ( d.h. Koordinaten von allen Eltern zusammenaddieren )
-	while(temp->parent)
-	{
-		temp = temp->parent;
-		abs_y += temp->y;
-	}
+    // Relative Koordinaten in absolute umrechnen
+    // ( d.h. Koordinaten von allen Eltern zusammenaddieren )
+    while(temp->parent)
+    {
+        temp = temp->parent;
+        abs_y += temp->y;
+    }
 
-	return abs_y;
+    return abs_y;
 }
 
 
@@ -163,69 +163,69 @@ unsigned short Window::GetY(bool absolute) const
  *
  *  @author OLiver
  */
-bool Window::RelayKeyboardMessage(bool (Window::*msg)(const KeyEvent&),const KeyEvent& ke)
+bool Window::RelayKeyboardMessage(bool (Window::*msg)(const KeyEvent&), const KeyEvent& ke)
 {
-	// Abgeleitete Klassen fragen, ob das Weiterleiten von Nachrichten erlaubt ist
-	// (IngameFenster könnten ja z.B. minimiert sein)
-	if(!IsMessageRelayAllowed())
-		return false;
+    // Abgeleitete Klassen fragen, ob das Weiterleiten von Nachrichten erlaubt ist
+    // (IngameFenster könnten ja z.B. minimiert sein)
+    if(!IsMessageRelayAllowed())
+        return false;
 
-	// Alle Controls durchgehen
-	// Falls das Fenster dann plötzlich nich mehr aktiv ist (z.b. neues Fenster geöffnet, sofort abbrechen!)
-	for(std::map<unsigned int,Window*>::iterator it = idmap.begin(); it != idmap.end() && active; ++it)
-	{
-		if(it->second->visible && it->second->active)
-			if((it->second->*msg)(ke))
-				return true;
-	}
+    // Alle Controls durchgehen
+    // Falls das Fenster dann plötzlich nich mehr aktiv ist (z.b. neues Fenster geöffnet, sofort abbrechen!)
+    for(std::map<unsigned int, Window*>::iterator it = idmap.begin(); it != idmap.end() && active; ++it)
+    {
+        if(it->second->visible && it->second->active)
+            if((it->second->*msg)(ke))
+                return true;
+    }
 
-	return false;
+    return false;
 }
 
-bool Window::RelayMouseMessage(bool (Window::*msg)(const MouseCoords&),const MouseCoords& mc)
+bool Window::RelayMouseMessage(bool (Window::*msg)(const MouseCoords&), const MouseCoords& mc)
 {
-	// Abgeleitete Klassen fragen, ob das Weiterleiten von Mausnachrichten erlaubt ist
-	// (IngameFenster könnten ja z.B. minimiert sein)
-	if(!IsMessageRelayAllowed())
-		return false;
+    // Abgeleitete Klassen fragen, ob das Weiterleiten von Mausnachrichten erlaubt ist
+    // (IngameFenster könnten ja z.B. minimiert sein)
+    if(!IsMessageRelayAllowed())
+        return false;
 
-	bool processed = false;
+    bool processed = false;
 
-	// Alle Controls durchgehen
-	// Falls das Fenster dann plötzlich nich mehr aktiv ist (z.b. neues Fenster geöffnet, sofort abbrechen!)
-	// Use reverse iterator because the topmost (=last elements) should receive the messages first!
-	for(std::map<unsigned int,Window*>::reverse_iterator it = idmap.rbegin(); it != idmap.rend() && active; ++it)
-	{
-		if(locked_areas.size())
-			if(TestWindowInRegion(it->second, mc))
-				continue;
+    // Alle Controls durchgehen
+    // Falls das Fenster dann plötzlich nich mehr aktiv ist (z.b. neues Fenster geöffnet, sofort abbrechen!)
+    // Use reverse iterator because the topmost (=last elements) should receive the messages first!
+    for(std::map<unsigned int, Window*>::reverse_iterator it = idmap.rbegin(); it != idmap.rend() && active; ++it)
+    {
+        if(locked_areas.size())
+            if(TestWindowInRegion(it->second, mc))
+                continue;
 
-		if(it->second->visible && it->second->active)
-			// Falls von einem Steuerelement verarbeitet --> abbrechen
-			if((it->second->*msg)(mc))
-			{
-				processed = true;
-				break;
-			}
-	}
+        if(it->second->visible && it->second->active)
+            // Falls von einem Steuerelement verarbeitet --> abbrechen
+            if((it->second->*msg)(mc))
+            {
+                processed = true;
+                break;
+            }
+    }
 
-	/*// Nur vorläufig
-	if(processed && msg == &Window::Msg_LeftDown)
-	{
-		for(std::map<unsigned int,Window*>::iterator it = idmap.begin(); it != idmap.end() && active; ++it)
-		{
-			if(locked_areas.size())
-				if(TestWindowInRegion(it->second, mc))
-					continue;
+    /*// Nur vorläufig
+    if(processed && msg == &Window::Msg_LeftDown)
+    {
+        for(std::map<unsigned int,Window*>::iterator it = idmap.begin(); it != idmap.end() && active; ++it)
+        {
+            if(locked_areas.size())
+                if(TestWindowInRegion(it->second, mc))
+                    continue;
 
-			if(it->second->visible && it->second->active)
-				// Falls von einem Steuerelement verarbeitet --> abbrechen
-				it->second->Msg_LeftDown_After(mc);
+            if(it->second->visible && it->second->active)
+                // Falls von einem Steuerelement verarbeitet --> abbrechen
+                it->second->Msg_LeftDown_After(mc);
 
-		}
-	}*/
+        }
+    }*/
 
-	return processed;
+    return processed;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -238,8 +238,8 @@ bool Window::RelayMouseMessage(bool (Window::*msg)(const MouseCoords&),const Mou
  */
 void Window::SetActive(bool activate)
 {
-	this->active = activate;
-	ActivateControls(activate);
+    this->active = activate;
+    ActivateControls(activate);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -252,8 +252,8 @@ void Window::SetActive(bool activate)
  */
 void Window::ActivateControls(bool activate)
 {
-	for(std::map<unsigned int,Window*>::iterator it = idmap.begin(); it != idmap.end(); ++it)
-		it->second->SetActive(activate);
+    for(std::map<unsigned int, Window*>::iterator it = idmap.begin(); it != idmap.end(); ++it)
+        it->second->SetActive(activate);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -265,10 +265,10 @@ void Window::ActivateControls(bool activate)
  *
  *  @author OLiver
  */
-void Window::LockRegion(Window *window, const Rect &rect)
+void Window::LockRegion(Window* window, const Rect& rect)
 {
-	LockedRegion lg = {window, rect};
-	locked_areas.push_back(lg);
+    LockedRegion lg = {window, rect};
+    locked_areas.push_back(lg);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -279,22 +279,22 @@ void Window::LockRegion(Window *window, const Rect &rect)
  *
  *  @author OLiver
  */
-void Window::FreeRegion(Window *window)
+void Window::FreeRegion(Window* window)
 {
-	for(list<LockedRegion>::iterator it = locked_areas.begin(); it.valid(); ++it)
-	{
-		if(window == it->window)
-		{
-			locked_areas.erase(it);
-			return;
-		}
-	}
+    for(list<LockedRegion>::iterator it = locked_areas.begin(); it.valid(); ++it)
+    {
+        if(window == it->window)
+        {
+            locked_areas.erase(it);
+            return;
+        }
+    }
 }
 
 /// Weiterleitung von Nachrichten von abgeleiteten Klassen erlaubt oder nicht?
 bool Window::IsMessageRelayAllowed() const
 {
-	return true;
+    return true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -303,21 +303,21 @@ bool Window::IsMessageRelayAllowed() const
  *
  *  @author OLiver
  */
-ctrlBuildingIcon *Window::AddBuildingIcon(unsigned int id, 
-										  unsigned short x, 
-										  unsigned short y, 
-										  BuildingType type,
-										  const Nation nation,
-										  unsigned short size,
-										  const std::string& tooltip)
+ctrlBuildingIcon* Window::AddBuildingIcon(unsigned int id,
+        unsigned short x,
+        unsigned short y,
+        BuildingType type,
+        const Nation nation,
+        unsigned short size,
+        const std::string& tooltip)
 {
-	if(scale)
-	{
-		x = ScaleX(x);
-		y = ScaleY(y);
-	}
+    if(scale)
+    {
+        x = ScaleX(x);
+        y = ScaleY(y);
+    }
 
-	return AddCtrl(id, new ctrlBuildingIcon(this, id, x, y, type, nation, size, tooltip));
+    return AddCtrl(id, new ctrlBuildingIcon(this, id, x, y, type, nation, size, tooltip));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -340,46 +340,46 @@ ctrlBuildingIcon *Window::AddBuildingIcon(unsigned int id,
 
 
 /// fügt einen Text-ButtonCtrl hinzu.
-ctrlTextButton *Window::AddTextButton(unsigned int id, unsigned short x, unsigned short y,unsigned short width, unsigned short height, const TextureColor tc,const std::string& text,  glArchivItem_Font *font, const std::string& tooltip)
+ctrlTextButton* Window::AddTextButton(unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, const TextureColor tc, const std::string& text,  glArchivItem_Font* font, const std::string& tooltip)
 {
-	if(scale)
-	{
-		x = ScaleX(x);
-		y = ScaleY(y);
-		width = ScaleX(width);
-		height = ScaleY(height);
-	}
+    if(scale)
+    {
+        x = ScaleX(x);
+        y = ScaleY(y);
+        width = ScaleX(width);
+        height = ScaleY(height);
+    }
 
-	return AddCtrl(id, new ctrlTextButton(this, id, x, y, width, height, tc, text,font,tooltip));
+    return AddCtrl(id, new ctrlTextButton(this, id, x, y, width, height, tc, text, font, tooltip));
 }
 
 /// fügt einen Color-ButtonCtrl hinzu.
-ctrlColorButton *Window::AddColorButton(unsigned int id, unsigned short x, unsigned short y,unsigned short width, unsigned short height, const TextureColor tc, const unsigned int fillColor, const std::string& tooltip)
+ctrlColorButton* Window::AddColorButton(unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, const TextureColor tc, const unsigned int fillColor, const std::string& tooltip)
 {
-	if(scale)
-	{
-		x = ScaleX(x);
-		y = ScaleY(y);
-		width = ScaleX(width);
-		height = ScaleY(height);
-	}
+    if(scale)
+    {
+        x = ScaleX(x);
+        y = ScaleY(y);
+        width = ScaleX(width);
+        height = ScaleY(height);
+    }
 
-	return AddCtrl(id, new ctrlColorButton(this, id, x, y, width, height, tc, fillColor, tooltip));
+    return AddCtrl(id, new ctrlColorButton(this, id, x, y, width, height, tc, fillColor, tooltip));
 }
 
 
 /// fügt einen Image-ButtonCtrl hinzu.
-ctrlImageButton *Window::AddImageButton(unsigned int id, unsigned short x, unsigned short y,unsigned short width, unsigned short height, const TextureColor tc,glArchivItem_Bitmap * const image,  const std::string& tooltip)
+ctrlImageButton* Window::AddImageButton(unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, const TextureColor tc, glArchivItem_Bitmap* const image,  const std::string& tooltip)
 {
-	if(scale)
-	{
-		x = ScaleX(x);
-		y = ScaleY(y);
-		width = ScaleX(width);
-		height = ScaleY(height);
-	}
+    if(scale)
+    {
+        x = ScaleX(x);
+        y = ScaleY(y);
+        width = ScaleX(width);
+        height = ScaleY(height);
+    }
 
-	return AddCtrl(id, new ctrlImageButton(this, id, x, y, width, height, tc, image,tooltip));
+    return AddCtrl(id, new ctrlImageButton(this, id, x, y, width, height, tc, image, tooltip));
 }
 
 
@@ -389,23 +389,23 @@ ctrlImageButton *Window::AddImageButton(unsigned int id, unsigned short x, unsig
  *
  *  @author Devil
  */
-ctrlChat *Window::AddChatCtrl(unsigned int id,
-							  unsigned short x, 
-							  unsigned short y,
-							  unsigned short width,
-							  unsigned short height, 
-							  TextureColor tc, 
-							  glArchivItem_Font *font)
+ctrlChat* Window::AddChatCtrl(unsigned int id,
+                              unsigned short x,
+                              unsigned short y,
+                              unsigned short width,
+                              unsigned short height,
+                              TextureColor tc,
+                              glArchivItem_Font* font)
 {
-	if(scale)
-	{
-		x = ScaleX(x);
-		y = ScaleY(y);
-		width = ScaleX(width);
-		height = ScaleY(height);
-	}
+    if(scale)
+    {
+        x = ScaleX(x);
+        y = ScaleY(y);
+        width = ScaleX(width);
+        height = ScaleY(height);
+    }
 
-	return AddCtrl(id, new ctrlChat(this, id, x, y, width, height, tc, font));
+    return AddCtrl(id, new ctrlChat(this, id, x, y, width, height, tc, font));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -414,25 +414,25 @@ ctrlChat *Window::AddChatCtrl(unsigned int id,
  *
  *  @author OLiver
  */
-ctrlCheck *Window::AddCheckBox(unsigned int id,
-							   unsigned short x, 
-							   unsigned short y,
-							   unsigned short width, 
-							   unsigned short height,
-							   TextureColor tc, 
-							   const std::string& text, 
-							   glArchivItem_Font *font, 
-							   bool readonly)
+ctrlCheck* Window::AddCheckBox(unsigned int id,
+                               unsigned short x,
+                               unsigned short y,
+                               unsigned short width,
+                               unsigned short height,
+                               TextureColor tc,
+                               const std::string& text,
+                               glArchivItem_Font* font,
+                               bool readonly)
 {
-	if(scale)
-	{
-		x = ScaleX(x);
-		y = ScaleY(y);
-		width = ScaleX(width);
-		height = ScaleY(height);
-	}
+    if(scale)
+    {
+        x = ScaleX(x);
+        y = ScaleY(y);
+        width = ScaleX(width);
+        height = ScaleY(height);
+    }
 
-	return AddCtrl(id, new ctrlCheck(this, id, x, y, width, height, tc, text, font, readonly));
+    return AddCtrl(id, new ctrlCheck(this, id, x, y, width, height, tc, text, font, readonly));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -441,25 +441,25 @@ ctrlCheck *Window::AddCheckBox(unsigned int id,
  *
  *  @author OLiver
  */
-ctrlComboBox *Window::AddComboBox(unsigned int id,
-								  unsigned short x, 
-								  unsigned short y,
-								  unsigned short width,
-								  unsigned short height,
-								  TextureColor tc, 
-								  glArchivItem_Font *font,
-								  unsigned short max_list_height,
-								  bool readonly)
+ctrlComboBox* Window::AddComboBox(unsigned int id,
+                                  unsigned short x,
+                                  unsigned short y,
+                                  unsigned short width,
+                                  unsigned short height,
+                                  TextureColor tc,
+                                  glArchivItem_Font* font,
+                                  unsigned short max_list_height,
+                                  bool readonly)
 {
-	if(scale)
-	{
-		x = ScaleX(x);
-		y = ScaleY(y);
-		width = ScaleX(width);
-		height = ScaleY(height);
-	}
+    if(scale)
+    {
+        x = ScaleX(x);
+        y = ScaleY(y);
+        width = ScaleX(width);
+        height = ScaleY(height);
+    }
 
-	return AddCtrl(id, new ctrlComboBox(this, id, x, y, width, height, tc, font, max_list_height, readonly));
+    return AddCtrl(id, new ctrlComboBox(this, id, x, y, width, height, tc, font, max_list_height, readonly));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -468,25 +468,25 @@ ctrlComboBox *Window::AddComboBox(unsigned int id,
  *
  *  @author OLiver
  */
-ctrlDeepening *Window::AddDeepening(unsigned int id,
-									unsigned short x,
-									unsigned short y,
-									unsigned short width, 
-									unsigned short height, 
-									TextureColor tc, 
-									const std::string& text, 
-									glArchivItem_Font *font, 
-									unsigned int color)
+ctrlDeepening* Window::AddDeepening(unsigned int id,
+                                    unsigned short x,
+                                    unsigned short y,
+                                    unsigned short width,
+                                    unsigned short height,
+                                    TextureColor tc,
+                                    const std::string& text,
+                                    glArchivItem_Font* font,
+                                    unsigned int color)
 {
-	if(scale)
-	{
-		x = ScaleX(x);
-		y = ScaleY(y);
-		width = ScaleX(width);
-		height = ScaleY(height);
-	}
+    if(scale)
+    {
+        x = ScaleX(x);
+        y = ScaleY(y);
+        width = ScaleX(width);
+        height = ScaleY(height);
+    }
 
-	return AddCtrl(id, new ctrlDeepening(this, id, x, y, width, height, tc, text, font, color));
+    return AddCtrl(id, new ctrlDeepening(this, id, x, y, width, height, tc, text, font, color));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -495,23 +495,23 @@ ctrlDeepening *Window::AddDeepening(unsigned int id,
  *
  *  @author Divan
  */
-ctrlColorDeepening *Window::AddColorDeepening(unsigned int id,
-									unsigned short x,
-									unsigned short y,
-									unsigned short width, 
-									unsigned short height, 
-									TextureColor tc, 
-									unsigned int fillColor)
+ctrlColorDeepening* Window::AddColorDeepening(unsigned int id,
+        unsigned short x,
+        unsigned short y,
+        unsigned short width,
+        unsigned short height,
+        TextureColor tc,
+        unsigned int fillColor)
 {
-	if(scale)
-	{
-		x = ScaleX(x);
-		y = ScaleY(y);
-		width = ScaleX(width);
-		height = ScaleY(height);
-	}
+    if(scale)
+    {
+        x = ScaleX(x);
+        y = ScaleY(y);
+        width = ScaleX(width);
+        height = ScaleY(height);
+    }
 
-	return AddCtrl(id, new ctrlColorDeepening(this, id, x, y, width, height, tc, fillColor));
+    return AddCtrl(id, new ctrlColorDeepening(this, id, x, y, width, height, tc, fillColor));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -520,27 +520,27 @@ ctrlColorDeepening *Window::AddColorDeepening(unsigned int id,
  *
  *  @author OLiver
  */
-ctrlEdit *Window::AddEdit(unsigned int id,
-						  unsigned short x, 
-						  unsigned short y, 
-						  unsigned short width, 
-						  unsigned short height, 
-						  TextureColor tc, 
-						  glArchivItem_Font *font,
-						  unsigned short maxlength,
-						  bool password, 
-						  bool disabled,
-						  bool notify)
+ctrlEdit* Window::AddEdit(unsigned int id,
+                          unsigned short x,
+                          unsigned short y,
+                          unsigned short width,
+                          unsigned short height,
+                          TextureColor tc,
+                          glArchivItem_Font* font,
+                          unsigned short maxlength,
+                          bool password,
+                          bool disabled,
+                          bool notify)
 {
-	if(scale)
-	{
-		x = ScaleX(x);
-		y = ScaleY(y);
-		width = ScaleX(width);
-		height = ScaleY(height);
-	}
+    if(scale)
+    {
+        x = ScaleX(x);
+        y = ScaleY(y);
+        width = ScaleX(width);
+        height = ScaleY(height);
+    }
 
-	return AddCtrl(id, new ctrlEdit(this, id, x, y, width, height, tc, font, maxlength, password, disabled, notify));
+    return AddCtrl(id, new ctrlEdit(this, id, x, y, width, height, tc, font, maxlength, password, disabled, notify));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -549,9 +549,9 @@ ctrlEdit *Window::AddEdit(unsigned int id,
  *
  *  @author FloSoft
  */
-ctrlGroup *Window::AddGroup(unsigned int id, bool scale)
+ctrlGroup* Window::AddGroup(unsigned int id, bool scale)
 {
-	return AddCtrl(id, new ctrlGroup(this, id, scale));
+    return AddCtrl(id, new ctrlGroup(this, id, scale));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -560,18 +560,18 @@ ctrlGroup *Window::AddGroup(unsigned int id, bool scale)
  *
  *  @author OLiver
  */
-ctrlImage *Window::AddImage(unsigned int id,
-							unsigned short x,
-							unsigned short y,
-							glArchivItem_Bitmap *image, const std::string& tooltip)
+ctrlImage* Window::AddImage(unsigned int id,
+                            unsigned short x,
+                            unsigned short y,
+                            glArchivItem_Bitmap* image, const std::string& tooltip)
 {
-	if(scale)
-	{
-		x = ScaleX(x);
-		y = ScaleY(y);
-	}
+    if(scale)
+    {
+        x = ScaleX(x);
+        y = ScaleY(y);
+    }
 
-	return AddCtrl(id, new ctrlImage(this, id, x, y, image, tooltip));
+    return AddCtrl(id, new ctrlImage(this, id, x, y, image, tooltip));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -580,23 +580,23 @@ ctrlImage *Window::AddImage(unsigned int id,
  *
  *  @author OLiver
  */
-ctrlList *Window::AddList(unsigned int id,
-						  unsigned short x,
-						  unsigned short y,
-						  unsigned short width,
-						  unsigned short height,
-						  TextureColor tc,
-						  glArchivItem_Font *font)
+ctrlList* Window::AddList(unsigned int id,
+                          unsigned short x,
+                          unsigned short y,
+                          unsigned short width,
+                          unsigned short height,
+                          TextureColor tc,
+                          glArchivItem_Font* font)
 {
-	if(scale)
-	{
-		x = ScaleX(x);
-		y = ScaleY(y);
-		width = ScaleX(width);
-		height = ScaleY(height);
-	}
+    if(scale)
+    {
+        x = ScaleX(x);
+        y = ScaleY(y);
+        width = ScaleX(width);
+        height = ScaleY(height);
+    }
 
-	return AddCtrl(id, new ctrlList(this, id, x, y, width, height, tc, font));
+    return AddCtrl(id, new ctrlList(this, id, x, y, width, height, tc, font));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -605,24 +605,24 @@ ctrlList *Window::AddList(unsigned int id,
  *
  *  @author Devil
  */
-ctrlMultiline *Window::AddMultiline(unsigned int id,
-									unsigned short x, 
-								    unsigned short y, 
-								    unsigned short width, 
-								    unsigned short height, 
-								    TextureColor tc, 
-								    glArchivItem_Font *font, 
-									unsigned int format)
+ctrlMultiline* Window::AddMultiline(unsigned int id,
+                                    unsigned short x,
+                                    unsigned short y,
+                                    unsigned short width,
+                                    unsigned short height,
+                                    TextureColor tc,
+                                    glArchivItem_Font* font,
+                                    unsigned int format)
 {
-	if(scale)
-	{
-		x = ScaleX(x);
-		y = ScaleY(y);
-		width = ScaleX(width);
-		height = ScaleY(height);
-	}
+    if(scale)
+    {
+        x = ScaleX(x);
+        y = ScaleY(y);
+        width = ScaleX(width);
+        height = ScaleY(height);
+    }
 
-	return AddCtrl(id, new ctrlMultiline(this, id, x, y, width, height, tc, font, format));
+    return AddCtrl(id, new ctrlMultiline(this, id, x, y, width, height, tc, font, format));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -636,11 +636,11 @@ ctrlMultiline *Window::AddMultiline(unsigned int id,
  *
  *  @author OLiver
  */
-ctrlOptionGroup *Window::AddOptionGroup(unsigned int id,
-										int select_type,
-										bool scale)
+ctrlOptionGroup* Window::AddOptionGroup(unsigned int id,
+                                        int select_type,
+                                        bool scale)
 {
-	return AddCtrl(id, new ctrlOptionGroup(this, id, select_type, scale));
+    return AddCtrl(id, new ctrlOptionGroup(this, id, select_type, scale));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -654,11 +654,11 @@ ctrlOptionGroup *Window::AddOptionGroup(unsigned int id,
  *
  *  @author jh
  */
-ctrlMultiSelectGroup *Window::AddMultiSelectGroup(unsigned int id, 
-																									int select_type, 
-																									bool scale)
+ctrlMultiSelectGroup* Window::AddMultiSelectGroup(unsigned int id,
+        int select_type,
+        bool scale)
 {
-	return AddCtrl(id, new ctrlMultiSelectGroup(this, id, select_type, scale));
+    return AddCtrl(id, new ctrlMultiSelectGroup(this, id, select_type, scale));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -667,25 +667,25 @@ ctrlMultiSelectGroup *Window::AddMultiSelectGroup(unsigned int id,
  *
  *  @author OLiver
  */
-ctrlPercent *Window::AddPercent(unsigned int id,
-								unsigned short x,
-								unsigned short y, 
-								unsigned short width,
-								unsigned short height,
-								TextureColor tc, 
-								unsigned int text_color, 
-								glArchivItem_Font *font,
-								const unsigned short *percentage)
+ctrlPercent* Window::AddPercent(unsigned int id,
+                                unsigned short x,
+                                unsigned short y,
+                                unsigned short width,
+                                unsigned short height,
+                                TextureColor tc,
+                                unsigned int text_color,
+                                glArchivItem_Font* font,
+                                const unsigned short* percentage)
 {
-	if(scale)
-	{
-		x = ScaleX(x);
-		y = ScaleY(y);
-		width = ScaleX(width);
-		height = ScaleY(height);
-	}
+    if(scale)
+    {
+        x = ScaleX(x);
+        y = ScaleY(y);
+        width = ScaleX(width);
+        height = ScaleY(height);
+    }
 
-	return AddCtrl(id, new ctrlPercent(this, id, x, y, width, height, tc, text_color, font, percentage));
+    return AddCtrl(id, new ctrlPercent(this, id, x, y, width, height, tc, text_color, font, percentage));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -694,31 +694,31 @@ ctrlPercent *Window::AddPercent(unsigned int id,
  *
  *  @author OLiver
  */
-ctrlProgress *Window::AddProgress(unsigned int id,
-								  unsigned short x,
-								  unsigned short y,
-								  unsigned short width,
-								  unsigned short height,
-								  TextureColor tc,
-								  unsigned short button_minus,
-								  unsigned short button_plus,
-								  unsigned short maximum,
-								  const std::string& tooltip,
-								  unsigned short x_padding,
-								  unsigned short y_padding,
-								  unsigned int force_color,
-								  const std::string& button_minus_tooltip,
-								  const std::string& button_plus_tooltip)
+ctrlProgress* Window::AddProgress(unsigned int id,
+                                  unsigned short x,
+                                  unsigned short y,
+                                  unsigned short width,
+                                  unsigned short height,
+                                  TextureColor tc,
+                                  unsigned short button_minus,
+                                  unsigned short button_plus,
+                                  unsigned short maximum,
+                                  const std::string& tooltip,
+                                  unsigned short x_padding,
+                                  unsigned short y_padding,
+                                  unsigned int force_color,
+                                  const std::string& button_minus_tooltip,
+                                  const std::string& button_plus_tooltip)
 {
-	if(scale)
-	{
-		x = ScaleX(x);
-		y = ScaleY(y);
-		width = ScaleX(width);
-		height = ScaleY(height);
-	}
+    if(scale)
+    {
+        x = ScaleX(x);
+        y = ScaleY(y);
+        width = ScaleX(width);
+        height = ScaleY(height);
+    }
 
-	return AddCtrl(id, new ctrlProgress(this, id, x, y, width, height, tc, button_minus, button_plus, maximum, x_padding, y_padding, force_color, tooltip, button_minus_tooltip, button_plus_tooltip));
+    return AddCtrl(id, new ctrlProgress(this, id, x, y, width, height, tc, button_minus, button_plus, maximum, x_padding, y_padding, force_color, tooltip, button_minus_tooltip, button_plus_tooltip));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -727,25 +727,25 @@ ctrlProgress *Window::AddProgress(unsigned int id,
  *
  *  @author OLiver
  */
-ctrlScrollBar *Window::AddScrollBar(unsigned int id,
-							  unsigned short x, 
-							  unsigned short y,
-							  unsigned short width, 
-							  unsigned short height, 
-							  unsigned short button_height, 
-							  TextureColor tc, 
-							  unsigned short page_size)
+ctrlScrollBar* Window::AddScrollBar(unsigned int id,
+                                    unsigned short x,
+                                    unsigned short y,
+                                    unsigned short width,
+                                    unsigned short height,
+                                    unsigned short button_height,
+                                    TextureColor tc,
+                                    unsigned short page_size)
 {
-	if(scale)
-	{
-		x = ScaleX(x);
-		y = ScaleY(y);
-		width = ScaleX(width);
-		height = ScaleY(height);
-		button_height = ScaleY(button_height);
-	}
+    if(scale)
+    {
+        x = ScaleX(x);
+        y = ScaleY(y);
+        width = ScaleX(width);
+        height = ScaleY(height);
+        button_height = ScaleY(button_height);
+    }
 
-	return AddCtrl(id, new ctrlScrollBar(this, id, x, y, width, height, button_height, tc, page_size));
+    return AddCtrl(id, new ctrlScrollBar(this, id, x, y, width, height, button_height, tc, page_size));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -754,19 +754,19 @@ ctrlScrollBar *Window::AddScrollBar(unsigned int id,
  *
  *  @author OLiver
  */
-ctrlTab *Window::AddTabCtrl(unsigned int id,
-						unsigned short x, 
-						unsigned short y, 
-						unsigned short width)
+ctrlTab* Window::AddTabCtrl(unsigned int id,
+                            unsigned short x,
+                            unsigned short y,
+                            unsigned short width)
 {
-	if(scale)
-	{
-		x = ScaleX(x);
-		y = ScaleY(y);
-		width = ScaleX(width);
-	}
+    if(scale)
+    {
+        x = ScaleX(x);
+        y = ScaleY(y);
+        width = ScaleX(width);
+    }
 
-	return AddCtrl(id, new ctrlTab(this, id, x, y, width));
+    return AddCtrl(id, new ctrlTab(this, id, x, y, width));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -776,33 +776,33 @@ ctrlTab *Window::AddTabCtrl(unsigned int id,
  *
  *  @author OLiver
  */
-ctrlTable *Window::AddTable(unsigned int id,
-							unsigned short x, 
-							unsigned short y, 
-							unsigned short width, 
-							unsigned short height, 
-							TextureColor tc, 
-							glArchivItem_Font *font, 
-							unsigned int columns, 
-							...)
+ctrlTable* Window::AddTable(unsigned int id,
+                            unsigned short x,
+                            unsigned short y,
+                            unsigned short width,
+                            unsigned short height,
+                            TextureColor tc,
+                            glArchivItem_Font* font,
+                            unsigned int columns,
+                            ...)
 {
-	ctrlTable *ctrl;
-	va_list liste;
-	va_start(liste, columns);
+    ctrlTable* ctrl;
+    va_list liste;
+    va_start(liste, columns);
 
-	if(scale)
-	{
-		x = ScaleX(x);
-		y = ScaleY(y);
-		width = ScaleX(width);
-		height = ScaleY(height);
-	}
+    if(scale)
+    {
+        x = ScaleX(x);
+        y = ScaleY(y);
+        width = ScaleX(width);
+        height = ScaleY(height);
+    }
 
-	ctrl = new ctrlTable(this, id, x, y, width, height, tc, font, columns, liste);
-	
-	va_end(liste);
+    ctrl = new ctrlTable(this, id, x, y, width, height, tc, font, columns, liste);
 
-	return AddCtrl(id, ctrl);
+    va_end(liste);
+
+    return AddCtrl(id, ctrl);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -811,9 +811,9 @@ ctrlTable *Window::AddTable(unsigned int id,
  *
  *  @author FloSoft
  */
-ctrlTimer *Window::AddTimer(unsigned int id, unsigned int timeout)
+ctrlTimer* Window::AddTimer(unsigned int id, unsigned int timeout)
 {
-	return AddCtrl(id, new ctrlTimer(this, id, timeout));
+    return AddCtrl(id, new ctrlTimer(this, id, timeout));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -835,21 +835,21 @@ ctrlTimer *Window::AddTimer(unsigned int id, unsigned int timeout)
  *
  *  @author OLiver
  */
-ctrlText *Window::AddText(unsigned int id, 
-						  unsigned short x,
-						  unsigned short y, 
-						  const std::string& text, 
-						  unsigned int color, 
-						  unsigned int format, 
-						  glArchivItem_Font *font)
+ctrlText* Window::AddText(unsigned int id,
+                          unsigned short x,
+                          unsigned short y,
+                          const std::string& text,
+                          unsigned int color,
+                          unsigned int format,
+                          glArchivItem_Font* font)
 {
-	if(scale)
-	{
-		x = ScaleX(x);
-		y = ScaleY(y);
-	}
+    if(scale)
+    {
+        x = ScaleX(x);
+        y = ScaleY(y);
+    }
 
-	return AddCtrl(id, new ctrlText(this, id, x, y, text, color, format, font));
+    return AddCtrl(id, new ctrlText(this, id, x, y, text, color, format, font));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -858,35 +858,35 @@ ctrlText *Window::AddText(unsigned int id,
  *
  *  @author FloSoft
  */
-ctrlVarDeepening *Window::AddVarDeepening(unsigned int id, 
-									 unsigned short x, 
-									 unsigned short y, 
-									 unsigned short width, 
-									 unsigned short height, 
-									 TextureColor tc, 
-									 const std::string& formatstr,  
-									 glArchivItem_Font *font,
-									 unsigned int color,
-									 unsigned int parameters, 
-									 ...)
+ctrlVarDeepening* Window::AddVarDeepening(unsigned int id,
+        unsigned short x,
+        unsigned short y,
+        unsigned short width,
+        unsigned short height,
+        TextureColor tc,
+        const std::string& formatstr,
+        glArchivItem_Font* font,
+        unsigned int color,
+        unsigned int parameters,
+        ...)
 {
-	ctrlVarDeepening *ctrl;
-	va_list liste;
-	va_start(liste, parameters);
+    ctrlVarDeepening* ctrl;
+    va_list liste;
+    va_start(liste, parameters);
 
-	if(scale)
-	{
-		x = ScaleX(x);
-		y = ScaleY(y);
-		width = ScaleX(width);
-		height = ScaleY(height);
-	}
+    if(scale)
+    {
+        x = ScaleX(x);
+        y = ScaleY(y);
+        width = ScaleX(width);
+        height = ScaleY(height);
+    }
 
-	ctrl = new ctrlVarDeepening(this, id, x, y, width, height, tc, formatstr, font, color, parameters, liste);
-	
-	va_end(liste);
+    ctrl = new ctrlVarDeepening(this, id, x, y, width, height, tc, formatstr, font, color, parameters, liste);
 
-	return AddCtrl(id, ctrl);
+    va_end(liste);
+
+    return AddCtrl(id, ctrl);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -910,49 +910,49 @@ ctrlVarDeepening *Window::AddVarDeepening(unsigned int id,
  *
  *  @author OLiver
  */
-ctrlVarText *Window::AddVarText(unsigned int id, 
-								unsigned short x, 
-								unsigned short y, 
-								 const std::string& formatstr, 
-								unsigned int color, 
-								unsigned int format, 
-								glArchivItem_Font *font, 
-								unsigned int parameters, 
-								...)
+ctrlVarText* Window::AddVarText(unsigned int id,
+                                unsigned short x,
+                                unsigned short y,
+                                const std::string& formatstr,
+                                unsigned int color,
+                                unsigned int format,
+                                glArchivItem_Font* font,
+                                unsigned int parameters,
+                                ...)
 {
-	ctrlVarText *ctrl;
-	va_list liste;
-	va_start(liste, parameters);
+    ctrlVarText* ctrl;
+    va_list liste;
+    va_start(liste, parameters);
 
-	if(scale)
-	{
-		x = ScaleX(x);
-		y = ScaleY(y);
-	}
+    if(scale)
+    {
+        x = ScaleX(x);
+        y = ScaleY(y);
+    }
 
-	ctrl = new ctrlVarText(this, id, x, y, formatstr, color, format, font, parameters, liste);
-	
-	va_end(liste);
+    ctrl = new ctrlVarText(this, id, x, y, formatstr, color, format, font, parameters, liste);
 
-	return AddCtrl(id, ctrl);
+    va_end(liste);
+
+    return AddCtrl(id, ctrl);
 }
 
-ctrlPreviewMinimap *Window::AddPreviewMinimap(const unsigned id,
-				 unsigned short x, 
-				 unsigned short y, 
-				  unsigned short width, 
-				  unsigned short height,
-				 glArchivItem_Map * const map)
+ctrlPreviewMinimap* Window::AddPreviewMinimap(const unsigned id,
+        unsigned short x,
+        unsigned short y,
+        unsigned short width,
+        unsigned short height,
+        glArchivItem_Map* const map)
 {
-	if(scale)
-	{
-		x = ScaleX(x);
-		y = ScaleY(y);
-		width = ScaleX(width);
-		height = ScaleY(height);
-	}
+    if(scale)
+    {
+        x = ScaleX(x);
+        y = ScaleY(y);
+        width = ScaleX(width);
+        height = ScaleY(height);
+    }
 
-	return AddCtrl(id, new ctrlPreviewMinimap(this, id, x, y, width, height, map));
+    return AddCtrl(id, new ctrlPreviewMinimap(this, id, x, y, width, height, map));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -961,127 +961,127 @@ ctrlPreviewMinimap *Window::AddPreviewMinimap(const unsigned id,
  *
  *  @author OLiver
  */
-void Window::Draw3D(const unsigned short x, 
-			const unsigned short y, 
-			const unsigned short width, 
-			const unsigned short height,
-			const TextureColor tc,
-			const unsigned short type,
-			const bool illuminated,
-			const bool draw_content)
+void Window::Draw3D(const unsigned short x,
+                    const unsigned short y,
+                    const unsigned short width,
+                    const unsigned short height,
+                    const TextureColor tc,
+                    const unsigned short type,
+                    const bool illuminated,
+                    const bool draw_content)
 {
-	if(width < 4 || height < 4)
-		return;
+    if(width < 4 || height < 4)
+        return;
 
-	if(type <= 1)
-	{
-		// Äußerer Rahmen
-		LOADER.GetImageN("io", 12 + tc)->Draw(x, y, width, 2,      0, 0, width, 2);
-		LOADER.GetImageN("io", 12 + tc)->Draw(x, y, 2,     height, 0, 0, 2,     height);
+    if(type <= 1)
+    {
+        // Äußerer Rahmen
+        LOADER.GetImageN("io", 12 + tc)->Draw(x, y, width, 2,      0, 0, width, 2);
+        LOADER.GetImageN("io", 12 + tc)->Draw(x, y, 2,     height, 0, 0, 2,     height);
 
-		if(illuminated)
-		{
-			// Modulate2x anmachen
-			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_EXT);
-			glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, 2.0f);
-		}
+        if(illuminated)
+        {
+            // Modulate2x anmachen
+            glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_EXT);
+            glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, 2.0f);
+        }
 
-		// Inhalt der Box
-		if(draw_content)
-		{
-			if(type)
-				LOADER.GetImageN("io", tc*2)->Draw(x+2,y+2,width-4,height-4,0, 0, width-4,height-4);
-			else
-				LOADER.GetImageN("io", tc*2+1)->Draw(x+2,y+2,width-4,height-4,0, 0, width-4,height-4);
-		}
+        // Inhalt der Box
+        if(draw_content)
+        {
+            if(type)
+                LOADER.GetImageN("io", tc * 2)->Draw(x + 2, y + 2, width - 4, height - 4, 0, 0, width - 4, height - 4);
+            else
+                LOADER.GetImageN("io", tc * 2 + 1)->Draw(x + 2, y + 2, width - 4, height - 4, 0, 0, width - 4, height - 4);
+        }
 
-		if(illuminated)
-		{
-			// Modulate2x wieder ausmachen
-			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-		}
+        if(illuminated)
+        {
+            // Modulate2x wieder ausmachen
+            glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+        }
 
-		glDisable(GL_TEXTURE_2D);
+        glDisable(GL_TEXTURE_2D);
 
-		glColor3f(0.0f,0.0f,0.0f);
+        glColor3f(0.0f, 0.0f, 0.0f);
 
-		glBegin(GL_QUADS);
+        glBegin(GL_QUADS);
 
-		glVertex2i(x+width-1,y);
-		glVertex2i(x+width-1,y+height);
-		glVertex2i(x+width,y+height);
-		glVertex2i(x+width,y);
+        glVertex2i(x + width - 1, y);
+        glVertex2i(x + width - 1, y + height);
+        glVertex2i(x + width, y + height);
+        glVertex2i(x + width, y);
 
-		glVertex2i(x+width-2,y+1);
-		glVertex2i(x+width-2,y+height);
-		glVertex2i(x+width-1,y+height);
-		glVertex2i(x+width-1,y+1);
+        glVertex2i(x + width - 2, y + 1);
+        glVertex2i(x + width - 2, y + height);
+        glVertex2i(x + width - 1, y + height);
+        glVertex2i(x + width - 1, y + 1);
 
-		glVertex2i(x,y+height-1);
-		glVertex2i(x,y+height);
-		glVertex2i(x+width-2,y+height);
-		glVertex2i(x+width-2,y+height-1);
+        glVertex2i(x, y + height - 1);
+        glVertex2i(x, y + height);
+        glVertex2i(x + width - 2, y + height);
+        glVertex2i(x + width - 2, y + height - 1);
 
-		glVertex2i(x+1,y+height-2);
-		glVertex2i(x+1,y+height-1);
-		glVertex2i(x+width-2,y+height-1);
-		glVertex2i(x+width-2,y+height-2);
+        glVertex2i(x + 1, y + height - 2);
+        glVertex2i(x + 1, y + height - 1);
+        glVertex2i(x + width - 2, y + height - 1);
+        glVertex2i(x + width - 2, y + height - 2);
 
-		glEnd();
-	}
-	else
-	{
-		LOADER.GetImageN("io",12+tc)->Draw(x,y+height-2,width,2,0, 0, width,2);
-		LOADER.GetImageN("io",12+tc)->Draw(x+width-2,y, 2,height,0, 0,2,height);
+        glEnd();
+    }
+    else
+    {
+        LOADER.GetImageN("io", 12 + tc)->Draw(x, y + height - 2, width, 2, 0, 0, width, 2);
+        LOADER.GetImageN("io", 12 + tc)->Draw(x + width - 2, y, 2, height, 0, 0, 2, height);
 
-		if(illuminated)
-		{
-			// Modulate2x anmachen
-			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_EXT);
-			glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, 2.0f);
-		}
+        if(illuminated)
+        {
+            // Modulate2x anmachen
+            glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_EXT);
+            glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, 2.0f);
+        }
 
-		LOADER.GetImageN("io",tc*2+1)->Draw(x+2,y+2,width-4,2,0, 0, width-4,2);
-		LOADER.GetImageN("io",tc*2+1)->Draw(x+2,y+2,2,height-4,0, 0, 2,height-4);
+        LOADER.GetImageN("io", tc * 2 + 1)->Draw(x + 2, y + 2, width - 4, 2, 0, 0, width - 4, 2);
+        LOADER.GetImageN("io", tc * 2 + 1)->Draw(x + 2, y + 2, 2, height - 4, 0, 0, 2, height - 4);
 
-		LOADER.GetImageN("io",tc*2+1)->Draw(x+4,y+4,width-6,height-6,0, 0, width-6,height-6);
+        LOADER.GetImageN("io", tc * 2 + 1)->Draw(x + 4, y + 4, width - 6, height - 6, 0, 0, width - 6, height - 6);
 
-		if(illuminated)
-		{
-			// Modulate2x wieder ausmachen
-			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-		}
+        if(illuminated)
+        {
+            // Modulate2x wieder ausmachen
+            glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+        }
 
-		glDisable(GL_TEXTURE_2D);
+        glDisable(GL_TEXTURE_2D);
 
-		glColor3f(0.0f,0.0f,0.0f);
+        glColor3f(0.0f, 0.0f, 0.0f);
 
-		glBegin(GL_QUADS);
+        glBegin(GL_QUADS);
 
-		glVertex2i(x,y);
-		glVertex2i(x,y+1);
-		glVertex2i(x+width,y+1);
-		glVertex2i(x+width,y);
+        glVertex2i(x, y);
+        glVertex2i(x, y + 1);
+        glVertex2i(x + width, y + 1);
+        glVertex2i(x + width, y);
 
-		glVertex2i(x,y+1);
-		glVertex2i(x,y+2);
-		glVertex2i(x+width-1,y+2);
-		glVertex2i(x+width-1,y+1);
+        glVertex2i(x, y + 1);
+        glVertex2i(x, y + 2);
+        glVertex2i(x + width - 1, y + 2);
+        glVertex2i(x + width - 1, y + 1);
 
-		glVertex2i(x,y+2);
-		glVertex2i(x,y+height);
-		glVertex2i(x+1,y+height);
-		glVertex2i(x+1,y+2);
+        glVertex2i(x, y + 2);
+        glVertex2i(x, y + height);
+        glVertex2i(x + 1, y + height);
+        glVertex2i(x + 1, y + 2);
 
-		glVertex2i(x+1,y+2);
-		glVertex2i(x+1,y+height-1);
-		glVertex2i(x+2,y+height-1);
-		glVertex2i(x+2,y+2);
+        glVertex2i(x + 1, y + 2);
+        glVertex2i(x + 1, y + height - 1);
+        glVertex2i(x + 2, y + height - 1);
+        glVertex2i(x + 2, y + 2);
 
-		glEnd();
-	}
+        glEnd();
+    }
 
-	glEnable(GL_TEXTURE_2D);
+    glEnable(GL_TEXTURE_2D);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1094,18 +1094,18 @@ void Window::Draw3D(const unsigned short x,
  */
 void Window::DrawRectangle(unsigned short x, unsigned short y, unsigned short width, unsigned short height, unsigned int color)
 {
-	glDisable(GL_TEXTURE_2D);
+    glDisable(GL_TEXTURE_2D);
 
-	glColor4ub(GetRed(color), GetGreen(color), GetBlue(color), GetAlpha(color));
+    glColor4ub(GetRed(color), GetGreen(color), GetBlue(color), GetAlpha(color));
 
-	glBegin(GL_QUADS);
-	glVertex2i(x, y);
-	glVertex2i(x, y+height);
-	glVertex2i(x+width, y+height);
-	glVertex2i(x+width, y);
-	glEnd();
+    glBegin(GL_QUADS);
+    glVertex2i(x, y);
+    glVertex2i(x, y + height);
+    glVertex2i(x + width, y + height);
+    glVertex2i(x + width, y);
+    glEnd();
 
-	glEnable(GL_TEXTURE_2D);
+    glEnable(GL_TEXTURE_2D);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1128,7 +1128,7 @@ void Window::DrawLine(unsigned short ax, unsigned short ay, unsigned short bx, u
     glEnd();
 
     glEnable(GL_TEXTURE_2D);
-}  
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
@@ -1138,22 +1138,22 @@ void Window::DrawLine(unsigned short ax, unsigned short ay, unsigned short bx, u
  */
 void Window::DrawControls(void)
 {
-	for(std::map<unsigned int,Window*>::iterator it = idmap.begin(); it != idmap.end(); ++it)
-	{
-		Window *control = it->second;
-		assert(control);
+    for(std::map<unsigned int, Window*>::iterator it = idmap.begin(); it != idmap.end(); ++it)
+    {
+        Window* control = it->second;
+        assert(control);
 
-		control->Msg_PaintBefore();
-		control->Draw();
-	}
+        control->Msg_PaintBefore();
+        control->Draw();
+    }
 
-	for(std::map<unsigned int,Window*>::iterator it = idmap.begin(); it != idmap.end(); ++it)
-	{
-		Window *control = it->second;
-		assert(control);
+    for(std::map<unsigned int, Window*>::iterator it = idmap.begin(); it != idmap.end(); ++it)
+    {
+        Window* control = it->second;
+        assert(control);
 
-		control->Msg_PaintAfter();
-	}
+        control->Msg_PaintAfter();
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1168,15 +1168,15 @@ void Window::DrawControls(void)
  *
  *  @author OLiver
  */
-bool Window::TestWindowInRegion(Window *window, const MouseCoords& mc)
+bool Window::TestWindowInRegion(Window* window, const MouseCoords& mc)
 {
-	for(list<LockedRegion>::iterator it = locked_areas.begin(); it.valid(); ++it)
-	{
-		if(it->window != window && Coll(mc.x + GetX(), mc.y + GetY(), it->rect))
-			return true;
-	}
+    for(list<LockedRegion>::iterator it = locked_areas.begin(); it.valid(); ++it)
+    {
+        if(it->window != window && Coll(mc.x + GetX(), mc.y + GetY(), it->rect))
+            return true;
+    }
 
-	return false;
+    return false;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1187,28 +1187,28 @@ bool Window::TestWindowInRegion(Window *window, const MouseCoords& mc)
  */
 unsigned short Window::ScaleX(unsigned short val) const
 {
-	return  val*VideoDriverWrapper::inst().GetScreenWidth()/800;
+    return  val * VideoDriverWrapper::inst().GetScreenWidth() / 800;
 }
 
 unsigned short Window::ScaleY(unsigned short val) const
 {
-	return val*VideoDriverWrapper::inst().GetScreenHeight()/600;
+    return val * VideoDriverWrapper::inst().GetScreenHeight() / 600;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
-void Window::Msg_PaintBefore() 
+void Window::Msg_PaintBefore()
 {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
@@ -1218,51 +1218,51 @@ void Window::Msg_PaintAfter()
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
 bool Window::Msg_LeftDown(const MouseCoords& mc)
 {
-	return false;
+    return false;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
 bool Window::Msg_RightDown(const MouseCoords& mc)
 {
-	return false;
+    return false;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
 bool Window::Msg_LeftUp(const MouseCoords& mc)
 {
-	return false;
+    return false;
 }
 
 bool Window::Msg_LeftDown_After(const MouseCoords& mc)
 {
-	return false;
+    return false;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
 bool Window::Msg_RightUp(const MouseCoords& mc)
 {
-	return false;
+    return false;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1273,7 +1273,7 @@ bool Window::Msg_RightUp(const MouseCoords& mc)
  */
 bool Window::Msg_WheelUp(const MouseCoords& mc)
 {
-	return false;
+    return false;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1284,34 +1284,34 @@ bool Window::Msg_WheelUp(const MouseCoords& mc)
  */
 bool Window::Msg_WheelDown(const MouseCoords& mc)
 {
-	return false;
+    return false;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
 bool Window::Msg_MouseMove(const MouseCoords& mc)
 {
-	return false;
+    return false;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
 bool Window::Msg_KeyDown(const KeyEvent& ke)
 {
-	return false;
+    return false;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
@@ -1321,7 +1321,7 @@ void Window::Msg_ButtonClick(const unsigned int ctrl_id)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author Divan
  */
@@ -1332,7 +1332,7 @@ void Window::Msg_ScreenResize(const ScreenResizeEvent& sr)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
@@ -1342,7 +1342,7 @@ void Window::Msg_EditEnter(const unsigned int ctrl_id)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
@@ -1352,7 +1352,7 @@ void Window::Msg_EditChange(const unsigned int ctrl_id)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
@@ -1362,7 +1362,7 @@ void Window::Msg_TabChange(const unsigned int ctrl_id, const unsigned short tab_
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
@@ -1376,7 +1376,7 @@ void Window::Msg_ListChooseItem(const unsigned int ctrl_id, const unsigned short
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
@@ -1386,7 +1386,7 @@ void Window::Msg_ComboSelectItem(const unsigned int ctrl_id, const unsigned shor
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
@@ -1396,7 +1396,7 @@ void Window::Msg_CheckboxChange(const unsigned int ctrl_id, const bool checked)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
@@ -1406,7 +1406,7 @@ void Window::Msg_ProgressChange(const unsigned int ctrl_id, const unsigned short
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author FloSoft
  */
@@ -1416,7 +1416,7 @@ void Window::Msg_ScrollChange(const unsigned int ctrl_id, const unsigned short p
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
@@ -1426,7 +1426,7 @@ void Window::Msg_ScrollShow(const unsigned int ctrl_id, const bool visible)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
@@ -1436,7 +1436,7 @@ void Window::Msg_OptionGroupChange(const unsigned int ctrl_id, const unsigned sh
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
@@ -1446,7 +1446,7 @@ void Window::Msg_Timer(const unsigned int ctrl_id)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
@@ -1460,7 +1460,7 @@ void Window::Msg_TableChooseItem(const unsigned ctrl_id, const unsigned short se
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
@@ -1470,7 +1470,7 @@ void Window::Msg_TableRightButton(const unsigned int ctrl_id, const unsigned sho
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
@@ -1480,17 +1480,17 @@ void Window::Msg_TableLeftButton(const unsigned int ctrl_id, const unsigned shor
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
-void Window::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr) 
+void Window::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr)
 {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
@@ -1500,7 +1500,7 @@ void Window::Msg_Group_ButtonClick(const unsigned int group_id, const unsigned i
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
@@ -1510,7 +1510,7 @@ void Window::Msg_Group_EditEnter(const unsigned int group_id, const unsigned int
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
@@ -1520,7 +1520,7 @@ void Window::Msg_Group_EditChange(const unsigned int group_id, const unsigned in
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
@@ -1530,7 +1530,7 @@ void Window::Msg_Group_TabChange(const unsigned int group_id, const unsigned int
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
@@ -1540,7 +1540,7 @@ void Window::Msg_Group_ListSelectItem(const unsigned int group_id, const unsigne
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
@@ -1550,7 +1550,7 @@ void Window::Msg_Group_ComboSelectItem(const unsigned int group_id, const unsign
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
@@ -1560,7 +1560,7 @@ void Window::Msg_Group_CheckboxChange(const unsigned int group_id, const unsigne
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
@@ -1570,7 +1570,7 @@ void Window::Msg_Group_ProgressChange(const unsigned int group_id, const unsigne
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
@@ -1580,7 +1580,7 @@ void Window::Msg_Group_ScrollShow(const unsigned int group_id, const unsigned in
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
@@ -1590,7 +1590,7 @@ void Window::Msg_Group_OptionGroupChange(const unsigned int group_id, const unsi
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
@@ -1600,7 +1600,7 @@ void Window::Msg_Group_Timer(const unsigned int group_id, const unsigned int ctr
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
@@ -1610,7 +1610,7 @@ void Window::Msg_Group_TableSelectItem(const unsigned int group_id, const unsign
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
@@ -1620,7 +1620,7 @@ void Window::Msg_Group_TableRightButton(const unsigned int group_id, const unsig
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */

@@ -1,4 +1,4 @@
-// $Id: iwSurrender.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: iwSurrender.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -25,13 +25,13 @@
 
 class iwSurrender : public IngameWindow
 {
-public:
+    public:
 
-	iwSurrender(void);
+        iwSurrender(void);
 
-private:
+    private:
 
-	void Msg_ButtonClick(const unsigned int ctrl_id);
+        void Msg_ButtonClick(const unsigned int ctrl_id);
 };
 
 #endif // !iwSURRENDER_H_INCLUDED

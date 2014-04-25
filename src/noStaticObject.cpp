@@ -1,4 +1,4 @@
-// $Id: noStaticObject.cpp 8197 2012-09-09 18:35:22Z marcus $
+// $Id: noStaticObject.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -34,9 +34,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -51,40 +51,40 @@
  *  @author FloSoft
  */
 noStaticObject::noStaticObject(unsigned short x, unsigned short y, unsigned short id, unsigned short file, unsigned char size, NodalObjectType type)
-	: noCoordBase(type,x,y), id(id), file(file), size(size)
+    : noCoordBase(type, x, y), id(id), file(file), size(size)
 {
-	// sind wir ein "Schloss" Objekt?
-	if(GetSize() == 2)
-	{
-		for(unsigned i = 0;i<3;++i)
-		{
-			MapCoord xa = gwg->GetXA(x,y,i);
-			MapCoord ya = gwg->GetYA(x,y,i);
-			
-			noBase *no = gwg->GetSpecObj<noBase>(xa,ya);
-			if(no)
-			{
-				no->Destroy();
-				delete no;
-			}
-			gwg->SetNO(new noExtension(this),xa,ya);
-		}
-	}
+    // sind wir ein "Schloss" Objekt?
+    if(GetSize() == 2)
+    {
+        for(unsigned i = 0; i < 3; ++i)
+        {
+            MapCoord xa = gwg->GetXA(x, y, i);
+            MapCoord ya = gwg->GetYA(x, y, i);
+
+            noBase* no = gwg->GetSpecObj<noBase>(xa, ya);
+            if(no)
+            {
+                no->Destroy();
+                delete no;
+            }
+            gwg->SetNO(new noExtension(this), xa, ya);
+        }
+    }
 }
 
-void noStaticObject::Serialize_noStaticObject(SerializedGameData * sgd) const
+void noStaticObject::Serialize_noStaticObject(SerializedGameData* sgd) const
 {
-	Serialize_noCoordBase(sgd);
+    Serialize_noCoordBase(sgd);
 
-	sgd->PushUnsignedShort(id);
-	sgd->PushUnsignedShort(file);
-	sgd->PushUnsignedChar(size);
+    sgd->PushUnsignedShort(id);
+    sgd->PushUnsignedShort(file);
+    sgd->PushUnsignedChar(size);
 }
 
-noStaticObject::noStaticObject(SerializedGameData * sgd, const unsigned obj_id) : noCoordBase(sgd,obj_id),
-id(sgd->PopUnsignedShort()),
-file(sgd->PopUnsignedShort()),
-size(sgd->PopUnsignedChar())
+noStaticObject::noStaticObject(SerializedGameData* sgd, const unsigned obj_id) : noCoordBase(sgd, obj_id),
+    id(sgd->PopUnsignedShort()),
+    file(sgd->PopUnsignedShort()),
+    size(sgd->PopUnsignedChar())
 {
 }
 
@@ -100,36 +100,38 @@ size(sgd->PopUnsignedChar())
  */
 void noStaticObject::Draw(int x, int y)
 {
-	glArchivItem_Bitmap *bitmap = NULL, *shadow = NULL;
+    glArchivItem_Bitmap* bitmap = NULL, *shadow = NULL;
 
-	if ((file == 0xFFFF) && (id == 561))
-	{
-		Loader::gateway_cache[GAMECLIENT.GetGlobalAnimation(4, 5, 4, 0) + 1].draw(x, y);
-		return;
-	} else	if (file == 0xFFFF)
-	{
-		bitmap = LOADER.GetMapImageN(id);
-		shadow = LOADER.GetMapImageN(id+100);
-	}
-	else if(file < 7)
-	{
-		static const std::string files[7] = {
-			"mis0bobs", "mis1bobs", "mis2bobs", "mis3bobs", "mis4bobs", "mis5bobs", "charburner_bobs"
-		};
-		bitmap = LOADER.GetImageN(files[file], id);
-		// Use only shadows where available
-		if(file < 6)
-			shadow = LOADER.GetImageN(files[file], id+1);
-	}
+    if ((file == 0xFFFF) && (id == 561))
+    {
+        Loader::gateway_cache[GAMECLIENT.GetGlobalAnimation(4, 5, 4, 0) + 1].draw(x, y);
+        return;
+    }
+    else  if (file == 0xFFFF)
+    {
+        bitmap = LOADER.GetMapImageN(id);
+        shadow = LOADER.GetMapImageN(id + 100);
+    }
+    else if(file < 7)
+    {
+        static const std::string files[7] =
+        {
+            "mis0bobs", "mis1bobs", "mis2bobs", "mis3bobs", "mis4bobs", "mis5bobs", "charburner_bobs"
+        };
+        bitmap = LOADER.GetImageN(files[file], id);
+        // Use only shadows where available
+        if(file < 6)
+            shadow = LOADER.GetImageN(files[file], id + 1);
+    }
 
-	assert(bitmap);
+    assert(bitmap);
 
-	// Bild zeichnen
-	bitmap->Draw(x, y, 0, 0, 0, 0, 0, 0);
+    // Bild zeichnen
+    bitmap->Draw(x, y, 0, 0, 0, 0, 0, 0);
 
-	// Schatten zeichnen
-	if(shadow)
-		shadow->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+    // Schatten zeichnen
+    if(shadow)
+        shadow->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -140,24 +142,24 @@ void noStaticObject::Draw(int x, int y)
  */
 void noStaticObject::Destroy_noStaticObject(void)
 {
-	// waren wir ein "Schloss" Objekt?
-	if(GetSize() == 2)
-	{
-	
-		for(unsigned i = 0;i<3;++i)
-		{
-			MapCoord xa = gwg->GetXA(x,y,i);
-			MapCoord ya = gwg->GetYA(x,y,i);
-			
-			noBase *no = gwg->GetSpecObj<noBase>(xa, ya);
-			if(no)
-			{
-				no->Destroy();
-				delete no;
-				gwg->SetNO(NULL, xa, ya);
-			}
-		}
-	}
+    // waren wir ein "Schloss" Objekt?
+    if(GetSize() == 2)
+    {
 
-	Destroy_noBase();
+        for(unsigned i = 0; i < 3; ++i)
+        {
+            MapCoord xa = gwg->GetXA(x, y, i);
+            MapCoord ya = gwg->GetYA(x, y, i);
+
+            noBase* no = gwg->GetSpecObj<noBase>(xa, ya);
+            if(no)
+            {
+                no->Destroy();
+                delete no;
+                gwg->SetNO(NULL, xa, ya);
+            }
+        }
+    }
+
+    Destroy_noBase();
 }

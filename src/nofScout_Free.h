@@ -1,4 +1,4 @@
-// $Id: nofScout_Free.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: nofScout_Free.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -25,44 +25,44 @@
 /// Frei herumlaufender Erkunder
 class nofScout_Free : public nofFlagWorker
 {
-	/// Nächster Punkt, wo der Späher hingehen soll
-	MapCoord next_x,next_y;
-	/// Weg, weit weit er noch laufen soll
-	unsigned rest_way;
+        /// Nächster Punkt, wo der Späher hingehen soll
+        MapCoord next_x, next_y;
+        /// Weg, weit weit er noch laufen soll
+        unsigned rest_way;
 
-private:
+    private:
 
-	void GoalReached();
-	void Walked();
-	void HandleDerivedEvent(const unsigned int id);
+        void GoalReached();
+        void Walked();
+        void HandleDerivedEvent(const unsigned int id);
 
-	/// Erkundet (quasi ein Umherirren)
-	void Scout();
+        /// Erkundet (quasi ein Umherirren)
+        void Scout();
 
-	/// Sucht einen neuen Zielpunkt und geht zu diesen
-	void GoToNewNode();
-	
-	/// Gibt den Sichtradius dieser Figur zurück (0, falls nicht-spähend)
-	virtual unsigned GetVisualRange() const;
+        /// Sucht einen neuen Zielpunkt und geht zu diesen
+        void GoToNewNode();
 
-public:
+        /// Gibt den Sichtradius dieser Figur zurück (0, falls nicht-spähend)
+        virtual unsigned GetVisualRange() const;
 
-	nofScout_Free(const MapCoord x, const MapCoord y,const unsigned char player,noRoadNode * goal);
-	nofScout_Free(SerializedGameData * sgd, const unsigned obj_id);
+    public:
 
-	/// Serialisierungsfunktionen
-	protected:	void Serialize_nofScout_Free(SerializedGameData * sgd) const;
-	public:		void Serialize(SerializedGameData *sgd) const { Serialize_nofScout_Free(sgd); }
+        nofScout_Free(const MapCoord x, const MapCoord y, const unsigned char player, noRoadNode* goal);
+        nofScout_Free(SerializedGameData* sgd, const unsigned obj_id);
 
-	GO_Type GetGOT() const { return GOT_NOF_SCOUT_FREE; }
+        /// Serialisierungsfunktionen
+    protected:  void Serialize_nofScout_Free(SerializedGameData* sgd) const;
+    public:     void Serialize(SerializedGameData* sgd) const { Serialize_nofScout_Free(sgd); }
 
-	void Draw(int x, int y);
+        GO_Type GetGOT() const { return GOT_NOF_SCOUT_FREE; }
 
-	/// Wird aufgerufen, wenn die Flagge abgerissen wurde
-	void LostWork();
+        void Draw(int x, int y);
 
-	///// Ist der Erkunder am erkunden (Sichtbereich um ihn herum)?
-	//bool IsScouting() const { return (state == STATE_SCOUT_SCOUTING || state == STATE_GOTOFLAG); }
+        /// Wird aufgerufen, wenn die Flagge abgerissen wurde
+        void LostWork();
+
+        ///// Ist der Erkunder am erkunden (Sichtbereich um ihn herum)?
+        //bool IsScouting() const { return (state == STATE_SCOUT_SCOUTING || state == STATE_GOTOFLAG); }
 };
 
 

@@ -1,4 +1,4 @@
-// $Id: ctrlPercent.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: ctrlPercent.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -25,21 +25,21 @@
 
 class ctrlPercent : public Window
 {
-public:
-	/// Konstruktor von @p ctrlPercent.
-	ctrlPercent(Window *parent, unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, unsigned int text_color, glArchivItem_Font *font, const unsigned short *percentage);
+    public:
+        /// Konstruktor von @p ctrlPercent.
+        ctrlPercent(Window* parent, unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, unsigned int text_color, glArchivItem_Font* font, const unsigned short* percentage);
 
-	void SetPercentage(const unsigned short *percentage) { this->percentage = percentage; }
+        void SetPercentage(const unsigned short* percentage) { this->percentage = percentage; }
 
-protected:
-	/// Zeichenmethode.
-	virtual bool Draw_(void);
+    protected:
+        /// Zeichenmethode.
+        virtual bool Draw_(void);
 
-private:
-	TextureColor tc;
-	unsigned int text_color;
-	glArchivItem_Font *font;
-	const unsigned short *percentage;
+    private:
+        TextureColor tc;
+        unsigned int text_color;
+        glArchivItem_Font* font;
+        const unsigned short* percentage;
 };
 
 #endif // !CTRLPERCENT_H_INCLUDED

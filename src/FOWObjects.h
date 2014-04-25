@@ -1,4 +1,4 @@
-// $Id: FOWObjects.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: FOWObjects.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -27,12 +27,12 @@ class SerializedGameData;
 /// Typen für die FOW Objekte
 enum FOW_Type
 {
-	FOW_NOTHING,
-	FOW_BUILDING,
-	FOW_BUILDINGSITE,
-	FOW_FLAG,
-	FOW_TREE,
-	FOW_GRANITE
+    FOW_NOTHING,
+    FOW_BUILDING,
+    FOW_BUILDINGSITE,
+    FOW_FLAG,
+    FOW_TREE,
+    FOW_GRANITE
 };
 
 /// Helligkeit der Objekte beim Zeichnen
@@ -47,27 +47,27 @@ unsigned CalcPlayerFOWDrawColor(const unsigned color);
 /// was ein bestimmter Spieler gesehen hat
 class FOWObject
 {
-public:
+    public:
 
-	virtual ~FOWObject();
-	/// An x,y zeichnen.
-	virtual void Draw(int x, int y) const = 0;
-	/// Serialisierungsfunktion.
-	virtual void Serialize(SerializedGameData *sgd) const = 0;
-	/// Gibt Typ zurück
-	virtual FOW_Type GetType() const = 0;
+        virtual ~FOWObject();
+        /// An x,y zeichnen.
+        virtual void Draw(int x, int y) const = 0;
+        /// Serialisierungsfunktion.
+        virtual void Serialize(SerializedGameData* sgd) const = 0;
+        /// Gibt Typ zurück
+        virtual FOW_Type GetType() const = 0;
 };
 
 /// Platzhalter-Objekt, falls dort kein Objekt existiert
 class fowNothing : public FOWObject
 {
-public:
+    public:
 
-	fowNothing();
-	fowNothing(SerializedGameData * sgd);
-	void Serialize(SerializedGameData *sgd) const;
-	void Draw(int x, int y) const;
-	FOW_Type GetType() const { return FOW_NOTHING; }
+        fowNothing();
+        fowNothing(SerializedGameData* sgd);
+        void Serialize(SerializedGameData* sgd) const;
+        void Draw(int x, int y) const;
+        FOW_Type GetType() const { return FOW_NOTHING; }
 } const nothing;
 
 
@@ -75,94 +75,94 @@ public:
 /// Gebäude im Nebel
 class fowBuilding : public FOWObject
 {
-private:
-	/// Typ des Gebäudes
-	const BuildingType type;
-	/// Volk des Gebäudes (muss extra gespeichert werden, da ja auch z.B. fremde Gebäude erobert werden können)
-	const Nation nation;
-public:
+    private:
+        /// Typ des Gebäudes
+        const BuildingType type;
+        /// Volk des Gebäudes (muss extra gespeichert werden, da ja auch z.B. fremde Gebäude erobert werden können)
+        const Nation nation;
+    public:
 
-	fowBuilding(const BuildingType type, const Nation nation);
-	fowBuilding(SerializedGameData * sgd);
-	void Serialize(SerializedGameData *sgd) const;
-	void Draw(int x, int y) const;
-	FOW_Type GetType() const { return FOW_BUILDING; }
+        fowBuilding(const BuildingType type, const Nation nation);
+        fowBuilding(SerializedGameData* sgd);
+        void Serialize(SerializedGameData* sgd) const;
+        void Draw(int x, int y) const;
+        FOW_Type GetType() const { return FOW_BUILDING; }
 };
 
 /// Baustelle
 class fowBuildingSite : public FOWObject
 {
-private:
-	/// Wird planiert?
-	const bool planing;
-	/// Typ des Gebäudes
-	const BuildingType type;
-	/// Volk des Gebäudes (muss extra gespeichert werden, da ja auch z.B. fremde Gebäude erobert werden können)
-	const Nation nation;
-	/// Gibt den Baufortschritt an, wie hoch das Gebäude schon gebaut ist, gemessen in 8 Stufen für jede verbaute Ware
-	const unsigned char build_progress;
-public:
+    private:
+        /// Wird planiert?
+        const bool planing;
+        /// Typ des Gebäudes
+        const BuildingType type;
+        /// Volk des Gebäudes (muss extra gespeichert werden, da ja auch z.B. fremde Gebäude erobert werden können)
+        const Nation nation;
+        /// Gibt den Baufortschritt an, wie hoch das Gebäude schon gebaut ist, gemessen in 8 Stufen für jede verbaute Ware
+        const unsigned char build_progress;
+    public:
 
-	fowBuildingSite(const bool planing, const BuildingType type, const Nation nation, const unsigned char build_progress);
-	fowBuildingSite(SerializedGameData * sgd);
-	void Serialize(SerializedGameData *sgd) const;
-	void Draw(int x, int y) const;
-	FOW_Type GetType() const { return FOW_BUILDINGSITE; }
+        fowBuildingSite(const bool planing, const BuildingType type, const Nation nation, const unsigned char build_progress);
+        fowBuildingSite(SerializedGameData* sgd);
+        void Serialize(SerializedGameData* sgd) const;
+        void Draw(int x, int y) const;
+        FOW_Type GetType() const { return FOW_BUILDINGSITE; }
 };
 
 
 /// Flagge
 class fowFlag : public FOWObject
 {
-private:
-	/// Besitzer
-	const unsigned char player;
-	/// Flaggenart
-	const FlagType flag_type;
+    private:
+        /// Besitzer
+        const unsigned char player;
+        /// Flaggenart
+        const FlagType flag_type;
 
-public:
+    public:
 
-	fowFlag(const unsigned char player, const FlagType flag_type);
-	fowFlag(SerializedGameData * sgd);
-	void Serialize(SerializedGameData *sgd) const;
-	void Draw(int x, int y) const;
-	FOW_Type GetType() const { return FOW_FLAG; }
+        fowFlag(const unsigned char player, const FlagType flag_type);
+        fowFlag(SerializedGameData* sgd);
+        void Serialize(SerializedGameData* sgd) const;
+        void Draw(int x, int y) const;
+        FOW_Type GetType() const { return FOW_FLAG; }
 };
 
 /// Baum
 class fowTree : public FOWObject
 {
-private:
+    private:
 
-	/// Typ des Baumes (also welche Baumart)
-	const unsigned char type;
-	/// Größe des Baumes (0-2, 3 = aufgewachsen!)
-	const unsigned char size;
+        /// Typ des Baumes (also welche Baumart)
+        const unsigned char type;
+        /// Größe des Baumes (0-2, 3 = aufgewachsen!)
+        const unsigned char size;
 
-public:
+    public:
 
-	fowTree(const unsigned char type, const unsigned char size);
-	fowTree(SerializedGameData * sgd);
-	void Serialize(SerializedGameData *sgd) const;
-	void Draw(int x, int y) const;
-	FOW_Type GetType() const { return FOW_TREE; }
+        fowTree(const unsigned char type, const unsigned char size);
+        fowTree(SerializedGameData* sgd);
+        void Serialize(SerializedGameData* sgd) const;
+        void Draw(int x, int y) const;
+        FOW_Type GetType() const { return FOW_TREE; }
 };
 
 /// Granitblock
 class fowGranite : public FOWObject
 {
-private:
+    private:
 
-	const GraniteType type; /// Welcher Typ ( gibt 2 )
-	const unsigned char state; /// Status, 0 - 5, von sehr wenig bis sehr viel
+        const GraniteType type; /// Welcher Typ ( gibt 2 )
+        const unsigned char state; /// Status, 0 - 5, von sehr wenig bis sehr viel
 
-public:
+    public:
 
-	fowGranite(const GraniteType type, const unsigned char state);
-	fowGranite(SerializedGameData * sgd);
-	void Serialize(SerializedGameData *sgd) const;
-	void Draw(int x, int y) const;
-	FOW_Type GetType() const { return FOW_GRANITE; }
+        fowGranite(const GraniteType type, const unsigned char state);
+        fowGranite(SerializedGameData* sgd);
+        void Serialize(SerializedGameData* sgd) const;
+        void Draw(int x, int y) const;
+        FOW_Type GetType() const { return FOW_GRANITE; }
 };
 
 

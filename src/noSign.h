@@ -1,4 +1,4 @@
-// $Id: noSign.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: noSign.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -26,33 +26,33 @@
 /// Stellt ein Ressourcen-Schild dar
 class noSign : public noDisappearingEnvObject
 {
-public:
-	/// Konstruktor von @p noSign.
-	noSign(const unsigned short x, const unsigned short y, const unsigned char type, const unsigned char quantity);
-	noSign(SerializedGameData * sgd, const unsigned obj_id);
+    public:
+        /// Konstruktor von @p noSign.
+        noSign(const unsigned short x, const unsigned short y, const unsigned char type, const unsigned char quantity);
+        noSign(SerializedGameData* sgd, const unsigned obj_id);
 
-	/// Aufräummethoden
-protected:	void Destroy_noSign();
-public:		void Destroy() { Destroy_noSign(); }
-	/// Serialisierungsfunktionen
-	protected:	void Serialize_noSign(SerializedGameData * sgd) const;
-	public:		void Serialize(SerializedGameData *sgd) const { Serialize_noSign(sgd); }
+        /// Aufräummethoden
+    protected:  void Destroy_noSign();
+    public:     void Destroy() { Destroy_noSign(); }
+        /// Serialisierungsfunktionen
+    protected:  void Serialize_noSign(SerializedGameData* sgd) const;
+    public:     void Serialize(SerializedGameData* sgd) const { Serialize_noSign(sgd); }
 
-	GO_Type GetGOT() const { return GOT_SIGN; }
+        GO_Type GetGOT() const { return GOT_SIGN; }
 
-	/// An x,y zeichnen.
-	void Draw(int x, int y);
+        /// An x,y zeichnen.
+        void Draw(int x, int y);
 
-	void HandleEvent(const unsigned int id);
+        void HandleEvent(const unsigned int id);
 
-	unsigned char GetSignType() const { return type; }
+        unsigned char GetSignType() const { return type; }
 
-private:
+    private:
 
-	/// Typ der Ressource (0 = Erz, 1 = Gold, 2 = Kohle, 3 = Granit, 4 = Wasser, 5 = nix)
-	const unsigned char type;
-	/// Häufigkeit der Ressource
-	const unsigned char quantity;
+        /// Typ der Ressource (0 = Erz, 1 = Gold, 2 = Kohle, 3 = Granit, 4 = Wasser, 5 = nix)
+        const unsigned char type;
+        /// Häufigkeit der Ressource
+        const unsigned char quantity;
 };
 
 #endif // !NOSIGN_H_INCLUDED

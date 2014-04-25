@@ -1,4 +1,4 @@
-// $Id: iwInventory.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: iwInventory.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -26,9 +26,9 @@
 
 class iwInventory : public iwWares
 {
-public:
-	/// Konstruktor von @p iwInventory.
-	iwInventory();
+    public:
+        /// Konstruktor von @p iwInventory.
+        iwInventory();
 };
 
 #endif // !iwINVENTORY_H_INCLUDED

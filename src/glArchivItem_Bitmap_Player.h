@@ -1,4 +1,4 @@
-// $Id: glArchivItem_Bitmap_Player.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: glArchivItem_Bitmap_Player.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -24,17 +24,17 @@
 /// Klasse für GL-Player-Bitmaps.
 class glArchivItem_Bitmap_Player : public libsiedler2::baseArchivItem_Bitmap_Player, public glArchivItem_Bitmap
 {
-public:
-	/// Konstruktor von @p glArchivItem_Bitmap_Player.
-	glArchivItem_Bitmap_Player(void) : baseArchivItem_Bitmap(), baseArchivItem_Bitmap_Player(), glArchivItem_Bitmap() {}
+    public:
+        /// Konstruktor von @p glArchivItem_Bitmap_Player.
+        glArchivItem_Bitmap_Player(void) : baseArchivItem_Bitmap(), baseArchivItem_Bitmap_Player(), glArchivItem_Bitmap() {}
 
-	/// Kopierkonstruktor von @p ArchivItem_Bitmap_Player.
-	glArchivItem_Bitmap_Player(const glArchivItem_Bitmap_Player *item) : baseArchivItem_Bitmap(item), baseArchivItem_Bitmap_Player(item), glArchivItem_Bitmap(item) {}
+        /// Kopierkonstruktor von @p ArchivItem_Bitmap_Player.
+        glArchivItem_Bitmap_Player(const glArchivItem_Bitmap_Player* item) : baseArchivItem_Bitmap(item), baseArchivItem_Bitmap_Player(item), glArchivItem_Bitmap(item) {}
 
-	void Draw(short dst_x, short dst_y, short dst_w , short dst_h , short src_x , short src_y , short src_w , short src_h , const unsigned int color , const unsigned int player_color );
+        void Draw(short dst_x, short dst_y, short dst_w , short dst_h , short src_x , short src_y , short src_w , short src_h , const unsigned int color , const unsigned int player_color );
 
-protected:
-	void GenerateTexture();
+    protected:
+        void GenerateTexture();
 };
 
 #endif // !GLARCHIVITEM_BITMAP_PLAYER_H_INCLUDED

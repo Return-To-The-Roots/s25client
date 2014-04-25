@@ -1,4 +1,4 @@
-// $Id: noDisappearingMapEnvObject.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: noDisappearingMapEnvObject.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -26,29 +26,29 @@
 /// Verschwindendes Umwelt-Objekt ohne weiter Bedeutung (z.b. Baumstamm etc.)
 class noDisappearingMapEnvObject : public noDisappearingEnvObject
 {
-public:
-	/// Konstruktor von @p noSign.
-	noDisappearingMapEnvObject(const unsigned short x, const unsigned short y, const unsigned short map_id);
-	noDisappearingMapEnvObject(SerializedGameData * sgd, const unsigned obj_id);
+    public:
+        /// Konstruktor von @p noSign.
+        noDisappearingMapEnvObject(const unsigned short x, const unsigned short y, const unsigned short map_id);
+        noDisappearingMapEnvObject(SerializedGameData* sgd, const unsigned obj_id);
 
-	/// Aufräummethoden
-protected:	void Destroy_noDisappearingMapEnvObject();
-public:		void Destroy() { Destroy_noDisappearingMapEnvObject(); }
-	/// Serialisierungsfunktionen
-	protected:	void Serialize_noDisappearingMapEnvObject(SerializedGameData * sgd) const;
-	public:		void Serialize(SerializedGameData *sgd) const { Serialize_noDisappearingMapEnvObject(sgd); }
+        /// Aufräummethoden
+    protected:  void Destroy_noDisappearingMapEnvObject();
+    public:     void Destroy() { Destroy_noDisappearingMapEnvObject(); }
+        /// Serialisierungsfunktionen
+    protected:  void Serialize_noDisappearingMapEnvObject(SerializedGameData* sgd) const;
+    public:     void Serialize(SerializedGameData* sgd) const { Serialize_noDisappearingMapEnvObject(sgd); }
 
-	GO_Type GetGOT() const { return GOT_DISAPPEARINGMAPENVOBJECT; }
+        GO_Type GetGOT() const { return GOT_DISAPPEARINGMAPENVOBJECT; }
 
-	/// An x,y zeichnen.
-	void Draw(int x, int y);
+        /// An x,y zeichnen.
+        void Draw(int x, int y);
 
-	void HandleEvent(const unsigned int id);
+        void HandleEvent(const unsigned int id);
 
-private:
+    private:
 
-	/// ID in der mapsx.lst
-	const unsigned short map_id;
+        /// ID in der mapsx.lst
+        const unsigned short map_id;
 };
 
 

@@ -1,4 +1,4 @@
-// $Id: noCharburnerPile.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: noCharburnerPile.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -32,9 +32,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
 
@@ -42,182 +42,182 @@
 const unsigned SMOLDERING_LENGTH = 3000;
 
 /// Work steps for the construction of the wood pile and the cover
-const unsigned short CONSTRUCTION_WORKING_STEPS[2] = {6,6};
+const unsigned short CONSTRUCTION_WORKING_STEPS[2] = {6, 6};
 /// Work steps for one graphical step during the remove of the cover
 const unsigned short REMOVECOVER_WORK_STEPS = 1;
 /// Work steps for one graphical step during the "harvest"
 const unsigned short HARVEST_WORK_STEPS = 1;
 
-noCharburnerPile::noCharburnerPile(const unsigned short x, const unsigned short y) : noCoordBase(NOP_CHARBURNERPILE,x,y),
-state(STATE_WOOD), step(0), sub_step(1), event(NULL)
+noCharburnerPile::noCharburnerPile(const unsigned short x, const unsigned short y) : noCoordBase(NOP_CHARBURNERPILE, x, y),
+    state(STATE_WOOD), step(0), sub_step(1), event(NULL)
 {
 }
 
 noCharburnerPile::~noCharburnerPile()
 {
-	
+
 }
 
 void noCharburnerPile::Destroy_noCharburnerPile()
 {
-	em->RemoveEvent(event);
+    em->RemoveEvent(event);
 
-	// Bauplätze drumrum neu berechnen
-	gwg->RecalcBQAroundPointBig(x,y);
+    // Bauplätze drumrum neu berechnen
+    gwg->RecalcBQAroundPointBig(x, y);
 
-	Destroy_noCoordBase();
+    Destroy_noCoordBase();
 }
 
-void noCharburnerPile::Serialize_noCharburnerPile(SerializedGameData * sgd) const
+void noCharburnerPile::Serialize_noCharburnerPile(SerializedGameData* sgd) const
 {
-	Serialize_noCoordBase(sgd);
+    Serialize_noCoordBase(sgd);
 
-	sgd->PushUnsignedChar(static_cast<unsigned char>(state));
-	sgd->PushUnsignedShort(step);
-	sgd->PushUnsignedShort(sub_step);
-	sgd->PushObject(event,true);
+    sgd->PushUnsignedChar(static_cast<unsigned char>(state));
+    sgd->PushUnsignedShort(step);
+    sgd->PushUnsignedShort(sub_step);
+    sgd->PushObject(event, true);
 }
 
-noCharburnerPile::noCharburnerPile(SerializedGameData * sgd, const unsigned obj_id) : noCoordBase(sgd,obj_id),
-state(State(sgd->PopUnsignedChar())),
-step(sgd->PopUnsignedShort()),
-sub_step(sgd->PopUnsignedShort()),
-event(sgd->PopObject<EventManager::Event>(GOT_EVENT))
+noCharburnerPile::noCharburnerPile(SerializedGameData* sgd, const unsigned obj_id) : noCoordBase(sgd, obj_id),
+    state(State(sgd->PopUnsignedChar())),
+    step(sgd->PopUnsignedShort()),
+    sub_step(sgd->PopUnsignedShort()),
+    event(sgd->PopObject<EventManager::Event>(GOT_EVENT))
 {
 }
 
-void noCharburnerPile::Draw( int x,	int y)
+void noCharburnerPile::Draw( int x, int y)
 {
-	switch(state)
-	{
-	case STATE_WOOD:
-		{
-			// Draw sand on which the wood stack is constructed
-			LOADER.GetImageN("charburner_bobs",25)->Draw(x,y);
+    switch(state)
+    {
+        case STATE_WOOD:
+        {
+            // Draw sand on which the wood stack is constructed
+            LOADER.GetImageN("charburner_bobs", 25)->Draw(x, y);
 
-			glArchivItem_Bitmap * image;
-			if(step == 0)
-				image = LOADER.GetImageN("charburner_bobs",26);
-			else 
-			{
-				image = LOADER.GetImageN("charburner_bobs",28);
+            glArchivItem_Bitmap* image;
+            if(step == 0)
+                image = LOADER.GetImageN("charburner_bobs", 26);
+            else
+            {
+                image = LOADER.GetImageN("charburner_bobs", 28);
 
-				// Draw wood pile beneath the cover
-				 LOADER.GetImageN("charburner_bobs",26)->Draw(x,y);
-			}
+                // Draw wood pile beneath the cover
+                LOADER.GetImageN("charburner_bobs", 26)->Draw(x, y);
+            }
 
-			unsigned short progress = sub_step*image->getHeight() / CONSTRUCTION_WORKING_STEPS[step];
-			unsigned short height = image->getHeight() - progress;
-			if(progress != 0)
-				image->Draw(x, y+height, 0, 0, 0, height, 0, progress);
-		} return;
-	case STATE_SMOLDERING:
-		{
-			LOADER.GetImageN("charburner_bobs",27+GameClient::inst().
-				GetGlobalAnimation(2,10,1,obj_id+this->x*10+this->y*10))->Draw(x,y);
-				
-			// Dann Qualm zeichnen 
-			LOADER.GetMapImageN(692+1*8+GAMECLIENT.GetGlobalAnimation(8,5,2,(this->x+this->y)*100))
-					->Draw(x+21,y-11,0,0,0,0,0,0,0x99EEEEEE);
-			LOADER.GetMapImageN(692+2*8+GAMECLIENT.GetGlobalAnimation(8,5,2,(this->x+this->y)*100))
-					->Draw(x-2,y-06,0,0,0,0,0,0,0x99EEEEEE);
-			LOADER.GetMapImageN(692+1*8+GAMECLIENT.GetGlobalAnimation(8,5,2,(this->x+this->y)*100))
-					->Draw(x-25,y-11,0,0,0,0,0,0,0x99EEEEEE);
-			LOADER.GetMapImageN(692+3*8+GAMECLIENT.GetGlobalAnimation(8,5,2,(this->x+this->y)*100))
-					->Draw(x-2,y-35,0,0,0,0,0,0,0x99EEEEEE);
-		} return;
-	case STATE_REMOVECOVER:
-		{
-			LOADER.GetImageN("charburner_bobs",28+step)->Draw(x,y);
-		} return;
-	case STATE_HARVEST:
-		{
-			LOADER.GetImageN("charburner_bobs",34+step)->Draw(x,y);
+            unsigned short progress = sub_step * image->getHeight() / CONSTRUCTION_WORKING_STEPS[step];
+            unsigned short height = image->getHeight() - progress;
+            if(progress != 0)
+                image->Draw(x, y + height, 0, 0, 0, height, 0, progress);
+        } return;
+        case STATE_SMOLDERING:
+        {
+            LOADER.GetImageN("charburner_bobs", 27 + GameClient::inst().
+                             GetGlobalAnimation(2, 10, 1, obj_id + this->x * 10 + this->y * 10))->Draw(x, y);
 
-		} return;
-	default: return;
-	}
+            // Dann Qualm zeichnen
+            LOADER.GetMapImageN(692 + 1 * 8 + GAMECLIENT.GetGlobalAnimation(8, 5, 2, (this->x + this->y) * 100))
+            ->Draw(x + 21, y - 11, 0, 0, 0, 0, 0, 0, 0x99EEEEEE);
+            LOADER.GetMapImageN(692 + 2 * 8 + GAMECLIENT.GetGlobalAnimation(8, 5, 2, (this->x + this->y) * 100))
+            ->Draw(x - 2, y - 06, 0, 0, 0, 0, 0, 0, 0x99EEEEEE);
+            LOADER.GetMapImageN(692 + 1 * 8 + GAMECLIENT.GetGlobalAnimation(8, 5, 2, (this->x + this->y) * 100))
+            ->Draw(x - 25, y - 11, 0, 0, 0, 0, 0, 0, 0x99EEEEEE);
+            LOADER.GetMapImageN(692 + 3 * 8 + GAMECLIENT.GetGlobalAnimation(8, 5, 2, (this->x + this->y) * 100))
+            ->Draw(x - 2, y - 35, 0, 0, 0, 0, 0, 0, 0x99EEEEEE);
+        } return;
+        case STATE_REMOVECOVER:
+        {
+            LOADER.GetImageN("charburner_bobs", 28 + step)->Draw(x, y);
+        } return;
+        case STATE_HARVEST:
+        {
+            LOADER.GetImageN("charburner_bobs", 34 + step)->Draw(x, y);
+
+        } return;
+        default: return;
+    }
 }
 
 void noCharburnerPile::HandleEvent(const unsigned int id)
 {
-	// Smoldering is over 
-	// Pile is ready for the remove of the cover
-	state = STATE_REMOVECOVER;
-	event = NULL;
+    // Smoldering is over
+    // Pile is ready for the remove of the cover
+    state = STATE_REMOVECOVER;
+    event = NULL;
 }
 
 
 /// Charburner has worked on it --> Goto next step
 void noCharburnerPile::NextStep()
 {
-	switch(state)
-	{
-	default: return;
-	case STATE_WOOD:
-		{
-			++sub_step;
-			if(sub_step == CONSTRUCTION_WORKING_STEPS[step])
-			{
-				++step;
-				sub_step = 0;
+    switch(state)
+    {
+        default: return;
+        case STATE_WOOD:
+        {
+            ++sub_step;
+            if(sub_step == CONSTRUCTION_WORKING_STEPS[step])
+            {
+                ++step;
+                sub_step = 0;
 
-				// Reached new state?
-				if(step == 2)
-				{
-					step = 0;
-					state = STATE_SMOLDERING;
-					event = em->AddEvent(this,SMOLDERING_LENGTH,0);
-				}
-			}
+                // Reached new state?
+                if(step == 2)
+                {
+                    step = 0;
+                    state = STATE_SMOLDERING;
+                    event = em->AddEvent(this, SMOLDERING_LENGTH, 0);
+                }
+            }
 
-		} return;
-	case STATE_REMOVECOVER:
-		{
-			++sub_step;
-			if(sub_step == REMOVECOVER_WORK_STEPS)
-			{
-				++step;
-				sub_step = 0;
+        } return;
+        case STATE_REMOVECOVER:
+        {
+            ++sub_step;
+            if(sub_step == REMOVECOVER_WORK_STEPS)
+            {
+                ++step;
+                sub_step = 0;
 
-				// Reached new state?
-				if(step == 6)
-				{
-					state = STATE_HARVEST;
-					step = 0;
-				}
-			}
+                // Reached new state?
+                if(step == 6)
+                {
+                    state = STATE_HARVEST;
+                    step = 0;
+                }
+            }
 
-		} return;
-	case STATE_HARVEST:
-		{
-			++sub_step;
-			if(sub_step == HARVEST_WORK_STEPS)
-			{
-				++step;
-				sub_step = 0;
+        } return;
+        case STATE_HARVEST:
+        {
+            ++sub_step;
+            if(sub_step == HARVEST_WORK_STEPS)
+            {
+                ++step;
+                sub_step = 0;
 
-				// Reached new state?
-				if(step == 6)
-				{
-					// Add an empty pile as environmental object
-					gwg->SetNO(new noEnvObject(x,y,40,6),x,y);
-					em->AddToKillList(this);
+                // Reached new state?
+                if(step == 6)
+                {
+                    // Add an empty pile as environmental object
+                    gwg->SetNO(new noEnvObject(x, y, 40, 6), x, y);
+                    em->AddToKillList(this);
 
-					// BQ drumrum neu berechnen
-					gwg->RecalcBQAroundPoint(x,y);
-				}
-			}
-		} return;
+                    // BQ drumrum neu berechnen
+                    gwg->RecalcBQAroundPoint(x, y);
+                }
+            }
+        } return;
 
-	}
+    }
 }
 
 
 noCharburnerPile::WareType noCharburnerPile::GetNeededWareType() const
 {
-	if(sub_step % 2 == 0)
-		return WT_WOOD;
-	else 
-		return WT_GRAIN;
+    if(sub_step % 2 == 0)
+        return WT_WOOD;
+    else
+        return WT_GRAIN;
 }

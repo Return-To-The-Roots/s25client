@@ -1,4 +1,4 @@
-// $Id: noEnvObject.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: noEnvObject.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -28,9 +28,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -43,17 +43,17 @@
  *  @author FloSoft
  */
 noEnvObject::noEnvObject(unsigned short x, unsigned short y, unsigned short id, unsigned short file)
-	: noStaticObject(x, y, id, file, 0, NOP_ENVIRONMENT)
+    : noStaticObject(x, y, id, file, 0, NOP_ENVIRONMENT)
 {
 }
 
-void noEnvObject::Serialize_noEnvObject(SerializedGameData * sgd) const
+void noEnvObject::Serialize_noEnvObject(SerializedGameData* sgd) const
 {
-	Serialize_noStaticObject(sgd);
+    Serialize_noStaticObject(sgd);
 
 
 }
 
-noEnvObject::noEnvObject(SerializedGameData * sgd, const unsigned obj_id) : noStaticObject(sgd,obj_id)
+noEnvObject::noEnvObject(SerializedGameData* sgd, const unsigned obj_id) : noStaticObject(sgd, obj_id)
 {
 }

@@ -1,4 +1,4 @@
-// $Id: ClientInterface.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: ClientInterface.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -25,9 +25,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
 void ClientInterface::CI_NextConnectState(const ConnectState cs) {}
@@ -36,7 +36,7 @@ void ClientInterface::CI_Error(const ClientError ce) {}
 void ClientInterface::CI_NewPlayer(const unsigned player_id) {}
 void ClientInterface::CI_PlayerLeft(const unsigned player_id) {}
 
-void ClientInterface::CI_GameStarted(GameWorldViewer *gwv) {}
+void ClientInterface::CI_GameStarted(GameWorldViewer* gwv) {}
 
 void ClientInterface::CI_PSChanged(const unsigned player_id, const PlayerState ps) {}
 void ClientInterface::CI_NationChanged(const unsigned player_id, const Nation nation) {}

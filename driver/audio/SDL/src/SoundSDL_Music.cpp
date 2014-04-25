@@ -1,4 +1,4 @@
-// $Id: SoundSDL_Music.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: SoundSDL_Music.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -26,15 +26,15 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
-SoundSDL_Music *SoundSDL_Music::mthis = NULL;
+SoundSDL_Music* SoundSDL_Music::mthis = NULL;
 
 ///////////////////////////////////////////////////////////////////////////////
-/** 
+/**
  *  Konstruktor von @p SoundSDL_Music.
  *
  *  @author FloSoft
@@ -44,18 +44,18 @@ SoundSDL_Music::SoundSDL_Music() : music(NULL)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/** 
+/**
  *  Destruktor von @p Sound.
  *
  *  @author FloSoft
  */
 SoundSDL_Music::~SoundSDL_Music(void)
 {
-	Mix_FreeMusic(music);
+    Mix_FreeMusic(music);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/** 
+/**
  *  Abspielen Starten.
  *
  *  @param[in] loop  @p true für ununterbrochenes Abspielen
@@ -66,35 +66,35 @@ SoundSDL_Music::~SoundSDL_Music(void)
  */
 //int SoundSDL_Music::Play(unsigned char volume, const unsigned char volume, const bool loop)
 //{
-//	// ggf alten anhalten
-//	Stop(-1);
+//  // ggf alten anhalten
+//  Stop(-1);
 //
-//	if(Mix_PlayMusic(music, (loop ? -1 : 0)) == -1)
-//	{
-//		fprintf(stderr, "%s\n", Mix_GetError());
-//		return -1;
-//	}
+//  if(Mix_PlayMusic(music, (loop ? -1 : 0)) == -1)
+//  {
+//      fprintf(stderr, "%s\n", Mix_GetError());
+//      return -1;
+//  }
 //
-//	mthis = this;
+//  mthis = this;
 //
-//	// Volume nur von 0-128
-//	Mix_VolumeMusic(volume / 2);
-//	Mix_HookMusicFinished(MusicFinished);
+//  // Volume nur von 0-128
+//  Mix_VolumeMusic(volume / 2);
+//  Mix_HookMusicFinished(MusicFinished);
 //
-//	return 0;
+//  return 0;
 //}
 //
 
 
 ///////////////////////////////////////////////////////////////////////////////
-/** 
+/**
  *  Abspielen Stoppen.
- * 
+ *
  *  @param[in] channel Ignored
  *
  *  @author FloSoft
  */
 //void SoundSDL_Music::Stop(int channel)
 //{
-//	Mix_HaltMusic();
+//  Mix_HaltMusic();
 //}

@@ -1,4 +1,4 @@
-// $Id: main.h 6458 2010-05-31 11:38:51Z FloSoft $
+// $Id: main.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005-2009 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -24,17 +24,17 @@
 ///////////////////////////////////////////////////////////////////////////////
 // System-Header
 #ifdef _WIN32
-#	define _CRTDBG_MAP_ALLOC
-#	include <windows.h>
-#	include <io.h>
+#   define _CRTDBG_MAP_ALLOC
+#   include <windows.h>
+#   include <io.h>
 #else
-#	include <unistd.h>
-#	include <limits.h>
-#	include <dlfcn.h>
+#   include <unistd.h>
+#   include <limits.h>
+#   include <dlfcn.h>
 #endif // !_WIN32
 
 #if defined _WIN32 && defined _DEBUG
-#	include <crtdbg.h>
+#   include <crtdbg.h>
 #endif // _WIN32 && _DEBUG
 
 #include <stdio.h>

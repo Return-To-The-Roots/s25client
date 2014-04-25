@@ -1,4 +1,4 @@
-// $Id: ctrlText.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: ctrlText.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -25,13 +25,13 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
-ctrlBaseText::ctrlBaseText(const std::string& text, const unsigned color, glArchivItem_Font *font) :
-	text(text), color(color), font(font)
+ctrlBaseText::ctrlBaseText(const std::string& text, const unsigned color, glArchivItem_Font* font) :
+    text(text), color(color), font(font)
 {
 }
 
@@ -41,28 +41,28 @@ ctrlBaseText::ctrlBaseText(const std::string& text, const unsigned color, glArch
  *
  *  @author OLiver
  */
-ctrlText::ctrlText(Window *parent, 
-				   unsigned int id, 
-				   unsigned short x, 
-				   unsigned short y, 
-				   const std::string& text, 
-				   unsigned int color, 
-				   unsigned int format, 
-				   glArchivItem_Font *font)
-	: Window(x, y, id, parent), ctrlBaseText(text,color,font), format(format)
+ctrlText::ctrlText(Window* parent,
+                   unsigned int id,
+                   unsigned short x,
+                   unsigned short y,
+                   const std::string& text,
+                   unsigned int color,
+                   unsigned int format,
+                   glArchivItem_Font* font)
+    : Window(x, y, id, parent), ctrlBaseText(text, color, font), format(format)
 {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
  *  zeichnet das Fenster.
- * 
+ *
  *  @author OLiver
  */
 bool ctrlText::Draw_(void)
 {
-	if(text.length())
-		font->Draw(GetX(), GetY(), text.c_str(), format, color);
+    if(text.length())
+        font->Draw(GetX(), GetY(), text.c_str(), format, color);
 
-	return true;
+    return true;
 }

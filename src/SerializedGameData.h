@@ -1,4 +1,4 @@
-// $Id: SerializedGameData.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: SerializedGameData.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -38,152 +38,152 @@ class GameWorld;
 /// Kümmert sich um das Serialisieren der GameDaten fürs Speichern und Resynchronisieren
 class SerializedGameData : public Serializer
 {
-	/// Objektreferenzen
-	union
-	{
-		const GameObject ** objects_write;
-		GameObject ** objects_read;
-	};
-	/// Voraussichtliche Gesamtanzahl an Objekten (nur beim Laden)
-	unsigned total_objects_count;
-	/// Aktuelle Anzahl an Objekten
-	unsigned objects_count;
+        /// Objektreferenzen
+        union
+        {
+            const GameObject** objects_write;
+            GameObject** objects_read;
+        };
+        /// Voraussichtliche Gesamtanzahl an Objekten (nur beim Laden)
+        unsigned total_objects_count;
+        /// Aktuelle Anzahl an Objekten
+        unsigned objects_count;
 
-	EventManager *em;
+        EventManager* em;
 
-private:
+    private:
 
-	/// Objekt(referenzen) lesen
-	GameObject * PopObject_(GO_Type got); 
+        /// Objekt(referenzen) lesen
+        GameObject* PopObject_(GO_Type got);
 
-public:
+    public:
 
-	SerializedGameData();
+        SerializedGameData();
 
-	/// Nimmt das gesamte Spiel auf und speichert es im Buffer
-	void MakeSnapshot(GameWorld *const gw, EventManager *const em);
-	/// Liest den Buffer aus einer Datei
-	void ReadFromFile(BinaryFile& file);
+        /// Nimmt das gesamte Spiel auf und speichert es im Buffer
+        void MakeSnapshot(GameWorld* const gw, EventManager* const em);
+        /// Liest den Buffer aus einer Datei
+        void ReadFromFile(BinaryFile& file);
 
-	void PrepareDeserialization(EventManager * const em) { this->em = em; }
+        void PrepareDeserialization(EventManager* const em) { this->em = em; }
 
-	/// Erzeugt GameObject
-	GameObject * Create_GameObject(const GO_Type got, const unsigned obj_id);
-	/// Erzeugt FOWObject
-	FOWObject * Create_FOWObject(const FOW_Type fowtype);
+        /// Erzeugt GameObject
+        GameObject* Create_GameObject(const GO_Type got, const unsigned obj_id);
+        /// Erzeugt FOWObject
+        FOWObject* Create_FOWObject(const FOW_Type fowtype);
 
-	/// Kopiermethoden
+        /// Kopiermethoden
 
-	/// Objekt(referenzen) kopieren
-	void PushObject(const GameObject * go,const bool known); 
+        /// Objekt(referenzen) kopieren
+        void PushObject(const GameObject* go, const bool known);
 
-	/// Kopiert eine Liste von GameObjects
-	template <typename T>
-	void PushObjectList(const list<T*>& gos,const bool known)
-	{
-		// Anzahl
-		PushUnsignedInt(gos.size());
-		// einzelne Objekte
-		for(typename list<T*>::const_iterator it = gos.begin(); it.valid(); ++it)
-			PushObject(*it,known);
-	}
+        /// Kopiert eine Liste von GameObjects
+        template <typename T>
+        void PushObjectList(const list<T*>& gos, const bool known)
+        {
+            // Anzahl
+            PushUnsignedInt(gos.size());
+            // einzelne Objekte
+            for(typename list<T*>::const_iterator it = gos.begin(); it.valid(); ++it)
+                PushObject(*it, known);
+        }
 
-	/// Kopiert eine Liste von GameObjects
-	template <typename T>
-	void PushObjectList(const std::list<T*>& gos,const bool known)
-	{
-		// Anzahl
-		PushUnsignedInt(gos.size());
-		// einzelne Objekte
-		for(typename std::list<T*>::const_iterator it = gos.begin(); it!=gos.end(); ++it)
-			PushObject(*it,known);
-	}
+        /// Kopiert eine Liste von GameObjects
+        template <typename T>
+        void PushObjectList(const std::list<T*>& gos, const bool known)
+        {
+            // Anzahl
+            PushUnsignedInt(gos.size());
+            // einzelne Objekte
+            for(typename std::list<T*>::const_iterator it = gos.begin(); it != gos.end(); ++it)
+                PushObject(*it, known);
+        }
 
-	/// Kopiert eine Liste von GameObjects
-	template <typename T>
-	void PushObjectVector(const std::vector<T*>& gos,const bool known)
-	{
-		// Anzahl
-		PushUnsignedInt(gos.size());
-		// einzelne Objekte
-		for(unsigned i = 0;i<gos.size();++i)
-			PushObject(gos[i],known);
-	}
+        /// Kopiert eine Liste von GameObjects
+        template <typename T>
+        void PushObjectVector(const std::vector<T*>& gos, const bool known)
+        {
+            // Anzahl
+            PushUnsignedInt(gos.size());
+            // einzelne Objekte
+            for(unsigned i = 0; i < gos.size(); ++i)
+                PushObject(gos[i], known);
+        }
 
-	/// FoW-Objekt
-	void PushFOWObject(const FOWObject * fowobj);
-	
-		/// Point of map coords
-	void PushMapPoint(const Point<MapCoord> p)
-	{
-		PushUnsignedShort(p.x);
-		PushUnsignedShort(p.y);
-	}
-	
-	/// Point of map coords
-	Point<MapCoord> PopMapPoint()
-	{
-		Point<MapCoord> p;
-		p.x = PopUnsignedShort();
-		p.y = PopUnsignedShort();
-		return p;
-	}
+        /// FoW-Objekt
+        void PushFOWObject(const FOWObject* fowobj);
 
-	
+        /// Point of map coords
+        void PushMapPoint(const Point<MapCoord> p)
+        {
+            PushUnsignedShort(p.x);
+            PushUnsignedShort(p.y);
+        }
+
+        /// Point of map coords
+        Point<MapCoord> PopMapPoint()
+        {
+            Point<MapCoord> p;
+            p.x = PopUnsignedShort();
+            p.y = PopUnsignedShort();
+            return p;
+        }
 
 
 
-	// Lesemethoden
-
-	/// Objekt(referenzen) lesen
-	template <typename T>
-	T * PopObject(GO_Type got) { return static_cast<T*>(PopObject_(got)); } 
-
-	/// FoW-Objekt
-	FOWObject * PopFOWObject();
-	
-	/// Liest eine Liste von GameObjects
-	template <typename T>
-	void PopObjectList(list<T*>& gos,GO_Type got)
-	{
-		// Anzahl
-		unsigned size = PopUnsignedInt();
-		// einzelne Objekte
-		for(unsigned i = 0;i<size;++i)
-			gos.push_back(PopObject<T>(got));
-	}
-
-	/// Liest eine Liste von GameObjects
-	template <typename T>
-	void PopObjectList(std::list<T*>& gos,GO_Type got)
-	{
-		// Anzahl
-		unsigned size = PopUnsignedInt();
-		// einzelne Objekte
-		for(unsigned i = 0;i<size;++i)
-			gos.push_back(PopObject<T>(got));
-	}
-
-	/// Liest einen Vektor von GameObjects
-	template <typename T>
-	void PopObjectVector(std::vector<T*>& gos,GO_Type got)
-	{
-		// Anzahl
-		unsigned size = PopUnsignedInt();
-		gos.resize(size);
-		// einzelne Objekte
-		for(unsigned i = 0;i<size;++i)
-			gos[i] = PopObject<T>(got);
-	}
 
 
-	/// Fügt ein gelesenes Objekt zur globalen Objektliste dazu
-	void AddObject(GameObject * go);
+        // Lesemethoden
+
+        /// Objekt(referenzen) lesen
+        template <typename T>
+        T* PopObject(GO_Type got) { return static_cast<T*>(PopObject_(got)); }
+
+        /// FoW-Objekt
+        FOWObject* PopFOWObject();
+
+        /// Liest eine Liste von GameObjects
+        template <typename T>
+        void PopObjectList(list<T*>& gos, GO_Type got)
+        {
+            // Anzahl
+            unsigned size = PopUnsignedInt();
+            // einzelne Objekte
+            for(unsigned i = 0; i < size; ++i)
+                gos.push_back(PopObject<T>(got));
+        }
+
+        /// Liest eine Liste von GameObjects
+        template <typename T>
+        void PopObjectList(std::list<T*>& gos, GO_Type got)
+        {
+            // Anzahl
+            unsigned size = PopUnsignedInt();
+            // einzelne Objekte
+            for(unsigned i = 0; i < size; ++i)
+                gos.push_back(PopObject<T>(got));
+        }
+
+        /// Liest einen Vektor von GameObjects
+        template <typename T>
+        void PopObjectVector(std::vector<T*>& gos, GO_Type got)
+        {
+            // Anzahl
+            unsigned size = PopUnsignedInt();
+            gos.resize(size);
+            // einzelne Objekte
+            for(unsigned i = 0; i < size; ++i)
+                gos[i] = PopObject<T>(got);
+        }
 
 
-	/// Sucht ein Objekt, falls vorhanden
-	const GameObject * GetConstGameObject(const unsigned obj_id) const;
-	GameObject * GetGameObject(const unsigned obj_id) const;
+        /// Fügt ein gelesenes Objekt zur globalen Objektliste dazu
+        void AddObject(GameObject* go);
+
+
+        /// Sucht ein Objekt, falls vorhanden
+        const GameObject* GetConstGameObject(const unsigned obj_id) const;
+        GameObject* GetGameObject(const unsigned obj_id) const;
 };
 
 

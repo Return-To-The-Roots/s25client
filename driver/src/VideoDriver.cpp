@@ -1,4 +1,4 @@
-// $Id: VideoDriver.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: VideoDriver.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -87,20 +87,20 @@ static char THIS_FILE[] = __FILE__;
  */
 
 ///////////////////////////////////////////////////////////////////////////////
-/** 
+/**
  *  Konstruktor von @p VideoDriver.
  *
  *  @param[in] CallBack DriverCallback für Rückmeldungen.
  *
  *  @author FloSoft
  */
-VideoDriver::VideoDriver(VideoDriverLoaderInterface * CallBack) : CallBack(CallBack), initialized(false), screenWidth(0), screenHeight(0), fullscreen(false)
+VideoDriver::VideoDriver(VideoDriverLoaderInterface* CallBack) : CallBack(CallBack), initialized(false), screenWidth(0), screenHeight(0), fullscreen(false)
 {
-	memset(keyboard, 0, 512);
+    memset(keyboard, 0, 512);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/** 
+/**
  *  Destruktor von @p VideoDriver.
  *
  *  @author FloSoft
@@ -110,20 +110,20 @@ VideoDriver::~VideoDriver(void)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/** 
+/**
  *  Funktion zum Auslesen des Treibernamens.
  *
  *  @return liefert den Treibernamen zurück
  *
  *  @author FloSoft
  */
-const char *VideoDriver::GetName(void) const
+const char* VideoDriver::GetName(void) const
 {
-	return NULL;
+    return NULL;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/** 
+/**
  *  Treiberinitialisierungsfunktion.
  *
  *  @return @p true bei Erfolg, @p false bei Fehler
@@ -132,11 +132,11 @@ const char *VideoDriver::GetName(void) const
  */
 bool VideoDriver::Initialize(void)
 {
-	return false;
+    return false;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/** 
+/**
  *  Treiberaufräumfunktion.
  *
  *  @author FloSoft
@@ -146,7 +146,7 @@ void VideoDriver::CleanUp(void)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/** 
+/**
  *  Erstellt das Fenster mit entsprechenden Werten.
  *
  *  @param[in] width      Breite des Fensters
@@ -159,11 +159,11 @@ void VideoDriver::CleanUp(void)
  */
 bool VideoDriver::CreateScreen(unsigned short width, unsigned short height, const bool fullscreen)
 {
-	return false;
+    return false;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/** 
+/**
  *  Erstellt oder verändert das Fenster mit entsprechenden Werten.
  *
  *  @param[in] width      Breite des Fensters
@@ -176,11 +176,11 @@ bool VideoDriver::CreateScreen(unsigned short width, unsigned short height, cons
  */
 bool VideoDriver::ResizeScreen(unsigned short width, unsigned short height, const bool fullscreen)
 {
-	return false;
+    return false;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/** 
+/**
  *  Schliesst das Fenster.
  *
  *  @author FloSoft
@@ -190,7 +190,7 @@ void VideoDriver::DestroyScreen(void)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/** 
+/**
  *  Wechselt die OpenGL-Puffer.
  *
  *  @return @p true bei Erfolg, @p false bei Fehler
@@ -199,11 +199,11 @@ void VideoDriver::DestroyScreen(void)
  */
 bool VideoDriver::SwapBuffers(void)
 {
-	return false;
+    return false;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/** 
+/**
  *  Die Nachrichtenschleife.
  *
  *  @return @p true bei Erfolg, @p false bei Fehler
@@ -212,11 +212,11 @@ bool VideoDriver::SwapBuffers(void)
  */
 bool VideoDriver::MessageLoop(void)
 {
-	return false;
+    return false;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/** 
+/**
  *  Funktion zum Auslesen des TickCounts.
  *
  *  @return liefert den TickCount
@@ -225,11 +225,11 @@ bool VideoDriver::MessageLoop(void)
  */
 unsigned long VideoDriver::GetTickCount(void) const
 {
-	return 0;
+    return 0;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/** 
+/**
  *  Funktion zum Holen einer Subfunktion.
  *
  *  @param[in] function Name der Funktion welche geholt werden soll.
@@ -238,9 +238,9 @@ unsigned long VideoDriver::GetTickCount(void) const
  *
  *  @author FloSoft
  */
-void *VideoDriver::GetFunction(const char *function) const
+void* VideoDriver::GetFunction(const char* function) const
 {
-	return NULL;
+    return NULL;
 }
 
 /// Listet verfügbare Videomodi auf
@@ -249,7 +249,7 @@ void VideoDriver::ListVideoModes(std::vector<VideoMode>& video_modes) const
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/** 
+/**
  *  Funktion zum Auslesen der Mauskoordinaten.
  *
  *  @param[out] x X-Koordinate
@@ -257,14 +257,14 @@ void VideoDriver::ListVideoModes(std::vector<VideoMode>& video_modes) const
  *
  *  @author FloSoft
  */
-void VideoDriver::GetMousePos(int &x, int &y) const
+void VideoDriver::GetMousePos(int& x, int& y) const
 {
-	x = mouse_xy.x;
-	y = mouse_xy.y;
+    x = mouse_xy.x;
+    y = mouse_xy.y;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/** 
+/**
  *  Funktion zum Setzen der Mauskoordinaten.
  *
  *  @param[in] x X-Koordinate
@@ -277,7 +277,7 @@ void VideoDriver::SetMousePos(int x, int y)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/** 
+/**
  *  Funktion zum Auslesen der X-Koordinate der Maus.
  *
  *  @return liefert die X-Koordinate
@@ -286,11 +286,11 @@ void VideoDriver::SetMousePos(int x, int y)
  */
 int VideoDriver::GetMousePosX() const
 {
-	return mouse_xy.x;
+    return mouse_xy.x;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/** 
+/**
  *  Funktion zum Setzen der X-Koordinate der Maus.
  *
  *  @param[in] x X-Koordinate
@@ -302,7 +302,7 @@ void VideoDriver::SetMousePosX(int x)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/** 
+/**
  *  Funktion zum Auslesen der Y-Koordinate der Maus.
  *
  *  @return liefert die Y-Koordinate
@@ -311,11 +311,11 @@ void VideoDriver::SetMousePosX(int x)
  */
 int VideoDriver::GetMousePosY() const
 {
-	return mouse_xy.y;
+    return mouse_xy.y;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/** 
+/**
  *  Funktion zum Setzen der Y-Koordinate der Maus.
  *
  *  @param[in] y Y-Koordinate
@@ -327,7 +327,7 @@ void VideoDriver::SetMousePosY(int y)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/** 
+/**
  *  Funktion zum Auslesen ob die Linke Maustaste gedrückt ist.
  *
  *  @return @p true bei Gedrückt, @p false bei Losgelassen
@@ -336,11 +336,11 @@ void VideoDriver::SetMousePosY(int y)
  */
 bool VideoDriver::GetMouseStateL(void) const
 {
-	return mouse_xy.ldown;
+    return mouse_xy.ldown;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/** 
+/**
  *  Funktion zum Auslesen ob die Rechte Maustaste gedrückt ist.
  *
  *  @return @p true bei Gedrückt, @p false bei Losgelassen
@@ -349,5 +349,5 @@ bool VideoDriver::GetMouseStateL(void) const
  */
 bool VideoDriver::GetMouseStateR(void) const
 {
-	return mouse_xy.rdown;
+    return mouse_xy.rdown;
 }

@@ -1,4 +1,4 @@
-// $Id: CollisionDetection.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: CollisionDetection.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -25,61 +25,61 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Coll(const int x, const int y, const Rect &rect)
+bool Coll(const int x, const int y, const Rect& rect)
 {
-  return ( x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom );
+    return ( x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom );
 }
 
-bool Coll(const int x, const int y, const int rx,const int ry, const int rwidth,const int rheight)
+bool Coll(const int x, const int y, const int rx, const int ry, const int rwidth, const int rheight)
 {
-  return ( x >= rx && x < (rx+rwidth) && y >= ry && y < (ry+rheight));
+    return ( x >= rx && x < (rx + rwidth) && y >= ry && y < (ry + rheight));
 }
 
 
 bool Coll(const int left1, const int right1, const int left2, const int right2)
 {
-  return( (left1 >= left2 && left1 <= right2) || (right1 >= left2 && right1 <= right2) || (left2 >= left1 && left2 <= right1) || (right2 >= left1 && right2 <= right1) );
+    return( (left1 >= left2 && left1 <= right2) || (right1 >= left2 && right1 <= right2) || (left2 >= left1 && left2 <= right1) || (right2 >= left1 && right2 <= right1) );
 }
 
 
-bool CollEdges(const Rect &rect1, const Rect &rect2)
+bool CollEdges(const Rect& rect1, const Rect& rect2)
 {
-  return ( Coll(rect1.left, rect1.top, rect2) || Coll(rect1.right, rect1.top, rect2) ||
-           Coll(rect1.left, rect1.bottom, rect2) || Coll(rect1.right, rect1.bottom, rect2) ||
-           Coll(rect2.left, rect2.top, rect1) || Coll(rect2.right, rect2.top, rect1) ||
-           Coll(rect2.left, rect2.bottom, rect1) || Coll(rect2.right, rect2.bottom, rect1) );
+    return ( Coll(rect1.left, rect1.top, rect2) || Coll(rect1.right, rect1.top, rect2) ||
+             Coll(rect1.left, rect1.bottom, rect2) || Coll(rect1.right, rect1.bottom, rect2) ||
+             Coll(rect2.left, rect2.top, rect1) || Coll(rect2.right, rect2.top, rect1) ||
+             Coll(rect2.left, rect2.bottom, rect1) || Coll(rect2.right, rect2.bottom, rect1) );
 }
 
 
 
-bool Coll(const Rect &rect1, const Rect &rect2)
+bool Coll(const Rect& rect1, const Rect& rect2)
 {
-	// Radius berechnen
-	int Radius1X = (rect1.right - rect1.left) / 2;
-	int Radius1Y = (rect1.bottom - rect1.top) / 2;
+    // Radius berechnen
+    int Radius1X = (rect1.right - rect1.left) / 2;
+    int Radius1Y = (rect1.bottom - rect1.top) / 2;
 
-	int Radius2X = (rect2.right - rect2.left) / 2;
-	int Radius2Y = (rect2.bottom - rect2.top) / 2;
+    int Radius2X = (rect2.right - rect2.left) / 2;
+    int Radius2Y = (rect2.bottom - rect2.top) / 2;
 
-	// die Mitte der Bounding Box berechnen
-	int Center1X = rect1.left + Radius1X;
-	int Center1Y = rect1.top + Radius1Y;
+    // die Mitte der Bounding Box berechnen
+    int Center1X = rect1.left + Radius1X;
+    int Center1Y = rect1.top + Radius1Y;
 
-	int Center2X = rect2.left + Radius2X;
-	int Center2Y = rect2.top + Radius2Y;
+    int Center2X = rect2.left + Radius2X;
+    int Center2Y = rect2.top + Radius2Y;
 
-	// Abstand berechnen
-	int OffsetX = abs(Center1X - Center2X);
-	int OffsetY = abs(Center1Y - Center2Y);
+    // Abstand berechnen
+    int OffsetX = abs(Center1X - Center2X);
+    int OffsetY = abs(Center1Y - Center2Y);
 
-	return CollEdges(rect1, rect2) || (OffsetX < Radius1X + Radius2X && OffsetY < Radius1Y + Radius2Y);
+    return CollEdges(rect1, rect2) || (OffsetX < Radius1X + Radius2X && OffsetY < Radius1Y + Radius2Y);
 }
 
 

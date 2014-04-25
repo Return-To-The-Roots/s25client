@@ -1,4 +1,4 @@
-// $Id: main.cpp 8725 2013-05-16 12:30:38Z marcus $
+// $Id: main.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -44,25 +44,25 @@
 #endif
 
 #ifdef __APPLE__
-#	include <SDL_main.h>
+#   include <SDL_main.h>
 #endif // __APPLE__
 
 #ifdef _WIN32
-#	include "../win32/resource.h"
-#	include "VideoDriverWrapper.h"
+#   include "../win32/resource.h"
+#   include "VideoDriverWrapper.h"
 #endif
 
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER && !defined NOHWETRANS
-#	include <windows.h>
-#	include <eh.h>
+#   include <windows.h>
+#   include <eh.h>
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -73,11 +73,11 @@
  */
 void ExitHandler(void)
 {
-	Socket::Shutdown();
+    Socket::Shutdown();
 
 #if defined _WIN32 && !defined __CYGWIN__
-	LOG.lprintf("\n\nDr%ccken Sie eine beliebige Taste . . .\n", 129);
-	getch();
+    LOG.lprintf("\n\nDr%ccken Sie eine beliebige Taste . . .\n", 129);
+    getch();
 #endif
 }
 
@@ -95,41 +95,41 @@ void ExitHandler(void)
  */
 void ExceptionHandler (unsigned int exception_type, _EXCEPTION_POINTERS* exception_pointer)
 {
-	fatal_error("C-Exception caught\n");
+    fatal_error("C-Exception caught\n");
 }
 #endif // _WIN32 && _DEBUG && !NOHWETRANS
 
 int mkdir_p(const std::string dir)
 {
-	if(IsDir(dir))
-		return 0;
+    if(IsDir(dir))
+        return 0;
 
-	if (
+    if (
 #ifdef _WIN32
-		!CreateDirectoryA(dir.c_str(), NULL)
+        !CreateDirectoryA(dir.c_str(), NULL)
 #else
-		mkdir(dir.c_str(), 0750) < 0
+        mkdir(dir.c_str(), 0750) < 0
 #endif
-	)
-	{
-		size_t slash = dir.rfind('/');
-		if (slash != std::string::npos)
-		{
-			std::string prefix = dir.substr(0, slash);
-			if(mkdir_p(prefix) == 0)
-			{
-				return (
+    )
+    {
+        size_t slash = dir.rfind('/');
+        if (slash != std::string::npos)
+        {
+            std::string prefix = dir.substr(0, slash);
+            if(mkdir_p(prefix) == 0)
+            {
+                return (
 #ifdef _WIN32
-					CreateDirectoryA(dir.c_str(), NULL) ? 0 : -1
+                           CreateDirectoryA(dir.c_str(), NULL) ? 0 : -1
 #else
-					mkdir(dir.c_str(), 0750)
+                           mkdir(dir.c_str(), 0750)
 #endif
-				);
-			}
-		}
-		return -1;
-	}
-	return 0;
+                       );
+            }
+        }
+        return -1;
+    }
+    return 0;
 }
 
 #ifdef _WIN32
@@ -138,52 +138,52 @@ LONG WINAPI
 #else
 void
 #endif
-	WinExceptionHandler(
+WinExceptionHandler(
 #ifdef _MSC_VER
-	LPEXCEPTION_POINTERS info
+    LPEXCEPTION_POINTERS info
 #else
-	int sig
+    int sig
 #endif
-	)
+)
 {
-	if ((SETTINGS.global.submit_debug_data == 1) ||
-		MessageBoxA(NULL,
-		_("RttR crashed. Would you like to send debug information to RttR to help us avoiding this crash in the future? Thank you very much!"),
-		_("Error"), MB_YESNO | MB_ICONERROR | MB_TASKMODAL | MB_SETFOREGROUND) == IDYES)
-	{
-		VideoDriverWrapper::inst().DestroyScreen();
+    if ((SETTINGS.global.submit_debug_data == 1) ||
+            MessageBoxA(NULL,
+                        _("RttR crashed. Would you like to send debug information to RttR to help us avoiding this crash in the future? Thank you very much!"),
+                        _("Error"), MB_YESNO | MB_ICONERROR | MB_TASKMODAL | MB_SETFOREGROUND) == IDYES)
+    {
+        VideoDriverWrapper::inst().DestroyScreen();
 
-		DebugInfo di;
+        DebugInfo di;
 
-		di.SendReplay();
-		di.SendStackTrace(
+        di.SendReplay();
+        di.SendStackTrace(
 #ifdef _MSC_VER
-			info->ContextRecord
+            info->ContextRecord
 #endif
-		);
-	}
+        );
+    }
 
-	if(SETTINGS.global.submit_debug_data == 0)
-		MessageBoxA(NULL, _("RttR crashed. Please restart the application!"), _("Error"), MB_OK | MB_ICONERROR | MB_TASKMODAL | MB_SETFOREGROUND);
+    if(SETTINGS.global.submit_debug_data == 0)
+        MessageBoxA(NULL, _("RttR crashed. Please restart the application!"), _("Error"), MB_OK | MB_ICONERROR | MB_TASKMODAL | MB_SETFOREGROUND);
 
-	_exit(1);
+    _exit(1);
 
 #ifdef _MSC_VER
-	return(EXCEPTION_EXECUTE_HANDLER);
+    return(EXCEPTION_EXECUTE_HANDLER);
 #endif
 }
 #else
 void LinExceptionHandler(int sig)
 {
-	if (SETTINGS.global.submit_debug_data == 1)
-	{
-		DebugInfo di;
+    if (SETTINGS.global.submit_debug_data == 1)
+    {
+        DebugInfo di;
 
-		di.SendReplay();
-		di.SendStackTrace();
-	}
+        di.SendReplay();
+        di.SendStackTrace();
+    }
 
-	abort();
+    abort();
 }
 #endif
 
@@ -199,159 +199,162 @@ void LinExceptionHandler(int sig)
  *  @author FloSoft
  *  @author OLiver
  */
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER && !defined NOHWETRANS
-	_set_se_translator(ExceptionHandler);
+    _set_se_translator(ExceptionHandler);
 #endif // _WIN32 && _DEBUG && !NOHWETRANS
 
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER && !defined NOCRTDBG
-	// Enable Memory-Leak-Detection
-	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_CHECK_ALWAYS_DF | _CRTDBG_LEAK_CHECK_DF /*| _CRTDBG_CHECK_CRT_DF*/);
+    // Enable Memory-Leak-Detection
+    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_CHECK_ALWAYS_DF | _CRTDBG_LEAK_CHECK_DF /*| _CRTDBG_CHECK_CRT_DF*/);
 #endif // _WIN32 && _DEBUG && !NOCRTDBG
 
-	// Signal-Handler setzen
+    // Signal-Handler setzen
 #ifdef _WIN32
-	SetConsoleCtrlHandler(HandlerRoutine, TRUE);
+    SetConsoleCtrlHandler(HandlerRoutine, TRUE);
 
-	// set console window icon
-	SendMessage(GetConsoleWindow(), WM_SETICON, (WPARAM)TRUE, (LPARAM)LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_SYMBOL)));
+    // set console window icon
+    SendMessage(GetConsoleWindow(), WM_SETICON, (WPARAM)TRUE, (LPARAM)LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_SYMBOL)));
 
-	// Set UTF-8 console charset
-	SetConsoleOutputCP(CP_UTF8);
+    // Set UTF-8 console charset
+    SetConsoleOutputCP(CP_UTF8);
 
 #ifndef _MSC_VER
-	signal(SIGSEGV, WinExceptionHandler);
+    signal(SIGSEGV, WinExceptionHandler);
 #else
-	SetUnhandledExceptionFilter(WinExceptionHandler);
+    SetUnhandledExceptionFilter(WinExceptionHandler);
 #endif
-	//AddVectoredExceptionHandler(1, WinExceptionHandler);
+    //AddVectoredExceptionHandler(1, WinExceptionHandler);
 #else
-	struct sigaction sa;
-	sa.sa_handler = HandlerRoutine;
-	sa.sa_flags = 0; //SA_RESTART would not allow to interrupt connect call;
-	sigemptyset(&sa.sa_mask);
+    struct sigaction sa;
+    sa.sa_handler = HandlerRoutine;
+    sa.sa_flags = 0; //SA_RESTART would not allow to interrupt connect call;
+    sigemptyset(&sa.sa_mask);
 
-	sigaction(SIGINT, &sa, NULL);
-	sigaction(SIGPIPE, &sa, NULL);
-	sigaction(SIGALRM, &sa, NULL);
+    sigaction(SIGINT, &sa, NULL);
+    sigaction(SIGPIPE, &sa, NULL);
+    sigaction(SIGALRM, &sa, NULL);
 
-	signal(SIGSEGV, LinExceptionHandler);
+    signal(SIGSEGV, LinExceptionHandler);
 #endif // _WIN32
 
-	// diverse dirs anlegen
-	const unsigned int dir_count = 7;
-	unsigned int dirs[dir_count] = { 94, 47, 48, 51, 85, 98, 99 }; // settingsdir muss zuerst angelegt werden (94)
+    // diverse dirs anlegen
+    const unsigned int dir_count = 7;
+    unsigned int dirs[dir_count] = { 94, 47, 48, 51, 85, 98, 99 }; // settingsdir muss zuerst angelegt werden (94)
 
 #ifdef _WIN32
-	if(IsDir(GetFilePath("~/Siedler II.5 RttR")))
-		MoveFileA(GetFilePath("~/Siedler II.5 RttR").c_str(), GetFilePath(FILE_PATHS[94]).c_str());
+    if(IsDir(GetFilePath("~/Siedler II.5 RttR")))
+        MoveFileA(GetFilePath("~/Siedler II.5 RttR").c_str(), GetFilePath(FILE_PATHS[94]).c_str());
 #endif
 
 #ifdef __APPLE__
-	if(IsDir(GetFilePath("~/.s25rttr")))
-		rename(GetFilePath("~/.s25rttr").c_str(), GetFilePath(FILE_PATHS[94]).c_str());
+    if(IsDir(GetFilePath("~/.s25rttr")))
+        rename(GetFilePath("~/.s25rttr").c_str(), GetFilePath(FILE_PATHS[94]).c_str());
 #endif
 
-	for(unsigned int i = 0; i < dir_count; ++i)
-	{
-		std::string dir = GetFilePath(FILE_PATHS[dirs[i]]);
+    for(unsigned int i = 0; i < dir_count; ++i)
+    {
+        std::string dir = GetFilePath(FILE_PATHS[dirs[i]]);
 
-		if(mkdir_p(dir) < 0)
-		{
-			error("Verzeichnis %s konnte nicht erstellt werden: ", dir.c_str());
-			error("Das Spiel konnte nicht gestartet werden");
-			return 1;
-		}
-	}
+        if(mkdir_p(dir) < 0)
+        {
+            error("Verzeichnis %s konnte nicht erstellt werden: ", dir.c_str());
+            error("Das Spiel konnte nicht gestartet werden");
+            return 1;
+        }
+    }
 
-	libsiedler2::setTextureFormat(libsiedler2::FORMAT_RGBA);
-	libsiedler2::setAllocator(glAllocator);
+    libsiedler2::setTextureFormat(libsiedler2::FORMAT_RGBA);
+    libsiedler2::setAllocator(glAllocator);
 
-	// Zufallsgenerator initialisieren (Achtung: nur für Animationens-Offsets interessant, für alles andere (spielentscheidende) wird unser Generator verwendet)
-	srand(static_cast<unsigned int>(std::time(NULL)));
+    // Zufallsgenerator initialisieren (Achtung: nur für Animationens-Offsets interessant, für alles andere (spielentscheidende) wird unser Generator verwendet)
+    srand(static_cast<unsigned int>(std::time(NULL)));
 
-	// Exit-Handler initialisieren
-	atexit(&ExitHandler);
+    // Exit-Handler initialisieren
+    atexit(&ExitHandler);
 
-	// Socketzeug initialisieren
-	if(!Socket::Initialize())
-	{
-		error("Konnte Sockets nicht initialisieren!");
-		return 1;
-	}
+    // Socketzeug initialisieren
+    if(!Socket::Initialize())
+    {
+        error("Konnte Sockets nicht initialisieren!");
+        return 1;
+    }
 
-	// Spiel starten
-	if(!GAMEMANAGER.Start())
-	{
-	        error("Das Spiel konnte nicht gestartet werden");
-		return 1;
-	}
+    // Spiel starten
+    if(!GAMEMANAGER.Start())
+    {
+        error("Das Spiel konnte nicht gestartet werden");
+        return 1;
+    }
 
 #ifndef NDEBUG
-	if (argc > 1)
-	{
-		CreateServerInfo csi;
-		csi.gamename = _("Unlimited Play");
-		csi.password = "localgame";
-		csi.port = 3665;
-		csi.type = NP_LOCAL;
-		csi.ipv6 = false;
-		csi.use_upnp = false;
+    if (argc > 1)
+    {
+        CreateServerInfo csi;
+        csi.gamename = _("Unlimited Play");
+        csi.password = "localgame";
+        csi.port = 3665;
+        csi.type = NP_LOCAL;
+        csi.ipv6 = false;
+        csi.use_upnp = false;
 
-		printf("loading game!\n");
+        printf("loading game!\n");
 
-		WindowManager::inst().Switch(new dskSelectMap(csi));
+        WindowManager::inst().Switch(new dskSelectMap(csi));
 
-	        if(!GAMESERVER.TryToStart(csi, argv[1], MAPTYPE_SAVEGAME))
-		{
-			if(!GAMESERVER.TryToStart(csi, argv[1], MAPTYPE_OLDMAP))
-			{
-				GameWorldViewer *gwv;
-				unsigned int error = GAMECLIENT.StartReplay(argv[1], gwv);
+        if(!GAMESERVER.TryToStart(csi, argv[1], MAPTYPE_SAVEGAME))
+        {
+            if(!GAMESERVER.TryToStart(csi, argv[1], MAPTYPE_OLDMAP))
+            {
+                GameWorldViewer* gwv;
+                unsigned int error = GAMECLIENT.StartReplay(argv[1], gwv);
 
-				std::string replay_errors[] =
-				{
-					_("Error while playing replay!"),
-					_("Error while opening file!"),
-					_("Invalid Replay!"),
-					_("Error: Replay is too old!"),
-					_("Program version is too old to play that replay!"),
-					"",
-					_("Temporary map file was not found!")
-				};
+                std::string replay_errors[] =
+                {
+                    _("Error while playing replay!"),
+                    _("Error while opening file!"),
+                    _("Invalid Replay!"),
+                    _("Error: Replay is too old!"),
+                    _("Program version is too old to play that replay!"),
+                    "",
+                    _("Temporary map file was not found!")
+                };
 
-				if (error)
-				{
-					printf("ERROR: %s\n", replay_errors[error].c_str());
-				} else
-				{
-					WindowManager::inst().Switch(new dskGameLoader(gwv));
-				}
-			} else
-			{
-				WindowManager::inst().Draw();
-				WindowManager::inst().Show(new iwPleaseWait);
-			}
-		} else
-		{
-			WindowManager::inst().Draw();
-			WindowManager::inst().Show(new iwPleaseWait);
-		}
-	}
+                if (error)
+                {
+                    printf("ERROR: %s\n", replay_errors[error].c_str());
+                }
+                else
+                {
+                    WindowManager::inst().Switch(new dskGameLoader(gwv));
+                }
+            }
+            else
+            {
+                WindowManager::inst().Draw();
+                WindowManager::inst().Show(new iwPleaseWait);
+            }
+        }
+        else
+        {
+            WindowManager::inst().Draw();
+            WindowManager::inst().Show(new iwPleaseWait);
+        }
+    }
 #endif
 
-	// Hauptschleife
-	while(GAMEMANAGER.Run())
-	{
+    // Hauptschleife
+    while(GAMEMANAGER.Run())
+    {
 #ifndef _WIN32
-		extern bool killme;
-		killme = false;
+        extern bool killme;
+        killme = false;
 #endif // !_WIN32
-	}
+    }
 
-	// Spiel beenden
-	GAMEMANAGER.Stop();
+    // Spiel beenden
+    GAMEMANAGER.Stop();
 
-	return 0;
+    return 0;
 }

@@ -1,4 +1,4 @@
-// $Id: nobStorehouse.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: nobStorehouse.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -33,58 +33,58 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
-nobStorehouse::nobStorehouse(const unsigned short x, const unsigned short y,const unsigned char player,const Nation nation) 
-: nobBaseWarehouse(BLD_STOREHOUSE,x,y,player,nation)
+nobStorehouse::nobStorehouse(const unsigned short x, const unsigned short y, const unsigned char player, const Nation nation)
+    : nobBaseWarehouse(BLD_STOREHOUSE, x, y, player, nation)
 {
-	// Alle Waren 0, außer 100 Träger
-	goods.clear();
-	real_goods.clear();
+    // Alle Waren 0, außer 100 Träger
+    goods.clear();
+    real_goods.clear();
 
-	// Aktuellen Warenbestand zur aktuellen Inventur dazu addieren
-	AddToInventory();
+    // Aktuellen Warenbestand zur aktuellen Inventur dazu addieren
+    AddToInventory();
 
-	// Der Wirtschaftsverwaltung Bescheid sagen
-	gwg->GetPlayer(player)->AddWarehouse(this);
+    // Der Wirtschaftsverwaltung Bescheid sagen
+    gwg->GetPlayer(player)->AddWarehouse(this);
 
-	// Post versenden
-	if(GameClient::inst().GetPlayerID() == this->player)
-		GameClient::inst().SendPostMessage(new ImagePostMsgWithLocation(
-			_("New storehouse finished"), PMC_GENERAL, x, y, BLD_STOREHOUSE, nation));
+    // Post versenden
+    if(GameClient::inst().GetPlayerID() == this->player)
+        GameClient::inst().SendPostMessage(new ImagePostMsgWithLocation(
+                                               _("New storehouse finished"), PMC_GENERAL, x, y, BLD_STOREHOUSE, nation));
 }
 
 
 
 void nobStorehouse::Destroy_nobStorehouse()
 {
-	// Der Wirtschaftsverwaltung Bescheid sagen
-	gwg->GetPlayer(player)->RemoveWarehouse(this);
+    // Der Wirtschaftsverwaltung Bescheid sagen
+    gwg->GetPlayer(player)->RemoveWarehouse(this);
 
-	Destroy_nobBaseWarehouse();
+    Destroy_nobBaseWarehouse();
 }
 
-void nobStorehouse::Serialize_nobStorehouse(SerializedGameData * sgd) const
+void nobStorehouse::Serialize_nobStorehouse(SerializedGameData* sgd) const
 {
-	Serialize_nobBaseWarehouse(sgd);
+    Serialize_nobBaseWarehouse(sgd);
 }
 
-nobStorehouse::nobStorehouse(SerializedGameData * sgd, const unsigned obj_id) : nobBaseWarehouse(sgd,obj_id)
+nobStorehouse::nobStorehouse(SerializedGameData* sgd, const unsigned obj_id) : nobBaseWarehouse(sgd, obj_id)
 {
 }
 
 
-void nobStorehouse::Draw(int x,int y)
+void nobStorehouse::Draw(int x, int y)
 {
-	// Gebäude an sich zeichnen
-  	DrawBaseBuilding(x,y);
+    // Gebäude an sich zeichnen
+    DrawBaseBuilding(x, y);
 }
 
 
 void nobStorehouse::HandleEvent(const unsigned int id)
 {
-	HandleBaseEvent(id);
+    HandleBaseEvent(id);
 }

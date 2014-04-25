@@ -1,4 +1,4 @@
-// $Id: glAllocator.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: glAllocator.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -25,13 +25,13 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
-/** 
+/**
  *  Der GL-Item-Allocator.
  *
  *  @param[in] type    Der Typ des Items
@@ -40,106 +40,106 @@
  *
  *  @author FloSoft
  */
-libsiedler2::ArchivItem *glAllocator(unsigned short type, unsigned short subtype, const libsiedler2::ArchivItem *item)
+libsiedler2::ArchivItem* glAllocator(unsigned short type, unsigned short subtype, const libsiedler2::ArchivItem* item)
 {
-	if(item)
-		type = item->getBobType();
+    if(item)
+        type = item->getBobType();
 
-	switch(type)
-	{
-	case libsiedler2::BOBTYPE_SOUND: // WAVs, MIDIs
-		{
-			const libsiedler2::baseArchivItem_Sound *i = dynamic_cast<const libsiedler2::baseArchivItem_Sound*>(item);
-			if(item)
-				subtype = i->getType();
+    switch(type)
+    {
+        case libsiedler2::BOBTYPE_SOUND: // WAVs, MIDIs
+        {
+            const libsiedler2::baseArchivItem_Sound* i = dynamic_cast<const libsiedler2::baseArchivItem_Sound*>(item);
+            if(item)
+                subtype = i->getType();
 
-			switch(subtype)
-			{
-			case libsiedler2::SOUNDTYPE_MIDI: // MIDI
-				{
-					if(!item)
-						return new glArchivItem_Sound_Midi();
-					else
-						return new glArchivItem_Sound_Midi( dynamic_cast<const glArchivItem_Sound_Midi*>(item) );
-				} break;
-			case libsiedler2::SOUNDTYPE_WAVE: // WAV
-				{
-					if(!item)
-						return new glArchivItem_Sound_Wave();
-					else
-						return new glArchivItem_Sound_Wave( dynamic_cast<const glArchivItem_Sound_Wave*>(item) );
-				} break;
-			case libsiedler2::SOUNDTYPE_XMIDI: // XMIDI
-				{
-					if(!item)
-						return new glArchivItem_Sound_XMidi();
-					else
-						return new glArchivItem_Sound_XMidi( dynamic_cast<const glArchivItem_Sound_XMidi*>(item) );
-				} break;
-			case libsiedler2::SOUNDTYPE_OTHER: // Andere
-				{
-					if(!item)
-						return new glArchivItem_Sound_Other();
-					else
-						return new glArchivItem_Sound_Other( dynamic_cast<const glArchivItem_Sound_Other*>(item) );
-				} break;
-			default:
-				{
-					return libsiedler2::StandardAllocator(type, subtype, item);
-				} break;
-			}
-		} break;
-	case libsiedler2::BOBTYPE_BOB: // Bob-File
-		{
-			if(!item)
-				return new glArchivItem_Bob();
-			else
-				return new glArchivItem_Bob( dynamic_cast<const glArchivItem_Bob*>(item) );
-		} break;
-	case libsiedler2::BOBTYPE_BITMAP_RLE: // RLE komprimiertes Bitmap
-		{
-			if(!item)
-				return new glArchivItem_Bitmap_RLE();
-			else
-				return new glArchivItem_Bitmap_RLE( dynamic_cast<const glArchivItem_Bitmap_RLE*>(item) );
-		} break;
-	case libsiedler2::BOBTYPE_FONT: // Font
-		{
-			if(!item)
-				return new glArchivItem_Font();
-			else
-				return new glArchivItem_Font( dynamic_cast<const glArchivItem_Font*>(item) );
-		} break;
-	case libsiedler2::BOBTYPE_BITMAP_PLAYER: // Bitmap mit spezifischer Spielerfarbe
-		{
-			if(!item)
-				return new glArchivItem_Bitmap_Player();
-			else
-				return new glArchivItem_Bitmap_Player( dynamic_cast<const glArchivItem_Bitmap_Player*>(item) );
-		} break;
-	case libsiedler2::BOBTYPE_BITMAP_SHADOW: // Schatten
-		{
-			if(!item)
-				return new glArchivItem_Bitmap_Shadow();
-			else
-				return new glArchivItem_Bitmap_Shadow( dynamic_cast<const glArchivItem_Bitmap_Shadow*>(item) );
-		} break;
-	case libsiedler2::BOBTYPE_MAP: // Map
-		{
-			if(!item)
-				return new glArchivItem_Map();
-			else
-				return new glArchivItem_Map( dynamic_cast<const glArchivItem_Map*>(item) );
-		} break;
-	case libsiedler2::BOBTYPE_BITMAP_RAW: // unkomprimiertes Bitmap
-		{
-			if(!item)
-				return new glArchivItem_Bitmap_Raw();
-			else
-				return new glArchivItem_Bitmap_Raw( dynamic_cast<const glArchivItem_Bitmap_Raw*>(item) );
-		} break;
-	default: 
-		break;
-	}
-	return libsiedler2::StandardAllocator(type, subtype, item);
+            switch(subtype)
+            {
+                case libsiedler2::SOUNDTYPE_MIDI: // MIDI
+                {
+                    if(!item)
+                        return new glArchivItem_Sound_Midi();
+                    else
+                        return new glArchivItem_Sound_Midi( dynamic_cast<const glArchivItem_Sound_Midi*>(item) );
+                } break;
+                case libsiedler2::SOUNDTYPE_WAVE: // WAV
+                {
+                    if(!item)
+                        return new glArchivItem_Sound_Wave();
+                    else
+                        return new glArchivItem_Sound_Wave( dynamic_cast<const glArchivItem_Sound_Wave*>(item) );
+                } break;
+                case libsiedler2::SOUNDTYPE_XMIDI: // XMIDI
+                {
+                    if(!item)
+                        return new glArchivItem_Sound_XMidi();
+                    else
+                        return new glArchivItem_Sound_XMidi( dynamic_cast<const glArchivItem_Sound_XMidi*>(item) );
+                } break;
+                case libsiedler2::SOUNDTYPE_OTHER: // Andere
+                {
+                    if(!item)
+                        return new glArchivItem_Sound_Other();
+                    else
+                        return new glArchivItem_Sound_Other( dynamic_cast<const glArchivItem_Sound_Other*>(item) );
+                } break;
+                default:
+                {
+                    return libsiedler2::StandardAllocator(type, subtype, item);
+                } break;
+            }
+        } break;
+        case libsiedler2::BOBTYPE_BOB: // Bob-File
+        {
+            if(!item)
+                return new glArchivItem_Bob();
+            else
+                return new glArchivItem_Bob( dynamic_cast<const glArchivItem_Bob*>(item) );
+        } break;
+        case libsiedler2::BOBTYPE_BITMAP_RLE: // RLE komprimiertes Bitmap
+        {
+            if(!item)
+                return new glArchivItem_Bitmap_RLE();
+            else
+                return new glArchivItem_Bitmap_RLE( dynamic_cast<const glArchivItem_Bitmap_RLE*>(item) );
+        } break;
+        case libsiedler2::BOBTYPE_FONT: // Font
+        {
+            if(!item)
+                return new glArchivItem_Font();
+            else
+                return new glArchivItem_Font( dynamic_cast<const glArchivItem_Font*>(item) );
+        } break;
+        case libsiedler2::BOBTYPE_BITMAP_PLAYER: // Bitmap mit spezifischer Spielerfarbe
+        {
+            if(!item)
+                return new glArchivItem_Bitmap_Player();
+            else
+                return new glArchivItem_Bitmap_Player( dynamic_cast<const glArchivItem_Bitmap_Player*>(item) );
+        } break;
+        case libsiedler2::BOBTYPE_BITMAP_SHADOW: // Schatten
+        {
+            if(!item)
+                return new glArchivItem_Bitmap_Shadow();
+            else
+                return new glArchivItem_Bitmap_Shadow( dynamic_cast<const glArchivItem_Bitmap_Shadow*>(item) );
+        } break;
+        case libsiedler2::BOBTYPE_MAP: // Map
+        {
+            if(!item)
+                return new glArchivItem_Map();
+            else
+                return new glArchivItem_Map( dynamic_cast<const glArchivItem_Map*>(item) );
+        } break;
+        case libsiedler2::BOBTYPE_BITMAP_RAW: // unkomprimiertes Bitmap
+        {
+            if(!item)
+                return new glArchivItem_Bitmap_Raw();
+            else
+                return new glArchivItem_Bitmap_Raw( dynamic_cast<const glArchivItem_Bitmap_Raw*>(item) );
+        } break;
+        default:
+            break;
+    }
+    return libsiedler2::StandardAllocator(type, subtype, item);
 }

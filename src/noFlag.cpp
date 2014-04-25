@@ -1,4 +1,4 @@
-// $Id: noFlag.cpp 8286 2012-09-17 15:29:22Z marcus $
+// $Id: noFlag.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -41,180 +41,180 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
 noFlag::noFlag(const unsigned short x, const unsigned short y,
-			   const unsigned char player, const unsigned char dis_dir)
-	: noRoadNode(NOP_FLAG, x, y, player),
-	ani_offset(rand() % 20000), flagtype(FT_NORMAL)
+               const unsigned char player, const unsigned char dis_dir)
+    : noRoadNode(NOP_FLAG, x, y, player),
+      ani_offset(rand() % 20000), flagtype(FT_NORMAL)
 {
-	for(unsigned char i = 0; i < 8; ++i)
-		wares[i] = NULL;
+    for(unsigned char i = 0; i < 8; ++i)
+        wares[i] = NULL;
 
-	// BWUs nullen
-	for(unsigned char i = 0; i < MAX_BWU; ++i)
-	{
-		bwus[i].id = 0xFFFFFFFF;
-		bwus[i].last_gf = 0;
-	}
+    // BWUs nullen
+    for(unsigned char i = 0; i < MAX_BWU; ++i)
+    {
+        bwus[i].id = 0xFFFFFFFF;
+        bwus[i].last_gf = 0;
+    }
 
-	// Gucken, ob die Flagge auf einen bereits bestehenden Weg gesetzt wurde
-	unsigned char dir;
-	noFlag *flag = gwg->GetRoadFlag(x, y, dir, dis_dir);
+    // Gucken, ob die Flagge auf einen bereits bestehenden Weg gesetzt wurde
+    unsigned char dir;
+    noFlag* flag = gwg->GetRoadFlag(x, y, dir, dis_dir);
 
-	if(flag)
-	{
-		if (flag->routes[dir])
-		{
-			flag->routes[dir]->SplitRoad(this);
-		}
-	}
+    if(flag)
+    {
+        if (flag->routes[dir])
+        {
+            flag->routes[dir]->SplitRoad(this);
+        }
+    }
 
-	// auf Wasseranteile prüfen
-	for(unsigned char i = 0; i < 6; ++i)
-	{
-		if(gwg->GetTerrainAround(x, y, i) == 14)
-			flagtype = FT_WATER;
-	}
+    // auf Wasseranteile prüfen
+    for(unsigned char i = 0; i < 6; ++i)
+    {
+        if(gwg->GetTerrainAround(x, y, i) == 14)
+            flagtype = FT_WATER;
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
-noFlag::noFlag(SerializedGameData *sgd, const unsigned int obj_id)
-	: noRoadNode(sgd, obj_id),
-	ani_offset(rand() % 20000), flagtype(FlagType(sgd->PopUnsignedChar()))
+noFlag::noFlag(SerializedGameData* sgd, const unsigned int obj_id)
+    : noRoadNode(sgd, obj_id),
+      ani_offset(rand() % 20000), flagtype(FlagType(sgd->PopUnsignedChar()))
 {
-	for(unsigned char i = 0; i < 8; ++i)
-		wares[i] = sgd->PopObject<Ware>(GOT_WARE);
+    for(unsigned char i = 0; i < 8; ++i)
+        wares[i] = sgd->PopObject<Ware>(GOT_WARE);
 
-	// BWUs laden
-	for(unsigned char i = 0; i < MAX_BWU; ++i)
-	{
-		bwus[i].id = sgd->PopUnsignedInt();
-		bwus[i].last_gf = sgd->PopUnsignedInt();
-	}
+    // BWUs laden
+    for(unsigned char i = 0; i < MAX_BWU; ++i)
+    {
+        bwus[i].id = sgd->PopUnsignedInt();
+        bwus[i].last_gf = sgd->PopUnsignedInt();
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
 noFlag::~noFlag()
 {
-	// Waren vernichten
-	for(unsigned char i = 0; i < 8; ++i)
-		delete wares[i];
+    // Waren vernichten
+    for(unsigned char i = 0; i < 8; ++i)
+        delete wares[i];
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
 void noFlag::Destroy_noFlag()
 {
-	/// Da ist dann nichts
-	gwg->SetNO(0, x, y);
+    /// Da ist dann nichts
+    gwg->SetNO(0, x, y);
 
-	// Waren vernichten
-	for(unsigned i = 0; i < 8; ++i)
-	{
-		if(wares[i])
-		{
-			// Inventur entsprechend verringern
-			wares[i]->WareLost(player);
-			delete wares[i];
-			wares[i] = NULL;
-		}
-	}
-	
-	// Den Flag-Workern Bescheid sagen, die hier ggf. arbeiten
-	gwg->GetPlayer(player)->FlagDestroyed(this);
+    // Waren vernichten
+    for(unsigned i = 0; i < 8; ++i)
+    {
+        if(wares[i])
+        {
+            // Inventur entsprechend verringern
+            wares[i]->WareLost(player);
+            delete wares[i];
+            wares[i] = NULL;
+        }
+    }
 
-	Destroy_noRoadNode();
+    // Den Flag-Workern Bescheid sagen, die hier ggf. arbeiten
+    gwg->GetPlayer(player)->FlagDestroyed(this);
+
+    Destroy_noRoadNode();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
-void noFlag::Serialize_noFlag(SerializedGameData *sgd) const
+void noFlag::Serialize_noFlag(SerializedGameData* sgd) const
 {
-	Serialize_noRoadNode(sgd);
+    Serialize_noRoadNode(sgd);
 
-	sgd->PushUnsignedChar(static_cast<unsigned char>(flagtype));
-	for(unsigned char i = 0; i < 8; ++i)
-		sgd->PushObject(wares[i], true);
+    sgd->PushUnsignedChar(static_cast<unsigned char>(flagtype));
+    for(unsigned char i = 0; i < 8; ++i)
+        sgd->PushObject(wares[i], true);
 
-	// BWUs speichern
-	for(unsigned char i = 0; i < MAX_BWU; ++i)
-	{
-		sgd->PushUnsignedInt(bwus[i].id);
-		sgd->PushUnsignedInt(bwus[i].last_gf);
-	}
+    // BWUs speichern
+    for(unsigned char i = 0; i < MAX_BWU; ++i)
+    {
+        sgd->PushUnsignedInt(bwus[i].id);
+        sgd->PushUnsignedInt(bwus[i].last_gf);
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
 void noFlag::Draw(int x, int y)
 {
-	// Positionen der Waren an der Flagge relativ zur Flagge
-	static const signed char WARES_POS[8][2] =
-	{
-		{  0,  0},
-		{ -4,  0},
-		{  3, -1},
-		{ -7, -1},
-		{  6, -2},
-		{-10, -2},
-		{  9, -5},
-		{-13, -5}
-	};
+    // Positionen der Waren an der Flagge relativ zur Flagge
+    static const signed char WARES_POS[8][2] =
+    {
+        {  0,  0},
+        { -4,  0},
+        {  3, -1},
+        { -7, -1},
+        {  6, -2},
+        { -10, -2},
+        {  9, -5},
+        { -13, -5}
+    };
 
-	unsigned ani_step = GAMECLIENT.GetGlobalAnimation(8,2,1,ani_offset);
+    unsigned ani_step = GAMECLIENT.GetGlobalAnimation(8, 2, 1, ani_offset);
 
-	Loader::flag_cache[gwg->GetPlayer(player)->nation][flagtype][ani_step].draw(x, y, 0xFFFFFFFF, COLORS[gwg->GetPlayer(player)->color]);
+    Loader::flag_cache[gwg->GetPlayer(player)->nation][flagtype][ani_step].draw(x, y, 0xFFFFFFFF, COLORS[gwg->GetPlayer(player)->color]);
 
-	// Waren (von hinten anfangen zu zeichnen)
-	for(unsigned i = 8;i;--i)
-	{
-		if(wares[i-1])
-			LOADER.GetMapImageN(2200+wares[i-1]->type)->Draw(x+WARES_POS[i-1][0],y+WARES_POS[i-1][1],0,0,0,0,0,0);
-	}
+    // Waren (von hinten anfangen zu zeichnen)
+    for(unsigned i = 8; i; --i)
+    {
+        if(wares[i - 1])
+            LOADER.GetMapImageN(2200 + wares[i - 1]->type)->Draw(x + WARES_POS[i - 1][0], y + WARES_POS[i - 1][1], 0, 0, 0, 0, 0, 0);
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung" 
+ *  Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung"
  *  für den Fog of War.
  *
  *  @author OLiver
  */
-FOWObject *noFlag::CreateFOWObject() const
+FOWObject* noFlag::CreateFOWObject() const
 {
-	return new fowFlag(player,flagtype);
+    return new fowFlag(player, flagtype);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -223,21 +223,21 @@ FOWObject *noFlag::CreateFOWObject() const
  *
  *  @author OLiver
  */
-void noFlag::AddWare(Ware *ware)
+void noFlag::AddWare(Ware* ware)
 {
-	for(unsigned char i = 0; i < 8; ++i)
-	{
-		if(!wares[i])
-		{
-			wares[i] = ware;
+    for(unsigned char i = 0; i < 8; ++i)
+    {
+        if(!wares[i])
+        {
+            wares[i] = ware;
 
-			// Träger Bescheid sagen
-			if(ware->GetNextDir() != 0xFF)
-				routes[ware->GetNextDir()]->AddWareJob(this);
+            // Träger Bescheid sagen
+            if(ware->GetNextDir() != 0xFF)
+                routes[ware->GetNextDir()]->AddWareJob(this);
 
-			return;
-		}
-	}
+            return;
+        }
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -248,101 +248,101 @@ void noFlag::AddWare(Ware *ware)
  */
 unsigned noFlag::GetWareCount() const
 {
-	unsigned count = 0;
-	for(unsigned char i = 0; i < 8; ++i)
-		if(wares[i])
-			++count;
+    unsigned count = 0;
+    for(unsigned char i = 0; i < 8; ++i)
+        if(wares[i])
+            ++count;
 
-	return count;
+    return count;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- * Wählt eine Ware von einer Flagge aus (anhand der Transportreihenfolge), 
+ * Wählt eine Ware von einer Flagge aus (anhand der Transportreihenfolge),
  * entfernt sie von der Flagge und gibt sie zurück.
  *
- * wenn swap_wares true ist, bedeutet dies, dass Waren nur ausgetauscht werden 
+ * wenn swap_wares true ist, bedeutet dies, dass Waren nur ausgetauscht werden
  * und somit nicht die Träger benachrichtigt werden müssen.
  *
  *  @author OLiver
  */
-Ware *noFlag::SelectWare(const unsigned char dir, const bool swap_wares, const noFigure *const carrier)
+Ware* noFlag::SelectWare(const unsigned char dir, const bool swap_wares, const noFigure* const carrier)
 {
-	Ware *best_ware = NULL;
-	
-	// Index merken, damit wir die enstprechende Ware dann entfernen können
-	unsigned best_ware_index = 0xFF;
+    Ware* best_ware = NULL;
 
-	// Die mit der niedrigsten, d.h. höchsten Priorität wird als erstes transportiert
-	for(unsigned char i = 0; i < 8; ++i)
-	{
-		if(wares[i])
-		{
-			if(wares[i]->GetNextDir() == dir)
-			{
-				if(best_ware)
-				{
-					if(gwg->GetPlayer(player)->transport[wares[i]->type] < gwg->GetPlayer(player)->transport[best_ware->type])
-					{
-						best_ware = wares[i];
-						best_ware_index = i;
-					}
-				}
-				else
-				{
-					best_ware = wares[i];
-					best_ware_index = i;
-				}
-			}
-		}
-	}
+    // Index merken, damit wir die enstprechende Ware dann entfernen können
+    unsigned best_ware_index = 0xFF;
 
-	// Ware von der Flagge entfernen
-	if(best_ware)
-		wares[best_ware_index] = NULL;
+    // Die mit der niedrigsten, d.h. höchsten Priorität wird als erstes transportiert
+    for(unsigned char i = 0; i < 8; ++i)
+    {
+        if(wares[i])
+        {
+            if(wares[i]->GetNextDir() == dir)
+            {
+                if(best_ware)
+                {
+                    if(gwg->GetPlayer(player)->transport[wares[i]->type] < gwg->GetPlayer(player)->transport[best_ware->type])
+                    {
+                        best_ware = wares[i];
+                        best_ware_index = i;
+                    }
+                }
+                else
+                {
+                    best_ware = wares[i];
+                    best_ware_index = i;
+                }
+            }
+        }
+    }
 
-	// ggf. anderen Trägern Bescheid sagen, aber nicht dem, der die Ware aufgehoben hat!
-	routes[dir]->WareJobRemoved(carrier);
+    // Ware von der Flagge entfernen
+    if(best_ware)
+        wares[best_ware_index] = NULL;
 
-	if(!swap_wares)
-	{
-		// Wenn nun wieder ein Platz frei ist, allen Wegen rundrum sowie evtl Warenhäusern
-		// Bescheid sagen, die evtl waren, dass sie wieder was ablegen können
-		for(unsigned char i = 0; i < 6; ++i)
-		{
-			if(routes[i])
-			{
-				if(routes[i]->GetLength() == 1)
-				{
-					// Gebäude?
-					
-					if(gwg->GetSpecObj<noBase>(gwg->GetXA(x,y,1), gwg->GetYA(x,y,1))->GetType() == NOP_BUILDING)
-					{
-						if(gwg->GetSpecObj<noBuilding>(gwg->GetXA(x,y,1), gwg->GetYA(x,y,1))->FreePlaceAtFlag())
-							break;
-					}
-				}
-				else
-				{
-					// Richtiger Weg --> Träger Bescheid sagen
-					for(unsigned char c = 0; c < 2; ++c)
-					{
-						if(routes[i]->hasCarrier(c))
-						{
-							if(routes[i]->getCarrier(c)->SpaceAtFlag(this == routes[i]->GetF2()))
-								break;
-						}
-					}
-				}
-			}
- 		}
-	}
+    // ggf. anderen Trägern Bescheid sagen, aber nicht dem, der die Ware aufgehoben hat!
+    routes[dir]->WareJobRemoved(carrier);
 
-/*	assert(best_ware);
-	if(!best_ware)
-		LOG.lprintf("Achtung: Bug im Spiel: noFlag::SelectWare: best_ware = 0!\n");
-*/
-	return best_ware;
+    if(!swap_wares)
+    {
+        // Wenn nun wieder ein Platz frei ist, allen Wegen rundrum sowie evtl Warenhäusern
+        // Bescheid sagen, die evtl waren, dass sie wieder was ablegen können
+        for(unsigned char i = 0; i < 6; ++i)
+        {
+            if(routes[i])
+            {
+                if(routes[i]->GetLength() == 1)
+                {
+                    // Gebäude?
+
+                    if(gwg->GetSpecObj<noBase>(gwg->GetXA(x, y, 1), gwg->GetYA(x, y, 1))->GetType() == NOP_BUILDING)
+                    {
+                        if(gwg->GetSpecObj<noBuilding>(gwg->GetXA(x, y, 1), gwg->GetYA(x, y, 1))->FreePlaceAtFlag())
+                            break;
+                    }
+                }
+                else
+                {
+                    // Richtiger Weg --> Träger Bescheid sagen
+                    for(unsigned char c = 0; c < 2; ++c)
+                    {
+                        if(routes[i]->hasCarrier(c))
+                        {
+                            if(routes[i]->getCarrier(c)->SpaceAtFlag(this == routes[i]->GetF2()))
+                                break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /*  assert(best_ware);
+        if(!best_ware)
+            LOG.lprintf("Achtung: Bug im Spiel: noFlag::SelectWare: best_ware = 0!\n");
+    */
+    return best_ware;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -354,14 +354,14 @@ Ware *noFlag::SelectWare(const unsigned char dir, const bool swap_wares, const n
  */
 unsigned short noFlag::GetPunishmentPoints(const unsigned char dir) const
 {
-	// Waren zählen, die in diese Richtung transportiert werden müssen
-	unsigned short points = GetWaresCountForRoad(dir) << 1;
+    // Waren zählen, die in diese Richtung transportiert werden müssen
+    unsigned short points = GetWaresCountForRoad(dir) << 1;
 
-	// Wenn kein Träger auf der Straße ist, gibts nochmal extra satte Strafpunkte
-	if(!routes[dir]->isOccupied())
-		points += 200;
+    // Wenn kein Träger auf der Straße ist, gibts nochmal extra satte Strafpunkte
+    if(!routes[dir]->isOccupied())
+        points += 200;
 
-	return points;
+    return points;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -372,13 +372,13 @@ unsigned short noFlag::GetPunishmentPoints(const unsigned char dir) const
  */
 void noFlag::DestroyAttachedBuilding()
 {
-	// Achtung es wird ein Feuer durch Destroy gesetzt, daher Objekt merken!
-	noBase *no = gwg->GetNO(gwg->GetXA(x,y,1),gwg->GetYA(x,y,1));
-	if(no->GetType() == NOP_BUILDINGSITE || no->GetType() == NOP_BUILDING)
-	{
-		no->Destroy();
-		delete no;
-	}
+    // Achtung es wird ein Feuer durch Destroy gesetzt, daher Objekt merken!
+    noBase* no = gwg->GetNO(gwg->GetXA(x, y, 1), gwg->GetYA(x, y, 1));
+    if(no->GetType() == NOP_BUILDINGSITE || no->GetType() == NOP_BUILDING)
+    {
+        no->Destroy();
+        delete no;
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -389,8 +389,8 @@ void noFlag::DestroyAttachedBuilding()
  */
 void noFlag::Upgrade()
 {
-	if(flagtype == FT_NORMAL)
-		flagtype = FT_LARGE;
+    if(flagtype == FT_NORMAL)
+        flagtype = FT_LARGE;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -401,25 +401,25 @@ void noFlag::Upgrade()
  */
 void noFlag::Capture(const unsigned char new_owner)
 {
-	// Alle Straßen um mich herum zerstören bis auf die zum Gebäude (also Nr. 1)
-	for(unsigned char i = 0; i < 6; ++i)
-	{
-		if(i != 1)
-			DestroyRoad(i);
-	}
+    // Alle Straßen um mich herum zerstören bis auf die zum Gebäude (also Nr. 1)
+    for(unsigned char i = 0; i < 6; ++i)
+    {
+        if(i != 1)
+            DestroyRoad(i);
+    }
 
-	// Waren vernichten
-	for(unsigned char i = 0; i < 8; ++i)
-	{
-		if(wares[i])
-		{
-			wares[i]->WareLost(player);
-			delete wares[i];
-			wares[i] = NULL;
-		}
-	}
+    // Waren vernichten
+    for(unsigned char i = 0; i < 8; ++i)
+    {
+        if(wares[i])
+        {
+            wares[i]->WareLost(player);
+            delete wares[i];
+            wares[i] = NULL;
+        }
+    }
 
-	this->player = new_owner;
+    this->player = new_owner;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -430,25 +430,25 @@ void noFlag::Capture(const unsigned char new_owner)
  */
 bool noFlag::IsImpossibleForBWU(const unsigned bwu_id) const
 {
-	// Zeitintervall, in der die Zugänglichkeit der Flaggen von einer bestimmten BWU überprüft wird
-	const unsigned int MAX_BWU_INTERVAL = 2000;
+    // Zeitintervall, in der die Zugänglichkeit der Flaggen von einer bestimmten BWU überprüft wird
+    const unsigned int MAX_BWU_INTERVAL = 2000;
 
-	// BWU-ID erstmal suchen
-	for(unsigned char i = 0; i < MAX_BWU; ++i)
-	{
-		if(bwus[i].id == bwu_id)
-		{
-			// Wenn letzter TÜV noch nicht zu lange zurückliegt, können wir sie als unzugänglich zurückgeben
-			if(GameClient::inst().GetGFNumber() - bwus[i].last_gf <= MAX_BWU_INTERVAL)
-				return true;
+    // BWU-ID erstmal suchen
+    for(unsigned char i = 0; i < MAX_BWU; ++i)
+    {
+        if(bwus[i].id == bwu_id)
+        {
+            // Wenn letzter TÜV noch nicht zu lange zurückliegt, können wir sie als unzugänglich zurückgeben
+            if(GameClient::inst().GetGFNumber() - bwus[i].last_gf <= MAX_BWU_INTERVAL)
+                return true;
 
-			// ansonsten nicht, evtl ist sie ja jetzt mal wieder zugänglich, sollte also mal neu geprüft werden
-			else
-				return false;
-		}
-	}
+            // ansonsten nicht, evtl ist sie ja jetzt mal wieder zugänglich, sollte also mal neu geprüft werden
+            else
+                return false;
+        }
+    }
 
-	return false;
+    return false;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -459,31 +459,31 @@ bool noFlag::IsImpossibleForBWU(const unsigned bwu_id) const
  */
 void noFlag::ImpossibleForBWU(const unsigned bwu_id)
 {
-	// Evtl gibts BWU schon --> Dann einfach GF-Zahl aktualisieren
-	for(unsigned char i = 0; i < MAX_BWU; ++i)
-	{
-		if(bwus[i].id == bwu_id)
-		{
-			bwus[i].last_gf = GameClient::inst().GetGFNumber();
-			return;
-		}
-	}
+    // Evtl gibts BWU schon --> Dann einfach GF-Zahl aktualisieren
+    for(unsigned char i = 0; i < MAX_BWU; ++i)
+    {
+        if(bwus[i].id == bwu_id)
+        {
+            bwus[i].last_gf = GameClient::inst().GetGFNumber();
+            return;
+        }
+    }
 
-	// Gibts noch nicht, dann den ältesten BWU-Account raussuchen und den überschreiben
-	unsigned oldest_gf = 0xFFFFFFFF;
-	unsigned oldest_account_id = 0;
+    // Gibts noch nicht, dann den ältesten BWU-Account raussuchen und den überschreiben
+    unsigned oldest_gf = 0xFFFFFFFF;
+    unsigned oldest_account_id = 0;
 
-	for(unsigned char i = 0; i < MAX_BWU; ++i)
-	{
-		if(bwus[i].last_gf < oldest_gf)
-		{
-			// Neuer ältester
-			oldest_gf = bwus[i].last_gf;
-			oldest_account_id = i;
-		}
-	}
+    for(unsigned char i = 0; i < MAX_BWU; ++i)
+    {
+        if(bwus[i].last_gf < oldest_gf)
+        {
+            // Neuer ältester
+            oldest_gf = bwus[i].last_gf;
+            oldest_account_id = i;
+        }
+    }
 
-	// Den ältesten dann schließlich überschreiben
-	bwus[oldest_account_id].id = bwu_id;
-	bwus[oldest_account_id].last_gf = oldest_gf;
+    // Den ältesten dann schließlich überschreiben
+    bwus[oldest_account_id].id = bwu_id;
+    bwus[oldest_account_id].last_gf = oldest_gf;
 }

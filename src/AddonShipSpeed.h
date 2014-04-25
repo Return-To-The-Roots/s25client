@@ -29,20 +29,20 @@
  */
 class AddonShipSpeed : public AddonList
 {
-public:
-	AddonShipSpeed() : AddonList(ADDON_SHIP_SPEED, 
-									   ADDONGROUP_ECONOMY,
-									   gettext_noop("Set ship speed"), 
-									   gettext_noop("Allows you to set ship movement speed\n\n"),
-									   2
-									  )
-	{
-		addOption(gettext_noop("Very slow"));
-		addOption(gettext_noop("Slow"));
-		addOption(gettext_noop("Normal"));	
-		addOption(gettext_noop("Fast"));
-		addOption(gettext_noop("Very fast"));
-	}
+    public:
+        AddonShipSpeed() : AddonList(ADDON_SHIP_SPEED,
+                                         ADDONGROUP_ECONOMY,
+                                         gettext_noop("Set ship speed"),
+                                         gettext_noop("Allows you to set ship movement speed\n\n"),
+                                         2
+                                        )
+        {
+            addOption(gettext_noop("Very slow"));
+            addOption(gettext_noop("Slow"));
+            addOption(gettext_noop("Normal"));
+            addOption(gettext_noop("Fast"));
+            addOption(gettext_noop("Very fast"));
+        }
 };
 
 #endif

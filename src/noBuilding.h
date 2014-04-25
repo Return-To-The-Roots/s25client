@@ -1,4 +1,4 @@
-// $Id: noBuilding.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: noBuilding.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -26,38 +26,38 @@
 
 class noBuilding : public noBaseBuilding
 {
-protected:
+    protected:
 
-	/// Gibt an, wie viele Leute die Tür geöffnet haben (wenns 0 ist, ist die Tür zu, ansonsten offen)
-	unsigned char opendoor;
+        /// Gibt an, wie viele Leute die Tür geöffnet haben (wenns 0 ist, ist die Tür zu, ansonsten offen)
+        unsigned char opendoor;
 
-public:
+    public:
 
 
-	noBuilding(const BuildingType type,const unsigned short x, const unsigned short y,const unsigned char player,const Nation nation);
-	noBuilding(SerializedGameData * sgd, const unsigned obj_id);
+        noBuilding(const BuildingType type, const unsigned short x, const unsigned short y, const unsigned char player, const Nation nation);
+        noBuilding(SerializedGameData* sgd, const unsigned obj_id);
 
-	/// Aufräummethoden
-protected:	void Destroy_noBuilding();
-public:		void Destroy() { Destroy_noBuilding(); }
+        /// Aufräummethoden
+    protected:  void Destroy_noBuilding();
+    public:     void Destroy() { Destroy_noBuilding(); }
 
-	/// Serialisierungsfunktionen
-	protected:	void Serialize_noBuilding(SerializedGameData * sgd) const;
-	public:		void Serialize(SerializedGameData *sgd) const { Serialize_noBuilding(sgd); }
+        /// Serialisierungsfunktionen
+    protected:  void Serialize_noBuilding(SerializedGameData* sgd) const;
+    public:     void Serialize(SerializedGameData* sgd) const { Serialize_noBuilding(sgd); }
 
-	/// Zeichnet das Gebäude an sich mit Tür ohne zusätzlichen Schnickschnack
-	void DrawBaseBuilding(int x,int y);
+        /// Zeichnet das Gebäude an sich mit Tür ohne zusätzlichen Schnickschnack
+        void DrawBaseBuilding(int x, int y);
 
-	void OpenDoor()	{++opendoor;}
-	void CloseDoor() {--opendoor;}
+        void OpenDoor() {++opendoor;}
+        void CloseDoor() {--opendoor;}
 
-	void GotWorker(Job job, noFigure * worker);
+        void GotWorker(Job job, noFigure* worker);
 
-	/// Wird aufgerufen, wenn von der Fahne vor dem Gebäude ein Rohstoff aufgenommen wurde
-	virtual bool FreePlaceAtFlag() = 0;
+        /// Wird aufgerufen, wenn von der Fahne vor dem Gebäude ein Rohstoff aufgenommen wurde
+        virtual bool FreePlaceAtFlag() = 0;
 
-	/// Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung" für den Fog of War
-	FOWObject * CreateFOWObject() const;
+        /// Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung" für den Fog of War
+        FOWObject* CreateFOWObject() const;
 };
 
 

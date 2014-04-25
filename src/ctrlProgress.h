@@ -1,4 +1,4 @@
-// $Id: ctrlProgress.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: ctrlProgress.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -25,52 +25,52 @@
 
 class ctrlProgress : public Window
 {
-public:
-	ctrlProgress(Window *parent, 
-				 const unsigned int id,
-				 const unsigned short x, 
-				 const unsigned short y, 
-				 const unsigned short width,
-				 const unsigned short height,
-				 const TextureColor tc, 
-				  unsigned short button_minus, 
-				  unsigned short button_plus,  
-				 const unsigned short maximum,
-				 const unsigned short x_padding,
-				 const unsigned short y_padding,
-				 const unsigned int force_color,
-				 const std::string& tooltip,
-				 const std::string& button_minus_tooltip = NULL,
-				 const std::string& button_plus_tooltip = NULL,
-				 unsigned short * const write_val = NULL);
+    public:
+        ctrlProgress(Window* parent,
+                     const unsigned int id,
+                     const unsigned short x,
+                     const unsigned short y,
+                     const unsigned short width,
+                     const unsigned short height,
+                     const TextureColor tc,
+                     unsigned short button_minus,
+                     unsigned short button_plus,
+                     const unsigned short maximum,
+                     const unsigned short x_padding,
+                     const unsigned short y_padding,
+                     const unsigned int force_color,
+                     const std::string& tooltip,
+                     const std::string& button_minus_tooltip = NULL,
+                     const std::string& button_plus_tooltip = NULL,
+                     unsigned short* const write_val = NULL);
 
-	void SetPosition(unsigned short position);
-	const unsigned short &GetPosition(void) const { return position; }
+        void SetPosition(unsigned short position);
+        const unsigned short& GetPosition(void) const { return position; }
 
-	virtual void Msg_ButtonClick(const unsigned int ctrl_id);
-	virtual bool Msg_LeftDown(const MouseCoords& mc);
-	virtual bool Msg_LeftUp(const MouseCoords& mc);
-	virtual bool Msg_WheelUp(const MouseCoords& mc);
-	virtual bool Msg_WheelDown(const MouseCoords& mc);
-	virtual bool Msg_MouseMove(const MouseCoords& mc);
+        virtual void Msg_ButtonClick(const unsigned int ctrl_id);
+        virtual bool Msg_LeftDown(const MouseCoords& mc);
+        virtual bool Msg_LeftUp(const MouseCoords& mc);
+        virtual bool Msg_WheelUp(const MouseCoords& mc);
+        virtual bool Msg_WheelDown(const MouseCoords& mc);
+        virtual bool Msg_MouseMove(const MouseCoords& mc);
 
-protected:
-	virtual bool Draw_(void);
+    protected:
+        virtual bool Draw_(void);
 
-private:
-	TextureColor tc;
+    private:
+        TextureColor tc;
 
-	unsigned short position;
-	unsigned short minimum; 
-	unsigned short maximum;
+        unsigned short position;
+        unsigned short minimum;
+        unsigned short maximum;
 
-	// Abstand vom Button zur Leiste (Leiste wird entsprechend verkleinert!)
-	unsigned short x_padding,y_padding;
+        // Abstand vom Button zur Leiste (Leiste wird entsprechend verkleinert!)
+        unsigned short x_padding, y_padding;
 
-	/// Falls der Balken immer eine bestimmte Farben haben soll, ansonsten 0 setzen!
-	unsigned int force_color;
+        /// Falls der Balken immer eine bestimmte Farben haben soll, ansonsten 0 setzen!
+        unsigned int force_color;
 
-	/// Optionaler Pointer auf eine Variable, 
+        /// Optionaler Pointer auf eine Variable,
 };
 
 #endif // !CTRLPROGRESS_H_INCLUDED

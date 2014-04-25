@@ -1,4 +1,4 @@
-// $Id: iwBaseWarehouse.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: iwBaseWarehouse.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -29,25 +29,25 @@ class GameWorldViewer;
 /// Basisklasse für die HQ- und Lagerhäuserfenster
 class iwBaseWarehouse : public iwWares
 {
-	GameWorldViewer * const gwv;
+        GameWorldViewer* const gwv;
 
-protected:
-	nobBaseWarehouse *wh; ///< Pointer zum entsprechenden Lagerhaus
+    protected:
+        nobBaseWarehouse* wh; ///< Pointer zum entsprechenden Lagerhaus
 
-public:
-	/// Konstruktor von @p iwBaseWarehouse.
-	iwBaseWarehouse(GameWorldViewer * const gwv,const char *const title, unsigned char page_count, nobBaseWarehouse *wh);
+    public:
+        /// Konstruktor von @p iwBaseWarehouse.
+        iwBaseWarehouse(GameWorldViewer* const gwv, const char* const title, unsigned char page_count, nobBaseWarehouse* wh);
 
-protected:
+    protected:
 
-	/// Overlay ändern
-	void ChangeOverlay(unsigned int i, unsigned int what);
+        /// Overlay ändern
+        void ChangeOverlay(unsigned int i, unsigned int what);
 
-	void Msg_Group_ButtonClick(const unsigned int group_id, const unsigned int ctrl_id);
-	void Msg_ButtonClick(const unsigned int ctrl_id);
+        void Msg_Group_ButtonClick(const unsigned int group_id, const unsigned int ctrl_id);
+        void Msg_ButtonClick(const unsigned int ctrl_id);
 
 
-	
+
 };
 
 #endif // !iwHQ_H_INCLUDED

@@ -1,4 +1,4 @@
-// $Id: iwHQ.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: iwHQ.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -31,9 +31,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -42,56 +42,56 @@
  *
  *  @author OLiver
  */
-iwHQ::iwHQ(GameWorldViewer * const gwv, nobBaseWarehouse *wh, const char * const title, const unsigned pages_count)
-	: iwBaseWarehouse(gwv,title, pages_count, wh)
+iwHQ::iwHQ(GameWorldViewer* const gwv, nobBaseWarehouse* wh, const char* const title, const unsigned pages_count)
+    : iwBaseWarehouse(gwv, title, pages_count, wh)
 {
-	// Soldaten Reservierungsseite
-	ctrlGroup * reserve = AddGroup(102);
+    // Soldaten Reservierungsseite
+    ctrlGroup* reserve = AddGroup(102);
 
-	// "Reserve"-Überschrift
-	reserve->AddText(0,83,70,_("Reserve"),0xFFFFFF00,glArchivItem_Font::DF_CENTER,NormalFont);
+    // "Reserve"-Überschrift
+    reserve->AddText(0, 83, 70, _("Reserve"), 0xFFFFFF00, glArchivItem_Font::DF_CENTER, NormalFont);
 
-	// Y-Abstand zwischen den Zeilen
-	const unsigned Y_DISTANCE = 30;
+    // Y-Abstand zwischen den Zeilen
+    const unsigned Y_DISTANCE = 30;
 
-	for(unsigned i = 0;i<5;++i)
-	{
-		// Bildhintergrund
-		reserve->AddImage(1+i,34,107+Y_DISTANCE*i,LOADER.GetMapImageN(2298));
-		// Rang-Bild
-		reserve->AddImage(6+i,34,107+Y_DISTANCE*i,LOADER.GetMapImageN(2321+i));
-		// Minus-Button
-		reserve->AddImageButton(11+i,54,95+Y_DISTANCE*i,24,24,TC_RED1,LOADER.GetImageN("io",139),_("Less"));
-		// Plus-Button
-		reserve->AddImageButton(16+i,118,95+Y_DISTANCE*i,24,24,TC_GREEN2,LOADER.GetImageN("io",138),_("More"));
-		// Anzahl-Text
-		reserve->AddVarText(21+i,100,100+Y_DISTANCE*i,_("%u/%u"),0xFFFFFF00,glArchivItem_Font::DF_CENTER,NormalFont,2,
-			wh->GetReservePointerAvailable(i),wh->GetReservePointerClaimed(i));
-	}
+    for(unsigned i = 0; i < 5; ++i)
+    {
+        // Bildhintergrund
+        reserve->AddImage(1 + i, 34, 107 + Y_DISTANCE * i, LOADER.GetMapImageN(2298));
+        // Rang-Bild
+        reserve->AddImage(6 + i, 34, 107 + Y_DISTANCE * i, LOADER.GetMapImageN(2321 + i));
+        // Minus-Button
+        reserve->AddImageButton(11 + i, 54, 95 + Y_DISTANCE * i, 24, 24, TC_RED1, LOADER.GetImageN("io", 139), _("Less"));
+        // Plus-Button
+        reserve->AddImageButton(16 + i, 118, 95 + Y_DISTANCE * i, 24, 24, TC_GREEN2, LOADER.GetImageN("io", 138), _("More"));
+        // Anzahl-Text
+        reserve->AddVarText(21 + i, 100, 100 + Y_DISTANCE * i, _("%u/%u"), 0xFFFFFF00, glArchivItem_Font::DF_CENTER, NormalFont, 2,
+                            wh->GetReservePointerAvailable(i), wh->GetReservePointerClaimed(i));
+    }
 
-	reserve->SetVisible(false);
+    reserve->SetVisible(false);
 }
 
 void iwHQ::Msg_Group_ButtonClick(const unsigned int group_id, const unsigned int ctrl_id)
 {
-	if(group_id == 102)
-	{
-		// Minus-Button
-		if(ctrl_id >= 11 && ctrl_id < 16)
-		{
-			// Netzwerk-Nachricht generieren
-			GameClient::inst().AddGC(new gc::ChangeReserve(wh->GetX(),wh->GetY(),ctrl_id-11,wh->DecreaseReserveVisual(ctrl_id-11)));
-		}
-		// Plus-Button
-		else if(ctrl_id >= 16 && ctrl_id < 21)
-		{
-			// Netzwerk-Nachricht generieren
-			GameClient::inst().AddGC(new gc::ChangeReserve(wh->GetX(),wh->GetY(),ctrl_id-16,wh->IncreaseReserveVisual(ctrl_id-16)));
-		}
-	}
+    if(group_id == 102)
+    {
+        // Minus-Button
+        if(ctrl_id >= 11 && ctrl_id < 16)
+        {
+            // Netzwerk-Nachricht generieren
+            GameClient::inst().AddGC(new gc::ChangeReserve(wh->GetX(), wh->GetY(), ctrl_id - 11, wh->DecreaseReserveVisual(ctrl_id - 11)));
+        }
+        // Plus-Button
+        else if(ctrl_id >= 16 && ctrl_id < 21)
+        {
+            // Netzwerk-Nachricht generieren
+            GameClient::inst().AddGC(new gc::ChangeReserve(wh->GetX(), wh->GetY(), ctrl_id - 16, wh->IncreaseReserveVisual(ctrl_id - 16)));
+        }
+    }
 
-	
 
-	 // an Basis weiterleiten
-	iwBaseWarehouse::Msg_Group_ButtonClick(group_id,ctrl_id);
+
+    // an Basis weiterleiten
+    iwBaseWarehouse::Msg_Group_ButtonClick(group_id, ctrl_id);
 }

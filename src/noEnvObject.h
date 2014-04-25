@@ -1,4 +1,4 @@
-// $Id: noEnvObject.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: noEnvObject.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -25,22 +25,22 @@
 
 class noEnvObject : public noStaticObject
 {
-public:
-	noEnvObject(unsigned short x, unsigned short y, unsigned short id, unsigned short file = 0xFFFF);
-	noEnvObject(SerializedGameData * sgd, const unsigned obj_id);
+    public:
+        noEnvObject(unsigned short x, unsigned short y, unsigned short id, unsigned short file = 0xFFFF);
+        noEnvObject(SerializedGameData* sgd, const unsigned obj_id);
 
-	void Destroy() { Destroy_noEnvObject(); }
+        void Destroy() { Destroy_noEnvObject(); }
 
-	/// Serialisierungsfunktionen
-	protected:	void Serialize_noEnvObject(SerializedGameData * sgd) const;
-	public:		void Serialize(SerializedGameData *sgd) const { Serialize_noEnvObject(sgd); }
+        /// Serialisierungsfunktionen
+    protected:  void Serialize_noEnvObject(SerializedGameData* sgd) const;
+    public:     void Serialize(SerializedGameData* sgd) const { Serialize_noEnvObject(sgd); }
 
-	GO_Type GetGOT() const { return GOT_ENVOBJECT; }
+        GO_Type GetGOT() const { return GOT_ENVOBJECT; }
 
-	virtual BlockingManner GetBM() const { return BM_NOTBLOCKING; }
+        virtual BlockingManner GetBM() const { return BM_NOTBLOCKING; }
 
-protected:
-	void Destroy_noEnvObject() { Destroy_noStaticObject(); }
+    protected:
+        void Destroy_noEnvObject() { Destroy_noStaticObject(); }
 };
 
 #endif // !NOENVOBJECT_H_INCLUDED

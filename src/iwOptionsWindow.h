@@ -1,4 +1,4 @@
-// $Id: iwOptionsWindow.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: iwOptionsWindow.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -27,14 +27,14 @@ class dskGameInterface;
 class iwOptionsWindow : public IngameWindow
 {
 
-public:
+    public:
 
-	iwOptionsWindow(dskGameInterface *gameDesktop);
+        iwOptionsWindow(dskGameInterface* gameDesktop);
 
-private:
-	dskGameInterface *gameDesktop;
-	void Msg_ButtonClick(const unsigned int ctrl_id);
-	void Msg_ProgressChange(const unsigned int ctrl_id, const unsigned short position);
+    private:
+        dskGameInterface* gameDesktop;
+        void Msg_ButtonClick(const unsigned int ctrl_id);
+        void Msg_ProgressChange(const unsigned int ctrl_id, const unsigned short position);
 };
 
 #endif

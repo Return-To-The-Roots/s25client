@@ -1,4 +1,4 @@
-// $Id: ctrlVarDeepening.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: ctrlVarDeepening.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -25,9 +25,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -36,79 +36,79 @@
  *
  *  @author FloSoft
  */
-ctrlVarDeepening::ctrlVarDeepening(Window *parent,
-								   unsigned int id, 
-								   unsigned short x, 
-								   unsigned short y, 
-								   unsigned short width, 
-								   unsigned short height, 
-								   TextureColor tc, 
-								   const std::string& text,
-								   glArchivItem_Font *font,
-								   unsigned int color,
-								   unsigned int count,
-								   va_list liste)
-	: ctrlVarText(parent, id, x, y, text, color, 0, font, count, liste), 
-	tc(tc)
+ctrlVarDeepening::ctrlVarDeepening(Window* parent,
+                                   unsigned int id,
+                                   unsigned short x,
+                                   unsigned short y,
+                                   unsigned short width,
+                                   unsigned short height,
+                                   TextureColor tc,
+                                   const std::string& text,
+                                   glArchivItem_Font* font,
+                                   unsigned int color,
+                                   unsigned int count,
+                                   va_list liste)
+    : ctrlVarText(parent, id, x, y, text, color, 0, font, count, liste),
+      tc(tc)
 {
-	// We don't want to pass these through all those constructors 
-	// of only-text objects down to the Window class. This is a special
-	// situation, as we are a Deepening _and_ a VarText instead
-	// of owning the VarText.
-	this->width  = width;
-	this->height = height;
+    // We don't want to pass these through all those constructors
+    // of only-text objects down to the Window class. This is a special
+    // situation, as we are a Deepening _and_ a VarText instead
+    // of owning the VarText.
+    this->width  = width;
+    this->height = height;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
  *  zeichnet das Fenster.
- * 
+ *
  *  @author FloSoft
  */
 bool ctrlVarDeepening::Draw_(void)
 {
-	Draw3D(x, y, width, height, tc, 2);
+    Draw3D(x, y, width, height, tc, 2);
 
-	char buffer[1025];
+    char buffer[1025];
 
-	// variablen Inhalt erzeugen
-	for(unsigned int i = 0, j = 0, k = 0; i < text.length() && j < 1024; ++i)
-	{
-		if(text[i] == '%')
-		{
-			++i;
-			char temp[1025];
-			switch(text[i])
-			{
-			case 'd':
-				{
-					snprintf(temp, 1024, "%d", *(int*)vars[k++]);
-					for(unsigned int x = 0; x < strlen(temp); ++x)
-						buffer[j++] = temp[x];
-				} break;
-			case 's':
-				{
-					snprintf(temp, 1024, "%s", (char*)vars[k++]);
-					for(unsigned int x = 0; x < strlen(temp); ++x)
-						buffer[j++] = temp[x];
-				} break;
-			default:
-				{
-					buffer[j++] = text[i-1];
-					buffer[j++] = text[i];
-				} break;
-			}
-		}
-		else
-			buffer[j++] = text[i];
-		buffer[j] = '\0';
-	}
-	//vsnprintf(buffer, 1024, text, *(va_list*)&vars);
+    // variablen Inhalt erzeugen
+    for(unsigned int i = 0, j = 0, k = 0; i < text.length() && j < 1024; ++i)
+    {
+        if(text[i] == '%')
+        {
+            ++i;
+            char temp[1025];
+            switch(text[i])
+            {
+                case 'd':
+                {
+                    snprintf(temp, 1024, "%d", *(int*)vars[k++]);
+                    for(unsigned int x = 0; x < strlen(temp); ++x)
+                        buffer[j++] = temp[x];
+                } break;
+                case 's':
+                {
+                    snprintf(temp, 1024, "%s", (char*)vars[k++]);
+                    for(unsigned int x = 0; x < strlen(temp); ++x)
+                        buffer[j++] = temp[x];
+                } break;
+                default:
+                {
+                    buffer[j++] = text[i - 1];
+                    buffer[j++] = text[i];
+                } break;
+            }
+        }
+        else
+            buffer[j++] = text[i];
+        buffer[j] = '\0';
+    }
+    //vsnprintf(buffer, 1024, text, *(va_list*)&vars);
 
-	// letzte byte nullen (safety, vsnprintf schreibt bei zu großem string kein null-terminator)
-	buffer[1024] = '\0';
+    // letzte byte nullen (safety, vsnprintf schreibt bei zu großem string kein null-terminator)
+    buffer[1024] = '\0';
 
-	font->Draw(x + width / 2, y + height / 2, buffer, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, color);
-	
-	return true;
+    font->Draw(x + width / 2, y + height / 2, buffer, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, color);
+
+    return true;
 }

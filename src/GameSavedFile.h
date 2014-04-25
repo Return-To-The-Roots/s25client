@@ -1,4 +1,4 @@
-// $Id: GameSavedFile.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: GameSavedFile.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -27,49 +27,49 @@
 /// Basisklasse für Replays und Savegames
 class SavedFile
 {
-public:
-	SavedFile();
-	virtual ~SavedFile();
+    public:
+        SavedFile();
+        virtual ~SavedFile();
 
-protected:
-	/// Schreibt Signatur und Version der Datei
-	void WriteVersion(BinaryFile& file, unsigned int signature_length, const char* signature, unsigned short version);
-	/// Überprüft Signatur und Version der Datei
-	bool ValidateFile(BinaryFile& file, unsigned int signature_length, const char* signature, unsigned short version);
+    protected:
+        /// Schreibt Signatur und Version der Datei
+        void WriteVersion(BinaryFile& file, unsigned int signature_length, const char* signature, unsigned short version);
+        /// Überprüft Signatur und Version der Datei
+        bool ValidateFile(BinaryFile& file, unsigned int signature_length, const char* signature, unsigned short version);
 
-	/// Schreibt Spielerdaten
-	void WritePlayerData(BinaryFile& file);
-	/// Liest Spielerdaten aus
-	void ReadPlayerData(BinaryFile& file);
+        /// Schreibt Spielerdaten
+        void WritePlayerData(BinaryFile& file);
+        /// Liest Spielerdaten aus
+        void ReadPlayerData(BinaryFile& file);
 
-	/// schreibt die GlobalGameSettings in die Datei.
-	void WriteGGS(BinaryFile& file);
-	/// liest die GlobalGameSettings aus der Datei.
-	void ReadGGS(BinaryFile& file);
+        /// schreibt die GlobalGameSettings in die Datei.
+        void WriteGGS(BinaryFile& file);
+        /// liest die GlobalGameSettings aus der Datei.
+        void ReadGGS(BinaryFile& file);
 
 
-public:
-	/// Zeitpunkt der Aufnahme
-	unser_time_t save_time;
-	/// Mapname
-	std::string map_name;
-	/// Anzahl Spieler
-	unsigned char player_count;
+    public:
+        /// Zeitpunkt der Aufnahme
+        unser_time_t save_time;
+        /// Mapname
+        std::string map_name;
+        /// Anzahl Spieler
+        unsigned char player_count;
 
-	/// Spieler
-	struct Player
-	{
-		/// PlayerState
-		unsigned ps;
-		/// (Damaliger) Name des Spielers
-		std::string name;
-		/// Volk, Farbe, Team
-		Nation nation;
-		unsigned char color, team;
-	} *players;
+        /// Spieler
+        struct Player
+        {
+            /// PlayerState
+            unsigned ps;
+            /// (Damaliger) Name des Spielers
+            std::string name;
+            /// Volk, Farbe, Team
+            Nation nation;
+            unsigned char color, team;
+        }* players;
 
-	/// GGS
-	GlobalGameSettings ggs;
+        /// GGS
+        GlobalGameSettings ggs;
 };
 
 #endif // !GAMEFILES_H_INCLUDED

@@ -1,4 +1,4 @@
-// $Id: GameMessage.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: GameMessage.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -25,41 +25,41 @@
 
 class GameMessage : public Message
 {
-public:
-	/// Spieler-ID, von dem diese Nachricht stammt
-	unsigned char player;
-public:
-	GameMessage(const unsigned short id) : Message(id) {}
-	/// Konstruktor von @p GameMessage.
-	GameMessage(const unsigned short id, const unsigned char player) 
-		: Message(id), player(player)
-	{
-		PushUnsignedChar(player);
-	}
-	/// Konstruktor, um Message aus vorhandenem Datenblock heraus zu erstellen
-	GameMessage(const unsigned id, const unsigned char * const data, const unsigned length)
-		: Message(id, data, length), player(PopUnsignedChar())
-		{
-		}
-	/// Destruktor von @p GameMessage.
-	virtual ~GameMessage(void) {};
+    public:
+        /// Spieler-ID, von dem diese Nachricht stammt
+        unsigned char player;
+    public:
+        GameMessage(const unsigned short id) : Message(id) {}
+        /// Konstruktor von @p GameMessage.
+        GameMessage(const unsigned short id, const unsigned char player)
+            : Message(id), player(player)
+        {
+            PushUnsignedChar(player);
+        }
+        /// Konstruktor, um Message aus vorhandenem Datenblock heraus zu erstellen
+        GameMessage(const unsigned id, const unsigned char* const data, const unsigned length)
+            : Message(id, data, length), player(PopUnsignedChar())
+        {
+        }
+        /// Destruktor von @p GameMessage.
+        virtual ~GameMessage(void) {};
 
-	/// Run Methode für GameMessages, wobei PlayerID ggf. schon in der Message festgemacht wurde
-	virtual void Run(MessageInterface *callback) = 0;
+        /// Run Methode für GameMessages, wobei PlayerID ggf. schon in der Message festgemacht wurde
+        virtual void Run(MessageInterface* callback) = 0;
 
-	virtual void run(MessageInterface *callback, unsigned int id)
-	{
-		player = PopUnsignedChar();
-		if(id != 0xFFFFFFFF)
-			player = static_cast<unsigned char>(id);
-		Run(callback);
-	}
+        virtual void run(MessageInterface* callback, unsigned int id)
+        {
+            player = PopUnsignedChar();
+            if(id != 0xFFFFFFFF)
+                player = static_cast<unsigned char>(id);
+            Run(callback);
+        }
 
-	/// Gibt Netto-Länge der Message zurück ohne zusätzliche Daten (Player usw)
-	unsigned GetNetLength() const { return GetLength() -1; }
+        /// Gibt Netto-Länge der Message zurück ohne zusätzliche Daten (Player usw)
+        unsigned GetNetLength() const { return GetLength() - 1; }
 
-	static Message *create_game(unsigned short id);
-	virtual Message *create(unsigned short id) const { return create_game(id); }
+        static Message* create_game(unsigned short id);
+        virtual Message* create(unsigned short id) const { return create_game(id); }
 };
 
 #endif // GAMEMESSAGE_H_INCLUDED

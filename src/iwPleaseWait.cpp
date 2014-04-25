@@ -1,4 +1,4 @@
-// $Id: iwPleaseWait.cpp 8209 2012-09-10 14:55:39Z marcus $
+// $Id: iwPleaseWait.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -29,27 +29,27 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
-/** 
+/**
  *  Konstruktor von @p iwPleaseWait.
  *
- *  Fenster wird modal geöffnet, damit man ggf. einen "Weiter"-Button nicht 
+ *  Fenster wird modal geöffnet, damit man ggf. einen "Weiter"-Button nicht
  *  mehrfach betätigen kann.
  *
  *  @author OLiver
  */
 iwPleaseWait::iwPleaseWait(void) : IngameWindow(CGI_PLEASEWAIT, 0xFFFF, 0xFFFF, 300, 60, _("Please wait..."), LOADER.GetImageN("resource", 41), true)
 {
-	GAMEMANAGER.SetCursor(CURSOR_MOON);
-	AddText(0, GetWidth() / 2, GetHeight() / 2, _("Please wait..."), COLOR_YELLOW, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, NormalFont);
+    GAMEMANAGER.SetCursor(CURSOR_MOON);
+    AddText(0, GetWidth() / 2, GetHeight() / 2, _("Please wait..."), COLOR_YELLOW, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, NormalFont);
 }
 
 iwPleaseWait::~iwPleaseWait()
 {
-	GAMEMANAGER.SetCursor();
+    GAMEMANAGER.SetCursor();
 }

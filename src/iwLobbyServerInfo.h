@@ -1,4 +1,4 @@
-// $Id: iwLobbyServerInfo.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: iwLobbyServerInfo.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -27,20 +27,20 @@ class LobbyServerInfo;
 
 class iwLobbyServerInfo : public IngameWindow
 {
-private:
-	const LobbyServerInfo *serverinfo;
-	unsigned int server;
+    private:
+        const LobbyServerInfo* serverinfo;
+        unsigned int server;
 
-public:
-	iwLobbyServerInfo();
+    public:
+        iwLobbyServerInfo();
 
-	void Set(const LobbyServerInfo *serverinfo, unsigned int server);
-	unsigned int GetNr(void) { return server; }
+        void Set(const LobbyServerInfo* serverinfo, unsigned int server);
+        unsigned int GetNr(void) { return server; }
 
-protected:
-	void UpdateServerInfo();
+    protected:
+        void UpdateServerInfo();
 
-	void Msg_Timer(const unsigned int ctrl_id);
+        void Msg_Timer(const unsigned int ctrl_id);
 
 
 };

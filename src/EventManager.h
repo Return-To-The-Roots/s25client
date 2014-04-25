@@ -1,4 +1,4 @@
-// $Id: EventManager.h 8852 2013-08-18 19:05:05Z marcus $
+// $Id: EventManager.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -33,75 +33,75 @@ class SerializedGameData;
 
 class EventManager
 {
-public:
-	class Event : public GameObject
-	{
-	public:
+    public:
+        class Event : public GameObject
+        {
+            public:
 
-		GameObject * obj;
-		unsigned int gf;
-		unsigned int gf_length;
-		unsigned int gf_next;
-		unsigned int id;
+                GameObject* obj;
+                unsigned int gf;
+                unsigned int gf_length;
+                unsigned int gf_next;
+                unsigned int id;
 
-	public:
+            public:
 
-		Event(GameObject * const  obj, const unsigned int gf,const unsigned int gf_length,const unsigned int id)
-			: obj(obj), gf(gf), gf_length(gf_length), id(id)
-		{
-			gf_next = gf + gf_length;
-		}
+                Event(GameObject* const  obj, const unsigned int gf, const unsigned int gf_length, const unsigned int id)
+                    : obj(obj), gf(gf), gf_length(gf_length), id(id)
+                {
+                    gf_next = gf + gf_length;
+                }
 
-		Event(SerializedGameData * sgd, const unsigned obj_id);
+                Event(SerializedGameData* sgd, const unsigned obj_id);
 
-		void Destroy(void);
+                void Destroy(void);
 
-		/// Serialisierungsfunktionen
-		protected: void Serialize_Event(SerializedGameData * sgd) const;
-		public: void Serialize(SerializedGameData *sgd) const { Serialize_Event(sgd); }
+                /// Serialisierungsfunktionen
+            protected: void Serialize_Event(SerializedGameData* sgd) const;
+            public: void Serialize(SerializedGameData* sgd) const { Serialize_Event(sgd); }
 
-		GO_Type GetGOT() const { return GOT_EVENT; }
+                GO_Type GetGOT() const { return GOT_EVENT; }
 
-		// Vergleichsoperatur für chronologisches Einfügen nach Ziel-GF
-		bool operator <= (const Event& other) const { return gf+gf_length<=other.gf+other.gf_length; }
-	};
-	typedef Event * EventPointer;
+                // Vergleichsoperatur für chronologisches Einfügen nach Ziel-GF
+                bool operator <= (const Event& other) const { return gf + gf_length <= other.gf + other.gf_length; }
+        };
+        typedef Event* EventPointer;
 
-public:
-
-
-	~EventManager();
+    public:
 
 
-	/// führt alle Events des aktuellen GameFrames aus.
-	void NextGF();
-	/// fügt ein Event der Eventliste hinzu.
-	EventPointer AddEvent(GameObject *obj, const unsigned int gf_length, const unsigned int id = 0);
-	/// Deserialisiert ein Event und fügt es hinzu
-	EventPointer AddEvent(SerializedGameData * sgd, const unsigned obj_id);
-	/// Fügt ein schon angebrochenes Event hinzu (Events, wenn jemand beim Laufen stehengeblieben ist z.B.)
-	/// Ein altes Event wird also quasi fortgeführt (um gf_elapsed in der Vergangenheit angelegt)
-	EventPointer AddEvent(GameObject *obj, const unsigned int gf_length, const unsigned int id, const unsigned gf_elapsed);
+        ~EventManager();
 
-	/// Löscht alle Listen für Spielende
-	void Clear() { eis.clear(); kill_list.clear(); }
-	/// Event entfernen
-	void RemoveEvent(EventPointer ep);
-	/// Objekt will gekillt werden
-	void AddToKillList(GameObject *obj) { assert(std::count(kill_list.begin(), kill_list.end(), obj) == 0); kill_list.push_back(obj); }
 
-	/// Serialisieren
-	void Serialize(SerializedGameData *sgd) const;
-	/// Deserialisieren
-	void Deserialize(SerializedGameData *sgd);
-	
-	/// Ist ein Event mit bestimmter id für ein bestimmtes Objekt bereits vorhanden?
-	bool IsEventActive(const GameObject * const obj, const unsigned id) const;
+        /// führt alle Events des aktuellen GameFrames aus.
+        void NextGF();
+        /// fügt ein Event der Eventliste hinzu.
+        EventPointer AddEvent(GameObject* obj, const unsigned int gf_length, const unsigned int id = 0);
+        /// Deserialisiert ein Event und fügt es hinzu
+        EventPointer AddEvent(SerializedGameData* sgd, const unsigned obj_id);
+        /// Fügt ein schon angebrochenes Event hinzu (Events, wenn jemand beim Laufen stehengeblieben ist z.B.)
+        /// Ein altes Event wird also quasi fortgeführt (um gf_elapsed in der Vergangenheit angelegt)
+        EventPointer AddEvent(GameObject* obj, const unsigned int gf_length, const unsigned int id, const unsigned gf_elapsed);
 
-	void RemoveAllEventsOfObject(GameObject *obj);
-private:
-	std::list<Event*> eis;     ///< Liste der Events für die einzelnen Objekte
-	std::list<GameObject*> kill_list; ///< Liste mit Objekten die unmittelbar nach NextGF gekillt werden sollen
+        /// Löscht alle Listen für Spielende
+        void Clear() { eis.clear(); kill_list.clear(); }
+        /// Event entfernen
+        void RemoveEvent(EventPointer ep);
+        /// Objekt will gekillt werden
+        void AddToKillList(GameObject* obj) { assert(std::count(kill_list.begin(), kill_list.end(), obj) == 0); kill_list.push_back(obj); }
+
+        /// Serialisieren
+        void Serialize(SerializedGameData* sgd) const;
+        /// Deserialisieren
+        void Deserialize(SerializedGameData* sgd);
+
+        /// Ist ein Event mit bestimmter id für ein bestimmtes Objekt bereits vorhanden?
+        bool IsEventActive(const GameObject* const obj, const unsigned id) const;
+
+        void RemoveAllEventsOfObject(GameObject* obj);
+    private:
+        std::list<Event*> eis;     ///< Liste der Events für die einzelnen Objekte
+        std::list<GameObject*> kill_list; ///< Liste mit Objekten die unmittelbar nach NextGF gekillt werden sollen
 };
 
 #define EVENTMANAGER EventManager::inst()

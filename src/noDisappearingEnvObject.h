@@ -1,4 +1,4 @@
-// $Id: noDisappearingEnvObject.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: noDisappearingEnvObject.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -24,35 +24,35 @@
 
 class noDisappearingEnvObject : public noCoordBase
 {
-public:
-	/// Konstruktor von @p noDisappearingEnvObject.
-	noDisappearingEnvObject(const unsigned short x, const unsigned short y, const unsigned living_time,
-		const unsigned add_var_living_time);
-	noDisappearingEnvObject(SerializedGameData * sgd, const unsigned obj_id);
+    public:
+        /// Konstruktor von @p noDisappearingEnvObject.
+        noDisappearingEnvObject(const unsigned short x, const unsigned short y, const unsigned living_time,
+                                const unsigned add_var_living_time);
+        noDisappearingEnvObject(SerializedGameData* sgd, const unsigned obj_id);
 
-	/// Aufräummethoden
-protected:	void Destroy_noDisappearingEnvObject();
-public:		void Destroy() { Destroy_noDisappearingEnvObject(); }
-	/// Serialisierungsfunktionen
-	protected:	void Serialize_noDisappearingEnvObject(SerializedGameData * sgd) const;
-	public:		void Serialize(SerializedGameData *sgd) const { Serialize_noDisappearingEnvObject(sgd); }
+        /// Aufräummethoden
+    protected:  void Destroy_noDisappearingEnvObject();
+    public:     void Destroy() { Destroy_noDisappearingEnvObject(); }
+        /// Serialisierungsfunktionen
+    protected:  void Serialize_noDisappearingEnvObject(SerializedGameData* sgd) const;
+    public:     void Serialize(SerializedGameData* sgd) const { Serialize_noDisappearingEnvObject(sgd); }
 
-	/// Benachrichtigen, wenn neuer GF erreicht wurde.
-	void HandleEvent_noDisappearingEnvObject(const unsigned int id);
+        /// Benachrichtigen, wenn neuer GF erreicht wurde.
+        void HandleEvent_noDisappearingEnvObject(const unsigned int id);
 
-protected:
+    protected:
 
-	/// Gibt Farbe zurück, mit der das Objekt gezeichnet werden soll
-	unsigned GetDrawColor() const;
-	/// Gibt Farbe zurück, mit der der Schatten des Objekts gezeichnet werden soll
-	unsigned GetDrawShadowColor() const;
+        /// Gibt Farbe zurück, mit der das Objekt gezeichnet werden soll
+        unsigned GetDrawColor() const;
+        /// Gibt Farbe zurück, mit der der Schatten des Objekts gezeichnet werden soll
+        unsigned GetDrawShadowColor() const;
 
-private:
+    private:
 
-	/// Bin ich grad in der Sterbephase (in der das Schild immer transparenter wird, bevor es verschwindet)
-	bool disappearing;
-	/// Event, das bestimmt wie lange es noch lebt
-	EventManager::EventPointer dead_event;
+        /// Bin ich grad in der Sterbephase (in der das Schild immer transparenter wird, bevor es verschwindet)
+        bool disappearing;
+        /// Event, das bestimmt wie lange es noch lebt
+        EventManager::EventPointer dead_event;
 };
 
 

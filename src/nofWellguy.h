@@ -1,4 +1,4 @@
-// $Id: nofWellguy.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: nofWellguy.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -27,20 +27,20 @@ class nobUsualBuilding;
 /// Klasse für den Schreiner
 class nofWellguy : public nofWorkman
 {
-	/// Zeichnet ihn beim Arbeiten
-	void DrawWorking(int x, int y);
-	/// Gibt die ID in JOBS.BOB zurück, wenn der Beruf Waren rausträgt (bzw rein)
-	// TODO:der Brunnentyphat keine ID in JOBS.BOB
-	unsigned short GetCarryID() const { return 111; }
-	/// Der Arbeiter erzeugt eine Ware
-	GoodType ProduceWare();
+        /// Zeichnet ihn beim Arbeiten
+        void DrawWorking(int x, int y);
+        /// Gibt die ID in JOBS.BOB zurück, wenn der Beruf Waren rausträgt (bzw rein)
+        // TODO:der Brunnentyphat keine ID in JOBS.BOB
+        unsigned short GetCarryID() const { return 111; }
+        /// Der Arbeiter erzeugt eine Ware
+        GoodType ProduceWare();
 
-public:
+    public:
 
-	nofWellguy(const unsigned short x, const unsigned short y,const unsigned char player,nobUsual * workplace);
-	nofWellguy(SerializedGameData * sgd, const unsigned obj_id);
+        nofWellguy(const unsigned short x, const unsigned short y, const unsigned char player, nobUsual* workplace);
+        nofWellguy(SerializedGameData* sgd, const unsigned obj_id);
 
-	GO_Type GetGOT() const { return GOT_NOF_WELLGUY; }
+        GO_Type GetGOT() const { return GOT_NOF_WELLGUY; }
 };
 
 #endif

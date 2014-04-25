@@ -1,4 +1,4 @@
-// $Id: GlobalVars.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: GlobalVars.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -26,15 +26,15 @@
 /// Klasse für alle "globalen" Variablen/Objekte
 class GlobalVars : public Singleton<GlobalVars>
 {
-public:
-	/// Konstruktor von @p GlobalVars.
-	GlobalVars(void);
+    public:
+        /// Konstruktor von @p GlobalVars.
+        GlobalVars(void);
 
-public:
-	bool notdone;
-	bool ingame;
-	bool ext_vbo;
-	bool ext_swapcontrol;
+    public:
+        bool notdone;
+        bool ingame;
+        bool ext_vbo;
+        bool ext_swapcontrol;
 };
 
 ///////////////////////////////////////////////////////////////////////////////

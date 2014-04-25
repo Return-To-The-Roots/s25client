@@ -1,4 +1,4 @@
-// $Id: AIConstruction.h 8305 2012-09-22 12:34:54Z marcus $
+// $Id: AIConstruction.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -35,93 +35,93 @@ namespace gc { class GameCommand; }
 
 class AIConstruction
 {
-public:
-	AIConstruction(AIInterface *aii, AIPlayerJH *aijh);
-	~AIConstruction(void);
+    public:
+        AIConstruction(AIInterface* aii, AIPlayerJH* aijh);
+        ~AIConstruction(void);
 
-	/// Adds a build job to the queue
-	void AddBuildJob(AIJH::BuildJob *job, bool front);
-	void AddJob(AIJH::Job *job, bool front);
+        /// Adds a build job to the queue
+        void AddBuildJob(AIJH::BuildJob* job, bool front);
+        void AddJob(AIJH::Job* job, bool front);
 
-	AIJH::Job *GetBuildJob();
-	unsigned GetBuildJobNum() const { return buildJobs.size(); }
+        AIJH::Job* GetBuildJob();
+        unsigned GetBuildJobNum() const { return buildJobs.size(); }
 
-	void AddConnectFlagJob(const noFlag *flag); // todo aijh als param suckt
+        void AddConnectFlagJob(const noFlag* flag); // todo aijh als param suckt
 
-	bool BuildJobAvailable() const { return buildJobs.size() > 0;}
+        bool BuildJobAvailable() const { return buildJobs.size() > 0;}
 
-	/// Finds flags in the area around x,y
-	void FindFlags(std::vector<const noFlag*>& flags, unsigned short x, unsigned short y, unsigned short radius, bool clear = true);
+        /// Finds flags in the area around x,y
+        void FindFlags(std::vector<const noFlag*>& flags, unsigned short x, unsigned short y, unsigned short radius, bool clear = true);
 
-	void FindFlags(std::vector<const noFlag*>& flags, unsigned short x, unsigned short y, unsigned short radius, 
-															 unsigned short real_x, unsigned short real_y, unsigned short real_radius, bool clear = true);
+        void FindFlags(std::vector<const noFlag*>& flags, unsigned short x, unsigned short y, unsigned short radius,
+                       unsigned short real_x, unsigned short real_y, unsigned short real_radius, bool clear = true);
 
-	/// Connects a specific flag to a roadsystem nearby and returns true if succesful. Also returns the route of the future road.
-	bool ConnectFlagToRoadSytem(const noFlag *flag, std::vector<unsigned char>& route, unsigned int maxSearchRadius = 10);
+        /// Connects a specific flag to a roadsystem nearby and returns true if succesful. Also returns the route of the future road.
+        bool ConnectFlagToRoadSytem(const noFlag* flag, std::vector<unsigned char>& route, unsigned int maxSearchRadius = 10);
 
-	/// Builds a street between two roadnodes and sets flags on it, if route is empty, it will be calculated
-	bool BuildRoad(const noRoadNode *start, const noRoadNode *target, std::vector<unsigned char> &route);
+        /// Builds a street between two roadnodes and sets flags on it, if route is empty, it will be calculated
+        bool BuildRoad(const noRoadNode* start, const noRoadNode* target, std::vector<unsigned char> &route);
 
-	/// whenever a given route contains 2 segment alternatives these get tested for their buildquality and the one with the lower bq is picked for the final path
-	bool MinorRoadImprovements(const noRoadNode *start, const noRoadNode *target, std::vector<unsigned char> &route);
+        /// whenever a given route contains 2 segment alternatives these get tested for their buildquality and the one with the lower bq is picked for the final path
+        bool MinorRoadImprovements(const noRoadNode* start, const noRoadNode* target, std::vector<unsigned char> &route);
 
-	/// Checks whether a flag is connected to the road system or not (connected = has path to HQ)
-	bool IsConnectedToRoadSystem(const noFlag *flag);
+        /// Checks whether a flag is connected to the road system or not (connected = has path to HQ)
+        bool IsConnectedToRoadSystem(const noFlag* flag);
 
-	/// Randomly chooses a military building, prefering bigger buildings if enemy nearby
-	BuildingType ChooseMilitaryBuilding(MapCoord x, MapCoord y);
+        /// Randomly chooses a military building, prefering bigger buildings if enemy nearby
+        BuildingType ChooseMilitaryBuilding(MapCoord x, MapCoord y);
 
-	/// Returns the number of buildings and buildingsites of a specific type (refresh with RefreshBuildingCount())
-	unsigned GetBuildingCount(BuildingType type);
+        /// Returns the number of buildings and buildingsites of a specific type (refresh with RefreshBuildingCount())
+        unsigned GetBuildingCount(BuildingType type);
 
-	/// Returns the number of buildingsites of a specific type (refresh with RefreshBuildingCount())
-	unsigned GetBuildingSitesCount(BuildingType type);
+        /// Returns the number of buildingsites of a specific type (refresh with RefreshBuildingCount())
+        unsigned GetBuildingSitesCount(BuildingType type);
 
-	/// Refreshes the number of buildings by asking the GameClientPlayer and recalcs some wanted buildings
-	void RefreshBuildingCount();
+        /// Refreshes the number of buildings by asking the GameClientPlayer and recalcs some wanted buildings
+        void RefreshBuildingCount();
 
 
-	/// Checks whether a building type is wanted atm
-	bool Wanted(BuildingType type);
+        /// Checks whether a building type is wanted atm
+        bool Wanted(BuildingType type);
 
-	/// Initializes the wanted-buildings-vector
-	void InitBuildingsWanted();
+        /// Initializes the wanted-buildings-vector
+        void InitBuildingsWanted();
 
-	/// Update BQ and farming ground around new building site + road
-	/// HIer oder in AIPlayerJH?
-	//void RecalcGround(MapCoord x_building, MapCoord y_building, std::vector<unsigned char> &route_road);
+        /// Update BQ and farming ground around new building site + road
+        /// HIer oder in AIPlayerJH?
+        //void RecalcGround(MapCoord x_building, MapCoord y_building, std::vector<unsigned char> &route_road);
 
-	/// Tries to build a second road to a flag, which is in any way better than the first one
-	bool BuildAlternativeRoad(const noFlag *flag, std::vector<unsigned char> &route);
+        /// Tries to build a second road to a flag, which is in any way better than the first one
+        bool BuildAlternativeRoad(const noFlag* flag, std::vector<unsigned char> &route);
 
-	bool OtherStoreInRadius(MapCoord &x, MapCoord &y, unsigned radius);
-	
-	void AddStoreHouse(MapCoord x, MapCoord y) { storeHouses.push_back(AIJH::Coords(x, y)); }
-	void AddStoreHouseFront(MapCoord x,MapCoord y) {storeHouses.push_front(AIJH::Coords(x,y));}
+        bool OtherStoreInRadius(MapCoord& x, MapCoord& y, unsigned radius);
 
-	noFlag *FindTargetStoreHouseFlag(MapCoord x, MapCoord y);
+        void AddStoreHouse(MapCoord x, MapCoord y) { storeHouses.push_back(AIJH::Coords(x, y)); }
+        void AddStoreHouseFront(MapCoord x, MapCoord y) {storeHouses.push_front(AIJH::Coords(x, y));}
 
-	std::list<AIJH::Coords> &GetStoreHousePositions() { return storeHouses; }
+        noFlag* FindTargetStoreHouseFlag(MapCoord x, MapCoord y);
 
-private:
-	/// Contains how many buildings of every type is wanted
-	std::vector<unsigned> buildingsWanted;
+        std::list<AIJH::Coords> &GetStoreHousePositions() { return storeHouses; }
 
-	/// The current job the AI is working on
-	AIJH::Job *currentJob;
+    private:
+        /// Contains how many buildings of every type is wanted
+        std::vector<unsigned> buildingsWanted;
 
-	/// Contains the jobs the AI should try to execute, for example build jobs
-	std::deque<AIJH::Job*> buildJobs;
+        /// The current job the AI is working on
+        AIJH::Job* currentJob;
 
-	AIInterface *aii;
-	AIPlayerJH *aijh;
+        /// Contains the jobs the AI should try to execute, for example build jobs
+        std::deque<AIJH::Job*> buildJobs;
 
-	/// Number of buildings and building sites of this player (refreshed by RefreshBuildingCount())
-	BuildingCount buildingCounts;
+        AIInterface* aii;
+        AIPlayerJH* aijh;
 
-	std::list<AIJH::Coords> storeHouses;
+        /// Number of buildings and building sites of this player (refreshed by RefreshBuildingCount())
+        BuildingCount buildingCounts;
 
-	unsigned char playerID;
+        std::list<AIJH::Coords> storeHouses;
+
+        unsigned char playerID;
 };
 
 #endif //! AICONSTRUCTION_H_INCLUDED

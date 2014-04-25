@@ -1,4 +1,4 @@
-// $Id: GameServerPlayer.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: GameServerPlayer.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -33,46 +33,46 @@ class Serializer;
 // GamePlayerInfo für die PlayerSlots des Servers
 class GameServerPlayer : public GamePlayerInfo
 {
-public:
-	GameServerPlayer(const unsigned playerid);
-	GameServerPlayer(const unsigned playerid, Serializer * ser);
-	~GameServerPlayer();
+    public:
+        GameServerPlayer(const unsigned playerid);
+        GameServerPlayer(const unsigned playerid, Serializer* ser);
+        ~GameServerPlayer();
 
-	/// Gibt Sekunden bis zum TimeOut (Rausschmiss) zurück
-	unsigned GetTimeOut() const;
+        /// Gibt Sekunden bis zum TimeOut (Rausschmiss) zurück
+        unsigned GetTimeOut() const;
 
-	void doPing();
-	void doTimeout();
-	void reserve(Socket *sock, unsigned char id);
-	void clear();
+        void doPing();
+        void doTimeout();
+        void reserve(Socket* sock, unsigned char id);
+        void clear();
 
-	/// Tauscht Spieler
-	void SwapPlayer(GameServerPlayer& two);
+        /// Tauscht Spieler
+        void SwapPlayer(GameServerPlayer& two);
 
-	/// Spieler laggt
-	void Lagging();
-	/// Spieler laggt nicht (mehr)
-	void NotLagging();
+        /// Spieler laggt
+        void Lagging();
+        /// Spieler laggt nicht (mehr)
+        void NotLagging();
 
-private:
+    private:
 
-	unsigned int connecttime;
-	/// Zeitpunkt, ab dem kein Kommando mehr vom Spieler kommt
-	unser_time_t last_command_timeout;
+        unsigned int connecttime;
+        /// Zeitpunkt, ab dem kein Kommando mehr vom Spieler kommt
+        unser_time_t last_command_timeout;
 
-public:
-	Socket so;
-	bool pinging;
+    public:
+        Socket so;
+        bool pinging;
 
-	MessageQueue send_queue;
-	MessageQueue recv_queue;
+        MessageQueue send_queue;
+        MessageQueue recv_queue;
 
-	std::list<GameMessage_GameCommand> gc_queue;
+        std::list<GameMessage_GameCommand> gc_queue;
 
-	unsigned int lastping;
+        unsigned int lastping;
 
-	unsigned int temp_ul;
-	unsigned int temp_ui;
+        unsigned int temp_ul;
+        unsigned int temp_ui;
 };
 
 

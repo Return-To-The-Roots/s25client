@@ -1,4 +1,4 @@
-// $Id: iwBuildingProductivities.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: iwBuildingProductivities.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -31,30 +31,30 @@ const unsigned BUILDINGS_COUNT = 24;
 /// Reihenfolge der Gebäude
 const BuildingType bts[BUILDINGS_COUNT] =
 {
-	BLD_GRANITEMINE,
-	BLD_COALMINE,
-	BLD_IRONMINE,
-	BLD_GOLDMINE,
-	BLD_WOODCUTTER,
-	BLD_FISHERY,
-	BLD_QUARRY,
-	BLD_FORESTER,
-	BLD_SLAUGHTERHOUSE,
-	BLD_HUNTER,
-	BLD_BREWERY,
-	BLD_ARMORY,
-	BLD_METALWORKS,
-	BLD_IRONSMELTER,
-	BLD_PIGFARM,
-	BLD_MILL,
-	BLD_BAKERY,
-	BLD_SAWMILL,
-	BLD_MINT,
-	BLD_WELL,
-	BLD_SHIPYARD,
-	BLD_FARM,
-	BLD_DONKEYBREEDER,
-	BLD_CHARBURNER
+    BLD_GRANITEMINE,
+    BLD_COALMINE,
+    BLD_IRONMINE,
+    BLD_GOLDMINE,
+    BLD_WOODCUTTER,
+    BLD_FISHERY,
+    BLD_QUARRY,
+    BLD_FORESTER,
+    BLD_SLAUGHTERHOUSE,
+    BLD_HUNTER,
+    BLD_BREWERY,
+    BLD_ARMORY,
+    BLD_METALWORKS,
+    BLD_IRONSMELTER,
+    BLD_PIGFARM,
+    BLD_MILL,
+    BLD_BAKERY,
+    BLD_SAWMILL,
+    BLD_MINT,
+    BLD_WELL,
+    BLD_SHIPYARD,
+    BLD_FARM,
+    BLD_DONKEYBREEDER,
+    BLD_CHARBURNER
 };
 
 
@@ -80,41 +80,41 @@ const unsigned short percent_height = 18;
 
 /// Konstruktor von @p iwBuildingProductivities.
 iwBuildingProductivities::iwBuildingProductivities()
-: IngameWindow(CGI_BUILDINGSPRODUCTIVITY, 0xFFFE, 0xFFFE,
-			   left_x+2*percent_width+2*image_percent_x+percent_image_x+right_x,
-			   top_y + (BUILDINGS_COUNT/2+1) * (distance_y+1), _("Productivity"), LOADER.GetImageN("resource", 41)),
- percents(40,0)
+    : IngameWindow(CGI_BUILDINGSPRODUCTIVITY, 0xFFFE, 0xFFFE,
+                   left_x + 2 * percent_width + 2 * image_percent_x + percent_image_x + right_x,
+                   top_y + (BUILDINGS_COUNT / 2 + 1) * (distance_y + 1), _("Productivity"), LOADER.GetImageN("resource", 41)),
+    percents(40, 0)
 {
-	for(unsigned y = 0;y<BUILDINGS_COUNT/2+BUILDINGS_COUNT%2;++y)
-	{
-		for(unsigned x = 0;x<2;++x)
-		{
-			if(y*2+x < BUILDINGS_COUNT)
-			{
-				AddImage((y*2+x)*2, left_x + x*(percent_image_x+percent_width+image_percent_x),top_y + distance_y*y + percent_height/2,
-					LOADER.GetImageN(NATION_ICON_IDS[GameClient::inst().GetLocalPlayer()->nation],bts[y*2+x]),_(BUILDING_NAMES[bts[y*2+x]]));
+    for(unsigned y = 0; y < BUILDINGS_COUNT / 2 + BUILDINGS_COUNT % 2; ++y)
+    {
+        for(unsigned x = 0; x < 2; ++x)
+        {
+            if(y * 2 + x < BUILDINGS_COUNT)
+            {
+                AddImage((y * 2 + x) * 2, left_x + x * (percent_image_x + percent_width + image_percent_x), top_y + distance_y * y + percent_height / 2,
+                         LOADER.GetImageN(NATION_ICON_IDS[GameClient::inst().GetLocalPlayer()->nation], bts[y * 2 + x]), _(BUILDING_NAMES[bts[y * 2 + x]]));
 
-				AddPercent((y*2+x)*2+1, left_x + image_percent_x + x*(percent_image_x+percent_width+image_percent_x),top_y + distance_y*y,
-					percent_width, percent_height, TC_GREY, COLOR_YELLOW, SmallFont, &percents[bts[y*2+x]]);
-			}
-		}
-	}
+                AddPercent((y * 2 + x) * 2 + 1, left_x + image_percent_x + x * (percent_image_x + percent_width + image_percent_x), top_y + distance_y * y,
+                           percent_width, percent_height, TC_GREY, COLOR_YELLOW, SmallFont, &percents[bts[y * 2 + x]]);
+            }
+        }
+    }
 
-	UpdatePercents();
+    UpdatePercents();
 
-	// Hilfe-Button
-	AddImageButton(500,width-14-30,height-20-32,30,32,TC_GREY, LOADER.GetImageN("io",21), _("Help"));
+    // Hilfe-Button
+    AddImageButton(500, width - 14 - 30, height - 20 - 32, 30, 32, TC_GREY, LOADER.GetImageN("io", 21), _("Help"));
 }
 
 /// Aktualisieren der Prozente
 void iwBuildingProductivities::UpdatePercents()
 {
-	GameClient::inst().GetLocalPlayer()->CalcProductivities(percents);
+    GameClient::inst().GetLocalPlayer()->CalcProductivities(percents);
 }
 
 /// Produktivitäts-percentbars aktualisieren
 void iwBuildingProductivities::Msg_PaintAfter()
 {
-	UpdatePercents();
+    UpdatePercents();
 }
 

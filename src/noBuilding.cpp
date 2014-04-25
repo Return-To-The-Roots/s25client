@@ -1,4 +1,4 @@
-// $Id: noBuilding.cpp 8170 2012-09-07 14:44:26Z marcus $
+// $Id: noBuilding.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -32,99 +32,99 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
 noBuilding::noBuilding(const BuildingType type,
-					   const unsigned short x, 
-					   const unsigned short y,
-					   const unsigned char player,
-					   const Nation nation)
-	: noBaseBuilding(NOP_BUILDING,type, x, y, player),
-	opendoor(0)
+                       const unsigned short x,
+                       const unsigned short y,
+                       const unsigned char player,
+                       const Nation nation)
+    : noBaseBuilding(NOP_BUILDING, type, x, y, player),
+      opendoor(0)
 {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
 void noBuilding::Destroy_noBuilding()
 {
-	// Feuer erzeugen (bei Hütten und Bergwerken kleine Feuer, bei allen anderen große!)
-	// Feuer setzen
-	gwg->SetNO(new noFire(x,y,(GetSize() == BQ_HUT || GetSize() == BQ_MINE)?0:1),x,y);
+    // Feuer erzeugen (bei Hütten und Bergwerken kleine Feuer, bei allen anderen große!)
+    // Feuer setzen
+    gwg->SetNO(new noFire(x, y, (GetSize() == BQ_HUT || GetSize() == BQ_MINE) ? 0 : 1), x, y);
 
-	Destroy_noBaseBuilding();
+    Destroy_noBaseBuilding();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
-void noBuilding::Serialize_noBuilding(SerializedGameData * sgd) const
+void noBuilding::Serialize_noBuilding(SerializedGameData* sgd) const
 {
-	Serialize_noBaseBuilding(sgd);
+    Serialize_noBaseBuilding(sgd);
 
-	sgd->PushUnsignedChar(opendoor);
+    sgd->PushUnsignedChar(opendoor);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
-noBuilding::noBuilding(SerializedGameData * sgd, const unsigned obj_id) : noBaseBuilding(sgd,obj_id),
-opendoor(sgd->PopUnsignedChar())
-{
-}
-
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  
- *
- *  @author OLiver
- */
-void noBuilding::DrawBaseBuilding(int x,int y)
-{
-	Loader::building_cache[nation][type][0].draw(x,y);
-
-	if (opendoor && GetDoorImage())
-	{
-		GetDoorImage()->Draw(x,y,0,0,0,0,0,0);
-	}
-}
-
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  
- *
- *  @author OLiver
- */
-void noBuilding::GotWorker(Job job, noFigure * worker)
+noBuilding::noBuilding(SerializedGameData* sgd, const unsigned obj_id) : noBaseBuilding(sgd, obj_id),
+    opendoor(sgd->PopUnsignedChar())
 {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  
+ *
  *
  *  @author OLiver
  */
-FOWObject * noBuilding::CreateFOWObject() const
+void noBuilding::DrawBaseBuilding(int x, int y)
 {
-	return new fowBuilding(type,nation);
+    Loader::building_cache[nation][type][0].draw(x, y);
+
+    if (opendoor && GetDoorImage())
+    {
+        GetDoorImage()->Draw(x, y, 0, 0, 0, 0, 0, 0);
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/**
+ *
+ *
+ *  @author OLiver
+ */
+void noBuilding::GotWorker(Job job, noFigure* worker)
+{
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/**
+ *
+ *
+ *  @author OLiver
+ */
+FOWObject* noBuilding::CreateFOWObject() const
+{
+    return new fowBuilding(type, nation);
 }

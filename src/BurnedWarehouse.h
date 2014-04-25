@@ -1,4 +1,4 @@
-// $Id: BurnedWarehouse.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: BurnedWarehouse.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -24,33 +24,33 @@
 /// Unsichtbares Objekt, welches die fliehenden Leute aus einem ehemaligen abgebrannten Lagerhaus/HQ spuckt
 class BurnedWarehouse : public noCoordBase
 {
-	/// Spieler des ehemaligen Lagerhauses
-	const unsigned char player;
-	/// Aktuelle Rausgeh-Phase
-	unsigned go_out_phase;
-	// Leute, die noch rauskommen müssen
-	unsigned people[30];
+        /// Spieler des ehemaligen Lagerhauses
+        const unsigned char player;
+        /// Aktuelle Rausgeh-Phase
+        unsigned go_out_phase;
+        // Leute, die noch rauskommen müssen
+        unsigned people[30];
 
-public:
+    public:
 
-	BurnedWarehouse(const unsigned short x, const unsigned short y, const unsigned char player,const unsigned * people);
-	BurnedWarehouse(SerializedGameData * sgd, const unsigned obj_id);
+        BurnedWarehouse(const unsigned short x, const unsigned short y, const unsigned char player, const unsigned* people);
+        BurnedWarehouse(SerializedGameData* sgd, const unsigned obj_id);
 
-	~BurnedWarehouse();
+        ~BurnedWarehouse();
 
-	void Destroy(void);
+        void Destroy(void);
 
 
-	/// Serialisierungsfunktionen
-	protected:	void Serialize_BurnedWarehouse(SerializedGameData * sgd) const;
-	public:		void Serialize(SerializedGameData *sgd) const { Serialize_BurnedWarehouse(sgd); }
+        /// Serialisierungsfunktionen
+    protected:  void Serialize_BurnedWarehouse(SerializedGameData* sgd) const;
+    public:     void Serialize(SerializedGameData* sgd) const { Serialize_BurnedWarehouse(sgd); }
 
-	GO_Type GetGOT() const { return GOT_BURNEDWAREHOUSE; }
+        GO_Type GetGOT() const { return GOT_BURNEDWAREHOUSE; }
 
-	/// Benachrichtigen, wenn neuer GF erreicht wurde.
-	void HandleEvent(const unsigned int id);
+        /// Benachrichtigen, wenn neuer GF erreicht wurde.
+        void HandleEvent(const unsigned int id);
 
-	void Draw(int x, int y) {}
+        void Draw(int x, int y) {}
 };
 
 #endif

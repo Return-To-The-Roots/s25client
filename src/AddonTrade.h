@@ -30,15 +30,15 @@
  */
 class AddonTrade : public AddonBool
 {
-public:
-	AddonTrade() : AddonBool(ADDON_TRADE,
-										  ADDONGROUP_ECONOMY,
-										  gettext_noop("Trade"), 
-										  gettext_noop("Allows to send wares/figures to allied warehouses"),
-										  0
-										 )
-	{
-	}
+    public:
+        AddonTrade() : AddonBool(ADDON_TRADE,
+                                     ADDONGROUP_ECONOMY,
+                                     gettext_noop("Trade"),
+                                     gettext_noop("Allows to send wares/figures to allied warehouses"),
+                                     0
+                                    )
+        {
+        }
 };
 
 #endif // !ADDONEXHAUSTIBLEWELLS_H_INCLUDED

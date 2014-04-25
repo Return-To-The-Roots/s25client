@@ -1,4 +1,4 @@
-// $Id: nofSoldier.cpp 9177 2014-02-20 17:45:20Z marcus $
+// $Id: nofSoldier.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -33,54 +33,54 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
-nofSoldier::nofSoldier(const unsigned short x, const unsigned short y,const unsigned char player,
-					   nobBaseMilitary * const goal ,nobBaseMilitary * const home,const unsigned char rank)
-: noFigure(static_cast<Job>(JOB_PRIVATE+rank),x,y,player,goal), building(home), hitpoints(HITPOINTS[gwg->GetPlayer(player)->nation][rank])
+nofSoldier::nofSoldier(const unsigned short x, const unsigned short y, const unsigned char player,
+                       nobBaseMilitary* const goal , nobBaseMilitary* const home, const unsigned char rank)
+    : noFigure(static_cast<Job>(JOB_PRIVATE + rank), x, y, player, goal), building(home), hitpoints(HITPOINTS[gwg->GetPlayer(player)->nation][rank])
 {
 }
 
-nofSoldier::nofSoldier(const unsigned short x, const unsigned short y,const unsigned char player,
-		nobBaseMilitary * const home,const unsigned char rank)
-: noFigure(static_cast<Job>(JOB_PRIVATE+rank),x,y,player), building(home), hitpoints(HITPOINTS[gwg->GetPlayer(player)->nation][rank])
+nofSoldier::nofSoldier(const unsigned short x, const unsigned short y, const unsigned char player,
+                       nobBaseMilitary* const home, const unsigned char rank)
+    : noFigure(static_cast<Job>(JOB_PRIVATE + rank), x, y, player), building(home), hitpoints(HITPOINTS[gwg->GetPlayer(player)->nation][rank])
 {
 }
 
-void nofSoldier::Serialize_nofSoldier(SerializedGameData * sgd) const
+void nofSoldier::Serialize_nofSoldier(SerializedGameData* sgd) const
 {
-	Serialize_noFigure(sgd);
+    Serialize_noFigure(sgd);
 
-	if(fs != FS_WANDER && fs != FS_GOHOME)
-		sgd->PushObject(building,false);
+    if(fs != FS_WANDER && fs != FS_GOHOME)
+        sgd->PushObject(building, false);
 
-	sgd->PushUnsignedChar(hitpoints);
+    sgd->PushUnsignedChar(hitpoints);
 }
 
-nofSoldier::nofSoldier(SerializedGameData * sgd, const unsigned obj_id) : noFigure(sgd,obj_id)
+nofSoldier::nofSoldier(SerializedGameData* sgd, const unsigned obj_id) : noFigure(sgd, obj_id)
 {
-	if(fs != FS_WANDER && fs != FS_GOHOME)
-		building = sgd->PopObject<nobBaseMilitary>(GOT_UNKNOWN);
-	else
-		building = 0;
+    if(fs != FS_WANDER && fs != FS_GOHOME)
+        building = sgd->PopObject<nobBaseMilitary>(GOT_UNKNOWN);
+    else
+        building = 0;
 
-	hitpoints = sgd->PopUnsignedChar();
+    hitpoints = sgd->PopUnsignedChar();
 }
 
 void nofSoldier::DrawSoldierWalking(int x, int y, bool waitingsoldier)
 {
-	DrawWalking(x,y,LOADER.GetBobN("jobs"),30+NATION_RTTR_TO_S2[gwg->GetPlayer(player)->nation]*6+job-JOB_PRIVATE,false,waitingsoldier);
+    DrawWalking(x, y, LOADER.GetBobN("jobs"), 30 + NATION_RTTR_TO_S2[gwg->GetPlayer(player)->nation] * 6 + job - JOB_PRIVATE, false, waitingsoldier);
 }
 
 void nofSoldier::AbrogateWorkplace()
 {
-	// Militärgebäude Bescheid sagen, dass ich nicht kommen kann
-	if(building)
-	{
-		static_cast<nobMilitary*>(building)->SoldierLost(this);
-		building = 0;
-	}
+    // Militärgebäude Bescheid sagen, dass ich nicht kommen kann
+    if(building)
+    {
+        static_cast<nobMilitary*>(building)->SoldierLost(this);
+        building = 0;
+    }
 }

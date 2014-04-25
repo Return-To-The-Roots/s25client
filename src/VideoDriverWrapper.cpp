@@ -1,4 +1,4 @@
-// $Id: VideoDriverWrapper.cpp 8877 2013-08-26 20:30:09Z marcus $
+// $Id: VideoDriverWrapper.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -33,9 +33,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -46,7 +46,7 @@
  */
 VideoDriverWrapper::VideoDriverWrapper() :  videodriver(NULL), texture_pos(0), texture_current(0)
 {
-	memset(texture_list, 0, sizeof(unsigned int)*100000);
+    memset(texture_list, 0, sizeof(unsigned int) * 100000);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -57,7 +57,7 @@ VideoDriverWrapper::VideoDriverWrapper() :  videodriver(NULL), texture_pos(0), t
  */
 VideoDriverWrapper::~VideoDriverWrapper()
 {
-	CleanUp();
+    CleanUp();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -73,27 +73,27 @@ VideoDriverWrapper::~VideoDriverWrapper()
 bool VideoDriverWrapper::LoadDriver(void)
 {
 #ifdef _WIN32
-	// unter Windows standardm‰ﬂig WinAPI pr‰farieren
-	if(SETTINGS.driver.video == "") 
-		SETTINGS.driver.video = "(WinAPI) OpenGL via the glorious WinAPI";
+    // unter Windows standardm‰ﬂig WinAPI pr‰farieren
+    if(SETTINGS.driver.video == "")
+        SETTINGS.driver.video = "(WinAPI) OpenGL via the glorious WinAPI";
 #endif
 
-	// DLL laden
-	if(!driver_wrapper.Load(DriverWrapper::DT_VIDEO, SETTINGS.driver.video))
-		return false;
+    // DLL laden
+    if(!driver_wrapper.Load(DriverWrapper::DT_VIDEO, SETTINGS.driver.video))
+        return false;
 
-	PDRIVER_CREATEVIDEOINSTANCE CreateVideoInstance;
+    PDRIVER_CREATEVIDEOINSTANCE CreateVideoInstance;
 
-	CreateVideoInstance = pto2ptf<PDRIVER_CREATEVIDEOINSTANCE>(driver_wrapper.GetDLLFunction("CreateVideoInstance"));
+    CreateVideoInstance = pto2ptf<PDRIVER_CREATEVIDEOINSTANCE>(driver_wrapper.GetDLLFunction("CreateVideoInstance"));
 
-	// Instanz erzeugen
-	if(!(videodriver = CreateVideoInstance(&WindowManager::inst())))
-		return false;
+    // Instanz erzeugen
+    if(!(videodriver = CreateVideoInstance(&WindowManager::inst())))
+        return false;
 
-	if(!videodriver->Initialize())
-		return false;
+    if(!videodriver->Initialize())
+        return false;
 
-	return true;
+    return true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -109,53 +109,53 @@ bool VideoDriverWrapper::LoadDriver(void)
  */
 bool VideoDriverWrapper::CreateScreen(const unsigned short screen_width, const unsigned short screen_height, const bool fullscreen)
 {
-	if(videodriver == NULL)
-	{
-		fatal_error("Kein Videotreiber ausgewaehlt!\n");
-		return false;
-	}
+    if(videodriver == NULL)
+    {
+        fatal_error("Kein Videotreiber ausgewaehlt!\n");
+        return false;
+    }
 
-	// Fenster erstellen
-	// On Windows it is necessary to open a windowed mode window at first and then resize it
+    // Fenster erstellen
+    // On Windows it is necessary to open a windowed mode window at first and then resize it
 #ifdef _WIN32
-	// We need this doubled up here
-	// - With WinAPI in the windowed case, otherwise the GL Viewport is set wrong (or something related, seems to be a bug in our WinAPI implementation)
-	// - With SDL in the fullscreen case
-	if(!videodriver->CreateScreen(800, 600, false))
-	{
-		fatal_error("Erstellen des Fensters fehlgeschlagen!\n");
-		return false;
-	}
-	if(!videodriver->ResizeScreen(screen_width, screen_height, fullscreen))
-	{
-		fatal_error("Erstellen des Fensters fehlgeschlagen!\n");
-		return false;
-	}
+    // We need this doubled up here
+    // - With WinAPI in the windowed case, otherwise the GL Viewport is set wrong (or something related, seems to be a bug in our WinAPI implementation)
+    // - With SDL in the fullscreen case
+    if(!videodriver->CreateScreen(800, 600, false))
+    {
+        fatal_error("Erstellen des Fensters fehlgeschlagen!\n");
+        return false;
+    }
+    if(!videodriver->ResizeScreen(screen_width, screen_height, fullscreen))
+    {
+        fatal_error("Erstellen des Fensters fehlgeschlagen!\n");
+        return false;
+    }
 #else
-	if(!videodriver->CreateScreen(screen_width, screen_height, fullscreen))
-	{
-		fatal_error("Erstellen des Fensters fehlgeschlagen!\n");
-		return false;
-	}
+    if(!videodriver->CreateScreen(screen_width, screen_height, fullscreen))
+    {
+        fatal_error("Erstellen des Fensters fehlgeschlagen!\n");
+        return false;
+    }
 #endif
 
-	// DriverWrapper Initialisieren
-	if(!Initialize())
-	{
-		fatal_error("Initialisieren des OpenGL-Kontexts fehlgeschlagen!\n");
-		return false;
-	}
+    // DriverWrapper Initialisieren
+    if(!Initialize())
+    {
+        fatal_error("Initialisieren des OpenGL-Kontexts fehlgeschlagen!\n");
+        return false;
+    }
 
 
 
-	// WindowManager informieren
-	WindowManager::inst().Msg_ScreenResize(screen_width, screen_height);
+    // WindowManager informieren
+    WindowManager::inst().Msg_ScreenResize(screen_width, screen_height);
 
-	// VSYNC ggf abschalten/einschalten
-	if(GLOBALVARS.ext_swapcontrol)
-		wglSwapIntervalEXT((SETTINGS.video.vsync == 1));
+    // VSYNC ggf abschalten/einschalten
+    if(GLOBALVARS.ext_swapcontrol)
+        wglSwapIntervalEXT((SETTINGS.video.vsync == 1));
 
-	return true;
+    return true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -172,19 +172,19 @@ bool VideoDriverWrapper::CreateScreen(const unsigned short screen_width, const u
  */
 bool VideoDriverWrapper::ResizeScreen(const unsigned short screenWidth, const unsigned short screenHeight, const bool fullscreen)
 {
-	if(videodriver == NULL)
-	{
-		fatal_error("Kein Videotreiber ausgewaehlt!\n");
-		return false;
-	}
+    if(videodriver == NULL)
+    {
+        fatal_error("Kein Videotreiber ausgewaehlt!\n");
+        return false;
+    }
 
-	const bool result = videodriver->ResizeScreen(screenWidth, screenHeight, fullscreen);
+    const bool result = videodriver->ResizeScreen(screenWidth, screenHeight, fullscreen);
 
-	RenewViewport();
+    RenewViewport();
 
-	WindowManager::inst().Msg_ScreenResize(screenWidth, screenHeight);
+    WindowManager::inst().Msg_ScreenResize(screenWidth, screenHeight);
 
-	return result;
+    return result;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -195,22 +195,22 @@ bool VideoDriverWrapper::ResizeScreen(const unsigned short screenWidth, const un
  */
 bool VideoDriverWrapper::DestroyScreen()
 {
-	if(videodriver == NULL)
-	{
-		fatal_error("Kein Videotreiber ausgewaehlt!\n");
-		return false;
-	}
+    if(videodriver == NULL)
+    {
+        fatal_error("Kein Videotreiber ausgewaehlt!\n");
+        return false;
+    }
 
-	// Texturen aufr‰umen
-	LOG.lprintf("Saeubere Texturespeicher: ");
-	unsigned int ladezeit = GetTickCount();
-	CleanUp();
-	LOG.lprintf("fertig (nach %dms)\n", GetTickCount()-ladezeit);
+    // Texturen aufr‰umen
+    LOG.lprintf("Saeubere Texturespeicher: ");
+    unsigned int ladezeit = GetTickCount();
+    CleanUp();
+    LOG.lprintf("fertig (nach %dms)\n", GetTickCount() - ladezeit);
 
-	// Videotreiber zur¸cksetzen
-	videodriver->DestroyScreen();
+    // Videotreiber zur¸cksetzen
+    videodriver->DestroyScreen();
 
-	return true;
+    return true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -223,39 +223,39 @@ bool VideoDriverWrapper::DestroyScreen()
  *
  *  @author FloSoft
  */
-bool VideoDriverWrapper::hasExtension(const char *extension)
+bool VideoDriverWrapper::hasExtension(const char* extension)
 {
-	const unsigned char *extensions = NULL;
+    const unsigned char* extensions = NULL;
 
-	const unsigned char *start;
-	unsigned char *position, *ende;
+    const unsigned char* start;
+    unsigned char* position, *ende;
 
-	// Extension mit Leerzeichen gibts nich
-	position = (unsigned char *)strchr(extension, ' ');
-	if( position || *extension == '\0' )
-		return false;
+    // Extension mit Leerzeichen gibts nich
+    position = (unsigned char*)strchr(extension, ' ');
+    if( position || *extension == '\0' )
+        return false;
 
-	// ermittle Extensions String
-	extensions = glGetString( GL_EXTENSIONS );
+    // ermittle Extensions String
+    extensions = glGetString( GL_EXTENSIONS );
 
-	// such nach einer exakten Kopie des Extensions Strings
-	start = extensions;
-	for(;;)
-	{
-		position = (unsigned char *)strstr( (const char *)start, extension );
-		if( !position )
-			break;
+    // such nach einer exakten Kopie des Extensions Strings
+    start = extensions;
+    for(;;)
+    {
+        position = (unsigned char*)strstr( (const char*)start, extension );
+        if( !position )
+            break;
 
-		ende = position + strlen( extension );
-		if( position == start || *( position - 1 ) == ' ' )
-		{
-			if( *ende == ' ' || *ende == '\0' )
-				return true;
-		}
-		start = ende;
-	}
+        ende = position + strlen( extension );
+        if( position == start || *( position - 1 ) == ' ' )
+        {
+            if( *ende == ' ' || *ende == '\0' )
+                return true;
+        }
+        start = ende;
+    }
 
-	return false;
+    return false;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -266,10 +266,10 @@ bool VideoDriverWrapper::hasExtension(const char *extension)
  */
 void VideoDriverWrapper::CleanUp()
 {
-	glDeleteTextures(texture_pos, (const GLuint*)texture_list);
+    glDeleteTextures(texture_pos, (const GLuint*)texture_list);
 
-	memset(texture_list, 0, sizeof(unsigned int)*texture_pos);
-	texture_pos = 0;
+    memset(texture_list, 0, sizeof(unsigned int)*texture_pos);
+    texture_pos = 0;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -280,15 +280,15 @@ void VideoDriverWrapper::CleanUp()
  */
 unsigned int VideoDriverWrapper::GenerateTexture()
 {
-	if(texture_pos >= 100000)
-	{
-		fatal_error("100000 texture-limit reached!!!!\n");
-		return 0;
-	}
+    if(texture_pos >= 100000)
+    {
+        fatal_error("100000 texture-limit reached!!!!\n");
+        return 0;
+    }
 
-	glGenTextures(1, (GLuint*)&texture_list[texture_pos]);
+    glGenTextures(1, (GLuint*)&texture_list[texture_pos]);
 
-	return texture_list[texture_pos++];
+    return texture_list[texture_pos++];
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -299,13 +299,13 @@ unsigned int VideoDriverWrapper::GenerateTexture()
  */
 bool VideoDriverWrapper::SwapBuffers()
 {
-	if(videodriver == NULL)
-	{
-		fatal_error("Kein Videotreiber ausgewaehlt!\n");
-		return false;
-	}
+    if(videodriver == NULL)
+    {
+        fatal_error("Kein Videotreiber ausgewaehlt!\n");
+        return false;
+    }
 
-	return videodriver->SwapBuffers();
+    return videodriver->SwapBuffers();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -316,13 +316,13 @@ bool VideoDriverWrapper::SwapBuffers()
  */
 bool VideoDriverWrapper::Run()
 {
-	if(videodriver == NULL)
-	{
-		fatal_error("Kein Videotreiber ausgewaehlt!\n");
-		return false;
-	}
+    if(videodriver == NULL)
+    {
+        fatal_error("Kein Videotreiber ausgewaehlt!\n");
+        return false;
+    }
 
-	return videodriver->MessageLoop();
+    return videodriver->MessageLoop();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -333,48 +333,48 @@ bool VideoDriverWrapper::Run()
  */
 bool VideoDriverWrapper::Initialize()
 {
-	RenewViewport();
+    RenewViewport();
 
-	// Depthbuffer und Colorbuffer einstellen
-	glClearColor(0.0, 0.0, 0.0, 0.5);
+    // Depthbuffer und Colorbuffer einstellen
+    glClearColor(0.0, 0.0, 0.0, 0.5);
 
-	// Smooth - Shading aktivieren
-	glShadeModel(GL_SMOOTH);
+    // Smooth - Shading aktivieren
+    glShadeModel(GL_SMOOTH);
 
-	glEnable(GL_ALPHA_TEST);
-	glAlphaFunc(GL_GREATER, 0.0f);
+    glEnable(GL_ALPHA_TEST);
+    glAlphaFunc(GL_GREATER, 0.0f);
 
-	// Alphablending an
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glEnable(GL_BLEND);
+    // Alphablending an
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
 
-	// Depthbuffer abschalten
-	glDisable(GL_DEPTH_TEST);
-	glDepthMask(GL_FALSE);
+    // Depthbuffer abschalten
+    glDisable(GL_DEPTH_TEST);
+    glDepthMask(GL_FALSE);
 
-	// Texturen anstellen
-	glEnable(GL_TEXTURE_2D);
+    // Texturen anstellen
+    glEnable(GL_TEXTURE_2D);
 
-	// Dither abstellen
-	glDisable(GL_DITHER);
+    // Dither abstellen
+    glDisable(GL_DITHER);
 
-	// Scissoring aktivieren
-	glEnable(GL_SCISSOR_TEST);
+    // Scissoring aktivieren
+    glEnable(GL_SCISSOR_TEST);
 
-	// Nur obere Seite von Dreiecke rendern --> Performance
-	glEnable(GL_CULL_FACE);
+    // Nur obere Seite von Dreiecke rendern --> Performance
+    glEnable(GL_CULL_FACE);
 
-	// Extensions laden
-	if(!LoadAllExtensions())
-		return false;
+    // Extensions laden
+    if(!LoadAllExtensions())
+        return false;
 
-	// Puffer leeren
-	glClear(GL_COLOR_BUFFER_BIT);
+    // Puffer leeren
+    glClear(GL_COLOR_BUFFER_BIT);
 
-	// Buffer swappen um den leeren Buffer darzustellen
-	SwapBuffers();
+    // Buffer swappen um den leeren Buffer darzustellen
+    SwapBuffers();
 
-	return true;
+    return true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -385,26 +385,26 @@ bool VideoDriverWrapper::Initialize()
  */
 void VideoDriverWrapper::RenewViewport(bool onlyRenew)
 {
-	const unsigned short width  = videodriver->GetScreenWidth();	
-	const unsigned short height = videodriver->GetScreenHeight();	
+    const unsigned short width  = videodriver->GetScreenWidth();
+    const unsigned short height = videodriver->GetScreenHeight();
 
-	// Viewport mit widthxheight setzen
-	glViewport(0, 0, width, height);
-	glScissor(0, 0, width, height);
+    // Viewport mit widthxheight setzen
+    glViewport(0, 0, width, height);
+    glScissor(0, 0, width, height);
 
-	// Orthogonale Matrix erstellen
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
+    // Orthogonale Matrix erstellen
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
 
-	// ... und laden
-	glOrtho(0,width,0,height,-100,100);
+    // ... und laden
+    glOrtho(0, width, 0, height, -100, 100);
 
-	// 0; 0 soll obere linke Ecke sein
-	glRotated(180,1,0,0);
-	glTranslated(0,-videodriver->GetScreenHeight(),0);
+    // 0; 0 soll obere linke Ecke sein
+    glRotated(180, 1, 0, 0);
+    glTranslated(0, -videodriver->GetScreenHeight(), 0);
 
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -415,41 +415,41 @@ void VideoDriverWrapper::RenewViewport(bool onlyRenew)
  */
 bool VideoDriverWrapper::LoadAllExtensions()
 {
-	// auf VSync-Extension testen
+    // auf VSync-Extension testen
 #ifdef _WIN32
-	if((GLOBALVARS.ext_swapcontrol = hasExtension("WGL_EXT_swap_control")))
-	{
-		if( (wglSwapIntervalEXT = pto2ptf<PFNWGLSWAPINTERVALFARPROC>(loadExtension("wglSwapIntervalEXT"))) == NULL)
-			GLOBALVARS.ext_swapcontrol = false;
-	}
+    if((GLOBALVARS.ext_swapcontrol = hasExtension("WGL_EXT_swap_control")))
+    {
+        if( (wglSwapIntervalEXT = pto2ptf<PFNWGLSWAPINTERVALFARPROC>(loadExtension("wglSwapIntervalEXT"))) == NULL)
+            GLOBALVARS.ext_swapcontrol = false;
+    }
 #else
-	/*if((GLOBALVARS.ext_swapcontrol = hasExtension("GLX_SGI_swap_control")))
-	{*/
-		// fix for buggy video driver...
-		GLOBALVARS.ext_swapcontrol = true;
-		if( (wglSwapIntervalEXT = pto2ptf<PFNWGLSWAPINTERVALFARPROC>(loadExtension("glXSwapIntervalSGI"))) == NULL)
-			GLOBALVARS.ext_swapcontrol = false;
-	//}
+    /*if((GLOBALVARS.ext_swapcontrol = hasExtension("GLX_SGI_swap_control")))
+    {*/
+    // fix for buggy video driver...
+    GLOBALVARS.ext_swapcontrol = true;
+    if( (wglSwapIntervalEXT = pto2ptf<PFNWGLSWAPINTERVALFARPROC>(loadExtension("glXSwapIntervalSGI"))) == NULL)
+        GLOBALVARS.ext_swapcontrol = false;
+    //}
 #endif
 
-	// auf VertexBufferObject-Extension testen
-	if((GLOBALVARS.ext_vbo = hasExtension("GL_ARB_vertex_buffer_object")))
-	{
+    // auf VertexBufferObject-Extension testen
+    if((GLOBALVARS.ext_vbo = hasExtension("GL_ARB_vertex_buffer_object")))
+    {
 #ifndef __APPLE__
-		if ( (glBindBufferARB = pto2ptf<PFNGLBINDBUFFERARBPROC>(loadExtension("glBindBufferARB"))) == NULL)
-			GLOBALVARS.ext_vbo = false;
-		else if ( (glDeleteBuffersARB = pto2ptf<PFNGLDELETEBUFFERSARBPROC>(loadExtension("glDeleteBuffersARB"))) == NULL)
-			GLOBALVARS.ext_vbo = false;
-		else if ( (glGenBuffersARB = pto2ptf<PFNGLGENBUFFERSARBPROC>(loadExtension("glGenBuffersARB"))) == NULL)
-			GLOBALVARS.ext_vbo = false;
-		else if ( (glBufferDataARB = pto2ptf<PFNGLBUFFERDATAARBPROC>(loadExtension("glBufferDataARB"))) == NULL)
-			GLOBALVARS.ext_vbo = false;
-		else if ( (glBufferSubDataARB = pto2ptf<PFNGLBUFFERSUBDATAARBPROC>(loadExtension("glBufferSubDataARB"))) == NULL)
-			GLOBALVARS.ext_vbo = false;
+        if ( (glBindBufferARB = pto2ptf<PFNGLBINDBUFFERARBPROC>(loadExtension("glBindBufferARB"))) == NULL)
+            GLOBALVARS.ext_vbo = false;
+        else if ( (glDeleteBuffersARB = pto2ptf<PFNGLDELETEBUFFERSARBPROC>(loadExtension("glDeleteBuffersARB"))) == NULL)
+            GLOBALVARS.ext_vbo = false;
+        else if ( (glGenBuffersARB = pto2ptf<PFNGLGENBUFFERSARBPROC>(loadExtension("glGenBuffersARB"))) == NULL)
+            GLOBALVARS.ext_vbo = false;
+        else if ( (glBufferDataARB = pto2ptf<PFNGLBUFFERDATAARBPROC>(loadExtension("glBufferDataARB"))) == NULL)
+            GLOBALVARS.ext_vbo = false;
+        else if ( (glBufferSubDataARB = pto2ptf<PFNGLBUFFERSUBDATAARBPROC>(loadExtension("glBufferSubDataARB"))) == NULL)
+            GLOBALVARS.ext_vbo = false;
 #endif // ! __APPLE__
-	}
+    }
 
-	return true;
+    return true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -460,10 +460,10 @@ bool VideoDriverWrapper::LoadAllExtensions()
  */
 unsigned int VideoDriverWrapper::GetTickCount()
 {
-	if(videodriver == NULL)
-		return (unsigned int)time(NULL);
+    if(videodriver == NULL)
+        return (unsigned int)time(NULL);
 
-	return (unsigned int)videodriver->GetTickCount();
+    return (unsigned int)videodriver->GetTickCount();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -476,15 +476,15 @@ unsigned int VideoDriverWrapper::GetTickCount()
  *
  *  @author FloSoft
  */
-void *VideoDriverWrapper::loadExtension(const char *extension)
+void* VideoDriverWrapper::loadExtension(const char* extension)
 {
-	if (videodriver == NULL)
-	{
-		fatal_error("Kein Videotreiber ausgewaehlt!\n");
-		return(NULL);
-	}
+    if (videodriver == NULL)
+    {
+        fatal_error("Kein Videotreiber ausgewaehlt!\n");
+        return(NULL);
+    }
 
-	return videodriver->GetFunction(extension);
+    return videodriver->GetFunction(extension);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -495,10 +495,10 @@ void *VideoDriverWrapper::loadExtension(const char *extension)
  */
 int VideoDriverWrapper::GetMouseX()
 {
-	if(videodriver == NULL)
-		return 0;
+    if(videodriver == NULL)
+        return 0;
 
-	return videodriver->GetMousePosX();
+    return videodriver->GetMousePosX();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -509,10 +509,10 @@ int VideoDriverWrapper::GetMouseX()
  */
 int VideoDriverWrapper::GetMouseY()
 {
-	if(videodriver == NULL)
-		return 0;
+    if(videodriver == NULL)
+        return 0;
 
-	return videodriver->GetMousePosY();
+    return videodriver->GetMousePosY();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -523,10 +523,10 @@ int VideoDriverWrapper::GetMouseY()
  */
 bool VideoDriverWrapper::IsLeftDown()
 {
-	if(videodriver == NULL)
-		return false;
+    if(videodriver == NULL)
+        return false;
 
-	return videodriver->GetMouseStateL();
+    return videodriver->GetMouseStateL();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -537,10 +537,10 @@ bool VideoDriverWrapper::IsLeftDown()
  */
 bool VideoDriverWrapper::IsRightDown()
 {
-	if(videodriver == NULL)
-		return false;
+    if(videodriver == NULL)
+        return false;
 
-	return videodriver->GetMouseStateR();
+    return videodriver->GetMouseStateR();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -551,10 +551,10 @@ bool VideoDriverWrapper::IsRightDown()
  */
 void VideoDriverWrapper::SetMousePos(const int x, const int y)
 {
-	if(videodriver == NULL)
-		return;
+    if(videodriver == NULL)
+        return;
 
-	videodriver->SetMousePos(x, y);
+    videodriver->SetMousePos(x, y);
 }
 
 
@@ -566,17 +566,17 @@ void VideoDriverWrapper::SetMousePos(const int x, const int y)
  */
 void VideoDriverWrapper::ListVideoModes(std::vector<VideoDriver::VideoMode>& video_modes) const
 {
-	if(videodriver == NULL)
-		return;
+    if(videodriver == NULL)
+        return;
 
-	// Standard-Modi hinzuf¸gen
-	VideoDriver::VideoMode vm800  = {  800, 600 };
-	VideoDriver::VideoMode vm1024 = { 1024, 768 };
+    // Standard-Modi hinzuf¸gen
+    VideoDriver::VideoMode vm800  = {  800, 600 };
+    VideoDriver::VideoMode vm1024 = { 1024, 768 };
 
-	video_modes.push_back(vm800);
-	video_modes.push_back(vm1024);
+    video_modes.push_back(vm800);
+    video_modes.push_back(vm1024);
 
-	videodriver->ListVideoModes(video_modes);
+    videodriver->ListVideoModes(video_modes);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -585,10 +585,10 @@ void VideoDriverWrapper::ListVideoModes(std::vector<VideoDriver::VideoMode>& vid
  *
  *  @author OLiver
  */
-void * VideoDriverWrapper::GetWindowPointer() const
+void* VideoDriverWrapper::GetWindowPointer() const
 {
-	if(videodriver == NULL)
-		return NULL;
+    if(videodriver == NULL)
+        return NULL;
 
-	return videodriver->GetWindowPointer();
+    return videodriver->GetWindowPointer();
 }

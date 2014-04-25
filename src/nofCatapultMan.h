@@ -1,4 +1,4 @@
-// $Id: nofCatapultMan.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: nofCatapultMan.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -25,61 +25,61 @@
 /// Arbeiter im Katapult
 class nofCatapultMan : public nofBuildingWorker
 {
-	/// Drehschritte für den Katapult auf dem Dach, bis er die Angriffsrichtung erreicht hat
-	/// negativ - andere Richtung!
-	int wheel_steps;
+        /// Drehschritte für den Katapult auf dem Dach, bis er die Angriffsrichtung erreicht hat
+        /// negativ - andere Richtung!
+        int wheel_steps;
 
-	/// Ein mögliches Ziel für den Katapult
-	class PossibleTarget
-	{
-	public:
-		
-		/// Gebäude
-		unsigned short x,y;
-		/// Entfernung
-		unsigned distance;
+        /// Ein mögliches Ziel für den Katapult
+        class PossibleTarget
+        {
+            public:
 
-		PossibleTarget() : x(0), y(0), distance(0) {}
-		PossibleTarget(const unsigned short x, const unsigned short y, const unsigned distance) : x(x), y(y), distance(distance) {}
-		PossibleTarget(SerializedGameData *sgd) : x(sgd->PopUnsignedShort()), y(sgd->PopUnsignedShort()), distance(sgd->PopUnsignedInt()) {}
+                /// Gebäude
+                unsigned short x, y;
+                /// Entfernung
+                unsigned distance;
 
-		void Serialize_PossibleTarget(SerializedGameData *sgd) const
-		{	
-			sgd->PushUnsignedShort(x);
-			sgd->PushUnsignedShort(y);
-			sgd->PushUnsignedInt(distance);
-		}
+                PossibleTarget() : x(0), y(0), distance(0) {}
+                PossibleTarget(const unsigned short x, const unsigned short y, const unsigned distance) : x(x), y(y), distance(distance) {}
+                PossibleTarget(SerializedGameData* sgd) : x(sgd->PopUnsignedShort()), y(sgd->PopUnsignedShort()), distance(sgd->PopUnsignedInt()) {}
 
-	} target; /// das anvisierte Ziel
+                void Serialize_PossibleTarget(SerializedGameData* sgd) const
+                {
+                    sgd->PushUnsignedShort(x);
+                    sgd->PushUnsignedShort(y);
+                    sgd->PushUnsignedInt(distance);
+                }
 
-private:
+        } target; /// das anvisierte Ziel
 
-	/// Funktionen, die nur von der Basisklasse (noFigure) aufgerufen werden, wenn man gelaufen ist
-	void WalkedDerived();
-	/// Malt den Arbeiter beim Arbeiten
-	void DrawWorking(int x,int y);
-	/// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren rausträgt (bzw rein)
-	unsigned short GetCarryID() const { return 0; }
+    private:
 
-	/// Wenn jeweils gelaufen wurde oder ein Event abgelaufen ist, je nach aktuellem Status folgende Funktionen ausführen
-	void HandleStateTargetBuilding();
-	void HandleStateBackOff();
+        /// Funktionen, die nur von der Basisklasse (noFigure) aufgerufen werden, wenn man gelaufen ist
+        void WalkedDerived();
+        /// Malt den Arbeiter beim Arbeiten
+        void DrawWorking(int x, int y);
+        /// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren rausträgt (bzw rein)
+        unsigned short GetCarryID() const { return 0; }
 
-public:
+        /// Wenn jeweils gelaufen wurde oder ein Event abgelaufen ist, je nach aktuellem Status folgende Funktionen ausführen
+        void HandleStateTargetBuilding();
+        void HandleStateBackOff();
 
-	nofCatapultMan(const unsigned short x, const unsigned short y,const unsigned char player,nobUsual * workplace);
-	nofCatapultMan(SerializedGameData * sgd, const unsigned obj_id);
+    public:
 
-	/// Serialisierungsfunktionen
-	protected:	void Serialize_nofCatapultMan(SerializedGameData * sgd) const;
-	public:		void Serialize(SerializedGameData *sgd) const { Serialize_nofCatapultMan(sgd); }
+        nofCatapultMan(const unsigned short x, const unsigned short y, const unsigned char player, nobUsual* workplace);
+        nofCatapultMan(SerializedGameData* sgd, const unsigned obj_id);
 
-	GO_Type GetGOT() const { return GOT_NOF_CATAPULTMAN; }
+        /// Serialisierungsfunktionen
+    protected:  void Serialize_nofCatapultMan(SerializedGameData* sgd) const;
+    public:     void Serialize(SerializedGameData* sgd) const { Serialize_nofCatapultMan(sgd); }
 
-	void HandleDerivedEvent(const unsigned int id);
+        GO_Type GetGOT() const { return GOT_NOF_CATAPULTMAN; }
 
-	/// wird aufgerufen, wenn die Arbeit abgebrochen wird (von nofBuildingWorker aufgerufen)
-	void WorkArborted();
+        void HandleDerivedEvent(const unsigned int id);
+
+        /// wird aufgerufen, wenn die Arbeit abgebrochen wird (von nofBuildingWorker aufgerufen)
+        void WorkArborted();
 };
 
 

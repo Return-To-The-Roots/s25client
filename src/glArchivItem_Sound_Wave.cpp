@@ -1,4 +1,4 @@
-// $Id: glArchivItem_Sound_Wave.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: glArchivItem_Sound_Wave.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -29,9 +29,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -45,11 +45,11 @@
  */
 unsigned int glArchivItem_Sound_Wave::Play(unsigned char volume, bool loop)
 {
-	if(SETTINGS.sound.effekte == false/* || !VideoDriverWrapper::inst().audiodriver*/)
-		return 0xFFFFFFFF;
+    if(SETTINGS.sound.effekte == false/* || !VideoDriverWrapper::inst().audiodriver*/)
+        return 0xFFFFFFFF;
 
-	if(sound == NULL)
-		sound = AudioDriverWrapper::inst().LoadEffect(AudioDriver::AD_WAVE, data, length);
+    if(sound == NULL)
+        sound = AudioDriverWrapper::inst().LoadEffect(AudioDriver::AD_WAVE, data, length);
 
-	return AudioDriverWrapper::inst().PlayEffect(sound, volume, loop);
+    return AudioDriverWrapper::inst().PlayEffect(sound, volume, loop);
 }

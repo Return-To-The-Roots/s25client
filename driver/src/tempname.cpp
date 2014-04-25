@@ -1,4 +1,4 @@
-// $Id: tempname.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: tempname.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -48,58 +48,60 @@ static char THIS_FILE[] = __FILE__;
  *
  *  @return               bei Erfolg wird true geliefert, bei Fehler false
  */
-bool tempname(char *name, unsigned int length)
+bool tempname(char* name, unsigned int length)
 {
-	if(!name)
-		return false;
+    if(!name)
+        return false;
 
-	memset(name, 0, length);
+    memset(name, 0, length);
 
-	const char *tempdir = NULL;
+    const char* tempdir = NULL;
 
-	// Ort des Temporären Verzeichnisses holen
-	tempdir = getenv("TMPDIR");
-	if (tempdir == NULL || *tempdir == '\0')
-		tempdir = getenv("TMP");
-	if (tempdir == NULL || *tempdir == '\0')
-		tempdir = getenv("TEMP");
+    // Ort des Temporären Verzeichnisses holen
+    tempdir = getenv("TMPDIR");
+    if (tempdir == NULL || *tempdir == '\0')
+        tempdir = getenv("TMP");
+    if (tempdir == NULL || *tempdir == '\0')
+        tempdir = getenv("TEMP");
 #ifndef _WIN32
-	if (tempdir == NULL)
-		tempdir = "/tmp";
+    if (tempdir == NULL)
+        tempdir = "/tmp";
 #endif
-	if (tempdir == NULL)
-		return false;
+    if (tempdir == NULL)
+        return false;
 
-	unsigned int dirlen = (unsigned int)strlen(tempdir);
+    unsigned int dirlen = (unsigned int)strlen(tempdir);
 
-	while(dirlen > 0 && tempdir[dirlen - 1] == '/')
-		dirlen--;
+    while(dirlen > 0 && tempdir[dirlen - 1] == '/')
+        dirlen--;
 
-	srand( (unsigned int)time(NULL) );
+    srand( (unsigned int)time(NULL) );
 
-	char temp[512];
-	FILE *test = NULL;
+    char temp[512];
+    FILE* test = NULL;
 
-	// nach einer unbenutzten Datei suchen
-	do {
-		if(test)
-			fclose(test);
+    // nach einer unbenutzten Datei suchen
+    do
+    {
+        if(test)
+            fclose(test);
 
-		memset(temp, 0, 512);
+        memset(temp, 0, 512);
 
-		for(unsigned int i = 0; i < 10; i++)
-			sprintf(temp, "%s%c", temp, (rand() % 25)+65 );
+        for(unsigned int i = 0; i < 10; i++)
+            sprintf(temp, "%s%c", temp, (rand() % 25) + 65 );
 #if defined _WIN32
-	#ifndef __CYGWIN__
-	#define snprintf _snprintf 
-	#endif
-		snprintf(name, length, "%s\\tmp.%s", tempdir, temp);
+#ifndef __CYGWIN__
+#define snprintf _snprintf
+#endif
+        snprintf(name, length, "%s\\tmp.%s", tempdir, temp);
 #else
-		snprintf(name, length, "%s/tmp.%s", tempdir, temp);
+        snprintf(name, length, "%s/tmp.%s", tempdir, temp);
 #endif // !_WIN32
 
-		test = fopen(name, "r");
-	} while ( test != NULL);
+        test = fopen(name, "r");
+    }
+    while ( test != NULL);
 
-	return true;
+    return true;
 }

@@ -1,4 +1,4 @@
-// $Id: glArchivItem_Bitmap_Raw.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: glArchivItem_Bitmap_Raw.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -24,12 +24,12 @@
 /// Klasse für GL-RAW-Bitmaps.
 class glArchivItem_Bitmap_Raw : public libsiedler2::baseArchivItem_Bitmap_Raw, public glArchivItem_Bitmap
 {
-public:
-	/// Konstruktor von @p glArchivItem_Bitmap_Raw.
-	glArchivItem_Bitmap_Raw(void) : baseArchivItem_Bitmap(), baseArchivItem_Bitmap_Raw(), glArchivItem_Bitmap() {}
+    public:
+        /// Konstruktor von @p glArchivItem_Bitmap_Raw.
+        glArchivItem_Bitmap_Raw(void) : baseArchivItem_Bitmap(), baseArchivItem_Bitmap_Raw(), glArchivItem_Bitmap() {}
 
-	/// Kopierkonstruktor von @p glArchivItem_Bitmap_Raw.
-	glArchivItem_Bitmap_Raw(const glArchivItem_Bitmap_Raw *item) : baseArchivItem_Bitmap(item), baseArchivItem_Bitmap_Raw(item), glArchivItem_Bitmap(item) {}
+        /// Kopierkonstruktor von @p glArchivItem_Bitmap_Raw.
+        glArchivItem_Bitmap_Raw(const glArchivItem_Bitmap_Raw* item) : baseArchivItem_Bitmap(item), baseArchivItem_Bitmap_Raw(item), glArchivItem_Bitmap(item) {}
 };
 
 #endif // !GLARCHIVITEM_BITMAP_RAW_H_INCLUDED

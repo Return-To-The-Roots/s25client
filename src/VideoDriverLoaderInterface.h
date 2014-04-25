@@ -1,4 +1,4 @@
-// $Id: VideoDriverLoaderInterface.h 6458 2010-05-31 11:38:51Z FloSoft $
+// $Id: VideoDriverLoaderInterface.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005-2009 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -25,20 +25,20 @@
 
 class VideoDriverLoaderInterface
 {
-public:
-	virtual ~VideoDriverLoaderInterface() {};
+    public:
+        virtual ~VideoDriverLoaderInterface() {};
 
-	virtual void Msg_LeftDown(MouseCoords mc) = 0;
-	virtual void Msg_LeftUp(const MouseCoords& mc) = 0;
-	virtual void Msg_RightDown(const MouseCoords& mc) = 0;
-	virtual void Msg_RightUp(const MouseCoords& mc) = 0;
-	virtual void Msg_WheelUp(const MouseCoords& mc) = 0;
-	virtual void Msg_WheelDown(const MouseCoords& mc) = 0;
-	virtual void Msg_MouseMove(const MouseCoords& mc) = 0;
+        virtual void Msg_LeftDown(MouseCoords mc) = 0;
+        virtual void Msg_LeftUp(const MouseCoords& mc) = 0;
+        virtual void Msg_RightDown(const MouseCoords& mc) = 0;
+        virtual void Msg_RightUp(const MouseCoords& mc) = 0;
+        virtual void Msg_WheelUp(const MouseCoords& mc) = 0;
+        virtual void Msg_WheelDown(const MouseCoords& mc) = 0;
+        virtual void Msg_MouseMove(const MouseCoords& mc) = 0;
 
-	virtual void Msg_KeyDown(const KeyEvent& ke) = 0;
+        virtual void Msg_KeyDown(const KeyEvent& ke) = 0;
 
-	virtual void ScreenResized(unsigned short width, unsigned short height) = 0;
+        virtual void ScreenResized(unsigned short width, unsigned short height) = 0;
 };
 
 #endif // !DRIVERLOADERINTERFACE_H_INCLUDED

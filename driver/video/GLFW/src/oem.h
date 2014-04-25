@@ -1,4 +1,4 @@
-// $Id: oem.h 6458 2010-05-31 11:38:51Z FloSoft $
+// $Id: oem.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005-2009 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -24,10 +24,10 @@
 #ifndef _WIN32
 
 /// Wandelt einen String vom ANSI ins OEM Format um.
-char *AnsiToOem(const char *from, char *to, unsigned int length = 0);
+char* AnsiToOem(const char* from, char* to, unsigned int length = 0);
 
 /// Wandelt einen String vom OEM ins ANSI Format um.
-char *OemToAnsi(const char *from, char *to, unsigned int length = 0);
+char* OemToAnsi(const char* from, char* to, unsigned int length = 0);
 
 #endif // !_WIN32
 

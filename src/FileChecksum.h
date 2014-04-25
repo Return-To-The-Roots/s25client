@@ -1,4 +1,4 @@
-// $Id: FileChecksum.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: FileChecksum.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -21,9 +21,9 @@
 
 #pragma once
 
-unsigned int CalcChecksumOfFile(const char * const path);
-unsigned int CalcChecksumOfBuffer(const unsigned char *buffer, unsigned int size);
+unsigned int CalcChecksumOfFile(const char* const path);
+unsigned int CalcChecksumOfBuffer(const unsigned char* buffer, unsigned int size);
 
-inline unsigned int CalcChecksumOfBuffer(const char *buffer, unsigned int size) { return CalcChecksumOfBuffer((const unsigned char*)buffer, size); }
+inline unsigned int CalcChecksumOfBuffer(const char* buffer, unsigned int size) { return CalcChecksumOfBuffer((const unsigned char*)buffer, size); }
 
 #endif // !FILECHECKSUM_H_INCLUDED

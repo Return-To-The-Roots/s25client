@@ -1,4 +1,4 @@
-// $Id: main.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: main.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -24,26 +24,26 @@
 ///////////////////////////////////////////////////////////////////////////////
 // System-Header
 #ifdef _WIN32
-#	define _CRTDBG_MAP_ALLOC
-#	include <windows.h>
-#	include <io.h>
+#   define _CRTDBG_MAP_ALLOC
+#   include <windows.h>
+#   include <io.h>
 #else
-#	include <unistd.h>
-#	include <limits.h>
+#   include <unistd.h>
+#   include <limits.h>
 #endif // !_WIN32
 
 #ifdef _MSC_VER
-	#define getch _getch
+#define getch _getch
 #ifndef snprintf
-	#define snprintf _snprintf
+#define snprintf _snprintf
 #endif
-	#ifndef assert
-		#define assert _ASSERT
-	#endif
+#ifndef assert
+#define assert _ASSERT
+#endif
 #endif
 
 #if defined _WIN32 && defined _DEBUG
-#	include <crtdbg.h>
+#   include <crtdbg.h>
 #endif // _WIN32 && _DEBUG
 
 #include <stdio.h>
@@ -52,11 +52,11 @@
 #include <ctype.h>
 
 #ifdef __APPLE__
-	#include <SDL.h>
-	#include <SDL_mixer.h>
+#include <SDL.h>
+#include <SDL_mixer.h>
 #else
-	#include <SDL/SDL.h>
-	#include <SDL/SDL_mixer.h>
+#include <SDL/SDL.h>
+#include <SDL/SDL_mixer.h>
 #endif // !__APPLE__
 
 

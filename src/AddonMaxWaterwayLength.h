@@ -1,4 +1,4 @@
-// $Id: AddonMaxWaterwayLength.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: AddonMaxWaterwayLength.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -31,28 +31,28 @@
  */
 class AddonMaxWaterwayLength : public AddonList
 {
-public:
-	AddonMaxWaterwayLength() : AddonList(ADDON_MAX_WATERWAY_LENGTH, 
-										 ADDONGROUP_GAMEPLAY,
-											gettext_noop("Set maximum waterway length"), 
-											gettext_noop("Limits the distance settlers may travel per boat.\n\n"
-														 "Possible values are:\n"
-														 "Short: 3 tiles\n"
-														 "Default: 5 tiles\n"
-														 "Long: 9 tiles\n"
-														 "Longer: 13 tiles\n"
-														 "Very long: 21 tiles\n"
-														 "and Unlimited."),
-											1
-										 )
-	{
-		addOption(gettext_noop("Short"));
-		addOption(gettext_noop("Default"));
-		addOption(gettext_noop("Long"));
-		addOption(gettext_noop("Longer"));
-		addOption(gettext_noop("Very long"));	
-		addOption(gettext_noop("Unlimited"));	
-	}
+    public:
+        AddonMaxWaterwayLength() : AddonList(ADDON_MAX_WATERWAY_LENGTH,
+                                                 ADDONGROUP_GAMEPLAY,
+                                                 gettext_noop("Set maximum waterway length"),
+                                                 gettext_noop("Limits the distance settlers may travel per boat.\n\n"
+                                                         "Possible values are:\n"
+                                                         "Short: 3 tiles\n"
+                                                         "Default: 5 tiles\n"
+                                                         "Long: 9 tiles\n"
+                                                         "Longer: 13 tiles\n"
+                                                         "Very long: 21 tiles\n"
+                                                         "and Unlimited."),
+                                                 1
+                                                )
+        {
+            addOption(gettext_noop("Short"));
+            addOption(gettext_noop("Default"));
+            addOption(gettext_noop("Long"));
+            addOption(gettext_noop("Longer"));
+            addOption(gettext_noop("Very long"));
+            addOption(gettext_noop("Unlimited"));
+        }
 };
 
 #endif // !ADDONMAXWATERWAYLENGTH_H_INCLUDED

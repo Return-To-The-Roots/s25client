@@ -1,4 +1,4 @@
-// $Id: Messenger.h 7683 2011-12-29 21:08:32Z marcus $
+// $Id: Messenger.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -26,24 +26,24 @@
 
 class Messenger
 {
-	struct Msg
-	{
-		std::string author;
-		unsigned color_author;
-		ChatDestination cd;
-		std::string msg;
-		unsigned color_msg;
-		unsigned starttime;
-		unsigned short width;
-	};
+        struct Msg
+        {
+            std::string author;
+            unsigned color_author;
+            ChatDestination cd;
+            std::string msg;
+            unsigned color_msg;
+            unsigned starttime;
+            unsigned short width;
+        };
 
-	std::list<Msg> messages;
+        std::list<Msg> messages;
 
-public:
-	~Messenger();
+    public:
+        ~Messenger();
 
-	void Draw();
-	void AddMessage(const std::string& author, const unsigned color_author, const ChatDestination cd, const std::string& msg,const unsigned color_msg = COLOR_YELLOW);
+        void Draw();
+        void AddMessage(const std::string& author, const unsigned color_author, const ChatDestination cd, const std::string& msg, const unsigned color_msg = COLOR_YELLOW);
 };
 
 #endif // !MESSENGER_H_INCLUDED

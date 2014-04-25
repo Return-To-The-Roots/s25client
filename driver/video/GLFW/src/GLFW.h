@@ -1,4 +1,4 @@
-// $Id: GLFW.h 6458 2010-05-31 11:38:51Z FloSoft $
+// $Id: GLFW.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005-2009 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -26,72 +26,72 @@
 /// Klasse für den GL-Framework Videotreiber.
 class VideoGLFW : public VideoDriver
 {
-public:
-	/// Konstruktor von @p VideoGLFW.
-	VideoGLFW(VideoDriverLoaderInterface * CallBack);
+    public:
+        /// Konstruktor von @p VideoGLFW.
+        VideoGLFW(VideoDriverLoaderInterface* CallBack);
 
-	/// Destruktor von @p VideoGLFW.
-	~VideoGLFW(void);
+        /// Destruktor von @p VideoGLFW.
+        ~VideoGLFW(void);
 
-	/// Treiberinitialisierungsfunktion.
-	bool Initialize(void);
+        /// Treiberinitialisierungsfunktion.
+        bool Initialize(void);
 
-	/// Treiberaufräumfunktion.
-	void CleanUp(void);
+        /// Treiberaufräumfunktion.
+        void CleanUp(void);
 
-	/// Erstellt das Fenster mit entsprechenden Werten.
-	bool CreateScreen(unsigned short width, unsigned short height, bool fullscreen);
+        /// Erstellt das Fenster mit entsprechenden Werten.
+        bool CreateScreen(unsigned short width, unsigned short height, bool fullscreen);
 
-	/// Erstellt oder verändert das Fenster mit entsprechenden Werten.
-	bool ResizeScreen(unsigned short *width, unsigned short *height, bool fullscreen);
+        /// Erstellt oder verändert das Fenster mit entsprechenden Werten.
+        bool ResizeScreen(unsigned short* width, unsigned short* height, bool fullscreen);
 
-	/// Schliesst das Fenster.
-	void DestroyScreen(void);
+        /// Schliesst das Fenster.
+        void DestroyScreen(void);
 
-	/// Wechselt die OpenGL-Puffer.
-	bool SwapBuffers(void);
+        /// Wechselt die OpenGL-Puffer.
+        bool SwapBuffers(void);
 
-	/// Die Nachrichtenschleife.
-	bool MessageLoop(void);
+        /// Die Nachrichtenschleife.
+        bool MessageLoop(void);
 
-	/// Funktion zum Auslesen des TickCounts.
-	unsigned long GetTickCount(void) const;
+        /// Funktion zum Auslesen des TickCounts.
+        unsigned long GetTickCount(void) const;
 
-	/// Funktion zum Holen einer Subfunktion.
-	void *GetFunction(const char *function) const;
+        /// Funktion zum Holen einer Subfunktion.
+        void* GetFunction(const char* function) const;
 
-	/// Funktion zum Setzen der Mauskoordinaten.
-	void SetMousePos(int x, int y);
+        /// Funktion zum Setzen der Mauskoordinaten.
+        void SetMousePos(int x, int y);
 
-	/// Funktion zum Setzen der X-Koordinate der Maus.
-	void SetMousePosX(int x);
+        /// Funktion zum Setzen der X-Koordinate der Maus.
+        void SetMousePosX(int x);
 
-	/// Funktion zum Setzen der Y-Koordinate der Maus.
-	void SetMousePosY(int y);
-	
-	/// Get state of the modifier keys
-	KeyEvent GetModKeyState(void) const;
+        /// Funktion zum Setzen der Y-Koordinate der Maus.
+        void SetMousePosY(int y);
 
-	/// Gibt Pointer auf ein Fenster zur?ck (device-dependent!), HWND unter Windows
-	void * GetWindowPointer() const;
+        /// Get state of the modifier keys
+        KeyEvent GetModKeyState(void) const;
 
-private:
-	/// Callbackfunktion des GL-Frameworks um Mausbewegungen abzufangen.
-	static void GLFWCALL OnMouseMove(int x, int y);
+        /// Gibt Pointer auf ein Fenster zur?ck (device-dependent!), HWND unter Windows
+        void* GetWindowPointer() const;
 
-	/// Callbackfunktion des GL-Frameworks um Mausklicks abzufangen.
-	static void GLFWCALL OnMouseButton(int button, int action);
+    private:
+        /// Callbackfunktion des GL-Frameworks um Mausbewegungen abzufangen.
+        static void GLFWCALL OnMouseMove(int x, int y);
 
-	/// Tastenwandlungsfunktion.
-	unsigned char TranslateKey(unsigned char key);
+        /// Callbackfunktion des GL-Frameworks um Mausklicks abzufangen.
+        static void GLFWCALL OnMouseButton(int button, int action);
 
-	/// Callbackfunktion des GL-Frameworks um Tastatureingaben abzufangen.
-	static void GLFWCALL OnKeyAction(int key, int action);
-	
-private:
-	bool mouse_l; ///< Status der Linken Maustaste.
-	bool mouse_r; ///< Status der Rechten Maustaste.
-	void *libGL;  ///< Handle auf die libGL.
+        /// Tastenwandlungsfunktion.
+        unsigned char TranslateKey(unsigned char key);
+
+        /// Callbackfunktion des GL-Frameworks um Tastatureingaben abzufangen.
+        static void GLFWCALL OnKeyAction(int key, int action);
+
+    private:
+        bool mouse_l; ///< Status der Linken Maustaste.
+        bool mouse_r; ///< Status der Rechten Maustaste.
+        void* libGL;  ///< Handle auf die libGL.
 };
 
 #endif // !GLFW_H_INCLUDED

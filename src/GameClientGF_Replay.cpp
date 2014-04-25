@@ -1,4 +1,4 @@
-// $Id: GameClientGF_Replay.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: GameClientGF_Replay.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -12,7 +12,7 @@
 // Siedler II.5 RTTR is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details. 
+// GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
 // along with Siedler II.5 RTTR. If not, see <http://www.gnu.org/licenses/>.
@@ -32,104 +32,104 @@
 
 void GameClient::ExecuteGameFrame_Replay()
 {
-	randcheckinfo.rand = RANDOM.GetCurrentRandomValue();
+    randcheckinfo.rand = RANDOM.GetCurrentRandomValue();
 
-	// Commands alle aus der Datei lesen
-	while(true)
-	{
-		// Schon an der Zeit?
-		if(replayinfo.next_gf == framesinfo.nr)
-		{
-			// RC-Type auslesen
-			Replay::ReplayCommand rc = replayinfo.replay.ReadRCType();
-			
-			// Chat Command?
-			if(rc == Replay::RC_CHAT)
-			{
-				unsigned char player,dest;
-				std::string message;
-				replayinfo.replay.ReadChatCommand(&player,&dest,message);
-				
-				// Nächsten Zeitpunkt lesen
-				replayinfo.replay.ReadGF(&replayinfo.next_gf);
+    // Commands alle aus der Datei lesen
+    while(true)
+    {
+        // Schon an der Zeit?
+        if(replayinfo.next_gf == framesinfo.nr)
+        {
+            // RC-Type auslesen
+            Replay::ReplayCommand rc = replayinfo.replay.ReadRCType();
 
-		/*		char from[256];
-				snprintf(from, 256, _("<%s> "), players[player]->name.GetStr());*/
+            // Chat Command?
+            if(rc == Replay::RC_CHAT)
+            {
+                unsigned char player, dest;
+                std::string message;
+                replayinfo.replay.ReadChatCommand(&player, &dest, message);
 
-				if(ci)
-					ci->CI_Chat(player,ChatDestination(dest),message);
-			}
-			// Game Command?
-			else if(rc == Replay::RC_GAME)
-			{
-				unsigned char * data;
-				unsigned short length;
+                // Nächsten Zeitpunkt lesen
+                replayinfo.replay.ReadGF(&replayinfo.next_gf);
 
-				replayinfo.replay.ReadGameCommand(&length,&data);
-				// Nächsten Zeitpunkt lesen
-				replayinfo.replay.ReadGF(&replayinfo.next_gf);
-				GameMessage_GameCommand msg(data,length);
+                /*      char from[256];
+                        snprintf(from, 256, _("<%s> "), players[player]->name.GetStr());*/
 
-				// NCs ausführen (4 Bytes Checksumme und 1 Byte Player-ID überspringen)
-				ExecuteAllGCs(msg,0,0);
+                if(ci)
+                    ci->CI_Chat(player, ChatDestination(dest), message);
+            }
+            // Game Command?
+            else if(rc == Replay::RC_GAME)
+            {
+                unsigned char* data;
+                unsigned short length;
 
-				// Replay ist NSYNC äh ASYNC!
-				if(!replayinfo.async && msg.checksum != 0 && msg.checksum != (unsigned)randcheckinfo.rand)
-				{
-					// Meldung mit GF erzeugen
-					char msg[256];
-					sprintf(msg,_("Warning: The played replay is not in sync with the original match. (GF: %u)"), framesinfo.nr);
-					// Messenger im Game
-					if(ci && GLOBALVARS.ingame)
-						ci->CI_ReplayAsync(msg);
+                replayinfo.replay.ReadGameCommand(&length, &data);
+                // Nächsten Zeitpunkt lesen
+                replayinfo.replay.ReadGF(&replayinfo.next_gf);
+                GameMessage_GameCommand msg(data, length);
 
-					// Konsole
-					LOG.lprintf("%s\n",msg);
+                // NCs ausführen (4 Bytes Checksumme und 1 Byte Player-ID überspringen)
+                ExecuteAllGCs(msg, 0, 0);
 
-					replayinfo.async = true;
+                // Replay ist NSYNC äh ASYNC!
+                if(!replayinfo.async && msg.checksum != 0 && msg.checksum != (unsigned)randcheckinfo.rand)
+                {
+                    // Meldung mit GF erzeugen
+                    char msg[256];
+                    sprintf(msg, _("Warning: The played replay is not in sync with the original match. (GF: %u)"), framesinfo.nr);
+                    // Messenger im Game
+                    if(ci && GLOBALVARS.ingame)
+                        ci->CI_ReplayAsync(msg);
 
-					//// pausieren
-					//framesinfo.pause = true;
-				}
+                    // Konsole
+                    LOG.lprintf("%s\n", msg);
+
+                    replayinfo.async = true;
+
+                    //// pausieren
+                    //framesinfo.pause = true;
+                }
 
 
-				delete [] data;
-			}
+                delete [] data;
+            }
 
-			
 
-			
-		}
-		else
-		{
-			// noch nichtan der Reihe, dann wieder raus
-			break;
-		}
-	}
 
-	
 
-	// Frame ausführen
-	NextGF();
+        }
+        else
+        {
+            // noch nichtan der Reihe, dann wieder raus
+            break;
+        }
+    }
 
-	// Replay zu Ende?
-	if(framesinfo.nr == replayinfo.replay.last_gf)
-	{
-		// Replay zu Ende
 
-		// Meldung erzeugen
-		char msg[256];
-		sprintf(msg,_("Notice: The played replay has ended. (GF: %u, %dh %dmin %ds, TF: %u, AVG_FPS: %u)"), framesinfo.nr, GameManager::inst().GetRuntime()/3600, ((GameManager::inst().GetRuntime())%3600)/60, (GameManager::inst().GetRuntime())%3600%60, GameManager::inst().GetFrameCount(), GameManager::inst().GetAverageFPS());
-		// Messenger im Game
-		if(ci && GLOBALVARS.ingame)
-			ci->CI_ReplayEndReached(msg);
 
-		// Konsole
-		LOG.lprintf("%s\n",msg);
+    // Frame ausführen
+    NextGF();
 
-		replayinfo.end = true;
+    // Replay zu Ende?
+    if(framesinfo.nr == replayinfo.replay.last_gf)
+    {
+        // Replay zu Ende
 
-		// pausieren
-		framesinfo.pause = true;
-	}
+        // Meldung erzeugen
+        char msg[256];
+        sprintf(msg, _("Notice: The played replay has ended. (GF: %u, %dh %dmin %ds, TF: %u, AVG_FPS: %u)"), framesinfo.nr, GameManager::inst().GetRuntime() / 3600, ((GameManager::inst().GetRuntime()) % 3600) / 60, (GameManager::inst().GetRuntime()) % 3600 % 60, GameManager::inst().GetFrameCount(), GameManager::inst().GetAverageFPS());
+        // Messenger im Game
+        if(ci && GLOBALVARS.ingame)
+            ci->CI_ReplayEndReached(msg);
+
+        // Konsole
+        LOG.lprintf("%s\n", msg);
+
+        replayinfo.end = true;
+
+        // pausieren
+        framesinfo.pause = true;
+    }
 }

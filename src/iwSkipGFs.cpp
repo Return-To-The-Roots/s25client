@@ -1,4 +1,4 @@
-// $Id: iwSkipGFs.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: iwSkipGFs.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -29,43 +29,43 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
-/** 
+/**
  *  Konstruktor von @p iwPlayReplay.
  *
  *  @author OLiver
  */
 iwSkipGFs::iwSkipGFs(void)
-	: IngameWindow(CGI_SKIPGFS, 0xFFFF, 0xFFFF, 300, 110, _("Skip GameFrames"), LOADER.GetImageN("resource", 41))
+    : IngameWindow(CGI_SKIPGFS, 0xFFFF, 0xFFFF, 300, 110, _("Skip GameFrames"), LOADER.GetImageN("resource", 41))
 {
-	// Text vor Editfeld
-	AddText(0, 50, 36,_("to GameFrame:"), COLOR_YELLOW, 0, NormalFont);
+    // Text vor Editfeld
+    AddText(0, 50, 36, _("to GameFrame:"), COLOR_YELLOW, 0, NormalFont);
 
-	// Editfeld zum Eingeben des Ziel-GF
-	ctrlEdit *edit = AddEdit(1, 126, 32, 120, 20, TC_GREY, NormalFont);
-	edit->SetFocus();
-	
-	// OK-Button
-	AddTextButton(2, 110, 65, 80, 22, TC_GREEN2, _("OK"),NormalFont);
+    // Editfeld zum Eingeben des Ziel-GF
+    ctrlEdit* edit = AddEdit(1, 126, 32, 120, 20, TC_GREY, NormalFont);
+    edit->SetFocus();
+
+    // OK-Button
+    AddTextButton(2, 110, 65, 80, 22, TC_GREEN2, _("OK"), NormalFont);
 }
 
 void iwSkipGFs::SkipGFs()
 {
-	int gf = atoi(GetCtrl<ctrlEdit>(1)->GetText().c_str());
-		GAMECLIENT.SkipGF(gf);
+    int gf = atoi(GetCtrl<ctrlEdit>(1)->GetText().c_str());
+    GAMECLIENT.SkipGF(gf);
 }
 
 void iwSkipGFs::Msg_ButtonClick(const unsigned int ctrl_id)
 {
-	SkipGFs();
+    SkipGFs();
 }
 
 void iwSkipGFs::Msg_EditEnter(const unsigned int ctrl_id)
 {
-	SkipGFs();
+    SkipGFs();
 }

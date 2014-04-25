@@ -1,4 +1,4 @@
-// $Id: iwAddons.h 7095 2011-03-27 20:15:08Z OLiver $
+// $Id: iwAddons.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005-2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -27,36 +27,36 @@ class GlobalGameSettings;
 
 class iwAddons : public IngameWindow
 {
-	/// Breite der Scrollbar
-	static const unsigned short SCROLLBAR_WIDTH = 20;
-	/// Pointer to the settings we edit in this window
-	GlobalGameSettings * ggs;
+        /// Breite der Scrollbar
+        static const unsigned short SCROLLBAR_WIDTH = 20;
+        /// Pointer to the settings we edit in this window
+        GlobalGameSettings* ggs;
 
-public:
-	enum ChangePolicy
-	{
-		HOSTGAME,
-		READONLY,
-		SETDEFAULTS
-	};
+    public:
+        enum ChangePolicy
+        {
+            HOSTGAME,
+            READONLY,
+            SETDEFAULTS
+        };
 
-public:
-	iwAddons(GlobalGameSettings * ggs,ChangePolicy policy = SETDEFAULTS);
-	~iwAddons(void);
+    public:
+        iwAddons(GlobalGameSettings* ggs, ChangePolicy policy = SETDEFAULTS);
+        ~iwAddons(void);
 
-protected:
-	void Msg_ButtonClick(const unsigned int ctrl_id);
-	void Msg_OptionGroupChange(const unsigned int ctrl_id, const unsigned short selection);
-	void Msg_ScrollChange(const unsigned int ctrl_id, const unsigned short position);
-	bool Msg_WheelUp(const MouseCoords& mc);
-	bool Msg_WheelDown(const MouseCoords& mc);
-	
-	/// Aktualisiert die Addons, die angezeigt werden sollen
-	void UpdateView(const unsigned short selection);
+    protected:
+        void Msg_ButtonClick(const unsigned int ctrl_id);
+        void Msg_OptionGroupChange(const unsigned int ctrl_id, const unsigned short selection);
+        void Msg_ScrollChange(const unsigned int ctrl_id, const unsigned short position);
+        bool Msg_WheelUp(const MouseCoords& mc);
+        bool Msg_WheelDown(const MouseCoords& mc);
 
-private:
-	ChangePolicy policy;
-	unsigned short _inthiscategory;
+        /// Aktualisiert die Addons, die angezeigt werden sollen
+        void UpdateView(const unsigned short selection);
+
+    private:
+        ChangePolicy policy;
+        unsigned short _inthiscategory;
 };
 
 #endif // !iwENHANCEMENTS_H_INCLUDED

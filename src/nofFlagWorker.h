@@ -1,4 +1,4 @@
-// $Id: nofFlagWorker.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: nofFlagWorker.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -27,48 +27,48 @@ class noFlag;
 /// Basisklasse für Geologen und Späher, also die, die an eine Flagge gebunden sind zum Arbeiten
 class nofFlagWorker : public noFigure
 {
-protected:
-	/// Flaggen-Ausgangspunkt
-	noFlag * flag;
+    protected:
+        /// Flaggen-Ausgangspunkt
+        noFlag* flag;
 
-	enum State
-	{
-		STATE_FIGUREWORK, // Zur Flagge und zurückgehen, Rumirren usw
-		STATE_GOTOFLAG, // geht zurück zur Flagge um anschließend nach Hause zu gehen
+        enum State
+        {
+            STATE_FIGUREWORK, // Zur Flagge und zurückgehen, Rumirren usw
+            STATE_GOTOFLAG, // geht zurück zur Flagge um anschließend nach Hause zu gehen
 
-		STATE_GEOLOGIST_GOTONEXTNODE, // Zum nächsten Punkt gehen, um dort zu graben
-		STATE_GEOLOGIST_DIG, // graben (mit Hammer auf Berg hauen)
-		STATE_GEOLOGIST_CHEER, // Jubeln, dass man etwas gefunden hat
+            STATE_GEOLOGIST_GOTONEXTNODE, // Zum nächsten Punkt gehen, um dort zu graben
+            STATE_GEOLOGIST_DIG, // graben (mit Hammer auf Berg hauen)
+            STATE_GEOLOGIST_CHEER, // Jubeln, dass man etwas gefunden hat
 
-		STATE_SCOUT_SCOUTING // läuft umher und erkundet
-	} state;
+            STATE_SCOUT_SCOUTING // läuft umher und erkundet
+        } state;
 
-protected:
+    protected:
 
-	/// Kündigt bei der Flagge
-	void AbrogateWorkplace();
-	/// Geht wieder zurück zur Flagge und dann nach Hause
-	void GoToFlag();
+        /// Kündigt bei der Flagge
+        void AbrogateWorkplace();
+        /// Geht wieder zurück zur Flagge und dann nach Hause
+        void GoToFlag();
 
-public:
+    public:
 
-	nofFlagWorker(const Job job,const unsigned short x, const unsigned short y,const unsigned char player,noRoadNode * goal);
-	nofFlagWorker(SerializedGameData * sgd, const unsigned obj_id);
+        nofFlagWorker(const Job job, const unsigned short x, const unsigned short y, const unsigned char player, noRoadNode* goal);
+        nofFlagWorker(SerializedGameData* sgd, const unsigned obj_id);
 
-	/// Aufräummethoden
-protected:	void Destroy_nofFlagWorker();
-public:		void Destroy() { Destroy_nofFlagWorker(); }
+        /// Aufräummethoden
+    protected:  void Destroy_nofFlagWorker();
+    public:     void Destroy() { Destroy_nofFlagWorker(); }
 
-	/// Serialisierungsfunktionen
-	protected:	void Serialize_nofFlagWorker(SerializedGameData * sgd) const;
-	public:		void Serialize(SerializedGameData *sgd) const { Serialize_nofFlagWorker(sgd); }
+        /// Serialisierungsfunktionen
+    protected:  void Serialize_nofFlagWorker(SerializedGameData* sgd) const;
+    public:     void Serialize(SerializedGameData* sgd) const { Serialize_nofFlagWorker(sgd); }
 
 
-	/// Wird aufgerufen, wenn die Flagge abgerissen wurde
-	virtual void LostWork() = 0;
+        /// Wird aufgerufen, wenn die Flagge abgerissen wurde
+        virtual void LostWork() = 0;
 
-	/// Gibt Flagge zurück
-	noFlag * GetFlag() const { return flag; }
+        /// Gibt Flagge zurück
+        noFlag* GetFlag() const { return flag; }
 
 };
 

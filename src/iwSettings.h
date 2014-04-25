@@ -1,4 +1,4 @@
-// $Id: iwSettings.h 
+// $Id: iwSettings.h
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -29,16 +29,16 @@
 /// Fenster mit den Statistiken.
 class iwSettings : public IngameWindow
 {
-public:
-	/// Konstruktor von @p iwStatistics.
-	iwSettings(dskGameInterface *gameDesktop);
-	~iwSettings();
+    public:
+        /// Konstruktor von @p iwStatistics.
+        iwSettings(dskGameInterface* gameDesktop);
+        ~iwSettings();
 
-private:
-	std::vector<VideoDriver::VideoMode> video_modes; ///< Vector für die Auflösungen
-	void Msg_OptionGroupChange(const unsigned int ctrl_id, const unsigned short selection);
-	void Msg_CheckboxChange(const unsigned int ctrl_id, const bool checked);
-	dskGameInterface *gameDesktop;
+    private:
+        std::vector<VideoDriver::VideoMode> video_modes; ///< Vector für die Auflösungen
+        void Msg_OptionGroupChange(const unsigned int ctrl_id, const unsigned short selection);
+        void Msg_CheckboxChange(const unsigned int ctrl_id, const bool checked);
+        dskGameInterface* gameDesktop;
 };
 
 #endif // !iwSETTINGS_H_INCLUDED

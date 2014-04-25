@@ -1,4 +1,4 @@
-// $Id: iwWares.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: iwWares.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -26,24 +26,24 @@
 
 class iwWares : public IngameWindow
 {
-protected:
-	const Goods * const inventory;    ///< Warenbestand
-	unsigned char page;       ///< aktuelle Seite des Inventurfensters.
-	unsigned char page_count; ///< maximale Seite des Inventurfensters.
+    protected:
+        const Goods* const inventory;     ///< Warenbestand
+        unsigned char page;       ///< aktuelle Seite des Inventurfensters.
+        unsigned char page_count; ///< maximale Seite des Inventurfensters.
 
-public:
-	/// Konstruktor von @p iwInventory.
-	iwWares(unsigned int id, unsigned short x, unsigned short y, const unsigned short width, const unsigned short height, const std::string& title, unsigned char page_count,
-		bool allow_outhousing, glArchivItem_Font *font, const Goods *inventory);
-	/// bestimmte Inventurseite zeigen.
-	void SetPage(unsigned char page);
-	/// setzt die maximale Seitenzahl.
-	void SetPageCount(unsigned char page_count) { this->page_count = page_count; }
+    public:
+        /// Konstruktor von @p iwInventory.
+        iwWares(unsigned int id, unsigned short x, unsigned short y, const unsigned short width, const unsigned short height, const std::string& title, unsigned char page_count,
+                bool allow_outhousing, glArchivItem_Font* font, const Goods* inventory);
+        /// bestimmte Inventurseite zeigen.
+        void SetPage(unsigned char page);
+        /// setzt die maximale Seitenzahl.
+        void SetPageCount(unsigned char page_count) { this->page_count = page_count; }
 
-protected:
+    protected:
 
-	void Msg_ButtonClick(const unsigned int ctrl_id);
-	void Msg_PaintBefore();
+        void Msg_ButtonClick(const unsigned int ctrl_id);
+        void Msg_PaintBefore();
 };
 
 #endif // !iwINVENTORY_H_INCLUDED

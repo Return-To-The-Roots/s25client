@@ -1,4 +1,4 @@
-// $Id: iwPostWindow.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: iwPostWindow.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -26,38 +26,38 @@
 
 class iwPostWindow : public IngameWindow
 {
-public:
-	iwPostWindow(GameWorldViewer& gwv);
-  void Msg_PaintBefore();
-  void Msg_ButtonClick(const unsigned int ctrl_id);
-  bool Msg_KeyDown(const KeyEvent& ke);
+    public:
+        iwPostWindow(GameWorldViewer& gwv);
+        void Msg_PaintBefore();
+        void Msg_ButtonClick(const unsigned int ctrl_id);
+        bool Msg_KeyDown(const KeyEvent& ke);
 
-private:
-  GameWorldViewer& gwv;
-  ctrlImage *postImage;
-  ctrlText *postMsgInfos;
+    private:
+        GameWorldViewer& gwv;
+        ctrlImage* postImage;
+        ctrlText* postMsgInfos;
 
-  ctrlImageButton *gotoButton;
-  ctrlImageButton *deleteButton;
-  
-  ctrlImageButton *acceptButton;
-  ctrlImageButton *declineButton;
+        ctrlImageButton* gotoButton;
+        ctrlImageButton* deleteButton;
 
-  unsigned currentMessage;
+        ctrlImageButton* acceptButton;
+        ctrlImageButton* declineButton;
 
-	/// Liefert Pointer auf die pos-te Nachricht zurück
-  PostMsg *GetPostMsg(unsigned pos) const;
+        unsigned currentMessage;
 
-	/// Passt Steuerelemente an, setzt Einstellung für diverse Controls passend für die aktuelle PostMessage
-  void DisplayPostMessage();
+        /// Liefert Pointer auf die pos-te Nachricht zurück
+        PostMsg* GetPostMsg(unsigned pos) const;
 
-	/// Nachricht löschen
-	void DeletePostMessage(PostMsg *pm);
+        /// Passt Steuerelemente an, setzt Einstellung für diverse Controls passend für die aktuelle PostMessage
+        void DisplayPostMessage();
 
-	/// Setzt den Text mehrzeilig in das Postfenster
-	void SetMessageText(const std::string& message);
+        /// Nachricht löschen
+        void DeletePostMessage(PostMsg* pm);
 
-  unsigned lastSize;
+        /// Setzt den Text mehrzeilig in das Postfenster
+        void SetMessageText(const std::string& message);
+
+        unsigned lastSize;
 
 };
 

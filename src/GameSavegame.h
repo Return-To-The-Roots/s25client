@@ -1,4 +1,4 @@
-// $Id: GameSavegame.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: GameSavegame.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -26,27 +26,27 @@
 
 class Savegame : public SavedFile
 {
-public:
-	Savegame();
-	~Savegame();
+    public:
+        Savegame();
+        ~Savegame();
 
-	/// Schreibst Savegame oder Teile davon
-	bool Save(const std::string& filename);
-	bool Save(BinaryFile& file);
+        /// Schreibst Savegame oder Teile davon
+        bool Save(const std::string& filename);
+        bool Save(BinaryFile& file);
 
-	/// Lädt Savegame oder Teile davon
-	bool Load(const std::string&  filename, const bool load_players, const bool load_sgd);
-	bool Load(BinaryFile& file, const bool load_players, const bool load_sgd);
+        /// Lädt Savegame oder Teile davon
+        bool Load(const std::string&  filename, const bool load_players, const bool load_sgd);
+        bool Load(BinaryFile& file, const bool load_players, const bool load_sgd);
 
-public:
-	/// Start-GF
-	unsigned int start_gf;
-	/// Serialisierte Spieldaten
-	SerializedGameData sgd;
+    public:
+        /// Start-GF
+        unsigned int start_gf;
+        /// Serialisierte Spieldaten
+        SerializedGameData sgd;
 
-private:
-	static const unsigned short SAVE_VERSION;
-	static const char SAVE_SIGNATURE[8];
+    private:
+        static const unsigned short SAVE_VERSION;
+        static const char SAVE_SIGNATURE[8];
 };
 
 #endif //!GAMESAVEGAME_H_INCLUDED

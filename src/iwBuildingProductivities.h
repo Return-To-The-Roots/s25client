@@ -1,4 +1,4 @@
-// $Id: iwBuildingProductivities.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: iwBuildingProductivities.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -24,21 +24,21 @@
 /// Fenster, welches die Anzahl aller Gebäude und der Baustellena auflistet
 class iwBuildingProductivities : public IngameWindow
 {
-	/// Prozentzahlen der einzelnen Gebäude
-	std::vector<unsigned short> percents;
+        /// Prozentzahlen der einzelnen Gebäude
+        std::vector<unsigned short> percents;
 
-public:
+    public:
 
-	/// Konstruktor von @p iwMilitary.
-	iwBuildingProductivities();
+        /// Konstruktor von @p iwMilitary.
+        iwBuildingProductivities();
 
-private:
+    private:
 
-	/// Aktualisieren der Prozente
-	void UpdatePercents();
+        /// Aktualisieren der Prozente
+        void UpdatePercents();
 
-	/// Produktivitäts-Progressbars aktualisieren
-	void Msg_PaintAfter();
+        /// Produktivitäts-Progressbars aktualisieren
+        void Msg_PaintAfter();
 
 };
 

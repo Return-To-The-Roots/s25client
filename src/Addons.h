@@ -1,4 +1,4 @@
-// $Id: Addons.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: Addons.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -33,33 +33,33 @@ class Window;
  */
 class Addon
 {
-public:
-	Addon(const AddonId id, const unsigned int groups, const std::string &name, const std::string &description, const unsigned int default_status)
-		: id(id), groups(groups), name(name), description(description), default_status(default_status)	{	}
-	virtual ~Addon() {	}
+    public:
+        Addon(const AddonId id, const unsigned int groups, const std::string& name, const std::string& description, const unsigned int default_status)
+            : id(id), groups(groups), name(name), description(description), default_status(default_status)  {   }
+        virtual ~Addon() {  }
 
-	virtual void hideGui(Window *window, unsigned int id) const;
-	virtual void createGui(Window *window, unsigned int id, unsigned short& y, bool readonly, unsigned int status) const;
-	virtual void setGuiStatus(Window *window, unsigned int id, unsigned int status) const {	}
+        virtual void hideGui(Window* window, unsigned int id) const;
+        virtual void createGui(Window* window, unsigned int id, unsigned short& y, bool readonly, unsigned int status) const;
+        virtual void setGuiStatus(Window* window, unsigned int id, unsigned int status) const { }
 
-	virtual unsigned int getGuiStatus(Window *window, unsigned int id, bool& failed) const 
-	{
-		failed = false; 
-		return getDefaultStatus();
-	}
+        virtual unsigned int getGuiStatus(Window* window, unsigned int id, bool& failed) const
+        {
+            failed = false;
+            return getDefaultStatus();
+        }
 
-	AddonId getId() const { return id; }
-	unsigned int getGroups() const { return (ADDONGROUP_ALL|groups); }
-	std::string getName() const { return name; }
-	std::string getDescription() const { return description; }
-	unsigned int getDefaultStatus() const { return default_status; }
+        AddonId getId() const { return id; }
+        unsigned int getGroups() const { return (ADDONGROUP_ALL | groups); }
+        std::string getName() const { return name; }
+        std::string getDescription() const { return description; }
+        unsigned int getDefaultStatus() const { return default_status; }
 
-private:
-	AddonId id;
-	unsigned int groups;
-	std::string name;
-	std::string description;
-	unsigned int default_status;
+    private:
+        AddonId id;
+        unsigned int groups;
+        std::string name;
+        std::string description;
+        unsigned int default_status;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -71,29 +71,29 @@ private:
  */
 class AddonList : public Addon
 {
-public:
-	AddonList(const AddonId id, const unsigned int groups, const std::string &name, const std::string &description, const unsigned int default_status)
-		: Addon(id, groups, name, description, default_status) { }
+    public:
+        AddonList(const AddonId id, const unsigned int groups, const std::string& name, const std::string& description, const unsigned int default_status)
+            : Addon(id, groups, name, description, default_status) { }
 
-	virtual void hideGui(Window *window, unsigned int id) const;
-	virtual void createGui(Window *window, unsigned int id, unsigned short& y, bool readonly, unsigned int status) const;
-	virtual void setGuiStatus(Window *window, unsigned int id, unsigned int status) const;
-	virtual unsigned int getGuiStatus(Window *window, unsigned int id, bool& failed) const;
+        virtual void hideGui(Window* window, unsigned int id) const;
+        virtual void createGui(Window* window, unsigned int id, unsigned short& y, bool readonly, unsigned int status) const;
+        virtual void setGuiStatus(Window* window, unsigned int id, unsigned int status) const;
+        virtual unsigned int getGuiStatus(Window* window, unsigned int id, bool& failed) const;
 
-protected:
-	void removeOptions()
-	{
-		options.clear();
-	}
+    protected:
+        void removeOptions()
+        {
+            options.clear();
+        }
 
-	void addOption(const std::string &name)
-	{
-		if(std::find(options.begin(), options.end(), name) == options.end())
-			options.push_back(name);
-	}
+        void addOption(const std::string& name)
+        {
+            if(std::find(options.begin(), options.end(), name) == options.end())
+                options.push_back(name);
+        }
 
-private:
-	std::vector<std::string> options;
+    private:
+        std::vector<std::string> options;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -104,14 +104,14 @@ private:
  */
 class AddonBool : public Addon
 {
-public:
-	AddonBool(const AddonId id, const unsigned int groups, const std::string &name, const std::string &description, const unsigned int default_status)
-		: Addon(id, groups, name, description, default_status) { }
+    public:
+        AddonBool(const AddonId id, const unsigned int groups, const std::string& name, const std::string& description, const unsigned int default_status)
+            : Addon(id, groups, name, description, default_status) { }
 
-	virtual void hideGui(Window *window, unsigned int id) const;
-	virtual void createGui(Window *window, unsigned int id, unsigned short& y, bool readonly, unsigned int status) const;
-	virtual void setGuiStatus(Window *window, unsigned int id, unsigned int status) const;
-	virtual unsigned int getGuiStatus(Window *window, unsigned int id, bool& failed) const;
+        virtual void hideGui(Window* window, unsigned int id) const;
+        virtual void createGui(Window* window, unsigned int id, unsigned short& y, bool readonly, unsigned int status) const;
+        virtual void setGuiStatus(Window* window, unsigned int id, unsigned int status) const;
+        virtual unsigned int getGuiStatus(Window* window, unsigned int id, bool& failed) const;
 };
 
 #endif // !ADDONS_H_INCLUDED

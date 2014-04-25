@@ -1,4 +1,4 @@
-// $Id: nofPassiveWorker.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: nofPassiveWorker.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -27,18 +27,18 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
-nofPassiveWorker::nofPassiveWorker(const Job job,const unsigned short x, const unsigned short y,const unsigned char player,noRoadNode * goal)
-: noFigure(job,x,y,player,goal)
+nofPassiveWorker::nofPassiveWorker(const Job job, const unsigned short x, const unsigned short y, const unsigned char player, noRoadNode* goal)
+    : noFigure(job, x, y, player, goal)
 {
 }
 
-nofPassiveWorker::nofPassiveWorker(SerializedGameData * sgd, const unsigned obj_id) 
-: noFigure(sgd,obj_id)
+nofPassiveWorker::nofPassiveWorker(SerializedGameData* sgd, const unsigned obj_id)
+    : noFigure(sgd, obj_id)
 {
 }
 
@@ -51,12 +51,12 @@ void nofPassiveWorker::Walked()
 // wenn das Ziel erreicht wurde
 void nofPassiveWorker::GoalReached()
 {
-	// Mich hier einquartieren
-	gwg->RemoveFigure(this,x,y);
-	nobBaseWarehouse * wh = gwg->GetSpecObj<nobBaseWarehouse>(x,y);
-	assert(wh);
-	wh->AddFigure(this);
-	
+    // Mich hier einquartieren
+    gwg->RemoveFigure(this, x, y);
+    nobBaseWarehouse* wh = gwg->GetSpecObj<nobBaseWarehouse>(x, y);
+    assert(wh);
+    wh->AddFigure(this);
+
 }
 
 void nofPassiveWorker::AbrogateWorkplace()
@@ -67,11 +67,11 @@ void nofPassiveWorker::AbrogateWorkplace()
 /// Zeichnen
 void nofPassiveWorker::Draw(int x, int y)
 {
-	DrawWalking(x,y);
+    DrawWalking(x, y);
 }
 
 /// Für alle restlichen Events, die nicht von noFigure behandelt werden
 void nofPassiveWorker::HandleDerivedEvent(const unsigned int id)
 {
-	
+
 }

@@ -1,4 +1,4 @@
-// $Id: Addons.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: Addons.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -30,15 +30,15 @@
  *
  *  @author FloSoft
  */
-void Addon::hideGui(Window *window, unsigned int id) const
+void Addon::hideGui(Window* window, unsigned int id) const
 {
-	ctrlText *text = window->GetCtrl<ctrlText>(id);
-	if(text)
-		text->SetVisible(false);
-	
-	ctrlImageButton *button = window->GetCtrl<ctrlImageButton>(id + 1);
-	if(button)
-		button->SetVisible(false);
+    ctrlText* text = window->GetCtrl<ctrlText>(id);
+    if(text)
+        text->SetVisible(false);
+
+    ctrlImageButton* button = window->GetCtrl<ctrlImageButton>(id + 1);
+    if(button)
+        button->SetVisible(false);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -47,36 +47,21 @@ void Addon::hideGui(Window *window, unsigned int id) const
  *
  *  @author FloSoft
  */
-void Addon::createGui(Window *window, unsigned int id, unsigned short& y, bool readonly, unsigned int status) const
+void Addon::createGui(Window* window, unsigned int id, unsigned short& y, bool readonly, unsigned int status) const
 {
-	ctrlText *text = window->GetCtrl<ctrlText>(id);
-	if(!text)
-		text = window->AddText(id, 52, y + 4, _(name), COLOR_YELLOW, 0, NormalFont);
-	
-	text->SetVisible(true);
-	text->Move(52, y + 4);
-	
-	ctrlImageButton *button = window->GetCtrl<ctrlImageButton>(id + 1);
-	if(!button)
-		button = window->AddImageButton(id + 1, 20, y, 22, 22, TC_GREY, LOADER.GetImageN("io", 21), _(description));
-	
-	button->SetVisible(true);
-	button->Move(20, y);
- }
+    ctrlText* text = window->GetCtrl<ctrlText>(id);
+    if(!text)
+        text = window->AddText(id, 52, y + 4, _(name), COLOR_YELLOW, 0, NormalFont);
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author FloSoft
- */
-void AddonList::hideGui(Window *window, unsigned int id) const
-{
-	Addon::hideGui(window, id);
+    text->SetVisible(true);
+    text->Move(52, y + 4);
 
-	ctrlComboBox *combo = window->GetCtrl<ctrlComboBox>(id + 2);
-	if(combo)
-		combo->SetVisible(false);
+    ctrlImageButton* button = window->GetCtrl<ctrlImageButton>(id + 1);
+    if(!button)
+        button = window->AddImageButton(id + 1, 20, y, 22, 22, TC_GREY, LOADER.GetImageN("io", 21), _(description));
+
+    button->SetVisible(true);
+    button->Move(20, y);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -85,24 +70,13 @@ void AddonList::hideGui(Window *window, unsigned int id) const
  *
  *  @author FloSoft
  */
-void AddonList::createGui(Window *window, unsigned int id, unsigned short& y, bool readonly, unsigned int status) const
+void AddonList::hideGui(Window* window, unsigned int id) const
 {
-	Addon::createGui(window, id, y, readonly, status);
-	
-	ctrlComboBox *combo = window->GetCtrl<ctrlComboBox>(id + 2);
-	if(!combo)
-	{
-		combo = window->AddComboBox(id + 2, 450, y, 220, 20,  TC_GREY, NormalFont, 100, readonly );
-		for(std::vector<std::string>::const_iterator it = options.begin(); it != options.end(); ++it)
-			combo->AddString(*it);
+    Addon::hideGui(window, id);
 
-		setGuiStatus(window, id, status);
-	}
-
-	combo->SetVisible(true);
-	combo->Move(430, y);
-
-	y += 30;
+    ctrlComboBox* combo = window->GetCtrl<ctrlComboBox>(id + 2);
+    if(combo)
+        combo->SetVisible(false);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -111,12 +85,24 @@ void AddonList::createGui(Window *window, unsigned int id, unsigned short& y, bo
  *
  *  @author FloSoft
  */
-void AddonList::setGuiStatus(Window *window, unsigned int id, unsigned int status) const
+void AddonList::createGui(Window* window, unsigned int id, unsigned short& y, bool readonly, unsigned int status) const
 {
-	ctrlComboBox *combo = window->GetCtrl<ctrlComboBox>(id + 2);
+    Addon::createGui(window, id, y, readonly, status);
 
-	if(combo)
-		combo->SetSelection(status);
+    ctrlComboBox* combo = window->GetCtrl<ctrlComboBox>(id + 2);
+    if(!combo)
+    {
+        combo = window->AddComboBox(id + 2, 450, y, 220, 20,  TC_GREY, NormalFont, 100, readonly );
+        for(std::vector<std::string>::const_iterator it = options.begin(); it != options.end(); ++it)
+            combo->AddString(*it);
+
+        setGuiStatus(window, id, status);
+    }
+
+    combo->SetVisible(true);
+    combo->Move(430, y);
+
+    y += 30;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -125,17 +111,12 @@ void AddonList::setGuiStatus(Window *window, unsigned int id, unsigned int statu
  *
  *  @author FloSoft
  */
-unsigned int AddonList::getGuiStatus(Window *window, unsigned int id, bool& failed) const
+void AddonList::setGuiStatus(Window* window, unsigned int id, unsigned int status) const
 {
-	ctrlComboBox *combo = window->GetCtrl<ctrlComboBox>(id + 2);
-	if(!combo)
-	{
-		failed = true;
-		return getDefaultStatus();
-	}
-	failed = false;
+    ctrlComboBox* combo = window->GetCtrl<ctrlComboBox>(id + 2);
 
-	return combo->GetSelection();
+    if(combo)
+        combo->SetSelection(status);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -144,12 +125,17 @@ unsigned int AddonList::getGuiStatus(Window *window, unsigned int id, bool& fail
  *
  *  @author FloSoft
  */
-void AddonBool::hideGui(Window *window, unsigned int id) const
+unsigned int AddonList::getGuiStatus(Window* window, unsigned int id, bool& failed) const
 {
-	Addon::hideGui(window, id);
-	ctrlCheck *check = window->GetCtrl<ctrlCheck>(id + 2);
-	if(check)
-		check->SetVisible(false);
+    ctrlComboBox* combo = window->GetCtrl<ctrlComboBox>(id + 2);
+    if(!combo)
+    {
+        failed = true;
+        return getDefaultStatus();
+    }
+    failed = false;
+
+    return combo->GetSelection();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -158,21 +144,12 @@ void AddonBool::hideGui(Window *window, unsigned int id) const
  *
  *  @author FloSoft
  */
-void AddonBool::createGui(Window *window, unsigned int id, unsigned short& y, bool readonly, unsigned int status) const
+void AddonBool::hideGui(Window* window, unsigned int id) const
 {
-	Addon::createGui(window, id, y, readonly, status);
-
-	ctrlCheck *check = window->GetCtrl<ctrlCheck>(id + 2);
-	if(!check)
-	{
-		check = window->AddCheckBox(id + 2, 430, y, 220, 20,  TC_GREY, _("Use"), NormalFont, readonly );
-		setGuiStatus(window, id, status);
-	}
-	
-	check->SetVisible(true);
-	check->Move(430, y);
-
-	y += 30;
+    Addon::hideGui(window, id);
+    ctrlCheck* check = window->GetCtrl<ctrlCheck>(id + 2);
+    if(check)
+        check->SetVisible(false);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -181,12 +158,21 @@ void AddonBool::createGui(Window *window, unsigned int id, unsigned short& y, bo
  *
  *  @author FloSoft
  */
-void AddonBool::setGuiStatus(Window *window, unsigned int id, unsigned int status) const
+void AddonBool::createGui(Window* window, unsigned int id, unsigned short& y, bool readonly, unsigned int status) const
 {
-	ctrlCheck *check = window->GetCtrl<ctrlCheck>(id + 2);
+    Addon::createGui(window, id, y, readonly, status);
 
-	if(check)
-		check->SetCheck( (status != 0) );
+    ctrlCheck* check = window->GetCtrl<ctrlCheck>(id + 2);
+    if(!check)
+    {
+        check = window->AddCheckBox(id + 2, 430, y, 220, 20,  TC_GREY, _("Use"), NormalFont, readonly );
+        setGuiStatus(window, id, status);
+    }
+
+    check->SetVisible(true);
+    check->Move(430, y);
+
+    y += 30;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -195,15 +181,29 @@ void AddonBool::setGuiStatus(Window *window, unsigned int id, unsigned int statu
  *
  *  @author FloSoft
  */
-unsigned int AddonBool::getGuiStatus(Window *window, unsigned int id, bool& failed) const
+void AddonBool::setGuiStatus(Window* window, unsigned int id, unsigned int status) const
 {
-	ctrlCheck *check = window->GetCtrl<ctrlCheck>(id + 2);
-	if(!check)
-	{
-		failed = true;
-		return getDefaultStatus();
-	}
-	failed = false;
+    ctrlCheck* check = window->GetCtrl<ctrlCheck>(id + 2);
 
-	return (check->GetCheck() ? 1 : 0);
+    if(check)
+        check->SetCheck( (status != 0) );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/**
+ *
+ *
+ *  @author FloSoft
+ */
+unsigned int AddonBool::getGuiStatus(Window* window, unsigned int id, bool& failed) const
+{
+    ctrlCheck* check = window->GetCtrl<ctrlCheck>(id + 2);
+    if(!check)
+    {
+        failed = true;
+        return getDefaultStatus();
+    }
+    failed = false;
+
+    return (check->GetCheck() ? 1 : 0);
 }

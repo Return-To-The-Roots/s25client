@@ -1,4 +1,4 @@
-// $Id: ctrlOptionGroup.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: ctrlOptionGroup.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -27,38 +27,39 @@
 /// Verwaltet eine Gruppe von Buttons, die als Optionsbuttons benötigt werden
 class ctrlOptionGroup : public ctrlGroup
 {
-public:
-	enum {
-		ILLUMINATE = 0,
-		CHECK,
-		SHOW
-	};
+    public:
+        enum
+        {
+            ILLUMINATE = 0,
+            CHECK,
+            SHOW
+        };
 
-public:
-	/// Konstruktor von @p ctrlOptionGroup.
-	ctrlOptionGroup(Window *parent, unsigned int id, int select_type, bool scale = false);
+    public:
+        /// Konstruktor von @p ctrlOptionGroup.
+        ctrlOptionGroup(Window* parent, unsigned int id, int select_type, bool scale = false);
 
-	/// Selektiert einen neuen Button
-	void SetSelection(unsigned short selection, bool notify = false);
-	/// Gibt den aktuell selektierten Button zurück
-	unsigned short GetSelection() const { return selection; }
-	// Gibt einen Button aus der Gruppe zurück zum direkten Bearbeiten
-	ctrlButton *GetButton(unsigned int id) { return GetCtrl<ctrlButton>(id); }
+        /// Selektiert einen neuen Button
+        void SetSelection(unsigned short selection, bool notify = false);
+        /// Gibt den aktuell selektierten Button zurück
+        unsigned short GetSelection() const { return selection; }
+        // Gibt einen Button aus der Gruppe zurück zum direkten Bearbeiten
+        ctrlButton* GetButton(unsigned int id) { return GetCtrl<ctrlButton>(id); }
 
-	virtual void Msg_ButtonClick(const unsigned int ctrl_id);
-	virtual bool Msg_LeftDown(const MouseCoords& mc);
-	virtual bool Msg_LeftUp(const MouseCoords& mc);
-	virtual bool Msg_WheelUp(const MouseCoords& mc);
-	virtual bool Msg_WheelDown(const MouseCoords& mc);
-	virtual bool Msg_MouseMove(const MouseCoords& mc);
+        virtual void Msg_ButtonClick(const unsigned int ctrl_id);
+        virtual bool Msg_LeftDown(const MouseCoords& mc);
+        virtual bool Msg_LeftUp(const MouseCoords& mc);
+        virtual bool Msg_WheelUp(const MouseCoords& mc);
+        virtual bool Msg_WheelDown(const MouseCoords& mc);
+        virtual bool Msg_MouseMove(const MouseCoords& mc);
 
-protected:
-	/// Zeichenmethode.
-	virtual bool Draw_(void);
+    protected:
+        /// Zeichenmethode.
+        virtual bool Draw_(void);
 
-private:
-	unsigned short selection; ///< aktuell ausgewählter Button ( @p 0xFFFF = nicht selektiert )
-	int select_type;         ///< Typ der Selektierung
+    private:
+        unsigned short selection; ///< aktuell ausgewählter Button ( @p 0xFFFF = nicht selektiert )
+        int select_type;         ///< Typ der Selektierung
 };
 
 #endif // !CTRLOPTIONGROUP_H_INCLUDED

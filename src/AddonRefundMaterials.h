@@ -1,4 +1,4 @@
-// $Id: AddonRefundMaterials.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: AddonRefundMaterials.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -31,20 +31,20 @@
  */
 class AddonRefundMaterials : public AddonList
 {
-public:
-	AddonRefundMaterials() : AddonList(ADDON_REFUND_MATERIALS, 
-									   ADDONGROUP_ECONOMY,
-									   gettext_noop("Refund materials when building is destroyed"), 
-									   gettext_noop("Allows you to get building materials back if the building is destroyed."),
-									   0
-									  )
-	{
-		addOption(gettext_noop("No refund"));
-		addOption(gettext_noop("Refund 25%"));
-		addOption(gettext_noop("Refund 50%"));
-		addOption(gettext_noop("Refund 75%"));
-		addOption(gettext_noop("Get all back"));	
-	}
+    public:
+        AddonRefundMaterials() : AddonList(ADDON_REFUND_MATERIALS,
+                                               ADDONGROUP_ECONOMY,
+                                               gettext_noop("Refund materials when building is destroyed"),
+                                               gettext_noop("Allows you to get building materials back if the building is destroyed."),
+                                               0
+                                              )
+        {
+            addOption(gettext_noop("No refund"));
+            addOption(gettext_noop("Refund 25%"));
+            addOption(gettext_noop("Refund 50%"));
+            addOption(gettext_noop("Refund 75%"));
+            addOption(gettext_noop("Get all back"));
+        }
 };
 
 #endif // !ADDONREFUNDMATERIALS_H_INCLUDED

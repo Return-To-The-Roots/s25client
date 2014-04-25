@@ -1,4 +1,4 @@
-// $Id: AudioDriver.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: AudioDriver.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -25,9 +25,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -47,59 +47,59 @@
  */
 
 ///////////////////////////////////////////////////////////////////////////////
-/** 
+/**
  *  Konstruktor von @p AudioDriver.
  *
  *  @author FloSoft
  */
-AudioDriver::AudioDriver(AudioDriverLoaderInterface * adli)
-: play_id_counter(1),  adli(adli), initialized(false)
+AudioDriver::AudioDriver(AudioDriverLoaderInterface* adli)
+    : play_id_counter(1),  adli(adli), initialized(false)
 {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/** 
+/**
  *  Destruktor von @p AudioDriver.
  *
  *  @author FloSoft
  */
 AudioDriver::~AudioDriver(void)
 {
-	for(std::vector<Sound*>::iterator it = sounds.begin(); it != sounds.end(); ++it)
-	{
-		// Sounddeskriptoren aufräumen
-		delete (*it);
-	}
-	sounds.clear();
+    for(std::vector<Sound*>::iterator it = sounds.begin(); it != sounds.end(); ++it)
+    {
+        // Sounddeskriptoren aufräumen
+        delete (*it);
+    }
+    sounds.clear();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/** 
+/**
  *  Funktion zum Auslesen des Treibernamens.
  *
  *  @return liefert den Treibernamen zurück
  *
  *  @author FloSoft
  */
-const char *AudioDriver::GetName(void) const
+const char* AudioDriver::GetName(void) const
 {
-	return NULL;
+    return NULL;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/** 
- * 
+/**
+ *
  *
  *  @author OLiver
  */
 unsigned AudioDriver::GeneratePlayID()
 {
-	// Ende erreicht?
-	if(play_id_counter == 0xFFFF)
-	{
-		// dann wieder bei 0 anfangen (0xFFFF als Fehlermeldung!)
-		play_id_counter = 0;
-	}
+    // Ende erreicht?
+    if(play_id_counter == 0xFFFF)
+    {
+        // dann wieder bei 0 anfangen (0xFFFF als Fehlermeldung!)
+        play_id_counter = 0;
+    }
 
-	return play_id_counter++;
+    return play_id_counter++;
 }

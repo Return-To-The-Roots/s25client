@@ -1,4 +1,4 @@
-// $Id: AudioDriver.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: AudioDriver.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -29,79 +29,80 @@
 /// Basisklasse für einen Audiotreiber.
 class AudioDriver
 {
-public:
-	/// Konstruktor von @p AudioDriver.
-	AudioDriver(AudioDriverLoaderInterface * adli);
+    public:
+        /// Konstruktor von @p AudioDriver.
+        AudioDriver(AudioDriverLoaderInterface* adli);
 
-	/// Destruktor von @p AudioDriver.
-	virtual ~AudioDriver(void);
+        /// Destruktor von @p AudioDriver.
+        virtual ~AudioDriver(void);
 
-	/// Funktion zum Auslesen des Treibernamens.
-	virtual const char *GetName(void) const;
+        /// Funktion zum Auslesen des Treibernamens.
+        virtual const char* GetName(void) const;
 
-	/// Treiberinitialisierungsfunktion.
-	virtual bool Initialize(void) = 0;
+        /// Treiberinitialisierungsfunktion.
+        virtual bool Initialize(void) = 0;
 
-	/// Treiberaufräumfunktion.
-	virtual void CleanUp(void) = 0;
+        /// Treiberaufräumfunktion.
+        virtual void CleanUp(void) = 0;
 
-	virtual Sound *LoadEffect(unsigned int data_type, unsigned char *data, unsigned long size) = 0;
-	virtual Sound *LoadMusic(unsigned int data_type, unsigned char *data, unsigned long size) = 0;
+        virtual Sound* LoadEffect(unsigned int data_type, unsigned char* data, unsigned long size) = 0;
+        virtual Sound* LoadMusic(unsigned int data_type, unsigned char* data, unsigned long size) = 0;
 
-	/// Spielt Sound ab
-	virtual unsigned int PlayEffect(Sound *sound, const unsigned char volume, const bool loop) = 0;
-	/// Spielt Midi ab
-	virtual void PlayMusic(Sound * sound, const unsigned repeats) = 0;
-	/// Stoppt die Musik.
-	virtual void StopMusic(void) = 0;
-	/// Stoppt einen Sound
-	virtual void StopEffect(const unsigned int play_id) = 0; 
-	/// Wird ein Sound (noch) abgespielt?
-	virtual bool IsEffectPlaying(const unsigned play_id) = 0;
-	/// Verändert die Lautstärke von einem abgespielten Sound (falls er noch abgespielt wird)
-	virtual void ChangeVolume(const unsigned play_id,const unsigned char volume) = 0;
+        /// Spielt Sound ab
+        virtual unsigned int PlayEffect(Sound* sound, const unsigned char volume, const bool loop) = 0;
+        /// Spielt Midi ab
+        virtual void PlayMusic(Sound* sound, const unsigned repeats) = 0;
+        /// Stoppt die Musik.
+        virtual void StopMusic(void) = 0;
+        /// Stoppt einen Sound
+        virtual void StopEffect(const unsigned int play_id) = 0;
+        /// Wird ein Sound (noch) abgespielt?
+        virtual bool IsEffectPlaying(const unsigned play_id) = 0;
+        /// Verändert die Lautstärke von einem abgespielten Sound (falls er noch abgespielt wird)
+        virtual void ChangeVolume(const unsigned play_id, const unsigned char volume) = 0;
 
-	virtual void SetMasterEffectVolume(unsigned char volume) = 0;
-	virtual void SetMasterMusicVolume(unsigned char volume) = 0;
+        virtual void SetMasterEffectVolume(unsigned char volume) = 0;
+        virtual void SetMasterMusicVolume(unsigned char volume) = 0;
 
-	/// prüft auf Initialisierung.
-	bool IsInitialized() { return initialized; }
+        /// prüft auf Initialisierung.
+        bool IsInitialized() { return initialized; }
 
-protected:
+    protected:
 
-	/// "Generiert" eine Play-ID
-	unsigned GeneratePlayID();
+        /// "Generiert" eine Play-ID
+        unsigned GeneratePlayID();
 
-private:
+    private:
 
-	/// Counter für Play-IDs
-	unsigned play_id_counter;
-
-
-public:
-	enum DataType {
-		AD_UNKNOWN = 0,
-		AD_WAVE,
-		AD_MIDI,
-		AD_OTHER
-		// AD_MP3, usw
-	};
+        /// Counter für Play-IDs
+        unsigned play_id_counter;
 
 
-protected:
+    public:
+        enum DataType
+        {
+            AD_UNKNOWN = 0,
+            AD_WAVE,
+            AD_MIDI,
+            AD_OTHER
+            // AD_MP3, usw
+        };
 
-	AudioDriverLoaderInterface * adli; 
-	
-	///< Das DriverCallback für Rückmeldungen.
 
-	bool initialized; ///< Initialisierungsstatus.
+    protected:
 
-	std::vector<Sound*> sounds;
+        AudioDriverLoaderInterface* adli;
 
-	/// Anzahl Channels, die reserviert werden können (für Effekte!)
-	static const unsigned CHANNEL_COUNT = 64;
+        ///< Das DriverCallback für Rückmeldungen.
 
-	
+        bool initialized; ///< Initialisierungsstatus.
+
+        std::vector<Sound*> sounds;
+
+        /// Anzahl Channels, die reserviert werden können (für Effekte!)
+        static const unsigned CHANNEL_COUNT = 64;
+
+
 };
 
 #endif // !AUDIODRIVER_H_INCLUDED

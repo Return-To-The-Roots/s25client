@@ -1,4 +1,4 @@
-// $Id: nobShipYard.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: nobShipYard.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -26,34 +26,34 @@
 /// Extraklasse für ein Schiffsbauer-Gebäude, da hier extra Optionen eingestellt werden müssen
 class nobShipYard : public nobUsual
 {
-public:
+    public:
 
-	/// Modi für den Schiffsbauer
-	enum Mode
-	{
-		BOATS = 0, // baut kleine Boote
-		SHIPS // baut große Schiffe
-	};
+        /// Modi für den Schiffsbauer
+        enum Mode
+        {
+            BOATS = 0, // baut kleine Boote
+            SHIPS // baut große Schiffe
+        };
 
-private:
+    private:
 
-	/// Aktueller Modus vom Schiffsbauer
-	Mode mode;
+        /// Aktueller Modus vom Schiffsbauer
+        Mode mode;
 
-public:
+    public:
 
-	nobShipYard(const unsigned short x, const unsigned short y,const unsigned char player,const Nation nation);
-	nobShipYard(SerializedGameData * sgd, const unsigned obj_id);
+        nobShipYard(const unsigned short x, const unsigned short y, const unsigned char player, const Nation nation);
+        nobShipYard(SerializedGameData* sgd, const unsigned obj_id);
 
-	/// Serialisierungsfunktionen
-	void Serialize(SerializedGameData *sgd) const;
+        /// Serialisierungsfunktionen
+        void Serialize(SerializedGameData* sgd) const;
 
-	GO_Type GetGOT() const { return GOT_NOB_SHIPYARD; }
+        GO_Type GetGOT() const { return GOT_NOB_SHIPYARD; }
 
-	/// Gibt aktuellen Modus zurück
-	Mode GetMode() const { return mode; }
-	/// Schaltet Modus entsprechend um
-	void ToggleMode();
+        /// Gibt aktuellen Modus zurück
+        Mode GetMode() const { return mode; }
+        /// Schaltet Modus entsprechend um
+        void ToggleMode();
 };
 
 

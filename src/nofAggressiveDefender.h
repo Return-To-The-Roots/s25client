@@ -1,4 +1,4 @@
-// $Id: nofAggressiveDefender.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: nofAggressiveDefender.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -27,72 +27,72 @@ class nofPassiveSoldier;
 /// Aggressiv-verteidigender Soldat (jemand, der den Angreifer auf offenem Feld entgegenläuft)
 class nofAggressiveDefender : public nofActiveSoldier
 {
-	// Unser Feind-Freund ;)
-	friend class nofAttacker;
+        // Unser Feind-Freund ;)
+        friend class nofAttacker;
 
-private:
+    private:
 
-	/// Soldaten, der er entgegenrennen soll
-	nofAttacker * attacker;
-	/// Militärgebäude, das angegriffen wird
-	nobBaseMilitary * attacked_goal;
+        /// Soldaten, der er entgegenrennen soll
+        nofAttacker* attacker;
+        /// Militärgebäude, das angegriffen wird
+        nobBaseMilitary* attacked_goal;
 
-private:
+    private:
 
-	/// wenn man gelaufen ist
-	void Walked();
-	/// Geht nach Haus für MAggressiveDefending-Mission
-	void ReturnHomeMissionAggressiveDefending();
-	/// Läuft wieter
-	void MissAggressiveDefendingWalk();
-	/// Sucht sich für MissionAggressiveAttacking ein neues Ziel, wenns keins findet, gehts nach Hause
-	void MissionAggressiveDefendingLookForNewAggressor();
-	/// Sagt den verschiedenen Zielen Bescheid, dass wir doch nicht mehr kommen können
-	void InformTargetsAboutCancelling();
+        /// wenn man gelaufen ist
+        void Walked();
+        /// Geht nach Haus für MAggressiveDefending-Mission
+        void ReturnHomeMissionAggressiveDefending();
+        /// Läuft wieter
+        void MissAggressiveDefendingWalk();
+        /// Sucht sich für MissionAggressiveAttacking ein neues Ziel, wenns keins findet, gehts nach Hause
+        void MissionAggressiveDefendingLookForNewAggressor();
+        /// Sagt den verschiedenen Zielen Bescheid, dass wir doch nicht mehr kommen können
+        void InformTargetsAboutCancelling();
 
-	/// The derived classes regain control after a fight of nofActiveSoldier
-	void FreeFightEnded();
+        /// The derived classes regain control after a fight of nofActiveSoldier
+        void FreeFightEnded();
 
-public:
+    public:
 
-	nofAggressiveDefender(const unsigned short x, const unsigned short y,const unsigned char player,
-		nobBaseMilitary * const home,const unsigned char rank,nofAttacker * const attacker);
-	nofAggressiveDefender(nofPassiveSoldier * other,nofAttacker * const attacker);
-	nofAggressiveDefender(SerializedGameData * sgd, const unsigned obj_id);
+        nofAggressiveDefender(const unsigned short x, const unsigned short y, const unsigned char player,
+                              nobBaseMilitary* const home, const unsigned char rank, nofAttacker* const attacker);
+        nofAggressiveDefender(nofPassiveSoldier* other, nofAttacker* const attacker);
+        nofAggressiveDefender(SerializedGameData* sgd, const unsigned obj_id);
 
-	~nofAggressiveDefender();
+        ~nofAggressiveDefender();
 
 
 
-	/// Aufräummethoden
-protected:	void Destroy_nofAggressiveDefender();
-public:		void Destroy() { Destroy_nofAggressiveDefender(); }
+        /// Aufräummethoden
+    protected:  void Destroy_nofAggressiveDefender();
+    public:     void Destroy() { Destroy_nofAggressiveDefender(); }
 
-	/// Serialisierungsfunktionen
-	protected:	void Serialize_nofAggressiveDefender(SerializedGameData * sgd) const;
-	public:		void Serialize(SerializedGameData *sgd) const { Serialize_nofAggressiveDefender(sgd); }
+        /// Serialisierungsfunktionen
+    protected:  void Serialize_nofAggressiveDefender(SerializedGameData* sgd) const;
+    public:     void Serialize(SerializedGameData* sgd) const { Serialize_nofAggressiveDefender(sgd); }
 
-	GO_Type GetGOT() const { return GOT_NOF_AGGRESSIVEDEFENDER; }
+        GO_Type GetGOT() const { return GOT_NOF_AGGRESSIVEDEFENDER; }
 
-	/// Wenn ein Heimat-Militärgebäude bei Missionseinsätzen zerstört wurde
-	void HomeDestroyed();
-	/// Wenn er noch in der Warteschleife vom Ausgangsgebäude hängt und dieses zerstört wurde
-	void HomeDestroyedAtBegin();
-	/// Wenn ein Kampf gewonnen wurde
-	void WonFighting();
-	/// Wenn ein Kampf verloren wurde (Tod)
-	void LostFighting();
+        /// Wenn ein Heimat-Militärgebäude bei Missionseinsätzen zerstört wurde
+        void HomeDestroyed();
+        /// Wenn er noch in der Warteschleife vom Ausgangsgebäude hängt und dieses zerstört wurde
+        void HomeDestroyedAtBegin();
+        /// Wenn ein Kampf gewonnen wurde
+        void WonFighting();
+        /// Wenn ein Kampf verloren wurde (Tod)
+        void LostFighting();
 
-	/// Gebäude, das vom aggressiv-verteidigenden Soldaten verteidigt werden sollte, wurde zerstört
-	void AttackedGoalDestroyed();
-	/// Soldat, der angehalten ist, um auf seinen Angreifer-Kollegen zu warten, soll jetzt weiterlaufen, da er um
-	/// das Angriffsgebäude schon wartet
-	void MissAggressiveDefendingContinueWalking();
-	/// Wenn der jeweils andere Soldat, mit dem man kämpfen wollte, nicht mehr kommen kann
-	void AttackerLost();
-	/// Ich befinde mich noch im Lagerhaus in der Warteschlange und muss mein HQ etc. verteidigen
-	/// Mission muss also abgebrochen werden
-	void NeedForHomeDefence();
+        /// Gebäude, das vom aggressiv-verteidigenden Soldaten verteidigt werden sollte, wurde zerstört
+        void AttackedGoalDestroyed();
+        /// Soldat, der angehalten ist, um auf seinen Angreifer-Kollegen zu warten, soll jetzt weiterlaufen, da er um
+        /// das Angriffsgebäude schon wartet
+        void MissAggressiveDefendingContinueWalking();
+        /// Wenn der jeweils andere Soldat, mit dem man kämpfen wollte, nicht mehr kommen kann
+        void AttackerLost();
+        /// Ich befinde mich noch im Lagerhaus in der Warteschlange und muss mein HQ etc. verteidigen
+        /// Mission muss also abgebrochen werden
+        void NeedForHomeDefence();
 
 };
 

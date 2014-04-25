@@ -1,4 +1,4 @@
-// $Id: dskMultiPlayer.h 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: dskMultiPlayer.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -26,12 +26,12 @@
 /// Klasse des Multispieler Desktops.
 class dskMultiPlayer : public Desktop
 {
-public:
-	/// Konstruktor von @p dskMultiPlayer.
-	dskMultiPlayer();
+    public:
+        /// Konstruktor von @p dskMultiPlayer.
+        dskMultiPlayer();
 
-private:
-	void Msg_ButtonClick(const unsigned int ctrl_id);
+    private:
+        void Msg_ButtonClick(const unsigned int ctrl_id);
 };
 
 #endif // !dskMULTIPLAYER_H_INCLUDED

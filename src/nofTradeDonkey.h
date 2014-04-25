@@ -29,53 +29,53 @@ class nofTradeLeader;
 /// Can also be the other people following the leader!
 class nofTradeDonkey : public noFigure
 {
-	/// Leader of the caravane
-	nofTradeLeader * leader;
-	/// Successor (NULL if this is the one behind the leader)
-	nofTradeDonkey * successor;
-	/// Ware this donkey carries (GD_NOTHING if this is a normal figure)
-	GoodType gt;
-	/// Last dir this donkey used
-	std::deque<unsigned char> next_dirs;
+        /// Leader of the caravane
+        nofTradeLeader* leader;
+        /// Successor (NULL if this is the one behind the leader)
+        nofTradeDonkey* successor;
+        /// Ware this donkey carries (GD_NOTHING if this is a normal figure)
+        GoodType gt;
+        /// Last dir this donkey used
+        std::deque<unsigned char> next_dirs;
 
-private:
+    private:
 
-	void GoalReached();
-	void Walked();
-	void HandleDerivedEvent(const unsigned int id);
-	void AbrogateWorkplace();
+        void GoalReached();
+        void Walked();
+        void HandleDerivedEvent(const unsigned int id);
+        void AbrogateWorkplace();
 
-	/// Returns next direction
-	unsigned char GetNextDir() { unsigned char dir = next_dirs.front(); next_dirs.pop_front(); return dir; }
+        /// Returns next direction
+        unsigned char GetNextDir() { unsigned char dir = next_dirs.front(); next_dirs.pop_front(); return dir; }
 
-public:
+    public:
 
-	nofTradeDonkey(const MapCoord x, const MapCoord y,const unsigned char player,
-		nofTradeLeader * const leader, const GoodType gt,const Job job);
-	nofTradeDonkey(SerializedGameData * sgd, const unsigned obj_id);
+        nofTradeDonkey(const MapCoord x, const MapCoord y, const unsigned char player,
+                       nofTradeLeader* const leader, const GoodType gt, const Job job);
+        nofTradeDonkey(SerializedGameData* sgd, const unsigned obj_id);
 
-	void Serialize(SerializedGameData *sgd) const;
+        void Serialize(SerializedGameData* sgd) const;
 
-	GO_Type GetGOT() const { return GOT_NOF_TRADEDONKEY; }
+        GO_Type GetGOT() const { return GOT_NOF_TRADEDONKEY; }
 
-	void Draw(int x, int y);
+        void Draw(int x, int y);
 
-	/// Wird aufgerufen, wenn die Flagge abgerissen wurde
-	void LostWork();
+        /// Wird aufgerufen, wenn die Flagge abgerissen wurde
+        void LostWork();
 
-	
-	/// Adds the next direction, this is usually done by the predecessor
-	void AddNextDir(const unsigned char dir) { next_dirs.push_back(dir); }
 
-	/// Gets the type of ware this donkey is carrying
-	GoodType GetCarriedWare() const { return gt; }
+        /// Adds the next direction, this is usually done by the predecessor
+        void AddNextDir(const unsigned char dir) { next_dirs.push_back(dir); }
 
-	/// Sets the sucessor in the caravane
-	void SetSuccessor(nofTradeDonkey * const successor) 
-	{ this->successor = successor; }
+        /// Gets the type of ware this donkey is carrying
+        GoodType GetCarriedWare() const { return gt; }
 
-	/// Start wandering and informs the other successors about this
-	void CancelTradeCaravane();
+        /// Sets the sucessor in the caravane
+        void SetSuccessor(nofTradeDonkey* const successor)
+        { this->successor = successor; }
+
+        /// Start wandering and informs the other successors about this
+        void CancelTradeCaravane();
 };
 
 

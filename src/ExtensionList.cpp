@@ -1,4 +1,4 @@
-// $Id: ExtensionList.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+// $Id: ExtensionList.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -25,9 +25,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-	#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
+#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
 #endif
 
 // WGL_EXT_swap_control
@@ -36,12 +36,12 @@ PFNWGLSWAPINTERVALFARPROC wglSwapIntervalEXT = NULL;
 // GL_ARB_vertex_buffer_object
 
 #ifndef __APPLE__
-	PFNGLGENBUFFERSARBPROC glGenBuffersARB = NULL;
-	PFNGLBINDBUFFERARBPROC glBindBufferARB = NULL;
-	PFNGLBUFFERDATAARBPROC glBufferDataARB = NULL;
-	PFNGLDELETEBUFFERSARBPROC glDeleteBuffersARB = NULL;
-	PFNGLBUFFERSUBDATAARBPROC glBufferSubDataARB = NULL;
+PFNGLGENBUFFERSARBPROC glGenBuffersARB = NULL;
+PFNGLBINDBUFFERARBPROC glBindBufferARB = NULL;
+PFNGLBUFFERDATAARBPROC glBufferDataARB = NULL;
+PFNGLDELETEBUFFERSARBPROC glDeleteBuffersARB = NULL;
+PFNGLBUFFERSUBDATAARBPROC glBufferSubDataARB = NULL;
 
-	// GL_EXT_paletted_texture
-	PFNGLCOLORTABLEEXTPROC glColorTableEXT = NULL;
+// GL_EXT_paletted_texture
+PFNGLCOLORTABLEEXTPROC glColorTableEXT = NULL;
 #endif // !__APPLE__
