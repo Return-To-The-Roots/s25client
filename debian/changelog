@@ -1,3 +1,65 @@
+s25rttr (20140426-9366.325) precise; urgency=low
+
+  * Automatic Jenkins Build 325
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sat, 26 Apr 2014 17:39:42 +0200
+
+s25rttr (20140426-9366) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sat, 26 Apr 2014 00:00:00 +0200
+
+s25rttr (20140426-9363) any; urgency=low
+
+  * - try to resync replay if async
+    - optimize eventmanager (99sek -> 63sek for 170000gf ~= 30%)
+    - fix paths in project files
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 26 Apr 2014 15:00:00 +0200
+
+s25rttr (20140426-9362.324) precise; urgency=low
+
+  * Automatic Jenkins Build 324
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sat, 26 Apr 2014 02:10:09 +0200
+
+s25rttr (20140426-9362) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sat, 26 Apr 2014 00:00:00 +0200
+
+s25rttr (20140425-9357) any; urgency=low
+
+  * astyle
+
+ -- Florian Doersch <flosoft@siedler25.org>  Fri, 25 Apr 2014 15:35:00 +0200
+
+s25rttr (20140421-9352.323) precise; urgency=low
+
+  * Automatic Jenkins Build 323
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Mon, 21 Apr 2014 01:09:01 +0200
+
+s25rttr (20140421-9352) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Mon, 21 Apr 2014 00:00:00 +0200
+
+s25rttr (20140420-9351) any; urgency=low
+
+  * fix displaying user classification when joining game
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sun, 20 Apr 2014 08:31:00 +0200
+
+s25rttr (20140419-9349) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 19 Apr 2014 22:00:00 +0200
+
 s25rttr (20140415-9338.322) precise; urgency=low
 
   * Automatic Jenkins Build 322
