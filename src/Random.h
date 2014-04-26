@@ -1,4 +1,4 @@
-// $Id: Random.h 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: Random.h 9363 2014-04-26 15:00:08Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -70,8 +70,9 @@ class Random : public Singleton<Random>
 
         /// Gibt aktuelle Zufallszahl zurück
         int GetCurrentRandomValue() const { return zahl; }
+        void ReplaySet(const unsigned int checksum) { zahl = checksum; }
 
-        std::list<RandomEntry> *GetAsyncLog();
+        std::list<RandomEntry>* GetAsyncLog();
 
         /// Speichere Log
         void SaveLog(const char* const filename);

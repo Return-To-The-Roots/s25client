@@ -1,4 +1,4 @@
-// $Id: EventManager.h 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: EventManager.h 9363 2014-04-26 15:00:08Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -27,6 +27,7 @@
 #include "GameObject.h"
 
 #include <list>
+#include <map>
 
 class GameObject;
 class SerializedGameData;
@@ -68,10 +69,7 @@ class EventManager
         typedef Event* EventPointer;
 
     public:
-
-
         ~EventManager();
-
 
         /// führt alle Events des aktuellen GameFrames aus.
         void NextGF();
@@ -100,7 +98,7 @@ class EventManager
 
         void RemoveAllEventsOfObject(GameObject* obj);
     private:
-        std::list<Event*> eis;     ///< Liste der Events für die einzelnen Objekte
+        std::map<unsigned, std::list<Event*> > eis;     ///< Liste der Events für die einzelnen Objekte
         std::list<GameObject*> kill_list; ///< Liste mit Objekten die unmittelbar nach NextGF gekillt werden sollen
 };
 

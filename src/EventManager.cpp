@@ -1,4 +1,4 @@
-// $Id: EventManager.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: EventManager.cpp 9363 2014-04-26 15:00:08Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -41,8 +41,11 @@ static char THIS_FILE[] = __FILE__;
 
 EventManager::~EventManager()
 {
-    for(std::list<Event*>::iterator it = eis.begin(); it != eis.end(); ++it)
-        delete (*it);
+    for(std::map<unsigned, std::list<Event*> >::iterator it = eis.begin(); it != eis.end(); ++it)
+    {
+        for(std::list<Event*>::iterator e_it = it->second.begin(); e_it != it->second.end(); ++e_it)
+            delete (*e_it);
+    }
 
     eis.clear();
 }
@@ -70,7 +73,7 @@ EventManager::EventPointer EventManager::AddEvent(GameObject* obj, const unsigne
 
     // Event eintragen
     Event* event = new Event(obj, GAMECLIENT.GetGFNumber(), gf_length, id);
-    eis.push_back(event);
+    eis[event->gf_next].push_back(event);
 
     return event;
 }
@@ -78,7 +81,7 @@ EventManager::EventPointer EventManager::AddEvent(GameObject* obj, const unsigne
 EventManager::EventPointer EventManager::AddEvent(SerializedGameData* sgd, const unsigned obj_id)
 {
     Event* event = new Event(sgd, obj_id);
-    eis.push_back(event);
+    eis[event->gf_next].push_back(event);
 
     return event;
 }
@@ -94,7 +97,7 @@ EventManager::EventPointer EventManager::AddEvent(GameObject* obj, const unsigne
 
     // Anfang des Events in die Vergangenheit zurückverlegen
     Event* event = new Event(obj, GAMECLIENT.GetGFNumber() - gf_elapsed, gf_length, id);
-    eis.push_back(event);
+    eis[event->gf_next].push_back(event);
 
     return event;
 }
@@ -110,38 +113,25 @@ void EventManager::NextGF()
     unsigned int gfnr = GAMECLIENT.GetGFNumber();
 
     // Events abfragen
-    for (std::list<Event*>::iterator it = eis.begin(); it != eis.end(); )
+    std::map<unsigned, std::list<Event*> >::iterator it = eis.find(gfnr);
+    if(it != eis.end())
     {
-        Event* e = *it;
-
-        if (!e)
+        for(std::list<Event*>::iterator e_it = it->second.begin(); e_it != it->second.end(); ++e_it)
         {
-            it = eis.erase(it);
-        }
-        else if (e->gf_next == gfnr)
-        {
-
-            assert(e->obj);
-            assert(e->obj->GetObjId() < GameObject::GetObjIDCounter());
-
-            it = eis.erase(it);
-
-            if (e->obj)
+            Event* e = (*e_it);
+            if(e)
             {
-                e->obj->HandleEvent(e->id);
-                /*          } else
-                            {
-                                LOG.lprintf("EventManager::NextGF(): event with NULL object!\n");*/
+                assert(e->obj);
+                assert(e->obj->GetObjId() < GameObject::GetObjIDCounter());
+
+
+                if (e->obj)
+                    e->obj->HandleEvent(e->id);
+
+                delete e;
             }
-
-//          it = eis.erase(it);
-
-            delete e;
         }
-        else
-        {
-            ++it;
-        }
+        eis.erase(it);
     }
 
     // Kill-List durchgehen und Objekte in den Bytehimmel befördern
@@ -185,10 +175,13 @@ void EventManager::Serialize(SerializedGameData* sgd) const
 
     std::list<const Event*> save_events;
     // Nur Events speichern, die noch nicth vorher von anderen Objekten gespeichert wurden!
-    for(std::list<Event*>::const_iterator it = eis.begin(); it != eis.end(); ++it)
+    for(std::map< unsigned, std::list<Event*> >::const_iterator it = eis.begin(); it != eis.end(); ++it)
     {
-        if ((*it) && !sgd->GetConstGameObject((*it)->GetObjId()))
-            save_events.push_back(*it);
+        for(std::list<Event*>::const_iterator e_it = it->second.begin(); e_it != it->second.end(); ++e_it)
+        {
+            if ((*e_it) && !sgd->GetConstGameObject((*e_it)->GetObjId()))
+                save_events.push_back(*e_it);
+        }
     }
 
     sgd->PushObjectList(save_events, true);
@@ -207,11 +200,14 @@ void EventManager::Deserialize(SerializedGameData* sgd)
 /// Ist ein Event mit bestimmter id für ein bestimmtes Objekt bereits vorhanden?
 bool EventManager::IsEventActive(const GameObject* const obj, const unsigned id) const
 {
-    for (std::list<Event*>::const_iterator it = eis.begin(); it != eis.end(); ++it)
+    for(std::map< unsigned, std::list<Event*> >::const_iterator it = eis.begin(); it != eis.end(); ++it)
     {
-        if ((*it) && ((*it)->id == id) && ((*it)->obj == obj))
+        for(std::list<Event*>::const_iterator e_it = it->second.begin(); e_it != it->second.end(); ++e_it)
         {
-            return true;
+            if ((*e_it) && ((*e_it)->id == id) && ((*e_it)->obj == obj))
+            {
+                return true;
+            }
         }
     }
 
@@ -221,22 +217,19 @@ bool EventManager::IsEventActive(const GameObject* const obj, const unsigned id)
 // only used for debugging purposes
 void EventManager::RemoveAllEventsOfObject(GameObject* obj)
 {
-    // Events abfragen
-    for (std::list<Event*>::iterator it = eis.begin(); it != eis.end(); )
+    for(std::map< unsigned, std::list<Event*> >::iterator it = eis.begin(); it != eis.end(); ++it)
     {
-        if (!*it)
+        for(std::list<Event*>::iterator e_it = it->second.begin(); e_it != it->second.end();)
         {
-            ++it;
+            if(*e_it && (*e_it)->obj == obj)
+            {
+                e_it = it->second.erase(e_it);
+            }
+            else
+                ++e_it;
         }
-        else if ((*it)->obj == obj)
-        {
-            it = eis.erase(it);
-            LOG.lprintf("EventManager::RemoveAllEventsOfObject(): still objects left!\n");
-        }
-        else
-        {
-            ++it;
-        }
+        if(it->second.size() == 0)
+            eis.erase(it);
     }
 }
 
@@ -247,33 +240,25 @@ void EventManager::RemoveEvent(EventPointer ep)
         return;
     }
 
-    std::list<Event*>::iterator it = eis.begin();
-
-    while (it != eis.end())
+    std::map<unsigned, std::list<Event*> >::iterator it = eis.find(ep->gf_next);
+    if(it != eis.end())
     {
-        if ((*it) == ep)
+        std::list<Event*>::iterator e_it = std::find(it->second.begin(), it->second.end(), ep);
+        do
         {
-            (*it) = NULL;
+            if(e_it == it->second.end())
+                break;
 
-            // delete first occurrence
-            delete ep;
-
-            break;
+            e_it = it->second.erase(e_it);
+            if(e_it != it->second.end())
+                e_it = std::find(e_it, it->second.end(), ep);
         }
+        while(e_it != it->second.end());
 
-        ++it;
+        if(it->second.size() == 0)
+            eis.erase(it);
     }
 
-    // NULL any further findings
-    while (it != eis.end())
-    {
-        if ((*it) == ep)
-        {
-            LOG.lprintf("EventManager::RemoveEvent(): duplicate!\n");
-            (*it) = NULL;
-        }
-
-        ++it;
-    }
+    delete ep;
 }
 

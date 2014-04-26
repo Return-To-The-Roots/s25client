@@ -1,4 +1,4 @@
-// $Id: GameClientGF_Replay.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: GameClientGF_Replay.cpp 9363 2014-04-26 15:00:08Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -74,31 +74,31 @@ void GameClient::ExecuteGameFrame_Replay()
                 ExecuteAllGCs(msg, 0, 0);
 
                 // Replay ist NSYNC äh ASYNC!
-                if(!replayinfo.async && msg.checksum != 0 && msg.checksum != (unsigned)randcheckinfo.rand)
+                if(msg.checksum != 0 && msg.checksum != (unsigned)randcheckinfo.rand)
                 {
-                    // Meldung mit GF erzeugen
-                    char msg[256];
-                    sprintf(msg, _("Warning: The played replay is not in sync with the original match. (GF: %u)"), framesinfo.nr);
-                    // Messenger im Game
-                    if(ci && GLOBALVARS.ingame)
-                        ci->CI_ReplayAsync(msg);
+                    if(replayinfo.async == 0)
+                    {
+                        // Meldung mit GF erzeugen
+                        char text[256];
+                        sprintf(text, _("Warning: The played replay is not in sync with the original match. (GF: %u)"), framesinfo.nr);
 
-                    // Konsole
-                    LOG.lprintf("%s\n", msg);
+                        // Messenger im Game (prints to console too)
+                        if(ci && GLOBALVARS.ingame)
+                            ci->CI_ReplayAsync(text);
 
-                    replayinfo.async = true;
+                        // pausieren
+                        framesinfo.pause = true;
+                    }
 
-                    //// pausieren
-                    //framesinfo.pause = true;
+                    replayinfo.async++;
                 }
 
+                // resync random generator, so replay "can't" be async.
+                // (of course it can, since we resynchronize only after each command, the command itself could be use multiple rand values)
+                RANDOM.ReplaySet(msg.checksum);
 
-                delete [] data;
+                delete[] data;
             }
-
-
-
-
         }
         else
         {
@@ -106,8 +106,6 @@ void GameClient::ExecuteGameFrame_Replay()
             break;
         }
     }
-
-
 
     // Frame ausführen
     NextGF();
@@ -118,14 +116,21 @@ void GameClient::ExecuteGameFrame_Replay()
         // Replay zu Ende
 
         // Meldung erzeugen
-        char msg[256];
-        sprintf(msg, _("Notice: The played replay has ended. (GF: %u, %dh %dmin %ds, TF: %u, AVG_FPS: %u)"), framesinfo.nr, GameManager::inst().GetRuntime() / 3600, ((GameManager::inst().GetRuntime()) % 3600) / 60, (GameManager::inst().GetRuntime()) % 3600 % 60, GameManager::inst().GetFrameCount(), GameManager::inst().GetAverageFPS());
+        char text[256];
+        sprintf(text, _("Notice: The played replay has ended. (GF: %u, %dh %dmin %ds, TF: %u, AVG_FPS: %u)"), framesinfo.nr, GameManager::inst().GetRuntime() / 3600, ((GameManager::inst().GetRuntime()) % 3600) / 60, (GameManager::inst().GetRuntime()) % 3600 % 60, GameManager::inst().GetFrameCount(), GameManager::inst().GetAverageFPS());
+
         // Messenger im Game
         if(ci && GLOBALVARS.ingame)
-            ci->CI_ReplayEndReached(msg);
+            ci->CI_ReplayEndReached(text);
 
-        // Konsole
-        LOG.lprintf("%s\n", msg);
+        if(replayinfo.async != 0)
+        {
+            char text[256];
+            sprintf(text, _("Notice: Overall asynchronous frame count: %u"), replayinfo.async);
+            // Messenger im Game
+            if(ci && GLOBALVARS.ingame)
+                ci->CI_ReplayEndReached(text);
+        }
 
         replayinfo.end = true;
 

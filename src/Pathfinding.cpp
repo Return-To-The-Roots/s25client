@@ -1,4 +1,4 @@
-// $Id: Pathfinding.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: Pathfinding.cpp 9363 2014-04-26 15:00:08Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -217,7 +217,7 @@ const GameWorldBase* PathfindingPoint::gwb = NULL;
 /// Wegfinden ( A* ), O(v lg v) --> Wegfindung auf allgemeinen Terrain (ohne Straßen), für Wegbau und frei herumlaufende Berufe
 bool GameWorldBase::FindFreePath(const MapCoord x_start, const MapCoord y_start,
                                  const MapCoord x_dest, const MapCoord y_dest, const bool random_route,
-                                 const unsigned max_route, std::vector<unsigned char> * route, unsigned* length,
+                                 const unsigned max_route, std::vector<unsigned char>* route, unsigned* length,
                                  unsigned char* first_dir,  FP_Node_OK_Callback IsNodeOK, FP_Node_OK_Callback IsNodeToDestOk, const void* param, const bool record) const
 {
     // increase currentVisit, so we don't have to clear the visited-states at every run
@@ -245,6 +245,8 @@ bool GameWorldBase::FindFreePath(const MapCoord x_start, const MapCoord y_start,
     pf_nodes[start_id].lastVisited = currentVisit;
     pf_nodes[start_id].way = 0;
     pf_nodes[start_id].dir = 0;
+
+    unsigned rand = RANDOM.Rand(__FILE__, __LINE__, y_start * GetWidth() + x_start, 6);
 
     while(todo.size())
     {
@@ -291,7 +293,7 @@ bool GameWorldBase::FindFreePath(const MapCoord x_start, const MapCoord y_start,
             continue;
 
         // Bei Zufälliger Richtung anfangen (damit man nicht immer denselben Weg geht, besonders für die Soldaten wichtig)
-        unsigned start = random_route ? RANDOM.Rand("pf", __LINE__, y_start * GetWidth() + x_start, 6) : 0;
+        unsigned start = random_route ? rand : 0;
 
         // Knoten in alle 6 Richtungen bilden
         for(unsigned z = start + 3; z < start + 9; ++z)
@@ -353,7 +355,7 @@ bool GameWorldBase::FindFreePath(const MapCoord x_start, const MapCoord y_start,
     return false;
 }
 
-template < class _Ty,
+template<class _Ty,
          class _Container = std::vector<_Ty>,
          class _Pr = std::less<typename _Container::value_type> >
 class openlist_container : public std::priority_queue<_Ty,  _Container, _Pr>
@@ -411,7 +413,7 @@ openlist_container<const noRoadNode*, std::vector<const noRoadNode*>, RoadNodeCo
 /// Wegfinden ( A* ), O(v lg v) --> Wegfindung auf allgemeinen Terrain (ohne Straßen), für Wegbau und frei herumlaufende Berufe
 bool GameWorldBase::FindPathOnRoads(const noRoadNode* const start, const noRoadNode* const goal,
                                     const bool ware_mode, unsigned* length,
-                                    unsigned char* first_dir,  Point<MapCoord> * next_harbor,
+                                    unsigned char* first_dir,  Point<MapCoord>* next_harbor,
                                     const RoadSegment* const forbidden, const bool record, unsigned max) const
 {
     // Aus Replay lesen?
@@ -757,7 +759,7 @@ unsigned char GameWorldBase::FindHumanPath(const MapCoord x_start, const MapCoor
 }
 
 /// Wegfindung für Menschen im Straßennetz
-unsigned char GameWorldGame::FindHumanPathOnRoads(const noRoadNode* const start, const noRoadNode* const goal, unsigned* length, Point<MapCoord> * next_harbor, const RoadSegment* const forbidden)
+unsigned char GameWorldGame::FindHumanPathOnRoads(const noRoadNode* const start, const noRoadNode* const goal, unsigned* length, Point<MapCoord>* next_harbor, const RoadSegment* const forbidden)
 {
     unsigned char first_dir = 0xFF;
     if(FindPathOnRoads(start, goal, false, length, &first_dir, next_harbor, forbidden))
@@ -767,7 +769,7 @@ unsigned char GameWorldGame::FindHumanPathOnRoads(const noRoadNode* const start,
 }
 
 /// Wegfindung für Waren im Straßennetz
-unsigned char GameWorldGame::FindPathForWareOnRoads(const noRoadNode* const start, const noRoadNode* const goal, unsigned* length, Point<MapCoord> * next_harbor, unsigned max)
+unsigned char GameWorldGame::FindPathForWareOnRoads(const noRoadNode* const start, const noRoadNode* const goal, unsigned* length, Point<MapCoord>* next_harbor, unsigned max)
 {
     unsigned char first_dir = 0xFF;
     if(FindPathOnRoads(start, goal, true, length, &first_dir, next_harbor, NULL, true, max))
@@ -779,7 +781,7 @@ unsigned char GameWorldGame::FindPathForWareOnRoads(const noRoadNode* const star
 
 /// Wegfindung für Schiffe auf dem Wasser
 bool GameWorldBase::FindShipPath(const MapCoord x_start, const MapCoord y_start, const MapCoord x_dest,
-                                 const MapCoord y_dest, std::vector<unsigned char> * route, unsigned* length, const unsigned max_length,
+                                 const MapCoord y_dest, std::vector<unsigned char>* route, unsigned* length, const unsigned max_length,
                                  GameWorldBase::CrossBorders* cb)
 {
     return FindFreePath(x_start, y_start, x_dest, y_dest, true, 400, route, length, NULL, IsPointOK_ShipPath,
@@ -839,7 +841,7 @@ bool IsPointToDestOK_TradePath(const GameWorldBase& gwb, const MapCoord x, const
 /// Find a route for trade caravanes
 unsigned char GameWorldGame::FindTradePath(const Point<MapCoord> start,
         const Point<MapCoord> dest, const unsigned char player, const unsigned max_route, const bool random_route,
-        std::vector<unsigned char> * route, unsigned* length,
+        std::vector<unsigned char>* route, unsigned* length,
         const bool record) const
 {
     //unsigned tt = GetTickCount();
@@ -872,7 +874,7 @@ unsigned char GameWorldGame::FindTradePath(const Point<MapCoord> start,
 /// Check whether trade path is still valid
 bool GameWorldGame::CheckTradeRoute(const Point<MapCoord> start, const std::vector<unsigned char>& route,
                                     const unsigned pos, const unsigned char player,
-                                    Point<MapCoord> * dest) const
+                                    Point<MapCoord>* dest) const
 {
     return CheckFreeRoute(start.x, start.y, route, pos, IsPointOK_TradePath,
                           IsPointToDestOK_HumanPath, dest ? &dest->x : NULL, dest ? &dest->y : NULL, &player);

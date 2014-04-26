@@ -1,4 +1,4 @@
-// $Id: GameClient.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: GameClient.cpp 9363 2014-04-26 15:00:08Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -131,7 +131,7 @@ void GameClient::RandCheckInfo::Clear()
  */
 void GameClient::ReplayInfo::Clear()
 {
-    async = false;
+    async = 0;
     end = false;
     next_gf = 0;
     filename = "";
@@ -1188,7 +1188,7 @@ void GameClient::OnNMSGetAsyncLog(const GameMessage_GetAsyncLog& msg)
     // AsyncLog an den Server senden
 
     // stückeln...
-    std::list<RandomEntry> *async_log = RANDOM.GetAsyncLog();
+    std::list<RandomEntry>* async_log = RANDOM.GetAsyncLog();
 
     std::list<RandomEntry> part;
 
@@ -1577,7 +1577,7 @@ void GameClient::WriteReplayHeader(const unsigned random_init)
         LOG.lprintf("GameClient::WriteReplayHeader: WARNING: File couldn't be opened. Don't use a replayinfo.replay.\n");
 }
 
-unsigned GameClient::StartReplay(const std::string& path, GameWorldViewer * &gwv)
+unsigned GameClient::StartReplay(const std::string& path, GameWorldViewer*& gwv)
 {
     replayinfo.filename = path;
     replayinfo.replay.savegame = &mapinfo.savegame;
@@ -1652,7 +1652,7 @@ unsigned GameClient::StartReplay(const std::string& path, GameWorldViewer * &gwv
     }
 
     replay_mode = true;
-    replayinfo.async = false;
+    replayinfo.async = 0;
     replayinfo.end = false;
 
     StartGame(replayinfo.replay.random_init);
@@ -2017,7 +2017,7 @@ void GameClient::SendAIEvent(AIEvent::Base* ev, unsigned receiver)
 }
 
 /// Schreibt ggf. Pathfinding-Results in das Replay, falls erforderlich
-void GameClient::AddPathfindingResult(const unsigned char dir, const unsigned* const length, const Point<MapCoord> * const next_harbor)
+void GameClient::AddPathfindingResult(const unsigned char dir, const unsigned* const length, const Point<MapCoord>* const next_harbor)
 {
     // Sind wir im normalem Spiel?
     if(!replay_mode || (replay_mode && !replayinfo.replay.pathfinding_results))
@@ -2046,7 +2046,7 @@ bool GameClient::ArePathfindingResultsAvailable() const
 }
 
 /// Gibt Pathfinding-Results zurück aus einem Replay
-bool GameClient::ReadPathfindingResult(unsigned char* dir, unsigned* length, Point<MapCoord> * next_harbor)
+bool GameClient::ReadPathfindingResult(unsigned char* dir, unsigned* length, Point<MapCoord>* next_harbor)
 {
     return replayinfo.replay.ReadPathfindingResult(dir, length, next_harbor);
 }

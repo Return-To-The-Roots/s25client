@@ -1,4 +1,4 @@
-// $Id: GameClient.h 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: GameClient.h 9363 2014-04-26 15:00:08Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -124,7 +124,7 @@ class GameClient : public Singleton<GameClient>, public GameMessageInterface
             else {framesinfo.gf_length = 70; framesinfo.nwf_length = 250 / framesinfo.gf_length;}
         } //poc
         /// Lädt ein Replay und startet dementsprechend das Spiel (0 = alles OK, alles andere entsprechende Fehler-ID!)
-        unsigned StartReplay(const std::string& path, GameWorldViewer * &gwv);
+        unsigned StartReplay(const std::string& path, GameWorldViewer*& gwv);
         /// Replay-Geschwindigkeit erhöhen/verringern
         void IncreaseReplaySpeed() { if(replay_mode && framesinfo.gf_length > 10) framesinfo.gf_length -= 10; }
         void DecreaseReplaySpeed() { if(replay_mode && framesinfo.gf_length < 1000) framesinfo.gf_length += 10; }
@@ -166,11 +166,11 @@ class GameClient : public Singleton<GameClient>, public GameMessageInterface
         void GetVisualSettings();
 
         /// Schreibt ggf. Pathfinding-Results in das Replay, falls erforderlich
-        void AddPathfindingResult(const unsigned char dir, const unsigned* const length, const Point<MapCoord> * const next_harbor);
+        void AddPathfindingResult(const unsigned char dir, const unsigned* const length, const Point<MapCoord>* const next_harbor);
         /// Gibt zurück, ob Pathfinding-Results zur Verfügung stehen
         bool ArePathfindingResultsAvailable() const;
         /// Gibt Pathfinding-Results zurück aus einem Replay
-        bool ReadPathfindingResult( unsigned char* dir, unsigned* length, Point<MapCoord> * next_harbor);
+        bool ReadPathfindingResult( unsigned char* dir, unsigned* length, Point<MapCoord>* next_harbor);
 
     private:
         /// Versucht einen neuen GameFrame auszuführen, falls die Zeit dafür gekommen ist
@@ -371,7 +371,7 @@ class GameClient : public Singleton<GameClient>, public GameMessageInterface
                 /// Replaydatei
                 Replay replay;
                 /// Replay asynchron (Meldung nur einmal ausgeben!)
-                bool async;
+                int async;
                 bool end;
                 // Nächster Replay-Command-Zeitpunkt (in GF)
                 unsigned next_gf;
