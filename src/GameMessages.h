@@ -1,4 +1,4 @@
-// $Id: GameMessages.h 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: GameMessages.h 9369 2014-04-27 11:54:08Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -300,7 +300,7 @@ class GameMessage_Server_Async : public GameMessage
 
     public:
         GameMessage_Server_Async(void) : GameMessage(NMS_SERVER_ASYNC) { }
-        GameMessage_Server_Async(const std::vector<int> &checksums)
+        GameMessage_Server_Async(const std::vector<int>& checksums)
             : GameMessage(NMS_SERVER_ASYNC, 0xFF)
         {
             LOG.write(">>> NMS_SERVER_ASYNC(%d)\n", checksums.size());
@@ -878,7 +878,7 @@ class GameMessage_SendAsyncLog : public GameMessage
     public:
         GameMessage_SendAsyncLog() : GameMessage(NMS_SEND_ASYNC_LOG) {}
 
-        GameMessage_SendAsyncLog(std::list<RandomEntry> *async_log, bool last) : GameMessage(NMS_SEND_ASYNC_LOG, 0xFF)
+        GameMessage_SendAsyncLog(std::list<RandomEntry>* async_log, bool last) : GameMessage(NMS_SEND_ASYNC_LOG, 0xFF)
         {
             PushBool(last);
             PushUnsignedInt(async_log->size());
@@ -888,7 +888,7 @@ class GameMessage_SendAsyncLog : public GameMessage
                 PushUnsignedInt(it->counter);
                 PushSignedInt(it->max);
                 PushSignedInt(it->value);
-                PushString(it->src_name);
+                PushString(it->src_name ? it->src_name : "");
                 PushUnsignedInt(it->src_line);
                 PushUnsignedInt(it->obj_id);
             }
