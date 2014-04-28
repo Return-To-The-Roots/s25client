@@ -1,4 +1,4 @@
-// $Id: GameServer.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: GameServer.cpp 9371 2014-04-28 14:08:16Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -156,7 +156,7 @@ bool GameServer::TryToStart(const CreateServerInfo& csi, const std::string& map_
     switch(mapinfo.map_type)
     {
         default: LOG.lprintf("GameServer::Start: ERROR: Map-Type %u not supported!\n", mapinfo.map_type); return false;
-            // Altes S2-Mapformat von BB
+        // Altes S2-Mapformat von BB
         case MAPTYPE_OLDMAP:
         {
             libsiedler2::ArchivInfo map;
@@ -570,9 +570,6 @@ bool GameServer::StartGame()
 
     framesinfo.lasttime = VideoDriverWrapper::inst().GetTickCount();
 
-    // Spielstart allen mitteilen
-    SendToAll(GameMessage_Server_NWFDone(0xff));
-
     // GameClient soll erstmal starten, damit wir von ihm die benötigten Daten für die KIs bekommen
     GAMECLIENT.StartGame(random_init);
 
@@ -587,6 +584,9 @@ bool GameServer::StartGame()
     }
 
     LOG.write("SERVER >>> BROADCAST: NMS_NFC_DONE\n");
+
+    // Spielstart allen mitteilen
+    SendToAll(GameMessage_Server_NWFDone(0xff));
 
     return true;
 }
@@ -1441,7 +1441,7 @@ void GameServer::OnNMSGameCommand(const GameMessage_GameCommand& msg)
         SendToAll(GameMessage_GameCommand(msg.player, msg.checksum, std::vector<gc::GameCommand*>()));
 }
 
-void GameServer::OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, std::list<RandomEntry> *in, bool last)
+void GameServer::OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, std::list<RandomEntry>* in, bool last)
 {
     if (msg.player == async_player1)
     {

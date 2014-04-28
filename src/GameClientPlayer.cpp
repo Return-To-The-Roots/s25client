@@ -1,4 +1,4 @@
-// $Id: GameClientPlayer.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: GameClientPlayer.cpp 9371 2014-04-28 14:08:16Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -184,7 +184,7 @@ GameClientPlayer::GameClientPlayer(const unsigned playerid) : GamePlayerInfo(pla
     for(unsigned i = 0; i < 5; ++i)
         defenders[i] = true;
 
-    is_lagging = false;
+    is_lagging = true;
 
     // Inventur nullen
     global_inventory.clear();
@@ -2132,7 +2132,7 @@ void GameClientPlayer::HarborDestroyed(nobHarborBuilding* hb)
 /// Sucht einen Hafen in der Nähe, wo dieses Schiff seine Waren abladen kann
 /// gibt true zurück, falls erfolgreich
 bool GameClientPlayer::FindHarborForUnloading(noShip* ship, const MapCoord start_x, const MapCoord start_y, unsigned* goal_harbor_id,
-        std::vector<unsigned char> * route, nobHarborBuilding* exception)
+        std::vector<unsigned char>* route, nobHarborBuilding* exception)
 {
     nobHarborBuilding* best = NULL;
     unsigned best_distance = 0xffffffff;
