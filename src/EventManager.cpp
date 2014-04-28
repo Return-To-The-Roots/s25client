@@ -1,4 +1,4 @@
-// $Id: EventManager.cpp 9363 2014-04-26 15:00:08Z FloSoft $
+// $Id: EventManager.cpp 9372 2014-04-28 15:25:24Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -111,6 +111,8 @@ EventManager::EventPointer EventManager::AddEvent(GameObject* obj, const unsigne
 void EventManager::NextGF()
 {
     unsigned int gfnr = GAMECLIENT.GetGFNumber();
+
+    assert( (eis.size() ? eis.begin()->first >= gfnr : true) );
 
     // Events abfragen
     std::map<unsigned, std::list<Event*> >::iterator it = eis.find(gfnr);

@@ -1,4 +1,4 @@
-// $Id: Pathfinding.cpp 9363 2014-04-26 15:00:08Z FloSoft $
+// $Id: Pathfinding.cpp 9372 2014-04-28 15:25:24Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -246,7 +246,8 @@ bool GameWorldBase::FindFreePath(const MapCoord x_start, const MapCoord y_start,
     pf_nodes[start_id].way = 0;
     pf_nodes[start_id].dir = 0;
 
-    unsigned rand = RANDOM.Rand(__FILE__, __LINE__, y_start * GetWidth() + x_start, 6);
+    // TODO confirm random
+    unsigned rand = (y_start * GetWidth() + x_start) * GAMECLIENT.GetGFNumber() % 6; //RANDOM.Rand(__FILE__, __LINE__, y_start * GetWidth() + x_start, 6);
 
     while(todo.size())
     {
