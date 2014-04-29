@@ -1,4 +1,4 @@
-// $Id: GameConsts.h 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: GameConsts.h 9374 2014-04-29 15:42:33Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -27,7 +27,7 @@ const unsigned MAX_PLAYERS = 8;
 
 #include "mygettext.h"
 
-/// Völker
+/// Völker (dont forget to change shield-count in iwWares too ...)
 enum Nation
 {
     NAT_AFRICANS = 0,
@@ -480,7 +480,7 @@ inline GoodType ConvertShields(const GoodType& good)
 
 /// Umgekehrte Konvertierung: Gibt den Schildtyp für jede Nation an
 const GoodType SHIELD_TYPES[NATION_COUNT] = { GD_SHIELDAFRICANS, GD_SHIELDJAPANESE,
-        GD_SHIELDROMANS, GD_SHIELDVIKINGS
+                                              GD_SHIELDROMANS, GD_SHIELDVIKINGS
                                             };
 
 /// Reichweite der Bergarbeiter

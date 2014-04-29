@@ -1,4 +1,4 @@
-// $Id: iwWares.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: iwWares.cpp 9374 2014-04-29 15:42:33Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -79,7 +79,7 @@ iwWares::iwWares(unsigned int id, unsigned short x , unsigned short y,
         }, // 0xFFFF = unused
     };
 
-    static const unsigned short shield_INVENTORY_IDS[4] = {GD_SHIELDAFRICANS, GD_SHIELDJAPANESE, GD_SHIELDROMANS, GD_SHIELDVIKINGS };
+    static const unsigned short shield_INVENTORY_IDS[5] = { GD_SHIELDAFRICANS, GD_SHIELDJAPANESE, GD_SHIELDROMANS, GD_SHIELDVIKINGS, GD_SHIELDJAPANESE };
 
     // Warenseite hinzufügen
     ctrlGroup* wares = AddGroup(100);
