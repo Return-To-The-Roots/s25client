@@ -1,4 +1,4 @@
-// $Id: GameServer.cpp 9371 2014-04-28 14:08:16Z FloSoft $
+// $Id: GameServer.cpp 9375 2014-04-29 15:44:00Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -565,9 +565,6 @@ bool GameServer::StartGame()
     SendToAll(start_msg);
     LOG.write("SERVER >>> BROADCAST: NMS_SERVER_START(%d)\n", random_init);
 
-    // ab ins game wechseln
-    status = SS_GAME;
-
     framesinfo.lasttime = VideoDriverWrapper::inst().GetTickCount();
 
     // GameClient soll erstmal starten, damit wir von ihm die benötigten Daten für die KIs bekommen
@@ -586,7 +583,10 @@ bool GameServer::StartGame()
     LOG.write("SERVER >>> BROADCAST: NMS_NFC_DONE\n");
 
     // Spielstart allen mitteilen
-    SendToAll(GameMessage_Server_NWFDone(0xff));
+    SendToAll(GameMessage_Server_NWFDone(0xff, 0));
+
+    // ab ins game wechseln
+    status = SS_GAME;
 
     return true;
 }
@@ -1019,7 +1019,7 @@ void GameServer::ClientWatchDog()
                             ChangePlayer(player_switch_old_id, player_switch_new_id);
 
 
-                        SendToAll(GameMessage_Server_NWFDone(0xff));
+                        SendToAll(GameMessage_Server_NWFDone(0xff, framesinfo.nr));
                         // Framecounter erhöhen
                         ++framesinfo.nr;
                     }

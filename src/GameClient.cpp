@@ -1,4 +1,4 @@
-// $Id: GameClient.cpp 9363 2014-04-26 15:00:08Z FloSoft $
+// $Id: GameClient.cpp 9375 2014-04-29 15:44:00Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -319,8 +319,6 @@ void GameClient::Stop()
  */
 void GameClient::StartGame(const unsigned int random_init)
 {
-    state = CS_GAME; // zu gamestate wechseln
-
     // Daten zurücksetzen
     randcheckinfo.Clear();
 
@@ -1140,7 +1138,6 @@ void GameClient::OnNMSGGSChange(const GameMessage_GGSChange& msg)
 /// @param message  Nachricht, welche ausgeführt wird
 void GameClient::OnNMSGameCommand(const GameMessage_GameCommand& msg)
 {
-
     if(msg.player != 0xFF)
         // Nachricht in Queue einhängen
         players[msg.player].gc_queue.push_back(msg);
@@ -1151,6 +1148,17 @@ void GameClient::OnNMSGameCommand(const GameMessage_GameCommand& msg)
 /// @param message  Nachricht, welche ausgeführt wird
 void GameClient::OnNMSServerDone(const GameMessage_Server_NWFDone& msg)
 {
+    //assert(framesinfo.nr == msg.nr);
+
+    framesinfo.nr_srv = (msg.nr + 1) * framesinfo.nwf_length;
+
+    LOG.lprintf("framesinfo.nr(%d) == framesinfo.nr_srv(%d)\n", framesinfo.nr, framesinfo.nr_srv);
+
+    if(framesinfo.nr == 0)
+    {
+        state = CS_GAME; // zu gamestate wechseln
+        RealStart();
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1392,7 +1400,7 @@ void GameClient::ExecuteGameFrame(const bool skipping)
             } // if(!is_lagging)
 
         } // if(framesinfo.nr % framesinfo.nwf_length == 0)
-        else
+        else if (framesinfo.nr < framesinfo.nr_srv)
         {
             // Nähster GameFrame zwischen framesinfos
 

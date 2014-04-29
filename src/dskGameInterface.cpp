@@ -1,4 +1,4 @@
-// $Id: dskGameInterface.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: dskGameInterface.cpp 9375 2014-04-29 15:44:00Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -115,8 +115,6 @@ dskGameInterface::dskGameInterface()
 
     LOBBYCLIENT.SetInterface(this);
     GAMECLIENT.SetInterface(this);
-
-    GAMECLIENT.RealStart();
 
     // Wir sind nun ingame
     GLOBALVARS.ingame = true;

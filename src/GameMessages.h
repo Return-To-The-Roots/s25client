@@ -1,4 +1,4 @@
-// $Id: GameMessages.h 9369 2014-04-27 11:54:08Z FloSoft $
+// $Id: GameMessages.h 9375 2014-04-29 15:44:00Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -534,12 +534,12 @@ class GameMessage_Player_Ping : public GameMessage
             : GameMessage(NMS_PLAYER_PING, player), ping(ping)
         {
             PushUnsignedShort(ping);
-            LOG.write(">>> NMS_PLAYER_PING\n");
+            //LOG.write(">>> NMS_PLAYER_PING\n");
         }
         void Run(MessageInterface* callback)
         {
             ping = PopUnsignedShort();
-            LOG.write("<<< NMS_PLAYER_PING\n");
+            //LOG.write("<<< NMS_PLAYER_PING\n");
             GetInterface(callback)->OnNMSPlayerPing(*this);
         }
 };
@@ -818,12 +818,21 @@ class GameMessage_GameCommand : public GameMessage
 class GameMessage_Server_NWFDone : public GameMessage
 {
     public:
+        unsigned int nr; // GF
+
+    public:
         GameMessage_Server_NWFDone(void) : GameMessage(NMS_SERVER_NWF_DONE) { }
-        GameMessage_Server_NWFDone(const unsigned char player) : GameMessage(NMS_SERVER_NWF_DONE, player) { }
+        GameMessage_Server_NWFDone(const unsigned char player, const unsigned int nr) : GameMessage(NMS_SERVER_NWF_DONE, player)
+        {
+            PushUnsignedInt(nr);
+            LOG.write(">>> NMS_NFC_DONE(%d)\n", nr);
+        }
 
         void Run(MessageInterface* callback)
         {
-            LOG.write("<<< NMS_NFC_DONE\n");
+            nr = PopUnsignedInt();
+
+            LOG.write("<<< NMS_NFC_DONE(%d)\n", nr);
             GetInterface(callback)->OnNMSServerDone(*this);
         }
 };
@@ -840,14 +849,13 @@ class GameMessage_Pause : public GameMessage
             : GameMessage(NMS_PAUSE, 0xFF)
         {
             PushBool(paused);
-
-            LOG.write(">>> NMS_GGS_CHANGE\n");
+            LOG.write(">>> NMS_PAUSE(%d)\n", paused ? 1 : 0);
         }
         void Run(MessageInterface* callback)
         {
             paused = PopBool();
 
-            LOG.write("<<< NMS_GGS_CHANGE\n");
+            LOG.write("<<< NMS_PAUSE(%d)\n", paused ? 1 : 0);
             GetInterface(callback)->OnNMSPause(*this);
         }
 };
