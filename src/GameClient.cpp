@@ -1,4 +1,4 @@
-// $Id: GameClient.cpp 9375 2014-04-29 15:44:00Z FloSoft $
+// $Id: GameClient.cpp 9377 2014-04-30 15:48:03Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1152,7 +1152,7 @@ void GameClient::OnNMSServerDone(const GameMessage_Server_NWFDone& msg)
 
     framesinfo.nr_srv = (msg.nr + 1) * framesinfo.nwf_length;
 
-    LOG.lprintf("framesinfo.nr(%d) == framesinfo.nr_srv(%d)\n", framesinfo.nr, framesinfo.nr_srv);
+    //LOG.lprintf("framesinfo.nr(%d) == framesinfo.nr_srv(%d)\n", framesinfo.nr, framesinfo.nr_srv);
 
     if(framesinfo.nr == 0)
     {
