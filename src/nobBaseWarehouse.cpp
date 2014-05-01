@@ -1,4 +1,4 @@
-// $Id: nobBaseWarehouse.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: nobBaseWarehouse.cpp 9386 2014-05-01 15:38:11Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -54,11 +54,11 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 /// Intervall für Ausleerung (in gf)
-const unsigned EMPTY_INTERVAL = 100;
+const unsigned EMPTY_INTERVAL = 25;
 /// Intervall für Einlieferung
-const unsigned STORE_INTERVAL = 100;
+const unsigned STORE_INTERVAL = 50;
 /// Dauer für das Erstellen von Trägern
-const unsigned short PRODUCE_HELPERS_GF = 300;
+const unsigned short PRODUCE_HELPERS_GF = 150;
 const unsigned short PRODUCE_HELPERS_RANDOM_GF = 20;
 /// Dauer für das Rekrutierung von Soldaten
 const unsigned short RECRUITE_GF = 200;
