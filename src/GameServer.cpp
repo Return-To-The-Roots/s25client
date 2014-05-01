@@ -1,4 +1,4 @@
-// $Id: GameServer.cpp 9381 2014-05-01 10:27:24Z FloSoft $
+// $Id: GameServer.cpp 9382 2014-05-01 11:32:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -570,6 +570,10 @@ bool GameServer::StartGame()
     // GameClient soll erstmal starten, damit wir von ihm die benötigten Daten für die KIs bekommen
     GAMECLIENT.StartGame(random_init);
 
+    // read back gf_nr (if savegame)
+    if(mapinfo.map_type == MAPTYPE_SAVEGAME)
+        framesinfo.gf_nr = GAMECLIENT.GetGFNumber();
+
     // Erste KI-Nachrichten schicken
     for(unsigned i = 0; i < this->serverconfig.playercount; ++i)
     {
@@ -583,7 +587,7 @@ bool GameServer::StartGame()
     LOG.write("SERVER >>> BROADCAST: NMS_NFC_DONE\n");
 
     // Spielstart allen mitteilen
-    SendToAll(GameMessage_Server_NWFDone(0xff, 0));
+    SendToAll(GameMessage_Server_NWFDone(0xff, framesinfo.gf_nr, true));
 
     // ab ins game wechseln
     status = SS_GAME;

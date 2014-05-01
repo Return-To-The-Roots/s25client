@@ -1,4 +1,4 @@
-// $Id: GameMessages.h 9381 2014-05-01 10:27:24Z FloSoft $
+// $Id: GameMessages.h 9382 2014-05-01 11:32:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -850,18 +850,21 @@ class GameMessage_Server_NWFDone : public GameMessage
 {
     public:
         unsigned int nr; // GF
+        bool first;
 
     public:
         GameMessage_Server_NWFDone(void) : GameMessage(NMS_SERVER_NWF_DONE) { }
-        GameMessage_Server_NWFDone(const unsigned char player, const unsigned int nr) : GameMessage(NMS_SERVER_NWF_DONE, player)
+        GameMessage_Server_NWFDone(const unsigned char player, const unsigned int nr, const bool first = false) : GameMessage(NMS_SERVER_NWF_DONE, player)
         {
             PushUnsignedInt(nr);
+            PushBool(first);
             LOG.write(">>> NMS_NWF_DONE(%d)\n", nr);
         }
 
         void Run(MessageInterface* callback)
         {
             nr = PopUnsignedInt();
+            first = PopBool();
 
             LOG.write("<<< NMS_NWF_DONE(%d)\n", nr);
             GetInterface(callback)->OnNMSServerDone(*this);
