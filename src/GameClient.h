@@ -1,4 +1,4 @@
-// $Id: GameClient.h 9381 2014-05-01 10:27:24Z FloSoft $
+// $Id: GameClient.h 9384 2014-05-01 14:53:50Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -330,6 +330,7 @@ class GameClient : public Singleton<GameClient>, public GameMessageInterface
                 unsigned nr_srv;
                 /// Länge der GameFrames in ms (= Geschwindigkeit des Spiels)
                 unsigned gf_length;
+                unsigned gf_length_new;
                 /// Länge der Network-Frames in gf(!)
                 unsigned nwf_length;
 
@@ -341,6 +342,7 @@ class GameClient : public Singleton<GameClient>, public GameMessageInterface
                 unsigned pausetime;
 
                 bool pause;
+				unsigned pause_gf;
         } framesinfo;
 
         class RandCheckInfo

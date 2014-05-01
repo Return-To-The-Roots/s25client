@@ -1,4 +1,4 @@
-// $Id: GameServer.cpp 9382 2014-05-01 11:32:25Z FloSoft $
+// $Id: GameServer.cpp 9384 2014-05-01 14:53:50Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -65,6 +65,7 @@ void GameServer::FramesInfo::Clear()
     nwf_length = 0;
     gf_nr = 0;
     gf_length = 0;
+    gf_length_new = 0;
     lasttime = 0;
     lastmsgtime = 0;
     pausetime = 0;
@@ -540,7 +541,7 @@ bool GameServer::StartGame()
         }
     }
 
-    framesinfo.gf_length = SPEED_GF_LENGTHS[ggs.game_speed];
+    framesinfo.gf_length_new = framesinfo.gf_length = SPEED_GF_LENGTHS[ggs.game_speed];
 
     // NetworkFrame-Länge bestimmen, je schlechter (also höher) die Pings, desto länger auch die Framelänge
     unsigned i = 1;
@@ -584,10 +585,10 @@ bool GameServer::StartGame()
         }
     }
 
-    LOG.write("SERVER >>> BROADCAST: NMS_NFC_DONE\n");
+    LOG.write("SERVER >>> BROADCAST: NMS_NWF_DONE\n");
 
     // Spielstart allen mitteilen
-    SendToAll(GameMessage_Server_NWFDone(0xff, framesinfo.gf_nr, true));
+    SendToAll(GameMessage_Server_NWFDone(0xff, framesinfo.gf_nr, framesinfo.gf_length, true));
 
     // ab ins game wechseln
     status = SS_GAME;
@@ -1022,8 +1023,21 @@ void GameServer::ClientWatchDog()
                         if(player_switch_old_id != 255)
                             ChangePlayer(player_switch_old_id, player_switch_new_id);
 
+                        if(framesinfo.gf_length_new != framesinfo.gf_length)
+                        {
+                            int oldnwf = framesinfo.nwf_length;
 
-                        SendToAll(GameMessage_Server_NWFDone(0xff, framesinfo.gf_nr));
+                            framesinfo.gf_length = framesinfo.gf_length_new;
+                            if(framesinfo.gf_length == 1)
+                                framesinfo.nwf_length = 50;
+                            else
+                                framesinfo.nwf_length = 250 / framesinfo.gf_length;
+
+                            LOG.lprintf("Server %d/%d: Speed changed from %d to %d\n", framesinfo.gf_nr, framesinfo.nr, oldnwf, framesinfo.nwf_length);
+                            //LOG.lprintf("Server: GF-Length: %5d => %5d, NWF-Length: %5d => %5d, GF: %5d\n", oldgfl, framesinfo.gf_length, oldnwf, framesinfo.nwf_length, framesinfo.gf_nr);
+                        }
+
+                        SendToAll(GameMessage_Server_NWFDone(0xff, framesinfo.gf_nr, framesinfo.gf_length));
                         // Framecounter erhöhen
                         ++framesinfo.nr;
                     }
@@ -1434,20 +1448,7 @@ inline void GameServer::OnNMSMapChecksum(const GameMessage_Map_Checksum& msg)
 // speed change message
 void GameServer::OnNMSServerSpeed(const GameMessage_Server_Speed& msg)
 {
-    int oldgfl = framesinfo.gf_length;
-    int oldnwf = framesinfo.nwf_length;
-
-    framesinfo.gf_length = msg.gf_length;
-
-    if(framesinfo.gf_length == 1)
-        framesinfo.nwf_length = 50;
-    else
-        framesinfo.nwf_length = 250 / framesinfo.gf_length;
-
-    //LOG.lprintf("Server: GF-Length: %5d => %5d, NWF-Length: %5d => %5d, GF: %5d\n", oldgfl, framesinfo.gf_length, oldnwf, framesinfo.nwf_length, framesinfo.gf_nr);
-
-    GameMessage_Server_Speed m(msg.player, framesinfo.gf_length, framesinfo.gf_nr);
-    SendToAll(m);
+    framesinfo.gf_length_new = msg.gf_length;
 }
 
 void GameServer::OnNMSGameCommand(const GameMessage_GameCommand& msg)
@@ -1643,7 +1644,7 @@ void GameServer::ChangePlayer(const unsigned char old_id, const unsigned char ne
 bool GameServer::TogglePause()
 {
     framesinfo.pause = !framesinfo.pause;
-    SendToAll(GameMessage_Pause(framesinfo.pause));
+	SendToAll(GameMessage_Pause(framesinfo.pause, framesinfo.gf_nr + framesinfo.nwf_length));
 
     return framesinfo.pause;
 }

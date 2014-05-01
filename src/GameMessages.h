@@ -1,4 +1,4 @@
-// $Id: GameMessages.h 9382 2014-05-01 11:32:25Z FloSoft $
+// $Id: GameMessages.h 9384 2014-05-01 14:53:50Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -818,55 +818,48 @@ class GameMessage_Server_Speed : public GameMessage
 {
     public:
         unsigned int gf_length; // new speed
-        unsigned int nr; // GF
 
     public:
         GameMessage_Server_Speed(void) : GameMessage(NMS_SERVER_SPEED) { }
         GameMessage_Server_Speed(const unsigned int gf_length) : GameMessage(NMS_SERVER_SPEED, player)
         {
             PushUnsignedInt(gf_length);
-            PushUnsignedInt(0);
             LOG.write(">>> NMS_SERVER_SPEED(%d)\n", gf_length);
-        }
-        GameMessage_Server_Speed(const unsigned char player, const unsigned int gf_length, const unsigned int nr) : GameMessage(NMS_SERVER_SPEED, player)
-        {
-            PushUnsignedInt(gf_length);
-            PushUnsignedInt(nr);
-            LOG.write(">>> NMS_SERVER_SPEED(%d, %d)\n", gf_length, nr);
         }
 
         void Run(MessageInterface* callback)
         {
             gf_length = PopUnsignedInt();
-            nr = PopUnsignedInt();
 
-            LOG.write("<<< NMS_SERVER_SPEED(%d, %d)\n", gf_length, nr);
+            LOG.write("<<< NMS_SERVER_SPEED(%d)\n", gf_length);
             GetInterface(callback)->OnNMSServerSpeed(*this);
         }
 };
-
 
 class GameMessage_Server_NWFDone : public GameMessage
 {
     public:
         unsigned int nr; // GF
+        unsigned int gf_length; // new speed
         bool first;
 
     public:
         GameMessage_Server_NWFDone(void) : GameMessage(NMS_SERVER_NWF_DONE) { }
-        GameMessage_Server_NWFDone(const unsigned char player, const unsigned int nr, const bool first = false) : GameMessage(NMS_SERVER_NWF_DONE, player)
+        GameMessage_Server_NWFDone(const unsigned char player, const unsigned int nr, const unsigned int gf_length, const bool first = false) : GameMessage(NMS_SERVER_NWF_DONE, player)
         {
             PushUnsignedInt(nr);
+            PushUnsignedInt(gf_length);
             PushBool(first);
-            LOG.write(">>> NMS_NWF_DONE(%d)\n", nr);
+            LOG.write(">>> NMS_NWF_DONE(%d, %d, %d)\n", nr, gf_length, (first ? 1 : 0));
         }
 
         void Run(MessageInterface* callback)
         {
             nr = PopUnsignedInt();
+            gf_length = PopUnsignedInt();
             first = PopBool();
 
-            LOG.write("<<< NMS_NWF_DONE(%d)\n", nr);
+            LOG.write("<<< NMS_NWF_DONE(%d, %d, %d)\n", nr, gf_length, (first ? 1 : 0));
             GetInterface(callback)->OnNMSServerDone(*this);
         }
 };
@@ -875,19 +868,22 @@ class GameMessage_Pause : public GameMessage
 {
     public:
         /// Pausiert?
+		unsigned int nr; // GF
         bool paused;
 
     public:
         GameMessage_Pause(void) : GameMessage(NMS_PAUSE) { }
-        GameMessage_Pause(const bool paused)
+        GameMessage_Pause(const bool paused, const unsigned nr)
             : GameMessage(NMS_PAUSE, 0xFF)
         {
             PushBool(paused);
+			PushUnsignedInt(nr);
             LOG.write(">>> NMS_PAUSE(%d)\n", paused ? 1 : 0);
         }
         void Run(MessageInterface* callback)
         {
             paused = PopBool();
+			nr = PopUnsignedInt();
 
             LOG.write("<<< NMS_PAUSE(%d)\n", paused ? 1 : 0);
             GetInterface(callback)->OnNMSPause(*this);

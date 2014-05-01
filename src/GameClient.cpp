@@ -1,4 +1,4 @@
-// $Id: GameClient.cpp 9382 2014-05-01 11:32:25Z FloSoft $
+// $Id: GameClient.cpp 9384 2014-05-01 14:53:50Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -104,12 +104,14 @@ void GameClient::FramesInfo::Clear()
 {
     nr = 0;
     gf_length = 0;
+    gf_length_new = 0;
     nwf_length = 0;
     frame_time = 0;
     lasttime = 0;
     lastmsgtime = 0;
     pausetime = 0;
     pause = false;
+	pause_gf = 0;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -427,6 +429,8 @@ void GameClient::RealStart()
 {
 //  framesinfo.pause = false;
     framesinfo.pause = replay_mode;
+
+	//framesinfo.pause = true;
 
     /// Wenn Replay, evtl erstes Command vom Start-Frame auslesen, was sonst ignoriert werden würde
     if(replay_mode)
@@ -1148,19 +1152,6 @@ void GameClient::OnNMSGameCommand(const GameMessage_GameCommand& msg)
 /// @param message  Nachricht, welche ausgeführt wird
 void GameClient::OnNMSServerSpeed(const GameMessage_Server_Speed& msg)
 {
-    int oldgfl = framesinfo.gf_length;
-    int oldnwf = framesinfo.nwf_length;
-
-    framesinfo.gf_length = msg.gf_length;
-    framesinfo.nr_srv = msg.nr + framesinfo.nwf_length;
-
-    if(framesinfo.gf_length == 1)
-        framesinfo.nwf_length = 50;
-    else
-        framesinfo.nwf_length = 250 / framesinfo.gf_length;
-
-    LOG.lprintf("Speed changed from %d to %d\n", oldnwf, framesinfo.nwf_length);
-    //LOG.lprintf("Client: GF-Length: %5d => %5d, NWF-Length: %5d => %5d, GF: %5d\n", oldgfl, framesinfo.gf_length, oldnwf, framesinfo.nwf_length, framesinfo.nr_srv);
 }
 
 void GameClient::IncreaseSpeed()
@@ -1185,6 +1176,8 @@ void GameClient::IncreaseSpeed()
 /// @param message  Nachricht, welche ausgeführt wird
 void GameClient::OnNMSServerDone(const GameMessage_Server_NWFDone& msg)
 {
+    framesinfo.gf_length_new = msg.gf_length;
+
     framesinfo.nr_srv = msg.nr + framesinfo.nwf_length;
 
     if(msg.first)
@@ -1193,7 +1186,7 @@ void GameClient::OnNMSServerDone(const GameMessage_Server_NWFDone& msg)
         RealStart();
     }
 
-    //LOG.lprintf("framesinfo.nr(%d) == framesinfo.nr_srv(%d)\n", framesinfo.nr, framesinfo.nr_srv);
+    LOG.lprintf("framesinfo.nr(%d) == framesinfo.nr_srv(%d)\n", framesinfo.nr, framesinfo.nr_srv);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1206,12 +1199,20 @@ void GameClient::OnNMSServerDone(const GameMessage_Server_NWFDone& msg)
  */
 void GameClient::OnNMSPause(const GameMessage_Pause& msg)
 {
-    framesinfo.pause =  msg.paused;
+    //framesinfo.pause =  msg.paused;
+	if(msg.paused)
+		framesinfo.pause_gf = msg.nr;
+	else
+	{
+	    framesinfo.pause =  false;
+		framesinfo.pause_gf = 0;
+	}
+
     framesinfo.lastmsgtime = VideoDriverWrapper::inst().GetTickCount();
 
-    LOG.write("<<< NMS_NFC_PAUSE(%u)\n", framesinfo.pause);
+    LOG.write("<<< NMS_NFC_PAUSE(%u)\n", framesinfo.pause_gf);
 
-    if(framesinfo.pause)
+    if(msg.paused)
         ci->CI_GamePaused();
     else
         ci->CI_GameResumed();
@@ -1372,6 +1373,11 @@ void GameClient::StatisticStep()
 void GameClient::ExecuteGameFrame(const bool skipping)
 {
     unsigned int currenttime = VideoDriverWrapper::inst().GetTickCount();
+	if(!framesinfo.pause && framesinfo.pause_gf != 0 && framesinfo.nr == framesinfo.pause_gf)
+	{
+		framesinfo.pause_gf = 0;
+		framesinfo.pause = true;
+	}
 
     if(framesinfo.pause)
     {
@@ -1434,6 +1440,23 @@ void GameClient::ExecuteGameFrame(const bool skipping)
 
             } // if(!is_lagging)
 
+            if(framesinfo.gf_length_new != framesinfo.gf_length)
+            {
+                framesinfo.gf_length = framesinfo.gf_length_new;
+
+                //int oldgfl = framesinfo.gf_length;
+                int oldnwf = framesinfo.nwf_length;
+
+                if(framesinfo.gf_length == 1)
+                    framesinfo.nwf_length = 50;
+                else
+                    framesinfo.nwf_length = 250 / framesinfo.gf_length;
+
+                framesinfo.nr_srv = framesinfo.nr_srv - oldnwf + framesinfo.nwf_length;
+
+                LOG.lprintf("Client: %d/%d: Speed changed from %d to %d\n", framesinfo.nr_srv, framesinfo.nr, oldnwf, framesinfo.nwf_length);
+                //LOG.lprintf("Client: GF-Length: %5d => %5d, NWF-Length: %5d => %5d, GF: %5d\n", oldgfl, framesinfo.gf_length, oldnwf, framesinfo.nwf_length, framesinfo.nr_srv);
+            }
         } // if(framesinfo.nr % framesinfo.nwf_length == 0)
         else if (framesinfo.nr < framesinfo.nr_srv)
         {
