@@ -1,4 +1,4 @@
-// $Id: GameProtocol.h 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: GameProtocol.h 9381 2014-05-01 10:27:24Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -62,6 +62,7 @@ enum
     NMS_SERVER_NWF_DONE = 0x0401, // 0
     NMS_GAMECOMMANDS,
     NMS_PAUSE,
+    NMS_SERVER_SPEED,
 
     NMS_GGS_CHANGE = 0x0501, //
 

@@ -1,4 +1,4 @@
-// $Id: GameMessageInterface.h 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: GameMessageInterface.h 9381 2014-05-01 10:27:24Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -59,6 +59,7 @@ class GameMessage_GGSChange;
 class GameMessage_Pause;
 class GameMessage_Server_NWFDone;
 class GameMessage_GameCommand;
+class GameMessage_Server_Speed;
 
 class GameMessage_GetAsyncLog;
 class GameMessage_SendAsyncLog;
@@ -104,11 +105,12 @@ class GameMessageInterface : public MessageInterface
         virtual void OnNMSPause(const GameMessage_Pause& msg);
         virtual void OnNMSServerDone(const GameMessage_Server_NWFDone& msg);
         virtual void OnNMSGameCommand(const GameMessage_GameCommand& msg);
+        virtual void OnNMSServerSpeed(const GameMessage_Server_Speed& msg);
 
         virtual void OnNMSGGSChange(const GameMessage_GGSChange& msg);
 
         virtual void OnNMSGetAsyncLog(const GameMessage_GetAsyncLog& msg);
-        virtual void OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, std::list<RandomEntry> *his, bool last);
+        virtual void OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, std::list<RandomEntry>* his, bool last);
 };
 
 #endif //!GAMEMESSAGEINTERFACE_H_INCLUDED

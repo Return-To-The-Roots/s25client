@@ -1,4 +1,4 @@
-// $Id: GameMessageInterface.cpp 7678 2011-12-28 17:05:25Z marcus $
+// $Id: GameMessageInterface.cpp 9381 2014-05-01 10:27:24Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -57,9 +57,10 @@ void GameMessageInterface::OnNMSMapChecksumOK(const GameMessage_Map_ChecksumOK& 
 void GameMessageInterface::OnNMSPause(const GameMessage_Pause& msg) {}
 void GameMessageInterface::OnNMSServerDone(const GameMessage_Server_NWFDone& msg) {}
 void GameMessageInterface::OnNMSGameCommand(const GameMessage_GameCommand& msg) {}
+void GameMessageInterface::OnNMSServerSpeed(const GameMessage_Server_Speed& msg) {}
 
 void GameMessageInterface::OnNMSGGSChange(const GameMessage_GGSChange& msg) {}
 
 void GameMessageInterface::OnNMSGetAsyncLog(const GameMessage_GetAsyncLog& msg) {}
-void GameMessageInterface::OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, std::list<RandomEntry> *his, bool last) {}
+void GameMessageInterface::OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, std::list<RandomEntry>* his, bool last) {}
 

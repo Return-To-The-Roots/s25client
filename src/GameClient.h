@@ -1,4 +1,4 @@
-// $Id: GameClient.h 9375 2014-04-29 15:44:00Z FloSoft $
+// $Id: GameClient.h 9381 2014-05-01 10:27:24Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -115,14 +115,8 @@ class GameClient : public Singleton<GameClient>, public GameMessageInterface
         void Command_ToggleColor();
         void Command_ToggleReady();
 
-        void IncreaseSpeed()
-        {
-            if(framesinfo.gf_length > 10) {framesinfo.gf_length -= 10; framesinfo.nwf_length = 250 / framesinfo.gf_length;}
-#ifndef NDEBUG
-            else if (framesinfo.gf_length == 10) {framesinfo.gf_length = 1; framesinfo.nwf_length = 50;}
-#endif
-            else {framesinfo.gf_length = 70; framesinfo.nwf_length = 250 / framesinfo.gf_length;}
-        } //poc
+        void IncreaseSpeed();
+
         /// Lädt ein Replay und startet dementsprechend das Spiel (0 = alles OK, alles andere entsprechende Fehler-ID!)
         unsigned StartReplay(const std::string& path, GameWorldViewer*& gwv);
         /// Replay-Geschwindigkeit erhöhen/verringern
@@ -224,6 +218,7 @@ class GameClient : public Singleton<GameClient>, public GameMessageInterface
         virtual void OnNMSPause(const GameMessage_Pause& msg);
         virtual void OnNMSServerDone(const GameMessage_Server_NWFDone& msg);
         virtual void OnNMSGameCommand(const GameMessage_GameCommand& msg);
+        virtual void OnNMSServerSpeed(const GameMessage_Server_Speed& msg);
 
         void OnNMSGGSChange(const GameMessage_GGSChange& msg);
 

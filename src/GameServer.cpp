@@ -1,4 +1,4 @@
-// $Id: GameServer.cpp 9375 2014-04-29 15:44:00Z FloSoft $
+// $Id: GameServer.cpp 9381 2014-05-01 10:27:24Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1019,7 +1019,7 @@ void GameServer::ClientWatchDog()
                             ChangePlayer(player_switch_old_id, player_switch_new_id);
 
 
-                        SendToAll(GameMessage_Server_NWFDone(0xff, framesinfo.nr));
+                        SendToAll(GameMessage_Server_NWFDone(0xff, framesinfo.gf_nr));
                         // Framecounter erhöhen
                         ++framesinfo.nr;
                     }
@@ -1425,6 +1425,25 @@ inline void GameServer::OnNMSMapChecksum(const GameMessage_Map_Checksum& msg)
 
         LOG.write("SERVER >>> BROADCAST: NMS_GGS_CHANGE\n");
     }
+}
+
+// speed change message
+void GameServer::OnNMSServerSpeed(const GameMessage_Server_Speed& msg)
+{
+    int oldgfl = framesinfo.gf_length;
+    int oldnwf = framesinfo.nwf_length;
+
+    framesinfo.gf_length = msg.gf_length;
+
+    if(framesinfo.gf_length == 1)
+        framesinfo.nwf_length = 50;
+    else
+        framesinfo.nwf_length = 250 / framesinfo.gf_length;
+
+    //LOG.lprintf("Server: GF-Length: %5d => %5d, NWF-Length: %5d => %5d, GF: %5d\n", oldgfl, framesinfo.gf_length, oldnwf, framesinfo.nwf_length, framesinfo.gf_nr);
+
+    GameMessage_Server_Speed m(msg.player, framesinfo.gf_length, framesinfo.gf_nr);
+    SendToAll(m);
 }
 
 void GameServer::OnNMSGameCommand(const GameMessage_GameCommand& msg)

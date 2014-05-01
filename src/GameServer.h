@@ -1,4 +1,4 @@
-// $Id: GameServer.h 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: GameServer.h 9381 2014-05-01 10:27:24Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -101,8 +101,9 @@ class GameServer : public Singleton<GameServer>, public GameMessageInterface
         void OnNMSPlayerReady(const GameMessage_Player_Ready& msg);
         void OnNMSMapChecksum(const GameMessage_Map_Checksum& msg);
         void OnNMSGameCommand(const GameMessage_GameCommand& msg);
+        void OnNMSServerSpeed(const GameMessage_Server_Speed& msg);
 
-        void OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, std::list<RandomEntry> *his, bool last);
+        void OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, std::list<RandomEntry>* his, bool last);
 
     private:
         enum ServerState

@@ -1,4 +1,4 @@
-// $Id: GameClient.cpp 9377 2014-04-30 15:48:03Z FloSoft $
+// $Id: GameClient.cpp 9381 2014-05-01 10:27:24Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1144,13 +1144,48 @@ void GameClient::OnNMSGameCommand(const GameMessage_GameCommand& msg)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+/// Speed change message vom Server
+/// @param message  Nachricht, welche ausgeführt wird
+void GameClient::OnNMSServerSpeed(const GameMessage_Server_Speed& msg)
+{
+    int oldgfl = framesinfo.gf_length;
+    int oldnwf = framesinfo.nwf_length;
+
+    framesinfo.gf_length = msg.gf_length;
+    framesinfo.nr_srv = msg.nr + framesinfo.nwf_length;
+
+    if(framesinfo.gf_length == 1)
+        framesinfo.nwf_length = 50;
+    else
+        framesinfo.nwf_length = 250 / framesinfo.gf_length;
+
+    LOG.lprintf("Speed changed from %d to %d\n", oldnwf, framesinfo.nwf_length);
+    //LOG.lprintf("Client: GF-Length: %5d => %5d, NWF-Length: %5d => %5d, GF: %5d\n", oldgfl, framesinfo.gf_length, oldnwf, framesinfo.nwf_length, framesinfo.nr_srv);
+}
+
+void GameClient::IncreaseSpeed()
+{
+    int gf_length = framesinfo.gf_length;
+    if(gf_length > 10)
+        gf_length -= 10;
+
+#ifndef NDEBUG
+    else if (gf_length == 10)
+        gf_length = 1;
+#endif
+
+    else
+        gf_length = 70;
+
+    send_queue.push(new GameMessage_Server_Speed(gf_length));
+}
+
+///////////////////////////////////////////////////////////////////////////////
 /// NFC Done vom Server
 /// @param message  Nachricht, welche ausgeführt wird
 void GameClient::OnNMSServerDone(const GameMessage_Server_NWFDone& msg)
 {
-    //assert(framesinfo.nr == msg.nr);
-
-    framesinfo.nr_srv = (msg.nr + 1) * framesinfo.nwf_length;
+    framesinfo.nr_srv = msg.nr + framesinfo.nwf_length;
 
     //LOG.lprintf("framesinfo.nr(%d) == framesinfo.nr_srv(%d)\n", framesinfo.nr, framesinfo.nr_srv);
 

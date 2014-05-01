@@ -1,4 +1,4 @@
-// $Id: GameMessages.h 9375 2014-04-29 15:44:00Z FloSoft $
+// $Id: GameMessages.h 9381 2014-05-01 10:27:24Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -814,6 +814,37 @@ class GameMessage_GameCommand : public GameMessage
         }
 };
 
+class GameMessage_Server_Speed : public GameMessage
+{
+    public:
+        unsigned int gf_length; // new speed
+        unsigned int nr; // GF
+
+    public:
+        GameMessage_Server_Speed(void) : GameMessage(NMS_SERVER_SPEED) { }
+        GameMessage_Server_Speed(const unsigned int gf_length) : GameMessage(NMS_SERVER_SPEED, player)
+        {
+            PushUnsignedInt(gf_length);
+            PushUnsignedInt(0);
+            LOG.write(">>> NMS_SERVER_SPEED(%d)\n", gf_length);
+        }
+        GameMessage_Server_Speed(const unsigned char player, const unsigned int gf_length, const unsigned int nr) : GameMessage(NMS_SERVER_SPEED, player)
+        {
+            PushUnsignedInt(gf_length);
+            PushUnsignedInt(nr);
+            LOG.write(">>> NMS_SERVER_SPEED(%d, %d)\n", gf_length, nr);
+        }
+
+        void Run(MessageInterface* callback)
+        {
+            gf_length = PopUnsignedInt();
+            nr = PopUnsignedInt();
+
+            LOG.write("<<< NMS_SERVER_SPEED(%d, %d)\n", gf_length, nr);
+            GetInterface(callback)->OnNMSServerSpeed(*this);
+        }
+};
+
 
 class GameMessage_Server_NWFDone : public GameMessage
 {
@@ -825,14 +856,14 @@ class GameMessage_Server_NWFDone : public GameMessage
         GameMessage_Server_NWFDone(const unsigned char player, const unsigned int nr) : GameMessage(NMS_SERVER_NWF_DONE, player)
         {
             PushUnsignedInt(nr);
-            LOG.write(">>> NMS_NFC_DONE(%d)\n", nr);
+            LOG.write(">>> NMS_NWF_DONE(%d)\n", nr);
         }
 
         void Run(MessageInterface* callback)
         {
             nr = PopUnsignedInt();
 
-            LOG.write("<<< NMS_NFC_DONE(%d)\n", nr);
+            LOG.write("<<< NMS_NWF_DONE(%d)\n", nr);
             GetInterface(callback)->OnNMSServerDone(*this);
         }
 };
