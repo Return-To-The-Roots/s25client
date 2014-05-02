@@ -1,4 +1,4 @@
-// $Id: dskHostGame.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: dskHostGame.cpp 9388 2014-05-02 07:37:20Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -447,13 +447,13 @@ void dskHostGame::Msg_Group_ButtonClick(const unsigned int group_id, const unsig
                 GAMESERVER.TogglePlayerTeam(player_id);
             if(player_id == GAMECLIENT.GetPlayerID())
             {
-                if(GAMECLIENT.GetLocalPlayer()->team > 1) // team: 1->2->3->4->0
+                if(GAMECLIENT.GetLocalPlayer()->team > TM_RANDOMTEAM && GAMECLIENT.GetLocalPlayer()->team < TEAM_COUNT) // team: 1->2->3->4->0
                 {
                     GAMECLIENT.GetLocalPlayer()->team = Team((GAMECLIENT.GetLocalPlayer()->team + 1) % TEAM_COUNT);
                 }
                 else
                 {
-                    if(GAMECLIENT.GetLocalPlayer()->team == 0) // 0(noteam)->randomteam(1-4)
+                    if(GAMECLIENT.GetLocalPlayer()->team == TM_NOTEAM) // 0(noteam)->randomteam(1-4)
                     {
                         int rnd = RANDOM.Rand(__FILE__, __LINE__, 0, 4);
                         if(!rnd)
