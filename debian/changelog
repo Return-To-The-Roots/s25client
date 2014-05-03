@@ -1,3 +1,177 @@
+s25rttr (20140503-9389.333) precise; urgency=low
+
+  * Automatic Jenkins Build 333
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sat, 03 May 2014 01:08:55 +0200
+
+s25rttr (20140503-9389) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sat, 03 May 2014 00:00:00 +0200
+
+s25rttr (20140502-9388) any; urgency=low
+
+  * fix random team selection (- -> ? *-> ?* -> 1 -> 2 -> 3 -> 4 -> -
+    -> ? -> 1 ...)
+
+ -- Florian Doersch <flosoft@siedler25.org>  Fri, 02 May 2014 07:37:00 +0200
+
+s25rttr (20140502-9387.332) precise; urgency=low
+
+  * Automatic Jenkins Build 332
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Fri, 02 May 2014 01:09:39 +0200
+
+s25rttr (20140502-9387) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Fri, 02 May 2014 00:00:00 +0200
+
+s25rttr (20140501-9386) any; urgency=low
+
+  * - aus/ein-lager-konstanten verringert
+    - neuer träger konstante verringert
+
+ -- Florian Doersch <flosoft@siedler25.org>  Thu, 01 May 2014 15:38:00 +0200
+
+s25rttr (20140501-9385) any; urgency=low
+
+  * remove debug again
+
+ -- Florian Doersch <flosoft@siedler25.org>  Thu, 01 May 2014 15:31:00 +0200
+
+s25rttr (20140501-9384.331) precise; urgency=low
+
+  * Automatic Jenkins Build 331
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Thu, 01 May 2014 17:18:40 +0200
+
+s25rttr (20140501-9384) any; urgency=low
+
+  * - preparations for mp speed change (still not working)
+    - synchronized pause (client will play until server gf)
+
+ -- Florian Doersch <flosoft@siedler25.org>  Thu, 01 May 2014 14:53:00 +0200
+
+s25rttr (20140501-9383.330) precise; urgency=low
+
+  * Automatic Jenkins Build 330
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Thu, 01 May 2014 14:48:32 +0200
+
+s25rttr (20140501-9383) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Thu, 01 May 2014 00:00:00 +0200
+
+s25rttr (20140501-9382) any; urgency=low
+
+  * fix loading savegames
+
+ -- Florian Doersch <flosoft@siedler25.org>  Thu, 01 May 2014 11:32:00 +0200
+
+s25rttr (20140501-9381) any; urgency=low
+
+  * fix singleplayer speed change, should perhaps work on mp too (but
+    not tested yet)
+
+ -- Florian Doersch <flosoft@siedler25.org>  Thu, 01 May 2014 10:27:00 +0200
+
+s25rttr (20140430-9379.329) precise; urgency=low
+
+  * Automatic Jenkins Build 329
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Wed, 30 Apr 2014 21:37:15 +0200
+
+s25rttr (20140430-9379) any; urgency=low
+
+  * add new babylonian items
+
+ -- Florian Doersch <flosoft@siedler25.org>  Wed, 30 Apr 2014 15:51:00 +0200
+
+s25rttr (20140430-9378) any; urgency=low
+
+  * change to packed list
+
+ -- Florian Doersch <flosoft@siedler25.org>  Wed, 30 Apr 2014 15:50:00 +0200
+
+s25rttr (20140430-9377) any; urgency=low
+
+  * remove frameinfo log
+
+ -- Florian Doersch <flosoft@siedler25.org>  Wed, 30 Apr 2014 15:48:00 +0200
+
+s25rttr (20140429-9375.328) precise; urgency=low
+
+  * Automatic Jenkins Build 328
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 29 Apr 2014 18:25:21 +0200
+
+s25rttr (20140429-9375) any; urgency=low
+
+  * fix async gamestart (hopefully)
+
+ -- Florian Doersch <flosoft@siedler25.org>  Tue, 29 Apr 2014 15:44:00 +0200
+
+s25rttr (20140429-9374) any; urgency=low
+
+  * fix babylonian shield bug (hopefully)
+
+ -- Florian Doersch <flosoft@siedler25.org>  Tue, 29 Apr 2014 15:42:00 +0200
+
+s25rttr (20140429-9373.327) precise; urgency=low
+
+  * Automatic Jenkins Build 327
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 29 Apr 2014 01:01:25 +0200
+
+s25rttr (20140429-9373) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 29 Apr 2014 00:00:00 +0200
+
+s25rttr (20140428-9372) any; urgency=low
+
+  * - assertion in EventManager
+    - replaced random in pathfinding by non synchronized method,
+    since its only called on (one) client ? (ASYNC!)
+
+ -- Florian Doersch <flosoft@siedler25.org>  Mon, 28 Apr 2014 15:25:00 +0200
+
+s25rttr (20140428-9371) any; urgency=low
+
+  * start game with lagging players
+
+ -- Florian Doersch <flosoft@siedler25.org>  Mon, 28 Apr 2014 14:08:00 +0200
+
+s25rttr (20140428-9370.326) precise; urgency=low
+
+  * Automatic Jenkins Build 326
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Mon, 28 Apr 2014 01:10:45 +0200
+
+s25rttr (20140428-9370) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Mon, 28 Apr 2014 00:00:00 +0200
+
+s25rttr (20140427-9369) any; urgency=low
+
+  * fix crash
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sun, 27 Apr 2014 11:54:00 +0200
+
+s25rttr (20140426-9367) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 26 Apr 2014 22:00:00 +0200
+
 s25rttr (20140426-9366.325) precise; urgency=low
 
   * Automatic Jenkins Build 325
