@@ -1,4 +1,4 @@
-// $Id: DoorConsts.h 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: DoorConsts.h 9392 2014-05-04 12:38:34Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -21,7 +21,7 @@
 #define DOOR_CONSTS_H_
 
 
-// Konstanten fr den Punkt, ab dem die Träcer "verschwinden" bei einem Gebäcde, jeweils als Y-Angabe
+// Konstanten für den Punkt, ab dem die Träger "verschwinden" bei einem Gebäude, jeweils als Y-Angabe
 
 const signed char DOOR_CONSTS[NATION_COUNT][40] =
 {
@@ -113,7 +113,6 @@ const signed char DOOR_CONSTS[NATION_COUNT][40] =
         16
     },
 
-
     // Römer
     {
         4,
@@ -157,7 +156,6 @@ const signed char DOOR_CONSTS[NATION_COUNT][40] =
         -8,
         2
     },
-
 
     // Wikinger
     {
@@ -203,12 +201,49 @@ const signed char DOOR_CONSTS[NATION_COUNT][40] =
         10
     },
 
-
+    // babylonians
     {
-        9, 1, 5, 0,      12,     0,      0,      0,      0,      7,      8,      8,      8,      8,      5,      0,      10,     9,      5,      3,      9,      10,     3,      12,     10,     13,     7,      0,      -8,
-        14,     0,      11,     10,     9,      11,     11,     15,     -7,     -5,     16
+        9,
+        5,
+        5,
+        0,
+        12,
+        0,
+        0,
+        0,
+        0,
+        7,
+        8,
+        8,
+        8,
+        8,
+        5,
+        0,
+        10,
+        9,
+        5,
+        3,
+        9,
+        10,
+        3,
+        12,
+        10,
+        13,
+        7,
+        0,
+        -8,
+        14,
+        0,
+        11,
+        10,
+        9,
+        11,
+        11,
+        15,
+        -7,
+        -5,
+        16
     }
-
 };
 
 #endif
