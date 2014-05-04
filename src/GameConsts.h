@@ -1,4 +1,4 @@
-// $Id: GameConsts.h 9374 2014-04-29 15:42:33Z FloSoft $
+// $Id: GameConsts.h 9394 2014-05-04 12:39:31Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -479,9 +479,14 @@ inline GoodType ConvertShields(const GoodType& good)
 }
 
 /// Umgekehrte Konvertierung: Gibt den Schildtyp für jede Nation an
-const GoodType SHIELD_TYPES[NATION_COUNT] = { GD_SHIELDAFRICANS, GD_SHIELDJAPANESE,
-                                              GD_SHIELDROMANS, GD_SHIELDVIKINGS
-                                            };
+const GoodType SHIELD_TYPES[NATION_COUNT] =
+{
+    GD_SHIELDAFRICANS,
+    GD_SHIELDJAPANESE,
+    GD_SHIELDROMANS,
+    GD_SHIELDVIKINGS,
+    GD_SHIELDJAPANESE
+};
 
 /// Reichweite der Bergarbeiter
 const unsigned MINER_RADIUS = 2;
