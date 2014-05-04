@@ -1,4 +1,4 @@
-// $Id: GlobalGameSettings.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: GlobalGameSettings.cpp 9395 2014-05-04 12:39:52Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -200,7 +200,7 @@ void GlobalGameSettings::Serialize(Serializer* ser) const
         ser->PushUnsignedInt(it->addon->getId());
         ser->PushUnsignedInt(it->status);
 
-        LOG.write("\t%d=%d\n", it->addon->getId(), it->status);
+        LOG.write("\t0x%08X=%d\n", it->addon->getId(), it->status);
     }
 }
 
@@ -232,7 +232,7 @@ void GlobalGameSettings::Deserialize(Serializer* ser)
         unsigned int status = ser->PopUnsignedInt();
         setSelection(addon, status);
 
-        LOG.write("\t%d=%d\n", addon, status);
+        LOG.write("\t0x%08X=%d\n", addon, status);
     }
 }
 
