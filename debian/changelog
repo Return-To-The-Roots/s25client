@@ -1,3 +1,51 @@
+s25rttr (20140510-9402.335) precise; urgency=low
+
+  * Automatic Jenkins Build 335
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sat, 10 May 2014 09:11:04 +0200
+
+s25rttr (20140510-9402) any; urgency=low
+
+  * fix ugly load game crashes
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 10 May 2014 06:54:00 +0200
+
+s25rttr (20140504-9395.334) precise; urgency=low
+
+  * Automatic Jenkins Build 334
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sun, 04 May 2014 17:17:25 +0200
+
+s25rttr (20140504-9395) any; urgency=low
+
+  * addon text
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sun, 04 May 2014 12:39:00 +0200
+
+s25rttr (20140504-9394) any; urgency=low
+
+  * babylonian shield fix
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sun, 04 May 2014 12:39:00 +0200
+
+s25rttr (20140504-9393) any; urgency=low
+
+  * clean up addon ids
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sun, 04 May 2014 12:38:00 +0200
+
+s25rttr (20140504-9392) any; urgency=low
+
+  * update babylonian icons
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sun, 04 May 2014 12:38:00 +0200
+
+s25rttr (20140503-9390) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 03 May 2014 22:00:00 +0200
+
 s25rttr (20140503-9389.333) precise; urgency=low
 
   * Automatic Jenkins Build 333
