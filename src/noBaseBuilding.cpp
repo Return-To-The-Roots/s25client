@@ -1,4 +1,4 @@
-// $Id: noBaseBuilding.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: noBaseBuilding.cpp 9402 2014-05-10 06:54:13Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -115,7 +115,8 @@ void noBaseBuilding::Destroy_noBaseBuilding()
     //notify the ai about this
     GAMECLIENT.SendAIEvent(new AIEvent::Building(AIEvent::BuildingDestroyed, x, y, type), player);
 
-    gwg->GetGameInterface()->GI_UpdateMinimap(x, y);
+    if(gwg->GetGameInterface())
+        gwg->GetGameInterface()->GI_UpdateMinimap(x, y);
 
     // evtl Anbauten wieder abreiﬂen
     DestroyBuildingExtensions();

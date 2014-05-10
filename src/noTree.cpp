@@ -1,4 +1,4 @@
-// $Id: noTree.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: noTree.cpp 9402 2014-05-10 06:54:13Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -219,7 +219,8 @@ void noTree::HandleEvent(const unsigned int id)
             gwg->RecalcBQAroundPoint(x, y);
 
             // Minimap Bescheid geben (Baum gefallen)
-            gwg->GetGameInterface()->GI_UpdateMinimap(x, y);
+			if(gwg->GetGameInterface())
+				gwg->GetGameInterface()->GI_UpdateMinimap(x, y);
 
         } break;
         default: break;

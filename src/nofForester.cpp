@@ -1,4 +1,4 @@
-// $Id: nofForester.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: nofForester.cpp 9402 2014-05-10 06:54:13Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -126,7 +126,8 @@ void nofForester::WorkFinished()
         gwg->RecalcBQAroundPoint(x, y);
 
         // Minimap Bescheid geben (neuer Baum)
-        gwg->GetGameInterface()->GI_UpdateMinimap(x, y);
+        if(gwg->GetGameInterface())
+            gwg->GetGameInterface()->GI_UpdateMinimap(x, y);
     }
 }
 
