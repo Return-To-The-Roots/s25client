@@ -1,4 +1,4 @@
-// $Id: nofArmorer.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: nofArmorer.cpp 9431 2014-06-06 06:13:29Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -102,15 +102,5 @@ GoodType nofArmorer::ProduceWare()
     if(sword_shield)
         return GD_SWORD;
     else
-    {
-        // Je nach Nation einen bestimmtem Schild fertigen
-        switch(GAMECLIENT.GetPlayer(player)->nation)
-        {
-            case 0: return GD_SHIELDAFRICANS;
-            case 1: return GD_SHIELDJAPANESE;
-            case 2: return GD_SHIELDROMANS;
-            case 3: return GD_SHIELDVIKINGS;
-            default: return GD_NOTHING;
-        }
-    }
+	return SHIELD_TYPES[GAMECLIENT.GetPlayer(player)->nation];
 }
