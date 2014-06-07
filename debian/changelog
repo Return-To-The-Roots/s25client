@@ -1,3 +1,21 @@
+s25rttr (20140606-9431.336) precise; urgency=low
+
+  * Automatic Jenkins Build 336
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Fri, 06 Jun 2014 08:49:34 +0200
+
+s25rttr (20140606-9431) any; urgency=low
+
+  * hopefully fix babylonian shield produce bug
+
+ -- Florian Doersch <flosoft@siedler25.org>  Fri, 06 Jun 2014 06:13:00 +0200
+
+s25rttr (20140510-9403) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 10 May 2014 22:00:00 +0200
+
 s25rttr (20140510-9402.335) precise; urgency=low
 
   * Automatic Jenkins Build 335
