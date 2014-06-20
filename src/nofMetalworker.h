@@ -1,4 +1,4 @@
-// $Id: nofMetalworker.h 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: nofMetalworker.h 9447 2014-06-20 21:40:55Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -33,6 +33,8 @@ class nofMetalworker : public nofWorkman
         unsigned short GetCarryID() const;
         /// Der Arbeiter erzeugt eine Ware
         GoodType ProduceWare();
+        
+        unsigned ToolsOrderedTotal() const;
 
     public:
 

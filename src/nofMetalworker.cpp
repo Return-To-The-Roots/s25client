@@ -1,4 +1,4 @@
-// $Id: nofMetalworker.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: nofMetalworker.cpp 9447 2014-06-20 21:40:55Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -110,20 +110,41 @@ const GoodType TOOLS_SETTINGS_IDS[12] =
     GD_BOW          // Bogen
 };
 
-
+unsigned nofMetalworker::ToolsOrderedTotal() const
+{
+    unsigned sum = 0;
+    for (unsigned i = 0; i < TOOL_COUNT; ++i)
+        sum += gwg->GetPlayer(player)->tools_ordered[i];
+    return sum;
+}
 
 GoodType nofMetalworker::ProduceWare()
 {
     // qx:tools
     {
+        int prio = -1;
+        int tool = -1;
+        
         for (unsigned i = 0; i < TOOL_COUNT; ++i)
         {
-            if (gwg->GetPlayer(player)->tools_ordered[i] > 0)
+            if (gwg->GetPlayer(player)->tools_ordered[i] > 0 && (gwg->GetPlayer(player)->tools_settings[i] > prio) )
             {
-                --gwg->GetPlayer(player)->tools_ordered[i];
-                iwTools::UpdateOrders();
-                return TOOLS_SETTINGS_IDS[i];
+                prio = gwg->GetPlayer(player)->tools_settings[i];
+                tool = i;
             }
+        }
+        
+        if (tool != -1)
+        {
+            --gwg->GetPlayer(player)->tools_ordered[tool];
+            
+            if ( (player == GameClient::inst().GetPlayerID()) && (ToolsOrderedTotal() == 0) )
+            {
+                GameClient::inst().SendPostMessage( new PostMsg( _("Completed the ordered amount of tools."), PMC_GENERAL ) );
+            }
+            
+            iwTools::UpdateOrders();
+            return TOOLS_SETTINGS_IDS[tool];
         }
     }
 
