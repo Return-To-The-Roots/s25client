@@ -1,3 +1,28 @@
+s25rttr (20140621-9448.337) precise; urgency=low
+
+  * Automatic Jenkins Build 337
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sat, 21 Jun 2014 00:47:44 +0200
+
+s25rttr (20140621-9448) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sat, 21 Jun 2014 00:00:00 +0200
+
+s25rttr (20140620-9447) any; urgency=low
+
+  * added patch from
+    http://bazaar.launchpad.net/~quixui-d/s25rttr/qxup/revision/8752
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Fri, 20 Jun 2014 21:40:00 +0200
+
+s25rttr (20140607-9433) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 07 Jun 2014 22:00:00 +0200
+
 s25rttr (20140606-9431.336) precise; urgency=low
 
   * Automatic Jenkins Build 336
