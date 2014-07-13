@@ -1,4 +1,4 @@
-// $Id: GameClient.cpp 9385 2014-05-01 15:31:50Z FloSoft $
+// $Id: GameClient.cpp 9472 2014-07-13 14:11:19Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1722,6 +1722,9 @@ unsigned GameClient::StartReplay(const std::string& path, GameWorldViewer*& gwv)
     replayinfo.end = false;
 
     StartGame(replayinfo.replay.random_init);
+
+	state = CS_GAME; // zu gamestate wechseln
+    RealStart();
 
     replayinfo.replay.ReadGF(&replayinfo.next_gf);
 
