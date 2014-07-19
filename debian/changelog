@@ -1,3 +1,27 @@
+s25rttr (20140714-9473.338) precise; urgency=low
+
+  * Automatic Jenkins Build 338
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Mon, 14 Jul 2014 01:07:38 +0200
+
+s25rttr (20140714-9473) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Mon, 14 Jul 2014 00:00:00 +0200
+
+s25rttr (20140713-9472) any; urgency=low
+
+  * make replays replayable (still asyncs in replays like #1335132)
+
+ -- Jan-Henrik Kluth <sf-team@siedler25.org>  Sun, 13 Jul 2014 14:11:00 +0200
+
+s25rttr (20140621-9449) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 21 Jun 2014 22:00:00 +0200
+
 s25rttr (20140621-9448.337) precise; urgency=low
 
   * Automatic Jenkins Build 337
