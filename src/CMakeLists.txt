@@ -1,5 +1,5 @@
 ################################################################################
-### $Id: CMakeLists.txt 9186 2014-02-22 13:22:44Z marcus $
+### $Id: CMakeLists.txt 9484 2014-07-23 07:07:02Z FloSoft $
 ################################################################################
 
 INCLUDE(FindBZip2)
@@ -474,6 +474,13 @@ IF ( NOT EXISTS "${LUA_LIB}" )
 	ADD_FLAGS(CMAKE_C_FLAGS -I/usr/include/lua5.2)
 	ADD_FLAGS(CMAKE_CXX_FLAGS -I/usr/include/lua5.2)
 ENDIF ( NOT EXISTS "${LUA_LIB}" )
+
+IF ( NOT EXISTS "${LUA_LIB}" )
+	SET(LUA_LIB "/usr/lib/liblua.so")
+	ADD_FLAGS(CMAKE_C_FLAGS -I/usr/include/)
+	ADD_FLAGS(CMAKE_CXX_FLAGS -I/usr/include/)
+ENDIF ( NOT EXISTS "${LUA_LIB}" )
+
 MESSAGE(STATUS "Using LUA library from ${LUA_LIB}")
 
 ADD_FLAGS(CMAKE_C_FLAGS -I${LUA_DIR}/include)
