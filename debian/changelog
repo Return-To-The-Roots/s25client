@@ -1,3 +1,27 @@
+s25rttr (20140724-9485.339) precise; urgency=low
+
+  * Automatic Jenkins Build 339
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Thu, 24 Jul 2014 01:07:25 +0200
+
+s25rttr (20140724-9485) any; urgency=low
+
+  * Empty log message
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Thu, 24 Jul 2014 00:00:00 +0200
+
+s25rttr (20140723-9484) any; urgency=low
+
+  * add quick fix from #1189145 comment 7
+
+ -- Florian Doersch <flosoft@siedler25.org>  Wed, 23 Jul 2014 07:07:00 +0200
+
+s25rttr (20140719-9479) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 19 Jul 2014 22:00:00 +0200
+
 s25rttr (20140714-9473.338) precise; urgency=low
 
   * Automatic Jenkins Build 338
