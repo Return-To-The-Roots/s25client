@@ -1,3 +1,139 @@
+s25rttr (20141129-9512.340) precise; urgency=low
+
+  * Automatic Jenkins Build 340
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sat, 29 Nov 2014 12:17:05 +0100
+
+s25rttr (20141129-9512) any; urgency=low
+
+  * Added five new maps by Spike: Archipelag Sumary.SWD,
+    FalkLand.wld, IDYLL.WLD, Landung4.wld, tupai.swd
+
+ -- marcus  Sat, 29 Nov 2014 10:55:00 +0100
+
+s25rttr (20141129-9511) any; urgency=low
+
+  * Added missing .h files for new addons
+
+ -- marcus  Sat, 29 Nov 2014 10:53:00 +0100
+
+s25rttr (20141129-9510) any; urgency=low
+
+  * AIpoc r9512
+    added +50% & +100% burn duration to the burn duration addon
+
+ -- marcus  Sat, 29 Nov 2014 10:51:00 +0100
+
+s25rttr (20141129-9509) any; urgency=low
+
+  * AIpoc r9511
+    fix for bug #1335132 Replays sind nicht abspielbar (win)
+
+ -- marcus  Sat, 29 Nov 2014 10:51:00 +0100
+
+s25rttr (20141129-9508) any; urgency=low
+
+  * AIpoc r9510
+    babylonian armorer now uses the japanese shield carry-out
+    animation (previously used no animation at all)
+
+ -- marcus  Sat, 29 Nov 2014 10:50:00 +0100
+
+s25rttr (20141129-9507) any; urgency=low
+
+  * AIpoc r9509
+    sea attacks now test the path coastal point - goal instead of
+    harbor - goal to stop sea attack commands that will fail on
+    arrival.
+
+ -- marcus  Sat, 29 Nov 2014 10:49:00 +0100
+
+s25rttr (20141129-9506) any; urgency=low
+
+  * AIpoc r9507
+    babylonian military flags relocated
+
+ -- marcus  Sat, 29 Nov 2014 10:49:00 +0100
+
+s25rttr (20141129-9505) any; urgency=low
+
+  * AIpoc r9506
+    babylonian pig farm & donkey breeder animal animation locations
+    fixed
+
+ -- marcus  Sat, 29 Nov 2014 10:48:00 +0100
+
+s25rttr (20141129-9504) any; urgency=low
+
+  * AIpoc r9505
+    changes babylonian:
+    smoke for ironsmelter, brewery
+    stop/no gold sign location for most buildings
+
+ -- marcus  Sat, 29 Nov 2014 10:47:00 +0100
+
+s25rttr (20141129-9503) any; urgency=low
+
+  * AIpoc r9504
+    fixed work anim offset for babylonian:
+    ironsmelter,butcher,minter
+
+ -- marcus  Sat, 29 Nov 2014 10:47:00 +0100
+
+s25rttr (20141129-9502) any; urgency=low
+
+  * AIpoc r9503
+    fix for Bug #1395445 defeat during load frame: crash
+
+ -- marcus  Sat, 29 Nov 2014 10:46:00 +0100
+
+s25rttr (20141129-9501) any; urgency=low
+
+  * AIpoc r9502
+    babylonian mine's work animation offset fixed to display in the
+    correct location
+
+ -- marcus  Sat, 29 Nov 2014 10:45:00 +0100
+
+s25rttr (20141129-9500) any; urgency=low
+
+  * AIpoc r9501
+    babylonian iron smelter's smoke moved to the correct location
+
+ -- marcus  Sat, 29 Nov 2014 10:45:00 +0100
+
+s25rttr (20141129-9499) any; urgency=low
+
+  * AIpoc r9500
+    fix for Bug #1355151 (loading games with already defeated ai
+    crashes game)
+    the ai will no longer attempt to surrender during the loading
+    screen...
+
+ -- marcus  Sat, 29 Nov 2014 10:43:00 +0100
+
+s25rttr (20141129-9498) any; urgency=low
+
+  * AIpoc r9499
+    new addon: burn duration - allows to adjust for how long
+    destroyed buildings will burn
+
+ -- marcus  Sat, 29 Nov 2014 10:42:00 +0100
+
+s25rttr (20141129-9497) any; urgency=low
+
+  * AIpoc r9498
+    new addon: more animals - allows the user to adjust the
+    percentage of trees that spawn animals
+
+ -- marcus  Sat, 29 Nov 2014 10:41:00 +0100
+
+s25rttr (20140726-9488) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 26 Jul 2014 22:00:00 +0200
+
 s25rttr (20140724-9485.339) precise; urgency=low
 
   * Automatic Jenkins Build 339
