@@ -1,4 +1,4 @@
-// $Id: GameClientPlayer.cpp 9371 2014-04-28 14:08:16Z FloSoft $
+// $Id: GameClientPlayer.cpp 9502 2014-11-29 10:46:24Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1500,7 +1500,10 @@ void GameClientPlayer::TestDefeat()
         defeated = true;
 
         // GUI Bescheid sagen
-        gwg->GetGameInterface()->GI_PlayerDefeated(playerid);
+		if(gwg->GetGameInterface())
+			gwg->GetGameInterface()->GI_PlayerDefeated(playerid);
+		else
+			LOG.lprintf("Warning: Player %i defeated but could not find GameInterface (GameClientPlayer.cpp::TestDefeat()\n",playerid);
     }
 }
 
