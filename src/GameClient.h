@@ -1,4 +1,4 @@
-// $Id: GameClient.h 9384 2014-05-01 14:53:50Z FloSoft $
+// $Id: GameClient.h 9509 2014-11-29 10:51:10Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -166,6 +166,7 @@ class GameClient : public Singleton<GameClient>, public GameMessageInterface
         /// Gibt Pathfinding-Results zurück aus einem Replay
         bool ReadPathfindingResult( unsigned char* dir, unsigned* length, Point<MapCoord>* next_harbor);
 
+		
     private:
         /// Versucht einen neuen GameFrame auszuführen, falls die Zeit dafür gekommen ist
         void ExecuteGameFrame(const bool skipping = false);
@@ -268,6 +269,8 @@ class GameClient : public Singleton<GameClient>, public GameMessageInterface
         } visual_settings, default_settings;
 
     private:
+		/// geöffnetes replay file
+		BinaryFile replayfile;
         /// Spielwelt
         GameWorld* gw;
         /// EventManager

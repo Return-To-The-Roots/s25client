@@ -1,4 +1,4 @@
-// $Id: GameClient.cpp 9472 2014-07-13 14:11:19Z jh $
+// $Id: GameClient.cpp 9509 2014-11-29 10:51:10Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1401,7 +1401,6 @@ void GameClient::ExecuteGameFrame(const bool skipping)
         //LOG.lprintf("%d = %d\n", framesinfo.nr / framesinfo.nwf_length, Random::inst().GetCurrentRandomValue());
         if(replay_mode)
         {
-
             // Diesen Zeitpunkt merken
             framesinfo.lasttime += framesinfo.gf_length;
             // Nächster Game-Frame erreicht
@@ -1647,12 +1646,11 @@ unsigned GameClient::StartReplay(const std::string& path, GameWorldViewer*& gwv)
 {
     replayinfo.filename = path;
     replayinfo.replay.savegame = &mapinfo.savegame;
-
-    if(!replayinfo.replay.LoadHeader(path, true))
+	if(!replayinfo.replay.LoadHeader(path, true,replayfile))
         return false;
-
-
-    // NWF-Länge
+	//what gf does the first action occur?
+	replayinfo.replay.ReadGF(&replayinfo.next_gf,replayfile);
+	// NWF-Länge
     framesinfo.nwf_length = replayinfo.replay.nwf_length;
 
     //players.resize(replayinfo.replay.players.getCount());
@@ -1726,7 +1724,7 @@ unsigned GameClient::StartReplay(const std::string& path, GameWorldViewer*& gwv)
 	state = CS_GAME; // zu gamestate wechseln
     RealStart();
 
-    replayinfo.replay.ReadGF(&replayinfo.next_gf);
+    //replayinfo.replay.ReadGF(&replayinfo.next_gf,replayfile);
 
     gwv = gw;
 

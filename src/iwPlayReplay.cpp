@@ -1,4 +1,4 @@
-// $Id: iwPlayReplay.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: iwPlayReplay.cpp 9509 2014-11-29 10:51:10Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -165,7 +165,8 @@ void iwPlayReplay::FillReplayTable(const std::string& filename, void* param)
     Replay replay;
 
     // Datei laden
-    if(!replay.LoadHeader(filename, false))
+	BinaryFile filecopy;
+    if(!replay.LoadHeader(filename, false,filecopy))
         return;
 
     // Zeitstamp benutzen

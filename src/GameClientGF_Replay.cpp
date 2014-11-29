@@ -1,4 +1,4 @@
-// $Id: GameClientGF_Replay.cpp 9363 2014-04-26 15:00:08Z FloSoft $
+// $Id: GameClientGF_Replay.cpp 9509 2014-11-29 10:51:10Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -41,17 +41,17 @@ void GameClient::ExecuteGameFrame_Replay()
         if(replayinfo.next_gf == framesinfo.nr)
         {
             // RC-Type auslesen
-            Replay::ReplayCommand rc = replayinfo.replay.ReadRCType();
-
+            Replay::ReplayCommand rc = replayinfo.replay.ReadRCType(replayfile);
+			
             // Chat Command?
             if(rc == Replay::RC_CHAT)
             {
                 unsigned char player, dest;
                 std::string message;
-                replayinfo.replay.ReadChatCommand(&player, &dest, message);
+                replayinfo.replay.ReadChatCommand(&player, &dest, message,replayfile);
 
                 // Nächsten Zeitpunkt lesen
-                replayinfo.replay.ReadGF(&replayinfo.next_gf);
+                replayinfo.replay.ReadGF(&replayinfo.next_gf,replayfile);
 
                 /*      char from[256];
                         snprintf(from, 256, _("<%s> "), players[player]->name.GetStr());*/
@@ -65,9 +65,9 @@ void GameClient::ExecuteGameFrame_Replay()
                 unsigned char* data;
                 unsigned short length;
 
-                replayinfo.replay.ReadGameCommand(&length, &data);
+                replayinfo.replay.ReadGameCommand(&length, &data,replayfile);
                 // Nächsten Zeitpunkt lesen
-                replayinfo.replay.ReadGF(&replayinfo.next_gf);
+                replayinfo.replay.ReadGF(&replayinfo.next_gf,replayfile);
                 GameMessage_GameCommand msg(data, length);
 
                 // NCs ausführen (4 Bytes Checksumme und 1 Byte Player-ID überspringen)
@@ -95,7 +95,10 @@ void GameClient::ExecuteGameFrame_Replay()
 
                 // resync random generator, so replay "can't" be async.
                 // (of course it can, since we resynchronize only after each command, the command itself could be use multiple rand values)
-                RANDOM.ReplaySet(msg.checksum);
+
+				// resync is useless as we just detect that something between the last gamecommand and this current gamecommand was async so it already happened and without any idea what happened it can not be fixed here...
+				// also: this is the wrong location to resync if we should do something like this it has to happen before executing the game commands as that was the time the value we can resync to was taken.
+                //RANDOM.ReplaySet(msg.checksum);
 
                 delete[] data;
             }
@@ -103,6 +106,7 @@ void GameClient::ExecuteGameFrame_Replay()
         else
         {
             // noch nichtan der Reihe, dann wieder raus
+			//LOG.lprintf("start replay gf %i ",replayinfo.next_gf);			
             break;
         }
     }
