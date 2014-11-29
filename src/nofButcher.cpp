@@ -1,4 +1,4 @@
-// $Id: nofButcher.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: nofButcher.cpp 9503 2014-11-29 10:47:02Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -48,7 +48,7 @@ nofButcher::nofButcher(SerializedGameData* sgd, const unsigned obj_id) : nofWork
 
 void nofButcher::DrawWorking(int x, int y)
 {
-    signed char offsets[NATION_COUNT][2] = { {38, 2}, { -3, 5}, {21, -1}, {26, -5}, { -3, 5} };
+    signed char offsets[NATION_COUNT][2] = { {38, 2}, { -3, 5}, {21, -1}, {26, -5}, { -7, 2} };
 
     unsigned now_id;
 

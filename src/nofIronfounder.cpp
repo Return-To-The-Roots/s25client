@@ -1,4 +1,4 @@
-// $Id: nofIronfounder.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: nofIronfounder.cpp 9503 2014-11-29 10:47:02Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -47,7 +47,7 @@ nofIronfounder::nofIronfounder(SerializedGameData* sgd, const unsigned obj_id) :
 
 void nofIronfounder::DrawWorking(int x, int y)
 {
-    signed char offsets[5][2] = { { -22, 12}, { -23, 3}, { -19, 8}, { -18, 4}, { -38, -1} };
+    signed char offsets[5][2] = { { -22, 12}, { -23, 3}, { -19, 8}, { -18, 4}, { -33, 7} };
 
     unsigned now_id = GAMECLIENT.Interpolate(272, current_ev);
 
