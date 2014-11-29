@@ -975,6 +975,9 @@
     <ClInclude Include="..\..\src\AddonMoreAnimals.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\AddonBurnDuration.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Addons.cpp">

@@ -1,4 +1,4 @@
-// $Id: GlobalGameSettings.cpp 9497 2014-11-29 10:41:59Z marcus $
+// $Id: GlobalGameSettings.cpp 9498 2014-11-29 10:42:51Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -58,6 +58,7 @@
 
 #include "AddonShipSpeed.h"
 #include "AddonMoreAnimals.h"
+#include "AddonBurnDuration.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
@@ -147,6 +148,7 @@ void GlobalGameSettings::reset(bool recreate)
 
         registerAddon(new AddonShipSpeed);
 		registerAddon(new AddonMoreAnimals);
+		registerAddon(new AddonBurnDuration);
     }
 }
 

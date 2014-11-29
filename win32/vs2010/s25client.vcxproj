@@ -101,6 +101,7 @@
     <ClInclude Include="..\..\build_version.h" />
     <ClInclude Include="..\..\src\AddonAdjustMilitaryStrength.h" />
     <ClInclude Include="..\..\src\AddonAIDebugWindow.h" />
+    <ClInclude Include="..\..\src\AddonBurnDuration.h" />
     <ClInclude Include="..\..\src\AddonCatapultGraphics.h" />
     <ClInclude Include="..\..\src\AddonChangeGoldDeposits.h" />
     <ClInclude Include="..\..\src\AddonCharburner.h" />

@@ -1,4 +1,4 @@
-// $Id: const_addons.h 9497 2014-11-29 10:41:59Z marcus $
+// $Id: const_addons.h 9498 2014-11-29 10:42:51Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -77,6 +77,7 @@ enum AddonId
     ADDON_SEA_ATTACK                 = 0x00900001,
     ADDON_INEXHAUSTIBLE_FISH         = 0x00900002,
 	ADDON_MORE_ANIMALS               = 0x00900003,
+	ADDON_BURN_DURATION              = 0x00900004,
 
     ADDON_SHIP_SPEED                 = 0x00A00000
 };
