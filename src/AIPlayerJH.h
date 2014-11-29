@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.h 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: AIPlayerJH.h 9499 2014-11-29 10:43:47Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -106,7 +106,7 @@ class AIPlayerJH : public AIBase
                    const GameClientPlayerList* const players, const GlobalGameSettings* const ggs,
                    const AI::Level level);
 
-
+		int initgfcomplete;
         int GetResMapValue(MapCoord x, MapCoord y, AIJH::Resource res);
         AIInterface* GetInterface() { return aii; }
 
@@ -164,6 +164,8 @@ class AIPlayerJH : public AIBase
 
         //now used to init farm space around farms ... lazy legacy
         void InitStoreAndMilitarylists();
+		//set default start values for the ai for distribution & military settings
+		void InitMilitaryAndDistribution();
 
         //returns true if we can get to the startflag in <maxlen without turning back
         bool IsFlagPartofCircle(const noFlag* startFlag, unsigned maxlen, const noFlag* curFlag, unsigned char excludeDir, bool init, std::vector<int> oldflagsx, std::vector<int> oldflagsy);
@@ -308,8 +310,8 @@ class AIPlayerJH : public AIBase
         /// Resource maps, containing a rating for every map point concerning a resource
         std::vector<std::vector<int> > resourceMaps;
 
-        // Required by the AIJobs:
-
+		// Required by the AIJobs:
+		
 
         const std::string& GetPlayerName() { return player->name; }
         unsigned char GetPlayerID() { return playerid; }

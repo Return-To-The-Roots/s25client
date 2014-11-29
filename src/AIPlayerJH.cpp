@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: AIPlayerJH.cpp 9499 2014-11-29 10:43:47Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -52,6 +52,7 @@ AIPlayerJH::AIPlayerJH(const unsigned char playerid, const GameWorldBase* const 
                        const AI::Level level) : AIBase(playerid, gwb, player, players, ggs, level), defeated(false),
     construction(AIConstruction(aii, this))
 {
+	initgfcomplete=0;
     currentJob = 0;
     InitNodes();
     InitResourceMaps();
@@ -66,10 +67,16 @@ void AIPlayerJH::RunGF(const unsigned gf)
 
     if (TestDefeat())
         return;
-    if (gf == 40)
+    if (!initgfcomplete)
     {
-        InitStoreAndMilitarylists();
+        InitStoreAndMilitarylists();		
+		InitMilitaryAndDistribution();
     }
+	if(initgfcomplete<10)
+	{
+		initgfcomplete++;
+		return; //  1 init -> 2 test defeat -> 3 do other ai stuff -> goto 2
+	}
     if (gf == 100)
     {
         if(aii->GetMilitaryBuildings().size() < 1 && aii->GetStorehouses().size() < 2)
@@ -77,54 +84,7 @@ void AIPlayerJH::RunGF(const unsigned gf)
             Chat(_("Hi, I'm an artifical player and I'm not very good yet!"));
             Chat(_("And I may crash your game sometimes..."));
         }
-
-        // Set military settings to some nicer default values
-        std::vector<unsigned char> milSettings;
-        milSettings.resize(8);
-        milSettings[0] = 10;    //recruits 0-10
-        milSettings[1] = 5;     //defense 0-5
-        milSettings[2] = 4;     //defenders 0-5
-        milSettings[3] = 5;     //attackers 0-5
-        milSettings[4] = 0;     //inland buildings (0 bar) 0-8
-        milSettings[5] = 8;     //center buildings (1 bar) 0-8
-        milSettings[6] = 8;     //harbor buildings (? bar) 0-8
-        milSettings[7] = 8;     //border buildings (2 bar) 0-8
-        aii->SetMilitarySettings(milSettings);
-        //set good distribution settings
-        std::vector<unsigned char> goodSettings;
-        goodSettings.resize(23);
-        goodSettings[0] = 10; //food granite
-        goodSettings[1] = 10; //food coal
-        goodSettings[2] = 10; //food iron
-        goodSettings[3] = 10; //food gold
-
-        goodSettings[4] = 10; //grain mill
-        goodSettings[5] = 10; //grain pigfarm
-        goodSettings[6] = 10; //grain donkeybreeder
-        goodSettings[7] = 10; //grain brewery
-        goodSettings[8] = 10; //grain charburner
-
-        goodSettings[9] = 10; //iron armory
-        goodSettings[10] = 10; //iron metalworks
-
-        goodSettings[11] = 10; //coal armory
-        goodSettings[12] = 10; //coal ironsmelter
-        goodSettings[13] = 10; //coal mint
-
-        goodSettings[14] = 10; //wood sawmill
-        goodSettings[15] = 10; //wood charburner
-
-        goodSettings[16] = 10; //boards new buildings
-        goodSettings[17] = 4; //boards metalworks
-        goodSettings[18] = 2; //boards shipyard
-
-        goodSettings[19] = 10; //water bakery
-        goodSettings[20] = 10; //water brewery
-        goodSettings[21] = 10; //water pigfarm
-        goodSettings[22] = 10; //water donkeybreeder
-        aii->SetDistribution(goodSettings);
-
-    }
+	}
 
     if ((gf + (playerid * 11)) % 3 == 0) //try to complete a job on the list
     {
@@ -303,13 +263,14 @@ void AIPlayerJH::RunGF(const unsigned gf)
         {
             aii->DestroyBuilding(tx, ty);
         }
-    }
+    }	
 }
 
 bool AIPlayerJH::TestDefeat()
-{
-    if (!aii->GetStorehouses().size())
+{		
+    if (initgfcomplete>=10 && !aii->GetStorehouses().size())
     {
+		//LOG.lprintf("ai defeated player %i \n",playerid);
         defeated = true;
         aii->Surrender();
         Chat(_("You win"));
@@ -2107,7 +2068,6 @@ bool AIPlayerJH::RemoveUnusedRoad(const noFlag* startFlag, unsigned char exclude
 
 unsigned AIPlayerJH::SoldierAvailable()
 {
-    std::list<AIJH::Coords> storeHousePoses = construction.GetStoreHousePositions();
     unsigned freeSoldiers = 0;
     for (std::list<nobBaseWarehouse*>::const_iterator it = aii->GetStorehouses().begin(); it != aii->GetStorehouses().end(); it++)
     {
@@ -2171,8 +2131,57 @@ void AIPlayerJH::InitStoreAndMilitarylists()
     {
         SetFarmedNodes((*it)->GetX(), (*it)->GetY(), true);
     }
-    if(aii->GetMilitaryBuildings().size() > 0 || aii->GetStorehouses().size() > 1)
-        Chat(_("AI'm back"));
+    //if(aii->GetMilitaryBuildings().size() > 0 || aii->GetStorehouses().size() > 1)
+    //    Chat(_("AI'm back"));
+}
+//set default start values for the ai for distribution & military settings
+void AIPlayerJH::InitMilitaryAndDistribution()
+{
+	// Set military settings to some nicer default values
+        std::vector<unsigned char> milSettings;
+        milSettings.resize(8);
+        milSettings[0] = 10;    //recruits 0-10
+        milSettings[1] = 5;     //defense 0-5
+        milSettings[2] = 4;     //defenders 0-5
+        milSettings[3] = 5;     //attackers 0-5
+        milSettings[4] = 0;     //inland buildings (0 bar) 0-8
+        milSettings[5] = 8;     //center buildings (1 bar) 0-8
+        milSettings[6] = 8;     //harbor buildings (? bar) 0-8
+        milSettings[7] = 8;     //border buildings (2 bar) 0-8
+        aii->SetMilitarySettings(milSettings);
+        //set good distribution settings
+        std::vector<unsigned char> goodSettings;
+        goodSettings.resize(23);
+        goodSettings[0] = 10; //food granite
+        goodSettings[1] = 10; //food coal
+        goodSettings[2] = 10; //food iron
+        goodSettings[3] = 10; //food gold
+
+        goodSettings[4] = 10; //grain mill
+        goodSettings[5] = 10; //grain pigfarm
+        goodSettings[6] = 10; //grain donkeybreeder
+        goodSettings[7] = 10; //grain brewery
+        goodSettings[8] = 10; //grain charburner
+
+        goodSettings[9] = 10; //iron armory
+        goodSettings[10] = 10; //iron metalworks
+
+        goodSettings[11] = 10; //coal armory
+        goodSettings[12] = 10; //coal ironsmelter
+        goodSettings[13] = 10; //coal mint
+
+        goodSettings[14] = 10; //wood sawmill
+        goodSettings[15] = 10; //wood charburner
+
+        goodSettings[16] = 10; //boards new buildings
+        goodSettings[17] = 4; //boards metalworks
+        goodSettings[18] = 2; //boards shipyard
+
+        goodSettings[19] = 10; //water bakery
+        goodSettings[20] = 10; //water brewery
+        goodSettings[21] = 10; //water pigfarm
+        goodSettings[22] = 10; //water donkeybreeder
+        aii->SetDistribution(goodSettings);
 }
 
 bool AIPlayerJH::ValidTreeinRange(MapCoord x, MapCoord y)

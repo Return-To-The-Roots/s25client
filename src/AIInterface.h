@@ -85,6 +85,8 @@ class AIInterface
 
         unsigned char GetPlayerID() const { return playerID; }
 
+		bool IsDefeated() const {return player->isDefeated();}
+
         /// Returns a specific object from a position on the map (const version)
         template<typename T> const T* GetSpecObj(MapCoord x, MapCoord y) const { return gwb->GetSpecObj<T>(x, y); }
 

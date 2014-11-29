@@ -1,4 +1,4 @@
-// $Id: AIConstruction.h 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: AIConstruction.h 9499 2014-11-29 10:43:47Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -96,12 +96,12 @@ class AIConstruction
 
         bool OtherStoreInRadius(MapCoord& x, MapCoord& y, unsigned radius);
 
-        void AddStoreHouse(MapCoord x, MapCoord y) { storeHouses.push_back(AIJH::Coords(x, y)); }
-        void AddStoreHouseFront(MapCoord x, MapCoord y) {storeHouses.push_front(AIJH::Coords(x, y));}
+        //void AddStoreHouse(MapCoord x, MapCoord y) { storeHouses.push_back(AIJH::Coords(x, y)); }
+        //void AddStoreHouseFront(MapCoord x, MapCoord y) {storeHouses.push_front(AIJH::Coords(x, y));}
 
         noFlag* FindTargetStoreHouseFlag(MapCoord x, MapCoord y);
 
-        std::list<AIJH::Coords> &GetStoreHousePositions() { return storeHouses; }
+        //std::list<AIJH::Coords> &GetStoreHousePositions() { return storeHouses; }
 
     private:
         /// Contains how many buildings of every type is wanted
@@ -119,7 +119,7 @@ class AIConstruction
         /// Number of buildings and building sites of this player (refreshed by RefreshBuildingCount())
         BuildingCount buildingCounts;
 
-        std::list<AIJH::Coords> storeHouses;
+        //std::list<AIJH::Coords> storeHouses;
 
         unsigned char playerID;
 };
