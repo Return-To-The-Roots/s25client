@@ -1,4 +1,4 @@
-// $Id: noFire.cpp 9498 2014-11-29 10:42:51Z marcus $
+// $Id: noFire.cpp 9510 2014-11-29 10:51:36Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -43,7 +43,7 @@ noFire::noFire(const unsigned short x, const unsigned short y, const unsigned ch
     : noCoordBase(NOP_FIRE, x, y), size(size), was_sounding(false), last_sound(0), next_interval(0)
 {
     // Bestimmte Zeit lang brennen
-	const unsigned FIREDURATION[] = {3700, 2775, 1850, 925, 370};
+	const unsigned FIREDURATION[] = {3700, 2775, 1850, 925, 370, 5550, 7400};
     dead_event = em->AddEvent(this, FIREDURATION[GAMECLIENT.GetGGS().getSelection(ADDON_BURN_DURATION)]);
 }
 noFire::~noFire()
@@ -83,7 +83,7 @@ noFire::noFire(SerializedGameData* sgd, const unsigned obj_id) : noCoordBase(sgd
 void noFire::Draw(int x, int y)
 {
     //// Die ersten 2 Drittel (zeitlich) brennen, das 3. Drittel Schutt daliegen lassen
-	const unsigned FIREANIMATIONDURATION[] = {1000, 750, 500, 250, 100};
+	const unsigned FIREANIMATIONDURATION[] = {1000, 750, 500, 250, 100, 1500, 2000};
     unsigned id = GAMECLIENT.Interpolate(FIREANIMATIONDURATION[GAMECLIENT.GetGGS().getSelection(ADDON_BURN_DURATION)], dead_event);
 
     if(id < FIREANIMATIONDURATION[GAMECLIENT.GetGGS().getSelection(ADDON_BURN_DURATION)]*2/3)
