@@ -1,4 +1,4 @@
-// $Id: nofMiner.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: nofMiner.cpp 9501 2014-11-29 10:45:47Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -47,12 +47,13 @@ nofMiner::nofMiner(SerializedGameData* sgd, const unsigned obj_id) : nofWorkman(
 
 void nofMiner::DrawWorking(int x, int y)
 {
-    const signed char offsets[32] =
+    const signed char offsets[40] = //work animation offset in x,y granite, coal, iron, gold 
     {
-        5, 3, 5, 3, 5, 3, 5, 3,
-        4, 1, 4, 1, 4, 1, 4, 1,
-        9, 4, 9, 4, 9, 4, 9, 4,
-        10, 3, 10, 3, 10, 3, 10, 3
+        5, 3, 5, 3, 5, 3, 5, 3,		//africans
+        4, 1, 4, 1, 4, 1, 4, 1,		//japanese
+        9, 4, 9, 4, 9, 4, 9, 4,		//romans
+        10, 3, 10, 3, 10, 3, 10, 3, //vikings
+        8, 3, 8, 3, 8, 3, 8, 3		//babylonians
     };
 
     unsigned now_id = GAMECLIENT.Interpolate(160, current_ev);
