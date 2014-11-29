@@ -1,4 +1,4 @@
-// $Id: MilitaryConsts.h 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: MilitaryConsts.h 9506 2014-11-29 10:49:13Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -75,7 +75,7 @@ const signed char TROOPS_FLAGS[NATION_COUNT][4][2] =
     {{ -9, -49}, {14, -59}, {16, -63}, {0, -44}},
     {{ -24, -36}, {9, -62}, { -2, -80}, {23, -75}},
     {{ -5, -50}, { -5, -51}, { -9, -74}, { -12, -58}},
-    {{ -30, -47}, { -10, -60}, {16, -71}, { -46, -64}}
+    {{ -22, -37}, { -2, -51}, {20, -70}, { -46, -64}}
 };
 
 /// Anzahl an Militäreinstellungen
@@ -97,7 +97,7 @@ const unsigned MILITARY_SETTINGS_SCALE[MILITARY_SETTINGS_COUNT] =
 // Besatzungsflaggen für die HQs
 const signed char TROOPS_FLAGS_HQ[NATION_COUNT][2] =
 {
-    { -12, -102}, { -19, -94}, { -18, -112}, {20, -54}, { -34, -81}
+    { -12, -102}, { -19, -94}, { -18, -112}, {20, -54}, { -33, -81}
 };
 
 /// Grenzflaggen (4 Völker x 4 GröÃen x 2 X+Y) - ab 3162
@@ -107,7 +107,7 @@ const signed char BORDER_FLAGS[NATION_COUNT][4][2] =
     {{17, -45}, { -3, -49}, { -30, -25}, {22, -53}},
     {{28, -19}, {29, -18}, { -27, -12}, { -49, -62}},
     {{24, -19}, {24, -19}, {17, -52}, { -37, -32}},
-    {{8, -31}, {3, -42}, { -6, -59}, { -10, -61}}
+    {{8, -26}, {13, -36}, { -1, -59}, { -10, -61}}
 };
 
 
