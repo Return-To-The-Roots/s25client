@@ -1,4 +1,4 @@
-// $Id: nofArmorer.cpp 9431 2014-06-06 06:13:29Z FloSoft $
+// $Id: nofArmorer.cpp 9508 2014-11-29 10:50:30Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -90,6 +90,7 @@ unsigned short nofArmorer::GetCarryID() const
             case 1: return 58;
             case 2: return 57;
             case 3: return 59;
+			case 4: return 58; //babylonians use japanese shield carry-animation
             default: return 0;
         }
     }
