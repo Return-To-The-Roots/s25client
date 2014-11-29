@@ -1,4 +1,4 @@
-// $Id: nobUsual.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: nobUsual.cpp 9505 2014-11-29 10:48:29Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -224,7 +224,7 @@ void nobUsual::Draw(int x, int y)
         // X-Position der Esel
         const int DONKEY_X[NATION_COUNT][3] = {{13, 26, 39}, {3, 16, 30}, {2, 15, 29}, {7, 18, 30}, {3, 16, 30}};
         // Y-Position
-        const int DONKEY_Y[NATION_COUNT] = { -9, -17, -21, -17, -17};
+        const int DONKEY_Y[NATION_COUNT] = { -9, -17, -21, -17, -22};
         // Animations-IDS des Esels
         const unsigned char DONKEY_ANIMATION[] =
         { 0, 1, 2, 3, 4, 5, 6, 7, 7, 7, 6, 5, 4, 4, 5, 6, 5, 7, 6, 5, 4, 3, 2, 1, 0 };
@@ -260,7 +260,7 @@ void nobUsual::Draw(int x, int y)
             { { -16, 0}, { -37, 0}, { -32, 8}, { -16, 10}, { -22, 18} }, // Japaner
             { { -15, 0}, { -4, 9}, { -22, 10}, {2, 19}, { -15, 20} }, // Römer
             { {5, -5}, {25, -12}, { -7, 7}, { -23, 11}, { -10, 14} }, // Wikinger
-            { { -16, -5}, { -37, -5}, { -32, -13}, { -16, 5}, { -22, 13} } // Babylonier
+            { { -16, 5}, { -37, 5}, { -32, -1}, { -16, 15}, { -27, 18} } // Babylonier
         };
 
 
