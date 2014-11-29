@@ -1,4 +1,4 @@
-// $Id: BuildingConsts.h 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: BuildingConsts.h 9500 2014-11-29 10:45:24Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -333,7 +333,7 @@ const SmokeConst BUILDING_SMOKE_CONSTS[NATION_COUNT][30] =
         {2, -18, -42}, // BLD_BREWERY
         {1, -23, -45}, // BLD_ARMORY
         {0, 0, 0}, // BLD_METALWORKS
-        {2, -27, -41}, // BLD_IRONSMELTER
+        {2, -23, -36}, // BLD_IRONSMELTER
         {0, 0, 0}, // BLD_CHARBURNER
         {0, 0, 0}, // BLD_PIGFARM
         {0, 0, 0}, // BLD_STOREHOUSE
