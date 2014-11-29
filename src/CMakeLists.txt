@@ -1,5 +1,5 @@
 ################################################################################
-### $Id: CMakeLists.txt 9484 2014-07-23 07:07:02Z FloSoft $
+### $Id: CMakeLists.txt 9497 2014-11-29 10:41:59Z marcus $
 ################################################################################
 
 INCLUDE(FindBZip2)
@@ -325,6 +325,7 @@ SET(SOURCES_OTHER
 										AddonMilitaryAid.h
 										AddonRefundOnEmergency.h
 										AddonShipSpeed.h
+										AddonMoreAnimals.h
 										const_addons.h
 	win32_nanosleep.cpp                 win32_nanosleep.h
 	Debug.cpp                           Debug.h

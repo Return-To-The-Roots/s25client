@@ -1,4 +1,4 @@
-// $Id: noTree.cpp 9402 2014-05-10 06:54:13Z FloSoft $
+// $Id: noTree.cpp 9497 2014-11-29 10:41:59Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -61,8 +61,9 @@ noTree::noTree(const unsigned short x, const unsigned short y, const unsigned ch
     // neuer Baum, neue Instanz
     ++INSTANCE_COUNTER;
 
-    // Jeder 80. Baum produziert Tiere, aber keine Palmen und Ananas!
-    produce_animals = (type < 3 || type > 5) && (INSTANCE_COUNTER % 20 == 0);
+    // Jeder 20. Baum produziert Tiere, aber keine Palmen und Ananas!
+	const unsigned TREESPERANIMALSPAWN[] = {20, 13, 10, 6, 4, 2};
+    produce_animals = (type < 3 || type > 5) && (INSTANCE_COUNTER % TREESPERANIMALSPAWN[GAMECLIENT.GetGGS().getSelection(ADDON_MORE_ANIMALS)] == 0);
 
     // Falls das der Fall ist, dann wollen wir doch gleich mal eins produzieren
     if(produce_animals)
