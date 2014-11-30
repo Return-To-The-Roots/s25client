@@ -1,4 +1,4 @@
-// $Id: noMovable.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: noMovable.cpp 9518 2014-11-30 09:22:47Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -68,8 +68,23 @@ noMovable::noMovable(SerializedGameData* sgd, const unsigned obj_id) : noCoordBa
 void noMovable::Walk()
 {
     moving = false;
-
+	
+	if ((dir != 1) && (dir != 2))
+	{
+		gwg->RemoveFigure(this, x, y);
+		
+		gwg->GetPointA(x, y, dir);
+		
+		gwg->AddFigure(this, x, y);
+	} else
+	{
+		gwg->GetPointA(x, y, dir);
+	}
+/*
     int tx = x, ty = y;
+    
+            inline void GetPointA(MapCoord& x, MapCoord& y, unsigned dir) const {x = GetXA(x, y, dir); y = GetYA(x, y, dir);}
+    
     x = gwg->GetXA(tx, ty, dir);
     y = gwg->GetYA(tx, ty, dir);
 
@@ -80,7 +95,7 @@ void noMovable::Walk()
 
     // und an der anderen Stelle wieder hinzufgen
     if(dir != 1 && dir != 2)
-        gwg->AddFigure(this, x, y);
+        gwg->AddFigure(this, x, y);*/
 }
 
 void noMovable::StartMoving(const unsigned char dir, unsigned gf_length)

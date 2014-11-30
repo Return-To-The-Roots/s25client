@@ -1,4 +1,4 @@
-// $Id: TerrainRenderer.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: TerrainRenderer.cpp 9518 2014-11-30 09:22:47Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -89,8 +89,8 @@ float TerrainRenderer::GetTerrainXAround(int x,  int y, const unsigned dir)
 
     GetPointAround(x, y, dir);
 
-    int xo, yo;
-    ConvertCoords(x, y, tx, ty, &xo, &yo);
+    int xo;
+    ConvertCoords(x, y, tx, ty, &xo, NULL);
 
     return GetTerrainX(tx, ty) + xo;
 }
@@ -101,8 +101,8 @@ float TerrainRenderer::GetTerrainYAround(int x,  int y, const unsigned dir)
 
     GetPointAround(x, y, dir);
 
-    int xo, yo;
-    ConvertCoords(x, y, tx, ty, &xo, &yo);
+    int yo;
+    ConvertCoords(x, y, tx, ty, NULL, &yo);
 
     return GetTerrainY(tx, ty) + yo;
 }
@@ -113,8 +113,8 @@ float TerrainRenderer::GetBXAround(int x, int y, const unsigned char triangle, c
 
     GetPointAround(x, y, dir);
 
-    int xo, yo;
-    ConvertCoords(x, y, tx, ty, &xo, &yo);
+    int xo;
+    ConvertCoords(x, y, tx, ty, &xo, NULL);
 
     return GetBX(tx, ty, triangle) + xo;
 }
@@ -125,8 +125,8 @@ float TerrainRenderer::GetBYAround(int x, int y, const unsigned char triangle, c
 
     GetPointAround(x, y, dir);
 
-    int xo, yo;
-    ConvertCoords(x, y, tx, ty, &xo, &yo);
+    int yo;
+    ConvertCoords(x, y, tx, ty, NULL, &yo);
 
     return GetBY(tx, ty, triangle) + yo;
 }
@@ -205,7 +205,6 @@ void TerrainRenderer::UpdateBorderVertex(const MapCoord x, const MapCoord y, con
     GetVertex(x, y).border[1].pos.x = ( GetTerrainXAround(x, y, 3) + GetTerrainX(x, y) + GetTerrainXAround(x, y, 4) ) / 3.0f;
     GetVertex(x, y).border[1].pos.y = ( GetTerrainYAround(x, y, 3) + GetTerrainY(x, y) + GetTerrainYAround(x, y, 4) ) / 3.0f;
     GetVertex(x, y).border[1].color = ( GetColor(gwv->GetXA(x, y, 3), gwv->GetYA(x, y, 3)) + GetColor(x, y) + GetColor(gwv->GetXA(x, y, 4), gwv->GetYA(x, y, 4)) ) / 3.0f;
-
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -929,30 +928,29 @@ void TerrainRenderer::Draw(GameWorldView* gwv, unsigned int* water)
  */
 void TerrainRenderer::ConvertCoords(int x, int y, unsigned short& x_out, unsigned short& y_out, int* xo, int* yo) const
 {
-    bool mx = false, my = false;
-
-    while(x < 0)
-    {
-        x += width;
-        mx = true;
-    }
-
-    while(y < 0)
-    {
-        y += height;
-        my = true;
-    }
-
-    if(xo)
-        *xo = (mx ? (x / width) * TR_W - width * TR_W : (x / width) * TR_W * width );
-    if(yo)
-        *yo = (my ? (y / height) * TR_H - height * TR_H : (y / height) * TR_H * height);
-
-    x %= width;
-    y %= height;
-
-    x_out = static_cast<unsigned short>(x);
-    y_out = static_cast<unsigned short>(y);
+	if (x < 0)
+	{
+	    if (xo)
+	    	*xo = -TR_W * width;
+		x_out = static_cast<unsigned short>(width + (x % width));
+	} else
+	{
+	    if (xo)
+	    	*xo = (x / width) * (TR_W * width);
+		x_out = static_cast<unsigned short>(x % width);
+	}
+	
+	if (y < 0)
+	{
+	    if (yo)
+	    	*yo = -TR_H * height;
+		y_out = static_cast<unsigned short>(height + (y % height));
+	} else
+	{
+	    if (yo)
+	    	*yo = (y / height) * (TR_H * height);
+		y_out = static_cast<unsigned short>(y % height);
+	}
 }
 
 struct GL_T2F_C3F_V3F_Struct

@@ -1,4 +1,4 @@
-// $Id: GameWorldBase.cpp 9507 2014-11-29 10:49:31Z marcus $
+// $Id: GameWorldBase.cpp 9518 2014-11-30 09:22:47Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -371,11 +371,10 @@ bool GameWorldBase::RoadAvailable(const bool boat_road, const int x, const int y
         // Other roads at this point?
         if(GetPointRoad(x, y, z, visual))
         {
-            (void) GetPointRoad(x, y, z, visual);
+//            (void) GetPointRoad(x, y, z, visual);
             return false;
         }
     }
-
 
     for(unsigned char i = 3; i < 6; ++i)
     {

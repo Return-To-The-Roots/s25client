@@ -1,4 +1,4 @@
-// $Id: Pathfinding.cpp 9372 2014-04-28 15:25:24Z FloSoft $
+// $Id: Pathfinding.cpp 9518 2014-11-30 09:22:47Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -670,11 +670,12 @@ bool IsPointOK_RoadPath(const GameWorldBase& gwb, const MapCoord x, const MapCoo
 {
     const Param_RoadPath* prp = static_cast<const Param_RoadPath*>(param);
 
-    // Feld bebaubar?
-    if(!gwb.RoadAvailable(prp->boat_road, x, y, dir))
-        return false;
     // Auch auf unserem Territorium?
     if(!gwb.IsPlayerTerritory(x, y))
+        return false;
+
+    // Feld bebaubar?
+    if(!gwb.RoadAvailable(prp->boat_road, x, y, dir))
         return false;
 
     return true;
