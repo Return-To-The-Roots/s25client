@@ -1,4 +1,4 @@
-// $Id: noAnimal.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: noAnimal.cpp 9519 2014-11-30 22:19:55Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -275,7 +275,8 @@ unsigned char noAnimal::FindDir()
 
         unsigned char t1 = gwg->GetWalkingTerrain1(x, y, d), t2 = gwg->GetWalkingTerrain2(x, y, d);
 
-        // Nicht über den Kartenrand hinauswandern!
+		/* Animals are people, too. They should be allowed to cross borders as well!
+		
         if(x == 0)
         {
             if(d == 5 || d == 0 || d == 1)
@@ -296,6 +297,7 @@ unsigned char noAnimal::FindDir()
             if(d == 4 || d == 5)
                 continue;
         }
+        */
 
         if(species == SPEC_DUCK)
         {
@@ -338,7 +340,6 @@ unsigned char noAnimal::FindDir()
 
             if(!roads)
                 return d;
-
         }
     }
 
