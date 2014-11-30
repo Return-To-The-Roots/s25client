@@ -35,7 +35,7 @@ class AddonBurnDuration : public AddonList
         AddonBurnDuration() : AddonList(ADDON_BURN_DURATION,
                                                  ADDONGROUP_GAMEPLAY,
                                                  gettext_noop("Set duration fires burn"),
-                                                 gettext_noop("adjusts how long a building will for when it is destroyed.\n\n"
+                                                 gettext_noop("adjusts how long a building will burn for when it is destroyed.\n\n"
                                                          "Possible values are:\n"
 														 "Default\n"
 														 "Reduced by 25%\n"
