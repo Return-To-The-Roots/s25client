@@ -1,4 +1,4 @@
-// $Id: nobBaseWarehouse.cpp 9386 2014-05-01 15:38:11Z FloSoft $
+// $Id: nobBaseWarehouse.cpp 9520 2014-11-30 22:45:47Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -871,9 +871,12 @@ void nobBaseWarehouse::CancelWare(Ware* ware)
 /// Bestellte Figur, die sich noch inder Warteschlange befindet, kommt nicht mehr und will rausgehauen werden
 void nobBaseWarehouse::CancelFigure(noFigure* figure)
 {
+	std::list<noFigure *>::iterator it = std::find(leave_house.begin(), leave_house.end(), figure);
+	
     // Figure aus den Waiting-Wares entfernen
-    leave_house.erase(std::find(leave_house.begin(), leave_house.end(), figure));
-    //leave_house.erase(figure);
+    if (it != leave_house.end())
+		leave_house.erase(it);
+	
     AddFigure(figure, false);
 }
 
