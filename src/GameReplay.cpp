@@ -1,4 +1,4 @@
-// $Id: GameReplay.cpp 9509 2014-11-29 10:51:10Z marcus $
+// $Id: GameReplay.cpp 9517 2014-11-30 09:21:25Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -138,7 +138,7 @@ bool Replay::WriteHeader(const std::string& filename)
     // Create File for pathfinding results
     if(pathfinding_results)
         pf_file.Open((filename + "_res").c_str(), OFM_WRITE);
-	
+
     return true;
 }
 
@@ -147,7 +147,7 @@ bool Replay::WriteHeader(const std::string& filename)
  *
  *  @author OLiver
  */
-bool Replay::LoadHeader(const std::string& filename, const bool load_extended_header, BinaryFile &filecopy)
+bool Replay::LoadHeader(const std::string& filename, const bool load_extended_header)
 {
     this->filename = filename;
     // Datei öffnen
@@ -212,7 +212,6 @@ bool Replay::LoadHeader(const std::string& filename, const bool load_extended_he
         //  file.Seek(1, SEEK_CUR);
     }
 
-	// pathfinding results are apparently buggy and not in use according to the comment on bool GameClient::ArePathfindingResultsAvailable() const
     if(load_extended_header)
     {
         // Try to open precalculated pathfinding results
@@ -222,7 +221,7 @@ bool Replay::LoadHeader(const std::string& filename, const bool load_extended_he
             pf_file.Open((filename + "_res").c_str(), OFM_WRITE);
     }
 
-	filecopy=file;
+
     return true;
 }
 
@@ -338,7 +337,7 @@ void Replay::AddPathfindingResult(const unsigned char data, const unsigned* cons
  *
  *  @author OLiver
  */
-bool Replay::ReadGF(unsigned* gf,BinaryFile &replayfile)
+bool Replay::ReadGF(unsigned* gf)
 {
     // bei ungerader 4er position aufrunden
     //while(file.Tell() % 4 && !file.EndOfFile())
@@ -349,7 +348,6 @@ bool Replay::ReadGF(unsigned* gf,BinaryFile &replayfile)
     //  return false;
 
     // GF-Anzahl
-	file=replayfile;
     *gf = file.ReadUnsignedInt();
 
     // Replaydatei zu Ende?
@@ -365,10 +363,9 @@ bool Replay::ReadGF(unsigned* gf,BinaryFile &replayfile)
  *
  *  @author OLiver
  */
-Replay::ReplayCommand Replay::ReadRCType(BinaryFile &replayfile)
+Replay::ReplayCommand Replay::ReadRCType()
 {
     // Type auslesen
-	file=replayfile;
     return ReplayCommand(file.ReadUnsignedChar());
 }
 
@@ -377,9 +374,8 @@ Replay::ReplayCommand Replay::ReadRCType(BinaryFile &replayfile)
  *
  *  @author OLiver
  */
-void Replay::ReadChatCommand(unsigned char* player, unsigned char*   dest, std::string& str,BinaryFile &replayfile)
+void Replay::ReadChatCommand(unsigned char* player, unsigned char*   dest, std::string& str)
 {
-	file=replayfile;
     *player = file.ReadUnsignedChar();
     *dest = file.ReadUnsignedChar();
     file.ReadLongString(str);
@@ -390,9 +386,8 @@ void Replay::ReadChatCommand(unsigned char* player, unsigned char*   dest, std::
  *
  *  @author OLiver
  */
-void Replay::ReadGameCommand(unsigned short* length, unsigned char** data,BinaryFile &replayfile)
+void Replay::ReadGameCommand(unsigned short* length, unsigned char** data)
 {
-	file=replayfile;
     *length = file.ReadUnsignedShort();
     *data = new unsigned char[*length];
     file.ReadRawData(*data, *length);
@@ -400,7 +395,6 @@ void Replay::ReadGameCommand(unsigned short* length, unsigned char** data,Binary
 
 bool Replay::ReadPathfindingResult(unsigned char* data, unsigned* length, Point<MapCoord> * next_harbor)
 {
-	assert(false);
     if(!pathfinding_results)
         return false;
 

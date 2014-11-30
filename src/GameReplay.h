@@ -1,4 +1,4 @@
-// $Id: GameReplay.h 9509 2014-11-29 10:51:10Z marcus $
+// $Id: GameReplay.h 9517 2014-11-30 09:21:25Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -54,7 +54,7 @@ class Replay : public SavedFile
         /// Beginnt die Save-Datei und schreibt den Header
         bool WriteHeader(const std::string& filename);
         /// Lädt den Header
-        bool LoadHeader(const std::string& filename, const bool load_extended_header,BinaryFile &filecopy);
+        bool LoadHeader(const std::string& filename, const bool load_extended_header);
 
         /// Fügt ein Chat-Kommando hinzu (schreibt)
         void AddChatCommand(const unsigned gf, const unsigned char player, const unsigned char dest, const std::string& str);
@@ -64,12 +64,12 @@ class Replay : public SavedFile
         void AddPathfindingResult(const unsigned char data, const unsigned* const length, const Point<MapCoord> * const next_harbor);
 
         /// Liest RC-Type aus, liefert false, wenn das Replay zu Ende ist
-        bool ReadGF(unsigned* gf,BinaryFile &replayfile);
+        bool ReadGF(unsigned* gf);
         /// RC-Type aus, liefert false
-        ReplayCommand ReadRCType(BinaryFile &replayfile);
+        ReplayCommand ReadRCType();
         /// Liest ein Chat-Command aus
-        void ReadChatCommand(unsigned char* player, unsigned char*   dest, std::string& str,BinaryFile &replayfile);
-        void ReadGameCommand(unsigned short* length, unsigned char** data,BinaryFile &replayfile);
+        void ReadChatCommand(unsigned char* player, unsigned char*   dest, std::string& str);
+        void ReadGameCommand(unsigned short* length, unsigned char** data);
         bool ReadPathfindingResult(unsigned char* data, unsigned* length, Point<MapCoord> * next_harbor);
 
         /// Aktualisiert den End-GF, schreibt ihn in die Replaydatei (nur beim Spielen bzw. Schreiben verwenden!)
