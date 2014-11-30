@@ -1,4 +1,4 @@
-// $Id: noAnimal.cpp 9519 2014-11-30 22:19:55Z marcus $
+// $Id: noAnimal.cpp 9521 2014-11-30 23:31:02Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -273,7 +273,7 @@ unsigned char noAnimal::FindDir()
     {
         unsigned char d = (dtmp + doffset) % 6;
 
-        unsigned char t1 = gwg->GetWalkingTerrain1(x, y, d), t2 = gwg->GetWalkingTerrain2(x, y, d);
+        unsigned char t1 = gwg->GetWalkingTerrain1(x, y, d);
 
 		/* Animals are people, too. They should be allowed to cross borders as well!
 		
@@ -302,6 +302,8 @@ unsigned char noAnimal::FindDir()
         if(species == SPEC_DUCK)
         {
             // Enten schwimmen nur auf dem Wasser --> muss daher Wasser sein (ID 14 = Wasser)
+            unsigned char t2 = gwg->GetWalkingTerrain2(x, y, d);
+            
             if(t1 == 14 &&
                     t2 == 14)
                 return d;
@@ -309,6 +311,8 @@ unsigned char noAnimal::FindDir()
         else if(species == SPEC_POLARBEAR)
         {
             // Polarbären laufen nur auf Schnee rum
+            unsigned char t2 = gwg->GetWalkingTerrain2(x, y, d);
+
             if(t1 == 0 ||
                     t2 == 0)
                 return d;
@@ -335,7 +339,10 @@ unsigned char noAnimal::FindDir()
             for(unsigned char d2 = 0; d2 < 6; ++d2)
             {
                 if(gwg->GetPointRoad(dst_x, dst_y, d2))
+                {
                     roads = true;
+                    break;
+                }
             }
 
             if(!roads)
