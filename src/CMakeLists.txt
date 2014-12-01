@@ -1,5 +1,5 @@
 ################################################################################
-### $Id: CMakeLists.txt 9498 2014-11-29 10:42:51Z marcus $
+### $Id: CMakeLists.txt 9526 2014-12-01 17:33:10Z marcus $
 ################################################################################
 
 INCLUDE(FindBZip2)
@@ -327,6 +327,7 @@ SET(SOURCES_OTHER
 										AddonShipSpeed.h
 										AddonMoreAnimals.h
 										AddonBurnDuration.h
+										AddonNoAlliedPush.h
 										const_addons.h
 	win32_nanosleep.cpp                 win32_nanosleep.h
 	Debug.cpp                           Debug.h

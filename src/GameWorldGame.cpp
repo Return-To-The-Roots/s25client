@@ -1,4 +1,4 @@
-// $Id: GameWorldGame.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: GameWorldGame.cpp 9526 2014-12-01 17:33:10Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -592,9 +592,9 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding* const building, const 
             MapCoord tx, ty;
             ConvertCoords(x, y, &tx, &ty);
             // Wenn der Punkt den Besitz geändert hat
-            if((prev_player = GetNode(tx, ty).owner) != (player = tr.GetOwner(x, y)))
+			if((prev_player = GetNode(tx, ty).owner) != (player = tr.GetOwner(x, y)) && (!newBuilt || prev_player==0 || !GetPlayer(prev_player-1)->IsAlly(player-1) || !GAMECLIENT.GetGGS().isEnabled(ADDON_NO_ALLIED_PUSH)))
             {
-                // Dann entsprechend neuen Besitzer setzen
+                // Dann entsprechend neuen Besitzer setzen - unless the players are allied and the No_allied_push addon is active!
                 GetNode(tx, ty).owner = player;
                 owner_changed[(x2 - x1) * (y - y1) + (x - x1)] = true;
                 if (player != 0)
