@@ -1,4 +1,4 @@
-// $Id: GameClient.cpp 9523 2014-12-01 09:47:54Z marcus $
+// $Id: GameClient.cpp 9524 2014-12-01 14:06:14Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1680,8 +1680,6 @@ unsigned GameClient::StartReplay(const std::string& path, GameWorldViewer*& gwv)
     if(!replayinfo.replay.LoadHeader(path, true))
         return false;
 
-    replayinfo.replay.ReadGF(&replayinfo.next_gf);
-
     // NWF-Länge
     framesinfo.nwf_length = replayinfo.replay.nwf_length;
 
@@ -1752,6 +1750,8 @@ unsigned GameClient::StartReplay(const std::string& path, GameWorldViewer*& gwv)
     replayinfo.end = false;
 
     StartGame(replayinfo.replay.random_init);
+
+    replayinfo.replay.ReadGF(&replayinfo.next_gf);
 
 	state = CS_GAME; // zu gamestate wechseln
     RealStart();

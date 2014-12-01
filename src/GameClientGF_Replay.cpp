@@ -1,4 +1,4 @@
-// $Id: GameClientGF_Replay.cpp 9517 2014-11-30 09:21:25Z marcus $
+// $Id: GameClientGF_Replay.cpp 9524 2014-12-01 14:06:14Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -95,7 +95,7 @@ void GameClient::ExecuteGameFrame_Replay()
 
                 // resync random generator, so replay "can't" be async.
                 // (of course it can, since we resynchronize only after each command, the command itself could be use multiple rand values)
-                RANDOM.ReplaySet(msg.checksum);
+                //RANDOM.ReplaySet(msg.checksum);
 
                 delete[] data;
             }
