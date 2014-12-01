@@ -1,4 +1,4 @@
-// $Id: GameWorldGame.cpp 9528 2014-12-01 17:35:29Z marcus $
+// $Id: GameWorldGame.cpp 9529 2014-12-01 17:36:21Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -905,20 +905,21 @@ void GameWorldGame::DestroyPlayerRests(const MapCoord x, const MapCoord y, const
         // Wurde das Objekt auch nicht vom Gegner übernommen?
         if(static_cast<noRoadNode*>(no)->GetPlayer() + 1 != new_player)
         {
-			//maybe buildings that push territory should not be destroyed right now?- can happen with improved alliances addon so allow those buildings & their flag to survive.
+			//maybe buildings that push territory should not be destroyed right now?- can happen with improved alliances addon or in rare cases even without the addon so allow those buildings & their flag to survive.
 			if(!allowdestructionofmilbuildings)
 			{
-				//LOG.lprintf("destroy player rests x,%i y,%i type,%i \n",x,y,no->GetType());
-				if(no->GetGOT() == GOT_NOB_HQ || no->GetGOT() == GOT_NOB_HARBORBUILDING || (no->GetGOT() == GOT_NOB_MILITARY && !GetSpecObj<nobMilitary>(x,y)->IsNewBuilt()))
+				if(no->GetGOT() == GOT_NOB_HQ || no->GetGOT() == GOT_NOB_HARBORBUILDING || (no->GetGOT() == GOT_NOB_MILITARY && !GetSpecObj<nobMilitary>(x,y)->IsNewBuilt()) || (no->GetType()==NOP_BUILDINGSITE && GetSpecObj<noBuildingSite>(x,y)->IsHarborBuildingSiteFromSea()))
 				{
+					//LOG.lprintf("DestroyPlayerRests of hq,military,harbor or colony-harbor in construction stopped at x,%i y,%i type,%i \n",x,y,no->GetType());
 					return;
 				}
 				//flag of such a building?				
 				if(no->GetType()==NOP_FLAG)
 				{
 					noBase* no2=GetNO(GetXA(x,y,1),GetYA(x,y,1));
-					if(no2->GetGOT() == GOT_NOB_HQ || no2->GetGOT() == GOT_NOB_HARBORBUILDING || (no2->GetGOT() == GOT_NOB_MILITARY && !GetSpecObj<nobMilitary>(GetXA(x,y,1),GetYA(x,y,1))->IsNewBuilt()))
+					if(no2->GetGOT() == GOT_NOB_HQ || no2->GetGOT() == GOT_NOB_HARBORBUILDING || (no2->GetGOT() == GOT_NOB_MILITARY && !GetSpecObj<nobMilitary>(GetXA(x,y,1),GetYA(x,y,1))->IsNewBuilt()) || (no2->GetType()==NOP_BUILDINGSITE && GetSpecObj<noBuildingSite>(GetXA(x,y,1),GetYA(x,y,1))->IsHarborBuildingSiteFromSea()))
 					{
+						//LOG.lprintf("DestroyPlayerRests of a flag of a hq,military,harbor or colony-harbor in construction stopped at x,%i y,%i type,%i \n",GetXA(x,y,1),GetYA(x,y,1),no2->GetType());
 						return;
 					}
 				}
