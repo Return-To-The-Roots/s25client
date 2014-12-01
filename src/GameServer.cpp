@@ -1,4 +1,4 @@
-// $Id: GameServer.cpp 9384 2014-05-01 14:53:50Z FloSoft $
+// $Id: GameServer.cpp 9525 2014-12-01 17:26:21Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -933,7 +933,7 @@ void GameServer::ClientWatchDog()
                         unsigned char player_switch_old_id = 255, player_switch_new_id = 255;
 
                         // Checksumme des ersten Spielers als Richtwert
-                        GameServerPlayer* firstPlayer = NULL;
+                        GameServerPlayer* firstHumanPlayer = NULL;
 
                         for(client = 0; client < serverconfig.playercount; ++client)
                         {
@@ -945,9 +945,9 @@ void GameServer::ClientWatchDog()
                                 player->NotLagging();
 
                                 // Checksumme des ersten Spielers als Richtwert
-                                if(firstPlayer == NULL)
+                                if ((firstHumanPlayer == NULL) && (player->ps == PS_OCCUPIED))
                                 {
-                                    firstPlayer = player;
+                                    firstHumanPlayer = player;
                                 }
 
                                 // Checksumme merken, da die Nachricht dann wieder entfernt wird
@@ -972,12 +972,17 @@ void GameServer::ClientWatchDog()
                                 //LOG.lprintf("%d = %d - %d\n", framesinfo.nr, checksum, Random::inst().GetCurrentRandomValue());
 
                                 // Checksummen nicht gleich?
-                                if (    (player->checksum != firstPlayer->checksum) ||
-                                        (player->obj_cnt != firstPlayer->obj_cnt) ||
-                                        (player->obj_id_cnt != firstPlayer->obj_id_cnt))
+                                if (
+                                        (firstHumanPlayer != NULL) &&
+                                        (player->ps == PS_OCCUPIED) &&
+	                                    (
+	                                		(player->checksum != firstHumanPlayer->checksum) ||
+	                                        (player->obj_cnt != firstHumanPlayer->obj_cnt) ||
+    	                                    (player->obj_id_cnt != firstHumanPlayer->obj_id_cnt))
+    	                                )
                                 {
-                                    LOG.lprintf("%u = C%i:%i O:%u;%u I:%u:%u\n", framesinfo.nr, player->checksum, firstPlayer->checksum,
-                                                player->obj_cnt, firstPlayer->obj_cnt, player->obj_id_cnt, firstPlayer->obj_id_cnt);
+                                    LOG.lprintf("%u = C%i:%i O:%u;%u I:%u:%u\n", framesinfo.nr, player->checksum, firstHumanPlayer->checksum,
+                                                player->obj_cnt, firstHumanPlayer->obj_cnt, player->obj_id_cnt, firstHumanPlayer->obj_id_cnt);
 
                                     // Checksummenliste erzeugen
                                     std::vector<int> checksums;
@@ -992,10 +997,10 @@ void GameServer::ClientWatchDog()
                                         player->send_queue.push(new GameMessage_GetAsyncLog(client));
                                         player->send_queue.flush(&player->so);
 
-                                        async_player2 = firstPlayer->getPlayerID();
+                                        async_player2 = firstHumanPlayer->getPlayerID();
                                         async_player2_done = false;
-                                        firstPlayer->send_queue.push(new GameMessage_GetAsyncLog(firstPlayer->getPlayerID()));
-                                        firstPlayer->send_queue.flush(&firstPlayer->so);
+                                        firstHumanPlayer->send_queue.push(new GameMessage_GetAsyncLog(firstHumanPlayer->getPlayerID()));
+                                        firstHumanPlayer->send_queue.flush(&firstHumanPlayer->so);
                                     }
 
                                     // Async-Meldung rausgeben.
