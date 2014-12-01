@@ -1,4 +1,4 @@
-// $Id: GameWorldGame.cpp 9527 2014-12-01 17:34:30Z marcus $
+// $Id: GameWorldGame.cpp 9528 2014-12-01 17:35:29Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -531,7 +531,8 @@ void GameWorldGame::UpgradeRoad(const MapCoord x, const MapCoord y, const unsign
 
 void GameWorldGame::RecalcTerritory(const noBaseBuilding* const building, const unsigned short radius, const bool destroyed, const bool newBuilt)
 {
-	unsigned char ownerofdestroyedbuilding = GetNode(building->GetX(),building->GetY()).owner;
+	unsigned char owneroftriggerbuilding = GetNode(building->GetX(),building->GetY()).owner;
+	unsigned char new_owner_of_trigger_building;
 
     std::list<nobBaseMilitary*> buildings; // Liste von Militärgebäuden in der Nähe
 
@@ -586,18 +587,45 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding* const building, const 
     std::vector<int> sizeChanges(GAMECLIENT.GetPlayerCount());
     // Daten von der TR kopieren in die richtige Karte, dabei zus. Grenzen korrigieren und Objekte zerstören, falls
     // das Land davon jemanden anders nun gehört
+	
+    MapCoord tx, ty;	
+	new_owner_of_trigger_building=tr.GetOwner(building->GetX(),building->GetY());
+
     for(int y = y1; y < y2; ++y)
     {
         for(int x = x1; x < x2; ++x)
         {
             unsigned char prev_player, player;
-            MapCoord tx, ty;
             ConvertCoords(x, y, &tx, &ty);
 			
-			// Wenn der Punkt den Besitz geändert hat und das auch darf 
-			if((prev_player = GetNode(tx, ty).owner) != (player = tr.GetOwner(x, y)) && (!newBuilt || prev_player==0 || !GetPlayer(prev_player-1)->IsAlly(player-1) || !GAMECLIENT.GetGGS().isEnabled(ADDON_NO_ALLIED_PUSH)) && (!destroyed || ownerofdestroyedbuilding != player || !GAMECLIENT.GetGGS().isEnabled(ADDON_NO_ALLIED_PUSH)))
+			// Wenn der Punkt den Besitz geändert hat
+			if ((prev_player = GetNode(tx, ty).owner) != (player = tr.GetOwner(x, y)))
             {
-                // Dann entsprechend neuen Besitzer setzen - unless the players are allied and the No_allied_push addon is active!
+                // Dann entsprechend neuen Besitzer setzen - bei improved alliances addon noch paar extra bedingungen prüfen
+				if (GAMECLIENT.GetGGS().isEnabled(ADDON_NO_ALLIED_PUSH))
+				{
+					//rule 1: only take territory from an ally if that ally loses a building - special case: headquarter can take territory
+					if (prev_player>0 && player>0 && GetPlayer(prev_player-1)->IsAlly(player-1) && !(owneroftriggerbuilding==prev_player && !newBuilt) && !building->GetBuildingType()==BLD_HEADQUARTERS)
+					{
+						//LOG.lprintf("rule 1 \n");
+						owner_changed[(x2 - x1) * (y - y1) + (x - x1)] = false;
+						continue;
+					}
+					//rule 2: do not gain territory when you lose a building (captured or destroyed)
+					if (owneroftriggerbuilding==player && !newBuilt)
+					{
+						//LOG.lprintf("rule 2 \n");
+						owner_changed[(x2 - x1) * (y - y1) + (x - x1)] = false;
+						continue;
+					}
+					//rule 3: do not lose territory when you gain a building (newBuilt or capture)
+					if ((owneroftriggerbuilding==prev_player && prev_player>0 && newBuilt) || (new_owner_of_trigger_building==prev_player && !destroyed && !newBuilt))
+					{
+						//LOG.lprintf("rule 3 \n");
+						owner_changed[(x2 - x1) * (y - y1) + (x - x1)] = false;
+						continue;
+					}
+				}
                 GetNode(tx, ty).owner = player;
                 owner_changed[(x2 - x1) * (y - y1) + (x - x1)] = true;
                 if (player != 0)
