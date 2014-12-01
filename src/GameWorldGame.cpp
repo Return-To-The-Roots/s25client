@@ -1,4 +1,4 @@
-// $Id: GameWorldGame.cpp 9526 2014-12-01 17:33:10Z marcus $
+// $Id: GameWorldGame.cpp 9527 2014-12-01 17:34:30Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -531,6 +531,8 @@ void GameWorldGame::UpgradeRoad(const MapCoord x, const MapCoord y, const unsign
 
 void GameWorldGame::RecalcTerritory(const noBaseBuilding* const building, const unsigned short radius, const bool destroyed, const bool newBuilt)
 {
+	unsigned char ownerofdestroyedbuilding = GetNode(building->GetX(),building->GetY()).owner;
+
     std::list<nobBaseMilitary*> buildings; // Liste von Militärgebäuden in der Nähe
 
     // alle Militärgebäude in der Nähe abgrasen
@@ -591,8 +593,9 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding* const building, const 
             unsigned char prev_player, player;
             MapCoord tx, ty;
             ConvertCoords(x, y, &tx, &ty);
-            // Wenn der Punkt den Besitz geändert hat
-			if((prev_player = GetNode(tx, ty).owner) != (player = tr.GetOwner(x, y)) && (!newBuilt || prev_player==0 || !GetPlayer(prev_player-1)->IsAlly(player-1) || !GAMECLIENT.GetGGS().isEnabled(ADDON_NO_ALLIED_PUSH)))
+			
+			// Wenn der Punkt den Besitz geändert hat und das auch darf 
+			if((prev_player = GetNode(tx, ty).owner) != (player = tr.GetOwner(x, y)) && (!newBuilt || prev_player==0 || !GetPlayer(prev_player-1)->IsAlly(player-1) || !GAMECLIENT.GetGGS().isEnabled(ADDON_NO_ALLIED_PUSH)) && (!destroyed || ownerofdestroyedbuilding != player || !GAMECLIENT.GetGGS().isEnabled(ADDON_NO_ALLIED_PUSH)))
             {
                 // Dann entsprechend neuen Besitzer setzen - unless the players are allied and the No_allied_push addon is active!
                 GetNode(tx, ty).owner = player;
@@ -653,7 +656,7 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding* const building, const 
                 {
                     unsigned short ttx = GetXA(tx, ty, i), tty = GetYA(tx, ty, i);
 
-                    DestroyPlayerRests(ttx, tty, GetNode(tx, ty).owner, building);
+                    DestroyPlayerRests(ttx, tty, GetNode(tx, ty).owner, building,false);
 
                     // BQ neu berechnen
                     GetNode(ttx, tty).bq = CalcBQ(ttx, tty, GAMECLIENT.GetPlayerID());
@@ -863,7 +866,7 @@ bool GameWorldGame::TerritoryChange(const noBaseBuilding* const building, const 
     return true;
 }
 
-void GameWorldGame::DestroyPlayerRests(const MapCoord x, const MapCoord y, const unsigned char new_player, const noBaseBuilding* exception)
+void GameWorldGame::DestroyPlayerRests(const MapCoord x, const MapCoord y, const unsigned char new_player, const noBaseBuilding* exception, bool allowdestructionofmilbuildings)
 {
     noBase* no = GetNO(x, y);
 
@@ -874,6 +877,24 @@ void GameWorldGame::DestroyPlayerRests(const MapCoord x, const MapCoord y, const
         // Wurde das Objekt auch nicht vom Gegner übernommen?
         if(static_cast<noRoadNode*>(no)->GetPlayer() + 1 != new_player)
         {
+			//maybe buildings that push territory should not be destroyed right now?- can happen with improved alliances addon so allow those buildings & their flag to survive.
+			if(!allowdestructionofmilbuildings)
+			{
+				//LOG.lprintf("destroy player rests x,%i y,%i type,%i \n",x,y,no->GetType());
+				if(no->GetGOT() == GOT_NOB_HQ || no->GetGOT() == GOT_NOB_HARBORBUILDING || (no->GetGOT() == GOT_NOB_MILITARY && !GetSpecObj<nobMilitary>(x,y)->IsNewBuilt()))
+				{
+					return;
+				}
+				//flag of such a building?				
+				if(no->GetType()==NOP_FLAG)
+				{
+					noBase* no2=GetNO(GetXA(x,y,1),GetYA(x,y,1));
+					if(no2->GetGOT() == GOT_NOB_HQ || no2->GetGOT() == GOT_NOB_HARBORBUILDING || (no2->GetGOT() == GOT_NOB_MILITARY && !GetSpecObj<nobMilitary>(GetXA(x,y,1),GetYA(x,y,1))->IsNewBuilt()))
+					{
+						return;
+					}
+				}
+			}				
             // vorher Bescheid sagen
             if(no->GetType() == NOP_FLAG && no != (exception ? exception->GetFlag() : 0))
                 static_cast<noFlag*>(no)->DestroyAttachedBuilding();

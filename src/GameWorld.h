@@ -1,4 +1,4 @@
-// $Id: GameWorld.h 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: GameWorld.h 9527 2014-12-01 17:34:30Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -699,7 +699,7 @@ class GameWorldGame : public virtual GameWorldBase
         void AdjustNodes(const MapCoord x1, const MapCoord y1, const MapCoord x2, const MapCoord y2);
         void AdjustNodes2(const MapCoord x1, const MapCoord y1, const MapCoord x2, const MapCoord y2);
         /// ZerstÃ¶rt Spielerteile auf einem Punkt, wenn der Punkt dem Spieler nun nich mehr gehÃ¶rt
-        void DestroyPlayerRests(const MapCoord x, const MapCoord y, const unsigned char new_player, const noBaseBuilding* exception);
+        void DestroyPlayerRests(const MapCoord x, const MapCoord y, const unsigned char new_player, const noBaseBuilding* exception, bool allowdestructionofmilbuildings=true);
 
         /// Prüft, ob auf diesem Punkt Deko-Objekte liegen, die für den Wegbau entfernt werden kÃ¶nnen
         bool IsObjectionableForRoad(const MapCoord x, const MapCoord y);
