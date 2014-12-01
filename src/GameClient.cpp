@@ -1,4 +1,4 @@
-// $Id: GameClient.cpp 9522 2014-12-01 09:37:54Z marcus $
+// $Id: GameClient.cpp 9523 2014-12-01 09:47:54Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1170,6 +1170,35 @@ void GameClient::IncreaseSpeed()
 
     send_queue.push(new GameMessage_Server_Speed(gf_length));
 }
+
+void GameClient::IncreaseReplaySpeed()
+{
+	if (replay_mode)
+	{
+		if (framesinfo.gf_length > 10)
+		{
+			framesinfo.gf_length -= 10;
+		} else if (framesinfo.gf_length == 10)
+		{
+			framesinfo.gf_length = 1;
+		}
+	}
+}
+
+void GameClient::DecreaseReplaySpeed()
+{
+	if (replay_mode)
+	{
+		if (framesinfo.gf_length == 1)
+		{
+			framesinfo.gf_length = 10;
+		} else if (framesinfo.gf_length < 1000)
+		{
+			framesinfo.gf_length += 10;
+		}
+	}
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////
 /// NFC Done vom Server

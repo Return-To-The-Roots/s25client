@@ -1,4 +1,4 @@
-// $Id: GameClient.h 9517 2014-11-30 09:21:25Z marcus $
+// $Id: GameClient.h 9523 2014-12-01 09:47:54Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -120,8 +120,8 @@ class GameClient : public Singleton<GameClient>, public GameMessageInterface
         /// Lädt ein Replay und startet dementsprechend das Spiel (0 = alles OK, alles andere entsprechende Fehler-ID!)
         unsigned StartReplay(const std::string& path, GameWorldViewer*& gwv);
         /// Replay-Geschwindigkeit erhöhen/verringern
-        void IncreaseReplaySpeed() { if(replay_mode && framesinfo.gf_length > 10) framesinfo.gf_length -= 10; }
-        void DecreaseReplaySpeed() { if(replay_mode && framesinfo.gf_length < 1000) framesinfo.gf_length += 10; }
+        void IncreaseReplaySpeed();
+        void DecreaseReplaySpeed();
         void SetReplayPause(bool pause);
         void ToggleReplayPause() { SetReplayPause(!framesinfo.pause); }
         /// Schaltet FoW im Replaymodus ein/aus
