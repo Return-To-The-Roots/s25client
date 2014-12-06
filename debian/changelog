@@ -1,3 +1,188 @@
+s25rttr (20141201-9529.344) precise; urgency=low
+
+  * Automatic Jenkins Build 344
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Mon, 01 Dec 2014 18:59:15 +0100
+
+s25rttr (20141201-9529) any; urgency=low
+
+  * AIpoc r9517
+    fix for crash that occurs when a military building is captured
+    that is close to a colony from sea or harbor (not just with
+    improved alliances)
+    part 4 improved alliances
+
+ -- marcus  Mon, 01 Dec 2014 17:36:00 +0100
+
+s25rttr (20141201-9528) any; urgency=low
+
+  * AIpoc r9516
+    improved alliances addon 0.3
+    rule1: do not capture allied territory unless your ally is losing
+    a building or you push with your headquarter
+    rule2: do not gain territory when you lose a building
+    rule3: do not lose territory when you gain a building
+
+ -- marcus  Mon, 01 Dec 2014 17:35:00 +0100
+
+s25rttr (20141201-9527) any; urgency=low
+
+  * AIpoc r9514
+    addon Improved Alliances fixes:
+    when a building is destroyed a player can no longer gain
+    territory
+    when a building is conquered / build after a temporary alliance
+    has ended and your new territory pushes too close to an existing
+    military building - that building (and flag) do not get destroyed
+    even if they are now on the border
+
+ -- marcus  Mon, 01 Dec 2014 17:34:00 +0100
+
+s25rttr (20141201-9526) any; urgency=low
+
+  * AIpoc r9508
+    new addon: improved alliances
+    allied players can no longer push back your border with new
+    military buildings
+
+ -- marcus  Mon, 01 Dec 2014 17:33:00 +0100
+
+s25rttr (20141201-9525) any; urgency=low
+
+  * Avoid async checks for non-human players.
+
+ -- marcus  Mon, 01 Dec 2014 17:26:00 +0100
+
+s25rttr (20141201-9524.343) precise; urgency=low
+
+  * Automatic Jenkins Build 343
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Mon, 01 Dec 2014 17:12:46 +0100
+
+s25rttr (20141201-9524) any; urgency=low
+
+  * Replay fix #2.
+
+ -- marcus  Mon, 01 Dec 2014 14:06:00 +0100
+
+s25rttr (20141201-9523) any; urgency=low
+
+  * Add 1ms replay speed.
+
+ -- marcus  Mon, 01 Dec 2014 09:47:00 +0100
+
+s25rttr (20141201-9522) any; urgency=low
+
+  * Fix replays (hopefully).
+
+ -- marcus  Mon, 01 Dec 2014 09:37:00 +0100
+
+s25rttr (20141201-9521.342) precise; urgency=low
+
+  * Automatic Jenkins Build 342
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Mon, 01 Dec 2014 01:17:13 +0100
+
+s25rttr (20141130-9521) any; urgency=low
+
+  * Animals vs roads: stop checking once we know that there's at
+    least one road, since we don't care about the exact number.
+
+ -- marcus  Sun, 30 Nov 2014 23:31:00 +0100
+
+s25rttr (20141130-9520) any; urgency=low
+
+  * Crash fix - don't remove figure from list that isn't on it...
+    
+    [...]
+    #4 erase (this=0x803fda0, __position=...) at
+    /usr/include/c++/4.8/bits/list.tcc:112
+    #5 nobBaseWarehouse::CancelFigure (this=0x803fd20,
+    figure=0x124ead10) at src/nobBaseWarehouse.cpp:875
+    #6 0x00000000008234d1 in nobMilitary::RegulateTroops
+    (this=0x116c7c70) at src/nobMilitary.cpp:469
+    #7 0x0000000000713c42 in GameClientPlayer::NewSoldierAvailable
+    (this=0x7e38508, soldier_count=@0x80400a0: 56) at
+    src/GameClientPlayer.cpp:1357
+    #8 0x000000000081535f in nobBaseWarehouse::CheckJobsForNewFigure
+    (this=0x803fd20, job=JOB_PRIVATE) at src/nobBaseWarehouse.cpp:783
+    #9 0x0000000000820f7a in nobMilitary::CancelOrders
+    (this=this@entry=0x116c7c70) at src/nobMilitary.cpp:594
+    #10 0x0000000000821113 in nobMilitary::Destroy_nobMilitary
+    (this=0x116c7c70) at src/nobMilitary.cpp:101
+    #11 0x0000000000823b75 in nobMilitary::HitOfCatapultStone
+    (this=0x116c7c70) at src/nobMilitary.cpp:1190
+    #12 0x00000000006fdfab in EventManager::NextGF (this=0x7e4b2a0)
+    at src/EventManager.cpp:131
+    #13 0x00000000007024ef in GameClient::NextGF
+    (this=this@entry=0xc1cce0 <Singleton<GameClient>::me>) at
+    src/GameClient.cpp:1522
+    #14 0x0000000000706268 in GameClient::ExecuteGameFrame
+    (this=this@entry=0xc1cce0 <Singleton<GameClient>::me>,
+    skipping=skipping@entry=false) at src/GameClient.cpp:1471
+    #15 0x000000000070656a in GameClient::Run
+    (this=this@entry=0xc1cce0 <Singleton<GameClient>::me>) at
+    src/GameClient.cpp:262
+    #16 0x0000000000722b4f in GameManager::Run
+    (this=this@entry=0xc1bc20 <Singleton<GameManager>::me>) at
+    src/GameManager.cpp:163
+    #17 0x00000000005308c1 in main (argc=<optimized out>,
+    argv=<optimized out>) at src/main.cpp:348
+
+ -- marcus  Sun, 30 Nov 2014 22:45:00 +0100
+
+s25rttr (20141130-9519) any; urgency=low
+
+  * Animals are people, too. They should be allowed to cross borders
+    as well!
+
+ -- marcus  Sun, 30 Nov 2014 22:19:00 +0100
+
+s25rttr (20141130-9518) any; urgency=low
+
+  * Some minor performance improvements.
+
+ -- marcus  Sun, 30 Nov 2014 09:22:00 +0100
+
+s25rttr (20141130-9517) any; urgency=low
+
+  * Reverted AIpoc r9511, as it introduced crashes.
+
+ -- marcus  Sun, 30 Nov 2014 09:21:00 +0100
+
+s25rttr (20141130-9516) any; urgency=low
+
+  * AIpoc r9513
+    missing word in BurnDuration addon text
+
+ -- marcus  Sun, 30 Nov 2014 08:35:00 +0100
+
+s25rttr (20141130-9515.341) precise; urgency=low
+
+  * Automatic Jenkins Build 341
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sun, 30 Nov 2014 01:05:38 +0100
+
+s25rttr (20141129-9515) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 29 Nov 2014 23:00:00 +0100
+
+s25rttr (20141129-9514) any; urgency=low
+
+  * Renamed "Archipelag Sumary.SWD" to "ArchipelagSumary.SWD"
+    (updater does not seem to support whitespaces)
+
+ -- marcus  Sat, 29 Nov 2014 11:54:00 +0100
+
+s25rttr (20141129-9513) any; urgency=low
+
+  * Renamed "Archipelag Sumary.SWD" to "ArchipelagSumary.SWD"
+    (updater does not seem to support whitespaces)
+
+ -- marcus  Sat, 29 Nov 2014 11:53:00 +0100
+
 s25rttr (20141129-9512.340) precise; urgency=low
 
   * Automatic Jenkins Build 340
