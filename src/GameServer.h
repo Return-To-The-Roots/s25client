@@ -1,4 +1,4 @@
-// $Id: GameServer.h 9532 2014-12-09 08:52:41Z marcus $
+// $Id: GameServer.h 9533 2014-12-09 08:53:24Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -58,6 +58,7 @@ class GameServer : public Singleton<GameServer>, public GameMessageInterface
         void CancelCountdown(void);
 
         bool TogglePause();
+		bool IsPaused(){return framesinfo.pause;}
 
         void TogglePlayerNation(unsigned char client);
         void TogglePlayerTeam(unsigned char client);

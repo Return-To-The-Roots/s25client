@@ -1,4 +1,4 @@
-// $Id: GameClient.cpp 9532 2014-12-09 08:52:41Z marcus $
+// $Id: GameClient.cpp 9533 2014-12-09 08:53:24Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1835,6 +1835,12 @@ void GameClient::SkipGF(unsigned int gf)
 		SetReplayPause(false);
 	if(!replay_mode)
 	{
+		//unpause before skipping
+		if(GameServer::inst().IsPaused())
+		{
+			GameServer::inst().TogglePause();
+			//return;
+		}
 		GameServer::inst().skiptogf=gf;
 		skiptogf=gf;
 		LOG.lprintf("jumping from gf %i to gf %i \n", framesinfo.nr, gf);
