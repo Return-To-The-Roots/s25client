@@ -1,4 +1,4 @@
-// $Id: GameClient.h 9523 2014-12-01 09:47:54Z marcus $
+// $Id: GameClient.h 9532 2014-12-09 08:52:41Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -266,7 +266,8 @@ class GameClient : public Singleton<GameClient>, public GameMessageInterface
             {}
 
         } visual_settings, default_settings;
-
+		/// skip ahead how many gf?
+		unsigned int skiptogf;
     private:
         /// Spielwelt
         GameWorld* gw;
@@ -381,6 +382,7 @@ class GameClient : public Singleton<GameClient>, public GameMessageInterface
 
         /// Replaymodus an oder aus?
         bool replay_mode;
+		
 
         /// Spiel-Log für Asyncs
         FILE* game_log;

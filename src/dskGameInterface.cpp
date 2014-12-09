@@ -1,4 +1,4 @@
-// $Id: dskGameInterface.cpp 9375 2014-04-29 15:44:00Z FloSoft $
+// $Id: dskGameInterface.cpp 9532 2014-12-09 08:52:41Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -700,8 +700,15 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
         } return true;
         case 'j': // GFs überspringen
         {
-            if(GAMECLIENT.IsReplayModeOn())
-                WindowManager::inst().Show(new iwSkipGFs);
+            unsigned singleplayer = 0, i = 0;
+            while(i < GameClient::inst().GetPlayerCount() && singleplayer < 2)
+            {
+                if(GameClient::inst().GetPlayer(i)->ps == PS_OCCUPIED)singleplayer++;
+                i++;
+            }
+            if(singleplayer < 2)
+				WindowManager::inst().Show(new iwSkipGFs);
+                
         } return true;
         case 'l': // Minimap anzeigen
         {

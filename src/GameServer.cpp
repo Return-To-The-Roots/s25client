@@ -1,4 +1,4 @@
-// $Id: GameServer.cpp 9525 2014-12-01 17:26:21Z marcus $
+// $Id: GameServer.cpp 9532 2014-12-09 08:52:41Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -125,6 +125,7 @@ GameServer::GameServer(void)
     serverconfig.Clear();
     mapinfo.Clear();
     countdown.Clear();
+	skiptogf=0;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -439,9 +440,11 @@ void GameServer::Stop(void)
 
     // laden dicht machen
     serversocket.Close();
+	// clear jump target
+	skiptogf=0;
 
     if(status != SS_STOPPED)
-        LOG.lprintf("server state changed to stop\n");
+        LOG.lprintf("server state changed to stop\n");	
 
     // status
     status = SS_STOPPED;
@@ -893,8 +896,10 @@ void GameServer::ClientWatchDog()
         if(!framesinfo.pause)
         {
             // network frame durchführen
-            if(currenttime - framesinfo.lasttime > framesinfo.gf_length)
+			if(currenttime - framesinfo.lasttime > framesinfo.gf_length || skiptogf > framesinfo.gf_nr)
             {
+				//if(skiptogf > framesinfo.gf_nr)
+					//LOG.lprintf("skipping to gf %i \n",skiptogf);
                 ++framesinfo.gf_nr;
                 // KIs ausführen
                 for(unsigned i = 0; i < ai_players.size(); ++i)

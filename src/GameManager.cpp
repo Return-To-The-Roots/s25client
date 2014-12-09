@@ -1,4 +1,4 @@
-// $Id: GameManager.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: GameManager.cpp 9532 2014-12-09 08:52:41Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -196,8 +196,9 @@ bool GameManager::Run()
             current_time = VideoDriverWrapper::inst().GetTickCount();
         }
     }
-
-    WindowManager::inst().Draw();
+	//only draw if we dont skip ahead right now
+	if(!GAMECLIENT.skiptogf || GAMECLIENT.skiptogf < GAMECLIENT.GetGFNumber())
+		WindowManager::inst().Draw();
 
     last_time = current_time;
 

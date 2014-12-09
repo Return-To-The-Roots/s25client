@@ -1,4 +1,4 @@
-// $Id: GameClient.cpp 9524 2014-12-01 14:06:14Z marcus $
+// $Id: GameClient.cpp 9532 2014-12-09 08:52:41Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -154,6 +154,7 @@ GameClient::GameClient(void)
     framesinfo.Clear();
     randcheckinfo.Clear();
     postMessages.clear();
+	skiptogf=0;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -309,6 +310,9 @@ void GameClient::Stop()
     gcs.clear();
 
     socket.Close();
+
+	// clear jump target
+	skiptogf=0;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1425,7 +1429,7 @@ void GameClient::ExecuteGameFrame(const bool skipping)
 
     // Wurde der nächsten Game-Frame zeitlich erreicht (bzw. wenn nur Frames übersprungen werden sollen,
     // brauchen wir nicht zu warten)?
-    if(skipping || (currenttime - framesinfo.lasttime) > framesinfo.gf_length)
+    if(skipping || skiptogf > framesinfo.nr || (currenttime - framesinfo.lasttime) > framesinfo.gf_length)
     {
         //LOG.lprintf("%d = %d\n", framesinfo.nr / framesinfo.nwf_length, Random::inst().GetCurrentRandomValue());
         if(replay_mode)
@@ -1827,10 +1831,19 @@ void GameClient::SkipGF(unsigned int gf)
     unsigned start_ticks = VideoDriverWrapper::inst().GetTickCount();
 
     // Spiel entpausieren
-    SetReplayPause(false);
+	if(replay_mode)
+		SetReplayPause(false);
+	if(!replay_mode)
+	{
+		GameServer::inst().skiptogf=gf;
+		skiptogf=gf;
+		LOG.lprintf("jumping from gf %i to gf %i \n", framesinfo.nr, gf);
+		return;
+	}
+	
 
     // GFs überspringen
-    for(unsigned int i = framesinfo.nr; i < gf; ++i)
+	for(unsigned int i = framesinfo.nr; i < gf;++i)
     {
         if(i % 1000 == 0)
         {
@@ -1848,24 +1861,22 @@ void GameClient::SkipGF(unsigned int gf)
             gw->Draw(GetPlayerID(), &water_percent, false, 0, 0, road);
 
             // text oben noch hinschreiben
-            snprintf(nwf_string, 255, _("current GF: %u - still fast forwarding: %d GFs left (%d %%)"), GetGFNumber(), gf - i, (i * 100 / gf) );
+            snprintf(nwf_string, 255, _("current GF: %u - still fast forwarding: %d GFs left (%d %%)"), GetGFNumber(), gf - i, (i * 100 / gf) );			
             LargeFont->Draw(VideoDriverWrapper::inst().GetScreenWidth() / 2, VideoDriverWrapper::inst().GetScreenHeight() / 2, nwf_string, glArchivItem_Font::DF_CENTER, 0xFFFFFF00);
 
             VideoDriverWrapper::inst().SwapBuffers();
         }
         ExecuteGameFrame(true);
+		//LOG.lprintf("jumping: now at gf %i\n", framesinfo.nr);		
     }
-
+	
+    // Spiel pausieren & text ausgabe wie lang das jetzt gedauert hat 
     unsigned ticks = VideoDriverWrapper::inst().GetTickCount() - start_ticks;
+	char text[256];
+	snprintf(text, sizeof(text), _("Jump finished (%.3f seconds)."), (double) ticks / 1000.0);
+	ci->CI_Chat(playerid, CD_SYSTEM, text); 
+	SetReplayPause(true);
 
-    // Spiel pausieren
-    SetReplayPause(true);
-
-    char text[256];
-
-    snprintf(text, sizeof(text), _("Replay finished (%.3f seconds)."), (double) ticks / 1000.0);
-
-    ci->CI_Chat(playerid, CD_SYSTEM, text);
 }
 
 unsigned GameClient::WriteSaveHeader(const std::string& filename)

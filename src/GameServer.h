@@ -1,4 +1,4 @@
-// $Id: GameServer.h 9384 2014-05-01 14:53:50Z FloSoft $
+// $Id: GameServer.h 9532 2014-12-09 08:52:41Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -196,6 +196,7 @@ class GameServer : public Singleton<GameServer>, public GameMessageInterface
     public:
         AIBase* GetAIPlayer(unsigned playerID) { return ai_players[playerID]; }
         void SendAIEvent(AIEvent::Base* ev, unsigned receiver);
+		unsigned int skiptogf;
 
 };
 
