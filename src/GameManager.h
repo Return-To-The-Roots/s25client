@@ -1,4 +1,4 @@
-// $Id: GameManager.h 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: GameManager.h 9534 2014-12-09 08:53:56Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -89,6 +89,7 @@ class GameManager : public Singleton<GameManager>
         unsigned int frame_time;
         unsigned int run_time;
         unsigned int last_time;
+		unsigned int skipgf_last_time;
         CursorType cursor;
         CursorType cursor_next;
 };

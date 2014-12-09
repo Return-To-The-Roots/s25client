@@ -1,4 +1,4 @@
-// $Id: GameManager.cpp 9532 2014-12-09 08:52:41Z marcus $
+// $Id: GameManager.cpp 9534 2014-12-09 08:53:56Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -198,16 +198,39 @@ bool GameManager::Run()
     }
 	//only draw if we dont skip ahead right now
 	if(!GAMECLIENT.skiptogf || GAMECLIENT.skiptogf < GAMECLIENT.GetGFNumber())
+	{
 		WindowManager::inst().Draw();
+		if ((GAMECLIENT.GetState() == GameClient::CS_GAME) && (GAMECLIENT.GetGFLength() < 30))
+		{
+			LOADER.GetImageN("io", 164)->Draw(VideoDriverWrapper::inst().GetScreenWidth() - 55, 35, 0, 0, 0, 0);
+		}
 
+		DrawCursor();
+	}
+
+	//if we skip drawing write a comment every 5k gf
+	if(GAMECLIENT.skiptogf && GAMECLIENT.skiptogf > GAMECLIENT.GetGFNumber() && GAMECLIENT.GetGFNumber()%5000==0)
+	{
+		if(skipgf_last_time)
+			LOG.lprintf("jumping to gf %i, now at gf %i, time for last 5k gf: %.3f s, avg gf time %.3f ms \n",GAMECLIENT.skiptogf, GAMECLIENT.GetGFNumber(),double (VideoDriverWrapper::inst().GetTickCount()-skipgf_last_time)/1000,double (VideoDriverWrapper::inst().GetTickCount()-skipgf_last_time)/5000);
+		else
+			LOG.lprintf("jumping to gf %i, now at gf %i \n",GAMECLIENT.skiptogf, GAMECLIENT.GetGFNumber());
+		skipgf_last_time=VideoDriverWrapper::inst().GetTickCount();
+	}
+	//jump complete!
+	if(GAMECLIENT.skiptogf && GAMECLIENT.skiptogf == GAMECLIENT.GetGFNumber())
+	{
+		if(skipgf_last_time)
+		{
+			if((GAMECLIENT.skiptogf-1)%5000>0)
+				LOG.lprintf("jump to gf %i complete, time for last %i gf: %.3f s, avg gf time %.3f ms \n",GAMECLIENT.skiptogf, (GAMECLIENT.skiptogf-1)%5000+1,double (VideoDriverWrapper::inst().GetTickCount()-skipgf_last_time)/1000,double (VideoDriverWrapper::inst().GetTickCount()-skipgf_last_time)/((GAMECLIENT.skiptogf-1)%5000));
+			else
+				LOG.lprintf("jump to gf %i complete \n",GAMECLIENT.skiptogf);
+		}
+		skipgf_last_time=0;
+	}
     last_time = current_time;
-
-    if ((GAMECLIENT.GetState() == GameClient::CS_GAME) && (GAMECLIENT.GetGFLength() < 30))
-    {
-        LOADER.GetImageN("io", 164)->Draw(VideoDriverWrapper::inst().GetScreenWidth() - 55, 35, 0, 0, 0, 0);
-    }
-
-    DrawCursor();
+    
 
     // Framerate berechnen
     if(current_time - frame_time >= 1000)
