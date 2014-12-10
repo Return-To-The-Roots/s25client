@@ -1,4 +1,4 @@
-// $Id: dskGameInterface.cpp 9532 2014-12-09 08:52:41Z marcus $
+// $Id: dskGameInterface.cpp 9535 2014-12-10 06:46:33Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -706,7 +706,7 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
                 if(GameClient::inst().GetPlayer(i)->ps == PS_OCCUPIED)singleplayer++;
                 i++;
             }
-            if(singleplayer < 2)
+            if(singleplayer < 2 || GAMECLIENT.IsReplayModeOn())
 				WindowManager::inst().Show(new iwSkipGFs);
                 
         } return true;
