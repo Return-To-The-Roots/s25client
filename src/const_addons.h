@@ -1,4 +1,4 @@
-// $Id: const_addons.h 9526 2014-12-01 17:33:10Z marcus $
+// $Id: const_addons.h 9537 2014-12-10 22:14:07Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -79,6 +79,7 @@ enum AddonId
 	ADDON_MORE_ANIMALS               = 0x00900003,
 	ADDON_BURN_DURATION              = 0x00900004,
 	ADDON_NO_ALLIED_PUSH             = 0x00900005,
+	ADDON_BATTLEFIELD_PROMOTION      = 0x00900006,
 
     ADDON_SHIP_SPEED                 = 0x00A00000
 };

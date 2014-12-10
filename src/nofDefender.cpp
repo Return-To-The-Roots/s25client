@@ -1,4 +1,4 @@
-// $Id: nofDefender.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: nofDefender.cpp 9537 2014-12-10 22:14:07Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -178,6 +178,10 @@ void nofDefender::HomeDestroyedAtBegin()
 /// Wenn ein Kampf gewonnen wurde
 void nofDefender::WonFighting()
 {
+	
+	//addon BattlefieldPromotion active? -> increase rank!
+	if(GameClient::inst().GetGGS().isEnabled(ADDON_BATTLEFIELD_PROMOTION))
+		IncreaseRank();
     // Angreifer tot
     attacker = 0;
 

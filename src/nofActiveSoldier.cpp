@@ -1,4 +1,4 @@
-// $Id: nofActiveSoldier.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: nofActiveSoldier.cpp 9537 2014-12-10 22:14:07Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -336,6 +336,18 @@ bool nofActiveSoldier::FindEnemiesNearby()
     MeetingEnemy();
 
     return true;
+}
+/// increase rank
+void nofActiveSoldier::IncreaseRank()
+{   
+	//max rank reached? -> dont increase!
+	if(MAX_MILITARY_RANK - (GetRank() + GameClient::inst().GetGGS().getSelection(ADDON_MAX_RANK)) < 1)
+		return;
+	// Einen Rang höher
+    job = Job(unsigned(job) + 1);
+	// Inventur entsprechend erhöhen und verringern
+    gwg->GetPlayer(player)->IncreaseInventoryJob(job, 1);
+    gwg->GetPlayer(player)->DecreaseInventoryJob(Job(unsigned(job) - 1), 1);
 }
 
 /// Handle state "meet enemy" after each walking step

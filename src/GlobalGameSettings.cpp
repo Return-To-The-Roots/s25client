@@ -1,4 +1,4 @@
-// $Id: GlobalGameSettings.cpp 9526 2014-12-01 17:33:10Z marcus $
+// $Id: GlobalGameSettings.cpp 9537 2014-12-10 22:14:07Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -60,6 +60,7 @@
 #include "AddonMoreAnimals.h"
 #include "AddonBurnDuration.h"
 #include "AddonNoAlliedPush.h"
+#include "AddonBattlefieldPromotion.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
@@ -151,6 +152,7 @@ void GlobalGameSettings::reset(bool recreate)
 		registerAddon(new AddonMoreAnimals);
 		registerAddon(new AddonBurnDuration);
 		registerAddon(new AddonNoAlliedPush);
+		registerAddon(new AddonBattlefieldPromotion);
     }
 }
 

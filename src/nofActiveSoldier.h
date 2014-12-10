@@ -1,4 +1,4 @@
-// $Id: nofActiveSoldier.h 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: nofActiveSoldier.h 9537 2014-12-10 22:14:07Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -96,6 +96,8 @@ class nofActiveSoldier : public nofSoldier
         /// Looks for an appropriate fighting spot between the two soldiers
         /// Returns true if successful
         bool GetFightSpotNear(nofActiveSoldier* other, Point<MapCoord> * fight_spot);
+		/// increase rank (used by addon CombatPromotion)
+		void IncreaseRank();
 
 
 

@@ -442,6 +442,9 @@ void nofAttacker::CancelAtHomeMilitaryBuilding()
 /// Wenn ein Kampf gewonnen wurde
 void nofAttacker::WonFighting()
 {
+	//addon BattlefieldPromotion active? -> increase rank!
+	if(GameClient::inst().GetGGS().isEnabled(ADDON_BATTLEFIELD_PROMOTION))
+		IncreaseRank();
     // Ist evtl. unser Heimatgebäude zerstört?
     if(!building && state != STATE_ATTACKING_FIGHTINGVSDEFENDER)
     {

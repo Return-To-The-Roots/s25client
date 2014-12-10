@@ -139,6 +139,9 @@ void nofAggressiveDefender::HomeDestroyedAtBegin()
 /// Wenn ein Kampf gewonnen wurde
 void nofAggressiveDefender::WonFighting()
 {
+	//addon BattlefieldPromotion active? -> increase rank!
+	if(GameClient::inst().GetGGS().isEnabled(ADDON_BATTLEFIELD_PROMOTION))
+		IncreaseRank();
     // Angreifer tot
     attacker  = NULL;
 
