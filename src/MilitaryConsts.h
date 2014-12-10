@@ -1,4 +1,4 @@
-// $Id: MilitaryConsts.h 9506 2014-11-29 10:49:13Z marcus $
+// $Id: MilitaryConsts.h 9536 2014-12-10 22:12:56Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -26,6 +26,9 @@ const unsigned short MILITARY_SQUARE_SIZE = 20;
 /// Maximale Entfernungen für "nahe Militärgebäudedistanz" und "mittlere Militärgebäudedistanz"
 const unsigned MAX_MILITARY_DISTANCE_NEAR = 18;
 const unsigned MAX_MILITARY_DISTANCE_MIDDLE = 26;
+
+/// highest military rank - currently ranks 0-4 available
+const unsigned MAX_MILITARY_RANK = 4;
 
 /// Basisangriffsreichweite (Angriff mit allen Soldaten möglich)
 const unsigned BASE_ATTACKING_DISTANCE = 21;

@@ -1,4 +1,4 @@
-// $Id: nobMilitary.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: nobMilitary.cpp 9536 2014-12-10 22:12:56Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -289,7 +289,7 @@ void nobMilitary::HandleEvent(const unsigned int id)
             // wird dieser ebenfalls befördert usw.!
 
             // Rang des letzten beförderten Soldaten, 4-MaxRank am Anfang setzen, damit keiner über den maximalen Rang befördert wird
-            unsigned char last_rank = 4 - GameClient::inst().GetGGS().getSelection(ADDON_MAX_RANK);
+            unsigned char last_rank = MAX_MILITARY_RANK - GameClient::inst().GetGGS().getSelection(ADDON_MAX_RANK);
 
             for(list<nofPassiveSoldier*>::iterator it = troops.end(); it.valid(); --it)
             {
@@ -305,7 +305,7 @@ void nobMilitary::HandleEvent(const unsigned int id)
             }
 
             // Wurde jemand befördert?
-            if(last_rank < 4 - GameClient::inst().GetGGS().getSelection(ADDON_MAX_RANK))
+            if(last_rank < MAX_MILITARY_RANK - GameClient::inst().GetGGS().getSelection(ADDON_MAX_RANK))
             {
                 // Goldmünze verbrauchen
                 --coins;
