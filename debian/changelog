@@ -1,3 +1,76 @@
+s25rttr (20141211-9537.346) precise; urgency=low
+
+  * Automatic Jenkins Build 346
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Thu, 11 Dec 2014 01:20:18 +0100
+
+s25rttr (20141210-9537) any; urgency=low
+
+  * AIpoc r9534
+    addon: Battlefield Promotion
+    wishlist: #652466 [addon] Soldatenupgrade bei Sieg
+
+ -- marcus  Wed, 10 Dec 2014 22:14:00 +0100
+
+s25rttr (20141210-9536) any; urgency=low
+
+  * AIpoc r9533
+    use a new military constant max_military_rank instead of 4 for
+    soldier upgrades
+
+ -- marcus  Wed, 10 Dec 2014 22:12:00 +0100
+
+s25rttr (20141210-9535) any; urgency=low
+
+  * AIpoc r9532
+    allow jump in replays of multiplayer games once again
+
+ -- marcus  Wed, 10 Dec 2014 06:46:00 +0100
+
+s25rttr (20141210-9534.345) precise; urgency=low
+
+  * Automatic Jenkins Build 345
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Wed, 10 Dec 2014 01:16:49 +0100
+
+s25rttr (20141209-9534) any; urgency=low
+
+  * AIpoc r9531
+    write some updates to log while using jump
+    dont draw cursor during jump
+
+ -- marcus  Tue, 09 Dec 2014 08:53:00 +0100
+
+s25rttr (20141209-9533) any; urgency=low
+
+  * AIpoc r9530
+    unpause game when 'j'umping ahead
+
+ -- marcus  Tue, 09 Dec 2014 08:53:00 +0100
+
+s25rttr (20141209-9532) any; urgency=low
+
+  * AIpoc r9529
+    allow 'J'ump in singleplayer, deactivates drawing game frames and
+    waiting the x ms each gf should take, ai and other game parts
+    should work as usual while jumping ahead.
+
+ -- marcus  Tue, 09 Dec 2014 08:52:00 +0100
+
+s25rttr (20141209-9531) any; urgency=low
+
+  * AIpoc r9528
+    vs2010 project files for VideoWinAPI & videoSDL updated to find
+    build_paths.h
+
+ -- marcus  Tue, 09 Dec 2014 08:51:00 +0100
+
+s25rttr (20141206-9530) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 06 Dec 2014 23:00:00 +0100
+
 s25rttr (20141201-9529.344) precise; urgency=low
 
   * Automatic Jenkins Build 344
