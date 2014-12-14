@@ -1,4 +1,4 @@
-// $Id: nobHarborBuilding.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: nobHarborBuilding.cpp 9544 2014-12-14 12:05:30Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -508,7 +508,7 @@ void nobHarborBuilding::OrderExpeditionWares()
         return;
     // Waren in der Bestellungsliste mit beachten
     unsigned boards = 0, stones = 0;
-    for(list<Ware*>::iterator it = dependent_wares.begin(); it.valid(); ++it)
+    for(std::list<Ware*>::iterator it = dependent_wares.begin(); it!=dependent_wares.end(); ++it)
     {
         if (*it == 0) // qx: check for bug #1132707
         {
@@ -1359,7 +1359,7 @@ unsigned nobHarborBuilding::CalcDistributionPoints(const GoodType type)
 
     unsigned ordered_boards = 0, ordered_stones = 0;
     // Ermitteln, wiviele Bretter und Steine auf dem Weg zum Lagerhaus sind
-    for(list<Ware*>::iterator it = dependent_wares.begin(); it.valid(); ++it)
+	for(std::list<Ware*>::iterator it = dependent_wares.begin(); it!=dependent_wares.end(); ++it)
     {
         if((*it)->type == GD_BOARDS) ++ordered_boards;
         else if((*it)->type == GD_STONES) ++ordered_stones;

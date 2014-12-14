@@ -1,4 +1,4 @@
-// $Id: nobBaseWarehouse.h 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: nobBaseWarehouse.h 9544 2014-12-14 12:05:30Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -57,7 +57,7 @@ class nobBaseWarehouse : public nobBaseMilitary
         /// Liste von Figuren, die auf dem Weg zu dem Lagerhaus sind bzw. Soldaten die von ihm kommen
         std::list<noFigure*> dependent_figures;
         /// Liste von Waren, die auf dem Weg zum Lagerhaus sind
-        list<Ware*> dependent_wares;
+        std::list<Ware*> dependent_wares;
         /// Produzier-Träger-Event
         EventManager::EventPointer producinghelpers_event;
         /// Rekrutierungsevent für Soldaten
@@ -140,6 +140,7 @@ class nobBaseWarehouse : public nobBaseMilitary
         unsigned GetVisualWaresCount(GoodType type) const { return goods.goods[type]; }
         unsigned GetVisualFiguresCount(Job type) const { return goods.people[type]; }
 
+
         /// Verändert Ein/Auslagerungseinstellungen (visuell)
         void ChangeVisualInventorySettings(unsigned char category, unsigned char state, unsigned char type);
         /// Gibt Ein/Auslagerungseinstellungen zurück (visuell)
@@ -207,9 +208,9 @@ class nobBaseWarehouse : public nobBaseMilitary
         { assert(CheckDependentFigure(worker) == false); dependent_figures.push_back(worker); }
 
         //// Entfernt eine abhängige Ware wieder aus der Liste (wird mit TakeWare hinzugefügt)
-        void RemoveDependentWare(Ware* ware) { dependent_wares.erase(ware); }
+		void RemoveDependentWare(Ware* ware) { dependent_wares.remove(ware); }
         /// Überprüft, ob Ware abhängig ist
-        bool IsWareDependent(Ware* ware) { return dependent_wares.search(ware).valid(); }
+		bool IsWareDependent(Ware* ware) { return std::find(dependent_wares.begin(),dependent_wares.end(),ware)!=dependent_wares.end(); }
 
         /// Prüft, ob es Waren zum Auslagern gibt
         bool AreWaresToEmpty() const;

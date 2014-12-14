@@ -1,4 +1,4 @@
-// $Id: nobBaseWarehouse.cpp 9520 2014-11-30 22:45:47Z marcus $
+// $Id: nobBaseWarehouse.cpp 9544 2014-12-14 12:05:30Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -89,7 +89,7 @@ void nobBaseWarehouse::Destroy_nobBaseWarehouse()
     // Den Waren und Figuren Bescheid sagen, die zu uns auf den Weg sind, dass wir nun nicht mehr existieren
     for(std::list<noFigure*>::iterator it = dependent_figures.begin(); it != dependent_figures.end(); ++it)
         (*it)->GoHome();
-    for(list<Ware*>::iterator it = dependent_wares.begin(); it.valid(); ++it)
+	for(std::list<Ware*>::iterator it = dependent_wares.begin(); it!=dependent_wares.end(); ++it)
         (*it)->GoalDestroyed();
 
     // ggf. Events abmelden
