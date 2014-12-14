@@ -981,6 +981,9 @@
     <ClInclude Include="..\..\src\AddonNoAlliedPush.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\iwMissionStatement.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Addons.cpp">
@@ -1741,6 +1744,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\glSmartBitmap.cpp">
       <Filter>Quelldateien\Loader\libsiedler2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\iwMissionStatement.cpp">
+      <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

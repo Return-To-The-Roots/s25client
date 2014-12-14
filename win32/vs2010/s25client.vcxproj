@@ -257,6 +257,7 @@
     <ClInclude Include="..\..\src\iwMilitary.h" />
     <ClInclude Include="..\..\src\iwMilitaryBuilding.h" />
     <ClInclude Include="..\..\src\iwMinimap.h" />
+    <ClInclude Include="..\..\src\iwMissionStatement.h" />
     <ClInclude Include="..\..\src\iwMsgbox.h" />
     <ClInclude Include="..\..\src\iwMusicPlayer.h" />
     <ClInclude Include="..\..\src\iwObservate.h" />
@@ -526,6 +527,7 @@
     <ClCompile Include="..\..\src\iwMilitary.cpp" />
     <ClCompile Include="..\..\src\iwMilitaryBuilding.cpp" />
     <ClCompile Include="..\..\src\iwMinimap.cpp" />
+    <ClCompile Include="..\..\src\iwMissionStatement.cpp" />
     <ClCompile Include="..\..\src\iwMsgbox.cpp" />
     <ClCompile Include="..\..\src\iwMusicPlayer.cpp" />
     <ClCompile Include="..\..\src\iwObservate.cpp" />
