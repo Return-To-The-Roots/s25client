@@ -1,4 +1,4 @@
-// $Id: GameClientPlayer.cpp 9502 2014-11-29 10:46:24Z marcus $
+// $Id: GameClientPlayer.cpp 9542 2014-12-14 12:04:08Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -563,11 +563,6 @@ void GameClientPlayer::RoadDestroyed()
         {
             // Weg neu berechnen
             (*it)->RecalcRoute();
-            // Will die Ware nicht mehr aufs Wasser?
-            if((*it)->GetNextDir() != SHIP_DIR)
-            {
-
-            }
         }
 
         ++it;

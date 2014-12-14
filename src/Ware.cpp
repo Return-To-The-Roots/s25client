@@ -1,4 +1,4 @@
-// $Id: Ware.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: Ware.cpp 9542 2014-12-14 12:04:08Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -46,9 +46,6 @@ Ware::Ware(const GoodType type, noBaseBuilding* goal, noRoadNode* location) :
 {
     // Ware in den Index mit eintragen
     gwg->GetPlayer(location->GetPlayer())->RegisterWare(this);
-
-
-    //assert(obj_id != 1197877);
 }
 
 Ware::~Ware()
@@ -91,6 +88,7 @@ Ware::Ware(SerializedGameData* sgd, const unsigned obj_id) : GameObject(sgd, obj
 
 void Ware::RecalcRoute()
 {
+	
     // Nächste Richtung nehmen
     next_dir = gwg->FindPathForWareOnRoads(location, goal, NULL, &next_harbor);
 
@@ -99,27 +97,33 @@ void Ware::RecalcRoute()
     {
         // meinem Ziel Becheid sagen
         goal->WareLost(this);
+		if(state==STATE_WAITFORSHIP)
+		{
+			assert(location);
+			assert(location->GetGOT() == GOT_NOB_HARBORBUILDING);
+			state = STATE_WAITINWAREHOUSE;
+			static_cast<nobHarborBuilding*>(location)->WareDontWantToTravelByShip(this);			
+		}
+		else
+		{
+			nobBaseWarehouse* wh = gwg->GetPlayer(location->GetPlayer())->FindWarehouse(location, FW::Condition_StoreWare, 0, true, &type, true);
+			if(wh)
+			{
+				// Lagerhaus ist unser neues Ziel
+				goal = wh;
+				// Weg berechnen
+				next_dir = gwg->FindPathForWareOnRoads(location, goal, NULL, &next_harbor);
 
-        nobBaseWarehouse* wh = gwg->GetPlayer(location->GetPlayer())->FindWarehouse(
-                                   location, FW::Condition_StoreWare, 0, true, &type, true);
-        if(wh)
-        {
-            // Lagerhaus ist unser neues Ziel
-            goal = wh;
-            // Weg berechnen
-            next_dir = gwg->FindPathForWareOnRoads(location, goal, NULL, &next_harbor);
+				wh->TakeWare(this);
+			}
+			else
+			{
+				// Es gibt auch kein Weg zu einem Lagerhaus, tja dann ist es wohl vorbei erstmal
+				goal = 0;
 
-            wh->TakeWare(this);
-        }
-        else
-        {
-
-
-            // Es gibt auch kein Weg zu einem Lagerhaus, tja dann ist es wohl vorbei erstmal
-            goal = 0;
-
-            return;
-        }
+				return;
+			}
+		}
     }
 
 
@@ -129,10 +133,8 @@ void Ware::RecalcRoute()
     {
         assert(location);
         assert(location->GetGOT() == GOT_NOB_HARBORBUILDING);
-
-        static_cast<nobHarborBuilding*>(location)->WareDontWantToTravelByShip(this);
-
-        state = STATE_WAITINWAREHOUSE;
+		state = STATE_WAITINWAREHOUSE;
+        static_cast<nobHarborBuilding*>(location)->WareDontWantToTravelByShip(this);        
     }
 
     //// Es wurde ein gültiger Weg gefunden! Dann muss aber noch dem nächsten Träger Bescheid gesagt werden
@@ -141,7 +143,6 @@ void Ware::RecalcRoute()
 
 void Ware::GoalDestroyed()
 {
-
     if(state == STATE_WAITINWAREHOUSE)
     {
         // Ware ist noch im Lagerhaus auf der Warteliste
@@ -328,6 +329,7 @@ void Ware::StartShipJourney()
 /// Informiert Ware, dass Schiffsreise beendet ist und die Ware nun in einem Hafengebäude liegt
 bool Ware::ShipJorneyEnded(nobHarborBuilding* hb)
 {
+
     state = STATE_WAITINWAREHOUSE;
     location = hb;
 
