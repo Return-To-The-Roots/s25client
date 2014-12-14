@@ -1,4 +1,4 @@
-// $Id: GameClient.cpp 9540 2014-12-14 11:32:47Z marcus $
+// $Id: GameClient.cpp 9548 2014-12-14 19:51:50Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1010,7 +1010,7 @@ inline void GameClient::OnNMSMapInfo(const GameMessage_Map_Info& msg)
     {
         std::string lua_file = clientconfig.mapfilepath.substr(0, clientconfig.mapfilepath.length() - 3);
         lua_file.append("lua");
-        
+
         FILE *lua_f = fopen(lua_file.c_str(), "wb");
 
         if ((lua_f == NULL) || (fwrite(msg.script.data(), 1, msg.script.length(), lua_f) != msg.script.length()))

@@ -1,4 +1,4 @@
-// $Id: GameWorldBase.cpp 9547 2014-12-14 13:46:48Z marcus $
+// $Id: GameWorldBase.cpp 9548 2014-12-14 19:51:50Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -37,6 +37,8 @@
 #include "nobMilitary.h"
 #include "noEnvObject.h"
 #include "noStaticObject.h"
+#include "WindowManager.h"
+#include "iwMissionStatement.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -68,6 +70,7 @@ GameWorldBase::GameWorldBase() : gi(NULL), width(0), height(0), lt(LT_GREENLAND)
         {"EnableBuilding", LUA_EnableBuilding},
         {"DisableBuilding", LUA_DisableBuilding},
         {"SetRestrictedArea", LUA_SetRestrictedArea},
+        {"ClearResources", LUA_ClearResources},
         {"AddWares", LUA_AddWares},
         {"AddPeople", LUA_AddPeople},
         {"GetGF", LUA_GetGF},
@@ -77,6 +80,7 @@ GameWorldBase::GameWorldBase() : gi(NULL), width(0), height(0), lt(LT_GREENLAND)
         {"GetBuildingCount", LUA_GetBuildingCount},
         {"Log", LUA_Log},
         {"Chat", LUA_Chat},
+        {"MissionStatement", LUA_MissionStatement},
         {"PostMessage", LUA_PostMessage},
         {"PostMessageWithLocation", LUA_PostMessageWithLocation},
         {"AddStaticObject", LUA_AddStaticObject},
@@ -1966,6 +1970,41 @@ int GameWorldBase::LUA_SetRestrictedArea(lua_State* L)
     return(0);
 }
 
+int GameWorldBase::LUA_ClearResources(lua_State *L)
+{
+    if (lua_gettop(L) > 0)
+    {
+        unsigned p = (unsigned) luaL_checknumber(L, 1);
+
+        if (p >= GAMECLIENT.GetPlayerCount())
+        {
+            lua_pushstring(L, "player number invalid!");
+            lua_error(L);
+            return(0);
+        }
+
+        const std::list<nobBaseWarehouse*> warehouses = GAMECLIENT.GetPlayer(p)->GetStorehouses();
+        
+        for (std::list<nobBaseWarehouse*>::const_iterator wh = warehouses.begin(); wh != warehouses.end(); ++wh)
+        {
+            (*wh)->Clear();
+        }
+    } else
+    {
+        for (unsigned p = 0; p < GAMECLIENT.GetPlayerCount(); p++)
+        {
+            const std::list<nobBaseWarehouse*> warehouses = GAMECLIENT.GetPlayer(p)->GetStorehouses();
+            
+            for (std::list<nobBaseWarehouse*>::const_iterator wh = warehouses.begin(); wh != warehouses.end(); ++wh)
+            {
+                (*wh)->Clear();
+            }
+        }
+    }
+    
+    return(0);
+}
+
 int GameWorldBase::LUA_AddWares(lua_State* L)
 {
 //  GameWorldBase *gw = static_cast<GameWorldBase*>(lua_touserdata(L,lua_upvalueindex(1)));
@@ -2231,6 +2270,36 @@ int GameWorldBase::LUA_Chat(lua_State *L)
     }
     
     GAMECLIENT.SystemChat(message);
+    
+    return(0);
+}
+
+int GameWorldBase::LUA_MissionStatement(lua_State *L)
+{
+    int argc = lua_gettop(L);
+    
+    if (argc < 3)
+    {
+        lua_pushstring(L, "Too few arguments!");
+        lua_error(L);
+        return(0);
+    }
+    
+    unsigned player = (unsigned) luaL_checknumber(L, 1);
+    
+    if ((player != 0xFFFFFFFF) && (unsigned) GAMECLIENT.GetPlayerID() != player)
+    {
+        return(0);
+    }
+    
+    std::string message;
+    
+    for (int n = 3; n <= argc; n++)
+    {
+        message.append(luaL_checklstring(L, n, NULL));
+    }
+    
+    WindowManager::inst().Show(new iwMissionStatement(luaL_checklstring(L, 2, NULL), message));
     
     return(0);
 }

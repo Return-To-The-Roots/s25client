@@ -1,4 +1,4 @@
-// $Id: nobBaseWarehouse.cpp 9544 2014-12-14 12:05:30Z marcus $
+// $Id: nobBaseWarehouse.cpp 9548 2014-12-14 19:51:50Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -187,6 +187,38 @@ nobBaseWarehouse::nobBaseWarehouse(SerializedGameData* sgd, const unsigned obj_i
     }
 }
 
+void nobBaseWarehouse::Clear()
+{
+    for(unsigned i = 0; i < WARE_TYPES_COUNT; ++i)
+    {
+        gwg->GetPlayer(player)->DecreaseInventoryWare(GoodType(i), real_goods.goods[i]);
+        goods.goods[i] = 0;
+        real_goods.goods[i] = 0;
+    }
+    
+    for(unsigned i = 0; i < JOB_TYPES_COUNT; ++i)
+    {
+        gwg->GetPlayer(player)->DecreaseInventoryJob(Job(i), real_goods.people[i]);
+        goods.people[i] = 0;
+        real_goods.people[i] = 0;
+    }
+    
+    for(list<Ware*>::iterator it = waiting_wares.begin(); it.valid(); ++it)
+    {
+        (*it)->WareLost(player);
+        delete (*it);
+    }
+
+    waiting_wares.clear();
+
+    for (unsigned i = 0; i < 5; ++i)
+    {
+        // TODO: inventory!?
+        reserve_soldiers_available[i] = 0;
+        reserve_soldiers_claimed_visual[i] = 0;
+        reserve_soldiers_claimed_real[i] = 0;
+    }
+}
 
 void nobBaseWarehouse::OrderCarrier(noRoadNode* const goal, RoadSegment* workplace)
 {

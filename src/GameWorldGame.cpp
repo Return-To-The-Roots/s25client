@@ -1,4 +1,4 @@
-// $Id: GameWorldGame.cpp 9540 2014-12-14 11:32:47Z marcus $
+// $Id: GameWorldGame.cpp 9548 2014-12-14 19:51:50Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1613,6 +1613,11 @@ void GameWorldGame::SetVisibility(const MapCoord x, const MapCoord y,  const uns
     Visibility visibility_before = GetNode(x, y).fow[player].visibility;
     GetNode(x, y).fow[player].visibility = VIS_VISIBLE;
 
+    if (visibility_before != VIS_VISIBLE)
+    {
+        LUA_EventExplored(player, x, y);
+    }
+    
     // Etwaige FOW-Objekte zerstören
     delete GetNode(x, y).fow[player].object;
     GetNode(x, y).fow[player].object = NULL;

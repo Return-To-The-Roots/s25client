@@ -1,5 +1,5 @@
 ################################################################################
-### $Id: CMakeLists.txt 9537 2014-12-10 22:14:07Z marcus $
+### $Id: CMakeLists.txt 9548 2014-12-14 19:51:50Z marcus $
 ################################################################################
 
 INCLUDE(FindBZip2)
@@ -120,6 +120,7 @@ SET(SOURCES_INGAMEWINDOWS
 	iwTransport.cpp                     iwTransport.h
 	iwWares.cpp                         iwWares.h
 	iwMerchandiseStatistics.cpp         iwMerchandiseStatistics.h
+	iwMissionStatement.cpp              iwMissionStatement.h
    )
 
 SET(SOURCES_AI

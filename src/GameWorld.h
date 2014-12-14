@@ -1,4 +1,4 @@
-// $Id: GameWorld.h 9547 2014-12-14 13:46:48Z marcus $
+// $Id: GameWorld.h 9548 2014-12-14 19:51:50Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -460,11 +460,13 @@ class GameWorldBase
         static int LUA_DisableBuilding(lua_State* L);
         static int LUA_EnableBuilding(lua_State* L);
         static int LUA_SetRestrictedArea(lua_State* L);
+        static int LUA_ClearResources(lua_State *L);
         static int LUA_AddWares(lua_State* L);
         static int LUA_AddPeople(lua_State* L);
         static int LUA_GetGF(lua_State *L);
         static int LUA_Log(lua_State *L);
         static int LUA_Chat(lua_State *L);
+        static int LUA_MissionStatement(lua_State *L);
         static int LUA_PostMessage(lua_State *L);
         static int LUA_PostMessageWithLocation(lua_State *L);
         static int LUA_GetPlayerCount(lua_State *L);

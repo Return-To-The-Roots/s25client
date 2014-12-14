@@ -1,4 +1,4 @@
-// $Id: GameServer.cpp 9539 2014-12-14 10:15:57Z marcus $
+// $Id: GameServer.cpp 9548 2014-12-14 19:51:50Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -235,7 +235,7 @@ bool GameServer::Start()
     
     if (lua_f)
     {
-        ssize_t lua_len;
+        size_t lua_len;
         
         fseek(lua_f, 0, SEEK_END);
         lua_len = ftell(lua_f);
@@ -243,9 +243,18 @@ bool GameServer::Start()
         
         mapinfo.script.resize(lua_len);
         
-        if ((ssize_t)libendian::le_read_c(&mapinfo.script[0], lua_len, map_f) != lua_len)
+        size_t offset = 0;
+        
+        while (offset < lua_len)
         {
-            read_succeeded = false;
+            size_t ret = fread(&(mapinfo.script[offset]), 1, lua_len - offset, lua_f);
+            
+            if (ret == 0)
+            {
+                return(false);
+            }
+            
+            offset += ret;
         }
         
         fclose(lua_f);

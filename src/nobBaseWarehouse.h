@@ -1,4 +1,4 @@
-// $Id: nobBaseWarehouse.h 9545 2014-12-14 12:05:58Z marcus $
+// $Id: nobBaseWarehouse.h 9548 2014-12-14 19:51:50Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -116,6 +116,8 @@ class nobBaseWarehouse : public nobBaseMilitary
         nobBaseWarehouse(const BuildingType type, const unsigned short x, const unsigned short y, const unsigned char player, const Nation nation);
         nobBaseWarehouse(SerializedGameData* sgd, const unsigned obj_id);
 
+        void Clear();
+        
         virtual ~nobBaseWarehouse();
 
         /// Aufräummethoden
