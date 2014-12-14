@@ -1,4 +1,4 @@
-// $Id: GameWorldBase.cpp 9540 2014-12-14 11:32:47Z marcus $
+// $Id: GameWorldBase.cpp 9547 2014-12-14 13:46:48Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -35,6 +35,8 @@
 #include "nofPassiveSoldier.h"
 #include "nobHarborBuilding.h"
 #include "nobMilitary.h"
+#include "noEnvObject.h"
+#include "noStaticObject.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -69,10 +71,16 @@ GameWorldBase::GameWorldBase() : gi(NULL), width(0), height(0), lt(LT_GREENLAND)
         {"AddWares", LUA_AddWares},
         {"AddPeople", LUA_AddPeople},
         {"GetGF", LUA_GetGF},
+        {"GetPlayerCount", LUA_GetPlayerCount},
+        {"GetPeopleCount", LUA_GetPeopleCount},
+        {"GetWareCount", LUA_GetWareCount},
+        {"GetBuildingCount", LUA_GetBuildingCount},
         {"Log", LUA_Log},
         {"Chat", LUA_Chat},
         {"PostMessage", LUA_PostMessage},
         {"PostMessageWithLocation", LUA_PostMessageWithLocation},
+        {"AddStaticObject", LUA_AddStaticObject},
+        {"AddEnvObject", LUA_AddEnvObject},
         {NULL, NULL}
     };
     
@@ -84,6 +92,9 @@ GameWorldBase::GameWorldBase() : gi(NULL), width(0), height(0), lt(LT_GREENLAND)
     lua_pushlightuserdata(lua, this);
 
     luaL_setfuncs(lua, meta, 1);
+    
+    
+    
     lua_settop(lua, 0);
 
     /*  if (luaL_dostring(lua, "rttr.test(\"hallo\", 23);"))
@@ -2068,6 +2079,116 @@ int GameWorldBase::LUA_GetGF(lua_State *L)
     return(1);
 }
 
+int GameWorldBase::LUA_GetPlayerCount(lua_State *L)
+{
+    lua_pushnumber(L, GAMECLIENT.GetPlayerCount());
+    return(1);
+}
+
+int GameWorldBase::LUA_GetBuildingCount(lua_State *L)
+{
+    if (lua_gettop(L) < 2)
+    {
+        lua_pushstring(L, "need player number and building type!");
+        lua_error(L);
+        return(0);
+    }
+    
+    unsigned pnr = (unsigned) luaL_checknumber(L, 1);
+    
+    if (pnr >= GAMECLIENT.GetPlayerCount())
+    {
+        lua_pushstring(L, "player number invalid!");
+        lua_error(L);
+        return(0);
+    }
+    
+    unsigned building_type = (unsigned) luaL_checknumber(L, 2);
+    
+    if (building_type >= BUILDING_TYPES_COUNT)
+    {
+        lua_pushstring(L, "invalid building type!");
+        lua_error(L);
+        return(0);
+    }
+    
+    BuildingCount bc;
+    
+    GAMECLIENT.GetPlayer(pnr)->GetBuildingCount(bc);
+    
+    lua_pushnumber(L, bc.building_counts[building_type]);
+    
+    return(1);
+}
+
+int GameWorldBase::LUA_GetWareCount(lua_State *L)
+{
+    if (lua_gettop(L) < 2)
+    {
+        lua_pushstring(L, "need player number and ware type!");
+        lua_error(L);
+        return(0);
+    }
+    
+    unsigned pnr = (unsigned) luaL_checknumber(L, 1);
+    
+    if (pnr >= GAMECLIENT.GetPlayerCount())
+    {
+        lua_pushstring(L, "player number invalid!");
+        lua_error(L);
+        return(0);
+    }
+    
+    unsigned type = (unsigned) luaL_checknumber(L, 2);
+    
+    if (type >= WARE_TYPES_COUNT)
+    {
+        lua_pushstring(L, "invalid ware type!");
+        lua_error(L);
+        return(0);
+    }
+
+    const Goods *goods = GAMECLIENT.GetPlayer(pnr)->GetInventory();
+    
+    lua_pushnumber(L, goods->goods[type]);
+    
+    return(1);
+}
+
+int GameWorldBase::LUA_GetPeopleCount(lua_State *L)
+{
+    if (lua_gettop(L) < 2)
+    {
+        lua_pushstring(L, "need player number and job type!");
+        lua_error(L);
+        return(0);
+    }
+    
+    unsigned pnr = (unsigned) luaL_checknumber(L, 1);
+    
+    if (pnr >= GAMECLIENT.GetPlayerCount())
+    {
+        lua_pushstring(L, "player number invalid!");
+        lua_error(L);
+        return(0);
+    }
+    
+    unsigned type = (unsigned) luaL_checknumber(L, 2);
+    
+    if (type >= JOB_TYPES_COUNT)
+    {
+        lua_pushstring(L, "invalid job type!");
+        lua_error(L);
+        return(0);
+    }
+
+    const Goods *goods = GAMECLIENT.GetPlayer(pnr)->GetInventory();
+    
+    lua_pushnumber(L, goods->people[type]);
+    
+    return(1);
+}
+
 int GameWorldBase::LUA_Log(lua_State *L)
 {
     int argc = lua_gettop(L);
@@ -2109,7 +2230,6 @@ int GameWorldBase::LUA_Chat(lua_State *L)
         message.append(luaL_checklstring(L, n, NULL));
     }
     
-    LOG.lprintf("MESSAGE: '%s'\n", message.c_str());
     GAMECLIENT.SystemChat(message);
     
     return(0);
@@ -2128,7 +2248,6 @@ int GameWorldBase::LUA_PostMessage(lua_State *L)
     
     if ((unsigned) GAMECLIENT.GetPlayerID() != (unsigned) luaL_checknumber(L, 1))
     {
-        LOG.lprintf("Not sending message, since we are not player %u.\n", (unsigned) luaL_checknumber(L, 1));
         return(0);
     }
     
@@ -2157,7 +2276,6 @@ int GameWorldBase::LUA_PostMessageWithLocation(lua_State *L)
     
     if ((unsigned) GAMECLIENT.GetPlayerID() != (unsigned) luaL_checknumber(L, 1))
     {
-        LOG.lprintf("Not sending message, since we are not player %u.\n", (unsigned) luaL_checknumber(L, 1));
         return(0);
     }
     
@@ -2174,6 +2292,103 @@ int GameWorldBase::LUA_PostMessageWithLocation(lua_State *L)
     GAMECLIENT.SendPostMessage(new PostMsgWithLocation(message, PMC_OTHER, x, y));
     
     return(0);
+}
+
+int GameWorldBase::LUA_AddStaticObject(lua_State *L)
+{
+    GameWorldGame *gwg = dynamic_cast<GameWorldGame*>((GameWorldBase*) lua_touserdata(L,lua_upvalueindex(1)));
+    
+    if (gwg == NULL)
+    {
+        return(0);
+    }
+    
+    int argc = lua_gettop(L);
+    
+    if (argc < 3)
+    {
+        lua_pushstring(L, "Too few arguments!");
+        lua_error(L);
+        return(0);
+    }
+    
+    unsigned x = (unsigned) luaL_checknumber(L, 1);
+    unsigned y = (unsigned) luaL_checknumber(L, 2);
+    unsigned id = (unsigned) luaL_checknumber(L, 3);
+    
+    unsigned file = 0xFFFF;
+    unsigned size = 0;
+    
+    if (argc > 3)
+    {
+        file = (unsigned) luaL_checknumber(L, 4);
+        
+        if (argc > 4)
+        {
+            size = (unsigned) luaL_checknumber(L, 5);
+            
+            if (size > 2)
+            {
+                lua_pushstring(L, "Invalid size!");
+                lua_error(L);
+                return(0);
+            }
+        }
+    }
+    
+    if (gwg->GetNode(x, y).obj && (gwg->GetNode(x, y).obj->GetGOT() != GOT_NOTHING) && (gwg->GetNode(x, y).obj->GetGOT() != GOT_STATICOBJECT) && (gwg->GetNode(x, y).obj->GetGOT() != GOT_ENVOBJECT))
+    {
+        lua_pushnumber(L, 0);
+        return(1);
+    }
+    
+    gwg->GetNode(x, y).obj = new noStaticObject(x, y, id, file, size);
+    gwg->RecalcBQAroundPoint(x, y);
+       
+    lua_pushnumber(L, 1);
+    return(1);
+}
+
+int GameWorldBase::LUA_AddEnvObject(lua_State *L)
+{
+    GameWorldGame *gwg = dynamic_cast<GameWorldGame*>((GameWorldBase*) lua_touserdata(L,lua_upvalueindex(1)));
+    
+    if (gwg == NULL)
+    {
+        return(0);
+    }
+    
+    int argc = lua_gettop(L);
+    
+    if (argc < 3)
+    {
+        lua_pushstring(L, "Too few arguments!");
+        lua_error(L);
+        return(0);
+    }
+    
+    unsigned x = (unsigned) luaL_checknumber(L, 1);
+    unsigned y = (unsigned) luaL_checknumber(L, 2);
+    unsigned id = (unsigned) luaL_checknumber(L, 3);
+    
+    unsigned file = 0xFFFF;
+    
+    if (argc > 3)
+    {
+        file = (unsigned) luaL_checknumber(L, 4);
+    }
+    
+    if (gwg->GetNode(x, y).obj && (gwg->GetNode(x, y).obj->GetGOT() != GOT_NOTHING) && (gwg->GetNode(x, y).obj->GetGOT() != GOT_STATICOBJECT) && (gwg->GetNode(x, y).obj->GetGOT() != GOT_ENVOBJECT))
+    {
+        lua_pushnumber(L, 0);
+        return(1);
+    }
+    
+    gwg->GetNode(x, y).obj = new noEnvObject(x, y, id, file);
+    gwg->RecalcBQAroundPoint(x, y);   
+    
+    lua_pushnumber(L, 1);
+    return(1);
 }
 
 void GameWorldBase::LUA_EventExplored(unsigned player, MapCoord x, MapCoord y)
