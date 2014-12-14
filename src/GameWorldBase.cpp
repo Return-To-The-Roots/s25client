@@ -1,4 +1,4 @@
-// $Id: GameWorldBase.cpp 9548 2014-12-14 19:51:50Z marcus $
+// $Id: GameWorldBase.cpp 9550 2014-12-14 21:36:13Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -83,6 +83,7 @@ GameWorldBase::GameWorldBase() : gi(NULL), width(0), height(0), lt(LT_GREENLAND)
         {"MissionStatement", LUA_MissionStatement},
         {"PostMessage", LUA_PostMessage},
         {"PostMessageWithLocation", LUA_PostMessageWithLocation},
+        {"PostNewBuildings", LUA_PostNewBuildings},
         {"AddStaticObject", LUA_AddStaticObject},
         {"AddEnvObject", LUA_AddEnvObject},
         {NULL, NULL}
@@ -2359,6 +2360,37 @@ int GameWorldBase::LUA_PostMessageWithLocation(lua_State *L)
     }
     
     GAMECLIENT.SendPostMessage(new PostMsgWithLocation(message, PMC_OTHER, x, y));
+    
+    return(0);
+}
+
+int GameWorldBase::LUA_PostNewBuildings(lua_State *L)
+{
+    int argc = lua_gettop(L);
+    
+    if (argc < 2)
+    {
+        lua_pushstring(L, "Too few arguments!");
+        lua_error(L);
+        return(0);
+    }
+    
+    if ((unsigned) GAMECLIENT.GetPlayerID() != (unsigned) luaL_checknumber(L, 1))
+    {
+        return(0);
+    }
+    
+    unsigned pnr = (unsigned) luaL_checknumber(L, 1);
+    
+    for (int n = 2; n <= argc; n++)
+    {
+        unsigned building_type = (unsigned) luaL_checknumber(L, n);
+        
+        if (building_type < BUILDING_TYPES_COUNT)
+        {
+            GAMECLIENT.SendPostMessage(new ImagePostMsgWithLocation(_(BUILDING_NAMES[building_type]), PMC_GENERAL, GAMECLIENT.GetPlayer(pnr)->hqx, GAMECLIENT.GetPlayer(pnr)->hqy, (BuildingType) building_type, (Nation) GAMECLIENT.GetPlayer(pnr)->nation));
+        }
+    }
     
     return(0);
 }
