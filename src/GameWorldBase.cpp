@@ -1,4 +1,4 @@
-// $Id: GameWorldBase.cpp 9539 2014-12-14 10:15:57Z marcus $
+// $Id: GameWorldBase.cpp 9540 2014-12-14 11:32:47Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -70,6 +70,7 @@ GameWorldBase::GameWorldBase() : gi(NULL), width(0), height(0), lt(LT_GREENLAND)
         {"AddPeople", LUA_AddPeople},
         {"GetGF", LUA_GetGF},
         {"Log", LUA_Log},
+        {"Chat", LUA_Chat},
         {"PostMessage", LUA_PostMessage},
         {"PostMessageWithLocation", LUA_PostMessageWithLocation},
         {NULL, NULL}
@@ -1946,7 +1947,7 @@ int GameWorldBase::LUA_SetRestrictedArea(lua_State* L)
     {
         MapCoord x = (MapCoord) luaL_checknumber(L, cnt++);
         MapCoord y = (MapCoord) luaL_checknumber(L, cnt++);
-        fprintf(stderr, "RESTRICTED AREA - %u, %u\n", x, y);
+//        fprintf(stderr, "RESTRICTED AREA - %u, %u\n", x, y);
 
         restricted_area.push_back(Point<MapCoord>(x, y));
     }
@@ -1982,9 +1983,8 @@ int GameWorldBase::LUA_AddWares(lua_State* L)
 
     if (warehouse == NULL)
     {
-        lua_pushstring(L, "player has no warehouses!");
-        lua_error(L);
-        return(0);
+        lua_pushnumber(L, 0);
+        return(1);
     }
 
     Goods goods;
@@ -2004,7 +2004,8 @@ int GameWorldBase::LUA_AddWares(lua_State* L)
 
     warehouse->AddGoods(goods);
 
-    return(0);
+    lua_pushnumber(L, 1);
+    return(1);
 }
 
 int GameWorldBase::LUA_AddPeople(lua_State* L)
@@ -2035,9 +2036,8 @@ int GameWorldBase::LUA_AddPeople(lua_State* L)
 
     if (warehouse == NULL)
     {
-        lua_pushstring(L, "player has no warehouses!");
-        lua_error(L);
-        return(0);
+        lua_pushnumber(L, 0);
+        return(1);
     }
 
     Goods goods;
@@ -2057,7 +2057,9 @@ int GameWorldBase::LUA_AddPeople(lua_State* L)
 
     warehouse->AddGoods(goods);
 
-    return(0);
+    lua_pushnumber(L, 1);
+    
+    return(1);
 }
 
 int GameWorldBase::LUA_GetGF(lua_State *L)
@@ -2078,6 +2080,37 @@ int GameWorldBase::LUA_Log(lua_State *L)
     }
     
     LOG.lprintf("%s\n", message.c_str());
+    
+    return(0);
+}
+
+int GameWorldBase::LUA_Chat(lua_State *L)
+{
+    int argc = lua_gettop(L);
+    
+    if (argc < 2)
+    {
+        lua_pushstring(L, "Too few arguments!");
+        lua_error(L);
+        return(0);
+    }
+    
+    unsigned player = (unsigned) luaL_checknumber(L, 1);
+    
+    if ((player != 0xFFFFFFFF) && (unsigned) GAMECLIENT.GetPlayerID() != player)
+    {
+        return(0);
+    }
+    
+    std::string message;
+    
+    for (int n = 2; n <= argc; n++)
+    {
+        message.append(luaL_checklstring(L, n, NULL));
+    }
+    
+    LOG.lprintf("MESSAGE: '%s'\n", message.c_str());
+    GAMECLIENT.SystemChat(message);
     
     return(0);
 }
@@ -2143,9 +2176,9 @@ int GameWorldBase::LUA_PostMessageWithLocation(lua_State *L)
     return(0);
 }
 
-void GameWorldBase::EventExplored(unsigned player, MapCoord x, MapCoord y)
+void GameWorldBase::LUA_EventExplored(unsigned player, MapCoord x, MapCoord y)
 {
-    lua_getglobal(lua, "explored");
+    lua_getglobal(lua, "onExplored");
 
     if (lua_isfunction(lua, -1))
     {
@@ -2166,9 +2199,9 @@ void GameWorldBase::EventExplored(unsigned player, MapCoord x, MapCoord y)
     }
 }
 
-void GameWorldBase::EventOccupied(unsigned player, MapCoord x, MapCoord y)
+void GameWorldBase::LUA_EventOccupied(unsigned player, MapCoord x, MapCoord y)
 {
-    lua_getglobal(lua, "occupied");
+    lua_getglobal(lua, "onOccupied");
 
     if (lua_isfunction(lua, -1))
     {
@@ -2189,9 +2222,9 @@ void GameWorldBase::EventOccupied(unsigned player, MapCoord x, MapCoord y)
     }
 }
 
-void GameWorldBase::EventStart()
+void GameWorldBase::LUA_EventStart()
 {
-    lua_getglobal(lua, "start");
+    lua_getglobal(lua, "onStart");
 
     if (lua_isfunction(lua, -1))
     {
@@ -2207,4 +2240,51 @@ void GameWorldBase::EventStart()
         lua_pop(lua, 1);
     }
 }
+
+void GameWorldBase::LUA_EventGF(unsigned nr)
+{
+    lua_getglobal(lua, "onGameFrame");
+
+    if (lua_isfunction(lua, -1))
+    {
+        lua_pushnumber(lua, nr);
+        
+        // 1 argument, 0 return values, no error handler
+        if (lua_pcall(lua, 1, 0, 0))
+        {
+            fprintf(stderr, "ERROR: '%s'!\n", lua_tostring(lua, -1));
+            lua_pop(lua, 1);
+        }
+    }
+    else
+    {
+        lua_pop(lua, 1);
+    }
+}
+
+void GameWorldBase::LUA_EventResourceFound(const unsigned char player, const unsigned short x, const unsigned short y, const unsigned char type, const unsigned char quantity)
+{
+    lua_getglobal(lua, "onResourceFound");
+
+    if (lua_isfunction(lua, -1))
+    {
+        lua_pushnumber(lua, player);
+        lua_pushnumber(lua, x);
+        lua_pushnumber(lua, y);
+        lua_pushnumber(lua, type);
+        lua_pushnumber(lua, quantity);
+        
+        // 5 arguments, 0 return values, no error handler
+        if (lua_pcall(lua, 5, 0, 0))
+        {
+            fprintf(stderr, "ERROR: '%s'!\n", lua_tostring(lua, -1));
+            lua_pop(lua, 1);
+        }
+    }
+    else
+    {
+        lua_pop(lua, 1);
+    }
+}
+
 

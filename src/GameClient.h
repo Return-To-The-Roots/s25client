@@ -1,4 +1,4 @@
-// $Id: GameClient.h 9532 2014-12-09 08:52:41Z marcus $
+// $Id: GameClient.h 9540 2014-12-14 11:32:47Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -166,6 +166,7 @@ class GameClient : public Singleton<GameClient>, public GameMessageInterface
         /// Gibt Pathfinding-Results zurück aus einem Replay
         bool ReadPathfindingResult( unsigned char* dir, unsigned* length, Point<MapCoord>* next_harbor);
 
+        void SystemChat(std::string text);
     private:
         /// Versucht einen neuen GameFrame auszuführen, falls die Zeit dafür gekommen ist
         void ExecuteGameFrame(const bool skipping = false);

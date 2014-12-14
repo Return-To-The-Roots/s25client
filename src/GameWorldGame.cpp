@@ -1,4 +1,4 @@
-// $Id: GameWorldGame.cpp 9529 2014-12-01 17:36:21Z marcus $
+// $Id: GameWorldGame.cpp 9540 2014-12-14 11:32:47Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -634,7 +634,7 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding* const building, const 
                     sizeChanges[prev_player - 1]--;
 
                 // Event for map scripting
-                EventOccupied(player - 1, tx, ty);
+                LUA_EventOccupied(player - 1, tx, ty);
             }
             else
                 owner_changed[(x2 - x1) * (y - y1) + (x - x1)] = false;
@@ -1561,7 +1561,7 @@ void GameWorldGame::RecalcVisibility(const MapCoord x, const MapCoord y, const u
     {
         if (visibility_before != VIS_VISIBLE)
         {
-            EventExplored(player, x, y);
+            LUA_EventExplored(player, x, y);
         }
 
         GetNode(x, y).fow[player].visibility = VIS_VISIBLE;

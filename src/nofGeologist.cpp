@@ -1,4 +1,4 @@
-// $Id: nofGeologist.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: nofGeologist.cpp 9540 2014-12-14 11:32:47Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -515,6 +515,7 @@ void nofGeologist::SetSign(const unsigned char resources)
         resAlreadyFound[type] = true;
     }
 
+    gwg->LUA_EventResourceFound(this->player, x, y, type, quantity);
 
     // Schild setzen
     gwg->SetNO(new noSign(x, y, type, quantity), x, y);

@@ -1,4 +1,4 @@
-// $Id: GameClient.cpp 9539 2014-12-14 10:15:57Z marcus $
+// $Id: GameClient.cpp 9540 2014-12-14 11:32:47Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1584,6 +1584,8 @@ void GameClient::NextGF()
             players[i].TestPacts();
         }
     }
+    
+    gw->LUA_EventGF(framesinfo.nr);
 }
 
 
@@ -1902,6 +1904,11 @@ void GameClient::SkipGF(unsigned int gf)
 	ci->CI_Chat(playerid, CD_SYSTEM, text); 
 	SetReplayPause(true);
 
+}
+
+void GameClient::SystemChat(std::string text)
+{
+    ci->CI_Chat(playerid, CD_SYSTEM, text);
 }
 
 unsigned GameClient::WriteSaveHeader(const std::string& filename)

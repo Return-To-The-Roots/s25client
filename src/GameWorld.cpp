@@ -1,4 +1,4 @@
-// $Id: GameWorld.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: GameWorld.cpp 9540 2014-12-14 11:32:47Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -73,7 +73,7 @@ bool GameWorld::LoadMap(const std::string& filename)
         this->MoveToMapObject(GetPlayer(GameClient::inst().GetPlayerID())->hqx,
                               GetPlayer(GameClient::inst().GetPlayerID())->hqy);
 
-    EventStart();
+    LUA_EventStart();
 
     return true;
 }
