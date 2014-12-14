@@ -1,4 +1,4 @@
-// $Id: nobHarborBuilding.cpp 9544 2014-12-14 12:05:30Z marcus $
+// $Id: nobHarborBuilding.cpp 9546 2014-12-14 12:06:35Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -134,11 +134,14 @@ void nobHarborBuilding::Destroy()
     //cancel order for scouts
     if (exploration_expedition.active)
     {
+		real_goods.people[JOB_SCOUT] += exploration_expedition.scouts;
         for (unsigned i = exploration_expedition.scouts; i < SCOUTS_EXPLORATION_EXPEDITION; i++)
         {
             gwg->GetPlayer(player)->OneJobNotWanted(JOB_SCOUT, this);
         }
     }
+	//cancel all jobs wanted for this building
+	gwg->GetPlayer(player)->JobNotWanted(this,true);
     // Waiting Wares löschen
     for(std::list<Ware*>::iterator it = wares_for_ships.begin(); it != wares_for_ships.end(); ++it)
     {

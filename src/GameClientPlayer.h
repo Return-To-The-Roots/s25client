@@ -1,4 +1,4 @@
-// $Id: GameClientPlayer.h 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: GameClientPlayer.h 9546 2014-12-14 12:06:35Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -239,7 +239,7 @@ class GameClientPlayer : public GamePlayerInfo
         /// Fügt ein RoadNode hinzu, der einen bestimmten Job braucht
         void AddJobWanted(const Job job, noRoadNode* workplace);
         /// Entfernt ihn wieder aus der Liste (wenn er dann doch nich mehr gebraucht wird)
-        void JobNotWanted(noRoadNode* workplace);
+        void JobNotWanted(noRoadNode* workplace,bool all=false);
         /// Entfernt einen ausgesuchten Job wieder aus der Liste (wenn er dann doch nich mehr gebraucht wird)
         void OneJobNotWanted(const Job job, noRoadNode* workplace);
         /// Versucht für alle Arbeitsplätze eine Arbeitskraft zu suchen

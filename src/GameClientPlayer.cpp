@@ -1,4 +1,4 @@
-// $Id: GameClientPlayer.cpp 9545 2014-12-14 12:05:58Z marcus $
+// $Id: GameClientPlayer.cpp 9546 2014-12-14 12:06:35Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -745,14 +745,15 @@ void GameClientPlayer::AddJobWanted(const Job job, noRoadNode* workplace)
     }
 }
 
-void GameClientPlayer::JobNotWanted(noRoadNode* workplace)
+void GameClientPlayer::JobNotWanted(noRoadNode* workplace,bool all)
 {
     for(std::list<JobNeeded>::iterator it = jobs_wanted.begin(); it != jobs_wanted.end(); ++it)
     {
         if(it->workplace == workplace)
         {
-            jobs_wanted.erase(it);
-            return;
+            it = jobs_wanted.erase(it);
+			if(!all || it==jobs_wanted.end())
+				return;
         }
     }
 }
@@ -2203,6 +2204,18 @@ void GameClientPlayer::TestForEmergencyProgramm()
 			}			
 		}*/
     }
+	/*	
+	unsigned c=0;
+	for(std::list<JobNeeded>::iterator it = jobs_wanted.begin(); it != jobs_wanted.end(); ++it)
+	{
+		c++;
+		if(!(it->workplace->GetX()<0||it->workplace->GetX()>300||it->workplace->GetY()<0||it->workplace->GetY()>300) && it->workplace->GetPlayer()!=playerid)
+		{
+			LOG.lprintf("soon bad job type %i at %i,%i player %i, jobc %i, owner of workplace %i \n",it->job,it->workplace->GetX(),it->workplace->GetY(),playerid,c,it->workplace->GetPlayer());
+		}			
+		if(it->workplace->GetX()<0||it->workplace->GetX()>300||it->workplace->GetY()<0||it->workplace->GetY()>300)
+			LOG.lprintf("NOW HORRIBLE job needed type %i at %i,%i player %i, jobc %i \n",it->job,it->workplace->GetX(),it->workplace->GetY(),playerid,c);
+	}*/
 
     // Holzfäller und Sägewerke zählen, -10 ftw
     unsigned woodcutter = buildings[BLD_WOODCUTTER - 10].size();
