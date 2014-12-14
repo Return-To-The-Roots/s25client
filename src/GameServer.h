@@ -1,4 +1,4 @@
-// $Id: GameServer.h 9533 2014-12-09 08:53:24Z marcus $
+// $Id: GameServer.h 9539 2014-12-14 10:15:57Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -168,6 +168,7 @@ class GameServer : public Singleton<GameServer>, public GameMessageInterface
                 std::string name;
                 unsigned char* zipdata;
                 MapType map_type;
+                std::string script;
         } mapinfo;
 
         Socket serversocket;

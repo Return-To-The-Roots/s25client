@@ -1,4 +1,4 @@
-// $Id: GameMessages.h 9384 2014-05-01 14:53:50Z FloSoft $
+// $Id: GameMessages.h 9539 2014-12-14 10:15:57Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -629,19 +629,22 @@ class GameMessage_Map_Info : public GameMessage
         unsigned ziplength;
         /// Größe der dekomprimierten Daten
         unsigned normal_length;
+        /// LUA script
+        std::string script;
 
     public:
         GameMessage_Map_Info(void) : GameMessage(NMS_MAP_INFO) { }
         GameMessage_Map_Info(const std::string& map_name, const MapType mt, const unsigned partcount,
-                             const unsigned ziplength, const unsigned normal_length)
+                             const unsigned ziplength, const unsigned normal_length, const std::string& script)
             : GameMessage(NMS_MAP_INFO, 0xFF), map_name(map_name),  mt(mt), partcount(partcount), ziplength(ziplength),
-              normal_length(normal_length)
+              normal_length(normal_length), script(script)
         {
             PushString(map_name);
             PushUnsignedChar(static_cast<unsigned char>(mt));
             PushUnsignedInt(partcount);
             PushUnsignedInt(ziplength);
             PushUnsignedInt(normal_length);
+            PushString(script);
 
             LOG.write(">>> NMS_MAP_INFO\n");
         }
@@ -652,6 +655,7 @@ class GameMessage_Map_Info : public GameMessage
             partcount = PopUnsignedInt();
             ziplength = PopUnsignedInt();
             normal_length = PopUnsignedInt();
+            script = PopString();
 
             LOG.write("<<< NMS_MAP_INFO\n");
             GetInterface(callback)->OnNMSMapInfo(*this);

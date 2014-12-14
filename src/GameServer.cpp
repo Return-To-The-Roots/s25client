@@ -1,4 +1,4 @@
-// $Id: GameServer.cpp 9532 2014-12-09 08:52:41Z marcus $
+// $Id: GameServer.cpp 9539 2014-12-14 10:15:57Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -227,6 +227,30 @@ bool GameServer::Start()
     bool read_succeeded = ((unsigned int)libendian::le_read_c(map_data, mapinfo.length, map_f) == mapinfo.length);
     fclose(map_f);
 
+    // read lua script - if any
+    std::string lua_file = serverconfig.mapname.substr(0, serverconfig.mapname.length() - 3);
+    lua_file.append("lua");
+    
+    FILE *lua_f = fopen(lua_file.c_str(), "rb");
+    
+    if (lua_f)
+    {
+        ssize_t lua_len;
+        
+        fseek(lua_f, 0, SEEK_END);
+        lua_len = ftell(lua_f);
+        fseek(lua_f, 0, SEEK_SET);
+        
+        mapinfo.script.resize(lua_len);
+        
+        if ((ssize_t)libendian::le_read_c(&mapinfo.script[0], lua_len, map_f) != lua_len)
+        {
+            read_succeeded = false;
+        }
+        
+        fclose(lua_f);
+    }
+    
     if(!read_succeeded)
         return false;
 
@@ -1295,7 +1319,7 @@ inline void GameServer::OnNMSPlayerName(const GameMessage_Player_Name& msg)
     player->temp_ul = 0;
 
     player->send_queue.push(new GameMessage_Map_Info(mapinfo.name, mapinfo.map_type, mapinfo.partcount,
-                            mapinfo.ziplength, mapinfo.length));
+                            mapinfo.ziplength, mapinfo.length, mapinfo.script));
 
     // Und Kartendaten
     for(unsigned i = 0; i < mapinfo.partcount; ++i)

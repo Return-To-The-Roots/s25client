@@ -1,4 +1,4 @@
-// $Id: GameWorldBase.cpp 9518 2014-11-30 09:22:47Z marcus $
+// $Id: GameWorldBase.cpp 9539 2014-12-14 10:15:57Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -54,8 +54,13 @@ GameWorldBase::GameWorldBase() : gi(NULL), width(0), height(0), lt(LT_GREENLAND)
 
     // initialize scripting
     lua = luaL_newstate();
-    luaL_openlibs(lua);
-
+    //luaL_openlibs(lua);
+    luaopen_base(lua);
+    luaopen_package(lua);
+    luaopen_string(lua);
+    luaopen_table(lua);
+    luaopen_math(lua);
+    
     static const luaL_Reg meta[] =
     {
         {"EnableBuilding", LUA_EnableBuilding},
@@ -63,9 +68,13 @@ GameWorldBase::GameWorldBase() : gi(NULL), width(0), height(0), lt(LT_GREENLAND)
         {"SetRestrictedArea", LUA_SetRestrictedArea},
         {"AddWares", LUA_AddWares},
         {"AddPeople", LUA_AddPeople},
+        {"GetGF", LUA_GetGF},
+        {"Log", LUA_Log},
+        {"PostMessage", LUA_PostMessage},
+        {"PostMessageWithLocation", LUA_PostMessageWithLocation},
         {NULL, NULL}
     };
-
+    
     luaL_newlibtable(lua, meta);
 
     lua_setglobal(lua, "rttr");
@@ -1794,9 +1803,6 @@ void GameWorldBase::GetAvailableSoldiersForSeaAttack(const unsigned char player_
 
     // Entsprechend nach Rang sortieren
     attackers->sort();
-
-
-
 }
 
 int GameWorldBase::LUA_EnableBuilding(lua_State* L)
@@ -1804,7 +1810,7 @@ int GameWorldBase::LUA_EnableBuilding(lua_State* L)
 //  GameWorldBase *gw = static_cast<GameWorldBase*>(lua_touserdata(L,lua_upvalueindex(1)));
     int argc = lua_gettop(L);
 
-    if (argc < 2)
+    if (argc < 1)
     {
         lua_pushstring(L, "too few or too many arguments!");
         lua_error(L);
@@ -1823,6 +1829,16 @@ int GameWorldBase::LUA_EnableBuilding(lua_State* L)
 
     GameClientPlayer* player = GAMECLIENT.GetPlayer(pnr);
 
+    if (argc == 1)
+    {
+        for (unsigned building_type = 0; building_type < BUILDING_TYPES_COUNT; building_type++)
+        {
+            player->EnableBuilding(BuildingType(building_type));
+        }
+        
+        return(0);
+    }
+    
     int cnt = 2;
     while (cnt <= argc)
     {
@@ -1831,7 +1847,6 @@ int GameWorldBase::LUA_EnableBuilding(lua_State* L)
 
         if (building_type < BUILDING_TYPES_COUNT)
         {
-            fprintf(stderr, "ENABLE %u\n", building_type);
             player->EnableBuilding(BuildingType(building_type));
         }
         else
@@ -1849,7 +1864,7 @@ int GameWorldBase::LUA_DisableBuilding(lua_State* L)
 //  GameWorldBase *gw = static_cast<GameWorldBase*>(lua_touserdata(L,lua_upvalueindex(1)));
     int argc = lua_gettop(L);
 
-    if (argc < 2)
+    if (argc < 1)
     {
         lua_pushstring(L, "too few or too many arguments!");
         lua_error(L);
@@ -1865,9 +1880,19 @@ int GameWorldBase::LUA_DisableBuilding(lua_State* L)
         lua_error(L);
         return(0);
     }
-
+    
     GameClientPlayer* player = GAMECLIENT.GetPlayer(pnr);
-
+    
+    if (argc == 1)
+    {
+        for (unsigned building_type = 0; building_type < BUILDING_TYPES_COUNT; building_type++)
+        {
+            player->DisableBuilding(BuildingType(building_type));
+        }
+        
+        return(0);
+    }
+    
     int cnt = 2;
     while (cnt <= argc)
     {
@@ -1876,10 +1901,8 @@ int GameWorldBase::LUA_DisableBuilding(lua_State* L)
 
         if (building_type < BUILDING_TYPES_COUNT)
         {
-            fprintf(stderr, "DISABLE %u\n", building_type);
             player->DisableBuilding(BuildingType(building_type));
-        }
-        else
+        } else
         {
             lua_pushstring(L, "building type invalid!");
             lua_error(L);
@@ -2034,6 +2057,89 @@ int GameWorldBase::LUA_AddPeople(lua_State* L)
 
     warehouse->AddGoods(goods);
 
+    return(0);
+}
+
+int GameWorldBase::LUA_GetGF(lua_State *L)
+{
+    lua_pushnumber(L, GAMECLIENT.GetGFNumber());
+    return(1);
+}
+
+int GameWorldBase::LUA_Log(lua_State *L)
+{
+    int argc = lua_gettop(L);
+    
+    std::string message;
+    
+    for (int n = 1; n <= argc; n++)
+    {
+        message.append(luaL_checklstring(L, n, NULL));
+    }
+    
+    LOG.lprintf("%s\n", message.c_str());
+    
+    return(0);
+}
+
+int GameWorldBase::LUA_PostMessage(lua_State *L)
+{
+    int argc = lua_gettop(L);
+    
+    if (argc < 2)
+    {
+        lua_pushstring(L, "Too few arguments!");
+        lua_error(L);
+        return(0);
+    }
+    
+    if ((unsigned) GAMECLIENT.GetPlayerID() != (unsigned) luaL_checknumber(L, 1))
+    {
+        LOG.lprintf("Not sending message, since we are not player %u.\n", (unsigned) luaL_checknumber(L, 1));
+        return(0);
+    }
+    
+    std::string message;
+    
+    for (int n = 2; n <= argc; n++)
+    {
+        message.append(luaL_checklstring(L, n, NULL));
+    }
+    
+    GAMECLIENT.SendPostMessage(new PostMsg(message, PMC_OTHER));
+    
+    return(0);
+}
+
+int GameWorldBase::LUA_PostMessageWithLocation(lua_State *L)
+{
+    int argc = lua_gettop(L);
+    
+    if (argc < 4)
+    {
+        lua_pushstring(L, "Too few arguments!");
+        lua_error(L);
+        return(0);
+    }
+    
+    if ((unsigned) GAMECLIENT.GetPlayerID() != (unsigned) luaL_checknumber(L, 1))
+    {
+        LOG.lprintf("Not sending message, since we are not player %u.\n", (unsigned) luaL_checknumber(L, 1));
+        return(0);
+    }
+    
+    MapCoord x = (MapCoord) luaL_checknumber(L, 2);
+    MapCoord y = (MapCoord) luaL_checknumber(L, 3);
+    
+    std::string message;
+    
+    for (int n = 4; n <= argc; n++)
+    {
+        message.append(luaL_checklstring(L, n, NULL));
+    }
+    
+    GAMECLIENT.SendPostMessage(new PostMsgWithLocation(message, PMC_OTHER, x, y));
+    
     return(0);
 }
 

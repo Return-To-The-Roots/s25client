@@ -1,4 +1,4 @@
-// $Id: GameWorld.h 9527 2014-12-01 17:34:30Z marcus $
+// $Id: GameWorld.h 9539 2014-12-14 10:15:57Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -462,7 +462,11 @@ class GameWorldBase
         static int LUA_SetRestrictedArea(lua_State* L);
         static int LUA_AddWares(lua_State* L);
         static int LUA_AddPeople(lua_State* L);
-
+        static int LUA_GetGF(lua_State *L);
+        static int LUA_Log(lua_State *L);
+        static int LUA_PostMessage(lua_State *L);
+        static int LUA_PostMessageWithLocation(lua_State *L);
+        
     public:
         void EventExplored(unsigned player, MapCoord x, MapCoord y);
         void EventOccupied(unsigned player, MapCoord x, MapCoord y);
