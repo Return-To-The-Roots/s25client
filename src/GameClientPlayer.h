@@ -1,4 +1,4 @@
-// $Id: GameClientPlayer.h 9546 2014-12-14 12:06:35Z marcus $
+// $Id: GameClientPlayer.h 9552 2014-12-14 21:57:34Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -326,6 +326,8 @@ class GameClientPlayer : public GamePlayerInfo
 
         /// Darf der andere Spieler von mir angegriffen werden?
         bool IsPlayerAttackable(const unsigned char player) const;
+		/// Am I allowed to construct this building?
+		bool IsBuildingEnabled(BuildingType type) const {return(building_enabled[type]);}
         /// Ist ein anderer Spieler ein richtiger Verbündeter von uns, d.h. Teamsicht, Unterstützung durch aggressive Verteidiger usw.?
         bool IsAlly(const unsigned char player) const;
         /// Truppen bestellen

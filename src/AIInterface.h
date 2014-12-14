@@ -147,6 +147,9 @@ class AIInterface
         // Checks if it is allowed to build catapults
         bool CanBuildCatapult() const { return player->CanBuildCatapult(); }
 
+		/// checks if the player is allowed to build the buildingtype (lua maybe later addon?)
+		bool CanBuildBuildingtype(BuildingType bt) const { return player->IsBuildingEnabled(bt); }
+
         /// Tests whether a player is attackable or not (alliances, etc)
         bool IsPlayerAttackable(unsigned char playerID) const { return player->IsPlayerAttackable(playerID); }
 

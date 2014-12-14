@@ -1,4 +1,4 @@
-// $Id: AIConstruction.cpp 9499 2014-11-29 10:43:47Z marcus $
+// $Id: AIConstruction.cpp 9552 2014-12-14 21:57:34Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -399,6 +399,8 @@ unsigned AIConstruction::GetBuildingSitesCount(BuildingType type)
 
 bool AIConstruction::Wanted(BuildingType type)
 {
+	if (!aii->CanBuildBuildingtype(type))
+		return false;
     if (type == BLD_CATAPULT)
         return aii->CanBuildCatapult() && (aii->GetInventory()->goods[GD_STONES] > 50 + (4 * GetBuildingCount(BLD_CATAPULT)));
     if ((type >= BLD_BARRACKS && type <= BLD_FORTRESS) || type == BLD_STOREHOUSE)
