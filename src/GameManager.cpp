@@ -1,4 +1,4 @@
-// $Id: GameManager.cpp 9541 2014-12-14 12:02:52Z marcus $
+// $Id: GameManager.cpp 9543 2014-12-14 12:04:38Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -254,14 +254,17 @@ bool GameManager::Run()
     }
 
     // und zeichnen
-    char frame_str[64];
-    sprintf(frame_str, "%d fps", framerate);
+	//only draw if we dont skip ahead right now
+	if(!GAMECLIENT.skiptogf || GAMECLIENT.skiptogf < GAMECLIENT.GetGFNumber())
+	{
+		char frame_str[64];
+		sprintf(frame_str, "%d fps", framerate);
 
-    SmallFont->Draw( VideoDriverWrapper::inst().GetScreenWidth(), 0, frame_str, glArchivItem_Font::DF_RIGHT, COLOR_YELLOW);
+		SmallFont->Draw( VideoDriverWrapper::inst().GetScreenWidth(), 0, frame_str, glArchivItem_Font::DF_RIGHT, COLOR_YELLOW);
 
-    // Zeichenpuffer wechseln
-    VideoDriverWrapper::inst().SwapBuffers();
-
+		// Zeichenpuffer wechseln
+		VideoDriverWrapper::inst().SwapBuffers();
+	}
     ++frames;
 
     // Fenstermanager aufräumen
