@@ -1,4 +1,4 @@
-// $Id: GameClientPlayer.cpp 9542 2014-12-14 12:04:08Z marcus $
+// $Id: GameClientPlayer.cpp 9545 2014-12-14 12:05:58Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -2190,6 +2190,18 @@ void GameClientPlayer::TestForEmergencyProgramm()
     {
         boards += (*w)->GetInventory()->goods[GD_BOARDS];
         stones += (*w)->GetInventory()->goods[GD_STONES];
+		/*std::list<Ware*> testwares = (*w)->GetDependentWares();
+		unsigned c=0;
+		unsigned bad=-1;
+		for(std::list<Ware*>::iterator a = testwares.begin(); a!= testwares.end(); ++a)
+		{
+			c++;
+			if((*a)->goal->GetX()!=(*w)->GetX() || (*a)->goal->GetY()!=(*w)->GetY())
+			{
+				bad=c;
+				LOG.lprintf("bad ware id %i, type %i, player %i, wareloc %i,%i, goal loc %i,%i expecting wh %i,%i warenumber %i \n",(*a)->GetObjId(),(*a)->type,playerid,(*a)->GetLocation()?(*a)->GetLocation()->GetX():0,(*a)->GetLocation()?(*a)->GetLocation()->GetY():0, (*a)->goal->GetX(),(*a)->goal->GetY(),(*w)->GetX(),(*w)->GetY(),c);
+			}			
+		}*/
     }
 
     // Holzfäller und Sägewerke zählen, -10 ftw

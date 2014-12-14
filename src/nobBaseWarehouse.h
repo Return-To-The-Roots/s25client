@@ -1,4 +1,4 @@
-// $Id: nobBaseWarehouse.h 9544 2014-12-14 12:05:30Z marcus $
+// $Id: nobBaseWarehouse.h 9545 2014-12-14 12:05:58Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -211,7 +211,7 @@ class nobBaseWarehouse : public nobBaseMilitary
 		void RemoveDependentWare(Ware* ware) { dependent_wares.remove(ware); }
         /// Überprüft, ob Ware abhängig ist
 		bool IsWareDependent(Ware* ware) { return std::find(dependent_wares.begin(),dependent_wares.end(),ware)!=dependent_wares.end(); }
-
+		std::list<Ware*> GetDependentWares() {return dependent_wares;}
         /// Prüft, ob es Waren zum Auslagern gibt
         bool AreWaresToEmpty() const;
 

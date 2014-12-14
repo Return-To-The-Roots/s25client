@@ -1,4 +1,4 @@
-// $Id: Ware.cpp 9542 2014-12-14 12:04:08Z marcus $
+// $Id: Ware.cpp 9545 2014-12-14 12:05:58Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -57,6 +57,7 @@ Ware::~Ware()
 
 void Ware::Destroy(void)
 {
+	
 }
 
 void Ware::Serialize_Ware(SerializedGameData* sgd) const
@@ -151,7 +152,7 @@ void Ware::GoalDestroyed()
     else if(state == STATE_ONSHIP)
     {
         // Ziel zunächst auf NULL setzen, was dann vom Zielhafen erkannt wird,
-        // woraufhin dieser die Ware gleich in sein Inventar mit übernimmt
+        // woraufhin dieser die Ware gleich in sein Inventar mit übernimmt		
         goal = NULL;
     }
     // Oder wartet sie im Hafen noch auf ein Schiff
@@ -169,9 +170,7 @@ void Ware::GoalDestroyed()
         assert(location->GetPlayer() < MAX_PLAYERS);
 
         // Wird sie gerade aus einem Lagerhaus rausgetragen?
-        if(location->GetGOT() == GOT_NOB_STOREHOUSE ||
-                /*location->GetGOT() == GOT_NOB_HARBOUR || */
-                location->GetGOT() == GOT_NOB_HQ)
+        if(location->GetGOT() == GOT_NOB_STOREHOUSE || location->GetGOT() == GOT_NOB_HARBORBUILDING || location->GetGOT() == GOT_NOB_HQ)
         {
             if(location != goal)
             {
@@ -179,7 +178,7 @@ void Ware::GoalDestroyed()
                 // Lagerhaus ggf. Bescheid sagen
                 goal->TakeWare(this);
             }
-            else
+            else //at the goal (which was just destroyed) and get carried out right now? -> we are about to get destroyed...
             {
                 goal = NULL;
                 next_dir = 0xFF;
@@ -212,15 +211,26 @@ void Ware::GoalDestroyed()
         }
         else if(state == STATE_CARRIED)
         {
-            // Ziel = aktuelle Position, d.h. der Träger, der die Ware trägt, geht gerade in das Zielgebäude rein
-            // d.h. es ist sowieso zu spät
+            // if goal = current location -> too late to do anything our road will be removed and ware destroyed when the carrier starts walking about
+			// goal != current location -> find a warehouse for us (if we are entering a warehouse already set this as new goal (should only happen if its a harbor for shipping as the building wasnt our goal))
+
             if(goal != location)
             {
-                goal = gwg->GetPlayer(location->GetPlayer())->FindWarehouse(location, FW::Condition_StoreWare, 0, true, &type, true);
+				if(location->GetGOT() == GOT_NOB_STOREHOUSE || location->GetGOT() == GOT_NOB_HARBORBUILDING || location->GetGOT() == GOT_NOB_HQ) //currently carried into a warehouse? -> add ware (pathfinding will not return this wh because of path lengths 0)
+				{
+					if(location->GetGOT()!=GOT_NOB_HARBORBUILDING)
+						LOG.lprintf("WARNING: Ware::GoalDestroyed() -- ware is currently being carried into warehouse or hq that was not it's goal! ware id %i, type %i, player %i, wareloc %i,%i, goal loc %i,%i \n",GetObjId(),type,location->GetPlayer(),GetLocation()->GetX(),GetLocation()->GetY(), goal->GetX(),goal->GetY());
+					goal = static_cast<noBaseBuilding*>(location);
+					goal->TakeWare(this);
+				}
+				else
+				{
+					goal = gwg->GetPlayer(location->GetPlayer())->FindWarehouse(location, FW::Condition_StoreWare, 0, true, &type, true);
 
-                if(goal)
-                    // Lagerhaus ggf. Bescheid sagen
-                    goal->TakeWare(this);
+					if(goal)
+						// Lagerhaus ggf. Bescheid sagen
+						goal->TakeWare(this);
+				}
             }
         }
     }
