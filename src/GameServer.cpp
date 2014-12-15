@@ -1,4 +1,4 @@
-// $Id: GameServer.cpp 9548 2014-12-14 19:51:50Z marcus $
+// $Id: GameServer.cpp 9554 2014-12-15 20:57:17Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -258,6 +258,10 @@ bool GameServer::Start()
         }
         
         fclose(lua_f);
+    } else
+    {
+        // just to be sure
+        mapinfo.script.clear();
     }
     
     if(!read_succeeded)
