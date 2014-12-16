@@ -1,4 +1,4 @@
-// $Id: AIEventManager.h 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: AIEventManager.h 9555 2014-12-16 15:25:13Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -44,7 +44,8 @@ namespace AIEvent
         ResourceUsed,
         RoadConstructionComplete,
         RoadConstructionFailed,
-        NewColonyFounded
+        NewColonyFounded,
+		LuaConstructionOrder
     };
 
 

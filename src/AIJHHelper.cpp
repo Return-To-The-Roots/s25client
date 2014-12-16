@@ -1,4 +1,4 @@
-// $Id: AIJHHelper.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: AIJHHelper.cpp 9555 2014-12-16 15:25:13Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -497,6 +497,13 @@ void AIJH::EventJob::ExecuteJob()
         {
             AIEvent::Direction* dvb = dynamic_cast<AIEvent::Direction*>(ev);
             aijh->HandleRoadConstructionFailed(AIPlayerJH::Coords(dvb->GetX(), dvb->GetY()), dvb->GetDirection());
+            status = AIJH::JOB_FINISHED;
+        }
+        break;
+		case AIEvent::LuaConstructionOrder:
+        {
+            AIEvent::Building* evb = dynamic_cast<AIEvent::Building*>(ev);
+			aijh->ExecuteLuaConstructionOrder(evb->GetX(),evb->GetY(),evb->GetBuildingType(),true);           
             status = AIJH::JOB_FINISHED;
         }
         break;

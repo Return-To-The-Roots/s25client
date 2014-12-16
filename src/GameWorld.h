@@ -1,4 +1,4 @@
-// $Id: GameWorld.h 9550 2014-12-14 21:36:13Z marcus $
+// $Id: GameWorld.h 9555 2014-12-16 15:25:13Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -474,6 +474,7 @@ class GameWorldBase
         static int LUA_GetWareCount(lua_State *L);
         static int LUA_GetPeopleCount(lua_State *L);
         static int LUA_AddEnvObject(lua_State *L);
+		static int LUA_AIConstructionOrder(lua_State *L);
         static int LUA_AddStaticObject(lua_State *L);
         static int LUA_PostNewBuildings(lua_State *L);
         

@@ -1,4 +1,4 @@
-// $Id: AIJHHelper.h 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: AIJHHelper.h 9555 2014-12-16 15:25:13Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -115,6 +115,7 @@ namespace AIJH
             virtual ~Job() { }
             virtual void ExecuteJob() { return; }
             JobStatus GetStatus() { return status; }
+			void SetStatus(JobStatus s) {status=s;}
         protected:
             AIPlayerJH* aijh;
             AIInterface* aii;
@@ -127,14 +128,16 @@ namespace AIJH
         public:
             BuildJob(AIPlayerJH* aijh, BuildingType type, MapCoord around_x, MapCoord around_y, SearchMode searchMode = SEARCHMODE_RADIUS)
                 : Job(aijh), type(type), target_x(0xFFFF), target_y(0xFFFF), around_x(around_x), around_y(around_y), searchMode(searchMode) { }
-            BuildJob(AIPlayerJH* aijh, BuildingType type, SearchMode searchMode = SEARCHMODE_RADIUS)
-                : Job(aijh), type(type), target_x(0xFFFF), target_y(0xFFFF), around_x(0xFFFF), around_y(0xFFFF), searchMode(searchMode) { }
+            /*BuildJob(AIPlayerJH* aijh, BuildingType type, SearchMode searchMode = SEARCHMODE_RADIUS)
+                : Job(aijh), type(type), target_x(0xFFFF), target_y(0xFFFF), around_x(0xFFFF), around_y(0xFFFF), searchMode(searchMode) { }*/
 
             ~BuildJob() { }
             virtual void ExecuteJob();
             inline BuildingType GetType() const { return type; }
             inline MapCoord GetTargetX() const { return target_x; }
             inline MapCoord GetTargetY() const { return target_y; }
+			void SetTargetX(MapCoord x) {target_x=x;}
+			void SetTargetY(MapCoord y) {target_y=y;}
         private:
             BuildingType type;
             MapCoord target_x, target_y;

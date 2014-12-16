@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 9553 2014-12-14 21:58:10Z marcus $
+// $Id: AIPlayerJH.cpp 9555 2014-12-16 15:25:13Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -284,16 +284,16 @@ void AIPlayerJH::AddBuildJob(BuildingType type, MapCoord x, MapCoord y, bool fro
     construction.AddBuildJob(new AIJH::BuildJob(this, type, x, y), front);
 }
 
-void AIPlayerJH::AddJob(AIJH::Job* job, bool front)
+/*void AIPlayerJH::AddJob(AIJH::Job* job, bool front)
 {
     construction.AddJob(job, front);
-}
+}*/
 
 
-void AIPlayerJH::AddBuildJob(BuildingType type)
+/*void AIPlayerJH::AddBuildJob(BuildingType type)
 {
     construction.AddBuildJob(new AIJH::BuildJob(this, type), false);
-}
+}*/
 
 AIJH::Resource AIPlayerJH::CalcResource(MapCoord x, MapCoord y)
 {
@@ -1521,6 +1521,8 @@ void AIPlayerJH::HandleNoMoreResourcesReachable(const Coords& coords, BuildingTy
             }
         }
         aii->DestroyBuilding(x, y);
+		if(bld==BLD_FISHERY) //fishery cant find fish? set fish value at location to 0 so we dont have to calculate the value for this location again
+			SetResourceMap(AIJH::FISH, x + (y * aii->GetMapHeight()), 0);
     }
     else
         return;
@@ -1533,7 +1535,7 @@ void AIPlayerJH::HandleNoMoreResourcesReachable(const Coords& coords, BuildingTy
 
     // and try to rebuild the same building
     if(bld != BLD_HUNTER)
-        AddBuildJob(bld);
+        AddBuildJob(bld,x,y);
 
     // farm is always good!
     AddBuildJob(BLD_FARM, x, y);
@@ -2230,6 +2232,28 @@ bool AIPlayerJH::ValidStoneinRange(MapCoord x, MapCoord y)
         }
     }
     return false;
+}
+
+void AIPlayerJH::ExecuteLuaConstructionOrder(MapCoord x, MapCoord y, BuildingType bt,bool forced)
+{
+	if (!aii->CanBuildBuildingtype(bt)) // not allowed to build this buildingtype? -> do nothing!
+		return;
+	if (forced) //fixed location - just a direct gamecommand to build buildingtype at location (no checks if this is a valid & good location from the ai)
+	{
+		aii->SetBuildingSite(x,y,bt);
+		AIJH::BuildJob* j=new AIJH::BuildJob(this, bt, x, y);
+		j->SetStatus(AIJH::JOB_EXECUTING_ROAD1);
+		j->SetTargetX(x);
+		j->SetTargetY(y);
+		construction.AddBuildJob(j,true); //connects the buildingsite to roadsystem
+	}
+	else 
+	{
+		if (construction.Wanted(bt))
+		{
+			construction.AddBuildJob(new AIJH::BuildJob(this, bt, x, y), true); //add build job to the front of the list
+		}
+	}
 }
 
 bool AIPlayerJH::BuildingNearby(MapCoord x, MapCoord y, BuildingType bld, unsigned min)

@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.h 9499 2014-11-29 10:43:47Z marcus $
+// $Id: AIPlayerJH.h 9555 2014-12-16 15:25:13Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -137,8 +137,8 @@ class AIPlayerJH : public AIBase
         void ExecuteAIJob();
         void AddBuildJob(AIJH::BuildJob* job, bool front = false) { construction.AddBuildJob(job, front); }
         void AddBuildJob(BuildingType type, MapCoord x, MapCoord y, bool front = false);
-        void AddBuildJob(BuildingType type);
-        void AddJob(AIJH::Job* job, bool front);
+        //void AddBuildJob(BuildingType type);
+        //void AddJob(AIJH::Job* job, bool front);
 
         /// Checks the list of military buildingsites and puts the coordinates into the list of military buildings if building is finished
         void CheckNewMilitaryBuildings();
@@ -283,6 +283,8 @@ class AIPlayerJH : public AIBase
         bool ValidStoneinRange(MapCoord x, MapCoord y);
 
         bool ValidFishInRange(MapCoord x, MapCoord y);
+
+		void ExecuteLuaConstructionOrder(MapCoord x, MapCoord y, BuildingType bt, bool forced=false);
 
         bool NoEnemyHarbor();
 

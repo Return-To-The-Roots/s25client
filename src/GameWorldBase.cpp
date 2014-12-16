@@ -1,4 +1,4 @@
-// $Id: GameWorldBase.cpp 9551 2014-12-14 21:55:33Z marcus $
+// $Id: GameWorldBase.cpp 9555 2014-12-16 15:25:13Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -86,6 +86,7 @@ GameWorldBase::GameWorldBase() : gi(NULL), width(0), height(0), lt(LT_GREENLAND)
         {"PostNewBuildings", LUA_PostNewBuildings},
         {"AddStaticObject", LUA_AddStaticObject},
         {"AddEnvObject", LUA_AddEnvObject},
+		{"AIConstructionOrder", LUA_AIConstructionOrder},
         {NULL, NULL}
     };
     
@@ -2582,6 +2583,36 @@ int GameWorldBase::LUA_AddEnvObject(lua_State *L)
     
     gwg->GetNode(x, y).obj = new noEnvObject(x, y, id, file);
     gwg->RecalcBQAroundPoint(x, y);   
+    
+    lua_pushnumber(L, 1);
+    return(1);
+}
+
+int GameWorldBase::LUA_AIConstructionOrder(lua_State *L)
+{
+    GameWorldGame *gwg = dynamic_cast<GameWorldGame*>((GameWorldBase*) lua_touserdata(L,lua_upvalueindex(1)));
+    
+    if (gwg == NULL)
+    {
+        return(0);
+    }
+    
+    int argc = lua_gettop(L);
+    
+    if (argc < 4)//x,y,buildingtype,player
+    {
+        lua_pushstring(L, "Too few arguments!");
+        lua_error(L);
+        return(0);
+    }
+    
+    unsigned x = (unsigned) luaL_checknumber(L, 1);
+    unsigned y = (unsigned) luaL_checknumber(L, 2);
+    unsigned id = (unsigned) luaL_checknumber(L, 3);
+	unsigned pn = (unsigned) luaL_checknumber(L,4);
+	BuildingType bt=static_cast<BuildingType>(id);
+    
+    GameClient::inst().SendAIEvent(new AIEvent::Building(AIEvent::LuaConstructionOrder, x, y,bt), pn);  
     
     lua_pushnumber(L, 1);
     return(1);
