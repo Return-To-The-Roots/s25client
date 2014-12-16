@@ -1,4 +1,4 @@
-// $Id: GameWorldBase.cpp 9555 2014-12-16 15:25:13Z marcus $
+// $Id: GameWorldBase.cpp 9556 2014-12-16 15:50:37Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -2599,17 +2599,17 @@ int GameWorldBase::LUA_AIConstructionOrder(lua_State *L)
     
     int argc = lua_gettop(L);
     
-    if (argc < 4)//x,y,buildingtype,player
+    if (argc < 4)//player,x,y,buildingtype
     {
         lua_pushstring(L, "Too few arguments!");
         lua_error(L);
         return(0);
     }
     
-    unsigned x = (unsigned) luaL_checknumber(L, 1);
-    unsigned y = (unsigned) luaL_checknumber(L, 2);
-    unsigned id = (unsigned) luaL_checknumber(L, 3);
-	unsigned pn = (unsigned) luaL_checknumber(L,4);
+    unsigned pn = (unsigned) luaL_checknumber(L, 1);
+    unsigned x = (unsigned) luaL_checknumber(L, 2);
+    unsigned y = (unsigned) luaL_checknumber(L, 3);
+    unsigned id = (unsigned) luaL_checknumber(L, 4);
 	BuildingType bt=static_cast<BuildingType>(id);
     
     GameClient::inst().SendAIEvent(new AIEvent::Building(AIEvent::LuaConstructionOrder, x, y,bt), pn);  
