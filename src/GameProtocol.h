@@ -1,4 +1,4 @@
-// $Id: GameProtocol.h 9381 2014-05-01 10:27:24Z FloSoft $
+// $Id: GameProtocol.h 9557 2014-12-18 08:57:19Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -173,8 +173,8 @@ enum
     NP_LOCAL
 };
 
-// Wie lange maximal warten, bis Rausschmiss des Spielers
-const unsigned PING_TIMEOUT     = 30000;
+// Wie lange maximal warten, bis Rausschmiss des Spielers (in milliseconds)
+const unsigned PING_TIMEOUT     = 2 * 60 * 1000; // 2min
 
 // Ziele fürs Chatten (Ingame)
 enum ChatDestination
