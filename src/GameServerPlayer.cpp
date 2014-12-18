@@ -1,4 +1,4 @@
-// $Id: GameServerPlayer.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: GameServerPlayer.cpp 9558 2014-12-18 09:01:20Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -89,7 +89,6 @@ void GameServerPlayer::doTimeout()
 {
     if( (ps == PS_RESERVED) && ( ( VideoDriverWrapper::inst().GetTickCount() - connecttime ) > PING_TIMEOUT ) )
     {
-        puts("aaahh");
         LOG.lprintf("SERVER: Reserved slot %d freed due to ping timeout\n", playerid);
 
         /*// Todesnachricht absetzen
