@@ -1,3 +1,250 @@
+s25rttr (20141218-9558.356) precise; urgency=low
+
+  * Automatic Jenkins Build 356
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Thu, 18 Dec 2014 18:00:43 +0100
+
+s25rttr (20141218-9558) any; urgency=low
+
+  * remove "aaaaah"
+
+ -- Florian Doersch <flosoft@siedler25.org>  Thu, 18 Dec 2014 09:01:00 +0100
+
+s25rttr (20141218-9557) any; urgency=low
+
+  * Ping Timeout increased to 2min, hopefully fixes Bug #1400339
+
+ -- Florian Doersch <flosoft@siedler25.org>  Thu, 18 Dec 2014 08:57:00 +0100
+
+s25rttr (20141217-9556.355) precise; urgency=low
+
+  * Automatic Jenkins Build 355
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Wed, 17 Dec 2014 01:16:53 +0100
+
+s25rttr (20141216-9556) any; urgency=low
+
+  * AIpoc r9554
+    lua: changed param order for
+    rttr.AIConstructionOrder(player,x,y,buildingtype)
+
+ -- marcus  Tue, 16 Dec 2014 15:50:00 +0100
+
+s25rttr (20141216-9555) any; urgency=low
+
+  * AIpoc r9553
+    new lua command:
+    rttr.AIConstructionOrder(x,y,buildingtype,player) //players are
+    numbered 0 to playercount-1
+    minor improvements to ai:
+    -no longer rebuilds fisheries on bad locations not detected by
+    the check function
+    -HandleNoMoreResourcesReachable now attempts to rebuild the
+    building nearby instead of anywhere
+
+ -- marcus  Tue, 16 Dec 2014 15:25:00 +0100
+
+s25rttr (20141216-9554.354) precise; urgency=low
+
+  * Automatic Jenkins Build 354
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 16 Dec 2014 01:06:50 +0100
+
+s25rttr (20141215-9554) any; urgency=low
+
+  * just to be sure.. :)
+
+ -- marcus  Mon, 15 Dec 2014 20:57:00 +0100
+
+s25rttr (20141215-9553.353) precise; urgency=low
+
+  * Automatic Jenkins Build 353
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Mon, 15 Dec 2014 09:32:10 +0100
+
+s25rttr (20141214-9553.352) precise; urgency=low
+
+  * Automatic Jenkins Build 352
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sun, 14 Dec 2014 23:14:15 +0100
+
+s25rttr (20141214-9553) any; urgency=low
+
+  * AIpoc r9549
+    when sea-attacks are disabled the ai sets military setting for
+    harbor-near buildings to 0%
+
+ -- marcus  Sun, 14 Dec 2014 21:58:00 +0100
+
+s25rttr (20141214-9552) any; urgency=low
+
+  * AIpoc r9548
+    ai checks if it is allowed to build the planned buildings
+
+ -- marcus  Sun, 14 Dec 2014 21:57:00 +0100
+
+s25rttr (20141214-9551) any; urgency=low
+
+  * lua scripting
+    - add constants (BLD_*, GD_*, JOB_*) for lua scripts from rttr
+
+ -- marcus  Sun, 14 Dec 2014 21:55:00 +0100
+
+s25rttr (20141214-9550) any; urgency=low
+
+  * lua scripting
+    - added PostNewBuildings(player, building_type...) to inform
+    players about new buildings
+
+ -- marcus  Sun, 14 Dec 2014 21:36:00 +0100
+
+s25rttr (20141214-9549) any; urgency=low
+
+  * AIpoc r9547
+    added iwMissionStatement to vs2010 files
+
+ -- marcus  Sun, 14 Dec 2014 21:11:00 +0100
+
+s25rttr (20141214-9548.351) precise; urgency=low
+
+  * Automatic Jenkins Build 351
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sun, 14 Dec 2014 21:08:38 +0100
+
+s25rttr (20141214-9548) any; urgency=low
+
+  * lua scripting
+    - added ClearResources() / ClearResources(player) to clear all
+    resources in warehouses
+    - added MissionStatement(player, title, content) (and
+    iwMissionStatement)
+
+ -- marcus  Sun, 14 Dec 2014 19:51:00 +0100
+
+s25rttr (20141214-9547.350) precise; urgency=low
+
+  * Automatic Jenkins Build 350
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sun, 14 Dec 2014 15:01:49 +0100
+
+s25rttr (20141214-9547) any; urgency=low
+
+  * lua scripting
+    - Added GetPlayerCount() -> number of players
+    - Added GetBuildingCount(player, type) -> number of buildings of
+    type for player
+    - Added GetWareCount(player, type) -> number of wares of type for
+    player
+    - Added GetPeopleCount(player, type) -> number of people of type
+    for player
+    - Added AddStaticObject(x, y, id, file, size) -> add object id
+    from file (0xFFFF = map_?_z.lst, 0-5 mis?bobs.lst), blocking (0 =
+    hut, 1 = house, 2 = castle)
+    - Added AddEnvObject(x, y, id, file) -> add environment object id
+    from file (0xFFFF = map_?_z.lst, 0-5 mis?bobs.lst)
+
+ -- marcus  Sun, 14 Dec 2014 13:46:00 +0100
+
+s25rttr (20141214-9546.349) precise; urgency=low
+
+  * Automatic Jenkins Build 349
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sun, 14 Dec 2014 13:20:49 +0100
+
+s25rttr (20141214-9546) any; urgency=low
+
+  * AIpoc r9540
+    Harbor Destroy now sends out scouts from a scout expedition
+    Harbor Destroy now cancels all jobs_wanted (should fix the crash
+    with invalid entries remaining in the jobs_wanted list)
+
+ -- marcus  Sun, 14 Dec 2014 12:06:00 +0100
+
+s25rttr (20141214-9545) any; urgency=low
+
+  * AIpoc r9539
+    fix for a crash - ware getting carried into a harbor for shipping
+    loses it's goal, cannot find path to harbor for adding because
+    distance is 0 so will be added to different warehouse
+    dependent_wares list but still added to the harbor (and then
+    destroyed).
+    Crash happens when the warehouse where the ware got added as a
+    dependent_ware is destroyed.
+
+ -- marcus  Sun, 14 Dec 2014 12:05:00 +0100
+
+s25rttr (20141214-9544) any; urgency=low
+
+  * AIpoc r9538
+    warehouse dependent_wares now std::list
+
+ -- marcus  Sun, 14 Dec 2014 12:05:00 +0100
+
+s25rttr (20141214-9543) any; urgency=low
+
+  * AIpoc r9537
+    skip updating the fps count when jumping
+
+ -- marcus  Sun, 14 Dec 2014 12:04:00 +0100
+
+s25rttr (20141214-9542) any; urgency=low
+
+  * AIpoc r9536
+    when the goal harbor is lost while waiting for a ship and no
+    alternate route exists wares will now be added to the harbor
+    instead of getting transported to a different warehouse first for
+    no reason
+
+ -- marcus  Sun, 14 Dec 2014 12:04:00 +0100
+
+s25rttr (20141214-9541) any; urgency=low
+
+  * AIpoc r9535
+    don't print multiple log entries during jump when client is much
+    faster than the server
+
+ -- marcus  Sun, 14 Dec 2014 12:02:00 +0100
+
+s25rttr (20141214-9540.348) precise; urgency=low
+
+  * Automatic Jenkins Build 348
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sun, 14 Dec 2014 12:49:43 +0100
+
+s25rttr (20141214-9540) any; urgency=low
+
+  * lua scripting
+    - added Chat(player, message) - -1 for all players
+    - renamed events to onXxxx
+    - added onResourceFound(player, x, y, type, quantity)
+    - added onGameFrame(gf_number)
+
+ -- marcus  Sun, 14 Dec 2014 11:32:00 +0100
+
+s25rttr (20141214-9539.347) precise; urgency=low
+
+  * Automatic Jenkins Build 347
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sun, 14 Dec 2014 11:34:22 +0100
+
+s25rttr (20141214-9539) any; urgency=low
+
+  * lua scripting
+    - added GetGF(): retrieve GF number
+    - Log(message...): logging to log file/console
+    - added PostMessage(player, ...)/PostMessageWithLocation(player,
+    x, y, message...): messages to player
+    - removed io and os libraries
+    - transfer lua script to all clients with map
+
+ -- marcus  Sun, 14 Dec 2014 10:15:00 +0100
+
+s25rttr (20141213-9538) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 13 Dec 2014 23:00:00 +0100
+
 s25rttr (20141211-9537.346) precise; urgency=low
 
   * Automatic Jenkins Build 346
