@@ -1,4 +1,4 @@
-// $Id: AIConstruction.cpp 9552 2014-12-14 21:57:34Z marcus $
+// $Id: AIConstruction.cpp 9562 2014-12-30 10:52:05Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -329,11 +329,21 @@ bool AIConstruction::IsConnectedToRoadSystem(const noFlag* flag)
 
 BuildingType AIConstruction::ChooseMilitaryBuilding(MapCoord x, MapCoord y)
 {
+	//default : 2 barracks for each guardhouse
+	//stones & low soldiers -> only guardhouse (no stones -> only barracks)
+	//harbor nearby that could be used to attack/get attacked -> tower
+	//enemy nearby? -> tower or fortress 
+	//to do: important location or an area with a very low amount of buildspace? -> try large buildings
+	//buildings with requirement > small have a chance to be replaced with small buildings to avoid getting stuck if there are no places for medium/large buildings
     BuildingType bld = BLD_BARRACKS;
 
     if (((rand() % 3) == 0 || aii->GetInventory()->people[JOB_PRIVATE] < 15) && (aii->GetInventory()->goods[GD_STONES] > 6 || GetBuildingCount(BLD_QUARRY) > 0))
         bld = BLD_GUARDHOUSE;
-
+	if (aijh->HarborPosClose(x,y,20) && rand()%10!=0 && aijh->ggs->getSelection(ADDON_SEA_ATTACK) != 2)
+	{
+		bld = BLD_WATCHTOWER;
+		return bld;
+	}
     std::list<nobBaseMilitary*> military;
     aii->GetMilitaryBuildings(x, y, 3, military);
     for(std::list<nobBaseMilitary*>::iterator it = military.begin(); it != military.end(); ++it)

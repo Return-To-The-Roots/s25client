@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.h 9555 2014-12-16 15:25:13Z marcus $
+// $Id: AIPlayerJH.h 9562 2014-12-30 10:52:05Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -248,9 +248,6 @@ class AIPlayerJH : public AIBase
         /// sea attack
         void TrySeaAttack();
 
-        /// checks distance to all harborpositions
-        bool HarborPosClose(MapCoord x, MapCoord y, unsigned range, bool onlyempty = false);
-
         /// checks if there is at least 1 sea id connected to the harbor spot with at least 2 harbor spots! when onlyempty=true there has to be at least 1 other free harborid
         bool HarborPosRelevant(unsigned harborid, bool onlyempty = false);
 
@@ -321,7 +318,11 @@ class AIPlayerJH : public AIBase
         AIJH::Job* GetCurrentJob() { return currentJob; }
     public:
         inline AIJH::Node& GetAINode(MapCoord x, MapCoord y) { return nodes[x + gwb->GetWidth() * y]; }
-        inline unsigned GetJobNum() const { return eventManager.GetEventNum() + construction.GetBuildJobNum(); }
+        inline unsigned GetJobNum() const { return eventManager.GetEventNum() + construction.GetBuildJobNum(); }	
+
+        /// checks distance to all harborpositions
+        bool HarborPosClose(MapCoord x, MapCoord y, unsigned range, bool onlyempty = false);
+		
 
 // Event...
     protected:
