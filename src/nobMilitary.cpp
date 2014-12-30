@@ -1,4 +1,4 @@
-// $Id: nobMilitary.cpp 9536 2014-12-10 22:12:56Z marcus $
+// $Id: nobMilitary.cpp 9560 2014-12-30 10:51:09Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1006,7 +1006,7 @@ void nobMilitary::NeedOccupyingTroops(const unsigned char new_owner)
 
 
         // keine Soldaten mehr gefunden, der Rest (der noch nicht da ist) kann wieder nach Hause gehen
-        // Achtung: Hier können Iteratoren gelöscht werden in CapturedBuildingFull, daher Sicherheitsschleife!
+        // Achtung: Hier können Iteratoren gelöscht werden in CapturedBuildingFull, daher Sicherheitsschleife!		
         list<nofAttacker*>::iterator next_it;
         for(list<nofAttacker*>::iterator it = aggressors.begin(); it.valid(); it = next_it)
         {
@@ -1027,9 +1027,9 @@ void nobMilitary::NeedOccupyingTroops(const unsigned char new_owner)
                 }
             }
 
-
+			//LOG.lprintf("no more capture troops detected: rest can go home (target was: %i,%i) ",x,y);
             // Nicht gerade Soldaten löschen, die das Gebäude noch einnehmen!
-            if(attacker->GetState() != nofActiveSoldier::STATE_ATTACKING_CAPTURINGNEXT)
+            if(attacker->GetState() != nofActiveSoldier::STATE_ATTACKING_CAPTURINGNEXT && !gwg->GetPlayer(attacker->GetPlayer())->IsPlayerAttackable(player))
             {
                 aggressors.erase(it);
                 attacker->CapturedBuildingFull();
@@ -1044,13 +1044,15 @@ void nobMilitary::NeedOccupyingTroops(const unsigned char new_owner)
     {
         // keine Soldaten mehr benötigt, der Rest kann wieder nach Hause gehen
         // Achtung: Hier können Iteratoren gelöscht werden in CapturedBuildingFull, daher Sicherheitsschleife!
+		//LOG.lprintf("building full: remaining attackers can go home (target was: %i,%i) \n ",x,y);
         list<nofAttacker*>::iterator next_it;
         for(list<nofAttacker*>::iterator it = aggressors.begin(); it.valid(); it = next_it)
         {
             next_it = it.GetNext();
             nofAttacker* attacker = *it;
             // Nicht gerade Soldaten löschen, die das Gebäude noch einnehmen!
-            if(attacker->GetState() != nofActiveSoldier::STATE_ATTACKING_CAPTURINGNEXT)
+			//also: dont remove attackers owned by players not allied with the new owner!
+			if(attacker->GetState() != nofActiveSoldier::STATE_ATTACKING_CAPTURINGNEXT && !gwg->GetPlayer(attacker->GetPlayer())->IsPlayerAttackable(player))
             {
                 aggressors.erase(it);
                 attacker->CapturedBuildingFull();
