@@ -1,4 +1,4 @@
-// $Id: GameClientCommands.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: GameClientCommands.cpp 9561 2014-12-30 10:51:38Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -133,6 +133,7 @@ void GameClient::Command_ToggleColor()
  */
 void GameClient::ChangePlayer(const unsigned char old_id, const unsigned char new_id)
 {
+	LOG.lprintf("GameClient::ChangePlayer %i - %i \n",old_id, new_id); 
     // ID auch innerhalb der Spielerzahl?
     if(new_id >= players.getCount())
         return;
@@ -167,6 +168,10 @@ void GameClient::ChangePlayer(const unsigned char old_id, const unsigned char ne
         //gw->MoveToMapObject(player->hqx,player->hqy);
         //GameClientPlayer *player = players[playerid]; // wegen GCC-Fehlermeldung auskommentiert
     }
+	//swap command que
+	std::list<GameMessage_GameCommand> temp=players[old_id].gc_queue;
+	players[old_id].gc_queue=players[new_id].gc_queue;
+	players[new_id].gc_queue=temp;
 
     // GUI Bescheid sagen (um z.B. Schatten neu zu berechnen)
     if(ci)

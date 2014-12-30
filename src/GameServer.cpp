@@ -1,4 +1,4 @@
-// $Id: GameServer.cpp 9554 2014-12-15 20:57:17Z marcus $
+// $Id: GameServer.cpp 9561 2014-12-30 10:51:38Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1671,10 +1671,10 @@ void GameServer::OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, std::lis
 
 void GameServer::ChangePlayer(const unsigned char old_id, const unsigned char new_id)
 {
+	LOG.lprintf("GameServer::ChangePlayer %i - %i \n",old_id, new_id);
     // old_id muss richtiger Spieler, new_id KI sein, ansonsten geht das natürlich nicht
     if( !(players[old_id].ps == PS_OCCUPIED && players[new_id].ps == PS_KI) )
-        return;
-
+        return;	
     players[old_id].ps = PS_KI;
     players[new_id].ps = PS_OCCUPIED;
     players[new_id].so = players[old_id].so;
@@ -1684,6 +1684,11 @@ void GameServer::ChangePlayer(const unsigned char old_id, const unsigned char ne
     ai_players[new_id] = 0;
 
     ai_players[old_id] = GameClient::inst().CreateAIPlayer(old_id);
+
+	//swap the gamecommand que
+	std::list<GameMessage_GameCommand> temp=players[old_id].gc_queue;
+	players[old_id].gc_queue=players[new_id].gc_queue;
+	players[new_id].gc_queue=temp;
 }
 
 
