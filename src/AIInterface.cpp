@@ -256,6 +256,36 @@ bool AIInterface::FindFreePathForNewRoad(MapCoord startX, MapCoord startY, MapCo
     return gwb->FindFreePath(startX, startY, targetX, targetY, false, 100, route, length, NULL, IsPointOK_RoadPath, NULL, (void*) &boat, false);
 }
 
+/// player->FindWarehouse
+nobBaseWarehouse* AIInterface::FindWarehouse(const noRoadNode* const start, bool (*IsWarehouseGood)(nobBaseWarehouse*, const void*), const RoadSegment* const forbidden, const bool to_wh, const void* param, const bool use_boat_roads, unsigned* const length)
+{
+	 nobBaseWarehouse* best = 0;
+
+	//  unsigned char path = 0xFF, tpath = 0xFF;
+    unsigned tlength = 0xFFFFFFFF, best_length = 0xFFFFFFFF;
+
+	for(std::list<nobBaseWarehouse*>::const_iterator w = player->GetStorehouses().begin(); w != player->GetStorehouses().end(); ++w)
+    {
+        // Lagerhaus geeignet?
+        if(IsWarehouseGood(*w, param))
+        {
+            if(gwb->FindPathOnRoads(to_wh ? start : *w, to_wh ? *w : start, use_boat_roads, &tlength, NULL, NULL, forbidden))
+            {
+                if(tlength < best_length || !best)
+                {
+                    best_length = tlength;
+                    best = (*w);
+                }
+            }
+        }
+    }
+
+    if(length)
+        *length = best_length;
+
+    return best;
+}
+
 bool AIInterface::CalcBQSumDifference(MapCoord x, MapCoord y, MapCoord tx, MapCoord ty)
 {
     unsigned s1 = 0, s2 = 0;

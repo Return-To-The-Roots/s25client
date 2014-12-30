@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.h 9564 2014-12-30 10:53:04Z marcus $
+// $Id: AIPlayerJH.h 9565 2014-12-30 19:51:40Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -146,10 +146,16 @@ class AIPlayerJH : public AIBase
         void DistributePeopleByBlocking(unsigned char jobnumber, unsigned limit);
 
 		/// blocks max rank soldiers in warehouse 1 (hq most often), then balances soldiers among frontier warehouses - if there are no frontier warehouses just pick anything but 1 if there is just 1 then dont block
-        void DistributeMaxRankSoldiersByBlocking(unsigned limit);
+        void DistributeMaxRankSoldiersByBlocking(unsigned limit,nobBaseWarehouse* upwh);
 
 		/// returns true if at least 1 military building has a flag > 0
 		bool HasFrontierBuildings();
+
+		/// returns the warehouse closest to the upgradebuilding or if it cant find a way the first warehouse and if there is no warehouse left null
+		nobBaseWarehouse* GetUpgradeBuildingWarehouse();
+
+		/// activate gathering of swords,shields,beer,privates(if there is an upgrade building), helpers(if necessary)
+		void SetGatheringForUpgradeWarehouse(nobBaseWarehouse* upgradewarehouse);
 
         /// Initializes the nodes on start of the game
         void InitNodes();

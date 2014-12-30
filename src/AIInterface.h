@@ -156,7 +156,9 @@ class AIInterface
         /// Tests whether a player is attackable or not (alliances, etc)
         bool IsPlayerAttackable(unsigned char playerID) const { return player->IsPlayerAttackable(playerID); }
 
-
+		/// player->FindWarehouse
+		nobBaseWarehouse* FindWarehouse(const noRoadNode* const start, bool (*IsWarehouseGood)(nobBaseWarehouse*, const void*), const RoadSegment* const forbidden, const bool to_wh, const void* param, const bool use_boat_roads, unsigned* const length = 0);
+		
         /// Returns a list of military buildings around a given point and a given radius
         void GetMilitaryBuildings(MapCoord x, MapCoord y, unsigned radius, std::list<nobBaseMilitary*> &miliaryBuildings) const { gwb->LookForMilitaryBuildings(miliaryBuildings, x, y, radius); }
 

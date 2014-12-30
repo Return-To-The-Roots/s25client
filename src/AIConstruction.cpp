@@ -1,4 +1,4 @@
-// $Id: AIConstruction.cpp 9564 2014-12-30 10:53:04Z marcus $
+// $Id: AIConstruction.cpp 9565 2014-12-30 19:51:40Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -346,7 +346,7 @@ BuildingType AIConstruction::ChooseMilitaryBuilding(MapCoord x, MapCoord y)
 		bld = BLD_WATCHTOWER;
 		return bld;
 	}
-	if(aijh->UpdateUpgradeBuilding()<0 && buildingCounts.building_site_counts[BLD_FORTRESS]<1 && (aii->GetInventory()->goods[GD_STONES] > 20 || GetBuildingCount(BLD_QUARRY) > 0))
+	if(aijh->UpdateUpgradeBuilding()<0 && buildingCounts.building_site_counts[BLD_FORTRESS]<1 && (aii->GetInventory()->goods[GD_STONES] > 20 || GetBuildingCount(BLD_QUARRY) > 0) && rand()%10!=0)
 	{
 		bld = BLD_FORTRESS;
 		return bld;
