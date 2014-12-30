@@ -1,4 +1,4 @@
-// $Id: nobBaseWarehouse.cpp 9548 2014-12-14 19:51:50Z marcus $
+// $Id: nobBaseWarehouse.cpp 9564 2014-12-30 10:53:04Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -918,12 +918,12 @@ void nobBaseWarehouse::TakeWare(Ware* ware)
     dependent_wares.push_back(ware);
 }
 
-void nobBaseWarehouse::OrderTroops(nobMilitary* goal, unsigned count)
+void nobBaseWarehouse::OrderTroops(nobMilitary* goal, unsigned count,bool ignoresettingsendweakfirst)
 {
     // Soldaten durchgehen und count rausschicken
 
     // Ränge durchgehen, absteigend, starke zuerst
-    if (gwg->GetPlayer(player)->military_settings[1] >= MILITARY_SETTINGS_SCALE[1] / 2)
+    if (gwg->GetPlayer(player)->military_settings[1] >= MILITARY_SETTINGS_SCALE[1] / 2 && !ignoresettingsendweakfirst)
     {
         for(unsigned i = 5; i && count; --i)
         {

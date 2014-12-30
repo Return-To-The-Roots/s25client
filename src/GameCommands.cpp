@@ -1,4 +1,4 @@
-// $Id: GameCommands.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: GameCommands.cpp 9564 2014-12-30 10:53:04Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -71,6 +71,8 @@ GameCommand* GameCommand::CreateGameCommand(const Type gst, Serializer* ser)
         case CHEAT_ARMAGEDDON: return new CheatArmageddon(ser);
         case DESTROYALL: return new DestroyAll(ser);
         case UPGRADEROAD: return new UpgradeRoad(ser);
+		case ORDERNEWSOLDIERS: return new OrderNewSoldiers(ser);
+		case SENDSOLDIERSHOME: return new SendSoldiersHome(ser);
     }
 
     return NULL;
@@ -163,6 +165,22 @@ void StopGold::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsig
     {
         if(gwg.GetSpecObj<nobMilitary>(x, y)->GetPlayer() == playerid)
             gwg.GetSpecObj<nobMilitary>(x, y)->StopGold();
+    }
+}
+void SendSoldiersHome::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
+{
+    if(gwg.GetNO(x, y)->GetGOT() == GOT_NOB_MILITARY)
+    {
+        if(gwg.GetSpecObj<nobMilitary>(x, y)->GetPlayer() == playerid)
+            gwg.GetSpecObj<nobMilitary>(x, y)->SendSoldiersHome();
+    }
+}
+void OrderNewSoldiers::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
+{
+    if(gwg.GetNO(x, y)->GetGOT() == GOT_NOB_MILITARY)
+    {
+        if(gwg.GetSpecObj<nobMilitary>(x, y)->GetPlayer() == playerid)
+            gwg.GetSpecObj<nobMilitary>(x, y)->OrderNewSoldiers();
     }
 }
 void StopProduction::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)

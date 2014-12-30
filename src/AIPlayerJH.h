@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.h 9563 2014-12-30 10:52:34Z marcus $
+// $Id: AIPlayerJH.h 9564 2014-12-30 10:53:04Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -105,7 +105,6 @@ class AIPlayerJH : public AIBase
         AIPlayerJH(const unsigned char playerid, const GameWorldBase* const gwb, const GameClientPlayer* const player,
                    const GameClientPlayerList* const players, const GlobalGameSettings* const ggs,
                    const AI::Level level);
-
 		int initgfcomplete;
         int GetResMapValue(MapCoord x, MapCoord y, AIJH::Resource res);
         AIInterface* GetInterface() { return aii; }
@@ -126,9 +125,7 @@ class AIPlayerJH : public AIBase
         void RunGF(const unsigned gf);
 
         void SendAIEvent(AIEvent::Base* ev);
-
-
-
+		
 
         /// resigned yes/no
         bool defeated;
@@ -145,6 +142,14 @@ class AIPlayerJH : public AIBase
 
         /// blocks goods in each warehouse that has at least limit amount of that good - if all warehouses have enough they unblock
         void DistributeGoodsByBlocking(unsigned char goodnumber, unsigned limit);
+		/// blocks people in each warehouse that has at least limit amount of that job - if all warehouses have enough they unblock
+        void DistributePeopleByBlocking(unsigned char jobnumber, unsigned limit);
+
+		/// blocks max rank soldiers in warehouse 1 (hq most often), then balances soldiers among frontier warehouses - if there are no frontier warehouses just pick anything but 1 if there is just 1 then dont block
+        void DistributeMaxRankSoldiersByBlocking(unsigned limit);
+
+		/// returns true if at least 1 military building has a flag > 0
+		bool HasFrontierBuildings();
 
         /// Initializes the nodes on start of the game
         void InitNodes();
@@ -263,15 +268,18 @@ class AIPlayerJH : public AIBase
         void UpdateReachableNodes(MapCoord x, MapCoord y, unsigned radius);
         void IterativeReachableNodeChecker(std::queue<std::pair<MapCoord, MapCoord> >& toCheck);
 
+		/// disconnects 'inland' military buildings from road system(and sends out soldiers), sets stop gold, uses the upgrade building (order new private, kick out general)
+		void MilUpgradeOptim();
+
         void SetFarmedNodes(MapCoord x, MapCoord y, bool set);
 
         //removes a no longer used road(and its flags) returns true when there is a building at the flag that might need a new connection
-        bool RemoveUnusedRoad(const noFlag* startFlag, unsigned char excludeDir = 0xFF, bool firstflag = true, bool allowcircle = true);
+        bool RemoveUnusedRoad(const noFlag* startFlag, unsigned char excludeDir = 0xFF, bool firstflag = true, bool allowcircle = true,bool keepstartflag=false);
         //finds all unused flags and roads, removes flags or reconnects them as neccessary
         void RemoveAllUnusedRoads(MapCoord x, MapCoord y);
 
         // check if there are free soldiers (in hq/storehouses)
-        unsigned SoldierAvailable();
+        unsigned SoldierAvailable(int rank=-1);
 
         bool HuntablesinRange(unsigned x, unsigned y, unsigned min);
 
@@ -288,7 +296,8 @@ class AIPlayerJH : public AIBase
         bool IsInvalidShipyardPosition(MapCoord x, MapCoord y);
 
         void SetResourceMap(AIJH::Resource res, unsigned nodenumber, int newvalue) {resourceMaps[res][nodenumber] = newvalue;}
-
+		
+		MapCoord UpgradeBldX,UpgradeBldY;
 
     protected:
         /// The current job the AI is working on
@@ -324,6 +333,8 @@ class AIPlayerJH : public AIBase
         bool HarborPosClose(MapCoord x, MapCoord y, unsigned range, bool onlyempty = false);
 		/// returns the percentage*100 of possible normal building places
         unsigned BQsurroundcheck(MapCoord x, MapCoord y, unsigned range, bool includeexisting,unsigned limit=0);
+		/// returns list entry of the building the ai uses for troop upgrades
+		int UpdateUpgradeBuilding();
 		
 
 // Event...

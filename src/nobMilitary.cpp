@@ -1,4 +1,4 @@
-// $Id: nobMilitary.cpp 9560 2014-12-30 10:51:09Z marcus $
+// $Id: nobMilitary.cpp 9564 2014-12-30 10:53:04Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -524,6 +524,50 @@ int nobMilitary::CalcTroopsCount()
     return (TROOPS_COUNT[nation][size] - 1) * gwg->GetPlayer(player)->military_settings[4 + frontier_distance] / MILITARY_SETTINGS_SCALE[4 + frontier_distance] + 1;
 }
 
+void nobMilitary::SendSoldiersHome()
+{
+	int diff;
+    if((diff = 1 - int(troops.size() + ordered_troops.size() + troops_on_mission.size() + (defender ? (defender->IsWaitingAtFlag() || defender->IsFightingAtFlag()) ? 1 : 0 : 0)
+                                       /*+ capturing_soldiers*/ + far_away_capturers.size())) < 0) //poc: this should only be >0 if we are being captured. capturing should be true until its the last soldier and this last one would count twice here and result in a returning soldier that shouldnt return.
+	{
+		// Nur rausschicken, wenn es einen Weg zu einem Lagerhaus gibt!
+        if(gwg->GetPlayer(player)->FindWarehouse(this, FW::NoCondition, 0, true, 0, false))
+		{
+			int mrank=-1;
+			for(list<nofPassiveSoldier*>::iterator it = troops.end(); diff && troops.size() > 1; ++diff)
+			{
+				if (it.valid())
+				{
+					if(mrank<0) //set mrank = highest rank
+						mrank=(*it)->GetRank();
+					else if (mrank>(*it)->GetRank()) //if the current soldier is of lower rank than what we started with -> send no more troops out
+						return;
+		            (*it)->LeaveBuilding();
+                    AddLeavingFigure(*it);
+                    troops.erase(&it);
+				}
+			}
+		}
+	}
+}
+
+void nobMilitary::OrderNewSoldiers()
+{
+	int diff;
+    if((diff = CalcTroopsCount() - int(troops.size() + ordered_troops.size() + troops_on_mission.size() + (defender ? (defender->IsWaitingAtFlag() || defender->IsFightingAtFlag()) ? 1 : 0 : 0)
+                                       /*+ capturing_soldiers*/ + far_away_capturers.size())) > 0) //poc: this should only be >0 if we are being captured. capturing should be true until its the last soldier and this last one would count twice here and result in a returning soldier that shouldnt return.
+	{
+		// Zu wenig Truppen
+        // Gebäude wird angegriffen und
+        // Addon aktiv, nur soviele Leute zum Nachbesetzen schicken wie Verteidiger eingestellt
+        if (aggressors.size() > 0 && GameClient::inst().GetGGS().getSelection(ADDON_DEFENDER_BEHAVIOR) == 2)
+        {
+            diff = (gwg->GetPlayer(player)->military_settings[2] * diff) / MILITARY_SETTINGS_SCALE[2];
+        }
+        gwg->GetPlayer(player)->OrderTroops(this, diff,true);
+	}    
+}
+
 bool nobMilitary::IsUseless() const
 {
     if(frontier_distance || new_built)
@@ -828,6 +872,18 @@ unsigned nobMilitary::GetSoldiersStrength() const
     }
 
     return(strength);
+}
+
+/// is there a max rank soldier in the building?
+unsigned nobMilitary::HasMaxRankSoldier() const
+{
+	unsigned count=0;
+    for(list<nofPassiveSoldier*>::const_iterator it = troops.end(); it.valid(); --it)
+    {
+		if ((*it)->GetRank() >= (MAX_MILITARY_RANK - GameClient::inst().GetGGS().getSelection(ADDON_MAX_RANK)))
+			count++;
+    }
+	return count;
 }
 
 nofDefender* nobMilitary::ProvideDefender(nofAttacker* const attacker)

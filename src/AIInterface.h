@@ -121,7 +121,10 @@ class AIInterface
         bool IsObjectTypeOnNode(MapCoord x, MapCoord y, NodalObjectType objectType) const { return gwb->GetNO(x, y)->GetType() == objectType; }
 
         /// Tests whether there is specific building on a spot
-        bool IsBuildingOnNode(MapCoord x, MapCoord y, BuildingType bld) const { return (gwb->GetNO(x, y)->GetType() == NOP_BUILDING || gwb->GetNO(x, y)->GetType() == NOP_BUILDINGSITE) ? (gwb->GetSpecObj<noBaseBuilding>(x, y)->GetBuildingType() == bld) : false;; }
+        bool IsBuildingOnNode(MapCoord x, MapCoord y, BuildingType bld) const { return (gwb->GetNO(x, y)->GetType() == NOP_BUILDING || gwb->GetNO(x, y)->GetType() == NOP_BUILDINGSITE) ? (gwb->GetSpecObj<noBaseBuilding>(x, y)->GetBuildingType() == bld) : false; }
+
+		/// test whether there is a military building on a position
+		bool IsMilitaryBuildingOnNode(MapCoord x, MapCoord y) const {return ((gwb->GetNO(x,y)->GetType()==NOP_BUILDING || gwb->GetNO(x, y)->GetType() == NOP_BUILDINGSITE) ? (gwb->GetSpecObj<noBaseBuilding>(x, y)->GetBuildingType() >= BLD_BARRACKS && gwb->GetSpecObj<noBaseBuilding>(x, y)->GetBuildingType() <= BLD_FORTRESS) : false); }
 
         /// Tests whether the ai player can see a point
         bool IsVisible(MapCoord x, MapCoord y) const { return gwb->CalcWithAllyVisiblity(x, y, playerID) == VIS_VISIBLE; }
@@ -219,6 +222,15 @@ class AIInterface
         void ToggleCoins(MapCoord x, MapCoord y) { gcs->push_back(new gc::StopGold(x, y)); }
         void ToggleCoins(const nobMilitary* building) { ToggleCoins(building->GetX(), building->GetY()); }
 
+		///getnation
+		unsigned GetNation() {return player->nation;}
+
+		/// send out soldiers
+		void SendSoldiersHome(MapCoord x,MapCoord y) {gcs->push_back(new gc::SendSoldiersHome(x,y));}
+		
+		/// order new soldiers
+		void OrderNewSoldiers(MapCoord x,MapCoord y) {gcs->push_back(new gc::OrderNewSoldiers(x,y));}
+
         /// Starts Preparation of an sea expedition in a habor
         void StartExpedition(MapCoord x, MapCoord y) { gcs->push_back(new gc::StartExpedition(x, y)); }
         void StartExpedition(const nobHarborBuilding* harbor) { StartExpedition(harbor->GetX(), harbor->GetY()); }
@@ -250,6 +262,9 @@ class AIInterface
         /// Destroys a flag on a spot
         void DestroyFlag(MapCoord x, MapCoord y) { gcs->push_back(new gc::DestroyFlag(x, y)); }
         void DestroyFlag(const noFlag* flag) { DestroyFlag(flag->GetX(), flag->GetY()); }
+		
+        /// Destroys a road on a spot
+        void DestroyRoad(MapCoord x, MapCoord y, unsigned char start_dir) { gcs->push_back(new gc::DestroyRoad(x, y,start_dir)); }
 
         /// Attacks an enemy building
         void Attack(MapCoord x, MapCoord y, unsigned soldiers_count, bool strong_soldiers)

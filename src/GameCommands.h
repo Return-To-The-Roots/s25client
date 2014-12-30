@@ -53,7 +53,9 @@ namespace gc
         SURRENDER,
         CHEAT_ARMAGEDDON,
         DESTROYALL,
-        UPGRADEROAD
+        UPGRADEROAD,
+		SENDSOLDIERSHOME,
+		ORDERNEWSOLDIERS
     };
 
 
@@ -301,6 +303,34 @@ namespace gc
                 : Coords(DESTROYBUILDING, x, y) {}
             DestroyBuilding(Serializer* ser)
                 : Coords(DESTROYBUILDING, ser) {}
+
+            /// Führt das GameCommand aus
+            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+    };
+
+/// Send all highest rank soldiers home (used by ai to upgrade troops instead of changing mil settings all the time)
+    class SendSoldiersHome : public Coords
+    {
+            friend class GameClient;
+        public:
+            SendSoldiersHome(const MapCoord x, const MapCoord y)
+                : Coords(SENDSOLDIERSHOME, x, y) {}
+            SendSoldiersHome(Serializer* ser)
+                : Coords(SENDSOLDIERSHOME, ser) {}
+
+            /// Führt das GameCommand aus
+            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+    };
+
+/// call for new min rank soldiers (used by ai to upgrade troops instead of changing mil settings all the time)
+    class OrderNewSoldiers : public Coords
+    {
+            friend class GameClient;
+        public:
+            OrderNewSoldiers(const MapCoord x, const MapCoord y)
+                : Coords(ORDERNEWSOLDIERS, x, y) {}
+            OrderNewSoldiers(Serializer* ser)
+                : Coords(ORDERNEWSOLDIERS, ser) {}
 
             /// Führt das GameCommand aus
             void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);

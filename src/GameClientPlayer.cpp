@@ -1,4 +1,4 @@
-// $Id: GameClientPlayer.cpp 9546 2014-12-14 12:06:35Z marcus $
+// $Id: GameClientPlayer.cpp 9564 2014-12-30 10:53:04Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1291,7 +1291,7 @@ bool GameClientPlayer::IsPlayerAttackable(const unsigned char player) const
 }
 
 
-void GameClientPlayer::OrderTroops(nobMilitary* goal, unsigned count)
+void GameClientPlayer::OrderTroops(nobMilitary* goal, unsigned count,bool ignoresettingsendweakfirst)
 {
     // Solange Lagerhäuser nach Soldaten absuchen, bis entweder keins mehr übrig ist oder alle Soldaten bestellt sind
     nobBaseWarehouse* wh;
@@ -1303,7 +1303,7 @@ void GameClientPlayer::OrderTroops(nobMilitary* goal, unsigned count)
         {
             unsigned order_count = min(wh->GetSoldiersCount(), count);
             count -= order_count;
-            wh->OrderTroops(goal, order_count);
+            wh->OrderTroops(goal, order_count,ignoresettingsendweakfirst);
         }
     }
     while(count && wh);

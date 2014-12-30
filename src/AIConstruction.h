@@ -1,4 +1,4 @@
-// $Id: AIConstruction.h 9563 2014-12-30 10:52:34Z marcus $
+// $Id: AIConstruction.h 9564 2014-12-30 10:53:04Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -57,7 +57,7 @@ class AIConstruction
                        unsigned short real_x, unsigned short real_y, unsigned short real_radius, bool clear = true);
 
         /// Connects a specific flag to a roadsystem nearby and returns true if succesful. Also returns the route of the future road.
-        bool ConnectFlagToRoadSytem(const noFlag* flag, std::vector<unsigned char>& route, unsigned int maxSearchRadius = 10);
+        bool ConnectFlagToRoadSytem(const noFlag* flag, std::vector<unsigned char>& route, unsigned int maxSearchRadius = 14);
 
         /// Builds a street between two roadnodes and sets flags on it, if route is empty, it will be calculated
         bool BuildRoad(const noRoadNode* start, const noRoadNode* target, std::vector<unsigned char> &route);

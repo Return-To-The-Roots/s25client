@@ -1,4 +1,4 @@
-// $Id: nobMilitary.h 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: nobMilitary.h 9564 2014-12-30 10:53:04Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -194,6 +194,8 @@ class nobMilitary : public nobBaseMilitary
         bool IsGoldDisabledVirtual() const { return disable_coins_virtual; }
         /// Fragt ab, ob Goldzufuhr ausgeschaltet ist (real)
         bool IsGoldDisabled() const { return disable_coins; }
+		/// is there a max rank soldier in the building?
+		unsigned HasMaxRankSoldier() const;
 
         /// Sucht sämtliche Lagerhäuser nach Goldmünzen ab und bestellt ggf. eine, falls eine gebraucht wird
         void SearchCoins();
@@ -203,6 +205,11 @@ class nobMilitary : public nobBaseMilitary
 
         /// Sind noch Truppen drinne, die dieses Gebäude verteidigen können
         bool DefendersAvailable() const { return (GetTroopsCount() > 0); }
+
+		/// send all soldiers of the highest rank home (if highest=lowest keep 1)
+		void SendSoldiersHome();
+		/// order new troops
+		void OrderNewSoldiers();
 
         /// Darf das Militärgebäude abgerissen werden (Abriss-Verbot berücksichtigen)?
         bool IsDemolitionAllowed() const;

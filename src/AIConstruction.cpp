@@ -1,4 +1,4 @@
-// $Id: AIConstruction.cpp 9563 2014-12-30 10:52:34Z marcus $
+// $Id: AIConstruction.cpp 9564 2014-12-30 10:53:04Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -176,7 +176,9 @@ bool AIConstruction::ConnectFlagToRoadSytem(const noFlag* flag, std::vector<unsi
     {
         tmpRoute.clear();
         unsigned int length;
-
+		// the flag should not be at a military building!		
+		if (aii->IsMilitaryBuildingOnNode(aii->GetXA(flags[i]->GetX(),flags[i]->GetY(),1),aii->GetYA(flags[i]->GetX(),flags[i]->GetY(),1)))
+			continue;
         // Gibts überhaupt einen Pfad zu dieser Flagge
         bool pathFound = aii->FindFreePathForNewRoad(flag->GetX(), flag->GetY(), flags[i]->GetX(), flags[i]->GetY(), &tmpRoute, &length);
 
@@ -344,6 +346,11 @@ BuildingType AIConstruction::ChooseMilitaryBuilding(MapCoord x, MapCoord y)
 		bld = BLD_WATCHTOWER;
 		return bld;
 	}
+	if(aijh->UpdateUpgradeBuilding()<0 && buildingCounts.building_site_counts[BLD_FORTRESS]<1 && (aii->GetInventory()->goods[GD_STONES] > 20 || GetBuildingCount(BLD_QUARRY) > 0))
+	{
+		bld = BLD_FORTRESS;
+		return bld;
+	}
     std::list<nobBaseMilitary*> military;
     aii->GetMilitaryBuildings(x, y, 3, military);
     for(std::list<nobBaseMilitary*>::iterator it = military.begin(); it != military.end(); ++it)
@@ -458,26 +465,29 @@ void AIConstruction::RefreshBuildingCount()
         bonuswant = GetBuildingCount(BLD_CHARBURNER) + ((!aijh->ggs->isEnabled(ADDON_INEXHAUSTIBLE_MINES) && ((GetBuildingCount(BLD_IRONMINE) + GetBuildingCount(BLD_COALMINE) + GetBuildingCount(BLD_GOLDMINE)) > 6)) ? 1 : 0) + ((aijh->ggs->isEnabled(ADDON_EXHAUSTIBLE_WELLS) && GetBuildingCount(BLD_WELL) > 3) ? 1 : 0);
         buildingsWanted[BLD_FORESTER] = max<int>((min<int>((aii->GetMilitaryBuildings().size() > 23 ? 3 : (aii->GetMilitaryBuildings().size() / 8) + 1) + bonuswant, resourcelimit)), 1);
 
+		//earlygame: limit board use so limited to militarybuildingcount
         //woodcutters
-        buildingsWanted[BLD_WOODCUTTER] = aii->GetInventory()->goods[GD_AXE] + aii->GetInventory()->people[JOB_WOODCUTTER] + 1;
+		buildingsWanted[BLD_WOODCUTTER] = (aii->GetInventory()->goods[GD_AXE] + aii->GetInventory()->people[JOB_WOODCUTTER] + 1)>(aii->GetMilitaryBuildings().size()+1)?(aii->GetMilitaryBuildings().size()+1):(aii->GetInventory()->goods[GD_AXE] + aii->GetInventory()->people[JOB_WOODCUTTER] + 1);
 
         //fishery & hunter
-        buildingsWanted[BLD_FISHERY] = aii->GetInventory()->goods[GD_RODANDLINE] + aii->GetInventory()->people[JOB_FISHER];
+        buildingsWanted[BLD_FISHERY] = (aii->GetInventory()->goods[GD_RODANDLINE] + aii->GetInventory()->people[JOB_FISHER])>(aii->GetMilitaryBuildings().size()+1)?(aii->GetMilitaryBuildings().size()+1):(aii->GetInventory()->goods[GD_RODANDLINE] + aii->GetInventory()->people[JOB_FISHER]);
         buildingsWanted[BLD_HUNTER] = (aii->GetInventory()->goods[GD_BOW] + aii->GetInventory()->people[JOB_HUNTER] < 4) ? aii->GetInventory()->goods[GD_BOW] + aii->GetInventory()->people[JOB_HUNTER] : 4;
 
         //quarry: low ware games start at 2 otherwise build as many as we have stonemasons, higher ware games up to 6 quarries
         if(aii->GetInventory()->goods[GD_PICKAXE] + aii->GetInventory()->people[JOB_MINER] < 7 && aii->GetInventory()->people[JOB_STONEMASON] > 0 && aii->GetInventory()->people[JOB_MINER] < 3)
         {
-            buildingsWanted[BLD_QUARRY] = aii->GetInventory()->people[JOB_STONEMASON] > 2 ? aii->GetInventory()->people[JOB_STONEMASON] : 2;
+            buildingsWanted[BLD_QUARRY] = aii->GetInventory()->people[JOB_STONEMASON] > 2 ? aii->GetInventory()->people[JOB_STONEMASON]>(aii->GetMilitaryBuildings().size())?(aii->GetMilitaryBuildings().size()):aii->GetInventory()->people[JOB_STONEMASON] : 2;
         }
         else
         {
             //>6miners = build up to 6 depending on resources, else max out at miners/2
             buildingsWanted[BLD_QUARRY] = (aii->GetInventory()->goods[GD_PICKAXE] + aii->GetInventory()->people[JOB_STONEMASON] < 6) ? ((aii->GetInventory()->people[JOB_MINER] > 6) ? aii->GetInventory()->goods[GD_PICKAXE] + aii->GetInventory()->people[JOB_STONEMASON] : aii->GetInventory()->people[JOB_MINER] / 2) : 6;
-        }
+			if(buildingsWanted[BLD_QUARRY]>(aii->GetMilitaryBuildings().size()))
+				(aii->GetMilitaryBuildings().size());
+		}
         //sawmills limited by woodcutters and carpenter+saws reduced by charburners minimum of 2
         resourcelimit = aii->GetInventory()->people[JOB_CARPENTER] + aii->GetInventory()->goods[GD_SAW];
-        buildingsWanted[BLD_SAWMILL] = max<int>(min<int>((GetBuildingCount(BLD_WOODCUTTER) - (GetBuildingCount(BLD_CHARBURNER) * 2)) / 2, resourcelimit), 2); //min 2
+        buildingsWanted[BLD_SAWMILL] = max<int>(min<int>((GetBuildingCount(BLD_WOODCUTTER) - (GetBuildingCount(BLD_CHARBURNER) * 2)) / 2, resourcelimit), 3); //min 2
 
         //ironsmelters limited by ironmines or crucibles
         buildingsWanted[BLD_IRONSMELTER] = (aii->GetInventory()->goods[GD_CRUCIBLE] + aii->GetInventory()->people[JOB_IRONFOUNDER] >= GetBuildingCount(BLD_IRONMINE)) ? GetBuildingCount(BLD_IRONMINE) : aii->GetInventory()->goods[GD_CRUCIBLE] + aii->GetInventory()->people[JOB_IRONFOUNDER];
@@ -542,7 +552,7 @@ void AIConstruction::RefreshBuildingCount()
             {
                 //probably still limited in food supply go up to 4 coal 1 gold 2 iron (gold+coal->coin, iron+coal->tool, iron+coal+coal->weapon)
                 buildingsWanted[BLD_IRONMINE] = (aii->GetInventory()->people[JOB_MINER] + aii->GetInventory()->goods[GD_PICKAXE] - (GetBuildingCount(BLD_COALMINE) + GetBuildingCount(BLD_GOLDMINE)) > 1 && GetBuildingCount(BLD_BAKERY) + GetBuildingCount(BLD_SLAUGHTERHOUSE) + GetBuildingCount(BLD_HUNTER) + GetBuildingCount(BLD_FISHERY) > 4) ? 2 : 1;
-                buildingsWanted[BLD_GOLDMINE] = (aii->GetInventory()->people[JOB_MINER] > 2) ? 1 : 0;
+                buildingsWanted[BLD_GOLDMINE] = (aii->GetInventory()->people[JOB_MINER] > 2) ? 1 : 0;				
                 resourcelimit = aii->GetInventory()->people[JOB_CHARBURNER] + aii->GetInventory()->goods[GD_SHOVEL];
                 if(aijh->ggs->isEnabled(ADDON_CHARBURNER) && (GetBuildingCount(BLD_COALMINE) < 1 && (GetBuildingCount(BLD_IRONMINE) + GetBuildingCount(BLD_GOLDMINE) > 0)))
                     buildingsWanted[BLD_CHARBURNER] = min<int>(1, resourcelimit);
@@ -557,7 +567,7 @@ void AIConstruction::RefreshBuildingCount()
                 buildingsWanted[BLD_GRANITEMINE] = 0;
         }
     }
-    if(aijh->ggs->getSelection(ADDON_MAX_RANK) > 3)
+    if(MAX_MILITARY_RANK - aijh->ggs->getSelection(ADDON_MAX_RANK) < 1)
     {
         buildingsWanted[BLD_GOLDMINE] = 0; // max rank is 0 = private / recruit ==> gold is useless!
     }
@@ -610,7 +620,9 @@ bool AIConstruction::BuildAlternativeRoad(const noFlag* flag, std::vector<unsign
         //std::vector<unsigned char> new_route;
         route.clear();
         unsigned int newLength;
-
+		// the flag should not be at a military building!		
+		if (aii->IsMilitaryBuildingOnNode(aii->GetXA(flags[i]->GetX(),flags[i]->GetY(),1),aii->GetYA(flags[i]->GetX(),flags[i]->GetY(),1)))
+			continue;
         // Gibts überhaupt einen Pfad zu dieser Flagge
         bool pathFound = aii->FindFreePathForNewRoad(flag->GetX(), flag->GetY(), flags[i]->GetX(), flags[i]->GetY(), &route, &newLength);
 

@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 9563 2014-12-30 10:52:34Z marcus $
+// $Id: AIPlayerJH.cpp 9564 2014-12-30 10:53:04Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -97,6 +97,10 @@ void AIPlayerJH::RunGF(const unsigned gf)
         //CheckExistingMilitaryBuildings();
         TryToAttack();
     }
+	if ((gf + playerid * 17) % 73 == 0)
+    {
+        MilUpgradeOptim();
+    }
 
     if ((gf + 41 + playerid * 17) % 100 == 0)
     {
@@ -142,14 +146,14 @@ void AIPlayerJH::RunGF(const unsigned gf)
         std::vector<unsigned char> milSettings;
         milSettings.resize(8);
         milSettings[0] = 10;
-        milSettings[1] = 5;
+        milSettings[1] = HasFrontierBuildings()?5:0;
         milSettings[2] = 4;
         milSettings[3] = 5;
-        milSettings[4] = 0;                                                 //interior 1 soldier each
+		milSettings[4] = UpdateUpgradeBuilding() >= 0? 8 : 0;                                                 //interior full if we have an upgrade building else 1 soldier each
         milSettings[5] = (unsigned char)max<int>(min<int>((SoldierAvailable() / 10), 8), 4); //inland min 50% max 100% depending on how many soldiers are available
         milSettings[6] = ggs->getSelection(ADDON_SEA_ATTACK)==2 ? 0 : NoEnemyHarbor() ? ((SoldierAvailable() > 10) ? 4 : 0) : 8; //no sea attacks?->no soldiers else -> harbor points: enemy harbors exist? 100% if not 50% or 0% depending on our available recruits
         milSettings[7] = 8;                                                     //front: 100%
-        if(player->military_settings[5] != milSettings[5] || player->military_settings[6] != milSettings[6]) //only send the command if we want to change something
+		if(player->military_settings[5] != milSettings[5] || player->military_settings[6] != milSettings[6] || player->military_settings[4]!=milSettings[4] || player->military_settings[1]!=milSettings[1]) //only send the command if we want to change something
             aii->SetMilitarySettings(milSettings);
         //check for useless sawmills
         if(aii->GetBuildings(BLD_SAWMILL).size() > 2)
@@ -214,6 +218,8 @@ void AIPlayerJH::RunGF(const unsigned gf)
         {
             aii->ChangeInventorySetting(wh->GetX(), wh->GetY(), 1, 8, 0); //less than 50 helpers - collect them: more than 50 stop collecting
         }
+		if (MAX_MILITARY_RANK - ggs->getSelection(ADDON_MAX_RANK) > 0) //there is more than 1 rank available -> distribute
+			DistributeMaxRankSoldiersByBlocking(5);
         //unlimited when every warehouse has at least that amount
         DistributeGoodsByBlocking(23, 30); //30 boards for each warehouse - block after that - should speed up expansion
         DistributeGoodsByBlocking(24, 50); //50 stones for each warehouse - block after that - should limit losses in case a warehouse is destroyed
@@ -259,7 +265,7 @@ void AIPlayerJH::RunGF(const unsigned gf)
             }
         }
         AddBuildJob(construction.ChooseMilitaryBuilding(tx, ty), tx, ty);
-        if((*it2)->IsUseless() && (*it2)->IsDemolitionAllowed())
+        if((*it2)->IsUseless() && (*it2)->IsDemolitionAllowed() && randomstore!=UpdateUpgradeBuilding())
         {
             aii->DestroyBuilding(tx, ty);
         }
@@ -1086,7 +1092,145 @@ void AIPlayerJH::DistributeGoodsByBlocking(unsigned char goodnumber, unsigned li
         }
     }
 }
+void AIPlayerJH::DistributeMaxRankSoldiersByBlocking(unsigned limit)
+{
+	unsigned completewh=0;
+	for (std::list<nobBaseWarehouse*>::const_iterator it=aii->GetStorehouses().begin();it!=aii->GetStorehouses().end();it++)
+	{
+		if(!aii->IsObjectTypeOnNode((*it)->GetX(),(*it)->GetY(),NOP_BUILDINGSITE))
+		{
+			//LOG.lprintf("distribute maxranks - wh detection for player %i , got a non-bldsite at %i,%i \n",playerid,(*it)->GetX(),(*it)->GetY());
+			completewh++;
+		}
+		else
+			LOG.lprintf("distribute maxranks - wh buildingsite detection for player %i , got a bldsite at %i,%i \n",playerid,(*it)->GetX(),(*it)->GetY());
+		if(completewh>1)
+			break;
+	}
+	if(completewh<1) //no warehouses -> no job
+		return;
 
+	unsigned char maxrankjobnr=JOB_PRIVATE + MAX_MILITARY_RANK  - ggs->getSelection(ADDON_MAX_RANK); //private + general - max rank limiter
+	
+	if(completewh==1 ) //only 1 warehouse? dont block max ranks here
+	{
+		if ((*(aii->GetStorehouses().begin()))->CheckRealInventorySettings(1,2,maxrankjobnr))
+			aii->ChangeInventorySetting((*(aii->GetStorehouses().begin()))->GetX(),(*(aii->GetStorehouses().begin()))->GetY(),1,2,maxrankjobnr);
+		return;
+	}
+	//rest applies for at least 2 complete warehouses!
+	std::list<nobMilitary*>frontiermils; //make a list containing frontier military buildings
+	for (std::list<nobMilitary*>::const_iterator it = aii->GetMilitaryBuildings().begin();it!=aii->GetMilitaryBuildings().end();it++)
+	{
+		if ((*it)->GetFrontierDistance()>0 && !(*it)->IsNewBuilt())
+			frontiermils.push_back(*it);
+	}
+	std::list<nobBaseWarehouse*>frontierwhs; //make a list containing all warehouses near frontier military buildings
+	for (std::list<nobBaseWarehouse*>::const_iterator it = aii->GetStorehouses().begin(); it!=aii->GetStorehouses().end();it++)
+	{
+		if(!aii->IsObjectTypeOnNode((*it)->GetX(),(*it)->GetY(),NOP_BUILDINGSITE)) //a completed warehouse!
+		{
+			for (std::list<nobMilitary*>::const_iterator it2 = frontiermils.begin(); it2!=frontiermils.end();it2++)
+			{	
+				if(aii->CalcDistance((*it)->GetX(),(*it)->GetY(),(*it2)->GetX(),(*it2)->GetY())<12)
+				{
+					frontierwhs.push_back(*it);
+					break;
+				}
+			}
+		}
+	}
+	//have frontier warehouses?
+	if(frontierwhs.size())
+	{
+		//LOG.lprintf("distribute maxranks - got frontierwhs for player %i \n",playerid);
+		bool understaffedwh=false;
+		//try to gather limit maxranks in each - if we have that many unblock for all frontier whs, 
+		//check if there is at least one with less than limit first
+		for (std::list<nobBaseWarehouse*>::const_iterator it=frontierwhs.begin();it!=frontierwhs.end();it++)
+		{
+			if((*it)->GetInventory()->people[maxrankjobnr]<limit)
+			{
+				understaffedwh=true;
+				break;
+			}
+		}
+		//if understaffed was found block in all with >=limit else unblock in all
+		for (std::list<nobBaseWarehouse*>::const_iterator it=aii->GetStorehouses().begin();it!=aii->GetStorehouses().end();it++)
+		{
+			if(std::find(frontierwhs.begin(),frontierwhs.end(),(*it))!=frontierwhs.end()) //frontier wh?
+			{
+				if(understaffedwh)
+				{
+					if((*it)->GetInventory()->people[maxrankjobnr]<limit)
+					{
+						if ((*it)->CheckRealInventorySettings(1,2,maxrankjobnr)) //maxranks blocked? -> unblock
+							aii->ChangeInventorySetting((*it)->GetX(),(*it)->GetY(),1,2,maxrankjobnr);
+					}
+					else //more than limit
+					{
+						if (!(*it)->CheckRealInventorySettings(1,2,maxrankjobnr)) //maxranks not blocked -> block
+							aii->ChangeInventorySetting((*it)->GetX(),(*it)->GetY(),1,2,maxrankjobnr);
+					}					
+				}
+				else //no understaffedwh
+				{
+					if ((*it)->CheckRealInventorySettings(1,2,maxrankjobnr)) //maxranks blocked? -> unblock
+							aii->ChangeInventorySetting((*it)->GetX(),(*it)->GetY(),1,2,maxrankjobnr);
+				}
+			}
+			else //not frontier wh! block it
+			{
+				if (!(*it)->CheckRealInventorySettings(1,2,maxrankjobnr)) //maxranks not blocked -> block
+							aii->ChangeInventorySetting((*it)->GetX(),(*it)->GetY(),1,2,maxrankjobnr);
+			}
+		}
+	}
+	else //there are no frontier whs!
+	{
+		//LOG.lprintf("distribute maxranks - got NO frontierwhs for player %i \n",playerid);
+		bool understaffedwh=false;
+		//try to gather limit maxranks in each - if we have that many unblock for all  whs, 
+		//check if there is at least one with less than limit first
+		for (std::list<nobBaseWarehouse*>::const_iterator it=aii->GetStorehouses().begin();it!=aii->GetStorehouses().end();it++)
+		{
+			if((*it)->GetInventory()->people[maxrankjobnr]<limit && it!=aii->GetStorehouses().begin()) //first warehouse is special case
+			{
+				understaffedwh=true;
+				break;
+			}
+		}
+		for (std::list<nobBaseWarehouse*>::const_iterator it=aii->GetStorehouses().begin();it!=aii->GetStorehouses().end();it++)
+		{
+			if(it==aii->GetStorehouses().begin()) //first warehouse should block when there is more than 1 wh
+			{
+				//LOG.lprintf("distribute maxranks - got NO frontierwhs for player %i , block at hq \n",playerid);
+				if (!(*it)->CheckRealInventorySettings(1,2,maxrankjobnr))
+					aii->ChangeInventorySetting((*it)->GetX(),(*it)->GetY(),1,2,maxrankjobnr);
+				continue;
+			}
+			if(understaffedwh)
+			{
+				
+				if((*it)->GetInventory()->people[maxrankjobnr]<limit )
+				{
+					if ((*it)->CheckRealInventorySettings(1,2,maxrankjobnr)) //maxranks blocked? -> unblock
+						aii->ChangeInventorySetting((*it)->GetX(),(*it)->GetY(),1,2,maxrankjobnr);
+				}
+				else //more than limit
+				{
+					if (!(*it)->CheckRealInventorySettings(1,2,maxrankjobnr)) //maxranks not blocked -> block
+						aii->ChangeInventorySetting((*it)->GetX(),(*it)->GetY(),1,2,maxrankjobnr);
+				}					
+			}
+			else //no understaffedwh
+			{
+				if ((*it)->CheckRealInventorySettings(1,2,maxrankjobnr)) //maxranks blocked? -> unblock
+						aii->ChangeInventorySetting((*it)->GetX(),(*it)->GetY(),1,2,maxrankjobnr);
+			}
+		}
+	}
+}
 bool AIPlayerJH::SimpleFindPosition(MapCoord& x, MapCoord& y, BuildingQuality size, int radius)
 {
     unsigned short width = aii->GetMapWidth();
@@ -1582,11 +1726,80 @@ void AIPlayerJH::HandleBorderChanged(const Coords& coords)
     }
 }
 
+void AIPlayerJH::MilUpgradeOptim()
+{
+	//do we have a upgrade building?
+	int upb = UpdateUpgradeBuilding();
+	int count=0;	
+	for (std::list<nobMilitary*>::const_iterator it = aii->GetMilitaryBuildings().begin(); it != aii->GetMilitaryBuildings().end(); it++)
+	{
+		if (count!=upb) //not upgrade building
+		{
+			if(upb>=0) //we do have an upgrade building
+			{
+				if(!(*it)->IsGoldDisabled()) // deactivate gold for all other buildings
+				{
+					aii->ToggleCoins((*it)->GetX(), (*it)->GetY());
+				}
+				if ((*it)->GetFrontierDistance()==0 && (((unsigned)count+6) < aii->GetMilitaryBuildings().size()) ) //send out troops until 1 private is left, then cancel road
+				{
+					if ((*it)->GetTroopsCount()>1) //more than 1 soldier remaining? -> send out order
+					{
+						aii->SendSoldiersHome((*it)->GetX(),(*it)->GetY());
+					}
+					else if(!(*it)->IsNewBuilt()) //0-1 soldier remains and the building has had at least 1 soldier at some point and the building is not new on the list-> cancel road (and fix roadsystem if necessary)
+					{
+						RemoveUnusedRoad((*it)->GetFlag(),1,true,true,true);
+					}
+				}
+				else if ((*it)->GetFrontierDistance()>=1) // frontier building - connect to road system
+				{
+					construction.AddConnectFlagJob((*it)->GetFlag());
+				}
+			}
+			else //no upgrade building? -> activate gold for frontier buildings
+			{
+				if((*it)->IsGoldDisabled() && (*it)->GetFrontierDistance()>0) 
+				{
+					aii->ToggleCoins((*it)->GetX(), (*it)->GetY());
+				}
+			}
+		}
+		else //upgrade building 
+		{
+			if(!construction.IsConnectedToRoadSystem((*it)->GetFlag()))
+			{
+				construction.AddConnectFlagJob((*it)->GetFlag());				
+				continue;
+			}
+			if((*it)->IsGoldDisabled()) // activate gold
+			{
+				aii->ToggleCoins((*it)->GetX(), (*it)->GetY());
+			}
+			if((*it)->HasMaxRankSoldier()) // has max rank soldier? send it/them out!
+				aii->SendSoldiersHome((*it)->GetX(),(*it)->GetY());
+			if(SoldierAvailable(0) && (*it)->GetTroopsCount() < (unsigned)((*it)->GetBuildingType()==BLD_WATCHTOWER?TROOPS_COUNT[aii->GetNation()][2]:TROOPS_COUNT[aii->GetNation()][3])) //building not full and privates in a warehouse? order new!
+				aii->OrderNewSoldiers((*it)->GetX(),(*it)->GetY());
+		}
+		count++;
+	}
+}
+
 
 void AIPlayerJH::Chat(std::string message)
 {
     GameMessage_Server_Chat chat = GameMessage_Server_Chat(playerid, CD_ALL, message);
     GameServer::inst().AIChat(chat);
+}
+
+bool AIPlayerJH::HasFrontierBuildings()
+{
+	for (std::list<nobMilitary*>::const_iterator it = aii->GetMilitaryBuildings().begin(); it!=aii->GetMilitaryBuildings().end();it++)
+	{
+		if((*it)->GetFrontierDistance()>0)
+			return true;
+	}
+	return false;
 }
 
 void AIPlayerJH::TryToAttack()
@@ -1608,20 +1821,9 @@ void AIPlayerJH::TryToAttack()
             std::advance(it, skip);
         skip = 0;
         const nobMilitary* mil = (*it);
-        if (mil->GetFrontierDistance() == 0)  //inland building? -> deactivate gold & skip it
-        {
-            if(!mil->IsGoldDisabled())
-            {
-                aii->ToggleCoins(mil->GetX(), mil->GetY());
-            }
+        if (mil->GetFrontierDistance() == 0)  //inland building? -> skip it
+        {            
             continue;
-        }
-        else
-        {
-            if(mil->IsGoldDisabled())       //combat building? -> activate gold
-            {
-                aii->ToggleCoins(mil->GetX(), mil->GetY());
-            }
         }
 
         // get nearby enemy buildings and store in set of potential attacking targets
@@ -2005,7 +2207,7 @@ void AIPlayerJH::RemoveAllUnusedRoads(MapCoord x, MapCoord y)
     }
 }
 
-bool AIPlayerJH::RemoveUnusedRoad(const noFlag* startFlag, unsigned char excludeDir, bool firstflag, bool allowcircle)
+bool AIPlayerJH::RemoveUnusedRoad(const noFlag* startFlag, unsigned char excludeDir, bool firstflag, bool allowcircle,bool keepstartflag)
 {
     unsigned char foundDir = 0xFF;
     unsigned char foundDir2 = 0xFF;
@@ -2053,7 +2255,13 @@ bool AIPlayerJH::RemoveUnusedRoad(const noFlag* startFlag, unsigned char exclude
     }
 
     // kill the flag
-    aii->DestroyFlag(startFlag);
+	if(keepstartflag)
+	{
+		if(foundDir<6)
+			aii->DestroyRoad(startFlag->GetX(),startFlag->GetY(),foundDir);
+	}
+	else
+		aii->DestroyFlag(startFlag);
 
     // nothing found?
     if (foundDir > 6)
@@ -2068,12 +2276,15 @@ bool AIPlayerJH::RemoveUnusedRoad(const noFlag* startFlag, unsigned char exclude
     return false;
 }
 
-unsigned AIPlayerJH::SoldierAvailable()
+unsigned AIPlayerJH::SoldierAvailable(int rank)
 {
     unsigned freeSoldiers = 0;
     for (std::list<nobBaseWarehouse*>::const_iterator it = aii->GetStorehouses().begin(); it != aii->GetStorehouses().end(); it++)
     {
-        freeSoldiers += ((*it)->GetInventory()->people[JOB_PRIVATE] + (*it)->GetInventory()->people[JOB_PRIVATEFIRSTCLASS] + (*it)->GetInventory()->people[JOB_SERGEANT] + (*it)->GetInventory()->people[JOB_OFFICER] + (*it)->GetInventory()->people[JOB_GENERAL]);
+		if(rank<0 || rank>4)
+			freeSoldiers += ((*it)->GetInventory()->people[JOB_PRIVATE] + (*it)->GetInventory()->people[JOB_PRIVATEFIRSTCLASS] + (*it)->GetInventory()->people[JOB_SERGEANT] + (*it)->GetInventory()->people[JOB_OFFICER] + (*it)->GetInventory()->people[JOB_GENERAL]);
+		else
+			freeSoldiers += ((*it)->GetInventory()->people[rank+21]);
     }
     return freeSoldiers;
 }
@@ -2133,8 +2344,32 @@ void AIPlayerJH::InitStoreAndMilitarylists()
     {
         SetFarmedNodes((*it)->GetX(), (*it)->GetY(), true);
     }
-    //if(aii->GetMilitaryBuildings().size() > 0 || aii->GetStorehouses().size() > 1)
-    //    Chat(_("AI'm back"));
+	//find the upgradebuilding
+	UpgradeBldX=0;
+	UpgradeBldY=0;
+	UpdateUpgradeBuilding();
+}
+int AIPlayerJH::UpdateUpgradeBuilding()
+{
+	if(aii->GetStorehouses().size())
+	{
+		unsigned count=0;
+		for (std::list<nobMilitary*>::const_iterator it = aii->GetMilitaryBuildings().begin(); it!=aii->GetMilitaryBuildings().end(); it++)
+		{
+			//inland building, tower or fortress, connected to warehouse 1 
+			if((*it)->GetBuildingType()>=BLD_WATCHTOWER && (*it)->GetFrontierDistance()<1 && construction.IsConnectedToRoadSystem((*it)->GetFlag()))
+			{
+				//LOG.lprintf("UpdateUpgradeBuilding at %i,%i for player %i (listslot %i) \n",(*it)->GetX(),(*it)->GetY(),playerid,count);
+				UpgradeBldX=(*it)->GetX();
+				UpgradeBldY=(*it)->GetY();
+				return count;
+			}
+			count++;
+		}
+	}
+	UpgradeBldX=0;
+	UpgradeBldY=0;
+	return -1;
 }
 //set default start values for the ai for distribution & military settings
 void AIPlayerJH::InitMilitaryAndDistribution()

@@ -1,4 +1,4 @@
-// $Id: nobBaseWarehouse.h 9548 2014-12-14 19:51:50Z marcus $
+// $Id: nobBaseWarehouse.h 9564 2014-12-30 10:53:04Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -226,7 +226,7 @@ class nobBaseWarehouse : public nobBaseMilitary
                    real_goods.people[JOB_SERGEANT] + real_goods.people[JOB_OFFICER] + real_goods.people[JOB_GENERAL];
         }
         /// Bestellt Soldaten
-        void OrderTroops(nobMilitary* goal, unsigned count);
+        void OrderTroops(nobMilitary* goal, unsigned count,bool ignoresettingsendweakfirst=false);
 
         /// Schickt einen Verteidiger raus, der einem Angreifer in den Weg rennt
         nofAggressiveDefender* SendDefender(nofAttacker* attacker);
