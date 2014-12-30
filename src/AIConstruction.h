@@ -1,4 +1,4 @@
-// $Id: AIConstruction.h 9499 2014-11-29 10:43:47Z marcus $
+// $Id: AIConstruction.h 9563 2014-12-30 10:52:34Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -70,7 +70,7 @@ class AIConstruction
 
         /// Randomly chooses a military building, prefering bigger buildings if enemy nearby
         BuildingType ChooseMilitaryBuilding(MapCoord x, MapCoord y);
-
+		
         /// Returns the number of buildings and buildingsites of a specific type (refresh with RefreshBuildingCount())
         unsigned GetBuildingCount(BuildingType type);
 
@@ -83,6 +83,9 @@ class AIConstruction
 
         /// Checks whether a building type is wanted atm
         bool Wanted(BuildingType type);
+
+		/// Checks whether the ai wants to construct more mil buildings atm
+        bool MilitaryBuildingSitesLimit();
 
         /// Initializes the wanted-buildings-vector
         void InitBuildingsWanted();

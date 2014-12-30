@@ -135,7 +135,7 @@ class AIInterface
 
         /// Returns building quality on a given spot
         BuildingQuality GetBuildingQuality(MapCoord x, MapCoord y) const { return gwb->CalcBQ(x, y, playerID); }
-
+		BuildingQuality GetBuildingQualityAnyOwner(MapCoord x, MapCoord y) const { return gwb->CalcBQ(x, y, playerID,false,true,true); }
 
         // Tries to find a free path for a road and return length and the route
         bool FindFreePathForNewRoad(MapCoord startX, MapCoord startY, MapCoord targetX, MapCoord targetY, std::vector<Direction> *route = NULL,

@@ -1,4 +1,4 @@
-// $Id: AIJHHelper.cpp 9555 2014-12-16 15:25:13Z marcus $
+// $Id: AIJHHelper.cpp 9563 2014-12-30 10:52:34Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -181,6 +181,12 @@ void AIJH::BuildJob::TryToBuild()
             case BLD_WATCHTOWER:
             case BLD_FORTRESS:
                 foundPos = aijh->FindBestPosition(bx, by, AIJH::BORDERLAND, BUILDING_SIZE[type], 1, 11, true);
+				//could we build a bigger military building? check if the location is surrounded by terrain that does not allow normal buildings (probably important map part)
+				if(aii->GetBuildingQuality(bx,by)!=BQ_MINE && aii->GetBuildingQuality(bx,by)>BUILDING_SIZE[type] && aijh->BQsurroundcheck(bx,by,6,true,10)<10)
+				{
+					//more than 80% is unbuildable in range 7 -> upgrade
+					type=type<BLD_WATCHTOWER?BLD_WATCHTOWER:BLD_FORTRESS;
+				}
                 break;
             case BLD_GOLDMINE:
                 foundPos = aijh->FindBestPosition(bx, by, AIJH::GOLD, BQ_MINE, 11, true);

@@ -1,4 +1,4 @@
-// $Id: AIConstruction.cpp 9562 2014-12-30 10:52:05Z marcus $
+// $Id: AIConstruction.cpp 9563 2014-12-30 10:52:34Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -415,8 +415,15 @@ bool AIConstruction::Wanted(BuildingType type)
         return aii->CanBuildCatapult() && (aii->GetInventory()->goods[GD_STONES] > 50 + (4 * GetBuildingCount(BLD_CATAPULT)));
     if ((type >= BLD_BARRACKS && type <= BLD_FORTRESS) || type == BLD_STOREHOUSE)
         //todo: find a better way to determine that there is no risk in expanding than sawmill up and complete
-        return (GetBuildingCount(BLD_BARRACKS) + GetBuildingCount(BLD_GUARDHOUSE) + GetBuildingCount(BLD_FORTRESS) + GetBuildingCount(BLD_WATCHTOWER) > 0 || buildingCounts.building_counts[BLD_SAWMILL] > 0 || (aii->GetInventory()->goods[GD_BOARDS] > 30 && GetBuildingCount(BLD_SAWMILL) > 0));
+        return ((GetBuildingCount(BLD_BARRACKS) + GetBuildingCount(BLD_GUARDHOUSE) + GetBuildingCount(BLD_FORTRESS) + GetBuildingCount(BLD_WATCHTOWER) > 0 || buildingCounts.building_counts[BLD_SAWMILL] > 0 || (aii->GetInventory()->goods[GD_BOARDS] > 30 && GetBuildingCount(BLD_SAWMILL) > 0)) && MilitaryBuildingSitesLimit());
     return GetBuildingCount(type) < buildingsWanted[type];
+}
+
+bool AIConstruction::MilitaryBuildingSitesLimit()
+{
+	unsigned complete = buildingCounts.building_counts[BLD_WATCHTOWER] + buildingCounts.building_counts[BLD_FORTRESS] + buildingCounts.building_counts[BLD_GUARDHOUSE] + buildingCounts.building_counts[BLD_BARRACKS];
+	unsigned inconstruction = buildingCounts.building_site_counts[BLD_WATCHTOWER] + buildingCounts.building_site_counts[BLD_FORTRESS] + buildingCounts.building_site_counts[BLD_GUARDHOUSE] + buildingCounts.building_site_counts[BLD_BARRACKS];
+	return complete+3 > inconstruction;
 }
 
 void AIConstruction::RefreshBuildingCount()

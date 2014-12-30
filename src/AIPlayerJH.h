@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.h 9562 2014-12-30 10:52:05Z marcus $
+// $Id: AIPlayerJH.h 9563 2014-12-30 10:52:34Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -322,6 +322,8 @@ class AIPlayerJH : public AIBase
 
         /// checks distance to all harborpositions
         bool HarborPosClose(MapCoord x, MapCoord y, unsigned range, bool onlyempty = false);
+		/// returns the percentage*100 of possible normal building places
+        unsigned BQsurroundcheck(MapCoord x, MapCoord y, unsigned range, bool includeexisting,unsigned limit=0);
 		
 
 // Event...

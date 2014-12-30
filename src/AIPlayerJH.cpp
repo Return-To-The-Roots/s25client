@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 9555 2014-12-16 15:25:13Z marcus $
+// $Id: AIPlayerJH.cpp 9563 2014-12-30 10:52:34Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -2288,6 +2288,50 @@ bool AIPlayerJH::HarborPosClose(MapCoord x, MapCoord y, unsigned range, bool onl
         }
     }
     return false;
+}
+
+/// returns the percentage*100 of possible normal+ building places
+unsigned AIPlayerJH::BQsurroundcheck(MapCoord x, MapCoord y, unsigned range, bool includeexisting,unsigned limit)
+{	
+	unsigned maxvalue=6*(2<<(range-1))-5; //1,7,19,43,91,... = 6*2^range -5
+	unsigned count=0;
+	if (( aii->GetBuildingQuality(x,y)>=BQ_HUT && aii->GetBuildingQuality(x,y) <= BQ_CASTLE) || aii->GetBuildingQuality(x,y) == BQ_HARBOR)
+    {
+		count++;
+    }
+	NodalObjectType nob = gwb->GetNO(x,y)->GetType();
+	if (includeexisting)
+	{
+		if ( nob==NOP_BUILDING || nob==NOP_BUILDINGSITE ||nob==NOP_EXTENSION || nob==NOP_FIRE || nob==NOP_CHARBURNERPILE )
+			count++;
+	}	
+	//first count all the possible building places
+    for(MapCoord tx = gwb->GetXA(x, y, 0), r = 1; r <= range; tx = gwb->GetXA(tx, y, 0), ++r)
+    {
+        MapCoord tx2 = tx, ty2 = y;
+        for(unsigned i = 2; i < 8; ++i)
+        {
+            for(MapCoord r2 = 0; r2 < r; gwb->GetPointA(tx2, ty2, i % 6), ++r2)
+            {
+				if (limit && ((count*100)/maxvalue) > limit)
+					return ((count*100)/maxvalue);
+                //point can be used for a building
+                if (( aii->GetBuildingQualityAnyOwner(tx2,ty2)>=BQ_HUT && aii->GetBuildingQualityAnyOwner(tx2,ty2) <= BQ_CASTLE) || aii->GetBuildingQualityAnyOwner(tx2,ty2) == BQ_HARBOR)
+                {
+                    count++;
+					continue;
+                }
+				if (includeexisting)
+				{
+					nob = gwb->GetNO(tx2,ty2)->GetType();
+					if ( nob==NOP_BUILDING || nob==NOP_BUILDINGSITE ||nob==NOP_EXTENSION || nob==NOP_FIRE || nob==NOP_CHARBURNERPILE )
+						count++;
+				}				
+			}
+        }
+    }	
+	//LOG.lprintf("bqcheck at %i,%i r%u result: %u,%u \n",x,y,range,count,maxvalue);
+    return ((count*100)/maxvalue);
 }
 
 bool AIPlayerJH::HarborPosRelevant(unsigned harborid, bool onlyempty)
