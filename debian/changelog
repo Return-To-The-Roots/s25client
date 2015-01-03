@@ -1,3 +1,68 @@
+s25rttr (20141231-9565.358) precise; urgency=low
+
+  * Automatic Jenkins Build 358
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Wed, 31 Dec 2014 01:10:35 +0100
+
+s25rttr (20141230-9565) any; urgency=low
+
+  * AIpoc r9560
+    improved ai coin use part 2
+
+ -- marcus  Tue, 30 Dec 2014 19:51:00 +0100
+
+s25rttr (20141230-9564.357) precise; urgency=low
+
+  * Automatic Jenkins Build 357
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Tue, 30 Dec 2014 12:12:59 +0100
+
+s25rttr (20141230-9564) any; urgency=low
+
+  * AIpoc r9559
+    improved ai coin use
+
+ -- marcus  Tue, 30 Dec 2014 10:53:00 +0100
+
+s25rttr (20141230-9563) any; urgency=low
+
+  * AIpoc r9558
+    ai should now detect areas with a low amount of possible
+    buildings and react by trying to build bigger military buildings
+
+ -- marcus  Tue, 30 Dec 2014 10:52:00 +0100
+
+s25rttr (20141230-9562) any; urgency=low
+
+  * AIpoc r9557
+    the ai will now try to build towers close to harbor positions
+
+ -- marcus  Tue, 30 Dec 2014 10:52:00 +0100
+
+s25rttr (20141230-9561) any; urgency=low
+
+  * AIpoc r9556
+    player swap fix: swap the command que when swapping players
+    (fixes permanent pause in singleplayer & async in multiplayer)
+    non host swaps and multiple swaps in 1 nwf for one player still
+    cause permanent pause
+
+ -- marcus  Tue, 30 Dec 2014 10:51:00 +0100
+
+s25rttr (20141230-9560) any; urgency=low
+
+  * AIpoc r9555
+    when a building is captured: only send home attackers that cannot
+    attack the new owner
+
+ -- marcus  Tue, 30 Dec 2014 10:51:00 +0100
+
+s25rttr (20141220-9559) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 20 Dec 2014 23:00:00 +0100
+
 s25rttr (20141218-9558.356) precise; urgency=low
 
   * Automatic Jenkins Build 356
