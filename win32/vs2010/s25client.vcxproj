@@ -109,6 +109,7 @@
     <ClInclude Include="..\..\src\AddonDefenderBehavior.h" />
     <ClInclude Include="..\..\src\AddonDemolitionProhibition.h" />
     <ClInclude Include="..\..\src\AddonExhaustibleWells.h" />
+    <ClInclude Include="..\..\src\AddonHalfCostMilEquip.h" />
     <ClInclude Include="..\..\src\AddonInexhaustibleGraniteMines.h" />
     <ClInclude Include="..\..\src\AddonInexhaustibleMines.h" />
     <ClInclude Include="..\..\src\AddonLimitCatapults.h" />
