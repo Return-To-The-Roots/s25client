@@ -1,4 +1,4 @@
-// $Id: GlobalGameSettings.cpp 9537 2014-12-10 22:14:07Z marcus $
+// $Id: GlobalGameSettings.cpp 9567 2015-01-03 19:34:57Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -61,6 +61,7 @@
 #include "AddonBurnDuration.h"
 #include "AddonNoAlliedPush.h"
 #include "AddonBattlefieldPromotion.h"
+#include "AddonHalfCostMilEquip.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
@@ -153,6 +154,7 @@ void GlobalGameSettings::reset(bool recreate)
 		registerAddon(new AddonBurnDuration);
 		registerAddon(new AddonNoAlliedPush);
 		registerAddon(new AddonBattlefieldPromotion);
+		registerAddon(new AddonHalfCostMilEquip);
     }
 }
 

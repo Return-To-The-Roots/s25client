@@ -1,4 +1,4 @@
-// $Id: AIConstruction.cpp 9566 2015-01-03 19:33:59Z marcus $
+// $Id: AIConstruction.cpp 9567 2015-01-03 19:34:57Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -527,6 +527,8 @@ void AIConstruction::RefreshBuildingCount()
         buildingsWanted[BLD_MINT] = GetBuildingCount(BLD_GOLDMINE);
         //armory count = smelter -metalworks if there is more than 1 smelter or 1 if there is just 1.
         buildingsWanted[BLD_ARMORY] = (GetBuildingCount(BLD_IRONSMELTER) > 1) ? GetBuildingCount(BLD_IRONSMELTER) - GetBuildingCount(BLD_METALWORKS) : GetBuildingCount(BLD_IRONSMELTER);
+		if(aijh->ggs->isEnabled(ADDON_HALF_COST_MIL_EQUIP))
+			buildingsWanted[BLD_ARMORY]*=2;
         //brewery count = 1+(armory/5) if there is at least 1 armory or armory /6 for exhaustible mines
         if(aijh->ggs->isEnabled(ADDON_INEXHAUSTIBLE_MINES))
             buildingsWanted[BLD_BREWERY] = (GetBuildingCount(BLD_ARMORY) > 0 && GetBuildingCount(BLD_FARM) > 0) ? 1 + (GetBuildingCount(BLD_ARMORY) / 5) : 0;

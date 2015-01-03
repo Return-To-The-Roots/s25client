@@ -1,4 +1,4 @@
-// $Id: nofArmorer.cpp 9508 2014-11-29 10:50:30Z marcus $
+// $Id: nofArmorer.cpp 9567 2015-01-03 19:34:57Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -93,6 +93,63 @@ unsigned short nofArmorer::GetCarryID() const
 			case 4: return 58; //babylonians use japanese shield carry-animation
             default: return 0;
         }
+    }
+}
+
+void nofArmorer::HandleDerivedEvent(const unsigned int id)
+{	
+    switch(state)
+    {
+        case STATE_WAITING1:
+        {
+			if(!GameClient::inst().GetGGS().isEnabled(ADDON_HALF_COST_MIL_EQUIP) || !sword_shield)
+			{
+				//LOG.lprintf("armorer handlewait1 - consume wares %i \n",player);
+				nofWorkman::HandleStateWaiting1();
+			}
+			else
+			{
+				// Nach 1. Warten wird gearbeitet
+				current_ev = em->AddEvent(this, JOB_CONSTS[job].work_length, 1);
+				state = STATE_WORK;
+				workplace->is_working = true;
+				//LOG.lprintf("armorer handlewait1 - no consume wares %i \n",player);
+			}
+        } break;
+        case STATE_WORK:
+        {
+            HandleStateWork();
+        } break;
+        case STATE_WAITING2:
+        {
+            HandleStateWaiting2();
+        } break;
+        default:
+            break;
+	}
+}
+
+void nofArmorer::TryToWork()
+{
+    // Wurde die Produktion eingestellt?
+    if(workplace->IsProductionDisabled())
+    {
+        state = STATE_WAITINGFORWARES_OR_PRODUCTIONSTOPPED;
+        // Nun arbeite ich nich mehr
+        StartNotWorking();
+    }
+    else if ( workplace->WaresAvailable() || (GameClient::inst().GetGGS().isEnabled(ADDON_HALF_COST_MIL_EQUIP) && sword_shield )) 
+    {
+        state = STATE_WAITING1;
+        current_ev = em->AddEvent(this, JOB_CONSTS[job].wait1_length, 1);
+        StopNotWorking();
+
+    }
+    else
+    {
+        state = STATE_WAITINGFORWARES_OR_PRODUCTIONSTOPPED;
+        // Nun arbeite ich nich mehr
+        StartNotWorking();
     }
 }
 

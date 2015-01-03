@@ -1,4 +1,4 @@
-// $Id: nofArmorer.h 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: nofArmorer.h 9567 2015-01-03 19:34:57Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -38,11 +38,13 @@ class nofArmorer : public nofWorkman
         unsigned short GetCarryID() const;
         /// Der Arbeiter erzeugt eine Ware
         GoodType ProduceWare();
+		void HandleDerivedEvent(const unsigned int id);
 
     public:
 
         nofArmorer(const unsigned short x, const unsigned short y, const unsigned char player, nobUsual* workplace);
         nofArmorer(SerializedGameData* sgd, const unsigned obj_id);
+		void TryToWork();
 
         /// Serialisierungsfunktionen
     protected:  void Serialize_nofArmorer(SerializedGameData* sgd) const;

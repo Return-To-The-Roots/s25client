@@ -1,4 +1,4 @@
-// $Id: nobMilitary.cpp 9566 2015-01-03 19:33:59Z marcus $
+// $Id: nobMilitary.cpp 9567 2015-01-03 19:34:57Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -580,6 +580,7 @@ void nobMilitary::OrderNewSoldiers()
         }
         gwg->GetPlayer(player)->OrderTroops(this, diff,true);
 	} 
+	//now notify the max ranks we no longer wanted (they will pick a new target which may be the same building that is why we cancel them after ordering new ones in the hope to get low ranks instead)
 	for (std::list<nofPassiveSoldier*>::const_iterator it=noneed.begin();it!=noneed.end();it++)
 		(*it)->NotNeeded();
 }

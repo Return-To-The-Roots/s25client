@@ -1,4 +1,4 @@
-// $Id: nofBuildingWorker.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: nofBuildingWorker.cpp 9567 2015-01-03 19:34:57Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -33,6 +33,7 @@
 #include "EventManager.h"
 #include "nofWoodcutter.h"
 #include "nofHunter.h"
+#include "nofArmorer.h"
 #include "SoundManager.h"
 #include "SerializedGameData.h"
 #include "AIEventManager.h"
@@ -160,7 +161,10 @@ void nofBuildingWorker::Walked()
             else
             {
                 // Anfangen zu Arbeiten
-                TryToWork();
+				if(job!=JOB_ARMORER)
+					TryToWork();
+				else
+					dynamic_cast<nofArmorer*>(this)->TryToWork();
             }
 
         } break;
@@ -251,7 +255,10 @@ void nofBuildingWorker::GotWareOrProductionAllowed()
     // Falls man auf Waren wartet, kann man dann anfangen zu arbeiten
     if(state == STATE_WAITINGFORWARES_OR_PRODUCTIONSTOPPED)
         // anfangen zu arbeiten
-        TryToWork();
+		if(job!=JOB_ARMORER)
+			TryToWork();
+		else
+			dynamic_cast<nofArmorer*>(this)->TryToWork();
 }
 
 void nofBuildingWorker::GoalReached()
