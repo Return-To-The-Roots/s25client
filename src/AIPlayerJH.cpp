@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 9565 2014-12-30 19:51:40Z marcus $
+// $Id: AIPlayerJH.cpp 9566 2015-01-03 19:33:59Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1788,7 +1788,7 @@ void AIPlayerJH::MilUpgradeOptim()
 				{
 					aii->ToggleCoins((*it)->GetX(), (*it)->GetY());
 				}
-				if ((*it)->GetFrontierDistance()==0 && (((unsigned)count+6) < aii->GetMilitaryBuildings().size()) ) //send out troops until 1 private is left, then cancel road
+				if ((*it)->GetFrontierDistance()==0 && (((unsigned)count+PlannedConnectedInlandMilitary()) < aii->GetMilitaryBuildings().size()) ) //send out troops until 1 private is left, then cancel road
 				{
 					if ((*it)->GetTroopsCount()>1) //more than 1 soldier remaining? -> send out order
 					{
@@ -2398,24 +2398,37 @@ void AIPlayerJH::InitStoreAndMilitarylists()
 }
 int AIPlayerJH::UpdateUpgradeBuilding()
 {
+	std::list<nobMilitary*> backup;
 	if(aii->GetStorehouses().size())
-	{
+	{		
 		unsigned count=0;
 		for (std::list<nobMilitary*>::const_iterator it = aii->GetMilitaryBuildings().begin(); it!=aii->GetMilitaryBuildings().end(); it++)
 		{
 			//inland building, tower or fortress, connected to warehouse 1 
 			if((*it)->GetBuildingType()>=BLD_WATCHTOWER && (*it)->GetFrontierDistance()<1 && construction.IsConnectedToRoadSystem((*it)->GetFlag()))
 			{
-				//LOG.lprintf("UpdateUpgradeBuilding at %i,%i for player %i (listslot %i) \n",(*it)->GetX(),(*it)->GetY(),playerid,count);
-				UpgradeBldX=(*it)->GetX();
-				UpgradeBldY=(*it)->GetY();
-				return count;
+				if (construction.IsConnectedToRoadSystem((*it)->GetFlag()))
+				{
+					//LOG.lprintf("UpdateUpgradeBuilding at %i,%i for player %i (listslot %i) \n",(*it)->GetX(),(*it)->GetY(),playerid,count);
+					UpgradeBldX=(*it)->GetX();
+					UpgradeBldY=(*it)->GetY();
+					UpgradeBldListNumber=count;
+					return count;
+				}
+				backup.push_back(*it);
+				
 			}
 			count++;
 		}
 	}
+	//no valid upgrade building yet - try to reconnect correctly flagged buildings
+	for (std::list<nobMilitary*>::const_iterator it=backup.begin();it!=backup.end();it++)
+	{
+		construction.AddConnectFlagJob((*it)->GetFlag());
+	}
 	UpgradeBldX=0;
 	UpgradeBldY=0;
+	UpgradeBldListNumber=-1;
 	return -1;
 }
 //set default start values for the ai for distribution & military settings

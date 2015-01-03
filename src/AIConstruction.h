@@ -1,4 +1,4 @@
-// $Id: AIConstruction.h 9564 2014-12-30 10:53:04Z marcus $
+// $Id: AIConstruction.h 9566 2015-01-03 19:33:59Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -55,6 +55,9 @@ class AIConstruction
 
         void FindFlags(std::vector<const noFlag*>& flags, unsigned short x, unsigned short y, unsigned short radius,
                        unsigned short real_x, unsigned short real_y, unsigned short real_radius, bool clear = true);
+		
+		/// returns true if the military building should be connected to the roadsystem
+		bool MilitaryBuildingWantsRoad(nobMilitary* milbld, unsigned listpos);
 
         /// Connects a specific flag to a roadsystem nearby and returns true if succesful. Also returns the route of the future road.
         bool ConnectFlagToRoadSytem(const noFlag* flag, std::vector<unsigned char>& route, unsigned int maxSearchRadius = 14);

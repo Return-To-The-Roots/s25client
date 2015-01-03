@@ -1,4 +1,4 @@
-// $Id: AIConstruction.cpp 9565 2014-12-30 19:51:40Z marcus $
+// $Id: AIConstruction.cpp 9566 2015-01-03 19:33:59Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -143,6 +143,19 @@ void AIConstruction::FindFlags(std::vector<const noFlag*>& flags, unsigned short
     }
 }
 
+bool AIConstruction::MilitaryBuildingWantsRoad(nobMilitary* milbld, unsigned listpos)
+{
+	if(milbld->GetFrontierDistance()>0) //close to front or harbor? connect!
+		return true;
+	if(aijh->UpgradeBldListNumber==listpos) // upgrade bld should have road already but just in case it doesnt -> get a road asap
+		return true;
+	if(aijh->UpgradeBldListNumber<0) //no upgrade bld on last update -> connect all that want to connect
+		return true;
+	if(listpos>(aii->GetMilitaryBuildings().size()-aijh->PlannedConnectedInlandMilitary()))
+		return true;
+	return false;
+}
+
 bool AIConstruction::ConnectFlagToRoadSytem(const noFlag* flag, std::vector<unsigned char>& route, unsigned int maxSearchRadius)
 {
     // TODO: die methode kann  ganz schön böse Laufzeiten bekommen... Optimieren?
@@ -150,6 +163,25 @@ bool AIConstruction::ConnectFlagToRoadSytem(const noFlag* flag, std::vector<unsi
     // Radius in dem nach würdigen Fahnen gesucht wird
     //const unsigned short maxSearchRadius = 10;
 
+	//flag of a military building? -> check if we really want to connect this right now
+	if (aii->IsMilitaryBuildingOnNode(aii->GetXA(flag->GetX(),flag->GetY(),1),aii->GetYA(flag->GetX(),flag->GetY(),1)))
+	{
+		MapCoord mx=aii->GetXA(flag->GetX(),flag->GetY(),1);
+		MapCoord my=aii->GetYA(flag->GetX(),flag->GetY(),1);
+		unsigned listpos=0;
+		for (std::list<nobMilitary*>::const_iterator it=aii->GetMilitaryBuildings().begin();it!=aii->GetMilitaryBuildings().end();it++)
+		{
+			if((*it)->GetX()==mx && (*it)->GetY()==my) 
+			{
+				if(!MilitaryBuildingWantsRoad((*it),listpos))
+				{
+					return false;
+				}
+				break;
+			}
+			listpos++;
+		}
+	}
     // Ziel, das möglichst schnell erreichbar sein soll
     //noFlag *targetFlag = gwb->GetSpecObj<nobHQ>(player->hqx, player->hqy)->GetFlag();
     noFlag* targetFlag = FindTargetStoreHouseFlag(flag->GetX(), flag->GetY());

@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.h 9565 2014-12-30 19:51:40Z marcus $
+// $Id: AIPlayerJH.h 9566 2015-01-03 19:33:59Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -304,6 +304,7 @@ class AIPlayerJH : public AIBase
         void SetResourceMap(AIJH::Resource res, unsigned nodenumber, int newvalue) {resourceMaps[res][nodenumber] = newvalue;}
 		
 		MapCoord UpgradeBldX,UpgradeBldY;
+		
 
     protected:
         /// The current job the AI is working on
@@ -334,7 +335,8 @@ class AIPlayerJH : public AIBase
     public:
         inline AIJH::Node& GetAINode(MapCoord x, MapCoord y) { return nodes[x + gwb->GetWidth() * y]; }
         inline unsigned GetJobNum() const { return eventManager.GetEventNum() + construction.GetBuildJobNum(); }	
-
+		int UpgradeBldListNumber;
+		unsigned PlannedConnectedInlandMilitary() {return aii->GetMilitaryBuildings().size()/5<6 ? 6:aii->GetMilitaryBuildings().size()/5;}
         /// checks distance to all harborpositions
         bool HarborPosClose(MapCoord x, MapCoord y, unsigned range, bool onlyempty = false);
 		/// returns the percentage*100 of possible normal building places

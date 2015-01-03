@@ -1,4 +1,4 @@
-// $Id: nobMilitary.cpp 9564 2014-12-30 10:53:04Z marcus $
+// $Id: nobMilitary.cpp 9566 2015-01-03 19:33:59Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -551,9 +551,23 @@ void nobMilitary::SendSoldiersHome()
 	}
 }
 
+//used by the ai to refill the upgradebuilding with low rank soldiers! - normal orders for soldiers are done in RegulateTroops!
 void nobMilitary::OrderNewSoldiers()
 {
 	int diff;
+	//cancel all max ranks on their way to this building
+	std::list<nofPassiveSoldier*> noneed;
+	for(list<nofPassiveSoldier*>::iterator it = ordered_troops.begin(); it.valid(); ++it)
+    {
+		if((*it)->GetRank() >= MAX_MILITARY_RANK - GameClient::inst().GetGGS().getSelection(ADDON_MAX_RANK))
+		{
+			nofPassiveSoldier* soldier = *it;
+			ordered_troops.erase(&it);
+			noneed.push_back(soldier);
+		}
+    }
+
+	//order new troops now
     if((diff = CalcTroopsCount() - int(troops.size() + ordered_troops.size() + troops_on_mission.size() + (defender ? (defender->IsWaitingAtFlag() || defender->IsFightingAtFlag()) ? 1 : 0 : 0)
                                        /*+ capturing_soldiers*/ + far_away_capturers.size())) > 0) //poc: this should only be >0 if we are being captured. capturing should be true until its the last soldier and this last one would count twice here and result in a returning soldier that shouldnt return.
 	{
@@ -565,7 +579,9 @@ void nobMilitary::OrderNewSoldiers()
             diff = (gwg->GetPlayer(player)->military_settings[2] * diff) / MILITARY_SETTINGS_SCALE[2];
         }
         gwg->GetPlayer(player)->OrderTroops(this, diff,true);
-	}    
+	} 
+	for (std::list<nofPassiveSoldier*>::const_iterator it=noneed.begin();it!=noneed.end();it++)
+		(*it)->NotNeeded();
 }
 
 bool nobMilitary::IsUseless() const
