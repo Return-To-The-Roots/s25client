@@ -1,3 +1,39 @@
+s25rttr (20150104-9569.359) precise; urgency=low
+
+  * Automatic Jenkins Build 359
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sun, 04 Jan 2015 01:23:08 +0100
+
+s25rttr (20150103-9569) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 03 Jan 2015 23:00:00 +0100
+
+s25rttr (20150103-9568) any; urgency=low
+
+  * AIpoc r9562
+    VS 2010 project update
+
+ -- marcus  Sat, 03 Jan 2015 19:35:00 +0100
+
+s25rttr (20150103-9567) any; urgency=low
+
+  * AIpoc r9562
+    new addon: half cost mil equip
+    allows a smith to create 1 sword & 1 shield for 1 iron + 1 coal
+    instead of 2 iron + 2 coal
+
+ -- marcus  Sat, 03 Jan 2015 19:34:00 +0100
+
+s25rttr (20150103-9566) any; urgency=low
+
+  * AIpoc r9561
+    ai: do not reconnect military buildings that do not want to be
+    connected to the roadsystem
+
+ -- marcus  Sat, 03 Jan 2015 19:33:00 +0100
+
 s25rttr (20141231-9565.358) precise; urgency=low
 
   * Automatic Jenkins Build 358
