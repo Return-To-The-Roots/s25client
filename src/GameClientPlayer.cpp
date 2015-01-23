@@ -1,4 +1,4 @@
-// $Id: GameClientPlayer.cpp 9564 2014-12-30 10:53:04Z marcus $
+// $Id: GameClientPlayer.cpp 9571 2015-01-23 08:24:15Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -820,9 +820,19 @@ Ware* GameClientPlayer::OrderWare(const GoodType ware, noBaseBuilding* goal)
             else
                 return 0;
         }
-    }
-    else
-        return 0;
+    }	
+    else //no warehouse can deliver the ware -> check all our wares for lost wares that might match the order
+	{
+		for(std::list<Ware*>::iterator it = ware_list.begin(); it != ware_list.end(); ++it)
+		{
+			if((*it)->IsLostWare() && (*it)->type==ware)
+			{ //got a lost ware with a road to goal -> give new goal to ware
+				if((*it)->CheckNewGoalForLostWare(goal))
+					return (*it);				
+			}
+		}
+	}
+	return 0;
 }
 
 nofCarrier* GameClientPlayer::OrderDonkey(RoadSegment* road)
