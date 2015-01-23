@@ -1,4 +1,4 @@
-// $Id: Ware.h 9571 2015-01-23 08:24:15Z marcus $
+// $Id: Ware.h 9572 2015-01-23 08:24:56Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -97,7 +97,8 @@ class Ware : public GameObject
         /// Sagt der Ware, dass sie sich ein Lagerhaus nochmal suchen soll (für LostWares gedacht, die kein Lagerhaus mehr gefunden haben)
         void FindRouteToWarehouse();
 		///a building is looking for a ware - check if this lost ware can be send to the building and then do it
-		bool CheckNewGoalForLostWare(noBaseBuilding* newgoal);
+		unsigned CheckNewGoalForLostWare(noBaseBuilding* newgoal);
+		void SetNewGoalForLostWare(noBaseBuilding* newgoal);
         /// Gibt Ort der Ware zurück
         noRoadNode* GetLocation() { return location; }
         /// Ist die Ware eine LostWare (Ware, die kein Ziel mehr hat und irgendwo sinnlos rumliegt)?

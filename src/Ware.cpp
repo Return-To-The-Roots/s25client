@@ -1,4 +1,4 @@
-// $Id: Ware.cpp 9571 2015-01-23 08:24:15Z marcus $
+// $Id: Ware.cpp 9572 2015-01-23 08:24:56Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -323,10 +323,37 @@ void Ware::FindRouteToWarehouse()
 }
 
 ///a lost ware got ordered
-bool Ware::CheckNewGoalForLostWare(noBaseBuilding* newgoal)
+unsigned Ware::CheckNewGoalForLostWare(noBaseBuilding* newgoal)
 {
+	unsigned tlength = 0xFFFFFFFF;
 	if (state!=STATE_WAITATFLAG) //todo: check all special cases for wares being carried right now and where possible allow them to be ordered
 		return false;
+	unsigned char possibledir=gwg->FindPathForWareOnRoads(location, newgoal,&tlength);
+	if(possibledir!=0xFF) //there is a valid path to the goal? -> ordered!
+	{
+		//in case the ware is right in front of the goal building the ware has to be moved away 1 flag and then back because non-warehouses cannot just carry in new wares they need a helper to do this
+		if(possibledir==1 && newgoal->GetFlag()->GetX()==location->GetX() && newgoal->GetFlag()->GetY()==location->GetY())
+		{
+			for(unsigned i=0;i<6;i++)
+			{
+				if(i!=1 && location->routes[i])
+					{
+						possibledir=i;
+						break;
+					}
+			}
+			if(possibledir==1) //got no other route from the flag -> impossible
+				return 0xFFFFFFFF;					
+		}
+		//at this point there either is a road to the goal or if we are at the flag of the goal we have a road to a different flag to bounce off of to get to the goal		
+		return tlength;		
+	}
+	else
+		return 0xFFFFFFFF;
+}
+
+void Ware::SetNewGoalForLostWare(noBaseBuilding* newgoal)
+{
 	unsigned char possibledir=gwg->FindPathForWareOnRoads(location, newgoal);
 	if(possibledir!=0xFF) //there is a valid path to the goal? -> ordered!
 	{
@@ -342,16 +369,13 @@ bool Ware::CheckNewGoalForLostWare(noBaseBuilding* newgoal)
 					}
 			}
 			if(possibledir==1) //got no other route from the flag -> impossible
-				return false;					
+				return;					
 		}
 		//at this point there either is a road to the goal or if we are at the flag of the goal we have a road to a different flag to bounce off of to get to the goal
 		next_dir=possibledir;	
 		goal=newgoal;	
-		location->routes[next_dir]->AddWareJob(location);
-		return true;		
+		location->routes[next_dir]->AddWareJob(location);	
 	}
-	else
-		return false;
 }
 
 bool Ware::FindRouteFromWarehouse()
