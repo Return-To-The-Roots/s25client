@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 9575 2015-01-23 08:27:19Z marcus $
+// $Id: AIPlayerJH.cpp 9576 2015-01-23 08:27:47Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1012,8 +1012,10 @@ bool AIPlayerJH::FindBestPosition(MapCoord& x, MapCoord& y, AIJH::Resource res, 
                         continue;
                     }
                     BuildingQuality bq = aii->GetBuildingQuality(tx2, ty2);
-                    if ( (bq >= size && bq < BQ_MINE) // normales Gebäude
-                            || (bq == size))    // auch Bergwerke
+                    if (( (bq >= size && bq < BQ_MINE) // normales Gebäude
+                            || (bq == size)) &&     // auch Bergwerke
+							(res!=AIJH::BORDERLAND || !aii->IsRoadPoint(aii->GetXA(tx2,ty2,4),aii->GetYA(tx2,ty2,4))))
+					//special: military buildings cannot be build next to an existing road as that would have them connected to 2 roads which the ai no longer should do
                     {
                         best_x = tx2;
                         best_y = ty2;
@@ -1392,7 +1394,8 @@ void AIPlayerJH::HandleNewMilitaryBuilingOccupied(const Coords& coords)
         BLD_GRANITEMINE,
         BLD_FISHERY,
         BLD_FARM,
-        BLD_HUNTER
+        BLD_HUNTER,
+		BLD_FORESTER
     };
     unsigned numBldToTest = 0;
     //remove the storehouse from the building test list if we are close to another storehouse already
@@ -1417,7 +1420,7 @@ void AIPlayerJH::HandleNewMilitaryBuilingOccupied(const Coords& coords)
         }
     }
 
-    for (unsigned int i = numBldToTest; i < 10; ++i)
+    for (unsigned int i = numBldToTest; i < 11; ++i)
     {
         if (construction.Wanted(bldToTest[i]))
         {
@@ -2791,7 +2794,7 @@ unsigned AIPlayerJH::CalcMilSettings()
 			convtype=2;
 		if((*it)->GetBuildingType()==BLD_FORTRESS)
 			convtype=3;
-		if((*it)->GetFrontierDistance()==3 || ((*it)->GetFrontierDistance()==2 && ggs->getSelection(ADDON_SEA_ATTACK)!=2) || ((*it)->GetFrontierDistance()==0 && (aii->GetMilitaryBuildings().size()-howmanyshouldstayconnected < count || (int)count==uun)))//front or connected interior
+		if((*it)->GetFrontierDistance()==3 || ((*it)->GetFrontierDistance()==2 && ggs->getSelection(ADDON_SEA_ATTACK)!=2) || ((*it)->GetFrontierDistance()==0 && (aii->GetMilitaryBuildings().size()-howmanyshouldstayconnected < (unsigned)count || count==uun)))//front or connected interior
 		{
 			soldierinusefixed+=maxtroops[4][convtype];
 		}
