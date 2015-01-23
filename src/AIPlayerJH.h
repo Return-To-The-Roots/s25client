@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.h 9566 2015-01-03 19:33:59Z marcus $
+// $Id: AIPlayerJH.h 9574 2015-01-23 08:26:44Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -111,6 +111,13 @@ class AIPlayerJH : public AIBase
 
         /// Test whether the player should resign or not
         bool TestDefeat();
+
+		/// calculates the values the ai should pick for harbor flag & 1 bar buildings between 50% and 100%  
+		/// return value is whatever has to be added to 4(=50%) for harbor and if anything is left that has to be added to 1 bar setting
+		unsigned CalcMilSettings();
+
+		/// military & tool production settings 
+		void AdjustSettings();
 
         ///return number of sea_ids with at least 2 harbor spots
         unsigned GetCountofAIRelevantSeaIds();

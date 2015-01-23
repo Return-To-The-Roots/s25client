@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 9566 2015-01-03 19:33:59Z marcus $
+// $Id: AIPlayerJH.cpp 9574 2015-01-23 08:26:44Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -126,35 +126,7 @@ void AIPlayerJH::RunGF(const unsigned gf)
     }
     if((gf + playerid * 11) % 150 == 0)
     {
-        //update tool creation settings
-        std::vector<unsigned char> toolsettings;
-        toolsettings.resize(12);
-        toolsettings[2] = (aii->GetInventory()->goods[GD_SAW] + aii->GetInventory()->people[JOB_CARPENTER] < 2) ? 4 : aii->GetInventory()->goods[GD_SAW] < 1 ? 1 : 0;                                                                       //saw
-        toolsettings[3] = (aii->GetInventory()->goods[GD_PICKAXE] < 1) ? 1 : 0;                                                                                                                     //pickaxe
-        toolsettings[4] = (aii->GetInventory()->goods[GD_HAMMER] < 1) ? 1 : 0;                                                                                                                      //hammer
-        toolsettings[6] = (aii->GetInventory()->goods[GD_CRUCIBLE] + aii->GetInventory()->people[JOB_IRONFOUNDER] < construction.GetBuildingCount(BLD_IRONSMELTER) + 1) ? 1 : 0;;                   //crucible
-        toolsettings[8] = (toolsettings[4] < 1 && toolsettings[3] < 1 && toolsettings[6] < 1 && toolsettings[2] < 1 && (aii->GetInventory()->goods[GD_SCYTHE] < 1)) ? 1 : 0;                        //scythe
-        toolsettings[10] = (aii->GetInventory()->goods[GD_ROLLINGPIN] + aii->GetInventory()->people[JOB_BAKER] < construction.GetBuildingCount(BLD_BAKERY) + 1) ? 1 : 0;                            //rollingpin
-        toolsettings[5] = (toolsettings[4] < 1 && toolsettings[3] < 1 && toolsettings[6] < 1 && toolsettings[2] < 1 && (aii->GetInventory()->goods[GD_SHOVEL] < 1)) ? 1 : 0 ;                       //shovel
-        toolsettings[1] = (toolsettings[4] < 1 && toolsettings[3] < 1 && toolsettings[6] < 1 && toolsettings[2] < 1 && (aii->GetInventory()->goods[GD_AXE] + aii->GetInventory()->people[JOB_WOODCUTTER] < 12) && aii->GetInventory()->goods[GD_AXE] < 1) ? 1 : 0; //axe
-        toolsettings[0] = 0; //(toolsettings[4]<1&&toolsettings[3]<1&&toolsettings[6]<1&&toolsettings[2]<1&&(aii->GetInventory()->goods[GD_TONGS]<1))?1:0;                                                //Tongs(metalworks)
-        toolsettings[9] = 0; //(aii->GetInventory()->goods[GD_CLEAVER]+aii->GetInventory()->people[JOB_BUTCHER]<construction.GetBuildingCount(BLD_SLAUGHTERHOUSE)+1)?1:0;                                //cleaver
-        toolsettings[7] = 0;                                                                                                                                                                        //rod & line
-        toolsettings[11] = 0;                                                                                                                                                                       //bow
-        aii->SetToolSettings(toolsettings);
-        // Set military settings to some currently required values
-        std::vector<unsigned char> milSettings;
-        milSettings.resize(8);
-        milSettings[0] = 10;
-        milSettings[1] = HasFrontierBuildings()?5:0;
-        milSettings[2] = 4;
-        milSettings[3] = 5;
-		milSettings[4] = UpdateUpgradeBuilding() >= 0? 8 : 0;                                                 //interior full if we have an upgrade building else 1 soldier each
-        milSettings[5] = (unsigned char)max<int>(min<int>((SoldierAvailable() / 10), 8), 4); //inland min 50% max 100% depending on how many soldiers are available
-        milSettings[6] = ggs->getSelection(ADDON_SEA_ATTACK)==2 ? 0 : NoEnemyHarbor() ? ((SoldierAvailable() > 10) ? 4 : 0) : 8; //no sea attacks?->no soldiers else -> harbor points: enemy harbors exist? 100% if not 50% or 0% depending on our available recruits
-        milSettings[7] = 8;                                                     //front: 100%
-		if(player->military_settings[5] != milSettings[5] || player->military_settings[6] != milSettings[6] || player->military_settings[4]!=milSettings[4] || player->military_settings[1]!=milSettings[1]) //only send the command if we want to change something
-            aii->SetMilitarySettings(milSettings);
+        AdjustSettings();
         //check for useless sawmills
         if(aii->GetBuildings(BLD_SAWMILL).size() > 3)
         {
@@ -2740,4 +2712,97 @@ unsigned AIPlayerJH::GetCountofAIRelevantSeaIds()
         }
     }
     return validseaids.size();
+}
+
+void AIPlayerJH::AdjustSettings()
+{
+	//update tool creation settings
+    std::vector<unsigned char> toolsettings;
+    toolsettings.resize(12);
+    toolsettings[2] = (aii->GetInventory()->goods[GD_SAW] + aii->GetInventory()->people[JOB_CARPENTER] < 2) ? 4 : aii->GetInventory()->goods[GD_SAW] < 1 ? 1 : 0;                                                                       //saw
+    toolsettings[3] = (aii->GetInventory()->goods[GD_PICKAXE] < 1) ? 1 : 0;                                                                                                                     //pickaxe
+    toolsettings[4] = (aii->GetInventory()->goods[GD_HAMMER] < 1) ? 1 : 0;                                                                                                                      //hammer
+    toolsettings[6] = (aii->GetInventory()->goods[GD_CRUCIBLE] + aii->GetInventory()->people[JOB_IRONFOUNDER] < construction.GetBuildingCount(BLD_IRONSMELTER) + 1) ? 1 : 0;;                   //crucible
+    toolsettings[8] = (toolsettings[4] < 1 && toolsettings[3] < 1 && toolsettings[6] < 1 && toolsettings[2] < 1 && (aii->GetInventory()->goods[GD_SCYTHE] < 1)) ? 1 : 0;                        //scythe
+    toolsettings[10] = (aii->GetInventory()->goods[GD_ROLLINGPIN] + aii->GetInventory()->people[JOB_BAKER] < construction.GetBuildingCount(BLD_BAKERY) + 1) ? 1 : 0;                            //rollingpin
+    toolsettings[5] = (toolsettings[4] < 1 && toolsettings[3] < 1 && toolsettings[6] < 1 && toolsettings[2] < 1 && (aii->GetInventory()->goods[GD_SHOVEL] < 1)) ? 1 : 0 ;                       //shovel
+    toolsettings[1] = (toolsettings[4] < 1 && toolsettings[3] < 1 && toolsettings[6] < 1 && toolsettings[2] < 1 && (aii->GetInventory()->goods[GD_AXE] + aii->GetInventory()->people[JOB_WOODCUTTER] < 12) && aii->GetInventory()->goods[GD_AXE] < 1) ? 1 : 0; //axe
+    toolsettings[0] = 0; //(toolsettings[4]<1&&toolsettings[3]<1&&toolsettings[6]<1&&toolsettings[2]<1&&(aii->GetInventory()->goods[GD_TONGS]<1))?1:0;                                                //Tongs(metalworks)
+    toolsettings[9] = 0; //(aii->GetInventory()->goods[GD_CLEAVER]+aii->GetInventory()->people[JOB_BUTCHER]<construction.GetBuildingCount(BLD_SLAUGHTERHOUSE)+1)?1:0;                                //cleaver
+    toolsettings[7] = 0;                                                                                                                                                                        //rod & line
+    toolsettings[11] = 0;                                                                                                                                                                       //bow
+    aii->SetToolSettings(toolsettings);
+
+    // Set military settings to some currently required values
+    std::vector<unsigned char> milSettings;
+    milSettings.resize(8);
+    milSettings[0] = 10;
+    milSettings[1] = HasFrontierBuildings()?5:0; //if we have a front send strong soldiers first else weak first to make upgrading easier
+    milSettings[2] = 4;
+    milSettings[3] = 5;
+	milSettings[4] = UpdateUpgradeBuilding() >= 0? 8 : 0;                                                 //interior 0bar full if we have an upgrade building else 1 soldier each
+    milSettings[6] = ggs->getSelection(ADDON_SEA_ATTACK)==2 ? 0 : 8; //harbor flag: no sea attacks?->no soldiers else 50% to 100%
+	milSettings[5] = CalcMilSettings(); //inland 1bar min 50% max 100% depending on how many soldiers are available
+	milSettings[7] = 8;                                                     //front: 100%
+	if(player->military_settings[5] != milSettings[5] || player->military_settings[6] != milSettings[6] || player->military_settings[4]!=milSettings[4] || player->military_settings[1]!=milSettings[1]) //only send the command if we want to change something
+		aii->SetMilitarySettings(milSettings);
+}
+
+unsigned AIPlayerJH::CalcMilSettings()
+{
+	///first sum up all soldiers we have
+	unsigned milrank=JOB_PRIVATE;
+	unsigned soldiercount=0;
+	unsigned soldierinusefixed=0; 
+	int uun=UpdateUpgradeBuilding();
+	int count=0;	
+	unsigned InlandTroops[5]= {0,0,0,0,0}; //how many troops are required to fill inland buildings at settings 4,5,6,7,8
+	unsigned maxtroops[5][4]= //max troops in the military buildings at settings 4-8
+	{
+		{1,2,3,5},
+		{1,2,4,6},
+		{1,2,4,7},
+		{1,2,5,8},
+		{2,3,6,9}
+	};
+	unsigned howmanyshouldstayconnected=PlannedConnectedInlandMilitary();
+	for (unsigned i=0;i<5;i++){soldiercount += aii->GetInventory()->people[milrank++];}
+	
+	//now add up all counts of soldiers that are fixed in use and those that depend on whatever we have as a result
+	for (std::list<nobMilitary*>::const_iterator it=aii->GetMilitaryBuildings().begin();it!=aii->GetMilitaryBuildings().end();it++)
+	{		
+		unsigned convtype=0;
+		if((*it)->GetBuildingType()==BLD_BARRACKS)
+			convtype=0;
+		if((*it)->GetBuildingType()==BLD_GUARDHOUSE)			
+			convtype=1;
+		if((*it)->GetBuildingType()==BLD_WATCHTOWER)
+			convtype=2;
+		if((*it)->GetBuildingType()==BLD_FORTRESS)
+			convtype=3;
+		if((*it)->GetFrontierDistance()==3 || ((*it)->GetFrontierDistance()==2 && ggs->getSelection(ADDON_SEA_ATTACK)!=2) || ((*it)->GetFrontierDistance()==0 && (aii->GetMilitaryBuildings().size()-howmanyshouldstayconnected < count || (int)count==uun)))//front or connected interior
+		{
+			soldierinusefixed+=maxtroops[4][convtype];
+		}
+		else if((*it)->GetFrontierDistance()==1) //1 bar (inland)
+		{
+			for(int i=0;i<5;i++)
+				InlandTroops[i]+=maxtroops[i][convtype];	
+		}
+		else//setting should be 0 so add 1 soldier
+			soldierinusefixed++;
+
+		count++;
+	}
+	
+	//now the current need total and for inland and harbor is ready for use
+	unsigned returnvalue=8;
+	while (returnvalue - 4 > 0)
+	{//have more than enough soldiers for this setting or just enough and this is the current setting? -> return it else try the next lower setting down to 4 (50%)
+		if(soldierinusefixed + InlandTroops[returnvalue - 4] < soldiercount*10/11 || (player->military_settings[5]>=returnvalue && soldierinusefixed + InlandTroops[returnvalue - 4] < soldiercount))
+			break;
+		returnvalue--;
+	}
+	//LOG.lprintf("player %i inland milsetting %i \n",playerid,returnvalue);
+	return returnvalue;
 }

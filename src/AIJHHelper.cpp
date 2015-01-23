@@ -1,4 +1,4 @@
-// $Id: AIJHHelper.cpp 9563 2014-12-30 10:52:34Z marcus $
+// $Id: AIJHHelper.cpp 9574 2015-01-23 08:26:44Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -381,9 +381,15 @@ void AIJH::BuildJob::BuildMainRoad()
     {
         aii->CallGeologist(houseFlag->GetX(), houseFlag->GetY());
     }
-
-    status = AIJH::JOB_EXECUTING_ROAD2;
-    return TryToBuildSecondaryRoad();
+	if(type > BLD_FORTRESS)//not a military building? -> build secondary road now 
+	{
+		status = AIJH::JOB_EXECUTING_ROAD2;
+		return TryToBuildSecondaryRoad();
+	}
+	else //military buildings only get 1 road
+	{
+		status = AIJH::JOB_FINISHED;
+	}
 
 }
 
