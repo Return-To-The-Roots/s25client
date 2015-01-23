@@ -293,7 +293,7 @@ class AIInterface
         /// Sends a chat message to all players TODO: enemy/ally-chat
         void Chat(std::string& message);
 
-        /// Stops production of a producer
+        /// Stops/starts production of a producer
         void StopProduction(MapCoord x, MapCoord y) { gcs->push_back(new gc::StopProduction(x, y)); }
 
         /// changes inventory settings for a warehouse by XOR with old settings (self fixing stupid settings)

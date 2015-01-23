@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 9574 2015-01-23 08:26:44Z marcus $
+// $Id: AIPlayerJH.cpp 9575 2015-01-23 08:27:19Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -108,7 +108,7 @@ void AIPlayerJH::RunGF(const unsigned gf)
             TrySeaAttack();
     }
 
-    if ((gf + playerid * 13) % 1500 == 0) // check expeditions (order new / cancel)
+    if ((gf + playerid * 13) % 1500 == 0) // check expeditions (order new / cancel) and if we have 1 complete forester but less than 1 military building and less than 2 buildingsites stop production
     {
         for(std::list<nobHarborBuilding*>::const_iterator it = aii->GetHarbors().begin(); it != aii->GetHarbors().end(); it++)
         {
@@ -123,6 +123,17 @@ void AIPlayerJH::RunGF(const unsigned gf)
             if((*it)->IsWaitingForExpeditionInstructions())
                 HandleExpedition(*it);
         }
+		if(aii->GetBuildings(BLD_FORESTER).size()>0 && aii->GetBuildings(BLD_FORESTER).size()<2 && aii->GetMilitaryBuildings().size()<3 && aii->GetBuildingSites().size()<3)
+			//stop the forester
+		{
+			if(!(*aii->GetBuildings(BLD_FORESTER).begin())->IsProductionDisabled())
+				aii->StopProduction((*aii->GetBuildings(BLD_FORESTER).begin())->GetX(),(*aii->GetBuildings(BLD_FORESTER).begin())->GetY());
+		}
+		else //activate the forester 
+		{
+			if(aii->GetBuildings(BLD_FORESTER).size()>0 && (*aii->GetBuildings(BLD_FORESTER).begin())->IsProductionDisabled())
+				aii->StopProduction((*aii->GetBuildings(BLD_FORESTER).begin())->GetX(),(*aii->GetBuildings(BLD_FORESTER).begin())->GetY());
+		}
     }
     if((gf + playerid * 11) % 150 == 0)
     {

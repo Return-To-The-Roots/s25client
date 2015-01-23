@@ -1,4 +1,4 @@
-// $Id: AIConstruction.h 9566 2015-01-03 19:33:59Z marcus $
+// $Id: AIConstruction.h 9575 2015-01-23 08:27:19Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -101,6 +101,8 @@ class AIConstruction
         bool BuildAlternativeRoad(const noFlag* flag, std::vector<unsigned char> &route);
 
         bool OtherStoreInRadius(MapCoord& x, MapCoord& y, unsigned radius);
+
+		bool OtherUsualBuildingInRadius(MapCoord& x,MapCoord& y, unsigned radius, BuildingType bt);
 
         //void AddStoreHouse(MapCoord x, MapCoord y) { storeHouses.push_back(AIJH::Coords(x, y)); }
         //void AddStoreHouseFront(MapCoord x, MapCoord y) {storeHouses.push_front(AIJH::Coords(x, y));}

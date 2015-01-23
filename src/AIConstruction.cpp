@@ -1,4 +1,4 @@
-// $Id: AIConstruction.cpp 9567 2015-01-03 19:34:57Z marcus $
+// $Id: AIConstruction.cpp 9575 2015-01-23 08:27:19Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -495,7 +495,7 @@ void AIConstruction::RefreshBuildingCount()
         //foresters
         resourcelimit = aii->GetInventory()->people[JOB_FORESTER] + aii->GetInventory()->goods[GD_SHOVEL] + 1; //bonuswant for foresters depends on addon settings for mines,wells,charburner
         bonuswant = GetBuildingCount(BLD_CHARBURNER) + ((!aijh->ggs->isEnabled(ADDON_INEXHAUSTIBLE_MINES) && ((GetBuildingCount(BLD_IRONMINE) + GetBuildingCount(BLD_COALMINE) + GetBuildingCount(BLD_GOLDMINE)) > 6)) ? 1 : 0) + ((aijh->ggs->isEnabled(ADDON_EXHAUSTIBLE_WELLS) && GetBuildingCount(BLD_WELL) > 3) ? 1 : 0);
-        buildingsWanted[BLD_FORESTER] = max<int>((min<int>((aii->GetMilitaryBuildings().size() > 23 ? 3 : (aii->GetMilitaryBuildings().size() / 8) + 1) + bonuswant, resourcelimit)), 1);
+        buildingsWanted[BLD_FORESTER] = max<int>((min<int>((aii->GetMilitaryBuildings().size() > 29 ? 5 : (aii->GetMilitaryBuildings().size() / 6) + 1) + bonuswant, resourcelimit)), 1);
 
 		//earlygame: limit board use so limited to militarybuildingcount
         //woodcutters
@@ -715,6 +715,24 @@ bool AIConstruction::BuildAlternativeRoad(const noFlag* flag, std::vector<unsign
     }
 
     return false;
+}
+
+bool AIConstruction::OtherUsualBuildingInRadius(MapCoord& x, MapCoord& y, unsigned radius, BuildingType bt)
+{
+	for (std::list<nobUsual*>::const_iterator it = aii->GetBuildings(bt).begin(); it != aii->GetBuildings(bt).end(); it++)
+    {
+        if(aii->CalcDistance((*it)->GetX(), (*it)->GetY(), x, y) < radius)
+            return true;
+    }
+	for(std::list<noBuildingSite*>::const_iterator it = aii->GetBuildingSites().begin(); it != aii->GetBuildingSites().end(); it++)
+    {
+        if((*it)->GetBuildingType() == bt)
+        {
+            if(aii->CalcDistance((*it)->GetX(), (*it)->GetY(), x, y) < radius)
+                return true;
+        }
+    }
+	return false;
 }
 
 bool AIConstruction::OtherStoreInRadius(MapCoord& x, MapCoord& y, unsigned radius)
