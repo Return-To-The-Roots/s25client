@@ -1,4 +1,4 @@
-// $Id: nobBaseWarehouse.cpp 9564 2014-12-30 10:53:04Z marcus $
+// $Id: nobBaseWarehouse.cpp 9580 2015-01-23 08:29:54Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1471,7 +1471,8 @@ void nobBaseWarehouse::RefreshReserve(unsigned rank)
         // beim Warenbestand hinzufügen
         goods.people[JOB_PRIVATE + rank] += subtract;
         real_goods.people[JOB_PRIVATE + rank] += subtract;
-
+		// if the rank is supposed to be send away, do it!
+		CheckOuthousing(1,JOB_PRIVATE + rank);
         // Ggf. Truppen in die Militärgebäude schicken
         gwg->GetPlayer(player)->RegulateAllTroops();
     }
