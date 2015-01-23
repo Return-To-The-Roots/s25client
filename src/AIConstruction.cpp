@@ -1,4 +1,4 @@
-// $Id: AIConstruction.cpp 9575 2015-01-23 08:27:19Z marcus $
+// $Id: AIConstruction.cpp 9577 2015-01-23 08:28:23Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -47,19 +47,88 @@ AIConstruction::~AIConstruction(void)
 
 void AIConstruction::AddBuildJob(AIJH::BuildJob* job, bool front)
 {
-    if (front)
-        buildJobs.push_front(job);
-    else
-        buildJobs.push_back(job);
+	if(job->GetType()==BLD_SHIPYARD && aijh->IsInvalidShipyardPosition(job->GetAroundX(),job->GetAroundY()))
+	{
+		delete job;
+		return;
+	}
+	if (job->GetType()<BLD_FORTRESS) //non military buildings can only be added once to the contruction que for every location
+	{
+		if (front)
+			buildJobs.push_front(job);
+		else
+			buildJobs.push_back(job);
+	}
+	else //check if the buildjob is already in list and if so dont add it again
+	{
+		bool alreadyinlist=false;
+		for(unsigned i=0;i<buildJobs.size();i++)
+		{
+			if(buildJobs[i]->GetType()==job->GetType() && buildJobs[i]->GetAroundX()==job->GetAroundX() && buildJobs[i]->GetAroundY()==job->GetAroundY())
+			{
+				alreadyinlist=true;
+				break;
+			}
+		}
+		if(!alreadyinlist)
+		{
+			if (front)
+				buildJobs.push_front(job);
+			else
+				buildJobs.push_back(job);
+		}
+		else
+		{
+			//LOG.lprintf("duplicate buildorders type %i at %i,%i \n",job->GetType(),job->GetTargetX(),job->GetTargetY());
+			delete job;
+		}
+	}
 }
 
-void AIConstruction::AddJob(AIJH::Job* job, bool front)
+/*void AIConstruction::AddJob(AIJH::BuildJob* job, bool front)
 {
     if (front)
         buildJobs.push_front(job);
     else
         buildJobs.push_back(job);
 
+}*/
+
+void AIConstruction::ExecuteJobs(unsigned limit)
+{
+	unsigned i=0; //count up to limit
+	unsigned initconjobs = connectJobs.size()<5?connectJobs.size():5;
+	unsigned initbuildjobs = buildJobs.size()<5?buildJobs.size():5;
+	for(i;i<limit && connectJobs.size() && i < initconjobs ;i++) //go through list, until limit is reached or list empty or when every entry has been checked
+	{
+		connectJobs.front()->ExecuteJob();
+		if(connectJobs.front()->GetStatus() != AIJH::JOB_FINISHED && connectJobs.front()->GetStatus() != AIJH::JOB_FAILED) //couldnt do job? -> move to back of list
+		{
+			connectJobs.push_back(connectJobs.front());
+			connectJobs.pop_front();
+		}
+		else //job done of failed -> delete job and remove from list
+		{
+			AIJH::Job* job = connectJobs.front();
+			connectJobs.pop_front();
+			delete job;
+		}
+	}	
+	for(i;i<limit && buildJobs.size() && i < (initconjobs+initbuildjobs) ;i++)
+	{
+		buildJobs.front()->ExecuteJob();
+		if(buildJobs.front()->GetStatus() != AIJH::JOB_FINISHED && buildJobs.front()->GetStatus() != AIJH::JOB_FAILED) //couldnt do job? -> move to back of list
+		{
+			buildJobs.push_back(buildJobs.front());
+			buildJobs.pop_front();
+		}
+		else //job done of failed -> delete job and remove from list
+		{
+			AIJH::Job* job = buildJobs.front();
+			buildJobs.pop_front();
+			delete job;
+		}
+	}
 }
 
 AIJH::Job* AIConstruction::GetBuildJob()
@@ -74,9 +143,18 @@ AIJH::Job* AIConstruction::GetBuildJob()
 
 void AIConstruction::AddConnectFlagJob(const noFlag* flag)
 {
-    buildJobs.push_front(new AIJH::ConnectJob(aijh, flag->GetX(), flag->GetY()));
+    connectJobs.push_back(new AIJH::ConnectJob(aijh, flag->GetX(), flag->GetY()));
 }
 
+bool AIConstruction::CanStillConstructHere(MapCoord x, MapCoord y)
+{
+	for(unsigned i=0;i<constructionlocations.size();i+=2)
+	{
+		if(aii->CalcDistance(x,y,constructionlocations[i],constructionlocations[i+1])<12)
+			return false;
+	}
+	return true;
+}
 
 void AIConstruction::FindFlags(std::vector<const noFlag*>& flags, unsigned short x, unsigned short y, unsigned short radius,
                                unsigned short real_x, unsigned short real_y, unsigned short real_radius, bool clear)
@@ -469,7 +547,9 @@ void AIConstruction::RefreshBuildingCount()
 {
     unsigned resourcelimit = 0; //variables to make this more readable for humans
     unsigned bonuswant = 0;
-    //unsigned foodusers=GetBuildingCount(BLD_IRONMINE)+GetBuildingCount(BLD_COALMINE)+GetBuildingCount(BLD_GRANITEMINE)+GetBuildingCount(BLD_GOLDMINE)+GetBuildingCount(BLD_CHARBURNER);
+	//max processing
+    unsigned foodusers=GetBuildingCount(BLD_CHARBURNER)+GetBuildingCount(BLD_MILL)+GetBuildingCount(BLD_BREWERY)+GetBuildingCount(BLD_PIGFARM)+GetBuildingCount(BLD_DONKEYBREEDER);
+	
 
     aii->GetBuildingCount(buildingCounts);
     //no military buildings -> usually start only
@@ -552,7 +632,7 @@ void AIConstruction::RefreshBuildingCount()
 
         buildingsWanted[BLD_WELL] = buildingsWanted[BLD_BAKERY] + buildingsWanted[BLD_PIGFARM] + buildingsWanted[BLD_DONKEYBREEDER] + buildingsWanted[BLD_BREWERY];
 
-        buildingsWanted[BLD_FARM] = aii->GetInventory()->goods[GD_SCYTHE] + aii->GetInventory()->people[JOB_FARMER];
+        buildingsWanted[BLD_FARM] = min<unsigned>(aii->GetInventory()->goods[GD_SCYTHE] + aii->GetInventory()->people[JOB_FARMER],foodusers+3);
 
         if(aii->GetInventory()->goods[GD_PICKAXE] + aii->GetInventory()->people[JOB_MINER] < 3)
         {

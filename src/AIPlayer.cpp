@@ -1,4 +1,4 @@
-// $Id: AIPlayer.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: AIPlayer.cpp 9577 2015-01-23 08:28:23Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -32,6 +32,6 @@ AIPlayer::AIPlayer(const unsigned char playerid, const GameWorldBase* const gwb,
 
 
 /// Wird jeden GF aufgerufen und die KI kann hier entsprechende Handlungen vollziehen
-void AIPlayer::RunGF(const unsigned gf)
+void AIPlayer::RunGF(const unsigned gf, bool gfisnwf)
 {
 }

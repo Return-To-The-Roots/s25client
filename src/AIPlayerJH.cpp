@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 9576 2015-01-23 08:27:47Z marcus $
+// $Id: AIPlayerJH.cpp 9577 2015-01-23 08:28:23Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -60,7 +60,7 @@ AIPlayerJH::AIPlayerJH(const unsigned char playerid, const GameWorldBase* const 
 }
 
 /// Wird jeden GF aufgerufen und die KI kann hier entsprechende Handlungen vollziehen
-void AIPlayerJH::RunGF(const unsigned gf)
+void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
 {
     if (defeated)
         return;
@@ -77,6 +77,9 @@ void AIPlayerJH::RunGF(const unsigned gf)
 		initgfcomplete++;
 		return; //  1 init -> 2 test defeat -> 3 do other ai stuff -> goto 2
 	}
+	if (gfisnwf)//nwf -> now the orders have been executed -> new constructions can be started
+		construction.constructionlocations.clear();
+
     if (gf == 100)
     {
         if(aii->GetMilitaryBuildings().size() < 1 && aii->GetStorehouses().size() < 2)
@@ -86,8 +89,9 @@ void AIPlayerJH::RunGF(const unsigned gf)
         }
 	}
 
-    if ((gf + (playerid * 11)) % 3 == 0) //try to complete a job on the list
+    if (!gfisnwf) //try to complete a job on the list
     {
+		//LOG.lprintf("ai doing stuff %i \n",playerid);
         construction.RefreshBuildingCount();
         ExecuteAIJob();
     }
@@ -156,23 +160,14 @@ void AIPlayerJH::RunGF(const unsigned gf)
     if((gf + playerid * 7) % 200 == 0) // plan new buildings
     {
         construction.RefreshBuildingCount();
+		
         //pick a random storehouse and try to build one of these buildings around it (checks if we actually want more of the building type)
         BuildingType bldToTest[] =
         {
             BLD_HARBORBUILDING,
             BLD_SHIPYARD,
             BLD_SAWMILL,
-            BLD_FORESTER,
-            BLD_IRONSMELTER,
-            BLD_MINT,
-            BLD_ARMORY,
-            BLD_METALWORKS,
-            BLD_BREWERY,
-            BLD_MILL,
-            BLD_PIGFARM,
-            BLD_SLAUGHTERHOUSE,
-            BLD_BAKERY,
-            BLD_DONKEYBREEDER,
+            BLD_FORESTER,			
             BLD_FARM,
             BLD_FISHERY,
             BLD_WOODCUTTER,
@@ -182,43 +177,49 @@ void AIPlayerJH::RunGF(const unsigned gf)
             BLD_COALMINE,
             BLD_GRANITEMINE,
             BLD_HUNTER,
-            BLD_CHARBURNER
+            BLD_CHARBURNER,
+            BLD_IRONSMELTER,
+            BLD_MINT,
+            BLD_ARMORY,
+            BLD_METALWORKS,
+            BLD_BREWERY,
+            BLD_MILL,
+            BLD_PIGFARM,
+            BLD_SLAUGHTERHOUSE,
+            BLD_BAKERY,
+            BLD_DONKEYBREEDER
         };
         unsigned numBldToTest = 24;
-        unsigned int randomstore;
-        randomstore = rand() % (aii->GetStorehouses().size());
-        if(aii->GetStorehouses().size() < 1)
-            return;
-
-        //collect swords,shields,helpers,privates and beer in first storehouse or whatever is closest to the upgradebuilding if we have one!
-		nobBaseWarehouse* wh = GetUpgradeBuildingWarehouse();
-		SetGatheringForUpgradeWarehouse(wh);
+        unsigned int randomstore=0;
+		//LOG.lprintf("new buildorders %i whs and %i mil for player %i \n",aii->GetStorehouses().size(),aii->GetMilitaryBuildings().size(),playerid);
 		
-		if (MAX_MILITARY_RANK - ggs->getSelection(ADDON_MAX_RANK) > 0) //there is more than 1 rank available -> distribute
-			DistributeMaxRankSoldiersByBlocking(5,wh);
-        //unlimited when every warehouse has at least that amount
-        DistributeGoodsByBlocking(23, 30); //30 boards for each warehouse - block after that - should speed up expansion
-        DistributeGoodsByBlocking(24, 50); //50 stones for each warehouse - block after that - should limit losses in case a warehouse is destroyed
-        //go to the picked random warehouse and try to build around it
-        std::list<nobBaseWarehouse*>::const_iterator it = aii->GetStorehouses().begin();
-        std::advance(it, randomstore);
-        UpdateNodesAroundNoBorder((*it)->GetX(), (*it)->GetY(), 15); //update the area we want to build in first
-        for (unsigned int i = 0; i < numBldToTest; i++)
-        {
-            //only 1 shipyard for each harbor
-            if(bldToTest[i] == BLD_SHIPYARD)
-            {
-                if(IsInvalidShipyardPosition((*it)->GetX(), (*it)->GetY()))
-                    continue;
-            }
-            if (construction.Wanted(bldToTest[i]))
-            {
-                AddBuildJob(bldToTest[i], (*it)->GetX(), (*it)->GetY());
-            }
-        }
-        if(gf > 1500 || aii->GetInventory()->goods[GD_BOARDS] > 11)
-            AddBuildJob(construction.ChooseMilitaryBuilding((*it)->GetX(), (*it)->GetY()), (*it)->GetX(), (*it)->GetY());
-
+        if(aii->GetStorehouses().size() > 0)
+		{			
+			randomstore = rand() % (aii->GetStorehouses().size());
+			//collect swords,shields,helpers,privates and beer in first storehouse or whatever is closest to the upgradebuilding if we have one!
+			nobBaseWarehouse* wh = GetUpgradeBuildingWarehouse();
+			SetGatheringForUpgradeWarehouse(wh);
+		
+			if (MAX_MILITARY_RANK - ggs->getSelection(ADDON_MAX_RANK) > 0) //there is more than 1 rank available -> distribute
+				DistributeMaxRankSoldiersByBlocking(5,wh);
+			//unlimited when every warehouse has at least that amount
+			DistributeGoodsByBlocking(23, 30); //30 boards for each warehouse - block after that - should speed up expansion
+			DistributeGoodsByBlocking(24, 50); //50 stones for each warehouse - block after that - should limit losses in case a warehouse is destroyed
+			//go to the picked random warehouse and try to build around it
+			std::list<nobBaseWarehouse*>::const_iterator it = aii->GetStorehouses().begin();
+			std::advance(it, randomstore);
+			UpdateNodesAroundNoBorder((*it)->GetX(), (*it)->GetY(), 15); //update the area we want to build in first
+			for (unsigned int i = 0; i < numBldToTest; i++)
+			{
+				if (construction.Wanted(bldToTest[i]))
+				{
+					AddBuildJobAroundEvery(bldToTest[i], true); //add a buildorder for the picked buildingtype at every warehouse
+				}
+			}
+			if(gf > 1500 || aii->GetInventory()->goods[GD_BOARDS] > 11)
+	            AddBuildJob(construction.ChooseMilitaryBuilding((*it)->GetX(), (*it)->GetY()), (*it)->GetX(), (*it)->GetY());
+		}
+		//end of construction around & orders for warehouses
 
         //now pick a random military building and try to build around that as well
         if(aii->GetMilitaryBuildings().size() < 1)return;
@@ -227,17 +228,12 @@ void AIPlayerJH::RunGF(const unsigned gf)
         std::advance(it2, randomstore);
         MapCoord tx = (*it2)->GetX(), ty = (*it2)->GetY();
         UpdateReachableNodes(tx, ty, 15);
+		numBldToTest=14; //resource gathering buildings only around military; processing only close to warehouses
         for (unsigned int i = 0; i < numBldToTest; i++)
         {
-            if(bldToTest[i] == BLD_SHIPYARD)
-            {
-                //only 1 shipyard for each harbor
-                if(IsInvalidShipyardPosition(tx, ty))
-                    continue;
-            }
             if (construction.Wanted(bldToTest[i]))
             {
-                AddBuildJob(bldToTest[i], tx, ty);
+                AddBuildJobAroundEvery(bldToTest[i], false);
             }
         }
         AddBuildJob(construction.ChooseMilitaryBuilding(tx, ty), tx, ty);
@@ -289,16 +285,23 @@ void AIPlayerJH::AddBuildJob(BuildingType type, MapCoord x, MapCoord y, bool fro
     construction.AddBuildJob(new AIJH::BuildJob(this, type, x, y), front);
 }
 
-/*void AIPlayerJH::AddJob(AIJH::Job* job, bool front)
+void AIPlayerJH::AddBuildJobAroundEvery(BuildingType bt, bool warehouse)
 {
-    construction.AddJob(job, front);
-}*/
-
-
-/*void AIPlayerJH::AddBuildJob(BuildingType type)
-{
-    construction.AddBuildJob(new AIJH::BuildJob(this, type), false);
-}*/
+	if(warehouse)
+	{
+		for(std::list<nobBaseWarehouse*>::const_iterator it=aii->GetStorehouses().begin();it!=aii->GetStorehouses().end();it++)
+		{
+			construction.AddBuildJob(new AIJH::BuildJob(this,bt,(*it)->GetX(),(*it)->GetY()),false);
+		}
+	}
+	else
+	{
+		for(std::list<nobMilitary*>::const_iterator it=aii->GetMilitaryBuildings().begin();it!=aii->GetMilitaryBuildings().end();it++)
+		{
+			construction.AddBuildJob(new AIJH::BuildJob(this,bt,(*it)->GetX(),(*it)->GetY()),false);
+		}
+	}
+}
 
 void AIPlayerJH::SetGatheringForUpgradeWarehouse(nobBaseWarehouse* upgradewarehouse)
 {
@@ -1050,10 +1053,10 @@ void AIPlayerJH::UpdateNodesAroundNoBorder(MapCoord x, MapCoord y, unsigned radi
 void AIPlayerJH::ExecuteAIJob()
 {
     // Check whether current job is finished...
-    if (currentJob)
+    /*if (currentJob)
     {
         if (currentJob->GetStatus() == AIJH::JOB_FINISHED)
-        {
+        {			
             delete currentJob;
             currentJob = 0;
         }
@@ -1069,24 +1072,35 @@ void AIPlayerJH::ExecuteAIJob()
             delete currentJob;
             currentJob = 0;
         }
-    }
+    }*/
+	unsigned quota = 10; //limit the amount of events to handle
+	while (eventManager.EventAvailable() && quota) //handle all new events - some will add new orders but they can all be handled instantly
+	{
+		quota--;
+		if(currentJob)
+			delete currentJob;
+		currentJob = new AIJH::EventJob(this,eventManager.GetEvent());
+		currentJob->ExecuteJob();
+	}
+	//how many construction & connect jobs the ai will attempt every gf, the ai gets new orders from events and every 200 gf
+	quota = (aii->GetStorehouses().size() + aii->GetMilitaryBuildings().size()) * 1;
+	if (quota>40)
+		quota=40;
 
+	construction.ExecuteJobs(quota); //try to execute up to quota connect & construction jobs
+	/*
     // if no current job available, take next one! events first, then constructions
     if (!currentJob)
     {
-        if (eventManager.EventAvailable())
-        {
-            currentJob = new AIJH::EventJob(this, eventManager.GetEvent());
-        }
-        else if (construction.BuildJobAvailable())
+        if (construction.BuildJobAvailable())
         {
             currentJob = construction.GetBuildJob();
         }
     }
-
     // Something to do? Do it!
     if (currentJob)
         currentJob->ExecuteJob();
+		*/
 }
 
 void AIPlayerJH::RecalcBQAround(const MapCoord x, const MapCoord y)

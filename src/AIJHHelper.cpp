@@ -1,4 +1,4 @@
-// $Id: AIJHHelper.cpp 9575 2015-01-23 08:27:19Z marcus $
+// $Id: AIJHHelper.cpp 9577 2015-01-23 08:28:23Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -44,6 +44,10 @@ AIJH::Job::Job(AIPlayerJH* aijh)
 
 void AIJH::BuildJob::ExecuteJob()
 {
+	//are we allowed to plan construction work in the area in this nwf?
+	if(!aijh->GetConstruction()->CanStillConstructHere(around_x, around_y))
+		return;
+
     if (status == AIJH::JOB_WAITING)
         status = AIJH::JOB_EXECUTING_START;
 
@@ -266,6 +270,8 @@ void AIJH::BuildJob::TryToBuild()
     target_x = bx;
     target_y = by;
     status = AIJH::JOB_EXECUTING_ROAD1;
+	aijh->GetConstruction()->constructionlocations.push_back(target_x); // add new construction area to the list of active orders in the current nwf
+	aijh->GetConstruction()->constructionlocations.push_back(target_y);
     return;
 }
 
@@ -318,6 +324,8 @@ void AIJH::BuildJob::BuildMainRoad()
         }
         else
         {
+			aijh->GetConstruction()->constructionlocations.push_back(target_x); // add new construction area to the list of active orders in the current nwf
+			aijh->GetConstruction()->constructionlocations.push_back(target_y);
             // Warten bis Weg da ist...
             //return;
         }
@@ -410,7 +418,11 @@ void AIJH::BuildJob::TryToBuildSecondaryRoad()
     }
 
     if (aijh->GetConstruction()->BuildAlternativeRoad(houseFlag, route))
+	{
         status = AIJH::JOB_EXECUTING_ROAD2_2;
+		aijh->GetConstruction()->constructionlocations.push_back(target_x); // add new construction area to the list of active orders in the current nwf
+		aijh->GetConstruction()->constructionlocations.push_back(target_y);
+	}
     else
         status = AIJH::JOB_FINISHED;
 }
@@ -421,7 +433,7 @@ void AIJH::ExpandJob::ExecuteJob()
 }
 
 
-void AIJH::EventJob::ExecuteJob()
+void AIJH::EventJob::ExecuteJob()//for now it is assumed that all these will be finished or failed after execution (no wait or progress)
 {
     switch(ev->GetType())
     {
@@ -534,6 +546,11 @@ void AIJH::ConnectJob::ExecuteJob()
 #ifdef DEBUG_AI
     std::cout << "Player " << (unsigned)aijh->GetPlayerID() << ", ConnectJob executed..." << std::endl;
 #endif
+	
+	//can the ai still construct here? else return and try again later
+	if (!aijh->GetConstruction()->CanStillConstructHere(flag_x,flag_y))
+		return; 
+
     const noFlag* flag = aii->GetSpecObj<noFlag>(flag_x, flag_y);
 
     if (!flag)
@@ -576,6 +593,8 @@ void AIJH::ConnectJob::ExecuteJob()
 #endif
         aijh->RecalcGround(flag_x, flag_y, route);
         status = AIJH::JOB_FINISHED;
+		aijh->GetConstruction()->constructionlocations.push_back(flag_x); // add new construction area to the list of active orders in the current nwf
+		aijh->GetConstruction()->constructionlocations.push_back(flag_y);
         return;
     }
 }

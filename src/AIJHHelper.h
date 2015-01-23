@@ -1,4 +1,4 @@
-// $Id: AIJHHelper.h 9555 2014-12-16 15:25:13Z marcus $
+// $Id: AIJHHelper.h 9577 2015-01-23 08:28:23Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -135,7 +135,9 @@ namespace AIJH
             virtual void ExecuteJob();
             inline BuildingType GetType() const { return type; }
             inline MapCoord GetTargetX() const { return target_x; }
-            inline MapCoord GetTargetY() const { return target_y; }
+            inline MapCoord GetTargetY() const { return target_y; }			
+            inline MapCoord GetAroundX() const { return around_x; }
+            inline MapCoord GetAroundY() const { return around_y; }
 			void SetTargetX(MapCoord x) {target_x=x;}
 			void SetTargetY(MapCoord y) {target_y=y;}
         private:

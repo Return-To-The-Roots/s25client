@@ -1,4 +1,4 @@
-// $Id: AIBase.h 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: AIBase.h 9577 2015-01-23 08:28:23Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -68,7 +68,7 @@ class AIBase
         virtual ~AIBase() {}
 
         /// Wird jeden GF aufgerufen und die KI kann hier entsprechende Handlungen vollziehen
-        virtual void RunGF(const unsigned gf) = 0;
+        virtual void RunGF(const unsigned gf, bool gfisnwf) = 0;
 
         /// Verweis auf die Globalen Spieleinstellungen, da diese auch die weiteren Entscheidungen beeinflussen können
         /// (beispielsweise Siegesbedingungen, FOW usw.)

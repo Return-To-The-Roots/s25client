@@ -1,4 +1,4 @@
-// $Id: AIPlayer.h 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: AIPlayer.h 9577 2015-01-23 08:28:23Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -33,7 +33,7 @@ class AIPlayer : public AIBase
 
         /// Wird jeden GF aufgerufen und die KI kann hier entsprechende Handlungen vollziehen
         /// gf ist die GF-Zahl vom Spiel
-        void RunGF(const unsigned gf);
+        void RunGF(const unsigned gf, bool gfisnwf);
 };
 
 #endif //!AIPLAYER_H_INCLUDED

@@ -1,4 +1,4 @@
-// $Id: AIConstruction.h 9575 2015-01-23 08:27:19Z marcus $
+// $Id: AIConstruction.h 9577 2015-01-23 08:28:23Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -41,7 +41,8 @@ class AIConstruction
 
         /// Adds a build job to the queue
         void AddBuildJob(AIJH::BuildJob* job, bool front);
-        void AddJob(AIJH::Job* job, bool front);
+        //void AddJob(AIJH::BuildJob* job, bool front);
+
 
         AIJH::Job* GetBuildJob();
         unsigned GetBuildJobNum() const { return buildJobs.size(); }
@@ -104,12 +105,16 @@ class AIConstruction
 
 		bool OtherUsualBuildingInRadius(MapCoord& x,MapCoord& y, unsigned radius, BuildingType bt);
 
-        //void AddStoreHouse(MapCoord x, MapCoord y) { storeHouses.push_back(AIJH::Coords(x, y)); }
-        //void AddStoreHouseFront(MapCoord x, MapCoord y) {storeHouses.push_front(AIJH::Coords(x, y));}
 
         noFlag* FindTargetStoreHouseFlag(MapCoord x, MapCoord y);
 
-        //std::list<AIJH::Coords> &GetStoreHousePositions() { return storeHouses; }
+		bool CanStillConstructHere(MapCoord x, MapCoord y);
+		
+		/// contains the locations x,y at which the ai has done some kind of construction since the last nwf
+		// -> so the commands are not yet executed and for now the ai will just not build again in the area until the next nwf
+		std::deque<MapCoord> constructionlocations;
+
+		void ExecuteJobs(unsigned limit);
 
     private:
         /// Contains how many buildings of every type is wanted
@@ -118,8 +123,9 @@ class AIConstruction
         /// The current job the AI is working on
         AIJH::Job* currentJob;
 
-        /// Contains the jobs the AI should try to execute, for example build jobs
-        std::deque<AIJH::Job*> buildJobs;
+        /// Contains the build jobs the AI should try to execute
+        std::deque<AIJH::BuildJob*> buildJobs;
+		std::deque<AIJH::ConnectJob*> connectJobs;
 
         AIInterface* aii;
         AIPlayerJH* aijh;

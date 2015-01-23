@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.h 9574 2015-01-23 08:26:44Z marcus $
+// $Id: AIPlayerJH.h 9577 2015-01-23 08:28:23Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -121,6 +121,9 @@ class AIPlayerJH : public AIBase
 
         ///return number of sea_ids with at least 2 harbor spots
         unsigned GetCountofAIRelevantSeaIds();
+		
+        bool IsInvalidShipyardPosition(MapCoord x, MapCoord y);
+
     protected:
         struct Coords
         {
@@ -129,11 +132,10 @@ class AIPlayerJH : public AIBase
             Coords(MapCoord x, MapCoord y) : x(x), y(y) { }
         };
 
-        void RunGF(const unsigned gf);
+        void RunGF(const unsigned gf,bool gfisnwf);
 
         void SendAIEvent(AIEvent::Base* ev);
 		
-
         /// resigned yes/no
         bool defeated;
 
@@ -141,8 +143,8 @@ class AIPlayerJH : public AIBase
         void ExecuteAIJob();
         void AddBuildJob(AIJH::BuildJob* job, bool front = false) { construction.AddBuildJob(job, front); }
         void AddBuildJob(BuildingType type, MapCoord x, MapCoord y, bool front = false);
-        //void AddBuildJob(BuildingType type);
-        //void AddJob(AIJH::Job* job, bool front);
+		//adds buildjobs for a buildingtype around every warehouse or military building
+		void AddBuildJobAroundEvery(BuildingType bt, bool warehouse);
 
         /// Checks the list of military buildingsites and puts the coordinates into the list of military buildings if building is finished
         void CheckNewMilitaryBuildings();
@@ -305,9 +307,7 @@ class AIPlayerJH : public AIBase
 		void ExecuteLuaConstructionOrder(MapCoord x, MapCoord y, BuildingType bt, bool forced=false);
 
         bool NoEnemyHarbor();
-
-        bool IsInvalidShipyardPosition(MapCoord x, MapCoord y);
-
+		
         void SetResourceMap(AIJH::Resource res, unsigned nodenumber, int newvalue) {resourceMaps[res][nodenumber] = newvalue;}
 		
 		MapCoord UpgradeBldX,UpgradeBldY;

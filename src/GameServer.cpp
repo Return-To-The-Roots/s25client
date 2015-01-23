@@ -1,4 +1,4 @@
-// $Id: GameServer.cpp 9561 2014-12-30 10:51:38Z marcus $
+// $Id: GameServer.cpp 9577 2015-01-23 08:28:23Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -942,7 +942,7 @@ void GameServer::ClientWatchDog()
                 for(unsigned i = 0; i < ai_players.size(); ++i)
                 {
                     if(ai_players[i])
-                        ai_players[i]->RunGF(framesinfo.gf_nr);
+						ai_players[i]->RunGF(framesinfo.gf_nr, framesinfo.gf_nr%framesinfo.nwf_length==0);
                 }
 
                 // NWF vergangen?
