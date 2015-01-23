@@ -1,4 +1,4 @@
-// $Id: GameWorld.h 9555 2014-12-16 15:25:13Z marcus $
+// $Id: GameWorld.h 9578 2015-01-23 08:28:58Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -336,6 +336,10 @@ class GameWorldBase
                           const MapCoord x_dest, const MapCoord y_dest, const bool random_route,
                           const unsigned max_route, std::vector<unsigned char> * route, unsigned* length, unsigned char* first_dir,
                           FP_Node_OK_Callback IsNodeOK, FP_Node_OK_Callback IsNodeToDestOk, const void* param, const bool record) const;
+		bool FindFreePathAlternatingConditions(const MapCoord x_start, const MapCoord y_start,
+                          const MapCoord x_dest, const MapCoord y_dest, const bool random_route,
+                          const unsigned max_route, std::vector<unsigned char> * route, unsigned* length, unsigned char* first_dir,
+                          FP_Node_OK_Callback IsNodeOK, FP_Node_OK_Callback IsNodeOKAlternate, FP_Node_OK_Callback IsNodeToDestOk, const void* param, const bool record) const;
         /// Ermittelt, ob eine freie Route noch passierbar ist und gibt den Endpunkt der Route zurück
         bool CheckFreeRoute(const MapCoord x_start, const MapCoord y_start, const std::vector<unsigned char>& route,
                             const unsigned pos, FP_Node_OK_Callback IsNodeOK, FP_Node_OK_Callback IsNodeToDestOk,

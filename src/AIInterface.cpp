@@ -38,6 +38,7 @@ static char THIS_FILE[] = __FILE__;
 
 // from Pathfinding.cpp TODO: in nice
 bool IsPointOK_RoadPath(const GameWorldBase& gwb, const MapCoord x, const MapCoord y, const unsigned char dir, const void* param);
+bool IsPointOK_RoadPathEvenStep(const GameWorldBase& gwb, const MapCoord x, const MapCoord y, const unsigned char dir, const void* param);
 
 AIJH::Resource AIInterface::GetSubsurfaceResource(MapCoord x, MapCoord y) const
 {
@@ -253,7 +254,7 @@ bool AIInterface::FindFreePathForNewRoad(MapCoord startX, MapCoord startY, MapCo
         unsigned* length) const
 {
     bool boat = false;
-    return gwb->FindFreePath(startX, startY, targetX, targetY, false, 100, route, length, NULL, IsPointOK_RoadPath, NULL, (void*) &boat, false);
+    return gwb->FindFreePathAlternatingConditions(startX, startY, targetX, targetY, false, 100, route, length, NULL, IsPointOK_RoadPath,IsPointOK_RoadPathEvenStep, NULL, (void*) &boat, false);
 }
 
 /// player->FindWarehouse

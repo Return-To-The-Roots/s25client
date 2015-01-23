@@ -1,4 +1,4 @@
-// $Id: AIConstruction.cpp 9577 2015-01-23 08:28:23Z marcus $
+// $Id: AIConstruction.cpp 9578 2015-01-23 08:28:58Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -31,6 +31,7 @@
 
 // from Pathfinding.cpp
 bool IsPointOK_RoadPath(const GameWorldBase& gwb, const MapCoord x, const MapCoord y, const unsigned char dir, const void* param);
+bool IsPointOK_RoadPathEvenStep(const GameWorldBase& gwb, const MapCoord x, const MapCoord y, const unsigned char dir, const void* param);
 
 AIConstruction::AIConstruction(AIInterface* aii, AIPlayerJH* aijh)
     : aii(aii), aijh(aijh)
@@ -353,6 +354,7 @@ bool AIConstruction::ConnectFlagToRoadSytem(const noFlag* flag, std::vector<unsi
 
 bool AIConstruction::MinorRoadImprovements(const noRoadNode* start, const noRoadNode* target, std::vector<unsigned char>&route)
 {
+	 return BuildRoad(start, target, route);
     //bool done=false;
     MapCoord x = start->GetX(), y = start->GetY();
     /*for(unsigned i=0;i<route.size();i++)
@@ -425,6 +427,17 @@ bool AIConstruction::BuildRoad(const noRoadNode* start, const noRoadNode* target
         MapCoord y = start->GetY();
         aii->SetFlag(target->GetX(), target->GetY());
         aii->BuildRoad(x, y, route);
+		//set flags along the road just after contruction - todo: handle failed road construction by removing the useless flags!
+		/*MapCoord tx=x,ty=y;
+		for(unsigned i=0;i<route.size()-2;i++)
+		{
+			x=aii->GetXA(tx,ty,route[i]);
+			y=aii->GetXA(tx,ty,route[i]);
+			tx=x;
+			ty=y;
+			if(i>0 && i%2==0)
+				aii->SetFlag(tx,ty);
+		}*/
         return true;
     }
     return false;

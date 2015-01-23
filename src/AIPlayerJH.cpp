@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 9577 2015-01-23 08:28:23Z marcus $
+// $Id: AIPlayerJH.cpp 9578 2015-01-23 08:28:58Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1509,6 +1509,8 @@ void AIPlayerJH::HandleRoadConstructionComplete(const Coords& coords, unsigned c
     //does the roadsegment still exist?
     if(!flag->routes[dir])
         return;
+	if(flag->routes[dir]->GetLength()<4) //road too short to need flags
+		return;
     //check if this road leads to a warehouseflag and if it does start setting flags from the warehouseflag else from the new flag
     //goal is to move roadsegments with a length of more than 2 away from the warehouse
     MapCoord tx = flag->routes[dir]->GetOtherFlag(flag)->GetX();
