@@ -1,4 +1,4 @@
-// $Id: Ware.cpp 9572 2015-01-23 08:24:56Z marcus $
+// $Id: Ware.cpp 9573 2015-01-23 08:25:35Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -327,7 +327,7 @@ unsigned Ware::CheckNewGoalForLostWare(noBaseBuilding* newgoal)
 {
 	unsigned tlength = 0xFFFFFFFF;
 	if (state!=STATE_WAITATFLAG) //todo: check all special cases for wares being carried right now and where possible allow them to be ordered
-		return false;
+		return 0xFFFFFFFF;
 	unsigned char possibledir=gwg->FindPathForWareOnRoads(location, newgoal,&tlength);
 	if(possibledir!=0xFF) //there is a valid path to the goal? -> ordered!
 	{
@@ -352,6 +352,7 @@ unsigned Ware::CheckNewGoalForLostWare(noBaseBuilding* newgoal)
 		return 0xFFFFFFFF;
 }
 
+/// this assumes that the ware is at a flag (todo: handle carried wares) and that there is a valid path to the goal
 void Ware::SetNewGoalForLostWare(noBaseBuilding* newgoal)
 {
 	unsigned char possibledir=gwg->FindPathForWareOnRoads(location, newgoal);
