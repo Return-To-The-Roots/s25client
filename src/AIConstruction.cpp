@@ -1,4 +1,4 @@
-// $Id: AIConstruction.cpp 9578 2015-01-23 08:28:58Z marcus $
+// $Id: AIConstruction.cpp 9579 2015-01-23 08:29:26Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -546,7 +546,12 @@ bool AIConstruction::Wanted(BuildingType type)
     if ((type >= BLD_BARRACKS && type <= BLD_FORTRESS) || type == BLD_STOREHOUSE)
         //todo: find a better way to determine that there is no risk in expanding than sawmill up and complete
         return ((GetBuildingCount(BLD_BARRACKS) + GetBuildingCount(BLD_GUARDHOUSE) + GetBuildingCount(BLD_FORTRESS) + GetBuildingCount(BLD_WATCHTOWER) > 0 || buildingCounts.building_counts[BLD_SAWMILL] > 0 || (aii->GetInventory()->goods[GD_BOARDS] > 30 && GetBuildingCount(BLD_SAWMILL) > 0)) && MilitaryBuildingSitesLimit());
-    return GetBuildingCount(type) < buildingsWanted[type];
+    if(type==BLD_SAWMILL && GetBuildingCount(BLD_SAWMILL)>1)
+	{
+		if (aijh->AmountInStorage(GD_WOOD,0) < 15*(buildingCounts.building_site_counts[BLD_SAWMILL]+1))
+			return false;
+	}
+	return GetBuildingCount(type) < buildingsWanted[type];
 }
 
 bool AIConstruction::MilitaryBuildingSitesLimit()
@@ -589,10 +594,18 @@ void AIConstruction::RefreshBuildingCount()
         resourcelimit = aii->GetInventory()->people[JOB_FORESTER] + aii->GetInventory()->goods[GD_SHOVEL] + 1; //bonuswant for foresters depends on addon settings for mines,wells,charburner
         bonuswant = GetBuildingCount(BLD_CHARBURNER) + ((!aijh->ggs->isEnabled(ADDON_INEXHAUSTIBLE_MINES) && ((GetBuildingCount(BLD_IRONMINE) + GetBuildingCount(BLD_COALMINE) + GetBuildingCount(BLD_GOLDMINE)) > 6)) ? 1 : 0) + ((aijh->ggs->isEnabled(ADDON_EXHAUSTIBLE_WELLS) && GetBuildingCount(BLD_WELL) > 3) ? 1 : 0);
         buildingsWanted[BLD_FORESTER] = max<int>((min<int>((aii->GetMilitaryBuildings().size() > 29 ? 5 : (aii->GetMilitaryBuildings().size() / 6) + 1) + bonuswant, resourcelimit)), 1);
+		
 
 		//earlygame: limit board use so limited to militarybuildingcount
         //woodcutters
 		buildingsWanted[BLD_WOODCUTTER] = (aii->GetInventory()->goods[GD_AXE] + aii->GetInventory()->people[JOB_WOODCUTTER] + 1)>(aii->GetMilitaryBuildings().size()+1)?(aii->GetMilitaryBuildings().size()+1):(aii->GetInventory()->goods[GD_AXE] + aii->GetInventory()->people[JOB_WOODCUTTER] + 1);
+		
+		//on maps with many trees the ai will build woodcutters all over the place which means the foresters are not really required
+		if(buildingsWanted[BLD_FORESTER]>1 && buildingsWanted[BLD_WOODCUTTER]>GetBuildingCount(BLD_WOODCUTTER)+3)
+		{
+			buildingsWanted[BLD_FORESTER]=1;
+		}
+
 
         //fishery & hunter
         buildingsWanted[BLD_FISHERY] = (aii->GetInventory()->goods[GD_RODANDLINE] + aii->GetInventory()->people[JOB_FISHER])>(aii->GetMilitaryBuildings().size()+1)?(aii->GetMilitaryBuildings().size()+1):(aii->GetInventory()->goods[GD_RODANDLINE] + aii->GetInventory()->people[JOB_FISHER]);
@@ -608,7 +621,7 @@ void AIConstruction::RefreshBuildingCount()
             //>6miners = build up to 6 depending on resources, else max out at miners/2
             buildingsWanted[BLD_QUARRY] = (aii->GetInventory()->goods[GD_PICKAXE] + aii->GetInventory()->people[JOB_STONEMASON] < 6) ? ((aii->GetInventory()->people[JOB_MINER] > 6) ? aii->GetInventory()->goods[GD_PICKAXE] + aii->GetInventory()->people[JOB_STONEMASON] : aii->GetInventory()->people[JOB_MINER] / 2) : 6;
 			if(buildingsWanted[BLD_QUARRY]>(aii->GetMilitaryBuildings().size()))
-				(aii->GetMilitaryBuildings().size());
+				buildingsWanted[BLD_QUARRY]=(aii->GetMilitaryBuildings().size());
 		}
         //sawmills limited by woodcutters and carpenter+saws reduced by charburners minimum of 2
         resourcelimit = aii->GetInventory()->people[JOB_CARPENTER] + aii->GetInventory()->goods[GD_SAW];
@@ -684,11 +697,11 @@ void AIConstruction::RefreshBuildingCount()
                 if(aijh->ggs->isEnabled(ADDON_CHARBURNER) && (GetBuildingCount(BLD_COALMINE) < 1 && (GetBuildingCount(BLD_IRONMINE) + GetBuildingCount(BLD_GOLDMINE) > 0)))
                     buildingsWanted[BLD_CHARBURNER] = min<int>(1, resourcelimit);
             }
-            if(GetBuildingCount(BLD_QUARRY) < 4) //no quarry -> try granitemines.
+			if(GetBuildingCount(BLD_QUARRY)+1 < buildingsWanted[BLD_QUARRY] && aijh->AmountInStorage(GD_STONES,0)<100) //no quarry and low stones -> try granitemines.
             {
-                buildingsWanted[BLD_GRANITEMINE] = (aii->GetInventory()->people[JOB_MINER] > 6) ? 5 - GetBuildingCount(BLD_QUARRY) : 1;
-                if(buildingsWanted[BLD_GRANITEMINE] > (GetBuildingCount(BLD_BARRACKS) + GetBuildingCount(BLD_GUARDHOUSE) + GetBuildingCount(BLD_FORTRESS) + GetBuildingCount(BLD_WATCHTOWER)) / 3) //limit granitemines to military / 3
-                    buildingsWanted[BLD_GRANITEMINE] = (GetBuildingCount(BLD_BARRACKS) + GetBuildingCount(BLD_GUARDHOUSE) + GetBuildingCount(BLD_FORTRESS) + GetBuildingCount(BLD_WATCHTOWER)) / 3;
+                buildingsWanted[BLD_GRANITEMINE] = (aii->GetInventory()->people[JOB_MINER] > 6 && buildingsWanted[BLD_QUARRY] > GetBuildingCount(BLD_QUARRY)) ? buildingsWanted[BLD_QUARRY] - GetBuildingCount(BLD_QUARRY) : 1;
+				if(buildingsWanted[BLD_GRANITEMINE] >  (aii->GetMilitaryBuildings().size() / 15) + 1) //limit granitemines to military / 15
+					buildingsWanted[BLD_GRANITEMINE] = (aii->GetMilitaryBuildings().size() / 15) + 1;
             }
             else
                 buildingsWanted[BLD_GRANITEMINE] = 0;

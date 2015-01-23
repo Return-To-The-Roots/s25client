@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 9578 2015-01-23 08:28:58Z marcus $
+// $Id: AIPlayerJH.cpp 9579 2015-01-23 08:29:26Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -111,8 +111,9 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
         if(ggs->getSelection(ADDON_SEA_ATTACK) < 2) //not deactivated by addon? -> go ahead
             TrySeaAttack();
     }
-
-    if ((gf + playerid * 13) % 1500 == 0) // check expeditions (order new / cancel) and if we have 1 complete forester but less than 1 military building and less than 2 buildingsites stop production
+	// check expeditions (order new / cancel) and if we have 1 complete forester but less than 1 military building and less than 2 buildingsites stop production
+	// stop/resume granitemine production
+    if ((gf + playerid * 13) % 1500 == 0) 
     {
         for(std::list<nobHarborBuilding*>::const_iterator it = aii->GetHarbors().begin(); it != aii->GetHarbors().end(); it++)
         {
@@ -137,6 +138,24 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
 		{
 			if(aii->GetBuildings(BLD_FORESTER).size()>0 && (*aii->GetBuildings(BLD_FORESTER).begin())->IsProductionDisabled())
 				aii->StopProduction((*aii->GetBuildings(BLD_FORESTER).begin())->GetX(),(*aii->GetBuildings(BLD_FORESTER).begin())->GetY());
+		}
+		//stop production in granite mines when the ai has many stones (100+ and at least 15 for each warehouse)
+		if(AmountInStorage(GD_STONES,0)<100 || AmountInStorage(GD_STONES,0)<15*aii->GetStorehouses().size())
+			//activate
+		{
+			for(std::list<nobUsual*>::const_iterator it=aii->GetBuildings(BLD_GRANITEMINE).begin();it!=aii->GetBuildings(BLD_GRANITEMINE).end();it++)
+			{
+				if((*it)->IsProductionDisabled())
+					aii->StopProduction((*it)->GetX(),(*it)->GetY());
+			}
+		}
+		else //deactivate
+		{
+			for(std::list<nobUsual*>::const_iterator it=aii->GetBuildings(BLD_GRANITEMINE).begin();it!=aii->GetBuildings(BLD_GRANITEMINE).end();it++)
+			{
+				if(!(*it)->IsProductionDisabled())
+					aii->StopProduction((*it)->GetX(),(*it)->GetY());
+			}
 		}
     }
     if((gf + playerid * 11) % 150 == 0)
@@ -2686,6 +2705,19 @@ bool AIPlayerJH::IsInvalidShipyardPosition(MapCoord x, MapCoord y)
 
 }
 
+unsigned AIPlayerJH::AmountInStorage(unsigned char num,unsigned char page)
+{
+	unsigned counter=0;
+	for(std::list<nobBaseWarehouse*>::const_iterator it=aii->GetStorehouses().begin();it!=aii->GetStorehouses().end();it++)
+	{
+		if(page==0)
+			counter+=(*it)->GetInventory()->goods[num];
+		else
+			counter+=(*it)->GetInventory()->people[num];
+	}
+	return counter;
+}
+
 bool AIPlayerJH::ValidFishInRange(MapCoord x, MapCoord y)
 {
     unsigned max_radius = 5;
@@ -2770,7 +2802,8 @@ void AIPlayerJH::AdjustSettings()
     milSettings[1] = HasFrontierBuildings()?5:0; //if we have a front send strong soldiers first else weak first to make upgrading easier
     milSettings[2] = 4;
     milSettings[3] = 5;
-	milSettings[4] = UpdateUpgradeBuilding() >= 0? 8 : 0;                                                 //interior 0bar full if we have an upgrade building else 1 soldier each
+	//interior 0bar full if we have an upgrade building and gold(or produce gold) else 1 soldier each
+	milSettings[4] = UpdateUpgradeBuilding() >= 0 && (aii->GetInventory()->goods[GD_COINS]>0 || (aii->GetInventory()->goods[GD_GOLD]>0 && aii->GetInventory()->goods[GD_COAL]>0 && aii->GetBuildings(BLD_MINT).size()) )? 8 : 0;     
     milSettings[6] = ggs->getSelection(ADDON_SEA_ATTACK)==2 ? 0 : 8; //harbor flag: no sea attacks?->no soldiers else 50% to 100%
 	milSettings[5] = CalcMilSettings(); //inland 1bar min 50% max 100% depending on how many soldiers are available
 	milSettings[7] = 8;                                                     //front: 100%

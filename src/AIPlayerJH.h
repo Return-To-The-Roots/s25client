@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.h 9577 2015-01-23 08:28:23Z marcus $
+// $Id: AIPlayerJH.h 9579 2015-01-23 08:29:26Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -350,6 +350,8 @@ class AIPlayerJH : public AIBase
         unsigned BQsurroundcheck(MapCoord x, MapCoord y, unsigned range, bool includeexisting,unsigned limit=0);
 		/// returns list entry of the building the ai uses for troop upgrades
 		int UpdateUpgradeBuilding();
+		/// returns amount of good/people stored in warehouses right now
+		unsigned AmountInStorage(unsigned char num,unsigned char page);
 		
 
 // Event...
