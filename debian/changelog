@@ -1,3 +1,115 @@
+s25rttr (20150123-9581.360) precise; urgency=low
+
+  * Automatic Jenkins Build 360
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Fri, 23 Jan 2015 09:59:43 +0100
+
+s25rttr (20150123-9581) any; urgency=low
+
+  * AIpoc r9573
+    fix for bug #1319068 unbesetzte (kürzere) Wege werden bevorzugt
+    - increased punishment points for no carrier (not even on the way
+    to the road) (now 500 old 200)
+    - added punishment points for "only 1 carrier and that carrier
+    still has to walk from the warehouse to the road" (now 50 old 0)
+
+ -- marcus  Fri, 23 Jan 2015 08:30:00 +0100
+
+s25rttr (20150123-9580) any; urgency=low
+
+  * AIpoc r9572
+    fix for bug #1283548 Soldaten aus der Reserve werden nicht
+    richtig Registriert
+
+ -- marcus  Fri, 23 Jan 2015 08:29:00 +0100
+
+s25rttr (20150123-9579) any; urgency=low
+
+  * AIpoc r9571
+    ai should now
+    -delay the construction of foresters after the first one if the
+    map has enough trees already
+    -stop/resume the production of granite mines depending on the
+    stones in warehouses
+    -only build more sawmills after the first 2 when there is at
+    least some wood in the warehouses
+
+ -- marcus  Fri, 23 Jan 2015 08:29:00 +0100
+
+s25rttr (20150123-9578) any; urgency=low
+
+  * AIpoc r9570
+    ai road construction updated: should now focus on road segments
+    with length 2
+
+ -- marcus  Fri, 23 Jan 2015 08:28:00 +0100
+
+s25rttr (20150123-9577) any; urgency=low
+
+  * AIpoc r9569
+    ai construction updated:
+    -keeps a list of construction locations for every NWF
+    -improvements for construction handling when an ai owns a very
+    big area
+    -farms now limited by tools+workers AND processing buildings
+
+ -- marcus  Fri, 23 Jan 2015 08:28:00 +0100
+
+s25rttr (20150123-9576) any; urgency=low
+
+  * AIpoc r9568
+    ai can no longer build new military buildings next to existing
+    roads
+
+ -- marcus  Fri, 23 Jan 2015 08:27:00 +0100
+
+s25rttr (20150123-9575) any; urgency=low
+
+  * AIpoc r9567
+    ai will now stop production in the first forester on maps with
+    very limited building space
+    ai will now build more foresters and will try to build them far
+    from each other
+
+ -- marcus  Fri, 23 Jan 2015 08:27:00 +0100
+
+s25rttr (20150123-9574) any; urgency=low
+
+  * AIpoc r9566
+    ai will no longer try to build a secondary road to military
+    buildings
+    ai military & tool settings updated
+
+ -- marcus  Fri, 23 Jan 2015 08:26:00 +0100
+
+s25rttr (20150123-9573) any; urgency=low
+
+  * AIpoc r9565
+    fixed 1 return value for the check new goal for lost ware
+
+ -- marcus  Fri, 23 Jan 2015 08:25:00 +0100
+
+s25rttr (20150123-9572) any; urgency=low
+
+  * AIpoc r9564
+    improved lost ware ordering (find shortest path not just any lost
+    ware)
+
+ -- marcus  Fri, 23 Jan 2015 08:24:00 +0100
+
+s25rttr (20150123-9571) any; urgency=low
+
+  * AIpoc r9563
+    fixes bug #1406923 Water is not distributed off a well
+
+ -- marcus  Fri, 23 Jan 2015 08:24:00 +0100
+
+s25rttr (20150110-9570) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 10 Jan 2015 23:00:00 +0100
+
 s25rttr (20150104-9569.359) precise; urgency=low
 
   * Automatic Jenkins Build 359
