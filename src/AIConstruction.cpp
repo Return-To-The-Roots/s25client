@@ -1,4 +1,4 @@
-// $Id: AIConstruction.cpp 9579 2015-01-23 08:29:26Z marcus $
+// $Id: AIConstruction.cpp 9582 2015-01-24 17:41:44Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -601,7 +601,7 @@ void AIConstruction::RefreshBuildingCount()
 		buildingsWanted[BLD_WOODCUTTER] = (aii->GetInventory()->goods[GD_AXE] + aii->GetInventory()->people[JOB_WOODCUTTER] + 1)>(aii->GetMilitaryBuildings().size()+1)?(aii->GetMilitaryBuildings().size()+1):(aii->GetInventory()->goods[GD_AXE] + aii->GetInventory()->people[JOB_WOODCUTTER] + 1);
 		
 		//on maps with many trees the ai will build woodcutters all over the place which means the foresters are not really required
-		if(buildingsWanted[BLD_FORESTER]>1 && buildingsWanted[BLD_WOODCUTTER]>GetBuildingCount(BLD_WOODCUTTER)+3)
+		if((buildingsWanted[BLD_FORESTER]>1 && aii->GetMilitaryBuildings().size()<15 && buildingsWanted[BLD_WOODCUTTER]<GetBuildingCount(BLD_WOODCUTTER)+3) || (buildingsWanted[BLD_FORESTER]>1 && buildingsWanted[BLD_WOODCUTTER]<GetBuildingCount(BLD_WOODCUTTER)+2) )
 		{
 			buildingsWanted[BLD_FORESTER]=1;
 		}
@@ -676,6 +676,9 @@ void AIConstruction::RefreshBuildingCount()
         {
             //coalmine count now depends on iron & gold not linked to food or material supply - might have to add a material check if this makes problems
             buildingsWanted[BLD_COALMINE] = (GetBuildingCount(BLD_IRONMINE) > 0) ? (GetBuildingCount(BLD_IRONMINE) * 2) - 1 + GetBuildingCount(BLD_GOLDMINE) : (GetBuildingCount(BLD_GOLDMINE) > 0) ? GetBuildingCount(BLD_GOLDMINE) : 1;
+			//more mines planned than food available? -> limit mines
+			if(buildingsWanted[BLD_COALMINE]>2 && buildingsWanted[BLD_COALMINE]*2 > aii->GetBuildings(BLD_FARM).size()+aii->GetBuildings(BLD_FISHERY).size()+1)
+				buildingsWanted[BLD_COALMINE]=aii->GetBuildings(BLD_FARM).size()+aii->GetBuildings(BLD_FISHERY).size()+2;
             if (GetBuildingCount(BLD_FARM) > 7) //quite the empire just scale mines with farms
             {
                 if(aijh->ggs->isEnabled(ADDON_INEXHAUSTIBLE_MINES)) //inexhaustible mines? -> more farms required for each mine
