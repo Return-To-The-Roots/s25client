@@ -1,3 +1,24 @@
+s25rttr (20150125-9583.361) precise; urgency=low
+
+  * Automatic Jenkins Build 361
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sun, 25 Jan 2015 01:09:19 +0100
+
+s25rttr (20150124-9583) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 24 Jan 2015 23:00:00 +0100
+
+s25rttr (20150124-9582) any; urgency=low
+
+  * AIpoc r9574
+    ai construction:
+    - mines once again limited by food supply
+    - fix for forester limits
+
+ -- marcus  Sat, 24 Jan 2015 17:41:00 +0100
+
 s25rttr (20150123-9581.360) precise; urgency=low
 
   * Automatic Jenkins Build 360
