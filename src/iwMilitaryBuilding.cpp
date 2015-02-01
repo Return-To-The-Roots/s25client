@@ -1,4 +1,4 @@
-// $Id: iwMilitaryBuilding.cpp 9592 2015-02-01 09:39:38Z marcus $
+// $Id: iwMilitaryBuilding.cpp 9596 2015-02-01 09:41:54Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -77,6 +77,9 @@ iwMilitaryBuilding::iwMilitaryBuilding(GameWorldViewer* const gwv, dskGameInterf
     AddImage(8, 117, 114, LOADER.GetNationImageN(building->GetNation(), 250 + 5 * building->GetBuildingType()));
 	// "Go to next" (building of same type)
     AddImageButton( 9, 179, 115, 30, 32, TC_GREY, LOADER.GetImageN("io", 107), _("Go to next military building"));
+	//addon military control active? -> show button
+	if(GameClient::inst().GetGGS().isEnabled(ADDON_MILITARY_CONTROL))
+		AddImageButton( 10, 124, 147, 30, 32, TC_GREY, LOADER.GetImageN("io_new", 4), _("Send max rank soldiers to a warehouse"));
 }
 
 void iwMilitaryBuilding::Msg_PaintAfter()
@@ -183,6 +186,11 @@ void iwMilitaryBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
 				}
 			}
 		} break;
+		case 10: //send home button (addon)
+		{
+			GAMECLIENT.AddGC(new gc::SendSoldiersHome(building->GetX(),building->GetY()));
+		}
+		break;
     }
 }
 

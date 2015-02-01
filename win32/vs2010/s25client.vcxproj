@@ -116,6 +116,7 @@
     <ClInclude Include="..\..\src\AddonManualRoadEnlargement.h" />
     <ClInclude Include="..\..\src\AddonMaxWaterwayLength.h" />
     <ClInclude Include="..\..\src\AddonMilitaryAid.h" />
+    <ClInclude Include="..\..\src\AddonMilitaryControl.h" />
     <ClInclude Include="..\..\src\AddonMoreAnimals.h" />
     <ClInclude Include="..\..\src\AddonNoAlliedPush.h" />
     <ClInclude Include="..\..\src\AddonNoCoinsDefault.h" />

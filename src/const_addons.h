@@ -1,4 +1,4 @@
-// $Id: const_addons.h 9567 2015-01-03 19:34:57Z marcus $
+// $Id: const_addons.h 9596 2015-02-01 09:41:54Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -81,6 +81,7 @@ enum AddonId
 	ADDON_NO_ALLIED_PUSH             = 0x00900005,
 	ADDON_BATTLEFIELD_PROMOTION      = 0x00900006,
 	ADDON_HALF_COST_MIL_EQUIP        = 0x00900007,
+	ADDON_MILITARY_CONTROL           = 0x00900008,
 
     ADDON_SHIP_SPEED                 = 0x00A00000
 };
