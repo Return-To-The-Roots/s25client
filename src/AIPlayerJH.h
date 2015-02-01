@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.h 9579 2015-01-23 08:29:26Z marcus $
+// $Id: AIPlayerJH.h 9586 2015-02-01 09:36:43Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -184,8 +184,8 @@ class AIPlayerJH : public AIBase
 
         //now used to init farm space around farms ... lazy legacy
         void InitStoreAndMilitarylists();
-		//set default start values for the ai for distribution & military settings
-		void InitMilitaryAndDistribution();
+		//set default start values for the ai for distribution
+		void InitDistribution();
 
         //returns true if we can get to the startflag in <maxlen without turning back
         bool IsFlagPartofCircle(const noFlag* startFlag, unsigned maxlen, const noFlag* curFlag, unsigned char excludeDir, bool init, std::vector<int> oldflagsx, std::vector<int> oldflagsy);

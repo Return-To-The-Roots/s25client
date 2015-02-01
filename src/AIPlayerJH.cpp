@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 9585 2015-02-01 09:36:05Z marcus $
+// $Id: AIPlayerJH.cpp 9586 2015-02-01 09:36:43Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -70,7 +70,7 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
     if (!initgfcomplete)
     {
         InitStoreAndMilitarylists();		
-		InitMilitaryAndDistribution();
+		InitDistribution();
 		construction.constructionorders.resize(BUILDING_TYPES_COUNT);
     }
 	if(initgfcomplete<10)
@@ -2460,20 +2460,8 @@ int AIPlayerJH::UpdateUpgradeBuilding()
 	return -1;
 }
 //set default start values for the ai for distribution & military settings
-void AIPlayerJH::InitMilitaryAndDistribution()
-{
-	// Set military settings to some nicer default values
-        std::vector<unsigned char> milSettings;
-        milSettings.resize(8);
-        milSettings[0] = 10;    //recruits 0-10
-        milSettings[1] = 5;     //defense 0-5
-        milSettings[2] = 4;     //defenders 0-5
-        milSettings[3] = 5;     //attackers 0-5
-        milSettings[4] = 0;     //inland buildings (0 bar) 0-8
-        milSettings[5] = 8;     //center buildings (1 bar) 0-8
-        milSettings[6] = 8;     //harbor buildings (? bar) 0-8
-        milSettings[7] = 8;     //border buildings (2 bar) 0-8
-        aii->SetMilitarySettings(milSettings);
+void AIPlayerJH::InitDistribution()
+{	
         //set good distribution settings
         std::vector<unsigned char> goodSettings;
         goodSettings.resize(23);

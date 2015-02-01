@@ -1,4 +1,4 @@
-// $Id: GameClientPlayer.cpp 9572 2015-01-23 08:24:56Z marcus $
+// $Id: GameClientPlayer.cpp 9586 2015-02-01 09:36:43Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1370,7 +1370,14 @@ void GameClientPlayer::NewSoldierAvailable(const unsigned& soldier_count)
 
     // Und den Rest ggf.
     for(std::list<nobMilitary*>::iterator it = military_buildings.begin(); it != military_buildings.end() && soldier_count; ++it)
-        (*it)->RegulateTroops();
+	{
+		//already checked? -> skip
+		if((*it)->GetFrontierDistance() == 2 || (*it)->IsNewBuilt())
+			continue;
+		(*it)->RegulateTroops();
+		if(!soldier_count) //used the soldier?
+			return;
+	}
 
 }
 
