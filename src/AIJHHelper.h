@@ -1,4 +1,4 @@
-// $Id: AIJHHelper.h 9577 2015-01-23 08:28:23Z marcus $
+// $Id: AIJHHelper.h 9589 2015-02-01 09:38:05Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -174,6 +174,8 @@ namespace AIJH
                 : Job(aijh), flag_x(flag_x), flag_y(flag_y), target_x(0xFFFF), target_y(0xFFFF) { }
             ~ConnectJob() { }
             virtual void ExecuteJob();
+			MapCoord getflagx() const {return flag_x;}
+			MapCoord getflagy() const {return flag_y;}
         private:
             MapCoord flag_x, flag_y, target_x, target_y;
             std::vector<unsigned char> route;

@@ -1,4 +1,4 @@
-// $Id: AIConstruction.cpp 9585 2015-02-01 09:36:05Z marcus $
+// $Id: AIConstruction.cpp 9589 2015-02-01 09:38:05Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -144,6 +144,13 @@ AIJH::Job* AIConstruction::GetBuildJob()
 
 void AIConstruction::AddConnectFlagJob(const noFlag* flag)
 {
+	//already in list?
+	for(unsigned i=0;i<connectJobs.size();i++)
+	{		
+		if(connectJobs[i]->getflagx()==flag->GetX() && connectJobs[i]->getflagy()==flag->GetY())
+			return;
+	}
+	//add to list
     connectJobs.push_back(new AIJH::ConnectJob(aijh, flag->GetX(), flag->GetY()));
 }
 

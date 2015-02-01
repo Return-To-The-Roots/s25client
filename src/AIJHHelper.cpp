@@ -1,4 +1,4 @@
-// $Id: AIJHHelper.cpp 9585 2015-02-01 09:36:05Z marcus $
+// $Id: AIJHHelper.cpp 9589 2015-02-01 09:38:05Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -553,7 +553,7 @@ void AIJH::ConnectJob::ExecuteJob()
 		return; 
 
     const noFlag* flag = aii->GetSpecObj<noFlag>(flag_x, flag_y);
-
+	
     if (!flag)
     {
 #ifdef DEBUG_AI
@@ -562,6 +562,19 @@ void AIJH::ConnectJob::ExecuteJob()
         status = AIJH::JOB_FAILED;
         return;
     }
+
+	//is flag of a military building and has some road connection alraedy (not necessarily to a warehouse so this is required to avoid multiple connections on mil buildings)
+	if(aii->IsMilitaryBuildingOnNode(aii->GetXA(flag->GetX(),flag->GetY(),1),aii->GetYA(flag->GetX(),flag->GetY(),1)))
+	{
+		for(unsigned i=2;i<7;i++)
+		{
+			if(flag->routes[i%6])
+			{
+				status=AIJH::JOB_FINISHED;
+				return;
+			}
+		}
+	}
 
     // already connected?
     if (!aijh->GetConstruction()->IsConnectedToRoadSystem(flag))
@@ -583,7 +596,9 @@ void AIJH::ConnectJob::ExecuteJob()
 #ifdef DEBUG_AI
             std::cout << "Connecting flag..." << std::endl;
 #endif
-            // wait...
+            // constructing road... wait...
+			aijh->GetConstruction()->constructionlocations.push_back(flag_x); // add new construction area to the list of active orders in the current nwf
+			aijh->GetConstruction()->constructionlocations.push_back(flag_y);
             return;
         }
     }
@@ -594,8 +609,7 @@ void AIJH::ConnectJob::ExecuteJob()
 #endif
         aijh->RecalcGround(flag_x, flag_y, route);
         status = AIJH::JOB_FINISHED;
-		aijh->GetConstruction()->constructionlocations.push_back(flag_x); // add new construction area to the list of active orders in the current nwf
-		aijh->GetConstruction()->constructionlocations.push_back(flag_y);
+		
         return;
     }
 }
