@@ -1,4 +1,4 @@
-// $Id: AIConstruction.cpp 9589 2015-02-01 09:38:05Z marcus $
+// $Id: AIConstruction.cpp 9590 2015-02-01 09:38:32Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -608,7 +608,7 @@ void AIConstruction::RefreshBuildingCount()
 		buildingsWanted[BLD_WOODCUTTER] = (aii->GetInventory()->goods[GD_AXE] + aii->GetInventory()->people[JOB_WOODCUTTER] + 1)>(aii->GetMilitaryBuildings().size()+1)?(aii->GetMilitaryBuildings().size()+1):(aii->GetInventory()->goods[GD_AXE] + aii->GetInventory()->people[JOB_WOODCUTTER] + 1);
 		
 		//on maps with many trees the ai will build woodcutters all over the place which means the foresters are not really required
-		if((buildingsWanted[BLD_FORESTER]>1 && aii->GetMilitaryBuildings().size()<15 && buildingsWanted[BLD_WOODCUTTER]<GetBuildingCount(BLD_WOODCUTTER)+3) || (buildingsWanted[BLD_FORESTER]>1 && buildingsWanted[BLD_WOODCUTTER]<GetBuildingCount(BLD_WOODCUTTER)+2) )
+		if((buildingsWanted[BLD_FORESTER]>1 && aii->GetMilitaryBuildings().size()<10 && buildingsWanted[BLD_WOODCUTTER]<GetBuildingCount(BLD_WOODCUTTER)+3) || (buildingsWanted[BLD_FORESTER]>1 && buildingsWanted[BLD_WOODCUTTER]<GetBuildingCount(BLD_WOODCUTTER)+2) )
 		{
 			buildingsWanted[BLD_FORESTER]=1;
 		}
