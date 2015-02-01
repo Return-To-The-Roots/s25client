@@ -1,4 +1,4 @@
-// $Id: AIConstruction.h 9585 2015-02-01 09:36:05Z marcus $
+// $Id: AIConstruction.h 9591 2015-02-01 09:39:07Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -46,6 +46,7 @@ class AIConstruction
 
         AIJH::Job* GetBuildJob();
         unsigned GetBuildJobNum() const { return buildJobs.size(); }
+		unsigned GetConnectJobNum() const {return connectJobs.size();}
 
         void AddConnectFlagJob(const noFlag* flag); // todo aijh als param suckt
 

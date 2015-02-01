@@ -1,4 +1,4 @@
-// $Id: iwAIDebug.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: iwAIDebug.cpp 9591 2015-02-01 09:39:07Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -71,7 +71,7 @@ iwAIDebug::iwAIDebug(GameWorldViewer* const gwv)
         return;
     }
 
-    ctrlComboBox* players = AddComboBox(0, 15, 30, 250, 20, TC_GREY, NormalFont, 100);
+	ctrlComboBox* players = AddComboBox(1, 15, 30, 250, 20, TC_GREY, NormalFont, 100);
     for (std::vector<AIPlayerJH*>::iterator it = ais.begin(); it != ais.end(); it++)
     {
         players->AddString(_((*it)->GetPlayerName()));
@@ -80,7 +80,7 @@ iwAIDebug::iwAIDebug(GameWorldViewer* const gwv)
     selection = 0;
     players->SetSelection(selection);
 
-    ctrlComboBox* overlays = AddComboBox(1, 15, 60, 250, 20, TC_GREY, NormalFont, 100);
+    ctrlComboBox* overlays = AddComboBox(0, 15, 60, 250, 20, TC_GREY, NormalFont, 100);
     overlays->AddString("None");
     overlays->AddString("BuildingQuality");
     overlays->AddString("Reachability");
@@ -96,6 +96,8 @@ iwAIDebug::iwAIDebug(GameWorldViewer* const gwv)
     overlays->AddString("Fish");
     overlay = 0;
     overlays->SetSelection(overlay);
+
+	
 
     //jobs = AddList(1, 15, 60, 120, 220, TC_GREY, NormalFont);
 
@@ -120,12 +122,12 @@ void iwAIDebug::Msg_ComboSelectItem(const unsigned int ctrl_id, const unsigned s
         default:
             break;
 
-        case 0:
+        case 1:
         {
             selection = select;
             gwv->SetAIDebug(overlay, ais[selection]->GetPlayerID(), false);
         } break;
-        case 1:
+        case 0:
         {
             overlay = select;
             gwv->SetAIDebug(overlay, ais[selection]->GetPlayerID(), true);
