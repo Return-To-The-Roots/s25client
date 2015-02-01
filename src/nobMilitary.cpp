@@ -1,4 +1,4 @@
-// $Id: nobMilitary.cpp 9567 2015-01-03 19:34:57Z marcus $
+// $Id: nobMilitary.cpp 9587 2015-02-01 09:37:07Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -513,7 +513,18 @@ void nobMilitary::RegulateTroops()
         {
             diff = (gwg->GetPlayer(player)->military_settings[2] * diff) / MILITARY_SETTINGS_SCALE[2];
         }
-        gwg->GetPlayer(player)->OrderTroops(this, diff);
+		//only order new troops if there is a chance that there is a path - pathfinding from each warehouse with soldiers to this mil building will start at the warehouse and cost time
+        bool mighthaveroad=false;
+		for(unsigned i=2; i<7; i++) //every direction but 1 because 1 is the building connection so it doesnt count for this check
+		{
+			if(GetFlag()->routes[i%6])
+			{
+				mighthaveroad=true;
+				break;
+			}
+		}
+		if(mighthaveroad)
+			gwg->GetPlayer(player)->OrderTroops(this, diff);
     }
 
     is_regulating_troops = false;
