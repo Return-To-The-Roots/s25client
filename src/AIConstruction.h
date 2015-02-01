@@ -1,4 +1,4 @@
-// $Id: AIConstruction.h 9577 2015-01-23 08:28:23Z marcus $
+// $Id: AIConstruction.h 9585 2015-02-01 09:36:05Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -113,6 +113,9 @@ class AIConstruction
 		/// contains the locations x,y at which the ai has done some kind of construction since the last nwf
 		// -> so the commands are not yet executed and for now the ai will just not build again in the area until the next nwf
 		std::deque<MapCoord> constructionlocations;
+
+		//contains the type and amount of buildings ordered since the last nwf
+		std::vector<unsigned char> constructionorders;
 
 		void ExecuteJobs(unsigned limit);
 

@@ -1,4 +1,4 @@
-// $Id: AIJHHelper.cpp 9577 2015-01-23 08:28:23Z marcus $
+// $Id: AIJHHelper.cpp 9585 2015-02-01 09:36:05Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -272,6 +272,7 @@ void AIJH::BuildJob::TryToBuild()
     status = AIJH::JOB_EXECUTING_ROAD1;
 	aijh->GetConstruction()->constructionlocations.push_back(target_x); // add new construction area to the list of active orders in the current nwf
 	aijh->GetConstruction()->constructionlocations.push_back(target_y);
+	aijh->GetConstruction()->constructionorders[type]++;
     return;
 }
 

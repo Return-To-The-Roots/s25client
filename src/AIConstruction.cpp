@@ -1,4 +1,4 @@
-// $Id: AIConstruction.cpp 9582 2015-01-24 17:41:44Z marcus $
+// $Id: AIConstruction.cpp 9585 2015-02-01 09:36:05Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -551,7 +551,7 @@ bool AIConstruction::Wanted(BuildingType type)
 		if (aijh->AmountInStorage(GD_WOOD,0) < 15*(buildingCounts.building_site_counts[BLD_SAWMILL]+1))
 			return false;
 	}
-	return GetBuildingCount(type) < buildingsWanted[type];
+	return GetBuildingCount(type)+constructionorders[type] < buildingsWanted[type];
 }
 
 bool AIConstruction::MilitaryBuildingSitesLimit()
@@ -678,7 +678,7 @@ void AIConstruction::RefreshBuildingCount()
             buildingsWanted[BLD_COALMINE] = (GetBuildingCount(BLD_IRONMINE) > 0) ? (GetBuildingCount(BLD_IRONMINE) * 2) - 1 + GetBuildingCount(BLD_GOLDMINE) : (GetBuildingCount(BLD_GOLDMINE) > 0) ? GetBuildingCount(BLD_GOLDMINE) : 1;
 			//more mines planned than food available? -> limit mines
 			if(buildingsWanted[BLD_COALMINE]>2 && buildingsWanted[BLD_COALMINE]*2 > aii->GetBuildings(BLD_FARM).size()+aii->GetBuildings(BLD_FISHERY).size()+1)
-				buildingsWanted[BLD_COALMINE]=aii->GetBuildings(BLD_FARM).size()+aii->GetBuildings(BLD_FISHERY).size()+2;
+				buildingsWanted[BLD_COALMINE]=(aii->GetBuildings(BLD_FARM).size()+aii->GetBuildings(BLD_FISHERY).size())/2+2;
             if (GetBuildingCount(BLD_FARM) > 7) //quite the empire just scale mines with farms
             {
                 if(aijh->ggs->isEnabled(ADDON_INEXHAUSTIBLE_MINES)) //inexhaustible mines? -> more farms required for each mine

@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.cpp 9579 2015-01-23 08:29:26Z marcus $
+// $Id: AIPlayerJH.cpp 9585 2015-02-01 09:36:05Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -71,6 +71,7 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
     {
         InitStoreAndMilitarylists();		
 		InitMilitaryAndDistribution();
+		construction.constructionorders.resize(BUILDING_TYPES_COUNT);
     }
 	if(initgfcomplete<10)
 	{
@@ -78,7 +79,11 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
 		return; //  1 init -> 2 test defeat -> 3 do other ai stuff -> goto 2
 	}
 	if (gfisnwf)//nwf -> now the orders have been executed -> new constructions can be started
+	{	
 		construction.constructionlocations.clear();
+		for(unsigned i=0;i<BUILDING_TYPES_COUNT;i++)
+			construction.constructionorders[i]=0;
+	}
 
     if (gf == 100)
     {
@@ -1536,6 +1541,8 @@ void AIPlayerJH::HandleRoadConstructionComplete(const Coords& coords, unsigned c
     MapCoord ty = flag->routes[dir]->GetOtherFlag(flag)->GetY();
     tx = gwb->GetXA(tx, ty, 1);
     ty = gwb->GetYA(tx, ty, 1);
+	construction.constructionlocations.push_back(tx);
+	construction.constructionlocations.push_back(ty);
     if(aii->IsBuildingOnNode(tx, ty, BLD_STOREHOUSE) || aii->IsBuildingOnNode(tx, ty, BLD_HARBORBUILDING) || aii->IsBuildingOnNode(tx, ty, BLD_HEADQUARTERS))
     {
         gwb->GetPointA(tx, ty, 4);
