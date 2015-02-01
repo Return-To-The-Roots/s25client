@@ -55,7 +55,8 @@ namespace gc
         DESTROYALL,
         UPGRADEROAD,
 		SENDSOLDIERSHOME,
-		ORDERNEWSOLDIERS
+		ORDERNEWSOLDIERS,
+		NOTIFYALLIESOFLOCATION
     };
 
 
@@ -573,6 +574,20 @@ namespace gc
                 : Coords(STOPPRODUCTION, x, y) {}
             StopProduction(Serializer* ser)
                 : Coords(STOPPRODUCTION, ser) {}
+
+            /// Führt das GameCommand aus
+            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+    };
+
+/// Produktivität in einem Gebäude deaktivieren/aktivieren
+    class NotifyAlliesOfLocation : public Coords
+    {
+            friend class GameClient;
+        public:
+            NotifyAlliesOfLocation(const MapCoord x, const MapCoord y)
+                : Coords(NOTIFYALLIESOFLOCATION, x, y) {}
+            NotifyAlliesOfLocation(Serializer* ser)
+                : Coords(NOTIFYALLIESOFLOCATION, ser) {}
 
             /// Führt das GameCommand aus
             void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);

@@ -1,4 +1,4 @@
-// $Id: GameCommands.cpp 9564 2014-12-30 10:53:04Z marcus $
+// $Id: GameCommands.cpp 9597 2015-02-01 09:42:22Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -73,6 +73,7 @@ GameCommand* GameCommand::CreateGameCommand(const Type gst, Serializer* ser)
         case UPGRADEROAD: return new UpgradeRoad(ser);
 		case ORDERNEWSOLDIERS: return new OrderNewSoldiers(ser);
 		case SENDSOLDIERSHOME: return new SendSoldiersHome(ser);
+		case NOTIFYALLIESOFLOCATION: return new NotifyAlliesOfLocation(ser);
     }
 
     return NULL;
@@ -234,6 +235,11 @@ void AcceptPact::Execute(GameWorldGame& gwg, GameClientPlayer& player, const uns
 void CancelPact::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
 {
     player.CancelPact(pt, this->player);
+}
+
+void NotifyAlliesOfLocation::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
+{
+	player.NotifyAlliesOfLocation(x,y,playerid);
 }
 
 void ChangeShipYardMode::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)

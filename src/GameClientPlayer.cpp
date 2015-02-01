@@ -1,4 +1,4 @@
-// $Id: GameClientPlayer.cpp 9587 2015-02-01 09:37:07Z marcus $
+// $Id: GameClientPlayer.cpp 9597 2015-02-01 09:42:22Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1785,6 +1785,19 @@ GameClientPlayer::PactState GameClientPlayer::GetPactState(const PactType pt, co
     }
 
     return NO_PACT;
+}
+
+///all allied players get a letter with the location
+void GameClientPlayer::NotifyAlliesOfLocation(MapCoord x, MapCoord y, unsigned char allyplayerid)
+{	
+	for(unsigned i = 0; i < GameClient::inst().GetPlayerCount(); ++i)
+    {
+        GameClientPlayer* p = GameClient::inst().GetPlayer(i);
+		if(i != allyplayerid && p->IsAlly(allyplayerid+1) && GameClient::inst().GetPlayerID() == i)
+		{	            		
+            GameClient::inst().SendPostMessage(new PostMsgWithLocation(_("Your ally wishes to notify you of this location"), PMC_DIPLOMACY, x, y));
+		}
+	}
 }
 
 /// Gibt die verbleibende Dauer zurück, die ein Bündnis noch laufen wird (0xFFFFFFFF = für immer)

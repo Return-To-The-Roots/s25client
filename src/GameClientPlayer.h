@@ -1,4 +1,4 @@
-// $Id: GameClientPlayer.h 9564 2014-12-30 10:53:04Z marcus $
+// $Id: GameClientPlayer.h 9597 2015-02-01 09:42:22Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -393,6 +393,9 @@ class GameClientPlayer : public GamePlayerInfo
 
         /// Er gibt auf
         void Surrender();
+
+		///all allied players get a letter with the location
+		void NotifyAlliesOfLocation(MapCoord x, MapCoord y, unsigned char allyplayerid);
 
         /// Macht Bündnisvorschlag an diesen Spieler
         void SuggestPact(const unsigned char other_player, const PactType pt, const unsigned duration);

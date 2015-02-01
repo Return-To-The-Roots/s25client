@@ -1,4 +1,4 @@
-// $Id: iwAction.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: iwAction.cpp 9597 2015-02-01 09:42:22Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -85,6 +85,7 @@ iwAction::iwAction(dskGameInterface* const gi, GameWorldViewer* const gwv, const
         TAB_WATCH   1 =
         TAB_WATCH   2 =
         TAB_WATCH   3 = zum HQ
+		TAB_WATCH	4 = notify allies of location
 
         TAB_ATTACK  1 = Less soldiers
         TAB_ATTACK  2 = More soldiers
@@ -334,9 +335,10 @@ iwAction::iwAction(dskGameInterface* const gi, GameWorldViewer* const gwv, const
     {
         ctrlGroup* group = main_tab->AddTab(LOADER.GetImageN("io", 36), _("Display options"), TAB_WATCH);
 
-        group->AddImageButton(1, 0, 45,  60, 36, TC_GREY, LOADER.GetImageN("io", 108), _("Observation window"));
-        group->AddImageButton(2,  60, 45,  60, 36, TC_GREY, LOADER.GetImageN("io", 179), _("House names"));
-        group->AddImageButton(3, 120, 45,  60, 36, TC_GREY, LOADER.GetImageN("io", 180), _("Go to headquarters"));
+        group->AddImageButton(1, 0, 45,  45, 36, TC_GREY, LOADER.GetImageN("io", 108), _("Observation window"));
+        group->AddImageButton(2,  45, 45,  45, 36, TC_GREY, LOADER.GetImageN("io", 179), _("House names"));
+        group->AddImageButton(3, 90, 45,  45, 36, TC_GREY, LOADER.GetImageN("io", 180), _("Go to headquarters"));
+		group->AddImageButton(4, 135, 45,  45, 36, TC_GREY, LOADER.GetImageN("io", 107), _("Notify allies of this location"));
     }
 
     main_tab->SetSelection(0, true);
@@ -740,6 +742,11 @@ void iwAction::Msg_ButtonClick_TabWatch(const unsigned int ctrl_id)
             GameClientPlayer* player = GAMECLIENT.GetLocalPlayer();
             gwv->MoveToMapObject(player->hqx, player->hqy);
         } break;
+		case 4:
+		{
+			GAMECLIENT.AddGC(new gc::NotifyAlliesOfLocation(selected_x,selected_y));
+			Close();			
+		}break;
     }
 
     Close();
