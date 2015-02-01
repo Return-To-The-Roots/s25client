@@ -1,4 +1,4 @@
-// $Id: iwMilitaryBuilding.h 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: iwMilitaryBuilding.h 9592 2015-02-01 09:39:38Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -25,15 +25,17 @@
 
 class nobMilitary;
 class GameWorldViewer;
+class dskGameInterface;
 
 class iwMilitaryBuilding : public IngameWindow
 {
     private:
         nobMilitary* const building;
         GameWorldViewer* const gwv;
+		dskGameInterface* const gi;
 
     public:
-        iwMilitaryBuilding(GameWorldViewer* const gwv, nobMilitary* const building);
+        iwMilitaryBuilding(GameWorldViewer* const gwv, dskGameInterface* const gi, nobMilitary* const building);
 
         /// Zeigt Messagebox an, dass das Militärgebäude nicht abgerissen werden kann (Abriss-Verbot)
         static void DemolitionNotAllowed();

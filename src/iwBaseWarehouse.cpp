@@ -1,4 +1,4 @@
-// $Id: iwBaseWarehouse.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: iwBaseWarehouse.cpp 9592 2015-02-01 09:39:38Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -31,8 +31,13 @@
 #include "WindowManager.h"
 #include "iwHelp.h"
 #include "GameCommands.h"
+#include "iwHQ.h"
+#include "iwStorehouse.h"
+#include "iwHarborBuilding.h"
 
 #include "nobBaseWarehouse.h"
+#include "nobHarborBuilding.h"
+#include "nobStorehouse.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -48,10 +53,10 @@ static char THIS_FILE[] = __FILE__;
  *
  *  @author OLiver
  */
-iwBaseWarehouse::iwBaseWarehouse(GameWorldViewer* const gwv, const char* const title,
+iwBaseWarehouse::iwBaseWarehouse(GameWorldViewer* const gwv, dskGameInterface* const gi, const char* const title,
                                  unsigned char page_count,
                                  nobBaseWarehouse* wh)
-    : iwWares(wh->CreateGUIID(), 0xFFFE, 0xFFFE, 167, 416, title, page_count, true, NormalFont, wh->GetInventory()), gwv(gwv), wh(wh)
+    : iwWares(wh->CreateGUIID(), 0xFFFE, 0xFFFE, 167, 416, title, page_count, true, NormalFont, wh->GetInventory()), gwv(gwv), gi(gi), wh(wh)
 {
     // Basisinitialisierungsänderungen
     background = LOADER.GetImageN("resource", 41);
@@ -70,7 +75,9 @@ iwBaseWarehouse::iwBaseWarehouse(GameWorldViewer* const gwv, const char* const t
     // Alle auswählen bzw setzen!
     AddImageButton(11, 122, 335, 32, 32, TC_GREY, LOADER.GetImageN("io", 223), _("Select all"));
     // "Gehe Zu Ort"
-    AddImageButton(13, 122, 369, 32, 32, TC_GREY, LOADER.GetImageN("io", 107), _("Go to place"));
+    AddImageButton(13, 122, 369, 15, 32, TC_GREY, LOADER.GetImageN("io", 107), _("Go to place"));
+	// Go to next warehouse
+	AddImageButton(14, 139, 369, 15, 32, TC_GREY, LOADER.GetImageN("io", 107), _("Go to next warehouse"));
 
     // Ein/Auslager Overlays entsprechend setzen
     // bei Replays die reellen Einstellungen nehmen, weils die visuellen da logischweise nich gibt!
@@ -190,6 +197,45 @@ void iwBaseWarehouse::Msg_ButtonClick(const unsigned int ctrl_id)
         {
             gwv->MoveToMapObject(wh->GetX(), wh->GetY());
         } break;
+		case 14: //go to next of same type
+		{
+			//is there at least 1 other building of the same type?
+			if(GameClient::inst().GetPlayer(wh->GetPlayer())->GetStorehouses().size()>1)
+			{
+				//go through list once we get to current building -> open window for the next one and go to next location
+				for(std::list<nobBaseWarehouse*>::const_iterator it=GameClient::inst().GetPlayer(wh->GetPlayer())->GetStorehouses().begin(); it != GameClient::inst().GetPlayer(wh->GetPlayer())->GetStorehouses().end(); it++)
+				{
+					if((*it)->GetX()==wh->GetX() && (*it)->GetY()==wh->GetY()) //got to current building in the list?
+					{
+						//close old window, open new window (todo: only open if it isnt already open), move to location of next building
+						Close();
+						it++;
+						if(it == GameClient::inst().GetPlayer(wh->GetPlayer())->GetStorehouses().end()) //was last entry in list -> goto first												{
+							it=GameClient::inst().GetPlayer(wh->GetPlayer())->GetStorehouses().begin();
+						gwv->MoveToMapObject((*it)->GetX(),(*it)->GetY());
+						if((*it)->GetBuildingType()==BLD_HEADQUARTERS)
+						{
+							iwHQ* nextscrn=new iwHQ(gwv, gi, (*it),_("Headquarters"), 3);
+							nextscrn->Move(x,y);
+							WindowManager::inst().Show(nextscrn);
+						}
+						else if((*it)->GetBuildingType()==BLD_HARBORBUILDING)
+						{
+							iwHarborBuilding* nextscrn = new iwHarborBuilding(gwv,gi,dynamic_cast<nobHarborBuilding*>((*it)));
+							nextscrn->Move(x,y);
+							WindowManager::inst().Show(nextscrn);
+						}
+						else if((*it)->GetBuildingType()==BLD_STOREHOUSE) 
+						{
+							iwStorehouse* nextscrn=new iwStorehouse(gwv,gi,dynamic_cast<nobStorehouse*>((*it)));
+							nextscrn->Move(x,y);
+							WindowManager::inst().Show(nextscrn);
+						}
+						break;
+					}
+				}
+			}
+		} break;
         default: // an Basis weiterleiten
         {
             iwWares::Msg_ButtonClick(ctrl_id);

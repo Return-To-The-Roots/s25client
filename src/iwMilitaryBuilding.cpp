@@ -1,4 +1,4 @@
-// $Id: iwMilitaryBuilding.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: iwMilitaryBuilding.cpp 9592 2015-02-01 09:39:38Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -52,9 +52,9 @@ static char THIS_FILE[] = __FILE__;
  *
  *  @author OLiver
  */
-iwMilitaryBuilding::iwMilitaryBuilding(GameWorldViewer* const gwv, nobMilitary* const building)
+iwMilitaryBuilding::iwMilitaryBuilding(GameWorldViewer* const gwv, dskGameInterface* const gi, nobMilitary* const building)
     : IngameWindow(building->CreateGUIID(), (unsigned short) - 2, (unsigned short) - 2, 226, 194, _(BUILDING_NAMES[building->GetBuildingType()]), LOADER.GetImageN("resource", 41)),
-      building(building), gwv(gwv)
+      building(building),gi(gi), gwv(gwv)
 {
     // Schwert
     AddImage(0, 28, 39, LOADER.GetMapImageN(2298));
@@ -75,6 +75,8 @@ iwMilitaryBuilding::iwMilitaryBuilding(GameWorldViewer* const gwv, nobMilitary* 
 
     // Gebäudebild
     AddImage(8, 117, 114, LOADER.GetNationImageN(building->GetNation(), 250 + 5 * building->GetBuildingType()));
+	// "Go to next" (building of same type)
+    AddImageButton( 9, 179, 115, 30, 32, TC_GREY, LOADER.GetImageN("io", 107), _("Go to next military building"));
 }
 
 void iwMilitaryBuilding::Msg_PaintAfter()
@@ -157,6 +159,30 @@ void iwMilitaryBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
         {
             gwv->MoveToMapObject(building->GetX(), building->GetY());
         } break;
+		case 9: //go to next of same type
+		{
+			//is there at least 1 other building of the same type?
+			if(GameClient::inst().GetPlayer(building->GetPlayer())->GetMilitaryBuildings().size()>1)
+			{
+				//go through list once we get to current building -> open window for the next one and go to next location
+				for(std::list<nobMilitary*>::const_iterator it=GameClient::inst().GetPlayer(building->GetPlayer())->GetMilitaryBuildings().begin(); it != GameClient::inst().GetPlayer(building->GetPlayer())->GetMilitaryBuildings().end(); it++)
+				{
+					if((*it)->GetX()==building->GetX() && (*it)->GetY()==building->GetY()) //got to current building in the list?
+					{
+						//close old window, open new window (todo: only open if it isnt already open), move to location of next building
+						Close();
+						it++;
+						if(it == GameClient::inst().GetPlayer(building->GetPlayer())->GetMilitaryBuildings().end()) //was last entry in list -> goto first												{
+							it=GameClient::inst().GetPlayer(building->GetPlayer())->GetMilitaryBuildings().begin();
+						gwv->MoveToMapObject((*it)->GetX(),(*it)->GetY());
+						iwMilitaryBuilding* nextscrn=new iwMilitaryBuilding(gwv, gi, (*it));
+						nextscrn->Move(x,y);
+						WindowManager::inst().Show(nextscrn);
+						break;
+					}
+				}
+			}
+		} break;
     }
 }
 

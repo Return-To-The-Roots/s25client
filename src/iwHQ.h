@@ -1,4 +1,4 @@
-// $Id: iwHQ.h 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: iwHQ.h 9592 2015-02-01 09:39:38Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -29,7 +29,7 @@ class iwHQ : public iwBaseWarehouse
 {
     public:
         /// Konstruktor von @p iwHQ.
-        iwHQ(GameWorldViewer* const gwv, nobBaseWarehouse* wh,  const char* const title, const unsigned pages_count);
+        iwHQ(GameWorldViewer* const gwv, dskGameInterface* const gi, nobBaseWarehouse* wh,  const char* const title, const unsigned pages_count);
 
     protected:
 

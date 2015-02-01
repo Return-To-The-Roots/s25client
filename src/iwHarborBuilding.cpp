@@ -1,4 +1,4 @@
-// $Id: iwHarborBuilding.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: iwHarborBuilding.cpp 9592 2015-02-01 09:39:38Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -43,8 +43,8 @@ static char THIS_FILE[] = __FILE__;
  *
  *  @author OLiver
  */
-iwHarborBuilding::iwHarborBuilding(GameWorldViewer* const gwv, nobHarborBuilding* hb)
-    : iwHQ(gwv, hb, _("Harbor building"), 4)
+iwHarborBuilding::iwHarborBuilding(GameWorldViewer* const gwv, dskGameInterface* const gi, nobHarborBuilding* hb)
+    : iwHQ(gwv, gi, hb, _("Harbor building"), 4)
 {
     // Zusätzliche Hafenseite
     ctrlGroup* harbor_page = AddGroup(103);

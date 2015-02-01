@@ -1,4 +1,4 @@
-// $Id: iwBaseWarehouse.h 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: iwBaseWarehouse.h 9592 2015-02-01 09:39:38Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -25,18 +25,20 @@
 
 class nobBaseWarehouse;
 class GameWorldViewer;
+class dskGameInterface;
 
 /// Basisklasse für die HQ- und Lagerhäuserfenster
 class iwBaseWarehouse : public iwWares
 {
-        GameWorldViewer* const gwv;
+        GameWorldViewer* const gwv;		
+		dskGameInterface* const gi;
 
     protected:
         nobBaseWarehouse* wh; ///< Pointer zum entsprechenden Lagerhaus
 
     public:
         /// Konstruktor von @p iwBaseWarehouse.
-        iwBaseWarehouse(GameWorldViewer* const gwv, const char* const title, unsigned char page_count, nobBaseWarehouse* wh);
+        iwBaseWarehouse(GameWorldViewer* const gwv, dskGameInterface* const gi, const char* const title, unsigned char page_count, nobBaseWarehouse* wh);
 
     protected:
 

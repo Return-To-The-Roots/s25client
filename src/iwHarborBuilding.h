@@ -1,4 +1,4 @@
-// $Id: iwHarborBuilding.h 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: iwHarborBuilding.h 9592 2015-02-01 09:39:38Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -27,7 +27,7 @@ class iwHarborBuilding : public iwHQ
 {
     public:
         /// Konstruktor von @p nobHarborBuilding.
-        iwHarborBuilding(GameWorldViewer* const gwv, nobHarborBuilding* hb);
+        iwHarborBuilding(GameWorldViewer* const gwv, dskGameInterface* const gi, nobHarborBuilding* hb);
 
     protected:
         void Msg_Group_ButtonClick(const unsigned int group_id, const unsigned int ctrl_id);

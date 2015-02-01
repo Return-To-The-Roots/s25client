@@ -1,4 +1,4 @@
-// $Id: dskGameInterface.cpp 9535 2014-12-10 06:46:33Z marcus $
+// $Id: dskGameInterface.cpp 9592 2015-02-01 09:39:38Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -396,16 +396,16 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
             // HQ
             if(bt == BLD_HEADQUARTERS)
                 //WindowManager::inst().Show(new iwTrade(gwv,this,gwv->GetSpecObj<nobHQ>(cselx,csely)));
-                WindowManager::inst().Show(new iwHQ(gwv, gwv->GetSpecObj<nobHQ>(cselx, csely), _("Headquarters"), 3));
+                WindowManager::inst().Show(new iwHQ(gwv,this, gwv->GetSpecObj<nobHQ>(cselx, csely), _("Headquarters"), 3));
             // Lagerhäuser
             else if(bt == BLD_STOREHOUSE)
-                WindowManager::inst().Show(new iwStorehouse(gwv, gwv->GetSpecObj<nobStorehouse>(cselx, csely)));
+                WindowManager::inst().Show(new iwStorehouse(gwv, this, gwv->GetSpecObj<nobStorehouse>(cselx, csely)));
             // Hafengebäude
             else if(bt == BLD_HARBORBUILDING)
-                WindowManager::inst().Show(new iwHarborBuilding(gwv, gwv->GetSpecObj<nobHarborBuilding>(cselx, csely)));
+                WindowManager::inst().Show(new iwHarborBuilding(gwv, this, gwv->GetSpecObj<nobHarborBuilding>(cselx, csely)));
             // Militärgebäude
             else if(bt <= BLD_FORTRESS)
-                WindowManager::inst().Show(new iwMilitaryBuilding(gwv, gwv->GetSpecObj<nobMilitary>(cselx, csely)));
+                WindowManager::inst().Show(new iwMilitaryBuilding(gwv, this, gwv->GetSpecObj<nobMilitary>(cselx, csely)));
             else
                 WindowManager::inst().Show(new iwBuilding(gwv, this, gwv->GetSpecObj<nobUsual>(cselx, csely)));
             return true;
