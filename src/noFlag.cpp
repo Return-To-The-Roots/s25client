@@ -1,4 +1,4 @@
-// $Id: noFlag.cpp 9581 2015-01-23 08:30:53Z marcus $
+// $Id: noFlag.cpp 9588 2015-02-01 09:37:32Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -360,7 +360,7 @@ unsigned short noFlag::GetPunishmentPoints(const unsigned char dir) const
     // Wenn kein Träger auf der Straße ist, gibts nochmal extra satte Strafpunkte
     if(!routes[dir]->isOccupied())
         points += 500;
-	else if (!routes[dir]->getCarrier(0)->GetCarrierState() && !routes[dir]->hasCarrier(1)) //no donkey and the normal carrier has been ordered from the warehouse but has not yet arrived
+	else if (routes[dir]->hasCarrier(0) && !routes[dir]->getCarrier(0)->GetCarrierState() && !routes[dir]->hasCarrier(1)) //no donkey and the normal carrier has been ordered from the warehouse but has not yet arrived
 		points +=50;
 
     return points;
