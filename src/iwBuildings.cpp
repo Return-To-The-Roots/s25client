@@ -1,4 +1,4 @@
-// $Id: iwBuildings.cpp 9594 2015-02-01 09:40:27Z marcus $
+// $Id: iwBuildings.cpp 9595 2015-02-01 09:40:54Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -24,6 +24,17 @@
 #include "Loader.h"
 #include "GameConsts.h"
 #include "GameClient.h"
+#include "WindowManager.h"
+#include "nobMilitary.h"
+#include "iwMilitaryBuilding.h"
+#include "nobUsual.h"
+#include "iwBuilding.h"
+#include "nobBaseWarehouse.h"
+#include "nobStorehouse.h"
+#include "nobHarborBuilding.h"
+#include "iwStorehouse.h"
+#include "iwHarborBuilding.h"
+
 
 const unsigned BUILDINGS_COUNT = 32;
 
@@ -51,7 +62,7 @@ const BuildingType bts[BUILDINGS_COUNT] =
     BLD_METALWORKS,
     BLD_IRONSMELTER,
     BLD_PIGFARM,
-    BLD_STOREHOUSE,
+    BLD_STOREHOUSE, // entry 21
     BLD_MILL,
     BLD_BAKERY,
     BLD_SAWMILL,
@@ -61,7 +72,7 @@ const BuildingType bts[BUILDINGS_COUNT] =
     BLD_FARM,
     BLD_DONKEYBREEDER,
     BLD_CHARBURNER,
-    BLD_HARBORBUILDING
+    BLD_HARBORBUILDING // entry 31
 };
 
 
@@ -76,7 +87,7 @@ const unsigned short font_distance_y = 20;
 
 
 /// Konstruktor von @p iwMilitary.
-iwBuildings::iwBuildings() : IngameWindow(CGI_BUILDINGS, 0xFFFE, 0xFFFE, 185, 480, _("Buildings"), LOADER.GetImageN("resource", 41))
+iwBuildings::iwBuildings(GameWorldViewer* const gwv, dskGameInterface* const gi) : IngameWindow(CGI_BUILDINGS, 0xFFFE, 0xFFFE, 185, 480, _("Buildings"), LOADER.GetImageN("resource", 41)),gwv(gwv),gi(gi)
 {
     // Symbole für die einzelnen Gebäude erstellen
     for(unsigned short y = 0; y < BUILDINGS_COUNT / 4 + (BUILDINGS_COUNT % 4 > 0 ? 1 : 0); ++y)
@@ -84,9 +95,9 @@ iwBuildings::iwBuildings() : IngameWindow(CGI_BUILDINGS, 0xFFFE, 0xFFFE, 185, 48
         for(unsigned short x = 0; x < ((y == BUILDINGS_COUNT / 4) ? BUILDINGS_COUNT % 4 : 4); ++x)
         {
 			if(bts[y*4+x] != BLD_CHARBURNER)
-				AddImage(y * 4 + x, first_x + icon_distance_x * x, first_y + icon_distance_y * y,LOADER.GetImageN(NATION_ICON_IDS[GameClient::inst().GetLocalPlayer()->nation], bts[y * 4 + x]), _(BUILDING_NAMES[bts[y * 4 + x]]));
+				AddImageButton(y * 4 + x, first_x - 16 + icon_distance_x * x, first_y - 16 + icon_distance_y * y,32,32,TC_GREY,LOADER.GetImageN(NATION_ICON_IDS[GameClient::inst().GetLocalPlayer()->nation], bts[y * 4 + x]), _(BUILDING_NAMES[bts[y * 4 + x]]));
 			else
-				AddImage(y * 4 + x, first_x + icon_distance_x * x, first_y + icon_distance_y * y,LOADER.GetImageN("charburner", GameClient::inst().GetLocalPlayer()->nation * 8 + 8) , _(BUILDING_NAMES[bts[y * 4 + x]]));
+				AddImageButton(y * 4 + x, first_x - 16 + icon_distance_x * x, first_y - 16  + icon_distance_y * y,32,32,TC_GREY,LOADER.GetImageN("charburner", GameClient::inst().GetLocalPlayer()->nation * 8 + 8) , _(BUILDING_NAMES[bts[y * 4 + x]]));
         }
     }
 
@@ -115,4 +126,70 @@ void iwBuildings::Msg_PaintAfter()
 
         }
     }
+}
+
+void iwBuildings::Msg_ButtonClick(const unsigned int ctrl_id)
+{	
+	//no buildings of type complete? -> do nothing
+	BuildingCount bc;
+	GameClient::inst().GetLocalPlayer()->GetBuildingCount(bc);	
+	if(bc.building_counts[bts[ctrl_id]] < 1)
+		return;
+
+	//military building open first of type if available
+	if(ctrl_id < 4)
+	{
+		for(std::list<nobMilitary*>::const_iterator it=GameClient::inst().GetLocalPlayer()->GetMilitaryBuildings().begin(); it != GameClient::inst().GetLocalPlayer()->GetMilitaryBuildings().end(); it++)
+		{
+			if((*it)->GetBuildingType()==bts[ctrl_id]) // got first of type -> open building window (military)
+			{
+				gwv->MoveToMapObject((*it)->GetX(),(*it)->GetY());
+				iwMilitaryBuilding* nextscrn=new iwMilitaryBuilding(gwv, gi, (*it));
+				WindowManager::inst().Show(nextscrn);
+				return;
+			}
+		}
+		return;
+	}
+	//not warehouse, harbor (military excluded) -> so it is a nobusual!
+	if(ctrl_id != 21 && ctrl_id != 31)
+	{
+		nobUsual* it=*GameClient::inst().GetLocalPlayer()->GetBuildings(bts[ctrl_id]).begin();
+		gwv->MoveToMapObject(it->GetX(),it->GetY());
+		iwBuilding* nextscrn=new iwBuilding(gwv, gi, (it));
+		WindowManager::inst().Show(nextscrn);
+		return;
+	}
+	else if(ctrl_id == 21)//warehouse?
+	{
+		//go through list until we get to a warehouse
+		for(std::list<nobBaseWarehouse*>::const_iterator it=GameClient::inst().GetLocalPlayer()->GetStorehouses().begin(); it != GameClient::inst().GetLocalPlayer()->GetStorehouses().end(); it++)
+		{
+			if((*it)->GetBuildingType()==bts[ctrl_id])
+			{
+				gwv->MoveToMapObject((*it)->GetX(),(*it)->GetY());
+				iwStorehouse* nextscrn=new iwStorehouse(gwv,gi,dynamic_cast<nobStorehouse*>((*it)));
+				nextscrn->Move(x,y);
+				WindowManager::inst().Show(nextscrn);
+				return;
+			}
+		}
+	}
+	else if(ctrl_id==31)//harbor
+	{
+		//go through list until we get to a harbor
+		for(std::list<nobBaseWarehouse*>::const_iterator it=GameClient::inst().GetLocalPlayer()->GetStorehouses().begin(); it != GameClient::inst().GetLocalPlayer()->GetStorehouses().end(); it++)
+		{
+			if((*it)->GetBuildingType()==bts[ctrl_id])
+			{
+				gwv->MoveToMapObject((*it)->GetX(),(*it)->GetY());
+				iwHarborBuilding* nextscrn = new iwHarborBuilding(gwv,gi,dynamic_cast<nobHarborBuilding*>((*it)));
+				nextscrn->Move(x,y);
+				WindowManager::inst().Show(nextscrn);
+				return;
+			}
+		}
+	}
+
+	
 }

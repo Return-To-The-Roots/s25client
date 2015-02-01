@@ -1,4 +1,4 @@
-// $Id: iwMainMenu.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: iwMainMenu.cpp 9595 2015-02-01 09:40:54Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -132,7 +132,7 @@ void iwMainMenu::Msg_ButtonClick(const unsigned int ctrl_id)
         } break;
         case 5: // Gebäudestatistik
         {
-            WindowManager::inst().Show(new iwBuildings);
+            WindowManager::inst().Show(new iwBuildings(gwv,gi));
         } break;
         case 6: // Inventur
         {

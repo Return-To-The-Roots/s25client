@@ -1,4 +1,4 @@
-// $Id: iwBuildings.h 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: iwBuildings.h 9595 2015-02-01 09:40:54Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -21,19 +21,25 @@
 
 
 #include "IngameWindow.h"
+class dskGameInterface;
+class GameWorldViewer;
 
 /// Fenster, welches die Anzahl aller Gebäude und der Baustellena auflistet
 class iwBuildings : public IngameWindow
 {
+	GameWorldViewer* const gwv;
+    dskGameInterface* const gi;
     public:
 
         /// Konstruktor von @p iwMilitary.
-        iwBuildings();
+        iwBuildings(GameWorldViewer* const gwv, dskGameInterface* const gi);
 
     private:
 
         /// Anzahlen der Gebäude zeichnen
         void Msg_PaintAfter();
+		
+		void Msg_ButtonClick(const unsigned int ctrl_id);
 
 };
 
