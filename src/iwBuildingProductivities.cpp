@@ -1,4 +1,4 @@
-// $Id: iwBuildingProductivities.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: iwBuildingProductivities.cpp 9594 2015-02-01 09:40:27Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -91,8 +91,10 @@ iwBuildingProductivities::iwBuildingProductivities()
         {
             if(y * 2 + x < BUILDINGS_COUNT)
             {
-                AddImage((y * 2 + x) * 2, left_x + x * (percent_image_x + percent_width + image_percent_x), top_y + distance_y * y + percent_height / 2,
-                         LOADER.GetImageN(NATION_ICON_IDS[GameClient::inst().GetLocalPlayer()->nation], bts[y * 2 + x]), _(BUILDING_NAMES[bts[y * 2 + x]]));
+				if(bts[y*2+x]!=BLD_CHARBURNER)
+					AddImage((y * 2 + x) * 2, left_x + x * (percent_image_x + percent_width + image_percent_x), top_y + distance_y * y + percent_height / 2,LOADER.GetImageN(NATION_ICON_IDS[GameClient::inst().GetLocalPlayer()->nation], bts[y * 2 + x]), _(BUILDING_NAMES[bts[y * 2 + x]]));
+				else
+					AddImage((y * 2 + x) * 2, left_x + x * (percent_image_x + percent_width + image_percent_x), top_y + distance_y * y + percent_height / 2,LOADER.GetImageN("charburner", GameClient::inst().GetLocalPlayer()->nation * 8 + 8), _(BUILDING_NAMES[bts[y * 2 + x]]));
 
                 AddPercent((y * 2 + x) * 2 + 1, left_x + image_percent_x + x * (percent_image_x + percent_width + image_percent_x), top_y + distance_y * y,
                            percent_width, percent_height, TC_GREY, COLOR_YELLOW, SmallFont, &percents[bts[y * 2 + x]]);

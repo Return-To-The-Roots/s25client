@@ -1,4 +1,4 @@
-// $Id: iwBuildings.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: iwBuildings.cpp 9594 2015-02-01 09:40:27Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -83,8 +83,10 @@ iwBuildings::iwBuildings() : IngameWindow(CGI_BUILDINGS, 0xFFFE, 0xFFFE, 185, 48
     {
         for(unsigned short x = 0; x < ((y == BUILDINGS_COUNT / 4) ? BUILDINGS_COUNT % 4 : 4); ++x)
         {
-            AddImage(y * 4 + x, first_x + icon_distance_x * x, first_y + icon_distance_y * y,
-                     LOADER.GetImageN(NATION_ICON_IDS[GameClient::inst().GetLocalPlayer()->nation], bts[y * 4 + x]), _(BUILDING_NAMES[bts[y * 4 + x]]));
+			if(bts[y*4+x] != BLD_CHARBURNER)
+				AddImage(y * 4 + x, first_x + icon_distance_x * x, first_y + icon_distance_y * y,LOADER.GetImageN(NATION_ICON_IDS[GameClient::inst().GetLocalPlayer()->nation], bts[y * 4 + x]), _(BUILDING_NAMES[bts[y * 4 + x]]));
+			else
+				AddImage(y * 4 + x, first_x + icon_distance_x * x, first_y + icon_distance_y * y,LOADER.GetImageN("charburner", GameClient::inst().GetLocalPlayer()->nation * 8 + 8) , _(BUILDING_NAMES[bts[y * 4 + x]]));
         }
     }
 

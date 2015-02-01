@@ -1,4 +1,4 @@
-// $Id: ctrlBuildingIcon.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: ctrlBuildingIcon.cpp 9594 2015-02-01 09:40:27Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -62,8 +62,11 @@ bool ctrlBuildingIcon::Draw_(void)
 
     if(state == BUTTON_HOVER || state == BUTTON_PRESSED)
         LOADER.GetImageN("io", 0)->Draw(GetX(), GetY(), size, size, size, size, 0, 0);
-
-    glArchivItem_Bitmap* image = LOADER.GetImageN(NATION_ICON_IDS[nation], type);
+	glArchivItem_Bitmap* image;
+	if(type!=BLD_CHARBURNER)
+		image = LOADER.GetImageN(NATION_ICON_IDS[nation], type);
+	else
+		image = LOADER.GetImageN("charburner", nation*8+8);
     if(image)
         image->Draw(GetX() + size / 2, GetY() + size / 2, 0, 0, 0, 0, 0, 0, (state == BUTTON_PRESSED ? 0xFFFFFF00 : 0xFFFFFFFF));
 
