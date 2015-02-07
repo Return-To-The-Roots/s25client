@@ -1,3 +1,171 @@
+s25rttr (20150207-9601.363) precise; urgency=low
+
+  * Automatic Jenkins Build 363
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sat, 07 Feb 2015 12:57:15 +0100
+
+s25rttr (20150207-9601) any; urgency=low
+
+  * AIpoc r9590
+    FFA building capture fixed:
+    A soldier defeating the last defender of a building will now
+    fight waiting attackers owned by other players instead of just
+    capturing the building
+
+ -- marcus  Sat, 07 Feb 2015 11:09:00 +0100
+
+s25rttr (20150207-9600) any; urgency=low
+
+  * AIpoc r9589
+    fixes a crash that occurred when an empty building got captured
+
+ -- marcus  Sat, 07 Feb 2015 11:08:00 +0100
+
+s25rttr (20150207-9599) any; urgency=low
+
+  * AIpoc r9588
+    added more info to some log prints
+    when RoadDestroyed recalcs the routes of all wares it now handles
+    previously lost wares that were 'lost' at the flag of their new
+    goal and still haven't moved since getting a new goal as a
+    special case
+
+ -- marcus  Sat, 07 Feb 2015 11:08:00 +0100
+
+s25rttr (20150201-9597.362) precise; urgency=low
+
+  * Automatic Jenkins Build 362
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Sun, 01 Feb 2015 11:04:22 +0100
+
+s25rttr (20150201-9597) any; urgency=low
+
+  * AIpoc r9587
+    added notify allies of location: gamecommand, button and
+    execution of the new gamecommand
+
+ -- marcus  Sun, 01 Feb 2015 09:42:00 +0100
+
+s25rttr (20150201-9596) any; urgency=low
+
+  * AIpoc r9586
+    new Addon: Military Control
+    adds the send home button to military buildings
+    Pressing this button will send all soldiers of the highest
+    available rank to a warehouse
+
+ -- marcus  Sun, 01 Feb 2015 09:41:00 +0100
+
+s25rttr (20150201-9595) any; urgency=low
+
+  * AIpoc r9585
+    buildinglist now has button-images for all buildingtypes;
+    clicking on a button move the screen to the first building of
+    that type and opens the info screen for that building
+
+ -- marcus  Sun, 01 Feb 2015 09:40:00 +0100
+
+s25rttr (20150201-9594) any; urgency=low
+
+  * AIpoc r9584
+    babylonian charburner icon now visible in:
+    - action->construction window
+    - building list
+    - productivity list
+
+ -- marcus  Sun, 01 Feb 2015 09:40:00 +0100
+
+s25rttr (20150201-9593) any; urgency=low
+
+  * AIpoc r9583
+    iwBuilding: display babylonian charburner's building image
+
+ -- marcus  Sun, 01 Feb 2015 09:40:00 +0100
+
+s25rttr (20150201-9592) any; urgency=low
+
+  * AIpoc r9582
+    new button for building windows:
+    go to next building of same type / warehouse / military building:
+    close current window, open window for next building at same
+    location, move screen to new building
+
+ -- marcus  Sun, 01 Feb 2015 09:39:00 +0100
+
+s25rttr (20150201-9591) any; urgency=low
+
+  * AIpoc r9581
+    aidebug window:
+    - box order swapped so all list entries in both boxes can be
+    selected
+    - ai order count now is sum of events + buildjobs + connectjobs
+    (old: no connectjobs)
+
+ -- marcus  Sun, 01 Feb 2015 09:39:00 +0100
+
+s25rttr (20150201-9590) any; urgency=low
+
+  * AIpoc r9580
+    ai: construction requirements for 2nd forester a bit less strict
+
+ -- marcus  Sun, 01 Feb 2015 09:38:00 +0100
+
+s25rttr (20150201-9589) any; urgency=low
+
+  * AIpoc r9579
+    ai:
+    - dont plan duplicate connect jobs
+    - dont connect flags of military buildings that already have a
+    road even if that road does not lead to a warehouse
+    - remember location of road construction when actually
+    constructing a road and not when the road is complete...
+
+ -- marcus  Sun, 01 Feb 2015 09:38:00 +0100
+
+s25rttr (20150201-9588) any; urgency=low
+
+  * AIpoc r9578
+    fixes a crash in the punishment point calculation that occurred
+    when there was only a donkey on a road but no carrier
+
+ -- marcus  Sun, 01 Feb 2015 09:37:00 +0100
+
+s25rttr (20150201-9587) any; urgency=low
+
+  * AIpoc r9577
+    military buildings check if their flag has at least 1 road
+    connection before ordering new troops
+    GameClientPlayer::FindWarehouse improved (check distance < best
+    and if true give pathfinding current best as limit)
+
+ -- marcus  Sun, 01 Feb 2015 09:37:00 +0100
+
+s25rttr (20150201-9586) any; urgency=low
+
+  * AIpoc r9576
+    ai no longer sets init military settings
+    minor efficiency upgrade for
+    GameClientPlayer::NewSoldierAvailable
+
+ -- marcus  Sun, 01 Feb 2015 09:36:00 +0100
+
+s25rttr (20150201-9585) any; urgency=low
+
+  * AIpoc r9575
+    ai:
+    - keep a list of given orders since last nwf
+    - more restrictive limits for mine construction
+    - setting flags in an area counts as a construction order
+    stopping other ai commands in the area for the nwf
+
+ -- marcus  Sun, 01 Feb 2015 09:36:00 +0100
+
+s25rttr (20150131-9584) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 31 Jan 2015 23:00:00 +0100
+
 s25rttr (20150125-9583.361) precise; urgency=low
 
   * Automatic Jenkins Build 361
