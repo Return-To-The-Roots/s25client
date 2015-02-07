@@ -1,4 +1,4 @@
-// $Id: GameWorldGame.cpp 9548 2014-12-14 19:51:50Z marcus $
+// $Id: GameWorldGame.cpp 9601 2015-02-07 11:09:14Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -1389,7 +1389,7 @@ bool GameWorldGame::ValidPointForFighting(const MapCoord x, const MapCoord y, co
         // Oder ein Kampf, der hier tobt?
         if((*it)->GetGOT() == GOT_FIGHTING)
         {
-            if(static_cast<noFighting*>(*it)->IsActive())
+			if(static_cast<noFighting*>(*it)->IsActive() && !static_cast<noFighting*>(*it)->IsFighter(exception))
                 return false;
         }
     }

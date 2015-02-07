@@ -1,4 +1,4 @@
-// $Id: nofActiveSoldier.cpp 9599 2015-02-07 11:08:22Z marcus $
+// $Id: nofActiveSoldier.cpp 9601 2015-02-07 11:09:14Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -273,7 +273,7 @@ void nofActiveSoldier::Walked()
 
 /// Looks for enemies nearby which want to fight with this soldier
 /// Returns true if it found one
-bool nofActiveSoldier::FindEnemiesNearby()
+bool nofActiveSoldier::FindEnemiesNearby(unsigned char excludedOwner)
 {
     MapCoord tx, ty;
 
@@ -288,7 +288,7 @@ bool nofActiveSoldier::FindEnemiesNearby()
         list<noBase*> objects;
         gwg->GetDynamicObjectsFrom(tx, ty, objects);
         for(list<noBase*>::iterator it = objects.begin(); it.valid(); ++it)
-            if (dynamic_cast<nofActiveSoldier*>(*it))
+            if (dynamic_cast<nofActiveSoldier*>(*it) && dynamic_cast<nofActiveSoldier*>(*it)->GetPlayer()!=excludedOwner)
                 soldiersNearby.push_back(dynamic_cast<nofActiveSoldier*>(*it));
     }
 
@@ -300,7 +300,7 @@ bool nofActiveSoldier::FindEnemiesNearby()
         list<noBase*> objects;
         gwg->GetDynamicObjectsFrom(tx, ty, objects);
         for(list<noBase*>::iterator it = objects.begin(); it.valid(); ++it)
-            if (dynamic_cast<nofActiveSoldier*>(*it))
+            if (dynamic_cast<nofActiveSoldier*>(*it) && dynamic_cast<nofActiveSoldier*>(*it)->GetPlayer()!=excludedOwner)
                 soldiersNearby.push_back(dynamic_cast<nofActiveSoldier*>(*it));
     }
 
@@ -323,9 +323,17 @@ bool nofActiveSoldier::FindEnemiesNearby()
         return false;
 
     // Try to find fighting spot
-    if(!GetFightSpotNear(enemy, &fight_spot))
-        // No success? Then no fight
-        return false;
+	if(excludedOwner==255)
+	{
+		if(!GetFightSpotNear(enemy, &fight_spot))
+			// No success? Then no fight
+			return false;
+	}
+	else//we have an excluded owner for our new enemy and that only happens in ffa situations when we won against the last defender so our fightspot is the exact location we have right now
+	{
+		fight_spot.x=x;
+		fight_spot.y=y;
+	}
 
     // We try to meet us now
     state = STATE_MEETENEMY;
@@ -379,7 +387,7 @@ void nofActiveSoldier::MeetingEnemy()
         {
             // Is the fighting point still valid (could be another fight there already e.g.)?
             // And the enemy still on the way?
-            if (!gwg->ValidPointForFighting(x, y, true) || !(enemy->GetState() == STATE_MEETENEMY))
+            if (!gwg->ValidPointForFighting(x, y, false,this) || !(enemy->GetState() == STATE_MEETENEMY))
             {
                 // No
                 // Abort the whole fighting fun with the enemy

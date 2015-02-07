@@ -487,7 +487,7 @@ void nofAttacker::WonFighting()
 void nofAttacker::ContinueAtFlag()
 {
     // Greifen wir grad ein Gebäude an?
-    if(state == STATE_ATTACKING_FIGHTINGVSDEFENDER)
+	if(state == STATE_ATTACKING_FIGHTINGVSDEFENDER || (attacked_goal && state == STATE_FIGHTING && attacked_goal->GetFlag()->GetX()==x && attacked_goal->GetFlag()->GetY()==y))
     {
         // Dann neuen Verteidiger rufen
         if(attacked_goal->CallDefender(this))
@@ -497,6 +497,9 @@ void nofAttacker::ContinueAtFlag()
         }
         else
         {
+			//check for soldiers of other non-friendly non-owner players to fight
+			if(FindEnemiesNearby(attacked_goal->GetPlayer()))
+				return;
             // kein Verteidiger gefunden --> ins Gebäude laufen und es erobern
             state = STATE_ATTACKING_CAPTURINGFIRST;
             StartWalking(1);

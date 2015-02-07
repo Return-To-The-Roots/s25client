@@ -1,4 +1,4 @@
-// $Id: nofActiveSoldier.h 9537 2014-12-10 22:14:07Z marcus $
+// $Id: nofActiveSoldier.h 9601 2015-02-07 11:09:14Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -88,7 +88,7 @@ class nofActiveSoldier : public nofSoldier
 
         /// Looks for enemies nearby which want to fight with this soldier
         /// Returns true if it found one
-        bool FindEnemiesNearby();
+        bool FindEnemiesNearby(unsigned char excludedOwner=255);
         /// Informs this soldier that another soldier starts meeting him
         void MeetEnemy(nofActiveSoldier* other, const Point<MapCoord> figh_spot);
         /// Handle state "meet enemy" after each walking step

@@ -1,4 +1,4 @@
-// $Id: noFighting.h 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: noFighting.h 9601 2015-02-07 11:09:14Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -65,6 +65,7 @@ class noFighting : public noBase
 
         /// Dürfen andern Figuren diesen Kampf schon durchqueren?
         bool IsActive() const;
+		bool IsFighter(nofActiveSoldier* as) {return as==soldiers[0] || as ==soldiers[1];}
 
         /// Prüfen, ob ein Soldat von einem bestimmten Spieler in den Kampf verwickelt ist
         bool IsSoldierOfPlayer(const unsigned char player) const;
