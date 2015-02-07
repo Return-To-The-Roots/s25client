@@ -1,4 +1,4 @@
-// $Id: RoadSegment.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: RoadSegment.cpp 9599 2015-02-07 11:08:22Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -313,10 +313,10 @@ void RoadSegment::AddWareJob(const noRoadNode* rn)
                     static_cast<noBuilding*>(f2)->GetBuildingType() == BLD_HARBORBUILDING)
                 static_cast<nobBaseWarehouse*>(f2)->FetchWare();
             else
-                LOG.lprintf("RoadSegment::AddWareJob: WARNING: Ware in front of building (gf: %u)!\n", GAMECLIENT.GetGFNumber());
+                LOG.lprintf("RoadSegment::AddWareJob: WARNING: Ware in front of building at %i,%i (gf: %u)!\n", f2->GetX(), f2->GetY(), GAMECLIENT.GetGFNumber());
         }
         else
-            LOG.lprintf("RoadSegment::AddWareJob: WARNING: Ware in front of building site (gf: %u)!\n", GAMECLIENT.GetGFNumber());
+			LOG.lprintf("RoadSegment::AddWareJob: WARNING: Ware in front of building site at %i,%i (gf: %u)!\n",f2->GetX(), f2->GetY(), GAMECLIENT.GetGFNumber());
     }
 
     // Zufällig Esel oder Träger zuerst fragen, ob er Zeit hat

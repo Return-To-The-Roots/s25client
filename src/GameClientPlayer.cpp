@@ -1,4 +1,4 @@
-// $Id: GameClientPlayer.cpp 9597 2015-02-01 09:42:22Z marcus $
+// $Id: GameClientPlayer.cpp 9599 2015-02-07 11:08:22Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -537,16 +537,53 @@ void GameClientPlayer::RoadDestroyed()
     // Alle Waren, die an Flagge liegen und in Lagerhäusern, müssen gucken, ob sie ihr Ziel noch erreichen können, jetzt wo eine StraÃe fehlt
     for(std::list<Ware*>::iterator it = ware_list.begin(); it != ware_list.end(); )
     {
-        if((*it)->LieAtFlag())
+        if((*it)->LieAtFlag()) // Liegt die Flagge an einer Flagge, muss ihr Weg neu berechnet werden
         {
-            // Liegt die Flagge an einer Flagge, muss ihr Weg neu berechnet werden
-            unsigned char last_next_dir = (*it)->GetNextDir();
-            (*it)->RecalcRoute();
-            (*it)->RemoveWareJobForCurrentDir(last_next_dir);
-            // Träger Bescheid sagen
-            if((*it)->GetNextDir() != 0xFF)
-                (*it)->GetLocation()->routes[(*it)->GetNextDir()]->AddWareJob((*it)->GetLocation());
-        }
+			unsigned char last_next_dir = (*it)->GetNextDir();
+			(*it)->RecalcRoute();			
+			//special case: ware was lost some time ago and the new goal is at this flag and not a warehouse,hq,harbor and the "flip-route" picked so a carrier would pick up the ware carry it away from goal then back and drop
+			//it off at the goal was just destroyed? -> try to pick another flip route or tell the goal about failure.
+			if((*it)->goal && (*it)->GetNextDir()==1 && (*it)->GetLocation()->GetX()==(*it)->goal->GetFlag()->GetX() && (*it)->GetLocation()->GetY()==(*it)->goal->GetFlag()->GetY() && (((*it)->goal->GetBuildingType()!=BLD_STOREHOUSE && (*it)->goal->GetBuildingType()!=BLD_HEADQUARTERS && (*it)->goal->GetBuildingType()!=BLD_HARBORBUILDING) || (*it)->goal->GetType()==NOP_BUILDINGSITE))
+			{
+				//LOG.lprintf("road destroyed special at %i,%i gf: %u \n", (*it)->GetLocation()->GetX(),(*it)->GetLocation()->GetY(),GAMECLIENT.GetGFNumber());
+				unsigned gotfliproute=1;
+				for(unsigned i=2;i<7;i++)
+				{
+					if((*it)->GetLocation()->routes[i%6])
+					{
+						gotfliproute=i;
+						break;
+					}
+				}
+				if(gotfliproute!=1)
+				{
+					(*it)->SetNextDir(gotfliproute%6);
+				}
+				else //no route to goal -> notify goal, try to send ware to a warehouse and if that fails as well set goal = 0 to mark this ware as lost
+				{
+					(*it)->NotifyGoalAboutLostWare();
+					nobBaseWarehouse* wh = gwg->GetPlayer((*it)->GetLocation()->GetPlayer())->FindWarehouse((*it)->GetLocation(), FW::Condition_StoreWare, 0, true, &(*it)->type, true);
+					if(wh)
+					{
+						(*it)->goal = wh;
+						(*it)->SetNextDir(gwg->FindPathForWareOnRoads((*it)->GetLocation(), (*it)->goal, NULL, &(*it)->next_harbor));
+						wh->TakeWare((*it));
+					}
+					else
+					{
+						(*it)->goal=0;
+					}
+				}
+			}
+			//end of special case
+
+			// notify carriers/flags about news if there are any
+			if((*it)->GetNextDir() != 0xFF && (*it)->GetNextDir()!=last_next_dir)
+				(*it)->GetLocation()->routes[(*it)->GetNextDir()]->AddWareJob((*it)->GetLocation());
+			//if the next direction changed: notify current flag that transport in the old direction might not longer be required
+			if((*it)->GetNextDir()!=last_next_dir)
+				(*it)->RemoveWareJobForCurrentDir(last_next_dir);
+		}
         else if((*it)->LieInWarehouse())
         {
             if(!(*it)->FindRouteFromWarehouse())

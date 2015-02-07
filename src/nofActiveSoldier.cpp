@@ -1,4 +1,4 @@
-// $Id: nofActiveSoldier.cpp 9537 2014-12-10 22:14:07Z marcus $
+// $Id: nofActiveSoldier.cpp 9599 2015-02-07 11:08:22Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -81,9 +81,9 @@ void nofActiveSoldier::GoalReached()
     if(!building)
     {
         if((building = gwg->GetSpecObj<nobMilitary>(this->GetX(), this->GetY())) != NULL)
-            LOG.lprintf("nofActiveSoldier::GoalRoached() - no valid 'building' but found one at soldier's position (%i,%i)\n", this->GetX(), this->GetY());
+            LOG.lprintf("nofActiveSoldier::GoalRoached() - no valid 'building' but found one at soldier's position (%i,%i) (gf: %u)\n", this->GetX(), this->GetY(),GAMECLIENT.GetGFNumber());
         else
-            LOG.lprintf("nofActiveSoldier::GoalRoached() - no valid 'building' also didnt find one at soldier's position (%i,%i)\n", this->GetX(), this->GetY());
+            LOG.lprintf("nofActiveSoldier::GoalRoached() - no valid 'building' also didnt find one at soldier's position (%i,%i) (gf: %u)\n", this->GetX(), this->GetY(),GAMECLIENT.GetGFNumber());
     }
     static_cast<nobMilitary*>(building)->AddActiveSoldier(this);
 

@@ -1,4 +1,4 @@
-// $Id: Ware.h 9572 2015-01-23 08:24:56Z marcus $
+// $Id: Ware.h 9599 2015-02-07 11:08:22Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -46,8 +46,6 @@ class Ware : public GameObject
         } state;
         /// Auf welcher Flagge, in welchem Gebäude die Ware gerade ist (bei STATE_CARRIED ist es die Flagge, zu der die Ware getragen wird!)
         noRoadNode* location;
-        /// Nächster Hafenpunkt, der ggf. angesteuert werden soll
-        Point<MapCoord> next_harbor;
 
     public:
 
@@ -55,6 +53,8 @@ class Ware : public GameObject
         const GoodType type;
         /// Wo die Ware mal hin soll
         noBaseBuilding* goal;
+        /// Nächster Hafenpunkt, der ggf. angesteuert werden soll
+        Point<MapCoord> next_harbor;
 
     public:
 
@@ -77,6 +77,8 @@ class Ware : public GameObject
         Point<MapCoord> GetNextHarbor() const { return  next_harbor; }
         /// Berechnet den Weg neu zu ihrem Ziel
         void RecalcRoute();
+		/// set new next dir
+		void SetNextDir(unsigned char newnextdir) {next_dir=newnextdir;}
         /// Wird aufgerufen, wenn es das Ziel der Ware nicht mehr gibt und sie wieder "nach Hause" getragen werden muss
         void GoalDestroyed();
         /// Verändert den Status der Ware
