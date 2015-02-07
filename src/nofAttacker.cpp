@@ -669,6 +669,9 @@ void nofAttacker::ReachedDestination()
             // kein Verteidiger gefunden --> ins Gebäude laufen und es erobern
             state = STATE_ATTACKING_CAPTURINGFIRST;
             StartWalking(1);
+			// Normalen Militärgebäuden schonmal Bescheid sagen
+            if(attacked_goal->GetGOT() == GOT_NOB_MILITARY)
+                static_cast<nobMilitary*>(attacked_goal)->PrepareCapturing();
         }
     }
     else
