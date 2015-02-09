@@ -1,4 +1,4 @@
-// $Id: noCharburnerPile.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: noCharburnerPile.cpp 9603 2015-02-09 19:16:54Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -28,6 +28,7 @@
 #include "GameWorld.h"
 #include "SerializedGameData.h"
 #include "noEnvObject.h"
+#include "noFire.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -40,6 +41,10 @@ static char THIS_FILE[] = __FILE__;
 
 /// Length of the smoldering
 const unsigned SMOLDERING_LENGTH = 3000;
+/// if nothing happens in this amount of GF the pile will catch fire and burn down (removes inactive piles)
+/// it takes about ~4000 gf to remove the cover & harvest the coal from a priority pile - so after this delay there are ~8k gf remaining for the charburner to start working on the started pile again
+/// -> this should only run out if there is either a very long time without resources or the building was destroyed/stopped
+const unsigned SELFDESTRUCT_DELAY = 12000;
 
 /// Work steps for the construction of the wood pile and the cover
 const unsigned short CONSTRUCTION_WORKING_STEPS[2] = {6, 6};
@@ -143,14 +148,32 @@ void noCharburnerPile::HandleEvent(const unsigned int id)
 {
     // Smoldering is over
     // Pile is ready for the remove of the cover
-    state = STATE_REMOVECOVER;
-    event = NULL;
+	if(state==STATE_SMOLDERING)
+	{
+		state = STATE_REMOVECOVER;
+		//start a selfdestruct timer
+		event = em->AddEvent(this, SELFDESTRUCT_DELAY,0);
+	}
+	else
+	{
+		//selfdestruct!
+		event = NULL;
+		gwg->SetNO(new noFire(x, y, 0),x,y);
+		gwg->RecalcBQAroundPoint(x, y);
+		em->AddToKillList(this);
+	}
 }
 
 
 /// Charburner has worked on it --> Goto next step
 void noCharburnerPile::NextStep()
 {
+	//reset selfdestruct timer
+	if(event)
+		em->RemoveEvent(event);
+	event = em->AddEvent(this,SELFDESTRUCT_DELAY,0);
+
+	//execute step
     switch(state)
     {
         default: return;
@@ -167,6 +190,7 @@ void noCharburnerPile::NextStep()
                 {
                     step = 0;
                     state = STATE_SMOLDERING;
+					em->RemoveEvent(event);
                     event = em->AddEvent(this, SMOLDERING_LENGTH, 0);
                 }
             }
@@ -209,7 +233,6 @@ void noCharburnerPile::NextStep()
                 }
             }
         } return;
-
     }
 }
 
