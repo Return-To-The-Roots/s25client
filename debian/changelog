@@ -1,3 +1,22 @@
+s25rttr (20150209-9603.364) precise; urgency=low
+
+  * Automatic Jenkins Build 364
+
+ -- Return To The Roots Team <sf-team@siedler25.org>  Mon, 09 Feb 2015 20:27:16 +0100
+
+s25rttr (20150209-9603) any; urgency=low
+
+  * AIpoc r9591
+    inactive charburner piles now selfdestruct after 12k gf
+
+ -- marcus  Mon, 09 Feb 2015 19:16:00 +0100
+
+s25rttr (20150207-9602) any; urgency=low
+
+  * Automatic debian/changelog update
+
+ -- Florian Doersch <flosoft@siedler25.org>  Sat, 07 Feb 2015 23:00:00 +0100
+
 s25rttr (20150207-9601.363) precise; urgency=low
 
   * Automatic Jenkins Build 363
