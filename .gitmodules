@@ -1,24 +1,24 @@
 [submodule "libendian"]
-	url = ../libendian
+	url = ../libendian.git
 	path = libendian
 [submodule "liblobby"]
-	url = ../liblobby
+	url = ../liblobby.git
 	path = liblobby
 [submodule "libsiedler2"]
-	url = ../libsiedler2
+	url = ../libsiedler2.git
 	path = libsiedler2
 [submodule "libutil"]
-	url = ../libutil
+	url = ../libutil.git
 	path = libutil
 [submodule "mygettext"]
-	url = ../mygettext
+	url = ../mygettext.git
 	path = mygettext
 [submodule "s-c"]
-	url = ../s-c
+	url = ../s-c.git
 	path = s-c
 [submodule "s25update"]
-	url = ../s25update
+	url = ../s25update.git
 	path = s25update
 [submodule "version"]
-	url = ../version
+	url = ../version.git
 	path = version
