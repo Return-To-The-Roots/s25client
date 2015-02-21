@@ -5,6 +5,8 @@
 We aim to extend new features such as a multiplayer mode via internet as well as the support for modern hardware and several operating systems like Windows XP/Vista/Seven, Linux and MacOS. Likewise we want to invent some smaller upgrades. Unfortunately it is necessary to rewrite the whole game, but we will stick to the original graphics and sounds, because they are still common and nice to be heard or seen.
 So you will still need an original "The Settlers 2 Gold Edition" version to play Return To The Roots.
 
+see more information on http://www.rttr.info
+
 # How to build
 
 ```
