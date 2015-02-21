@@ -280,6 +280,8 @@ elif [ "$COMPILEFOR" = "windows" ] ; then
 	cp -v ${mingw}/bin/SDL.dll ${DESTDIR} || exit 1
 	cp -v ${mingw}/bin/libvorbis-0.dll ${DESTDIR} || exit 1
 	cp -v ${mingw}/bin/libvorbisfile-3.dll ${DESTDIR} || exit 1
+	
+	cp -v ${mingw}/bin/libgcc_s_sjlj-1.dll ${DESTDIR}RTTR || exit 1
 	cp -v ${mingw}/bin/libcurl-4.dll ${DESTDIR}RTTR || exit 1
 	cp -v ${mingw}/bin/zlib1.dll ${DESTDIR}RTTR || exit 1
 
