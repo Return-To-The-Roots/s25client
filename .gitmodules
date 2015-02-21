@@ -22,3 +22,6 @@
 [submodule "version"]
 	url = https://github.com/Return-To-The-Roots/version.git
 	path = version
+[submodule "RTTR/languages"]
+	url = https://github.com/Return-To-The-Roots/languages.git
+	path = RTTR/languages
