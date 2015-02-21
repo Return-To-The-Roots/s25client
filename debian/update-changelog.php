@@ -1,23 +1,70 @@
+#!/usr/bin/php
 <?php
 
-$changelog = file_get_contents("changelog");
+$project = "unknown";
+$rev = "";
 
-$pattern = "(:\n    )\n\n";
-$replace = "\${1}Empty log message\n\n";
-$changelog = preg_replace("/$pattern/", $replace, $changelog);
+if ( $argc > 2 )
+{
+	$project = $argv[1];
+	$from = $argv[2];
+	$to = $argv[3];
+	$rev = "$from..$to";
+}
 
-$pattern = "(  \* \[r([0-9]*)\])([^:]*):\n    ";
-$replace = "  * ";
-$changelog = preg_replace("/$pattern/s", $replace, $changelog);
+$git_log = shell_exec("git log $rev --date=short --format=%h%n%aN%n%aE%n%ai%n%s%n%b###");
+$git_log_bits = explode('###' . PHP_EOL, $git_log);
 
-$pattern = "(  \* \[r([0-9]*)\] \.:\n    )\n";
-$replace = "\${1}Empty log message\n";
-$changelog = preg_replace("/$pattern/", $replace, $changelog);
+$changelog = array();
 
-$pattern = "s25rttr \([0-9]{8}-[0-9]*\) unstable; urgency=low\n\n  \* (\[r([0-9]*)\] \.:\n    |)Empty log message\n\n -- ([^<>]+) <([^@]+)@siedler25\.org>  [A-Z][a-z]{2}, [0-9]{2} [A-Z][a-z]{2} [0-9]{4} [0-9]{2}:[0-9]{2}:[0-9]{2} \+[0-9]{4}\n\n";
-$replace = "";
-$changelog = preg_replace("/$pattern/", $replace, $changelog);
+foreach ( $git_log_bits as $log )
+{
+	$log = trim($log);
+	$bits = explode(PHP_EOL, $log);
+	
+	if ( count($bits) > 1 )
+	{
+		$commit  = $bits[0];
+		$author  = $bits[1];
+		$email   = $bits[2];
+		$date    = strtotime($bits[3]);
+		$subject = $bits[4];
+		$body    = "";
+		if ( count($bits) > 5 )
+			$body    = $bits[5];
+		
+		$changelog[] = array(
+			'commit'  => $commit,
+			'date'    => $date,
+			'author'  => $author,
+			'email'   => $email,
+			'subject' => trim($subject),
+			'body'    => trim($body),
+		);
+	}
+}
 
-#print $changelog;
+reset($changelog);
 
-file_put_contents("changelog", $changelog);
+foreach ( $changelog as $entry ) 
+{
+	$day  = date("Ymd", $entry['date']);
+
+	$commit  = $entry['commit'];
+	$author  = $entry['author'];
+	$email   = $entry['email'];
+	$date    = date("D, d M Y H:i:s O", $entry['date']);
+	$subject = $entry['subject'];
+	$body    = $entry['body'];
+
+	fwrite(STDERR, "processing $commit\n");
+	
+	echo "$project ($day-$commit) precise; urgency=low".PHP_EOL;
+	echo "".PHP_EOL;
+	echo "  * $subject".PHP_EOL;
+	echo "".PHP_EOL;
+	if ( strlen($body) > 0 )
+		echo "    ".str_replace(PHP_EOL, PHP_EOL."   ", $body).PHP_EOL.PHP_EOL;
+	echo " -- $author <$email>  $date".PHP_EOL;
+	echo "".PHP_EOL;
+}
