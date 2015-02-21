@@ -32,6 +32,9 @@ else
 	echo "No changelog" > ${UPLOADFILE}changelog.txt
 fi
 
+cp ${UPLOADFILE}changelog.txt changelog-$TYPE.txt
+cp ${UPLOADFILE}rapidshare.txt rapidshare-$TYPE.txt
+
 # upload data
 echo "Uploading Data ..."
 scp -4 ${UPLOADFILE}rapidshare.txt $UPLOADTARGET$UPLOADTO || exit 3
