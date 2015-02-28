@@ -10,7 +10,7 @@ So you will still need an original "The Settlers 2 Gold Edition" version to play
 ```
 git clone https://github.com/Return-To-The-Roots/s25client s25client
 cd s25client
-git submodules update --init
+git submodule update --init
 cd build
 ./cmake.sh --prefix=.
 make
