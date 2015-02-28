@@ -15,3 +15,5 @@ cd build
 ./cmake.sh --prefix=.
 make
 ```
+
+for more info or help see INSTALL file or http://www.rttr.info 
