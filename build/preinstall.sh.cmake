@@ -167,10 +167,10 @@ mecho --blue "## Installing S2 placeholder"
 
 if [ "$COMPILEFOR" = "windows" ] ; then
 	echo "creating ${DESTDIR}put\ your\ S2-Installation\ in\ here"
-	touch ${DESTDIR}put\ your\ S2-Installation\ in\ here || exit 1
+	echo "put your S2-Installation in here" > ${DESTDIR}put\ your\ S2-Installation\ in\ here || exit 1
 else
 	echo "creating ${DESTDIR}${DATADIR}/S2/put\ your\ S2-Installation\ in\ here"
-	touch ${DESTDIR}${DATADIR}/S2/put\ your\ S2-Installation\ in\ here || exit 1
+	echo "put your S2-Installation in here" > ${DESTDIR}${DATADIR}/S2/put\ your\ S2-Installation\ in\ here || exit 1
 fi
 
 exit 0
