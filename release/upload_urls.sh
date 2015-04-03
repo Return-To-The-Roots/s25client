@@ -24,9 +24,9 @@ fi
 
 # create changelog
 echo "Creating Changelog ..."
-if [ -e .svn ] ; then
+if [ -e .svn ] || [ -e ../.svn ] ; then
 	svn log $(dirname $(svn info | grep "URL" | cut -d ' ' -f 2)) > ${UPLOADFILE}changelog.txt || exit 2
-elif [ -e .git ] ; then
+elif [ -e .git ] || [ -e ../.git ] ; then
 	git log > ${UPLOADFILE}changelog.txt || exit 2
 else
 	echo "No changelog" > ${UPLOADFILE}changelog.txt
