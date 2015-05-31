@@ -119,14 +119,14 @@ void nobMilitary::Destroy_nobMilitary()
 
     Destroy_nobBaseMilitary();
 
+    // Wieder aus dem Militärquadrat rauswerfen
+    gwg->GetPlayer(player)->RemoveMilitaryBuilding(this);
+    gwg->GetMilitarySquare(x, y).erase(this);
+
     // Land drumherum neu berechnen (nur wenn es schon besetzt wurde!)
     // Nach dem BaseDestroy erst, da in diesem erst das Feuer gesetzt, die Straße gelöscht wird usw.
     if(!new_built)
         gwg->RecalcTerritory(this, MILITARY_RADIUS[size], true, false);
-
-    // Wieder aus dem Militärquadrat rauswerfen
-    gwg->GetPlayer(player)->RemoveMilitaryBuilding(this);
-    gwg->GetMilitarySquare(x, y).erase(this);
 
     GAMECLIENT.SendAIEvent(new AIEvent::Building(AIEvent::BuildingLost, x, y, type), player);
 
