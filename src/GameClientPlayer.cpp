@@ -973,11 +973,26 @@ struct ClientForWare
 
     bool operator<(const ClientForWare b) const
     {
-        if (estimate == b.estimate)
+		// use estimate, points and absolute location (in that order) for sorting
+		// absolute location must be different -> tiebreaker in case everything else is the same
+        if (estimate != b.estimate)
         {
-            return(points > b.points);
+			return(estimate > b.estimate);
         }
-        return(estimate > b.estimate);
+		else
+		{
+			if (points != b.points)
+			{
+				return(points > b.points);
+			}
+			else
+			{
+				if (bb->GetX() != b.bb->GetX())
+					return bb->GetX() < b.bb->GetX();
+				else
+					return bb->GetY() < b.bb->GetY();
+			}
+		}
     }
 };
 
