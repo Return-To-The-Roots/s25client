@@ -93,40 +93,67 @@ if [ "$FORCE" = "1" ] ; then
 	echo "FORCE is set - forcing update"
 fi
 
+FORMAT=".tar.bz2"
+if [[ "$ARCH" =~ windows.* ]] ; then
+	FORMAT=.zip
+fi
+
 # create packed data and updater
-if [ $CHANGED -eq 1 ] || [ ! -f $ARCHDIR/packed/s25rttr.tar.bz2 ] ; then
+if [ $CHANGED -eq 1 ] || [ ! -f $ARCHDIR/packed/s25rttr$FORMAT] ; then
 	echo "creating new archive"
 
 	# remove old build artefacts
-	rm -f ../s25rttr*.tar.bz2
-	
+	rm -f ../s25rttr*$FORMAT
+
 	# pack
-	tar -C $ARCHNEWDIR/unpacked \
-		--exclude=.svn \
-		--exclude=dbg \
-		--exclude s25rttr_$VERSION/share/s25rttr/RTTR/MUSIC/SNG/SNG_*.OGG \
-		--exclude s25rttr_$VERSION/RTTR/MUSIC/SNG/SNG_*.OGG \
-		--exclude s25rttr_$VERSION/s25client.app/Contents/MacOS/share/s25rttr/RTTR/MUSIC/SNG/SNG_*.OGG \
-		-cvjf $ARCHNEWDIR/packed/s25rttr.tar.bz2 s25rttr_$VERSION || error
+	case "$FORMAT" in
+		.tar.bz2)
+			tar -C $ARCHNEWDIR/unpacked \
+				--exclude=.svn \
+				--exclude=dbg \
+				--exclude s25rttr_$VERSION/share/s25rttr/RTTR/MUSIC/SNG/SNG_*.OGG \
+				--exclude s25rttr_$VERSION/RTTR/MUSIC/SNG/SNG_*.OGG \
+				--exclude s25rttr_$VERSION/s25client.app/Contents/MacOS/share/s25rttr/RTTR/MUSIC/SNG/SNG_*.OGG \
+				-cvjf $ARCHNEWDIR/packed/s25rttr$FORMAT s25rttr_$VERSION || error
+		;;
+		.zip)
+			(cd $ARCHNEWDIR/unpacked && \
+				zip -r9 \
+					$ARCHNEWDIR/packed/s25rttr$FORMAT \
+					-x "s25rttr_$VERSION/dbg/*" \
+					-x "s25rttr_$VERSION/RTTR/MUSIC/SNG/SNG_*.OGG" \
+					-- s25rttr_$VERSION) || error
+		;;
+	esac
 	
-	cp -v $ARCHNEWDIR/packed/s25rttr.tar.bz2 ../s25rttr_$VERSION-${REVISION}_$ARCH.tar.bz2 || exit
+	cp -v $ARCHNEWDIR/packed/s25rttr$FORMAT ../s25rttr_$VERSION-${REVISION}_$ARCH$FORMAT || exit
 
 	if [ -d $ARCHNEWDIR/unpacked/s25rttr_$VERSION/dbg ] ; then
-		tar -C $ARCHNEWDIR/unpacked \
-			-cvjf $ARCHNEWDIR/packed/s25rttr_dbg.tar.bz2 s25rttr_$VERSION/dbg || error
-		cp -v $ARCHNEWDIR/packed/s25rttr_dbg.tar.bz2 ../s25rttr-dbg_$VERSION-${REVISION}_$ARCH.tar.bz2 || exit 1 
+		case "$FORMAT" in
+			.tar.bz2)
+				tar -C $ARCHNEWDIR/unpacked \
+					-cvjf $ARCHNEWDIR/packed/s25rttr_dbg$FORMAT s25rttr_$VERSION/dbg || error
+			;;
+			.zip)
+				(cd $ARCHNEWDIR/unpacked && \
+					zip -r9 \
+						$ARCHNEWDIR/packed/s25rttr_dbg$FORMAT s25rttr_$VERSION/dbg) || error
+			;;
+		esac
+
+		cp -v $ARCHNEWDIR/packed/s25rttr_dbg$FORMAT ../s25rttr-dbg_$VERSION-${REVISION}_$ARCH$FORMAT || exit 1 
 	else
-		touch ../s25rttr-dbg_$VERSION-${REVISION}_$ARCH.tar.bz2
+		touch ../s25rttr-dbg_$VERSION-${REVISION}_$ARCH$FORMAT
 	fi
 	
 	# link to archive
 	mkdir -p $ARCHIVE
-	ln -v $ARCHNEWDIR/packed/s25rttr.tar.bz2 $ARCHIVE/s25rttr_$VERSION-${REVISION}_$ARCH.tar.bz2 || \
-		cp -v $ARCHNEWDIR/packed/s25rttr.tar.bz2 $ARCHIVE/s25rttr_$VERSION-${REVISION}_$ARCH.tar.bz2 || exit 1
+	ln -v $ARCHNEWDIR/packed/s25rttr$FORMAT $ARCHIVE/s25rttr_$VERSION-${REVISION}_$ARCH$FORMAT || \
+		cp -v $ARCHNEWDIR/packed/s25rttr$FORMAT $ARCHIVE/s25rttr_$VERSION-${REVISION}_$ARCH$FORMAT || exit 1
 
 	if [ -d $ARCHNEWDIR/unpacked/s25rttr_$VERSION/dbg ] ; then
-		ln -v $ARCHNEWDIR/packed/s25rttr_dbg.tar.bz2 $ARCHIVE/s25rttr-dbg_$VERSION-${REVISION}_$ARCH.tar.bz2 || \
-			cp -v $ARCHNEWDIR/packed/s25rttr_dbg.tar.bz2 $ARCHIVE/s25rttr-dbg_$VERSION-${REVISION}_$ARCH.tar.bz2 || exit 1
+		ln -v $ARCHNEWDIR/packed/s25rttr_dbg$FORMAT $ARCHIVE/s25rttr-dbg_$VERSION-${REVISION}_$ARCH$FORMAT || \
+			cp -v $ARCHNEWDIR/packed/s25rttr_dbg$FORMAT $ARCHIVE/s25rttr-dbg_$VERSION-${REVISION}_$ARCH$FORMAT || exit 1
 	fi
 
 	# do upload
@@ -137,9 +164,9 @@ if [ $CHANGED -eq 1 ] || [ ! -f $ARCHDIR/packed/s25rttr.tar.bz2 ] ; then
 		
 		echo "uploading file to $UPLOADTARGET$UPLOADTO"
 		ssh $UPLOADHOST "mkdir -vp $UPLOADTO" || echo "mkdir $UPLOADTO failed"
-		rsync -avz --progress $ARCHIVE/s25rttr_$VERSION-${REVISION}_$ARCH.tar.bz2 $UPLOADTARGET$UPLOADTO || echo "scp failed"
+		rsync -avz --progress $ARCHIVE/s25rttr_$VERSION-${REVISION}_$ARCH$FORMAT $UPLOADTARGET$UPLOADTO || echo "scp failed"
 		if [ ! -z "$UPLOADTARGET" ] ; then
-			echo "${UPLOADURL}${UPLOADTO}s25rttr_$VERSION-${REVISION}_$ARCH.tar.bz2" >> ${UPLOADFILE}rapidshare.txt
+			echo "${UPLOADURL}${UPLOADTO}s25rttr_$VERSION-${REVISION}_$ARCH$FORMAT" >> ${UPLOADFILE}rapidshare.txt
 		fi
 	fi
 	
