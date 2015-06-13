@@ -29,7 +29,7 @@ if [ -e .svn ] || [ -e ../.svn ] ; then
 elif [ -e .git ] || [ -e ../.git ] ; then
 	git log --submodule > ${UPLOADFILE}changelog.txt || exit 2
 	for I in $(git submodule | cut -f 3 -d ' '); do
-		git log --submodule >> ${UPLOADFILE}changelog.txt || exit 2
+		(cd $I && git log --submodule) >> ${UPLOADFILE}changelog.txt || exit 2
 	done
 else
 	echo "No changelog" > ${UPLOADFILE}changelog.txt
