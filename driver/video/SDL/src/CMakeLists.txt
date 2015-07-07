@@ -2,6 +2,10 @@
 ### $Id: CMakeLists.txt 7506 2011-09-07 13:16:08Z FloSoft $
 #################################################################################
 
+IF(EXISTS "/usr/lib/x86_64-linux-gnu")
+ 	SET(CMAKE_LIBRARY_PATH "/usr/lib/x86_64-linux-gnu;${CMAKE_LIBRARY_PATH}")
+ENDIF()
+
 INCLUDE(FindSDL)
 
 IF (SDL_FOUND)
