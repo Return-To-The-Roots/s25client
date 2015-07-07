@@ -2,6 +2,10 @@
 ### $Id: CMakeLists.txt 7104 2011-03-29 13:44:22Z FloSoft $
 #################################################################################
 
+IF(EXISTS "/usr/lib/x86_64-linux-gnu")
+ 	SET(CMAKE_LIBRARY_PATH "/usr/lib/x86_64-linux-gnu;${CMAKE_LIBRARY_PATH}")
+ENDIF()
+
 INCLUDE(FindSDL)
 INCLUDE(FindSDL_mixer)
 
