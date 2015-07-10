@@ -364,8 +364,8 @@ void ctrlComboBox::ShowList(bool show)
         {
             liste->GetX(),
             liste->GetY(),
-            liste->GetX() + width,
-            liste->GetY() + liste->GetHeight()
+            static_cast<unsigned short>(liste->GetX() + width),
+            static_cast<unsigned short>(liste->GetY() + liste->GetHeight())
         };
 
         parent->LockRegion(this, list_region);
