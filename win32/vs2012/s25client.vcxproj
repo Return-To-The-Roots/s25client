@@ -63,7 +63,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>libiconv2.lib;opengl32.lib;shlwapi.lib;lua52.lib;libbz2d.lib;$(OutDir)libendian.lib;$(OutDir)libsiedler2.lib;$(OutDir)libutil.lib;$(OutDir)mygettext.lib;$(OutDir)liblobby_c.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libiconv2.lib;opengl32.lib;shlwapi.lib;lua52.lib;bzip2d.lib;$(OutDir)libendian.lib;$(OutDir)libsiedler2.lib;$(OutDir)libutil.lib;$(OutDir)mygettext.lib;$(OutDir)liblobby_c.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>"$(OutDir)prebuild-mutex.exe" "prebuild" "$(SolutionName)" "$(ProjectName)" "$(ProjectDir)..\.." "$(OutDir)"</Command>
@@ -91,7 +91,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>libiconv2.lib;opengl32.lib;shlwapi.lib;lua52.lib;libbz2.lib;$(OutDir)libendian.lib;$(OutDir)libsiedler2.lib;$(OutDir)libutil.lib;$(OutDir)mygettext.lib;$(OutDir)liblobby_c.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libiconv2.lib;opengl32.lib;shlwapi.lib;lua52.lib;bzip2.lib;$(OutDir)libendian.lib;$(OutDir)libsiedler2.lib;$(OutDir)libutil.lib;$(OutDir)mygettext.lib;$(OutDir)liblobby_c.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>"$(OutDir)prebuild-mutex.exe" "prebuild" "$(SolutionName)" "$(ProjectName)" "$(ProjectDir)..\.." "$(OutDir)"</Command>

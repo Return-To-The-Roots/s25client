@@ -1091,8 +1091,8 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_3F6C37153CC0A7DA7DA9663331544355"
             {
-            "SourcePath" = "8:LIBBZ2.dll"
-            "TargetName" = "8:LIBBZ2.dll"
+            "SourcePath" = "8:bzip2.dll"
+            "TargetName" = "8:bzip2.dll"
             "Tag" = "8:"
             "Folder" = "8:_2697FF2112AA4AC6BF264BD7BC37B459"
             "Condition" = "8:"
