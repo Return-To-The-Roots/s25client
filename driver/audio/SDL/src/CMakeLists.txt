@@ -2,8 +2,8 @@
 ### $Id: CMakeLists.txt 7104 2011-03-29 13:44:22Z FloSoft $
 #################################################################################
 
-INCLUDE(FindSDL)
-INCLUDE(FindSDL_mixer)
+FIND_PACKAGE(SDL)
+FIND_PACKAGE(SDL_mixer)
 
 IF (SDL_FOUND)
     CORRECT_LIB(SDL_LIBRARY SDL)

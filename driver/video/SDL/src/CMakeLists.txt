@@ -2,7 +2,7 @@
 ### $Id: CMakeLists.txt 7506 2011-09-07 13:16:08Z FloSoft $
 #################################################################################
 
-INCLUDE(FindSDL)
+FIND_PACKAGE(SDL)
 
 IF (SDL_FOUND)
 	INCLUDE(CMakeMacroCorrectLib)

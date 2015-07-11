@@ -2,26 +2,14 @@
 ### $Id: CMakeLists.txt 9596 2015-02-01 09:41:54Z marcus $
 ################################################################################
 
-INCLUDE(FindBZip2)
-IF (NOT BZIP2_FOUND)
-	MESSAGE(FATAL_ERROR "FATAL ERROR: BZip2 library not found")
-ENDIF (NOT BZIP2_FOUND)
-ADD_DEFINITIONS(${BZIP2_DEFINITIONS})
-
-INCLUDE(FindOpenGL)
-IF (NOT OPENGL_FOUND)
-	MESSAGE(FATAL_ERROR "FATAL ERROR: OpenGL library not found")
-ENDIF (NOT OPENGL_FOUND)
-
-INCLUDE(FindGettext)
-IF (NOT GETTEXT_FOUND)
-	MESSAGE(FATAL_ERROR "FATAL ERROR: gettext library not found")
-ENDIF (NOT GETTEXT_FOUND)
+FIND_PACKAGE(BZip2 REQUIRED)
+FIND_PACKAGE(OpenGL REQUIRED)
+FIND_PACKAGE(Gettext REQUIRED)
 
 ################################################################################
 
-INCLUDE_DIRECTORIES("../" "../liblobby/src/" "../libutil/src/" "../mygettext/src/" "../libsiedler2/src/" "../libendian/src/")
-LINK_DIRECTORIES("../libsiedler2/src" "../mygettext/src" "../libutil/src" "../liblobby/src" "../libendian/src")
+INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}" "${CMAKE_SOURCE_DIR}/liblobby/src/" "${CMAKE_SOURCE_DIR}/libutil/src/" "${CMAKE_SOURCE_DIR}/mygettext/src/" "${CMAKE_SOURCE_DIR}/libsiedler2/src/" "${CMAKE_SOURCE_DIR}/libendian/src/")
+LINK_DIRECTORIES("${CMAKE_SOURCE_DIR}/libsiedler2/src" "${CMAKE_SOURCE_DIR}/mygettext/src" "${CMAKE_SOURCE_DIR}/libutil/src" "${CMAKE_SOURCE_DIR}/liblobby/src" "${CMAKE_SOURCE_DIR}/libendian/src")
 
 ################################################################################
 
@@ -455,25 +443,29 @@ SET(LUA_VERSION "52")
 
 IF ( "${COMPILEFOR}" STREQUAL "windows")
 	IF ( "${COMPILEARCH}" STREQUAL "i386" )
-		SET(LUA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../contrib/lua/win32")
+		SET(LUA_DIR "${CMAKE_SOURCE_DIR}/contrib/lua/win32")
 	ELSE ( "${COMPILEARCH}" STREQUAL "i386" )
-		SET(LUA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../contrib/lua/win64")
+		SET(LUA_DIR "${CMAKE_SOURCE_DIR}/contrib/lua/win64")
 	ENDIF ( "${COMPILEARCH}" STREQUAL "i386" )
 ENDIF ( "${COMPILEFOR}" STREQUAL "windows")
 
 IF ( "${COMPILEFOR}" STREQUAL "linux")
 	IF ( "${COMPILEARCH}" STREQUAL "i386" )
-		SET(LUA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../contrib/lua/lin32")
+		SET(LUA_DIR "${CMAKE_SOURCE_DIR}/contrib/lua/lin32")
 	ELSE ( "${COMPILEARCH}" STREQUAL "i386" )
-		SET(LUA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../contrib/lua/lin64")
+		SET(LUA_DIR "${CMAKE_SOURCE_DIR}/contrib/lua/lin64")
 	ENDIF ( "${COMPILEARCH}" STREQUAL "i386" )
 ENDIF ( "${COMPILEFOR}" STREQUAL "linux")
 
 IF ( "${COMPILEFOR}" STREQUAL "apple")
-	SET(LUA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../contrib/lua/mac")
+	SET(LUA_DIR "${CMAKE_SOURCE_DIR}/contrib/lua/mac")
 ENDIF ( "${COMPILEFOR}" STREQUAL "apple")
 
-SET(LUA_LIB "${LUA_DIR}/liblua${LUA_VERSION}.a")
+IF (${CMAKE_HOST_SYSTEM_NAME} MATCHES "Windows")
+	SET(LUA_LIB "${CMAKE_SOURCE_DIR}/contrib/lib/lua${LUA_VERSION}.lib")
+ELSE ()
+	SET(LUA_LIB "${LUA_DIR}/liblua${LUA_VERSION}.a")
+ENDIF ()
 
 MESSAGE(STATUS "Checking LUA library at ${LUA_LIB}")
 IF ( NOT EXISTS "${LUA_LIB}" )
