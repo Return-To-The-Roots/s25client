@@ -426,13 +426,7 @@ void WindowManager::Msg_LeftDown(MouseCoords mc)
             continue;
 
         // FensterRect für Kollisionsabfrage
-        Rect window_rect =
-        {
-            (*it)->x,
-            (*it)->y,
-            (*it)->x + (*it)->GetWidth(),
-            (*it)->y + (*it)->GetHeight()
-        };
+        Rect window_rect = (*it)->GetRect();
 
         // trifft die Maus auf ein Fenster?
         if(Coll(mc.x, mc.y, window_rect))
@@ -703,13 +697,7 @@ void WindowManager::Msg_WheelUp(const MouseCoords& mc)
             continue;
 
         // FensterRect für Kollisionsabfrage
-        Rect window_rect =
-        {
-            (*it)->x,
-            (*it)->y,
-            (*it)->x + (*it)->GetWidth(),
-            (*it)->y + (*it)->GetHeight()
-        };
+        Rect window_rect = (*it)->GetRect();
 
         // trifft die Maus auf ein Fenster?
         if(Coll(mc.x, mc.y, window_rect))
@@ -800,13 +788,7 @@ void WindowManager::Msg_WheelDown(const MouseCoords& mc)
     {
         if( (*it) == NULL)
             continue;
-        Rect window_rect =
-        {
-            (*it)->x,
-            (*it)->y,
-            (*it)->x + (*it)->GetWidth(),
-            (*it)->y + (*it)->GetHeight()
-        };
+        Rect window_rect = (*it)->GetRect();
         if(Coll(mc.x, mc.y, window_rect))
         {
             if( (*windows.end()) != NULL)

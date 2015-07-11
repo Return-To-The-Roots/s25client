@@ -100,7 +100,7 @@ void AIConstruction::ExecuteJobs(unsigned limit)
 	unsigned i=0; //count up to limit
 	unsigned initconjobs = connectJobs.size()<5?connectJobs.size():5;
 	unsigned initbuildjobs = buildJobs.size()<5?buildJobs.size():5;
-	for(i;i<limit && connectJobs.size() && i < initconjobs ;i++) //go through list, until limit is reached or list empty or when every entry has been checked
+	for(;i<limit && connectJobs.size() && i < initconjobs ;i++) //go through list, until limit is reached or list empty or when every entry has been checked
 	{
 		connectJobs.front()->ExecuteJob();
 		if(connectJobs.front()->GetStatus() != AIJH::JOB_FINISHED && connectJobs.front()->GetStatus() != AIJH::JOB_FAILED) //couldnt do job? -> move to back of list
@@ -115,7 +115,7 @@ void AIConstruction::ExecuteJobs(unsigned limit)
 			delete job;
 		}
 	}	
-	for(i;i<limit && buildJobs.size() && i < (initconjobs+initbuildjobs) ;i++)
+	for(;i<limit && buildJobs.size() && i < (initconjobs+initbuildjobs) ;i++)
 	{
 		buildJobs.front()->ExecuteJob();
 		if(buildJobs.front()->GetStatus() != AIJH::JOB_FINISHED && buildJobs.front()->GetStatus() != AIJH::JOB_FAILED) //couldnt do job? -> move to back of list
@@ -233,9 +233,9 @@ bool AIConstruction::MilitaryBuildingWantsRoad(nobMilitary* milbld, unsigned lis
 {
 	if(milbld->GetFrontierDistance()>0) //close to front or harbor? connect!
 		return true;
-	if(aijh->UpgradeBldListNumber==listpos) // upgrade bld should have road already but just in case it doesnt -> get a road asap
-		return true;
 	if(aijh->UpgradeBldListNumber<0) //no upgrade bld on last update -> connect all that want to connect
+		return true;
+	if(static_cast<unsigned>(aijh->UpgradeBldListNumber)==listpos) // upgrade bld should have road already but just in case it doesnt -> get a road asap
 		return true;
 	if(listpos>(aii->GetMilitaryBuildings().size()-aijh->PlannedConnectedInlandMilitary()))
 		return true;

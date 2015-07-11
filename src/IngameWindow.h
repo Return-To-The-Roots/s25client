@@ -99,6 +99,9 @@ class IngameWindow : public Window
         bool last_down2;
         ButtonState button_state[2];
 
+        Rect GetLeftButtonRect()  const { Rect rect = {x, y, static_cast<unsigned short>(x + 16), static_cast<unsigned short>(y + 16)}; return rect; }
+        Rect GetRightButtonRect() const { Rect rect = {static_cast<unsigned short>(x + width - 16), y, static_cast<unsigned short>(x + width), static_cast<unsigned short>(y + 16)}; return rect; }
+
     private:
         bool modal;
         bool closeme;

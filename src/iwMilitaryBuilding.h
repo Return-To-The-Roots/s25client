@@ -31,8 +31,8 @@ class iwMilitaryBuilding : public IngameWindow
 {
     private:
         nobMilitary* const building;
-        GameWorldViewer* const gwv;
 		dskGameInterface* const gi;
+        GameWorldViewer* const gwv;
 
     public:
         iwMilitaryBuilding(GameWorldViewer* const gwv, dskGameInterface* const gi, nobMilitary* const building);
