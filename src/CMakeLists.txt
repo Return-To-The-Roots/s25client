@@ -295,6 +295,11 @@ SET(SOURCES_OTHER
 	WindowManager.cpp                   WindowManager.h
 	FOWObjects.cpp                      FOWObjects.h
 	PostMsg.cpp                         PostMsg.h
+	win32_nanosleep.cpp                 win32_nanosleep.h
+	Debug.cpp                           Debug.h
+   )
+
+SET(SOURCES_ADDONS
 	Addons.cpp                          Addons.h
 										AddonAsyncDebug.h
 										AddonChangeGoldDeposits.h
@@ -329,9 +334,7 @@ SET(SOURCES_OTHER
 										AddonHalfCostMilEquip.h
 										AddonMilitaryControl.h
 										const_addons.h
-	win32_nanosleep.cpp                 win32_nanosleep.h
-	Debug.cpp                           Debug.h
-   )
+	)
 
 SET(SOURCES_GL
 	glAllocator.cpp                     glAllocator.h
@@ -407,11 +410,24 @@ SET(s25client_SRCS
 	${SOURCES_BZIP}
 	${SOURCES_INGAMEWINDOWS}
 	${SOURCES_OTHER}
+	${SOURCES_ADDONS}
 	${SOURCES_AI}
 	${SOURCES_NO}
 	${SOURCES_NOB}
 	${SOURCES_NOF}
 )
+
+source_group(controls FILES ${SOURCES_CONTROLS})
+source_group(desktops FILES ${SOURCES_DESKTOPS})
+source_group(GL FILES ${SOURCES_GL})
+source_group(BZIP FILES ${SOURCES_BZIP})
+source_group(ingameWindows FILES ${SOURCES_INGAMEWINDOWS})
+source_group(other FILES ${SOURCES_OTHER})
+source_group(addons FILES ${SOURCES_ADDONS})
+source_group(AI FILES ${SOURCES_AI})
+source_group(NodeObjects FILES ${SOURCES_NO})
+source_group(noBuildings FILES ${SOURCES_NOB})
+source_group(noFigures FILES ${SOURCES_NOF})
 
 IF ( "${COMPILEFOR}" STREQUAL "windows" AND NOT ${CMAKE_HOST_SYSTEM_NAME} MATCHES "Windows")
 	ADD_DEFINITIONS("-DAFX_TARG_DEU")
