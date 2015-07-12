@@ -26,7 +26,7 @@
 
 #ifdef _WIN32
 #include "../../../../win32/resource.h"
-#include <SDL/SDL_syswm.h>
+#include <SDL_syswm.h>
 #endif // _WIN32
 
 ///////////////////////////////////////////////////////////////////////////////

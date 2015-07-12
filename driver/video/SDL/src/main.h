@@ -44,10 +44,6 @@
 #include <ctype.h>
 #include <algorithm>
 
-#ifdef __APPLE__
 #include <SDL.h>
-#else
-#include <SDL/SDL.h>
-#endif // !__APPLE__
 
 #endif // !MAIN_H_INCLUDED

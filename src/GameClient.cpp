@@ -20,6 +20,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Header
 #include "main.h"
+#include <build_version.h>
 #include "GameClient.h"
 
 #include "GameManager.h"

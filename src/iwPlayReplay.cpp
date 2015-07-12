@@ -206,5 +206,9 @@ void iwPlayReplay::FillReplayTable(const std::string& filename, void* param)
 void iwPlayReplay::RemoveReplay(const std::string& filename, void* param)
 {
     // und tschüss
-    unlink(filename.c_str());
+#ifdef _MSC_VER
+	_unlink(filename.c_str());
+#else
+	unlink(filename.c_str());
+#endif // _MSC_VER
 }

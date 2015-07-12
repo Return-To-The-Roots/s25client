@@ -191,7 +191,11 @@ void iwMusicPlayer::Msg_ButtonClick(const unsigned int ctrl_id)
                     return;
                 }
 
-                unlink(GetFullPlaylistPath(str).c_str());
+#ifdef _MSC_VER
+				_unlink(GetFullPlaylistPath(str).c_str());
+#else
+				unlink(GetFullPlaylistPath(str).c_str());
+#endif
                 this->UpdatePlaylistCombo(SETTINGS.sound.playlist);
             }
         } break;

@@ -135,7 +135,7 @@ typedef int socklen_t;
 ///////////////////////////////////////////////////////////////////////////////
 // Eigene Header
 #include <build_paths.h>
-#include <build_version.h>
+//#include <build_version.h>
 #include "../libutil/src/libutil.h"
 #include "../mygettext/src/mygettext.h"
 #include "../liblobby/src/liblobby.h"

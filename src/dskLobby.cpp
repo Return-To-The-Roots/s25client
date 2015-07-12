@@ -20,6 +20,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Header
 #include "main.h"
+#include <build_version.h>
 #include "dskLobby.h"
 
 #include "WindowManager.h"

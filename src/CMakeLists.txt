@@ -8,7 +8,15 @@ FIND_PACKAGE(Gettext REQUIRED)
 
 ################################################################################
 
-INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}" "${CMAKE_SOURCE_DIR}/liblobby/src/" "${CMAKE_SOURCE_DIR}/libutil/src/" "${CMAKE_SOURCE_DIR}/mygettext/src/" "${CMAKE_SOURCE_DIR}/libsiedler2/src/" "${CMAKE_SOURCE_DIR}/libendian/src/")
+INCLUDE_DIRECTORIES(
+					"${CMAKE_SOURCE_DIR}"
+					"${CMAKE_SOURCE_DIR}/liblobby/src/"
+					"${CMAKE_SOURCE_DIR}/libutil/src/"
+					"${CMAKE_SOURCE_DIR}/mygettext/src/"
+					"${CMAKE_SOURCE_DIR}/libsiedler2/src/"
+					"${CMAKE_SOURCE_DIR}/libendian/src/"
+					${BZIP2_INCLUDE_DIR}
+					)
 LINK_DIRECTORIES("${CMAKE_SOURCE_DIR}/libsiedler2/src" "${CMAKE_SOURCE_DIR}/mygettext/src" "${CMAKE_SOURCE_DIR}/libutil/src" "${CMAKE_SOURCE_DIR}/liblobby/src" "${CMAKE_SOURCE_DIR}/libendian/src")
 
 ################################################################################
@@ -389,10 +397,10 @@ IF ( "${COMPILEFOR}" STREQUAL "windows" )
 ENDIF ( "${COMPILEFOR}" STREQUAL "windows" )
 
 INCLUDE(AddFileDependencies)
-ADD_FILE_DEPENDENCIES(../build_version.cpp ${CMAKE_BINARY_DIR}/build_version.h)
+ADD_FILE_DEPENDENCIES(${PROJECT_SOURCE_DIR}/build_version.cpp ${CMAKE_BINARY_DIR}/build_version.h)
 
 SET(s25client_SRCS
-	../build_version.cpp
+	${PROJECT_SOURCE_DIR}/build_version.cpp
 	${SOURCES_CONTROLS}
 	${SOURCES_DESKTOPS}
 	${SOURCES_GL}
@@ -405,7 +413,7 @@ SET(s25client_SRCS
 	${SOURCES_NOF}
 )
 
-IF ( "${COMPILEFOR}" STREQUAL "windows")
+IF ( "${COMPILEFOR}" STREQUAL "windows" AND NOT ${CMAKE_HOST_SYSTEM_NAME} MATCHES "Windows")
 	ADD_DEFINITIONS("-DAFX_TARG_DEU")
 
 	IF ( "${COMPILEARCH}" STREQUAL "i386" )
@@ -421,7 +429,7 @@ IF ( "${COMPILEFOR}" STREQUAL "windows")
 	SET(s25client_SRCS ${s25client_SRCS} ${CMAKE_CURRENT_BINARY_DIR}/s25client.res.o)
 
 	ADD_FLAGS(CMAKE_EXE_LINKER_FLAGS -Wl,--stack,8388608)
-ENDIF ( "${COMPILEFOR}" STREQUAL "windows")
+ENDIF ( "${COMPILEFOR}" STREQUAL "windows" AND NOT ${CMAKE_HOST_SYSTEM_NAME} MATCHES "Windows")
 
 IF ( "${COMPILEFOR}" STREQUAL "apple")
 	CORRECT_LIB(OPENGL_gl_LIBRARY OpenGL)
@@ -470,31 +478,40 @@ ENDIF ()
 MESSAGE(STATUS "Checking LUA library at ${LUA_LIB}")
 IF ( NOT EXISTS "${LUA_LIB}" )
 	SET(LUA_LIB "/usr/lib/liblua5.2.a")
-	ADD_FLAGS(CMAKE_C_FLAGS -I/usr/include/lua5.2)
-	ADD_FLAGS(CMAKE_CXX_FLAGS -I/usr/include/lua5.2)
+	INCLUDE_DIRECTORIES("/usr/include/lua5.2")
 ENDIF ( NOT EXISTS "${LUA_LIB}" )
 
 IF ( NOT EXISTS "${LUA_LIB}" )
 	SET(LUA_LIB "/usr/lib/liblua.so")
-	ADD_FLAGS(CMAKE_C_FLAGS -I/usr/include/)
-	ADD_FLAGS(CMAKE_CXX_FLAGS -I/usr/include/)
+	INCLUDE_DIRECTORIES("/usr/include/")
 ENDIF ( NOT EXISTS "${LUA_LIB}" )
 
 MESSAGE(STATUS "Using LUA library from ${LUA_LIB}")
 
-ADD_FLAGS(CMAKE_C_FLAGS -I${LUA_DIR}/include)
-ADD_FLAGS(CMAKE_CXX_FLAGS -I${LUA_DIR}/include)
+INCLUDE_DIRECTORIES("${LUA_DIR}/include")
 
 ################################################################################
 
-ADD_EXECUTABLE(s25client ${s25client_SRCS})
+IF (MSVC)
+	SET(s25client_RC "${CMAKE_CURRENT_SOURCE_DIR}/../win32/s25client.rc")
+	SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /MANIFEST:NO")
+	# disable warning 4267: 'var' : conversion from 'size_t' to 'type', possible loss of data
+	ADD_DEFINITIONS(/wd"4267")
+	ADD_DEFINITIONS(/WX) # warning = error
+	ADD_DEFINITIONS(/MP) # parallel compilation
+ELSE()
+	SET(s25client_RC "")
+ENDIF()
+
+ADD_EXECUTABLE(s25client ${s25client_SRCS} ${s25client_RC})
+ADD_DEPENDENCIES(s25client updateversion)
 TARGET_LINK_LIBRARIES(s25client
 	siedler2
 	lobby_c
 	s25util
 	mygettext
 	${BZIP2_LIBRARIES}
-	pthread
+	#pthread
 	${OPENGL_gl_LIBRARY}
 	${LUA_LIB}
 )
@@ -505,12 +522,31 @@ IF ( "${COMPILEFOR}" STREQUAL "apple")
 ENDIF ( "${COMPILEFOR}" STREQUAL "apple")
 
 IF ( "${COMPILEFOR}" STREQUAL "windows")
-	TARGET_LINK_LIBRARIES(s25client ole32 ws2_32 shlwapi bz2 bfd iberty imagehlp ${TARGET_LINK_LIBRARIES} )
+	IF (NOT MSVC)
+		SET(ADD_LIBS "bfd iberty")
+	ELSE()
+		SET(ADD_LIBS "")
+	ENDIF()
+	TARGET_LINK_LIBRARIES(s25client ole32 ws2_32 shlwapi imagehlp ${ADD_LIBS} ${TARGET_LINK_LIBRARIES} )
 ENDIF ( "${COMPILEFOR}" STREQUAL "windows")
 
 IF ( "${COMPILEFOR}" STREQUAL "linux")
 	TARGET_LINK_LIBRARIES(s25client dl ${TARGET_LINK_LIBRARIES} )
 ENDIF ( "${COMPILEFOR}" STREQUAL "linux")
+
+IF (MSVC)
+	SET_TARGET_PROPERTIES(s25client PROPERTIES
+		RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_CURRENT_BINARY_DIR}/.."
+		RUNTIME_OUTPUT_DIRECTORY_DEBUG "${CMAKE_CURRENT_BINARY_DIR}/.."
+	)
+	SET(CONTRIB_DLL_DIR "${CMAKE_SOURCE_DIR}/contrib/bin" CACHE PATH "Path to dll files from contrib package")
+	IF (EXISTS "${CONTRIB_DLL_DIR}/libcurl.dll")
+		ADD_CUSTOM_COMMAND(TARGET s25client POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CONTRIB_DLL_DIR} $<TARGET_FILE_DIR:s25client>)
+	ELSE()
+		MESSAGE(WARNING "Folder with DLLs not found. You may not be able to execute directly from VS")
+	ENDIF()
+	ADD_CUSTOM_COMMAND(TARGET s25client POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/RTTR" "$<TARGET_FILE_DIR:s25client>/RTTR")
+ENDIF()
 
 INSTALL(TARGETS s25client RUNTIME DESTINATION ${BINDIR})
 

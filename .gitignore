@@ -43,3 +43,8 @@ GFX
 /build/cmake_install.cmake
 /build/postinstall.sh
 /build/preinstall.sh
+/build/RTTR
+/build/*.dll
+/build/*.exe
+/build/*.pdb
+/build/*.ilk

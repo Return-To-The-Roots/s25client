@@ -51,13 +51,8 @@
 #include <string.h>
 #include <ctype.h>
 
-#ifdef __APPLE__
 #include <SDL.h>
 #include <SDL_mixer.h>
-#else
-#include <SDL/SDL.h>
-#include <SDL/SDL_mixer.h>
-#endif // !__APPLE__
 
 
 ///////////////////////////////////////////////////////////////////////////////
