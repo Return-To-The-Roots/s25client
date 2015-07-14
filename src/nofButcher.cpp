@@ -48,7 +48,7 @@ nofButcher::nofButcher(SerializedGameData* sgd, const unsigned obj_id) : nofWork
 
 void nofButcher::DrawWorking(int x, int y)
 {
-    signed char offsets[NATION_COUNT][2] = { {38, 2}, { -3, 5}, {21, -1}, {26, -5}, { -7, 2} };
+    signed char offsets[NAT_COUNT][2] = { {38, 2}, { -3, 5}, {21, -1}, {26, -5}, { -7, 2} };
 
     unsigned now_id;
 

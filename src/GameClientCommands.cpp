@@ -85,7 +85,7 @@ void GameClient::Command_Chat(const std::string& text, const ChatDestination cd)
 void GameClient::Command_ToggleNation()
 {
     send_queue.push(new GameMessage_Player_Toggle_Nation
-                    (0xff, Nation((this->GetLocalPlayer()->nation + 1) % NATION_COUNT)));
+                    (0xff, Nation((this->GetLocalPlayer()->nation + 1) % NAT_COUNT)));
 }
 
 ///////////////////////////////////////////////////////////////////////////////

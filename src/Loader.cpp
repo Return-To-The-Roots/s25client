@@ -414,10 +414,10 @@ bool Loader::SaveSettings()
 glSmartBitmap Loader::animal_cache[SPEC_COUNT][6][ANIMAL_MAX_ANIMATION_STEPS + 1] = {{{glSmartBitmap()}}};
 
 // building_cache[nation][type][skeleton?]
-glSmartBitmap Loader::building_cache[NATION_COUNT][BUILDING_TYPES_COUNT][2] = {{{glSmartBitmap()}}};
+glSmartBitmap Loader::building_cache[NAT_COUNT][BUILDING_TYPES_COUNT][2] = {{{glSmartBitmap()}}};
 
 // flag_cache[nation][type][animation]
-glSmartBitmap Loader::flag_cache[NATION_COUNT][3][8] = {{{glSmartBitmap()}}};
+glSmartBitmap Loader::flag_cache[NAT_COUNT][3][8] = {{{glSmartBitmap()}}};
 
 glSmartBitmap Loader::building_flag_cache[8] = {glSmartBitmap()};
 
@@ -425,7 +425,7 @@ glSmartBitmap Loader::building_flag_cache[8] = {glSmartBitmap()};
 glSmartBitmap Loader::tree_cache[9][15] = {{glSmartBitmap()}};
 
 // Bobs from jobs.bob: bob_jobs_cache[nation][job][direction][animation]
-glSmartBitmap Loader::bob_jobs_cache[NATION_COUNT][JOB_TYPES_COUNT + 1][6][8];
+glSmartBitmap Loader::bob_jobs_cache[NAT_COUNT][JOB_TYPES_COUNT + 1][6][8];
 
 // Granit - zwei Typen, sechs größen
 glSmartBitmap Loader::granite_cache[2][6];
@@ -437,7 +437,7 @@ glSmartBitmap Loader::grainfield_cache[2][4];
 glSmartBitmap Loader::carrier_cache[WARE_TYPES_COUNT][6][8][2];
 
 // boundary_stone_cache[nation]
-glSmartBitmap Loader::boundary_stone_cache[NATION_COUNT];
+glSmartBitmap Loader::boundary_stone_cache[NAT_COUNT];
 
 // boat_cache[direction][animation_step]
 glSmartBitmap Loader::boat_cache[6][8];
@@ -463,7 +463,7 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool* nations)
 {
     assert(gfxset <= 2);
 
-    const unsigned int files_count = NATIVE_NATION_COUNT + 5 + 6 + 4 + 1 + 1;
+    const unsigned int files_count = NATIVE_NAT_COUNT + 5 + 6 + 4 + 1 + 1;
 
     unsigned int files[files_count] =
     {
@@ -475,11 +475,11 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool* nations)
         20u + gfxset                                     // tex?.lbm
     };
 
-    for(unsigned char i = 0; i < NATIVE_NATION_COUNT; ++i)
+    for(unsigned char i = 0; i < NATIVE_NAT_COUNT; ++i)
     {
         // ggf. Völker-Grafiken laden
         if(nations[i] || ((i == 2) && (nations[4])))
-            files[i] = 27 + i + (gfxset == 2) * NATIVE_NATION_COUNT;
+            files[i] = 27 + i + (gfxset == 2) * NATIVE_NAT_COUNT;
     }
 
     // dateien ggf nur einmal laden - qx: wozu? performance is hier echt egal -> fixing bug #1085693
@@ -505,7 +505,7 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool* nations)
 
 
 
-    for (unsigned int nation = 0; nation < NATION_COUNT; ++nation)
+    for (unsigned int nation = 0; nation < NAT_COUNT; ++nation)
     {
         nation_gfx[nation] = &(this->files[NATION_GFXSET_Z[lastgfx][nation]]);
     }
@@ -571,7 +571,7 @@ void Loader::fillCaches()
 
     glArchivItem_Bob* bob_jobs = LOADER.GetBobN("jobs");
 
-    for (unsigned nation = 0; nation < NATION_COUNT; ++nation)
+    for (unsigned nation = 0; nation < NAT_COUNT; ++nation)
     {
 // BUILDINGS
         for (unsigned type = 0; type < BUILDING_TYPES_COUNT; ++type)
@@ -650,7 +650,7 @@ void Loader::fillCaches()
 
                         if ((job == JOB_SCOUT) || ((job >= JOB_PRIVATE) && (job <= JOB_GENERAL)))
                         {
-                            if (nation < NATIVE_NATION_COUNT)
+                            if (nation < NATIVE_NAT_COUNT)
                             {
                                 id += NATION_RTTR_TO_S2[nation] * 6;
                             }
@@ -663,7 +663,7 @@ void Loader::fillCaches()
                                                                 overlayOffset = (job == JOB_SCOUT) ? 1740 : 1655;
 
                                                                 //8 Frames * 6 Directions * 6 Types
-                                                                overlayOffset += (nation - NATIVE_NATION_COUNT) * (8 * 6 * 6);
+                                                                overlayOffset += (nation - NATIVE_NAT_COUNT) * (8 * 6 * 6);
                                 */
                             }
                         }

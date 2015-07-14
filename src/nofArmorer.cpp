@@ -57,7 +57,7 @@ nofArmorer::nofArmorer(SerializedGameData* sgd, const unsigned obj_id) : nofWork
 
 void nofArmorer::DrawWorking(int x, int y)
 {
-    signed char offsets[NATION_COUNT][2] = { { -10, 15}, { -11, 9}, { -14, 16}, { -19, 1}, { -11, 9} };
+    signed char offsets[NAT_COUNT][2] = { { -10, 15}, { -11, 9}, { -14, 16}, { -19, 1}, { -11, 9} };
 
     unsigned int max_id = 280;
     unsigned now_id = GAMECLIENT.Interpolate(max_id, current_ev);

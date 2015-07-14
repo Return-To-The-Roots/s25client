@@ -50,8 +50,8 @@ nofPigbreeder::nofPigbreeder(SerializedGameData* sgd, const unsigned obj_id) : n
 void nofPigbreeder::DrawWorking(int x, int y)
 {
     //148
-    signed char offsets[NATION_COUNT][2] = { {10, 2}, {10, 2}, {10, 2}, {10, 2}, {10, 2} };
-    signed char walkstart[NATION_COUNT][2] = { { -6, -6}, { -6, -6}, { -6, -6}, { -6, -6}, { -6, -6} };
+    signed char offsets[NAT_COUNT][2] = { {10, 2}, {10, 2}, {10, 2}, {10, 2}, {10, 2} };
+    signed char walkstart[NAT_COUNT][2] = { { -6, -6}, { -6, -6}, { -6, -6}, { -6, -6}, { -6, -6} };
 
     unsigned int max_id = 240;
     int now_id = GAMECLIENT.Interpolate(max_id, current_ev);

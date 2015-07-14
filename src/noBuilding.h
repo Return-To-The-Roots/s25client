@@ -31,9 +31,6 @@ class noBuilding : public noBaseBuilding
         /// Gibt an, wie viele Leute die Tür geöffnet haben (wenns 0 ist, ist die Tür zu, ansonsten offen)
         unsigned char opendoor;
 
-    public:
-
-
         noBuilding(const BuildingType type, const unsigned short x, const unsigned short y, const unsigned char player, const Nation nation);
         noBuilding(SerializedGameData* sgd, const unsigned obj_id);
 

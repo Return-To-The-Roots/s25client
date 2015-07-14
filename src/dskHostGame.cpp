@@ -304,7 +304,7 @@ void dskHostGame::UpdatePlayerRow(const unsigned row)
         if(((GAMECLIENT.IsHost() && player->ps == PS_KI) || GAMECLIENT.GetPlayerID() == row) && !GAMECLIENT.IsSavegame())
         {
             // Volk
-            group->AddTextButton( 3, 240, cy, 90, 22, tc, _("Africans"), NormalFont);
+            group->AddTextButton( 3, 240, cy, 90, 22, tc, _(NationNames[0]), NormalFont);
             // Farbe
             group->AddColorButton( 4, 340, cy, 30, 22, tc, 0);
             // Team
@@ -313,7 +313,7 @@ void dskHostGame::UpdatePlayerRow(const unsigned row)
         else
         {
             // Volk
-            group->AddDeepening( 3, 240, cy, 90, 22, tc, _("Africans"), NormalFont, COLOR_YELLOW);
+            group->AddDeepening( 3, 240, cy, 90, 22, tc, _(NationNames[0]), NormalFont, COLOR_YELLOW);
             // Farbe
             group->AddColorDeepening( 4, 340, cy, 30, 22, tc, 0);
             // Team
@@ -400,7 +400,7 @@ void dskHostGame::Msg_Group_ButtonClick(const unsigned int group_id, const unsig
             if(player_id == GAMECLIENT.GetPlayerID())
             {
                 GAMECLIENT.Command_ToggleNation();
-                GAMECLIENT.GetLocalPlayer()->nation = Nation((unsigned(GAMECLIENT.GetLocalPlayer()->nation) + 1) % NATION_COUNT);
+                GAMECLIENT.GetLocalPlayer()->nation = Nation((unsigned(GAMECLIENT.GetLocalPlayer()->nation) + 1) % NAT_COUNT);
                 ChangeNation(GAMECLIENT.GetPlayerID(), GAMECLIENT.GetLocalPlayer()->nation);
             }
         } break;
@@ -830,9 +830,7 @@ void dskHostGame::ChangeReady(const unsigned int player, const bool ready)
  */
 void dskHostGame::ChangeNation(const unsigned i, const Nation nation)
 {
-    const std::string nations[NATION_COUNT] =
-    { _("Africans"), _("Japaneses"), _("Romans"), _("Vikings"), _("Babylonians") };
-    GetCtrl<ctrlGroup>(58 - i)->GetCtrl<ctrlBaseText>(3)->SetText(nations[nation]);
+    GetCtrl<ctrlGroup>(58 - i)->GetCtrl<ctrlBaseText>(3)->SetText(_(NationNames[nation]));
 }
 
 ///////////////////////////////////////////////////////////////////////////////

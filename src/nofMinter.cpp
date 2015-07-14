@@ -52,7 +52,7 @@ nofMinter::nofMinter(SerializedGameData* sgd, const unsigned obj_id) : nofWorkma
 
 void nofMinter::DrawWorking(int x, int y)
 {
-    signed char offsets[NATION_COUNT][2] = { {19, -20}, {19, -11}, {22, -12}, {28, 1}, {16, -12} };
+    signed char offsets[NAT_COUNT][2] = { {19, -20}, {19, -11}, {22, -12}, {28, 1}, {16, -12} };
 
     unsigned now_id = GAMECLIENT.Interpolate(136, current_ev);
 

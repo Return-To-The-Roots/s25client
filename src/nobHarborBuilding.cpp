@@ -250,15 +250,15 @@ nobHarborBuilding::nobHarborBuilding(SerializedGameData* sgd, const unsigned obj
 }
 
 // Relative Position des Bauarbeiters
-const Point<int> BUILDER_POS[NATION_COUNT] = { Point<int>(0, 18), Point<int>(-8, 17), Point<int>(0, 15), Point<int>(-18, 17), Point<int>(-18, 17) };
+const Point<int> BUILDER_POS[NAT_COUNT] = { Point<int>(0, 18), Point<int>(-8, 17), Point<int>(0, 15), Point<int>(-18, 17), Point<int>(-18, 17) };
 /// Relative Position der Brettertürme
-const Point<int> BOARDS_POS[NATION_COUNT] = { Point<int>(-70, -5), Point<int>(-55, -5), Point<int>(-50, -5), Point<int>(-60, -5), Point<int>(-60, -5) };
+const Point<int> BOARDS_POS[NAT_COUNT] = { Point<int>(-70, -5), Point<int>(-55, -5), Point<int>(-50, -5), Point<int>(-60, -5), Point<int>(-60, -5) };
 /// Relative Position der Steintürme
-const Point<int> STONES_POS[NATION_COUNT] = { Point<int>(-73, 10), Point<int>(-60, 10), Point<int>(-50, 10), Point<int>(-60, 10), Point<int>(-60, 10) };
+const Point<int> STONES_POS[NAT_COUNT] = { Point<int>(-73, 10), Point<int>(-60, 10), Point<int>(-50, 10), Point<int>(-60, 10), Point<int>(-60, 10) };
 /// Relative Postion der inneren Hafenfeuer
-const Point<int> FIRE_POS[NATION_COUNT] = { Point<int>(36, -51), Point<int>(0, 0), Point<int>(0, 0), Point<int>(5, -80), Point<int>(0, 0) };
+const Point<int> FIRE_POS[NAT_COUNT] = { Point<int>(36, -51), Point<int>(0, 0), Point<int>(0, 0), Point<int>(5, -80), Point<int>(0, 0) };
 /// Relative Postion der äußeren Hafenfeuer
-const Point<int> EXTRAFIRE_POS[NATION_COUNT] = { Point<int>(0, 0), Point<int>(0, 0), Point<int>(8, -115), Point<int>(0, 0), Point<int>(0, 0) };
+const Point<int> EXTRAFIRE_POS[NAT_COUNT] = { Point<int>(0, 0), Point<int>(0, 0), Point<int>(8, -115), Point<int>(0, 0), Point<int>(0, 0) };
 
 void nobHarborBuilding::Draw(int x, int y)
 {

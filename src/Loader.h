@@ -24,6 +24,7 @@
 #include "../libutil/src/Singleton.h"
 #include "../libsiedler2/src/libsiedler2.h"
 #include "const_addons.h"
+#include "NationConsts.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -92,7 +93,7 @@ class Loader : public Singleton<Loader>
     private:
         std::map<std::string, libsiedler2::ArchivInfo> files;
         unsigned char lastgfx;
-        libsiedler2::ArchivInfo* nation_gfx[NATION_COUNT];
+        libsiedler2::ArchivInfo* nation_gfx[NAT_COUNT];
         libsiedler2::ArchivInfo* map_gfx;
         libsiedler2::ArchivInfo* tex_gfx;
 
@@ -109,15 +110,15 @@ class Loader : public Singleton<Loader>
         glSmartTexturePacker* stp;
 
         static glSmartBitmap animal_cache[8][6][9];
-        static glSmartBitmap building_cache[NATION_COUNT][40][2];
-        static glSmartBitmap flag_cache[NATION_COUNT][3][8];
+        static glSmartBitmap building_cache[NAT_COUNT][40][2];
+        static glSmartBitmap flag_cache[NAT_COUNT][3][8];
         static glSmartBitmap building_flag_cache[8];
         static glSmartBitmap tree_cache[9][15];
-        static glSmartBitmap bob_jobs_cache[NATION_COUNT][33][6][8];
+        static glSmartBitmap bob_jobs_cache[NAT_COUNT][33][6][8];
         static glSmartBitmap granite_cache[2][6];
         static glSmartBitmap grainfield_cache[2][4];
         static glSmartBitmap carrier_cache[35][6][8][2];
-        static glSmartBitmap boundary_stone_cache[NATION_COUNT];
+        static glSmartBitmap boundary_stone_cache[NAT_COUNT];
         static glSmartBitmap boat_cache[6][8];
         static glSmartBitmap donkey_cache[6][8];
         static glSmartBitmap gateway_cache[5];

@@ -220,7 +220,7 @@ dskCredits::dskCredits(void) : Desktop(LOADER.GetImageN("setup013", 0))
     this->entries.push_back(entry);
     entry.lines.clear();
 
-    bool nations[NATION_COUNT] = { true, true, true, true, false };
+    bool nations[NAT_COUNT] = { true, true, true, true, false };
 
     LOADER.LoadFilesAtGame(0, nations);
 

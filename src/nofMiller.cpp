@@ -55,8 +55,8 @@ nofMiller::nofMiller(SerializedGameData* sgd, const unsigned obj_id) : nofWorkma
 
 void nofMiller::DrawWorking(int x, int y)
 {
-    signed char offsets[NATION_COUNT][2] = { {20, 8}, {20, 8}, {20, 8}, {20, 8}, {20, 8} };
-    signed char offsets_sitdown[NATION_COUNT][2] = { {23, 8}, {23, 8}, {23, 8}, {23, 8}, {23, 8} };
+    signed char offsets[NAT_COUNT][2] = { {20, 8}, {20, 8}, {20, 8}, {20, 8}, {20, 8} };
+    signed char offsets_sitdown[NAT_COUNT][2] = { {23, 8}, {23, 8}, {23, 8}, {23, 8}, {23, 8} };
     signed char walkoffsets[8][2] = { {8, 8}, {10, 9}, {12, 10}, {14, 11}, {16, 10}, {18, 9}, {20, 8}, {22, 8} };
 
     unsigned int max_id = 120;

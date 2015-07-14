@@ -48,7 +48,7 @@ nofCarpenter::nofCarpenter(SerializedGameData* sgd, const unsigned obj_id) : nof
 
 void nofCarpenter::DrawWorking(int x, int y)
 {
-    signed char offsets[NATION_COUNT][2] = { {30, 3}, {38, 3}, {30, 8}, {17, -2}, {38, 3} };
+    signed char offsets[NAT_COUNT][2] = { {30, 3}, {38, 3}, {30, 8}, {17, -2}, {38, 3} };
 
     unsigned now_id;
 

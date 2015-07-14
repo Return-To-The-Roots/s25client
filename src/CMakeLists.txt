@@ -271,6 +271,7 @@ SET(SOURCES_OTHER
 	Minimap.cpp                         Minimap.h
 										MinimapConsts.h
 	MusicPlayer.cpp                     MusicPlayer.h
+										NationConsts.h
 										NodalObjectTypes.h
 										Node.h
 	DriverWrapper.cpp                   DriverWrapper.h

@@ -48,7 +48,7 @@ nofBrewer::nofBrewer(SerializedGameData* sgd, const unsigned obj_id) : nofWorkma
 
 void nofBrewer::DrawWorking(int x, int y)
 {
-    signed char offsets[NATION_COUNT][2] = { {10, 17}, {10, 17}, {10, 17}, {10, 17}, {10, 17} };
+    signed char offsets[NAT_COUNT][2] = { {10, 17}, {10, 17}, {10, 17}, {10, 17}, {10, 17} };
 
     unsigned now_id = GAMECLIENT.Interpolate(128, current_ev);
 

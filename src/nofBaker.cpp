@@ -50,8 +50,8 @@ nofBaker::nofBaker(SerializedGameData* sgd, const unsigned obj_id) : nofWorkman(
 
 void nofBaker::DrawWorking(int x, int y)
 {
-    signed char offsets[NATION_COUNT][2] = { {40, -4}, { -16, 8}, { -5, 9}, { -8, 7}, { -16, 8} };
-    signed char walkoffsets[NATION_COUNT][8][2] =   //nation, schrit, x-y
+    signed char offsets[NAT_COUNT][2] = { {40, -4}, { -16, 8}, { -5, 9}, { -8, 7}, { -16, 8} };
+    signed char walkoffsets[NAT_COUNT][8][2] =   //nation, schrit, x-y
     {
         { {10, 10}, {17, 12}, {24, 14}, {32, 14}, {34, 9}, {36, 4}, {38, -1}, {40, -4} },
         { {9, 11}, {11, 13}, {7, 17}, {3, 20}, { -1, 17}, { -5, 14}, { -9, 12}, { -13, 10} },
@@ -59,7 +59,7 @@ void nofBaker::DrawWorking(int x, int y)
         { {9, 11}, {11, 13}, {9, 15}, {7, 17}, {4, 15}, {1, 13}, { -2, 11}, { -5, 9} },
         { {9, 11}, {11, 13}, {7, 17}, {3, 20}, { -1, 17}, { -5, 14}, { -9, 12}, { -13, 10} }
     };
-    signed char walkdirection[NATION_COUNT][6] =
+    signed char walkdirection[NAT_COUNT][6] =
     {
         {3, 3, 2, 5, 0, 0},
         {4, 5, 0, 3, 2, 1},

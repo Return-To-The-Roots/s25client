@@ -23,7 +23,7 @@
 
 // Konstanten für den Punkt, ab dem die Träger "verschwinden" bei einem Gebäude, jeweils als Y-Angabe
 
-const signed char DOOR_CONSTS[NATION_COUNT][40] =
+const signed char DOOR_CONSTS[NAT_COUNT][40] =
 {
     // Nubier
     {

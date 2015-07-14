@@ -43,7 +43,7 @@ const unsigned MAX_ATTACKING_RUN_DISTANCE = 40;
 const unsigned MEET_FOR_FIGHT_DISTANCE = 5;
 
 /// Besatzung in den einzelnen Militärgebäuden und nach Nation
-const int TROOPS_COUNT[NATION_COUNT][4] =
+const int TROOPS_COUNT[NAT_COUNT][4] =
 {
     {2, 3, 6, 9},
     {2, 3, 6, 9},
@@ -53,7 +53,7 @@ const int TROOPS_COUNT[NATION_COUNT][4] =
 };
 
 /// Gold in den einzelnen Militärgebäuden und nach Nation
-const unsigned short GOLD_COUNT[NATION_COUNT][4] =
+const unsigned short GOLD_COUNT[NAT_COUNT][4] =
 {
     {1, 2, 4, 6},
     {1, 2, 4, 6},
@@ -72,7 +72,7 @@ const unsigned HARBOR_ALONE_RADIUS = 8;
 /// Fahnenpositionen bei den Militärgebäuden
 
 // Besatzungsflaggen (4 Völker x 4 GröÃen x 2 X+Y) - ab 3162
-const signed char TROOPS_FLAGS[NATION_COUNT][4][2] =
+const signed char TROOPS_FLAGS[NAT_COUNT][4][2] =
 {
     {{24, -41}, {19, -41}, {31, -88}, {35, -67}},
     {{ -9, -49}, {14, -59}, {16, -63}, {0, -44}},
@@ -98,13 +98,13 @@ const unsigned MILITARY_SETTINGS_SCALE[MILITARY_SETTINGS_COUNT] =
 };
 
 // Besatzungsflaggen für die HQs
-const signed char TROOPS_FLAGS_HQ[NATION_COUNT][2] =
+const signed char TROOPS_FLAGS_HQ[NAT_COUNT][2] =
 {
     { -12, -102}, { -19, -94}, { -18, -112}, {20, -54}, { -33, -81}
 };
 
 /// Grenzflaggen (4 Völker x 4 GröÃen x 2 X+Y) - ab 3162
-const signed char BORDER_FLAGS[NATION_COUNT][4][2] =
+const signed char BORDER_FLAGS[NAT_COUNT][4][2] =
 {
     {{ -6, -36}, {7, -48}, { -18, -28}, { -47, -64}},
     {{17, -45}, { -3, -49}, { -30, -25}, {22, -53}},
@@ -115,7 +115,7 @@ const signed char BORDER_FLAGS[NATION_COUNT][4][2] =
 
 
 /// maximale Hitpoints der Soldaten von jedem Volk
-const unsigned char HITPOINTS[NATION_COUNT][5] =
+const unsigned char HITPOINTS[NAT_COUNT][5] =
 {
     {3, 4, 5, 6, 7},
     {3, 4, 5, 6, 7},
@@ -163,7 +163,7 @@ struct FightAnimation
 
 
 /// Diese gibts für alle beiden Richtung, für alle 5 Ränge und jweils nochmal für alle 4 Völker
-const FightAnimation FIGHT_ANIMATIONS[NATION_COUNT][5][2] =
+const FightAnimation FIGHT_ANIMATIONS[NAT_COUNT][5][2] =
 {
     // Nubier
     {
@@ -466,7 +466,7 @@ const FightAnimation FIGHT_ANIMATIONS[NATION_COUNT][5][2] =
 };
 
 /// IDs für die getroffenen (aufleuchtenden) Soldaten für jedes Volk
-const unsigned short HIT_SOLDIERS[NATION_COUNT][5] =
+const unsigned short HIT_SOLDIERS[NAT_COUNT][5] =
 {
     {1556, 1558, 1560, 1562, 1564},
     {1143, 1145, 1147, 1149, 1147},

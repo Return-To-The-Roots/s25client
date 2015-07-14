@@ -52,7 +52,7 @@ nofMetalworker::nofMetalworker(SerializedGameData* sgd, const unsigned obj_id) :
 
 void nofMetalworker::DrawWorking(int x, int y)
 {
-    signed char offsets[NATION_COUNT][2] = { { -11, -13}, {31, 5}, {32, 6}, {30, 10}, {28, 5} };
+    signed char offsets[NAT_COUNT][2] = { { -11, -13}, {31, 5}, {32, 6}, {30, 10}, {28, 5} };
 
     unsigned now_id;
 

@@ -101,7 +101,7 @@ void dskGameLoader::Msg_MsgBoxResult(const unsigned int msgbox_id, const MsgboxR
  */
 void dskGameLoader::Msg_Timer(const unsigned int ctrl_id)
 {
-    static bool load_nations[NATION_COUNT];
+    static bool load_nations[NAT_COUNT];
 
     ctrlTimer* timer = GetCtrl<ctrlTimer>(1);
     ctrlText* text = GetCtrl<ctrlText>(10 + position);
@@ -125,7 +125,7 @@ void dskGameLoader::Msg_Timer(const unsigned int ctrl_id)
 
         case 2: // Nationen ermitteln
         {
-            memset(load_nations, 0, sizeof(bool) * NATION_COUNT);
+            memset(load_nations, 0, sizeof(bool) * NAT_COUNT);
             for(unsigned char i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
                 load_nations[GAMECLIENT.GetPlayer(i)->nation] = true;
 

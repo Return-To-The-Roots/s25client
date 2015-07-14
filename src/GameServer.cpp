@@ -796,7 +796,7 @@ void GameServer::TogglePlayerNation(unsigned char client)
         return;
 
     // Nation wechseln
-    OnNMSPlayerToggleNation(GameMessage_Player_Toggle_Nation(client, Nation((player->nation + 1) % NATION_COUNT)));
+    OnNMSPlayerToggleNation(GameMessage_Player_Toggle_Nation(client, Nation((player->nation + 1) % NAT_COUNT)));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
