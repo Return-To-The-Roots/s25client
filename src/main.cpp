@@ -106,39 +106,6 @@ void ExceptionHandler (unsigned int exception_type, _EXCEPTION_POINTERS* excepti
 }
 #endif // _WIN32 && _DEBUG && !NOHWETRANS
 
-int mkdir_p(const std::string dir)
-{
-    if(IsDir(dir))
-        return 0;
-
-    if (
-#ifdef _WIN32
-        !CreateDirectoryA(dir.c_str(), NULL)
-#else
-        mkdir(dir.c_str(), 0750) < 0
-#endif
-    )
-    {
-        size_t slash = dir.rfind('/');
-        if (slash != std::string::npos)
-        {
-            std::string prefix = dir.substr(0, slash);
-            if(mkdir_p(prefix) == 0)
-            {
-                return (
-#ifdef _WIN32
-                           CreateDirectoryA(dir.c_str(), NULL) ? 0 : -1
-#else
-                           mkdir(dir.c_str(), 0750)
-#endif
-                       );
-            }
-        }
-        return -1;
-    }
-    return 0;
-}
-
 #ifdef _WIN32
 #ifdef _MSC_VER
 LONG WINAPI
