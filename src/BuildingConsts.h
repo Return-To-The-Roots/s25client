@@ -21,60 +21,46 @@
 #define BUILD_COSTS_H_
 
 #include "GameConsts.h"
-
-struct BuildingCost
-{
-    unsigned char boards;
-    unsigned char stones;
-};
+#include "BuildingTypes.h"
 
 // Konstanten für die Baukosten der Gebäude von allen 4 Völkern
-const BuildingCost BUILDING_COSTS[NATION_COUNT][40] =
+const BuildingCost BUILDING_COSTS[NAT_COUNT][40] =
 {
-    // Nubier
-    {
-        {0, 0}, {2, 0}, {2, 3}, {0, 0}, {3, 5}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {4, 7},
-        {4, 0}, {4, 0}, {4, 0}, {4, 0}, {4, 0}, {0, 0}, {4, 2}, {2, 0}, {2, 0}, {2, 0},
-        {2, 0}, {2, 2}, {2, 0}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {4, 3}, {3, 3}, {4, 3},
-        {0, 0}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 0}, {2, 3}, {3, 3}, {3, 3}, {4, 6}
-    },
-    // Japaner
-    {
-        {0, 0}, {2, 0}, {2, 3}, {0, 0}, {3, 5}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {4, 7},
-        {4, 0}, {4, 0}, {4, 0}, {4, 0}, {4, 0}, {0, 0}, {4, 2}, {2, 0}, {2, 0}, {2, 0},
-        {2, 0}, {2, 2}, {2, 0}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {4, 3}, {3, 3}, {4, 3},
-        {0, 0}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 0}, {2, 3}, {3, 3}, {3, 3}, {4, 6}
-    },
-    // Römer
-    {
-        {0, 0}, {2, 0}, {2, 3}, {0, 0}, {3, 5}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {4, 7},
-        {4, 0}, {4, 0}, {4, 0}, {4, 0}, {4, 0}, {0, 0}, {4, 2}, {2, 0}, {2, 0}, {2, 0},
-        {2, 0}, {2, 2}, {2, 0}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {4, 3}, {3, 3}, {4, 3},
-        {0, 0}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 0}, {2, 3}, {3, 3}, {3, 3}, {4, 6}
-    },
-    // Wikinger
-    {
-        {0, 0}, {2, 0}, {2, 3}, {0, 0}, {3, 5}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {4, 7},
-        {4, 0}, {4, 0}, {4, 0}, {4, 0}, {4, 0}, {0, 0}, {4, 2}, {2, 0}, {2, 0}, {2, 0},
-        {2, 0}, {2, 2}, {2, 0}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {4, 3}, {3, 3}, {4, 3},
-        {0, 0}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 0}, {2, 3}, {3, 3}, {3, 3}, {4, 6}
-    },
-    // Babylonier
-    {
-        {0, 0}, {2, 0}, {2, 3}, {0, 0}, {3, 5}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {4, 7},
-        {4, 0}, {4, 0}, {4, 0}, {4, 0}, {4, 0}, {0, 0}, {4, 2}, {2, 0}, {2, 0}, {2, 0},
-        {2, 0}, {2, 2}, {2, 0}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {4, 3}, {3, 3}, {4, 3},
-        {0, 0}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 0}, {2, 3}, {3, 3}, {3, 3}, {4, 6}
-    }
-};
-
-// Größe der Gebäude
-enum BuildingSize
-{
-    BZ_HUT = 0,
-    BZ_HOUSE,
-    BZ_CASTLE,
-    BZ_MINE
+	// Nubier
+	{
+		{0, 0}, {2, 0}, {2, 3}, {0, 0}, {3, 5}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {4, 7},
+		{4, 0}, {4, 0}, {4, 0}, {4, 0}, {4, 0}, {0, 0}, {4, 2}, {2, 0}, {2, 0}, {2, 0},
+		{2, 0}, {2, 2}, {2, 0}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {4, 3}, {3, 3}, {4, 3},
+		{0, 0}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 0}, {2, 3}, {3, 3}, {3, 3}, {4, 6}
+	},
+		// Japaner
+	{
+		{0, 0}, {2, 0}, {2, 3}, {0, 0}, {3, 5}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {4, 7},
+		{4, 0}, {4, 0}, {4, 0}, {4, 0}, {4, 0}, {0, 0}, {4, 2}, {2, 0}, {2, 0}, {2, 0},
+		{2, 0}, {2, 2}, {2, 0}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {4, 3}, {3, 3}, {4, 3},
+		{0, 0}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 0}, {2, 3}, {3, 3}, {3, 3}, {4, 6}
+	},
+		// Römer
+	{
+		{0, 0}, {2, 0}, {2, 3}, {0, 0}, {3, 5}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {4, 7},
+		{4, 0}, {4, 0}, {4, 0}, {4, 0}, {4, 0}, {0, 0}, {4, 2}, {2, 0}, {2, 0}, {2, 0},
+		{2, 0}, {2, 2}, {2, 0}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {4, 3}, {3, 3}, {4, 3},
+		{0, 0}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 0}, {2, 3}, {3, 3}, {3, 3}, {4, 6}
+	},
+		// Wikinger
+	{
+		{0, 0}, {2, 0}, {2, 3}, {0, 0}, {3, 5}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {4, 7},
+		{4, 0}, {4, 0}, {4, 0}, {4, 0}, {4, 0}, {0, 0}, {4, 2}, {2, 0}, {2, 0}, {2, 0},
+		{2, 0}, {2, 2}, {2, 0}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {4, 3}, {3, 3}, {4, 3},
+		{0, 0}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 0}, {2, 3}, {3, 3}, {3, 3}, {4, 6}
+	},
+		// Babylonier
+	{
+		{0, 0}, {2, 0}, {2, 3}, {0, 0}, {3, 5}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {4, 7},
+		{4, 0}, {4, 0}, {4, 0}, {4, 0}, {4, 0}, {0, 0}, {4, 2}, {2, 0}, {2, 0}, {2, 0},
+		{2, 0}, {2, 2}, {2, 0}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {4, 3}, {3, 3}, {4, 3},
+		{0, 0}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 0}, {2, 3}, {3, 3}, {3, 3}, {4, 6}
+	}
 };
 
 // Bauqualitäten der Gebäude
@@ -122,18 +108,6 @@ const BuildingQuality BUILDING_SIZE[40] =
     BQ_HARBOR
 };
 
-// Konstanten zu den "normalen Gebäuden" (Betrieben), beginnt erst mit Granitmine
-struct UsualBuilding
-{
-    /// Arbeitertyp, der in diesem Gebäude arbeitet
-    Job job;
-    /// Ware, die das Gebäude produziert
-    GoodType produced_ware;
-    /// Anzahl Waren, die das Gebäude benötigt
-    unsigned char wares_needed_count;
-    /// Waren, die das Gebäude benötigt
-    GoodType wares_needed[3];
-};
 
 
 
@@ -171,17 +145,8 @@ const UsualBuilding USUAL_BUILDING_CONSTS[30] =
     {JOB_NOTHING, GD_NOTHING, 0, {GD_NOTHING, GD_NOTHING, GD_NOTHING}},
 };
 
-/// Rauch-Konstanten zu den "normalen Gebäuden" (Betrieben), beginnt erst mit Granitmine
-struct SmokeConst
-{
-    /// Art des Rauches (von 1-4), 0 = kein Rauch!
-    unsigned char type;
-    /// Position des Rauches relativ zum Nullpunkt des Gebäudes
-    signed char x, y;
-};
-
 /// Rauchkonstanten für alle 4 Völker unterschiedlich und erst beginnend nach den Militärgebäuden, denn die rauchen nicht
-const SmokeConst BUILDING_SMOKE_CONSTS[NATION_COUNT][30] =
+const SmokeConst BUILDING_SMOKE_CONSTS[NAT_COUNT][30] =
 {
     // Nubier
     {
@@ -350,11 +315,7 @@ const SmokeConst BUILDING_SMOKE_CONSTS[NATION_COUNT][30] =
     }
 };
 
-/// Konstanten der "Produktions-Stopp"- und der "Gold-Stopp"-Schilder bei normalen und Militärgebäuden
-struct BuildingSignConst
-    { signed char x, y; };
-
-const BuildingSignConst BUILDING_SIGN_CONSTS[NATION_COUNT][40] =
+const BuildingSignConst BUILDING_SIGN_CONSTS[NAT_COUNT][40] =
 {
     // Nubier
     {

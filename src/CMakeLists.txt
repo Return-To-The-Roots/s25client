@@ -216,6 +216,7 @@ SET(SOURCES_NOF
 
 SET(SOURCES_OTHER
 										BuildingConsts.h
+										BuildingTypes.h
 	BurnedWarehouse.cpp                 BurnedWarehouse.h
 	CatapultStone.cpp                   CatapultStone.h
 	CollisionDetection.cpp              CollisionDetection.h
@@ -255,8 +256,10 @@ SET(SOURCES_OTHER
 										GammaTable.h
 	GlobalGameSettings.cpp              GlobalGameSettings.h
 	GlobalVars.cpp                      GlobalVars.h
+										GoodTypes.h
 	IngameWindow.cpp                    IngameWindow.h
 										JobConsts.h
+										JobTypes.h
 	languages.cpp                       languages.h
 										list.h
 	ListDir.cpp                         ListDir.h
