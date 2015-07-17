@@ -23,6 +23,7 @@
 
 #include "Window.h"
 #include "const_gui_ids.h"
+#include "Point.h"
 
 class IngameWindow : public Window
 {

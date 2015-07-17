@@ -28,6 +28,7 @@
 
 #include <list>
 #include <map>
+#include <cassert>
 
 class GameObject;
 class SerializedGameData;

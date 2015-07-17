@@ -22,6 +22,8 @@
 #pragma once
 
 #include "const_addons.h"
+#include <string>
+#include <vector>
 
 class Window;
 

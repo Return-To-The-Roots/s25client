@@ -21,6 +21,7 @@
 #define NO_BUILDINGSITE_H_
 
 #include "noBaseBuilding.h"
+#include "list.h"
 
 // Enumforwarddeklaration bei VC nutzen
 #ifdef _MSC_VER

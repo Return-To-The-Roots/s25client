@@ -40,11 +40,12 @@ class nobShipYard : public nobUsual
         /// Aktueller Modus vom Schiffsbauer
         Mode mode;
 
-    public:
-
+        friend class SerializedGameData;
+        friend class BuildingFactory;
         nobShipYard(const unsigned short x, const unsigned short y, const unsigned char player, const Nation nation);
         nobShipYard(SerializedGameData* sgd, const unsigned obj_id);
 
+    public:
         /// Serialisierungsfunktionen
         void Serialize(SerializedGameData* sgd) const;
 

@@ -23,6 +23,7 @@
 
 #include "noBase.h"
 #include "MapConsts.h"
+#include "Point.h"
 
 class noCoordBase : public noBase
 {

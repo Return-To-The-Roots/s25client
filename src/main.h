@@ -187,17 +187,6 @@ inline T max(T a, T b) { return ((a) < (b)) ? (b) : (a); }
 template <typename T>
 inline T SafeDiff(T a, T b) { return ((a) > (b)) ? (a - b) : (b - a); }
 
-// 2D-Punkt
-template <typename T>
-struct Point
-{
-    T x, y;
-    Point() {}
-    Point(const T x, const T y) : x(x), y(y) {}
-    bool operator==(const Point<T> second) const
-    { return (x == second.x && y == second.y); }
-};
-
 const unsigned oo = 0xffffffff;
 
 #endif // MAIN_H_INCLUDED

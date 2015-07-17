@@ -4,6 +4,7 @@
 #include "MapConsts.h"
 #include <memory.h>
 #include "GameConsts.h"
+#include "Point.h"
 
 class GameWorldGame;
 class TradeGraph;

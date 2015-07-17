@@ -42,6 +42,7 @@
 #include "nofPassiveWorker.h"
 #include "nofTradeLeader.h"
 #include "nofTradeDonkey.h"
+#include "JobFactory.h"
 
 #include <algorithm>
 
@@ -249,7 +250,7 @@ bool nobBaseWarehouse::OrderJob(const Job job, noRoadNode* const goal, const boo
         }
     }
 
-    noFigure* fig = CreateJob(job, x, y, player, goal);
+    noFigure* fig = JobFactory::CreateJob(job, x, y, player, goal);
     // Wenn Figur nicht sofort von abgeleiteter Klasse verwenet wird, fügen wir die zur Leave-Liste hinzu
     if(!UseFigureAtOnce(fig, goal))
         AddLeavingFigure(fig);

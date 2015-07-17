@@ -25,6 +25,7 @@
 #include "GameSavedFile.h"
 #include "GameProtocol.h"
 #include "MapConsts.h"
+#include "Point.h"
 
 class Savegame;
 

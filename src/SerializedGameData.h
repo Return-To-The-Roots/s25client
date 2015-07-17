@@ -29,6 +29,7 @@
 #include "GameObject.h"
 #include "FOWObjects.h"
 #include "Serializer.h"
+#include "Point.h"
 
 class noBase;
 class GameObject;

@@ -9,7 +9,7 @@ FIND_PACKAGE(Gettext REQUIRED)
 ################################################################################
 
 INCLUDE_DIRECTORIES(
-					"${CMAKE_SOURCE_DIR}"
+					"${CMAKE_SOURCE_DIR}/src"
 					"${CMAKE_SOURCE_DIR}/liblobby/src/"
 					"${CMAKE_SOURCE_DIR}/libutil/src/"
 					"${CMAKE_SOURCE_DIR}/mygettext/src/"
@@ -277,6 +277,7 @@ SET(SOURCES_OTHER
 										NationConsts.h
 										NodalObjectTypes.h
 										Node.h
+										Point.h
 	DriverWrapper.cpp                   DriverWrapper.h
 	VideoDriverWrapper.cpp              VideoDriverWrapper.h
 	AudioDriverWrapper.cpp              AudioDriverWrapper.h
@@ -360,6 +361,16 @@ SET(SOURCES_GL
 	glSmartBitmap.cpp                   glSmartBitmap.h
    )
 
+SET(SOURCES_SUBDIRS )
+MACRO(AddDirectory dir)
+	FILE(GLOB SUB_FILES ${dir}/*.cpp ${dir}/*.h)
+	SET(SOURCES_SUBDIRS ${SOURCES_SUBDIRS} ${SUB_FILES})
+	SOURCE_GROUP(${dir} FILES ${SUB_FILES})
+	INCLUDE_DIRECTORIES(${dir})
+ENDMACRO()
+
+AddDirectory(factories)
+AddDirectory(helpers)
 ################################################################################
 
 GETTEXT_CREATE_TRANSLATIONS(../RTTR/languages/rttr.pot ALL
@@ -419,6 +430,7 @@ SET(s25client_SRCS
 	${SOURCES_NO}
 	${SOURCES_NOB}
 	${SOURCES_NOF}
+	${SOURCES_SUBDIRS}
 )
 
 source_group(controls FILES ${SOURCES_CONTROLS})

@@ -26,48 +26,15 @@
 #include "noRoadNode.h"
 #include "EventManager.h"
 #include "MapGeometry.h"
+#include "nofCarrier.h"
+#include "noSkeleton.h"
 
 #include "nobBaseWarehouse.h"
+#include "nobHarborBuilding.h"
 #include "DoorConsts.h"
 #include "macros.h"
 #include "GameClient.h"
 #include "GameClientPlayer.h"
-#include "noBuildingSite.h"
-
-#include "nobUsual.h"
-#include "nofBuilder.h"
-#include "nofCarpenter.h"
-#include "nofArmorer.h"
-#include "nofStonemason.h"
-#include "nofBrewer.h"
-#include "nofMinter.h"
-#include "nofButcher.h"
-#include "nofIronfounder.h"
-#include "nofMiller.h"
-#include "nofMetalworker.h"
-#include "nofBaker.h"
-#include "nofWellguy.h"
-#include "nofGeologist.h"
-#include "nofMiner.h"
-#include "nofFarmer.h"
-#include "nofForester.h"
-#include "nofWoodcutter.h"
-#include "nofPigbreeder.h"
-#include "nofDonkeybreeder.h"
-#include "nofHunter.h"
-#include "nofFisher.h"
-#include "noSkeleton.h"
-#include "nofPassiveSoldier.h"
-#include "nofCarrier.h"
-#include "nofShipWright.h"
-#include "nofCatapultMan.h"
-#include "nofPlaner.h"
-#include "nofScout_LookoutTower.h"
-#include "nofScout_Free.h"
-#include "nofPassiveWorker.h"
-#include "nofCharburner.h"
-
-#include "nobHarborBuilding.h"
 
 #include "glSmartBitmap.h"
 
@@ -75,6 +42,7 @@
 #include "Random.h"
 
 #include "SerializedGameData.h"
+#include "JobConsts.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -1296,86 +1264,6 @@ void noFigure::CorrectSplitData(const RoadSegment* const rs2)
 /// Wird aufgerufen, wenn die StraÃŸe unter der Figur geteilt wurde (für abgeleitete Klassen)
 void noFigure::CorrectSplitData_Derived()
 {
-}
-
-
-noFigure* CreateJob(const Job job_id, const unsigned short x, const unsigned short y, const unsigned char player, noRoadNode* const goal)
-{
-    switch(job_id)
-    {
-        case JOB_BUILDER:
-        {
-            if(!goal)
-                return new nofBuilder(x, y, player, goal);
-            else if(goal->GetGOT() == GOT_NOB_HARBORBUILDING)
-                return new nofPassiveWorker(JOB_BUILDER, x, y, player, goal);
-            else return new nofBuilder(x, y, player, goal);
-        }
-        case JOB_PLANER: return new nofPlaner(x, y, player, static_cast<noBuildingSite*>(goal));
-        case JOB_CARPENTER: return new nofCarpenter(x, y, player, static_cast<nobUsual*>(goal));
-        case JOB_ARMORER: return new nofArmorer(x, y, player, static_cast<nobUsual*>(goal));
-        case JOB_STONEMASON: return new nofStonemason(x, y, player, static_cast<nobUsual*>(goal));
-        case JOB_BREWER: return new nofBrewer(x, y, player, static_cast<nobUsual*>(goal));
-        case JOB_MINTER: return new nofMinter(x, y, player, static_cast<nobUsual*>(goal));
-        case JOB_BUTCHER: return new nofButcher(x, y, player, static_cast<nobUsual*>(goal));
-        case JOB_IRONFOUNDER: return new nofIronfounder(x, y, player, static_cast<nobUsual*>(goal));
-        case JOB_MILLER: return new nofMiller(x, y, player, static_cast<nobUsual*>(goal));
-        case JOB_METALWORKER: return new nofMetalworker(x, y, player, static_cast<nobUsual*>(goal));
-        case JOB_BAKER: return new nofBaker(x, y, player, static_cast<nobUsual*>(goal));
-        case JOB_HELPER:
-        {
-            // Wenn goal = 0 oder Lagerhaus, dann Auslagern anscheinend und mann kann irgendeinen Typ nehmen
-            if(!goal)
-                return new nofWellguy(x, y, player, static_cast<nobUsual*>(goal));
-            if(goal->GetGOT() == GOT_NOB_STOREHOUSE || goal->GetGOT() == GOT_NOB_HARBORBUILDING
-                    || goal->GetGOT() == GOT_NOB_HQ)
-                return new nofWellguy(x, y, player, static_cast<nobUsual*>(goal));
-            else if(static_cast<nobUsual*>(goal)->GetBuildingType() == BLD_WELL)
-                return new nofWellguy(x, y, player, static_cast<nobUsual*>(goal));
-            else if(static_cast<nobUsual*>(goal)->GetBuildingType() == BLD_CATAPULT)
-                return new nofCatapultMan(x, y, player, static_cast<nobUsual*>(goal));
-            else
-            {
-                assert(false);
-                return 0;
-            }
-
-        }
-        case JOB_GEOLOGIST: return new nofGeologist(x, y, player, static_cast<noFlag*>(goal));
-        case JOB_SCOUT:
-        {
-            // Im Spähturm arbeitet ein anderer Spähter-Typ
-            // Wenn goal = 0 oder Lagerhaus, dann Auslagern anscheinend und mann kann irgendeinen Typ nehmen
-            if(!goal)
-                return new nofScout_LookoutTower(x, y, player, static_cast<nobUsual*>(goal));
-            if(goal->GetGOT() == GOT_NOB_HARBORBUILDING || goal->GetGOT() == GOT_NOB_STOREHOUSE || goal->GetGOT                                                                 () == GOT_NOB_HQ)
-                return new nofPassiveWorker(JOB_SCOUT, x, y, player, goal);
-            // Spähturm / Lagerhaus?
-            else if(goal->GetGOT() == GOT_NOB_USUAL || goal->GetGOT() == GOT_NOB_HARBORBUILDING)
-                return new nofScout_LookoutTower(x, y, player, static_cast<nobUsual*>(goal));
-            else if(goal->GetGOT() == GOT_FLAG)
-                return new nofScout_Free(x, y, player, goal);
-            else
-            {
-                assert(false);
-                return 0;
-            }
-        } break;
-        case JOB_MINER: return new nofMiner(x, y, player, static_cast<nobUsual*>(goal));
-        case JOB_FARMER: return new nofFarmer(x, y, player, static_cast<nobUsual*>(goal));
-        case JOB_FORESTER: return new nofForester(x, y, player, static_cast<nobUsual*>(goal));
-        case JOB_WOODCUTTER: return new nofWoodcutter(x, y, player, static_cast<nobUsual*>(goal));
-        case JOB_PIGBREEDER: return new nofPigbreeder(x, y, player, static_cast<nobUsual*>(goal));
-        case JOB_DONKEYBREEDER: return new nofDonkeybreeder(x, y, player, static_cast<nobUsual*>(goal) );
-        case JOB_HUNTER: return new nofHunter(x, y, player, static_cast<nobUsual*>(goal));
-        case JOB_FISHER: return new nofFisher(x, y, player, static_cast<nobUsual*>(goal));
-        case JOB_PRIVATE: case JOB_PRIVATEFIRSTCLASS: case JOB_SERGEANT: case JOB_OFFICER: case JOB_GENERAL:
-            return new nofPassiveSoldier(x, y, player, static_cast<nobBaseMilitary*>(goal), static_cast<nobBaseMilitary*>(goal), job_id - JOB_PRIVATE);
-        case JOB_PACKDONKEY: return new nofCarrier(nofCarrier::CT_DONKEY, x, y, player, 0, goal);
-        case JOB_SHIPWRIGHT: return new nofShipWright(x, y, player, static_cast<nobUsual*>(goal));
-        case JOB_CHARBURNER: return new nofCharburner(x, y, player, static_cast<nobUsual*>(goal));
-        default: return 0;
-    }
 }
 
 void noFigure::DrawWalkingBobCarrier(int x, int y, unsigned int ware, bool fat)

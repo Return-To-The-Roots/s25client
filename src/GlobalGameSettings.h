@@ -16,12 +16,16 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
+#pragma once
 #ifndef GlobalGameSettings_H_INCLUDED
 #define GlobalGameSettings_H_INCLUDED
 
 #include "Addons.h"
 #include <iostream>
-#pragma once
+#include <vector>
+#include <algorithm>
+
+class Serializer;
 
 class GlobalGameSettings
 {

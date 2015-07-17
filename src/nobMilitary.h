@@ -85,10 +85,11 @@ class nobMilitary : public nobBaseMilitary
         /// Beförderungsevent an
         void PrepareUpgrading();
 
-    public:
-
+        friend class SerializedGameData;
+        friend class BuildingFactory;
         nobMilitary(const BuildingType type, const unsigned short x, const unsigned short y, const unsigned char player, const Nation nation);
         nobMilitary(SerializedGameData* sgd, const unsigned obj_id);
+    public:
 
         ~nobMilitary();
 

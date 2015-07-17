@@ -24,6 +24,7 @@
 #include "Singleton.h"
 #include "MouseAndKeys.h"
 #include "VideoDriverLoaderInterface.h"
+#include "Point.h"
 
 class Window;
 class Desktop;

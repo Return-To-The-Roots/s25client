@@ -27,6 +27,7 @@
 #include "MapConsts.h"
 #include "PostMsg.h"
 #include "TradeGraph.h"
+#include "Point.h"
 
 
 class GameWorld;

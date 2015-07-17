@@ -22,6 +22,8 @@
 #pragma once
 
 #include "GameObject.h"
+#include <vector>
+#include <cassert>
 
 class nofCarrier;
 class noRoadNode;

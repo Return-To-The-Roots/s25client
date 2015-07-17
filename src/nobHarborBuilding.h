@@ -104,10 +104,12 @@ class nobHarborBuilding : public nobBaseWarehouse
         virtual nofDefender* ProvideDefender(nofAttacker* const attacker);
 
         unsigned ordered_ships;
-    public:
 
+        friend class SerializedGameData;
+        friend class BuildingFactory;
         nobHarborBuilding(const unsigned short x, const unsigned short y, const unsigned char player, const Nation nation);
         nobHarborBuilding(SerializedGameData* sgd, const unsigned obj_id);
+public:
 
         MapCoord GetMilitaryRadius() const { return HARBOR_ALONE_RADIUS; }
 

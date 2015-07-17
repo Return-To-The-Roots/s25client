@@ -237,9 +237,4 @@ class noFigure : public noMovable
         Point<MapCoord> ExamineRouteBeforeShipping();
 };
 
-
-// Erstellt Job anhand der job-id
-noFigure* CreateJob(const Job job_id, const unsigned short x, const unsigned short y, const unsigned char player, noRoadNode* const goal);
-
-
 #endif

@@ -20,7 +20,7 @@
 #define MAP_GEOMETRY_H_
 
 #include "MapConsts.h"
-
+#include "Point.h"
 
 /// Ermittelt Abstand zwischen 2 Punkten auf der Map
 unsigned CalcRawDistance(const int x1, const int y1,

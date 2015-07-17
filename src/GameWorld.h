@@ -29,6 +29,7 @@
 #include "EventManager.h"
 #include "TerrainRenderer.h"
 #include "main.h"
+#include "Point.h"
 #include <vector>
 #include <cstddef>
 #include "GamePlayerList.h"

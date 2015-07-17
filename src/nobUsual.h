@@ -49,16 +49,16 @@ class nobUsual : public noBuilding
         static const unsigned LAST_PRODUCTIVITIES_COUNT = 6;
         unsigned short last_productivities[LAST_PRODUCTIVITIES_COUNT];
 
+protected:
+        friend class SerializedGameData;
+        friend class BuildingFactory;
+        nobUsual(const BuildingType type, const unsigned short x, const unsigned short y, const unsigned char player, const Nation nation);
+        nobUsual(SerializedGameData* sgd, const unsigned obj_id);
     public:
 
         /// Wird gerade gearbeitet oder nicht?
         bool is_working;
 
-    public:
-
-
-        nobUsual(const BuildingType type, const unsigned short x, const unsigned short y, const unsigned char player, const Nation nation);
-        nobUsual(SerializedGameData* sgd, const unsigned obj_id);
         ~nobUsual();
 
         /// Aufräummethoden

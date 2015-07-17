@@ -31,16 +31,14 @@
 #include "noBuildingSite.h"
 #include "Random.h"
 
-#include "nobShipYard.h"
 #include "EventManager.h"
-#include "nobMilitary.h"
-#include "nobStorehouse.h"
-#include "nobHarborBuilding.h"
 #include "SoundManager.h"
 #include "SerializedGameData.h"
 #include "AIEventManager.h"
+#include "nobBaseWarehouse.h"
 
 #include "glSmartBitmap.h"
+#include "BuildingFactory.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -189,23 +187,11 @@ void nofBuilder::HandleDerivedEvent(const unsigned int id)
                 // KI-Event schicken
                 GAMECLIENT.SendAIEvent(new AIEvent::Building(AIEvent::BuildingFinished, x, y, building_type), player);
 
-                // Art des Gebäudes unterscheiden (Lagerhäuser,Militär,normal)
-                if(building_type == BLD_STOREHOUSE || building_type == BLD_HARBORBUILDING)
-                {
-                    // Lagerhäuser
-                    nobBaseWarehouse* wh;
-                    if(building_type == BLD_STOREHOUSE)
-                        wh = new nobStorehouse(x, y, player, building_nation);
-                    else
-                        wh = new nobHarborBuilding(x, y, player, building_nation);
+                noBuilding* bld = BuildingFactory::CreateBuilding(gwg, building_type, x, y, player, building_nation);
 
-
-                    gwg->SetNO(wh, x, y);
-                    // Bei Häfen zusätzlich der Wirtschaftsverwaltung Bescheid sagen
-                    // Achtung: das kann NIOHT in den Konstruktor von nobHarborBuilding!
-                    if(wh->GetGOT() == GOT_NOB_HARBORBUILDING)
-                        gwg->GetPlayer(player)->AddHarbor(static_cast<nobHarborBuilding*>(wh));
-
+                // Special handling for storehouses and harbours
+                if(building_type == BLD_STOREHOUSE || building_type == BLD_HARBORBUILDING){
+                    nobBaseWarehouse* wh = static_cast<nobBaseWarehouse*>(bld);
                     // Mich dort gleich einquartieren und nicht erst zurücklaufen
                     wh->AddFigure(this);
                     gwg->RemoveFigure(this, x, y);
@@ -218,18 +204,7 @@ void nofBuilder::HandleDerivedEvent(const unsigned int id)
                     gwg->GetPlayer(player)->FindClientForLostWares();
 
                     return;
-
                 }
-                else if(building_type >= BLD_BARRACKS && building_type <= BLD_FORTRESS)
-                    // Militärgebäude
-                    gwg->SetNO(new nobMilitary(building_type, x, y, player, building_nation), x, y);
-                else if(building_type == BLD_SHIPYARD)
-                    // Schiffsbauer kriegt eine Extrawurst
-                    gwg->SetNO(new nobShipYard(x, y, player, building_nation), x, y);
-                else
-                    // normale Gebäude
-                    gwg->SetNO(new nobUsual(building_type, x, y, player, building_nation), x, y);
-
 
                 // Nach Hause laufen bzw. auch rumirren
                 rs_pos = 0;

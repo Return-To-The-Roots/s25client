@@ -110,11 +110,9 @@ class nobBaseWarehouse : public nobBaseMilitary
         /// Aktuellen Warenbestand zur aktuellen Inventur dazu addieren
         void AddToInventory();
 
-    public:
-
-
         nobBaseWarehouse(const BuildingType type, const unsigned short x, const unsigned short y, const unsigned char player, const Nation nation);
         nobBaseWarehouse(SerializedGameData* sgd, const unsigned obj_id);
+    public:
 
         void Clear();
         

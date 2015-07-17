@@ -24,11 +24,10 @@
 
 class nobStorehouse : public nobBaseWarehouse
 {
-
-    public:
-
-        nobStorehouse(const unsigned short x, const unsigned short y, const unsigned char player, const Nation nation);
-        nobStorehouse(SerializedGameData* sgd, const unsigned obj_id);
+    friend class SerializedGameData;
+    friend class BuildingFactory;
+    nobStorehouse(const unsigned short x, const unsigned short y, const unsigned char player, const Nation nation);
+    nobStorehouse(SerializedGameData* sgd, const unsigned obj_id);
 
         /// Aufräummethoden
     protected:  void Destroy_nobStorehouse();
