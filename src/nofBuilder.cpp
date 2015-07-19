@@ -38,7 +38,7 @@
 #include "nobBaseWarehouse.h"
 
 #include "glSmartBitmap.h"
-#include "BuildingFactory.h"
+#include "factories/BuildingFactory.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

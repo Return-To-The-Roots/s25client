@@ -42,7 +42,7 @@
 #include "nofPassiveWorker.h"
 #include "nofTradeLeader.h"
 #include "nofTradeDonkey.h"
-#include "JobFactory.h"
+#include "factories/JobFactory.h"
 
 #include <algorithm>
 

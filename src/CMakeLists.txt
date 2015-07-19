@@ -366,7 +366,6 @@ MACRO(AddDirectory dir)
 	FILE(GLOB SUB_FILES ${dir}/*.cpp ${dir}/*.h)
 	SET(SOURCES_SUBDIRS ${SOURCES_SUBDIRS} ${SUB_FILES})
 	SOURCE_GROUP(${dir} FILES ${SUB_FILES})
-	INCLUDE_DIRECTORIES(${dir})
 ENDMACRO()
 
 AddDirectory(factories)

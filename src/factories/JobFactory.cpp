@@ -60,7 +60,7 @@
 #include "nofCharburner.h"
 
 #include <stdexcept>
-#include "converters.h"
+#include "helpers/converters.h"
 
 noFigure* JobFactory::CreateJob(const Job job_id, const unsigned short x, const unsigned short y, const unsigned char player, noRoadNode* const goal){
     switch(job_id)
