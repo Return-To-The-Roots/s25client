@@ -19,6 +19,7 @@
 #define GoodTypes_h__
 
 #include "mygettext.h"
+#include "JobTypes.h"
 
 // Warentypen
 enum GoodType
