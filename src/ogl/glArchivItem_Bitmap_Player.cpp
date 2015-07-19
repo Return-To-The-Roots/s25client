@@ -19,10 +19,10 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "glArchivItem_Bitmap_Player.h"
 
-#include "VideoDriverWrapper.h"
+#include "drivers/VideoDriverWrapper.h"
 #include "GlobalVars.h"
 #include "Loader.h"
 

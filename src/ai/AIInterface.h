@@ -20,19 +20,19 @@
 #ifndef AIINTERFACE_H_
 #define AIINTERFACE_H_
 
-#include "main.h"
+#include "defines.h"
 #include "GameWorld.h"
 #include "GameClientPlayer.h"
 #include "GameCommands.h"
 #include "AIJHHelper.h"
-#include "nobMilitary.h"
-#include "nobBaseWarehouse.h"
-#include "nobHarborBuilding.h"
-#include "noShip.h"
-#include "noBuilding.h"
-#include "nobBaseMilitary.h"
-#include "noFlag.h"
-#include "nobShipYard.h"
+#include "buildings/nobMilitary.h"
+#include "buildings/nobBaseWarehouse.h"
+#include "buildings/nobHarborBuilding.h"
+#include "nodeObjs/noShip.h"
+#include "buildings/noBuilding.h"
+#include "buildings/nobBaseMilitary.h"
+#include "nodeObjs/noFlag.h"
+#include "buildings/nobShipYard.h"
 #include "GameCommands.h"
 
 typedef unsigned char Direction;

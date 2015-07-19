@@ -21,10 +21,10 @@
 #define NO_MOVABLE_H_
 
 #include "noCoordBase.h"
-#include "GameConsts.h"
+#include "gameData/GameConsts.h"
 #include "list.h"
 #include "EventManager.h"
-#include "MapConsts.h"
+#include "gameTypes/MapTypes.h"
 
 /// Anzahl Animationsschritte bei dem jeweiligen Anstieg
 const unsigned short ASCENT_ANIMATION_STEPS[7] = {16, 16, 16, 16, 24, 32, 48};

@@ -21,7 +21,7 @@
 
 #include "noRoadNode.h"
 #include "RoadSegment.h"
-#include "MapConsts.h"
+#include "gameTypes/MapTypes.h"
 #include "Ware.h"
 
 class noFlag : public noRoadNode

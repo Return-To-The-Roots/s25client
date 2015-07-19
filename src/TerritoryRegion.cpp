@@ -19,12 +19,12 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "TerritoryRegion.h"
 
-#include "nobBaseMilitary.h"
-#include "nobMilitary.h"
-#include "MilitaryConsts.h"
+#include "buildings/nobBaseMilitary.h"
+#include "buildings/nobMilitary.h"
+#include "gameData/MilitaryConsts.h"
 #include "GameWorld.h"
 
 ///////////////////////////////////////////////////////////////////////////////

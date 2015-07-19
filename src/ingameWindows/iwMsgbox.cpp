@@ -19,13 +19,13 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "iwMsgbox.h"
 
-#include "VideoDriverWrapper.h"
+#include "drivers/VideoDriverWrapper.h"
 #include "Loader.h"
-#include "controls.h"
-#include "glArchivItem_Font.h"
+#include "controls/controls.h"
+#include "ogl/glArchivItem_Font.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

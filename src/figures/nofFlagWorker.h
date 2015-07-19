@@ -20,7 +20,7 @@
 #ifndef NOF_FLAG_WORKER_H_
 #define NOF_FLAG_WORKER_H_
 
-#include "noFigure.h"
+#include "figures/noFigure.h"
 
 class noFlag;
 

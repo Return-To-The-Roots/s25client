@@ -19,7 +19,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include <build_version.h>
 #include "iwOptionsWindow.h"
 
@@ -28,7 +28,7 @@
 #include "Settings.h"
 #include "files.h"
 
-#include "controls.h"
+#include "controls/controls.h"
 
 #include "iwEndgame.h"
 #include "iwSurrender.h"
@@ -37,9 +37,10 @@
 #include "iwSettings.h"
 
 #include "SoundManager.h"
-#include "AudioDriverWrapper.h"
+#include "drivers/AudioDriverWrapper.h"
 #include "MusicPlayer.h"
 #include "iwMusicPlayer.h"
+#include "ogl/glArchivItem_Font.h"
 
 
 ///////////////////////////////////////////////////////////////////////////////

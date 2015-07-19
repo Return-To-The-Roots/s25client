@@ -19,11 +19,11 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "GameServerPlayer.h"
 #include "GameMessage.h"
 #include "GameMessages.h"
-#include "VideoDriverWrapper.h"
+#include "drivers/VideoDriverWrapper.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

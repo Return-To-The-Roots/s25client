@@ -21,8 +21,9 @@
 
 #include "ctrlMinimap.h"
 #include "Minimap.h"
-#include "MapConsts.h"
-#include "GameConsts.h"
+#include "gameTypes/MapTypes.h"
+#include "gameData/GameConsts.h"
+#include "ogl/glArchivItem_Map.h"
 
 /// Übersichtskarte (MapPreview)
 class ctrlPreviewMinimap : public ctrlMinimap

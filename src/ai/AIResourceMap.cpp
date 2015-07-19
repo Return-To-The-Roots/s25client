@@ -19,7 +19,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "AIResourceMap.h"
 
 AIResourceMap::AIResourceMap(const GameWorldBase* const gwb, const std::vector<AIJH::Node> &nodes)

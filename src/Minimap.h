@@ -23,8 +23,8 @@ struct MapNode;
 class GameWorldViewer;
 
 #include "Loader.h"
-#include "glArchivItem_Bitmap_Direct.h"
-#include "MapConsts.h"
+#include "ogl/glArchivItem_Bitmap_Direct.h"
+#include "gameTypes/MapTypes.h"
 #include <vector>
 
 

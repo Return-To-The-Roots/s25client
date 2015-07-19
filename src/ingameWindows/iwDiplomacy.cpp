@@ -19,15 +19,15 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "iwDiplomacy.h"
 
-#include "dskGameInterface.h"
+#include "desktops/dskGameInterface.h"
 
 #include "Loader.h"
-#include "VideoDriverWrapper.h"
+#include "drivers/VideoDriverWrapper.h"
 #include "GameClient.h"
-#include "controls.h"
+#include "controls/controls.h"
 #include "WindowManager.h"
 #include "GameCommands.h"
 #include "GameClientPlayer.h"

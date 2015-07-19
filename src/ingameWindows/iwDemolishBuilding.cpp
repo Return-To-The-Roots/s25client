@@ -19,11 +19,11 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "iwDemolishBuilding.h"
 
 #include "Loader.h"
-#include "VideoDriverWrapper.h"
+#include "drivers/VideoDriverWrapper.h"
 #include "GameClient.h"
 #include "WindowManager.h"
 #include "GameWorld.h"

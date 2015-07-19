@@ -19,20 +19,20 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "nofWoodcutter.h"
 
 #include "GameWorld.h"
-#include "noGranite.h"
+#include "nodeObjs/noGranite.h"
 #include "Loader.h"
 #include "macros.h"
 #include "GameClient.h"
 #include "Ware.h"
-#include "noTree.h"
+#include "nodeObjs/noTree.h"
 #include "SoundManager.h"
-#include "AIEventManager.h"
+#include "ai/AIEventManager.h"
 
-#include "glSmartBitmap.h"
+#include "ogl/glSmartBitmap.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

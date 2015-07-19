@@ -20,7 +20,7 @@
 #ifndef JOB_CONSTS_H_
 #define JOB_CONSTS_H_
 
-#include "GameConsts.h"
+#include "gameData/GameConsts.h"
 
 /// Berufsstruktur
 struct JobConst

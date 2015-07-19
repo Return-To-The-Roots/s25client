@@ -19,11 +19,11 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "glArchivItem_Font.h"
 #include "Settings.h"
 #include "ExtensionList.h"
-#include "VideoDriverWrapper.h"
+#include "drivers/VideoDriverWrapper.h"
 
 #include "Loader.h"
 

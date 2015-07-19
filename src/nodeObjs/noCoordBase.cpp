@@ -19,7 +19,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "noCoordBase.h"
 #include "SerializedGameData.h"
 #include "GameWorld.h"

@@ -20,19 +20,19 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Header
 
-#include "main.h"
+#include "defines.h"
 #include "iwObservate.h"
 
 #include "Loader.h"
-#include "VideoDriverWrapper.h"
+#include "drivers/VideoDriverWrapper.h"
 #include "GameClient.h"
 #include "WindowManager.h"
 #include "GameWorld.h"
 #include "iwMsgbox.h"
 #include "GameCommands.h"
-#include "dskGameInterface.h"
+#include "desktops/dskGameInterface.h"
 #include "Settings.h"
-#include "ctrlButton.h"
+#include "controls/ctrlButton.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

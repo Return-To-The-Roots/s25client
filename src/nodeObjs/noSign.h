@@ -20,7 +20,7 @@
 #define NOSIGN_H_INCLUDED
 
 #include "noDisappearingEnvObject.h"
-#include "GameConsts.h"
+#include "gameData/GameConsts.h"
 #include "EventManager.h"
 
 /// Stellt ein Ressourcen-Schild dar

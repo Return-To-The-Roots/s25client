@@ -19,20 +19,20 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "iwSave.h"
 
 #include "WindowManager.h"
 #include "Loader.h"
-#include "controls.h"
+#include "controls/controls.h"
 
 #include "ListDir.h"
 #include "GameClient.h"
 #include "files.h"
 #include "GameServer.h"
 #include "LobbyClient.h"
-#include "dskLobby.h"
-#include "dskHostGame.h"
+#include "desktops/dskLobby.h"
+#include "desktops/dskHostGame.h"
 
 #include "iwPleaseWait.h"
 #include "iwMsgbox.h"

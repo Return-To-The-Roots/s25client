@@ -19,14 +19,14 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include <build_version.h>
 #include "dskMainMenu.h"
 
 #include "WindowManager.h"
 #include "Loader.h"
 #include "GlobalVars.h"
-#include "controls.h"
+#include "controls/controls.h"
 
 #include "Settings.h"
 
@@ -36,10 +36,10 @@
 #include "dskOptions.h"
 #include "dskIntro.h"
 #include "dskCredits.h"
-#include "iwMsgbox.h"
+#include "ingameWindows/iwMsgbox.h"
 
 #include "ListDir.h"
-#include "iwTextfile.h"
+#include "ingameWindows/iwTextfile.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

@@ -18,7 +18,7 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "main.h"
+#include "defines.h"
 #include "AIPlayer.h"
 #include "GameClientPlayer.h"
 #include "GameWorld.h"

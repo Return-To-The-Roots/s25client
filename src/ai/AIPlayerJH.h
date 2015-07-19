@@ -22,8 +22,8 @@
 #pragma once
 
 #include "AIBase.h"
-#include "MapConsts.h"
-#include "GameConsts.h"
+#include "gameTypes/MapTypes.h"
+#include "gameData/GameConsts.h"
 #include "GameClientPlayer.h"
 #include "AIJHHelper.h"
 #include "GameWorld.h"

@@ -19,18 +19,18 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "nofMetalworker.h"
 
 #include "Loader.h"
 #include "macros.h"
 #include "GameClient.h"
 #include "GameClientPlayer.h"
-#include "nobUsual.h"
+#include "buildings/nobUsual.h"
 #include "Random.h"
 #include "SoundManager.h"
 
-#include "iwTools.h"
+#include "ingameWindows/iwTools.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

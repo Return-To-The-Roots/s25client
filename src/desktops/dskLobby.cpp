@@ -19,27 +19,27 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include <build_version.h>
 #include "dskLobby.h"
 
 #include "WindowManager.h"
 #include "Loader.h"
-#include "VideoDriverWrapper.h"
+#include "drivers/VideoDriverWrapper.h"
 #include "GameClient.h"
 #include "LobbyClient.h"
 #include "LobbyProtocol.h"
-#include "controls.h"
+#include "controls/controls.h"
 #include "FileChecksum.h"
 #include "Settings.h"
 
 #include "dskHostGame.h"
 #include "dskMultiPlayer.h"
-#include "iwLobbyServerInfo.h"
-#include "iwLobbyRanking.h"
-#include "iwDirectIPCreate.h"
-#include "iwDirectIPConnect.h"
-#include "iwMsgbox.h"
+#include "ingameWindows/iwLobbyServerInfo.h"
+#include "ingameWindows/iwLobbyRanking.h"
+#include "ingameWindows/iwDirectIPCreate.h"
+#include "ingameWindows/iwDirectIPConnect.h"
+#include "ingameWindows/iwMsgbox.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

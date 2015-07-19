@@ -22,9 +22,9 @@
 #pragma once
 
 #include "IngameWindow.h"
-#include "GameConsts.h"
+#include "gameData/GameConsts.h"
 #include "GameObject.h"
-#include "noBuilding.h"
+#include "buildings/noBuilding.h"
 
 class dskGameInterface;
 class GameWorldViewer;

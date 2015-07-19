@@ -25,7 +25,7 @@
 
 #include "LobbyInterface.h"
 #include "ClientInterface.h"
-#include "iwDirectIPCreate.h"
+#include "ingameWindows/iwDirectIPCreate.h"
 
 struct CreateServerInfo;
 

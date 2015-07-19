@@ -19,13 +19,13 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "nofHunter.h"
 
-#include "noAnimal.h"
+#include "nodeObjs/noAnimal.h"
 #include "GameWorld.h"
 #include "Random.h"
-#include "nobUsual.h"
+#include "buildings/nobUsual.h"
 #include "EventManager.h"
 #include "GameClient.h"
 #include "Loader.h"

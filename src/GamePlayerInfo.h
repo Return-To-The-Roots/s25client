@@ -22,7 +22,7 @@
 
 #include "GameProtocol.h"
 #include "Socket.h"
-#include "GameConsts.h"
+#include "gameData/GameConsts.h"
 
 class Serializer;
 

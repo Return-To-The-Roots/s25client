@@ -19,15 +19,15 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "AIConstruction.h"
 
 #include "GameCommands.h"
-#include "nobBaseMilitary.h"
+#include "buildings/nobBaseMilitary.h"
 #include "MapGeometry.h"
-#include "nobHQ.h"
+#include "buildings/nobHQ.h"
 #include "AIPlayerJH.h"
-#include "noBuildingSite.h"
+#include "buildings/noBuildingSite.h"
 
 // from Pathfinding.cpp
 bool IsPointOK_RoadPath(const GameWorldBase& gwb, const MapCoord x, const MapCoord y, const unsigned char dir, const void* param);

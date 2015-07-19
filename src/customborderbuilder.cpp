@@ -43,9 +43,9 @@ zu sehen sein.
 Vor dem Aufruf von buildBorder() muss der interne, öffentliche Zeiger *palette auf ein ArchivItem_Palette* gesetzt werden.
 */
 
-#include "main.h"
+#include "defines.h"
 #include "customborderbuilder.h"
-#include "glArchivItem_Bitmap_RLE.h"
+#include "ogl/glArchivItem_Bitmap_RLE.h"
 
 using namespace libsiedler2;
 

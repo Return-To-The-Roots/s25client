@@ -19,7 +19,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "dskOptions.h"
 
 #include "GlobalGameSettings.h"
@@ -28,21 +28,21 @@
 #include "Loader.h"
 
 #include "Settings.h"
-#include "controls.h"
+#include "controls/controls.h"
 #include "GlobalVars.h"
 
 #include "dskMainMenu.h"
-#include "iwMusicPlayer.h"
+#include "ingameWindows/iwMusicPlayer.h"
 
 #include "languages.h"
 
-#include "VideoDriverWrapper.h"
-#include "AudioDriverWrapper.h"
+#include "drivers/VideoDriverWrapper.h"
+#include "drivers/AudioDriverWrapper.h"
 #include "MusicPlayer.h"
 
-#include "iwAddons.h"
-#include "iwTextfile.h"
-#include "iwMsgbox.h"
+#include "ingameWindows/iwAddons.h"
+#include "ingameWindows/iwTextfile.h"
+#include "ingameWindows/iwMsgbox.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

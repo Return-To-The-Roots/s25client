@@ -19,19 +19,19 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "GameClient.h"
 
-#include "VideoDriverWrapper.h"
-#include "noFlag.h"
+#include "drivers/VideoDriverWrapper.h"
+#include "nodeObjs/noFlag.h"
 #include "GameWorld.h"
 #include "GameClientPlayer.h"
 
 #include "GameServer.h"
-#include "nobUsual.h"
-#include "nobMilitary.h"
-#include "nobBaseWarehouse.h"
-#include "dskGameInterface.h"
+#include "buildings/nobUsual.h"
+#include "buildings/nobMilitary.h"
+#include "buildings/nobBaseWarehouse.h"
+#include "desktops/dskGameInterface.h"
 #include "ClientInterface.h"
 #include "GameCommands.h"
 #include "GameMessages.h"

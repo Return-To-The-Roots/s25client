@@ -19,12 +19,12 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "dskSelectMap.h"
 
 #include "WindowManager.h"
 #include "Loader.h"
-#include "controls.h"
+#include "controls/controls.h"
 #include "GameServer.h"
 #include "GameClient.h"
 #include "ListDir.h"
@@ -36,10 +36,10 @@
 #include "dskLobby.h"
 #include "dskSinglePlayer.h"
 
-#include "iwMsgbox.h"
-#include "iwSave.h"
-#include "iwDirectIPCreate.h"
-#include "iwPleaseWait.h"
+#include "ingameWindows/iwMsgbox.h"
+#include "ingameWindows/iwSave.h"
+#include "ingameWindows/iwDirectIPCreate.h"
+#include "ingameWindows/iwPleaseWait.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

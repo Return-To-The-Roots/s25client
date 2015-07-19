@@ -1,5 +1,5 @@
 
-#include "main.h"
+#include "defines.h"
 #include "TradeGraph.h"
 #include "GameWorld.h"
 #include "SerializedGameData.h"

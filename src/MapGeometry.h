@@ -19,7 +19,7 @@
 #ifndef MAP_GEOMETRY_H_
 #define MAP_GEOMETRY_H_
 
-#include "MapConsts.h"
+#include "gameTypes/MapTypes.h"
 #include "Point.h"
 
 /// Ermittelt Abstand zwischen 2 Punkten auf der Map

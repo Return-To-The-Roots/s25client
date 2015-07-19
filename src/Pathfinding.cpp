@@ -19,15 +19,15 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "Node.h"
 
 #include "GameWorld.h"
-#include "noRoadNode.h"
-#include "VideoDriverWrapper.h"
+#include "nodeObjs/noRoadNode.h"
+#include "drivers/VideoDriverWrapper.h"
 #include "Random.h"
 #include "MapGeometry.h"
-#include "nobHarborBuilding.h"
+#include "buildings/nobHarborBuilding.h"
 #include "GameClient.h"
 
 #include <set>

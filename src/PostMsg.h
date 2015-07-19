@@ -20,10 +20,10 @@
 #ifndef POSTMSG_H_
 #define POSTMSG_H_
 
-#include "main.h"
+#include "defines.h"
 #include <string>
-#include "GameConsts.h"
-#include "MapConsts.h"
+#include "gameData/GameConsts.h"
+#include "gameTypes/MapTypes.h"
 #include "Loader.h"
 
 class SerializedGameData;

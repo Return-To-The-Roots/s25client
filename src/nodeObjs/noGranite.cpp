@@ -19,7 +19,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "noGranite.h"
 
 #include "Loader.h"
@@ -27,7 +27,7 @@
 #include "SerializedGameData.h"
 #include "FOWObjects.h"
 
-#include "glSmartBitmap.h"
+#include "ogl/glSmartBitmap.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

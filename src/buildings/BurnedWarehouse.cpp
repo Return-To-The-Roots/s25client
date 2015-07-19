@@ -19,18 +19,18 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "BurnedWarehouse.h"
 
 #include "SerializedGameData.h"
 #include "EventManager.h"
 #include "GameWorld.h"
 #include "Random.h"
-#include "noFigure.h"
-#include "glArchivItem_Map.h"
+#include "figures/noFigure.h"
+#include "ogl/glArchivItem_Map.h"
 #include "GameClient.h"
 #include "GameClientPlayer.h"
-#include "nofPassiveWorker.h"
+#include "figures/nofPassiveWorker.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

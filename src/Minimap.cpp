@@ -19,9 +19,10 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "Minimap.h"
-#include "MinimapConsts.h"
+#include "gameData/MinimapConsts.h"
+#include "gameData/MapConsts.h"
 #include "GameWorld.h"
 #include "GameClient.h"
 

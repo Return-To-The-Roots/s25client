@@ -19,14 +19,14 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "SoundManager.h"
 
 #include "Loader.h"
-#include "VideoDriverWrapper.h"
-#include "AudioDriverWrapper.h"
+#include "drivers/VideoDriverWrapper.h"
+#include "drivers/AudioDriverWrapper.h"
 #include "Settings.h"
-#include "noBase.h"
+#include "nodeObjs/noBase.h"
 #include "GameClient.h"
 
 ///////////////////////////////////////////////////////////////////////////////

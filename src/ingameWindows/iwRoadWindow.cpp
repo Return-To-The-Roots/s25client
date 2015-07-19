@@ -19,14 +19,14 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "iwRoadWindow.h"
 
 #include "Loader.h"
-#include "VideoDriverWrapper.h"
-#include "controls.h"
+#include "drivers/VideoDriverWrapper.h"
+#include "controls/controls.h"
 
-#include "dskGameInterface.h"
+#include "desktops/dskGameInterface.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

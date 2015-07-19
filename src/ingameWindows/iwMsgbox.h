@@ -22,7 +22,7 @@
 #pragma once
 
 #include "IngameWindow.h"
-#include "glArchivItem_Font.h"
+#include "ogl/glArchivItem_Font.h"
 
 class iwMsgbox : public IngameWindow
 {

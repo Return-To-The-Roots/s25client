@@ -19,12 +19,12 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "ctrlButton.h"
 #include "Loader.h"
 
 #include "WindowManager.h"
-#include "VideoDriverWrapper.h"
+#include "drivers/VideoDriverWrapper.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

@@ -24,7 +24,7 @@
 #include "IngameWindow.h"
 #include "../driver/src/VideoDriver.h"
 
-#include "dskGameInterface.h"
+#include "desktops/dskGameInterface.h"
 
 /// Fenster mit den Statistiken.
 class iwSettings : public IngameWindow

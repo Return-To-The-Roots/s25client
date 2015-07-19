@@ -20,12 +20,12 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "iwTextfile.h"
 
 #include "Loader.h"
-#include "controls.h"
-#include "VideoDriverWrapper.h"
+#include "controls/controls.h"
+#include "drivers/VideoDriverWrapper.h"
 #include "files.h"
 #include "Settings.h"
 #include "iwMsgbox.h"

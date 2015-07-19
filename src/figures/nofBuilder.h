@@ -20,7 +20,7 @@
 #ifndef NOF_BUILDER_H_
 #define NOF_BUILDER_H_
 
-#include "noFigure.h"
+#include "figures/noFigure.h"
 
 class noBuildingSite;
 

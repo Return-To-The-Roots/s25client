@@ -19,23 +19,24 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "GameWorld.h"
 #include "Loader.h"
 #include "GameClient.h"
-#include "noEnvObject.h"
-#include "noStaticObject.h"
-#include "noGranite.h"
-#include "noTree.h"
-#include "noFlag.h"
-#include "nobHQ.h"
-#include "noFire.h"
-#include "nobUsual.h"
-#include "noAnimal.h"
+#include "nodeObjs/noEnvObject.h"
+#include "nodeObjs/noStaticObject.h"
+#include "nodeObjs/noGranite.h"
+#include "nodeObjs/noTree.h"
+#include "nodeObjs/noFlag.h"
+#include "buildings/nobHQ.h"
+#include "nodeObjs/noFire.h"
+#include "buildings/nobUsual.h"
+#include "nodeObjs/noAnimal.h"
 #include "CatapultStone.h"
-#include "noBuildingSite.h"
+#include "buildings/noBuildingSite.h"
 #include "Random.h"
 #include "TradeGraph.h"
+#include "gameData/MapConsts.h"
 #include <queue>
 #include <algorithm>
 

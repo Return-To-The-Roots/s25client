@@ -19,17 +19,17 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "nofMiller.h"
 
 #include "Loader.h"
 #include "macros.h"
 #include "GameClient.h"
-#include "nobUsual.h"
-#include "VideoDriverWrapper.h"
+#include "buildings/nobUsual.h"
+#include "drivers/VideoDriverWrapper.h"
 #include "SoundManager.h"
 
-#include "glSmartBitmap.h"
+#include "ogl/glSmartBitmap.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

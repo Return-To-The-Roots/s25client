@@ -18,31 +18,32 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
-#include "noFigure.h"
+#include "defines.h"
+#include "figures/noFigure.h"
 
 #include "GameWorld.h"
 #include "Loader.h"
-#include "noRoadNode.h"
+#include "nodeObjs/noRoadNode.h"
 #include "EventManager.h"
 #include "MapGeometry.h"
+#include "gameData/MapConsts.h"
 #include "nofCarrier.h"
-#include "noSkeleton.h"
+#include "nodeObjs/noSkeleton.h"
 
-#include "nobBaseWarehouse.h"
-#include "nobHarborBuilding.h"
-#include "DoorConsts.h"
+#include "buildings/nobBaseWarehouse.h"
+#include "buildings/nobHarborBuilding.h"
+#include "gameData/DoorConsts.h"
 #include "macros.h"
 #include "GameClient.h"
 #include "GameClientPlayer.h"
 
-#include "glSmartBitmap.h"
+#include "ogl/glSmartBitmap.h"
 
-#include "Swap.h"
+#include "helpers/Swap.h"
 #include "Random.h"
 
 #include "SerializedGameData.h"
-#include "JobConsts.h"
+#include "gameData/JobConsts.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

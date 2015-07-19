@@ -19,12 +19,12 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "iwHQ.h"
 
 #include "Loader.h"
-#include "nobHQ.h"
-#include "ctrlGroup.h"
+#include "buildings/nobHQ.h"
+#include "controls/ctrlGroup.h"
 #include "GameClient.h"
 #include "GameCommands.h"
 

@@ -19,15 +19,15 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "iwBuildingSite.h"
 
-#include "VideoDriverWrapper.h"
+#include "drivers/VideoDriverWrapper.h"
 
 #include "Loader.h"
 #include "GameClient.h"
 #include "WindowManager.h"
-#include "noBuildingSite.h"
+#include "buildings/noBuildingSite.h"
 
 #include "iwDemolishBuilding.h"
 #include "iwMsgbox.h"

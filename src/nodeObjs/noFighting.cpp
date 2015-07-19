@@ -19,22 +19,22 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "noFighting.h"
-#include "MilitaryConsts.h"
+#include "gameData/MilitaryConsts.h"
 
-#include "nofActiveSoldier.h"
+#include "figures/nofActiveSoldier.h"
 #include "Random.h"
 #include "EventManager.h"
 #include "GameWorld.h"
 #include "GameClient.h"
 #include "Loader.h"
 #include "noSkeleton.h"
-#include "nobBaseMilitary.h"
+#include "buildings/nobBaseMilitary.h"
 #include "SoundManager.h"
 #include "SerializedGameData.h"
 
-#include "glSmartBitmap.h"
+#include "ogl/glSmartBitmap.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

@@ -19,20 +19,20 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "iwShip.h"
-#include "dskGameInterface.h"
+#include "desktops/dskGameInterface.h"
 #include "Loader.h"
-#include "VideoDriverWrapper.h"
+#include "drivers/VideoDriverWrapper.h"
 #include "GameClient.h"
-#include "controls.h"
+#include "controls/controls.h"
 #include "WindowManager.h"
 #include "GameCommands.h"
-#include "noShip.h"
+#include "nodeObjs/noShip.h"
 #include "iwMsgbox.h"
-#include "noFigure.h"
+#include "figures/noFigure.h"
 #include "Ware.h"
-#include "JobConsts.h"
+#include "gameData/JobConsts.h"
 
 
 

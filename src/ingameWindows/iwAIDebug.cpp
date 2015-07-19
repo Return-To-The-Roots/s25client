@@ -19,15 +19,15 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "iwAIDebug.h"
 
 #include "WindowManager.h"
-#include "controls.h"
+#include "controls/controls.h"
 
 #include "GameClient.h"
 #include "GameServer.h"
-#include "AIPlayerJH.h"
+#include "ai/AIPlayerJH.h"
 
 #include "GameWorld.h"
 

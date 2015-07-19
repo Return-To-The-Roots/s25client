@@ -21,14 +21,14 @@
 #define OBJMANAGER_H_
 
 
-#include "GameConsts.h"
-#include "MapConsts.h"
-#include "noNothing.h"
+#include "gameData/GameConsts.h"
+#include "gameTypes/MapTypes.h"
+#include "nodeObjs/noNothing.h"
 #include "RoadSegment.h"
-#include "MilitaryConsts.h"
+#include "gameData/MilitaryConsts.h"
 #include "EventManager.h"
 #include "TerrainRenderer.h"
-#include "main.h"
+#include "defines.h"
 #include "Point.h"
 #include <vector>
 #include <cstddef>

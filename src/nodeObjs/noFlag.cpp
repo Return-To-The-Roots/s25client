@@ -19,23 +19,23 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "noFlag.h"
 
 #include "GameWorld.h"
 #include "Loader.h"
 #include "macros.h"
-#include "nofCarrier.h"
+#include "figures/nofCarrier.h"
 #include "GameClient.h"
 #include "GameClientPlayer.h"
 #include "Ware.h"
-#include "noBuilding.h"
-#include "noBuildingSite.h"
-#include "nobMilitary.h"
+#include "buildings/noBuilding.h"
+#include "buildings/noBuildingSite.h"
+#include "buildings/nobMilitary.h"
 #include "SerializedGameData.h"
 #include "FOWObjects.h"
 
-#include "glSmartBitmap.h"
+#include "ogl/glSmartBitmap.h"
 #include "GameServer.h"
 
 ///////////////////////////////////////////////////////////////////////////////

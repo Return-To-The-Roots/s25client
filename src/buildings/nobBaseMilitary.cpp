@@ -21,18 +21,18 @@
 // Header
 
 
-#include "main.h"
+#include "defines.h"
 #include "nobBaseMilitary.h"
 #include "GameWorld.h"
 #include "Loader.h"
-#include "noFire.h"
+#include "nodeObjs/noFire.h"
 #include "EventManager.h"
-#include "nofSoldier.h"
+#include "figures/nofSoldier.h"
 #include "Random.h"
 #include "nobMilitary.h"
-#include "nofAttacker.h"
-#include "nofAggressiveDefender.h"
-#include "nofDefender.h"
+#include "figures/nofAttacker.h"
+#include "figures/nofAggressiveDefender.h"
+#include "figures/nofDefender.h"
 #include "SerializedGameData.h"
 #include "MapGeometry.h"
 

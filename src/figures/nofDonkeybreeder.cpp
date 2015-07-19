@@ -19,17 +19,17 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "nofDonkeybreeder.h"
 
 #include "GameClient.h"
 #include "SoundManager.h"
 
-#include "nobUsual.h"
+#include "buildings/nobUsual.h"
 #include "nofCarrier.h"
 #include "GameWorld.h"
 
-#include "glSmartBitmap.h"
+#include "ogl/glSmartBitmap.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

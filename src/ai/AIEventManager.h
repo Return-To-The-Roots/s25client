@@ -21,9 +21,9 @@
 
 #pragma once
 
-#include "main.h"
-#include "MapConsts.h"
-#include "GameConsts.h"
+#include "defines.h"
+#include "gameTypes/MapTypes.h"
+#include "gameData/GameConsts.h"
 #include <queue>
 
 namespace AIEvent

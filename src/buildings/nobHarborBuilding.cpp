@@ -21,24 +21,24 @@
 // Header
 
 
-#include "main.h"
+#include "defines.h"
 #include "nobHarborBuilding.h"
 #include "GameWorld.h"
 #include "Loader.h"
-#include "noExtension.h"
-#include "MilitaryConsts.h"
+#include "nodeObjs/noExtension.h"
+#include "gameData/MilitaryConsts.h"
 #include "GameClient.h"
 #include "GameClientPlayer.h"
 #include "Ware.h"
 #include "EventManager.h"
-#include "noShip.h"
-#include "noFigure.h"
+#include "nodeObjs/noShip.h"
+#include "figures/noFigure.h"
 #include "Random.h"
 #include "nobMilitary.h"
-#include "nofAttacker.h"
-#include "nofDefender.h"
+#include "figures/nofAttacker.h"
+#include "figures/nofDefender.h"
 
-#include "glSmartBitmap.h"
+#include "ogl/glSmartBitmap.h"
 
 #include <set>
 

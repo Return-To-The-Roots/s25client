@@ -23,10 +23,13 @@
 
 #include "CollisionDetection.h"
 
-#include "MouseAndKeys.h"
+#include "drivers/MouseAndKeys.h"
 #include "Msgbox.h"
-#include "GameConsts.h"
+#include "gameData/GameConsts.h"
 #include "colors.h"
+#include "Rect.h"
+#include "list.h"
+#include <map>
 
 class WindowManager;
 
@@ -57,6 +60,9 @@ class ctrlTimer;
 class ctrlVarDeepening;
 class ctrlVarText;
 class ctrlMultiSelectGroup;
+
+class glArchivItem_Map;
+class glArchivItem_Font;
 
 /// Die Basisklasse der Fenster.
 class Window

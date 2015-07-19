@@ -19,11 +19,11 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "nofScout_Free.h"
 
-#include "GameConsts.h"
-#include "noFlag.h"
+#include "gameData/GameConsts.h"
+#include "nodeObjs/noFlag.h"
 #include "GameWorld.h"
 #include "Random.h"
 #include "EventManager.h"

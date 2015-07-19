@@ -23,8 +23,9 @@
 
 #include "../libutil/src/Singleton.h"
 #include "../libsiedler2/src/libsiedler2.h"
-#include "const_addons.h"
-#include "NationConsts.h"
+#include "addons/const_addons.h"
+#include "gameData/NationConsts.h"
+#include "Rect.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 

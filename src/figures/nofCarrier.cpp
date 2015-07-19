@@ -19,7 +19,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "nofCarrier.h"
 
 #include "GameWorld.h"
@@ -31,12 +31,12 @@
 
 #include "Ware.h"
 #include "RoadSegment.h"
-#include "noRoadNode.h"
-#include "noFlag.h"
-#include "noBaseBuilding.h"
-#include "JobConsts.h"
+#include "nodeObjs/noRoadNode.h"
+#include "nodeObjs/noFlag.h"
+#include "buildings/nobaseBuilding.h"
+#include "gameData/JobConsts.h"
 
-#include "glSmartBitmap.h"
+#include "ogl/glSmartBitmap.h"
 
 
 ///////////////////////////////////////////////////////////////////////////////

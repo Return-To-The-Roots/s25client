@@ -21,7 +21,7 @@
 // Header
 
 
-#include "main.h"
+#include "defines.h"
 #include "noEnvObject.h"
 #include "SerializedGameData.h"
 

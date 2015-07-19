@@ -19,13 +19,13 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "iwSurrender.h"
 
 #include "Loader.h"
 #include "GameManager.h"
 
-#include "dskMainMenu.h"
+#include "desktops/dskMainMenu.h"
 #include "iwSave.h"
 #include "WindowManager.h"
 #include "GameClient.h"

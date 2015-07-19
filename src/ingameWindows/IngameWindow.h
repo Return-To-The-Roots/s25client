@@ -22,8 +22,11 @@
 #pragma once
 
 #include "Window.h"
-#include "const_gui_ids.h"
+#include "gameData/const_gui_ids.h"
 #include "Point.h"
+#include <vector>
+
+class glArchivItem_Bitmap;
 
 class IngameWindow : public Window
 {

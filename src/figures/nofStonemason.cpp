@@ -19,11 +19,11 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "nofStonemason.h"
 
 #include "GameWorld.h"
-#include "noGranite.h"
+#include "nodeObjs/noGranite.h"
 #include "Loader.h"
 #include "macros.h"
 #include "GameClient.h"

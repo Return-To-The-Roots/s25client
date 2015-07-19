@@ -30,7 +30,7 @@
 #include "GlobalGameSettings.h"
 #include "GamePlayerList.h"
 
-#include "AIEventManager.h"
+#include "ai/AIEventManager.h"
 
 
 class GameServerPlayer;

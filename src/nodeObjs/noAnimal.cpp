@@ -21,20 +21,20 @@
 // Header
 
 
-#include "main.h"
+#include "defines.h"
 #include "noAnimal.h"
-#include "Swap.h"
+#include "helpers/Swap.h"
 #include "Loader.h"
 #include "macros.h"
 #include "GameClient.h"
 #include "Random.h"
 #include "EventManager.h"
 #include "GameWorld.h"
-#include "nofHunter.h"
-#include "VideoDriverWrapper.h"
+#include "figures/nofHunter.h"
+#include "drivers/VideoDriverWrapper.h"
 #include "SerializedGameData.h"
 
-#include "glSmartBitmap.h"
+#include "ogl/glSmartBitmap.h"
 
 /// Konstruktor
 noAnimal::noAnimal(const Species species, const unsigned short x, const unsigned short y) : noMovable(NOP_ANIMAL, x, y)

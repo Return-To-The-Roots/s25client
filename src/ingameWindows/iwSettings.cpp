@@ -19,18 +19,18 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "iwSettings.h"
 
 #include "Settings.h"
 #include "Loader.h"
-#include "controls.h"
+#include "controls/controls.h"
 #include "GameClient.h"
 #include "GlobalVars.h"
-#include "dskGameInterface.h"
+#include "desktops/dskGameInterface.h"
 
-#include "VideoDriverWrapper.h"
-#include "AudioDriverWrapper.h"
+#include "drivers/VideoDriverWrapper.h"
+#include "drivers/AudioDriverWrapper.h"
 
 #include "iwTextfile.h"
 #include "iwMsgbox.h"

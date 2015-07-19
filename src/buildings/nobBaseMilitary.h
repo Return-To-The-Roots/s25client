@@ -20,9 +20,9 @@
 #ifndef NOB_BASEMILITARY_H_
 #define NOB_BASEMILITARY_H_
 
-#include "noBuilding.h"
-#include "BuildingConsts.h"
-#include "GameConsts.h"
+#include "buildings/noBuilding.h"
+#include "gameData/BuildingConsts.h"
+#include "gameData/GameConsts.h"
 #include "EventManager.h"
 
 class nofSoldier;

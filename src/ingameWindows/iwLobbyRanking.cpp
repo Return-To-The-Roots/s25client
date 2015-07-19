@@ -19,12 +19,12 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "iwLobbyRanking.h"
 
 #include "WindowManager.h"
 #include "Loader.h"
-#include "controls.h"
+#include "controls/controls.h"
 #include "LobbyClient.h"
 
 ///////////////////////////////////////////////////////////////////////////////

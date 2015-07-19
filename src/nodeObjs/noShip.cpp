@@ -21,7 +21,7 @@
 // Header
 
 
-#include "main.h"
+#include "defines.h"
 #include "noShip.h"
 #include "Loader.h"
 #include "macros.h"
@@ -30,12 +30,12 @@
 #include "EventManager.h"
 #include "GameWorld.h"
 #include "SerializedGameData.h"
-#include "nobHarborBuilding.h"
-#include "noFigure.h"
+#include "buildings/nobHarborBuilding.h"
+#include "figures/noFigure.h"
 #include "Ware.h"
 #include "PostMsg.h"
-#include "AIEventManager.h"
-#include "nofAttacker.h"
+#include "ai/AIEventManager.h"
+#include "figures/nofAttacker.h"
 
 const unsigned int ship_count = 55;
 

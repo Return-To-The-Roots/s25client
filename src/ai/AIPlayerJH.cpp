@@ -18,7 +18,7 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "main.h"
+#include "defines.h"
 #include "AIPlayerJH.h"
 
 #include "GameClientPlayer.h"
@@ -26,13 +26,13 @@
 #include "GameCommands.h"
 #include "GamePlayerList.h"
 
-#include "nobMilitary.h"
-#include "nobHQ.h"
-#include "noBuildingSite.h"
-#include "noShip.h"
-#include "noFlag.h"
-#include "noTree.h"
-#include "noAnimal.h"
+#include "buildings/nobMilitary.h"
+#include "buildings/nobHQ.h"
+#include "buildings/noBuildingSite.h"
+#include "nodeObjs/noShip.h"
+#include "nodeObjs/noFlag.h"
+#include "nodeObjs/noTree.h"
+#include "nodeObjs/noAnimal.h"
 
 #include "MapGeometry.h"
 

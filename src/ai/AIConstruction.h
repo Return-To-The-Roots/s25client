@@ -26,7 +26,7 @@
 #include "list.h"
 #include "AIJHHelper.h"
 #include "GameWorld.h"
-#include "noFlag.h"
+#include "nodeObjs/noFlag.h"
 #include "AIInterface.h"
 
 class AIPlayerJH;

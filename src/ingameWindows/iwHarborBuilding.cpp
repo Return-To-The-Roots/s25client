@@ -19,15 +19,15 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "iwHarborBuilding.h"
 
 #include "Loader.h"
-#include "nobHarborBuilding.h"
-#include "ctrlGroup.h"
+#include "buildings/nobHarborBuilding.h"
+#include "controls/ctrlGroup.h"
 #include "GameClient.h"
 #include "GameCommands.h"
-#include "ctrlButton.h"
+#include "controls/ctrlButton.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

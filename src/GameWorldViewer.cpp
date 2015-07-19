@@ -19,22 +19,22 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "GameWorld.h"
-#include "VideoDriverWrapper.h"
-#include "glArchivItem_Map.h"
-#include "noTree.h"
-#include "nobUsual.h"
-#include "nobMilitary.h"
-#include "noBuildingSite.h"
+#include "drivers/VideoDriverWrapper.h"
+#include "ogl/glArchivItem_Map.h"
+#include "nodeObjs/noTree.h"
+#include "buildings/nobUsual.h"
+#include "buildings/nobMilitary.h"
+#include "buildings/noBuildingSite.h"
 #include "CatapultStone.h"
 #include "GameClient.h"
 #include "SoundManager.h"
 #include "MapGeometry.h"
-#include "MapConsts.h"
-#include "dskGameInterface.h"
+#include "gameTypes/MapTypes.h"
+#include "desktops/dskGameInterface.h"
 #include "FOWObjects.h"
-#include "noShip.h"
+#include "nodeObjs/noShip.h"
 
 #include "Settings.h"
 

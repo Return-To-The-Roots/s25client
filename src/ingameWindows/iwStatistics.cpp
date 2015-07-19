@@ -19,12 +19,12 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "iwStatistics.h"
 
 #include "Loader.h"
 #include "Settings.h"
-#include "controls.h"
+#include "controls/controls.h"
 #include "GameClient.h"
 
 

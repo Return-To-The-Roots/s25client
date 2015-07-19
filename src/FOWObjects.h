@@ -19,8 +19,8 @@
 #ifndef FOWOBJECT_H_INCLUDED
 #define FOWOBJECT_H_INCLUDED
 
-#include "GameConsts.h"
-#include "MapConsts.h"
+#include "gameData/GameConsts.h"
+#include "gameTypes/MapTypes.h"
 
 class SerializedGameData;
 

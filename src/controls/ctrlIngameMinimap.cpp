@@ -19,7 +19,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "ctrlIngameMinimap.h"
 #include "Minimap.h"
 #include "GameWorld.h"

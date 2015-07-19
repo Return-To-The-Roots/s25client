@@ -20,29 +20,29 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Header
 
-#include "main.h"
+#include "defines.h"
 #include "GameWorld.h"
-#include "VideoDriverWrapper.h"
-#include "glArchivItem_Map.h"
-#include "noTree.h"
-#include "nobUsual.h"
-#include "nobMilitary.h"
-#include "noBuildingSite.h"
+#include "drivers/VideoDriverWrapper.h"
+#include "ogl/glArchivItem_Map.h"
+#include "nodeObjs/noTree.h"
+#include "buildings/nobUsual.h"
+#include "buildings/nobMilitary.h"
+#include "buildings/noBuildingSite.h"
 #include "CatapultStone.h"
 #include "GameClient.h"
 #include "SoundManager.h"
 #include "MapGeometry.h"
-#include "MapConsts.h"
-#include "dskGameInterface.h"
+#include "gameData/MapConsts.h"
+#include "desktops/dskGameInterface.h"
 #include "FOWObjects.h"
-#include "noShip.h"
+#include "nodeObjs/noShip.h"
 
 #include "Settings.h"
 
 #include "GameServer.h"
-#include "AIPlayerJH.h"
+#include "ai/AIPlayerJH.h"
 
-#include "glSmartBitmap.h"
+#include "ogl/glSmartBitmap.h"
 
 GameWorldView::GameWorldView(GameWorldViewer* gwv, unsigned short x, unsigned short y, unsigned short width, unsigned short height) : selx(0), sely(0), show_coordinates(false), show_bq(false), show_names(false), show_productivity(false), xoffset(0), yoffset(0), last_xoffset(0), last_yoffset(0), gwv(gwv), d_what(0), d_player(0), d_active(false), x(x), y(y), width(width), height(height), terrain_list(0), terrain_last_xoffset(0), terrain_last_yoffset(0), terrain_last_global_animation(0), terrain_last_water(0)
 {

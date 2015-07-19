@@ -19,13 +19,13 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "nofWorkman.h"
 
-#include "nobUsual.h"
+#include "buildings/nobUsual.h"
 #include "Loader.h"
-#include "JobConsts.h"
-#include "BuildingConsts.h"
+#include "gameData/JobConsts.h"
+#include "gameData/BuildingConsts.h"
 #include "EventManager.h"
 #include "Ware.h"
 #include "GameClient.h"

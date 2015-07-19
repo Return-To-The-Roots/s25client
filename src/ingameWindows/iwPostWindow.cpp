@@ -21,16 +21,16 @@
 // Header
 
 
-#include "main.h"
+#include "defines.h"
 #include "iwPostWindow.h"
-#include "ctrlText.h"
-#include "ctrlButton.h"
-#include "ctrlTable.h"
-#include "ctrlImage.h"
-#include "ctrlMultiline.h"
+#include "controls/ctrlText.h"
+#include "controls/ctrlButton.h"
+#include "controls/ctrlTable.h"
+#include "controls/ctrlImage.h"
+#include "controls/ctrlMultiline.h"
 #include "WindowManager.h"
 #include "Loader.h"
-#include "const_gui_ids.h"
+#include "gameData/const_gui_ids.h"
 #include "macros.h"
 #include "GameClient.h"
 #include "GameClientPlayer.h"

@@ -21,7 +21,7 @@
 
 #pragma once
 
-#include "GameConsts.h"
+#include "gameData/GameConsts.h"
 #include "GlobalGameSettings.h"
 
 /// Basisklasse für Replays und Savegames

@@ -19,7 +19,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include <build_version.h>
 #include "dskSinglePlayer.h"
 
@@ -31,10 +31,10 @@
 
 #include "dskMainMenu.h"
 #include "dskSelectMap.h"
-#include "iwPlayReplay.h"
-#include "iwSave.h"
-#include "iwMsgbox.h"
-#include "iwPleaseWait.h"
+#include "ingameWindows/iwPlayReplay.h"
+#include "ingameWindows/iwSave.h"
+#include "ingameWindows/iwMsgbox.h"
+#include "ingameWindows/iwPleaseWait.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

@@ -1,9 +1,9 @@
 #ifndef TRADE_GRAPH_H_
 #define TRADE_GRAPH_H_
 
-#include "MapConsts.h"
+#include "gameTypes/MapTypes.h"
 #include <memory.h>
-#include "GameConsts.h"
+#include "gameData/GameConsts.h"
 #include "Point.h"
 
 class GameWorldGame;

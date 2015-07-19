@@ -19,9 +19,9 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "iwMerchandiseStatistics.h"
-#include "controls.h"
+#include "controls/controls.h"
 #include "GameClient.h"
 #include "GameClientPlayer.h"
 

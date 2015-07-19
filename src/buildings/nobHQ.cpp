@@ -21,12 +21,12 @@
 // Header
 
 
-#include "main.h"
+#include "defines.h"
 #include "nobHQ.h"
 #include "GameWorld.h"
 #include "Loader.h"
-#include "noExtension.h"
-#include "MilitaryConsts.h"
+#include "nodeObjs/noExtension.h"
+#include "gameData/MilitaryConsts.h"
 #include "GameClient.h"
 #include "GameClientPlayer.h"
 #include "GlobalGameSettings.h"

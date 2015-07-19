@@ -19,19 +19,19 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "nofGeologist.h"
 
-#include "GameConsts.h"
-#include "noFlag.h"
+#include "gameData/GameConsts.h"
+#include "nodeObjs/noFlag.h"
 #include "Loader.h"
 #include "macros.h"
 #include "GameWorld.h"
 #include "Random.h"
 #include "EventManager.h"
 #include "GameClient.h"
-#include "noSign.h"
-#include "nobBaseWarehouse.h"
+#include "nodeObjs/noSign.h"
+#include "buildings/nobBaseWarehouse.h"
 #include "SoundManager.h"
 #include "SerializedGameData.h"
 

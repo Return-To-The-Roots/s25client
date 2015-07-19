@@ -19,16 +19,16 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "WindowManager.h"
 
 #include "Settings.h"
-#include "VideoDriverWrapper.h"
+#include "drivers/VideoDriverWrapper.h"
 #include "Loader.h"
 
 #include "Window.h"
-#include "Desktop.h"
-#include "IngameWindow.h"
+#include "desktops/Desktop.h"
+#include "ingameWindows/IngameWindow.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

@@ -19,17 +19,17 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "nofForester.h"
 
 #include "GameWorld.h"
-#include "noGranite.h"
+#include "nodeObjs/noGranite.h"
 #include "Loader.h"
 #include "macros.h"
 #include "GameClient.h"
 #include "Ware.h"
 #include "Random.h"
-#include "noTree.h"
+#include "nodeObjs/noTree.h"
 #include "SoundManager.h"
 #include "GameWorld.h"
 #include "GameInterface.h"

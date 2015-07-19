@@ -19,11 +19,11 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "nobUsual.h"
 
-#include "nofBuildingWorker.h"
-#include "nofPigbreeder.h"
+#include "figures/nofBuildingWorker.h"
+#include "figures/nofPigbreeder.h"
 #include "Ware.h"
 
 #include "GameClient.h"

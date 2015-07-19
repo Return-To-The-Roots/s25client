@@ -19,7 +19,7 @@
 #ifndef DEBUG_H_
 #define DEBUG_H_
 
-#include "main.h"
+#include "defines.h"
 #include "Settings.h"
 #include "GameClient.h"
 #include "Random.h"

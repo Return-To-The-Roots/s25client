@@ -19,11 +19,11 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "nofCharburner.h"
 
 #include "GameWorld.h"
-#include "noGranite.h"
+#include "nodeObjs/noGranite.h"
 #include "Loader.h"
 #include "macros.h"
 #include "GameClient.h"
@@ -32,8 +32,8 @@
 #include "SoundManager.h"
 #include "GameWorld.h"
 #include "GameInterface.h"
-#include "noCharburnerPile.h"
-#include "nobUsual.h"
+#include "nodeObjs/noCharburnerPile.h"
+#include "buildings/nobUsual.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

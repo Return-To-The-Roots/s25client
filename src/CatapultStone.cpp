@@ -19,7 +19,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "CatapultStone.h"
 
 #include "EventManager.h"
@@ -27,10 +27,10 @@
 #include "SerializedGameData.h"
 #include "Loader.h"
 #include "GameClient.h"
-#include "nobMilitary.h"
-#include "noEnvObject.h"
+#include "buildings/nobMilitary.h"
+#include "nodeObjs/noEnvObject.h"
 #include "Random.h"
-#include "MapConsts.h"
+#include "gameData/MapConsts.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

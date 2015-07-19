@@ -1,9 +1,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "nofShipWright.h"
-#include "nobShipYard.h"
-#include "noShipBuildingSite.h"
+#include "buildings/nobShipYard.h"
+#include "nodeObjs/noShipBuildingSite.h"
 #include "GameWorld.h"
 #include "SerializedGameData.h"
 #include "SoundManager.h"

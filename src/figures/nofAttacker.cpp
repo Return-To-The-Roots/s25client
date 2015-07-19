@@ -21,24 +21,24 @@
 // Header
 
 
-#include "main.h"
+#include "defines.h"
 #include "nofAttacker.h"
 #include "nofDefender.h"
 #include "nofAggressiveDefender.h"
 #include "nofPassiveSoldier.h"
-#include "nobMilitary.h"
+#include "buildings/nobMilitary.h"
 #include "Loader.h"
 #include "GameClient.h"
-#include "GameConsts.h"
+#include "gameData/GameConsts.h"
 #include "Random.h"
 #include "GameWorld.h"
-#include "noFighting.h"
+#include "nodeObjs/noFighting.h"
 #include "SerializedGameData.h"
-#include "nobBaseWarehouse.h"
+#include "buildings/nobBaseWarehouse.h"
 #include "MapGeometry.h"
 #include "PostMsg.h"
-#include "nobHarborBuilding.h"
-#include "noShip.h"
+#include "buildings/nobHarborBuilding.h"
+#include "nodeObjs/noShip.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

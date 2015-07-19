@@ -19,27 +19,27 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "GameClientPlayer.h"
 #include "GameWorld.h"
 #include "GameClient.h"
 #include "Random.h"
 
-#include "GameConsts.h"
-#include "MilitaryConsts.h"
+#include "gameData/GameConsts.h"
+#include "gameData/MilitaryConsts.h"
 
 #include "RoadSegment.h"
 #include "Ware.h"
 
-#include "noFlag.h"
-#include "noBuildingSite.h"
-#include "nobUsual.h"
-#include "nobMilitary.h"
-#include "nofFlagWorker.h"
-#include "nofCarrier.h"
-#include "noShip.h"
-#include "nobHarborBuilding.h"
-#include "nofTradeLeader.h"
+#include "nodeObjs/noFlag.h"
+#include "buildings/noBuildingSite.h"
+#include "buildings/nobUsual.h"
+#include "buildings/nobMilitary.h"
+#include "figures/nofFlagWorker.h"
+#include "figures/nofCarrier.h"
+#include "nodeObjs/noShip.h"
+#include "buildings/nobHarborBuilding.h"
+#include "figures/nofTradeLeader.h"
 
 #include "GameInterface.h"
 

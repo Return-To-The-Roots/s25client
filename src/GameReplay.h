@@ -24,7 +24,7 @@
 #include "BinaryFile.h"
 #include "GameSavedFile.h"
 #include "GameProtocol.h"
-#include "MapConsts.h"
+#include "gameTypes/MapTypes.h"
 #include "Point.h"
 
 class Savegame;

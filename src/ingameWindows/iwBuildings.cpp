@@ -19,19 +19,19 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "iwBuildings.h"
 #include "Loader.h"
-#include "GameConsts.h"
+#include "gameData/GameConsts.h"
 #include "GameClient.h"
 #include "WindowManager.h"
-#include "nobMilitary.h"
+#include "buildings/nobMilitary.h"
 #include "iwMilitaryBuilding.h"
-#include "nobUsual.h"
+#include "buildings/nobUsual.h"
 #include "iwBuilding.h"
-#include "nobBaseWarehouse.h"
-#include "nobStorehouse.h"
-#include "nobHarborBuilding.h"
+#include "buildings/nobBaseWarehouse.h"
+#include "buildings/nobStorehouse.h"
+#include "buildings/nobHarborBuilding.h"
 #include "iwStorehouse.h"
 #include "iwHarborBuilding.h"
 

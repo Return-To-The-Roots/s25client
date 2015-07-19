@@ -19,14 +19,14 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "GameClient.h"
 
 #include "GlobalVars.h"
 #include "Loader.h"
 #include "Random.h"
 #include "GameManager.h"
-#include "dskGameInterface.h"
+#include "desktops/dskGameInterface.h"
 #include "ClientInterface.h"
 #include "GameMessages.h"
 

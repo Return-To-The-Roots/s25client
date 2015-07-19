@@ -19,7 +19,7 @@
 #ifndef TERRAIN_RENDERER_H_
 #define TERRAIN_RENDERER_H_
 
-#include "MapConsts.h"
+#include "gameTypes/MapTypes.h"
 
 class GameWorldViewer;
 class GameWorldView;

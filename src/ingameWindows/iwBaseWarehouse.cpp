@@ -19,13 +19,13 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "iwBaseWarehouse.h"
 
 #include "Loader.h"
 
-#include "VideoDriverWrapper.h"
-#include "controls.h"
+#include "drivers/VideoDriverWrapper.h"
+#include "controls/controls.h"
 #include "GameClient.h"
 #include "iwDemolishBuilding.h"
 #include "WindowManager.h"
@@ -35,9 +35,9 @@
 #include "iwStorehouse.h"
 #include "iwHarborBuilding.h"
 
-#include "nobBaseWarehouse.h"
-#include "nobHarborBuilding.h"
-#include "nobStorehouse.h"
+#include "buildings/nobBaseWarehouse.h"
+#include "buildings/nobHarborBuilding.h"
+#include "buildings/nobStorehouse.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

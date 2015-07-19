@@ -20,7 +20,7 @@
 #ifndef NOF_SOLDIER_H_
 #define NOF_SOLDIER_H_
 
-#include "noFigure.h"
+#include "figures/noFigure.h"
 
 class nobBaseMilitary;
 

@@ -19,7 +19,7 @@
 #ifndef GAMEINTERFACE_H_
 #define GAMEINTERFACE_H_
 
-#include "MapConsts.h"
+#include "gameTypes/MapTypes.h"
 
 /// Interface, welches vom Spiel angesprocehn werden kann, um beispielsweise GUI wichtige Nachrichten
 /// zu übermiteln

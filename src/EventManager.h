@@ -22,7 +22,7 @@
 #pragma once
 
 #include "Singleton.h"
-#include "GameConsts.h"
+#include "gameData/GameConsts.h"
 #include "list.h"
 #include "GameObject.h"
 

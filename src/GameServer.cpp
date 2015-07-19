@@ -19,7 +19,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include <build_version.h>
 #include "GameServer.h"
 
@@ -27,7 +27,7 @@
 
 #include "Loader.h"
 #include "Random.h"
-#include "VideoDriverWrapper.h"
+#include "drivers/VideoDriverWrapper.h"
 #include "GameMessage.h"
 #include "GameMessages.h"
 #include "GameClient.h"
@@ -35,13 +35,13 @@
 #include "FileChecksum.h"
 #include "GlobalGameSettings.h"
 #include "LobbyClient.h"
-#include "iwDirectIPCreate.h"
+#include "ingameWindows/iwDirectIPCreate.h"
 
 #include "GameServerPlayer.h"
 
 #include "GameSavegame.h"
 #include "GameReplay.h"
-#include "AIPlayer.h"
+#include "ai/AIPlayer.h"
 
 #include "Settings.h"
 #include "Debug.h"

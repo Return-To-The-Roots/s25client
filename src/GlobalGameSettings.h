@@ -20,7 +20,7 @@
 #ifndef GlobalGameSettings_H_INCLUDED
 #define GlobalGameSettings_H_INCLUDED
 
-#include "Addons.h"
+#include "addons/Addons.h"
 #include <iostream>
 #include <vector>
 #include <algorithm>

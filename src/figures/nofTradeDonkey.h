@@ -19,7 +19,7 @@
 #ifndef NOF_TRADEDONKEY_H_
 #define NOF_TRADEDONKEY_H_
 
-#include "noFigure.h"
+#include "figures/noFigure.h"
 #include "TradeGraph.h"
 #include <deque>
 

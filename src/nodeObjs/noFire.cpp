@@ -19,7 +19,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "noFire.h"
 
 #include "EventManager.h"
@@ -27,7 +27,7 @@
 #include "macros.h"
 #include "GameClient.h"
 #include "GameWorld.h"
-#include "VideoDriverWrapper.h"
+#include "drivers/VideoDriverWrapper.h"
 #include "SoundManager.h"
 #include "SerializedGameData.h"
 

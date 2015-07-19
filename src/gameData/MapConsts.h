@@ -21,37 +21,12 @@
 
 #pragma once
 
-/// Datentyp für Map-Koordinaten
-typedef unsigned short MapCoord;
-
 /// Wie hoch und breit ist ein Dreieck?
 static const int TR_W = 53;
 static const int TR_H = 29;
 
 /// Faktor fr die Höhen
 const int HEIGHT_FACTOR = 5;
-
-/// Terrainarten
-enum TerrainType
-{
-    TT_SNOW = 0,
-    TT_DESERT,
-    TT_SWAMPLAND,
-    TT_MEADOW_FLOWERS,
-    TT_MOUNTAIN1,
-    TT_MOUNTAIN2,
-    TT_MOUNTAIN3,
-    TT_MOUNTAIN4,
-    TT_SAVANNAH,
-    TT_MEADOW1,
-    TT_MEADOW2,
-    TT_MEADOW3,
-    TT_STEPPE,
-    TT_MOUNTAINMEADOW,
-    TT_WATER,
-    TT_LAVA
-};
-
 
 /// Terrainzuordnung
 const unsigned char TERRAIN_INDIZES [20] =
@@ -122,29 +97,5 @@ const unsigned char BORDER_TABLES[3][16][16][2] =
         { {0, 5}, {0, 3}, {0, 5}, {0, 4}, {0, 2}, {0, 2}, {0, 2}, {0, 2}, {0, 4}, {0, 4}, {0, 4}, {0, 4}, {0, 4}, {0, 1}, {0, 0}, {0, 0} }
     }
 };
-
-/// Sichtbarkeit für ALLE Spieler
-enum Visibility
-{
-    VIS_INVISIBLE = 0, /// Darkness
-    VIS_FOW, /// Fog of war
-    VIS_VISIBLE /// Visible
-};
-
-/// Granittyp
-enum GraniteType
-{
-    GT_1 = 0,
-    GT_2
-};
-
-/// Flaggentyp
-enum FlagType
-{
-    FT_NORMAL,
-    FT_LARGE,
-    FT_WATER
-};
-
 
 #endif // !MAPCONSTS_H_INCLUDED

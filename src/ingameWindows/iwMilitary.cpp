@@ -19,11 +19,11 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "iwMilitary.h"
 
 #include "Loader.h"
-#include "controls.h"
+#include "controls/controls.h"
 #include "GameClient.h"
 #include "GameCommands.h"
 

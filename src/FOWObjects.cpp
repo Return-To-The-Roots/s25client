@@ -19,11 +19,11 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "FOWObjects.h"
 #include "SerializedGameData.h"
 #include "GameClient.h"
-#include "BuildingConsts.h"
+#include "gameData/BuildingConsts.h"
 
 
 

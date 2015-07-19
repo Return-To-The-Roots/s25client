@@ -19,18 +19,18 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "nofFarmhand.h"
 
-#include "nobUsual.h"
+#include "buildings/nobUsual.h"
 #include "GameWorld.h"
 #include "EventManager.h"
 #include "Random.h"
-#include "JobConsts.h"
+#include "gameData/JobConsts.h"
 #include "SoundManager.h"
 #include "SerializedGameData.h"
 #include "GameClient.h"
-#include "AIEventManager.h"
+#include "ai/AIEventManager.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

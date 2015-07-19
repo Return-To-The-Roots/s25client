@@ -19,7 +19,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include <build_version.h>
 #include "GameClient.h"
 
@@ -31,9 +31,9 @@
 #include "Loader.h"
 #include "Settings.h"
 #include "FileChecksum.h"
-#include "VideoDriverWrapper.h"
+#include "drivers/VideoDriverWrapper.h"
 #include "WindowManager.h"
-#include "dskGameInterface.h"
+#include "desktops/dskGameInterface.h"
 #include "Random.h"
 #include "GameServer.h"
 #include "GameWorld.h"
@@ -48,8 +48,8 @@
 #include "files.h"
 #include "ClientInterface.h"
 #include "GameCommands.h"
-#include "AIPlayer.h"
-#include "AIPlayerJH.h"
+#include "ai/AIPlayer.h"
+#include "ai/AIPlayerJH.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

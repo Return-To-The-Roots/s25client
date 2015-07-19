@@ -19,50 +19,50 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "GlobalGameSettings.h"
 
 #include "Settings.h"
 
-#include "AddonLimitCatapults.h"
-#include "AddonInexhaustibleMines.h"
-#include "AddonRefundMaterials.h"
-#include "AddonExhaustibleWells.h"
-#include "AddonRefundOnEmergency.h"
-#include "AddonManualRoadEnlargement.h"
-#include "AddonCatapultGraphics.h"
+#include "addons/AddonLimitCatapults.h"
+#include "addons/AddonInexhaustibleMines.h"
+#include "addons/AddonRefundMaterials.h"
+#include "addons/AddonExhaustibleWells.h"
+#include "addons/AddonRefundOnEmergency.h"
+#include "addons/AddonManualRoadEnlargement.h"
+#include "addons/AddonCatapultGraphics.h"
 
-#include "AddonDemolitionProhibition.h"
-#include "AddonCharburner.h"
-#include "AddonTrade.h"
+#include "addons/AddonDemolitionProhibition.h"
+#include "addons/AddonCharburner.h"
+#include "addons/AddonTrade.h"
 
-#include "AddonChangeGoldDeposits.h"
-#include "AddonMaxWaterwayLength.h"
-#include "AddonCustomBuildSequence.h"
-#include "AddonStatisticsVisibility.h"
+#include "addons/AddonChangeGoldDeposits.h"
+#include "addons/AddonMaxWaterwayLength.h"
+#include "addons/AddonCustomBuildSequence.h"
+#include "addons/AddonStatisticsVisibility.h"
 
-#include "AddonDefenderBehavior.h"
-#include "AddonAIDebugWindow.h"
+#include "addons/AddonDefenderBehavior.h"
+#include "addons/AddonAIDebugWindow.h"
 
-#include "AddonNoCoinsDefault.h"
+#include "addons/AddonNoCoinsDefault.h"
 
-#include "AddonAdjustMilitaryStrength.h"
+#include "addons/AddonAdjustMilitaryStrength.h"
 
-#include "AddonToolOrdering.h"
+#include "addons/AddonToolOrdering.h"
 
-#include "AddonMilitaryAid.h"
-#include "AddonInexhaustibleGraniteMines.h"
-#include "AddonMaxRank.h"
-#include "AddonSeaAttack.h"
-#include "AddonInexhaustibleFish.h"
+#include "addons/AddonMilitaryAid.h"
+#include "addons/AddonInexhaustibleGraniteMines.h"
+#include "addons/AddonMaxRank.h"
+#include "addons/AddonSeaAttack.h"
+#include "addons/AddonInexhaustibleFish.h"
 
-#include "AddonShipSpeed.h"
-#include "AddonMoreAnimals.h"
-#include "AddonBurnDuration.h"
-#include "AddonNoAlliedPush.h"
-#include "AddonBattlefieldPromotion.h"
-#include "AddonHalfCostMilEquip.h"
-#include "AddonMilitaryControl.h"
+#include "addons/AddonShipSpeed.h"
+#include "addons/AddonMoreAnimals.h"
+#include "addons/AddonBurnDuration.h"
+#include "addons/AddonNoAlliedPush.h"
+#include "addons/AddonBattlefieldPromotion.h"
+#include "addons/AddonHalfCostMilEquip.h"
+#include "addons/AddonMilitaryControl.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 /**

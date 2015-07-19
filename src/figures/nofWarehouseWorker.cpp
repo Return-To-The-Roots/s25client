@@ -19,20 +19,20 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "nofWarehouseWorker.h"
 
 #include "Loader.h"
 #include "Ware.h"
 #include "GameWorld.h"
-#include "noRoadNode.h"
-#include "noFlag.h"
-#include "nobBaseWarehouse.h"
+#include "nodeObjs/noRoadNode.h"
+#include "nodeObjs/noFlag.h"
+#include "buildings/nobBaseWarehouse.h"
 #include "Random.h"
 #include "EventManager.h"
 #include "SerializedGameData.h"
 
-#include "glSmartBitmap.h"
+#include "ogl/glSmartBitmap.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

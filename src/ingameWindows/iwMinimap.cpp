@@ -19,11 +19,11 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "iwMinimap.h"
-#include "ctrlIngameMinimap.h"
+#include "controls/ctrlIngameMinimap.h"
 #include "Loader.h"
-#include "ctrlButton.h"
+#include "controls/ctrlButton.h"
 
 
 /// (maximale) Größe des Minimapfensters normal

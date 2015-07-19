@@ -20,8 +20,8 @@
 #ifndef NOF_BUILDING_WORKER_H_
 #define NOF_BUILDING_WORKER_H_
 
-#include "noFigure.h"
-#include "JobConsts.h"
+#include "figures/noFigure.h"
+#include "gameData/JobConsts.h"
 
 class nobUsual;
 

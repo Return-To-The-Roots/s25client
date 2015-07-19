@@ -19,7 +19,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include <build_version.h>
 #include "dskDirectIP.h"
 
@@ -30,9 +30,9 @@
 
 #include "dskMultiPlayer.h"
 
-#include "iwMsgbox.h"
-#include "iwDirectIPCreate.h"
-#include "iwDirectIPConnect.h"
+#include "ingameWindows/iwMsgbox.h"
+#include "ingameWindows/iwDirectIPCreate.h"
+#include "ingameWindows/iwDirectIPConnect.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

@@ -20,7 +20,7 @@
 #define NOF_SCOUT_FREE_H_
 
 #include "nofFlagWorker.h"
-#include "MapConsts.h"
+#include "gameTypes/MapTypes.h"
 
 /// Frei herumlaufender Erkunder
 class nofScout_Free : public nofFlagWorker

@@ -21,10 +21,10 @@
 #define GAMECLIENTPLAYER_H_
 
 #include "GamePlayerInfo.h"
-#include "GameConsts.h"
+#include "gameData/GameConsts.h"
 #include <list>
 #include <algorithm>
-#include "MapConsts.h"
+#include "gameTypes/MapTypes.h"
 #include "PostMsg.h"
 #include "TradeGraph.h"
 #include "Point.h"

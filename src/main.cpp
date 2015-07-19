@@ -19,7 +19,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 
 #include "GlobalVars.h"
 #include "signale.h"
@@ -36,11 +36,11 @@
 #ifndef NDEBUG
 #include "GameWorld.h"
 #include "GameServer.h"
-#include "iwDirectIPCreate.h"
+#include "ingameWindows/iwDirectIPCreate.h"
 #include "WindowManager.h"
-#include "dskGameLoader.h"
-#include "dskSelectMap.h"
-#include "iwPleaseWait.h"
+#include "desktops/dskGameLoader.h"
+#include "desktops/dskSelectMap.h"
+#include "ingameWindows/iwPleaseWait.h"
 #endif
 
 #ifdef __APPLE__
@@ -49,7 +49,7 @@
 
 #ifdef _WIN32
 #   include "../win32/resource.h"
-#   include "VideoDriverWrapper.h"
+#   include "drivers/VideoDriverWrapper.h"
 #endif
 
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER && !defined NOHWETRANS

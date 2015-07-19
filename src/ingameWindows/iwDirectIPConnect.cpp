@@ -19,15 +19,15 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "iwDirectIPConnect.h"
 
 #include "Loader.h"
 #include "GameClient.h"
-#include "controls.h"
+#include "controls/controls.h"
 #include "WindowManager.h"
 
-#include "dskHostGame.h"
+#include "desktops/dskHostGame.h"
 #include "Settings.h"
 
 ///////////////////////////////////////////////////////////////////////////////

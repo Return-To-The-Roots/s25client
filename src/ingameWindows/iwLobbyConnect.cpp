@@ -19,17 +19,17 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "iwLobbyConnect.h"
 
 #include "Loader.h"
 #include "GameClient.h"
-#include "controls.h"
+#include "controls/controls.h"
 #include "WindowManager.h"
 #include "Settings.h"
 #include "LobbyClient.h"
 
-#include "dskLobby.h"
+#include "desktops/dskLobby.h"
 #include "iwMsgbox.h"
 
 ///////////////////////////////////////////////////////////////////////////////

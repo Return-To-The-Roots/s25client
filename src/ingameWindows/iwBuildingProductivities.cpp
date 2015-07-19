@@ -19,7 +19,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "iwBuildingProductivities.h"
 #include "Loader.h"
 #include "GameClient.h"

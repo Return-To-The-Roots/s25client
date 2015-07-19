@@ -19,26 +19,26 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
-#include "noBuildingSite.h"
+#include "defines.h"
+#include "buildings/noBuildingSite.h"
 
 #include "GameClient.h"
 #include "GameWorld.h"
-#include "BuildingConsts.h"
-#include "DoorConsts.h"
+#include "gameData/BuildingConsts.h"
+#include "gameData/DoorConsts.h"
 #include "Ware.h"
 
-#include "noFlag.h"
-#include "noExtension.h"
-#include "nofBuilder.h"
+#include "nodeObjs/noFlag.h"
+#include "nodeObjs/noExtension.h"
+#include "figures/nofBuilder.h"
 
 #include "SerializedGameData.h"
 
-#include "nofPlaner.h"
+#include "figures/nofPlaner.h"
 
 #include "FOWObjects.h"
 
-#include "glSmartBitmap.h"
+#include "ogl/glSmartBitmap.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

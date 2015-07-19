@@ -20,10 +20,10 @@
 #ifndef NO_BASEBUILDING_H_
 #define NO_BASEBUILDING_H_
 
-#include "noRoadNode.h"
-#include "noFlag.h"
-#include "BuildingConsts.h"
-
+#include "nodeObjs/noRoadNode.h"
+#include "nodeObjs/noFlag.h"
+#include "gameTypes/BuildingTypes.h"
+#include "gameData/BuildingConsts.h"
 
 class glArchivItem_Bitmap;
 

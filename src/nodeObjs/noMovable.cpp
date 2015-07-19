@@ -19,7 +19,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "noMovable.h"
 
 #include "GlobalGameSettings.h"
@@ -28,6 +28,7 @@
 #include "GameClient.h"
 #include "EventManager.h"
 #include "SerializedGameData.h"
+#include "gameData/MapConsts.h"
 
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -21,23 +21,23 @@
 // Header
 
 
-#include "main.h"
+#include "defines.h"
 #include "nofBuilder.h"
-#include "GameConsts.h"
+#include "gameData/GameConsts.h"
 #include "Loader.h"
 #include "GameClient.h"
 #include "GameClientPlayer.h"
 #include "GameWorld.h"
-#include "noBuildingSite.h"
+#include "buildings/nobuildingSite.h"
 #include "Random.h"
 
 #include "EventManager.h"
 #include "SoundManager.h"
 #include "SerializedGameData.h"
-#include "AIEventManager.h"
-#include "nobBaseWarehouse.h"
+#include "ai/AIEventManager.h"
+#include "buildings/nobBaseWarehouse.h"
 
-#include "glSmartBitmap.h"
+#include "ogl/glSmartBitmap.h"
 #include "factories/BuildingFactory.h"
 
 ///////////////////////////////////////////////////////////////////////////////

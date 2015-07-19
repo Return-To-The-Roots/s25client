@@ -2,9 +2,9 @@
 #define GAME_COMMANDS_H_
 
 #include "Serializer.h"
-#include "GameConsts.h"
-#include "MapConsts.h"
-#include "MilitaryConsts.h"
+#include "gameData/GameConsts.h"
+#include "gameTypes/MapTypes.h"
+#include "gameData/MilitaryConsts.h"
 #include <vector>
 #include <cassert>
 

@@ -19,15 +19,16 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "nofCatapultMan.h"
 #include "GameWorld.h"
 #include "Random.h"
-#include "nobMilitary.h"
+#include "buildings/nobMilitary.h"
 #include "GameClient.h"
-#include "nobUsual.h"
+#include "buildings/nobUsual.h"
 #include "CatapultStone.h"
 #include "MapGeometry.h"
+#include "gameData/MapConsts.h"
 
 const int STONE_STARTS[12] = { -4, -48, -3, -47, -13, -47, -11, -48, -13, -47, -2, -47};
 

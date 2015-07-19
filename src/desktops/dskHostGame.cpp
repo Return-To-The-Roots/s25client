@@ -19,7 +19,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "dskHostGame.h"
 #include "dskGameLoader.h"
 
@@ -27,14 +27,14 @@
 #include "Loader.h"
 #include "GameClient.h"
 #include "GameServer.h"
-#include "controls.h"
+#include "controls/controls.h"
 #include "LobbyClient.h"
 
 #include "dskDirectIP.h"
 #include "dskLobby.h"
 #include "dskSinglePlayer.h"
-#include "iwMsgbox.h"
-#include "iwAddons.h"
+#include "ingameWindows/iwMsgbox.h"
+#include "ingameWindows/iwAddons.h"
 #include "Random.h"
 
 ///////////////////////////////////////////////////////////////////////////////

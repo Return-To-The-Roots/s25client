@@ -21,15 +21,15 @@
 // Header
 
 
-#include "main.h"
+#include "defines.h"
 #include "nofBaker.h"
 #include "Loader.h"
 #include "macros.h"
 #include "GameClient.h"
-#include "nobUsual.h"
+#include "buildings/nobUsual.h"
 #include "SoundManager.h"
 
-#include "glSmartBitmap.h"
+#include "ogl/glSmartBitmap.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

@@ -19,17 +19,18 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "iwDirectIPCreate.h"
 
 #include "Loader.h"
 #include "WindowManager.h"
-#include "controls.h"
+#include "controls/controls.h"
 #include "GameProtocol.h"
 #include "LobbyClient.h"
 #include "Settings.h"
 
-#include "dskSelectMap.h"
+#include "desktops/dskSelectMap.h"
+#include "ogl/glArchivItem_Font.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

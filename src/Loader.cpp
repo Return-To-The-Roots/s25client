@@ -19,7 +19,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 
 #include <iomanip>
 #include "Loader.h"
@@ -28,16 +28,16 @@
 #include "GlobalVars.h"
 #include "Settings.h"
 
-#include "VideoDriverWrapper.h"
-#include "AudioDriverWrapper.h"
+#include "drivers/VideoDriverWrapper.h"
+#include "drivers/AudioDriverWrapper.h"
 
 #include "CollisionDetection.h"
 #include "GameClient.h"
 #include "GameClientPlayer.h"
 #include "ListDir.h"
 
-#include "glSmartBitmap.h"
-#include "JobConsts.h"
+#include "ogl/glSmartBitmap.h"
+#include "gameData/JobConsts.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

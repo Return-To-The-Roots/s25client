@@ -19,7 +19,7 @@
 
 
 #include "AIJHHelper.h"
-#include "main.h"
+#include "defines.h"
 #include "AIPlayerJH.h"
 #include "AIConstruction.h"
 
@@ -27,9 +27,9 @@
 #include "GameWorld.h"
 #include "GameCommands.h"
 #include "GamePlayerList.h"
-#include "nobMilitary.h"
-#include "nobHQ.h"
-#include "noBuildingSite.h"
+#include "buildings/nobMilitary.h"
+#include "buildings/nobHQ.h"
+#include "buildings/noBuildingSite.h"
 #include "MapGeometry.h"
 #include "AIInterface.h"
 

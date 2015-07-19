@@ -21,7 +21,7 @@
 #define NO_SHIP_H_
 
 #include "noMovable.h"
-#include "MapConsts.h"
+#include "gameTypes/MapTypes.h"
 #include <list>
 
 class nobHarborBuilding;

@@ -19,7 +19,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "GameManager.h"
 
 #include "GlobalVars.h"
@@ -27,17 +27,17 @@
 
 #include "SoundManager.h"
 #include "WindowManager.h"
-#include "VideoDriverWrapper.h"
-#include "AudioDriverWrapper.h"
+#include "drivers/VideoDriverWrapper.h"
+#include "drivers/AudioDriverWrapper.h"
 
 #include "LobbyClient.h"
 #include "GameServer.h"
 #include "GameClient.h"
 
-#include "dskSplash.h"
-#include "dskMainMenu.h"
-#include "dskLobby.h"
-#include "iwMusicPlayer.h"
+#include "desktops/dskSplash.h"
+#include "desktops/dskMainMenu.h"
+#include "desktops/dskLobby.h"
+#include "ingameWindows/iwMusicPlayer.h"
 
 #include "MusicPlayer.h"
 

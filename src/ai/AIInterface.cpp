@@ -19,12 +19,12 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "AIInterface.h"
 
-#include "nobHarborBuilding.h"
-#include "nobHQ.h"
-#include "noTree.h"
+#include "buildings/nobHarborBuilding.h"
+#include "buildings/nobHQ.h"
+#include "nodeObjs/noTree.h"
 #include "GameWorld.h"
 
 ///////////////////////////////////////////////////////////////////////////////

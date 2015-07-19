@@ -19,25 +19,25 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "iwTrade.h"
 
-#include "dskGameInterface.h"
+#include "desktops/dskGameInterface.h"
 
 #include "Loader.h"
-#include "VideoDriverWrapper.h"
+#include "drivers/VideoDriverWrapper.h"
 #include "GameClient.h"
-#include "controls.h"
+#include "controls/controls.h"
 #include "WindowManager.h"
 #include "GameCommands.h"
 
 #include "iwMsgbox.h"
 
-#include "nobShipYard.h"
+#include "buildings/nobShipYard.h"
 #include "iwDemolishBuilding.h"
 #include "iwHelp.h"
-#include "BuildingConsts.h"
-#include "nobBaseWarehouse.h"
+#include "gameData/BuildingConsts.h"
+#include "buildings/nobBaseWarehouse.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

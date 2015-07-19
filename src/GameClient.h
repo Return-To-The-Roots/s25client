@@ -32,7 +32,7 @@
 #include "GameReplay.h"
 #include "GameWorld.h"
 #include "GlobalGameSettings.h"
-#include "AIEventManager.h"
+#include "ai/AIEventManager.h"
 
 class Window;
 class GameClientPlayer;

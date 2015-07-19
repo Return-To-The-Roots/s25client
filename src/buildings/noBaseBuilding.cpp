@@ -21,13 +21,14 @@
 // Header
 
 
-#include "main.h"
+#include "defines.h"
 #include "noBaseBuilding.h"
 #include "GameWorld.h"
 #include "GameClient.h"
 #include "GameClientPlayer.h"
-#include "DoorConsts.h"
-#include "noExtension.h"
+#include "gameData/DoorConsts.h"
+#include "gameData/MapConsts.h"
+#include "nodeObjs/noExtension.h"
 #include "Random.h"
 #include "nobBaseWarehouse.h"
 #include "Ware.h"

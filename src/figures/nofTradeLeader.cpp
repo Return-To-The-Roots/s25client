@@ -1,9 +1,9 @@
 
-#include "main.h"
+#include "defines.h"
 #include "nofTradeLeader.h"
 #include "nofTradeDonkey.h"
 #include "GameWorld.h"
-#include "nobBaseWarehouse.h"
+#include "buildings/nobBaseWarehouse.h"
 #include "SerializedGameData.h"
 
 nofTradeLeader::nofTradeLeader(const MapCoord x, const MapCoord y, const unsigned char player, const TradeRoute& tr, const Point<MapCoord>  start, const Point<MapCoord> goal)

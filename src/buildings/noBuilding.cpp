@@ -19,15 +19,15 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "noBuilding.h"
 
-#include "noFire.h"
+#include "nodeObjs/noFire.h"
 
 #include "GameWorld.h"
 #include "SerializedGameData.h"
 
-#include "glSmartBitmap.h"
+#include "ogl/glSmartBitmap.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

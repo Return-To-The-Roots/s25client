@@ -19,10 +19,10 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "IngameWindow.h"
 
-#include "VideoDriverWrapper.h"
+#include "drivers/VideoDriverWrapper.h"
 #include "Loader.h"
 #include "Settings.h"
 #include "GlobalVars.h"

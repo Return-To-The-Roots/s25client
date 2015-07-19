@@ -20,14 +20,14 @@
 #ifndef NOF_WAREHOUSEWORKER_H_
 #define NOF_WAREHOUSEWORKER_H_
 
-#include "noFigure.h"
+#include "figures/noFigure.h"
 
 
 // Enumforwarddeklaration bei VC nutzen
 #ifdef _MSC_VER
 enum GoodType;
 #else
-#include "GameConsts.h"
+#include "gameData/GameConsts.h"
 #endif
 
 class Ware;

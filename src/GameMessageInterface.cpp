@@ -19,7 +19,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "GameMessageInterface.h"
 
 void GameMessageInterface::OnNMSPing(const GameMessage_Ping& msg) {}

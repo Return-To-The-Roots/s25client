@@ -21,7 +21,7 @@
 #define NOB_HARBORBUILDING_H_
 
 #include "nobBaseWarehouse.h"
-#include "MilitaryConsts.h"
+#include "gameData/MilitaryConsts.h"
 #include <list>
 
 class noShip;

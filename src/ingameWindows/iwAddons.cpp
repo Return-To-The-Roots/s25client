@@ -19,9 +19,9 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "iwAddons.h"
-#include "controls.h"
+#include "controls/controls.h"
 
 #include "GlobalGameSettings.h"
 #include "GameClient.h"

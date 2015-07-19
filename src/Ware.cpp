@@ -19,16 +19,16 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "Ware.h"
 
 #include "GameWorld.h"
 #include "GameClientPlayer.h"
-#include "GameConsts.h"
-#include "nobBaseWarehouse.h"
-#include "nofCarrier.h"
+#include "gameData/GameConsts.h"
+#include "buildings/nobBaseWarehouse.h"
+#include "figures/nofCarrier.h"
 #include "SerializedGameData.h"
-#include "nobHarborBuilding.h"
+#include "buildings/nobHarborBuilding.h"
 #include "GameClient.h"
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -19,11 +19,11 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "TerrainRenderer.h"
 
-#include "VideoDriverWrapper.h"
-#include "MapConsts.h"
+#include "drivers/VideoDriverWrapper.h"
+#include "gameData/MapConsts.h"
 #include "GameWorld.h"
 #include "Settings.h"
 #include "GameClient.h"

@@ -19,8 +19,8 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
-#include "win32_nanosleep.h"
+#include "defines.h"
+#include "helpers/win32_nanosleep.h"
 
 #ifdef _WIN32
 

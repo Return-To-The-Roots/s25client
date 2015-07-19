@@ -21,7 +21,7 @@
 #define NOB_HQ_H_
 
 #include "nobBaseWarehouse.h"
-#include "MilitaryConsts.h"
+#include "gameData/MilitaryConsts.h"
 
 class nobHQ : public nobBaseWarehouse
 {

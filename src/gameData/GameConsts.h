@@ -27,10 +27,10 @@ const unsigned MAX_PLAYERS = 8;
 
 #include "mygettext.h"
 
-#include "NationConsts.h"
-#include "JobTypes.h"
-#include "BuildingTypes.h"
-#include "GoodTypes.h"
+#include "gameData/NationConsts.h"
+#include "gameTypes/JobTypes.h"
+#include "gameTypes/BuildingTypes.h"
+#include "gameTypes/GoodTypes.h"
 
 /// Team
 enum Team

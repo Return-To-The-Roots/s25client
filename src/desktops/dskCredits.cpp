@@ -19,7 +19,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "dskCredits.h"
 
 #include "GameManager.h"
@@ -27,10 +27,11 @@
 #include "Loader.h"
 
 #include "dskMainMenu.h"
-#include "ctrlButton.h"
+#include "controls/ctrlButton.h"
 
-#include "VideoDriverWrapper.h"
-#include "JobConsts.h"
+#include "drivers/VideoDriverWrapper.h"
+#include "gameData/JobConsts.h"
+#include "ogl/glArchivItem_Font.h"
 
 #include <cstdlib>
 #include <ctime>

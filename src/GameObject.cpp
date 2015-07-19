@@ -19,7 +19,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "GameObject.h"
 #include "SerializedGameData.h"
 #include "EventManager.h"

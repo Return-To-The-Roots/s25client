@@ -20,7 +20,7 @@
 #ifndef NOF_PLANER_H_
 #define NOF_PLANER_H_
 
-#include "noFigure.h"
+#include "figures/noFigure.h"
 
 class noBuildingSite;
 

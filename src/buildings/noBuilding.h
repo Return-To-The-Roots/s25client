@@ -21,8 +21,8 @@
 #define NO_BUILDING_H_
 
 #include "noBaseBuilding.h"
-#include "noFlag.h"
-#include "BuildingConsts.h"
+#include "nodeObjs/noFlag.h"
+#include "gameData/BuildingConsts.h"
 
 class noBuilding : public noBaseBuilding
 {

@@ -19,7 +19,7 @@
 #ifndef NOF_TRADELEADER_H_
 #define NOF_TRADELEADER_H_
 
-#include "noFigure.h"
+#include "figures/noFigure.h"
 #include "TradeGraph.h"
 
 class nofTradeDonkey;

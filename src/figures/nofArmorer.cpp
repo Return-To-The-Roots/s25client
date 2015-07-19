@@ -21,12 +21,12 @@
 // Header
 
 
-#include "main.h"
+#include "defines.h"
 #include "nofArmorer.h"
 #include "Loader.h"
 #include "macros.h"
 #include "GameClient.h"
-#include "nobUsual.h"
+#include "buildings/nobUsual.h"
 #include "SoundManager.h"
 #include "SerializedGameData.h"
 

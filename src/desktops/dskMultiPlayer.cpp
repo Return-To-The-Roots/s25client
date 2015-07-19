@@ -19,7 +19,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include <build_version.h>
 #include "dskMultiPlayer.h"
 
@@ -28,7 +28,8 @@
 
 #include "dskMainMenu.h"
 #include "dskDirectIP.h"
-#include "iwLobbyConnect.h"
+#include "ingameWindows/iwLobbyConnect.h"
+#include "ogl/glArchivItem_Font.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

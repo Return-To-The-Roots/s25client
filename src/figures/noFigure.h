@@ -19,10 +19,9 @@
 #ifndef NOFIGURE_H_INCLUDED
 #define NOFIGURE_H_INCLUDED
 
-#include "noMovable.h"
+#include "nodeObjs/noMovable.h"
 #include "GlobalGameSettings.h"
-#include "MapConsts.h"
-#include "VideoDriverWrapper.h"
+#include "gameTypes/MapTypes.h"
 
 class RoadSegment;
 class noRoadNode;
@@ -32,7 +31,7 @@ class glArchivItem_Bob;
 #ifdef _MSC_VER
 enum Job;
 #else
-#include "GameConsts.h"
+#include "gameData/GameConsts.h"
 #endif
 
 enum FigureState

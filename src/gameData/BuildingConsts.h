@@ -20,8 +20,8 @@
 #ifndef BUILD_COSTS_H_
 #define BUILD_COSTS_H_
 
-#include "GameConsts.h"
-#include "BuildingTypes.h"
+#include "gameData/GameConsts.h"
+#include "gameTypes/BuildingTypes.h"
 
 // Konstanten für die Baukosten der Gebäude von allen 4 Völkern
 const BuildingCost BUILDING_COSTS[NAT_COUNT][40] =

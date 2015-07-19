@@ -22,7 +22,7 @@
 #pragma once
 
 #include "IngameWindow.h"
-#include "ctrlGroup.h"
+#include "controls/ctrlGroup.h"
 
 class dskGameInterface;
 class GameWorldViewer;

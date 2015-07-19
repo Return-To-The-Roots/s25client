@@ -21,7 +21,7 @@
 
 #pragma once
 
-#include "main.h"
+#include "defines.h"
 
 class SerializedGameData;
 

@@ -19,15 +19,15 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "iwMusicPlayer.h"
 
 #include "Loader.h"
-#include "ctrlButton.h"
-#include "ctrlEdit.h"
-#include "ctrlList.h"
-#include "ctrlDeepening.h"
-#include "ctrlComboBox.h"
+#include "controls/ctrlButton.h"
+#include "controls/ctrlEdit.h"
+#include "controls/ctrlList.h"
+#include "controls/ctrlDeepening.h"
+#include "controls/ctrlComboBox.h"
 #include "WindowManager.h"
 #include "iwMsgbox.h"
 #include "MusicPlayer.h"

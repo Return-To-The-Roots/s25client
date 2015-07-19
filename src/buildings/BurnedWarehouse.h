@@ -19,7 +19,7 @@
 #ifndef BURNED_WAREHOUSE_H_
 #define BURNED_WAREHOUSE_H_
 
-#include "noCoordBase.h"
+#include "nodeObjs/noCoordBase.h"
 
 /// Unsichtbares Objekt, welches die fliehenden Leute aus einem ehemaligen abgebrannten Lagerhaus/HQ spuckt
 class BurnedWarehouse : public noCoordBase

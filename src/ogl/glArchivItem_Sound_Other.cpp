@@ -19,10 +19,10 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "glArchivItem_Sound_Other.h"
 
-#include "AudioDriverWrapper.h"
+#include "drivers/AudioDriverWrapper.h"
 #include "Settings.h"
 #include "../driver/src/AudioDriver.h"
 

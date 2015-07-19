@@ -19,14 +19,14 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "nofFlagWorker.h"
 
-#include "noFlag.h"
+#include "nodeObjs/noFlag.h"
 #include "GameWorld.h"
 #include "GameClientPlayer.h"
 #include "SerializedGameData.h"
-#include "nobBaseWarehouse.h"
+#include "buildings/nobBaseWarehouse.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

@@ -19,24 +19,24 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "iwAction.h"
 
-#include "dskGameInterface.h"
+#include "desktops/dskGameInterface.h"
 #include "iwDemolishBuilding.h"
 #include "iwMilitaryBuilding.h"
 #include "iwObservate.h"
 
 #include "Loader.h"
-#include "controls.h"
-#include "VideoDriverWrapper.h"
+#include "controls/controls.h"
+#include "drivers/VideoDriverWrapper.h"
 #include "GameClient.h"
 #include "GameWorld.h"
 #include "WindowManager.h"
 #include "GameCommands.h"
 
-#include "noFlag.h"
-#include "nobMilitary.h"
+#include "nodeObjs/noFlag.h"
+#include "buildings/nobMilitary.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

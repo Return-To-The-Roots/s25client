@@ -19,11 +19,11 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "ctrlPreviewMinimap.h"
 
-#include "glArchivItem_Map.h"
-#include "MinimapConsts.h"
+#include "ogl/glArchivItem_Map.h"
+#include "gameData/MinimapConsts.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

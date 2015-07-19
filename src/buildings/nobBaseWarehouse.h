@@ -22,9 +22,9 @@
 #pragma once
 
 #include "nobBaseMilitary.h"
-#include "GameConsts.h"
+#include "gameData/GameConsts.h"
 #include "EventManager.h"
-#include "noFigure.h"
+#include "figures/noFigure.h"
 #include <list>
 
 class nofCarrier;

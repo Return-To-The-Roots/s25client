@@ -20,8 +20,7 @@
 #define CTRL_MINIMAP_H_
 
 #include "ctrlRectangle.h"
-#include "MapConsts.h"
-#include "glArchivItem_Bitmap_Direct.h"
+#include "gameTypes/MapTypes.h"
 
 class Minimap;
 

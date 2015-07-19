@@ -19,19 +19,19 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "nofPlaner.h"
 
 #include "Loader.h"
 #include "GameClient.h"
 #include "GameClientPlayer.h"
 #include "GameWorld.h"
-#include "noBuildingSite.h"
+#include "buildings/nobuildingSite.h"
 #include "Random.h"
-#include "JobConsts.h"
+#include "gameData/JobConsts.h"
 #include "SoundManager.h"
 
-#include "glSmartBitmap.h"
+#include "ogl/glSmartBitmap.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

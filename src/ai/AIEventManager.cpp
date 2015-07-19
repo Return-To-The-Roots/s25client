@@ -19,7 +19,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "AIEventManager.h"
 
 AIEventManager::AIEventManager(void)

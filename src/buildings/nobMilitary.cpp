@@ -21,18 +21,18 @@
 // Header
 
 
-#include "main.h"
+#include "defines.h"
 #include "nobMilitary.h"
 #include "GameClient.h"
 #include "GameClientPlayer.h"
 #include "GameWorld.h"
-#include "PointDistance.h"
-#include "MilitaryConsts.h"
+#include "helpers/PointDistance.h"
+#include "gameData/MilitaryConsts.h"
 #include "Ware.h"
-#include "nofPassiveSoldier.h"
-#include "nofDefender.h"
-#include "nofAggressiveDefender.h"
-#include "nofAttacker.h"
+#include "figures/nofPassiveSoldier.h"
+#include "figures/nofDefender.h"
+#include "figures/nofAggressiveDefender.h"
+#include "figures/nofAttacker.h"
 #include "Loader.h"
 #include "macros.h"
 #include "EventManager.h"
@@ -43,7 +43,7 @@
 
 #include "SerializedGameData.h"
 #include "MapGeometry.h"
-#include "AIEventManager.h"
+#include "ai/AIEventManager.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

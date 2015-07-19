@@ -19,13 +19,13 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "RoadSegment.h"
 
-#include "nofCarrier.h"
-#include "noRoadNode.h"
-#include "noFlag.h"
-#include "nobBaseWarehouse.h"
+#include "figures/nofCarrier.h"
+#include "nodeObjs/noRoadNode.h"
+#include "nodeObjs/noFlag.h"
+#include "buildings/nobBaseWarehouse.h"
 
 #include "SerializedGameData.h"
 #include "Random.h"

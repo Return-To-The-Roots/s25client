@@ -19,22 +19,22 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "iwMilitaryBuilding.h"
 
-#include "VideoDriverWrapper.h"
+#include "drivers/VideoDriverWrapper.h"
 
 #include "Loader.h"
 #include "GameClient.h"
-#include "MilitaryConsts.h"
+#include "gameData/MilitaryConsts.h"
 #include "WindowManager.h"
-#include "controls.h"
+#include "controls/controls.h"
 #include "iwDemolishBuilding.h"
 #include "iwMsgbox.h"
 #include "iwHelp.h"
-#include "nobMilitary.h"
-#include "nofPassiveSoldier.h"
-#include "nofActiveSoldier.h"
+#include "buildings/nobMilitary.h"
+#include "figures/nofPassiveSoldier.h"
+#include "figures/nofActiveSoldier.h"
 #include "GameCommands.h"
 
 

@@ -1,14 +1,14 @@
 
-#include "main.h"
+#include "defines.h"
 
 
-#include "main.h"
+#include "defines.h"
 #include "nofTradeDonkey.h"
 #include "nofTradeLeader.h"
 #include "GameClient.h"
-#include "JobConsts.h"
+#include "gameData/JobConsts.h"
 #include "GameWorld.h"
-#include "nobBaseWarehouse.h"
+#include "buildings/nobBaseWarehouse.h"
 #include "SerializedGameData.h"
 
 nofTradeDonkey::nofTradeDonkey(const MapCoord x, const MapCoord y, const unsigned char player,

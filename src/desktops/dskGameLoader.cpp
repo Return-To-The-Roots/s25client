@@ -19,13 +19,13 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "dskGameLoader.h"
 
 #include "Loader.h"
-#include "controls.h"
+#include "controls/controls.h"
 #include "WindowManager.h"
-#include "VideoDriverWrapper.h"
+#include "drivers/VideoDriverWrapper.h"
 #include "GameClient.h"
 #include "LobbyClient.h"
 #include "GameManager.h"
@@ -35,7 +35,7 @@
 #include "dskLobby.h"
 #include "dskDirectIP.h"
 
-#include "iwMsgbox.h"
+#include "ingameWindows/iwMsgbox.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

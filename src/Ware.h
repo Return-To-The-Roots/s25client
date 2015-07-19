@@ -20,10 +20,10 @@
 #ifndef WARE_H_
 #define WARE_H_
 
-#include "GameConsts.h"
+#include "gameData/GameConsts.h"
 #include "GameObject.h"
-#include "MapConsts.h"
-#include "noRoadNode.h"
+#include "gameTypes/MapTypes.h"
+#include "nodeObjs/noRoadNode.h"
 
 class noBaseBuilding;
 class GameWorld;

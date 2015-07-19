@@ -19,16 +19,16 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "GameCommands.h"
 #include "GameClient.h"
 #include "GameClientPlayer.h"
 #include "GameWorld.h"
-#include "nobShipYard.h"
-#include "nobMilitary.h"
-#include "nobBaseWarehouse.h"
-#include "nobHarborBuilding.h"
-#include "noShip.h"
+#include "buildings/nobShipYard.h"
+#include "buildings/nobMilitary.h"
+#include "buildings/nobBaseWarehouse.h"
+#include "buildings/nobHarborBuilding.h"
+#include "nodeObjs/noShip.h"
 
 using namespace gc;
 

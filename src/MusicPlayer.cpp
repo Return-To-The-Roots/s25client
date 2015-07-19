@@ -19,10 +19,10 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "MusicPlayer.h"
-#include "iwMusicPlayer.h"
-#include "AudioDriverWrapper.h"
+#include "ingameWindows/iwMusicPlayer.h"
+#include "drivers/AudioDriverWrapper.h"
 
 #include "Loader.h"
 

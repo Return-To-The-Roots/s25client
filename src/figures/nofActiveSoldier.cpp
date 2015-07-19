@@ -21,18 +21,18 @@
 // Header
 
 
-#include "main.h"
+#include "defines.h"
 #include "nofActiveSoldier.h"
-#include "nobMilitary.h"
+#include "buildings/nobMilitary.h"
 #include "Loader.h"
-#include "GameConsts.h"
+#include "gameData/GameConsts.h"
 #include "Random.h"
 #include "GameWorld.h"
-#include "noFighting.h"
+#include "nodeObjs/noFighting.h"
 #include "GameClient.h"
 #include "SerializedGameData.h"
 
-#include "glSmartBitmap.h"
+#include "ogl/glSmartBitmap.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

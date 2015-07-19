@@ -21,7 +21,7 @@
 #define NO_GRANITE_H_
 
 #include "noBase.h"
-#include "MapConsts.h"
+#include "gameTypes/MapTypes.h"
 
 class noGranite : public noBase
 {

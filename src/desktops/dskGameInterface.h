@@ -23,8 +23,8 @@
 
 #include "Desktop.h"
 #include "Messenger.h"
-#include "iwAction.h"
-#include "MapConsts.h"
+#include "ingameWindows/iwAction.h"
+#include "gameTypes/MapTypes.h"
 #include "Minimap.h"
 #include "customborderbuilder.h"
 

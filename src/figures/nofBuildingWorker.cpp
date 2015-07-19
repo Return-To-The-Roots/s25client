@@ -21,12 +21,12 @@
 // Header
 
 
-#include "main.h"
+#include "defines.h"
 #include "nofBuildingWorker.h"
-#include "nobUsual.h"
-#include "nobBaseWarehouse.h"
+#include "buildings/nobUsual.h"
+#include "buildings/nobBaseWarehouse.h"
 #include "Loader.h"
-#include "noFlag.h"
+#include "nodeObjs/noFlag.h"
 #include "Ware.h"
 #include "GameClient.h"
 #include "GameClientPlayer.h"
@@ -36,7 +36,7 @@
 #include "nofArmorer.h"
 #include "SoundManager.h"
 #include "SerializedGameData.h"
-#include "AIEventManager.h"
+#include "ai/AIEventManager.h"
 
 
 

@@ -22,7 +22,7 @@
 #pragma once
 
 #include "noBase.h"
-#include "MapConsts.h"
+#include "gameTypes/MapTypes.h"
 #include "Point.h"
 
 class noCoordBase : public noBase

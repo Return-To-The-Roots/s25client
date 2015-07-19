@@ -20,7 +20,7 @@
 #ifndef NOF_CARRIER_H_
 #define NOF_CARRIER_H_
 
-#include "noFigure.h"
+#include "figures/noFigure.h"
 #include "GlobalVars.h"
 
 class RoadSegment;
