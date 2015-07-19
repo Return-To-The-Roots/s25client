@@ -24,7 +24,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Header
 #include "Interface.h"
-#include "../../src/VideoDriverLoaderInterface.h"
+#include "../../src/drivers/VideoDriverLoaderInterface.h"
 #include <vector>
 
 /// Basisklasse für einen Videotreiber.

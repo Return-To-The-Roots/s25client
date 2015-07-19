@@ -24,7 +24,7 @@
 #include <vector>
 
 
-#include "../../src/AudioDriverLoaderInterface.h"
+#include "../../src/drivers/AudioDriverLoaderInterface.h"
 
 /// Basisklasse für einen Audiotreiber.
 class AudioDriver
