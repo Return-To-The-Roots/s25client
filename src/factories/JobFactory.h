@@ -18,7 +18,7 @@
 #ifndef JobFactory_h__
 #define JobFactory_h__
 
-#include "JobTypes.h"
+#include "gameTypes/JobTypes.h"
 
 class noFigure;
 class noRoadNode;

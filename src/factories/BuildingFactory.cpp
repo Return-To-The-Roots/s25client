@@ -17,11 +17,11 @@
 
 #include "BuildingFactory.h"
 #include "GameWorld.h"
-#include "nobStorehouse.h"
-#include "nobHarborBuilding.h"
-#include "nobMilitary.h"
-#include "nobShipYard.h"
-#include "nobUsual.h"
+#include "buildings/nobStorehouse.h"
+#include "buildings/nobHarborBuilding.h"
+#include "buildings/nobMilitary.h"
+#include "buildings/nobShipYard.h"
+#include "buildings/nobUsual.h"
 
 noBuilding* BuildingFactory::CreateBuilding(GameWorldGame* gwg, const BuildingType type, const MapCoord x, const MapCoord y, const unsigned char player, const Nation nation){
     noBuilding* bld;

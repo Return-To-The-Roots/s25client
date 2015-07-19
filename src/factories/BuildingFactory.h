@@ -18,9 +18,9 @@
 #ifndef BuildingFactory_h__
 #define BuildingFactory_h__
 
-#include "MapConsts.h"
-#include "NationConsts.h"
-#include "BuildingConsts.h"
+#include "gameTypes/MapTypes.h"
+#include "gameData/NationConsts.h"
+#include "gameData/BuildingConsts.h"
 
 class noBuilding;
 class GameWorldGame;
