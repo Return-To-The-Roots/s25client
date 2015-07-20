@@ -125,7 +125,7 @@ enum BuildingType
 // Anzahl an unterschiedlichen Gebäudetypen
 const unsigned BUILDING_TYPES_COUNT = BLD_COUNT;
 
-const std::string BUILDING_NAMES[BuildingType::BLD_COUNT] =
+const std::string BUILDING_NAMES[BLD_COUNT] =
 {
 	gettext_noop("Headquarters"),
 	gettext_noop("Barracks"),

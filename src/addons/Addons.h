@@ -24,6 +24,7 @@
 #include "const_addons.h"
 #include <string>
 #include <vector>
+#include <algorithm>
 
 class Window;
 

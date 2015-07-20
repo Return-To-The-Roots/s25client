@@ -33,7 +33,7 @@
 #include "RoadSegment.h"
 #include "nodeObjs/noRoadNode.h"
 #include "nodeObjs/noFlag.h"
-#include "buildings/nobaseBuilding.h"
+#include "buildings/noBaseBuilding.h"
 #include "gameData/JobConsts.h"
 
 #include "ogl/glSmartBitmap.h"

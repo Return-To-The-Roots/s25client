@@ -28,7 +28,7 @@
 #include "GameClient.h"
 #include "GameClientPlayer.h"
 #include "GameWorld.h"
-#include "buildings/nobuildingSite.h"
+#include "buildings/noBuildingSite.h"
 #include "Random.h"
 
 #include "EventManager.h"

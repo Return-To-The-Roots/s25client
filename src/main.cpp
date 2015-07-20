@@ -218,9 +218,9 @@ int main(int argc, char* argv[])
 	std::string exePath = argv[0];
 	// get '/' or '\\' depending on unix/mac or windows.
 #if defined(_WIN32) || defined(WIN32)
-	int pos = exePath.rfind('\\');
+	size_t pos = exePath.rfind('\\');
 #else
-	int pos = exePath.rfind('/');
+	size_t pos = exePath.rfind('/');
 #endif
 	if(pos != std::string::npos){
 		exePath = exePath.substr(0, pos);

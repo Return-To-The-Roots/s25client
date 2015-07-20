@@ -20,6 +20,7 @@
 
 #include "mygettext.h"
 #include "JobTypes.h"
+#include <cstring>
 
 // Warentypen
 enum GoodType
@@ -114,8 +115,8 @@ struct Goods
 
 	void clear()
 	{
-		memset(goods, 0, sizeof(goods));
-		memset(people, 0, sizeof(people));
+		std::memset(goods, 0, sizeof(goods));
+		std::memset(people, 0, sizeof(people));
 	}
 
 	Goods() { clear(); }

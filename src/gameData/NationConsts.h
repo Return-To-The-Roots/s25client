@@ -14,4 +14,4 @@ enum Nation
 	NAT_INVALID = 0xFFFFFFFF
 };
 
-const std::string NationNames[Nation::NAT_COUNT] = { "Africans", "Japaneses", "Romans", "Vikings", "Babylonians" };
+const std::string NationNames[NAT_COUNT] = { "Africans", "Japaneses", "Romans", "Vikings", "Babylonians" };
