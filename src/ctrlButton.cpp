@@ -170,8 +170,8 @@ bool ctrlButton::Draw_(void)
     {
         GetX(),
         GetY(),
-        GetX() + width,
-        GetY() + height
+        static_cast<unsigned short>(GetX() + width),
+        static_cast<unsigned short>(GetY() + height)
     };
 
     if(tc != TC_INVISIBLE)

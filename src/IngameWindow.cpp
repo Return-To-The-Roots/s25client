@@ -98,10 +98,10 @@ void IngameWindow::MouseLeftDown(const MouseCoords& mc)
     // Maus muss sich auf der Titelleiste befinden
     Rect title_rect =
     {
-        x + LOADER.GetImageN("resource", 36)->getWidth(),
+        static_cast<unsigned short>(x + LOADER.GetImageN("resource", 36)->getWidth()),
         y,
-        x + width - LOADER.GetImageN("resource", 37)->getWidth(),
-        y + LOADER.GetImageN("resource", 43)->getHeight()
+        static_cast<unsigned short>(x + width - LOADER.GetImageN("resource", 37)->getWidth()),
+        static_cast<unsigned short>(y + LOADER.GetImageN("resource", 43)->getHeight())
     };
 
     if(Coll(mc.x, mc.y, title_rect))
@@ -115,8 +115,8 @@ void IngameWindow::MouseLeftDown(const MouseCoords& mc)
     // beiden Buttons oben links und rechts prfen
     const Rect rec[2] =
     {
-        {x,          y, x + 16,    y + 16},
-        {x + width - 16, y, x + width, y + 16}
+        GetLeftButtonRect(),
+        GetRightButtonRect()
     };
 
     for(unsigned char i = 0; i < 2; ++i)
@@ -134,8 +134,8 @@ void IngameWindow::MouseLeftUp(const MouseCoords& mc)
     // beiden Buttons oben links und rechts prfen
     const Rect rec[2] =
     {
-        {x,          y, x + 16,    y + 16},
-        {x + width - 16, y, x + width, y + 16}
+        GetLeftButtonRect(),
+        GetRightButtonRect()
     };
 
     for(unsigned char i = 0; i < 2; ++i)
@@ -200,8 +200,8 @@ void IngameWindow::MouseMove(const MouseCoords& mc)
     // beiden Buttons oben links und rechts prfen
     const Rect rec[2] =
     {
-        {x,          y, x + 16,    y + 16},
-        {x + width - 16, y, x + width, y + 16}
+        GetLeftButtonRect(),
+        GetRightButtonRect()
     };
 
     for(unsigned char i = 0; i < 2; ++i)

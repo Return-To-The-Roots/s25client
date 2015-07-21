@@ -254,11 +254,13 @@ void nofBuildingWorker::GotWareOrProductionAllowed()
 {
     // Falls man auf Waren wartet, kann man dann anfangen zu arbeiten
     if(state == STATE_WAITINGFORWARES_OR_PRODUCTIONSTOPPED)
+    {
         // anfangen zu arbeiten
 		if(job!=JOB_ARMORER)
 			TryToWork();
 		else
 			dynamic_cast<nofArmorer*>(this)->TryToWork();
+    }
 }
 
 void nofBuildingWorker::GoalReached()

@@ -27,7 +27,8 @@ echo "Creating Changelog ..."
 if [ -e .svn ] || [ -e ../.svn ] ; then
 	svn log $(dirname $(svn info | grep "URL" | cut -d ' ' -f 2)) > ${UPLOADFILE}changelog.txt || exit 2
 elif [ -e .git ] || [ -e ../.git ] ; then
-	git log > ${UPLOADFILE}changelog.txt || exit 2
+	git log --submodule | git log --submodule | sed -r "s#commit (.*)#commit \1\nRepository: $(git remote -v | head -n 1 | egrep -o "([^/]*)\.git" | sed s/.git//g)#g" > ${UPLOADFILE}changelog.txt || exit 2
+	git submodule foreach 'git log --submodule | sed -r "s#commit (.*)#commit \1\nRepository: $(git remote -v | head -n 1 | egrep -o "([^/]*)\.git" | sed s/.git//g)#g"' >> ${UPLOADFILE}changelog.txt || exit 2
 else
 	echo "No changelog" > ${UPLOADFILE}changelog.txt
 fi

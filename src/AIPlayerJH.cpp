@@ -214,7 +214,7 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
             BLD_DONKEYBREEDER
         };
         unsigned numBldToTest = 24;
-        unsigned int randomstore=0;
+        int randomstore=0;
 		//LOG.lprintf("new buildorders %i whs and %i mil for player %i \n",aii->GetStorehouses().size(),aii->GetMilitaryBuildings().size(),playerid);
 		
         if(aii->GetStorehouses().size() > 0)

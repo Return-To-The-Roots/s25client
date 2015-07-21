@@ -869,7 +869,7 @@ Ware* GameClientPlayer::OrderWare(const GoodType ware, noBaseBuilding* goal)
 		{
 			if((*it)->IsLostWare() && (*it)->type==ware)
 			{ //got a lost ware with a road to goal -> find best
-				if(tlength=(*it)->CheckNewGoalForLostWare(goal)<best_length)
+				if((tlength=(*it)->CheckNewGoalForLostWare(goal)<best_length))
 				{
 					best_length=tlength;
 					tempbest=(*it);	
