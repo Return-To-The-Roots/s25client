@@ -1,5 +1,5 @@
 [submodule "libendian"]
-	url = https://github.com/Return-To-The-Roots/libendian.git
+	url = https://github.com/Flamefire/libendian.git
 	path = libendian
 [submodule "liblobby"]
 	url = https://github.com/Return-To-The-Roots/liblobby.git
