@@ -30,6 +30,7 @@
 #include "Settings.h"
 #include "iwMsgbox.h"
 #include "WindowManager.h"
+#include "fileFuncs.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

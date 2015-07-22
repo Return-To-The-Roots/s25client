@@ -30,6 +30,7 @@
 #include "ListDir.h"
 #include "GameClient.h"
 #include "files.h"
+#include "fileFuncs.h"
 
 #include "iwMsgbox.h"
 #include "desktops/dskGameLoader.h"

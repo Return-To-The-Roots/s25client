@@ -24,6 +24,7 @@
 
 #include "ListDir.h"
 #include "files.h"
+#include "fileFuncs.h"
 #include "../driver/src/Interface.h"
 #include "../driver/src/AudioInterface.h"
 #include "../driver/src/VideoInterface.h"

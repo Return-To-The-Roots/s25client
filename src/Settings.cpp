@@ -23,6 +23,7 @@
 #include "Settings.h"
 
 #include "files.h"
+#include "fileFuncs.h"
 #include "Loader.h"
 #include "languages.h"
 #include "build_version.h"

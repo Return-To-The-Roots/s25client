@@ -35,6 +35,7 @@
 #include "GameClient.h"
 #include "GameClientPlayer.h"
 #include "ListDir.h"
+#include "fileFuncs.h"
 
 #include "ogl/glSmartBitmap.h"
 #include "gameData/JobConsts.h"

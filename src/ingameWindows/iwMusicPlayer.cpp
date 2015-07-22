@@ -32,6 +32,7 @@
 #include "iwMsgbox.h"
 #include "MusicPlayer.h"
 #include "files.h"
+#include "fileFuncs.h"
 #include "ListDir.h"
 #include "Settings.h"
 

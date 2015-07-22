@@ -43,6 +43,8 @@
 #include "ingameWindows/iwPleaseWait.h"
 #endif
 
+#include "fileFuncs.h"
+
 #ifdef __APPLE__
 #   include <SDL_main.h>
 #endif // __APPLE__

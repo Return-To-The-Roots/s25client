@@ -29,6 +29,7 @@
 #include "GameClient.h"
 #include "ListDir.h"
 #include "files.h"
+#include "fileFuncs.h"
 #include "LobbyClient.h"
 
 #include "dskDirectIP.h"

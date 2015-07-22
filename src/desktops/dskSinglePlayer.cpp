@@ -35,6 +35,7 @@
 #include "ingameWindows/iwSave.h"
 #include "ingameWindows/iwMsgbox.h"
 #include "ingameWindows/iwPleaseWait.h"
+#include "fileFuncs.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

@@ -45,6 +45,7 @@
 
 #include "Settings.h"
 #include "Debug.h"
+#include "fileFuncs.h"
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER

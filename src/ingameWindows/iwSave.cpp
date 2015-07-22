@@ -29,6 +29,7 @@
 #include "ListDir.h"
 #include "GameClient.h"
 #include "files.h"
+#include "fileFuncs.h"
 #include "GameServer.h"
 #include "LobbyClient.h"
 #include "desktops/dskLobby.h"
