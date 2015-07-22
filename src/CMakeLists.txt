@@ -97,18 +97,6 @@ SET(s25client_SRCS
 	${SOURCES_SUBDIRS}
 )
 
-source_group(controls FILES ${SOURCES_CONTROLS})
-source_group(desktops FILES ${SOURCES_DESKTOPS})
-source_group(GL FILES ${SOURCES_GL})
-source_group(BZIP FILES ${SOURCES_BZIP})
-source_group(ingameWindows FILES ${SOURCES_INGAMEWINDOWS})
-source_group(other FILES ${SOURCES_OTHER})
-source_group(addons FILES ${SOURCES_ADDONS})
-source_group(AI FILES ${SOURCES_AI})
-source_group(NodeObjects FILES ${SOURCES_NO})
-source_group(noBuildings FILES ${SOURCES_NOB})
-source_group(noFigures FILES ${SOURCES_NOF})
-
 IF ( "${COMPILEFOR}" STREQUAL "windows" AND NOT ${CMAKE_HOST_SYSTEM_NAME} MATCHES "Windows")
 	ADD_DEFINITIONS("-DAFX_TARG_DEU")
 
