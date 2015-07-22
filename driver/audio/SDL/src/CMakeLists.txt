@@ -22,9 +22,12 @@ IF (SDL_FOUND)
         
         ADD_LIBRARY(audioSDL SHARED SDL.cpp SDL.h main.h SoundSDL_Music.cpp SoundSDL_Music.h SoundSDL_Effect.cpp SoundSDL_Effect.h ${PROJECT_SOURCE_DIR}/build_version.cpp ../../../src/DriverInterface.cpp ../../../src/tempname.cpp ../../../src/tempname.h)
         ADD_DEPENDENCIES(audioSDL updateversion)
-        IF ( NOT WIN32 )
-            ADD_DEFINITIONS(-fPIC)
-        ENDIF()
+        IF ( NOT "${COMPILEFOR}" STREQUAL "windows" )
+            CHECK_CXX_COMPILER_FLAG("-fPIC" FPIC_FLAGS)
+            IF (FPIC_FLAGS)
+                ADD_DEFINITIONS(-fPIC)
+            ENDIF (FPIC_FLAGS)
+        ENDIF ( NOT "${COMPILEFOR}" STREQUAL "windows" )
 
         TARGET_LINK_LIBRARIES(audioSDL audiodrv endian ${SDL_LIBRARY} ${SDLMIXER_LIBRARY})
         

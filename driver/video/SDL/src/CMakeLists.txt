@@ -16,9 +16,12 @@ IF (SDL_FOUND)
 
 	ADD_LIBRARY(videoSDL SHARED SDL.cpp SDL.h main.h ${PROJECT_SOURCE_DIR}/build_version.cpp ${PROJECT_SOURCE_DIR}/driver/src/DriverInterface.cpp)
 	ADD_DEPENDENCIES(videoSDL updateversion)
-    IF ( NOT WIN32 )
-        ADD_DEFINITIONS(-fPIC)
-    ENDIF()
+    IF ( NOT "${COMPILEFOR}" STREQUAL "windows" )
+        CHECK_CXX_COMPILER_FLAG("-fPIC" FPIC_FLAGS)
+        IF (FPIC_FLAGS)
+            ADD_DEFINITIONS(-fPIC)
+        ENDIF (FPIC_FLAGS)
+    ENDIF ( NOT "${COMPILEFOR}" STREQUAL "windows" )
 
 	TARGET_LINK_LIBRARIES(videoSDL videodrv ${SDL_LIBRARY})
 
