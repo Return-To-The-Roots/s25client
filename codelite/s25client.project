@@ -8,7 +8,6 @@
   <Description/>
   <Dependencies/>
   <VirtualDirectory Name="src">
-    <File Name="../src/list.h"/>
     <File Name="../src/SoundManager.cpp"/>
     <File Name="../src/SerializedGameData.h"/>
     <File Name="../src/Swap.h"/>

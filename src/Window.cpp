@@ -267,8 +267,7 @@ void Window::ActivateControls(bool activate)
  */
 void Window::LockRegion(Window* window, const Rect& rect)
 {
-    LockedRegion lg = {window, rect};
-    locked_areas.push_back(lg);
+    locked_areas[window] = rect;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -281,14 +280,7 @@ void Window::LockRegion(Window* window, const Rect& rect)
  */
 void Window::FreeRegion(Window* window)
 {
-    for(list<LockedRegion>::iterator it = locked_areas.begin(); it.valid(); ++it)
-    {
-        if(window == it->window)
-        {
-            locked_areas.erase(it);
-            return;
-        }
-    }
+    locked_areas.erase(window);
 }
 
 /// Weiterleitung von Nachrichten von abgeleiteten Klassen erlaubt oder nicht?
@@ -1168,15 +1160,12 @@ void Window::DrawControls(void)
  *
  *  @author OLiver
  */
-bool Window::TestWindowInRegion(Window* window, const MouseCoords& mc)
+bool Window::TestWindowInRegion(Window* window, const MouseCoords& mc) const
 {
-    for(list<LockedRegion>::iterator it = locked_areas.begin(); it.valid(); ++it)
-    {
-        if(it->window != window && Coll(mc.x + GetX(), mc.y + GetY(), it->rect))
-            return true;
-    }
-
-    return false;
+    const std::map<Window*, Rect>::const_iterator it = locked_areas.find(window);
+    if(it == locked_areas.end())
+        return false;
+    return Coll(mc.x + GetX(), mc.y + GetY(), it->second);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

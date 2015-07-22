@@ -23,7 +23,6 @@
 
 #include <limits>
 #include <vector>
-#include "list.h"
 #include "AIJHHelper.h"
 #include "GameWorld.h"
 #include "nodeObjs/noFlag.h"

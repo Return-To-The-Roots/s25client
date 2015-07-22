@@ -22,7 +22,6 @@
 
 #include "noCoordBase.h"
 #include "gameData/GameConsts.h"
-#include "list.h"
 #include "EventManager.h"
 #include "gameTypes/MapTypes.h"
 

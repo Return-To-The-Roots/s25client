@@ -63,7 +63,7 @@ WindowManager::~WindowManager(void)
 
 void WindowManager::CleanUp()
 {
-    for(IngameWindowListIterator it = windows.begin(); it.valid(); ++it)
+    for(IgwListIterator it = windows.begin(); it != windows.end(); ++it)
         delete (*it);
     windows.clear();
 
@@ -91,53 +91,46 @@ void WindowManager::Draw(void)
         Switch();
 
     // haben wir einen gültigen Desktop?
-    if(desktop)
+    if(!desktop)
+        return;
+
+    // ja, Msg_PaintBefore aufrufen
+    desktop->Msg_PaintBefore();
+
+    // und Desktop zeichnen
+    desktop->Draw();
+
+    // haben wir Fenster?
+    if(!windows.empty())
     {
-        // ja, Msg_PaintBefore aufrufen
-        desktop->Msg_PaintBefore();
-
-        // und Desktop zeichnen
-        desktop->Draw();
-
-        // haben wir Fenster?
-        if(windows.size())
+        for(IgwListIterator it = windows.begin(); it != windows.end(); ++it)
         {
-            for(IngameWindowListIterator it = windows.begin(); it.valid(); ++it)
+            // Soll Fenster geschlossen werden?
+            if((*it)->ShouldBeClosed())
             {
-                // ist das Fenster hinter dem Iterator nicht NULL?
-                if( (*it) == NULL)
-                {
-                    // nein, also mit dem Nächsten weitermachen
-                    continue;
-                }
+                // Fenster schliessen
+                Close(*it);
 
-                // Soll Fenster geschlossen werden?
-                if((*it)->ShouldBeClosed())
-                {
-                    // Fenster schliessen
-                    Close(*it);
+                // und raus (korruption der liste verhindern)
+                break;
+            }
 
-                    // und raus (korruption der liste verhindern)
-                    break;
-                }
+            // Fenster zeichnen
+            (*it)->Draw();
 
-                // Fenster zeichnen
-                (*it)->Draw();
-
-                // wurde es minimiert?
-                if((*it)->GetMinimized() == false)
-                {
-                    // nein, Msg_PaintAfter aufrufen
-                    (*it)->Msg_PaintAfter();
-                }
+            // wurde es minimiert?
+            if((*it)->GetMinimized() == false)
+            {
+                // nein, Msg_PaintAfter aufrufen
+                (*it)->Msg_PaintAfter();
             }
         }
-
-        DrawToolTip();
-
-        // Msg_PaintAfter aufrufen
-        desktop->Msg_PaintAfter();
     }
+
+    DrawToolTip();
+
+    // Msg_PaintAfter aufrufen
+    desktop->Msg_PaintAfter();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -172,40 +165,34 @@ bool WindowManager::IsDesktopActive(void)
 void WindowManager::RelayKeyboardMessage(bool (Window::*msg)(const KeyEvent&), const KeyEvent& ke)
 {
     // ist der Desktop gültig?
-    if(desktop)
+    if(!desktop)
+        return;
+    // ist der Desktop aktiv?
+    if(desktop->GetActive())
     {
-        // ist der Desktop aktiv?
-        if(desktop->GetActive())
+        // Ja, dann Nachricht an Desktop weiterleiten
+        (desktop->*msg)(ke);
+        desktop->RelayKeyboardMessage(msg, ke);
+        return;
+    }
+
+    if(windows.empty())
+        return; // No windows -> nothing to do
+
+    // Letztes Fenster schließen? (Escape oder Alt-W)
+    if(ke.kt == KT_ESCAPE || (ke.c == 'w' && ke.alt))
+    {
+        Close(windows.back());
+        return;
+    }
+    // Nein, dann Nachricht an letztes Fenster weiterleiten
+    if(!(windows.back()->*msg)(ke))
+    {
+        if(!windows.back()->RelayKeyboardMessage(msg, ke))
         {
-            // Ja, dann Nachricht an Desktop weiterleiten
+            // Falls Nachrichten nicht behandelt wurden, an Desktop wieder senden
             (desktop->*msg)(ke);
             desktop->RelayKeyboardMessage(msg, ke);
-        }
-        else
-        {
-            // Letztes Fenster schließen? (Escape oder Alt-W)
-            if(ke.kt == KT_ESCAPE ||
-                    (ke.c == 'w' && ke.alt))
-            {
-                IngameWindowListIterator it(windows.end());
-                Close(it);
-            }
-            else
-            {
-                // Nein, dann Nachricht an letztes Fenster weiterleiten (falls vorhanden)
-                if( (*windows.end()) != NULL)
-                {
-                    if(!((*windows.end())->*msg)(ke))
-                    {
-                        if(!(*windows.end())->RelayKeyboardMessage(msg, ke))
-                        {
-                            // Falls Nachrichten nicht behandelt wurden, an Desktop wieder senden
-                            (desktop->*msg)(ke);
-                            desktop->RelayKeyboardMessage(msg, ke);
-                        }
-                    }
-                }
-            }
         }
     }
 }
@@ -214,24 +201,20 @@ void WindowManager::RelayKeyboardMessage(bool (Window::*msg)(const KeyEvent&), c
 void WindowManager::RelayMouseMessage(bool (Window::*msg)(const MouseCoords&), const MouseCoords& mc)
 {
     // ist der Desktop gültig?
-    if(desktop)
+    if(!desktop)
+        return;
+    // ist der Desktop aktiv?
+    if(desktop->GetActive())
     {
-        // ist der Desktop aktiv?
-        if(desktop->GetActive())
-        {
-            // Ja, dann Nachricht an Desktop weiterleiten
-            (desktop->*msg)(mc);
-            desktop->RelayMouseMessage(msg, mc);
-        }
-        else
-        {
-            // Nein, dann Nachricht an letztes Fenster weiterleiten (falls vorhanden)
-            if( (*windows.end()) != NULL)
-            {
-                ((*windows.end())->*msg)(mc);
-                (*windows.end())->RelayMouseMessage(msg, mc);
-            }
-        }
+        // Ja, dann Nachricht an Desktop weiterleiten
+        (desktop->*msg)(mc);
+        desktop->RelayMouseMessage(msg, mc);
+    }
+    else if(!windows.empty())
+    {
+        // Nein, dann Nachricht an letztes Fenster weiterleiten
+        (windows.back()->*msg)(mc);
+        windows.back()->RelayMouseMessage(msg, mc);
     }
 }
 
@@ -260,12 +243,8 @@ void WindowManager::Show(IngameWindow* window, bool mouse)
         return;
 
     // war das Fenster schon offen?
-    for(IngameWindowListIterator it = windows.begin(); it.valid(); ++it)
+    for(IgwListIterator it = windows.begin(); it != windows.end(); ++it)
     {
-        // ist das Fenster gültig?
-        if( (*it) == NULL)
-            continue;
-
         // Evtl wird es schon geschlossen?
         if((*it)->ShouldBeClosed())
             continue;
@@ -286,12 +265,8 @@ void WindowManager::Show(IngameWindow* window, bool mouse)
     desktop->SetActive(false);
 
     // alle anderen Fenster deaktivieren
-    for(IngameWindowListIterator it = windows.begin(); it.valid(); ++it)
+    for(IgwListIterator it = windows.begin(); it != windows.end(); ++it)
     {
-        // ist das Fenster gültig?
-        if( (*it) == NULL)
-            continue;
-
         (*it)->SetActive(false);
     }
 
@@ -301,31 +276,6 @@ void WindowManager::Show(IngameWindow* window, bool mouse)
 
     // Maus deaktivieren, bis sie losgelassen wurde (Fix des Switch-Anschließend-Drück-Bugs)
     disable_mouse = mouse;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  schliesst ein IngameWindow und entfernt es aus der Fensterliste.
- *
- *  @param[in] window Pointer auf das Fenster das geschlossen werden soll
- *
- *  @author OLiver
- */
-void WindowManager::Close(IngameWindow* window)
-{
-    for(IngameWindowListIterator it = windows.begin(); it.valid(); ++it)
-    {
-        // ist das Fenster gültig?
-        if( (*it) == NULL)
-            continue;
-
-        // ist es das Fenster das wir schliessen wollen?
-        if( (*it) == window)
-        {
-            // ja, dann schliessen
-            Close(it);
-        }
-    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -343,6 +293,21 @@ void WindowManager::Switch(Desktop* desktop, void* data, bool mouse)
     nextdesktop = desktop;
     nextdesktop_data = data;
     disable_mouse = mouse;
+}
+
+IngameWindow* WindowManager::FindWindowUnderMouse(const MouseCoords& mc) const{
+    // Fenster durchgehen ( von hinten nach vorn, da die vordersten ja zuerst geprüft werden müssen !! )
+    for(std::list<IngameWindow*>::const_reverse_iterator it = windows.rbegin(); it != windows.rend(); ++it)
+    {
+        // FensterRect für Kollisionsabfrage
+        Rect window_rect = (*it)->GetRect();
+
+        // trifft die Maus auf ein Fenster?
+        if(Coll(mc.x, mc.y, window_rect)){
+            return *it;
+        }
+    }
+    return NULL;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -373,7 +338,7 @@ void WindowManager::Msg_LeftDown(MouseCoords mc)
     last_left_click_time = time_now;
 
     // haben wir überhaupt fenster?
-    if(!windows.size())
+    if(windows.empty())
     {
         // nein, dann Desktop aktivieren
         desktop->SetActive(true);
@@ -392,93 +357,56 @@ void WindowManager::Msg_LeftDown(MouseCoords mc)
         return;
     }
 
-    // haben wir ein zuletzt aktives Fenster? (sollten wir ja eigentlich, aber sicher ist sicher)
-    if( (*windows.end()) != NULL)
+    // ist das zuletzt aktiv gewesene Fenster Modal?
+    if( windows.back()->GetModal())
     {
-        // ist das zuletzt aktiv gewesene Fenster Modal?
-        if( (*windows.end())->GetModal())
+        // ja es ist modal, ist der Maus-Klick-Fix aktiv?
+        if(!disable_mouse)
         {
-            // ja es ist modal, ist der Maus-Klick-Fix aktiv?
-            if(disable_mouse == false)
-            {
-                // nein, Msg_LeftDownaufrufen
-                (*windows.end())->Msg_LeftDown(mc);
+            // nein, Msg_LeftDownaufrufen
+            windows.back()->Msg_LeftDown(mc);
 
-                // und allen unten drunter auch Bescheid sagen
-                (*windows.end())->RelayMouseMessage(&Window::Msg_LeftDown, mc);
+            // und allen unten drunter auch Bescheid sagen
+            windows.back()->RelayMouseMessage(&Window::Msg_LeftDown, mc);
 
-                // und noch MouseLeftDown vom Fenster aufrufen
-                (*windows.end())->MouseLeftDown(mc);
-            }
-
-            // und raus
-            return;
+            // und noch MouseLeftDown vom Fenster aufrufen
+            windows.back()->MouseLeftDown(mc);
         }
+
+        // und raus
+        return;
     }
 
-    bool found_window = false;
+    IngameWindow* foundWindow = FindWindowUnderMouse(mc);
 
-    // Fenster durchgehen ( von hinten nach vorn, da die vordersten ja zuerst geprüft werden müssen !! )
-    for(IngameWindowListIterator it = windows.end(); it.valid(); --it)
-    {
-        // ist das Fenster gültig?
-        if( (*it) == NULL)
-            continue;
-
-        // FensterRect für Kollisionsabfrage
-        Rect window_rect = (*it)->GetRect();
-
-        // trifft die Maus auf ein Fenster?
-        if(Coll(mc.x, mc.y, window_rect))
-        {
-            // ja, also aktives Fenster deaktivieren (falls ok)
-            if( (*windows.end()) != NULL)
-                (*windows.end())->SetActive(false);
-
-            // Fenster aus der Liste holen und vorne wieder anhängen
-            IngameWindow* tmp = *it;
-            windows.erase(it); // ACHTUNG!!!!
-            windows.push_back(tmp);
-
-            // ist das neue Fenster ok?
-            if( (*windows.end()) != NULL)
-            {
-                // ja, dann aktivieren
-                (*windows.end())->SetActive(true);
-
-                // ist der Maus-Klick-Fix aktiv?
-                if(disable_mouse == false)
-                {
-                    // nein, dann Msg_LeftDown aufrufen
-                    (*windows.end())->Msg_LeftDown(mc);
-
-                    // und allen unten drunter auch Bescheid sagen
-                    (*windows.end())->RelayMouseMessage(&Window::Msg_LeftDown, mc);
-
-                    // und noch MouseLeftDown vom Fenster aufrufen
-                    (*windows.end())->MouseLeftDown(mc);
-                }
-            }
-
-
-            // wir haben eins gefunden --> der Desktop muss nicht aktiv werden
-            found_window = true;
-
-            // Desktop deaktivieren, falls aktiviert
-            desktop->SetActive(false);
-
-            // wir können mit der Schleife abbrechen
-            break;
-        }
-    }
+    // aktives Fenster deaktivieren
+    windows.back()->SetActive(false);
 
     // Haben wir ein Fenster gefunden gehabt?
-    if(!found_window)
-    {
-        // letztes Fenster deaktivieren (falls ok), da ja nun der Desktop aktiv werden soll
-        if( (*windows.end()) != NULL)
-            (*windows.end())->SetActive(false);
+    if(foundWindow){
+        // Fenster aus der Liste holen und vorne wieder anhängen
+        windows.remove(foundWindow);
+        windows.push_back(foundWindow);
 
+        // aktivieren
+        foundWindow->SetActive(true);
+
+        // ist der Maus-Klick-Fix aktiv?
+        if(!disable_mouse)
+        {
+            // nein, dann Msg_LeftDown aufrufen
+            foundWindow->Msg_LeftDown(mc);
+
+            // und allen unten drunter auch Bescheid sagen
+            foundWindow->RelayMouseMessage(&Window::Msg_LeftDown, mc);
+
+            // und noch MouseLeftDown vom Fenster aufrufen
+            foundWindow->MouseLeftDown(mc);
+        }
+
+        // Desktop deaktivieren, falls aktiviert
+        desktop->SetActive(false);
+    }else{
         // Desktop aktivieren
         desktop->SetActive(true);
 
@@ -520,20 +448,16 @@ void WindowManager::Msg_LeftUp(const MouseCoords& mc)
             // und die Fenster darunter auch
             desktop->RelayMouseMessage(&Window::Msg_LeftUp, mc);
         }
-        else
+        else if(windows.back())
         {
-            // nein, ist das Fenster ok?
-            if( (*windows.end()) != NULL)
-            {
-                // ja, dann Msg_LeftUp aufrufen
-                (*windows.end())->Msg_LeftUp(mc);
+            // ja, dann Msg_LeftUp aufrufen
+            windows.back()->Msg_LeftUp(mc);
 
-                // und den anderen Fenstern auch Bescheid geben
-                (*windows.end())->RelayMouseMessage(&Window::Msg_LeftUp, mc);
+            // und den anderen Fenstern auch Bescheid geben
+            windows.back()->RelayMouseMessage(&Window::Msg_LeftUp, mc);
 
-                // und noch MouseLeftUp vom Fenster aufrufen
-                (*windows.end())->MouseLeftUp(mc);
-            }
+            // und noch MouseLeftUp vom Fenster aufrufen
+            windows.back()->MouseLeftUp(mc);
         }
     }
 
@@ -555,50 +479,34 @@ void WindowManager::Msg_RightDown(const MouseCoords& mc)
     if(!desktop)
         return;
 
-    // Sind Fenster vorhanden?
-    if(windows.size())
+    // Sind Fenster vorhanden && ist das aktive Fenster ok
+    if(!windows.empty())
     {
-        // ist das aktive Fenster ok
-        if ((*windows.end()) != NULL)
-        {
-            // ist das Fenster modal? wenn ja, dann raus
-            if ((*windows.end())->GetModal())
-                return;
+        // ist das Fenster modal? wenn ja, dann raus
+        if (windows.back()->GetModal())
+            return;
 
-            // ja, dann prüfen ob Fenster geschlossen werden muss
-            for(IngameWindowListIterator it = windows.end(); it.valid(); --it)
+        // prüfen ob Fenster geschlossen werden muss
+        IngameWindow* foundWindow = FindWindowUnderMouse(mc);
+        if(foundWindow){
+            // ja, dann schliessen
+            if (foundWindow->GetCloseOnRightClick())
+                foundWindow->Close();
+            else
             {
-                // ist das Fenster gültig?
-                if( (*it) == NULL)
-                    continue;
+                windows.back()->SetActive(false);
 
-                // ja, haben wir einen Treffer?
-                if(Coll(mc.x, mc.y, (*it)->GetX(), (*it)->GetY(), (*it)->GetWidth(), (*it)->GetHeight()))
-                {
-                    // ja, dann schliessen
-                    if ((*it)->GetCloseOnRightClick())
-                    {
-                        (*it)->Close();
-                    }
-                    else
-                    {
-                        if( (*windows.end()) != NULL)
-                            (*windows.end())->SetActive(false);
+                // Fenster aus der Liste holen und vorne wieder anhängen
+                windows.remove(foundWindow);
+                windows.push_back(foundWindow);
 
-                        // Fenster aus der Liste holen und vorne wieder anhängen
-                        IngameWindow* tmp = *it;
-                        windows.erase(it); // ACHTUNG!!!!
-                        windows.push_back(tmp);
+                desktop->SetActive(false);
 
-                        desktop->SetActive(false);
-
-                        (*it)->SetActive(true);
-                        (*it)->Msg_RightDown(mc);
-                    }
-
-                    return;
-                }
+                foundWindow->SetActive(true);
+                foundWindow->Msg_RightDown(mc);
             }
+
+            return;
         }
     }
 
@@ -611,19 +519,15 @@ void WindowManager::Msg_RightDown(const MouseCoords& mc)
         // und die Fenster darunter auch
         desktop->RelayMouseMessage(&Window::Msg_RightDown, mc);
     }
-    else
+    else if(!windows.empty())
     {
-        // nein, ist das Fenster ok?
-        if( (*windows.end()) != NULL)
-        {
-            // ja, dann Nachricht an Fenster weiterleiten
-            (*windows.end())->RelayMouseMessage(&Window::Msg_RightDown, mc);
-        }
+        // dann Nachricht an Fenster weiterleiten
+        windows.back()->RelayMouseMessage(&Window::Msg_RightDown, mc);
     }
 
-    // letztes Fenster deaktivieren (falls ok), da ja nun der Desktop aktiv werden soll
-    if(windows.size())
-        (*windows.end())->SetActive(false);
+    // letztes Fenster deaktivieren, da ja nun der Desktop aktiv werden soll
+    if(!windows.empty())
+        windows.back()->SetActive(false);
 
     // Desktop aktivieren
     desktop->SetActive(true);
@@ -655,7 +559,7 @@ void WindowManager::Msg_WheelUp(const MouseCoords& mc)
         return;
 
     // haben wir überhaupt fenster?
-    if(!windows.size())
+    if(windows.empty())
     {
         // nein, dann Desktop aktivieren
         desktop->SetActive(true);
@@ -670,79 +574,42 @@ void WindowManager::Msg_WheelUp(const MouseCoords& mc)
         return;
     }
 
-    // haben wir ein zuletzt aktives Fenster? (sollten wir ja eigentlich, aber sicher ist sicher)
-    if( (*windows.end()) != NULL)
+    // ist das zuletzt aktiv gewesene Fenster Modal?
+    if(windows.back()->GetModal())
     {
-        // ist das zuletzt aktiv gewesene Fenster Modal?
-        if( (*windows.end())->GetModal())
-        {
-            // Msg_LeftDownaufrufen
-            (*windows.end())->Msg_WheelUp(mc);
+        // Msg_LeftDownaufrufen
+        windows.back()->Msg_WheelUp(mc);
 
-            // und allen unten drunter auch Bescheid sagen
-            (*windows.end())->RelayMouseMessage(&Window::Msg_WheelUp, mc);
+        // und allen unten drunter auch Bescheid sagen
+        windows.back()->RelayMouseMessage(&Window::Msg_WheelUp, mc);
 
-            // und raus
-            return;
-        }
+        // und raus
+        return;
     }
 
-    bool found_window = false;
+    IngameWindow* foundWindow = FindWindowUnderMouse(mc);
+    // ja, also aktives Fenster deaktivieren (falls ok)
+    if(windows.back())
+        windows.back()->SetActive(false);
 
-    // Fenster durchgehen ( von hinten nach vorn, da die vordersten ja zuerst geprüft werden müssen !! )
-    for(IngameWindowListIterator it = windows.end(); it.valid(); --it)
+    if(foundWindow)
     {
-        // ist das Fenster gültig?
-        if( (*it) == NULL)
-            continue;
+        // Fenster aus der Liste holen und vorne wieder anhängen
+        windows.remove(foundWindow);
+        windows.push_back(foundWindow);
 
-        // FensterRect für Kollisionsabfrage
-        Rect window_rect = (*it)->GetRect();
+        // ja, dann aktivieren
+        foundWindow->SetActive(true);
 
-        // trifft die Maus auf ein Fenster?
-        if(Coll(mc.x, mc.y, window_rect))
-        {
-            // ja, also aktives Fenster deaktivieren (falls ok)
-            if( (*windows.end()) != NULL)
-                (*windows.end())->SetActive(false);
+        // dann Msg_WheelUp aufrufen
+        foundWindow->Msg_WheelUp(mc);
 
-            // Fenster aus der Liste holen und vorne wieder anhängen
-            IngameWindow* tmp = *it;
-            windows.erase(it); // ACHTUNG!!!!
-            windows.push_back(tmp);
+        // und allen unten drunter auch Bescheid sagen
+        foundWindow->RelayMouseMessage(&Window::Msg_WheelUp, mc);
 
-            // ist das neue Fenster ok?
-            if( (*windows.end()) != NULL)
-            {
-                // ja, dann aktivieren
-                (*windows.end())->SetActive(true);
-
-                // dann Msg_WheelUp aufrufen
-                (*windows.end())->Msg_WheelUp(mc);
-
-                // und allen unten drunter auch Bescheid sagen
-                (*windows.end())->RelayMouseMessage(&Window::Msg_WheelUp, mc);
-            }
-
-
-            // wir haben eins gefunden --> der Desktop muss nicht aktiv werden
-            found_window = true;
-
-            // Desktop deaktivieren, falls aktiviert
-            desktop->SetActive(false);
-
-            // wir können mit der Schleife abbrechen
-            break;
-        }
-    }
-
-    // Haben wir ein Fenster gefunden gehabt?
-    if(!found_window)
-    {
-        // letztes Fenster deaktivieren (falls ok), da ja nun der Desktop aktiv werden soll
-        if( (*windows.end()) != NULL)
-            (*windows.end())->SetActive(false);
-
+        // Desktop deaktivieren, falls aktiviert
+        desktop->SetActive(false);
+    }else {
         // Desktop aktivieren
         desktop->SetActive(true);
 
@@ -766,7 +633,7 @@ void WindowManager::Msg_WheelDown(const MouseCoords& mc)
 {
     if(!desktop)
         return;
-    if(!windows.size())
+    if(windows.empty())
     {
         desktop->SetActive(true);
         desktop->Msg_WheelDown(mc);
@@ -774,43 +641,24 @@ void WindowManager::Msg_WheelDown(const MouseCoords& mc)
         // und raus
         return;
     }
-    if( (*windows.end()) != NULL)
+    if(windows.back()->GetModal())
     {
-        if( (*windows.end())->GetModal())
-        {
-            (*windows.end())->Msg_WheelDown(mc);
-            (*windows.end())->RelayMouseMessage(&Window::Msg_WheelDown, mc);
-            return;
-        }
+        windows.back()->Msg_WheelDown(mc);
+        windows.back()->RelayMouseMessage(&Window::Msg_WheelDown, mc);
+        return;
     }
-    bool found_window = false;
-    for(IngameWindowListIterator it = windows.end(); it.valid(); --it)
+    IngameWindow* foundWindow = FindWindowUnderMouse(mc);
+    windows.back()->SetActive(false);
+
+    if(foundWindow)
     {
-        if( (*it) == NULL)
-            continue;
-        Rect window_rect = (*it)->GetRect();
-        if(Coll(mc.x, mc.y, window_rect))
-        {
-            if( (*windows.end()) != NULL)
-                (*windows.end())->SetActive(false);
-            IngameWindow* tmp = *it;
-            windows.erase(it); // ACHTUNG!!!!
-            windows.push_back(tmp);
-            if( (*windows.end()) != NULL)
-            {
-                (*windows.end())->SetActive(true);
-                (*windows.end())->Msg_WheelDown(mc);
-                (*windows.end())->RelayMouseMessage(&Window::Msg_WheelDown, mc);
-            }
-            found_window = true;
-            desktop->SetActive(false);
-            break;
-        }
-    }
-    if(!found_window)
-    {
-        if( (*windows.end()) != NULL)
-            (*windows.end())->SetActive(false);
+        windows.remove(foundWindow);
+        windows.push_back(foundWindow);
+        foundWindow->SetActive(true);
+        foundWindow->Msg_WheelDown(mc);
+        foundWindow->RelayMouseMessage(&Window::Msg_WheelDown, mc);
+        desktop->SetActive(false);
+    }else{
         desktop->SetActive(true);
         desktop->Msg_WheelDown(mc);
         desktop->RelayMouseMessage(&Window::Msg_WheelDown, mc);;
@@ -845,22 +693,16 @@ void WindowManager::Msg_MouseMove(const MouseCoords& mc)
             // und alles drunter auch benachrichtigen
             desktop->RelayMouseMessage(&Window::Msg_MouseMove, mc);
         }
-        else
+        else if(!windows.empty())
         {
-            // nein, ist das Fenster ok?
-            if( (*windows.end()) != NULL)
-            {
-                // und MouseMove vom Fenster aufrufen
-                (*windows.end())->MouseMove(mc);
+            // und MouseMove vom Fenster aufrufen
+            windows.back()->MouseMove(mc);
 
-                // ja, dann Msg_MouseMove aufrufen
-                (*windows.end())->Msg_MouseMove(mc);
+            // ja, dann Msg_MouseMove aufrufen
+            windows.back()->Msg_MouseMove(mc);
 
-                // und alles drunter auch benachrichtigen
-                (*windows.end())->RelayMouseMessage(&Window::Msg_MouseMove, mc);
-
-
-            }
+            // und alles drunter auch benachrichtigen
+            windows.back()->RelayMouseMessage(&Window::Msg_MouseMove, mc);
         }
     }
 }
@@ -986,7 +828,7 @@ void WindowManager::Msg_ScreenResize(unsigned short width, unsigned short height
     desktop->Msg_ScreenResize(sr);
 
     // IngameWindow verschieben falls nötig, so dass sie komplett sichtbar sind
-    for(IngameWindowListIterator it = windows.begin(); it.valid(); ++it)
+    for(IgwListIterator it = windows.begin(); it != windows.end(); ++it)
     {
         const short dx = (*it)->GetX() + (*it)->GetWidth()  - sr.newWidth;
         const short dy = (*it)->GetY() + (*it)->GetHeight() - sr.newHeight;
@@ -1003,49 +845,42 @@ void WindowManager::Msg_ScreenResize(unsigned short width, unsigned short height
  *
  *  @author OLiver
  */
-void WindowManager::Close(IngameWindowListIterator& it)
+void WindowManager::Close(IngameWindow* window)
 {
-    SetToolTip(NULL, "");
-
     // ist das Fenster gültig?
-    if( (*it) == NULL)
+    if(!window)
         return;
 
+    IgwListIterator it = std::find(windows.begin(), windows.end(), window);
+    if( it == windows.end())
+        return; // Window already closed -> Out
+
+    SetToolTip(NULL, "");
+
     // War es an vorderster Stelle?
-    if(it == windows.end())
+    if(window == windows.back())
     {
         // haben wir noch Fenster zum aktivieren?
-        if(windows.size() - 1)
+        if(window != windows.front())
         {
             // ja, also das nächste aktivieren
-            IngameWindowListIterator tmp = it;
-            --tmp;
+            IgwListIterator tmp = it;
+            --it;
 
-            // ist das Fenster auch gültig?
-            if( (*tmp) != NULL)
-            {
-                // ja, Fenster aktivieren
-                (*tmp)->SetActive(true);
-            }
-            else
-            {
-                // nein, also Desktop aktivieren
-                desktop->SetActive(true);
-            }
+            // Activate window or desktop if window invalid
+            (*tmp)->SetActive(true);
         }
         else
         {
             // nein, also Desktop aktivieren
             desktop->SetActive(true);
         }
-
     }
 
     // Fenster löschen
-    delete (*it);
-
+    delete window;
     // und aus der Liste entfernen
-    windows.erase(&it);
+    windows.erase(it);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1059,10 +894,12 @@ void WindowManager::Close(IngameWindowListIterator& it)
  */
 void WindowManager::Close(unsigned int id)
 {
-    for(list<IngameWindow*>::iterator it = windows.begin(); it.valid(); ++it)
+    for(IgwListIterator it = windows.begin(); it != windows.end(); ++it)
     {
-        if((*it)->id == id)
-            Close(it);
+        if((*it)->id == id){
+            Close(*it);
+            return;
+        }
     }
 }
 
@@ -1084,10 +921,8 @@ void WindowManager::Switch(void)
     if(desktop)
     {
         // Alle (alten) Fenster zumachen
-        for(IngameWindowListIterator it = windows.begin(); it.valid(); ++it)
-        {
+        for(IgwListIterator it = windows.begin(); it != windows.end(); ++it)
             delete (*it);
-        }
         windows.clear();
 
         // Desktop löschen
@@ -1139,14 +974,15 @@ void WindowManager::DrawToolTip()
             x = mc->x - 30 - text_width;
 
         unsigned int count = 0;
-        std::string::size_type pos = 0;
+        size_t pos = 0;
         do
         {
             count++;
             if(pos != 0)
                 pos++;
+            pos = tooltip.find('\n', pos);
         }
-        while( (pos = tooltip.find('\n', pos)) != std::string::npos && (pos < tooltip.length() - 2));
+        while( pos != std::string::npos && (pos < tooltip.length() - 2));
 
         Window::DrawRectangle(x - 2 , mc->y - 2, text_width + 4, 4 + count * NormalFont->getDy(), 0x9F000000);
         NormalFont->Draw(x, mc->y , tooltip, glArchivItem_Font::DF_TOP, COLOR_YELLOW);

@@ -57,7 +57,7 @@ void nofGeologist::Serialize_nofGeologist(SerializedGameData* sgd) const
     sgd->PushUnsignedShort(signs);
 
     sgd->PushUnsignedInt(available_nodes.size());
-    for(list<Point>::const_iterator it = available_nodes.begin(); it.valid(); ++it)
+    for(std::vector< Point<MapCoord> >::const_iterator it = available_nodes.begin(); it != available_nodes.end(); ++it)
     {
         sgd->PushUnsignedShort(it->x);
         sgd->PushUnsignedShort(it->y);
@@ -77,7 +77,7 @@ nofGeologist::nofGeologist(SerializedGameData* sgd, const unsigned obj_id) : nof
     unsigned available_nodes_count = sgd->PopUnsignedInt();
     for(unsigned i = 0; i < available_nodes_count; ++i)
     {
-        Point p;
+        Point<MapCoord> p;
         p.x = sgd->PopUnsignedShort();
         p.y = sgd->PopUnsignedShort();
         available_nodes.push_back(p);
@@ -362,7 +362,7 @@ void nofGeologist::TestNode(const unsigned short x, const unsigned short y)
     {
         if(IsNodeGood(x, y) && (gwg->FindHumanPath(this->x, this->y, x, y, 20)) != 0xFF && !gwg->GetNode(x, y).reserved)
         {
-            nofGeologist::Point p = { x, y };
+            Point<MapCoord> p(x, y);
             available_nodes.push_back(p);
         }
     }
@@ -376,13 +376,13 @@ unsigned char nofGeologist::GetNextNode()
     do
     {
         // Sind überhaupt Punkte verfügbar?
-        while(available_nodes.size())
+        while(!available_nodes.empty())
         {
             // Dann einen Punkt zufällig auswählen
-            list<nofGeologist::Point>::iterator it = available_nodes[RANDOM.Rand(__FILE__, __LINE__, obj_id, available_nodes.size())];
+            int randNode = RANDOM.Rand(__FILE__, __LINE__, obj_id, available_nodes.size());
+            node_goal = available_nodes[randNode];
             // und aus der Liste entfernen
-            node_goal = *it;
-            available_nodes.erase(it);
+            available_nodes.erase(available_nodes.begin() + randNode);
             // Gucken, ob er gut ist und ob man hingehen kann und ob er noch nicht reserviert wurde!
             unsigned char ret_dir;
             if(IsNodeGood(node_goal.x, node_goal.y) && (ret_dir = gwg->FindHumanPath(x, y, node_goal.x, node_goal.y, 20)) != 0xFF && !gwg->GetNode(node_goal.x, node_goal.y).reserved)
@@ -396,11 +396,8 @@ unsigned char nofGeologist::GetNextNode()
 
         // Nach neuen Punkten sucehn
         LookForNewNodes();
-
-
-
     }
-    while(available_nodes.size());
+    while(!available_nodes.empty());
 
     return 0xFF;
 }

@@ -21,7 +21,7 @@
 #define SOUNDMANAGER_H_
 
 #include "Singleton.h"
-#include "list.h"
+#include <list>
 
 class noBase;
 class glArchivItem_Sound;
@@ -43,7 +43,7 @@ class SoundManager : public Singleton<SoundManager>
         };
 
         /// Liste von NO-Sounds
-        list<NOSound> no_sounds;
+        std::list<NOSound> no_sounds;
 
         //////////////////////////////////
 

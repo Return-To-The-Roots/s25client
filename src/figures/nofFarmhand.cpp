@@ -109,7 +109,7 @@ void nofFarmhand::HandleDerivedEvent(const unsigned int id)
             unsigned radius_count = 0;
 
             // Available points: 1st class and 2st class
-            list< Point<MapCoord> > available_points[3];
+            std::vector< Point<MapCoord> > available_points[3];
 
             unsigned max_radius = (job == JOB_CHARBURNER) ? 3 : RADIUS[job - JOB_WOODCUTTER];
             bool points_found = false;
@@ -158,9 +158,9 @@ void nofFarmhand::HandleDerivedEvent(const unsigned int id)
                 Point<MapCoord> p(0, 0);
                 for(unsigned i = 0; i < 3; ++i)
                 {
-                    if(available_points[i].size())
+                    if(!available_points[i].empty())
                     {
-                        p = *available_points[i][RANDOM.Rand(__FILE__, __LINE__, obj_id, available_points[i].size())];
+                        p = available_points[i][RANDOM.Rand(__FILE__, __LINE__, obj_id, available_points[i].size())];
                         break;
                     }
                 }

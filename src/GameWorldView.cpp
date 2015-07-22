@@ -143,9 +143,9 @@ void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool
 
 
                 // People
-                if(mn.figures.size())
+                if(!mn.figures.empty())
                 {
-                    for(list<noBase*>::iterator it = mn.figures.begin(); it.valid(); ++it)
+                    for(std::list<noBase*>::iterator it = mn.figures.begin(); it != mn.figures.end(); ++it)
                     {
                         // Bewegt er sich oder ist es ein Schiff?
                         if((*it)->IsMoving() || (*it)->GetGOT() == GOT_SHIP)

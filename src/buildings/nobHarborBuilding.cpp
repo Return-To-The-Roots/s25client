@@ -180,9 +180,7 @@ void nobHarborBuilding::Destroy()
     gwg->RecalcTerritory(this, HARBOR_ALONE_RADIUS, true, false);
 
     // Wieder aus dem Militärquadrat rauswerfen
-    gwg->GetMilitarySquare(x, y).erase(this);
-
-
+    gwg->GetMilitarySquare(x, y).remove(this);
 }
 
 void nobHarborBuilding::Serialize(SerializedGameData* sgd) const
@@ -1234,11 +1232,10 @@ void nobHarborBuilding::CancelFigure(noFigure* figure)
 ///Gibt verfügbare Angreifer zurück
 void nobHarborBuilding::GetAttackerBuildingsForSeaIdAttack(std::vector<SeaAttackerBuilding>*buildings)
 {
-    std::list<nobBaseMilitary*> all_buildings;
-    gwg->LookForMilitaryBuildings(all_buildings, x, y, 3);
+    std::set<nobBaseMilitary*> all_buildings = gwg->LookForMilitaryBuildings(x, y, 3);
 
     // Und zählen
-    for(std::list<nobBaseMilitary*>::iterator it = all_buildings.begin(); it != all_buildings.end(); ++it)
+    for(std::set<nobBaseMilitary*>::iterator it = all_buildings.begin(); it != all_buildings.end(); ++it)
     {
         if((*it)->GetGOT() != GOT_NOB_MILITARY)
             continue;
@@ -1266,11 +1263,10 @@ void nobHarborBuilding::GetAttackerBuildingsForSeaIdAttack(std::vector<SeaAttack
 void nobHarborBuilding::GetAttackerBuildingsForSeaAttack(std::vector<SeaAttackerBuilding> * buildings,
         const std::vector<unsigned>& defender_harbors)
 {
-    std::list<nobBaseMilitary*> all_buildings;
-    gwg->LookForMilitaryBuildings(all_buildings, x, y, 3);
+    std::set<nobBaseMilitary*> all_buildings = gwg->LookForMilitaryBuildings(x, y, 3);
 
     // Und zählen
-    for(std::list<nobBaseMilitary*>::iterator it = all_buildings.begin(); it != all_buildings.end(); ++it)
+    for(std::set<nobBaseMilitary*>::iterator it = all_buildings.begin(); it != all_buildings.end(); ++it)
     {
         if((*it)->GetGOT() != GOT_NOB_MILITARY)
             continue;

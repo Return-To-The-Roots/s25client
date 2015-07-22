@@ -23,7 +23,6 @@
 
 #include "Singleton.h"
 #include "gameData/GameConsts.h"
-#include "list.h"
 #include "GameObject.h"
 
 #include <list>

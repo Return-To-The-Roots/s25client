@@ -1658,11 +1658,10 @@ void AIPlayerJH::HandleExpedition(const noShip* ship)
 
 void AIPlayerJH::HandleExpedition(const Coords& coords)
 {
-    list<noBase*> objs;
-    aii->GetDynamicObjects(coords.x, coords.y, objs);
+    std::vector<noBase*> objs = aii->GetDynamicObjects(coords.x, coords.y);
     const noShip* ship = NULL;
 
-    for(list<noBase*>::iterator it = objs.begin(); it.valid(); ++it)
+    for(std::vector<noBase*>::const_iterator it = objs.begin(); it != objs.end(); ++it)
     {
         if((*it)->GetGOT() == GOT_SHIP)
         {
@@ -1902,13 +1901,11 @@ void AIPlayerJH::TryToAttack()
         }
 
         // get nearby enemy buildings and store in set of potential attacking targets
-        std::list<nobBaseMilitary*> buildings;
-
         MapCoord src_x = (*it)->GetX();
         MapCoord src_y = (*it)->GetY();
 
-        aii->GetMilitaryBuildings(src_x, src_y, 2, buildings);
-        for(std::list<nobBaseMilitary*>::iterator target = buildings.begin(); target != buildings.end(); ++target)
+        std::set<nobBaseMilitary*> buildings = aii->GetMilitaryBuildings(src_x, src_y, 2);
+        for(std::set<nobBaseMilitary*>::iterator target = buildings.begin(); target != buildings.end(); ++target)
         {
             if ((*target)->GetGOT() == GOT_NOB_MILITARY)
             {
@@ -1951,9 +1948,8 @@ void AIPlayerJH::TryToAttack()
         unsigned attackersStrength = 0;
 
         // ask each of nearby own military buildings for soldiers to contribute to the potential attack
-        std::list<nobBaseMilitary*> myBuildings;
-        aii->GetMilitaryBuildings(dest_x, dest_y, 2, myBuildings);
-        for(std::list<nobBaseMilitary*>::iterator it3 = myBuildings.begin(); it3 != myBuildings.end(); ++it3)
+        std::set<nobBaseMilitary*> myBuildings = aii->GetMilitaryBuildings(dest_x, dest_y, 2);
+        for(std::set<nobBaseMilitary*>::iterator it3 = myBuildings.begin(); it3 != myBuildings.end(); ++it3)
         {
             if ((*it3)->GetPlayer() == playerid)
             {
@@ -2087,9 +2083,8 @@ void AIPlayerJH::TrySeaAttack()
     {
         limit--;
         //now add all military buildings around the harborspot to our list of potential targets
-        std::list<nobBaseMilitary*> buildings;
-        aii->GetMilitaryBuildings(gwb->GetHarborPoint(searcharoundharborspots[i]).x, gwb->GetHarborPoint(searcharoundharborspots[i]).y, 2, buildings);
-        for(std::list<nobBaseMilitary*>::const_iterator it = buildings.begin(); it != buildings.end(); it++)
+        std::set<nobBaseMilitary*> buildings = aii->GetMilitaryBuildings(gwb->GetHarborPoint(searcharoundharborspots[i]).x, gwb->GetHarborPoint(searcharoundharborspots[i]).y, 2);
+        for(std::set<nobBaseMilitary*>::const_iterator it = buildings.begin(); it != buildings.end(); it++)
         {
             if(aii->IsPlayerAttackable((*it)->GetPlayer()) && aii->IsVisible((*it)->GetX(), (*it)->GetY()))
             {
@@ -2383,25 +2378,25 @@ bool AIPlayerJH::HuntablesinRange(unsigned x, unsigned y, unsigned min)
         for(unsigned short px = fx; px <= lx; ++px)
         {
             // Gibts hier was bewegliches?
-            if(gwb->GetFigures(px, py).size())
+            if(gwb->GetFigures(px, py).empty())
+                continue;
+            const std::list<noBase*>& figures = gwb->GetFigures(px, py);
+            // Dann nach Tieren suchen
+            for(std::list<noBase*>::const_iterator it = figures.begin(); it != figures.end(); ++it)
             {
-                // Dann nach Tieren suchen
-                for(list<noBase*>::iterator it = gwb->GetFigures(px, py).begin(); it.valid(); ++it)
+                if((*it)->GetType() == NOP_ANIMAL)
                 {
-                    if((*it)->GetType() == NOP_ANIMAL)
+                    // Ist das Tier überhaupt zum Jagen geeignet?
+                    if(!static_cast<noAnimal*>(*it)->CanHunted())
+                        continue;
+                    // Und komme ich hin?
+                    if(gwb->FindHumanPath(x, y, static_cast<noAnimal*>(*it)->GetX(), static_cast<noAnimal*>(*it)->GetY(), maxrange) != 0xFF)
+                        // Dann nehmen wir es
                     {
-                        // Ist das Tier überhaupt zum Jagen geeignet?
-                        if(!static_cast<noAnimal*>(*it)->CanHunted())
-                            continue;
-                        // Und komme ich hin?
-                        if(gwb->FindHumanPath(x, y, static_cast<noAnimal*>(*it)->GetX(), static_cast<noAnimal*>(*it)->GetY(), maxrange) != 0xFF)
-                            // Dann nehmen wir es
-                        {
-                            if(++huntablecount >= min)
-                                return true;
-                        }
-
+                        if(++huntablecount >= min)
+                            return true;
                     }
+
                 }
             }
         }

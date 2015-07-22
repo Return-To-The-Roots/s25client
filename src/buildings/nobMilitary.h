@@ -45,9 +45,9 @@ class nobMilitary : public nobBaseMilitary
         /// Größe bzw Typ des Militärgebäudes (0 = Baracke, 3 = Festung)
         unsigned char size;
         /// Bestellte Soldaten
-        list<nofPassiveSoldier*> ordered_troops;
+        std::list<nofPassiveSoldier*> ordered_troops;
         /// Bestellter Goldmünzen
-        list<Ware*> ordered_coins;
+        std::list<Ware*> ordered_coins;
         /// Gibt an, ob gerade die Eroberer in das Gebäude gehen (und es so nicht angegegriffen werden sollte)
         bool capturing;
         /// Anzahl der Soldaten, die das Militärgebäude gerade noch einnehmen
@@ -66,7 +66,7 @@ class nobMilitary : public nobBaseMilitary
     public:
 
         /// Soldatenbesatzung
-        list<nofPassiveSoldier*> troops;
+        std::list<nofPassiveSoldier*> troops;
 
         // Das Fenster braucht ja darauf Zugriff
         friend class iwMilitaryBuilding;
@@ -76,7 +76,7 @@ class nobMilitary : public nobBaseMilitary
         /// Bestellungen (sowohl Truppen als auch Goldmünzen) zurücknehmen
         void CancelOrders();
         /// Wählt je nach Militäreinstellungen (Verteidigerstärke) einen passenden Soldaten aus
-        list<nofPassiveSoldier*>::iterator ChooseSoldier();
+        nofPassiveSoldier* ChooseSoldier();
         /// Stellt Verteidiger zur Verfügung
         nofDefender* ProvideDefender(nofAttacker* const attacker);
         /// Will/kann das Gebäude noch Münzen bekommen?
@@ -84,6 +84,8 @@ class nobMilitary : public nobBaseMilitary
         /// Prüft, ob Goldmünzen und Soldaten, die befördert werden können, vorhanden sind und meldet ggf. ein
         /// Beförderungsevent an
         void PrepareUpgrading();
+        /// Gets the total amount of soldiers (ordered, stationed, on mission)
+        size_t GetTotalSoldiers() const;
 
         friend class SerializedGameData;
         friend class BuildingFactory;
@@ -161,7 +163,7 @@ class nobMilitary : public nobBaseMilitary
         unsigned GetSoldiersForAttack(const MapCoord dest_x, const MapCoord dest_y, const unsigned char player_attacker) const;
         /// Gibt die Soldaten zurück, die für einen Angriff auf ein bestimmtes Ziel zur Verfügung stehen
         void GetSoldiersForAttack(const MapCoord dest_x, const MapCoord dest_y,
-                                  const unsigned char player_attacker, std::vector<nofPassiveSoldier*> * soldiers) const;
+                                  const unsigned char player_attacker, std::vector<nofPassiveSoldier*>& soldiers) const;
         /// Gibt die Stärke der Soldaten zurück, die für einen Angriff auf ein bestimmtes Ziel zur Verfügung stehen
         unsigned GetSoldiersStrengthForAttack(const MapCoord dest_x, const MapCoord dest_y,
                                               const unsigned char player_attacker, unsigned& soldiers_count) const;

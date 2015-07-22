@@ -143,7 +143,6 @@ typedef int socklen_t;
 #include "../libendian/src/libendian.h"
 
 #include "macros.h"
-#include "list.h"
 #include "helpers/Swap.h"
 
 #include "ogl/glAllocator.h"

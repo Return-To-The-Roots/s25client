@@ -25,6 +25,7 @@
 #include "drivers/MouseAndKeys.h"
 #include "drivers/VideoDriverLoaderInterface.h"
 #include "Point.h"
+#include <list>
 
 class Window;
 class Desktop;
@@ -33,8 +34,8 @@ class IngameWindow;
 /// Verwaltet alle (offenen) Fenster bzw Desktops samt ihren Controls und Messages
 class WindowManager : public Singleton<WindowManager>, public VideoDriverLoaderInterface
 {
-        typedef list<IngameWindow*> IngameWindowList;                   ///< Fensterlistentyp
-        typedef list<IngameWindow*>::iterator IngameWindowListIterator; ///< Fensterlistentypiterator
+        typedef std::list<IngameWindow*> IgwList;                   ///< Fensterlistentyp
+        typedef std::list<IngameWindow*>::iterator IgwListIterator; ///< Fensterlistentypiterator
 
     public:
         /// Konstruktor von @p WindowManager.
@@ -89,10 +90,8 @@ class WindowManager : public Singleton<WindowManager>, public VideoDriverLoaderI
 
     protected:
         void DrawToolTip();
-
+        IngameWindow* FindWindowUnderMouse(const MouseCoords& mc) const;
     private:
-        /// schliesst ein IngameWindow und entfernt es aus der Fensterliste.
-        void Close(IngameWindowListIterator& it);
         /// wechselt einen Desktop
         void Switch(void);
 
@@ -102,7 +101,7 @@ class WindowManager : public Singleton<WindowManager>, public VideoDriverLoaderI
         void* nextdesktop_data;  ///< Daten für den nächsten Desktop, welche dann MSG_SWITCH übergeben werden
         bool disable_mouse;      ///< Mausdeaktivator, zum beheben des "Switch-Anschließend-Drück-Bug"s
 
-        IngameWindowList windows; ///< Fensterliste
+        IgwList windows; ///< Fensterliste
         const MouseCoords* mc;
         std::string tooltip;
         unsigned short screenWidth;  /// letzte gültige Bildschirm-/Fensterbreite

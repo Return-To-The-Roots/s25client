@@ -51,7 +51,7 @@ class nobBaseWarehouse : public nobBaseMilitary
     protected:
         // Liste von Waren, die noch rausgebracht werden müssen, was im Moment aber nicht möglich ist,
         // weil die Flagge voll ist vor dem Lagerhaus
-        list<Ware*> waiting_wares;
+        std::list<Ware*> waiting_wares;
         // verhindert doppeltes Holen von Waren
         bool fetch_double_protection;
         /// Liste von Figuren, die auf dem Weg zu dem Lagerhaus sind bzw. Soldaten die von ihm kommen

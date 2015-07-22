@@ -58,9 +58,9 @@ nobUsual::nobUsual(BuildingType type,
 
     // Entsprechend so viele Listen erstellen, wie nötig sind, bei Bergwerken 3
     if(USUAL_BUILDING_CONSTS[type - 10].wares_needed_count)
-        ordered_wares = new list<Ware*>[USUAL_BUILDING_CONSTS[type - 10].wares_needed_count];
+        ordered_wares.resize(USUAL_BUILDING_CONSTS[type - 10].wares_needed_count);
     else
-        ordered_wares = NULL;
+        ordered_wares.clear();
 
     // Arbeiter bestellen
     gwg->GetPlayer(player)->AddJobWanted(USUAL_BUILDING_CONSTS[type - 10].job, this);
@@ -96,9 +96,9 @@ nobUsual::nobUsual(SerializedGameData* sgd, const unsigned int obj_id)
         wares[i] = sgd->PopUnsignedChar();
 
     if(USUAL_BUILDING_CONSTS[type - 10].wares_needed_count)
-        ordered_wares = new list<Ware*>[USUAL_BUILDING_CONSTS[type - 10].wares_needed_count];
+        ordered_wares.resize(USUAL_BUILDING_CONSTS[type - 10].wares_needed_count);
     else
-        ordered_wares = 0;
+        ordered_wares.clear();
 
     for(unsigned i = 0; i < USUAL_BUILDING_CONSTS[type - 10].wares_needed_count; ++i)
         sgd->PopObjectList(ordered_wares[i], GOT_WARE);
@@ -116,9 +116,7 @@ nobUsual::nobUsual(SerializedGameData* sgd, const unsigned int obj_id)
  *  @author OLiver
  */
 nobUsual::~nobUsual()
-{
-    delete[] ordered_wares;
-}
+{}
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
@@ -136,7 +134,7 @@ void nobUsual::Destroy_nobUsual()
 
     // Bestellte Waren Bescheid sagen
     for(unsigned i = 0; i < USUAL_BUILDING_CONSTS[type - 10].wares_needed_count; ++i)
-        for(list<Ware*>::iterator it = ordered_wares[i].begin(); it.valid(); ++it)
+        for(std::list<Ware*>::iterator it = ordered_wares[i].begin(); it != ordered_wares[i].end(); ++it)
             WareNotNeeded((*it));
 
     // Events löschen
@@ -380,7 +378,7 @@ void nobUsual::AddWare(Ware* ware)
         {
             ++wares[i];
             //assert(wares[i] <= wares_count);
-            ordered_wares[i].erase(ware);
+            ordered_wares[i].remove(ware);
         }
     }
 
@@ -420,7 +418,7 @@ void nobUsual::WareLost(Ware* ware)
     for(unsigned i = 0; i < USUAL_BUILDING_CONSTS[type - 10].wares_needed_count; ++i)
     {
         if(USUAL_BUILDING_CONSTS[type - 10].wares_needed[i] == ware->type)
-            ordered_wares[i].erase(ware);
+            ordered_wares[i].remove(ware);
     }
 }
 

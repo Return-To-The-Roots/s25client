@@ -23,9 +23,10 @@
 #pragma once
 
 #include <list>
+#include <string>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Funktionsprototypen
-void ListDir(const std::string& path, bool directories, void (*CallBack)(const std::string& filename, void* param), void* param, std::list<std::string> * liste = 0);
+void ListDir(const std::string& path, bool directories, void (*CallBack)(const std::string& filename, void* param), void* param, std::list<std::string>* liste = NULL);
 
 #endif // LISTDIR_H_INCLUDED

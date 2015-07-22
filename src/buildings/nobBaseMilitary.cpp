@@ -35,6 +35,7 @@
 #include "figures/nofDefender.h"
 #include "SerializedGameData.h"
 #include "MapGeometry.h"
+#include <limits>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -60,28 +61,21 @@ nobBaseMilitary::~nobBaseMilitary()
 
 void nobBaseMilitary::Destroy_nobBaseMilitary()
 {
-    list<nofActiveSoldier*>::iterator next_it;
-
     // Soldaten Bescheid sagen, die evtl auf Mission sind
-    // Achtung: Hier können Iteratoren gelöscht werden in HomeDestroyed, daher Sicherheitsschleife!
-    for(list<nofActiveSoldier*>::iterator it = troops_on_mission.begin(); it.valid(); it = next_it)
-    {
-        next_it = it.GetNext();
+    // ATTENTION: iterators can be deleted in HomeDestroyed, -> copy first
+    std::vector<nofActiveSoldier*> tmpTroopsOnMission(troops_on_mission.begin(), troops_on_mission.end());
+    for(std::vector<nofActiveSoldier*>::iterator it = tmpTroopsOnMission.begin(); it != tmpTroopsOnMission.end(); ++it)
         (*it)->HomeDestroyed();
-    }
-
-    list<nofAttacker*>::iterator next_it2;
 
     // Und die, die das Gebäude evtl gerade angreifen
-    // Achtung: Hier können Iteratoren gelöscht werden in AttackedGoalDestroyed, daher Sicherheitsschleife!
-    for(list<nofAttacker*>::iterator it = aggressors.begin(); it.valid(); it = next_it2)
-    {
-        next_it2 = it.GetNext();
+    // ATTENTION: iterators can be deleted in AttackedGoalDestroyed, -> copy first
+    std::vector<nofAttacker*> tmpAggressors(aggressors.begin(), aggressors.end());
+    for(std::vector<nofAttacker*>::iterator it = tmpAggressors.begin(); it != tmpAggressors.end(); ++it)
         (*it)->AttackedGoalDestroyed();
-    }
 
     // Aggressiv-Verteidigenden Soldaten Bescheid sagen, dass sie nach Hause gehen können
-    for(list<nofAggressiveDefender*>::iterator it = aggressive_defenders.begin(); it.valid(); ++it)
+    std::vector<nofAggressiveDefender*> tmpDefenders(aggressive_defenders.begin(), aggressive_defenders.end());
+    for(std::vector<nofAggressiveDefender*>::iterator it = tmpDefenders.begin(); it != tmpDefenders.end(); ++it)
         (*it)->AttackedGoalDestroyed();
 
     // Verteidiger Bescheid sagen
@@ -111,10 +105,9 @@ void nobBaseMilitary::Destroy_nobBaseMilitary()
 
     // Umgebung nach feindlichen Militärgebäuden absuchen und die ihre Grenzflaggen neu berechnen lassen
     // da, wir ja nicht mehr existieren
-    std::list<nobBaseMilitary*> buildings;
-    gwg->LookForMilitaryBuildings(buildings, x, y, 4);
+    std::set<nobBaseMilitary*> buildings = gwg->LookForMilitaryBuildings(x, y, 4);
 
-    for(std::list<nobBaseMilitary*>::iterator it = buildings.begin(); it != buildings.end(); ++it)
+    for(std::set<nobBaseMilitary*>::iterator it = buildings.begin(); it != buildings.end(); ++it)
     {
         if((*it)->GetPlayer() != player
                 && (*it)->GetBuildingType() >= BLD_BARRACKS  && (*it)->GetBuildingType() <= BLD_FORTRESS)
@@ -171,7 +164,7 @@ void nobBaseMilitary::AddLeavingFigure(noFigure* fig)
 nofAttacker* nobBaseMilitary::FindAggressor(nofAggressiveDefender* defender)
 {
     // Nach weiteren Angreifern auf dieses Gebäude suchen, die in der Nähe und kampfbereit sind
-    for(list<nofAttacker*>::iterator it = aggressors.begin(); it.valid(); ++it)
+    for(std::list<nofAttacker*>::iterator it = aggressors.begin(); it != aggressors.end(); ++it)
     {
         // Überhaupt Lust zum Kämpfen?
         if((*it)->IsReadyForFight())
@@ -192,7 +185,7 @@ nofAttacker* nobBaseMilitary::FindAggressor(nofAggressiveDefender* defender)
         }
     }
 
-    return 0;
+    return NULL;
 }
 
 
@@ -223,10 +216,10 @@ void nobBaseMilitary::FindAnAttackerPlace(unsigned short& ret_x, unsigned short&
     }
 
     // Wenn Platz an der Flagge noch frei ist, soll er da hin gehen
-    list<Node> nodes;
+    std::vector<Node> nodes;
 
     // Ansonsten immer die Runde rum gehen und ein freies Plätzchen suchen (max. 3 Runden rum)
-    for(d = 1; d <= 3 && !nodes.size(); ++d)
+    for(d = 1; d <= 3 && nodes.empty(); ++d)
     {
         // links anfangen und im Uhrzeigersinn vorgehen
         ret_x = flag_x - d;
@@ -286,14 +279,14 @@ void nobBaseMilitary::FindAnAttackerPlace(unsigned short& ret_x, unsigned short&
     ret_x = 0xFFFF;
 
     // Nichts gefunden, dann raus
-    if(!nodes.size())
+    if(nodes.empty())
         return;
 
 
     // Weg zu allen gefundenen Punkten berechnen und den mit den kürzesten Weg nehmen
     // Die bisher kürzeste gefundene Länge
-    unsigned min_length = 0xFFFFFFFF;
-    for(list<Node>::iterator it = nodes.begin(); it.valid(); ++it)
+    unsigned min_length = std::numeric_limits<unsigned>::max();
+    for(std::vector<Node>::iterator it = nodes.begin(); it != nodes.end(); ++it)
     {
         // Derselbe Punkt? Dann können wir gleich abbrechen, finden ja sowieso keinen kürzeren Weg mehr
         if(soldier->GetX() == it->x && soldier->GetY() == it->y)
@@ -359,7 +352,7 @@ nofAttacker* nobBaseMilitary::FindAttackerNearBuilding()
     unsigned best_radius = 0xFFFFFFFF;
 
 
-    for(list<nofAttacker*>::iterator it = aggressors.begin(); it.valid(); ++it)
+    for(std::list<nofAttacker*>::iterator it = aggressors.begin(); it != aggressors.end(); ++it)
     {
         // Ist der Soldat überhaupt bereit zum Kämpfen (also wartet er um die Flagge herum oder rückt er nach)?
         if((*it)->IsAttackerReady())
@@ -383,7 +376,7 @@ nofAttacker* nobBaseMilitary::FindAttackerNearBuilding()
 
 void nobBaseMilitary::CheckArrestedAttackers()
 {
-    for(list<nofAttacker*>::iterator it = aggressors.begin(); it.valid(); ++it)
+    for(std::list<nofAttacker*>::iterator it = aggressors.begin(); it != aggressors.end(); ++it)
     {
         // Ist der Soldat überhaupt bereit zum Kämpfen (also wartet er um die Flagge herum)?
         if((*it)->IsAttackerReady())
@@ -402,7 +395,7 @@ void nobBaseMilitary::CheckArrestedAttackers()
 
 bool nobBaseMilitary::SendSuccessor(const unsigned short x, const unsigned short y, const unsigned short radius, const unsigned char dir)
 {
-    for(list<nofAttacker*>::iterator it = aggressors.begin(); it.valid(); ++it)
+    for(std::list<nofAttacker*>::iterator it = aggressors.begin(); it != aggressors.end(); ++it)
     {
         // Wartet der Soldat überhaupt um die Flagge?
         if((*it)->IsAttackerReady())
@@ -428,18 +421,12 @@ bool nobBaseMilitary::SendSuccessor(const unsigned short x, const unsigned short
 
 bool nobBaseMilitary::Test(nofAttacker* attacker)
 {
-    if(aggressors.search(attacker).valid())
-        return true;
-    else
-        return false;
+    return std::find(aggressors.begin(), aggressors.end(), attacker) != aggressors.end();
 }
 
 bool nobBaseMilitary::TestOnMission(nofActiveSoldier* soldier)
 {
-    if(troops_on_mission.search(soldier).valid())
-        return true;
-    else
-        return false;
+    return std::find(troops_on_mission.begin(), troops_on_mission.end(), soldier) != troops_on_mission.end();
 }
 
 /// Bricht einen aktuell von diesem Haus gestarteten Angriff/aggressive Verteidigung ab, d.h. setzt die Soldaten
@@ -447,7 +434,7 @@ bool nobBaseMilitary::TestOnMission(nofActiveSoldier* soldier)
 void nobBaseMilitary::CancelJobs()
 {
     // Soldaten, die noch in der Warteschlange hängen, rausschicken
-    for(std::list<noFigure*>::iterator it = leave_house.begin(); it != leave_house.end(); ++it)
+    for(std::list<noFigure*>::iterator it = leave_house.begin(); it != leave_house.end(); )
     {
         // Nur Soldaten nehmen (Job-Arbeiten) und keine (normalen) Verteidiger, da diese ja rauskommen
         // sollen zum Kampf
@@ -457,17 +444,14 @@ void nobBaseMilitary::CancelJobs()
             assert(as);
 
             // Nicht mehr auf Mission
-            troops_on_mission.erase(as);
+            troops_on_mission.remove(as);
             // Wenn er Job-Arbeiten verrichtet, ists ein ActiveSoldier --> dem muss extra noch Bescheid gesagt werden!
             as->InformTargetsAboutCancelling();
             // Wieder in das Haus verfrachten
             this->AddActiveSoldier(as);
             it = leave_house.erase(it);
-            if(it == leave_house.end())
-                break;
-
-            //leave_house.erase(&it);
-        }
+        }else
+            ++it;
     }
 
     //leave_house.clear();

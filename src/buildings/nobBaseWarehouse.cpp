@@ -79,7 +79,7 @@ nobBaseWarehouse::nobBaseWarehouse(const BuildingType type, const unsigned short
 nobBaseWarehouse::~nobBaseWarehouse()
 {
     // Waiting Wares löschen
-    for(list<Ware*>::iterator it = waiting_wares.begin(); it.valid(); ++it)
+    for(std::list<Ware*>::iterator it = waiting_wares.begin(); it != waiting_wares.end(); ++it)
         delete (*it);
 }
 
@@ -100,7 +100,7 @@ void nobBaseWarehouse::Destroy_nobBaseWarehouse()
     em->RemoveEvent(store_event);
 
     // Waiting Wares löschen
-    for(list<Ware*>::iterator it = waiting_wares.begin(); it.valid(); ++it)
+    for(std::list<Ware*>::iterator it = waiting_wares.begin(); it != waiting_wares.end(); ++it)
     {
         (*it)->WareLost(player);
         delete (*it);
@@ -204,7 +204,7 @@ void nobBaseWarehouse::Clear()
         real_goods.people[i] = 0;
     }
     
-    for(list<Ware*>::iterator it = waiting_wares.begin(); it.valid(); ++it)
+    for(std::list<Ware*>::iterator it = waiting_wares.begin(); it != waiting_wares.end(); ++it)
     {
         (*it)->WareLost(player);
         delete (*it);
@@ -539,7 +539,7 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
 
             empty_event = 0;
 
-            list<unsigned> type_list;
+            std::vector<unsigned> type_list;
             // Waren und Figuren zum Auslagern zusammensuchen (id >= 34 --> Figur!)
             // Wenn keine Platz an Flagge, dann keine Waren raus
             if(GetFlag()->IsSpaceForWare())
@@ -559,12 +559,12 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
             }
 
             // Gibts überhaupt welche?
-            if(!type_list.size())
+            if(type_list.empty())
                 // ansonsten gleich tschüss
                 return;
 
             // Eine ID zufällig auswählen
-            unsigned type = *type_list[RANDOM.Rand(__FILE__, __LINE__, obj_id, type_list.size())];
+            unsigned type = type_list[RANDOM.Rand(__FILE__, __LINE__, obj_id, type_list.size())];
 
             if(type < WARE_TYPES_COUNT)
             {
@@ -896,7 +896,7 @@ void nobBaseWarehouse::WareLost(Ware* ware)
 void nobBaseWarehouse::CancelWare(Ware* ware)
 {
     // Ware aus den Waiting-Wares entfernen
-    waiting_wares.erase(ware);
+    waiting_wares.remove(ware);
     // Anzahl davon wieder hochsetzen
     ++real_goods.goods[ConvertShields(ware->type)];
 }
@@ -989,7 +989,7 @@ nofAggressiveDefender* nobBaseWarehouse::SendDefender(nofAttacker* attacker)
 void nobBaseWarehouse::SoldierLost(nofSoldier* soldier)
 {
     // Soldat konnte nicht (mehr) kommen --> rauswerfen
-    troops_on_mission.erase(static_cast<nofActiveSoldier*>(soldier));
+    troops_on_mission.remove(static_cast<nofActiveSoldier*>(soldier));
 }
 
 void nobBaseWarehouse::AddActiveSoldier(nofActiveSoldier* soldier)
@@ -1008,7 +1008,7 @@ void nobBaseWarehouse::AddActiveSoldier(nofActiveSoldier* soldier)
     em->AddToKillList(soldier);
 
     // Ggf. war er auf Mission
-    troops_on_mission.erase(soldier);
+    troops_on_mission.remove(soldier);
 }
 
 nofDefender* nobBaseWarehouse::ProvideDefender(nofAttacker* const attacker)
@@ -1075,7 +1075,7 @@ nofDefender* nobBaseWarehouse::ProvideDefender(nofAttacker* const attacker)
         {
             static_cast<nofAggressiveDefender*>(*it)->NeedForHomeDefence();
             // Aus Missionsliste raushauen
-            troops_on_mission.erase(static_cast<nofAggressiveDefender*>(*it));
+            troops_on_mission.remove(static_cast<nofAggressiveDefender*>(*it));
 
             nofDefender* soldier = new nofDefender(x, y, player, this, static_cast<nofAggressiveDefender*>(*it)->GetRank(), attacker);
             (*it)->Destroy();
@@ -1096,7 +1096,7 @@ nofDefender* nobBaseWarehouse::ProvideDefender(nofAttacker* const attacker)
         }
     }
 
-    return 0;
+    return NULL;
 
 }
 
@@ -1336,7 +1336,7 @@ void nobBaseWarehouse::ChangeRealInventorySetting(unsigned char category, unsign
         empty_event = em->AddEvent(this, EMPTY_INTERVAL, 3);
 
     // Sollen Waren eingelagert werden? Dann müssen wir neue bestellen
-    if(state == 8 && !store_event && ((category == 0) ? inventory_settings_real.wares[type] : inventory_settings_real.figures[type]) & 8)
+    if(state == 8 && !store_event && ((category == 0) ? inventory_settings_real.wares[type] : (inventory_settings_real.figures[type]) & 8))
         store_event = em->AddEvent(this, STORE_INTERVAL, 4);
 }
 
@@ -1352,7 +1352,7 @@ void nobBaseWarehouse::ChangeAllRealInventorySettings(unsigned char category, un
         for(unsigned i = 0; i < WARE_TYPES_COUNT; ++i)
         {
             inventory_settings_real.wares[i] ^= state;
-            if(state == 8 && inventory_settings_real.wares[i] & state)
+            if(state == 8 && (inventory_settings_real.wares[i] & state))
                 store = true;
         }
     }
@@ -1362,7 +1362,7 @@ void nobBaseWarehouse::ChangeAllRealInventorySettings(unsigned char category, un
         for(unsigned i = 0; i < JOB_TYPES_COUNT; ++i)
         {
             inventory_settings_real.figures[i] ^= state;
-            if(state == 8 && inventory_settings_real.figures[i] & state)
+            if(state == 8 && (inventory_settings_real.figures[i] & state))
                 store = true;
         }
     }

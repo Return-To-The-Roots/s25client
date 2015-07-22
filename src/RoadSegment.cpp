@@ -106,10 +106,8 @@ void RoadSegment::Destroy_RoadSegment()
         for(unsigned short i = 0; i < route.size() + 1; ++i)
         {
             // Figuren sammeln, Achtung, einige können (... ? was?)
-            list<noBase*> objects;
-            gwg->GetDynamicObjectsFrom(x, y, objects);
-
-            for(list<noBase*>::iterator it = objects.begin(); it.valid(); ++it)
+            std::vector<noBase*> objects = gwg->GetDynamicObjectsFrom(x, y);
+            for(std::vector<noBase*>::iterator it = objects.begin(); it != objects.end(); ++it)
             {
                 if((*it)->GetType() == NOP_FIGURE)
                 {
@@ -213,9 +211,10 @@ void RoadSegment::SplitRoad(noFlag* splitflag)
 
     for(unsigned short i = 0; i < old_route.size() + 1; ++i)
     {
-        for(list<noBase*>::iterator it = gwg->GetFigures(tx, ty).begin(); it.valid(); ++it)
+        const std::list<noBase*>& figures = gwg->GetFigures(tx, ty);
+        for(std::list<noBase*>::const_iterator it = figures.begin(); it != figures.end(); ++it)
         {
-            if(static_cast<noFigure*>(*it)->GetType() == NOP_FIGURE)
+            if((*it)->GetType() == NOP_FIGURE)
             {
                 if(static_cast<noFigure*>(*it)->GetCurrentRoad() == this)
                     static_cast<noFigure*>(*it)->CorrectSplitData(second);

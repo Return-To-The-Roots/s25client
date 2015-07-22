@@ -28,7 +28,6 @@
 #include "gameData/GameConsts.h"
 #include "colors.h"
 #include "Rect.h"
-#include "list.h"
 #include <map>
 
 class WindowManager;
@@ -290,7 +289,7 @@ class Window
         /// zeichnet die Steuerelemente.
         void DrawControls(void);
         /// prüft ob Mauskoordinaten in einer gesperrten Region liegt.
-        bool TestWindowInRegion(Window* window, const MouseCoords& mc);
+        bool TestWindowInRegion(Window* window, const MouseCoords& mc) const;
         /// zeichnet das Fenster. (virtuelle Memberfunktion)
         virtual bool Draw_() = 0;
         /// Weiterleitung von Nachrichten von abgeleiteten Klassen erlaubt oder nicht?
@@ -333,13 +332,7 @@ class Window
         bool scale;               ///< Sollen Controls an Fenstergröße angepasst werden?
         std::string tooltip;      ///< Tooltip des Fensters (nur bei Controls benutzt)
 
-        struct LockedRegion
-        {
-            Window* window; ///< das Fenster, welches die Region sperrt.
-            Rect rect;      ///< das Rechteck, welches die Region beschreibt.
-        };
-
-        list<LockedRegion> locked_areas;       ///< gesperrte Regionen des Fensters.
+        std::map<Window*, Rect> locked_areas;       ///< gesperrte Regionen des Fensters.
         std::map<unsigned int, Window*> idmap; ///< Die Steuerelemente des Fensters.
 };
 

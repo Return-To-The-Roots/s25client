@@ -144,7 +144,7 @@ void nofHunter::HandleDerivedEvent(const unsigned int id)
             if(y + SQUARE_SIZE < gwg->GetHeight()) ly = y + SQUARE_SIZE; else ly = gwg->GetHeight() - 1;
 
             // Liste mit den gefundenen Tieren
-            list<noAnimal*> available_animals;
+            std::vector<noAnimal*> available_animals;
 
             // Durchgehen und nach Tieren suchen
             for(unsigned short py = fy; py <= ly; ++py)
@@ -152,10 +152,11 @@ void nofHunter::HandleDerivedEvent(const unsigned int id)
                 for(unsigned short px = fx; px <= lx; ++px)
                 {
                     // Gibts hier was bewegliches?
-                    if(gwg->GetFigures(px, py).size())
+                    const std::list<noBase*>& figures = gwg->GetFigures(px, py);
+                    if(!figures.empty())
                     {
                         // Dann nach Tieren suchen
-                        for(list<noBase*>::iterator it = gwg->GetFigures(px, py).begin(); it.valid(); ++it)
+                        for(std::list<noBase*>::const_iterator it = figures.begin(); it != figures.end(); ++it)
                         {
                             if((*it)->GetType() == NOP_ANIMAL)
                             {
@@ -180,7 +181,7 @@ void nofHunter::HandleDerivedEvent(const unsigned int id)
             if(available_animals.size())
             {
                 // Ein Tier zufällig heraussuchen
-                animal = *available_animals[RANDOM.Rand(__FILE__, __LINE__, obj_id, available_animals.size())];
+                animal = available_animals[RANDOM.Rand(__FILE__, __LINE__, obj_id, available_animals.size())];
 
                 // Wir jagen es jetzt
                 state = STATE_HUNTER_CHASING;

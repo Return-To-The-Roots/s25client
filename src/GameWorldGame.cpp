@@ -55,6 +55,7 @@
 #include "GameInterface.h"
 #include "drivers/VideoDriverWrapper.h"
 
+#include <algorithm>
 
 GameWorldGame::~GameWorldGame()
 {
@@ -199,10 +200,9 @@ void GameWorldGame::AddFigure(noBase* fig, const MapCoord x, const MapCoord y)
     if(!fig)
         return;
 
-    assert(!GetNode(x, y).figures.search(fig).valid());
-    GetNode(x, y).figures.push_back(fig);
-
-
+    std::list<noBase*>& figures = GetNode(x, y).figures;
+    assert(std::find(figures.begin(), figures.end(), fig) == figures.end());
+    figures.push_back(fig);
 
     for(unsigned char i = 0; i < 6; ++i)
     {
@@ -212,8 +212,9 @@ void GameWorldGame::AddFigure(noBase* fig, const MapCoord x, const MapCoord y)
         if(xa < 0 || ya < 0 || xa >= width || ya >= height)
             continue;
 
-        if(GetNode(xa, ya).figures.search(fig).valid())
-            assert(false);
+        const std::list<noBase*>& figures = GetNode(xa, ya).figures;
+        if(std::find(figures.begin(), figures.end(), fig) != figures.end())
+            throw std::runtime_error("Added figure that is in surrounding?");
     }
 
     //if(fig->GetDir() == 1 || fig->GetDir() == 2)
@@ -222,16 +223,9 @@ void GameWorldGame::AddFigure(noBase* fig, const MapCoord x, const MapCoord y)
     //  figures[y*width+x].push_back(fig);
 }
 
-void GameWorldGame::RemoveFigure(const noBase* fig, const MapCoord x, const MapCoord y)
+void GameWorldGame::RemoveFigure(noBase* fig, const MapCoord x, const MapCoord y)
 {
-    for(list<noBase*>::iterator it = GetNode(x, y).figures.begin(); it.valid(); ++it)
-    {
-        if(*it == fig)
-        {
-            GetNode(x, y).figures.erase(it);
-            return;
-        }
-    }
+    GetNode(x, y).figures.remove(fig);
 }
 
 
@@ -534,10 +528,9 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding* const building, const 
 	unsigned char owneroftriggerbuilding = GetNode(building->GetX(),building->GetY()).owner;
 	unsigned char new_owner_of_trigger_building;
 
-    std::list<nobBaseMilitary*> buildings; // Liste von Militärgebäuden in der Nähe
-
     // alle Militärgebäude in der Nähe abgrasen
-    LookForMilitaryBuildings(buildings, building->GetX(), building->GetY(), 3);
+	std::set<nobBaseMilitary*> buildingsUnsorted = LookForMilitaryBuildings(building->GetX(), building->GetY(), 3);
+	std::set<nobBaseMilitary*, nobBaseMilitary::Comparer> buildings(buildingsUnsorted.begin(), buildingsUnsorted.end());
 
     // Radius der noch draufaddiert wird auf den eigentlich ausreichenden Bereich, für das Eliminieren von
     // herausragenden Landesteilen und damit Grenzsteinen
@@ -552,10 +545,8 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding* const building, const 
 
     TerritoryRegion tr(x1, y1, x2, y2, this);
 
-    buildings.sort(nobBaseMilitary::Compare);
-
     // Alle Gebäude ihr Terrain in der Nähe neu berechnen
-    for(std::list<nobBaseMilitary*>::iterator it = buildings.begin(); it != buildings.end(); ++it)
+    for(std::set<nobBaseMilitary*, nobBaseMilitary::Comparer>::iterator it = buildings.begin(); it != buildings.end(); ++it)
     {
         // Ist es ein richtiges Militärgebäude?
         if((*it)->GetBuildingType() >= BLD_BARRACKS && (*it)->GetBuildingType() <= BLD_FORTRESS)
@@ -577,8 +568,6 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding* const building, const 
         if(*it != building || !destroyed)
             tr.CalcTerritoryOfBuilding(*it);
     }
-
-
 
     // Merken, wo sich der Besitzer geändert hat
     bool* owner_changed = new bool[(x2 - x1) * (y2 - y1)];
@@ -821,10 +810,8 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding* const building, const 
 
 bool GameWorldGame::TerritoryChange(const noBaseBuilding* const building, const unsigned short radius, const bool destroyed, const bool newBuilt)
 {
-    std::list<nobBaseMilitary*> buildings; // Liste von Militärgebäuden in der Nähe
-
-    // alle Militärgebäude in der Nähe abgrasen
-    LookForMilitaryBuildings(buildings, building->GetX(), building->GetY(), 3);
+    std::set<nobBaseMilitary*> buildingsUnsorted = LookForMilitaryBuildings(building->GetX(), building->GetY(), 3);
+    std::set<nobBaseMilitary*, nobBaseMilitary::Comparer> buildings(buildingsUnsorted.begin(), buildingsUnsorted.end());
 
     // Radius der noch draufaddiert wird auf den eigentlich ausreichenden Bereich, für das Eliminieren von
     // herausragenden Landesteilen und damit Grenzsteinen
@@ -839,10 +826,8 @@ bool GameWorldGame::TerritoryChange(const noBaseBuilding* const building, const 
 
     TerritoryRegion tr(x1, y1, x2, y2, this);
 
-    buildings.sort(nobBaseMilitary::Compare);
-
     // Alle Gebäude ihr Terrain in der Nähe neu berechnen
-    for(std::list<nobBaseMilitary*>::iterator it = buildings.begin(); it != buildings.end(); ++it)
+    for(std::set<nobBaseMilitary*, nobBaseMilitary::Comparer>::iterator it = buildings.begin(); it != buildings.end(); ++it)
     {
         // Ist es ein richtiges Militärgebäude?
         if((*it)->GetBuildingType() >= BLD_BARRACKS && (*it)->GetBuildingType() <= BLD_FORTRESS)
@@ -998,13 +983,12 @@ void GameWorldGame::RoadNodeAvailable(const MapCoord x, const MapCoord y)
 
         // Figuren Bescheid sagen, es können auch auf den Weg gestoppte sein, die müssen auch berücksichtigt
         // werden, daher die *From-Methode
-        list<noBase*> objects;
-        GetDynamicObjectsFrom(xa, ya, objects);
+        std::vector<noBase*> objects = GetDynamicObjectsFrom(xa, ya);
 
         // Auch Figuren da, die rumlaufen können?
         if(objects.size())
         {
-            for(list<noBase*>::iterator it = objects.begin(); it.valid(); ++it)
+            for(std::vector<noBase*>::iterator it = objects.begin(); it != objects.end(); ++it)
             {
                 if((*it)->GetType() == NOP_FIGURE)
                     static_cast<noFigure*>(*it)->NodeFreed(x, y);
@@ -1052,92 +1036,101 @@ void GameWorldGame::Attack(const unsigned char player_attacker, const MapCoord x
     }
 
     // Militärgebäude in der Nähe finden
-    std::list<nobBaseMilitary*> buildings;
-    LookForMilitaryBuildings(buildings, x, y, 3);
+    std::set<nobBaseMilitary*> buildings = LookForMilitaryBuildings(x, y, 3);
 
     // Liste von verfügbaren Soldaten, geordnet einfügen, damit man dann starke oder schwache Soldaten nehmen kann
-    list<PotentialAttacker> soldiers;
+    std::list<PotentialAttacker> soldiers;
 
 
-    for(std::list<nobBaseMilitary*>::iterator it = buildings.begin(); it != buildings.end(); ++it)
-    {
+    for(std::set<nobBaseMilitary*>::iterator it = buildings.begin(); it != buildings.end(); ++it) {
         // Muss ein Gebäude von uns sein und darf nur ein "normales Militärgebäude" sein (kein HQ etc.)
-        if((*it)->GetPlayer() == player_attacker && (*it)->GetBuildingType() >= BLD_BARRACKS && (*it)->GetBuildingType() <= BLD_FORTRESS)
+        if((*it)->GetPlayer() != player_attacker || (*it)->GetBuildingType() < BLD_BARRACKS || (*it)->GetBuildingType() > BLD_FORTRESS)
+            continue;
+
+        // Soldaten ausrechnen, wie viel man davon nehmen könnte, je nachdem wie viele in den
+        // Militäreinstellungen zum Angriff eingestellt wurden
+        unsigned soldiers_count =
+            (static_cast<nobMilitary*>(*it)->GetTroopsCount() > 1) ?
+            ((static_cast<nobMilitary*>(*it)->GetTroopsCount() - 1) * GetPlayer(player_attacker)->military_settings[3] / MILITARY_SETTINGS_SCALE[3]) : 0;
+
+        unsigned int distance = CalcDistance(x, y, (*it)->GetX(), (*it)->GetY());
+
+        // Falls Entfernung gröÃer als Basisreichweite, Soldaten subtrahieren
+        if (distance > BASE_ATTACKING_DISTANCE)
         {
+            // je einen soldaten zum entfernen vormerken für jeden EXTENDED_ATTACKING_DISTANCE groÃen Schritt
+            unsigned soldiers_to_remove = ((distance - BASE_ATTACKING_DISTANCE + EXTENDED_ATTACKING_DISTANCE - 1) / EXTENDED_ATTACKING_DISTANCE);
+            if (soldiers_to_remove < soldiers_count)
+                soldiers_count -= soldiers_to_remove;
+            else
+                continue;
+        }
 
-            // Soldaten ausrechnen, wie viel man davon nehmen könnte, je nachdem wie viele in den
-            // Militäreinstellungen zum Angriff eingestellt wurden
-            unsigned short soldiers_count =
-                (static_cast<nobMilitary*>(*it)->GetTroopsCount() > 1) ?
-                ((static_cast<nobMilitary*>(*it)->GetTroopsCount() - 1) * GetPlayer(player_attacker)->military_settings[3] / MILITARY_SETTINGS_SCALE[3]) : 0;
+        if(!soldiers_count)
+            continue;
 
-            unsigned int distance = CalcDistance(x, y, (*it)->GetX(), (*it)->GetY());
+        // The path should not be to far. If it is skip this
+        // Also use a bit of tolerance for the path
+        if(FindHumanPath(x, y, (*it)->GetX(), (*it)->GetY(), MAX_ATTACKING_RUN_DISTANCE) == 0xFF) // TODO check: hier wird ne random-route berechnet? soll das so?
+            continue;
 
-            // Falls Entfernung gröÃer als Basisreichweite, Soldaten subtrahieren
-            if (distance > BASE_ATTACKING_DISTANCE)
-            {
-                // je einen soldaten zum entfernen vormerken für jeden EXTENDED_ATTACKING_DISTANCE groÃen Schritt
-                unsigned short soldiers_to_remove = ((distance - BASE_ATTACKING_DISTANCE + EXTENDED_ATTACKING_DISTANCE - 1) / EXTENDED_ATTACKING_DISTANCE);
-                if (soldiers_to_remove < soldiers_count)
-                    soldiers_count -= soldiers_to_remove;
-                else
-                    continue;
-            }
-
-            if(soldiers_count)
-            {
-                // und auch der Weg zu FuÃ darf dann nicht so weit sein, wenn das alles bestanden ist, können wir ihn nehmen..
-                // Bei dem freien Pfad noch ein bisschen Toleranz mit einberechnen
-                if(FindHumanPath(x, y, (*it)->GetX(), (*it)->GetY(), MAX_ATTACKING_RUN_DISTANCE) != 0xFF) // TODO check: hier wird ne random-route berechnet? soll das so?
-                {
-                    // Soldaten davon nehmen
-                    unsigned i = 0;
-                    for(list<nofPassiveSoldier*>::iterator it2 = strong_soldiers ?
-                            static_cast<nobMilitary*>(*it)->troops.end() : static_cast<nobMilitary*>(*it)->troops.begin()
-                            ; it2.valid() && i < soldiers_count; ++i)
-                    {
-                        // Sortiert einfügen (aufsteigend nach Rang)
-
-                        unsigned old_size = soldiers.size();
-
-                        for(list<PotentialAttacker>::iterator it3 = soldiers.end(); it3.valid(); --it3)
-                        {
-                            // Ist das einzufügende Item gröÃer als das aktuelle?
-                            // an erster Stelle nach Rang, an zweiter dann nach Entfernung gehen
-                            if( (it3->soldier->GetRank() < (*it2)->GetRank() && !strong_soldiers) ||
-                                    (it3->soldier->GetRank() > (*it2)->GetRank() && strong_soldiers) ||
-                                    (it3->soldier->GetRank() == (*it2)->GetRank() && it3->distance > distance))
-                            {
-                                // ja dann hier einfügen
-                                PotentialAttacker pa = { *it2, distance };
-                                soldiers.insert(it3, pa);
-                                break;
-                            }
-                        }
-
-                        // Ansonsten ganz nach vorn einfügen, wenns noch nich eingefügt wurde
-                        if(old_size == soldiers.size())
-                        {
-                            PotentialAttacker pa = { *it2, distance };
-                            soldiers.push_front(pa);
-                        }
-
-                        if(strong_soldiers)
-                            --it2;
-                        else
-                            ++it2;
+        // Take soldier(s)
+        unsigned i = 0;
+        std::list<nofPassiveSoldier*>& troops = static_cast<nobMilitary*>(*it)->troops;
+        if(strong_soldiers){
+            // Strong soldiers first
+            for(std::list<nofPassiveSoldier*>::reverse_iterator it2 = troops.rbegin();
+                    it2 != troops.rend() && i < soldiers_count;
+                    ++it2, ++i){
+                bool inserted = false;
+                for(std::list<PotentialAttacker>::iterator it3 = soldiers.begin(); it3 != soldiers.end(); ++it3){
+                    /* Insert new soldier before current one if:
+                            new soldiers rank is greater
+                            OR new soldiers rank is equal AND new soldiers distance is smaller */
+                    if(it3->soldier->GetRank() < (*it2)->GetRank() ||
+                            (it3->soldier->GetRank() == (*it2)->GetRank() && it3->distance > distance)){
+                        PotentialAttacker pa = { *it2, distance };
+                        soldiers.insert(it3, pa);
+                        inserted = true;
+                        break;
                     }
                 }
+                if(!inserted){
+                    PotentialAttacker pa = { *it2, distance };
+                    soldiers.push_back(pa);
+                }
             }
-        }
+        }else{
+            // Weak soldiers first
+            for(std::list<nofPassiveSoldier*>::iterator it2 = troops.begin();
+                    it2 != troops.end() && i < soldiers_count;
+                    ++it2, ++i){
+                bool inserted = false;
+                for(std::list<PotentialAttacker>::iterator it3 = soldiers.begin(); it3 != soldiers.end(); ++it3){
+                    /* Insert new soldier before current one if:
+                            new soldiers rank is less
+                            OR new soldiers rank is equal AND new soldiers distance is smaller */
+                    if(it3->soldier->GetRank() > (*it2)->GetRank() ||
+                            (it3->soldier->GetRank() == (*it2)->GetRank() && it3->distance > distance)){
+                        PotentialAttacker pa = { *it2, distance };
+                        soldiers.insert(it3, pa);
+                        inserted = true;
+                        break;
+                    }
+                }
+                if(!inserted){
+                    PotentialAttacker pa = { *it2, distance };
+                    soldiers.push_back(pa);
+                }
+            }
+        } // End weak/strong check
     }
 
-    // Alle Soldaten zum Angriff schicken (jeweils wieder von hinten oder vorne durchgehen um schwache oder starke
-    // Soldaten zu nehmen)
+    // Send the soldiers to attack
     unsigned short i = 0;
 
-    for(list<PotentialAttacker>::iterator it = soldiers.begin();
-            it.valid() && i < soldiers_count; ++i, ++it)
+    for(std::list<PotentialAttacker>::iterator it = soldiers.begin();
+            it != soldiers.end() && i < soldiers_count; ++i, ++it)
     {
         // neuen Angreifer-Soldaten erzeugen
         new nofAttacker(it->soldier, attacked_building);
@@ -1212,11 +1205,10 @@ void  GameWorldGame::AttackViaSea(const unsigned char player_attacker, const Map
 bool GameWorldGame::IsRoadNodeForFigures(const MapCoord x, const MapCoord y, const unsigned char dir)
 {
     /// Objekte sammeln
-    list<noBase*> objects;
-    GetDynamicObjectsFrom(x, y, objects);
+    std::vector<noBase*> objects = GetDynamicObjectsFrom(x, y);
 
     // Figuren durchgehen, bei Kämpfen und wartenden Angreifern sowie anderen wartenden Figuren stoppen!
-    for(list<noBase*>::iterator it = objects.begin(); it.valid(); ++it)
+    for(std::vector<noBase*>::iterator it = objects.begin(); it != objects.end(); ++it)
     {
         // andere wartende Figuren
         /*
@@ -1254,23 +1246,24 @@ bool GameWorldGame::IsRoadNodeForFigures(const MapCoord x, const MapCoord y, con
 void GameWorldGame::StopOnRoads(const MapCoord x, const MapCoord y, const unsigned char dir)
 {
     // Figuren drumherum sammeln (auch von dem Punkt hier aus)
-    list<noBase*> figures;
+    std::vector<noBase*> figures;
 
     // Auch vom Ausgangspunkt aus, da sie im GameWorldGame wegem Zeichnen auch hier hängen können!
-    for(list<noBase*>::iterator it = GetFigures(x, y).begin(); it.valid(); ++it)
+    const std::list<noBase*>& fieldFigures = GetFigures(x, y);
+    for(std::list<noBase*>::const_iterator it = fieldFigures.begin(); it != fieldFigures.end(); ++it)
         if((*it)->GetType() == NOP_FIGURE)
             figures.push_back(*it);
 
     // Und natürlich in unmittelbarer Umgebung suchen
     for(unsigned d = 0; d < 6; ++d)
     {
-        for(list<noBase*>::iterator it = GetFigures(GetXA(x, y, d), GetYA(x, y, d)).begin()
-                                         ; it.valid(); ++it)
+        const std::list<noBase*>& fieldFigures = GetFigures(GetXA(x, y, d), GetYA(x, y, d));
+        for(std::list<noBase*>::const_iterator it = fieldFigures.begin(); it != fieldFigures.end(); ++it)
             if((*it)->GetType() == NOP_FIGURE)
                 figures.push_back(*it);
     }
 
-    for(list<noBase*>::iterator it = figures.begin(); it.valid(); ++it)
+    for(std::vector<noBase*>::iterator it = figures.begin(); it != figures.end(); ++it)
     {
         if(dir < 6)
         {
@@ -1335,7 +1328,8 @@ bool GameWorldGame::ValidWaitingAroundBuildingPoint(const MapCoord x, const MapC
         return false;
 
     // Objekte, die sich hier befinden durchgehen
-    for(list<noBase*>::iterator it = GetFigures(x, y).begin(); it.valid(); ++it)
+    const std::list<noBase*>& figures = GetFigures(x, y);
+    for(std::list<noBase*>::const_iterator it = figures.begin(); it != figures.end(); ++it)
     {
         // Ist hier ein anderer Soldat, der hier ebenfalls wartet?
         if((*it)->GetGOT() == GOT_NOF_ATTACKER || (*it)->GetGOT() == GOT_NOF_AGGRESSIVEDEFENDER ||
@@ -1367,7 +1361,8 @@ bool GameWorldGame::ValidPointForFighting(const MapCoord x, const MapCoord y, co
     }
 
     // Objekte, die sich hier befinden durchgehen
-    for(list<noBase*>::iterator it = GetFigures(x, y).begin(); it.valid(); ++it)
+    const std::list<noBase*>& figures = GetFigures(x, y);
+    for(std::list<noBase*>::const_iterator it = figures.begin(); it != figures.end(); ++it)
     {
         // Ist hier ein anderer Soldat, der hier ebenfalls wartet?
         if((*it)->GetGOT() == GOT_NOF_ATTACKER || (*it)->GetGOT() == GOT_NOF_AGGRESSIVEDEFENDER ||
@@ -1403,11 +1398,10 @@ bool GameWorldGame::ValidPointForFighting(const MapCoord x, const MapCoord y, co
 
 bool GameWorldGame::IsPointCompletelyVisible(const MapCoord x, const MapCoord y, const unsigned char player, const noBaseBuilding* const exception) const
 {
-    std::list<nobBaseMilitary*> buildings;
-    LookForMilitaryBuildings(buildings, x, y, 3);
+    std::set<nobBaseMilitary*> buildings = LookForMilitaryBuildings(x, y, 3);
 
     // Sichtbereich von Militärgebäuden
-    for(std::list<nobBaseMilitary*>::iterator it = buildings.begin(); it != buildings.end(); ++it)
+    for(std::set<nobBaseMilitary*>::iterator it = buildings.begin(); it != buildings.end(); ++it)
     {
         if((*it)->GetPlayer() == player && *it != exception)
         {
@@ -1488,11 +1482,10 @@ bool GameWorldGame::IsPointCompletelyVisible(const MapCoord x, const MapCoord y,
 
 bool GameWorldGame::IsScoutingFigureOnNode(const MapCoord x, const MapCoord y, const unsigned player, const unsigned distance) const
 {
-    list<noBase*> objects;
-    GetDynamicObjectsFrom(x, y, objects);
+    std::vector<noBase*> objects = GetDynamicObjectsFrom(x, y);
 
     // Späher/Soldaten in der Nähe prüfen und direkt auf dem Punkt
-    for(list<noBase*>::iterator it = objects.begin(); it.valid(); ++it)
+    for(std::vector<noBase*>::iterator it = objects.begin(); it != objects.end(); ++it)
     {
         if(distance <= VISUALRANGE_SCOUT)
         {
@@ -1576,16 +1569,13 @@ void GameWorldGame::RecalcVisibility(const MapCoord x, const MapCoord y, const u
         // Je nach vorherigen Zustand und Einstellung entscheiden
         switch(GameClient::inst().GetGGS().exploration)
         {
-            default: assert(false);
             case GlobalGameSettings::EXP_DISABLED:
             case GlobalGameSettings::EXP_CLASSIC:
-            {
                 // einmal sichtbare Bereiche bleiben erhalten
                 // nichts zu tun
-            } break;
+                break;
             case GlobalGameSettings::EXP_FOGOFWAR:
             case GlobalGameSettings::EXP_FOGOFWARE_EXPLORED:
-            {
                 // wenn es mal sichtbar war, nun im Nebel des Krieges
                 if(visibility_before == VIS_VISIBLE)
                 {
@@ -1593,7 +1583,9 @@ void GameWorldGame::RecalcVisibility(const MapCoord x, const MapCoord y, const u
 
                     SaveFOWNode(x, y, player);
                 }
-            } break;
+                break;
+            default:
+                throw std::logic_error("Invalid exploration value");
         }
 
     }

@@ -39,6 +39,7 @@
 #include "FOWObjects.h"
 
 #include "ogl/glSmartBitmap.h"
+#include "helpers/converters.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -118,9 +119,9 @@ void noBuildingSite::Destroy_noBuildingSite()
         gwg->GetPlayer(player)->JobNotWanted(this);
 
     // Bestellte Waren Bescheid sagen
-    for(list<Ware*>::iterator it = ordered_boards.begin(); it.valid(); ++it)
+    for(std::list<Ware*>::iterator it = ordered_boards.begin(); it != ordered_boards.end(); ++it)
         WareNotNeeded((*it));
-    for(list<Ware*>::iterator it = ordered_stones.begin(); it.valid(); ++it)
+    for(std::list<Ware*>::iterator it = ordered_stones.begin(); it != ordered_stones.end(); ++it)
         WareNotNeeded((*it));
 
     // und Feld wird leer
@@ -335,26 +336,12 @@ void noBuildingSite::AddWare(Ware* ware)
 
     if(ware->type == GD_BOARDS)
     {
-        for(list<Ware*>::iterator it = ordered_boards.begin(); it.valid(); ++it)
-        {
-            if(*it == ware)
-            {
-                ordered_boards.erase(it);
-                break;
-            }
-        }
+        ordered_boards.remove(ware);
         ++boards;
     }
     else if(ware->type == GD_STONES)
     {
-        for(list<Ware*>::iterator it = ordered_stones.begin(); it.valid(); ++it)
-        {
-            if(*it == ware)
-            {
-                ordered_stones.erase(it);
-                break;
-            }
-        }
+        ordered_stones.remove(ware);
         ++stones;
     }
 
@@ -368,23 +355,12 @@ void noBuildingSite::WareLost(Ware* ware)
 {
     assert(state == STATE_BUILDING);
 
-    // Aus der Bestellliste entfernen
-    for(list<Ware*>::iterator it = ordered_boards.begin(); it.valid(); ++it)
-    {
-        if((*it) == ware)
-        {
-            ordered_boards.erase(it);
-            break;
-        }
-    }
-    for(list<Ware*>::iterator it = ordered_stones.begin(); it.valid(); ++it)
-    {
-        if((*it) == ware)
-        {
-            ordered_stones.erase(it);
-            break;
-        }
-    }
+    if(ware->type == GD_BOARDS)
+        ordered_boards.remove(ware);
+    else if(ware->type == GD_STONES)
+        ordered_stones.remove(ware);
+    else
+        throw std::logic_error("Wrong ware type lost " + helpers::toString(ware->type));
 
     OrderConstructionMaterial();
 }

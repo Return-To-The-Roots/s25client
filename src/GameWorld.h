@@ -30,10 +30,11 @@
 #include "TerrainRenderer.h"
 #include "defines.h"
 #include "Point.h"
-#include <vector>
-#include <cstddef>
 #include "GamePlayerList.h"
 #include "TradeGraph.h"
+#include <vector>
+#include <set>
+#include <cstddef>
 
 class noEnvObject;
 class noGranite;
@@ -111,7 +112,7 @@ struct MapNode
     /// Objekt, welches sich dort befindet
     noBase* obj;
     /// Figuren, Kämpfe, die sich dort befinden
-    list<noBase*> figures;
+    std::list<noBase*> figures;
 
     MapNode();
 
@@ -137,10 +138,10 @@ class GameWorldBase
         /// Landschafts-Typ
         LandscapeType lt;
 
-        unsigned short* handled_nodes;  /// Array von abgeklapperten Knoten und deren Punktzahlen
+        std::vector<unsigned short> handled_nodes;  /// Array von abgeklapperten Knoten und deren Punktzahlen
 
         /// Eigenschaften von einem Punkt auf der Map
-        MapNode* nodes;
+        std::vector<MapNode> nodes;
 
         /// Rendert das Terrain
         TerrainRenderer tr;
@@ -196,7 +197,7 @@ class GameWorldBase
 
         noNothing nothing; // nur Platzhalter bei der Rckgabe von GetNO
         /// Liste von Militärgebäuden (auch HQ und Haufengebäude, daher normale Gebäude) pro "Militärquadrat"
-        list<nobBaseMilitary*> * military_squares;
+        std::vector< std::list<nobBaseMilitary*> > military_squares;
 
     public:
 
@@ -265,10 +266,10 @@ class GameWorldBase
 
         /// Gibt Figuren, die sich auf einem bestimmten Punkt befinden, zurück
         /// nicht bei laufenden Figuren oder
-        list<noBase*>& GetFigures(const MapCoord x, const MapCoord y) const { return nodes[y * width + x].figures; }
+        const std::list<noBase*>& GetFigures(const MapCoord x, const MapCoord y) const { return nodes[y * width + x].figures; }
         /// Gibt Dynamische Objekte, die von einem bestimmten Punkt aus laufen oder dort stehen sowie andere Objekte,
         /// die sich dort befinden, zurück
-        void GetDynamicObjectsFrom(const MapCoord x, const MapCoord y, list<noBase*>& objects) const;
+        std::vector<noBase*> GetDynamicObjectsFrom(const MapCoord x, const MapCoord y) const;
 
         // Gibt ein spezifisches Objekt zurück
         template<typename T> inline T* GetSpecObj(MapCoord x, MapCoord y) { return dynamic_cast<T*>( GetNode(x, y).obj ); }
@@ -319,7 +320,7 @@ class GameWorldBase
         bool IsMilitaryBuilding(const MapCoord x, const MapCoord y) const;
 
         /// Erstellt eine Liste mit allen Militärgebäuden in der Umgebung, radius bestimmt wie viele Kästchen nach einer Richtung im Umkreis
-        void LookForMilitaryBuildings(std::list<nobBaseMilitary*>& buildings, const MapCoord x, const MapCoord y, unsigned short radius) const;
+        std::set<nobBaseMilitary*> LookForMilitaryBuildings(const MapCoord x, const MapCoord y, unsigned short radius) const;
 
         /// Prüft, ob von einem bestimmten Punkt aus der Untergrund für Figuren zugänglich ist (kein Wasser,Lava,Sumpf)
         bool IsNodeToNodeForFigure(const MapCoord x, const MapCoord y, const unsigned dir) const;
@@ -763,7 +764,7 @@ class GameWorldGame : public virtual GameWorldBase
 
         inline void SetNO(noBase* obj, const MapCoord x, const MapCoord y) { GetNode(x, y).obj = obj; }
         void AddFigure(noBase* fig, const MapCoord x, const MapCoord y);
-        void RemoveFigure(const noBase* fig, const MapCoord x, const MapCoord y);
+        void RemoveFigure(noBase* fig, const MapCoord x, const MapCoord y);
 
         /// Berechnet Bauqualitäten an Punkt x;y und den ersten Kreis darum neu
         void RecalcBQAroundPoint(const MapCoord x, const MapCoord y);
@@ -832,7 +833,7 @@ class GameWorldGame : public virtual GameWorldBase
         /// Greift ein Militäregebäude mit Schiffen an
         void AttackViaSea(const unsigned char player_attacker, const MapCoord x, const MapCoord y, const unsigned short soldiers_count, const bool strong_soldiers);
         // Liefert das entsprechende Militärquadrat für einen bestimmten Punkt auf der Karte zurück (normale Koordinaten)
-        list<nobBaseMilitary*>& GetMilitarySquare(const MapCoord x, const MapCoord y)
+        std::list<nobBaseMilitary*>& GetMilitarySquare(const MapCoord x, const MapCoord y)
         { return military_squares[(y / MILITARY_SQUARE_SIZE) * (width / MILITARY_SQUARE_SIZE + 1) + x / MILITARY_SQUARE_SIZE]; }
 
         /// Fügt einen Katapultstein der Welt hinzu, der gezeichnt werden will

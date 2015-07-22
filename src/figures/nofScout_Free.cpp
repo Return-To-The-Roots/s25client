@@ -155,7 +155,7 @@ const unsigned SCOUT_RANGE = 16;
 
 void nofScout_Free::GoToNewNode()
 {
-    list< Point<MapCoord> > available_points;
+    std::list< Point<MapCoord> > available_points;
 
     for(MapCoord tx = gwg->GetXA(flag->GetX(), flag->GetY(), 0), r = 1; r < SCOUT_RANGE; tx = gwg->GetXA(tx, flag->GetY(), 0), ++r)
     {
@@ -177,9 +177,11 @@ void nofScout_Free::GoToNewNode()
 
     // Ein Objekt zufällig heraussuchen
     bool found_point = false;
-    while(available_points.size() && !found_point)
+    size_t numPointsLeft = available_points.size();
+    while(numPointsLeft && !found_point)
     {
-        list< Point<MapCoord> >::iterator p = available_points[RANDOM.Rand(__FILE__, __LINE__, obj_id, available_points.size())];
+        std::list< Point<MapCoord> >::iterator p = available_points.begin();
+        std::advance(p, RANDOM.Rand(__FILE__, __LINE__, obj_id, numPointsLeft));
 
         // Existiert ein Weg zu diesem Punkt und ist dieser Punkt auch noch von der Flagge noch in
         // einigermaßen vernünftiger Entfernung zu erreichen, um das Drumherumlaufen um Berge usw. zu
@@ -193,13 +195,11 @@ void nofScout_Free::GoToNewNode()
             Scout();
 
             found_point = true;
-
             break;
         }
 
         available_points.erase(p);
-
-
+        numPointsLeft--;
     }
 
     // Gibt es überhaupt einen Punkt, wo ich hingehen kann?

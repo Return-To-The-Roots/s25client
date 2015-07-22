@@ -39,6 +39,7 @@
 #include "nodeObjs/noStaticObject.h"
 #include "WindowManager.h"
 #include "ingameWindows/iwMissionStatement.h"
+#include <set>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -50,8 +51,7 @@ static char THIS_FILE[] = __FILE__;
 
 #define ADD_LUA_CONST(name) lua_pushnumber(lua, name); lua_setglobal(lua, #name);
 
-GameWorldBase::GameWorldBase() : gi(NULL), width(0), height(0), lt(LT_GREENLAND), handled_nodes(NULL),
-    nodes(NULL)
+GameWorldBase::GameWorldBase() : gi(NULL), width(0), height(0), lt(LT_GREENLAND)
 {
     noTree::ResetInstanceCounter();
     GameObject::ResetCounter();
@@ -216,9 +216,9 @@ void GameWorldBase::Init()
     map_size = width * height;
 
     // Map-Knoten erzeugen
-    nodes = new MapNode[map_size];
-    handled_nodes = new unsigned short[map_size];
-    military_squares = new list<nobBaseMilitary*>[ (width / MILITARY_SQUARE_SIZE + 1) * (height / MILITARY_SQUARE_SIZE + 1)];
+    nodes.resize(map_size);
+    handled_nodes.resize(map_size);
+    military_squares.resize((width / MILITARY_SQUARE_SIZE + 1) * (height / MILITARY_SQUARE_SIZE + 1));
 }
 
 MapNode::MapNode()
@@ -229,26 +229,23 @@ MapNode::MapNode()
 void GameWorldBase::Unload()
 {
     // Straßen sammeln und alle dann vernichten
-    list<RoadSegment*> roadsegments;
+    std::set<RoadSegment*> roadsegments;
     for(unsigned i = 0; i < map_size; ++i)
     {
-        if(nodes[i].obj)
+        if(!nodes[i].obj)
+            continue;
+        if(nodes[i].obj->GetGOT() != GOT_FLAG)
+            continue;
+        for(unsigned r = 0; r < 6; ++r)
         {
-            if(nodes[i].obj->GetGOT() == GOT_FLAG)
+            if(static_cast<noFlag*>(nodes[i].obj)->routes[r])
             {
-                for(unsigned r = 0; r < 6; ++r)
-                {
-                    if(static_cast<noFlag*>(nodes[i].obj)->routes[r])
-                    {
-                        if(!((roadsegments.search(static_cast<noFlag*>(nodes[i].obj)->routes[r])).valid()))
-                            roadsegments.push_back(static_cast<noFlag*>(nodes[i].obj)->routes[r]);
-                    }
-                }
+                roadsegments.insert(static_cast<noFlag*>(nodes[i].obj)->routes[r]);
             }
         }
     }
 
-    for(list<RoadSegment*>::iterator it = roadsegments.begin(); it.valid(); ++it)
+    for(std::set<RoadSegment*>::iterator it = roadsegments.begin(); it != roadsegments.end(); ++it)
         delete (*it);
 
 
@@ -274,9 +271,9 @@ void GameWorldBase::Unload()
     // Figuren vernichten
     for(unsigned i = 0; i < map_size; ++i)
     {
-        if(nodes[i].figures.size())
+        if(!nodes[i].figures.empty())
         {
-            for(list<noBase*>::iterator it = nodes[i].figures.begin(); it.valid(); ++it)
+            for(std::list<noBase*>::iterator it = nodes[i].figures.begin(); it != nodes[i].figures.end(); ++it)
                 delete (*it);
 
             nodes[i].figures.clear();
@@ -285,13 +282,9 @@ void GameWorldBase::Unload()
 
     catapult_stones.clear();
 
-    delete [] nodes;
-    delete [] handled_nodes;
-    delete [] military_squares;
-
-    nodes = NULL;
-    handled_nodes = NULL;
-    military_squares = NULL;
+    nodes.clear();
+    handled_nodes.clear();
+    military_squares.clear();
 
     map_size = 0;
 }
@@ -660,7 +653,7 @@ bool GameWorldBase::IsMilitaryBuilding(const MapCoord x, const MapCoord y) const
     return false;
 }
 
-void GameWorldBase::LookForMilitaryBuildings(std::list<nobBaseMilitary*>& buildings, const MapCoord x, const MapCoord y, unsigned short radius) const
+std::set<nobBaseMilitary*> GameWorldBase::LookForMilitaryBuildings(const MapCoord x, const MapCoord y, unsigned short radius) const
 {
     // Radius auf Anzahl der Militärquadrate begrenzen, sonst gibt es Überlappungen
     radius = min<MapCoord>(width / MILITARY_SQUARE_SIZE + 1, radius);
@@ -681,6 +674,8 @@ void GameWorldBase::LookForMilitaryBuildings(std::list<nobBaseMilitary*>& buildi
     last_x += radius;
     last_y += radius;
 
+    std::set<nobBaseMilitary*> buildings;
+
     // Liste erzeugen
     for(int cy = first_y; cy <= last_y; ++cy)
     {
@@ -695,14 +690,16 @@ void GameWorldBase::LookForMilitaryBuildings(std::list<nobBaseMilitary*>& buildi
             else if(cx >= width / MILITARY_SQUARE_SIZE + 1) tx = cx - width / MILITARY_SQUARE_SIZE - 1;
             else tx = cx;
 
-            for(list<nobBaseMilitary*>::iterator it = military_squares[ty * (width / MILITARY_SQUARE_SIZE + 1) + tx].begin(); it.valid(); ++it)
+            const std::list<nobBaseMilitary*>& milBuildings  = military_squares[ty * (width / MILITARY_SQUARE_SIZE + 1) + tx];
+            for(std::list<nobBaseMilitary*>::const_iterator it = milBuildings.begin(); it != milBuildings.end(); ++it)
             {
                 // Jedes Militärgebäude nur einmal hinzufügen
-                if(std::find(buildings.begin(), buildings.end(), *it) == buildings.end())
-                    buildings.push_back(*it);
+                buildings.insert(*it);
             }
         }
     }
+
+    return buildings;
 }
 
 
@@ -1033,7 +1030,7 @@ noFlag* GameWorldBase::GetRoadFlag(int x, int y, unsigned char& dir, unsigned la
  *
  *  @author OLiver
  */
-unsigned short GameWorldBase::GetXA(const MapCoord x, const MapCoord y, unsigned dir) const
+MapCoord GameWorldBase::GetXA(const MapCoord x, const MapCoord y, unsigned dir) const
 {
     assert(dir < 6);
 
@@ -1069,7 +1066,7 @@ unsigned short GameWorldBase::GetXA(const MapCoord x, const MapCoord y, unsigned
  *
  *  @author OLiver
  */
-unsigned short GameWorldBase::GetYA(const MapCoord x, const MapCoord y, unsigned dir) const
+MapCoord GameWorldBase::GetYA(const MapCoord x, const MapCoord y, unsigned dir) const
 {
     assert(dir < 6);
 
@@ -1335,20 +1332,21 @@ unsigned short GameWorldBase::IsCoastalPointToSeaWithHarbor(const MapCoord x, co
 
 /// Gibt Dynamische Objekte, die von einem bestimmten Punkt aus laufen oder dort stehen sowie andere Objekte,
 /// die sich dort befinden, zurück
-void GameWorldBase::GetDynamicObjectsFrom(const MapCoord x, const MapCoord y, list<noBase*>& objects) const
+std::vector<noBase*> GameWorldBase::GetDynamicObjectsFrom(const MapCoord x, const MapCoord y) const
 {
-    // Auch über und unter dem Punkt gucken, da dort auch die Figuren hängen können!
-    const unsigned short coords[6] =
+    std::vector<noBase*> objects;
+    // Look also on the points above and below for figures
+    const Point<MapCoord> coords[3] =
     {
-        x, y,
-        GetXA(x, y, 1), GetYA(x, y, 1),
-        GetXA(x, y, 2), GetYA(x, y, 2)
+        Point<MapCoord>(x, y),
+        Point<MapCoord>(GetXA(x, y, 1), GetYA(x, y, 1)),
+        Point<MapCoord>(GetXA(x, y, 2), GetYA(x, y, 2))
     };
 
     for(unsigned i = 0; i < 3; ++i)
     {
-        for(list<noBase*>::iterator it = GetFigures(coords[i * 2], coords[i * 2 + 1]).begin();
-                it.valid(); ++it)
+        const std::list<noBase*>& figures = GetFigures(coords[i].x, coords[i].y);
+        for(std::list<noBase*>::const_iterator it = figures.begin(); it != figures.end(); ++it)
         {
             // Ist es auch ein Figur und befindet sie sich an diesem Punkt?
             if((*it)->GetType() == NOP_FIGURE || (*it)->GetGOT() == GOT_ANIMAL || (*it)->GetGOT() == GOT_SHIP)
@@ -1359,9 +1357,9 @@ void GameWorldBase::GetDynamicObjectsFrom(const MapCoord x, const MapCoord y, li
             else if(i == 0)
                 // Den Rest nur bei den richtigen Koordinaten aufnehmen
                 objects.push_back(*it);
-
         }
     }
+    return objects;
 }
 
 
@@ -1823,7 +1821,7 @@ unsigned int GameWorldBase::GetAvailableSoldiersForSeaAttackAtSea(const unsigned
     {
         // Soldaten holen
         std::vector<nofPassiveSoldier*> tmp_soldiers;
-        buildings[i].building->GetSoldiersForAttack(buildings[i].harbor->GetX(), buildings[i].harbor->GetY(), player_attacker, &tmp_soldiers);
+        buildings[i].building->GetSoldiersForAttack(buildings[i].harbor->GetX(), buildings[i].harbor->GetY(), player_attacker, tmp_soldiers);
 
         // Überhaupt welche gefunden?
         if(!tmp_soldiers.size())
@@ -1900,7 +1898,7 @@ void GameWorldBase::GetAvailableSoldiersForSeaAttack(const unsigned char player_
         // Soldaten holen
         std::vector<nofPassiveSoldier*> tmp_soldiers;
         buildings[i].building->GetSoldiersForAttack(buildings[i].harbor->GetX(), buildings[i].harbor->GetY(),
-                player_attacker, &tmp_soldiers);
+                player_attacker, tmp_soldiers);
 
         // Überhaupt welche gefunden?
         if(!tmp_soldiers.size())

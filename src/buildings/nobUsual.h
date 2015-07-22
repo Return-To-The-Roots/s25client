@@ -22,6 +22,8 @@
 
 #include "noBuilding.h"
 #include "EventManager.h"
+#include <vector>
+#include <list>
 
 class Ware;
 class nofBuildingWorker;
@@ -40,7 +42,7 @@ class nobUsual : public noBuilding
         /// Rohstoffe, die zur Produktion benötigt werden
         unsigned char wares[3];
         /// Bestellte Waren
-        list<Ware*> * ordered_wares;
+        std::vector< std::list<Ware*> > ordered_wares;
         /// Bestell-Ware-Event
         EventManager::EventPointer orderware_ev;
         /// Rechne-Produktivität-aus-Event
@@ -104,7 +106,12 @@ protected:
         void TakeWare(Ware* ware);
 
         /// Bestellte Waren
-        inline unsigned AreThereAnyOrderedWares() {return ordered_wares->size();}
+        inline bool AreThereAnyOrderedWares() const {
+            for(std::vector< std::list<Ware*> >::const_iterator it = ordered_wares.begin(); it != ordered_wares.end(); ++it)
+                if(!it->empty())
+                    return true;
+            return false;
+        }
 
         /// Gibt Pointer auf Produktivität zurück
         const unsigned short* GetProduktivityPointer() const { return &productivity; }

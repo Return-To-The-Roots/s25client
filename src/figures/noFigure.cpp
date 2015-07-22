@@ -655,12 +655,11 @@ void noFigure::HandleEvent(const unsigned int id)
             gwg->RecalcMovingVisibilities(old_pos.x, old_pos.y, player, GetVisualRange(), old_dir, NULL);
 
 
-            list<noBase*> figures;
-            gwg->GetDynamicObjectsFrom(old_pos.x, old_pos.y, figures);
+            std::vector<noBase*> figures = gwg->GetDynamicObjectsFrom(old_pos.x, old_pos.y);
 
             // Wenn Figur verschwunden ist, muss ihr ehemaliger gesamter Sichtbereich noch einmal
             // neue berechnet werden
-            if(!figures.search(this).valid())
+            if(std::find(figures.begin(), figures.end(), this) == figures.end())
                 CalcVisibilities(old_pos.x, old_pos.y);
         }
 
@@ -781,7 +780,7 @@ void noFigure::Wander()
             unsigned short y2 = (y + wander_radius < gwg->GetHeight()) ? (y + wander_radius) : (gwg->GetHeight() - 1);
 
             // Flaggen sammeln und dann zufällig eine auswählen
-            list<noFlag*> flags;
+            std::vector<noFlag*> flags;
 
             for(unsigned short py = y1; py <= y2; ++py)
             {
@@ -799,7 +798,7 @@ void noFigure::Wander()
             unsigned best_way = 0xFFFFFFFF;
             noFlag* best_flag = 0;
 
-            for(list<noFlag*>::iterator it = flags.begin(); it.valid(); ++it)
+            for(std::vector<noFlag*>::iterator it = flags.begin(); it != flags.end(); ++it)
             {
                 // Ist das ein Flüchtling aus einem abgebrannten Lagerhaus?
                 if(burned_wh_id != 0xFFFFFFFF)

@@ -231,7 +231,6 @@ class GameClientPlayer : public GamePlayerInfo
         void RemoveHarbor(nobHarborBuilding* hb) { harbors.remove(hb); }
         /// (Unbesetzte) StraÃe aus der Liste entfernen
         void DeleteRoad(RoadSegment* rs) { roads.remove(rs); }
-        //bool TestRoads(RoadSegment * rs) { return roads.search(rs).valid(); }
 
         /// Für alle unbesetzen StraÃen Weg neu berechnen
         void FindWarehouseForAllRoads();

@@ -354,7 +354,7 @@ void nobHQ::Destroy_nobHQ()
     gwg->RecalcTerritory(this, MILITARY_RADIUS[GetSize()], true, false);
 
     // Wieder aus dem Militärquadrat rauswerfen
-    gwg->GetMilitarySquare(x, y).erase(this);
+    gwg->GetMilitarySquare(x, y).remove(this);
 }
 
 void nobHQ::Serialize_nobHQ(SerializedGameData* sgd) const

@@ -197,7 +197,7 @@ void AIConstruction::FindFlags(std::vector<const noFlag*>& flags, unsigned short
     {
         list<nobBaseMilitary*> military;
         gwb->LookForMilitaryBuildings(military, x, y, 2);
-        for(list<nobBaseMilitary*>::iterator it = military.begin();it.valid();++it)
+        for(list<nobBaseMilitary*>::iterator it = military.begin();it != military.end();++it)
         {
             unsigned distance = gwb->CalcDistance((*it)->GetX(), (*it)->GetY(), x, y);
             if (distance < radius && (*it)->GetPlayer() == player->getPlayerID())
@@ -481,9 +481,8 @@ BuildingType AIConstruction::ChooseMilitaryBuilding(MapCoord x, MapCoord y)
 		bld = BLD_FORTRESS;
 		return bld;
 	}
-    std::list<nobBaseMilitary*> military;
-    aii->GetMilitaryBuildings(x, y, 3, military);
-    for(std::list<nobBaseMilitary*>::iterator it = military.begin(); it != military.end(); ++it)
+    std::set<nobBaseMilitary*> military = aii->GetMilitaryBuildings(x, y, 3);
+    for(std::set<nobBaseMilitary*>::iterator it = military.begin(); it != military.end(); ++it)
     {
         unsigned distance = aii->GetDistance((*it)->GetX(), (*it)->GetY(), x, y);
 

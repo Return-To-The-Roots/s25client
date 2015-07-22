@@ -21,6 +21,9 @@
 #define NOF_GEOLOGIST_H_
 
 #include "nofFlagWorker.h"
+#include "Point.h"
+#include "gameTypes/MapTypes.h"
+#include <vector>
 
 class noFlag;
 
@@ -30,11 +33,12 @@ class nofGeologist : public nofFlagWorker
 
         /// Schilder, die er noch aufstellen sollte (max 15 abarbeiten)
         unsigned short signs;
-        /// Punkte, die noch in Frage kommen
-        struct Point { unsigned short x, y; };
-        list<Point> available_nodes;
+
+        typedef Point<MapCoord> MapPoint;
+
+        std::vector<MapPoint> available_nodes;
         /// Punkt, zu dem er gerade geht
-        Point node_goal;
+        MapPoint node_goal;
 
         /// maximaler Radius wie weit die Geologen sich von der Flagge entfernen würde
         static const unsigned short MAX_RADIUS = 10;

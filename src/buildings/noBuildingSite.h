@@ -21,7 +21,7 @@
 #define NO_BUILDINGSITE_H_
 
 #include "noBaseBuilding.h"
-#include "list.h"
+#include <list>
 
 // Enumforwarddeklaration bei VC nutzen
 #ifdef _MSC_VER
@@ -55,7 +55,7 @@ class noBuildingSite : public noBaseBuilding
         /// Gibt den Baufortschritt an, wie hoch das Gebäude schon gebaut ist, gemessen in 8 Stufen für jede verbaute Ware
         unsigned char build_progress;
         /// Bestellte Bretter und Steine, d.h. Steine/Bretter, die noch "bestellt" wurden, aber noch nicht da sind
-        list<Ware*> ordered_boards, ordered_stones;
+        std::list<Ware*> ordered_boards, ordered_stones;
 
     public:
         unsigned char getUsedBoards() const { return used_boards; }

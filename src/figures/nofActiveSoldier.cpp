@@ -209,7 +209,8 @@ void nofActiveSoldier::ExpelEnemies()
     std::vector<noFigure*> figures;
 
     // At the position of the soldier
-    for(list<noBase*>::iterator it = gwg->GetFigures(x, y).begin(); it.valid(); ++it)
+    const std::list<noBase*>& fieldFigures = gwg->GetFigures(x, y);
+    for(std::list<noBase*>::const_iterator it = fieldFigures.begin(); it != fieldFigures.end(); ++it)
     {
         if((*it)->GetType() == NOP_FIGURE)
             figures.push_back(static_cast<noFigure*>(*it));
@@ -218,7 +219,8 @@ void nofActiveSoldier::ExpelEnemies()
     // And around this point
     for(unsigned i = 0; i < 6; ++i)
     {
-        for(list<noBase*>::iterator it = gwg->GetFigures(gwg->GetXA(x, y, i), gwg->GetYA(x, y, i)).begin(); it.valid(); ++it)
+        const std::list<noBase*>& fieldFigures = gwg->GetFigures(gwg->GetXA(x, y, i), gwg->GetYA(x, y, i));
+        for(std::list<noBase*>::const_iterator it = fieldFigures.begin(); it != fieldFigures.end(); ++it)
         {
             // Normal settler?
             // Don't disturb hedgehogs and rabbits!
@@ -285,9 +287,8 @@ bool nofActiveSoldier::FindEnemiesNearby(unsigned char excludedOwner)
     {
         tx = gwg->GetXA(x, y, dir);
         ty = gwg->GetYA(x, y, dir);
-        list<noBase*> objects;
-        gwg->GetDynamicObjectsFrom(tx, ty, objects);
-        for(list<noBase*>::iterator it = objects.begin(); it.valid(); ++it)
+        std::vector<noBase*> objects = gwg->GetDynamicObjectsFrom(tx, ty);
+        for(std::vector<noBase*>::iterator it = objects.begin(); it != objects.end(); ++it)
             if (dynamic_cast<nofActiveSoldier*>(*it) && dynamic_cast<nofActiveSoldier*>(*it)->GetPlayer()!=excludedOwner)
                 soldiersNearby.push_back(dynamic_cast<nofActiveSoldier*>(*it));
     }
@@ -297,9 +298,8 @@ bool nofActiveSoldier::FindEnemiesNearby(unsigned char excludedOwner)
     {
         tx = gwg->GetXA2(x, y, dir);
         ty = gwg->GetYA2(x, y, dir);
-        list<noBase*> objects;
-        gwg->GetDynamicObjectsFrom(tx, ty, objects);
-        for(list<noBase*>::iterator it = objects.begin(); it.valid(); ++it)
+        std::vector<noBase*> objects = gwg->GetDynamicObjectsFrom(tx, ty);
+        for(std::vector<noBase*>::iterator it = objects.begin(); it != objects.end(); ++it)
             if (dynamic_cast<nofActiveSoldier*>(*it) && dynamic_cast<nofActiveSoldier*>(*it)->GetPlayer()!=excludedOwner)
                 soldiersNearby.push_back(dynamic_cast<nofActiveSoldier*>(*it));
     }

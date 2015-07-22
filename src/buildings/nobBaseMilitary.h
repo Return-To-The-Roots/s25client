@@ -49,11 +49,11 @@ class nobBaseMilitary : public noBuilding
         unsigned age;
         /// Truppen, die zwar gerade nicht im Haus sind, aber eigentlich dazu gehören und grade auf Mission sind, wo sie evtl
         /// wieder zurückkkehren könnten (Angriff, Verteidigung etc.)
-        list<nofActiveSoldier*> troops_on_mission;
+        std::list<nofActiveSoldier*> troops_on_mission;
         /// Liste von Soldaten, die dieses Gebäude angreifen
-        list<nofAttacker*> aggressors;
+        std::list<nofAttacker*> aggressors;
         /// Liste von aggressiven Verteidigern, die dieses Gebäude mit verteidigen
-        list<nofAggressiveDefender*> aggressive_defenders;
+        std::list<nofAggressiveDefender*> aggressive_defenders;
         /// Soldat, der grad dieses Gebäude verteidigt
         nofDefender* defender;
 
@@ -103,11 +103,11 @@ class nobBaseMilitary : public noBuilding
 
         /// Soldaten zur Angreifer-Liste hinzufügen und wieder entfernen
         void LinkAggressor(nofAttacker* soldier) { aggressors.push_back(soldier); }
-        virtual void UnlinkAggressor(nofAttacker* soldier) { aggressors.erase(soldier); }
+        virtual void UnlinkAggressor(nofAttacker* soldier) { aggressors.remove(soldier); }
 
         /// Soldaten zur Aggressiven-Verteidiger-Liste hinzufügen und wieder entfernen
         void LinkAggressiveDefender(nofAggressiveDefender* soldier) { aggressive_defenders.push_back(soldier); }
-        void UnlinkAggressiveDefender(nofAggressiveDefender* soldier) { aggressive_defenders.erase(soldier); }
+        void UnlinkAggressiveDefender(nofAggressiveDefender* soldier) { aggressive_defenders.remove(soldier); }
 
 
         /// Wird aufgerufen, wenn ein Soldat nicht mehr kommen kann
@@ -149,6 +149,12 @@ class nobBaseMilitary : public noBuilding
         // Vergleicht Gebäude anhand ihrer Bauzeit, um eine geordnete Reihenfolge hinzubekommen
         static bool Compare(const nobBaseMilitary* const one, const nobBaseMilitary* const two)
         { return (*one) < (*two); }
+
+        struct Comparer{
+            bool operator()(const nobBaseMilitary* const one, const nobBaseMilitary* const two){
+                return (*one) < (*two);
+            }
+        };
 };
 
 

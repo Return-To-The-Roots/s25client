@@ -24,7 +24,6 @@
 #include <memory.h>
 #include <list>
 #include <vector>
-#include "list.h"
 #include "BinaryFile.h"
 #include "GameObject.h"
 #include "FOWObjects.h"
@@ -80,17 +79,6 @@ class SerializedGameData : public Serializer
 
         /// Kopiert eine Liste von GameObjects
         template <typename T>
-        void PushObjectList(const list<T*>& gos, const bool known)
-        {
-            // Anzahl
-            PushUnsignedInt(gos.size());
-            // einzelne Objekte
-            for(typename list<T*>::const_iterator it = gos.begin(); it.valid(); ++it)
-                PushObject(*it, known);
-        }
-
-        /// Kopiert eine Liste von GameObjects
-        template <typename T>
         void PushObjectList(const std::list<T*>& gos, const bool known)
         {
             // Anzahl
@@ -142,17 +130,6 @@ class SerializedGameData : public Serializer
 
         /// FoW-Objekt
         FOWObject* PopFOWObject();
-
-        /// Liest eine Liste von GameObjects
-        template <typename T>
-        void PopObjectList(list<T*>& gos, GO_Type got)
-        {
-            // Anzahl
-            unsigned size = PopUnsignedInt();
-            // einzelne Objekte
-            for(unsigned i = 0; i < size; ++i)
-                gos.push_back(PopObject<T>(got));
-        }
 
         /// Liest eine Liste von GameObjects
         template <typename T>

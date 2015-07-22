@@ -381,8 +381,8 @@ void IngameMinimap::UpdateNode(const MapCoord x, const MapCoord y)
     if(!nodes_updated[y * map_width + x])
     {
         nodes_updated[y * map_width + x] = true;
-        Node node = { x, y };
-        nodes_updated_list.push_back(node);
+        Node node( x, y );
+        nodesToUpdate.push_back(node);
     }
 }
 
@@ -399,10 +399,10 @@ void IngameMinimap::BeforeDrawing()
     static const unsigned MAX_NODES_UPDATE_DENOMINATOR = 2; // (2 = 1/2, 3 = 1/3 usw.)
 
     // Überhaupt Änderungen nötig?
-    if(nodes_updated_list.size())
+    if(!nodesToUpdate.empty())
     {
         // Komplette Textur neu erzeugen, weil es zu viele Knoten sind?
-        if(nodes_updated_list.size() >= map_width * map_height / MAX_NODES_UPDATE_DENOMINATOR)
+        if(nodesToUpdate.size() >= map_width * map_height / MAX_NODES_UPDATE_DENOMINATOR)
         {
             // Ja, alles neu erzeugen
             UpdateAll();
@@ -416,7 +416,7 @@ void IngameMinimap::BeforeDrawing()
         else
         {
             // Entsprechende Pixel updaten
-            for(list<Node>::iterator it = nodes_updated_list.begin(); it.valid(); ++it)
+            for(std::vector<Node>::iterator it = nodesToUpdate.begin(); it != nodesToUpdate.end(); ++it)
             {
                 for(unsigned t = 0; t < 2; ++t)
                 {
@@ -429,7 +429,7 @@ void IngameMinimap::BeforeDrawing()
             }
         }
 
-        this->nodes_updated_list.clear();
+        this->nodesToUpdate.clear();
     }
 }
 

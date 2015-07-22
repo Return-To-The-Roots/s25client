@@ -97,9 +97,9 @@ void iwMilitaryBuilding::Msg_PaintAfter()
     DrawRectangle(GetX() + width / 2 - 22 * TROOPS_COUNT[building->nation][building->size] / 2, GetY() + 98 , 22 * TROOPS_COUNT[building->nation][building->size], 24, 0x96000000);
 
     // Sammeln aus der Rausgeh-Liste und denen, die wirklich noch drinne sind
-    list<unsigned> soldiers;
-    for(list<nofPassiveSoldier*>::iterator it = building->troops.begin(); it.valid(); ++it)
-        soldiers.push_back((*it)->GetRank());
+    std::multiset<unsigned> soldiers;
+    for(std::list<nofPassiveSoldier*>::iterator it = building->troops.begin(); it != building->troops.end(); ++it)
+        soldiers.insert((*it)->GetRank());
 
     for(std::list<noFigure*>::iterator it = building->leave_house.begin(); it != building->leave_house.end(); ++it)
     {
@@ -108,13 +108,13 @@ void iwMilitaryBuilding::Msg_PaintAfter()
                 (*it)->GetGOT() == GOT_NOF_DEFENDER ||
                 (*it)->GetGOT() == GOT_NOF_PASSIVESOLDIER)
         {
-            soldiers.insert_ordered(static_cast<nofSoldier*>(*it)->GetRank());
+            soldiers.insert(static_cast<nofSoldier*>(*it)->GetRank());
         }
     }
 
     // Soldaten zeichnen
     unsigned short i = 0;
-    for(list<unsigned>::iterator it = soldiers.begin(); it.valid(); ++it, ++i)
+    for(std::multiset<unsigned>::iterator it = soldiers.begin(); it != soldiers.end(); ++it, ++i)
         LOADER.GetMapImageN(2321 + *it)->Draw(GetX() + width / 2 - 22 * TROOPS_COUNT[building->nation][building->size] / 2 + 12 + i * 22, GetY() + 110, 0, 0, 0, 0, 0, 0);
 }
 

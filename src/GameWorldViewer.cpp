@@ -58,12 +58,11 @@ unsigned GameWorldViewer::GetAvailableSoldiersForAttack(const unsigned char play
     }
 
     // Militärgebäude in der Nähe finden
-    std::list<nobBaseMilitary*> buildings;
-    LookForMilitaryBuildings(buildings, x, y, 3);
+    std::set<nobBaseMilitary*> buildings = LookForMilitaryBuildings(x, y, 3);
 
     unsigned total_count = 0;
 
-    for(std::list<nobBaseMilitary*>::iterator it = buildings.begin(); it != buildings.end(); ++it)
+    for(std::set<nobBaseMilitary*>::iterator it = buildings.begin(); it != buildings.end(); ++it)
     {
         // Muss ein Gebäude von uns sein und darf nur ein "normales Militärgebäude" sein (kein HQ etc.)
         if((*it)->GetPlayer() == player_attacker && (*it)->GetBuildingType() >= BLD_BARRACKS && (*it)->GetBuildingType() <= BLD_FORTRESS)
@@ -187,7 +186,8 @@ noShip* GameWorldViewer::GetShip(const MapCoord x, const MapCoord y, const unsig
             pa.y = GetYA(x, y, i);
         }
 
-        for(list<noBase*>::iterator it = GetFigures(pa.x, pa.y).begin(); it.valid(); ++it)
+        const std::list<noBase*>& figures = GetFigures(pa.x, pa.y);
+        for(std::list<noBase*>::const_iterator it = figures.begin(); it != figures.end(); ++it)
         {
             if((*it)->GetGOT() == GOT_SHIP)
             {

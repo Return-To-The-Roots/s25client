@@ -107,7 +107,7 @@ class AIInterface
         bool IsOwnTerritory(MapCoord x, MapCoord y) const { return gwb->GetNode(x, y).owner == (playerID + 1); }
 
         /// Get a list of dynamic objects (like figures, ships) on a given spot // TODO: zu lowlevilig?
-        void GetDynamicObjects(MapCoord x, MapCoord y, list<noBase*> &objects) const { gwb->GetDynamicObjectsFrom(x, y, objects); }
+        std::vector<noBase*> GetDynamicObjects(MapCoord x, MapCoord y) const { return gwb->GetDynamicObjectsFrom(x, y); }
 
         /// Checks whether there is a road on a point or not
         bool IsRoadPoint(MapCoord x, MapCoord y) const;
@@ -160,7 +160,7 @@ class AIInterface
 		nobBaseWarehouse* FindWarehouse(const noRoadNode* const start, bool (*IsWarehouseGood)(nobBaseWarehouse*, const void*), const RoadSegment* const forbidden, const bool to_wh, const void* param, const bool use_boat_roads, unsigned* const length = 0);
 		
         /// Returns a list of military buildings around a given point and a given radius
-        void GetMilitaryBuildings(MapCoord x, MapCoord y, unsigned radius, std::list<nobBaseMilitary*> &miliaryBuildings) const { gwb->LookForMilitaryBuildings(miliaryBuildings, x, y, radius); }
+		std::set<nobBaseMilitary*> GetMilitaryBuildings(MapCoord x, MapCoord y, unsigned radius) const { return gwb->LookForMilitaryBuildings(x, y, radius); }
 
         /// Returns the headquarter of the player (or null if destroyed)
         const nobHQ* GetHeadquarter() const;

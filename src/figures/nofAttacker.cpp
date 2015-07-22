@@ -173,15 +173,15 @@ void nofAttacker::Walked()
                 return;
             }
 
-            unsigned short flag_x = attacked_goal->GetFlag()->GetX(),
+            MapCoord flag_x = attacked_goal->GetFlag()->GetX(),
                            flag_y = attacked_goal->GetFlag()->GetY();
             //assert(enemy->GetGOT() == GOT_NOF_DEFENDER);
             // Are we at the flag?
 
             nofDefender* defender = NULL;
             // Look for defenders at this position
-            for(list<noBase*>::iterator it = gwg->GetFigures(flag_x, flag_y).begin();
-                    it != gwg->GetFigures(flag_x, flag_y).end(); ++it)
+            const std::list<noBase*>& figures = gwg->GetFigures(flag_x, flag_y);
+            for(std::list<noBase*>::const_iterator it = figures.begin(); it != figures.end(); ++it)
             {
                 if((*it)->GetGOT() == GOT_NOF_DEFENDER)
                 {
@@ -197,8 +197,6 @@ void nofAttacker::Walked()
 
             if(x == flag_x && y == flag_y)
             {
-
-
                 if(defender)
                 {
                     // Start fight with the defender
@@ -719,10 +717,9 @@ void nofAttacker::TryToOrderAggressiveDefender()
         if(RANDOM.Rand(__FILE__, __LINE__, obj_id, 10) < 2)
         {
             // Militärgebäude in der Nähe abgrasen
-            std::list<nobBaseMilitary*> buildings;
-            gwg->LookForMilitaryBuildings(buildings, x, y, 2);
+            std::set<nobBaseMilitary*> buildings = gwg->LookForMilitaryBuildings(x, y, 2);
 
-            for(std::list<nobBaseMilitary*>::iterator it = buildings.begin(); it != buildings.end(); ++it)
+            for(std::set<nobBaseMilitary*>::iterator it = buildings.begin(); it != buildings.end(); ++it)
             {
                 // darf kein HQ sein, außer, das HQ wird selbst angegriffen, darf nicht weiter weg als 15 sein
                 // und es darf natürlich auch der entsprechende Feind sein, aber es darf auch nicht derselbe Spieler
@@ -1068,9 +1065,8 @@ void nofAttacker::HomeHarborLost()
 void nofAttacker::CancelAtShip()
 {
     // Alle Figuren durchgehen
-    list<noBase*> figures;
-    gwg->GetDynamicObjectsFrom(ship_x, ship_y, figures);
-    for(list<noBase*>::iterator it = figures.begin(); it.valid(); ++it)
+    std::vector<noBase*> figures = gwg->GetDynamicObjectsFrom(ship_x, ship_y);
+    for(std::vector<noBase*>::iterator it = figures.begin(); it != figures.end(); ++it)
     {
         if((*it)->GetObjId() == ship_obj_id)
         {
@@ -1079,7 +1075,6 @@ void nofAttacker::CancelAtShip()
             return;
         }
     }
-
 }
 
 /// Behandelt das Laufen zurück zum Schiff
@@ -1103,9 +1098,8 @@ void nofAttacker::HandleState_SeaAttack_ReturnToShip()
     if(x == ship_x && y == ship_y)
     {
         // Alle Figuren durchgehen
-        list<noBase*> figures;
-        gwg->GetDynamicObjectsFrom(x, y, figures);
-        for(list<noBase*>::iterator it = figures.begin(); it.valid(); ++it)
+        std::vector<noBase*> figures = gwg->GetDynamicObjectsFrom(x, y);
+        for(std::vector<noBase*>::iterator it = figures.begin(); it != figures.end(); ++it)
         {
             if((*it)->GetObjId() == ship_obj_id)
             {
@@ -1114,7 +1108,6 @@ void nofAttacker::HandleState_SeaAttack_ReturnToShip()
                 gwg->RemoveFigure(this, x, y);
                 // Uns zum Schiff hinzufügen
                 ship->AddAttacker(this);
-
 
                 state = STATE_FIGUREWORK;
                 fs = FS_GOTOGOAL;

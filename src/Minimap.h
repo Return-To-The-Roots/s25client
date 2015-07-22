@@ -25,6 +25,7 @@ class GameWorldViewer;
 #include "Loader.h"
 #include "ogl/glArchivItem_Bitmap_Direct.h"
 #include "gameTypes/MapTypes.h"
+#include "Point.h"
 #include <vector>
 
 
@@ -100,8 +101,8 @@ class IngameMinimap : public Minimap
         /// in einem GF mehrmals der Mappunkt verändert wird
         std::vector<bool> nodes_updated;
         /// Liste mit allen Punkten, die geändert werden müssen
-        struct Node { MapCoord x, y; };
-        list<Node> nodes_updated_list;
+        typedef Point<MapCoord> Node;
+        std::vector<Node> nodesToUpdate;
 
 
         /// Für jeden einzelnen Knoten speichern, welches Objekt hier dominiert, also wessen Pixel angezeigt wird

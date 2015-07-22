@@ -53,7 +53,7 @@ void SoundManager::PlayNOSound(const unsigned sound_lst_id, noBase* const obj, c
         return;
 
     // Wird Sound schon gespielt?
-    for(list<NOSound>::iterator it = no_sounds.begin(); it.valid(); ++it)
+    for(std::list<NOSound>::iterator it = no_sounds.begin(); it != no_sounds.end(); ++it)
     {
         if(it->obj == obj && it->id == id)
             return;
@@ -81,13 +81,14 @@ void SoundManager::WorkingFinished(noBase* const obj)
     if(SETTINGS.sound.effekte == false)
         return;
     // Alle Sounds von diesem Objekt stoppen und löschen
-    for(list<NOSound>::iterator it = no_sounds.begin(); it.valid(); ++it)
+    for(std::list<NOSound>::iterator it = no_sounds.begin(); it != no_sounds.end();)
     {
         if(it->obj == obj)
         {
             AudioDriverWrapper::inst().StopEffect(it->play_id);
-            no_sounds.erase(&it);
-        }
+            it = no_sounds.erase(it);
+        }else
+            ++it;
     }
 }
 

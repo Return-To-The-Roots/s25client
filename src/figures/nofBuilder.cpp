@@ -251,7 +251,7 @@ const short FREEWALK_LENGTH_SLANTWISE[2] = {14, 7}; // schräg
 
 void nofBuilder::StartFreewalk()
 {
-    list<unsigned char> possible_directions;
+    std::vector<unsigned char> possible_directions;
 
     unsigned char waiting_walk = ((state == STATE_WAITINGFREEWALK) ? 0 : 1);
 
@@ -277,7 +277,7 @@ void nofBuilder::StartFreewalk()
         possible_directions.push_back(4);
 
     // Zufällige Richtung von diesen auswählen
-    dir = *possible_directions[RANDOM.Rand(__FILE__, __LINE__, obj_id, possible_directions.size())];
+    dir = possible_directions[RANDOM.Rand(__FILE__, __LINE__, obj_id, possible_directions.size())];
 
     // Und dort auch hinlaufen
     current_ev = em->AddEvent(this, (state == STATE_WAITINGFREEWALK) ? 24 : 17, 1);

@@ -131,14 +131,13 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned int id)
         case STATE_WAITING1:
         {
             // Fertig mit warten --> anfangen zu arbeiten
-            std::list<nobBaseMilitary*> buildings;
-            gwg->LookForMilitaryBuildings(buildings, x, y, 3);
+            std::set<nobBaseMilitary*> buildings = gwg->LookForMilitaryBuildings(x, y, 3);
 
             // Liste von potentiellen Zielen
-            list<PossibleTarget> pts;
+            std::vector<PossibleTarget> pts;
 
 
-            for(std::list<nobBaseMilitary*>::iterator it = buildings.begin(); it != buildings.end(); ++it)
+            for(std::set<nobBaseMilitary*>::iterator it = buildings.begin(); it != buildings.end(); ++it)
             {
                 // Auch ein richtiges Militärgebäude (kein HQ usw.),
                 if((*it)->GetGOT() == GOT_NOB_MILITARY && GameClient::inst().GetPlayer(player)->IsPlayerAttackable((*it)->GetPlayer()))
@@ -162,7 +161,7 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned int id)
             }
 
             // Gibts evtl keine Ziele?
-            if(!pts.size())
+            if(pts.empty())
             {
                 // Weiter warten, vielleicht gibts ja später wieder mal was
                 current_ev = em->AddEvent(this, CATAPULT_WAIT1_LENGTH, 1);
@@ -174,7 +173,7 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned int id)
             workplace->ConsumeWares();
 
             // Eins zufällig auswählen
-            target = *pts[Random::inst().Rand(__FILE__, __LINE__, obj_id, pts.size())];
+            target = pts[Random::inst().Rand(__FILE__, __LINE__, obj_id, pts.size())];
 
             // Richtung, in die sich der Katapult drehen soll, bestimmen
             unsigned char shooting_dir;

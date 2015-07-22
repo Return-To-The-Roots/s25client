@@ -1609,13 +1609,13 @@ void GameClientPlayer::TestDefeat()
 //  };*/
 //
 //  // Warenlisten der Warenhäuser sammeln
-//  for(std::list<nobBaseWarehouse*>::iterator wh = warehouses.begin(); wh.valid(); ++wh)
+//  for(std::list<nobBaseWarehouse*>::iterator wh = warehouses.begin(); wh != warehouses.end(); ++wh)
 //      (*wh)->GetInventory(wares, figures);
 //
 //  if(wares)
 //  {
 //      // einzelne Waren sammeln
-//      for(std::list<Ware*>::iterator we = ware_list.begin(); we.valid(); ++we)
+//      for(std::list<Ware*>::iterator we = ware_list.begin(); we != ware_list.end(); ++we)
 //      {
 //          ++(wares[ware_map[(*we)->type]]);
 //      }
