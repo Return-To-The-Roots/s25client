@@ -112,7 +112,7 @@ void nofFarmhand::HandleDerivedEvent(const unsigned int id)
             list< Point<MapCoord> > available_points[3];
 
             unsigned max_radius = (job == JOB_CHARBURNER) ? 3 : RADIUS[job - JOB_WOODCUTTER];
-			unsigned add_radius_when_found = (job == JOB_CHARBURNER) ? 1 : ADD_RADIUS_WHEN_FOUND[job - JOB_WOODCUTTER];
+            unsigned add_radius_when_found = (job == JOB_CHARBURNER) ? 1 : ADD_RADIUS_WHEN_FOUND[job - JOB_WOODCUTTER];
 
             bool points_found = false;
             bool wait = false;
