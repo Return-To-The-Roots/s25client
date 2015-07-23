@@ -1974,7 +1974,7 @@ struct ShipForHarbor
 
     bool operator<(const ShipForHarbor b) const
     {
-        return(estimate < b.estimate);
+		return (estimate < b.estimate) || (estimate == b.estimate && ship->GetObjId() < b.ship->GetObjId());
     }
 };
 
@@ -2464,7 +2464,9 @@ struct WarehouseDistanceComperator
 
     static bool Compare(nobBaseWarehouse* const wh1, nobBaseWarehouse* const wh2)
     {
-        return (gwg->CalcDistance(wh1->GetPos(), ref->GetPos()) < gwg->CalcDistance(wh2->GetPos(), ref->GetPos()));
+        unsigned dist1 = gwg->CalcDistance(wh1->GetPos(), ref->GetPos());
+        unsigned dist2 = gwg->CalcDistance(wh2->GetPos(), ref->GetPos());
+        return (dist1 < dist2 ) || (dist1 == dist2 && wh1->GetObjId() < wh2->GetObjId());
     }
 };
 
