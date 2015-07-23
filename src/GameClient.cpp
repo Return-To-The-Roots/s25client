@@ -1142,7 +1142,7 @@ inline void GameClient::OnNMSMapChecksumOK(const GameMessage_Map_ChecksumOK& msg
 {
     LOG.write("<<< NMS_MAP_CHECKSUM(%d)\n", msg.correct ? 1 : 0);
 
-    if(msg.correct == false)
+    if(!msg.correct)
     {
         if(ci)
             ci->CI_Error(CE_WRONGMAP);

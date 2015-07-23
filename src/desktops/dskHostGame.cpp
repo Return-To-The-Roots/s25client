@@ -294,7 +294,7 @@ void dskHostGame::UpdatePlayerRow(const unsigned row)
         text = group->AddDeepening(1, 20, cy, 150, 22, tc, name.c_str(), NormalFont, COLOR_YELLOW);
 
     // Is das der Host? Dann farblich markieren
-    if(player->is_host == true)
+    if(player->is_host)
         text->SetColor(0xFF00FF00);
 
     // Bei geschlossenem nicht sichtbar

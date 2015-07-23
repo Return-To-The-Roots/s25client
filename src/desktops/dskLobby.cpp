@@ -219,7 +219,7 @@ void dskLobby::UpdatePlayerList(bool first)
 
     ctrlTable* playertable = GetCtrl<ctrlTable>(11);
 
-    if(LOBBYCLIENT.refreshplayerlist == true)
+    if(LOBBYCLIENT.refreshplayerlist)
     {
         LOBBYCLIENT.refreshplayerlist = false;
 
@@ -266,7 +266,7 @@ void dskLobby::UpdateServerList(bool first)
 
     ctrlTable* servertable = GetCtrl<ctrlTable>(10);
 
-    if(LOBBYCLIENT.refreshserverlist == true)
+    if(LOBBYCLIENT.refreshserverlist)
     {
         LOBBYCLIENT.refreshserverlist = false;
 

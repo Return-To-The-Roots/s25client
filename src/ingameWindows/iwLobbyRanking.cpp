@@ -43,7 +43,7 @@ static char THIS_FILE[] = __FILE__;
  */
 void iwLobbyRanking::UpdateRankings(bool first)
 {
-    if(LOBBYCLIENT.refreshrankinglist == true)
+    if(LOBBYCLIENT.refreshrankinglist)
     {
         const LobbyPlayerList* rankinglist = LOBBYCLIENT.GetRankingList();
         ctrlTable* rankingtable = GetCtrl<ctrlTable>(0);

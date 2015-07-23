@@ -45,7 +45,7 @@ static char THIS_FILE[] = __FILE__;
  */
 void glArchivItem_Sound_Midi::Play(const unsigned repeats)
 {
-    if(SETTINGS.sound.musik == false)
+    if(!SETTINGS.sound.musik)
         return;
 
     if(sound == NULL)

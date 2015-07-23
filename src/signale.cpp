@@ -76,7 +76,7 @@ void HandlerRoutine(int sig)
         c = getchar();
         if(c == 'j' || c == 1079565930)
         {
-            if(killme == true)
+            if(killme)
                 exit(1);
 
             killme = true;

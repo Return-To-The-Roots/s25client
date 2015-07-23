@@ -285,7 +285,7 @@ bool RoadSegment::AreWareJobs(const bool flag, unsigned ct, const bool take_ware
             {
                 // Wenn an die Flagge ein Gebäude angrenzt und der Träger da was reinträgt, kann der auch die Ware
                 // gleich mitnehmen, der zweite muss hier also nicht kommen
-                if((carrier[ct]->GetCurrentRoad()->f1 == f1 && flag == false) || (carrier[ct]->GetCurrentRoad()->f1 == f2 && flag == true))
+                if((carrier[ct]->GetCurrentRoad()->f1 == f1 && !flag) || (carrier[ct]->GetCurrentRoad()->f1 == f2 && flag))
                     return false;
             } break;
 

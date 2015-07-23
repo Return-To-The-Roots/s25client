@@ -74,7 +74,7 @@ GameServerPlayer::~GameServerPlayer()
 /// pingt ggf den Spieler
 void GameServerPlayer::doPing()
 {
-    if( (ps == PS_OCCUPIED) && (pinging == false) && ( ( VIDEODRIVER.GetTickCount() - lastping ) > 1000 ) )
+    if( (ps == PS_OCCUPIED) && (!pinging) && ( ( VIDEODRIVER.GetTickCount() - lastping ) > 1000 ) )
     {
         pinging = true;
 

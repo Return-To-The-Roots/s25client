@@ -1029,13 +1029,8 @@ void nobHarborBuilding::OrderShip()
         // need to order more ships
         needed -= ordered;
 
-        while (needed)
+        while (needed && players->getElement(player)->OrderShip(this))
         {
-            if (players->getElement(player)->OrderShip(this) == false)
-            {
-                break;
-            }
-
             needed--;
         }
     }

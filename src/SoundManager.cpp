@@ -49,7 +49,7 @@ void SoundManager::PlayNOSound(const unsigned sound_lst_id, noBase* const obj, c
     if (GAMECLIENT.IsPaused())
         return;
 
-    if(SETTINGS.sound.effekte == false)
+    if(!SETTINGS.sound.effekte)
         return;
 
     // Wird Sound schon gespielt?
@@ -98,7 +98,7 @@ void SoundManager::PlayBirdSounds(const unsigned short tree_count)
     if (GAMECLIENT.IsPaused())
         return;
 
-    if(SETTINGS.sound.effekte == false)
+    if(!SETTINGS.sound.effekte)
         return;
 
     // Abstände zwischen den Vogelsounds berechnen (je nachdem wieviel Bäume)
@@ -126,7 +126,7 @@ void SoundManager::PlayOceanBrawling(const unsigned water_percent)
     if (GAMECLIENT.IsPaused())
         return;
 
-    if(SETTINGS.sound.effekte == false)
+    if(!SETTINGS.sound.effekte)
         return;
 
     // Ist genug Wasser da zum Rauschen?

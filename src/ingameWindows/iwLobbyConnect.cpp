@@ -131,7 +131,7 @@ void iwLobbyConnect::LobbyForm(std::string& user, std::string& pass, std::string
     SETTINGS.lobby.name = user;
 
     // Ist Passwort speichern an?
-    if(SETTINGS.lobby.save_password == true)
+    if(SETTINGS.lobby.save_password)
     {
         // ja, Passwort speichern
         SETTINGS.lobby.password = pass;
@@ -211,7 +211,7 @@ void iwLobbyConnect::Msg_ButtonClick(const unsigned int ctrl_id)
             LobbyForm(user, pass, email);
 
             // Einloggen
-            if(LOBBYCLIENT.Login(LOADER.GetTextN("client", 0), atoi(LOADER.GetTextN("client", 1)), user, pass, SETTINGS.server.ipv6) == false)
+            if(!LOBBYCLIENT.Login(LOADER.GetTextN("client", 0), atoi(LOADER.GetTextN("client", 1)), user, pass, SETTINGS.server.ipv6))
             {
                 SetText(_("Connection failed!"), COLOR_RED, true);
                 break;
@@ -236,7 +236,7 @@ void iwLobbyConnect::Msg_ButtonClick(const unsigned int ctrl_id)
                 break; // raus
             }
 
-            if(LOBBYCLIENT.Register(LOADER.GetTextN("client", 0), atoi(LOADER.GetTextN("client", 1)), user, pass, email) == false)
+            if(!LOBBYCLIENT.Register(LOADER.GetTextN("client", 0), atoi(LOADER.GetTextN("client", 1)), user, pass, email))
             {
                 SetText(_("Connection failed!"), COLOR_RED, true);
                 break;

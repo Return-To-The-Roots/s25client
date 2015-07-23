@@ -45,7 +45,7 @@ static char THIS_FILE[] = __FILE__;
  */
 unsigned int glArchivItem_Sound_Wave::Play(unsigned char volume, bool loop)
 {
-    if(SETTINGS.sound.effekte == false/* || !VIDEODRIVER.audiodriver*/)
+    if(!SETTINGS.sound.effekte/* || !VIDEODRIVER.audiodriver*/)
         return 0xFFFFFFFF;
 
     if(sound == NULL)

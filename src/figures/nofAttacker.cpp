@@ -88,7 +88,7 @@ nofAttacker::~nofAttacker()
 {
 
     //unsigned char oplayer = (player == 0) ? 1 : 0;
-    //assert(GAMECLIENT.GetPlayer(oplayer)->GetFirstWH()->Test(this) == false);
+    //assert(!GAMECLIENT.GetPlayer(oplayer)->GetFirstWH()->Test(this));
 }
 
 void nofAttacker::Destroy_nofAttacker()
@@ -96,7 +96,7 @@ void nofAttacker::Destroy_nofAttacker()
     Destroy_nofActiveSoldier();
 
     /*unsigned char oplayer = (player == 0) ? 1 : 0;
-    assert(GAMECLIENT.GetPlayer(oplayer)->GetFirstWH()->Test(this) == false);*/
+    assert(!GAMECLIENT.GetPlayer(oplayer)->GetFirstWH()->Test(this));*/
 }
 
 

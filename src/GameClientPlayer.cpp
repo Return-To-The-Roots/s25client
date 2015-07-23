@@ -1782,7 +1782,7 @@ void GameClientPlayer::SuggestPact(const unsigned char other_player, const PactT
 /// Akzeptiert ein bestimmtes Bündnis, welches an diesen Spieler gemacht wurde
 void GameClientPlayer::AcceptPact(const unsigned id, const PactType pt, const unsigned char other_player)
 {
-    if(pacts[other_player][pt].accepted == false && pacts[other_player][pt].start == id)
+    if(!pacts[other_player][pt].accepted && pacts[other_player][pt].start == id)
     {
         // Pakt einwickeln
         MakePact(pt, other_player, pacts[other_player][pt].duration);

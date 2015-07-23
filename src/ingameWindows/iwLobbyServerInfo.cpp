@@ -45,7 +45,7 @@ void iwLobbyServerInfo::UpdateServerInfo()
 {
     static char host[512];
 
-    if(LOBBYCLIENT.refreshserverinfo == true)
+    if(LOBBYCLIENT.refreshserverinfo)
     {
         LOBBYCLIENT.refreshserverinfo = false;
 

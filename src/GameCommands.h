@@ -930,7 +930,7 @@ namespace gc
                 Coords::Serialize(ser);
 
                 ser->PushBool(ware_figure);
-                if(ware_figure == false) ser->PushUnsignedChar(static_cast<unsigned char>(gt));
+                if(!ware_figure) ser->PushUnsignedChar(static_cast<unsigned char>(gt));
                 else ser->PushUnsignedChar(static_cast<unsigned char>(job));
                 ser->PushUnsignedInt(count);
             }

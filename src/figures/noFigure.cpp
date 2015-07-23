@@ -100,7 +100,7 @@ void noFigure::Destroy_noFigure()
 {
     Destroy_noMovable();
 
-    assert(players->getElement(player)->CheckDependentFigure(this) == false);
+    assert(!players->getElement(player)->CheckDependentFigure(this));
 }
 
 void noFigure::Serialize_noFigure(SerializedGameData* sgd) const
