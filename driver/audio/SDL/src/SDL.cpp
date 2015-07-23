@@ -27,6 +27,9 @@
 
 #include <AudioInterface.h>
 
+#ifdef _MSC_VER
+    #define unlink _unlink
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
