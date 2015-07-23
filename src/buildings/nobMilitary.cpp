@@ -46,6 +46,7 @@
 #include "ai/AIEventManager.h"
 #include "Point.h"
 #include <limits>
+#include <stdexcept>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

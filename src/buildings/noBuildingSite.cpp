@@ -40,6 +40,7 @@
 
 #include "ogl/glSmartBitmap.h"
 #include "helpers/converters.h"
+#include <stdexcept>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

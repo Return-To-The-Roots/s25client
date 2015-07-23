@@ -56,6 +56,7 @@
 #include "drivers/VideoDriverWrapper.h"
 
 #include <algorithm>
+#include <stdexcept>
 
 GameWorldGame::~GameWorldGame()
 {

@@ -33,6 +33,7 @@
 #include "GamePlayerList.h"
 #include "TradeGraph.h"
 #include <vector>
+#include <list>
 #include <set>
 #include <cstddef>
 
