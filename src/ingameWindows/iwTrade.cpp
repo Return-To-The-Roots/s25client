@@ -61,7 +61,7 @@ iwTrade::iwTrade(GameWorldViewer* const gwv, dskGameInterface* const gi, nobBase
 {
     // Get title of the player
     char title[512];
-    sprintf(title, _("Trade with %s"), GameClient::inst().GetPlayer(wh->GetPlayer())->name.c_str());
+    sprintf(title, _("Trade with %s"), GAMECLIENT.GetPlayer(wh->GetPlayer())->name.c_str());
     SetTitle(title);
     // Gebäudebild und dessen Schatten
     AddImage( 0, 100, 144, LOADER.GetNationImageN(wh->GetNation(), 250 + 5 * wh->GetBuildingType()));
@@ -134,7 +134,7 @@ void iwTrade::Msg_ButtonClick(const unsigned int ctrl_id)
     // Start trading
     if(GetCtrl<ctrlComboBox>(4)->GetCtrl<ctrlList>(0)->GetVisible() == false && atoi(number_str.c_str()) > 0)
     {
-        GameClient::inst().AddGC(new gc::TradeOverLand(wh->GetX(), wh->GetY(), ware_figure, gt, job, atoi(number_str.c_str())));
+        GAMECLIENT.AddGC(new gc::TradeOverLand(wh->GetX(), wh->GetY(), ware_figure, gt, job, atoi(number_str.c_str())));
         this->Close();
     }
 }
@@ -179,7 +179,7 @@ void iwTrade::Msg_ComboSelectItem(const unsigned ctrl_id, const unsigned short s
                 GetCtrl<ctrlImage>(5)->SetImage(LOADER.GetMapImageN(2250 + wares[selection]));
 
                 // Get the number of available wares/figures
-                number = GameClient::inst().GetLocalPlayer()->GetAvailableWaresForTrading(wh, GoodType(selection), JOB_NOTHING);
+                number = GAMECLIENT.GetLocalPlayer()->GetAvailableWaresForTrading(wh, GoodType(selection), JOB_NOTHING);
             }
             else
             {
@@ -190,7 +190,7 @@ void iwTrade::Msg_ComboSelectItem(const unsigned ctrl_id, const unsigned short s
                 GetCtrl<ctrlImage>(5)->SetImage(image);
 
                 // Get the number of available wares/figures
-                number = GameClient::inst().GetLocalPlayer()->GetAvailableWaresForTrading(wh, GD_NOTHING, Job(selection));
+                number = GAMECLIENT.GetLocalPlayer()->GetAvailableWaresForTrading(wh, GD_NOTHING, Job(selection));
             }
 
             char str[256];

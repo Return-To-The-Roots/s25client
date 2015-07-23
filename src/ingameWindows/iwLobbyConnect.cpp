@@ -219,7 +219,7 @@ void iwLobbyConnect::Msg_ButtonClick(const unsigned int ctrl_id)
         } break;
         case 8: // Registrieren
         {
-            WindowManager::inst().Show(new iwMsgbox(_("Error"), _("To register, you have to create a valid board account at http://forum.siedler25.org at the moment.\n"), this, MSB_OK, MSB_EXCLAMATIONRED, 0));
+            WINDOWMANAGER.Show(new iwMsgbox(_("Error"), _("To register, you have to create a valid board account at http://forum.siedler25.org at the moment.\n"), this, MSB_OK, MSB_EXCLAMATIONRED, 0));
 
             /*
             // Text auf "Verbinde mit Host..." setzen und Button deaktivieren
@@ -304,7 +304,7 @@ void iwLobbyConnect::LC_LoggedIn(const std::string& email)
 
     GetCtrl<ctrlButton>(8)->Enable(false);
 
-    WindowManager::inst().Switch(new dskLobby);
+    WINDOWMANAGER.Switch(new dskLobby);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

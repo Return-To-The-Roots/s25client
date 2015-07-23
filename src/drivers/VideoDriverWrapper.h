@@ -112,6 +112,7 @@ class VideoDriverWrapper : public Singleton<VideoDriverWrapper>
         unsigned int texture_current;
 };
 
+#define VIDEODRIVER VideoDriverWrapper::inst()
 
 #endif
 

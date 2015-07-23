@@ -150,7 +150,7 @@ void nofGeologist::Draw(int x, int y)
             }
 
             if(sound)
-                SoundManager::inst().PlayNOSound((sound == 1) ? 81 : 56, this, sound_id);
+                SOUNDMANAGER.PlayNOSound((sound == 1) ? 81 : 56, this, sound_id);
 
         } break;
         case STATE_GEOLOGIST_CHEER:
@@ -168,7 +168,7 @@ void nofGeologist::Draw(int x, int y)
                 LOADER.GetImageN("rom_bobs", 361 + ids[i - 7])->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(player)->color]);
             }
 
-            if(i == 4)SoundManager::inst().PlayNOSound(107, this, 12); //yippy
+            if(i == 4)SOUNDMANAGER.PlayNOSound(107, this, 12); //yippy
 
         } break;
     }
@@ -290,7 +290,7 @@ void nofGeologist::HandleDerivedEvent(const unsigned int id)
             /// Punkt wieder freigeben
             gwg->GetNode(x, y).reserved = false;;
             /// Sounds evtl löschen
-            SoundManager::inst().WorkingFinished(this);
+            SOUNDMANAGER.WorkingFinished(this);
         } break;
     }
 }
@@ -490,19 +490,19 @@ void nofGeologist::SetSign(const unsigned char resources)
     {
         if (!resAlreadyFound[type] && !IsSignInArea(type))
         {
-            if(GameClient::inst().GetPlayerID() == this->player)
+            if(GAMECLIENT.GetPlayerID() == this->player)
             {
                 switch(type)
                 {
-                    case 0: GameClient::inst().SendPostMessage(new PostMsgWithLocation(_("Found iron ore"), PMC_GEOLOGIST, x, y));
+                    case 0: GAMECLIENT.SendPostMessage(new PostMsgWithLocation(_("Found iron ore"), PMC_GEOLOGIST, x, y));
                         break;
-                    case 1: GameClient::inst().SendPostMessage(new PostMsgWithLocation(_("Found gold"), PMC_GEOLOGIST, x, y));
+                    case 1: GAMECLIENT.SendPostMessage(new PostMsgWithLocation(_("Found gold"), PMC_GEOLOGIST, x, y));
                         break;
-                    case 2: GameClient::inst().SendPostMessage(new PostMsgWithLocation(_("Found coal"), PMC_GEOLOGIST, x, y));
+                    case 2: GAMECLIENT.SendPostMessage(new PostMsgWithLocation(_("Found coal"), PMC_GEOLOGIST, x, y));
                         break;
-                    case 3: GameClient::inst().SendPostMessage(new PostMsgWithLocation(_("Found granite"), PMC_GEOLOGIST, x, y));
+                    case 3: GAMECLIENT.SendPostMessage(new PostMsgWithLocation(_("Found granite"), PMC_GEOLOGIST, x, y));
                         break;
-                    case 4: GameClient::inst().SendPostMessage(new PostMsgWithLocation(_("Found water"), PMC_GEOLOGIST, x, y));
+                    case 4: GAMECLIENT.SendPostMessage(new PostMsgWithLocation(_("Found water"), PMC_GEOLOGIST, x, y));
                         break;
                     default:
                         ;

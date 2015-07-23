@@ -155,7 +155,7 @@ glSmartTexturePacker::~glSmartTexturePacker()
 {
     for (std::vector<unsigned>::const_iterator it = textures.begin(); it != textures.end(); ++it)
     {
-        VideoDriverWrapper::inst().DeleteTexture((*it));
+        VIDEODRIVER.DeleteTexture((*it));
     }
 }
 
@@ -173,7 +173,7 @@ bool glSmartTexturePacker::packHelper(std::vector<glSmartBitmap*> &list)
 
     unsigned texture;
 
-    texture = VideoDriverWrapper::inst().GenerateTexture();
+    texture = VIDEODRIVER.GenerateTexture();
 
     if (!texture)
     {
@@ -182,7 +182,7 @@ bool glSmartTexturePacker::packHelper(std::vector<glSmartBitmap*> &list)
 
     textures.push_back(texture);
 
-    VideoDriverWrapper::inst().BindTexture(texture);
+    VIDEODRIVER.BindTexture(texture);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
@@ -368,7 +368,7 @@ bool glSmartTexturePacker::pack()
     // free all textures allocated by us
     for (std::vector<unsigned>::const_iterator it = textures.begin(); it != textures.end(); ++it)
     {
-        VideoDriverWrapper::inst().DeleteTexture((*it));
+        VIDEODRIVER.DeleteTexture((*it));
     }
 
     // reset glSmartBitmap textures
@@ -384,7 +384,7 @@ void glSmartBitmap::reset()
 {
     if (texture && !sharedTexture)
     {
-        VideoDriverWrapper::inst().DeleteTexture(texture);
+        VIDEODRIVER.DeleteTexture(texture);
     }
 
     items.clear();
@@ -547,7 +547,7 @@ void glSmartBitmap::generateTexture()
 
     if (!texture)
     {
-        texture = VideoDriverWrapper::inst().GenerateTexture();
+        texture = VIDEODRIVER.GenerateTexture();
 
         if (!texture)
         {
@@ -568,7 +568,7 @@ void glSmartBitmap::generateTexture()
 
     drawTo(buffer, stride, h);
 
-    VideoDriverWrapper::inst().BindTexture(texture);
+    VIDEODRIVER.BindTexture(texture);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -623,14 +623,14 @@ void glSmartBitmap::draw(int x, int y, unsigned color, unsigned player_color)
         tmp[4].a = tmp[5].a = tmp[6].a = tmp[7].a = GetAlpha(player_color);
 
         glInterleavedArrays(GL_T2F_C4UB_V3F, 0, tmp);
-        VideoDriverWrapper::inst().BindTexture(texture);
+        VIDEODRIVER.BindTexture(texture);
         glDrawArrays(GL_QUADS, 0, 8);
 
         return;
     }
 
     glInterleavedArrays(GL_T2F_C4UB_V3F, 0, tmp);
-    VideoDriverWrapper::inst().BindTexture(texture);
+    VIDEODRIVER.BindTexture(texture);
     glDrawArrays(GL_QUADS, 0, 4);
 }
 
@@ -682,7 +682,7 @@ void glSmartBitmap::drawPercent(int x, int y, unsigned percent, unsigned color, 
         tmp[4].ty = tmp[7].ty = tmp[3].ty;
 
         glInterleavedArrays(GL_T2F_C4UB_V3F, 0, tmp);
-        VideoDriverWrapper::inst().BindTexture(texture);
+        VIDEODRIVER.BindTexture(texture);
         glDrawArrays(GL_QUADS, 0, 8);
 
         tmp[0].ty = tmp[3].ty = tmp[4].ty = tmp[7].ty = cache;
@@ -691,7 +691,7 @@ void glSmartBitmap::drawPercent(int x, int y, unsigned percent, unsigned color, 
     }
 
     glInterleavedArrays(GL_T2F_C4UB_V3F, 0, tmp);
-    VideoDriverWrapper::inst().BindTexture(texture);
+    VIDEODRIVER.BindTexture(texture);
     glDrawArrays(GL_QUADS, 0, 4);
 
     tmp[0].ty = tmp[3].ty = cache;

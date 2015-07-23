@@ -41,7 +41,7 @@ static char THIS_FILE[] = __FILE__;
 
 Ware::Ware(const GoodType type, noBaseBuilding* goal, noRoadNode* location) :
     next_dir(255), state(STATE_WAITINWAREHOUSE), location(location),
-    type(type == GD_SHIELDROMANS ? SHIELD_TYPES[GameClient::inst().GetPlayer(location->GetPlayer())->nation] : type ),// Bin ich ein Schild? Dann evtl. Typ nach Nation anpassen
+    type(type == GD_SHIELDROMANS ? SHIELD_TYPES[GAMECLIENT.GetPlayer(location->GetPlayer())->nation] : type ),// Bin ich ein Schild? Dann evtl. Typ nach Nation anpassen
     goal(goal)
 {
     // Ware in den Index mit eintragen

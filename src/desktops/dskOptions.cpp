@@ -269,7 +269,7 @@ dskOptions::dskOptions(void) : Desktop(LOADER.GetImageN("setup013", 0))
     // {
 
     // Videomodi auflisten
-    VideoDriverWrapper::inst().ListVideoModes(video_modes);
+    VIDEODRIVER.ListVideoModes(video_modes);
 
     // Und zu der Combobox hinzufügen
     for(unsigned i = 0; i < video_modes.size(); ++i)
@@ -379,12 +379,12 @@ void dskOptions::Msg_Group_ProgressChange(const unsigned int group_id, const uns
         case 70:
         {
             SETTINGS.sound.effekte_volume = (unsigned char)position * 255 / 10 + (position < 10 ? 1 : 0);
-            AudioDriverWrapper::inst().SetMasterEffectVolume(SETTINGS.sound.effekte_volume);
+            AUDIODRIVER.SetMasterEffectVolume(SETTINGS.sound.effekte_volume);
         } break;
         case 72:
         {
             SETTINGS.sound.musik_volume = (unsigned char)position * 255 / 10 + (position < 10 ? 1 : 0);
-            AudioDriverWrapper::inst().SetMasterMusicVolume(SETTINGS.sound.musik_volume);
+            AUDIODRIVER.SetMasterMusicVolume(SETTINGS.sound.musik_volume);
         } break;
     }
 }
@@ -408,7 +408,7 @@ void dskOptions::Msg_Group_ComboSelectItem(const unsigned int group_id, const un
             std::string old_lang = SETTINGS.language.language;
             SETTINGS.language.language = LANGUAGES.setLanguage(selection);
             if(SETTINGS.language.language != old_lang)
-                WindowManager::inst().Switch(new dskOptions);
+                WINDOWMANAGER.Switch(new dskOptions);
         } break;
         case 39: // Proxy
         {
@@ -521,9 +521,9 @@ void dskOptions::Msg_Group_OptionGroupChange(const unsigned int group_id, const 
                 case 65: SETTINGS.sound.musik = false; break;
             }
             if(SETTINGS.sound.musik)
-                MusicPlayer::inst().Play();
+                MUSICPLAYER.Play();
             else
-                MusicPlayer::inst().Stop();
+                MUSICPLAYER.Stop();
         } break;
         case 67: // Soundeffekte
         {
@@ -594,48 +594,48 @@ void dskOptions::Msg_ButtonClick(const unsigned int ctrl_id)
 
             // Auflösung/Vollbildmodus geändert?
 #ifdef _WIN32
-            if((SETTINGS.video.fullscreen_width != VideoDriverWrapper::inst().GetScreenWidth()
+            if((SETTINGS.video.fullscreen_width != VIDEODRIVER.GetScreenWidth()
                     ||
-                    SETTINGS.video.fullscreen_height != VideoDriverWrapper::inst().GetScreenHeight())
-                    || SETTINGS.video.fullscreen != VideoDriverWrapper::inst().IsFullscreen())
+                    SETTINGS.video.fullscreen_height != VIDEODRIVER.GetScreenHeight())
+                    || SETTINGS.video.fullscreen != VIDEODRIVER.IsFullscreen())
             {
-                if(!VideoDriverWrapper::inst().ResizeScreen(SETTINGS.video.fullscreen_width,
+                if(!VIDEODRIVER.ResizeScreen(SETTINGS.video.fullscreen_width,
                         SETTINGS.video.fullscreen_height,
                         SETTINGS.video.fullscreen))
                 {
-                    WindowManager::inst().Show(new iwMsgbox(_("Sorry!"), _("You need to restart your game to change the screen resolution!"), this, MSB_OK, MSB_EXCLAMATIONGREEN, 1));
+                    WINDOWMANAGER.Show(new iwMsgbox(_("Sorry!"), _("You need to restart your game to change the screen resolution!"), this, MSB_OK, MSB_EXCLAMATIONGREEN, 1));
 
                 }
             }
 #else
             if((SETTINGS.video.fullscreen &&
-                    (SETTINGS.video.fullscreen_width != VideoDriverWrapper::inst().GetScreenWidth()
+                    (SETTINGS.video.fullscreen_width != VIDEODRIVER.GetScreenWidth()
                      ||
-                     SETTINGS.video.fullscreen_height != VideoDriverWrapper::inst().GetScreenHeight())
-               ) || SETTINGS.video.fullscreen != VideoDriverWrapper::inst().IsFullscreen())
+                     SETTINGS.video.fullscreen_height != VIDEODRIVER.GetScreenHeight())
+               ) || SETTINGS.video.fullscreen != VIDEODRIVER.IsFullscreen())
             {
-                if(!VideoDriverWrapper::inst().ResizeScreen(SETTINGS.video.fullscreen ? SETTINGS.video.fullscreen_width : SETTINGS.video.windowed_width,
+                if(!VIDEODRIVER.ResizeScreen(SETTINGS.video.fullscreen ? SETTINGS.video.fullscreen_width : SETTINGS.video.windowed_width,
                         SETTINGS.video.fullscreen ? SETTINGS.video.fullscreen_height : SETTINGS.video.windowed_height,
                         SETTINGS.video.fullscreen))
                 {
-                    WindowManager::inst().Show(new iwMsgbox(_("Sorry!"), _("You need to restart your game to change the screen resolution!"), this, MSB_OK, MSB_EXCLAMATIONGREEN, 1));
+                    WINDOWMANAGER.Show(new iwMsgbox(_("Sorry!"), _("You need to restart your game to change the screen resolution!"), this, MSB_OK, MSB_EXCLAMATIONGREEN, 1));
 
                 }
             }
 #endif
-            if(SETTINGS.driver.video != VideoDriverWrapper::inst().GetName() ||
-                    SETTINGS.driver.audio != AudioDriverWrapper::inst().GetName())
+            if(SETTINGS.driver.video != VIDEODRIVER.GetName() ||
+                    SETTINGS.driver.audio != AUDIODRIVER.GetName())
             {
-                WindowManager::inst().Show(new iwMsgbox(_("Sorry!"), _("You need to restart your game to change the video or audio driver!"), this, MSB_OK, MSB_EXCLAMATIONGREEN, 1));
+                WINDOWMANAGER.Show(new iwMsgbox(_("Sorry!"), _("You need to restart your game to change the video or audio driver!"), this, MSB_OK, MSB_EXCLAMATIONGREEN, 1));
 
             }
 
-            WindowManager::inst().Switch(new dskMainMenu);
+            WINDOWMANAGER.Switch(new dskMainMenu);
         } break;
         case 14: // Addons
         {
             ggs.LoadSettings();
-            WindowManager::inst().Show(new iwAddons(&ggs));
+            WINDOWMANAGER.Show(new iwAddons(&ggs));
 
         } break;
     }
@@ -655,11 +655,11 @@ void dskOptions::Msg_Group_ButtonClick(const unsigned int group_id, const unsign
             break;
         case 71: // "Music player"
         {
-            WindowManager::inst().Show(new iwMusicPlayer);
+            WINDOWMANAGER.Show(new iwMusicPlayer);
         } break;
         case 35: // "Keyboard Readme"
         {
-            WindowManager::inst().Show(new iwTextfile("keyboardlayout.txt", _("Keyboard layout") ) );
+            WINDOWMANAGER.Show(new iwTextfile("keyboardlayout.txt", _("Keyboard layout") ) );
         } break;
     }
 }
@@ -678,7 +678,7 @@ void dskOptions::Msg_MsgBoxResult(const unsigned int msgbox_id, const MsgboxResu
             break;
         case 1: // "You need to restart your game ..."
         {
-            WindowManager::inst().Switch(new dskMainMenu);
+            WINDOWMANAGER.Switch(new dskMainMenu);
         } break;
     }
 }

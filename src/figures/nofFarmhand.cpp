@@ -87,7 +87,7 @@ void nofFarmhand::HandleDerivedEvent(const unsigned int id)
             // Evtl. Sounds löschen
             if(was_sounding)
             {
-                SoundManager::inst().WorkingFinished(this);
+                SOUNDMANAGER.WorkingFinished(this);
                 was_sounding = false;
             }
 
@@ -196,21 +196,21 @@ void nofFarmhand::HandleDerivedEvent(const unsigned int id)
             else
             {
 
-                if(GameClient::inst().GetPlayerID() == this->player)
+                if(GAMECLIENT.GetPlayerID() == this->player)
                 {
                     if (!OutOfRessourcesMsgSent)
                     {
                         switch(job)
                         {
                             case JOB_STONEMASON:
-                                GameClient::inst().SendPostMessage(
+                                GAMECLIENT.SendPostMessage(
                                     new ImagePostMsgWithLocation(_("No more stones in range"), PMC_GENERAL, x, y, workplace->GetBuildingType(), workplace->GetNation()));
                                 OutOfRessourcesMsgSent = true;
                                 // Produktivitätsanzeige auf 0 setzen
                                 workplace->SetProductivityToZero();
                                 break;
                             case JOB_FISHER:
-                                GameClient::inst().SendPostMessage(
+                                GAMECLIENT.SendPostMessage(
                                     new ImagePostMsgWithLocation(_("No more fishes in range"), PMC_GENERAL, x, y, workplace->GetBuildingType(), workplace->GetNation()));
                                 OutOfRessourcesMsgSent = true;
                                 // Produktivitätsanzeige auf 0 setzen

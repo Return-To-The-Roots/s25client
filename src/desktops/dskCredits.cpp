@@ -226,7 +226,7 @@ dskCredits::dskCredits(void) : Desktop(LOADER.GetImageN("setup013", 0))
     LOADER.LoadFilesAtGame(0, nations);
 
     this->it = entries.begin();
-    startTime = bobTime = bobSpawnTime = VideoDriverWrapper::inst().GetTickCount();
+    startTime = bobTime = bobSpawnTime = VIDEODRIVER.GetTickCount();
 
     GetMusic(sng_lst, 8)->Play(0);
 }
@@ -249,21 +249,21 @@ dskCredits::~dskCredits()
  */
 void dskCredits::Msg_PaintAfter()
 {
-    unsigned int time = VideoDriverWrapper::inst().GetTickCount() - startTime;
+    unsigned int time = VIDEODRIVER.GetTickCount() - startTime;
 
     if (time > PAGE_TIME)
     {
         ++this->it;
         if (this->it == entries.end())
             this->it = entries.begin();
-        this->startTime = VideoDriverWrapper::inst().GetTickCount();
+        this->startTime = VIDEODRIVER.GetTickCount();
     }
 
     // Frameratebegrenzer
-    int bob_time = VideoDriverWrapper::inst().GetTickCount() - bobTime;
+    int bob_time = VIDEODRIVER.GetTickCount() - bobTime;
     int bob_prosec = 25;
 
-    int bob_spawntime = VideoDriverWrapper::inst().GetTickCount() - bobSpawnTime;
+    int bob_spawntime = VIDEODRIVER.GetTickCount() - bobSpawnTime;
     int bob_spawnprosec = 5;
 
     if(GAMEMANAGER.GetFPS() < 30)
@@ -274,9 +274,9 @@ void dskCredits::Msg_PaintAfter()
         bob_spawnprosec = 2;
 
     // add new bob
-    if ( bob_spawnprosec > 0 && bob_spawntime > (1000 / bob_spawnprosec) && (int)bobs.size() < (int)(50 + VideoDriverWrapper::inst().GetScreenWidth() / 2))
+    if ( bob_spawnprosec > 0 && bob_spawntime > (1000 / bob_spawnprosec) && (int)bobs.size() < (int)(50 + VIDEODRIVER.GetScreenWidth() / 2))
     {
-        bobSpawnTime = VideoDriverWrapper::inst().GetTickCount();
+        bobSpawnTime = VIDEODRIVER.GetTickCount();
 
         Bob b = Bob();
         b.animationStep = 0;
@@ -290,7 +290,7 @@ void dskCredits::Msg_PaintAfter()
         }
         else
         {
-            b.x = VideoDriverWrapper::inst().GetScreenWidth();
+            b.x = VIDEODRIVER.GetScreenWidth();
             b.direction = 6;
         }
 
@@ -323,13 +323,13 @@ void dskCredits::Msg_PaintAfter()
     for (std::list<Bob>::iterator bob = bobs.begin(); bob != bobs.end(); ++bob)
     {
         if (!bob->hasWare)
-            Loader::inst().GetBobN("jobs")->Draw(bob->id, bob->direction, bob->isFat, bob->animationStep, bob->x, bob->y, bob->color);
+            LOADER.GetBobN("jobs")->Draw(bob->id, bob->direction, bob->isFat, bob->animationStep, bob->x, bob->y, bob->color);
         else
-            Loader::inst().GetBobN("carrier")->Draw(bob->id, bob->direction, bob->isFat, bob->animationStep, bob->x, bob->y, bob->color);
+            LOADER.GetBobN("carrier")->Draw(bob->id, bob->direction, bob->isFat, bob->animationStep, bob->x, bob->y, bob->color);
 
         if( bob_time > (1000 / bob_prosec) )
         {
-            bobTime = VideoDriverWrapper::inst().GetTickCount();
+            bobTime = VIDEODRIVER.GetTickCount();
 
             bob->animationStep++;
             if (bob->animationStep > 7)
@@ -337,7 +337,7 @@ void dskCredits::Msg_PaintAfter()
             if (bob->direction == 3)
             {
                 bob->x += bob->speed;
-                if (bob->x > VideoDriverWrapper::inst().GetScreenWidth())
+                if (bob->x > VIDEODRIVER.GetScreenWidth())
                     bob->direction = 6;
             }
             else if (bob->direction == 6)
@@ -351,7 +351,7 @@ void dskCredits::Msg_PaintAfter()
 
     // Frameratebegrenzer aktualisieren
     if( bob_time > (1000 / bob_prosec) )
-        bobTime = VideoDriverWrapper::inst().GetTickCount();
+        bobTime = VIDEODRIVER.GetTickCount();
 
     // calculate text transparency
     unsigned transparency = 0xFF;
@@ -383,7 +383,7 @@ void dskCredits::Msg_PaintAfter()
     glArchivItem_Bitmap* item = LOADER.GetImageN("credits", it->picId);
 
     if (item)
-        item->Draw(VideoDriverWrapper::inst().GetScreenWidth() - 300, 70, 0, 0, 0, 0, 0, 0, (COLOR_WHITE & 0x00FFFFFF) | transparency);
+        item->Draw(VIDEODRIVER.GetScreenWidth() - 300, 70, 0, 0, 0, 0, 0, 0, (COLOR_WHITE & 0x00FFFFFF) | transparency);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -394,7 +394,7 @@ void dskCredits::Msg_PaintAfter()
  */
 bool dskCredits::Close(void)
 {
-    WindowManager::inst().Switch(new dskMainMenu());
+    WINDOWMANAGER.Switch(new dskMainMenu());
     return true;
 }
 

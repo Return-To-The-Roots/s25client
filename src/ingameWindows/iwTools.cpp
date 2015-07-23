@@ -46,7 +46,7 @@ static char THIS_FILE[] = __FILE__;
  *  @author OLiver
  */
 iwTools::iwTools(void)                      // qx:tools
-    : IngameWindow(CGI_TOOLS, 0xFFFE, 0xFFFE, 166 + (GameClient::inst().GetGGS().isEnabled(ADDON_TOOL_ORDERING) ? 46 : 0), 432, _("Tools"), LOADER.GetImageN("io", 5)),
+    : IngameWindow(CGI_TOOLS, 0xFFFE, 0xFFFE, 166 + (GAMECLIENT.GetGGS().isEnabled(ADDON_TOOL_ORDERING) ? 46 : 0), 432, _("Tools"), LOADER.GetImageN("io", 5)),
       settings_changed(false)
 {
     // Einzelne Balken
@@ -63,7 +63,7 @@ iwTools::iwTools(void)                      // qx:tools
     AddProgress(10, 17, 305, 132, 26, TC_GREY, 161, 160, 5, _("Rolling pin"), 4, 4, 0, _("Less often"), _("More often"));
     AddProgress(11, 17, 333, 132, 26, TC_GREY, 163, 162, 5, _("Bow"), 4, 4, 0, _("Less often"), _("More often"));
 
-    if (GameClient::inst().GetGGS().isEnabled(ADDON_TOOL_ORDERING))
+    if (GAMECLIENT.GetGGS().isEnabled(ADDON_TOOL_ORDERING))
     {
         // qx:tools
         for (unsigned i = 0; i < TOOL_COUNT; ++i)
@@ -80,7 +80,7 @@ iwTools::iwTools(void)                      // qx:tools
     // Info
     AddImageButton(12,  18, 384, 30, 32, TC_GREY, LOADER.GetImageN("io",  21), _("Help"));
     // Standard
-    AddImageButton(13, 118 + (GameClient::inst().GetGGS().isEnabled(ADDON_TOOL_ORDERING) ? 46 : 0), 384, 30, 32, TC_GREY, LOADER.GetImageN("io", 191), _("Default"));
+    AddImageButton(13, 118 + (GAMECLIENT.GetGGS().isEnabled(ADDON_TOOL_ORDERING) ? 46 : 0), 384, 30, 32, TC_GREY, LOADER.GetImageN("io", 191), _("Default"));
 
     // Einstellungen festlegen
     for(unsigned char i = 0; i < 12; ++i)
@@ -114,7 +114,7 @@ void iwTools::TransmitSettings()
 // qx:tools
 void iwTools::UpdateTexts()
 {
-    if (GameClient::inst().GetGGS().isEnabled(ADDON_TOOL_ORDERING))
+    if (GAMECLIENT.GetGGS().isEnabled(ADDON_TOOL_ORDERING))
     {
         for (unsigned i = 0; i < TOOL_COUNT; ++i)
         {

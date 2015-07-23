@@ -118,7 +118,7 @@ bool Loader::LoadFileOrDir(const std::string& file, const unsigned int file_id, 
     if(IsDir(file))
     {
         // yes, load all files in the directory
-        unsigned int ladezeit = VideoDriverWrapper::inst().GetTickCount();
+        unsigned int ladezeit = VIDEODRIVER.GetTickCount();
 
         LOG.lprintf("Lade LST,BOB,IDX,BMP,TXT,GER,ENG Dateien aus \"%s\"\n", GetFilePath(file).c_str());
 
@@ -136,7 +136,7 @@ bool Loader::LoadFileOrDir(const std::string& file, const unsigned int file_id, 
             if(!LoadFile( i->c_str(), GetPaletteN("pal5"), load_always ) )
                 return false;
         }
-        LOG.lprintf("fertig (%ums)\n", VideoDriverWrapper::inst().GetTickCount() - ladezeit);
+        LOG.lprintf("fertig (%ums)\n", VIDEODRIVER.GetTickCount() - ladezeit);
     }
     else
     {
@@ -149,8 +149,8 @@ bool Loader::LoadFileOrDir(const std::string& file, const unsigned int file_id, 
         {
             glArchivItem_Bitmap* image = GetImageN("splash", 0);
             image->setFilter(GL_LINEAR);
-            image->Draw(0, 0, VideoDriverWrapper::inst().GetScreenWidth(), VideoDriverWrapper::inst().GetScreenHeight(), 0, 0, 0, 0);
-            VideoDriverWrapper::inst().SwapBuffers();
+            image->Draw(0, 0, VIDEODRIVER.GetScreenWidth(), VIDEODRIVER.GetScreenHeight(), 0, 0, 0, 0);
+            VIDEODRIVER.SwapBuffers();
         }
     }
     return true;
@@ -1112,7 +1112,7 @@ void Loader::ExtractAnimatedTexture(libsiedler2::ArchivInfo* destination, Rect& 
  */
 bool Loader::LoadArchiv(const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette, libsiedler2::ArchivInfo* archiv)
 {
-    unsigned int ladezeit = VideoDriverWrapper::inst().GetTickCount();
+    unsigned int ladezeit = VIDEODRIVER.GetTickCount();
 
     std::string file = GetFilePath(pfad);
 
@@ -1125,7 +1125,7 @@ bool Loader::LoadArchiv(const std::string& pfad, const libsiedler2::ArchivItem_P
         return false;
     }
 
-    LOG.lprintf("fertig (%ums)\n", VideoDriverWrapper::inst().GetTickCount() - ladezeit);
+    LOG.lprintf("fertig (%ums)\n", VIDEODRIVER.GetTickCount() - ladezeit);
 
     return true;
 }

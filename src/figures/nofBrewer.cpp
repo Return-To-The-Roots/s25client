@@ -58,7 +58,7 @@ void nofBrewer::DrawWorking(int x, int y)
 
     if(now_id == 5)
     {
-        SoundManager::inst().PlayNOSound(51, this, 0);
+        SOUNDMANAGER.PlayNOSound(51, this, 0);
         was_sounding = true;
     }
     last_id = now_id;

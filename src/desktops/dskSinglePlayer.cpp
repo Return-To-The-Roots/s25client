@@ -138,33 +138,33 @@ void dskSinglePlayer::Msg_ButtonClick(const unsigned int ctrl_id)
                 csi.ipv6 = false;
                 csi.use_upnp = false;
 
-                WindowManager::inst().Switch(new dskSelectMap(csi));
+                WINDOWMANAGER.Switch(new dskSelectMap(csi));
 
                 if(GAMESERVER.TryToStart(csi, path, MAPTYPE_SAVEGAME))
                 {
-                    WindowManager::inst().Draw();
-                    WindowManager::inst().Show(new iwPleaseWait);
+                    WINDOWMANAGER.Draw();
+                    WINDOWMANAGER.Show(new iwPleaseWait);
                 }
                 else
                 {
-                    WindowManager::inst().Show(new iwMsgbox(_("Error"), _("The specified file couldn't be loaded!"), this, MSB_OK, MSB_EXCLAMATIONRED));
+                    WINDOWMANAGER.Show(new iwMsgbox(_("Error"), _("The specified file couldn't be loaded!"), this, MSB_OK, MSB_EXCLAMATIONRED));
                 }
             }
             else
             {
-                WindowManager::inst().Show(new iwMsgbox(_("Error"), _("The specified file couldn't be loaded!"), this, MSB_OK, MSB_EXCLAMATIONRED));
+                WINDOWMANAGER.Show(new iwMsgbox(_("Error"), _("The specified file couldn't be loaded!"), this, MSB_OK, MSB_EXCLAMATIONRED));
             }
 
             liste.clear();
         } break;
         case 4: // "Replay abspielen"
         {
-            WindowManager::inst().Show(new iwPlayReplay);
+            WINDOWMANAGER.Show(new iwPlayReplay);
         } break;
         case 5: // "Kampagne"
         {
             /// @todo Hier dann Auswahl zwischen Kampagne(n) und "Freies Spiel"
-            WindowManager::inst().Show(new iwMsgbox(_("Not available"), _("Please use \'Unlimited Play\' to create a Singleplayer game."), this, MSB_OK, MSB_EXCLAMATIONGREEN));
+            WINDOWMANAGER.Show(new iwMsgbox(_("Not available"), _("Please use \'Unlimited Play\' to create a Singleplayer game."), this, MSB_OK, MSB_EXCLAMATIONGREEN));
         } break;
         case 6: // "Freies Spiel"
         {
@@ -176,7 +176,7 @@ void dskSinglePlayer::Msg_ButtonClick(const unsigned int ctrl_id)
         } break;
         case 8: // "Zurück"
         {
-            WindowManager::inst().Switch(new dskMainMenu);
+            WINDOWMANAGER.Switch(new dskMainMenu);
         } break;
     }
 }
@@ -191,7 +191,7 @@ void dskSinglePlayer::PrepareSinglePlayerServer()
     csi.ipv6 = false;
     csi.use_upnp = false;
 
-    WindowManager::inst().Switch(new dskSelectMap(csi));
+    WINDOWMANAGER.Switch(new dskSelectMap(csi));
 }
 
 void dskSinglePlayer::PrepareLoadGame()
@@ -204,7 +204,7 @@ void dskSinglePlayer::PrepareLoadGame()
     csi.ipv6 = false;
     csi.use_upnp = false;
 
-    WindowManager::inst().Switch(new dskSelectMap(csi));
-    WindowManager::inst().Draw();
-    WindowManager::inst().Show(new iwLoad(csi));
+    WINDOWMANAGER.Switch(new dskSelectMap(csi));
+    WINDOWMANAGER.Draw();
+    WINDOWMANAGER.Show(new iwLoad(csi));
 }

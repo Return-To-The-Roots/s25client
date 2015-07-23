@@ -54,7 +54,7 @@ bool AudioDriverWrapper::LoadDriver(void)
     PDRIVER_CREATEAUDIOINSTANCE CreateAudioInstance = pto2ptf<PDRIVER_CREATEAUDIOINSTANCE>(driver_wrapper.GetDLLFunction("CreateAudioInstance"));
 
     // Instanz erzeugen
-    if(!(audiodriver = CreateAudioInstance(this, VideoDriverWrapper::inst().GetWindowPointer())))
+    if(!(audiodriver = CreateAudioInstance(this, VIDEODRIVER.GetWindowPointer())))
         return false;
 
     if(!audiodriver->Initialize())
@@ -117,6 +117,6 @@ void AudioDriverWrapper::StopEffect(const unsigned int play_id)
 void AudioDriverWrapper::Msg_MusicFinished()
 {
     // MusicManager Bescheid sagen
-    MusicPlayer::inst().MusicFinished();
+    MUSICPLAYER.MusicFinished();
 }
 

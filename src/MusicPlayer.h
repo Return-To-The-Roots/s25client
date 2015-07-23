@@ -88,4 +88,6 @@ class MusicPlayer : public Singleton<MusicPlayer>
         libsiedler2::ArchivInfo sng;    ///< externes benutzerdefiniertes Musikstück (z.B. andere mp3)
 };
 
+#define MUSICPLAYER MusicPlayer::inst()
+
 #endif // !MUSICPLAYER_H_INCLUDED

@@ -85,7 +85,7 @@ void SoundManager::WorkingFinished(noBase* const obj)
     {
         if(it->obj == obj)
         {
-            AudioDriverWrapper::inst().StopEffect(it->play_id);
+            AUDIODRIVER.StopEffect(it->play_id);
             it = no_sounds.erase(it);
         }else
             ++it;
@@ -111,12 +111,12 @@ void SoundManager::PlayBirdSounds(const unsigned short tree_count)
     interval += bird_interval;
 
     // Nach einiger Zeit neuen Sound abspielen
-    if(VideoDriverWrapper::inst().GetTickCount() - last_bird  > interval)
+    if(VIDEODRIVER.GetTickCount() - last_bird  > interval)
     {
         // ohne baum - kein vogel
         if(tree_count > 0)
             LOADER.GetSoundN("sound", 87 + rand() % 5)->Play(80 - rand() % 30, false);
-        last_bird = VideoDriverWrapper::inst().GetTickCount();
+        last_bird = VIDEODRIVER.GetTickCount();
         bird_interval = rand() % 1000;
     }
 }
@@ -133,29 +133,29 @@ void SoundManager::PlayOceanBrawling(const unsigned water_percent)
     if(water_percent > 10)
     {
         // Wird schon ein Sound gespielt?
-        if(!AudioDriverWrapper::inst().IsEffectPlaying(ocean_play_id))
+        if(!AUDIODRIVER.IsEffectPlaying(ocean_play_id))
         {
             // Wenn nicht --> neuen abspielen
             ocean_play_id = LOADER.GetSoundN("sound", 98 + rand() % 3)->Play(255, true);
         }
 
         // Lautstärke setzen
-        AudioDriverWrapper::inst().ChangeVolume(ocean_play_id, water_percent * 2 + 55);
+        AUDIODRIVER.ChangeVolume(ocean_play_id, water_percent * 2 + 55);
     }
     else
     {
         // Rauschen ggf. stoppen
         if(ocean_play_id)
-            AudioDriverWrapper::inst().StopEffect(ocean_play_id);
+            AUDIODRIVER.StopEffect(ocean_play_id);
     }
 }
 
 void SoundManager::StopAll()
 {
     if(ocean_play_id)
-        AudioDriverWrapper::inst().StopEffect(ocean_play_id);
+        AUDIODRIVER.StopEffect(ocean_play_id);
 
-    last_bird = VideoDriverWrapper::inst().GetTickCount();
+    last_bird = VIDEODRIVER.GetTickCount();
     bird_interval = 0;
 }
 

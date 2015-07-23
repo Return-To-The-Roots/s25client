@@ -59,12 +59,12 @@ void nofCharburner::DrawWorking(int x, int y)
 {
     if(harvest)
     {
-        unsigned short now_id = GameClient::inst().Interpolate(39, current_ev);
+        unsigned short now_id = GAMECLIENT.Interpolate(39, current_ev);
 
         // Schaufel-Sound
         if(now_id == 6 || now_id == 18 || now_id == 30)
         {
-            SoundManager::inst().PlayNOSound(76, this, now_id / 12, 200);
+            SOUNDMANAGER.PlayNOSound(76, this, now_id / 12, 200);
             was_sounding = true;
         }
 
@@ -78,7 +78,7 @@ void nofCharburner::DrawWorking(int x, int y)
         LOADER.GetImageN("charburner_bobs", draw_id)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(player)->color]);
     }
     else
-        LOADER.GetImageN("charburner_bobs", 1 + GameClient::inst().Interpolate(18, current_ev) % 6)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(player)->color]);
+        LOADER.GetImageN("charburner_bobs", 1 + GAMECLIENT.Interpolate(18, current_ev) % 6)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(player)->color]);
 
 }
 

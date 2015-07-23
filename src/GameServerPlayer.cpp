@@ -72,11 +72,11 @@ GameServerPlayer::~GameServerPlayer()
 /// pingt ggf den Spieler
 void GameServerPlayer::doPing()
 {
-    if( (ps == PS_OCCUPIED) && (pinging == false) && ( ( VideoDriverWrapper::inst().GetTickCount() - lastping ) > 1000 ) )
+    if( (ps == PS_OCCUPIED) && (pinging == false) && ( ( VIDEODRIVER.GetTickCount() - lastping ) > 1000 ) )
     {
         pinging = true;
 
-        lastping = VideoDriverWrapper::inst().GetTickCount();
+        lastping = VIDEODRIVER.GetTickCount();
 
         // Ping Nachricht senden
         send_queue.push(new GameMessage_Ping(0xFF));
@@ -87,7 +87,7 @@ void GameServerPlayer::doPing()
 /// prüft auf Ping-Timeout beim verbinden
 void GameServerPlayer::doTimeout()
 {
-    if( (ps == PS_RESERVED) && ( ( VideoDriverWrapper::inst().GetTickCount() - connecttime ) > PING_TIMEOUT ) )
+    if( (ps == PS_RESERVED) && ( ( VIDEODRIVER.GetTickCount() - connecttime ) > PING_TIMEOUT ) )
     {
         LOG.lprintf("SERVER: Reserved slot %d freed due to ping timeout\n", playerid);
 
@@ -110,7 +110,7 @@ void GameServerPlayer::reserve(Socket* sock, unsigned char id)
 
     playerid = id;
 
-    connecttime = VideoDriverWrapper::inst().GetTickCount();
+    connecttime = VIDEODRIVER.GetTickCount();
 
     so = *sock;
 

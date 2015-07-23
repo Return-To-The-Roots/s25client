@@ -91,7 +91,7 @@ iwPostWindow::iwPostWindow(GameWorldViewer& gwv)
     currentMessage = 0;
     DisplayPostMessage();
 
-    lastSize = GameClient::inst().GetPostMessages().size();
+    lastSize = GAMECLIENT.GetPostMessages().size();
 }
 
 void iwPostWindow::Msg_ButtonClick(const unsigned int ctrl_id)
@@ -107,11 +107,11 @@ void iwPostWindow::Msg_ButtonClick(const unsigned int ctrl_id)
             DisplayPostMessage();
             break;
             // Vor
-        case 10: currentMessage = (currentMessage < GameClient::inst().GetPostMessages().size()-1) ? currentMessage + 1 : GameClient::inst().GetPostMessages().size()-1;
+        case 10: currentMessage = (currentMessage < GAMECLIENT.GetPostMessages().size()-1) ? currentMessage + 1 : GAMECLIENT.GetPostMessages().size()-1;
             DisplayPostMessage();
             break;
             // Schnell vor
-        case 11: currentMessage = GameClient::inst().GetPostMessages().size() - 1;
+        case 11: currentMessage = GAMECLIENT.GetPostMessages().size() - 1;
             DisplayPostMessage();
             break;
 
@@ -130,7 +130,7 @@ void iwPostWindow::Msg_ButtonClick(const unsigned int ctrl_id)
         // Löschen
         case 15:
         {
-            if(!GameClient::inst().GetPostMessages().empty())
+            if(!GAMECLIENT.GetPostMessages().empty())
                 DeletePostMessage(GetPostMsg(currentMessage));
         }
         break;
@@ -144,10 +144,10 @@ void iwPostWindow::Msg_ButtonClick(const unsigned int ctrl_id)
             {
                 // Vertrag akzeptieren? Ja
                 if(dpm->dp_type == DiplomacyPostQuestion::ACCEPT)
-                    GameClient::inst().AddGC(new gc::AcceptPact(true, dpm->id, dpm->pt, dpm->player));
+                    GAMECLIENT.AddGC(new gc::AcceptPact(true, dpm->id, dpm->pt, dpm->player));
                 // Vertrag beenden? Ja
                 else if(dpm->dp_type == DiplomacyPostQuestion::CANCEL)
-                    GameClient::inst().AddGC(new gc::CancelPact(dpm->pt, dpm->player));
+                    GAMECLIENT.AddGC(new gc::CancelPact(dpm->pt, dpm->player));
                 DeletePostMessage(pm);
             }
         } break;
@@ -162,7 +162,7 @@ void iwPostWindow::Msg_ButtonClick(const unsigned int ctrl_id)
                 // Vertrag annehmen? Nein
                 // TODO: Sinnvoll ne art reject schicken, damit der andere mitbekommmt dass man nich will
                 //if(dpm->dp_type == DiplomacyPostQuestion::ACCEPT)
-                //  GameClient::inst().AddGC(new gc::CancelPact(dpm->pt,dpm->player));
+                //  GAMECLIENT.AddGC(new gc::CancelPact(dpm->pt,dpm->player));
                 DeletePostMessage(pm);
             }
         }
@@ -174,7 +174,7 @@ void iwPostWindow::Msg_ButtonClick(const unsigned int ctrl_id)
 void iwPostWindow::Msg_PaintBefore()
 {
     // Immer wenn sich die Anzahl der Nachrichten geändert hat neu prüfen was so angezeigt werden muss
-    unsigned currentSize = GameClient::inst().GetPostMessages().size();
+    unsigned currentSize = GAMECLIENT.GetPostMessages().size();
     if (currentSize != lastSize)
     {
         // Neue Nachrichten dazugekommen, während das Fenster offen ist:
@@ -190,7 +190,7 @@ void iwPostWindow::Msg_PaintBefore()
             if (currentMessage >= MAX_POST_MESSAGES)
                 currentMessage = MAX_POST_MESSAGES - 1;
         }
-        lastSize = GameClient::inst().GetPostMessages().size();
+        lastSize = GAMECLIENT.GetPostMessages().size();
 
         // Anzeigeeinstellungen setzen
         DisplayPostMessage();
@@ -226,7 +226,7 @@ bool iwPostWindow::Msg_KeyDown(const KeyEvent& ke)
         } return true;
         case 'g': // Go to site of event
         {
-            if (!GameClient::inst().GetPostMessages().empty())
+            if (!GAMECLIENT.GetPostMessages().empty())
             {
                 Msg_ButtonClick(14);
             }
@@ -241,7 +241,7 @@ PostMsg* iwPostWindow::GetPostMsg(unsigned pos) const
 {
     PostMsg* pm = 0;
     unsigned counter = 0;
-    for(std::list<PostMsg*>::const_iterator it = GameClient::inst().GetPostMessages().begin(); it != GameClient::inst().GetPostMessages().end(); ++it)
+    for(std::list<PostMsg*>::const_iterator it = GAMECLIENT.GetPostMessages().begin(); it != GAMECLIENT.GetPostMessages().end(); ++it)
     {
         if (counter == pos)
         {
@@ -267,7 +267,7 @@ void iwPostWindow::DisplayPostMessage()
     const unsigned xTextCenter = 126;
     const unsigned yTextCenter = 151;
 
-    unsigned size = GameClient::inst().GetPostMessages().size();
+    unsigned size = GAMECLIENT.GetPostMessages().size();
 
     // Keine Nachrichten, alles ausblenden, bis auf zentrierten Text
     if (size == 0)
@@ -397,7 +397,7 @@ void iwPostWindow::SetMessageText(const std::string& message)
 
 void iwPostWindow::DeletePostMessage(PostMsg* pm)
 {
-    GameClient::inst().DeletePostMessage(pm);
+    GAMECLIENT.DeletePostMessage(pm);
     currentMessage = (currentMessage > 0) ? currentMessage - 1 : 0;
 }
 

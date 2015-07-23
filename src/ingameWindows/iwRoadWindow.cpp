@@ -57,12 +57,12 @@ iwRoadWindow::iwRoadWindow(dskGameInterface* const GameInterface, bool flagpossi
         cancel->Move(46, 20);
     }
 
-    if(x + GetWidth() > VideoDriverWrapper::inst().GetScreenWidth())
+    if(x + GetWidth() > VIDEODRIVER.GetScreenWidth())
         x = mouse_x - GetWidth() - 40;
-    if(y + GetIwHeight() > VideoDriverWrapper::inst().GetScreenHeight())
+    if(y + GetIwHeight() > VIDEODRIVER.GetScreenHeight())
         y = mouse_y - GetIwHeight() - 40;
 
-    VideoDriverWrapper::inst().SetMousePos(GetX() + 20, GetY() + 45);
+    VIDEODRIVER.SetMousePos(GetX() + 20, GetY() + 45);
 }
 
 iwRoadWindow::~iwRoadWindow()
@@ -85,7 +85,7 @@ void iwRoadWindow::Msg_ButtonClick(const unsigned int ctrl_id)
     }
 
     // Maus an vorherige Stelle setzen
-    VideoDriverWrapper::inst().SetMousePos(last_x, last_y);
+    VIDEODRIVER.SetMousePos(last_x, last_y);
 
     // und fenster schlieﬂen
     Close();

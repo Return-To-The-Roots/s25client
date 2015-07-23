@@ -83,18 +83,18 @@ void dskMultiPlayer::Msg_ButtonClick(const unsigned int ctrl_id)
     {
         case 3: // Lobby
         {
-            WindowManager::inst().Show(new iwLobbyConnect, true);
+            WINDOWMANAGER.Show(new iwLobbyConnect, true);
         } break;
         case 4: // Local Area Network
         {
         } break;
         case 5: // Direct IP
         {
-            WindowManager::inst().Switch(new dskDirectIP);
+            WINDOWMANAGER.Switch(new dskDirectIP);
         } break;
         case 6: // Zurück
         {
-            WindowManager::inst().Switch(new dskMainMenu);
+            WINDOWMANAGER.Switch(new dskMainMenu);
         } break;
     }
 }

@@ -1181,12 +1181,12 @@ bool Window::TestWindowInRegion(Window* window, const MouseCoords& mc) const
  */
 unsigned short Window::ScaleX(unsigned short val) const
 {
-    return  val * VideoDriverWrapper::inst().GetScreenWidth() / 800;
+    return  val * VIDEODRIVER.GetScreenWidth() / 800;
 }
 
 unsigned short Window::ScaleY(unsigned short val) const
 {
-    return val * VideoDriverWrapper::inst().GetScreenHeight() / 600;
+    return val * VIDEODRIVER.GetScreenHeight() / 600;
 }
 
 

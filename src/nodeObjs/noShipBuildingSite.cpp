@@ -134,7 +134,7 @@ void noShipBuildingSite::MakeBuildStep()
         gwg->RecalcBQAroundPointBig(x, y);
 
         // Spieler über Fertigstellung benachrichtigen
-        if(GameClient::inst().GetPlayerID() == this->player)
+        if(GAMECLIENT.GetPlayerID() == this->player)
             GAMECLIENT.SendPostMessage(new ShipPostMsg(_("A new ship is ready"), PMC_GENERAL, GAMECLIENT.GetPlayer(player)->nation, x, y));
 
         // KI Event senden

@@ -273,7 +273,7 @@ void iwLoad::SaveLoad(void)
         // Server starten
         if(LOBBYCLIENT.LoggedIn())
             // Lobby zeigen, wenn wenn das nich ging und man im Lobby-Modus ist
-            WindowManager::inst().Switch(new dskLobby);
+            WINDOWMANAGER.Switch(new dskLobby);
         else
             // Ansonsten schließen
             Close();
@@ -281,7 +281,7 @@ void iwLoad::SaveLoad(void)
     else
     {
         // Verbindungsfenster anzeigen
-        WindowManager::inst().Show(new iwPleaseWait);
+        WINDOWMANAGER.Show(new iwPleaseWait);
     }
 
 }

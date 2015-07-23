@@ -97,7 +97,7 @@ void noAnimal::Draw(int x, int y)
             // Bei Enten und Schafen: Soll ein Sound gespielt werden?
             if(species == SPEC_DUCK || species == SPEC_SHEEP)
             {
-                unsigned int now = VideoDriverWrapper::inst().GetTickCount();
+                unsigned int now = VIDEODRIVER.GetTickCount();
                 // Wurde der Soundzeitpunkt schon überschritten?
                 if(now > sound_moment)
                 {
@@ -254,7 +254,7 @@ void noAnimal::Walked()
             // Bei Enten und Schafen: Soundzeitpunkt ggf. setzen
             if(species == SPEC_DUCK || species == SPEC_SHEEP)
             {
-                unsigned int now = VideoDriverWrapper::inst().GetTickCount();
+                unsigned int now = VIDEODRIVER.GetTickCount();
                 // Wurde der Soundzeitpunkt schon überschritten?
                 if(now > sound_moment)
                     // Neuen Zeitpunkt errechnen

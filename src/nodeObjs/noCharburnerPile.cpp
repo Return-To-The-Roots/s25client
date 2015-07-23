@@ -118,7 +118,7 @@ void noCharburnerPile::Draw( int x, int y)
         } return;
         case STATE_SMOLDERING:
         {
-            LOADER.GetImageN("charburner_bobs", 27 + GameClient::inst().
+            LOADER.GetImageN("charburner_bobs", 27 + GAMECLIENT.
                              GetGlobalAnimation(2, 10, 1, obj_id + this->x * 10 + this->y * 10))->Draw(x, y);
 
             // Dann Qualm zeichnen

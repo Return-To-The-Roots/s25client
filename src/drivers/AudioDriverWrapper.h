@@ -80,4 +80,6 @@ class AudioDriverWrapper : public Singleton<AudioDriverWrapper>, public AudioDri
         AudioDriver* audiodriver;
 };
 
+#define AUDIODRIVER AudioDriverWrapper::inst()
+
 #endif

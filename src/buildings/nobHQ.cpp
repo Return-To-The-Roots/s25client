@@ -50,7 +50,7 @@ nobHQ::nobHQ(const unsigned short x, const unsigned short y, const unsigned char
 
 
     // StartWaren setzen ( provisorisch )
-    switch(GameClient::inst().GetGGS().start_wares)
+    switch(GAMECLIENT.GetGGS().start_wares)
     {
             //sehr wenig
 
@@ -368,8 +368,8 @@ nobHQ::nobHQ(SerializedGameData* sgd, const unsigned obj_id) : nobBaseWarehouse(
     gwg->GetMilitarySquare(x, y).push_back(this);
 
     // Startpos setzen
-    GameClient::inst().GetPlayer(player)->hqx = this->x;
-    GameClient::inst().GetPlayer(player)->hqy = this->y;
+    GAMECLIENT.GetPlayer(player)->hqx = this->x;
+    GAMECLIENT.GetPlayer(player)->hqy = this->y;
 }
 
 void nobHQ::Draw(int x, int y)

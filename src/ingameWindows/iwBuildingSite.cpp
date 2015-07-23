@@ -77,7 +77,7 @@ void iwBuildingSite::Msg_ButtonClick(const unsigned int ctrl_id)
     {
         case 2: // Hilfe
         {
-            WindowManager::inst().Show(new iwHelp(GUI_ID(CGI_HELPBUILDING + buildingsite->GetBuildingType()),
+            WINDOWMANAGER.Show(new iwHelp(GUI_ID(CGI_HELPBUILDING + buildingsite->GetBuildingType()),
                                                   _(BUILDING_NAMES[buildingsite->GetBuildingType()]),
                                                   _(BUILDING_HELP_STRINGS[buildingsite->GetBuildingType()]) ) );
         } break;
@@ -85,7 +85,7 @@ void iwBuildingSite::Msg_ButtonClick(const unsigned int ctrl_id)
         {
             // Abreiﬂen?
             Close();
-            WindowManager::inst().Show(new iwDemolishBuilding(gwv, buildingsite));
+            WINDOWMANAGER.Show(new iwDemolishBuilding(gwv, buildingsite));
         } break;
         case 4: // "Gehe Zu Ort"
         {

@@ -229,7 +229,7 @@ void SuggestPact::Execute(GameWorldGame& gwg, GameClientPlayer& player, const un
 
 void AcceptPact::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
 {
-    ::GameClient::inst().GetPlayer(this->player)->AcceptPact(id, pt, playerid);
+    ::GAMECLIENT.GetPlayer(this->player)->AcceptPact(id, pt, playerid);
 }
 
 void CancelPact::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)

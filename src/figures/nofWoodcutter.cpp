@@ -72,7 +72,7 @@ void nofWoodcutter::DrawWorking(int x, int y)
 
         if((i - 10) % 8 == 3)
         {
-            SoundManager::inst().PlayNOSound(53, this, i);
+            SOUNDMANAGER.PlayNOSound(53, this, i);
             was_sounding = true;
         }
 
@@ -84,7 +84,7 @@ void nofWoodcutter::DrawWorking(int x, int y)
 
         if(i == 90)
         {
-            SoundManager::inst().PlayNOSound(85, this, i);
+            SOUNDMANAGER.PlayNOSound(85, this, i);
             was_sounding = true;
         }
     }
@@ -129,7 +129,7 @@ void nofWoodcutter::WorkFinished()
     ware = GD_WOOD;
 
     // evtl. AIEvent senden
-    //GameClient::inst().SendAIEvent(new AIEvent::Location(AIEvent::TreeChopped, x, y), player);  only clutters the action list for the ai
+    //GAMECLIENT.SendAIEvent(new AIEvent::Location(AIEvent::TreeChopped, x, y), player);  only clutters the action list for the ai
 }
 
 /// Returns the quality of this working point or determines if the worker can work here at all

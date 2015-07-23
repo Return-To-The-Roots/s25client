@@ -121,7 +121,7 @@ void noFighting::Draw(int x, int y)
 
             // Sterbesound abspielen
             if(animation == 6)
-                SoundManager::inst().PlayNOSound(104, this, 2);
+                SOUNDMANAGER.PlayNOSound(104, this, 2);
 
 
         } break;
@@ -165,7 +165,7 @@ void noFighting::Draw(int x, int y)
                         // Wenn schwache Soldaten Schild hinhalten (Ani 0 und 1) und stärkere sich mit den Schwertern schützen (Ani 0)
                         // dann Schwert-aneinanderklirr-Sound abspielen
                         if( (animation == 5) && ((soldiers[i]->GetRank() < 2 && (defending_animation < 2)) || (soldiers[i]->GetRank() > 1 && (defending_animation == 0))))
-                            SoundManager::inst().PlayNOSound(101, this, 1);
+                            SOUNDMANAGER.PlayNOSound(101, this, 1);
 
                     }
                     else
@@ -179,7 +179,7 @@ void noFighting::Draw(int x, int y)
                             ->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(soldiers[i]->GetPlayer())->color]);
 
                             // Treffersound
-                            SoundManager::inst().PlayNOSound(105, this, 1);
+                            SOUNDMANAGER.PlayNOSound(105, this, 1);
                         }
                         else
                             // normal dastehen
@@ -192,7 +192,7 @@ void noFighting::Draw(int x, int y)
 
             // Angriffssound
             if(animation == 3)
-                SoundManager::inst().PlayNOSound(103, this, 0);
+                SOUNDMANAGER.PlayNOSound(103, this, 0);
 
 
 
@@ -221,7 +221,7 @@ void noFighting::HandleEvent(const unsigned int id)
             case 1:
             {
                 // Sounds löschen von der letzten Kampfphase
-                SoundManager::inst().WorkingFinished(this);
+                SOUNDMANAGER.WorkingFinished(this);
 
                 // Wurde der eine getroffen?
                 if(defending_animation == 3)
@@ -260,7 +260,7 @@ void noFighting::HandleEvent(const unsigned int id)
                 MapCoord x = soldiers[player_lost]->GetX(), y = soldiers[player_lost]->GetY();
 
                 // Sounds löschen vom Sterben
-                SoundManager::inst().WorkingFinished(this);
+                SOUNDMANAGER.WorkingFinished(this);
 
                 // Kampf ist endgültig beendet
                 em->AddToKillList(this);
@@ -312,7 +312,7 @@ void noFighting::StartAttack()
     unsigned char results[2];
     for(unsigned i = 0; i < 2; ++i)
     {
-        switch (GameClient::inst().GetGGS().getSelection(ADDON_ADJUST_MILITARY_STRENGTH))
+        switch (GAMECLIENT.GetGGS().getSelection(ADDON_ADJUST_MILITARY_STRENGTH))
         {
             case 0: // Maximale Stärke
             {
@@ -345,7 +345,7 @@ void noFighting::StartAttack()
 bool noFighting::IsActive() const
 {
     // Figuren dürfen vorbei, wenn Kampf an sich und die Offset-Zeit abgelaufen ist
-    return (turn < 3/* || GameClient::inst().GetGFNumber()-current_ev->gf < RELEASE_FIGURES_OFFSET*/);
+    return (turn < 3/* || GAMECLIENT.GetGFNumber()-current_ev->gf < RELEASE_FIGURES_OFFSET*/);
 }
 
 bool noFighting::IsSoldierOfPlayer(const unsigned char player) const

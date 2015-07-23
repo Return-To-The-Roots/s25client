@@ -248,12 +248,12 @@ bool ctrlProgress::Msg_MouseMove(const MouseCoords& mc)
 
     if(Coll(mc.x, mc.y, GetX() + height + x_padding, GetY(), width - height * 2 - x_padding * 2, height))
     {
-        WindowManager::inst().SetToolTip(this, tooltip);
+        WINDOWMANAGER.SetToolTip(this, tooltip);
         return true;
     }
     else
     {
-        WindowManager::inst().SetToolTip(this, "");
+        WINDOWMANAGER.SetToolTip(this, "");
         return false;
     }
 }

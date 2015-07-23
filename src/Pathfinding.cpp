@@ -542,10 +542,10 @@ bool GameWorldBase::FindPathOnRoads(const noRoadNode* const start, const noRoadN
                                     const RoadSegment* const forbidden, const bool record, unsigned max) const
 {
     // Aus Replay lesen?
-    if(GameClient::inst().ArePathfindingResultsAvailable() && record)
+    if(GAMECLIENT.ArePathfindingResultsAvailable() && record)
     {
         unsigned char dir;
-        if(GameClient::inst().ReadPathfindingResult(&dir, length, next_harbor))
+        if(GAMECLIENT.ReadPathfindingResult(&dir, length, next_harbor))
         {
             if(first_dir) *first_dir = dir;
             return (dir != 0xff);
@@ -556,7 +556,7 @@ bool GameWorldBase::FindPathOnRoads(const noRoadNode* const start, const noRoadN
     if(!start || !goal)
     {
         if(record)
-            GameClient::inst().AddPathfindingResult(0xff, length, next_harbor);
+            GAMECLIENT.AddPathfindingResult(0xff, length, next_harbor);
         return false;
     }
 
@@ -628,7 +628,7 @@ bool GameWorldBase::FindPathOnRoads(const noRoadNode* const start, const noRoadN
             // Fertig, es wurde ein Pfad gefunden
             if (record)
             {
-                GameClient::inst().AddPathfindingResult((unsigned char) last->dir, length, next_harbor);
+                GAMECLIENT.AddPathfindingResult((unsigned char) last->dir, length, next_harbor);
             }
 
             return true;
@@ -751,7 +751,7 @@ bool GameWorldBase::FindPathOnRoads(const noRoadNode* const start, const noRoadN
 
     // Liste leer und kein Ziel erreicht --> kein Weg
     if(record)
-        GameClient::inst().AddPathfindingResult(0xff, length, next_harbor);
+        GAMECLIENT.AddPathfindingResult(0xff, length, next_harbor);
     return false;
 }
 
@@ -884,10 +884,10 @@ unsigned char GameWorldBase::FindHumanPath(const MapCoord x_start, const MapCoor
         const MapCoord x_dest, const MapCoord y_dest, const unsigned max_route, const bool random_route, unsigned* length, const bool record) const
 {
     // Aus Replay lesen?
-    if(GameClient::inst().ArePathfindingResultsAvailable() && !random_route)
+    if(GAMECLIENT.ArePathfindingResultsAvailable() && !random_route)
     {
         unsigned char dir;
-        if(GameClient::inst().ReadPathfindingResult(&dir, length, NULL))
+        if(GAMECLIENT.ReadPathfindingResult(&dir, length, NULL))
             return dir;
     }
 
@@ -896,7 +896,7 @@ unsigned char GameWorldBase::FindHumanPath(const MapCoord x_start, const MapCoor
                  IsPointToDestOK_HumanPath, NULL, record);
 
     if(!random_route)
-        GameClient::inst().AddPathfindingResult(first_dir, length, NULL);
+        GAMECLIENT.AddPathfindingResult(first_dir, length, NULL);
 
     return first_dir;
 

@@ -70,9 +70,9 @@ bool GameWorld::LoadMap(const std::string& filename)
 
     tr.GenerateOpenGL(this);
 
-    if(GetPlayer(GameClient::inst().GetPlayerID())->hqx != 0xFFFF)
-        this->MoveToMapObject(GetPlayer(GameClient::inst().GetPlayerID())->hqx,
-                              GetPlayer(GameClient::inst().GetPlayerID())->hqy);
+    if(GetPlayer(GAMECLIENT.GetPlayerID())->hqx != 0xFFFF)
+        this->MoveToMapObject(GetPlayer(GAMECLIENT.GetPlayerID())->hqx,
+                              GetPlayer(GAMECLIENT.GetPlayerID())->hqy);
 
     LUA_EventStart();
 
@@ -155,9 +155,9 @@ void GameWorld::Scan(glArchivItem_Map* map)
             node.sea_id = 0;
 
             // FOW-Zeug initialisieren
-            for(unsigned i = 0; i < GameClient::inst().GetPlayerCount(); ++i)
+            for(unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
             {
-                switch(GameClient::inst().GetGGS().exploration)
+                switch(GAMECLIENT.GetGGS().exploration)
                 {
                     case GlobalGameSettings::EXP_DISABLED:
                     {
@@ -386,7 +386,7 @@ void GameWorld::Scan(glArchivItem_Map* map)
     }
 
     //random locations? -> randomize them :)
-    if (GameClient::inst().GetGGS().random_location)
+    if (GAMECLIENT.GetGGS().random_location)
     {
         ptrdiff_t (*p_myrandom)(ptrdiff_t) = myRandom;
         std::random_shuffle(headquarter_positions.begin(), headquarter_positions.end(), p_myrandom);
@@ -488,14 +488,14 @@ void GameWorld::Scan(glArchivItem_Map* map)
     }
 
     /// Bei FoW und aufgedeckt müssen auch die ersten FoW-Objekte erstellt werden
-    if(GameClient::inst().GetGGS().exploration == GlobalGameSettings::EXP_FOGOFWARE_EXPLORED)
+    if(GAMECLIENT.GetGGS().exploration == GlobalGameSettings::EXP_FOGOFWARE_EXPLORED)
     {
         for(unsigned y = 0; y < height; ++y)
         {
             for(unsigned x = 0; x < width; ++x)
             {
                 // Alle Spieler durchgehen
-                for(unsigned i = 0; i < GameClient::inst().GetPlayerCount(); ++i)
+                for(unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
                 {
                     // An der Stelle FOW für diesen Spieler?
                     if(GetNode(x, y).fow[i].visibility == VIS_FOW)
@@ -519,7 +519,7 @@ void GameWorld::Serialize(SerializedGameData* sgd) const
 
     /// Serialize trade graphs first if they exist
     // Only if trade is enabled
-    if(GameClient::inst().GetGGS().isEnabled(ADDON_TRADE))
+    if(GAMECLIENT.GetGGS().isEnabled(ADDON_TRADE))
     {
         sgd->PushUnsignedChar(static_cast<unsigned char>(tgs.size()));
         for(unsigned i = 0; i < tgs.size(); ++i)
@@ -548,7 +548,7 @@ void GameWorld::Serialize(SerializedGameData* sgd) const
         for(unsigned b = 0; b < 4; ++b)
             sgd->PushUnsignedChar(nodes[i].boundary_stones[b]);
         sgd->PushUnsignedChar(static_cast<unsigned char>(nodes[i].bq));
-        for(unsigned z = 0; z < GameClient::inst().GetPlayerCount(); ++z)
+        for(unsigned z = 0; z < GAMECLIENT.GetPlayerCount(); ++z)
         {
             sgd->PushUnsignedChar(static_cast<unsigned char>(nodes[i].fow[z].visibility));
             // Nur im FoW können FOW-Objekte stehen
@@ -615,7 +615,7 @@ void GameWorld::Deserialize(SerializedGameData* sgd)
 
     // Trade graphs
     // Only if trade is enabled
-    if(GameClient::inst().GetGGS().isEnabled(ADDON_TRADE))
+    if(GAMECLIENT.GetGGS().isEnabled(ADDON_TRADE))
     {
         tgs.resize(sgd->PopUnsignedChar());
         for(unsigned i = 0; i < tgs.size(); ++i)
@@ -642,7 +642,7 @@ void GameWorld::Deserialize(SerializedGameData* sgd)
         for(unsigned b = 0; b < 4; ++b)
             nodes[i].boundary_stones[b] = sgd->PopUnsignedChar();
         nodes[i].bq = BuildingQuality(sgd->PopUnsignedChar());
-        for(unsigned z = 0; z < GameClient::inst().GetPlayerCount(); ++z)
+        for(unsigned z = 0; z < GAMECLIENT.GetPlayerCount(); ++z)
         {
             nodes[i].fow[z].visibility = Visibility(sgd->PopUnsignedChar());
             // Nur im FoW können FOW-Objekte stehen
@@ -722,15 +722,15 @@ void GameWorld::Deserialize(SerializedGameData* sgd)
     tr.GenerateOpenGL(this);
 
     // Zum HQ am Anfang springen, falls dieses existiert
-    if(GetPlayer(GameClient::inst().GetPlayerID())->hqx != 0xFFFF)
-        this->MoveToMapObject(GetPlayer(GameClient::inst().GetPlayerID())->hqx,
-                              GetPlayer(GameClient::inst().GetPlayerID())->hqy);
+    if(GetPlayer(GAMECLIENT.GetPlayerID())->hqx != 0xFFFF)
+        this->MoveToMapObject(GetPlayer(GAMECLIENT.GetPlayerID())->hqx,
+                              GetPlayer(GAMECLIENT.GetPlayerID())->hqy);
 }
 
 
 void GameWorld::ImportantObjectDestroyed(const unsigned short x, const MapCoord y)
 {
-    WindowManager::inst().Close(CreateGUIID(x, y));
+    WINDOWMANAGER.Close(CreateGUIID(x, y));
 }
 
 void GameWorld::MilitaryBuildingCaptured(const unsigned short x, const MapCoord y, const unsigned char player)
@@ -808,7 +808,7 @@ unsigned GameWorld::MeasureSea(const MapCoord x, const MapCoord y, const unsigne
 //  {
 //      for(unsigned x = 0;x<width;++x)
 //      {
-//          for(unsigned i = 0;i<GameClient::inst().GetPlayerCount();++i)
+//          for(unsigned i = 0;i<GAMECLIENT.GetPlayerCount();++i)
 //              RecalcVisibility(x,y,i,false);
 //      }
 //  }

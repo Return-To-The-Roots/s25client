@@ -62,18 +62,18 @@ void nofMetalworker::DrawWorking(int x, int y)
     // Hämmer-Sound
     if(now_id % 23 == 3 || now_id % 23 == 7)
     {
-        SoundManager::inst().PlayNOSound(72, this, now_id, 100);
+        SOUNDMANAGER.PlayNOSound(72, this, now_id, 100);
         was_sounding = true;
     }
     // Säge-Sound 1
     else if(now_id % 23 == 9)
     {
-        SoundManager::inst().PlayNOSound(54, this, now_id);
+        SOUNDMANAGER.PlayNOSound(54, this, now_id);
         was_sounding = true;
     }
     else if(now_id % 23 == 17)
     {
-        SoundManager::inst().PlayNOSound(55, this, now_id);
+        SOUNDMANAGER.PlayNOSound(55, this, now_id);
         was_sounding = true;
     }
 
@@ -138,9 +138,9 @@ GoodType nofMetalworker::ProduceWare()
         {
             --gwg->GetPlayer(player)->tools_ordered[tool];
             
-            if ( (player == GameClient::inst().GetPlayerID()) && (ToolsOrderedTotal() == 0) )
+            if ( (player == GAMECLIENT.GetPlayerID()) && (ToolsOrderedTotal() == 0) )
             {
-                GameClient::inst().SendPostMessage( new PostMsg( _("Completed the ordered amount of tools."), PMC_GENERAL ) );
+                GAMECLIENT.SendPostMessage( new PostMsg( _("Completed the ordered amount of tools."), PMC_GENERAL ) );
             }
             
             iwTools::UpdateOrders();

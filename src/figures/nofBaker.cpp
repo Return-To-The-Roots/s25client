@@ -106,7 +106,7 @@ void nofBaker::DrawWorking(int x, int y)
         // "Brot-rein/raus"-Sound
         if((now_id % 8) == 4)
         {
-            SoundManager::inst().PlayNOSound(68, this, now_id);
+            SOUNDMANAGER.PlayNOSound(68, this, now_id);
             was_sounding = true;
         }
     }
@@ -123,7 +123,7 @@ void nofBaker::DrawWorking(int x, int y)
         // "Brot-rein/raus"-Sound
         if((now_id % 8) == 4)
         {
-            SoundManager::inst().PlayNOSound(68, this, now_id);
+            SOUNDMANAGER.PlayNOSound(68, this, now_id);
             was_sounding = true;
         }
     }

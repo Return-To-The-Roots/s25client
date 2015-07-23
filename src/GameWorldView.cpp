@@ -67,10 +67,8 @@ void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool
 {
 
     int shortest_len = 100000;
-    //if(//GUIResources::inst().action.IsActive())
-    //  shortest_len = 0;
 
-    glScissor(x, VideoDriverWrapper::inst().GetScreenHeight() - y - height, width, height);
+    glScissor(x, VIDEODRIVER.GetScreenHeight() - y - height, width, height);
 
     gwv->GetTerrainRenderer()->Draw(this, water);
 
@@ -95,13 +93,13 @@ void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool
             int xpos = int(gwv->GetTerrainRenderer()->GetTerrainX(tx, ty)) - xoffset + xo;
             int ypos = int(gwv->GetTerrainRenderer()->GetTerrainY(tx, ty)) - yoffset + yo;
 
-            if(abs(VideoDriverWrapper::inst().GetMouseX() - static_cast<int>(xpos)) + abs(VideoDriverWrapper::inst().GetMouseY() - static_cast<int>(ypos)) < shortest_len)
+            if(abs(VIDEODRIVER.GetMouseX() - static_cast<int>(xpos)) + abs(VIDEODRIVER.GetMouseY() - static_cast<int>(ypos)) < shortest_len)
             {
                 selx = tx;
                 sely = ty;
                 selxo = xo;
                 selyo = yo;
-                shortest_len = abs(VideoDriverWrapper::inst().GetMouseX() - static_cast<int>(xpos)) + abs(VideoDriverWrapper::inst().GetMouseY() - static_cast<int>(ypos));
+                shortest_len = abs(VIDEODRIVER.GetMouseX() - static_cast<int>(xpos)) + abs(VIDEODRIVER.GetMouseY() - static_cast<int>(ypos));
             }
 
             Visibility visibility = gwv->GetVisibility(tx, ty);
@@ -127,7 +125,7 @@ void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool
                         noBuilding* building = gwv->GetSpecObj<noBuilding>(tx, ty);
                         if (mn.owner != GAMECLIENT.GetPlayerID() + 1 //not belonging to current player
                                 && gwv->GetNO(tx, ty)->GetType() == NOP_BUILDING //is a building
-                                && !GameClient::inst().GetLocalPlayer()->IsAlly(building->GetPlayer())) //not an ally
+                                && !GAMECLIENT.GetLocalPlayer()->IsAlly(building->GetPlayer())) //not an ally
                         {
                             BuildingType bt = building->GetBuildingType();
                             if ((bt >= BLD_BARRACKS && bt <= BLD_FORTRESS)
@@ -167,7 +165,7 @@ void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool
                     //Draw building quality icon
                     bm->Draw(static_cast<int>(xpos), static_cast<int>(ypos), 0, 0, 0, 0, 0, 0);
                     //Show ability to construct military buildings
-                    if(GameClient::inst().GetGGS().isEnabled(ADDON_MILITARY_AID))
+                    if(GAMECLIENT.GetGGS().isEnabled(ADDON_MILITARY_AID))
                     {
                         if(!gwv->IsMilitaryBuildingNearNode(tx, ty, GAMECLIENT.GetPlayerID()) && (bq == BQ_HUT || bq == BQ_HOUSE || bq == BQ_CASTLE || bq == BQ_HARBOR))
                             LOADER.GetImageN("map_new", 20000)->Draw(static_cast<int>(xpos) + (1), static_cast<int>(ypos) - bm->getHeight() - 5, 0, 0, 0, 0, 0, 0);
@@ -203,7 +201,7 @@ void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool
             if (d_active)
             {
                 std::stringstream ss;
-                AIPlayerJH* ai = dynamic_cast<AIPlayerJH*>(GameServer::inst().GetAIPlayer(d_player));
+                AIPlayerJH* ai = dynamic_cast<AIPlayerJH*>(GAMESERVER.GetAIPlayer(d_player));
                 if (ai)
                 {
                     if (d_what == 1)
@@ -418,7 +416,7 @@ void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool
                 int altitude = gwv->GetNode(rb.point_x, rb.point_y).altitude;
 
                 const unsigned char waterway_lengthes[] = {3, 5, 9, 13, 21, 0}; // these are written into dskGameInterface.cpp, too
-                const unsigned char index = GameClient::inst().GetGGS().getSelection(ADDON_MAX_WATERWAY_LENGTH);
+                const unsigned char index = GAMECLIENT.GetGGS().getSelection(ADDON_MAX_WATERWAY_LENGTH);
                 assert(index <= sizeof(waterway_lengthes) - 1);
                 const unsigned char max_length = waterway_lengthes[index];
 
@@ -473,9 +471,9 @@ void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool
 
     glTranslatef((GLfloat) - this->x, (GLfloat) - this->y, 0.0f);
 
-    glScissor(0, 0, VideoDriverWrapper::inst().GetScreenWidth(), VideoDriverWrapper::inst().GetScreenWidth());
+    glScissor(0, 0, VIDEODRIVER.GetScreenWidth(), VIDEODRIVER.GetScreenWidth());
 
-    SoundManager::inst().PlayBirdSounds(noTree::QueryDrawCounter());
+    SOUNDMANAGER.PlayBirdSounds(noTree::QueryDrawCounter());
 }
 
 void GameWorldView::DrawBoundaryStone(const int x, const int y, const MapCoord tx, const MapCoord ty, const int xpos, const int ypos, Visibility vis)

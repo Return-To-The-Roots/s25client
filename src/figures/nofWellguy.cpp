@@ -141,7 +141,7 @@ void nofWellguy::DrawWorking(int x, int y)
 
     if((now_id >= 8) && (now_id < max_id - 8) && now_id % 8 == 4)
     {
-        SoundManager::inst().PlayNOSound(82, this, now_id);
+        SOUNDMANAGER.PlayNOSound(82, this, now_id);
         was_sounding = true;
     }
 }

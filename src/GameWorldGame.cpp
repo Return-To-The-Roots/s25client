@@ -638,8 +638,8 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding* const building, const 
         // Negatives Wachstum per Post dem/der jeweiligen Landesherren/dame melden, nur bei neugebauten Gebäuden
         if (newBuilt && sizeChanges[i] < 0)
         {
-            if(GameClient::inst().GetPlayerID() == i)
-                GameClient::inst().SendPostMessage(
+            if(GAMECLIENT.GetPlayerID() == i)
+                GAMECLIENT.SendPostMessage(
                     new ImagePostMsgWithLocation(_("Lost land by this building"), PMC_MILITARY, building->GetX(), building->GetY(),
                                                  building->GetBuildingType(), building->GetNation()));
         }
@@ -861,7 +861,7 @@ bool GameWorldGame::TerritoryChange(const noBaseBuilding* const building, const 
             if((prev_player = GetNode(tx, ty).owner) != (player = tr.GetOwner(x, y)))
             {
                 // if gameobjective isnt 75% ai can ignore water/snow/lava/swamp terrain (because it wouldnt help win the game)
-                if(GameClient::inst().GetGGS().game_objective == GlobalGameSettings::GO_CONQUER3_4)
+                if(GAMECLIENT.GetGGS().game_objective == GlobalGameSettings::GO_CONQUER3_4)
                     return false;
                 unsigned char t1 = GetNode(tx, ty).t1, t2 = GetNode(tx, ty).t2;
                 if((t1 != TT_WATER && t1 != TT_LAVA && t1 != TT_SWAMPLAND && t1 != TT_SNOW) && (t2 != TT_WATER && t2 != TT_LAVA && t2 != TT_SWAMPLAND && t2 != TT_SNOW))
@@ -1147,7 +1147,7 @@ void GameWorldGame::Attack(const unsigned char player_attacker, const MapCoord x
 void  GameWorldGame::AttackViaSea(const unsigned char player_attacker, const MapCoord x, const MapCoord y, const unsigned short soldiers_count, const bool strong_soldiers)
 {
     //sea attack abgeschaltet per addon?
-    if(GameClient::inst().GetGGS().getSelection(ADDON_SEA_ATTACK) == 2)
+    if(GAMECLIENT.GetGGS().getSelection(ADDON_SEA_ATTACK) == 2)
         return;
     // Verzögerungsbug-Abfrage:
     // Existiert das angegriffenen Gebäude überhaupt noch?
@@ -1539,9 +1539,9 @@ bool GameWorldGame::IsScoutingFigureOnNode(const MapCoord x, const MapCoord y, c
 void GameWorldGame::RecalcVisibility(const MapCoord x, const MapCoord y, const unsigned char player, const noBaseBuilding* const exception)
 {
     ///// Bei völlig ausgeschalteten Nebel muss nur das erste Mal alles auf sichtbar gesetzt werden
-    //if(GameClient::inst().GetGGS().exploration == GlobalGameSettings::EXP_DISABLED && !update_terrain)
+    //if(GAMECLIENT.GetGGS().exploration == GlobalGameSettings::EXP_DISABLED && !update_terrain)
     //  GetNode(x,y).fow[player].visibility = VIS_VISIBLE;
-    //else if(GameClient::inst().GetGGS().exploration == GlobalGameSettings::EXP_DISABLED && update_terrain)
+    //else if(GAMECLIENT.GetGGS().exploration == GlobalGameSettings::EXP_DISABLED && update_terrain)
     //  return;
 
     /// Zustand davor merken
@@ -1568,7 +1568,7 @@ void GameWorldGame::RecalcVisibility(const MapCoord x, const MapCoord y, const u
     {
         // nicht mehr sichtbar
         // Je nach vorherigen Zustand und Einstellung entscheiden
-        switch(GameClient::inst().GetGGS().exploration)
+        switch(GAMECLIENT.GetGGS().exploration)
         {
             case GlobalGameSettings::EXP_DISABLED:
             case GlobalGameSettings::EXP_CLASSIC:
@@ -1596,8 +1596,8 @@ void GameWorldGame::RecalcVisibility(const MapCoord x, const MapCoord y, const u
         gi->GI_UpdateMinimap(x, y);
 
     // Lokaler Spieler oder Verbündeter (wenn Team-Sicht an ist)? --> Terrain updaten
-    if(player == GameClient::inst().GetPlayerID() ||
-            (GameClient::inst().GetGGS().team_view && GameClient::inst().GetLocalPlayer()->IsAlly(player)))
+    if(player == GAMECLIENT.GetPlayerID() ||
+            (GAMECLIENT.GetGGS().team_view && GAMECLIENT.GetLocalPlayer()->IsAlly(player)))
         VisibilityChanged(x, y);
 }
 
@@ -1620,8 +1620,8 @@ void GameWorldGame::SetVisibility(const MapCoord x, const MapCoord y,  const uns
         gi->GI_UpdateMinimap(x, y);
 
     // Lokaler Spieler oder Verbündeter (wenn Team-Sicht an ist)? --> Terrain updaten
-    if(player == GameClient::inst().GetPlayerID() ||
-            (GameClient::inst().GetGGS().team_view && GameClient::inst().GetLocalPlayer()->IsAlly(player)))
+    if(player == GAMECLIENT.GetPlayerID() ||
+            (GAMECLIENT.GetGGS().team_view && GAMECLIENT.GetLocalPlayer()->IsAlly(player)))
         VisibilityChanged(x, y);
 }
 
@@ -1690,7 +1690,7 @@ void GameWorldGame::RecalcMovingVisibilities(const MapCoord x, const MapCoord y,
         if(current_owner && (old_vis == VIS_INVISIBLE ||
                              (old_vis == VIS_FOW && old_owner != current_owner)))
         {
-            if(GameClient::inst().GetPlayer(player)->IsPlayerAttackable(current_owner - 1) && enemy_territory)
+            if(GAMECLIENT.GetPlayer(player)->IsPlayerAttackable(current_owner - 1) && enemy_territory)
             {
                 enemy_territory->x = ttx;
                 enemy_territory->y = tty;
@@ -1716,7 +1716,7 @@ void GameWorldGame::RecalcMovingVisibilities(const MapCoord x, const MapCoord y,
         if(current_owner && (old_vis == VIS_INVISIBLE ||
                              (old_vis == VIS_FOW && old_owner != current_owner)))
         {
-            if(GameClient::inst().GetPlayer(player)->IsPlayerAttackable(current_owner - 1) && enemy_territory)
+            if(GAMECLIENT.GetPlayer(player)->IsPlayerAttackable(current_owner - 1) && enemy_territory)
             {
                 enemy_territory->x = ttx;
                 enemy_territory->y = tty;
@@ -1756,7 +1756,7 @@ void GameWorldGame::RecalcMovingVisibilities(const MapCoord x, const MapCoord y,
 
 void GameWorldGame::SaveFOWNode(const MapCoord x, const MapCoord y, const unsigned player)
 {
-    GetNode(x, y).fow[player].last_update_time = GameClient::inst().GetGFNumber();
+    GetNode(x, y).fow[player].last_update_time = GAMECLIENT.GetGFNumber();
 
     // FOW-Objekt erzeugen
     noBase* obj = GetNO(x, y);
@@ -2008,7 +2008,7 @@ bool GameWorldGame::FoundColony(const unsigned harbor_point, const unsigned char
     // BQ neu berechnen (evtl durch RecalcTerritory noch nicht geschehen)
     RecalcBQAroundPointBig(pos.x, pos.y);
     //notify the ai
-    GameClient::inst().SendAIEvent(new AIEvent::Location(AIEvent::NewColonyFounded, pos.x, pos.y), player);
+    GAMECLIENT.SendAIEvent(new AIEvent::Location(AIEvent::NewColonyFounded, pos.x, pos.y), player);
 
     return true;
 }
@@ -2040,28 +2040,28 @@ void GameWorldGame::GetHarborPointsWithinReach(const unsigned hp, std::vector<un
 void GameWorldGame::CreateTradeGraphs()
 {
     // Only if trade is enabled
-    if(!GameClient::inst().GetGGS().isEnabled(ADDON_TRADE))
+    if(!GAMECLIENT.GetGGS().isEnabled(ADDON_TRADE))
         return;
 
-    unsigned tt = VideoDriverWrapper::inst().GetTickCount();
+    unsigned tt = VIDEODRIVER.GetTickCount();
 
 
     for(unsigned i = 0; i < tgs.size(); ++i)
         delete tgs[i];
-    tgs.resize(GameClient::inst().GetPlayerCount());
+    tgs.resize(GAMECLIENT.GetPlayerCount());
     for(unsigned i = 0; i < tgs.size(); ++i)
         tgs[i] = new TradeGraph(i, this);
 
     // Calc the graph for the first player completely
     tgs[0]->Create();
 
-    printf("first: %u ms;\n", VideoDriverWrapper::inst().GetTickCount() - tt);
+    printf("first: %u ms;\n", VIDEODRIVER.GetTickCount() - tt);
 
 
     // And use this one for the others
-    for(unsigned i = 1; i < GameClient::inst().GetPlayerCount(); ++i)
+    for(unsigned i = 1; i < GAMECLIENT.GetPlayerCount(); ++i)
         tgs[i]->CreateWithHelpOfAnotherPlayer(*tgs[0], *players);
-    printf("others: %u ms;\n", VideoDriverWrapper::inst().GetTickCount() - tt);
+    printf("others: %u ms;\n", VIDEODRIVER.GetTickCount() - tt);
 }
 
 /// Creates a Trade Route from one point to another

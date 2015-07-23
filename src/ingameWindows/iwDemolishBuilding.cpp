@@ -63,11 +63,11 @@ void iwDemolishBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
             if (flag)
             {
                 // Flagge (mitsamt Gebäude) wegreißen
-                GameClient::inst().AddGC(new gc::DestroyFlag(gwv->GetXA(building->GetX(), building->GetY(), 4), gwv->GetYA(building->GetX(), building->GetY(), 4)));
+                GAMECLIENT.AddGC(new gc::DestroyFlag(gwv->GetXA(building->GetX(), building->GetY(), 4), gwv->GetYA(building->GetX(), building->GetY(), 4)));
             }
             else
             {
-                GameClient::inst().AddGC(new gc::DestroyBuilding(building->GetX(), building->GetY()));
+                GAMECLIENT.AddGC(new gc::DestroyBuilding(building->GetX(), building->GetY()));
             }
 
             Close();

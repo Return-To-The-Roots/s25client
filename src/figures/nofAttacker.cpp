@@ -88,7 +88,7 @@ nofAttacker::~nofAttacker()
 {
 
     //unsigned char oplayer = (player == 0) ? 1 : 0;
-    //assert(GameClient::inst().GetPlayer(oplayer)->GetFirstWH()->Test(this) == false);
+    //assert(GAMECLIENT.GetPlayer(oplayer)->GetFirstWH()->Test(this) == false);
 }
 
 void nofAttacker::Destroy_nofAttacker()
@@ -96,7 +96,7 @@ void nofAttacker::Destroy_nofAttacker()
     Destroy_nofActiveSoldier();
 
     /*unsigned char oplayer = (player == 0) ? 1 : 0;
-    assert(GameClient::inst().GetPlayer(oplayer)->GetFirstWH()->Test(this) == false);*/
+    assert(GAMECLIENT.GetPlayer(oplayer)->GetFirstWH()->Test(this) == false);*/
 }
 
 
@@ -280,13 +280,13 @@ void nofAttacker::Walked()
                 else
                 {
                     // Inform the owner of the building
-                    if(GameClient::inst().GetPlayerID() == attacked_goal->GetPlayer())
+                    if(GAMECLIENT.GetPlayerID() == attacked_goal->GetPlayer())
                     {
                         if(attacked_goal->GetGOT() == GOT_NOB_HQ)
-                            GameClient::inst().SendPostMessage(new
+                            GAMECLIENT.SendPostMessage(new
                                                                ImagePostMsgWithLocation(_("Our headquarters was destroyed!"), PMC_MILITARY, x, y, attacked_goal->GetBuildingType(), attacked_goal->GetNation()));
                         else
-                            GameClient::inst().SendPostMessage(new
+                            GAMECLIENT.SendPostMessage(new
                                                                ImagePostMsgWithLocation(_("This harbor building was destroyed"), PMC_MILITARY, x, y, attacked_goal->GetBuildingType(), attacked_goal->GetNation()));
                     }
 
@@ -441,7 +441,7 @@ void nofAttacker::CancelAtHomeMilitaryBuilding()
 void nofAttacker::WonFighting()
 {
 	//addon BattlefieldPromotion active? -> increase rank!
-	if(GameClient::inst().GetGGS().isEnabled(ADDON_BATTLEFIELD_PROMOTION))
+	if(GAMECLIENT.GetGGS().isEnabled(ADDON_BATTLEFIELD_PROMOTION))
 		IncreaseRank();
     // Ist evtl. unser Heimatgebäude zerstört?
     if(!building && state != STATE_ATTACKING_FIGHTINGVSDEFENDER)
@@ -652,7 +652,7 @@ void nofAttacker::ReachedDestination()
         }
 
         // Post schicken "Wir werden angegriffen" TODO evtl. unschön, da jeder Attacker das dann aufruft
-        if(attacked_goal->GetPlayer() == GameClient::inst().GetPlayerID())
+        if(attacked_goal->GetPlayer() == GAMECLIENT.GetPlayerID())
             GAMECLIENT.SendPostMessage(
                 new ImagePostMsgWithLocation(_("We are under attack!"), PMC_MILITARY, x, y,
                                              attacked_goal->GetBuildingType(), attacked_goal->GetNation()));
@@ -726,8 +726,8 @@ void nofAttacker::TryToOrderAggressiveDefender()
                 // wie man selbst sein, da das Gebäude ja z.B. schon erobert worden sein kann
                 if(((*it)->GetBuildingType() != BLD_HEADQUARTERS || (*it) == attacked_goal)
                         && gwg->CalcDistance(x, y, (*it)->GetX(), (*it)->GetY()) < 15
-                        && GameClient::inst().GetPlayer(attacked_goal->GetPlayer())->IsAlly((*it)->GetPlayer())  &&
-                        GameClient::inst().GetPlayer(player)->IsPlayerAttackable((*it)->GetPlayer()))
+                        && GAMECLIENT.GetPlayer(attacked_goal->GetPlayer())->IsAlly((*it)->GetPlayer())  &&
+                        GAMECLIENT.GetPlayer(player)->IsPlayerAttackable((*it)->GetPlayer()))
                 {
                     // ggf. Verteidiger rufen
                     if( ((*it)->SendDefender(this)))

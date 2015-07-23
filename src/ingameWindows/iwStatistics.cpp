@@ -49,9 +49,9 @@ iwStatistics::iwStatistics()
 
     // Spieler zählen
     numPlayingPlayers = 0;
-    for (unsigned i = 0; i < GameClient::inst().GetPlayerCount(); ++i)
+    for (unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
     {
-        if (GameClient::inst().GetPlayer(i)->ps == PS_KI || GameClient::inst().GetPlayer(i)->ps == PS_OCCUPIED)
+        if (GAMECLIENT.GetPlayer(i)->ps == PS_KI || GAMECLIENT.GetPlayer(i)->ps == PS_OCCUPIED)
             numPlayingPlayers++;
     }
 
@@ -59,25 +59,25 @@ iwStatistics::iwStatistics()
     unsigned short startX = 126 - (numPlayingPlayers - 1) * 17;
     unsigned pos = 0;
 
-    for (unsigned i = 0; i < GameClient::inst().GetPlayerCount(); ++i)
+    for (unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
     {
         // nicht belegte Spielplätze rauswerfen
-        if (!(GameClient::inst().GetPlayer(i)->ps == PS_KI || GameClient::inst().GetPlayer(i)->ps == PS_OCCUPIED))
+        if (!(GAMECLIENT.GetPlayer(i)->ps == PS_KI || GAMECLIENT.GetPlayer(i)->ps == PS_OCCUPIED))
         {
             activePlayers[i] = false;
             continue;
         }
-        switch(GameClient::inst().GetPlayer(i)->nation)
+        switch(GAMECLIENT.GetPlayer(i)->nation)
         {
-            case NAT_AFRICANS: AddImageButton(1+i, startX + pos * 34 - 17, 45-23, 34, 47, TC_GREEN1, LOADER.GetImageN("io", 257), GameClient::inst().GetPlayer(i)->name)->SetBorder(false);
+            case NAT_AFRICANS: AddImageButton(1+i, startX + pos * 34 - 17, 45-23, 34, 47, TC_GREEN1, LOADER.GetImageN("io", 257), GAMECLIENT.GetPlayer(i)->name)->SetBorder(false);
                 break;
-            case NAT_JAPANESES: AddImageButton(1+i, startX + pos * 34 - 17, 45-23, 34, 47, TC_GREEN1, LOADER.GetImageN("io", 253), GameClient::inst().GetPlayer(i)->name)->SetBorder(false);
+            case NAT_JAPANESES: AddImageButton(1+i, startX + pos * 34 - 17, 45-23, 34, 47, TC_GREEN1, LOADER.GetImageN("io", 253), GAMECLIENT.GetPlayer(i)->name)->SetBorder(false);
                 break;
-            case NAT_ROMANS: AddImageButton(1+i, startX + pos * 34 - 17, 45-23, 34, 47, TC_GREEN1, LOADER.GetImageN("io", 252), GameClient::inst().GetPlayer(i)->name)->SetBorder(false);
+            case NAT_ROMANS: AddImageButton(1+i, startX + pos * 34 - 17, 45-23, 34, 47, TC_GREEN1, LOADER.GetImageN("io", 252), GAMECLIENT.GetPlayer(i)->name)->SetBorder(false);
                 break;
-            case NAT_VIKINGS: AddImageButton(1+i, startX + pos * 34 - 17, 45-23, 34, 47, TC_GREEN1, LOADER.GetImageN("io", 256), GameClient::inst().GetPlayer(i)->name)->SetBorder(false);
+            case NAT_VIKINGS: AddImageButton(1+i, startX + pos * 34 - 17, 45-23, 34, 47, TC_GREEN1, LOADER.GetImageN("io", 256), GAMECLIENT.GetPlayer(i)->name)->SetBorder(false);
                 break;
-            case NAT_BABYLONIANS: AddImageButton(1+i, startX + pos * 34 - 17, 45-23, 34, 47, TC_GREEN1, LOADER.GetImageN("io_new", 7), GameClient::inst().GetPlayer(i)->name)->SetBorder(false);
+            case NAT_BABYLONIANS: AddImageButton(1+i, startX + pos * 34 - 17, 45-23, 34, 47, TC_GREEN1, LOADER.GetImageN("io_new", 7), GAMECLIENT.GetPlayer(i)->name)->SetBorder(false);
                 break;
             case NAT_COUNT:
             case NAT_INVALID:
@@ -85,7 +85,7 @@ iwStatistics::iwStatistics()
         }
 
         // Statistik-Sichtbarkeit abhängig von Auswahl
-        switch (GameClient::inst().GetGGS().getSelection(ADDON_STATISTICS_VISIBILITY))
+        switch (GAMECLIENT.GetGGS().getSelection(ADDON_STATISTICS_VISIBILITY))
         {
             default: // Passiert eh nicht, nur zur Sicherheit
                 activePlayers[i] = false;
@@ -274,15 +274,15 @@ void iwStatistics::Msg_PaintAfter()
     // Die farbigen Boxen unter den Spielerportraits malen
     unsigned short startX = 126 - numPlayingPlayers * 17;
     unsigned pos = 0;
-    for (unsigned i = 0; i < GameClient::inst().GetPlayerCount(); ++i)
+    for (unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
     {
-        if (!(GameClient::inst().GetPlayer(i)->ps == PS_KI || GameClient::inst().GetPlayer(i)->ps == PS_OCCUPIED))
+        if (!(GAMECLIENT.GetPlayer(i)->ps == PS_KI || GAMECLIENT.GetPlayer(i)->ps == PS_OCCUPIED))
         {
             continue;
         }
         if (activePlayers[i])
         {
-            DrawRectangle(this->x + startX + pos * 34, this->y + 68, 34, 12, COLORS[GameClient::inst().GetPlayer(i)->color]);
+            DrawRectangle(this->x + startX + pos * 34, this->y + 68, 34, 12, COLORS[GAMECLIENT.GetPlayer(i)->color]);
         }
         pos++;
     }

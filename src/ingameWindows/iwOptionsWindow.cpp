@@ -120,20 +120,20 @@ void iwOptionsWindow::Msg_ButtonClick(const unsigned int ctrl_id)
     {
         case 0: // "Spiel beenden"
         {
-            WindowManager::inst().Show(new iwEndgame);
+            WINDOWMANAGER.Show(new iwEndgame);
             Close();
         } break;
         case 4: // "Tastaturbelegung laden"
         {
-            WindowManager::inst().Show(new iwTextfile("keyboardlayout.txt", _("Keyboard layout")));
+            WINDOWMANAGER.Show(new iwTextfile("keyboardlayout.txt", _("Keyboard layout")));
         } break;
         case 6: // "'Lies mich'-Datei laden"
         {
-            WindowManager::inst().Show(new iwTextfile("readme.txt", _("Readme!")));
+            WINDOWMANAGER.Show(new iwTextfile("readme.txt", _("Readme!")));
         } break;
         case 10: // "Spiel speichern"
         {
-            WindowManager::inst().Show(new iwSave);
+            WINDOWMANAGER.Show(new iwSave);
         } break;
 
         case 12: // Geräusche an/aus
@@ -142,7 +142,7 @@ void iwOptionsWindow::Msg_ButtonClick(const unsigned int ctrl_id)
             GetCtrl<ctrlImageButton>(12)->SetImage(LOADER.GetImageN("io", 114 + !SETTINGS.sound.effekte));
 
             if(!SETTINGS.sound.effekte)
-                SoundManager::inst().StopAll();
+                SOUNDMANAGER.StopAll();
         } break;
 
         case 13: // Musik an/aus
@@ -150,22 +150,22 @@ void iwOptionsWindow::Msg_ButtonClick(const unsigned int ctrl_id)
             SETTINGS.sound.musik = !SETTINGS.sound.musik;
             GetCtrl<ctrlImageButton>(13)->SetImage(LOADER.GetImageN("io", 116 + !SETTINGS.sound.musik));
             if(SETTINGS.sound.musik)
-                MusicPlayer::inst().Play();
+                MUSICPLAYER.Play();
             else
-                MusicPlayer::inst().Stop();
+                MUSICPLAYER.Stop();
         } break;
         case 16: // Music player
         {
-            WindowManager::inst().Show(new iwMusicPlayer);
+            WINDOWMANAGER.Show(new iwMusicPlayer);
         } break;
         case 17: // Aufgeben
         {
-            WindowManager::inst().Show(new iwSurrender);
+            WINDOWMANAGER.Show(new iwSurrender);
             Close();
         } break;
         case 18: // Advanced
         {
-            WindowManager::inst().Show(new iwSettings(this->gameDesktop));
+            WINDOWMANAGER.Show(new iwSettings(this->gameDesktop));
             Close();
         } break;
 
@@ -179,12 +179,12 @@ void iwOptionsWindow::Msg_ProgressChange(const unsigned int ctrl_id, const unsig
         case 14:
         {
             SETTINGS.sound.effekte_volume = (unsigned char)position * 255 / 10 + (position < 10 ? 1 : 0);
-            AudioDriverWrapper::inst().SetMasterEffectVolume(SETTINGS.sound.effekte_volume);
+            AUDIODRIVER.SetMasterEffectVolume(SETTINGS.sound.effekte_volume);
         } break;
         case 15:
         {
             SETTINGS.sound.musik_volume = (unsigned char)position * 255 / 10 + (position < 10 ? 1 : 0);
-            AudioDriverWrapper::inst().SetMasterMusicVolume(SETTINGS.sound.musik_volume);
+            AUDIODRIVER.SetMasterMusicVolume(SETTINGS.sound.musik_volume);
         } break;
     }
 }

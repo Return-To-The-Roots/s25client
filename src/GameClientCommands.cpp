@@ -70,7 +70,7 @@ void GameClient::Command_SetFlag2(int x, int y, unsigned char player)
 void GameClient::Command_Chat(const std::string& text, const ChatDestination cd)
 {
     // Replaymodus oder kein Text --> nichts senden
-    if(GameClient::inst().IsReplayModeOn() || text.length() == 0)
+    if(GAMECLIENT.IsReplayModeOn() || text.length() == 0)
         return;
 
     send_queue.push(new GameMessage_Server_Chat(playerid, cd, text));
@@ -186,11 +186,11 @@ void GameClient::ChangeReplayPlayer(const unsigned new_id)
         // Unsinn auf den selben Spieler zu wechseln
         return;
     // Auch innerhalb der gültigen Spieler?
-    if(new_id >= GameClient::inst().GetPlayerCount())
+    if(new_id >= GAMECLIENT.GetPlayerCount())
         return;
     // Und ein richtiger ehemaliger Spieler?
-    if(GameClient::inst().GetPlayer(new_id)->ps != PS_KI &&
-            GameClient::inst().GetPlayer(new_id)->ps != PS_OCCUPIED)
+    if(GAMECLIENT.GetPlayer(new_id)->ps != PS_KI &&
+            GAMECLIENT.GetPlayer(new_id)->ps != PS_OCCUPIED)
         return;
 
 

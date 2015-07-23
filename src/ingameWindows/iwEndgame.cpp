@@ -63,7 +63,7 @@ void iwEndgame::Msg_ButtonClick(const unsigned int ctrl_id)
         case 0: // OK
         {
             GAMEMANAGER.ShowMenu();
-            GameClient::inst().ExitGame();
+            GAMECLIENT.ExitGame();
         } break;
         case 1: // Abbrechen
         {
@@ -71,7 +71,7 @@ void iwEndgame::Msg_ButtonClick(const unsigned int ctrl_id)
         } break;
         case 2: // OK + Speichern
         {
-            WindowManager::inst().Show(new iwSave());
+            WINDOWMANAGER.Show(new iwSave());
         } break;
     }
 }

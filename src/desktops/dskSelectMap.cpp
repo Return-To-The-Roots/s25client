@@ -237,19 +237,19 @@ void dskSelectMap::Msg_ButtonClick(const unsigned int ctrl_id)
         case 3: // "Zurück"
         {
             if(csi.type == NP_LOCAL)
-                WindowManager::inst().Switch(new dskSinglePlayer);
+                WINDOWMANAGER.Switch(new dskSinglePlayer);
             else
             {
                 if(LOBBYCLIENT.LoggedIn())
-                    WindowManager::inst().Switch(new dskLobby);
+                    WINDOWMANAGER.Switch(new dskLobby);
                 else
-                    WindowManager::inst().Switch(new dskDirectIP);
+                    WINDOWMANAGER.Switch(new dskDirectIP);
             }
         } break;
         case 4: // "Spiel laden..."
         {
             // Ladefenster aufrufen
-            WindowManager::inst().Show(new iwLoad(csi));
+            WINDOWMANAGER.Show(new iwLoad(csi));
         } break;
         case 5: // "Weiter"
         {
@@ -282,19 +282,19 @@ void dskSelectMap::StartServer()
             // Falls es ein lokal Spiel werden sollte, zurück zum SP-Menü
             if (csi.type == NP_LOCAL)
             {
-                WindowManager::inst().Switch(new dskSinglePlayer);
+                WINDOWMANAGER.Switch(new dskSinglePlayer);
             }
             else if(LOBBYCLIENT.LoggedIn())
                 // Lobby zeigen, wenn das nich ging
-                WindowManager::inst().Switch(new dskLobby);
+                WINDOWMANAGER.Switch(new dskLobby);
             else
                 // Ansonsten DirekteIP
-                WindowManager::inst().Switch(new dskDirectIP);
+                WINDOWMANAGER.Switch(new dskDirectIP);
         }
         else
         {
             // Verbindungsfenster anzeigen
-            WindowManager::inst().Show(new iwPleaseWait);
+            WINDOWMANAGER.Show(new iwPleaseWait);
         }
     }
 }
@@ -311,9 +311,9 @@ void dskSelectMap::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult
         GAMECLIENT.Stop();
 
         if(LOBBYCLIENT.LoggedIn()) // steht die Lobbyverbindung noch?
-            WindowManager::inst().Switch(new dskLobby);
+            WINDOWMANAGER.Switch(new dskLobby);
         else
-            WindowManager::inst().Switch(new dskDirectIP);
+            WINDOWMANAGER.Switch(new dskDirectIP);
     }
 }
 
@@ -328,7 +328,7 @@ void dskSelectMap::CI_NextConnectState(const ConnectState cs)
     {
         case CS_FINISHED:
         {
-            WindowManager::inst().Switch(new dskHostGame((csi.type == NP_LOCAL)));
+            WINDOWMANAGER.Switch(new dskHostGame((csi.type == NP_LOCAL)));
         } break;
         default:
             break;
@@ -357,7 +357,7 @@ void dskSelectMap::CI_Error(const ClientError ce)
                 _("Lost connection to server!")
             };
 
-            WindowManager::inst().Show(new iwMsgbox(_("Error"), errors[ce], this, MSB_OK, MSB_EXCLAMATIONRED, id));
+            WINDOWMANAGER.Show(new iwMsgbox(_("Error"), errors[ce], this, MSB_OK, MSB_EXCLAMATIONRED, id));
         } break;
         default: break;
     }
@@ -371,7 +371,7 @@ void dskSelectMap::CI_Error(const ClientError ce)
  */
 void dskSelectMap::LC_Status_Error(const std::string& error)
 {
-    WindowManager::inst().Show(new iwMsgbox(_("Error"), error, this, MSB_OK, MSB_EXCLAMATIONRED, 0));
+    WINDOWMANAGER.Show(new iwMsgbox(_("Error"), error, this, MSB_OK, MSB_EXCLAMATIONRED, 0));
 }
 
 ///////////////////////////////////////////////////////////////////////////////

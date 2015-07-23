@@ -84,7 +84,7 @@ const Point<int> SHIPS_FLAG_POS[12] =
 noShip::noShip(const unsigned short x, const unsigned short y, const unsigned char player)
     : noMovable(NOP_SHIP, x, y),
       player(player), state(STATE_IDLE), sea_id(0), goal_harbor_id(0), goal_dir(0),
-      name(ship_names[gwg->GetPlayer(player)->nation][Random::inst().Rand(__FILE__, __LINE__, this->obj_id, ship_count)]),
+      name(ship_names[gwg->GetPlayer(player)->nation][RANDOM.Rand(__FILE__, __LINE__, this->obj_id, ship_count)]),
       lost(false), remaining_sea_attackers(0), home_harbor(0), covered_distance(0)
 {
     // Meer ermitteln, auf dem dieses Schiff fährt
@@ -283,7 +283,7 @@ void noShip::HandleEvent(const unsigned int id)
                     state = STATE_EXPEDITION_WAITING;
 
                     // Spieler benachrichtigen
-                    if(GameClient::inst().GetPlayerID() == this->player)
+                    if(GAMECLIENT.GetPlayerID() == this->player)
                         GAMECLIENT.SendPostMessage(new ShipPostMsg(_("A ship is ready for an expedition."), PMC_GENERAL, GAMECLIENT.GetPlayer(player)->nation, x, y));
 
                     // KI Event senden
@@ -445,8 +445,8 @@ void noShip::Driven()
     {
         // Send message if necessary
         if(players->getElement(player)->ShipDiscoveredHostileTerritory
-                (enemy_territory_discovered) && player == GameClient::inst().GetPlayerID())
-            GameClient::inst().SendPostMessage(new PostMsgWithLocation(_("A ship disovered an enemy territory"), PMC_MILITARY, enemy_territory_discovered.x, enemy_territory_discovered.y));
+                (enemy_territory_discovered) && player == GAMECLIENT.GetPlayerID())
+            GAMECLIENT.SendPostMessage(new PostMsgWithLocation(_("A ship disovered an enemy territory"), PMC_MILITARY, enemy_territory_discovered.x, enemy_territory_discovered.y));
 
     }
 
@@ -725,7 +725,7 @@ void noShip::HandleState_ExpeditionDriving()
                 state = STATE_EXPEDITION_WAITING;
 
                 // Spieler benachrichtigen
-                if(GameClient::inst().GetPlayerID() == this->player)
+                if(GAMECLIENT.GetPlayerID() == this->player)
                     GAMECLIENT.SendPostMessage(new ShipPostMsg(_("A ship has reached the destination of its expedition."), PMC_GENERAL, GAMECLIENT.GetPlayer(player)->nation, x, y));
 
                 // KI Event senden
@@ -1151,7 +1151,7 @@ void noShip::ContinueExplorationExpedition()
 
         else
             // Zufällig den nächsten Hafen auswählen
-            goal_harbor_id = hps[Random::inst().Rand(__FILE__, __LINE__, obj_id, hps.size())];
+            goal_harbor_id = hps[RANDOM.Rand(__FILE__, __LINE__, obj_id, hps.size())];
     }
 
     StartDrivingToHarborPlace();

@@ -96,17 +96,17 @@ void CatapultStone::Draw(const GameWorldView& gwv, const int xoffset, const int 
     if(explode)
     {
         // Stein explodierend am Ziel zeichnen
-        LOADER.GetMapImageN(3102 + GameClient::inst().Interpolate(4, event))->
+        LOADER.GetMapImageN(3102 + GAMECLIENT.Interpolate(4, event))->
         Draw((dest_x - xoffset + world_width) % world_width, (dest_y - yoffset + world_height) % world_height);
     }
     else
     {
         // Linear interpolieren zwischen Ausgangs- und Zielpunkt
-        int x = GameClient::inst().Interpolate(start_x, dest_x, event);
-        int y = GameClient::inst().Interpolate(start_y, dest_y, event);
+        int x = GAMECLIENT.Interpolate(start_x, dest_x, event);
+        int y = GAMECLIENT.Interpolate(start_y, dest_y, event);
 
         int whole = int(sqrt(double((dest_x - start_x) * (dest_x - start_x) + (dest_y - start_y) * (dest_y - start_y))));
-        int s = GameClient::inst().Interpolate(whole , event);
+        int s = GAMECLIENT.Interpolate(whole , event);
 
 
         double dx = double(s) / double(whole)  - 0.5;
@@ -150,7 +150,7 @@ void CatapultStone::HandleEvent(const unsigned int id)
             // Trifft nicht
             // ggf. Leiche hinlegen, falls da nix ist
             if(!gwg->GetSpecObj<noBase>(dest_map_x, dest_map_y))
-                gwg->SetNO(new noEnvObject(dest_map_x, dest_map_y, 502 + Random::inst().Rand(__FILE__, __LINE__, obj_id, 2)), dest_map_x, dest_map_y);
+                gwg->SetNO(new noEnvObject(dest_map_x, dest_map_y, 502 + RANDOM.Rand(__FILE__, __LINE__, obj_id, 2)), dest_map_x, dest_map_y);
         }
     }
 }

@@ -87,7 +87,7 @@ static char THIS_FILE[] = __FILE__;
  */
 dskGameInterface::dskGameInterface()
     : Desktop(NULL),
-      gwv(GameClient::inst().QueryGameWorldViewer()), cbb(LOADER.GetPaletteN("pal5")),
+      gwv(GAMECLIENT.QueryGameWorldViewer()), cbb(LOADER.GetPaletteN("pal5")),
       actionwindow(NULL), roadwindow(NULL),
       selected_x(0), selected_y(0), minimap(*gwv)
 {
@@ -99,8 +99,8 @@ dskGameInterface::dskGameInterface()
 
     SetScale(false);;
 
-    int barx = (VideoDriverWrapper::inst().GetScreenWidth() - LOADER.GetImageN("resource", 29)->getWidth()) / 2 + 44;
-    int bary = VideoDriverWrapper::inst().GetScreenHeight() - LOADER.GetImageN("resource", 29)->getHeight() + 4;
+    int barx = (VIDEODRIVER.GetScreenWidth() - LOADER.GetImageN("resource", 29)->getWidth()) / 2 + 44;
+    int bary = VIDEODRIVER.GetScreenHeight() - LOADER.GetImageN("resource", 29)->getHeight() + 4;
 
     AddImageButton(0, barx,        bary, 37, 32, TC_GREEN1, LOADER.GetImageN("io",  50), _("Map"))
     ->SetBorder(false);
@@ -121,8 +121,8 @@ dskGameInterface::dskGameInterface()
     gwv->SetGameInterface(this);
 
     cbb.loadEdges( &LOADER.GetFiles().find("resource")->second );
-    cbb.buildBorder(VideoDriverWrapper::inst().GetScreenWidth(),
-                    VideoDriverWrapper::inst().GetScreenHeight(), &borders);
+    cbb.buildBorder(VIDEODRIVER.GetScreenWidth(),
+                    VIDEODRIVER.GetScreenHeight(), &borders);
 
     // Kann passieren dass schon Nachrichten vorliegen, bevor es uns gab (insb. HQ-Landverlust)
     if (GAMECLIENT.GetPostMessages().size() > 0)
@@ -189,20 +189,20 @@ void dskGameInterface::Msg_ButtonClick(const unsigned int ctrl_id)
     {
         case 0: // Karte
         {
-            WindowManager::inst().Show(new iwMinimap(&minimap, *gwv));
+            WINDOWMANAGER.Show(new iwMinimap(&minimap, *gwv));
         } break;
         case 1: // Optionen
         {
-            WindowManager::inst().Show(new iwMainMenu(gwv, this));
+            WINDOWMANAGER.Show(new iwMainMenu(gwv, this));
         } break;
         case 2: // Baukosten
         {
-            if(WindowManager::inst().IsDesktopActive())
+            if(WINDOWMANAGER.IsDesktopActive())
                 gwv->ShowBQ();
         } break;
         case 3: // Post
         {
-            WindowManager::inst().Show(new iwPostWindow(*gwv));
+            WINDOWMANAGER.Show(new iwPostWindow(*gwv));
             UpdatePostIcon(GAMECLIENT.GetPostMessages().size(), false);
         } break;
     }
@@ -221,15 +221,15 @@ void dskGameInterface::Msg_PaintBefore()
 
     // Rahmen zeichnen
     dynamic_cast<glArchivItem_Bitmap*>(borders.get(0))->Draw(0, 0); // oben (mit Ecken)
-    dynamic_cast<glArchivItem_Bitmap*>(borders.get(1))->Draw(0, VideoDriverWrapper::inst().GetScreenHeight() - 12); // unten (mit Ecken)
+    dynamic_cast<glArchivItem_Bitmap*>(borders.get(1))->Draw(0, VIDEODRIVER.GetScreenHeight() - 12); // unten (mit Ecken)
     dynamic_cast<glArchivItem_Bitmap*>(borders.get(2))->Draw(0, 12); // links
-    dynamic_cast<glArchivItem_Bitmap*>(borders.get(3))->Draw(VideoDriverWrapper::inst().GetScreenWidth() - 12, 12); // rechts
+    dynamic_cast<glArchivItem_Bitmap*>(borders.get(3))->Draw(VIDEODRIVER.GetScreenWidth() - 12, 12); // rechts
 
     LOADER.GetImageN("resource", 17)->Draw(12, 12, 0, 0, 0, 0, 0, 0);
-    LOADER.GetImageN("resource", 18)->Draw(VideoDriverWrapper::inst().GetScreenWidth() - 12 - LOADER.GetImageN("resource", 18)->getWidth(), 12, 0, 0, 0, 0, 0, 0);
-    LOADER.GetImageN("resource", 19)->Draw(12, VideoDriverWrapper::inst().GetScreenHeight() - 12 - LOADER.GetImageN("resource", 19)->getHeight(), 0, 0, 0, 0, 0, 0);
-    LOADER.GetImageN("resource", 20)->Draw(VideoDriverWrapper::inst().GetScreenWidth() - 12 - LOADER.GetImageN("resource", 20)->getWidth(), VideoDriverWrapper::inst().GetScreenHeight() - 12 - LOADER.GetImageN("resource", 20)->getHeight(), 0, 0, 0, 0, 0, 0);
-    LOADER.GetImageN("resource", 29)->Draw(VideoDriverWrapper::inst().GetScreenWidth() / 2 - LOADER.GetImageN("resource", 29)->getWidth() / 2, VideoDriverWrapper::inst().GetScreenHeight() - LOADER.GetImageN("resource", 29)->getHeight(), 0, 0, 0, 0, 0, 0);
+    LOADER.GetImageN("resource", 18)->Draw(VIDEODRIVER.GetScreenWidth() - 12 - LOADER.GetImageN("resource", 18)->getWidth(), 12, 0, 0, 0, 0, 0, 0);
+    LOADER.GetImageN("resource", 19)->Draw(12, VIDEODRIVER.GetScreenHeight() - 12 - LOADER.GetImageN("resource", 19)->getHeight(), 0, 0, 0, 0, 0, 0);
+    LOADER.GetImageN("resource", 20)->Draw(VIDEODRIVER.GetScreenWidth() - 12 - LOADER.GetImageN("resource", 20)->getWidth(), VIDEODRIVER.GetScreenHeight() - 12 - LOADER.GetImageN("resource", 20)->getHeight(), 0, 0, 0, 0, 0, 0);
+    LOADER.GetImageN("resource", 29)->Draw(VIDEODRIVER.GetScreenWidth() / 2 - LOADER.GetImageN("resource", 29)->getWidth() / 2, VIDEODRIVER.GetScreenHeight() - LOADER.GetImageN("resource", 29)->getHeight(), 0, 0, 0, 0, 0, 0);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -243,19 +243,19 @@ void dskGameInterface::Msg_PaintAfter()
     /* NWF-Anzeige (vorläufig)*/
     char nwf_string[256];
 
-    if(GameClient::inst().IsReplayModeOn())
+    if(GAMECLIENT.IsReplayModeOn())
         snprintf(nwf_string, 255, _("(Replay-Mode) Current GF: %u (End at: %u) / GF length: %u ms / NWF length: %u gf (%u ms)"), GAMECLIENT.GetGFNumber(), GAMECLIENT.GetLastReplayGF(), GAMECLIENT.GetGFLength(), GAMECLIENT.GetNWFLength(), GAMECLIENT.GetNWFLength() * GAMECLIENT.GetGFLength());
     else
         snprintf(nwf_string, 255, _("Current GF: %u / GF length: %u ms / NWF length: %u gf (%u ms) /  Ping: %u ms"), GAMECLIENT.GetGFNumber(), GAMECLIENT.GetGFLength(), GAMECLIENT.GetNWFLength(), GAMECLIENT.GetNWFLength() * GAMECLIENT.GetGFLength(), GAMECLIENT.GetLocalPlayer()->ping);
 
     // tournament mode?
-    unsigned tmd = GameClient::inst().GetTournamentModeDuration();
+    unsigned tmd = GAMECLIENT.GetTournamentModeDuration();
 
     if(tmd)
     {
         // Convert gf to seconds
-        unsigned sec = (GameClient::inst().GetGGS().game_objective - OBJECTIVES_COUNT) * 60 -
-                       GameClient::inst().GetGFNumber() * GameClient::inst().GetGFLength() / 1000;
+        unsigned sec = (GAMECLIENT.GetGGS().game_objective - OBJECTIVES_COUNT) * 60 -
+                       GAMECLIENT.GetGFNumber() * GAMECLIENT.GetGFLength() / 1000;
         char str[512];
         sprintf(str, "tournament mode: %02u:%02u:%02u remaining", sec / 3600, (sec / 60) % 60, sec % 60);
     }
@@ -263,18 +263,18 @@ void dskGameInterface::Msg_PaintAfter()
     NormalFont->Draw(30, 1, nwf_string, 0, 0xFFFFFF00);
 
     // Replaydateianzeige in der linken unteren Ecke
-    if(GameClient::inst().IsReplayModeOn())
-        NormalFont->Draw(0, VideoDriverWrapper::inst().GetScreenHeight(), GameClient::inst().GetReplayFileName(), glArchivItem_Font::DF_BOTTOM, 0xFFFFFF00);
+    if(GAMECLIENT.IsReplayModeOn())
+        NormalFont->Draw(0, VIDEODRIVER.GetScreenHeight(), GAMECLIENT.GetReplayFileName(), glArchivItem_Font::DF_BOTTOM, 0xFFFFFF00);
 
     // Mauszeiger
     if(road.mode != RM_DISABLED)
     {
-        if(VideoDriverWrapper::inst().IsLeftDown())
+        if(VIDEODRIVER.IsLeftDown())
             GAMEMANAGER.SetCursor(CURSOR_RM_PRESSED, /*once*/ true);
         else
             GAMEMANAGER.SetCursor(CURSOR_RM, /*once*/ true);
     }
-    else if(VideoDriverWrapper::inst().IsRightDown())
+    else if(VIDEODRIVER.IsRightDown())
     {
         GAMEMANAGER.SetCursor(CURSOR_SCROLL, /*once*/ true);
     }
@@ -284,7 +284,7 @@ void dskGameInterface::Msg_PaintAfter()
     {
         GameClientPlayer* player = GAMECLIENT.GetPlayer(i);
         if(player->is_lagging)
-            LOADER.GetImageN("rttr", 0)->Draw(VideoDriverWrapper::inst().GetScreenWidth() - 70 - i * 40, 35, 30, 30, 0, 0, 0, 0,  COLOR_WHITE, COLORS[player->color]);
+            LOADER.GetImageN("rttr", 0)->Draw(VIDEODRIVER.GetScreenWidth() - 70 - i * 40, 35, 30, 30, 0, 0, 0, 0,  COLOR_WHITE, COLORS[player->color]);
     }
 }
 
@@ -296,12 +296,12 @@ void dskGameInterface::Msg_PaintAfter()
  */
 bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
 {
-    if(Coll(mc.x, mc.y, VideoDriverWrapper::inst().GetScreenWidth() / 2 - LOADER.GetImageN("resource", 29)->getWidth() / 2 + 44,
-            VideoDriverWrapper::inst().GetScreenHeight() - LOADER.GetImageN("resource", 29)->getHeight() + 4, 37 * 4, 32 * 4))
+    if(Coll(mc.x, mc.y, VIDEODRIVER.GetScreenWidth() / 2 - LOADER.GetImageN("resource", 29)->getWidth() / 2 + 44,
+            VIDEODRIVER.GetScreenHeight() - LOADER.GetImageN("resource", 29)->getHeight() + 4, 37 * 4, 32 * 4))
         return false;
 
     // Start scrolling also on Ctrl + left click
-    if(VideoDriverWrapper::inst().GetModKeyState().ctrl)
+    if(VIDEODRIVER.GetModKeyState().ctrl)
     {
         gwv->MouseDown(mc);
         return true;
@@ -323,7 +323,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
         else
         {
             // altes Roadwindow schließen
-            WindowManager::inst().Close((unsigned int)CGI_ROADWINDOW);
+            WINDOWMANAGER.Close((unsigned int)CGI_ROADWINDOW);
 
             // Ist das ein gültiger neuer Wegpunkt?
             if(gwv->RoadAvailable(road.mode == RM_BOAT, cselx, csely, 0xFF) && gwv->GetNode(cselx, csely).owner - 1 == (signed)GAMECLIENT.GetPlayerID() &&
@@ -383,9 +383,9 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
 
 
         // Vielleicht steht hier auch ein Schiff?
-        if(noShip* ship = gwv->GetShip(cselx, csely, GameClient::inst().GetPlayerID()))
+        if(noShip* ship = gwv->GetShip(cselx, csely, GAMECLIENT.GetPlayerID()))
         {
-            WindowManager::inst().Show(new iwShip(gwv, this, ship));
+            WINDOWMANAGER.Show(new iwShip(gwv, this, ship));
             return true;
         }
 
@@ -395,26 +395,26 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
             BuildingType bt = static_cast<noBuilding*>(gwv->GetNO(cselx, csely))->GetBuildingType();
             // HQ
             if(bt == BLD_HEADQUARTERS)
-                //WindowManager::inst().Show(new iwTrade(gwv,this,gwv->GetSpecObj<nobHQ>(cselx,csely)));
-                WindowManager::inst().Show(new iwHQ(gwv,this, gwv->GetSpecObj<nobHQ>(cselx, csely), _("Headquarters"), 3));
+                //WINDOWMANAGER.Show(new iwTrade(gwv,this,gwv->GetSpecObj<nobHQ>(cselx,csely)));
+                WINDOWMANAGER.Show(new iwHQ(gwv,this, gwv->GetSpecObj<nobHQ>(cselx, csely), _("Headquarters"), 3));
             // Lagerhäuser
             else if(bt == BLD_STOREHOUSE)
-                WindowManager::inst().Show(new iwStorehouse(gwv, this, gwv->GetSpecObj<nobStorehouse>(cselx, csely)));
+                WINDOWMANAGER.Show(new iwStorehouse(gwv, this, gwv->GetSpecObj<nobStorehouse>(cselx, csely)));
             // Hafengebäude
             else if(bt == BLD_HARBORBUILDING)
-                WindowManager::inst().Show(new iwHarborBuilding(gwv, this, gwv->GetSpecObj<nobHarborBuilding>(cselx, csely)));
+                WINDOWMANAGER.Show(new iwHarborBuilding(gwv, this, gwv->GetSpecObj<nobHarborBuilding>(cselx, csely)));
             // Militärgebäude
             else if(bt <= BLD_FORTRESS)
-                WindowManager::inst().Show(new iwMilitaryBuilding(gwv, this, gwv->GetSpecObj<nobMilitary>(cselx, csely)));
+                WINDOWMANAGER.Show(new iwMilitaryBuilding(gwv, this, gwv->GetSpecObj<nobMilitary>(cselx, csely)));
             else
-                WindowManager::inst().Show(new iwBuilding(gwv, this, gwv->GetSpecObj<nobUsual>(cselx, csely)));
+                WINDOWMANAGER.Show(new iwBuilding(gwv, this, gwv->GetSpecObj<nobUsual>(cselx, csely)));
             return true;
         }
 
         // oder vielleicht eine Baustelle?
         else if(gwv->GetNO(cselx, csely)->GetType() == NOP_BUILDINGSITE && gwv->GetNode(cselx, csely).owner - 1 == (signed)GAMECLIENT.GetPlayerID())
         {
-            WindowManager::inst().Show(new iwBuildingSite(gwv, gwv->GetSpecObj<noBuildingSite>(cselx, csely)));
+            WINDOWMANAGER.Show(new iwBuildingSite(gwv, gwv->GetSpecObj<noBuildingSite>(cselx, csely)));
             return true;
 
         }
@@ -475,13 +475,13 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
                 BuildingType bt = building->GetBuildingType();
 
                 // Only if trade is enabled
-                if(GameClient::inst().GetGGS().isEnabled(ADDON_TRADE))
+                if(GAMECLIENT.GetGGS().isEnabled(ADDON_TRADE))
                 {
                     // Allied warehouse? -> Show trade window
-                    if(GameClient::inst().GetLocalPlayer()->IsAlly(building->GetPlayer())
+                    if(GAMECLIENT.GetLocalPlayer()->IsAlly(building->GetPlayer())
                             && (bt == BLD_HEADQUARTERS || bt == BLD_HARBORBUILDING || bt == BLD_STOREHOUSE))
                     {
-                        WindowManager::inst().Show(new iwTrade(gwv, this, static_cast<nobBaseWarehouse*>(building)));
+                        WINDOWMANAGER.Show(new iwTrade(gwv, this, static_cast<nobBaseWarehouse*>(building)));
                         return true;
                     }
                 }
@@ -503,8 +503,8 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
         // Bisheriges Actionfenster schließen, falls es eins gab
         // aktuelle Mausposition merken, da diese durch das Schließen verändert werden kann
         int mx = mc.x, my = mc.y;
-        WindowManager::inst().Close(actionwindow);
-        VideoDriverWrapper::inst().SetMousePos(mx, my);
+        WINDOWMANAGER.Close(actionwindow);
+        VIDEODRIVER.SetMousePos(mx, my);
 
         ShowActionWindow(action_tabs, cselx, csely, mc.x, mc.y, enable_military_buildings);
 
@@ -580,7 +580,7 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
             break;
         case KT_RETURN: // Chatfenster öffnen
         {
-            WindowManager::inst().Show(new iwChat);
+            WINDOWMANAGER.Show(new iwChat);
         } return true;
 
         case KT_SPACE: // Bauqualitäten anzeigen
@@ -609,7 +609,7 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
         } return true;
         case KT_F2: // Spiel speichern
         {
-            WindowManager::inst().Show(new iwSave);
+            WINDOWMANAGER.Show(new iwSave);
         } return true;
         case KT_F3: // Koordinatenanzeige ein/aus vorläufig zu Debugzwecken
         {
@@ -617,19 +617,19 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
         } return true;
         case KT_F8: // Tastaturbelegung
         {
-            WindowManager::inst().Show(new iwTextfile("keyboardlayout.txt", _("Keyboard layout")));
+            WINDOWMANAGER.Show(new iwTextfile("keyboardlayout.txt", _("Keyboard layout")));
         } return true;
         case KT_F9: // Readme
         {
-            WindowManager::inst().Show(new iwTextfile("readme.txt", _("Readme!")));
+            WINDOWMANAGER.Show(new iwTextfile("readme.txt", _("Readme!")));
         } return true;
         case KT_F11: // Music player (midi files)
         {
-            WindowManager::inst().Show(new iwMusicPlayer);
+            WINDOWMANAGER.Show(new iwMusicPlayer);
         } return true;
         case KT_F12: // Optionsfenster
         {
-            WindowManager::inst().Show(new iwOptionsWindow(this));
+            WINDOWMANAGER.Show(new iwOptionsWindow(this));
         } return true;
     }
 
@@ -648,11 +648,11 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
         case '4':   case '5':   case '6':
         case '7':   case '8':
         {
-            if(GameClient::inst().IsReplayModeOn())
-                GameClient::inst().ChangeReplayPlayer(ke.c - '1');
+            if(GAMECLIENT.IsReplayModeOn())
+                GAMECLIENT.ChangeReplayPlayer(ke.c - '1');
             else
             {
-                GameClientPlayer* player = GameClient::inst().GetPlayer(ke.c - '1');
+                GameClientPlayer* player = GAMECLIENT.GetPlayer(ke.c - '1');
                 if(player)
                 {
                     if(player->ps == PS_KI && player->aiType == AI_DUMMY)
@@ -668,9 +668,9 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
         case 'v':
         {
             unsigned singleplayer = 0, i = 0;
-            while(i < GameClient::inst().GetPlayerCount() && singleplayer < 2)
+            while(i < GAMECLIENT.GetPlayerCount() && singleplayer < 2)
             {
-                if(GameClient::inst().GetPlayer(i)->ps == PS_OCCUPIED)singleplayer++;
+                if(GAMECLIENT.GetPlayer(i)->ps == PS_OCCUPIED)singleplayer++;
                 i++;
             }
             if(singleplayer < 2)GAMECLIENT.IncreaseSpeed();
@@ -682,7 +682,7 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
         case 'd': // Replay: FoW an/ausschalten
         {
             // GameClient Bescheid sagen
-            GameClient::inst().ToggleReplayFOW();
+            GAMECLIENT.ToggleReplayFOW();
             // Sichtbarkeiten neu setzen auf der Map-Anzeige und der Minimap
             gwv->RecalcAllColors();
             minimap.UpdateAll();
@@ -696,31 +696,31 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
         } return true;
         case 'i': // Show inventory
         {
-            WindowManager::inst().Show(new iwInventory);
+            WINDOWMANAGER.Show(new iwInventory);
         } return true;
         case 'j': // GFs überspringen
         {
             unsigned singleplayer = 0, i = 0;
-            while(i < GameClient::inst().GetPlayerCount() && singleplayer < 2)
+            while(i < GAMECLIENT.GetPlayerCount() && singleplayer < 2)
             {
-                if(GameClient::inst().GetPlayer(i)->ps == PS_OCCUPIED)singleplayer++;
+                if(GAMECLIENT.GetPlayer(i)->ps == PS_OCCUPIED)singleplayer++;
                 i++;
             }
             if(singleplayer < 2 || GAMECLIENT.IsReplayModeOn())
-				WindowManager::inst().Show(new iwSkipGFs);
+				WINDOWMANAGER.Show(new iwSkipGFs);
                 
         } return true;
         case 'l': // Minimap anzeigen
         {
-            WindowManager::inst().Show(new iwMinimap(&minimap, *gwv));
+            WINDOWMANAGER.Show(new iwMinimap(&minimap, *gwv));
         } return true;
         case 'm': // Hauptauswahl
         {
-            WindowManager::inst().Show(new iwMainMenu(gwv, this));
+            WINDOWMANAGER.Show(new iwMainMenu(gwv, this));
         } return true;
         case 'n': // Show Post window
         {
-            WindowManager::inst().Show(new iwPostWindow(*gwv));
+            WINDOWMANAGER.Show(new iwPostWindow(*gwv));
             UpdatePostIcon(GAMECLIENT.GetPostMessages().size(), false);
         } return true;
         case 'p': // Pause
@@ -741,7 +741,7 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
         case 'q': // Spiel verlassen
         {
             if(ke.alt)
-                WindowManager::inst().Show(new iwEndgame);
+                WINDOWMANAGER.Show(new iwEndgame);
         } return true;
         case 's': // Produktivität anzeigen
         {
@@ -778,7 +778,7 @@ void dskGameInterface::Run()
 void dskGameInterface::ActivateRoadMode(const RoadMode rm)
 {
     // Im Replay und in der Pause keine Straßen bauen
-    if(GameClient::inst().IsReplayModeOn() || GameClient::inst().IsPaused())
+    if(GAMECLIENT.IsReplayModeOn() || GAMECLIENT.IsPaused())
         return;
 
     road.mode = rm;
@@ -828,7 +828,7 @@ bool dskGameInterface::BuildRoadPart(int& cselx, int& csely, bool end)
     if(road.mode == RM_BOAT)
     {
         unsigned char waterway_lengthes[] = {3, 5, 9, 13, 21, 0}; // these are written into GameWorldViewer.cpp, too
-        unsigned char index = GameClient::inst().GetGGS().getSelection(ADDON_MAX_WATERWAY_LENGTH);
+        unsigned char index = GAMECLIENT.GetGGS().getSelection(ADDON_MAX_WATERWAY_LENGTH);
 
         assert(index <= sizeof(waterway_lengthes) - 1);
         const unsigned char max_length = waterway_lengthes[index];
@@ -893,9 +893,9 @@ unsigned dskGameInterface::TestBuiltRoad(const int x, const int y)
 void dskGameInterface::ShowRoadWindow(int mouse_x, int mouse_y)
 {
     if(gwv->CalcBQ(road.point_x, road.point_y, GAMECLIENT.GetPlayerID(), 1))
-        WindowManager::inst().Show(roadwindow = new iwRoadWindow(this, 1, mouse_x, mouse_y), true);
+        WINDOWMANAGER.Show(roadwindow = new iwRoadWindow(this, 1, mouse_x, mouse_y), true);
     else
-        WindowManager::inst().Show(roadwindow = new iwRoadWindow(this, 0, mouse_x, mouse_y), true);
+        WINDOWMANAGER.Show(roadwindow = new iwRoadWindow(this, 0, mouse_x, mouse_y), true);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -938,7 +938,7 @@ void dskGameInterface::ShowActionWindow(const iwAction::Tabs& action_tabs, int c
             params = gwv->GetAvailableSoldiersForAttack(GAMECLIENT.GetPlayerID(), cselx, csely);
     }
 
-    WindowManager::inst().Show((actionwindow = new iwAction(this, gwv, action_tabs, cselx, csely, mouse_x, mouse_y, params, enable_military_buildings)), true);
+    WINDOWMANAGER.Show((actionwindow = new iwAction(this, gwv, action_tabs, cselx, csely, mouse_x, mouse_y, params, enable_military_buildings)), true);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -949,7 +949,7 @@ void dskGameInterface::ShowActionWindow(const iwAction::Tabs& action_tabs, int c
  */
 void dskGameInterface::CommandBuildRoad()
 {
-    GameClient::inst().AddGC(new gc::BuildRoad(road.start_x, road.start_y, road.mode == RM_BOAT, road.route));
+    GAMECLIENT.AddGC(new gc::BuildRoad(road.start_x, road.start_y, road.mode == RM_BOAT, road.route));
     road.mode = RM_DISABLED;
 }
 
@@ -972,7 +972,7 @@ void dskGameInterface::GI_FlagDestroyed(const unsigned short x, const unsigned s
     if(actionwindow)
     {
         if(actionwindow->GetSelectedX() == x && actionwindow->GetSelectedY() == y)
-            WindowManager::inst().Close(actionwindow);
+            WINDOWMANAGER.Close(actionwindow);
     }
 }
 
@@ -1010,7 +1010,7 @@ void dskGameInterface::CI_PlayerLeft(const unsigned player_id)
 {
     // Info-Meldung ausgeben
     char text[256];
-    snprintf(text, sizeof(text), _("Player '%s' left the game!"), GameClient::inst().GetPlayer(player_id)->name.c_str());
+    snprintf(text, sizeof(text), _("Player '%s' left the game!"), GAMECLIENT.GetPlayer(player_id)->name.c_str());
     messenger.AddMessage("", 0, CD_SYSTEM, text, COLOR_RED);
     // Im Spiel anzeigen, dass die KI das Spiel betreten hat
     snprintf(text, sizeof(text), _("Player '%s' joined the game!"), "KI");
@@ -1040,9 +1040,9 @@ void dskGameInterface::CI_GGSChanged(const GlobalGameSettings& ggs)
 void dskGameInterface::CI_Chat(const unsigned player_id, const ChatDestination cd, const std::string& msg)
 {
     char from[256];
-    snprintf(from, sizeof(from), _("<%s> "), GameClient::inst().GetPlayer(player_id)->name.c_str());
+    snprintf(from, sizeof(from), _("<%s> "), GAMECLIENT.GetPlayer(player_id)->name.c_str());
     messenger.AddMessage(from,
-                         COLORS[GameClient::inst().GetPlayer(player_id)->color], cd, msg);
+                         COLORS[GAMECLIENT.GetPlayer(player_id)->color], cd, msg);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1100,7 +1100,7 @@ void dskGameInterface::CI_GamePaused()
         // Fenster schließen
         if(roadwindow)
         {
-            //WindowManager::inst().Close(roadwindow);
+            //WINDOWMANAGER.Close(roadwindow);
             roadwindow->Close();
             roadwindow = 0;
         }
@@ -1175,13 +1175,13 @@ void dskGameInterface::CI_PlayersSwapped(const unsigned player1, const unsigned 
 {
     // Meldung anzeigen
     char text[256];
-    snprintf(text, sizeof(text), _("Player '%s' switched to player '%s'"), GameClient::inst().GetPlayer(player1)->name.c_str()
-             , GameClient::inst().GetPlayer(player2)->name.c_str());
+    snprintf(text, sizeof(text), _("Player '%s' switched to player '%s'"), GAMECLIENT.GetPlayer(player1)->name.c_str()
+             , GAMECLIENT.GetPlayer(player2)->name.c_str());
     messenger.AddMessage("", 0, CD_SYSTEM, text, COLOR_YELLOW);
 
 
     // Sichtbarkeiten und Minimap neu berechnen, wenn wir ein von den beiden Spielern sind
-    if(player1 == GameClient::inst().GetPlayerID() || player2 == GameClient::inst().GetPlayerID())
+    if(player1 == GAMECLIENT.GetPlayerID() || player2 == GAMECLIENT.GetPlayerID())
     {
         minimap.UpdateAll();
         gwv->RecalcAllColors();
@@ -1198,11 +1198,11 @@ void dskGameInterface::CI_PlayersSwapped(const unsigned player1, const unsigned 
 void dskGameInterface::GI_PlayerDefeated(const unsigned player_id)
 {
     char text[256];
-    snprintf(text, sizeof(text), _("Player '%s' was defeated!"), GameClient::inst().GetPlayer(player_id)->name.c_str());
+    snprintf(text, sizeof(text), _("Player '%s' was defeated!"), GAMECLIENT.GetPlayer(player_id)->name.c_str());
     messenger.AddMessage("", 0, CD_SYSTEM, text, COLOR_ORANGE);
 
     /// Lokaler Spieler?
-    if(player_id == GameClient::inst().GetPlayerID())
+    if(player_id == GAMECLIENT.GetPlayerID())
     {
         /// Sichtbarkeiten neu berechnen
         gwv->RecalcAllColors();
@@ -1232,7 +1232,7 @@ void dskGameInterface::GI_UpdateMinimap(const MapCoord x, const MapCoord y)
 void dskGameInterface::GI_TreatyOfAllianceChanged()
 {
     // Nur wenn Team-Sicht aktiviert ist, können sihc die Sichtbarkeiten auch ändern
-    if(GameClient::inst().GetGGS().team_view)
+    if(GAMECLIENT.GetGGS().team_view)
     {
         /// Sichtbarkeiten neu berechnen
         gwv->RecalcAllColors();
@@ -1321,7 +1321,7 @@ void dskGameInterface::CI_PostMessageDeleted(const unsigned postmessages_count)
 void dskGameInterface::GI_Winner(const unsigned player_id)
 {
     char text[256];
-    snprintf(text, sizeof(text), _("Player '%s' is the winner!"), GameClient::inst().GetPlayer(player_id)->name.c_str());
+    snprintf(text, sizeof(text), _("Player '%s' is the winner!"), GAMECLIENT.GetPlayer(player_id)->name.c_str());
     messenger.AddMessage("", 0, CD_SYSTEM, text, COLOR_ORANGE);
 }
 ///////////////////////////////////////////////////////////////////////////////
@@ -1334,7 +1334,7 @@ void dskGameInterface::GI_TeamWinner(const unsigned player_id)
 {
     unsigned winnercount = 0;
     char winners[5];
-    for(unsigned i = 0; i < GameClient::inst().GetPlayerCount() && winnercount < 5; i++)
+    for(unsigned i = 0; i < GAMECLIENT.GetPlayerCount() && winnercount < 5; i++)
     {
         winners[winnercount] = i;
         winnercount += player_id & (1 << i) ? 1 : 0;
@@ -1343,13 +1343,13 @@ void dskGameInterface::GI_TeamWinner(const unsigned player_id)
     switch (winnercount)
     {
         case 2:
-            snprintf(text, sizeof(text), _("Team victory! '%s' and '%s' are the winners!"), GameClient::inst().GetPlayer(winners[0])->name.c_str(), GameClient::inst().GetPlayer(winners[1])->name.c_str());
+            snprintf(text, sizeof(text), _("Team victory! '%s' and '%s' are the winners!"), GAMECLIENT.GetPlayer(winners[0])->name.c_str(), GAMECLIENT.GetPlayer(winners[1])->name.c_str());
             break;
         case 3:
-            snprintf(text, sizeof(text), _("Team victory! '%s' and '%s' and '%s' are the winners!"), GameClient::inst().GetPlayer(winners[0])->name.c_str(), GameClient::inst().GetPlayer(winners[1])->name.c_str(), GameClient::inst().GetPlayer(winners[2])->name.c_str());
+            snprintf(text, sizeof(text), _("Team victory! '%s' and '%s' and '%s' are the winners!"), GAMECLIENT.GetPlayer(winners[0])->name.c_str(), GAMECLIENT.GetPlayer(winners[1])->name.c_str(), GAMECLIENT.GetPlayer(winners[2])->name.c_str());
             break;
         case 4:
-            snprintf(text, sizeof(text), _("Team victory! '%s' and '%s' and '%s' and '%s' are the winners!"), GameClient::inst().GetPlayer(winners[0])->name.c_str(), GameClient::inst().GetPlayer(winners[1])->name.c_str(), GameClient::inst().GetPlayer(winners[2])->name.c_str(), GameClient::inst().GetPlayer(winners[3])->name.c_str());
+            snprintf(text, sizeof(text), _("Team victory! '%s' and '%s' and '%s' and '%s' are the winners!"), GAMECLIENT.GetPlayer(winners[0])->name.c_str(), GAMECLIENT.GetPlayer(winners[1])->name.c_str(), GAMECLIENT.GetPlayer(winners[2])->name.c_str(), GAMECLIENT.GetPlayer(winners[3])->name.c_str());
             break;
         default:
             snprintf(text, sizeof(text), "%s", _("Team victory!"));

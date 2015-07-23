@@ -149,7 +149,7 @@ bool ctrlEdit::Draw_(void)
                (focus ? 0xFFFFA000 : COLOR_YELLOW), 0, width - 8);
 
     // Alle 500ms Cursor für 500ms anzeigen
-    if(focus && !disabled && VideoDriverWrapper::inst().GetTickCount() % 1000 < 500)
+    if(focus && !disabled && VIDEODRIVER.GetTickCount() % 1000 < 500)
     {
         unsigned short cwidth = 5;
 

@@ -76,7 +76,7 @@ iwPlayReplay::iwPlayReplay(void)
     // Erst einmal nach Dateiname sortieren
     table->SortRows(0);
 
-    GameClient::inst().SetInterface(NULL);
+    GAMECLIENT.SetInterface(NULL);
 }
 
 void iwPlayReplay::Msg_ButtonClick(const unsigned int ctrl_id)
@@ -91,7 +91,7 @@ void iwPlayReplay::Msg_ButtonClick(const unsigned int ctrl_id)
         case 2:
         {
             // Sicherheitsabfrage, ob der Benutzer auch wirklich alle löschen möchte
-            WindowManager::inst().Show( new iwMsgbox(_("Clear"), _("Are you sure to remove all replays?"), this, MSB_YESNO, MSB_QUESTIONRED, 1) );
+            WINDOWMANAGER.Show( new iwMsgbox(_("Clear"), _("Are you sure to remove all replays?"), this, MSB_YESNO, MSB_QUESTIONRED, 1) );
 
         } break;
     }
@@ -106,8 +106,8 @@ void iwPlayReplay::Msg_TableChooseItem(const unsigned ctrl_id, const unsigned sh
 void iwPlayReplay::StartReplay()
 {
     // Mond malen
-    LOADER.GetImageN("resource", 33)->Draw(VideoDriverWrapper::inst().GetMouseX(), VideoDriverWrapper::inst().GetMouseY() - 40, 0, 0, 0, 0, 0, 0);
-    VideoDriverWrapper::inst().SwapBuffers();
+    LOADER.GetImageN("resource", 33)->Draw(VIDEODRIVER.GetMouseX(), VIDEODRIVER.GetMouseY() - 40, 0, 0, 0, 0, 0, 0);
+    VIDEODRIVER.SwapBuffers();
 
     ctrlTable* table = GetCtrl<ctrlTable>(0);
     if(table->GetSelection() < table->GetRowCount())
@@ -126,9 +126,9 @@ void iwPlayReplay::StartReplay()
         };
 
         if(error)
-            WindowManager::inst().Show( new iwMsgbox(_("Error while playing replay!"), replay_errors[error], this, MSB_OK, MSB_EXCLAMATIONRED) );
+            WINDOWMANAGER.Show( new iwMsgbox(_("Error while playing replay!"), replay_errors[error], this, MSB_OK, MSB_EXCLAMATIONRED) );
         else
-            WindowManager::inst().Switch(new dskGameLoader(gwv));
+            WINDOWMANAGER.Switch(new dskGameLoader(gwv));
     }
 }
 

@@ -117,4 +117,6 @@ class WindowManager : public Singleton<WindowManager>, public VideoDriverLoaderI
 //  unsigned short lastScreenSignalCount;
 };
 
+#define WINDOWMANAGER WindowManager::inst()
+
 #endif // !WINDOWMANAGER_H_INCLUDED

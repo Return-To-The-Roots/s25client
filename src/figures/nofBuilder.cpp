@@ -232,7 +232,7 @@ void nofBuilder::HandleDerivedEvent(const unsigned int id)
         case STATE_BUILD:
         {
             // Sounds abmelden
-            SoundManager::inst().WorkingFinished(this);
+            SOUNDMANAGER.WorkingFinished(this);
 
             // ein Bauschritt weniger, Haus um eins höher
             --building_steps_available;
@@ -334,7 +334,7 @@ void nofBuilder::Draw(int x, int y)
                     LOADER.GetImageN("rom_bobs", 353 + index % 4)->Draw(x + building_site->GetDoorPointX() + rel_x, y + building_site->GetDoorPointY() + rel_y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(building_site->GetPlayer())->color]);
 
                     if(index % 4 == 2)
-                        SoundManager::inst().PlayNOSound(78, this, index, 160 - rand() % 60);
+                        SOUNDMANAGER.PlayNOSound(78, this, index, 160 - rand() % 60);
                 }
                 else
                 {
@@ -342,7 +342,7 @@ void nofBuilder::Draw(int x, int y)
                     LOADER.GetImageN("rom_bobs", 283 + index % 4)->Draw(x + building_site->GetDoorPointX() + rel_x, y + building_site->GetDoorPointY() + rel_y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(building_site->GetPlayer())->color]);
 
                     if(index % 4 == 2)
-                        SoundManager::inst().PlayNOSound(72, this, index, 160 - rand() % 60);
+                        SOUNDMANAGER.PlayNOSound(72, this, index, 160 - rand() % 60);
                 }
 
             }
@@ -360,7 +360,7 @@ void nofBuilder::Draw(int x, int y)
                     LOADER.GetImageN("rom_bobs", 279 + index % 4)->Draw(x + building_site->GetDoorPointX() + rel_x, y + building_site->GetDoorPointY() + rel_y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(building_site->GetPlayer())->color]);
 
                     if(index % 4 == 2)
-                        SoundManager::inst().PlayNOSound(78, this, index, 160 - rand() % 60);
+                        SOUNDMANAGER.PlayNOSound(78, this, index, 160 - rand() % 60);
                 }
                 else
                 {
@@ -368,7 +368,7 @@ void nofBuilder::Draw(int x, int y)
                     LOADER.GetImageN("rom_bobs", 283 + index % 4)->Draw(x + building_site->GetDoorPointX() + rel_x, y + building_site->GetDoorPointY() + rel_y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(building_site->GetPlayer())->color]);
 
                     if(index % 4 == 2)
-                        SoundManager::inst().PlayNOSound(72, this, index, 160 - rand() % 60);
+                        SOUNDMANAGER.PlayNOSound(72, this, index, 160 - rand() % 60);
                 }
             }
 

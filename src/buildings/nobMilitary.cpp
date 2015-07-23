@@ -81,7 +81,7 @@ nobMilitary::nobMilitary(const BuildingType type, const unsigned short x, const 
 
     // Wenn kein Gold in neu gebaute Militärgebäude eingeliefert werden soll, wird die Goldzufuhr gestoppt
     // Ansonsten neue Goldmünzen anfordern
-    if(GameClient::inst().GetGGS().isEnabled(ADDON_NO_COINS_DEFAULT))
+    if(GAMECLIENT.GetGGS().isEnabled(ADDON_NO_COINS_DEFAULT))
     {
         disable_coins = true;
         disable_coins_virtual = true;
@@ -301,7 +301,7 @@ void nobMilitary::HandleEvent(const unsigned int id)
             // wird dieser ebenfalls befördert usw.!
 
             // Rang des letzten beförderten Soldaten, 4-MaxRank am Anfang setzen, damit keiner über den maximalen Rang befördert wird
-            unsigned char last_rank = MAX_MILITARY_RANK - GameClient::inst().GetGGS().getSelection(ADDON_MAX_RANK);
+            unsigned char last_rank = MAX_MILITARY_RANK - GAMECLIENT.GetGGS().getSelection(ADDON_MAX_RANK);
 
             for(std::list<nofPassiveSoldier*>::reverse_iterator it = troops.rbegin(); it != troops.rend(); ++it)
             {
@@ -317,7 +317,7 @@ void nobMilitary::HandleEvent(const unsigned int id)
             }
 
             // Wurde jemand befördert?
-            if(last_rank < MAX_MILITARY_RANK - GameClient::inst().GetGGS().getSelection(ADDON_MAX_RANK))
+            if(last_rank < MAX_MILITARY_RANK - GAMECLIENT.GetGGS().getSelection(ADDON_MAX_RANK))
             {
                 // Goldmünze verbrauchen
                 --coins;
@@ -424,7 +424,7 @@ void nobMilitary::NewEnemyMilitaryBuilding(const unsigned short distance)
     RegulateTroops();
 
     // KI-Event senden
-    //GameClient::inst().SendAIEvent(new AIEvent::Building(AIEvent::BorderChanged, x, y, type), player);
+    //GAMECLIENT.SendAIEvent(new AIEvent::Building(AIEvent::BorderChanged, x, y, type), player);
 }
 
 
@@ -506,7 +506,7 @@ void nobMilitary::RegulateTroops()
 
         // Gebäude wird angegriffen und
         // Addon aktiv, nur soviele Leute zum Nachbesetzen schicken wie Verteidiger eingestellt
-        if (aggressors.size() > 0 && GameClient::inst().GetGGS().getSelection(ADDON_DEFENDER_BEHAVIOR) == 2)
+        if (aggressors.size() > 0 && GAMECLIENT.GetGGS().getSelection(ADDON_DEFENDER_BEHAVIOR) == 2)
         {
             diff = (gwg->GetPlayer(player)->military_settings[2] * diff) / MILITARY_SETTINGS_SCALE[2];
         }
@@ -561,7 +561,7 @@ void nobMilitary::OrderNewSoldiers()
 	std::list<nofPassiveSoldier*> noNeed;
 	for(std::list<nofPassiveSoldier*>::iterator it = ordered_troops.begin(); it != ordered_troops.end(); )
     {
-		if((*it)->GetRank() >= MAX_MILITARY_RANK - GameClient::inst().GetGGS().getSelection(ADDON_MAX_RANK))
+		if((*it)->GetRank() >= MAX_MILITARY_RANK - GAMECLIENT.GetGGS().getSelection(ADDON_MAX_RANK))
 		{
 			nofPassiveSoldier* soldier = *it;
 			it = ordered_troops.erase(it);
@@ -577,7 +577,7 @@ void nobMilitary::OrderNewSoldiers()
 		// Zu wenig Truppen
         // Gebäude wird angegriffen und
         // Addon aktiv, nur soviele Leute zum Nachbesetzen schicken wie Verteidiger eingestellt
-        if (aggressors.size() > 0 && GameClient::inst().GetGGS().getSelection(ADDON_DEFENDER_BEHAVIOR) == 2)
+        if (aggressors.size() > 0 && GAMECLIENT.GetGGS().getSelection(ADDON_DEFENDER_BEHAVIOR) == 2)
         {
             diff = (gwg->GetPlayer(player)->military_settings[2] * diff) / MILITARY_SETTINGS_SCALE[2];
         }
@@ -707,8 +707,8 @@ void nobMilitary::AddPassiveSoldier(nofPassiveSoldier* soldier)
     // Wurde dieses Gebäude zum ersten Mal besetzt?
     if(new_built)
     {
-        if(GameClient::inst().GetPlayerID() == this->player)
-            GameClient::inst().SendPostMessage(new ImagePostMsgWithLocation(_("Military building occupied"), PMC_MILITARY, this->x, this->y, this->type, this->nation));
+        if(GAMECLIENT.GetPlayerID() == this->player)
+            GAMECLIENT.SendPostMessage(new ImagePostMsgWithLocation(_("Military building occupied"), PMC_MILITARY, this->x, this->y, this->type, this->nation));
         // Ist nun besetzt
         new_built = false;
         // Landgrenzen verschieben
@@ -718,7 +718,7 @@ void nobMilitary::AddPassiveSoldier(nofPassiveSoldier* soldier)
         // Fanfarensound abspieln, falls das Militärgebäude im Sichtbereich ist und unseres ist
         gwg->MilitaryBuildingCaptured(x, y, player);
         // AIEvent senden an besitzer
-        GameClient::inst().SendAIEvent(new AIEvent::Building(AIEvent::BuildingConquered, x, y, type), player);
+        GAMECLIENT.SendAIEvent(new AIEvent::Building(AIEvent::BuildingConquered, x, y, type), player);
     }
     else
     {
@@ -889,7 +889,7 @@ unsigned nobMilitary::HasMaxRankSoldier() const
 	unsigned count=0;
     for(std::list<nofPassiveSoldier*>::const_reverse_iterator it = troops.rbegin(); it != troops.rend(); ++it)
     {
-		if ((*it)->GetRank() >= (MAX_MILITARY_RANK - GameClient::inst().GetGGS().getSelection(ADDON_MAX_RANK)))
+		if ((*it)->GetRank() >= (MAX_MILITARY_RANK - GAMECLIENT.GetGGS().getSelection(ADDON_MAX_RANK)))
 			count++;
     }
 	return count;
@@ -1007,19 +1007,19 @@ void nobMilitary::Capture(const unsigned char new_owner)
     gwg->MilitaryBuildingCaptured(x, y, player);
 
     // Post verschicken, an den alten Besitzer und an den neuen Besitzer
-    if(GameClient::inst().GetPlayerID() == old_player)
-        GameClient::inst().SendPostMessage(
+    if(GAMECLIENT.GetPlayerID() == old_player)
+        GAMECLIENT.SendPostMessage(
             new ImagePostMsgWithLocation(_("Military building lost"), PMC_MILITARY, x, y, GetBuildingType(), GetNation()));
-    if(GameClient::inst().GetPlayerID() == this->player)
-        GameClient::inst().SendPostMessage(
+    if(GAMECLIENT.GetPlayerID() == this->player)
+        GAMECLIENT.SendPostMessage(
             new ImagePostMsgWithLocation(_("Military building captured"), PMC_MILITARY, x, y, GetBuildingType(), GetNation()));
 
     // ggf. Fenster schließen vom alten Spieler
     gwg->ImportantObjectDestroyed(x, y);
 
     // AIEvent senden an gewinner&verlierer
-    GameClient::inst().SendAIEvent(new AIEvent::Building(AIEvent::BuildingConquered, x, y, type), player);
-    GameClient::inst().SendAIEvent(new AIEvent::Building(AIEvent::BuildingLost, x, y, type), old_player);
+    GAMECLIENT.SendAIEvent(new AIEvent::Building(AIEvent::BuildingConquered, x, y, type), player);
+    GAMECLIENT.SendAIEvent(new AIEvent::Building(AIEvent::BuildingLost, x, y, type), old_player);
 
 }
 
@@ -1164,7 +1164,7 @@ unsigned nobMilitary::CalcCoinsPoints()
     for(std::list<nofPassiveSoldier*>::iterator it = troops.begin(); it != troops.end(); ++it)
     {
         // Solange es kein Max Rank (default 4) ist, kann der Soldat noch befördert werden
-        if((*it)->GetRank() < 4 - GameClient::inst().GetGGS().getSelection(ADDON_MAX_RANK))
+        if((*it)->GetRank() < 4 - GAMECLIENT.GetGGS().getSelection(ADDON_MAX_RANK))
             points += 20;
     }
 
@@ -1223,7 +1223,7 @@ void nobMilitary::PrepareUpgrading()
 
     for(std::list<nofPassiveSoldier*>::iterator it = troops.begin(); it != troops.end(); ++it)
     {
-        if((*it)->GetRank() < 4 - GameClient::inst().GetGGS().getSelection(ADDON_MAX_RANK))
+        if((*it)->GetRank() < 4 - GAMECLIENT.GetGGS().getSelection(ADDON_MAX_RANK))
         {
             // es wurde ein Soldat gefunden, der befördert werden kann
             soldiers_available = true;
@@ -1243,7 +1243,7 @@ void nobMilitary::HitOfCatapultStone()
     // Ein Soldat weniger, falls es noch welche gibt
     if(!troops.empty())
     {
-        troops.front->Die();
+        troops.front()->Die();
         troops.pop_front();
     }
 
@@ -1255,8 +1255,8 @@ void nobMilitary::HitOfCatapultStone()
         RegulateTroops();
 
     // Post verschicken
-    if(GameClient::inst().GetPlayerID() == this->player)
-        GameClient::inst().SendPostMessage(
+    if(GAMECLIENT.GetPlayerID() == this->player)
+        GAMECLIENT.SendPostMessage(
             new ImagePostMsgWithLocation(_("A catapult is firing upon us!"), PMC_MILITARY, x, y, GetBuildingType(), GetNation()));
 }
 
@@ -1268,7 +1268,7 @@ void nobMilitary::HitOfCatapultStone()
  */
 bool nobMilitary::IsDemolitionAllowed() const
 {
-    switch(GameClient::inst().GetGGS().getSelection(ADDON_DEMOLITION_PROHIBITION))
+    switch(GAMECLIENT.GetGGS().getSelection(ADDON_DEMOLITION_PROHIBITION))
     {
         default: // off
             break;

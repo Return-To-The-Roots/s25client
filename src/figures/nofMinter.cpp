@@ -64,7 +64,7 @@ void nofMinter::DrawWorking(int x, int y)
         // Evtl Sound abspielen
         if(now_id % 8 == 3)
         {
-            SoundManager::inst().PlayNOSound(58, this, now_id);
+            SOUNDMANAGER.PlayNOSound(58, this, now_id);
             was_sounding = true;
         }
     }

@@ -112,7 +112,7 @@ void dskLobby::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr
 {
     // Verbindung verloren
     if(msgbox_id == 0)
-        WindowManager::inst().Switch(new dskMultiPlayer);
+        WINDOWMANAGER.Switch(new dskMultiPlayer);
 }
 
 void dskLobby::Msg_ButtonClick(const unsigned int ctrl_id)
@@ -122,7 +122,7 @@ void dskLobby::Msg_ButtonClick(const unsigned int ctrl_id)
         case 3: // Zurück
         {
             LOBBYCLIENT.Stop();
-            WindowManager::inst().Switch(new dskMultiPlayer);
+            WINDOWMANAGER.Switch(new dskMultiPlayer);
         } break;
         case 4: // Verbinden - Button
         {
@@ -141,7 +141,7 @@ void dskLobby::Msg_ButtonClick(const unsigned int ctrl_id)
                             iwDirectIPConnect* connect = new iwDirectIPConnect(NP_LOBBY);
                             connect->SetHost(serverlist->getElement(i)->getHost().c_str());
                             connect->SetPort(serverlist->getElement(i)->getPort());
-                            WindowManager::inst().Show(connect);
+                            WINDOWMANAGER.Show(connect);
                             break;
                         }
                     }
@@ -151,17 +151,17 @@ void dskLobby::Msg_ButtonClick(const unsigned int ctrl_id)
         case 5: // Ranking - Button
         {
             LOBBYCLIENT.SendRankingListRequest();
-            WindowManager::inst().Show(new iwLobbyRanking, true);
+            WINDOWMANAGER.Show(new iwLobbyRanking, true);
         } break;
         case 6: // GameServer hinzufügen
         {
             if(SETTINGS.proxy.typ != 0)
-                WindowManager::inst().Show(new iwMsgbox(_("Sorry!"), _("You can't create a game while a proxy server is active\nDisable the use of a proxy server first!"), this, MSB_OK, MSB_EXCLAMATIONGREEN, 1));
+                WINDOWMANAGER.Show(new iwMsgbox(_("Sorry!"), _("You can't create a game while a proxy server is active\nDisable the use of a proxy server first!"), this, MSB_OK, MSB_EXCLAMATIONGREEN, 1));
             else
             {
                 servercreate = new iwDirectIPCreate(NP_LOBBY);
                 servercreate->SetParent(this);
-                WindowManager::inst().Show(servercreate, true);
+                WINDOWMANAGER.Show(servercreate, true);
             }
         } break;
     }
@@ -196,7 +196,7 @@ void dskLobby::Msg_TableRightButton(const unsigned int ctrl_id, const unsigned s
                     if(serverinfo->GetNr() == (unsigned int)atoi(item.c_str()))
                         break; // raus
 
-                    WindowManager::inst().Close(serverinfo);
+                    WINDOWMANAGER.Close(serverinfo);
                 }
 
                 serverinfo = new iwLobbyServerInfo();
@@ -205,7 +205,7 @@ void dskLobby::Msg_TableRightButton(const unsigned int ctrl_id, const unsigned s
                 serverinfo->SetTitle(table->GetItemText(table->GetSelection(false), 1));
 
                 LOBBYCLIENT.SendServerInfoRequest(atoi(item.c_str()));
-                WindowManager::inst().Show(serverinfo, true);
+                WINDOWMANAGER.Show(serverinfo, true);
             }
         } break;
     }
@@ -325,7 +325,7 @@ void dskLobby::LC_Status_ConnectionLost()
  */
 void dskLobby::LC_Status_IncompleteMessage()
 {
-    WindowManager::inst().Show(new iwMsgbox(_("Error"), _("Lost connection to lobby!"), this, MSB_OK, MSB_EXCLAMATIONRED, 0));
+    WINDOWMANAGER.Show(new iwMsgbox(_("Error"), _("Lost connection to lobby!"), this, MSB_OK, MSB_EXCLAMATIONRED, 0));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -348,7 +348,7 @@ void dskLobby::LC_Status_Error(const std::string& error)
  */
 void dskLobby::LC_Connected(void)
 {
-    WindowManager::inst().Switch(new dskHostGame);
+    WINDOWMANAGER.Switch(new dskHostGame);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -376,7 +376,7 @@ void dskLobby::LC_Chat(const std::string& player, const std::string& text)
             {
                 if (!text.compare(self.length() + 1, 2, ": "))
                 {
-                    WindowManager::inst().Show(new iwMsgbox("LobbyBot", text.substr(self.length() + 3), this, MSB_OK, MSB_EXCLAMATIONGREEN, 2));
+                    WINDOWMANAGER.Show(new iwMsgbox("LobbyBot", text.substr(self.length() + 3), this, MSB_OK, MSB_EXCLAMATIONGREEN, 2));
                 }
                 else if (!text.compare(self.length() + 1, 2, ", "))
                 {

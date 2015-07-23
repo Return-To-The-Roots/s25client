@@ -186,7 +186,7 @@ void iwMerchandiseStatistics::DrawStatistic()
     const std::set<unsigned short>& active = GetCtrl<ctrlMultiSelectGroup>(22)->GetSelection();
 
     // Statistik holen
-    const GameClientPlayer::Statistic stat = GameClient::inst().GetLocalPlayer()->GetStatistic(currentTime);
+    const GameClientPlayer::Statistic stat = GAMECLIENT.GetLocalPlayer()->GetStatistic(currentTime);
 
 
     // Maximalwert suchen

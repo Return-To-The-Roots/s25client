@@ -73,7 +73,7 @@ void nofFisher::DrawWorking(int x, int y)
 
         if(id / 2 == 1)
         {
-            SoundManager::inst().PlayNOSound(62, this, 0);
+            SOUNDMANAGER.PlayNOSound(62, this, 0);
             was_sounding = true;
         }
     }
@@ -99,7 +99,7 @@ void nofFisher::DrawWorking(int x, int y)
 
         if((id - 216) / 2 == 1)
         {
-            SoundManager::inst().PlayNOSound(62, this, 1);
+            SOUNDMANAGER.PlayNOSound(62, this, 1);
             was_sounding = true;
         }
     }
@@ -141,7 +141,7 @@ void nofFisher::WorkFinished()
     // Wenn ich einen Fisch gefangen habe, den Fisch "abbauen" und in die Hand nehmen
     if(successful)
     {
-        if(!GameClient::inst().GetGGS().isEnabled(ADDON_INEXHAUSTIBLE_FISH))
+        if(!GAMECLIENT.GetGGS().isEnabled(ADDON_INEXHAUSTIBLE_FISH))
             --(gwg->GetNode(gwg->GetXA(x, y, fishing_dir), gwg->GetYA(x, y, fishing_dir)).resources);
         ware = GD_FISH;
     }

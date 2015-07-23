@@ -304,9 +304,9 @@ bool GameServer::Start()
             players[0].is_host = true;
 
             // Standardeinstellungen aus den SETTINGS für die Addons laden
-            //GameClient::inst().GetGGS().LoadSettings();
-            GameClient::inst().LoadGGS();
-            ggs = GameClient::inst().GetGGS();
+            //GAMECLIENT.GetGGS().LoadSettings();
+            GAMECLIENT.LoadGGS();
+            ggs = GAMECLIENT.GetGGS();
         } break;
         case MAPTYPE_SAVEGAME:
         {
@@ -421,7 +421,7 @@ void GameServer::Run(void)
     if(countdown.do_countdown)
     {
         // countdown erzeugen
-        if(VideoDriverWrapper::inst().GetTickCount() - countdown.lasttime > 1000)
+        if(VIDEODRIVER.GetTickCount() - countdown.lasttime > 1000)
         {
             // nun echt starten
             if(countdown.countdown < 0)
@@ -434,7 +434,7 @@ void GameServer::Run(void)
                 SendToAll(GameMessage_Server_Countdown(countdown.countdown));
                 LOG.write("SERVER >>> BROADCAST: NMS_SERVER_COUNTDOWN(%d)\n", countdown.countdown);
 
-                countdown.lasttime = VideoDriverWrapper::inst().GetTickCount();
+                countdown.lasttime = VIDEODRIVER.GetTickCount();
 
                 --countdown.countdown;
             }
@@ -565,7 +565,7 @@ void GameServer::CancelCountdown()
 bool GameServer::StartGame()
 {
     // Bei Savegames wird der Startwert von den Clients aus der Datei gelesen!
-    unsigned random_init = (mapinfo.map_type == MAPTYPE_SAVEGAME) ? 0xFFFFFFFF : VideoDriverWrapper::inst().GetTickCount();
+    unsigned random_init = (mapinfo.map_type == MAPTYPE_SAVEGAME) ? 0xFFFFFFFF : VIDEODRIVER.GetTickCount();
 
     // Höchsten Ping ermitteln
     unsigned highest_ping = 0;
@@ -596,8 +596,8 @@ bool GameServer::StartGame()
     framesinfo.nwf_length = i;
 
     // Mond malen
-    LOADER.GetImageN("resource", 33)->Draw(VideoDriverWrapper::inst().GetMouseX(), VideoDriverWrapper::inst().GetMouseY() - 40, 0, 0, 0, 0, 0, 0);
-    VideoDriverWrapper::inst().SwapBuffers();
+    LOADER.GetImageN("resource", 33)->Draw(VIDEODRIVER.GetMouseX(), VIDEODRIVER.GetMouseY() - 40, 0, 0, 0, 0, 0, 0);
+    VIDEODRIVER.SwapBuffers();
 
     GameMessage_Server_Start start_msg(random_init, framesinfo.nwf_length);
 
@@ -608,7 +608,7 @@ bool GameServer::StartGame()
     SendToAll(start_msg);
     LOG.write("SERVER >>> BROADCAST: NMS_SERVER_START(%d)\n", random_init);
 
-    framesinfo.lasttime = VideoDriverWrapper::inst().GetTickCount();
+    framesinfo.lasttime = VIDEODRIVER.GetTickCount();
 
     // GameClient soll erstmal starten, damit wir von ihm die benötigten Daten für die KIs bekommen
     GAMECLIENT.StartGame(random_init);
@@ -852,7 +852,7 @@ void GameServer::KickPlayer(NS_PlayerKicked npk)
     {
         // KI-Spieler muss übernehmen
         player->ps = PS_KI;
-        ai_players[npk.playerid] = GameClient::inst().CreateAIPlayer(npk.playerid);
+        ai_players[npk.playerid] = GAMECLIENT.CreateAIPlayer(npk.playerid);
         // Und Socket schließen, das brauchen wir nicht mehr
         player->so.Close();
     }
@@ -930,7 +930,7 @@ void GameServer::ClientWatchDog()
     // prüfen ob GF vergangen
     if(status == SS_GAME)
     {
-        unsigned int currenttime = VideoDriverWrapper::inst().GetTickCount();
+        unsigned int currenttime = VIDEODRIVER.GetTickCount();
 
         if(!framesinfo.pause)
         {
@@ -1013,7 +1013,7 @@ void GameServer::ClientWatchDog()
 
                                 player->gc_queue.pop_front();
 
-                                //LOG.lprintf("%d = %d - %d\n", framesinfo.nr, checksum, Random::inst().GetCurrentRandomValue());
+                                //LOG.lprintf("%d = %d - %d\n", framesinfo.nr, checksum, RANDOM.GetCurrentRandomValue());
 
                                 // Checksummen nicht gleich?
                                 if (
@@ -1221,7 +1221,7 @@ inline void GameServer::OnNMSPong(const GameMessage_Pong& msg)
 {
     GameServerPlayer* player = &players[msg.player];
 
-    unsigned int currenttime = VideoDriverWrapper::inst().GetTickCount();
+    unsigned int currenttime = VIDEODRIVER.GetTickCount();
 
     player->ping = (unsigned short)(currenttime - player->lastping);
     player->pinging = false;
@@ -1457,7 +1457,7 @@ inline void GameServer::OnNMSMapChecksum(const GameMessage_Map_Checksum& msg)
 
         // belegt markieren
         player->ps = PS_OCCUPIED;
-        player->lastping = VideoDriverWrapper::inst().GetTickCount();
+        player->lastping = VIDEODRIVER.GetTickCount();
 
         // Servername senden
         player->send_queue.push(new GameMessage_Server_Name(serverconfig.gamename));
@@ -1666,7 +1666,7 @@ void GameServer::OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, std::lis
 
     // write async save
     snprintf(filename, sizeof(filename), "%s%s.sav", GetFilePath(FILE_PATHS[85]).c_str(), time_str);
-    GameClient::inst().WriteSaveHeader(filename);
+    GAMECLIENT.WriteSaveHeader(filename);
 
     KickPlayer(msg.player, NP_ASYNC, 0);
 }
@@ -1685,7 +1685,7 @@ void GameServer::ChangePlayer(const unsigned char old_id, const unsigned char ne
     delete ai_players[new_id];
     ai_players[new_id] = 0;
 
-    ai_players[old_id] = GameClient::inst().CreateAIPlayer(old_id);
+    ai_players[old_id] = GAMECLIENT.CreateAIPlayer(old_id);
 
 	//swap the gamecommand que
 	std::list<GameMessage_GameCommand> temp=players[old_id].gc_queue;

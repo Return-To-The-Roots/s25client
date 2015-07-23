@@ -60,7 +60,7 @@ void nofIronfounder::DrawWorking(int x, int y)
         // Evtl Sound abspielen
         if(now_id % 16 == 3)
         {
-            SoundManager::inst().PlayNOSound(58, this, now_id / 16);
+            SOUNDMANAGER.PlayNOSound(58, this, now_id / 16);
             was_sounding = true;
         }
     }

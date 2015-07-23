@@ -114,11 +114,11 @@ unsigned int Languages::getCount(void)
  */
 void Languages::setLanguage(const std::string& lang_code)
 {
-    Settings::inst().language.language = lang_code;
+    SETTINGS.language.language = lang_code;
 
     std::string locale = mysetlocale(LC_ALL, lang_code.c_str());
-    if(Settings::inst().language.language.length() == 0)
-        Settings::inst().language.language = locale;
+    if(SETTINGS.language.language.length() == 0)
+        SETTINGS.language.language = locale;
 
     const char* domain = "rttr";
     bind_textdomain_codeset(domain, "UTF-8");

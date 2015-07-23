@@ -57,7 +57,7 @@ void nofButcher::DrawWorking(int x, int y)
 
     if(now_id % 6 == 5)
     {
-        SoundManager::inst().PlayNOSound(66, this, now_id / 6);
+        SOUNDMANAGER.PlayNOSound(66, this, now_id / 6);
         was_sounding = true;
     }
 

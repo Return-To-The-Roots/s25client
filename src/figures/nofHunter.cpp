@@ -90,7 +90,7 @@ void nofHunter::DrawWorking(int x, int y)
 
                 if(id == 12)
                 {
-                    SoundManager::inst().PlayNOSound(74, this, 0);
+                    SOUNDMANAGER.PlayNOSound(74, this, 0);
                     was_sounding = true;
                 }
             }
@@ -101,7 +101,7 @@ void nofHunter::DrawWorking(int x, int y)
 
                 if(id == 7)
                 {
-                    SoundManager::inst().PlayNOSound(74, this, 0);
+                    SOUNDMANAGER.PlayNOSound(74, this, 0);
                     was_sounding = true;
                 }
             }
@@ -221,7 +221,7 @@ void nofHunter::HandleDerivedEvent(const unsigned int id)
             // Evtl. Sounds löschen
             if(was_sounding)
             {
-                SoundManager::inst().WorkingFinished(this);
+                SOUNDMANAGER.WorkingFinished(this);
                 was_sounding = false;
             }
         } break;

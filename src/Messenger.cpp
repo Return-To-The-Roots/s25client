@@ -55,7 +55,7 @@ void Messenger::Draw()
     unsigned y = 100;
     for(std::list<Messenger::Msg>::iterator it = messages.begin(); it != messages.end(); ++it, y += LargeFont->getHeight())
     {
-        unsigned diff = VideoDriverWrapper::inst().GetTickCount() - it->starttime;
+        unsigned diff = VIDEODRIVER.GetTickCount() - it->starttime;
         if(diff > 20000)
         {
             messages.erase(it++);
@@ -95,9 +95,9 @@ void Messenger::AddMessage(const std::string& author, const unsigned color_autho
     glArchivItem_Font::WrapInfo wi;
 
     // in Zeilen aufteilen, damit alles auf den Bildschirm passt
-    LargeFont->GetWrapInfo(msg.c_str(), VideoDriverWrapper::inst().GetScreenWidth() - 60
+    LargeFont->GetWrapInfo(msg.c_str(), VIDEODRIVER.GetScreenWidth() - 60
                            - LargeFont->getWidth(author.c_str()) - ((cd == CD_SYSTEM) ? 0 : LargeFont->getWidth(_(CD_STRINGS[cd]))),
-                           VideoDriverWrapper::inst().GetScreenWidth() - 60, wi);
+                           VIDEODRIVER.GetScreenWidth() - 60, wi);
 
     // Message-Strings erzeugen aus den WrapInfo
     std::string* strings = new std::string[wi.positions.size()];
@@ -125,7 +125,7 @@ void Messenger::AddMessage(const std::string& author, const unsigned color_autho
 
         tmp.color_author = color_author;
         tmp.color_msg = color_msg;
-        tmp.starttime = VideoDriverWrapper::inst().GetTickCount();
+        tmp.starttime = VIDEODRIVER.GetTickCount();
 
         messages.push_back(tmp);
     }

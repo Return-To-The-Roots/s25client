@@ -73,7 +73,7 @@ const unsigned short REMAINING_TIME_SPACE = 10;
  *  @author OLiver
  */
 iwDiplomacy::iwDiplomacy()
-    : IngameWindow(CGI_DIPLOMACY, (unsigned short) - 1, (unsigned short) - 1, 500, FIRST_LINE_Y + GameClient::inst().GetPlayerCount() * (CELL_HEIGHT + SPACE_HEIGHT) + 20, _("Diplomacy"),
+    : IngameWindow(CGI_DIPLOMACY, (unsigned short) - 1, (unsigned short) - 1, 500, FIRST_LINE_Y + GAMECLIENT.GetPlayerCount() * (CELL_HEIGHT + SPACE_HEIGHT) + 20, _("Diplomacy"),
                    LOADER.GetImageN("resource", 41))
 {
     // "Header" der Tabelle
@@ -82,22 +82,22 @@ iwDiplomacy::iwDiplomacy()
 
 
 
-    for(unsigned i = 0; i < GameClient::inst().GetPlayerCount(); ++i)
+    for(unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
     {
-        if(GameClient::inst().GetPlayer(i)->ps == PS_KI || GameClient::inst().GetPlayer(i)->ps == PS_OCCUPIED)
+        if(GAMECLIENT.GetPlayer(i)->ps == PS_KI || GAMECLIENT.GetPlayer(i)->ps == PS_OCCUPIED)
         {
             // Einzelne Spielernamen
             AddText(100 + i, LINE_DISTANCE_TO_MARGINS + 10, FIRST_LINE_Y + i * (CELL_HEIGHT + SPACE_HEIGHT) + CELL_HEIGHT / 2,
-                    GameClient::inst().GetPlayer(i)->name, COLORS[GameClient::inst().GetPlayer(i)->color], glArchivItem_Font::DF_VCENTER,
+                    GAMECLIENT.GetPlayer(i)->name, COLORS[GAMECLIENT.GetPlayer(i)->color], glArchivItem_Font::DF_VCENTER,
                     NormalFont);
 
-            if(GameClient::inst().GetPlayer(i)->ps == PS_OCCUPIED)
+            if(GAMECLIENT.GetPlayer(i)->ps == PS_OCCUPIED)
                 // Ping
                 AddDeepening(200 + i, LINE_DISTANCE_TO_MARGINS + PING_FIELD_POS - PING_FIELD_WIDTH / 2,
                              FIRST_LINE_Y + i * (CELL_HEIGHT + SPACE_HEIGHT) + CELL_HEIGHT / 2 - 11, PING_FIELD_WIDTH, 22, TC_GREY, "0", NormalFont, COLOR_YELLOW);
 
             // An sich selber braucht man keine Bündnisse zu schließen
-            if(GameClient::inst().GetPlayerID() != i)
+            if(GAMECLIENT.GetPlayerID() != i)
             {
                 // Bündnisvertrag-Button
                 glArchivItem_Bitmap* image = LOADER.GetImageN("io", 61);
@@ -128,11 +128,11 @@ iwDiplomacy::iwDiplomacy()
 void iwDiplomacy::Msg_PaintBefore()
 {
     // Die farbigen Zeilen malen
-    for(unsigned i = 0; i < GameClient::inst().GetPlayerCount(); ++i)
+    for(unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
     {
         // Rechtecke in Spielerfarbe malen mit entsprechender Transparenz
         Window::DrawRectangle(GetX() + LINE_DISTANCE_TO_MARGINS, GetY() + FIRST_LINE_Y + i * (CELL_HEIGHT + SPACE_HEIGHT), width - 2 * LINE_DISTANCE_TO_MARGINS, CELL_HEIGHT,
-                              (COLORS[GameClient::inst().GetPlayer(i)->color] & 0x00FFFFFF) | 0x40000000);
+                              (COLORS[GAMECLIENT.GetPlayer(i)->color] & 0x00FFFFFF) | 0x40000000);
     }
 }
 
@@ -145,7 +145,7 @@ void iwDiplomacy::Msg_PaintAfter()
     };
 
 
-    for(unsigned i = 0; i < GameClient::inst().GetPlayerCount(); ++i)
+    for(unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
     {
         // Farben der Bündnis-Buttons setzen, je nachdem wie der Status ist
 
@@ -154,18 +154,18 @@ void iwDiplomacy::Msg_PaintAfter()
         // Bündnisvertrag
         if(button)
             // Farbe je nach Bündnisstatus setzen
-            button->SetModulationColor(PACT_COLORS[GameClient::inst().GetLocalPlayer()->GetPactState(TREATY_OF_ALLIANCE, i)]);
+            button->SetModulationColor(PACT_COLORS[GAMECLIENT.GetLocalPlayer()->GetPactState(TREATY_OF_ALLIANCE, i)]);
         // Nicht-Angriffspakt
         button = GetCtrl<ctrlImageButton>(400 + i);
         if(button)
             // Farbe je nach Bündnisstatus setzen
-            button->SetModulationColor(PACT_COLORS[GameClient::inst().GetLocalPlayer()->GetPactState(NON_AGGRESSION_PACT, i)]);
+            button->SetModulationColor(PACT_COLORS[GAMECLIENT.GetLocalPlayer()->GetPactState(NON_AGGRESSION_PACT, i)]);
 
         // Ggf. Ping aktualisieren
         if(ctrlDeepening* pingfield = GetCtrl<ctrlDeepening>(200 + i))
         {
             char ping[64];
-            sprintf(ping, "%u", GameClient::inst().GetPlayer(i)->ping);
+            sprintf(ping, "%u", GAMECLIENT.GetPlayer(i)->ping);
             pingfield->SetText(ping);
         }
 
@@ -174,11 +174,11 @@ void iwDiplomacy::Msg_PaintAfter()
         {
             for(unsigned z = 0; z < 2; ++z)
             {
-                unsigned duration = GameClient::inst().GetLocalPlayer()->GetRemainingPactTime(PactType(z), i);
+                unsigned duration = GAMECLIENT.GetLocalPlayer()->GetRemainingPactTime(PactType(z), i);
                 // Überhaupt ein Bündnis abgeschlossen und Bündnis nicht für die Ewigkeit?
                 if(duration > 0 && duration != 0xFFFFFFFF)
                     // Dann entsprechende Zeit setzen
-                    GetCtrl<ctrlText>(500 + z * 100 + i)->SetText(GameClient::inst().FormatGFTime(duration));
+                    GetCtrl<ctrlText>(500 + z * 100 + i)->SetText(GAMECLIENT.FormatGFTime(duration));
                 else
                     // Ansonsten leer
                     GetCtrl<ctrlText>(500 + z * 100 + i)->SetText("");
@@ -189,9 +189,9 @@ void iwDiplomacy::Msg_PaintAfter()
 
 void iwDiplomacy::Msg_ButtonClick(const unsigned int ctrl_id)
 {
-    if (GameClient::inst().GetGGS().lock_teams)
+    if (GAMECLIENT.GetGGS().lock_teams)
     {
-        WindowManager::inst().Show(new iwMsgbox(_("Teams locked"), _("As the teams are locked, you cannot make treaties of any kind."), NULL, MSB_OK, MSB_EXCLAMATIONGREEN, 1));
+        WINDOWMANAGER.Show(new iwMsgbox(_("Teams locked"), _("As the teams are locked, you cannot make treaties of any kind."), NULL, MSB_OK, MSB_EXCLAMATIONGREEN, 1));
         return;
     }
 
@@ -200,24 +200,24 @@ void iwDiplomacy::Msg_ButtonClick(const unsigned int ctrl_id)
     {
         unsigned char player_id = static_cast<unsigned char>(ctrl_id - 300);
         // Noch kein Bündnis abgeschlossen?
-        if(GameClient::inst().GetLocalPlayer()->GetPactState(TREATY_OF_ALLIANCE, player_id) == GameClientPlayer::NO_PACT)
+        if(GAMECLIENT.GetLocalPlayer()->GetPactState(TREATY_OF_ALLIANCE, player_id) == GameClientPlayer::NO_PACT)
             // Dann neues Bündnis vorschlagen
-            WindowManager::inst().Show(new iwSuggestPact(TREATY_OF_ALLIANCE, player_id));
+            WINDOWMANAGER.Show(new iwSuggestPact(TREATY_OF_ALLIANCE, player_id));
         else
             // ansonsten Vertrag versuchen abzubrechen
-            GameClient::inst().AddGC(new gc::CancelPact(TREATY_OF_ALLIANCE, player_id));
+            GAMECLIENT.AddGC(new gc::CancelPact(TREATY_OF_ALLIANCE, player_id));
     }
     // Nichtangriffspakte
     if(ctrl_id >= 400 && ctrl_id < 500)
     {
         unsigned char player_id = static_cast<unsigned char>(ctrl_id - 400);
         // Noch kein Bündnis abgeschlossen?
-        if(GameClient::inst().GetLocalPlayer()->GetPactState(NON_AGGRESSION_PACT, player_id) == GameClientPlayer::NO_PACT)
+        if(GAMECLIENT.GetLocalPlayer()->GetPactState(NON_AGGRESSION_PACT, player_id) == GameClientPlayer::NO_PACT)
             // Dann neues Bündnis vorschlagen
-            WindowManager::inst().Show(new iwSuggestPact(NON_AGGRESSION_PACT, player_id));
+            WINDOWMANAGER.Show(new iwSuggestPact(NON_AGGRESSION_PACT, player_id));
         else
             // ansonsten Vertrag versuchen abzubrechen
-            GameClient::inst().AddGC(new gc::CancelPact(NON_AGGRESSION_PACT, player_id));
+            GAMECLIENT.AddGC(new gc::CancelPact(NON_AGGRESSION_PACT, player_id));
     }
 
 }
@@ -272,7 +272,7 @@ iwSuggestPact::iwSuggestPact(const PactType pt, const unsigned char player) : In
     AddText(1, 100, 30, _("Contract type:"), COLOR_YELLOW, 0, NormalFont);
     AddText(2, 100, 45, _(PACT_NAMES[pt]), COLOR_GREEN, 0, NormalFont);
     AddText(3, 100, 70, _("To player:"), COLOR_YELLOW, 0, NormalFont);
-    AddText(4, 100, 85, GameClient::inst().GetPlayer(player)->name, COLORS[GameClient::inst().GetPlayer(player)->color], 0, NormalFont);
+    AddText(4, 100, 85, GAMECLIENT.GetPlayer(player)->name, COLORS[GAMECLIENT.GetPlayer(player)->color], 0, NormalFont);
     AddText(5, 100, 110, _("Duration:"), COLOR_YELLOW, 0, NormalFont);
     ctrlComboBox* combo = AddComboBox(6, 100, 125, 190, 22, TC_GREEN2, NormalFont, 100);
 
@@ -280,7 +280,7 @@ iwSuggestPact::iwSuggestPact(const PactType pt, const unsigned char player) : In
     for(unsigned i = 0; i < DURATION_COUNT; ++i)
     {
         char str[256];
-        sprintf(str, "%s  (%s)", DURATION_NAMES[i], GameClient::inst().FormatGFTime(DURATIONS[i]).c_str());
+        sprintf(str, "%s  (%s)", DURATION_NAMES[i], GAMECLIENT.FormatGFTime(DURATIONS[i]).c_str());
         combo->AddString(str);
     }
     // Erstes Item in der Combobox vorerst auswählen
@@ -298,6 +298,6 @@ void iwSuggestPact::Msg_ButtonClick(const unsigned int ctrl_id)
     /// Dauer auswählen (wenn id == DURATION_COUNT, dann "für alle Ewigkeit" ausgewählt)
     unsigned selected_id = GetCtrl<ctrlComboBox>(6)->GetSelection();
     unsigned duration = (selected_id == DURATION_COUNT) ? 0xFFFFFFFF : DURATIONS[selected_id];
-    GameClient::inst().AddGC(new gc::SuggestPact(player, this->pt, duration));
+    GAMECLIENT.AddGC(new gc::SuggestPact(player, this->pt, duration));
     Close();
 }

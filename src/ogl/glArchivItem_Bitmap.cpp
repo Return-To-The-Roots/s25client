@@ -105,7 +105,7 @@ void glArchivItem_Bitmap::Draw(short dst_x, short dst_y, short dst_w, short dst_
     if(dst_h == 0)
         dst_h = src_h;
 
-    VideoDriverWrapper::inst().BindTexture(texture);
+    VIDEODRIVER.BindTexture(texture);
 
     assert(getBobType() != libsiedler2::BOBTYPE_BITMAP_PLAYER);
 
@@ -167,7 +167,7 @@ unsigned int glArchivItem_Bitmap::GetTexture()
  */
 void glArchivItem_Bitmap::DeleteTexture()
 {
-    VideoDriverWrapper::inst().DeleteTexture(texture);
+    VIDEODRIVER.DeleteTexture(texture);
     //glDeleteTextures(1, (const GLuint*)&texture);
     texture = 0;
 }
@@ -198,12 +198,12 @@ void glArchivItem_Bitmap::setFilter(unsigned int filter)
  */
 void glArchivItem_Bitmap::GenerateTexture(void)
 {
-    texture = VideoDriverWrapper::inst().GenerateTexture();
+    texture = VIDEODRIVER.GenerateTexture();
 
     if(!palette)
         setPalette(LOADER.GetPaletteN("pal5"));
 
-    VideoDriverWrapper::inst().BindTexture(texture);
+    VIDEODRIVER.BindTexture(texture);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);

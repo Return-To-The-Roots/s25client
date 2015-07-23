@@ -103,14 +103,14 @@ void iwObservate::Msg_ButtonClick(const unsigned int ctrl_id)
             for (unsigned i = 1; i <= 4; ++i)
                 GetCtrl<ctrlImageButton>(i)->Move(GetCtrl<ctrlImageButton>(i)->GetX(false) - diff, GetHeight() - 50);
 
-            if (x + width >= VideoDriverWrapper::inst().GetScreenWidth())
+            if (x + width >= VIDEODRIVER.GetScreenWidth())
             {
-                Move(VideoDriverWrapper::inst().GetScreenWidth() - width - 1, y);
+                Move(VIDEODRIVER.GetScreenWidth() - width - 1, y);
             }
 
-            if (y + height >= VideoDriverWrapper::inst().GetScreenHeight())
+            if (y + height >= VIDEODRIVER.GetScreenHeight())
             {
-                Move(x, VideoDriverWrapper::inst().GetScreenHeight() - height - 1);
+                Move(x, VIDEODRIVER.GetScreenHeight() - height - 1);
             }
     }
 }
@@ -149,7 +149,7 @@ bool iwObservate::Msg_MouseMove(const MouseCoords& mc)
             view->MoveTo( ( sx - mc.x) * 2,  ( sy - mc.y) * 2);
         else
             view->MoveTo(-( sx - mc.x) * 2, -( sy - mc.y) * 2);
-        VideoDriverWrapper::inst().SetMousePos(sx, sy);
+        VIDEODRIVER.SetMousePos(sx, sy);
     }
 
     return(false);

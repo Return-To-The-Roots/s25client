@@ -98,14 +98,14 @@ void glArchivItem_Bitmap_Player::Draw(short dst_x, short dst_y, short dst_w, sho
 
     glInterleavedArrays(GL_T2F_C4UB_V3F, 0, tmp);
 
-    VideoDriverWrapper::inst().BindTexture(texture);
+    VIDEODRIVER.BindTexture(texture);
 
     glDrawArrays(GL_QUADS, 0, 8);
 }
 
 void glArchivItem_Bitmap_Player::GenerateTexture(void)
 {
-    texture = VideoDriverWrapper::inst().GenerateTexture();
+    texture = VIDEODRIVER.GenerateTexture();
 
     // Spezialpalette (blaue Spielerfarben sind Grau) verwenden,
     // damit man per OpenGL einfärben kann!
@@ -115,7 +115,7 @@ void glArchivItem_Bitmap_Player::GenerateTexture(void)
 
     unsigned char* buffer = new unsigned char[tex_width * 2 * tex_height * 4];
 
-    VideoDriverWrapper::inst().BindTexture(texture);
+    VIDEODRIVER.BindTexture(texture);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);

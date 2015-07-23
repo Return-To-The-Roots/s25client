@@ -59,7 +59,7 @@ void nofStonemason::DrawWorking(int x, int y)
 
     if(now_id % 8 == 5)
     {
-        SoundManager::inst().PlayNOSound(56, this, now_id);
+        SOUNDMANAGER.PlayNOSound(56, this, now_id);
         was_sounding = true;
     }
 

@@ -200,7 +200,7 @@ iwAction::iwAction(dskGameInterface* const gi, GameWorldViewer* const gwv, const
         }
 
         // Mint and Goldmine
-        if(GameClient::inst().GetGGS().isEnabled(ADDON_CHANGE_GOLD_DEPOSITS))
+        if(GAMECLIENT.GetGGS().isEnabled(ADDON_CHANGE_GOLD_DEPOSITS))
         {
             building_available[1][7] = false;
             building_available[3][0] = false;
@@ -211,7 +211,7 @@ iwAction::iwAction(dskGameInterface* const gi, GameWorldViewer* const gwv, const
             building_available[1][12] = false;
 
         // Charburner
-        if(!GameClient::inst().GetGGS().isEnabled(ADDON_CHARBURNER))
+        if(!GAMECLIENT.GetGGS().isEnabled(ADDON_CHARBURNER))
             building_available[2][3] = false;
 
         for(unsigned char i = 0; i < TABS_COUNT[tabs.build_tabs]; ++i)
@@ -325,7 +325,7 @@ iwAction::iwAction(dskGameInterface* const gi, GameWorldViewer* const gwv, const
         ctrlGroup* group = main_tab->AddTab(LOADER.GetImageN("io", 177), _("Attack options"), TAB_SEAATTACK);
 
         selected_soldiers_count_sea = 1;
-        available_soldiers_count_sea = gwv->GetAvailableSoldiersForSeaAttackCount(GameClient::inst().GetPlayerID(), selected_x, selected_y);
+        available_soldiers_count_sea = gwv->GetAvailableSoldiersForSeaAttackCount(GAMECLIENT.GetPlayerID(), selected_x, selected_y);
 
         AddAttackControls(group, available_soldiers_count_sea);
     }
@@ -343,19 +343,19 @@ iwAction::iwAction(dskGameInterface* const gi, GameWorldViewer* const gwv, const
 
     main_tab->SetSelection(0, true);
 
-    if(x + GetWidth() > VideoDriverWrapper::inst().GetScreenWidth())
+    if(x + GetWidth() > VIDEODRIVER.GetScreenWidth())
         x = mouse_x - GetWidth() - 40;
-    if(y + GetHeight() > VideoDriverWrapper::inst().GetScreenHeight())
+    if(y + GetHeight() > VIDEODRIVER.GetScreenHeight())
         y = mouse_y - GetHeight() - 40;
 
-    VideoDriverWrapper::inst().SetMousePos(GetX() + 20, GetY() + 75);
+    VIDEODRIVER.SetMousePos(GetX() + 20, GetY() + 75);
 }
 
 void iwAction::AddUpgradeRoad(ctrlGroup* group, unsigned int& x, unsigned int& width)
 {
     assert(group);
 
-    if(GameClient::inst().GetGGS().isEnabled(ADDON_MANUAL_ROAD_ENLARGEMENT))
+    if(GAMECLIENT.GetGGS().isEnabled(ADDON_MANUAL_ROAD_ENLARGEMENT))
     {
         unsigned char flag_dir = 0;
         noFlag* flag = gwv->GetRoadFlag(selected_x, selected_y, flag_dir);
@@ -414,7 +414,7 @@ void iwAction::AddAttackControls(ctrlGroup* group, const unsigned attackers_coun
 
 iwAction::~iwAction()
 {
-    VideoDriverWrapper::inst().SetMousePos(last_x, last_y);
+    VIDEODRIVER.SetMousePos(last_x, last_y);
     gi->ActionWindowClosed();
 }
 
@@ -654,7 +654,7 @@ void iwAction::Msg_ButtonClick_TabFlag(const unsigned int ctrl_id)
 
                 }
 
-                WindowManager::inst().Show(new iwDemolishBuilding(gwv, building, true));
+                WINDOWMANAGER.Show(new iwDemolishBuilding(gwv, building, true));
             }
             else
             {
@@ -731,7 +731,7 @@ void iwAction::Msg_ButtonClick_TabWatch(const unsigned int ctrl_id)
         {
             Close();
 // TODO: bestimen, was an der position selected_x, selected_y ist
-            WindowManager::inst().Show(new iwObservate(gwv, selected_x, selected_y));
+            WINDOWMANAGER.Show(new iwObservate(gwv, selected_x, selected_y));
         } break;
         case 2: // Häusernamen/Prozent anmachen
         {

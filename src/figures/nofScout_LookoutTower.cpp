@@ -78,8 +78,8 @@ void nofScout_LookoutTower::WorkplaceReached()
     gwg->SetVisibilitiesAroundPoint(x, y, VISUALRANGE_LOOKOUTTOWER, player);
 
     // Und Post versenden
-    if(GameClient::inst().GetPlayerID() == this->player)
-        GameClient::inst().SendPostMessage(new ImagePostMsgWithLocation(
+    if(GAMECLIENT.GetPlayerID() == this->player)
+        GAMECLIENT.SendPostMessage(new ImagePostMsgWithLocation(
                                                _("Lookout-tower occupied"), PMC_MILITARY, x, y, workplace->GetBuildingType(), workplace->GetNation()));
 
 }

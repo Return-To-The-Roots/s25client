@@ -63,21 +63,21 @@ iwMsgbox::iwMsgbox(const std::string& title, const std::string& text, Window* pa
         case MSB_OK:
         {
             AddButton(0, width / 2 - 45, _("OK"), TC_GREEN2);
-            VideoDriverWrapper::inst().SetMousePos(GetX() + width / 2, GetY() + 110);
+            VIDEODRIVER.SetMousePos(GetX() + width / 2, GetY() + 110);
         } break;
 
         case MSB_OKCANCEL:
         {
             AddButton(0, width / 2 - 3 - 90, _("OK"), TC_GREEN2);
             AddButton(1, width / 2 + 3, _("Cancel"), TC_RED1);
-            VideoDriverWrapper::inst().SetMousePos(GetX() + width / 2 + 3 + 45, GetY() + 110);
+            VIDEODRIVER.SetMousePos(GetX() + width / 2 + 3 + 45, GetY() + 110);
         } break;
 
         case MSB_YESNO:
         {
             AddButton(0, width / 2 - 3 - 90, _("Yes"), TC_GREEN2);
             AddButton(1, width / 2 + 3, _("No"), TC_RED1);
-            VideoDriverWrapper::inst().SetMousePos(GetX() + width / 2 + 3 + 45, GetY() + 110);
+            VIDEODRIVER.SetMousePos(GetX() + width / 2 + 3 + 45, GetY() + 110);
         } break;
 
         case MSB_YESNOCANCEL:
@@ -85,7 +85,7 @@ iwMsgbox::iwMsgbox(const std::string& title, const std::string& text, Window* pa
             AddButton(0, width / 2 - 45 - 6 - 90, _("Yes"), TC_GREEN2);
             AddButton(1, width / 2 - 45, _("No"), TC_RED1);
             AddButton(2, width / 2 + 45 + 6, _("Cancel"), TC_GREY);
-            VideoDriverWrapper::inst().SetMousePos(GetX() + width / 2 + 6 + 90, GetY() + 110);
+            VIDEODRIVER.SetMousePos(GetX() + width / 2 + 6 + 90, GetY() + 110);
         } break;
     }
 }

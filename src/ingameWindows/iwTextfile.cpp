@@ -56,7 +56,7 @@ iwTextfile::iwTextfile(const std::string& filename, const std::string& title)
     : IngameWindow(CGI_README, 0xFFFF, 0xFFFF, 640, 480, title, LOADER.GetImageN("resource", 41))
 {
     // Pfad mit gewählter Sprache auswählen
-    std::string path = GetFilePath(FILE_PATHS[88]) + Settings::inst().language.language + "/" + filename;
+    std::string path = GetFilePath(FILE_PATHS[88]) + SETTINGS.language.language + "/" + filename;
 
     std::ifstream file(path.c_str());
 

@@ -58,7 +58,7 @@ void nofCarpenter::DrawWorking(int x, int y)
     // Evtl Sound abspielen
     if(now_id % 8 == 3 || now_id % 8 == 7)
     {
-        SoundManager::inst().PlayNOSound(54 + ((now_id) % 8) / 4, this, now_id / 4);
+        SOUNDMANAGER.PlayNOSound(54 + ((now_id) % 8) / 4, this, now_id / 4);
         was_sounding = true;
     }
 

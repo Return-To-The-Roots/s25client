@@ -75,7 +75,7 @@ void nofFarmer::DrawWorking(int x, int y)
         // Evtl Sound abspielen
         if(now_id % 8 == 3)
         {
-            SoundManager::inst().PlayNOSound(64, this, now_id / 8);
+            SOUNDMANAGER.PlayNOSound(64, this, now_id / 8);
             was_sounding = true;
         }
 

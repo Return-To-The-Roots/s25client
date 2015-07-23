@@ -156,19 +156,19 @@ dskHostGame::dskHostGame(bool single_player) :
     combo->AddString(_("Very fast")); // Sehr Schnell
 
     // Karte laden, um Kartenvorschau anzuzeigen
-    if(GameClient::inst().GetMapType() == MAPTYPE_OLDMAP)
+    if(GAMECLIENT.GetMapType() == MAPTYPE_OLDMAP)
     {
         // Map laden
         libsiedler2::ArchivInfo ai;
         // Karteninformationen laden
-        if(libsiedler2::loader::LoadMAP(GameClient::inst().GetMapPath().c_str(), &ai) == 0)
+        if(libsiedler2::loader::LoadMAP(GAMECLIENT.GetMapPath().c_str(), &ai) == 0)
         {
             glArchivItem_Map* map = static_cast<glArchivItem_Map*>(ai.get(0));
             ctrlPreviewMinimap* preview = AddPreviewMinimap(70, 560, 40, 220, 220, map);
 
             // Titel der Karte, Y-Position relativ je nach Höhe der Minimap festlegen, daher nochmals danach
             // verschieben, da diese Position sonst skaliert wird!
-            ctrlText* text = AddText(71, 670, 0, _("Map: ") +  GameClient::inst().GetMapTitle(), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, NormalFont);
+            ctrlText* text = AddText(71, 670, 0, _("Map: ") +  GAMECLIENT.GetMapTitle(), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, NormalFont);
             text->Move(text->GetX(false), preview->GetY(false) + preview->GetBottom() + 10);
         }
     }
@@ -193,8 +193,8 @@ dskHostGame::dskHostGame(bool single_player) :
             AddTextButton(80 + i, 5, 80 + (i - 1) * 30, 10, 22, TC_RED1, _("-"), NormalFont);;
     }
     // GGS aktualisieren, zum ersten Mal
-    GameClient::inst().LoadGGS();
-    this->CI_GGSChanged(GameClient::inst().GetGGS());
+    GAMECLIENT.LoadGGS();
+    this->CI_GGSChanged(GAMECLIENT.GetGGS());
 
     LOBBYCLIENT.SetInterface(this);
     if(LOBBYCLIENT.LoggedIn())
@@ -516,7 +516,7 @@ void dskHostGame::Msg_Group_ComboSelectItem(const unsigned int group_id, const u
         return;
     }
 
-    GameServer::inst().SwapPlayer(player_id, player2);
+    GAMESERVER.SwapPlayer(player_id, player2);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -559,7 +559,7 @@ void dskHostGame::Msg_ButtonClick(const unsigned int ctrl_id)
 
             if (p < MAX_PLAYERS)
             {
-                GameServer::inst().SwapPlayer(p, ctrl_id - 81);
+                GAMESERVER.SwapPlayer(p, ctrl_id - 81);
                 CI_PlayersSwapped(p, ctrl_id - 81);
             }
         } break;
@@ -572,13 +572,13 @@ void dskHostGame::Msg_ButtonClick(const unsigned int ctrl_id)
 
             if (single_player)
             {
-                WindowManager::inst().Switch(new dskSinglePlayer);
+                WINDOWMANAGER.Switch(new dskSinglePlayer);
             }
             else if(LOBBYCLIENT.LoggedIn())
-                WindowManager::inst().Switch(new dskLobby);
+                WINDOWMANAGER.Switch(new dskLobby);
             else
                 // Hauptmenü zeigen
-                WindowManager::inst().Switch(new dskDirectIP);
+                WINDOWMANAGER.Switch(new dskDirectIP);
 
         } break;
 
@@ -594,7 +594,7 @@ void dskHostGame::Msg_ButtonClick(const unsigned int ctrl_id)
                         ready->SetText(_("Cancel start"));
                     }
                     else
-                        WindowManager::inst().Show(new iwMsgbox(_("Error"), _("Game can only be started as soon as everybody has a unique color,everyone is ready and all free slots are closed."), this, MSB_OK, MSB_EXCLAMATIONRED, 10));
+                        WINDOWMANAGER.Show(new iwMsgbox(_("Error"), _("Game can only be started as soon as everybody has a unique color,everyone is ready and all free slots are closed."), this, MSB_OK, MSB_EXCLAMATIONRED, 10));
                 }
                 else
                     GAMESERVER.CancelCountdown();
@@ -611,7 +611,7 @@ void dskHostGame::Msg_ButtonClick(const unsigned int ctrl_id)
         {
             iwAddons* w = new iwAddons(&ggs, GAMECLIENT.IsHost() ? iwAddons::HOSTGAME : iwAddons::READONLY);
             w->SetParent(this);
-            WindowManager::inst().Show(w);
+            WINDOWMANAGER.Show(w);
         } break;
     }
 }
@@ -697,12 +697,12 @@ void dskHostGame::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult 
 
             if (single_player)
             {
-                WindowManager::inst().Switch(new dskSinglePlayer);
+                WINDOWMANAGER.Switch(new dskSinglePlayer);
             }
             else if(LOBBYCLIENT.LoggedIn())   // steht die Lobbyverbindung noch?
-                WindowManager::inst().Switch(new dskLobby);
+                WINDOWMANAGER.Switch(new dskLobby);
             else
-                WindowManager::inst().Switch(new dskDirectIP);
+                WINDOWMANAGER.Switch(new dskDirectIP);
         } break;
         case CGI_ADDONS: // addon-window applied settings?
         {
@@ -783,7 +783,7 @@ void dskHostGame::UpdateGGS()
     ggs.random_location = GetCtrl<ctrlCheck>(23)->GetCheck();
 
     // An Server übermitteln
-    GameServer::inst().ChangeGlobalGameSettings(ggs);
+    GAMESERVER.ChangeGlobalGameSettings(ggs);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -927,7 +927,7 @@ void dskHostGame::CI_PlayerLeft(const unsigned player_id)
 void dskHostGame::CI_GameStarted(GameWorldViewer* gwv)
 {
     // Desktop wechseln
-    WindowManager::inst().Switch(new dskGameLoader(gwv));
+    WINDOWMANAGER.Switch(new dskGameLoader(gwv));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1073,7 +1073,7 @@ void dskHostGame::CI_Error(const ClientError ce)
         case CE_CONNECTIONLOST:
         {
             // Verbindung zu Server abgebrochen
-            WindowManager::inst().Show(new iwMsgbox(_("Error"), _("Lost connection to server!"), this, MSB_OK, MSB_EXCLAMATIONRED, 0));
+            WINDOWMANAGER.Show(new iwMsgbox(_("Error"), _("Lost connection to server!"), this, MSB_OK, MSB_EXCLAMATIONRED, 0));
         } break;
         default: break;
     }
@@ -1102,5 +1102,5 @@ void dskHostGame::LC_RankingInfo(const LobbyPlayerInfo& player)
  */
 void dskHostGame::LC_Status_Error(const std::string& error)
 {
-    WindowManager::inst().Show(new iwMsgbox(_("Error"), error, this, MSB_OK, MSB_EXCLAMATIONRED, 0));
+    WINDOWMANAGER.Show(new iwMsgbox(_("Error"), error, this, MSB_OK, MSB_EXCLAMATIONRED, 0));
 }

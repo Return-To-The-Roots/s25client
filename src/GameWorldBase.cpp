@@ -258,7 +258,7 @@ void GameWorldBase::Unload()
             nodes[i].obj = NULL;
         }
 
-        for(unsigned z = 0; z < GameClient::inst().GetPlayerCount(); ++z)
+        for(unsigned z = 0; z < GAMECLIENT.GetPlayerCount(); ++z)
         {
             if(nodes[i].fow[z].object)
             {
@@ -1235,10 +1235,10 @@ void GameWorldBase::ChangeAltitude(const MapCoord x, const MapCoord y, const uns
     // Baumöglichkeiten neu berechnen
     // Direkt drumherum
     for(unsigned i = 0; i < 6; ++i)
-        SetBQ(GetXA(x, y, i), GetYA(x, y, i), GameClient::inst().GetPlayerID());
+        SetBQ(GetXA(x, y, i), GetYA(x, y, i), GAMECLIENT.GetPlayerID());
     // noch eine Schale weiter außen
     for(unsigned i = 0; i < 12; ++i)
-        SetBQ(GetXA2(x, y, i), GetYA2(x, y, i), GameClient::inst().GetPlayerID());
+        SetBQ(GetXA2(x, y, i), GetYA2(x, y, i), GAMECLIENT.GetPlayerID());
 
     // Abgeleiteter Klasse Bescheid sagen
     AltitudeChanged(x, y);
@@ -1278,12 +1278,12 @@ Visibility GameWorldBase::CalcWithAllyVisiblity(const MapCoord x, const MapCoord
         return best_visibility;
 
     /// Teamsicht aktiviert?
-    if(GameClient::inst().GetGGS().team_view)
+    if(GAMECLIENT.GetGGS().team_view)
     {
         // Dann prüfen, ob Teammitglieder evtl. eine bessere Sicht auf diesen Punkt haben
-        for(unsigned i = 0; i < GameClient::inst().GetPlayerCount(); ++i)
+        for(unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
         {
-            if(GameClient::inst().GetPlayer(i)->IsAlly(player))
+            if(GAMECLIENT.GetPlayer(i)->IsAlly(player))
             {
                 if(GetNode(x, y).fow[i].visibility > best_visibility)
                     best_visibility = GetNode(x, y).fow[i].visibility;
@@ -1572,7 +1572,7 @@ void GameWorldBase::GetValidSeaIDsAroundMilitaryBuildingForAttackCompare(const M
 		{
 			//target isnt the harbor pos AND there is an enemy harbor AND the sea attack addon is set to block on enemy harbor? -> done for this harbor pos
 			const nobHarborBuilding *hb=GetSpecObj<nobHarborBuilding>(harbor_x,harbor_y);
-			if(!(x == harbor_x && y == harbor_y) && hb && (players->getElement(player_attacker)->IsPlayerAttackable(GetNode(harbor_x,harbor_y).owner-1) && GameClient::inst().GetGGS().getSelection(ADDON_SEA_ATTACK)==1))
+			if(!(x == harbor_x && y == harbor_y) && hb && (players->getElement(player_attacker)->IsPlayerAttackable(GetNode(harbor_x,harbor_y).owner-1) && GAMECLIENT.GetGGS().getSelection(ADDON_SEA_ATTACK)==1))
 			{				
 				continue;
 			}
@@ -1676,7 +1676,7 @@ void GameWorldBase::GetValidSeaIDsAroundMilitaryBuildingForAttack(const MapCoord
 		{
 			//target isnt the harbor pos AND there is an enemy harbor AND the sea attack addon is set to block on enemy harbor? -> done for this harbor pos
 			const nobHarborBuilding *hb=GetSpecObj<nobHarborBuilding>(harbor_x,harbor_y);
-			if(!(x == harbor_x && y == harbor_y) && hb && (players->getElement(player_attacker)->IsPlayerAttackable(GetNode(harbor_x,harbor_y).owner-1) && GameClient::inst().GetGGS().getSelection(ADDON_SEA_ATTACK)==1))
+			if(!(x == harbor_x && y == harbor_y) && hb && (players->getElement(player_attacker)->IsPlayerAttackable(GetNode(harbor_x,harbor_y).owner-1) && GAMECLIENT.GetGGS().getSelection(ADDON_SEA_ATTACK)==1))
 			{				
 				continue;
 			}
@@ -1844,7 +1844,7 @@ void GameWorldBase::GetAvailableSoldiersForSeaAttack(const unsigned char player_
         std::list<GameWorldBase::PotentialSeaAttacker> * attackers) const
 {
     //sea attack abgeschaltet per addon?
-    if(GameClient::inst().GetGGS().getSelection(ADDON_SEA_ATTACK) == 2)
+    if(GAMECLIENT.GetGGS().getSelection(ADDON_SEA_ATTACK) == 2)
         return;
     // Ist das Ziel auch ein richtiges Militärgebäude?
     if(GetNO(x, y)->GetGOT() != GOT_NOB_HARBORBUILDING && GetNO(x, y)->GetGOT() !=  GOT_NOB_HQ
@@ -2394,7 +2394,7 @@ int GameWorldBase::LUA_MissionStatement(lua_State *L)
         message.append(luaL_checklstring(L, n, NULL));
     }
     
-    WindowManager::inst().Show(new iwMissionStatement(luaL_checklstring(L, 2, NULL), message));
+    WINDOWMANAGER.Show(new iwMissionStatement(luaL_checklstring(L, 2, NULL), message));
     
     return(0);
 }
@@ -2610,7 +2610,7 @@ int GameWorldBase::LUA_AIConstructionOrder(lua_State *L)
     unsigned id = (unsigned) luaL_checknumber(L, 4);
 	BuildingType bt=static_cast<BuildingType>(id);
     
-    GameClient::inst().SendAIEvent(new AIEvent::Building(AIEvent::LuaConstructionOrder, x, y,bt), pn);  
+    GAMECLIENT.SendAIEvent(new AIEvent::Building(AIEvent::LuaConstructionOrder, x, y,bt), pn);  
     
     lua_pushnumber(L, 1);
     return(1);

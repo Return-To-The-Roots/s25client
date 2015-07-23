@@ -81,7 +81,7 @@ void glArchivItem_Bitmap_Direct::tex_setPixel(unsigned short x, unsigned short y
             else
                 this->palette->get(color, &buffer[0], &buffer[1], &buffer[2]);
 
-            VideoDriverWrapper::inst().BindTexture(texture);
+            VIDEODRIVER.BindTexture(texture);
             glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &buffer);
         }
     }
@@ -112,7 +112,7 @@ void glArchivItem_Bitmap_Direct::tex_setPixel(unsigned short x, unsigned short y
         {
             unsigned char buffer[4] = { r, g, b, a };
 
-            VideoDriverWrapper::inst().BindTexture(texture);
+            VIDEODRIVER.BindTexture(texture);
             glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &buffer);
         }
     }

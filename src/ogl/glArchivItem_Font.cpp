@@ -382,7 +382,7 @@ void glArchivItem_Font::Draw(short x,
     }
 
     glInterleavedArrays(GL_T2F_V3F, 0, tmp);
-    VideoDriverWrapper::inst().BindTexture(((format & DF_NO_OUTLINE) == DF_NO_OUTLINE) ? _font->GetTexture() : _font_outline->GetTexture());
+    VIDEODRIVER.BindTexture(((format & DF_NO_OUTLINE) == DF_NO_OUTLINE) ? _font->GetTexture() : _font_outline->GetTexture());
     glDrawArrays(GL_QUADS, 0, idx);
 
     delete[] tmp;

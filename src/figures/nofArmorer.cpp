@@ -71,7 +71,7 @@ void nofArmorer::DrawWorking(int x, int y)
 
         if((now_id % 8) == 5)
         {
-            SoundManager::inst().PlayNOSound(52, this, now_id / 8);
+            SOUNDMANAGER.PlayNOSound(52, this, now_id / 8);
             was_sounding = true;
         }
     }
@@ -102,7 +102,7 @@ void nofArmorer::HandleDerivedEvent(const unsigned int id)
     {
         case STATE_WAITING1:
         {
-			if(!GameClient::inst().GetGGS().isEnabled(ADDON_HALF_COST_MIL_EQUIP) || !sword_shield)
+			if(!GAMECLIENT.GetGGS().isEnabled(ADDON_HALF_COST_MIL_EQUIP) || !sword_shield)
 			{
 				//LOG.lprintf("armorer handlewait1 - consume wares %i \n",player);
 				nofWorkman::HandleStateWaiting1();
@@ -138,7 +138,7 @@ void nofArmorer::TryToWork()
         // Nun arbeite ich nich mehr
         StartNotWorking();
     }
-    else if ( workplace->WaresAvailable() || (GameClient::inst().GetGGS().isEnabled(ADDON_HALF_COST_MIL_EQUIP) && sword_shield )) 
+    else if ( workplace->WaresAvailable() || (GAMECLIENT.GetGGS().isEnabled(ADDON_HALF_COST_MIL_EQUIP) && sword_shield )) 
     {
         state = STATE_WAITING1;
         current_ev = em->AddEvent(this, JOB_CONSTS[job].wait1_length, 1);

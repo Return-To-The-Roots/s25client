@@ -57,7 +57,7 @@ ctrlButton::ctrlButton(Window* parent, unsigned int id, unsigned short x, unsign
  */
 ctrlButton::~ctrlButton()
 {
-    WindowManager::inst().SetToolTip(this, "");
+    WINDOWMANAGER.SetToolTip(this, "");
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -75,14 +75,14 @@ bool ctrlButton::Msg_MouseMove(const MouseCoords& mc)
         else
             state = BUTTON_HOVER;
 
-        WindowManager::inst().SetToolTip(this, tooltip);
+        WINDOWMANAGER.SetToolTip(this, tooltip);
 
         return true;
     }
     else
     {
         state =  BUTTON_UP;
-        WindowManager::inst().SetToolTip(this, "");
+        WINDOWMANAGER.SetToolTip(this, "");
 
         return false;
     }
@@ -145,7 +145,7 @@ void ctrlButton::TestMouseOver()
 {
     if(state == BUTTON_HOVER || state == BUTTON_PRESSED)
     {
-        if(!Coll(VideoDriverWrapper::inst().GetMouseX(), VideoDriverWrapper::inst().GetMouseY(),
+        if(!Coll(VIDEODRIVER.GetMouseX(), VIDEODRIVER.GetMouseY(),
                  GetX(), GetY(), width, height))
             // Nicht mehr drauf --> wieder normalen Zustand
             state = BUTTON_UP;

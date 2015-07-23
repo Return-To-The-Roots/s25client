@@ -40,7 +40,7 @@
 
 #include "GameServer.h"
 
-GameWorldViewer::GameWorldViewer() : scroll(false), sx(0), sy(0), view(GameWorldView(this, 0, 0, VideoDriverWrapper::inst().GetScreenWidth(), VideoDriverWrapper::inst().GetScreenHeight()))
+GameWorldViewer::GameWorldViewer() : scroll(false), sx(0), sy(0), view(GameWorldView(this, 0, 0, VIDEODRIVER.GetScreenWidth(), VIDEODRIVER.GetScreenHeight()))
 {
     MoveTo(0, 0);
 }
@@ -115,7 +115,7 @@ void GameWorldViewer::MouseMove(const MouseCoords& mc)
             MoveTo( ( sx - mc.x) * 2,  ( sy - mc.y) * 2);
         else
             MoveTo(-( sx - mc.x) * 2, -( sy - mc.y) * 2);
-        VideoDriverWrapper::inst().SetMousePos(sx, sy);
+        VIDEODRIVER.SetMousePos(sx, sy);
     }
 }
 
@@ -134,14 +134,14 @@ void GameWorldViewer::VisibilityChanged(const MapCoord x, const MapCoord y)
 Visibility GameWorldViewer::GetVisibility(const MapCoord x, const MapCoord y) const
 {
     /// Replaymodus und FoW aus? Dann alles sichtbar
-    if(GameClient::inst().IsReplayModeOn() && GameClient::inst().IsReplayFOWDisabled())
+    if(GAMECLIENT.IsReplayModeOn() && GAMECLIENT.IsReplayFOWDisabled())
         return VIS_VISIBLE;
 
     // Spieler schon tot? Dann auch alles sichtbar?
-    if(GameClient::inst().GetLocalPlayer()->isDefeated())
+    if(GAMECLIENT.GetLocalPlayer()->isDefeated())
         return VIS_VISIBLE;
 
-    return CalcWithAllyVisiblity(x, y, GameClient::inst().GetPlayerID());
+    return CalcWithAllyVisiblity(x, y, GAMECLIENT.GetPlayerID());
 }
 
 
@@ -216,7 +216,7 @@ noShip* GameWorldViewer::GetShip(const MapCoord x, const MapCoord y, const unsig
 unsigned GameWorldViewer::GetAvailableSoldiersForSeaAttackCount(const unsigned char player_attacker,
         const MapCoord x, const MapCoord y) const
 {
-    if(GameClient::inst().GetGGS().getSelection(ADDON_SEA_ATTACK) == 2) //deactivated by addon?
+    if(GAMECLIENT.GetGGS().getSelection(ADDON_SEA_ATTACK) == 2) //deactivated by addon?
         return 0;
     std::list<GameWorldBase::PotentialSeaAttacker> attackers;
     GetAvailableSoldiersForSeaAttack(player_attacker, x, y, &attackers);
@@ -234,17 +234,17 @@ const FOWObject* GameWorldViewer::GetYoungestFOWObject(const Point<MapCoord> pos
 /// with the local player via team view
 unsigned char GameWorldViewer::GetYoungestFOWNodePlayer(const Point<MapCoord> pos) const
 {
-    unsigned char local_player = GameClient::inst().GetPlayerID();
+    unsigned char local_player = GAMECLIENT.GetPlayerID();
     unsigned char youngest_player = local_player;
     unsigned youngest_time = GetNode(pos.x, pos.y).fow[local_player].last_update_time;
 
     // Shared team view enabled?
-    if(GameClient::inst().GetGGS().team_view)
+    if(GAMECLIENT.GetGGS().team_view)
     {
         // Then check if team members have a better (="younger", see our economy) fow object
-        for(unsigned i = 0; i < GameClient::inst().GetPlayerCount(); ++i)
+        for(unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
         {
-            if(GameClient::inst().GetPlayer(i)->IsAlly(local_player))
+            if(GAMECLIENT.GetPlayer(i)->IsAlly(local_player))
             {
                 // Has the player FOW at this point at all?
                 if(GetNode(pos.x, pos.y).fow[i].visibility == VIS_FOW)

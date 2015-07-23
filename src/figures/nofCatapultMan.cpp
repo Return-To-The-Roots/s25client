@@ -72,7 +72,7 @@ void nofCatapultMan::DrawWorking(int x, int y)
         default: return;
         case STATE_CATAPULT_TARGETBUILDING:
         {
-            int step = GameClient::inst().Interpolate(abs(wheel_steps) + 1, current_ev);
+            int step = GAMECLIENT.Interpolate(abs(wheel_steps) + 1, current_ev);
 
             if(step <= abs(wheel_steps))
             {
@@ -90,7 +90,7 @@ void nofCatapultMan::DrawWorking(int x, int y)
         } break;
         case STATE_CATAPULT_BACKOFF:
         {
-            int step = GameClient::inst().Interpolate((abs(wheel_steps) + 3) * 2, current_ev);
+            int step = GAMECLIENT.Interpolate((abs(wheel_steps) + 3) * 2, current_ev);
 
             if(step < 2 * 3)
                 // Katapult nach Schießen zeichnen (hin und her wippen
@@ -140,7 +140,7 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned int id)
             for(std::set<nobBaseMilitary*>::iterator it = buildings.begin(); it != buildings.end(); ++it)
             {
                 // Auch ein richtiges Militärgebäude (kein HQ usw.),
-                if((*it)->GetGOT() == GOT_NOB_MILITARY && GameClient::inst().GetPlayer(player)->IsPlayerAttackable((*it)->GetPlayer()))
+                if((*it)->GetGOT() == GOT_NOB_MILITARY && GAMECLIENT.GetPlayer(player)->IsPlayerAttackable((*it)->GetPlayer()))
                 {
                     // Was nicht im Nebel liegt und auch schon besetzt wurde (nicht neu gebaut)?
                     if(gwg->GetNode((*it)->GetX(), (*it)->GetY()).fow[player].visibility == VIS_VISIBLE
@@ -173,7 +173,7 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned int id)
             workplace->ConsumeWares();
 
             // Eins zufällig auswählen
-            target = pts[Random::inst().Rand(__FILE__, __LINE__, obj_id, pts.size())];
+            target = pts[RANDOM.Rand(__FILE__, __LINE__, obj_id, pts.size())];
 
             // Richtung, in die sich der Katapult drehen soll, bestimmen
             unsigned char shooting_dir;
@@ -229,7 +229,7 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned int id)
             // Stein in Bewegung setzen
 
             // Soll das Gebäude getroffen werden (70%)
-            bool hit = (Random::inst().Rand(__FILE__, __LINE__, obj_id, 99) < 70);
+            bool hit = (RANDOM.Rand(__FILE__, __LINE__, obj_id, 99) < 70);
 
             // Radius fürs Treffen und Nicht-Treffen,  (in Pixeln), nur visuell
             const int RADIUS_HIT = 15; // nicht nach unten hin!
@@ -246,7 +246,7 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned int id)
             else
             {
                 // Ansonsten zufälligen Punkt rundrum heraussuchen
-                unsigned d = Random::inst().Rand(__FILE__, __LINE__, obj_id, 6);
+                unsigned d = RANDOM.Rand(__FILE__, __LINE__, obj_id, 6);
 
                 dest_map_x = gwg->GetXA(target.x, target.y, d);
                 dest_map_y = gwg->GetYA(target.x, target.y, d);
@@ -281,10 +281,10 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned int id)
             // Bei getroffenen den Aufschlagspunkt am Gebäude ein bisschen variieren
             if(hit)
             {
-                dest_x += (Random::inst().Rand(__FILE__, __LINE__, obj_id, RADIUS_HIT * 2) - RADIUS_HIT);
+                dest_x += (RANDOM.Rand(__FILE__, __LINE__, obj_id, RADIUS_HIT * 2) - RADIUS_HIT);
                 // hier nicht nach unten gehen, da die Tür (also Nullpunkt
                 // ja schon ziemlich weit unten ist!
-                dest_y -= Random::inst().Rand(__FILE__, __LINE__, obj_id, RADIUS_HIT);
+                dest_y -= RANDOM.Rand(__FILE__, __LINE__, obj_id, RADIUS_HIT);
             }
 
             // Stein erzeugen

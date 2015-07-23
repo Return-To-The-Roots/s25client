@@ -853,13 +853,13 @@ void TerrainRenderer::Draw(GameWorldView* gwv, unsigned int* water)
             switch(i)
             {
                 case TT_WATER:
-                    VideoDriverWrapper::inst().BindTexture(GetImage(water, GAMECLIENT.GetGlobalAnimation(8, 5, 2, 0))->GetTexture());
+                    VIDEODRIVER.BindTexture(GetImage(water, GAMECLIENT.GetGlobalAnimation(8, 5, 2, 0))->GetTexture());
                     break;
                 case TT_LAVA:
-                    VideoDriverWrapper::inst().BindTexture(GetImage(lava, GAMECLIENT.GetGlobalAnimation(4, 5, 4, 0))->GetTexture());
+                    VIDEODRIVER.BindTexture(GetImage(lava, GAMECLIENT.GetGlobalAnimation(4, 5, 4, 0))->GetTexture());
                     break;
                 default:
-                    VideoDriverWrapper::inst().BindTexture(GetImage(textures, i)->GetTexture());
+                    VIDEODRIVER.BindTexture(GetImage(textures, i)->GetTexture());
             }
 
             for(std::list<MapTile>::iterator it = sorted_textures[i].begin(); it != sorted_textures[i].end(); ++it)
@@ -887,7 +887,7 @@ void TerrainRenderer::Draw(GameWorldView* gwv, unsigned int* water)
     {
         if(!sorted_borders[i].empty())
         {
-            VideoDriverWrapper::inst().BindTexture(GetImage(borders, i)->GetTexture());
+            VIDEODRIVER.BindTexture(GetImage(borders, i)->GetTexture());
 
             for(std::list<BorderTile>::iterator it = sorted_borders[i].begin(); it != sorted_borders[i].end(); ++it)
             {
@@ -1127,7 +1127,7 @@ void TerrainRenderer::DrawWays(GameWorldView* gwv)
         }
 
         glInterleavedArrays(GL_T2F_C3F_V3F, 0, tmp);
-        VideoDriverWrapper::inst().BindTexture(GetImage(roads, type)->GetTexture());
+        VIDEODRIVER.BindTexture(GetImage(roads, type)->GetTexture());
         glDrawArrays(GL_QUADS, 0, i);
 
         delete[] tmp;

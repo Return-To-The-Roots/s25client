@@ -67,7 +67,7 @@ void nofPlaner::GoalReached()
     state = STATE_WALKING;
 
     // Zufällig Uhrzeigersinn oder dagegen
-    pd = ( Random::inst().Rand(__FILE__, __LINE__, obj_id, 2) == 0 ) ? (PD_CLOCKWISE) : (PD_COUNTERCLOCKWISE);
+    pd = ( RANDOM.Rand(__FILE__, __LINE__, obj_id, 2) == 0 ) ? (PD_CLOCKWISE) : (PD_COUNTERCLOCKWISE);
 
     // Je nachdem erst nach rechts oder links gehen
     StartWalking((pd == PD_CLOCKWISE) ? 5 : 3);
@@ -123,7 +123,7 @@ void nofPlaner::LostWork()
         {
             em->RemoveEvent(current_ev);
             /// Sounds abmelden
-            SoundManager::inst().WorkingFinished(this);
+            SOUNDMANAGER.WorkingFinished(this);
         }
 
         StartWandering();
@@ -189,10 +189,10 @@ void nofPlaner::Draw(int x, int y)
 
             // Schaufel-Sound
             if(now_id == 5 || now_id == 46 || now_id == 60)
-                SoundManager::inst().PlayNOSound(76, this, now_id, 200);
+                SOUNDMANAGER.PlayNOSound(76, this, now_id, 200);
             // Tret-Sound
             else if(now_id == 20 || now_id == 28)
-                SoundManager::inst().PlayNOSound(66, this, now_id, 200);
+                SOUNDMANAGER.PlayNOSound(66, this, now_id, 200);
 
         } break;
 
@@ -210,7 +210,7 @@ void nofPlaner::HandleDerivedEvent(const unsigned int id)
         if(building_site)
             gwg->ChangeAltitude(x, y, gwg->GetNode(building_site->GetX(), building_site->GetY()).altitude);
         /// Sounds abmelden
-        SoundManager::inst().WorkingFinished(this);
+        SOUNDMANAGER.WorkingFinished(this);
 
         state = STATE_WALKING;
 

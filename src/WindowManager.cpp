@@ -328,7 +328,7 @@ void WindowManager::Msg_LeftDown(MouseCoords mc)
     LOADER.GetSoundN("sound", 112)->Play(255, false);
 
     // Ggf. Doppelklick untersuche
-    unsigned time_now = VideoDriverWrapper::inst().GetTickCount();
+    unsigned time_now = VIDEODRIVER.GetTickCount();
     if((time_now - last_left_click_time) * 1000 / CLOCKS_PER_SEC < DOUBLE_CLICK_INTERVAL
             && Point<int>(mc.x, mc.y) == last_left_click_point)
         mc.dbl_click = true;
@@ -713,13 +713,13 @@ void WindowManager::Msg_KeyDown(const KeyEvent& ke)
     {
         // Switch Fullscreen/Windowed
 #ifdef _WIN32
-        VideoDriverWrapper::inst().ResizeScreen(SETTINGS.video.fullscreen_width,
+        VIDEODRIVER.ResizeScreen(SETTINGS.video.fullscreen_width,
                                                 SETTINGS.video.fullscreen_height,
-                                                !VideoDriverWrapper::inst().IsFullscreen());
+                                                !VIDEODRIVER.IsFullscreen());
 #else
-        VideoDriverWrapper::inst().ResizeScreen(VideoDriverWrapper::inst().IsFullscreen() ? SETTINGS.video.windowed_width : SETTINGS.video.fullscreen_width,
-                                                VideoDriverWrapper::inst().IsFullscreen() ? SETTINGS.video.windowed_height : SETTINGS.video.fullscreen_height,
-                                                !VideoDriverWrapper::inst().IsFullscreen());
+        VIDEODRIVER.ResizeScreen(VIDEODRIVER.IsFullscreen() ? SETTINGS.video.windowed_width : SETTINGS.video.fullscreen_width,
+                                                VIDEODRIVER.IsFullscreen() ? SETTINGS.video.windowed_height : SETTINGS.video.fullscreen_height,
+                                                !VIDEODRIVER.IsFullscreen());
 #endif
     }
     else
@@ -768,7 +768,7 @@ void WindowManager::ScreenResized(unsigned short width, unsigned short height)
 //  if(lastScreenHeightSignal == height)
 //  if(lastScreenSignalCount == 500)
 //  {
-//      VideoDriverWrapper::inst().ResizeScreen(width, height, VideoDriverWrapper::inst().IsFullscreen());
+//      VIDEODRIVER.ResizeScreen(width, height, VIDEODRIVER.IsFullscreen());
 //      return;
 //  }
 
@@ -786,7 +786,7 @@ void WindowManager::ScreenResized(unsigned short width, unsigned short height)
 //  }
 
     // Und los
-    VideoDriverWrapper::inst().ResizeScreen(newWidth, newHeight, VideoDriverWrapper::inst().IsFullscreen());
+    VIDEODRIVER.ResizeScreen(newWidth, newHeight, VIDEODRIVER.IsFullscreen());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -812,7 +812,7 @@ void WindowManager::Msg_ScreenResize(unsigned short width, unsigned short height
     sr.newWidth  = screenWidth  = (width < 800 ? 800 : width);
     sr.newHeight = screenHeight = (height < 600 ? 600 : height);
 
-    SETTINGS.video.fullscreen = VideoDriverWrapper::inst().IsFullscreen();
+    SETTINGS.video.fullscreen = VIDEODRIVER.IsFullscreen();
     // Wenn es absolut nicht anders geht, lassen wir im temporär doch
     // kleiner als 800x600 zu, abspeichern tun wir die aber nie.
     if(!SETTINGS.video.fullscreen)
@@ -970,7 +970,7 @@ void WindowManager::DrawToolTip()
         unsigned x = mc->x + 30;
 
         // links neben der Maus, wenn es über den Rand gehen würde
-        if(right_edge > VideoDriverWrapper::inst().GetScreenWidth() )
+        if(right_edge > VIDEODRIVER.GetScreenWidth() )
             x = mc->x - 30 - text_width;
 
         unsigned int count = 0;

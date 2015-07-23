@@ -58,7 +58,7 @@ const unsigned IODAT_SHIP_ID = 218;
  */
 iwShip::iwShip(GameWorldViewer* const gwv, dskGameInterface* const gi, noShip* const ship)
     : IngameWindow(CGI_SHIP, (unsigned short) - 2, (unsigned short) - 2, 252, 238, _("Ship register"), LOADER.GetImageN("resource", 41)),
-      gwv(gwv), gi(gi), ship_id(ship ? GameClient::inst().GetPlayer(ship->GetPlayer())->GetShipID(ship) : 0), player(ship ? ship->GetPlayer() : GameClient::inst().GetPlayerID())
+      gwv(gwv), gi(gi), ship_id(ship ? GAMECLIENT.GetPlayer(ship->GetPlayer())->GetShipID(ship) : 0), player(ship ? ship->GetPlayer() : GAMECLIENT.GetPlayerID())
 {
     AddImage(  0, 126, 101, LOADER.GetImageN("io", 228));
     AddImageButton( 2, 18, 192, 30, 35, TC_GREY, LOADER.GetImageN("io", 225));  // Viewer: 226 - Hilfe
@@ -94,7 +94,7 @@ void iwShip::Msg_PaintBefore()
 void iwShip::Msg_PaintAfter()
 {
     // Schiff holen
-    noShip* ship = (player == 0xff) ? NULL : GameClient::inst().GetPlayer(player)->GetShipByID(ship_id);
+    noShip* ship = (player == 0xff) ? NULL : GAMECLIENT.GetPlayer(player)->GetShipByID(ship_id);
 
     // Kein Schiff gefunden? Dann erstes Schiff holen
     if(!ship)
@@ -102,7 +102,7 @@ void iwShip::Msg_PaintAfter()
         ship_id = 0;
         // Nochmal probieren
         if(player != 0xff)
-            ship = GameClient::inst().GetPlayer(player)->GetShipByID(ship_id);
+            ship = GAMECLIENT.GetPlayer(player)->GetShipByID(ship_id);
         // Immer noch nicht? Dann gibt es keine Schiffe mehr und wir zeigen eine entsprechende Meldung an
         if(!ship)
         {
@@ -116,7 +116,7 @@ void iwShip::Msg_PaintAfter()
     NormalFont->Draw(GetX() + 42, GetY() + 42, ship->GetName(), glArchivItem_Font::DF_NO_OUTLINE, COLOR_WINDOWBROWN);
     // Schiffs-Nr.
     char str[32];
-    sprintf(str, "%u/%u", ship_id + 1, GameClient::inst().GetPlayer(ship->GetPlayer())->GetShipCount());
+    sprintf(str, "%u/%u", ship_id + 1, GAMECLIENT.GetPlayer(ship->GetPlayer())->GetShipCount());
     NormalFont->Draw(GetX() + 208, GetY() + 42, str, glArchivItem_Font::DF_RIGHT | glArchivItem_Font::DF_NO_OUTLINE, COLOR_WINDOWBROWN);
     // Das Schiffs-Bild
     LOADER.GetImageN("boot_z", 12)->Draw(GetX() + 138, GetY() + 117);
@@ -145,7 +145,7 @@ void iwShip::Msg_PaintAfter()
 
 void iwShip::Msg_ButtonClick(const unsigned int ctrl_id)
 {
-    noShip* ship = GameClient::inst().GetPlayer(player)->GetShipByID(ship_id);
+    noShip* ship = GAMECLIENT.GetPlayer(player)->GetShipByID(ship_id);
 
     if(!ship)
         return;
@@ -153,7 +153,7 @@ void iwShip::Msg_ButtonClick(const unsigned int ctrl_id)
     // Expeditionskommando? (Schiff weiterfahren lassen, Kolonie gründen)
     if(ctrl_id >= 10 && ctrl_id <= 17)
     {
-        GameClient::inst().AddGC(new gc::ExpeditionCommand(gc::ExpeditionCommand::Action(ctrl_id - 10), ship_id));
+        GAMECLIENT.AddGC(new gc::ExpeditionCommand(gc::ExpeditionCommand::Action(ctrl_id - 10), ship_id));
         Close();
     }
 
@@ -169,7 +169,7 @@ void iwShip::Msg_ButtonClick(const unsigned int ctrl_id)
         case 4:
         {
             if(ship_id == 0)
-                ship_id = GameClient::inst().GetPlayer(ship->GetPlayer())->GetShipCount() - 1;
+                ship_id = GAMECLIENT.GetPlayer(ship->GetPlayer())->GetShipCount() - 1;
             else
                 --ship_id;
         } break;
@@ -177,14 +177,14 @@ void iwShip::Msg_ButtonClick(const unsigned int ctrl_id)
         case 5:
         {
             ++ship_id;
-            if(ship_id == GameClient::inst().GetPlayer(ship->GetPlayer())->GetShipCount())
+            if(ship_id == GAMECLIENT.GetPlayer(ship->GetPlayer())->GetShipCount())
                 ship_id = 0;
 
         } break;
         // Letztes Schiff
         case 6:
         {
-            ship_id = GameClient::inst().GetPlayer(ship->GetPlayer())->GetShipCount() - 1;
+            ship_id = GAMECLIENT.GetPlayer(ship->GetPlayer())->GetShipCount() - 1;
         } break;
         case 7: // "Gehe Zu Ort"
         {
@@ -192,7 +192,7 @@ void iwShip::Msg_ButtonClick(const unsigned int ctrl_id)
         } break;
         /*  case 2: // Hilfe
                 {
-                //  WindowManager::inst().Show(new iwHelp(GUI_ID(CGI_HELPBUILDING+ship->GetShipType()),_(BUILDING_NAMES[ship->GetShipType()]),
+                //  WINDOWMANAGER.Show(new iwHelp(GUI_ID(CGI_HELPBUILDING+ship->GetShipType()),_(BUILDING_NAMES[ship->GetShipType()]),
                 //      _(BUILDING_HELP_STRINGS[ship->GetShipType()])));
                 } break;*/
     }
@@ -200,7 +200,7 @@ void iwShip::Msg_ButtonClick(const unsigned int ctrl_id)
 
 void iwShip::DrawCargo()
 {
-    noShip* ship = GameClient::inst().GetPlayer(player)->GetShipByID(ship_id);
+    noShip* ship = GAMECLIENT.GetPlayer(player)->GetShipByID(ship_id);
 
     std::vector<unsigned short> orderedWares = std::vector<unsigned short>(WARE_TYPES_COUNT);
     std::vector<unsigned short> orderedFigures = std::vector<unsigned short>(JOB_TYPES_COUNT);
@@ -264,9 +264,9 @@ void iwShip::DrawCargo()
 
             unsigned job_bobs_id = JOB_CONSTS[i].jobs_bob_id;
             if(i >= JOB_PRIVATE && i <= JOB_GENERAL)
-                job_bobs_id = 30 + NATION_RTTR_TO_S2[GameClient::inst().GetPlayer(player)->nation] * 6 + i - JOB_PRIVATE;
+                job_bobs_id = 30 + NATION_RTTR_TO_S2[GAMECLIENT.GetPlayer(player)->nation] * 6 + i - JOB_PRIVATE;
             else if(i == JOB_SCOUT)
-                job_bobs_id = 35 + NATION_RTTR_TO_S2[GameClient::inst().GetPlayer(player)->nation] * 6;
+                job_bobs_id = 35 + NATION_RTTR_TO_S2[GAMECLIENT.GetPlayer(player)->nation] * 6;
 
             if (i == JOB_PACKDONKEY)
                 LOADER.GetMapImageN(2016)->Draw(x, y);
@@ -298,7 +298,7 @@ void iwShip::DrawCargo()
             // Schilder? Dann das  Schild der jeweiligen Nationalität nehmen
             if(draw_id == GD_SHIELDROMANS)
             {
-                switch(GameClient::inst().GetLocalPlayer()->nation)
+                switch(GAMECLIENT.GetLocalPlayer()->nation)
                 {
                     case NAT_AFRICANS: draw_id = GD_SHIELDAFRICANS; break;
                     case NAT_JAPANESES: draw_id = GD_SHIELDJAPANESE; break;

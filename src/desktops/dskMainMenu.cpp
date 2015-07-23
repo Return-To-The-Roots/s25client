@@ -104,7 +104,7 @@ dskMainMenu::dskMainMenu(void) : Desktop(LOADER.GetImageN("menu", 0))
 void dskMainMenu::Msg_Timer(const unsigned int ctrl_id)
 {
     GetCtrl<ctrlTimer>(ctrl_id)->Stop();
-    WindowManager::inst().Show( new iwMsgbox(_("Submit debug data?"), _("RttR now supports sending debug data. Would you like to help us improving this game by sending debug data?"), this, MSB_YESNO, MSB_QUESTIONRED, 100) );
+    WINDOWMANAGER.Show( new iwMsgbox(_("Submit debug data?"), _("RttR now supports sending debug data. Would you like to help us improving this game by sending debug data?"), this, MSB_YESNO, MSB_QUESTIONRED, 100) );
 }
 
 void dskMainMenu::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr)
@@ -138,23 +138,23 @@ void dskMainMenu::Msg_ButtonClick(const unsigned int ctrl_id)
     {
         case 4: // "Single Player"
         {
-            WindowManager::inst().Switch(new dskSinglePlayer);
+            WINDOWMANAGER.Switch(new dskSinglePlayer);
         } break;
         case 5: // "Multiplayer"
         {
-            WindowManager::inst().Switch(new dskMultiPlayer);
+            WINDOWMANAGER.Switch(new dskMultiPlayer);
         } break;
         case 6: // "Options"
         {
-            WindowManager::inst().Switch(new dskOptions);
+            WINDOWMANAGER.Switch(new dskOptions);
         } break;
         case 7: // "Intro"
         {
-            WindowManager::inst().Switch(new dskIntro);
+            WINDOWMANAGER.Switch(new dskIntro);
         } break;
         case 8: // "Credits"
         {
-            WindowManager::inst().Switch(new dskCredits);
+            WINDOWMANAGER.Switch(new dskCredits);
         } break;
         case 9: // "Quit"
         {
@@ -162,7 +162,7 @@ void dskMainMenu::Msg_ButtonClick(const unsigned int ctrl_id)
         } break;
         case 10: // "Readme"
         {
-            WindowManager::inst().Show(new iwTextfile("readme.txt", _("Readme!")));
+            WINDOWMANAGER.Show(new iwTextfile("readme.txt", _("Readme!")));
         } break;
 
     }

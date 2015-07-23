@@ -63,7 +63,7 @@ nofAggressiveDefender::nofAggressiveDefender(nofPassiveSoldier* other, nofAttack
 
 nofAggressiveDefender::~nofAggressiveDefender()
 {
-    //assert(GameClient::inst().GetPlayer(player)->GetFirstWH()->TestOnMission(this) == false);
+    //assert(GAMECLIENT.GetPlayer(player)->GetFirstWH()->TestOnMission(this) == false);
 }
 
 void nofAggressiveDefender::Destroy_nofAggressiveDefender()
@@ -71,7 +71,7 @@ void nofAggressiveDefender::Destroy_nofAggressiveDefender()
     Destroy_nofActiveSoldier();
 
     //// Debugging
-    //assert(GameClient::inst().GetPlayer(player)->GetFirstWH()->TestOnMission(this) == false);
+    //assert(GAMECLIENT.GetPlayer(player)->GetFirstWH()->TestOnMission(this) == false);
 }
 
 void nofAggressiveDefender::Serialize_nofAggressiveDefender(SerializedGameData* sgd) const
@@ -140,7 +140,7 @@ void nofAggressiveDefender::HomeDestroyedAtBegin()
 void nofAggressiveDefender::WonFighting()
 {
 	//addon BattlefieldPromotion active? -> increase rank!
-	if(GameClient::inst().GetGGS().isEnabled(ADDON_BATTLEFIELD_PROMOTION))
+	if(GAMECLIENT.GetGGS().isEnabled(ADDON_BATTLEFIELD_PROMOTION))
 		IncreaseRank();
     // Angreifer tot
     attacker  = NULL;

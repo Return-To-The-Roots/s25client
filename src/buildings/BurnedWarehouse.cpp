@@ -100,7 +100,7 @@ void BurnedWarehouse::HandleEvent(const unsigned int id)
 
         // In Alle Richtungen verteilen
         // Startrichtung zufällig bestimmen
-        unsigned char start_dir = Random::inst().Rand(__FILE__, __LINE__, obj_id, 6);
+        unsigned char start_dir = RANDOM.Rand(__FILE__, __LINE__, obj_id, 6);
 
         bool possible[6];
         unsigned possible_count = 0;

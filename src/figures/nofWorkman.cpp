@@ -120,7 +120,7 @@ void nofWorkman::HandleStateWork()
     // Evtl. Sounds löschen
     if(was_sounding)
     {
-        SoundManager::inst().WorkingFinished(this);
+        SOUNDMANAGER.WorkingFinished(this);
         was_sounding = false;
     }
 }

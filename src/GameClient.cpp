@@ -387,7 +387,7 @@ void GameClient::StartGame(const unsigned int random_init)
 
         /// Evtl. Goldvorkommen ändern
         unsigned char target = 0xFF; // löschen
-        switch(GameClient::inst().GetGGS().getSelection(ADDON_CHANGE_GOLD_DEPOSITS))
+        switch(GAMECLIENT.GetGGS().getSelection(ADDON_CHANGE_GOLD_DEPOSITS))
         {
             case 0: target = 3; break; //in Gold   konvertieren bzw. nichts tun
             case 1: target = 0xFF; break; // löschen
@@ -400,7 +400,7 @@ void GameClient::StartGame(const unsigned int random_init)
     }
 
     // Zeit setzen
-    framesinfo.lasttime = VideoDriverWrapper::inst().GetTickCount();
+    framesinfo.lasttime = VIDEODRIVER.GetTickCount();
     framesinfo.lastmsgtime = framesinfo.lasttime;
 
     if(!replay_mode)
@@ -441,7 +441,7 @@ void GameClient::RealStart()
     if(replay_mode)
         ExecuteGameFrame_Replay();
 
-    GameManager::inst().ResetAverageFPS();
+    GAMEMANAGER.ResetAverageFPS();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -949,13 +949,13 @@ void GameClient::OnNMSServerAsync(const GameMessage_Server_Async& msg)
 
 //  sprintf(filename,"%s%s-%u.log",  GetFilePath(FILE_PATHS[47]).c_str(), time_str, rand()%100);
 
-//  Random::inst().SaveLog(filename);
+//  RANDOM.SaveLog(filename);
 
 //  LOG.lprintf("Async log saved at \"%s\"\n",filename);
 
     sprintf(filename, "%s%s.sav", GetFilePath(FILE_PATHS[85]).c_str(), time_str);
 
-    GameClient::inst().WriteSaveHeader(filename);
+    GAMECLIENT.WriteSaveHeader(filename);
 
     // Pausieren
 
@@ -1261,7 +1261,7 @@ void GameClient::OnNMSPause(const GameMessage_Pause& msg)
 		framesinfo.pause_gf = 0;
 	}
 
-    framesinfo.lastmsgtime = VideoDriverWrapper::inst().GetTickCount();
+    framesinfo.lastmsgtime = VIDEODRIVER.GetTickCount();
 
     LOG.write("<<< NMS_NFC_PAUSE(%u)\n", framesinfo.pause_gf);
 
@@ -1425,7 +1425,7 @@ void GameClient::StatisticStep()
 /// testet ob ein Netwerkframe abgelaufen ist und führt dann ggf die Befehle aus
 void GameClient::ExecuteGameFrame(const bool skipping)
 {
-    unsigned int currenttime = VideoDriverWrapper::inst().GetTickCount();
+    unsigned int currenttime = VIDEODRIVER.GetTickCount();
 	if(!framesinfo.pause && framesinfo.pause_gf != 0 && framesinfo.nr == framesinfo.pause_gf)
 	{
 		framesinfo.pause_gf = 0;
@@ -1451,7 +1451,7 @@ void GameClient::ExecuteGameFrame(const bool skipping)
     // brauchen wir nicht zu warten)?
     if(skipping || skiptogf > framesinfo.nr || (currenttime - framesinfo.lasttime) > framesinfo.gf_length)
     {
-        //LOG.lprintf("%d = %d\n", framesinfo.nr / framesinfo.nwf_length, Random::inst().GetCurrentRandomValue());
+        //LOG.lprintf("%d = %d\n", framesinfo.nr / framesinfo.nwf_length, RANDOM.GetCurrentRandomValue());
         if(replay_mode)
         {
 
@@ -1616,7 +1616,7 @@ void GameClient::ExecuteAllGCs(const GameMessage_GameCommand& gcs, unsigned char
 void GameClient::SendNothingNC(int checksum)
 {
     if(checksum == -1)
-        checksum = Random::inst().GetCurrentRandomValue();
+        checksum = RANDOM.GetCurrentRandomValue();
 
     /*GameMessage nfc(NMS_NFC_COMMANDS, 5);
     *static_cast<int*>(nfc.m_pData) = checksum;*/
@@ -1850,7 +1850,7 @@ void GameClient::SkipGF(unsigned int gf)
     if(gf <= framesinfo.nr)
         return;
 
-    unsigned start_ticks = VideoDriverWrapper::inst().GetTickCount();
+    unsigned start_ticks = VIDEODRIVER.GetTickCount();
 
     // Spiel entpausieren
 	if(replay_mode)
@@ -1858,12 +1858,12 @@ void GameClient::SkipGF(unsigned int gf)
 	if(!replay_mode)
 	{
 		//unpause before skipping
-		if(GameServer::inst().IsPaused())
+		if(GAMESERVER.IsPaused())
 		{
-			GameServer::inst().TogglePause();
+			GAMESERVER.TogglePause();
 			//return;
 		}
-		GameServer::inst().skiptogf=gf;
+		GAMESERVER.skiptogf=gf;
 		skiptogf=gf;
 		LOG.lprintf("jumping from gf %i to gf %i \n", framesinfo.nr, gf);
 		return;
@@ -1890,16 +1890,16 @@ void GameClient::SkipGF(unsigned int gf)
 
             // text oben noch hinschreiben
             snprintf(nwf_string, 255, _("current GF: %u - still fast forwarding: %d GFs left (%d %%)"), GetGFNumber(), gf - i, (i * 100 / gf) );			
-            LargeFont->Draw(VideoDriverWrapper::inst().GetScreenWidth() / 2, VideoDriverWrapper::inst().GetScreenHeight() / 2, nwf_string, glArchivItem_Font::DF_CENTER, 0xFFFFFF00);
+            LargeFont->Draw(VIDEODRIVER.GetScreenWidth() / 2, VIDEODRIVER.GetScreenHeight() / 2, nwf_string, glArchivItem_Font::DF_CENTER, 0xFFFFFF00);
 
-            VideoDriverWrapper::inst().SwapBuffers();
+            VIDEODRIVER.SwapBuffers();
         }
         ExecuteGameFrame(true);
 		//LOG.lprintf("jumping: now at gf %i\n", framesinfo.nr);		
     }
 	
     // Spiel pausieren & text ausgabe wie lang das jetzt gedauert hat 
-    unsigned ticks = VideoDriverWrapper::inst().GetTickCount() - start_ticks;
+    unsigned ticks = VIDEODRIVER.GetTickCount() - start_ticks;
 	char text[256];
 	snprintf(text, sizeof(text), _("Jump finished (%.3f seconds)."), (double) ticks / 1000.0);
 	ci->CI_Chat(playerid, CD_SYSTEM, text); 
@@ -1915,8 +1915,8 @@ void GameClient::SystemChat(std::string text)
 unsigned GameClient::WriteSaveHeader(const std::string& filename)
 {
     // Mond malen
-    LOADER.GetImageN("resource", 33)->Draw(VideoDriverWrapper::inst().GetMouseX(), VideoDriverWrapper::inst().GetMouseY() - 40, 0, 0, 0, 0, 0, 0);
-    VideoDriverWrapper::inst().SwapBuffers();
+    LOADER.GetImageN("resource", 33)->Draw(VIDEODRIVER.GetMouseX(), VIDEODRIVER.GetMouseY() - 40, 0, 0, 0, 0, 0, 0);
+    VIDEODRIVER.SwapBuffers();
 
     Savegame save;
 

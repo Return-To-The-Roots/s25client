@@ -60,7 +60,7 @@ dskGameLoader::dskGameLoader(GameWorldViewer* gwv)
 
     AddTimer(1, 50);
 
-    AddText(10, VideoDriverWrapper::inst().GetScreenWidth() / 2, VideoDriverWrapper::inst().GetScreenHeight() - 50, "", COLOR_YELLOW, glArchivItem_Font::DF_CENTER, LargeFont);
+    AddText(10, VIDEODRIVER.GetScreenWidth() / 2, VIDEODRIVER.GetScreenHeight() - 50, "", COLOR_YELLOW, glArchivItem_Font::DF_CENTER, LargeFont);
 
     for(unsigned int i = 0; i < 8; ++i)
         AddText(10 + i, 30, 30 + i * 20, "", COLOR_GREEN, 0, LargeFont);
@@ -87,9 +87,9 @@ void dskGameLoader::Msg_MsgBoxResult(const unsigned int msgbox_id, const MsgboxR
         GAMECLIENT.Stop();
 
         if(LOBBYCLIENT.LoggedIn()) // steht die Lobbyverbindung noch?
-            WindowManager::inst().Switch(new dskLobby);
+            WINDOWMANAGER.Switch(new dskLobby);
         else
-            WindowManager::inst().Switch(new dskDirectIP);
+            WINDOWMANAGER.Switch(new dskDirectIP);
     }
 }
 
@@ -113,7 +113,7 @@ void dskGameLoader::Msg_Timer(const unsigned int ctrl_id)
     {
         case 0: // Kartename anzeigen
         {
-            text->SetText(GameClient::inst().GetMapTitle());
+            text->SetText(GAMECLIENT.GetMapTitle());
             interval = 50;
         } break;
 
@@ -179,7 +179,7 @@ void dskGameLoader::Msg_Timer(const unsigned int ctrl_id)
 
         case 6: // zum Spiel wechseln
         {
-            WindowManager::inst().Switch(new dskGameInterface);
+            WINDOWMANAGER.Switch(new dskGameInterface);
             return;
         } break;
     }
@@ -196,5 +196,5 @@ void dskGameLoader::Msg_Timer(const unsigned int ctrl_id)
  */
 void dskGameLoader::LC_Status_Error(const std::string& error)
 {
-    WindowManager::inst().Show(new iwMsgbox(_("Error"), error, this, MSB_OK, MSB_EXCLAMATIONRED, 0));
+    WINDOWMANAGER.Show(new iwMsgbox(_("Error"), error, this, MSB_OK, MSB_EXCLAMATIONRED, 0));
 }

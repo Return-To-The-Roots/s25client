@@ -175,20 +175,20 @@ void IngameWindow::MouseMove(const MouseCoords& mc)
             NewMouseY -= ny;
             ny = 0;
         }
-        if(nx > VideoDriverWrapper::inst().GetScreenWidth() - width)
+        if(nx > VIDEODRIVER.GetScreenWidth() - width)
         {
-            NewMouseX -= nx - (VideoDriverWrapper::inst().GetScreenWidth() - width);
-            nx = VideoDriverWrapper::inst().GetScreenWidth() - width;
+            NewMouseX -= nx - (VIDEODRIVER.GetScreenWidth() - width);
+            nx = VIDEODRIVER.GetScreenWidth() - width;
         }
-        if(ny > VideoDriverWrapper::inst().GetScreenHeight() - height)
+        if(ny > VIDEODRIVER.GetScreenHeight() - height)
         {
-            NewMouseY -= ny - (VideoDriverWrapper::inst().GetScreenHeight() - height);
-            ny = VideoDriverWrapper::inst().GetScreenHeight() - height;
+            NewMouseY -= ny - (VIDEODRIVER.GetScreenHeight() - height);
+            ny = VIDEODRIVER.GetScreenHeight() - height;
         }
 
         // Fix mouse position if moved too far
         if(NewMouseX - mc.x || NewMouseY - mc.y)
-            VideoDriverWrapper::inst().SetMousePos(NewMouseX, NewMouseY);
+            VIDEODRIVER.SetMousePos(NewMouseX, NewMouseY);
 
         x = (unsigned short)nx;
         y = (unsigned short)ny;
@@ -358,7 +358,7 @@ bool IngameWindow::Draw_()
 void IngameWindow::MoveToCenter()
 {
     // Ja, also zentrieren
-    Move( (VideoDriverWrapper::inst().GetScreenWidth() - width) / 2, (VideoDriverWrapper::inst().GetScreenHeight() - height) / 2 );
+    Move( (VIDEODRIVER.GetScreenWidth() - width) / 2, (VIDEODRIVER.GetScreenHeight() - height) / 2 );
 
 }
 
@@ -366,18 +366,18 @@ void IngameWindow::MoveToCenter()
 void IngameWindow::MoveNextToMouse()
 {
     // Fenster soll neben der Maus dargestellt werden
-    if(VideoDriverWrapper::inst().GetMouseX() + 20 + width < VideoDriverWrapper::inst().GetScreenWidth())
-        this->x = VideoDriverWrapper::inst().GetMouseX() + 20;
+    if(VIDEODRIVER.GetMouseX() + 20 + width < VIDEODRIVER.GetScreenWidth())
+        this->x = VIDEODRIVER.GetMouseX() + 20;
     else
-        this->x = VideoDriverWrapper::inst().GetScreenWidth() - width;
+        this->x = VIDEODRIVER.GetScreenWidth() - width;
 
 
-    if(VideoDriverWrapper::inst().GetMouseY() - height / 2 < 0)
+    if(VIDEODRIVER.GetMouseY() - height / 2 < 0)
         this->y = 0;
-    else if(VideoDriverWrapper::inst().GetMouseY() + 20 + height / 2 > VideoDriverWrapper::inst().GetScreenHeight())
-        this->y = VideoDriverWrapper::inst().GetScreenHeight() - height;
+    else if(VIDEODRIVER.GetMouseY() + 20 + height / 2 > VIDEODRIVER.GetScreenHeight())
+        this->y = VIDEODRIVER.GetScreenHeight() - height;
     else
-        this->y = VideoDriverWrapper::inst().GetMouseY() - height / 2;
+        this->y = VIDEODRIVER.GetMouseY() - height / 2;
 }
 
 /// Weiterleitung von Nachrichten erlaubt oder nicht?

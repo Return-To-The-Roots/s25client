@@ -81,7 +81,7 @@ bool ctrlList::Msg_MouseMove(const MouseCoords& mc)
     {
         // Neue Selektierung
         mouseover = (mc.y - (GetY() + 2) ) / font->getHeight();
-        WindowManager::inst().SetToolTip(this,
+        WINDOWMANAGER.SetToolTip(this,
                                          ((font->getWidth(GetItemText(mouseover)) > width - 22) ?
                                           GetItemText(mouseover) : ""));
         return true;
@@ -89,7 +89,7 @@ bool ctrlList::Msg_MouseMove(const MouseCoords& mc)
 
     // Mouse-Over deaktivieren und Tooltip entfernen
     mouseover = 0xFFFF;
-    WindowManager::inst().SetToolTip(this, "");
+    WINDOWMANAGER.SetToolTip(this, "");
 
     // Für die Scrollbar weiterleiten
     return scrollbar->Msg_MouseMove(mc);
@@ -109,7 +109,7 @@ bool ctrlList::Msg_LeftDown(const MouseCoords& mc)
     if(Coll(mc.x, mc.y, GetX() + 2, GetY() + 2, width - 22, height - 4))
     {
         // Tooltip löschen, sonst bleibt er ewig
-        WindowManager::inst().SetToolTip(this, "");
+        WINDOWMANAGER.SetToolTip(this, "");
 
         // aktuellen Eintrag selektieren
         selection = mouseover + scrollbar->GetPos();
@@ -139,7 +139,7 @@ bool ctrlList::Msg_RightDown(const MouseCoords& mc)
     if(Coll(mc.x, mc.y, GetX() + 2, GetY() + 2, width - 22, height - 4))
     {
         // Tooltip löschen, sonst bleibt er ewig
-        WindowManager::inst().SetToolTip(this, "");
+        WINDOWMANAGER.SetToolTip(this, "");
 
         // aktuellen Eintrag selektieren
         selection = mouseover + scrollbar->GetPos();

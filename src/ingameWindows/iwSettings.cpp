@@ -56,7 +56,7 @@ iwSettings::iwSettings(dskGameInterface* gameDesktop)
     AddText(  46,  15,  40, _("Fullscreen resolution:"), COLOR_YELLOW, 0, NormalFont);
     AddText(  47,  15,  85, _("Mode:"), COLOR_YELLOW, 0, NormalFont);
     AddCheckBox(4, 200, 124, 150, 26, TC_GREY, _("Statistics Scale"), NormalFont, false);
-    GetCtrl<ctrlCheck>(4)->SetCheck(Settings::inst().ingame.scale_statistics);
+    GetCtrl<ctrlCheck>(4)->SetCheck(SETTINGS.ingame.scale_statistics);
 
     // "Vollbild"
     ctrlOptionGroup* optiongroup = AddOptionGroup(10, ctrlOptionGroup::CHECK, scale);
@@ -67,7 +67,7 @@ iwSettings::iwSettings(dskGameInterface* gameDesktop)
     // "Vollbild" setzen
     optiongroup = GetCtrl<ctrlOptionGroup>(3);
     optiongroup->SetSelection( (SETTINGS.video.fullscreen ? 1 : 2) );
-    VideoDriverWrapper::inst().ListVideoModes(video_modes);
+    VIDEODRIVER.ListVideoModes(video_modes);
 
     // "Auflösung"
     AddComboBox(0, 200, 35, 150, 22, TC_GREY, NormalFont, 110);
@@ -110,30 +110,30 @@ iwSettings::~iwSettings()
 
     // Auflösung/Vollbildmodus geändert?
 #ifdef _WIN32
-    if((SETTINGS.video.fullscreen_width != VideoDriverWrapper::inst().GetScreenWidth()
+    if((SETTINGS.video.fullscreen_width != VIDEODRIVER.GetScreenWidth()
             ||
-            SETTINGS.video.fullscreen_height != VideoDriverWrapper::inst().GetScreenHeight()
-            || SETTINGS.video.fullscreen != VideoDriverWrapper::inst().IsFullscreen()))
+            SETTINGS.video.fullscreen_height != VIDEODRIVER.GetScreenHeight()
+            || SETTINGS.video.fullscreen != VIDEODRIVER.IsFullscreen()))
     {
-        if(!VideoDriverWrapper::inst().ResizeScreen(SETTINGS.video.fullscreen_width,
+        if(!VIDEODRIVER.ResizeScreen(SETTINGS.video.fullscreen_width,
                 SETTINGS.video.fullscreen_height,
                 SETTINGS.video.fullscreen))
         {
-            // WindowManager::inst().Show(new iwMsgbox(_("Sorry!"), _("You need to restart your game to change the screen resolution!"), this, MSB_OK, MSB_EXCLAMATIONGREEN, 1));
+            // WINDOWMANAGER.Show(new iwMsgbox(_("Sorry!"), _("You need to restart your game to change the screen resolution!"), this, MSB_OK, MSB_EXCLAMATIONGREEN, 1));
         }
     }
 #else
     if((SETTINGS.video.fullscreen &&
-            (SETTINGS.video.fullscreen_width != VideoDriverWrapper::inst().GetScreenWidth()
+            (SETTINGS.video.fullscreen_width != VIDEODRIVER.GetScreenWidth()
              ||
-             SETTINGS.video.fullscreen_height != VideoDriverWrapper::inst().GetScreenHeight())
-       ) || SETTINGS.video.fullscreen != VideoDriverWrapper::inst().IsFullscreen())
+             SETTINGS.video.fullscreen_height != VIDEODRIVER.GetScreenHeight())
+       ) || SETTINGS.video.fullscreen != VIDEODRIVER.IsFullscreen())
     {
-        if(!VideoDriverWrapper::inst().ResizeScreen(SETTINGS.video.fullscreen ? SETTINGS.video.fullscreen_width : SETTINGS.video.windowed_width,
+        if(!VIDEODRIVER.ResizeScreen(SETTINGS.video.fullscreen ? SETTINGS.video.fullscreen_width : SETTINGS.video.windowed_width,
                 SETTINGS.video.fullscreen ? SETTINGS.video.fullscreen_height : SETTINGS.video.windowed_height,
                 SETTINGS.video.fullscreen))
         {
-            // WindowManager::inst().Show(new iwMsgbox(_("Sorry!"), _("You need to restart your game to change the screen resolution!"), this, MSB_OK, MSB_EXCLAMATIONGREEN, 1));
+            // WINDOWMANAGER.Show(new iwMsgbox(_("Sorry!"), _("You need to restart your game to change the screen resolution!"), this, MSB_OK, MSB_EXCLAMATIONGREEN, 1));
         }
     }
 #endif

@@ -58,7 +58,7 @@ void noFire::Destroy_noFire()
     gwg->RecalcBQAroundPoint(x, y);
 
     // Evtl Sounds vernichten
-    SoundManager::inst().WorkingFinished(this);
+    SOUNDMANAGER.WorkingFinished(this);
 
     Destroy_noCoordBase();
 }
@@ -93,12 +93,12 @@ void noFire::Draw(int x, int y)
         LOADER.GetMapImageN(2530 + size * 8 + id % 8)->Draw(x, y, 0, 0, 0, 0, 0, 0, 0xC0101010);
 
         // Feuersound abspielen in zufälligen Intervallen
-        if(VideoDriverWrapper::inst().GetTickCount() - last_sound > next_interval)
+        if(VIDEODRIVER.GetTickCount() - last_sound > next_interval)
         {
-            SoundManager::inst().PlayNOSound(96, this, id);
+            SOUNDMANAGER.PlayNOSound(96, this, id);
             was_sounding = true;
 
-            last_sound = VideoDriverWrapper::inst().GetTickCount();
+            last_sound = VIDEODRIVER.GetTickCount();
             next_interval = 500 + rand() % 1400;
         }
     }

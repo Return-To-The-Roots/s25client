@@ -50,16 +50,16 @@ iwAIDebug::iwAIDebug(GameWorldViewer* const gwv)
       gwv(gwv)
 {
     // Nur Host hat Zugriff auf die Daten über die KI-Spieler
-    if (!GameClient::inst().IsHost())
+    if (!GAMECLIENT.IsHost())
     {
         Close();
         return;
     }
 
     // Erstmal die AIs einsammeln
-    for (unsigned i = 0; i < GameClient::inst().GetPlayerCount(); ++i)
+    for (unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
     {
-        AIPlayerJH* ai = dynamic_cast<AIPlayerJH*>(GameServer::inst().GetAIPlayer(i));
+        AIPlayerJH* ai = dynamic_cast<AIPlayerJH*>(GAMESERVER.GetAIPlayer(i));
         if (ai)
             ais.push_back(ai);
     }

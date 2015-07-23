@@ -180,7 +180,7 @@ void nofDefender::WonFighting()
 {
 	
 	//addon BattlefieldPromotion active? -> increase rank!
-	if(GameClient::inst().GetGGS().isEnabled(ADDON_BATTLEFIELD_PROMOTION))
+	if(GAMECLIENT.GetGGS().isEnabled(ADDON_BATTLEFIELD_PROMOTION))
 		IncreaseRank();
     // Angreifer tot
     attacker = 0;

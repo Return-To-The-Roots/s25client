@@ -204,7 +204,7 @@ void nofBuildingWorker::WorkingReady()
             flag->AddWare(real_ware);
             real_ware->LieAtFlag(flag);
             // Warenstatistik erhöhen
-            GameClient::inst().GetPlayer(this->player)->IncreaseMerchandiseStatistic(ware);
+            GAMECLIENT.GetPlayer(this->player)->IncreaseMerchandiseStatistic(ware);
             // Tragen nun keine Ware mehr
             ware = GD_NOTHING;
         }
@@ -325,7 +325,7 @@ void nofBuildingWorker::LostWork()
 
 
             // Evtl. Sounds löschen
-            SoundManager::inst().WorkingFinished(this);
+            SOUNDMANAGER.WorkingFinished(this);
 
             state = STATE_FIGUREWORK;
 
@@ -346,7 +346,7 @@ void nofBuildingWorker::LostWork()
             StartWandering();
 
             // Evtl. Sounds löschen
-            SoundManager::inst().WorkingFinished(this);
+            SOUNDMANAGER.WorkingFinished(this);
 
             state = STATE_FIGUREWORK;
         } break;
@@ -366,7 +366,7 @@ void nofBuildingWorker::LostWork()
 bool nofBuildingWorker::GetResources(unsigned char type)
 {
     //this makes granite mines work everywhere
-    if (type == 0 && GameClient::inst().GetGGS().isEnabled(ADDON_INEXHAUSTIBLE_GRANITEMINES))
+    if (type == 0 && GAMECLIENT.GetGGS().isEnabled(ADDON_INEXHAUSTIBLE_GRANITEMINES))
         return true;
     // in Map-Resource-Koordinaten konvertieren
     type = RESOURCES_MINE_TO_MAP[type];
@@ -402,8 +402,8 @@ bool nofBuildingWorker::GetResources(unsigned char type)
     if(found)
     {
         // Minen / Brunnen unerschöpflich?
-        if( (type == 4 && GameClient::inst().GetGGS().isEnabled(ADDON_EXHAUSTIBLE_WELLS)) ||
-                (type != 4 && !GameClient::inst().GetGGS().isEnabled(ADDON_INEXHAUSTIBLE_MINES)) )
+        if( (type == 4 && GAMECLIENT.GetGGS().isEnabled(ADDON_EXHAUSTIBLE_WELLS)) ||
+                (type != 4 && !GAMECLIENT.GetGGS().isEnabled(ADDON_INEXHAUSTIBLE_MINES)) )
             --gwg->GetNode(mx, my).resources;
         return true;
     }
@@ -411,13 +411,13 @@ bool nofBuildingWorker::GetResources(unsigned char type)
     // Hoffe das passt auch, Post verschicken, keine Rohstoffe mehr da
     if (!OutOfRessourcesMsgSent)
     {
-        if(GameClient::inst().GetPlayerID() == this->player)
+        if(GAMECLIENT.GetPlayerID() == this->player)
         {
             std::string error = _("This mine is exhausted");
             if(workplace->GetBuildingType() == BLD_WELL)
                 error = _("This well is dried out");
 
-            GameClient::inst().SendPostMessage(
+            GAMECLIENT.SendPostMessage(
                 new ImagePostMsgWithLocation(_(error), PMC_GENERAL, x, y,
                                              workplace->GetBuildingType(), workplace->GetNation())
             );

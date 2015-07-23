@@ -1863,7 +1863,7 @@ void AIPlayerJH::MilUpgradeOptim()
 void AIPlayerJH::Chat(std::string message)
 {
     GameMessage_Server_Chat chat = GameMessage_Server_Chat(playerid, CD_ALL, message);
-    GameServer::inst().AIChat(chat);
+    GAMESERVER.AIChat(chat);
 }
 
 bool AIPlayerJH::HasFrontierBuildings()

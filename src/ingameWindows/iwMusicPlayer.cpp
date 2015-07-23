@@ -91,7 +91,7 @@ iwMusicPlayer::iwMusicPlayer()
     AddImageButton(15, 370, 270, 40, 40, TC_GREY, LOADER.GetImageN("io", 107), _("Playback in this order")); //225
 
     // Mit Werten füllen
-    MusicPlayer::inst().GetPlaylist().FillMusicPlayer(this);
+    MUSICPLAYER.GetPlaylist().FillMusicPlayer(this);
     UpdatePlaylistCombo(SETTINGS.sound.playlist);
 }
 
@@ -115,7 +115,7 @@ iwMusicPlayer::~iwMusicPlayer()
 
         if(!pl.SaveAs(GetFullPlaylistPath(str), true))
             // Fehler, konnte nicht gespeichert werden
-            WindowManager::inst().Show(new iwMsgbox(_("Error"), _("The specified file couldn't be saved!"), this, MSB_OK, MSB_EXCLAMATIONRED));
+            WINDOWMANAGER.Show(new iwMsgbox(_("Error"), _("The specified file couldn't be saved!"), this, MSB_OK, MSB_EXCLAMATIONRED));
     }
 
 
@@ -126,8 +126,8 @@ iwMusicPlayer::~iwMusicPlayer()
     // Werte in Musikplayer bringen
     if(changed)
     {
-        MusicPlayer::inst().GetPlaylist().ReadMusicPlayer(this);
-        MusicPlayer::inst().Play();
+        MUSICPLAYER.GetPlaylist().ReadMusicPlayer(this);
+        MUSICPLAYER.Play();
     }
 }
 
@@ -145,7 +145,7 @@ void iwMusicPlayer::Msg_ComboSelectItem(const unsigned ctrl_id, const unsigned s
         }
         else
             // Fehler, konnte nicht geladen werden
-            WindowManager::inst().Show(new iwMsgbox(_("Error"), _("The specified file couldn't be loaded!"), this, MSB_OK, MSB_EXCLAMATIONRED));
+            WINDOWMANAGER.Show(new iwMsgbox(_("Error"), _("The specified file couldn't be loaded!"), this, MSB_OK, MSB_EXCLAMATIONRED));
     }
 
 }
@@ -153,9 +153,9 @@ void iwMusicPlayer::Msg_ComboSelectItem(const unsigned ctrl_id, const unsigned s
 void iwMusicPlayer::Msg_ListChooseItem(const unsigned int ctrl_id, const unsigned short selection)
 {
     // Werte in Musikplayer bringen
-    MusicPlayer::inst().GetPlaylist().ReadMusicPlayer(this);
-    MusicPlayer::inst().GetPlaylist().SetStartSong(selection);
-    MusicPlayer::inst().Play();
+    MUSICPLAYER.GetPlaylist().ReadMusicPlayer(this);
+    MUSICPLAYER.GetPlaylist().SetStartSong(selection);
+    MUSICPLAYER.Play();
 
     // Wir haben ab jetzt quasi keine Veränderungen mehr --> damit Musik nicht neugestartet werden muss
     changed = false;
@@ -173,7 +173,7 @@ void iwMusicPlayer::Msg_ButtonClick(const unsigned int ctrl_id)
             // Add Playlist
         case 3:
         {
-            WindowManager::inst().Show(new InputWindow(this, 1, _("Specify the playlist name")));
+            WINDOWMANAGER.Show(new InputWindow(this, 1, _("Specify the playlist name")));
         } break;
         // Remove Playlist
         case 4:
@@ -188,7 +188,7 @@ void iwMusicPlayer::Msg_ButtonClick(const unsigned int ctrl_id)
                 // RTTR-Playlisten dürfen nicht gelöscht werden
                 if(str == "S2_Standard")
                 {
-                    WindowManager::inst().Show(new iwMsgbox(_("Error"), _("You are not allowed to delete the standard playlist!"), this, MSB_OK, MSB_EXCLAMATIONRED));
+                    WINDOWMANAGER.Show(new iwMsgbox(_("Error"), _("You are not allowed to delete the standard playlist!"), this, MSB_OK, MSB_EXCLAMATIONRED));
                     return;
                 }
 
@@ -214,13 +214,13 @@ void iwMusicPlayer::Msg_ButtonClick(const unsigned int ctrl_id)
         // Add Track
         case 7:
         {
-            WindowManager::inst().Show(new InputWindow(this, 0, _("Add track")));
+            WINDOWMANAGER.Show(new InputWindow(this, 0, _("Add track")));
             changed = true;
         } break;
         // Add Directory of tracks
         case 8:
         {
-            WindowManager::inst().Show(new InputWindow(this, 2, _("Add directory of tracks")));
+            WINDOWMANAGER.Show(new InputWindow(this, 2, _("Add directory of tracks")));
             changed = true;
         } break;
         // Remove Track
@@ -337,7 +337,7 @@ void iwMusicPlayer::Msg_Input(const unsigned int win_id, const std::string& msg)
                 changed = true;
             }
             else
-                WindowManager::inst().Show(new iwMsgbox(_("Error"), _("The specified file couldn't be opened!"), this, MSB_OK, MSB_EXCLAMATIONRED));
+                WINDOWMANAGER.Show(new iwMsgbox(_("Error"), _("The specified file couldn't be opened!"), this, MSB_OK, MSB_EXCLAMATIONRED));
 
         } break;
         // Add Playlist
@@ -362,7 +362,7 @@ void iwMusicPlayer::Msg_Input(const unsigned int win_id, const std::string& msg)
             else
             {
                 // Fehler, konnte nicht gespeichert werden
-                WindowManager::inst().Show(new iwMsgbox(_("Error"), _("The specified file couldn't be saved!"), this, MSB_OK, MSB_EXCLAMATIONRED));
+                WINDOWMANAGER.Show(new iwMsgbox(_("Error"), _("The specified file couldn't be saved!"), this, MSB_OK, MSB_EXCLAMATIONRED));
             }
         } break;
         // Add Track directory of tracks - Window

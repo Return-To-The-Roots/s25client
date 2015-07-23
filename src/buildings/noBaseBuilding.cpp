@@ -127,8 +127,8 @@ void noBaseBuilding::Destroy_noBaseBuilding()
 
     // Baukosten zurückerstatten (nicht bei Baustellen)
     if( (GetGOT() != GOT_BUILDINGSITE) &&
-            ( GameClient::inst().GetGGS().isEnabled(ADDON_REFUND_MATERIALS) ||
-              GameClient::inst().GetGGS().isEnabled(ADDON_REFUND_ON_EMERGENCY) ) )
+            ( GAMECLIENT.GetGGS().isEnabled(ADDON_REFUND_MATERIALS) ||
+              GAMECLIENT.GetGGS().isEnabled(ADDON_REFUND_ON_EMERGENCY) ) )
     {
         // lebt unsere Flagge noch?
         noFlag* flag = GetFlag();
@@ -137,11 +137,11 @@ void noBaseBuilding::Destroy_noBaseBuilding()
             unsigned int percent_index = 0;
 
             // wenn Rückerstattung aktiv ist, entsprechende Prozentzahl wählen
-            if(GameClient::inst().GetGGS().isEnabled(ADDON_REFUND_MATERIALS))
-                percent_index = GameClient::inst().GetGGS().getSelection(ADDON_REFUND_MATERIALS);
+            if(GAMECLIENT.GetGGS().isEnabled(ADDON_REFUND_MATERIALS))
+                percent_index = GAMECLIENT.GetGGS().getSelection(ADDON_REFUND_MATERIALS);
 
             // wenn Rückerstattung bei Notprogramm aktiv ist, 50% zurückerstatten
-            else if(gwg->GetPlayer(player)->hasEmergency() && GameClient::inst().GetGGS().isEnabled(ADDON_REFUND_ON_EMERGENCY))
+            else if(gwg->GetPlayer(player)->hasEmergency() && GAMECLIENT.GetGGS().isEnabled(ADDON_REFUND_ON_EMERGENCY))
                 percent_index = 2;
 
             // wieviel kriegt man von jeder Ware wieder?

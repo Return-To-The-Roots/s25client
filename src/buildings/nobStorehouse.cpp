@@ -52,8 +52,8 @@ nobStorehouse::nobStorehouse(const unsigned short x, const unsigned short y, con
     gwg->GetPlayer(player)->AddWarehouse(this);
 
     // Post versenden
-    if(GameClient::inst().GetPlayerID() == this->player)
-        GameClient::inst().SendPostMessage(new ImagePostMsgWithLocation(
+    if(GAMECLIENT.GetPlayerID() == this->player)
+        GAMECLIENT.SendPostMessage(new ImagePostMsgWithLocation(
                                                _("New storehouse finished"), PMC_GENERAL, x, y, BLD_STOREHOUSE, nation));
 }
 

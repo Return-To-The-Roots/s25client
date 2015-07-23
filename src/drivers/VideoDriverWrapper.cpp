@@ -87,7 +87,7 @@ bool VideoDriverWrapper::LoadDriver(void)
     CreateVideoInstance = pto2ptf<PDRIVER_CREATEVIDEOINSTANCE>(driver_wrapper.GetDLLFunction("CreateVideoInstance"));
 
     // Instanz erzeugen
-    if(!(videodriver = CreateVideoInstance(&WindowManager::inst())))
+    if(!(videodriver = CreateVideoInstance(&WINDOWMANAGER)))
         return false;
 
     if(!videodriver->Initialize())
@@ -149,7 +149,7 @@ bool VideoDriverWrapper::CreateScreen(const unsigned short screen_width, const u
 
 
     // WindowManager informieren
-    WindowManager::inst().Msg_ScreenResize(screen_width, screen_height);
+    WINDOWMANAGER.Msg_ScreenResize(screen_width, screen_height);
 
     // VSYNC ggf abschalten/einschalten
     if(GLOBALVARS.ext_swapcontrol)
@@ -182,7 +182,7 @@ bool VideoDriverWrapper::ResizeScreen(const unsigned short screenWidth, const un
 
     RenewViewport();
 
-    WindowManager::inst().Msg_ScreenResize(screenWidth, screenHeight);
+    WINDOWMANAGER.Msg_ScreenResize(screenWidth, screenHeight);
 
     return result;
 }

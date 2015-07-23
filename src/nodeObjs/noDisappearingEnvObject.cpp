@@ -51,7 +51,7 @@ noDisappearingEnvObject::noDisappearingEnvObject(const unsigned short x, const u
         const unsigned living_time, const unsigned add_var_living_time)
     : noCoordBase(NOP_ENVIRONMENT, x, y),
       disappearing(false), dead_event(em->AddEvent(this, living_time +
-                                      Random::inst().Rand(__FILE__, __LINE__, obj_id, add_var_living_time)))
+                                      RANDOM.Rand(__FILE__, __LINE__, obj_id, add_var_living_time)))
 {
 }
 

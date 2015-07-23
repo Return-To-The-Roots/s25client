@@ -78,7 +78,7 @@ iwMilitaryBuilding::iwMilitaryBuilding(GameWorldViewer* const gwv, dskGameInterf
 	// "Go to next" (building of same type)
     AddImageButton( 9, 179, 115, 30, 32, TC_GREY, LOADER.GetImageN("io", 107), _("Go to next military building"));
 	//addon military control active? -> show button
-	if(GameClient::inst().GetGGS().isEnabled(ADDON_MILITARY_CONTROL))
+	if(GAMECLIENT.GetGGS().isEnabled(ADDON_MILITARY_CONTROL))
 		AddImageButton( 10, 124, 147, 30, 32, TC_GREY, LOADER.GetImageN("io_new", 4), _("Send max rank soldiers to a warehouse"));
 }
 
@@ -125,7 +125,7 @@ void iwMilitaryBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
     {
         case 4: // Hilfe
         {
-            WindowManager::inst().Show(new iwHelp(GUI_ID(CGI_HELPBUILDING + building->GetBuildingType()), _(BUILDING_NAMES[building->GetBuildingType()]),
+            WINDOWMANAGER.Show(new iwHelp(GUI_ID(CGI_HELPBUILDING + building->GetBuildingType()), _(BUILDING_NAMES[building->GetBuildingType()]),
                                                   _(BUILDING_HELP_STRINGS[building->GetBuildingType()])));
         } break;
         case 5: // Gebäude abbrennen
@@ -140,12 +140,12 @@ void iwMilitaryBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
             {
                 // Abreißen?
                 Close();
-                WindowManager::inst().Show(new iwDemolishBuilding(gwv, building));
+                WINDOWMANAGER.Show(new iwDemolishBuilding(gwv, building));
             }
         } break;
         case 6: // Gold einstellen/erlauben
         {
-            if(!GameClient::inst().IsReplayModeOn() && !GameClient::inst().IsPaused())
+            if(!GAMECLIENT.IsReplayModeOn() && !GAMECLIENT.IsPaused())
             {
                 // visuell anzeigen
                 building->StopGoldVirtual();
@@ -165,22 +165,22 @@ void iwMilitaryBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
 		case 9: //go to next of same type
 		{
 			//is there at least 1 other building of the same type?
-			if(GameClient::inst().GetPlayer(building->GetPlayer())->GetMilitaryBuildings().size()>1)
+			if(GAMECLIENT.GetPlayer(building->GetPlayer())->GetMilitaryBuildings().size()>1)
 			{
 				//go through list once we get to current building -> open window for the next one and go to next location
-				for(std::list<nobMilitary*>::const_iterator it=GameClient::inst().GetPlayer(building->GetPlayer())->GetMilitaryBuildings().begin(); it != GameClient::inst().GetPlayer(building->GetPlayer())->GetMilitaryBuildings().end(); it++)
+				for(std::list<nobMilitary*>::const_iterator it=GAMECLIENT.GetPlayer(building->GetPlayer())->GetMilitaryBuildings().begin(); it != GAMECLIENT.GetPlayer(building->GetPlayer())->GetMilitaryBuildings().end(); it++)
 				{
 					if((*it)->GetX()==building->GetX() && (*it)->GetY()==building->GetY()) //got to current building in the list?
 					{
 						//close old window, open new window (todo: only open if it isnt already open), move to location of next building
 						Close();
 						it++;
-						if(it == GameClient::inst().GetPlayer(building->GetPlayer())->GetMilitaryBuildings().end()) //was last entry in list -> goto first												{
-							it=GameClient::inst().GetPlayer(building->GetPlayer())->GetMilitaryBuildings().begin();
+						if(it == GAMECLIENT.GetPlayer(building->GetPlayer())->GetMilitaryBuildings().end()) //was last entry in list -> goto first												{
+							it=GAMECLIENT.GetPlayer(building->GetPlayer())->GetMilitaryBuildings().begin();
 						gwv->MoveToMapObject((*it)->GetX(),(*it)->GetY());
 						iwMilitaryBuilding* nextscrn=new iwMilitaryBuilding(gwv, gi, (*it));
 						nextscrn->Move(x,y);
-						WindowManager::inst().Show(nextscrn);
+						WINDOWMANAGER.Show(nextscrn);
 						break;
 					}
 				}
@@ -204,13 +204,13 @@ void iwMilitaryBuilding::DemolitionNotAllowed()
 {
     // Meldung auswählen, je nach Einstellung
     std::string msg;
-    switch(GameClient::inst().GetGGS().getSelection(ADDON_DEMOLITION_PROHIBITION))
+    switch(GAMECLIENT.GetGGS().getSelection(ADDON_DEMOLITION_PROHIBITION))
     {
         default: assert(false); break;
         case 1: msg = _("Demolition ist not allowed because the building is under attack!"); break;
         case 2: msg = _("Demolition ist not allowed because the building is located in border area!"); break;
     }
 
-    WindowManager::inst().Show(new iwMsgbox(_("Demolition not possible"), msg, NULL, MSB_OK, MSB_EXCLAMATIONRED));
+    WINDOWMANAGER.Show(new iwMsgbox(_("Demolition not possible"), msg, NULL, MSB_OK, MSB_EXCLAMATIONRED));
 }
 

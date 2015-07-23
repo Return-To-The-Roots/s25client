@@ -68,7 +68,7 @@ void nofMiner::DrawWorking(int x, int y)
 
     if(now_id % 8 == 3)
     {
-        SoundManager::inst().PlayNOSound(59, this, now_id);
+        SOUNDMANAGER.PlayNOSound(59, this, now_id);
         was_sounding = true;
     }
 }

@@ -210,7 +210,7 @@ void noMovable::CalcWalkingRelative(int& x, int& y)
 void noMovable::PauseWalking()
 {
     // Frames festhalten, bis zu denen wir gekommen sind
-    pause_walked_gf = GameClient::inst().GetGFNumber() - current_ev->gf;
+    pause_walked_gf = GAMECLIENT.GetGFNumber() - current_ev->gf;
     // Länge merken
     pause_event_length = current_ev->gf_length;
     // Event abmelden

@@ -283,7 +283,7 @@ void iwDirectIPConnect::CI_NextConnectState(const ConnectState cs)
 
         case CS_FINISHED: // Wir wurden verbunden
         {
-            WindowManager::inst().Switch(new dskHostGame);
+            WINDOWMANAGER.Switch(new dskHostGame);
         } break;
         default: break;
     }

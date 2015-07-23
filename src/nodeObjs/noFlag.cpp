@@ -441,7 +441,7 @@ bool noFlag::IsImpossibleForBWU(const unsigned bwu_id) const
         if(bwus[i].id == bwu_id)
         {
             // Wenn letzter TÜV noch nicht zu lange zurückliegt, können wir sie als unzugänglich zurückgeben
-            if(GameClient::inst().GetGFNumber() - bwus[i].last_gf <= MAX_BWU_INTERVAL)
+            if(GAMECLIENT.GetGFNumber() - bwus[i].last_gf <= MAX_BWU_INTERVAL)
                 return true;
 
             // ansonsten nicht, evtl ist sie ja jetzt mal wieder zugänglich, sollte also mal neu geprüft werden
@@ -466,7 +466,7 @@ void noFlag::ImpossibleForBWU(const unsigned bwu_id)
     {
         if(bwus[i].id == bwu_id)
         {
-            bwus[i].last_gf = GameClient::inst().GetGFNumber();
+            bwus[i].last_gf = GAMECLIENT.GetGFNumber();
             return;
         }
     }

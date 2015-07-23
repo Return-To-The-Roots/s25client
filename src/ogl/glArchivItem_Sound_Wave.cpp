@@ -45,11 +45,11 @@ static char THIS_FILE[] = __FILE__;
  */
 unsigned int glArchivItem_Sound_Wave::Play(unsigned char volume, bool loop)
 {
-    if(SETTINGS.sound.effekte == false/* || !VideoDriverWrapper::inst().audiodriver*/)
+    if(SETTINGS.sound.effekte == false/* || !VIDEODRIVER.audiodriver*/)
         return 0xFFFFFFFF;
 
     if(sound == NULL)
-        sound = AudioDriverWrapper::inst().LoadEffect(AudioDriver::AD_WAVE, data, length);
+        sound = AUDIODRIVER.LoadEffect(AudioDriver::AD_WAVE, data, length);
 
-    return AudioDriverWrapper::inst().PlayEffect(sound, volume, loop);
+    return AUDIODRIVER.PlayEffect(sound, volume, loop);
 }

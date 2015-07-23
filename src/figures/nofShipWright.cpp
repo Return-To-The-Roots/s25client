@@ -138,7 +138,7 @@ void nofShipWright::HandleDerivedEvent(const unsigned int id)
                 // Evtl. Sounds löschen
                 if(was_sounding)
                 {
-                    SoundManager::inst().WorkingFinished(this);
+                    SOUNDMANAGER.WorkingFinished(this);
                     was_sounding = false;
                 }
 
@@ -345,12 +345,12 @@ void nofShipWright::DrawWorking(int x, int y)
             // Steh-Hammer-Sound
             if(graphics_id == 300)
             {
-                SoundManager::inst().PlayNOSound(78, this, id, 160 - rand() % 60);
+                SOUNDMANAGER.PlayNOSound(78, this, id, 160 - rand() % 60);
                 was_sounding = true;
             }
             else if(graphics_id == 303 || graphics_id == 307)
             {
-                SoundManager::inst().PlayNOSound(72, this, id - id % 2, 160 - rand() % 60);
+                SOUNDMANAGER.PlayNOSound(72, this, id - id % 2, 160 - rand() % 60);
                 was_sounding = true;
             }
 

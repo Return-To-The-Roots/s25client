@@ -79,7 +79,7 @@ void nofPigbreeder::DrawWorking(int x, int y)
         // Evtl Sound abspielen
         if((now_id - 16) == 10)
         {
-            SoundManager::inst().PlayNOSound(65, this, 0);
+            SOUNDMANAGER.PlayNOSound(65, this, 0);
             was_sounding = true;
         }
     }
@@ -103,13 +103,13 @@ GoodType nofPigbreeder::ProduceWare()
 void nofPigbreeder::MakePigSounds()
 {
     /// Ist es wieder Zeit für einen Schweine-Sound?
-    if(GameClient::inst().GetGFNumber() - last_id > 600 + unsigned(rand() % 200) - unsigned((*workplace->GetProduktivityPointer()) * 5) &&
-            (GameClient::inst().GetGFNumber() != last_id) && !GAMECLIENT.IsPaused())
+    if(GAMECLIENT.GetGFNumber() - last_id > 600 + unsigned(rand() % 200) - unsigned((*workplace->GetProduktivityPointer()) * 5) &&
+            (GAMECLIENT.GetGFNumber() != last_id) && !GAMECLIENT.IsPaused())
     {
         // "Oink"
         LOADER.GetSoundN("sound", 86)->Play(255, false);
 
-        last_id = GameClient::inst().GetGFNumber();
+        last_id = GAMECLIENT.GetGFNumber();
     }
 
 }

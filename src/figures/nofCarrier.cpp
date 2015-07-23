@@ -230,7 +230,7 @@ void nofCarrier::Draw(int x, int y)
                 bool animation = false;
 
                 // Ist es schon Zeit für eine Animation?
-                unsigned current_gf = GameClient::inst().GetGFNumber();
+                unsigned current_gf = GAMECLIENT.GetGFNumber();
 
                 if(current_gf >= next_animation)
                 {
@@ -397,7 +397,7 @@ void nofCarrier::Draw(int x, int y)
 
                 // Sound ggf. abspielen
                 if(ani_step == 2)
-                    SoundManager::inst().PlayNOSound(84, this, 0);
+                    SOUNDMANAGER.PlayNOSound(84, this, 0);
 
                 last_id = ani_step;
             }
@@ -409,7 +409,7 @@ void nofCarrier::Draw(int x, int y)
 /// Bestimmt neuen Animationszeitpunkt
 void nofCarrier::SetNewAnimationMoment()
 {
-    next_animation = GameClient::inst().GetGFNumber() + NEXT_ANIMATION + rand() % NEXT_ANIMATION_RANDOM;
+    next_animation = GAMECLIENT.GetGFNumber() + NEXT_ANIMATION + rand() % NEXT_ANIMATION_RANDOM;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -422,7 +422,7 @@ void nofCarrier::Walked()
 {
     // Bootssounds ggf. löschen
     if(ct == CT_BOAT && state != CARRS_FIGUREWORK)
-        SoundManager::inst().WorkingFinished(this);
+        SOUNDMANAGER.WorkingFinished(this);
 
     switch(state)
     {

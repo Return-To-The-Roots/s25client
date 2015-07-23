@@ -111,12 +111,12 @@ void nofMiller::DrawWorking(int x, int y)
         LOADER.GetNationImageN(workplace->GetNation(), 250 + (5 * (42 + ((now_id + 4) % 8))) + 1)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
 
         // Mühlensound abspielen in zufälligen Intervallen
-        if(VideoDriverWrapper::inst().GetTickCount() - last_sound > next_interval)
+        if(VIDEODRIVER.GetTickCount() - last_sound > next_interval)
         {
-            SoundManager::inst().PlayNOSound(77, this, now_id);
+            SOUNDMANAGER.PlayNOSound(77, this, now_id);
             was_sounding = true;
 
-            last_sound = VideoDriverWrapper::inst().GetTickCount();
+            last_sound = VIDEODRIVER.GetTickCount();
             next_interval = 500 + rand() % 1400;
         }
 

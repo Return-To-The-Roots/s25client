@@ -235,7 +235,7 @@ void MusicPlayer::Play()
  */
 void MusicPlayer::Stop()
 {
-    AudioDriverWrapper::inst().StopMusic();
+    AUDIODRIVER.StopMusic();
     playing = false;
 }
 

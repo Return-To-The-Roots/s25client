@@ -31,7 +31,7 @@ void GameClient::ExecuteGameFrame_Game()
     // Bei evtl. Spielerwechsel die IDs speichern, die "gewechselt" werden sollen
     unsigned char player_switch_old_id = 255, player_switch_new_id = 255;
 
-    int checksum = Random::inst().GetCurrentRandomValue();
+    int checksum = RANDOM.GetCurrentRandomValue();
 
     for(unsigned char i = 0; i < players.getCount(); ++i)
     {
@@ -60,7 +60,7 @@ void GameClient::ExecuteGameFrame_Game()
     // Frame ausführen
     NextGF();
 
-    //LOG.lprintf("%d = %d - %d\n", framesinfo.nr / framesinfo.nwf_length, checksum, Random::inst().GetCurrentRandomValue());
+    //LOG.lprintf("%d = %d - %d\n", framesinfo.nr / framesinfo.nwf_length, checksum, RANDOM.GetCurrentRandomValue());
 
     // Stehen eigene Commands an, die gesendet werden müssen?
     send_queue.push(new GameMessage_GameCommand(playerid, checksum, gcs));

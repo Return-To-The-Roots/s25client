@@ -1324,7 +1324,7 @@ void nobBaseWarehouse::ChangeRealInventorySetting(unsigned char category, unsign
 
     /// Bei anderen Spielern als dem lokalen, der das in Auftrag gegeben hat, müssen die visuellen ebenfalls
     /// geändert werden oder auch bei Replays
-    if(GameClient::inst().IsReplayModeOn() || GameClient::inst().GetPlayerID() != player)
+    if(GAMECLIENT.IsReplayModeOn() || GAMECLIENT.GetPlayerID() != player)
         ChangeVisualInventorySettings(category, state, type);
 
     // Evtl gabs verlorene Waren, die jetzt in das HQ wieder reinkönnen
@@ -1436,7 +1436,7 @@ void nobBaseWarehouse::SetRealReserve(const unsigned rank, const unsigned count)
     reserve_soldiers_claimed_real[rank] = count;
 
     // Replay oder anderer Spieler? Dann die visuellen auch erhöhen
-    if(GameClient::inst().IsReplayModeOn() || GameClient::inst().GetPlayerID() != player)
+    if(GAMECLIENT.IsReplayModeOn() || GAMECLIENT.GetPlayerID() != player)
         reserve_soldiers_claimed_visual[rank] = count;
 
     // Geforderte Soldaten ggf. einbeziehen

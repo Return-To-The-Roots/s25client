@@ -191,7 +191,7 @@ void iwDirectIPCreate::Msg_ButtonClick(const unsigned int ctrl_id)
             csi.use_upnp = (SETTINGS.global.use_upnp == 1);
 
             // Map auswählen
-            WindowManager::inst().Switch(new dskSelectMap(csi));
+            WINDOWMANAGER.Switch(new dskSelectMap(csi));
         } break;
         case 8:
         {

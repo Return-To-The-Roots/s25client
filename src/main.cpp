@@ -127,7 +127,7 @@ WinExceptionHandler(
                         _("RttR crashed. Would you like to send debug information to RttR to help us avoiding this crash in the future? Thank you very much!"),
                         _("Error"), MB_YESNO | MB_ICONERROR | MB_TASKMODAL | MB_SETFOREGROUND) == IDYES)
     {
-        VideoDriverWrapper::inst().DestroyScreen();
+        VIDEODRIVER.DestroyScreen();
 
         DebugInfo di;
 
@@ -292,7 +292,7 @@ int main(int argc, char* argv[])
 
         printf("loading game!\n");
 
-        WindowManager::inst().Switch(new dskSelectMap(csi));
+        WINDOWMANAGER.Switch(new dskSelectMap(csi));
 
         if(!GAMESERVER.TryToStart(csi, argv[1], MAPTYPE_SAVEGAME))
         {
@@ -318,19 +318,19 @@ int main(int argc, char* argv[])
                 }
                 else
                 {
-                    WindowManager::inst().Switch(new dskGameLoader(gwv));
+                    WINDOWMANAGER.Switch(new dskGameLoader(gwv));
                 }
             }
             else
             {
-                WindowManager::inst().Draw();
-                WindowManager::inst().Show(new iwPleaseWait);
+                WINDOWMANAGER.Draw();
+                WINDOWMANAGER.Show(new iwPleaseWait);
             }
         }
         else
         {
-            WindowManager::inst().Draw();
-            WindowManager::inst().Show(new iwPleaseWait);
+            WINDOWMANAGER.Draw();
+            WINDOWMANAGER.Show(new iwPleaseWait);
         }
     }
 #endif

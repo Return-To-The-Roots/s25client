@@ -73,7 +73,7 @@ void ctrlTimer::Start(unsigned int timeout)
     this->timeout = timeout;
 
     // timer initialisieren
-    timer = VideoDriverWrapper::inst().GetTickCount();
+    timer = VIDEODRIVER.GetTickCount();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -100,13 +100,13 @@ void ctrlTimer::Msg_PaintBefore()
         return;
 
     // Bei Timeout weiterschalten
-    if(VideoDriverWrapper::inst().GetTickCount() - timer > timeout)
+    if(VIDEODRIVER.GetTickCount() - timer > timeout)
     {
         parent->Msg_Timer(GetID());
 
         if (timer != 0)
         {
-            timer = VideoDriverWrapper::inst().GetTickCount();
+            timer = VIDEODRIVER.GetTickCount();
         }
     }
 }

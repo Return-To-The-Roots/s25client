@@ -211,7 +211,7 @@ unsigned IngameMinimap::CalcPixelColor(const void* param, const MapCoord x, cons
     unsigned color = 0;
 
     // Beobeachtender Spieler
-    unsigned char viewing_player = GameClient::inst().GetPlayerID();
+    unsigned char viewing_player = GAMECLIENT.GetPlayerID();
 
     Visibility visibility = gwv.GetVisibility(x, y);
 
@@ -231,7 +231,7 @@ unsigned IngameMinimap::CalcPixelColor(const void* param, const MapCoord x, cons
         if(!fow)
             owner = gwv.GetNode(x, y).owner;
         else
-            owner = gwv.GetNode(x, y).fow[GameClient::inst().GetPlayerID()].owner;
+            owner = gwv.GetNode(x, y).fow[GAMECLIENT.GetPlayerID()].owner;
 
         // Baum an dieser Stelle?
         if((!fow && gwv.GetNO(x, y)->GetGOT() == GOT_TREE) || (fow && gwv.GetFOWObject(x, y, viewing_player)->GetType() == FOW_TREE))
@@ -364,7 +364,7 @@ bool IngameMinimap::IsRoad(const MapCoord x, const MapCoord y, const Visibility 
 unsigned IngameMinimap::CombineWithPlayerColor(const unsigned color, const unsigned char player) const
 {
     // Spielerfarbe mit einberechnen
-    unsigned player_color = COLORS[GameClient::inst().GetPlayer(player - 1)->color];
+    unsigned player_color = COLORS[GAMECLIENT.GetPlayer(player - 1)->color];
 
     return MakeColor(0xFF, (GetRed(color) + GetRed(player_color)) / 2,
                      (GetGreen(color) + GetGreen(player_color)) / 2,
