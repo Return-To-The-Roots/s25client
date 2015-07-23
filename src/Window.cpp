@@ -1162,10 +1162,15 @@ void Window::DrawControls(void)
  */
 bool Window::TestWindowInRegion(Window* window, const MouseCoords& mc) const
 {
-    const std::map<Window*, Rect>::const_iterator it = locked_areas.find(window);
-    if(it == locked_areas.end())
-        return false;
-    return Coll(mc.x + GetX(), mc.y + GetY(), it->second);
+    for(std::map<Window*, Rect>::const_iterator it = locked_areas.begin(); it != locked_areas.end(); ++it)
+    {
+        if(it->first == window)
+            continue; // Locking window can always access its locked regions
+        // All others cannot:
+        if(Coll(mc.x + GetX(), mc.y + GetY(), it->second))
+            return true;
+    }
+    return false;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

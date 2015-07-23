@@ -863,9 +863,9 @@ void WindowManager::Close(IngameWindow* window)
         // haben wir noch Fenster zum aktivieren?
         if(window != windows.front())
         {
-            // ja, also das nächste aktivieren
+            // ja, also das nächste aktivieren. Save it as we need it later!
             IgwListIterator tmp = it;
-            --it;
+            --tmp;
 
             // Activate window or desktop if window invalid
             (*tmp)->SetActive(true);
