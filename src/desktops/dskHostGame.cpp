@@ -447,7 +447,7 @@ void dskHostGame::Msg_Group_ButtonClick(const unsigned int group_id, const unsig
                 GAMESERVER.TogglePlayerTeam(player_id);
             if(player_id == GAMECLIENT.GetPlayerID())
             {
-                if(GAMECLIENT.GetLocalPlayer()->team > TM_RANDOMTEAM && GAMECLIENT.GetLocalPlayer()->team < TEAM_COUNT) // team: 1->2->3->4->0
+                if(GAMECLIENT.GetLocalPlayer()->team > TM_RANDOMTEAM && GAMECLIENT.GetLocalPlayer()->team < Team(TEAM_COUNT)) // team: 1->2->3->4->0
                 {
                     GAMECLIENT.GetLocalPlayer()->team = Team((GAMECLIENT.GetLocalPlayer()->team + 1) % TEAM_COUNT);
                 }

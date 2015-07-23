@@ -134,7 +134,7 @@ bool DriverWrapper::Load(const DriverType dt, std::string& preference)
  */
 void* DriverWrapper::GetDLLFunction(const std::string& name)
 {
-    return (void*)GetProcAddress(dll, name.c_str());
+    return pto2ptf<void*>(GetProcAddress(dll, name.c_str()));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -189,16 +189,16 @@ void DriverWrapper::LoadDriverList(const DriverType dt, std::vector<DriverItem>&
 
         if( (dll = LoadLibraryA(path.c_str())) )
         {
-            PDRIVER_GETDRIVERAPIVERSION GetDriverAPIVersion = pto2ptf<PDRIVER_GETDRIVERAPIVERSION>((void*)GetProcAddress(dll, "GetDriverAPIVersion"));
+            PDRIVER_GETDRIVERAPIVERSION GetDriverAPIVersion = pto2ptf<PDRIVER_GETDRIVERAPIVERSION>(GetProcAddress(dll, "GetDriverAPIVersion"));
 
             if(GetDriverAPIVersion && GetDriverAPIVersion() == DRIVERAPIVERSION)
             {
-                PDRIVER_GETDRIVERNAME GetDriverName = pto2ptf<PDRIVER_GETDRIVERNAME>((void*)GetProcAddress(dll, "GetDriverName"));
+                PDRIVER_GETDRIVERNAME GetDriverName = pto2ptf<PDRIVER_GETDRIVERNAME>(GetProcAddress(dll, "GetDriverName"));
 
                 if(GetDriverName)
                 {
-                    PDRIVER_CREATEAUDIOINSTANCE CreateAudioInstance = pto2ptf<PDRIVER_CREATEAUDIOINSTANCE>((void*)GetProcAddress(dll, "CreateAudioInstance"));
-                    PDRIVER_CREATEVIDEOINSTANCE CreateVideoInstance = pto2ptf<PDRIVER_CREATEVIDEOINSTANCE>((void*)GetProcAddress(dll, "CreateVideoInstance"));
+                    PDRIVER_CREATEAUDIOINSTANCE CreateAudioInstance = pto2ptf<PDRIVER_CREATEAUDIOINSTANCE>(GetProcAddress(dll, "CreateAudioInstance"));
+                    PDRIVER_CREATEVIDEOINSTANCE CreateVideoInstance = pto2ptf<PDRIVER_CREATEVIDEOINSTANCE>(GetProcAddress(dll, "CreateVideoInstance"));
 
                     if((dt == DT_VIDEO && CreateVideoInstance) || (dt == DT_AUDIO && CreateAudioInstance))
                     {

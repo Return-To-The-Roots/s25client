@@ -536,7 +536,13 @@ unsigned long VideoWinAPI::GetTickCount(void) const
  */
 void* VideoWinAPI::GetFunction(const char* function) const
 {
-    return (void*)wglGetProcAddress(function);
+    union
+    {
+        PROC procAddress;
+        void* func;
+    };// Avoid warning about pointer conversion
+    procAddress = wglGetProcAddress(function);
+    return func;
 }
 
 /// Listet verfügbare Videomodi auf

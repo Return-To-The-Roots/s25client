@@ -39,12 +39,12 @@ int usleep (useconds_t microseconds)
     if ( microseconds )
     {
         static const useconds_t one_second = 1000000;
-        static SOCKET sock = SOCKET_ERROR;
+        static SOCKET sock = INVALID_SOCKET;
 
         timeval tv_delay;
         fd_set set;
 
-        if(sock == SOCKET_ERROR)
+        if(sock == INVALID_SOCKET)
             sock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
 
         FD_ZERO(&set);

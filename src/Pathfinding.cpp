@@ -139,80 +139,6 @@ struct PathfindingPoint
 };
 
 
-#define GetXYA(x, y, dx, dy, dir) \
-    { \
-        switch (dir) \
-        { \
-            case 0: \
-                if (!x) \
-                    dx = width - 1; \
-                else \
-                    dx = x - 1; \
-                dy = y; \
-                break; \
-            case 1: \
-                if (y & 1) \
-                    dx = x; \
-                else if (!x) \
-                    dx = width - 1; \
-                else \
-                    dx = x - 1; \
-                if (y > 0) \
-                    dy = y - 1; \
-                else \
-                    dy = height - 1; \
-                break; \
-            case 2: \
-                if (y & 1) \
-                    if (x == width - 1) \
-                        dx = 0; \
-                    else \
-                        dx = x + 1; \
-                else \
-                    dx = x; \
-                if (y > 0) \
-                    dy = y - 1; \
-                else \
-                    dy = height - 1; \
-                break; \
-            case 3: \
-                if (x == width - 1) \
-                    dx = 0; \
-                else \
-                    dx = x + 1; \
-                dy = y; \
-                break; \
-            case 4: \
-                if (y & 1) \
-                    if (x == width - 1) \
-                        dx = 0; \
-                    else \
-                        dx = x + 1; \
-                else \
-                    dx = x; \
-                if (y == height - 1) \
-                    dy = 0; \
-                else \
-                    dy = y + 1; \
-                break; \
-            case 5: \
-                if (y & 1) \
-                    dx = x; \
-                else if (!x) \
-                    dx = width - 1; \
-                else \
-                    dx = x - 1; \
-                if (y == height - 1) \
-                    dy = 0; \
-                else \
-                    dy = y + 1; \
-                break; \
-            default: \
-                break; \
-        } \
-    }
-
-
 
 /// Definitionen siehe oben
 MapCoord PathfindingPoint::dst_x = 0;
@@ -308,9 +234,8 @@ bool GameWorldBase::FindFreePath(const MapCoord x_start, const MapCoord y_start,
             unsigned i = z % 6;
 
             // Koordinaten des entsprechenden umliegenden Punktes bilden
-            MapCoord xa, ya;
-
-            GetXYA(best.x, best.y, xa, ya, i);
+            MapCoord xa = GetXA(best.x, best.y, i);
+            MapCoord ya = GetYA(best.x, best.y, i);
 
             // ID des umliegenden Knotens bilden
             unsigned xaid = MakeCoordID(xa, ya);
@@ -466,9 +391,8 @@ bool GameWorldBase::FindFreePathAlternatingConditions(const MapCoord x_start, co
             unsigned i = z % 6;
 
             // Koordinaten des entsprechenden umliegenden Punktes bilden
-            MapCoord xa, ya;
-
-            GetXYA(best.x, best.y, xa, ya, i);
+            MapCoord xa = GetXA(best.x, best.y, i);
+            MapCoord ya = GetYA(best.x, best.y, i);
 
             // ID des umliegenden Knotens bilden
             unsigned xaid = MakeCoordID(xa, ya);
