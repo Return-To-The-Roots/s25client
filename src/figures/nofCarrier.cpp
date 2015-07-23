@@ -674,7 +674,7 @@ void nofCarrier::GoalReached()
 
                 carried_ware->Carry( (rs_dir ? workplace->GetF1() : workplace->GetF2()) );
 
-                if(carried_ware != NULL)
+                if(carried_ware)
                     state = CARRS_CARRYWARE;
             }
             // wenn was an der gegenüberliegenden Flaggge liegt, ebenfalls holen
@@ -1045,7 +1045,7 @@ bool nofCarrier::WantInBuilding(bool* calculated)
     if(rs->GetLength() != 1)
         return false;
 
-    if (calculated != NULL)
+    if (calculated)
     {
         *calculated = true;
     }

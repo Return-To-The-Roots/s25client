@@ -674,7 +674,7 @@ void nobUsual::StopProduction()
  */
 bool nobUsual::HasWorker() const
 {
-    return ( (worker != NULL) ? (worker->GetState() != nofBuildingWorker::STATE_FIGUREWORK) : false);
+    return ( (worker) ? (worker->GetState() != nofBuildingWorker::STATE_FIGUREWORK) : false);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

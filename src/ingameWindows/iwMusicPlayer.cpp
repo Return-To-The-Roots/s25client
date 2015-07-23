@@ -297,7 +297,7 @@ void iwMusicPlayer::Msg_ButtonClick(const unsigned int ctrl_id)
 bool ValidateFile(const std::string& filename)
 {
     FILE* file = fopen(filename.c_str(), "r");
-    if(file == NULL)
+    if(!file)
         return false;
     else
     {

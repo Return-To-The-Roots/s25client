@@ -997,7 +997,7 @@ void GameServer::ClientWatchDog()
                                 player->NotLagging();
 
                                 // Checksumme des ersten Spielers als Richtwert
-                                if ((firstHumanPlayer == NULL) && (player->ps == PS_OCCUPIED))
+                                if ((!firstHumanPlayer) && (player->ps == PS_OCCUPIED))
                                 {
                                     firstHumanPlayer = player;
                                 }
@@ -1025,7 +1025,7 @@ void GameServer::ClientWatchDog()
 
                                 // Checksummen nicht gleich?
                                 if (
-                                        (firstHumanPlayer != NULL) &&
+                                        (firstHumanPlayer) &&
                                         (player->ps == PS_OCCUPIED) &&
 	                                    (
 	                                		(player->checksum != firstHumanPlayer->checksum) ||
@@ -1630,7 +1630,7 @@ void GameServer::OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, std::lis
     snprintf(filename, sizeof(filename), "%s%s.log", GetFilePath(FILE_PATHS[47]).c_str(), time_str);
     FILE* file = fopen(filename, "w");
 
-    if (file != NULL)
+    if (file)
     {
         // if there were any identical lines, include only the last one
         if (identical)
@@ -1736,7 +1736,7 @@ void GameServer::SetAIName(const unsigned player_id)
 
 void GameServer::SendAIEvent(AIEvent::Base* ev, unsigned receiver)
 {
-    if (ai_players[receiver] != NULL)
+    if (ai_players[receiver])
         ai_players[receiver]->SendAIEvent(ev);
     else
         delete ev;

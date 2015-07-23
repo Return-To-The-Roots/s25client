@@ -1019,9 +1019,9 @@ inline void GameClient::OnNMSMapInfo(const GameMessage_Map_Info& msg)
 
         FILE *lua_f = fopen(lua_file.c_str(), "wb");
 
-        if ((lua_f == NULL) || (fwrite(msg.script.data(), 1, msg.script.length(), lua_f) != msg.script.length()))
+        if ((!lua_f) || (fwrite(msg.script.data(), 1, msg.script.length(), lua_f) != msg.script.length()))
         {
-            LOG.lprintf("Fatal error: can't %s lua script to %s: %s\n", (lua_f == NULL) ? "open" : "write to", lua_file.c_str(), strerror(errno));
+            LOG.lprintf("Fatal error: can't %s lua script to %s: %s\n", (!lua_f) ? "open" : "write to", lua_file.c_str(), strerror(errno));
 
             Stop();
             return;
@@ -1814,13 +1814,13 @@ unsigned int GameClient::GetGlobalAnimation(const unsigned short max, const unsi
 
 unsigned GameClient::Interpolate(unsigned max_val, EventManager::EventPointer ev)
 {
-    assert( ev != NULL );
+    assert( ev );
     return min<unsigned int>(((max_val * ((framesinfo.nr - ev->gf) * framesinfo.gf_length + framesinfo.frame_time)) / (ev->gf_length * framesinfo.gf_length)), max_val - 1);
 }
 
 int GameClient::Interpolate(int x1, int x2, EventManager::EventPointer ev)
 {
-    assert( ev != NULL );
+    assert( ev );
     return (x1 + ( (x2 - x1) * ((int(framesinfo.nr) - int(ev->gf)) * int(framesinfo.gf_length) + int(framesinfo.frame_time))) / int(ev->gf_length * framesinfo.gf_length));
 }
 

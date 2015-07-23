@@ -676,7 +676,7 @@ void noFigure::GoHome(noRoadNode* goal)
         return;
     }
     // Nächstes Lagerhaus suchen
-    else if(goal == NULL)
+    else if(!goal)
     {
         // Wenn wir cur_rs == 0, dann hängen wir wahrscheinlich noch im Lagerhaus in der Warteschlange
         if(cur_rs == 0)

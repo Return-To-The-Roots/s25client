@@ -128,7 +128,7 @@ ctrlGroup* ctrlTab::AddTab(glArchivItem_Bitmap* image, std::string tooltip, cons
 {
     if(tab_count < MAX_TAB_COUNT)
     {
-        if(AddImageButton(tab_count, 36 * tab_count, 0, 36, 45, TC_RED1, image, tooltip) != NULL)
+        if(AddImageButton(tab_count, 36 * tab_count, 0, 36, 45, TC_RED1, image, tooltip))
         {
             tabs[tab_count++] = id;
             ctrlGroup* group = AddGroup(MAX_TAB_COUNT + 1 + id);

@@ -69,7 +69,7 @@ ctrlTable::ctrlTable(Window* parent,
             COLUMN c;
 
             const char* title = va_arg(liste, const char*);
-            if(title != NULL)
+            if(title)
                 c.title = title;
 
             c.width = (unsigned short)va_arg(liste, int);

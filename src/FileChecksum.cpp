@@ -55,7 +55,7 @@ unsigned int CalcChecksumOfFile(const char* const path)
 
 unsigned int CalcChecksumOfBuffer(const unsigned char* buffer, unsigned int size)
 {
-    if(buffer == NULL || size == 0)
+    if(!buffer || size == 0)
         return 0;
 
     unsigned int checksum = 0;

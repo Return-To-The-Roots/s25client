@@ -48,7 +48,7 @@ void glArchivItem_Sound_XMidi::Play(const unsigned repeats)
     if(!SETTINGS.sound.musik)
         return;
 
-    if(sound == NULL)
+    if(!sound)
     {
         if(tracklist[0].getMid() == NULL)
             tracklist[0].XMid2Mid();
@@ -56,6 +56,6 @@ void glArchivItem_Sound_XMidi::Play(const unsigned repeats)
         sound = AUDIODRIVER.LoadMusic(AudioDriver::AD_MIDI, tracklist[0].getMid(true), tracklist[0].getMidLength(true));
     }
 
-    if(sound != NULL)
+    if(sound)
         AUDIODRIVER.PlayMusic(sound, repeats);
 }

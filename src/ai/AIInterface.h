@@ -42,7 +42,7 @@ class AIInterface
     public:
         AIInterface(const GameWorldBase* const gwb, const GameClientPlayer* const player,
                     const GameClientPlayerList* const players, std::vector<gc::GameCommand*> *gcs, const unsigned char playerID) :
-            gwb(gwb), player(player), players(players), gcs(gcs), playerID(playerID) { assert(gcs != NULL); }
+            gwb(gwb), player(player), players(players), gcs(gcs), playerID(playerID) { assert(gcs); }
 
     private:
         /// Pointer to GameWorld, containing all information about the world

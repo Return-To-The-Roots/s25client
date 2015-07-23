@@ -560,7 +560,7 @@ void nobHarborBuilding::OrderExpeditionWares()
     }
 
     // Wenn immer noch nicht alles da ist, später noch einmal bestellen
-    if(orderware_ev == NULL)
+    if(!orderware_ev)
         orderware_ev = em->AddEvent(this, 210, 10);
 
 }

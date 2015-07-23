@@ -48,9 +48,9 @@ void glArchivItem_Sound_Other::Play(const unsigned repeats)
     if(!SETTINGS.sound.musik)
         return;
 
-    if(sound == NULL)
+    if(!sound)
         sound = AUDIODRIVER.LoadMusic(AudioDriver::AD_OTHER, data, length);
 
-    if(sound != NULL)
+    if(sound)
         AUDIODRIVER.PlayMusic(sound, repeats);
 }

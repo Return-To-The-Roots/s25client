@@ -81,7 +81,7 @@ void nofActiveSoldier::GoalReached()
     // Add myself to the building
     if(!building)
     {
-        if((building = gwg->GetSpecObj<nobMilitary>(this->GetX(), this->GetY())) != NULL)
+        if((building = gwg->GetSpecObj<nobMilitary>(this->GetX(), this->GetY())))
             LOG.lprintf("nofActiveSoldier::GoalRoached() - no valid 'building' but found one at soldier's position (%i,%i) (gf: %u)\n", this->GetX(), this->GetY(),GAMECLIENT.GetGFNumber());
         else
             LOG.lprintf("nofActiveSoldier::GoalRoached() - no valid 'building' also didnt find one at soldier's position (%i,%i) (gf: %u)\n", this->GetX(), this->GetY(),GAMECLIENT.GetGFNumber());

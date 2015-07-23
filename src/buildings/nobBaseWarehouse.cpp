@@ -1536,7 +1536,7 @@ void nobBaseWarehouse::StartTradeCaravane(const GoodType gt,  Job job, const uns
     {
         nofTradeDonkey* next = new nofTradeDonkey(x, y, player, tl, gt, job);
 
-        if(last == NULL) tl->SetSuccessor(next);
+        if(!last) tl->SetSuccessor(next);
         else last->SetSuccessor(next);
 
         last = next;

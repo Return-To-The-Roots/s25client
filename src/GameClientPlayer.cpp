@@ -2134,7 +2134,7 @@ void GameClientPlayer::GetJobForShip(noShip* ship)
             {
                 // Punkte ausrechnen
                 int points = (*it)->GetNeedForShip(ships_coming) - length;
-                if(points > best_points || best == NULL)
+                if(points > best_points || !best)
                 {
                     best = *it;
                     best_points = points;

@@ -48,7 +48,7 @@ unsigned int glArchivItem_Sound_Wave::Play(unsigned char volume, bool loop)
     if(!SETTINGS.sound.effekte/* || !VIDEODRIVER.audiodriver*/)
         return 0xFFFFFFFF;
 
-    if(sound == NULL)
+    if(!sound)
         sound = AUDIODRIVER.LoadEffect(AudioDriver::AD_WAVE, data, length);
 
     return AUDIODRIVER.PlayEffect(sound, volume, loop);

@@ -56,7 +56,7 @@ bool glSmartTexturePackerNode::insert(glSmartBitmap* b, unsigned char* buffer, u
         glSmartTexturePackerNode* current = todo.back();
         todo.pop_back();
 
-        if (current->child[0] != NULL)
+        if (current->child[0])
         {
             todo.push_back(current->child[0]);
             todo.push_back(current->child[1]);
@@ -64,7 +64,7 @@ bool glSmartTexturePackerNode::insert(glSmartBitmap* b, unsigned char* buffer, u
         }
 
         // we are a leaf and do already contain an image
-        if (current->bmp != NULL)
+        if (current->bmp)
         {
             continue;
         }
@@ -234,7 +234,7 @@ bool glSmartTexturePacker::packHelper(std::vector<glSmartBitmap*> &list)
 
             unsigned char* buffer = new unsigned char[w * h * 4];
 
-            if (buffer == NULL)
+            if (!buffer)
             {
                 return(false);
             }

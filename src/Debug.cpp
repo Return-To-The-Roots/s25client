@@ -148,7 +148,7 @@ bool DebugInfo::SendStackTrace()
     HMODULE kernel32 = LoadLibrary("kernel32.dll");
     HMODULE dbghelp = LoadLibrary("dbghelp.dll");
 
-    if ((kernel32 == NULL) || (dbghelp == NULL))
+    if ((!kernel32) || (!dbghelp))
     {
         return(false);
     }
@@ -162,7 +162,7 @@ bool DebugInfo::SendStackTrace()
     PFUNCTION_TABLE_ACCESS_ROUTINE64 SymFunctionTableAccess64 = (PFUNCTION_TABLE_ACCESS_ROUTINE64)(GetProcAddress(dbghelp, "SymFunctionTableAccess64"));
     PGET_MODULE_BASE_ROUTINE64 SymGetModuleBase64 = (PGET_MODULE_BASE_ROUTINE64)(GetProcAddress(dbghelp, "SymGetModuleBase64"));
 
-    if ((SymInitialize == NULL) || (StackWalk64 == NULL) || (SymFunctionTableAccess64 == NULL) || (SymGetModuleBase64 == NULL) || (RtlCaptureContext == NULL))
+    if ((!SymInitialize) || (!StackWalk64) || (!SymFunctionTableAccess64) || (!SymGetModuleBase64) || (!RtlCaptureContext))
     {
         return(false);
     }
@@ -174,7 +174,7 @@ bool DebugInfo::SendStackTrace()
     }
 
 #ifndef _MSC_VER
-    if (ctx == NULL)
+    if (!ctx)
     {
         context.ContextFlags = CONTEXT_FULL;
         RtlCaptureContext(&context);
@@ -220,7 +220,7 @@ bool DebugInfo::SendStackTrace()
 
     /*CaptureStackBackTraceType CaptureStackBackTrace = (CaptureStackBackTraceType)(GetProcAddress(LoadLibraryA("kernel32.dll"), "RtlCaptureStackBackTrace"));
 
-    if (CaptureStackBackTrace == NULL)
+    if (!CaptureStackBackTrace)
     {
         return(false);
     }

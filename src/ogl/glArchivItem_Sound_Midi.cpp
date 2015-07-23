@@ -48,9 +48,9 @@ void glArchivItem_Sound_Midi::Play(const unsigned repeats)
     if(!SETTINGS.sound.musik)
         return;
 
-    if(sound == NULL)
+    if(!sound)
         sound = AUDIODRIVER.LoadMusic(AudioDriver::AD_MIDI, tracklist[0].getMid(true), tracklist[0].getMidLength(true));
 
-    if(sound != NULL)
+    if(sound)
         AUDIODRIVER.PlayMusic(sound, repeats);
 }

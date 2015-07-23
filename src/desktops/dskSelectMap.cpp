@@ -406,7 +406,7 @@ void dskSelectMap::FillTable(const std::string& filename, void* param)
     libsiedler2::ArchivInfo map;
 
     // Ist die Tabelle gültig?
-    if(tabelle == NULL)
+    if(!tabelle)
         return;
 
     // Karteninformationen laden

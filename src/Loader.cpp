@@ -861,7 +861,7 @@ void Loader::fillCaches()
         glArchivItem_Bitmap* image = GetMapImageN(561);
         glArchivItem_Bitmap* shadow = GetMapImageN(661);
 
-        if ((image != NULL) && (shadow != NULL) && (palette != NULL))
+        if ((image) && (shadow) && (palette))
         {
             unsigned short width = image->getWidth();
             unsigned short height = image->getHeight();
@@ -1368,7 +1368,7 @@ bool Loader::LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Pal
         if(e == ".bob")
             to = dynamic_cast<libsiedler2::ArchivInfo*>(to->get(0));
 
-        if(to == NULL)
+        if(!to)
         {
             LOG.lprintf("Fehler beim Ersetzen einer BOB-Datei\n");
             return false;

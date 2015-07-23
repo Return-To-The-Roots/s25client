@@ -401,7 +401,7 @@ bool Ware::ShipJorneyEnded(nobHarborBuilding* hb)
     state = STATE_WAITINWAREHOUSE;
     location = hb;
 
-    if (goal == NULL)
+    if (!goal)
     {
         return(false);
     }

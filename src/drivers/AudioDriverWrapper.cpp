@@ -83,7 +83,7 @@ bool AudioDriverWrapper::LoadDriver(void)
  */
 Sound* AudioDriverWrapper::LoadMusic(unsigned int data_type, unsigned char* data, unsigned int size)
 {
-    if(audiodriver == NULL)
+    if(!audiodriver)
         return NULL;
 
     return audiodriver->LoadMusic(data_type, data, size);
@@ -91,7 +91,7 @@ Sound* AudioDriverWrapper::LoadMusic(unsigned int data_type, unsigned char* data
 
 Sound* AudioDriverWrapper::LoadEffect(unsigned int data_type, unsigned char* data, unsigned int size)
 {
-    if(audiodriver == NULL)
+    if(!audiodriver)
         return NULL;
 
     return audiodriver->LoadEffect(data_type, data, size);
@@ -100,7 +100,7 @@ Sound* AudioDriverWrapper::LoadEffect(unsigned int data_type, unsigned char* dat
 
 unsigned AudioDriverWrapper::PlayEffect(Sound* sound, const unsigned char volume, const bool loop)
 {
-    if(audiodriver == NULL)
+    if(!audiodriver)
         return 0;
 
     return audiodriver->PlayEffect(sound, volume, loop);
@@ -108,7 +108,7 @@ unsigned AudioDriverWrapper::PlayEffect(Sound* sound, const unsigned char volume
 
 void AudioDriverWrapper::StopEffect(const unsigned int play_id)
 {
-    if(audiodriver == NULL)
+    if(!audiodriver)
         return;
 
     return audiodriver->StopEffect(play_id);

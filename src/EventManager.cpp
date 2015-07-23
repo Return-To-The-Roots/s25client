@@ -237,7 +237,7 @@ void EventManager::RemoveAllEventsOfObject(GameObject* obj)
 
 void EventManager::RemoveEvent(EventPointer ep)
 {
-    if (ep == NULL)
+    if (!ep)
     {
         return;
     }

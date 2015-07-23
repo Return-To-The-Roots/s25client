@@ -2128,7 +2128,7 @@ int GameWorldBase::LUA_AddWares(lua_State* L)
 
     nobBaseWarehouse* warehouse = player->GetFirstWH();
 
-    if (warehouse == NULL)
+    if (!warehouse)
     {
         lua_pushnumber(L, 0);
         return(1);
@@ -2181,7 +2181,7 @@ int GameWorldBase::LUA_AddPeople(lua_State* L)
 
     nobBaseWarehouse* warehouse = player->GetFirstWH();
 
-    if (warehouse == NULL)
+    if (!warehouse)
     {
         lua_pushnumber(L, 0);
         return(1);
@@ -2495,7 +2495,7 @@ int GameWorldBase::LUA_AddStaticObject(lua_State *L)
 {
     GameWorldGame *gwg = dynamic_cast<GameWorldGame*>((GameWorldBase*) lua_touserdata(L,lua_upvalueindex(1)));
     
-    if (gwg == NULL)
+    if (!gwg)
     {
         return(0);
     }
@@ -2550,7 +2550,7 @@ int GameWorldBase::LUA_AddEnvObject(lua_State *L)
 {
     GameWorldGame *gwg = dynamic_cast<GameWorldGame*>((GameWorldBase*) lua_touserdata(L,lua_upvalueindex(1)));
     
-    if (gwg == NULL)
+    if (!gwg)
     {
         return(0);
     }
@@ -2592,7 +2592,7 @@ int GameWorldBase::LUA_AIConstructionOrder(lua_State *L)
 {
     GameWorldGame *gwg = dynamic_cast<GameWorldGame*>((GameWorldBase*) lua_touserdata(L,lua_upvalueindex(1)));
     
-    if (gwg == NULL)
+    if (!gwg)
     {
         return(0);
     }

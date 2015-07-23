@@ -88,9 +88,9 @@ void ListDir(const std::string& path, bool directories, void (*CallBack)(const s
 #else
     DIR* dir_d;
     dirent* dir = NULL;
-    if ((dir_d = opendir(rpath.c_str())) != NULL)
+    if ((dir_d = opendir(rpath.c_str())))
     {
-        while( (dir = readdir(dir_d)) != NULL)
+        while( (dir = readdir(dir_d)))
         {
             struct stat file_stat;
             std::string whole_path = rpath + dir->d_name;

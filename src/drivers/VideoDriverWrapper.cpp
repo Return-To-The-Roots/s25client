@@ -113,7 +113,7 @@ bool VideoDriverWrapper::LoadDriver(void)
  */
 bool VideoDriverWrapper::CreateScreen(const unsigned short screen_width, const unsigned short screen_height, const bool fullscreen)
 {
-    if(videodriver == NULL)
+    if(!videodriver)
     {
         fatal_error("Kein Videotreiber ausgewaehlt!\n");
         return false;
@@ -176,7 +176,7 @@ bool VideoDriverWrapper::CreateScreen(const unsigned short screen_width, const u
  */
 bool VideoDriverWrapper::ResizeScreen(const unsigned short screenWidth, const unsigned short screenHeight, const bool fullscreen)
 {
-    if(videodriver == NULL)
+    if(!videodriver)
     {
         fatal_error("Kein Videotreiber ausgewaehlt!\n");
         return false;
@@ -199,7 +199,7 @@ bool VideoDriverWrapper::ResizeScreen(const unsigned short screenWidth, const un
  */
 bool VideoDriverWrapper::DestroyScreen()
 {
-    if(videodriver == NULL)
+    if(!videodriver)
     {
         fatal_error("Kein Videotreiber ausgewaehlt!\n");
         return false;
@@ -303,7 +303,7 @@ unsigned int VideoDriverWrapper::GenerateTexture()
  */
 bool VideoDriverWrapper::SwapBuffers()
 {
-    if(videodriver == NULL)
+    if(!videodriver)
     {
         fatal_error("Kein Videotreiber ausgewaehlt!\n");
         return false;
@@ -320,7 +320,7 @@ bool VideoDriverWrapper::SwapBuffers()
  */
 bool VideoDriverWrapper::Run()
 {
-    if(videodriver == NULL)
+    if(!videodriver)
     {
         fatal_error("Kein Videotreiber ausgewaehlt!\n");
         return false;
@@ -464,7 +464,7 @@ bool VideoDriverWrapper::LoadAllExtensions()
  */
 unsigned int VideoDriverWrapper::GetTickCount()
 {
-    if(videodriver == NULL)
+    if(!videodriver)
         return (unsigned int)time(NULL);
 
     return (unsigned int)videodriver->GetTickCount();
@@ -482,7 +482,7 @@ unsigned int VideoDriverWrapper::GetTickCount()
  */
 void* VideoDriverWrapper::loadExtension(const char* extension)
 {
-    if (videodriver == NULL)
+    if (!videodriver)
     {
         fatal_error("Kein Videotreiber ausgewaehlt!\n");
         return(NULL);
@@ -499,7 +499,7 @@ void* VideoDriverWrapper::loadExtension(const char* extension)
  */
 int VideoDriverWrapper::GetMouseX()
 {
-    if(videodriver == NULL)
+    if(!videodriver)
         return 0;
 
     return videodriver->GetMousePosX();
@@ -513,7 +513,7 @@ int VideoDriverWrapper::GetMouseX()
  */
 int VideoDriverWrapper::GetMouseY()
 {
-    if(videodriver == NULL)
+    if(!videodriver)
         return 0;
 
     return videodriver->GetMousePosY();
@@ -527,7 +527,7 @@ int VideoDriverWrapper::GetMouseY()
  */
 bool VideoDriverWrapper::IsLeftDown()
 {
-    if(videodriver == NULL)
+    if(!videodriver)
         return false;
 
     return videodriver->GetMouseStateL();
@@ -541,7 +541,7 @@ bool VideoDriverWrapper::IsLeftDown()
  */
 bool VideoDriverWrapper::IsRightDown()
 {
-    if(videodriver == NULL)
+    if(!videodriver)
         return false;
 
     return videodriver->GetMouseStateR();
@@ -555,7 +555,7 @@ bool VideoDriverWrapper::IsRightDown()
  */
 void VideoDriverWrapper::SetMousePos(const int x, const int y)
 {
-    if(videodriver == NULL)
+    if(!videodriver)
         return;
 
     videodriver->SetMousePos(x, y);
@@ -570,7 +570,7 @@ void VideoDriverWrapper::SetMousePos(const int x, const int y)
  */
 void VideoDriverWrapper::ListVideoModes(std::vector<VideoDriver::VideoMode>& video_modes) const
 {
-    if(videodriver == NULL)
+    if(!videodriver)
         return;
 
     // Standard-Modi hinzufügen
@@ -591,7 +591,7 @@ void VideoDriverWrapper::ListVideoModes(std::vector<VideoDriver::VideoMode>& vid
  */
 void* VideoDriverWrapper::GetWindowPointer() const
 {
-    if(videodriver == NULL)
+    if(!videodriver)
         return NULL;
 
     return videodriver->GetWindowPointer();
