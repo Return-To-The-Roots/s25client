@@ -72,7 +72,7 @@ void TradeGraph::CreateWithHelpOfAnotherPlayer(const TradeGraph& helper, const G
         {
             Point<MapCoord> p(x, y);
             // Player hqs far away from this point?
-            unsigned nearest_hq = oo;
+            unsigned nearest_hq = std::numeric_limits<unsigned>::max();
             for(unsigned i = 0; i < players.getCount(); ++i)
             {
                 unsigned new_distance = gwg->CalcDistance(helper.GetNode(p).main_pos, Point<MapCoord>(players[i].hqx, players[i].hqy));
@@ -90,7 +90,7 @@ void TradeGraph::CreateWithHelpOfAnotherPlayer(const TradeGraph& helper, const G
         {
             Point<MapCoord> p(x, y);
             // Player hqs far away from this point?
-            unsigned nearest_hq = oo;
+            unsigned nearest_hq = std::numeric_limits<unsigned>::max();
             for(unsigned i = 0; i < players.getCount(); ++i)
             {
                 unsigned new_distance = gwg->CalcDistance(helper.GetNode(p).main_pos, Point<MapCoord>(players[i].hqx, players[i].hqy));
@@ -315,7 +315,7 @@ struct TGN
     bool visited;
     bool in_list;
 
-    TGN() : route_length(oo), real_length(oo), visited(false), in_list(false) {}
+    TGN() : route_length(std::numeric_limits<unsigned>::max()), real_length(std::numeric_limits<unsigned>::max()), visited(false), in_list(false) {}
 };
 
 

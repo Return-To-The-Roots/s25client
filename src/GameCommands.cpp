@@ -30,6 +30,8 @@
 #include "buildings/nobHarborBuilding.h"
 #include "nodeObjs/noShip.h"
 
+#include <cstdlib>
+
 using namespace gc;
 
 GameCommand* GameCommand::CreateGameCommand(const Type gst, Serializer* ser)

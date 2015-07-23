@@ -22,6 +22,12 @@
 #include "defines.h"
 #include "ListDir.h"
 
+#include <algorithm>
+
+#ifdef _WIN32
+    #include <windows.h>
+#endif
+
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER

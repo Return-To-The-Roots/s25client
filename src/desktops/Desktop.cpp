@@ -24,6 +24,7 @@
 
 #include "WindowManager.h"
 #include "drivers/VideoDriverWrapper.h"
+#include "ogl/glArchivItem_Bitmap.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

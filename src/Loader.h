@@ -22,15 +22,31 @@
 #pragma once
 
 #include "../libutil/src/Singleton.h"
-#include "../libsiedler2/src/libsiedler2.h"
 #include "addons/const_addons.h"
 #include "gameData/NationConsts.h"
 #include "Rect.h"
+#include "ogl/glArchivItem_Bitmap.h"
+#include "ogl/glArchivItem_Font.h"
+#include "ogl/glArchivItem_Sound.h"
+#include "ogl/glArchivItem_Bob.h"
+#include "../libsiedler2/src/ArchivInfo.h"
+#include "../libsiedler2/src/ArchivItem_Text.h"
+#include "../libsiedler2/src/ArchivItem_Ini.h"
+#include <string>
+#include <vector>
+#include <map>
+
+namespace libsiedler2{
+    class ArchivItem_Palette;
+    class ArchivItem_Ini;
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 
 class glSmartBitmap;
 class glSmartTexturePacker;
+
+const std::string CONFIG_NAME = "config";
 
 /// Loader Klasse.
 class Loader : public Singleton<Loader>

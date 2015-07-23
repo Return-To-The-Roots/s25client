@@ -21,6 +21,14 @@
 
 #pragma once
 
+#include "../libsiedler2/src/ArchivItem_Font.h"
+#include "oglIncludes.h"
+#include "colors.h"
+#include <map>
+#include <vector>
+
+class glArchivItem_Bitmap;
+
 /// Klasse für GL-Fontfiles.
 class glArchivItem_Font : public libsiedler2::ArchivItem_Font
 {

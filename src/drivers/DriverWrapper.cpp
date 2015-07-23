@@ -29,6 +29,8 @@
 #include "../driver/src/AudioInterface.h"
 #include "../driver/src/VideoInterface.h"
 #include "../driver/src/DriverInterfaceVersion.h"
+#include "Log.h"
+#include "error.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

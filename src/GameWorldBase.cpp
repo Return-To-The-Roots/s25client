@@ -39,6 +39,8 @@
 #include "nodeObjs/noStaticObject.h"
 #include "WindowManager.h"
 #include "ingameWindows/iwMissionStatement.h"
+#include "luaIncludes.h"
+#include "Log.h"
 #include <set>
 
 ///////////////////////////////////////////////////////////////////////////////

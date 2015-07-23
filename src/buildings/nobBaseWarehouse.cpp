@@ -43,6 +43,7 @@
 #include "figures/nofTradeLeader.h"
 #include "figures/nofTradeDonkey.h"
 #include "factories/JobFactory.h"
+#include "Log.h"
 
 #include <algorithm>
 

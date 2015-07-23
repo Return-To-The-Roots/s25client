@@ -32,6 +32,8 @@
 #include "WindowManager.h"
 #include "fileFuncs.h"
 
+#include <fstream>
+
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER

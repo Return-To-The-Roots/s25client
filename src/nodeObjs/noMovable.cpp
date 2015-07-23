@@ -29,7 +29,7 @@
 #include "EventManager.h"
 #include "SerializedGameData.h"
 #include "gameData/MapConsts.h"
-
+#include "Log.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -199,8 +199,8 @@ void noMovable::CalcWalkingRelative(int& x, int& y)
     // Wenn sie runterlaufen, muss es andersrum sein, da die Tiere dann immer vom OBEREN Punkt aus gezeichnet werden
     if(dir == 1 || dir == 2)
     {
-        Swap(x1, x2);
-        Swap(y1, y2);
+        std::swap(x1, x2);
+        std::swap(y1, y2);
     }
 
     CalcRelative(x, y, x1, y1, x2, y2);

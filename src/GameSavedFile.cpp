@@ -23,9 +23,9 @@
 #include <build_version.h>
 #include "BinaryFile.h"
 #include "GameSavedFile.h"
-
-
 #include "GamePlayerInfo.h"
+#include "../libutil/src/Serializer.h"
+#include "../libutil/src/Log.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 /**

@@ -23,6 +23,9 @@
 #include "ctrlEdit.h"
 
 #include "drivers/VideoDriverWrapper.h"
+#include "ogl/glArchivItem_Font.h"
+
+#include <sstream>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

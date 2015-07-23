@@ -25,6 +25,7 @@
 #include "drivers/VideoDriverWrapper.h"
 #include "GlobalVars.h"
 #include "Loader.h"
+#include "../libsiedler2/src/types.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

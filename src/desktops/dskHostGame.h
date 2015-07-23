@@ -28,6 +28,8 @@
 #include "LobbyInterface.h"
 #include "ClientInterface.h"
 
+#include "ogl/glArchivItem_Bitmap_Raw.h"
+
 /// Desktop für das Hosten-eines-Spiels-Fenster
 class dskHostGame :
     public Desktop,

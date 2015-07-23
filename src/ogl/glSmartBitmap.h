@@ -23,6 +23,7 @@
 #pragma once
 
 #include <vector>
+#include "oglIncludes.h"
 
 #include "glArchivItem_Bitmap.h"
 #include "glArchivItem_Bitmap_Player.h"

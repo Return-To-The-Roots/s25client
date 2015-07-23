@@ -39,7 +39,7 @@ static char THIS_FILE[] = __FILE__;
  *  @author FloSoft
  */
 glArchivItem_Music::glArchivItem_Music(void)
-    : baseArchivItem_Sound(), sound(NULL)
+    : sound(NULL)
 {
 }
 
@@ -50,7 +50,7 @@ glArchivItem_Music::glArchivItem_Music(void)
  *  @author FloSoft
  */
 glArchivItem_Music::glArchivItem_Music(const glArchivItem_Music* item)
-    : baseArchivItem_Sound(item), sound(NULL)
+    : libsiedler2::baseArchivItem_Sound(item), sound(NULL)
 {
 }
 

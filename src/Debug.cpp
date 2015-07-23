@@ -19,8 +19,11 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 
+#include "defines.h"
 #include "Debug.h"
 #include "build_version.h"
+#include "../libutil/src/Log.h"
+#include <bzlib.h>
 
 #ifdef _WIN32
 

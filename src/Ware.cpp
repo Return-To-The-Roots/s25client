@@ -30,6 +30,7 @@
 #include "SerializedGameData.h"
 #include "buildings/nobHarborBuilding.h"
 #include "GameClient.h"
+#include "Log.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

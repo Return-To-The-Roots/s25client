@@ -24,6 +24,7 @@
 
 #include "ctrlScrollBar.h"
 #include "WindowManager.h"
+#include "ogl/glArchivItem_Font.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -343,7 +344,7 @@ void ctrlList::Swap(unsigned short first, unsigned short second)
         selection = first;
 
     // Strings vertauschen
-    ::Swap(lines[first], lines[second]);
+    std::swap(lines[first], lines[second]);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

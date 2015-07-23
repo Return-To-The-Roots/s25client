@@ -22,13 +22,15 @@
 #pragma once
 
 #include "Singleton.h"
+#include <string>
+#include <vector>
 
 class Languages: public Singleton<Languages>
 {
     public:
         struct Language
         {
-            Language(std::string name, std::string code) : name(name), code(code) {}
+            Language(const std::string& name, const std::string& code) : name(name), code(code) {}
 
             static bool compare(const Language& o1, const Language& o2)
             {

@@ -2,9 +2,11 @@
 #define TRADE_GRAPH_H_
 
 #include "gameTypes/MapTypes.h"
-#include <memory.h>
 #include "gameData/GameConsts.h"
 #include "Point.h"
+
+#include <memory.h>
+#include <vector>
 
 class GameWorldGame;
 class TradeGraph;

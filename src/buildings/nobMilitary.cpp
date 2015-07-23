@@ -45,6 +45,8 @@
 #include "MapGeometry.h"
 #include "ai/AIEventManager.h"
 #include "Point.h"
+#include "Log.h"
+
 #include <limits>
 #include <stdexcept>
 

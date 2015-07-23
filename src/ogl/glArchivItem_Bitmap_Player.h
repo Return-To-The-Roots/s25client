@@ -21,6 +21,9 @@
 
 #pragma once
 
+#include "../libsiedler2/src/ArchivItem_Bitmap_Player.h"
+#include "glArchivItem_Bitmap.h"
+
 /// Klasse für GL-Player-Bitmaps.
 class glArchivItem_Bitmap_Player : public libsiedler2::baseArchivItem_Bitmap_Player, public glArchivItem_Bitmap
 {

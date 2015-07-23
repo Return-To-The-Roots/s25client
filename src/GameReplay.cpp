@@ -21,8 +21,8 @@
 // Header
 #include "defines.h"
 #include "GameReplay.h"
-
 #include "GameSavegame.h"
+#include "Log.h"
 
 /// Kleine Signatur am Anfang "RTTRRP", die ein gültiges S25 RTTR Replay kennzeichnet
 const char Replay::REPLAY_SIGNATURE[6] = {'R', 'T', 'T', 'R', 'R', 'P'};

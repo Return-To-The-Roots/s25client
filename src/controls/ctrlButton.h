@@ -24,6 +24,9 @@
 #include "ctrlRectangle.h"
 #include "ctrlText.h"
 
+#include <string>
+#include <algorithm>
+
 /// Buttonklasse
 class ctrlButton : public Window
 {
@@ -40,7 +43,7 @@ class ctrlButton : public Window
         /// Liefert Tooltip zurück
         std::string GetTooltip(void) const { return tooltip; }
         /// Tauscht Tooltips
-        void SwapTooltip(ctrlButton* two) { Swap(tooltip, two->tooltip); }
+        void SwapTooltip(ctrlButton* two) { std::swap(tooltip, two->tooltip); }
 
         void SetCheck(bool check) { this->check = check; }
         bool GetCheck(void) { return check; }
@@ -106,7 +109,7 @@ class ctrlImageButton : public ctrlButton
         /// Setzt Bild des Buttons
         void SetImage(glArchivItem_Bitmap* image) { this->image = image; }
         /// Tauscht Bilder
-        void SwapImage(ctrlImageButton* two) { Swap(image, two->image); }
+        void SwapImage(ctrlImageButton* two) { std::swap(image, two->image); }
         /// Gibt Bild zurück
         glArchivItem_Bitmap* GetButtonImage() const { return image; }
         /// Ändert Farbfilter, mit dem dieses Bild gezeichnet werden soll

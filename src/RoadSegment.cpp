@@ -32,6 +32,8 @@
 #include "GameWorld.h"
 #include "GameClient.h"
 
+#include "Log.h"
+
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER

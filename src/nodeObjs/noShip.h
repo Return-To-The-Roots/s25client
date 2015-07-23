@@ -23,6 +23,7 @@
 #include "noMovable.h"
 #include "gameTypes/MapTypes.h"
 #include <list>
+#include <vector>
 
 class nobHarborBuilding;
 

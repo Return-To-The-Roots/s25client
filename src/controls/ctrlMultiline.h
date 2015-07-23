@@ -20,6 +20,7 @@
 #define CTRL_MULTILINE_H_INCLUDED
 
 #include "ctrlRectangle.h"
+#include <vector>
 
 class ctrlMultiline : public Window
 {

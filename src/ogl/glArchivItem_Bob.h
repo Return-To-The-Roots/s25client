@@ -21,6 +21,8 @@
 
 #pragma once
 
+#include "../libsiedler2/src/ArchivItem_Bob.h"
+
 /// Klasse für GL-Bobfiles.
 class glArchivItem_Bob : public libsiedler2::ArchivItem_Bob
 {

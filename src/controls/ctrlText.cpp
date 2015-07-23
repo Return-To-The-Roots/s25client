@@ -21,6 +21,7 @@
 // Header
 #include "defines.h"
 #include "ctrlText.h"
+#include "ogl/glArchivItem_Font.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

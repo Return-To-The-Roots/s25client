@@ -33,6 +33,7 @@
 #include "SerializedGameData.h"
 
 #include "ogl/glSmartBitmap.h"
+#include "Log.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

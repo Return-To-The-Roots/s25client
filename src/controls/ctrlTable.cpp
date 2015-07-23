@@ -23,7 +23,9 @@
 #include "ctrlTable.h"
 
 #include "ctrlButton.h"
+#include "ogl/glArchivItem_Font.h"
 #include <sstream>
+#include <cstdarg>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

@@ -22,6 +22,7 @@
 #pragma once
 
 #include "../libutil/src/colors.h"
+#include "../libsiedler2/src/ArchivItem_Bitmap.h"
 
 #ifdef _WIN32
 typedef unsigned long long uint64_t;

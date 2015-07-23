@@ -21,8 +21,12 @@
 
 #pragma once
 
-#include "gameData/GameConsts.h"
+#include "gameData/NationConsts.h"
 #include "GlobalGameSettings.h"
+#include "../libutil/src/MyTime.h"
+#include <string>
+
+class BinaryFile;
 
 /// Basisklasse für Replays und Savegames
 class SavedFile

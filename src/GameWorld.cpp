@@ -37,11 +37,17 @@
 #include "Random.h"
 #include "TradeGraph.h"
 #include "gameData/MapConsts.h"
-#include <queue>
-#include <algorithm>
+#include "Log.h"
+#include "ogl/glArchivItem_Map.h"
 
 #include "WindowManager.h"
 #include "SoundManager.h"
+
+#include "../libsiedler2/src/prototypen.h"
+#include "luaIncludes.h"
+
+#include <queue>
+#include <algorithm>
 
 /// Lädt eine Karte
 bool GameWorld::LoadMap(const std::string& filename)

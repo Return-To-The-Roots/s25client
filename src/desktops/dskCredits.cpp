@@ -32,6 +32,7 @@
 #include "drivers/VideoDriverWrapper.h"
 #include "gameData/JobConsts.h"
 #include "ogl/glArchivItem_Font.h"
+#include "ogl/glArchivItem_Music.h"
 
 #include <cstdlib>
 #include <ctime>
@@ -146,6 +147,15 @@ dskCredits::dskCredits(void) : Desktop(LOADER.GetImageN("setup013", 0))
     entry.lines.clear();
 
     entry.title = "Marcus Ströbel (Maqs):";
+    entry.picId = -1;
+    entry.lastLine = "";
+    entry.lines.push_back(CreditsEntry::Line(_("Programming")));
+    entry.lines.push_back(CreditsEntry::Line(_("Quality Assurance")));
+
+    this->entries.push_back(entry);
+    entry.lines.clear();
+
+    entry.title = "Alex Grund (Flamefire):";
     entry.picId = -1;
     entry.lastLine = "";
     entry.lines.push_back(CreditsEntry::Line(_("Programming")));

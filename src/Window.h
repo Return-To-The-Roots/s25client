@@ -62,6 +62,7 @@ class ctrlMultiSelectGroup;
 
 class glArchivItem_Map;
 class glArchivItem_Font;
+class glArchivItem_Bitmap;
 
 /// Die Basisklasse der Fenster.
 class Window

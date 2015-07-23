@@ -22,6 +22,7 @@
 #include "defines.h"
 #include "CollisionDetection.h"
 #include "Rect.h"
+#include <cmath>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -77,8 +78,8 @@ bool Coll(const Rect& rect1, const Rect& rect2)
     int Center2Y = rect2.top + Radius2Y;
 
     // Abstand berechnen
-    int OffsetX = abs(Center1X - Center2X);
-    int OffsetY = abs(Center1Y - Center2Y);
+    int OffsetX = std::abs(Center1X - Center2X);
+    int OffsetY = std::abs(Center1Y - Center2Y);
 
     return CollEdges(rect1, rect2) || (OffsetX < Radius1X + Radius2X && OffsetY < Radius1Y + Radius2Y);
 }

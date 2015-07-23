@@ -36,6 +36,9 @@
 #include "ingameWindows/iwMsgbox.h"
 #include "ingameWindows/iwAddons.h"
 #include "Random.h"
+#include "Log.h"
+
+#include "../libsiedler2/src/prototypen.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

@@ -22,6 +22,10 @@
 #pragma once
 
 class glArchivItem_Bitmap_RLE;
+namespace libsiedler2{
+    class ArchivItem_Palette;
+    class ArchivInfo;
+}
 
 class CustomBorderBuilder
 {

@@ -29,6 +29,10 @@
 
 #include "WindowManager.h"
 #include "files.h"
+#include "error.h"
+#include "Log.h"
+
+#include <ctime>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

@@ -1,6 +1,4 @@
-// $Id: Swap.h 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -16,17 +14,15 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef SWAP_H_INCLUDED
-#define SWAP_H_INCLUDED
 
-#pragma once
+#ifndef luaIncludes_h__
+#define luaIncludes_h__
 
-template<typename T>
-void Swap(T& a, T& b)
+extern "C"
 {
-    T t(a);
-    a = b;
-    b = t;
+    #include "lua.h"
+    #include "lualib.h"
+    #include "lauxlib.h"
 }
 
-#endif // !SWAP_H_INCLUDED
+#endif // luaIncludes_h__

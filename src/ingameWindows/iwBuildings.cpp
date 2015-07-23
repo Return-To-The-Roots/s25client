@@ -35,6 +35,8 @@
 #include "iwStorehouse.h"
 #include "iwHarborBuilding.h"
 
+#include "files.h"
+
 
 const unsigned BUILDINGS_COUNT = 32;
 

@@ -42,6 +42,10 @@
 #include "ingameWindows/iwDirectIPCreate.h"
 #include "ingameWindows/iwPleaseWait.h"
 
+#include "Log.h"
+
+#include "../libsiedler2/src/prototypen.h"
+
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER

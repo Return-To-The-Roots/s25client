@@ -26,6 +26,10 @@
 #include "GameWorld.h"
 #include "GameClient.h"
 
+#include "ogl/glArchivItem_Map.h"
+
+#include "../libsiedler2/src/types.h"
+
 ///////////////////////////////////////////////////////////////////////////////
 /**
  *

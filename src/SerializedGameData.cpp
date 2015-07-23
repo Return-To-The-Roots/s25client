@@ -21,6 +21,9 @@
 // Header
 #include "defines.h"
 #include "SerializedGameData.h"
+
+#include "../libutil/src/Log.h"
+
 #include "GameWorld.h"
 #include "nodeObjs/noBase.h"
 #include "GameObject.h"

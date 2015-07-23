@@ -21,6 +21,10 @@
 
 #pragma once
 
+#include "../libsiedler2/src/ArchivItem_Bitmap.h"
+#include "glArchivItem_Bitmap.h"
+#include <cstdio>
+
 /// Klasse für GL-Direct-Bitmaps.
 class glArchivItem_Bitmap_Direct : public glArchivItem_Bitmap
 {

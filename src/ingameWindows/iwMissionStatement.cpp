@@ -30,6 +30,8 @@
 #include "iwMsgbox.h"
 #include "WindowManager.h"
 
+#include <sstream>
+
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER

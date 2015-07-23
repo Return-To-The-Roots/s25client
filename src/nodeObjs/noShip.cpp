@@ -36,6 +36,7 @@
 #include "PostMsg.h"
 #include "ai/AIEventManager.h"
 #include "figures/nofAttacker.h"
+#include "Log.h"
 
 const unsigned int ship_count = 55;
 

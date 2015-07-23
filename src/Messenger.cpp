@@ -23,7 +23,9 @@
 #include "Messenger.h"
 
 #include "Loader.h"
+#include "Log.h"
 #include "drivers/VideoDriverWrapper.h"
+#include "../mygettext/src/mygettext.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -53,17 +55,13 @@ Messenger::~Messenger()
 void Messenger::Draw()
 {
     unsigned y = 100;
-    for(std::list<Messenger::Msg>::iterator it = messages.begin(); it != messages.end(); ++it, y += LargeFont->getHeight())
+    for(std::list<Messenger::Msg>::iterator it = messages.begin(); it != messages.end(); y += LargeFont->getHeight())
     {
         unsigned diff = VIDEODRIVER.GetTickCount() - it->starttime;
         if(diff > 20000)
         {
-            messages.erase(it++);
-            if(it != messages.end())
-                continue;
-            else
-                break;
-
+            it = messages.erase(it);
+            continue;
         }
 
         // Transparenz der Schrift ausrechnen, da sie am Ende ausgeblendet wird
@@ -83,6 +81,7 @@ void Messenger::Draw()
         LargeFont->Draw(20 + LargeFont->getWidth(it->author, static_cast<unsigned>(it->author.length())) +
                         +LargeFont->getWidth(cd_str, static_cast<unsigned>(cd_str.length())), y,
                         it->msg, 0, (it->color_msg & 0x00FFFFFF) | transparency);
+        ++it;
     }
 }
 

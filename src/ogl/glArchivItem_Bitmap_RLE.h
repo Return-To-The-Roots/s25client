@@ -22,6 +22,7 @@
 #pragma once
 
 #include "glArchivItem_Bitmap.h"
+#include "../libsiedler2/src/ArchivItem_Bitmap_RLE.h"
 
 /// Klasse für GL-RLE-Bitmaps.
 class glArchivItem_Bitmap_RLE : public libsiedler2::baseArchivItem_Bitmap_RLE, public glArchivItem_Bitmap

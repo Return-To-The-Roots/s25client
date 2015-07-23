@@ -21,6 +21,9 @@
 
 #pragma once
 
+#include "glArchivItem_Bitmap.h"
+#include "../libsiedler2/src/ArchivItem_Bitmap_Raw.h"
+
 /// Klasse für GL-RAW-Bitmaps.
 class glArchivItem_Bitmap_Raw : public libsiedler2::baseArchivItem_Bitmap_Raw, public glArchivItem_Bitmap
 {

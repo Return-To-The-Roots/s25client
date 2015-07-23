@@ -20,6 +20,9 @@
 #define MUSICPLAYER_H_INCLUDED
 
 #include "Singleton.h"
+#include "../libsiedler2/src/ArchivInfo.h"
+#include <string>
+#include <vector>
 
 #pragma once
 
@@ -41,9 +44,9 @@ class Playlist
         const std::string getNextSong();
 
         /// Playlist in Datei speichern
-        bool SaveAs(const std::string filename, const bool overwrite);
+        bool SaveAs(const std::string& filename, const bool overwrite);
         /// Playlist laden
-        bool Load(const std::string filename);
+        bool Load(const std::string& filename);
 
         /// Füllt das iwMusicPlayer-Fenster mit den entsprechenden Werten
         void FillMusicPlayer(iwMusicPlayer* window) const;
@@ -72,7 +75,7 @@ class MusicPlayer : public Singleton<MusicPlayer>
         void Stop();
 
         /// Playlist laden
-        bool Load(const std::string filename) { return list.Load(filename); }
+        bool Load(const std::string& filename) { return list.Load(filename); }
         /// Musik wurde fertiggespielt (Callback)
         void MusicFinished()    {   PlayNext(); }
         /// liefert die Playlist.

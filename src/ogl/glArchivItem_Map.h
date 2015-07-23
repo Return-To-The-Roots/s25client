@@ -21,7 +21,8 @@
 
 #pragma once
 
-#include "defines.h"
+#include "../libsiedler2/src/ArchivItem_Map.h"
+#include "../libsiedler2/src/ArchivItem_Map_Header.h"
 
 class SerializedGameData;
 

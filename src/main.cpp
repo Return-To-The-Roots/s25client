@@ -21,6 +21,17 @@
 // Header
 #include "defines.h"
 
+
+#ifdef _WIN32
+#   include <windows.h>
+#   define chdir !SetCurrentDirectoryA
+#   ifndef __CYGWIN__
+#       include <conio.h>
+#   endif
+#else
+#   include <unistd.h>
+#endif
+
 #include "GlobalVars.h"
 #include "signale.h"
 #include "Socket.h"
@@ -29,18 +40,24 @@
 
 #include "GameClient.h"
 #include "Settings.h"
+#include "Log.h"
+#include "error.h"
+#include "files.h"
+
+#include "../libsiedler2/src/types.h"
+#include "ogl/glAllocator.h"
 
 // This is for catching crashes and reporting bugs, it does not slow down anything.
 #include "Debug.h"
 
 #ifndef NDEBUG
-#include "GameWorld.h"
-#include "GameServer.h"
-#include "ingameWindows/iwDirectIPCreate.h"
-#include "WindowManager.h"
-#include "desktops/dskGameLoader.h"
-#include "desktops/dskSelectMap.h"
-#include "ingameWindows/iwPleaseWait.h"
+    #include "GameWorld.h"
+    #include "GameServer.h"
+    #include "ingameWindows/iwDirectIPCreate.h"
+    #include "WindowManager.h"
+    #include "desktops/dskGameLoader.h"
+    #include "desktops/dskSelectMap.h"
+    #include "ingameWindows/iwPleaseWait.h"
 #endif
 
 #include "fileFuncs.h"
@@ -52,19 +69,16 @@
 #ifdef _WIN32
 #   include "../win32/resource.h"
 #   include "drivers/VideoDriverWrapper.h"
+#   ifdef _MSC_VER
+#        define getch _getch
+#   endif
 #endif
 
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER && !defined NOHWETRANS
-#   include <windows.h>
 #   include <eh.h>
 #endif
 
-#ifdef _WIN32
-#   include <windows.h>
-#   define chdir !SetCurrentDirectoryA
-#else
-#   include <unistd.h>
-#endif
+#include <ctime>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

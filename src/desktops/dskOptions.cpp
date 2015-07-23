@@ -174,7 +174,7 @@ dskOptions::dskOptions(void) : Desktop(LOADER.GetImageN("setup013", 0))
     upnp->SetSelection( (SETTINGS.global.use_upnp == 1) ? 10001 : 10002 );
 
 
-    if(GLOBALVARS.ext_vbo == false) // VBO unterstützt?
+    if(!GLOBALVARS.ext_vbo) // VBO unterstützt?
         optiongroup->AddText(  56, 280, 230, _("not supported"), COLOR_YELLOW, 0, NormalFont);
     else
         optiongroup->AddTextButton(56, 280, 225, 190, 22, TC_GREY, _("On"), NormalFont);
@@ -198,7 +198,7 @@ dskOptions::dskOptions(void) : Desktop(LOADER.GetImageN("setup013", 0))
     groupGrafik->AddText(  54,  80, 230, _("Vertex Buffer Objects:"), COLOR_YELLOW, 0, NormalFont);
     optiongroup = groupGrafik->AddOptionGroup(55, ctrlOptionGroup::CHECK, scale);
 
-    if(GLOBALVARS.ext_vbo == false) // VBO unterstützt?
+    if(!GLOBALVARS.ext_vbo) // VBO unterstützt?
         optiongroup->AddText(  56, 280, 230, _("not supported"), COLOR_YELLOW, 0, NormalFont);
     else
         optiongroup->AddTextButton(56, 280, 225, 190, 22, TC_GREY, _("On"), NormalFont);

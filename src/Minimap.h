@@ -28,6 +28,7 @@ class GameWorldViewer;
 #include "Point.h"
 #include <vector>
 
+class glArchivItem_Map;
 
 class Minimap
 {

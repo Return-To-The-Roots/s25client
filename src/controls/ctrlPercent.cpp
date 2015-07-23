@@ -22,6 +22,8 @@
 #include "defines.h"
 #include "ctrlPercent.h"
 
+#include "ogl/glArchivItem_Font.h"
+
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER

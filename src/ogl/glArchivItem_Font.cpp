@@ -24,9 +24,12 @@
 #include "Settings.h"
 #include "ExtensionList.h"
 #include "drivers/VideoDriverWrapper.h"
-
+#include "glArchivItem_Bitmap.h"
 #include "Loader.h"
+#include "Log.h"
+#include "glAllocator.h"
 
+#include "../libsiedler2/src/types.h"
 #include <cmath>
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -22,6 +22,9 @@
 #include "defines.h"
 #include "glArchivItem_Bob.h"
 
+#include "glArchivItem_Bitmap_Player.h"
+#include "colors.h"
+
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER

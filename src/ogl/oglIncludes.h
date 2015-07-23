@@ -15,56 +15,19 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef MapTypes_h__
-#define MapTypes_h__
+#ifndef includes_h__
+#define includes_h__
 
-#include "Point.h"
+#ifdef __APPLE__
+    #include <OpenGL/gl.h>
+    #include <OpenGL/glext.h>
+#else
+    #ifdef _WIN32
+        // Required for opengl
+        #include <windows.h>
+    #endif
+    #include <GL/gl.h>
+    #include <GL/glext.h>
+#endif // !__APPLE__
 
-/// Datentyp für Map-Koordinaten
-typedef unsigned short MapCoord;
-typedef Point<MapCoord> MapPoint;
-
-/// Terrainarten
-enum TerrainType
-{
-    TT_SNOW = 0,
-    TT_DESERT,
-    TT_SWAMPLAND,
-    TT_MEADOW_FLOWERS,
-    TT_MOUNTAIN1,
-    TT_MOUNTAIN2,
-    TT_MOUNTAIN3,
-    TT_MOUNTAIN4,
-    TT_SAVANNAH,
-    TT_MEADOW1,
-    TT_MEADOW2,
-    TT_MEADOW3,
-    TT_STEPPE,
-    TT_MOUNTAINMEADOW,
-    TT_WATER,
-    TT_LAVA
-};
-
-/// Sichtbarkeit für ALLE Spieler
-enum Visibility
-{
-    VIS_INVISIBLE = 0, /// Darkness
-    VIS_FOW, /// Fog of war
-    VIS_VISIBLE /// Visible
-};
-
-/// Granittyp
-enum GraniteType
-{
-    GT_1 = 0,
-    GT_2
-};
-
-/// Flaggentyp
-enum FlagType
-{
-    FT_NORMAL,
-    FT_LARGE,
-    FT_WATER
-};
-#endif // MapTypes_h__
+#endif // includes_h__

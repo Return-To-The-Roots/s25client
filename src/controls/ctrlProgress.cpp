@@ -26,6 +26,7 @@
 #include "Loader.h"
 #include "ogl/glArchivItem_Font.h"
 
+#include <sstream>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

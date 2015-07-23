@@ -25,6 +25,14 @@
 #include "drivers/AudioDriverWrapper.h"
 
 #include "Loader.h"
+#include "Log.h"
+
+#include "../libsiedler2/src/prototypen.h"
+#include "ogl/glArchivItem_Music.h"
+
+#include <algorithm>
+#include <fstream>
+#include <sstream>
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
@@ -69,7 +77,7 @@ void Playlist::Prepare()
  *
  *  @author OLiver
  */
-bool Playlist::SaveAs(const std::string filename, const bool overwrite)
+bool Playlist::SaveAs(const std::string& filename, const bool overwrite)
 {
     if(!overwrite)
     {
@@ -104,7 +112,7 @@ bool Playlist::SaveAs(const std::string filename, const bool overwrite)
  *
  *  @author OLiver
  */
-bool Playlist::Load(const std::string filename)
+bool Playlist::Load(const std::string& filename)
 {
     if(filename.length() == 0)
         return false;

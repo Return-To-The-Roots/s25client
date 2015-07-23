@@ -18,27 +18,39 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 ///////////////////////////////////////////////////////////////////////////////
-// Header
+
+// Conflict with DATADIR in shlwapi -> include build_paths later
+#define NO_BUILD_PATHS
 #include "defines.h"
 
-#include <iomanip>
-#include "Loader.h"
+#ifdef _WIN32
+#   include <shlwapi.h>
+#   include "build_paths.h"
+#endif // _WIN32
 
+#include "Loader.h"
 #include "files.h"
-#include "GlobalVars.h"
+
 #include "Settings.h"
 
 #include "drivers/VideoDriverWrapper.h"
 #include "drivers/AudioDriverWrapper.h"
+#include "Log.h"
 
-#include "CollisionDetection.h"
-#include "GameClient.h"
-#include "GameClientPlayer.h"
+#include "GameWorld.h"
 #include "ListDir.h"
 #include "fileFuncs.h"
 
 #include "ogl/glSmartBitmap.h"
+#include "ogl/glArchivItem_Bitmap_Raw.h"
+#include "ogl/glAllocator.h"
 #include "gameData/JobConsts.h"
+#include "../libsiedler2/src/types.h"
+#include "../libsiedler2/src/prototypen.h"
+
+#include <iomanip>
+#include <sstream>
+#include <algorithm>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -537,16 +549,16 @@ void Loader::fillCaches()
 
                 bmp.reset();
 
-                bmp.add(LOADER.GetMapImageN(ANIMALCONSTS[species].walking_id + ANIMALCONSTS[species].animation_steps * ( (dir + 3) % 6) + ani_step));
+                bmp.add(GetMapImageN(ANIMALCONSTS[species].walking_id + ANIMALCONSTS[species].animation_steps * ( (dir + 3) % 6) + ani_step));
 
                 if(ANIMALCONSTS[species].shadow_id)
                 {
                     if(species == SPEC_DUCK)
                         // Ente Sonderfall, da gibts nur einen Schatten für jede Richtung!
-                        bmp.addShadow(LOADER.GetMapImageN(ANIMALCONSTS[species].shadow_id));
+                        bmp.addShadow(GetMapImageN(ANIMALCONSTS[species].shadow_id));
                     else
                         // ansonsten immer pro Richtung einen Schatten
-                        bmp.addShadow(LOADER.GetMapImageN(ANIMALCONSTS[species].shadow_id + (dir + 3) % 6));
+                        bmp.addShadow(GetMapImageN(ANIMALCONSTS[species].shadow_id + (dir + 3) % 6));
                 }
 
                 stp->add(bmp);
@@ -559,18 +571,18 @@ void Loader::fillCaches()
 
         if (ANIMALCONSTS[species].dead_id)
         {
-            bmp.add(LOADER.GetMapImageN(ANIMALCONSTS[species].dead_id));
+            bmp.add(GetMapImageN(ANIMALCONSTS[species].dead_id));
 
             if (ANIMALCONSTS[species].shadow_dead_id)
             {
-                bmp.addShadow(LOADER.GetMapImageN(ANIMALCONSTS[species].shadow_dead_id));
+                bmp.addShadow(GetMapImageN(ANIMALCONSTS[species].shadow_dead_id));
             }
 
             stp->add(bmp);
         }
     }
 
-    glArchivItem_Bob* bob_jobs = LOADER.GetBobN("jobs");
+    glArchivItem_Bob* bob_jobs = GetBobN("jobs");
 
     for (unsigned nation = 0; nation < NAT_COUNT; ++nation)
     {
@@ -587,18 +599,18 @@ void Loader::fillCaches()
             {
                 unsigned id = nation * 8;
 
-                bmp.add(LOADER.GetImageN("charburner", id + ((lastgfx == LT_WINTERWORLD) ? 6 : 1)));
-                bmp.addShadow(LOADER.GetImageN("charburner", id + 2));
+                bmp.add(GetImageN("charburner", id + ((lastgfx == LT_WINTERWORLD) ? 6 : 1)));
+                bmp.addShadow(GetImageN("charburner", id + 2));
 
-                skel.add(LOADER.GetImageN("charburner", id + 3));
-                skel.addShadow(LOADER.GetImageN("charburner", id + 4));
+                skel.add(GetImageN("charburner", id + 3));
+                skel.addShadow(GetImageN("charburner", id + 4));
             }
             else
             {
-                bmp.add(LOADER.GetNationImageN(nation, 250 + 5 * type));
-                bmp.addShadow(LOADER.GetNationImageN(nation, 250 + 5 * type + 1));
-                skel.add(LOADER.GetNationImageN(nation, 250 + 5 * type + 2));
-                skel.addShadow(LOADER.GetNationImageN(nation, 250 + 5 * type + 3));
+                bmp.add(GetNationImageN(nation, 250 + 5 * type));
+                bmp.addShadow(GetNationImageN(nation, 250 + 5 * type + 1));
+                skel.add(GetNationImageN(nation, 250 + 5 * type + 2));
+                skel.addShadow(GetNationImageN(nation, 250 + 5 * type + 3));
             }
 
             stp->add(bmp);
@@ -617,8 +629,8 @@ void Loader::fillCaches()
 
                 bmp.reset();
 
-                bmp.add(static_cast<glArchivItem_Bitmap_Player*>(LOADER.GetNationImageN(nation, nr)));
-                bmp.addShadow(LOADER.GetNationImageN(nation, nr + 10));
+                bmp.add(static_cast<glArchivItem_Bitmap_Player*>(GetNationImageN(nation, nr)));
+                bmp.addShadow(GetNationImageN(nation, nr + 10));
 
                 stp->add(bmp);
             }
@@ -681,7 +693,7 @@ void Loader::fillCaches()
 
                     bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(bob_jobs->get(body)));
                     bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(bob_jobs->get(overlayOffset + bob_jobs->getLink(good))));
-                    bmp.addShadow(LOADER.GetMapImageN(900 + ( (dir + 3) % 6 ) * 8 + ani_step));
+                    bmp.addShadow(GetMapImageN(900 + ( (dir + 3) % 6 ) * 8 + ani_step));
 
                     stp->add(bmp);
                 }
@@ -692,8 +704,8 @@ void Loader::fillCaches()
 
         bmp.reset();
 
-        bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(LOADER.GetNationImageN(nation, 0)));
-        bmp.addShadow(LOADER.GetNationImageN(nation, 1));
+        bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(GetNationImageN(nation, 0)));
+        bmp.addShadow(GetNationImageN(nation, 1));
 
         stp->add(bmp);
     }
@@ -706,10 +718,10 @@ void Loader::fillCaches()
 
             bmp.reset();
 
-            bmp.add(static_cast<glArchivItem_Bitmap_Player *>(LOADER.GetMapImageN(3162+ani_step)));
+            bmp.add(static_cast<glArchivItem_Bitmap_Player *>(GetMapImageN(3162+ani_step)));
 
             int a, b, c, d;
-            static_cast<glArchivItem_Bitmap_Player *>(LOADER.GetMapImageN(3162+ani_step))->getVisibleArea(a, b, c, d);
+            static_cast<glArchivItem_Bitmap_Player *>(GetMapImageN(3162+ani_step))->getVisibleArea(a, b, c, d);
             fprintf(stderr, "%i,%i (%ix%i)\n", a, b, c, d);
 
 
@@ -725,8 +737,8 @@ void Loader::fillCaches()
 
             bmp.reset();
 
-            bmp.add(LOADER.GetMapImageN(200 + type * 15 + ani_step));
-            bmp.addShadow(LOADER.GetMapImageN(350 + type * 15 + ani_step));
+            bmp.add(GetMapImageN(200 + type * 15 + ani_step));
+            bmp.addShadow(GetMapImageN(350 + type * 15 + ani_step));
 
             stp->add(bmp);
         }
@@ -741,8 +753,8 @@ void Loader::fillCaches()
 
             bmp.reset();
 
-            bmp.add(LOADER.GetMapImageN(516 + type * 6 + size));
-            bmp.addShadow(LOADER.GetMapImageN(616 + type * 6 + size));
+            bmp.add(GetMapImageN(516 + type * 6 + size));
+            bmp.addShadow(GetMapImageN(616 + type * 6 + size));
 
             stp->add(bmp);
         }
@@ -757,8 +769,8 @@ void Loader::fillCaches()
 
             bmp.reset();
 
-            bmp.add(LOADER.GetMapImageN(532 + type * 5 + size));
-            bmp.addShadow(LOADER.GetMapImageN(632 + type * 5 + size));
+            bmp.add(GetMapImageN(532 + type * 5 + size));
+            bmp.addShadow(GetMapImageN(632 + type * 5 + size));
 
             stp->add(bmp);
         }
@@ -773,8 +785,8 @@ void Loader::fillCaches()
 
             bmp.reset();
 
-            bmp.add(LOADER.GetMapImageN(2000 + ((dir + 3) % 6) * 8 + ani_step));
-            bmp.addShadow(LOADER.GetMapImageN(2048 + dir % 3));
+            bmp.add(GetMapImageN(2000 + ((dir + 3) % 6) * 8 + ani_step));
+            bmp.addShadow(GetMapImageN(2048 + dir % 3));
 
             stp->add(bmp);
         }
@@ -789,15 +801,15 @@ void Loader::fillCaches()
 
             bmp.reset();
 
-            bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(LOADER.GetImageN("boat", ((dir + 3) % 6) * 8 + ani_step)));
-            bmp.addShadow(dynamic_cast<glArchivItem_Bitmap*>(LOADER.GetMapImageN(2048 + dir % 3)));
+            bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(GetImageN("boat", ((dir + 3) % 6) * 8 + ani_step)));
+            bmp.addShadow(dynamic_cast<glArchivItem_Bitmap*>(GetMapImageN(2048 + dir % 3)));
 
             stp->add(bmp);
         }
     }
 
 // carrier_cache[ware][direction][animation_step][fat]
-    glArchivItem_Bob* bob_carrier = LOADER.GetBobN("carrier");
+    glArchivItem_Bob* bob_carrier = GetBobN("carrier");
 
     for (unsigned ware = 0; ware < WARE_TYPES_COUNT; ++ware)
     {
@@ -832,7 +844,7 @@ void Loader::fillCaches()
 
                     bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(bob_carrier->get(body)));
                     bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(bob_carrier->get(96 + bob_carrier->getLink(good))));
-                    bmp.addShadow(LOADER.GetMapImageN(900 + ( (dir + 3) % 6 ) * 8 + ani_step));
+                    bmp.addShadow(GetMapImageN(900 + ( (dir + 3) % 6 ) * 8 + ani_step));
 
                     stp->add(bmp);
                 }
@@ -845,9 +857,9 @@ void Loader::fillCaches()
         const unsigned char start_index = 248;
         const unsigned char color_count = 4;
 
-        libsiedler2::ArchivItem_Palette* palette = LOADER.GetPaletteN("pal5");
-        glArchivItem_Bitmap* image = LOADER.GetMapImageN(561);
-        glArchivItem_Bitmap* shadow = LOADER.GetMapImageN(661);
+        libsiedler2::ArchivItem_Palette* palette = GetPaletteN("pal5");
+        glArchivItem_Bitmap* image = GetMapImageN(561);
+        glArchivItem_Bitmap* shadow = GetMapImageN(661);
 
         if ((image != NULL) && (shadow != NULL) && (palette != NULL))
         {

@@ -22,6 +22,7 @@
 #pragma once
 
 #include "Window.h"
+#include <vector>
 
 /// ChatCtrl-Klasse für ein ChatCtrl.
 class ctrlChat : public Window

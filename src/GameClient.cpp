@@ -51,6 +51,11 @@
 #include "ai/AIPlayer.h"
 #include "ai/AIPlayerJH.h"
 
+#include "../libsiedler2/src/prototypen.h"
+#include "../libsiedler2/src/ArchivItem_Map_Header.h"
+#include "ogl/glArchivItem_Map.h"
+#include <bzlib.h>
+
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER

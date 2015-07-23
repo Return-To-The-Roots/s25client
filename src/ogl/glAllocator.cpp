@@ -22,6 +22,8 @@
 #include "defines.h"
 #include "glAllocator.h"
 
+#include "../libsiedler2/src/types.h"
+
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER

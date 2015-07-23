@@ -64,6 +64,8 @@ class TradeGraph;
 struct RoadsBuilding;
 class FOWObject;
 
+struct lua_State;
+
 typedef bool (*FP_Node_OK_Callback)(const GameWorldBase& gwb, const MapCoord x, const MapCoord y, const unsigned char dir, const void* param);
 
 /// Eigenschaften von einem Punkt auf der Map

@@ -20,6 +20,8 @@
 #ifndef NODE_H_
 #define NODE_H_
 
+#include <cstring>
+
 class noRoadNode;
 
 class Node

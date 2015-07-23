@@ -46,6 +46,14 @@
 #include "Settings.h"
 #include "Debug.h"
 #include "fileFuncs.h"
+#include "ogl/glArchivItem_Map.h"
+#include "../libsiedler2/src/prototypen.h"
+#include "../libsiedler2/src/ArchivItem_Map_Header.h"
+
+#include "files.h"
+#include <bzlib.h>
+#include "luaIncludes.h"
+
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER

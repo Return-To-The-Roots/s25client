@@ -22,6 +22,7 @@
 #pragma once
 
 #include "../driver/src/Sound.h"
+#include "../libsiedler2/src/ArchivItem_Sound.h"
 
 class glArchivItem_Sound : public virtual libsiedler2::baseArchivItem_Sound
 {

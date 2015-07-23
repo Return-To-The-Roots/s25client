@@ -22,6 +22,8 @@
 #pragma once
 
 #include "GameProtocol.h"
+#include "../libutil/src/colors.h"
+#include <string>
 #include <list>
 
 class Messenger

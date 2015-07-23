@@ -23,7 +23,6 @@
 
 #include "defines.h"
 #include "noAnimal.h"
-#include "helpers/Swap.h"
 #include "Loader.h"
 #include "macros.h"
 #include "GameClient.h"

@@ -23,6 +23,13 @@
 #undef DriverType
 #endif
 
+#ifdef _WIN32
+    #include <windows.h>
+#endif
+
+#include <string>
+#include <vector>
+
 ///////////////////////////////////////////////////////////////////////////////
 // DriverWrapper
 class DriverWrapper
@@ -37,7 +44,7 @@ class DriverWrapper
         class DriverItem
         {
             public:
-                DriverItem(std::string file, std::string name) : file(file), name(name) {}
+                DriverItem(const std::string& file, const std::string& name) : file(file), name(name) {}
                 const std::string& GetFile() { return file; }
                 const std::string& GetName() { return name; }
 

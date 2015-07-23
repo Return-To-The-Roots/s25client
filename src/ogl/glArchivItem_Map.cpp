@@ -26,6 +26,9 @@
 
 #include "GameClient.h"
 #include "SerializedGameData.h"
+#include "../libsiedler2/src/ArchivItem_Raw.h"
+#include "../libsiedler2/src/types.h"
+#include "glAllocator.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

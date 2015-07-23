@@ -22,6 +22,7 @@
 #pragma once
 
 #include "ctrlScrollBar.h"
+#include <vector>
 
 class ctrlTable : public Window
 {

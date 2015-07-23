@@ -22,6 +22,7 @@
 #include "defines.h"
 #include "ctrlBuildingIcon.h"
 #include "Loader.h"
+#include "files.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

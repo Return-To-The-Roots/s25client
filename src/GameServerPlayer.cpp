@@ -25,6 +25,8 @@
 #include "GameMessages.h"
 #include "drivers/VideoDriverWrapper.h"
 
+#include <algorithm>
+
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
@@ -144,20 +146,20 @@ void GameServerPlayer::SwapPlayer(GameServerPlayer& two)
 {
     GamePlayerInfo::SwapPlayer(two);
 
-    Swap(this->connecttime, two.connecttime);
-    Swap(this->last_command_timeout, two.last_command_timeout);
+    std::swap(this->connecttime, two.connecttime);
+    std::swap(this->last_command_timeout, two.last_command_timeout);
 
-    Swap(this->so, two.so);
-    Swap(this->pinging, two.pinging);
+    std::swap(this->so, two.so);
+    std::swap(this->pinging, two.pinging);
 
-    Swap(this->send_queue, two.send_queue);
-    Swap(this->recv_queue, two.recv_queue);
-    Swap(this->gc_queue, two.gc_queue);
+    std::swap(this->send_queue, two.send_queue);
+    std::swap(this->recv_queue, two.recv_queue);
+    std::swap(this->gc_queue, two.gc_queue);
 
-    Swap(this->lastping, two.lastping);
+    std::swap(this->lastping, two.lastping);
 
-    Swap(this->temp_ul, two.temp_ul);
-    Swap(this->temp_ui, two.temp_ui);
+    std::swap(this->temp_ul, two.temp_ul);
+    std::swap(this->temp_ui, two.temp_ui);
 }
 
 /// Spieler laggt

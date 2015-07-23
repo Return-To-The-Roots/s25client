@@ -449,8 +449,8 @@ void GameClientPlayer::SwapPlayer(GameClientPlayer& two)
 {
     GamePlayerInfo::SwapPlayer(two);
 
-    Swap(this->is_lagging, two.is_lagging);
-    Swap(this->gc_queue, two.gc_queue);
+    std::swap(this->is_lagging, two.is_lagging);
+    std::swap(this->gc_queue, two.gc_queue);
 }
 
 nobBaseWarehouse* GameClientPlayer::FindWarehouse(const noRoadNode* const start, bool (*IsWarehouseGood)(nobBaseWarehouse*, const void*),

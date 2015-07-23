@@ -30,6 +30,8 @@
 #include "desktops/Desktop.h"
 #include "ingameWindows/IngameWindow.h"
 
+#include <ctime>
+
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
@@ -119,7 +121,7 @@ void WindowManager::Draw(void)
             (*it)->Draw();
 
             // wurde es minimiert?
-            if((*it)->GetMinimized() == false)
+            if(!(*it)->GetMinimized())
             {
                 // nein, Msg_PaintAfter aufrufen
                 (*it)->Msg_PaintAfter();
@@ -344,7 +346,7 @@ void WindowManager::Msg_LeftDown(MouseCoords mc)
         desktop->SetActive(true);
 
         // ist der Maus-Klick-Fix aktiv?
-        if(disable_mouse == false)
+        if(!disable_mouse)
         {
             // nein, Msg_LeftDown aufrufen
             desktop->Msg_LeftDown(mc);
@@ -411,7 +413,7 @@ void WindowManager::Msg_LeftDown(MouseCoords mc)
         desktop->SetActive(true);
 
         // ist der Maus-Klick-Fix aktiv?
-        if(disable_mouse == false)
+        if(!disable_mouse)
         {
             // nein, dann Msg_LeftDown aufrufen
             desktop->Msg_LeftDown(mc);
@@ -437,7 +439,7 @@ void WindowManager::Msg_LeftUp(const MouseCoords& mc)
         return;
 
     // ist der Maus-Klick-Fix aktiv?
-    if(disable_mouse == false)
+    if(!disable_mouse)
     {
         // ist der Desktop aktiv?
         if(desktop->GetActive())
@@ -682,7 +684,7 @@ void WindowManager::Msg_MouseMove(const MouseCoords& mc)
         return;
 
     // ist der Maus-Klick-Fix aktiv?
-    if(disable_mouse == false)
+    if(!disable_mouse)
     {
         // nein, ist unser Desktop aktiv?
         if(desktop->GetActive())

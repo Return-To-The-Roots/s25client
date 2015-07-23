@@ -21,6 +21,9 @@
 
 #pragma once
 
+#include "../libsiedler2/src/ArchivItem_Sound_Midi.h"
+#include "glArchivItem_Music.h"
+
 class glArchivItem_Sound_Midi : public libsiedler2::baseArchivItem_Sound_Midi, public glArchivItem_Music
 {
     public:

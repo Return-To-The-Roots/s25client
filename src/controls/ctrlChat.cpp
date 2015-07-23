@@ -23,6 +23,8 @@
 #include "ctrlChat.h"
 
 #include "ctrlScrollBar.h"
+#include "ogl/glArchivItem_Font.h"
+#include "Log.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

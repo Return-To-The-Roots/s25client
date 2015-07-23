@@ -24,6 +24,10 @@
 #include "Singleton.h"
 #include <list>
 
+#ifdef max
+    #undef max
+#endif
+
 struct RandomEntry
 {
     unsigned counter;

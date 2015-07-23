@@ -36,6 +36,7 @@
 #include "dskDirectIP.h"
 
 #include "ingameWindows/iwMsgbox.h"
+#include "files.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

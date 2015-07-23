@@ -23,6 +23,7 @@
 #include "ctrlImage.h"
 
 #include "WindowManager.h"
+#include "ogl/glArchivItem_Bitmap.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

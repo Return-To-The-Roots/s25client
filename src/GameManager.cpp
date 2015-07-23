@@ -40,6 +40,11 @@
 #include "ingameWindows/iwMusicPlayer.h"
 
 #include "MusicPlayer.h"
+#include "Log.h"
+#include "helpers/win32_nanosleep.h"
+#include "../libutil/src/error.h"
+
+#include <ctime>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -268,7 +273,7 @@ bool GameManager::Run()
     ++frames;
 
     // Fenstermanager aufräumen
-    if(GLOBALVARS.notdone == false)
+    if(!GLOBALVARS.notdone)
         WINDOWMANAGER.CleanUp();
 
     return GLOBALVARS.notdone;

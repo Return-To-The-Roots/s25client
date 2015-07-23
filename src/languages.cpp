@@ -26,6 +26,9 @@
 
 #include "files.h"
 #include "Settings.h"
+#include "../mygettext/src/mygettext.h"
+
+#include <algorithm>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

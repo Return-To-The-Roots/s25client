@@ -195,7 +195,7 @@ void iwTransport::Msg_ButtonClick(const unsigned int ctrl_id)
             // Wenn wir schon ganz oben sind, gehts nicht weiter höher
             while(group->GetSelection() > 0 && group->GetSelection() != 0xFFFF)
             {
-                Swap(GAMECLIENT.visual_settings.transport_order[group->GetSelection()], GAMECLIENT.visual_settings.transport_order[group->GetSelection() - 1]);
+                std::swap(GAMECLIENT.visual_settings.transport_order[group->GetSelection()], GAMECLIENT.visual_settings.transport_order[group->GetSelection() - 1]);
                 group->GetCtrl<ctrlImageButton>(group->GetSelection())->SwapImage(group->GetCtrl<ctrlImageButton>(group->GetSelection() - 1));
                 group->GetCtrl<ctrlImageButton>(group->GetSelection())->SwapTooltip(group->GetCtrl<ctrlImageButton>(group->GetSelection() - 1));
                 group->SetSelection(group->GetSelection() - 1);
@@ -210,7 +210,7 @@ void iwTransport::Msg_ButtonClick(const unsigned int ctrl_id)
             // Wenn wir schon ganz oben sind, gehts nicht weiter höher
             if(group->GetSelection() > 0 && group->GetSelection() != 0xFFFF)
             {
-                Swap(GAMECLIENT.visual_settings.transport_order[group->GetSelection()], GAMECLIENT.visual_settings.transport_order[group->GetSelection() - 1]);
+                std::swap(GAMECLIENT.visual_settings.transport_order[group->GetSelection()], GAMECLIENT.visual_settings.transport_order[group->GetSelection() - 1]);
                 group->GetCtrl<ctrlImageButton>(group->GetSelection())->SwapImage(group->GetCtrl<ctrlImageButton>(group->GetSelection() - 1));
                 group->GetCtrl<ctrlImageButton>(group->GetSelection())->SwapTooltip(group->GetCtrl<ctrlImageButton>(group->GetSelection() - 1));
                 group->SetSelection(group->GetSelection() - 1);
@@ -225,7 +225,7 @@ void iwTransport::Msg_ButtonClick(const unsigned int ctrl_id)
             // Wenn wir schon ganz unten sind, gehts nicht weiter runter
             if(group->GetSelection() < 13 && group->GetSelection() != 0xFFFF)
             {
-                Swap(GAMECLIENT.visual_settings.transport_order[group->GetSelection()], GAMECLIENT.visual_settings.transport_order[group->GetSelection() + 1]);
+                std::swap(GAMECLIENT.visual_settings.transport_order[group->GetSelection()], GAMECLIENT.visual_settings.transport_order[group->GetSelection() + 1]);
                 group->GetCtrl<ctrlImageButton>(group->GetSelection())->SwapImage(group->GetCtrl<ctrlImageButton>(group->GetSelection() + 1));
                 group->GetCtrl<ctrlImageButton>(group->GetSelection())->SwapTooltip(group->GetCtrl<ctrlImageButton>(group->GetSelection() + 1));
                 group->SetSelection(group->GetSelection() + 1);
@@ -240,7 +240,7 @@ void iwTransport::Msg_ButtonClick(const unsigned int ctrl_id)
             // Wenn wir schon ganz unten sind, gehts nicht weiter runter
             while(group->GetSelection() < 13 && group->GetSelection() != 0xFFFF)
             {
-                Swap(GAMECLIENT.visual_settings.transport_order[group->GetSelection()], GAMECLIENT.visual_settings.transport_order[group->GetSelection() + 1]);
+                std::swap(GAMECLIENT.visual_settings.transport_order[group->GetSelection()], GAMECLIENT.visual_settings.transport_order[group->GetSelection() + 1]);
                 group->GetCtrl<ctrlImageButton>(group->GetSelection())->SwapImage(group->GetCtrl<ctrlImageButton>(group->GetSelection() + 1));
                 group->GetCtrl<ctrlImageButton>(group->GetSelection())->SwapTooltip(group->GetCtrl<ctrlImageButton>(group->GetSelection() + 1));
                 group->SetSelection(group->GetSelection() + 1);

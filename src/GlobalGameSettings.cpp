@@ -64,6 +64,9 @@
 #include "addons/AddonHalfCostMilEquip.h"
 #include "addons/AddonMilitaryControl.h"
 
+#include "Serializer.h"
+#include "Log.h"
+
 ///////////////////////////////////////////////////////////////////////////////
 /**
  *
