@@ -332,12 +332,8 @@ bool TradeGraph::FindPath(const Point<MapCoord> start, const Point<MapCoord> goa
     nodes[start.y * size.x + start.x].route_length = 0;
     nodes[start.y * size.x + start.x].real_length = 0;
 
-    while(todo.size())
+    while(!todo.empty())
     {
-        // Liste leer und kein Ziel erreicht --> kein Weg
-        if(!todo.size())
-            return 0;
-
         unsigned shortest_route = 0xFFFFFFFF;
 
         std::list<Point<MapCoord> >::iterator best_it;

@@ -45,7 +45,7 @@ Playlist::Playlist() : repeats(1), random(false)
  */
 void Playlist::Prepare()
 {
-    if(songs.size())
+    if(!songs.empty())
     {
         order.clear();
 
@@ -291,7 +291,7 @@ void MusicPlayer::PlayNext()
 const std::string Playlist::getNextSong()
 {
     const std::string tmp(getCurrentSong());
-    if(order.size())
+    if(!order.empty())
         order.erase(order.begin());
     return tmp;
 }

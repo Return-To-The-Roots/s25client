@@ -626,8 +626,8 @@ void AIConstruction::RefreshBuildingCount()
         {
             //>6miners = build up to 6 depending on resources, else max out at miners/2
             buildingsWanted[BLD_QUARRY] = (aii->GetInventory()->goods[GD_PICKAXE] + aii->GetInventory()->people[JOB_STONEMASON] < 6) ? ((aii->GetInventory()->people[JOB_MINER] > 6) ? aii->GetInventory()->goods[GD_PICKAXE] + aii->GetInventory()->people[JOB_STONEMASON] : aii->GetInventory()->people[JOB_MINER] / 2) : 6;
-			if(buildingsWanted[BLD_QUARRY]>(aii->GetMilitaryBuildings().size()))
-				buildingsWanted[BLD_QUARRY]=(aii->GetMilitaryBuildings().size());
+			if(buildingsWanted[BLD_QUARRY] > aii->GetMilitaryBuildings().size())
+				buildingsWanted[BLD_QUARRY] = aii->GetMilitaryBuildings().size();
 		}
         //sawmills limited by woodcutters and carpenter+saws reduced by charburners minimum of 2
         resourcelimit = aii->GetInventory()->people[JOB_CARPENTER] + aii->GetInventory()->goods[GD_SAW];

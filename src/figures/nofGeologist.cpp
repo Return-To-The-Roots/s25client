@@ -346,7 +346,7 @@ void nofGeologist::LookForNewNodes()
         }
 
         // Wenn es in diesem Umkreis welche gibt, dann nur noch 2 Kreise zusätzlich weitergehen
-        if(!found && available_nodes.size())
+        if(!found && !available_nodes.empty())
         {
             max_radius = min(10, r + 3);
             found = true;

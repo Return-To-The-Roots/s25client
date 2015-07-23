@@ -130,7 +130,7 @@ void iwPostWindow::Msg_ButtonClick(const unsigned int ctrl_id)
         // Löschen
         case 15:
         {
-            if(GameClient::inst().GetPostMessages().size())
+            if(!GameClient::inst().GetPostMessages().empty())
                 DeletePostMessage(GetPostMsg(currentMessage));
         }
         break;
@@ -226,7 +226,7 @@ bool iwPostWindow::Msg_KeyDown(const KeyEvent& ke)
         } return true;
         case 'g': // Go to site of event
         {
-            if (GameClient::inst().GetPostMessages().size())
+            if (!GameClient::inst().GetPostMessages().empty())
             {
                 Msg_ButtonClick(14);
             }

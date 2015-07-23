@@ -1064,7 +1064,7 @@ noBaseBuilding* GameClientPlayer::FindClientForWare(Ware* ware)
                 // Wenn 0, dann braucht er die Ware nicht
                 if (points)
                 {
-                    if (distribution[gt].goals.size())
+                    if (!distribution[gt].goals.empty())
                     {
                         if ((*i)->GetBuildingType() == static_cast<BuildingType>(distribution[gt].goals[distribution[gt].selected_goal]))
                         {
@@ -1092,32 +1092,32 @@ noBaseBuilding* GameClientPlayer::FindClientForWare(Ware* ware)
 
         // If our estimate is worse (or equal) best_points, the real value cannot be better.
         // As our list is sorted, further entries cannot be better either, so stop searching.
-        if ((*it).estimate <= best_points)
+        if (it->estimate <= best_points)
             break;
 
         // get rid of double building entries. TODO: why are there double entries!?
-        if ((*it).bb == last_bb)
+        if (it->bb == last_bb)
             continue;
 
-        last_bb = (*it).bb;
+        last_bb = it->bb;
 
         // Find path ONLY if it may be better. Pathfinding is limited to the worst path score that would lead to a better score.
         // This eliminates the worst case scenario where all nodes in a split road network would be hit by the pathfinding only
         // to conclude that there is no possible path.
-        if (gwg->FindPathForWareOnRoads(start, (*it).bb, &path_length, NULL, ((*it).points - best_points) * 2 - 1) != 0xFF)
+        if (gwg->FindPathForWareOnRoads(start, it->bb, &path_length, NULL, (it->points - best_points) * 2 - 1) != 0xFF)
         {
-            unsigned score = (*it).points - (path_length / 2);
+            unsigned score = it->points - (path_length / 2);
 
             // As we have limited our pathfinding to take a maximum of (points - best_points) * 2 - 1 steps,
             // path_length / 2 can at most be points - best_points - 1, so the score will be greater than best_points. :)
             assert(score > best_points);
 
             best_points = score;
-            bb = (*it).bb;
+            bb = it->bb;
         }
     }
 
-    if(bb && distribution[gt].goals.size())
+    if(bb && !distribution[gt].goals.empty())
         distribution[gt].selected_goal = (distribution[gt].selected_goal + 907) % unsigned(distribution[gt].goals.size());
 
     // Wenn kein Abnehmer gefunden wurde, muss es halt in ein Lagerhaus
@@ -1260,7 +1260,7 @@ void GameClientPlayer::CalcProductivities(std::vector<unsigned short>& productiv
         for(std::list<nobUsual*>::iterator it = buildings[i].begin(); it != buildings[i].end(); ++it)
             total_productivity += *(*it)->GetProduktivityPointer();
 
-        if(buildings[i].size())
+        if(!buildings[i].empty())
             total_productivity /= buildings[i].size();
 
         productivities[i + 10] = static_cast<unsigned short>(total_productivity);
@@ -1279,7 +1279,7 @@ unsigned short GameClientPlayer::CalcAverageProductivitiy()
         for(std::list<nobUsual*>::iterator it = buildings[i].begin(); it != buildings[i].end(); ++it)
             total_productivity += *(*it)->GetProduktivityPointer();
 
-        if(buildings[i].size())
+        if(!buildings[i].empty())
             total_count += buildings[i].size();
     }
     if (total_count == 0)
@@ -1573,7 +1573,7 @@ void GameClientPlayer::TestDefeat()
 {
     // Nicht schon besiegt?
     // Keine Militärgebäude, keine Lagerhäuser (HQ,Häfen) -> kein Land --> verloren
-    if(!defeated && !military_buildings.size() && !warehouses.size())
+    if(!defeated && military_buildings.empty() && warehouses.empty())
     {
         defeated = true;
 
@@ -2274,7 +2274,7 @@ bool GameClientPlayer::FindHarborForUnloading(noShip* ship, const MapCoord start
 void GameClientPlayer::TestForEmergencyProgramm()
 {
     // we are already defeated, do not even think about an emergency program - it's too late :-(
-    if (defeated || !warehouses.size())
+    if (defeated || warehouses.empty())
     {
         return;
     }

@@ -987,7 +987,7 @@ void GameWorldGame::RoadNodeAvailable(const MapCoord x, const MapCoord y)
         std::vector<noBase*> objects = GetDynamicObjectsFrom(xa, ya);
 
         // Auch Figuren da, die rumlaufen können?
-        if(objects.size())
+        if(!objects.empty())
         {
             for(std::vector<noBase*>::iterator it = objects.begin(); it != objects.end(); ++it)
             {
@@ -1140,7 +1140,7 @@ void GameWorldGame::Attack(const unsigned char player_attacker, const MapCoord x
         delete it->soldier;
     }
 
-    /*if(!soldiers.size())
+    /*if(soldiers.empty())
         LOG.lprintfS("GameWorldGame::Attack: WARNING: Attack failed. No Soldiers available!\n");*/
 }
 

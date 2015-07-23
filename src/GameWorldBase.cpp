@@ -1824,7 +1824,7 @@ unsigned int GameWorldBase::GetAvailableSoldiersForSeaAttackAtSea(const unsigned
         buildings[i].building->GetSoldiersForAttack(buildings[i].harbor->GetX(), buildings[i].harbor->GetY(), player_attacker, tmp_soldiers);
 
         // Überhaupt welche gefunden?
-        if(!tmp_soldiers.size())
+        if(tmp_soldiers.empty())
             continue;
 
         // Soldaten hinzufügen
@@ -1901,7 +1901,7 @@ void GameWorldBase::GetAvailableSoldiersForSeaAttack(const unsigned char player_
                 player_attacker, tmp_soldiers);
 
         // Überhaupt welche gefunden?
-        if(!tmp_soldiers.size())
+        if(tmp_soldiers.empty())
             continue;
 
         // Soldaten hinzufügen

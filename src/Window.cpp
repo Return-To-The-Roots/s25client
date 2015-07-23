@@ -196,7 +196,7 @@ bool Window::RelayMouseMessage(bool (Window::*msg)(const MouseCoords&), const Mo
     // Use reverse iterator because the topmost (=last elements) should receive the messages first!
     for(std::map<unsigned int, Window*>::reverse_iterator it = idmap.rbegin(); it != idmap.rend() && active; ++it)
     {
-        if(locked_areas.size())
+        if(!locked_areas.empty())
             if(TestWindowInRegion(it->second, mc))
                 continue;
 
@@ -214,7 +214,7 @@ bool Window::RelayMouseMessage(bool (Window::*msg)(const MouseCoords&), const Mo
     {
         for(std::map<unsigned int,Window*>::iterator it = idmap.begin(); it != idmap.end() && active; ++it)
         {
-            if(locked_areas.size())
+            if(!locked_areas.empty())
                 if(TestWindowInRegion(it->second, mc))
                     continue;
 

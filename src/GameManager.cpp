@@ -92,7 +92,7 @@ bool GameManager::Start()
                 found = true;
         }
 
-        if(!found && available_video_modes.size())
+        if(!found && !available_video_modes.empty())
         {
             // Nicht gefunden, erste gültige Auflösung nehmen
             SETTINGS.video.fullscreen_width = available_video_modes[0].width;

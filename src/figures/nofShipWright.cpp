@@ -76,7 +76,7 @@ void nofShipWright::HandleDerivedEvent(const unsigned int id)
                 }
 
                 // Kein Schiff im Bau gefunden? Dann Plätzchen für ein neues Schiff suchen
-                if(!available_points.size())
+                if(available_points.empty())
                 {
                     for(MapCoord tx = gwg->GetXA(x, y, 0), r = 1; r <= SHIPWRIGHT_RADIUS; tx = gwg->GetXA(tx, y, 0), ++r)
                     {
@@ -102,7 +102,7 @@ void nofShipWright::HandleDerivedEvent(const unsigned int id)
                 }
 
                 // Punkte gefunden?
-                if(available_points.size())
+                if(!available_points.empty())
                 {
                     // Einen Punkt zufällig auswählen und dorthin laufen
                     ShipPoint p = available_points[RANDOM.Rand(__FILE__, __LINE__, obj_id, available_points.size())];

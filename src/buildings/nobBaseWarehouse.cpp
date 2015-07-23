@@ -317,7 +317,7 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
             leaving_event = 0;
 
             // Falls eine Bestellung storniert wurde
-            if(!leave_house.size() && !waiting_wares.size())
+            if(leave_house.empty() && waiting_wares.empty())
             {
                 go_out = false;
                 return;
@@ -355,9 +355,9 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
             }
 
             // Figuren kommen zuerst raus
-            if(leave_house.size())
+            if(!leave_house.empty())
             {
-                noFigure* fig = *leave_house.begin();
+                noFigure* fig = leave_house.front();
 
                 gwg->AddFigure(fig, x, y);
 
@@ -414,7 +414,7 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
             }
 
             // Wenn keine Figuren und Waren mehr da sind (bzw die Flagge vorm Haus voll ist), brauch auch keiner mehr rauszukommen
-            if(!leave_house.size() && !waiting_wares.size())
+            if(leave_house.empty() && waiting_wares.empty())
                 go_out = false;
 
 
@@ -737,7 +737,7 @@ void nobBaseWarehouse::AddWaitingWare(Ware* ware)
 
 bool nobBaseWarehouse::FreePlaceAtFlag()
 {
-    if(waiting_wares.size())
+    if(!waiting_wares.empty())
     {
         AddLeavingEvent();
         return true;

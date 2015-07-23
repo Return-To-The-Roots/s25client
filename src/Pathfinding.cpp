@@ -181,7 +181,7 @@ bool GameWorldBase::FindFreePath(const MapCoord x_start, const MapCoord y_start,
     // TODO confirm random
     unsigned rand = (y_start * GetWidth() + x_start) * GAMECLIENT.GetGFNumber() % 6; //RANDOM.Rand(__FILE__, __LINE__, y_start * GetWidth() + x_start, 6);
 
-    while(todo.size())
+    while(!todo.empty())
     {
         // Knoten mit den geringsten Wegkosten auswählen
         PathfindingPoint best = *todo.begin();
@@ -327,7 +327,7 @@ bool GameWorldBase::FindFreePathAlternatingConditions(const MapCoord x_start, co
     // TODO confirm random
     unsigned rand = (y_start * GetWidth() + x_start) * GAMECLIENT.GetGFNumber() % 6; //RANDOM.Rand(__FILE__, __LINE__, y_start * GetWidth() + x_start, 6);
 
-	while(todo.size())
+	while(!todo.empty())
     {		
 		if(!stepsTilSwitch) //counter for next step and switch condition
 		{			
@@ -589,7 +589,7 @@ bool GameWorldBase::FindPathOnRoads(const noRoadNode* const start, const noRoadN
 
     todo.push(start);
 
-    while (todo.size())
+    while (!todo.empty())
     {
         // Knoten mit den geringsten Wegkosten auswählen
         const noRoadNode* best = todo.top();

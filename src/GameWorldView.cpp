@@ -456,7 +456,7 @@ void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool
                             }
                         }
 
-                        if(rb.route.size())
+                        if(!rb.route.empty())
                         {
                             if(unsigned(rb.route.back() + 3) % 6 == i)
                                 LOADER.GetMapImageN(67)->Draw(xpos, ypos, 0, 0, 0, 0, 0, 0);

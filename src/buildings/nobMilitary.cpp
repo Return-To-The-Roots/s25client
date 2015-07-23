@@ -261,7 +261,7 @@ void nobMilitary::HandleEvent(const unsigned int id)
             leaving_event = 0;
 
             // Sind Leute da, die noch rausgehen wollen?
-            if(leave_house.size())
+            if(!leave_house.empty())
             {
                 // Dann raus mit denen
                 noFigure* soldier = *leave_house.begin();
@@ -276,7 +276,7 @@ void nobMilitary::HandleEvent(const unsigned int id)
             }
 
             // Wenn noch weitere drin sind, die müssen auch noch raus
-            if(leave_house.size())
+            if(!leave_house.empty())
                 leaving_event = em->AddEvent(this, 30 + RANDOM.Rand(__FILE__, __LINE__, obj_id, 10));
             else
                 go_out = false;
@@ -1241,14 +1241,14 @@ void nobMilitary::PrepareUpgrading()
 void nobMilitary::HitOfCatapultStone()
 {
     // Ein Soldat weniger, falls es noch welche gibt
-    if(troops.size())
+    if(!troops.empty())
     {
-        (*troops.begin())->Die();
+        troops.front->Die();
         troops.pop_front();
     }
 
     // Kein Soldat mehr da? Haus abfackeln
-    if(!troops.size())
+    if(troops.empty())
         Destroy();
     else
         // ansonsten noch neue Soldaten ggf. bestellen
@@ -1275,7 +1275,7 @@ bool nobMilitary::IsDemolitionAllowed() const
         case 1: // under attack
         {
             // Prüfen, ob das Gebäude angegriffen wird
-            if(aggressors.size())
+            if(!aggressors.empty())
                 return false;
         } break;
         case 2: // near frontiers

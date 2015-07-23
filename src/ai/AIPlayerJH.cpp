@@ -270,7 +270,7 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
 
 bool AIPlayerJH::TestDefeat()
 {		
-    if (initgfcomplete>=10 && !aii->GetStorehouses().size())
+    if (initgfcomplete>=10 && aii->GetStorehouses().empty())
     {
 		//LOG.lprintf("ai defeated player %i \n",playerid);
         defeated = true;
@@ -1211,7 +1211,7 @@ void AIPlayerJH::DistributeMaxRankSoldiersByBlocking(unsigned limit,nobBaseWareh
 		}		
 	}
 	//have frontier warehouses?
-	if(frontierwhs.size())
+	if(!frontierwhs.empty())
 	{
 		//LOG.lprintf("distribute maxranks - got frontierwhs for player %i \n",playerid);
 		bool understaffedwh=false;
@@ -1589,7 +1589,7 @@ void AIPlayerJH::HandleMilitaryBuilingLost(const Coords& coords)
 {
     MapCoord x = coords.x;
     MapCoord y = coords.y;
-    if(!aii->GetStorehouses().size()) //check if we have a storehouse left - if we dont have one trying to find a path to one will crash
+    if(aii->GetStorehouses().empty()) //check if we have a storehouse left - if we dont have one trying to find a path to one will crash
     {
         return;
     }
@@ -2037,7 +2037,7 @@ void AIPlayerJH::TrySeaAttack()
                     //attackers for this building?
                     std::vector<unsigned short> testseaidswithattackers(seaidswithattackers);
                     gwb->GetValidSeaIDsAroundMilitaryBuildingForAttackCompare(gwb->GetHarborPoint(i).x, gwb->GetHarborPoint(i).y, &testseaidswithattackers, playerid);
-                    if(testseaidswithattackers.size()) //harbor can be attacked?
+                    if(!testseaidswithattackers.empty()) //harbor can be attacked?
                     {
                         if(!hb->DefendersAvailable()) //no defenders?
                             undefendedTargets.push_back(hb);
@@ -2067,7 +2067,7 @@ void AIPlayerJH::TrySeaAttack()
         {
             std::list<GameWorldBase::PotentialSeaAttacker> attackers;
             gwb->GetAvailableSoldiersForSeaAttack(playerid, (*it)->GetX(), (*it)->GetY(), &attackers);
-            if(attackers.size()) //try to attack it!
+            if(!attackers.empty()) //try to attack it!
             {
                 aii->SeaAttack((*it)->GetX(), (*it)->GetY(), 1, true);
                 return;
@@ -2096,7 +2096,7 @@ void AIPlayerJH::TrySeaAttack()
                 {
                     std::vector<unsigned short> testseaidswithattackers(seaidswithattackers);
                     gwb->GetValidSeaIDsAroundMilitaryBuildingForAttackCompare((*it)->GetX(), (*it)->GetY(), &testseaidswithattackers, playerid);
-                    if(testseaidswithattackers.size())
+                    if(!testseaidswithattackers.empty())
                     {
                         undefendedTargets.push_back(*it);
                     }//else - no attackers - do nothing
@@ -2117,7 +2117,7 @@ void AIPlayerJH::TrySeaAttack()
         {
             std::list<GameWorldBase::PotentialSeaAttacker> attackers;
             gwb->GetAvailableSoldiersForSeaAttack(playerid, (*it)->GetX(), (*it)->GetY(), &attackers);
-            if(attackers.size()) //try to attack it!
+            if(!attackers.empty()) //try to attack it!
             {
                 aii->SeaAttack((*it)->GetX(), (*it)->GetY(), 1, true);
                 return;
@@ -2133,7 +2133,7 @@ void AIPlayerJH::TrySeaAttack()
         {
             std::list<GameWorldBase::PotentialSeaAttacker> attackers;
             gwb->GetAvailableSoldiersForSeaAttack(playerid, (*it)->GetX(), (*it)->GetY(), &attackers); //now get a final list of attackers and attack it
-            if(attackers.size())
+            if(!attackers.empty())
             {
                 aii->SeaAttack((*it)->GetX(), (*it)->GetY(), attackers.size(), true);
                 return;
@@ -2422,7 +2422,7 @@ void AIPlayerJH::InitStoreAndMilitarylists()
 int AIPlayerJH::UpdateUpgradeBuilding()
 {
 	std::list<nobMilitary*> backup;
-	if(aii->GetStorehouses().size())
+	if(!aii->GetStorehouses().empty())
 	{		
 		unsigned count=0;
 		for (std::list<nobMilitary*>::const_iterator it = aii->GetMilitaryBuildings().begin(); it!=aii->GetMilitaryBuildings().end(); it++)

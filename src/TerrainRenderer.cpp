@@ -848,7 +848,7 @@ void TerrainRenderer::Draw(GameWorldView* gwv, unsigned int* water)
 
     for(unsigned char i = 0; i < 16; ++i)
     {
-        if(sorted_textures[i].size())
+        if(!sorted_textures[i].empty())
         {
             switch(i)
             {
@@ -885,7 +885,7 @@ void TerrainRenderer::Draw(GameWorldView* gwv, unsigned int* water)
     lastyo = 0;
     for(unsigned short i = 0; i < 5; ++i)
     {
-        if(sorted_borders[i].size())
+        if(!sorted_borders[i].empty())
         {
             VideoDriverWrapper::inst().BindTexture(GetImage(borders, i)->GetTexture());
 

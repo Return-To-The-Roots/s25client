@@ -97,7 +97,7 @@ void RoadSegment::Destroy_RoadSegment()
     if(carrier[1])
         carrier[1]->LostWork();
 
-    if(route.size())
+    if(!route.empty())
     {
         // Straße durchgehen und alle Figuren sagen, dass sie die Arbeit verloren haben
         unsigned short x = f1->GetX();

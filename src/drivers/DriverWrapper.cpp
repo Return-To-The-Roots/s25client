@@ -94,7 +94,7 @@ bool DriverWrapper::Load(const DriverType dt, std::string& preference)
     LOG.lprintf("%u %s drivers found!\n", unsigned(drivers.size()), DIRECTORY[dt].c_str());
 
     // Welche gefunden?
-    if(!drivers.size())
+    if(drivers.empty())
         return false;
 
     /// Suche, ob der Treiber dabei ist, den wir wünschen

@@ -219,7 +219,7 @@ void noShip::Draw(int x, int y)
         } break;
         case STATE_SEAATTACK_RETURN:
         {
-            if(figures.size() || wares.size())
+            if(!figures.empty() || !wares.empty())
                 DrawDrivingWithWares(x, y);
             else
                 DrawDriving(x, y);
@@ -401,7 +401,7 @@ void noShip::HandleEvent(const unsigned int id)
                 case STATE_SEAATTACK_WAITING:
                 {
                     // Nächsten Soldaten nach draußen beordern
-                    if(!figures.size())
+                    if(figures.empty())
                         break;
 
                     nofAttacker* attacker = static_cast<nofAttacker*>(*figures.begin());
@@ -1085,7 +1085,7 @@ void noShip::SeaAttackerWishesNoReturn()
     {
         // Andere Events ggf. erstmal abmelden
         em->RemoveEvent(current_ev);
-        if(figures.size())
+        if(!figures.empty())
         {
             //set it to 1 so we "know" that we are driving back not any transport but a group of sea attackers (reset @ handleevent unload transport, used when target harbor dies to set the soldiers goal to 0)
             remaining_sea_attackers = 1;

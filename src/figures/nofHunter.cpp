@@ -178,7 +178,7 @@ void nofHunter::HandleDerivedEvent(const unsigned int id)
 
 
             // Gibt es überhaupt ein Tier, das ich jagen kann?
-            if(available_animals.size())
+            if(!available_animals.empty())
             {
                 // Ein Tier zufällig heraussuchen
                 animal = available_animals[RANDOM.Rand(__FILE__, __LINE__, obj_id, available_animals.size())];

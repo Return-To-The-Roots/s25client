@@ -582,7 +582,7 @@ void nobHarborBuilding::ShipArrived(noShip* ship)
 {
     // get a new job - priority is given according to this list: attack,expedition,exploration,transport
     // any attackers ready?
-    if(soldiers_for_ships.size())
+    if(!soldiers_for_ships.empty())
     {
         // load all soldiers that share the same target as the first soldier in the list
         std::list<noFigure*> attackers;
@@ -627,7 +627,7 @@ void nobHarborBuilding::ShipArrived(noShip* ship)
 
     }
     // Gibt es Waren oder Figuren, die ein Schiff von hier aus nutzen wollen?
-    if(wares_for_ships.size() || figures_for_ships.size())
+    if(!wares_for_ships.empty() || !figures_for_ships.empty())
     {
         // Das Ziel wird nach der ersten Figur bzw. ersten Ware gewählt
         // actually since the wares might not yet have informed the harbor that their target harbor was destroyed we pick the first figure/ware with a valid target instead
@@ -961,7 +961,7 @@ unsigned nobHarborBuilding::GetNeededShipsCount() const
         }
     }
     // Evtl. Angreifer, die noch verschifft werden müssen
-    if(soldiers_for_ships.size())
+    if(!soldiers_for_ships.empty())
     {
         // Die verschiedenen Zielhäfen -> Für jeden Hafen ein Schiff ordern
         std::vector< Point<MapCoord> > different_dests;
@@ -1419,7 +1419,7 @@ nofDefender* nobHarborBuilding::ProvideDefender(nofAttacker* const attacker)
     nofDefender* defender = nobBaseWarehouse::ProvideDefender(attacker);
     // Wenn das nicht geklappt hat und noch Soldaten in der Warteschlange für den Seeangriff sind
     // zweigen wir einfach diese ab
-    if(!defender && soldiers_for_ships.size())
+    if(!defender && !soldiers_for_ships.empty())
     {
         nofAttacker* defender_attacker = soldiers_for_ships.begin()->attacker;
         defender = new nofDefender(x, y, player, this, defender_attacker->GetRank(), attacker);

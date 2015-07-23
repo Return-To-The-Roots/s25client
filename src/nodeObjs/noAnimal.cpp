@@ -331,7 +331,7 @@ unsigned char noAnimal::FindDir()
                 continue;
 
             // Schließlich auch möglichst keine anderen Figuren bzw. Tiere
-            if(gwg->GetFigures(dst_x, dst_y).size())
+            if(!gwg->GetFigures(dst_x, dst_y).empty())
                 continue;
 
             // Und möglichst auch keine Straßen

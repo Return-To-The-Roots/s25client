@@ -459,10 +459,10 @@ void ctrlTable::Msg_ScrollShow(const unsigned int ctrl_id, const bool visible)
         // Rest einfach von letzter passender Spalte abziehen
         for(unsigned i = 0; i < columns.size(); ++i)
         {
-            if(GetCtrl<ctrlButton>(unsigned(columns.size()) - i - 1 + 1)->GetWidth() > rest)
+            ctrlButton* bt = GetCtrl<ctrlButton>(unsigned(columns.size()) - i - 1 + 1);
+            if(bt->GetWidth() > rest)
             {
-                GetCtrl<ctrlButton>(unsigned(columns.size()) - i - 1 + 1)
-                ->SetWidth(GetCtrl<ctrlButton>(unsigned(columns.size()) - i - 1 + 1)->GetWidth() - rest);
+                bt->SetWidth(bt->GetWidth() - rest);
                 break;
             }
         }
