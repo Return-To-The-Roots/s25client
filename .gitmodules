@@ -17,7 +17,7 @@
 	url = https://github.com/Flamefire/s-c.git
 	path = s-c
 [submodule "s25update"]
-	url = https://github.com/Return-To-The-Roots/s25update.git
+	url = https://github.com/Flamefire/s25update.git
 	path = s25update
 [submodule "version"]
 	url = https://github.com/Flamefire/version.git
