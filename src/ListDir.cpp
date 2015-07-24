@@ -25,7 +25,10 @@
 #include <algorithm>
 
 #ifdef _WIN32
-    #include <windows.h>
+#   include <windows.h>
+#else
+#   include <sys/types.h>
+#   include <dirent.h>
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////

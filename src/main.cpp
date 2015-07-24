@@ -32,6 +32,10 @@
 #   include <unistd.h>
 #endif
 
+#ifndef _MSC_VER
+#   include <csignal>
+#endif
+
 #include "GlobalVars.h"
 #include "signale.h"
 #include "Socket.h"
