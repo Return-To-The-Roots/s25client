@@ -175,7 +175,7 @@ class GameWorldBase
                     : id(id), distance(distance) {}
 
                 bool operator<(const Neighbor& two) const
-                { return distance < two.distance; }
+                { return (distance < two.distance) || (distance == two.distance && id < two.id); }
             };
 
             std::vector<Neighbor> neighbors[6];
