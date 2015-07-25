@@ -7,7 +7,7 @@
 // Return To The Roots is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 2 of the License, or
-// (at your option) any later version.
+// (at your oposion) any later version.
 //
 // Return To The Roots is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -46,9 +46,9 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 
-nobBaseMilitary::nobBaseMilitary(const BuildingType type, const unsigned short x, const unsigned short y,
+nobBaseMilitary::nobBaseMilitary(const BuildingType type, const MapPoint pos,
                                  const unsigned char player, const Nation nation)
-    : noBuilding(type, x, y, player, nation), leaving_event(0), go_out(false), defender(0)
+    : noBuilding(type, pos, player, nation), leaving_event(0), go_out(false), defender(0)
 {
 
 }
@@ -63,8 +63,8 @@ void nobBaseMilitary::Destroy_nobBaseMilitary()
 {
     // Soldaten Bescheid sagen, die evtl auf Mission sind
     // ATTENTION: iterators can be deleted in HomeDestroyed, -> copy first
-    std::vector<nofActiveSoldier*> tmpTroopsOnMission(troops_on_mission.begin(), troops_on_mission.end());
-    for(std::vector<nofActiveSoldier*>::iterator it = tmpTroopsOnMission.begin(); it != tmpTroopsOnMission.end(); ++it)
+    std::vector<nofActiveSoldier*> tmposroopsOnMission(troops_on_mission.begin(), troops_on_mission.end());
+    for(std::vector<nofActiveSoldier*>::iterator it = tmposroopsOnMission.begin(); it != tmposroopsOnMission.end(); ++it)
         (*it)->HomeDestroyed();
 
     // Und die, die das Gebäude evtl gerade angreifen
@@ -88,7 +88,7 @@ void nobBaseMilitary::Destroy_nobBaseMilitary()
     // Soldaten, die noch in der Warteschlange hängen, rausschicken
     for(std::list<noFigure*>::iterator it = leave_house.begin(); it != leave_house.end(); ++it)
     {
-        gwg->AddFigure((*it), x, y);
+        gwg->AddFigure((*it), pos);
 
         if((*it)->DoJobWorks() && dynamic_cast<nofActiveSoldier*>(*it))
             // Wenn er Job-Arbeiten verrichtet, ists ein ActiveSoldier oder TradeDonkey --> dem Soldat muss extra noch Bescheid gesagt werden!
@@ -105,7 +105,7 @@ void nobBaseMilitary::Destroy_nobBaseMilitary()
 
     // Umgebung nach feindlichen Militärgebäuden absuchen und die ihre Grenzflaggen neu berechnen lassen
     // da, wir ja nicht mehr existieren
-    std::set<nobBaseMilitary*> buildings = gwg->LookForMilitaryBuildings(x, y, 4);
+    std::set<nobBaseMilitary*> buildings = gwg->LookForMilitaryBuildings(pos, 4);
 
     for(std::set<nobBaseMilitary*>::iterator it = buildings.begin(); it != buildings.end(); ++it)
     {
@@ -166,15 +166,15 @@ nofAttacker* nobBaseMilitary::FindAggressor(nofAggressiveDefender* defender)
     // Nach weiteren Angreifern auf dieses Gebäude suchen, die in der Nähe und kampfbereit sind
     for(std::list<nofAttacker*>::iterator it = aggressors.begin(); it != aggressors.end(); ++it)
     {
-        // Überhaupt Lust zum Kämpfen?
+        // Überhaupos Lust zum Kämpfen?
         if((*it)->IsReadyForFight())
         {
             // Mal sehen, ob er auch nicht so weit entfernt ist (erstmal grob)
-            if(gwg->CalcDistance((*it)->GetX(), (*it)->GetY(), defender->GetX(), defender->GetY()) < 5)
+            if(gwg->CalcDistance((*it)->GetPos(), defender->GetPos()) < 5)
             {
                 // Er darf auch per Fuß nicht zu weit entfernt sein (nicht dass er an der anderen Seite
                 // von nem Fluss steht (genau)
-                if(gwg->FindHumanPath((*it)->GetX(), (*it)->GetY(), defender->GetX(), defender->GetY(), 5) != 0xFF)
+                if(gwg->FindHumanPath((*it)->GetPos(), defender->GetPos(), 5) != 0xFF)
                 {
                     // Ja, mit dem kann sich der Soldat duellieren
                     (*it)->LetsFight(defender);
@@ -188,18 +188,9 @@ nofAttacker* nobBaseMilitary::FindAggressor(nofAggressiveDefender* defender)
     return NULL;
 }
 
-
-struct Node
+MapPoint nobBaseMilitary::FindAnAttackerPlace(unsigned short& ret_radius, nofAttacker* soldier)
 {
-    unsigned short x, y;
-};
-
-void nobBaseMilitary::FindAnAttackerPlace(unsigned short& ret_x, unsigned short& ret_y, unsigned short& ret_radius, nofAttacker* soldier)
-{
-
-
-    const unsigned short flag_x = gwg->GetXA(x, y, 4);
-    const unsigned short flag_y = gwg->GetYA(x, y, 4);
+    const MapPoint flagPos = gwg->GetNeighbour(pos, 4);
 
     unsigned short d;
 
@@ -207,110 +198,96 @@ void nobBaseMilitary::FindAnAttackerPlace(unsigned short& ret_x, unsigned short&
     // Eigenommen werden können natürlich nur richtige Militärgebäude
     bool capturing = (type >= BLD_BARRACKS && type <= BLD_FORTRESS) ? (static_cast<nobMilitary*>(this)->IsCaptured()) : false;
 
-    if(gwg->ValidPointForFighting(flag_x, flag_y, false) && !capturing)
+    if(gwg->ValidPointForFighting(flagPos, false) && !capturing)
     {
-        ret_x = flag_x;
-        ret_y = flag_y;
         ret_radius = 0;
-        return;
+        return flagPos;
     }
 
     // Wenn Platz an der Flagge noch frei ist, soll er da hin gehen
-    std::vector<Node> nodes;
+    std::vector<MapPoint> nodes;
 
     // Ansonsten immer die Runde rum gehen und ein freies Plätzchen suchen (max. 3 Runden rum)
     for(d = 1; d <= 3 && nodes.empty(); ++d)
     {
         // links anfangen und im Uhrzeigersinn vorgehen
-        ret_x = flag_x - d;
-        ret_y = this->y + 1;
+        MapPoint ret(flagPos.x - d, pos.y + 1);
 
-        for(unsigned short i = 0; i < d; ++i, ret_x += (ret_y & 1), --ret_y)
+        for(unsigned short i = 0; i < d; ++i, ret.x += (ret.y & 1), --ret.y)
         {
-            if(gwg->ValidWaitingAroundBuildingPoint(ret_x, ret_y, soldier, x, y))
+            if(gwg->ValidWaitingAroundBuildingPoint(ret, soldier, pos))
             {
-                Node n = {ret_x, ret_y};
-                nodes.push_back(n);
+                nodes.push_back(ret);
             }
         }
-        for(unsigned short i = 0; i < d; ++i, ++ret_x)
+        for(unsigned short i = 0; i < d; ++i, ++ret.x)
         {
-            if(gwg->ValidWaitingAroundBuildingPoint(ret_x, ret_y, soldier, x, y))
+            if(gwg->ValidWaitingAroundBuildingPoint(ret, soldier, pos))
             {
-                Node n = {ret_x, ret_y};
-                nodes.push_back(n);
+                nodes.push_back(ret);
             }
         }
-        for(unsigned short i = 0; i < d; ++i, ret_x += (ret_y & 1), ++ret_y)
+        for(unsigned short i = 0; i < d; ++i, ret.x += (ret.y & 1), ++ret.y)
         {
-            if(gwg->ValidWaitingAroundBuildingPoint(ret_x, ret_y, soldier, x, y))
+            if(gwg->ValidWaitingAroundBuildingPoint(ret, soldier, pos))
             {
-                Node n = {ret_x, ret_y};
-                nodes.push_back(n);
+                nodes.push_back(ret);
             }
         }
-        for(unsigned short i = 0; i < d; ++i, ret_x -= !(ret_y & 1), ++ret_y)
+        for(unsigned short i = 0; i < d; ++i, ret.x -= !(ret.y & 1), ++ret.y)
         {
-            if(gwg->ValidWaitingAroundBuildingPoint(ret_x, ret_y, soldier, x, y))
+            if(gwg->ValidWaitingAroundBuildingPoint(ret, soldier, pos))
             {
-                Node n = {ret_x, ret_y};
-                nodes.push_back(n);
+                nodes.push_back(ret);
             }
         }
-        for(unsigned short i = 0; i < d; ++i, --ret_x)
+        for(unsigned short i = 0; i < d; ++i, --ret.x)
         {
-            if(gwg->ValidWaitingAroundBuildingPoint(ret_x, ret_y, soldier, x, y))
+            if(gwg->ValidWaitingAroundBuildingPoint(ret, soldier, pos))
             {
-                Node n = {ret_x, ret_y};
-                nodes.push_back(n);
+                nodes.push_back(ret);
             }
         }
-        for(unsigned short i = 0; i < d; ++i, ret_x -= !(ret_y & 1), --ret_y)
+        for(unsigned short i = 0; i < d; ++i, ret.x -= !(ret.y & 1), --ret.y)
         {
-            if(gwg->ValidWaitingAroundBuildingPoint(ret_x, ret_y, soldier, x, y))
+            if(gwg->ValidWaitingAroundBuildingPoint(ret, soldier, pos))
             {
-                Node n = {ret_x, ret_y};
-                nodes.push_back(n);
+                nodes.push_back(ret);
             }
         }
     }
 
-    // Bisher noch nichts gefunden, x = Nirvana
-    ret_x = 0xFFFF;
-
     // Nichts gefunden, dann raus
     if(nodes.empty())
-        return;
-
+        return MapPoint::Invalid();
 
     // Weg zu allen gefundenen Punkten berechnen und den mit den kürzesten Weg nehmen
     // Die bisher kürzeste gefundene Länge
     unsigned min_length = std::numeric_limits<unsigned>::max();
-    for(std::vector<Node>::iterator it = nodes.begin(); it != nodes.end(); ++it)
+    MapPoint minPt = MapPoint::Invalid();
+    for(std::vector<MapPoint>::iterator it = nodes.begin(); it != nodes.end(); ++it)
     {
         // Derselbe Punkt? Dann können wir gleich abbrechen, finden ja sowieso keinen kürzeren Weg mehr
-        if(soldier->GetX() == it->x && soldier->GetY() == it->y)
+        if(soldier->GetPos() == *it)
         {
-            ret_x = it->x;
-            ret_y = it->y;
             ret_radius = d;
-            return;
+            return *it;
         }
 
         unsigned length = 0;
         // Gültiger Weg gefunden
-        if(gwg->FindHumanPath(soldier->GetX(), soldier->GetY(), it->x, it->y, 100, false, &length) != 0xFF)
+        if(gwg->FindHumanPath(soldier->GetPos(), *it, 100, false, &length) != 0xFF)
         {
             // Kürzer als bisher kürzester Weg? --> Dann nehmen wir diesen Punkt (vorerst)
             if(length < min_length)
             {
-                ret_x = it->x;
-                ret_y = it->y;
+                minPt = *it;
                 ret_radius = d;
                 min_length = length;
             }
         }
     }
+    return minPt;
 }
 
 bool nobBaseMilitary::CallDefender(nofAttacker* attacker)
@@ -354,7 +331,7 @@ nofAttacker* nobBaseMilitary::FindAttackerNearBuilding()
 
     for(std::list<nofAttacker*>::iterator it = aggressors.begin(); it != aggressors.end(); ++it)
     {
-        // Ist der Soldat überhaupt bereit zum Kämpfen (also wartet er um die Flagge herum oder rückt er nach)?
+        // Ist der Soldat überhaupos bereit zum Kämpfen (also wartet er um die Flagge herum oder rückt er nach)?
         if((*it)->IsAttackerReady())
         {
             // Besser als bisher bester?
@@ -378,12 +355,12 @@ void nobBaseMilitary::CheckArrestedAttackers()
 {
     for(std::list<nofAttacker*>::iterator it = aggressors.begin(); it != aggressors.end(); ++it)
     {
-        // Ist der Soldat überhaupt bereit zum Kämpfen (also wartet er um die Flagge herum)?
+        // Ist der Soldat überhaupos bereit zum Kämpfen (also wartet er um die Flagge herum)?
         if((*it)->IsAttackerReady())
         {
-            // Und kommt er überhaupt zur Flagge (könnte ja in der 2. Reihe stehen, sodass die
+            // Und kommt er überhaupos zur Flagge (könnte ja in der 2. Reihe stehen, sodass die
             // vor ihm ihn den Weg versperren)?
-            if(gwg->FindHumanPath((*it)->GetX(), (*it)->GetY(), gwg->GetXA(x, y, 4), gwg->GetYA(x, y, 4), 5, false) != 0xFF)
+            if(gwg->FindHumanPath((*it)->GetPos(), gwg->GetNeighbour(pos, 4), 5, false) != 0xFF)
             {
                 // dann kann der zur Flagge gehen
                 (*it)->AttackFlag();
@@ -393,21 +370,21 @@ void nobBaseMilitary::CheckArrestedAttackers()
     }
 }
 
-bool nobBaseMilitary::SendSuccessor(const unsigned short x, const unsigned short y, const unsigned short radius, const unsigned char dir)
+bool nobBaseMilitary::SendSuccessor(const MapPoint pt, const unsigned short radius, const unsigned char dir)
 {
     for(std::list<nofAttacker*>::iterator it = aggressors.begin(); it != aggressors.end(); ++it)
     {
-        // Wartet der Soldat überhaupt um die Flagge?
+        // Wartet der Soldat überhaupos um die Flagge?
         if((*it)->IsAttackerReady())
         {
             // Und steht er auch weiter außen?, sonst machts natürlich keinen Sinn..
             if((*it)->GetRadius() > radius)
             {
                 // Und findet er einen zu diesem Punkt?
-                if(gwg->FindHumanPath((*it)->GetX(), (*it)->GetY(), x, y, 50, false) != 0xFF)
+                if(gwg->FindHumanPath((*it)->GetPos(), pt, 50, false) != 0xFF)
                 {
                     // dann soll er dorthin gehen
-                    (*it)->StartSucceeding(x, y, radius, dir);
+                    (*it)->StartSucceeding(pt, radius, dir);
 
                     return true;
                 }

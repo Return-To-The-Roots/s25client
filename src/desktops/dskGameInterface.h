@@ -48,10 +48,7 @@ struct RoadsBuilding
 {
     RoadMode mode;   ///< Straßenmodus
 
-    MapCoord point_x;
-    MapCoord point_y;
-    MapCoord start_x;
-    MapCoord start_y;
+    MapPoint point, start;
     std::vector<unsigned char> route;  ///< Richtungen der gebauten Straße
 };
 
@@ -82,7 +79,7 @@ class dskGameInterface :
         // Messenger für die Nachrichten
         Messenger messenger;
         // Aktuell selektierter Punkt auf der Karte
-        MapCoord selected_x, selected_y;
+        MapPoint selected;
         /// Minimap-Instanz
         IngameMinimap minimap;
 
@@ -124,15 +121,15 @@ class dskGameInterface :
         // Bei Wasserwegen kann die Reichweite nicht bis zum gewünschten
         // Punkt reichen. Dann werden die Zielkoordinaten geändert, daher
         // call-by-reference
-        bool BuildRoadPart(int& cselx, int& csely, bool end);
+        bool BuildRoadPart(MapPoint& cSel, bool end);
         // Prft, ob x;y auf der bereits gebauten Strecke liegt und gibt die Position+1 zurck vom Startpunkt der Strecke aus
         // wenn der Punkt nicht draufliegt, kommt 0 zurck
-        unsigned TestBuiltRoad(const int x, const int y);
+        unsigned TestBuiltRoad(const MapPoint pt);
         // Zeigt das Straäcnfenster an und entscheidet selbststäcdig, ob man eine Flagge an road_point_x/y bauen kann,
         // ansonsten gibt's nur nen Button zum Abbrechen
         void ShowRoadWindow(int mouse_x, int mouse_y);
         /// Zeigt das Actionwindow an, bei Flaggen werden z.B. noch berücksichtigt, obs ne besondere Flagge ist usw
-        void ShowActionWindow(const iwAction::Tabs& action_tabs, int cselx, int csely, int mouse_x, int mouse_y, const bool enable_military_buildings);
+        void ShowActionWindow(const iwAction::Tabs& action_tabs, MapPoint cSel, int mouse_x, int mouse_y, const bool enable_military_buildings);
 
     private:
 
@@ -167,14 +164,14 @@ class dskGameInterface :
         void CI_PostMessageDeleted(const unsigned postmessages_count);
 
         /// Wird aufgerufen, wann immer eine Flagge zerstört wurde, da so evtl der Wegbau abgebrochen werden muss
-        void GI_FlagDestroyed(const unsigned short x, const unsigned short y);
+        void GI_FlagDestroyed(const MapPoint pt);
         /// Spielerwechsel
         void CI_PlayersSwapped(const unsigned player1, const unsigned player2);
 
         /// Wenn ein Spieler verloren hat
         void GI_PlayerDefeated(const unsigned player_id);
         /// Es wurde etwas Minimap entscheidendes geändert --> Minimap updaten
-        void GI_UpdateMinimap(const MapCoord x, const MapCoord y);
+        void GI_UpdateMinimap(const MapPoint pt);
         /// Bündnisvertrag wurde abgeschlossen oder abgebrochen --> Minimap updaten
         void GI_TreatyOfAllianceChanged();
 

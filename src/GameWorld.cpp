@@ -76,9 +76,8 @@ bool GameWorld::LoadMap(const std::string& filename)
 
     tr.GenerateOpenGL(this);
 
-    if(GetPlayer(GAMECLIENT.GetPlayerID())->hqx != 0xFFFF)
-        this->MoveToMapObject(GetPlayer(GAMECLIENT.GetPlayerID())->hqx,
-                              GetPlayer(GAMECLIENT.GetPlayerID())->hqy);
+    if(GetPlayer(GAMECLIENT.GetPlayerID())->hqPos.x != 0xFFFF)
+        this->MoveToMapObject(GetPlayer(GAMECLIENT.GetPlayerID())->hqPos);
 
     LUA_EventStart();
 
@@ -102,7 +101,8 @@ void GameWorld::Scan(glArchivItem_Map* map)
     // Dummy-Hafenpos für Index 0 einfügen // ask Oliverr why!
     // -> I just did, the dummy is so that the harbor "0" might be used for ships with no particular destination
     // poc: if you ever remove this dummy go to GameWorldBase::CalcDistanceToNearestHarbor and fix the loop to include the first harbor again (think Ive seen other instances of dummyadjusted loops as well...)
-    GameWorldBase::HarborPos dummy = {0, 0};
+    GameWorldBase::HarborPos dummy;
+    dummy.pos = MapPoint(0, 0);
     harbor_pos.push_back(dummy);
 
     // Andere Sachen setzen
@@ -124,7 +124,7 @@ void GameWorld::Scan(glArchivItem_Map* map)
             {
                 t1 -= 0x40;
 
-                GameWorldBase::HarborPos p = {x, y};
+                GameWorldBase::HarborPos p(MapPoint(x, y));
                 node.harbor_id = harbor_pos.size();
                 harbor_pos.push_back(p);
             }
@@ -194,7 +194,7 @@ void GameWorld::Scan(glArchivItem_Map* map)
         }
     }
 
-    std::vector< Point<MapCoord> > headquarter_positions;
+    std::vector< MapPoint > headquarter_positions;
 
     // Objekte auslesen
     for(unsigned y = 0; y < height; ++y)
@@ -202,6 +202,7 @@ void GameWorld::Scan(glArchivItem_Map* map)
         for(unsigned x = 0; x < width; ++x)
         {
             unsigned int pos = y * width + x;
+            MapPoint pt(x, y);
             unsigned char lc = map->GetMapDataAt(MAP_LANDSCAPE, x, y);
 
             switch(map->GetMapDataAt(MAP_TYPE, x, y))
@@ -209,12 +210,11 @@ void GameWorld::Scan(glArchivItem_Map* map)
                     // Player Startpos (provisorisch)
                 case 0x80:
                 {
-                    headquarter_positions.push_back(Point<MapCoord>(x, y));
+                    headquarter_positions.push_back(pt);
 
                     if(lc < GAMECLIENT.GetPlayerCount())
                     {
-                        GetPlayer(lc)->hqx = x;
-                        GetPlayer(lc)->hqy = y;
+                        GetPlayer(lc)->hqPos = pt;
                         nodes[pos].obj = NULL;
                     }
                 } break;
@@ -223,13 +223,13 @@ void GameWorld::Scan(glArchivItem_Map* map)
                 case 0xC4:
                 {
                     if(lc >= 0x30 && lc <= 0x3D)
-                        nodes[pos].obj = new noTree(x, y, 0, 3);
+                        nodes[pos].obj = new noTree(pt, 0, 3);
                     else if(lc >= 0x70 && lc <= 0x7D)
-                        nodes[pos].obj = new noTree(x, y, 1, 3);
+                        nodes[pos].obj = new noTree(pt, 1, 3);
                     else if(lc >= 0xB0 && lc <= 0xBD)
-                        nodes[pos].obj = new noTree(x, y, 2, 3);
+                        nodes[pos].obj = new noTree(pt, 2, 3);
                     else if(lc >= 0xF0 && lc <= 0xFD)
-                        nodes[pos].obj = new noTree(x, y, 3, 3);
+                        nodes[pos].obj = new noTree(pt, 3, 3);
                     else
                     {
                         LOG.lprintf("Unbekannter Baum1-4 auf x=%d, y=%d: id=%d (0x%0X)\n", x, y, lc, lc);
@@ -241,13 +241,13 @@ void GameWorld::Scan(glArchivItem_Map* map)
                 case 0xC5:
                 {
                     if(lc >= 0x30 && lc <= 0x3D)
-                        nodes[pos].obj = new noTree(x, y, 4, 3);
+                        nodes[pos].obj = new noTree(pt, 4, 3);
                     else if(lc >= 0x70 && lc <= 0x7D)
-                        nodes[pos].obj = new noTree(x, y, 5, 3);
+                        nodes[pos].obj = new noTree(pt, 5, 3);
                     else if(lc >= 0xB0 && lc <= 0xBD)
-                        nodes[pos].obj = new noTree(x, y, 6, 3);
+                        nodes[pos].obj = new noTree(pt, 6, 3);
                     else if(lc >= 0xF0 && lc <= 0xFD)
-                        nodes[pos].obj = new noTree(x, y, 7, 3);
+                        nodes[pos].obj = new noTree(pt, 7, 3);
                     else
                     {
                         LOG.lprintf("Unbekannter Baum5-8 auf x=%d, y=%d: id=%d (0x%0X)\n", x, y, lc, lc);
@@ -259,7 +259,7 @@ void GameWorld::Scan(glArchivItem_Map* map)
                 case 0xC6:
                 {
                     if(lc >= 0x30 && lc <= 0x3D)
-                        nodes[pos].obj = new noTree(x, y, 8, 3);
+                        nodes[pos].obj = new noTree(pt, 8, 3);
                     else
                     {
                         LOG.lprintf("Unbekannter Baum9 auf x=%d, y=%d: id=%d (0x%0X)\n", x, y, lc, lc);
@@ -275,65 +275,65 @@ void GameWorld::Scan(glArchivItem_Map* map)
 
                     // Objekte aus der map_?_z.lst
                     if(lc <= 0x0A)
-                        nodes[pos].obj = new noEnvObject(x, y, 500 + lc);
+                        nodes[pos].obj = new noEnvObject(pt, 500 + lc);
 
                     // "wasserstein" aus der map_?_z.lst
                     else if(lc == 0x0B)
-                        nodes[pos].obj = new noStaticObject(x, y, 500 + lc);
+                        nodes[pos].obj = new noStaticObject(pt, 500 + lc);
 
                     // Objekte aus der map_?_z.lst
                     else if(lc >= 0x0C && lc <= 0x0F)
-                        nodes[pos].obj = new noEnvObject(x, y, 500 + lc);
+                        nodes[pos].obj = new noEnvObject(pt, 500 + lc);
 
                     // Objekte aus der map.lst
                     else if(lc >= 0x10 && lc <= 0x14)
-                        nodes[pos].obj = new noEnvObject(x, y, 542 + lc - 0x10);
+                        nodes[pos].obj = new noEnvObject(pt, 542 + lc - 0x10);
 
                     // gestrandetes Schiff (mis0bobs, unvollständig)
                     else if(lc == 0x15)
-                        nodes[pos].obj = new noStaticObject(x, y, (lc - 0x15) * 2, 0, 1);
+                        nodes[pos].obj = new noStaticObject(pt, (lc - 0x15) * 2, 0, 1);
 
                     // das Tor aus der map_?_z.lst
                     else if(lc == 0x16)
-                        nodes[pos].obj = new noStaticObject(x, y, 560, 0xFFFF, 2);
+                        nodes[pos].obj = new noStaticObject(pt, 560, 0xFFFF, 2);
 
                     // das geöffnete Tor aus map_?_z.lst
                     else if(lc == 0x17)
-                        nodes[pos].obj = new noStaticObject(x, y, 561, 0xFFFF, 2);
+                        nodes[pos].obj = new noStaticObject(pt, 561, 0xFFFF, 2);
 
                     // Stalagmiten (mis1bobs)
                     else if(lc >= 0x18 && lc <= 0x1E)
-                        nodes[pos].obj = new noStaticObject(x, y, (lc - 0x18) * 2, 1);
+                        nodes[pos].obj = new noStaticObject(pt, (lc - 0x18) * 2, 1);
 
                     // toter Baum (mis1bobs)
                     else if(lc >= 0x1F && lc <= 0x20)
-                        nodes[pos].obj = new noStaticObject(x, y, 20 + (lc - 0x1F) * 2, 1);
+                        nodes[pos].obj = new noStaticObject(pt, 20 + (lc - 0x1F) * 2, 1);
 
                     // Gerippe (mis1bobs)
                     else if(lc == 0x21)
-                        nodes[pos].obj = new noEnvObject(x, y, 30, 1);
+                        nodes[pos].obj = new noEnvObject(pt, 30, 1);
 
                     // Objekte aus der map.lst
                     else if(lc >= 0x22 && lc <= 0x27)
-                        nodes[pos].obj = new noEnvObject(x, y, 550 + lc - 0x22);
+                        nodes[pos].obj = new noEnvObject(pt, 550 + lc - 0x22);
 
                     // Objekte aus der map.lst
                     else if(lc >= 0x28 && lc <= 0x2B)
-                        nodes[pos].obj = new noEnvObject(x, y, 556 + lc - 0x28);
+                        nodes[pos].obj = new noEnvObject(pt, 556 + lc - 0x28);
 
                     // die "kaputten" Gebäuderuinen usw (mis2bobs)
                     else if(lc >= 0x2C && lc <= 0x2D)
-                        nodes[pos].obj = new noStaticObject(x, y, (lc - 0x2C) * 2, 2);
+                        nodes[pos].obj = new noStaticObject(pt, (lc - 0x2C) * 2, 2);
                     else if(lc == 0x2E)
-                        nodes[pos].obj = new noStaticObject(x, y, (lc - 0x2C) * 2, 2, 1);
+                        nodes[pos].obj = new noStaticObject(pt, (lc - 0x2C) * 2, 2, 1);
                     else if(lc == 0x2F)
-                        nodes[pos].obj = new noStaticObject(x, y, (lc - 0x2C) * 2, 2, 2);
+                        nodes[pos].obj = new noStaticObject(pt, (lc - 0x2C) * 2, 2, 2);
                     else if(lc == 0x30)
-                        nodes[pos].obj = new noEnvObject(x, y, (lc - 0x2C) * 2, 2);
+                        nodes[pos].obj = new noEnvObject(pt, (lc - 0x2C) * 2, 2);
 
                     // der Wikinger (mis3bobs)
                     else if(lc == 0x31)
-                        nodes[pos].obj = new noStaticObject(x, y, 0, 2);
+                        nodes[pos].obj = new noStaticObject(pt, 0, 2);
 
                     else
                     {
@@ -387,7 +387,7 @@ void GameWorld::Scan(glArchivItem_Map* map)
     {
         for(unsigned x = 0; x < width; ++x)
         {
-            SetBQ(x, y, BQ_NOTHING);
+            SetBQ(MapPoint(x, y), BQ_NOTHING);
         }
     }
 
@@ -399,8 +399,7 @@ void GameWorld::Scan(glArchivItem_Map* map)
 
         for (unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
         {
-            GetPlayer(i)->hqx = headquarter_positions.at(i).x;
-            GetPlayer(i)->hqy = headquarter_positions.at(i).y;
+            GetPlayer(i)->hqPos = headquarter_positions.at(i);
         }
     }
 
@@ -408,12 +407,12 @@ void GameWorld::Scan(glArchivItem_Map* map)
     for(unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
     {
         // Existiert überhaupt ein HQ?
-        if(GetPlayer(i)->hqx != 0xFFFF)
+        if(GetPlayer(i)->hqPos.x != 0xFFFF)
         {
             if(GetPlayer(i)->ps == PS_OCCUPIED || GetPlayer(i)->ps == PS_KI)
             {
-                nobHQ* hq = new nobHQ(GetPlayer(i)->hqx, GetPlayer(i)->hqy, i, GetPlayer(i)->nation);
-                SetNO(hq, GetPlayer(i)->hqx, GetPlayer(i)->hqy);
+                nobHQ* hq = new nobHQ(GetPlayer(i)->hqPos, i, GetPlayer(i)->nation);
+                SetNO(hq, GetPlayer(i)->hqPos);
                 GetPlayer(i)->AddWarehouse(reinterpret_cast<nobBaseWarehouse*>(hq));
             }
             /*else
@@ -426,6 +425,7 @@ void GameWorld::Scan(glArchivItem_Map* map)
     {
         for(unsigned x = 0; x < width; ++x)
         {
+            MapPoint pt(x, y);
             // Tiere setzen
             Species species;
             switch(map->GetMapDataAt(MAP_ANIMALS, x, y))
@@ -442,15 +442,15 @@ void GameWorld::Scan(glArchivItem_Map* map)
 
             if(species != SPEC_NOTHING)
             {
-                noAnimal* animal = new noAnimal(species, x, y);
-                AddFigure(animal, x, y);
+                noAnimal* animal = new noAnimal(species, pt);
+                AddFigure(animal, pt);
                 // Loslaufen
                 animal->StartLiving();
             }
 
             /// 4 Fische setzen
             if(map->GetMapDataAt(MAP_RESOURCES, y * width + x) > 0x80 && map->GetMapDataAt(MAP_RESOURCES, y * width + x)  < 0x90)
-                GetNode(x, y).resources = 0x84;
+                GetNode(pt).resources = 0x84;
         }
     }
 
@@ -459,13 +459,14 @@ void GameWorld::Scan(glArchivItem_Map* map)
     {
         for(unsigned x = 0; x < width; ++x)
         {
+            MapPoint pt(x, y);
             // Noch kein Meer an diesem Punkt?
-            if(!GetNode(x, y).sea_id)
+            if(!GetNode(pt).sea_id)
             {
                 // Aber trotzdem Teil eines noch nicht vermessenen Meeres?
-                if(IsSeaPoint(x, y))
+                if(IsSeaPoint(pt))
                 {
-                    unsigned sea_size = MeasureSea(x, y, seas.size());
+                    unsigned sea_size = MeasureSea(pt, seas.size());
                     seas.push_back(Sea(sea_size));
                 }
             }
@@ -476,8 +477,7 @@ void GameWorld::Scan(glArchivItem_Map* map)
     for(unsigned i = 0; i < harbor_pos.size(); ++i)
     {
         for(unsigned z = 0; z < 6; ++z)
-            harbor_pos[i].cps[z].sea_id = IsCoastalPoint(GetXA(harbor_pos[i].x, harbor_pos[i].y, z),
-                                          GetYA(harbor_pos[i].x, harbor_pos[i].y, z));
+            harbor_pos[i].cps[z].sea_id = IsCoastalPoint(GetNeighbour(harbor_pos[i].pos, z));
     }
 
     // Nachbarn der einzelnen Hafenplätze ermitteln
@@ -488,8 +488,9 @@ void GameWorld::Scan(glArchivItem_Map* map)
     {
         for(unsigned x = 0; x < width; ++x)
         {
-            RecalcShadow(x, y);
-            SetBQ(x, y, GAMECLIENT.GetPlayerID());
+            MapPoint pt(x, y);
+            RecalcShadow(pt);
+            SetBQ(pt, GAMECLIENT.GetPlayerID());
         }
     }
 
@@ -500,12 +501,13 @@ void GameWorld::Scan(glArchivItem_Map* map)
         {
             for(unsigned x = 0; x < width; ++x)
             {
+                MapPoint pt(x, y);
                 // Alle Spieler durchgehen
                 for(unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
                 {
                     // An der Stelle FOW für diesen Spieler?
-                    if(GetNode(x, y).fow[i].visibility == VIS_FOW)
-                        SaveFOWNode(x, y, i);
+                    if(GetNode(pt).fow[i].visibility == VIS_FOW)
+                        SaveFOWNode(pt, i);
                 }
             }
         }
@@ -587,8 +589,8 @@ void GameWorld::Serialize(SerializedGameData* sgd) const
     sgd->PushUnsignedInt(harbor_pos.size());
     for(unsigned i = 0; i < harbor_pos.size(); ++i)
     {
-        sgd->PushUnsignedShort(harbor_pos[i].x);
-        sgd->PushUnsignedShort(harbor_pos[i].y);
+        sgd->PushUnsignedShort(harbor_pos[i].pos.x);
+        sgd->PushUnsignedShort(harbor_pos[i].pos.y);
         for(unsigned z = 0; z < 6; ++z)
             sgd->PushUnsignedShort(harbor_pos[i].cps[z].sea_id);
         for(unsigned z = 0; z < 6; ++z)
@@ -680,7 +682,7 @@ void GameWorld::Deserialize(SerializedGameData* sgd)
 
         if (nodes[i].harbor_id)
         {
-            GameWorldBase::HarborPos  p = {(MapCoord) (i % width), (MapCoord) (i / width)};
+            GameWorldBase::HarborPos p(MapPoint((MapCoord) (i % width), (MapCoord) (i / width)));
             harbor_pos.push_back(p);
         }
     }
@@ -699,8 +701,8 @@ void GameWorld::Deserialize(SerializedGameData* sgd)
     harbor_pos.resize(sgd->PopUnsignedInt());
     for(unsigned i = 0; i < harbor_pos.size(); ++i)
     {
-        harbor_pos[i].x = sgd->PopUnsignedShort();
-        harbor_pos[i].y = sgd->PopUnsignedShort();
+        harbor_pos[i].pos.x = sgd->PopUnsignedShort();
+        harbor_pos[i].pos.y = sgd->PopUnsignedShort();
         for(unsigned z = 0; z < 6; ++z)
             harbor_pos[i].cps[z].sea_id = sgd->PopUnsignedShort();
         for(unsigned z = 0; z < 6; ++z)
@@ -721,25 +723,24 @@ void GameWorld::Deserialize(SerializedGameData* sgd)
     {
         for(unsigned x = 0; x < width; ++x)
         {
-            SetBQ(x, y, GAMECLIENT.GetPlayerID());
+            SetBQ(MapPoint(x, y), GAMECLIENT.GetPlayerID());
         }
     }
 
     tr.GenerateOpenGL(this);
 
     // Zum HQ am Anfang springen, falls dieses existiert
-    if(GetPlayer(GAMECLIENT.GetPlayerID())->hqx != 0xFFFF)
-        this->MoveToMapObject(GetPlayer(GAMECLIENT.GetPlayerID())->hqx,
-                              GetPlayer(GAMECLIENT.GetPlayerID())->hqy);
+    if(GetPlayer(GAMECLIENT.GetPlayerID())->hqPos.x != 0xFFFF)
+        this->MoveToMapObject(GetPlayer(GAMECLIENT.GetPlayerID())->hqPos);
 }
 
 
-void GameWorld::ImportantObjectDestroyed(const unsigned short x, const MapCoord y)
+void GameWorld::ImportantObjectDestroyed(const MapPoint pt)
 {
-    WINDOWMANAGER.Close(CreateGUIID(x, y));
+    WINDOWMANAGER.Close(CreateGUIID(pt));
 }
 
-void GameWorld::MilitaryBuildingCaptured(const unsigned short x, const MapCoord y, const unsigned char player)
+void GameWorld::MilitaryBuildingCaptured(const MapPoint pt, const unsigned char player)
 {
     if(player == GAMECLIENT.GetPlayerID())
     {
@@ -761,13 +762,13 @@ void GameWorld::MilitaryBuildingCaptured(const unsigned short x, const MapCoord 
 
 /// Vermisst ein neues Weltmeer von einem Punkt aus, indem es alle mit diesem Punkt verbundenen
 /// Wasserpunkte mit der gleichen ID belegt und die Anzahl zurückgibt
-unsigned GameWorld::MeasureSea(const MapCoord x, const MapCoord y, const unsigned short sea_id)
+unsigned GameWorld::MeasureSea(const MapPoint pt, const unsigned short sea_id)
 {
     // Breitensuche von diesem Punkt aus durchführen
     std::vector<bool> visited(width * height, false);
-    std::queue< Point<MapCoord> > todo;
+    std::queue< MapPoint > todo;
 
-    Point<MapCoord> start(x, y);
+    MapPoint start(pt);
     todo.push(start);
 
     // Knoten zählen (Startknoten schon mit inbegriffen)
@@ -775,28 +776,25 @@ unsigned GameWorld::MeasureSea(const MapCoord x, const MapCoord y, const unsigne
 
     while(!todo.empty())
     {
-        Point<MapCoord> p = todo.front();
+        MapPoint p = todo.front();
         todo.pop();
 
         if(visited[p.y * width + p.x])
             continue;
 
-        GetNode(p.x, p.y).sea_id = sea_id;
+        GetNode(p).sea_id = sea_id;
 
         for(unsigned i = 0; i < 6; ++i)
         {
-            MapCoord xa, ya;
-            xa = GetXA(p.x, p.y, i);
-            ya = GetYA(p.x, p.y, i);
+            MapPoint pa = GetNeighbour(p, i);
 
             // Ist das dort auch ein Meerespunkt?
-            if(!IsSeaPoint(xa, ya))
+            if(!IsSeaPoint(p))
                 continue;
 
-            if(!visited[ya * width + xa])
+            if(!visited[pa.y * width + pa.x])
             {
-                Point<MapCoord> add(xa, ya);
-                todo.push(add);
+                todo.push(pa);
             }
         }
 

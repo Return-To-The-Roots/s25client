@@ -44,7 +44,7 @@ const unsigned GROWING_WAITING_LENGTH = 1100;
 /// Länge des Wachsens
 const unsigned GROWING_LENGTH = 16;
 
-noGrainfield::noGrainfield(const unsigned short x, const unsigned short y) : noCoordBase(NOP_GRAINFIELD, x, y),
+noGrainfield::noGrainfield(const MapPoint pos) : noCoordBase(NOP_GRAINFIELD, pos),
     type(RANDOM.Rand(__FILE__, __LINE__, obj_id, 2)), state(STATE_GROWING_WAITING), size(0), event(em->AddEvent(this, GROWING_WAITING_LENGTH))
 {
 }
@@ -59,7 +59,7 @@ void noGrainfield::Destroy_noGrainfield()
     em->RemoveEvent(event);
 
     // Bauplätze drumrum neu berechnen
-    gwg->RecalcBQAroundPoint(x, y);
+    gwg->RecalcBQAroundPoint(pos);
 
     Destroy_noCoordBase();
 }
@@ -150,7 +150,7 @@ void noGrainfield::HandleEvent(const unsigned int id)
         {
             // Selbst zerstören
             event = 0;
-            gwg->SetNO(0, x, y);
+            gwg->SetNO(0, pos);
             em->AddToKillList(this);
         } break;
     }

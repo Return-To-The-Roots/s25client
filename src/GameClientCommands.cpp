@@ -53,9 +53,9 @@ static char THIS_FILE[] = __FILE__;
  *
  *  @author OLiver
  */
-void GameClient::Command_SetFlag2(int x, int y, unsigned char player)
+void GameClient::Command_SetFlag2(const MapPoint pt, unsigned char player)
 {
-    gw->SetFlag(x, y, player);
+    gw->SetFlag(pt, player);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -158,14 +158,14 @@ void GameClient::ChangePlayer(const unsigned char old_id, const unsigned char ne
         for(unsigned y = 0; y < gw->GetHeight(); ++y)
         {
             for(unsigned x = 0; x < gw->GetWidth(); ++x)
-                gw->SetBQ(x, y, new_id);
+                gw->SetBQ(MapPoint(x, y), new_id);
         }
 
         // Visuelle Einstellungen vom Spieler wieder holen
         GetVisualSettings();
 
         //// zum HQ hinscrollen
-        //gw->MoveToMapObject(player->hqx,player->hqy);
+        //gw->MoveToMapObject(player->hqPos.x,player->hqy);
         //GameClientPlayer *player = players[playerid]; // wegen GCC-Fehlermeldung auskommentiert
     }
 	//swap command que
@@ -200,7 +200,7 @@ void GameClient::ChangeReplayPlayer(const unsigned new_id)
     for(unsigned y = 0; y < gw->GetHeight(); ++y)
     {
         for(unsigned x = 0; x < gw->GetWidth(); ++x)
-            gw->SetBQ(x, y, new_id);
+            gw->SetBQ(MapPoint(x, y), new_id);
     }
 
     // GUI Bescheid sagen (um z.B. Schatten neu zu berechnen)

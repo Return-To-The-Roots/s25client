@@ -78,9 +78,9 @@ class Minimap
         void CreateMapTexture(const void* param);
 
         /// Berechnet einen bestimmten Punkt neu
-        void RecalcNode(const void* param, const MapCoord x, const MapCoord y);
+        void RecalcNode(const void* param, const MapPoint pt);
         /// Berechnet die Farbe eines Pixels
-        virtual unsigned CalcPixelColor(const void* param, const MapCoord x, const MapCoord y, const unsigned t) = 0;
+        virtual unsigned CalcPixelColor(const void* param, const MapPoint pt, const unsigned t) = 0;
 };
 
 class PreviewMinimap : public Minimap
@@ -91,7 +91,7 @@ class PreviewMinimap : public Minimap
     protected:
 
         /// Berechnet die Farbe für einen bestimmten Pixel der Minimap (t = Terrain1 oder 2)
-        unsigned CalcPixelColor(const void* param, const MapCoord x, const MapCoord y, const unsigned t);
+        unsigned CalcPixelColor(const void* param, const MapPoint pt, const unsigned t);
 };
 
 class IngameMinimap : public Minimap
@@ -102,8 +102,7 @@ class IngameMinimap : public Minimap
         /// in einem GF mehrmals der Mappunkt verändert wird
         std::vector<bool> nodes_updated;
         /// Liste mit allen Punkten, die geändert werden müssen
-        typedef Point<MapCoord> Node;
-        std::vector<Node> nodesToUpdate;
+        std::vector<MapPoint> nodesToUpdate;
 
 
         /// Für jeden einzelnen Knoten speichern, welches Objekt hier dominiert, also wessen Pixel angezeigt wird
@@ -129,11 +128,12 @@ class IngameMinimap : public Minimap
 
 
         /// Merkt, vor dass ein bestimmter Punkt aktualisiert werden soll
-        void UpdateNode(const MapCoord x, const MapCoord y);
+        void UpdateNode(const MapPoint pt);
 
         /// Updatet die gesamte Minimap
         void UpdateAll();
-
+        unsigned GetMMIdx(const MapPoint pt)
+        { return static_cast<unsigned>(pt.y) * static_cast<unsigned>(map_width) + static_cast<unsigned>(pt.x); }
 
 
         /// Die einzelnen Dinge umschalten
@@ -144,11 +144,11 @@ class IngameMinimap : public Minimap
     protected:
 
         /// Berechnet die Farbe für einen bestimmten Pixel der Minimap (t = Terrain1 oder 2)
-        unsigned CalcPixelColor(const void* param, const MapCoord x, const MapCoord y, const unsigned t);
+        unsigned CalcPixelColor(const void* param, const MapPoint pt, const unsigned t);
         /// Berechnet für einen bestimmten Punkt und ein Dreieck die normale Terrainfarbe
-        unsigned CalcTerrainColor(const MapCoord x, const MapCoord y, const unsigned t);
+        unsigned CalcTerrainColor(const MapPoint pt, const unsigned t);
         /// Prüft ob an einer Stelle eine Straße gezeichnet werden muss
-        bool IsRoad(const MapCoord x, const MapCoord y, const Visibility visibility);
+        bool IsRoad(const MapPoint pt, const Visibility visibility);
         /// Berechnet Spielerfarbe mit in eine gegebene Farbe mit ein (player muss mit +1 gegeben sein!)
         unsigned CombineWithPlayerColor(const unsigned color, const unsigned char player) const;
         /// Zusätzliche Dinge, die die einzelnen Maps vor dem Zeichenvorgang zu tun haben

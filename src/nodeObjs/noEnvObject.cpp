@@ -42,8 +42,8 @@ static char THIS_FILE[] = __FILE__;
  *
  *  @author FloSoft
  */
-noEnvObject::noEnvObject(unsigned short x, unsigned short y, unsigned short id, unsigned short file)
-    : noStaticObject(x, y, id, file, 0, NOP_ENVIRONMENT)
+noEnvObject::noEnvObject(const MapPoint pos, unsigned short id, unsigned short file)
+    : noStaticObject(pos, id, file, 0, NOP_ENVIRONMENT)
 {
 }
 

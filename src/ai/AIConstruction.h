@@ -51,11 +51,11 @@ class AIConstruction
 
         bool BuildJobAvailable() const { return buildJobs.size() > 0;}
 
-        /// Finds flags in the area around x,y
-        void FindFlags(std::vector<const noFlag*>& flags, unsigned short x, unsigned short y, unsigned short radius, bool clear = true);
+        /// Finds flags in the area around pt
+        void FindFlags(std::vector<const noFlag*>& flags, const MapPoint pt, unsigned short radius, bool clear = true);
 
-        void FindFlags(std::vector<const noFlag*>& flags, unsigned short x, unsigned short y, unsigned short radius,
-                       unsigned short real_x, unsigned short real_y, unsigned short real_radius, bool clear = true);
+        void FindFlags(std::vector<const noFlag*>& flags, const MapPoint pt, unsigned short radius,
+                       MapPoint real, unsigned short real_radius, bool clear = true);
 		
 		/// returns true if the military building should be connected to the roadsystem
 		bool MilitaryBuildingWantsRoad(nobMilitary* milbld, unsigned listpos);
@@ -73,7 +73,7 @@ class AIConstruction
         bool IsConnectedToRoadSystem(const noFlag* flag);
 
         /// Randomly chooses a military building, prefering bigger buildings if enemy nearby
-        BuildingType ChooseMilitaryBuilding(MapCoord x, MapCoord y);
+        BuildingType ChooseMilitaryBuilding(const MapPoint pt);
 		
         /// Returns the number of buildings and buildingsites of a specific type (refresh with RefreshBuildingCount())
         unsigned GetBuildingCount(BuildingType type);
@@ -96,23 +96,23 @@ class AIConstruction
 
         /// Update BQ and farming ground around new building site + road
         /// HIer oder in AIPlayerJH?
-        //void RecalcGround(MapCoord x_building, MapCoord y_building, std::vector<unsigned char> &route_road);
+        //void RecalcGround(const MapPoint buildingPos, std::vector<unsigned char> &route_road);
 
         /// Tries to build a second road to a flag, which is in any way better than the first one
         bool BuildAlternativeRoad(const noFlag* flag, std::vector<unsigned char> &route);
 
-        bool OtherStoreInRadius(MapCoord& x, MapCoord& y, unsigned radius);
+        bool OtherStoreInRadius(MapPoint pt, unsigned radius);
 
-		bool OtherUsualBuildingInRadius(MapCoord& x,MapCoord& y, unsigned radius, BuildingType bt);
+		bool OtherUsualBuildingInRadius(MapPoint pt, unsigned radius, BuildingType bt);
 
 
-        noFlag* FindTargetStoreHouseFlag(MapCoord x, MapCoord y);
+        noFlag* FindTargetStoreHouseFlag(const MapPoint pt);
 
-		bool CanStillConstructHere(MapCoord x, MapCoord y);
+		bool CanStillConstructHere(const MapPoint pt);
 		
-		/// contains the locations x,y at which the ai has done some kind of construction since the last nwf
+		/// contains the locations pt at which the ai has done some kind of construction since the last nwf
 		// -> so the commands are not yet executed and for now the ai will just not build again in the area until the next nwf
-		std::deque<MapCoord> constructionlocations;
+		std::deque<MapPoint> constructionlocations;
 
 		//contains the type and amount of buildings ordered since the last nwf
 		std::vector<unsigned char> constructionorders;

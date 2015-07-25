@@ -54,7 +54,7 @@ bool AudioDriverWrapper::LoadDriver(void)
     PDRIVER_CREATEAUDIOINSTANCE CreateAudioInstance = pto2ptf<PDRIVER_CREATEAUDIOINSTANCE>(driver_wrapper.GetDLLFunction("CreateAudioInstance"));
 
     // Instanz erzeugen
-    if(!(audiodriver = CreateAudioInstance(this, VIDEODRIVER.GetWindowPointer())))
+    if(!(audiodriver = CreateAudioInstance(this, VIDEODRIVER.GetMapPointer())))
         return false;
 
     if(!audiodriver->Initialize())

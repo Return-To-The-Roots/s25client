@@ -89,7 +89,7 @@ void iwBuildingSite::Msg_ButtonClick(const unsigned int ctrl_id)
         } break;
         case 4: // "Gehe Zu Ort"
         {
-            gwv->MoveToMapObject(buildingsite->GetX(), buildingsite->GetY());
+            gwv->MoveToMapObject(buildingsite->GetPos());
         } break;
     }
 }

@@ -43,8 +43,8 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-nofCharburner::nofCharburner(const unsigned short x, const unsigned short y, const unsigned char player, nobUsual* workplace)
-    : nofFarmhand(JOB_CHARBURNER, x, y, player, workplace), harvest(false), wt(WT_WOOD)
+nofCharburner::nofCharburner(const MapPoint pos, const unsigned char player, nobUsual* workplace)
+    : nofFarmhand(JOB_CHARBURNER, pos, player, workplace), harvest(false), wt(WT_WOOD)
 {
 }
 
@@ -96,7 +96,7 @@ void nofCharburner::WorkStarted()
 /// Abgeleitete Klasse informieren, wenn fertig ist mit Arbeiten
 void nofCharburner::WorkFinished()
 {
-    noBase* no = gwg->GetNO(x, y);
+    noBase* no = gwg->GetNO(pos);
 
     // Is a charburner pile is already there?
     if(no->GetGOT() == GOT_CHARBURNERPILE)
@@ -112,7 +112,7 @@ void nofCharburner::WorkFinished()
     }
 
     // Point still good?
-    if(GetPointQuality(x, y) != PQ_NOTPOSSIBLE)
+    if(GetPointQuality(pos) != PQ_NOTPOSSIBLE)
     {
         // Delete previous elements
         // Only environt objects and signs are allowed to be removed by the worker!
@@ -121,7 +121,7 @@ void nofCharburner::WorkFinished()
 
         if(nop == NOP_ENVIRONMENT || nop == NOP_NOTHING)
         {
-            no = gwg->GetSpecObj<noBase>(x, y);
+            no = gwg->GetSpecObj<noBase>(pos);
             if(no)
             {
                 no->Destroy();
@@ -129,18 +129,18 @@ void nofCharburner::WorkFinished()
             }
 
             // Plant charburner pile
-            gwg->SetNO(new noCharburnerPile(x, y), x, y);
+            gwg->SetNO(new noCharburnerPile(pos), pos);
 
             // BQ drumrum neu berechnen
-            gwg->RecalcBQAroundPointBig(x, y);
+            gwg->RecalcBQAroundPointBig(pos);
         }
     }
 }
 
 /// Fragt abgeleitete Klasse, ob hier Platz bzw ob hier ein Baum etc steht, den z.B. der Holzfäller braucht
-nofFarmhand::PointQuality nofCharburner::GetPointQuality(const unsigned short x, const unsigned short y)
+nofFarmhand::PointQuality nofCharburner::GetPointQuality(const MapPoint pt)
 {
-    noBase* no = gwg->GetNO(x, y);
+    noBase* no = gwg->GetNO(pt);
 
     // Is a charburner pile already here?
     if(no->GetGOT() == GOT_CHARBURNERPILE)
@@ -172,13 +172,13 @@ nofFarmhand::PointQuality nofCharburner::GetPointQuality(const unsigned short x,
         return PQ_NOTPOSSIBLE;
 
     // Der Platz muss frei sein
-    noBase::BlockingManner bm = gwg->GetNO(x, y)->GetBM();
+    noBase::BlockingManner bm = gwg->GetNO(pt)->GetBM();
 
     if(bm != noBase::BM_NOTBLOCKING)
         return PQ_NOTPOSSIBLE;
 
     // Kein Grenzstein darf da stehen
-    if(gwg->GetNode(x, y).boundary_stones[0])
+    if(gwg->GetNode(pt).boundary_stones[0])
         return PQ_NOTPOSSIBLE;
 
 
@@ -188,13 +188,13 @@ nofFarmhand::PointQuality nofCharburner::GetPointQuality(const unsigned short x,
     for(unsigned char i = 0; i < 6; ++i)
     {
         // Don't set it next to buildings and other charburner piles and grain fields
-        BlockingManner bm = gwg->GetNO(gwg->GetXA(x, y, i), gwg->GetYA(x, y, i))->GetBM();
+        BlockingManner bm = gwg->GetNO(gwg->GetNeighbour(pt, i))->GetBM();
         if(bm != BM_NOTBLOCKING)
             return PQ_NOTPOSSIBLE;
         // darf außerdem nicht neben einer Straße liegen
         for(unsigned char j = 0; j < 6; ++j)
         {
-            if(gwg->GetPointRoad(gwg->GetXA(x, y, i), gwg->GetYA(x, y, i), j))
+            if(gwg->GetPointRoad(gwg->GetNeighbour(pt, i), j))
                 return PQ_NOTPOSSIBLE;
         }
     }
@@ -204,7 +204,7 @@ nofFarmhand::PointQuality nofCharburner::GetPointQuality(const unsigned short x,
 
     for(unsigned char i = 0; i < 6; ++i)
     {
-        t = gwg->GetTerrainAround(x, y, i);
+        t = gwg->GetTerrainAround(pt, i);
         if(t == 1 || t == 3 || (t >= 8 && t <= 13))
             ++good_terrains;
     }
@@ -227,7 +227,7 @@ void nofCharburner::Serialize(SerializedGameData* sgd) const
 /// Inform derived class about the start of the whole working process (at the beginning when walking out of the house)
 void nofCharburner::WalkingStarted()
 {
-    noBase* nob = gwg->GetNO(dest_x, dest_y);
+    noBase* nob = gwg->GetNO(dest);
     if(nob->GetGOT() == GOT_CHARBURNERPILE)
         harvest = !(static_cast<noCharburnerPile*>(nob)->GetState() == noCharburnerPile::STATE_WOOD);
     else

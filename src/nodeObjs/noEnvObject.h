@@ -26,7 +26,7 @@
 class noEnvObject : public noStaticObject
 {
     public:
-        noEnvObject(unsigned short x, unsigned short y, unsigned short id, unsigned short file = 0xFFFF);
+        noEnvObject(const MapPoint pt, unsigned short id, unsigned short file = 0xFFFF);
         noEnvObject(SerializedGameData* sgd, const unsigned obj_id);
 
         void Destroy() { Destroy_noEnvObject(); }

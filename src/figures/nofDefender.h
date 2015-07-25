@@ -47,7 +47,7 @@ class nofDefender : public nofActiveSoldier
 
     public:
 
-        nofDefender(const unsigned short x, const unsigned short y, const unsigned char player, nobBaseMilitary* const building,
+        nofDefender(const MapPoint pt, const unsigned char player, nobBaseMilitary* const building,
                     const unsigned char rank, nofAttacker* const attacker);
         nofDefender(nofPassiveSoldier* other, nofAttacker* const attacker);
         nofDefender(SerializedGameData* sgd, const unsigned obj_id);

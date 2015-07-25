@@ -42,7 +42,7 @@ class nobShipYard : public nobUsual
 
         friend class SerializedGameData;
         friend class BuildingFactory;
-        nobShipYard(const unsigned short x, const unsigned short y, const unsigned char player, const Nation nation);
+        nobShipYard(const MapPoint pt, const unsigned char player, const Nation nation);
         nobShipYard(SerializedGameData* sgd, const unsigned obj_id);
 
     public:

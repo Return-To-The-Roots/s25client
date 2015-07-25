@@ -38,8 +38,8 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-nofArmorer::nofArmorer(const unsigned short x, const unsigned short y, const unsigned char player, nobUsual* workplace)
-    : nofWorkman(JOB_ARMORER, x, y, player, workplace), sword_shield(false)
+nofArmorer::nofArmorer(const MapPoint pos, const unsigned char player, nobUsual* workplace)
+    : nofWorkman(JOB_ARMORER, pos, player, workplace), sword_shield(false)
 {
 }
 

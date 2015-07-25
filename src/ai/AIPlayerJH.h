@@ -52,8 +52,7 @@ enum PositionSearchState
 struct PositionSearch
 {
     // where did the search start?
-    MapCoord startX;
-    MapCoord startY;
+    MapPoint start;
 
     // what do we want to find?
     AIJH::Resource res;
@@ -74,8 +73,7 @@ struct PositionSearch
     std::queue<unsigned>* toTest;
 
     // results
-    MapCoord resultX;
-    MapCoord resultY;
+    MapPoint result;
     int resultValue;
 
     // what to we want to build there?
@@ -83,8 +81,8 @@ struct PositionSearch
 
     bool best;
 
-    PositionSearch(MapCoord x, MapCoord y, AIJH::Resource res, int minimum, BuildingQuality size, BuildingType bld, bool best = false)
-        : startX(x), startY(y), res(res), minimum(minimum), size(size), bld(bld), best(best) { }
+    PositionSearch(const MapPoint pt, AIJH::Resource res, int minimum, BuildingQuality size, BuildingType bld, bool best = false)
+        : start(pt), res(res), minimum(minimum), size(size), bld(bld), best(best) { }
 
     ~PositionSearch()
     {
@@ -106,7 +104,7 @@ class AIPlayerJH : public AIBase
                    const GameClientPlayerList* const players, const GlobalGameSettings* const ggs,
                    const AI::Level level);
 		int initgfcomplete;
-        int GetResMapValue(MapCoord x, MapCoord y, AIJH::Resource res);
+        int GetResMapValue(const MapPoint pt, AIJH::Resource res);
         AIInterface* GetInterface() { return aii; }
 
         /// Test whether the player should resign or not
@@ -122,16 +120,9 @@ class AIPlayerJH : public AIBase
         ///return number of sea_ids with at least 2 harbor spots
         unsigned GetCountofAIRelevantSeaIds();
 		
-        bool IsInvalidShipyardPosition(MapCoord x, MapCoord y);
+        bool IsInvalidShipyardPosition(const MapPoint pt);
 
     protected:
-        struct Coords
-        {
-            MapCoord x;
-            MapCoord y;
-            Coords(MapCoord x, MapCoord y) : x(x), y(y) { }
-        };
-
         void RunGF(const unsigned gf,bool gfisnwf);
 
         void SendAIEvent(AIEvent::Base* ev);
@@ -142,7 +133,7 @@ class AIPlayerJH : public AIBase
         /// Executes a job form the job queue
         void ExecuteAIJob();
         void AddBuildJob(AIJH::BuildJob* job, bool front = false) { construction.AddBuildJob(job, front); }
-        void AddBuildJob(BuildingType type, MapCoord x, MapCoord y, bool front = false);
+        void AddBuildJob(BuildingType type, const MapPoint pt, bool front = false);
 		//adds buildjobs for a buildingtype around every warehouse or military building
 		void AddBuildJobAroundEvery(BuildingType bt, bool warehouse);
 
@@ -172,11 +163,11 @@ class AIPlayerJH : public AIBase
         void UpdateNodes();
 
         /// Updates the nodes around a position
-        void UpdateNodesAround(MapCoord x, MapCoord y, unsigned radius);
-        void UpdateNodesAroundNoBorder(MapCoord x, MapCoord y, unsigned radius);
+        void UpdateNodesAround(const MapPoint pt, unsigned radius);
+        void UpdateNodesAroundNoBorder(const MapPoint pt, unsigned radius);
 
         /// Returns the resource on a specific point
-        AIJH::Resource CalcResource(MapCoord x, MapCoord y);
+        AIJH::Resource CalcResource(const MapPoint pt);
 
         /// Initialize the resource maps
         void InitResourceMaps();
@@ -188,77 +179,77 @@ class AIPlayerJH : public AIBase
 		void InitDistribution();
 
         //returns true if we can get to the startflag in <maxlen without turning back
-        bool IsFlagPartofCircle(const noFlag* startFlag, unsigned maxlen, const noFlag* curFlag, unsigned char excludeDir, bool init, std::vector<int> oldflagsx, std::vector<int> oldflagsy);
+        bool IsFlagPartofCircle(const noFlag* startFlag, unsigned maxlen, const noFlag* curFlag, unsigned char excludeDir, bool init, std::vector<MapPoint> oldFlags);
 
         //globally update a layer of the resource map
         void RecalcResource(AIJH::Resource res);
 
         //get me the current addon settings?
 
-        /// Changes a single resource map around point x,y in radius; to every point around x,y distanceFromCenter * value is added
-        void ChangeResourceMap(MapCoord x, MapCoord y, unsigned radius, std::vector<int> &resMap, int value);
+        /// Changes a single resource map around point pt in radius; to every point around pt distanceFromCenter * value is added
+        void ChangeResourceMap(const MapPoint pt, unsigned radius, std::vector<int> &resMap, int value);
 
         /// Finds a good position for a specific resource in an area using the resource maps,
         /// first position satisfying threshold is returned, returns false if no such position found
-        bool FindGoodPosition(MapCoord& x, MapCoord& y, AIJH::Resource res, int threshold, BuildingQuality size, int radius = -1, bool inTerritory = true);
+        bool FindGoodPosition(MapPoint& pt, AIJH::Resource res, int threshold, BuildingQuality size, int radius = -1, bool inTerritory = true);
 
-        PositionSearch* CreatePositionSearch(MapCoord& x, MapCoord& y, AIJH::Resource res, BuildingQuality size, int minimum, BuildingType bld, bool best = false);
+        PositionSearch* CreatePositionSearch(MapPoint& pt, AIJH::Resource res, BuildingQuality size, int minimum, BuildingType bld, bool best = false);
 
         // Find position that satifies search->minimum or best (takes longer!)
         PositionSearchState FindGoodPosition(PositionSearch* search, bool best = false);
 
         /// Finds the best position for a specific resource in an area using the resource maps,
         /// satisfying the minimum value, returns false if no such position is found
-        bool FindBestPosition(MapCoord& x, MapCoord& y, AIJH::Resource res, BuildingQuality size, int minimum, int radius = -1, bool inTerritory = true);
-        bool FindBestPosition(MapCoord& x, MapCoord& y, AIJH::Resource res, BuildingQuality size, int radius = -1, bool inTerritory = true)
-        { return FindBestPosition(x, y, res, size, 1, radius, inTerritory); }
+        bool FindBestPosition(MapPoint& pt, AIJH::Resource res, BuildingQuality size, int minimum, int radius = -1, bool inTerritory = true);
+        bool FindBestPosition(MapPoint& pt, AIJH::Resource res, BuildingQuality size, int radius = -1, bool inTerritory = true)
+        { return FindBestPosition(pt, res, size, 1, radius, inTerritory); }
         ///finds the best position for a resource that cannot increase (fish,iron,coal,gold,granite,stones)
-        bool FindBestPositionDiminishingResource(MapCoord& x, MapCoord& y, AIJH::Resource res, BuildingQuality size, int minimum, int radius = -1, bool inTerritory = true);
+        bool FindBestPositionDiminishingResource(MapPoint& pt, AIJH::Resource res, BuildingQuality size, int minimum, int radius = -1, bool inTerritory = true);
 
         /// Finds a position for the desired building size
-        bool SimpleFindPosition(MapCoord& x, MapCoord& y, BuildingQuality size, int radius = -1);
+        bool SimpleFindPosition(MapPoint& pt, BuildingQuality size, int radius = -1);
 
         /// Density in percent (0-100)
-        unsigned GetDensity(MapCoord x, MapCoord y, AIJH::Resource res, int radius);
+        unsigned GetDensity(MapPoint pt, AIJH::Resource res, int radius);
 
         /// Recalculate the Buildingquality around a certain point
-        void RecalcBQAround(const MapCoord x, const MapCoord y);
+        void RecalcBQAround(const MapPoint pt);
 
         /// Does some actions after a new military building is occupied
-        void HandleNewMilitaryBuilingOccupied(const Coords& coords);
+        void HandleNewMilitaryBuilingOccupied(const MapPoint pt);
 
         /// Does some actions after a military building is lost
-        void HandleMilitaryBuilingLost(const Coords& coords);
+        void HandleMilitaryBuilingLost(const MapPoint pt);
 
         /// Does some actions after a building is destroyed
-        void HandleBuilingDestroyed(const Coords& coords, BuildingType bld);
+        void HandleBuilingDestroyed(MapPoint pt, BuildingType bld);
 
         // Handle event "no more resources"
-        void HandleNoMoreResourcesReachable(const Coords& coords, BuildingType bld);
+        void HandleNoMoreResourcesReachable(const MapPoint pt, BuildingType bld);
 
         // A new ship has been built -> handle it
-        void HandleShipBuilt(const Coords& coords);
+        void HandleShipBuilt(const MapPoint pt);
 
         // A new road has been built -> handle it
-        void HandleRoadConstructionComplete(const Coords& coords, unsigned char dir);
+        void HandleRoadConstructionComplete(MapPoint pt, unsigned char dir);
 
         // A road construction has failed -> handle it
-        void HandleRoadConstructionFailed(const Coords& coords, unsigned char dir);
+        void HandleRoadConstructionFailed(const MapPoint pt, unsigned char dir);
 
         // Handle border event
-        void HandleBorderChanged(const Coords& coords);
+        void HandleBorderChanged(const MapPoint pt);
 
         // Handle usual building finished
-        void HandleBuildingFinished(const Coords& coords, BuildingType bld);
+        void HandleBuildingFinished(const MapPoint pt, BuildingType bld);
 
-        void HandleExpedition(const Coords& coords);
+        void HandleExpedition(const MapPoint pt);
         void HandleExpedition(const noShip* ship);
 
         // Handle chopped tree, test for new space
-        void HandleTreeChopped(const Coords& coords);
+        void HandleTreeChopped(const MapPoint pt);
 
         // Handle new colony
-        void HandleNewColonyFounded(const Coords& coords);
+        void HandleNewColonyFounded(const MapPoint pt);
 
         /// Sends a chat messsage to all players
         void Chat(std::string message);
@@ -272,39 +263,39 @@ class AIPlayerJH : public AIBase
         bool HarborPosRelevant(unsigned harborid, bool onlyempty = false);
 
         /// returns true when a building of the given type is closer to the given position than min (ONLY NOBUSUAL (=no warehouse/military))
-        bool BuildingNearby(MapCoord x, MapCoord y, BuildingType bld, unsigned min);
+        bool BuildingNearby(const MapPoint pt, BuildingType bld, unsigned min);
 
         /// Update BQ and farming ground around new building site + road
-        void RecalcGround(MapCoord x_building, MapCoord y_building, std::vector<unsigned char> &route_road);
+        void RecalcGround(const MapPoint buildingPos, std::vector<unsigned char> &route_road);
 
         void SaveResourceMapsToFile();
 
         void InitReachableNodes();
-        void UpdateReachableNodes(MapCoord x, MapCoord y, unsigned radius);
-        void IterativeReachableNodeChecker(std::queue<std::pair<MapCoord, MapCoord> >& toCheck);
+        void UpdateReachableNodes(const MapPoint pt, unsigned radius);
+        void IterativeReachableNodeChecker(std::queue<MapPoint>& toCheck);
 
 		/// disconnects 'inland' military buildings from road system(and sends out soldiers), sets stop gold, uses the upgrade building (order new private, kick out general)
 		void MilUpgradeOptim();
 
-        void SetFarmedNodes(MapCoord x, MapCoord y, bool set);
+        void SetFarmedNodes(const MapPoint pt, bool set);
 
         //removes a no longer used road(and its flags) returns true when there is a building at the flag that might need a new connection
         bool RemoveUnusedRoad(const noFlag* startFlag, unsigned char excludeDir = 0xFF, bool firstflag = true, bool allowcircle = true,bool keepstartflag=false);
         //finds all unused flags and roads, removes flags or reconnects them as neccessary
-        void RemoveAllUnusedRoads(MapCoord x, MapCoord y);
+        void RemoveAllUnusedRoads(const MapPoint pt);
 
         // check if there are free soldiers (in hq/storehouses)
         unsigned SoldierAvailable(int rank=-1);
 
-        bool HuntablesinRange(unsigned x, unsigned y, unsigned min);
+        bool HuntablesinRange(const MapPoint pt, unsigned min);
 
-        bool ValidTreeinRange(MapCoord x, MapCoord y);
+        bool ValidTreeinRange(const MapPoint pt);
 
-        bool ValidStoneinRange(MapCoord x, MapCoord y);
+        bool ValidStoneinRange(const MapPoint pt);
 
-        bool ValidFishInRange(MapCoord x, MapCoord y);
+        bool ValidFishInRange(const MapPoint pt);
 
-		void ExecuteLuaConstructionOrder(MapCoord x, MapCoord y, BuildingType bt, bool forced=false);
+		void ExecuteLuaConstructionOrder(const MapPoint pt, BuildingType bt, bool forced=false);
 
         bool NoEnemyHarbor();
 		
@@ -321,10 +312,10 @@ class AIPlayerJH : public AIBase
         /// std::deque<AIJH::Job*> aiJobs;
 
         /// List of coordinates at which military buildings should be
-        std::list<Coords> milBuildings;
+        std::list<MapPoint> milBuildings;
 
         /// List of coordinates at which military buildingsites should be
-        std::list<Coords> milBuildingSites;
+        std::list<MapPoint> milBuildingSites;
 
         /// Nodes containing some information about every map node
         std::vector<AIJH::Node> nodes;
@@ -340,14 +331,14 @@ class AIPlayerJH : public AIBase
         AIConstruction* GetConstruction() { return &construction; }
         AIJH::Job* GetCurrentJob() { return currentJob; }
     public:
-        inline AIJH::Node& GetAINode(MapCoord x, MapCoord y) { return nodes[x + gwb->GetWidth() * y]; }
+        inline AIJH::Node& GetAINode(const MapPoint pt) { return nodes[pt.x + gwb->GetWidth() * pt.y]; }
 		inline unsigned GetJobNum() const { return eventManager.GetEventNum() + construction.GetBuildJobNum() + construction.GetConnectJobNum(); }	
 		int UpgradeBldListNumber;
 		unsigned PlannedConnectedInlandMilitary() {return aii->GetMilitaryBuildings().size()/5<6 ? 6:aii->GetMilitaryBuildings().size()/5;}
         /// checks distance to all harborpositions
-        bool HarborPosClose(MapCoord x, MapCoord y, unsigned range, bool onlyempty = false);
+        bool HarborPosClose(const MapPoint pt, unsigned range, bool onlyempty = false);
 		/// returns the percentage*100 of possible normal building places
-        unsigned BQsurroundcheck(MapCoord x, MapCoord y, unsigned range, bool includeexisting,unsigned limit=0);
+        unsigned BQsurroundcheck(const MapPoint pt, unsigned range, bool includeexisting,unsigned limit=0);
 		/// returns list entry of the building the ai uses for troop upgrades
 		int UpdateUpgradeBuilding();
 		/// returns amount of good/people stored in warehouses right now

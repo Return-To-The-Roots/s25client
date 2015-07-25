@@ -37,8 +37,8 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-nofBrewer::nofBrewer(const unsigned short x, const unsigned short y, const unsigned char player, nobUsual* workplace)
-    : nofWorkman(JOB_BREWER, x, y, player, workplace)
+nofBrewer::nofBrewer(const MapPoint pos, const unsigned char player, nobUsual* workplace)
+    : nofWorkman(JOB_BREWER, pos, player, workplace)
 {
 }
 

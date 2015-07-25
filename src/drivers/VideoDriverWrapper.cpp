@@ -589,10 +589,10 @@ void VideoDriverWrapper::ListVideoModes(std::vector<VideoDriver::VideoMode>& vid
  *
  *  @author OLiver
  */
-void* VideoDriverWrapper::GetWindowPointer() const
+void* VideoDriverWrapper::GetMapPointer() const
 {
     if(!videodriver)
         return NULL;
 
-    return videodriver->GetWindowPointer();
+    return videodriver->GetMapPointer();
 }

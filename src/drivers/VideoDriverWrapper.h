@@ -66,7 +66,7 @@ class VideoDriverWrapper : public Singleton<VideoDriverWrapper>
         void ListVideoModes(std::vector<VideoDriver::VideoMode>& video_modes) const;
 
         /// Gibt Pointer auf ein Fenster zurück (device-dependent!), HWND unter Windows
-        void* GetWindowPointer() const;
+        void* GetMapPointer() const;
 
         unsigned short GetScreenWidth()  const
         { const unsigned short w = videodriver->GetScreenWidth(); return (w < 800 ? 800 : w); }

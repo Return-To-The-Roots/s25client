@@ -107,12 +107,11 @@ const unsigned short ANIMATION[2][4][35] =
 
 const Job JOB_TYPES[3] = { JOB_HELPER, JOB_PACKDONKEY, JOB_BOATCARRIER };
 
-nofCarrier::nofCarrier(const CarrierType ct, unsigned short x,
-                       unsigned short y,
+nofCarrier::nofCarrier(const CarrierType ct, const MapPoint pos,
                        unsigned char player,
                        RoadSegment* workplace,
                        noRoadNode* const goal)
-    : noFigure(JOB_TYPES[ct], x, y, player, goal), ct(ct),
+    : noFigure(JOB_TYPES[ct], pos, player, goal), ct(ct),
       state(CARRS_FIGUREWORK), fat( ( RANDOM.Rand(__FILE__, __LINE__, obj_id, 2) ? true : false) ),
       workplace(workplace), carried_ware(NULL), productivity_ev(0),
       productivity(0), worked_gf(0), since_working_gf(0xFFFFFFFF), next_animation(0),
@@ -578,7 +577,7 @@ void nofCarrier::Walked()
         case CARRS_CARRYWARETOBUILDING:
         {
             // Ware ablegen
-            gwg->GetSpecObj<noRoadNode>(x, y)->AddWare(carried_ware);
+            gwg->GetSpecObj<noRoadNode>(pos)->AddWare(carried_ware);
             // Ich trag' keine Ware mehr
             carried_ware = 0;
             // Wieder zurück zu meinem Weg laufen
@@ -652,7 +651,7 @@ void nofCarrier::GoalReached()
     // Wir arbeiten schonmal
     StartWorking();
 
-    noRoadNode* rn = gwg->GetSpecObj<noRoadNode>(x, y);
+    noRoadNode* rn = gwg->GetSpecObj<noRoadNode>(pos);
     for(unsigned char i = 0; i < 6; ++i)
     {
         //noRoadNode * rn = gwg->GetSpecObj<noRoadNode>(x,y);
@@ -754,29 +753,29 @@ void nofCarrier::LostWork()
         // Is this a boat carrier (i.e. he is on the water)
         if(ct == CT_BOAT)
         {
-            Point<MapCoord> tmp_pos(x, y);
+            MapPoint tmpPos(pos);
             if(state != CARRS_WAITFORWARE && state != CARRS_WAITFORWARESPACE)
             {
                 // If we are walking choose the destination point as start point
                 // for the pathfinding!
-                gwg->GetPointA(tmp_pos.x, tmp_pos.y, dir);
+                tmpPos = gwg->GetNeighbour(tmpPos, dir);
             }
 
 
 
             // Look for the shore
-            for(MapCoord tx = gwg->GetXA(tmp_pos.x, tmp_pos.y, 0), r = 1; r <= 5; tx = gwg->GetXA(tx, tmp_pos.y, 0), ++r)
+            for(MapCoord tx = gwg->GetXA(tmpPos, 0), r = 1; r <= 5; tx = gwg->GetXA(tx, tmpPos.y, 0), ++r)
             {
 
-                MapCoord tx2 = tx, ty2 = tmp_pos.y;
+                MapPoint t2(tx, tmpPos.y);
                 for(unsigned i = 2; i < 8; ++i)
                 {
-                    for(MapCoord r2 = 0; r2 < r; gwg->GetPointA(tx2, ty2, i % 6), ++r2)
+                    for(MapCoord r2 = 0; r2 < r; t2 = gwg->GetNeighbour(t2,  i % 6), ++r2)
                     {
-                        if(gwg->IsCoastalPoint(tx2, ty2) && gwg->IsNodeForFigures(tx2, ty2))
+                        if(gwg->IsCoastalPoint(t2) && gwg->IsNodeForFigures(t2))
                         {
                             shore_path = new std::vector<unsigned char>;
-                            if(gwg->FindShipPath(tmp_pos.x, tmp_pos.y, tx2, ty2, shore_path, NULL))
+                            if(gwg->FindShipPath(tmpPos, t2, shore_path, NULL))
                             {
                                 // Ok let's paddle to the coast
                                 rs_pos = 0;
@@ -993,7 +992,7 @@ void nofCarrier::RemoveWareJob()
 void nofCarrier::FetchWare(const bool swap_wares)
 {
     // Ware aufnehmnen
-    carried_ware = gwg->GetSpecObj<noFlag>(x, y)->SelectWare((dir + 3) % 6, swap_wares, this);
+    carried_ware = gwg->GetSpecObj<noFlag>(pos)->SelectWare((dir + 3) % 6, swap_wares, this);
 
     if(carried_ware)
     {

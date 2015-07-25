@@ -26,7 +26,7 @@ class noShipBuildingSite: public noCoordBase
 {
     public:
 
-        noShipBuildingSite(const unsigned short x, const unsigned short y, const unsigned char player);
+        noShipBuildingSite(const MapPoint pt, const unsigned char player);
         noShipBuildingSite(SerializedGameData* sgd, const unsigned obj_id);
         ~noShipBuildingSite();
         void Destroy();

@@ -7,7 +7,7 @@
 // Return To The Roots is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 2 of the License, or
-// (at your option) any later version.
+// (at your oposion) any later version.
 //
 // Return To The Roots is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -44,11 +44,10 @@ static char THIS_FILE[] = __FILE__;
  *  @author OLiver
  */
 noBuilding::noBuilding(const BuildingType type,
-                       const unsigned short x,
-                       const unsigned short y,
+                       const MapPoint pos,
                        const unsigned char player,
                        const Nation nation)
-    : noBaseBuilding(NOP_BUILDING, type, x, y, player),
+    : noBaseBuilding(NOP_BUILDING, type, pos, player),
       opendoor(0)
 {
 }
@@ -63,7 +62,7 @@ void noBuilding::Destroy_noBuilding()
 {
     // Feuer erzeugen (bei Hütten und Bergwerken kleine Feuer, bei allen anderen große!)
     // Feuer setzen
-    gwg->SetNO(new noFire(x, y, (GetSize() == BQ_HUT || GetSize() == BQ_MINE) ? 0 : 1), x, y);
+    gwg->SetNO(new noFire(pos, (GetSize() == BQ_HUT || GetSize() == BQ_MINE) ? 0 : 1), pos);
 
     Destroy_noBaseBuilding();
 }

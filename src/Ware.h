@@ -54,7 +54,7 @@ class Ware : public GameObject
         /// Wo die Ware mal hin soll
         noBaseBuilding* goal;
         /// Nächster Hafenpunkt, der ggf. angesteuert werden soll
-        Point<MapCoord> next_harbor;
+        MapPoint next_harbor;
 
     public:
 
@@ -74,7 +74,7 @@ class Ware : public GameObject
         /// siehe oben
         inline unsigned char GetNextDir() const { return next_dir; }
         /// Gibt nächsten Hafen zurück, falls vorhanden
-        Point<MapCoord> GetNextHarbor() const { return  next_harbor; }
+        MapPoint GetNextHarbor() const { return  next_harbor; }
         /// Berechnet den Weg neu zu ihrem Ziel
         void RecalcRoute();
 		/// set new next dir

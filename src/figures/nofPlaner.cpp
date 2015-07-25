@@ -41,8 +41,8 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-nofPlaner::nofPlaner(const unsigned short x, const unsigned short y, const unsigned char player, noBuildingSite* building_site)
-    : noFigure(JOB_PLANER, x, y, player, building_site), state(STATE_FIGUREWORK), building_site(building_site), pd(PD_NOTWORKING)
+nofPlaner::nofPlaner(const MapPoint pos, const unsigned char player, noBuildingSite* building_site)
+    : noFigure(JOB_PLANER, pos, player, building_site), state(STATE_FIGUREWORK), building_site(building_site), pd(PD_NOTWORKING)
 {
 }
 
@@ -76,7 +76,7 @@ void nofPlaner::GoalReached()
 void nofPlaner::Walked()
 {
     /// Zur Baustelle zurückgelaufen? (=fertig)
-    if(x == building_site->GetX() && y == building_site->GetY())
+    if(pos == building_site->GetPos())
     {
         // Baustelle Bescheid sagen
         building_site->PlaningFinished();
@@ -86,7 +86,7 @@ void nofPlaner::Walked()
         // Nach Hause laufen bzw. auch rumirren
         rs_pos = 0;
         rs_dir = true;
-        cur_rs = gwg->GetSpecObj<noRoadNode>(x, y)->routes[4];
+        cur_rs = gwg->GetSpecObj<noRoadNode>(pos)->routes[4];
         building_site = 0;
 
         GoHome();
@@ -208,7 +208,7 @@ void nofPlaner::HandleDerivedEvent(const unsigned int id)
     {
         // Planieren (falls Baustelle noch existiert)
         if(building_site)
-            gwg->ChangeAltitude(x, y, gwg->GetNode(building_site->GetX(), building_site->GetY()).altitude);
+            gwg->ChangeAltitude(pos, gwg->GetNode(building_site->GetPos()).altitude);
         /// Sounds abmelden
         SOUNDMANAGER.WorkingFinished(this);
 

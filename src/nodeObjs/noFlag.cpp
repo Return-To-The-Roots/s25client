@@ -52,9 +52,9 @@ static char THIS_FILE[] = __FILE__;
  *
  *  @author OLiver
  */
-noFlag::noFlag(const unsigned short x, const unsigned short y,
+noFlag::noFlag(const MapPoint pos,
                const unsigned char player, const unsigned char dis_dir)
-    : noRoadNode(NOP_FLAG, x, y, player),
+    : noRoadNode(NOP_FLAG, pos, player),
       ani_offset(rand() % 20000), flagtype(FT_NORMAL)
 {
     for(unsigned char i = 0; i < 8; ++i)
@@ -69,7 +69,7 @@ noFlag::noFlag(const unsigned short x, const unsigned short y,
 
     // Gucken, ob die Flagge auf einen bereits bestehenden Weg gesetzt wurde
     unsigned char dir;
-    noFlag* flag = gwg->GetRoadFlag(x, y, dir, dis_dir);
+    noFlag* flag = gwg->GetRoadFlag(pos, dir, dis_dir);
 
     if(flag)
     {
@@ -82,7 +82,7 @@ noFlag::noFlag(const unsigned short x, const unsigned short y,
     // auf Wasseranteile prüfen
     for(unsigned char i = 0; i < 6; ++i)
     {
-        if(gwg->GetTerrainAround(x, y, i) == 14)
+        if(gwg->GetTerrainAround(pos, i) == 14)
             flagtype = FT_WATER;
     }
 }
@@ -130,7 +130,7 @@ noFlag::~noFlag()
 void noFlag::Destroy_noFlag()
 {
     /// Da ist dann nichts
-    gwg->SetNO(0, x, y);
+    gwg->SetNO(0, pos);
 
     // Waren vernichten
     for(unsigned i = 0; i < 8; ++i)
@@ -316,9 +316,9 @@ Ware* noFlag::SelectWare(const unsigned char dir, const bool swap_wares, const n
                 {
                     // Gebäude?
 
-                    if(gwg->GetSpecObj<noBase>(gwg->GetXA(x, y, 1), gwg->GetYA(x, y, 1))->GetType() == NOP_BUILDING)
+                    if(gwg->GetSpecObj<noBase>(gwg->GetNeighbour(pos, 1))->GetType() == NOP_BUILDING)
                     {
-                        if(gwg->GetSpecObj<noBuilding>(gwg->GetXA(x, y, 1), gwg->GetYA(x, y, 1))->FreePlaceAtFlag())
+                        if(gwg->GetSpecObj<noBuilding>(gwg->GetNeighbour(pos, 1))->FreePlaceAtFlag())
                             break;
                     }
                 }
@@ -375,7 +375,7 @@ unsigned short noFlag::GetPunishmentPoints(const unsigned char dir) const
 void noFlag::DestroyAttachedBuilding()
 {
     // Achtung es wird ein Feuer durch Destroy gesetzt, daher Objekt merken!
-    noBase* no = gwg->GetNO(gwg->GetXA(x, y, 1), gwg->GetYA(x, y, 1));
+    noBase* no = gwg->GetNO(gwg->GetNeighbour(pos, 1));
     if(no->GetType() == NOP_BUILDINGSITE || no->GetType() == NOP_BUILDING)
     {
         no->Destroy();

@@ -27,7 +27,7 @@
 class noFlag : public noRoadNode
 {
     public:
-        noFlag(const unsigned short x, const unsigned short y, const unsigned char player, const unsigned char dis_dir = 0xFF);
+        noFlag(const MapPoint pt, const unsigned char player, const unsigned char dis_dir = 0xFF);
         noFlag(SerializedGameData* sgd, const unsigned int obj_id);
         ~noFlag();
 

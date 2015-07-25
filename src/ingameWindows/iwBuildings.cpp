@@ -145,7 +145,7 @@ void iwBuildings::Msg_ButtonClick(const unsigned int ctrl_id)
 		{
 			if((*it)->GetBuildingType()==bts[ctrl_id]) // got first of type -> open building window (military)
 			{
-				gwv->MoveToMapObject((*it)->GetX(),(*it)->GetY());
+				gwv->MoveToMapObject((*it)->GetPos());
 				iwMilitaryBuilding* nextscrn=new iwMilitaryBuilding(gwv, gi, (*it));
 				WINDOWMANAGER.Show(nextscrn);
 				return;
@@ -157,7 +157,7 @@ void iwBuildings::Msg_ButtonClick(const unsigned int ctrl_id)
 	if(ctrl_id != 21 && ctrl_id != 31)
 	{
 		nobUsual* it=*GAMECLIENT.GetLocalPlayer()->GetBuildings(bts[ctrl_id]).begin();
-		gwv->MoveToMapObject(it->GetX(),it->GetY());
+		gwv->MoveToMapObject(it->GetPos());
 		iwBuilding* nextscrn=new iwBuilding(gwv, gi, (it));
 		WINDOWMANAGER.Show(nextscrn);
 		return;
@@ -169,7 +169,7 @@ void iwBuildings::Msg_ButtonClick(const unsigned int ctrl_id)
 		{
 			if((*it)->GetBuildingType()==bts[ctrl_id])
 			{
-				gwv->MoveToMapObject((*it)->GetX(),(*it)->GetY());
+				gwv->MoveToMapObject((*it)->GetPos());
 				iwStorehouse* nextscrn=new iwStorehouse(gwv,gi,dynamic_cast<nobStorehouse*>((*it)));
 				nextscrn->Move(x,y);
 				WINDOWMANAGER.Show(nextscrn);
@@ -184,7 +184,7 @@ void iwBuildings::Msg_ButtonClick(const unsigned int ctrl_id)
 		{
 			if((*it)->GetBuildingType()==bts[ctrl_id])
 			{
-				gwv->MoveToMapObject((*it)->GetX(),(*it)->GetY());
+				gwv->MoveToMapObject((*it)->GetPos());
 				iwHarborBuilding* nextscrn = new iwHarborBuilding(gwv,gi,dynamic_cast<nobHarborBuilding*>((*it)));
 				nextscrn->Move(x,y);
 				WINDOWMANAGER.Show(nextscrn);

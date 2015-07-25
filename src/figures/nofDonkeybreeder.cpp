@@ -45,8 +45,8 @@ static char THIS_FILE[] = __FILE__;
  *
  *  @author FloSoft
  */
-nofDonkeybreeder::nofDonkeybreeder(unsigned short x, unsigned short y, unsigned char player, nobUsual* workplace)
-    : nofWorkman(JOB_DONKEYBREEDER, x, y, player, workplace)
+nofDonkeybreeder::nofDonkeybreeder(const MapPoint pos, unsigned char player, nobUsual* workplace)
+    : nofWorkman(JOB_DONKEYBREEDER, pos, player, workplace)
 {
 }
 
@@ -118,9 +118,9 @@ void nofDonkeybreeder::WorkFinished()
     RoadSegment* road = gwg->GetPlayer(player)->FindRoadForDonkey(workplace, &flag_goal);
 
     // Esel erzeugen und zum Ziel beordern
-    nofCarrier* donkey = new nofCarrier(nofCarrier::CT_DONKEY, x, y, player, road, flag_goal);
+    nofCarrier* donkey = new nofCarrier(nofCarrier::CT_DONKEY, pos, player, road, flag_goal);
     gwg->GetPlayer(player)->IncreaseInventoryJob(JOB_PACKDONKEY, 1);
-    donkey->InitializeRoadWalking(gwg->GetSpecObj<noRoadNode>(x, y)->routes[4], 0, true);
+    donkey->InitializeRoadWalking(gwg->GetSpecObj<noRoadNode>(pos)->routes[4], 0, true);
 
     // Wenn keine Straße gefunden wurde, muss er nach Hause gehen
     if(!road)
@@ -130,7 +130,7 @@ void nofDonkeybreeder::WorkFinished()
         road->GotDonkey(donkey);
 
     // Esel absetzen
-    gwg->AddFigure(donkey, x, y);
+    gwg->AddFigure(donkey, pos);
 
     // In die neue Welt laufen
     donkey->ActAtFirst();

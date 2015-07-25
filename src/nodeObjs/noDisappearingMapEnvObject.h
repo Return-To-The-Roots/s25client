@@ -28,7 +28,7 @@ class noDisappearingMapEnvObject : public noDisappearingEnvObject
 {
     public:
         /// Konstruktor von @p noSign.
-        noDisappearingMapEnvObject(const unsigned short x, const unsigned short y, const unsigned short map_id);
+        noDisappearingMapEnvObject(const MapPoint pt, const unsigned short map_id);
         noDisappearingMapEnvObject(SerializedGameData* sgd, const unsigned obj_id);
 
         /// Aufräummethoden

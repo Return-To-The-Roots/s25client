@@ -38,8 +38,8 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-nofScout_Free::nofScout_Free(const MapCoord x, const MapCoord y, const unsigned char player, noRoadNode* goal)
-    : nofFlagWorker(JOB_SCOUT, x, y, player, goal), next_x(x), next_y(y), rest_way(0)
+nofScout_Free::nofScout_Free(const MapPoint pos, const unsigned char player, noRoadNode* goal)
+    : nofFlagWorker(JOB_SCOUT, pos, player, goal), nextPos(pos), rest_way(0)
 {
 }
 
@@ -47,13 +47,12 @@ void nofScout_Free::Serialize_nofScout_Free(SerializedGameData* sgd) const
 {
     Serialize_nofFlagWorker(sgd);
 
-    sgd->PushUnsignedShort(next_x);
-    sgd->PushUnsignedShort(next_y);
+    sgd->PushUnsignedShort(nextPos.x);
+    sgd->PushUnsignedShort(nextPos.y);
 }
 
 nofScout_Free::nofScout_Free(SerializedGameData* sgd, const unsigned obj_id) : nofFlagWorker(sgd, obj_id),
-    next_x(sgd->PopUnsignedShort()),
-    next_y(sgd->PopUnsignedShort())
+    nextPos(sgd->PopUnsignedShort(), sgd->PopUnsignedShort())
 {
 }
 
@@ -131,7 +130,7 @@ void nofScout_Free::Scout()
     }
 
     // Bin ich schon an dem Punkt angekommen?
-    if(x == next_x && y == next_y)
+    if(pos == nextPos)
     {
         // Nächsten Punkt suchen
         GoToNewNode();
@@ -139,7 +138,7 @@ void nofScout_Free::Scout()
     else
     {
         // Weg suchen
-        dir = gwg->FindHumanPath(x, y, next_x, next_y, 30);
+        dir = gwg->FindHumanPath(pos, nextPos, 30);
 
         // Wenns keinen gibt, neuen suchen, ansonsten hinlaufen
         if(dir == 0xFF)
@@ -155,21 +154,19 @@ const unsigned SCOUT_RANGE = 16;
 
 void nofScout_Free::GoToNewNode()
 {
-    std::list< Point<MapCoord> > available_points;
+    std::list< MapPoint > available_points;
 
-    for(MapCoord tx = gwg->GetXA(flag->GetX(), flag->GetY(), 0), r = 1; r < SCOUT_RANGE; tx = gwg->GetXA(tx, flag->GetY(), 0), ++r)
+    for(MapCoord tx = gwg->GetXA(flag->GetPos(), 0), r = 1; r < SCOUT_RANGE; tx = gwg->GetXA(tx, flag->GetY(), 0), ++r)
     {
-        MapCoord tx2 = tx, ty2 = flag->GetY();
+        MapPoint t2(tx, flag->GetY());
         for(unsigned i = 2; i < 8; ++i)
         {
-            for(MapCoord r2 = 0; r2 < r; gwg->GetPointA(tx2, ty2, i % 6), ++r2)
+            for(MapCoord r2 = 0; r2 < r; t2 = gwg->GetNeighbour(t2,  i % 6), ++r2)
             {
                 // Liegt Punkt im Nebel und für Figuren begehbar?
-                if(gwg->GetNode(tx2, ty2).fow[player].visibility != VIS_VISIBLE
-                        && gwg->IsNodeForFigures(tx2, ty2))
+                if(gwg->GetNode(t2).fow[player].visibility != VIS_VISIBLE && gwg->IsNodeForFigures(t2))
                 {
-                    Point<MapCoord> p (tx2, ty2);
-                    available_points.push_back(p);
+                    available_points.push_back(t2);
                 }
             }
         }
@@ -180,17 +177,16 @@ void nofScout_Free::GoToNewNode()
     size_t numPointsLeft = available_points.size();
     while(numPointsLeft && !found_point)
     {
-        std::list< Point<MapCoord> >::iterator p = available_points.begin();
+        std::list< MapPoint >::iterator p = available_points.begin();
         std::advance(p, RANDOM.Rand(__FILE__, __LINE__, obj_id, numPointsLeft));
 
         // Existiert ein Weg zu diesem Punkt und ist dieser Punkt auch noch von der Flagge noch in
         // einigermaßen vernünftiger Entfernung zu erreichen, um das Drumherumlaufen um Berge usw. zu
         // verhindern
-        if(gwg->FindHumanPath(x, y, p->x, p->y, SCOUT_RANGE * 2) != 0xFF && gwg->FindHumanPath(flag->GetX(), flag->GetY(), p->x, p->y, SCOUT_RANGE + SCOUT_RANGE / 4) != 0xFF)
+        if(gwg->FindHumanPath(pos, *p, SCOUT_RANGE * 2) != 0xFF && gwg->FindHumanPath(flag->GetPos(), *p, SCOUT_RANGE + SCOUT_RANGE / 4) != 0xFF)
         {
             // Als neues Ziel nehmen
-            next_x = p->x;
-            next_y = p->y;
+            nextPos = *p;
 
             Scout();
 

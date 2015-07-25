@@ -46,8 +46,8 @@ static char THIS_FILE[] = __FILE__;
 unsigned noTree::INSTANCE_COUNTER = 0;
 unsigned short noTree::DRAW_COUNTER = 0;
 
-noTree::noTree(const unsigned short x, const unsigned short y, const unsigned char type, const unsigned char size)
-    : noCoordBase(NOP_TREE, x, y), type(type), size(size), event(0), produce_animal_event(0)
+noTree::noTree(const MapPoint pos, const unsigned char type, const unsigned char size)
+    : noCoordBase(NOP_TREE, pos), type(type), size(size), event(0), produce_animal_event(0)
 {
     // Wenn der Baum klein ist, muss später mal wachsen
     if(!size)
@@ -216,12 +216,12 @@ void noTree::HandleEvent(const unsigned int id)
             // Baum verschwindet nun und es bleibt ein Baumstumpf zurück
             event = 0;
             em->AddToKillList(this);
-            gwg->SetNO(new noDisappearingMapEnvObject(x, y, 531), x, y);
-            gwg->RecalcBQAroundPoint(x, y);
+            gwg->SetNO(new noDisappearingMapEnvObject(pos, 531), pos);
+            gwg->RecalcBQAroundPoint(pos);
 
             // Minimap Bescheid geben (Baum gefallen)
 			if(gwg->GetGameInterface())
-				gwg->GetGameInterface()->GI_UpdateMinimap(x, y);
+				gwg->GetGameInterface()->GI_UpdateMinimap(pos);
 
         } break;
         default: break;
@@ -264,9 +264,9 @@ void noTree::ProduceAnimal()
         SPEC_DEER,
         SPEC_SHEEP
     };
-    noAnimal* animal = new noAnimal(possible_species[RANDOM.Rand(__FILE__, __LINE__, obj_id, 6)], x, y);
+    noAnimal* animal = new noAnimal(possible_species[RANDOM.Rand(__FILE__, __LINE__, obj_id, 6)], pos);
     // In die Landschaft setzen
-    gwg->AddFigure(animal, x, y);
+    gwg->AddFigure(animal, pos);
     // Und ihm die Pforten geben..
     animal->StartLiving();
 }

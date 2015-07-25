@@ -42,8 +42,8 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-nofForester::nofForester(const unsigned short x, const unsigned short y, const unsigned char player, nobUsual* workplace)
-    : nofFarmhand(JOB_FORESTER, x, y, player, workplace)
+nofForester::nofForester(const MapPoint pos, const unsigned char player, nobUsual* workplace)
+    : nofFarmhand(JOB_FORESTER, pos, player, workplace)
 {
 }
 
@@ -88,12 +88,12 @@ void nofForester::WorkStarted()
 /// Abgeleitete Klasse informieren, wenn fertig ist mit Arbeiten
 void nofForester::WorkFinished()
 {
-    noBase* no = gwg->GetNO(x, y);
+    noBase* no = gwg->GetNO(pos);
 
     // Wenn irgendwo ne Straﬂe schon ist, NICHT einsetzen!
     for(unsigned i = 0; i < 6; ++i)
     {
-        if(gwg->GetPointRoad(x, y, i))
+        if(gwg->GetPointRoad(pos, i))
             return;
     }
 
@@ -119,43 +119,43 @@ void nofForester::WorkFinished()
         };
 
         // jungen Baum einsetzen
-        gwg->SetNO(new noTree(x, y, AVAILABLE_TREES[gwg->GetLandscapeType()]
-                              [RANDOM.Rand(__FILE__, __LINE__, obj_id, AVAILABLE_TREES_COUNT[gwg->GetLandscapeType()])], 0), x, y);
+        gwg->SetNO(new noTree(pos, AVAILABLE_TREES[gwg->GetLandscapeType()]
+                              [RANDOM.Rand(__FILE__, __LINE__, obj_id, AVAILABLE_TREES_COUNT[gwg->GetLandscapeType()])], 0), pos);
 
         // BQ drumherum neu berechnen
-        gwg->RecalcBQAroundPoint(x, y);
+        gwg->RecalcBQAroundPoint(pos);
 
         // Minimap Bescheid geben (neuer Baum)
         if(gwg->GetGameInterface())
-            gwg->GetGameInterface()->GI_UpdateMinimap(x, y);
+            gwg->GetGameInterface()->GI_UpdateMinimap(pos);
     }
 }
 
 /// Returns the quality of this working point or determines if the worker can work here at all
-nofFarmhand::PointQuality nofForester::GetPointQuality(const MapCoord x, const MapCoord y)
+nofFarmhand::PointQuality nofForester::GetPointQuality(const MapPoint pt)
 {
     // Der Platz muss frei sein
-    noBase::BlockingManner bm = gwg->GetNO(x, y)->GetBM();
+    noBase::BlockingManner bm = gwg->GetNO(pt)->GetBM();
 
     if(bm != noBase::BM_NOTBLOCKING)
         return PQ_NOTPOSSIBLE;
 
     // Kein Grenzstein darf da stehen
-    if(gwg->GetNode(x, y).boundary_stones[0])
+    if(gwg->GetNode(pt).boundary_stones[0])
         return PQ_NOTPOSSIBLE;
 
 
     // darf auﬂerdem nich auf einer Straﬂe liegen
     for(unsigned char i = 0; i < 6; ++i)
     {
-        if(gwg->GetPointRoad(x, y, i))
+        if(gwg->GetPointRoad(pt, i))
             return PQ_NOTPOSSIBLE;
     }
 
     // es d¸rfen auﬂerdem keine Geb‰ude rund um den Baum stehen
     for(unsigned char i = 0; i < 6; ++i)
     {
-        if(gwg->GetNO(gwg->GetXA(x, y, i), gwg->GetYA(x, y, i))->GetType() ==  NOP_BUILDING)
+        if(gwg->GetNO(gwg->GetNeighbour(pt, i))->GetType() ==  NOP_BUILDING)
             return PQ_NOTPOSSIBLE;
     }
 
@@ -164,7 +164,7 @@ nofFarmhand::PointQuality nofForester::GetPointQuality(const MapCoord x, const M
 
     for(unsigned char i = 0; i < 6; ++i)
     {
-        t = gwg->GetTerrainAround(x, y, i);
+        t = gwg->GetTerrainAround(pt, i);
         if(t == 3 || (t >= 8 && t <= 12))
             ++good_terrains;
     }

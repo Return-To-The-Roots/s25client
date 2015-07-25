@@ -39,8 +39,8 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-noFire::noFire(const unsigned short x, const unsigned short y, const unsigned char size)
-    : noCoordBase(NOP_FIRE, x, y), size(size), was_sounding(false), last_sound(0), next_interval(0)
+noFire::noFire(const MapPoint pos, const unsigned char size)
+    : noCoordBase(NOP_FIRE, pos), size(size), was_sounding(false), last_sound(0), next_interval(0)
 {
     // Bestimmte Zeit lang brennen
 	const unsigned FIREDURATION[] = {3700, 2775, 1850, 925, 370, 5550, 7400};
@@ -53,9 +53,9 @@ noFire::~noFire()
 void noFire::Destroy_noFire()
 {
     // nix mehr hier
-    gwg->SetNO(0, x, y);
+    gwg->SetNO(0, pos);
     // Bauplätze drumrum neu berechnen
-    gwg->RecalcBQAroundPoint(x, y);
+    gwg->RecalcBQAroundPoint(pos);
 
     // Evtl Sounds vernichten
     SOUNDMANAGER.WorkingFinished(this);

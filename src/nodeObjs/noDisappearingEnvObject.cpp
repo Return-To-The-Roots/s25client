@@ -47,9 +47,9 @@ static char THIS_FILE[] = __FILE__;
  *
  *  @author OLiver
  */
-noDisappearingEnvObject::noDisappearingEnvObject(const unsigned short x, const unsigned short y,
+noDisappearingEnvObject::noDisappearingEnvObject(const MapPoint pos,
         const unsigned living_time, const unsigned add_var_living_time)
-    : noCoordBase(NOP_ENVIRONMENT, x, y),
+    : noCoordBase(NOP_ENVIRONMENT, pos),
       disappearing(false), dead_event(em->AddEvent(this, living_time +
                                       RANDOM.Rand(__FILE__, __LINE__, obj_id, add_var_living_time)))
 {
@@ -127,7 +127,7 @@ void noDisappearingEnvObject::HandleEvent_noDisappearingEnvObject(const unsigned
 void noDisappearingEnvObject::Destroy_noDisappearingEnvObject(void)
 {
     // Feld räumen, wenn ich sterbe
-    gwg->SetNO(0, x, y);
+    gwg->SetNO(0, pos);
 
     // ggf Event abmelden
     if(dead_event)

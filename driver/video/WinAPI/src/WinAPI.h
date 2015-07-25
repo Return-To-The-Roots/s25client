@@ -79,7 +79,7 @@ class VideoWinAPI : public VideoDriver
         KeyEvent GetModKeyState(void) const;
 
         /// Gibt Pointer auf ein Fenster zurück (device-dependent!), HWND unter Windows
-        void* GetWindowPointer() const;
+        void* GetMapPointer() const;
 
     private:
         /// Funktion zum Senden einer gedrückten Taste.

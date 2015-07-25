@@ -87,7 +87,7 @@ class noTree : public noCoordBase
 
     public:
 
-        noTree(const unsigned short x, const unsigned short y, const unsigned char type, const unsigned char size);
+        noTree(const MapPoint pt, const unsigned char type, const unsigned char size);
         noTree(SerializedGameData* sgd, const unsigned obj_id);
 
         ~noTree();

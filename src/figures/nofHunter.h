@@ -33,7 +33,7 @@ class nofHunter : public nofBuildingWorker
         /// Tier, das gejagt wird
         noAnimal* animal;
         /// Punkt, von dem aus geschossen wird
-        unsigned short shooting_x, shooting_y;
+        MapPoint shootingPos;
         /// Richtung, in die geschossen wird
         unsigned char shooting_dir;
 
@@ -52,7 +52,7 @@ class nofHunter : public nofBuildingWorker
         void WalkHome();
 
         /// Prüft, ob der Schießpunkt geeignet ist
-        bool IsShootingPointGood(const unsigned short x, const unsigned short y);
+        bool IsShootingPointGood(const MapPoint pt);
 
         /// Wenn jeweils gelaufen wurde oder ein Event abgelaufen ist, je nach aktuellem Status folgende Funktionen ausführen
         void HandleStateChasing();
@@ -63,7 +63,7 @@ class nofHunter : public nofBuildingWorker
 
     public:
 
-        nofHunter(const unsigned short x, const unsigned short y, const unsigned char player, nobUsual* workplace);
+        nofHunter(const MapPoint pt, const unsigned char player, nobUsual* workplace);
         nofHunter(SerializedGameData* sgd, const unsigned obj_id);
         ~nofHunter() {/* assert(obj_id != 266501);*/ }
 

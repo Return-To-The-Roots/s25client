@@ -65,7 +65,7 @@ class noAnimal : public noMovable
 
 
         /// Konstruktor
-        noAnimal(const Species species, const unsigned short x, const unsigned short y);
+        noAnimal(const Species species, const MapPoint pt);
         noAnimal(SerializedGameData* sgd, const unsigned obj_id);
 
         ~noAnimal() {}
@@ -95,7 +95,7 @@ class noAnimal : public noMovable
         void BeginHunting(nofHunter* hunter);
         /// Ein Jäger ist in der Nähe vom Tier und will es abschießen --> Tier muss stillhalten
         /// gibt die Koordinaten seines (späteren) Standorts zurück
-        void HunterIsNear(unsigned short* location_x, unsigned short* location_y);
+        MapPoint HunterIsNear();
         /// Ein Jäger kann doch nicht mehr zum Tier kommen --> kann wieder normal weiterlaufen
         void StopHunting();
 

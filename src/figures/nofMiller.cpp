@@ -39,8 +39,8 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-nofMiller::nofMiller(const unsigned short x, const unsigned short y, const unsigned char player, nobUsual* workplace)
-    : nofWorkman(JOB_MILLER, x, y, player, workplace), last_sound(0), next_interval(0)
+nofMiller::nofMiller(const MapPoint pos, const unsigned char player, nobUsual* workplace)
+    : nofWorkman(JOB_MILLER, pos, player, workplace), last_sound(0), next_interval(0)
 {
 }
 

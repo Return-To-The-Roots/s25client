@@ -360,13 +360,7 @@ void ctrlComboBox::ShowList(bool show)
     // Region sperren für die Liste, oder freigeben
     if(show)
     {
-        Rect list_region =
-        {
-            liste->GetX(),
-            liste->GetY(),
-            static_cast<unsigned short>(liste->GetX() + width),
-            static_cast<unsigned short>(liste->GetY() + liste->GetHeight())
-        };
+        Rect list_region (liste->GetX(), liste->GetY(), width, liste->GetHeight());
 
         parent->LockRegion(this, list_region);
     }

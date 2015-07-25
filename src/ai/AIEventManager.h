@@ -64,19 +64,20 @@ namespace AIEvent
     class Location : public Base
     {
         public:
-            Location(AIEventType type, MapCoord x, MapCoord y) : Base(type), x(x), y(y) { }
+            Location(AIEventType type, const MapPoint pt) : Base(type), pos(pt) { }
             ~Location() { }
-            MapCoord GetX() const { return x; }
-            MapCoord GetY() const { return y; }
+            MapCoord GetX() const { return pos.x; }
+            MapCoord GetY() const { return pos.y; }
+            MapPoint GetPos() const { return pos; }
 
         protected:
-            MapCoord x, y;
+            MapPoint pos;
     };
 
     class Direction : public Location
     {
         public:
-            Direction(AIEventType type, MapCoord x, MapCoord y, unsigned char direction) : Location(type, x, y), direction(direction) { }
+            Direction(AIEventType type, const MapPoint pt, unsigned char direction) : Location(type, pt), direction(direction) { }
             ~Direction() { }
             unsigned char GetDirection() const { return direction; }
 
@@ -87,7 +88,7 @@ namespace AIEvent
     class Building : public Location
     {
         public:
-            Building(AIEventType type, MapCoord x, MapCoord y, BuildingType building) : Location(type, x, y), building(building) { }
+            Building(AIEventType type, const MapPoint pt, BuildingType building) : Location(type, pt), building(building) { }
             ~Building() { }
             BuildingType GetBuildingType() const { return building; }
 

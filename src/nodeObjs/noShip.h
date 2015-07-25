@@ -73,7 +73,7 @@ class noShip : public noMovable
         /// Namen des Schiffs
         std::string name;
         /// Schiffsroute und Position
-        unsigned pos;
+        unsigned curRouteIdx;
         std::vector<unsigned char> route;
         /// Ladung des Schiffes
         std::list<noFigure*> figures;
@@ -140,7 +140,7 @@ class noShip : public noMovable
     public:
 
         /// Konstruktor
-        noShip(const unsigned short x, const unsigned short y, const unsigned char player);
+        noShip(const MapPoint pt, const unsigned char player);
         noShip(SerializedGameData* sgd, const unsigned obj_id);
 
         ~noShip() {}
@@ -213,10 +213,10 @@ class noShip : public noMovable
         bool IsGoingToHarbor(nobHarborBuilding* hb) const;
 
         /// Belädt das Schiff mit Waren und Figuren, um eine Transportfahrt zu starten
-        void PrepareTransport(Point<MapCoord> goal, const std::list<noFigure*>& figures, const std::list<Ware*>& wares);
+        void PrepareTransport(MapPoint goal, const std::list<noFigure*>& figures, const std::list<Ware*>& wares);
 
         /// Belädt das Schiff mit Schiffs-Angreifern
-        void PrepareSeaAttack(Point<MapCoord> goal, const std::list<noFigure*>& figures);
+        void PrepareSeaAttack(MapPoint goal, const std::list<noFigure*>& figures);
         /// Sagt Bescheid, dass ein Schiffsangreifer nicht mehr mit nach Hause fahren will
         void SeaAttackerWishesNoReturn();
         /// Schiffs-Angreifer sind nach dem Angriff wieder zurückgekehrt

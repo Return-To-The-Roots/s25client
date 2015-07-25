@@ -11,9 +11,9 @@
 #include "buildings/nobBaseWarehouse.h"
 #include "SerializedGameData.h"
 
-nofTradeDonkey::nofTradeDonkey(const MapCoord x, const MapCoord y, const unsigned char player,
+nofTradeDonkey::nofTradeDonkey(const MapPoint pos, const unsigned char player,
                                nofTradeLeader* const leader, const GoodType gt, const Job job)
-    : noFigure((job != JOB_NOTHING) ? job : JOB_PACKDONKEY, x, y, player), leader(leader), successor(NULL), gt(gt)
+    : noFigure((job != JOB_NOTHING) ? job : JOB_PACKDONKEY, pos, player), leader(leader), successor(NULL), gt(gt)
 {
 }
 
@@ -51,14 +51,14 @@ void nofTradeDonkey::Walked()
     if(next_dirs.size() < 1)
     {
         //WanderFailedTrade();
-        gwg->RemoveFigure(this, x, y);
+        gwg->RemoveFigure(this, pos);
         return;
     }
     unsigned char next_dir = GetNextDir();
     // Are we now at the goal?
     if(next_dir == REACHED_GOAL)
     {
-        noBase* nob = gwg->GetNO(x, y);
+        noBase* nob = gwg->GetNO(pos);
         bool invalid_goal = false;
         if(nob->GetType() != NOP_BUILDING)
             invalid_goal = true;
@@ -74,7 +74,7 @@ void nofTradeDonkey::Walked()
 
         gwg->GetPlayer(static_cast<nobBaseWarehouse*>(nob)->GetPlayer())
         ->IncreaseInventoryJob(this->GetJobType(), 1);
-        gwg->RemoveFigure(this, x, y);
+        gwg->RemoveFigure(this, pos);
         static_cast<nobBaseWarehouse*>(nob)->AddFigure(this);
 
         // Add also our ware if we carry one

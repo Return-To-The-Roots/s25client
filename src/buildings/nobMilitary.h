@@ -89,7 +89,7 @@ class nobMilitary : public nobBaseMilitary
 
         friend class SerializedGameData;
         friend class BuildingFactory;
-        nobMilitary(const BuildingType type, const unsigned short x, const unsigned short y, const unsigned char player, const Nation nation);
+        nobMilitary(const BuildingType type, const MapPoint pt, const unsigned char player, const Nation nation);
         nobMilitary(SerializedGameData* sgd, const unsigned obj_id);
     public:
 
@@ -160,12 +160,12 @@ class nobMilitary : public nobBaseMilitary
         nofAggressiveDefender* SendDefender(nofAttacker* attacker);
 
         /// Gibt die Anzahl der Soldaten zurück, die für einen Angriff auf ein bestimmtes Ziel zur Verfügung stehen
-        unsigned GetSoldiersForAttack(const MapCoord dest_x, const MapCoord dest_y, const unsigned char player_attacker) const;
+        unsigned GetSoldiersForAttack(const MapPoint dest, const unsigned char player_attacker) const;
         /// Gibt die Soldaten zurück, die für einen Angriff auf ein bestimmtes Ziel zur Verfügung stehen
-        void GetSoldiersForAttack(const MapCoord dest_x, const MapCoord dest_y,
+        void GetSoldiersForAttack(const MapPoint dest,
                                   const unsigned char player_attacker, std::vector<nofPassiveSoldier*>& soldiers) const;
         /// Gibt die Stärke der Soldaten zurück, die für einen Angriff auf ein bestimmtes Ziel zur Verfügung stehen
-        unsigned GetSoldiersStrengthForAttack(const MapCoord dest_x, const MapCoord dest_y,
+        unsigned GetSoldiersStrengthForAttack(const MapPoint dest,
                                               const unsigned char player_attacker, unsigned& soldiers_count) const;
         /// Gibt die Stärke eines Militärgebäudes zurück
         unsigned GetSoldiersStrength() const;

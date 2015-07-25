@@ -68,15 +68,14 @@ bool ctrlIngameMinimap::Draw_()
     int middle_y = (gwv.GetLastY() + gwv.GetFirstY()) / 2;
 
     // Koordinaten korrigieren
-    MapCoord middle_corrected_x, middle_corrected_y;
-    gwv.ConvertCoords(middle_x, middle_y, &middle_corrected_x, &middle_corrected_y);
+    MapPoint middle_corrected = gwv.ConvertCoords(middle_x, middle_y);
 
     // Scroll-Auswahl-Bild holen
     glArchivItem_Bitmap* image = LOADER.GetMapImageN(23);
 
     // Position (relativ zum angezeigten Anfang der Karte) berechnen
-    short xpos = middle_corrected_x * width_show / minimap->GetMapWidth() + 2;
-    short ypos = middle_corrected_y * height_show / minimap->GetMapHeight() + 2;
+    short xpos = middle_corrected.x * width_show / minimap->GetMapWidth() + 2;
+    short ypos = middle_corrected.y * height_show / minimap->GetMapHeight() + 2;
 
     // Scroll-Auswahl-Bild an den Rändern verkleinern, damit es nicht über die Karte "überlappt"
     short src_x = 0, src_y = 0;
@@ -138,7 +137,7 @@ bool ctrlIngameMinimap::Msg_MouseMove(const MouseCoords& mc)
             unsigned short map_x = (mc.x - (GetX() + GetLeft())) * minimap->GetMapWidth() / width_show;
             unsigned short map_y = (mc.y - (GetY() + GetTop())) * minimap->GetMapHeight() / height_show;
 
-            gwv.MoveToMapObject(map_x, map_y);
+            gwv.MoveToMapObject(MapPoint(map_x, map_y));
 
             return true;
         }

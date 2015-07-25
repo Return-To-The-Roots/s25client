@@ -45,7 +45,7 @@ namespace AIJH
     {
         MapCoord x;
         MapCoord y;
-        Coords(MapCoord x, MapCoord y) : x(x), y(y) { }
+        Coords(const MapPoint pt) : x(x), y(y) { }
     };
 
     enum Resource
@@ -122,28 +122,34 @@ namespace AIJH
             JobStatus status;
     };
 
-    class BuildJob : public Job
+    class JobWithTarget{
+    public:
+        JobWithTarget(): target(0xFFFF, 0xFFFF){}
+        inline MapPoint GetTarget() const { return target; }	
+        void SetTargetX(MapCoord x) {target.x=x;}
+        void SetTargetY(MapCoord y) {target.y=y;}
+        void SetTarget(MapPoint newTarget) {target = newTarget;}
+    protected:
+        MapPoint target;
+    };
+
+    class BuildJob : public Job, public JobWithTarget
     {
             friend class iwAIDebug;
         public:
-            BuildJob(AIPlayerJH* aijh, BuildingType type, MapCoord around_x, MapCoord around_y, SearchMode searchMode = SEARCHMODE_RADIUS)
-                : Job(aijh), type(type), target_x(0xFFFF), target_y(0xFFFF), around_x(around_x), around_y(around_y), searchMode(searchMode) { }
+            BuildJob(AIPlayerJH* aijh, BuildingType type, MapPoint around, SearchMode searchMode = SEARCHMODE_RADIUS)
+                : Job(aijh), type(type), around(around), searchMode(searchMode) { }
             /*BuildJob(AIPlayerJH* aijh, BuildingType type, SearchMode searchMode = SEARCHMODE_RADIUS)
                 : Job(aijh), type(type), target_x(0xFFFF), target_y(0xFFFF), around_x(0xFFFF), around_y(0xFFFF), searchMode(searchMode) { }*/
 
             ~BuildJob() { }
             virtual void ExecuteJob();
-            inline BuildingType GetType() const { return type; }
-            inline MapCoord GetTargetX() const { return target_x; }
-            inline MapCoord GetTargetY() const { return target_y; }			
-            inline MapCoord GetAroundX() const { return around_x; }
-            inline MapCoord GetAroundY() const { return around_y; }
-			void SetTargetX(MapCoord x) {target_x=x;}
-			void SetTargetY(MapCoord y) {target_y=y;}
+            inline BuildingType GetType() const { return type; }            
+            inline MapPoint GetAround() const { return around; }
+
         private:
             BuildingType type;
-            MapCoord target_x, target_y;
-            MapCoord around_x, around_y;
+            MapPoint around;
             SearchMode searchMode;
             std::vector<unsigned char> route;
 
@@ -152,7 +158,7 @@ namespace AIJH
             void TryToBuildSecondaryRoad();
     };
 
-    class ExpandJob : public Job
+    class ExpandJob : public Job, public JobWithTarget
     {
             friend class iwAIDebug;
         public:
@@ -161,23 +167,21 @@ namespace AIJH
             void ExecuteJob();
         private:
             BuildingType type;
-            MapCoord target_x, target_y;
             std::vector<unsigned char> route;
     };
 
 
-    class ConnectJob : public Job
+    class ConnectJob : public Job, public JobWithTarget
     {
             friend class iwAIDebug;
         public:
-            ConnectJob(AIPlayerJH* aijh, MapCoord flag_x, MapCoord flag_y)
-                : Job(aijh), flag_x(flag_x), flag_y(flag_y), target_x(0xFFFF), target_y(0xFFFF) { }
+            ConnectJob(AIPlayerJH* aijh, MapPoint flagPos)
+                : Job(aijh), flagPos(flagPos) { }
             ~ConnectJob() { }
             virtual void ExecuteJob();
-			MapCoord getflagx() const {return flag_x;}
-			MapCoord getflagy() const {return flag_y;}
+			MapPoint getFlag() const {return flagPos;}
         private:
-            MapCoord flag_x, flag_y, target_x, target_y;
+            MapPoint flagPos;
             std::vector<unsigned char> route;
     };
 

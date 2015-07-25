@@ -50,29 +50,29 @@ void PostMsg::Serialize(SerializedGameData* sgd)
     sgd->PushUnsignedInt(sendFrame);
 }
 
-PostMsgWithLocation::PostMsgWithLocation(const std::string& text, PostMessageCategory cat, MapCoord x, MapCoord y)
-    : PostMsg(text, cat), x(x), y(y) { type = PMT_WITH_LOCATION; }
+PostMsgWithLocation::PostMsgWithLocation(const std::string& text, PostMessageCategory cat, const MapPoint pt)
+    : PostMsg(text, cat), pt(pt) { type = PMT_WITH_LOCATION; }
 
 PostMsgWithLocation::PostMsgWithLocation(SerializedGameData* sgd)
-    : PostMsg(sgd), x(sgd->PopUnsignedShort()), y(sgd->PopUnsignedShort()) { }
+    : PostMsg(sgd), pt(sgd->PopUnsignedShort(), sgd->PopUnsignedShort()) { }
 
 void PostMsgWithLocation::Serialize(SerializedGameData* sgd)
 {
     PostMsg::Serialize(sgd);
-    sgd->PushUnsignedShort(x);
-    sgd->PushUnsignedShort(y);
+    sgd->PushUnsignedShort(pt.x);
+    sgd->PushUnsignedShort(pt.y);
 }
 
 ImagePostMsgWithLocation::ImagePostMsgWithLocation(const std::string& text, PostMessageCategory cat,
-        MapCoord x, MapCoord y, BuildingType senderBuilding, Nation senderNation)
-    : PostMsgWithLocation(text, cat, x, y), senderBuilding(senderBuilding), senderNation(senderNation)
+        const MapPoint pt, BuildingType senderBuilding, Nation senderNation)
+    : PostMsgWithLocation(text, cat, pt), senderBuilding(senderBuilding), senderNation(senderNation)
 {
     type = PMT_IMAGE_WITH_LOCATION;
 }
 
 ImagePostMsgWithLocation::ImagePostMsgWithLocation(const std::string& text, PostMessageCategory cat,
-        MapCoord x, MapCoord y, Nation senderNation)
-    : PostMsgWithLocation(text, cat, x, y), senderNation(senderNation)
+        const MapPoint pt, Nation senderNation)
+    : PostMsgWithLocation(text, cat, pt), senderNation(senderNation)
 {
     type = PMT_IMAGE_WITH_LOCATION;
 }
@@ -176,8 +176,8 @@ void DiplomacyPostInfo::Serialize(SerializedGameData* sgd)
 }
 
 
-ShipPostMsg::ShipPostMsg(const std::string& text, PostMessageCategory cat, Nation senderNation, MapCoord x, MapCoord y)
-    :   ImagePostMsgWithLocation(text, cat, x, y, senderNation)
+ShipPostMsg::ShipPostMsg(const std::string& text, PostMessageCategory cat, Nation senderNation, const MapPoint pt)
+    :   ImagePostMsgWithLocation(text, cat, pt, senderNation)
 {
     type = PMT_SHIP;
 }

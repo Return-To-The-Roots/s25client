@@ -38,8 +38,8 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-nofFisher::nofFisher(const unsigned short x, const unsigned short y, const unsigned char player, nobUsual* workplace)
-    : nofFarmhand(JOB_FISHER, x, y, player, workplace), fishing_dir(0), successful(false)
+nofFisher::nofFisher(const MapPoint pos, const unsigned char player, nobUsual* workplace)
+    : nofFarmhand(JOB_FISHER, pos, player, workplace), fishing_dir(0), successful(false)
 {
 }
 
@@ -123,13 +123,13 @@ void nofFisher::WorkStarted()
     for(unsigned char i = 0; i < 6; ++i)
     {
         fishing_dir = (i + doffset) % 6;
-        if(gwg->GetNode(gwg->GetXA(x, y, fishing_dir), gwg->GetYA(x, y, fishing_dir)).resources > 0x80 &&
-                gwg->GetNode(gwg->GetXA(x, y, fishing_dir), gwg->GetYA(x, y, fishing_dir)).resources < 0x90)
+        if(gwg->GetNode(gwg->GetNeighbour(pos, fishing_dir)).resources > 0x80 &&
+                gwg->GetNode(gwg->GetNeighbour(pos, fishing_dir)).resources < 0x90)
             break;
     }
 
     // Wahrscheinlichkeit, einen Fisch zu fangen sinkt mit abnehmendem Bestand
-    unsigned short probability = 40 + (gwg->GetNode(gwg->GetXA(x, y, fishing_dir), gwg->GetYA(x, y, fishing_dir)).resources - 0x80) * 10;
+    unsigned short probability = 40 + (gwg->GetNode(gwg->GetNeighbour(pos, fishing_dir)).resources - 0x80) * 10;
     successful = (RANDOM.Rand(__FILE__, __LINE__, obj_id, 100) < probability);
 }
 
@@ -142,7 +142,7 @@ void nofFisher::WorkFinished()
     if(successful)
     {
         if(!GAMECLIENT.GetGGS().isEnabled(ADDON_INEXHAUSTIBLE_FISH))
-            --(gwg->GetNode(gwg->GetXA(x, y, fishing_dir), gwg->GetYA(x, y, fishing_dir)).resources);
+            --(gwg->GetNode(gwg->GetNeighbour(pos, fishing_dir)).resources);
         ware = GD_FISH;
     }
     else
@@ -150,17 +150,17 @@ void nofFisher::WorkFinished()
 }
 
 /// Returns the quality of this working point or determines if the worker can work here at all
-nofFarmhand::PointQuality nofFisher::GetPointQuality(const MapCoord x, const MapCoord y)
+nofFarmhand::PointQuality nofFisher::GetPointQuality(const MapPoint pt)
 {
     // Der Punkt muss passierbar sein für Figuren
-    if(!gwg->IsNodeForFigures(x, y))
+    if(!gwg->IsNodeForFigures(pt))
         return PQ_NOTPOSSIBLE;
 
     // irgendwo drumherum muss es Fisch geben
     for(unsigned char i = 0; i < 6; ++i)
     {
-        if(gwg->GetNode(gwg->GetXA(x, y, i), gwg->GetYA(x, y, i)).resources > 0x80 &&
-                gwg->GetNode(gwg->GetXA(x, y, i), gwg->GetYA(x, y, i)).resources < 0x90)
+        if(gwg->GetNode(gwg->GetNeighbour(pt, i)).resources > 0x80 &&
+                gwg->GetNode(gwg->GetNeighbour(pt, i)).resources < 0x90)
             return PQ_CLASS1;
     }
 

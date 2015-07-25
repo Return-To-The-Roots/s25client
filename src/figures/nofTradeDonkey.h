@@ -50,7 +50,7 @@ class nofTradeDonkey : public noFigure
 
     public:
 
-        nofTradeDonkey(const MapCoord x, const MapCoord y, const unsigned char player,
+        nofTradeDonkey(const MapPoint pt, const unsigned char player,
                        nofTradeLeader* const leader, const GoodType gt, const Job job);
         nofTradeDonkey(SerializedGameData* sgd, const unsigned obj_id);
 

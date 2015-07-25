@@ -48,10 +48,10 @@ class nofAttacker : public nofActiveSoldier
         EventManager::EventPointer blocking_event;
 
         /// Für Seeangreifer: Stelle, wo sich der Hafen befindet, von wo aus sie losfahren sollen
-        MapCoord harbor_x, harbor_y;
+        MapPoint harborPos;
         /// Für Seeangreifer: Landepunkt, wo sich das Schiff befindet, mit dem der Angreifer
         /// ggf. wieder nach Hause fahren kann
-        MapCoord ship_x, ship_y;
+        MapPoint shipPos;
         unsigned ship_obj_id;
 
     private:
@@ -140,7 +140,7 @@ class nofAttacker : public nofActiveSoldier
         unsigned GetRadius() const { return radius; }
         /// Ein um-die-Flagge-Swartender Angreifer soll auf einen frei gewordenen Platz nachrücken, damit keine
         /// Lücken entstehen
-        void StartSucceeding(const unsigned short x, const unsigned short y, const unsigned short new_radius, const unsigned char dir);
+        void StartSucceeding(const MapPoint pt, const unsigned short new_radius, const unsigned char dir);
         /// Siehe oben, wird nach jeder Wegeinheit aufgerufen
         void SucceedingWalk();
         /// Try to start capturing although he is still far away from the destination
@@ -157,7 +157,7 @@ class nofAttacker : public nofActiveSoldier
         nobBaseMilitary* GetAttackedGoal() const { return attacked_goal; }
 
         /// Startet den Angriff am Landungspunkt vom Schiff
-        void StartAttackOnOtherIsland(const MapCoord ship_x, const MapCoord ship_y, const unsigned ship_id);
+        void StartAttackOnOtherIsland(const MapPoint shipPos, const unsigned ship_id);
         /// Sagt Schiffsangreifern, dass sie mit dem Schiff zurück fahren
         void StartReturnViaShip();
         /// Sea attacker enters harbor and finds no shipping route or no longer has a valid target: return home soon on a road

@@ -96,13 +96,12 @@ void IngameWindow::SetMinimized(bool minimized)
 void IngameWindow::MouseLeftDown(const MouseCoords& mc)
 {
     // Maus muss sich auf der Titelleiste befinden
-    Rect title_rect =
-    {
+    Rect title_rect(
         static_cast<unsigned short>(x + LOADER.GetImageN("resource", 36)->getWidth()),
         y,
-        static_cast<unsigned short>(x + width - LOADER.GetImageN("resource", 37)->getWidth()),
-        static_cast<unsigned short>(y + LOADER.GetImageN("resource", 43)->getHeight())
-    };
+        static_cast<unsigned short>(width - LOADER.GetImageN("resource", 36)->getWidth() - LOADER.GetImageN("resource", 37)->getWidth()),
+        LOADER.GetImageN("resource", 43)->getHeight()
+        );
 
     if(Coll(mc.x, mc.y, title_rect))
     {

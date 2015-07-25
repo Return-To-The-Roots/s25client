@@ -39,8 +39,8 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-noMovable::noMovable(const NodalObjectType nop, const unsigned short x, const unsigned short y)
-    : noCoordBase(nop, x, y), dir(4), ascent(0), current_ev(0), pause_walked_gf(0), pause_event_length(0), moving(false)
+noMovable::noMovable(const NodalObjectType nop, const MapPoint pos)
+    : noCoordBase(nop, pos), dir(4), ascent(0), current_ev(0), pause_walked_gf(0), pause_event_length(0), moving(false)
 {
 }
 
@@ -72,22 +72,22 @@ void noMovable::Walk()
 	
 	if ((dir != 1) && (dir != 2))
 	{
-		gwg->RemoveFigure(this, x, y);
+		gwg->RemoveFigure(this, pos);
 		
-		gwg->GetPointA(x, y, dir);
+		pos = gwg->GetNeighbour(pos, dir);
 		
-		gwg->AddFigure(this, x, y);
+		gwg->AddFigure(this, pos);
 	} else
 	{
-		gwg->GetPointA(x, y, dir);
+		pos = gwg->GetNeighbour(pos, dir);
 	}
 /*
     int tx = x, ty = y;
     
-            inline void GetPointA(MapCoord& x, MapCoord& y, unsigned dir) const {x = GetXA(x, y, dir); y = GetYA(x, y, dir);}
+            inline void GetPointA(MapPoint& pos, unsigned dir) const {x = GetXA(pos, dir); y = GetYA(pos, dir);}
     
-    x = gwg->GetXA(tx, ty, dir);
-    y = gwg->GetYA(tx, ty, dir);
+    x = gwg->GetXA(t, dir);
+    y = gwg->GetYA(t, dir);
 
 
     // Auf der jeweiligen Stelle mich suchen und dort entfernen...
@@ -96,7 +96,7 @@ void noMovable::Walk()
 
     // und an der anderen Stelle wieder hinzufgen
     if(dir != 1 && dir != 2)
-        gwg->AddFigure(this, x, y);*/
+        gwg->AddFigure(this, pos);*/
 }
 
 void noMovable::StartMoving(const unsigned char dir, unsigned gf_length)
@@ -116,7 +116,7 @@ void noMovable::StartMoving(const unsigned char dir, unsigned gf_length)
 
     // Steigung ermitteln, muss entsprechend langsamer (hoch) bzw. schneller (runter) laufen
     // runter natürlich nich so viel schneller werden wie langsamer hoch
-    switch(int(gwg->GetNodeAround(x, y, dir).altitude) - int(gwg->GetNode(x, y).altitude))
+    switch(int(gwg->GetNodeAround(pos, dir).altitude) - int(gwg->GetNode(pos).altitude))
     {
         default: ascent = 3; // gerade
         case 1: ascent = 4; gf_length+=(gf_length/2); break; // leicht hoch
@@ -134,8 +134,8 @@ void noMovable::StartMoving(const unsigned char dir, unsigned gf_length)
     // Wenn wir nach oben gehen, muss vom oberen Punkt dann aus gezeichnet werden im GameWorld
     if(dir == 1 || dir == 2)
     {
-        gwg->RemoveFigure(this, x, y);
-        gwg->AddFigure(this, gwg->GetXA(x, y, dir), gwg->GetYA(x, y, dir));
+        gwg->RemoveFigure(this, pos);
+        gwg->AddFigure(this, gwg->GetNeighbour(pos, dir));
     }
 }
 
@@ -173,23 +173,23 @@ void noMovable::CalcRelative(int& x, int& y, int x1, int y1, int x2, int y2)
 /// Interpoliert fürs Laufen zwischen zwei Kartenpunkten
 void noMovable::CalcWalkingRelative(int& x, int& y)
 {
-    int x1 = static_cast<int>(gwg->GetTerrainX(this->x, this->y));
-    int y1 = static_cast<int>(gwg->GetTerrainY(this->x, this->y));
-    int x2 = static_cast<int>(gwg->GetTerrainX(gwg->GetXA(this->x, this->y, dir), gwg->GetYA(this->x, this->y, dir)));
-    int y2 = static_cast<int>(gwg->GetTerrainY(gwg->GetXA(this->x, this->y, dir), gwg->GetYA(this->x, this->y, dir)));
+    int x1 = static_cast<int>(gwg->GetTerrainX(this->pos));
+    int y1 = static_cast<int>(gwg->GetTerrainY(this->pos));
+    int x2 = static_cast<int>(gwg->GetTerrainX(gwg->GetNeighbour(this->pos, dir)));
+    int y2 = static_cast<int>(gwg->GetTerrainY(gwg->GetNeighbour(this->pos, dir)));
 
     // Gehen wir über einen Kartenrand (horizontale Richung?)
-    if(abs(x1 - x2) >= gwg->GetWidth() * TR_W / 2)
+    if(std::abs(x1 - x2) >= gwg->GetWidth() * TR_W / 2)
     {
-        if(abs(x1 - int(gwg->GetWidth())*TR_W - x2) < abs(x1 - x2))
+        if(std::abs(x1 - int(gwg->GetWidth())*TR_W - x2) < std::abs(x1 - x2))
             x1 -= gwg->GetWidth() * TR_W;
         else
             x1 += gwg->GetWidth() * TR_W;
     }
     // Und dasselbe für vertikale Richtung
-    if(abs(y1 - y2) >= gwg->GetHeight() * TR_H / 2)
+    if(std::abs(y1 - y2) >= gwg->GetHeight() * TR_H / 2)
     {
-        if(abs(y1 - int(gwg->GetHeight())*TR_H - y2) < abs(y1 - y2))
+        if(std::abs(y1 - int(gwg->GetHeight())*TR_H - y2) < std::abs(y1 - y2))
             y1 -= gwg->GetHeight() * TR_H;
         else
             y1 += gwg->GetHeight() * TR_H;
@@ -228,8 +228,8 @@ void noMovable::PauseWalking()
         // --> rückgängig!
         if(dir == 1 || dir == 2)
         {
-            gwg->RemoveFigure(this, gwg->GetXA(x, y, dir), gwg->GetYA(x, y, dir));
-            gwg->AddFigure(this, x, y);
+            gwg->RemoveFigure(this, gwg->GetNeighbour(pos, dir));
+            gwg->AddFigure(this, pos);
 
         }
     }
@@ -246,13 +246,13 @@ bool noMovable::IsMoving() const
 }
 
 /// Gibt die Position zurück, wo wir uns hinbewegen (selbe Position, wenn Schiff steht)
-Point<MapCoord> noMovable::GetDestinationForCurrentMove() const
+MapPoint noMovable::GetDestinationForCurrentMove() const
 {
     // Bewegt sich das Ding gerade?
     if(IsMoving())
         // Dann unsere Zielrichtung zur Berechnung verwenden
-        return Point<MapCoord>(gwg->GetXA(x, y, dir), gwg->GetYA(x, y, dir));
+        return MapPoint(gwg->GetNeighbour(pos, dir));
 
-    return Point<MapCoord>(x, y);
+    return pos;
 }
 

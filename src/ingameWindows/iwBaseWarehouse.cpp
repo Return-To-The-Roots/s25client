@@ -144,7 +144,7 @@ void iwBaseWarehouse::Msg_Group_ButtonClick(const unsigned int group_id, const u
             if(data != 0)
             {
                 // Nicht bei Replays setzen
-                if(GAMECLIENT.AddGC(new gc::ChangeInventorySetting(wh->GetX(), wh->GetY(), page, data, ctrl_id - 100)))
+                if(GAMECLIENT.AddGC(new gc::ChangeInventorySetting(wh->GetPos(), page, data, ctrl_id - 100)))
                     // optisch schonmal setzen
                     ChangeOverlay(ctrl_id - 100, data);;
             }
@@ -177,7 +177,7 @@ void iwBaseWarehouse::Msg_ButtonClick(const unsigned int ctrl_id)
                 if(data != 0)
                 {
                     // Nicht bei Replays setzen
-                    if(GAMECLIENT.AddGC(new gc::ChangeAllInventorySettings(wh->GetX(), wh->GetY(), page, data)))
+                    if(GAMECLIENT.AddGC(new gc::ChangeAllInventorySettings(wh->GetPos(), page, data)))
                     {
                         // optisch setzen
                         unsigned short count = ((page == 0) ? WARE_TYPES_COUNT : JOB_TYPES_COUNT);
@@ -195,7 +195,7 @@ void iwBaseWarehouse::Msg_ButtonClick(const unsigned int ctrl_id)
         } break;
         case 13: // "Gehe Zu Ort"
         {
-            gwv->MoveToMapObject(wh->GetX(), wh->GetY());
+            gwv->MoveToMapObject(wh->GetPos());
         } break;
 		case 14: //go to next of same type
 		{
@@ -212,7 +212,7 @@ void iwBaseWarehouse::Msg_ButtonClick(const unsigned int ctrl_id)
 						it++;
 						if(it == GAMECLIENT.GetPlayer(wh->GetPlayer())->GetStorehouses().end()) //was last entry in list -> goto first												{
 							it=GAMECLIENT.GetPlayer(wh->GetPlayer())->GetStorehouses().begin();
-						gwv->MoveToMapObject((*it)->GetX(),(*it)->GetY());
+						gwv->MoveToMapObject((*it)->GetPos());
 						if((*it)->GetBuildingType()==BLD_HEADQUARTERS)
 						{
 							iwHQ* nextscrn=new iwHQ(gwv, gi, (*it),_("Headquarters"), 3);

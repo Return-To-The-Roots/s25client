@@ -16,16 +16,19 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef MAIN_H_INCLUDED
-#define MAIN_H_INCLUDED
 
 #pragma once
+#ifndef defines_h__
+#define defines_h__
+
 
 ///////////////////////////////////////////////////////////////////////////////
 // System-Header
 
 #define _CRTDBG_MAP_ALLOC
+#ifndef NOMINMAX
 #define NOMINMAX
+#endif
 
 #ifdef _WIN32
 #    define WIN32_LEAN_AND_MEAN
@@ -59,7 +62,7 @@
 #    define LoadLibrary(x) dlopen(x, RTLD_LAZY)
 #    define LoadLibraryW LoadLibrary
 #    define LoadLibraryA LoadLibrary
-#    define GetProcAddress(x, y) dlsym(x, y)
+#    define GetProcAddress(pt) dlsym(pt)
 #    define GetProcAddressW GetProcAddress
 #    define GetProcAddressA GetProcAddress
 #    define FreeLibrary(x) dlclose(x)
@@ -106,4 +109,5 @@ inline T max(T a, T b) { return (a < b) ? b : a; }
 template <typename T>
 inline T SafeDiff(T a, T b) { return (a > b) ? a - b : b - a; }
 
-#endif // MAIN_H_INCLUDED
+#endif // defines_h__
+

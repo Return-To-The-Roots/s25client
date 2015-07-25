@@ -58,7 +58,7 @@ class noRoadNode : public noCoordBase
         mutable unsigned dir;
     public:
 
-        noRoadNode(const NodalObjectType nop, const unsigned short x, const unsigned short y, const unsigned char player);
+        noRoadNode(const NodalObjectType nop, const MapPoint pt, const unsigned char player);
         noRoadNode(SerializedGameData* sgd, const unsigned obj_id);
 
         virtual ~noRoadNode();

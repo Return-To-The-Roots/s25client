@@ -38,15 +38,15 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-nofSoldier::nofSoldier(const unsigned short x, const unsigned short y, const unsigned char player,
+nofSoldier::nofSoldier(const MapPoint pos, const unsigned char player,
                        nobBaseMilitary* const goal , nobBaseMilitary* const home, const unsigned char rank)
-    : noFigure(static_cast<Job>(JOB_PRIVATE + rank), x, y, player, goal), building(home), hitpoints(HITPOINTS[gwg->GetPlayer(player)->nation][rank])
+    : noFigure(static_cast<Job>(JOB_PRIVATE + rank), pos, player, goal), building(home), hitpoints(HITPOINTS[gwg->GetPlayer(player)->nation][rank])
 {
 }
 
-nofSoldier::nofSoldier(const unsigned short x, const unsigned short y, const unsigned char player,
+nofSoldier::nofSoldier(const MapPoint pos, const unsigned char player,
                        nobBaseMilitary* const home, const unsigned char rank)
-    : noFigure(static_cast<Job>(JOB_PRIVATE + rank), x, y, player), building(home), hitpoints(HITPOINTS[gwg->GetPlayer(player)->nation][rank])
+    : noFigure(static_cast<Job>(JOB_PRIVATE + rank), pos, player), building(home), hitpoints(HITPOINTS[gwg->GetPlayer(player)->nation][rank])
 {
 }
 

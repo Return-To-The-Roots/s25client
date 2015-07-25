@@ -536,7 +536,7 @@ KeyEvent VideoSDL::GetModKeyState(void) const
 }
 
 /// Gibt Pointer auf ein Fenster zurück (device-dependent!), HWND unter Windows
-void* VideoSDL::GetWindowPointer() const
+void* VideoSDL::GetMapPointer() const
 {
 #ifdef WIN32
     SDL_SysWMinfo wmInfo;

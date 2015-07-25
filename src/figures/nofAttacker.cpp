@@ -58,7 +58,7 @@ const unsigned BLOCK_OFFSET = 10;
 nofAttacker::nofAttacker(nofPassiveSoldier* other, nobBaseMilitary* const attacked_goal)
     : nofActiveSoldier(*other, STATE_ATTACKING_WALKINGTOGOAL), attacked_goal(attacked_goal),
       should_haunted(GAMECLIENT.GetPlayer(attacked_goal->GetPlayer())->ShouldSendDefender()), blocking_event(0),
-      harbor_x(0xffff), harbor_y(0xffff), ship_x(0xffff), ship_y(0xffff), ship_obj_id(0)
+      harborPos(MapPoint::Invalid()), shipPos(MapPoint::Invalid()), ship_obj_id(0)
 {
     // Dem Haus Bescheid sagen
     static_cast<nobMilitary*>(building)->SoldierOnMission(other, this);
@@ -73,7 +73,7 @@ nofAttacker::nofAttacker(nofPassiveSoldier* other, nobBaseMilitary* const attack
 
       attacked_goal(attacked_goal),
       should_haunted(GAMECLIENT.GetPlayer(attacked_goal->GetPlayer())->ShouldSendDefender()), blocking_event(0),
-      harbor_x(harbor->GetX()), harbor_y(harbor->GetY()), ship_x(0xffff), ship_y(0xffff), ship_obj_id(0)
+      harborPos(harbor->GetPos()), shipPos(MapPoint::Invalid()), ship_obj_id(0)
 {
     // Dem Haus Bescheid sagen
     static_cast<nobMilitary*>(building)->SoldierOnMission(other, this);
@@ -113,10 +113,10 @@ void nofAttacker::Serialize_nofAttacker(SerializedGameData* sgd) const
         if(state == STATE_ATTACKING_WAITINGFORDEFENDER)
             sgd->PushObject(blocking_event, true);
 
-        sgd->PushUnsignedShort(harbor_x);
-        sgd->PushUnsignedShort(harbor_y);
-        sgd->PushUnsignedShort(ship_x);
-        sgd->PushUnsignedShort(ship_y);
+        sgd->PushUnsignedShort(harborPos.x);
+        sgd->PushUnsignedShort(harborPos.y);
+        sgd->PushUnsignedShort(shipPos.x);
+        sgd->PushUnsignedShort(shipPos.y);
         sgd->PushUnsignedInt(ship_obj_id);
     }
 }
@@ -132,10 +132,10 @@ nofAttacker::nofAttacker(SerializedGameData* sgd, const unsigned obj_id) : nofAc
         if(state == STATE_ATTACKING_WAITINGFORDEFENDER)
             blocking_event = sgd->PopObject<EventManager::Event>(GOT_EVENT);
 
-        harbor_x = sgd->PopUnsignedShort();
-        harbor_y = sgd->PopUnsignedShort();
-        ship_x = sgd->PopUnsignedShort();
-        ship_y = sgd->PopUnsignedShort();
+        harborPos.x = sgd->PopUnsignedShort();
+        harborPos.y = sgd->PopUnsignedShort();
+        shipPos.x = sgd->PopUnsignedShort();
+        shipPos.y = sgd->PopUnsignedShort();
         ship_obj_id = sgd->PopUnsignedInt();
     }
     else
@@ -173,14 +173,13 @@ void nofAttacker::Walked()
                 return;
             }
 
-            MapCoord flag_x = attacked_goal->GetFlag()->GetX(),
-                           flag_y = attacked_goal->GetFlag()->GetY();
+            MapPoint flagPos = attacked_goal->GetFlag()->GetPos();
             //assert(enemy->GetGOT() == GOT_NOF_DEFENDER);
             // Are we at the flag?
 
             nofDefender* defender = NULL;
             // Look for defenders at this position
-            const std::list<noBase*>& figures = gwg->GetFigures(flag_x, flag_y);
+            const std::list<noBase*>& figures = gwg->GetFigures(flagPos);
             for(std::list<noBase*>::const_iterator it = figures.begin(); it != figures.end(); ++it)
             {
                 if((*it)->GetGOT() == GOT_NOF_DEFENDER)
@@ -195,12 +194,12 @@ void nofAttacker::Walked()
             }
 
 
-            if(x == flag_x && y == flag_y)
+            if(pos == flagPos)
             {
                 if(defender)
                 {
                     // Start fight with the defender
-                    gwg->AddFigure(new noFighting(this, defender), x, y);
+                    gwg->AddFigure(new noFighting(this, defender), pos);
 
                     // Set the appropriate states
                     state = STATE_ATTACKING_FIGHTINGVSDEFENDER;
@@ -213,7 +212,7 @@ void nofAttacker::Walked()
             }
             else
             {
-                if( (dir = gwg->FindHumanPath(x, y, flag_x, flag_y, 5, true)) == 0xFF)
+                if( (dir = gwg->FindHumanPath(pos, flagPos, 5, true)) == 0xFF)
                 {
                     // es wurde kein Weg mehr gefunden --> neues Plätzchen suchen und warten
                     state = STATE_ATTACKING_WALKINGTOGOAL;
@@ -272,7 +271,7 @@ void nofAttacker::Walked()
                     building = attacked_goal;
                     // mich zum Gebäude hinzufügen und von der Karte entfernen
                     attacked_goal->AddActiveSoldier(this);
-                    gwg->RemoveFigure(this, x, y);
+                    gwg->RemoveFigure(this, pos);
                     // ggf. weitere Soldaten rufen, damit das Gebäude voll wird
                     static_cast<nobMilitary*>(attacked_goal)->NeedOccupyingTroops(player);
                 }
@@ -284,10 +283,10 @@ void nofAttacker::Walked()
                     {
                         if(attacked_goal->GetGOT() == GOT_NOB_HQ)
                             GAMECLIENT.SendPostMessage(new
-                                                               ImagePostMsgWithLocation(_("Our headquarters was destroyed!"), PMC_MILITARY, x, y, attacked_goal->GetBuildingType(), attacked_goal->GetNation()));
+                                                               ImagePostMsgWithLocation(_("Our headquarters was destroyed!"), PMC_MILITARY, pos, attacked_goal->GetBuildingType(), attacked_goal->GetNation()));
                         else
                             GAMECLIENT.SendPostMessage(new
-                                                               ImagePostMsgWithLocation(_("This harbor building was destroyed"), PMC_MILITARY, x, y, attacked_goal->GetBuildingType(), attacked_goal->GetNation()));
+                                                               ImagePostMsgWithLocation(_("This harbor building was destroyed"), PMC_MILITARY, pos, attacked_goal->GetBuildingType(), attacked_goal->GetNation()));
                     }
 
                     // abreißen
@@ -309,7 +308,7 @@ void nofAttacker::Walked()
 
             // Gucken, ob der Abflughafen auch noch steht und sich in unserer Hand befindet
             bool valid_harbor = true;
-            noBase* hb = gwg->GetNO(harbor_x, harbor_y);
+            noBase* hb = gwg->GetNO(harborPos);
             if(hb->GetGOT() != GOT_NOB_HARBORBUILDING)
                 valid_harbor = false;
             else if(static_cast<nobHarborBuilding*>(hb)->GetPlayer() != player)
@@ -324,27 +323,26 @@ void nofAttacker::Walked()
             }
 
             // Sind wir schon da?
-            if(x == harbor_x && y == harbor_y)
+            if(pos == harborPos)
             {
                 // Uns zum Hafen hinzufügen
                 state = STATE_SEAATTACKING_WAITINHARBOR;
-                gwg->RemoveFigure(this, x, y);
-                gwg->GetSpecObj<nobHarborBuilding>(x, y)->AddSeaAttacker(this);
+                gwg->RemoveFigure(this, pos);
+                gwg->GetSpecObj<nobHarborBuilding>(pos)->AddSeaAttacker(this);
 
                 return;
             }
 
             // Erstmal Flagge ansteuern
-            MapCoord harbor_flag_x = gwg->GetXA(harbor_x, harbor_y, 4);
-            MapCoord harbor_flag_y = gwg->GetYA(harbor_x, harbor_y, 4);
+            MapPoint harborFlagPos = gwg->GetNeighbour(harborPos, 4);
 
             // Wenn wir an der Flagge bereits sind, in den Hafen eintreten
-            if(x == harbor_flag_x && y == harbor_flag_y)
+            if(pos == harborFlagPos)
                 StartWalking(1);
             else
             {
                 // Weg zum Hafen suchen
-                unsigned char dir = gwg->FindHumanPath(x, y, harbor_flag_x, harbor_flag_y, MAX_ATTACKING_RUN_DISTANCE, false, NULL);
+                unsigned char dir = gwg->FindHumanPath(pos, harborFlagPos, MAX_ATTACKING_RUN_DISTANCE, false, NULL);
                 if(dir == 0xff)
                 {
                     // Kein Weg gefunden? Dann auch abbrechen!
@@ -396,7 +394,7 @@ void nofAttacker::HomeDestroyed()
             Wander();
 
             // und evtl einen Nachrücker für diesen Platz suchen
-            attacked_goal->SendSuccessor(x, y, radius, dir);
+            attacked_goal->SendSuccessor(pos, radius, dir);
 
 
 
@@ -485,7 +483,7 @@ void nofAttacker::WonFighting()
 void nofAttacker::ContinueAtFlag()
 {
     // Greifen wir grad ein Gebäude an?
-	if(state == STATE_ATTACKING_FIGHTINGVSDEFENDER || (attacked_goal && state == STATE_FIGHTING && attacked_goal->GetFlag()->GetX()==x && attacked_goal->GetFlag()->GetY()==y))
+	if(state == STATE_ATTACKING_FIGHTINGVSDEFENDER || (attacked_goal && state == STATE_FIGHTING && attacked_goal->GetFlag()->GetPos()==pos))
     {
         // Dann neuen Verteidiger rufen
         if(attacked_goal->CallDefender(this))
@@ -593,11 +591,10 @@ void nofAttacker::MissAttackingWalk()
 
 
     // Eine Position rund um das Militärgebäude suchen
-    unsigned short goal_x, goal_y;
-    attacked_goal->FindAnAttackerPlace(goal_x, goal_y, radius, this);
+    MapPoint goal = attacked_goal->FindAnAttackerPlace(radius, this);
 
     // Keinen Platz mehr gefunden?
-    if(goal_x == 0xFFFF)
+    if(goal.isValid())
     {
         // Dann nach Haus gehen
         ReturnHomeMissionAttacking();
@@ -605,7 +602,7 @@ void nofAttacker::MissAttackingWalk()
     }
 
     // Sind wir evtl schon da?
-    if(x == goal_x && y == goal_y)
+    if(pos == goal)
     {
         ReachedDestination();
         return;
@@ -623,7 +620,7 @@ void nofAttacker::MissAttackingWalk()
 
 
     // Ansonsten Weg zum Ziel suchen
-    dir = gwg->FindHumanPath(x, y, goal_x, goal_y, MAX_ATTACKING_RUN_DISTANCE, true);
+    dir = gwg->FindHumanPath(pos, goal, MAX_ATTACKING_RUN_DISTANCE, true);
     // Keiner gefunden? Nach Hause gehen
     if(dir == 0xff)
     {
@@ -639,7 +636,7 @@ void nofAttacker::MissAttackingWalk()
 void nofAttacker::ReachedDestination()
 {
     // Sind wir direkt an der Flagge?
-    if(x == attacked_goal->GetFlag()->GetX() && y == attacked_goal->GetFlag()->GetY())
+    if(pos == attacked_goal->GetFlag()->GetPos())
     {
         // Building already captured? Continue capturing
         // This can only be a far away attacker
@@ -654,7 +651,7 @@ void nofAttacker::ReachedDestination()
         // Post schicken "Wir werden angegriffen" TODO evtl. unschön, da jeder Attacker das dann aufruft
         if(attacked_goal->GetPlayer() == GAMECLIENT.GetPlayerID())
             GAMECLIENT.SendPostMessage(
-                new ImagePostMsgWithLocation(_("We are under attack!"), PMC_MILITARY, x, y,
+                new ImagePostMsgWithLocation(_("We are under attack!"), PMC_MILITARY, pos,
                                              attacked_goal->GetBuildingType(), attacked_goal->GetNation()));
 
         // Dann Verteidiger rufen
@@ -681,25 +678,24 @@ void nofAttacker::ReachedDestination()
         // reservieren, damit sich kein anderer noch hier hinstellt
         state = STATE_ATTACKING_WAITINGAROUNDBUILDING;
         // zur Flagge hin ausrichten
-        MapCoord flag_x = attacked_goal->GetFlag()->GetX();
-        MapCoord flag_y = attacked_goal->GetFlag()->GetY();
-        if(y == flag_y && x <= flag_x) dir = 3;
-        else if(y == flag_y && x > flag_x) dir = 0;
-        else if(y < flag_y && x < flag_x) dir = 4;
-        else if(y < flag_y && x >  flag_x) dir = 5;
-        else if(y > flag_y && x < flag_x) dir = 2;
-        else if(y > flag_y && x >  flag_x) dir = 1;
-        else if(x ==  flag_x)
+        MapPoint attFlagPos = attacked_goal->GetFlag()->GetPos();
+        if(pos.y == attFlagPos.y && pos.x <= attFlagPos.x) dir = 3;
+        else if(pos.y == attFlagPos.y && pos.x > attFlagPos.x) dir = 0;
+        else if(pos.y < attFlagPos.y && pos.x < attFlagPos.x) dir = 4;
+        else if(pos.y < attFlagPos.y && pos.x >  attFlagPos.x) dir = 5;
+        else if(pos.y > attFlagPos.y && pos.x < attFlagPos.x) dir = 2;
+        else if(pos.y > attFlagPos.y && pos.x >  attFlagPos.x) dir = 1;
+        else if(pos.x ==  attFlagPos.x)
         {
-            if(y < flag_y && !(SafeDiff(y, flag_y) & 1)) dir = 4;
-            else if(y < flag_y && (SafeDiff(y, flag_y) & 1))
+            if(pos.y < attFlagPos.y && !(SafeDiff(pos.y, attFlagPos.y) & 1)) dir = 4;
+            else if(pos.y < attFlagPos.y && (SafeDiff(pos.y, attFlagPos.y) & 1))
             {
-                if(y & 1) dir = 5; else dir = 4;
+                if(pos.y & 1) dir = 5; else dir = 4;
             }
-            else if(y > flag_y && !(SafeDiff(y, flag_y) & 1)) dir = 2;
-            else if(y > flag_y && (SafeDiff(y, flag_y) & 1))
+            else if(pos.y > attFlagPos.y && !(SafeDiff(pos.y, attFlagPos.y) & 1)) dir = 2;
+            else if(pos.y > attFlagPos.y && (SafeDiff(pos.y, attFlagPos.y) & 1))
             {
-                if(y & 1) dir = 1; else dir = 2;
+                if(pos.y & 1) dir = 1; else dir = 2;
             }
         }
     }
@@ -717,7 +713,7 @@ void nofAttacker::TryToOrderAggressiveDefender()
         if(RANDOM.Rand(__FILE__, __LINE__, obj_id, 10) < 2)
         {
             // Militärgebäude in der Nähe abgrasen
-            std::set<nobBaseMilitary*> buildings = gwg->LookForMilitaryBuildings(x, y, 2);
+            std::set<nobBaseMilitary*> buildings = gwg->LookForMilitaryBuildings(pos, 2);
 
             for(std::set<nobBaseMilitary*>::iterator it = buildings.begin(); it != buildings.end(); ++it)
             {
@@ -725,7 +721,7 @@ void nofAttacker::TryToOrderAggressiveDefender()
                 // und es darf natürlich auch der entsprechende Feind sein, aber es darf auch nicht derselbe Spieler
                 // wie man selbst sein, da das Gebäude ja z.B. schon erobert worden sein kann
                 if(((*it)->GetBuildingType() != BLD_HEADQUARTERS || (*it) == attacked_goal)
-                        && gwg->CalcDistance(x, y, (*it)->GetX(), (*it)->GetY()) < 15
+                        && gwg->CalcDistance(pos, (*it)->GetPos()) < 15
                         && GAMECLIENT.GetPlayer(attacked_goal->GetPlayer())->IsAlly((*it)->GetPlayer())  &&
                         GAMECLIENT.GetPlayer(player)->IsPlayerAttackable((*it)->GetPlayer()))
                 {
@@ -760,15 +756,14 @@ void nofAttacker::AttackedGoalDestroyed()
         // Block-Event ggf abmelden
         em->RemoveEvent(blocking_event);
         blocking_event = 0;
-        gwg->RoadNodeAvailable(x, y);
+        gwg->RoadNodeAvailable(pos);
     }
 }
 
 bool nofAttacker::AttackFlag(nofDefender* defender)
 {
     // Zur Flagge laufen, findet er einen Weg?
-    unsigned char tmp_dir = gwg->FindHumanPath(x, y, attacked_goal->GetFlag()->GetX(),
-                            attacked_goal->GetFlag()->GetY(), 3, true);
+    unsigned char tmp_dir = gwg->FindHumanPath(pos, attacked_goal->GetFlag()->GetPos(), 3, true);
 
     if(tmp_dir != 0xFF)
     {
@@ -790,7 +785,7 @@ bool nofAttacker::AttackFlag(nofDefender* defender)
         if(waiting_around_building)
         {
             // evtl. Nachrücker senden
-            attacked_goal->SendSuccessor(x, y, radius, old_dir);
+            attacked_goal->SendSuccessor(pos, radius, old_dir);
         }
 
         return true;
@@ -825,11 +820,10 @@ void nofAttacker::CapturingWalking()
         return;
     }
 
-    unsigned short flag_x = attacked_goal->GetFlag()->GetX(),
-                   flag_y = attacked_goal->GetFlag()->GetY();
+    MapPoint attFlagPos = attacked_goal->GetFlag()->GetPos();
 
     // Sind wir schon im Gebäude?
-    if(x == attacked_goal->GetX() && y == attacked_goal->GetY())
+    if(pos == attacked_goal->GetPos())
     {
         // Meinem alten Heimatgebäude Bescheid sagen (falls es noch existiert)
         if(building)
@@ -837,7 +831,7 @@ void nofAttacker::CapturingWalking()
         if(ship_obj_id)
             CancelAtShip();
         // mich von der Karte tilgen-
-        gwg->RemoveFigure(this, x, y);
+        gwg->RemoveFigure(this, pos);
         // Das ist nun mein neues zu Hause
         building = attacked_goal;
         // und zum Gebäude hinzufügen
@@ -854,7 +848,7 @@ void nofAttacker::CapturingWalking()
 
     }
     // oder zumindest schonmal an der Flagge?
-    else if(x == flag_x && y == flag_y)
+    else if(pos == attFlagPos)
     {
         // ins Gebäude laufen
         StartWalking(1);
@@ -890,7 +884,7 @@ void nofAttacker::CapturingWalking()
         }
 
         // weiter zur Flagge laufen
-        if((dir = gwg->FindHumanPath(x, y, flag_x, flag_y, 10, true)) == 0xFF)
+        if((dir = gwg->FindHumanPath(pos, attFlagPos, 10, true)) == 0xFF)
         {
             // auweia, es wurde kein Weg mehr gefunden
 
@@ -934,7 +928,7 @@ void nofAttacker::CapturedBuildingFull()
     }
 }
 
-void nofAttacker::StartSucceeding(const unsigned short x, const unsigned short y, const unsigned short new_radius, const unsigned char dir)
+void nofAttacker::StartSucceeding(const MapPoint pt, const unsigned short new_radius, const unsigned char dir)
 {
     // Wir sollen auf diesen Punkt nachrücken
     state = STATE_ATTACKING_WALKINGTOGOAL;
@@ -943,7 +937,7 @@ void nofAttacker::StartSucceeding(const unsigned short x, const unsigned short y
     unsigned char old_dir = this->dir;
 
     // unser alter Platz ist ja nun auch leer, da gibts vielleicht auch einen Nachrücker?
-    attacked_goal->SendSuccessor(this->x, this->y, radius, old_dir);
+    attacked_goal->SendSuccessor(this->pos, radius, old_dir);
 
     // Und schonmal loslaufen, da wir ja noch stehen
     MissAttackingWalk();
@@ -990,7 +984,7 @@ void nofAttacker::HandleDerivedEvent(const unsigned int id)
     if(state == STATE_ATTACKING_WAITINGFORDEFENDER)
     {
         // Figuren stoppen
-        gwg->StopOnRoads(x, y);
+        gwg->StopOnRoads(pos);
         blocking_event = 0;
     }
 }
@@ -1023,10 +1017,9 @@ void nofAttacker::InformTargetsAboutCancelling()
 
 
 /// Startet den Angriff am Landungspunkt vom Schiff
-void nofAttacker::StartAttackOnOtherIsland(const MapCoord ship_x, const MapCoord ship_y, const unsigned ship_id)
+void nofAttacker::StartAttackOnOtherIsland(const MapPoint shipPos, const unsigned ship_id)
 {
-    x = this->ship_x = ship_x;
-    y = this->ship_y = ship_y;
+    pos = this->shipPos = shipPos;
     this->ship_obj_id = ship_id;
 
     state = STATE_ATTACKING_WALKINGTOGOAL;
@@ -1048,7 +1041,7 @@ void nofAttacker::SeaAttackFailedBeforeLaunch()
 void nofAttacker::StartReturnViaShip()
 {
     // remove us from where we are, so nobody will ever draw us :)
-    gwg->RemoveFigure(this, this->x, this->y);
+    gwg->RemoveFigure(this, this->pos);
 
     goal = building;
     state = STATE_FIGUREWORK;
@@ -1065,7 +1058,7 @@ void nofAttacker::HomeHarborLost()
 void nofAttacker::CancelAtShip()
 {
     // Alle Figuren durchgehen
-    std::vector<noBase*> figures = gwg->GetDynamicObjectsFrom(ship_x, ship_y);
+    std::vector<noBase*> figures = gwg->GetDynamicObjectsFrom(shipPos);
     for(std::vector<noBase*>::iterator it = figures.begin(); it != figures.end(); ++it)
     {
         if((*it)->GetObjId() == ship_obj_id)
@@ -1095,17 +1088,17 @@ void nofAttacker::HandleState_SeaAttack_ReturnToShip()
     }
 
     // Sind wir schon im Schiff?
-    if(x == ship_x && y == ship_y)
+    if(pos == shipPos)
     {
         // Alle Figuren durchgehen
-        std::vector<noBase*> figures = gwg->GetDynamicObjectsFrom(x, y);
+        std::vector<noBase*> figures = gwg->GetDynamicObjectsFrom(pos);
         for(std::vector<noBase*>::iterator it = figures.begin(); it != figures.end(); ++it)
         {
             if((*it)->GetObjId() == ship_obj_id)
             {
                 noShip* ship = static_cast<noShip*>(*it);
                 // Und von der Landkarte tilgen
-                gwg->RemoveFigure(this, x, y);
+                gwg->RemoveFigure(this, pos);
                 // Uns zum Schiff hinzufügen
                 ship->AddAttacker(this);
 
@@ -1123,7 +1116,7 @@ void nofAttacker::HandleState_SeaAttack_ReturnToShip()
         Wander();
     }
     // oder finden wir gar keinen Weg mehr?
-    else if((dir = gwg->FindHumanPath(x, y, ship_x, ship_y, MAX_ATTACKING_RUN_DISTANCE)) == 0xFF)
+    else if((dir = gwg->FindHumanPath(pos, shipPos, MAX_ATTACKING_RUN_DISTANCE)) == 0xFF)
     {
         // Kein Weg gefunden --> Rumirren
         StartWandering();
@@ -1167,7 +1160,7 @@ bool nofAttacker::TryToStartFarAwayCapturing(nobMilitary* dest)
             || state == STATE_FIGHTING)
     {
         // Not too far away?
-        if(gwg->CalcDistance(x, y, dest->GetX(), dest->GetY()) < MAX_FAR_AWAY_CAPTURING_DISTANCE)
+        if(gwg->CalcDistance(pos, dest->GetPos()) < MAX_FAR_AWAY_CAPTURING_DISTANCE)
             return true;
     }
 

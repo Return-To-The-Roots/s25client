@@ -89,13 +89,11 @@ dskGameInterface::dskGameInterface()
     : Desktop(NULL),
       gwv(GAMECLIENT.QueryGameWorldViewer()), cbb(LOADER.GetPaletteN("pal5")),
       actionwindow(NULL), roadwindow(NULL),
-      selected_x(0), selected_y(0), minimap(*gwv)
+      selected(0, 0), minimap(*gwv)
 {
     road.mode = RM_DISABLED;
-    road.point_x = 0;
-    road.point_y = 0;
-    road.start_x = 0;
-    road.start_y = 0;
+    road.point = MapPoint(0, 0);
+    road.start = MapPoint(0, 0);
 
     SetScale(false);;
 
@@ -311,11 +309,11 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
     if(road.mode)
     {
         // in "richtige" Map-Koordinaten Konvertieren, den aktuellen selektierten Punkt
-        int cselx = gwv->GetSelX(), csely = gwv->GetSelY();
+        MapPoint cSel = gwv->GetSel();
         // Um auf Wasserweglängenbegrenzun reagieren zu können:
-        int cselx2 = cselx, csely2 = csely;
+        MapPoint cSel2(cSel);
 
-        if(cselx == road.point_x && csely == road.point_y)
+        if(cSel == road.point)
         {
             // Selektierter Punkt ist der gleiche wie der Straßenpunkt --> Fenster mit Wegbau abbrechen
             ShowRoadWindow(mc.x, mc.y);
@@ -326,39 +324,39 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
             WINDOWMANAGER.Close((unsigned int)CGI_ROADWINDOW);
 
             // Ist das ein gültiger neuer Wegpunkt?
-            if(gwv->RoadAvailable(road.mode == RM_BOAT, cselx, csely, 0xFF) && gwv->GetNode(cselx, csely).owner - 1 == (signed)GAMECLIENT.GetPlayerID() &&
-                    gwv->IsPlayerTerritory(cselx, csely))
+            if(gwv->RoadAvailable(road.mode == RM_BOAT, cSel, 0xFF) && gwv->GetNode(cSel).owner - 1 == (signed)GAMECLIENT.GetPlayerID() &&
+                    gwv->IsPlayerTerritory(cSel))
             {
-                if(!BuildRoadPart(cselx, csely, false))
+                if(!BuildRoadPart(cSel, false))
                     ShowRoadWindow(mc.x, mc.y);
             }
-            else if(gwv->CalcBQ(cselx, csely, GAMECLIENT.GetPlayerID(), 1))
+            else if(gwv->CalcBQ(cSel, GAMECLIENT.GetPlayerID(), 1))
             {
                 // Wurde bereits auf das gebaute Stück geklickt?
                 unsigned tbr;
-                if((tbr = TestBuiltRoad(cselx, csely)))
+                if((tbr = TestBuiltRoad(cSel)))
                     DemolishRoad(tbr);
                 else
                 {
-                    if(BuildRoadPart(cselx, csely, 1))
+                    if(BuildRoadPart(cSel, 1))
                     {
                         // Ist der Zielpunkt der gleiche geblieben?
-                        if (cselx2 == cselx && csely2 == csely)
+                        if (cSel == cSel2)
                             CommandBuildRoad();
                     }
-                    else if (cselx2 == cselx && csely2 == csely)
+                    else if (cSel == cSel2)
                         ShowRoadWindow(mc.x, mc.y);
                 }
             }
             // Wurde auf eine Flagge geklickt und ist diese Flagge nicht der Weganfangspunkt?
-            else if(gwv->GetNO(cselx, csely)->GetType() == NOP_FLAG && !(cselx == road.start_x && csely == road.start_y))
+            else if(gwv->GetNO(cSel)->GetType() == NOP_FLAG && cSel != road.start)
             {
-                if(BuildRoadPart(cselx, csely, 1))
+                if(BuildRoadPart(cSel, 1))
                 {
-                    if (cselx2 == cselx && csely2 == csely)
+                    if (cSel == cSel2)
                         CommandBuildRoad();
                 }
-                else if (cselx2 == cselx && csely2 == csely)
+                else if (cSel == cSel2)
                     ShowRoadWindow(mc.x, mc.y);
             }
 
@@ -366,7 +364,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
             {
                 unsigned tbr;
                 // Wurde bereits auf das gebaute Stück geklickt?
-                if((tbr = TestBuiltRoad(cselx, csely)))
+                if((tbr = TestBuiltRoad(cSel)))
                     DemolishRoad(tbr);
                 else
                     ShowRoadWindow(mc.x, mc.y);
@@ -379,42 +377,42 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
 
         iwAction::Tabs action_tabs;
 
-        unsigned short cselx = gwv->GetSelX(), csely = gwv->GetSelY();
+        MapPoint cSel = gwv->GetSel();
 
 
         // Vielleicht steht hier auch ein Schiff?
-        if(noShip* ship = gwv->GetShip(cselx, csely, GAMECLIENT.GetPlayerID()))
+        if(noShip* ship = gwv->GetShip(cSel, GAMECLIENT.GetPlayerID()))
         {
             WINDOWMANAGER.Show(new iwShip(gwv, this, ship));
             return true;
         }
 
         // Evtl ists nen Haus? (unser Haus)
-        if(gwv->GetNO(cselx, csely)->GetType() == NOP_BUILDING   && gwv->GetNode(cselx, csely).owner - 1 == (signed)GAMECLIENT.GetPlayerID())
+        if(gwv->GetNO(cSel)->GetType() == NOP_BUILDING   && gwv->GetNode(cSel).owner - 1 == (signed)GAMECLIENT.GetPlayerID())
         {
-            BuildingType bt = static_cast<noBuilding*>(gwv->GetNO(cselx, csely))->GetBuildingType();
+            BuildingType bt = static_cast<noBuilding*>(gwv->GetNO(cSel))->GetBuildingType();
             // HQ
             if(bt == BLD_HEADQUARTERS)
                 //WINDOWMANAGER.Show(new iwTrade(gwv,this,gwv->GetSpecObj<nobHQ>(cselx,csely)));
-                WINDOWMANAGER.Show(new iwHQ(gwv,this, gwv->GetSpecObj<nobHQ>(cselx, csely), _("Headquarters"), 3));
+                WINDOWMANAGER.Show(new iwHQ(gwv,this, gwv->GetSpecObj<nobHQ>(cSel), _("Headquarters"), 3));
             // Lagerhäuser
             else if(bt == BLD_STOREHOUSE)
-                WINDOWMANAGER.Show(new iwStorehouse(gwv, this, gwv->GetSpecObj<nobStorehouse>(cselx, csely)));
+                WINDOWMANAGER.Show(new iwStorehouse(gwv, this, gwv->GetSpecObj<nobStorehouse>(cSel)));
             // Hafengebäude
             else if(bt == BLD_HARBORBUILDING)
-                WINDOWMANAGER.Show(new iwHarborBuilding(gwv, this, gwv->GetSpecObj<nobHarborBuilding>(cselx, csely)));
+                WINDOWMANAGER.Show(new iwHarborBuilding(gwv, this, gwv->GetSpecObj<nobHarborBuilding>(cSel)));
             // Militärgebäude
             else if(bt <= BLD_FORTRESS)
-                WINDOWMANAGER.Show(new iwMilitaryBuilding(gwv, this, gwv->GetSpecObj<nobMilitary>(cselx, csely)));
+                WINDOWMANAGER.Show(new iwMilitaryBuilding(gwv, this, gwv->GetSpecObj<nobMilitary>(cSel)));
             else
-                WINDOWMANAGER.Show(new iwBuilding(gwv, this, gwv->GetSpecObj<nobUsual>(cselx, csely)));
+                WINDOWMANAGER.Show(new iwBuilding(gwv, this, gwv->GetSpecObj<nobUsual>(cSel)));
             return true;
         }
 
         // oder vielleicht eine Baustelle?
-        else if(gwv->GetNO(cselx, csely)->GetType() == NOP_BUILDINGSITE && gwv->GetNode(cselx, csely).owner - 1 == (signed)GAMECLIENT.GetPlayerID())
+        else if(gwv->GetNO(cSel)->GetType() == NOP_BUILDINGSITE && gwv->GetNode(cSel).owner - 1 == (signed)GAMECLIENT.GetPlayerID())
         {
-            WINDOWMANAGER.Show(new iwBuildingSite(gwv, gwv->GetSpecObj<noBuildingSite>(cselx, csely)));
+            WINDOWMANAGER.Show(new iwBuildingSite(gwv, gwv->GetSpecObj<noBuildingSite>(cSel)));
             return true;
 
         }
@@ -422,15 +420,15 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
 
         action_tabs.watch = true;
         // Unser Land
-        if(gwv->GetNode(cselx, csely).owner == GAMECLIENT.GetPlayerID() + 1)
+        if(gwv->GetNode(cSel).owner == GAMECLIENT.GetPlayerID() + 1)
         {
             // Kann hier was gebaut werden?
-            if(gwv->GetNode(gwv->GetSelX(), gwv->GetSelY()).bq >= BQ_HUT)
+            if(gwv->GetNode(gwv->GetSel()).bq >= BQ_HUT)
             {
                 action_tabs.build = true;
 
                 // Welches Gebäude kann gebaut werden?
-                switch(gwv->GetNode(gwv->GetSelX(), gwv->GetSelY()).bq)
+                switch(gwv->GetNode(gwv->GetSel()).bq)
                 {
                     case BQ_HUT: action_tabs.build_tabs = iwAction::Tabs::BT_HUT; break;
                     case BQ_HOUSE: action_tabs.build_tabs = iwAction::Tabs::BT_HOUSE; break;
@@ -440,38 +438,38 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
                     default: break;
                 }
 
-                if(!gwv->FlagNear(cselx, csely))
+                if(!gwv->FlagNear(cSel))
                     action_tabs.setflag = true;
 
                 // Prüfen, ob sich Militärgebäude in der Nähe befinden, wenn nein, können auch eigene
                 // Militärgebäude gebaut werden
-                enable_military_buildings = !gwv->IsMilitaryBuildingNearNode(cselx, csely, GAMECLIENT.GetPlayerID());
+                enable_military_buildings = !gwv->IsMilitaryBuildingNearNode(cSel, GAMECLIENT.GetPlayerID());
             }
-            else if(gwv->GetNode(gwv->GetSelX(), gwv->GetSelY()).bq == BQ_FLAG)
+            else if(gwv->GetNode(gwv->GetSel()).bq == BQ_FLAG)
                 action_tabs.setflag = true;
 
 
 
-            if(gwv->GetNO(cselx, csely)->GetType() == NOP_FLAG)
+            if(gwv->GetNO(cSel)->GetType() == NOP_FLAG)
                 action_tabs.flag = true;
 
             // Prüfen, ob irgendwo Straßen anliegen
             bool roads = false;
             for(unsigned i = 0; i < 6; ++i)
-                if(gwv->GetPointRoad(cselx, csely, i, true))
+                if(gwv->GetPointRoad(cSel, i, true))
                     roads = true;
 
             if( (roads) && !(
-                        gwv->GetNO(cselx, csely)->GetType() == NOP_FLAG ||
-                        gwv->GetNO(cselx, csely)->GetType() == NOP_BUILDING) )
+                        gwv->GetNO(cSel)->GetType() == NOP_FLAG ||
+                        gwv->GetNO(cSel)->GetType() == NOP_BUILDING) )
                 action_tabs.cutroad = true;
         }
         // evtl ists ein feindliches Militärgebäude, welches NICHT im Nebel liegt?
-        else if(gwv->GetVisibility(cselx, csely) == VIS_VISIBLE)
+        else if(gwv->GetVisibility(cSel) == VIS_VISIBLE)
         {
-            if(gwv->GetNO(cselx, csely)->GetType() == NOP_BUILDING)
+            if(gwv->GetNO(cSel)->GetType() == NOP_BUILDING)
             {
-                noBuilding* building = gwv->GetSpecObj<noBuilding>(cselx, csely);
+                noBuilding* building = gwv->GetSpecObj<noBuilding>(cSel);
                 BuildingType bt = building->GetBuildingType();
 
                 // Only if trade is enabled
@@ -490,7 +488,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
                 if(bt >= BLD_BARRACKS && bt <= BLD_FORTRESS)
                 {
                     // Dann darf es nicht neu gebaut sein!
-                    if(!gwv->GetSpecObj<nobMilitary>(cselx, csely)->IsNewBuilt())
+                    if(!gwv->GetSpecObj<nobMilitary>(cSel)->IsNewBuilt())
                         action_tabs.attack = action_tabs.sea_attack = true;
                 }
                 // oder ein HQ oder Hafen?
@@ -506,10 +504,9 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
         WINDOWMANAGER.Close(actionwindow);
         VIDEODRIVER.SetMousePos(mx, my);
 
-        ShowActionWindow(action_tabs, cselx, csely, mc.x, mc.y, enable_military_buildings);
+        ShowActionWindow(action_tabs, cSel, mc.x, mc.y, enable_military_buildings);
 
-        selected_x = static_cast<unsigned short>(cselx);
-        selected_y = static_cast<unsigned short>(csely);
+        selected = cSel;
 
     }
 
@@ -691,8 +688,8 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
         {
             GameClientPlayer* player = GAMECLIENT.GetLocalPlayer();
             // Prüfen, ob dieses überhaupt noch existiert
-            if(player->hqx != 0xFFFF)
-                gwv->MoveToMapObject(player->hqx, player->hqy);
+            if(player->hqPos.x != 0xFFFF)
+                gwv->MoveToMapObject(player->hqPos);
         } return true;
         case 'i': // Show inventory
         {
@@ -761,7 +758,7 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
 void dskGameInterface::Run()
 {
     unsigned water_percent;
-    gwv->Draw(GAMECLIENT.GetPlayerID(), &water_percent, actionwindow ? true : false, selected_x, selected_y, road);
+    gwv->Draw(GAMECLIENT.GetPlayerID(), &water_percent, actionwindow ? true : false, selected, road);
 
     // Evtl Meeresrauschen-Sounds abspieln
     SOUNDMANAGER.PlayOceanBrawling(water_percent);
@@ -785,25 +782,17 @@ void dskGameInterface::ActivateRoadMode(const RoadMode rm)
     if(rm != RM_DISABLED)
     {
         road.route.clear();
-        road.start_x = road.point_x = selected_x;
-        road.start_y = road.point_y = selected_y;
-        unsigned short tmp_px, tmp_py, tmp_sx, tmp_sy;
-        gwv->ConvertCoords(road.point_x, road.point_y, &tmp_px, &tmp_py);
-        gwv->ConvertCoords(road.start_x, road.start_y, &tmp_sx, &tmp_sy);
-        road.point_x = tmp_px;
-        road.point_y = tmp_py;
-        road.start_x = tmp_sx;
-        road.start_y = tmp_sy;
+        road.start = road.point = selected;
+        road.point = gwv->ConvertCoords(road.point.x, road.point.y);
+        road.start = gwv->ConvertCoords(road.start.x, road.start.y);
     }
     else
     {
-        gwv->RemoveVisualRoad(road.start_x, road.start_y, road.route);
+        gwv->RemoveVisualRoad(road.start, road.route);
         for(unsigned i = 0; i < road.route.size(); ++i)
         {
-            gwv->SetPointVirtualRoad(road.start_x, road.start_y, road.route[i], 0);
-            int tx2 = road.start_x, ty2 = road.start_y;
-            road.start_x = gwv->GetXA(tx2, ty2, road.route[i]);
-            road.start_y = gwv->GetYA(tx2, ty2, road.route[i]);
+            gwv->SetPointVirtualRoad(road.start, road.route[i], 0);
+            road.start = gwv->GetNeighbour(road.start, road.route[i]);
         }
     }
 
@@ -815,10 +804,10 @@ void dskGameInterface::ActivateRoadMode(const RoadMode rm)
  *
  *  @author OLiver
  */
-bool dskGameInterface::BuildRoadPart(int& cselx, int& csely, bool end)
+bool dskGameInterface::BuildRoadPart(MapPoint& cSel, bool end)
 {
     std::vector<unsigned char> new_route;
-    bool path_found = gwv->FindRoadPath(road.point_x, road.point_y, cselx, csely, new_route, road.mode == RM_BOAT);
+    bool path_found = gwv->FindRoadPath(road.point, cSel, new_route, road.mode == RM_BOAT);
 
     // Weg gefunden?
     if(!path_found)
@@ -850,13 +839,12 @@ bool dskGameInterface::BuildRoadPart(int& cselx, int& csely, bool end)
     // Weg (visuell) bauen
     for(unsigned i = 0; i < new_route.size(); ++i)
     {
-        gwv->SetPointVirtualRoad(road.point_x, road.point_y, new_route[i], (road.mode == RM_BOAT) ? 3 : 1);
-        gwv->GetPointA(road.point_x, road.point_y, new_route[i]);
-        gwv->CalcRoad(road.point_x, road.point_y, GAMECLIENT.GetPlayerID());
+        gwv->SetPointVirtualRoad(road.point, new_route[i], (road.mode == RM_BOAT) ? 3 : 1);
+        road.point = gwv->GetNeighbour(road.point, new_route[i]);
+        gwv->CalcRoad(road.point, GAMECLIENT.GetPlayerID());
     }
     // Zielpunkt updaten (für Wasserweg)
-    cselx = road.point_x;
-    csely = road.point_y;
+    cSel = road.point;
 
     road.route.insert(road.route.end(), new_route.begin(), new_route.end());
 
@@ -869,17 +857,15 @@ bool dskGameInterface::BuildRoadPart(int& cselx, int& csely, bool end)
  *
  *  @author OLiver
  */
-unsigned dskGameInterface::TestBuiltRoad(const int x, const int y)
+unsigned dskGameInterface::TestBuiltRoad(const MapPoint pt)
 {
-    int x2 = road.start_x, y2 = road.start_y;
+    MapPoint pt2 = road.start;
     for(unsigned i = 0; i < road.route.size(); ++i)
     {
-        if(x2 == x && y2 == y)
+        if(pt2 == pt)
             return i + 1;
 
-        int tx2 = x2, ty2 = y2;
-        x2 = gwv->GetXA(tx2, ty2, road.route[i]);
-        y2 = gwv->GetYA(tx2, ty2, road.route[i]);
+        pt2 = gwv->GetNeighbour(pt2, road.route[i]);
     }
     return 0;
 }
@@ -892,7 +878,7 @@ unsigned dskGameInterface::TestBuiltRoad(const int x, const int y)
  */
 void dskGameInterface::ShowRoadWindow(int mouse_x, int mouse_y)
 {
-    if(gwv->CalcBQ(road.point_x, road.point_y, GAMECLIENT.GetPlayerID(), 1))
+    if(gwv->CalcBQ(road.point, GAMECLIENT.GetPlayerID(), 1))
         WINDOWMANAGER.Show(roadwindow = new iwRoadWindow(this, 1, mouse_x, mouse_y), true);
     else
         WINDOWMANAGER.Show(roadwindow = new iwRoadWindow(this, 0, mouse_x, mouse_y), true);
@@ -904,7 +890,7 @@ void dskGameInterface::ShowRoadWindow(int mouse_x, int mouse_y)
  *
  *  @author OLiver
  */
-void dskGameInterface::ShowActionWindow(const iwAction::Tabs& action_tabs, int cselx, int csely, int mouse_x, int mouse_y, const bool enable_military_buildings)
+void dskGameInterface::ShowActionWindow(const iwAction::Tabs& action_tabs, MapPoint cSel, int mouse_x, int mouse_y, const bool enable_military_buildings)
 {
     unsigned int params = 0;
 
@@ -913,7 +899,7 @@ void dskGameInterface::ShowActionWindow(const iwAction::Tabs& action_tabs, int c
     {
         for(unsigned char x = 0; x < 6; ++x)
         {
-            if(gwv->GetTerrainAround(cselx, csely, x) == 14)
+            if(gwv->GetTerrainAround(cSel, x) == 14)
                 params = iwAction::AWFT_WATERFLAG;
         }
     }
@@ -922,11 +908,11 @@ void dskGameInterface::ShowActionWindow(const iwAction::Tabs& action_tabs, int c
     if(action_tabs.flag)
     {
 
-        if(gwv->GetNO(gwv->GetXA(cselx, csely, 1), gwv->GetYA(cselx, csely, 1))->GetGOT() == GOT_NOB_HQ)
+        if(gwv->GetNO(gwv->GetNeighbour(cSel, 1))->GetGOT() == GOT_NOB_HQ)
             params = iwAction::AWFT_HQ;
-        else if(gwv->GetNO(cselx, csely)->GetType() == NOP_FLAG)
+        else if(gwv->GetNO(cSel)->GetType() == NOP_FLAG)
         {
-            if(gwv->GetSpecObj<noFlag>(cselx, csely)->GetFlagType() == FT_WATER)
+            if(gwv->GetSpecObj<noFlag>(cSel)->GetFlagType() == FT_WATER)
                 params = iwAction::AWFT_WATERFLAG;
         }
     }
@@ -934,11 +920,11 @@ void dskGameInterface::ShowActionWindow(const iwAction::Tabs& action_tabs, int c
     // Angriffstab muss wissen, wieviel Soldaten maximal entsendet werden können
     if(action_tabs.attack)
     {
-        if(GAMECLIENT.GetLocalPlayer()->IsPlayerAttackable(gwv->GetSpecObj<noBuilding>(cselx, csely)->GetPlayer()))
-            params = gwv->GetAvailableSoldiersForAttack(GAMECLIENT.GetPlayerID(), cselx, csely);
+        if(GAMECLIENT.GetLocalPlayer()->IsPlayerAttackable(gwv->GetSpecObj<noBuilding>(cSel)->GetPlayer()))
+            params = gwv->GetAvailableSoldiersForAttack(GAMECLIENT.GetPlayerID(), cSel);
     }
 
-    WINDOWMANAGER.Show((actionwindow = new iwAction(this, gwv, action_tabs, cselx, csely, mouse_x, mouse_y, params, enable_military_buildings)), true);
+    WINDOWMANAGER.Show((actionwindow = new iwAction(this, gwv, action_tabs, cSel, mouse_x, mouse_y, params, enable_military_buildings)), true);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -949,7 +935,7 @@ void dskGameInterface::ShowActionWindow(const iwAction::Tabs& action_tabs, int c
  */
 void dskGameInterface::CommandBuildRoad()
 {
-    GAMECLIENT.AddGC(new gc::BuildRoad(road.start_x, road.start_y, road.mode == RM_BOAT, road.route));
+    GAMECLIENT.AddGC(new gc::BuildRoad(road.start, road.mode == RM_BOAT, road.route));
     road.mode = RM_DISABLED;
 }
 
@@ -959,10 +945,10 @@ void dskGameInterface::CommandBuildRoad()
  *
  *  @author OLiver
  */
-void dskGameInterface::GI_FlagDestroyed(const unsigned short x, const unsigned short y)
+void dskGameInterface::GI_FlagDestroyed(const MapPoint pt)
 {
     // Im Wegbaumodus und haben wir von hier eine Flagge gebaut?
-    if(road.mode != RM_DISABLED && road.start_x == x && road.start_y == y)
+    if(road.mode != RM_DISABLED && road.start == pt)
     {
         // Wegbau abbrechen
         ActivateRoadMode(RM_DISABLED);
@@ -971,7 +957,7 @@ void dskGameInterface::GI_FlagDestroyed(const unsigned short x, const unsigned s
     // Evtl Actionfenster schließen, da sich das ja auch auf diese Flagge bezieht
     if(actionwindow)
     {
-        if(actionwindow->GetSelectedX() == x && actionwindow->GetSelectedY() == y)
+        if(actionwindow->GetSelectedX() == pt.x && actionwindow->GetSelectedY() == pt.y)
             WINDOWMANAGER.Close(actionwindow);
     }
 }
@@ -1217,10 +1203,10 @@ void dskGameInterface::GI_PlayerDefeated(const unsigned player_id)
  *
  *  @author OLiver
  */
-void dskGameInterface::GI_UpdateMinimap(const MapCoord x, const MapCoord y)
+void dskGameInterface::GI_UpdateMinimap(const MapPoint pt)
 {
     // Minimap Bescheid sagen
-    minimap.UpdateNode(x, y);
+    minimap.UpdateNode(pt);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1251,11 +1237,10 @@ void dskGameInterface::DemolishRoad(const unsigned start_id)
 {
     for(unsigned i = road.route.size(); i >= start_id; --i)
     {
-        MapCoord tx = road.point_x, ty = road.point_y;
-        road.point_x = gwv->GetXA(tx, ty, (road.route[i - 1] + 3) % 6);
-        road.point_y = gwv->GetYA(tx, ty, (road.route[i - 1] + 3) % 6);
-        gwv->SetPointVirtualRoad(road.point_x, road.point_y, road.route[i - 1], 0);
-        gwv->CalcRoad(tx, ty, GAMECLIENT.GetPlayerID());
+        MapPoint t = road.point;
+        road.point = gwv->GetNeighbour(road.point, (road.route[i - 1] + 3) % 6);
+        gwv->SetPointVirtualRoad(road.point, road.route[i - 1], 0);
+        gwv->CalcRoad(t, GAMECLIENT.GetPlayerID());
     }
 
     road.route.resize(start_id - 1);

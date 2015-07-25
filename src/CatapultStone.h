@@ -21,6 +21,7 @@
 
 #include "GameObject.h"
 #include "EventManager.h"
+#include "gameTypes/MapTypes.h"
 
 class nobMilitary;
 class GameWorldView;
@@ -33,9 +34,9 @@ class CatapultStone : public GameObject
     private:
 
         /// (Map-)Koordinaten des Hauses, in dem er einschlagen soll
-        const unsigned short dest_building_x, dest_building_y;
+        const MapPoint dest_building;
         /// Aufschlagspunkt des Steines (Map-Koordinaten!)
-        const unsigned short dest_map_x, dest_map_y;
+        const MapPoint dest_map;
         /// Koordinaten der Startposition des Steins
         const int start_x, start_y;
         /// Koordinaten der Zielposition des Steins
@@ -47,7 +48,7 @@ class CatapultStone : public GameObject
 
     public:
 
-        CatapultStone(const unsigned short dest_building_x, const unsigned short dest_building_y, const unsigned short dest_map_x, const unsigned short dest_map_y,
+        CatapultStone(const MapPoint dest_building, const MapPoint dest_map,
                       const int start_x, const int start_y, const int dest_x, const int dest_y, const unsigned fly_duration);
 
         CatapultStone(SerializedGameData* sgd, const unsigned obj_id);

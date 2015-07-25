@@ -40,8 +40,8 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-nofFarmhand::nofFarmhand(const Job job, const unsigned short x, const unsigned short y, const unsigned char player, nobUsual* workplace)
-    : nofBuildingWorker(job, x, y, player, workplace), dest_x(0), dest_y(0)
+nofFarmhand::nofFarmhand(const Job job, const MapPoint pos, const unsigned char player, nobUsual* workplace)
+    : nofBuildingWorker(job, pos, player, workplace), dest(0, 0)
 {
 }
 
@@ -49,13 +49,12 @@ void nofFarmhand::Serialize_nofFarmhand(SerializedGameData* sgd) const
 {
     Serialize_nofBuildingWorker(sgd);
 
-    sgd->PushUnsignedShort(dest_x);
-    sgd->PushUnsignedShort(dest_y);
+    sgd->PushUnsignedShort(dest.x);
+    sgd->PushUnsignedShort(dest.y);
 }
 
 nofFarmhand::nofFarmhand(SerializedGameData* sgd, const unsigned obj_id) : nofBuildingWorker(sgd, obj_id),
-    dest_x(sgd->PopUnsignedShort()),
-    dest_y(sgd->PopUnsignedShort())
+    dest(sgd->PopUnsignedShort(), sgd->PopUnsignedShort())
 {}
 
 
@@ -80,7 +79,7 @@ void nofFarmhand::HandleDerivedEvent(const unsigned int id)
             // fertig mit Arbeiten --> dann müssen die "Folgen des Arbeitens" ausgeführt werden
             WorkFinished();
             // Objekt wieder freigeben
-            gwg->GetNode(x, y).reserved = false;
+            gwg->GetNode(pos).reserved = false;
             // Wieder nach Hause gehen
             StartWalkingHome();
 
@@ -109,7 +108,7 @@ void nofFarmhand::HandleDerivedEvent(const unsigned int id)
             unsigned radius_count = 0;
 
             // Available points: 1st class and 2st class
-            std::vector< Point<MapCoord> > available_points[3];
+            std::vector< MapPoint > available_points[3];
 
             unsigned max_radius = (job == JOB_CHARBURNER) ? 3 : RADIUS[job - JOB_WOODCUTTER];
             unsigned add_radius_when_found = (job == JOB_CHARBURNER) ? 1 : ADD_RADIUS_WHEN_FOUND[job - JOB_WOODCUTTER];
@@ -117,21 +116,21 @@ void nofFarmhand::HandleDerivedEvent(const unsigned int id)
             bool points_found = false;
             bool wait = false;
 
-            for(MapCoord tx = gwg->GetXA(x, y, 0), r = 1; r <= max_radius; tx = gwg->GetXA(tx, y, 0), ++r)
+            for(MapCoord tx = gwg->GetXA(pos, 0), r = 1; r <= max_radius; tx = gwg->GetXA(tx, pos.y, 0), ++r)
             {
                 // Wurde ein Punkt in diesem Radius gefunden?
                 bool found_in_radius = false;
 
-                MapCoord tx2 = tx, ty2 = y;
+                MapPoint t2(tx, pos.y);
                 for(unsigned i = 2; i < 8; ++i)
                 {
-                    for(MapCoord r2 = 0; r2 < r; gwg->GetPointA(tx2, ty2, i % 6), ++r2)
+                    for(MapCoord r2 = 0; r2 < r; t2 = gwg->GetNeighbour(t2,  i % 6), ++r2)
                     {
-                        if(IsPointAvailable(tx2, ty2))
+                        if(IsPointAvailable(t2))
                         {
-                            if (!gwg->GetNode(tx2, ty2).reserved)
+                            if (!gwg->GetNode(t2).reserved)
                             {
-                                available_points[GetPointQuality(tx2, ty2) - PQ_CLASS1].push_back(Point<MapCoord>(tx2, ty2));
+                                available_points[GetPointQuality(t2) - PQ_CLASS1].push_back(MapPoint(t2));
                                 found_in_radius = true;
                                 points_found = true;
                             }
@@ -157,7 +156,7 @@ void nofFarmhand::HandleDerivedEvent(const unsigned int id)
             if(points_found)
             {
                 // Prefer 1st class objects and use only 2nd class objects if there are no more other objects anymore
-                Point<MapCoord> p(0, 0);
+                MapPoint p(0, 0);
                 for(unsigned i = 0; i < 3; ++i)
                 {
                     if(!available_points[i].empty())
@@ -168,8 +167,7 @@ void nofFarmhand::HandleDerivedEvent(const unsigned int id)
                 }
 
                 // Als neues Ziel nehmen
-                dest_x = p.x;
-                dest_y = p.y;
+                dest = p;
 
                 state = STATE_WALKTOWORKPOINT;
 
@@ -177,7 +175,7 @@ void nofFarmhand::HandleDerivedEvent(const unsigned int id)
                 workplace->is_working = true;
 
                 // Punkt für uns reservieren
-                gwg->GetNode(dest_x, dest_y).reserved = true;;
+                gwg->GetNode(dest).reserved = true;;
 
                 // Anfangen zu laufen (erstmal aus dem Haus raus!)
                 StartWalking(4);
@@ -204,14 +202,14 @@ void nofFarmhand::HandleDerivedEvent(const unsigned int id)
                         {
                             case JOB_STONEMASON:
                                 GAMECLIENT.SendPostMessage(
-                                    new ImagePostMsgWithLocation(_("No more stones in range"), PMC_GENERAL, x, y, workplace->GetBuildingType(), workplace->GetNation()));
+                                    new ImagePostMsgWithLocation(_("No more stones in range"), PMC_GENERAL, pos, workplace->GetBuildingType(), workplace->GetNation()));
                                 OutOfRessourcesMsgSent = true;
                                 // Produktivitätsanzeige auf 0 setzen
                                 workplace->SetProductivityToZero();
                                 break;
                             case JOB_FISHER:
                                 GAMECLIENT.SendPostMessage(
-                                    new ImagePostMsgWithLocation(_("No more fishes in range"), PMC_GENERAL, x, y, workplace->GetBuildingType(), workplace->GetNation()));
+                                    new ImagePostMsgWithLocation(_("No more fishes in range"), PMC_GENERAL, pos, workplace->GetBuildingType(), workplace->GetNation()));
                                 OutOfRessourcesMsgSent = true;
                                 // Produktivitätsanzeige auf 0 setzen
                                 workplace->SetProductivityToZero();
@@ -228,8 +226,7 @@ void nofFarmhand::HandleDerivedEvent(const unsigned int id)
                     case BLD_WOODCUTTER:
                     case BLD_QUARRY:
                     case BLD_FISHERY:
-                        GAMECLIENT.SendAIEvent(new AIEvent::Building(AIEvent::NoMoreResourcesReachable, workplace->GetX(), workplace->GetY(),
-                                               workplace->GetBuildingType()), player);
+                        GAMECLIENT.SendAIEvent(new AIEvent::Building(AIEvent::NoMoreResourcesReachable, workplace->GetPos(), workplace->GetBuildingType()), player);
                         break;
                     default:
                         break;
@@ -247,13 +244,13 @@ void nofFarmhand::HandleDerivedEvent(const unsigned int id)
     }
 }
 
-bool nofFarmhand::IsPointAvailable(const unsigned short x, const unsigned short y)
+bool nofFarmhand::IsPointAvailable(const MapPoint pt)
 {
     // Gibts an diesen Punkt überhaupt die nötigen Vorraussetzungen für den Beruf?
-    if(GetPointQuality(x, y) != PQ_NOTPOSSIBLE)
+    if(GetPointQuality(pt) != PQ_NOTPOSSIBLE)
     {
         // Gucken, ob ein Weg hinführt
-        if(gwg->FindHumanPath(this->x, this->y, x, y, 20) != 0xFF)
+        if(gwg->FindHumanPath(this->pos, pt, 20) != 0xFF)
             return 1;
         else
             return 0;
@@ -265,7 +262,7 @@ bool nofFarmhand::IsPointAvailable(const unsigned short x, const unsigned short 
 void nofFarmhand::WalkToWorkpoint()
 {
     // Sind wir am Ziel angekommen?
-    if(x == dest_x && y == dest_y)
+    if(pos == dest)
     {
         // Anfangen zu arbeiten
         state = STATE_WORK;
@@ -273,10 +270,10 @@ void nofFarmhand::WalkToWorkpoint()
         WorkStarted();
     }
     // Weg suchen und gucken ob der Punkt noch in Ordnung ist
-    else if((dir = gwg->FindHumanPath(x, y, dest_x, dest_y, 20)) == 0xFF || GetPointQuality(dest_x, dest_y) == PQ_NOTPOSSIBLE)
+    else if((dir = gwg->FindHumanPath(pos, dest, 20)) == 0xFF || GetPointQuality(dest) == PQ_NOTPOSSIBLE)
     {
         // Punkt freigeben
-        gwg->GetNode(dest_x, dest_y).reserved = false;
+        gwg->GetNode(dest).reserved = false;
         // Kein Weg führt mehr zum Ziel oder Punkt ist nich mehr in Ordnung --> wieder nach Hause gehen
         StartWalkingHome();
     }
@@ -291,8 +288,7 @@ void nofFarmhand::StartWalkingHome()
 {
     state = STATE_WALKINGHOME;
     // Fahne vor dem Gebäude anpeilen
-    dest_x = gwg->GetXA(workplace->GetX(), workplace->GetY(), 4);
-    dest_y = gwg->GetYA(workplace->GetX(), workplace->GetY(), 4);
+    dest = gwg->GetNeighbour(workplace->GetPos(), 4);
 
     // Zu Laufen anfangen
     WalkHome();
@@ -301,13 +297,13 @@ void nofFarmhand::StartWalkingHome()
 void nofFarmhand::WalkHome()
 {
     // Sind wir zu Hause angekommen? (genauer an der Flagge !!)
-    if(x == dest_x && y == dest_y)
+    if(pos == dest)
     {
         // Weiteres übernimmt nofBuildingWorker
         WorkingReady();
     }
     // Weg suchen und ob wir überhaupt noch nach Hause kommen
-    else if((dir = gwg->FindHumanPath(x, y, dest_x, dest_y, 40)) == 0xFF)
+    else if((dir = gwg->FindHumanPath(pos, dest, 40)) == 0xFF)
     {
         // Kein Weg führt mehr nach Hause--> Rumirren
         StartWandering();
@@ -328,7 +324,7 @@ void nofFarmhand::WorkAborted()
 {
     // Platz freigeben, falls man gerade arbeitet
     if(state == STATE_WORK || state == STATE_WALKTOWORKPOINT)
-        gwg->GetNode(dest_x, dest_y).reserved = false;
+        gwg->GetNode(dest).reserved = false;
 
     WorkAborted_Farmhand();
 }

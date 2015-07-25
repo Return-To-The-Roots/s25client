@@ -28,7 +28,7 @@ class nobHQ : public nobBaseWarehouse
     public:
 
 
-        nobHQ(const unsigned short x, const unsigned short y, const unsigned char player, const Nation nation);
+        nobHQ(const MapPoint pt, const unsigned char player, const Nation nation);
         nobHQ(SerializedGameData* sgd, const unsigned obj_id);
 
         /// Aufräummethoden

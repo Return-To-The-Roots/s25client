@@ -48,8 +48,8 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-nofBuildingWorker::nofBuildingWorker(const Job job, const unsigned short x, const unsigned short y, const unsigned char player, nobUsual* workplace)
-    : noFigure(job, x, y, player, workplace), state(STATE_FIGUREWORK), workplace(workplace), ware(GD_NOTHING), not_working(0), since_not_working(0xFFFFFFFF), was_sounding(false), OutOfRessourcesMsgSent(false)
+nofBuildingWorker::nofBuildingWorker(const Job job, const MapPoint pos, const unsigned char player, nobUsual* workplace)
+    : noFigure(job, pos, player, workplace), state(STATE_FIGUREWORK), workplace(workplace), ware(GD_NOTHING), not_working(0), since_not_working(0xFFFFFFFF), was_sounding(false), OutOfRessourcesMsgSent(false)
 {
 }
 
@@ -371,28 +371,26 @@ bool nofBuildingWorker::GetResources(unsigned char type)
     // in Map-Resource-Koordinaten konvertieren
     type = RESOURCES_MINE_TO_MAP[type];
 
-    MapCoord mx = 0, my = 0;
+    MapPoint mP(0, 0);
     bool found = false;
 
     // Alle Punkte durchgehen, bis man einen findet, wo man graben kann
-    if(GetResourcesOfNode(x, y, type))
+    if(GetResourcesOfNode(pos, type))
     {
-        mx = x;
-        my = y;
+        mP = pos;
         found = true;
     }
 
-    for(MapCoord tx = gwg->GetXA(x, y, 0), r = 1; !found && r <= MINER_RADIUS; tx = gwg->GetXA(tx, y, 0), ++r)
+    for(MapCoord tx = gwg->GetXA(pos, 0), r = 1; !found && r <= MINER_RADIUS; tx = gwg->GetXA(tx, pos.y, 0), ++r)
     {
-        MapCoord tx2 = tx, ty2 = y;
+        MapPoint t2(tx, pos.y);
         for(unsigned int i = 2; !found && i < 8; ++i)
         {
-            for(MapCoord r2 = 0; !found && r2 < r; gwg->GetPointA(tx2, ty2, i % 6), ++r2)
+            for(MapCoord r2 = 0; !found && r2 < r; t2 = gwg->GetNeighbour(t2,  i % 6), ++r2)
             {
-                if(GetResourcesOfNode(tx2, ty2, type))
+                if(GetResourcesOfNode(t2, type))
                 {
-                    mx = tx2;
-                    my = ty2;
+                    mP = t2;
                     found = true;
                 }
             }
@@ -404,7 +402,7 @@ bool nofBuildingWorker::GetResources(unsigned char type)
         // Minen / Brunnen unerschöpflich?
         if( (type == 4 && GAMECLIENT.GetGGS().isEnabled(ADDON_EXHAUSTIBLE_WELLS)) ||
                 (type != 4 && !GAMECLIENT.GetGGS().isEnabled(ADDON_INEXHAUSTIBLE_MINES)) )
-            --gwg->GetNode(mx, my).resources;
+            --gwg->GetNode(mP).resources;
         return true;
     }
 
@@ -418,7 +416,7 @@ bool nofBuildingWorker::GetResources(unsigned char type)
                 error = _("This well is dried out");
 
             GAMECLIENT.SendPostMessage(
-                new ImagePostMsgWithLocation(_(error), PMC_GENERAL, x, y,
+                new ImagePostMsgWithLocation(_(error), PMC_GENERAL, pos,
                                              workplace->GetBuildingType(), workplace->GetNation())
             );
         }
@@ -428,23 +426,20 @@ bool nofBuildingWorker::GetResources(unsigned char type)
         workplace->SetProductivityToZero();
 
         // KI-Event erzeugen
-        GAMECLIENT.SendAIEvent(
-            new AIEvent::Building(AIEvent::NoMoreResourcesReachable, workplace->GetX(), workplace->GetY(),
-                                  workplace->GetBuildingType()), player
-        );
+        GAMECLIENT.SendAIEvent(new AIEvent::Building(AIEvent::NoMoreResourcesReachable, workplace->GetPos(), workplace->GetBuildingType()), player);
     }
 
     // Hoffe das passt...
     return false;
 }
 
-bool nofBuildingWorker::GetResourcesOfNode(const unsigned short x, const unsigned short y, const unsigned char type)
+bool nofBuildingWorker::GetResourcesOfNode(const MapPoint pt, const unsigned char type)
 {
     // Evtl über die Grenzen gelesen?
-    if(x >= gwg->GetWidth() || y >= gwg->GetHeight())
+    if(pt.x >= gwg->GetWidth() || pt.y >= gwg->GetHeight())
         return false;
 
-    unsigned char resources = gwg->GetNode(x, y).resources;
+    unsigned char resources = gwg->GetNode(pt).resources;
 
     // wasser?
     if(type == 4)

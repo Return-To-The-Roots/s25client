@@ -55,18 +55,18 @@ noFighting::noFighting(nofActiveSoldier* soldier1, nofActiveSoldier* soldier2) :
     player_won = 0xFF;
 
     // Die beiden Soldaten erstmal aus der Liste hauen
-    gwg->RemoveFigure(soldier1, soldier1->GetX(), soldier1->GetY());
-    gwg->RemoveFigure(soldier2, soldier1->GetX(), soldier1->GetY());
+    gwg->RemoveFigure(soldier1, soldier1->GetPos());
+    gwg->RemoveFigure(soldier2, soldier1->GetPos());
 
     // Beginn-Event Anmelden (Soldaten gehen auf ihre Seiten)
     current_ev = em->AddEvent(this, 15);
 
     // anderen Leute, die auf diesem Punkt zulaufen, stoppen
-    gwg->StopOnRoads(soldier1->GetX(), soldier1->GetY());
+    gwg->StopOnRoads(soldier1->GetPos());
 
     // Sichtradius behalten
-    gwg->SetVisibilitiesAroundPoint(soldier1->GetX(), soldier1->GetY(), VISUALRANGE_SOLDIER, soldier1->GetPlayer());
-    gwg->SetVisibilitiesAroundPoint(soldier1->GetX(), soldier1->GetY(), VISUALRANGE_SOLDIER, soldier2->GetPlayer());
+    gwg->SetVisibilitiesAroundPoint(soldier1->GetPos(), VISUALRANGE_SOLDIER, soldier1->GetPlayer());
+    gwg->SetVisibilitiesAroundPoint(soldier1->GetPos(), VISUALRANGE_SOLDIER, soldier2->GetPlayer());
 }
 
 void noFighting::Serialize_noFighting(SerializedGameData* sgd) const
@@ -231,7 +231,7 @@ void noFighting::HandleEvent(const unsigned int id)
                         // Soldat Bescheid sagen, dass er stirbt
                         soldiers[!turn]->LostFighting();
                         // Anderen Soldaten auf die Karte wieder setzen, Bescheid sagen, er kann wieder loslaufen
-                        gwg->AddFigure(soldiers[turn], soldiers[turn]->GetX(), soldiers[turn]->GetY());
+                        gwg->AddFigure(soldiers[turn], soldiers[turn]->GetPos());
                         soldiers[turn]->WonFighting();
                         // Besitzer merken für die Sichtbarkeiten am Ende dann
                         player_won = soldiers[turn]->GetPlayer();
@@ -242,7 +242,7 @@ void noFighting::HandleEvent(const unsigned int id)
                         current_ev = em->AddEvent(this, 30);
                         // Umstehenden Figuren Bescheid nach gewisser Zeit Bescheid sagen
                         /*em->AddEvent(this,RELEASE_FIGURES_OFFSET,1);*/
-                        gwg->RoadNodeAvailable(soldiers[turn - 3]->GetX(), soldiers[turn - 3]->GetY());
+                        gwg->RoadNodeAvailable(soldiers[turn - 3]->GetPos());
 
                         // In die Statistik eintragen
                         gwg->GetPlayer(player_won)->ChangeStatisticValue(STAT_VANQUISHED, 1);
@@ -257,17 +257,17 @@ void noFighting::HandleEvent(const unsigned int id)
             case 4:
             {
                 unsigned player_lost = turn - 3;
-                MapCoord x = soldiers[player_lost]->GetX(), y = soldiers[player_lost]->GetY();
+                MapPoint pt = soldiers[player_lost]->GetPos();
 
                 // Sounds löschen vom Sterben
                 SOUNDMANAGER.WorkingFinished(this);
 
                 // Kampf ist endgültig beendet
                 em->AddToKillList(this);
-                gwg->RemoveFigure(this, x, y);
+                gwg->RemoveFigure(this, pt);
 
                 // Wenn da nix war bzw. nur ein Verzierungsobjekt, kommt nun ein Skelett hin
-                noBase* no = gwg->GetNO(x, y);
+                noBase* no = gwg->GetNO(pt);
                 if(no->GetType() == NOP_NOTHING || no->GetType() == NOP_ENVIRONMENT)
                 {
                     if(no->GetType() != NOP_NOTHING)
@@ -276,22 +276,20 @@ void noFighting::HandleEvent(const unsigned int id)
                         delete no;
                     }
 
-                    gwg->SetNO(new noSkeleton(x, y), x, y);
+                    gwg->SetNO(new noSkeleton(pt), pt);
                 }
 
                 // Umstehenden Figuren Bescheid sagen
                 //gwg->RoadNodeAvailable(soldiers[turn-3]->GetX(),soldiers[turn-3]->GetY());
 
                 // Sichtradius ausblenden am Ende des Kampfes, an jeweiligen Soldaten dann übergeben, welcher überlebt hat
-                gwg->RecalcVisibilitiesAroundPoint(x, y, VISUALRANGE_SOLDIER, soldiers[player_lost]->GetPlayer(), NULL);
-                gwg->RecalcVisibilitiesAroundPoint(x, y, VISUALRANGE_SOLDIER, player_won, NULL);
+                gwg->RecalcVisibilitiesAroundPoint(pt, VISUALRANGE_SOLDIER, soldiers[player_lost]->GetPlayer(), NULL);
+                gwg->RecalcVisibilitiesAroundPoint(pt, VISUALRANGE_SOLDIER, player_won, NULL);
 
                 // Soldaten endgültig umbringen
                 gwg->GetPlayer(soldiers[player_lost]->GetPlayer())->DecreaseInventoryJob(soldiers[player_lost]->GetJobType(), 1);
                 soldiers[player_lost]->Destroy();
                 delete soldiers[player_lost];
-
-
 
             } break;
         }

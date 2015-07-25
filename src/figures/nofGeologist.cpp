@@ -43,8 +43,8 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-nofGeologist::nofGeologist(const unsigned short x, const unsigned short y, const unsigned char player, noRoadNode* goal)
-    : nofFlagWorker(JOB_GEOLOGIST, x, y, player, goal),  signs(0), resAlreadyFound(std::vector<bool>(5))
+nofGeologist::nofGeologist(const MapPoint pos, const unsigned char player, noRoadNode* goal)
+    : nofFlagWorker(JOB_GEOLOGIST, pos, player, goal),  signs(0), resAlreadyFound(std::vector<bool>(5))
 {
     node_goal.x = 0;
     node_goal.y = 0;
@@ -57,7 +57,7 @@ void nofGeologist::Serialize_nofGeologist(SerializedGameData* sgd) const
     sgd->PushUnsignedShort(signs);
 
     sgd->PushUnsignedInt(available_nodes.size());
-    for(std::vector< Point<MapCoord> >::const_iterator it = available_nodes.begin(); it != available_nodes.end(); ++it)
+    for(std::vector< MapPoint >::const_iterator it = available_nodes.begin(); it != available_nodes.end(); ++it)
     {
         sgd->PushUnsignedShort(it->x);
         sgd->PushUnsignedShort(it->y);
@@ -77,7 +77,7 @@ nofGeologist::nofGeologist(SerializedGameData* sgd, const unsigned obj_id) : nof
     unsigned available_nodes_count = sgd->PopUnsignedInt();
     for(unsigned i = 0; i < available_nodes_count; ++i)
     {
-        Point<MapCoord> p;
+        MapPoint p;
         p.x = sgd->PopUnsignedShort();
         p.y = sgd->PopUnsignedShort();
         available_nodes.push_back(p);
@@ -204,17 +204,17 @@ void nofGeologist::Walked()
     if(state == STATE_GEOLOGIST_GOTONEXTNODE)
     {
         // Ist mein Zielpunkt überhaupt noch geeignet zum Graben (kann ja mittlerweile auch was drauf gebaut worden sein)
-        if(!IsNodeGood(node_goal.x, node_goal.y))
+        if(!IsNodeGood(node_goal))
         {
             // alten Punkt wieder freigeben
-            gwg->GetNode(node_goal.x, node_goal.y).reserved = false;;
+            gwg->GetNode(node_goal).reserved = false;;
             // wenn nicht, dann zu einem neuen Punkt gehen
             GoToNextNode();
             return;
         }
 
         // Bin ich am Zielpunkt?
-        if(x == node_goal.x && y == node_goal.y)
+        if(pos == node_goal)
         {
             // anfangen zu graben
             current_ev = em->AddEvent(this, 100, 1);
@@ -223,13 +223,13 @@ void nofGeologist::Walked()
         else
         {
             // Weg zum nächsten Punkt suchen
-            dir = gwg->FindHumanPath(x, y, node_goal.x, node_goal.y, 20);
+            dir = gwg->FindHumanPath(pos, node_goal, 20);
 
             // Wenns keinen gibt
             if(dir == 0xFF)
             {
                 // alten Punkt wieder freigeben
-                gwg->GetNode(node_goal.x, node_goal.y).reserved = false;;
+                gwg->GetNode(node_goal).reserved = false;
                 // dann neuen Punkt suchen
                 dir = GetNextNode();
                 // falls es keinen gibt, dann zurück zur Flagge gehen und es übernimmt der andere "Walked"-Zweig
@@ -260,7 +260,7 @@ void nofGeologist::HandleDerivedEvent(const unsigned int id)
         case STATE_GEOLOGIST_DIG:
         {
             // Ressourcen an diesem Punkt untersuchen
-            unsigned char resources = gwg->GetNode(x, y).resources;
+            unsigned char resources = gwg->GetNode(pos).resources;
 
 
             if((resources >= 0x41 && resources <= 0x47) || (resources >= 0x49 && resources <= 0x4F) ||
@@ -277,18 +277,18 @@ void nofGeologist::HandleDerivedEvent(const unsigned int id)
                 SetSign(resources);
                 GoToNextNode();
                 /// Punkt wieder freigeben
-                gwg->GetNode(x, y).reserved = false;;
+                gwg->GetNode(pos).reserved = false;;
             }
 
         } break;
         case STATE_GEOLOGIST_CHEER:
         {
             // Schild reinstecken
-            SetSign(gwg->GetNode(x, y).resources);
+            SetSign(gwg->GetNode(pos).resources);
             // Und weiterlaufen
             GoToNextNode();
             /// Punkt wieder freigeben
-            gwg->GetNode(x, y).reserved = false;;
+            gwg->GetNode(pos).reserved = false;;
             /// Sounds evtl löschen
             SOUNDMANAGER.WorkingFinished(this);
         } break;
@@ -296,11 +296,11 @@ void nofGeologist::HandleDerivedEvent(const unsigned int id)
 }
 
 
-bool nofGeologist::IsNodeGood(const unsigned short x, const unsigned short y)
+bool nofGeologist::IsNodeGood(const MapPoint pt)
 {
     // Es dürfen auch keine bestimmten Objekte darauf stehen und auch keine Schilder !!
-    if(!gwg->IsNodeForFigures(x, y) || gwg->GetNO(x, y)->GetGOT() == GOT_SIGN
-            || gwg->GetNO(x, y)->GetType() == NOP_FLAG || gwg->GetNO(x, y)->GetType() == NOP_TREE)
+    if(!gwg->IsNodeForFigures(pt) || gwg->GetNO(pt)->GetGOT() == GOT_SIGN
+            || gwg->GetNO(pt)->GetType() == NOP_FLAG || gwg->GetNO(pt)->GetType() == NOP_TREE)
         return false;
 
     return true;
@@ -313,57 +313,56 @@ void nofGeologist::LookForNewNodes()
 
     for(unsigned short r = 1; r < max_radius; ++r)
     {
-        int x = flag->GetX(), y = flag->GetY();
+        MapPoint test(flag->GetPos());
 
         // r Punkte rüber
-        x -= r;
+        test.x -= r;
 
         // r schräg runter bzw hoch
         for(unsigned short i = 0; i < r; ++i)
         {
-            TestNode(x, y + i); // unten
-            if(i) TestNode(x, y - i); // oben
+            TestNode(MapPoint(test.x, test.y + i)); // unten
+            if(i) TestNode(MapPoint(test.x, test.y - i)); // oben
 
-            x += (y & 1);
+            test.x += (test.y & 1);
         }
 
         // Die obere bzw untere Reihe
-        for(unsigned short i = 0; i < r + 1; ++i, ++x)
+        for(unsigned short i = 0; i < r + 1; ++i, ++test.x)
         {
-            TestNode(x, y + r); // unten
-            TestNode(x, y - r); // oben
+            TestNode(MapPoint(test.x, test.y + r)); // unten
+            TestNode(MapPoint(test.x, test.y - r)); // oben
         }
 
-        x = flag->GetX() + r;
+        test.x = flag->GetX() + r;
 
         // auf der anderen Seite wieder schräg hoch/runter
         for(unsigned short i = 0; i < r; ++i)
         {
-            TestNode(x, y + i); // unten
-            if(i) TestNode(x, y - i); // oben
+            TestNode(MapPoint(test.x, test.y + i)); // unten
+            if(i) TestNode(MapPoint(test.x, test.y - i)); // oben
 
-            x -= !(y & 1);
+            test.x -= !(test.y & 1);
         }
 
         // Wenn es in diesem Umkreis welche gibt, dann nur noch 2 Kreise zusätzlich weitergehen
         if(!found && !available_nodes.empty())
         {
-            max_radius = min(10, r + 3);
+            max_radius = std::min(10, r + 3);
             found = true;
         }
 
     }
 }
 
-void nofGeologist::TestNode(const unsigned short x, const unsigned short y)
+void nofGeologist::TestNode(const MapPoint pt)
 {
     // Prüfen, ob er überhaupt auf der Karte liegt und nicht irgendwo im Nirvana
-    if(x < gwg->GetWidth() && y < gwg->GetHeight())
+    if(pt.x < gwg->GetWidth() && pt.y < gwg->GetHeight())
     {
-        if(IsNodeGood(x, y) && (gwg->FindHumanPath(this->x, this->y, x, y, 20)) != 0xFF && !gwg->GetNode(x, y).reserved)
+        if(IsNodeGood(pos) && (gwg->FindHumanPath(this->pos, pt, 20)) != 0xFF && !gwg->GetNode(pt).reserved)
         {
-            Point<MapCoord> p(x, y);
-            available_nodes.push_back(p);
+            available_nodes.push_back(pt);
         }
     }
 }
@@ -385,10 +384,10 @@ unsigned char nofGeologist::GetNextNode()
             available_nodes.erase(available_nodes.begin() + randNode);
             // Gucken, ob er gut ist und ob man hingehen kann und ob er noch nicht reserviert wurde!
             unsigned char ret_dir;
-            if(IsNodeGood(node_goal.x, node_goal.y) && (ret_dir = gwg->FindHumanPath(x, y, node_goal.x, node_goal.y, 20)) != 0xFF && !gwg->GetNode(node_goal.x, node_goal.y).reserved)
+            if(IsNodeGood(node_goal) && (ret_dir = gwg->FindHumanPath(pos, node_goal, 20)) != 0xFF && !gwg->GetNode(node_goal).reserved)
             {
                 // Reservieren
-                gwg->GetNode(node_goal.x, node_goal.y).reserved = true;;
+                gwg->GetNode(node_goal).reserved = true;;
                 return ret_dir;
             }
         }
@@ -434,7 +433,7 @@ void nofGeologist::GoToNextNode()
 void nofGeologist::SetSign(const unsigned char resources)
 {
     // Bestimmte Objekte können gelöscht werden
-    noBase* no = gwg->GetNO(x, y);
+    noBase* no = gwg->GetNO(pos);
 
     if(no->GetType() != NOP_NOTHING && no->GetType() != NOP_ENVIRONMENT)
         return;
@@ -494,15 +493,15 @@ void nofGeologist::SetSign(const unsigned char resources)
             {
                 switch(type)
                 {
-                    case 0: GAMECLIENT.SendPostMessage(new PostMsgWithLocation(_("Found iron ore"), PMC_GEOLOGIST, x, y));
+                    case 0: GAMECLIENT.SendPostMessage(new PostMsgWithLocation(_("Found iron ore"), PMC_GEOLOGIST, pos));
                         break;
-                    case 1: GAMECLIENT.SendPostMessage(new PostMsgWithLocation(_("Found gold"), PMC_GEOLOGIST, x, y));
+                    case 1: GAMECLIENT.SendPostMessage(new PostMsgWithLocation(_("Found gold"), PMC_GEOLOGIST, pos));
                         break;
-                    case 2: GAMECLIENT.SendPostMessage(new PostMsgWithLocation(_("Found coal"), PMC_GEOLOGIST, x, y));
+                    case 2: GAMECLIENT.SendPostMessage(new PostMsgWithLocation(_("Found coal"), PMC_GEOLOGIST, pos));
                         break;
-                    case 3: GAMECLIENT.SendPostMessage(new PostMsgWithLocation(_("Found granite"), PMC_GEOLOGIST, x, y));
+                    case 3: GAMECLIENT.SendPostMessage(new PostMsgWithLocation(_("Found granite"), PMC_GEOLOGIST, pos));
                         break;
-                    case 4: GAMECLIENT.SendPostMessage(new PostMsgWithLocation(_("Found water"), PMC_GEOLOGIST, x, y));
+                    case 4: GAMECLIENT.SendPostMessage(new PostMsgWithLocation(_("Found water"), PMC_GEOLOGIST, pos));
                         break;
                     default:
                         ;
@@ -512,10 +511,10 @@ void nofGeologist::SetSign(const unsigned char resources)
         resAlreadyFound[type] = true;
     }
 
-    gwg->LUA_EventResourceFound(this->player, x, y, type, quantity);
+    gwg->LUA_EventResourceFound(this->player, pos, type, quantity);
 
     // Schild setzen
-    gwg->SetNO(new noSign(x, y, type, quantity), x, y);
+    gwg->SetNO(new noSign(pos, type, quantity), pos);
 
 
 }
@@ -542,7 +541,7 @@ void nofGeologist::LostWork()
         case STATE_GEOLOGIST_DIG:
         case STATE_GEOLOGIST_CHEER:
         {
-            gwg->GetNode(node_goal.x, node_goal.y).reserved = false;;
+            gwg->GetNode(node_goal).reserved = false;;
         } break;
     }
 }
@@ -550,15 +549,15 @@ void nofGeologist::LostWork()
 bool nofGeologist::IsSignInArea(unsigned char type) const
 {
     const unsigned short radius = 7;
-    for(MapCoord tx = gwg->GetXA(x, y, 0), r = 1; r <= radius; tx = gwg->GetXA(tx, y, 0), ++r)
+    for(MapCoord tx = gwg->GetXA(pos, 0), r = 1; r <= radius; tx = gwg->GetXA(tx, pos.y, 0), ++r)
     {
-        MapCoord tx2 = tx, ty2 = y;
+        MapPoint t2(tx, pos.y);
         for(unsigned i = 2; i < 8; ++i)
         {
-            for(MapCoord r2 = 0; r2 < r; gwg->GetPointA(tx2, ty2, i % 6), ++r2)
+            for(MapCoord r2 = 0; r2 < r; t2 = gwg->GetNeighbour(t2,  i % 6), ++r2)
             {
                 noSign* sign = 0;
-                if ((sign = gwg->GetSpecObj<noSign>(tx2, ty2)))
+                if ((sign = gwg->GetSpecObj<noSign>(t2)))
                 {
                     if (sign->GetSignType() == type)
                         return true;

@@ -53,24 +53,24 @@ class PostMsg
 class PostMsgWithLocation : public PostMsg
 {
     public:
-        PostMsgWithLocation(const std::string& text, PostMessageCategory cat, MapCoord x, MapCoord y);
+        PostMsgWithLocation(const std::string& text, PostMessageCategory cat, const MapPoint pt);
         PostMsgWithLocation(SerializedGameData* sgd);
 
-        MapCoord GetX() const { return x; }
-        MapCoord GetY() const { return y; }
+        MapCoord GetX() const { return pt.x; }
+        MapCoord GetY() const { return pt.y; }
+        MapPoint GetPos() const { return pt; }
         virtual void Serialize(SerializedGameData* sgd);
 
     private:
-        MapCoord x;
-        MapCoord y;
+        MapPoint pt;
 };
 
 /// Post-Nachricht mit Bild, Text und Goto-Button
 class ImagePostMsgWithLocation : public PostMsgWithLocation
 {
     public:
-        ImagePostMsgWithLocation(const std::string& text, PostMessageCategory cat, MapCoord x, MapCoord y, BuildingType senderBuilding, Nation senderNation);
-        ImagePostMsgWithLocation(const std::string& text, PostMessageCategory cat, MapCoord x, MapCoord y, Nation senderNation);
+        ImagePostMsgWithLocation(const std::string& text, PostMessageCategory cat, const MapPoint pt, BuildingType senderBuilding, Nation senderNation);
+        ImagePostMsgWithLocation(const std::string& text, PostMessageCategory cat, const MapPoint pt, Nation senderNation);
         ImagePostMsgWithLocation(SerializedGameData* sgd);
 
         glArchivItem_Bitmap* GetImage_() const;
@@ -141,7 +141,7 @@ class noShip;
 class ShipPostMsg : public ImagePostMsgWithLocation
 {
     public:
-        ShipPostMsg(const std::string& text, PostMessageCategory cat, Nation senderNation, MapCoord x, MapCoord y);
+        ShipPostMsg(const std::string& text, PostMessageCategory cat, Nation senderNation, const MapPoint pt);
         glArchivItem_Bitmap* GetImage_() const;
         MapCoord GetX() const;
         MapCoord GetY() const;

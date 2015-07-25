@@ -23,7 +23,7 @@
 
 #include "Window.h"
 #include "gameData/const_gui_ids.h"
-#include "Point.h"
+#include "gameTypes/MapTypes.h"
 #include <vector>
 
 class glArchivItem_Bitmap;
@@ -103,8 +103,8 @@ class IngameWindow : public Window
         bool last_down2;
         ButtonState button_state[2];
 
-        Rect GetLeftButtonRect()  const { Rect rect = {x, y, static_cast<unsigned short>(x + 16), static_cast<unsigned short>(y + 16)}; return rect; }
-        Rect GetRightButtonRect() const { Rect rect = {static_cast<unsigned short>(x + width - 16), y, static_cast<unsigned short>(x + width), static_cast<unsigned short>(y + 16)}; return rect; }
+        Rect GetLeftButtonRect()  const { return Rect(x, y, 16, 16); }
+        Rect GetRightButtonRect() const { return Rect(static_cast<unsigned short>(x + width - 16), y, 16, 16); }
 
     private:
         bool modal;

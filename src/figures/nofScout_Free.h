@@ -26,7 +26,7 @@
 class nofScout_Free : public nofFlagWorker
 {
         /// Nächster Punkt, wo der Späher hingehen soll
-        MapCoord next_x, next_y;
+        MapPoint nextPos;
         /// Weg, weit weit er noch laufen soll
         unsigned rest_way;
 
@@ -47,7 +47,7 @@ class nofScout_Free : public nofFlagWorker
 
     public:
 
-        nofScout_Free(const MapCoord x, const MapCoord y, const unsigned char player, noRoadNode* goal);
+        nofScout_Free(const MapPoint pt, const unsigned char player, noRoadNode* goal);
         nofScout_Free(SerializedGameData* sgd, const unsigned obj_id);
 
         /// Serialisierungsfunktionen

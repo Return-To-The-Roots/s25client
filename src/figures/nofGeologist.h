@@ -34,7 +34,7 @@ class nofGeologist : public nofFlagWorker
         /// Schilder, die er noch aufstellen sollte (max 15 abarbeiten)
         unsigned short signs;
 
-        typedef Point<MapCoord> MapPoint;
+        typedef MapPoint MapPoint;
 
         std::vector<MapPoint> available_nodes;
         /// Punkt, zu dem er gerade geht
@@ -52,11 +52,11 @@ class nofGeologist : public nofFlagWorker
         void HandleDerivedEvent(const unsigned int id);
 
         /// Kann man an diesem Punkt ein Schild aufstellen?
-        bool IsNodeGood(const unsigned short x, const unsigned short y);
+        bool IsNodeGood(const MapPoint pt);
         /// Sucht im Umkreis von der Flagge neue Punkte wo man graben könnte
         void LookForNewNodes();
         /// Nimmt den Punkt mit in die Liste auf, wenn er geeignet ist
-        void TestNode(const unsigned short x, const unsigned short y);
+        void TestNode(const MapPoint pt);
         /// Bestimmt einen neuen Punkt,wo man hingehen kann, falls es keinen mehr gibt, wird ein ungültiger
         /// Iterator gesetzt, liefert die Richtung in die man zum Punkt gehen muss, zurück
         unsigned char GetNextNode();
@@ -70,7 +70,7 @@ class nofGeologist : public nofFlagWorker
 
     public:
 
-        nofGeologist(const unsigned short x, const unsigned short y, const unsigned char player, noRoadNode* goal);
+        nofGeologist(const MapPoint pt, const unsigned char player, noRoadNode* goal);
         nofGeologist(SerializedGameData* sgd, const unsigned obj_id);
 
         /// Serialisierungsfunktionen

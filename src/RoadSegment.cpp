@@ -102,13 +102,12 @@ void RoadSegment::Destroy_RoadSegment()
     if(!route.empty())
     {
         // Straße durchgehen und alle Figuren sagen, dass sie die Arbeit verloren haben
-        unsigned short x = f1->GetX();
-        unsigned short y = f1->GetY();
+        MapPoint pt = f1->GetPos();
 
         for(unsigned short i = 0; i < route.size() + 1; ++i)
         {
             // Figuren sammeln, Achtung, einige können (... ? was?)
-            std::vector<noBase*> objects = gwg->GetDynamicObjectsFrom(x, y);
+            std::vector<noBase*> objects = gwg->GetDynamicObjectsFrom(pt);
             for(std::vector<noBase*>::iterator it = objects.begin(); it != objects.end(); ++it)
             {
                 if((*it)->GetType() == NOP_FIGURE)
@@ -121,13 +120,11 @@ void RoadSegment::Destroy_RoadSegment()
                 }
             }
 
-            gwg->RoadNodeAvailable(x, y);
+            gwg->RoadNodeAvailable(pt);
 
             if(i != route.size())
             {
-                int tx = x, ty = y;
-                x = gwg->GetXA(tx, ty, route[i]);
-                y = gwg->GetYA(tx, ty, route[i]);
+                pt = gwg->GetNeighbour(pt, route[i]);
             }
         }
 
@@ -172,13 +169,13 @@ void RoadSegment::SplitRoad(noFlag* splitflag)
 
     // Stelle herausfinden, an der der Weg zerschnitten wird ( = Länge des ersten Teilstücks )
     unsigned int length1, length2;
-    unsigned short tx = f1->GetX(), ty = f1->GetY();
+    MapPoint t = f1->GetPos();
     for(length1 = 0; length1 < route.size(); ++length1)
     {
-        if(tx == splitflag->GetX() && ty == splitflag->GetY())
+        if(t == splitflag->GetPos())
             break;
 
-        gwg->GetPointA(tx, ty, route[length1]);
+        t = gwg->GetNeighbour(t, route[length1]);
     }
 
     length2 = this->route.size() - length1;
@@ -208,12 +205,11 @@ void RoadSegment::SplitRoad(noFlag* splitflag)
     second->f2->routes[(second->route.back() + 3) % 6] = second;
 
     // Straße durchgehen und allen Figuren Bescheid sagen
-    tx = f1->GetX();
-    ty = f1->GetY();
+    t = f1->GetPos();
 
     for(unsigned short i = 0; i < old_route.size() + 1; ++i)
     {
-        const std::list<noBase*>& figures = gwg->GetFigures(tx, ty);
+        const std::list<noBase*>& figures = gwg->GetFigures(t);
         for(std::list<noBase*>::const_iterator it = figures.begin(); it != figures.end(); ++it)
         {
             if((*it)->GetType() == NOP_FIGURE)
@@ -225,9 +221,7 @@ void RoadSegment::SplitRoad(noFlag* splitflag)
 
         if(i != old_route.size())
         {
-            int tx2 = tx, ty2 = ty;
-            tx = gwg->GetXA(tx2, ty2, old_route[i]);
-            ty = gwg->GetYA(tx2, ty2, old_route[i]);
+            t = gwg->GetNeighbour(t, old_route[i]);
         }
     }
 
@@ -314,10 +308,10 @@ void RoadSegment::AddWareJob(const noRoadNode* rn)
                     static_cast<noBuilding*>(f2)->GetBuildingType() == BLD_HARBORBUILDING)
                 static_cast<nobBaseWarehouse*>(f2)->FetchWare();
             else
-                LOG.lprintf("RoadSegment::AddWareJob: WARNING: Ware in front of building at %i,%i (gf: %u)!\n", f2->GetX(), f2->GetY(), GAMECLIENT.GetGFNumber());
+                LOG.lprintf("RoadSegment::AddWareJob: WARNING: Ware in front of building at %i,%i (gf: %u)!\n", f2->GetPos(), GAMECLIENT.GetGFNumber());
         }
         else
-			LOG.lprintf("RoadSegment::AddWareJob: WARNING: Ware in front of building site at %i,%i (gf: %u)!\n",f2->GetX(), f2->GetY(), GAMECLIENT.GetGFNumber());
+			LOG.lprintf("RoadSegment::AddWareJob: WARNING: Ware in front of building site at %i,%i (gf: %u)!\n",f2->GetPos(), GAMECLIENT.GetGFNumber());
     }
 
     // Zufällig Esel oder Träger zuerst fragen, ob er Zeit hat
@@ -364,13 +358,11 @@ void RoadSegment::UpgradeDonkeyRoad()
     rt = RT_DONKEY;
 
     // Eselstraßen setzen
-    int x = f1->GetX(), y = f1->GetY();
+    MapPoint pt = f1->GetPos();
     for(unsigned short i = 0; i < route.size(); ++i)
     {
-        gwg->SetPointRoad(x, y, route[i], RT_DONKEY + 1);
-        int tx = x, ty = y;
-        x = gwg->GetXA(tx, ty, route[i]);
-        y = gwg->GetYA(tx, ty, route[i]);
+        gwg->SetPointRoad(pt, route[i], RT_DONKEY + 1);
+        pt = gwg->GetNeighbour(pt, route[i]);
     }
 
     // Flaggen auf beiden Seiten upgraden
@@ -430,9 +422,9 @@ noFlag* RoadSegment::GetOtherFlag(const noFlag* flag)
     //is it a valid flag?
     assert((flag->GetX() == f1->GetX() && flag->GetY() == f1->GetY()) || (flag->GetX() == f2->GetX() && flag->GetY() == f2->GetY()));
     if(flag->GetX() == f1->GetX() && flag->GetY() == f1->GetY())
-        return gwg->GetSpecObj<noFlag>(f2->GetX(), f2->GetY());
+        return gwg->GetSpecObj<noFlag>(f2->GetPos());
     if(flag->GetX() == f2->GetX() && flag->GetY() == f2->GetY())
-        return gwg->GetSpecObj<noFlag>(f1->GetX(), f1->GetY());
+        return gwg->GetSpecObj<noFlag>(f1->GetPos());
     //shouldnt get here or at least catch the assertion fail
     return NULL;
 }

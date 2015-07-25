@@ -73,7 +73,7 @@ class noFigure : public noMovable
         /// Wieviel (erfolglose) Rumirr-Flaggensuch-Versuche hat es schon gegeben (nach bestimmter Zahl Figur sterben lassen)
         unsigned short wander_tryings;
         /// Falls eine Flagge gefunden wurde, Zielpunkt, der Flagge
-        unsigned short flag_x, flag_y;
+        MapPoint flagPos;
         /// Obj-ID der (damaligen) Flagge, (evtl wurde sie zwischendurch abgerissen)
         unsigned flag_obj_id;
         /// Wenn der Typ aus einem Lagerhaus geflohen ist, Obj-ID des abbrennenden Lagerhauses zur
@@ -104,7 +104,7 @@ class noFigure : public noMovable
         //void WanderToFlagFailedTrade();
 
         /// Sichtbarkeiten berechnen für Figuren mit Sichtradius (Soldaten, Erkunder) vor dem Laufen
-        void CalcVisibilities(const MapCoord x, const MapCoord y);
+        void CalcVisibilities(const MapPoint pt);
 
     protected:
 
@@ -123,9 +123,9 @@ class noFigure : public noMovable
     public:
 
         /// Konstruktor für Figuren, die auf dem Wegenetz starten
-        noFigure(const Job job, const unsigned short x, const unsigned short y, const unsigned char player, noRoadNode* const goal);
+        noFigure(const Job job, const MapPoint pt, const unsigned char player, noRoadNode* const goal);
         /// Konstruktor für Figuren, die im Job-Modus starten
-        noFigure(const Job job, const unsigned short x, const unsigned short y, const unsigned char player);
+        noFigure(const Job job, const MapPoint pt, const unsigned char player);
 
         noFigure(SerializedGameData* sgd, const unsigned obj_id);
 
@@ -198,12 +198,12 @@ class noFigure : public noMovable
         virtual bool MemberOfWarehouse() const { return false; }
 
         /// Ein Punkt neben der Figur wurde freigegeben --> wenn sie deswegen angehalten ist, kann sie weiterlaufen
-        void NodeFreed(const unsigned short x, const unsigned short y);
+        void NodeFreed(const MapPoint pt);
 
         /// Wartet sie auf einen freien Platz?
         bool IsWaitingForFreeNode() const { return waiting_for_free_node; }
         /// Stoppt, wenn er auf diesen Punkt zuläuft
-        void StopIfNecessary(const unsigned short x, const unsigned short y);
+        void StopIfNecessary(const MapPoint pt);
 
 
         unsigned char GetDir() const { return dir; }
@@ -216,7 +216,7 @@ class noFigure : public noMovable
         void Abrogate(); // beim Arbeitsplatz "kündigen" soll, man das Laufen zum Ziel unterbrechen muss (warum auch immer)
 
         /// Informiert die Figur, dass für sie eine Schiffsreise beginnt
-        void StartShipJourney(const Point<MapCoord> goal);
+        void StartShipJourney(const MapPoint goal);
         /// Informiert die Figur, wenn Kreuzfahrt beendet ist
         void ShipJourneyEnded();
         /// Gibt zurück, ob die Figur kein Ziel mehr hat und damit nach einer Schifffahrt im
@@ -233,7 +233,7 @@ class noFigure : public noMovable
 
         /// Examines the route (maybe harbor, road destroyed?) before start shipping
         /// Returns (maybe new) destination harbor ((0,0) if he doesn't go by ship)
-        Point<MapCoord> ExamineRouteBeforeShipping();
+        MapPoint ExamineRouteBeforeShipping();
 };
 
 #endif

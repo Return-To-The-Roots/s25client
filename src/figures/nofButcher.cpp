@@ -37,8 +37,8 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-nofButcher::nofButcher(const unsigned short x, const unsigned short y, const unsigned char player, nobUsual* workplace)
-    : nofWorkman(JOB_BUTCHER, x, y, player, workplace)
+nofButcher::nofButcher(const MapPoint pos, const unsigned char player, nobUsual* workplace)
+    : nofWorkman(JOB_BUTCHER, pos, player, workplace)
 {
 }
 

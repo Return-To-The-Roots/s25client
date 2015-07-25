@@ -32,8 +32,8 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-nofPassiveWorker::nofPassiveWorker(const Job job, const unsigned short x, const unsigned short y, const unsigned char player, noRoadNode* goal)
-    : noFigure(job, x, y, player, goal)
+nofPassiveWorker::nofPassiveWorker(const Job job, const MapPoint pos, const unsigned char player, noRoadNode* goal)
+    : noFigure(job, pos, player, goal)
 {
 }
 
@@ -52,8 +52,8 @@ void nofPassiveWorker::Walked()
 void nofPassiveWorker::GoalReached()
 {
     // Mich hier einquartieren
-    gwg->RemoveFigure(this, x, y);
-    nobBaseWarehouse* wh = gwg->GetSpecObj<nobBaseWarehouse>(x, y);
+    gwg->RemoveFigure(this, pos);
+    nobBaseWarehouse* wh = gwg->GetSpecObj<nobBaseWarehouse>(pos);
     assert(wh);
     wh->AddFigure(this);
 

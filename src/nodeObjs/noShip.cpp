@@ -82,8 +82,8 @@ const Point<int> SHIPS_FLAG_POS[12] =
 };
 
 /// Konstruktor
-noShip::noShip(const unsigned short x, const unsigned short y, const unsigned char player)
-    : noMovable(NOP_SHIP, x, y),
+noShip::noShip(const MapPoint pos, const unsigned char player)
+    : noMovable(NOP_SHIP, pos),
       player(player), state(STATE_IDLE), sea_id(0), goal_harbor_id(0), goal_dir(0),
       name(ship_names[gwg->GetPlayer(player)->nation][RANDOM.Rand(__FILE__, __LINE__, this->obj_id, ship_count)]),
       lost(false), remaining_sea_attackers(0), home_harbor(0), covered_distance(0)
@@ -91,7 +91,7 @@ noShip::noShip(const unsigned short x, const unsigned short y, const unsigned ch
     // Meer ermitteln, auf dem dieses Schiff fährt
     for(unsigned i = 0; i < 6; ++i)
     {
-        unsigned short sea_id = gwg->GetNodeAround(x, y, i).sea_id;
+        unsigned short sea_id = gwg->GetNodeAround(pos, i).sea_id;
         if(sea_id)
             this->sea_id = sea_id;
     }
@@ -99,7 +99,7 @@ noShip::noShip(const unsigned short x, const unsigned short y, const unsigned ch
     // Auf irgendeinem Meer müssen wir ja sein
     assert(sea_id > 0);
 
-    gwg->AddFigure(this, x, y);
+    gwg->AddFigure(this, pos);
 
     // Schiff registrieren lassen
     players->getElement(player)->RegisterShip(this);
@@ -115,7 +115,7 @@ void noShip::Serialize(SerializedGameData* sgd) const
     sgd->PushUnsignedInt(goal_harbor_id);
     sgd->PushUnsignedChar(goal_dir);
     sgd->PushString(name);
-    sgd->PushUnsignedInt(pos);
+    sgd->PushUnsignedInt(curRouteIdx);
     sgd->PushUnsignedInt(route.size());
     sgd->PushBool(lost);
     sgd->PushUnsignedInt(remaining_sea_attackers);
@@ -137,7 +137,7 @@ noShip::noShip(SerializedGameData* sgd, const unsigned obj_id) :
     goal_harbor_id(sgd->PopUnsignedInt()),
     goal_dir(sgd->PopUnsignedChar()),
     name(sgd->PopString()),
-    pos(sgd->PopUnsignedInt()),
+    curRouteIdx(sgd->PopUnsignedInt()),
     route(sgd->PopUnsignedInt()),
     lost(sgd->PopBool()),
     remaining_sea_attackers(sgd->PopUnsignedInt()),
@@ -285,10 +285,10 @@ void noShip::HandleEvent(const unsigned int id)
 
                     // Spieler benachrichtigen
                     if(GAMECLIENT.GetPlayerID() == this->player)
-                        GAMECLIENT.SendPostMessage(new ShipPostMsg(_("A ship is ready for an expedition."), PMC_GENERAL, GAMECLIENT.GetPlayer(player)->nation, x, y));
+                        GAMECLIENT.SendPostMessage(new ShipPostMsg(_("A ship is ready for an expedition."), PMC_GENERAL, GAMECLIENT.GetPlayer(player)->nation, pos));
 
                     // KI Event senden
-                    GAMECLIENT.SendAIEvent(new AIEvent::Location(AIEvent::ExpeditionWaiting, x, y), player);
+                    GAMECLIENT.SendAIEvent(new AIEvent::Location(AIEvent::ExpeditionWaiting, pos), player);
                 } break;
                 case STATE_EXPLORATIONEXPEDITION_LOADING:
                 {
@@ -304,8 +304,8 @@ void noShip::HandleEvent(const unsigned int id)
                 case STATE_EXPEDITION_UNLOADING:
                 {
                     // Hafen herausfinden
-                    Point<MapCoord> goal_pos(gwg->GetHarborPoint(goal_harbor_id));
-                    noBase* hb = gwg->GetNO(goal_pos.x, goal_pos.y);
+                    MapPoint goal_pos(gwg->GetHarborPoint(goal_harbor_id));
+                    noBase* hb = gwg->GetNO(goal_pos);
 
                     if(hb->GetGOT() == GOT_NOB_HARBORBUILDING)
                     {
@@ -331,8 +331,8 @@ void noShip::HandleEvent(const unsigned int id)
                 case STATE_EXPLORATIONEXPEDITION_UNLOADING:
                 {
                     // Hafen herausfinden
-                    Point<MapCoord> goal_pos(gwg->GetHarborPoint(goal_harbor_id));
-                    noBase* hb = gwg->GetNO(goal_pos.x, goal_pos.y);
+                    MapPoint goal_pos(gwg->GetHarborPoint(goal_harbor_id));
+                    noBase* hb = gwg->GetNO(goal_pos);
 
                     unsigned old_visual_range = GetVisualRange();
 
@@ -355,7 +355,7 @@ void noShip::HandleEvent(const unsigned int id)
                     }
 
                     // Sichtbarkeiten neu berechnen
-                    gwg->RecalcVisibilitiesAroundPoint(x, y, old_visual_range, player, NULL);
+                    gwg->RecalcVisibilitiesAroundPoint(pos, old_visual_range, player, NULL);
 
 
                 } break;
@@ -367,8 +367,8 @@ void noShip::HandleEvent(const unsigned int id)
                 {
                     // Hafen herausfinden
                     remaining_sea_attackers = 0; //can be 1 in case we had sea attackers on board - set to 1 for a special check when the return harbor is destroyed to set the returning attackers goal to 0
-                    Point<MapCoord> goal_pos(gwg->GetHarborPoint(goal_harbor_id));
-                    noBase* hb = gwg->GetNO(goal_pos.x, goal_pos.y);
+                    MapPoint goal_pos(gwg->GetHarborPoint(goal_harbor_id));
+                    noBase* hb = gwg->GetNO(goal_pos);
                     if(hb->GetGOT() == GOT_NOB_HARBORBUILDING)
                     {
                         static_cast<nobHarborBuilding*>(hb)->ReceiveGoodsFromShip(figures, wares);
@@ -413,10 +413,10 @@ void noShip::HandleEvent(const unsigned int id)
                         break;
 
                     figures.pop_front();
-                    gwg->AddFigure(attacker, x, y);
+                    gwg->AddFigure(attacker, pos);
 
                     current_ev = em->AddEvent(this, 30, 1);
-                    attacker->StartAttackOnOtherIsland(x, y, obj_id);
+                    attacker->StartAttackOnOtherIsland(pos, obj_id);
                     ;
                 };
                 case STATE_SEAATTACK_UNLOADING:
@@ -438,8 +438,8 @@ void noShip::StartDriving(const unsigned char dir)
 
 void noShip::Driven()
 {
-    Point<MapCoord> enemy_territory_discovered(0xffff, 0xffff);
-    gwg->RecalcMovingVisibilities(x, y, player, GetVisualRange(), dir, &enemy_territory_discovered);
+    MapPoint enemy_territory_discovered(0xffff, 0xffff);
+    gwg->RecalcMovingVisibilities(pos, player, GetVisualRange(), dir, &enemy_territory_discovered);
 
     // Feindliches Territorium entdeckt?
     if(enemy_territory_discovered.x != 0xffff)
@@ -447,7 +447,7 @@ void noShip::Driven()
         // Send message if necessary
         if(players->getElement(player)->ShipDiscoveredHostileTerritory
                 (enemy_territory_discovered) && player == GAMECLIENT.GetPlayerID())
-            GAMECLIENT.SendPostMessage(new PostMsgWithLocation(_("A ship disovered an enemy territory"), PMC_MILITARY, enemy_territory_discovered.x, enemy_territory_discovered.y));
+            GAMECLIENT.SendPostMessage(new PostMsgWithLocation(_("A ship disovered an enemy territory"), PMC_MILITARY, enemy_territory_discovered));
 
     }
 
@@ -482,11 +482,11 @@ void noShip::GoToHarbor(nobHarborBuilding* hb, const std::vector<unsigned char>&
 {
     state = STATE_GOTOHARBOR;
 
-    goal_harbor_id = gwg->GetNode(hb->GetX(), hb->GetY()).harbor_id;
+    goal_harbor_id = gwg->GetNode(hb->GetPos()).harbor_id;
 
     // Route merken
     this->route = route;
-    pos = 1;
+    curRouteIdx = 1;
 
     // losfahren
     StartDriving(route[0]);
@@ -508,19 +508,19 @@ void noShip::HandleState_GoToHarbor()
             case GOAL_REACHED:
             {
 
-                Point<MapCoord> goal(gwg->GetHarborPoint(goal_harbor_id));
+                MapPoint goal(gwg->GetHarborPoint(goal_harbor_id));
                 // Erstmal nichts machen und idlen
                 StartIdling();
                 // Hafen Bescheid sagen, dass wir da sind (falls er überhaupt noch existiert)
-                noBase* nb = gwg->GetNO(goal.x, goal.y);
+                noBase* nb = gwg->GetNO(goal);
                 if(nb->GetGOT() == GOT_NOB_HARBORBUILDING)
                     static_cast<nobHarborBuilding*>(nb)->ShipArrived(this);
             } break;
             case NO_ROUTE_FOUND:
             {
-                Point<MapCoord> goal(gwg->GetHarborPoint(goal_harbor_id));
+                MapPoint goal(gwg->GetHarborPoint(goal_harbor_id));
                 // Dem Hafen Bescheid sagen
-                gwg->GetSpecObj<nobHarborBuilding>(goal.x, goal.y)->ShipLost(this);
+                gwg->GetSpecObj<nobHarborBuilding>(goal)->ShipLost(this);
                 // Ziel aktualisieren
                 goal_harbor_id = 0;
                 // Nichts machen und idlen
@@ -553,17 +553,17 @@ void noShip::StartExplorationExpedition()
     covered_distance = 0;
     home_harbor = goal_harbor_id;
     // Sichtbarkeiten neu berechnen
-    gwg->SetVisibilitiesAroundPoint(x, y, GetVisualRange(), player);
+    gwg->SetVisibilitiesAroundPoint(pos, GetVisualRange(), player);
 }
 
 
 /// Fährt weiter zu einem Hafen
 noShip::Result noShip::DriveToHarbour()
 {
-    Point<MapCoord> goal(gwg->GetHarborPoint(goal_harbor_id));
+    MapPoint goal(gwg->GetHarborPoint(goal_harbor_id));
 
     // Existiert der Hafen überhaupt noch?
-    if(gwg->GetGOT(goal.x, goal.y) != GOT_NOB_HARBORBUILDING)
+    if(gwg->GetGOT(goal) != GOT_NOB_HARBORBUILDING)
         return HARBOR_DOESNT_EXIST;
 
     return DriveToHarbourPlace();
@@ -575,45 +575,45 @@ noShip::Result noShip::DriveToHarbour()
 noShip::Result noShip::DriveToHarbourPlace()
 {
     // Sind wir schon da?
-    if(pos == route.size())
+    if(curRouteIdx == route.size())
         return GOAL_REACHED;
     else
     {
         // Punkt, zu dem uns der Hafen hinführen will (Küstenpunkt)
-        MapCoord coastal_x, coastal_y;
-        gwg->GetCoastalPoint(goal_harbor_id, &coastal_x, &coastal_y, sea_id);
+        MapPoint coastalPos = gwg->GetCoastalPoint(goal_harbor_id, sea_id);
 
-        MapCoord goal_x_route, goal_y_route;
+        MapPoint goalRoutePos;
 
         // Route überprüfen
-        if(!gwg->CheckShipRoute(x, y, route, pos, &goal_x_route, &goal_y_route))
+        if(!gwg->CheckShipRoute(pos, route, curRouteIdx, &goalRoutePos))
         {
             // Route kann nicht mehr passiert werden --> neue Route suchen
-            if(!gwg->FindShipPath(x, y, coastal_x, coastal_y, &route, NULL))
+            if(!gwg->FindShipPath(pos, coastalPos, &route, NULL))
             {
                 // Wieder keine gefunden -> raus
                 return NO_ROUTE_FOUND;
             }
 
             // Wir fangen bei der neuen Route wieder von vorne an
-            pos = 0;
+            curRouteIdx = 0;
         }
 
         // Kommen wir auch mit unser bisherigen Route an dem ursprünglich anvisierten Hafenplatz an?
-        if(!(coastal_x == goal_x_route && coastal_y == goal_y_route))
+        if(coastalPos != goalRoutePos)
         {
             // Nein, d.h. wenn wir schon nah dran sind, müssen wir die Route neu berechnen
-            if(route.size() - pos < 10)
+            assert(route.size() >= curRouteIdx);
+            if(route.size() - curRouteIdx < 10)
             {
-                if(!gwg->FindShipPath(x, y, coastal_x, coastal_y, &route, NULL))
+                if(!gwg->FindShipPath(pos, coastalPos, &route, NULL))
                     // Keiner gefunden -> raus
                     return NO_ROUTE_FOUND;
 
-                pos = 0;
+                curRouteIdx = 0;
             }
         }
 
-        StartDriving(route[pos++]);
+        StartDriving(route[curRouteIdx++]);
         return DRIVING;
     }
 
@@ -636,25 +636,24 @@ void noShip::ContinueExpedition(const unsigned char dir)
     assert(state == STATE_EXPEDITION_WAITING);
 
     // Nächsten Hafenpunkt in dieser Richtung suchen
-    unsigned new_goal = gwg->GetNextFreeHarborPoint(x, y, goal_harbor_id, dir, player);
+    unsigned new_goal = gwg->GetNextFreeHarborPoint(pos, goal_harbor_id, dir, player);
 
     // Auch ein Ziel gefunden?
     if(!new_goal)
         return;
 
-    MapCoord coastal_x, coastal_y;
-    gwg->GetCoastalPoint(new_goal, &coastal_x, &coastal_y, sea_id);
+    MapPoint coastalPos = gwg->GetCoastalPoint(new_goal, sea_id);
 
     // Versuchen, Weg zu finden
-    if(!gwg->FindShipPath(x, y, coastal_x, coastal_y, &route, NULL))
+    if(!gwg->FindShipPath(pos, coastalPos, &route, NULL))
         return;
 
     // Dann fahren wir da mal hin
-    pos = 0;
+    curRouteIdx = 0;
     goal_harbor_id = new_goal;
     state = STATE_EXPEDITION_DRIVING;
 
-    StartDriving(route[pos++]);
+    StartDriving(route[curRouteIdx++]);
 }
 
 /// Weist das Schiff an, eine Expedition abzubrechen (nur wenn es steht) und zum
@@ -666,7 +665,7 @@ void noShip::CancelExpedition()
     if(goal_harbor_id == home_harbor)
     {
         route.clear();
-        pos = 0;
+        curRouteIdx = 0;
         state = STATE_EXPEDITION_DRIVING; //just in case the home harbor was destroyed
         HandleState_ExpeditionDriving();
     }
@@ -694,7 +693,7 @@ void noShip::FoundColony()
         players->getElement(player)->GetJobForShip(this);
     }
     else //colony founding FAILED - notify ai
-        GAMECLIENT.SendAIEvent(new AIEvent::Location(AIEvent::ExpeditionWaiting, x, y), player);
+        GAMECLIENT.SendAIEvent(new AIEvent::Location(AIEvent::ExpeditionWaiting, pos), player);
 
 }
 
@@ -727,15 +726,15 @@ void noShip::HandleState_ExpeditionDriving()
 
                 // Spieler benachrichtigen
                 if(GAMECLIENT.GetPlayerID() == this->player)
-                    GAMECLIENT.SendPostMessage(new ShipPostMsg(_("A ship has reached the destination of its expedition."), PMC_GENERAL, GAMECLIENT.GetPlayer(player)->nation, x, y));
+                    GAMECLIENT.SendPostMessage(new ShipPostMsg(_("A ship has reached the destination of its expedition."), PMC_GENERAL, GAMECLIENT.GetPlayer(player)->nation, pos));
 
                 // KI Event senden
-                GAMECLIENT.SendAIEvent(new AIEvent::Location(AIEvent::ExpeditionWaiting, x, y), player);
+                GAMECLIENT.SendAIEvent(new AIEvent::Location(AIEvent::ExpeditionWaiting, pos), player);
             }
         } break;
         case NO_ROUTE_FOUND:
         {
-            Point<MapCoord> goal(gwg->GetHarborPoint(goal_harbor_id));
+            MapPoint goal(gwg->GetHarborPoint(goal_harbor_id));
             // Nichts machen und idlen
             StartIdling();
         } break;
@@ -743,10 +742,9 @@ void noShip::HandleState_ExpeditionDriving()
         {
             // Kein Heimathafen mehr?
             // Das Schiff muss einen Notlandeplatz ansteuern
-            if(players->getElement(player)->FindHarborForUnloading
-                    (this, x, y, &goal_harbor_id, &route, NULL))
+            if(players->getElement(player)->FindHarborForUnloading(this, pos, &goal_harbor_id, &route, NULL))
             {
-                pos = 0;
+                curRouteIdx = 0;
                 home_harbor = goal_harbor_id; //set new home=goal so we will actually unload once we reach the goal
                 HandleState_ExpeditionDriving();
             }
@@ -794,18 +792,18 @@ void noShip::HandleState_ExplorationExpeditionDriving()
         } break;
         case NO_ROUTE_FOUND:
         {
-            Point<MapCoord> goal(gwg->GetHarborPoint(goal_harbor_id));
+            MapPoint goal(gwg->GetHarborPoint(goal_harbor_id));
             unsigned old_visual_range = GetVisualRange();
             // Nichts machen und idlen
             StartIdling();
             // Sichtbarkeiten neu berechnen
-            gwg->RecalcVisibilitiesAroundPoint(x, y, old_visual_range, player, NULL);
+            gwg->RecalcVisibilitiesAroundPoint(pos, old_visual_range, player, NULL);
         } break;
         case HARBOR_DOESNT_EXIST:
         {
             // Neuen Hafen suchen
             if(players->getElement(player)->FindHarborForUnloading
-                    (this, x, y, &goal_harbor_id, &route, NULL))
+                    (this, pos, &goal_harbor_id, &route, NULL))
                 HandleState_TransportDriving();
             else
                 // Ansonsten als verloren markieren, damit uns später Bescheid gesagt wird
@@ -860,10 +858,9 @@ void noShip::HandleState_TransportDriving()
             }
 
             // Neuen Hafen suchen
-            if(players->getElement(player)->FindHarborForUnloading
-                    (this, x, y, &goal_harbor_id, &route, NULL))
+            if(players->getElement(player)->FindHarborForUnloading(this, pos, &goal_harbor_id, &route, NULL))
             {
-                pos = 0;
+                curRouteIdx = 0;
                 HandleState_TransportDriving();
             }
             else
@@ -899,10 +896,10 @@ bool noShip::IsGoingToHarbor(nobHarborBuilding* hb) const
 }
 
 /// Belädt das Schiff mit Waren und Figuren, um eine Transportfahrt zu starten
-void noShip::PrepareTransport(Point<MapCoord> goal, const std::list<noFigure*>& figures, const std::list<Ware*>& wares)
+void noShip::PrepareTransport(MapPoint goal, const std::list<noFigure*>& figures, const std::list<Ware*>& wares)
 {
     // ID von Zielhafen herausfinden
-    noBase* nb = gwg->GetNO(goal.x, goal.y);
+    noBase* nb = gwg->GetNO(goal);
     assert(nb->GetGOT() == GOT_NOB_HARBORBUILDING);
     this->home_harbor = goal_harbor_id;
     this->goal_harbor_id = static_cast<nobHarborBuilding*>(nb)->GetHarborPosID();
@@ -915,11 +912,11 @@ void noShip::PrepareTransport(Point<MapCoord> goal, const std::list<noFigure*>& 
 }
 
 /// Belädt das Schiff mit Schiffs-Angreifern
-void noShip::PrepareSeaAttack(Point<MapCoord> goal, const std::list<noFigure*>& figures)
+void noShip::PrepareSeaAttack(MapPoint goal, const std::list<noFigure*>& figures)
 {
     // Heimathafen merken
     home_harbor = goal_harbor_id;
-    this->goal_harbor_id = gwg->GetHarborPointID(goal.x, goal.y);
+    this->goal_harbor_id = gwg->GetHarborPointID(goal);
     this->figures = figures;
     for(std::list<noFigure*>::iterator it = this->figures.begin(); it != this->figures.end(); ++it)
     {
@@ -955,7 +952,7 @@ void noShip::HandleState_SeaAttackDriving()
         } break;
         case NO_ROUTE_FOUND:
         {
-            Point<MapCoord> goal(gwg->GetHarborPoint(goal_harbor_id));
+            MapPoint goal(gwg->GetHarborPoint(goal_harbor_id));
             // Nichts machen und idlen
             StartIdling();
         } break;
@@ -989,7 +986,7 @@ void noShip::HandleState_SeaAttackReturn()
         } break;
         case NO_ROUTE_FOUND:
         {
-            Point<MapCoord> goal(gwg->GetHarborPoint(goal_harbor_id));
+            MapPoint goal(gwg->GetHarborPoint(goal_harbor_id));
             // Nichts machen und idlen
             StartIdling();
         } break;
@@ -999,22 +996,21 @@ void noShip::HandleState_SeaAttackReturn()
 /// Fängt an zu einem Hafen zu fahren (berechnet Route usw.)
 void noShip::StartDrivingToHarborPlace()
 {
-    MapCoord coastal_x, coastal_y;
-    gwg->GetCoastalPoint(goal_harbor_id, &coastal_x, &coastal_y, sea_id);
+    MapPoint coastalPos = gwg->GetCoastalPoint(goal_harbor_id, sea_id);
 
     // Versuchen, Weg zu finden
-    if(!gwg->FindShipPath(x, y, coastal_x, coastal_y, &route, NULL))
+    if(!gwg->FindShipPath(pos, coastalPos, &route, NULL))
     {
-        if(coastal_x == x && coastal_y == y)
+        if(pos == coastalPos)
             route.clear();
         else
         {
             // todo
-            LOG.lprintf("Achtung: Bug im Spiel: noShip::StartDrivingToHarborPlace: Schiff hat keinen Weg gefunden! player %i state %i pos %u,%u goal coastal %u,%u goal-id %i goalpos %u,%u \n", player, state, x, y, coastal_x, coastal_y, goal_harbor_id, gwg->GetHarborPoint(goal_harbor_id).x, gwg->GetHarborPoint(goal_harbor_id).y);
+            LOG.lprintf("Achtung: Bug im Spiel: noShip::StartDrivingToHarborPlace: Schiff hat keinen Weg gefunden! player %i state %i pos %u,%u goal coastal %u,%u goal-id %i goalpos %u,%u \n", player, state, pos, coastalPos.x, coastalPos.y, goal_harbor_id, gwg->GetHarborPoint(goal_harbor_id).x, gwg->GetHarborPoint(goal_harbor_id).y);
             return;
         }
     }
-    pos = 0;
+    curRouteIdx = 0;
 }
 
 /// Startet die eigentliche Transportaktion, nachdem das Schiff beladen wurde

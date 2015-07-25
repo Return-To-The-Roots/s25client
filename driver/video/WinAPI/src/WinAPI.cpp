@@ -812,7 +812,7 @@ LRESULT CALLBACK VideoWinAPI::WindowProc(HWND window, UINT msg, WPARAM wParam, L
             pVideoWinAPI->mouse_z += GET_WHEEL_DELTA_WPARAM(wParam);
 
             // We don't want to crash if there were even wheels that produce higher values...
-            while (abs(pVideoWinAPI->mouse_z) >= WHEEL_DELTA)
+            while (std::abs(pVideoWinAPI->mouse_z) >= WHEEL_DELTA)
             {
                 if (pVideoWinAPI->mouse_z > 0) // Scrolled to top
                 {
@@ -857,7 +857,7 @@ KeyEvent VideoWinAPI::GetModKeyState(void) const
 }
 
 /// Gibt Pointer auf ein Fenster zurück (device-dependent!), HWND unter Windows
-void* VideoWinAPI::GetWindowPointer() const
+void* VideoWinAPI::GetMapPointer() const
 {
     return (void*)this->screen;
 }

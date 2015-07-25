@@ -7,7 +7,7 @@
 // Return To The Roots is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 2 of the License, or
-// (at your option) any later version.
+// (at your oposion) any later version.
 //
 // Return To The Roots is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -45,8 +45,8 @@ const unsigned GO_OUT_PHASES = 10;
 /// Länge zwischen zwei solchen Phasen
 const unsigned PHASE_LENGTH = 2;
 
-BurnedWarehouse::BurnedWarehouse(const unsigned short x, const unsigned short y, const unsigned char player, const unsigned* people)
-    : noCoordBase(NOP_BURNEDWAREHOUSE, x, y), player(player), go_out_phase(0)
+BurnedWarehouse::BurnedWarehouse(const MapPoint pos, const unsigned char player, const unsigned* people)
+    : noCoordBase(NOP_BURNEDWAREHOUSE, pos), player(player), go_out_phase(0)
 {
     memcpy(this->people, people, 30 * sizeof(unsigned));
     // Erstes Event anmelden
@@ -108,8 +108,7 @@ void BurnedWarehouse::HandleEvent(const unsigned int id)
         // Mögliche Richtungen zählen und speichern
         for(unsigned char d = 0; d < 6; ++d)
         {
-            if(gwg->IsNodeForFigures(gwg->GetXA(x, y, d),
-                                     gwg->GetYA(x, y, d)))
+            if(gwg->IsNodeForFigures(gwg->GetNeighbour(pos, d)))
             {
                 possible[d] = true;
                 ++possible_count;
@@ -161,9 +160,9 @@ void BurnedWarehouse::HandleEvent(const unsigned int id)
             for(unsigned z = 0; z < dir_count; ++z)
             {
                 // Job erzeugen
-                nofPassiveWorker* figure = new nofPassiveWorker(Job(i), x, y, player, NULL);
+                nofPassiveWorker* figure = new nofPassiveWorker(Job(i), pos, player, NULL);
                 // Auf die Map setzen
-                gwg->AddFigure(figure, x, y);
+                gwg->AddFigure(figure, pos);
                 // Losrumirren in die jeweilige Richtung
                 figure->StartWandering(obj_id);
                 figure->StartWalking(dir);

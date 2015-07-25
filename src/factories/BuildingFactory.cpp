@@ -23,15 +23,15 @@
 #include "buildings/nobShipYard.h"
 #include "buildings/nobUsual.h"
 
-noBuilding* BuildingFactory::CreateBuilding(GameWorldGame* gwg, const BuildingType type, const MapCoord x, const MapCoord y, const unsigned char player, const Nation nation){
+noBuilding* BuildingFactory::CreateBuilding(GameWorldGame* gwg, const BuildingType type, const MapPoint pt, const unsigned char player, const Nation nation){
     noBuilding* bld;
     switch (type)
     {
     case BLD_STOREHOUSE:
-        bld =  new nobStorehouse(x, y, player, nation);
+        bld =  new nobStorehouse(pt, player, nation);
         break;
     case BLD_HARBORBUILDING:
-        bld = new nobHarborBuilding(x, y, player, nation);
+        bld = new nobHarborBuilding(pt, player, nation);
         // Bei Häfen zusätzlich der Wirtschaftsverwaltung Bescheid sagen
         // Achtung: das kann NIOHT in den Konstruktor von nobHarborBuilding!
         gwg->GetPlayer(player)->AddHarbor(static_cast<nobHarborBuilding*>(bld));
@@ -40,15 +40,15 @@ noBuilding* BuildingFactory::CreateBuilding(GameWorldGame* gwg, const BuildingTy
     case BLD_GUARDHOUSE:
     case BLD_WATCHTOWER:
     case BLD_FORTRESS:
-        bld = new nobMilitary(type, x, y, player, nation);
+        bld = new nobMilitary(type, pt, player, nation);
         break;
     case BLD_SHIPYARD:
-        bld = new nobShipYard(x, y, player, nation);
+        bld = new nobShipYard(pt, player, nation);
         break;
     default:
-        bld = new nobUsual(type, x, y, player, nation);
+        bld = new nobUsual(type, pt, player, nation);
         break;
     }
-    gwg->SetNO(bld, x, y);
+    gwg->SetNO(bld, pt);
     return bld;
 }

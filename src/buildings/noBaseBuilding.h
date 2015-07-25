@@ -49,7 +49,7 @@ class noBaseBuilding : public noRoadNode
 
     public:
 
-        noBaseBuilding(const NodalObjectType nop, const BuildingType type, const unsigned short x, const unsigned short y, const unsigned char player);
+        noBaseBuilding(const NodalObjectType nop, const BuildingType type, const MapPoint pt, const unsigned char player);
         noBaseBuilding(SerializedGameData* sgd, const unsigned obj_id);
 
         virtual ~noBaseBuilding();

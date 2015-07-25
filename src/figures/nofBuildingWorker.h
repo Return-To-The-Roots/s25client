@@ -112,13 +112,13 @@ class nofBuildingWorker : public noFigure
         /// ab, wenn dig = true ist
         bool GetResources(unsigned char type);
         /// Macht das gleiche wie GetResources nur direkt für einen Punkt
-        bool GetResourcesOfNode(const unsigned short x, const unsigned short y, const unsigned char type);
+        bool GetResourcesOfNode(const MapPoint pt, const unsigned char type);
 
 
     public:
         State GetState() { return state; }
 
-        nofBuildingWorker(const Job job, const unsigned short x, const unsigned short y, const unsigned char player, nobUsual* workplace);
+        nofBuildingWorker(const Job job, const MapPoint pt, const unsigned char player, nobUsual* workplace);
         nofBuildingWorker(SerializedGameData* sgd, const unsigned obj_id);
 
         /// Aufräummethoden

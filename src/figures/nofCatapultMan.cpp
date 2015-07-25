@@ -33,11 +33,10 @@
 const int STONE_STARTS[12] = { -4, -48, -3, -47, -13, -47, -11, -48, -13, -47, -2, -47};
 
 
-nofCatapultMan::nofCatapultMan(const unsigned short x,
-                               const unsigned short y,
+nofCatapultMan::nofCatapultMan(const MapPoint pos,
                                const unsigned char player,
                                nobUsual* workplace)
-    : nofBuildingWorker(JOB_HELPER, x, y, player, workplace),
+    : nofBuildingWorker(JOB_HELPER, pos, player, workplace),
       wheel_steps(0)
 {
 }
@@ -72,9 +71,9 @@ void nofCatapultMan::DrawWorking(int x, int y)
         default: return;
         case STATE_CATAPULT_TARGETBUILDING:
         {
-            int step = GAMECLIENT.Interpolate(abs(wheel_steps) + 1, current_ev);
+            int step = GAMECLIENT.Interpolate(std::abs(wheel_steps) + 1, current_ev);
 
-            if(step <= abs(wheel_steps))
+            if(step <= std::abs(wheel_steps))
             {
 
                 if(wheel_steps < 0)
@@ -90,7 +89,7 @@ void nofCatapultMan::DrawWorking(int x, int y)
         } break;
         case STATE_CATAPULT_BACKOFF:
         {
-            int step = GAMECLIENT.Interpolate((abs(wheel_steps) + 3) * 2, current_ev);
+            int step = GAMECLIENT.Interpolate((std::abs(wheel_steps) + 3) * 2, current_ev);
 
             if(step < 2 * 3)
                 // Katapult nach Schießen zeichnen (hin und her wippen
@@ -131,7 +130,7 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned int id)
         case STATE_WAITING1:
         {
             // Fertig mit warten --> anfangen zu arbeiten
-            std::set<nobBaseMilitary*> buildings = gwg->LookForMilitaryBuildings(x, y, 3);
+            std::set<nobBaseMilitary*> buildings = gwg->LookForMilitaryBuildings(pos, 3);
 
             // Liste von potentiellen Zielen
             std::vector<PossibleTarget> pts;
@@ -143,18 +142,17 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned int id)
                 if((*it)->GetGOT() == GOT_NOB_MILITARY && GAMECLIENT.GetPlayer(player)->IsPlayerAttackable((*it)->GetPlayer()))
                 {
                     // Was nicht im Nebel liegt und auch schon besetzt wurde (nicht neu gebaut)?
-                    if(gwg->GetNode((*it)->GetX(), (*it)->GetY()).fow[player].visibility == VIS_VISIBLE
+                    if(gwg->GetNode((*it)->GetPos()).fow[player].visibility == VIS_VISIBLE
                             && !static_cast<nobMilitary*>((*it))->IsNewBuilt())
                     {
                         // Entfernung ausrechnen
-                        unsigned distance = gwg->CalcDistance(x, y, (*it)->GetX(), (*it)->GetY());
+                        unsigned distance = gwg->CalcDistance(pos, (*it)->GetPos());
 
                         // Entfernung nicht zu hoch?
                         if(distance < 14)
                         {
                             // Mit in die Liste aufnehmen
-                            PossibleTarget pt((*it)->GetX(), (*it)->GetY(), distance);
-                            pts.push_back(pt);
+                            pts.push_back(PossibleTarget((*it)->GetPos(), distance));
                         }
                     }
                 }
@@ -179,24 +177,24 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned int id)
             unsigned char shooting_dir;
 
             // Normale X-Distanz (ohne Beachtung der Kartenränderüberquerung)
-            unsigned x_dist = abs(int(target.x) - int(x));
+            unsigned x_dist = std::abs(int(target.pos.x) - int(pos.x));
             // Distanzen jeweils bei Überquerung des linken und rechten Randes
-            unsigned x_dist1 = abs(int(target.x) - int(x) + gwg->GetWidth());
-            unsigned x_dist2 = abs(int(target.x) - int(x) - gwg->GetWidth());
+            unsigned x_dist1 = std::abs(int(target.pos.x) - int(pos.x) + gwg->GetWidth());
+            unsigned x_dist2 = std::abs(int(target.pos.x) - int(pos.x) - gwg->GetWidth());
             // Minimale, d.h. im Endeffekt reale Distanz
-            unsigned min_dist_x = min(min(x_dist, x_dist1), x_dist2);
+            unsigned min_dist_x = std::min(std::min(x_dist, x_dist1), x_dist2);
 
             // Normale Y-Distanz (ohne Beachtung der Kartenränderüberquerung)
-            unsigned y_dist = abs(int(target.y) - int(y));
+            unsigned y_dist = std::abs(int(target.pos.y) - int(pos.y));
             // Distanzen jeweils bei Überquerung des linken und rechten Randes
-            unsigned y_dist1 = abs(int(target.y) - int(y) + gwg->GetHeight());
-            unsigned y_dist2 = abs(int(target.y) - int(y) - gwg->GetHeight());
+            unsigned y_dist1 = std::abs(int(target.pos.y) - int(pos.y) + gwg->GetHeight());
+            unsigned y_dist2 = std::abs(int(target.pos.y) - int(pos.y) - gwg->GetHeight());
             // Minimale, d.h. im Endeffekt reale Distanz
-            unsigned min_dist_y = min(min(y_dist, y_dist1), y_dist2);
+            unsigned min_dist_y = std::min(std::min(y_dist, y_dist1), y_dist2);
 
-            bool side_x = (x < target.x);
+            bool side_x = (pos.x < target.pos.x);
             if(x_dist > x_dist1 || x_dist > x_dist2) side_x = !side_x; // Wenn er über Kartengrenze schießt, Richtung umkehren
-            bool side_y = (y < target.y);
+            bool side_y = (pos.y < target.pos.y);
             if(y_dist > y_dist1 || y_dist > y_dist2) side_y = !side_y;
 
             // Y-Abstand nur unwesentlich klein --> Richtung 0 und 3 (direkt gegenüber) nehmen
@@ -216,7 +214,7 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned int id)
             if(wheel_steps < -3)
                 wheel_steps = 6 + wheel_steps;
 
-            current_ev = em->AddEvent(this, 15 * (abs(wheel_steps) + 1), 1);
+            current_ev = em->AddEvent(this, 15 * (std::abs(wheel_steps) + 1), 1);
 
             state = STATE_CATAPULT_TARGETBUILDING;
 
@@ -235,24 +233,20 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned int id)
             const int RADIUS_HIT = 15; // nicht nach unten hin!
 
             // Zielkoordinaten als (Map-Koordinaten!)
-            unsigned short dest_map_x, dest_map_y;
+            MapPoint destMap;
 
             if(hit)
             {
                 // Soll getroffen werden --> Aufschlagskoordinaten gleich dem eigentlichem Ziel
-                dest_map_x = target.x;
-                dest_map_y = target.y;
+                destMap = target.pos;
             }
             else
             {
                 // Ansonsten zufälligen Punkt rundrum heraussuchen
                 unsigned d = RANDOM.Rand(__FILE__, __LINE__, obj_id, 6);
 
-                dest_map_x = gwg->GetXA(target.x, target.y, d);
-                dest_map_y = gwg->GetYA(target.x, target.y, d);
+                destMap = gwg->GetNeighbour(target.pos, d);
             }
-
-
 
             unsigned char shooting_dir = (7 + wheel_steps) % 6;
 
@@ -261,21 +255,21 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned int id)
             int world_height = gwg->GetHeight() * TR_H;
 
             // Startpunkt bestimmen
-            int start_x = int(gwg->GetTerrainX(x, y)) + STONE_STARTS[(7 + wheel_steps) % 6 * 2];
-            int start_y = int(gwg->GetTerrainY(x, y)) + STONE_STARTS[shooting_dir * 2 + 1];
+            int start_x = int(gwg->GetTerrainX(pos)) + STONE_STARTS[(7 + wheel_steps) % 6 * 2];
+            int start_y = int(gwg->GetTerrainY(pos)) + STONE_STARTS[shooting_dir * 2 + 1];
             // (Visuellen) Aufschlagpunkt bestimmen
-            int dest_x = int(gwg->GetTerrainX(dest_map_x, dest_map_y));
-            int dest_y = int(gwg->GetTerrainY(dest_map_x, dest_map_y));
+            int dest_x = int(gwg->GetTerrainX(destMap));
+            int dest_y = int(gwg->GetTerrainY(destMap));
 
             // Kartenränder beachten
             // Wenn Abstand kleiner is, den kürzeren Abstand über den Kartenrand wählen
-            if(abs(start_x + world_width - dest_x) < abs(start_x - dest_x))
+            if(std::abs(start_x + world_width - dest_x) < std::abs(start_x - dest_x))
                 start_x += world_width;
-            else if(abs(start_x - world_width - dest_x) < abs(start_x - dest_x))
+            else if(std::abs(start_x - world_width - dest_x) < std::abs(start_x - dest_x))
                 start_x -= world_width;
-            if(abs(start_y + world_height - dest_y) < abs(start_y - dest_y))
+            if(std::abs(start_y + world_height - dest_y) < std::abs(start_y - dest_y))
                 start_y += world_height;
-            else if(abs(start_y - world_height - dest_y) < abs(start_y - dest_y))
+            else if(std::abs(start_y - world_height - dest_y) < std::abs(start_y - dest_y))
                 start_y -= world_height;
 
             // Bei getroffenen den Aufschlagspunkt am Gebäude ein bisschen variieren
@@ -288,13 +282,10 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned int id)
             }
 
             // Stein erzeugen
-            gwg->AddCatapultStone(new CatapultStone(target.x, target.y, dest_map_x, dest_map_y,
-                                                    start_x, start_y,
-                                                    dest_x, dest_y,
-                                                    80));
+            gwg->AddCatapultStone(new CatapultStone(target.pos, destMap, start_x, start_y, dest_x, dest_y, 80));
 
             // Katapult wieder in Ausgangslage zurückdrehen
-            current_ev = em->AddEvent(this, 15 * (abs(wheel_steps) + 3), 1);
+            current_ev = em->AddEvent(this, 15 * (std::abs(wheel_steps) + 3), 1);
 
             state = STATE_CATAPULT_BACKOFF;
         } break;

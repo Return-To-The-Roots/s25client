@@ -43,13 +43,13 @@ class nofFarmer : public nofFarmhand
         void WorkAborted_Farmhand();
 
         /// Returns the quality of this working point or determines if the worker can work here at all
-        PointQuality GetPointQuality(const MapCoord x, const MapCoord y);
+        PointQuality GetPointQuality(const MapPoint pt);
 
-        bool checkSurrounding(unsigned short x, unsigned short y, int type);
+        bool checkSurrounding(const MapPoint pt, int type);
 
     public:
 
-        nofFarmer(const unsigned short x, const unsigned short y, const unsigned char player, nobUsual* workplace);
+        nofFarmer(const MapPoint pt, const unsigned char player, nobUsual* workplace);
         nofFarmer(SerializedGameData* sgd, const unsigned obj_id);
 
 

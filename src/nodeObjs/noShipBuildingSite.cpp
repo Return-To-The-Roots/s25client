@@ -40,8 +40,8 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-noShipBuildingSite::noShipBuildingSite(const unsigned short x, const unsigned short y, const unsigned char player)
-    : noCoordBase(NOP_ENVIRONMENT, x, y),
+noShipBuildingSite::noShipBuildingSite(const MapPoint pos, const unsigned char player)
+    : noCoordBase(NOP_ENVIRONMENT, pos),
       player(player), progress(0)
 {
 }
@@ -52,7 +52,7 @@ noShipBuildingSite::~noShipBuildingSite()
 
 void noShipBuildingSite::Destroy()
 {
-    gwg->SetNO(NULL, x, y);
+    gwg->SetNO(NULL, pos);
 
     Destroy_noCoordBase();
 }
@@ -82,11 +82,11 @@ void noShipBuildingSite::Draw(int x, int y)
     if(progress < PROGRESS_PARTS[0] + PROGRESS_PARTS[1])
     {
         glArchivItem_Bitmap* image = LOADER.GetImageN("boot_z", 24);
-        unsigned height = min(image->getHeight() * unsigned(progress) / PROGRESS_PARTS[0],
+        unsigned height = std::min(image->getHeight() * unsigned(progress) / PROGRESS_PARTS[0],
                               unsigned(image->getHeight()));
         image->Draw(x, y + (image->getHeight() - height), 0, 0, 0, (image->getHeight() - height), 0, height);
         image =  LOADER.GetImageN("boot_z", 25);
-        height = min(image->getHeight() * unsigned(progress) / PROGRESS_PARTS[0],
+        height = std::min(image->getHeight() * unsigned(progress) / PROGRESS_PARTS[0],
                      unsigned(image->getHeight()));
         image->Draw(x, y + (image->getHeight() - height), 0, 0, 0, (image->getHeight() - height), 0, height, COLOR_SHADOW);
     }
@@ -94,11 +94,11 @@ void noShipBuildingSite::Draw(int x, int y)
     {
         unsigned real_progress = progress - PROGRESS_PARTS[0];
         glArchivItem_Bitmap* image =  LOADER.GetImageN("boot_z", 26);
-        unsigned height = min(image->getHeight() * unsigned(real_progress) / PROGRESS_PARTS[1],
+        unsigned height = std::min(image->getHeight() * unsigned(real_progress) / PROGRESS_PARTS[1],
                               unsigned(image->getHeight()));
         image->Draw(x, y + (image->getHeight() - height), 0, 0, 0, (image->getHeight() - height), 0, height);
         image =  LOADER.GetImageN("boot_z", 27);
-        height = min(image->getHeight() * unsigned(real_progress) / PROGRESS_PARTS[1],
+        height = std::min(image->getHeight() * unsigned(real_progress) / PROGRESS_PARTS[1],
                      unsigned(image->getHeight()));
         image->Draw(x, y + (image->getHeight() - height), 0, 0, 0, (image->getHeight() - height), 0, height, COLOR_SHADOW);
     }
@@ -127,18 +127,18 @@ void noShipBuildingSite::MakeBuildStep()
     {
         // Mich vernichten
         em->AddToKillList(this);
-        gwg->SetNO(NULL, x, y);
+        gwg->SetNO(NULL, pos);
         // ein fertiges Schiff stattdessen hinsetzen
-        new noShip(x, y, player);
+        new noShip(pos, player);
         // BQ neu berechnen, da Schiff nicht mehr blockiert
-        gwg->RecalcBQAroundPointBig(x, y);
+        gwg->RecalcBQAroundPointBig(pos);
 
         // Spieler über Fertigstellung benachrichtigen
         if(GAMECLIENT.GetPlayerID() == this->player)
-            GAMECLIENT.SendPostMessage(new ShipPostMsg(_("A new ship is ready"), PMC_GENERAL, GAMECLIENT.GetPlayer(player)->nation, x, y));
+            GAMECLIENT.SendPostMessage(new ShipPostMsg(_("A new ship is ready"), PMC_GENERAL, GAMECLIENT.GetPlayer(player)->nation, pos));
 
         // KI Event senden
-        GAMECLIENT.SendAIEvent(new AIEvent::Location(AIEvent::ShipBuilt, x, y), player);
+        GAMECLIENT.SendAIEvent(new AIEvent::Location(AIEvent::ShipBuilt, pos), player);
     }
 
 }

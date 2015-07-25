@@ -38,8 +38,8 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-nofWellguy::nofWellguy(const unsigned short x, const unsigned short y, const unsigned char player, nobUsual* workplace)
-    : nofWorkman(JOB_HELPER, x, y, player, workplace)
+nofWellguy::nofWellguy(const MapPoint pos, const unsigned char player, nobUsual* workplace)
+    : nofWorkman(JOB_HELPER, pos, player, workplace)
 {
 }
 

@@ -26,7 +26,7 @@
 class nofShipWright : public nofWorkman
 {
         /// Punkt, an dem das Schiff steht, an dem er gerade arbeitet
-        MapCoord dest_x, dest_y;
+        MapPoint dest;
     private:
         /// Zeichnet ihn beim Arbeiten
         void DrawWorking(int x, int y);
@@ -39,7 +39,7 @@ class nofShipWright : public nofWorkman
         void StartWalkingToShip(const unsigned char first_dir);
 
         /// Ist ein bestimmter Punkt auf der Karte für den Schiffsbau geeignet
-        bool IsPointGood(const MapCoord x, const MapCoord y) const;
+        bool IsPointGood(const MapPoint pt) const;
 
         /// Der Schiffsbauer hat einen Bauschritt bewältigt und geht wieder zurück zum Haus
         void WorkFinished();
@@ -55,7 +55,7 @@ class nofShipWright : public nofWorkman
 
     public:
 
-        nofShipWright(const unsigned short x, const unsigned short y, const unsigned char player, nobUsual* workplace);
+        nofShipWright(const MapPoint pt, const unsigned char player, nobUsual* workplace);
         nofShipWright(SerializedGameData* sgd, const unsigned obj_id);
         GO_Type GetGOT() const { return GOT_NOF_SHIPWRIGHT; }
         void HandleDerivedEvent(const unsigned int id);

@@ -36,7 +36,7 @@
 #include "ogl/glSmartBitmap.h"
 
 /// Konstruktor
-noAnimal::noAnimal(const Species species, const unsigned short x, const unsigned short y) : noMovable(NOP_ANIMAL, x, y)
+noAnimal::noAnimal(const Species species, const MapPoint pos) : noMovable(NOP_ANIMAL, pos)
     , species(species), state(STATE_WALKING), pause_way(5 + RANDOM.Rand(__FILE__, __LINE__, obj_id, 15)), hunter(0), sound_moment(0)
 {
     if(hunter)
@@ -187,7 +187,7 @@ void noAnimal::HandleEvent(const unsigned int id)
         {
             // von der Karte tilgen
             current_ev = 0;
-            gwg->RemoveFigure(this, x, y);
+            gwg->RemoveFigure(this, pos);
             em->AddToKillList(this);
         } break;
 
@@ -272,7 +272,7 @@ unsigned char noAnimal::FindDir()
     {
         unsigned char d = (dtmp + doffset) % 6;
 
-        unsigned char t1 = gwg->GetWalkingTerrain1(x, y, d);
+        unsigned char t1 = gwg->GetWalkingTerrain1(pos, d);
 
 		/* Animals are people, too. They should be allowed to cross borders as well!
 		
@@ -301,7 +301,7 @@ unsigned char noAnimal::FindDir()
         if(species == SPEC_DUCK)
         {
             // Enten schwimmen nur auf dem Wasser --> muss daher Wasser sein (ID 14 = Wasser)
-            unsigned char t2 = gwg->GetWalkingTerrain2(x, y, d);
+            unsigned char t2 = gwg->GetWalkingTerrain2(pos, d);
             
             if(t1 == 14 &&
                     t2 == 14)
@@ -310,7 +310,7 @@ unsigned char noAnimal::FindDir()
         else if(species == SPEC_POLARBEAR)
         {
             // Polarbären laufen nur auf Schnee rum
-            unsigned char t2 = gwg->GetWalkingTerrain2(x, y, d);
+            unsigned char t2 = gwg->GetWalkingTerrain2(pos, d);
 
             if(t1 == 0 ||
                     t2 == 0)
@@ -323,21 +323,21 @@ unsigned char noAnimal::FindDir()
                 continue;
 
             // Außerdem dürfen keine Hindernisse im Weg sein
-            unsigned short dst_x = gwg->GetXA(x, y, d), dst_y = gwg->GetYA(x, y, d);
-            noBase* no = gwg->GetNO(dst_x, dst_y);
+            MapPoint dst = gwg->GetNeighbour(pos, d);
+            noBase* no = gwg->GetNO(dst);
 
             if(no->GetType() != NOP_NOTHING &&  no->GetType() != NOP_ENVIRONMENT &&  no->GetType() != NOP_TREE)
                 continue;
 
             // Schließlich auch möglichst keine anderen Figuren bzw. Tiere
-            if(!gwg->GetFigures(dst_x, dst_y).empty())
+            if(!gwg->GetFigures(dst).empty())
                 continue;
 
             // Und möglichst auch keine Straßen
             bool roads = false;
             for(unsigned char d2 = 0; d2 < 6; ++d2)
             {
-                if(gwg->GetPointRoad(dst_x, dst_y, d2))
+                if(gwg->GetPointRoad(dst, d2))
                 {
                     roads = true;
                     break;
@@ -367,25 +367,23 @@ void noAnimal::BeginHunting(nofHunter* hunter)
 }
 
 
-void noAnimal::HunterIsNear(unsigned short* location_x, unsigned short* location_y)
+MapPoint noAnimal::HunterIsNear()
 {
     // Steht es gerade?
     if(state == STATE_PAUSED)
     {
         // dann bleibt es einfach stehen und gibt seine jetzigen Koordinaten zurück
         state = STATE_WAITINGFORHUNTER;
-        *location_x = x;
-        *location_y = y;
         // Warteevent abmelden
         em->RemoveEvent(current_ev);
         current_ev = 0;
+        return pos;
     }
     else
     {
         // ansonsten nach dem Laufen stehenbleiben und die Koordinaten zurückgeben von dem Punkt, der erreicht wird
         state = STATE_WALKINGUNTILWAITINGFORHUNTER;
-        *location_x = gwg->GetXA(x, y, dir);
-        *location_y = gwg->GetYA(x, y, dir);
+        return gwg->GetNeighbour(pos, dir);
     }
 }
 

@@ -7,7 +7,7 @@
 // Return To The Roots is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 2 of the License, or
-// (at your option) any later version.
+// (at your oposion) any later version.
 //
 // Return To The Roots is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -40,12 +40,12 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-nobHQ::nobHQ(const unsigned short x, const unsigned short y, const unsigned char player, const Nation nation)
-    : nobBaseWarehouse(BLD_HEADQUARTERS, x, y, player, nation)
+nobHQ::nobHQ(const MapPoint pos, const unsigned char player, const Nation nation)
+    : nobBaseWarehouse(BLD_HEADQUARTERS, pos, player, nation)
 {
 
     // ins Militärquadrat einfügen
-    gwg->GetMilitarySquare(x, y).push_back(this);
+    gwg->GetMilitarySquare(pos).push_back(this);
     gwg->RecalcTerritory(this, GetMilitaryRadius(), false, true);
 
 
@@ -354,7 +354,7 @@ void nobHQ::Destroy_nobHQ()
     gwg->RecalcTerritory(this, MILITARY_RADIUS[GetSize()], true, false);
 
     // Wieder aus dem Militärquadrat rauswerfen
-    gwg->GetMilitarySquare(x, y).remove(this);
+    gwg->GetMilitarySquare(pos).remove(this);
 }
 
 void nobHQ::Serialize_nobHQ(SerializedGameData* sgd) const
@@ -365,11 +365,10 @@ void nobHQ::Serialize_nobHQ(SerializedGameData* sgd) const
 nobHQ::nobHQ(SerializedGameData* sgd, const unsigned obj_id) : nobBaseWarehouse(sgd, obj_id)
 {
     // ins Militärquadrat einfügen
-    gwg->GetMilitarySquare(x, y).push_back(this);
+    gwg->GetMilitarySquare(pos).push_back(this);
 
     // Startpos setzen
-    GAMECLIENT.GetPlayer(player)->hqx = this->x;
-    GAMECLIENT.GetPlayer(player)->hqy = this->y;
+    GAMECLIENT.GetPlayer(player)->hqPos = this->pos;
 }
 
 void nobHQ::Draw(int x, int y)

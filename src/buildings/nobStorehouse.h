@@ -26,7 +26,7 @@ class nobStorehouse : public nobBaseWarehouse
 {
     friend class SerializedGameData;
     friend class BuildingFactory;
-    nobStorehouse(const unsigned short x, const unsigned short y, const unsigned char player, const Nation nation);
+    nobStorehouse(const MapPoint pt, const unsigned char player, const Nation nation);
     nobStorehouse(SerializedGameData* sgd, const unsigned obj_id);
 
         /// Aufräummethoden

@@ -36,8 +36,8 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-nofIronfounder::nofIronfounder(const unsigned short x, const unsigned short y, const unsigned char player, nobUsual* workplace)
-    : nofWorkman(JOB_IRONFOUNDER, x, y, player, workplace)
+nofIronfounder::nofIronfounder(const MapPoint pos, const unsigned char player, nobUsual* workplace)
+    : nofWorkman(JOB_IRONFOUNDER, pos, player, workplace)
 {
 }
 

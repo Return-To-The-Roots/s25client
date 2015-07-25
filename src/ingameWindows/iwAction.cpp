@@ -65,9 +65,9 @@ enum TabID
  *
  *  @author OLiver
  */
-iwAction::iwAction(dskGameInterface* const gi, GameWorldViewer* const gwv, const Tabs& tabs, unsigned short selected_x, unsigned short selected_y, int mouse_x, int mouse_y, unsigned int params, bool military_buildings)
+iwAction::iwAction(dskGameInterface* const gi, GameWorldViewer* const gwv, const Tabs& tabs, MapPoint selectedPt, int mouse_x, int mouse_y, unsigned int params, bool military_buildings)
     : IngameWindow(CGI_ACTION, mouse_x, mouse_y, 200, 254, _("Activity window"), LOADER.GetImageN("io", 1)),
-      gi(gi), gwv(gwv), selected_x(selected_x), selected_y(selected_y), last_x(mouse_x), last_y(mouse_y)
+      gi(gi), gwv(gwv), selectedPt(selectedPt), last_x(mouse_x), last_y(mouse_y)
 {
     /*
         TAB_FLAG    1 = Land road
@@ -325,7 +325,7 @@ iwAction::iwAction(dskGameInterface* const gi, GameWorldViewer* const gwv, const
         ctrlGroup* group = main_tab->AddTab(LOADER.GetImageN("io", 177), _("Attack options"), TAB_SEAATTACK);
 
         selected_soldiers_count_sea = 1;
-        available_soldiers_count_sea = gwv->GetAvailableSoldiersForSeaAttackCount(GAMECLIENT.GetPlayerID(), selected_x, selected_y);
+        available_soldiers_count_sea = gwv->GetAvailableSoldiersForSeaAttackCount(GAMECLIENT.GetPlayerID(), selectedPt);
 
         AddAttackControls(group, available_soldiers_count_sea);
     }
@@ -358,7 +358,7 @@ void iwAction::AddUpgradeRoad(ctrlGroup* group, unsigned int& x, unsigned int& w
     if(GAMECLIENT.GetGGS().isEnabled(ADDON_MANUAL_ROAD_ENLARGEMENT))
     {
         unsigned char flag_dir = 0;
-        noFlag* flag = gwv->GetRoadFlag(selected_x, selected_y, flag_dir);
+        noFlag* flag = gwv->GetRoadFlag(selectedPt, flag_dir);
         if(flag && flag->routes[flag_dir]->GetRoadType() == RoadSegment::RT_NORMAL)
         {
             width = 90;
@@ -370,9 +370,9 @@ void iwAction::AddUpgradeRoad(ctrlGroup* group, unsigned int& x, unsigned int& w
 void iwAction::DoUpgradeRoad()
 {
     unsigned char flag_dir = 0;
-    noFlag* flag = gwv->GetRoadFlag(selected_x, selected_y, flag_dir);
+    noFlag* flag = gwv->GetRoadFlag(selectedPt, flag_dir);
     if(flag)
-        GAMECLIENT.AddGC(new gc::UpgradeRoad(flag->GetX(), flag->GetY(), flag_dir));
+        GAMECLIENT.AddGC(new gc::UpgradeRoad(flag->GetPos(), flag_dir));
 }
 
 /// Fügt Angriffs-Steuerelemente für bestimmte Gruppe hinzu
@@ -573,7 +573,7 @@ void iwAction::Msg_ButtonClick_TabAttack(const unsigned int ctrl_id)
         {
             ctrlOptionGroup* ogroup = GetCtrl<ctrlTab>(0)->GetGroup(TAB_ATTACK)->GetCtrl<ctrlOptionGroup>(3);
 
-            GAMECLIENT.AddGC(new gc::Attack(selected_x, selected_y, selected_soldiers_count, (ogroup->GetSelection() == 1)));
+            GAMECLIENT.AddGC(new gc::Attack(selectedPt, selected_soldiers_count, (ogroup->GetSelection() == 1)));
 
             Close();
         } break;
@@ -609,7 +609,7 @@ void iwAction::Msg_ButtonClick_TabSeaAttack(const unsigned int ctrl_id)
         {
             ctrlOptionGroup* ogroup = GetCtrl<ctrlTab>(0)->GetGroup(TAB_SEAATTACK)->GetCtrl<ctrlOptionGroup>(3);
 
-            GAMECLIENT.AddGC(new gc::SeaAttack(selected_x, selected_y, selected_soldiers_count_sea, (ogroup->GetSelection() == 1)));
+            GAMECLIENT.AddGC(new gc::SeaAttack(selectedPt, selected_soldiers_count_sea, (ogroup->GetSelection() == 1)));
 
             Close();
         } break;
@@ -633,13 +633,13 @@ void iwAction::Msg_ButtonClick_TabFlag(const unsigned int ctrl_id)
         } break;
         case 3: // Flagge abreißen
         {
-            NodalObjectType nop = (gwv->GetNO(gwv->GetXA(selected_x, selected_y, 1), gwv->GetYA(selected_x, selected_y, 1)))->GetType() ;
+            NodalObjectType nop = (gwv->GetNO(gwv->GetNeighbour(selectedPt, 1)))->GetType() ;
             // Haben wir ne Baustelle/Gebäude dran?
             if(nop == NOP_BUILDING || nop == NOP_BUILDINGSITE)
             {
                 // Abreißen?
                 Close();
-                noBaseBuilding* building = gwv->GetSpecObj<noBaseBuilding>(gwv->GetXA(selected_x, selected_y, 1), gwv->GetYA(selected_x, selected_y, 1));
+                noBaseBuilding* building = gwv->GetSpecObj<noBaseBuilding>(gwv->GetNeighbour(selectedPt, 1));
 
                 // Militärgebäude?
                 if(building->GetGOT() == GOT_NOB_MILITARY)
@@ -658,18 +658,18 @@ void iwAction::Msg_ButtonClick_TabFlag(const unsigned int ctrl_id)
             }
             else
             {
-                GAMECLIENT.AddGC(new gc::DestroyFlag(selected_x, selected_y));
+                GAMECLIENT.AddGC(new gc::DestroyFlag(selectedPt));
                 Close();
             }
         } break;
         case 4: // Geologen rufen
         {
-            GAMECLIENT.AddGC(new gc::CallGeologist(selected_x, selected_y));
+            GAMECLIENT.AddGC(new gc::CallGeologist(selectedPt));
             Close();
         } break;
         case 5: // Späher rufen
         {
-            GAMECLIENT.AddGC(new gc::CallScout(selected_x, selected_y));
+            GAMECLIENT.AddGC(new gc::CallScout(selectedPt));
             Close();
         } break;
     }
@@ -678,7 +678,7 @@ void iwAction::Msg_ButtonClick_TabFlag(const unsigned int ctrl_id)
 void iwAction::Msg_ButtonClick_TabBuild(const unsigned int ctrl_id)
 {
     // Klick auf Gebäudebauicon
-    GAMECLIENT.AddGC(new gc::SetBuildingSite(selected_x, selected_y,
+    GAMECLIENT.AddGC(new gc::SetBuildingSite(selectedPt,
                      GetCtrl<ctrlTab>(0)->GetGroup(TAB_BUILD)->GetCtrl<ctrlTab>(1)->GetCurrentGroup()->
                      GetCtrl<ctrlBuildingIcon>(ctrl_id)->GetType()));
 
@@ -692,7 +692,7 @@ void iwAction::Msg_ButtonClick_TabSetFlag(const unsigned int ctrl_id)
     {
         case 1: // Flagge setzen
         {
-            GAMECLIENT.AddGC(new gc::SetFlag(selected_x, selected_y));
+            GAMECLIENT.AddGC(new gc::SetFlag(selectedPt));
         } break;
         case 2: // Weg aufwerten
         {
@@ -710,9 +710,9 @@ void iwAction::Msg_ButtonClick_TabCutRoad(const unsigned int ctrl_id)
         case 1: // Straße abreißen
         {
             unsigned char flag_dir = 0;
-            noFlag* flag = gwv->GetRoadFlag(selected_x, selected_y, flag_dir);
+            noFlag* flag = gwv->GetRoadFlag(selectedPt, flag_dir);
             if(flag)
-                GAMECLIENT.AddGC(new gc::DestroyRoad(flag->GetX(), flag->GetY(), flag_dir));
+                GAMECLIENT.AddGC(new gc::DestroyRoad(flag->GetPos(), flag_dir));
         } break;
         case 2: // Straße aufwerten
         {
@@ -730,8 +730,8 @@ void iwAction::Msg_ButtonClick_TabWatch(const unsigned int ctrl_id)
         case 1:
         {
             Close();
-// TODO: bestimen, was an der position selected_x, selected_y ist
-            WINDOWMANAGER.Show(new iwObservate(gwv, selected_x, selected_y));
+// TODO: bestimen, was an der position selected ist
+            WINDOWMANAGER.Show(new iwObservate(gwv, selectedPt));
         } break;
         case 2: // Häusernamen/Prozent anmachen
         {
@@ -740,11 +740,11 @@ void iwAction::Msg_ButtonClick_TabWatch(const unsigned int ctrl_id)
         case 3: // zum HQ
         {
             GameClientPlayer* player = GAMECLIENT.GetLocalPlayer();
-            gwv->MoveToMapObject(player->hqx, player->hqy);
+            gwv->MoveToMapObject(player->hqPos);
         } break;
 		case 4:
 		{
-			GAMECLIENT.AddGC(new gc::NotifyAlliesOfLocation(selected_x,selected_y));
+			GAMECLIENT.AddGC(new gc::NotifyAlliesOfLocation(selectedPt));
 			Close();			
 		}break;
     }

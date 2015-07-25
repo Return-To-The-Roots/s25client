@@ -41,11 +41,11 @@ class nofFisher : public nofFarmhand
         void WorkFinished();
 
         /// Returns the quality of this working point or determines if the worker can work here at all
-        PointQuality GetPointQuality(const MapCoord x, const MapCoord y);
+        PointQuality GetPointQuality(const MapPoint pt);
 
     public:
 
-        nofFisher(const unsigned short x, const unsigned short y, const unsigned char player, nobUsual* workplace);
+        nofFisher(const MapPoint pt, const unsigned char player, nobUsual* workplace);
         nofFisher(SerializedGameData* sgd, const unsigned obj_id);
 
         ~nofFisher() {}

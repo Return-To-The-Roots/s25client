@@ -45,9 +45,9 @@ class nofSoldier : public noFigure
 
     public:
 
-        nofSoldier(const unsigned short x, const unsigned short y, const unsigned char player,
+        nofSoldier(const MapPoint pt, const unsigned char player,
                    nobBaseMilitary* const goal, nobBaseMilitary* const home, const unsigned char rank);
-        nofSoldier(const unsigned short x, const unsigned short y, const unsigned char player,
+        nofSoldier(const MapPoint pt, const unsigned char player,
                    nobBaseMilitary* const home, const unsigned char rank);
         nofSoldier(SerializedGameData* sgd, const unsigned obj_id);
 

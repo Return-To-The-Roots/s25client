@@ -103,16 +103,16 @@ class SerializedGameData : public Serializer
         void PushFOWObject(const FOWObject* fowobj);
 
         /// Point of map coords
-        void PushMapPoint(const Point<MapCoord> p)
+        void PushMapPoint(const MapPoint p)
         {
             PushUnsignedShort(p.x);
             PushUnsignedShort(p.y);
         }
 
         /// Point of map coords
-        Point<MapCoord> PopMapPoint()
+        MapPoint PopMapPoint()
         {
-            Point<MapCoord> p;
+            MapPoint p;
             p.x = PopUnsignedShort();
             p.y = PopUnsignedShort();
             return p;

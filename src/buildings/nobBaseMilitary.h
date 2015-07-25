@@ -65,7 +65,7 @@ class nobBaseMilitary : public noBuilding
 
     public:
 
-        nobBaseMilitary(const BuildingType type, const unsigned short x, const unsigned short y, const unsigned char player, const Nation nation);
+        nobBaseMilitary(const BuildingType type, const MapPoint pt, const unsigned char player, const Nation nation);
         nobBaseMilitary(SerializedGameData* sgd, const unsigned obj_id);
         virtual ~nobBaseMilitary();
 
@@ -119,9 +119,9 @@ class nobBaseMilitary : public noBuilding
         nofAttacker* FindAggressor(nofAggressiveDefender* defender);
         /// Sucht für einen Angreifer den nächsten (bzw. genau den) Platz zur Fahne, damit die sich darum postieren und
         /// warten
-        void FindAnAttackerPlace(unsigned short& ret_x, unsigned short& ret_y, unsigned short& ret_radius, nofAttacker* soldier);
+        MapPoint FindAnAttackerPlace(unsigned short& ret_radius, nofAttacker* soldier);
         /// Sucht einen Nachrücker, der weiter hinten steht, auf diesen Posten und schickt diesen auch los
-        bool SendSuccessor(const unsigned short x, const unsigned short y, const unsigned short radius, const unsigned char dir);
+        bool SendSuccessor(const MapPoint pt, const unsigned short radius, const unsigned char dir);
 
         /// Gibt zurück, ob es noch einenen Verteidiger in dieser Hütte gibt, wenn ja wird dieser losgeschickt,
         /// aggressor ist der Angreifer an der Fahne, mit dem er kämpfen soll

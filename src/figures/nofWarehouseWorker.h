@@ -65,7 +65,7 @@ class nofWarehouseWorker : public noFigure
 
     public:
 
-        nofWarehouseWorker(const unsigned short x, const unsigned short y, const unsigned char player, Ware* ware, const bool task);
+        nofWarehouseWorker(const MapPoint pt, const unsigned char player, Ware* ware, const bool task);
         nofWarehouseWorker(SerializedGameData* sgd, const unsigned obj_id);
 
         ~nofWarehouseWorker();

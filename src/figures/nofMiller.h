@@ -43,7 +43,7 @@ class nofMiller : public nofWorkman
 
     public:
 
-        nofMiller(const unsigned short x, const unsigned short y, const unsigned char player, nobUsual* workplace);
+        nofMiller(const MapPoint pt, const unsigned char player, nobUsual* workplace);
         nofMiller(SerializedGameData* sgd, const unsigned obj_id);
 
         /// Serialisierungsfunktionen

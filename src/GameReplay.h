@@ -62,7 +62,7 @@ class Replay : public SavedFile
         /// Fügt ein Spiel-Kommando hinzu (schreibt)
         void AddGameCommand(const unsigned gf, const unsigned short length, const unsigned char* const data);
         /// Fügt Pathfinding-Result hinzu
-        void AddPathfindingResult(const unsigned char data, const unsigned* const length, const Point<MapCoord> * const next_harbor);
+        void AddPathfindingResult(const unsigned char data, const unsigned* const length, const MapPoint * const next_harbor);
 
         /// Liest RC-Type aus, liefert false, wenn das Replay zu Ende ist
         bool ReadGF(unsigned* gf);
@@ -71,7 +71,7 @@ class Replay : public SavedFile
         /// Liest ein Chat-Command aus
         void ReadChatCommand(unsigned char* player, unsigned char*   dest, std::string& str);
         void ReadGameCommand(unsigned short* length, unsigned char** data);
-        bool ReadPathfindingResult(unsigned char* data, unsigned* length, Point<MapCoord> * next_harbor);
+        bool ReadPathfindingResult(unsigned char* data, unsigned* length, MapPoint * next_harbor);
 
         /// Aktualisiert den End-GF, schreibt ihn in die Replaydatei (nur beim Spielen bzw. Schreiben verwenden!)
         void UpdateLastGF(const unsigned last_gf);

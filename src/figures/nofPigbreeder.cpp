@@ -38,8 +38,8 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-nofPigbreeder::nofPigbreeder(const unsigned short x, const unsigned short y, const unsigned char player, nobUsual* workplace)
-    : nofWorkman(JOB_PIGBREEDER, x, y, player, workplace)
+nofPigbreeder::nofPigbreeder(const MapPoint pos, const unsigned char player, nobUsual* workplace)
+    : nofWorkman(JOB_PIGBREEDER, pos, player, workplace)
 {
 }
 

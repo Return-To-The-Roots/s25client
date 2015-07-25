@@ -128,7 +128,7 @@ void iwShip::Msg_PaintAfter()
         GetCtrl<Window>(11)->SetVisible(true);
 
         for(unsigned char i = 0; i < 6; ++i)
-            GetCtrl<Window>(12 + i)->SetVisible(gwv->GetNextFreeHarborPoint(ship->GetX(), ship->GetY(),
+            GetCtrl<Window>(12 + i)->SetVisible(gwv->GetNextFreeHarborPoint(ship->GetPos(),
                                                 ship->GetCurrentHarbor(), i, ship->GetPlayer()) > 0);
 
     }
@@ -188,7 +188,7 @@ void iwShip::Msg_ButtonClick(const unsigned int ctrl_id)
         } break;
         case 7: // "Gehe Zu Ort"
         {
-            gwv->MoveToMapObject(ship->GetX(), ship->GetY());
+            gwv->MoveToMapObject(ship->GetPos());
         } break;
         /*  case 2: // Hilfe
                 {

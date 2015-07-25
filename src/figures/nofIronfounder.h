@@ -36,7 +36,7 @@ class nofIronfounder : public nofWorkman
 
     public:
 
-        nofIronfounder(const unsigned short x, const unsigned short y, const unsigned char player, nobUsual* workplace);
+        nofIronfounder(const MapPoint pt, const unsigned char player, nobUsual* workplace);
         nofIronfounder(SerializedGameData* sgd, const unsigned obj_id);
 
         GO_Type GetGOT() const { return GOT_NOF_IRONFOUNDER; }

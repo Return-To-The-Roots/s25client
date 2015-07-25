@@ -39,8 +39,8 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-nofStonemason::nofStonemason(const unsigned short x, const unsigned short y, const unsigned char player, nobUsual* workplace)
-    : nofFarmhand(JOB_STONEMASON, x, y, player, workplace)
+nofStonemason::nofStonemason(const MapPoint pos, const unsigned char player, nobUsual* workplace)
+    : nofFarmhand(JOB_STONEMASON, pos, player, workplace)
 {
 }
 
@@ -80,32 +80,32 @@ void nofStonemason::WorkStarted()
 void nofStonemason::WorkFinished()
 {
     // Stein abhauen (wenn er nur noch ganz klein ist, dann wird er von der Landkarte getilgt)
-    if(gwg->GetSpecObj<noGranite>(x, y)->IsSmall())
+    if(gwg->GetSpecObj<noGranite>(pos)->IsSmall())
     {
         // Granitklötzchen löschen
-        gwg->GetSpecObj<noGranite>(x, y)->Destroy();
-        delete gwg->GetSpecObj<noGranite>(x, y);
-        gwg->SetNO(0, x, y);
+        gwg->GetSpecObj<noGranite>(pos)->Destroy();
+        delete gwg->GetSpecObj<noGranite>(pos);
+        gwg->SetNO(0, pos);
 
         // Minimap Bescheid geben (Granitglötzchen muss weg)
         if(gwg->GetGameInterface())
-            gwg->GetGameInterface()->GI_UpdateMinimap(x, y);
+            gwg->GetGameInterface()->GI_UpdateMinimap(pos);
 
         // Drumherum BQ neu berechnen, da diese sich ja jetzt hätten ändern können
-        gwg->RecalcBQAroundPoint(x, y);
+        gwg->RecalcBQAroundPoint(pos);
     }
     else
         // ansonsten wird er um 1 kleiner
-        gwg->GetSpecObj<noGranite>(x, y)->Hew();
+        gwg->GetSpecObj<noGranite>(pos)->Hew();
 
     // Stein in die Hand nehmen
     ware = GD_STONES;
 }
 
 /// Returns the quality of this working point or determines if the worker can work here at all
-nofFarmhand::PointQuality nofStonemason::GetPointQuality(const MapCoord x, const MapCoord y)
+nofFarmhand::PointQuality nofStonemason::GetPointQuality(const MapPoint pt)
 {
     // An dieser Position muss es nur Stein geben
-    return ((gwg->GetNO(x, y)->GetType() == NOP_GRANITE) ? PQ_CLASS1 : PQ_NOTPOSSIBLE);
+    return ((gwg->GetNO(pt)->GetType() == NOP_GRANITE) ? PQ_CLASS1 : PQ_NOTPOSSIBLE);
 }
 

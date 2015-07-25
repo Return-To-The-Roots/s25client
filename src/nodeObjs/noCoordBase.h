@@ -31,7 +31,7 @@ class noCoordBase : public noBase
     public:
 
         /// Konstruktor von @p noCoordBase.
-        noCoordBase(const NodalObjectType nop, const MapCoord x, const MapCoord y) : noBase(nop), x(x), y(y) {}
+        noCoordBase(const NodalObjectType nop, const MapPoint pt) : noBase(nop), pos(pt) {}
         noCoordBase(SerializedGameData* sgd, const unsigned obj_id);
 
         /// Aufräummethoden
@@ -43,20 +43,18 @@ class noCoordBase : public noBase
     public:     void Serialize(SerializedGameData* sgd) const { Serialize_noCoordBase(sgd); }
 
         /// liefert die X-Koordinate.
-        MapCoord GetX(void) const { return x; }
+        MapCoord GetX(void) const { return pos.x; }
         /// liefert die Y-Koordinate.
-        MapCoord GetY(void) const { return y; }
+        MapCoord GetY(void) const { return pos.y; }
 
         /// Returns position
-        Point<MapCoord> GetPos() const
-        { return Point<MapCoord>(x, y); }
+        MapPoint GetPos() const { return pos; }
 
         /// Liefert GUI-ID zurück für die Fenster
         unsigned CreateGUIID() const;
 
     protected:
-        MapCoord x; ///< X-Koordinate
-        MapCoord y; ///< Y-Koordinate
+        MapPoint pos;
 };
 
 #endif // !NOCOORDBASE_H_INCLUDED

@@ -7,7 +7,7 @@
 // Return To The Roots is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 2 of the License, or
-// (at your option) any later version.
+// (at your oposion) any later version.
 //
 // Return To The Roots is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -46,40 +46,40 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-noBaseBuilding::noBaseBuilding(const NodalObjectType nop, const BuildingType type, const unsigned short x, const unsigned short y, const unsigned char player)
-    : noRoadNode(nop, x, y, player), type(type), nation(GAMECLIENT.GetPlayer(player)->nation), door_point_x(1000000), door_point_y(DOOR_CONSTS[GAMECLIENT.GetPlayer(player)->nation][type])
+noBaseBuilding::noBaseBuilding(const NodalObjectType nop, const BuildingType type, const MapPoint pos, const unsigned char player)
+    : noRoadNode(nop, pos, player), type(type), nation(GAMECLIENT.GetPlayer(player)->nation), door_point_x(1000000), door_point_y(DOOR_CONSTS[GAMECLIENT.GetPlayer(player)->nation][type])
 {
 
     // Evtl Flagge setzen, wenn noch keine da ist
-    if(gwg->GetNO(gwg->GetXA(x, y, 4), gwg->GetYA(x, y, 4))->GetType() != NOP_FLAG)
+    if(gwg->GetNO(gwg->GetNeighbour(pos, 4))->GetType() != NOP_FLAG)
     {
         // ggf. vorherige Objekte löschen
-        noBase* no = gwg->GetSpecObj<noBase>(gwg->GetXA(x, y, 4), gwg->GetYA(x, y, 4));
+        noBase* no = gwg->GetSpecObj<noBase>(gwg->GetNeighbour(pos, 4));
         if(no)
         {
             no->Destroy();
             delete no;
         }
-        gwg->SetNO(new noFlag(gwg->GetXA(x, y, 4), gwg->GetYA(x, y, 4), player), gwg->GetXA(x, y, 4), gwg->GetYA(x, y, 4));
+        gwg->SetNO(new noFlag(gwg->GetNeighbour(pos, 4), player), gwg->GetNeighbour(pos, 4));
     }
 
     // Straßeneingang setzen (wenn nicht schon vorhanden z.b. durch vorherige Baustelle!)
-    if(!gwg->GetPointRoad(x, y, 4))
+    if(!gwg->GetPointRoad(pos, 4))
     {
-        gwg->SetPointRoad(x, y, 4, 1);
+        gwg->SetPointRoad(pos, 4, 1);
 
         // Straßenverbindung erstellen zwischen Flagge und Haus
         // immer von Flagge ZU Gebäude (!)
         std::vector<unsigned char> route(1, 1);
         // Straße zuweisen
-        gwg->GetSpecObj<noRoadNode>(gwg->GetXA(x, y, 4), gwg->GetYA(x, y, 4))->routes[1] = // der Flagge
+        gwg->GetSpecObj<noRoadNode>(gwg->GetNeighbour(pos, 4))->routes[1] = // der Flagge
             routes[4] = // dem Gebäude
-                new RoadSegment(RoadSegment::RT_NORMAL, gwg->GetSpecObj<noRoadNode>(gwg->GetXA(x, y, 4), gwg->GetYA(x, y, 4)), this, route);
+                new RoadSegment(RoadSegment::RT_NORMAL, gwg->GetSpecObj<noRoadNode>(gwg->GetNeighbour(pos, 4)), this, route);
     }
     else
     {
         // vorhandene Straße der Flagge nutzen
-        noFlag* flag = gwg->GetSpecObj<noFlag>(gwg->GetXA(x, y, 4), gwg->GetYA(x, y, 4));
+        noFlag* flag = gwg->GetSpecObj<noFlag>(gwg->GetNeighbour(pos, 4));
 
         assert(flag->routes[1]);
         routes[4] = flag->routes[1];
@@ -92,16 +92,15 @@ noBaseBuilding::noBaseBuilding(const NodalObjectType nop, const BuildingType typ
     {
         for(unsigned i = 0; i < 3; ++i)
         {
-            MapCoord xa = gwg->GetXA(x, y, i);
-            MapCoord ya = gwg->GetYA(x, y, i);
+            MapPoint pos2 = gwg->GetNeighbour(pos, i);
 
-            noBase* no = gwg->GetSpecObj<noBase>(xa, ya);
+            noBase* no = gwg->GetSpecObj<noBase>(pos2);
             if(no)
             {
                 no->Destroy();
                 delete no;
             }
-            gwg->SetNO(new noExtension(this), xa, ya);
+            gwg->SetNO(new noExtension(this), pos2);
         }
     }
 }
@@ -114,16 +113,16 @@ void noBaseBuilding::Destroy_noBaseBuilding()
 {
     DestroyAllRoads();
     //notify the ai about this
-    GAMECLIENT.SendAIEvent(new AIEvent::Building(AIEvent::BuildingDestroyed, x, y, type), player);
+    GAMECLIENT.SendAIEvent(new AIEvent::Building(AIEvent::BuildingDestroyed, pos, type), player);
 
     if(gwg->GetGameInterface())
-        gwg->GetGameInterface()->GI_UpdateMinimap(x, y);
+        gwg->GetGameInterface()->GI_UpdateMinimap(pos);
 
     // evtl Anbauten wieder abreißen
     DestroyBuildingExtensions();
 
     // ggf. Fenster schließen
-    gwg->ImportantObjectDestroyed(x, y);
+    gwg->ImportantObjectDestroyed(pos);
 
     // Baukosten zurückerstatten (nicht bei Baustellen)
     if( (GetGOT() != GOT_BUILDINGSITE) &&
@@ -211,23 +210,23 @@ short noBaseBuilding::GetDoorPointX()
     // Door-Point noch nicht ausgerechnet?
     if(door_point_x == 1000000)
     {
-        int x1 = static_cast<int>(gwg->GetTerrainX(this->x, this->y));
-        int y1 = static_cast<int>(gwg->GetTerrainY(this->x, this->y));
-        int x2 = static_cast<int>(gwg->GetTerrainX(gwg->GetXA(this->x, this->y, 4), gwg->GetYA(this->x, this->y, 4)));
-        int y2 = static_cast<int>(gwg->GetTerrainY(gwg->GetXA(this->x, this->y, 4), gwg->GetYA(this->x, this->y, 4)));
+        int x1 = static_cast<int>(gwg->GetTerrainX(pos));
+        int y1 = static_cast<int>(gwg->GetTerrainY(pos));
+        int x2 = static_cast<int>(gwg->GetTerrainX(gwg->GetNeighbour(pos, 4)));
+        int y2 = static_cast<int>(gwg->GetTerrainY(gwg->GetNeighbour(pos, 4)));
 
         // Gehen wir über einen Kartenrand (horizontale Richung?)
-        if(abs(x1 - x2) >= gwg->GetWidth() * TR_W / 2)
+        if(std::abs(x1 - x2) >= gwg->GetWidth() * TR_W / 2)
         {
-            if(abs(x1 - int(gwg->GetWidth())*TR_W - x2) < abs(x1 - x2))
+            if(std::abs(x1 - int(gwg->GetWidth())*TR_W - x2) < std::abs(x1 - x2))
                 x1 -= gwg->GetWidth() * TR_W;
             else
                 x1 += gwg->GetWidth() * TR_W;
         }
         // Und dasselbe für vertikale Richtung
-        if(abs(y1 - y2) >= gwg->GetHeight() * TR_H / 2)
+        if(std::abs(y1 - y2) >= gwg->GetHeight() * TR_H / 2)
         {
-            if(abs(y1 - int(gwg->GetHeight())*TR_H - y2) < abs(y1 - y2))
+            if(std::abs(y1 - int(gwg->GetHeight())*TR_H - y2) < std::abs(y1 - y2))
                 y1 -= gwg->GetHeight() * TR_H;
             else
                 y1 += gwg->GetHeight() * TR_H;
@@ -243,7 +242,7 @@ short noBaseBuilding::GetDoorPointX()
 
 noFlag* noBaseBuilding::GetFlag() const
 {
-    return gwg->GetSpecObj<noFlag>(gwg->GetXA(x, y, 4), gwg->GetYA(x, y, 4));
+    return gwg->GetSpecObj<noFlag>(gwg->GetNeighbour(pos, 4));
 }
 
 
@@ -279,15 +278,14 @@ void noBaseBuilding::DestroyBuildingExtensions()
 
         for(unsigned i = 0; i < 3; ++i)
         {
-            MapCoord xa = gwg->GetXA(x, y, i);
-            MapCoord ya = gwg->GetYA(x, y, i);
+            MapPoint nb = gwg->GetNeighbour(pos, i);
 
-            noBase* no = gwg->GetSpecObj<noBase>(xa, ya);
+            noBase* no = gwg->GetSpecObj<noBase>(nb);
             if(no)
             {
                 no->Destroy();
                 delete no;
-                gwg->SetNO(NULL, xa, ya);
+                gwg->SetNO(NULL, nb);
             }
         }
 

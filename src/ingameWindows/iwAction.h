@@ -59,8 +59,7 @@ class iwAction : public IngameWindow
         dskGameInterface* const gi;
         GameWorldViewer* const gwv;
 
-        unsigned short selected_x;
-        unsigned short selected_y;
+        MapPoint selectedPt;
         unsigned short last_x;
         unsigned short last_y;
 
@@ -74,12 +73,12 @@ class iwAction : public IngameWindow
         unsigned short building_tab_heights[4];
 
     public:
-        iwAction(dskGameInterface* const gi, GameWorldViewer* const gwv, const Tabs& tabs, unsigned short selected_x, unsigned short selected_y, int mouse_x, int mouse_y, unsigned int params, bool military_buildings);
+        iwAction(dskGameInterface* const gi, GameWorldViewer* const gwv, const Tabs& tabs, MapPoint selectedPt, int mouse_x, int mouse_y, unsigned int params, bool military_buildings);
         ~iwAction();
 
         /// Gibt zurück, auf welchen Punkt es sich bezieht
-        unsigned short GetSelectedX() const { return selected_x; }
-        unsigned short GetSelectedY() const { return selected_y; }
+        unsigned short GetSelectedX() const { return selectedPt.x; }
+        unsigned short GetSelectedY() const { return selectedPt.y; }
 
     private:
 

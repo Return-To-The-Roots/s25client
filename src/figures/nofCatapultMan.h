@@ -35,18 +35,18 @@ class nofCatapultMan : public nofBuildingWorker
             public:
 
                 /// Gebäude
-                unsigned short x, y;
+                MapPoint pos;
                 /// Entfernung
                 unsigned distance;
 
-                PossibleTarget() : x(0), y(0), distance(0) {}
-                PossibleTarget(const unsigned short x, const unsigned short y, const unsigned distance) : x(x), y(y), distance(distance) {}
-                PossibleTarget(SerializedGameData* sgd) : x(sgd->PopUnsignedShort()), y(sgd->PopUnsignedShort()), distance(sgd->PopUnsignedInt()) {}
+                PossibleTarget() : pos(0, 0), distance(0) {}
+                PossibleTarget(const MapPoint pt, const unsigned distance) : pos(pt), distance(distance) {}
+                PossibleTarget(SerializedGameData* sgd) : pos(sgd->PopUnsignedShort(), sgd->PopUnsignedShort()), distance(sgd->PopUnsignedInt()) {}
 
                 void Serialize_PossibleTarget(SerializedGameData* sgd) const
                 {
-                    sgd->PushUnsignedShort(x);
-                    sgd->PushUnsignedShort(y);
+                    sgd->PushUnsignedShort(pos.x);
+                    sgd->PushUnsignedShort(pos.y);
                     sgd->PushUnsignedInt(distance);
                 }
 
@@ -67,7 +67,7 @@ class nofCatapultMan : public nofBuildingWorker
 
     public:
 
-        nofCatapultMan(const unsigned short x, const unsigned short y, const unsigned char player, nobUsual* workplace);
+        nofCatapultMan(const MapPoint pt, const unsigned char player, nobUsual* workplace);
         nofCatapultMan(SerializedGameData* sgd, const unsigned obj_id);
 
         /// Serialisierungsfunktionen

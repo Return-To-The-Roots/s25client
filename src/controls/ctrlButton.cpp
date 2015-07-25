@@ -166,13 +166,7 @@ bool ctrlButton::Draw_(void)
     // Prüfen, ob bei gehighlighteten Button die Maus auch noch über dem Button ist
     TestMouseOver();
 
-    Rect buttonrect =
-    {
-        GetX(),
-        GetY(),
-        static_cast<unsigned short>(GetX() + width),
-        static_cast<unsigned short>(GetY() + height)
-    };
+    Rect buttonrect(GetX(), GetY(), width, height);
 
     if(tc != TC_INVISIBLE)
     {

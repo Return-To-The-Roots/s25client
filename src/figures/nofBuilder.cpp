@@ -49,13 +49,13 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 
-nofBuilder::nofBuilder(const unsigned short x, const unsigned short y, const unsigned char player, noRoadNode* building_site)
-    : noFigure(JOB_BUILDER, x, y, player, building_site), state(STATE_FIGUREWORK), building_site(static_cast<noBuildingSite*>(building_site)), building_steps_available(0)
+nofBuilder::nofBuilder(const MapPoint pos, const unsigned char player, noRoadNode* building_site)
+    : noFigure(JOB_BUILDER, pos, player, building_site), state(STATE_FIGUREWORK), building_site(static_cast<noBuildingSite*>(building_site)), building_steps_available(0)
 {
     // Sind wir schon an unsere Baustelle gleich hingesetzt worden (bei Häfen)?
     if(building_site)
     {
-        if(x == building_site->GetX() && y == building_site->GetY())
+        if(pos == building_site->GetPos())
             // Dann gleich mit dem Bauprozess beginnen
             GoalReached();
     }
@@ -178,23 +178,23 @@ void nofBuilder::HandleDerivedEvent(const unsigned int id)
                 gwg->GetPlayer(player)->RemoveBuildingSite(building_site);
 
                 // ggf. Baustellenfenster schließen
-                gwg->ImportantObjectDestroyed(building_site->GetX(), building_site->GetY());
+                gwg->ImportantObjectDestroyed(building_site->GetPos());
 
                 // Baustelle kommt in den Bytehimmel
-                gwg->SetNO(NULL, building_site->GetX(), building_site->GetY());
+                gwg->SetNO(NULL, building_site->GetPos());
                 delete building_site;
 
                 // KI-Event schicken
-                GAMECLIENT.SendAIEvent(new AIEvent::Building(AIEvent::BuildingFinished, x, y, building_type), player);
+                GAMECLIENT.SendAIEvent(new AIEvent::Building(AIEvent::BuildingFinished, pos, building_type), player);
 
-                noBuilding* bld = BuildingFactory::CreateBuilding(gwg, building_type, x, y, player, building_nation);
+                noBuilding* bld = BuildingFactory::CreateBuilding(gwg, building_type, pos, player, building_nation);
 
                 // Special handling for storehouses and harbours
                 if(building_type == BLD_STOREHOUSE || building_type == BLD_HARBORBUILDING){
                     nobBaseWarehouse* wh = static_cast<nobBaseWarehouse*>(bld);
                     // Mich dort gleich einquartieren und nicht erst zurücklaufen
                     wh->AddFigure(this);
-                    gwg->RemoveFigure(this, x, y);
+                    gwg->RemoveFigure(this, pos);
 
                     // Evtl Träger aus dem HQ wieder verwenden
                     gwg->GetPlayer(player)->FindWarehouseForAllRoads();
@@ -209,7 +209,7 @@ void nofBuilder::HandleDerivedEvent(const unsigned int id)
                 // Nach Hause laufen bzw. auch rumirren
                 rs_pos = 0;
                 rs_dir = true;
-                cur_rs = gwg->GetSpecObj<noRoadNode>(x, y)->routes[4];
+                cur_rs = gwg->GetSpecObj<noRoadNode>(pos)->routes[4];
                 building_site = 0;
 
                 GoHome();

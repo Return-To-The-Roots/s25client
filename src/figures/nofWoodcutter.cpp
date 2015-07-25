@@ -42,8 +42,8 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-nofWoodcutter::nofWoodcutter(const unsigned short x, const unsigned short y, const unsigned char player, nobUsual* workplace)
-    : nofFarmhand(JOB_WOODCUTTER, x, y, player, workplace)
+nofWoodcutter::nofWoodcutter(const MapPoint pos, const unsigned char player, nobUsual* workplace)
+    : nofFarmhand(JOB_WOODCUTTER, pos, player, workplace)
 {
 }
 
@@ -117,9 +117,9 @@ unsigned short nofWoodcutter::GetCarryID() const
 /// Abgeleitete Klasse informieren, wenn sie anfängt zu arbeiten (Vorbereitungen)
 void nofWoodcutter::WorkStarted()
 {
-    assert(gwg->GetSpecObj<noTree>(dest_x, dest_y)->GetType() == NOP_TREE);
+    assert(gwg->GetSpecObj<noTree>(dest)->GetType() == NOP_TREE);
 
-    gwg->GetSpecObj<noTree>(dest_x, dest_y)->FallSoon();
+    gwg->GetSpecObj<noTree>(dest)->FallSoon();
 }
 
 /// Abgeleitete Klasse informieren, wenn fertig ist mit Arbeiten
@@ -129,16 +129,16 @@ void nofWoodcutter::WorkFinished()
     ware = GD_WOOD;
 
     // evtl. AIEvent senden
-    //GAMECLIENT.SendAIEvent(new AIEvent::Location(AIEvent::TreeChopped, x, y), player);  only clutters the action list for the ai
+    //GAMECLIENT.SendAIEvent(new AIEvent::Location(AIEvent::TreeChopped, pos), player);  only clutters the action list for the ai
 }
 
 /// Returns the quality of this working point or determines if the worker can work here at all
-nofFarmhand::PointQuality nofWoodcutter::GetPointQuality(const MapCoord x, const MapCoord y)
+nofFarmhand::PointQuality nofWoodcutter::GetPointQuality(const MapPoint pt)
 {
     // Gibt es hier an dieser Position einen Baum und ist dieser ausgewachsen?
     // außerdem keine Ananas fällen!
-    noBase* no;
-    if((no = gwg->GetNO(x, y))->GetType() == NOP_TREE)
+    noBase* no = gwg->GetNO(pt);
+    if(no->GetType() == NOP_TREE)
     {
         if(static_cast<noTree*>(no)->size == 3 && static_cast<noTree*>(no)->type != 5)
             return PQ_CLASS1;
@@ -152,5 +152,5 @@ void nofWoodcutter::WorkAborted_Farmhand()
 {
     // Dem Baum Bescheid sagen
     if(state == STATE_WORK)
-        gwg->GetSpecObj<noTree>(x, y)->DontFall();
+        gwg->GetSpecObj<noTree>(pos)->DontFall();
 }

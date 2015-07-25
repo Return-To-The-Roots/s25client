@@ -38,7 +38,7 @@ class nofMetalworker : public nofWorkman
 
     public:
 
-        nofMetalworker(const unsigned short x, const unsigned short y, const unsigned char player, nobUsual* workplace);
+        nofMetalworker(const MapPoint pt, const unsigned char player, nobUsual* workplace);
         nofMetalworker(SerializedGameData* sgd, const unsigned obj_id);
 
         GO_Type GetGOT() const { return GOT_NOF_METALWORKER; }

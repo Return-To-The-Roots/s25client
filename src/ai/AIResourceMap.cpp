@@ -39,41 +39,39 @@ void AIResourceMap::Init()
     map.resize(AIJH::RES_TYPE_COUNT);
 
     map.resize(width * height);
-    for (unsigned short y = 0; y < height; ++y)
+    for (MapPoint pt(0, 0); pt.y < height; ++pt.y)
     {
-        for (unsigned short x = 0; x < width; ++x)
+        for (pt.x = 0; pt.x < width; ++pt.x)
         {
-            unsigned i = y * width + x;
+            unsigned i = gwb->GetIdx(pt);
             //resourceMaps[res][i] = 0;
             if (nodes[i].res == (AIJH::Resource)res && (AIJH::Resource)res != AIJH::BORDERLAND)
             {
-                ChangeResourceMap(x, y, AIJH::RES_RADIUS[res], 1);
+                ChangeResourceMap(pt, AIJH::RES_RADIUS[res], 1);
             }
 
             // Grenzgebiet"ressource"
             else if (nodes[i].border && (AIJH::Resource)res == AIJH::BORDERLAND)
             {
-                ChangeResourceMap(x, y, AIJH::RES_RADIUS[AIJH::BORDERLAND], 1);
+                ChangeResourceMap(pt, AIJH::RES_RADIUS[AIJH::BORDERLAND], 1);
             }
         }
     }
 }
 
 
-void AIResourceMap::ChangeResourceMap(MapCoord x, MapCoord y, unsigned radius, int value)
+void AIResourceMap::ChangeResourceMap(const MapPoint pt, unsigned radius, int value)
 {
-    unsigned short width = gwb->GetWidth();
+    map[gwb->GetIdx(pt)] += value * radius;
 
-    map[x + y * width] += value * radius;
-
-    for(MapCoord tx = gwb->GetXA(x, y, 0), r = 1; r <= radius; tx = gwb->GetXA(tx, y, 0), ++r)
+    for(MapCoord tx = gwb->GetXA(pt, 0), r = 1; r <= radius; tx = gwb->GetXA(tx, pt.y, 0), ++r)
     {
-        MapCoord tx2 = tx, ty2 = y;
+        MapPoint t2(tx, pt.y);
         for(unsigned i = 2; i < 8; ++i)
         {
-            for(MapCoord r2 = 0; r2 < r; gwb->GetPointA(tx2, ty2, i % 6), ++r2)
+            for(MapCoord r2 = 0; r2 < r; t2 = gwb->GetNeighbour(t2, i % 6), ++r2)
             {
-                unsigned i = tx2 + ty2 * width;
+                unsigned i = gwb->GetIdx(t2);
                 map[i] += value * (radius - r);
             }
         }
@@ -81,30 +79,25 @@ void AIResourceMap::ChangeResourceMap(MapCoord x, MapCoord y, unsigned radius, i
 }
 
 
-bool AIResourceMap::FindGoodPosition(MapCoord& x, MapCoord& y, int threshold, BuildingQuality size, int radius, bool inTerritory)
+bool AIResourceMap::FindGoodPosition(MapPoint& pt, int threshold, BuildingQuality size, int radius, bool inTerritory)
 {
     unsigned short width = gwb->GetWidth();
     unsigned short height = gwb->GetHeight();
 
-    if (x >= width || y >= height)
-    {
-        assert(false);
-        //x = player->hqx;
-        //y = player->hqy;
-    }
+    assert(pt.x < width && pt.y < height);
 
     // TODO was besseres wär schön ;)
     if (radius == -1)
         radius = 30;
 
-    for(MapCoord tx = gwb->GetXA(x, y, 0), r = 1; r <= radius; tx = gwb->GetXA(tx, y, 0), ++r)
+    for(MapCoord tx = gwb->GetXA(pt, 0), r = 1; r <= radius; tx = gwb->GetXA(tx, pt.y, 0), ++r)
     {
-        MapCoord tx2 = tx, ty2 = y;
+        MapPoint t2(tx, pt.y);
         for(unsigned i = 2; i < 8; ++i)
         {
-            for(MapCoord r2 = 0; r2 < r; gwb->GetPointA(tx2, ty2, i % 6), ++r2)
+            for(MapCoord r2 = 0; r2 < r; t2 = gwb->GetNeighbour(t2, i % 6), ++r2)
             {
-                unsigned i = tx2 + ty2 * width;
+                unsigned i = gwb->GetIdx(t2);
                 if (map[i] >= threshold)
                 {
                     if ((inTerritory && !nodes[i].owned) || nodes[i].farmed)
@@ -112,8 +105,7 @@ bool AIResourceMap::FindGoodPosition(MapCoord& x, MapCoord& y, int threshold, Bu
                     if ( (nodes[i].bq >= size && nodes[i].bq < BQ_MINE) // normales Gebäude
                             || (nodes[i].bq == size))   // auch Bergwerke
                     {
-                        x = tx2;
-                        y = ty2;
+                        pt = t2;
                         return true;
                     }
                 }
@@ -124,33 +116,28 @@ bool AIResourceMap::FindGoodPosition(MapCoord& x, MapCoord& y, int threshold, Bu
 }
 
 
-bool AIResourceMap::FindBestPosition(MapCoord& x, MapCoord& y, BuildingQuality size, int minimum, int radius, bool inTerritory)
+bool AIResourceMap::FindBestPosition(MapPoint& pt, BuildingQuality size, int minimum, int radius, bool inTerritory)
 {
     unsigned short width = gwb->GetWidth();
     unsigned short height = gwb->GetHeight();
 
-    if (x >= width || y >= height)
-    {
-        assert(false);
-        //x = player->hqx;
-        //y = player->hqy;
-    }
+    assert(pt.x < width && pt.y < height);
 
     // TODO was besseres wär schön ;)
     if (radius == -1)
         radius = 30;
 
-    int best_x = 0, best_y = 0, best_value;
-    best_value = -1;
+    MapPoint best(0, 0);
+    int best_value = -1;
 
-    for(MapCoord tx = gwb->GetXA(x, y, 0), r = 1; r <= radius; tx = gwb->GetXA(tx, y, 0), ++r)
+    for(MapCoord tx = gwb->GetXA(pt, 0), r = 1; r <= radius; tx = gwb->GetXA(tx, pt.y, 0), ++r)
     {
-        MapCoord tx2 = tx, ty2 = y;
+        MapPoint t2(tx, pt.y);
         for(unsigned i = 2; i < 8; ++i)
         {
-            for(MapCoord r2 = 0; r2 < r; gwb->GetPointA(tx2, ty2, i % 6), ++r2)
+            for(MapCoord r2 = 0; r2 < r; t2 = gwb->GetNeighbour(t2, i % 6), ++r2)
             {
-                unsigned i = tx2 + ty2 * width;
+                unsigned i = gwb->GetIdx(t2);
                 if (map[i] > best_value)
                 {
                     if (!nodes[i].reachable || (inTerritory && !nodes[i].owned) || nodes[i].farmed)
@@ -158,8 +145,7 @@ bool AIResourceMap::FindBestPosition(MapCoord& x, MapCoord& y, BuildingQuality s
                     if ( (nodes[i].bq >= size && nodes[i].bq < BQ_MINE) // normales Gebäude
                             || (nodes[i].bq == size))   // auch Bergwerke
                     {
-                        best_x = tx2;
-                        best_y = ty2;
+                        best = t2;
                         best_value = map[i];
                     }
                 }
@@ -169,8 +155,7 @@ bool AIResourceMap::FindBestPosition(MapCoord& x, MapCoord& y, BuildingQuality s
 
     if (best_value >= minimum)
     {
-        x = best_x;
-        y = best_y;
+        pt = best;
         return true;
     }
     return false;

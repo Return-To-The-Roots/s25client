@@ -70,7 +70,7 @@ class nofActiveSoldier : public nofSoldier
         /// Current enemy when fighting in the nofActiveSoldier modes (and only in this case!)
         nofActiveSoldier* enemy;
         /// Meeting point for fighting against the enemy
-        Point<MapCoord> fight_spot;
+        MapPoint fight_spot;
 
     protected:
 
@@ -90,12 +90,12 @@ class nofActiveSoldier : public nofSoldier
         /// Returns true if it found one
         bool FindEnemiesNearby(unsigned char excludedOwner=255);
         /// Informs this soldier that another soldier starts meeting him
-        void MeetEnemy(nofActiveSoldier* other, const Point<MapCoord> figh_spot);
+        void MeetEnemy(nofActiveSoldier* other, const MapPoint figh_spot);
         /// Handle state "meet enemy" after each walking step
         void MeetingEnemy();
         /// Looks for an appropriate fighting spot between the two soldiers
         /// Returns true if successful
-        bool GetFightSpotNear(nofActiveSoldier* other, Point<MapCoord> * fight_spot);
+        bool GetFightSpotNear(nofActiveSoldier* other, MapPoint * fight_spot);
 		/// increase rank (used by addon CombatPromotion)
 		void IncreaseRank();
 
@@ -116,7 +116,7 @@ class nofActiveSoldier : public nofSoldier
     public:
 
         /// Constructors
-        nofActiveSoldier(const unsigned short x, const unsigned short y, const unsigned char player,
+        nofActiveSoldier(const MapPoint pt, const unsigned char player,
                          nobBaseMilitary* const home, const unsigned char rank, const SoldierState init_state);
         /// (Copy-)Constructor
         nofActiveSoldier(const nofSoldier& other, const SoldierState init_state);

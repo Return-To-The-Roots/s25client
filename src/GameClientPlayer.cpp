@@ -69,11 +69,8 @@ const unsigned char STD_TRANSPORT[35] =
  *
  *  @author OLiver
  */
-GameClientPlayer::GameClientPlayer(const unsigned playerid) : GamePlayerInfo(playerid), build_order(31), military_settings(MILITARY_SETTINGS_COUNT), tools_settings(12, 0)
+GameClientPlayer::GameClientPlayer(const unsigned playerid) : GamePlayerInfo(playerid), build_order(31), military_settings(MILITARY_SETTINGS_COUNT), tools_settings(12, 0), hqPos(0xFFFF, 0xFFFF)
 {
-    // Erstmal kein HQ (leerer Spieler) wie das bei manchen Karten der Fall ist
-    hqy = hqx = 0xFFFF;
-
     for (unsigned i = 0; i < BUILDING_TYPES_COUNT; ++i)
     {
         building_enabled[i] = true;
@@ -240,8 +237,8 @@ void GameClientPlayer::Serialize(SerializedGameData* sgd)
         sgd->PushBool(defenders[i]);
     sgd->PushUnsignedShort(defenders_pos);
 
-    sgd->PushUnsignedShort(hqx);
-    sgd->PushUnsignedShort(hqy);
+    sgd->PushUnsignedShort(hqPos.x);
+    sgd->PushUnsignedShort(hqPos.y);
 
     for(unsigned i = 0; i < WARE_TYPES_COUNT; ++i)
     {
@@ -356,8 +353,8 @@ void GameClientPlayer::Deserialize(SerializedGameData* sgd)
         defenders[i] = sgd->PopBool();
     defenders_pos = sgd->PopUnsignedShort();
 
-    hqx = sgd->PopUnsignedShort();
-    hqy = sgd->PopUnsignedShort();
+    hqPos.x = sgd->PopUnsignedShort();
+    hqPos.y = sgd->PopUnsignedShort();
 
     for(unsigned i = 0; i < WARE_TYPES_COUNT; ++i)
     {
@@ -467,7 +464,7 @@ nobBaseWarehouse* GameClientPlayer::FindWarehouse(const noRoadNode* const start,
         if(IsWarehouseGood(*w, param))
         {
 			//now check if there is at least a chance that the next wh is closer than current best because pathfinding takes time
-			if(gwg->CalcDistance(start->GetX(),start->GetY(),(*w)->GetX(),(*w)->GetY()) > best_length)
+			if(gwg->CalcDistance(start->GetPos(),(*w)->GetPos()) > best_length)
 				continue;
             // Bei der erlaubten Benutzung von BootsstraÃen Waren-Pathfinding benutzen wenns zu nem Lagerhaus gehn soll start <-> ziel tauschen bei der wegfindung
             if(gwg->FindPathOnRoads(to_wh ? start : *w, to_wh ? *w : start, use_boat_roads, &tlength, NULL, NULL, forbidden, true, best_length))
@@ -1030,7 +1027,7 @@ noBaseBuilding* GameClientPlayer::FindClientForWare(Ware* ware)
             {
                 points += 10 * 30; // Verteilung existiert nicht, Expeditionen haben allerdings hohe Priorität
 
-                cfw.push_back(ClientForWare(*it, points - (gwg->CalcDistance(start->GetX(), start->GetY(), (*it)->GetX(), (*it)->GetY()) / 2), points));
+                cfw.push_back(ClientForWare(*it, points - (gwg->CalcDistance(start->GetPos(), (*it)->GetPos()) / 2), points));
             }
         }
     }
@@ -1050,7 +1047,7 @@ noBaseBuilding* GameClientPlayer::FindClientForWare(Ware* ware)
                 {
                     points += distribution[gt].percent_buildings[BLD_HEADQUARTERS] * 30;
 
-                    cfw.push_back(ClientForWare(*i, points - (gwg->CalcDistance(start->GetX(), start->GetY(), (*i)->GetX(), (*i)->GetY()) / 2), points));
+                    cfw.push_back(ClientForWare(*i, points - (gwg->CalcDistance(start->GetPos(), (*i)->GetPos()) / 2), points));
                 }
             }
         }
@@ -1076,7 +1073,7 @@ noBaseBuilding* GameClientPlayer::FindClientForWare(Ware* ware)
                         }
                     }
 
-                    cfw.push_back(ClientForWare(*i, points - (gwg->CalcDistance(start->GetX(), start->GetY(), (*i)->GetX(), (*i)->GetY()) / 2), points));
+                    cfw.push_back(ClientForWare(*i, points - (gwg->CalcDistance(start->GetPos(), (*i)->GetPos()) / 2), points));
                 }
             }
         }
@@ -1376,7 +1373,7 @@ void GameClientPlayer::OrderTroops(nobMilitary* goal, unsigned count,bool ignore
         wh = FindWarehouse(goal, FW::Condition_Troops, 0, false, &param_count, false);
         if(wh)
         {
-            unsigned order_count = min(wh->GetSoldiersCount(), count);
+            unsigned order_count = std::min(wh->GetSoldiersCount(), count);
             count -= order_count;
             wh->OrderTroops(goal, order_count,ignoresettingsendweakfirst);
         }
@@ -1436,10 +1433,10 @@ void GameClientPlayer::NewSoldierAvailable(const unsigned& soldier_count)
 
 }
 
-void GameClientPlayer::CallFlagWorker(const unsigned short x, const unsigned short y, const Job job)
+void GameClientPlayer::CallFlagWorker(const MapPoint pt, const Job job)
 {
     /// Flagge rausfinden
-    noFlag* flag = gwg->GetSpecObj<noFlag>(x, y);
+    noFlag* flag = gwg->GetSpecObj<noFlag>(pt);
     /// Lagerhaus mit Geologen finden
     FW::Param_Job p = { job, 1 };
     nobBaseWarehouse* wh = FindWarehouse(flag, FW::Condition_Job, 0, false, &p, false);
@@ -1840,14 +1837,14 @@ GameClientPlayer::PactState GameClientPlayer::GetPactState(const PactType pt, co
 }
 
 ///all allied players get a letter with the location
-void GameClientPlayer::NotifyAlliesOfLocation(MapCoord x, MapCoord y, unsigned char allyplayerid)
+void GameClientPlayer::NotifyAlliesOfLocation(const MapPoint pt, unsigned char allyplayerid)
 {	
 	for(unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
     {
         GameClientPlayer* p = GAMECLIENT.GetPlayer(i);
 		if(i != allyplayerid && p->IsAlly(allyplayerid+1) && GAMECLIENT.GetPlayerID() == i)
 		{	            		
-            GAMECLIENT.SendPostMessage(new PostMsgWithLocation(_("Your ally wishes to notify you of this location"), PMC_DIPLOMACY, x, y));
+            GAMECLIENT.SendPostMessage(new PostMsgWithLocation(_("Your ally wishes to notify you of this location"), PMC_DIPLOMACY, pt));
 		}
 	}
 }
@@ -1988,9 +1985,9 @@ bool GameClientPlayer::OrderShip(nobHarborBuilding* hb)
     {
         for (std::vector<noShip*>::iterator it = ships.begin(); it != ships.end(); ++it)
         {
-            if ((*it)->IsIdling() && gwg->IsAtThisSea(gwg->GetHarborPointID(hb->GetX(), hb->GetY()), (*it)->GetSeaID()))
+            if ((*it)->IsIdling() && gwg->IsAtThisSea(gwg->GetHarborPointID(hb->GetPos()), (*it)->GetSeaID()))
             {
-                sfh.push_back(ShipForHarbor(*it, gwg->CalcDistance(hb->GetX(), hb->GetY(), (*it)->GetX(), (*it)->GetY())));
+                sfh.push_back(ShipForHarbor(*it, gwg->CalcDistance(hb->GetPos(), (*it)->GetPos())));
             }
         }
     }
@@ -2000,14 +1997,14 @@ bool GameClientPlayer::OrderShip(nobHarborBuilding* hb)
         {
             if ((*it)->IsIdling())
             {
-                if (gwg->IsAtThisSea(gwg->GetHarborPointID(hb->GetX(), hb->GetY()), (*it)->GetSeaID()))
+                if (gwg->IsAtThisSea(gwg->GetHarborPointID(hb->GetPos()), (*it)->GetSeaID()))
                 {
-                    sfh.push_back(ShipForHarbor(*it, gwg->CalcDistance(hb->GetX(), hb->GetY(), (*it)->GetX(), (*it)->GetY())));
+                    sfh.push_back(ShipForHarbor(*it, gwg->CalcDistance(hb->GetPos(), (*it)->GetPos())));
                 }
             }
             else if ((*it)->IsGoingToHarbor(hb))
             {
-                sfh.push_back(ShipForHarbor(*it, gwg->CalcDistance(hb->GetX(), hb->GetY(), (*it)->GetX(), (*it)->GetY())));
+                sfh.push_back(ShipForHarbor(*it, gwg->CalcDistance(hb->GetPos(), (*it)->GetPos())));
             }
         }
     }
@@ -2029,20 +2026,19 @@ bool GameClientPlayer::OrderShip(nobHarborBuilding* hb)
             break;
         }
 
-        MapCoord dest_x, dest_y;
         noShip* ship = (*it).ship;
 
-        gwg->GetCoastalPoint(hb->GetHarborPosID(), &dest_x, &dest_y, ship->GetSeaID());
+        MapPoint dest = gwg->GetCoastalPoint(hb->GetHarborPosID(), ship->GetSeaID());
 
         // ship already there?
-        if ((ship->GetX() == dest_x) && (ship->GetY() == dest_y))
+        if (ship->GetPos() == dest)
         {
             ship->AssignHarborId(hb->GetHarborPosID());
             hb->ShipArrived(ship);
             return(true);
         }
 
-        if (gwg->FindShipPath(ship->GetX(), ship->GetY(), dest_x, dest_y, &route, &distance))
+        if (gwg->FindShipPath(ship->GetPos(), dest, &route, &distance))
         {
             if (distance < best_distance)
             {
@@ -2116,11 +2112,10 @@ void GameClientPlayer::GetJobForShip(noShip* ship)
         // liegen wir am gleichen Meer?
         if(gwg->IsAtThisSea((*it)->GetHarborPosID(), ship->GetSeaID()))
         {
-            MapCoord dest_x, dest_y;
-            gwg->GetCoastalPoint((*it)->GetHarborPosID(), &dest_x, &dest_y, ship->GetSeaID());
+            MapPoint dest = gwg->GetCoastalPoint((*it)->GetHarborPosID(), ship->GetSeaID());
 
             // Evtl. sind wir schon da?
-            if(ship->GetX() == dest_x && ship->GetY() == dest_y)
+            if(ship->GetPos() == dest)
             {
                 ship->AssignHarborId((*it)->GetHarborPosID());
                 (*it)->ShipArrived(ship);
@@ -2130,7 +2125,7 @@ void GameClientPlayer::GetJobForShip(noShip* ship)
             unsigned length;
             std::vector<unsigned char> route;
 
-            if(gwg->FindShipPath(ship->GetX(), ship->GetY(), dest_x, dest_y, &route, &length))
+            if(gwg->FindShipPath(ship->GetPos(), dest, &route, &length))
             {
                 // Punkte ausrechnen
                 int points = (*it)->GetNeedForShip(ships_coming) - length;
@@ -2225,7 +2220,7 @@ void GameClientPlayer::HarborDestroyed(nobHarborBuilding* hb)
 
 /// Sucht einen Hafen in der Nähe, wo dieses Schiff seine Waren abladen kann
 /// gibt true zurück, falls erfolgreich
-bool GameClientPlayer::FindHarborForUnloading(noShip* ship, const MapCoord start_x, const MapCoord start_y, unsigned* goal_harbor_id,
+bool GameClientPlayer::FindHarborForUnloading(noShip* ship, const MapPoint start, unsigned* goal_harbor_id,
         std::vector<unsigned char>* route, nobHarborBuilding* exception)
 {
     nobHarborBuilding* best = NULL;
@@ -2243,7 +2238,7 @@ bool GameClientPlayer::FindHarborForUnloading(noShip* ship, const MapCoord start
             continue;
 
         // Distanz ermitteln zwischen Schiff und Hafen, Schiff kann natürlich auch über Kartenränder fahren
-        unsigned distance = gwg->CalcDistance(ship->GetX(), ship->GetY(), hb->GetX(), hb->GetY());
+        unsigned distance = gwg->CalcDistance(ship->GetPos(), hb->GetPos());
 
         // Kürzerer Weg als bisher bestes Ziel?
         if(distance < best_distance)
@@ -2257,18 +2252,15 @@ bool GameClientPlayer::FindHarborForUnloading(noShip* ship, const MapCoord start
     if(best)
     {
         // Weg dorthin suchen
-        MapCoord dx, dy;
-        gwg->GetCoastalPoint(best->GetHarborPosID(), &dx, &dy, ship->GetSeaID());
+        MapPoint dest = gwg->GetCoastalPoint(best->GetHarborPosID(), ship->GetSeaID());
         route->clear();
         *goal_harbor_id = best->GetHarborPosID();
         // Weg dorthin gefunden?
-        if(gwg->FindShipPath(start_x, start_y, dx, dy, route, NULL))
+        if(gwg->FindShipPath(start, dest, route, NULL))
             return true;
-        else
-            return false;
     }
-    else
-        return false;
+    
+    return false;
 }
 
 void GameClientPlayer::TestForEmergencyProgramm()
@@ -2393,7 +2385,7 @@ bool GameClientPlayer::CanBuildCatapult() const
 /// A ship has discovered new hostile territory --> determines if this is new
 /// i.e. there is a sufficient distance to older locations
 /// Returns true if yes and false if not
-bool GameClientPlayer::ShipDiscoveredHostileTerritory(const Point<MapCoord> location)
+bool GameClientPlayer::ShipDiscoveredHostileTerritory(const MapPoint location)
 {
     // Prüfen, ob Abstand zu bisherigen Punkten nicht zu klein
     for(unsigned i = 0; i < enemies_discovered_by_ships.size(); ++i)
@@ -2497,7 +2489,7 @@ void GameClientPlayer::Trade(nobBaseWarehouse* wh, const GoodType gt, const Job 
             else if(job != JOB_NOTHING)
                 available = (*it)->GetAvailableFiguresForTrading(job);
 
-            available = min(available, count);
+            available = std::min(available, count);
             count -= available;
             if(available > 0) //we dont have anything to send .. so dont start a new traderoute from here!
                 (*it)->StartTradeCaravane(gt, job, available, *tr, wh);

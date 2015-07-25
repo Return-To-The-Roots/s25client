@@ -40,15 +40,15 @@
 
 #include "GameServer.h"
 
-GameWorldViewer::GameWorldViewer() : scroll(false), sx(0), sy(0), view(GameWorldView(this, 0, 0, VIDEODRIVER.GetScreenWidth(), VIDEODRIVER.GetScreenHeight()))
+GameWorldViewer::GameWorldViewer() : scroll(false), sx(0), sy(0), view(GameWorldView(this, MapPoint(0, 0), VIDEODRIVER.GetScreenWidth(), VIDEODRIVER.GetScreenHeight()))
 {
     MoveTo(0, 0);
 }
 
-unsigned GameWorldViewer::GetAvailableSoldiersForAttack(const unsigned char player_attacker, const MapCoord x, const MapCoord y)
+unsigned GameWorldViewer::GetAvailableSoldiersForAttack(const unsigned char player_attacker, const MapPoint pt)
 {
     // Ist das angegriffenne ein normales Gebäude?
-    nobBaseMilitary* attacked_building = GetSpecObj<nobBaseMilitary>(x, y);
+    nobBaseMilitary* attacked_building = GetSpecObj<nobBaseMilitary>(pt);
     if(attacked_building->GetBuildingType() >= BLD_BARRACKS && attacked_building->GetBuildingType() <= BLD_FORTRESS)
     {
         // Wird es gerade eingenommen?
@@ -58,7 +58,7 @@ unsigned GameWorldViewer::GetAvailableSoldiersForAttack(const unsigned char play
     }
 
     // Militärgebäude in der Nähe finden
-    std::set<nobBaseMilitary*> buildings = LookForMilitaryBuildings(x, y, 3);
+    std::set<nobBaseMilitary*> buildings = LookForMilitaryBuildings(pt, 3);
 
     unsigned total_count = 0;
 
@@ -66,7 +66,7 @@ unsigned GameWorldViewer::GetAvailableSoldiersForAttack(const unsigned char play
     {
         // Muss ein Gebäude von uns sein und darf nur ein "normales Militärgebäude" sein (kein HQ etc.)
         if((*it)->GetPlayer() == player_attacker && (*it)->GetBuildingType() >= BLD_BARRACKS && (*it)->GetBuildingType() <= BLD_FORTRESS)
-            total_count += static_cast<nobMilitary*>(*it)->GetSoldiersForAttack(x, y, player_attacker);
+            total_count += static_cast<nobMilitary*>(*it)->GetSoldiersForAttack(pt, player_attacker);
 
     }
 
@@ -120,18 +120,18 @@ void GameWorldViewer::MouseMove(const MouseCoords& mc)
 }
 
 // Höhe wurde Verändert: TerrainRenderer Bescheid sagen, damit es entsprechend verändert werden kann
-void GameWorldViewer::AltitudeChanged(const MapCoord x, const MapCoord y)
+void GameWorldViewer::AltitudeChanged(const MapPoint pt)
 {
-    tr.AltitudeChanged(x, y, this);
+    tr.AltitudeChanged(pt, this);
 }
 
-void GameWorldViewer::VisibilityChanged(const MapCoord x, const MapCoord y)
+void GameWorldViewer::VisibilityChanged(const MapPoint pt)
 {
-    tr.VisibilityChanged(x, y, this);
+    tr.VisibilityChanged(pt, this);
 }
 
 
-Visibility GameWorldViewer::GetVisibility(const MapCoord x, const MapCoord y) const
+Visibility GameWorldViewer::GetVisibility(const MapPoint pt) const
 {
     /// Replaymodus und FoW aus? Dann alles sichtbar
     if(GAMECLIENT.IsReplayModeOn() && GAMECLIENT.IsReplayFOWDisabled())
@@ -141,7 +141,7 @@ Visibility GameWorldViewer::GetVisibility(const MapCoord x, const MapCoord y) co
     if(GAMECLIENT.GetLocalPlayer()->isDefeated())
         return VIS_VISIBLE;
 
-    return CalcWithAllyVisiblity(x, y, GAMECLIENT.GetPlayerID());
+    return CalcWithAllyVisiblity(pt, GAMECLIENT.GetPlayerID());
 }
 
 
@@ -151,16 +151,16 @@ void GameWorldViewer::RecalcAllColors()
 }
 
 /// liefert sichtbare StraÃe, im FoW entsprechend die FoW-StraÃe
-unsigned char GameWorldViewer::GetVisibleRoad(const MapCoord x, const MapCoord y, unsigned char dir, const Visibility visibility) const
+unsigned char GameWorldViewer::GetVisibleRoad(const MapPoint pt, unsigned char dir, const Visibility visibility) const
 {
     if(visibility == VIS_VISIBLE)
         // Normal die sichtbaren StraÃen zurückliefern
-        return GetRoad(x, y, dir, true);
+        return GetRoad(pt, dir, true);
 //      return GetPointRoad(x,y,dir,true);
     else if(visibility == VIS_FOW)
         // entsprechende FoW-StraÃe liefern
-//      return GetPointFOWRoad(x,y,dir,GetYoungestFOWNodePlayer(Point<MapCoord>(x,y)));
-        return GetNode(x, y).fow[GetYoungestFOWNodePlayer(Point<MapCoord>(x, y))].roads[dir];
+//      return GetPointFOWRoad(x,y,dir,GetYoungestFOWNodePlayer(MapPoint(x,y)));
+        return GetNode(pt).fow[GetYoungestFOWNodePlayer(pt)].roads[dir];
     else
         // Unsichtbar -> keine StraÃe zeichnen
         return 0;
@@ -168,25 +168,24 @@ unsigned char GameWorldViewer::GetVisibleRoad(const MapCoord x, const MapCoord y
 
 
 /// Return a ship at this position owned by the given player. Prefers ships that need instructions.
-noShip* GameWorldViewer::GetShip(const MapCoord x, const MapCoord y, const unsigned char player) const
+noShip* GameWorldViewer::GetShip(const MapPoint pt, const unsigned char player) const
 {
     noShip* ship = NULL;
 
     for (unsigned i = 0; i < 7; ++i)
     {
-        Point<MapCoord> pa;
+        MapPoint pa;
 
         if (i == 6)
         {
-            pa = Point<MapCoord>(x, y);
+            pa = pt;
         }
         else
         {
-            pa.x = GetXA(x, y, i);
-            pa.y = GetYA(x, y, i);
+            pa = GetNeighbour(pt, i);
         }
 
-        const std::list<noBase*>& figures = GetFigures(pa.x, pa.y);
+        const std::list<noBase*>& figures = GetFigures(pa);
         for(std::list<noBase*>::const_iterator it = figures.begin(); it != figures.end(); ++it)
         {
             if((*it)->GetGOT() == GOT_SHIP)
@@ -195,7 +194,7 @@ noShip* GameWorldViewer::GetShip(const MapCoord x, const MapCoord y, const unsig
 
                 if (tmp->GetPlayer() == player)
                 {
-                    if (((tmp->GetX() == x) && (tmp->GetY() == y)) || (tmp->GetDestinationForCurrentMove() == Point<MapCoord>(x, y)))
+                    if ((tmp->GetPos() == pt) || (tmp->GetDestinationForCurrentMove() == pt))
                     {
                         if (tmp->IsWaitingForExpeditionInstructions())
                         {
@@ -214,29 +213,29 @@ noShip* GameWorldViewer::GetShip(const MapCoord x, const MapCoord y, const unsig
 
 /// Gibt die verfügbar Anzahl der Angreifer für einen Seeangriff zurück
 unsigned GameWorldViewer::GetAvailableSoldiersForSeaAttackCount(const unsigned char player_attacker,
-        const MapCoord x, const MapCoord y) const
+        const MapPoint pt) const
 {
     if(GAMECLIENT.GetGGS().getSelection(ADDON_SEA_ATTACK) == 2) //deactivated by addon?
         return 0;
     std::list<GameWorldBase::PotentialSeaAttacker> attackers;
-    GetAvailableSoldiersForSeaAttack(player_attacker, x, y, &attackers);
+    GetAvailableSoldiersForSeaAttack(player_attacker, pt, &attackers);
     return unsigned(attackers.size());
 }
 
 /// Get the "youngest" FOWObject of all players who share the view with the local player
-const FOWObject* GameWorldViewer::GetYoungestFOWObject(const Point<MapCoord> pos) const
+const FOWObject* GameWorldViewer::GetYoungestFOWObject(const MapPoint pos) const
 {
-    return GetNode(pos.x, pos.y).fow[GetYoungestFOWNodePlayer(pos)].object;
+    return GetNode(pos).fow[GetYoungestFOWNodePlayer(pos)].object;
 }
 
 
 /// Gets the youngest fow node of all visible objects of all players who are connected
 /// with the local player via team view
-unsigned char GameWorldViewer::GetYoungestFOWNodePlayer(const Point<MapCoord> pos) const
+unsigned char GameWorldViewer::GetYoungestFOWNodePlayer(const MapPoint pos) const
 {
     unsigned char local_player = GAMECLIENT.GetPlayerID();
     unsigned char youngest_player = local_player;
-    unsigned youngest_time = GetNode(pos.x, pos.y).fow[local_player].last_update_time;
+    unsigned youngest_time = GetNode(pos).fow[local_player].last_update_time;
 
     // Shared team view enabled?
     if(GAMECLIENT.GetGGS().team_view)
@@ -247,13 +246,13 @@ unsigned char GameWorldViewer::GetYoungestFOWNodePlayer(const Point<MapCoord> po
             if(GAMECLIENT.GetPlayer(i)->IsAlly(local_player))
             {
                 // Has the player FOW at this point at all?
-                if(GetNode(pos.x, pos.y).fow[i].visibility == VIS_FOW)
+                if(GetNode(pos).fow[i].visibility == VIS_FOW)
                 {
                     // Younger than the youngest or no object at all?
-                    if(GetNode(pos.x, pos.y).fow[i].last_update_time > youngest_time)
+                    if(GetNode(pos).fow[i].last_update_time > youngest_time)
                     {
                         // Then take it
-                        youngest_time = GetNode(pos.x, pos.y).fow[i].last_update_time;
+                        youngest_time = GetNode(pos).fow[i].last_update_time;
                         // And remember its owner
                         youngest_player = i;
                     }

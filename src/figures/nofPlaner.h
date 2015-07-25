@@ -55,7 +55,7 @@ class nofPlaner : public noFigure
 
     public:
 
-        nofPlaner(const unsigned short x, const unsigned short y, const unsigned char player, noBuildingSite* building_site);
+        nofPlaner(const MapPoint pt, const unsigned char player, noBuildingSite* building_site);
         nofPlaner(SerializedGameData* sgd, const unsigned obj_id);
 
         /// Serialisierungsfunktionen

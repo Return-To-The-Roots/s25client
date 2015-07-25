@@ -36,7 +36,7 @@ class nofButcher : public nofWorkman
 
     public:
 
-        nofButcher(const unsigned short x, const unsigned short y, const unsigned char player, nobUsual* workplace);
+        nofButcher(const MapPoint pt, const unsigned char player, nobUsual* workplace);
         nofButcher(SerializedGameData* sgd, const unsigned obj_id);
 
         GO_Type GetGOT() const { return GOT_NOF_BUTCHER; }

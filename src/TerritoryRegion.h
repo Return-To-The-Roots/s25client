@@ -50,7 +50,7 @@ class TerritoryRegion
 
     private:
         /// Check whether the point x, y is part of the polygon
-        static bool IsPointInPolygon(GameWorldBase* gwb, std::vector< Point<MapCoord> > &polygon, MapCoord x, MapCoord y);
+        static bool IsPointInPolygon(GameWorldBase* gwb, std::vector< MapPoint > &polygon, const MapPoint pt);
 
         /// Testet einen Punkt, ob der neue Spieler ihn übernehmen kann und übernimmt ihn ggf.
         void TestNode( int x, int y, const unsigned char player, const unsigned char radius, const bool check_barriers);
@@ -65,7 +65,7 @@ class TerritoryRegion
         TerritoryRegion(const int x1, const int y1, const int x2, const int y2, GameWorldBase* const gwb);
         ~TerritoryRegion();
 
-        static bool IsPointValid(GameWorldBase* gwb, std::vector< Point<MapCoord> > &polygon, MapCoord x, MapCoord y);
+        static bool IsPointValid(GameWorldBase* gwb, std::vector< MapPoint > &polygon, const MapPoint pt);
 
         /// Berechnet ein Militärgebäude mit ein
         void CalcTerritoryOfBuilding(const noBaseBuilding* const building);

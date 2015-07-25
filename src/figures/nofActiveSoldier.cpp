@@ -43,9 +43,9 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-nofActiveSoldier::nofActiveSoldier(const unsigned short x, const unsigned short y, const unsigned char player,
+nofActiveSoldier::nofActiveSoldier(const MapPoint pos, const unsigned char player,
                                    nobBaseMilitary* const home, const unsigned char rank, const SoldierState init_state)
-    : nofSoldier(x, y, player, home, rank), state(init_state), enemy(NULL)
+    : nofSoldier(pos, player, home, rank), state(init_state), enemy(NULL)
 
 {
 }
@@ -81,15 +81,15 @@ void nofActiveSoldier::GoalReached()
     // Add myself to the building
     if(!building)
     {
-        if((building = gwg->GetSpecObj<nobMilitary>(this->GetX(), this->GetY())))
-            LOG.lprintf("nofActiveSoldier::GoalRoached() - no valid 'building' but found one at soldier's position (%i,%i) (gf: %u)\n", this->GetX(), this->GetY(),GAMECLIENT.GetGFNumber());
+        if((building = gwg->GetSpecObj<nobMilitary>(this->GetPos())))
+            LOG.lprintf("nofActiveSoldier::GoalRoached() - no valid 'building' but found one at soldier's position (%i,%i) (gf: %u)\n", this->GetPos(),GAMECLIENT.GetGFNumber());
         else
-            LOG.lprintf("nofActiveSoldier::GoalRoached() - no valid 'building' also didnt find one at soldier's position (%i,%i) (gf: %u)\n", this->GetX(), this->GetY(),GAMECLIENT.GetGFNumber());
+            LOG.lprintf("nofActiveSoldier::GoalRoached() - no valid 'building' also didnt find one at soldier's position (%i,%i) (gf: %u)\n", this->GetPos(),GAMECLIENT.GetGFNumber());
     }
     static_cast<nobMilitary*>(building)->AddActiveSoldier(this);
 
     // And remove myself from the map
-    gwg->RemoveFigure(this, x, y);
+    gwg->RemoveFigure(this, pos);
 }
 
 void nofActiveSoldier::ReturnHome()
@@ -129,10 +129,10 @@ void nofActiveSoldier::WalkingHome()
         // We're there!
         building->AddActiveSoldier(this);
         // Remove myself from the map
-        gwg->RemoveFigure(this, x, y);
+        gwg->RemoveFigure(this, pos);
     }
     // Or we don't find a route?
-    else if((dir = gwg->FindHumanPath(x, y, building->GetFlag()->GetX(), building->GetFlag()->GetY(), 100)) == 0xFF)
+    else if((dir = gwg->FindHumanPath(pos, building->GetFlag()->GetPos(), 100)) == 0xFF)
     {
         // Start wandering around then
         StartWandering();
@@ -210,7 +210,7 @@ void nofActiveSoldier::ExpelEnemies()
     std::vector<noFigure*> figures;
 
     // At the position of the soldier
-    const std::list<noBase*>& fieldFigures = gwg->GetFigures(x, y);
+    const std::list<noBase*>& fieldFigures = gwg->GetFigures(pos);
     for(std::list<noBase*>::const_iterator it = fieldFigures.begin(); it != fieldFigures.end(); ++it)
     {
         if((*it)->GetType() == NOP_FIGURE)
@@ -220,7 +220,7 @@ void nofActiveSoldier::ExpelEnemies()
     // And around this point
     for(unsigned i = 0; i < 6; ++i)
     {
-        const std::list<noBase*>& fieldFigures = gwg->GetFigures(gwg->GetXA(x, y, i), gwg->GetYA(x, y, i));
+        const std::list<noBase*>& fieldFigures = gwg->GetFigures(gwg->GetNeighbour(pos, i));
         for(std::list<noBase*>::const_iterator it = fieldFigures.begin(); it != fieldFigures.end(); ++it)
         {
             // Normal settler?
@@ -229,9 +229,9 @@ void nofActiveSoldier::ExpelEnemies()
             {
                 noFigure* fig = static_cast<noFigure*>(*it);
                 // The people have to be either on the point itself or they have to walk there
-                if(fig->GetX() == x && fig->GetY() == y)
+                if(fig->GetPos() == pos)
                     figures.push_back(fig);
-                else if(fig->GetDestinationForCurrentMove() == Point<MapCoord>(x, y))
+                else if(fig->GetDestinationForCurrentMove() == pos)
                     figures.push_back(fig);
             }
         }
@@ -278,17 +278,14 @@ void nofActiveSoldier::Walked()
 /// Returns true if it found one
 bool nofActiveSoldier::FindEnemiesNearby(unsigned char excludedOwner)
 {
-    MapCoord tx, ty;
-
     // Vector with potential victims
     std::vector<nofActiveSoldier*> soldiersNearby;
 
     // Look in radius 1
     for(unsigned dir = 0; dir < 6; ++dir)
     {
-        tx = gwg->GetXA(x, y, dir);
-        ty = gwg->GetYA(x, y, dir);
-        std::vector<noBase*> objects = gwg->GetDynamicObjectsFrom(tx, ty);
+        MapPoint t = gwg->GetNeighbour(pos, dir);
+        std::vector<noBase*> objects = gwg->GetDynamicObjectsFrom(t);
         for(std::vector<noBase*>::iterator it = objects.begin(); it != objects.end(); ++it)
             if (dynamic_cast<nofActiveSoldier*>(*it) && dynamic_cast<nofActiveSoldier*>(*it)->GetPlayer()!=excludedOwner)
                 soldiersNearby.push_back(dynamic_cast<nofActiveSoldier*>(*it));
@@ -297,9 +294,8 @@ bool nofActiveSoldier::FindEnemiesNearby(unsigned char excludedOwner)
     // ... and radius 2
     for(unsigned dir = 0; dir < 12; ++dir)
     {
-        tx = gwg->GetXA2(x, y, dir);
-        ty = gwg->GetYA2(x, y, dir);
-        std::vector<noBase*> objects = gwg->GetDynamicObjectsFrom(tx, ty);
+        MapPoint t = gwg->GetNeighbour2(pos, dir);
+        std::vector<noBase*> objects = gwg->GetDynamicObjectsFrom(t);
         for(std::vector<noBase*>::iterator it = objects.begin(); it != objects.end(); ++it)
             if (dynamic_cast<nofActiveSoldier*>(*it) && dynamic_cast<nofActiveSoldier*>(*it)->GetPlayer()!=excludedOwner)
                 soldiersNearby.push_back(dynamic_cast<nofActiveSoldier*>(*it));
@@ -332,8 +328,7 @@ bool nofActiveSoldier::FindEnemiesNearby(unsigned char excludedOwner)
 	}
 	else//we have an excluded owner for our new enemy and that only happens in ffa situations when we won against the last defender so our fightspot is the exact location we have right now
 	{
-		fight_spot.x=x;
-		fight_spot.y=y;
+		fight_spot = pos;
 	}
 
     // We try to meet us now
@@ -377,7 +372,7 @@ void nofActiveSoldier::MeetingEnemy()
         if (enemy->GetPos() == fight_spot && enemy->GetState() == STATE_WAITINGFORFIGHT)
         {
             // Start fighting
-            gwg->AddFigure(new noFighting(enemy, this), x, y);
+            gwg->AddFigure(new noFighting(enemy, this), pos);
 
             enemy->FightingStarted();
             FightingStarted();
@@ -388,7 +383,7 @@ void nofActiveSoldier::MeetingEnemy()
         {
             // Is the fighting point still valid (could be another fight there already e.g.)?
             // And the enemy still on the way?
-            if (!gwg->ValidPointForFighting(x, y, false,this) || !(enemy->GetState() == STATE_MEETENEMY))
+            if (!gwg->ValidPointForFighting(pos, false,this) || !(enemy->GetState() == STATE_MEETENEMY))
             {
                 // No
                 // Abort the whole fighting fun with the enemy
@@ -411,7 +406,7 @@ void nofActiveSoldier::MeetingEnemy()
     // Not at the fighting spot yet, continue walking there
     else
     {
-        dir = gwg->FindHumanPath(x, y, fight_spot.x, fight_spot.y, MAX_ATTACKING_RUN_DISTANCE);
+        dir = gwg->FindHumanPath(pos, fight_spot, MAX_ATTACKING_RUN_DISTANCE);
         if (dir != 255)
         {
             StartWalking(dir);
@@ -445,7 +440,7 @@ bool nofActiveSoldier::IsReadyForFight() const
 }
 
 /// Informs this soldier that another soldier starts meeting him
-void nofActiveSoldier::MeetEnemy(nofActiveSoldier* other, const Point<MapCoord> figh_spot)
+void nofActiveSoldier::MeetEnemy(nofActiveSoldier* other, const MapPoint figh_spot)
 {
     // Remember these things
     enemy = other;
@@ -466,41 +461,42 @@ void nofActiveSoldier::MeetEnemy(nofActiveSoldier* other, const Point<MapCoord> 
 
 /// Looks for an appropriate fighting spot between the two soldiers
 /// Returns true if successful
-bool nofActiveSoldier::GetFightSpotNear(nofActiveSoldier* other, Point<MapCoord> * fight_spot)
+bool nofActiveSoldier::GetFightSpotNear(nofActiveSoldier* other, MapPoint * fight_spot)
 {
     // Calc middle between the two soldiers and use this as origin spot for the search of more fight spots
-    Point<MapCoord> middle( (x + gwg->GetXA(other->GetX(), other->GetY(), other->GetDir())) / 2, (y + gwg->GetYA(other->GetX(), other->GetY(), other->GetDir())) / 2 );
+    MapPoint otherPos = gwg->GetNeighbour(other->GetPos(), other->GetDir());
+    MapPoint middle( (pos.x + otherPos.x) / 2, (pos.y + otherPos.y) / 2 );
 
     // Did we cross the borders ? ( horizontally)
-    if(SafeDiff(middle.x, x) > MEET_FOR_FIGHT_DISTANCE)
+    if(SafeDiff(middle.x, pos.x) > MEET_FOR_FIGHT_DISTANCE)
     {
         // In this case: distance = distance of soldier 1 to left border + distance of soldier 2 to right border
-        MapCoord minx = min(x, other->GetX());
-        MapCoord maxx = max(x, other->GetX());
+        MapCoord minx = std::min(pos.x, other->GetX());
+        MapCoord maxx = std::max(pos.x, other->GetX());
 
         MapCoord diff = minx + (gwg->GetWidth() - maxx);
         middle.x += diff / 2;
     }
 
     // Did we cross the borders ? ( vertically)
-    if(SafeDiff(middle.y, y) > MEET_FOR_FIGHT_DISTANCE)
+    if(SafeDiff(middle.y, pos.y) > MEET_FOR_FIGHT_DISTANCE)
     {
         // In this case: distance = distance of soldier 1 to left border + distance of soldier 2 to right border
-        MapCoord miny = min(y, other->GetY());
-        MapCoord maxy = max(y, other->GetY());
+        MapCoord miny = std::min(pos.y, other->GetY());
+        MapCoord maxy = std::max(pos.y, other->GetY());
 
         MapCoord diff = miny + (gwg->GetHeight() - maxy);
         middle.y += diff / 2;
     }
 
     // We could have crossed the border due to our interpolating across the borders
-    gwg->ConvertCoords(middle.x, middle.y, &middle.x, &middle.y);
+    middle = gwg->ConvertCoords(middle.x, middle.y);
 
 
     // Test Middle point first
-    if(gwg->ValidPointForFighting(middle.x, middle.y, true, NULL)
-            && (GetPos() == middle || gwg->FindHumanPath(x, y, middle.x, middle.y, MEET_FOR_FIGHT_DISTANCE * 2, false, NULL) != 0xff)
-            && (other->GetPos() == middle || gwg->FindHumanPath(other->GetX(), other->GetY(), middle.x, middle.y, MEET_FOR_FIGHT_DISTANCE * 2, false, NULL) != 0xff))
+    if(gwg->ValidPointForFighting(middle, true, NULL)
+            && (GetPos() == middle || gwg->FindHumanPath(pos, middle, MEET_FOR_FIGHT_DISTANCE * 2, false, NULL) != 0xff)
+            && (other->GetPos() == middle || gwg->FindHumanPath(other->GetPos(), middle, MEET_FOR_FIGHT_DISTANCE * 2, false, NULL) != 0xff))
     {
         // Great, then let's take this one
         *fight_spot = middle;
@@ -514,20 +510,19 @@ bool nofActiveSoldier::GetFightSpotNear(nofActiveSoldier* other, Point<MapCoord>
         // Wurde ein Punkt in diesem Radius gefunden?
         // bool found_in_radius = false;
 
-        MapCoord tx2 = tx, ty2 = middle.y;
+        MapPoint t2(tx, middle.y);
         for(unsigned i = 2; i < 8; ++i)
         {
-            for(MapCoord r2 = 0; r2 < r; gwg->GetPointA(tx2, ty2, i % 6), ++r2)
+            for(MapCoord r2 = 0; r2 < r; t2 = gwg->GetNeighbour(t2, i % 6), ++r2)
             {
                 // Did we find a good spot?
-                if(gwg->ValidPointForFighting(tx2, ty2, true, NULL)
-                        && gwg->FindHumanPath(x, y, tx2, ty2, MEET_FOR_FIGHT_DISTANCE * 2, false, NULL) != 0xff
-                        && gwg->FindHumanPath(other->GetX(), other->GetY(), tx2, ty2, MEET_FOR_FIGHT_DISTANCE * 2, false, NULL) != 0xff)
+                if(gwg->ValidPointForFighting(t2, true, NULL)
+                        && gwg->FindHumanPath(pos, t2, MEET_FOR_FIGHT_DISTANCE * 2, false, NULL) != 0xff
+                        && gwg->FindHumanPath(other->GetPos(), t2, MEET_FOR_FIGHT_DISTANCE * 2, false, NULL) != 0xff)
 
                 {
                     // Great, then let's take this one
-                    fight_spot->x = tx2;
-                    fight_spot->y = ty2;
+                    *fight_spot = t2;
                     return true;
 
                 }

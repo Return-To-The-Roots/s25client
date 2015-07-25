@@ -63,7 +63,7 @@ iwHelp::iwHelp(const GUI_ID gui_id, const std::string& title, const std::string&
         NormalFont->GetWrapInfo(content, HELP_WINDOW_WIDTH - 28 - ctrlMultiline::SCROLLBAR_WIDTH,
                                 HELP_WINDOW_WIDTH - 24 - ctrlMultiline::SCROLLBAR_WIDTH, wi);
 
-    unsigned int show_lines = min( (unsigned int)wi.positions.size(), MAX_LINES);
+    unsigned int show_lines = std::min( (unsigned int)wi.positions.size(), MAX_LINES);
 
     unsigned short text_height = show_lines * NormalFont->getHeight();
 

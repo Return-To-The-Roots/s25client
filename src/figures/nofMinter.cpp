@@ -36,8 +36,8 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-nofMinter::nofMinter(const unsigned short x, const unsigned short y, const unsigned char player, nobUsual* workplace)
-    : nofWorkman(JOB_MINTER, x, y, player, workplace)
+nofMinter::nofMinter(const MapPoint pos, const unsigned char player, nobUsual* workplace)
+    : nofWorkman(JOB_MINTER, pos, player, workplace)
 {
 }
 

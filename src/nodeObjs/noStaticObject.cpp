@@ -50,24 +50,23 @@ static char THIS_FILE[] = __FILE__;
  *
  *  @author FloSoft
  */
-noStaticObject::noStaticObject(unsigned short x, unsigned short y, unsigned short id, unsigned short file, unsigned char size, NodalObjectType type)
-    : noCoordBase(type, x, y), id(id), file(file), size(size)
+noStaticObject::noStaticObject(const MapPoint pos, unsigned short id, unsigned short file, unsigned char size, NodalObjectType type)
+    : noCoordBase(type, pos), id(id), file(file), size(size)
 {
     // sind wir ein "Schloss" Objekt?
     if(GetSize() == 2)
     {
         for(unsigned i = 0; i < 3; ++i)
         {
-            MapCoord xa = gwg->GetXA(x, y, i);
-            MapCoord ya = gwg->GetYA(x, y, i);
+            MapPoint na = gwg->GetNeighbour(pos, i);
 
-            noBase* no = gwg->GetSpecObj<noBase>(xa, ya);
+            noBase* no = gwg->GetSpecObj<noBase>(pos);
             if(no)
             {
                 no->Destroy();
                 delete no;
             }
-            gwg->SetNO(new noExtension(this), xa, ya);
+            gwg->SetNO(new noExtension(this), pos);
         }
     }
 }
@@ -148,15 +147,14 @@ void noStaticObject::Destroy_noStaticObject(void)
 
         for(unsigned i = 0; i < 3; ++i)
         {
-            MapCoord xa = gwg->GetXA(x, y, i);
-            MapCoord ya = gwg->GetYA(x, y, i);
+            MapPoint nb = gwg->GetNeighbour(pos, i);
 
-            noBase* no = gwg->GetSpecObj<noBase>(xa, ya);
+            noBase* no = gwg->GetSpecObj<noBase>(nb);
             if(no)
             {
                 no->Destroy();
                 delete no;
-                gwg->SetNO(NULL, xa, ya);
+                gwg->SetNO(NULL, nb);
             }
         }
     }

@@ -36,8 +36,8 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-nofFlagWorker::nofFlagWorker(const Job job, const unsigned short x, const unsigned short y, const unsigned char player, noRoadNode* goal)
-    : noFigure(job, x, y, player, goal), flag(0), state(STATE_FIGUREWORK)
+nofFlagWorker::nofFlagWorker(const Job job, const MapPoint pos, const unsigned char player, noRoadNode* goal)
+    : noFigure(job, pos, player, goal), flag(0), state(STATE_FIGUREWORK)
 {
     // Flagge als Ziel, dann arbeiten wir auch, ansonsten kanns aber auch nur ein Lagerhaus oder Null sein, wenn ein
     // Lagerhaus abgerissen wurde oder ausgelagert wurde etc., dann auch den nicht als Flag-Worker registrieren
@@ -86,7 +86,7 @@ void nofFlagWorker::GoToFlag()
     // Zur Flagge zurücklaufen
 
     // Bin ich an der Fahne?
-    if(x == flag->GetX() && y == flag->GetY())
+    if(pos == flag->GetPos())
     {
         // nach Hause gehen
         if(nobBaseWarehouse* wh = gwg->GetPlayer(player)->FindWarehouse(flag, FW::Condition_StoreFigure, 0, true, &job, false))
@@ -118,7 +118,7 @@ void nofFlagWorker::GoToFlag()
     else
     {
         // Weg suchen
-        dir = gwg->FindHumanPath(x, y, flag->GetX(), flag->GetY(), 40);
+        dir = gwg->FindHumanPath(pos, flag->GetPos(), 40);
 
         // Wenns keinen gibt, rumirren, ansonsten hinlaufen
         if(dir == 0xFF)

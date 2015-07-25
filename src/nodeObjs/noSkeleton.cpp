@@ -37,8 +37,8 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-noSkeleton::noSkeleton(const unsigned short x, const unsigned short y)
-    : noCoordBase(NOP_ENVIRONMENT, x, y),
+noSkeleton::noSkeleton(const MapPoint pos)
+    : noCoordBase(NOP_ENVIRONMENT, pos),
       type(0), current_event(em->AddEvent(this, 15000 + RANDOM.Rand(__FILE__, __LINE__, obj_id, 10000)))
 {
 }
@@ -49,7 +49,7 @@ noSkeleton::~noSkeleton()
 
 void noSkeleton::Destroy_noSkeleton()
 {
-    gwg->SetNO(NULL, x, y);
+    gwg->SetNO(NULL, pos);
 
     // ggf Event abmelden
     if(current_event)

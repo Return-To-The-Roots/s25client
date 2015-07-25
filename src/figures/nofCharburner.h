@@ -45,7 +45,7 @@ class nofCharburner : public nofFarmhand
         void WorkFinished();
 
         /// Returns the quality of this working point or determines if the worker can work here at all
-        PointQuality GetPointQuality(const MapCoord x, const MapCoord y);
+        PointQuality GetPointQuality(const MapPoint pt);
 
         /// Inform derived class about the start of the whole working process (at the beginning when walking out of the house)
         void WalkingStarted();
@@ -58,7 +58,7 @@ class nofCharburner : public nofFarmhand
 
     public:
 
-        nofCharburner(const MapCoord x, MapCoord y, const unsigned char player, nobUsual* workplace);
+        nofCharburner(const MapPoint pt, const unsigned char player, nobUsual* workplace);
         nofCharburner(SerializedGameData* sgd, const unsigned obj_id);
 
         void Serialize(SerializedGameData* sgd) const;

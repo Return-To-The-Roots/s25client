@@ -51,7 +51,7 @@ class noCharburnerPile : public noCoordBase
 
     public:
 
-        noCharburnerPile(const unsigned short x, const unsigned short y);
+        noCharburnerPile(const MapPoint pt);
         noCharburnerPile(SerializedGameData* sgd, const unsigned obj_id);
 
         ~noCharburnerPile();

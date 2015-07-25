@@ -38,14 +38,14 @@ class nofWoodcutter : public nofFarmhand
 
 
         /// Returns the quality of this working point or determines if the worker can work here at all
-        PointQuality GetPointQuality(const MapCoord x, const MapCoord y);
+        PointQuality GetPointQuality(const MapPoint pt);
 
         /// wird aufgerufen, wenn die Arbeit abgebrochen wird (von nofBuildingWorker aufgerufen)
         void WorkAborted_Farmhand();
 
     public:
 
-        nofWoodcutter(const unsigned short x, const unsigned short y, const unsigned char player, nobUsual* workplace);
+        nofWoodcutter(const MapPoint pt, const unsigned char player, nobUsual* workplace);
         nofWoodcutter(SerializedGameData* sgd, const unsigned obj_id);
 
         GO_Type GetGOT() const { return GOT_NOF_WOODCUTTER; }

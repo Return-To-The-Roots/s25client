@@ -44,12 +44,12 @@ static char THIS_FILE[] = __FILE__;
 
 // 260x190, 300x250, 340x310
 
-//IngameWindow::IngameWindow(unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, const std::string& title, glArchivItem_Bitmap *background, bool modal)
-iwObservate::iwObservate(GameWorldViewer* const gwv, const unsigned short selected_x, const unsigned short selected_y)
-    : IngameWindow(gwv->CreateGUIID(selected_x, selected_y), 0xFFFE, 0xFFFE, 300, 250, _("Observation window"), NULL),
-      view(new GameWorldView(gwv, GetX() + 10, GetY() + 15, 300 - 20, 250 - 20)), selected_x(selected_x), selected_y(selected_y), last_x(-1), last_y(-1), scroll(false)
+//IngameWindow::IngameWindow(unsigned int id, const MapPoint pt, unsigned short width, unsigned short height, const std::string& title, glArchivItem_Bitmap *background, bool modal)
+iwObservate::iwObservate(GameWorldViewer* const gwv, const MapPoint selectedPt)
+    : IngameWindow(gwv->CreateGUIID(selectedPt), 0xFFFE, 0xFFFE, 300, 250, _("Observation window"), NULL),
+      view(new GameWorldView(gwv, MapPoint(GetX() + 10, GetY() + 15), 300 - 20, 250 - 20)), selectedPt(selectedPt), last_x(-1), last_y(-1), scroll(false)
 {
-    view->MoveToMapObject(selected_x, selected_y);
+    view->MoveToMapObject(selectedPt);
     SetCloseOnRightClick(false);
 
     // Lupe: 36
@@ -72,7 +72,10 @@ void iwObservate::Msg_ButtonClick(const unsigned int ctrl_id)
         case 2:
             break;
         case 3:
-            view->GetGameWorldViewer()->MoveToMapObject(view->GetLastX() - (view->GetLastX() - view->GetFirstX()) / 2, view->GetLastY() - (view->GetLastY() - view->GetFirstY()) / 2);
+            view->GetGameWorldViewer()->MoveToMapObject(MapPoint(
+                view->GetLastX() - (view->GetLastX() - view->GetFirstX()) / 2,
+                view->GetLastY() - (view->GetLastY() - view->GetFirstY()) / 2)
+                );
             break;
         case 4:
             int diff = width;
@@ -130,12 +133,10 @@ bool iwObservate::Draw_()
         RoadsBuilding road;
 
         road.mode = RM_DISABLED;
-        road.point_x = 0;
-        road.point_y = 0;
-        road.start_x = 0;
-        road.start_y = 0;
+        road.point = MapPoint(0, 0);
+        road.start = MapPoint(0, 0);
 
-        view->Draw(GAMECLIENT.GetPlayerID(), NULL, true, view->GetGameWorldViewer()->GetSelX(), view->GetGameWorldViewer()->GetSelY(), road);
+        view->Draw(GAMECLIENT.GetPlayerID(), NULL, true, view->GetGameWorldViewer()->GetSel(), road);
     }
 
     return(IngameWindow::Draw_());

@@ -47,7 +47,7 @@ class noGrainfield : public noCoordBase
 
     public:
 
-        noGrainfield(const unsigned short x, const unsigned short y);
+        noGrainfield(const MapPoint pt);
         noGrainfield(SerializedGameData* sgd, const unsigned obj_id);
 
         ~noGrainfield();

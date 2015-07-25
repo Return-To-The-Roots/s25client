@@ -46,9 +46,9 @@ nofPassiveSoldier::nofPassiveSoldier(const nofSoldier& soldier) : nofSoldier(sol
     current_ev = 0;
 }
 
-nofPassiveSoldier::nofPassiveSoldier(const unsigned short x, const unsigned short y, const unsigned char player,
+nofPassiveSoldier::nofPassiveSoldier(const MapPoint pos, const unsigned char player,
                                      nobBaseMilitary* const goal, nobBaseMilitary* const home, const unsigned char rank)
-    : nofSoldier(x, y, player, goal, home, rank), healing_event(0)
+    : nofSoldier(pos, player, goal, home, rank), healing_event(0)
 {
 }
 
@@ -132,7 +132,7 @@ void nofPassiveSoldier::GoalReached()
     static_cast<nobMilitary*>(building)->AddPassiveSoldier(this);
 
     // und wir können uns auch aus der Laufliste erstmal entfernen
-    gwg->RemoveFigure(this, x, y);
+    gwg->RemoveFigure(this, pos);
 }
 
 void nofPassiveSoldier::InBuildingDestroyed()
@@ -140,7 +140,7 @@ void nofPassiveSoldier::InBuildingDestroyed()
     building = 0;
 
     // Auf die Karte setzen
-    gwg->AddFigure(this, x, y);
+    gwg->AddFigure(this, pos);
     // Erstmal in zufällige Richtung rammeln
     StartWandering();
 

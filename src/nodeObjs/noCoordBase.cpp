@@ -28,17 +28,16 @@ void noCoordBase::Serialize_noCoordBase(SerializedGameData* sgd) const
 {
     Serialize_noBase(sgd);
 
-    sgd->PushUnsignedShort(x);
-    sgd->PushUnsignedShort(y);
+    sgd->PushUnsignedShort(pos.x);
+    sgd->PushUnsignedShort(pos.y);
 }
 
 noCoordBase::noCoordBase(SerializedGameData* sgd, const unsigned obj_id) : noBase(sgd, obj_id),
-    x(sgd->PopUnsignedShort()),
-    y(sgd->PopUnsignedShort())
+    pos(sgd->PopUnsignedShort(), sgd->PopUnsignedShort())
 {
 }
 
 unsigned noCoordBase::CreateGUIID() const
 {
-    return gwg->CreateGUIID(x, y);
+    return gwg->CreateGUIID(pos);
 }

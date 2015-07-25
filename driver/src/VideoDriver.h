@@ -110,7 +110,7 @@ class VideoDriver
         virtual KeyEvent GetModKeyState(void) const = 0;// { const KeyEvent ke = {KT_INVALID,0,false,false,false}; return ke; }
 
         /// Gibt Pointer auf ein Fenster zurück (device-dependent!), HWND unter Windows
-        virtual void* GetWindowPointer() const = 0;
+        virtual void* GetMapPointer() const = 0;
 
         /// prüft auf Initialisierung.
         bool IsInitialized() { return initialized; }

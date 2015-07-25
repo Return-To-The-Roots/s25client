@@ -18,15 +18,29 @@
 #ifndef Point_h__
 #define Point_h__
 
+#include <limits>
+
 // 2D-Punkt
 template <typename T>
 struct Point
 {
     T x, y;
     Point() {}
-    Point(const T x, const T y) : x(x), y(y) {}
-    bool operator==(const Point<T> second) const
+    Point(const T x, const T y): x(x), y(y) {}
+    template<typename U>
+    explicit Point(const Point<U>& pt): x(pt.x), y(pt.y) {}
+    bool operator==(const Point second) const
     { return (x == second.x && y == second.y); }
+    bool operator!=(const Point second) const
+    { return !(*this == second); }
+
+    static const Point Invalid()
+    { return Point(std::numeric_limits<T>::max(), std::numeric_limits<T>::max()); }
+
+    bool isValid() const
+    {
+        return *this != Invalid();
+    }
 };
 
 #endif // Point_h__

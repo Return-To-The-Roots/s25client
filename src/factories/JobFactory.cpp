@@ -62,94 +62,94 @@
 #include <stdexcept>
 #include "helpers/converters.h"
 
-noFigure* JobFactory::CreateJob(const Job job_id, const unsigned short x, const unsigned short y, const unsigned char player, noRoadNode* const goal){
+noFigure* JobFactory::CreateJob(const Job job_id, const MapPoint pt, const unsigned char player, noRoadNode* const goal){
     switch(job_id)
     {
     case JOB_BUILDER:
         if(!goal)
-            return new nofBuilder(x, y, player, goal);
+            return new nofBuilder(pt, player, goal);
         else if(goal->GetGOT() == GOT_NOB_HARBORBUILDING)
-            return new nofPassiveWorker(JOB_BUILDER, x, y, player, goal);
-        else return new nofBuilder(x, y, player, goal);
+            return new nofPassiveWorker(JOB_BUILDER, pt, player, goal);
+        else return new nofBuilder(pt, player, goal);
     case JOB_PLANER:
-        return new nofPlaner(x, y, player, static_cast<noBuildingSite*>(goal));
+        return new nofPlaner(pt, player, static_cast<noBuildingSite*>(goal));
     case JOB_CARPENTER:
-        return new nofCarpenter(x, y, player, static_cast<nobUsual*>(goal));
+        return new nofCarpenter(pt, player, static_cast<nobUsual*>(goal));
     case JOB_ARMORER:
-        return new nofArmorer(x, y, player, static_cast<nobUsual*>(goal));
+        return new nofArmorer(pt, player, static_cast<nobUsual*>(goal));
     case JOB_STONEMASON:
-        return new nofStonemason(x, y, player, static_cast<nobUsual*>(goal));
+        return new nofStonemason(pt, player, static_cast<nobUsual*>(goal));
     case JOB_BREWER:
-        return new nofBrewer(x, y, player, static_cast<nobUsual*>(goal));
+        return new nofBrewer(pt, player, static_cast<nobUsual*>(goal));
     case JOB_MINTER:
-        return new nofMinter(x, y, player, static_cast<nobUsual*>(goal));
+        return new nofMinter(pt, player, static_cast<nobUsual*>(goal));
     case JOB_BUTCHER:
-        return new nofButcher(x, y, player, static_cast<nobUsual*>(goal));
+        return new nofButcher(pt, player, static_cast<nobUsual*>(goal));
     case JOB_IRONFOUNDER:
-        return new nofIronfounder(x, y, player, static_cast<nobUsual*>(goal));
+        return new nofIronfounder(pt, player, static_cast<nobUsual*>(goal));
     case JOB_MILLER:
-        return new nofMiller(x, y, player, static_cast<nobUsual*>(goal));
+        return new nofMiller(pt, player, static_cast<nobUsual*>(goal));
     case JOB_METALWORKER:
-        return new nofMetalworker(x, y, player, static_cast<nobUsual*>(goal));
+        return new nofMetalworker(pt, player, static_cast<nobUsual*>(goal));
     case JOB_BAKER:
-        return new nofBaker(x, y, player, static_cast<nobUsual*>(goal));
+        return new nofBaker(pt, player, static_cast<nobUsual*>(goal));
     case JOB_HELPER:
         // Wenn goal = 0 oder Lagerhaus, dann Auslagern anscheinend und mann kann irgendeinen Typ nehmen
         if(!goal)
-            return new nofWellguy(x, y, player, NULL);
+            return new nofWellguy(pt, player, NULL);
         if(goal->GetGOT() == GOT_NOB_STOREHOUSE || goal->GetGOT() == GOT_NOB_HARBORBUILDING || goal->GetGOT() == GOT_NOB_HQ)
-            return new nofWellguy(x, y, player, static_cast<nobUsual*>(goal));
+            return new nofWellguy(pt, player, static_cast<nobUsual*>(goal));
         if(goal->GetGOT() == GOT_NOB_USUAL){
             nobUsual* goalBld = static_cast<nobUsual*>(goal);
             if(goalBld->GetBuildingType() == BLD_WELL)
-                return new nofWellguy(x, y, player, goalBld);
+                return new nofWellguy(pt, player, goalBld);
             else if(goalBld->GetBuildingType() == BLD_CATAPULT)
-                return new nofCatapultMan(x, y, player, goalBld);
+                return new nofCatapultMan(pt, player, goalBld);
         }
         throw std::runtime_error("Invalid goal type: " + helpers::toString(goal->GetGOT()) + " for job " + helpers::toString(job_id));
     case JOB_GEOLOGIST:
-        return new nofGeologist(x, y, player, static_cast<noFlag*>(goal));
+        return new nofGeologist(pt, player, static_cast<noFlag*>(goal));
     case JOB_SCOUT:
         // Im Spähturm arbeitet ein anderer Spähter-Typ
         // Wenn goal = 0 oder Lagerhaus, dann Auslagern anscheinend und mann kann irgendeinen Typ nehmen
         if(!goal)
-            return new nofScout_LookoutTower(x, y, player, NULL);
+            return new nofScout_LookoutTower(pt, player, NULL);
         if(goal->GetGOT() == GOT_NOB_HARBORBUILDING || goal->GetGOT() == GOT_NOB_STOREHOUSE || goal->GetGOT() == GOT_NOB_HQ)
-            return new nofPassiveWorker(JOB_SCOUT, x, y, player, goal);
+            return new nofPassiveWorker(JOB_SCOUT, pt, player, goal);
         // Spähturm / Lagerhaus?
         if(goal->GetGOT() == GOT_NOB_USUAL || goal->GetGOT() == GOT_NOB_HARBORBUILDING)
-            return new nofScout_LookoutTower(x, y, player, static_cast<nobUsual*>(goal));
+            return new nofScout_LookoutTower(pt, player, static_cast<nobUsual*>(goal));
         if(goal->GetGOT() == GOT_FLAG)
-            return new nofScout_Free(x, y, player, goal);
+            return new nofScout_Free(pt, player, goal);
         throw std::runtime_error("Invalid goal type: " + helpers::toString(goal->GetGOT()) + " for job " + helpers::toString(job_id));
     case JOB_MINER:
-        return new nofMiner(x, y, player, static_cast<nobUsual*>(goal));
+        return new nofMiner(pt, player, static_cast<nobUsual*>(goal));
     case JOB_FARMER:
-        return new nofFarmer(x, y, player, static_cast<nobUsual*>(goal));
+        return new nofFarmer(pt, player, static_cast<nobUsual*>(goal));
     case JOB_FORESTER:
-        return new nofForester(x, y, player, static_cast<nobUsual*>(goal));
+        return new nofForester(pt, player, static_cast<nobUsual*>(goal));
     case JOB_WOODCUTTER:
-        return new nofWoodcutter(x, y, player, static_cast<nobUsual*>(goal));
+        return new nofWoodcutter(pt, player, static_cast<nobUsual*>(goal));
     case JOB_PIGBREEDER:
-        return new nofPigbreeder(x, y, player, static_cast<nobUsual*>(goal));
+        return new nofPigbreeder(pt, player, static_cast<nobUsual*>(goal));
     case JOB_DONKEYBREEDER:
-        return new nofDonkeybreeder(x, y, player, static_cast<nobUsual*>(goal) );
+        return new nofDonkeybreeder(pt, player, static_cast<nobUsual*>(goal) );
     case JOB_HUNTER:
-        return new nofHunter(x, y, player, static_cast<nobUsual*>(goal));
+        return new nofHunter(pt, player, static_cast<nobUsual*>(goal));
     case JOB_FISHER:
-        return new nofFisher(x, y, player, static_cast<nobUsual*>(goal));
+        return new nofFisher(pt, player, static_cast<nobUsual*>(goal));
     case JOB_PRIVATE:
     case JOB_PRIVATEFIRSTCLASS:
     case JOB_SERGEANT:
     case JOB_OFFICER:
     case JOB_GENERAL:
-        return new nofPassiveSoldier(x, y, player, static_cast<nobBaseMilitary*>(goal), static_cast<nobBaseMilitary*>(goal), job_id - JOB_PRIVATE);
+        return new nofPassiveSoldier(pt, player, static_cast<nobBaseMilitary*>(goal), static_cast<nobBaseMilitary*>(goal), job_id - JOB_PRIVATE);
     case JOB_PACKDONKEY:
-        return new nofCarrier(nofCarrier::CT_DONKEY, x, y, player, 0, goal);
+        return new nofCarrier(nofCarrier::CT_DONKEY, pt, player, 0, goal);
     case JOB_SHIPWRIGHT:
-        return new nofShipWright(x, y, player, static_cast<nobUsual*>(goal));
+        return new nofShipWright(pt, player, static_cast<nobUsual*>(goal));
     case JOB_CHARBURNER:
-        return new nofCharburner(x, y, player, static_cast<nobUsual*>(goal));
+        return new nofCharburner(pt, player, static_cast<nobUsual*>(goal));
     case JOB_NOTHING:
         throw std::runtime_error("Cannot create a nothing job");
     }

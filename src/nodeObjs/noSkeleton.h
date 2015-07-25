@@ -29,7 +29,7 @@ class noSkeleton: public noCoordBase
 {
     public:
 
-        noSkeleton(const unsigned short x, const unsigned short y);
+        noSkeleton(const MapPoint pt);
         noSkeleton(SerializedGameData* sgd, const unsigned obj_id);
 
         ~noSkeleton();

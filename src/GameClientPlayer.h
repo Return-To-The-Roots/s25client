@@ -105,7 +105,7 @@ class GameClientPlayer : public GamePlayerInfo
         std::vector<noShip*> ships;
 
         /// Liste mit Punkten, die schon von Schiffen entdeckt wurden
-        std::vector< Point<MapCoord> > enemies_discovered_by_ships;
+        std::vector< MapPoint > enemies_discovered_by_ships;
 
         /** Polygon(s) defining the area the player may have territory in.
          *  No elements means no restrictions.
@@ -113,7 +113,7 @@ class GameClientPlayer : public GamePlayerInfo
          *  - http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
          *  The area is not allowed to shrink! This will lead to crashes!
          */
-        std::vector< Point<MapCoord> > restricted_area;
+        std::vector< MapPoint > restricted_area;
 
         bool building_enabled[BUILDING_TYPES_COUNT];
 
@@ -151,7 +151,7 @@ class GameClientPlayer : public GamePlayerInfo
         std::list<GameMessage_GameCommand> gc_queue;
 
         /// Koordinaten des HQs des Spielers
-        unsigned short hqx, hqy;
+        MapPoint hqPos;
 
         // Informationen über die Verteilung
         struct
@@ -179,7 +179,7 @@ class GameClientPlayer : public GamePlayerInfo
         void EnableBuilding(BuildingType type) {building_enabled[type] = true;}
         void DisableBuilding(BuildingType type) {building_enabled[type] = false;}
         bool IsBuildingEnabled(BuildingType type) {return(building_enabled[type]);}
-        std::vector< Point<MapCoord> > &GetRestrictedArea() {return(restricted_area);}
+        std::vector< MapPoint > &GetRestrictedArea() {return(restricted_area);}
 
     private:
 
@@ -345,7 +345,7 @@ class GameClientPlayer : public GamePlayerInfo
         bool ShouldSendDefender();
 
         /// Ruft einen Geologen
-        void CallFlagWorker(const unsigned short x, const unsigned short y, const Job job);
+        void CallFlagWorker(const MapPoint pt, const Job job);
         /// Registriert einen Geologen bzw. einen Späher an einer bestimmten Flagge, damit diese informiert werden,
         /// wenn die Flagge abgerissen wird
         void RegisterFlagWorker(nofFlagWorker* flagworker) { flagworkers.push_back(flagworker); }
@@ -378,12 +378,12 @@ class GameClientPlayer : public GamePlayerInfo
         void HarborDestroyed(nobHarborBuilding* hb);
         /// Sucht einen Hafen in der Nähe, wo dieses Schiff seine Waren abladen kann
         /// gibt true zurück, falls erfolgreich
-        bool FindHarborForUnloading(noShip* ship, const MapCoord start_x, const MapCoord start_y, unsigned* goal_harbor_id, std::vector<unsigned char> * route,
+        bool FindHarborForUnloading(noShip* ship, const MapPoint start, unsigned* goal_harbor_id, std::vector<unsigned char> * route,
                                     nobHarborBuilding* exception);
         /// A ship has discovered new hostile territory --> determines if this is new
         /// i.e. there is a sufficient distance to older locations
         /// Returns true if yes and false if not
-        bool ShipDiscoveredHostileTerritory(const Point<MapCoord> location);
+        bool ShipDiscoveredHostileTerritory(const MapPoint location);
 
         ///Gibt liste der Schiffe zurück
         const std::vector<noShip*>&GetShips() const {return ships;}
@@ -395,7 +395,7 @@ class GameClientPlayer : public GamePlayerInfo
         void Surrender();
 
 		///all allied players get a letter with the location
-		void NotifyAlliesOfLocation(MapCoord x, MapCoord y, unsigned char allyplayerid);
+		void NotifyAlliesOfLocation(const MapPoint pt, unsigned char allyplayerid);
 
         /// Macht Bündnisvorschlag an diesen Spieler
         void SuggestPact(const unsigned char other_player, const PactType pt, const unsigned duration);

@@ -53,7 +53,7 @@ const unsigned short REMOVECOVER_WORK_STEPS = 1;
 /// Work steps for one graphical step during the "harvest"
 const unsigned short HARVEST_WORK_STEPS = 1;
 
-noCharburnerPile::noCharburnerPile(const unsigned short x, const unsigned short y) : noCoordBase(NOP_CHARBURNERPILE, x, y),
+noCharburnerPile::noCharburnerPile(const MapPoint pos) : noCoordBase(NOP_CHARBURNERPILE, pos),
     state(STATE_WOOD), step(0), sub_step(1), event(NULL)
 {
 }
@@ -68,7 +68,7 @@ void noCharburnerPile::Destroy_noCharburnerPile()
     em->RemoveEvent(event);
 
     // Bauplätze drumrum neu berechnen
-    gwg->RecalcBQAroundPointBig(x, y);
+    gwg->RecalcBQAroundPointBig(pos);
 
     Destroy_noCoordBase();
 }
@@ -119,16 +119,16 @@ void noCharburnerPile::Draw( int x, int y)
         case STATE_SMOLDERING:
         {
             LOADER.GetImageN("charburner_bobs", 27 + GAMECLIENT.
-                             GetGlobalAnimation(2, 10, 1, obj_id + this->x * 10 + this->y * 10))->Draw(x, y);
+                             GetGlobalAnimation(2, 10, 1, obj_id + this->pos.x * 10 + this->pos.y * 10))->Draw(x, y);
 
             // Dann Qualm zeichnen
-            LOADER.GetMapImageN(692 + 1 * 8 + GAMECLIENT.GetGlobalAnimation(8, 5, 2, (this->x + this->y) * 100))
+            LOADER.GetMapImageN(692 + 1 * 8 + GAMECLIENT.GetGlobalAnimation(8, 5, 2, (this->pos.x + this->pos.y) * 100))
             ->Draw(x + 21, y - 11, 0, 0, 0, 0, 0, 0, 0x99EEEEEE);
-            LOADER.GetMapImageN(692 + 2 * 8 + GAMECLIENT.GetGlobalAnimation(8, 5, 2, (this->x + this->y) * 100))
+            LOADER.GetMapImageN(692 + 2 * 8 + GAMECLIENT.GetGlobalAnimation(8, 5, 2, (this->pos.x + this->pos.y) * 100))
             ->Draw(x - 2, y - 06, 0, 0, 0, 0, 0, 0, 0x99EEEEEE);
-            LOADER.GetMapImageN(692 + 1 * 8 + GAMECLIENT.GetGlobalAnimation(8, 5, 2, (this->x + this->y) * 100))
+            LOADER.GetMapImageN(692 + 1 * 8 + GAMECLIENT.GetGlobalAnimation(8, 5, 2, (this->pos.x + this->pos.y) * 100))
             ->Draw(x - 25, y - 11, 0, 0, 0, 0, 0, 0, 0x99EEEEEE);
-            LOADER.GetMapImageN(692 + 3 * 8 + GAMECLIENT.GetGlobalAnimation(8, 5, 2, (this->x + this->y) * 100))
+            LOADER.GetMapImageN(692 + 3 * 8 + GAMECLIENT.GetGlobalAnimation(8, 5, 2, (this->pos.x + this->pos.y) * 100))
             ->Draw(x - 2, y - 35, 0, 0, 0, 0, 0, 0, 0x99EEEEEE);
         } return;
         case STATE_REMOVECOVER:
@@ -158,8 +158,8 @@ void noCharburnerPile::HandleEvent(const unsigned int id)
 	{
 		//selfdestruct!
 		event = NULL;
-		gwg->SetNO(new noFire(x, y, 0),x,y);
-		gwg->RecalcBQAroundPoint(x, y);
+		gwg->SetNO(new noFire(pos, 0), pos);
+		gwg->RecalcBQAroundPoint(pos);
 		em->AddToKillList(this);
 	}
 }
@@ -225,11 +225,11 @@ void noCharburnerPile::NextStep()
                 if(step == 6)
                 {
                     // Add an empty pile as environmental object
-                    gwg->SetNO(new noEnvObject(x, y, 40, 6), x, y);
+                    gwg->SetNO(new noEnvObject(pos, 40, 6), pos);
                     em->AddToKillList(this);
 
                     // BQ drumrum neu berechnen
-                    gwg->RecalcBQAroundPoint(x, y);
+                    gwg->RecalcBQAroundPoint(pos);
                 }
             }
         } return;

@@ -36,8 +36,8 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-nofScout_LookoutTower::nofScout_LookoutTower(const unsigned short x, const unsigned short y, const unsigned char player, nobUsual* workplace)
-    : nofBuildingWorker(JOB_SCOUT, x, y, player, workplace)
+nofScout_LookoutTower::nofScout_LookoutTower(const MapPoint pos, const unsigned char player, nobUsual* workplace)
+    : nofBuildingWorker(JOB_SCOUT, pos, player, workplace)
 {
 }
 
@@ -68,18 +68,18 @@ void nofScout_LookoutTower::HandleDerivedEvent(const unsigned int id)
 void nofScout_LookoutTower::WorkAborted()
 {
     // Im enstprechenden Radius alles neu berechnen
-    gwg->RecalcVisibilitiesAroundPoint(x, y, VISUALRANGE_LOOKOUTTOWER, player, workplace);
+    gwg->RecalcVisibilitiesAroundPoint(pos, VISUALRANGE_LOOKOUTTOWER, player, workplace);
 }
 
 void nofScout_LookoutTower::WorkplaceReached()
 {
 
     // Im enstprechenden Radius alles sichtbar machen
-    gwg->SetVisibilitiesAroundPoint(x, y, VISUALRANGE_LOOKOUTTOWER, player);
+    gwg->SetVisibilitiesAroundPoint(pos, VISUALRANGE_LOOKOUTTOWER, player);
 
     // Und Post versenden
     if(GAMECLIENT.GetPlayerID() == this->player)
         GAMECLIENT.SendPostMessage(new ImagePostMsgWithLocation(
-                                               _("Lookout-tower occupied"), PMC_MILITARY, x, y, workplace->GetBuildingType(), workplace->GetNation()));
+                                               _("Lookout-tower occupied"), PMC_MILITARY, pos, workplace->GetBuildingType(), workplace->GetNation()));
 
 }

@@ -36,8 +36,8 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-nofMiner::nofMiner(const unsigned short x, const unsigned short y, const unsigned char player, nobUsual* workplace)
-    : nofWorkman(JOB_MINER, x, y, player, workplace)
+nofMiner::nofMiner(const MapPoint pos, const unsigned char player, nobUsual* workplace)
+    : nofWorkman(JOB_MINER, pos, player, workplace)
 {
 }
 

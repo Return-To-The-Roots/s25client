@@ -29,7 +29,7 @@ class nofFarmhand : public nofBuildingWorker
     protected:
 
         /// Arbeitsziel, das der Arbeiter ansteuert
-        unsigned short dest_x, dest_y;
+        MapPoint dest;
 
         enum PointQuality
         {
@@ -53,9 +53,9 @@ class nofFarmhand : public nofBuildingWorker
         ///// Fängt das "Warten-vor-dem-Arbeiten" an, falls er arbeiten kann (müssen ja bestimmte "Naturobjekte" gegeben sein)
         //void TryToWork();
         /// Findet heraus, ob der Beruf an diesem Punkt arbeiten kann
-        bool IsPointAvailable(const unsigned short x, const unsigned short y);
+        bool IsPointAvailable(const MapPoint pt);
         /// Returns the quality of this working point or determines if the worker can work here at all
-        virtual PointQuality GetPointQuality(const unsigned short x, const unsigned short y) = 0;
+        virtual PointQuality GetPointQuality(const MapPoint pt) = 0;
 
         /// Läuft zum Arbeitspunkt
         void WalkToWorkpoint();
@@ -76,7 +76,7 @@ class nofFarmhand : public nofBuildingWorker
 
     public:
 
-        nofFarmhand(const Job job, const unsigned short x, const unsigned short y, const unsigned char player, nobUsual* workplace);
+        nofFarmhand(const Job job, const MapPoint pt, const unsigned char player, nobUsual* workplace);
         nofFarmhand(SerializedGameData* sgd, const unsigned obj_id);
 
         /// Aufräummethoden

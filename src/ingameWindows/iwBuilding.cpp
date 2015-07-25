@@ -197,7 +197,7 @@ void iwBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
         {
             // Produktion einstellen/fortführen
             // NC senden
-            if(GAMECLIENT.AddGC(new gc::StopProduction(building->GetX(), building->GetY())))
+            if(GAMECLIENT.AddGC(new gc::StopProduction(building->GetPos())))
             {
                 // visuell anzeigen, falls erfolgreich
                 building->StopProductionVirtual();
@@ -218,11 +218,11 @@ void iwBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
         } break;
         case 7: // "Gehe Zum Ort"
         {
-            gwv->MoveToMapObject(building->GetX(), building->GetY());
+            gwv->MoveToMapObject(building->GetPos());
         } break;
         case 11: // Schiff/Boot umstellen bei Schiffsbauer
         {
-            if(GAMECLIENT.AddGC(new gc::ChangeShipYardMode(building->GetX(), building->GetY())))
+            if(GAMECLIENT.AddGC(new gc::ChangeShipYardMode(building->GetPos())))
             {
                 // Auch optisch den Button umstellen
                 ctrlImageButton* button = GetCtrl<ctrlImageButton>(11);
@@ -248,7 +248,7 @@ void iwBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
 						it++;
 						if(it == GAMECLIENT.GetPlayer(building->GetPlayer())->GetBuildings(building->GetBuildingType()).end()) //was last entry in list -> goto first												{
 							it=GAMECLIENT.GetPlayer(building->GetPlayer())->GetBuildings(building->GetBuildingType()).begin();
-						gwv->MoveToMapObject((*it)->GetX(),(*it)->GetY());
+						gwv->MoveToMapObject((*it)->GetPos());
 						iwBuilding* nextscrn=new iwBuilding(gwv, gi, (*it));
 						nextscrn->Move(x,y);
 						WINDOWMANAGER.Show(nextscrn);

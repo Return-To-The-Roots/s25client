@@ -40,8 +40,8 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-nofWorkman::nofWorkman(const Job job, const unsigned short x, const unsigned short y, const unsigned char player, nobUsual* workplace)
-    : nofBuildingWorker(job, x, y, player, workplace)
+nofWorkman::nofWorkman(const Job job, const MapPoint pos, const unsigned char player, nobUsual* workplace)
+    : nofBuildingWorker(job, pos, player, workplace)
 {
 }
 

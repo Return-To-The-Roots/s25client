@@ -42,9 +42,9 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 
-nofDefender::nofDefender(const unsigned short x, const unsigned short y, const unsigned char player,
+nofDefender::nofDefender(const MapPoint pos, const unsigned char player,
                          nobBaseMilitary* const home, const unsigned char rank, nofAttacker* const attacker)
-    : nofActiveSoldier(x, y, player, home, rank, STATE_DEFENDING_WALKINGTO), attacker(attacker)
+    : nofActiveSoldier(pos, player, home, rank, STATE_DEFENDING_WALKINGTO), attacker(attacker)
 {
 }
 
@@ -78,7 +78,7 @@ void nofDefender::Walked()
         case STATE_DEFENDING_WALKINGTO:
         {
             // Mit Angreifer den Kampf beginnen
-            gwg->AddFigure(new noFighting(attacker, this), x, y);
+            gwg->AddFigure(new noFighting(attacker, this), pos);
             state = STATE_FIGHTING;
             attacker->state = STATE_ATTACKING_FIGHTINGVSDEFENDER;
 
@@ -109,7 +109,7 @@ void nofDefender::Walked()
             else
             {
                 // mich von der Landkarte tilgen
-                gwg->RemoveFigure(this, x, y);
+                gwg->RemoveFigure(this, pos);
                 // mich zum Gebäude wieder hinzufügen
                 building->AddActiveSoldier(this);
                 // Gebäude Bescheid sagen, dass es nun keinen Verteidiger mehr gibt

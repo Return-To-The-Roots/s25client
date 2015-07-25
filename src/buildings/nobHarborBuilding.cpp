@@ -7,7 +7,7 @@
 // Return To The Roots is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 2 of the License, or
-// (at your option) any later version.
+// (at your oposion) any later version.
 //
 // Return To The Roots is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -81,11 +81,11 @@ void nobHarborBuilding::ExplorationExpeditionInfo::Serialize(SerializedGameData*
 
 
 
-nobHarborBuilding::nobHarborBuilding(const unsigned short x, const unsigned short y, const unsigned char player, const Nation nation)
-    : nobBaseWarehouse(BLD_HARBORBUILDING, x, y, player, nation), orderware_ev(0)
+nobHarborBuilding::nobHarborBuilding(const MapPoint pos, const unsigned char player, const Nation nation)
+    : nobBaseWarehouse(BLD_HARBORBUILDING, pos, player, nation), orderware_ev(0)
 {
     // ins Militärquadrat einfügen
-    gwg->GetMilitarySquare(x, y).push_back(this);
+    gwg->GetMilitarySquare(pos).push_back(this);
     gwg->RecalcTerritory(this, GetMilitaryRadius(), false, true);
 
     // Alle Waren 0, außer 100 Träger
@@ -100,12 +100,12 @@ nobHarborBuilding::nobHarborBuilding(const unsigned short x, const unsigned shor
 
     /// Die Meere herausfinden, an die dieser Hafen grenzt
     for(unsigned i = 0; i < 6; ++i)
-        sea_ids[i] = gwg->IsCoastalPoint(gwg->GetXA(x, y, i), gwg->GetYA(x, y, i));
+        sea_ids[i] = gwg->IsCoastalPoint(gwg->GetNeighbour(pos, i));
 
     // Post versenden
     if(GAMECLIENT.GetPlayerID() == this->player)
         GAMECLIENT.SendPostMessage(new ImagePostMsgWithLocation(
-                                               _("New harbor building finished"), PMC_GENERAL, x, y, BLD_HARBORBUILDING, nation));
+                                               _("New harbor building finished"), PMC_GENERAL, pos, BLD_HARBORBUILDING, nation));
 }
 
 
@@ -153,7 +153,7 @@ void nobHarborBuilding::Destroy()
     // Leute, die noch aufs Schiff warten, rausschicken
     for(std::list<FigureForShip>::iterator it = figures_for_ships.begin(); it != figures_for_ships.end(); ++it)
     {
-        gwg->AddFigure(it->fig, x, y);
+        gwg->AddFigure(it->fig, pos);
 
         it->fig->Abrogate();
         it->fig->StartWandering();
@@ -163,7 +163,7 @@ void nobHarborBuilding::Destroy()
 
     for(std::list<SoldierForShip>::iterator it = soldiers_for_ships.begin(); it != soldiers_for_ships.end(); ++it)
     {
-        gwg->AddFigure(it->attacker, x, y);
+        gwg->AddFigure(it->attacker, pos);
 
         it->attacker->CancelAtHomeMilitaryBuilding();
         it->attacker->StartWandering();
@@ -180,7 +180,7 @@ void nobHarborBuilding::Destroy()
     gwg->RecalcTerritory(this, HARBOR_ALONE_RADIUS, true, false);
 
     // Wieder aus dem Militärquadrat rauswerfen
-    gwg->GetMilitarySquare(x, y).remove(this);
+    gwg->GetMilitarySquare(pos).remove(this);
 }
 
 void nobHarborBuilding::Serialize(SerializedGameData* sgd) const
@@ -218,7 +218,7 @@ nobHarborBuilding::nobHarborBuilding(SerializedGameData* sgd, const unsigned obj
       orderware_ev(sgd->PopObject<EventManager::Event>(GOT_EVENT))
 {
     // ins Militärquadrat einfügen
-    gwg->GetMilitarySquare(x, y).push_back(this);
+    gwg->GetMilitarySquare(pos).push_back(this);
 
     for(unsigned i = 0; i < 6; ++i)
         sea_ids[i] = sgd->PopUnsignedShort();
@@ -341,7 +341,7 @@ void nobHarborBuilding::HandleEvent(const unsigned int id)
     }
 }
 
-/// Startet eine Expedition oder stoppt sie, wenn bereits eine stattfindet
+/// Startet eine Expedition oder stoppos sie, wenn bereits eine stattfindet
 void nobHarborBuilding::StartExpedition()
 {
     // Schon eine Expedition gestartet?
@@ -363,7 +363,7 @@ void nobHarborBuilding::StartExpedition()
             // Evtl. Abnehmer für die Figur wieder finden
             gwg->GetPlayer(player)->FindWarehouseForAllJobs(JOB_BUILDER);
         }
-        else //todo falls noch nicht da - unterscheiden ob unterwegs oder nur bestellt - falls bestellt stornieren sonst informieren damit kein ersatz geschickt wird falls was nicht klappt aufm weg
+        else //todo falls noch nicht da - unterscheiden ob unterwegs oder nur bestellt - falls bestellt stornieren sonst informieren damit kein ersatz geschickt wird falls was nicht klappos aufm weg
         {
             gwg->GetPlayer(player)->OneJobNotWanted(JOB_BUILDER, this);
         }
@@ -376,8 +376,8 @@ void nobHarborBuilding::StartExpedition()
 
     // In unseren Warenbestand gucken und die erforderlichen Bretter und Steine sowie den
     // Bauarbeiter holen, falls vorhanden
-    expedition.boards = min(unsigned(BUILDING_COSTS[nation][BLD_HARBORBUILDING].boards), real_goods.goods[GD_BOARDS]);
-    expedition.stones = min(unsigned(BUILDING_COSTS[nation][BLD_HARBORBUILDING].stones), real_goods.goods[GD_STONES]);
+    expedition.boards = std::min(unsigned(BUILDING_COSTS[nation][BLD_HARBORBUILDING].boards), real_goods.goods[GD_BOARDS]);
+    expedition.stones = std::min(unsigned(BUILDING_COSTS[nation][BLD_HARBORBUILDING].stones), real_goods.goods[GD_STONES]);
     real_goods.goods[GD_BOARDS] -= expedition.boards;
     goods.goods[GD_BOARDS] -= expedition.boards;
     real_goods.goods[GD_STONES] -= expedition.stones;
@@ -428,7 +428,7 @@ void nobHarborBuilding::StartExpedition()
 
 }
 
-/// Startet eine Erkundungs-Expedition oder stoppt sie, wenn bereits eine stattfindet
+/// Startet eine Erkundungs-Expedition oder stoppos sie, wenn bereits eine stattfindet
 void nobHarborBuilding::StartExplorationExpedition()
 {
     // Schon eine Expedition gestartet?
@@ -459,7 +459,7 @@ void nobHarborBuilding::StartExplorationExpedition()
     // In unseren Warenbestand gucken und die erforderlichen Erkunder rausziehen
     if(real_goods.people[JOB_SCOUT])
     {
-        exploration_expedition.scouts = min(real_goods.people[JOB_SCOUT], SCOUTS_EXPLORATION_EXPEDITION);
+        exploration_expedition.scouts = std::min(real_goods.people[JOB_SCOUT], SCOUTS_EXPLORATION_EXPEDITION);
 
         real_goods.people[JOB_SCOUT] -= exploration_expedition.scouts;
     }
@@ -586,7 +586,7 @@ void nobHarborBuilding::ShipArrived(noShip* ship)
     {
         // load all soldiers that share the same target as the first soldier in the list
         std::list<noFigure*> attackers;
-        Point<MapCoord> ship_dest = soldiers_for_ships.begin()->dest;
+        MapPoint ship_dest = soldiers_for_ships.begin()->dest;
 
         for(std::list<SoldierForShip>::iterator it = soldiers_for_ships.begin(); it != soldiers_for_ships.end();)
         {
@@ -631,12 +631,12 @@ void nobHarborBuilding::ShipArrived(noShip* ship)
     {
         // Das Ziel wird nach der ersten Figur bzw. ersten Ware gewählt
         // actually since the wares might not yet have informed the harbor that their target harbor was destroyed we pick the first figure/ware with a valid target instead
-        Point<MapCoord> dest;
+        MapPoint dest;
         bool gotdest = false;
         for(std::list<FigureForShip>::iterator it = figures_for_ships.begin(); it != figures_for_ships.end(); it++)
         {
-            noBase* nb = gwg->GetNO(it->dest.x, it->dest.y);
-            if(nb->GetGOT() == GOT_NOB_HARBORBUILDING && gwg->GetNode(it->dest.x, it->dest.y).owner == player + 1) //target is a harbor and owned by the same player
+            noBase* nb = gwg->GetNO(it->dest);
+            if(nb->GetGOT() == GOT_NOB_HARBORBUILDING && gwg->GetNode(it->dest).owner == player + 1) //target is a harbor and owned by the same player
             {
                 dest = it->dest;
                 gotdest = true;
@@ -645,8 +645,8 @@ void nobHarborBuilding::ShipArrived(noShip* ship)
         }
         for(std::list<Ware*>::iterator it = wares_for_ships.begin(); !gotdest && it != wares_for_ships.end(); it++)
         {
-            noBase* nb = gwg->GetNO((*it)->GetNextHarbor().x, (*it)->GetNextHarbor().y);
-            if(nb->GetGOT() == GOT_NOB_HARBORBUILDING && gwg->GetNode((*it)->GetNextHarbor().x, (*it)->GetNextHarbor().y).owner == player + 1)
+            noBase* nb = gwg->GetNO((*it)->GetNextHarbor());
+            if(nb->GetGOT() == GOT_NOB_HARBORBUILDING && gwg->GetNode((*it)->GetNextHarbor()).owner == player + 1)
             {
                 dest = (*it)->GetNextHarbor();
                 gotdest = true;
@@ -827,7 +827,7 @@ void nobHarborBuilding::ShipLost(noShip* ship)
 /// Gibt die Hafenplatz-ID zurück, auf der der Hafen steht
 unsigned nobHarborBuilding::GetHarborPosID() const
 {
-    return gwg->GetHarborPointID(x, y);
+    return gwg->GetHarborPointID(pos);
 }
 
 /// Abfangen, wenn ein Mann nicht mehr kommen kann --> könnte ein Bauarbeiter sein und
@@ -876,7 +876,7 @@ void nobHarborBuilding::RemoveDependentFigure(noFigure* figure)
 void nobHarborBuilding::GetShipConnections(std::vector<ShipConnection>& connections) const
 {
     // Is there any harbor building at all? (could be destroyed)?
-    if(gwg->GetGOT(this->x, this->y) != GOT_NOB_HARBORBUILDING)
+    if(gwg->GetGOT(this->pos) != GOT_NOB_HARBORBUILDING)
         // Then good-bye
         return;
 
@@ -904,7 +904,7 @@ void nobHarborBuilding::GetShipConnections(std::vector<ShipConnection>& connecti
 
 
 /// Fügt einen Mensch hinzu, der mit dem Schiff irgendwo hin fahren will
-void nobHarborBuilding::AddFigureForShip(noFigure* fig, Point<MapCoord> dest)
+void nobHarborBuilding::AddFigureForShip(noFigure* fig, MapPoint dest)
 {
     FigureForShip ffs = { fig, dest };
     figures_for_ships.push_back(ffs);
@@ -939,7 +939,7 @@ unsigned nobHarborBuilding::GetNeededShipsCount() const
     if ((figures_for_ships.size() > 0) || (wares_for_ships.size() > 0))
     {
         // Die verschiedenen Zielhäfen -> Für jeden Hafen ein Schiff ordern
-        std::vector< Point<MapCoord> > destinations;
+        std::vector< MapPoint > destinations;
 
         for (std::list<FigureForShip>::const_iterator it = figures_for_ships.begin(); it != figures_for_ships.end(); ++it)
         {
@@ -964,7 +964,7 @@ unsigned nobHarborBuilding::GetNeededShipsCount() const
     if(!soldiers_for_ships.empty())
     {
         // Die verschiedenen Zielhäfen -> Für jeden Hafen ein Schiff ordern
-        std::vector< Point<MapCoord> > different_dests;
+        std::vector< MapPoint > different_dests;
         for(std::list<SoldierForShip>::const_iterator it = soldiers_for_ships.begin();
                 it != soldiers_for_ships.end(); ++it)
         {
@@ -1042,7 +1042,7 @@ bool nobHarborBuilding::UseWareAtOnce(Ware* ware, noBaseBuilding* const goal)
 {
     // Evtl. muss die Ware gleich das Schiff nehmen ->
     // dann zum Schiffsreservoir hinzufügen
-    Point<MapCoord> next_harbor;
+    MapPoint next_harbor;
     ware->RecalcRoute();
     if(ware->GetNextDir() == SHIP_DIR)
     {
@@ -1064,7 +1064,7 @@ bool nobHarborBuilding::UseFigureAtOnce(noFigure* fig, noRoadNode* const goal)
 {
     // Evtl. muss die Ware gleich das Schiff nehmen ->
     // dann zum Schiffsreservoir hinzufügen
-    Point<MapCoord> next_harbor;
+    MapPoint next_harbor;
     if(gwg->FindHumanPathOnRoads(this, goal, NULL, &next_harbor) == SHIP_DIR)
     {
         // Reduce figure count because figues don't go through the house leaving process
@@ -1121,7 +1121,7 @@ void nobHarborBuilding::ReceiveGoodsFromShip(const std::list<noFigure*> figures,
         }
         else //figure has a different goal
         {
-            Point<MapCoord> next_harbor = (*it)->ExamineRouteBeforeShipping();
+            MapPoint next_harbor = (*it)->ExamineRouteBeforeShipping();
             unsigned char next_dir = (*it)->GetDir();
 
             if (next_dir == 4)
@@ -1145,7 +1145,7 @@ void nobHarborBuilding::ReceiveGoodsFromShip(const std::list<noFigure*> figures,
     {
         if((*it)->ShipJorneyEnded(this))
         {
-            // Optische Warenwerte entsprechend erhöhen
+            // Oposische Warenwerte entsprechend erhöhen
             ++goods.goods[ConvertShields((*it)->type)];
 
             // Ware will die weitere Reise antreten, also muss sie zur Liste der rausgetragenen Waren
@@ -1227,7 +1227,7 @@ void nobHarborBuilding::CancelFigure(noFigure* figure)
 ///Gibt verfügbare Angreifer zurück
 void nobHarborBuilding::GetAttackerBuildingsForSeaIdAttack(std::vector<SeaAttackerBuilding>*buildings)
 {
-    std::set<nobBaseMilitary*> all_buildings = gwg->LookForMilitaryBuildings(x, y, 3);
+    std::set<nobBaseMilitary*> all_buildings = gwg->LookForMilitaryBuildings(pos, 3);
 
     // Und zählen
     for(std::set<nobBaseMilitary*>::iterator it = all_buildings.begin(); it != all_buildings.end(); ++it)
@@ -1236,7 +1236,7 @@ void nobHarborBuilding::GetAttackerBuildingsForSeaIdAttack(std::vector<SeaAttack
             continue;
 
         // Liegt er auch im groben Raster und handelt es sich um den gleichen Besitzer?
-        if((*it)->GetPlayer() != player || gwg->CalcDistance((*it)->GetX(), (*it)->GetY(), x, y) > BASE_ATTACKING_DISTANCE)
+        if((*it)->GetPlayer() != player || gwg->CalcDistance((*it)->GetPos(), pos) > BASE_ATTACKING_DISTANCE)
             continue;
         // Gebäude suchen, vielleicht schon vorhanden? Dann können wir uns den pathfinding Aufwand sparen!
         std::vector<SeaAttackerBuilding>::iterator it2 = std::find(buildings->begin(), buildings->end(), static_cast<nobMilitary*>(*it));
@@ -1247,7 +1247,7 @@ void nobHarborBuilding::GetAttackerBuildingsForSeaIdAttack(std::vector<SeaAttack
             continue;
         }
         // Weg vom Hafen zum Militärgebäude berechnen
-        if(!gwg->FindFreePath((*it)->GetX(), (*it)->GetY(), x, y, false, MAX_ATTACKING_RUN_DISTANCE, NULL, NULL, NULL, NULL, NULL, NULL, false))
+        if(!gwg->FindFreePath((*it)->GetPos(), pos, false, MAX_ATTACKING_RUN_DISTANCE, NULL, NULL, NULL, NULL, NULL, NULL, false))
             continue;
         //neues Gebäude mit weg und allem -> in die Liste!
         SeaAttackerBuilding sab = { static_cast<nobMilitary*>(*it), this , 0};
@@ -1258,7 +1258,7 @@ void nobHarborBuilding::GetAttackerBuildingsForSeaIdAttack(std::vector<SeaAttack
 void nobHarborBuilding::GetAttackerBuildingsForSeaAttack(std::vector<SeaAttackerBuilding> * buildings,
         const std::vector<unsigned>& defender_harbors)
 {
-    std::set<nobBaseMilitary*> all_buildings = gwg->LookForMilitaryBuildings(x, y, 3);
+    std::set<nobBaseMilitary*> all_buildings = gwg->LookForMilitaryBuildings(pos, 3);
 
     // Und zählen
     for(std::set<nobBaseMilitary*>::iterator it = all_buildings.begin(); it != all_buildings.end(); ++it)
@@ -1267,18 +1267,18 @@ void nobHarborBuilding::GetAttackerBuildingsForSeaAttack(std::vector<SeaAttacker
             continue;
 
         // Liegt er auch im groben Raster und handelt es sich um den gleichen Besitzer?
-        if((*it)->GetPlayer() != player || gwg->CalcDistance((*it)->GetX(), (*it)->GetY(), x, y) > BASE_ATTACKING_DISTANCE)
+        if((*it)->GetPlayer() != player || gwg->CalcDistance((*it)->GetPos(), pos) > BASE_ATTACKING_DISTANCE)
             continue;
 
         // Weg vom Hafen zum Militärgebäude berechnen
-        if(!gwg->FindFreePath((*it)->GetX(), (*it)->GetY(), x, y, false, MAX_ATTACKING_RUN_DISTANCE, NULL, NULL, NULL, NULL, NULL, NULL, false))
+        if(!gwg->FindFreePath((*it)->GetPos(), pos, false, MAX_ATTACKING_RUN_DISTANCE, NULL, NULL, NULL, NULL, NULL, NULL, false))
             continue;
 
         // Entfernung zwischen Hafen und möglichen Zielhafenpunkt ausrechnen
         unsigned min_distance = 0xffffffff;
         for(unsigned i = 0; i < defender_harbors.size(); ++i)
         {
-            min_distance = min(min_distance, gwg->CalcHarborDistance(GetHarborPosID(), defender_harbors.at(i)));
+            min_distance = std::min(min_distance, gwg->CalcHarborDistance(GetHarborPosID(), defender_harbors.at(i)));
         }
 
         // Gebäude suchen, vielleicht schon vorhanden?
@@ -1307,8 +1307,7 @@ void nobHarborBuilding::AddSeaAttacker(nofAttacker* attacker)
     unsigned best_distance = 0xffffffff;
     unsigned best_harbor_point = 0xffffffff;
     std::vector<unsigned> harbor_points;
-    gwg->GetHarborPointsAroundMilitaryBuilding(attacker->GetAttackedGoal()->GetX(), attacker->GetAttackedGoal()->GetY(),
-            &harbor_points);
+    gwg->GetHarborPointsAroundMilitaryBuilding(attacker->GetAttackedGoal()->GetPos(), &harbor_points);
     for(unsigned i = 0; i < harbor_points.size(); ++i)
     {
         unsigned tmp_distance = gwg->CalcHarborDistance(this->GetHarborPosID(), harbor_points[i]);
@@ -1346,7 +1345,7 @@ void nobHarborBuilding::AddSeaAttacker(nofAttacker* attacker)
 unsigned nobHarborBuilding::CalcDistributionPoints(const GoodType type)
 {
 
-    // Ist überhaupt eine Expedition im Gang und ein entsprechender Warentyp
+    // Ist überhaupos eine Expedition im Gang und ein entsprechender Warentyp
     if(!expedition.active || !(type == GD_BOARDS || type == GD_STONES))
         return 0;
 
@@ -1383,7 +1382,7 @@ unsigned nobHarborBuilding::CalcDistributionPoints(const GoodType type)
 void nobHarborBuilding::WareDontWantToTravelByShip(Ware* ware)
 {
     // Maybe this building is already destroyed
-    if(gwg->GetGOT(x, y) != GOT_NOB_HARBORBUILDING)
+    if(gwg->GetGOT(pos) != GOT_NOB_HARBORBUILDING)
         return;
 
     // Ware aus unserer Liste streichen
@@ -1412,12 +1411,12 @@ nofDefender* nobHarborBuilding::ProvideDefender(nofAttacker* const attacker)
 {
     // Versuchen, zunächst auf konventionelle Weise Angreifer zu bekoommen
     nofDefender* defender = nobBaseWarehouse::ProvideDefender(attacker);
-    // Wenn das nicht geklappt hat und noch Soldaten in der Warteschlange für den Seeangriff sind
+    // Wenn das nicht geklappos hat und noch Soldaten in der Warteschlange für den Seeangriff sind
     // zweigen wir einfach diese ab
     if(!defender && !soldiers_for_ships.empty())
     {
         nofAttacker* defender_attacker = soldiers_for_ships.begin()->attacker;
-        defender = new nofDefender(x, y, player, this, defender_attacker->GetRank(), attacker);
+        defender = new nofDefender(pos, player, this, defender_attacker->GetRank(), attacker);
         defender_attacker->CancelSeaAttack();
         defender_attacker->Abrogate();
         defender_attacker->Destroy();

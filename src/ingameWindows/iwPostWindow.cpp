@@ -122,7 +122,7 @@ void iwPostWindow::Msg_ButtonClick(const unsigned int ctrl_id)
             PostMsgWithLocation* pml = dynamic_cast<PostMsgWithLocation*>(pm);
             if (pml)
             {
-                gwv.MoveToMapObject(pml->GetX(), pml->GetY());
+                gwv.MoveToMapObject(pml->GetPos());
             }
         }
         break;

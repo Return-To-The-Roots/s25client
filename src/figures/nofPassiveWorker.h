@@ -38,7 +38,7 @@ class nofPassiveWorker : public noFigure
 
     public:
 
-        nofPassiveWorker(const Job job, const unsigned short x, const unsigned short y, const unsigned char player, noRoadNode* goal);
+        nofPassiveWorker(const Job job, const MapPoint pt, const unsigned char player, noRoadNode* goal);
         nofPassiveWorker(SerializedGameData* sgd, const unsigned obj_id);
 
         /// Zeichnen

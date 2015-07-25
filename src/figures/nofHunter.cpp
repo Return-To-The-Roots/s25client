@@ -45,8 +45,8 @@ static char THIS_FILE[] = __FILE__;
 /// Maximale Distanz, die ein Jäger läuft, um ein Tier zu jagen
 const MapCoord MAX_HUNTING_DISTANCE = 50;
 
-nofHunter::nofHunter(const unsigned short x, const unsigned short y, const unsigned char player, nobUsual* workplace)
-    : nofBuildingWorker(JOB_HUNTER, x, y, player, workplace), animal(0), shooting_x(0), shooting_y(0), shooting_dir(0)
+nofHunter::nofHunter(const MapPoint pos, const unsigned char player, nobUsual* workplace)
+    : nofBuildingWorker(JOB_HUNTER, pos, player, workplace), animal(0), shootingPos(0, 0), shooting_dir(0)
 {
 }
 
@@ -57,8 +57,8 @@ void nofHunter::Serialize_nofHunter(SerializedGameData* sgd) const
     if(state != STATE_FIGUREWORK && state != STATE_WAITING1)
     {
         sgd->PushObject(animal, true);
-        sgd->PushUnsignedShort(shooting_x);
-        sgd->PushUnsignedShort(shooting_y);
+        sgd->PushUnsignedShort(shootingPos.x);
+        sgd->PushUnsignedShort(shootingPos.y);
         sgd->PushUnsignedChar(shooting_dir);
     }
 }
@@ -68,8 +68,8 @@ nofHunter::nofHunter(SerializedGameData* sgd, const unsigned obj_id) : nofBuildi
     if(state != STATE_FIGUREWORK && state != STATE_WAITING1)
     {
         animal = sgd->PopObject<noAnimal>(GOT_ANIMAL);
-        shooting_x = sgd->PopUnsignedShort();
-        shooting_y = sgd->PopUnsignedShort();
+        shootingPos.x = sgd->PopUnsignedShort();
+        shootingPos.y = sgd->PopUnsignedShort();
         shooting_dir = sgd->PopUnsignedChar();
     }
 }
@@ -135,24 +135,24 @@ void nofHunter::HandleDerivedEvent(const unsigned int id)
             // in einem Quadrat um die Hütte (Kreis unnötig, da ja die Tiere sich sowieso bewegen) Tiere suchen
 
             // Unter- und Obergrenzen für das Quadrat bzw. Rechteck (nicht über Kartenränder hinauslesen)
-            unsigned short fx, fy, lx, ly;
+            MapCoord fx, fy, lx, ly;
             const unsigned short SQUARE_SIZE = 19;
 
-            if(x > SQUARE_SIZE) fx = x - SQUARE_SIZE; else fx = 0;
-            if(y > SQUARE_SIZE) fy = y - SQUARE_SIZE; else fy = 0;
-            if(x + SQUARE_SIZE < gwg->GetWidth()) lx = x + SQUARE_SIZE; else lx = gwg->GetWidth() - 1;
-            if(y + SQUARE_SIZE < gwg->GetHeight()) ly = y + SQUARE_SIZE; else ly = gwg->GetHeight() - 1;
+            if(pos.x > SQUARE_SIZE) fx = pos.x - SQUARE_SIZE; else fx = 0;
+            if(pos.y > SQUARE_SIZE) fy = pos.y - SQUARE_SIZE; else fy = 0;
+            if(pos.x + SQUARE_SIZE < gwg->GetWidth()) lx = pos.x + SQUARE_SIZE; else lx = gwg->GetWidth() - 1;
+            if(pos.y + SQUARE_SIZE < gwg->GetHeight()) ly = pos.y + SQUARE_SIZE; else ly = gwg->GetHeight() - 1;
 
             // Liste mit den gefundenen Tieren
             std::vector<noAnimal*> available_animals;
 
             // Durchgehen und nach Tieren suchen
-            for(unsigned short py = fy; py <= ly; ++py)
+            for(MapPoint p(0, fy); p.y <= ly; ++p.y)
             {
-                for(unsigned short px = fx; px <= lx; ++px)
+                for(p.x = fx; p.x <= lx; ++p.x)
                 {
                     // Gibts hier was bewegliches?
-                    const std::list<noBase*>& figures = gwg->GetFigures(px, py);
+                    const std::list<noBase*>& figures = gwg->GetFigures(p);
                     if(!figures.empty())
                     {
                         // Dann nach Tieren suchen
@@ -165,8 +165,7 @@ void nofHunter::HandleDerivedEvent(const unsigned int id)
                                     continue;
 
                                 // Und komme ich hin?
-                                if(gwg->FindHumanPath(x, y, static_cast<noAnimal*>(*it)->GetX(),
-                                                      static_cast<noAnimal*>(*it)->GetY(), MAX_HUNTING_DISTANCE) != 0xFF)
+                                if(gwg->FindHumanPath(pos, static_cast<noAnimal*>(*it)->GetPos(), MAX_HUNTING_DISTANCE) != 0xFF)
                                     // Dann nehmen wir es
                                     available_animals.push_back(static_cast<noAnimal*>(*it));
                             }
@@ -202,7 +201,7 @@ void nofHunter::HandleDerivedEvent(const unsigned int id)
                 // Weiter warten, vielleicht gibts ja später wieder mal was
                 current_ev = em->AddEvent(this, JOB_CONSTS[job].wait1_length, 1);
                 //tell the ai that there is nothing left to hunt!
-                GAMECLIENT.SendAIEvent(new AIEvent::Building(AIEvent::NoMoreResourcesReachable, workplace->GetX(), workplace->GetY(), workplace->GetBuildingType()), player);
+                GAMECLIENT.SendAIEvent(new AIEvent::Building(AIEvent::NoMoreResourcesReachable, workplace->GetPos(), workplace->GetBuildingType()), player);
 
                 StartNotWorking();
             }
@@ -253,107 +252,70 @@ void nofHunter::WalkedDerived()
     }
 }
 
-bool nofHunter::IsShootingPointGood(const unsigned short x, const unsigned short y)
+bool nofHunter::IsShootingPointGood(const MapPoint pt)
 {
     // Punkt muss betretbar sein und man muss ihn erreichen können
-    return (gwg->IsNodeForFigures(x, y) && gwg->FindHumanPath(this->x, this->y, x, y, 6) != 0xFF);
+    return (gwg->IsNodeForFigures(pt) && gwg->FindHumanPath(this->pos, pt, 6) != 0xFF);
 }
 
 void nofHunter::HandleStateChasing()
 {
     // Sind wir in der Nähe des Tieres?
-    if(gwg->CalcDistance(x, y, animal->GetX(), animal->GetY()) < 7)
+    if(gwg->CalcDistance(pos, animal->GetPos()) < 7)
     {
-        unsigned short animal_x, animal_y;
-
         // Dann bitten wir es mal, schonmal anzuhalten und bekommen seine Koordinaten, wo es dann steht
-        animal->HunterIsNear(&animal_x, &animal_y);
+        Point<int> animalPos(animal->HunterIsNear());
 
         // Nun müssen wir drumherum einen Punkt suchen, von dem wir schießen, der natürlich direkt dem Standort
         // des Tieres gegenüberliegen muss (mit zufälliger Richtung beginnen)
         unsigned char doffset = RANDOM.Rand(__FILE__, __LINE__, obj_id, 6);
-        shooting_x = 0xFFFF; shooting_y = 0xFFFF;
+        shootingPos = MapPoint::Invalid();
         unsigned char d;
         for(d = 0; d < 6; ++d)
         {
+            int dx, dy;
             switch((d + doffset) % 6)
             {
                 case 0:
-                {
-                    if(animal_x >= 4)
-                    {
-                        if(IsShootingPointGood(animal_x - 4, animal_y))
-                        {
-                            shooting_x = animal_x - 4;
-                            shooting_y = animal_y;
-                        }
-                    }
-                } break;
+                    dx = -4;
+                    dy = 0;
+                    break;
                 case 1:
-                {
-                    if(animal_x >= 2 && animal_y >= 4)
-                    {
-                        if(IsShootingPointGood(animal_x - 2, animal_y - 4))
-                        {
-                            shooting_x = animal_x - 2;
-                            shooting_y = animal_y - 4;
-                        }
-                    }
-                } break;
+                    dx = -2;
+                    dy = -4;
+                    break;
                 case 2:
-                {
-                    if(animal_x + 2 < gwg->GetWidth() && animal_y >= 4)
-                    {
-                        if(IsShootingPointGood(animal_x + 2, animal_y - 4))
-                        {
-                            shooting_x = animal_x + 2;
-                            shooting_y = animal_y - 4;
-                        }
-                    }
-                } break;
+                    dx = 2;
+                    dy = -4;
+                    break;
                 case 3:
-                {
-                    if(animal_x + 4 < gwg->GetWidth())
-                    {
-                        if(IsShootingPointGood(animal_x + 4, animal_y))
-                        {
-                            shooting_x = animal_x + 4;
-                            shooting_y = animal_y;
-                        }
-                    }
-                } break;
+                    dx = 4;
+                    dy = 0;
+                    break;
                 case 4:
-                {
-                    if(animal_x + 2 < gwg->GetWidth() && animal_y + 4 < gwg->GetHeight())
-                    {
-                        if(IsShootingPointGood(animal_x + 2, animal_y + 4))
-                        {
-                            shooting_x = animal_x + 2;
-                            shooting_y = animal_y + 4;
-                        }
-                    }
-                } break;
+                    dx = 2;
+                    dy = 4;
+                    break;
                 case 5:
-                {
-                    if(animal_x >= 2 && animal_y + 4 < gwg->GetHeight())
-                    {
-                        if(IsShootingPointGood(animal_x - 2, animal_y + 4))
-                        {
-                            shooting_x = animal_x - 2;
-                            shooting_y = animal_y + 4;
-                        }
-                    }
-                } break;
+                    dx = -2;
+                    dy = 4;
+                    break;
+                default:
+                    throw std::logic_error("Wrong value?");
             }
 
-            // Wurde ein Punkt gefunden --> raus
-            if(shooting_x != 0xFFFF)
+            animalPos.x += dx;
+            animalPos.y += dy;
+            if(animalPos.x >=0 && animalPos.y >=0 && animalPos.x < static_cast<int>(gwg->GetWidth()) && animalPos.y < static_cast<int>(gwg->GetHeight()))
+            {
+                shootingPos = MapPoint(animalPos);
                 break;
+            }
         }
 
 
         // Wurde ein Punkt gefunden?
-        if(shooting_x != 0xFFFF)
+        if(shootingPos.isValid())
         {
             // Richtung, in die geschossen wird, bestimmen (natürlich die entgegengesetzte nehmen)
             shooting_dir = (d + doffset + 3) % 6;
@@ -372,7 +334,7 @@ void nofHunter::HandleStateChasing()
     else
     {
         // Weg dorthin suchen
-        if((dir = gwg->FindHumanPath(x, y, animal->GetX(), animal->GetY(), MAX_HUNTING_DISTANCE)) != 0xFF)
+        if((dir = gwg->FindHumanPath(pos, animal->GetPos(), MAX_HUNTING_DISTANCE)) != 0xFF)
         {
             // Weg gefunden, dann hinlaufen
             StartWalking(dir);
@@ -389,7 +351,7 @@ void nofHunter::HandleStateChasing()
 void nofHunter::HandleStateFindingShootingPoint()
 {
     // Sind wir schon da und steht das Tier schon?
-    if(shooting_x == x && shooting_y == y && animal->IsReadyForShooting())
+    if(shootingPos == pos && animal->IsReadyForShooting())
     {
         // dann schießen
         state = STATE_HUNTER_SHOOTING;
@@ -398,7 +360,7 @@ void nofHunter::HandleStateFindingShootingPoint()
     else
     {
         // Weg dorthin suchen
-        if((dir = gwg->FindHumanPath(x, y, shooting_x, shooting_y, 6)) != 0xFF)
+        if((dir = gwg->FindHumanPath(pos, shootingPos, 6)) != 0xFF)
         {
             // Weg gefunden, dann hinlaufen
             StartWalking(dir);
@@ -424,7 +386,7 @@ void nofHunter::HandleStateShooting()
 void nofHunter::HandleStateWalkingToCadaver()
 {
     // Sind wir schon da?
-    if(animal->GetX() == x && animal->GetY() == y)
+    if(animal->GetPos() == pos)
     {
         // dann ausnehmen
         state = STATE_HUNTER_EVISCERATING;
@@ -433,7 +395,7 @@ void nofHunter::HandleStateWalkingToCadaver()
     else
     {
         // Weg dorthin suchen
-        if((dir = gwg->FindHumanPath(x, y, animal->GetX(), animal->GetY(), 6)) != 0xFF)
+        if((dir = gwg->FindHumanPath(pos, animal->GetPos(), 6)) != 0xFF)
         {
             // Weg gefunden, dann hinlaufen
             StartWalking(dir);
@@ -450,7 +412,7 @@ void nofHunter::HandleStateWalkingToCadaver()
 void nofHunter::HandleStateEviscerating()
 {
     // Tier verschwinden lassen
-    gwg->RemoveFigure(animal, x, y);
+    gwg->RemoveFigure(animal, pos);
     // Tier vernichten
     animal->Eviscerated();
     animal->Destroy();
@@ -479,15 +441,15 @@ void nofHunter::StartWalkingHome()
 void nofHunter::WalkHome()
 {
     // Sind wir zu Hause angekommen? (genauer an der Flagge !!)
-    unsigned short flag_x = workplace->GetX() + (workplace->GetY() & 1), flag_y = workplace->GetY() + 1;
-    if(x == flag_x && y == flag_y)
+    MapPoint flagPos = gwg->GetNeighbour(workplace->GetPos(), 4);
+    if(pos == flagPos)
     {
         // Weiteres übernimmt nofBuildingWorker
         WorkingReady();
     }
     // Weg suchen und ob wir überhaupt noch nach Hause kommen (Toleranz bei dem Weg mit einberechnen,
     // damit er nicht einfach rumirrt und wegstirbt, wenn er einmal ein paar Felder zu weit gelaufen ist)
-    else if((dir = gwg->FindHumanPath(x, y, flag_x, flag_y, MAX_HUNTING_DISTANCE + MAX_HUNTING_DISTANCE / 4)) == 0xFF)
+    else if((dir = gwg->FindHumanPath(pos, flagPos, MAX_HUNTING_DISTANCE + MAX_HUNTING_DISTANCE / 4)) == 0xFF)
     {
         // Kein Weg führt mehr nach Hause--> Rumirren
         StartWandering();

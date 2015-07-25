@@ -49,7 +49,7 @@ class noMovable : public noCoordBase
 
     public:
 
-        noMovable(const NodalObjectType nop, const unsigned short x, const unsigned short y);
+        noMovable(const NodalObjectType nop, const MapPoint pt);
         noMovable(SerializedGameData* sgd, const unsigned obj_id);
 
         /// Aufräummethoden
@@ -71,7 +71,7 @@ class noMovable : public noCoordBase
         // Steht er in der zwischen 2 Wegpunkten?
         bool IsStandingBetweenNodes() const { return (pause_walked_gf > 0) ? true : false; }
         /// Gibt die Position zurück, wo wir uns hinbewegen (selbe Position, wenn Schiff steht)
-        Point<MapCoord> GetDestinationForCurrentMove() const;
+        MapPoint GetDestinationForCurrentMove() const;
         /// Gibt zurück, ob sich das angegebene Objekt zwischen zwei Punkten bewegt
         bool IsMoving() const;
 

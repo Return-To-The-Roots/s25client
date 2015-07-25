@@ -50,7 +50,7 @@ class nofPassiveSoldier : public nofSoldier
     public:
 
         nofPassiveSoldier(const nofSoldier& soldier);
-        nofPassiveSoldier(const unsigned short x, const unsigned short y, const unsigned char player, nobBaseMilitary* const goal, nobBaseMilitary* const home, const unsigned char rank);
+        nofPassiveSoldier(const MapPoint pt, const unsigned char player, nobBaseMilitary* const goal, nobBaseMilitary* const home, const unsigned char rank);
         nofPassiveSoldier(SerializedGameData* sgd, const unsigned obj_id);
 
         ~nofPassiveSoldier();

@@ -39,8 +39,8 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-nofBaker::nofBaker(const unsigned short x, const unsigned short y, const unsigned char player, nobUsual* workplace)
-    : nofWorkman(JOB_BAKER, x, y, player, workplace)
+nofBaker::nofBaker(const MapPoint pos, const unsigned char player, nobUsual* workplace)
+    : nofWorkman(JOB_BAKER, pos, player, workplace)
 {
 }
 
@@ -134,13 +134,13 @@ void nofBaker::DrawWorking(int x, int y)
     }
     if((now_id >= max_id - 4) && (now_id < max_id - 2) ) //reingehn teil 1
     {
-        LOADER.LOADER.GetNationImageN(wpNation, 250 + 5 * BLD_BAKERY + 4)->Draw(x, y, 0, 0, 0, 0, 0, 0);
+        LOADER.GetNationImageN(wpNation, 250 + 5 * BLD_BAKERY + 4)->Draw(x, y, 0, 0, 0, 0, 0, 0);
         Loader::bob_jobs_cache[wpNation][JOB_BAKER][walkdirection[wpNation][4]][now_id % 8].draw(walkx_r, walky_r, COLOR_WHITE, COLORS[plColor]);
 //        LOADER.GetBobN("jobs")->Draw(17,walkdirection[wpNation][4],true,now_id%8,walkx_r,walky_r,COLORS[plColor]);
     }
     if((now_id >= max_id - 2) && (now_id < max_id) ) //reingehn teil 2
     {
-        LOADER.LOADER.GetNationImageN(wpNation, 250 + 5 * BLD_BAKERY + 4)->Draw(x, y, 0, 0, 0, 0, 0, 0);
+        LOADER.GetNationImageN(wpNation, 250 + 5 * BLD_BAKERY + 4)->Draw(x, y, 0, 0, 0, 0, 0, 0);
         Loader::bob_jobs_cache[wpNation][JOB_BAKER][walkdirection[wpNation][5]][now_id % 8].draw(walkx_r, walky_r, COLOR_WHITE, COLORS[plColor]);
 //        LOADER.GetBobN("jobs")->Draw(17,walkdirection[wpNation][5],true,now_id%8,walkx_r,walky_r,COLORS[plColor]);
     }

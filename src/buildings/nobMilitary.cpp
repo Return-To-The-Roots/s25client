@@ -7,7 +7,7 @@
 // Return To The Roots is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 2 of the License, or
-// (at your option) any later version.
+// (at your oposion) any later version.
 //
 // Return To The Roots is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -58,13 +58,13 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-nobMilitary::nobMilitary(const BuildingType type, const unsigned short x, const unsigned short y, const unsigned char player, const Nation nation)
-    : nobBaseMilitary(type, x, y, player, nation), new_built(true), coins(0), disable_coins(false),
+nobMilitary::nobMilitary(const BuildingType type, const MapPoint pos, const unsigned char player, const Nation nation)
+    : nobBaseMilitary(type, pos, player, nation), new_built(true), coins(0), disable_coins(false),
       disable_coins_virtual(false), capturing(false), capturing_soldiers(0), goldorder_event(0), upgrade_event(0), is_regulating_troops(false), captured_not_built(false)
 {
     // Gebäude entsprechend als Militärgebäude registrieren und in ein Militärquadrat eintragen
     gwg->GetPlayer(player)->AddMilitaryBuilding(this);
-    gwg->GetMilitarySquare(x, y).push_back(this);
+    gwg->GetMilitarySquare(pos).push_back(this);
 
     // Größe ermitteln
     switch(type)
@@ -81,7 +81,7 @@ nobMilitary::nobMilitary(const BuildingType type, const unsigned short x, const 
     // Tür aufmachen, bis Gebäude besetzt ist
     OpenDoor();
 
-    // Wenn kein Gold in neu gebaute Militärgebäude eingeliefert werden soll, wird die Goldzufuhr gestoppt
+    // Wenn kein Gold in neu gebaute Militärgebäude eingeliefert werden soll, wird die Goldzufuhr gestoppos
     // Ansonsten neue Goldmünzen anfordern
     if(GAMECLIENT.GetGGS().isEnabled(ADDON_NO_COINS_DEFAULT))
     {
@@ -135,14 +135,14 @@ void nobMilitary::Destroy_nobMilitary()
 
     // Wieder aus dem Militärquadrat rauswerfen
     gwg->GetPlayer(player)->RemoveMilitaryBuilding(this);
-    gwg->GetMilitarySquare(x, y).remove(this);
+    gwg->GetMilitarySquare(pos).remove(this);
 
     // Land drumherum neu berechnen (nur wenn es schon besetzt wurde!)
     // Nach dem BaseDestroy erst, da in diesem erst das Feuer gesetzt, die Straße gelöscht wird usw.
     if(!new_built)
         gwg->RecalcTerritory(this, MILITARY_RADIUS[size], true, false);
 
-    GAMECLIENT.SendAIEvent(new AIEvent::Building(AIEvent::BuildingLost, x, y, type), player);
+    GAMECLIENT.SendAIEvent(new AIEvent::Building(AIEvent::BuildingLost, pos, type), player);
 
 }
 
@@ -209,7 +209,7 @@ nobMilitary::nobMilitary(SerializedGameData* sgd, const unsigned obj_id) : nobBa
     sgd->PopObjectList(far_away_capturers, GOT_NOF_ATTACKER);
 
     // ins Militärquadrat einfügen
-    gwg->GetMilitarySquare(x, y).push_back(this);
+    gwg->GetMilitarySquare(pos).push_back(this);
 }
 
 
@@ -223,7 +223,7 @@ void nobMilitary::Draw(int x, int y)
     unsigned flags = min<unsigned>(troops.size() + this->leave_house.size(), 4);
 
     for(unsigned i = 0; i < flags; ++i)
-        LOADER.GetMapImageN(3162 + GAMECLIENT.GetGlobalAnimation(8, 2, 1, this->x * this->y * i))->Draw(x + TROOPS_FLAGS[nation][size][0], y + TROOPS_FLAGS[nation][size][1] + (i) * 3, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(player)->color]);
+        LOADER.GetMapImageN(3162 + GAMECLIENT.GetGlobalAnimation(8, 2, 1, pos.x * pos.y * i))->Draw(x + TROOPS_FLAGS[nation][size][0], y + TROOPS_FLAGS[nation][size][1] + (i) * 3, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(player)->color]);
 
     // Die Fahne, die anzeigt wie weit das Gebäude von der Grenze entfernt ist, zeichnen
     unsigned frontier_distance_tmp = frontier_distance;
@@ -231,7 +231,7 @@ void nobMilitary::Draw(int x, int y)
     if(frontier_distance_tmp == 2)
     {
         // todo Hafenflagge
-        bitmap = LOADER.GetImageN("map_new", 3150 + GAMECLIENT.GetGlobalAnimation(4, 1, 1, this->x * this->y * age));
+        bitmap = LOADER.GetImageN("map_new", 3150 + GAMECLIENT.GetGlobalAnimation(4, 1, 1, pos.x * pos.y * age));
 
     }
     else
@@ -242,7 +242,7 @@ void nobMilitary::Draw(int x, int y)
     if(bitmap)
         bitmap->Draw(x + BORDER_FLAGS[nation][size][0], y + BORDER_FLAGS[nation][size][1], 0, 0, 0, 0, 0, 0);
 
-    // Wenn Goldzufuhr gestoppt ist, Schild außen am Gebäude zeichnen zeichnen
+    // Wenn Goldzufuhr gestoppos ist, Schild außen am Gebäude zeichnen zeichnen
     if(disable_coins_virtual)
         LOADER.GetMapImageN(46)->Draw(x + BUILDING_SIGN_CONSTS[nation][type].x, y + BUILDING_SIGN_CONSTS[nation][type].y, 0, 0, 0, 0, 0, 0);
 
@@ -267,7 +267,7 @@ void nobMilitary::HandleEvent(const unsigned int id)
             {
                 // Dann raus mit denen
                 noFigure* soldier = *leave_house.begin();
-                gwg->AddFigure(soldier, x, y);
+                gwg->AddFigure(soldier, pos);
 
                 soldier->ActAtFirst();
                 leave_house.pop_front();
@@ -341,18 +341,18 @@ unsigned short nobMilitary::GetMilitaryRadius() const
     return MILITARY_RADIUS[size];
 }
 
-void nobMilitary::LookForEnemyBuildings(const nobBaseMilitary* const exception)
+void nobMilitary::LookForEnemyBuildings(const nobBaseMilitary* const exceposion)
 {
     // Umgebung nach Militärgebäuden absuchen
-    std::set<nobBaseMilitary*> buildings = gwg->LookForMilitaryBuildings(x, y, 3);
+    std::set<nobBaseMilitary*> buildings = gwg->LookForMilitaryBuildings(pos, 3);
     frontier_distance = 0;
 
     for(std::set<nobBaseMilitary*>::iterator it = buildings.begin(); it != buildings.end(); ++it)
     {
         // feindliches Militärgebäude?
-        if(*it != exception && (*it)->GetPlayer() != player && gwg->GetPlayer((*it)->GetPlayer())->IsPlayerAttackable(player))
+        if(*it != exceposion && (*it)->GetPlayer() != player && gwg->GetPlayer((*it)->GetPlayer())->IsPlayerAttackable(player))
         {
-            unsigned distance = gwg->CalcDistance(x, y, (*it)->GetX(), (*it)->GetY());
+            unsigned distance = gwg->CalcDistance(pos, (*it)->GetPos());
 
             // in nahem Umkreis, also Grenzen berühren sich
             if(distance <= MILITARY_RADIUS[size] + (*it)->GetMilitaryRadius()) // warum erzeugtn das ne warning in vs2008?
@@ -395,9 +395,9 @@ void nobMilitary::LookForEnemyBuildings(const nobBaseMilitary* const exception)
 
     // Evtl. Hafenpunkte in der N? mit ber?htigen
     if(frontier_distance <= 1)
-        if(gwg->CalcDistanceToNearestHarbor(Point<MapCoord>(x, y)) < SEAATTACK_DISTANCE + 2)
+        if(gwg->CalcDistanceToNearestHarbor(pos) < SEAATTACK_DISTANCE + 2)
         {
-            //if(gwg->IsAHarborInSeaAttackDistance(Point<MapCoord>(x,y)))
+            //if(gwg->IsAHarborInSeaAttackDistance(MapPoint(x,y)))
             frontier_distance = 2;
         }
 
@@ -426,7 +426,7 @@ void nobMilitary::NewEnemyMilitaryBuilding(const unsigned short distance)
     RegulateTroops();
 
     // KI-Event senden
-    //GAMECLIENT.SendAIEvent(new AIEvent::Building(AIEvent::BorderChanged, x, y, type), player);
+    //GAMECLIENT.SendAIEvent(new AIEvent::Building(AIEvent::BorderChanged, pos, type), player);
 }
 
 
@@ -710,7 +710,7 @@ void nobMilitary::AddPassiveSoldier(nofPassiveSoldier* soldier)
     if(new_built)
     {
         if(GAMECLIENT.GetPlayerID() == this->player)
-            GAMECLIENT.SendPostMessage(new ImagePostMsgWithLocation(_("Military building occupied"), PMC_MILITARY, this->x, this->y, this->type, this->nation));
+            GAMECLIENT.SendPostMessage(new ImagePostMsgWithLocation(_("Military building occupied"), PMC_MILITARY, pos, this->type, this->nation));
         // Ist nun besetzt
         new_built = false;
         // Landgrenzen verschieben
@@ -718,9 +718,9 @@ void nobMilitary::AddPassiveSoldier(nofPassiveSoldier* soldier)
         // Tür zumachen
         CloseDoor();
         // Fanfarensound abspieln, falls das Militärgebäude im Sichtbereich ist und unseres ist
-        gwg->MilitaryBuildingCaptured(x, y, player);
+        gwg->MilitaryBuildingCaptured(pos, player);
         // AIEvent senden an besitzer
-        GAMECLIENT.SendAIEvent(new AIEvent::Building(AIEvent::BuildingConquered, x, y, type), player);
+        GAMECLIENT.SendAIEvent(new AIEvent::Building(AIEvent::BuildingConquered, pos, type), player);
     }
     else
     {
@@ -814,7 +814,7 @@ nofAggressiveDefender* nobMilitary::SendDefender(nofAttacker* attacker)
 }
 
 /// Gibt die Anzahl der Soldaten zurück, die für einen Angriff auf ein bestimmtes Ziel zur Verfügung stehen
-unsigned nobMilitary::GetSoldiersForAttack(const MapCoord dest_x, const MapCoord dest_y, const unsigned char player_attacker) const
+unsigned nobMilitary::GetSoldiersForAttack(const MapPoint dest, const unsigned char player_attacker) const
 {
     // Soldaten ausrechnen, wie viel man davon nehmen könnte, je nachdem wie viele in den
     // Militäreinstellungen zum Angriff eingestellt wurden
@@ -822,7 +822,7 @@ unsigned nobMilitary::GetSoldiersForAttack(const MapCoord dest_x, const MapCoord
         (GetTroopsCount() > 1) ?
         ((GetTroopsCount() - 1) * players->getElement(player_attacker)->military_settings[3] / 5) : 0;
 
-    unsigned int distance = gwg->CalcDistance(x, y, dest_x, dest_y);
+    unsigned int distance = gwg->CalcDistance(pos, dest);
 
     // Falls Entfernung größer als Basisreichweite, Soldaten subtrahieren
     if (distance > BASE_ATTACKING_DISTANCE)
@@ -836,7 +836,7 @@ unsigned nobMilitary::GetSoldiersForAttack(const MapCoord dest_x, const MapCoord
     }
 
     // und auch der Weg zu Fuß darf dann nicht so weit sein, wenn das alles bestanden ist, können wir ihn nehmen..
-    if(soldiers_count && gwg->FindHumanPath(x, y, dest_x, dest_y, MAX_ATTACKING_RUN_DISTANCE, false, NULL, false) != 0xFF)
+    if(soldiers_count && gwg->FindHumanPath(pos, dest, MAX_ATTACKING_RUN_DISTANCE, false, NULL, false) != 0xFF)
         // Soldaten davon nehmen
         return soldiers_count;
     else
@@ -844,10 +844,10 @@ unsigned nobMilitary::GetSoldiersForAttack(const MapCoord dest_x, const MapCoord
 }
 
 /// Gibt die Soldaten zurück, die für einen Angriff auf ein bestimmtes Ziel zur Verfügung stehen
-void nobMilitary::GetSoldiersForAttack(const MapCoord dest_x, const MapCoord dest_y,
+void nobMilitary::GetSoldiersForAttack(const MapPoint dest,
                                        const unsigned char player_attacker, std::vector<nofPassiveSoldier*>& soldiers) const
 {
-    unsigned soldiers_count = GetSoldiersForAttack(dest_x, dest_y, player_attacker);
+    unsigned soldiers_count = GetSoldiersForAttack(dest, player_attacker);
     for(std::list<nofPassiveSoldier*>::const_reverse_iterator it = troops.rbegin(); it != troops.rend() && soldiers_count; ++it, --soldiers_count)
     {
         soldiers.push_back(*it);
@@ -856,12 +856,12 @@ void nobMilitary::GetSoldiersForAttack(const MapCoord dest_x, const MapCoord des
 }
 
 /// Gibt die Stärke der Soldaten zurück, die für einen Angriff auf ein bestimmtes Ziel zur Verfügung stehen
-unsigned nobMilitary::GetSoldiersStrengthForAttack(const MapCoord dest_x, const MapCoord dest_y,
+unsigned nobMilitary::GetSoldiersStrengthForAttack(const MapPoint dest,
         const unsigned char player_attacker, unsigned& count) const
 {
     unsigned strength = 0;
 
-    unsigned soldiers_count = GetSoldiersForAttack(dest_x, dest_y, player_attacker);
+    unsigned soldiers_count = GetSoldiersForAttack(dest, player_attacker);
     count = soldiers_count;
 
     for(std::list<nofPassiveSoldier*>::const_reverse_iterator it = troops.rbegin(); it != troops.rend() && soldiers_count; ++it, --soldiers_count)
@@ -899,7 +899,7 @@ unsigned nobMilitary::HasMaxRankSoldier() const
 
 nofDefender* nobMilitary::ProvideDefender(nofAttacker* const attacker)
 {
-    // Überhaupt Soldaten da?
+    // Überhaupos Soldaten da?
     if(troops.empty())
     {
         /// Soldaten, die noch auf Mission gehen wollen, canceln und für die Verteidigung mit einziehen
@@ -964,12 +964,12 @@ void nobMilitary::Capture(const unsigned char new_owner)
     gwg->RecalcTerritory(this, MILITARY_RADIUS[size], false, false);
 
     // Sichtbarkeiten berechnen für alten Spieler
-    gwg->RecalcVisibilitiesAroundPoint(GetX(), GetY(), GetMilitaryRadius() + VISUALRANGE_MILITARY + 1, old_player, NULL);
+    gwg->RecalcVisibilitiesAroundPoint(pos, GetMilitaryRadius() + VISUALRANGE_MILITARY + 1, old_player, NULL);
 
     // Grenzflagge entsprechend neu setzen von den Feinden
     LookForEnemyBuildings();
     // und von den Verbündeten (da ja ein Feindgebäude weg ist)!
-    std::set<nobBaseMilitary*> buildings = gwg->LookForMilitaryBuildings(x, y, 4);
+    std::set<nobBaseMilitary*> buildings = gwg->LookForMilitaryBuildings(pos, 4);
 
     for(std::set<nobBaseMilitary*>::iterator it = buildings.begin(); it != buildings.end(); ++it)
     {
@@ -981,10 +981,10 @@ void nobMilitary::Capture(const unsigned char new_owner)
     }
 
     // ehemalige Leute dieses Gebäudes nach Hause schicken, die ggf. grad auf dem Weg rein/raus waren
-    Point<MapCoord> coords[2] = {Point<MapCoord>(x, y), Point<MapCoord>(gwg->GetXA(x, y, 4), gwg->GetYA(x, y, 4))};
+    MapPoint coords[2] = {pos, MapPoint(gwg->GetNeighbour(pos, 4))};
     for(unsigned short i = 0; i < 2; ++i)
     {
-        const std::list<noBase*>& figures = gwg->GetFigures(coords[i].x, coords[i].y);
+        const std::list<noBase*>& figures = gwg->GetFigures(coords[i]);
         for(std::list<noBase*>::const_iterator it = figures.begin(); it != figures.end(); ++it)
         {
             if((*it)->GetType() == NOP_FIGURE)
@@ -1006,22 +1006,22 @@ void nobMilitary::Capture(const unsigned char new_owner)
     --capturing_soldiers;
 
     // Fanfarensound abspieln, falls das Militärgebäude im Sichtbereich ist und unseres ist
-    gwg->MilitaryBuildingCaptured(x, y, player);
+    gwg->MilitaryBuildingCaptured(pos, player);
 
     // Post verschicken, an den alten Besitzer und an den neuen Besitzer
     if(GAMECLIENT.GetPlayerID() == old_player)
         GAMECLIENT.SendPostMessage(
-            new ImagePostMsgWithLocation(_("Military building lost"), PMC_MILITARY, x, y, GetBuildingType(), GetNation()));
+            new ImagePostMsgWithLocation(_("Military building lost"), PMC_MILITARY, pos, GetBuildingType(), GetNation()));
     if(GAMECLIENT.GetPlayerID() == this->player)
         GAMECLIENT.SendPostMessage(
-            new ImagePostMsgWithLocation(_("Military building captured"), PMC_MILITARY, x, y, GetBuildingType(), GetNation()));
+            new ImagePostMsgWithLocation(_("Military building captured"), PMC_MILITARY, pos, GetBuildingType(), GetNation()));
 
     // ggf. Fenster schließen vom alten Spieler
-    gwg->ImportantObjectDestroyed(x, y);
+    gwg->ImportantObjectDestroyed(pos);
 
     // AIEvent senden an gewinner&verlierer
-    GAMECLIENT.SendAIEvent(new AIEvent::Building(AIEvent::BuildingConquered, x, y, type), player);
-    GAMECLIENT.SendAIEvent(new AIEvent::Building(AIEvent::BuildingLost, x, y, type), old_player);
+    GAMECLIENT.SendAIEvent(new AIEvent::Building(AIEvent::BuildingConquered, pos, type), player);
+    GAMECLIENT.SendAIEvent(new AIEvent::Building(AIEvent::BuildingLost, pos, type), old_player);
 
 }
 
@@ -1042,15 +1042,15 @@ void nobMilitary::NeedOccupyingTroops(const unsigned char new_owner)
         // Soldaten absuchen
         for(std::list<nofAttacker*>::iterator it = aggressors.begin(); it != aggressors.end(); ++it)
         {
-            // Steht der Soldat überhaupt um das Gebäude rum?
+            // Steht der Soldat überhaupos um das Gebäude rum?
             if((*it)->IsAttackerReady() && ((*it)->GetPlayer() == new_owner || new_owner == 0xFF))
             {
                 // Näher als der bisher beste?
                 if((*it)->GetRadius() < best_radius)
                 {
-                    // Und kommt er überhaupt zur Flagge (könnte ja in der 2. Reihe stehen, sodass die
+                    // Und kommt er überhaupos zur Flagge (könnte ja in der 2. Reihe stehen, sodass die
                     // vor ihm ihn den Weg versperren)?
-                    if(gwg->FindHumanPath((*it)->GetX(), (*it)->GetY(), gwg->GetXA(x, y, 4), gwg->GetYA(x, y, 4), 10, false) != 0xFF)
+                    if(gwg->FindHumanPath((*it)->GetPos(), gwg->GetNeighbour(pos, 4), 10, false) != 0xFF)
                     {
                         // Dann is das der bisher beste
                         best_attacker = *it;
@@ -1152,7 +1152,7 @@ void nobMilitary::StopGold()
 
 unsigned nobMilitary::CalcCoinsPoints()
 {
-    // Will ich überhaupt Goldmünzen, wenn nich, sofort raus
+    // Will ich überhaupos Goldmünzen, wenn nich, sofort raus
     if(!WantCoins())
         return 0;
 
@@ -1178,13 +1178,13 @@ unsigned nobMilitary::CalcCoinsPoints()
 
 bool nobMilitary::WantCoins()
 {
-    // Wenn die Goldzufuhr gestoppt wurde oder Münzvorrat voll ist, will ich gar keine Goldmünzen
+    // Wenn die Goldzufuhr gestoppos wurde oder Münzvorrat voll ist, will ich gar keine Goldmünzen
     return (!disable_coins && coins + ordered_coins.size() != GOLD_COUNT[nation][size] && !new_built);
 }
 
 void nobMilitary::SearchCoins()
 {
-    // Brauche ich überhaupt Goldmünzen bzw. hab ich vielleicht schon ein Event angemeldet?
+    // Brauche ich überhaupos Goldmünzen bzw. hab ich vielleicht schon ein Event angemeldet?
     if(WantCoins() && !goldorder_event)
     {
         // Lagerhaus mit Goldmünzen suchen
@@ -1259,7 +1259,7 @@ void nobMilitary::HitOfCatapultStone()
     // Post verschicken
     if(GAMECLIENT.GetPlayerID() == this->player)
         GAMECLIENT.SendPostMessage(
-            new ImagePostMsgWithLocation(_("A catapult is firing upon us!"), PMC_MILITARY, x, y, GetBuildingType(), GetNation()));
+            new ImagePostMsgWithLocation(_("A catapult is firing upon us!"), PMC_MILITARY, pos, GetBuildingType(), GetNation()));
 }
 
 ///////////////////////////////////////////////////////////////////////////////

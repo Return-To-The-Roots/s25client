@@ -70,10 +70,10 @@ const unsigned short WANDER_RADIUS_SOLDIERS = 15;
 
 
 
-noFigure::noFigure(const Job job, const unsigned short x, const unsigned short y, const unsigned char player, noRoadNode* const goal)
-    :   noMovable(NOP_FIGURE, x, y), fs(FS_GOTOGOAL), job(job), player(player), cur_rs(0),
+noFigure::noFigure(const Job job, const MapPoint pos, const unsigned char player, noRoadNode* const goal)
+    :   noMovable(NOP_FIGURE, pos), fs(FS_GOTOGOAL), job(job), player(player), cur_rs(0),
         rs_pos(0), rs_dir(0), on_ship(false), goal(goal), waiting_for_free_node(false),
-        flag_x(0xFFFF), flag_y(0xFFFF), last_id(0xFFFFFFFF)
+        flagPos(0xFFFF, 0xFFFF), last_id(0xFFFFFFFF)
 
 {
     //if(GetVisualRange())
@@ -88,8 +88,8 @@ noFigure::noFigure(const Job job, const unsigned short x, const unsigned short y
 
 }
 
-noFigure::noFigure(const Job job, const unsigned short x, const unsigned short y, const unsigned char player)
-    :   noMovable(NOP_FIGURE, x, y), fs(FS_JOB), job(job), player(player), cur_rs(0),
+noFigure::noFigure(const Job job, const MapPoint pos, const unsigned char player)
+    :   noMovable(NOP_FIGURE, pos), fs(FS_JOB), job(job), player(player), cur_rs(0),
         rs_pos(0), rs_dir(0), on_ship(false), goal(0), waiting_for_free_node(false), last_id(0xFFFFFFFF)
 {
     //f(GetVisualRange())
@@ -124,8 +124,8 @@ void noFigure::Serialize_noFigure(SerializedGameData* sgd) const
     {
         sgd->PushUnsignedShort(wander_way);
         sgd->PushUnsignedShort(wander_tryings);
-        sgd->PushUnsignedShort(flag_x);
-        sgd->PushUnsignedShort(flag_y);
+        sgd->PushUnsignedShort(flagPos.x);
+        sgd->PushUnsignedShort(flagPos.y);
         sgd->PushUnsignedInt(flag_obj_id);
         sgd->PushUnsignedInt(burned_wh_id);
     }
@@ -152,8 +152,8 @@ noFigure::noFigure(SerializedGameData* sgd, const unsigned obj_id) : noMovable(s
     {
         wander_way = sgd->PopUnsignedShort();
         wander_tryings = sgd->PopUnsignedShort();
-        flag_x = sgd->PopUnsignedShort();
-        flag_y = sgd->PopUnsignedShort();
+        flagPos.x = sgd->PopUnsignedShort();
+        flagPos.y = sgd->PopUnsignedShort();
         flag_obj_id = sgd->PopUnsignedInt();
         burned_wh_id = sgd->PopUnsignedInt();
     }
@@ -171,9 +171,9 @@ void noFigure::ActAtFirst()
         case FS_GOHOME:
         {
             // Wenn ich gleich wieder nach Hause geschickt wurde und aus einem Lagerhaus rauskomme, gar nicht erst rausgehen!
-            if(goal->GetX() == x && goal->GetY() == y)
+            if(goal->GetPos() == pos)
             {
-                gwg->RemoveFigure(this, x, y);
+                gwg->RemoveFigure(this, pos);
                 static_cast<nobBaseWarehouse*>(goal)->AddFigure(this);
             }
             else
@@ -201,44 +201,44 @@ void noFigure::InitializeRoadWalking(const RoadSegment* const road, const unsign
 
 bool noFigure::CalcFigurRelative(int& x, int& y)
 {
-    int x1 = static_cast<int>(gwg->GetTerrainX(this->x, this->y));
-    int y1 = static_cast<int>(gwg->GetTerrainY(this->x, this->y));
-    int x2 = static_cast<int>(gwg->GetTerrainX(gwg->GetXA(this->x, this->y, dir), gwg->GetYA(this->x, this->y, dir)));
-    int y2 = static_cast<int>(gwg->GetTerrainY(gwg->GetXA(this->x, this->y, dir), gwg->GetYA(this->x, this->y, dir)));
+    int x1 = static_cast<int>(gwg->GetTerrainX(pos));
+    int y1 = static_cast<int>(gwg->GetTerrainY(pos));
+    int x2 = static_cast<int>(gwg->GetTerrainX(gwg->GetNeighbour(pos, dir)));
+    int y2 = static_cast<int>(gwg->GetTerrainY(gwg->GetNeighbour(pos, dir)));
 
 
     // Gehen wir über einen Kartenrand (horizontale Richung?)
-    if(abs(x1 - x2) >= gwg->GetWidth() * TR_W / 2)
+    if(std::abs(x1 - x2) >= gwg->GetWidth() * TR_W / 2)
     {
-        if(abs(x1 - int(gwg->GetWidth())*TR_W - x2) < abs(x1 - x2))
+        if(std::abs(x1 - int(gwg->GetWidth())*TR_W - x2) < std::abs(x1 - x2))
             x1 -= gwg->GetWidth() * TR_W;
         else
             x1 += gwg->GetWidth() * TR_W;
     }
     // Und dasselbe für vertikale Richtung
-    if(abs(y1 - y2) >= gwg->GetHeight() * TR_H / 2)
+    if(std::abs(y1 - y2) >= gwg->GetHeight() * TR_H / 2)
     {
-        if(abs(y1 - int(gwg->GetHeight())*TR_H - y2) < abs(y1 - y2))
+        if(std::abs(y1 - int(gwg->GetHeight())*TR_H - y2) < std::abs(y1 - y2))
             y1 -= gwg->GetHeight() * TR_H;
         else
             y1 += gwg->GetHeight() * TR_H;
     }
 
-    MapCoord xa = gwg->GetXA(this->x, this->y, 1), ya = gwg->GetYA(this->x, this->y, 1);
+    MapPoint nb = gwg->GetNeighbour(pos, 1);
 
-    if(dir == 1 && (gwg->GetNO(xa, ya)->GetType() == NOP_BUILDINGSITE || gwg->GetNO(xa, ya)->GetType() == NOP_BUILDING))
+    if(dir == 1 && (gwg->GetNO(nb)->GetType() == NOP_BUILDINGSITE || gwg->GetNO(nb)->GetType() == NOP_BUILDING))
     {
-        x2 += gwg->GetSpecObj<noBaseBuilding>(xa, ya)->GetDoorPointX();
-        y2 += gwg->GetSpecObj<noBaseBuilding>(xa, ya)->GetDoorPointY();
-        x += gwg->GetSpecObj<noBaseBuilding>(xa, ya)->GetDoorPointX();
-        y += gwg->GetSpecObj<noBaseBuilding>(xa, ya)->GetDoorPointY();
+        x2 += gwg->GetSpecObj<noBaseBuilding>(nb)->GetDoorPointX();
+        y2 += gwg->GetSpecObj<noBaseBuilding>(nb)->GetDoorPointY();
+        x += gwg->GetSpecObj<noBaseBuilding>(nb)->GetDoorPointX();
+        y += gwg->GetSpecObj<noBaseBuilding>(nb)->GetDoorPointY();
     }
-    else if(gwg->GetNO(this->x, this->y)->GetType() == NOP_BUILDINGSITE || gwg->GetNO(this->x, this->y)->GetType() == NOP_BUILDING)
+    else if(gwg->GetNO(this->pos)->GetType() == NOP_BUILDINGSITE || gwg->GetNO(this->pos)->GetType() == NOP_BUILDING)
     {
-        x1 += gwg->GetSpecObj<noBaseBuilding>(this->x, this->y)->GetDoorPointX();
-        y1 += gwg->GetSpecObj<noBaseBuilding>(this->x, this->y)->GetDoorPointY();
-        x += gwg->GetSpecObj<noBaseBuilding>(this->x, this->y)->GetDoorPointX();
-        y += gwg->GetSpecObj<noBaseBuilding>(this->x, this->y)->GetDoorPointY();
+        x1 += gwg->GetSpecObj<noBaseBuilding>(this->pos)->GetDoorPointX();
+        y1 += gwg->GetSpecObj<noBaseBuilding>(this->pos)->GetDoorPointY();
+        x += gwg->GetSpecObj<noBaseBuilding>(this->pos)->GetDoorPointX();
+        y += gwg->GetSpecObj<noBaseBuilding>(this->pos)->GetDoorPointY();
     }
 
     // Wenn die Träger runterlaufne, muss es andersrum sein, da die Träger dann immer vom OBEREN Punkt aus gezeichnet werden
@@ -265,21 +265,21 @@ void noFigure::StartWalking(const unsigned char dir)
     }
 
     // Gehen wir in ein Gebäude?
-    if(dir == 1 && gwg->GetNO(gwg->GetXA(x, y, 1), gwg->GetYA(x, y, 1))->GetType() == NOP_BUILDING)
-        gwg->GetSpecObj<noBuilding>(gwg->GetXA(x, y, 1), gwg->GetYA(x, y, 1))->OpenDoor(); // Dann die Tür aufmachen
+    if(dir == 1 && gwg->GetNO(gwg->GetNeighbour(pos, 1))->GetType() == NOP_BUILDING)
+        gwg->GetSpecObj<noBuilding>(gwg->GetNeighbour(pos, 1))->OpenDoor(); // Dann die Tür aufmachen
     // oder aus einem raus?
-    if(dir == 4 && gwg->GetNO(x, y)->GetType() == NOP_BUILDING)
-        gwg->GetSpecObj<noBuilding>(x, y)->OpenDoor(); // Dann die Tür aufmachen
+    if(dir == 4 && gwg->GetNO(pos)->GetType() == NOP_BUILDING)
+        gwg->GetSpecObj<noBuilding>(pos)->OpenDoor(); // Dann die Tür aufmachen
 
     // Ist der Platz schon besetzt, wo wir hinlaufen wollen und laufen wir auf StraÃƒÂŸen?
-    if(!gwg->IsRoadNodeForFigures(gwg->GetXA(x, y, dir), gwg->GetYA(x, y, dir), dir) &&
+    if(!gwg->IsRoadNodeForFigures(gwg->GetNeighbour(pos, dir), dir) &&
             cur_rs)
     {
         // Dann stehen bleiben!
         this->dir = dir;
         waiting_for_free_node = true;
         // Andere Figuren stoppen
-        gwg->StopOnRoads(x, y, dir);
+        gwg->StopOnRoads(pos, dir);
     }
     else
     {
@@ -335,8 +335,8 @@ void noFigure::DrawShadow(const int x, const int y, const unsigned char anistep,
 void noFigure::WalkFigure()
 {
     // Tür hinter sich zumachen, wenn wir aus einem Gebäude kommen
-    if(dir == 4 && gwg->GetNO(x, y)->GetType() == NOP_BUILDING)
-        gwg->GetSpecObj<noBuilding>(x, y)->CloseDoor();
+    if(dir == 4 && gwg->GetNO(pos)->GetType() == NOP_BUILDING)
+        gwg->GetSpecObj<noBuilding>(pos)->CloseDoor();
 
     Walk();
 
@@ -345,8 +345,8 @@ void noFigure::WalkFigure()
 
 
     // oder in eins reingegangen sind
-    if(dir == 1 && gwg->GetNO(x, y)->GetType() == NOP_BUILDING)
-        gwg->GetSpecObj<noBuilding>(x, y)->CloseDoor();
+    if(dir == 1 && gwg->GetNO(pos)->GetType() == NOP_BUILDING)
+        gwg->GetSpecObj<noBuilding>(pos)->CloseDoor();
 
 }
 
@@ -366,30 +366,26 @@ void noFigure::WalkToGoal()
     {
         // Ziel erreicht?
         // Bei dem Träger können das beide Flaggen sein!
-        unsigned short goal_x1, goal_y1, goal_x2 = 0xFFFF, goal_y2 = 0xFFFF;
+        MapPoint goal1, goal2;
         if(GetGOT() == GOT_NOF_CARRIER && fs == FS_GOTOGOAL)
         {
-            goal_x1 = static_cast<nofCarrier*>(this)->GetFirstFlag() ?
-                      static_cast<nofCarrier*>(this)->GetFirstFlag()->GetX() : 0xFFFF;
-            goal_y1 = static_cast<nofCarrier*>(this)->GetFirstFlag() ?
-                      static_cast<nofCarrier*>(this)->GetFirstFlag()->GetY() : 0xFFFF;
-            goal_x2 = static_cast<nofCarrier*>(this)->GetSecondFlag() ?
-                      static_cast<nofCarrier*>(this)->GetSecondFlag()->GetX() : 0xFFFF;
-            goal_y2 = static_cast<nofCarrier*>(this)->GetSecondFlag() ?
-                      static_cast<nofCarrier*>(this)->GetSecondFlag()->GetY() : 0xFFFF;
+            goal1 = static_cast<nofCarrier*>(this)->GetFirstFlag() ?
+                static_cast<nofCarrier*>(this)->GetFirstFlag()->GetPos() : MapPoint(0xFFFF, 0xFFFF);
+            goal2 = static_cast<nofCarrier*>(this)->GetSecondFlag() ?
+                static_cast<nofCarrier*>(this)->GetSecondFlag()->GetPos() : MapPoint(0xFFFF, 0xFFFF);
         }
         else
         {
-            goal_x1 = goal->GetX();
-            goal_y1 = goal->GetY();
+            goal1 = goal->GetPos();
+            goal2 = MapPoint(0xFFFF, 0xFFFF);
         }
 
-        if((goal_x1 == x && goal_y1 == y) || (goal_x2 == x && goal_y2 == y))
+        if(goal1 == pos || goal2 == pos)
         {
             if(fs == FS_GOHOME)
             {
                 // Mann im Lagerhaus angekommen
-                gwg->RemoveFigure(this, x, y);
+                gwg->RemoveFigure(this, pos);
                 static_cast<nobBaseWarehouse*>(goal)->AddFigure(this);
             }
             else
@@ -409,9 +405,9 @@ void noFigure::WalkToGoal()
         }
         else
         {
-            Point<MapCoord> next_harbor;
+            MapPoint next_harbor;
             // Neuen Weg berechnen
-            unsigned char route = gwg->FindHumanPathOnRoads(gwg->GetSpecObj<noRoadNode>(x, y), goal, NULL, &next_harbor);
+            unsigned char route = gwg->FindHumanPathOnRoads(gwg->GetSpecObj<noRoadNode>(pos), goal, NULL, &next_harbor);
             // Kein Weg zum Ziel... nächstes Lagerhaus suchen
             if(route == 0xFF)
             {
@@ -435,7 +431,7 @@ void noFigure::WalkToGoal()
             {
                 // Uns in den Hafen einquartieren
                 noBase* nob;
-                if((nob = gwg->GetNO(x, y))->GetGOT() != GOT_NOB_HARBORBUILDING)
+                if((nob = gwg->GetNO(pos))->GetGOT() != GOT_NOB_HARBORBUILDING)
                 {
                     // Es gibt keinen Hafen mehr -> nach Hause gehen
 
@@ -457,7 +453,7 @@ void noFigure::WalkToGoal()
 
                 // Uns in den Hafen einquartieren
                 cur_rs = NULL; // wir laufen nicht mehr auf einer StraÃƒÂŸe
-                gwg->RemoveFigure(this, x, y);
+                gwg->RemoveFigure(this, pos);
                 static_cast<nobHarborBuilding*>(nob)->AddFigureForShip(this, next_harbor);
 
                 return;
@@ -465,10 +461,10 @@ void noFigure::WalkToGoal()
 
 
             // Nächste StraÃƒÂŸe wollen, auf der man geht
-            cur_rs = gwg->GetSpecObj<noRoadNode>(x, y)->routes[route];
+            cur_rs = gwg->GetSpecObj<noRoadNode>(pos)->routes[route];
             StartWalking(route);
             rs_pos = 0;
-            rs_dir = (gwg->GetSpecObj<noRoadNode>(x, y) == cur_rs->GetF1()) ? false : true;
+            rs_dir = (gwg->GetSpecObj<noRoadNode>(pos) == cur_rs->GetF1()) ? false : true;
         }
 
     }
@@ -539,7 +535,7 @@ void noFigure::WalkToGoal()
         }
         else
         {
-            Point<MapCoord> next_harbor;
+            MapPoint next_harbor;
             // Neuen Weg berechnen
             unsigned char route = gwg->FindHumanPathOnRoads(gwg->GetSpecObj<noRoadNode>(x,y),goal,NULL,&next_harbor);
             // Kein Weg zum Ziel... nächstes Lagerhaus suchen
@@ -625,7 +621,7 @@ void noFigure::HandleEvent(const unsigned int id)
         // Alte Richtung und Position für die Berechnung der Sichtbarkeiten merken
         unsigned char old_dir = dir;
 
-        Point<MapCoord> old_pos(x, y);
+        MapPoint old_pos(pos);
 
         switch(fs)
         {
@@ -653,15 +649,15 @@ void noFigure::HandleEvent(const unsigned int id)
 
             // Use old position (don't use this->x/y because it might be different now
             // Figure could be in a ship etc.)
-            gwg->RecalcMovingVisibilities(old_pos.x, old_pos.y, player, GetVisualRange(), old_dir, NULL);
+            gwg->RecalcMovingVisibilities(old_pos, player, GetVisualRange(), old_dir, NULL);
 
 
-            std::vector<noBase*> figures = gwg->GetDynamicObjectsFrom(old_pos.x, old_pos.y);
+            std::vector<noBase*> figures = gwg->GetDynamicObjectsFrom(old_pos);
 
             // Wenn Figur verschwunden ist, muss ihr ehemaliger gesamter Sichtbereich noch einmal
             // neue berechnet werden
             if(std::find(figures.begin(), figures.end(), this) == figures.end())
-                CalcVisibilities(old_pos.x, old_pos.y);
+                CalcVisibilities(old_pos);
         }
 
     }
@@ -681,11 +677,11 @@ void noFigure::GoHome(noRoadNode* goal)
         // Wenn wir cur_rs == 0, dann hängen wir wahrscheinlich noch im Lagerhaus in der Warteschlange
         if(cur_rs == 0)
         {
-            assert(gwg->GetNO(x, y)->GetGOT() == GOT_NOB_HQ ||
-                   gwg->GetNO(x, y)->GetGOT() == GOT_NOB_STOREHOUSE
-                   || gwg->GetNO(x, y)->GetGOT() == GOT_NOB_HARBORBUILDING);
+            assert(gwg->GetNO(pos)->GetGOT() == GOT_NOB_HQ ||
+                   gwg->GetNO(pos)->GetGOT() == GOT_NOB_STOREHOUSE
+                   || gwg->GetNO(pos)->GetGOT() == GOT_NOB_HARBORBUILDING);
 
-            gwg->GetSpecObj<nobBaseWarehouse>(x, y)->CancelFigure(this);
+            gwg->GetSpecObj<nobBaseWarehouse>(pos)->CancelFigure(this);
             return;
         }
         else
@@ -706,7 +702,7 @@ void noFigure::GoHome(noRoadNode* goal)
             waiting_for_free_node = false;
             WalkToGoal();
             // anderen Leuten noch ggf Bescheid sagen
-            gwg->RoadNodeAvailable(this->x, this->y);
+            gwg->RoadNodeAvailable(this->pos);
         }
     }
     else
@@ -775,22 +771,22 @@ void noFigure::Wander()
         if(!wander_way)
         {
             // Umgebung abscannen, nicht über den Rand gehen
-            unsigned short x1 = (x > wander_radius) ? (x - wander_radius) : 0;
-            unsigned short y1 = (y > wander_radius) ? (y - wander_radius) : 0;
-            unsigned short x2 = (x + wander_radius < gwg->GetWidth()) ? (x + wander_radius) : (gwg->GetWidth() - 1);
-            unsigned short y2 = (y + wander_radius < gwg->GetHeight()) ? (y + wander_radius) : (gwg->GetHeight() - 1);
+            unsigned short x1 = (pos.x > wander_radius) ? (pos.x - wander_radius) : 0;
+            unsigned short y1 = (pos.y > wander_radius) ? (pos.y - wander_radius) : 0;
+            unsigned short x2 = (pos.x + wander_radius < gwg->GetWidth()) ? (pos.x + wander_radius) : (gwg->GetWidth() - 1);
+            unsigned short y2 = (pos.y + wander_radius < gwg->GetHeight()) ? (pos.y + wander_radius) : (gwg->GetHeight() - 1);
 
             // Flaggen sammeln und dann zufällig eine auswählen
             std::vector<noFlag*> flags;
 
-            for(unsigned short py = y1; py <= y2; ++py)
+            for(MapPoint p(0, y1); p.y <= y2; ++p.y)
             {
-                for(unsigned short px = x1; px <= x2; ++px)
+                for(p.x = x1; p.x <= x2; ++p.x)
                 {
-                    if(gwg->GetNO(px, py)->GetType() == NOP_FLAG)
+                    if(gwg->GetNO(p)->GetType() == NOP_FLAG)
                     {
-                        if(gwg->GetSpecObj<noFlag>(px, py)->GetPlayer() == player)
-                            flags.push_back(gwg->GetSpecObj<noFlag>(px, py));
+                        if(gwg->GetSpecObj<noFlag>(p)->GetPlayer() == player)
+                            flags.push_back(gwg->GetSpecObj<noFlag>(p));
                     }
                 }
             }
@@ -814,11 +810,11 @@ void noFigure::Wander()
                 }
 
                 // würde die die bisher beste an Weg unterbieten?
-                unsigned way = gwg->CalcDistance(x, y, (*it)->GetX(), (*it)->GetY());
+                unsigned way = gwg->CalcDistance(pos, (*it)->GetPos());
                 if(way < best_way)
                 {
                     // Gibts nen Weg zu dieser Flagge?
-                    if((dir = gwg->FindHumanPath(x, y, (*it)->GetX(), (*it)->GetY(), 10, false)) != 0xFF)
+                    if((dir = gwg->FindHumanPath(pos, (*it)->GetPos(), 10, false)) != 0xFF)
                     {
                         // gucken, ob ein Weg zu einem Warenhaus führt
                         if(gwg->GetPlayer(player)->FindWarehouse(*it, FW::Condition_StoreFigure, 0, true, &job, false))
@@ -842,8 +838,7 @@ void noFigure::Wander()
             {
                 // bestmögliche schlieÃƒÂŸlich nehmen
                 wander_way = 0xFFFF;
-                flag_x = best_flag->GetX();
-                flag_y = best_flag->GetY();
+                flagPos = best_flag->GetPos();
                 flag_obj_id = best_flag->GetObjId();
                 WanderToFlag();
                 return;
@@ -875,13 +870,13 @@ void noFigure::Wander()
             unsigned char dir = (d + doffset) % 6;
 
             // Nicht über den Rand gehen!
-            if(x == 0 && (dir == 0 || dir == 1 || dir == 5)) continue;
-            if(y == 0 && (dir == 1 || dir == 2)) continue;
-            if(x == gwg->GetWidth() - 1 && (dir == 2 || dir == 3 || dir == 4)) continue;
-            if(y == gwg->GetHeight() - 1 && (dir == 4 || dir == 5)) continue;
+            if(pos.x == 0 && (dir == 0 || dir == 1 || dir == 5)) continue;
+            if(pos.y == 0 && (dir == 1 || dir == 2)) continue;
+            if(pos.x == gwg->GetWidth() - 1 && (dir == 2 || dir == 3 || dir == 4)) continue;
+            if(pos.y == gwg->GetHeight() - 1 && (dir == 4 || dir == 5)) continue;
 
-            if(gwg->IsNodeForFigures(gwg->GetXA(x, y, dir), gwg->GetYA(x, y, dir))
-                    && gwg->IsNodeToNodeForFigure(x, y, dir))
+            if(gwg->IsNodeForFigures(gwg->GetNeighbour(pos, dir))
+                    && gwg->IsNodeToNodeForFigure(pos, dir))
             {
                 StartWalking(dir);
                 --wander_way;
@@ -953,11 +948,11 @@ void noFigure::WanderFailedTrade()
                 }
 
                 // würde die die bisher beste an Weg unterbieten?
-                unsigned way = gwg->CalcDistance(x,y,(*it)->GetX(),(*it)->GetY());
+                unsigned way = gwg->CalcDistance(x,y,(*it)->GetPos());
                 if(way < best_way)
                 {
                     // Gibts nen Weg zu dieser Flagge?
-                    if((dir = gwg->FindHumanPath(x,y,(*it)->GetX(),(*it)->GetY(),10,false)) != 0xFF)
+                    if((dir = gwg->FindHumanPath(x,y,(*it)->GetPos(),10,false)) != 0xFF)
                     {
                         // gucken, ob ein Weg zu einem Warenhaus führt
                         if(gwg->GetPlayer(player)->FindWarehouse(*it,FW::Condition_StoreFigure,0,true,&job,false))
@@ -1041,7 +1036,7 @@ void noFigure::WanderFailedTrade()
 void noFigure::WanderToFlag()
 {
     // Existiert die Flagge überhaupt noch?
-    noBase* no = gwg->GetNO(flag_x, flag_y);
+    noBase* no = gwg->GetNO(flagPos);
     if(no->GetObjId() != flag_obj_id)
     {
         // Wenn nicht, wieder normal weiter rumirren
@@ -1051,12 +1046,12 @@ void noFigure::WanderToFlag()
     }
 
     // Sind wir schon da?
-    if(x == flag_x && y == flag_y)
+    if(pos == flagPos)
     {
         // Gibts noch nen Weg zu einem Lagerhaus?
 
         if(nobBaseWarehouse* wh = gwg->GetPlayer(player)->FindWarehouse(
-                                      gwg->GetSpecObj<noRoadNode>(x, y), FW::Condition_StoreFigure, 0, true, &job, false))
+                                      gwg->GetSpecObj<noRoadNode>(pos), FW::Condition_StoreFigure, 0, true, &job, false))
         {
             // ja, dann können wir ja hingehen
             fs = FS_GOTOGOAL;
@@ -1079,7 +1074,7 @@ void noFigure::WanderToFlag()
 
     // Weiter zur Flagge gehen
     // Gibts noch nen Weg dahin bzw. existiert die Flagge noch?
-    if((dir = gwg->FindHumanPath(x, y, flag_x, flag_y, 60, false)) != 0xFF)
+    if((dir = gwg->FindHumanPath(pos, flagPos, 60, false)) != 0xFF)
     {
         // weiter hinlaufen
         StartWalking(dir);
@@ -1366,11 +1361,11 @@ void noFigure::DrawWalking(int x, int y)
 void noFigure::Die()
 {
     // Weg mit mir
-    gwg->RemoveFigure(this, x, y);
+    gwg->RemoveFigure(this, pos);
     em->AddToKillList(this);
     // ggf. Leiche hinlegen, falls da nix ist
-    if(!gwg->GetSpecObj<noBase>(x, y))
-        gwg->SetNO(new noSkeleton(x, y), x, y);
+    if(!gwg->GetSpecObj<noBase>(pos))
+        gwg->SetNO(new noSkeleton(pos), pos);
 
     // Wars ein Bootmann? Dann Boot und Träger abziehen
     if(job == JOB_BOATCARRIER)
@@ -1382,36 +1377,34 @@ void noFigure::Die()
         gwg->GetPlayer(player)->DecreaseInventoryJob(job, 1);
 
     // Sichtbarkeiten neu berechnen für Erkunder und Soldaten
-    CalcVisibilities(x, y);
+    CalcVisibilities(pos);
 }
 void noFigure::DieFailedTrade()
 {
     // Weg mit mir
-    gwg->RemoveFigure(this, x, y);
+    gwg->RemoveFigure(this, pos);
     em->AddToKillList(this);
     // ggf. Leiche hinlegen, falls da nix ist
-    if(!gwg->GetSpecObj<noBase>(x, y))
-        gwg->SetNO(new noSkeleton(x, y), x, y);
+    if(!gwg->GetSpecObj<noBase>(pos))
+        gwg->SetNO(new noSkeleton(pos), pos);
     // Sichtbarkeiten neu berechnen für Erkunder und Soldaten
     //CalcVisibilities(x,y);
 }
 
-void noFigure::NodeFreed(const unsigned short x, const unsigned short y)
+void noFigure::NodeFreed(const MapPoint pt)
 {
     // Stehen wir gerade aus diesem Grund?
     if(waiting_for_free_node)
     {
         // Ist das der Punkt, zu dem wir hin wollen?
-        if(x == gwg->GetXA(this->x, this->y, dir) && y == gwg->GetYA(this->x, this->y, dir))
+        if(pt == gwg->GetNeighbour(this->pos, dir))
         {
-
-
             // Gehen wir in ein Gebäude? Dann wieder ausgleichen, weil wir die Türen sonst doppelt aufmachen!
-            if(dir == 1 && gwg->GetNO(gwg->GetXA(this->x, this->y, 1), gwg->GetYA(this->x, this->y, 1))->GetType() == NOP_BUILDING)
-                gwg->GetSpecObj<noBuilding>(gwg->GetXA(this->x, this->y, 1), gwg->GetYA(this->x, this->y, 1))->CloseDoor();
+            if(dir == 1 && gwg->GetNO(gwg->GetNeighbour(this->pos, 1))->GetType() == NOP_BUILDING)
+                gwg->GetSpecObj<noBuilding>(gwg->GetNeighbour(this->pos, 1))->CloseDoor();
             // oder aus einem raus?
-            if(dir == 4 && gwg->GetNO(this->x, this->y)->GetType() == NOP_BUILDING)
-                gwg->GetSpecObj<noBuilding>(this->x, this->y)->CloseDoor();
+            if(dir == 4 && gwg->GetNO(this->pos)->GetType() == NOP_BUILDING)
+                gwg->GetSpecObj<noBuilding>(this->pos)->CloseDoor();
 
             // Wir stehen nun nicht mehr
             waiting_for_free_node = false;
@@ -1420,9 +1413,7 @@ void noFigure::NodeFreed(const unsigned short x, const unsigned short y)
             StartWalking(dir);
 
             // anderen Leuten noch ggf Bescheid sagen
-            gwg->RoadNodeAvailable(this->x, this->y);
-
-
+            gwg->RoadNodeAvailable(this->pos);
         }
     }
 }
@@ -1438,7 +1429,7 @@ void noFigure::Abrogate()
         {
             if(!on_ship) //no goal but going home - should not happen
             {
-                LOG.lprintf("noFigure::Abrogate - GOHOME figure has no goal and is not on a ship - player %i state %i pos %u,%u \n", player, fs, x, y);
+                LOG.lprintf("noFigure::Abrogate - GOHOME figure has no goal and is not on a ship - player %i state %i pos %u,%u \n", player, fs, pos);
                 //assert(false);
             }
         }
@@ -1448,7 +1439,7 @@ void noFigure::Abrogate()
 }
 
 
-void noFigure::StopIfNecessary(const unsigned short x, const unsigned short y)
+void noFigure::StopIfNecessary(const MapPoint pt)
 {
     // Lauf ich auf Wegen --> wenn man zum Ziel oder Weg läuft oder die Träger, die natürlich auch auf Wegen arbeiten
     if(fs == FS_GOHOME || fs == FS_GOTOGOAL || (fs == FS_JOB && GetGOT() == GOT_NOF_CARRIER))
@@ -1456,13 +1447,12 @@ void noFigure::StopIfNecessary(const unsigned short x, const unsigned short y)
         // Laufe ich zu diesem Punkt?
         if(current_ev)
         {
-            if(!waiting_for_free_node && gwg->GetXA(this->x, this->y, dir) == x &&
-                    gwg->GetYA(this->x, this->y, dir) == y)
+            if(!waiting_for_free_node && gwg->GetNeighbour(this->pos, dir) == pt)
             {
                 // Dann stehenbleiben
                 PauseWalking();
                 waiting_for_free_node = true;
-                gwg->StopOnRoads(this->x, this->y, dir);
+                gwg->StopOnRoads(this->pos, dir);
             }
         }
     }
@@ -1470,22 +1460,21 @@ void noFigure::StopIfNecessary(const unsigned short x, const unsigned short y)
 
 
 /// Sichtbarkeiten berechnen für Figuren mit Sichtradius (Soldaten, Erkunder) vor dem Laufen
-void noFigure::CalcVisibilities(const MapCoord x, const MapCoord y)
+void noFigure::CalcVisibilities(const MapPoint pt)
 {
     // Sichtbarkeiten neu berechnen für Erkunder und Soldaten
     if(GetVisualRange())
         // An alter Position neu berechnen
-        gwg->RecalcVisibilitiesAroundPoint(x, y, GetVisualRange(), player, NULL);
+        gwg->RecalcVisibilitiesAroundPoint(pt, GetVisualRange(), player, NULL);
 }
 
 /// Informiert die Figur, dass für sie eine Schiffsreise beginnt
-void noFigure::StartShipJourney(const Point<MapCoord> goal)
+void noFigure::StartShipJourney(const MapPoint goal)
 {
     // remove us from where we are, so nobody will ever draw us :)
-    gwg->RemoveFigure(this, this->x, this->y);
+    gwg->RemoveFigure(this, this->pos);
 
-    x = goal.x;
-    y = goal.y;
+    pos = goal;
     on_ship = true;
 }
 
@@ -1496,11 +1485,11 @@ void noFigure::ShipJourneyEnded()
 }
 
 /// Examines the route (maybe harbor, road destroyed?) before start shipping
-Point<MapCoord> noFigure::ExamineRouteBeforeShipping()
+MapPoint noFigure::ExamineRouteBeforeShipping()
 {
-    Point<MapCoord> next_harbor;
+    MapPoint next_harbor;
     // Calc new route
-    dir = gwg->FindHumanPathOnRoads(gwg->GetSpecObj<noRoadNode>(x, y), goal, NULL, &next_harbor);
+    dir = gwg->FindHumanPathOnRoads(gwg->GetSpecObj<noRoadNode>(pos), goal, NULL, &next_harbor);
 
 
     if(dir == 0xff)
@@ -1511,7 +1500,7 @@ Point<MapCoord> noFigure::ExamineRouteBeforeShipping()
         // All ok, return next harbor (could be another one!)
         return next_harbor;
     else
-        return Point<MapCoord>(0, 0);
+        return MapPoint(0, 0);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

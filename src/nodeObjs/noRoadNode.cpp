@@ -37,13 +37,13 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 
-noRoadNode::noRoadNode(const NodalObjectType nop, const unsigned short x, const unsigned short y, const unsigned char player)
-    : noCoordBase(nop, x, y),
+noRoadNode::noRoadNode(const NodalObjectType nop, const MapPoint pos, const unsigned char player)
+    : noCoordBase(nop, pos),
       player(player)
 {
     for(unsigned i = 0; i < 6; ++i)
         routes[i] = 0;
-    coord_id = gwg->MakeCoordID(x, y);
+    coord_id = gwg->MakeCoordID(pos);
     last_visit = 0;
 }
 
@@ -92,7 +92,7 @@ noRoadNode::noRoadNode(SerializedGameData* sgd, const unsigned obj_id) : noCoord
         routes[i] = sgd->PopObject<RoadSegment>(GOT_ROADSEGMENT);
     }
 
-    coord_id = gwg->MakeCoordID(x, y);
+    coord_id = gwg->MakeCoordID(pos);
     last_visit = 0;
 }
 
@@ -106,14 +106,12 @@ void noRoadNode::DestroyRoad(const unsigned char dir)
 {
     if(routes[dir])
     {
-        int tx = routes[dir]->GetF1()->GetX(), ty = routes[dir]->GetF1()->GetY();
+        MapPoint t = routes[dir]->GetF1()->GetPos();
         for(unsigned z = 0; z < routes[dir]->GetLength(); ++z)
         {
-            gwg->SetPointRoad(tx, ty, routes[dir]->GetRoute(z), 0);
-            int ttx = tx, tty = ty;
-            tx = gwg->GetXA(ttx, tty, routes[dir]->GetRoute(z));
-            ty = gwg->GetYA(ttx, tty, routes[dir]->GetRoute(z));
-            gwg->CalcRoad(ttx, tty, player);
+            gwg->SetPointRoad(t, routes[dir]->GetRoute(z), 0);
+            gwg->CalcRoad(t, player);
+            t = gwg->GetNeighbour(t, routes[dir]->GetRoute(z));
         }
 
         noRoadNode* oflag;

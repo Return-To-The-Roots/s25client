@@ -66,7 +66,7 @@ class nobHarborBuilding : public nobBaseWarehouse
         struct FigureForShip
         {
             noFigure* fig;
-            Point<MapCoord> dest;
+            MapPoint dest;
         };
         std::list<FigureForShip> figures_for_ships;
 
@@ -74,7 +74,7 @@ class nobHarborBuilding : public nobBaseWarehouse
         struct SoldierForShip
         {
             nofAttacker* attacker;
-            Point<MapCoord> dest;
+            MapPoint dest;
         };
         std::list<SoldierForShip> soldiers_for_ships;
 
@@ -107,7 +107,7 @@ class nobHarborBuilding : public nobBaseWarehouse
 
         friend class SerializedGameData;
         friend class BuildingFactory;
-        nobHarborBuilding(const unsigned short x, const unsigned short y, const unsigned char player, const Nation nation);
+        nobHarborBuilding(const MapPoint pt, const unsigned char player, const Nation nation);
         nobHarborBuilding(SerializedGameData* sgd, const unsigned obj_id);
 public:
 
@@ -165,7 +165,7 @@ public:
         void GetShipConnections(std::vector<ShipConnection>& connections) const;
 
         /// Fügt einen Mensch hinzu, der mit dem Schiff irgendwo hin fahren will
-        void AddFigureForShip(noFigure* fig, Point<MapCoord> dest);
+        void AddFigureForShip(noFigure* fig, MapPoint dest);
         /// Fügt eine Ware hinzu, die mit dem Schiff verschickt werden soll
         void AddWareForShip(Ware* ware);
 

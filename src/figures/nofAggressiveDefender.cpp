@@ -44,9 +44,9 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-nofAggressiveDefender::nofAggressiveDefender(const unsigned short x, const unsigned short y, const unsigned char player,
+nofAggressiveDefender::nofAggressiveDefender(const MapPoint pos, const unsigned char player,
         nobBaseMilitary* const home, const unsigned char rank, nofAttacker* const attacker)
-    : nofActiveSoldier(x, y, player, home, rank, STATE_AGGRESSIVEDEFENDING_WALKINGTOAGGRESSOR), attacker(attacker),
+    : nofActiveSoldier(pos, player, home, rank, STATE_AGGRESSIVEDEFENDING_WALKINGTOAGGRESSOR), attacker(attacker),
       attacked_goal(attacker->GetAttackedGoal())
 {
     // Angegriffenem Gebäude Bescheid sagen
@@ -278,8 +278,7 @@ void nofAggressiveDefender::MissAggressiveDefendingWalk()
         return;
 
     // Calc next walking direction
-    dir = gwg->FindHumanPath(x, y, attacker->GetX(),
-                             attacker->GetY(), 100, true);
+    dir = gwg->FindHumanPath(pos, attacker->GetPos(), 100, true);
 
     if(dir == 0xFF)
     {

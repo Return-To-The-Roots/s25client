@@ -79,7 +79,7 @@ class VideoSDL : public VideoDriver
         KeyEvent GetModKeyState(void) const;
 
         /// Gibt Pointer auf ein Fenster zurück (device-dependent!), HWND unter Windows
-        void* GetWindowPointer() const;
+        void* GetMapPointer() const;
 
     private:
         SDL_Surface* screen; ///< Das Fenster-SDL-Surface.

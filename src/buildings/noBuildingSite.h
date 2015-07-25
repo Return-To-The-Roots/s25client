@@ -63,9 +63,9 @@ class noBuildingSite : public noBaseBuilding
         unsigned char getBoards() const { return boards; }
         unsigned char getStones() const { return stones; }
 
-        noBuildingSite(const BuildingType type, const unsigned short x, const unsigned short y, const unsigned char player);
+        noBuildingSite(const BuildingType type, const MapPoint pt, const unsigned char player);
         /// Konstruktor für Hafenbaustellen vom Schiff aus
-        noBuildingSite(const unsigned short x, const unsigned short y, const unsigned char player);
+        noBuildingSite(const MapPoint pt, const unsigned char player);
         noBuildingSite(SerializedGameData* sgd, const unsigned obj_id);
 
         ~noBuildingSite();

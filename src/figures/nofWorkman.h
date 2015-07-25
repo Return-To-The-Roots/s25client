@@ -46,7 +46,7 @@ class nofWorkman : public nofBuildingWorker
 
     public:
 
-        nofWorkman(const Job job, const unsigned short x, const unsigned short y, const unsigned char player, nobUsual* workplace);
+        nofWorkman(const Job job, const MapPoint pt, const unsigned char player, nobUsual* workplace);
         nofWorkman(SerializedGameData* sgd, const unsigned obj_id);
 
         /// Serialisierungsfunktionen

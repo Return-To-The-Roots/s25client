@@ -150,7 +150,7 @@ void iwMilitaryBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
                 // visuell anzeigen
                 building->StopGoldVirtual();
                 // NC senden
-                GAMECLIENT.AddGC(new gc::StopGold(building->GetX(), building->GetY()));
+                GAMECLIENT.AddGC(new gc::StopGold(building->GetPos()));
                 // anderes Bild auf dem Button
                 if(building->IsGoldDisabledVirtual())
                     GetCtrl<ctrlImageButton>(6)->SetImage(LOADER.GetImageN("io", 226));
@@ -160,7 +160,7 @@ void iwMilitaryBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
         } break;
         case 7: // "Gehe Zu Ort"
         {
-            gwv->MoveToMapObject(building->GetX(), building->GetY());
+            gwv->MoveToMapObject(building->GetPos());
         } break;
 		case 9: //go to next of same type
 		{
@@ -177,7 +177,7 @@ void iwMilitaryBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
 						it++;
 						if(it == GAMECLIENT.GetPlayer(building->GetPlayer())->GetMilitaryBuildings().end()) //was last entry in list -> goto first												{
 							it=GAMECLIENT.GetPlayer(building->GetPlayer())->GetMilitaryBuildings().begin();
-						gwv->MoveToMapObject((*it)->GetX(),(*it)->GetY());
+						gwv->MoveToMapObject((*it)->GetPos());
 						iwMilitaryBuilding* nextscrn=new iwMilitaryBuilding(gwv, gi, (*it));
 						nextscrn->Move(x,y);
 						WINDOWMANAGER.Show(nextscrn);
@@ -188,7 +188,7 @@ void iwMilitaryBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
 		} break;
 		case 10: //send home button (addon)
 		{
-			GAMECLIENT.AddGC(new gc::SendSoldiersHome(building->GetX(),building->GetY()));
+			GAMECLIENT.AddGC(new gc::SendSoldiersHome(building->GetPos()));
 		}
 		break;
     }

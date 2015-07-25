@@ -34,7 +34,7 @@ class iwObservate : public IngameWindow
 {
         GameWorldView* view;
 
-        const unsigned short selected_x, selected_y;
+        const MapPoint selectedPt;
         short last_x, last_y;
 
         // Scrolling
@@ -42,7 +42,7 @@ class iwObservate : public IngameWindow
         int sx, sy;
 
     public:
-        iwObservate(GameWorldViewer* const gwv, const unsigned short selected_x, const unsigned short selected_y);
+        iwObservate(GameWorldViewer* const gwv, const MapPoint selectedPt);
 
     private:
         bool Draw_();

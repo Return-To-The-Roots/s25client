@@ -161,7 +161,7 @@ void iwAIDebug::Msg_PaintBefore()
     {
         ss << "BuildJob:" << std::endl;
         ss << BUILDING_NAMES[bj->GetType()] << std::endl;
-        ss << bj->GetTargetX() << " / " << bj->GetTargetY() << std::endl;
+        ss << bj->GetTarget().x << " / " << bj->GetTarget().y << std::endl;
     }
     else if (ej)
     {

@@ -281,7 +281,7 @@ class Window
     protected:
 
         /// gets the extent of the window
-        Rect GetRect() const { Rect rect = { x, y, static_cast<unsigned short>(x + GetWidth()), static_cast<unsigned short>(y + GetHeight()) }; return rect; }
+        Rect GetRect() const { return Rect(x, y, GetWidth(), GetHeight()); }
         /// scales X- und Y values to fit the screen
         unsigned short ScaleX(const unsigned short val) const;
         unsigned short ScaleY(const unsigned short val) const;

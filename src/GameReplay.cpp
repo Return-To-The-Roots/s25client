@@ -314,7 +314,7 @@ void Replay::AddGameCommand(const unsigned gf, const unsigned short length, cons
 }
 
 /// Fügt Pathfinding-Result hinzu
-void Replay::AddPathfindingResult(const unsigned char data, const unsigned* const length, const Point<MapCoord> * const next_harbor)
+void Replay::AddPathfindingResult(const unsigned char data, const unsigned* const length, const MapPoint * const next_harbor)
 {
     //if(!pathfinding_results)
     //  return;
@@ -393,7 +393,7 @@ void Replay::ReadGameCommand(unsigned short* length, unsigned char** data)
     file.ReadRawData(*data, *length);
 }
 
-bool Replay::ReadPathfindingResult(unsigned char* data, unsigned* length, Point<MapCoord> * next_harbor)
+bool Replay::ReadPathfindingResult(unsigned char* data, unsigned* length, MapPoint * next_harbor)
 {
     if(!pathfinding_results)
         return false;

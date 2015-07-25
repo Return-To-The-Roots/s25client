@@ -108,7 +108,7 @@ class GameClient : public Singleton<GameClient>, public GameMessageInterface
         /// Fügt ein GameCommand für den Spieler hinzu und gibt bei Erfolg true zurück, ansonstn false (in der Pause oder wenn Spieler besiegt ist)
         bool AddGC(gc::GameCommand* gc);
 
-        void Command_SetFlag2(int x, int y, unsigned char player);
+        void Command_SetFlag2(const MapPoint pt, unsigned char player);
         void Command_Chat(const std::string& text, const ChatDestination cd );
         void Command_ToggleNation();
         void Command_ToggleTeam(Team newteam);
@@ -160,11 +160,11 @@ class GameClient : public Singleton<GameClient>, public GameMessageInterface
         void GetVisualSettings();
 
         /// Schreibt ggf. Pathfinding-Results in das Replay, falls erforderlich
-        void AddPathfindingResult(const unsigned char dir, const unsigned* const length, const Point<MapCoord>* const next_harbor);
+        void AddPathfindingResult(const unsigned char dir, const unsigned* const length, const MapPoint* const next_harbor);
         /// Gibt zurück, ob Pathfinding-Results zur Verfügung stehen
         bool ArePathfindingResultsAvailable() const;
         /// Gibt Pathfinding-Results zurück aus einem Replay
-        bool ReadPathfindingResult( unsigned char* dir, unsigned* length, Point<MapCoord>* next_harbor);
+        bool ReadPathfindingResult( unsigned char* dir, unsigned* length, MapPoint* next_harbor);
 
         void SystemChat(std::string text);
     private:

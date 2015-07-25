@@ -19,6 +19,7 @@
 #define JobFactory_h__
 
 #include "gameTypes/JobTypes.h"
+#include "gameTypes/MapTypes.h"
 
 class noFigure;
 class noRoadNode;
@@ -28,7 +29,7 @@ class JobFactory{
     JobFactory();
 public:
     // Erstellt Job anhand der job-id
-    static noFigure* CreateJob(const Job job_id, const unsigned short x, const unsigned short y, const unsigned char player, noRoadNode* const goal);
+    static noFigure* CreateJob(const Job job_id, const MapPoint pt, const unsigned char player, noRoadNode* const goal);
 };
 
 #endif // JobFactory_h__

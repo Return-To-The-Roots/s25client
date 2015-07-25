@@ -36,7 +36,7 @@ class nofMiner : public nofWorkman
 
     public:
 
-        nofMiner(const unsigned short x, const unsigned short y, const unsigned char player, nobUsual* workplace);
+        nofMiner(const MapPoint pt, const unsigned char player, nobUsual* workplace);
         nofMiner(SerializedGameData* sgd, const unsigned obj_id);
 
         GO_Type GetGOT() const { return GOT_NOF_MINER; }

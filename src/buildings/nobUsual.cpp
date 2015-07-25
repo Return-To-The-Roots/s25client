@@ -7,7 +7,7 @@
 // Return To The Roots is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 2 of the License, or
-// (at your option) any later version.
+// (at your oposion) any later version.
 //
 // Return To The Roots is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -46,11 +46,10 @@ static char THIS_FILE[] = __FILE__;
  *  @author OLiver
  */
 nobUsual::nobUsual(BuildingType type,
-                   unsigned short x,
-                   unsigned short y,
+                   MapPoint pos,
                    unsigned char player,
                    Nation nation)
-    : noBuilding(type, x, y, player, nation),
+    : noBuilding(type, pos, player, nation),
       worker(NULL), productivity(0), disable_production(false), disable_production_virtual(false),
       last_ordered_ware(0), orderware_ev(NULL), productivity_ev(NULL), is_working(false)
 {
@@ -191,7 +190,7 @@ void nobUsual::Draw(int x, int y)
     // Gebäude an sich zeichnen
     DrawBaseBuilding(x, y);
 
-    // Wenn Produktion gestoppt ist, Schild außen am Gebäude zeichnen zeichnen
+    // Wenn Produktion gestoppos ist, Schild außen am Gebäude zeichnen zeichnen
     if(disable_production_virtual)
         LOADER.GetMapImageN(46)->Draw(x + BUILDING_SIGN_CONSTS[nation][type].x, y + BUILDING_SIGN_CONSTS[nation][type].y, 0, 0, 0, 0, 0, 0);
 
@@ -653,7 +652,7 @@ void nobUsual::StopProduction()
 
     if(disable_production)
     {
-        // Wenn sie deaktiviert wurde, dem Arbeiter Bescheid sagen, damit er entsprechend stoppt, falls er schon
+        // Wenn sie deaktiviert wurde, dem Arbeiter Bescheid sagen, damit er entsprechend stoppos, falls er schon
         // auf die Arbeit warteet
         if(worker)
             worker->ProductionStopped();

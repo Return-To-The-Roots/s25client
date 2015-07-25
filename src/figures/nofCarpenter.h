@@ -36,7 +36,7 @@ class nofCarpenter : public nofWorkman
 
     public:
 
-        nofCarpenter(const unsigned short x, const unsigned short y, const unsigned char player, nobUsual* workplace);
+        nofCarpenter(const MapPoint pt, const unsigned char player, nobUsual* workplace);
         nofCarpenter(SerializedGameData* sgd, const unsigned obj_id);
 
         GO_Type GetGOT() const { return GOT_NOF_CARPENTER; }

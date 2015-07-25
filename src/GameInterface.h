@@ -31,9 +31,9 @@ class GameInterface
         /// Ein Spieler hat verloren
         virtual void GI_PlayerDefeated(const unsigned player_id) = 0;
         /// Es wurde etwas Minimap entscheidendes geändert --> Minimap updaten
-        virtual void GI_UpdateMinimap(const MapCoord x, const MapCoord y) = 0;
+        virtual void GI_UpdateMinimap(const MapPoint pt) = 0;
         /// Flagge wurde zerstört
-        virtual void GI_FlagDestroyed(const MapCoord x, const MapCoord y) = 0;
+        virtual void GI_FlagDestroyed(const MapPoint pt) = 0;
         /// Bündnisvertrag wurde abgeschlossen oder abgebrochen --> Minimap updaten
         virtual void GI_TreatyOfAllianceChanged() = 0;
 

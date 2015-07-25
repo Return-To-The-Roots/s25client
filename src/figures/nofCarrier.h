@@ -108,7 +108,7 @@ class nofCarrier : public noFigure
 
     public:
 
-        nofCarrier(const CarrierType ct, const unsigned short x, const unsigned short y, const unsigned char player, RoadSegment* workplace, noRoadNode* const goal);
+        nofCarrier(const CarrierType ct, const MapPoint pt, const unsigned char player, RoadSegment* workplace, noRoadNode* const goal);
         nofCarrier(SerializedGameData* sgd, const unsigned obj_id);
 
         ~nofCarrier();

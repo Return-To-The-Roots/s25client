@@ -33,7 +33,7 @@ class nofTradeLeader : public noFigure
         /// Successor (NULL if this is the one behind the leader)
         nofTradeDonkey* successor;
         /// The start and home warehosue
-        Point<MapCoord> start, goal;
+        MapPoint start, goal;
 
     private:
 
@@ -50,7 +50,7 @@ class nofTradeLeader : public noFigure
 
     public:
 
-        nofTradeLeader(const MapCoord x, const MapCoord y, const unsigned char player, const TradeRoute& tr, const Point<MapCoord>  start, const Point<MapCoord> goal);
+        nofTradeLeader(const MapPoint pt, const unsigned char player, const TradeRoute& tr, const MapPoint  start, const MapPoint goal);
         nofTradeLeader(SerializedGameData* sgd, const unsigned obj_id);
 
         void Serialize(SerializedGameData* sgd) const;

@@ -46,11 +46,10 @@ static char THIS_FILE[] = __FILE__;
  *
  *  @author OLiver
  */
-noSign::noSign(const unsigned short x,
-               const unsigned short y,
+noSign::noSign(const MapPoint pos,
                const unsigned char type,
                const unsigned char quantity)
-    : noDisappearingEnvObject(x, y, 8500, 500), type(type), quantity(quantity)
+    : noDisappearingEnvObject(pos, 8500, 500), type(type), quantity(quantity)
 {
 }
 

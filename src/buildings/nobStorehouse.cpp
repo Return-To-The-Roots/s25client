@@ -7,7 +7,7 @@
 // Return To The Roots is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 2 of the License, or
-// (at your option) any later version.
+// (at your oposion) any later version.
 //
 // Return To The Roots is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -38,8 +38,8 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-nobStorehouse::nobStorehouse(const unsigned short x, const unsigned short y, const unsigned char player, const Nation nation)
-    : nobBaseWarehouse(BLD_STOREHOUSE, x, y, player, nation)
+nobStorehouse::nobStorehouse(const MapPoint pos, const unsigned char player, const Nation nation)
+    : nobBaseWarehouse(BLD_STOREHOUSE, pos, player, nation)
 {
     // Alle Waren 0, außer 100 Träger
     goods.clear();
@@ -54,7 +54,7 @@ nobStorehouse::nobStorehouse(const unsigned short x, const unsigned short y, con
     // Post versenden
     if(GAMECLIENT.GetPlayerID() == this->player)
         GAMECLIENT.SendPostMessage(new ImagePostMsgWithLocation(
-                                               _("New storehouse finished"), PMC_GENERAL, x, y, BLD_STOREHOUSE, nation));
+                                               _("New storehouse finished"), PMC_GENERAL, pos, BLD_STOREHOUSE, nation));
 }
 
 

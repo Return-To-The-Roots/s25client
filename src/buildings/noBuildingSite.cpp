@@ -7,7 +7,7 @@
 // Return To The Roots is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 2 of the License, or
-// (at your option) any later version.
+// (at your oposion) any later version.
 //
 // Return To The Roots is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -50,14 +50,14 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-noBuildingSite::noBuildingSite(const BuildingType type, const unsigned short x, const unsigned short y, const unsigned char player)
-    : noBaseBuilding(NOP_BUILDINGSITE, type, x, y, player), state(STATE_BUILDING), planer(0), builder(0), boards(0), stones(0), used_boards(0), used_stones(0), build_progress(0)
+noBuildingSite::noBuildingSite(const BuildingType type, const MapPoint pos, const unsigned char player)
+    : noBaseBuilding(NOP_BUILDINGSITE, type, pos, player), state(STATE_BUILDING), planer(0), builder(0), boards(0), stones(0), used_boards(0), used_stones(0), build_progress(0)
 {
     // Überprüfen, ob die Baustelle erst noch planiert werden muss (nur bei mittleren/großen Gebäuden)
     if(GetSize() == BQ_HOUSE || GetSize() == BQ_CASTLE || GetSize() == BQ_HARBOR)
     {
         // Höhe auf dem Punkt, wo die Baustelle steht
-        int altitude = gwg->GetNode(x, y).altitude;
+        int altitude = gwg->GetNode(pos).altitude;
 
         for(unsigned i = 0; i < 6; ++i)
         {
@@ -65,7 +65,7 @@ noBuildingSite::noBuildingSite(const BuildingType type, const unsigned short x, 
             if(i != 4)
             {
                 // Gibt es da Differenzen?
-                if(altitude - gwg->GetNodeAround(x, y, i).altitude != 0)
+                if(altitude - gwg->GetNodeAround(pos, i).altitude != 0)
                     state = STATE_PLANING;
             }
         }
@@ -82,11 +82,11 @@ noBuildingSite::noBuildingSite(const BuildingType type, const unsigned short x, 
 }
 
 /// Konstruktor für Hafenbaustellen vom Schiff aus
-noBuildingSite::noBuildingSite(const unsigned short x, const unsigned short y, const unsigned char player)
-    : noBaseBuilding(NOP_BUILDINGSITE, BLD_HARBORBUILDING, x, y, player),
+noBuildingSite::noBuildingSite(const MapPoint pos, const unsigned char player)
+    : noBaseBuilding(NOP_BUILDINGSITE, BLD_HARBORBUILDING, pos, player),
       state(STATE_BUILDING),
       planer(0),
-      builder(new nofBuilder(x, y, player, this)),
+      builder(new nofBuilder(pos, player, this)),
       boards(BUILDING_COSTS[nation][BLD_HARBORBUILDING].boards),
       stones(BUILDING_COSTS[nation][BLD_HARBORBUILDING].stones),
       used_boards(0),
@@ -96,7 +96,7 @@ noBuildingSite::noBuildingSite(const unsigned short x, const unsigned short y, c
     // Baustelle in den Index eintragen, damit die Wirtschaft auch Bescheid weiß
     gwg->GetPlayer(player)->AddBuildingSite(this);
     // Bauarbeiter auch auf der Karte auftragen
-    gwg->AddFigure(builder, x, y);
+    gwg->AddFigure(builder, pos);
 
     // Baumaterialien in der Inventur verbuchen
     gwg->GetPlayer(player)->DecreaseInventoryWare(GD_BOARDS, boards);
@@ -126,11 +126,11 @@ void noBuildingSite::Destroy_noBuildingSite()
         WareNotNeeded((*it));
 
     // und Feld wird leer
-    gwg->SetNO(0, x, y);
+    gwg->SetNO(0, pos);
     // Anbauten drumrum ggf. zerstören
     DestroyBuildingExtensions();
 
-    gwg->RecalcBQAroundPointBig(x, y);
+    gwg->RecalcBQAroundPointBig(pos);
 
     // Baustelle wieder aus der Liste entfernen - dont forget about expedition harbor status
     bool expeditionharbor = IsHarborBuildingSiteFromSea();

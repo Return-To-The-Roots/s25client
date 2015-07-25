@@ -18,9 +18,14 @@
 #ifndef Rect_h__
 #define Rect_h__
 
+#include "Point.h"
+
 typedef struct Rect
 {
     unsigned short left, top, right, bottom;
+    Rect(){}
+    Rect(unsigned short left, unsigned short top, unsigned short width, unsigned short height): left(left), top(top), right(left + width), bottom(top + height){}
+    Rect(Point<unsigned short> lt, Point<unsigned short> size): left(lt.x), top(lt.y), right(left + size.x), bottom(top + size.y){}
 } Rect;
 
 #endif // Rect_h__

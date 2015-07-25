@@ -33,7 +33,7 @@ class BurnedWarehouse : public noCoordBase
 
     public:
 
-        BurnedWarehouse(const unsigned short x, const unsigned short y, const unsigned char player, const unsigned* people);
+        BurnedWarehouse(const MapPoint pt, const unsigned char player, const unsigned* people);
         BurnedWarehouse(SerializedGameData* sgd, const unsigned obj_id);
 
         ~BurnedWarehouse();

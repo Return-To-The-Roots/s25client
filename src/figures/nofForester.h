@@ -37,11 +37,11 @@ class nofForester : public nofFarmhand
         void WorkFinished();
 
         /// Returns the quality of this working point or determines if the worker can work here at all
-        PointQuality GetPointQuality(const MapCoord x, const MapCoord y);
+        PointQuality GetPointQuality(const MapPoint pt);
 
     public:
 
-        nofForester(const unsigned short x, const unsigned short y, const unsigned char player, nobUsual* workplace);
+        nofForester(const MapPoint pt, const unsigned char player, nobUsual* workplace);
         nofForester(SerializedGameData* sgd, const unsigned obj_id);
 
         GO_Type GetGOT() const { return GOT_NOF_FORESTER; }

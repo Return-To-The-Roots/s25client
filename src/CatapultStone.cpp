@@ -40,9 +40,9 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-CatapultStone::CatapultStone(const unsigned short dest_building_x, const unsigned short dest_building_y, const unsigned short dest_map_x, const unsigned short dest_map_y,
+CatapultStone::CatapultStone(const MapPoint dest_building, const MapPoint dest_map,
                              const int start_x, const int start_y, const int dest_x, const int dest_y, const unsigned fly_duration) :
-    dest_building_x(dest_building_x), dest_building_y(dest_building_y), dest_map_x(dest_map_x), dest_map_y(dest_map_y), start_x(start_x),
+    dest_building(dest_building), dest_map(dest_map), start_x(start_x),
     start_y(start_y), dest_x(dest_x), dest_y(dest_y), explode(false), event(em->AddEvent(this, fly_duration))
 {
 }
@@ -50,10 +50,8 @@ CatapultStone::CatapultStone(const unsigned short dest_building_x, const unsigne
 
 
 CatapultStone::CatapultStone(SerializedGameData* sgd, const unsigned obj_id) : GameObject(sgd, obj_id),
-    dest_building_x(sgd->PopUnsignedShort()),
-    dest_building_y(sgd->PopUnsignedShort()),
-    dest_map_x(sgd->PopUnsignedShort()),
-    dest_map_y(sgd->PopUnsignedShort()),
+    dest_building(sgd->PopUnsignedShort(), sgd->PopUnsignedShort()),
+    dest_map(sgd->PopUnsignedShort(), sgd->PopUnsignedShort()),
     start_x(sgd->PopSignedInt()),
     start_y(sgd->PopSignedInt()),
     dest_x(sgd->PopSignedInt()),
@@ -67,10 +65,10 @@ CatapultStone::CatapultStone(SerializedGameData* sgd, const unsigned obj_id) : G
 /// Serialisierungsfunktionen
 void CatapultStone::Serialize_CatapultStone(SerializedGameData* sgd) const
 {
-    sgd->PushUnsignedShort(dest_building_x);
-    sgd->PushUnsignedShort(dest_building_y);
-    sgd->PushUnsignedShort(dest_map_x);
-    sgd->PushUnsignedShort(dest_map_y);
+    sgd->PushUnsignedShort(dest_building.x);
+    sgd->PushUnsignedShort(dest_building.y);
+    sgd->PushUnsignedShort(dest_map.x);
+    sgd->PushUnsignedShort(dest_map.y);
     sgd->PushSignedInt(start_x);
     sgd->PushSignedInt(start_y);
     sgd->PushSignedInt(dest_x);
@@ -86,8 +84,8 @@ void CatapultStone::Destroy()
 void CatapultStone::Draw(const GameWorldView& gwv, const int xoffset, const int yoffset)
 {
     // Stein überhaupt zeichnen (wenn Quelle und Ziel nicht sichtbar sind, dann nicht!)
-    if(gwv.GetGameWorldViewer()->GetVisibility(dest_building_x, dest_building_y) != VIS_VISIBLE &&
-            gwv.GetGameWorldViewer()->GetVisibility(dest_map_x, dest_map_y) != VIS_VISIBLE)
+    if(gwv.GetGameWorldViewer()->GetVisibility(dest_building) != VIS_VISIBLE &&
+            gwv.GetGameWorldViewer()->GetVisibility(dest_map) != VIS_VISIBLE)
         return;
 
     int world_width = gwg->GetWidth() * TR_W;
@@ -139,18 +137,18 @@ void CatapultStone::HandleEvent(const unsigned int id)
         explode = true;
 
         // Trifft der Stein?
-        if(dest_building_x == dest_map_x && dest_building_y == dest_map_y)
+        if(dest_building == dest_map)
         {
             // Steht an der Stelle noch ein Militärgebäude zum Bombardieren?
-            if(gwg->GetNO(dest_building_x, dest_building_y)->GetGOT() == GOT_NOB_MILITARY)
-                gwg->GetSpecObj<nobMilitary>(dest_building_x, dest_building_y)->HitOfCatapultStone();
+            if(gwg->GetNO(dest_building)->GetGOT() == GOT_NOB_MILITARY)
+                gwg->GetSpecObj<nobMilitary>(dest_building)->HitOfCatapultStone();
         }
         else
         {
             // Trifft nicht
             // ggf. Leiche hinlegen, falls da nix ist
-            if(!gwg->GetSpecObj<noBase>(dest_map_x, dest_map_y))
-                gwg->SetNO(new noEnvObject(dest_map_x, dest_map_y, 502 + RANDOM.Rand(__FILE__, __LINE__, obj_id, 2)), dest_map_x, dest_map_y);
+            if(!gwg->GetSpecObj<noBase>(dest_map))
+                gwg->SetNO(new noEnvObject(dest_map, 502 + RANDOM.Rand(__FILE__, __LINE__, obj_id, 2)), dest_map);
         }
     }
 }

@@ -46,10 +46,8 @@ static char THIS_FILE[] = __FILE__;
  *
  *  @author OLiver
  */
-noDisappearingMapEnvObject::noDisappearingMapEnvObject(const unsigned short x,
-        const unsigned short y,
-        const unsigned short map_id)
-    : noDisappearingEnvObject(x, y, 4000, 1000), map_id(map_id)
+noDisappearingMapEnvObject::noDisappearingMapEnvObject(const MapPoint pos, const unsigned short map_id)
+    : noDisappearingEnvObject(pos, 4000, 1000), map_id(map_id)
 {
 }
 

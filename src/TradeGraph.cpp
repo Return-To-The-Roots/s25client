@@ -15,15 +15,15 @@ TradeGraph::TradeGraph(const unsigned char player, const GameWorldGame* const gw
 /// Creates a new complete graph
 void TradeGraph::Create()
 {
-    for(MapCoord y = 0; y < size.y; ++y)
-        for(MapCoord x = 0; x < size.x; ++x)
-            FindMainPoint(Point<MapCoord>(x, y));
+    for(MapPoint pt(0, 0); pt.y < size.y; ++pt.y)
+        for(pt.x = 0; pt.x < size.x; ++pt.x)
+            FindMainPoint(pt);
 
-    for(MapCoord y = 0; y < size.y; ++y)
-        for(MapCoord x = 0; x < size.x; ++x)
+    for(MapPoint pt(0, 0); pt.y < size.y; ++pt.y)
+        for(pt.x = 0; pt.x < size.x; ++pt.x)
         {
             for(unsigned d = 0; d < 8; ++d)
-                UpdateEdge(Point<MapCoord>(x, y), d, NULL);
+                UpdateEdge(pt, d, NULL);
         }
 }
 
@@ -68,14 +68,15 @@ void TradeGraph::Serialize(SerializedGameData* sgd) const
 /// Creates the graph at the beginning of the game using the data of the graph of another player
 void TradeGraph::CreateWithHelpOfAnotherPlayer(const TradeGraph& helper, const GameClientPlayerList& players)
 {
-    for(MapCoord y = 0; y < size.y; ++y) for(MapCoord x = 0; x < size.x; ++x)
+    for(MapPoint pt(0, 0); pt.y < size.y; ++pt.y)
+        for(pt.x = 0; pt.x < size.x; ++pt.x)
         {
-            Point<MapCoord> p(x, y);
+            MapPoint p(pt);
             // Player hqs far away from this point?
             unsigned nearest_hq = std::numeric_limits<unsigned>::max();
             for(unsigned i = 0; i < players.getCount(); ++i)
             {
-                unsigned new_distance = gwg->CalcDistance(helper.GetNode(p).main_pos, Point<MapCoord>(players[i].hqx, players[i].hqy));
+                unsigned new_distance = gwg->CalcDistance(helper.GetNode(p).main_pos, players[i].hqPos);
 
                 if(new_distance < nearest_hq)
                     nearest_hq = new_distance;
@@ -86,14 +87,15 @@ void TradeGraph::CreateWithHelpOfAnotherPlayer(const TradeGraph& helper, const G
             else
                 FindMainPoint(p);
         }
-    for(MapCoord y = 0; y < size.y; ++y) for(MapCoord x = 0; x < size.x; ++x)
+    for(MapPoint pt(0, 0); pt.y < size.y; ++pt.y)
+        for(pt.x = 0; pt.x < size.x; ++pt.x)
         {
-            Point<MapCoord> p(x, y);
+            MapPoint p(pt);
             // Player hqs far away from this point?
             unsigned nearest_hq = std::numeric_limits<unsigned>::max();
             for(unsigned i = 0; i < players.getCount(); ++i)
             {
-                unsigned new_distance = gwg->CalcDistance(helper.GetNode(p).main_pos, Point<MapCoord>(players[i].hqx, players[i].hqy));
+                unsigned new_distance = gwg->CalcDistance(helper.GetNode(p).main_pos, players[i].hqPos);
 
                 if(new_distance < nearest_hq)
                     nearest_hq = new_distance;
@@ -101,7 +103,7 @@ void TradeGraph::CreateWithHelpOfAnotherPlayer(const TradeGraph& helper, const G
 
             if(nearest_hq < TGN_SIZE * 2)
                 for(unsigned d = 0; d < 8; ++d)
-                    UpdateEdge(Point<MapCoord>(x, y), d, &helper);
+                    UpdateEdge(pt, d, &helper);
         }
 }
 
@@ -149,7 +151,7 @@ unsigned char TradeRoute::GetNextDir()
 {
     if(local_route.size() == 0) return 0xff;
 
-    if(current_pos == tg->gwg->GetPointA(goal, 1))
+    if(current_pos == tg->gwg->GetNeighbour(goal, 1))
     {
         return 0xdd;
     }
@@ -158,7 +160,7 @@ unsigned char TradeRoute::GetNextDir()
     for(unsigned i = global_pos; i < global_route.size(); ++i)
     {
         unsigned char next_dir = global_route[i];
-        Point<MapCoord> pos = TradeGraphNode::ConverToTGCoords(current_pos);
+        MapPoint pos = TradeGraphNode::ConverToTGCoords(current_pos);
         // Next direction not possible?
         if(!tg->GetNode(pos).dirs[next_dir])
             return RecalcGlobalRoute();
@@ -172,7 +174,7 @@ unsigned char TradeRoute::GetNextDir()
     }
 
     unsigned char next_dir = local_route[local_pos];
-    current_pos = tg->gwg->GetPointA(current_pos, next_dir);
+    current_pos = tg->gwg->GetNeighbour(current_pos, next_dir);
 
     // Next step
     if(++local_pos >= local_route.size())
@@ -228,7 +230,7 @@ unsigned char TradeRoute::RecalcGlobalRoute()
     local_pos = 0;
     global_pos = 0;
     // TG node where we start
-    Point<MapCoord> start_tgn  = current_pos_tg = TradeGraphNode::ConverToTGCoords(start);
+    MapPoint start_tgn  = current_pos_tg = TradeGraphNode::ConverToTGCoords(start);
     // Try to calc paths to the main point and - if this doesn't work - to the mainpoints of the surrounded nodes
     unsigned char next_dir;
     for(unsigned char i = 0; i <= 8; ++i)
@@ -249,8 +251,8 @@ unsigned char TradeRoute::RecalcGlobalRoute()
 
     // The same for the last path main_point-->destination
     // TG node where we end
-    Point<MapCoord> goal_tgn = TradeGraphNode::ConverToTGCoords(goal);
-    Point<MapCoord> goal_tgn_tmp = goal_tgn;
+    MapPoint goal_tgn = TradeGraphNode::ConverToTGCoords(goal);
+    MapPoint goal_tgn_tmp = goal_tgn;
     // Try to calc paths to the main point and - if this doesn't work - to the mainpoints of the surrounded nodes
     for(unsigned char i = 0; i <= 8; ++i)
     {
@@ -281,7 +283,7 @@ unsigned char TradeRoute::RecalcGlobalRoute()
 
 /// Returns to coordinate of the node around this node
 /// (Directions 1-8 (incl), 0 = no change)
-Point<MapCoord> TradeGraph::GetNodeAround(const Point<MapCoord> pos, const unsigned char dir) const
+MapPoint TradeGraph::GetNodeAround(const MapPoint pos, const unsigned char dir) const
 {
     Point<int> cpos = Point<int>(pos.x, pos.y);
     Point<int> new_pos(cpos);
@@ -304,7 +306,7 @@ Point<MapCoord> TradeGraph::GetNodeAround(const Point<MapCoord> pos, const unsig
     if(new_pos.y < 0) new_pos.y += size.y;
     if(new_pos.y >= size.y) new_pos.y -= size.y;
 
-    return Point<MapCoord>(new_pos.x, new_pos.y);
+    return MapPoint(new_pos.x, new_pos.y);
 }
 
 struct TGN
@@ -321,10 +323,10 @@ struct TGN
 
 
 /// Find a path on the Trade Graph
-bool TradeGraph::FindPath(const Point<MapCoord> start, const Point<MapCoord> goal, std::vector<unsigned char>& route) const
+bool TradeGraph::FindPath(const MapPoint start, const MapPoint goal, std::vector<unsigned char>& route) const
 {
     // Todo list
-    std::list< Point<MapCoord> > todo;
+    std::list< MapPoint > todo;
     todo.push_back(start);
 
     std::vector<TGN> nodes(size.x * size.y);
@@ -336,9 +338,9 @@ bool TradeGraph::FindPath(const Point<MapCoord> start, const Point<MapCoord> goa
     {
         unsigned shortest_route = 0xFFFFFFFF;
 
-        std::list<Point<MapCoord> >::iterator best_it;
+        std::list<MapPoint >::iterator best_it;
 
-        for(std::list<Point<MapCoord> >::iterator it = todo.begin(); it != todo.end(); ++it)
+        for(std::list<MapPoint >::iterator it = todo.begin(); it != todo.end(); ++it)
         {
             unsigned new_way = nodes[it->y * size.x + it->x].real_length + TGN_SIZE;
             if(new_way < shortest_route)
@@ -356,7 +358,7 @@ bool TradeGraph::FindPath(const Point<MapCoord> start, const Point<MapCoord> goa
             if(GetNode(*best_it).dirs[i] == NO_EDGE)
                 continue;
 
-            Point<MapCoord> new_pos(GetNodeAround(*best_it, i + 1));
+            MapPoint new_pos(GetNodeAround(*best_it, i + 1));
 
             if(nodes[new_pos.y * size.x + new_pos.x].visited)
                 continue;
@@ -367,7 +369,7 @@ bool TradeGraph::FindPath(const Point<MapCoord> start, const Point<MapCoord> goa
                 route.resize(nodes[best_it->y * size.x + best_it->x].route_length + 1);
                 route[route.size() - 1] = i;
 
-                Point<MapCoord> pos = *best_it;
+                MapPoint pos = *best_it;
 
                 for(int z = route.size() - 2; z >= 0; --z, pos = GetNodeAround(pos, (nodes[pos.y * size.x + pos.x].dir + 4) % 8 + 1))
                     route[z] = nodes[pos.y * size.x + pos.x].dir;
@@ -400,7 +402,7 @@ bool TradeGraph::FindPath(const Point<MapCoord> start, const Point<MapCoord> goa
 
 
 /// Finds a main point for a speciefic node
-void TradeGraph::FindMainPoint(const Point<MapCoord> tgn)
+void TradeGraph::FindMainPoint(const MapPoint tgn)
 {
     /// Calc size of this node rectangle
     MapCoord width, height;
@@ -417,30 +419,30 @@ void TradeGraph::FindMainPoint(const Point<MapCoord> tgn)
 
 
     // We consider the following points as main points
-    Point<MapCoord> ps[POTENTIAL_MAIN_POINTS] =
+    MapPoint ps[POTENTIAL_MAIN_POINTS] =
     {
-        Point<MapCoord>(tgn.x* TGN_SIZE + width / 2, tgn.y* TGN_SIZE + height / 2),
+        MapPoint(tgn.x* TGN_SIZE + width / 2, tgn.y* TGN_SIZE + height / 2),
 
-        Point<MapCoord>(tgn.x* TGN_SIZE + width / 4, tgn.y* TGN_SIZE + height / 4),
-        Point<MapCoord>(tgn.x* TGN_SIZE + width * 3 / 4, tgn.y* TGN_SIZE + height / 4),
-        Point<MapCoord>(tgn.x* TGN_SIZE + width * 3 / 4, tgn.y* TGN_SIZE + height * 3 / 4),
-        Point<MapCoord>(tgn.x* TGN_SIZE + width / 4, tgn.y* TGN_SIZE + height * 3 / 4)
+        MapPoint(tgn.x* TGN_SIZE + width / 4, tgn.y* TGN_SIZE + height / 4),
+        MapPoint(tgn.x* TGN_SIZE + width * 3 / 4, tgn.y* TGN_SIZE + height / 4),
+        MapPoint(tgn.x* TGN_SIZE + width * 3 / 4, tgn.y* TGN_SIZE + height * 3 / 4),
+        MapPoint(tgn.x* TGN_SIZE + width / 4, tgn.y* TGN_SIZE + height * 3 / 4)
     };
 
     bool good_points[POTENTIAL_MAIN_POINTS];
 
     for(unsigned i = 0; i < POTENTIAL_MAIN_POINTS; ++i)
     {
-        Point<MapCoord> p = ps[i];
-        good_points[i] = gwg->IsNodeForFigures(p.x, p.y);
+        MapPoint p = ps[i];
+        good_points[i] = gwg->IsNodeForFigures(p);
 
         // Valid point? Otherwise choose one around this one
-        if(!gwg->IsNodeForFigures(p.x, p.y))
+        if(!gwg->IsNodeForFigures(p))
         {
             for(unsigned d = 0; d < 6; ++d)
             {
-                Point<MapCoord> pt(gwg->GetPointA(p, d));
-                if(gwg->IsNodeForFigures(pt.x, pt.y))
+                MapPoint pt(gwg->GetNeighbour(p, d));
+                if(gwg->IsNodeForFigures(pt))
                 {
                     ps[i] = pt;
                     good_points[i] = true;
@@ -455,7 +457,7 @@ void TradeGraph::FindMainPoint(const Point<MapCoord> tgn)
     unsigned best_connections = 0, best_id = 0;
     for(unsigned i = 0; i < POTENTIAL_MAIN_POINTS; ++i)
     {
-        Point<MapCoord> p = ps[i];
+        MapPoint p = ps[i];
         unsigned connections = 0;
         for(unsigned j = 0; j < POTENTIAL_MAIN_POINTS; ++j)
         {
@@ -484,7 +486,7 @@ void TradeGraph::FindMainPoint(const Point<MapCoord> tgn)
 
 
 /// Updates one speciefic edge
-void TradeGraph::UpdateEdge(Point<MapCoord> pos, const unsigned char dir, const TradeGraph* const tg)
+void TradeGraph::UpdateEdge(MapPoint pos, const unsigned char dir, const TradeGraph* const tg)
 {
     if(tg)
         if(tg->GetNode(pos).dont_run_over_player_territory[dir])
@@ -493,7 +495,7 @@ void TradeGraph::UpdateEdge(Point<MapCoord> pos, const unsigned char dir, const 
             GetNode(pos).dirs[dir] = tg->GetNode(pos).dirs[dir];
             return;
         }
-    Point<MapCoord> other = GetNodeAround(pos, dir + 1);
+    MapPoint other = GetNodeAround(pos, dir + 1);
     unsigned char other_dir = (dir + 4) % 8;
     if(GetNode(other).dont_run_over_player_territory[other_dir])
     {
@@ -505,7 +507,7 @@ void TradeGraph::UpdateEdge(Point<MapCoord> pos, const unsigned char dir, const 
 
     unsigned length;
     std::vector<unsigned char> route;
-    Point<MapCoord> mpos(GetNode(pos).main_pos);
+    MapPoint mpos(GetNode(pos).main_pos);
     // Simply try to find a path from one main point to another
     if(gwg->FindTradePath(mpos, GetNode(other).main_pos,
                           player, TG_PF_LENGTH, false, &route, &length) == 0xff)
@@ -515,8 +517,8 @@ void TradeGraph::UpdateEdge(Point<MapCoord> pos, const unsigned char dir, const 
     bool player = false;
     for(unsigned i = 0; i < route.size(); ++i)
     {
-        mpos = gwg->GetPointA(mpos, route[i]);
-        if(gwg->GetNode(mpos.x, mpos.y).owner != 0)
+        mpos = gwg->GetNeighbour(mpos, route[i]);
+        if(gwg->GetNode(mpos).owner != 0)
             player = true;
     }
 
@@ -526,7 +528,7 @@ void TradeGraph::UpdateEdge(Point<MapCoord> pos, const unsigned char dir, const 
 }
 
 /// Assigns new start and goal positions and hence, a new route
-void TradeRoute::AssignNewGoal(const Point<MapCoord> new_goal, const Point<MapCoord> current)
+void TradeRoute::AssignNewGoal(const MapPoint new_goal, const MapPoint current)
 {
     this->start = current;
     this->goal = new_goal;

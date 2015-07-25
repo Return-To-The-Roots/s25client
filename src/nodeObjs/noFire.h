@@ -40,7 +40,7 @@ class noFire : public noCoordBase
 
     public:
 
-        noFire(const unsigned short x, const unsigned short y, const unsigned char size);
+        noFire(const MapPoint pt, const unsigned char size);
         noFire(SerializedGameData* sgd, const unsigned obj_id);
 
         ~noFire();

@@ -6,8 +6,8 @@
 #include "buildings/nobBaseWarehouse.h"
 #include "SerializedGameData.h"
 
-nofTradeLeader::nofTradeLeader(const MapCoord x, const MapCoord y, const unsigned char player, const TradeRoute& tr, const Point<MapCoord>  start, const Point<MapCoord> goal)
-    : noFigure(JOB_HELPER, x, y, player), tr(tr), successor(NULL), start(start), goal(goal), fails(0)
+nofTradeLeader::nofTradeLeader(const MapPoint pos, const unsigned char player, const TradeRoute& tr, const MapPoint  start, const MapPoint goal)
+    : noFigure(JOB_HELPER, pos, player), tr(tr), successor(NULL), start(start), goal(goal), fails(0)
 {
 }
 
@@ -49,7 +49,7 @@ void nofTradeLeader::Walked()
     }
     bool invalid_goal = false;
 
-    noBase* nob = gwg->GetNO(goal.x, goal.y);
+    noBase* nob = gwg->GetNO(goal);
     if(nob->GetType() != NOP_BUILDING)
         invalid_goal = true;
     if(!static_cast<noBuilding*>(nob)->IsWarehouse())
@@ -71,7 +71,7 @@ void nofTradeLeader::Walked()
         {
             gwg->GetPlayer(static_cast<nobBaseWarehouse*>(nob)->GetPlayer())
             ->IncreaseInventoryJob(this->GetJobType(), 1);
-            gwg->RemoveFigure(this, x, y);
+            gwg->RemoveFigure(this, pos);
             static_cast<nobBaseWarehouse*>(nob)->AddFigure(this);
         }
         else if(next_dir != NO_PATH)
@@ -124,7 +124,7 @@ void nofTradeLeader::TryToGoHome()
     //CancelTradeCaravane();
 
     // Find a way back home
-    tr.AssignNewGoal(gwg->GetPointA(start, 4), this->GetPos());
+    tr.AssignNewGoal(gwg->GetNeighbour(start, 4), this->GetPos());
     if(!tr.IsValid())
         CancelTradeCaravane();
 

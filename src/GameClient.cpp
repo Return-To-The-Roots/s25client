@@ -376,7 +376,7 @@ void GameClient::StartGame(const unsigned int random_init)
         {
             for (unsigned short x = 0; x < width; ++x)
             {
-                gw->VisibilityChanged(x, y);
+                gw->VisibilityChanged(MapPoint(x, y));
             }
         }
         // Visuelle Einstellungen ableiten
@@ -1885,13 +1885,11 @@ void GameClient::SkipGF(unsigned int gf)
             char nwf_string[256];
 
             road.mode = RM_DISABLED;
-            road.point_x = 0;
-            road.point_y = 0;
-            road.start_x = 0;
-            road.start_y = 0;
+            road.point = MapPoint(0, 0);
+            road.start = MapPoint(0, 0);
 
             // spiel aktualisieren
-            gw->Draw(GetPlayerID(), &water_percent, false, 0, 0, road);
+            gw->Draw(GetPlayerID(), &water_percent, false, MapPoint(0, 0), road);
 
             // text oben noch hinschreiben
             snprintf(nwf_string, 255, _("current GF: %u - still fast forwarding: %d GFs left (%d %%)"), GetGFNumber(), gf - i, (i * 100 / gf) );			
@@ -2163,7 +2161,7 @@ void GameClient::SendAIEvent(AIEvent::Base* ev, unsigned receiver)
 }
 
 /// Schreibt ggf. Pathfinding-Results in das Replay, falls erforderlich
-void GameClient::AddPathfindingResult(const unsigned char dir, const unsigned* const length, const Point<MapCoord>* const next_harbor)
+void GameClient::AddPathfindingResult(const unsigned char dir, const unsigned* const length, const MapPoint* const next_harbor)
 {
     // Sind wir im normalem Spiel?
     if(!replay_mode || (replay_mode && !replayinfo.replay.pathfinding_results))
@@ -2192,7 +2190,7 @@ bool GameClient::ArePathfindingResultsAvailable() const
 }
 
 /// Gibt Pathfinding-Results zurück aus einem Replay
-bool GameClient::ReadPathfindingResult(unsigned char* dir, unsigned* length, Point<MapCoord>* next_harbor)
+bool GameClient::ReadPathfindingResult(unsigned char* dir, unsigned* length, MapPoint* next_harbor)
 {
     return replayinfo.replay.ReadPathfindingResult(dir, length, next_harbor);
 }
