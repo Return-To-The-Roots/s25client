@@ -34,13 +34,11 @@ class nofGeologist : public nofFlagWorker
         /// Schilder, die er noch aufstellen sollte (max 15 abarbeiten)
         unsigned short signs;
 
-        typedef MapPoint MapPoint;
-
         std::vector<MapPoint> available_nodes;
         /// Punkt, zu dem er gerade geht
         MapPoint node_goal;
 
-        /// maximaler Radius wie weit die Geologen sich von der Flagge entfernen würde
+        /// maximaler Radius wie weit die Geologen sich von der Flagge entfernen wï¿½rde
         static const unsigned short MAX_RADIUS = 10;
 
         std::vector<bool> resAlreadyFound;
@@ -53,12 +51,12 @@ class nofGeologist : public nofFlagWorker
 
         /// Kann man an diesem Punkt ein Schild aufstellen?
         bool IsNodeGood(const MapPoint pt);
-        /// Sucht im Umkreis von der Flagge neue Punkte wo man graben könnte
+        /// Sucht im Umkreis von der Flagge neue Punkte wo man graben kï¿½nnte
         void LookForNewNodes();
         /// Nimmt den Punkt mit in die Liste auf, wenn er geeignet ist
         void TestNode(const MapPoint pt);
-        /// Bestimmt einen neuen Punkt,wo man hingehen kann, falls es keinen mehr gibt, wird ein ungültiger
-        /// Iterator gesetzt, liefert die Richtung in die man zum Punkt gehen muss, zurück
+        /// Bestimmt einen neuen Punkt,wo man hingehen kann, falls es keinen mehr gibt, wird ein ungï¿½ltiger
+        /// Iterator gesetzt, liefert die Richtung in die man zum Punkt gehen muss, zurï¿½ck
         unsigned char GetNextNode();
         /// Sucht sich einen neuen Punkt und geht dorthin oder geht wieder nach Hause wenn alle Schilder aufgestellt wurden
         /// oder es keinen Punkt mehr gibt

@@ -59,13 +59,13 @@
 #    define HINSTANCE void*
 
 #    define closesocket close
-#    define LoadLibrary(x) dlopen(x, RTLD_LAZY)
+#    define LoadLibrary(lib) dlopen(lib, RTLD_LAZY)
 #    define LoadLibraryW LoadLibrary
 #    define LoadLibraryA LoadLibrary
-#    define GetProcAddress(pt) dlsym(pt)
+#    define GetProcAddress(lib, name) dlsym(lib, name)
 #    define GetProcAddressW GetProcAddress
 #    define GetProcAddressA GetProcAddress
-#    define FreeLibrary(x) dlclose(x)
+#    define FreeLibrary(lib) dlclose(lib)
 
 #    include <assert.h>
 #endif // !_WIN32

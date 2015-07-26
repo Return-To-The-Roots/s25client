@@ -32,6 +32,10 @@
 #include "Log.h"
 #include "error.h"
 
+#ifndef _WIN32
+#	include <dlfcn.h>
+#endif // _WIN32
+
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER

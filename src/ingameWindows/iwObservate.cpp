@@ -73,8 +73,8 @@ void iwObservate::Msg_ButtonClick(const unsigned int ctrl_id)
             break;
         case 3:
             view->GetGameWorldViewer()->MoveToMapObject(MapPoint(
-                view->GetLastX() - (view->GetLastX() - view->GetFirstX()) / 2,
-                view->GetLastY() - (view->GetLastY() - view->GetFirstY()) / 2)
+                view->GetLastPt().x - (view->GetLastPt().x - view->GetLastPt().x) / 2,
+                view->GetLastPt().x - (view->GetLastPt().x - view->GetLastPt().x) / 2)
                 );
             break;
         case 4:
@@ -122,8 +122,7 @@ bool iwObservate::Draw_()
 {
     if ((x != last_x) || (y != last_y))
     {
-        view->SetX(GetX() + 10);
-        view->SetY(GetY() + 15);
+        view->SetPos(MapPoint(GetX() + 10, GetY() + 15));
         last_x = x;
         last_y = y;
     }

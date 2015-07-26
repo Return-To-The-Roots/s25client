@@ -106,11 +106,11 @@ void GameWorld::Scan(glArchivItem_Map* map)
     harbor_pos.push_back(dummy);
 
     // Andere Sachen setzen
-    for(unsigned short y = 0; y < height; ++y)
+    for(MapCoord y = 0; y < height; ++y)
     {
-        for(unsigned short x = 0; x < width; ++x)
+        for(MapCoord x = 0; x < width; ++x)
         {
-            MapNode& node = nodes[y * width + x];
+            MapNode& node = nodes[GetIdx(MapPoint(x, y))];
 
             node.roads[2] = node.roads[1] = node.roads[0] = 0;
             node.roads_real[2] = node.roads_real[1] = node.roads_real[0] = false;
@@ -197,12 +197,12 @@ void GameWorld::Scan(glArchivItem_Map* map)
     std::vector< MapPoint > headquarter_positions;
 
     // Objekte auslesen
-    for(unsigned y = 0; y < height; ++y)
+    for(MapCoord y = 0; y < height; ++y)
     {
-        for(unsigned x = 0; x < width; ++x)
+        for(MapCoord x = 0; x < width; ++x)
         {
-            unsigned int pos = y * width + x;
             MapPoint pt(x, y);
+            unsigned int pos = GetIdx(pt);
             unsigned char lc = map->GetMapDataAt(MAP_LANDSCAPE, x, y);
 
             switch(map->GetMapDataAt(MAP_TYPE, x, y))
@@ -421,11 +421,12 @@ void GameWorld::Scan(glArchivItem_Map* map)
     }
 
     // Tiere auslesen
-    for(unsigned y = 0; y < height; ++y)
+    for(MapCoord y = 0; y < height; ++y)
     {
-        for(unsigned x = 0; x < width; ++x)
+        for(MapCoord x = 0; x < width; ++x)
         {
             MapPoint pt(x, y);
+            unsigned pos = GetIdx(pt);
             // Tiere setzen
             Species species;
             switch(map->GetMapDataAt(MAP_ANIMALS, x, y))
@@ -449,7 +450,7 @@ void GameWorld::Scan(glArchivItem_Map* map)
             }
 
             /// 4 Fische setzen
-            if(map->GetMapDataAt(MAP_RESOURCES, y * width + x) > 0x80 && map->GetMapDataAt(MAP_RESOURCES, y * width + x)  < 0x90)
+            if(map->GetMapDataAt(MAP_RESOURCES, pos) > 0x80 && map->GetMapDataAt(MAP_RESOURCES, pos)  < 0x90)
                 GetNode(pt).resources = 0x84;
         }
     }
@@ -779,7 +780,7 @@ unsigned GameWorld::MeasureSea(const MapPoint pt, const unsigned short sea_id)
         MapPoint p = todo.front();
         todo.pop();
 
-        if(visited[p.y * width + p.x])
+        if(visited[GetIdx(p)])
             continue;
 
         GetNode(p).sea_id = sea_id;
@@ -792,13 +793,13 @@ unsigned GameWorld::MeasureSea(const MapPoint pt, const unsigned short sea_id)
             if(!IsSeaPoint(p))
                 continue;
 
-            if(!visited[pa.y * width + pa.x])
+            if(!visited[GetIdx(pa)])
             {
                 todo.push(pa);
             }
         }
 
-        visited[p.y * width + p.x] = true;
+        visited[GetIdx(p)] = true;
         ++count;
     }
 

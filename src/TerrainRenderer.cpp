@@ -27,6 +27,8 @@
 #include "GameWorld.h"
 #include "Settings.h"
 #include "GameClient.h"
+#include <cstdlib>
+#include <cmath>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -37,6 +39,7 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 TerrainRenderer::TerrainRenderer() :
+	width(0), height(0),
     vertices(NULL),
     gl_vertices(NULL), gl_texcoords(NULL), gl_colors(NULL),
     vbo_vertices(0), vbo_texcoords(0), vbo_colors(0),
@@ -147,7 +150,7 @@ void TerrainRenderer::GenerateVertices(const GameWorldViewer* gwv)
         }
     }
 
-    // Ränder generieren
+    // Rï¿½nder generieren
     for(MapCoord y = 0; y < height; ++y)
     {
         for(MapCoord x = 0; x < width; ++x)
@@ -191,7 +194,7 @@ void TerrainRenderer::UpdateVertexTerrain(const MapPoint pt, const GameWorldView
 /// erzeugt Rand-Vertex
 void TerrainRenderer::UpdateBorderVertex(const MapPoint pt, const GameWorldViewer* gwv)
 {
-    /// @todo GetTerrainX und Co durch GetTerrainXA ausdrücken
+    /// @todo GetTerrainX und Co durch GetTerrainXA ausdrï¿½cken
     GetVertex(pt).border[0].pos.x = ( GetTerrainXAround(pt.x, pt.y, 5) + GetTerrainX(pt) + GetTerrainXAround(pt.x, pt.y, 4) ) / 3.0f;
     GetVertex(pt).border[0].pos.y = ( GetTerrainYAround(pt.x, pt.y, 5) + GetTerrainY(pt) + GetTerrainYAround(pt.x, pt.y, 4) ) / 3.0f;
     GetVertex(pt).border[0].color = ( GetColor(gwv->GetNeighbour(pt, 5)) + GetColor(pt) + GetColor(gwv->GetNeighbour(pt, 4)) ) / 3.0f;
@@ -218,7 +221,7 @@ void TerrainRenderer::GenerateOpenGL(const GameWorldViewer* gwv)
 
     unsigned int offset = width * height * 2;
 
-    // Ränder zählen
+    // Rï¿½nder zï¿½hlen
     borders = new Borders[width * height];
     for(MapCoord y = 0; y < height; ++y)
     {
@@ -227,7 +230,7 @@ void TerrainRenderer::GenerateOpenGL(const GameWorldViewer* gwv)
             MapPoint pt(x, y);
             unsigned char t1 = gwv->GetNode(pt).t1;
             unsigned char t2 = gwv->GetNode(pt).t2;
-            unsigned int pos = y * width + x;
+            unsigned int pos = GetTRIdx(pt);
 
             if( (borders[pos].left_right[0] = BORDER_TABLES[lt][t1][t2][1]) )
             {
@@ -283,7 +286,7 @@ void TerrainRenderer::GenerateOpenGL(const GameWorldViewer* gwv)
         }
     }
 
-    // Ränder erzeugen
+    // Rï¿½nder erzeugen
     for(MapCoord y = 0; y < height; ++y)
     {
         for(MapCoord x = 0; x < width; ++x)
@@ -324,7 +327,7 @@ void TerrainRenderer::GenerateOpenGL(const GameWorldViewer* gwv)
     }
 }
 
-/// Erzeugt fertiges Dreieick für OpenGL
+/// Erzeugt fertiges Dreieick fï¿½r OpenGL
 
 void TerrainRenderer::UpdateTrianglePos(const MapPoint pt, const GameWorldViewer* gwv, const bool update)
 {
@@ -410,13 +413,13 @@ void TerrainRenderer::UpdateTriangleTerrain(const MapPoint pt, const GameWorldVi
     }
 }
 
-/// Erzeugt die Dreiecke für die Ränder
+/// Erzeugt die Dreiecke fï¿½r die Rï¿½nder
 void TerrainRenderer::UpdateBorderTrianglePos(const MapPoint pt, const GameWorldViewer* gwv, const bool update)
 {
     unsigned int pos = GetTRIdx(pt);
 
-    // Für VBO-Aktualisierung:
-    // Erzeugte Ränder zählen
+    // Fï¿½r VBO-Aktualisierung:
+    // Erzeugte Rï¿½nder zï¿½hlen
     unsigned count_borders = 0;
     // Erstes Offset merken
     unsigned first_offset = 0;
@@ -517,8 +520,8 @@ void TerrainRenderer::UpdateBorderTriangleColor(const MapPoint pt, const GameWor
 {
     unsigned int pos = GetTRIdx(pt);
 
-    // Für VBO-Aktualisierung:
-    // Erzeugte Ränder zählen
+    // Fï¿½r VBO-Aktualisierung:
+    // Erzeugte Rï¿½nder zï¿½hlen
     unsigned count_borders = 0;
     // Erstes Offset merken
     unsigned first_offset = 0;
@@ -595,8 +598,8 @@ void TerrainRenderer::UpdateBorderTriangleTerrain(const MapPoint pt, const GameW
 {
     unsigned int pos = GetTRIdx(pt);
 
-    // Für VBO-Aktualisierung:
-    // Erzeugte Ränder zählen
+    // Fï¿½r VBO-Aktualisierung:
+    // Erzeugte Rï¿½nder zï¿½hlen
     unsigned count_borders = 0;
     // Erstes Offset merken
     unsigned first_offset = 0;
@@ -713,12 +716,12 @@ void TerrainRenderer::Draw(GameWorldView* gwv, unsigned int* water)
     unsigned int offset = width * height * 2;
 
     // Beim zeichnen immer nur beginnen, wo man auch was sieht
-    for(int y = gwv->GetFirstY(); y < gwv->GetLastY(); ++y)
+    for(int y = gwv->GetFirstPt().y; y < gwv->GetLastPt().y; ++y)
     {
         unsigned char last = 255;
         unsigned char last_border = 255;
 
-        for(int x = gwv->GetFirstX(); x < gwv->GetLastX(); ++x)
+        for(int x = gwv->GetFirstPt().x; x < gwv->GetLastPt().x; ++x)
         {
             MapPoint tP = ConvertCoords(x, y, &xo, &yo);
 
@@ -750,22 +753,22 @@ void TerrainRenderer::Draw(GameWorldView* gwv, unsigned int* water)
 
             unsigned char tiles[6] =
             {
-                borders[tP.y* width + tP.x].left_right[0],
-                borders[tP.y* width + tP.x].left_right[1],
-                borders[tP.y* width + tP.x].right_left[0],
-                borders[tP.y* width + tP.x].right_left[1],
-                borders[tP.y* width + tP.x].top_down[0],
-                borders[tP.y* width + tP.x].top_down[1],
+                borders[GetTRIdx(tP)].left_right[0],
+                borders[GetTRIdx(tP)].left_right[1],
+                borders[GetTRIdx(tP)].right_left[0],
+                borders[GetTRIdx(tP)].right_left[1],
+                borders[GetTRIdx(tP)].top_down[0],
+                borders[GetTRIdx(tP)].top_down[1],
             };
 
             unsigned int offsets[6] =
             {
-                borders[tP.y* width + tP.x].left_right_offset[0],
-                borders[tP.y* width + tP.x].left_right_offset[1],
-                borders[tP.y* width + tP.x].right_left_offset[0],
-                borders[tP.y* width + tP.x].right_left_offset[1],
-                borders[tP.y* width + tP.x].top_down_offset[0],
-                borders[tP.y* width + tP.x].top_down_offset[1],
+                borders[GetTRIdx(tP)].left_right_offset[0],
+                borders[GetTRIdx(tP)].left_right_offset[1],
+                borders[GetTRIdx(tP)].right_left_offset[0],
+                borders[GetTRIdx(tP)].right_left_offset[1],
+                borders[GetTRIdx(tP)].top_down_offset[0],
+                borders[GetTRIdx(tP)].top_down_offset[1],
             };
 
             for(unsigned char i = 0; i < 6; ++i)
@@ -800,8 +803,8 @@ void TerrainRenderer::Draw(GameWorldView* gwv, unsigned int* water)
             water_count += it->count;
         }
 
-        if( (gwv->GetLastX() - gwv->GetFirstX()) && (gwv->GetLastY() - gwv->GetFirstY()) )
-            *water = 50 * water_count / ( (gwv->GetLastX() - gwv->GetFirstX()) * (gwv->GetLastY() - gwv->GetFirstY()) );
+        if( (gwv->GetLastPt().x - gwv->GetFirstPt().x) && (gwv->GetLastPt().y - gwv->GetFirstPt().y) )
+            *water = 50 * water_count / ( (gwv->GetLastPt().x - gwv->GetFirstPt().x) * (gwv->GetLastPt().y - gwv->GetFirstPt().y) );
         else
             *water = 0;
     }
@@ -836,7 +839,7 @@ void TerrainRenderer::Draw(GameWorldView* gwv, unsigned int* water)
     glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_EXT);
     glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, 2.0f);
 
-    // Verschieben gemäß x und y offset
+    // Verschieben gemï¿½ï¿½ x und y offset
     glTranslatef( float(-gwv->GetXOffset()), float(-gwv->GetYOffset()), 0.0f);
 
     // Alphablending aus
@@ -902,7 +905,7 @@ void TerrainRenderer::Draw(GameWorldView* gwv, unsigned int* water)
 
     DrawWays(gwv);
 
-    // Wieder zurück ins normale modulate
+    // Wieder zurï¿½ck ins normale modulate
     glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
     /*  glEndList();
@@ -929,24 +932,24 @@ MapPoint TerrainRenderer::ConvertCoords(int x, int y, int* xo, int* yo) const
 	{
 	    if (xo)
 	    	*xo = -TR_W * width;
-		ptOut.x = static_cast<unsigned short>(width + (x % width));
+		ptOut.x = static_cast<MapCoord>(width + (x % width));
 	} else
 	{
 	    if (xo)
 	    	*xo = (x / width) * (TR_W * width);
-		ptOut.x = static_cast<unsigned short>(x % width);
+		ptOut.x = static_cast<MapCoord>(x % width);
 	}
 	
 	if (y < 0)
 	{
 	    if (yo)
 	    	*yo = -TR_H * height;
-		ptOut.y = static_cast<unsigned short>(height + (y % height));
+		ptOut.y = static_cast<MapCoord>(height + (y % height));
 	} else
 	{
 	    if (yo)
 	    	*yo = (y / height) * (TR_H * height);
-		ptOut.y = static_cast<unsigned short>(y % height);
+		ptOut.y = static_cast<MapCoord>(y % height);
 	}
     return ptOut;
 }
@@ -971,7 +974,7 @@ void TerrainRenderer::PrepareWaysPoint(GameWorldView* gwv, MapPoint t, int xo, i
     float xpos = GetTerrainX(t) - gwv->GetXOffset() + xo;
     float ypos = GetTerrainY(t) - gwv->GetYOffset() + yo;
 
-    // Wegtypen für die drei Richtungen
+    // Wegtypen fï¿½r die drei Richtungen
     unsigned char type;
 
     Visibility visibility = gwv->GetGameWorldViewer()->GetVisibility(t);
@@ -985,7 +988,7 @@ void TerrainRenderer::PrepareWaysPoint(GameWorldView* gwv, MapPoint t, int xo, i
             float xpos2 = GetTerrainX(ta) - gwv->GetXOffset() + xo;
             float ypos2 = GetTerrainY(ta) - gwv->GetYOffset() + yo;
 
-            // Gehen wir über einen Kartenrand (horizontale Richung?)
+            // Gehen wir ï¿½ber einen Kartenrand (horizontale Richung?)
             if(std::abs(xpos - xpos2) >= gwv->GetGameWorldViewer()->GetWidth() * TR_W / 2)
             {
                 if(std::abs(xpos2 - int(gwv->GetGameWorldViewer()->GetWidth())*TR_W - xpos) < std::abs(xpos - xpos2))
@@ -993,7 +996,7 @@ void TerrainRenderer::PrepareWaysPoint(GameWorldView* gwv, MapPoint t, int xo, i
                 else
                     xpos2 += gwv->GetGameWorldViewer()->GetWidth() * TR_W;
             }
-            // Und dasselbe für vertikale Richtung
+            // Und dasselbe fï¿½r vertikale Richtung
             if(std::abs(ypos - ypos2) >= gwv->GetGameWorldViewer()->GetHeight() * TR_H / 2)
             {
                 if(std::abs(ypos2 - int(gwv->GetGameWorldViewer()->GetHeight())*TR_H - ypos) < std::abs(ypos - ypos2))
@@ -1013,7 +1016,7 @@ void TerrainRenderer::PrepareWaysPoint(GameWorldView* gwv, MapPoint t, int xo, i
                     unsigned t1 = gwv->GetGameWorldViewer()->GetTerrainAround(t, dir + 2);
                     unsigned t2 = gwv->GetGameWorldViewer()->GetTerrainAround(t, dir + 3);
 
-                    // Prüfen, ob Bergwerge gezeichnet werden müssen, indem man guckt, ob der Weg einen
+                    // Prï¿½fen, ob Bergwerge gezeichnet werden mï¿½ssen, indem man guckt, ob der Weg einen
                     // Berg "streift" oder auch eine Bergwiese
                     if(( (t1 >= TT_MOUNTAIN1 && t1 <= TT_MOUNTAIN4) || t1 == TT_MOUNTAINMEADOW)
                             || ( (t2 >= TT_MOUNTAIN1  && t2 <= TT_MOUNTAIN4) || t2 == TT_MOUNTAINMEADOW))
@@ -1133,7 +1136,7 @@ void TerrainRenderer::DrawWays(GameWorldView* gwv)
 
 void TerrainRenderer::AltitudeChanged(const MapPoint pt, const GameWorldViewer* gwv)
 {
-    // den selbst sowieso die Punkte darum updaten, da sich bei letzteren die Schattierung geändert haben könnte
+    // den selbst sowieso die Punkte darum updaten, da sich bei letzteren die Schattierung geï¿½ndert haben kï¿½nnte
     UpdateVertexPos(pt, gwv);
     UpdateVertexColor(pt, gwv);
 
@@ -1141,13 +1144,13 @@ void TerrainRenderer::AltitudeChanged(const MapPoint pt, const GameWorldViewer* 
         UpdateVertexColor(gwv->GetNeighbour(pt, i), gwv);
 
 
-    // und für die Ränder
+    // und fï¿½r die Rï¿½nder
     UpdateBorderVertex(pt, gwv);
 
     for(unsigned i = 0; i < 6; ++i)
         UpdateBorderVertex(gwv->GetNeighbour(pt, i), gwv);
 
-    // den selbst sowieso die Punkte darum updaten, da sich bei letzteren die Schattierung geändert haben könnte
+    // den selbst sowieso die Punkte darum updaten, da sich bei letzteren die Schattierung geï¿½ndert haben kï¿½nnte
     UpdateTrianglePos(pt, gwv, true);
     UpdateTriangleColor(pt, gwv, true);
 
@@ -1158,13 +1161,13 @@ void TerrainRenderer::AltitudeChanged(const MapPoint pt, const GameWorldViewer* 
     }
 
 
-    // Auch im zweiten Kreis drumherum die Dreiecke neu berechnen, da die durch die Schattenänderung der umliegenden
-    // Punkte auch geändert werden könnten
+    // Auch im zweiten Kreis drumherum die Dreiecke neu berechnen, da die durch die Schattenï¿½nderung der umliegenden
+    // Punkte auch geï¿½ndert werden kï¿½nnten
     for(unsigned i = 0; i < 12; ++i)
         UpdateTriangleColor(gwv->GetNeighbour2(pt, i), gwv, true);
 
 
-    // und für die Ränder
+    // und fï¿½r die Rï¿½nder
     UpdateBorderTrianglePos(pt, gwv, true);
     UpdateBorderTriangleColor(pt, gwv, true);
 
@@ -1188,17 +1191,17 @@ void TerrainRenderer::VisibilityChanged(const MapPoint pt, const GameWorldViewer
     for(unsigned i = 0; i < 6; ++i)
         UpdateVertexColor(gwv->GetNeighbour(pt, i), gwv);
 
-    // und für die Ränder
+    // und fï¿½r die Rï¿½nder
     UpdateBorderVertex(pt, gwv);
     for(unsigned i = 0; i < 6; ++i)
         UpdateBorderVertex(gwv->GetNeighbour(pt, i), gwv);
 
-    // den selbst sowieso die Punkte darum updaten, da sich bei letzteren die Schattierung geändert haben könnte
+    // den selbst sowieso die Punkte darum updaten, da sich bei letzteren die Schattierung geï¿½ndert haben kï¿½nnte
     UpdateTriangleColor(pt, gwv, true);
     for(unsigned i = 0; i < 6; ++i)
         UpdateTriangleColor(gwv->GetNeighbour(pt, i), gwv, true);
 
-    // und für die Ränder
+    // und fï¿½r die Rï¿½nder
     UpdateBorderTriangleColor(pt, gwv, true);
     for(unsigned i = 0; i < 6; ++i)
         UpdateBorderTriangleColor(gwv->GetNeighbour(pt, i), gwv, true);

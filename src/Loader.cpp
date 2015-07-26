@@ -26,6 +26,8 @@
 #ifdef _WIN32
 #   include <shlwapi.h>
 #   include "build_paths.h"
+#else
+#	include <sys/stat.h>
 #endif // _WIN32
 
 #include "Loader.h"

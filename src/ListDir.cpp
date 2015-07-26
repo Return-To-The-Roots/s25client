@@ -28,6 +28,7 @@
 #   include <windows.h>
 #else
 #   include <sys/types.h>
+#	include <sys/stat.h>
 #   include <dirent.h>
 #endif
 

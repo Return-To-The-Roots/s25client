@@ -25,6 +25,7 @@
 #include "Loader.h"
 #include "controls/controls.h"
 #include "drivers/VideoDriverWrapper.h"
+#include <cstdarg>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

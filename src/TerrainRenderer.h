@@ -55,7 +55,7 @@ struct PreparedRoad
 };
 
 
-/// Klasse, die für das grafische Anzeigen (Rendern) des Terrains zuständig ist
+/// Klasse, die fï¿½r das grafische Anzeigen (Rendern) des Terrains zustï¿½ndig ist
 class TerrainRenderer
 {
         struct Point
@@ -74,7 +74,7 @@ class TerrainRenderer
         {
             ColorPoint pos; // Position vom jeweiligen Punkt
             unsigned char terrain[2]; // Terrain der Dreiecke
-            ColorPoint border[2]; // Mittelpunkt für Ränder
+            ColorPoint border[2]; // Mittelpunkt fï¿½r Rï¿½nder
         };
 
         struct Color
@@ -104,7 +104,7 @@ class TerrainRenderer
             unsigned int top_down_offset[2];
         };
 
-        /// Breite und Höhe der Karte
+        /// Breite und Hï¿½he der Karte
         unsigned short width, height;
 
         Vertex* vertices;
@@ -126,22 +126,22 @@ class TerrainRenderer
         { return static_cast<unsigned>(pt.y) * static_cast<unsigned>(width) + static_cast<unsigned>(pt.x); }
 
         /// liefert den Vertex an der Stelle X, Y.
-        Vertex& GetVertex(const MapPoint pt) { return vertices[pt.y * width + pt.x]; }
+        Vertex& GetVertex(const MapPoint pt) { return vertices[GetTRIdx(pt)]; }
 
         /// erzeugt die Terrain-Vertices.
         void GenerateVertices(const GameWorldViewer* gwb);
-        /// erzeugt Vertex (update, wenn die Daten ggf. im Vertexbuffer ersetzt werden sollen, bei Veränderung)
+        /// erzeugt Vertex (update, wenn die Daten ggf. im Vertexbuffer ersetzt werden sollen, bei Verï¿½nderung)
         void UpdateVertexPos(const MapPoint pt, const GameWorldViewer* gwv);
         void UpdateVertexColor(const MapPoint pt, const GameWorldViewer* gwv);
         void UpdateVertexTerrain(const MapPoint pt, const GameWorldViewer* gwv);
         /// erzeugt Rand-Vertex
         void UpdateBorderVertex(const MapPoint pt, const GameWorldViewer* gwv);
 
-        /// Erzeugt fertiges Dreieick für OpenGL
+        /// Erzeugt fertiges Dreieick fï¿½r OpenGL
         void UpdateTrianglePos(const MapPoint pt, const GameWorldViewer* gwv, const bool update);
         void UpdateTriangleColor(const MapPoint pt, const GameWorldViewer* gwv, const bool update);
         void UpdateTriangleTerrain(const MapPoint pt, const GameWorldViewer* gwv, const bool update);
-        /// Erzeugt die Dreiecke für die Ränder
+        /// Erzeugt die Dreiecke fï¿½r die Rï¿½nder
         void UpdateBorderTrianglePos(const MapPoint pt, const GameWorldViewer* gwv, const bool update);
         void UpdateBorderTriangleColor(const MapPoint pt, const GameWorldViewer* gwv, const bool update);
         void UpdateBorderTriangleTerrain(const MapPoint pt, const GameWorldViewer* gwv, const bool update);
@@ -152,7 +152,7 @@ class TerrainRenderer
         float GetBX(const MapPoint pt, unsigned char triangle) { return GetVertex(pt).border[triangle].pos.x; }
         /// liefert den Y-Rand-Vertex an der Stelle X,Y
         float GetBY(const MapPoint pt, unsigned char triangle) { return GetVertex(pt).border[triangle].pos.y; }
-        /// Liefert BX,BY um einen Punkt herum, beachtet auch Kartenränder (entspricht GetTerrainX)
+        /// Liefert BX,BY um einen Punkt herum, beachtet auch Kartenrï¿½nder (entspricht GetTerrainX)
         float GetBXAround(int x, int y, const unsigned char triangle, const unsigned char dir);
         float GetBYAround(int x, int y, const unsigned char triangle, const unsigned char dir);
         /// liefert den Rand-Vertex-Farbwert an der Stelle X,Y
@@ -177,7 +177,7 @@ class TerrainRenderer
         /// zeichnet den Kartenausschnitt.
         void Draw(GameWorldView* gwv, unsigned int* water);
 
-        /// Konvertiert "falsche Koordinaten", also im Minusbereich oder zu groß wegen Zeichnen, in "richtige Koordinaten"
+        /// Konvertiert "falsche Koordinaten", also im Minusbereich oder zu groï¿½ wegen Zeichnen, in "richtige Koordinaten"
         /// mit 0 <= x_out < width und 0 <= y_out < height
         MapPoint ConvertCoords(int x, int y, int* xo = 0, int* yo = 0) const;
         /// liefert den X-Vertex an der Stelle X,Y
@@ -188,9 +188,9 @@ class TerrainRenderer
         float GetTerrainXAround(int x,  int y, const unsigned dir);
         float GetTerrainYAround(int x,  int y, const unsigned dir);
 
-        /// Höhe eines Punktes wurde (durch Planierer) verändert --> updaten
+        /// Hï¿½he eines Punktes wurde (durch Planierer) verï¿½ndert --> updaten
         void AltitudeChanged(const MapPoint pt, const GameWorldViewer* gwv);
-        /// Sichtbarkeit eines Punktes verändert
+        /// Sichtbarkeit eines Punktes verï¿½ndert
         void VisibilityChanged(const MapPoint pt, const GameWorldViewer* gwv);
 
         /// Berechnet Schattierungen der gesamten Map neu

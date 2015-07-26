@@ -69,7 +69,12 @@ const unsigned char STD_TRANSPORT[35] =
  *
  *  @author OLiver
  */
-GameClientPlayer::GameClientPlayer(const unsigned playerid) : GamePlayerInfo(playerid), build_order(31), military_settings(MILITARY_SETTINGS_COUNT), tools_settings(12, 0), hqPos(0xFFFF, 0xFFFF)
+GameClientPlayer::GameClientPlayer(const unsigned playerid):
+		GamePlayerInfo(playerid),
+		hqPos(MapPoint::Invalid()),
+		build_order(31),
+		military_settings(MILITARY_SETTINGS_COUNT),
+		tools_settings(12, 0)
 {
     for (unsigned i = 0; i < BUILDING_TYPES_COUNT; ++i)
     {

@@ -45,7 +45,7 @@ static char THIS_FILE[] = __FILE__;
  *
  *  @param[in] id   Nr der Grafik
  *  @param[in] file Nr der Datei (0xFFFF map_?_z.lst, 0-5 mis?bobs.lst)
- *  @param[in] size Größe des Objekts
+ *  @param[in] size Grï¿½ï¿½e des Objekts
  *  @param[in] type Typ des Objekts
  *
  *  @author FloSoft
@@ -58,15 +58,15 @@ noStaticObject::noStaticObject(const MapPoint pos, unsigned short id, unsigned s
     {
         for(unsigned i = 0; i < 3; ++i)
         {
-            MapPoint na = gwg->GetNeighbour(pos, i);
+            MapPoint nb = gwg->GetNeighbour(pos, i);
 
-            noBase* no = gwg->GetSpecObj<noBase>(pos);
+            noBase* no = gwg->GetSpecObj<noBase>(nb);
             if(no)
             {
                 no->Destroy();
                 delete no;
             }
-            gwg->SetNO(new noExtension(this), pos);
+            gwg->SetNO(new noExtension(this), nb);
         }
     }
 }
@@ -135,7 +135,7 @@ void noStaticObject::Draw(int x, int y)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  zerstört das Objekt.
+ *  zerstï¿½rt das Objekt.
  *
  *  @author FloSoft
  */

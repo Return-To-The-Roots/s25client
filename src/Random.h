@@ -23,6 +23,7 @@
 
 #include "Singleton.h"
 #include <list>
+#include <cstddef>
 
 #ifdef max
     #undef max
@@ -72,7 +73,7 @@ class Random : public Singleton<Random>
             }
         }
 
-        /// Gibt aktuelle Zufallszahl zurück
+        /// Gibt aktuelle Zufallszahl zurï¿½ck
         int GetCurrentRandomValue() const { return zahl; }
         void ReplaySet(const unsigned int checksum) { zahl = checksum; }
 

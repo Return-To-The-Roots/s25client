@@ -41,13 +41,6 @@ namespace gc { class GameCommand; }
 
 namespace AIJH
 {
-    struct Coords
-    {
-        MapCoord x;
-        MapCoord y;
-        Coords(const MapPoint pt) : x(x), y(y) { }
-    };
-
     enum Resource
     {
         WOOD,

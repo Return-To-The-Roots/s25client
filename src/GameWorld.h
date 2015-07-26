@@ -502,7 +502,7 @@ class GameWorldView
 {
         /// Selektierter Punkt
         MapPoint selPt;
-        int selxo, selyo;
+        Point<int> selO;
 
         /// Koordinaten auf der Map anzeigen (zum Debuggen)?
         bool show_coordinates;
@@ -512,13 +512,13 @@ class GameWorldView
         bool show_productivity; ///< Produktivität-Anzeigen ein oder aus
 
         /// Scrolling-Zeug
-        int xoffset, yoffset;
+        Point<int> offset;
         /// Letzte Scrollposition, an der man war, bevor man weggesprungen ist
-        int last_xoffset, last_yoffset;
+        Point<int> lastOffset;
         /// Erster gezeichneter Map-Punkt
-        int fx, fy;
+        Point<int> firstPt;
         /// Letzter gezeichneter Map-Punkt
-        int lx, ly;
+        Point<int> lastPt;
 
         GameWorldViewer* gwv;
 
@@ -527,13 +527,13 @@ class GameWorldView
         unsigned d_player;
         bool d_active;
 
-        unsigned short x, y;
+        MapPoint pos;
         unsigned short width, height;
 
     public:
         bool terrain_rerender;
         unsigned int terrain_list;
-        int terrain_last_xoffset, terrain_last_yoffset;
+        Point<int> terrainLastOffset;
         unsigned int terrain_last_global_animation;
         unsigned int terrain_last_water;
 
@@ -548,11 +548,8 @@ class GameWorldView
         GameWorldViewer* GetGameWorldViewer() const {return(gwv);};
 
 
-        inline void SetX(unsigned short new_x) {x = new_x;}
-        inline void SetY(unsigned short new_y) {y = new_y;}
-
-        inline unsigned short GetX() {return(x);}
-        inline unsigned short GetY() {return(y);}
+        inline void SetPos(MapPoint newPos) { pos = newPos; }
+        inline MapPoint GetPos() const {return pos;}
 
         /// Bauqualitäten anzeigen oder nicht
         inline void ShowBQ() { show_bq = !show_bq; }
@@ -577,8 +574,8 @@ class GameWorldView
         /// Springt zur letzten Position, bevor man "weggesprungen" ist
         void MoveToLastPosition();
 
-        inline void MoveToX(int x, bool absolute = false) { MoveTo( (absolute ? 0 : xoffset) + x, yoffset, true); }
-        inline void MoveToY(int y, bool absolute = false) { MoveTo( xoffset, (absolute ? 0 : yoffset) + y, true); }
+        inline void MoveToX(int x, bool absolute = false) { MoveTo( (absolute ? 0 : offset.x) + x, offset.y, true); }
+        inline void MoveToY(int y, bool absolute = false) { MoveTo( offset.x, (absolute ? 0 : offset.y) + y, true); }
 
         void CalcFxLx();
 
@@ -590,18 +587,15 @@ class GameWorldView
         inline MapCoord GetSelY() const { return selPt.y; }
         inline MapPoint GetSel() const { return selPt; }
 
-        inline int GetSelXo() const { return selxo; }
-        inline int GetSelYo() const { return selyo; }
+        inline Point<int> GetSelo() const { return selO; }
 
         /// Gibt Scrolling-Offset zurück
-        inline int GetXOffset() const { return xoffset - x; }
-        inline int GetYOffset() const { return yoffset - y; }
+        inline int GetXOffset() const { return offset.x - pos.x; }
+        inline int GetYOffset() const { return offset.y - pos.y; }
         /// Gibt ersten Punkt an, der beim Zeichnen angezeigt wird
-        inline int GetFirstX() const { return fx; }
-        inline int GetFirstY() const { return fy; }
+        inline Point<int> GetFirstPt() const { return firstPt; }
         /// Gibt letzten Punkt an, der beim Zeichnen angezeigt wird
-        inline int GetLastX() const { return lx; }
-        inline int GetLastY() const { return ly; }
+        inline Point<int> GetLastPt() const { return lastPt; }
 
         void DrawBoundaryStone(const int x, const int y, const MapPoint t, const int xpos, const int ypos, Visibility vis);
 
@@ -676,11 +670,9 @@ class GameWorldViewer : public virtual GameWorldBase
         MapPoint GetSel() const { return view.GetSel(); }
 
         /// Gibt ersten Punkt an, der beim Zeichnen angezeigt wird
-        inline int GetFirstX() const { return(view.GetFirstX()); }
-        inline int GetFirstY() const { return(view.GetFirstY()); }
+        inline Point<int> GetFirstPt() const { return(view.GetFirstPt()); }
         /// Gibt letzten Punkt an, der beim Zeichnen angezeigt wird
-        inline int GetLastX() const { return(view.GetLastX()); }
-        inline int GetLastY() const { return(view.GetLastY()); }
+        inline Point<int> GetLastPt() const { return(view.GetLastPt()); }
 
         /// Ermittelt Sichtbarkeit eines Punktes für den lokalen Spieler, berücksichtigt ggf. Teamkameraden
         Visibility GetVisibility(const MapPoint pt) const;

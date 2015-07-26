@@ -44,7 +44,24 @@
 
 #include "ogl/glSmartBitmap.h"
 
-GameWorldView::GameWorldView(GameWorldViewer* gwv, const MapPoint pt, unsigned short width, unsigned short height) : selPt(0, 0), show_coordinates(false), show_bq(false), show_names(false), show_productivity(false), xoffset(0), yoffset(0), last_xoffset(0), last_yoffset(0), gwv(gwv), d_what(0), d_player(0), d_active(false), x(x), y(y), width(width), height(height), terrain_list(0), terrain_last_xoffset(0), terrain_last_yoffset(0), terrain_last_global_animation(0), terrain_last_water(0)
+GameWorldView::GameWorldView(GameWorldViewer* gwv, const MapPoint pos, unsigned short width, unsigned short height):
+	selPt(0, 0),
+	show_coordinates(false),
+	show_bq(false),
+	show_names(false),
+	show_productivity(false),
+	offset(0, 0),
+	lastOffset(0, 0),
+	gwv(gwv),
+	d_what(0),
+	d_player(0),
+	d_active(false),
+	pos(pos),
+	width(width), height(height),
+	terrain_list(0),
+	terrainLastOffset(0, 0),
+	terrain_last_global_animation(0),
+	terrain_last_water(0)
 {
     CalcFxLx();
 }
@@ -68,35 +85,34 @@ void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool
 
     int shortest_len = 100000;
 
-    glScissor(x, VIDEODRIVER.GetScreenHeight() - y - height, width, height);
+    glScissor(pos.x, VIDEODRIVER.GetScreenHeight() - pos.y - height, width, height);
 
     gwv->GetTerrainRenderer()->Draw(this, water);
 
-    glTranslatef((GLfloat) this->x, (GLfloat) this->y, 0.0f);
+    glTranslatef((GLfloat) pos.x, (GLfloat) pos.y, 0.0f);
 
     // Draw-Counter der Bäume zurücksetzen vor jedem Zeichnen
     noTree::ResetDrawCounter();
 
-    for(int y = fy; y < ly; ++y)
+    for(int y = firstPt.y; y < lastPt.y; ++y)
     {
         // Figuren speichern, die in dieser Zeile gemalt werden müssen
         // und sich zwischen zwei Zeilen befinden, da sie dazwischen laufen
         std::vector<ObjectBetweenLines> between_lines;
 
-        for(int x = fx; x < lx; ++x)
+        for(int x = firstPt.x; x < lastPt.x; ++x)
         {
             int xo, yo;
             MapPoint t = gwv->GetTerrainRenderer()->ConvertCoords(x, y, &xo, &yo);
 
 
-            int xpos = int(gwv->GetTerrainRenderer()->GetTerrainX(t)) - xoffset + xo;
-            int ypos = int(gwv->GetTerrainRenderer()->GetTerrainY(t)) - yoffset + yo;
+            int xpos = int(gwv->GetTerrainRenderer()->GetTerrainX(t)) - offset.x + xo;
+            int ypos = int(gwv->GetTerrainRenderer()->GetTerrainY(t)) - offset.y + yo;
 
             if(std::abs(VIDEODRIVER.GetMouseX() - static_cast<int>(xpos)) + std::abs(VIDEODRIVER.GetMouseY() - static_cast<int>(ypos)) < shortest_len)
             {
                 selPt = t;
-                selxo = xo;
-                selyo = yo;
+                selO = Point<int>(xo, yo);
                 shortest_len = std::abs(VIDEODRIVER.GetMouseX() - static_cast<int>(xpos)) + std::abs(VIDEODRIVER.GetMouseY() - static_cast<int>(ypos));
             }
 
@@ -184,7 +200,7 @@ void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool
             {
                 char high[32];
                 //*sprintf(high,"%d",unsigned(GetNode(tx,ty).altitude));*/
-                sprintf(high, "%d;%d", t);
+                sprintf(high, "%d;%d", t.x, t.y);
                 //*sprintf(high,"%X",unsigned(GetNode(tx,ty))).resources;*/
                 //sprintf(high,"%u",GetNode(tx,ty)).reserved;
                 NormalFont->Draw(static_cast<int>(xpos), static_cast<int>(ypos), high, 0, 0xFFFFFF00);
@@ -238,16 +254,16 @@ void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool
     // Names & Productivity overlay
     if(show_names || show_productivity)
     {
-        for(int x = fx; x < lx; ++x)
+        for(int x = firstPt.x; x < lastPt.x; ++x)
         {
-            for(int y = fy; y < ly; ++y)
+            for(int y = firstPt.y; y < lastPt.y; ++y)
             {
                 // Coordinate transform
                 int xo, yo;
                 MapPoint t = gwv->GetTerrainRenderer()->ConvertCoords(x, y, &xo, &yo);
 
-                int xpos = (int)(gwv->GetTerrainRenderer()->GetTerrainX(t) - xoffset + xo);
-                int ypos = (int)(gwv->GetTerrainRenderer()->GetTerrainY(t) - yoffset + yo);
+                int xpos = (int)(gwv->GetTerrainRenderer()->GetTerrainX(t) - offset.x + xo);
+                int ypos = (int)(gwv->GetTerrainRenderer()->GetTerrainY(t) - offset.y + yo);
 
                 // Name bzw Produktivität anzeigen
                 GO_Type got = gwv->GetNO(t)->GetGOT();
@@ -363,16 +379,16 @@ void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool
         }
     }
 
-    for(int x = fx; x < lx; ++x)
+    for(int x = firstPt.x; x < lastPt.x; ++x)
     {
-        for(int y = fy; y < ly; ++y)
+        for(int y = firstPt.y; y < lastPt.y; ++y)
         {
             // Coordinates transform
             int xo, yo;
             MapPoint t = gwv->GetTerrainRenderer()->ConvertCoords(x, y, &xo, &yo);
 
-            int xpos = (int)(gwv->GetTerrainRenderer()->GetTerrainX(t) - xoffset + xo);
-            int ypos = (int)(gwv->GetTerrainRenderer()->GetTerrainY(t) - yoffset + yo);
+            int xpos = (int)(gwv->GetTerrainRenderer()->GetTerrainX(t) - offset.x + xo);
+            int ypos = (int)(gwv->GetTerrainRenderer()->GetTerrainY(t) - offset.y + yo);
 
             /// Current point indicated by Mouse
             if(selPt == t)
@@ -461,9 +477,9 @@ void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool
 
     // Umherfliegende Katapultsteine zeichnen
     for(std::list<CatapultStone*>::iterator it = gwv->catapult_stones.begin(); it != gwv->catapult_stones.end(); ++it)
-        (*it)->Draw(*this, xoffset, yoffset);
+        (*it)->Draw(*this, offset.x, offset.y);
 
-    glTranslatef((GLfloat) - this->x, (GLfloat) - this->y, 0.0f);
+    glTranslatef((GLfloat) - pos.x, (GLfloat) - pos.y, 0.0f);
 
     glScissor(0, 0, VIDEODRIVER.GetScreenWidth(), VIDEODRIVER.GetScreenWidth());
 
@@ -527,13 +543,12 @@ void GameWorldView::MoveTo(int x, int y, bool absolute)
 {
     if(absolute)
     {
-        xoffset = x;
-        yoffset = y;
+        offset = Point<int>(x, y);
     }
     else
     {
-        xoffset += x;
-        yoffset += y;
+    	offset.x += x;
+    	offset.y += y;
     }
 
     CalcFxLx();
@@ -541,8 +556,7 @@ void GameWorldView::MoveTo(int x, int y, bool absolute)
 
 void GameWorldView::MoveToMapObject(const MapPoint pt)
 {
-    last_xoffset = xoffset;
-    last_yoffset = yoffset;
+    lastOffset = offset;
 
     MoveTo(static_cast<int>(gwv->GetTerrainX(pt))
            - width  / 2, static_cast<int>(gwv->GetTerrainY(pt))
@@ -552,13 +566,11 @@ void GameWorldView::MoveToMapObject(const MapPoint pt)
 /// Springt zur letzten Position, bevor man "weggesprungen" ist
 void GameWorldView::MoveToLastPosition()
 {
-    int new_last_xoffset = xoffset;
-    int new_last_yoffset = yoffset;
+    Point<int> newLastOffset = offset;
 
-    MoveTo(last_xoffset, last_yoffset, true);
+    MoveTo(lastOffset.x, lastOffset.y, true);
 
-    last_xoffset = new_last_xoffset;
-    last_yoffset = new_last_yoffset;
+    lastOffset = newLastOffset;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -569,19 +581,19 @@ void GameWorldView::MoveToLastPosition()
  */
 void GameWorldView::CalcFxLx()
 {
-    if(xoffset < 0)
-        xoffset = gwv->GetWidth() * TR_W + xoffset;
-    if(yoffset < 0)
-        yoffset = gwv->GetHeight() * TR_H + yoffset;
-    if(xoffset > gwv->GetWidth() * TR_W + width)
-        xoffset -= (gwv->GetWidth() * TR_W);
-    if(yoffset > gwv->GetHeight() * TR_H + height)
-        yoffset -= (gwv->GetHeight() * TR_H);
+    if(offset.x < 0)
+    	offset.x = gwv->GetWidth() * TR_W + offset.x;
+    if(offset.y < 0)
+    	offset.y = gwv->GetHeight() * TR_H + offset.y;
+    if(offset.x > gwv->GetWidth() * TR_W + width)
+    	offset.x -= (gwv->GetWidth() * TR_W);
+    if(offset.y > gwv->GetHeight() * TR_H + height)
+    	offset.y -= (gwv->GetHeight() * TR_H);
 
-    fx = xoffset / TR_W - 1;
-    fy = (yoffset - 0x20 * HEIGHT_FACTOR) / TR_H;
-    lx = (xoffset + width) / TR_W + 2;
-    ly = (yoffset + height + 0x40 * HEIGHT_FACTOR) / TR_H;
+    firstPt.x = offset.x / TR_W - 1;
+    firstPt.y = (offset.y - 0x20 * HEIGHT_FACTOR) / TR_H;
+    lastPt.x = (offset.x + width) / TR_W + 2;
+    lastPt.y = (offset.y + height + 0x40 * HEIGHT_FACTOR) / TR_H;
 }
 
 void GameWorldView::Resize(unsigned short width, unsigned short height)

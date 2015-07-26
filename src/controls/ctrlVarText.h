@@ -22,6 +22,7 @@
 #pragma once
 
 #include "ctrlText.h"
+#include <cstdarg>
 
 class ctrlVarText : public ctrlText
 {

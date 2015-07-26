@@ -72,7 +72,7 @@ void AIJH::BuildJob::ExecuteJob()
         break;
         case AIJH::JOB_EXECUTING_ROAD2_2:
         {
-            // evtl noch prüfen ob auch dieser Straßenbau erfolgreich war?
+            // evtl noch prï¿½fen ob auch dieser Straï¿½enbau erfolgreich war?
             aijh->RecalcGround(target, route);
             status = AIJH::JOB_FINISHED;
         }
@@ -101,7 +101,6 @@ void AIJH::BuildJob::ExecuteJob()
 #ifdef DEBUG_AI
         std::cout << "Player " << (unsigned)aijh->GetPlayerID() << ", Job failed: Military building too near for " << BUILDING_NAMES[type] << " at " << target.x << "/" << target.y << "." << std::endl;
 #endif
-        //aijh->nodes[target_x + target_y * aijh->GetGWB()->GetWidth()].
         return;
     }
 }
@@ -125,7 +124,7 @@ void AIJH::BuildJob::TryToBuild()
     if (searchMode == SEARCHMODE_GLOBAL)
     {
         // TODO: tmp solution for testing: only woodcutter
-        //hier machen für mehre gebäude
+        //hier machen fï¿½r mehre gebï¿½ude
         //erstmal wieder rausgenommen weil kaputt - todo: fix positionsearch
         if (type != BLD_WOODCUTTER)
         {
@@ -277,9 +276,9 @@ void AIJH::BuildJob::BuildMainRoad()
     const noBuildingSite* bld;
     if (!(bld = aii->GetSpecObj<noBuildingSite>(target)))
     {
-        // Prüfen ob sich vielleicht die BQ geändert hat und damit Bau unmöglich ist
+        // Prï¿½fen ob sich vielleicht die BQ geï¿½ndert hat und damit Bau unmï¿½glich ist
         BuildingQuality bq = aii->GetBuildingQuality(target);
-        if (!(bq >= BUILDING_SIZE[type] && bq < BQ_MINE) // normales Gebäude
+        if (!(bq >= BUILDING_SIZE[type] && bq < BQ_MINE) // normales Gebï¿½ude
                 && !(bq == BUILDING_SIZE[type]))    // auch Bergwerke
         {
             status = AIJH::JOB_FAILED;
@@ -305,7 +304,7 @@ void AIJH::BuildJob::BuildMainRoad()
     // Gucken noch nicht ans Wegnetz angeschlossen
     if (!aijh->GetConstruction()->IsConnectedToRoadSystem(houseFlag))
     {
-        // Bau unmöglich?
+        // Bau unmï¿½glich?
         if (!aijh->GetConstruction()->ConnectFlagToRoadSytem(houseFlag, route))
         {
             status = AIJH::JOB_FAILED;
@@ -326,7 +325,7 @@ void AIJH::BuildJob::BuildMainRoad()
         }
     }
 
-    // Wir sind angeschlossen, BQ für den eben gebauten Weg aktualisieren
+    // Wir sind angeschlossen, BQ fï¿½r den eben gebauten Weg aktualisieren
     //aijh->RecalcBQAround(target);
     //aijh->RecalcGround(target, route);
 
@@ -402,7 +401,7 @@ void AIJH::BuildJob::TryToBuildSecondaryRoad()
 
     if (!houseFlag)
     {
-        // Baustelle wurde wohl zerstört, oh schreck!
+        // Baustelle wurde wohl zerstï¿½rt, oh schreck!
         status = AIJH::JOB_FAILED;
 #ifdef DEBUG_AI
         std::cout << "Player " << (unsigned)aijh->GetPlayerID() << ", Job failed: House flag is gone, " << BUILDING_NAMES[type] << " at " << target_x << "/" << target_y << ". Retrying..." << std::endl;

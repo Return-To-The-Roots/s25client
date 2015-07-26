@@ -1869,13 +1869,9 @@ void GameWorldGame::CalcHarborPosNeighbors()
     // pre-calculate sea-points, as IsSeaPoint is rather expensive
     std::vector<unsigned int> flags_init(width * height);
 
-    for (size_t x = 0; x < width; x++)
-    {
-        for (size_t y = 0; y < height; y++)
-        {
-            flags_init[y * width + x] = IsSeaPoint(MapPoint(x, y)) ? 1 : 0;
-        }
-    }
+    for (MapPoint p(0, 0); p.y < height; p.y++)
+        for (p.x = 0; p.x < width; p.x++)
+            flags_init[GetIdx(p)] = IsSeaPoint(p) ? 1 : 0;
 
     for (size_t i = 1; i < harbor_pos.size(); ++i)
     {

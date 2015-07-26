@@ -26,6 +26,7 @@
 #include "buildings/nobMilitary.h"
 #include "gameData/MilitaryConsts.h"
 #include "GameWorld.h"
+#include <stdexcept>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -47,7 +48,7 @@ TerritoryRegion::TerritoryRegion(const int x1, const int y1, const int x2, const
 
 TerritoryRegion::~TerritoryRegion()
 {
-    // Feld löschen
+    // Feld lï¿½schen
     delete [] nodes;
 }
 
@@ -89,7 +90,7 @@ bool TerritoryRegion::IsPointValid(GameWorldBase* gwb, std::vector< MapPoint > &
 
 void TerritoryRegion::TestNode( int x,  int y, const unsigned char player, const unsigned char radius, const bool check_barriers)
 {
-    // Gucken, ob der Punkt überhaupt mit in diese Region gehört
+    // Gucken, ob der Punkt ï¿½berhaupt mit in diese Region gehï¿½rt
     if(x + gwb->GetWidth() >= int(x1) && x + gwb->GetWidth() < int(x2))
         x += gwb->GetWidth();
     else if(x - gwb->GetWidth() >= int(x1) && x - gwb->GetWidth() < int(x2))
@@ -111,7 +112,7 @@ void TerritoryRegion::TestNode( int x,  int y, const unsigned char player, const
     if (check_barriers && !IsPointValid(gwb, gwb->GetPlayer(player)->GetRestrictedArea(), MapPoint(x, y)))
         return;
 
-    /// Wenn das Militargebäude jetzt näher dran ist, dann geht dieser Punkt in den Besitz vom jeweiligen Spieler
+    /// Wenn das Militargebï¿½ude jetzt nï¿½her dran ist, dann geht dieser Punkt in den Besitz vom jeweiligen Spieler
     /// oder wenn es halt gar nicht besetzt ist
     unsigned idx = (y - y1) * (x2 - x1) + (x - x1);
     if(radius < nodes[idx].radius || !nodes[(y - y1) * (x2 - x1) + (x - x1)].owner)
@@ -137,7 +138,7 @@ void TerritoryRegion::CalcTerritoryOfBuilding(const noBaseBuilding* const buildi
         check_barriers = !(static_cast<const nobMilitary*>(building)->WasCapturedOnce());
     }
 
-    // Punkt, auf dem das Militärgebäude steht
+    // Punkt, auf dem das Militï¿½rgebï¿½ude steht
     MapPoint pt = building->GetPos();
     TestNode(pt.x, pt.y, building->GetPlayer(), 0, false);    // no need to check barriers here. this point is on our territory.
 

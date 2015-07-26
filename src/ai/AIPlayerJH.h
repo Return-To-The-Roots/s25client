@@ -91,7 +91,7 @@ struct PositionSearch
     }
 };
 
-/// Klasse für die besser JH-KI
+/// Klasse fï¿½r die besser JH-KI
 class AIPlayerJH : public AIBase
 {
         friend class AIJH::BuildJob;
@@ -331,7 +331,7 @@ class AIPlayerJH : public AIBase
         AIConstruction* GetConstruction() { return &construction; }
         AIJH::Job* GetCurrentJob() { return currentJob; }
     public:
-        inline AIJH::Node& GetAINode(const MapPoint pt) { return nodes[pt.x + gwb->GetWidth() * pt.y]; }
+        inline AIJH::Node& GetAINode(const MapPoint pt) { return nodes[gwb->GetIdx(pt)]; }
 		inline unsigned GetJobNum() const { return eventManager.GetEventNum() + construction.GetBuildJobNum() + construction.GetConnectJobNum(); }	
 		int UpgradeBldListNumber;
 		unsigned PlannedConnectedInlandMilitary() {return aii->GetMilitaryBuildings().size()/5<6 ? 6:aii->GetMilitaryBuildings().size()/5;}

@@ -32,6 +32,8 @@
 #include "Random.h"
 #include "gameData/MapConsts.h"
 
+#include <cmath>
+
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
@@ -103,7 +105,7 @@ void CatapultStone::Draw(const GameWorldView& gwv, const int xoffset, const int 
         int x = GAMECLIENT.Interpolate(start_x, dest_x, event);
         int y = GAMECLIENT.Interpolate(start_y, dest_y, event);
 
-        int whole = int(sqrt(double((dest_x - start_x) * (dest_x - start_x) + (dest_y - start_y) * (dest_y - start_y))));
+        int whole = int(std::sqrt(double((dest_x - start_x) * (dest_x - start_x) + (dest_y - start_y) * (dest_y - start_y))));
         int s = GAMECLIENT.Interpolate(whole , event);
 
 

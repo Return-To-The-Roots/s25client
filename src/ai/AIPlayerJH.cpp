@@ -464,8 +464,6 @@ void AIPlayerJH::InitReachableNodes()
 
 void AIPlayerJH::IterativeReachableNodeChecker(std::queue<MapPoint>& toCheck)
 {
-    unsigned short width = aii->GetMapWidth();
-
     // TODO auch mal bootswege bauen können
     //Param_RoadPath prp = { false };
 
@@ -499,8 +497,6 @@ void AIPlayerJH::IterativeReachableNodeChecker(std::queue<MapPoint>& toCheck)
 
 void AIPlayerJH::UpdateReachableNodes(const MapPoint pt, unsigned radius)
 {
-    unsigned short width = aii->GetMapWidth();
-
     std::queue<MapPoint> toCheck;
 
     for(MapCoord tx = aii->GetXA(pt, 0), r = 1; r <= radius; tx = aii->GetXA(tx, pt.y, 0), ++r)
@@ -510,7 +506,7 @@ void AIPlayerJH::UpdateReachableNodes(const MapPoint pt, unsigned radius)
         {
             for(MapCoord r2 = 0; r2 < r; t2 = aii->GetNeighbour(t2, i % 6), ++r2)
             {
-                unsigned i = t2.x + t2.y * width;
+                unsigned i = aii->GetIdx(t2);
                 nodes[i].reachable = false;
                 const noFlag* myFlag = 0;
                 if (( myFlag = aii->GetSpecObj<noFlag>(t2)))
@@ -648,8 +644,6 @@ void AIPlayerJH::SetFarmedNodes(const MapPoint pt, bool set)
     // Radius in dem Bausplatz für Felder blockiert wird
     const unsigned radius = 3;
 
-    unsigned short width = aii->GetMapWidth();
-
     nodes[aii->GetIdx(pt)].farmed = set;
 
     for(MapCoord tx = aii->GetXA(pt, 0), r = 1; r <= radius; tx = aii->GetXA(tx, pt.y, 0), ++r)
@@ -668,8 +662,6 @@ void AIPlayerJH::SetFarmedNodes(const MapPoint pt, bool set)
 
 void AIPlayerJH::ChangeResourceMap(const MapPoint pt, unsigned radius, std::vector<int> &resMap, int value)
 {
-    unsigned short width = aii->GetMapWidth();
-
     resMap[aii->GetIdx(pt)] += value * radius;
 
     for(MapCoord tx = aii->GetXA(pt, 0), r = 1; r <= radius; tx = aii->GetXA(tx, pt.y, 0), ++r)

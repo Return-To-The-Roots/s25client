@@ -42,6 +42,7 @@
 #include "luaIncludes.h"
 #include "Log.h"
 #include <set>
+#include <stdexcept>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

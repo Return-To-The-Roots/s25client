@@ -36,6 +36,9 @@
 #include "ListDir.h"
 #include "Settings.h"
 
+#ifndef _WIN32
+#	include <unistd.h>
+#endif // _WIN32
 
 iwMusicPlayer::InputWindow::InputWindow(iwMusicPlayer* parent, const unsigned win_id, const std::string& title)
     : IngameWindow(CGI_INPUTWINDOW, (unsigned short) - 2, (unsigned short) - 2,

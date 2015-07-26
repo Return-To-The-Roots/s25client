@@ -22,6 +22,7 @@
 #pragma once
 
 #include "ctrlVarText.h"
+#include <cstdarg>
 
 class ctrlVarDeepening : public ctrlVarText
 {

@@ -64,8 +64,8 @@ bool ctrlIngameMinimap::Draw_()
     DrawMap(*minimap);
 
     // Mittleren Punkt berechnen und dort hinscrollen
-    int middle_x = (gwv.GetLastX() + gwv.GetFirstX()) / 2;
-    int middle_y = (gwv.GetLastY() + gwv.GetFirstY()) / 2;
+    int middle_x = (gwv.GetLastPt().x + gwv.GetFirstPt().x) / 2;
+    int middle_y = (gwv.GetLastPt().x + gwv.GetFirstPt().x) / 2;
 
     // Koordinaten korrigieren
     MapPoint middle_corrected = gwv.ConvertCoords(middle_x, middle_y);
@@ -77,29 +77,29 @@ bool ctrlIngameMinimap::Draw_()
     short xpos = middle_corrected.x * width_show / minimap->GetMapWidth() + 2;
     short ypos = middle_corrected.y * height_show / minimap->GetMapHeight() + 2;
 
-    // Scroll-Auswahl-Bild an den Rändern verkleinern, damit es nicht über die Karte "überlappt"
+    // Scroll-Auswahl-Bild an den Rï¿½ndern verkleinern, damit es nicht ï¿½ber die Karte "ï¿½berlappt"
     short src_x = 0, src_y = 0;
     short draw_width = image->getWidth();
     short draw_height = image->getHeight();
 
-    // Überlappung am linken Rand?
+    // ï¿½berlappung am linken Rand?
     if(xpos - image->getNx() < 0)
     {
         src_x = -(xpos - image->getNx());
         draw_width += (xpos - image->getNx());
         xpos = image->getNx();
     }
-    // Überlappung am oberen Rand?
+    // ï¿½berlappung am oberen Rand?
     if(ypos - image->getNy() < 0)
     {
         src_y = -(ypos - image->getNy());
         draw_height += (ypos - image->getNy());
         ypos = image->getNy();
     }
-    // Überlappung am rechten Rand?
+    // ï¿½berlappung am rechten Rand?
     if(xpos - image->getNx() + image->getWidth() >= width_show)
         draw_width -= (xpos - image->getNx() + image->getWidth() - width_show);
-    // Überlappung am unteren Rand?
+    // ï¿½berlappung am unteren Rand?
     if(ypos - image->getNy() + image->getHeight() >= height_show)
         draw_height -= (ypos - image->getNy() + image->getHeight() - height_show);
 
@@ -148,7 +148,7 @@ bool ctrlIngameMinimap::Msg_MouseMove(const MouseCoords& mc)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Setzt Breite und Höhe des Controls
+ *  Setzt Breite und Hï¿½he des Controls
  *
  *  @author OLiver
  */
