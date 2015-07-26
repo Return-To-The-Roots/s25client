@@ -57,7 +57,7 @@ iwAddons::iwAddons(GlobalGameSettings* ggs, ChangePolicy policy)
     ctrlOptionGroup* optiongroup = AddOptionGroup(5, ctrlOptionGroup::CHECK, scale);
     // "Alle"
     optiongroup->AddTextButton(ADDONGROUP_ALL,  20, 50, 120, 22, TC_GREEN2, _("All"), NormalFont);
-    // "Militär"
+    // "Militï¿½r"
     optiongroup->AddTextButton(ADDONGROUP_MILITARY, 150, 50, 120, 22, TC_GREEN2, _("Military"), NormalFont);
     // "Wirtschaft"
     optiongroup->AddTextButton(ADDONGROUP_ECONOMY, 290, 50, 120, 22, TC_GREEN2, _("Economy"), NormalFont);
@@ -100,7 +100,7 @@ void iwAddons::Msg_ButtonClick(const unsigned int ctrl_id)
             if(policy == READONLY)
                 Close();
 
-            // Einstellungen in ADDONMANAGER übertragen
+            // Einstellungen in ADDONMANAGER ï¿½bertragen
             for(unsigned int i = 0; i < ggs->getCount(); ++i)
             {
                 unsigned int status;
@@ -140,7 +140,7 @@ void iwAddons::Msg_ButtonClick(const unsigned int ctrl_id)
 
         case 3: // Load S2 Defaults
         {
-            // Standardeinstellungen aufs Fenster übertragen
+            // Standardeinstellungen aufs Fenster ï¿½bertragen
             for(unsigned int i = 0; i < ggs->getCount(); ++i)
             {
                 unsigned int status;
@@ -162,7 +162,7 @@ void iwAddons::UpdateView(const unsigned short selection)
     ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(6);
     unsigned short y = 90;
     unsigned short inthiscategory = 0;
-    //LOG.lprintf("Page range: %u - %u\n", scrollbar->GetPos(), (unsigned int)(scrollbar->GetPos()+scrollbar->GetPageSize()));
+    //LOG.lprintf("Page range: %u - %u\n", scrollbar->GetPos().x, scrollbar->GetPos().y, (unsigned int)(scrollbar->GetPos()+scrollbar->GetPageSize()));
     for(unsigned int i = 0; i < ggs->getCount(); ++i)
     {
         unsigned int id = 10 + 20 * (ggs->getCount() - i - 1);

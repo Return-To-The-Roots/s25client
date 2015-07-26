@@ -82,9 +82,9 @@ void nofActiveSoldier::GoalReached()
     if(!building)
     {
         if((building = gwg->GetSpecObj<nobMilitary>(this->GetPos())))
-            LOG.lprintf("nofActiveSoldier::GoalRoached() - no valid 'building' but found one at soldier's position (%i,%i) (gf: %u)\n", this->GetPos(),GAMECLIENT.GetGFNumber());
+            LOG.lprintf("nofActiveSoldier::GoalRoached() - no valid 'building' but found one at soldier's position (%i,%i) (gf: %u)\n", pos.x, pos.y,GAMECLIENT.GetGFNumber());
         else
-            LOG.lprintf("nofActiveSoldier::GoalRoached() - no valid 'building' also didnt find one at soldier's position (%i,%i) (gf: %u)\n", this->GetPos(),GAMECLIENT.GetGFNumber());
+            LOG.lprintf("nofActiveSoldier::GoalRoached() - no valid 'building' also didnt find one at soldier's position (%i,%i) (gf: %u)\n", pos.x, pos.y,GAMECLIENT.GetGFNumber());
     }
     static_cast<nobMilitary*>(building)->AddActiveSoldier(this);
 
@@ -347,9 +347,9 @@ void nofActiveSoldier::IncreaseRank()
 	//max rank reached? -> dont increase!
 	if(MAX_MILITARY_RANK - (GetRank() + GAMECLIENT.GetGGS().getSelection(ADDON_MAX_RANK)) < 1)
 		return;
-	// Einen Rang höher
+	// Einen Rang hï¿½her
     job = Job(unsigned(job) + 1);
-	// Inventur entsprechend erhöhen und verringern
+	// Inventur entsprechend erhï¿½hen und verringern
     gwg->GetPlayer(player)->IncreaseInventoryJob(job, 1);
     gwg->GetPlayer(player)->DecreaseInventoryJob(Job(unsigned(job) - 1), 1);
 }

@@ -22,6 +22,7 @@
 #include "defines.h"
 #include "CollisionDetection.h"
 #include "Rect.h"
+#include <cstdlib>
 #include <cmath>
 
 ///////////////////////////////////////////////////////////////////////////////

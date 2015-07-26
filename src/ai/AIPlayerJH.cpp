@@ -2373,7 +2373,7 @@ int AIPlayerJH::UpdateUpgradeBuilding()
 			{
 				if (construction.IsConnectedToRoadSystem((*it)->GetFlag()))
 				{
-					//LOG.lprintf("UpdateUpgradeBuilding at %i,%i for player %i (listslot %i) \n",(*it)->GetPos(),playerid,count);
+					//LOG.lprintf("UpdateUpgradeBuilding at %i,%i for player %i (listslot %i) \n",(*it)->GetX(), (*it)->GetY(), playerid, count);
 					UpgradeBldX=(*it)->GetX();
 					UpgradeBldY=(*it)->GetY();
 					UpgradeBldListNumber=count;

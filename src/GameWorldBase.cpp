@@ -224,11 +224,6 @@ void GameWorldBase::Init()
     military_squares.resize((width / MILITARY_SQUARE_SIZE + 1) * (height / MILITARY_SQUARE_SIZE + 1));
 }
 
-MapNode::MapNode()
-{
-
-}
-
 void GameWorldBase::Unload()
 {
     // Straßen sammeln und alle dann vernichten
@@ -406,18 +401,16 @@ unsigned GameWorldBase::CalcDistance(const int x1, const int y1,
  */
 unsigned char GameWorldBase::GetRoad(const MapPoint pt, unsigned char dir, bool all) const
 {
-    assert(dir < 3);
-
     assert(pt.x < width && pt.y < height);
 
     unsigned pos = GetIdx(pt);
 
+    if(dir >= 3)
+    	throw std::out_of_range("Dir");
+
     // Entweder muss es eine richtige Straße sein oder es müssen auch visuelle Straßen erlaubt sein
-    if(dir < 3)
-    {
-        if(nodes[pos].roads_real[(unsigned)dir] || all)
-            return nodes[pos].roads[(unsigned)dir];
-    }
+	if(nodes[pos].roads_real[(unsigned)dir] || all)
+		return nodes[pos].roads[(unsigned)dir];
 
     return 0;
 }

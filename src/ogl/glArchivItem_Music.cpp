@@ -39,7 +39,7 @@ static char THIS_FILE[] = __FILE__;
  *  @author FloSoft
  */
 glArchivItem_Music::glArchivItem_Music(void)
-    : sound(NULL)
+    : libsiedler2::baseArchivItem_Sound(), sound(NULL)
 {
 }
 

@@ -1429,7 +1429,7 @@ void noFigure::Abrogate()
         {
             if(!on_ship) //no goal but going home - should not happen
             {
-                LOG.lprintf("noFigure::Abrogate - GOHOME figure has no goal and is not on a ship - player %i state %i pos %u,%u \n", player, fs, pos);
+                LOG.lprintf("noFigure::Abrogate - GOHOME figure has no goal and is not on a ship - player %i state %i pos %u,%u \n", player, fs, pos.x, pos.y);
                 //assert(false);
             }
         }

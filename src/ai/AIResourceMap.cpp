@@ -81,12 +81,9 @@ void AIResourceMap::ChangeResourceMap(const MapPoint pt, unsigned radius, int va
 
 bool AIResourceMap::FindGoodPosition(MapPoint& pt, int threshold, BuildingQuality size, int radius, bool inTerritory)
 {
-    unsigned short width = gwb->GetWidth();
-    unsigned short height = gwb->GetHeight();
+    assert(pt.x < gwb->GetWidth() && pt.y < gwb->GetHeight());
 
-    assert(pt.x < width && pt.y < height);
-
-    // TODO was besseres wär schön ;)
+    // TODO was besseres wï¿½r schï¿½n ;)
     if (radius == -1)
         radius = 30;
 
@@ -102,7 +99,7 @@ bool AIResourceMap::FindGoodPosition(MapPoint& pt, int threshold, BuildingQualit
                 {
                     if ((inTerritory && !nodes[i].owned) || nodes[i].farmed)
                         continue;
-                    if ( (nodes[i].bq >= size && nodes[i].bq < BQ_MINE) // normales Gebäude
+                    if ( (nodes[i].bq >= size && nodes[i].bq < BQ_MINE) // normales Gebï¿½ude
                             || (nodes[i].bq == size))   // auch Bergwerke
                     {
                         pt = t2;
@@ -118,12 +115,9 @@ bool AIResourceMap::FindGoodPosition(MapPoint& pt, int threshold, BuildingQualit
 
 bool AIResourceMap::FindBestPosition(MapPoint& pt, BuildingQuality size, int minimum, int radius, bool inTerritory)
 {
-    unsigned short width = gwb->GetWidth();
-    unsigned short height = gwb->GetHeight();
+    assert(pt.x < gwb->GetWidth() && pt.y < gwb->GetHeight());
 
-    assert(pt.x < width && pt.y < height);
-
-    // TODO was besseres wär schön ;)
+    // TODO was besseres wï¿½r schï¿½n ;)
     if (radius == -1)
         radius = 30;
 
@@ -142,7 +136,7 @@ bool AIResourceMap::FindBestPosition(MapPoint& pt, BuildingQuality size, int min
                 {
                     if (!nodes[i].reachable || (inTerritory && !nodes[i].owned) || nodes[i].farmed)
                         continue;
-                    if ( (nodes[i].bq >= size && nodes[i].bq < BQ_MINE) // normales Gebäude
+                    if ( (nodes[i].bq >= size && nodes[i].bq < BQ_MINE) // normales Gebï¿½ude
                             || (nodes[i].bq == size))   // auch Bergwerke
                     {
                         best = t2;

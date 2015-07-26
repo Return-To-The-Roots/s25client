@@ -116,9 +116,6 @@ struct MapNode
     noBase* obj;
     /// Figuren, Kämpfe, die sich dort befinden
     std::list<noBase*> figures;
-
-    MapNode();
-
 };
 
 enum LandscapeType
