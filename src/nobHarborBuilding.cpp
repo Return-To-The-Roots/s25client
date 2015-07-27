@@ -1280,7 +1280,7 @@ void nobHarborBuilding::GetAttackerBuildingsForSeaAttack(std::vector<SeaAttacker
             continue;
 
         // Weg vom Hafen zum Militärgebäude berechnen
-        if(!gwg->FindFreePath((*it)->GetX(), (*it)->GetY(), x, y, false, MAX_ATTACKING_RUN_DISTANCE, NULL, NULL, NULL, NULL, NULL, NULL, false))
+        if (gwg->FindHumanPath((*it)->GetX(), (*it)->GetY(), x, y, MAX_ATTACKING_RUN_DISTANCE, false, NULL, false) == 0xFF)
             continue;
 
         // Entfernung zwischen Hafen und möglichen Zielhafenpunkt ausrechnen
