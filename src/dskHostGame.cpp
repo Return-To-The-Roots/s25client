@@ -86,9 +86,9 @@ dskHostGame::dskHostGame(bool single_player) :
     if (!single_player)
     {
         // Chatfenster
-        AddChatCtrl(1, 20, 310, 360, 218, TC_GREY, NormalFont);
+        AddChatCtrl(1, 20, 320, 360, 218, TC_GREY, NormalFont);
         // Edit für Chatfenster
-        AddEdit(4, 20, 530, 360, 22, TC_GREY, NormalFont);
+        AddEdit(4, 20, 540, 360, 22, TC_GREY, NormalFont);
     }
 
     // "Spiel starten"
