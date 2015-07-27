@@ -1,4 +1,4 @@
-// $Id: PostMsg.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: PostMsg.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -97,7 +97,7 @@ void ImagePostMsgWithLocation::Serialize(SerializedGameData* sgd)
     sgd->PushUnsignedInt(senderNation);
 }
 
-/// Titel für die Fenster für unterschiedliche Bündnistypen
+/// Titel fÃ¼r die Fenster fÃ¼r unterschiedliche BÃ¼ndnistypen
 const char* const PACT_TITLES[PACTS_COUNT] =
 {
     gettext_noop("treaty of alliance"),
@@ -123,7 +123,7 @@ DiplomacyPostQuestion::DiplomacyPostQuestion(const unsigned id, const unsigned c
     text = std::string(msg) + "\n" + duration_msg;
 }
 
-/// Vertrag auflösen
+/// Vertrag auflÃ¶sen
 DiplomacyPostQuestion::DiplomacyPostQuestion(const unsigned id, const unsigned char player, const PactType pt)
     : PostMsg("", PMC_DIPLOMACY), dp_type(CANCEL), id(id), player(player), pt(pt)
 {

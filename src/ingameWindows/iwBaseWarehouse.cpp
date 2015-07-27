@@ -1,4 +1,4 @@
-// $Id: iwBaseWarehouse.cpp 9592 2015-02-01 09:39:38Z marcus $
+ï»¿// $Id: iwBaseWarehouse.cpp 9592 2015-02-01 09:39:38Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -58,10 +58,10 @@ iwBaseWarehouse::iwBaseWarehouse(GameWorldViewer* const gwv, dskGameInterface* c
                                  nobBaseWarehouse* wh)
     : iwWares(wh->CreateGUIID(), 0xFFFE, 0xFFFE, 167, 416, title, page_count, true, NormalFont, wh->GetInventory()), gwv(gwv), gi(gi), wh(wh)
 {
-    // Basisinitialisierungsänderungen
+    // BasisinitialisierungsÃ¤nderungen
     background = LOADER.GetImageN("resource", 41);
 
-    // Auswahl für Auslagern/Einlagern Verbieten-Knöpfe
+    // Auswahl fÃ¼r Auslagern/Einlagern Verbieten-KnÃ¶pfe
     ctrlOptionGroup* group = AddOptionGroup(10, ctrlOptionGroup::CHECK);
     // Einlagern
     group->AddImageButton(0, 16, 335, 32, 32, TC_GREY, LOADER.GetImageN("io_new", 4), _("Collect"));
@@ -69,10 +69,10 @@ iwBaseWarehouse::iwBaseWarehouse(GameWorldViewer* const gwv, dskGameInterface* c
     group->AddImageButton(1, 52, 335, 32, 32, TC_GREY, LOADER.GetImageN("io", 211), _("Take out of store"));
     // Einlagern verbieten
     group->AddImageButton(2, 86, 335, 32, 32, TC_GREY, LOADER.GetImageN("io", 212), _("Stop storage"));
-    // nix tun auswählen
+    // nix tun auswÃ¤hlen
     group->SetSelection(0);
 
-    // Alle auswählen bzw setzen!
+    // Alle auswÃ¤hlen bzw setzen!
     AddImageButton(11, 122, 335, 32, 32, TC_GREY, LOADER.GetImageN("io", 223), _("Select all"));
     // "Gehe Zu Ort"
     AddImageButton(13, 122, 369, 15, 32, TC_GREY, LOADER.GetImageN("io", 107), _("Go to place"));
@@ -107,12 +107,12 @@ iwBaseWarehouse::iwBaseWarehouse(GameWorldViewer* const gwv, dskGameInterface* c
         }
     }
 
-    // Lagerhaus oder Hafengebäude?
+    // Lagerhaus oder HafengebÃ¤ude?
     if(wh->GetGOT() == GOT_NOB_STOREHOUSE || wh->GetGOT() == GOT_NOB_HARBORBUILDING)
     {
 
-        // Abbrennbutton hinzufügen
-        // "Blättern" in Bretter stauchen und verschieben
+        // Abbrennbutton hinzufÃ¼gen
+        // "BlÃ¤ttern" in Bretter stauchen und verschieben
         GetCtrl<ctrlButton>(0)->SetWidth(32);
         GetCtrl<ctrlButton>(0)->Move(86, 369, true);
 
@@ -156,13 +156,13 @@ void iwBaseWarehouse::Msg_ButtonClick(const unsigned int ctrl_id)
 {
     switch(ctrl_id)
     {
-        case 1: // Gebäude abreißen
+        case 1: // GebÃ¤ude abreiÃŸen
         {
-            // Abreißen?
+            // AbreiÃŸen?
             Close();
             WINDOWMANAGER.Show(new iwDemolishBuilding(gwv, wh));
         } break;
-        case 11: // "Alle auswählen"
+        case 11: // "Alle auswÃ¤hlen"
         {
             if(this->page < 2)
             {
@@ -246,10 +246,10 @@ void iwBaseWarehouse::Msg_ButtonClick(const unsigned int ctrl_id)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Overlay ändern.
+ *  Overlay Ã¤ndern.
  *
  *  @param[in] i    Item-Nr (0-29)
- *  @param[in] what Welcher Status soll geändert werden (2 = Einlagern verbieten, 4 = Auslagern)
+ *  @param[in] what Welcher Status soll geÃ¤ndert werden (2 = Einlagern verbieten, 4 = Auslagern)
  *
  *  @author FloSoft
  */
@@ -257,7 +257,7 @@ void iwBaseWarehouse::ChangeOverlay(unsigned int i, unsigned int what)
 {
     ctrlImage* image;
 
-    // Status ändern
+    // Status Ã¤ndern
     wh->ChangeVisualInventorySettings(page, what, i);
 
     // Einlagern verbieten-Bild (de)aktivieren

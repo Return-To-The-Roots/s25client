@@ -1,4 +1,4 @@
-// $Id: ctrlPreviewMinimap.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: ctrlPreviewMinimap.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -25,7 +25,7 @@
 #include "gameData/GameConsts.h"
 #include "ogl/glArchivItem_Map.h"
 
-/// Übersichtskarte (MapPreview)
+/// Ãœbersichtskarte (MapPreview)
 class ctrlPreviewMinimap : public ctrlMinimap
 {
         /// Minimap
@@ -53,7 +53,7 @@ class ctrlPreviewMinimap : public ctrlMinimap
         /// Zeichnet die MapPreview
         bool Draw_();
 
-        /// Setzt die (Start-)Farbe eines Spielers bzw. löscht diesen (color = 0)
+        /// Setzt die (Start-)Farbe eines Spielers bzw. lÃ¶scht diesen (color = 0)
         void SetPlayerColor(const unsigned id, const unsigned color)
         {
             players[id].color = color;

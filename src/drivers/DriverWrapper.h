@@ -1,4 +1,4 @@
-// $Id: DriverWrapper.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: DriverWrapper.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -58,14 +58,14 @@ class DriverWrapper
         /// Destruktor von @p DriverWrapper
         ~DriverWrapper(void);
 
-        /// Läd einen Treiber in die Treiber DLL, versucht, "preference" zu nehmen
+        /// LÃ¤d einen Treiber in die Treiber DLL, versucht, "preference" zu nehmen
         bool Load(const DriverType dt, std::string& preference);
         /// Gibt eine Treiber-Handle wieder frei
         void Unload();
-        /// Gibt Adresse auf eine bestimmte Funktion zurück
+        /// Gibt Adresse auf eine bestimmte Funktion zurÃ¼ck
         void* GetDLLFunction(const std::string& name);
 
-        /// Läd eine Liste von verfügbaren Treibern
+        /// LÃ¤d eine Liste von verfÃ¼gbaren Treibern
         static void LoadDriverList(const DriverType dt, std::vector<DriverItem>& driver_list);
 
     private:

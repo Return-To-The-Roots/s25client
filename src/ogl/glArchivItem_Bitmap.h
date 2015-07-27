@@ -1,4 +1,4 @@
-// $Id: glArchivItem_Bitmap.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: glArchivItem_Bitmap.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -28,7 +28,7 @@
 typedef unsigned long long uint64_t;
 #endif
 
-/// Basisklasse für GL-Bitmapitems.
+/// Basisklasse fÃ¼r GL-Bitmapitems.
 class glArchivItem_Bitmap : public virtual libsiedler2::baseArchivItem_Bitmap
 {
     public:
@@ -45,7 +45,7 @@ class glArchivItem_Bitmap : public virtual libsiedler2::baseArchivItem_Bitmap
 
         /// liefert das GL-Textur-Handle.
         unsigned int GetTexture();
-        /// Löscht die GL-Textur (z.B fürs Neuerstellen)
+        /// LÃ¶scht die GL-Textur (z.B fÃ¼rs Neuerstellen)
         virtual void DeleteTexture();
         /// Setzt den Texturfilter auf einen bestimmten Wert.
         virtual void setFilter(unsigned int filter);
@@ -59,7 +59,7 @@ class glArchivItem_Bitmap : public virtual libsiedler2::baseArchivItem_Bitmap
 
     protected:
         unsigned int texture; ///< Das GL-Textur-Handle
-        unsigned int filter;  ///< Der aktuell gewählte Texturfilter
+        unsigned int filter;  ///< Der aktuell gewÃ¤hlte Texturfilter
 };
 
 #endif // !GLARCHIVITEM_BITMAP_INCLUDED

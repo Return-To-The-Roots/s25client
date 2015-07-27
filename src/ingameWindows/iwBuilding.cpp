@@ -1,4 +1,4 @@
-// $Id: iwBuilding.cpp 9593 2015-02-01 09:40:01Z marcus $
+ï»¿// $Id: iwBuilding.cpp 9593 2015-02-01 09:40:01Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -46,7 +46,7 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-/// IDs in der IO_DAT von Boot und Schiffs-Bild für den Umschaltebutton beim Schiffsbauer
+/// IDs in der IO_DAT von Boot und Schiffs-Bild fÃ¼r den Umschaltebutton beim Schiffsbauer
 const unsigned IODAT_BOAT_ID = 219;
 const unsigned IODAT_SHIP_ID = 218;
 
@@ -54,7 +54,7 @@ const unsigned IODAT_SHIP_ID = 218;
 /**
  *  Konstruktor von @p iwBuilding.
  *
- *  @todo überprüfen und die restlichen Steuerelemente zur Funktion bringen
+ *  @todo Ã¼berprÃ¼fen und die restlichen Steuerelemente zur Funktion bringen
  *
  *  @author OLiver
  */
@@ -75,7 +75,7 @@ iwBuilding::iwBuilding(GameWorldViewer* const gwv, dskGameInterface* const gi, n
         AddImage(13, 28, 39, LOADER.GetImageN("io_new", 5));	
     }
 
-    // Gebäudesymbol
+    // GebÃ¤udesymbol
     AddImage(1, 117, 114, building->GetBuildingImage());
 
     // Symbol der produzierten Ware (falls hier was produziert wird)
@@ -87,13 +87,13 @@ iwBuilding::iwBuilding(GameWorldViewer* const gwv, dskGameInterface* const gi, n
 
     // Info
     AddImageButton( 4,  16, 147, 30, 32, TC_GREY, LOADER.GetImageN("io",  21), _("Help"));
-    // Abreißen
+    // AbreiÃŸen
     AddImageButton( 5,  50, 147, 34, 32, TC_GREY, LOADER.GetImageN("io",  23), _("Demolish house"));
-    // Produktivität einstellen (196,197) (bei Spähturm ausblenden)
+    // ProduktivitÃ¤t einstellen (196,197) (bei SpÃ¤hturm ausblenden)
     Window* enable_productivity = AddImageButton( 6,  90, 147, 34, 32, TC_GREY, LOADER.GetImageN("io", ((building->IsProductionDisabledVirtual()) ? 197 : 196)));
     if(building->GetBuildingType() == BLD_LOOKOUTTOWER)
         enable_productivity->SetVisible(false);
-    // Bei Bootsbauer Button zum Umwählen von Booten und Schiffen
+    // Bei Bootsbauer Button zum UmwÃ¤hlen von Booten und Schiffen
     if(building->GetBuildingType() == BLD_SHIPYARD)
     {
         // Jenachdem Boot oder Schiff anzeigen
@@ -105,10 +105,10 @@ iwBuilding::iwBuilding(GameWorldViewer* const gwv, dskGameInterface* const gi, n
     // "Gehe Zum Ort"
     AddImageButton( 7, 179, 147, 30, 32, TC_GREY, LOADER.GetImageN("io", 107), _("Go to place"));	
 
-    // Gebäudebild und dessen Schatten
+    // GebÃ¤udebild und dessen Schatten
     AddImage( 8, 117, 114, LOADER.GetNationImageN(building->GetNation(), 250 + 5 * building->GetBuildingType()));
 
-    // Produktivitätsanzeige (bei Katapulten und Spähtürmen ausblenden)
+    // ProduktivitÃ¤tsanzeige (bei Katapulten und SpÃ¤htÃ¼rmen ausblenden)
     Window* productivity = AddPercent(9, 59, 31, 106, 16, TC_GREY, 0xFFFFFF00, SmallFont, building->GetProduktivityPointer());
     if(building->GetBuildingType() == BLD_CATAPULT || building->GetBuildingType() == BLD_LOOKOUTTOWER)
         productivity->SetVisible(false);
@@ -122,7 +122,7 @@ iwBuilding::iwBuilding(GameWorldViewer* const gwv, dskGameInterface* const gi, n
 
 void iwBuilding::Msg_PaintBefore()
 {
-    // Schatten des Gebäudes (muss hier gezeichnet werden wegen schwarz und halbdurchsichtig)
+    // Schatten des GebÃ¤udes (muss hier gezeichnet werden wegen schwarz und halbdurchsichtig)
     glArchivItem_Bitmap* bitmap = building->GetBuildingImageShadow();
 
     if(bitmap)
@@ -187,15 +187,15 @@ void iwBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
             WINDOWMANAGER.Show(new iwHelp(GUI_ID(CGI_HELPBUILDING + building->GetBuildingType()), _(BUILDING_NAMES[building->GetBuildingType()]),
                                                   _(BUILDING_HELP_STRINGS[building->GetBuildingType()])));
         } break;
-        case 5: // Gebäude abbrennen
+        case 5: // GebÃ¤ude abbrennen
         {
-            // Abreißen?
+            // AbreiÃŸen?
             Close();
             WINDOWMANAGER.Show(new iwDemolishBuilding(gwv, building));
         } break;
         case 6:
         {
-            // Produktion einstellen/fortführen
+            // Produktion einstellen/fortfÃ¼hren
             // NC senden
             if(GAMECLIENT.AddGC(new gc::StopProduction(building->GetPos())))
             {

@@ -1,4 +1,4 @@
-// $Id: NodalObjectTypes.h 9357 2014-04-25 15:35:25Z FloSoft $
+Ôªø// $Id: NodalObjectTypes.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -27,19 +27,19 @@ enum NodalObjectType
     NOP_GRANITE, // Granit
     NOP_TREE, // Baum
     NOP_GRAINFIELD, // Getreidefeld
-    NOP_ENVIRONMENT, // sonstige "Umweltobjekte", die keine besondere Funktion haben ( tote B‰ume, Pilze, Str‰ucher )
+    NOP_ENVIRONMENT, // sonstige "Umweltobjekte", die keine besondere Funktion haben ( tote B√§ume, Pilze, Str√§ucher )
     NOP_OBJECT, // sonstige "feste" Objekte, die keine besondere Funktion haben (Stalagmiten, Ruinen, usw)
-    NOP_BUILDING, // Geb‰cde
+    NOP_BUILDING, // Geb√§cde
     NOP_FLAG, // Fahne
     NOP_BUILDINGSITE, // Baustelle
     NOP_FIGURE, // Siedler-Leute
-    NOP_EXTENSION, // Anbau von groﬂen Geb‰uden
-    NOP_FIRE, // Ein Feuer von einem brennende (zerstˆrten) Geb‰ude
+    NOP_EXTENSION, // Anbau von gro√üen Geb√§uden
+    NOP_FIRE, // Ein Feuer von einem brennende (zerst√∂rten) Geb√§ude
     NOP_FIGHTING, // Kampf,
     NOP_ANIMAL, // Tier
-    NOP_BURNEDWAREHOUSE, // abgebranntes Lagerhaus, aus dem die Menschen jetzt strˆmen
+    NOP_BURNEDWAREHOUSE, // abgebranntes Lagerhaus, aus dem die Menschen jetzt str√∂men
     NOP_SHIP, // Schiff
-    NOP_CHARBURNERPILE, // Holz-/Kohle-Haufen vom Kˆhler
+    NOP_CHARBURNERPILE, // Holz-/Kohle-Haufen vom K√∂hler
     NOP_ERROR
 };
 

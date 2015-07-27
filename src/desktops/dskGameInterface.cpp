@@ -1,4 +1,4 @@
-// $Id: dskGameInterface.cpp 9592 2015-02-01 09:39:38Z marcus $
+ï»¿// $Id: dskGameInterface.cpp 9592 2015-02-01 09:39:38Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -81,7 +81,7 @@ static char THIS_FILE[] = __FILE__;
 ///////////////////////////////////////////////////////////////////////////////
 /**
  *  Konstruktor von @p dskGameInterface.
- *  Startet das Spiel und lädt alles Notwendige.
+ *  Startet das Spiel und lÃ¤dt alles Notwendige.
  *
  *  @author OLiver
  */
@@ -130,7 +130,7 @@ dskGameInterface::dskGameInterface()
 ///////////////////////////////////////////////////////////////////////////////
 /**
  *  Destruktor von @p dskGameInterface.
- *  Beendet das Spiel und räumt alles auf.
+ *  Beendet das Spiel und rÃ¤umt alles auf.
  *
  *  @author OLiver
  */
@@ -214,7 +214,7 @@ void dskGameInterface::Msg_ButtonClick(const unsigned int ctrl_id)
  */
 void dskGameInterface::Msg_PaintBefore()
 {
-    // Spiel ausführen
+    // Spiel ausfÃ¼hren
     Run();
 
     // Rahmen zeichnen
@@ -238,7 +238,7 @@ void dskGameInterface::Msg_PaintBefore()
  */
 void dskGameInterface::Msg_PaintAfter()
 {
-    /* NWF-Anzeige (vorläufig)*/
+    /* NWF-Anzeige (vorlÃ¤ufig)*/
     char nwf_string[256];
 
     if(GAMECLIENT.IsReplayModeOn())
@@ -305,25 +305,25 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
         return true;
     }
 
-    // Unterscheiden je nachdem Straäcnbaumodus an oder aus ist
+    // Unterscheiden je nachdem StraÃ¤cnbaumodus an oder aus ist
     if(road.mode)
     {
         // in "richtige" Map-Koordinaten Konvertieren, den aktuellen selektierten Punkt
         MapPoint cSel = gwv->GetSel();
-        // Um auf Wasserweglängenbegrenzun reagieren zu können:
+        // Um auf WasserweglÃ¤ngenbegrenzun reagieren zu kÃ¶nnen:
         MapPoint cSel2(cSel);
 
         if(cSel == road.point)
         {
-            // Selektierter Punkt ist der gleiche wie der Straßenpunkt --> Fenster mit Wegbau abbrechen
+            // Selektierter Punkt ist der gleiche wie der StraÃŸenpunkt --> Fenster mit Wegbau abbrechen
             ShowRoadWindow(mc.x, mc.y);
         }
         else
         {
-            // altes Roadwindow schließen
+            // altes Roadwindow schlieÃŸen
             WINDOWMANAGER.Close((unsigned int)CGI_ROADWINDOW);
 
-            // Ist das ein gültiger neuer Wegpunkt?
+            // Ist das ein gÃ¼ltiger neuer Wegpunkt?
             if(gwv->RoadAvailable(road.mode == RM_BOAT, cSel, 0xFF) && gwv->GetNode(cSel).owner - 1 == (signed)GAMECLIENT.GetPlayerID() &&
                     gwv->IsPlayerTerritory(cSel))
             {
@@ -332,7 +332,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
             }
             else if(gwv->CalcBQ(cSel, GAMECLIENT.GetPlayerID(), 1))
             {
-                // Wurde bereits auf das gebaute Stück geklickt?
+                // Wurde bereits auf das gebaute StÃ¼ck geklickt?
                 unsigned tbr;
                 if((tbr = TestBuiltRoad(cSel)))
                     DemolishRoad(tbr);
@@ -363,7 +363,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
             else
             {
                 unsigned tbr;
-                // Wurde bereits auf das gebaute Stück geklickt?
+                // Wurde bereits auf das gebaute StÃ¼ck geklickt?
                 if((tbr = TestBuiltRoad(cSel)))
                     DemolishRoad(tbr);
                 else
@@ -395,13 +395,13 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
             if(bt == BLD_HEADQUARTERS)
                 //WINDOWMANAGER.Show(new iwTrade(gwv,this,gwv->GetSpecObj<nobHQ>(cselx,csely)));
                 WINDOWMANAGER.Show(new iwHQ(gwv,this, gwv->GetSpecObj<nobHQ>(cSel), _("Headquarters"), 3));
-            // Lagerhäuser
+            // LagerhÃ¤user
             else if(bt == BLD_STOREHOUSE)
                 WINDOWMANAGER.Show(new iwStorehouse(gwv, this, gwv->GetSpecObj<nobStorehouse>(cSel)));
-            // Hafengebäude
+            // HafengebÃ¤ude
             else if(bt == BLD_HARBORBUILDING)
                 WINDOWMANAGER.Show(new iwHarborBuilding(gwv, this, gwv->GetSpecObj<nobHarborBuilding>(cSel)));
-            // Militärgebäude
+            // MilitÃ¤rgebÃ¤ude
             else if(bt <= BLD_FORTRESS)
                 WINDOWMANAGER.Show(new iwMilitaryBuilding(gwv, this, gwv->GetSpecObj<nobMilitary>(cSel)));
             else
@@ -427,7 +427,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
             {
                 action_tabs.build = true;
 
-                // Welches Gebäude kann gebaut werden?
+                // Welches GebÃ¤ude kann gebaut werden?
                 switch(gwv->GetNode(gwv->GetSel()).bq)
                 {
                     case BQ_HUT: action_tabs.build_tabs = iwAction::Tabs::BT_HUT; break;
@@ -441,8 +441,8 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
                 if(!gwv->FlagNear(cSel))
                     action_tabs.setflag = true;
 
-                // Prüfen, ob sich Militärgebäude in der Nähe befinden, wenn nein, können auch eigene
-                // Militärgebäude gebaut werden
+                // PrÃ¼fen, ob sich MilitÃ¤rgebÃ¤ude in der NÃ¤he befinden, wenn nein, kÃ¶nnen auch eigene
+                // MilitÃ¤rgebÃ¤ude gebaut werden
                 enable_military_buildings = !gwv->IsMilitaryBuildingNearNode(cSel, GAMECLIENT.GetPlayerID());
             }
             else if(gwv->GetNode(gwv->GetSel()).bq == BQ_FLAG)
@@ -453,7 +453,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
             if(gwv->GetNO(cSel)->GetType() == NOP_FLAG)
                 action_tabs.flag = true;
 
-            // Prüfen, ob irgendwo Straßen anliegen
+            // PrÃ¼fen, ob irgendwo StraÃŸen anliegen
             bool roads = false;
             for(unsigned i = 0; i < 6; ++i)
                 if(gwv->GetPointRoad(cSel, i, true))
@@ -464,7 +464,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
                         gwv->GetNO(cSel)->GetType() == NOP_BUILDING) )
                 action_tabs.cutroad = true;
         }
-        // evtl ists ein feindliches Militärgebäude, welches NICHT im Nebel liegt?
+        // evtl ists ein feindliches MilitÃ¤rgebÃ¤ude, welches NICHT im Nebel liegt?
         else if(gwv->GetVisibility(cSel) == VIS_VISIBLE)
         {
             if(gwv->GetNO(cSel)->GetType() == NOP_BUILDING)
@@ -484,7 +484,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
                     }
                 }
 
-                // Ist es ein gewöhnliches Militärgebäude?
+                // Ist es ein gewÃ¶hnliches MilitÃ¤rgebÃ¤ude?
                 if(bt >= BLD_BARRACKS && bt <= BLD_FORTRESS)
                 {
                     // Dann darf es nicht neu gebaut sein!
@@ -498,8 +498,8 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
         }
 
 
-        // Bisheriges Actionfenster schließen, falls es eins gab
-        // aktuelle Mausposition merken, da diese durch das Schließen verändert werden kann
+        // Bisheriges Actionfenster schlieÃŸen, falls es eins gab
+        // aktuelle Mausposition merken, da diese durch das SchlieÃŸen verÃ¤ndert werden kann
         int mx = mc.x, my = mc.y;
         WINDOWMANAGER.Close(actionwindow);
         VIDEODRIVER.SetMousePos(mx, my);
@@ -575,12 +575,12 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
     {
         default:
             break;
-        case KT_RETURN: // Chatfenster öffnen
+        case KT_RETURN: // Chatfenster Ã¶ffnen
         {
             WINDOWMANAGER.Show(new iwChat);
         } return true;
 
-        case KT_SPACE: // Bauqualitäten anzeigen
+        case KT_SPACE: // BauqualitÃ¤ten anzeigen
         {
             gwv->ShowBQ();
         } return true;
@@ -608,7 +608,7 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
         {
             WINDOWMANAGER.Show(new iwSave);
         } return true;
-        case KT_F3: // Koordinatenanzeige ein/aus vorläufig zu Debugzwecken
+        case KT_F3: // Koordinatenanzeige ein/aus vorlÃ¤ufig zu Debugzwecken
         {
             gwv->ShowCoordinates();
         } return true;
@@ -632,7 +632,7 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
 
     switch(ke.c)
     {
-        case '+': // Geschwindigkeit im Replay erhöhen
+        case '+': // Geschwindigkeit im Replay erhÃ¶hen
         {
             GAMECLIENT.IncreaseReplaySpeed();
         } return true;
@@ -658,7 +658,7 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
             }
         } return true;
 
-        case 'b': // Zur lezten Position zurückspringen
+        case 'b': // Zur lezten Position zurÃ¼ckspringen
         {
             gwv->MoveToLastPosition();
         } return true;
@@ -672,7 +672,7 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
             }
             if(singleplayer < 2)GAMECLIENT.IncreaseSpeed();
         } return true;
-        case 'c': // Gebäudenamen anzeigen
+        case 'c': // GebÃ¤udenamen anzeigen
         {
             gwv->ShowNames();
         } return true;
@@ -687,7 +687,7 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
         case 'h': // Zum HQ springen
         {
             GameClientPlayer* player = GAMECLIENT.GetLocalPlayer();
-            // Prüfen, ob dieses überhaupt noch existiert
+            // PrÃ¼fen, ob dieses Ã¼berhaupt noch existiert
             if(player->hqPos.x != 0xFFFF)
                 gwv->MoveToMapObject(player->hqPos);
         } return true;
@@ -695,7 +695,7 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
         {
             WINDOWMANAGER.Show(new iwInventory);
         } return true;
-        case 'j': // GFs überspringen
+        case 'j': // GFs Ã¼berspringen
         {
             unsigned singleplayer = 0, i = 0;
             while(i < GAMECLIENT.GetPlayerCount() && singleplayer < 2)
@@ -740,7 +740,7 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
             if(ke.alt)
                 WINDOWMANAGER.Show(new iwEndgame);
         } return true;
-        case 's': // Produktivität anzeigen
+        case 's': // ProduktivitÃ¤t anzeigen
         {
             gwv->ShowProductivity();
         } return true;
@@ -774,7 +774,7 @@ void dskGameInterface::Run()
  */
 void dskGameInterface::ActivateRoadMode(const RoadMode rm)
 {
-    // Im Replay und in der Pause keine Straßen bauen
+    // Im Replay und in der Pause keine StraÃŸen bauen
     if(GAMECLIENT.IsReplayModeOn() || GAMECLIENT.IsPaused())
         return;
 
@@ -824,7 +824,7 @@ bool dskGameInterface::BuildRoadPart(MapPoint& cSel, bool end)
 
         unsigned short length = road.route.size() + new_route.size();
 
-        // max_length == 0 heißt beliebig lang, ansonsten
+        // max_length == 0 heiÃŸt beliebig lang, ansonsten
         // Weg zurechtstutzen.
         if (max_length > 0)
         {
@@ -843,7 +843,7 @@ bool dskGameInterface::BuildRoadPart(MapPoint& cSel, bool end)
         road.point = gwv->GetNeighbour(road.point, new_route[i]);
         gwv->CalcRoad(road.point, GAMECLIENT.GetPlayerID());
     }
-    // Zielpunkt updaten (für Wasserweg)
+    // Zielpunkt updaten (fÃ¼r Wasserweg)
     cSel = road.point;
 
     road.route.insert(road.route.end(), new_route.begin(), new_route.end());
@@ -917,7 +917,7 @@ void dskGameInterface::ShowActionWindow(const iwAction::Tabs& action_tabs, MapPo
         }
     }
 
-    // Angriffstab muss wissen, wieviel Soldaten maximal entsendet werden können
+    // Angriffstab muss wissen, wieviel Soldaten maximal entsendet werden kÃ¶nnen
     if(action_tabs.attack)
     {
         if(GAMECLIENT.GetLocalPlayer()->IsPlayerAttackable(gwv->GetSpecObj<noBuilding>(cSel)->GetPlayer()))
@@ -954,7 +954,7 @@ void dskGameInterface::GI_FlagDestroyed(const MapPoint pt)
         ActivateRoadMode(RM_DISABLED);
     }
 
-    // Evtl Actionfenster schließen, da sich das ja auch auf diese Flagge bezieht
+    // Evtl Actionfenster schlieÃŸen, da sich das ja auch auf diese Flagge bezieht
     if(actionwindow)
     {
         if(actionwindow->GetSelectedX() == pt.x && actionwindow->GetSelectedY() == pt.y)
@@ -1079,18 +1079,18 @@ void dskGameInterface::CI_GamePaused()
     snprintf(from, sizeof(from), _("<%s> "), _("SYSTEM"));
     messenger.AddMessage(from, COLOR_GREY, CD_SYSTEM, _("Game was paused."));
 
-    /// Straßenbau ggf. abbrechen, wenn aktiviert
+    /// StraÃŸenbau ggf. abbrechen, wenn aktiviert
     if(road.mode != RM_DISABLED)
     {
         road.mode = RM_DISABLED;
-        // Fenster schließen
+        // Fenster schlieÃŸen
         if(roadwindow)
         {
             //WINDOWMANAGER.Close(roadwindow);
             roadwindow->Close();
             roadwindow = 0;
         }
-        // Weg zurückbauen
+        // Weg zurÃ¼ckbauen
         this->DemolishRoad(1);
 
     }
@@ -1211,13 +1211,13 @@ void dskGameInterface::GI_UpdateMinimap(const MapPoint pt)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Bündnisvertrag wurde abgeschlossen oder abgebrochen --> Minimap updaten
+ *  BÃ¼ndnisvertrag wurde abgeschlossen oder abgebrochen --> Minimap updaten
  *
  *  @author OLiver
  */
 void dskGameInterface::GI_TreatyOfAllianceChanged()
 {
-    // Nur wenn Team-Sicht aktiviert ist, können sihc die Sichtbarkeiten auch ändern
+    // Nur wenn Team-Sicht aktiviert ist, kÃ¶nnen sihc die Sichtbarkeiten auch Ã¤ndern
     if(GAMECLIENT.GetGGS().team_view)
     {
         /// Sichtbarkeiten neu berechnen
@@ -1229,7 +1229,7 @@ void dskGameInterface::GI_TreatyOfAllianceChanged()
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Baut Weg zurück von Ende bis zu start_id
+ *  Baut Weg zurÃ¼ck von Ende bis zu start_id
  *
  *  @author OLiver
  */
@@ -1288,7 +1288,7 @@ void dskGameInterface::CI_NewPostMessage(const unsigned postmessages_count)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Es wurde eine Postnachricht vom Spieler gelöscht
+ *  Es wurde eine Postnachricht vom Spieler gelÃ¶scht
  *
  *  @author OLiver
  */

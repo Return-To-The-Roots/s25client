@@ -1,4 +1,4 @@
-// $Id: ctrlList.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: ctrlList.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -92,7 +92,7 @@ bool ctrlList::Msg_MouseMove(const MouseCoords& mc)
     mouseover = 0xFFFF;
     WINDOWMANAGER.SetToolTip(this, "");
 
-    // Für die Scrollbar weiterleiten
+    // FÃ¼r die Scrollbar weiterleiten
     return scrollbar->Msg_MouseMove(mc);
 }
 
@@ -109,7 +109,7 @@ bool ctrlList::Msg_LeftDown(const MouseCoords& mc)
     // Wenn Maus in der Liste
     if(Coll(mc.x, mc.y, GetX() + 2, GetY() + 2, width - 22, height - 4))
     {
-        // Tooltip löschen, sonst bleibt er ewig
+        // Tooltip lÃ¶schen, sonst bleibt er ewig
         WINDOWMANAGER.SetToolTip(this, "");
 
         // aktuellen Eintrag selektieren
@@ -122,7 +122,7 @@ bool ctrlList::Msg_LeftDown(const MouseCoords& mc)
         return true;
     }
 
-    // Für die Scrollbar weiterleiten
+    // FÃ¼r die Scrollbar weiterleiten
     return scrollbar->Msg_LeftDown(mc);
 }
 
@@ -139,7 +139,7 @@ bool ctrlList::Msg_RightDown(const MouseCoords& mc)
     // Wenn Maus in der Liste
     if(Coll(mc.x, mc.y, GetX() + 2, GetY() + 2, width - 22, height - 4))
     {
-        // Tooltip löschen, sonst bleibt er ewig
+        // Tooltip lÃ¶schen, sonst bleibt er ewig
         WINDOWMANAGER.SetToolTip(this, "");
 
         // aktuellen Eintrag selektieren
@@ -149,7 +149,7 @@ bool ctrlList::Msg_RightDown(const MouseCoords& mc)
         return true;
     }
 
-    // Für die Scrollbar weiterleiten
+    // FÃ¼r die Scrollbar weiterleiten
     return scrollbar->Msg_RightDown(mc);
 }
 
@@ -163,7 +163,7 @@ bool ctrlList::Msg_LeftUp(const MouseCoords& mc)
 {
     ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
 
-    // Für die Scrollbar weiterleiten
+    // FÃ¼r die Scrollbar weiterleiten
     return scrollbar->Msg_LeftUp(mc);
 }
 
@@ -232,7 +232,7 @@ bool ctrlList::Draw_(void)
     // Wieviele Linien anzeigen?
     unsigned show_lines = (pagesize > lines.size() ? unsigned(lines.size()) : pagesize);
 
-    // Listeneinträge zeichnen
+    // ListeneintrÃ¤ge zeichnen
     for(unsigned short i = 0; i < show_lines; ++i)
     {
         // Schwarze Markierung, wenn die Maus drauf ist
@@ -248,13 +248,13 @@ bool ctrlList::Draw_(void)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  fügt eine Zeile hinzu.
+ *  fÃ¼gt eine Zeile hinzu.
  *
  *  @author FloSoft
  */
 void ctrlList::AddString(const std::string& text)
 {
-    // lines-Array ggf vergrößern
+    // lines-Array ggf vergrÃ¶ÃŸern
     lines.push_back(text);
 
     GetCtrl<ctrlScrollBar>(0)->SetRange(static_cast<unsigned short>(lines.size()));
@@ -262,7 +262,7 @@ void ctrlList::AddString(const std::string& text)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Verändert einen String
+ *  VerÃ¤ndert einen String
  *
  *  @author OLiver
  */
@@ -273,7 +273,7 @@ void ctrlList::SetString(const std::string& text, const unsigned id)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  löscht alle Items.
+ *  lÃ¶scht alle Items.
  *
  *  @author FloSoft
  */
@@ -303,10 +303,10 @@ const std::string& ctrlList::GetItemText(unsigned short line) const
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Größe ändern.
+ *  GrÃ¶ÃŸe Ã¤ndern.
  *
  *  @param[in] width  Neue Breite
- *  @param[in] height Neue Höhe
+ *  @param[in] height Neue HÃ¶he
  *
  *  @author OLiver
  */

@@ -1,4 +1,4 @@
-// $Id: IngameWindow.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: IngameWindow.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -54,12 +54,12 @@ class IngameWindow : public Window
         /// liefert den Fenstertitel.
         const std::string& GetTitle(void) { return title; }
 
-        /// setzt die ausgeklappte Höhe des Fensters.
+        /// setzt die ausgeklappte HÃ¶he des Fensters.
         void SetIwHeight(unsigned short height) { this->iwHeight = height; if(!minimized) this->height = height; }
-        /// liefert die ausgeklappte Höhe des Fensters.
+        /// liefert die ausgeklappte HÃ¶he des Fensters.
         unsigned short GetIwHeight(void) const { return iwHeight; }
 
-        /// merkt das Fenster zum Schließen vor.
+        /// merkt das Fenster zum SchlieÃŸen vor.
         void Close(bool closeme = true) { this->closeme = closeme; }
         /// soll das Fenster geschlossen werden.
         bool ShouldBeClosed() { return closeme; }

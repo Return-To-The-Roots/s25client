@@ -1,4 +1,4 @@
-// $Id: GameSavegame.h 9357 2014-04-25 15:35:25Z FloSoft $
+﻿// $Id: GameSavegame.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -34,7 +34,7 @@ class Savegame : public SavedFile
         bool Save(const std::string& filename);
         bool Save(BinaryFile& file);
 
-        /// L�dt Savegame oder Teile davon
+        /// Lädt Savegame oder Teile davon
         bool Load(const std::string&  filename, const bool load_players, const bool load_sgd);
         bool Load(BinaryFile& file, const bool load_players, const bool load_sgd);
 

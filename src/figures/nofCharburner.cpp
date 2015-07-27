@@ -1,4 +1,4 @@
-// $Id: nofCharburner.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+﻿// $Id: nofCharburner.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -82,13 +82,13 @@ void nofCharburner::DrawWorking(int x, int y)
 
 }
 
-/// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren rausträgt (bzw rein)
+/// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren raustrÃ¤gt (bzw rein)
 unsigned short nofCharburner::GetCarryID() const
 {
     return 1000;
 }
 
-/// Abgeleitete Klasse informieren, wenn sie anfängt zu arbeiten (Vorbereitungen)
+/// Abgeleitete Klasse informieren, wenn sie anfÃ¤ngt zu arbeiten (Vorbereitungen)
 void nofCharburner::WorkStarted()
 {
 }
@@ -137,7 +137,7 @@ void nofCharburner::WorkFinished()
     }
 }
 
-/// Fragt abgeleitete Klasse, ob hier Platz bzw ob hier ein Baum etc steht, den z.B. der Holzfäller braucht
+/// Fragt abgeleitete Klasse, ob hier Platz bzw ob hier ein Baum etc steht, den z.B. der HolzfÃ¤ller braucht
 nofFarmhand::PointQuality nofCharburner::GetPointQuality(const MapPoint pt)
 {
     noBase* no = gwg->GetNO(pt);
@@ -191,7 +191,7 @@ nofFarmhand::PointQuality nofCharburner::GetPointQuality(const MapPoint pt)
         BlockingManner bm = gwg->GetNO(gwg->GetNeighbour(pt, i))->GetBM();
         if(bm != BM_NOTBLOCKING)
             return PQ_NOTPOSSIBLE;
-        // darf außerdem nicht neben einer Straße liegen
+        // darf auÃŸerdem nicht neben einer StraÃŸe liegen
         for(unsigned char j = 0; j < 6; ++j)
         {
             if(gwg->GetPointRoad(gwg->GetNeighbour(pt, i), j))

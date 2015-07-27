@@ -1,4 +1,4 @@
-// $Id: glArchivItem_Font.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+﻿// $Id: glArchivItem_Font.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -102,8 +102,8 @@ std::string glArchivItem_Font::Unicode_to_Utf8(unsigned int c) const
 unsigned int glArchivItem_Font::Utf8_to_Unicode(const std::string& text, unsigned int& i) const
 {
     unsigned int c = (text[i] & 0xFF);
-    // qx: fix für namen in der Kartenübersicht
-    if(c == 0xF6 || c == 0xDF)return c; // if we accidentally try to convert an already unicode text including ö (0xF6) this will catch it (todo: find a better way to do this that includes other cases)
+    // qx: fix fÃ¼r namen in der KartenÃ¼bersicht
+    if(c == 0xF6 || c == 0xDF)return c; // if we accidentally try to convert an already unicode text including Ã¶ (0xF6) this will catch it (todo: find a better way to do this that includes other cases)
     if( (c & 0x80) == 0x80) // 1Xxxxxxx
     {
 
@@ -146,7 +146,7 @@ unsigned int glArchivItem_Font::Utf8_to_Unicode(const std::string& text, unsigne
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  @brief fügt ein einzelnes Zeichen zur Zeichenliste hinzu
+ *  @brief fÃ¼gt ein einzelnes Zeichen zur Zeichenliste hinzu
  *
  *  @author Marcus
  */
@@ -226,8 +226,8 @@ void glArchivItem_Font::Draw(short x,
                              const std::wstring& wend,
                              unsigned short end_length)
 {
-    // etwas dämlich, aber einfach ;)
-    // da wir hier erstmal in utf8 konvertieren, und dann im anderen Draw wieder zurück ...
+    // etwas dÃ¤mlich, aber einfach ;)
+    // da wir hier erstmal in utf8 konvertieren, und dann im anderen Draw wieder zurÃ¼ck ...
 
     std::string text;
     for(unsigned int i = 0; i < wtext.length(); ++i)
@@ -255,8 +255,8 @@ void glArchivItem_Font::Draw(short x,
  *                      @p glArchivItem_Font::DF_VCENTER - Text vertikal zentriert
  *                      @p glArchivItem_Font::DF_BOTTOM  - Text unten
  *  @param[in] color  Farbe des Textes
- *  @param[in] length Länge des Textes
- *  @param[in] max    maximale Länge
+ *  @param[in] length LÃ¤nge des Textes
+ *  @param[in] max    maximale LÃ¤nge
  *
  *  @author OLiver
  */
@@ -290,7 +290,7 @@ void glArchivItem_Font::Draw(short x,
         unsigned short end_max = 0;
         unsigned short end_width = getWidth(end, end_length, max, &end_max);
 
-        // Bei Überlauf oder kleiner 0 - nix zeichnen ;)
+        // Bei Ãœberlauf oder kleiner 0 - nix zeichnen ;)
         if( text_width - end_width > text_width || text_width - end_width <= 0 )
             return;
 
@@ -393,10 +393,10 @@ void glArchivItem_Font::Draw(short x,
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  liefert die Länge einer Zeichenkette.
+ *  liefert die LÃ¤nge einer Zeichenkette.
  *
  *  @param[in]     text   Der Text
- *  @param[in]     length Textlänge
+ *  @param[in]     length TextlÃ¤nge
  *  @param[in,out] max    In:  maximale Breite des Textes in Pixeln
  *                        Out: maximale Breite in Buchstaben der in "max"-Pixel reinpasst.
  *
@@ -416,7 +416,7 @@ unsigned short glArchivItem_Font::getWidth(const std::wstring& text, unsigned le
 
         if(text[i] == '\n')
         {
-            if(w > wm) // Längste Zeile
+            if(w > wm) // LÃ¤ngste Zeile
                 wm = w;
             w = 0;
         }
@@ -432,7 +432,7 @@ unsigned short glArchivItem_Font::getWidth(const std::wstring& text, unsigned le
         w += cw;
     }
 
-    if((wm == 0) || (wm < w)) // Letzte Zeile kann auch die längste sein und hat kein \n am Ende
+    if((wm == 0) || (wm < w)) // Letzte Zeile kann auch die lÃ¤ngste sein und hat kein \n am Ende
         wm = w;
 
     if(max)
@@ -453,7 +453,7 @@ unsigned short glArchivItem_Font::getWidth(const std::string& text, unsigned len
 
         if(text[i] == '\n')
         {
-            if(w > wm) // Längste Zeile
+            if(w > wm) // LÃ¤ngste Zeile
                 wm = w;
             w = 0;
         }
@@ -469,7 +469,7 @@ unsigned short glArchivItem_Font::getWidth(const std::string& text, unsigned len
         w += cw;
     }
 
-    if((wm == 0) || (wm < w)) // Letzte Zeile kann auch die längste sein und hat kein \n am Ende
+    if((wm == 0) || (wm < w)) // Letzte Zeile kann auch die lÃ¤ngste sein und hat kein \n am Ende
         wm = w;
 
     if(max)
@@ -486,7 +486,7 @@ unsigned short glArchivItem_Font::getWidth(const std::string& text, unsigned len
  */
 void glArchivItem_Font::WrapInfo::CreateSingleStrings(const std::string& origin_text, std::string* dest_strings)
 {
-    // Kopie des ursprünglichen Strings erstellen
+    // Kopie des ursprÃ¼nglichen Strings erstellen
     std::string copy(origin_text);
 
     for(unsigned i = 0; i < positions.size(); ++i)
@@ -495,7 +495,7 @@ void glArchivItem_Font::WrapInfo::CreateSingleStrings(const std::string& origin_
         char temp = 0;
         if(i + 1 < positions.size())
         {
-            // dann muss statt des Leerzeichens o.Ä. ein Nullzeichen gesetzt werden, damit nur der Teilstring aufgenommen
+            // dann muss statt des Leerzeichens o.Ã„. ein Nullzeichen gesetzt werden, damit nur der Teilstring aufgenommen
             // wird und nicht noch alles was danach kommt
 
             // das Zeichen merken, was da vorher war
@@ -507,7 +507,7 @@ void glArchivItem_Font::WrapInfo::CreateSingleStrings(const std::string& origin_
         if(i < origin_text.length()) //in case of empty string dont try to read char 1 ...
             dest_strings[i] = &copy[positions.at(i)];
 
-        // wieder ggf. zurücksetzen, siehe oben
+        // wieder ggf. zurÃ¼cksetzen, siehe oben
         if(i + 1 < positions.size())
             copy[positions.at(i + 1)] = temp;
     }
@@ -515,12 +515,12 @@ void glArchivItem_Font::WrapInfo::CreateSingleStrings(const std::string& origin_
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Gibt Infos, über die Unterbrechungspunkte in einem Text
+ *  Gibt Infos, Ã¼ber die Unterbrechungspunkte in einem Text
  *
  *  @param[in]     text            Text, der auf Zeilen verteilt werden soll
  *  @param[in]     primary_width   Maximale Breite der ersten Zeile
  *  @param[in]     secondary_width Maximale Breite der weiteren Zeilen
- *  @param[in,out] wi              Pointer auf die Anfänge der einzelnen Zeilen
+ *  @param[in,out] wi              Pointer auf die AnfÃ¤nge der einzelnen Zeilen
  *
  *
  *  @author OLiver
@@ -543,7 +543,7 @@ void glArchivItem_Font::GetWrapInfo(const std::string& text,
     wi.positions.clear();
     wi.positions.push_back(0);
 
-    // Länge des Strings
+    // LÃ¤nge des Strings
     unsigned int length = (unsigned int)text.length();
 
     for(unsigned i = 0; i <= length; ++i)
@@ -554,11 +554,11 @@ void glArchivItem_Font::GetWrapInfo(const std::string& text,
             // Passt das letzte Wort mit auf die Zeile? (bzw bei newline immer neue zeile anfangen)
             if(word_width + line_width <= ( (wi.positions.size() == 1) ? primary_width : secondary_width))
             {
-                // Länge des Leerzeichens mit draufaddieren
+                // LÃ¤nge des Leerzeichens mit draufaddieren
                 line_width += word_width;
                 line_width += CharWidth(' ');
 
-                // neues Wort fängt dann nach dem Leerzeichen an (falls wir nicht schon am Ende vom Text sind)
+                // neues Wort fÃ¤ngt dann nach dem Leerzeichen an (falls wir nicht schon am Ende vom Text sind)
                 if(i < length - 1)
                 {
                     word_width = 0;
@@ -569,7 +569,7 @@ void glArchivItem_Font::GetWrapInfo(const std::string& text,
             {
                 // Ansonsten neue Zeile anfangen
 
-                // Passt das Wort wenigsens komplett überhaupt in die nächste Zeile?
+                // Passt das Wort wenigsens komplett Ã¼berhaupt in die nÃ¤chste Zeile?
                 if(word_width <= secondary_width)
                 {
                     // neue Zeile anfangen mit diesem Wort
@@ -585,7 +585,7 @@ void glArchivItem_Font::GetWrapInfo(const std::string& text,
                 }
                 else
                 {
-                    // ansonsten muss das Wort zwangsläufig auf mehrere Zeilen verteilt werden
+                    // ansonsten muss das Wort zwangslÃ¤ufig auf mehrere Zeilen verteilt werden
                     for(size_t z = 0; text[word_start + z] != ' ' && text[word_start + z]; ++z)
                     {
                         unsigned int zz = word_start + z;
@@ -665,7 +665,7 @@ void glArchivItem_Font::initFont()
 
     int w = (dx + 2) * chars_per_line + 2;
     int h = (dy + 2) * chars_per_line + 2;
-    unsigned int buffersize = w * h * 4; // RGBA Puffer für alle Buchstaben
+    unsigned int buffersize = w * h * 4; // RGBA Puffer fÃ¼r alle Buchstaben
     unsigned char* buffer = new unsigned char[buffersize];
     memset(buffer, 0, buffersize);
 
@@ -684,7 +684,7 @@ void glArchivItem_Font::initFont()
         if(c)
         {
             // Spezialpalette (blaue Spielerfarben sind Grau) verwenden,
-            // damit man per OpenGL einfärben kann!
+            // damit man per OpenGL einfÃ¤rben kann!
             c->print(buffer, w, h, libsiedler2::FORMAT_RGBA, LOADER.GetPaletteN("colors"), 128, x, y, 0, 0, 0, 0, true);
 
             char_info ci;
@@ -699,7 +699,7 @@ void glArchivItem_Font::initFont()
     }
 
     // Spezialpalette (blaue Spielerfarben sind Grau) verwenden,
-    // damit man per OpenGL einfärben kann!
+    // damit man per OpenGL einfÃ¤rben kann!
     _font->create(w, h, buffer, w, h, libsiedler2::FORMAT_RGBA, LOADER.GetPaletteN("colors"));
 
     x = 1;
@@ -717,7 +717,7 @@ void glArchivItem_Font::initFont()
         if(c)
         {
             // Spezialpalette (blaue Spielerfarben sind Grau) verwenden,
-            // damit man per OpenGL einfärben kann!
+            // damit man per OpenGL einfÃ¤rben kann!
             c->print(buffer, w, h, libsiedler2::FORMAT_RGBA, LOADER.GetPaletteN("colors"), 128, x, y);
 
             x += dx + 2;

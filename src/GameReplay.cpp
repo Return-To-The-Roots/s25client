@@ -1,4 +1,4 @@
-// $Id: GameReplay.cpp 9517 2014-11-30 09:21:25Z marcus $
+ï»¿// $Id: GameReplay.cpp 9517 2014-11-30 09:21:25Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -24,7 +24,7 @@
 #include "GameSavegame.h"
 #include "Log.h"
 
-/// Kleine Signatur am Anfang "RTTRRP", die ein gültiges S25 RTTR Replay kennzeichnet
+/// Kleine Signatur am Anfang "RTTRRP", die ein gÃ¼ltiges S25 RTTR Replay kennzeichnet
 const char Replay::REPLAY_SIGNATURE[6] = {'R', 'T', 'T', 'R', 'R', 'P'};
 /// Version des Replay-Formates
 const unsigned short Replay::REPLAY_VERSION = 26;
@@ -72,7 +72,7 @@ void Replay::StopRecording()
  */
 bool Replay::WriteHeader(const std::string& filename)
 {
-    // Datei öffnen
+    // Datei Ã¶ffnen
     if(!file.Open(filename.c_str(), OFM_WRITE))
         return false;
 
@@ -82,14 +82,14 @@ bool Replay::WriteHeader(const std::string& filename)
     WriteVersion(file, 6, REPLAY_SIGNATURE, REPLAY_VERSION);
     // Timestamp der Aufzeichnung (TODO: Little/Big Endian unterscheidung)
     file.WriteRawData(&save_time, 8);
-    /// NWF-Länge
+    /// NWF-LÃ¤nge
     file.WriteUnsignedShort(nwf_length);
     /// Zufallsgeneratorinitialisierung
     file.WriteUnsignedInt(random_init);
     /// Pathfinding-Results hier drin?
     file.WriteUnsignedChar(pathfinding_results ? 1 : 0);
 
-    // Position merken für End-GF
+    // Position merken fÃ¼r End-GF
     last_gf_file_pos = file.Tell();
 
     /// End-GF (erstmal nur 0, wird dann im Spiel immer geupdatet)
@@ -150,11 +150,11 @@ bool Replay::WriteHeader(const std::string& filename)
 bool Replay::LoadHeader(const std::string& filename, const bool load_extended_header)
 {
     this->filename = filename;
-    // Datei öffnen
+    // Datei Ã¶ffnen
     if(!file.Open(filename.c_str(), OFM_READ))
         return false;
 
-    // Version überprüfen
+    // Version Ã¼berprÃ¼fen
     // Signatur und Version einlesen
     if(!ValidateFile(file, 6, REPLAY_SIGNATURE, REPLAY_VERSION))
     {
@@ -164,7 +164,7 @@ bool Replay::LoadHeader(const std::string& filename, const bool load_extended_he
 
     // Zeitstempel
     file.ReadRawData(&save_time, 8);
-    // NWF-Länge
+    // NWF-LÃ¤nge
     nwf_length = file.ReadUnsignedShort();
     // Zufallsgeneratorinitialisierung
     random_init = file.ReadUnsignedInt();
@@ -261,7 +261,7 @@ void Replay::AddChatCommand(const unsigned gf, const unsigned char player, const
     //while(file.() % 4)
     //  file.WriteSignedChar(0);
 
-    // Platzhalter für nächste GF-Zahl
+    // Platzhalter fÃ¼r nÃ¤chste GF-Zahl
     gf_file_pos = file.Tell();
     file.WriteUnsignedInt(0xffffffff);
 
@@ -296,7 +296,7 @@ void Replay::AddGameCommand(const unsigned gf, const unsigned short length, cons
     // Type (RC_GAME)
     file.WriteUnsignedChar(RC_GAME);
 
-    // Länge der Daten
+    // LÃ¤nge der Daten
     file.WriteUnsignedShort(length);
     // Daten
     file.WriteRawData(data, length);
@@ -305,7 +305,7 @@ void Replay::AddGameCommand(const unsigned gf, const unsigned short length, cons
     //while(file.Tell() % 4)
     //  file.WriteSignedChar(0);
 
-    // Platzhalter für nächste GF-Zahl
+    // Platzhalter fÃ¼r nÃ¤chste GF-Zahl
     gf_file_pos = file.Tell();
     file.WriteUnsignedInt(0xeeeeeeee);
 
@@ -313,7 +313,7 @@ void Replay::AddGameCommand(const unsigned gf, const unsigned short length, cons
     file.Flush();
 }
 
-/// Fügt Pathfinding-Result hinzu
+/// FÃ¼gt Pathfinding-Result hinzu
 void Replay::AddPathfindingResult(const unsigned char data, const unsigned* const length, const MapPoint * const next_harbor)
 {
     //if(!pathfinding_results)

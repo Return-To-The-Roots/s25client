@@ -1,4 +1,4 @@
-// $Id: dskMultiPlayer.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: dskMultiPlayer.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -69,7 +69,7 @@ dskMultiPlayer::dskMultiPlayer(void) : Desktop(LOADER.GetImageN("menu", 0))
     AddTextButton(4, 115, 210, 220, 22, TC_GREEN2, _("Network/LAN"), NormalFont);
     // "Direkte IP"
     AddTextButton(5, 115, 250, 220, 22, TC_GREEN2, _("Direct IP"), NormalFont);
-    // "Zurück"
+    // "ZurÃ¼ck"
     AddTextButton(6, 115, 290, 220, 22, TC_RED1, _("Back"), NormalFont);
 
     AddImage(11, 20, 20, LOADER.GetImageN("logo", 0));
@@ -92,7 +92,7 @@ void dskMultiPlayer::Msg_ButtonClick(const unsigned int ctrl_id)
         {
             WINDOWMANAGER.Switch(new dskDirectIP);
         } break;
-        case 6: // Zurück
+        case 6: // ZurÃ¼ck
         {
             WINDOWMANAGER.Switch(new dskMainMenu);
         } break;

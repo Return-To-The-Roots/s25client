@@ -1,4 +1,4 @@
-// $Id: iwOptionsWindow.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+Ôªø// $Id: iwOptionsWindow.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -86,17 +86,17 @@ iwOptionsWindow::iwOptionsWindow(dskGameInterface* gameDesktop)
     AddImageButton(10, 35, 250, 35, 35, TC_GREEN2, LOADER.GetImageN("io", 47));
     AddText(11, 85, 270, _("Save game!"), COLOR_YELLOW, 0 | glArchivItem_Font::DF_BOTTOM, NormalFont);
 
-    // Ger‰usche an/aus
+    // Ger√§usche an/aus
     AddImageButton(12, 35, 300, 35, 35, TC_GREEN2, LOADER.GetImageN("io", 114 + !SETTINGS.sound.effekte));
 
     // Musik an/aus
     AddImageButton(13, 35, 340, 35, 35, TC_GREEN2, LOADER.GetImageN("io", 116 + !SETTINGS.sound.musik));
 
-    // Ger‰uschlautst‰rke
+    // Ger√§uschlautst√§rke
     AddProgress(14, 100, 306, 160, 22, TC_GREEN2, 139, 138, 10)
     ->SetPosition(SETTINGS.sound.effekte_volume * 10 / 255);
 
-    // Musiklautst‰rke
+    // Musiklautst√§rke
     AddProgress(15, 100, 346, 160, 22, TC_GREEN2, 139, 138, 10)
     ->SetPosition(SETTINGS.sound.musik_volume * 10 / 255);
 
@@ -136,7 +136,7 @@ void iwOptionsWindow::Msg_ButtonClick(const unsigned int ctrl_id)
             WINDOWMANAGER.Show(new iwSave);
         } break;
 
-        case 12: // Ger‰usche an/aus
+        case 12: // Ger√§usche an/aus
         {
             SETTINGS.sound.effekte = !SETTINGS.sound.effekte;
             GetCtrl<ctrlImageButton>(12)->SetImage(LOADER.GetImageN("io", 114 + !SETTINGS.sound.effekte));

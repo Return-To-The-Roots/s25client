@@ -1,4 +1,4 @@
-// $Id: nofActiveSoldier.cpp 9601 2015-02-07 11:09:14Z marcus $
+﻿// $Id: nofActiveSoldier.cpp 9601 2015-02-07 11:09:14Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -345,9 +345,9 @@ void nofActiveSoldier::IncreaseRank()
 	//max rank reached? -> dont increase!
 	if(MAX_MILITARY_RANK - (GetRank() + GAMECLIENT.GetGGS().getSelection(ADDON_MAX_RANK)) < 1)
 		return;
-	// Einen Rang h�her
+	// Einen Rang höher
     job = Job(unsigned(job) + 1);
-	// Inventur entsprechend erh�hen und verringern
+	// Inventur entsprechend erhöhen und verringern
     gwg->GetPlayer(player)->IncreaseInventoryJob(job, 1);
     gwg->GetPlayer(player)->DecreaseInventoryJob(Job(unsigned(job) - 1), 1);
 }

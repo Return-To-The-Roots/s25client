@@ -1,4 +1,4 @@
-// $Id: ctrlTable.h 9357 2014-04-25 15:35:25Z FloSoft $
+﻿// $Id: ctrlTable.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -31,11 +31,11 @@ class ctrlTable : public Window
         ctrlTable(Window* parent, unsigned int id, unsigned short x, unsigned short y, unsigned short width,  unsigned short height, TextureColor tc, glArchivItem_Font* font, unsigned short column_count, va_list liste);
         virtual ~ctrlTable(void);
 
-        /// l�scht alle Items.
+        /// lï¿½scht alle Items.
         void DeleteAllItems(void);
         /// setzt die Auswahl.
         void SetSelection(unsigned short selection, bool left = true);
-        /// f�gt eine Zeile hinzu.
+        /// fï¿½gt eine Zeile hinzu.
         void AddRow(unsigned int alwaysnull, ...);
         /// liefert den Wert eines Feldes.
         const std::string& GetItemText(unsigned short row, unsigned short column) const;
@@ -70,7 +70,7 @@ class ctrlTable : public Window
 
         virtual bool Draw_(void);
 
-        /// Gr��e �ndern
+        /// Grï¿½ï¿½e ï¿½ndern
         void Resize_(unsigned short width, unsigned short height);
         /// Setzt die Breite und Position der Buttons ohne Scrolleiste
         void ResetButtonWidths();
@@ -84,7 +84,7 @@ class ctrlTable : public Window
 
         struct COLUMN
         {
-            /// Breite der Spalten in Promille von der Tabellenl�nge
+            /// Breite der Spalten in Promille von der Tabellenlï¿½nge
             unsigned short width;
             std::string title;
             SortType sortType;

@@ -1,4 +1,4 @@
-// $Id: iwTextfile.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: iwTextfile.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 // Copyright (c) 2013 Nevik Rehnel (hai.kataker at gmx.de)
@@ -57,7 +57,7 @@ static char THIS_FILE[] = __FILE__;
 iwTextfile::iwTextfile(const std::string& filename, const std::string& title)
     : IngameWindow(CGI_README, 0xFFFF, 0xFFFF, 640, 480, title, LOADER.GetImageN("resource", 41))
 {
-    // Pfad mit gewählter Sprache auswählen
+    // Pfad mit gewÃ¤hlter Sprache auswÃ¤hlen
     std::string path = GetFilePath(FILE_PATHS[88]) + SETTINGS.language.language + "/" + filename;
 
     std::ifstream file(path.c_str());
@@ -66,7 +66,7 @@ iwTextfile::iwTextfile(const std::string& filename, const std::string& title)
 
     if(!file.good())
     {
-        // lokalisierte Vresion nicht gefunden, Standard öffnen
+        // lokalisierte Vresion nicht gefunden, Standard Ã¶ffnen
         path = FILE_PATHS[88] + filename;
         file.clear();
         file.open(path.c_str());

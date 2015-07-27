@@ -1,4 +1,4 @@
-// $Id: iwMusicPlayer.h 9357 2014-04-25 15:35:25Z FloSoft $
+Ôªø// $Id: iwMusicPlayer.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -38,8 +38,8 @@ class iwMusicPlayer : public IngameWindow
                 void Msg_EditEnter(const unsigned int ctrl_id);
         };
 
-        /// Merken, ob Ver‰nderungen an den Musikeinstellungen durchgef¸hrt wurden und ob deswegen
-        /// beim Schlieﬂen des Fensters das ganze neu gestartet werden muss
+        /// Merken, ob Ver√§nderungen an den Musikeinstellungen durchgef√ºhrt wurden und ob deswegen
+        /// beim Schlie√üen des Fensters das ganze neu gestartet werden muss
         bool changed;
 
     public:
@@ -52,7 +52,7 @@ class iwMusicPlayer : public IngameWindow
         void SetRepeats(const unsigned repeats);
         void SetRandomPlayback(const bool random_playback);
 
-        /// Gibt Werte zur¸ck
+        /// Gibt Werte zur√ºck
         void GetSegments(std::vector<std::string>& segments) const;
         unsigned GetRepeats() const;
         bool GetRandomPlayback() const;
@@ -60,7 +60,7 @@ class iwMusicPlayer : public IngameWindow
         /// Updatet die Playlist- Combo, selektiert entsprechenden Eintrag, falls vorhanden
         void UpdatePlaylistCombo(const std::string& highlight_entry);
 
-        /// Hilfsfunktion, die vollst‰ndigen Pfad zu einem Combobox-Eintrag liefert
+        /// Hilfsfunktion, die vollst√§ndigen Pfad zu einem Combobox-Eintrag liefert
         static std::string GetFullPlaylistPath(const std::string& combo_str);
 
     private:

@@ -1,4 +1,4 @@
-// $Id: nofPlaner.h 9357 2014-04-25 15:35:25Z FloSoft $
+Ôªø// $Id: nofPlaner.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -27,11 +27,11 @@ class noBuildingSite;
 /// Der Planierer
 class nofPlaner : public noFigure
 {
-        /// Was der Planierer gerade so schˆnes macht
+        /// Was der Planierer gerade so sch√∂nes macht
         enum PlanerState
         {
             STATE_FIGUREWORK = 0,
-            STATE_WALKING, /// l‰uft zum n‰chsten Punkt, um zu graben
+            STATE_WALKING, /// l√§uft zum n√§chsten Punkt, um zu graben
             STATE_PLANING /// planiert einen Punkt (Abspielen der Animation
         } state;
 

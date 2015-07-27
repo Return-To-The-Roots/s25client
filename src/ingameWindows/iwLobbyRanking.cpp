@@ -1,4 +1,4 @@
-// $Id: iwLobbyRanking.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: iwLobbyRanking.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -82,7 +82,7 @@ iwLobbyRanking::iwLobbyRanking(void)
     AddTimer(1, 60000);
     AddTimer(2, 1000);
 
-    // "Zurück"
+    // "ZurÃ¼ck"
     AddTextButton(3, 20, 370, 400, 20, TC_RED1, _("Back"), NormalFont);
 }
 
@@ -105,7 +105,7 @@ void iwLobbyRanking::Msg_ButtonClick(const unsigned int ctrl_id)
 {
     switch(ctrl_id)
     {
-        case 3: // "Zurück"
+        case 3: // "ZurÃ¼ck"
         {
             Close();
         } break;

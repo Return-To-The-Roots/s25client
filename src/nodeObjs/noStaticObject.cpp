@@ -1,4 +1,4 @@
-// $Id: noStaticObject.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+﻿// $Id: noStaticObject.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -45,7 +45,7 @@ static char THIS_FILE[] = __FILE__;
  *
  *  @param[in] id   Nr der Grafik
  *  @param[in] file Nr der Datei (0xFFFF map_?_z.lst, 0-5 mis?bobs.lst)
- *  @param[in] size Gr��e des Objekts
+ *  @param[in] size Grï¿½ï¿½e des Objekts
  *  @param[in] type Typ des Objekts
  *
  *  @author FloSoft
@@ -135,7 +135,7 @@ void noStaticObject::Draw(int x, int y)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  zerst�rt das Objekt.
+ *  zerstï¿½rt das Objekt.
  *
  *  @author FloSoft
  */

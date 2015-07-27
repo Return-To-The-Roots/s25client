@@ -1,4 +1,4 @@
-// $Id: nofWorkman.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+﻿// $Id: nofWorkman.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -117,7 +117,7 @@ void nofWorkman::HandleStateWork()
     // wir arbeiten nicht mehr
     workplace->is_working = false;
 
-    // Evtl. Sounds l�schen
+    // Evtl. Sounds löschen
     if(was_sounding)
     {
         SOUNDMANAGER.WorkingFinished(this);

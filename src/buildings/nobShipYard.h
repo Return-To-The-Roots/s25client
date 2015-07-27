@@ -1,4 +1,4 @@
-// $Id: nobShipYard.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: nobShipYard.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -23,16 +23,16 @@
 #include "nobUsual.h"
 
 
-/// Extraklasse für ein Schiffsbauer-Gebäude, da hier extra Optionen eingestellt werden müssen
+/// Extraklasse fÃ¼r ein Schiffsbauer-GebÃ¤ude, da hier extra Optionen eingestellt werden mÃ¼ssen
 class nobShipYard : public nobUsual
 {
     public:
 
-        /// Modi für den Schiffsbauer
+        /// Modi fÃ¼r den Schiffsbauer
         enum Mode
         {
             BOATS = 0, // baut kleine Boote
-            SHIPS // baut große Schiffe
+            SHIPS // baut groÃŸe Schiffe
         };
 
     private:
@@ -51,7 +51,7 @@ class nobShipYard : public nobUsual
 
         GO_Type GetGOT() const { return GOT_NOB_SHIPYARD; }
 
-        /// Gibt aktuellen Modus zurück
+        /// Gibt aktuellen Modus zurÃ¼ck
         Mode GetMode() const { return mode; }
         /// Schaltet Modus entsprechend um
         void ToggleMode();

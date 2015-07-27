@@ -1,4 +1,4 @@
-// $Id: noDisappearingEnvObject.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: noDisappearingEnvObject.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -30,7 +30,7 @@ class noDisappearingEnvObject : public noCoordBase
                                 const unsigned add_var_living_time);
         noDisappearingEnvObject(SerializedGameData* sgd, const unsigned obj_id);
 
-        /// Aufräummethoden
+        /// AufrÃ¤ummethoden
     protected:  void Destroy_noDisappearingEnvObject();
     public:     void Destroy() { Destroy_noDisappearingEnvObject(); }
         /// Serialisierungsfunktionen
@@ -42,9 +42,9 @@ class noDisappearingEnvObject : public noCoordBase
 
     protected:
 
-        /// Gibt Farbe zurück, mit der das Objekt gezeichnet werden soll
+        /// Gibt Farbe zurÃ¼ck, mit der das Objekt gezeichnet werden soll
         unsigned GetDrawColor() const;
-        /// Gibt Farbe zurück, mit der der Schatten des Objekts gezeichnet werden soll
+        /// Gibt Farbe zurÃ¼ck, mit der der Schatten des Objekts gezeichnet werden soll
         unsigned GetDrawShadowColor() const;
 
     private:

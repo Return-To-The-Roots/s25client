@@ -1,4 +1,4 @@
-// $Id: iwBuildingProductivities.cpp 9594 2015-02-01 09:40:27Z marcus $
+Ôªø// $Id: iwBuildingProductivities.cpp 9594 2015-02-01 09:40:27Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -26,10 +26,10 @@
 #include "files.h"
 
 
-/// Anzahl der angezeigten Geb‰ude
+/// Anzahl der angezeigten Geb√§ude
 const unsigned BUILDINGS_COUNT = 24;
 
-/// Reihenfolge der Geb‰ude
+/// Reihenfolge der Geb√§ude
 const BuildingType bts[BUILDINGS_COUNT] =
 {
     BLD_GRANITEMINE,
@@ -67,14 +67,14 @@ const unsigned short top_y = 30;
 const unsigned short right_x = 40;
 /// Horizontaler Abstand zwischen Bild und Prozentbar
 const unsigned short image_percent_x = 35;
-/// Horizontaler Abstand zwischen Prozentbar und n‰chstem Bild
+/// Horizontaler Abstand zwischen Prozentbar und n√§chstem Bild
 const unsigned short percent_image_x = 40;
 /// Vertikaler Abstand zwischen 2 nacheinanderfolgenden "Zeilen"
 const unsigned short distance_y = 35;
 
 /// Breite der Prozentbalken
 const unsigned short percent_width = 100;
-/// Hˆhe der Scrollbars
+/// H√∂he der Scrollbars
 const unsigned short percent_height = 18;
 
 
@@ -115,7 +115,7 @@ void iwBuildingProductivities::UpdatePercents()
     GAMECLIENT.GetLocalPlayer()->CalcProductivities(percents);
 }
 
-/// Produktivit‰ts-percentbars aktualisieren
+/// Produktivit√§ts-percentbars aktualisieren
 void iwBuildingProductivities::Msg_PaintAfter()
 {
     UpdatePercents();

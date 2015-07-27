@@ -1,4 +1,4 @@
-// $Id: SoundManager.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: SoundManager.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -59,14 +59,14 @@ void SoundManager::PlayNOSound(const unsigned sound_lst_id, noBase* const obj, c
             return;
     }
 
-    // Sound wird noch nicht gespielt --> hinzufügen und abspielen
+    // Sound wird noch nicht gespielt --> hinzufÃ¼gen und abspielen
     unsigned play_id = LOADER.GetSoundN("sound", sound_lst_id)->Play(volume, false);
 
     // Konnte er auch abgespielt werden?
 
     if(play_id != 0)
     {
-        // Dann hinzufügen zur abgespielt-Liste
+        // Dann hinzufÃ¼gen zur abgespielt-Liste
         NOSound nos = { obj, id, play_id };
         no_sounds.push_back(nos);
     }
@@ -80,7 +80,7 @@ void SoundManager::WorkingFinished(noBase* const obj)
 
     if(SETTINGS.sound.effekte == false)
         return;
-    // Alle Sounds von diesem Objekt stoppen und löschen
+    // Alle Sounds von diesem Objekt stoppen und lÃ¶schen
     for(std::list<NOSound>::iterator it = no_sounds.begin(); it != no_sounds.end();)
     {
         if(it->obj == obj)
@@ -101,7 +101,7 @@ void SoundManager::PlayBirdSounds(const unsigned short tree_count)
     if(!SETTINGS.sound.effekte)
         return;
 
-    // Abstände zwischen den Vogelsounds berechnen (je nachdem wieviel Bäume)
+    // AbstÃ¤nde zwischen den Vogelsounds berechnen (je nachdem wieviel BÃ¤ume)
     unsigned interval;
     if(1000 > tree_count * 10)
         interval = 1000 - tree_count * 10;
@@ -139,7 +139,7 @@ void SoundManager::PlayOceanBrawling(const unsigned water_percent)
             ocean_play_id = LOADER.GetSoundN("sound", 98 + rand() % 3)->Play(255, true);
         }
 
-        // Lautstärke setzen
+        // LautstÃ¤rke setzen
         AUDIODRIVER.ChangeVolume(ocean_play_id, water_percent * 2 + 55);
     }
     else

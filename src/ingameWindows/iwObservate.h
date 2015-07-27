@@ -1,4 +1,4 @@
-// $Id: iwDemolishBuilding.h
+Ôªø// $Id: iwDemolishBuilding.h
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -29,7 +29,7 @@
 class dskGameInterface;
 //class GameWorldViewer;
 
-/// Fenster, welches eine Sicherheitsabfrage vor dem Abreiﬂen eines Geb‰udes durchf¸hrt
+/// Fenster, welches eine Sicherheitsabfrage vor dem Abrei√üen eines Geb√§udes durchf√ºhrt
 class iwObservate : public IngameWindow
 {
         GameWorldView* view;

@@ -1,4 +1,4 @@
-// $Id: nofCatapultMan.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+Ôªø// $Id: nofCatapultMan.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -83,7 +83,7 @@ void nofCatapultMan::DrawWorking(int x, int y)
                 LOADER.GetImageN("rom_bobs", 1781 + (7 + step) % 6)->Draw(x - 7, y - 19, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLOR_WHITE);
             }
             //else
-            //  // Katapult schieﬂend zeichnen
+            //  // Katapult schie√üend zeichnen
             //  LOADER.GetImageN("rom_bobs", 1787+(7+wheel_steps)%6)->Draw(x-7,y-19);
 
         } break;
@@ -92,7 +92,7 @@ void nofCatapultMan::DrawWorking(int x, int y)
             int step = GAMECLIENT.Interpolate((std::abs(wheel_steps) + 3) * 2, current_ev);
 
             if(step < 2 * 3)
-                // Katapult nach Schieﬂen zeichnen (hin und her wippen
+                // Katapult nach Schie√üen zeichnen (hin und her wippen
                 LOADER.GetImageN("rom_bobs", 1787 + (step % 2) * 6 + (7 + wheel_steps) % 6)->Draw(x - 7, y - 19, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLOR_WHITE);
             else
             {
@@ -101,7 +101,7 @@ void nofCatapultMan::DrawWorking(int x, int y)
                 if(wheel_steps < 0)
                     step = -(step);
 
-                // Katapult auf dem Dach mit Stein drehend zeichnen (zur¸ck in Ausgangsposition: Richtung 4)
+                // Katapult auf dem Dach mit Stein drehend zeichnen (zur√ºck in Ausgangsposition: Richtung 4)
                 LOADER.GetImageN("rom_bobs", 1775 + (7 + wheel_steps - step) % 6)->Draw(x - 7, y - 19, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLOR_WHITE);
             }
 
@@ -138,7 +138,7 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned int id)
 
             for(std::set<nobBaseMilitary*>::iterator it = buildings.begin(); it != buildings.end(); ++it)
             {
-                // Auch ein richtiges Milit‰rgeb‰ude (kein HQ usw.),
+                // Auch ein richtiges Milit√§rgeb√§ude (kein HQ usw.),
                 if((*it)->GetGOT() == GOT_NOB_MILITARY && GAMECLIENT.GetPlayer(player)->IsPlayerAttackable((*it)->GetPlayer()))
                 {
                     // Was nicht im Nebel liegt und auch schon besetzt wurde (nicht neu gebaut)?
@@ -161,7 +161,7 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned int id)
             // Gibts evtl keine Ziele?
             if(pts.empty())
             {
-                // Weiter warten, vielleicht gibts ja sp‰ter wieder mal was
+                // Weiter warten, vielleicht gibts ja sp√§ter wieder mal was
                 current_ev = em->AddEvent(this, CATAPULT_WAIT1_LENGTH, 1);
                 StartNotWorking();
                 return;
@@ -170,39 +170,39 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned int id)
             // Waren verbrauchen
             workplace->ConsumeWares();
 
-            // Eins zuf‰llig ausw‰hlen
+            // Eins zuf√§llig ausw√§hlen
             target = pts[RANDOM.Rand(__FILE__, __LINE__, obj_id, pts.size())];
 
             // Richtung, in die sich der Katapult drehen soll, bestimmen
             unsigned char shooting_dir;
 
-            // Normale X-Distanz (ohne Beachtung der Kartenr‰nder¸berquerung)
+            // Normale X-Distanz (ohne Beachtung der Kartenr√§nder√ºberquerung)
             unsigned x_dist = std::abs(int(target.pos.x) - int(pos.x));
-            // Distanzen jeweils bei ‹berquerung des linken und rechten Randes
+            // Distanzen jeweils bei √úberquerung des linken und rechten Randes
             unsigned x_dist1 = std::abs(int(target.pos.x) - int(pos.x) + gwg->GetWidth());
             unsigned x_dist2 = std::abs(int(target.pos.x) - int(pos.x) - gwg->GetWidth());
             // Minimale, d.h. im Endeffekt reale Distanz
             unsigned min_dist_x = std::min(std::min(x_dist, x_dist1), x_dist2);
 
-            // Normale Y-Distanz (ohne Beachtung der Kartenr‰nder¸berquerung)
+            // Normale Y-Distanz (ohne Beachtung der Kartenr√§nder√ºberquerung)
             unsigned y_dist = std::abs(int(target.pos.y) - int(pos.y));
-            // Distanzen jeweils bei ‹berquerung des linken und rechten Randes
+            // Distanzen jeweils bei √úberquerung des linken und rechten Randes
             unsigned y_dist1 = std::abs(int(target.pos.y) - int(pos.y) + gwg->GetHeight());
             unsigned y_dist2 = std::abs(int(target.pos.y) - int(pos.y) - gwg->GetHeight());
             // Minimale, d.h. im Endeffekt reale Distanz
             unsigned min_dist_y = std::min(std::min(y_dist, y_dist1), y_dist2);
 
             bool side_x = (pos.x < target.pos.x);
-            if(x_dist > x_dist1 || x_dist > x_dist2) side_x = !side_x; // Wenn er ¸ber Kartengrenze schieﬂt, Richtung umkehren
+            if(x_dist > x_dist1 || x_dist > x_dist2) side_x = !side_x; // Wenn er √ºber Kartengrenze schie√üt, Richtung umkehren
             bool side_y = (pos.y < target.pos.y);
             if(y_dist > y_dist1 || y_dist > y_dist2) side_y = !side_y;
 
-            // Y-Abstand nur unwesentlich klein --> Richtung 0 und 3 (direkt gegen¸ber) nehmen
+            // Y-Abstand nur unwesentlich klein --> Richtung 0 und 3 (direkt gegen√ºber) nehmen
             if(min_dist_y <= min_dist_x / 5)
                 shooting_dir = (side_x) ? 3 : 0;
             else
             {
-                // Ansonsten noch y mit ber¸cksichtigen und je einen der 4 Quadranten nehmen
+                // Ansonsten noch y mit ber√ºcksichtigen und je einen der 4 Quadranten nehmen
                 if(side_y)
                     shooting_dir = (side_x) ? 4 : 5;
                 else
@@ -226,10 +226,10 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned int id)
         {
             // Stein in Bewegung setzen
 
-            // Soll das Geb‰ude getroffen werden (70%)
+            // Soll das Geb√§ude getroffen werden (70%)
             bool hit = (RANDOM.Rand(__FILE__, __LINE__, obj_id, 99) < 70);
 
-            // Radius f¸rs Treffen und Nicht-Treffen,  (in Pixeln), nur visuell
+            // Radius f√ºrs Treffen und Nicht-Treffen,  (in Pixeln), nur visuell
             const int RADIUS_HIT = 15; // nicht nach unten hin!
 
             // Zielkoordinaten als (Map-Koordinaten!)
@@ -242,7 +242,7 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned int id)
             }
             else
             {
-                // Ansonsten zuf‰lligen Punkt rundrum heraussuchen
+                // Ansonsten zuf√§lligen Punkt rundrum heraussuchen
                 unsigned d = RANDOM.Rand(__FILE__, __LINE__, obj_id, 6);
 
                 destMap = gwg->GetNeighbour(target.pos, d);
@@ -250,7 +250,7 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned int id)
 
             unsigned char shooting_dir = (7 + wheel_steps) % 6;
 
-            // Grˆﬂe der Welt in Pixeln bestimmen
+            // Gr√∂√üe der Welt in Pixeln bestimmen
             int world_width = gwg->GetWidth() * TR_W;
             int world_height = gwg->GetHeight() * TR_H;
 
@@ -261,8 +261,8 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned int id)
             int dest_x = int(gwg->GetTerrainX(destMap));
             int dest_y = int(gwg->GetTerrainY(destMap));
 
-            // Kartenr‰nder beachten
-            // Wenn Abstand kleiner is, den k¸rzeren Abstand ¸ber den Kartenrand w‰hlen
+            // Kartenr√§nder beachten
+            // Wenn Abstand kleiner is, den k√ºrzeren Abstand √ºber den Kartenrand w√§hlen
             if(std::abs(start_x + world_width - dest_x) < std::abs(start_x - dest_x))
                 start_x += world_width;
             else if(std::abs(start_x - world_width - dest_x) < std::abs(start_x - dest_x))
@@ -272,11 +272,11 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned int id)
             else if(std::abs(start_y - world_height - dest_y) < std::abs(start_y - dest_y))
                 start_y -= world_height;
 
-            // Bei getroffenen den Aufschlagspunkt am Geb‰ude ein bisschen variieren
+            // Bei getroffenen den Aufschlagspunkt am Geb√§ude ein bisschen variieren
             if(hit)
             {
                 dest_x += (RANDOM.Rand(__FILE__, __LINE__, obj_id, RADIUS_HIT * 2) - RADIUS_HIT);
-                // hier nicht nach unten gehen, da die T¸r (also Nullpunkt
+                // hier nicht nach unten gehen, da die T√ºr (also Nullpunkt
                 // ja schon ziemlich weit unten ist!
                 dest_y -= RANDOM.Rand(__FILE__, __LINE__, obj_id, RADIUS_HIT);
             }
@@ -284,7 +284,7 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned int id)
             // Stein erzeugen
             gwg->AddCatapultStone(new CatapultStone(target.pos, destMap, start_x, start_y, dest_x, dest_y, 80));
 
-            // Katapult wieder in Ausgangslage zur¸ckdrehen
+            // Katapult wieder in Ausgangslage zur√ºckdrehen
             current_ev = em->AddEvent(this, 15 * (std::abs(wheel_steps) + 3), 1);
 
             state = STATE_CATAPULT_BACKOFF;

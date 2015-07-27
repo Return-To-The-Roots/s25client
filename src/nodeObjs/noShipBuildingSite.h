@@ -1,4 +1,4 @@
-// $Id: noShipBuildingSite.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: noShipBuildingSite.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -33,7 +33,7 @@ class noShipBuildingSite: public noCoordBase
         void Serialize(SerializedGameData* sgd) const;
         GO_Type GetGOT() const { return GOT_SHIPBUILDINGSITE; }
 
-        /// Gibt den Eigentümer zurück
+        /// Gibt den EigentÃ¼mer zurÃ¼ck
         unsigned char GetPlayer() const { return player; }
 
         /// Das Schiff wird um eine Stufe weitergebaut
@@ -47,7 +47,7 @@ class noShipBuildingSite: public noCoordBase
 
     private:
 
-        /// Spieler, dem dieses Schiff gehört
+        /// Spieler, dem dieses Schiff gehÃ¶rt
         unsigned char player;
         /// Baufortschritt des Schiffes
         unsigned char progress;

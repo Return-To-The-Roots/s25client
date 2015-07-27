@@ -1,4 +1,4 @@
-// $Id: noSkeleton.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: noSkeleton.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -82,7 +82,7 @@ void noSkeleton::HandleEvent(const unsigned int id)
 {
     if(!type)
     {
-        // weiter verwesen, dann später sterben nach ner zufälligen Zeit
+        // weiter verwesen, dann spÃ¤ter sterben nach ner zufÃ¤lligen Zeit
         type = 1;
         current_event = em->AddEvent(this, 10000 + RANDOM.Rand(__FILE__, __LINE__, obj_id, 10000));
     }

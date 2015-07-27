@@ -1,4 +1,4 @@
-// $Id: nofHunter.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+﻿// $Id: nofHunter.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -44,7 +44,7 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-/// Maximale Distanz, die ein J�ger l�uft, um ein Tier zu jagen
+/// Maximale Distanz, die ein Jï¿½ger lï¿½uft, um ein Tier zu jagen
 const MapCoord MAX_HUNTING_DISTANCE = 50;
 
 nofHunter::nofHunter(const MapPoint pos, const unsigned char player, nobUsual* workplace)
@@ -132,9 +132,9 @@ void nofHunter::HandleDerivedEvent(const unsigned int id)
         case STATE_WAITING1:
         {
             // Fertig mit warten --> anfangen zu arbeiten
-            // in einem Quadrat um die H�tte (Kreis unn�tig, da ja die Tiere sich sowieso bewegen) Tiere suchen
+            // in einem Quadrat um die Hï¿½tte (Kreis unnï¿½tig, da ja die Tiere sich sowieso bewegen) Tiere suchen
 
-            // Unter- und Obergrenzen f�r das Quadrat bzw. Rechteck (nicht �ber Kartenr�nder hinauslesen)
+            // Unter- und Obergrenzen fï¿½r das Quadrat bzw. Rechteck (nicht ï¿½ber Kartenrï¿½nder hinauslesen)
             MapCoord fx, fy, lx, ly;
             const unsigned short SQUARE_SIZE = 19;
 
@@ -160,7 +160,7 @@ void nofHunter::HandleDerivedEvent(const unsigned int id)
                         {
                             if((*it)->GetType() == NOP_ANIMAL)
                             {
-                                // Ist das Tier �berhaupt zum Jagen geeignet?
+                                // Ist das Tier ï¿½berhaupt zum Jagen geeignet?
                                 if(!static_cast<noAnimal*>(*it)->CanHunted())
                                     continue;
 
@@ -176,10 +176,10 @@ void nofHunter::HandleDerivedEvent(const unsigned int id)
 
 
 
-            // Gibt es �berhaupt ein Tier, das ich jagen kann?
+            // Gibt es ï¿½berhaupt ein Tier, das ich jagen kann?
             if(!available_animals.empty())
             {
-                // Ein Tier zuf�llig heraussuchen
+                // Ein Tier zufï¿½llig heraussuchen
                 animal = available_animals[RANDOM.Rand(__FILE__, __LINE__, obj_id, available_animals.size())];
 
                 // Wir jagen es jetzt
@@ -198,7 +198,7 @@ void nofHunter::HandleDerivedEvent(const unsigned int id)
             }
             else
             {
-                // Weiter warten, vielleicht gibts ja sp�ter wieder mal was
+                // Weiter warten, vielleicht gibts ja spï¿½ter wieder mal was
                 current_ev = em->AddEvent(this, JOB_CONSTS[job].wait1_length, 1);
                 //tell the ai that there is nothing left to hunt!
                 GAMECLIENT.SendAIEvent(new AIEvent::Building(AIEvent::NoMoreResourcesReachable, workplace->GetPos(), workplace->GetBuildingType()), player);
@@ -217,7 +217,7 @@ void nofHunter::HandleDerivedEvent(const unsigned int id)
         {
             HandleStateEviscerating();
 
-            // Evtl. Sounds l�schen
+            // Evtl. Sounds lï¿½schen
             if(was_sounding)
             {
                 SOUNDMANAGER.WorkingFinished(this);
@@ -254,20 +254,20 @@ void nofHunter::WalkedDerived()
 
 bool nofHunter::IsShootingPointGood(const MapPoint pt)
 {
-    // Punkt muss betretbar sein und man muss ihn erreichen k�nnen
+    // Punkt muss betretbar sein und man muss ihn erreichen kï¿½nnen
     return (gwg->IsNodeForFigures(pt) && gwg->FindHumanPath(this->pos, pt, 6) != 0xFF);
 }
 
 void nofHunter::HandleStateChasing()
 {
-    // Sind wir in der N�he des Tieres?
+    // Sind wir in der Nï¿½he des Tieres?
     if(gwg->CalcDistance(pos, animal->GetPos()) < 7)
     {
         // Dann bitten wir es mal, schonmal anzuhalten und bekommen seine Koordinaten, wo es dann steht
         Point<int> animalPos(animal->HunterIsNear());
 
-        // Nun m�ssen wir drumherum einen Punkt suchen, von dem wir schie�en, der nat�rlich direkt dem Standort
-        // des Tieres gegen�berliegen muss (mit zuf�lliger Richtung beginnen)
+        // Nun mï¿½ssen wir drumherum einen Punkt suchen, von dem wir schieï¿½en, der natï¿½rlich direkt dem Standort
+        // des Tieres gegenï¿½berliegen muss (mit zufï¿½lliger Richtung beginnen)
         unsigned char doffset = RANDOM.Rand(__FILE__, __LINE__, obj_id, 6);
         shootingPos = MapPoint::Invalid();
         unsigned char d;
@@ -317,7 +317,7 @@ void nofHunter::HandleStateChasing()
         // Wurde ein Punkt gefunden?
         if(shootingPos.isValid())
         {
-            // Richtung, in die geschossen wird, bestimmen (nat�rlich die entgegengesetzte nehmen)
+            // Richtung, in die geschossen wird, bestimmen (natï¿½rlich die entgegengesetzte nehmen)
             shooting_dir = (d + doffset + 3) % 6;
             // dorthingehen
             state = STATE_HUNTER_FINDINGSHOOTINGPOINT;
@@ -353,7 +353,7 @@ void nofHunter::HandleStateFindingShootingPoint()
     // Sind wir schon da und steht das Tier schon?
     if(shootingPos == pos && animal->IsReadyForShooting())
     {
-        // dann schie�en
+        // dann schieï¿½en
         state = STATE_HUNTER_SHOOTING;
         current_ev = em->AddEvent(this, 16, 1);
     }
@@ -420,7 +420,7 @@ void nofHunter::HandleStateEviscerating()
     animal = 0;
     // Fleisch in die Hand nehmen
     ware = GD_MEAT;
-    // und zur�ck zur H�tte
+    // und zurï¿½ck zur Hï¿½tte
     StartWalkingHome();
     WalkHome();
 }
@@ -428,7 +428,7 @@ void nofHunter::HandleStateEviscerating()
 
 void nofHunter::StartWalkingHome()
 {
-    // Lebt das Tier noch, m�ssen wir ihm Bescheid sagen
+    // Lebt das Tier noch, mï¿½ssen wir ihm Bescheid sagen
     if(animal)
     {
         animal->StopHunting();
@@ -444,14 +444,14 @@ void nofHunter::WalkHome()
     MapPoint flagPos = gwg->GetNeighbour(workplace->GetPos(), 4);
     if(pos == flagPos)
     {
-        // Weiteres �bernimmt nofBuildingWorker
+        // Weiteres ï¿½bernimmt nofBuildingWorker
         WorkingReady();
     }
-    // Weg suchen und ob wir �berhaupt noch nach Hause kommen (Toleranz bei dem Weg mit einberechnen,
+    // Weg suchen und ob wir ï¿½berhaupt noch nach Hause kommen (Toleranz bei dem Weg mit einberechnen,
     // damit er nicht einfach rumirrt und wegstirbt, wenn er einmal ein paar Felder zu weit gelaufen ist)
     else if((dir = gwg->FindHumanPath(pos, flagPos, MAX_HUNTING_DISTANCE + MAX_HUNTING_DISTANCE / 4)) == 0xFF)
     {
-        // Kein Weg f�hrt mehr nach Hause--> Rumirren
+        // Kein Weg fï¿½hrt mehr nach Hause--> Rumirren
         StartWandering();
         Wander();
         // Haus Bescheid sagen
@@ -459,7 +459,7 @@ void nofHunter::WalkHome()
     }
     else
     {
-        // Alles ok, wir k�nnen hinlaufen
+        // Alles ok, wir kï¿½nnen hinlaufen
         StartWalking(dir);
     }
 }

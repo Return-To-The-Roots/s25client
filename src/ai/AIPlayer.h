@@ -1,4 +1,4 @@
-// $Id: AIPlayer.h 9577 2015-01-23 08:28:23Z marcus $
+Ôªø// $Id: AIPlayer.h 9577 2015-01-23 08:28:23Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -23,7 +23,7 @@
 
 #include "AIBase.h"
 
-/// Klasse f¸r die standardm‰ﬂige (vorerst) KI
+/// Klasse f√ºr die standardm√§√üige (vorerst) KI
 class AIPlayer : public AIBase
 {
     public:

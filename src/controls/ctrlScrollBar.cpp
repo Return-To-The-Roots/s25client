@@ -1,4 +1,4 @@
-// $Id: ctrlScrollBar.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: ctrlScrollBar.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -206,7 +206,7 @@ void ctrlScrollBar::SetPos(unsigned short scroll_pos)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  setzt die Scroll-Höhe.
+ *  setzt die Scroll-HÃ¶he.
  *
  *  @author OLiver
  */
@@ -218,7 +218,7 @@ void ctrlScrollBar::SetRange(unsigned short scroll_range)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  setzt die Seiten-Höhe.
+ *  setzt die Seiten-HÃ¶he.
  *
  *  @author OLiver
  */
@@ -279,7 +279,7 @@ bool ctrlScrollBar::Draw_(void)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  berechnet die Werte für die Scrollbar.
+ *  berechnet die Werte fÃ¼r die Scrollbar.
  *
  *  @author FloSoft
  */
@@ -311,7 +311,7 @@ void ctrlScrollBar::CalculateScrollBar(unsigned short height)
         scrollbar_height = 0;
         scroll_pos = 0;
 
-        // nicht nötig, Scrollleiste kann weg
+        // nicht nÃ¶tig, Scrollleiste kann weg
         if(visible)
         {
             visible = false;

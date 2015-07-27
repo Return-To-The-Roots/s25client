@@ -1,4 +1,4 @@
-// $Id: VideoDriverWrapper.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: VideoDriverWrapper.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -37,18 +37,18 @@ class VideoDriverWrapper : public Singleton<VideoDriverWrapper>
         /// Destruktor von @p DriverWrapper
         ~VideoDriverWrapper();
 
-        /// Läd den Treiber
+        /// LÃ¤d den Treiber
         bool LoadDriver(void);
 
         /// Erstellt das Fenster.
         bool CreateScreen(const unsigned short screen_width, const unsigned short screen_height, const bool fullscreen);
-        /// Verändert Auflösung, Fenster/Fullscreen
+        /// VerÃ¤ndert AuflÃ¶sung, Fenster/Fullscreen
         bool ResizeScreen(const unsigned short screen_width, const unsigned short screen_height, const bool fullscreen);
         // Viewport (neu) setzen
         void RenewViewport(bool onlyRenew = false);
-        // zerstört das Fenster.
+        // zerstÃ¶rt das Fenster.
         bool DestroyScreen();
-        // räumt die Texturen auf
+        // rÃ¤umt die Texturen auf
         void CleanUp();
         // erstellt eine Textur
         unsigned int GenerateTexture();
@@ -57,15 +57,15 @@ class VideoDriverWrapper : public Singleton<VideoDriverWrapper>
 
         // Swapped den Buffer
         bool SwapBuffers();
-        // liefert den Mausstatus (sollte nur beim Zeichnen der Maus verwendet werden, für alles andere die Mausmessages
+        // liefert den Mausstatus (sollte nur beim Zeichnen der Maus verwendet werden, fÃ¼r alles andere die Mausmessages
         // benutzen!!!)
         int GetMouseX();
         int GetMouseY();
 
-        /// Listet verfügbare Videomodi auf
+        /// Listet verfÃ¼gbare Videomodi auf
         void ListVideoModes(std::vector<VideoDriver::VideoMode>& video_modes) const;
 
-        /// Gibt Pointer auf ein Fenster zurück (device-dependent!), HWND unter Windows
+        /// Gibt Pointer auf ein Fenster zurÃ¼ck (device-dependent!), HWND unter Windows
         void* GetMapPointer() const;
 
         unsigned short GetScreenWidth()  const
@@ -93,10 +93,10 @@ class VideoDriverWrapper : public Singleton<VideoDriverWrapper>
         // Viewpoint und Co initialisieren
         bool Initialize();
 
-        // prüft ob eine Extension verfügbar ist
+        // prÃ¼ft ob eine Extension verfÃ¼gbar ist
         bool hasExtension(const char* extension);
 
-        // lädt eine Funktion aus den Extensions
+        // lÃ¤dt eine Funktion aus den Extensions
         void* loadExtension(const char* extension);
 
         // Alle (im Programm benutzen) Extensions laden

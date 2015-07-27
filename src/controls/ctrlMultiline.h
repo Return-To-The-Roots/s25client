@@ -1,4 +1,4 @@
-// $Id: ctrlMultiline.h 9357 2014-04-25 15:35:25Z FloSoft $
+﻿// $Id: ctrlMultiline.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -35,7 +35,7 @@ class ctrlMultiline : public Window
         //void AddText(const std::string& text, unsigned int color);
         void AddString(const std::string& str, unsigned int color, bool scroll = true);
         unsigned GetLineCount() { return unsigned(lines.size()); }
-        /// Gibt den index-ten Eintrag zur�ck
+        /// Gibt den index-ten Eintrag zurück
         const std::string& GetLine(const unsigned index) const { return lines[index].str; }
         void SetLine(const unsigned index, const std::string& str, unsigned int color);
 

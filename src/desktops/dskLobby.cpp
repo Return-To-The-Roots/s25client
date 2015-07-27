@@ -1,4 +1,4 @@
-// $Id: dskLobby.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: dskLobby.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -65,13 +65,13 @@ dskLobby::dskLobby() : Desktop(LOADER.GetImageN("setup013", 0)), serverinfo(NULL
     // Copyright
     AddText(2, 800, 600, _("\xA9 2005 - 2011 Settlers Freaks"), COLOR_YELLOW, glArchivItem_Font::DF_RIGHT | glArchivItem_Font::DF_BOTTOM, NormalFont);
 
-    // "Zurück"
+    // "ZurÃ¼ck"
     AddTextButton(3, 530, 530, 250, 22, TC_RED1, _("Back"), NormalFont);
     // "Verbinden"
     AddTextButton(4, 530, 470, 250, 22, TC_GREEN2, _("Connect"), NormalFont);
     // "Internet Ranking"
     AddTextButton(5, 530, 500, 250, 22, TC_GREEN2, _("Internet Ranking"), NormalFont);
-    // "Server hinzufügen"
+    // "Server hinzufÃ¼gen"
     AddTextButton(6, 530, 440, 250, 22, TC_GREEN2, _("Add Server"), NormalFont);
 
     // Gameserver-Tabelle - "ID", "Server", "Karte", "Spieler", "Version", "Ping"
@@ -119,7 +119,7 @@ void dskLobby::Msg_ButtonClick(const unsigned int ctrl_id)
 {
     switch(ctrl_id)
     {
-        case 3: // Zurück
+        case 3: // ZurÃ¼ck
         {
             LOBBYCLIENT.Stop();
             WINDOWMANAGER.Switch(new dskMultiPlayer);
@@ -153,7 +153,7 @@ void dskLobby::Msg_ButtonClick(const unsigned int ctrl_id)
             LOBBYCLIENT.SendRankingListRequest();
             WINDOWMANAGER.Show(new iwLobbyRanking, true);
         } break;
-        case 6: // GameServer hinzufügen
+        case 6: // GameServer hinzufÃ¼gen
         {
             if(SETTINGS.proxy.typ != 0)
                 WINDOWMANAGER.Show(new iwMsgbox(_("Sorry!"), _("You can't create a game while a proxy server is active\nDisable the use of a proxy server first!"), this, MSB_OK, MSB_EXCLAMATIONGREEN, 1));

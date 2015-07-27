@@ -1,4 +1,4 @@
-// $Id: ctrlList.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: ctrlList.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -33,22 +33,22 @@ class ctrlList : public Window
         /// Destruktor von @p ctrlList.
         virtual ~ctrlList(void);
 
-        /// Größe verändern
+        /// GrÃ¶ÃŸe verÃ¤ndern
         void Resize_(unsigned short width, unsigned short height);
 
-        /// Neuen String zur Listbox hinzufügen.
+        /// Neuen String zur Listbox hinzufÃ¼gen.
         void AddString(const std::string& text);
-        /// Verändert einen String
+        /// VerÃ¤ndert einen String
         void SetString(const std::string& text, const unsigned id);
         /// Listbox leeren.
         void DeleteAllItems(void);
         /// liefert den Wert einer Zeile.
         const std::string& GetItemText(unsigned short line) const;
-        /// liefert den Wert der aktuell gewählten Zeile.
+        /// liefert den Wert der aktuell gewÃ¤hlten Zeile.
         const std::string& GetSelItemText(void) const { return GetItemText(selection); };
         /// Vertauscht zwei Zeilen.
         void Swap(unsigned short first, unsigned short second);
-        /// Löscht ein Element
+        /// LÃ¶scht ein Element
         void Remove(const unsigned short index);
 
         unsigned short GetLineCount(void) const { return static_cast<unsigned short>(lines.size()); }

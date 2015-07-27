@@ -1,4 +1,4 @@
-// $Id: dskGameLoader.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+Ôªø// $Id: dskGameLoader.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -49,7 +49,7 @@ static char THIS_FILE[] = __FILE__;
 ///////////////////////////////////////////////////////////////////////////////
 /**
  *  Konstruktor von @p dskGameLoader.
- *  Startet das Spiel und l‰dt alles Notwendige.
+ *  Startet das Spiel und l√§dt alles Notwendige.
  *
  *  @author FloSoft
  */
@@ -191,7 +191,7 @@ void dskGameLoader::Msg_Timer(const unsigned int ctrl_id)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  (Lobby-)Status: Benutzerdefinierter Fehler (kann auch Conn-Loss o.‰ sein)
+ *  (Lobby-)Status: Benutzerdefinierter Fehler (kann auch Conn-Loss o.√§ sein)
  *
  *  @author FloSoft
  */

@@ -1,4 +1,4 @@
-// $Id: iwBuildings.cpp 9595 2015-02-01 09:40:54Z marcus $
+Ôªø// $Id: iwBuildings.cpp 9595 2015-02-01 09:40:54Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -40,7 +40,7 @@
 
 const unsigned BUILDINGS_COUNT = 32;
 
-/// Reihenfolge der Geb‰ude
+/// Reihenfolge der Geb√§ude
 const BuildingType bts[BUILDINGS_COUNT] =
 {
     BLD_BARRACKS,
@@ -91,7 +91,7 @@ const unsigned short font_distance_y = 20;
 /// Konstruktor von @p iwMilitary.
 iwBuildings::iwBuildings(GameWorldViewer* const gwv, dskGameInterface* const gi) : IngameWindow(CGI_BUILDINGS, 0xFFFE, 0xFFFE, 185, 480, _("Buildings"), LOADER.GetImageN("resource", 41)),gwv(gwv),gi(gi)
 {
-    // Symbole f¸r die einzelnen Geb‰ude erstellen
+    // Symbole f√ºr die einzelnen Geb√§ude erstellen
     for(unsigned short y = 0; y < BUILDINGS_COUNT / 4 + (BUILDINGS_COUNT % 4 > 0 ? 1 : 0); ++y)
     {
         for(unsigned short x = 0; x < ((y == BUILDINGS_COUNT / 4) ? BUILDINGS_COUNT % 4 : 4); ++x)
@@ -108,7 +108,7 @@ iwBuildings::iwBuildings(GameWorldViewer* const gwv, dskGameInterface* const gi)
 
 }
 
-/// Anzahlen der Geb‰ude zeichnen
+/// Anzahlen der Geb√§ude zeichnen
 void iwBuildings::Msg_PaintAfter()
 {
     // Anzahlen herausfinden
@@ -116,7 +116,7 @@ void iwBuildings::Msg_PaintAfter()
 
     GAMECLIENT.GetLocalPlayer()->GetBuildingCount(bc);
 
-    // Anzahlen unter die Geb‰ude schreiben
+    // Anzahlen unter die Geb√§ude schreiben
     for(unsigned short y = 0; y < BUILDINGS_COUNT / 4 + (BUILDINGS_COUNT % 4 > 0 ? 1 : 0); ++y)
     {
         for(unsigned short x = 0; x < ((y == BUILDINGS_COUNT / 4) ? BUILDINGS_COUNT % 4 : 4); ++x)

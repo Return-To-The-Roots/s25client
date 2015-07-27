@@ -1,4 +1,4 @@
-// $Id: nofDefender.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: nofDefender.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -39,7 +39,7 @@ class nofDefender : public nofActiveSoldier
 
         /// wenn man gelaufen ist
         void Walked();
-        /// Sagt den verschiedenen Zielen Bescheid, dass wir doch nicht mehr kommen können
+        /// Sagt den verschiedenen Zielen Bescheid, dass wir doch nicht mehr kommen kÃ¶nnen
         void InformTargetsAboutCancelling();
 
         /// The derived classes regain control after a fight of nofActiveSoldier
@@ -52,7 +52,7 @@ class nofDefender : public nofActiveSoldier
         nofDefender(nofPassiveSoldier* other, nofAttacker* const attacker);
         nofDefender(SerializedGameData* sgd, const unsigned obj_id);
 
-        /// Aufräummethoden
+        /// AufrÃ¤ummethoden
     protected:  void Destroy_nofDefender() { Destroy_nofActiveSoldier(); }
     public:     void Destroy() { Destroy_nofDefender(); }
 
@@ -63,14 +63,14 @@ class nofDefender : public nofActiveSoldier
         GO_Type GetGOT() const { return GOT_NOF_DEFENDER; }
 
         /// Der Verteidiger geht gerade rein und es kommt ein neuer Angreifer an die Flagge, hiermit wird der Ver-
-        /// teidiger darüber informiert, damit er dann gleich wieder umdrehen kann
+        /// teidiger darÃ¼ber informiert, damit er dann gleich wieder umdrehen kann
         void NewAttacker(nofAttacker* attacker) { this->attacker = attacker; }
         /// Der Angreifer konnte nicht mehr an die Flagge kommen
         void AttackerArrested();
 
-        /// Wenn ein Heimat-Militärgebäude bei Missionseinsätzen zerstört wurde
+        /// Wenn ein Heimat-MilitÃ¤rgebÃ¤ude bei MissionseinsÃ¤tzen zerstÃ¶rt wurde
         void HomeDestroyed();
-        /// Wenn er noch in der Warteschleife vom Ausgangsgebäude hängt und dieses zerstört wurde
+        /// Wenn er noch in der Warteschleife vom AusgangsgebÃ¤ude hÃ¤ngt und dieses zerstÃ¶rt wurde
         void HomeDestroyedAtBegin();
         /// Wenn ein Kampf gewonnen wurde
         void WonFighting();

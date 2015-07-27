@@ -1,4 +1,4 @@
-// $Id: iwMerchandiseStatistics.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: iwMerchandiseStatistics.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -33,20 +33,20 @@ class iwMerchandiseStatistics : public IngameWindow
         ~iwMerchandiseStatistics();
 
     private:
-        /// Malt die bunten Kästchen über den Buttons
+        /// Malt die bunten KÃ¤stchen Ã¼ber den Buttons
         void DrawRectangles();
         /// Zeichnet das Achsensystem
         void DrawAxis();
         /// Zeichnet die Statistikdaten (TODO)
         void DrawStatistic();
 
-        // Die Farben für die einzelnen Warenlinien
+        // Die Farben fÃ¼r die einzelnen Warenlinien
         static const unsigned int BarColors[14];
 
         // Aktueller Zeitbereich
         StatisticTime currentTime;
 
-        // Textelemente für die verschiedenen Zeitbereiche
+        // Textelemente fÃ¼r die verschiedenen Zeitbereiche
         std::vector<ctrlText*> timeAnnotations;
 
         // Maximalwert der y-Achse

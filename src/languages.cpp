@@ -1,4 +1,4 @@
-// $Id: languages.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+﻿// $Id: languages.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -70,7 +70,7 @@ void Languages::loadLanguages()
     // Sprachen sortieren
     std::sort(languages.begin(), languages.end(), Language::compare);
 
-    // Systemsprache hinzuf�gen
+    // Systemsprache hinzufügen
     Language l(gettext_noop("System language"), "");
     languages.insert(languages.begin(), l);
 

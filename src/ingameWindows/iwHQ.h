@@ -1,4 +1,4 @@
-// $Id: iwHQ.h 9592 2015-02-01 09:39:38Z marcus $
+﻿// $Id: iwHQ.h 9592 2015-02-01 09:39:38Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //

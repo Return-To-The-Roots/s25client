@@ -1,4 +1,4 @@
-// $Id: noFlag.cpp 9588 2015-02-01 09:37:32Z marcus $
+ï»¿// $Id: noFlag.cpp 9588 2015-02-01 09:37:32Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -79,7 +79,7 @@ noFlag::noFlag(const MapPoint pos,
         }
     }
 
-    // auf Wasseranteile prüfen
+    // auf Wasseranteile prÃ¼fen
     for(unsigned char i = 0; i < 6; ++i)
     {
         if(gwg->GetTerrainAround(pos, i) == 14)
@@ -208,7 +208,7 @@ void noFlag::Draw(int x, int y)
 ///////////////////////////////////////////////////////////////////////////////
 /**
  *  Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung"
- *  für den Fog of War.
+ *  fÃ¼r den Fog of War.
  *
  *  @author OLiver
  */
@@ -231,7 +231,7 @@ void noFlag::AddWare(Ware* ware)
         {
             wares[i] = ware;
 
-            // Träger Bescheid sagen
+            // TrÃ¤ger Bescheid sagen
             if(ware->GetNextDir() != 0xFF)
                 routes[ware->GetNextDir()]->AddWareJob(this);
 
@@ -242,7 +242,7 @@ void noFlag::AddWare(Ware* ware)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Gibt die Anzahl der Waren zurück, die an der Flagge liegen.
+ *  Gibt die Anzahl der Waren zurÃ¼ck, die an der Flagge liegen.
  *
  *  @author OLiver
  */
@@ -258,11 +258,11 @@ unsigned noFlag::GetWareCount() const
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- * Wählt eine Ware von einer Flagge aus (anhand der Transportreihenfolge),
- * entfernt sie von der Flagge und gibt sie zurück.
+ * WÃ¤hlt eine Ware von einer Flagge aus (anhand der Transportreihenfolge),
+ * entfernt sie von der Flagge und gibt sie zurÃ¼ck.
  *
  * wenn swap_wares true ist, bedeutet dies, dass Waren nur ausgetauscht werden
- * und somit nicht die Träger benachrichtigt werden müssen.
+ * und somit nicht die TrÃ¤ger benachrichtigt werden mÃ¼ssen.
  *
  *  @author OLiver
  */
@@ -270,10 +270,10 @@ Ware* noFlag::SelectWare(const unsigned char dir, const bool swap_wares, const n
 {
     Ware* best_ware = NULL;
 
-    // Index merken, damit wir die enstprechende Ware dann entfernen können
+    // Index merken, damit wir die enstprechende Ware dann entfernen kÃ¶nnen
     unsigned best_ware_index = 0xFF;
 
-    // Die mit der niedrigsten, d.h. höchsten Priorität wird als erstes transportiert
+    // Die mit der niedrigsten, d.h. hÃ¶chsten PrioritÃ¤t wird als erstes transportiert
     for(unsigned char i = 0; i < 8; ++i)
     {
         if(wares[i])
@@ -301,20 +301,20 @@ Ware* noFlag::SelectWare(const unsigned char dir, const bool swap_wares, const n
     if(best_ware)
         wares[best_ware_index] = NULL;
 
-    // ggf. anderen Trägern Bescheid sagen, aber nicht dem, der die Ware aufgehoben hat!
+    // ggf. anderen TrÃ¤gern Bescheid sagen, aber nicht dem, der die Ware aufgehoben hat!
     routes[dir]->WareJobRemoved(carrier);
 
     if(!swap_wares)
     {
-        // Wenn nun wieder ein Platz frei ist, allen Wegen rundrum sowie evtl Warenhäusern
-        // Bescheid sagen, die evtl waren, dass sie wieder was ablegen können
+        // Wenn nun wieder ein Platz frei ist, allen Wegen rundrum sowie evtl WarenhÃ¤usern
+        // Bescheid sagen, die evtl waren, dass sie wieder was ablegen kÃ¶nnen
         for(unsigned char i = 0; i < 6; ++i)
         {
             if(routes[i])
             {
                 if(routes[i]->GetLength() == 1)
                 {
-                    // Gebäude?
+                    // GebÃ¤ude?
 
                     if(gwg->GetSpecObj<noBase>(gwg->GetNeighbour(pos, 1))->GetType() == NOP_BUILDING)
                     {
@@ -324,7 +324,7 @@ Ware* noFlag::SelectWare(const unsigned char dir, const bool swap_wares, const n
                 }
                 else
                 {
-                    // Richtiger Weg --> Träger Bescheid sagen
+                    // Richtiger Weg --> TrÃ¤ger Bescheid sagen
                     for(unsigned char c = 0; c < 2; ++c)
                     {
                         if(routes[i]->hasCarrier(c))
@@ -347,17 +347,17 @@ Ware* noFlag::SelectWare(const unsigned char dir, const bool swap_wares, const n
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Gibt Wegstrafpunkte für das Pathfinden für Waren, die in eine bestimmte
- *  Richtung noch transportiert werden müssen.
+ *  Gibt Wegstrafpunkte fÃ¼r das Pathfinden fÃ¼r Waren, die in eine bestimmte
+ *  Richtung noch transportiert werden mÃ¼ssen.
  *
  *  @author OLiver
  */
 unsigned short noFlag::GetPunishmentPoints(const unsigned char dir) const
 {
-    // Waren zählen, die in diese Richtung transportiert werden müssen
+    // Waren zÃ¤hlen, die in diese Richtung transportiert werden mÃ¼ssen
     unsigned short points = GetWaresCountForRoad(dir) << 1;
 
-    // Wenn kein Träger auf der Straße ist, gibts nochmal extra satte Strafpunkte
+    // Wenn kein TrÃ¤ger auf der StraÃŸe ist, gibts nochmal extra satte Strafpunkte
     if(!routes[dir]->isOccupied())
         points += 500;
 	else if (routes[dir]->hasCarrier(0) && !routes[dir]->getCarrier(0)->GetCarrierState() && !routes[dir]->hasCarrier(1)) //no donkey and the normal carrier has been ordered from the warehouse but has not yet arrived
@@ -368,7 +368,7 @@ unsigned short noFlag::GetPunishmentPoints(const unsigned char dir) const
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Zerstört evtl. vorhandenes Gebäude bzw. Baustelle vor der Flagge.
+ *  ZerstÃ¶rt evtl. vorhandenes GebÃ¤ude bzw. Baustelle vor der Flagge.
  *
  *  @author OLiver
  */
@@ -385,7 +385,7 @@ void noFlag::DestroyAttachedBuilding()
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Baut normale Flaggen zu "gloriösen" aus bei Eselstraßen.
+ *  Baut normale Flaggen zu "gloriÃ¶sen" aus bei EselstraÃŸen.
  *
  *  @author OLiver
  */
@@ -397,13 +397,13 @@ void noFlag::Upgrade()
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Feind übernimmt die Flagge.
+ *  Feind Ã¼bernimmt die Flagge.
  *
  *  @author OLiver
  */
 void noFlag::Capture(const unsigned char new_owner)
 {
-    // Alle Straßen um mich herum zerstören bis auf die zum Gebäude (also Nr. 1)
+    // Alle StraÃŸen um mich herum zerstÃ¶ren bis auf die zum GebÃ¤ude (also Nr. 1)
     for(unsigned char i = 0; i < 6; ++i)
     {
         if(i != 1)
@@ -426,13 +426,13 @@ void noFlag::Capture(const unsigned char new_owner)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Ist diese Flagge für eine bestimmte Lagerhausflüchtlingsgruppe (BWU) nicht zugänglich?
+ *  Ist diese Flagge fÃ¼r eine bestimmte LagerhausflÃ¼chtlingsgruppe (BWU) nicht zugÃ¤nglich?
  *
  *  @author OLiver
  */
 bool noFlag::IsImpossibleForBWU(const unsigned bwu_id) const
 {
-    // Zeitintervall, in der die Zugänglichkeit der Flaggen von einer bestimmten BWU überprüft wird
+    // Zeitintervall, in der die ZugÃ¤nglichkeit der Flaggen von einer bestimmten BWU Ã¼berprÃ¼ft wird
     const unsigned int MAX_BWU_INTERVAL = 2000;
 
     // BWU-ID erstmal suchen
@@ -440,11 +440,11 @@ bool noFlag::IsImpossibleForBWU(const unsigned bwu_id) const
     {
         if(bwus[i].id == bwu_id)
         {
-            // Wenn letzter TÜV noch nicht zu lange zurückliegt, können wir sie als unzugänglich zurückgeben
+            // Wenn letzter TÃœV noch nicht zu lange zurÃ¼ckliegt, kÃ¶nnen wir sie als unzugÃ¤nglich zurÃ¼ckgeben
             if(GAMECLIENT.GetGFNumber() - bwus[i].last_gf <= MAX_BWU_INTERVAL)
                 return true;
 
-            // ansonsten nicht, evtl ist sie ja jetzt mal wieder zugänglich, sollte also mal neu geprüft werden
+            // ansonsten nicht, evtl ist sie ja jetzt mal wieder zugÃ¤nglich, sollte also mal neu geprÃ¼ft werden
             else
                 return false;
         }
@@ -455,7 +455,7 @@ bool noFlag::IsImpossibleForBWU(const unsigned bwu_id) const
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Hinzufügen, dass diese Flagge für eine bestimmte Lagerhausgruppe nicht zugänglich ist.
+ *  HinzufÃ¼gen, dass diese Flagge fÃ¼r eine bestimmte Lagerhausgruppe nicht zugÃ¤nglich ist.
  *
  *  @author OLiver
  */
@@ -471,7 +471,7 @@ void noFlag::ImpossibleForBWU(const unsigned bwu_id)
         }
     }
 
-    // Gibts noch nicht, dann den ältesten BWU-Account raussuchen und den überschreiben
+    // Gibts noch nicht, dann den Ã¤ltesten BWU-Account raussuchen und den Ã¼berschreiben
     unsigned oldest_gf = 0xFFFFFFFF;
     unsigned oldest_account_id = 0;
 
@@ -479,13 +479,13 @@ void noFlag::ImpossibleForBWU(const unsigned bwu_id)
     {
         if(bwus[i].last_gf < oldest_gf)
         {
-            // Neuer ältester
+            // Neuer Ã¤ltester
             oldest_gf = bwus[i].last_gf;
             oldest_account_id = i;
         }
     }
 
-    // Den ältesten dann schließlich überschreiben
+    // Den Ã¤ltesten dann schlieÃŸlich Ã¼berschreiben
     bwus[oldest_account_id].id = bwu_id;
     bwus[oldest_account_id].last_gf = oldest_gf;
 }

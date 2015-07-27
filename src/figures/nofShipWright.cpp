@@ -1,4 +1,4 @@
-///////////////////////////////////////////////////////////////////////////////
+Ôªø///////////////////////////////////////////////////////////////////////////////
 // Header
 #include "defines.h"
 #include "nofShipWright.h"
@@ -16,7 +16,7 @@ nofShipWright::nofShipWright(const MapPoint pos, const unsigned char player, nob
 
 const unsigned SHIPWRIGHT_RADIUS = 8;
 const unsigned SHIPWRIGHT_WALKING_DISTANCE = 15;
-/// Arbeitszeit des Schiffsbauers beim Bauen von groﬂen Schiffen
+/// Arbeitszeit des Schiffsbauers beim Bauen von gro√üen Schiffen
 const unsigned WORKING_TIME_SHIPS = 70;
 
 
@@ -33,16 +33,16 @@ void nofShipWright::HandleDerivedEvent(const unsigned int id)
     {
         case STATE_WAITING1:
         {
-            // Herausfinden, was der Schiffsbauer als n‰chstes bauen soll
+            // Herausfinden, was der Schiffsbauer als n√§chstes bauen soll
             if(dynamic_cast<nobShipYard*>(workplace)->GetMode() == nobShipYard::BOATS)
                 // in Handwerksmanier Boote herstellen
                 nofWorkman::HandleStateWaiting1();
             else
             {
-                // Verf¸gbare Punkte, die geeignete Pl‰tze darstellen w¸rden
+                // Verf√ºgbare Punkte, die geeignete Pl√§tze darstellen w√ºrden
                 std::vector<ShipPoint> available_points;
 
-                // Wege m¸ssen immer von der Flagge aus berechnet werden
+                // Wege m√ºssen immer von der Flagge aus berechnet werden
                 MapPoint flagPos = gwg->GetNeighbour(pos, 4);
                 for(MapCoord tx = gwg->GetXA(pos, 0), r = 1; r <= SHIPWRIGHT_RADIUS; tx = gwg->GetXA(tx, pos.y, 0), ++r)
                 {
@@ -60,7 +60,7 @@ void nofShipWright::HandleDerivedEvent(const unsigned int id)
                             // Schiff?
                             if(obj->GetGOT() == GOT_SHIPBUILDINGSITE)
                             {
-                                // Platz noch nicht reserviert und gehˆrt das Schiff auch mir?
+                                // Platz noch nicht reserviert und geh√∂rt das Schiff auch mir?
                                 unsigned char first_dir = 0xFF;
                                 if(!gwg->GetNode(pos).reserved &&
                                         static_cast<noShipBuildingSite*>(obj)->GetPlayer() == player &&
@@ -73,7 +73,7 @@ void nofShipWright::HandleDerivedEvent(const unsigned int id)
                     }
                 }
 
-                // Kein Schiff im Bau gefunden? Dann Pl‰tzchen f¸r ein neues Schiff suchen
+                // Kein Schiff im Bau gefunden? Dann Pl√§tzchen f√ºr ein neues Schiff suchen
                 if(available_points.empty())
                 {
                     for(MapCoord tx = gwg->GetXA(pos, 0), r = 1; r <= SHIPWRIGHT_RADIUS; tx = gwg->GetXA(tx, pos.y, 0), ++r)
@@ -101,7 +101,7 @@ void nofShipWright::HandleDerivedEvent(const unsigned int id)
                 // Punkte gefunden?
                 if(!available_points.empty())
                 {
-                    // Einen Punkt zuf‰llig ausw‰hlen und dorthin laufen
+                    // Einen Punkt zuf√§llig ausw√§hlen und dorthin laufen
                     ShipPoint p = available_points[RANDOM.Rand(__FILE__, __LINE__, obj_id, available_points.size())];
                     dest = p.pos;
                     StartWalkingToShip(p.first_dir);
@@ -110,28 +110,28 @@ void nofShipWright::HandleDerivedEvent(const unsigned int id)
                 {
                     // Nichts zu arbeiten gefunden
                     StartNotWorking();
-                    // Weiter warten, vielleicht gibts ja sp‰ter wieder mal was
+                    // Weiter warten, vielleicht gibts ja sp√§ter wieder mal was
                     current_ev = em->AddEvent(this, JOB_CONSTS[job].wait1_length, 1);
                 }
             }
         } break;
         case STATE_WORK:
         {
-            // Sind wir an unserem Arbeitsplatz (dem Geb‰ude), wenn wir die Arbeit beendet haben, bauen wir nur Boote,
-            // ansonsten sind wir an unserem Schiff und bauen groﬂe Schiffe
+            // Sind wir an unserem Arbeitsplatz (dem Geb√§ude), wenn wir die Arbeit beendet haben, bauen wir nur Boote,
+            // ansonsten sind wir an unserem Schiff und bauen gro√üe Schiffe
             if(workplace->GetPos() == pos)
                 // Boote bauen
                 nofWorkman::HandleStateWork();
             else
             {
-                // fertig mit Arbeiten --> dann m¸ssen die "Folgen des Arbeitens" ausgef¸hrt werden
+                // fertig mit Arbeiten --> dann m√ºssen die "Folgen des Arbeitens" ausgef√ºhrt werden
                 WorkFinished();
                 // Objekt wieder freigeben
                 gwg->GetNode(pos).reserved = false;
                 // Wieder nach Hause gehen
                 StartWalkingHome();
 
-                // Evtl. Sounds lˆschen
+                // Evtl. Sounds l√∂schen
                 if(was_sounding)
                 {
                     SOUNDMANAGER.WorkingFinished(this);
@@ -172,7 +172,7 @@ void nofShipWright::StartWalkingToShip(const unsigned char first_dir)
     workplace->is_working = true;
     // Waren verbrauchen
     workplace->ConsumeWares();
-    // Punkt f¸r uns reservieren
+    // Punkt f√ºr uns reservieren
     gwg->GetNode(dest).reserved = true;;
     // Anfangen zu laufen (erstmal aus dem Haus raus!)
     StartWalking(4);
@@ -180,7 +180,7 @@ void nofShipWright::StartWalkingToShip(const unsigned char first_dir)
     StopNotWorking();
 }
 
-/// Ist ein bestimmter Punkt auf der Karte f¸r den Schiffsbau geeignet
+/// Ist ein bestimmter Punkt auf der Karte f√ºr den Schiffsbau geeignet
 /// poc: differene to original game: points at a sea which cant have a harbor are invalid (original as long as there is 1 harborpoint at any sea on the map any sea is valid)
 bool nofShipWright::IsPointGood(const MapPoint pt) const
 {
@@ -213,12 +213,12 @@ void nofShipWright::WalkToWorkpoint()
     {
         // Punkt freigeben
         gwg->GetNode(dest).reserved = false;;
-        // Kein Weg f¸hrt mehr zum Ziel oder Punkt ist nich mehr in Ordnung --> wieder nach Hause gehen
+        // Kein Weg f√ºhrt mehr zum Ziel oder Punkt ist nich mehr in Ordnung --> wieder nach Hause gehen
         StartWalkingHome();
     }
     else
     {
-        // Alles ok, wir kˆnnen hinlaufen
+        // Alles ok, wir k√∂nnen hinlaufen
         StartWalking(dir);
     }
 }
@@ -226,7 +226,7 @@ void nofShipWright::WalkToWorkpoint()
 void nofShipWright::StartWalkingHome()
 {
     state = STATE_WALKINGHOME;
-    // Fahne vor dem Geb‰ude anpeilen
+    // Fahne vor dem Geb√§ude anpeilen
     dest = gwg->GetNeighbour(workplace->GetPos(), 4);
 
     // Zu Laufen anfangen
@@ -238,13 +238,13 @@ void nofShipWright::WalkHome()
     // Sind wir zu Hause angekommen? (genauer an der Flagge !!)
     if(pos == dest)
     {
-        // Weiteres ¸bernimmt nofBuildingWorker
+        // Weiteres √ºbernimmt nofBuildingWorker
         WorkingReady();
     }
-    // Weg suchen und ob wir ¸berhaupt noch nach Hause kommen
+    // Weg suchen und ob wir √ºberhaupt noch nach Hause kommen
     else if((dir = gwg->FindHumanPath(pos, dest, SHIPWRIGHT_WALKING_DISTANCE)) == 0xFF)
     {
-        // Kein Weg f¸hrt mehr nach Hause--> Rumirren
+        // Kein Weg f√ºhrt mehr nach Hause--> Rumirren
         StartWandering();
         Wander();
         // Haus Bescheid sagen
@@ -253,7 +253,7 @@ void nofShipWright::WalkHome()
     }
     else
     {
-        // Alles ok, wir kˆnnen hinlaufen
+        // Alles ok, wir k√∂nnen hinlaufen
         StartWalking(dir);
     }
 }
@@ -267,18 +267,18 @@ void nofShipWright::WorkAborted()
 }
 
 
-/// Der Schiffsbauer hat einen Bauschritt bew‰ltigt und geht wieder zur¸ck zum Haus
+/// Der Schiffsbauer hat einen Bauschritt bew√§ltigt und geht wieder zur√ºck zum Haus
 void nofShipWright::WorkFinished()
 {
-    // Befindet sich an dieser Stelle schon ein Schiff oder m¸ssen wir es erst noch hinsetzen?
+    // Befindet sich an dieser Stelle schon ein Schiff oder m√ºssen wir es erst noch hinsetzen?
     if(gwg->GetGOT(pos) != GOT_SHIPBUILDINGSITE)
     {
-        // Ggf Zierobjekte lˆschen
+        // Ggf Zierobjekte l√∂schen
         noBase* obj = gwg->GetSpecObj<noBase>(pos);
         if(obj)
         {
             if(obj->GetType() != NOP_ENVIRONMENT)
-                // Mittlerweile wurde anderes Objekt hierhin gesetzt --> kˆnnen kein Schiff mehr bauen
+                // Mittlerweile wurde anderes Objekt hierhin gesetzt --> k√∂nnen kein Schiff mehr bauen
                 return;
 
             obj->Destroy();
@@ -287,7 +287,7 @@ void nofShipWright::WorkFinished()
 
         // Baustelle setzen
         gwg->SetNO(new noShipBuildingSite(pos, player), pos);
-        // Baupl‰tze drumrum neu berechnen
+        // Baupl√§tze drumrum neu berechnen
         gwg->RecalcBQAroundPointBig(pos);
     }
 

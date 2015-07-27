@@ -1,4 +1,4 @@
-// $Id: iwMainMenu.cpp 9595 2015-02-01 09:40:54Z marcus $
+Ôªø// $Id: iwMainMenu.cpp 9595 2015-02-01 09:40:54Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -78,9 +78,9 @@ iwMainMenu::iwMainMenu(GameWorldViewer* const gwv, dskGameInterface* const gi)
     // Inventur
     AddImageButton( 6, 138,  70,  39, 44, TC_GREY, LOADER.GetImageN("io", 214), _("Stock"));
 
-    // Geb‰ude
+    // Geb√§ude
     AddImageButton( 7,  12, 118,  53, 44, TC_GREY, LOADER.GetImageN("io", 136), _("Productivity"));
-    // Milit‰r
+    // Milit√§r
     AddImageButton( 8,  68, 118,  53, 44, TC_GREY, LOADER.GetImageN("io", 133), _("Military"));
     // Schiffe
     AddImageButton( 9, 124, 118,  53, 44, TC_GREY, LOADER.GetImageN("io", 175), _("Ship register"));
@@ -130,7 +130,7 @@ void iwMainMenu::Msg_ButtonClick(const unsigned int ctrl_id)
         {
             WINDOWMANAGER.Show(new iwMerchandiseStatistics);
         } break;
-        case 5: // Geb‰udestatistik
+        case 5: // Geb√§udestatistik
         {
             WINDOWMANAGER.Show(new iwBuildings(gwv,gi));
         } break;
@@ -138,11 +138,11 @@ void iwMainMenu::Msg_ButtonClick(const unsigned int ctrl_id)
         {
             WINDOWMANAGER.Show(new iwInventory);
         } break;
-        case 7: // Produktivit‰ten
+        case 7: // Produktivit√§ten
         {
             WINDOWMANAGER.Show(new iwBuildingProductivities);
         } break;
-        case 8: // Milit‰r
+        case 8: // Milit√§r
         {
             WINDOWMANAGER.Show(new iwMilitary);
         } break;

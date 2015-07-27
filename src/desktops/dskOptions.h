@@ -1,4 +1,4 @@
-// $Id: dskOptions.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: dskOptions.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -44,7 +44,7 @@ class dskOptions: public Desktop
 
     private:
         GlobalGameSettings ggs;
-        std::vector<VideoDriver::VideoMode> video_modes; ///< Vector für die Auflösungen
+        std::vector<VideoDriver::VideoMode> video_modes; ///< Vector fÃ¼r die AuflÃ¶sungen
 };
 
 #endif // !dskOPTIONS_H_INCLUDED

@@ -1,4 +1,4 @@
-// $Id: iwBuildOrder.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: iwBuildOrder.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -47,7 +47,7 @@ iwBuildOrder::iwBuildOrder(void)
 {
     ctrlList* list = AddList(0, 15, 60, 150, 220, TC_GREY, NormalFont);
 
-    // Liste füllen
+    // Liste fÃ¼llen
     for(unsigned char i = 0; i < 31; ++i)
         list->AddString(_(BUILDING_NAMES[GAMECLIENT.visual_settings.build_order[i]]));
 
@@ -67,7 +67,7 @@ iwBuildOrder::iwBuildOrder(void)
     combo->AddString(_("Sequence of given order")); // "Reihenfolge der Auftraggebung"
     combo->AddString(_("After the following order")); // "Nach folgender Reihenfolge"
 
-    // Eintrag in Combobox auswählen
+    // Eintrag in Combobox auswÃ¤hlen
     combo->SetSelection(GAMECLIENT.visual_settings.order_type);
 
     // Standard
@@ -89,7 +89,7 @@ iwBuildOrder::~iwBuildOrder()
 
 void iwBuildOrder::TransmitSettings()
 {
-    // Wurden Einstellungen geändert?
+    // Wurden Einstellungen geÃ¤ndert?
     if(settings_changed)
     {
         // Einstellungen speichern
@@ -104,7 +104,7 @@ void iwBuildOrder::Msg_Timer(const unsigned int ctrl_id)
         // Im Replay aktualisieren wir die Werte
         UpdateSettings();
     else
-        // Im normalen Spielmodus schicken wir den ganzen Spaß ab
+        // Im normalen Spielmodus schicken wir den ganzen SpaÃŸ ab
         TransmitSettings();
 }
 
@@ -131,7 +131,7 @@ void iwBuildOrder::Msg_ButtonClick(const unsigned int ctrl_id)
     unsigned short auswahl = list->GetSelection();
     unsigned short anzahl = list->GetLineCount();
 
-    // Auswahl gültig?
+    // Auswahl gÃ¼ltig?
     if(auswahl >= anzahl)
         return;
 
@@ -188,7 +188,7 @@ void iwBuildOrder::Msg_ButtonClick(const unsigned int ctrl_id)
             ctrlList* list = GetCtrl<ctrlList>(0);
             list->DeleteAllItems();
 
-            // Liste füllen
+            // Liste fÃ¼llen
             for(unsigned char i = 0; i < 31; ++i)
                 list->AddString(_(BUILDING_NAMES[GAMECLIENT.default_settings.build_order[i]]));
             list->SetSelection(0);
@@ -202,7 +202,7 @@ void iwBuildOrder::Msg_ButtonClick(const unsigned int ctrl_id)
 
 void iwBuildOrder::UpdateSettings()
 {
-    // Liste füllen
+    // Liste fÃ¼llen
     for(unsigned char i = 0; i < 31; ++i)
         GetCtrl<ctrlList>(0)->SetString(_(BUILDING_NAMES[GAMECLIENT.visual_settings.build_order[i]]), i);
 }

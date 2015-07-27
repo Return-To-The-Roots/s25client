@@ -1,4 +1,4 @@
-// $Id: noRoadNode.h 9357 2014-04-25 15:35:25Z FloSoft $
+Ôªø// $Id: noRoadNode.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -32,7 +32,7 @@ enum Job;
 #include "gameData/GameConsts.h"
 #endif
 
-// Basisklasse f¸r Geb‰ude und Flagge (alles, was als "Straﬂenknoten" dient
+// Basisklasse f√ºr Geb√§ude und Flagge (alles, was als "Stra√üenknoten" dient
 class noRoadNode : public noCoordBase
 {
     protected:
@@ -62,7 +62,7 @@ class noRoadNode : public noCoordBase
         noRoadNode(SerializedGameData* sgd, const unsigned obj_id);
 
         virtual ~noRoadNode();
-        /// Aufr‰ummethoden
+        /// Aufr√§ummethoden
     protected:  void Destroy_noRoadNode();
     public:     void Destroy() { Destroy_noRoadNode(); }
 
@@ -74,15 +74,15 @@ class noRoadNode : public noCoordBase
 
         void DestroyRoad(const unsigned char dir);
         void UpgradeRoad(const unsigned char dir);
-        /// Vernichtet Alle Straﬂe um diesen Knoten
+        /// Vernichtet Alle Stra√üe um diesen Knoten
         void DestroyAllRoads();
 
         unsigned char GetPlayer() const { return player; }
 
-        /// Legt eine Ware am Objekt ab (an allen Straﬂenknoten (Geb‰ude, Baustellen und Flaggen) kann man Waren ablegen
+        /// Legt eine Ware am Objekt ab (an allen Stra√üenknoten (Geb√§ude, Baustellen und Flaggen) kann man Waren ablegen
         virtual void AddWare(Ware* ware) = 0;
 
-        /// Nur f¸r Flagge, Geb‰ude kˆnnen 0 zur¸ckgeben, gibt Wegstrafpunkte f¸r das Pathfinden f¸r Waren, die in eine bestimmte Richtung noch transportiert werden m¸ssen
+        /// Nur f√ºr Flagge, Geb√§ude k√∂nnen 0 zur√ºckgeben, gibt Wegstrafpunkte f√ºr das Pathfinden f√ºr Waren, die in eine bestimmte Richtung noch transportiert werden m√ºssen
         virtual unsigned short GetPunishmentPoints(const unsigned char dir) const { return 0; }
 
 };

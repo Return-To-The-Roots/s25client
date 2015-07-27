@@ -1,4 +1,4 @@
-// $Id: GlobalVars.h 9357 2014-04-25 15:35:25Z FloSoft $
+﻿// $Id: GlobalVars.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -23,7 +23,7 @@
 
 #include "Singleton.h"
 
-/// Klasse f�r alle "globalen" Variablen/Objekte
+/// Klasse für alle "globalen" Variablen/Objekte
 class GlobalVars : public Singleton<GlobalVars>
 {
     public:

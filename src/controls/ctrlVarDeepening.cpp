@@ -1,4 +1,4 @@
-// $Id: ctrlVarDeepening.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+﻿// $Id: ctrlVarDeepening.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -107,7 +107,7 @@ bool ctrlVarDeepening::Draw_(void)
     }
     //vsnprintf(buffer, 1024, text, *(va_list*)&vars);
 
-    // letzte byte nullen (safety, vsnprintf schreibt bei zu gro�em string kein null-terminator)
+    // letzte byte nullen (safety, vsnprintf schreibt bei zu großem string kein null-terminator)
     buffer[1024] = '\0';
 
     font->Draw(x + width / 2, y + height / 2, buffer, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, color);

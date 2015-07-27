@@ -1,4 +1,4 @@
-// $Id: noMovable.cpp 9518 2014-11-30 09:22:47Z marcus $
+ï»¿// $Id: noMovable.cpp 9518 2014-11-30 09:22:47Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -106,7 +106,7 @@ void noMovable::StartMoving(const unsigned char dir, unsigned gf_length)
     // Ist das Wesen stehengeblieben mitten aufm Weg?
     if(pause_walked_gf)
     {
-        // Das Laufevent fortführen
+        // Das Laufevent fortfÃ¼hren
         /*  assert(dir == this->dir);*/
         current_ev = em->AddEvent(this, pause_event_length, 0, pause_walked_gf);
         pause_walked_gf = 0;
@@ -115,7 +115,7 @@ void noMovable::StartMoving(const unsigned char dir, unsigned gf_length)
     }
 
     // Steigung ermitteln, muss entsprechend langsamer (hoch) bzw. schneller (runter) laufen
-    // runter natürlich nich so viel schneller werden wie langsamer hoch
+    // runter natÃ¼rlich nich so viel schneller werden wie langsamer hoch
     switch(int(gwg->GetNodeAround(pos, dir).altitude) - int(gwg->GetNode(pos).altitude))
     {
         default: ascent = 3; // gerade
@@ -170,7 +170,7 @@ void noMovable::CalcRelative(int& x, int& y, int x1, int y1, int x2, int y2)
     }
 }
 
-/// Interpoliert fürs Laufen zwischen zwei Kartenpunkten
+/// Interpoliert fÃ¼rs Laufen zwischen zwei Kartenpunkten
 void noMovable::CalcWalkingRelative(int& x, int& y)
 {
     int x1 = static_cast<int>(gwg->GetTerrainX(this->pos));
@@ -178,7 +178,7 @@ void noMovable::CalcWalkingRelative(int& x, int& y)
     int x2 = static_cast<int>(gwg->GetTerrainX(gwg->GetNeighbour(this->pos, dir)));
     int y2 = static_cast<int>(gwg->GetTerrainY(gwg->GetNeighbour(this->pos, dir)));
 
-    // Gehen wir über einen Kartenrand (horizontale Richung?)
+    // Gehen wir Ã¼ber einen Kartenrand (horizontale Richung?)
     if(std::abs(x1 - x2) >= gwg->GetWidth() * TR_W / 2)
     {
         if(std::abs(x1 - int(gwg->GetWidth())*TR_W - x2) < std::abs(x1 - x2))
@@ -186,7 +186,7 @@ void noMovable::CalcWalkingRelative(int& x, int& y)
         else
             x1 += gwg->GetWidth() * TR_W;
     }
-    // Und dasselbe für vertikale Richtung
+    // Und dasselbe fÃ¼r vertikale Richtung
     if(std::abs(y1 - y2) >= gwg->GetHeight() * TR_H / 2)
     {
         if(std::abs(y1 - int(gwg->GetHeight())*TR_H - y2) < std::abs(y1 - y2))
@@ -211,7 +211,7 @@ void noMovable::PauseWalking()
 {
     // Frames festhalten, bis zu denen wir gekommen sind
     pause_walked_gf = GAMECLIENT.GetGFNumber() - current_ev->gf;
-    // Länge merken
+    // LÃ¤nge merken
     pause_event_length = current_ev->gf_length;
     // Event abmelden
     em->RemoveEvent(current_ev);
@@ -219,13 +219,13 @@ void noMovable::PauseWalking()
     moving = false;
 
     // Achtung, evtl wird er gleich in dem gf gestoppt, wo er auch losgelaufen war
-    // in dem Fall ist es wie, als ob er normal an einem bestimmten Knotenpunkt stoppt, bloß dass er
+    // in dem Fall ist es wie, als ob er normal an einem bestimmten Knotenpunkt stoppt, bloÃŸ dass er
     // schon losgelaufen war, als der andere ihn stoppt, daher muss Verschieben wegen dem Zeichnen im GameWorld
-    // rückgängig gemacht werden!
+    // rÃ¼ckgÃ¤ngig gemacht werden!
     if(pause_walked_gf == 0)
     {
         // Wenn wir nach oben gehen, muss vom oberen Punkt dann aus gezeichnet werden im GameWorld
-        // --> rückgängig!
+        // --> rÃ¼ckgÃ¤ngig!
         if(dir == 1 || dir == 2)
         {
             gwg->RemoveFigure(this, gwg->GetNeighbour(pos, dir));
@@ -235,7 +235,7 @@ void noMovable::PauseWalking()
     }
 }
 
-/// Gibt zurück, ob sich das angegebene Objekt zwischen zwei Punkten bewegt
+/// Gibt zurÃ¼ck, ob sich das angegebene Objekt zwischen zwei Punkten bewegt
 bool noMovable::IsMoving() const
 {
     if(current_ev)
@@ -245,7 +245,7 @@ bool noMovable::IsMoving() const
     return false;
 }
 
-/// Gibt die Position zurück, wo wir uns hinbewegen (selbe Position, wenn Schiff steht)
+/// Gibt die Position zurÃ¼ck, wo wir uns hinbewegen (selbe Position, wenn Schiff steht)
 MapPoint noMovable::GetDestinationForCurrentMove() const
 {
     // Bewegt sich das Ding gerade?

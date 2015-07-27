@@ -1,4 +1,4 @@
-// $Id: iwBaseWarehouse.h 9592 2015-02-01 09:39:38Z marcus $
+ï»¿// $Id: iwBaseWarehouse.h 9592 2015-02-01 09:39:38Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -27,7 +27,7 @@ class nobBaseWarehouse;
 class GameWorldViewer;
 class dskGameInterface;
 
-/// Basisklasse für die HQ- und Lagerhäuserfenster
+/// Basisklasse fÃ¼r die HQ- und LagerhÃ¤userfenster
 class iwBaseWarehouse : public iwWares
 {
         GameWorldViewer* const gwv;		
@@ -42,7 +42,7 @@ class iwBaseWarehouse : public iwWares
 
     protected:
 
-        /// Overlay ändern
+        /// Overlay Ã¤ndern
         void ChangeOverlay(unsigned int i, unsigned int what);
 
         void Msg_Group_ButtonClick(const unsigned int group_id, const unsigned int ctrl_id);

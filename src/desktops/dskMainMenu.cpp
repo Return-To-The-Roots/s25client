@@ -1,4 +1,4 @@
-// $Id: dskMainMenu.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: dskMainMenu.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -52,7 +52,7 @@ static char THIS_FILE[] = __FILE__;
 ///////////////////////////////////////////////////////////////////////////////
 /** @class dskMainMenu
  *
- *  Klasse des Hauptmenü Desktops.
+ *  Klasse des HauptmenÃ¼ Desktops.
  *
  *  @author OLiver
  */
@@ -71,7 +71,7 @@ dskMainMenu::dskMainMenu(void) : Desktop(LOADER.GetImageN("menu", 0))
     // URL
     AddText(1, 400, 600, _("http://www.siedler25.org"), COLOR_GREEN, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, NormalFont);
     // Copyright
-    AddVarText(2, 800, 600, _("© 2005 - %s Settlers Freaks"), COLOR_YELLOW, glArchivItem_Font::DF_RIGHT | glArchivItem_Font::DF_BOTTOM, NormalFont, 1, GetCurrentYear());
+    AddVarText(2, 800, 600, _("Â© 2005 - %s Settlers Freaks"), COLOR_YELLOW, glArchivItem_Font::DF_RIGHT | glArchivItem_Font::DF_BOTTOM, NormalFont, 1, GetCurrentYear());
 
     // "Einzelspieler"
     AddTextButton(4, 115, 180, 220, 22, TC_GREEN2, _("Singleplayer"), NormalFont);
@@ -98,7 +98,7 @@ dskMainMenu::dskMainMenu(void) : Desktop(LOADER.GetImageN("menu", 0))
     /*AddText(20, 50, 450, _("Font Test"), COLOR_YELLOW, glArchivItem_Font::DF_LEFT, SmallFont);
     AddText(21, 50, 470, _("Font Test"), COLOR_YELLOW, glArchivItem_Font::DF_LEFT, NormalFont);
     AddText(22, 50, 490, _("Font Test"), COLOR_YELLOW, glArchivItem_Font::DF_LEFT, LargeFont);*/
-    //  !\"#$%&'()*+,-./0123456789:;<=>?@abcdefghijklmnopqrstuvwxyz\\_ABCDEFGHIJKLMNOPQRSTUVWXYZÇüéâäàåçêëèïîì©ÄÅôöòûùÖÜáíóúñ
+    //  !\"#$%&'()*+,-./0123456789:;<=>?@abcdefghijklmnopqrstuvwxyz\\_ABCDEFGHIJKLMNOPQRSTUVWXYZÃ‡Ã¼Ã©Ã¢Ã¤Ã Ã¥Ã§ÃªÃ«Ã¨Ã¯Ã®Ã¬Â©Ã„Ã…Ã´Ã¶Ã²Ã»Ã¹Ã–ÃœÃ¡Ã­Ã³ÃºÃ±
 }
 
 void dskMainMenu::Msg_Timer(const unsigned int ctrl_id)

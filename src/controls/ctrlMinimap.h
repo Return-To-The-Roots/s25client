@@ -1,4 +1,4 @@
-// $Id: ctrlMinimap.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: ctrlMinimap.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -24,11 +24,11 @@
 
 class Minimap;
 
-/// Übersichtskarte (MapPreview)
+/// Ãœbersichtskarte (MapPreview)
 class ctrlMinimap : public Window
 {
     protected:
-        /// Größe der Anzeige der Minimap
+        /// GrÃ¶ÃŸe der Anzeige der Minimap
         unsigned short width_show, height_show;
         /// Abstand der Minimap vom Rand des Controls
         unsigned short padding_x, padding_y;
@@ -45,7 +45,7 @@ class ctrlMinimap : public Window
                      const unsigned short map_width,
                      const unsigned short map_height);
 
-        /// Gibt width_show und height_show zurück
+        /// Gibt width_show und height_show zurÃ¼ck
         unsigned short GetWidthShow() const { return width_show; }
         unsigned short GetHeightShow() const { return height_show; }
 
@@ -55,18 +55,18 @@ class ctrlMinimap : public Window
         inline unsigned short GetRight() const { return GetLeft() + width_show + padding_x; }
         inline unsigned short GetBottom() const { return GetTop() + height_show + padding_y; }
 
-        /// Größe ändern
+        /// GrÃ¶ÃŸe Ã¤ndern
         virtual void Resize_(unsigned short width, unsigned short heigth);
         void SetDisplaySize(const unsigned short width, const unsigned short height,
                             const unsigned short map_width, const unsigned short map_height);
 
-        /// Liefert für einen gegebenen Map-Punkt die Pixel-Koordinaten relativ zur Bounding-Box
+        /// Liefert fÃ¼r einen gegebenen Map-Punkt die Pixel-Koordinaten relativ zur Bounding-Box
         inline unsigned short CalcMapCoordX(const unsigned short x) const
         { return GetLeft() + width_show * x / map_width; }
         inline unsigned short CalcMapCoordY(const unsigned short y) const
         { return GetTop() + height_show * y / map_height; }
 
-        /// Verkleinert Minimap soweit es geht (entfernt Bounding-Box) in Y-Richtung und gibt neue Höhe zurück
+        /// Verkleinert Minimap soweit es geht (entfernt Bounding-Box) in Y-Richtung und gibt neue HÃ¶he zurÃ¼ck
         void RemoveBoundingBox(const unsigned short width_min, const unsigned short height_min);
 
     protected:

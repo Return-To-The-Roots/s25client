@@ -1,4 +1,4 @@
-// $Id: nofGeologist.cpp 9540 2014-12-14 11:32:47Z marcus $
+ï»¿// $Id: nofGeologist.cpp 9540 2014-12-14 11:32:47Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -182,7 +182,7 @@ void nofGeologist::GoalReached()
 
     signs = 15;
 
-    // Für jeden Ressourcentyp nur einmal eine Post-Nachricht schicken
+    // FÃ¼r jeden Ressourcentyp nur einmal eine Post-Nachricht schicken
     for(unsigned i = 0; i < 5; ++i)
         resAlreadyFound[i] = false;
 
@@ -198,7 +198,7 @@ void nofGeologist::Walked()
 {
     if(state == STATE_GEOLOGIST_GOTONEXTNODE)
     {
-        // Ist mein Zielpunkt überhaupt noch geeignet zum Graben (kann ja mittlerweile auch was drauf gebaut worden sein)
+        // Ist mein Zielpunkt Ã¼berhaupt noch geeignet zum Graben (kann ja mittlerweile auch was drauf gebaut worden sein)
         if(!IsNodeGood(node_goal))
         {
             // alten Punkt wieder freigeben
@@ -217,7 +217,7 @@ void nofGeologist::Walked()
         }
         else
         {
-            // Weg zum nächsten Punkt suchen
+            // Weg zum nÃ¤chsten Punkt suchen
             dir = gwg->FindHumanPath(pos, node_goal, 20);
 
             // Wenns keinen gibt
@@ -227,7 +227,7 @@ void nofGeologist::Walked()
                 gwg->GetNode(node_goal).reserved = false;
                 // dann neuen Punkt suchen
                 dir = GetNextNode();
-                // falls es keinen gibt, dann zurück zur Flagge gehen und es übernimmt der andere "Walked"-Zweig
+                // falls es keinen gibt, dann zurÃ¼ck zur Flagge gehen und es Ã¼bernimmt der andere "Walked"-Zweig
                 if(dir == 0xFF)
                 {
                     state = STATE_GOTOFLAG;
@@ -284,7 +284,7 @@ void nofGeologist::HandleDerivedEvent(const unsigned int id)
             GoToNextNode();
             /// Punkt wieder freigeben
             gwg->GetNode(pos).reserved = false;;
-            /// Sounds evtl löschen
+            /// Sounds evtl lÃ¶schen
             SOUNDMANAGER.WorkingFinished(this);
         } break;
     }
@@ -293,7 +293,7 @@ void nofGeologist::HandleDerivedEvent(const unsigned int id)
 
 bool nofGeologist::IsNodeGood(const MapPoint pt)
 {
-    // Es dürfen auch keine bestimmten Objekte darauf stehen und auch keine Schilder !!
+    // Es dÃ¼rfen auch keine bestimmten Objekte darauf stehen und auch keine Schilder !!
     if(!gwg->IsNodeForFigures(pt) || gwg->GetNO(pt)->GetGOT() == GOT_SIGN
             || gwg->GetNO(pt)->GetType() == NOP_FLAG || gwg->GetNO(pt)->GetType() == NOP_TREE)
         return false;
@@ -310,10 +310,10 @@ void nofGeologist::LookForNewNodes()
     {
         MapPoint test(flag->GetPos());
 
-        // r Punkte rüber
+        // r Punkte rÃ¼ber
         test.x -= r;
 
-        // r schräg runter bzw hoch
+        // r schrÃ¤g runter bzw hoch
         for(unsigned short i = 0; i < r; ++i)
         {
             TestNode(MapPoint(test.x, test.y + i)); // unten
@@ -331,7 +331,7 @@ void nofGeologist::LookForNewNodes()
 
         test.x = flag->GetX() + r;
 
-        // auf der anderen Seite wieder schräg hoch/runter
+        // auf der anderen Seite wieder schrÃ¤g hoch/runter
         for(unsigned short i = 0; i < r; ++i)
         {
             TestNode(MapPoint(test.x, test.y + i)); // unten
@@ -340,7 +340,7 @@ void nofGeologist::LookForNewNodes()
             test.x -= !(test.y & 1);
         }
 
-        // Wenn es in diesem Umkreis welche gibt, dann nur noch 2 Kreise zusätzlich weitergehen
+        // Wenn es in diesem Umkreis welche gibt, dann nur noch 2 Kreise zusÃ¤tzlich weitergehen
         if(!found && !available_nodes.empty())
         {
             max_radius = std::min(10, r + 3);
@@ -352,7 +352,7 @@ void nofGeologist::LookForNewNodes()
 
 void nofGeologist::TestNode(const MapPoint pt)
 {
-    // Prüfen, ob er überhaupt auf der Karte liegt und nicht irgendwo im Nirvana
+    // PrÃ¼fen, ob er Ã¼berhaupt auf der Karte liegt und nicht irgendwo im Nirvana
     if(pt.x < gwg->GetWidth() && pt.y < gwg->GetHeight())
     {
         if(IsNodeGood(pos) && (gwg->FindHumanPath(this->pos, pt, 20)) != 0xFF && !gwg->GetNode(pt).reserved)
@@ -364,15 +364,15 @@ void nofGeologist::TestNode(const MapPoint pt)
 
 unsigned char nofGeologist::GetNextNode()
 {
-    // Überhaupt noch Schilder zum Aufstellen
+    // Ãœberhaupt noch Schilder zum Aufstellen
     if(!signs)
         return 0xFF;
     do
     {
-        // Sind überhaupt Punkte verfügbar?
+        // Sind Ã¼berhaupt Punkte verfÃ¼gbar?
         while(!available_nodes.empty())
         {
-            // Dann einen Punkt zufällig auswählen
+            // Dann einen Punkt zufÃ¤llig auswÃ¤hlen
             int randNode = RANDOM.Rand(__FILE__, __LINE__, obj_id, available_nodes.size());
             node_goal = available_nodes[randNode];
             // und aus der Liste entfernen
@@ -419,7 +419,7 @@ void nofGeologist::GoToNextNode()
     }
     else
     {
-        // ansonsten zur Flagge zurückgehen
+        // ansonsten zur Flagge zurÃ¼ckgehen
         state = STATE_GOTOFLAG;
         Walked();
     }
@@ -427,20 +427,20 @@ void nofGeologist::GoToNextNode()
 
 void nofGeologist::SetSign(const unsigned char resources)
 {
-    // Bestimmte Objekte können gelöscht werden
+    // Bestimmte Objekte kÃ¶nnen gelÃ¶scht werden
     noBase* no = gwg->GetNO(pos);
 
     if(no->GetType() != NOP_NOTHING && no->GetType() != NOP_ENVIRONMENT)
         return;
 
-    // Zierobjekte löschen
+    // Zierobjekte lÃ¶schen
     if(no->GetType() == NOP_ENVIRONMENT)
     {
         no->Destroy();
         delete no;
     }
 
-    // Schildtyp und -häufigkeit herausfinden
+    // Schildtyp und -hÃ¤ufigkeit herausfinden
     unsigned char type, quantity;
 
     if(resources >= 0x41 && resources <= 0x47)
@@ -521,7 +521,7 @@ void nofGeologist::LostWork()
     switch(state)
     {
         default: break;
-            // Wenn wir noch hingehen, dann zurückgehen
+            // Wenn wir noch hingehen, dann zurÃ¼ckgehen
         case STATE_FIGUREWORK:
         {
             GoHome();

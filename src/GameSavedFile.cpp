@@ -1,4 +1,4 @@
-// $Id: GameSavedFile.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: GameSavedFile.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -74,7 +74,7 @@ bool SavedFile::ValidateFile(BinaryFile& file, unsigned int signature_length, co
 
     file.ReadRawData(read_signature, signature_length);
 
-    // Signatur überprüfen
+    // Signatur Ã¼berprÃ¼fen
     if(memcmp(read_signature, signature, signature_length))
     {
         // unterscheiden sich! --> raus
@@ -82,10 +82,10 @@ bool SavedFile::ValidateFile(BinaryFile& file, unsigned int signature_length, co
         return false;
     }
 
-    // Programmversion überspringen
+    // Programmversion Ã¼berspringen
     file.Seek(8, SEEK_CUR);
 
-    // Version überprüfen
+    // Version Ã¼berprÃ¼fen
     unsigned short read_version = file.ReadUnsignedShort();
     if(read_version != version)
     {
@@ -126,7 +126,7 @@ void SavedFile::WritePlayerData(BinaryFile& file)
  */
 void SavedFile::ReadPlayerData(BinaryFile& file)
 {
-    // ggf. wieder löschen
+    // ggf. wieder lÃ¶schen
     delete[] players;
 
     players = new SavedFile::Player[player_count];

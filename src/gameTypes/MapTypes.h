@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+ï»¿// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -20,7 +20,7 @@
 
 #include "Point.h"
 
-/// Datentyp für Map-Koordinaten
+/// Datentyp fÃ¼r Map-Koordinaten
 typedef unsigned short MapCoord;
 typedef Point<MapCoord> MapPoint;
 
@@ -45,7 +45,7 @@ enum TerrainType
     TT_LAVA
 };
 
-/// Sichtbarkeit für ALLE Spieler
+/// Sichtbarkeit fÃ¼r ALLE Spieler
 enum Visibility
 {
     VIS_INVISIBLE = 0, /// Darkness

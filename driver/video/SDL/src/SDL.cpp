@@ -1,4 +1,4 @@
-// $Id: SDL.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: SDL.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -41,7 +41,7 @@ static char THIS_FILE[] = __FILE__;
 /**
  *  Instanzierungsfunktion von @p VideoSDL.
  *
- *  @param[in] CallBack DriverCallback für Rückmeldungen.
+ *  @param[in] CallBack DriverCallback fÃ¼r RÃ¼ckmeldungen.
  *
  *  @return liefert eine Instanz des jeweiligen Treibers
  *
@@ -68,7 +68,7 @@ DRIVERDLLAPI const char* GetDriverName(void)
 ///////////////////////////////////////////////////////////////////////////////
 /** @class VideoSDL
  *
- *  Klasse für den SDL Videotreiber.
+ *  Klasse fÃ¼r den SDL Videotreiber.
  *
  *  @author FloSoft
  */
@@ -93,7 +93,7 @@ static VideoSDL* pVideoSDL = NULL;
 /**
  *  Konstruktor von @p VideoSDL.
  *
- *  @param[in] CallBack DriverCallback für Rückmeldungen.
+ *  @param[in] CallBack DriverCallback fÃ¼r RÃ¼ckmeldungen.
  *
  *  @author FloSoft
  */
@@ -117,7 +117,7 @@ VideoSDL::~VideoSDL(void)
 /**
  *  Funktion zum Auslesen des Treibernamens.
  *
- *  @return liefert den Treibernamen zurück
+ *  @return liefert den Treibernamen zurÃ¼ck
  *
  *  @author FloSoft
  */
@@ -156,7 +156,7 @@ bool VideoSDL::Initialize(void)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Treiberaufräumfunktion.
+ *  TreiberaufrÃ¤umfunktion.
  *
  *  @author FloSoft
  */
@@ -174,7 +174,7 @@ void VideoSDL::CleanUp(void)
  *  Erstellt das Fenster mit entsprechenden Werten.
  *
  *  @param[in] width      Breite des Fensters
- *  @param[in] height     Höhe des Fensters
+ *  @param[in] height     HÃ¶he des Fensters
  *  @param[in] fullscreen Vollbildmodus ja oder nein
  *
  *  @return @p true bei Erfolg, @p false bei Fehler
@@ -231,10 +231,10 @@ bool VideoSDL::CreateScreen(unsigned short width, unsigned short height, const b
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Erstellt oder verändert das Fenster mit entsprechenden Werten.
+ *  Erstellt oder verÃ¤ndert das Fenster mit entsprechenden Werten.
  *
  *  @param[in] width      Breite des Fensters
- *  @param[in] height     Höhe des Fensters
+ *  @param[in] height     HÃ¶he des Fensters
  *  @param[in] fullscreen Vollbildmodus ja oder nein
  *
  *  @return @p true bei Erfolg, @p false bei Fehler
@@ -358,7 +358,7 @@ bool VideoSDL::MessageLoop(void)
                     case SDLK_BACKQUOTE: ev.key.keysym.unicode = '^'; break;
                 }
 
-                /// Strg, Alt, usw gedrückt?
+                /// Strg, Alt, usw gedrÃ¼ckt?
                 if(ev.key.keysym.mod & KMOD_CTRL) ke.ctrl = true;
                 if(ev.key.keysym.mod & KMOD_SHIFT) ke.shift = true;
                 if(ev.key.keysym.mod & KMOD_ALT) ke.alt = true;
@@ -447,7 +447,7 @@ unsigned long VideoSDL::GetTickCount(void) const
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *   Listet verfügbare Videomodi auf
+ *   Listet verfÃ¼gbare Videomodi auf
  *
  *  @param[in,out] video_modes Der Vector mit den Videomodes
  *
@@ -535,7 +535,7 @@ KeyEvent VideoSDL::GetModKeyState(void) const
     return ke;
 }
 
-/// Gibt Pointer auf ein Fenster zurück (device-dependent!), HWND unter Windows
+/// Gibt Pointer auf ein Fenster zurÃ¼ck (device-dependent!), HWND unter Windows
 void* VideoSDL::GetMapPointer() const
 {
 #ifdef WIN32

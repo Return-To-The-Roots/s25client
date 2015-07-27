@@ -1,4 +1,4 @@
-// $Id: iwPlayReplay.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: iwPlayReplay.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -38,10 +38,10 @@ class iwPlayReplay : public IngameWindow
 
         /// Callbackfunktion zum Eintragen einer Replay-Zeile in der Tabelle.
         static void FillReplayTable(const std::string& filename, void* param);
-        /// Callbackfunktion zum löschen aller Replays
+        /// Callbackfunktion zum lÃ¶schen aller Replays
         static void RemoveReplay(const std::string& filename, void* param);
 
-        /// Startet das Replay (aktuell ausgewählter Eintrag)
+        /// Startet das Replay (aktuell ausgewÃ¤hlter Eintrag)
         void StartReplay();
 };
 

@@ -1,4 +1,4 @@
-// $Id: GameManager.cpp 9543 2014-12-14 12:04:38Z marcus $
+﻿// $Id: GameManager.cpp 9543 2014-12-14 12:04:38Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -83,7 +83,7 @@ bool GameManager::Start()
         return false;
     }
 
-    // Im Vollbildmodus überprüfen, ob Video-Mode überhaupt existiert
+    // Im Vollbildmodus Ã¼berprÃ¼fen, ob Video-Mode Ã¼berhaupt existiert
     if(SETTINGS.video.fullscreen)
     {
         std::vector<VideoDriver::VideoMode> available_video_modes;
@@ -99,7 +99,7 @@ bool GameManager::Start()
 
         if(!found && !available_video_modes.empty())
         {
-            // Nicht gefunden, erste gültige Auflösung nehmen
+            // Nicht gefunden, erste gÃ¼ltige AuflÃ¶sung nehmen
             SETTINGS.video.fullscreen_width = available_video_modes[0].width;
             SETTINGS.video.fullscreen_height = available_video_modes[0].height;
         }
@@ -118,7 +118,7 @@ bool GameManager::Start()
         //return false;
     }
 
-    /// Lautstärken gleich mit setzen
+    /// LautstÃ¤rken gleich mit setzen
     AUDIODRIVER.SetMasterEffectVolume(SETTINGS.sound.effekte_volume);
     AUDIODRIVER.SetMasterMusicVolume(SETTINGS.sound.musik_volume);
 
@@ -175,7 +175,7 @@ bool GameManager::Run()
     {
         static unsigned long vsync = SETTINGS.video.vsync;
 
-        // immer 10% dazu/weg bis man über der Framerate liegt
+        // immer 10% dazu/weg bis man Ã¼ber der Framerate liegt
         if(vsync < 200 && 1000 * framerate < (unsigned int)(960 * vsync) )
             vsync = (1100 * vsync) / 1000;
         else if(vsync > SETTINGS.video.vsync)
@@ -248,7 +248,7 @@ bool GameManager::Run()
         // weitere Sekunde vergangen
         ++run_time;
 
-        // Gesamtzahl der gezeichneten Frames erhöhen
+        // Gesamtzahl der gezeichneten Frames erhÃ¶hen
         frame_count += frames;
 
         // normale Framerate berechnen
@@ -272,7 +272,7 @@ bool GameManager::Run()
 	}
     ++frames;
 
-    // Fenstermanager aufräumen
+    // Fenstermanager aufrÃ¤umen
     if(!GLOBALVARS.notdone)
         WINDOWMANAGER.CleanUp();
 
@@ -281,7 +281,7 @@ bool GameManager::Run()
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Startet und lädt das Menü.
+ *  Startet und lÃ¤dt das MenÃ¼.
  *
  *  @author FloSoft
  */
@@ -309,7 +309,7 @@ bool GameManager::StartMenu()
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  zeigt das Hauptmenü.
+ *  zeigt das HauptmenÃ¼.
  *
  *  @author FloSoft
  */
@@ -328,7 +328,7 @@ bool GameManager::ShowMenu()
         // Lobby zeigen
         WINDOWMANAGER.Switch(new dskLobby);
     else
-        // Hauptmenü zeigen
+        // HauptmenÃ¼ zeigen
         WINDOWMANAGER.Switch(new dskMainMenu);
 
     return true;

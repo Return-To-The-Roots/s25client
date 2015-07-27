@@ -1,4 +1,4 @@
-// $Id: dskMainMenu.h 9357 2014-04-25 15:35:25Z FloSoft $
+﻿// $Id: dskMainMenu.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -23,7 +23,7 @@
 
 #include "Desktop.h"
 
-/// Klasse des Hauptmen� Desktops.
+/// Klasse des Hauptmenü Desktops.
 class dskMainMenu : public Desktop
 {
         void Msg_PaintAfter();

@@ -1,4 +1,4 @@
-// $Id: ctrlOptionGroup.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: ctrlOptionGroup.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -24,7 +24,7 @@
 #include "ctrlGroup.h"
 #include "ctrlButton.h"
 
-/// Verwaltet eine Gruppe von Buttons, die als Optionsbuttons benötigt werden
+/// Verwaltet eine Gruppe von Buttons, die als Optionsbuttons benÃ¶tigt werden
 class ctrlOptionGroup : public ctrlGroup
 {
     public:
@@ -41,9 +41,9 @@ class ctrlOptionGroup : public ctrlGroup
 
         /// Selektiert einen neuen Button
         void SetSelection(unsigned short selection, bool notify = false);
-        /// Gibt den aktuell selektierten Button zurück
+        /// Gibt den aktuell selektierten Button zurÃ¼ck
         unsigned short GetSelection() const { return selection; }
-        // Gibt einen Button aus der Gruppe zurück zum direkten Bearbeiten
+        // Gibt einen Button aus der Gruppe zurÃ¼ck zum direkten Bearbeiten
         ctrlButton* GetButton(unsigned int id) { return GetCtrl<ctrlButton>(id); }
 
         virtual void Msg_ButtonClick(const unsigned int ctrl_id);
@@ -58,7 +58,7 @@ class ctrlOptionGroup : public ctrlGroup
         virtual bool Draw_(void);
 
     private:
-        unsigned short selection; ///< aktuell ausgewählter Button ( @p 0xFFFF = nicht selektiert )
+        unsigned short selection; ///< aktuell ausgewÃ¤hlter Button ( @p 0xFFFF = nicht selektiert )
         int select_type;         ///< Typ der Selektierung
 };
 

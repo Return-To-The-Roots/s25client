@@ -1,4 +1,4 @@
-// $Id: GameClient.h 9540 2014-12-14 11:32:47Z marcus $
+ï»¿// $Id: GameClient.h 9540 2014-12-14 11:32:47Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -64,13 +64,13 @@ class GameClient : public Singleton<GameClient>, public GameMessageInterface
 
         inline unsigned char GetPlayerID() const { return playerid; }
         inline unsigned GetPlayerCount() const { return players.getCount(); }
-        /// Liefert einen Player zurück
+        /// Liefert einen Player zurÃ¼ck
         inline GameClientPlayer* GetPlayer(const unsigned int id) { return players.getElement(id); }
         inline GameClientPlayer* GetLocalPlayer(void) { return GetPlayer(playerid); }
-        /// Erzeugt einen KI-Player, der mit den Daten vom GameClient gefüttert werden muss (zusätzlich noch mit den GameServer)
+        /// Erzeugt einen KI-Player, der mit den Daten vom GameClient gefÃ¼ttert werden muss (zusÃ¤tzlich noch mit den GameServer)
         AIBase* CreateAIPlayer(const unsigned playerid);
 
-        /// Gibt GGS zurück
+        /// Gibt GGS zurÃ¼ck
         const GlobalGameSettings& GetGGS() const { return ggs; }
         void LoadGGS();
 
@@ -78,13 +78,13 @@ class GameClient : public Singleton<GameClient>, public GameMessageInterface
         void Run();
         void Stop();
 
-        // Gibt GameWorldViewer zurück (VORLÄUFIG, soll später verschwinden!!)
+        // Gibt GameWorldViewer zurÃ¼ck (VORLÃ„UFIG, soll spÃ¤ter verschwinden!!)
         GameWorldViewer* QueryGameWorldViewer() const { return static_cast<GameWorldViewer*>(gw); }
-        /// Gibt Map-Titel zurück
+        /// Gibt Map-Titel zurÃ¼ck
         const std::string& GetMapTitle() const { return mapinfo.title; }
-        /// Gibt Pfad zu der Map zurück
+        /// Gibt Pfad zu der Map zurÃ¼ck
         const std::string& GetMapPath() const  { return clientconfig.mapfilepath; }
-        /// Gibt Map-Typ zurück
+        /// Gibt Map-Typ zurÃ¼ck
         const MapType GetMapType() const { return mapinfo.map_type; }
 
         // Initialisiert und startet das Spiel
@@ -92,7 +92,7 @@ class GameClient : public Singleton<GameClient>, public GameMessageInterface
         /// Wird aufgerufen, wenn das GUI fertig mit Laden ist und es losgehen kann
         void RealStart();
 
-        /// Beendet das Spiel, zerstört die Spielstrukturen
+        /// Beendet das Spiel, zerstÃ¶rt die Spielstrukturen
         void ExitGame();
 
         ClientState GetState() const { return state; }
@@ -103,9 +103,9 @@ class GameClient : public Singleton<GameClient>, public GameMessageInterface
         unsigned int GetGlobalAnimation(const unsigned short max, const unsigned char factor_numerator, const unsigned char factor_denumerator, const unsigned int offset);
         unsigned int Interpolate(unsigned max_val, EventManager::EventPointer ev);
         int Interpolate(int x1, int x2, EventManager::EventPointer ev);
-        /// Gibt Geschwindigkeits-Faktor zurück
+        /// Gibt Geschwindigkeits-Faktor zurÃ¼ck
 
-        /// Fügt ein GameCommand für den Spieler hinzu und gibt bei Erfolg true zurück, ansonstn false (in der Pause oder wenn Spieler besiegt ist)
+        /// FÃ¼gt ein GameCommand fÃ¼r den Spieler hinzu und gibt bei Erfolg true zurÃ¼ck, ansonstn false (in der Pause oder wenn Spieler besiegt ist)
         bool AddGC(gc::GameCommand* gc);
 
         void Command_SetFlag2(const MapPoint pt, unsigned char player);
@@ -117,23 +117,23 @@ class GameClient : public Singleton<GameClient>, public GameMessageInterface
 
         void IncreaseSpeed();
 
-        /// Lädt ein Replay und startet dementsprechend das Spiel (0 = alles OK, alles andere entsprechende Fehler-ID!)
+        /// LÃ¤dt ein Replay und startet dementsprechend das Spiel (0 = alles OK, alles andere entsprechende Fehler-ID!)
         unsigned StartReplay(const std::string& path, GameWorldViewer*& gwv);
-        /// Replay-Geschwindigkeit erhöhen/verringern
+        /// Replay-Geschwindigkeit erhÃ¶hen/verringern
         void IncreaseReplaySpeed();
         void DecreaseReplaySpeed();
         void SetReplayPause(bool pause);
         void ToggleReplayPause() { SetReplayPause(!framesinfo.pause); }
         /// Schaltet FoW im Replaymodus ein/aus
         void ToggleReplayFOW() { replayinfo.all_visible = !replayinfo.all_visible; }
-        /// Prüft, ob FoW im Replaymodus ausgeschalten ist
+        /// PrÃ¼ft, ob FoW im Replaymodus ausgeschalten ist
         bool IsReplayFOWDisabled() const { return replayinfo.all_visible; }
-        /// Gibt Replay-Ende (GF) zurück
+        /// Gibt Replay-Ende (GF) zurÃ¼ck
         unsigned GetLastReplayGF() const { return replayinfo.replay.last_gf; }
         /// Wandelt eine GF-Angabe in eine Zeitangabe um (HH:MM:SS oder MM:SS wenn Stunden = 0)
         std::string FormatGFTime(const unsigned gf) const;
 
-        /// Gibt Replay-Dateiname zurück
+        /// Gibt Replay-Dateiname zurÃ¼ck
         const std::string& GetReplayFileName() const { return replayinfo.filename; }
         /// Wird ein Replay abgespielt?
         bool IsReplayModeOn() const { return replay_mode; }
@@ -161,29 +161,29 @@ class GameClient : public Singleton<GameClient>, public GameMessageInterface
 
         /// Schreibt ggf. Pathfinding-Results in das Replay, falls erforderlich
         void AddPathfindingResult(const unsigned char dir, const unsigned* const length, const MapPoint* const next_harbor);
-        /// Gibt zurück, ob Pathfinding-Results zur Verfügung stehen
+        /// Gibt zurÃ¼ck, ob Pathfinding-Results zur VerfÃ¼gung stehen
         bool ArePathfindingResultsAvailable() const;
-        /// Gibt Pathfinding-Results zurück aus einem Replay
+        /// Gibt Pathfinding-Results zurÃ¼ck aus einem Replay
         bool ReadPathfindingResult( unsigned char* dir, unsigned* length, MapPoint* next_harbor);
 
         void SystemChat(std::string text);
     private:
-        /// Versucht einen neuen GameFrame auszuführen, falls die Zeit dafür gekommen ist
+        /// Versucht einen neuen GameFrame auszufÃ¼hren, falls die Zeit dafÃ¼r gekommen ist
         void ExecuteGameFrame(const bool skipping = false);
         void ExecuteGameFrame_Replay();
         void ExecuteGameFrame_Game();
-        /// Filtert aus einem Network-Command-Paket alle Commands aus und führt sie aus, falls ein Spielerwechsel-Command
-        /// dabei ist, füllt er die übergebenen IDs entsprechend aus
+        /// Filtert aus einem Network-Command-Paket alle Commands aus und fÃ¼hrt sie aus, falls ein Spielerwechsel-Command
+        /// dabei ist, fÃ¼llt er die Ã¼bergebenen IDs entsprechend aus
         void ExecuteAllGCs(const GameMessage_GameCommand& gcs,  unsigned char* player_switch_old_id, unsigned char* player_switch_new_id);
         /// Sendet ein NC-Paket ohne Befehle
         void SendNothingNC(int checksum = -1);
         /// Findet heraus, ob ein Spieler laggt und setzt bei diesen Spieler den entsprechenden flag
         bool IsPlayerLagging();
 
-        /// Führt notwendige Dinge für nächsten GF aus
+        /// FÃ¼hrt notwendige Dinge fÃ¼r nÃ¤chsten GF aus
         void NextGF();
 
-        /// Führt für alle Spieler einen Statistikschritt aus, wenn die Zeit es verlangt
+        /// FÃ¼hrt fÃ¼r alle Spieler einen Statistikschritt aus, wenn die Zeit es verlangt
         void StatisticStep();
 
         //  Netzwerknachrichten
@@ -225,7 +225,7 @@ class GameClient : public Singleton<GameClient>, public GameMessageInterface
 
         void OnNMSGetAsyncLog(const GameMessage_GetAsyncLog& msg);
 
-        /// Wird aufgerufen, wenn der Server gegangen ist (Verbindung verloren, ungültige Nachricht etc.)
+        /// Wird aufgerufen, wenn der Server gegangen ist (Verbindung verloren, ungÃ¼ltige Nachricht etc.)
         void ServerLost();
 
         // Replaymethoden
@@ -246,7 +246,7 @@ class GameClient : public Singleton<GameClient>, public GameMessageInterface
         std::list<PostMsg*> postMessages;
 
     public:
-        /// Virtuelle Werte der Einstellungsfenster, die aber noch nicht wirksam sind, nur um die Verzögerungen zu
+        /// Virtuelle Werte der Einstellungsfenster, die aber noch nicht wirksam sind, nur um die VerzÃ¶gerungen zu
         /// verstecken
         struct VisualSettings
         {
@@ -258,7 +258,7 @@ class GameClient : public Singleton<GameClient>, public GameMessageInterface
             std::vector<unsigned char> build_order;
             /// Transport-Reihenfolge
             std::vector<unsigned char> transport_order;
-            /// Militäreinstellungen (die vom Militärmenü)
+            /// MilitÃ¤reinstellungen (die vom MilitÃ¤rmenÃ¼)
             std::vector<unsigned char> military_settings;
             /// Werkzeugeinstellungen (in der Reihenfolge wie im Fenster!)
             std::vector<unsigned char> tools_settings;
@@ -330,10 +330,10 @@ class GameClient : public Singleton<GameClient>, public GameMessageInterface
                 /// Aktueller GameFrame (der wievielte seit Beginn)
                 unsigned nr;
                 unsigned nr_srv;
-                /// Länge der GameFrames in ms (= Geschwindigkeit des Spiels)
+                /// LÃ¤nge der GameFrames in ms (= Geschwindigkeit des Spiels)
                 unsigned gf_length;
                 unsigned gf_length_new;
-                /// Länge der Network-Frames in gf(!)
+                /// LÃ¤nge der Network-Frames in gf(!)
                 unsigned nwf_length;
 
                 /// Zeit in ms seit dem letzten Frame
@@ -359,7 +359,7 @@ class GameClient : public Singleton<GameClient>, public GameMessageInterface
 
         ClientInterface* ci;
 
-        /// GameCommands, die vom Client noch an den Server gesendet werden müssen
+        /// GameCommands, die vom Client noch an den Server gesendet werden mÃ¼ssen
         std::vector<gc::GameCommand*> gcs;
 
         struct ReplayInfo
@@ -373,7 +373,7 @@ class GameClient : public Singleton<GameClient>, public GameMessageInterface
                 /// Replay asynchron (Meldung nur einmal ausgeben!)
                 int async;
                 bool end;
-                // Nächster Replay-Command-Zeitpunkt (in GF)
+                // NÃ¤chster Replay-Command-Zeitpunkt (in GF)
                 unsigned next_gf;
                 /// Replay-Dateiname
                 std::string filename;
@@ -385,7 +385,7 @@ class GameClient : public Singleton<GameClient>, public GameMessageInterface
         bool replay_mode;
 		
 
-        /// Spiel-Log für Asyncs
+        /// Spiel-Log fÃ¼r Asyncs
         FILE* game_log;
 };
 

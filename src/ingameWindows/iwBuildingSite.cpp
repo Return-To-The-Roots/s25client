@@ -1,4 +1,4 @@
-// $Id: iwBuildingSite.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: iwBuildingSite.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -51,14 +51,14 @@ iwBuildingSite::iwBuildingSite(GameWorldViewer* const gwv, const noBuildingSite*
     : IngameWindow(buildingsite->CreateGUIID(), 0xFFFE, 0xFFFE, 226, 194, _(BUILDING_NAMES[buildingsite->GetBuildingType()]), LOADER.GetImageN("resource", 41)),
       gwv(gwv), buildingsite(buildingsite)
 {
-    // Bild des Gebäudes
+    // Bild des GebÃ¤udes
     AddImage(0, 113, 130, buildingsite->GetBuildingImage());
-    // Gebäudename
+    // GebÃ¤udename
     AddText(1, 113, 44, _("Order of building site"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, NormalFont);
 
     // Hilfe
     AddImageButton( 2,  16, 147, 30, 32, TC_GREY, LOADER.GetImageN("io",  21));
-    // Gebäude abbrennen
+    // GebÃ¤ude abbrennen
     AddImageButton( 3,  50, 147, 34, 32, TC_GREY, LOADER.GetImageN("io",  23));
 
     // "Gehe Zu Ort"
@@ -81,9 +81,9 @@ void iwBuildingSite::Msg_ButtonClick(const unsigned int ctrl_id)
                                                   _(BUILDING_NAMES[buildingsite->GetBuildingType()]),
                                                   _(BUILDING_HELP_STRINGS[buildingsite->GetBuildingType()]) ) );
         } break;
-        case 3: // Gebäude abbrennen
+        case 3: // GebÃ¤ude abbrennen
         {
-            // Abreißen?
+            // AbreiÃŸen?
             Close();
             WINDOWMANAGER.Show(new iwDemolishBuilding(gwv, buildingsite));
         } break;
@@ -96,7 +96,7 @@ void iwBuildingSite::Msg_ButtonClick(const unsigned int ctrl_id)
 
 void iwBuildingSite::Msg_PaintBefore()
 {
-    // Schatten des Gebäudes (muss hier gezeichnet werden wegen schwarz und halbdurchsichtig)
+    // Schatten des GebÃ¤udes (muss hier gezeichnet werden wegen schwarz und halbdurchsichtig)
     glArchivItem_Bitmap* bitmap = buildingsite->GetBuildingImageShadow();
 
     if(bitmap)

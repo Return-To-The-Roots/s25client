@@ -1,4 +1,4 @@
-// $Id: GamePlayerInfo.h 9357 2014-04-25 15:35:25Z FloSoft $
+﻿// $Id: GamePlayerInfo.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -76,7 +76,7 @@ class GamePlayerInfo
     public:
         /// Spielertyp (Mensch, KI oder geschlossen..?)
         PlayerState ps;
-        /// Wenn KI, was f�r eine?
+        /// Wenn KI, was für eine?
         AIType aiType;
 
         /// Spielername

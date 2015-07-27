@@ -1,4 +1,4 @@
-// $Id: nofCatapultMan.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: nofCatapultMan.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -25,16 +25,16 @@
 /// Arbeiter im Katapult
 class nofCatapultMan : public nofBuildingWorker
 {
-        /// Drehschritte für den Katapult auf dem Dach, bis er die Angriffsrichtung erreicht hat
+        /// Drehschritte fÃ¼r den Katapult auf dem Dach, bis er die Angriffsrichtung erreicht hat
         /// negativ - andere Richtung!
         int wheel_steps;
 
-        /// Ein mögliches Ziel für den Katapult
+        /// Ein mÃ¶gliches Ziel fÃ¼r den Katapult
         class PossibleTarget
         {
             public:
 
-                /// Gebäude
+                /// GebÃ¤ude
                 MapPoint pos;
                 /// Entfernung
                 unsigned distance;
@@ -57,10 +57,10 @@ class nofCatapultMan : public nofBuildingWorker
         void WalkedDerived();
         /// Malt den Arbeiter beim Arbeiten
         void DrawWorking(int x, int y);
-        /// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren rausträgt (bzw rein)
+        /// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren raustrÃ¤gt (bzw rein)
         unsigned short GetCarryID() const { return 0; }
 
-        /// Wenn jeweils gelaufen wurde oder ein Event abgelaufen ist, je nach aktuellem Status folgende Funktionen ausführen
+        /// Wenn jeweils gelaufen wurde oder ein Event abgelaufen ist, je nach aktuellem Status folgende Funktionen ausfÃ¼hren
         void HandleStateTargetBuilding();
         void HandleStateBackOff();
 

@@ -1,4 +1,4 @@
-// $Id: iwMilitaryBuilding.cpp 9596 2015-02-01 09:41:54Z marcus $
+Ôªø// $Id: iwMilitaryBuilding.cpp 9596 2015-02-01 09:41:54Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -66,14 +66,14 @@ iwMilitaryBuilding::iwMilitaryBuilding(GameWorldViewer* const gwv, dskGameInterf
 
     // Hilfe
     AddImageButton(4,  16, 147, 30, 32, TC_GREY, LOADER.GetImageN("io",  21));
-    // Abreiﬂen
+    // Abrei√üen
     AddImageButton(5,  50, 147, 34, 32, TC_GREY, LOADER.GetImageN("io",  23));
     // Gold an/aus (227,226)
     AddImageButton(6,  90, 147, 32, 32, TC_GREY, LOADER.GetImageN("io", ((building->IsGoldDisabledVirtual()) ? 226 : 227)));
     // "Gehe Zu Ort"
     AddImageButton(7, 179, 147, 30, 32, TC_GREY, LOADER.GetImageN("io", 107), _("Go to place"));
 
-    // Geb‰udebild
+    // Geb√§udebild
     AddImage(8, 117, 114, LOADER.GetNationImageN(building->GetNation(), 250 + 5 * building->GetBuildingType()));
 	// "Go to next" (building of same type)
     AddImageButton( 9, 179, 115, 30, 32, TC_GREY, LOADER.GetImageN("io", 107), _("Go to next military building"));
@@ -84,16 +84,16 @@ iwMilitaryBuilding::iwMilitaryBuilding(GameWorldViewer* const gwv, dskGameInterf
 
 void iwMilitaryBuilding::Msg_PaintAfter()
 {
-    // Schatten des Geb‰udes (muss hier gezeichnet werden wegen schwarz und halbdurchsichtig)
+    // Schatten des Geb√§udes (muss hier gezeichnet werden wegen schwarz und halbdurchsichtig)
     LOADER.GetNationImageN(building->GetNation(), 250 + 5 * building->GetBuildingType() + 1)->Draw(GetX() + 117, GetY() + 114, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
 
-    // Schwarzer Untergrund f¸r Goldanzeige
+    // Schwarzer Untergrund f√ºr Goldanzeige
     DrawRectangle(GetX() + width / 2 - 22 * GOLD_COUNT[building->nation][building->size] / 2, GetY() + 60, 22 * GOLD_COUNT[building->nation][building->size], 24, 0x96000000);
     // Gold
     for(unsigned short i = 0; i < GOLD_COUNT[building->nation][building->size]; ++i)
         LOADER.GetMapImageN(2278)->Draw(GetX() + width / 2 - 22 * GOLD_COUNT[building->nation][building->size] / 2 + 12 + i * 22, GetY() + 72, 0, 0, 0, 0, 0, 0, ( i >= building->coins ? 0xFFA0A0A0 : 0xFFFFFFFF) );
 
-    // Schwarzer Untergrund f¸r Soldatenanzeige
+    // Schwarzer Untergrund f√ºr Soldatenanzeige
     DrawRectangle(GetX() + width / 2 - 22 * TROOPS_COUNT[building->nation][building->size] / 2, GetY() + 98 , 22 * TROOPS_COUNT[building->nation][building->size], 24, 0x96000000);
 
     // Sammeln aus der Rausgeh-Liste und denen, die wirklich noch drinne sind
@@ -128,9 +128,9 @@ void iwMilitaryBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
             WINDOWMANAGER.Show(new iwHelp(GUI_ID(CGI_HELPBUILDING + building->GetBuildingType()), _(BUILDING_NAMES[building->GetBuildingType()]),
                                                   _(BUILDING_HELP_STRINGS[building->GetBuildingType()])));
         } break;
-        case 5: // Geb‰ude abbrennen
+        case 5: // Geb√§ude abbrennen
         {
-            // Darf das Geb‰ude abgerissen werden?
+            // Darf das Geb√§ude abgerissen werden?
             if(!building->IsDemolitionAllowed())
             {
                 // Messagebox anzeigen
@@ -138,7 +138,7 @@ void iwMilitaryBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
             }
             else
             {
-                // Abreiﬂen?
+                // Abrei√üen?
                 Close();
                 WINDOWMANAGER.Show(new iwDemolishBuilding(gwv, building));
             }
@@ -202,7 +202,7 @@ void iwMilitaryBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
  */
 void iwMilitaryBuilding::DemolitionNotAllowed()
 {
-    // Meldung ausw‰hlen, je nach Einstellung
+    // Meldung ausw√§hlen, je nach Einstellung
     std::string msg;
     switch(GAMECLIENT.GetGGS().getSelection(ADDON_DEMOLITION_PROHIBITION))
     {

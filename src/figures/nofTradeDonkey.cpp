@@ -1,4 +1,4 @@
-
+ï»¿
 #include "defines.h"
 
 
@@ -114,13 +114,13 @@ void nofTradeDonkey::Draw(int x, int y)
 
     if(job == JOB_PACKDONKEY)
     {
-        // Wenn wir warten auf ein freies Plätzchen, müssen wir den stehend zeichnen!
+        // Wenn wir warten auf ein freies PlÃ¤tzchen, mÃ¼ssen wir den stehend zeichnen!
         // Wenn event = 0, dann sind wir mittem auf dem Weg angehalten!
         unsigned ani_step = GAMECLIENT.Interpolate(ASCENT_ANIMATION_STEPS[ascent], current_ev) % 8;
 
         CalcFigurRelative(x, y);
 
-        // Läuft normal mit oder ohne Ware
+        // LÃ¤uft normal mit oder ohne Ware
 
         // Esel
         LOADER.GetMapImageN(2000 + ((dir + 3) % 6) * 8 + ani_step)->Draw(x, y);

@@ -1,4 +1,4 @@
-// $Id: noDisappearingEnvObject.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: noDisappearingEnvObject.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -69,7 +69,7 @@ noDisappearingEnvObject::noDisappearingEnvObject(SerializedGameData* sgd, const 
 {
 }
 
-/// Gibt Farbe zurück, mit der das Objekt gezeichnet werden soll
+/// Gibt Farbe zurÃ¼ck, mit der das Objekt gezeichnet werden soll
 unsigned noDisappearingEnvObject::GetDrawColor() const
 {
     if(disappearing)
@@ -81,7 +81,7 @@ unsigned noDisappearingEnvObject::GetDrawColor() const
         return 0xFFFFFFFF;
 }
 
-/// Gibt Farbe zurück, mit der der Schatten des Objekts gezeichnet werden soll
+/// Gibt Farbe zurÃ¼ck, mit der der Schatten des Objekts gezeichnet werden soll
 unsigned noDisappearingEnvObject::GetDrawShadowColor() const
 {
     if(disappearing)
@@ -104,7 +104,7 @@ void noDisappearingEnvObject::HandleEvent_noDisappearingEnvObject(const unsigned
 {
     if(id)
     {
-        // endgültig vernichten
+        // endgÃ¼ltig vernichten
         em->AddToKillList(this);
         dead_event = 0;
     }
@@ -112,7 +112,7 @@ void noDisappearingEnvObject::HandleEvent_noDisappearingEnvObject(const unsigned
     {
         // Jetzt verschwinden
         disappearing = true;
-        // In ner bestimmten Zeit dann endgültig vernichten
+        // In ner bestimmten Zeit dann endgÃ¼ltig vernichten
         dead_event = em->AddEvent(this, 30, 1);
     }
 }
@@ -120,13 +120,13 @@ void noDisappearingEnvObject::HandleEvent_noDisappearingEnvObject(const unsigned
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Räumt das Objekt auf.
+ *  RÃ¤umt das Objekt auf.
  *
  *  @author FloSoft
  */
 void noDisappearingEnvObject::Destroy_noDisappearingEnvObject(void)
 {
-    // Feld räumen, wenn ich sterbe
+    // Feld rÃ¤umen, wenn ich sterbe
     gwg->SetNO(0, pos);
 
     // ggf Event abmelden

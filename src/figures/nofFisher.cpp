@@ -1,4 +1,4 @@
-// $Id: nofFisher.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: nofFisher.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -79,7 +79,7 @@ void nofFisher::DrawWorking(int x, int y)
     }
     else if(id < 216)
     {
-        // Angel im Wasser hängen lassen und warten
+        // Angel im Wasser hÃ¤ngen lassen und warten
         draw_id = 1590 + 8 * ((fishing_dir + 3) % 6) + (id % 8);
     }
     else
@@ -90,7 +90,7 @@ void nofFisher::DrawWorking(int x, int y)
             draw_id = 1638 + 8 * ((fishing_dir + 3) % 6) + (id - 216) / 2;
         else
         {
-            // Ohne Fisch (wie das Reinlassen, bloß umgekehrt)
+            // Ohne Fisch (wie das Reinlassen, bloÃŸ umgekehrt)
             if(fishing_dir < 3)
                 draw_id = 1566 + 8 * fishing_dir + 7 - +(id - 216) / 2;
             else
@@ -108,17 +108,17 @@ void nofFisher::DrawWorking(int x, int y)
     DrawShadow(x, y, 0, fishing_dir);
 }
 
-/// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren rausträgt (bzw rein)
+/// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren raustrÃ¤gt (bzw rein)
 unsigned short nofFisher::GetCarryID() const
 {
     return 70;
 }
 
-/// Abgeleitete Klasse informieren, wenn sie anfängt zu arbeiten (Vorbereitungen)
+/// Abgeleitete Klasse informieren, wenn sie anfÃ¤ngt zu arbeiten (Vorbereitungen)
 void nofFisher::WorkStarted()
 {
     unsigned char doffset = RANDOM.Rand(__FILE__, __LINE__, obj_id, 6);
-    // Punkt mit Fisch suchen (mit zufälliger Richtung beginnen)
+    // Punkt mit Fisch suchen (mit zufÃ¤lliger Richtung beginnen)
     fishing_dir = 0xFF;
     for(unsigned char i = 0; i < 6; ++i)
     {
@@ -152,7 +152,7 @@ void nofFisher::WorkFinished()
 /// Returns the quality of this working point or determines if the worker can work here at all
 nofFarmhand::PointQuality nofFisher::GetPointQuality(const MapPoint pt)
 {
-    // Der Punkt muss passierbar sein für Figuren
+    // Der Punkt muss passierbar sein fÃ¼r Figuren
     if(!gwg->IsNodeForFigures(pt))
         return PQ_NOTPOSSIBLE;
 

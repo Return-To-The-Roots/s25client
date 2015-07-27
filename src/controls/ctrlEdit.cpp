@@ -1,4 +1,4 @@
-// $Id: ctrlEdit.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: ctrlEdit.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -105,7 +105,7 @@ const std::string ctrlEdit::GetText(void) const
 /**
  *  zeichnet das Fenster.
  *
- *  @todo muss alles überarbeitet werden
+ *  @todo muss alles Ã¼berarbeitet werden
  *
  *  @author OLiver
  */
@@ -151,7 +151,7 @@ bool ctrlEdit::Draw_(void)
     font->Draw(GetX() + 4, GetY() + height / 2, dtext.substr(start), glArchivItem_Font::DF_VCENTER,
                (focus ? 0xFFFFA000 : COLOR_YELLOW), 0, width - 8);
 
-    // Alle 500ms Cursor für 500ms anzeigen
+    // Alle 500ms Cursor fÃ¼r 500ms anzeigen
     if(focus && !disabled && VIDEODRIVER.GetTickCount() % 1000 < 500)
     {
         unsigned short cwidth = 5;
@@ -167,7 +167,7 @@ bool ctrlEdit::Draw_(void)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  fügt ein Zeichen zum Text hinzu
+ *  fÃ¼gt ein Zeichen zum Text hinzu
  *
  *  @param[in] text Das Zeichen
  *
@@ -233,19 +233,19 @@ void ctrlEdit::Msg_PaintAfter()
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Maustaste-gedrückt Callback
+ *  Maustaste-gedrÃ¼ckt Callback
  *
  *  @author OLiver
  */
 bool ctrlEdit::Msg_LeftDown(const MouseCoords& mc)
 {
     if((newfocus = Coll(mc.x, mc.y, GetX(), GetY(), width, height)))
-        return false; /// vorläufig, um Fokus zu für andere Edit-Felder zu kriegen, damit es zu keinen Doppelfokus kommt
+        return false; /// vorlÃ¤ufig, um Fokus zu fÃ¼r andere Edit-Felder zu kriegen, damit es zu keinen Doppelfokus kommt
     else
         return false;
 }
 
-// vorläufig
+// vorlÃ¤ufig
 bool ctrlEdit::Msg_LeftDown_After(const MouseCoords& mc)
 {
     if(!Coll(mc.x, mc.y, GetX(), GetY(), width, height))
@@ -256,7 +256,7 @@ bool ctrlEdit::Msg_LeftDown_After(const MouseCoords& mc)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Taste-gedrückt Callback
+ *  Taste-gedrÃ¼ckt Callback
  *
  *  @author FloSoft
  */
@@ -270,7 +270,7 @@ bool ctrlEdit::Msg_KeyDown(const KeyEvent& ke)
     {
         default:
             return false;
-            // Wird bereits über Char geliefert !!
+            // Wird bereits Ã¼ber Char geliefert !!
         case KT_SPACE: // Leertaste
         {
             AddChar(0x20);
@@ -278,10 +278,10 @@ bool ctrlEdit::Msg_KeyDown(const KeyEvent& ke)
 
         case KT_LEFT: // Cursor nach Links
         {
-            // Blockweise nach links, falls Strg gedrückt
+            // Blockweise nach links, falls Strg gedrÃ¼ckt
             if(ke.ctrl)
             {
-                // Erst über alle Trennzeichen hinweg
+                // Erst Ã¼ber alle Trennzeichen hinweg
                 while (cursor_pos > 0 && std::wstring(L" \t\n-+=").find(text[cursor_pos - 1]) != std::wstring::npos)
                 {
                     CursorLeft();
@@ -289,7 +289,7 @@ bool ctrlEdit::Msg_KeyDown(const KeyEvent& ke)
                         break;
                 }
 
-                // Und dann über alles, was kein Trenner ist
+                // Und dann Ã¼ber alles, was kein Trenner ist
                 while (cursor_pos > 0 && std::wstring(L" \t\n-+=").find(text[cursor_pos - 1]) == std::wstring::npos)
                 {
                     CursorLeft();
@@ -305,17 +305,17 @@ bool ctrlEdit::Msg_KeyDown(const KeyEvent& ke)
 
         case KT_RIGHT: // Cursor nach Rechts
         {
-            // Blockweise nach rechts, falls Strg gedrückt
+            // Blockweise nach rechts, falls Strg gedrÃ¼ckt
             if(ke.ctrl)
             {
-                // Erst über alle Trennzeichen hinweg
+                // Erst Ã¼ber alle Trennzeichen hinweg
                 while (cursor_pos + 1 < text.length() && std::wstring(L" \t\n-+=").find(text[cursor_pos + 1]) != std::wstring::npos)
                 {
                     CursorRight();
                     if(cursor_pos == text.length())
                         break;
                 }
-                // Und dann über alles, was kein Trenner ist
+                // Und dann Ã¼ber alles, was kein Trenner ist
                 while (cursor_pos + 1 < text.length() && std::wstring(L" \t\n-+=").find(text[cursor_pos + 1]) == std::wstring::npos)
                 {
                     CursorRight();
@@ -335,13 +335,13 @@ bool ctrlEdit::Msg_KeyDown(const KeyEvent& ke)
                 AddChar(ke.c);
         } break;
 
-        case KT_BACKSPACE: // Backspace gedrückt
+        case KT_BACKSPACE: // Backspace gedrÃ¼ckt
         {
             if(!disabled)
                 RemoveChar();
         } break;
 
-        case KT_DELETE: // Entfernen gedrückt
+        case KT_DELETE: // Entfernen gedrÃ¼ckt
         {
             if(!disabled && cursor_pos < text.length())
             {
@@ -350,19 +350,19 @@ bool ctrlEdit::Msg_KeyDown(const KeyEvent& ke)
             }
         } break;
 
-        case KT_RETURN: // Enter gedrückt
+        case KT_RETURN: // Enter gedrÃ¼ckt
         {
             if(!disabled && parent)
                 parent->Msg_EditEnter(GetID());
         } break;
 
-        case KT_HOME: // Pos1 gedrückt
+        case KT_HOME: // Pos1 gedrÃ¼ckt
         {
             while(cursor_pos > 0)
                 CursorLeft();
         } break;
 
-        case KT_END: // Ende gedrückt
+        case KT_END: // Ende gedrÃ¼ckt
         {
             while(cursor_pos < text.length())
                 CursorRight();

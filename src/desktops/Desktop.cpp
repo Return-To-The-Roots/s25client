@@ -1,4 +1,4 @@
-// $Id: Desktop.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: Desktop.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -36,7 +36,7 @@ static char THIS_FILE[] = __FILE__;
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Konstruktor für einen Spieldesktop
+ *  Konstruktor fÃ¼r einen Spieldesktop
  *
  *  @param[in] background Hintergrund des Desktops
  *
@@ -92,22 +92,22 @@ void Desktop::Show(void)
 
 ///////////////////////////////////////////////////////////////////////////////
 /*
- *  Reagiert auf Spielfenstergrößenänderung
+ *  Reagiert auf SpielfenstergrÃ¶ÃŸenÃ¤nderung
  *
  *  @author Divan
  */
 void Desktop::Msg_ScreenResize(const ScreenResizeEvent& sr)
 {
 // Keep the following block the same as in ctrlGroup class:
-    // Für skalierte Desktops ist alles einfach, die brauchen im besten Fall gar nichts selbst implementieren
+    // FÃ¼r skalierte Desktops ist alles einfach, die brauchen im besten Fall gar nichts selbst implementieren
     if (scale)
     {
-        //Zunächst an die Kinder weiterleiten
+        //ZunÃ¤chst an die Kinder weiterleiten
         for(std::map<unsigned int, Window*>::iterator it = idmap.begin(); it != idmap.end(); ++it)
             if(it->second)
             {
                 Window* ctrl = it->second;
-                // unskalierte Position und Größe bekommen
+                // unskalierte Position und GrÃ¶ÃŸe bekommen
                 unsigned realx = ctrl->GetX() * 800 / sr.oldWidth;
                 unsigned realy = ctrl->GetY() * 600 / sr.oldHeight;
                 unsigned realwidth  = ctrl->GetWidth()  * 800 / sr.oldWidth;

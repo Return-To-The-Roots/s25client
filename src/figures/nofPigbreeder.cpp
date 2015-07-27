@@ -1,4 +1,4 @@
-// $Id: nofPigbreeder.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+﻿// $Id: nofPigbreeder.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -102,7 +102,7 @@ GoodType nofPigbreeder::ProduceWare()
 
 void nofPigbreeder::MakePigSounds()
 {
-    /// Ist es wieder Zeit f�r einen Schweine-Sound?
+    /// Ist es wieder Zeit für einen Schweine-Sound?
     if(GAMECLIENT.GetGFNumber() - last_id > 600 + unsigned(rand() % 200) - unsigned((*workplace->GetProduktivityPointer()) * 5) &&
             (GAMECLIENT.GetGFNumber() != last_id) && !GAMECLIENT.IsPaused())
     {

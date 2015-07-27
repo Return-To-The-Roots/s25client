@@ -1,4 +1,4 @@
-// $Id: nofDefender.cpp 9537 2014-12-10 22:14:07Z marcus $
+ï»¿// $Id: nofDefender.cpp 9537 2014-12-10 22:14:07Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -85,7 +85,7 @@ void nofDefender::Walked()
         } break;
         case STATE_DEFENDING_WALKINGFROM:
         {
-            // Ist evtl. unser Heimatgebäude zerstört?
+            // Ist evtl. unser HeimatgebÃ¤ude zerstÃ¶rt?
             if(!building)
             {
                 // Rumirren
@@ -110,9 +110,9 @@ void nofDefender::Walked()
             {
                 // mich von der Landkarte tilgen
                 gwg->RemoveFigure(this, pos);
-                // mich zum Gebäude wieder hinzufügen
+                // mich zum GebÃ¤ude wieder hinzufÃ¼gen
                 building->AddActiveSoldier(this);
-                // Gebäude Bescheid sagen, dass es nun keinen Verteidiger mehr gibt
+                // GebÃ¤ude Bescheid sagen, dass es nun keinen Verteidiger mehr gibt
                 building->NoDefender();
             }
 
@@ -122,7 +122,7 @@ void nofDefender::Walked()
     }
 }
 
-/// Wenn ein Heimat-Militärgebäude bei Missionseinsätzen zerstört wurde
+/// Wenn ein Heimat-MilitÃ¤rgebÃ¤ude bei MissionseinsÃ¤tzen zerstÃ¶rt wurde
 void nofDefender::HomeDestroyed()
 {
     building = 0;
@@ -155,8 +155,8 @@ void nofDefender::HomeDestroyed()
         } break;
         case STATE_FIGHTING:
         {
-            // Die normale Tätigkeit wird erstmal fortgesetzt (Laufen, Kämpfen, wenn er schon an der Fahne ist
-            // wird er auch nicht mehr zurückgehen)
+            // Die normale TÃ¤tigkeit wird erstmal fortgesetzt (Laufen, KÃ¤mpfen, wenn er schon an der Fahne ist
+            // wird er auch nicht mehr zurÃ¼ckgehen)
         } break;
         default:
             break;
@@ -185,7 +185,7 @@ void nofDefender::WonFighting()
     // Angreifer tot
     attacker = 0;
 
-    // Ist evtl. unser Heimatgebäude zerstört?
+    // Ist evtl. unser HeimatgebÃ¤ude zerstÃ¶rt?
     if(!building)
     {
         // Rumirren
@@ -204,7 +204,7 @@ void nofDefender::WonFighting()
     }
     else
     {
-        // Kein Angreifer gefunden, dann gehen wir wieder in unser Gebäude
+        // Kein Angreifer gefunden, dann gehen wir wieder in unser GebÃ¤ude
         state = STATE_DEFENDING_WALKINGFROM;
         StartWalking(1);
         // Angreifer auf 0 setzen, er ist ja tot
@@ -217,14 +217,14 @@ void nofDefender::LostFighting()
 {
     attacker = 0;
 
-    // Gebäude Bescheid sagen, falls es noch existiert
+    // GebÃ¤ude Bescheid sagen, falls es noch existiert
     if(building)
     {
         building->NoDefender();
-        // Ist das ein "normales" Militärgebäude?
+        // Ist das ein "normales" MilitÃ¤rgebÃ¤ude?
         if(building->GetBuildingType() >= BLD_BARRACKS && building->GetBuildingType() <= BLD_FORTRESS)
         {
-            // Wenn ich nicht der lezte Soldat da drinnen war, dann können noch neue kommen..
+            // Wenn ich nicht der lezte Soldat da drinnen war, dann kÃ¶nnen noch neue kommen..
             if(static_cast<nobMilitary*>(building)->GetTroopsCount())
                 static_cast<nobMilitary*>(building)->RegulateTroops();
         }
@@ -237,7 +237,7 @@ void nofDefender::AttackerArrested()
     // Neuen Angreifer suchen
     if(!(attacker = building->FindAttackerNearBuilding()))
     {
-        // Kein Angreifer gefunden, dann gehen wir wieder in unser Gebäude
+        // Kein Angreifer gefunden, dann gehen wir wieder in unser GebÃ¤ude
         state = STATE_DEFENDING_WALKINGFROM;
         StartWalking(1);
         // Angreifer auf 0 setzen, er ist ja tot
@@ -245,7 +245,7 @@ void nofDefender::AttackerArrested()
     }
 }
 
-/// Sagt den verschiedenen Zielen Bescheid, dass wir doch nicht mehr kommen können
+/// Sagt den verschiedenen Zielen Bescheid, dass wir doch nicht mehr kommen kÃ¶nnen
 void nofDefender::InformTargetsAboutCancelling()
 {
 }

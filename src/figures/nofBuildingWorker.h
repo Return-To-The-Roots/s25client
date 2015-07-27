@@ -1,4 +1,4 @@
-// $Id: nofBuildingWorker.h 9357 2014-04-25 15:35:25Z FloSoft $
+﻿// $Id: nofBuildingWorker.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -25,31 +25,31 @@
 
 class nobUsual;
 
-/// Repräsentiert einen Arbeiter in einem Gebäude
+/// ReprÃ¤sentiert einen Arbeiter in einem GebÃ¤ude
 class nofBuildingWorker : public noFigure
 {
     public:
 
-        /// Was der gerade so schönes macht
+        /// Was der gerade so schÃ¶nes macht
         enum State
         {
             STATE_FIGUREWORK = 0, /// Arbeiten der noFigure (Laufen zum Arbeitsplatz, Rumirren usw)
-            STATE_ENTERBUILDING, /// Betreten des Gebäudes
-            STATE_WAITING1, /// Warten, bis man anfängt zu produzieren
-            STATE_WAITING2, /// Warten nach dem Produzieren, bis man Ware rausträgt (nur Handwerker)
+            STATE_ENTERBUILDING, /// Betreten des GebÃ¤udes
+            STATE_WAITING1, /// Warten, bis man anfÃ¤ngt zu produzieren
+            STATE_WAITING2, /// Warten nach dem Produzieren, bis man Ware raustrÃ¤gt (nur Handwerker)
             STATE_CARRYOUTWARE, /// Raustragen der Ware
             STATE_WORK, /// Arbeiten
             STATE_WAITINGFORWARES_OR_PRODUCTIONSTOPPED, /// Warten auf Waren oder weil Produktion eingetellt wurde
             STATE_WALKTOWORKPOINT, /// Zum "Arbeitspunkt" laufen (nur Landarbeiter)
-            STATE_WALKINGHOME, /// vom Arbeitspunkt zurück nach Hause laufen (nur Landarbeiter)
-            STATE_WAITFORWARESPACE, /// auf einen freien Platz an der Flagge vor dem Gebäude warten
-            STATE_HUNTER_CHASING, /// Jäger: verfolgt das Tier bis auf eine gewisse Distanz
-            STATE_HUNTER_FINDINGSHOOTINGPOINT, /// Jäger: sucht einen Punkt rund um das Tier, von dem er es abschießen kann
-            STATE_HUNTER_SHOOTING, /// Jäger: Tier erschießen
-            STATE_HUNTER_WALKINGTOCADAVER, /// Jäger: Zum Kadaver laufen
-            STATE_HUNTER_EVISCERATING, /// Jäger: Tier ausnehmen
-            STATE_CATAPULT_TARGETBUILDING, /// Katapult: Dreht den Katapult oben auf das Ziel zu und schießt
-            STATE_CATAPULT_BACKOFF /// Katapult: beendet schießen und dreht Katapult in die Ausgangsstellung zurück
+            STATE_WALKINGHOME, /// vom Arbeitspunkt zurÃ¼ck nach Hause laufen (nur Landarbeiter)
+            STATE_WAITFORWARESPACE, /// auf einen freien Platz an der Flagge vor dem GebÃ¤ude warten
+            STATE_HUNTER_CHASING, /// JÃ¤ger: verfolgt das Tier bis auf eine gewisse Distanz
+            STATE_HUNTER_FINDINGSHOOTINGPOINT, /// JÃ¤ger: sucht einen Punkt rund um das Tier, von dem er es abschieÃŸen kann
+            STATE_HUNTER_SHOOTING, /// JÃ¤ger: Tier erschieÃŸen
+            STATE_HUNTER_WALKINGTOCADAVER, /// JÃ¤ger: Zum Kadaver laufen
+            STATE_HUNTER_EVISCERATING, /// JÃ¤ger: Tier ausnehmen
+            STATE_CATAPULT_TARGETBUILDING, /// Katapult: Dreht den Katapult oben auf das Ziel zu und schieÃŸt
+            STATE_CATAPULT_BACKOFF /// Katapult: beendet schieÃŸen und dreht Katapult in die Ausgangsstellung zurÃ¼ck
 
         };
 
@@ -60,10 +60,10 @@ class nofBuildingWorker : public noFigure
         /// Arbeitsplatz (Haus, in dem er arbeitet)
         nobUsual* workplace;
 
-        // Ware, die er evtl gerade trägt
+        // Ware, die er evtl gerade trÃ¤gt
         GoodType ware;
 
-        /// Wieviel er von den letzen 100gf NICHT gearbeitet hat (fürs Ausrechnen der Produktivität)
+        /// Wieviel er von den letzen 100gf NICHT gearbeitet hat (fÃ¼rs Ausrechnen der ProduktivitÃ¤t)
         unsigned short not_working;
         /// Seit welchem Zeitpunkt (in gf) er ggf. NICHT mehr arbeitet (0xFFFFFFFF = er arbeitet gerade)
         unsigned int since_not_working;
@@ -73,16 +73,16 @@ class nofBuildingWorker : public noFigure
 
     protected:
 
-        /// wird von abgeleiteten Klassen aufgerufen, wenn sie die Ware an der Fahne vorm Gebäude ablegen wollen (oder auch nicht)
+        /// wird von abgeleiteten Klassen aufgerufen, wenn sie die Ware an der Fahne vorm GebÃ¤ude ablegen wollen (oder auch nicht)
         /// also fertig mit Arbeiten sind
         void WorkingReady();
-        /// Fängt an NICHT zu arbeiten (wird gemessen fürs Ausrechnen der Produktivität)
+        /// FÃ¤ngt an NICHT zu arbeiten (wird gemessen fÃ¼rs Ausrechnen der ProduktivitÃ¤t)
         void StartNotWorking();
-        /// Hört auf, nicht zu arbeiten, sprich fängt an zu arbeiten (fürs Ausrechnen der Produktivität)
+        /// HÃ¶rt auf, nicht zu arbeiten, sprich fÃ¤ngt an zu arbeiten (fÃ¼rs Ausrechnen der ProduktivitÃ¤t)
         void StopNotWorking();
-        /// wenn man beim Arbeitsplatz "kündigen" soll, man das Laufen zum Ziel unterbrechen muss (warum auch immer)
+        /// wenn man beim Arbeitsplatz "kÃ¼ndigen" soll, man das Laufen zum Ziel unterbrechen muss (warum auch immer)
         void AbrogateWorkplace();
-        // Fängt das "Warten-vor-dem-Arbeiten" an, falls Rohstoffe zum Arbeiten vorhanden sind, ansonsten Warten auf Rohstoffe
+        // FÃ¤ngt das "Warten-vor-dem-Arbeiten" an, falls Rohstoffe zum Arbeiten vorhanden sind, ansonsten Warten auf Rohstoffe
         void TryToWork();
 
     private:
@@ -93,7 +93,7 @@ class nofBuildingWorker : public noFigure
 
         /// Malt den Arbeiter beim Arbeiten
         virtual void DrawWorking(int x, int y) = 0;
-        /// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren rausträgt (bzw rein)
+        /// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren raustrÃ¤gt (bzw rein)
         virtual unsigned short GetCarryID() const = 0;
         /// Laufen an abgeleitete Klassen weiterleiten
         virtual void WalkedDerived() = 0;
@@ -107,11 +107,11 @@ class nofBuildingWorker : public noFigure
         /// Zeichnen der Figur in sonstigen Arbeitslagen
         virtual void DrawOtherStates(const int x, const int y);
 
-        /// nur für Bergarbeiter!
-        /// Sucht die Nähe nach einer bestimmten Ressource ab und gibt true zurück, wenn er fündig wird und baut ggf eins
+        /// nur fÃ¼r Bergarbeiter!
+        /// Sucht die NÃ¤he nach einer bestimmten Ressource ab und gibt true zurÃ¼ck, wenn er fÃ¼ndig wird und baut ggf eins
         /// ab, wenn dig = true ist
         bool GetResources(unsigned char type);
-        /// Macht das gleiche wie GetResources nur direkt für einen Punkt
+        /// Macht das gleiche wie GetResources nur direkt fÃ¼r einen Punkt
         bool GetResourcesOfNode(const MapPoint pt, const unsigned char type);
 
 
@@ -121,7 +121,7 @@ class nofBuildingWorker : public noFigure
         nofBuildingWorker(const Job job, const MapPoint pt, const unsigned char player, nobUsual* workplace);
         nofBuildingWorker(SerializedGameData* sgd, const unsigned obj_id);
 
-        /// Aufräummethoden
+        /// AufrÃ¤ummethoden
     protected:  void Destroy_nofBuildingWorker() { Destroy_noFigure(); }
     public:     void Destroy() { Destroy_nofBuildingWorker(); }
 
@@ -138,9 +138,9 @@ class nofBuildingWorker : public noFigure
         bool FreePlaceAtFlag();
         /// Wenn das Haus des Arbeiters abbrennt
         void LostWork();
-        /// Rechnet die Produktivität aus (und setzt den Zähler zurück, setzt vorraus, dass das in 100 gf - Abständen aufgerufen wird !!!)
+        /// Rechnet die ProduktivitÃ¤t aus (und setzt den ZÃ¤hler zurÃ¼ck, setzt vorraus, dass das in 100 gf - AbstÃ¤nden aufgerufen wird !!!)
         unsigned short CalcProductivity();
-        /// Wird aufgerufen, nachdem die Produktion in dem Gebäude, wo er arbeitet, verboten wurde
+        /// Wird aufgerufen, nachdem die Produktion in dem GebÃ¤ude, wo er arbeitet, verboten wurde
         void ProductionStopped();
 
     protected:

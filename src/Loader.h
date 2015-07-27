@@ -1,4 +1,4 @@
-// $Id: Loader.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: Loader.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -57,23 +57,23 @@ class Loader : public Singleton<Loader>
         /// Desktruktor von @p Loader.
         ~Loader(void);
 
-        /// Lädt alle allgemeinen Dateien.
+        /// LÃ¤dt alle allgemeinen Dateien.
         bool LoadFilesAtStart(void);
-        /// Lädt die Spieldateien.
+        /// LÃ¤dt die Spieldateien.
         bool LoadFilesAtGame(unsigned char gfxset, bool* nations);
-        /// Lädt Dateien von Addons.
+        /// LÃ¤dt Dateien von Addons.
         bool LoadFilesFromAddon(const AddonId id);
         void fillCaches();
-        /// Lädt das Terrain.
+        /// LÃ¤dt das Terrain.
         bool CreateTerrainTextures(void);
 
-        /// Lädt die Settings.
+        /// LÃ¤dt die Settings.
         bool LoadSettings();
         /// Speichert die Settings.
         bool SaveSettings();
 
     protected:
-        /// Lädt alle Sounds.
+        /// LÃ¤dt alle Sounds.
         inline bool LoadSounds();
 
     private:

@@ -1,4 +1,4 @@
-// $Id: ctrlDeepening.h 9357 2014-04-25 15:35:25Z FloSoft $
+﻿// $Id: ctrlDeepening.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -31,7 +31,7 @@ class ctrlDeepening : public ctrlText
 
     protected:
         virtual bool Draw_(void);
-        /// Abgeleitete Klassen m�ssen erweiterten Inhalt zeichnen
+        /// Abgeleitete Klassen müssen erweiterten Inhalt zeichnen
         virtual void DrawContent() const {}
 
     private:

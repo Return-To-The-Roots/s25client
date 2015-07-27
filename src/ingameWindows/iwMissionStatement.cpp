@@ -1,4 +1,4 @@
-// $Id: iwMissionStatement.cpp 9357 2014-12-14 18:45:25Z Marcus $
+﻿// $Id: iwMissionStatement.cpp 9357 2014-12-14 18:45:25Z Marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //

@@ -1,4 +1,4 @@
-// $Id: ctrlPercent.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: ctrlPercent.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -63,7 +63,7 @@ ctrlPercent::ctrlPercent(Window* parent,
  */
 bool ctrlPercent::Draw_(void)
 {
-    // Wenn der Prozentsatzpointer = 0, dann wird 0 angezeigt und es soll nich abstürzen!
+    // Wenn der Prozentsatzpointer = 0, dann wird 0 angezeigt und es soll nich abstÃ¼rzen!
     unsigned short percentage = (this->percentage ?  *this->percentage : 0);
 
     // Farbe herausfinden
@@ -72,7 +72,7 @@ bool ctrlPercent::Draw_(void)
     if(percentage > 100)
         percentage = 100;
 
-    // Farbe wählen je nachdem wie viel Prozent
+    // Farbe wÃ¤hlen je nachdem wie viel Prozent
     if(percentage >= 60)
         color = 0xFF00E000;
     else if(percentage >= 30)

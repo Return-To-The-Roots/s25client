@@ -1,4 +1,4 @@
-// $Id: EventManager.h 9363 2014-04-26 15:00:08Z FloSoft $
+﻿// $Id: EventManager.h 9363 2014-04-26 15:00:08Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -64,7 +64,7 @@ class EventManager
 
                 GO_Type GetGOT() const { return GOT_EVENT; }
 
-                // Vergleichsoperatur für chronologisches Einfügen nach Ziel-GF
+                // Vergleichsoperatur fÃ¼r chronologisches EinfÃ¼gen nach Ziel-GF
                 bool operator <= (const Event& other) const { return gf + gf_length <= other.gf + other.gf_length; }
         };
         typedef Event* EventPointer;
@@ -72,17 +72,17 @@ class EventManager
     public:
         ~EventManager();
 
-        /// führt alle Events des aktuellen GameFrames aus.
+        /// fÃ¼hrt alle Events des aktuellen GameFrames aus.
         void NextGF();
-        /// fügt ein Event der Eventliste hinzu.
+        /// fÃ¼gt ein Event der Eventliste hinzu.
         EventPointer AddEvent(GameObject* obj, const unsigned int gf_length, const unsigned int id = 0);
-        /// Deserialisiert ein Event und fügt es hinzu
+        /// Deserialisiert ein Event und fÃ¼gt es hinzu
         EventPointer AddEvent(SerializedGameData* sgd, const unsigned obj_id);
-        /// Fügt ein schon angebrochenes Event hinzu (Events, wenn jemand beim Laufen stehengeblieben ist z.B.)
-        /// Ein altes Event wird also quasi fortgeführt (um gf_elapsed in der Vergangenheit angelegt)
+        /// FÃ¼gt ein schon angebrochenes Event hinzu (Events, wenn jemand beim Laufen stehengeblieben ist z.B.)
+        /// Ein altes Event wird also quasi fortgefÃ¼hrt (um gf_elapsed in der Vergangenheit angelegt)
         EventPointer AddEvent(GameObject* obj, const unsigned int gf_length, const unsigned int id, const unsigned gf_elapsed);
 
-        /// Löscht alle Listen für Spielende
+        /// LÃ¶scht alle Listen fÃ¼r Spielende
         void Clear() { eis.clear(); kill_list.clear(); }
         /// Event entfernen
         void RemoveEvent(EventPointer ep);
@@ -94,12 +94,12 @@ class EventManager
         /// Deserialisieren
         void Deserialize(SerializedGameData* sgd);
 
-        /// Ist ein Event mit bestimmter id für ein bestimmtes Objekt bereits vorhanden?
+        /// Ist ein Event mit bestimmter id fÃ¼r ein bestimmtes Objekt bereits vorhanden?
         bool IsEventActive(const GameObject* const obj, const unsigned id) const;
 
         void RemoveAllEventsOfObject(GameObject* obj);
     private:
-        std::map<unsigned, std::list<Event*> > eis;     ///< Liste der Events für die einzelnen Objekte
+        std::map<unsigned, std::list<Event*> > eis;     ///< Liste der Events fÃ¼r die einzelnen Objekte
         std::list<GameObject*> kill_list; ///< Liste mit Objekten die unmittelbar nach NextGF gekillt werden sollen
 };
 

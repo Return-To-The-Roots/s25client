@@ -1,4 +1,4 @@
-// $Id: ctrlButton.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: ctrlButton.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -140,7 +140,7 @@ bool ctrlButton::Msg_LeftUp(const MouseCoords& mc)
     return false;
 }
 
-// Prüfen, ob bei gehighlighteten Button die Maus auch noch über dem Button ist
+// PrÃ¼fen, ob bei gehighlighteten Button die Maus auch noch Ã¼ber dem Button ist
 void ctrlButton::TestMouseOver()
 {
     if(state == BUTTON_HOVER || state == BUTTON_PRESSED)
@@ -163,7 +163,7 @@ bool ctrlButton::Draw_(void)
     if(width == 0 || height == 0)
         return true;
 
-    // Prüfen, ob bei gehighlighteten Button die Maus auch noch über dem Button ist
+    // PrÃ¼fen, ob bei gehighlighteten Button die Maus auch noch Ã¼ber dem Button ist
     TestMouseOver();
 
     Rect buttonrect(GetX(), GetY(), width, height);
@@ -196,7 +196,7 @@ ctrlTextButton::ctrlTextButton(Window* parent, unsigned int id, unsigned short x
 }
 
 
-/// Abgeleitete Klassen müssen erweiterten Button-Inhalt zeichnen (Text in dem Fall)
+/// Abgeleitete Klassen mÃ¼ssen erweiterten Button-Inhalt zeichnen (Text in dem Fall)
 void ctrlTextButton::DrawContent() const
 {
     unsigned color;
@@ -225,7 +225,7 @@ void ctrlImageButton::DrawContent() const
 }
 
 
-/// Abgeleitete Klassen müssen erweiterten Button-Inhalt zeichnen (Text in dem Fall)
+/// Abgeleitete Klassen mÃ¼ssen erweiterten Button-Inhalt zeichnen (Text in dem Fall)
 ctrlColorButton::ctrlColorButton(Window* parent, unsigned int id, unsigned short x, unsigned short y,
                                  unsigned short width, unsigned short height, const TextureColor tc,
                                  unsigned int fillColor, const std::string& tooltip) :
@@ -235,7 +235,7 @@ ctrlColorButton::ctrlColorButton(Window* parent, unsigned int id, unsigned short
 }
 
 
-/// Abgeleitete Klassen müssen erweiterten Button-Inhalt zeichnen (Farbe in dem Fall)
+/// Abgeleitete Klassen mÃ¼ssen erweiterten Button-Inhalt zeichnen (Farbe in dem Fall)
 void ctrlColorButton::DrawContent() const
 {
     DrawRectangle(x + 3, y + 3, width - 6, height - 6, fillColor);

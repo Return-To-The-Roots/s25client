@@ -1,4 +1,4 @@
-// $Id: ctrlButton.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: ctrlButton.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -40,7 +40,7 @@ class ctrlButton : public Window
 
         /// Setzt Tooltip
         void SetTooltip(const std::string& tooltip) { this->tooltip = tooltip; }
-        /// Liefert Tooltip zurück
+        /// Liefert Tooltip zurÃ¼ck
         std::string GetTooltip(void) const { return tooltip; }
         /// Tauscht Tooltips
         void SwapTooltip(ctrlButton* two) { std::swap(tooltip, two->tooltip); }
@@ -58,20 +58,20 @@ class ctrlButton : public Window
     protected:
         /// Zeichnet Grundstruktur des Buttons
         virtual bool Draw_(void);
-        /// Abgeleitete Klassen müssen erweiterten Button-Inhalt zeichnen
+        /// Abgeleitete Klassen mÃ¼ssen erweiterten Button-Inhalt zeichnen
         virtual void DrawContent() const = 0;
-        // Prüfen, ob bei gehighlighteten Button die Maus auch noch über dem Button ist
+        // PrÃ¼fen, ob bei gehighlighteten Button die Maus auch noch Ã¼ber dem Button ist
         void TestMouseOver();
 
     protected:
 
         /// Texturfarbe des Buttons
         TextureColor tc;
-        /// Status des Buttons (gedrückt, erhellt usw. durch Maus ausgelöst)
+        /// Status des Buttons (gedrÃ¼ckt, erhellt usw. durch Maus ausgelÃ¶st)
         ButtonState state;
         /// Hat der Button einen 3D-Rand?
         bool border;
-        /// Button dauerhaft gedrückt?
+        /// Button dauerhaft gedrÃ¼ckt?
         bool check;
         /// Button "erleuchtet"?
         bool illuminated;
@@ -90,7 +90,7 @@ class ctrlTextButton : public ctrlButton, public ctrlBaseText
 
     protected:
 
-        /// Abgeleitete Klassen müssen erweiterten Button-Inhalt zeichnen (Text in dem Fall)
+        /// Abgeleitete Klassen mÃ¼ssen erweiterten Button-Inhalt zeichnen (Text in dem Fall)
         void DrawContent() const;
 };
 
@@ -110,16 +110,16 @@ class ctrlImageButton : public ctrlButton
         void SetImage(glArchivItem_Bitmap* image) { this->image = image; }
         /// Tauscht Bilder
         void SwapImage(ctrlImageButton* two) { std::swap(image, two->image); }
-        /// Gibt Bild zurück
+        /// Gibt Bild zurÃ¼ck
         glArchivItem_Bitmap* GetButtonImage() const { return image; }
-        /// Ändert Farbfilter, mit dem dieses Bild gezeichnet werden soll
+        /// Ã„ndert Farbfilter, mit dem dieses Bild gezeichnet werden soll
         void SetModulationColor(const unsigned modulation_color)
         { this->modulation_color = modulation_color; }
 
 
     protected:
 
-        /// Abgeleitete Klassen müssen erweiterten Button-Inhalt zeichnen (Text in dem Fall)
+        /// Abgeleitete Klassen mÃ¼ssen erweiterten Button-Inhalt zeichnen (Text in dem Fall)
         void DrawContent() const;
 
     protected:
@@ -146,7 +146,7 @@ class ctrlColorButton : public ctrlButton, public ColorControlInterface
 
     protected:
 
-        /// Abgeleitete Klassen müssen erweiterten Button-Inhalt zeichnen (Text in dem Fall)
+        /// Abgeleitete Klassen mÃ¼ssen erweiterten Button-Inhalt zeichnen (Text in dem Fall)
         void DrawContent() const;
 
     protected:

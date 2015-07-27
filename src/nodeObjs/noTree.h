@@ -1,4 +1,4 @@
-// $Id: noTree.h 9357 2014-04-25 15:35:25Z FloSoft $
+Ôªø// $Id: noTree.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -28,34 +28,34 @@ class nofWoodcutter;
 /// Stellt einen Baum dar
 /*
 
-B‰ume kˆnnen ausgewachsen sein oder noch wachsen in 3 Schritten, das gibt size an.
-Wenn ein Baum gef‰llt wird, wird er vom Holzf‰ller gezeichnet.
-Das Wachsen von B‰umen sieht so aus:
+B√§ume k√∂nnen ausgewachsen sein oder noch wachsen in 3 Schritten, das gibt size an.
+Wenn ein Baum gef√§llt wird, wird er vom Holzf√§ller gezeichnet.
+Das Wachsen von B√§umen sieht so aus:
 
 _______________|__|_________________|_| ...
   Warten      Wachsen   Warten    Wachsen
 
-Es wird eine l‰ngere Zeit gewartet, dann w‰chst der Baum, dabei wird die n‰chste Stufe langsam eingeblendet.
+Es wird eine l√§ngere Zeit gewartet, dann w√§chst der Baum, dabei wird die n√§chste Stufe langsam eingeblendet.
 
 */
 class noTree : public noCoordBase
 {
-        /// Der Holzf‰ller ist Experte in Sachen Baum :)
+        /// Der Holzf√§ller ist Experte in Sachen Baum :)
         friend class nofWoodcutter;
         friend class AIPlayerJH;
         friend class AIInterface;
 
         /// Typ des Baumes (also welche Baumart)
         unsigned char type;
-        /// Grˆﬂe des Baumes (0-2, 3 = aufgewachsen!)
+        /// Gr√∂√üe des Baumes (0-2, 3 = aufgewachsen!)
         unsigned char size;
         enum State
         {
             STATE_NOTHING, // Baum steht einfach nur rum
             STATE_GROWING_WAIT, // Baum ist noch im Wachsstadium, hat aber gerade keinen "Wachstumsschub"
             STATE_GROWING_GROW, // Baum hat gerade den Wachstumsschub
-            STATE_FALLING_WAIT, // Baum wartet noch bis er umf‰llt
-            STATE_FALLING_FALL, // Baum f‰llt gerade um
+            STATE_FALLING_WAIT, // Baum wartet noch bis er umf√§llt
+            STATE_FALLING_FALL, // Baum f√§llt gerade um
             STATE_FALLING_FALLEN // Baum ist schon umgefallen und liegt noch ne Weile da bis er abtransportiert wird
         } state;
 
@@ -67,20 +67,20 @@ class noTree : public noCoordBase
 
         /// Produziert dieser Baum Tiere?
         bool produce_animals;
-        /// Z‰hlt Instanzen der B‰ume (jeder so und so vielte Baum produziert Tiere)
+        /// Z√§hlt Instanzen der B√§ume (jeder so und so vielte Baum produziert Tiere)
         static unsigned INSTANCE_COUNTER;
-        /// Z‰hlt gezeichnete B‰ume innerhalb eines Zeichenvorgangs (so und soviel Vogelgezwitscher muss dann abgespielt werden)
+        /// Z√§hlt gezeichnete B√§ume innerhalb eines Zeichenvorgangs (so und soviel Vogelgezwitscher muss dann abgespielt werden)
         static unsigned short DRAW_COUNTER;
 
-        /// Gibt Warte- und Wachsdauer der B‰ume an
+        /// Gibt Warte- und Wachsdauer der B√§ume an
         static const unsigned WAIT_LENGTH = 835;
         static const unsigned GROWING_LENGTH = 15;
 
     private:
 
-        /// Vom Holzf‰ller aufgerufen: Wenn der Holzf‰ller anf‰ngt und der Baum dann in einer bestimmten Zeit umfallen soll
+        /// Vom Holzf√§ller aufgerufen: Wenn der Holzf√§ller anf√§ngt und der Baum dann in einer bestimmten Zeit umfallen soll
         void FallSoon();
-        /// Vom Holzf‰ller aufgerufen: Der Holzf‰ller hat seine Arbeit unterbrochen und der Baum soll doch nicht umfallen
+        /// Vom Holzf√§ller aufgerufen: Der Holzf√§ller hat seine Arbeit unterbrochen und der Baum soll doch nicht umfallen
         void DontFall();
         /// "Produziert" ein Tier
         void ProduceAnimal();
@@ -92,7 +92,7 @@ class noTree : public noCoordBase
 
         ~noTree();
 
-        /// Aufr‰ummethoden
+        /// Aufr√§ummethoden
     protected:  void Destroy_noTree();
     public:     void Destroy() { Destroy_noTree(); }
 
@@ -109,7 +109,7 @@ class noTree : public noCoordBase
 
         BlockingManner GetBM() const { return BM_TREE; }
 
-        /// Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung" f¸r den Fog of War
+        /// Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung" f√ºr den Fog of War
         FOWObject* CreateFOWObject() const;
 
         /// Setzt Instance-Counter auf 0

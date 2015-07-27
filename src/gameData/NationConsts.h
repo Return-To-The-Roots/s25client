@@ -1,8 +1,8 @@
-#pragma once
+﻿#pragma once
 
 #include <string>
 
-/// V�lker (dont forget to change shield-count in iwWares too ...)
+/// Völker (dont forget to change shield-count in iwWares too ...)
 enum Nation
 {
 	NAT_AFRICANS = 0,

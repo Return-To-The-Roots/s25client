@@ -1,4 +1,4 @@
-// $Id: nobBaseMilitary.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+Ôªø// $Id: nobBaseMilitary.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -67,13 +67,13 @@ void nobBaseMilitary::Destroy_nobBaseMilitary()
     for(std::vector<nofActiveSoldier*>::iterator it = tmposroopsOnMission.begin(); it != tmposroopsOnMission.end(); ++it)
         (*it)->HomeDestroyed();
 
-    // Und die, die das Geb‰ude evtl gerade angreifen
+    // Und die, die das Geb√§ude evtl gerade angreifen
     // ATTENTION: iterators can be deleted in AttackedGoalDestroyed, -> copy first
     std::vector<nofAttacker*> tmpAggressors(aggressors.begin(), aggressors.end());
     for(std::vector<nofAttacker*>::iterator it = tmpAggressors.begin(); it != tmpAggressors.end(); ++it)
         (*it)->AttackedGoalDestroyed();
 
-    // Aggressiv-Verteidigenden Soldaten Bescheid sagen, dass sie nach Hause gehen kˆnnen
+    // Aggressiv-Verteidigenden Soldaten Bescheid sagen, dass sie nach Hause gehen k√∂nnen
     std::vector<nofAggressiveDefender*> tmpDefenders(aggressive_defenders.begin(), aggressive_defenders.end());
     for(std::vector<nofAggressiveDefender*>::iterator it = tmpDefenders.begin(); it != tmpDefenders.end(); ++it)
         (*it)->AttackedGoalDestroyed();
@@ -85,7 +85,7 @@ void nobBaseMilitary::Destroy_nobBaseMilitary()
     // Warteschlangenevent vernichten
     em->RemoveEvent(leaving_event);
 
-    // Soldaten, die noch in der Warteschlange h‰ngen, rausschicken
+    // Soldaten, die noch in der Warteschlange h√§ngen, rausschicken
     for(std::list<noFigure*>::iterator it = leave_house.begin(); it != leave_house.end(); ++it)
     {
         gwg->AddFigure((*it), pos);
@@ -103,7 +103,7 @@ void nobBaseMilitary::Destroy_nobBaseMilitary()
 
     leave_house.clear();
 
-    // Umgebung nach feindlichen Milit‰rgeb‰uden absuchen und die ihre Grenzflaggen neu berechnen lassen
+    // Umgebung nach feindlichen Milit√§rgeb√§uden absuchen und die ihre Grenzflaggen neu berechnen lassen
     // da, wir ja nicht mehr existieren
     std::set<nobBaseMilitary*> buildings = gwg->LookForMilitaryBuildings(pos, 4);
 
@@ -163,22 +163,22 @@ void nobBaseMilitary::AddLeavingFigure(noFigure* fig)
 
 nofAttacker* nobBaseMilitary::FindAggressor(nofAggressiveDefender* defender)
 {
-    // Nach weiteren Angreifern auf dieses Geb‰ude suchen, die in der N‰he und kampfbereit sind
+    // Nach weiteren Angreifern auf dieses Geb√§ude suchen, die in der N√§he und kampfbereit sind
     for(std::list<nofAttacker*>::iterator it = aggressors.begin(); it != aggressors.end(); ++it)
     {
-        // ‹berhaupos Lust zum K‰mpfen?
+        // √úberhaupos Lust zum K√§mpfen?
         if((*it)->IsReadyForFight())
         {
             // Mal sehen, ob er auch nicht so weit entfernt ist (erstmal grob)
             if(gwg->CalcDistance((*it)->GetPos(), defender->GetPos()) < 5)
             {
-                // Er darf auch per Fuﬂ nicht zu weit entfernt sein (nicht dass er an der anderen Seite
+                // Er darf auch per Fu√ü nicht zu weit entfernt sein (nicht dass er an der anderen Seite
                 // von nem Fluss steht (genau)
                 if(gwg->FindHumanPath((*it)->GetPos(), defender->GetPos(), 5) != 0xFF)
                 {
                     // Ja, mit dem kann sich der Soldat duellieren
                     (*it)->LetsFight(defender);
-                    // zur¸ckgeben
+                    // zur√ºckgeben
                     return (*it);
                 }
             }
@@ -195,7 +195,7 @@ MapPoint nobBaseMilitary::FindAnAttackerPlace(unsigned short& ret_radius, nofAtt
     unsigned short d;
 
     // Diesen Flaggenplatz nur nehmen, wenn es auch nich gerade eingenommen wird, sonst gibts Deserteure!
-    // Eigenommen werden kˆnnen nat¸rlich nur richtige Milit‰rgeb‰ude
+    // Eigenommen werden k√∂nnen nat√ºrlich nur richtige Milit√§rgeb√§ude
     bool capturing = (type >= BLD_BARRACKS && type <= BLD_FORTRESS) ? (static_cast<nobMilitary*>(this)->IsCaptured()) : false;
 
     if(gwg->ValidPointForFighting(flagPos, false) && !capturing)
@@ -207,7 +207,7 @@ MapPoint nobBaseMilitary::FindAnAttackerPlace(unsigned short& ret_radius, nofAtt
     // Wenn Platz an der Flagge noch frei ist, soll er da hin gehen
     std::vector<MapPoint> nodes;
 
-    // Ansonsten immer die Runde rum gehen und ein freies Pl‰tzchen suchen (max. 3 Runden rum)
+    // Ansonsten immer die Runde rum gehen und ein freies Pl√§tzchen suchen (max. 3 Runden rum)
     for(d = 1; d <= 3 && nodes.empty(); ++d)
     {
         // links anfangen und im Uhrzeigersinn vorgehen
@@ -261,13 +261,13 @@ MapPoint nobBaseMilitary::FindAnAttackerPlace(unsigned short& ret_radius, nofAtt
     if(nodes.empty())
         return MapPoint::Invalid();
 
-    // Weg zu allen gefundenen Punkten berechnen und den mit den k¸rzesten Weg nehmen
-    // Die bisher k¸rzeste gefundene L‰nge
+    // Weg zu allen gefundenen Punkten berechnen und den mit den k√ºrzesten Weg nehmen
+    // Die bisher k√ºrzeste gefundene L√§nge
     unsigned min_length = std::numeric_limits<unsigned>::max();
     MapPoint minPt = MapPoint::Invalid();
     for(std::vector<MapPoint>::iterator it = nodes.begin(); it != nodes.end(); ++it)
     {
-        // Derselbe Punkt? Dann kˆnnen wir gleich abbrechen, finden ja sowieso keinen k¸rzeren Weg mehr
+        // Derselbe Punkt? Dann k√∂nnen wir gleich abbrechen, finden ja sowieso keinen k√ºrzeren Weg mehr
         if(soldier->GetPos() == *it)
         {
             ret_radius = d;
@@ -275,10 +275,10 @@ MapPoint nobBaseMilitary::FindAnAttackerPlace(unsigned short& ret_radius, nofAtt
         }
 
         unsigned length = 0;
-        // G¸ltiger Weg gefunden
+        // G√ºltiger Weg gefunden
         if(gwg->FindHumanPath(soldier->GetPos(), *it, 100, false, &length) != 0xFF)
         {
-            // K¸rzer als bisher k¸rzester Weg? --> Dann nehmen wir diesen Punkt (vorerst)
+            // K√ºrzer als bisher k√ºrzester Weg? --> Dann nehmen wir diesen Punkt (vorerst)
             if(length < min_length)
             {
                 minPt = *it;
@@ -292,21 +292,21 @@ MapPoint nobBaseMilitary::FindAnAttackerPlace(unsigned short& ret_radius, nofAtt
 
 bool nobBaseMilitary::CallDefender(nofAttacker* attacker)
 {
-    // Ist noch ein Verteidiger drauﬂen (der z.B. grad wieder reingeht?
+    // Ist noch ein Verteidiger drau√üen (der z.B. grad wieder reingeht?
     if(defender)
     {
-        // Dann nehmen wir den, m¸ssen ihm nur den neuen Angreifer mitteilen
+        // Dann nehmen wir den, m√ºssen ihm nur den neuen Angreifer mitteilen
         defender->NewAttacker(attacker);
-        // Leute, die aus diesem Geb‰ude zum Angriff/aggressiver Verteidigung rauskommen wollen,
+        // Leute, die aus diesem Geb√§ude zum Angriff/aggressiver Verteidigung rauskommen wollen,
         // blocken
         CancelJobs();
 
         return true;
     }
-    // ansonsten einen neuen aus dem Geb‰ude holen
+    // ansonsten einen neuen aus dem Geb√§ude holen
     else if((defender = ProvideDefender(attacker)))
     {
-        // Leute, die aus diesem Geb‰ude zum Angriff/aggressiver Verteidigung rauskommen wollen,
+        // Leute, die aus diesem Geb√§ude zum Angriff/aggressiver Verteidigung rauskommen wollen,
         // blocken
         CancelJobs();
         // Soldat muss noch rauskommen
@@ -316,7 +316,7 @@ bool nobBaseMilitary::CallDefender(nofAttacker* attacker)
     }
     else
     {
-        // Geb‰ude ist leer, dann kann es erobert werden
+        // Geb√§ude ist leer, dann kann es erobert werden
         return false;
     }
 }
@@ -324,14 +324,14 @@ bool nobBaseMilitary::CallDefender(nofAttacker* attacker)
 nofAttacker* nobBaseMilitary::FindAttackerNearBuilding()
 {
     // Alle angreifenden Soldaten durchgehen
-    // Den Soldaten, der am n‰chsten dran steht, nehmen
+    // Den Soldaten, der am n√§chsten dran steht, nehmen
     nofAttacker* best_attacker = 0;
     unsigned best_radius = 0xFFFFFFFF;
 
 
     for(std::list<nofAttacker*>::iterator it = aggressors.begin(); it != aggressors.end(); ++it)
     {
-        // Ist der Soldat ¸berhaupos bereit zum K‰mpfen (also wartet er um die Flagge herum oder r¸ckt er nach)?
+        // Ist der Soldat √ºberhaupos bereit zum K√§mpfen (also wartet er um die Flagge herum oder r√ºckt er nach)?
         if((*it)->IsAttackerReady())
         {
             // Besser als bisher bester?
@@ -344,10 +344,10 @@ nofAttacker* nobBaseMilitary::FindAttackerNearBuilding()
     }
 
     if(best_attacker)
-        // Den schlieﬂlich zur Flagge schicken
+        // Den schlie√ülich zur Flagge schicken
         best_attacker->AttackFlag(defender);
 
-    // und ihn zur¸ckgeben, wenns keine gibt, nat¸rlich 0
+    // und ihn zur√ºckgeben, wenns keine gibt, nat√ºrlich 0
     return best_attacker;
 }
 
@@ -355,10 +355,10 @@ void nobBaseMilitary::CheckArrestedAttackers()
 {
     for(std::list<nofAttacker*>::iterator it = aggressors.begin(); it != aggressors.end(); ++it)
     {
-        // Ist der Soldat ¸berhaupos bereit zum K‰mpfen (also wartet er um die Flagge herum)?
+        // Ist der Soldat √ºberhaupos bereit zum K√§mpfen (also wartet er um die Flagge herum)?
         if((*it)->IsAttackerReady())
         {
-            // Und kommt er ¸berhaupos zur Flagge (kˆnnte ja in der 2. Reihe stehen, sodass die
+            // Und kommt er √ºberhaupos zur Flagge (k√∂nnte ja in der 2. Reihe stehen, sodass die
             // vor ihm ihn den Weg versperren)?
             if(gwg->FindHumanPath((*it)->GetPos(), gwg->GetNeighbour(pos, 4), 5, false) != 0xFF)
             {
@@ -374,10 +374,10 @@ bool nobBaseMilitary::SendSuccessor(const MapPoint pt, const unsigned short radi
 {
     for(std::list<nofAttacker*>::iterator it = aggressors.begin(); it != aggressors.end(); ++it)
     {
-        // Wartet der Soldat ¸berhaupos um die Flagge?
+        // Wartet der Soldat √ºberhaupos um die Flagge?
         if((*it)->IsAttackerReady())
         {
-            // Und steht er auch weiter auﬂen?, sonst machts nat¸rlich keinen Sinn..
+            // Und steht er auch weiter au√üen?, sonst machts nat√ºrlich keinen Sinn..
             if((*it)->GetRadius() > radius)
             {
                 // Und findet er einen zu diesem Punkt?
@@ -410,7 +410,7 @@ bool nobBaseMilitary::TestOnMission(nofActiveSoldier* soldier)
 /// aus der Warteschleife wieder in das Haus --> wenn Angreifer an der Fahne ist und Verteidiger rauskommen soll
 void nobBaseMilitary::CancelJobs()
 {
-    // Soldaten, die noch in der Warteschlange h‰ngen, rausschicken
+    // Soldaten, die noch in der Warteschlange h√§ngen, rausschicken
     for(std::list<noFigure*>::iterator it = leave_house.begin(); it != leave_house.end(); )
     {
         // Nur Soldaten nehmen (Job-Arbeiten) und keine (normalen) Verteidiger, da diese ja rauskommen

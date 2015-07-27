@@ -1,4 +1,4 @@
-// $Id: iwAddons.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+﻿// $Id: iwAddons.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005-2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -57,7 +57,7 @@ iwAddons::iwAddons(GlobalGameSettings* ggs, ChangePolicy policy)
     ctrlOptionGroup* optiongroup = AddOptionGroup(5, ctrlOptionGroup::CHECK, scale);
     // "Alle"
     optiongroup->AddTextButton(ADDONGROUP_ALL,  20, 50, 120, 22, TC_GREEN2, _("All"), NormalFont);
-    // "Milit�r"
+    // "Militär"
     optiongroup->AddTextButton(ADDONGROUP_MILITARY, 150, 50, 120, 22, TC_GREEN2, _("Military"), NormalFont);
     // "Wirtschaft"
     optiongroup->AddTextButton(ADDONGROUP_ECONOMY, 290, 50, 120, 22, TC_GREEN2, _("Economy"), NormalFont);
@@ -100,7 +100,7 @@ void iwAddons::Msg_ButtonClick(const unsigned int ctrl_id)
             if(policy == READONLY)
                 Close();
 
-            // Einstellungen in ADDONMANAGER �bertragen
+            // Einstellungen in ADDONMANAGER übertragen
             for(unsigned int i = 0; i < ggs->getCount(); ++i)
             {
                 unsigned int status;
@@ -140,7 +140,7 @@ void iwAddons::Msg_ButtonClick(const unsigned int ctrl_id)
 
         case 3: // Load S2 Defaults
         {
-            // Standardeinstellungen aufs Fenster �bertragen
+            // Standardeinstellungen aufs Fenster übertragen
             for(unsigned int i = 0; i < ggs->getCount(); ++i)
             {
                 unsigned int status;

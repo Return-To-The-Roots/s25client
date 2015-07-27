@@ -1,4 +1,4 @@
-// $Id: iwMsgbox.h 9357 2014-04-25 15:35:25Z FloSoft $
+﻿// $Id: iwMsgbox.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -30,7 +30,7 @@ class iwMsgbox : public IngameWindow
         Window* parent;
         /// Buttons, die auf der Box erscheinen sollen
         MsgboxButton button;
-        /// ID f�r die Msgbox, um unterschiedliche
+        /// ID für die Msgbox, um unterschiedliche
         unsigned int msgboxid;
 
         /// (Haupt)Text, der angezeigt werden soll

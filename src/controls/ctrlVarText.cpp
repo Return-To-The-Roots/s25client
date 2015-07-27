@@ -1,4 +1,4 @@
-// $Id: ctrlVarText.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+Ôªø// $Id: ctrlVarText.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -35,7 +35,7 @@ static char THIS_FILE[] = __FILE__;
 /**
  *  Konstruktor des Textcontrols, welches variablen Inhalt haben kann.
  *
- *  @param[in] parent    Handle zum ¸bergeordneten Fenster
+ *  @param[in] parent    Handle zum √ºbergeordneten Fenster
  *  @param[in] id        Steuerelement-ID
  *  @param[in] x         X-Position des Steuerelements
  *  @param[in] y         Y-Position des Steuerelements
@@ -80,7 +80,7 @@ ctrlVarText::ctrlVarText(Window* parent,
  */
 ctrlVarText::~ctrlVarText()
 {
-    // Pointerliste aufr‰umen
+    // Pointerliste aufr√§umen
     delete[] vars;
 }
 
@@ -131,7 +131,7 @@ bool ctrlVarText::Draw_(void)
     // variablen Inhalt erzeugen
     //vsnprintf(buffer, 1024, text, *(va_list*)&vars);
 
-    // letzte byte nullen (safety, vsnprintf schreibt bei zu groﬂem string kein null-terminator)
+    // letzte byte nullen (safety, vsnprintf schreibt bei zu gro√üem string kein null-terminator)
     buffer[1024] = '\0';
 
     // und zeichnen

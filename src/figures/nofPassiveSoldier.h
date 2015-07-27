@@ -1,4 +1,4 @@
-// $Id: nofPassiveSoldier.h 9357 2014-04-25 15:35:25Z FloSoft $
+Ôªø// $Id: nofPassiveSoldier.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -24,8 +24,8 @@
 class nofAttacker;
 
 
-/// Soldaten, die nur in Milit‰rgeb‰ude warten bzw. vom HQ dareinkommen und noch keine spezielle Funktion
-/// ¸bernehmen
+/// Soldaten, die nur in Milit√§rgeb√§ude warten bzw. vom HQ dareinkommen und noch keine spezielle Funktion
+/// √ºbernehmen
 class nofPassiveSoldier : public nofSoldier
 {
     private:
@@ -43,7 +43,7 @@ class nofPassiveSoldier : public nofSoldier
 
         /// wenn man gelaufen ist
         void Walked();
-        /// Pr¸ft die Gesundheit des Soldaten und meldet, falls erforderlich, ein Heilungs-Event an
+        /// Pr√ºft die Gesundheit des Soldaten und meldet, falls erforderlich, ein Heilungs-Event an
         void Heal();
 
 
@@ -55,7 +55,7 @@ class nofPassiveSoldier : public nofSoldier
 
         ~nofPassiveSoldier();
 
-        /// Aufr‰ummethoden
+        /// Aufr√§ummethoden
     protected:  void Destroy_nofPassiveSoldier();
     public:     void Destroy() { Destroy_nofPassiveSoldier(); }
 
@@ -68,15 +68,15 @@ class nofPassiveSoldier : public nofSoldier
         // Zeichnet den Soldaten
         void Draw(int x, int y);
 
-        /// wenn Milit‰rgeb‰ude abgerissen wurde und sich der Soldat im Geb‰ude befand
+        /// wenn Milit√§rgeb√§ude abgerissen wurde und sich der Soldat im Geb√§ude befand
         void InBuildingDestroyed();
-        /// Sagt einem in einem Milit‰rgeb‰ude sitzenden Soldaten, dass er raus nach Hause gehen soll
+        /// Sagt einem in einem Milit√§rgeb√§ude sitzenden Soldaten, dass er raus nach Hause gehen soll
         void LeaveBuilding();
 
-        /// Befˆrdert einen Soldaten
+        /// Bef√∂rdert einen Soldaten
         void Upgrade();
 
-        /// Soldat befindet sich auf dem Hinweg zum Milit‰rgeb‰ude und wird nich l‰nger gebraucht
+        /// Soldat befindet sich auf dem Hinweg zum Milit√§rgeb√§ude und wird nich l√§nger gebraucht
         void NotNeeded();
 };
 

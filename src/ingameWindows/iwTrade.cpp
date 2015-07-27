@@ -1,4 +1,4 @@
-// $Id: iwBuilding.cpp 7091 2011-03-27 10:57:38Z OLiver $
+ï»¿// $Id: iwBuilding.cpp 7091 2011-03-27 10:57:38Z OLiver $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -51,7 +51,7 @@ static char THIS_FILE[] = __FILE__;
 /**
  *  Konstruktor von @p iwBuilding.
  *
- *  @todo überprüfen und die restlichen Steuerelemente zur Funktion bringen
+ *  @todo Ã¼berprÃ¼fen und die restlichen Steuerelemente zur Funktion bringen
  *
  *  @author OLiver
  */
@@ -63,7 +63,7 @@ iwTrade::iwTrade(GameWorldViewer* const gwv, dskGameInterface* const gi, nobBase
     char title[512];
     sprintf(title, _("Trade with %s"), GAMECLIENT.GetPlayer(wh->GetPlayer())->name.c_str());
     SetTitle(title);
-    // Gebäudebild und dessen Schatten
+    // GebÃ¤udebild und dessen Schatten
     AddImage( 0, 100, 144, LOADER.GetNationImageN(wh->GetNation(), 250 + 5 * wh->GetBuildingType()));
 
     const unsigned left_column = 200;
@@ -107,7 +107,7 @@ iwTrade::iwTrade(GameWorldViewer* const gwv, dskGameInterface* const gi, nobBase
 
 void iwTrade::Msg_PaintBefore()
 {
-    // Schatten des Gebäudes (muss hier gezeichnet werden wegen schwarz und halbdurchsichtig)
+    // Schatten des GebÃ¤udes (muss hier gezeichnet werden wegen schwarz und halbdurchsichtig)
     glArchivItem_Bitmap* bitmap = LOADER.GetNationImageN(wh->GetNation(), 250 + 5 * wh->GetBuildingType() + 1);
 
     if(bitmap)

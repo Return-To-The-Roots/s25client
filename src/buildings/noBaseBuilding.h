@@ -1,4 +1,4 @@
-// $Id: noBaseBuilding.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: noBaseBuilding.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -31,12 +31,12 @@ class noBaseBuilding : public noRoadNode
 {
     protected:
 
-        /// Typ des Gebäudes
+        /// Typ des GebÃ¤udes
         BuildingType type;
 
-        /// Volk des Gebäudes (muss extra gespeichert werden, da ja auch z.B. fremde Gebäude erobert werden können)
+        /// Volk des GebÃ¤udes (muss extra gespeichert werden, da ja auch z.B. fremde GebÃ¤ude erobert werden kÃ¶nnen)
         const Nation nation;
-        /// Doorpoints - Punkte, wo die Tür ist, bis wohin die Träger gehen dürfen
+        /// Doorpoints - Punkte, wo die TÃ¼r ist, bis wohin die TrÃ¤ger gehen dÃ¼rfen
         int door_point_x;
         int door_point_y;
 
@@ -44,7 +44,7 @@ class noBaseBuilding : public noRoadNode
 
         /// Ware Bescheid sagen, dass sie nicht mehr hierher kommen brauch
         void WareNotNeeded(Ware* ware);
-        /// Zerstört Anbauten, falls es sich um ein großes Gebäude handelt (wo es diese auch gibt)
+        /// ZerstÃ¶rt Anbauten, falls es sich um ein groÃŸes GebÃ¤ude handelt (wo es diese auch gibt)
         void DestroyBuildingExtensions();
 
     public:
@@ -54,7 +54,7 @@ class noBaseBuilding : public noRoadNode
 
         virtual ~noBaseBuilding();
 
-        /// Aufräummethoden
+        /// AufrÃ¤ummethoden
     protected:  void Destroy_noBaseBuilding();
     public:     void Destroy() { Destroy_noBaseBuilding(); }
 
@@ -65,7 +65,7 @@ class noBaseBuilding : public noRoadNode
         /// Eine bestellte Ware konnte doch nicht kommen
         virtual void WareLost(Ware* ware) = 0;
 
-        /// Gibt diverse Sachen zurück
+        /// Gibt diverse Sachen zurÃ¼ck
         BuildingQuality GetSize() const { return BUILDING_SIZE[type]; }
         BuildingType GetBuildingType () const { return type; }
         Nation GetNation() const { return nation; }
@@ -78,29 +78,29 @@ class noBaseBuilding : public noRoadNode
                     GetBuildingType() == BLD_STOREHOUSE || GetBuildingType() == BLD_HARBORBUILDING);
         }
 
-        /// Ermittelt die Flagge, die vor dem Gebäude steht
+        /// Ermittelt die Flagge, die vor dem GebÃ¤ude steht
         noFlag* GetFlag() const;
 
         short GetDoorPointX();
         short GetDoorPointY() const { return (door_point_y & 0xFFFF); }
 
-        /*/// Gibt die Warenverteilungspunkte zurück (bei 0 wurde kein Weg gefunden)
+        /*/// Gibt die Warenverteilungspunkte zurÃ¼ck (bei 0 wurde kein Weg gefunden)
         virtual unsigned CalcDistributionPoints(noRoadNode * start,const GoodType type) = 0;*/
-        /// Wird aufgerufen, wenn eine neue Ware zum dem Gebäude geliefert wird (nicht wenn sie bestellt wurde vom Gebäude!)
+        /// Wird aufgerufen, wenn eine neue Ware zum dem GebÃ¤ude geliefert wird (nicht wenn sie bestellt wurde vom GebÃ¤ude!)
         virtual void TakeWare(Ware* ware) = 0;
-        /// Wird aufgerufen, wenn ein bestimmter Arbeiter für das hier gerufen wurde
+        /// Wird aufgerufen, wenn ein bestimmter Arbeiter fÃ¼r das hier gerufen wurde
         virtual void GotWorker(Job job, noFigure* worker) {};
 
 
-        /// Gibt ein Bild zurück für das normale Gebäude
+        /// Gibt ein Bild zurÃ¼ck fÃ¼r das normale GebÃ¤ude
         glArchivItem_Bitmap* GetBuildingImage() const;
-        /// Gibt ein Bild zurück für das Gebäudegerüst
+        /// Gibt ein Bild zurÃ¼ck fÃ¼r das GebÃ¤udegerÃ¼st
         glArchivItem_Bitmap* GetBuildingSkeletonImage() const;
-        /// Gibt ein Bild zurück für das normale Gebäude
+        /// Gibt ein Bild zurÃ¼ck fÃ¼r das normale GebÃ¤ude
         glArchivItem_Bitmap* GetBuildingImageShadow() const;
-        /// Gibt ein Bild zurück für das Gebäudegerüst
+        /// Gibt ein Bild zurÃ¼ck fÃ¼r das GebÃ¤udegerÃ¼st
         glArchivItem_Bitmap* GetBuildingSkeletonImageShadow() const;
-        /// Gibt ein Bild zurück für die Tür des Gebäudes
+        /// Gibt ein Bild zurÃ¼ck fÃ¼r die TÃ¼r des GebÃ¤udes
         glArchivItem_Bitmap* GetDoorImage() const;
 
 };

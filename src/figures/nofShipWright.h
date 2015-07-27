@@ -1,4 +1,4 @@
-// $Id: nofShipWright.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: nofShipWright.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -30,7 +30,7 @@ class nofShipWright : public nofWorkman
     private:
         /// Zeichnet ihn beim Arbeiten
         void DrawWorking(int x, int y);
-        /// Gibt die ID in JOBS.BOB zurück, wenn der Beruf Waren rausträgt (bzw rein)
+        /// Gibt die ID in JOBS.BOB zurÃ¼ck, wenn der Beruf Waren raustrÃ¤gt (bzw rein)
         unsigned short GetCarryID() const { return 90; }
         /// Der Arbeiter erzeugt eine Ware
         GoodType ProduceWare() { return GD_BOAT; }
@@ -38,10 +38,10 @@ class nofShipWright : public nofWorkman
         /// Startet das Laufen zu der Arbeitsstelle, dem Schiff
         void StartWalkingToShip(const unsigned char first_dir);
 
-        /// Ist ein bestimmter Punkt auf der Karte für den Schiffsbau geeignet
+        /// Ist ein bestimmter Punkt auf der Karte fÃ¼r den Schiffsbau geeignet
         bool IsPointGood(const MapPoint pt) const;
 
-        /// Der Schiffsbauer hat einen Bauschritt bewältigt und geht wieder zurück zum Haus
+        /// Der Schiffsbauer hat einen Bauschritt bewÃ¤ltigt und geht wieder zurÃ¼ck zum Haus
         void WorkFinished();
 
         void WalkToWorkpoint();

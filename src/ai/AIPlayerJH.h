@@ -1,4 +1,4 @@
-// $Id: AIPlayerJH.h 9591 2015-02-01 09:39:07Z marcus $
+﻿// $Id: AIPlayerJH.h 9591 2015-02-01 09:39:07Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -91,7 +91,7 @@ struct PositionSearch
     }
 };
 
-/// Klasse f�r die besser JH-KI
+/// Klasse fï¿½r die besser JH-KI
 class AIPlayerJH : public AIBase
 {
         friend class AIJH::BuildJob;

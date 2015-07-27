@@ -1,4 +1,4 @@
-// $Id: glArchivItem_Bitmap_Raw.h 9357 2014-04-25 15:35:25Z FloSoft $
+﻿// $Id: glArchivItem_Bitmap_Raw.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -24,7 +24,7 @@
 #include "glArchivItem_Bitmap.h"
 #include "../libsiedler2/src/ArchivItem_Bitmap_Raw.h"
 
-/// Klasse f�r GL-RAW-Bitmaps.
+/// Klasse für GL-RAW-Bitmaps.
 class glArchivItem_Bitmap_Raw : public libsiedler2::baseArchivItem_Bitmap_Raw, public glArchivItem_Bitmap
 {
     public:

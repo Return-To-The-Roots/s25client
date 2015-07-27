@@ -1,4 +1,4 @@
-// $Id: nofHunter.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: nofHunter.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -25,7 +25,7 @@
 class noAnimal;
 
 
-/// Klasse für den Jäger, der Tiere jagt und Nahrung produziert
+/// Klasse fÃ¼r den JÃ¤ger, der Tiere jagt und Nahrung produziert
 class nofHunter : public nofBuildingWorker
 {
     private:
@@ -43,18 +43,18 @@ class nofHunter : public nofBuildingWorker
         void WalkedDerived();
         /// Malt den Arbeiter beim Arbeiten
         void DrawWorking(int x, int y);
-        /// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren rausträgt (bzw rein)
+        /// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren raustrÃ¤gt (bzw rein)
         unsigned short GetCarryID() const { return 89; }
 
-        /// Trifft Vorbereitungen fürs nach Hause - Laufen
+        /// Trifft Vorbereitungen fÃ¼rs nach Hause - Laufen
         void StartWalkingHome();
-        /// Läuft wieder zu seiner Hütte zurück
+        /// LÃ¤uft wieder zu seiner HÃ¼tte zurÃ¼ck
         void WalkHome();
 
-        /// Prüft, ob der Schießpunkt geeignet ist
+        /// PrÃ¼ft, ob der SchieÃŸpunkt geeignet ist
         bool IsShootingPointGood(const MapPoint pt);
 
-        /// Wenn jeweils gelaufen wurde oder ein Event abgelaufen ist, je nach aktuellem Status folgende Funktionen ausführen
+        /// Wenn jeweils gelaufen wurde oder ein Event abgelaufen ist, je nach aktuellem Status folgende Funktionen ausfÃ¼hren
         void HandleStateChasing();
         void HandleStateFindingShootingPoint();
         void HandleStateShooting();
@@ -75,7 +75,7 @@ class nofHunter : public nofBuildingWorker
 
         void HandleDerivedEvent(const unsigned int id);
 
-        /// das Tier ist nicht mehr verfügbar (von selbst gestorben o.Ä.)
+        /// das Tier ist nicht mehr verfÃ¼gbar (von selbst gestorben o.Ã„.)
         void AnimalLost();
         /// wird aufgerufen, wenn die Arbeit abgebrochen wird (von nofBuildingWorker aufgerufen)
         void WorkAborted();

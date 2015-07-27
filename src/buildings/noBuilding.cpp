@@ -1,4 +1,4 @@
-// $Id: noBuilding.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: noBuilding.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -60,7 +60,7 @@ noBuilding::noBuilding(const BuildingType type,
  */
 void noBuilding::Destroy_noBuilding()
 {
-    // Feuer erzeugen (bei Hütten und Bergwerken kleine Feuer, bei allen anderen große!)
+    // Feuer erzeugen (bei HÃ¼tten und Bergwerken kleine Feuer, bei allen anderen groÃŸe!)
     // Feuer setzen
     gwg->SetNO(new noFire(pos, (GetSize() == BQ_HUT || GetSize() == BQ_MINE) ? 0 : 1), pos);
 

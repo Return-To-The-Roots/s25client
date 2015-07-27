@@ -1,4 +1,4 @@
-// $Id: GameMessages.h 9539 2014-12-14 10:15:57Z marcus $
+ï»¿// $Id: GameMessages.h 9539 2014-12-14 10:15:57Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -30,7 +30,7 @@
 #include "../libutil/src/Log.h"
 
 /*
- * das Klassenkommentar ist alles Client-Sicht, für Server-Sicht ist alles andersrum
+ * das Klassenkommentar ist alles Client-Sicht, fÃ¼r Server-Sicht ist alles andersrum
  *
  * Konstruktor ohne Parameter ist allgemein nur zum Empfangen (immer noop!)
  * run-Methode ist Auswertung der Daten
@@ -626,9 +626,9 @@ class GameMessage_Map_Info : public GameMessage
         MapType mt;
         /// Anzahl der Teile, in die der Mapblock zerteilt wurde
         unsigned partcount;
-        /// Größe der Zip-komprimierten Date
+        /// GrÃ¶ÃŸe der Zip-komprimierten Date
         unsigned ziplength;
-        /// Größe der dekomprimierten Daten
+        /// GrÃ¶ÃŸe der dekomprimierten Daten
         unsigned normal_length;
         /// LUA script
         std::string script;
@@ -761,7 +761,7 @@ class GameMessage_GGSChange : public GameMessage
 class GameMessage_GameCommand : public GameMessage
 {
     public:
-        /// Checksumme, die der Spieler übermittelt
+        /// Checksumme, die der Spieler Ã¼bermittelt
         unsigned checksum;
         unsigned obj_cnt;
         unsigned obj_id_cnt;

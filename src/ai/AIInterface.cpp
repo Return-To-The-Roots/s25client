@@ -1,4 +1,4 @@
-// $Id: AIInterface.cpp
+﻿// $Id: AIInterface.cpp
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //

@@ -1,4 +1,4 @@
-// $Id: nofScout_Free.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+﻿// $Id: nofScout_Free.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -101,7 +101,7 @@ void nofScout_Free::LostWork()
     switch(state)
     {
         default: break;
-            // Wenn wir noch hingehen, dann zurückgehen
+            // Wenn wir noch hingehen, dann zurÃ¼ckgehen
         case STATE_FIGUREWORK:
         {
             GoHome();
@@ -122,7 +122,7 @@ void nofScout_Free::Scout()
     // Erkundet er noch, ist aber schon seine maximale Wegstrecke abgelaufen?
     if(--rest_way == 0)
     {
-        // Wieder zur Flagge zurückgehen
+        // Wieder zur Flagge zurÃ¼ckgehen
         state = STATE_GOTOFLAG;
         GoToFlag();
         return;
@@ -131,7 +131,7 @@ void nofScout_Free::Scout()
     // Bin ich schon an dem Punkt angekommen?
     if(pos == nextPos)
     {
-        // Nächsten Punkt suchen
+        // NÃ¤chsten Punkt suchen
         GoToNewNode();
     }
     else
@@ -162,7 +162,7 @@ void nofScout_Free::GoToNewNode()
         {
             for(MapCoord r2 = 0; r2 < r; t2 = gwg->GetNeighbour(t2,  i % 6), ++r2)
             {
-                // Liegt Punkt im Nebel und für Figuren begehbar?
+                // Liegt Punkt im Nebel und fÃ¼r Figuren begehbar?
                 if(gwg->GetNode(t2).fow[player].visibility != VIS_VISIBLE && gwg->IsNodeForFigures(t2))
                 {
                     available_points.push_back(t2);
@@ -171,7 +171,7 @@ void nofScout_Free::GoToNewNode()
         }
     }
 
-    // Ein Objekt zufällig heraussuchen
+    // Ein Objekt zufÃ¤llig heraussuchen
     bool found_point = false;
     size_t numPointsLeft = available_points.size();
     while(numPointsLeft && !found_point)
@@ -180,7 +180,7 @@ void nofScout_Free::GoToNewNode()
         std::advance(p, RANDOM.Rand(__FILE__, __LINE__, obj_id, numPointsLeft));
 
         // Existiert ein Weg zu diesem Punkt und ist dieser Punkt auch noch von der Flagge noch in
-        // einigermaßen vernünftiger Entfernung zu erreichen, um das Drumherumlaufen um Berge usw. zu
+        // einigermaÃŸen vernÃ¼nftiger Entfernung zu erreichen, um das Drumherumlaufen um Berge usw. zu
         // verhindern
         if(gwg->FindHumanPath(pos, *p, SCOUT_RANGE * 2) != 0xFF && gwg->FindHumanPath(flag->GetPos(), *p, SCOUT_RANGE + SCOUT_RANGE / 4) != 0xFF)
         {
@@ -197,16 +197,16 @@ void nofScout_Free::GoToNewNode()
         numPointsLeft--;
     }
 
-    // Gibt es überhaupt einen Punkt, wo ich hingehen kann?
+    // Gibt es Ã¼berhaupt einen Punkt, wo ich hingehen kann?
     if(!found_point)
     {
-        // Wieder zur Flagge zurückgehen
+        // Wieder zur Flagge zurÃ¼ckgehen
         state = STATE_GOTOFLAG;
         GoToFlag();
     }
 }
 
-/// Gibt den Sichtradius dieser Figur zurück (0, falls nicht-spähend)
+/// Gibt den Sichtradius dieser Figur zurÃ¼ck (0, falls nicht-spÃ¤hend)
 unsigned nofScout_Free::GetVisualRange() const
 {
     return VISUALRANGE_SCOUT;

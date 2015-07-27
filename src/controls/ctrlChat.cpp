@@ -1,4 +1,4 @@
-// $Id: ctrlChat.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: ctrlChat.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -36,7 +36,7 @@ static char THIS_FILE[] = __FILE__;
 
 /// Breite der Scrollbar
 static const unsigned short SCROLLBAR_WIDTH = 20;
-/// Einschubbreite für sekundäre Zeilen (die umgebrochen wurden)
+/// Einschubbreite fÃ¼r sekundÃ¤re Zeilen (die umgebrochen wurden)
 static const unsigned short SECONDARY_PUGGING = 30;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -48,7 +48,7 @@ static const unsigned short SECONDARY_PUGGING = 30;
  *  @param[in] x      X-Position
  *  @param[in] y      Y-Position
  *  @param[in] width  Breite des Controls
- *  @param[in] height Höhe des Controls
+ *  @param[in] height HÃ¶he des Controls
  *  @param[in] tc     Hintergrundtextur
  *  @param[in] font   Schriftart
  *
@@ -68,7 +68,7 @@ ctrlChat::ctrlChat(Window* parent,
     // Zeilen pro Seite festlegen errechnen
     page_size = (height - 4) / (font->getHeight() + 2);
 
-    // Scrollbalken hinzufügen
+    // Scrollbalken hinzufÃ¼gen
     AddScrollBar(0, width - SCROLLBAR_WIDTH, 0, SCROLLBAR_WIDTH, height, SCROLLBAR_WIDTH, tc, page_size);
 
     //// Erst einmal 128 Chatzeilen reservieren
@@ -91,7 +91,7 @@ ctrlChat::~ctrlChat()
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Größe ändern
+ *  GrÃ¶ÃŸe Ã¤ndern
  *
  *  @author Divan
  */
@@ -166,7 +166,7 @@ bool ctrlChat::Draw_()
     // Wieviele Linien anzeigen?
     unsigned show_lines = (page_size > unsigned(chat_lines.size()) ? unsigned(chat_lines.size()) : page_size);
 
-    // Listeneinträge zeichnen
+    // ListeneintrÃ¤ge zeichnen
     unsigned int pos = GetCtrl<ctrlScrollBar>(0)->GetPos();
     for(unsigned int i = 0; i < show_lines; ++i)
     {
@@ -224,16 +224,16 @@ void ctrlChat::WrapLine(unsigned short i)
     // Breite von Zeitstring und Spielername berechnen (falls vorhanden)
     unsigned short prefix_width = ( line.time_string.length() ? font->getWidth(line.time_string) : 0) + (line.player.length() ? (bracket1_size + bracket2_size + font->getWidth(line.player)) : 0 );
 
-    // Reicht die Breite des Textfeldes noch nichtmal dafür aus?
+    // Reicht die Breite des Textfeldes noch nichtmal dafÃ¼r aus?
     if(prefix_width > width - 2 - SCROLLBAR_WIDTH)
     {
-        // dann können wir das gleich vergessen
+        // dann kÃ¶nnen wir das gleich vergessen
         return;
     }
 
     glArchivItem_Font::WrapInfo wi;
 
-    // Zeilen ggf. wrappen, falls der Platz nich reicht und die Zeilenanfanänge in wi speichern
+    // Zeilen ggf. wrappen, falls der Platz nich reicht und die ZeilenanfanÃ¤nge in wi speichern
     font->GetWrapInfo(line.msg, width - prefix_width - 2 - SCROLLBAR_WIDTH, width - 2 - SCROLLBAR_WIDTH, wi);
 
     // Message-Strings erzeugen aus den WrapInfo
@@ -241,11 +241,11 @@ void ctrlChat::WrapLine(unsigned short i)
 
     wi.CreateSingleStrings(line.msg, strings);
 
-    // Zeilen hinzufügen
+    // Zeilen hinzufÃ¼gen
     for(unsigned int i = 0; i < wi.positions.size(); ++i)
     {
         ChatLine wrap_line;
-        // Nur bei den ersten Zeilen müssen ja Zeit und Spielername mit angegeben werden
+        // Nur bei den ersten Zeilen mÃ¼ssen ja Zeit und Spielername mit angegeben werden
         if(!(wrap_line.secondary = (i ? true : false)))
         {
             wrap_line.time_string = line.time_string;

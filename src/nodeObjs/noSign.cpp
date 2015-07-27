@@ -1,4 +1,4 @@
-// $Id: noSign.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+﻿// $Id: noSign.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -96,7 +96,7 @@ void noSign::HandleEvent(const unsigned int id)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  R�umt das Objekt auf.
+ *  Räumt das Objekt auf.
  *
  *  @author FloSoft
  */

@@ -1,4 +1,4 @@
-#ifndef NOALLIEDPUSH_H_INCLUDED
+﻿#ifndef NOALLIEDPUSH_H_INCLUDED
 #define NOALLIEDPUSH_H_INCLUDED
 
 #pragma once

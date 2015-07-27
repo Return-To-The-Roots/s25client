@@ -1,4 +1,4 @@
-// $Id: nofFlagWorker.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: nofFlagWorker.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -76,14 +76,14 @@ void nofFlagWorker::Destroy_nofFlagWorker()
 void nofFlagWorker::AbrogateWorkplace()
 {
     flag = 0;
-    /// uns entfernen, da wir wieder umdrehen müssen
+    /// uns entfernen, da wir wieder umdrehen mÃ¼ssen
     gwg->GetPlayer(player)->RemoveFlagWorker(this);
 }
 
-/// Geht wieder zurück zur Flagge und dann nach Hause
+/// Geht wieder zurÃ¼ck zur Flagge und dann nach Hause
 void nofFlagWorker::GoToFlag()
 {
-    // Zur Flagge zurücklaufen
+    // Zur Flagge zurÃ¼cklaufen
 
     // Bin ich an der Fahne?
     if(pos == flag->GetPos())
@@ -92,21 +92,21 @@ void nofFlagWorker::GoToFlag()
         if(nobBaseWarehouse* wh = gwg->GetPlayer(player)->FindWarehouse(flag, FW::Condition_StoreFigure, 0, true, &job, false))
         {
             GoHome(wh);
-            // Vorgaukeln, dass wir ein Stück Straße bereits geschafft haben
-            // damit wir mit WalkToGoal weiter bis zum Ziel laufen können
+            // Vorgaukeln, dass wir ein StÃ¼ck StraÃŸe bereits geschafft haben
+            // damit wir mit WalkToGoal weiter bis zum Ziel laufen kÃ¶nnen
             cur_rs = &emulated_wanderroad;
             rs_pos = 0;
             WalkToGoal();
         }
         else
         {
-            // Weg führt nicht mehr zum Lagerhaus, dann rumirren
+            // Weg fÃ¼hrt nicht mehr zum Lagerhaus, dann rumirren
             StartWandering();
             Wander();
         }
 
 
-        // Da wir quasi "freiwillig" nach Hause gegangen sind ohne das Abreißen der Flagge, auch manuell wieder
+        // Da wir quasi "freiwillig" nach Hause gegangen sind ohne das AbreiÃŸen der Flagge, auch manuell wieder
         // "abmelden"
         gwg->GetPlayer(player)->RemoveFlagWorker(this);
 

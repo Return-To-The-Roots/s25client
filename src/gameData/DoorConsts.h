@@ -1,4 +1,4 @@
-// $Id: DoorConsts.h 9392 2014-05-04 12:38:34Z FloSoft $
+ï»¿// $Id: DoorConsts.h 9392 2014-05-04 12:38:34Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -21,7 +21,7 @@
 #define DOOR_CONSTS_H_
 
 
-// Konstanten für den Punkt, ab dem die Träger "verschwinden" bei einem Gebäude, jeweils als Y-Angabe
+// Konstanten fÃ¼r den Punkt, ab dem die TrÃ¤ger "verschwinden" bei einem GebÃ¤ude, jeweils als Y-Angabe
 
 const signed char DOOR_CONSTS[NAT_COUNT][40] =
 {
@@ -113,7 +113,7 @@ const signed char DOOR_CONSTS[NAT_COUNT][40] =
         16
     },
 
-    // Römer
+    // RÃ¶mer
     {
         4,
         6,

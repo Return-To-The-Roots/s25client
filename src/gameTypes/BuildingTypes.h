@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+Ôªø// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -28,7 +28,7 @@ struct BuildingCost
 	unsigned char stones;
 };
 
-// Grˆﬂe der Geb‰ude
+// Gr√∂√üe der Geb√§ude
 enum BuildingSize
 {
 	BZ_HUT = 0,
@@ -37,7 +37,7 @@ enum BuildingSize
 	BZ_MINE
 };
 
-// Bauqualit‰ten
+// Bauqualit√§ten
 enum BuildingQuality
 {
 	BQ_NOTHING = 0,
@@ -50,29 +50,29 @@ enum BuildingQuality
 	BQ_DANGER = 255
 };
 
-// Konstanten zu den "normalen Geb‰uden" (Betrieben), beginnt erst mit Granitmine
+// Konstanten zu den "normalen Geb√§uden" (Betrieben), beginnt erst mit Granitmine
 struct UsualBuilding
 {
-	/// Arbeitertyp, der in diesem Geb‰ude arbeitet
+	/// Arbeitertyp, der in diesem Geb√§ude arbeitet
 	Job job;
-	/// Ware, die das Geb‰ude produziert
+	/// Ware, die das Geb√§ude produziert
 	GoodType produced_ware;
-	/// Anzahl Waren, die das Geb‰ude benˆtigt
+	/// Anzahl Waren, die das Geb√§ude ben√∂tigt
 	unsigned char wares_needed_count;
-	/// Waren, die das Geb‰ude benˆtigt
+	/// Waren, die das Geb√§ude ben√∂tigt
 	GoodType wares_needed[3];
 };
 
-/// Rauch-Konstanten zu den "normalen Geb‰uden" (Betrieben), beginnt erst mit Granitmine
+/// Rauch-Konstanten zu den "normalen Geb√§uden" (Betrieben), beginnt erst mit Granitmine
 struct SmokeConst
 {
 	/// Art des Rauches (von 1-4), 0 = kein Rauch!
 	unsigned char type;
-	/// Position des Rauches relativ zum Nullpunkt des Geb‰udes
+	/// Position des Rauches relativ zum Nullpunkt des Geb√§udes
 	signed char x, y;
 };
 
-/// Konstanten der "Produktions-Stopp"- und der "Gold-Stopp"-Schilder bei normalen und Milit‰rgeb‰uden
+/// Konstanten der "Produktions-Stopp"- und der "Gold-Stopp"-Schilder bei normalen und Milit√§rgeb√§uden
 struct BuildingSignConst
 { signed char x, y; };
 
@@ -122,7 +122,7 @@ enum BuildingType
 	BLD_COUNT = BLD_NOTHING
 };
 
-// Anzahl an unterschiedlichen Geb‰udetypen
+// Anzahl an unterschiedlichen Geb√§udetypen
 const unsigned BUILDING_TYPES_COUNT = BLD_COUNT;
 
 const std::string BUILDING_NAMES[BLD_COUNT] =

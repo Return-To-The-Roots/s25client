@@ -1,4 +1,4 @@
-// $Id: nobBaseMilitary.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: nobBaseMilitary.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -32,35 +32,35 @@ class nofAggressiveDefender;
 class nofDefender;
 
 
-/// allgemeine Basisklasse für alle Militärgebäude (HQ,normale Militärgebäude, Häfen,einschließlich Lagerhäuser,
-/// weil die auch viele Merkmale davon haben, aber sind eigentlich keine Militärgebäude)
+/// allgemeine Basisklasse fÃ¼r alle MilitÃ¤rgebÃ¤ude (HQ,normale MilitÃ¤rgebÃ¤ude, HÃ¤fen,einschlieÃŸlich LagerhÃ¤user,
+/// weil die auch viele Merkmale davon haben, aber sind eigentlich keine MilitÃ¤rgebÃ¤ude)
 class nobBaseMilitary : public noBuilding
 {
     protected:
 
-        /// Liste von Figuren, die das Gebäude verlassen wollen (damit nicht alle auf einmal rauskommen)
+        /// Liste von Figuren, die das GebÃ¤ude verlassen wollen (damit nicht alle auf einmal rauskommen)
         std::list<noFigure*> leave_house;
         /// Event, damit nicht alle auf einmal rauskommen
         EventManager::EventPointer leaving_event;
-        /// Geht gerade jemand raus? (damit nicht alle auf einmal rauskommen), für Lager- und Militärhäuser
+        /// Geht gerade jemand raus? (damit nicht alle auf einmal rauskommen), fÃ¼r Lager- und MilitÃ¤rhÃ¤user
         bool go_out;
-        /// Gibt "Alter" des Gebäudes an, je größer, desto älter ist es! (als Vergleich was zuerst gebaut wurde bei
-        /// Militärgebäuden + HQs und Häfen
+        /// Gibt "Alter" des GebÃ¤udes an, je grÃ¶ÃŸer, desto Ã¤lter ist es! (als Vergleich was zuerst gebaut wurde bei
+        /// MilitÃ¤rgebÃ¤uden + HQs und HÃ¤fen
         unsigned age;
-        /// Truppen, die zwar gerade nicht im Haus sind, aber eigentlich dazu gehören und grade auf Mission sind, wo sie evtl
-        /// wieder zurückkkehren könnten (Angriff, Verteidigung etc.)
+        /// Truppen, die zwar gerade nicht im Haus sind, aber eigentlich dazu gehÃ¶ren und grade auf Mission sind, wo sie evtl
+        /// wieder zurÃ¼ckkkehren kÃ¶nnten (Angriff, Verteidigung etc.)
         std::list<nofActiveSoldier*> troops_on_mission;
-        /// Liste von Soldaten, die dieses Gebäude angreifen
+        /// Liste von Soldaten, die dieses GebÃ¤ude angreifen
         std::list<nofAttacker*> aggressors;
-        /// Liste von aggressiven Verteidigern, die dieses Gebäude mit verteidigen
+        /// Liste von aggressiven Verteidigern, die dieses GebÃ¤ude mit verteidigen
         std::list<nofAggressiveDefender*> aggressive_defenders;
-        /// Soldat, der grad dieses Gebäude verteidigt
+        /// Soldat, der grad dieses GebÃ¤ude verteidigt
         nofDefender* defender;
 
     private:
 
-        /// die abgeleiteten Klassen sollen einen Soldaten als Verteidiger zur Verfügung stellen, wenn sie keinen haben
-        /// wird 0 zurückgegeben!
+        /// die abgeleiteten Klassen sollen einen Soldaten als Verteidiger zur VerfÃ¼gung stellen, wenn sie keinen haben
+        /// wird 0 zurÃ¼ckgegeben!
         virtual nofDefender* ProvideDefender(nofAttacker* const attacker) = 0;
 
     public:
@@ -69,7 +69,7 @@ class nobBaseMilitary : public noBuilding
         nobBaseMilitary(SerializedGameData* sgd, const unsigned obj_id);
         virtual ~nobBaseMilitary();
 
-        /// Aufräummethoden
+        /// AufrÃ¤ummethoden
     protected:  void Destroy_nobBaseMilitary();
     public:     void Destroy() { Destroy_nobBaseMilitary(); }
 
@@ -78,34 +78,34 @@ class nobBaseMilitary : public noBuilding
     public: void Serialize(SerializedGameData* sgd) const { Serialize_nobBaseMilitary(sgd); }
 
 
-        /// Figur hinzufügen, die rausgehen will (damit nicht alle auf einmal rauskommen), für Lager- und Militärhäuser)
+        /// Figur hinzufÃ¼gen, die rausgehen will (damit nicht alle auf einmal rauskommen), fÃ¼r Lager- und MilitÃ¤rhÃ¤user)
         void AddLeavingFigure(noFigure* fig);
 
-        /// Liefert Militärradius des Gebäudes (falls es ein Militärgebäude ist)
+        /// Liefert MilitÃ¤rradius des GebÃ¤udes (falls es ein MilitÃ¤rgebÃ¤ude ist)
         virtual MapCoord GetMilitaryRadius() const { return 0; }
 
-        /// Gibt Verteidiger zurück
+        /// Gibt Verteidiger zurÃ¼ck
         nofDefender* GetDefender() const { return defender; }
 
         /// Das Alter wird immer verglichen
-        /// absteigend sortieren, da jünger <=> age größer
+        /// absteigend sortieren, da jÃ¼nger <=> age grÃ¶ÃŸer
         bool operator < (const nobBaseMilitary& other) const { return obj_id > other.GetObjId(); }
 
         /// Meldet ein neues "Rausgeh"-Event an, falls gerade keiner rausgeht
-        /// (damit nicht alle auf einmal rauskommen), für Lager- und Militärhäuser)
+        /// (damit nicht alle auf einmal rauskommen), fÃ¼r Lager- und MilitÃ¤rhÃ¤user)
         void AddLeavingEvent();
 
-        /// Fügt aktiven Soldaten (der aus von einer Mission) zum Militärgebäude hinzu
+        /// FÃ¼gt aktiven Soldaten (der aus von einer Mission) zum MilitÃ¤rgebÃ¤ude hinzu
         virtual void AddActiveSoldier(nofActiveSoldier* soldier) = 0;
 
         /// Schickt einen Verteidiger raus, der einem Angreifer in den Weg rennt
         virtual nofAggressiveDefender* SendDefender(nofAttacker* attacker) = 0;
 
-        /// Soldaten zur Angreifer-Liste hinzufügen und wieder entfernen
+        /// Soldaten zur Angreifer-Liste hinzufÃ¼gen und wieder entfernen
         void LinkAggressor(nofAttacker* soldier) { aggressors.push_back(soldier); }
         virtual void UnlinkAggressor(nofAttacker* soldier) { aggressors.remove(soldier); }
 
-        /// Soldaten zur Aggressiven-Verteidiger-Liste hinzufügen und wieder entfernen
+        /// Soldaten zur Aggressiven-Verteidiger-Liste hinzufÃ¼gen und wieder entfernen
         void LinkAggressiveDefender(nofAggressiveDefender* soldier) { aggressive_defenders.push_back(soldier); }
         void UnlinkAggressiveDefender(nofAggressiveDefender* soldier) { aggressive_defenders.remove(soldier); }
 
@@ -113,20 +113,20 @@ class nobBaseMilitary : public noBuilding
         /// Wird aufgerufen, wenn ein Soldat nicht mehr kommen kann
         virtual void SoldierLost(nofSoldier* soldier) = 0;
 
-        /// Sucht einen Angreifer auf das Gebäude, der gerade nichts zu tun hat und Lust hat zum Kämpfen
-        /// und in der Nähe von x,y ist (wird von aggressiven Verteidigern aufgerufen), wenn keiner gefunden wird, wird 0
-        /// zurückgegeben
+        /// Sucht einen Angreifer auf das GebÃ¤ude, der gerade nichts zu tun hat und Lust hat zum KÃ¤mpfen
+        /// und in der NÃ¤he von x,y ist (wird von aggressiven Verteidigern aufgerufen), wenn keiner gefunden wird, wird 0
+        /// zurÃ¼ckgegeben
         nofAttacker* FindAggressor(nofAggressiveDefender* defender);
-        /// Sucht für einen Angreifer den nächsten (bzw. genau den) Platz zur Fahne, damit die sich darum postieren und
+        /// Sucht fÃ¼r einen Angreifer den nÃ¤chsten (bzw. genau den) Platz zur Fahne, damit die sich darum postieren und
         /// warten
         MapPoint FindAnAttackerPlace(unsigned short& ret_radius, nofAttacker* soldier);
-        /// Sucht einen Nachrücker, der weiter hinten steht, auf diesen Posten und schickt diesen auch los
+        /// Sucht einen NachrÃ¼cker, der weiter hinten steht, auf diesen Posten und schickt diesen auch los
         bool SendSuccessor(const MapPoint pt, const unsigned short radius, const unsigned char dir);
 
-        /// Gibt zurück, ob es noch einenen Verteidiger in dieser Hütte gibt, wenn ja wird dieser losgeschickt,
-        /// aggressor ist der Angreifer an der Fahne, mit dem er kämpfen soll
+        /// Gibt zurÃ¼ck, ob es noch einenen Verteidiger in dieser HÃ¼tte gibt, wenn ja wird dieser losgeschickt,
+        /// aggressor ist der Angreifer an der Fahne, mit dem er kÃ¤mpfen soll
         bool CallDefender(nofAttacker* attacker);
-        /// Sucht einen Angreifer auf dieses Gebäude und schickt ihn ggf. zur Flagge zum Kämpfen
+        /// Sucht einen Angreifer auf dieses GebÃ¤ude und schickt ihn ggf. zur Flagge zum KÃ¤mpfen
         nofAttacker* FindAttackerNearBuilding();
         /// Wird aufgerufen nach einem Kampf an einer Flagge, der evtl. die anderen Soldaten gehindert hat, zur Flagge
         /// zu kommen, diese Funktion sucht nach solchen Soldaten schickt einen ggf. zur Flagge, um anzugreifen
@@ -137,7 +137,7 @@ class nobBaseMilitary : public noBuilding
         /// aus der Warteschleife wieder in das Haus --> wenn Angreifer an der Fahne ist und Verteidiger rauskommen soll
         void CancelJobs();
 
-        /// Sind noch Truppen drinne, die dieses Gebäude verteidigen können
+        /// Sind noch Truppen drinne, die dieses GebÃ¤ude verteidigen kÃ¶nnen
         virtual bool DefendersAvailable() const = 0;
 
         bool IsUnderAttack() const {return(aggressors.size() > 0);};
@@ -146,7 +146,7 @@ class nobBaseMilitary : public noBuilding
         bool Test(nofAttacker* attacker);
         bool TestOnMission(nofActiveSoldier* soldier);
 
-        // Vergleicht Gebäude anhand ihrer Bauzeit, um eine geordnete Reihenfolge hinzubekommen
+        // Vergleicht GebÃ¤ude anhand ihrer Bauzeit, um eine geordnete Reihenfolge hinzubekommen
         static bool Compare(const nobBaseMilitary* const one, const nobBaseMilitary* const two)
         { return (*one) < (*two); }
 

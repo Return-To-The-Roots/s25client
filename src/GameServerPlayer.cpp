@@ -1,4 +1,4 @@
-// $Id: GameServerPlayer.cpp 9558 2014-12-18 09:01:20Z FloSoft $
+Ôªø// $Id: GameServerPlayer.cpp 9558 2014-12-18 09:01:20Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -86,7 +86,7 @@ void GameServerPlayer::doPing()
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/// pr¸ft auf Ping-Timeout beim verbinden
+/// pr√ºft auf Ping-Timeout beim verbinden
 void GameServerPlayer::doTimeout()
 {
     if( (ps == PS_RESERVED) && ( ( VIDEODRIVER.GetTickCount() - connecttime ) > PING_TIMEOUT ) )
@@ -97,7 +97,7 @@ void GameServerPlayer::doTimeout()
         Message_Dead dm();
         dm.send(&so);*/
 
-        // und aufr‰umen
+        // und aufr√§umen
         clear();
     }
 }

@@ -1,4 +1,4 @@
-// $Id: nobUsual.cpp 9505 2014-11-29 10:48:29Z marcus $
+ï»¿// $Id: nobUsual.cpp 9505 2014-11-29 10:48:29Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -55,7 +55,7 @@ nobUsual::nobUsual(BuildingType type,
 {
     wares[0] = wares[1] = wares[2] = 0;
 
-    // Entsprechend so viele Listen erstellen, wie nötig sind, bei Bergwerken 3
+    // Entsprechend so viele Listen erstellen, wie nÃ¶tig sind, bei Bergwerken 3
     if(USUAL_BUILDING_CONSTS[type - 10].wares_needed_count)
         ordered_wares.resize(USUAL_BUILDING_CONSTS[type - 10].wares_needed_count);
     else
@@ -64,13 +64,13 @@ nobUsual::nobUsual(BuildingType type,
     // Arbeiter bestellen
     gwg->GetPlayer(player)->AddJobWanted(USUAL_BUILDING_CONSTS[type - 10].job, this);
 
-    // Tür aufmachen,bis Gebäude besetzt ist
+    // TÃ¼r aufmachen,bis GebÃ¤ude besetzt ist
     OpenDoor();
 
-    // Gebäude in den Index eintragen, damit die Wirtschaft auch Bescheid weiß
+    // GebÃ¤ude in den Index eintragen, damit die Wirtschaft auch Bescheid weiÃŸ
     gwg->GetPlayer(player)->AddUsualBuilding(this);
 
-    // Keine Produktivitäten weiter
+    // Keine ProduktivitÃ¤ten weiter
     memset(last_productivities, 0, sizeof(unsigned short)*LAST_PRODUCTIVITIES_COUNT);
 }
 
@@ -136,13 +136,13 @@ void nobUsual::Destroy_nobUsual()
         for(std::list<Ware*>::iterator it = ordered_wares[i].begin(); it != ordered_wares[i].end(); ++it)
             WareNotNeeded((*it));
 
-    // Events löschen
+    // Events lÃ¶schen
     em->RemoveEvent(orderware_ev);
     em->RemoveEvent(productivity_ev);
     orderware_ev = 0;
     productivity_ev = 0;
 
-    // Gebäude wieder aus der Liste entfernen
+    // GebÃ¤ude wieder aus der Liste entfernen
     gwg->GetPlayer(player)->RemoveUsualBuilding(this);
 
     // Inventur entsprechend verringern wegen den Waren, die vernichtetet werden
@@ -187,16 +187,16 @@ void nobUsual::Serialize_nobUsual(SerializedGameData* sgd) const
  */
 void nobUsual::Draw(int x, int y)
 {
-    // Gebäude an sich zeichnen
+    // GebÃ¤ude an sich zeichnen
     DrawBaseBuilding(x, y);
 
-    // Wenn Produktion gestoppos ist, Schild außen am Gebäude zeichnen zeichnen
+    // Wenn Produktion gestoppos ist, Schild auÃŸen am GebÃ¤ude zeichnen zeichnen
     if(disable_production_virtual)
         LOADER.GetMapImageN(46)->Draw(x + BUILDING_SIGN_CONSTS[nation][type].x, y + BUILDING_SIGN_CONSTS[nation][type].y, 0, 0, 0, 0, 0, 0);
 
     // Rauch zeichnen
 
-    // Raucht dieses Gebäude und ist es in Betrieb? (nur arbeitende Gebäude rauchen schließlich)
+    // Raucht dieses GebÃ¤ude und ist es in Betrieb? (nur arbeitende GebÃ¤ude rauchen schlieÃŸlich)
     if(BUILDING_SMOKE_CONSTS[nation][type - 10].type && is_working)
     {
         // Dann Qualm zeichnen (damit Qualm nicht synchron ist, x- und y- Koordinate als Unterscheidung
@@ -204,20 +204,20 @@ void nobUsual::Draw(int x, int y)
         ->Draw(x + BUILDING_SMOKE_CONSTS[nation][type - 10].x, y + BUILDING_SMOKE_CONSTS[nation][type - 10].y, 0, 0, 0, 0, 0, 0, 0x99EEEEEE);
     }
 
-    // TODO: zusätzliche Dinge wie Mühlenräder, Schweinchen etc bei bestimmten Gebäuden zeichnen
+    // TODO: zusÃ¤tzliche Dinge wie MÃ¼hlenrÃ¤der, Schweinchen etc bei bestimmten GebÃ¤uden zeichnen
 
-    // Bei Mühle, wenn sie nicht arbeitet, immer Mühlenräder (nichtdrehend) zeichnen
+    // Bei MÃ¼hle, wenn sie nicht arbeitet, immer MÃ¼hlenrÃ¤der (nichtdrehend) zeichnen
     if(type == BLD_MILL && !is_working)
     {
-        // Flügel der Mühle
+        // FlÃ¼gel der MÃ¼hle
         LOADER.GetNationImageN(nation, 250 + 5 * 49)->Draw(x, y, 0, 0, 0, 0, 0, 0);
-        // Schatten der Flügel
+        // Schatten der FlÃ¼gel
         LOADER.GetNationImageN(nation, 250 + 5 * 49 + 1)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
     }
     // Esel in den Kammer bei Eselzucht zeichnen
     else if(type == BLD_DONKEYBREEDER)
     {
-        // Für alle Völker jeweils
+        // FÃ¼r alle VÃ¶lker jeweils
         // X-Position der Esel
         const int DONKEY_X[NAT_COUNT][3] = {{13, 26, 39}, {3, 16, 30}, {2, 15, 29}, {7, 18, 30}, {3, 16, 30}};
         // Y-Position
@@ -227,7 +227,7 @@ void nobUsual::Draw(int x, int y)
         { 0, 1, 2, 3, 4, 5, 6, 7, 7, 7, 6, 5, 4, 4, 5, 6, 5, 7, 6, 5, 4, 3, 2, 1, 0 };
 
         // Die drei Esel zeichnen mithilfe von Globalanimation
-        // Anzahl hängt von Produktivität der Eselzucht ab:
+        // Anzahl hÃ¤ngt von ProduktivitÃ¤t der Eselzucht ab:
         // 0-29 - kein Esel
         // 30-60 - 1 Esel
         // 60-90 - 2 Esel
@@ -249,25 +249,25 @@ void nobUsual::Draw(int x, int y)
     // Bei Schweinefarm Schweinchen auf dem Hof zeichnen
     else if(type == BLD_PIGFARM && this->HasWorker())
     {
-        // Position der 5 Schweinchen für alle 4 Völker (1. ist das große Schwein)
+        // Position der 5 Schweinchen fÃ¼r alle 4 VÃ¶lker (1. ist das groÃŸe Schwein)
         const int PIG_POSITIONS[NAT_COUNT][5][2] =
         {
             //  gr. S. 1.klS 2. klS usw
             { {3, -8}, {17, 3}, { -12, 4}, { -2, 10}, { -22, 11} }, // Afrikaner
             { { -16, 0}, { -37, 0}, { -32, 8}, { -16, 10}, { -22, 18} }, // Japaner
-            { { -15, 0}, { -4, 9}, { -22, 10}, {2, 19}, { -15, 20} }, // Römer
+            { { -15, 0}, { -4, 9}, { -22, 10}, {2, 19}, { -15, 20} }, // RÃ¶mer
             { {5, -5}, {25, -12}, { -7, 7}, { -23, 11}, { -10, 14} }, // Wikinger
             { { -16, 5}, { -37, 5}, { -32, -1}, { -16, 15}, { -27, 18} } // Babylonier
         };
 
 
-        /// Großes Schwein zeichnen
+        /// GroÃŸes Schwein zeichnen
         LOADER.GetMapImageN(2160)->Draw(
             x + PIG_POSITIONS[nation][0][0], y + PIG_POSITIONS[nation][0][1], 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
         LOADER.GetMapImageN(2100 + GAMECLIENT.GetGlobalAnimation(12, 3, 1, GetX() + GetY() + obj_id))->Draw(
             x + PIG_POSITIONS[nation][0][0], y + PIG_POSITIONS[nation][0][1]);
 
-        // Die 4 kleinen Schweinchen, je nach Produktivität
+        // Die 4 kleinen Schweinchen, je nach ProduktivitÃ¤t
         for(unsigned i = 1; i < min<unsigned>(unsigned(productivity) / 20 + 1, 5); ++i)
         {
             //A random (really, dice-rolled by hand:) ) order of the four possible pig animations, with eating three times as much as the others ones
@@ -286,7 +286,7 @@ void nobUsual::Draw(int x, int y)
                 x + PIG_POSITIONS[nation][i][0], y + PIG_POSITIONS[nation][i][1]);
         }
 
-        // Ggf. Sounds abspielen (oink oink), da soll sich der Schweinezüchter drum kümmen
+        // Ggf. Sounds abspielen (oink oink), da soll sich der SchweinezÃ¼chter drum kÃ¼mmen
         dynamic_cast<nofPigbreeder*>(worker)->MakePigSounds();
     }
     // Bei nubischen Bergwerken das Feuer vor dem Bergwerk zeichnen
@@ -306,19 +306,19 @@ void nobUsual::HandleEvent(const unsigned int id)
     if(id)
     {
         productivity = last_productivities[5];
-        // Produktivität "verrücken" und gleich mit ausrechnen
+        // ProduktivitÃ¤t "verrÃ¼cken" und gleich mit ausrechnen
         for(unsigned short i = LAST_PRODUCTIVITIES_COUNT; i >= 2; --i)
             productivity += (last_productivities[i - 1] = last_productivities[i - 2]);
 
-        // Die aktuelle Produktivität nehmen und sie mit einberechnen
+        // Die aktuelle ProduktivitÃ¤t nehmen und sie mit einberechnen
         unsigned short current_productivity = worker->CalcProductivity();
         productivity += current_productivity;
         last_productivities[0] = current_productivity;
 
-        // Durschnitt ausrechnen der letzten Produktivitäten PLUS der aktuellen!
+        // Durschnitt ausrechnen der letzten ProduktivitÃ¤ten PLUS der aktuellen!
         productivity /= ((LAST_PRODUCTIVITIES_COUNT + 1));
 
-        // Event für nächste Abrechnung
+        // Event fÃ¼r nÃ¤chste Abrechnung
         productivity_ev = em->AddEvent(this, 400, 1);
     }
     else
@@ -342,11 +342,11 @@ void nobUsual::HandleEvent(const unsigned int id)
                     ordered_wares[last_ordered_ware].push_back(w);
             }
 
-            // Wenn dieser Betrieb 2 Waren benötigt, muss sich bei den Warentypen abgewechselt werden
+            // Wenn dieser Betrieb 2 Waren benÃ¶tigt, muss sich bei den Warentypen abgewechselt werden
             last_ordered_ware = (last_ordered_ware + 1) % USUAL_BUILDING_CONSTS[type - 10].wares_needed_count;
         }
 
-        // Nach ner bestimmten Zeit dann nächste Ware holen
+        // Nach ner bestimmten Zeit dann nÃ¤chste Ware holen
         orderware_ev = em->AddEvent(this, 210);
     }
 
@@ -361,7 +361,7 @@ void nobUsual::HandleEvent(const unsigned int id)
 void nobUsual::AddWare(Ware* ware)
 
 {
-    // Maximale Warenanzahlbestimmen (nur für assert unten)
+    // Maximale Warenanzahlbestimmen (nur fÃ¼r assert unten)
     /*  unsigned wares_count;
         if(USUAL_BUILDING_CONSTS[this->type-10].wares_needed_count == 3)
             wares_count = 2;
@@ -370,7 +370,7 @@ void nobUsual::AddWare(Ware* ware)
         else
             wares_count = 6;*/
 
-    // Gucken, um was für einen Warentyp es sich handelt und dann dort hinzufügen
+    // Gucken, um was fÃ¼r einen Warentyp es sich handelt und dann dort hinzufÃ¼gen
     for(unsigned char i = 0; i < USUAL_BUILDING_CONSTS[type - 10].wares_needed_count; ++i)
     {
         if(ware->type == USUAL_BUILDING_CONSTS[type - 10].wares_needed[i])
@@ -444,7 +444,7 @@ void nobUsual::GotWorker(Job job, noFigure* worker)
  */
 void nobUsual::WorkerLost()
 {
-    // Produktivitätsevent ggf. abmelden
+    // ProduktivitÃ¤tsevent ggf. abmelden
     em->RemoveEvent(productivity_ev);
     productivity_ev = 0;
 
@@ -488,7 +488,7 @@ void nobUsual::ConsumeWares()
 
     if(USUAL_BUILDING_CONSTS[type - 10].wares_needed_count == 3)
     {
-        // Bei Bergwerken wird immer nur eine Lebensmittelart "konsumiert" und es wird natürlich immer die genommen, die am meisten vorhanden ist
+        // Bei Bergwerken wird immer nur eine Lebensmittelart "konsumiert" und es wird natÃ¼rlich immer die genommen, die am meisten vorhanden ist
         unsigned char best = 0;
 
         for(unsigned char i = 0; i < 3; ++i)
@@ -574,7 +574,7 @@ unsigned nobUsual::CalcDistributionPoints(noRoadNode* start, const GoodType type
             break;
     }
 
-    // Wenn wir Ware nicht brauchen oder Produktion eingestellt wurde --> 0 zurückgeben
+    // Wenn wir Ware nicht brauchen oder Produktion eingestellt wurde --> 0 zurÃ¼ckgeben
     if(id == 3 || disable_production)
         return 0;
 
@@ -587,14 +587,14 @@ unsigned nobUsual::CalcDistributionPoints(noRoadNode* start, const GoodType type
     else
         wares_count = 6;
 
-    // Wenn wir schon mit der Ware vollgestopft sind (bei Bergwerken nur 2 Waren jeweils!), ebenfalls 0 zurückgeben
+    // Wenn wir schon mit der Ware vollgestopft sind (bei Bergwerken nur 2 Waren jeweils!), ebenfalls 0 zurÃ¼ckgeben
     if(unsigned(wares[id]) + ordered_wares[id].size() == wares_count)
         return 0;
 
-    // 10000 als Basis wählen, damit man auch noch was abziehen kann
+    // 10000 als Basis wÃ¤hlen, damit man auch noch was abziehen kann
     unsigned points = 10000;
 
-    // Wenn hier schon Waren drin sind oder welche bestellt sind, wirkt sich das natürlich negativ auf die "Wichtigkeit" aus
+    // Wenn hier schon Waren drin sind oder welche bestellt sind, wirkt sich das natÃ¼rlich negativ auf die "Wichtigkeit" aus
     points -= (wares[id] + ordered_wares[id].size()) * 30;
 
     if (points > 10000) // "underflow" ;)
@@ -632,7 +632,7 @@ void nobUsual::TakeWare(Ware* ware)
  */
 void nobUsual::WorkerArrived()
 {
-    // Produktivität in 1000 gf ausrechnen
+    // ProduktivitÃ¤t in 1000 gf ausrechnen
     productivity_ev = em->AddEvent(this, 400, 1);
 }
 

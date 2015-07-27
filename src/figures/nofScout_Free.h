@@ -1,4 +1,4 @@
-// $Id: nofScout_Free.h 9357 2014-04-25 15:35:25Z FloSoft $
+Ôªø// $Id: nofScout_Free.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -25,7 +25,7 @@
 /// Frei herumlaufender Erkunder
 class nofScout_Free : public nofFlagWorker
 {
-        /// N‰chster Punkt, wo der Sp‰her hingehen soll
+        /// N√§chster Punkt, wo der Sp√§her hingehen soll
         MapPoint nextPos;
         /// Weg, weit weit er noch laufen soll
         unsigned rest_way;
@@ -42,7 +42,7 @@ class nofScout_Free : public nofFlagWorker
         /// Sucht einen neuen Zielpunkt und geht zu diesen
         void GoToNewNode();
 
-        /// Gibt den Sichtradius dieser Figur zur¸ck (0, falls nicht-sp‰hend)
+        /// Gibt den Sichtradius dieser Figur zur√ºck (0, falls nicht-sp√§hend)
         virtual unsigned GetVisualRange() const;
 
     public:

@@ -1,4 +1,4 @@
-// $Id: noShipBuildingSite.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: noShipBuildingSite.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -71,7 +71,7 @@ noShipBuildingSite::noShipBuildingSite(SerializedGameData* sgd, const unsigned o
 {
 }
 
-/// Progress-Anteile für die 3 Baustufen
+/// Progress-Anteile fÃ¼r die 3 Baustufen
 const unsigned PROGRESS_PARTS[3] =
 { 4, 2, 3};
 
@@ -133,7 +133,7 @@ void noShipBuildingSite::MakeBuildStep()
         // BQ neu berechnen, da Schiff nicht mehr blockiert
         gwg->RecalcBQAroundPointBig(pos);
 
-        // Spieler über Fertigstellung benachrichtigen
+        // Spieler Ã¼ber Fertigstellung benachrichtigen
         if(GAMECLIENT.GetPlayerID() == this->player)
             GAMECLIENT.SendPostMessage(new ShipPostMsg(_("A new ship is ready"), PMC_GENERAL, GAMECLIENT.GetPlayer(player)->nation, pos));
 

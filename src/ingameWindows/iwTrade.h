@@ -1,4 +1,4 @@
-#ifndef IW_TRADE_H_
+ï»¿#ifndef IW_TRADE_H_
 #define IW_TRADE_H_
 
 #include "IngameWindow.h"
@@ -12,7 +12,7 @@ class iwTrade : public IngameWindow
 {
         GameWorldViewer* const gwv;
         dskGameInterface* const gi; ///< Das GameInterface
-        nobBaseWarehouse* const wh;              ///< Das zugehörige Gebäudeobjekt
+        nobBaseWarehouse* const wh;              ///< Das zugehÃ¶rige GebÃ¤udeobjekt
         /// Possible wares
         std::vector<GoodType> wares;
         /// Possible figures

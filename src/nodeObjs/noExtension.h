@@ -1,4 +1,4 @@
-// $Id: noExtension.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: noExtension.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -23,7 +23,7 @@
 
 #include "noBase.h"
 
-// Große Gebäude erstrecken sich über 4 Felder, die restlichen 3 werden mit dieser Klasse gefüllt
+// GroÃŸe GebÃ¤ude erstrecken sich Ã¼ber 4 Felder, die restlichen 3 werden mit dieser Klasse gefÃ¼llt
 class noExtension : public noBase
 {
     public:

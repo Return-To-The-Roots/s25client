@@ -1,4 +1,4 @@
-// $Id: dskAboutRTTR.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: dskAboutRTTR.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -38,7 +38,7 @@ static char THIS_FILE[] = __FILE__;
 ///////////////////////////////////////////////////////////////////////////////
 /** @class dskAboutRTTR
  *
- *  Klasse des Über-Siedler-RTTR Desktops.
+ *  Klasse des Ãœber-Siedler-RTTR Desktops.
  *
  *  @author FloSoft
  */
@@ -51,7 +51,7 @@ static char THIS_FILE[] = __FILE__;
  */
 dskAboutRTTR::dskAboutRTTR(void) : Desktop(LOADER.GetImageN("menu", 0))
 {
-    // "Zurück"
+    // "ZurÃ¼ck"
     AddTextButton(0, 300, 550, 200, 22, TC_RED1, _("Back"), NormalFont);
 
     AddImage(11, 20, 20, LOADER.GetImageN("logo", 0));
@@ -62,7 +62,7 @@ void dskAboutRTTR::Msg_ButtonClick(const unsigned int ctrl_id)
 {
     switch(ctrl_id)
     {
-        case 0: // "Zurück"
+        case 0: // "ZurÃ¼ck"
         {
             WINDOWMANAGER.Switch(new dskMainMenu);
         } break;

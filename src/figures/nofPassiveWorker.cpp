@@ -1,4 +1,4 @@
-// $Id: nofPassiveWorker.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+﻿// $Id: nofPassiveWorker.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -70,7 +70,7 @@ void nofPassiveWorker::Draw(int x, int y)
     DrawWalking(x, y);
 }
 
-/// Für alle restlichen Events, die nicht von noFigure behandelt werden
+/// FÃ¼r alle restlichen Events, die nicht von noFigure behandelt werden
 void nofPassiveWorker::HandleDerivedEvent(const unsigned int id)
 {
 

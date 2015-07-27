@@ -1,4 +1,4 @@
-// $Id: GameWorldViewer.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+﻿// $Id: GameWorldViewer.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -47,7 +47,7 @@ GameWorldViewer::GameWorldViewer() : scroll(false), sx(0), sy(0), view(GameWorld
 
 unsigned GameWorldViewer::GetAvailableSoldiersForAttack(const unsigned char player_attacker, const MapPoint pt)
 {
-    // Ist das angegriffenne ein normales Gebäude?
+    // Ist das angegriffenne ein normales GebÃ¤ude?
     nobBaseMilitary* attacked_building = GetSpecObj<nobBaseMilitary>(pt);
     if(attacked_building->GetBuildingType() >= BLD_BARRACKS && attacked_building->GetBuildingType() <= BLD_FORTRESS)
     {
@@ -57,14 +57,14 @@ unsigned GameWorldViewer::GetAvailableSoldiersForAttack(const unsigned char play
             return 0;
     }
 
-    // Militärgebäude in der Nähe finden
+    // MilitÃ¤rgebÃ¤ude in der NÃ¤he finden
     std::set<nobBaseMilitary*> buildings = LookForMilitaryBuildings(pt, 3);
 
     unsigned total_count = 0;
 
     for(std::set<nobBaseMilitary*>::iterator it = buildings.begin(); it != buildings.end(); ++it)
     {
-        // Muss ein Gebäude von uns sein und darf nur ein "normales Militärgebäude" sein (kein HQ etc.)
+        // Muss ein GebÃ¤ude von uns sein und darf nur ein "normales MilitÃ¤rgebÃ¤ude" sein (kein HQ etc.)
         if((*it)->GetPlayer() == player_attacker && (*it)->GetBuildingType() >= BLD_BARRACKS && (*it)->GetBuildingType() <= BLD_FORTRESS)
             total_count += static_cast<nobMilitary*>(*it)->GetSoldiersForAttack(pt, player_attacker);
 
@@ -119,7 +119,7 @@ void GameWorldViewer::MouseMove(const MouseCoords& mc)
     }
 }
 
-// Höhe wurde Verändert: TerrainRenderer Bescheid sagen, damit es entsprechend verändert werden kann
+// HÃ¶he wurde VerÃ¤ndert: TerrainRenderer Bescheid sagen, damit es entsprechend verÃ¤ndert werden kann
 void GameWorldViewer::AltitudeChanged(const MapPoint pt)
 {
     tr.AltitudeChanged(pt, this);
@@ -150,19 +150,19 @@ void GameWorldViewer::RecalcAllColors()
     tr.UpdateAllColors(this);
 }
 
-/// liefert sichtbare StraÃe, im FoW entsprechend die FoW-StraÃe
+/// liefert sichtbare StraÃƒÂŸe, im FoW entsprechend die FoW-StraÃƒÂŸe
 unsigned char GameWorldViewer::GetVisibleRoad(const MapPoint pt, unsigned char dir, const Visibility visibility) const
 {
     if(visibility == VIS_VISIBLE)
-        // Normal die sichtbaren StraÃen zurückliefern
+        // Normal die sichtbaren StraÃƒÂŸen zurÃ¼ckliefern
         return GetRoad(pt, dir, true);
 //      return GetPointRoad(x,y,dir,true);
     else if(visibility == VIS_FOW)
-        // entsprechende FoW-StraÃe liefern
+        // entsprechende FoW-StraÃƒÂŸe liefern
 //      return GetPointFOWRoad(x,y,dir,GetYoungestFOWNodePlayer(MapPoint(x,y)));
         return GetNode(pt).fow[GetYoungestFOWNodePlayer(pt)].roads[dir];
     else
-        // Unsichtbar -> keine StraÃe zeichnen
+        // Unsichtbar -> keine StraÃƒÂŸe zeichnen
         return 0;
 }
 
@@ -211,7 +211,7 @@ noShip* GameWorldViewer::GetShip(const MapPoint pt, const unsigned char player) 
     return(ship);
 }
 
-/// Gibt die verfügbar Anzahl der Angreifer für einen Seeangriff zurück
+/// Gibt die verfÃ¼gbar Anzahl der Angreifer fÃ¼r einen Seeangriff zurÃ¼ck
 unsigned GameWorldViewer::GetAvailableSoldiersForSeaAttackCount(const unsigned char player_attacker,
         const MapPoint pt) const
 {

@@ -1,4 +1,4 @@
-// $Id: ctrlIngameMinimap.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: ctrlIngameMinimap.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -24,12 +24,12 @@
 class GameWorldViewer;
 class IngameMinimap;
 
-/// Minimap-Control für Ingame
+/// Minimap-Control fÃ¼r Ingame
 class ctrlIngameMinimap : public ctrlMinimap
 {
         /// Zeiger auf Minimap (die im Spiel dauerhaft!! gespeichert werden muss)
         IngameMinimap* minimap;
-        /// Referenz auf GameWorldViewer, für das Gescrolle
+        /// Referenz auf GameWorldViewer, fÃ¼r das Gescrolle
         GameWorldViewer& gwv;
 
     public:
@@ -51,7 +51,7 @@ class ctrlIngameMinimap : public ctrlMinimap
         bool Msg_LeftDown(const MouseCoords& mc);
         bool Msg_MouseMove(const MouseCoords& mc);
 
-        /// Setzt Breite und Höhe des Controls
+        /// Setzt Breite und HÃ¶he des Controls
         void SetDisplaySize(const unsigned short width, const unsigned short height);
 
         /// Die einzelnen Dinge umschalten

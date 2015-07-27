@@ -1,4 +1,4 @@
-// $Id: nofSoldier.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: nofSoldier.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -24,12 +24,12 @@
 
 class nobBaseMilitary;
 
-/// Basisklasse für alle Soldatentypen
+/// Basisklasse fÃ¼r alle Soldatentypen
 class nofSoldier : public noFigure
 {
     protected:
 
-        /// Heimatgebäude, ist bei Soldaten aus HQs das HQ!
+        /// HeimatgebÃ¤ude, ist bei Soldaten aus HQs das HQ!
         nobBaseMilitary* building;
         /// Hitpoints
         unsigned char hitpoints;
@@ -40,7 +40,7 @@ class nofSoldier : public noFigure
         void DrawSoldierWalking(int x, int y, bool waitingsoldier = false);
 
     private:
-        /// wenn man beim Arbeitsplatz "kündigen" soll, man das Laufen zum Ziel unterbrechen muss (warum auch immer)
+        /// wenn man beim Arbeitsplatz "kÃ¼ndigen" soll, man das Laufen zum Ziel unterbrechen muss (warum auch immer)
         void AbrogateWorkplace();
 
     public:
@@ -51,7 +51,7 @@ class nofSoldier : public noFigure
                    nobBaseMilitary* const home, const unsigned char rank);
         nofSoldier(SerializedGameData* sgd, const unsigned obj_id);
 
-        /// Aufräummethoden
+        /// AufrÃ¤ummethoden
     protected:  void Destroy_nofSoldier() { Destroy_noFigure(); }
     public:     void Destroy() { Destroy_nofSoldier(); }
 

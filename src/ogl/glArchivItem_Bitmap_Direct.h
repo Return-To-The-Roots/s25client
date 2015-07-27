@@ -1,4 +1,4 @@
-// $Id: glArchivItem_Bitmap_Direct.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: glArchivItem_Bitmap_Direct.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -25,7 +25,7 @@
 #include "glArchivItem_Bitmap.h"
 #include <cstdio>
 
-/// Klasse für GL-Direct-Bitmaps.
+/// Klasse fÃ¼r GL-Direct-Bitmaps.
 class glArchivItem_Bitmap_Direct : public glArchivItem_Bitmap
 {
     public:
@@ -44,7 +44,7 @@ class glArchivItem_Bitmap_Direct : public glArchivItem_Bitmap
         unsigned char* tex_getPixel(const unsigned short x, const unsigned short y);
 
 
-        /// lädt die Bilddaten aus einer Datei.
+        /// lÃ¤dt die Bilddaten aus einer Datei.
         virtual int load(FILE* file, const libsiedler2::ArchivItem_Palette* palette) { return 254; }
         /// schreibt die Bilddaten in eine Datei.
         virtual int write(FILE* file, const libsiedler2::ArchivItem_Palette* palette) const { return 254; }

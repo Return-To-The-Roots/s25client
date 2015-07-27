@@ -1,4 +1,4 @@
-// $Id: BuildingConsts.h 9504 2014-11-29 10:47:38Z marcus $
+ï»¿// $Id: BuildingConsts.h 9504 2014-11-29 10:47:38Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -23,7 +23,7 @@
 #include "gameData/GameConsts.h"
 #include "gameTypes/BuildingTypes.h"
 
-// Konstanten für die Baukosten der Gebäude von allen 4 Völkern
+// Konstanten fÃ¼r die Baukosten der GebÃ¤ude von allen 4 VÃ¶lkern
 const BuildingCost BUILDING_COSTS[NAT_COUNT][40] =
 {
 	// Nubier
@@ -40,7 +40,7 @@ const BuildingCost BUILDING_COSTS[NAT_COUNT][40] =
 		{2, 0}, {2, 2}, {2, 0}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {4, 3}, {3, 3}, {4, 3},
 		{0, 0}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 0}, {2, 3}, {3, 3}, {3, 3}, {4, 6}
 	},
-		// Römer
+		// RÃ¶mer
 	{
 		{0, 0}, {2, 0}, {2, 3}, {0, 0}, {3, 5}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {4, 7},
 		{4, 0}, {4, 0}, {4, 0}, {4, 0}, {4, 0}, {0, 0}, {4, 2}, {2, 0}, {2, 0}, {2, 0},
@@ -63,7 +63,7 @@ const BuildingCost BUILDING_COSTS[NAT_COUNT][40] =
 	}
 };
 
-// Bauqualitäten der Gebäude
+// BauqualitÃ¤ten der GebÃ¤ude
 const BuildingQuality BUILDING_SIZE[40] =
 {
     BQ_CASTLE,
@@ -145,7 +145,7 @@ const UsualBuilding USUAL_BUILDING_CONSTS[30] =
     {JOB_NOTHING, GD_NOTHING, 0, {GD_NOTHING, GD_NOTHING, GD_NOTHING}},
 };
 
-/// Rauchkonstanten für alle 4 Völker unterschiedlich und erst beginnend nach den Militärgebäuden, denn die rauchen nicht
+/// Rauchkonstanten fÃ¼r alle 4 VÃ¶lker unterschiedlich und erst beginnend nach den MilitÃ¤rgebÃ¤uden, denn die rauchen nicht
 const SmokeConst BUILDING_SMOKE_CONSTS[NAT_COUNT][30] =
 {
     // Nubier
@@ -214,7 +214,7 @@ const SmokeConst BUILDING_SMOKE_CONSTS[NAT_COUNT][30] =
         {0, 0, 0}, // BLD_DONKEYBREEDER
         {0, 0, 0} // BLD_HARBORBUILDING
     },
-    // Römer
+    // RÃ¶mer
     {
         {0, 0, 0}, // BLD_GRANITEMINE
         {0, 0, 0}, // BLD_COALMINE
@@ -330,7 +330,7 @@ const BuildingSignConst BUILDING_SIGN_CONSTS[NAT_COUNT][40] =
         {14, -11}, {15, -10}, { -13, -7}, {16, -11}, {21, -3}, { -6, -2}, {14, -14}, { -5, -22}, {30, -25}, {0, 0},
         {0, 0}, {0, -22}, { -30, -13}, {35, -20}, {13, -34}, {19, -15}, { -22, -10}, {37, -13}, { -15, -36}, {0, 0}
     },
-    // Römer
+    // RÃ¶mer
     {
         {0, 0}, {15, -3}, {14, -2}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {20, -39},
         {15, -2}, {26, 4}, {21, 4}, {21, 4}, {0, 0}, {0, 0}, {0, 0}, { -29, -10}, {0, 0}, { -4, 4},
@@ -354,7 +354,7 @@ const BuildingSignConst BUILDING_SIGN_CONSTS[NAT_COUNT][40] =
     }
 };
 
-/// Position der nubischen Feuer für alle 4 Bergwerke
+/// Position der nubischen Feuer fÃ¼r alle 4 Bergwerke
 /// (Granit, Kohle, Eisen, Gold)
 const int NUBIAN_MINE_FIRE[4][2] =
 {
@@ -362,7 +362,7 @@ const int NUBIAN_MINE_FIRE[4][2] =
 };
 
 
-/// Hilfetexte für Gebäude
+/// Hilfetexte fÃ¼r GebÃ¤ude
 extern const char* const BUILDING_HELP_STRINGS[40];
 
 #endif

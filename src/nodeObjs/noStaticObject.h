@@ -1,4 +1,4 @@
-// $Id: noStaticObject.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: noStaticObject.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -31,11 +31,11 @@ class noStaticObject : public noCoordBase
 
         void Destroy() { Destroy_noStaticObject(); }
 
-        /// gibt die Item-ID zurück (nr in der jeweiligen File)
+        /// gibt die Item-ID zurÃ¼ck (nr in der jeweiligen File)
         unsigned short GetItemID() const { return id; }
-        /// gibt die Nr der File zurück)
+        /// gibt die Nr der File zurÃ¼ck)
         unsigned short GetItemFile() const { return file; }
-        /// gibt die Größe des Objekts zurück.
+        /// gibt die GrÃ¶ÃŸe des Objekts zurÃ¼ck.
         unsigned char GetSize(void) const { return size; }
 
         virtual BlockingManner GetBM() const { return BlockingManner(unsigned(BM_HUT) + size); }

@@ -1,4 +1,4 @@
-// $Id: VideoDriver.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: VideoDriver.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -27,7 +27,7 @@
 #include "../../src/drivers/VideoDriverLoaderInterface.h"
 #include <vector>
 
-/// Basisklasse für einen Videotreiber.
+/// Basisklasse fÃ¼r einen Videotreiber.
 class VideoDriver
 {
     public:
@@ -43,13 +43,13 @@ class VideoDriver
         /// Treiberinitialisierungsfunktion.
         virtual bool Initialize(void);
 
-        /// Treiberaufräumfunktion.
+        /// TreiberaufrÃ¤umfunktion.
         virtual void CleanUp(void);
 
         /// Erstellt das Fenster mit entsprechenden Werten.
         virtual bool CreateScreen(unsigned short width, unsigned short height, const bool fullscreen);
 
-        /// Erstellt oder verändert das Fenster mit entsprechenden Werten.
+        /// Erstellt oder verÃ¤ndert das Fenster mit entsprechenden Werten.
         virtual bool ResizeScreen(unsigned short width, unsigned short height, const bool fullscreen);
 
         /// Schliesst das Fenster.
@@ -67,7 +67,7 @@ class VideoDriver
         /// Funktion zum Holen einer Subfunktion.
         virtual void* GetFunction(const char* function) const;
 
-        /// Listet verfügbare Videomodi auf
+        /// Listet verfÃ¼gbare Videomodi auf
         struct VideoMode
         {
             unsigned short width;
@@ -95,10 +95,10 @@ class VideoDriver
         /// Funktion zum Setzen der Y-Koordinate der Maus.
         virtual void SetMousePosY(int y);
 
-        /// Funktion zum Auslesen ob die Linke Maustaste gedrückt ist.
+        /// Funktion zum Auslesen ob die Linke Maustaste gedrÃ¼ckt ist.
         virtual bool GetMouseStateL(void) const;
 
-        /// Funktion zum Auslesen ob die Rechte Maustaste gedrückt ist.
+        /// Funktion zum Auslesen ob die Rechte Maustaste gedrÃ¼ckt ist.
         virtual bool GetMouseStateR(void) const;
 
         //
@@ -109,19 +109,19 @@ class VideoDriver
         /// Get state of the modifier keys
         virtual KeyEvent GetModKeyState(void) const = 0;// { const KeyEvent ke = {KT_INVALID,0,false,false,false}; return ke; }
 
-        /// Gibt Pointer auf ein Fenster zurück (device-dependent!), HWND unter Windows
+        /// Gibt Pointer auf ein Fenster zurÃ¼ck (device-dependent!), HWND unter Windows
         virtual void* GetMapPointer() const = 0;
 
-        /// prüft auf Initialisierung.
+        /// prÃ¼ft auf Initialisierung.
         bool IsInitialized() { return initialized; }
 
     protected:
-        VideoDriverLoaderInterface* CallBack;  ///< Das DriverCallback für Rückmeldungen.
+        VideoDriverLoaderInterface* CallBack;  ///< Das DriverCallback fÃ¼r RÃ¼ckmeldungen.
         bool initialized;            ///< Initialisierungsstatus.
         MouseCoords mouse_xy;        ///< Status der Maus.
         bool keyboard[512];          ///< Status der Tastatur;
         unsigned short screenWidth;  ///< aktuelle Bildschirm-/Fensterbreite
-        unsigned short screenHeight; ///< aktuelle Bildschirm-/Fensterhöhe
+        unsigned short screenHeight; ///< aktuelle Bildschirm-/FensterhÃ¶he
         bool fullscreen;             ///< Vollbild an/aus?
 };
 #endif // !VIDEODRIVER_H_INCLUDED

@@ -1,4 +1,4 @@
-// $Id: iwRoadWindow.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+﻿// $Id: iwRoadWindow.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -87,6 +87,6 @@ void iwRoadWindow::Msg_ButtonClick(const unsigned int ctrl_id)
     // Maus an vorherige Stelle setzen
     VIDEODRIVER.SetMousePos(last_x, last_y);
 
-    // und fenster schlie�en
+    // und fenster schließen
     Close();
 }

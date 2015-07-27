@@ -1,4 +1,4 @@
-// $Id: ctrlTab.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: ctrlTab.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -120,7 +120,7 @@ bool ctrlTab::Msg_MouseMove(const MouseCoords& mc)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  fügt eine Tab hinzu.
+ *  fÃ¼gt eine Tab hinzu.
  *
  *  @author OLiver
  */
@@ -143,7 +143,7 @@ ctrlGroup* ctrlTab::AddTab(glArchivItem_Bitmap* image, std::string tooltip, cons
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  löscht alle Tabs.
+ *  lÃ¶scht alle Tabs.
  *
  *  @author OLiver
  */
@@ -165,10 +165,10 @@ void ctrlTab::DeleteAllTabs(void)
  */
 void ctrlTab::SetSelection(unsigned short nr, bool notify)
 {
-    /// Eltern informieren, dass Tab geändert wurde
+    /// Eltern informieren, dass Tab geÃ¤ndert wurde
     parent->Msg_TabChange(GetID(), tabs[nr]);
 
-    // Farbe des alten Buttons ändern
+    // Farbe des alten Buttons Ã¤ndern
     ctrlButton* button;
 
     button = GetCtrl<ctrlButton>(tab_selection);
@@ -178,10 +178,10 @@ void ctrlTab::SetSelection(unsigned short nr, bool notify)
     // Steuerelemente auf der alten Tabseite ausblenden
     GetCtrl<ctrlGroup>(tabs[tab_selection] + MAX_TAB_COUNT + 1)->SetVisible(false);
 
-    // Umwählen
+    // UmwÃ¤hlen
     tab_selection = nr;
 
-    // Farbe des neuen Buttons ändern
+    // Farbe des neuen Buttons Ã¤ndern
     button = GetCtrl<ctrlButton>(tab_selection);
     if(button)
         button->SetTexture(TC_GREEN1);
@@ -192,8 +192,8 @@ void ctrlTab::SetSelection(unsigned short nr, bool notify)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Gibt Tab-Group zurück, über die die Steuerelemente der Tab angesprochen
- *  werden können
+ *  Gibt Tab-Group zurÃ¼ck, Ã¼ber die die Steuerelemente der Tab angesprochen
+ *  werden kÃ¶nnen
  *
  *  @author OLiver
  */

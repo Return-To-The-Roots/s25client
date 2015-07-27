@@ -1,4 +1,4 @@
-// $Id: ctrlChat.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: ctrlChat.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -24,7 +24,7 @@
 #include "Window.h"
 #include <vector>
 
-/// ChatCtrl-Klasse für ein ChatCtrl.
+/// ChatCtrl-Klasse fÃ¼r ein ChatCtrl.
 class ctrlChat : public Window
 {
     public:
@@ -33,9 +33,9 @@ class ctrlChat : public Window
         /// Destruktor von @p ctrlChat.
         virtual ~ctrlChat();
 
-        /// Größe ändern
+        /// GrÃ¶ÃŸe Ã¤ndern
         void Resize_(unsigned short width, unsigned short height);
-        /// Fügt eine Chatnachricht hinzu.
+        /// FÃ¼gt eine Chatnachricht hinzu.
         void AddMessage(const std::string& time_string, const std::string& player, const unsigned int player_color, const std::string& msg, unsigned int msg_color);
         /// Setzt Farbe der Zeitangaben.
         void SetTimeColor(const unsigned int color) { time_color = color; }
@@ -49,16 +49,16 @@ class ctrlChat : public Window
     protected:
         /// Zeichnet das Chat-Control.
         virtual bool Draw_();
-        /// Vergrößert die Anzahl der Chatzeilen.
+        /// VergrÃ¶ÃŸert die Anzahl der Chatzeilen.
         void ExtendMemory(const unsigned int count);
         /// Converts an unwrapped line into a wrapped one and appends it
         void WrapLine(unsigned short i);
 
     private:
-        // Struktur für eine Chatzeile.
+        // Struktur fÃ¼r eine Chatzeile.
         struct ChatLine
         {
-            /// Handelt es sich bei dieser Zeile um eine sekundäre (also den >1-Teil einer umbrochenen Zeile)
+            /// Handelt es sich bei dieser Zeile um eine sekundÃ¤re (also den >1-Teil einer umbrochenen Zeile)
             bool secondary;
             /// Zeitangabe (optional, 0 wenn nicht benutzt)
             std::string time_string;

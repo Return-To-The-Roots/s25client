@@ -1,4 +1,4 @@
-// $Id: nofForester.cpp 9402 2014-05-10 06:54:13Z FloSoft $
+Ôªø// $Id: nofForester.cpp 9402 2014-05-10 06:54:13Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -74,13 +74,13 @@ void nofForester::DrawWorking(int x, int y)
 
 }
 
-/// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren raustr‰gt (bzw rein)
+/// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren raustr√§gt (bzw rein)
 unsigned short nofForester::GetCarryID() const
 {
     return 0;
 }
 
-/// Abgeleitete Klasse informieren, wenn sie anf‰ngt zu arbeiten (Vorbereitungen)
+/// Abgeleitete Klasse informieren, wenn sie anf√§ngt zu arbeiten (Vorbereitungen)
 void nofForester::WorkStarted()
 {
 }
@@ -90,14 +90,14 @@ void nofForester::WorkFinished()
 {
     noBase* no = gwg->GetNO(pos);
 
-    // Wenn irgendwo ne Straﬂe schon ist, NICHT einsetzen!
+    // Wenn irgendwo ne Stra√üe schon ist, NICHT einsetzen!
     for(unsigned i = 0; i < 6; ++i)
     {
         if(gwg->GetPointRoad(pos, i))
             return;
     }
 
-    // Wenn Objekt ein Zierobjekt ist, dann lˆschen, ansonsten den Baum NICHT einsetzen!
+    // Wenn Objekt ein Zierobjekt ist, dann l√∂schen, ansonsten den Baum NICHT einsetzen!
     if(no->GetType() == NOP_ENVIRONMENT || no->GetType() == NOP_NOTHING)
     {
         if(no->GetType() == NOP_ENVIRONMENT)
@@ -106,7 +106,7 @@ void nofForester::WorkFinished()
             delete no;
         }
 
-        // Je nach Landschaft andere B‰ume pflanzbar!
+        // Je nach Landschaft andere B√§ume pflanzbar!
         const unsigned char AVAILABLE_TREES_COUNT[3] =
         {
             6, 3, 4
@@ -145,14 +145,14 @@ nofFarmhand::PointQuality nofForester::GetPointQuality(const MapPoint pt)
         return PQ_NOTPOSSIBLE;
 
 
-    // darf auﬂerdem nich auf einer Straﬂe liegen
+    // darf au√üerdem nich auf einer Stra√üe liegen
     for(unsigned char i = 0; i < 6; ++i)
     {
         if(gwg->GetPointRoad(pt, i))
             return PQ_NOTPOSSIBLE;
     }
 
-    // es d¸rfen auﬂerdem keine Geb‰ude rund um den Baum stehen
+    // es d√ºrfen au√üerdem keine Geb√§ude rund um den Baum stehen
     for(unsigned char i = 0; i < 6; ++i)
     {
         if(gwg->GetNO(gwg->GetNeighbour(pt, i))->GetType() ==  NOP_BUILDING)

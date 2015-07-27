@@ -1,4 +1,4 @@
-// $Id: SoundSDL_Music.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+﻿// $Id: SoundSDL_Music.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -58,7 +58,7 @@ SoundSDL_Music::~SoundSDL_Music(void)
 /**
  *  Abspielen Starten.
  *
- *  @param[in] loop  @p true f�r ununterbrochenes Abspielen
+ *  @param[in] loop  @p true für ununterbrochenes Abspielen
  *
  *  @return @p true bei Erfolg, @p false bei Fehler
  *

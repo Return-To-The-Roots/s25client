@@ -1,4 +1,4 @@
-// $Id: noSkeleton.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: noSkeleton.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -51,7 +51,7 @@ class noSkeleton: public noCoordBase
     private:
         /// Type des Skeletts (0 = ganz "frisch", 1 - schon etwas verdorrt)
         unsigned char type;
-        /// EventPointer, damit der dann gelöscht werden kann, falls das Skelett von außerhalb gelöscht wird
+        /// EventPointer, damit der dann gelÃ¶scht werden kann, falls das Skelett von auÃŸerhalb gelÃ¶scht wird
         EventManager::EventPointer current_event;
 };
 

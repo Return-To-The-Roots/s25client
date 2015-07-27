@@ -1,4 +1,4 @@
-// $Id: nofFarmhand.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: nofFarmhand.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -23,7 +23,7 @@
 #include "nofBuildingWorker.h"
 
 
-/// Ein Landarbeiter geht raus aus seiner Hütte und arbeitet in "freier Natur"
+/// Ein Landarbeiter geht raus aus seiner HÃ¼tte und arbeitet in "freier Natur"
 class nofFarmhand : public nofBuildingWorker
 {
     protected:
@@ -50,23 +50,23 @@ class nofFarmhand : public nofBuildingWorker
         virtual void WorkAborted_Farmhand();
 
 
-        ///// Fängt das "Warten-vor-dem-Arbeiten" an, falls er arbeiten kann (müssen ja bestimmte "Naturobjekte" gegeben sein)
+        ///// FÃ¤ngt das "Warten-vor-dem-Arbeiten" an, falls er arbeiten kann (mÃ¼ssen ja bestimmte "Naturobjekte" gegeben sein)
         //void TryToWork();
         /// Findet heraus, ob der Beruf an diesem Punkt arbeiten kann
         bool IsPointAvailable(const MapPoint pt);
         /// Returns the quality of this working point or determines if the worker can work here at all
         virtual PointQuality GetPointQuality(const MapPoint pt) = 0;
 
-        /// Läuft zum Arbeitspunkt
+        /// LÃ¤uft zum Arbeitspunkt
         void WalkToWorkpoint();
-        /// Trifft Vorbereitungen fürs nach Hause - Laufen
+        /// Trifft Vorbereitungen fÃ¼rs nach Hause - Laufen
         void StartWalkingHome();
-        /// Läuft wieder zu seiner Hütte zurück
+        /// LÃ¤uft wieder zu seiner HÃ¼tte zurÃ¼ck
         void WalkHome();
 
         /// Inform derived class about the start of the whole working process (at the beginning when walking out of the house)
         virtual void WalkingStarted();
-        /// Abgeleitete Klasse informieren, wenn sie anfängt zu arbeiten (Vorbereitungen)
+        /// Abgeleitete Klasse informieren, wenn sie anfÃ¤ngt zu arbeiten (Vorbereitungen)
         virtual void WorkStarted() = 0;
         /// Abgeleitete Klasse informieren, wenn fertig ist mit Arbeiten
         virtual void WorkFinished() = 0;
@@ -79,7 +79,7 @@ class nofFarmhand : public nofBuildingWorker
         nofFarmhand(const Job job, const MapPoint pt, const unsigned char player, nobUsual* workplace);
         nofFarmhand(SerializedGameData* sgd, const unsigned obj_id);
 
-        /// Aufräummethoden
+        /// AufrÃ¤ummethoden
     protected:  void Destroy_nofFarmhand() { Destroy_nofBuildingWorker(); }
     public:     void Destroy() { Destroy_nofFarmhand(); }
 

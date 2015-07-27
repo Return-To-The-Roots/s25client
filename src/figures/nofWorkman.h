@@ -1,4 +1,4 @@
-// $Id: nofWorkman.h 9357 2014-04-25 15:35:25Z FloSoft $
+Ôªø// $Id: nofWorkman.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -22,7 +22,7 @@
 
 #include "nofBuildingWorker.h"
 
-/// Ein Handwerker ist jemand, der seine Waren nur im Geb‰ude herstellt und diese raustr‰gt
+/// Ein Handwerker ist jemand, der seine Waren nur im Geb√§ude herstellt und diese raustr√§gt
 /// Allen gemeinsam ist, dass sie einen festen Arbeitsablauf haben:
 /// Warten -- Arbeiten -- Warten -- Ware raustragen -- wieder reinkommen -- ...
 class nofWorkman : public nofBuildingWorker
@@ -31,14 +31,14 @@ class nofWorkman : public nofBuildingWorker
 
         // Funktionen, die nur von der Basisklasse  aufgerufen werden, wenn...
         virtual void WalkedDerived(); // man gelaufen ist
-        /// Gibt den Warentyp zur¸ck, welche der Arbeiter erzeugen will
+        /// Gibt den Warentyp zur√ºck, welche der Arbeiter erzeugen will
         virtual GoodType ProduceWare() = 0;
         /// Abgeleitete Klasse informieren, wenn man fertig ist mit Arbeiten
         virtual void WorkFinished();
 
     protected:
 
-        /// Entsprechende Methoden f¸r die Abwicklung der einzelnen Zust‰nde
+        /// Entsprechende Methoden f√ºr die Abwicklung der einzelnen Zust√§nde
         /// Nach erstem Warten, sprich der Arbeiter muss versuchen, neu anfangen zu arbeiten
         void HandleStateWaiting1();
         void HandleStateWaiting2();

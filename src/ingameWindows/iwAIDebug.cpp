@@ -1,4 +1,4 @@
-// $Id: iwAIDebug.cpp 9591 2015-02-01 09:39:07Z marcus $
+ï»¿// $Id: iwAIDebug.cpp 9591 2015-02-01 09:39:07Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -49,7 +49,7 @@ iwAIDebug::iwAIDebug(GameWorldViewer* const gwv)
     : IngameWindow(CGI_OPTIONSWINDOW, 0xFFFF, 0xFFFF, 300, 515, _("AI Debug"), LOADER.GetImageN("resource", 41)),
       gwv(gwv)
 {
-    // Nur Host hat Zugriff auf die Daten über die KI-Spieler
+    // Nur Host hat Zugriff auf die Daten Ã¼ber die KI-Spieler
     if (!GAMECLIENT.IsHost())
     {
         Close();
@@ -64,7 +64,7 @@ iwAIDebug::iwAIDebug(GameWorldViewer* const gwv)
             ais.push_back(ai);
     }
 
-    // Wenn keine KI-Spieler, schließen
+    // Wenn keine KI-Spieler, schlieÃŸen
     if (ais.size() == 0)
     {
         Close();

@@ -1,4 +1,4 @@
-// $Id: nofFlagWorker.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: nofFlagWorker.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -24,7 +24,7 @@
 
 class noFlag;
 
-/// Basisklasse für Geologen und Späher, also die, die an eine Flagge gebunden sind zum Arbeiten
+/// Basisklasse fÃ¼r Geologen und SpÃ¤her, also die, die an eine Flagge gebunden sind zum Arbeiten
 class nofFlagWorker : public noFigure
 {
     protected:
@@ -33,21 +33,21 @@ class nofFlagWorker : public noFigure
 
         enum State
         {
-            STATE_FIGUREWORK, // Zur Flagge und zurückgehen, Rumirren usw
-            STATE_GOTOFLAG, // geht zurück zur Flagge um anschließend nach Hause zu gehen
+            STATE_FIGUREWORK, // Zur Flagge und zurÃ¼ckgehen, Rumirren usw
+            STATE_GOTOFLAG, // geht zurÃ¼ck zur Flagge um anschlieÃŸend nach Hause zu gehen
 
-            STATE_GEOLOGIST_GOTONEXTNODE, // Zum nächsten Punkt gehen, um dort zu graben
+            STATE_GEOLOGIST_GOTONEXTNODE, // Zum nÃ¤chsten Punkt gehen, um dort zu graben
             STATE_GEOLOGIST_DIG, // graben (mit Hammer auf Berg hauen)
             STATE_GEOLOGIST_CHEER, // Jubeln, dass man etwas gefunden hat
 
-            STATE_SCOUT_SCOUTING // läuft umher und erkundet
+            STATE_SCOUT_SCOUTING // lÃ¤uft umher und erkundet
         } state;
 
     protected:
 
-        /// Kündigt bei der Flagge
+        /// KÃ¼ndigt bei der Flagge
         void AbrogateWorkplace();
-        /// Geht wieder zurück zur Flagge und dann nach Hause
+        /// Geht wieder zurÃ¼ck zur Flagge und dann nach Hause
         void GoToFlag();
 
     public:
@@ -55,7 +55,7 @@ class nofFlagWorker : public noFigure
         nofFlagWorker(const Job job, const MapPoint pt, const unsigned char player, noRoadNode* goal);
         nofFlagWorker(SerializedGameData* sgd, const unsigned obj_id);
 
-        /// Aufräummethoden
+        /// AufrÃ¤ummethoden
     protected:  void Destroy_nofFlagWorker();
     public:     void Destroy() { Destroy_nofFlagWorker(); }
 
@@ -67,7 +67,7 @@ class nofFlagWorker : public noFigure
         /// Wird aufgerufen, wenn die Flagge abgerissen wurde
         virtual void LostWork() = 0;
 
-        /// Gibt Flagge zurück
+        /// Gibt Flagge zurÃ¼ck
         noFlag* GetFlag() const { return flag; }
 
 };

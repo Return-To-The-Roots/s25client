@@ -1,4 +1,4 @@
-// $Id: noMovable.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: noMovable.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -32,14 +32,14 @@ class noMovable : public noCoordBase
 {
     protected:
 
-        unsigned char dir; // Richtung, in die es gerade läcft
+        unsigned char dir; // Richtung, in die es gerade lÃ¤cft
         unsigned char ascent; // Anstieg beim Laufen (0-2 runter, 3 gerade, 4-6 hoch)
         EventManager::EventPointer current_ev;
         /// Falls er unterwegs angehalten ist: wie weit war er schon gelaufen (0 wenn nicht)
         unsigned pause_walked_gf;
         /// Wenn er angehalten hat, wie lange das Laufevent war
         unsigned pause_event_length;
-        /// Läuft es gerade (zum Debuggen)
+        /// LÃ¤uft es gerade (zum Debuggen)
         bool moving;
 
     protected:
@@ -52,7 +52,7 @@ class noMovable : public noCoordBase
         noMovable(const NodalObjectType nop, const MapPoint pt);
         noMovable(SerializedGameData* sgd, const unsigned obj_id);
 
-        /// Aufräummethoden
+        /// AufrÃ¤ummethoden
     protected:  void Destroy_noMovable() { Destroy_noCoordBase(); }
     public:     void Destroy() { Destroy_noMovable(); }
 
@@ -60,19 +60,19 @@ class noMovable : public noCoordBase
     protected:  void Serialize_noMovable(SerializedGameData* sgd) const;
     public:     void Serialize(SerializedGameData* sgd) const { Serialize_noMovable(sgd); }
 
-        /// In aktueller Richtung ein Stück zurücklegen
+        /// In aktueller Richtung ein StÃ¼ck zurÃ¼cklegen
         void Walk();
         // Starten zu Laufen, Event anmelden
         void StartMoving(const unsigned char dir, unsigned gf_length);
         // Interpoliert die Positon zwischen zwei Knotenpunkten
         void CalcRelative(int& x, int& y, int x1 = 0, int y1 = 0, int x2 = 0, int y2 = 0);
-        /// Interpoliert fürs Laufen zwischen zwei Kartenpunkten
+        /// Interpoliert fÃ¼rs Laufen zwischen zwei Kartenpunkten
         void CalcWalkingRelative(int& x, int& y);
         // Steht er in der zwischen 2 Wegpunkten?
         bool IsStandingBetweenNodes() const { return (pause_walked_gf > 0) ? true : false; }
-        /// Gibt die Position zurück, wo wir uns hinbewegen (selbe Position, wenn Schiff steht)
+        /// Gibt die Position zurÃ¼ck, wo wir uns hinbewegen (selbe Position, wenn Schiff steht)
         MapPoint GetDestinationForCurrentMove() const;
-        /// Gibt zurück, ob sich das angegebene Objekt zwischen zwei Punkten bewegt
+        /// Gibt zurÃ¼ck, ob sich das angegebene Objekt zwischen zwei Punkten bewegt
         bool IsMoving() const;
 
 };

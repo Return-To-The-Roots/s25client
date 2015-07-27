@@ -1,4 +1,4 @@
-// $Id: dskSelectMap.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: dskSelectMap.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -101,13 +101,13 @@ dskSelectMap::dskSelectMap(const CreateServerInfo& csi)
     : Desktop(LOADER.GetImageN("setup015", 0)),
       csi(csi)
 {
-    // Die Tabelle für die Maps
+    // Die Tabelle fÃ¼r die Maps
     AddTable( 1, 110,  35, 680, 400, TC_GREY, NormalFont, 6, _("Name"), 250, ctrlTable::SRT_STRING, _("Author"), 216, ctrlTable::SRT_STRING, _("Player"), 170, ctrlTable::SRT_NUMBER, _("Type"), 180, ctrlTable::SRT_STRING, _("Size"), 134, ctrlTable::SRT_MAPSIZE, "", 0, ctrlTable::SRT_STRING);
 
     // "Karten Auswahl"
     AddText(  2, 400,   5, _("Selection of maps"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, LargeFont);
 
-    // "Zurück"
+    // "ZurÃ¼ck"
     AddTextButton(3, 380, 560, 200, 22, TC_RED1, _("Back"), NormalFont);
     // "Spiel laden..."
     AddTextButton(4, 590, 530, 200, 22, TC_GREEN2, _("Load game..."), NormalFont);
@@ -138,7 +138,7 @@ dskSelectMap::dskSelectMap(const CreateServerInfo& csi)
     AddText(12, 260, 470, _("Map: "), COLOR_YELLOW, glArchivItem_Font::DF_LEFT, NormalFont);
     AddText(13, 260, 490, _("Mapfile: "), COLOR_YELLOW, glArchivItem_Font::DF_LEFT, NormalFont);
 
-    // "Eigene" auswählen
+    // "Eigene" auswÃ¤hlen
     optiongroup->SetSelection(5, true);
 
     LOBBYCLIENT.SetInterface(this);
@@ -170,7 +170,7 @@ void dskSelectMap::Msg_OptionGroupChange(const unsigned int ctrl_id, const unsig
     static const unsigned int ids[] = { 39, 40, 41, 42, 43, 52, 91, 93, 48 };
     char path[4096];
 
-    // Und wieder füllen lassen
+    // Und wieder fÃ¼llen lassen
     snprintf(path, 4096, "%s*.swd", GetFilePath(FILE_PATHS[ids[selection]]).c_str());
     ListDir(path, false, FillTable, (void*)table );
 
@@ -181,7 +181,7 @@ void dskSelectMap::Msg_OptionGroupChange(const unsigned int ctrl_id, const unsig
     // Dann noch sortieren
     table->SortRows(0);
 
-    // und Auswahl zurücksetzen
+    // und Auswahl zurÃ¼cksetzen
     table->SetSelection(0);
 }
 
@@ -238,7 +238,7 @@ void dskSelectMap::Msg_ButtonClick(const unsigned int ctrl_id)
 {
     switch(ctrl_id)
     {
-        case 3: // "Zurück"
+        case 3: // "ZurÃ¼ck"
         {
             if(csi.type == NP_LOCAL)
                 WINDOWMANAGER.Switch(new dskSinglePlayer);
@@ -274,7 +274,7 @@ void dskSelectMap::StartServer()
     ctrlTable* table = GetCtrl<ctrlTable>(1);
     unsigned short selection = table->GetSelection();
 
-    // Ist die Auswahl gültig?
+    // Ist die Auswahl gÃ¼ltig?
     if(selection < table->GetRowCount())
     {
         // Kartenpfad aus Tabelle holen
@@ -283,7 +283,7 @@ void dskSelectMap::StartServer()
         // Server starten
         if(!GAMESERVER.TryToStart(csi, map_path, MAPTYPE_OLDMAP))
         {
-            // Falls es ein lokal Spiel werden sollte, zurück zum SP-Menü
+            // Falls es ein lokal Spiel werden sollte, zurÃ¼ck zum SP-MenÃ¼
             if (csi.type == NP_LOCAL)
             {
                 WINDOWMANAGER.Switch(new dskSinglePlayer);
@@ -369,7 +369,7 @@ void dskSelectMap::CI_Error(const ClientError ce)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  (Lobby-)Status: Benutzerdefinierter Fehler (kann auch Conn-Loss o.ä sein)
+ *  (Lobby-)Status: Benutzerdefinierter Fehler (kann auch Conn-Loss o.Ã¤ sein)
  *
  *  @author FloSoft
  */
@@ -386,7 +386,7 @@ void dskSelectMap::LC_Status_Error(const std::string& error)
  */
 void dskSelectMap::LC_Created(void)
 {
-    // ggf. im nächstes Stadium weiter
+    // ggf. im nÃ¤chstes Stadium weiter
     GAMESERVER.Start();
 }
 
@@ -395,7 +395,7 @@ void dskSelectMap::LC_Created(void)
  *  Callbackfunktion zum Eintragen einer Karte in der Tabelle.
  *
  *  @param[in] filename Der Dateiname
- *  @param[in] param    Ein aufrufsabhängiger Parameter
+ *  @param[in] param    Ein aufrufsabhÃ¤ngiger Parameter
  *
  *  @author OLiver
  */
@@ -405,7 +405,7 @@ void dskSelectMap::FillTable(const std::string& filename, void* param)
     char players[64], size[32];
     libsiedler2::ArchivInfo map;
 
-    // Ist die Tabelle gültig?
+    // Ist die Tabelle gÃ¼ltig?
     if(!tabelle)
         return;
 
@@ -422,7 +422,7 @@ void dskSelectMap::FillTable(const std::string& filename, void* param)
         snprintf(players, 64, _("%d Player"), header->getPlayer());
         snprintf(size, 32, "%dx%d", header->getWidth(), header->getHeight());
 
-        // und einfügen
+        // und einfÃ¼gen
         const std::string landscapes[3] =
         {
             _("Greenland"),

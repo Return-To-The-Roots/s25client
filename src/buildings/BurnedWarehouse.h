@@ -1,4 +1,4 @@
-// $Id: BurnedWarehouse.h 9357 2014-04-25 15:35:25Z FloSoft $
+﻿// $Id: BurnedWarehouse.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -28,7 +28,7 @@ class BurnedWarehouse : public noCoordBase
         const unsigned char player;
         /// Aktuelle Rausgeh-Phase
         unsigned go_out_phase;
-        // Leute, die noch rauskommen m�ssen
+        // Leute, die noch rauskommen müssen
         unsigned people[30];
 
     public:

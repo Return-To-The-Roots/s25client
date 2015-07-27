@@ -1,4 +1,4 @@
-// $Id: ctrlComboBox.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: ctrlComboBox.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -67,7 +67,7 @@ ctrlComboBox::ctrlComboBox(Window* parent,
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Größe verändern
+ *  GrÃ¶ÃŸe verÃ¤ndern
  *
  *  @author Divan
  *  @author OLiver
@@ -85,10 +85,10 @@ void ctrlComboBox::Resize_(unsigned short width, unsigned short height)
 
     unsigned short list_height = 4;
 
-    // Langsam die Höhe der maximalen annähern
+    // Langsam die HÃ¶he der maximalen annÃ¤hern
     for(unsigned int i = 0; i < list->GetLineCount(); ++i)
     {
-        // zu große geworden?
+        // zu groÃŸe geworden?
         list_height += font->getHeight();
 
         if(list_height > (scale ? ScaleY(max_list_height) : max_list_height))
@@ -97,7 +97,7 @@ void ctrlComboBox::Resize_(unsigned short width, unsigned short height)
             if(i == 0)
                 return;
 
-            // Höhe um eins erniedrigen, damits wieder kleiner ist als die maximale
+            // HÃ¶he um eins erniedrigen, damits wieder kleiner ist als die maximale
             list_height -= font->getHeight();;
 
             break;
@@ -116,7 +116,7 @@ void ctrlComboBox::Resize_(unsigned short width, unsigned short height)
  */
 void ctrlComboBox::Msg_PaintAfter()
 {
-    // Liste erst jetzt malen, damit sie den Rest überdeckt
+    // Liste erst jetzt malen, damit sie den Rest Ã¼berdeckt
     GetCtrl<ctrlList>(0)->Draw();
 }
 
@@ -128,7 +128,7 @@ void ctrlComboBox::Msg_PaintAfter()
  */
 bool ctrlComboBox::Msg_MouseMove(const MouseCoords& mc)
 {
-    // Für Button und Liste weiterleiten
+    // FÃ¼r Button und Liste weiterleiten
     return RelayMouseMessage(&Window::Msg_MouseMove, mc);
 }
 
@@ -157,7 +157,7 @@ bool ctrlComboBox::Msg_LeftDown(const MouseCoords& mc)
         return true;
     }
 
-    // Für Button und Liste weiterleiten
+    // FÃ¼r Button und Liste weiterleiten
     return RelayMouseMessage(&Window::Msg_LeftDown, mc);
 }
 
@@ -169,7 +169,7 @@ bool ctrlComboBox::Msg_LeftDown(const MouseCoords& mc)
  */
 bool ctrlComboBox::Msg_LeftUp(const MouseCoords& mc)
 {
-    // Für Button und Liste weiterleiten
+    // FÃ¼r Button und Liste weiterleiten
     return RelayMouseMessage(&Window::Msg_LeftUp, mc);
 }
 
@@ -183,7 +183,7 @@ bool ctrlComboBox::Msg_RightDown(const MouseCoords& mc)
 {
     ctrlList* list = GetCtrl<ctrlList>(0);
 
-    // Für Button und Liste weiterleiten (und danach erst schließen)
+    // FÃ¼r Button und Liste weiterleiten (und danach erst schlieÃŸen)
     bool ret = RelayMouseMessage(&Window::Msg_RightDown, mc);
 
     // Clicked on list -> close it
@@ -263,12 +263,12 @@ void ctrlComboBox::Msg_ListSelectItem(const unsigned int ctrl_id, const unsigned
 
     ctrlList* list = GetCtrl<ctrlList>(0);
 
-    // ist in der Liste überhaupt was drin?
+    // ist in der Liste Ã¼berhaupt was drin?
     if(selection != this->selection && list->GetLineCount() > 0)
     {
         this->selection = selection;
 
-        // Nachricht an übergeordnetes Fenster verschicken
+        // Nachricht an Ã¼bergeordnetes Fenster verschicken
         parent->Msg_ComboSelectItem(GetID(), selection);
     }
 }
@@ -276,7 +276,7 @@ void ctrlComboBox::Msg_ListSelectItem(const unsigned int ctrl_id, const unsigned
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  fügt einen String zur Liste hinzu.
+ *  fÃ¼gt einen String zur Liste hinzu.
  *
  *  @author OLiver
  */
@@ -288,7 +288,7 @@ void ctrlComboBox::AddString(const std::string& text)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  löscht alle Items der Liste.
+ *  lÃ¶scht alle Items der Liste.
  *
  *  @author OLiver
  */
@@ -300,7 +300,7 @@ void ctrlComboBox::DeleteAllItems()
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  wählt ein Item aus
+ *  wÃ¤hlt ein Item aus
  *
  *  @author OLiver
  */
@@ -327,7 +327,7 @@ bool ctrlComboBox::Draw_(void)
     if(liste->GetLineCount() > 0)
         font->Draw(GetX() + 2, GetY() + height / 2, liste->GetSelItemText(), glArchivItem_Font::DF_VCENTER, COLOR_YELLOW, 0, width - 2 - height, "");
 
-    // Male restliche Controls per Hand, denn ein einfaches DrawControls() würde
+    // Male restliche Controls per Hand, denn ein einfaches DrawControls() wÃ¼rde
     // auch die Liste malen, die bei Msg_PaintAfter() sowieso gemalt wird.
     ctrlImageButton* button = GetCtrl<ctrlImageButton>(1);
     if(button)
@@ -357,7 +357,7 @@ void ctrlComboBox::ShowList(bool show)
     // Pfeilbutton entsprechend
     GetCtrl<ctrlButton>(1)->SetCheck(show);
 
-    // Region sperren für die Liste, oder freigeben
+    // Region sperren fÃ¼r die Liste, oder freigeben
     if(show)
     {
         Rect list_region (liste->GetX(), liste->GetY(), width, liste->GetHeight());

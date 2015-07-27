@@ -1,4 +1,4 @@
-// $Id: AddonMilitaryConstruction.h 8839 2013-08-14 18:44:55Z KaiN $
+﻿// $Id: AddonMilitaryConstruction.h 8839 2013-08-14 18:44:55Z KaiN $
 //
 // Copyright (c) 2005 - 2013 Settlers Freaks (sf-team at siedler25.org)
 //

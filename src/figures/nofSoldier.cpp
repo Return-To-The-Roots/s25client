@@ -1,4 +1,4 @@
-// $Id: nofSoldier.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+Ôªø// $Id: nofSoldier.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -77,7 +77,7 @@ void nofSoldier::DrawSoldierWalking(int x, int y, bool waitingsoldier)
 
 void nofSoldier::AbrogateWorkplace()
 {
-    // Milit‰rgeb‰ude Bescheid sagen, dass ich nicht kommen kann
+    // Milit√§rgeb√§ude Bescheid sagen, dass ich nicht kommen kann
     if(building)
     {
         static_cast<nobMilitary*>(building)->SoldierLost(this);

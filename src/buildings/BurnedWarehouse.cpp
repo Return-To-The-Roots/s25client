@@ -1,4 +1,4 @@
-// $Id: BurnedWarehouse.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+﻿// $Id: BurnedWarehouse.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -42,7 +42,7 @@ static char THIS_FILE[] = __FILE__;
 
 /// Anzahl der Rausgeh-Etappen
 const unsigned GO_OUT_PHASES = 10;
-/// Länge zwischen zwei solchen Phasen
+/// LÃ¤nge zwischen zwei solchen Phasen
 const unsigned PHASE_LENGTH = 2;
 
 BurnedWarehouse::BurnedWarehouse(const MapPoint pos, const unsigned char player, const unsigned* people)
@@ -99,13 +99,13 @@ void BurnedWarehouse::HandleEvent(const unsigned int id)
         people[i] -= count;
 
         // In Alle Richtungen verteilen
-        // Startrichtung zufällig bestimmen
+        // Startrichtung zufÃ¤llig bestimmen
         unsigned char start_dir = RANDOM.Rand(__FILE__, __LINE__, obj_id, 6);
 
         bool possible[6];
         unsigned possible_count = 0;
 
-        // Mögliche Richtungen zählen und speichern
+        // MÃ¶gliche Richtungen zÃ¤hlen und speichern
         for(unsigned char d = 0; d < 6; ++d)
         {
             if(gwg->IsNodeForFigures(gwg->GetNeighbour(pos, d)))
@@ -129,7 +129,7 @@ void BurnedWarehouse::HandleEvent(const unsigned int id)
             return;
         }
 
-        // Letzte mögliche Richtung bestimmen
+        // Letzte mÃ¶gliche Richtung bestimmen
         unsigned char last_dir = 0xFF;
 
         for(unsigned char d = 0; d < 6; ++d)
@@ -146,17 +146,17 @@ void BurnedWarehouse::HandleEvent(const unsigned int id)
             // Aktuelle Richtung, die jetzt dran ist bestimmen
             unsigned dir = (start_dir + d) % 6;
 
-            // Wenn Richtung nicht möglich ist --> weglassen
+            // Wenn Richtung nicht mÃ¶glich ist --> weglassen
             if(!possible[dir])
                 continue;
 
-            // Anzahl jetzt für diese Richtung ausrechnen
+            // Anzahl jetzt fÃ¼r diese Richtung ausrechnen
             unsigned dir_count = count / possible_count;
-            // Bei letzter Richtung noch den übriggebliebenen Rest dazuaddieren
+            // Bei letzter Richtung noch den Ã¼briggebliebenen Rest dazuaddieren
             if(dir == last_dir)
                 dir_count += count % possible_count;
 
-            // Die Figuren schließlich rausschicken
+            // Die Figuren schlieÃŸlich rausschicken
             for(unsigned z = 0; z < dir_count; ++z)
             {
                 // Job erzeugen
@@ -172,23 +172,23 @@ void BurnedWarehouse::HandleEvent(const unsigned int id)
         }
     }
 
-    // Nächste Runde
+    // NÃ¤chste Runde
     ++go_out_phase;
 
-    // Nächste Runde anmelden bzw. sich selbst killen, wenn alle Runden erledigt sind
+    // NÃ¤chste Runde anmelden bzw. sich selbst killen, wenn alle Runden erledigt sind
     if(go_out_phase == GO_OUT_PHASES)
     {
-        // fertig, sich selbst töten
+        // fertig, sich selbst tÃ¶ten
         em->AddToKillList(this);
 #ifndef NDEBUG
-        // Prüfen, ob alle evakuiert wurden und keiner mehr an Board ist
+        // PrÃ¼fen, ob alle evakuiert wurden und keiner mehr an Board ist
         for(unsigned i = 0; i < 30; ++i)
             assert(people[i] == 0);
 #endif
     }
     else
     {
-        // Nächstes Event anmelden
+        // NÃ¤chstes Event anmelden
         em->AddEvent(this, PHASE_LENGTH, 0);
     }
 

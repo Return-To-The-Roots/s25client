@@ -1,4 +1,4 @@
-// $Id: AudioDriver.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: AudioDriver.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -33,7 +33,7 @@ static char THIS_FILE[] = __FILE__;
 ///////////////////////////////////////////////////////////////////////////////
 /** @class AudioDriver
  *
- *  Basisklasse für einen Audiotreiber.
+ *  Basisklasse fÃ¼r einen Audiotreiber.
  *
  *  @author FloSoft
  */
@@ -67,7 +67,7 @@ AudioDriver::~AudioDriver(void)
 {
     for(std::vector<Sound*>::iterator it = sounds.begin(); it != sounds.end(); ++it)
     {
-        // Sounddeskriptoren aufräumen
+        // Sounddeskriptoren aufrÃ¤umen
         delete (*it);
     }
     sounds.clear();
@@ -77,7 +77,7 @@ AudioDriver::~AudioDriver(void)
 /**
  *  Funktion zum Auslesen des Treibernamens.
  *
- *  @return liefert den Treibernamen zurück
+ *  @return liefert den Treibernamen zurÃ¼ck
  *
  *  @author FloSoft
  */

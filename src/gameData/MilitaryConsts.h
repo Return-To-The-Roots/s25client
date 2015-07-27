@@ -1,4 +1,4 @@
-// $Id: MilitaryConsts.h 9536 2014-12-10 22:12:56Z marcus $
+﻿// $Id: MilitaryConsts.h 9536 2014-12-10 22:12:56Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -20,29 +20,29 @@
 #ifndef MILITARY_CONSTS_H_
 #define MILITARY_CONSTS_H_
 
-/// GröÃe der Militärquadrate (in Knotenpunkten), in die die Welt eingeteilt wurde für Militärgebäude
+/// GrÃ¶ÃƒÂŸe der MilitÃ¤rquadrate (in Knotenpunkten), in die die Welt eingeteilt wurde fÃ¼r MilitÃ¤rgebÃ¤ude
 const unsigned short MILITARY_SQUARE_SIZE = 20;
 
-/// Maximale Entfernungen für "nahe Militärgebäudedistanz" und "mittlere Militärgebäudedistanz"
+/// Maximale Entfernungen fÃ¼r "nahe MilitÃ¤rgebÃ¤udedistanz" und "mittlere MilitÃ¤rgebÃ¤udedistanz"
 const unsigned MAX_MILITARY_DISTANCE_NEAR = 18;
 const unsigned MAX_MILITARY_DISTANCE_MIDDLE = 26;
 
 /// highest military rank - currently ranks 0-4 available
 const unsigned MAX_MILITARY_RANK = 4;
 
-/// Basisangriffsreichweite (Angriff mit allen Soldaten möglich)
+/// Basisangriffsreichweite (Angriff mit allen Soldaten mÃ¶glich)
 const unsigned BASE_ATTACKING_DISTANCE = 21;
 
-/// Erweiterte Reichweite, für die jeweils ein Soldat von der Angriffsarmee abgezogen wird
+/// Erweiterte Reichweite, fÃ¼r die jeweils ein Soldat von der Angriffsarmee abgezogen wird
 const unsigned EXTENDED_ATTACKING_DISTANCE = 1;
 
-/// Maximale Länge für den Laufweg beim Angriff
+/// Maximale LÃ¤nge fÃ¼r den Laufweg beim Angriff
 const unsigned MAX_ATTACKING_RUN_DISTANCE = 40;
 
 /// Distanz zwischen zwei Gegnern, sodass diese aufeinander zugehen
 const unsigned MEET_FOR_FIGHT_DISTANCE = 5;
 
-/// Besatzung in den einzelnen Militärgebäuden und nach Nation
+/// Besatzung in den einzelnen MilitÃ¤rgebÃ¤uden und nach Nation
 const int TROOPS_COUNT[NAT_COUNT][4] =
 {
     {2, 3, 6, 9},
@@ -52,7 +52,7 @@ const int TROOPS_COUNT[NAT_COUNT][4] =
     {2, 3, 6, 9}
 };
 
-/// Gold in den einzelnen Militärgebäuden und nach Nation
+/// Gold in den einzelnen MilitÃ¤rgebÃ¤uden und nach Nation
 const unsigned short GOLD_COUNT[NAT_COUNT][4] =
 {
     {1, 2, 4, 6},
@@ -62,16 +62,16 @@ const unsigned short GOLD_COUNT[NAT_COUNT][4] =
     {1, 2, 4, 6}
 };
 
-/// Radien der Militärgebäude ( die letzten beiden sind HQ und Hafen!)
+/// Radien der MilitÃ¤rgebÃ¤ude ( die letzten beiden sind HQ und Hafen!)
 const unsigned MILITARY_RADIUS[6] =
 { 8, 9, 10, 11, 9, 4 };
 
-// Radius für einzelne Hafen(baustellen)
+// Radius fÃ¼r einzelne Hafen(baustellen)
 const unsigned HARBOR_ALONE_RADIUS = 8;
 
-/// Fahnenpositionen bei den Militärgebäuden
+/// Fahnenpositionen bei den MilitÃ¤rgebÃ¤uden
 
-// Besatzungsflaggen (4 Völker x 4 GröÃen x 2 X+Y) - ab 3162
+// Besatzungsflaggen (4 VÃ¶lker x 4 GrÃ¶ÃƒÂŸen x 2 X+Y) - ab 3162
 const signed char TROOPS_FLAGS[NAT_COUNT][4][2] =
 {
     {{24, -41}, {19, -41}, {31, -88}, {35, -67}},
@@ -81,10 +81,10 @@ const signed char TROOPS_FLAGS[NAT_COUNT][4][2] =
     {{ -22, -37}, { -2, -51}, {20, -70}, { -46, -64}}
 };
 
-/// Anzahl an Militäreinstellungen
+/// Anzahl an MilitÃ¤reinstellungen
 const unsigned MILITARY_SETTINGS_COUNT = 8;
 
-/// Skalierung der einzelnen Militäreinstellungen (maximale Werte)
+/// Skalierung der einzelnen MilitÃ¤reinstellungen (maximale Werte)
 const unsigned MILITARY_SETTINGS_SCALE[MILITARY_SETTINGS_COUNT] =
 {
     10,
@@ -97,13 +97,13 @@ const unsigned MILITARY_SETTINGS_SCALE[MILITARY_SETTINGS_COUNT] =
     8
 };
 
-// Besatzungsflaggen für die HQs
+// Besatzungsflaggen fÃ¼r die HQs
 const signed char TROOPS_FLAGS_HQ[NAT_COUNT][2] =
 {
     { -12, -102}, { -19, -94}, { -18, -112}, {20, -54}, { -33, -81}
 };
 
-/// Grenzflaggen (4 Völker x 4 GröÃen x 2 X+Y) - ab 3162
+/// Grenzflaggen (4 VÃ¶lker x 4 GrÃ¶ÃƒÂŸen x 2 X+Y) - ab 3162
 const signed char BORDER_FLAGS[NAT_COUNT][4][2] =
 {
     {{ -6, -36}, {7, -48}, { -18, -28}, { -47, -64}},
@@ -127,11 +127,11 @@ const unsigned char HITPOINTS[NAT_COUNT][5] =
 /// Max distance for an attacker to reach a building and join in capturing
 const unsigned MAX_FAR_AWAY_CAPTURING_DISTANCE = 15;
 
-/// Sichtweite der Militärgebäude (relativ); wird auf die normale Grenzweite draufaddiert
+/// Sichtweite der MilitÃ¤rgebÃ¤ude (relativ); wird auf die normale Grenzweite draufaddiert
 const unsigned VISUALRANGE_MILITARY = 3;
-/// Sichtweite von Spähtürmen (absolut)
+/// Sichtweite von SpÃ¤htÃ¼rmen (absolut)
 const unsigned VISUALRANGE_LOOKOUTTOWER = 20;
-/// Sichtweite von Spähern
+/// Sichtweite von SpÃ¤hern
 const unsigned VISUALRANGE_SCOUT = 3;
 /// Sichtweite von Soldaten
 const unsigned VISUALRANGE_SOLDIER = 2;
@@ -140,18 +140,18 @@ const unsigned VISUALRANGE_SHIP = 2;
 /// Sichtweite von Erkundungs-Schiffen
 const unsigned VISUALRANGE_EXPLORATION_SHIP = 12;
 
-/// Beförderungszeit von Soldaten ( =UPGRADE_TIME + rand(UPGRADE_TIME_RANDOM) )
+/// BefÃ¶rderungszeit von Soldaten ( =UPGRADE_TIME + rand(UPGRADE_TIME_RANDOM) )
 const unsigned UPGRADE_TIME = 100;
 const unsigned UPGRADE_TIME_RANDOM = 300;
-/// Genesungszeit von Soldaten in Häusern, Zeit, die gebraucht wird um sich um einen Hitpoint zu erholen
+/// Genesungszeit von Soldaten in HÃ¤usern, Zeit, die gebraucht wird um sich um einen Hitpoint zu erholen
 // ( =CONVALESCE_TIME + rand(CONVALESCE_TIME_RANDOM) )
 const unsigned CONVALESCE_TIME = 500;
 const unsigned CONVALESCE_TIME_RANDOM = 500;
 
-/// Maximale Entfernung des Militärgebäudes von dem Hafen bei Seeangriffen
+/// Maximale Entfernung des MilitÃ¤rgebÃ¤udes von dem Hafen bei Seeangriffen
 const unsigned SEAATTACK_DISTANCE = 15;
 
-/// Kampfanimationskonstanten für einen Soldatenrang (Gespeichert werden jeweils die IDs in der ROM_BOBS.LST!)
+/// Kampfanimationskonstanten fÃ¼r einen Soldatenrang (Gespeichert werden jeweils die IDs in der ROM_BOBS.LST!)
 struct FightAnimation
 {
     // Angreifen (8 Frames)
@@ -162,12 +162,12 @@ struct FightAnimation
 };
 
 
-/// Diese gibts für alle beiden Richtung, für alle 5 Ränge und jweils nochmal für alle 4 Völker
+/// Diese gibts fÃ¼r alle beiden Richtung, fÃ¼r alle 5 RÃ¤nge und jweils nochmal fÃ¼r alle 4 VÃ¶lker
 const FightAnimation FIGHT_ANIMATIONS[NAT_COUNT][5][2] =
 {
     // Nubier
     {
-        // Schütze (Rang 1)
+        // SchÃ¼tze (Rang 1)
         {
             {
                 { 595, 596, 597, 598, 599, 600, 601, 602 },
@@ -226,7 +226,7 @@ const FightAnimation FIGHT_ANIMATIONS[NAT_COUNT][5][2] =
 
     // Japaner
     {
-        // Schütze (Rang 1)
+        // SchÃ¼tze (Rang 1)
         {
             {
                 { 444, 445, 446, 447, 448, 446, 445, 444 },
@@ -286,9 +286,9 @@ const FightAnimation FIGHT_ANIMATIONS[NAT_COUNT][5][2] =
 
 
 
-    // Römer
+    // RÃ¶mer
     {
-        // Schütze (Rang 1)
+        // SchÃ¼tze (Rang 1)
         {
             {
                 { 364, 365, 366, 367, 368, 369, 370, 371 },
@@ -348,7 +348,7 @@ const FightAnimation FIGHT_ANIMATIONS[NAT_COUNT][5][2] =
 
     // Wikinger
     {
-        // Schütze (Rang 1)
+        // SchÃ¼tze (Rang 1)
         {
             {
                 { 517, 518, 519, 520, 521, 522, 523, 524 },
@@ -406,7 +406,7 @@ const FightAnimation FIGHT_ANIMATIONS[NAT_COUNT][5][2] =
     },
     // Babylonier
     {
-        // Schütze (Rang 1)
+        // SchÃ¼tze (Rang 1)
         {
             {
                 { 444, 445, 446, 447, 448, 446, 445, 444 },
@@ -465,7 +465,7 @@ const FightAnimation FIGHT_ANIMATIONS[NAT_COUNT][5][2] =
 
 };
 
-/// IDs für die getroffenen (aufleuchtenden) Soldaten für jedes Volk
+/// IDs fÃ¼r die getroffenen (aufleuchtenden) Soldaten fÃ¼r jedes Volk
 const unsigned short HIT_SOLDIERS[NAT_COUNT][5] =
 {
     {1556, 1558, 1560, 1562, 1564},
@@ -475,7 +475,7 @@ const unsigned short HIT_SOLDIERS[NAT_COUNT][5] =
     {1143, 1145, 1147, 1149, 1147}
 };
 
-/// Bestimmt den Aufblinkframe vom den Opfern der folgenden Angreifer (nach Rängen)
+/// Bestimmt den Aufblinkframe vom den Opfern der folgenden Angreifer (nach RÃ¤ngen)
 const unsigned short HIT_MOMENT[5] = {4, 4, 4, 4, 6};
 
 

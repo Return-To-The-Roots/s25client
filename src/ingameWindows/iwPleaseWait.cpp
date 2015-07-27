@@ -1,4 +1,4 @@
-// $Id: iwPleaseWait.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: iwPleaseWait.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -39,8 +39,8 @@ static char THIS_FILE[] = __FILE__;
 /**
  *  Konstruktor von @p iwPleaseWait.
  *
- *  Fenster wird modal geöffnet, damit man ggf. einen "Weiter"-Button nicht
- *  mehrfach betätigen kann.
+ *  Fenster wird modal geÃ¶ffnet, damit man ggf. einen "Weiter"-Button nicht
+ *  mehrfach betÃ¤tigen kann.
  *
  *  @author OLiver
  */

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+ï»¿// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -29,7 +29,7 @@ enum GoodType
 	/*  1 */GD_TONGS,       // Zange
 	/*  2 */GD_HAMMER,      // Hammer
 	/*  3 */GD_AXE,         // Axt
-	/*  4 */GD_SAW,         // Säge
+	/*  4 */GD_SAW,         // SÃ¤ge
 	/*  5 */GD_PICKAXE,     // Spitzhacke
 	/*  6 */GD_SHOVEL,      // Schaufel
 	/*  7 */GD_CRUCIBLE,    // Schmelztiegel
@@ -73,7 +73,7 @@ const std::string WARE_NAMES[36] =
 	/*  1 */gettext_noop("Tongs"),      // Zange
 	/*  2 */gettext_noop("Hammer"),     // Hammer
 	/*  3 */gettext_noop("Axe"),            // Axt
-	/*  4 */gettext_noop("Saw"),            // Säge
+	/*  4 */gettext_noop("Saw"),            // SÃ¤ge
 	/*  5 */gettext_noop("Pick-axe"),       // Spitzhacke
 	/*  6 */gettext_noop("Shovel"),     // Schaufel
 	/*  7 */gettext_noop("Crucible"),   // Schmelztiegel
@@ -107,7 +107,7 @@ const std::string WARE_NAMES[36] =
 	/* 35 */""
 };
 
-/// Waren- und Berufsstruktur ( für HQs, Lagerhäüser usw )
+/// Waren- und Berufsstruktur ( fÃ¼r HQs, LagerhÃ¤Ã¼ser usw )
 struct Goods
 {
 	unsigned int goods[WARE_TYPES_COUNT];

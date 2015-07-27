@@ -1,4 +1,4 @@
-// $Id: nofBuilder.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: nofBuilder.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -52,7 +52,7 @@ static char THIS_FILE[] = __FILE__;
 nofBuilder::nofBuilder(const MapPoint pos, const unsigned char player, noRoadNode* building_site)
     : noFigure(JOB_BUILDER, pos, player, building_site), state(STATE_FIGUREWORK), building_site(static_cast<noBuildingSite*>(building_site)), building_steps_available(0)
 {
-    // Sind wir schon an unsere Baustelle gleich hingesetzt worden (bei Häfen)?
+    // Sind wir schon an unsere Baustelle gleich hingesetzt worden (bei HÃ¤fen)?
     if(building_site)
     {
         if(pos == building_site->GetPos())
@@ -158,7 +158,7 @@ void nofBuilder::HandleDerivedEvent(const unsigned int id)
             // Gibts noch was zu bauen?
             if(building_steps_available)
             {
-                // dann mal schön bauen
+                // dann mal schÃ¶n bauen
                 current_ev = em->AddEvent(this, 40, 1);
                 state = STATE_BUILD;
             }
@@ -166,9 +166,9 @@ void nofBuilder::HandleDerivedEvent(const unsigned int id)
             {
                 // fertig mit Bauen!
 
-                // Baustelle abreißen und Gebäude hinsetzen
+                // Baustelle abreiÃŸen und GebÃ¤ude hinsetzen
 
-                // Gebäudetyp merken und das Volk des Gebäudes
+                // GebÃ¤udetyp merken und das Volk des GebÃ¤udes
                 BuildingType building_type = building_site->GetBuildingType();
                 Nation building_nation = building_site->GetNation();
 
@@ -177,7 +177,7 @@ void nofBuilder::HandleDerivedEvent(const unsigned int id)
                 // Baustelle abmelden
                 gwg->GetPlayer(player)->RemoveBuildingSite(building_site);
 
-                // ggf. Baustellenfenster schließen
+                // ggf. Baustellenfenster schlieÃŸen
                 gwg->ImportantObjectDestroyed(building_site->GetPos());
 
                 // Baustelle kommt in den Bytehimmel
@@ -192,15 +192,15 @@ void nofBuilder::HandleDerivedEvent(const unsigned int id)
                 // Special handling for storehouses and harbours
                 if(building_type == BLD_STOREHOUSE || building_type == BLD_HARBORBUILDING){
                     nobBaseWarehouse* wh = static_cast<nobBaseWarehouse*>(bld);
-                    // Mich dort gleich einquartieren und nicht erst zurücklaufen
+                    // Mich dort gleich einquartieren und nicht erst zurÃ¼cklaufen
                     wh->AddFigure(this);
                     gwg->RemoveFigure(this, pos);
 
-                    // Evtl Träger aus dem HQ wieder verwenden
+                    // Evtl TrÃ¤ger aus dem HQ wieder verwenden
                     gwg->GetPlayer(player)->FindWarehouseForAllRoads();
                     gwg->GetPlayer(player)->FindWarehouseForAllJobs(JOB_HELPER);
 
-                    // Evtl gabs verlorene Waren, die jetzt in das HQ wieder reinkönnen
+                    // Evtl gabs verlorene Waren, die jetzt in das HQ wieder reinkÃ¶nnen
                     gwg->GetPlayer(player)->FindClientForLostWares();
 
                     return;
@@ -234,10 +234,10 @@ void nofBuilder::HandleDerivedEvent(const unsigned int id)
             // Sounds abmelden
             SOUNDMANAGER.WorkingFinished(this);
 
-            // ein Bauschritt weniger, Haus um eins höher
+            // ein Bauschritt weniger, Haus um eins hÃ¶her
             --building_steps_available;
             ++building_site->build_progress;
-            // Fertig mit dem Bauschritt, dann an nächste Position gehen
+            // Fertig mit dem Bauschritt, dann an nÃ¤chste Position gehen
             state = STATE_BUILDFREEWALK;
             StartFreewalk();
         } break;
@@ -245,9 +245,9 @@ void nofBuilder::HandleDerivedEvent(const unsigned int id)
     }
 }
 
-// Länge, die der Bauarbeiter in einem Free-Walk zurücklegt (in Pixeln)
+// LÃ¤nge, die der Bauarbeiter in einem Free-Walk zurÃ¼cklegt (in Pixeln)
 const short FREEWALK_LENGTH[2] = {22, 11}; // waagerecht
-const short FREEWALK_LENGTH_SLANTWISE[2] = {14, 7}; // schräg
+const short FREEWALK_LENGTH_SLANTWISE[2] = {14, 7}; // schrÃ¤g
 
 void nofBuilder::StartFreewalk()
 {
@@ -276,13 +276,13 @@ void nofBuilder::StartFreewalk()
     if(rel_x + FREEWALK_LENGTH_SLANTWISE[waiting_walk] <= RIGHT_MAX && rel_y + FREEWALK_LENGTH_SLANTWISE[waiting_walk] <= DOWN_MAX)
         possible_directions.push_back(4);
 
-    // Zufällige Richtung von diesen auswählen
+    // ZufÃ¤llige Richtung von diesen auswÃ¤hlen
     dir = possible_directions[RANDOM.Rand(__FILE__, __LINE__, obj_id, possible_directions.size())];
 
     // Und dort auch hinlaufen
     current_ev = em->AddEvent(this, (state == STATE_WAITINGFREEWALK) ? 24 : 17, 1);
 
-    // Zukünftigen Platz berechnen
+    // ZukÃ¼nftigen Platz berechnen
     next_rel_x = rel_x;
     next_rel_y = rel_y;
 
@@ -348,7 +348,7 @@ void nofBuilder::Draw(int x, int y)
             }
             else if(rel_x < 5)
             {
-                // in der Mitte mit "Händen"
+                // in der Mitte mit "HÃ¤nden"
                 LOADER.GetImageN("rom_bobs", 287 + (index / 2) % 4)->Draw(x + building_site->GetDoorPointX() + rel_x, y + building_site->GetDoorPointY() + rel_y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(building_site->GetPlayer())->color]);
             }
             else
@@ -383,7 +383,7 @@ void nofBuilder::Draw(int x, int y)
 
 bool nofBuilder::ChooseWare()
 {
-    // Brauch ich ein Brett(Rohbau und wenn kein Stein benötigt wird) oder Stein?
+    // Brauch ich ein Brett(Rohbau und wenn kein Stein benÃ¶tigt wird) oder Stein?
     if(building_site->GetBuildProgress(false) < BUILDING_COSTS[building_site->GetNation()][building_site->GetBuildingType()].boards * 8 || !BUILDING_COSTS[building_site->GetNation()][building_site->GetBuildingType()].stones)
     {
         // Brett
@@ -392,7 +392,7 @@ bool nofBuilder::ChooseWare()
             // ein Brett weniger liegt da
             --building_site->boards;
             ++building_site->used_boards;
-            // wir können 8 Bauschritt ausführen
+            // wir kÃ¶nnen 8 Bauschritt ausfÃ¼hren
             building_steps_available = 8;
 
             return true;
@@ -406,7 +406,7 @@ bool nofBuilder::ChooseWare()
             // ein Stein weniger liegt da
             --building_site->stones;
             ++building_site->used_stones;
-            // wir können 8 Bauschritt ausführen
+            // wir kÃ¶nnen 8 Bauschritt ausfÃ¼hren
             building_steps_available = 8;
 
             return true;

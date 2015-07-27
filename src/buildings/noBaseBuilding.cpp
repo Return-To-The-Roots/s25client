@@ -1,4 +1,4 @@
-// $Id: noBaseBuilding.cpp 9402 2014-05-10 06:54:13Z FloSoft $
+Ôªø// $Id: noBaseBuilding.cpp 9402 2014-05-10 06:54:13Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -53,7 +53,7 @@ noBaseBuilding::noBaseBuilding(const NodalObjectType nop, const BuildingType typ
     // Evtl Flagge setzen, wenn noch keine da ist
     if(gwg->GetNO(gwg->GetNeighbour(pos, 4))->GetType() != NOP_FLAG)
     {
-        // ggf. vorherige Objekte lˆschen
+        // ggf. vorherige Objekte l√∂schen
         noBase* no = gwg->GetSpecObj<noBase>(gwg->GetNeighbour(pos, 4));
         if(no)
         {
@@ -63,22 +63,22 @@ noBaseBuilding::noBaseBuilding(const NodalObjectType nop, const BuildingType typ
         gwg->SetNO(new noFlag(gwg->GetNeighbour(pos, 4), player), gwg->GetNeighbour(pos, 4));
     }
 
-    // Straﬂeneingang setzen (wenn nicht schon vorhanden z.b. durch vorherige Baustelle!)
+    // Stra√üeneingang setzen (wenn nicht schon vorhanden z.b. durch vorherige Baustelle!)
     if(!gwg->GetPointRoad(pos, 4))
     {
         gwg->SetPointRoad(pos, 4, 1);
 
-        // Straﬂenverbindung erstellen zwischen Flagge und Haus
-        // immer von Flagge ZU Geb‰ude (!)
+        // Stra√üenverbindung erstellen zwischen Flagge und Haus
+        // immer von Flagge ZU Geb√§ude (!)
         std::vector<unsigned char> route(1, 1);
-        // Straﬂe zuweisen
+        // Stra√üe zuweisen
         gwg->GetSpecObj<noRoadNode>(gwg->GetNeighbour(pos, 4))->routes[1] = // der Flagge
-            routes[4] = // dem Geb‰ude
+            routes[4] = // dem Geb√§ude
                 new RoadSegment(RoadSegment::RT_NORMAL, gwg->GetSpecObj<noRoadNode>(gwg->GetNeighbour(pos, 4)), this, route);
     }
     else
     {
-        // vorhandene Straﬂe der Flagge nutzen
+        // vorhandene Stra√üe der Flagge nutzen
         noFlag* flag = gwg->GetSpecObj<noFlag>(gwg->GetNeighbour(pos, 4));
 
         assert(flag->routes[1]);
@@ -87,7 +87,7 @@ noBaseBuilding::noBaseBuilding(const NodalObjectType nop, const BuildingType typ
 
     }
 
-    // Werde/Bin ich (mal) ein groﬂes Schloss? Dann m¸ssen die Anbauten gesetzt werden
+    // Werde/Bin ich (mal) ein gro√ües Schloss? Dann m√ºssen die Anbauten gesetzt werden
     if(GetSize() == BQ_CASTLE || GetSize() == BQ_HARBOR)
     {
         for(unsigned i = 0; i < 3; ++i)
@@ -118,13 +118,13 @@ void noBaseBuilding::Destroy_noBaseBuilding()
     if(gwg->GetGameInterface())
         gwg->GetGameInterface()->GI_UpdateMinimap(pos);
 
-    // evtl Anbauten wieder abreiﬂen
+    // evtl Anbauten wieder abrei√üen
     DestroyBuildingExtensions();
 
-    // ggf. Fenster schlieﬂen
+    // ggf. Fenster schlie√üen
     gwg->ImportantObjectDestroyed(pos);
 
-    // Baukosten zur¸ckerstatten (nicht bei Baustellen)
+    // Baukosten zur√ºckerstatten (nicht bei Baustellen)
     if( (GetGOT() != GOT_BUILDINGSITE) &&
             ( GAMECLIENT.GetGGS().isEnabled(ADDON_REFUND_MATERIALS) ||
               GAMECLIENT.GetGGS().isEnabled(ADDON_REFUND_ON_EMERGENCY) ) )
@@ -135,11 +135,11 @@ void noBaseBuilding::Destroy_noBaseBuilding()
         {
             unsigned int percent_index = 0;
 
-            // wenn R¸ckerstattung aktiv ist, entsprechende Prozentzahl w‰hlen
+            // wenn R√ºckerstattung aktiv ist, entsprechende Prozentzahl w√§hlen
             if(GAMECLIENT.GetGGS().isEnabled(ADDON_REFUND_MATERIALS))
                 percent_index = GAMECLIENT.GetGGS().getSelection(ADDON_REFUND_MATERIALS);
 
-            // wenn R¸ckerstattung bei Notprogramm aktiv ist, 50% zur¸ckerstatten
+            // wenn R√ºckerstattung bei Notprogramm aktiv ist, 50% zur√ºckerstatten
             else if(gwg->GetPlayer(player)->hasEmergency() && GAMECLIENT.GetGGS().isEnabled(ADDON_REFUND_ON_EMERGENCY))
                 percent_index = 2;
 
@@ -147,7 +147,7 @@ void noBaseBuilding::Destroy_noBaseBuilding()
             const unsigned int percents[5] = { 0, 25, 50, 75, 100 };
             const unsigned int percent = 10 * percents[percent_index];
 
-            // zur¸ckgaben berechnen (abgerundet)
+            // zur√ºckgaben berechnen (abgerundet)
             unsigned int boards = (percent * BUILDING_COSTS[nation][type].boards) / 1000;
             unsigned int stones = (percent * BUILDING_COSTS[nation][type].stones) / 1000;
 
@@ -161,7 +161,7 @@ void noBaseBuilding::Destroy_noBaseBuilding()
                     Ware* ware = new Ware(goods[which], 0, flag);
                     // Inventur anpassen
                     gwg->GetPlayer(player)->IncreaseInventoryWare(goods[which], 1);
-                    // Abnehmer f¸r Ware finden
+                    // Abnehmer f√ºr Ware finden
                     ware->goal = gwg->GetPlayer(player)->FindClientForWare(ware);
                     // Ware soll ihren weiteren Weg berechnen
                     ware->RecalcRoute();
@@ -205,7 +205,7 @@ noBaseBuilding::noBaseBuilding(SerializedGameData* sgd, const unsigned obj_id) :
 short noBaseBuilding::GetDoorPointX()
 {
     // Door-Points ausrechnen (Punkte, bis wohin die Menschen gehen, wenn sie ins
-    // Geb‰ude gehen, woa uﬂerdem der Bauarbeiter baut und wo die Waren liegen
+    // Geb√§ude gehen, woa u√üerdem der Bauarbeiter baut und wo die Waren liegen
 
     // Door-Point noch nicht ausgerechnet?
     if(door_point_x == 1000000)
@@ -215,7 +215,7 @@ short noBaseBuilding::GetDoorPointX()
         int x2 = static_cast<int>(gwg->GetTerrainX(gwg->GetNeighbour(pos, 4)));
         int y2 = static_cast<int>(gwg->GetTerrainY(gwg->GetNeighbour(pos, 4)));
 
-        // Gehen wir ¸ber einen Kartenrand (horizontale Richung?)
+        // Gehen wir √ºber einen Kartenrand (horizontale Richung?)
         if(std::abs(x1 - x2) >= gwg->GetWidth() * TR_W / 2)
         {
             if(std::abs(x1 - int(gwg->GetWidth())*TR_W - x2) < std::abs(x1 - x2))
@@ -223,7 +223,7 @@ short noBaseBuilding::GetDoorPointX()
             else
                 x1 += gwg->GetWidth() * TR_W;
         }
-        // Und dasselbe f¸r vertikale Richtung
+        // Und dasselbe f√ºr vertikale Richtung
         if(std::abs(y1 - y2) >= gwg->GetHeight() * TR_H / 2)
         {
             if(std::abs(y1 - int(gwg->GetHeight())*TR_H - y2) < std::abs(y1 - y2))
@@ -272,7 +272,7 @@ void noBaseBuilding::WareNotNeeded(Ware* ware)
 
 void noBaseBuilding::DestroyBuildingExtensions()
 {
-    // Nur bei groﬂen Geb‰uden gibts diese Anbauten
+    // Nur bei gro√üen Geb√§uden gibts diese Anbauten
     if(GetSize() == BQ_CASTLE || GetSize() == BQ_HARBOR)
     {
 
@@ -302,7 +302,7 @@ noBase::BlockingManner noBaseBuilding::GetBM() const
         return noBase::BlockingManner(unsigned(bq) - 1);
 }
 
-/// Gibt ein Bild zur¸ck f¸r das normale Geb‰ude
+/// Gibt ein Bild zur√ºck f√ºr das normale Geb√§ude
 glArchivItem_Bitmap* noBaseBuilding::GetBuildingImage() const
 {
     if (type == BLD_CHARBURNER)
@@ -311,7 +311,7 @@ glArchivItem_Bitmap* noBaseBuilding::GetBuildingImage() const
         return LOADER.GetNationImageN(nation, 250 + 5 * type);
 }
 
-/// Gibt ein Bild zur¸ck f¸r das Geb‰udeger¸st
+/// Gibt ein Bild zur√ºck f√ºr das Geb√§udeger√ºst
 glArchivItem_Bitmap* noBaseBuilding::GetBuildingSkeletonImage() const
 {
     if (type == BLD_CHARBURNER)
@@ -320,7 +320,7 @@ glArchivItem_Bitmap* noBaseBuilding::GetBuildingSkeletonImage() const
         return LOADER.GetNationImageN(nation, 250 + 5 * type + 2);
 }
 
-/// Gibt ein Bild zur¸ck f¸r das normale Geb‰ude
+/// Gibt ein Bild zur√ºck f√ºr das normale Geb√§ude
 glArchivItem_Bitmap* noBaseBuilding::GetBuildingImageShadow() const
 {
     if (type == BLD_CHARBURNER)
@@ -329,7 +329,7 @@ glArchivItem_Bitmap* noBaseBuilding::GetBuildingImageShadow() const
         return LOADER.GetNationImageN(nation, 250 + 5 * type + 1);
 }
 
-/// Gibt ein Bild zur¸ck f¸r das Geb‰udeger¸st
+/// Gibt ein Bild zur√ºck f√ºr das Geb√§udeger√ºst
 glArchivItem_Bitmap* noBaseBuilding::GetBuildingSkeletonImageShadow() const
 {
     if (type == BLD_CHARBURNER)
@@ -338,7 +338,7 @@ glArchivItem_Bitmap* noBaseBuilding::GetBuildingSkeletonImageShadow() const
         return LOADER.GetNationImageN(nation, 250 + 5 * type + 3);
 }
 
-/// Gibt ein Bild zur¸ck f¸r die T¸r des Geb‰udes
+/// Gibt ein Bild zur√ºck f√ºr die T√ºr des Geb√§udes
 glArchivItem_Bitmap* noBaseBuilding::GetDoorImage() const
 {
     if (type == BLD_CHARBURNER)

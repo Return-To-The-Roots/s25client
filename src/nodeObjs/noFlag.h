@@ -1,4 +1,4 @@
-// $Id: noFlag.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: noFlag.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -36,22 +36,22 @@ class noFlag : public noRoadNode
 
         inline GO_Type GetGOT() const { return GOT_FLAG; }
         inline FlagType GetFlagType() const { return flagtype; }
-        /// Gibt Auskunft darüber, ob noch Platz für eine Ware an der Flagge ist.
+        /// Gibt Auskunft darÃ¼ber, ob noch Platz fÃ¼r eine Ware an der Flagge ist.
         inline bool IsSpaceForWare() const { return (GetWareCount() < 8); }
 
         void Draw(int x, int y);
 
         BlockingManner GetBM() const { return BM_FLAG; }
 
-        /// Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung" für den Fog of War.
+        /// Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung" fÃ¼r den Fog of War.
         FOWObject* CreateFOWObject() const;
         /// Legt eine Ware an der Flagge ab.
         void AddWare(Ware* ware);
-        /// Gibt die Anzahl der Waren zurück, die an der Flagge liegen.
+        /// Gibt die Anzahl der Waren zurÃ¼ck, die an der Flagge liegen.
         unsigned GetWareCount() const;
-        /// Wählt eine Ware von einer Flagge aus (anhand der Transportreihenfolge), entfernt sie von der Flagge und gibt sie zurück.
+        /// WÃ¤hlt eine Ware von einer Flagge aus (anhand der Transportreihenfolge), entfernt sie von der Flagge und gibt sie zurÃ¼ck.
         Ware* SelectWare(const unsigned char dir, const bool swap_wares, const noFigure* const carrier);
-        /// Prüft, ob es Waren gibt, die auf den Weg in Richtung dir getragen werden müssen.
+        /// PrÃ¼ft, ob es Waren gibt, die auf den Weg in Richtung dir getragen werden mÃ¼ssen.
         inline unsigned short GetWaresCountForRoad(const unsigned char dir) const
         {
             unsigned short ret = 0;
@@ -75,17 +75,17 @@ class noFlag : public noRoadNode
 
             return(ret);
         }
-        /// Gibt Wegstrafpunkte für das Pathfinden für Waren, die in eine bestimmte Richtung noch transportiert werden müssen.
+        /// Gibt Wegstrafpunkte fÃ¼r das Pathfinden fÃ¼r Waren, die in eine bestimmte Richtung noch transportiert werden mÃ¼ssen.
         unsigned short GetPunishmentPoints(const unsigned char dir) const;
-        /// Zerstört evtl. vorhandenes Gebäude bzw. Baustelle vor der Flagge.
+        /// ZerstÃ¶rt evtl. vorhandenes GebÃ¤ude bzw. Baustelle vor der Flagge.
         void DestroyAttachedBuilding();
-        /// Baut normale Flaggen zu "gloriösen" aus bei Eselstraßen.
+        /// Baut normale Flaggen zu "gloriÃ¶sen" aus bei EselstraÃŸen.
         void Upgrade();
-        /// Feind übernimmt die Flagge.
+        /// Feind Ã¼bernimmt die Flagge.
         void Capture(const unsigned char new_owner);
-        /// Ist diese Flagge für eine bestimmte Lagerhausflüchtlingsgruppe (BWU) nicht zugänglich?
+        /// Ist diese Flagge fÃ¼r eine bestimmte LagerhausflÃ¼chtlingsgruppe (BWU) nicht zugÃ¤nglich?
         bool IsImpossibleForBWU(const unsigned int bwu_id) const;
-        /// Hinzufügen, dass diese Flagge für eine bestimmte Lagerhausgruppe nicht zugänglich ist.
+        /// HinzufÃ¼gen, dass diese Flagge fÃ¼r eine bestimmte Lagerhausgruppe nicht zugÃ¤nglich ist.
         void ImpossibleForBWU(const unsigned int bwu_id);
 
     protected:
@@ -100,14 +100,14 @@ class noFlag : public noRoadNode
         Ware* wares[8];
 
         /// Wieviele BWU-Teile es maximal geben soll, also wieviele abgebrannte Lagerhausgruppen
-        /// gleichzeitig die Flagge als nicht begehbar deklarieren können.
+        /// gleichzeitig die Flagge als nicht begehbar deklarieren kÃ¶nnen.
         static const unsigned int MAX_BWU = 4;
 
-        /// Nicht erreichbar für Massenflüchtlinge
+        /// Nicht erreichbar fÃ¼r MassenflÃ¼chtlinge
         struct BurnedWarehouseUnit
         {
             unsigned int id;        ///< ID der Gruppe
-            unsigned int last_gf;   ///< letzter TÜV, ob man auch nicht hinkommt, in GF
+            unsigned int last_gf;   ///< letzter TÃœV, ob man auch nicht hinkommt, in GF
         } bwus[MAX_BWU];
 };
 

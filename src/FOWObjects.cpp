@@ -1,4 +1,4 @@
-// $Id: FOWObjects.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: FOWObjects.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -39,7 +39,7 @@ unsigned CalcPlayerFOWDrawColor(const unsigned color)
     green = green * FOW_DRAW_COLOR_BRIGHTNESS / 0xFF;
     blue = blue * FOW_DRAW_COLOR_BRIGHTNESS / 0xFF;
 
-    // Fertige Farbe zurückgeben
+    // Fertige Farbe zurÃ¼ckgeben
     return MakeColor(0xFF, red, green, blue);
 }
 
@@ -87,7 +87,7 @@ void fowBuilding::Draw(int x, int y) const
     else
     {
         LOADER.GetNationImageN(nation, 250 + 5 * type)->Draw(x, y, 0, 0, 0, 0, 0, 0, FOW_DRAW_COLOR);
-        // ACHTUNG nicht jedes Gebäude hat einen Schatten !!
+        // ACHTUNG nicht jedes GebÃ¤ude hat einen Schatten !!
         if(LOADER.GetNationImageN(nation, 250 + 5 * type + 1))
             LOADER.GetNationImageN(nation, 250 + 5 * type + 1)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
     }

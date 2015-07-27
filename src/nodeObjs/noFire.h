@@ -1,4 +1,4 @@
-// $Id: noFire.h 9357 2014-04-25 15:35:25Z FloSoft $
+Ôªø// $Id: noFire.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -23,10 +23,10 @@
 #include "noCoordBase.h"
 #include "EventManager.h"
 
-// Klasse f¸r ein brennendes Geb‰ude
+// Klasse f√ºr ein brennendes Geb√§ude
 class noFire : public noCoordBase
 {
-        /// Grˆﬂe des Feuers: klein (0) oder groﬂ (1)
+        /// Gr√∂√üe des Feuers: klein (0) oder gro√ü (1)
         unsigned char size;
         /// "Todesevent" (also bis es abgebrannt ist) speichern, damit dann interpoliert wird
         EventManager::EventPointer dead_event;
@@ -34,7 +34,7 @@ class noFire : public noCoordBase
         bool was_sounding;
         /// Letzter Feuersound-Zeitpunkt
         unsigned last_sound;
-        /// Intervall zum n‰chsten Feuersound
+        /// Intervall zum n√§chsten Feuersound
         unsigned next_interval;
 
 
@@ -44,7 +44,7 @@ class noFire : public noCoordBase
         noFire(SerializedGameData* sgd, const unsigned obj_id);
 
         ~noFire();
-        /// Aufr‰ummethoden
+        /// Aufr√§ummethoden
     protected:  void Destroy_noFire();
     public:     void Destroy() { Destroy_noFire(); }
 

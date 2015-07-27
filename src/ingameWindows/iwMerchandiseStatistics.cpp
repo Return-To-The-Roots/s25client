@@ -1,4 +1,4 @@
-// $Id: iwMerchandiseStatistics.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: iwMerchandiseStatistics.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005-2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -34,20 +34,20 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-// Farben für die einzelnen Balken
+// Farben fÃ¼r die einzelnen Balken
 const unsigned int iwMerchandiseStatistics::BarColors[14] =
 {
-    0xFF00D3F7, // türkis
+    0xFF00D3F7, // tÃ¼rkis
     0xFFFB9E49, // gelb
     0xFFDF6161, // orange
-    0xFF71B63C, // hellgrün
+    0xFF71B63C, // hellgrÃ¼n
     0xFFAE71CB, // rosa
     0xFF9A75BE, // pink
     0xFF9EA6AE, // grau
     0xFF1038A6, // blau
     0xFF714520, // braun
     0xFFAE0000, // rot
-    0xFF045514, // dunkelgrün
+    0xFF045514, // dunkelgrÃ¼n
     0xFF61245D, // dunkellila
     0xFF5D4175, // blasslila
     0xFF202420  // schwarz
@@ -88,7 +88,7 @@ iwMerchandiseStatistics::iwMerchandiseStatistics()
     // Hilfe
     AddImageButton(16, 17, 261, 30, 32, TC_GREY, LOADER.GetImageN("io", 21), _("Help"));
 
-    // Mülleimer
+    // MÃ¼lleimer
     AddImageButton(17, 49, 263, 30, 28, TC_GREY, LOADER.GetImageN("io", 106), _("Delete all"));
 
     // Zeiten
@@ -126,7 +126,7 @@ void iwMerchandiseStatistics::Msg_ButtonClick(const unsigned int ctrl_id)
         {
             // TODO Help!
         } break;
-        case 17: // Alle abwählen
+        case 17: // Alle abwÃ¤hlen
         {
             const std::set<unsigned short>& active = GetCtrl<ctrlMultiSelectGroup>(22)->GetSelection();
             for(std::set<unsigned short>::const_iterator it = active.begin(); it != active.end();)
@@ -144,7 +144,7 @@ void iwMerchandiseStatistics::Msg_OptionGroupChange(const unsigned int ctrl_id, 
 {
     switch(ctrl_id)
     {
-        case 23: // Zeitbereich wählen
+        case 23: // Zeitbereich wÃ¤hlen
             switch(selection)
             {
                 case 18:
@@ -175,7 +175,7 @@ void iwMerchandiseStatistics::Msg_PaintAfter()
 // TODO
 void iwMerchandiseStatistics::DrawStatistic()
 {
-    // Ein paar benötigte Werte...
+    // Ein paar benÃ¶tigte Werte...
     const int sizeX = 180;
     const int sizeY = 80;
     const int topLeftX = this->x + 34;
@@ -234,7 +234,7 @@ void iwMerchandiseStatistics::DrawStatistic()
     }
 }
 
-// Lustige bunte Kästchen über den Buttons malen
+// Lustige bunte KÃ¤stchen Ã¼ber den Buttons malen
 void iwMerchandiseStatistics::DrawRectangles()
 {
 
@@ -260,7 +260,7 @@ void iwMerchandiseStatistics::DrawRectangles()
 
 void iwMerchandiseStatistics::DrawAxis()
 {
-    // Ein paar benötigte Werte...
+    // Ein paar benÃ¶tigte Werte...
     const int sizeX = 180;
     const int sizeY = 80;
     const int topLeftX = this->x + 34;
@@ -281,7 +281,7 @@ void iwMerchandiseStatistics::DrawAxis()
     DrawLine(topLeftX + sizeX - 3, topLeftY + sizeY / 2, topLeftX + sizeX + 4, topLeftY + sizeY / 2, 1, MakeColor(255, 88, 44, 16));
 
     // Striche an der X-Achse + Beschriftung
-    // Zunächst die 0, die haben alle
+    // ZunÃ¤chst die 0, die haben alle
     timeAnnotations[6]->Move(topLeftXrel + 180, topLeftYrel + sizeY + 6);
     timeAnnotations[6]->SetText("0");
     timeAnnotations[6]->SetVisible(true);

@@ -1,4 +1,4 @@
-// $Id: ctrlMultiSelectGroup.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: ctrlMultiSelectGroup.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -25,7 +25,7 @@
 #include "ctrlButton.h"
 #include <set>
 
-/// Verwaltet eine Gruppe von n Buttons, von denen 0 bis n gleichzeitig ausgewählt sind
+/// Verwaltet eine Gruppe von n Buttons, von denen 0 bis n gleichzeitig ausgewÃ¤hlt sind
 class ctrlMultiSelectGroup : public ctrlGroup
 {
     public:
@@ -46,11 +46,11 @@ class ctrlMultiSelectGroup : public ctrlGroup
         void RemoveSelection(unsigned short selection, bool notify = false);
         /// Wechselt zwischen selektiert/nicht selektiert
         void ToggleSelection(unsigned short selection, bool notify = false);
-        /// Gibt Liste der aktuell selektierten Buttons zurück
+        /// Gibt Liste der aktuell selektierten Buttons zurÃ¼ck
         const std::set<unsigned short> &GetSelection() const { return selection; }
-        /// Prüft ob ein Button ausgewählt ist
+        /// PrÃ¼ft ob ein Button ausgewÃ¤hlt ist
         bool IsSelected(unsigned short selection) const;
-        // Gibt einen Button aus der Gruppe zurück zum direkten Bearbeiten
+        // Gibt einen Button aus der Gruppe zurÃ¼ck zum direkten Bearbeiten
         ctrlButton* GetButton(unsigned int id) { return GetCtrl<ctrlButton>(id); }
 
         virtual void Msg_ButtonClick(const unsigned int ctrl_id);
@@ -65,7 +65,7 @@ class ctrlMultiSelectGroup : public ctrlGroup
         virtual bool Draw_(void);
 
     private:
-        std::set<unsigned short> selection; ///< aktuell ausgewählte Buttons
+        std::set<unsigned short> selection; ///< aktuell ausgewÃ¤hlte Buttons
         int select_type;         ///< Typ der Selektierung
 };
 

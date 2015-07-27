@@ -1,4 +1,4 @@
-// $Id: iwPostWindow.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: iwPostWindow.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -45,13 +45,13 @@ class iwPostWindow : public IngameWindow
 
         unsigned currentMessage;
 
-        /// Liefert Pointer auf die pos-te Nachricht zurück
+        /// Liefert Pointer auf die pos-te Nachricht zurÃ¼ck
         PostMsg* GetPostMsg(unsigned pos) const;
 
-        /// Passt Steuerelemente an, setzt Einstellung für diverse Controls passend für die aktuelle PostMessage
+        /// Passt Steuerelemente an, setzt Einstellung fÃ¼r diverse Controls passend fÃ¼r die aktuelle PostMessage
         void DisplayPostMessage();
 
-        /// Nachricht löschen
+        /// Nachricht lÃ¶schen
         void DeletePostMessage(PostMsg* pm);
 
         /// Setzt den Text mehrzeilig in das Postfenster

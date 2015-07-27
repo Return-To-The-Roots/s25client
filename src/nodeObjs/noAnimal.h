@@ -1,4 +1,4 @@
-// $Id: noAnimal.h 9357 2014-04-25 15:35:25Z FloSoft $
+Ôªø// $Id: noAnimal.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -25,7 +25,7 @@
 
 class nofHunter;
 
-/// Klasse f¸r die Tiere (ausgenommen Esel und Schweine nat¸rlich)
+/// Klasse f√ºr die Tiere (ausgenommen Esel und Schweine nat√ºrlich)
 class noAnimal : public noMovable
 {
         /// Tierart
@@ -34,19 +34,19 @@ class noAnimal : public noMovable
         /// Was macht das Tier gerade?
         enum State
         {
-            STATE_WALKING = 0, /// L‰uft dumm in der Gegend rum
+            STATE_WALKING = 0, /// L√§uft dumm in der Gegend rum
             STATE_PAUSED, /// macht mal ne kurze Verschnaufpause ;)
-            STATE_WAITINGFORHUNTER, /// wartet auf den J‰ger bis er es abknallt
-            STATE_WALKINGUNTILWAITINGFORHUNTER, /// l‰uft weiter, wartet aber dann auf den J‰ger
+            STATE_WAITINGFORHUNTER, /// wartet auf den J√§ger bis er es abknallt
+            STATE_WALKINGUNTILWAITINGFORHUNTER, /// l√§uft weiter, wartet aber dann auf den J√§ger
             STATE_DEAD, /// wurde erschossen und liegt tot rum
             STATE_DISAPPEARING /// Leiche verschwindet langsam...
         } state;
 
         /// Wie weit kann es noch rumlaufen, bis es mal wieder eine Pause machen muss
         unsigned short pause_way;
-        /// J‰ger, der das Tier jagt (0, falls nicht gejagt)
+        /// J√§ger, der das Tier jagt (0, falls nicht gejagt)
         nofHunter* hunter;
-        /// N‰chster Zeitpunkt, ab wann der Sound gespielt werden soll (bei Enten und Schafen)
+        /// N√§chster Zeitpunkt, ab wann der Sound gespielt werden soll (bei Enten und Schafen)
         unsigned int sound_moment;
 
     private:
@@ -56,9 +56,9 @@ class noAnimal : public noMovable
         void Walked();
         /// Sucht eine Richtung, in die das Tier gehen kann
         unsigned char FindDir();
-        /// F‰ngt an zu laufen
+        /// F√§ngt an zu laufen
         void StartWalking(const unsigned char dir);
-        /// Sucht eine neue Richtung und l‰uft in diese, ansonsten stirbt es
+        /// Sucht eine neue Richtung und l√§uft in diese, ansonsten stirbt es
         void StandardWalking();
 
     public:
@@ -74,7 +74,7 @@ class noAnimal : public noMovable
     protected:  void Serialize_noAnimal(SerializedGameData* sgd) const;
     public:     void Serialize(SerializedGameData* sgd) const { Serialize_noAnimal(sgd); }
 
-        /// Aufr‰ummethoden
+        /// Aufr√§ummethoden
     protected:  void Destroy_noAnimal() { Destroy_noMovable(); }
     public:     void Destroy() { Destroy_noAnimal(); }
 
@@ -85,26 +85,26 @@ class noAnimal : public noMovable
         // Benachrichtigen, wenn neuer gf erreicht wurde
         void HandleEvent(const unsigned int id);
 
-        /// Wird aufgerufen, nachdem das Tier erzeugt wurde und zur Figurenliste hinzugef¸gt wurde
+        /// Wird aufgerufen, nachdem das Tier erzeugt wurde und zur Figurenliste hinzugef√ºgt wurde
         void StartLiving();
 
-        /// Kann das Tier noch vom J‰ger gejagt werden?
+        /// Kann das Tier noch vom J√§ger gejagt werden?
         bool CanHunted() const;
 
-        /// Ein J‰ger geht das Tier jagen
+        /// Ein J√§ger geht das Tier jagen
         void BeginHunting(nofHunter* hunter);
-        /// Ein J‰ger ist in der N‰he vom Tier und will es abschieﬂen --> Tier muss stillhalten
-        /// gibt die Koordinaten seines (sp‰teren) Standorts zur¸ck
+        /// Ein J√§ger ist in der N√§he vom Tier und will es abschie√üen --> Tier muss stillhalten
+        /// gibt die Koordinaten seines (sp√§teren) Standorts zur√ºck
         MapPoint HunterIsNear();
-        /// Ein J‰ger kann doch nicht mehr zum Tier kommen --> kann wieder normal weiterlaufen
+        /// Ein J√§ger kann doch nicht mehr zum Tier kommen --> kann wieder normal weiterlaufen
         void StopHunting();
 
 
-        /// Steht das Tier schon schˆn ruhig, damit der J‰ger es erschieﬂen kann?
+        /// Steht das Tier schon sch√∂n ruhig, damit der J√§ger es erschie√üen kann?
         bool IsReadyForShooting() const { return (state == STATE_WAITINGFORHUNTER); }
         /// Tier soll sterben - erstmal nur Leiche liegen lassen
         void Die();
-        /// Tier wurde vom J‰ger ausgenommen und muss sofort verschwinden
+        /// Tier wurde vom J√§ger ausgenommen und muss sofort verschwinden
         void Eviscerated();
 };
 

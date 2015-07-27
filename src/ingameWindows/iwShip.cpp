@@ -1,4 +1,4 @@
-// $Id: iwShip.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+Ôªø// $Id: iwShip.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -44,7 +44,7 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-/// IDs in der IO_DAT von Boot und Schiffs-Bild f¸r den Umschaltebutton beim Schiffsbauer
+/// IDs in der IO_DAT von Boot und Schiffs-Bild f√ºr den Umschaltebutton beim Schiffsbauer
 const unsigned IODAT_BOAT_ID = 219;
 const unsigned IODAT_SHIP_ID = 218;
 
@@ -52,7 +52,7 @@ const unsigned IODAT_SHIP_ID = 218;
 /**
  *  Konstruktor von @p iwShip.
  *
- *  @todo ¸berpr¸fen und die restlichen Steuerelemente zur Funktion bringen
+ *  @todo √ºberpr√ºfen und die restlichen Steuerelemente zur Funktion bringen
  *
  *  @author OLiver
  */
@@ -62,8 +62,8 @@ iwShip::iwShip(GameWorldViewer* const gwv, dskGameInterface* const gi, noShip* c
 {
     AddImage(  0, 126, 101, LOADER.GetImageN("io", 228));
     AddImageButton( 2, 18, 192, 30, 35, TC_GREY, LOADER.GetImageN("io", 225));  // Viewer: 226 - Hilfe
-    AddImageButton( 3, 51, 196, 30, 26, TC_GREY, LOADER.GetImageN("io", 102));  // Viewer: 103 - Schnell zur¸ck
-    AddImageButton( 4, 81, 196, 30, 26, TC_GREY, LOADER.GetImageN("io", 103));  // Viewer: 104 - Zur¸ck
+    AddImageButton( 3, 51, 196, 30, 26, TC_GREY, LOADER.GetImageN("io", 102));  // Viewer: 103 - Schnell zur√ºck
+    AddImageButton( 4, 81, 196, 30, 26, TC_GREY, LOADER.GetImageN("io", 103));  // Viewer: 104 - Zur√ºck
     AddImageButton( 5, 111, 196, 30, 26, TC_GREY, LOADER.GetImageN("io", 104)); // Viewer: 105 - Vor
     AddImageButton( 6, 141, 196, 30, 26, TC_GREY, LOADER.GetImageN("io", 105)); // Viewer: 106 - Schnell vor
     AddImageButton( 7, 181, 196, 30, 26, TC_GREY, LOADER.GetImageN("io", 107), _("Go to place")); // "Gehe Zu Ort"
@@ -150,7 +150,7 @@ void iwShip::Msg_ButtonClick(const unsigned int ctrl_id)
     if(!ship)
         return;
 
-    // Expeditionskommando? (Schiff weiterfahren lassen, Kolonie gr¸nden)
+    // Expeditionskommando? (Schiff weiterfahren lassen, Kolonie gr√ºnden)
     if(ctrl_id >= 10 && ctrl_id <= 17)
     {
         GAMECLIENT.AddGC(new gc::ExpeditionCommand(gc::ExpeditionCommand::Action(ctrl_id - 10), ship_id));
@@ -165,7 +165,7 @@ void iwShip::Msg_ButtonClick(const unsigned int ctrl_id)
         {
             ship_id = 0;
         } break;
-        // Eins zur¸ck
+        // Eins zur√ºck
         case 4:
         {
             if(ship_id == 0)
@@ -205,14 +205,14 @@ void iwShip::DrawCargo()
     std::vector<unsigned short> orderedWares = std::vector<unsigned short>(WARE_TYPES_COUNT);
     std::vector<unsigned short> orderedFigures = std::vector<unsigned short>(JOB_TYPES_COUNT);
 
-    // Alle Figuren in Gruppen z‰hlen
+    // Alle Figuren in Gruppen z√§hlen
     const std::list<noFigure*> figures = ship->GetFigures();
     for(std::list<noFigure*>::const_iterator it = figures.begin(); it != figures.end(); ++it)
     {
         orderedFigures[(*it)->GetJobType()]++;
     }
 
-    // Alle Waren in Gruppen z‰hlen
+    // Alle Waren in Gruppen z√§hlen
     const std::list<Ware*> wares = ship->GetWares();
     for(std::list<Ware*>::const_iterator it = wares.begin(); it != wares.end(); ++it)
     {
@@ -295,7 +295,7 @@ void iwShip::DrawCargo()
 
             unsigned draw_id = i;
 
-            // Schilder? Dann das  Schild der jeweiligen Nationalit‰t nehmen
+            // Schilder? Dann das  Schild der jeweiligen Nationalit√§t nehmen
             if(draw_id == GD_SHIELDROMANS)
             {
                 switch(GAMECLIENT.GetLocalPlayer()->nation)

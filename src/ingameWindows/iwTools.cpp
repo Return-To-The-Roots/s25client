@@ -1,4 +1,4 @@
-// $Id: iwTools.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+Ôªø// $Id: iwTools.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -86,7 +86,7 @@ iwTools::iwTools(void)                      // qx:tools
     for(unsigned char i = 0; i < 12; ++i)
         GetCtrl<ctrlProgress>(i)->SetPosition(GAMECLIENT.visual_settings.tools_settings[i]);
 
-    // Netzwerk-‹bertragungs-Timer
+    // Netzwerk-√úbertragungs-Timer
     AddTimer(14, 2000);
 }
 
@@ -97,7 +97,7 @@ iwTools::~iwTools()
 
 void iwTools::TransmitSettings()
 {
-    // Wurden Einstellungen ver‰ndert?
+    // Wurden Einstellungen ver√§ndert?
     if(settings_changed)
     {
         // Einstellungen speichern
@@ -187,7 +187,7 @@ void iwTools::Msg_ButtonClick(const unsigned int ctrl_id)
 
 void iwTools::Msg_ProgressChange(const unsigned int ctrl_id, const unsigned short position)
 {
-    // Einstellungen wurden ge‰ndert
+    // Einstellungen wurden ge√§ndert
     settings_changed = true;
 }
 
@@ -197,7 +197,7 @@ void iwTools::Msg_Timer(const unsigned int ctrl_id)
         // Im Replay aktualisieren wir die Werte
         UpdateSettings();
     else
-        // Im normalen Spielmodus schicken wir den ganzen Spaﬂ ab
+        // Im normalen Spielmodus schicken wir den ganzen Spa√ü ab
         TransmitSettings();
 }
 

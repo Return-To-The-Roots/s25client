@@ -1,4 +1,4 @@
-// $Id: noFigure.h 9357 2014-04-25 15:35:25Z FloSoft $
+Ôªø// $Id: noFigure.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -52,11 +52,11 @@ class noFigure : public noMovable
         Job job; // Beruf(sart)
         unsigned char player;
 
-        // Straﬂenlaufzeug: (nur genutzt beim Laufen im Straﬂennetz!)
+        // Stra√üenlaufzeug: (nur genutzt beim Laufen im Stra√üennetz!)
 
-        const RoadSegment* cur_rs;  /// Straﬂe, auf der er gerade l‰uft
-        unsigned short rs_pos; /// Position auf der aktuellen Straﬂe (Wegst¸ck)
-        bool rs_dir; /// von welcher Seite er auf die Straﬂe l‰uft
+        const RoadSegment* cur_rs;  /// Stra√üe, auf der er gerade l√§uft
+        unsigned short rs_pos; /// Position auf der aktuellen Stra√üe (Wegst√ºck)
+        bool rs_dir; /// von welcher Seite er auf die Stra√üe l√§uft
 
         // Befindet sich die Figur gerade auf einem Schiff?
         bool on_ship;
@@ -68,7 +68,7 @@ class noFigure : public noMovable
         bool waiting_for_free_node;
 
         // nur bei FS_WANDER von Bedeutung:
-        /// Restlicher Weg f¸r das Rumirren (0xFFFF wenn schon auf dem Weg zu einer Flagge!)
+        /// Restlicher Weg f√ºr das Rumirren (0xFFFF wenn schon auf dem Weg zu einer Flagge!)
         unsigned short wander_way;
         /// Wieviel (erfolglose) Rumirr-Flaggensuch-Versuche hat es schon gegeben (nach bestimmter Zahl Figur sterben lassen)
         unsigned short wander_tryings;
@@ -77,7 +77,7 @@ class noFigure : public noMovable
         /// Obj-ID der (damaligen) Flagge, (evtl wurde sie zwischendurch abgerissen)
         unsigned flag_obj_id;
         /// Wenn der Typ aus einem Lagerhaus geflohen ist, Obj-ID des abbrennenden Lagerhauses zur
-        /// Kommunikation mit anderen Kollegen, die ebenfalls fl¸chten --> "Kollektivwegfindung", ansonsten ist das 0xFFFFFFFF
+        /// Kommunikation mit anderen Kollegen, die ebenfalls fl√ºchten --> "Kollektivwegfindung", ansonsten ist das 0xFFFFFFFF
         unsigned burned_wh_id;
 
 
@@ -92,10 +92,10 @@ class noFigure : public noMovable
         virtual void GoalReached() = 0; // das Ziel erreicht wurde
         virtual void Walked() = 0; // man gelaufen ist
 
-        /// F¸r alle restlichen Events, die nicht von noFigure behandelt werden
+        /// F√ºr alle restlichen Events, die nicht von noFigure behandelt werden
         virtual void HandleDerivedEvent(const unsigned int id) = 0;
 
-        /// Gibt den Sichtradius dieser Figur zur¸ck (0, falls nicht-sp‰hend)
+        /// Gibt den Sichtradius dieser Figur zur√ºck (0, falls nicht-sp√§hend)
         virtual unsigned GetVisualRange() const;
 
         /// Unterfunktion von Wander --> zur Flagge irren
@@ -103,12 +103,12 @@ class noFigure : public noMovable
         /// Unterfunktion von Wander --> zur Flagge irren
         //void WanderToFlagFailedTrade();
 
-        /// Sichtbarkeiten berechnen f¸r Figuren mit Sichtradius (Soldaten, Erkunder) vor dem Laufen
+        /// Sichtbarkeiten berechnen f√ºr Figuren mit Sichtradius (Soldaten, Erkunder) vor dem Laufen
         void CalcVisibilities(const MapPoint pt);
 
     protected:
 
-        /// In aktueller Richtung ein St¸ck zurcklegen
+        /// In aktueller Richtung ein St√ºck zurcklegen
         void WalkFigure();
         /// Schatten der Figur malen
         void DrawShadow(const int x, const int y, const unsigned char anistep, unsigned char dir);
@@ -122,15 +122,15 @@ class noFigure : public noMovable
 
     public:
 
-        /// Konstruktor f¸r Figuren, die auf dem Wegenetz starten
+        /// Konstruktor f√ºr Figuren, die auf dem Wegenetz starten
         noFigure(const Job job, const MapPoint pt, const unsigned char player, noRoadNode* const goal);
-        /// Konstruktor f¸r Figuren, die im Job-Modus starten
+        /// Konstruktor f√ºr Figuren, die im Job-Modus starten
         noFigure(const Job job, const MapPoint pt, const unsigned char player);
 
         noFigure(SerializedGameData* sgd, const unsigned obj_id);
 
 
-        /// Aufr‰ummethoden
+        /// Aufr√§ummethoden
     protected:  void Destroy_noFigure();
     public:     void Destroy() { Destroy_noFigure(); }
 
@@ -142,7 +142,7 @@ class noFigure : public noMovable
 
         /// Ziel setzen
         void SetGoalToNULL() { goal = NULL; }
-        /// Ziel zur¸ckgeben
+        /// Ziel zur√ºckgeben
         noRoadNode* GetGoal() const { return goal; }
 
         /// Getter
@@ -151,50 +151,50 @@ class noFigure : public noMovable
 
         /// Tut was, nachdem er rausgehen soll
         void ActAtFirst();
-        /// Legt die Anfangsdaten f¸r das Laufen auf Wegen fest
+        /// Legt die Anfangsdaten f√ºr das Laufen auf Wegen fest
         void InitializeRoadWalking(const RoadSegment* const road, const unsigned short rs_pos, const bool rs_dir);
-        /// Gibt Job-Typ zur¸ck
+        /// Gibt Job-Typ zur√ºck
         Job GetJobType() const { return job; }
         /// Zeichnet eine Figur aus "carrier.bob" beim Laufen.
         void DrawWalkingBobCarrier(int x, int y, unsigned int ware, bool fat);
-        /// Zeichnet eine Figur aus "jobs.bob", wenn sie l‰uft.
+        /// Zeichnet eine Figur aus "jobs.bob", wenn sie l√§uft.
         void DrawWalkingBobJobs(int x, int y, unsigned int id);
-        /// Zeichnet standardm‰ﬂig die Figur, wenn sie l‰uft
+        /// Zeichnet standardm√§√üig die Figur, wenn sie l√§uft
         void DrawWalking(int x, int y, glArchivItem_Bob* file, unsigned int item, bool fat, bool waitingsoldier = false);
-        /// Zeichnet standardm‰ﬂig die Figur, wenn sie l‰uft aus einem bestimmten normalen LST Archiv
+        /// Zeichnet standardm√§√üig die Figur, wenn sie l√§uft aus einem bestimmten normalen LST Archiv
         void DrawWalking(int x, int y, const char* const file, unsigned int id);
-        /// Zeichnet standardm‰ﬂig die Figur, wenn sie l‰uft, nimmt automatisch richtige Job-ID/Datei
+        /// Zeichnet standardm√§√üig die Figur, wenn sie l√§uft, nimmt automatisch richtige Job-ID/Datei
         void DrawWalking(int x, int y);
         /// Interpoliert die Positon zwischen zwei Knotenpunkten
         bool CalcFigurRelative(int& x, int& y);
-        /// Anfangen zu laufen (Event anmelden, T¸r aufmachen ggf)
+        /// Anfangen zu laufen (Event anmelden, T√ºr aufmachen ggf)
         void StartWalking(const unsigned char dir);
-        /// Anfangen zu laufen (Event anmelden, T¸r aufmachen ggf)
+        /// Anfangen zu laufen (Event anmelden, T√ºr aufmachen ggf)
         //void StartWalkingFailedTrade(const unsigned char dir);
         /// Umherirren starten (frei rumlaufen)
         void StartWandering(const unsigned burned_wh_id = 0xFFFFFFFF);
         /// Umherirren starten (frei rumlaufen - nach fehlgeschlagener handelsroute)
         //void StartWanderingFailedTrade(const unsigned burned_wh_id = 0xFFFFFFFF);
-        /// Auf Straﬂen(!) nach Hause laufen
+        /// Auf Stra√üen(!) nach Hause laufen
         void GoHome(noRoadNode* goal = NULL);
-        /// Aktuellen Weg, auf dem er l‰uft, fr ung¸ltig erkl‰ren
+        /// Aktuellen Weg, auf dem er l√§uft, fr ung√ºltig erkl√§ren
         void CutCurrentRoad() { cur_rs = 0; }
-        /// Auf Straﬂen zur Zielflagge laufen
+        /// Auf Stra√üen zur Zielflagge laufen
         void WalkToGoal();
-        /// Auf Straﬂen zur Zielflagge laufen
+        /// Auf Stra√üen zur Zielflagge laufen
         //void WalkToGoalFailedTrade();
-        /// Gibt die Straﬂe zur¸ck, auf der man gerade l‰uft
+        /// Gibt die Stra√üe zur√ºck, auf der man gerade l√§uft
         const RoadSegment* GetCurrentRoad() { return cur_rs; }
-        /// Wird aufgerufen, wenn die Straﬂe unter der Figur geteilt wurde, setzt vorraus, dass die Figur auf der geteilten Straﬂe l‰uft!
+        /// Wird aufgerufen, wenn die Stra√üe unter der Figur geteilt wurde, setzt vorraus, dass die Figur auf der geteilten Stra√üe l√§uft!
         void CorrectSplitData(const RoadSegment* const rs2);
-        /// Wird aufgerufen, wenn die Straﬂe unter der Figur geteilt wurde (f¸r abgeleitete Klassen)
+        /// Wird aufgerufen, wenn die Stra√üe unter der Figur geteilt wurde (f√ºr abgeleitete Klassen)
         virtual void CorrectSplitData_Derived();
-        /// L‰sst die Figur sterben (lˆst sich auf und hinterl‰sst ggf. Leiche)
+        /// L√§sst die Figur sterben (l√∂st sich auf und hinterl√§sst ggf. Leiche)
         void Die();
-        /// L‰sst die Figur sterben (lˆst sich auf und hinterl‰sst ggf. Leiche) - does not reduce good counts because for trade routes they have been reduced already.
+        /// L√§sst die Figur sterben (l√∂st sich auf und hinterl√§sst ggf. Leiche) - does not reduce good counts because for trade routes they have been reduced already.
         void DieFailedTrade();
-        /// Mitglied von nem Lagerhaus(Lagerhausarbeiter, die die Tr‰ger-Best‰nde nicht beeinflussen?)
-        /// Kann auﬂer bei WarehouseWorker die Default-Definition gelassen werden
+        /// Mitglied von nem Lagerhaus(Lagerhausarbeiter, die die Tr√§ger-Best√§nde nicht beeinflussen?)
+        /// Kann au√üer bei WarehouseWorker die Default-Definition gelassen werden
         virtual bool MemberOfWarehouse() const { return false; }
 
         /// Ein Punkt neben der Figur wurde freigegeben --> wenn sie deswegen angehalten ist, kann sie weiterlaufen
@@ -202,7 +202,7 @@ class noFigure : public noMovable
 
         /// Wartet sie auf einen freien Platz?
         bool IsWaitingForFreeNode() const { return waiting_for_free_node; }
-        /// Stoppt, wenn er auf diesen Punkt zul‰uft
+        /// Stoppt, wenn er auf diesen Punkt zul√§uft
         void StopIfNecessary(const MapPoint pt);
 
 
@@ -213,19 +213,19 @@ class noFigure : public noMovable
         /// Macht die Figur Job-Arbeiten?
         bool DoJobWorks() const { return (fs == FS_JOB); }
 
-        void Abrogate(); // beim Arbeitsplatz "k¸ndigen" soll, man das Laufen zum Ziel unterbrechen muss (warum auch immer)
+        void Abrogate(); // beim Arbeitsplatz "k√ºndigen" soll, man das Laufen zum Ziel unterbrechen muss (warum auch immer)
 
-        /// Informiert die Figur, dass f¸r sie eine Schiffsreise beginnt
+        /// Informiert die Figur, dass f√ºr sie eine Schiffsreise beginnt
         void StartShipJourney(const MapPoint goal);
         /// Informiert die Figur, wenn Kreuzfahrt beendet ist
         void ShipJourneyEnded();
-        /// Gibt zur¸ck, ob die Figur kein Ziel mehr hat und damit nach einer Schifffahrt im
+        /// Gibt zur√ºck, ob die Figur kein Ziel mehr hat und damit nach einer Schifffahrt im
         /// Lagerhaus interniert werden muss
         bool HasNoGoal() const { return (goal ==  NULL); }
-        /// Gibt zur¸ck, ob die Figur auf Straﬂen l‰uft zu ihrem Arbeitsplatz o.ƒ.
+        /// Gibt zur√ºck, ob die Figur auf Stra√üen l√§uft zu ihrem Arbeitsplatz o.√Ñ.
         bool IsWalkingOnRoad() const
         {
-            // Nur Tr‰ger arbeiten richtig auf Straﬂen
+            // Nur Tr√§ger arbeiten richtig auf Stra√üen
             if(fs == FS_JOB) return (GetGOT() == GOT_NOF_CARRIER);
             else if(fs == FS_GOHOME || fs == FS_GOTOGOAL) return true;
             else return false;

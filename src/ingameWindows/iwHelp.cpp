@@ -1,4 +1,4 @@
-// $Id: iwHelp.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: iwHelp.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -57,7 +57,7 @@ iwHelp::iwHelp(const GUI_ID gui_id, const std::string& title, const std::string&
     glArchivItem_Font::WrapInfo wi;
     NormalFont->GetWrapInfo(content, HELP_WINDOW_WIDTH - 28, HELP_WINDOW_WIDTH - 28, wi);
 
-    // Mehr Linien benötigt als die maximalen? Dann kommt ja noch die Scrollbar dran und der ganze Spaß muss
+    // Mehr Linien benÃ¶tigt als die maximalen? Dann kommt ja noch die Scrollbar dran und der ganze SpaÃŸ muss
     // umgebrochen werden, also nochmal mit geringerer Breite berechnen
     if(wi.positions.size() > MAX_LINES)
         NormalFont->GetWrapInfo(content, HELP_WINDOW_WIDTH - 28 - ctrlMultiline::SCROLLBAR_WIDTH,
@@ -67,12 +67,12 @@ iwHelp::iwHelp(const GUI_ID gui_id, const std::string& title, const std::string&
 
     unsigned short text_height = show_lines * NormalFont->getHeight();
 
-    // Höhe setzen
+    // HÃ¶he setzen
     SetIwHeight(text_height + 40);
     // Fenster neben die Maus schieben
     MoveNextToMouse();
 
-    // Größe des Fensters und des Controls nach der Anzahl der Zeilen
+    // GrÃ¶ÃŸe des Fensters und des Controls nach der Anzahl der Zeilen
     ctrlMultiline* text = AddMultiline(2, 10, 20, HELP_WINDOW_WIDTH - 20, text_height + 4, TC_GREEN1, NormalFont, glArchivItem_Font::DF_LEFT | glArchivItem_Font::DF_TOP);
     text->EnableBox(false);
 

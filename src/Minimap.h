@@ -1,4 +1,4 @@
-// $Id: Minimap.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: Minimap.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -32,15 +32,15 @@ class glArchivItem_Map;
 
 class Minimap
 {
-        ///// Breite und Höhe (Pixel) der Bounding Box, in die die Map zentriert wird
+        ///// Breite und HÃ¶he (Pixel) der Bounding Box, in die die Map zentriert wird
         //unsigned short width,height;
-        ///// Breite und Höhe (Pixel) der angezeigten Map
+        ///// Breite und HÃ¶he (Pixel) der angezeigten Map
         //unsigned short width_show, height_show;
     protected:
-        /// Breite und Höhe der Map (in Knoten)
+        /// Breite und HÃ¶he der Map (in Knoten)
         unsigned short map_width, map_height;
 
-        /// Textur für die Map
+        /// Textur fÃ¼r die Map
         glArchivItem_Bitmap_Direct map;
 
         //struct PlayerColor
@@ -51,9 +51,9 @@ class Minimap
 
     protected:
 
-        /// Zusätzliche Dinge, die die einzelnen Maps vor dem Zeichenvorgang zu tun haben
+        /// ZusÃ¤tzliche Dinge, die die einzelnen Maps vor dem Zeichenvorgang zu tun haben
         virtual void BeforeDrawing();
-        /// Variiert die übergebene Farbe zufällig in der Helligkeit
+        /// Variiert die Ã¼bergebene Farbe zufÃ¤llig in der Helligkeit
         unsigned VaryBrightness(const unsigned color, const int range) const;
 
     public:
@@ -68,7 +68,7 @@ class Minimap
         /// (x und y bezieht sich auf obere linke Ecke der Bounding Box)
         void Draw(const unsigned short x, const unsigned short y, const unsigned short width, const unsigned short height);
 
-        /// Gibt Größe der Map zurück
+        /// Gibt GrÃ¶ÃŸe der Map zurÃ¼ck
         unsigned short GetMapWidth() const { return map_width; }
         unsigned short GetMapHeight() const { return map_height; }
 
@@ -90,7 +90,7 @@ class PreviewMinimap : public Minimap
 
     protected:
 
-        /// Berechnet die Farbe für einen bestimmten Pixel der Minimap (t = Terrain1 oder 2)
+        /// Berechnet die Farbe fÃ¼r einen bestimmten Pixel der Minimap (t = Terrain1 oder 2)
         unsigned CalcPixelColor(const void* param, const MapPoint pt, const unsigned t);
 };
 
@@ -98,30 +98,30 @@ class IngameMinimap : public Minimap
 {
         /// Referenz auf den GameWorldViewer
         const GameWorldViewer& gwv;
-        /// Speichert die einzelnen Veränderungen eines jeden Mappunktes, damit nicht unnötigerweise
-        /// in einem GF mehrmals der Mappunkt verändert wird
+        /// Speichert die einzelnen VerÃ¤nderungen eines jeden Mappunktes, damit nicht unnÃ¶tigerweise
+        /// in einem GF mehrmals der Mappunkt verÃ¤ndert wird
         std::vector<bool> nodes_updated;
-        /// Liste mit allen Punkten, die geändert werden müssen
+        /// Liste mit allen Punkten, die geÃ¤ndert werden mÃ¼ssen
         std::vector<MapPoint> nodesToUpdate;
 
 
-        /// Für jeden einzelnen Knoten speichern, welches Objekt hier dominiert, also wessen Pixel angezeigt wird
+        /// FÃ¼r jeden einzelnen Knoten speichern, welches Objekt hier dominiert, also wessen Pixel angezeigt wird
         enum DrawnObject
         {
             DO_INVALID = 0,
-            DO_INVISIBLE, /// im im vollständigem Dunklen
+            DO_INVISIBLE, /// im im vollstÃ¤ndigem Dunklen
             DO_TERRAIN, /// Nur Terrain oder Baum und Granit ohne irgendwas
             DO_PLAYER, /// Nur Terrain oder Baum und Granit mit Spielerterritorium dazu
-            DO_BUILDING, /// Gebäude
-            DO_ROAD /// Straße
+            DO_BUILDING, /// GebÃ¤ude
+            DO_ROAD /// StraÃŸe
         };
 
         std::vector<DrawnObject> dos;
 
         /// Einzelne Dinge anzeigen oder nicht anzeigen
-        bool territory; /// Länder der Spieler
-        bool houses; /// Häuser
-        bool roads; /// Straßen
+        bool territory; /// LÃ¤nder der Spieler
+        bool houses; /// HÃ¤user
+        bool roads; /// StraÃŸen
 
     public:
         IngameMinimap(const GameWorldViewer& gwv);
@@ -143,18 +143,18 @@ class IngameMinimap : public Minimap
 
     protected:
 
-        /// Berechnet die Farbe für einen bestimmten Pixel der Minimap (t = Terrain1 oder 2)
+        /// Berechnet die Farbe fÃ¼r einen bestimmten Pixel der Minimap (t = Terrain1 oder 2)
         unsigned CalcPixelColor(const void* param, const MapPoint pt, const unsigned t);
-        /// Berechnet für einen bestimmten Punkt und ein Dreieck die normale Terrainfarbe
+        /// Berechnet fÃ¼r einen bestimmten Punkt und ein Dreieck die normale Terrainfarbe
         unsigned CalcTerrainColor(const MapPoint pt, const unsigned t);
-        /// Prüft ob an einer Stelle eine Straße gezeichnet werden muss
+        /// PrÃ¼ft ob an einer Stelle eine StraÃŸe gezeichnet werden muss
         bool IsRoad(const MapPoint pt, const Visibility visibility);
         /// Berechnet Spielerfarbe mit in eine gegebene Farbe mit ein (player muss mit +1 gegeben sein!)
         unsigned CombineWithPlayerColor(const unsigned color, const unsigned char player) const;
-        /// Zusätzliche Dinge, die die einzelnen Maps vor dem Zeichenvorgang zu tun haben
+        /// ZusÃ¤tzliche Dinge, die die einzelnen Maps vor dem Zeichenvorgang zu tun haben
         /// in dem Falle: Karte aktualisieren
         void BeforeDrawing();
-        /// Alle Punkte Updaten, bei denen das DrawnObject gleich dem übergebenen drawn_object ist
+        /// Alle Punkte Updaten, bei denen das DrawnObject gleich dem Ã¼bergebenen drawn_object ist
         void UpdateAll(const DrawnObject drawn_object);
 };
 

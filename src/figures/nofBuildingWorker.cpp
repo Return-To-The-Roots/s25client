@@ -1,4 +1,4 @@
-// $Id: nofBuildingWorker.cpp 9567 2015-01-03 19:34:57Z marcus $
+﻿// $Id: nofBuildingWorker.cpp 9567 2015-01-03 19:34:57Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -122,7 +122,7 @@ void nofBuildingWorker::Draw(int x, int y)
         {
             unsigned short id = GetCarryID();
 
-            // Über 100 bedeutet aus der carrier.bob nehmen, ansonsten aus der jobs.bob!
+            // Ãœber 100 bedeutet aus der carrier.bob nehmen, ansonsten aus der jobs.bob!
             if(id >= 100)
                 DrawWalking(x, y, LOADER.GetBobN("carrier"), GetCarryID() - 100, JOB_CONSTS[job].fat);
             else
@@ -151,11 +151,11 @@ void nofBuildingWorker::Walked()
 
             if(ware != GD_NOTHING)
             {
-                // dann war draußen kein Platz --> ist jetzt evtl Platz?
+                // dann war drauÃŸen kein Platz --> ist jetzt evtl Platz?
                 state = STATE_WAITFORWARESPACE;
                 if(workplace->GetFlag()->GetWareCount() < 8)
                     FreePlaceAtFlag();
-                // Ab jetzt warten, d.h. nicht mehr arbeiten --> schlecht für die Produktivität
+                // Ab jetzt warten, d.h. nicht mehr arbeiten --> schlecht fÃ¼r die ProduktivitÃ¤t
                 StartNotWorking();
             }
             else
@@ -170,7 +170,7 @@ void nofBuildingWorker::Walked()
         } break;
         case STATE_CARRYOUTWARE:
         {
-            // Alles weitere übernimmt nofBuildingWorker
+            // Alles weitere Ã¼bernimmt nofBuildingWorker
             WorkingReady();
         } break;
         default:
@@ -192,18 +192,18 @@ void nofBuildingWorker::WorkingReady()
         {
             // Ware erzeugen
             Ware* real_ware = new Ware(ware, 0, flag);
-            // Inventur entsprechend erhöhen, dabei Schilder unterscheiden!
+            // Inventur entsprechend erhÃ¶hen, dabei Schilder unterscheiden!
             GoodType ware_type = (real_ware->type == GD_SHIELDVIKINGS || real_ware->type == GD_SHIELDAFRICANS ||
                                   real_ware->type == GD_SHIELDJAPANESE) ? GD_SHIELDROMANS : real_ware->type;
             gwg->GetPlayer(player)->IncreaseInventoryWare(ware_type, 1);
-            // Abnehmer für Ware finden
+            // Abnehmer fÃ¼r Ware finden
             real_ware->goal = gwg->GetPlayer(player)->FindClientForWare(real_ware);
             // Ware soll ihren weiteren Weg berechnen
             real_ware->RecalcRoute();
             // Ware ablegen
             flag->AddWare(real_ware);
             real_ware->LieAtFlag(flag);
-            // Warenstatistik erhöhen
+            // Warenstatistik erhÃ¶hen
             GAMECLIENT.GetPlayer(this->player)->IncreaseMerchandiseStatistic(ware);
             // Tragen nun keine Ware mehr
             ware = GD_NOTHING;
@@ -225,9 +225,9 @@ void nofBuildingWorker::TryToWork()
         StartNotWorking();
     }
     // Falls man auf Waren wartet, kann man dann anfangen zu arbeiten
-    // (bei Bergwerken müssen zusätzlich noch Rohstoffvorkommen vorhanden sein!)
-    // (bei Brunnen muss ebenfalls auf Wasser geprüft werden!)
-    // Spähturm-Erkunder arbeiten nie!
+    // (bei Bergwerken mÃ¼ssen zusÃ¤tzlich noch Rohstoffvorkommen vorhanden sein!)
+    // (bei Brunnen muss ebenfalls auf Wasser geprÃ¼ft werden!)
+    // SpÃ¤hturm-Erkunder arbeiten nie!
     // Charburner doesn't need wares for harvesting!
     // -> Wares are considered when calling GetPointQuality!
     else if( (workplace->WaresAvailable() || job == JOB_CHARBURNER) &&
@@ -265,9 +265,9 @@ void nofBuildingWorker::GotWareOrProductionAllowed()
 
 void nofBuildingWorker::GoalReached()
 {
-    // Tür zumachen (ist immer bis zu Erstbesetzung offen)
+    // TÃ¼r zumachen (ist immer bis zu Erstbesetzung offen)
     workplace->CloseDoor();
-    // Gebäude Bescheid sagen, dass ich da bin
+    // GebÃ¤ude Bescheid sagen, dass ich da bin
     workplace->WorkerArrived();
 
     WorkplaceReached();
@@ -324,7 +324,7 @@ void nofBuildingWorker::LostWork()
             Wander();
 
 
-            // Evtl. Sounds löschen
+            // Evtl. Sounds lÃ¶schen
             SOUNDMANAGER.WorkingFinished(this);
 
             state = STATE_FIGUREWORK;
@@ -342,10 +342,10 @@ void nofBuildingWorker::LostWork()
             WorkAborted();
 
             // Rumirren
-            // Bei diesen States läuft man schon, darf also nicht noch zusätzlich Wander aufrufen, da man dann ja im Laufen nochmal losläuft!
+            // Bei diesen States lÃ¤uft man schon, darf also nicht noch zusÃ¤tzlich Wander aufrufen, da man dann ja im Laufen nochmal loslÃ¤uft!
             StartWandering();
 
-            // Evtl. Sounds löschen
+            // Evtl. Sounds lÃ¶schen
             SOUNDMANAGER.WorkingFinished(this);
 
             state = STATE_FIGUREWORK;
@@ -399,7 +399,7 @@ bool nofBuildingWorker::GetResources(unsigned char type)
 
     if(found)
     {
-        // Minen / Brunnen unerschöpflich?
+        // Minen / Brunnen unerschÃ¶pflich?
         if( (type == 4 && GAMECLIENT.GetGGS().isEnabled(ADDON_EXHAUSTIBLE_WELLS)) ||
                 (type != 4 && !GAMECLIENT.GetGGS().isEnabled(ADDON_INEXHAUSTIBLE_MINES)) )
             --gwg->GetNode(mP).resources;
@@ -422,7 +422,7 @@ bool nofBuildingWorker::GetResources(unsigned char type)
         }
 
         OutOfRessourcesMsgSent = true;
-        // Produktivitätsanzeige auf 0 setzen
+        // ProduktivitÃ¤tsanzeige auf 0 setzen
         workplace->SetProductivityToZero();
 
         // KI-Event erzeugen
@@ -435,7 +435,7 @@ bool nofBuildingWorker::GetResources(unsigned char type)
 
 bool nofBuildingWorker::GetResourcesOfNode(const MapPoint pt, const unsigned char type)
 {
-    // Evtl über die Grenzen gelesen?
+    // Evtl Ã¼ber die Grenzen gelesen?
     if(pt.x >= gwg->GetWidth() || pt.y >= gwg->GetHeight())
         return false;
 
@@ -458,7 +458,7 @@ void nofBuildingWorker::StartNotWorking()
 
 void nofBuildingWorker::StopNotWorking()
 {
-    // Falls wir vorher nicht gearbeitet haben, diese Zeit merken für die Produktivität
+    // Falls wir vorher nicht gearbeitet haben, diese Zeit merken fÃ¼r die ProduktivitÃ¤t
     if(since_not_working != 0xFFFFFFFF)
     {
         not_working += static_cast<unsigned short>(GAMECLIENT.GetGFNumber() - since_not_working);
@@ -470,19 +470,19 @@ unsigned short nofBuildingWorker::CalcProductivity()
 {
     if (OutOfRessourcesMsgSent)
         return 0;
-    // Gucken, ob bis jetzt gearbeitet wurde/wird oder nicht, je nachdem noch was dazuzählen
+    // Gucken, ob bis jetzt gearbeitet wurde/wird oder nicht, je nachdem noch was dazuzÃ¤hlen
     if(since_not_working != 0xFFFFFFFF)
     {
-        // Es wurde bis jetzt nicht mehr gearbeitet, das also noch dazuzählen
+        // Es wurde bis jetzt nicht mehr gearbeitet, das also noch dazuzÃ¤hlen
         not_working += static_cast<unsigned short>(GAMECLIENT.GetGFNumber() - since_not_working);
-        // Zähler zurücksetzen
+        // ZÃ¤hler zurÃ¼cksetzen
         since_not_working = GAMECLIENT.GetGFNumber();
     }
 
-    // Produktivität ausrechnen
+    // ProduktivitÃ¤t ausrechnen
     unsigned short productivity = (400 - not_working) / 4;
 
-    // Zähler zurücksetzen
+    // ZÃ¤hler zurÃ¼cksetzen
     not_working = 0;
 
     return productivity;

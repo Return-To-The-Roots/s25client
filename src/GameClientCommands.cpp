@@ -1,4 +1,4 @@
-// $Id: GameClientCommands.cpp 9561 2014-12-30 10:51:38Z marcus $
+ï»¿// $Id: GameClientCommands.cpp 9561 2014-12-30 10:51:38Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -60,7 +60,7 @@ void GameClient::Command_SetFlag2(const MapPoint pt, unsigned char player)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Chatbefehl, hängt eine Textnachricht in die Sende-Queue.
+ *  Chatbefehl, hÃ¤ngt eine Textnachricht in die Sende-Queue.
  *
  *  @param[in] text        Der Text
  *  @param[in] destination Ziel der Nachricht
@@ -138,11 +138,11 @@ void GameClient::ChangePlayer(const unsigned char old_id, const unsigned char ne
     if(new_id >= players.getCount())
         return;
 
-    // Gleiche ID - wäre unsinnig zu wechseln
+    // Gleiche ID - wÃ¤re unsinnig zu wechseln
     if(old_id == new_id)
         return;
 
-    // old_id muss richtiger Spieler, new_id KI sein, ansonsten geht das natürlich nicht
+    // old_id muss richtiger Spieler, new_id KI sein, ansonsten geht das natÃ¼rlich nicht
     if( !(players[old_id].ps == PS_OCCUPIED && players[new_id].ps == PS_KI) )
         return;
 
@@ -154,7 +154,7 @@ void GameClient::ChangePlayer(const unsigned char old_id, const unsigned char ne
     {
         playerid = new_id;
 
-        // BQ überall neu berechnen
+        // BQ Ã¼berall neu berechnen
         for(unsigned y = 0; y < gw->GetHeight(); ++y)
         {
             for(unsigned x = 0; x < gw->GetWidth(); ++x)
@@ -185,7 +185,7 @@ void GameClient::ChangeReplayPlayer(const unsigned new_id)
     if(old_id == new_id)
         // Unsinn auf den selben Spieler zu wechseln
         return;
-    // Auch innerhalb der gültigen Spieler?
+    // Auch innerhalb der gÃ¼ltigen Spieler?
     if(new_id >= GAMECLIENT.GetPlayerCount())
         return;
     // Und ein richtiger ehemaliger Spieler?
@@ -196,7 +196,7 @@ void GameClient::ChangeReplayPlayer(const unsigned new_id)
 
     playerid = new_id;
 
-    // BQ überall neu berechnen
+    // BQ Ã¼berall neu berechnen
     for(unsigned y = 0; y < gw->GetHeight(); ++y)
     {
         for(unsigned x = 0; x < gw->GetWidth(); ++x)

@@ -1,4 +1,4 @@
-// $Id: JobConsts.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: JobConsts.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -27,7 +27,7 @@ struct JobConst
 {
     /// Werkzeug, das der Beruf braucht
     GoodType tool;
-    /// Ob der Beruf dick oder dünn ist
+    /// Ob der Beruf dick oder dÃ¼nn ist
     bool fat;
     /// ID in Jobs.BOB
     unsigned short jobs_bob_id;
@@ -70,7 +70,7 @@ const JobConst JOB_CONSTS[JOB_TYPES_COUNT] =
     {GD_NOTHING, false, 33, 0, 0, 0}, //JOB_OFFICER
     {GD_NOTHING, false, 34, 0, 0, 0}, //JOB_GENERAL
     {GD_HAMMER, false, 26, 0, 0, 0}, //JOB_GEOLOGIST
-    {GD_HAMMER, false, 25, 1250, 100, 5}, //JOB_SHIPWRIGHT, Todo: Timing wenn Schiffe bauen möglich
+    {GD_HAMMER, false, 25, 1250, 100, 5}, //JOB_SHIPWRIGHT, Todo: Timing wenn Schiffe bauen mÃ¶glich
     {GD_BOW, false, 35, 0, 0, 0},    //JOB_SCOUT
     {GD_NOTHING, false, 37, 0, 0, 0}, //JOB_PACKDONKEY
     {GD_NOTHING, false, 37, 0, 0, 0}, //JOB_BOATCARRIER
@@ -80,7 +80,7 @@ const JobConst JOB_CONSTS[JOB_TYPES_COUNT] =
 /// Katapultmann-Wartezeit
 const unsigned CATAPULT_WAIT1_LENGTH = 1300; //eigenlich 310 - aber hochgestellt wegen zu schneller Warenverteilung
 
-/// Positionen der Ware für jede Richtung beim Zeichnen für Esel und Boot
+/// Positionen der Ware fÃ¼r jede Richtung beim Zeichnen fÃ¼r Esel und Boot
 const int WARE_POS_DONKEY[96] =
 {
     0, -13, 0, -12, 0, -12, 1, -13, 2, -13, 2, -12, 2, -12, 1, -13,
@@ -91,7 +91,7 @@ const int WARE_POS_DONKEY[96] =
     -3, -10, -3, -9, -3, -9, -2, -10, -1, -10, -1, -10, -1, -9, -1, -10,
 };
 
-/// Positionen der Ware im Boat für jede Richtung
+/// Positionen der Ware im Boat fÃ¼r jede Richtung
 const int WARE_POS_BOAT[12] =
 {
     11, -4, 11, 0, -7, -1, -8, -5, -7, -7, 6, -7

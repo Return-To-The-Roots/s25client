@@ -1,4 +1,4 @@
-// $Id: glArchivItem_Bitmap.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: glArchivItem_Bitmap.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -39,7 +39,7 @@ static char THIS_FILE[] = __FILE__;
 ///////////////////////////////////////////////////////////////////////////////
 /** @class glArchivItem_Bitmap
  *
- *  Basisklasse für GL-Bitmapitems.
+ *  Basisklasse fÃ¼r GL-Bitmapitems.
  *
  *  @author FloSoft
  */
@@ -163,7 +163,7 @@ unsigned int glArchivItem_Bitmap::GetTexture()
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Löscht die GL-Textur (z.B fürs Neuerstellen)
+ *  LÃ¶scht die GL-Textur (z.B fÃ¼rs Neuerstellen)
  *
  *  @author FloSoft
  */
@@ -187,7 +187,7 @@ void glArchivItem_Bitmap::setFilter(unsigned int filter)
 
     this->filter = filter;
 
-    // neugenerierung der Textur anstoßen
+    // neugenerierung der Textur anstoÃŸen
     if(texture != 0)
         DeleteTexture();
 }

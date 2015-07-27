@@ -1,4 +1,4 @@
-// $Id: GameClientGF_Game.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+Ôªø// $Id: GameClientGF_Game.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -26,7 +26,7 @@
 
 void GameClient::ExecuteGameFrame_Game()
 {
-    // Geschickte Network Commands der Spieler ausf¸hren und ggf. im Replay aufzeichnen
+    // Geschickte Network Commands der Spieler ausf√ºhren und ggf. im Replay aufzeichnen
 
     // Bei evtl. Spielerwechsel die IDs speichern, die "gewechselt" werden sollen
     unsigned char player_switch_old_id = 255, player_switch_new_id = 255;
@@ -39,7 +39,7 @@ void GameClient::ExecuteGameFrame_Game()
         {
             GameMessage_GameCommand& msg = players[i].gc_queue.front();
 
-            // Command im Replay aufzeichnen (wenn nicht gerade eins schon l‰uft xD)
+            // Command im Replay aufzeichnen (wenn nicht gerade eins schon l√§uft xD)
             // Nur Commands reinschreiben, KEINE PLATZHALTER (nc_count = 0)
             if(msg.gcs.size() > 0 && !replay_mode)
             {
@@ -48,7 +48,7 @@ void GameClient::ExecuteGameFrame_Game()
                 replayinfo.replay.AddGameCommand(framesinfo.nr, tmp.GetLength(), tmp.GetData());
             }
 
-            // Das ganze Zeug soll die andere Funktion ausf¸hren
+            // Das ganze Zeug soll die andere Funktion ausf√ºhren
             ExecuteAllGCs(msg, &player_switch_old_id, &player_switch_new_id);
 
             // Nachricht abwerfen :)
@@ -57,15 +57,15 @@ void GameClient::ExecuteGameFrame_Game()
         }
     }
 
-    // Frame ausf¸hren
+    // Frame ausf√ºhren
     NextGF();
 
     //LOG.lprintf("%d = %d - %d\n", framesinfo.nr / framesinfo.nwf_length, checksum, RANDOM.GetCurrentRandomValue());
 
-    // Stehen eigene Commands an, die gesendet werden m¸ssen?
+    // Stehen eigene Commands an, die gesendet werden m√ºssen?
     send_queue.push(new GameMessage_GameCommand(playerid, checksum, gcs));
 
-    // alles gesendet --> Liste lˆschen
+    // alles gesendet --> Liste l√∂schen
     gcs.clear();
 
 

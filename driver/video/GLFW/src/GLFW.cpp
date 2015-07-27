@@ -1,4 +1,4 @@
-// $Id: GLFW.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: GLFW.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005-2009 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -36,7 +36,7 @@ static char THIS_FILE[] = __FILE__;
 /**
  *  Instanzierungsfunktion von @p VideoGLFW.
  *
- *  @param[in] CallBack DriverCallback für Rückmeldungen.
+ *  @param[in] CallBack DriverCallback fÃ¼r RÃ¼ckmeldungen.
  *
  *  @return liefert eine Instanz des jeweiligen Treibers
  *
@@ -63,7 +63,7 @@ DRIVERDLLAPI const char* GetDriverName(void)
 ///////////////////////////////////////////////////////////////////////////////
 /** @class VideoGLFW
  *
- *  Klasse für den GL-Framework Videotreiber.
+ *  Klasse fÃ¼r den GL-Framework Videotreiber.
  *
  *  @author FloSoft
  */
@@ -80,7 +80,7 @@ static VideoGLFW* pVideoGLFW = NULL;
 /**
  *  Konstruktor von @p VideoGLFW.
  *
- *  @param[in] CallBack DriverCallback für Rückmeldungen.
+ *  @param[in] CallBack DriverCallback fÃ¼r RÃ¼ckmeldungen.
  *
  *  @author FloSoft
  */
@@ -128,16 +128,16 @@ bool VideoGLFW::Initialize(void)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Treiberaufräumfunktion.
+ *  TreiberaufrÃ¤umfunktion.
  *
  *  @author FloSoft
  */
 void VideoGLFW::CleanUp(void)
 {
-    // Fenster zerstören
+    // Fenster zerstÃ¶ren
     DestroyScreen();
 
-    // GL-Framework aufräumen
+    // GL-Framework aufrÃ¤umen
     glfwTerminate();
 
     // nun sind wir nicht mehr initalisiert
@@ -153,7 +153,7 @@ void VideoGLFW::CleanUp(void)
  *  Erstellt das Fenster mit entsprechenden Werten.
  *
  *  @param[in] width      Breite des Fensters
- *  @param[in] height     Höhe des Fensters
+ *  @param[in] height     HÃ¶he des Fensters
  *  @param[in] fullscreen Vollbildmodus ja oder nein
  *
  *  @return @p true bei Erfolg, @p false bei Fehler
@@ -200,10 +200,10 @@ bool VideoGLFW::CreateScreen(unsigned short width, unsigned short height, bool f
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Erstellt oder verändert das Fenster mit entsprechenden Werten.
+ *  Erstellt oder verÃ¤ndert das Fenster mit entsprechenden Werten.
  *
  *  @param[in] width      Breite des Fensters
- *  @param[in] height     Höhe des Fensters
+ *  @param[in] height     HÃ¶he des Fensters
  *  @param[in] fullscreen Vollbildmodus ja oder nein
  *
  *  @return @p true bei Erfolg, @p false bei Fehler
@@ -223,7 +223,7 @@ bool VideoGLFW::ResizeScreen(unsigned short* width, unsigned short* height, bool
     if(glfwGetWindowParam(GLFW_OPENED) == GL_FALSE)
         return CreateScreen(*width, *height, fullscreen);
 
-    // Fenstergröße setzen
+    // FenstergrÃ¶ÃŸe setzen
     glfwSetWindowSize(*width, *height);
 
     glfwPollEvents();
@@ -429,7 +429,7 @@ void GLFWCALL VideoGLFW::OnMouseButton(int button, int action)
  *
  *  @param[in] key    Taste
  *
- *  @return ggf. veränderten @p key
+ *  @return ggf. verÃ¤nderten @p key
  *
  *  @author FloSoft
  */
@@ -463,9 +463,9 @@ unsigned char VideoGLFW::TranslateKey(unsigned char key)
         //printf("l %d, %c\n", key, key);
         switch(key)
         {
-            case 196: key = 'ä'; break;
-            case 214: key = 'ö'; break;
-            case 220: key = 'ü'; break;
+            case 196: key = 'Ã¤'; break;
+            case 214: key = 'Ã¶'; break;
+            case 220: key = 'Ã¼'; break;
         }
         /// @todo: fehlende Zeichen einsetzen
     }

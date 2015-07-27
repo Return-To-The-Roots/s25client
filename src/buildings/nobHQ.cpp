@@ -1,4 +1,4 @@
-// $Id: nobHQ.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+Ôªø// $Id: nobHQ.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -44,7 +44,7 @@ nobHQ::nobHQ(const MapPoint pos, const unsigned char player, const Nation nation
     : nobBaseWarehouse(BLD_HEADQUARTERS, pos, player, nation)
 {
 
-    // ins Milit‰rquadrat einf¸gen
+    // ins Milit√§rquadrat einf√ºgen
     gwg->GetMilitarySquare(pos).push_back(this);
     gwg->RecalcTerritory(this, GetMilitaryRadius(), false, true);
 
@@ -350,10 +350,10 @@ void nobHQ::Destroy_nobHQ()
     Destroy_nobBaseWarehouse();
 
     // Land drumherum neu berechnen (nur wenn es schon besetzt wurde!)
-    // Nach dem BaseDestroy erst, da in diesem erst das Feuer gesetzt, die Straﬂe gelˆscht wird usw.
+    // Nach dem BaseDestroy erst, da in diesem erst das Feuer gesetzt, die Stra√üe gel√∂scht wird usw.
     gwg->RecalcTerritory(this, MILITARY_RADIUS[GetSize()], true, false);
 
-    // Wieder aus dem Milit‰rquadrat rauswerfen
+    // Wieder aus dem Milit√§rquadrat rauswerfen
     gwg->GetMilitarySquare(pos).remove(this);
 }
 
@@ -364,7 +364,7 @@ void nobHQ::Serialize_nobHQ(SerializedGameData* sgd) const
 
 nobHQ::nobHQ(SerializedGameData* sgd, const unsigned obj_id) : nobBaseWarehouse(sgd, obj_id)
 {
-    // ins Milit‰rquadrat einf¸gen
+    // ins Milit√§rquadrat einf√ºgen
     gwg->GetMilitarySquare(pos).push_back(this);
 
     // Startpos setzen
@@ -373,11 +373,11 @@ nobHQ::nobHQ(SerializedGameData* sgd, const unsigned obj_id) : nobBaseWarehouse(
 
 void nobHQ::Draw(int x, int y)
 {
-    // Geb‰ude an sich zeichnen
+    // Geb√§ude an sich zeichnen
     DrawBaseBuilding(x, y);
 
 
-    // 4 F‰hnchen zeichnen
+    // 4 F√§hnchen zeichnen
     for(unsigned i = min<unsigned>(GetSoldiersCount() +
                                    reserve_soldiers_available[0] + reserve_soldiers_available[1] + reserve_soldiers_available[2] + reserve_soldiers_available[3] + reserve_soldiers_available[4]
                                    , 4); i; --i)

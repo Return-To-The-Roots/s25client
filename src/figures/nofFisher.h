@@ -1,4 +1,4 @@
-// $Id: nofFisher.h 9357 2014-04-25 15:35:25Z FloSoft $
+Ôªø// $Id: nofFisher.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -26,16 +26,16 @@ class nofFisher : public nofFarmhand
 {
         /// Richtung, in die er fischt
         unsigned char fishing_dir;
-        /// F‰ngt er einen Fisch?
+        /// F√§ngt er einen Fisch?
         bool successful;
     private:
 
         /// Malt den Arbeiter beim Arbeiten
         void DrawWorking(int x, int y);
-        /// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren raustr‰gt (bzw rein)
+        /// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren raustr√§gt (bzw rein)
         unsigned short GetCarryID() const;
 
-        /// Abgeleitete Klasse informieren, wenn sie anf‰ngt zu arbeiten (Vorbereitungen)
+        /// Abgeleitete Klasse informieren, wenn sie anf√§ngt zu arbeiten (Vorbereitungen)
         void WorkStarted();
         /// Abgeleitete Klasse informieren, wenn fertig ist mit Arbeiten
         void WorkFinished();

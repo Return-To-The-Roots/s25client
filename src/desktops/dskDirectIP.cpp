@@ -1,4 +1,4 @@
-// $Id: dskDirectIP.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: dskDirectIP.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -62,7 +62,7 @@ dskDirectIP::dskDirectIP(void) : Desktop(LOADER.GetImageN("menu", 0))
     AddTextButton(3, 115, 180, 220, 22, TC_GREEN2, _("Create Game"), NormalFont);
     AddTextButton(4, 115, 210, 220, 22, TC_GREEN2, _("Join Game"), NormalFont);
 
-    // "Zurück"
+    // "ZurÃ¼ck"
     AddTextButton(5, 115, 250, 220, 22, TC_RED1, _("Back"), NormalFont);
 
     AddImage(11, 20, 20, LOADER.GetImageN("logo", 0));
@@ -85,7 +85,7 @@ void dskDirectIP::Msg_ButtonClick(const unsigned int ctrl_id)
         {
             WINDOWMANAGER.Show(new iwDirectIPConnect(NP_DIRECT));
         } break;
-        case 5: // "Zurück"
+        case 5: // "ZurÃ¼ck"
         {
             WINDOWMANAGER.Switch(new dskMultiPlayer);
         } break;

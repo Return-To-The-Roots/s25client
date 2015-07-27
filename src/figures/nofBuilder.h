@@ -1,4 +1,4 @@
-// $Id: nofBuilder.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: nofBuilder.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -40,7 +40,7 @@ class nofBuilder : public noFigure
             STATE_FIGUREWORK = 0,
             STATE_WAITINGFREEWALK, // Bauarbeiter geht auf und ab und wartet auf Rohstoffe
             STATE_BUILDFREEWALK, // Bauarbeiter geht auf und ab und baut
-            STATE_BUILD // Bauarbeiter "baut" gerade (hämmert auf Gebäude ein)
+            STATE_BUILD // Bauarbeiter "baut" gerade (hÃ¤mmert auf GebÃ¤ude ein)
         } state;
 
         /// Baustelle des Bauarbeiters
@@ -54,7 +54,7 @@ class nofBuilder : public noFigure
         short rel_x, rel_y;
         short next_rel_x, next_rel_y;
 
-        /// Wie viele Bauschritte noch verfügbar sind, bis der nächste Rohstoff geholt werden muss
+        /// Wie viele Bauschritte noch verfÃ¼gbar sind, bis der nÃ¤chste Rohstoff geholt werden muss
         unsigned char building_steps_available;
 
     private:
@@ -66,7 +66,7 @@ class nofBuilder : public noFigure
 
         /// In neue Richtung laufen (Freewalk)
         void StartFreewalk();
-        /// "Frisst" eine passende Ware (falls vorhanden, gibt true in dem Fall zurück!) von der Baustelle, d.h nimmt sie in die Hand und erhöht die building_steps_avaible
+        /// "Frisst" eine passende Ware (falls vorhanden, gibt true in dem Fall zurÃ¼ck!) von der Baustelle, d.h nimmt sie in die Hand und erhÃ¶ht die building_steps_avaible
         bool ChooseWare();
 
     public:

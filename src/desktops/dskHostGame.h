@@ -1,4 +1,4 @@
-// $Id: dskHostGame.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: dskHostGame.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -30,7 +30,7 @@
 
 #include "ogl/glArchivItem_Bitmap_Raw.h"
 
-/// Desktop für das Hosten-eines-Spiels-Fenster
+/// Desktop fÃ¼r das Hosten-eines-Spiels-Fenster
 class dskHostGame :
     public Desktop,
     public ClientInterface,
@@ -38,20 +38,20 @@ class dskHostGame :
 {
     public:
 
-        /// Map übergeben, damit die Kartenvorschau erstellt werden kann
+        /// Map Ã¼bergeben, damit die Kartenvorschau erstellt werden kann
         dskHostGame(bool single_player = false);
 
-        /// Größe ändern-Reaktionen die nicht vom Skaling-Mechanismus erfasst werden.
+        /// GrÃ¶ÃŸe Ã¤ndern-Reaktionen die nicht vom Skaling-Mechanismus erfasst werden.
         void Resize_(unsigned short width, unsigned short height);
     private:
 
         void TogglePlayerReady(unsigned char player, bool ready);
         // GGS von den Controls auslesen
         void UpdateGGS();
-        /// Aktualisiert eine Spielerreihe (löscht Controls und legt neue an)
+        /// Aktualisiert eine Spielerreihe (lÃ¶scht Controls und legt neue an)
         void UpdatePlayerRow(const unsigned row);
 
-        /// Füllt die Felder einer Reihe aus
+        /// FÃ¼llt die Felder einer Reihe aus
         void ChangeTeam(const unsigned i, const unsigned char nr);
         void ChangeReady(const unsigned i, const bool ready);
         void ChangeNation(const unsigned i, const Nation nation);

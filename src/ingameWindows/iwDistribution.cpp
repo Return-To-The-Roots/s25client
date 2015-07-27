@@ -1,4 +1,4 @@
-// $Id: iwDistribution.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: iwDistribution.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -59,7 +59,7 @@ iwDistribution::iwDistribution(void)
 {
     ctrlGroup* group;
 
-    // Werte für die Progressbars
+    // Werte fÃ¼r die Progressbars
     //const GameClientPlayer *player = GAMECLIENT.GetLocalPlayer();
 
     // Tab Control
@@ -83,7 +83,7 @@ iwDistribution::iwDistribution(void)
     // Getreidegruppe
     group = tab->AddTab(LOADER.GetImageN("io", 90), _("Grain"), TAB_CORN);
 
-    // Mühle
+    // MÃ¼hle
     group->AddText(0, width / 2,  60, _("Mill"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, SmallFont);
     (void) group->AddProgress(1, PROGRESS_BORDER_DISTANCE - tab->GetX(false),  60, width - 2 * PROGRESS_BORDER_DISTANCE, 20, TC_GREY, 139, 138, 10);
     // Schweinezucht
@@ -118,7 +118,7 @@ iwDistribution::iwDistribution(void)
     // Eisenschmelze
     group->AddText(2, width / 2, 100, _("Iron smelter"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, SmallFont);
     (void) group->AddProgress(3, PROGRESS_BORDER_DISTANCE - tab->GetX(false), 100, width - 2 * PROGRESS_BORDER_DISTANCE, 20, TC_GREY, 139, 138, 10);
-    // Münzprägerei
+    // MÃ¼nzprÃ¤gerei
     group->AddText(4, width / 2, 140, _("Mint"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, SmallFont);
     (void) group->AddProgress(5, PROGRESS_BORDER_DISTANCE - tab->GetX(false), 140, width - 2 * PROGRESS_BORDER_DISTANCE, 20, TC_GREY, 139, 138, 10);
 
@@ -145,10 +145,10 @@ iwDistribution::iwDistribution(void)
     group->AddText(4, 120, 140, _("Shipyard"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, SmallFont);
     (void) group->AddProgress(5, PROGRESS_BORDER_DISTANCE - tab->GetX(false), 140, width - 2 * PROGRESS_BORDER_DISTANCE, 20, TC_GREY, 139, 138, 10);
 
-    // Wasserbüffel äh -gruppe ;-)
+    // WasserbÃ¼ffel Ã¤h -gruppe ;-)
     group = tab->AddTab(LOADER.GetImageN("io", 92), _("Water"), TAB_WATER);
 
-    // Bäckerei
+    // BÃ¤ckerei
     group->AddText(0, width / 2,  60, _("Bakery"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, SmallFont);
     (void) group->AddProgress(1, PROGRESS_BORDER_DISTANCE - tab->GetX(false),  60, width - 2 * PROGRESS_BORDER_DISTANCE, 20, TC_GREY, 139, 138, 10);
     // Brauerei
@@ -167,10 +167,10 @@ iwDistribution::iwDistribution(void)
 
     UpdateSettings();
 
-    // Gruppe auswählen
+    // Gruppe auswÃ¤hlen
     tab->SetSelection(0);
 
-    // Timer für die Übertragung der Daten via Netzwerk
+    // Timer fÃ¼r die Ãœbertragung der Daten via Netzwerk
     AddTimer(1, 2000);
 
 
@@ -202,7 +202,7 @@ void iwDistribution::TransmitSettings()
             j += GROUP_SIZES[i - 1];
         }
 
-        // und übermitteln
+        // und Ã¼bermitteln
         GAMECLIENT.AddGC(new gc::ChangeDistribution(GAMECLIENT.visual_settings.distribution));
 
         settings_changed = false;
@@ -220,13 +220,13 @@ void iwDistribution::Msg_Timer(const unsigned int ctrl_id)
         // Im Replay aktualisieren wir die Werte
         UpdateSettings();
     else
-        // Im normalen Spielmodus schicken wir den ganzen Spaß ab
+        // Im normalen Spielmodus schicken wir den ganzen SpaÃŸ ab
         TransmitSettings();
 }
 
 void iwDistribution::UpdateSettings()
 {
-    // Globale Id für alle Gruppen für die visual_settings
+    // Globale Id fÃ¼r alle Gruppen fÃ¼r die visual_settings
     unsigned vsi = 0;
     // Alle Gruppen durchgehen und Einstellungen festlegen
     for(unsigned g = 0; g < 7; ++g)

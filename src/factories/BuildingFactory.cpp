@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+ï»¿// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -32,7 +32,7 @@ noBuilding* BuildingFactory::CreateBuilding(GameWorldGame* gwg, const BuildingTy
         break;
     case BLD_HARBORBUILDING:
         bld = new nobHarborBuilding(pt, player, nation);
-        // Bei Häfen zusätzlich der Wirtschaftsverwaltung Bescheid sagen
+        // Bei HÃ¤fen zusÃ¤tzlich der Wirtschaftsverwaltung Bescheid sagen
         // Achtung: das kann NIOHT in den Konstruktor von nobHarborBuilding!
         gwg->GetPlayer(player)->AddHarbor(static_cast<nobHarborBuilding*>(bld));
         break;

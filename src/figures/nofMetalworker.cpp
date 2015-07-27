@@ -1,4 +1,4 @@
-// $Id: nofMetalworker.cpp 9447 2014-06-20 21:40:55Z jh $
+ï»¿// $Id: nofMetalworker.cpp 9447 2014-06-20 21:40:55Z jh $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -59,13 +59,13 @@ void nofMetalworker::DrawWorking(int x, int y)
     LOADER.GetImageN("rom_bobs", 190 + (now_id = GAMECLIENT.Interpolate(230, current_ev)) % 23)
     ->Draw(x + offsets[workplace->GetNation()][0], y + offsets[workplace->GetNation()][1], 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(workplace->GetPlayer())->color]);
 
-    // Hämmer-Sound
+    // HÃ¤mmer-Sound
     if(now_id % 23 == 3 || now_id % 23 == 7)
     {
         SOUNDMANAGER.PlayNOSound(72, this, now_id, 100);
         was_sounding = true;
     }
-    // Säge-Sound 1
+    // SÃ¤ge-Sound 1
     else if(now_id % 23 == 9)
     {
         SOUNDMANAGER.PlayNOSound(54, this, now_id);
@@ -98,7 +98,7 @@ const GoodType TOOLS_SETTINGS_IDS[12] =
 {
     GD_TONGS,       // Zange
     GD_AXE,         // Axt,
-    GD_SAW,         // Säge
+    GD_SAW,         // SÃ¤ge
     GD_PICKAXE,     // Spitzhacke
     GD_HAMMER,      // Hammer
     GD_SHOVEL,      // Schaufel
@@ -148,19 +148,19 @@ GoodType nofMetalworker::ProduceWare()
         }
     }
 
-    // Je nach Werkzeugeinstellungen zufällig ein Werkzeug produzieren, je größer der Balken,
-    // desto höher jeweils die Wahrscheinlichkeit
+    // Je nach Werkzeugeinstellungen zufÃ¤llig ein Werkzeug produzieren, je grÃ¶ÃŸer der Balken,
+    // desto hÃ¶her jeweils die Wahrscheinlichkeit
     unsigned short all_size = 0;
 
     for(unsigned i = 0; i < 12; ++i)
         all_size += gwg->GetPlayer(player)->tools_settings[i];
 
-    // Wenn alle auf 0 gesetzt sind, einfach eins zufällig auswählen
+    // Wenn alle auf 0 gesetzt sind, einfach eins zufÃ¤llig auswÃ¤hlen
     if(!all_size)
         return TOOLS_SETTINGS_IDS[RANDOM.Rand(__FILE__, __LINE__, obj_id, 12)];
 
-    // Ansonsten Array mit den Werkzeugtypen erstellen und davon dann eins zufällig zurückliefern, je höher Wahr-
-    // scheinlichkeit (Balken), desto öfter im Array enthalten
+    // Ansonsten Array mit den Werkzeugtypen erstellen und davon dann eins zufÃ¤llig zurÃ¼ckliefern, je hÃ¶her Wahr-
+    // scheinlichkeit (Balken), desto Ã¶fter im Array enthalten
     unsigned char* random_array = new unsigned char[all_size];
     unsigned pos = 0;
 

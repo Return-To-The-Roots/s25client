@@ -1,4 +1,4 @@
-// $Id: dskOptions.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: dskOptions.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -69,7 +69,7 @@ static char THIS_FILE[] = __FILE__;
  */
 dskOptions::dskOptions(void) : Desktop(LOADER.GetImageN("setup013", 0))
 {
-    // Zurück
+    // ZurÃ¼ck
     AddTextButton(0, 300, 550, 200, 22,   TC_RED1, _("Back"), NormalFont);
 
     // "Optionen"
@@ -149,7 +149,7 @@ dskOptions::dskOptions(void) : Desktop(LOADER.GetImageN("setup013", 0))
     // TODO: not implemented
     //combo->AddString(_("Socks v5"));
 
-    // und auswählen
+    // und auswÃ¤hlen
     switch(SETTINGS.proxy.typ)
     {
         default:    {   combo->SetSelection(0); } break;
@@ -174,13 +174,13 @@ dskOptions::dskOptions(void) : Desktop(LOADER.GetImageN("setup013", 0))
     upnp->SetSelection( (SETTINGS.global.use_upnp == 1) ? 10001 : 10002 );
 
 
-    if(!GLOBALVARS.ext_vbo) // VBO unterstützt?
+    if(!GLOBALVARS.ext_vbo) // VBO unterstÃ¼tzt?
         optiongroup->AddText(  56, 280, 230, _("not supported"), COLOR_YELLOW, 0, NormalFont);
     else
         optiongroup->AddTextButton(56, 280, 225, 190, 22, TC_GREY, _("On"), NormalFont);
     optiongroup->AddTextButton(57, 480, 225, 190, 22, TC_GREY, _("Off"), NormalFont);
 
-    // "Auflösung"
+    // "AuflÃ¶sung"
     groupGrafik->AddText(  40,  80, 80, _("Fullscreen resolution:"), COLOR_YELLOW, 0, NormalFont);
     groupGrafik->AddComboBox(41, 280, 75, 120, 22, TC_GREY, NormalFont, 150);
 
@@ -198,7 +198,7 @@ dskOptions::dskOptions(void) : Desktop(LOADER.GetImageN("setup013", 0))
     groupGrafik->AddText(  54,  80, 230, _("Vertex Buffer Objects:"), COLOR_YELLOW, 0, NormalFont);
     optiongroup = groupGrafik->AddOptionGroup(55, ctrlOptionGroup::CHECK, scale);
 
-    if(!GLOBALVARS.ext_vbo) // VBO unterstützt?
+    if(!GLOBALVARS.ext_vbo) // VBO unterstÃ¼tzt?
         optiongroup->AddText(  56, 280, 230, _("not supported"), COLOR_YELLOW, 0, NormalFont);
     else
         optiongroup->AddTextButton(56, 280, 225, 190, 22, TC_GREY, _("On"), NormalFont);
@@ -260,7 +260,7 @@ dskOptions::dskOptions(void) : Desktop(LOADER.GetImageN("setup013", 0))
     // Musicplayer-Button
     groupSound->AddTextButton(71, 280, 175, 190, 22, TC_GREY, _("Music player"), NormalFont);
 
-    // "Allgemein" auswählen
+    // "Allgemein" auswÃ¤hlen
     optiongroup = GetCtrl<ctrlOptionGroup>(10);
     optiongroup->SetSelection(11, true);
 
@@ -271,7 +271,7 @@ dskOptions::dskOptions(void) : Desktop(LOADER.GetImageN("setup013", 0))
     // Videomodi auflisten
     VIDEODRIVER.ListVideoModes(video_modes);
 
-    // Und zu der Combobox hinzufügen
+    // Und zu der Combobox hinzufÃ¼gen
     for(unsigned i = 0; i < video_modes.size(); ++i)
     {
         // >=800x600, alles andere macht keinen Sinn
@@ -282,7 +282,7 @@ dskOptions::dskOptions(void) : Desktop(LOADER.GetImageN("setup013", 0))
 
             groupGrafik->GetCtrl<ctrlComboBox>(41)->AddString(str);
 
-            // Ist das die aktuelle Auflösung? Dann selektieren
+            // Ist das die aktuelle AuflÃ¶sung? Dann selektieren
             if(video_modes[i].width == SETTINGS.video.fullscreen_width &&
                     video_modes[i].height == SETTINGS.video.fullscreen_height)
                 groupGrafik->GetCtrl<ctrlComboBox>(41)->SetSelection(i);
@@ -298,7 +298,7 @@ dskOptions::dskOptions(void) : Desktop(LOADER.GetImageN("setup013", 0))
     optiongroup = groupGrafik->GetCtrl<ctrlOptionGroup>(47);
     optiongroup->SetSelection( (SETTINGS.video.fullscreen ? 48 : 49) );
 
-    // "Limit Framerate" füllen
+    // "Limit Framerate" fÃ¼llen
     optiongroup = groupGrafik->GetCtrl<ctrlOptionGroup>(51);
     for(unsigned char i = 0; i < Settings::SCREEN_REFRESH_RATES_COUNT; ++i)
     {
@@ -319,7 +319,7 @@ dskOptions::dskOptions(void) : Desktop(LOADER.GetImageN("setup013", 0))
             default:
             {
                 // frameratebegrenzungen mit Bildabstand kleiner 13ms
-                // wird unter windows nicht mehr aufgelöst
+                // wird unter windows nicht mehr aufgelÃ¶st
 #ifdef _WIN32
                 if(960 / Settings::SCREEN_REFRESH_RATES[i] > 13)
 #endif // _WIN32
@@ -430,7 +430,7 @@ void dskOptions::Msg_Group_ComboSelectItem(const unsigned int group_id, const un
             if(SETTINGS.proxy.typ != 4)
                 GetCtrl<ctrlGroup>(21)->GetCtrl<ctrlOptionGroup>(301)->GetCtrl<ctrlTextButton>(302)->Enable(true);
         } break;
-        case 41: // Auflösung
+        case 41: // AuflÃ¶sung
         {
             SETTINGS.video.fullscreen_width = video_modes[selection].width;
             SETTINGS.video.fullscreen_height = video_modes[selection].height;
@@ -438,7 +438,7 @@ void dskOptions::Msg_Group_ComboSelectItem(const unsigned int group_id, const un
         case 51: // Limit Framerate
         {
             // 0: aus
-            // 1: vsync, wenn verfügbar, ansonsten schon eine Framerate
+            // 1: vsync, wenn verfÃ¼gbar, ansonsten schon eine Framerate
             // 2: Framerates
             switch(selection)
             {
@@ -580,19 +580,19 @@ void dskOptions::Msg_ButtonClick(const unsigned int ctrl_id)
 {
     switch(ctrl_id)
     {
-        case 0: // "Zurück"
+        case 0: // "ZurÃ¼ck"
         {
             ctrlGroup* groupAllgemein = GetCtrl<ctrlGroup>(21);
 
             // Name abspeichern
             SETTINGS.lobby.name = groupAllgemein->GetCtrl<ctrlEdit>(31)->GetText();
-            // Proxy abspeichern, überprüfung der einstellung übernimmt SETTINGS.Save()d
+            // Proxy abspeichern, Ã¼berprÃ¼fung der einstellung Ã¼bernimmt SETTINGS.Save()d
             SETTINGS.proxy.proxy = groupAllgemein->GetCtrl<ctrlEdit>(37)->GetText();
             SETTINGS.proxy.port = atoi(groupAllgemein->GetCtrl<ctrlEdit>(371)->GetText().c_str());
 
             SETTINGS.Save();
 
-            // Auflösung/Vollbildmodus geändert?
+            // AuflÃ¶sung/Vollbildmodus geÃ¤ndert?
 #ifdef _WIN32
             if((SETTINGS.video.fullscreen_width != VIDEODRIVER.GetScreenWidth()
                     ||

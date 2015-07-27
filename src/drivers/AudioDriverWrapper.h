@@ -1,4 +1,4 @@
-// $Id: AudioDriverWrapper.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: AudioDriverWrapper.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -39,10 +39,10 @@ class AudioDriverWrapper : public Singleton<AudioDriverWrapper>, public AudioDri
 
         ~AudioDriverWrapper();
 
-        /// Läd den Treiber
+        /// LÃ¤d den Treiber
         bool LoadDriver(void);
 
-        /// Lädt einen Sound.
+        /// LÃ¤dt einen Sound.
         Sound* LoadEffect(unsigned int data_type, unsigned char* data, unsigned int size);
         Sound* LoadMusic(unsigned int data_type, unsigned char* data, unsigned int size);
 
@@ -60,7 +60,7 @@ class AudioDriverWrapper : public Singleton<AudioDriverWrapper>, public AudioDri
         /// Wird ein Sound (noch) abgespielt?
         bool IsEffectPlaying(const unsigned play_id)
         { if(audiodriver) return audiodriver->IsEffectPlaying(play_id); else return false; }
-        /// Verändert die Lautstärke von einem abgespielten Sound (falls er noch abgespielt wird)
+        /// VerÃ¤ndert die LautstÃ¤rke von einem abgespielten Sound (falls er noch abgespielt wird)
         void ChangeVolume(const unsigned play_id, const unsigned char volume)
         { if(audiodriver) audiodriver->ChangeVolume(play_id, volume); }
 

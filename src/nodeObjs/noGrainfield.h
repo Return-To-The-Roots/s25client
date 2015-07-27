@@ -1,4 +1,4 @@
-// $Id: noGrainfield.h 9357 2014-04-25 15:35:25Z FloSoft $
+Ôªø// $Id: noGrainfield.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -33,13 +33,13 @@ class noGrainfield : public noCoordBase
         /// Status
         enum State
         {
-            STATE_GROWING_WAITING, /// Wachsphase, wartet auf den n‰chsten Wachstumsschub
-            STATE_GROWING, /// w‰chst
+            STATE_GROWING_WAITING, /// Wachsphase, wartet auf den n√§chsten Wachstumsschub
+            STATE_GROWING, /// w√§chst
             STATE_NORMAL, /// ist ausgewachsen und verdorrt nach einer Weile
             STATE_WITHERING /// verdorrt (verschwindet)
         } state;
 
-        /// Grˆﬂe des Feldes (0-3), 3 ist ausgewachsen
+        /// Gr√∂√üe des Feldes (0-3), 3 ist ausgewachsen
         unsigned char size;
 
         /// Wachs-Event
@@ -52,7 +52,7 @@ class noGrainfield : public noCoordBase
 
         ~noGrainfield();
 
-        /// Aufr‰ummethoden
+        /// Aufr√§ummethoden
     protected:  void Destroy_noGrainfield();
     public:     void Destroy() { Destroy_noGrainfield(); }
 
@@ -70,7 +70,7 @@ class noGrainfield : public noCoordBase
         /// Kann man es abernten?
         bool IsHarvestable() const { return size == 3 && state == STATE_NORMAL;}
 
-        /// Gibt die ID des abgeernteten Getreidefelds in der map_last zur¸ck
+        /// Gibt die ID des abgeernteten Getreidefelds in der map_last zur√ºck
         unsigned GetHarvestMapLstID() const { return 532 + type * 5 + 4; }
 
         /// Bauer beginnt dieses Feld abzuernten

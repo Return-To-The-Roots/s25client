@@ -1,4 +1,4 @@
-// $Id: iwDirectIPCreate.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+Ôªø// $Id: iwDirectIPCreate.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -78,7 +78,7 @@ iwDirectIPCreate::iwDirectIPCreate(unsigned int server_type)
     // "Starten"
     AddTextButton(7, 20, 240, 125, 22, TC_GREEN2, _("Start"), NormalFont);
 
-    // "Zur¸ck"
+    // "Zur√ºck"
     AddTextButton(8, 155, 240, 125, 22, TC_RED1, _("Back"), NormalFont);
 
     name->SetText(SETTINGS.lobby.name + _("'s Game"));
@@ -100,7 +100,7 @@ void iwDirectIPCreate::Msg_EditChange(const unsigned int ctrl_id)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Bei Enter n‰chstes Steuerelement ausw‰hlen
+ *  Bei Enter n√§chstes Steuerelement ausw√§hlen
  *
  *  @author FloSoft
  */
@@ -190,7 +190,7 @@ void iwDirectIPCreate::Msg_ButtonClick(const unsigned int ctrl_id)
             csi.ipv6 = SETTINGS.server.ipv6;
             csi.use_upnp = (SETTINGS.global.use_upnp == 1);
 
-            // Map ausw‰hlen
+            // Map ausw√§hlen
             WINDOWMANAGER.Switch(new dskSelectMap(csi));
         } break;
         case 8:

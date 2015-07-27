@@ -1,4 +1,4 @@
-// $Id: IngameWindow.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: IngameWindow.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -275,7 +275,7 @@ bool IngameWindow::Draw_()
     {
         // Seitenleisten
 
-        // Höhe
+        // HÃ¶he
         unsigned side_height = height - LOADER.GetImageN("resource", 36)->getHeight() - LOADER.GetImageN("resource", 45)->getHeight();
 
         // Wieviel mal nebeneinanderzeichnen?
@@ -314,7 +314,7 @@ bool IngameWindow::Draw_()
 
         // Clientbereich
 
-        // überhaupt ne Clienttexture gewnscht?
+        // Ã¼berhaupt ne Clienttexture gewnscht?
         if(background)
         {
             // Bereich ausrechnen
@@ -324,7 +324,7 @@ bool IngameWindow::Draw_()
             background->Draw(this->x + LOADER.GetImageN("resource", 38)->getWidth(), this->y + LOADER.GetImageN("resource", 36)->getHeight(), client_width, client_height, 0, 0, client_width, client_height);
         }
 
-        // Links und rechts unten die 2 kleinen Knäufe
+        // Links und rechts unten die 2 kleinen KnÃ¤ufe
         LOADER.GetImageN("resource", 45)->Draw(x, y + iwHeight - LOADER.GetImageN("resource", 45)->getHeight(), 0, 0, 0, 0, 0, 0);
         LOADER.GetImageN("resource", 45)->Draw(x + width - LOADER.GetImageN("resource", 45)->getWidth(), y + iwHeight - LOADER.GetImageN("resource", 45)->getHeight(), 0, 0, 0, 0, 0, 0);
 

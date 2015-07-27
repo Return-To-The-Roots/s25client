@@ -1,4 +1,4 @@
-// $Id: GameConsts.h 9394 2014-05-04 12:39:31Z FloSoft $
+ï»¿// $Id: GameConsts.h 9394 2014-05-04 12:39:31Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -91,7 +91,7 @@ enum Species
 
 const unsigned SPEC_COUNT = SPEC_NOTHING;
 
-/// Informationen über die  einzelnen Tierarten
+/// Informationen Ã¼ber die  einzelnen Tierarten
 struct AnimalConst
 {
     /// IDs in der map_lst, wo die Lauf-IDs von der jeweiligen Tierart beginnen
@@ -112,7 +112,7 @@ struct AnimalConst
 
 const AnimalConst ANIMALCONSTS[8] =
 {
-    {1600, 0, 1648, 1649, 8, 20}, // Polarbär
+    {1600, 0, 1648, 1649, 8, 20}, // PolarbÃ¤r
     {1700, 0, 1736, 1737, 6, 20}, // Hase hell
     {1740, 0, 1776, 1777, 6, 20}, // Hase dunkel
     {1800, 1840, 1836, 0, 6, 20}, // Fuchs
@@ -124,7 +124,7 @@ const AnimalConst ANIMALCONSTS[8] =
 
 const unsigned ANIMAL_MAX_ANIMATION_STEPS = 8;
 
-/// Verfügbare Statistikarten
+/// VerfÃ¼gbare Statistikarten
 enum StatisticType
 {
     STAT_COUNTRY = 0,
@@ -144,7 +144,7 @@ const unsigned STAT_TYPE_COUNT = 9;
 /// Anzahl Warenstatistikarten
 const unsigned STAT_MERCHANDISE_TYPE_COUNT = 14;
 
-/// Statistikzeiträume
+/// StatistikzeitrÃ¤ume
 enum StatisticTime
 {
     STAT_15M = 0,
@@ -153,7 +153,7 @@ enum StatisticTime
     STAT_16H
 };
 
-/// Anzahl Statistikzeiträume
+/// Anzahl StatistikzeitrÃ¤ume
 const unsigned STAT_TIME_COUNT = 4;
 
 /// Anzahl der Statistikschritte, die gespeichert werden
@@ -170,10 +170,10 @@ const unsigned char NATION_RTTR_TO_S2[4] =
 /// Konvertierungstabelle von Rohstoff-Indizes von den Bergwerken --> Map
 const unsigned char RESOURCES_MINE_TO_MAP[5] = {3, 0, 1, 2, 4};
 
-/// Geschwindigkeitsabstufungen - Längen der GFs in ms
+/// Geschwindigkeitsabstufungen - LÃ¤ngen der GFs in ms
 const unsigned SPEED_GF_LENGTHS[6] = {80, 60, 50, 40, 30, 1};
 
-/// Macht ggf. aus den verschiedenen Schilden der Nationen jeweils immer das römische normale Schild für
+/// Macht ggf. aus den verschiedenen Schilden der Nationen jeweils immer das rÃ¶mische normale Schild fÃ¼r
 /// die Warensysteme usw
 inline GoodType ConvertShields(const GoodType& good)
 {
@@ -182,7 +182,7 @@ inline GoodType ConvertShields(const GoodType& good)
             good == GD_SHIELDJAPANESE) ? GD_SHIELDROMANS : good;
 }
 
-/// Umgekehrte Konvertierung: Gibt den Schildtyp für jede Nation an
+/// Umgekehrte Konvertierung: Gibt den Schildtyp fÃ¼r jede Nation an
 const GoodType SHIELD_TYPES[NAT_COUNT] =
 {
     GD_SHIELDAFRICANS,
@@ -202,10 +202,10 @@ enum PactType
     NON_AGGRESSION_PACT
 };
 
-/// Anzahl der unterschiedlichen Bündnisse
+/// Anzahl der unterschiedlichen BÃ¼ndnisse
 const unsigned PACTS_COUNT = 2;
 
-/// Namen der Verträge
+/// Namen der VertrÃ¤ge
 const std::string PACT_NAMES[32] =
 {
     gettext_noop("Treaty of alliance"),
@@ -237,10 +237,10 @@ enum PostMessageType
 /// Maximale Nachrichtenanzahl im Briefkasten
 const unsigned MAX_POST_MESSAGES = 20;
 
-/// Konstante für die Pfadrichtung bei einer Schiffsverbindung
+/// Konstante fÃ¼r die Pfadrichtung bei einer Schiffsverbindung
 const unsigned char SHIP_DIR = 100;
 
-/// Anzahl der Späher bei einer Erkundungs-Expedition
+/// Anzahl der SpÃ¤her bei einer Erkundungs-Expedition
 const unsigned SCOUTS_EXPLORATION_EXPEDITION = 3;
 
 /// Number of "classical" objectives in a friendly match

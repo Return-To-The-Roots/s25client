@@ -1,4 +1,4 @@
-// $Id: AIResourceMap.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+﻿// $Id: AIResourceMap.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -83,7 +83,7 @@ bool AIResourceMap::FindGoodPosition(MapPoint& pt, int threshold, BuildingQualit
 {
     assert(pt.x < gwb->GetWidth() && pt.y < gwb->GetHeight());
 
-    // TODO was besseres w�r sch�n ;)
+    // TODO was besseres wär schön ;)
     if (radius == -1)
         radius = 30;
 
@@ -99,7 +99,7 @@ bool AIResourceMap::FindGoodPosition(MapPoint& pt, int threshold, BuildingQualit
                 {
                     if ((inTerritory && !nodes[i].owned) || nodes[i].farmed)
                         continue;
-                    if ( (nodes[i].bq >= size && nodes[i].bq < BQ_MINE) // normales Geb�ude
+                    if ( (nodes[i].bq >= size && nodes[i].bq < BQ_MINE) // normales Gebäude
                             || (nodes[i].bq == size))   // auch Bergwerke
                     {
                         pt = t2;
@@ -117,7 +117,7 @@ bool AIResourceMap::FindBestPosition(MapPoint& pt, BuildingQuality size, int min
 {
     assert(pt.x < gwb->GetWidth() && pt.y < gwb->GetHeight());
 
-    // TODO was besseres w�r sch�n ;)
+    // TODO was besseres wär schön ;)
     if (radius == -1)
         radius = 30;
 
@@ -136,7 +136,7 @@ bool AIResourceMap::FindBestPosition(MapPoint& pt, BuildingQuality size, int min
                 {
                     if (!nodes[i].reachable || (inTerritory && !nodes[i].owned) || nodes[i].farmed)
                         continue;
-                    if ( (nodes[i].bq >= size && nodes[i].bq < BQ_MINE) // normales Geb�ude
+                    if ( (nodes[i].bq >= size && nodes[i].bq < BQ_MINE) // normales Gebäude
                             || (nodes[i].bq == size))   // auch Bergwerke
                     {
                         best = t2;

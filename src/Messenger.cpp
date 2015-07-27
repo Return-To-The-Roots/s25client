@@ -1,4 +1,4 @@
-// $Id: Messenger.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: Messenger.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -41,7 +41,7 @@ const std::string CD_STRINGS[4] =
     "", "(All) ", "(Team) ", "(Enemies) "
 };
 
-/// Farbe für die einzelnen CDs
+/// Farbe fÃ¼r die einzelnen CDs
 const unsigned CD_COLORS[4] =
 {
     0, COLOR_WHITE, COLOR_GREEN, COLOR_RED
@@ -70,7 +70,7 @@ void Messenger::Draw()
             transparency = (transparency - transparency * (diff - 18000) / 2000);
 
 
-        // Auf Alphaposition verschieben (höchstes Byte)
+        // Auf Alphaposition verschieben (hÃ¶chstes Byte)
         transparency = transparency << 24;
 
         std::string cd_str = (it->cd == CD_SYSTEM) ? "" : _(CD_STRINGS[it->cd]);

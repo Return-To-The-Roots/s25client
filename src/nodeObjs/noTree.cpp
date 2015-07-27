@@ -1,4 +1,4 @@
-// $Id: noTree.cpp 9497 2014-11-29 10:41:59Z marcus $
+Ôªø// $Id: noTree.cpp 9497 2014-11-29 10:41:59Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -49,7 +49,7 @@ unsigned short noTree::DRAW_COUNTER = 0;
 noTree::noTree(const MapPoint pos, const unsigned char type, const unsigned char size)
     : noCoordBase(NOP_TREE, pos), type(type), size(size), event(0), produce_animal_event(0)
 {
-    // Wenn der Baum klein ist, muss sp‰ter mal wachsen
+    // Wenn der Baum klein ist, muss sp√§ter mal wachsen
     if(!size)
     {
         event = em->AddEvent(this, WAIT_LENGTH);
@@ -114,12 +114,12 @@ void noTree::Draw( int x,   int y)
             // Wenn er ausgewachsen ist, dann animiert zeichnen
             Loader::tree_cache[type][GAMECLIENT.GetGlobalAnimation(8, 7 - GetX() % 2, 3 + GetY() % 3, GetX()*GetY() * 10 * type)].draw(x, y);
 
-            // je mehr B‰ume gezeichnet, desto mehr Vogelgezwitscher
+            // je mehr B√§ume gezeichnet, desto mehr Vogelgezwitscher
             ++DRAW_COUNTER;
         } break;
         case STATE_GROWING_WAIT:
         {
-            // normal zeichnen, w‰chst nicht
+            // normal zeichnen, w√§chst nicht
             Loader::tree_cache[type][8 + size].draw(x, y);
         } break;
         case STATE_GROWING_GROW:
@@ -140,7 +140,7 @@ void noTree::Draw( int x,   int y)
         } break;
         case STATE_FALLING_FALL:
         {
-            // Umfallen beschleunigen --> f¸r erste Frames mehr Zeit
+            // Umfallen beschleunigen --> f√ºr erste Frames mehr Zeit
             unsigned short i = GAMECLIENT.Interpolate(9, event);
 
             if(i < 4)
@@ -166,7 +166,7 @@ void noTree::HandleEvent(const unsigned int id)
     {
         // Neues Tier erzeugen
         ProduceAnimal();
-        // n‰chstes Event anmelden
+        // n√§chstes Event anmelden
         produce_animal_event = em->AddEvent(this, 6000 + RANDOM.Rand(__FILE__, __LINE__, obj_id, 2000), 3);
 
         return;
@@ -176,18 +176,18 @@ void noTree::HandleEvent(const unsigned int id)
     {
         case STATE_GROWING_WAIT:
         {
-            // Der Baum hat gewartet, also w‰chst er jetzt
+            // Der Baum hat gewartet, also w√§chst er jetzt
             event = em->AddEvent(this, GROWING_LENGTH);
             state = STATE_GROWING_GROW;
 
         } break;
         case STATE_GROWING_GROW:
         {
-            // Wenn er ausgewachsen ist, dann nicht, ansonsten nochmal ein "Warteevent" anmelden, damit er noch weiter w‰chst
+            // Wenn er ausgewachsen ist, dann nicht, ansonsten nochmal ein "Warteevent" anmelden, damit er noch weiter w√§chst
             if(++size != 3)
             {
                 event = em->AddEvent(this, WAIT_LENGTH);
-                // Erstmal wieder bis zum n‰chsten Wachsstumsschub warten
+                // Erstmal wieder bis zum n√§chsten Wachsstumsschub warten
                 state = STATE_GROWING_WAIT;
             }
             else
@@ -213,7 +213,7 @@ void noTree::HandleEvent(const unsigned int id)
         } break;
         case STATE_FALLING_FALLEN:
         {
-            // Baum verschwindet nun und es bleibt ein Baumstumpf zur¸ck
+            // Baum verschwindet nun und es bleibt ein Baumstumpf zur√ºck
             event = 0;
             em->AddToKillList(this);
             gwg->SetNO(new noDisappearingMapEnvObject(pos, 531), pos);
@@ -237,7 +237,7 @@ FOWObject* noTree::CreateFOWObject() const
 
 void noTree::FallSoon()
 {
-    // Warten bis der Holzf‰ller fertig ist und der Baum dann umf‰llt
+    // Warten bis der Holzf√§ller fertig ist und der Baum dann umf√§llt
     event = em->AddEvent(this, 105);
     state = STATE_FALLING_WAIT;
 }
@@ -254,7 +254,7 @@ void noTree::DontFall()
 
 void noTree::ProduceAnimal()
 {
-    // neues Tier erzeugen, zuf‰lliger Typ
+    // neues Tier erzeugen, zuf√§lliger Typ
     Species possible_species[6] =
     {
         SPEC_RABBITWHITE,

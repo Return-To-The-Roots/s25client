@@ -1,4 +1,4 @@
-// $Id: GameWorldView.cpp 7359 2011-08-10 10:21:18Z FloSoft $
+﻿// $Id: GameWorldView.cpp 7359 2011-08-10 10:21:18Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -91,12 +91,12 @@ void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool
 
     glTranslatef((GLfloat) pos.x, (GLfloat) pos.y, 0.0f);
 
-    // Draw-Counter der Bäume zurücksetzen vor jedem Zeichnen
+    // Draw-Counter der BÃ¤ume zurÃ¼cksetzen vor jedem Zeichnen
     noTree::ResetDrawCounter();
 
     for(int y = firstPt.y; y < lastPt.y; ++y)
     {
-        // Figuren speichern, die in dieser Zeile gemalt werden müssen
+        // Figuren speichern, die in dieser Zeile gemalt werden mÃ¼ssen
         // und sich zwischen zwei Zeilen befinden, da sie dazwischen laufen
         std::vector<ObjectBetweenLines> between_lines;
 
@@ -265,7 +265,7 @@ void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool
                 int xpos = (int)(gwv->GetTerrainRenderer()->GetTerrainX(t) - offset.x + xo);
                 int ypos = (int)(gwv->GetTerrainRenderer()->GetTerrainY(t) - offset.y + yo);
 
-                // Name bzw Produktivität anzeigen
+                // Name bzw ProduktivitÃ¤t anzeigen
                 GO_Type got = gwv->GetNO(t)->GetGOT();
                 if(IsBaseBuilding(got))
                 {
@@ -368,7 +368,7 @@ void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool
 
     // GUI-Symbole auf der Map zeichnen
 
-    // Falls im StraÃenbaumodus: Punkte um den aktuellen StraÃenbaupunkt herum ermitteln
+    // Falls im StraÃƒÂŸenbaumodus: Punkte um den aktuellen StraÃƒÂŸenbaupunkt herum ermitteln
     MapPoint road_points[6];
 
     if(rb.mode)
@@ -524,7 +524,7 @@ void GameWorldView::DrawBoundaryStone(const int x, const int y, const MapPoint t
     }
 }
 
-/// Schaltet Produktivitäten/Namen komplett aus oder an
+/// Schaltet ProduktivitÃ¤ten/Namen komplett aus oder an
 void GameWorldView::ShowNamesAndProductivity()
 {
     if(show_productivity && show_names)

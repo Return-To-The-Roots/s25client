@@ -1,4 +1,4 @@
-// $Id: nofPassiveSoldier.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: nofPassiveSoldier.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -111,7 +111,7 @@ void nofPassiveSoldier::HandleDerivedEvent(const unsigned int id)
 void nofPassiveSoldier::Heal()
 {
     // Schon ein Event angemeldet?
-    // Dann muss dieses entfernt werden, wahrscheinlich war er zuvor draußen gewesen
+    // Dann muss dieses entfernt werden, wahrscheinlich war er zuvor drauÃŸen gewesen
     if(healing_event)
     {
         em->RemoveEvent(healing_event);
@@ -126,12 +126,12 @@ void nofPassiveSoldier::Heal()
 
 void nofPassiveSoldier::GoalReached()
 {
-    // im Militärgebäude angekommen
+    // im MilitÃ¤rgebÃ¤ude angekommen
 
-    // mich hinzufügen
+    // mich hinzufÃ¼gen
     static_cast<nobMilitary*>(building)->AddPassiveSoldier(this);
 
-    // und wir können uns auch aus der Laufliste erstmal entfernen
+    // und wir kÃ¶nnen uns auch aus der Laufliste erstmal entfernen
     gwg->RemoveFigure(this, pos);
 }
 
@@ -141,7 +141,7 @@ void nofPassiveSoldier::InBuildingDestroyed()
 
     // Auf die Karte setzen
     gwg->AddFigure(this, pos);
-    // Erstmal in zufällige Richtung rammeln
+    // Erstmal in zufÃ¤llige Richtung rammeln
     StartWandering();
 
     StartWalking(RANDOM.Rand(__FILE__, __LINE__, obj_id, 6));
@@ -162,20 +162,20 @@ void nofPassiveSoldier::LeaveBuilding()
 
 void nofPassiveSoldier::Upgrade()
 {
-    // Einen Rang höher
+    // Einen Rang hÃ¶her
     job = Job(unsigned(job) + 1);
 
     // wieder heilen bzw. Hitpoints anpasen
     hitpoints = HITPOINTS[gwg->GetPlayer(player)->nation][job - JOB_PRIVATE];
 
-    // Inventur entsprechend erhöhen und verringern
+    // Inventur entsprechend erhÃ¶hen und verringern
     gwg->GetPlayer(player)->IncreaseInventoryJob(job, 1);
     gwg->GetPlayer(player)->DecreaseInventoryJob(Job(unsigned(job) - 1), 1);
 }
 
 void nofPassiveSoldier::Walked()
 {
-    // Das dürfte nich passiern!
+    // Das dÃ¼rfte nich passiern!
     assert(false);
 }
 

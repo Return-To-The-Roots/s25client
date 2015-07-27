@@ -1,4 +1,4 @@
-// $Id: AudioDriverWrapper.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: AudioDriverWrapper.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -44,7 +44,7 @@ AudioDriverWrapper::~AudioDriverWrapper()
     delete audiodriver;
 }
 
-/// Lädt den Treiber
+/// LÃ¤dt den Treiber
 bool AudioDriverWrapper::LoadDriver(void)
 {
     // DLL laden
@@ -70,12 +70,12 @@ bool AudioDriverWrapper::LoadDriver(void)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Lädt einen Sound.
+ *  LÃ¤dt einen Sound.
  *
  *  @param[in] type      Typ (Musik/Effekt)
  *  @param[in] data_type Datentyp
  *  @param[in] data      Datenblock
- *  @param[in] size      Größe des Datenblocks
+ *  @param[in] size      GrÃ¶ÃŸe des Datenblocks
  *
  *  @return Sounddeskriptor bei Erfolg, @p NULL bei Fehler
  *

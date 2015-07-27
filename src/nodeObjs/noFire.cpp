@@ -1,4 +1,4 @@
-// $Id: noFire.cpp 9510 2014-11-29 10:51:36Z marcus $
+ï»¿// $Id: noFire.cpp 9510 2014-11-29 10:51:36Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -54,7 +54,7 @@ void noFire::Destroy_noFire()
 {
     // nix mehr hier
     gwg->SetNO(0, pos);
-    // Bauplätze drumrum neu berechnen
+    // BauplÃ¤tze drumrum neu berechnen
     gwg->RecalcBQAroundPoint(pos);
 
     // Evtl Sounds vernichten
@@ -92,7 +92,7 @@ void noFire::Draw(int x, int y)
         LOADER.GetMapImageN(2500 + size * 8 + id % 8)->Draw(x, y, 0, 0, 0, 0, 0, 0);
         LOADER.GetMapImageN(2530 + size * 8 + id % 8)->Draw(x, y, 0, 0, 0, 0, 0, 0, 0xC0101010);
 
-        // Feuersound abspielen in zufälligen Intervallen
+        // Feuersound abspielen in zufÃ¤lligen Intervallen
         if(VIDEODRIVER.GetTickCount() - last_sound > next_interval)
         {
             SOUNDMANAGER.PlayNOSound(96, this, id);

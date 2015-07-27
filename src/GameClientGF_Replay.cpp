@@ -1,4 +1,4 @@
-// $Id: GameClientGF_Replay.cpp 9524 2014-12-01 14:06:14Z marcus $
+ï»¿// $Id: GameClientGF_Replay.cpp 9524 2014-12-01 14:06:14Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -50,7 +50,7 @@ void GameClient::ExecuteGameFrame_Replay()
                 std::string message;
                 replayinfo.replay.ReadChatCommand(&player, &dest, message);
 
-                // Nächsten Zeitpunkt lesen
+                // NÃ¤chsten Zeitpunkt lesen
                 replayinfo.replay.ReadGF(&replayinfo.next_gf);
 
                 /*      char from[256];
@@ -66,14 +66,14 @@ void GameClient::ExecuteGameFrame_Replay()
                 unsigned short length;
 
                 replayinfo.replay.ReadGameCommand(&length, &data);
-                // Nächsten Zeitpunkt lesen
+                // NÃ¤chsten Zeitpunkt lesen
                 replayinfo.replay.ReadGF(&replayinfo.next_gf);
                 GameMessage_GameCommand msg(data, length);
 
-                // NCs ausführen (4 Bytes Checksumme und 1 Byte Player-ID überspringen)
+                // NCs ausfÃ¼hren (4 Bytes Checksumme und 1 Byte Player-ID Ã¼berspringen)
                 ExecuteAllGCs(msg, 0, 0);
 
-                // Replay ist NSYNC äh ASYNC!
+                // Replay ist NSYNC Ã¤h ASYNC!
                 if(msg.checksum != 0 && msg.checksum != (unsigned)randcheckinfo.rand)
                 {
                     if(replayinfo.async == 0)
@@ -107,7 +107,7 @@ void GameClient::ExecuteGameFrame_Replay()
         }
     }
 
-    // Frame ausführen
+    // Frame ausfÃ¼hren
     NextGF();
 
     // Replay zu Ende?

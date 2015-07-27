@@ -1,4 +1,4 @@
-// $Id: nofArmorer.h 9567 2015-01-03 19:34:57Z marcus $
+ï»¿// $Id: nofArmorer.h 9567 2015-01-03 19:34:57Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -24,17 +24,17 @@
 
 class nobUsualBuilding;
 
-/// Klasse für den Schmied
+/// Klasse fÃ¼r den Schmied
 class nofArmorer : public nofWorkman
 {
     private:
 
-        /// Bestimmt, was der Schmied als nächstes schmieden soll (immer Schwert-Schild im Wechsel)
+        /// Bestimmt, was der Schmied als nÃ¤chstes schmieden soll (immer Schwert-Schild im Wechsel)
         bool sword_shield;
 
     private:
         void DrawWorking(int x, int y);
-        /// Gibt die ID in JOBS.BOB zurück, wenn der Beruf Waren rausträgt (bzw rein)
+        /// Gibt die ID in JOBS.BOB zurÃ¼ck, wenn der Beruf Waren raustrÃ¤gt (bzw rein)
         unsigned short GetCarryID() const;
         /// Der Arbeiter erzeugt eine Ware
         GoodType ProduceWare();

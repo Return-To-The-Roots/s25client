@@ -1,4 +1,4 @@
-// $Id: dskGameInterface.h 9357 2014-04-25 15:35:25Z FloSoft $
+Ôªø// $Id: dskGameInterface.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -39,17 +39,17 @@ class GameWorldViewer;
 
 enum RoadMode
 {
-    RM_DISABLED, // kein Straﬂenbau
-    RM_NORMAL, // Bau einer normalen Straﬂe
-    RM_BOAT // Bau einer Wasserstraﬂe
+    RM_DISABLED, // kein Stra√üenbau
+    RM_NORMAL, // Bau einer normalen Stra√üe
+    RM_BOAT // Bau einer Wasserstra√üe
 };
 
 struct RoadsBuilding
 {
-    RoadMode mode;   ///< Straﬂenmodus
+    RoadMode mode;   ///< Stra√üenmodus
 
     MapPoint point, start;
-    std::vector<unsigned char> route;  ///< Richtungen der gebauten Straﬂe
+    std::vector<unsigned char> route;  ///< Richtungen der gebauten Stra√üe
 };
 
 class dskGameInterface :
@@ -60,23 +60,23 @@ class dskGameInterface :
 {
     private:
 
-        // Interface f¸r das Spiel
+        // Interface f√ºr das Spiel
         GameWorldViewer* gwv;
 
         CustomBorderBuilder cbb;
 
         libsiedler2::ArchivInfo borders;
 
-        /// Straﬂenbauzeug
+        /// Stra√üenbauzeug
         RoadsBuilding road;
 
-        // Aktuell geˆffnetes Aktionsfenster
+        // Aktuell ge√∂ffnetes Aktionsfenster
         iwAction* actionwindow;
-        // Aktuell geˆffnetes Straﬂenbaufenster
+        // Aktuell ge√∂ffnetes Stra√üenbaufenster
         iwRoadWindow* roadwindow;
         // Is der lokale Spieler der Host?
         bool ishost;
-        // Messenger f¸r die Nachrichten
+        // Messenger f√ºr die Nachrichten
         Messenger messenger;
         // Aktuell selektierter Punkt auf der Karte
         MapPoint selected;
@@ -94,19 +94,19 @@ class dskGameInterface :
         /// Called whenever Settings are changed ingame
         void SettingsChanged(void);
 
-        /// L‰sst das Spiel laufen (zeichnen)
+        /// L√§sst das Spiel laufen (zeichnen)
         void Run();
 
-        /// Wird aufgerufen, wenn eine Taste gedr¸ckt wurde
+        /// Wird aufgerufen, wenn eine Taste gedr√ºckt wurde
         void KeyPressed(KeyEvent ke);
         /// Wird bei Linksmausklicks aufgerufen
         void MouseClicked(MouseCoords* mc);
 
-        /// Aktiviert Straﬂenbaumodus bzw gibt zur¸ck, ob er aktiviert ist
+        /// Aktiviert Stra√üenbaumodus bzw gibt zur√ºck, ob er aktiviert ist
         void ActivateRoadMode(const RoadMode rm);
         RoadMode GetRoadMode() const { return road.mode; }
 
-        /// Baut die gew¸nschte bis jetzt noch visuelle Straﬂe (schickt Anfrage an Server)
+        /// Baut die gew√ºnschte bis jetzt noch visuelle Stra√üe (schickt Anfrage an Server)
         void CommandBuildRoad();
 
         /// Wird aufgerufen, wenn die Fenster geschlossen werden
@@ -118,24 +118,24 @@ class dskGameInterface :
         friend class RoadSegment;
 
         // Sucht einen Weg von road_point_x/y zu cselx/y und baut ihn ( nur visuell )
-        // Bei Wasserwegen kann die Reichweite nicht bis zum gew¸nschten
-        // Punkt reichen. Dann werden die Zielkoordinaten ge‰ndert, daher
+        // Bei Wasserwegen kann die Reichweite nicht bis zum gew√ºnschten
+        // Punkt reichen. Dann werden die Zielkoordinaten ge√§ndert, daher
         // call-by-reference
         bool BuildRoadPart(MapPoint& cSel, bool end);
         // Prft, ob x;y auf der bereits gebauten Strecke liegt und gibt die Position+1 zurck vom Startpunkt der Strecke aus
         // wenn der Punkt nicht draufliegt, kommt 0 zurck
         unsigned TestBuiltRoad(const MapPoint pt);
-        // Zeigt das Stra‰cnfenster an und entscheidet selbstst‰cdig, ob man eine Flagge an road_point_x/y bauen kann,
+        // Zeigt das Stra√§cnfenster an und entscheidet selbstst√§cdig, ob man eine Flagge an road_point_x/y bauen kann,
         // ansonsten gibt's nur nen Button zum Abbrechen
         void ShowRoadWindow(int mouse_x, int mouse_y);
-        /// Zeigt das Actionwindow an, bei Flaggen werden z.B. noch ber¸cksichtigt, obs ne besondere Flagge ist usw
+        /// Zeigt das Actionwindow an, bei Flaggen werden z.B. noch ber√ºcksichtigt, obs ne besondere Flagge ist usw
         void ShowActionWindow(const iwAction::Tabs& action_tabs, MapPoint cSel, int mouse_x, int mouse_y, const bool enable_military_buildings);
 
     private:
 
         void Resize_(unsigned short width, unsigned short height);
 
-        /// Baut Weg zur¸ck von Ende bis zu start_id
+        /// Baut Weg zur√ºck von Ende bis zu start_id
         void DemolishRoad(const unsigned start_id);
 
         /// Updatet das Post-Icon mit der Nachrichtenanzahl und der Taube
@@ -163,16 +163,16 @@ class dskGameInterface :
         void CI_NewPostMessage(const unsigned postmessages_count);
         void CI_PostMessageDeleted(const unsigned postmessages_count);
 
-        /// Wird aufgerufen, wann immer eine Flagge zerstˆrt wurde, da so evtl der Wegbau abgebrochen werden muss
+        /// Wird aufgerufen, wann immer eine Flagge zerst√∂rt wurde, da so evtl der Wegbau abgebrochen werden muss
         void GI_FlagDestroyed(const MapPoint pt);
         /// Spielerwechsel
         void CI_PlayersSwapped(const unsigned player1, const unsigned player2);
 
         /// Wenn ein Spieler verloren hat
         void GI_PlayerDefeated(const unsigned player_id);
-        /// Es wurde etwas Minimap entscheidendes ge‰ndert --> Minimap updaten
+        /// Es wurde etwas Minimap entscheidendes ge√§ndert --> Minimap updaten
         void GI_UpdateMinimap(const MapPoint pt);
-        /// B¸ndnisvertrag wurde abgeschlossen oder abgebrochen --> Minimap updaten
+        /// B√ºndnisvertrag wurde abgeschlossen oder abgebrochen --> Minimap updaten
         void GI_TreatyOfAllianceChanged();
 
         void GI_Winner(const unsigned player_id);

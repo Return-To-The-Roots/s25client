@@ -1,4 +1,4 @@
-// $Id: ctrlOptionGroup.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+Ôªø// $Id: ctrlOptionGroup.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -60,13 +60,13 @@ bool ctrlOptionGroup::Draw_(void)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  w‰hlt einen Button aus der Gruppe aus.
+ *  w√§hlt einen Button aus der Gruppe aus.
  *
  *  @author OLiver
  */
 void ctrlOptionGroup::SetSelection(unsigned short selection, bool notify)
 {
-    // Aktuellen ausgew‰hlten Button wieder normal machen
+    // Aktuellen ausgew√§hlten Button wieder normal machen
     if(this->selection != 0xFFFF)
     {
         ctrlButton* button = GetCtrl<ctrlButton>(this->selection);
@@ -79,7 +79,7 @@ void ctrlOptionGroup::SetSelection(unsigned short selection, bool notify)
         }
     }
 
-    // Neuen Button ausw‰hlen
+    // Neuen Button ausw√§hlen
     if(selection != 0xFFFF)
     {
         ctrlButton* button = GetCtrl<ctrlButton>(selection);

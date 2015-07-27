@@ -1,4 +1,4 @@
-// $Id: noBuildingSite.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: noBuildingSite.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -53,10 +53,10 @@ static char THIS_FILE[] = __FILE__;
 noBuildingSite::noBuildingSite(const BuildingType type, const MapPoint pos, const unsigned char player)
     : noBaseBuilding(NOP_BUILDINGSITE, type, pos, player), state(STATE_BUILDING), planer(0), builder(0), boards(0), stones(0), used_boards(0), used_stones(0), build_progress(0)
 {
-    // Überprüfen, ob die Baustelle erst noch planiert werden muss (nur bei mittleren/großen Gebäuden)
+    // ÃœberprÃ¼fen, ob die Baustelle erst noch planiert werden muss (nur bei mittleren/groÃŸen GebÃ¤uden)
     if(GetSize() == BQ_HOUSE || GetSize() == BQ_CASTLE || GetSize() == BQ_HARBOR)
     {
-        // Höhe auf dem Punkt, wo die Baustelle steht
+        // HÃ¶he auf dem Punkt, wo die Baustelle steht
         int altitude = gwg->GetNode(pos).altitude;
 
         for(unsigned i = 0; i < 6; ++i)
@@ -71,17 +71,17 @@ noBuildingSite::noBuildingSite(const BuildingType type, const MapPoint pos, cons
         }
     }
 
-    // Wir hätten gerne einen Planierer/Bauarbeiter...
+    // Wir hÃ¤tten gerne einen Planierer/Bauarbeiter...
     gwg->GetPlayer(player)->AddJobWanted((state == STATE_PLANING) ? JOB_PLANER : JOB_BUILDER, this);
 
     // Bauwaren anfordern
     OrderConstructionMaterial();
 
-    // Baustelle in den Index eintragen, damit die Wirtschaft auch Bescheid weiß
+    // Baustelle in den Index eintragen, damit die Wirtschaft auch Bescheid weiÃŸ
     gwg->GetPlayer(player)->AddBuildingSite(this);
 }
 
-/// Konstruktor für Hafenbaustellen vom Schiff aus
+/// Konstruktor fÃ¼r Hafenbaustellen vom Schiff aus
 noBuildingSite::noBuildingSite(const MapPoint pos, const unsigned char player)
     : noBaseBuilding(NOP_BUILDINGSITE, BLD_HARBORBUILDING, pos, player),
       state(STATE_BUILDING),
@@ -93,7 +93,7 @@ noBuildingSite::noBuildingSite(const MapPoint pos, const unsigned char player)
       used_stones(0),
       build_progress(0)
 {
-    // Baustelle in den Index eintragen, damit die Wirtschaft auch Bescheid weiß
+    // Baustelle in den Index eintragen, damit die Wirtschaft auch Bescheid weiÃŸ
     gwg->GetPlayer(player)->AddBuildingSite(this);
     // Bauarbeiter auch auf der Karte auftragen
     gwg->AddFigure(builder, pos);
@@ -127,7 +127,7 @@ void noBuildingSite::Destroy_noBuildingSite()
 
     // und Feld wird leer
     gwg->SetNO(0, pos);
-    // Anbauten drumrum ggf. zerstören
+    // Anbauten drumrum ggf. zerstÃ¶ren
     DestroyBuildingExtensions();
 
     gwg->RecalcBQAroundPointBig(pos);
@@ -140,11 +140,11 @@ void noBuildingSite::Destroy_noBuildingSite()
     if(expeditionharbor)
     {
         //LOG.lprintf("harbor building site from sea destroyed/removed");
-        // Ggf. aus der Liste mit den vom Schiff aus gegründeten Baustellen streichen - no longer required as this is done in gwg->GetPlayer(player)->RemoveBuildingSite(this);
+        // Ggf. aus der Liste mit den vom Schiff aus gegrÃ¼ndeten Baustellen streichen - no longer required as this is done in gwg->GetPlayer(player)->RemoveBuildingSite(this);
         //gwg->RemoveHarborBuildingSiteFromSea(this);
 
         Destroy_noBaseBuilding();
-        // Land neu berechnen nach zerstören weil da schon straßen etc entfernt werden
+        // Land neu berechnen nach zerstÃ¶ren weil da schon straÃŸen etc entfernt werden
         gwg->RecalcTerritory(this, HARBOR_ALONE_RADIUS, true, false);
     }
     else
@@ -270,7 +270,7 @@ void noBuildingSite::Draw(int x, int y)
     //NormalFont->Draw(x,y,number,0,0xFFFF0000);
 }
 
-/// Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung" für den Fog of War
+/// Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung" fÃ¼r den Fog of War
 FOWObject* noBuildingSite::CreateFOWObject() const
 {
     return new fowBuildingSite(state == STATE_PLANING, type, nation, build_progress);
@@ -311,16 +311,16 @@ unsigned noBuildingSite::CalcDistributionPoints(noRoadNode* start, const GoodTyp
             (BUILDING_COSTS[nation][this->type].stones == ordered_stones.size() + stones + used_stones && goodtype == GD_STONES))
         return 0;
 
-    // 10000 als Basis wählen, damit man auch noch was abziehen kann
+    // 10000 als Basis wÃ¤hlen, damit man auch noch was abziehen kann
     unsigned points = 10000;
 
-    // Baumaterial mit einberechnen (wer noch am wenigsten braucht, soll mehr Punkte kriegen, da ja möglichst
-    // zuerst Gebäude fertiggestellt werden sollten)
+    // Baumaterial mit einberechnen (wer noch am wenigsten braucht, soll mehr Punkte kriegen, da ja mÃ¶glichst
+    // zuerst GebÃ¤ude fertiggestellt werden sollten)
     points -= (BUILDING_COSTS[nation][type].boards - ordered_boards.size() - boards - used_boards) * 20;
     points -= (BUILDING_COSTS[nation][type].stones - ordered_stones.size() - stones - used_stones) * 20;
 
 
-    // Baupriorität mit einberechnen (niedriger = höhere Priorität, daher - !)
+    // BauprioritÃ¤t mit einberechnen (niedriger = hÃ¶here PrioritÃ¤t, daher - !)
     points -= gwg->GetPlayer(player)->GetBuidingSitePriority(this) * 30;
 
     if (points > 10000) // "underflow" ;)
@@ -402,14 +402,14 @@ void noBuildingSite::PlaningFinished()
     state = STATE_BUILDING;
     planer = 0;
 
-    // Wir hätten gerne einen Bauarbeiter...
+    // Wir hÃ¤tten gerne einen Bauarbeiter...
     gwg->GetPlayer(player)->AddJobWanted(JOB_BUILDER, this);
 
     // Bauwaren anfordern
     OrderConstructionMaterial();
 }
 
-/// Gibt zurück, ob eine bestimmte Baustellen eine Baustelle ist, die vom Schiff aus errichtet wurde
+/// Gibt zurÃ¼ck, ob eine bestimmte Baustellen eine Baustelle ist, die vom Schiff aus errichtet wurde
 bool noBuildingSite::IsHarborBuildingSiteFromSea() const
 {
     if(this->type == BLD_HARBORBUILDING)

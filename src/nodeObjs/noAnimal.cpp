@@ -1,4 +1,4 @@
-// $Id: noAnimal.cpp 9521 2014-11-30 23:31:02Z marcus $
+Ôªø// $Id: noAnimal.cpp 9521 2014-11-30 23:31:02Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -97,7 +97,7 @@ void noAnimal::Draw(int x, int y)
             if(species == SPEC_DUCK || species == SPEC_SHEEP)
             {
                 unsigned int now = VIDEODRIVER.GetTickCount();
-                // Wurde der Soundzeitpunkt schon ¸berschritten?
+                // Wurde der Soundzeitpunkt schon √ºberschritten?
                 if(now > sound_moment)
                 {
                     // Wenns in dem jeweiligen Rahmen liegt, Sound abspielen
@@ -157,7 +157,7 @@ void noAnimal::HandleEvent(const unsigned int id)
             // neue Position einnehmen
             Walk();
 
-            // entscheiden, was als n‰chstes zu tun ist
+            // entscheiden, was als n√§chstes zu tun ist
             Walked();
         } break;
         // Warte-Event
@@ -177,7 +177,7 @@ void noAnimal::HandleEvent(const unsigned int id)
             current_ev = em->AddEvent(this, 30, 3);
             state = STATE_DISAPPEARING;
 
-            // J‰ger ggf. Bescheid sagen (falls der es nicht mehr rechtzeitig schafft, bis ich verwest bin)
+            // J√§ger ggf. Bescheid sagen (falls der es nicht mehr rechtzeitig schafft, bis ich verwest bin)
             if(hunter)
                 hunter->AnimalLost();
 
@@ -207,7 +207,7 @@ void noAnimal::StandardWalking()
     {
         // Sterben, weil kein Weg mehr gefunden wurde
         Die();
-        // J‰ger ggf. Bescheid sagen (falls der es nicht mehr rechtzeitig schafft, bis ich verwest bin)
+        // J√§ger ggf. Bescheid sagen (falls der es nicht mehr rechtzeitig schafft, bis ich verwest bin)
         if(hunter)
         {
             hunter->AnimalLost();
@@ -229,12 +229,12 @@ void noAnimal::Walked()
             break;
         case STATE_WALKINGUNTILWAITINGFORHUNTER:
         {
-            // stehenbleiben und auf den J‰ger warten
+            // stehenbleiben und auf den J√§ger warten
             state = STATE_WAITINGFORHUNTER;
         } break;
         case STATE_WALKING:
         {
-            // ein weiteres St¸ck gelaufen
+            // ein weiteres St√ºck gelaufen
             --pause_way;
 
             // Ist es so lange gelaufen, dass es mal wieder eine Pause braucht?
@@ -254,7 +254,7 @@ void noAnimal::Walked()
             if(species == SPEC_DUCK || species == SPEC_SHEEP)
             {
                 unsigned int now = VIDEODRIVER.GetTickCount();
-                // Wurde der Soundzeitpunkt schon ¸berschritten?
+                // Wurde der Soundzeitpunkt schon √ºberschritten?
                 if(now > sound_moment)
                     // Neuen Zeitpunkt errechnen
                     sound_moment = now + 8000 + rand() % 5000;
@@ -265,7 +265,7 @@ void noAnimal::Walked()
 
 unsigned char noAnimal::FindDir()
 {
-    // mit zuf‰lliger Richtung anfangen
+    // mit zuf√§lliger Richtung anfangen
     unsigned doffset = RANDOM.Rand(__FILE__, __LINE__, obj_id, 6);
 
     for(unsigned char dtmp = 0; dtmp < 6; ++dtmp)
@@ -309,7 +309,7 @@ unsigned char noAnimal::FindDir()
         }
         else if(species == SPEC_POLARBEAR)
         {
-            // Polarb‰ren laufen nur auf Schnee rum
+            // Polarb√§ren laufen nur auf Schnee rum
             unsigned char t2 = gwg->GetWalkingTerrain2(pos, d);
 
             if(t1 == 0 ||
@@ -318,22 +318,22 @@ unsigned char noAnimal::FindDir()
         }
         else
         {
-            // Die anderen Tiere d¸rfen nur auf Wiesen,Savannen usw. laufen, nicht auf Bergen oder in der W¸ste!
+            // Die anderen Tiere d√ºrfen nur auf Wiesen,Savannen usw. laufen, nicht auf Bergen oder in der W√ºste!
             if(!((t1 == 3 || (t1 >= 8 && t1 <= 13)) && (t1 == 3 || (t1 >= 8 && t1 <= 13))))
                 continue;
 
-            // Auﬂerdem d¸rfen keine Hindernisse im Weg sein
+            // Au√üerdem d√ºrfen keine Hindernisse im Weg sein
             MapPoint dst = gwg->GetNeighbour(pos, d);
             noBase* no = gwg->GetNO(dst);
 
             if(no->GetType() != NOP_NOTHING &&  no->GetType() != NOP_ENVIRONMENT &&  no->GetType() != NOP_TREE)
                 continue;
 
-            // Schlieﬂlich auch mˆglichst keine anderen Figuren bzw. Tiere
+            // Schlie√ülich auch m√∂glichst keine anderen Figuren bzw. Tiere
             if(!gwg->GetFigures(dst).empty())
                 continue;
 
-            // Und mˆglichst auch keine Straﬂen
+            // Und m√∂glichst auch keine Stra√üen
             bool roads = false;
             for(unsigned char d2 = 0; d2 < 6; ++d2)
             {
@@ -357,7 +357,7 @@ unsigned char noAnimal::FindDir()
 
 bool noAnimal::CanHunted() const
 {
-    // Enten sowie Tiere, die bereits gejagt werden, oder schon tot daliegen, kˆnnen nicht gejagt werden
+    // Enten sowie Tiere, die bereits gejagt werden, oder schon tot daliegen, k√∂nnen nicht gejagt werden
     return (species != SPEC_DUCK && state != STATE_DEAD && state != STATE_DISAPPEARING && !hunter);
 }
 
@@ -372,7 +372,7 @@ MapPoint noAnimal::HunterIsNear()
     // Steht es gerade?
     if(state == STATE_PAUSED)
     {
-        // dann bleibt es einfach stehen und gibt seine jetzigen Koordinaten zur¸ck
+        // dann bleibt es einfach stehen und gibt seine jetzigen Koordinaten zur√ºck
         state = STATE_WAITINGFORHUNTER;
         // Warteevent abmelden
         em->RemoveEvent(current_ev);
@@ -381,7 +381,7 @@ MapPoint noAnimal::HunterIsNear()
     }
     else
     {
-        // ansonsten nach dem Laufen stehenbleiben und die Koordinaten zur¸ckgeben von dem Punkt, der erreicht wird
+        // ansonsten nach dem Laufen stehenbleiben und die Koordinaten zur√ºckgeben von dem Punkt, der erreicht wird
         state = STATE_WALKINGUNTILWAITINGFORHUNTER;
         return gwg->GetNeighbour(pos, dir);
     }
@@ -398,13 +398,13 @@ void noAnimal::StopHunting()
 
         case STATE_WAITINGFORHUNTER:
         {
-            // wenn wir stehen, zus‰tzlich loslaufen
+            // wenn wir stehen, zus√§tzlich loslaufen
             state = STATE_WALKING;
             StandardWalking();
         } break;
         case STATE_WALKINGUNTILWAITINGFORHUNTER:
         {
-            // wir kˆnnen wieder normal weiterlaufen
+            // wir k√∂nnen wieder normal weiterlaufen
             state = STATE_WALKING;
         } break;
     }

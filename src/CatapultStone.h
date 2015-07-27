@@ -1,4 +1,4 @@
-// $Id: CatapultStone.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: CatapultStone.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -28,7 +28,7 @@ class GameWorldView;
 class GameWorldViewer;
 
 
-/// Klasse für einen fliegenden Katapultstein
+/// Klasse fÃ¼r einen fliegenden Katapultstein
 class CatapultStone : public GameObject
 {
     private:
@@ -55,7 +55,7 @@ class CatapultStone : public GameObject
 
         ~CatapultStone() {}
 
-        /// Zerstören
+        /// ZerstÃ¶ren
         void Destroy();
 
         /// Serialisierungsfunktionen

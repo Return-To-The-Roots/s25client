@@ -1,4 +1,4 @@
-// $Id: noBase.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: noBase.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -37,12 +37,12 @@ class noBase : public GameObject
         /// An x,y zeichnen.
         virtual void Draw(int x, int y) = 0;
 
-        /// Type zurückgeben.
+        /// Type zurÃ¼ckgeben.
         NodalObjectType GetType(void) const { return nop; }
         /// Serialisierungsfunktion.
         void Serialize(SerializedGameData* sgd) const { Serialize_noBase(sgd); }
 
-        /// Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung" für den Fog of War
+        /// Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung" fÃ¼r den Fog of War
         virtual FOWObject* CreateFOWObject() const;
 
         /// Gibt an, inwieweit ein Objekt auf der Karte die BQ beeinflusst
@@ -61,12 +61,12 @@ class noBase : public GameObject
         };
 
         virtual BlockingManner GetBM() const;
-        /// Gibt zurück, ob sich das angegebene Objekt zwischen zwei Punkten bewegt
+        /// Gibt zurÃ¼ck, ob sich das angegebene Objekt zwischen zwei Punkten bewegt
         virtual bool IsMoving() const;
 
 
     protected:
-        /// Räumt das Basisobjekt auf.
+        /// RÃ¤umt das Basisobjekt auf.
         void Destroy_noBase(void) {}
         /// serialisiert das Basisobjekt.
         void Serialize_noBase(SerializedGameData* sgd) const;

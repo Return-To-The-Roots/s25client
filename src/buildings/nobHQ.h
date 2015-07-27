@@ -1,4 +1,4 @@
-// $Id: nobHQ.h 9357 2014-04-25 15:35:25Z FloSoft $
+﻿// $Id: nobHQ.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -31,7 +31,7 @@ class nobHQ : public nobBaseWarehouse
         nobHQ(const MapPoint pt, const unsigned char player, const Nation nation);
         nobHQ(SerializedGameData* sgd, const unsigned obj_id);
 
-        /// Aufr�ummethoden
+        /// Aufräummethoden
     protected:  void Destroy_nobHQ();
     public:     void Destroy() { Destroy_nobHQ(); }
 

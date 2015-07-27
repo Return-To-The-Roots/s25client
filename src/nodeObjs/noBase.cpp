@@ -1,4 +1,4 @@
-// $Id: noBase.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+﻿// $Id: noBase.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -45,7 +45,7 @@ noBase::BlockingManner noBase::GetBM() const
     return BM_NOTBLOCKING;
 }
 
-/// Gibt zurück, ob sich das angegebene Objekt zwischen zwei Punkten bewegt
+/// Gibt zurÃ¼ck, ob sich das angegebene Objekt zwischen zwei Punkten bewegt
 bool noBase::IsMoving() const
 {
     return false;

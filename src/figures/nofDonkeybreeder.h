@@ -1,4 +1,4 @@
-// $Id: nofDonkeybreeder.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: nofDonkeybreeder.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -25,7 +25,7 @@
 
 class nobUsualBuilding;
 
-/// Klasse für den Eselzüchter
+/// Klasse fÃ¼r den EselzÃ¼chter
 class nofDonkeybreeder : public nofWorkman
 {
     public:
@@ -42,7 +42,7 @@ class nofDonkeybreeder : public nofWorkman
         /// Wird aufgerufen, wenn er fertig mit arbeiten ist
         void WorkFinished();
 
-        /// Gibt die ID in JOBS.BOB zurück, wenn der Beruf Waren rausträgt (bzw rein)
+        /// Gibt die ID in JOBS.BOB zurÃ¼ck, wenn der Beruf Waren raustrÃ¤gt (bzw rein)
         unsigned short GetCarryID() const { return 0; }
 };
 

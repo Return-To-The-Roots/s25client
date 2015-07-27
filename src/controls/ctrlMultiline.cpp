@@ -1,4 +1,4 @@
-// $Id: ctrlMultiline.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+﻿// $Id: ctrlMultiline.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -56,7 +56,7 @@ ctrlMultiline::ctrlMultiline(Window* parent,
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  f�gt eine Zeile hinzu.
+ *  fügt eine Zeile hinzu.
  *
  *  @author OLiver
  */

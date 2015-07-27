@@ -1,4 +1,4 @@
-// $Id: iwHQ.cpp 9592 2015-02-01 09:39:38Z marcus $
+﻿// $Id: iwHQ.cpp 9592 2015-02-01 09:39:38Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -48,7 +48,7 @@ iwHQ::iwHQ(GameWorldViewer* const gwv, dskGameInterface* const gi, nobBaseWareho
     // Soldaten Reservierungsseite
     ctrlGroup* reserve = AddGroup(102);
 
-    // "Reserve"-�berschrift
+    // "Reserve"-Überschrift
     reserve->AddText(0, 83, 70, _("Reserve"), 0xFFFFFF00, glArchivItem_Font::DF_CENTER, NormalFont);
 
     // Y-Abstand zwischen den Zeilen

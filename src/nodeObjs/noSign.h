@@ -1,4 +1,4 @@
-// $Id: noSign.h 9357 2014-04-25 15:35:25Z FloSoft $
+Ôªø// $Id: noSign.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -31,7 +31,7 @@ class noSign : public noDisappearingEnvObject
         noSign(const MapPoint pt, const unsigned char type, const unsigned char quantity);
         noSign(SerializedGameData* sgd, const unsigned obj_id);
 
-        /// Aufr‰ummethoden
+        /// Aufr√§ummethoden
     protected:  void Destroy_noSign();
     public:     void Destroy() { Destroy_noSign(); }
         /// Serialisierungsfunktionen
@@ -51,7 +51,7 @@ class noSign : public noDisappearingEnvObject
 
         /// Typ der Ressource (0 = Erz, 1 = Gold, 2 = Kohle, 3 = Granit, 4 = Wasser, 5 = nix)
         const unsigned char type;
-        /// H‰ufigkeit der Ressource
+        /// H√§ufigkeit der Ressource
         const unsigned char quantity;
 };
 

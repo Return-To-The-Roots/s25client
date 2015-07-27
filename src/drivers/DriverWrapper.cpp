@@ -1,4 +1,4 @@
-// $Id: DriverWrapper.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+﻿// $Id: DriverWrapper.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -88,10 +88,10 @@ void DriverWrapper::Unload()
  */
 bool DriverWrapper::Load(const DriverType dt, std::string& preference)
 {
-    // ggf. aufräumen vorher
+    // ggf. aufrÃ¤umen vorher
     Unload();
 
-    /// Verfügbare Treiber auflisten
+    /// VerfÃ¼gbare Treiber auflisten
     std::vector<DriverItem> drivers;
     const std::string DIRECTORY[2] = { "video", "audio" };
 
@@ -103,7 +103,7 @@ bool DriverWrapper::Load(const DriverType dt, std::string& preference)
     if(drivers.empty())
         return false;
 
-    /// Suche, ob der Treiber dabei ist, den wir wünschen
+    /// Suche, ob der Treiber dabei ist, den wir wÃ¼nschen
     for(std::vector<DriverItem>::iterator it = drivers.begin(); it != drivers.end(); ++it)
     {
         if(it->GetName() == preference)
@@ -165,7 +165,7 @@ void* DriverWrapper::GetDLLFunction(const std::string& name)
  */
 void DriverWrapper::LoadDriverList(const DriverType dt, std::vector<DriverItem>& driver_list)
 {
-    /// Verfügbare Treiber auflisten
+    /// VerfÃ¼gbare Treiber auflisten
     std::list<std::string> driver_files;
 
     const std::string DIRECTORY[2] = { "video", "audio" };

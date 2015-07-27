@@ -1,4 +1,4 @@
-// $Id: WindowManager.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+﻿// $Id: WindowManager.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -93,7 +93,7 @@ void WindowManager::Draw(void)
     if(nextdesktop)
         Switch();
 
-    // haben wir einen g�ltigen Desktop?
+    // haben wir einen gï¿½ltigen Desktop?
     if(!desktop)
         return;
 
@@ -167,7 +167,7 @@ bool WindowManager::IsDesktopActive(void)
 /// Sendet eine Tastaturnachricht an die Fenster.
 void WindowManager::RelayKeyboardMessage(bool (Window::*msg)(const KeyEvent&), const KeyEvent& ke)
 {
-    // ist der Desktop g�ltig?
+    // ist der Desktop gï¿½ltig?
     if(!desktop)
         return;
     // ist der Desktop aktiv?
@@ -182,7 +182,7 @@ void WindowManager::RelayKeyboardMessage(bool (Window::*msg)(const KeyEvent&), c
     if(windows.empty())
         return; // No windows -> nothing to do
 
-    // Letztes Fenster schlie�en? (Escape oder Alt-W)
+    // Letztes Fenster schlieï¿½en? (Escape oder Alt-W)
     if(ke.kt == KT_ESCAPE || (ke.c == 'w' && ke.alt))
     {
         Close(windows.back());
@@ -203,7 +203,7 @@ void WindowManager::RelayKeyboardMessage(bool (Window::*msg)(const KeyEvent&), c
 /// Sendet eine Mausnachricht weiter an alle Fenster
 void WindowManager::RelayMouseMessage(bool (Window::*msg)(const MouseCoords&), const MouseCoords& mc)
 {
-    // ist der Desktop g�ltig?
+    // ist der Desktop gï¿½ltig?
     if(!desktop)
         return;
     // ist der Desktop aktiv?
@@ -225,11 +225,11 @@ void WindowManager::RelayMouseMessage(bool (Window::*msg)(const MouseCoords&), c
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  �ffnet ein IngameWindow und f�gt es zur Fensterliste hinzu.
+ *  ï¿½ffnet ein IngameWindow und fï¿½gt es zur Fensterliste hinzu.
  *
  *  @param[in] desktop       Pointer zum neuen Desktop, auf dem gewechselt werden soll
- *  @param[in] data          Daten f�r den neuen Desktop
- *  @param[in] disable_mouse Bei true wird bis zum n�chsten Release die Maus deaktiviert (Switch-Anschlie�end-Dr�ck-Bug)
+ *  @param[in] data          Daten fï¿½r den neuen Desktop
+ *  @param[in] disable_mouse Bei true wird bis zum nï¿½chsten Release die Maus deaktiviert (Switch-Anschlieï¿½end-Drï¿½ck-Bug)
  *
  *  @author OLiver
  */
@@ -237,11 +237,11 @@ void WindowManager::Show(IngameWindow* window, bool mouse)
 {
     SetToolTip(NULL, "");
 
-    // haben wir ein g�ltiges Fenster erhalten?
+    // haben wir ein gï¿½ltiges Fenster erhalten?
     if(!window)
         return;
 
-    // haben wir einen g�ltigen Desktop?
+    // haben wir einen gï¿½ltigen Desktop?
     if(!desktop)
         return;
 
@@ -261,7 +261,7 @@ void WindowManager::Show(IngameWindow* window, bool mouse)
         }
     }
 
-    // Fenster hinzuf�gen
+    // Fenster hinzufï¿½gen
     windows.push_back(window);
 
     // Desktop deaktivieren
@@ -277,7 +277,7 @@ void WindowManager::Show(IngameWindow* window, bool mouse)
     window->SetActive(true);
 
 
-    // Maus deaktivieren, bis sie losgelassen wurde (Fix des Switch-Anschlie�end-Dr�ck-Bugs)
+    // Maus deaktivieren, bis sie losgelassen wurde (Fix des Switch-Anschlieï¿½end-Drï¿½ck-Bugs)
     disable_mouse = mouse;
 }
 
@@ -286,8 +286,8 @@ void WindowManager::Show(IngameWindow* window, bool mouse)
  *  merkt einen Desktop zum Wechsel vor.
  *
  *  @param[in] desktop       Pointer zum neuen Desktop, auf dem gewechselt werden soll
- *  @param[in] data          Daten f�r den neuen Desktop
- *  @param[in] disable_mouse Bei true wird bis zum n�chsten Release die Maus deaktiviert (Switch-Anschlie�end-Dr�ck-Bug)
+ *  @param[in] data          Daten fï¿½r den neuen Desktop
+ *  @param[in] disable_mouse Bei true wird bis zum nï¿½chsten Release die Maus deaktiviert (Switch-Anschlieï¿½end-Drï¿½ck-Bug)
  *
  *  @author OLiver
  */
@@ -299,10 +299,10 @@ void WindowManager::Switch(Desktop* desktop, void* data, bool mouse)
 }
 
 IngameWindow* WindowManager::FindWindowUnderMouse(const MouseCoords& mc) const{
-    // Fenster durchgehen ( von hinten nach vorn, da die vordersten ja zuerst gepr�ft werden m�ssen !! )
+    // Fenster durchgehen ( von hinten nach vorn, da die vordersten ja zuerst geprï¿½ft werden mï¿½ssen !! )
     for(std::list<IngameWindow*>::const_reverse_iterator it = windows.rbegin(); it != windows.rend(); ++it)
     {
-        // FensterRect f�r Kollisionsabfrage
+        // FensterRect fï¿½r Kollisionsabfrage
         Rect window_rect = (*it)->GetRect();
 
         // trifft die Maus auf ein Fenster?
@@ -315,7 +315,7 @@ IngameWindow* WindowManager::FindWindowUnderMouse(const MouseCoords& mc) const{
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Verarbeitung des Dr�ckens der Linken Maustaste.
+ *  Verarbeitung des Drï¿½ckens der Linken Maustaste.
  *
  *  @param[in] mc Mauskoordinaten Struktur
  *
@@ -323,7 +323,7 @@ IngameWindow* WindowManager::FindWindowUnderMouse(const MouseCoords& mc) const{
  */
 void WindowManager::Msg_LeftDown(MouseCoords mc)
 {
-    // ist unser Desktop g�ltig?
+    // ist unser Desktop gï¿½ltig?
     if(!desktop)
         return;
 
@@ -340,7 +340,7 @@ void WindowManager::Msg_LeftDown(MouseCoords mc)
     last_left_click_point = Point<int>(mc.x, mc.y);
     last_left_click_time = time_now;
 
-    // haben wir �berhaupt fenster?
+    // haben wir ï¿½berhaupt fenster?
     if(windows.empty())
     {
         // nein, dann Desktop aktivieren
@@ -387,7 +387,7 @@ void WindowManager::Msg_LeftDown(MouseCoords mc)
 
     // Haben wir ein Fenster gefunden gehabt?
     if(foundWindow){
-        // Fenster aus der Liste holen und vorne wieder anh�ngen
+        // Fenster aus der Liste holen und vorne wieder anhï¿½ngen
         windows.remove(foundWindow);
         windows.push_back(foundWindow);
 
@@ -435,7 +435,7 @@ void WindowManager::Msg_LeftDown(MouseCoords mc)
  */
 void WindowManager::Msg_LeftUp(const MouseCoords& mc)
 {
-    // ist unser Desktop g�ltig?
+    // ist unser Desktop gï¿½ltig?
     if(!desktop)
         return;
 
@@ -470,7 +470,7 @@ void WindowManager::Msg_LeftUp(const MouseCoords& mc)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Verarbeitung des Dr�ckens der Rechten Maustaste.
+ *  Verarbeitung des Drï¿½ckens der Rechten Maustaste.
  *
  *  @param[in] mc Mauskoordinaten Struktur
  *
@@ -478,7 +478,7 @@ void WindowManager::Msg_LeftUp(const MouseCoords& mc)
  */
 void WindowManager::Msg_RightDown(const MouseCoords& mc)
 {
-    // ist unser Desktop g�ltig?
+    // ist unser Desktop gï¿½ltig?
     if(!desktop)
         return;
 
@@ -489,7 +489,7 @@ void WindowManager::Msg_RightDown(const MouseCoords& mc)
         if (windows.back()->GetModal())
             return;
 
-        // pr�fen ob Fenster geschlossen werden muss
+        // prï¿½fen ob Fenster geschlossen werden muss
         IngameWindow* foundWindow = FindWindowUnderMouse(mc);
         if(foundWindow){
             // ja, dann schliessen
@@ -499,7 +499,7 @@ void WindowManager::Msg_RightDown(const MouseCoords& mc)
             {
                 windows.back()->SetActive(false);
 
-                // Fenster aus der Liste holen und vorne wieder anh�ngen
+                // Fenster aus der Liste holen und vorne wieder anhï¿½ngen
                 windows.remove(foundWindow);
                 windows.push_back(foundWindow);
 
@@ -557,11 +557,11 @@ void WindowManager::Msg_RightUp(const MouseCoords& mc)
  */
 void WindowManager::Msg_WheelUp(const MouseCoords& mc)
 {
-    // ist unser Desktop g�ltig?
+    // ist unser Desktop gï¿½ltig?
     if(!desktop)
         return;
 
-    // haben wir �berhaupt fenster?
+    // haben wir ï¿½berhaupt fenster?
     if(windows.empty())
     {
         // nein, dann Desktop aktivieren
@@ -597,7 +597,7 @@ void WindowManager::Msg_WheelUp(const MouseCoords& mc)
 
     if(foundWindow)
     {
-        // Fenster aus der Liste holen und vorne wieder anh�ngen
+        // Fenster aus der Liste holen und vorne wieder anhï¿½ngen
         windows.remove(foundWindow);
         windows.push_back(foundWindow);
 
@@ -680,7 +680,7 @@ void WindowManager::Msg_MouseMove(const MouseCoords& mc)
 {
     this->mc = &mc;
 
-    // ist unser Desktop g�ltig?
+    // ist unser Desktop gï¿½ltig?
     if(!desktop)
         return;
 
@@ -731,13 +731,13 @@ void WindowManager::Msg_KeyDown(const KeyEvent& ke)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Verarbeitung Spielfenstergr��e ver�ndert (vom Betriebssystem aus)
- *  Liefert evtl. eine Gr��e die wir nicht wollen und daher korrigieren
+ *  Verarbeitung Spielfenstergrï¿½ï¿½e verï¿½ndert (vom Betriebssystem aus)
+ *  Liefert evtl. eine Grï¿½ï¿½e die wir nicht wollen und daher korrigieren
  *  oder falls ok durchlassen.
  *  Eigentliche Verarbeitung dann in Msg_ScreenResize.
  *
  *  @param[in] width  neue Breite
- *  @param[in] height neue H�he
+ *  @param[in] height neue Hï¿½he
  *
  *  @author Divan
  */
@@ -747,7 +747,7 @@ void WindowManager::ScreenResized(unsigned short width, unsigned short height)
     unsigned short newHeight = height;
 
 //  bool mustResize = false;
-    // Minimale Ausdehnung erf�llt?
+    // Minimale Ausdehnung erfï¿½llt?
 //  if(newWidth  < 800 || newHeight < 600)
 //  {
 //      mustResize = true;
@@ -757,14 +757,14 @@ void WindowManager::ScreenResized(unsigned short width, unsigned short height)
 
     // Es kann passieren dass wir versuchen ein 800x600-Fenster zu erstellen,
     // aber das Betriebssystem es immer wieder verkleinert. Hier sollten wir
-    // uns nicht auf einen endlosen Kampf einlassen, denn der Kl�gere gibt nach.
-    // Problem: B�se Windowmanager wie Metacity feuern st�ndig Resize-Events,
-    // wenn man den die Fenstergr��e zieht und wir sie wieder zu vergr��ern
+    // uns nicht auf einen endlosen Kampf einlassen, denn der Klï¿½gere gibt nach.
+    // Problem: Bï¿½se Windowmanager wie Metacity feuern stï¿½ndig Resize-Events,
+    // wenn man den die Fenstergrï¿½ï¿½e zieht und wir sie wieder zu vergrï¿½ï¿½ern
     // versuchen.
-    // Wir m�ssen also durch Warten halbwegs ausschlie�en, dass wir es
+    // Wir mï¿½ssen also durch Warten halbwegs ausschlieï¿½en, dass wir es
     // mit dem Nutzer zu tun haben.
-    // TODO: Dann den Treiber zwingen, ein nicht resizable Fenster zu �ffnen
-    // und erst wieder, wenn der Nutzer im Men� nochmal eine Aufl�sung einstellt,
+    // TODO: Dann den Treiber zwingen, ein nicht resizable Fenster zu ï¿½ffnen
+    // und erst wieder, wenn der Nutzer im Menï¿½ nochmal eine Auflï¿½sung einstellt,
     // das Resizen zulassen.
 //  if(width < 800 || height < 600)
 //  if(lastScreenWidthSignal  == width)
@@ -794,18 +794,18 @@ void WindowManager::ScreenResized(unsigned short width, unsigned short height)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Verarbeitung Spielfenstergr��e ver�ndert (vom Spiel aus)
- *  Liefert immer eine sinnvolle Gr��e, mind. 800x600.
+ *  Verarbeitung Spielfenstergrï¿½ï¿½e verï¿½ndert (vom Spiel aus)
+ *  Liefert immer eine sinnvolle Grï¿½ï¿½e, mind. 800x600.
  *
  *  @param[in] width  neue Breite
- *  @param[in] height neue H�he
+ *  @param[in] height neue Hï¿½he
  *
  *  @author Divan
  */
 void WindowManager::Msg_ScreenResize(unsigned short width, unsigned short height)
 {
-    // Falls sich nichts �ndert, brauchen wir auch nicht reagieren
-    // (Evtl hat sich ja nur der Modus Fenster/Vollbild ge�ndert)
+    // Falls sich nichts ï¿½ndert, brauchen wir auch nicht reagieren
+    // (Evtl hat sich ja nur der Modus Fenster/Vollbild geï¿½ndert)
     if(screenWidth == width && screenHeight == height)
         return;
 
@@ -816,7 +816,7 @@ void WindowManager::Msg_ScreenResize(unsigned short width, unsigned short height
     sr.newHeight = screenHeight = (height < 600 ? 600 : height);
 
     SETTINGS.video.fullscreen = VIDEODRIVER.IsFullscreen();
-    // Wenn es absolut nicht anders geht, lassen wir im tempor�r doch
+    // Wenn es absolut nicht anders geht, lassen wir im temporï¿½r doch
     // kleiner als 800x600 zu, abspeichern tun wir die aber nie.
     if(!SETTINGS.video.fullscreen)
     {
@@ -824,13 +824,13 @@ void WindowManager::Msg_ScreenResize(unsigned short width, unsigned short height
         if(height >= 600) SETTINGS.video.windowed_height = height;
     }
 
-    // ist unser Desktop g�ltig?
+    // ist unser Desktop gï¿½ltig?
     if(!desktop)
         return;
 
     desktop->Msg_ScreenResize(sr);
 
-    // IngameWindow verschieben falls n�tig, so dass sie komplett sichtbar sind
+    // IngameWindow verschieben falls nï¿½tig, so dass sie komplett sichtbar sind
     for(IgwListIterator it = windows.begin(); it != windows.end(); ++it)
     {
         const short dx = (*it)->GetX() + (*it)->GetWidth()  - sr.newWidth;
@@ -850,7 +850,7 @@ void WindowManager::Msg_ScreenResize(unsigned short width, unsigned short height
  */
 void WindowManager::Close(IngameWindow* window)
 {
-    // ist das Fenster g�ltig?
+    // ist das Fenster gï¿½ltig?
     if(!window)
         return;
 
@@ -866,7 +866,7 @@ void WindowManager::Close(IngameWindow* window)
         // haben wir noch Fenster zum aktivieren?
         if(window != windows.front())
         {
-            // ja, also das n�chste aktivieren. Save it as we need it later!
+            // ja, also das nï¿½chste aktivieren. Save it as we need it later!
             IgwListIterator tmp = it;
             --tmp;
 
@@ -880,7 +880,7 @@ void WindowManager::Close(IngameWindow* window)
         }
     }
 
-    // Fenster l�schen
+    // Fenster lï¿½schen
     delete window;
     // und aus der Liste entfernen
     windows.erase(it);
@@ -889,7 +889,7 @@ void WindowManager::Close(IngameWindow* window)
 ///////////////////////////////////////////////////////////////////////////////
 /**
  *  Sucht ein Fenster mit der entsprechenden Fenster-ID
- *  und schlie�t es (falls es so eins gibt)
+ *  und schlieï¿½t es (falls es so eins gibt)
  *
  *  @param[in] id ID des/der Fenster(s) welche(s) geschlossen werden soll
  *
@@ -920,7 +920,7 @@ void WindowManager::Switch(void)
 
     SetToolTip(NULL, "");
 
-    // haben wir einen aktuell g�ltigen Desktop?
+    // haben wir einen aktuell gï¿½ltigen Desktop?
     if(desktop)
     {
         // Alle (alten) Fenster zumachen
@@ -928,20 +928,20 @@ void WindowManager::Switch(void)
             delete (*it);
         windows.clear();
 
-        // Desktop l�schen
+        // Desktop lï¿½schen
         delete desktop;
     }
 
     // Desktop auf Neuen umstellen
     desktop = nextdesktop;
 
-    // ist der neue Desktop g�ltig?
+    // ist der neue Desktop gï¿½ltig?
     if(desktop)
     {
         // Desktop aktivieren
         desktop->SetActive(true);
 
-        // aufr�umen
+        // aufrï¿½umen
         nextdesktop = NULL;
         nextdesktop_data = NULL;
     }
@@ -972,7 +972,7 @@ void WindowManager::DrawToolTip()
         unsigned right_edge = mc->x + 30 + text_width + 2;
         unsigned x = mc->x + 30;
 
-        // links neben der Maus, wenn es �ber den Rand gehen w�rde
+        // links neben der Maus, wenn es ï¿½ber den Rand gehen wï¿½rde
         if(right_edge > VIDEODRIVER.GetScreenWidth() )
             x = mc->x - 30 - text_width;
 

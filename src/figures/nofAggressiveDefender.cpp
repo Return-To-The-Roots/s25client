@@ -1,4 +1,4 @@
-// $Id: nofAggressiveDefender.cpp
+Ôªø// $Id: nofAggressiveDefender.cpp
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -49,7 +49,7 @@ nofAggressiveDefender::nofAggressiveDefender(const MapPoint pos, const unsigned 
     : nofActiveSoldier(pos, player, home, rank, STATE_AGGRESSIVEDEFENDING_WALKINGTOAGGRESSOR), attacker(attacker),
       attacked_goal(attacker->GetAttackedGoal())
 {
-    // Angegriffenem Geb‰ude Bescheid sagen
+    // Angegriffenem Geb√§ude Bescheid sagen
     attacked_goal->LinkAggressiveDefender(this);
 }
 
@@ -57,7 +57,7 @@ nofAggressiveDefender::nofAggressiveDefender(nofPassiveSoldier* other, nofAttack
     : nofActiveSoldier(*other, STATE_AGGRESSIVEDEFENDING_WALKINGTOAGGRESSOR), attacker(attacker),
       attacked_goal(attacker->GetAttackedGoal())
 {
-    // Angegriffenem Geb‰ude Bescheid sagen
+    // Angegriffenem Geb√§ude Bescheid sagen
     attacked_goal->LinkAggressiveDefender(this);
 }
 
@@ -112,7 +112,7 @@ void nofAggressiveDefender::Walked()
     }
 }
 
-/// Wenn ein Heimat-Milit‰rgeb‰ude bei Missionseins‰tzen zerstˆrt wurde
+/// Wenn ein Heimat-Milit√§rgeb√§ude bei Missionseins√§tzen zerst√∂rt wurde
 void nofAggressiveDefender::HomeDestroyed()
 {
     building = NULL;
@@ -122,7 +122,7 @@ void nofAggressiveDefender::HomeDestroyedAtBegin()
 {
     building = 0;
 
-    // angegriffenem Geb‰ude Bescheid sagen, dass wir doch nicht mehr kommen
+    // angegriffenem Geb√§ude Bescheid sagen, dass wir doch nicht mehr kommen
     if(attacked_goal)
     {
         attacked_goal->UnlinkAggressiveDefender(this);
@@ -145,7 +145,7 @@ void nofAggressiveDefender::WonFighting()
     // Angreifer tot
     attacker  = NULL;
 
-    // Ist evtl. unser Heimatgeb‰ude zerstˆrt?
+    // Ist evtl. unser Heimatgeb√§ude zerst√∂rt?
     if(!building)
     {
         // Rumirren
@@ -160,14 +160,14 @@ void nofAggressiveDefender::WonFighting()
         return;
     }
 
-    // Angreifer ist tot, nach anderen suchen, die in meiner N‰he sind und mich evtl noch mit denen kloppen
+    // Angreifer ist tot, nach anderen suchen, die in meiner N√§he sind und mich evtl noch mit denen kloppen
     MissionAggressiveDefendingLookForNewAggressor();
 }
 
 /// Wenn ein Kampf verloren wurde (Tod)
 void nofAggressiveDefender::LostFighting()
 {
-    // Meinem zu Hause Bescheid sagen, dass ich nicht mehr lebe (damit neue Truppen reinkˆnnen),
+    // Meinem zu Hause Bescheid sagen, dass ich nicht mehr lebe (damit neue Truppen reink√∂nnen),
     // falls es noch existiert
     if(building)
         building->SoldierLost(this);
@@ -180,7 +180,7 @@ void nofAggressiveDefender::LostFighting()
 
 void nofAggressiveDefender::MissionAggressiveDefendingLookForNewAggressor()
 {
-    // Wenns das Zielgeb‰ude nich mehr gibt, gleich nach Hause gehen!
+    // Wenns das Zielgeb√§ude nich mehr gibt, gleich nach Hause gehen!
     if(!attacked_goal)
     {
         ReturnHomeMissionAggressiveDefending();
@@ -191,11 +191,11 @@ void nofAggressiveDefender::MissionAggressiveDefendingLookForNewAggressor()
     // noch drinstehen hat, dass er auf einen Kampf wartet
     state = STATE_AGGRESSIVEDEFENDING_WALKINGTOAGGRESSOR;
 
-    // nach anderen suchen, die in meiner N‰he sind und mich evtl noch mit denen kloppen
+    // nach anderen suchen, die in meiner N√§he sind und mich evtl noch mit denen kloppen
     if((attacker = attacked_goal
                    ->FindAggressor(this)))
     {
-        // zum Angreifer gehen und mit ihm k‰mpfen
+        // zum Angreifer gehen und mit ihm k√§mpfen
         if(state == STATE_MEETENEMY)
             MeetingEnemy();
         else
@@ -203,7 +203,7 @@ void nofAggressiveDefender::MissionAggressiveDefendingLookForNewAggressor()
     }
     else
     {
-        // keiner will mehr mit mir k‰mpfen, dann geh ich halt wieder nach Hause
+        // keiner will mehr mit mir k√§mpfen, dann geh ich halt wieder nach Hause
         ReturnHomeMissionAggressiveDefending();
     }
 }
@@ -227,7 +227,7 @@ void nofAggressiveDefender::MissAggressiveDefendingContinueWalking()
 
 void nofAggressiveDefender::MissAggressiveDefendingWalk()
 {
-    // Ist evtl. unser Heimatgeb‰ude zerstˆrt?
+    // Ist evtl. unser Heimatgeb√§ude zerst√∂rt?
     if(!building)
     {
         attacker = NULL;
@@ -249,7 +249,7 @@ void nofAggressiveDefender::MissAggressiveDefendingWalk()
         return;
     }
 
-    // Wenns das Zielgeb‰ude nich mehr gibt, gleich nach Hause gehen!
+    // Wenns das Zielgeb√§ude nich mehr gibt, gleich nach Hause gehen!
     if(!attacked_goal)
     {
         ReturnHomeMissionAggressiveDefending();
@@ -305,7 +305,7 @@ void nofAggressiveDefender::AttackerLost()
 {
     attacker = NULL;
 
-    // Wenn wir auf die gewartet hatten, m¸ssen wir uns einen neuen Angreifer suchen
+    // Wenn wir auf die gewartet hatten, m√ºssen wir uns einen neuen Angreifer suchen
     if(state == STATE_WAITINGFORFIGHT)
         MissionAggressiveDefendingLookForNewAggressor();
 }
@@ -324,7 +324,7 @@ void nofAggressiveDefender::NeedForHomeDefence()
     }
 }
 
-/// Sagt den verschiedenen Zielen Bescheid, dass wir doch nicht mehr kommen kˆnnen
+/// Sagt den verschiedenen Zielen Bescheid, dass wir doch nicht mehr kommen k√∂nnen
 void nofAggressiveDefender::InformTargetsAboutCancelling()
 {
     // Angreifer Bescheid sagen

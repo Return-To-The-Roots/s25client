@@ -1,4 +1,4 @@
-// $Id: ctrlRectangle.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+﻿// $Id: ctrlRectangle.cpp 7521 2011-09-08 20:45:55Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //

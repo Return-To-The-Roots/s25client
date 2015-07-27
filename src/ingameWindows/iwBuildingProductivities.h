@@ -1,4 +1,4 @@
-// $Id: iwBuildingProductivities.h 9357 2014-04-25 15:35:25Z FloSoft $
+Ôªø// $Id: iwBuildingProductivities.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -21,10 +21,10 @@
 
 #include "IngameWindow.h"
 
-/// Fenster, welches die Anzahl aller Geb‰ude und der Baustellena auflistet
+/// Fenster, welches die Anzahl aller Geb√§ude und der Baustellena auflistet
 class iwBuildingProductivities : public IngameWindow
 {
-        /// Prozentzahlen der einzelnen Geb‰ude
+        /// Prozentzahlen der einzelnen Geb√§ude
         std::vector<unsigned short> percents;
 
     public:
@@ -37,7 +37,7 @@ class iwBuildingProductivities : public IngameWindow
         /// Aktualisieren der Prozente
         void UpdatePercents();
 
-        /// Produktivit‰ts-Progressbars aktualisieren
+        /// Produktivit√§ts-Progressbars aktualisieren
         void Msg_PaintAfter();
 
 };

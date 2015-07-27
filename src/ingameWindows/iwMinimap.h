@@ -1,4 +1,4 @@
-// $Id: iwMinimap.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: iwMinimap.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -24,14 +24,14 @@
 class IngameMinimap;
 class GameWorldViewer;
 
-/// Fenster für die Minimap
+/// Fenster fÃ¼r die Minimap
 class iwMinimap : public IngameWindow
 {
-        /// Fenster vergrößert?
+        /// Fenster vergrÃ¶ÃŸert?
         bool extended;
     private:
 
-        /// Verändert die Größe des Fensters und positioniert alle Controls etc. neu
+        /// VerÃ¤ndert die GrÃ¶ÃŸe des Fensters und positioniert alle Controls etc. neu
         void ChangeWindowSize(const unsigned short width, const unsigned short height);
 
         void Msg_ButtonClick(const unsigned ctrl_id);

@@ -1,4 +1,4 @@
-// $Id: iwTools.h 9357 2014-04-25 15:35:25Z FloSoft $
+Ôªø// $Id: iwTools.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -23,10 +23,10 @@
 
 #include "IngameWindow.h"
 
-/// Fenster mit den Milit‰reinstellungen.
+/// Fenster mit den Milit√§reinstellungen.
 class iwTools : public IngameWindow
 {
-        /// Einstellungen nach dem letzten Netzwerk-Versenden nochmal ver‰ndert?
+        /// Einstellungen nach dem letzten Netzwerk-Versenden nochmal ver√§ndert?
         bool settings_changed;
 
     public:
@@ -38,7 +38,7 @@ class iwTools : public IngameWindow
 
         /// Updatet die Steuerelemente mit den aktuellen Einstellungen aus dem Spiel
         void UpdateSettings();
-        /// Sendet ver‰nderte Einstellungen (an den Client), falls sie ver‰ndert wurden
+        /// Sendet ver√§nderte Einstellungen (an den Client), falls sie ver√§ndert wurden
         void TransmitSettings();
 
         void Msg_ButtonClick(const unsigned int ctrl_id);

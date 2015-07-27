@@ -1,4 +1,4 @@
-// $Id: iwTransport.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: iwTransport.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -99,7 +99,7 @@ iwTransport::iwTransport()
     // Buttons der einzelnen Waren anlegen
     ctrlOptionGroup* group = AddOptionGroup(6, ctrlOptionGroup::ILLUMINATE);
 
-    // Zeiger auf die Bilder für die einzelnen Waren in der Transportschlange
+    // Zeiger auf die Bilder fÃ¼r die einzelnen Waren in der Transportschlange
     TRANSPORT_SPRITES[0] = LOADER.GetMapImageN(2250 + GD_COINS);
     TRANSPORT_SPRITES[1] = LOADER.GetImageN("io", 111);
     TRANSPORT_SPRITES[2] = LOADER.GetMapImageN(2250 + GD_BEER);
@@ -145,7 +145,7 @@ iwTransport::iwTransport()
                               TRANSPORT_SPRITES[GAMECLIENT.visual_settings.transport_order[i]],
                               _(TOOLTIPS[GAMECLIENT.visual_settings.transport_order[i]]));
 
-    // Netzwerk-Übertragungs-Timer
+    // Netzwerk-Ãœbertragungs-Timer
     AddTimer(7, 2000);
 }
 
@@ -159,7 +159,7 @@ void iwTransport::TransmitSettings()
 {
     if(settings_changed)
     {
-        // Daten übertragen
+        // Daten Ã¼bertragen
         GAMECLIENT.AddGC(new gc::ChangeTransport(GAMECLIENT.visual_settings.transport_order));
 
         settings_changed = false;
@@ -192,7 +192,7 @@ void iwTransport::Msg_ButtonClick(const unsigned int ctrl_id)
         {
             ctrlOptionGroup* group = GetCtrl<ctrlOptionGroup>(6);
 
-            // Wenn wir schon ganz oben sind, gehts nicht weiter höher
+            // Wenn wir schon ganz oben sind, gehts nicht weiter hÃ¶her
             while(group->GetSelection() > 0 && group->GetSelection() != 0xFFFF)
             {
                 std::swap(GAMECLIENT.visual_settings.transport_order[group->GetSelection()], GAMECLIENT.visual_settings.transport_order[group->GetSelection() - 1]);
@@ -207,7 +207,7 @@ void iwTransport::Msg_ButtonClick(const unsigned int ctrl_id)
         {
             ctrlOptionGroup* group = GetCtrl<ctrlOptionGroup>(6);
 
-            // Wenn wir schon ganz oben sind, gehts nicht weiter höher
+            // Wenn wir schon ganz oben sind, gehts nicht weiter hÃ¶her
             if(group->GetSelection() > 0 && group->GetSelection() != 0xFFFF)
             {
                 std::swap(GAMECLIENT.visual_settings.transport_order[group->GetSelection()], GAMECLIENT.visual_settings.transport_order[group->GetSelection() - 1]);
@@ -257,7 +257,7 @@ void iwTransport::Msg_Timer(const unsigned int ctrl_id)
         // Im Replay aktualisieren wir die Werte
         UpdateSettings();
     else
-        // Im normalen Spielmodus schicken wir den ganzen Spaß ab
+        // Im normalen Spielmodus schicken wir den ganzen SpaÃŸ ab
         TransmitSettings();
 }
 

@@ -1,4 +1,4 @@
-// $Id: ctrlImage.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: ctrlImage.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -69,7 +69,7 @@ ctrlImage::~ctrlImage()
  */
 bool ctrlImage::Draw_()
 {
-    // gültiges Bild?
+    // gÃ¼ltiges Bild?
     if(image)
         image->Draw(GetX(), GetY(), 0, 0, 0, 0, 0, 0);
 
@@ -84,10 +84,10 @@ bool ctrlImage::Draw_()
  */
 bool ctrlImage::Msg_MouseMove(const MouseCoords& mc)
 {
-    // gültiges Bildz?
+    // gÃ¼ltiges Bildz?
     if(image)
     {
-        // Jeweils Tooltip ein- und ausblenden, wenn die Maus über dem Bild ist
+        // Jeweils Tooltip ein- und ausblenden, wenn die Maus Ã¼ber dem Bild ist
         if(Coll(mc.x, mc.y, GetX() - image->getNx(), GetY() - image->getNy(), image->getWidth(), image->getHeight()))
             WINDOWMANAGER.SetToolTip(this, tooltip);
         else

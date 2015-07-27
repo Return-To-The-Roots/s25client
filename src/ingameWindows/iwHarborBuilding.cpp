@@ -1,4 +1,4 @@
-// $Id: iwHarborBuilding.cpp 9592 2015-02-01 09:39:38Z marcus $
+﻿// $Id: iwHarborBuilding.cpp 9592 2015-02-01 09:39:38Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -46,17 +46,17 @@ static char THIS_FILE[] = __FILE__;
 iwHarborBuilding::iwHarborBuilding(GameWorldViewer* const gwv, dskGameInterface* const gi, nobHarborBuilding* hb)
     : iwHQ(gwv, gi, hb, _("Harbor building"), 4)
 {
-    // Zusätzliche Hafenseite
+    // ZusÃ¤tzliche Hafenseite
     ctrlGroup* harbor_page = AddGroup(103);
 
-    // "Expedition"-Überschrift
+    // "Expedition"-Ãœberschrift
     harbor_page->AddText(0, 83, 70, _("Expedition"), 0xFFFFFF00, glArchivItem_Font::DF_CENTER, NormalFont);
 
     // Button zum Expedition starten
     harbor_page->AddImageButton(1, 65, 100, 30, 30, TC_GREY, LOADER.GetImageN("io", 176), _("Start expedition"));
     AdjustExpeditionButton(false);
 
-    // "Expedition"-Überschrift
+    // "Expedition"-Ãœberschrift
     harbor_page->AddText(2, 83, 140, _("Exploration expedition"), 0xFFFFFF00, glArchivItem_Font::DF_CENTER, NormalFont);
 
     // Button zum Expedition starten
@@ -70,7 +70,7 @@ iwHarborBuilding::iwHarborBuilding(GameWorldViewer* const gwv, dskGameInterface*
 /**
  *  setzt den Expeditionsknopf korrekt
  *
- *  falls @p flip gesetzt, dann umgekehrt einfärben
+ *  falls @p flip gesetzt, dann umgekehrt einfÃ¤rben
  *
  *  @author FloSoft
  */
@@ -78,8 +78,8 @@ void iwHarborBuilding::AdjustExpeditionButton(bool flip)
 {
     ctrlImageButton* button = GetCtrl<ctrlGroup>(103)->GetCtrl<ctrlImageButton>(1);
 
-    // Visuelle Rückmeldung, grün einfärben, wenn Expedition gestartet wurde
-    // Jeweils umgekehrte Farbe nehmen, da die Änderung ja spielerisch noch nicht
+    // Visuelle RÃ¼ckmeldung, grÃ¼n einfÃ¤rben, wenn Expedition gestartet wurde
+    // Jeweils umgekehrte Farbe nehmen, da die Ã„nderung ja spielerisch noch nicht
     // in Kraft getreten ist!
     bool exp = static_cast<nobHarborBuilding*>(wh)->IsExpeditionActive();
 
@@ -101,7 +101,7 @@ void iwHarborBuilding::AdjustExpeditionButton(bool flip)
 /**
  *  setzt den Expeditionsknopf korrekt
  *
- *  falls @p flip gesetzt, dann umgekehrt einfärben
+ *  falls @p flip gesetzt, dann umgekehrt einfÃ¤rben
  *
  *  @author OLiver
  */
@@ -109,8 +109,8 @@ void iwHarborBuilding::AdjustExplorationExpeditionButton(bool flip)
 {
     ctrlImageButton* button = GetCtrl<ctrlGroup>(103)->GetCtrl<ctrlImageButton>(3);
 
-    // Visuelle Rückmeldung, grün einfärben, wenn Expedition gestartet wurde
-    // Jeweils umgekehrte Farbe nehmen, da die Änderung ja spielerisch noch nicht
+    // Visuelle RÃ¼ckmeldung, grÃ¼n einfÃ¤rben, wenn Expedition gestartet wurde
+    // Jeweils umgekehrte Farbe nehmen, da die Ã„nderung ja spielerisch noch nicht
     // in Kraft getreten ist!
     bool exp = static_cast<nobHarborBuilding*>(wh)->IsExplorationExpeditionActive();
 

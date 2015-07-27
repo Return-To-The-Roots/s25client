@@ -1,4 +1,4 @@
-// $Id: iwWares.cpp 9374 2014-04-29 15:42:33Z FloSoft $
+Ôªø// $Id: iwWares.cpp 9374 2014-04-29 15:42:33Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -65,7 +65,7 @@ iwWares::iwWares(unsigned int id, unsigned short x , unsigned short y,
             4,  5,  2,  6,
             7,  8,  9, 12, 13,
             14, 16, GD_SHIELDROMANS, 15
-        }, // GD_SHIELDROMANS = Vˆlkerspezifisches Schild
+        }, // GD_SHIELDROMANS = V√∂lkerspezifisches Schild
 
         {
             // Figuren
@@ -81,9 +81,9 @@ iwWares::iwWares(unsigned int id, unsigned short x , unsigned short y,
 
     static const unsigned short shield_INVENTORY_IDS[5] = { GD_SHIELDAFRICANS, GD_SHIELDJAPANESE, GD_SHIELDROMANS, GD_SHIELDVIKINGS, GD_SHIELDJAPANESE };
 
-    // Warenseite hinzuf¸gen
+    // Warenseite hinzuf√ºgen
     ctrlGroup* wares = AddGroup(100);
-    // Figurenseite hinzuf¸gen
+    // Figurenseite hinzuf√ºgen
     ctrlGroup* figures = AddGroup(101);
 
     GameClientPlayer* player = GAMECLIENT.GetLocalPlayer();
@@ -145,7 +145,7 @@ iwWares::iwWares(unsigned int id, unsigned short x , unsigned short y,
             figures->AddImage(300 + INVENTORY_IDS[1][ware_id], (four ? 40 : 26) + x * 28, 34 + y * 42, image);
         }
 
-        // Overlay f¸r "Nicht Einlagern"
+        // Overlay f√ºr "Nicht Einlagern"
 
         ctrlImage* image = wares->AddImage(400 + INVENTORY_IDS[0][ware_id], (four ? 40 : 26) + x * 28, 30 + y * 42, LOADER.GetImageN("io", 222));
         image->SetVisible(false);
@@ -155,7 +155,7 @@ iwWares::iwWares(unsigned int id, unsigned short x , unsigned short y,
             image->SetVisible(false);
         }
 
-        // Overlay f¸r "Auslagern"
+        // Overlay f√ºr "Auslagern"
         image = wares->AddImage(500 + INVENTORY_IDS[0][ware_id], (four ? 40 : 26) + x * 28, 44 + y * 42, LOADER.GetImageN("io", 221));
         image->SetVisible(false);
         if(INVENTORY_IDS[1][ware_id] != 0xFFFF)
@@ -173,7 +173,7 @@ iwWares::iwWares(unsigned int id, unsigned short x , unsigned short y,
                                 glArchivItem_Font::DF_BOTTOM | glArchivItem_Font::DF_RIGHT, font, 1,
                                 &inventory->people[INVENTORY_IDS[1][ware_id]]);
 
-        // Overlay f¸r "Einlagern"
+        // Overlay f√ºr "Einlagern"
         image = wares->AddImage(700 + INVENTORY_IDS[0][ware_id], (four ? 40 : 26) + x * 28, 44 + y * 42, LOADER.GetImageN("io_new", 3));
         image->SetVisible(false);
         if(INVENTORY_IDS[1][ware_id] != 0xFFFF)
@@ -186,7 +186,7 @@ iwWares::iwWares(unsigned int id, unsigned short x , unsigned short y,
     wares->SetVisible(true);
     figures->SetVisible(false);
 
-    // "Bl‰ttern"
+    // "Bl√§ttern"
     AddImageButton(0, 52, height - 47, 66, 32, TC_GREY, LOADER.GetImageN("io", 84), _("Next page"));
     // Hilfe
     AddImageButton(12,  16, height - 47, 32, 32, TC_GREY, LOADER.GetImageN("io", 21), _("Help"));
@@ -196,7 +196,7 @@ void iwWares::Msg_ButtonClick(const unsigned int ctrl_id)
 {
     switch(ctrl_id)
     {
-        case 0: // "Bl‰ttern"
+        case 0: // "Bl√§ttern"
         {
             SetPage( (page + 1) );
         } break;

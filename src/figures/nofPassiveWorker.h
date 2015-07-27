@@ -1,4 +1,4 @@
-// $Id: nofPassiveWorker.h 9357 2014-04-25 15:35:25Z FloSoft $
+﻿// $Id: nofPassiveWorker.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -34,7 +34,7 @@ class nofPassiveWorker : public noFigure
         void Walked(); // wenn man gelaufen ist
         void GoalReached(); // wenn das Ziel erreicht wurde
         void AbrogateWorkplace();
-        void HandleDerivedEvent(const unsigned int id); /// Für alle restlichen Events, die nicht von noFigure behandelt werden
+        void HandleDerivedEvent(const unsigned int id); /// FÃ¼r alle restlichen Events, die nicht von noFigure behandelt werden
 
     public:
 

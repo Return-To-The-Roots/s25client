@@ -1,4 +1,4 @@
-// $Id: GLFW.h 9357 2014-04-25 15:35:25Z FloSoft $
+Ôªø// $Id: GLFW.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005-2009 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -23,7 +23,7 @@
 
 #include <VideoDriver.h>
 
-/// Klasse f¸r den GL-Framework Videotreiber.
+/// Klasse f√ºr den GL-Framework Videotreiber.
 class VideoGLFW : public VideoDriver
 {
     public:
@@ -36,13 +36,13 @@ class VideoGLFW : public VideoDriver
         /// Treiberinitialisierungsfunktion.
         bool Initialize(void);
 
-        /// Treiberaufr‰umfunktion.
+        /// Treiberaufr√§umfunktion.
         void CleanUp(void);
 
         /// Erstellt das Fenster mit entsprechenden Werten.
         bool CreateScreen(unsigned short width, unsigned short height, bool fullscreen);
 
-        /// Erstellt oder ver‰ndert das Fenster mit entsprechenden Werten.
+        /// Erstellt oder ver√§ndert das Fenster mit entsprechenden Werten.
         bool ResizeScreen(unsigned short* width, unsigned short* height, bool fullscreen);
 
         /// Schliesst das Fenster.

@@ -1,4 +1,4 @@
-// $Id: Desktop.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: Desktop.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -23,7 +23,7 @@
 
 #include "Window.h"
 
-/// Desktopklasse für Spielmenü-Haupthintergrundflächen.
+/// Desktopklasse fÃ¼r SpielmenÃ¼-HaupthintergrundflÃ¤chen.
 class Desktop : public Window
 {
     public:

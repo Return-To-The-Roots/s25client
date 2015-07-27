@@ -1,4 +1,4 @@
-// $Id: iwStatistics.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+Ôªø// $Id: iwStatistics.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005-2010 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -47,7 +47,7 @@ iwStatistics::iwStatistics()
 {
     activePlayers = std::vector<bool>(MAX_PLAYERS);
 
-    // Spieler z‰hlen
+    // Spieler z√§hlen
     numPlayingPlayers = 0;
     for (unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
     {
@@ -55,13 +55,13 @@ iwStatistics::iwStatistics()
             numPlayingPlayers++;
     }
 
-    // Bilder f¸r die spielenden Spieler malen (nur vier in Gebrauch, da kein einzelner Anf¸hrer ausw‰hlbar)
+    // Bilder f√ºr die spielenden Spieler malen (nur vier in Gebrauch, da kein einzelner Anf√ºhrer ausw√§hlbar)
     unsigned short startX = 126 - (numPlayingPlayers - 1) * 17;
     unsigned pos = 0;
 
     for (unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
     {
-        // nicht belegte Spielpl‰tze rauswerfen
+        // nicht belegte Spielpl√§tze rauswerfen
         if (!(GAMECLIENT.GetPlayer(i)->ps == PS_KI || GAMECLIENT.GetPlayer(i)->ps == PS_OCCUPIED))
         {
             activePlayers[i] = false;
@@ -84,7 +84,7 @@ iwStatistics::iwStatistics()
                 break;
         }
 
-        // Statistik-Sichtbarkeit abh‰ngig von Auswahl
+        // Statistik-Sichtbarkeit abh√§ngig von Auswahl
         switch (GAMECLIENT.GetGGS().getSelection(ADDON_STATISTICS_VISIBILITY))
         {
             default: // Passiert eh nicht, nur zur Sicherheit
@@ -94,7 +94,7 @@ iwStatistics::iwStatistics()
             {
                 activePlayers[i] = true;
             } break;
-            case 1: // Nur Verb¸ndete teilen Sicht
+            case 1: // Nur Verb√ºndete teilen Sicht
             {
                 const bool visible = GAMECLIENT.GetLocalPlayer()->IsAlly(i);
                 activePlayers[i] = visible;
@@ -135,7 +135,7 @@ iwStatistics::iwStatistics()
     // Hilfe-Button
     AddImageButton(25, 18, 288, 30, 32, TC_GREY, LOADER.GetImageN("io", 21), _("Help"));
 
-    // Aktuelle ‹berschrift ¸ber der Statistik
+    // Aktuelle √úberschrift √ºber der Statistik
     headline = AddText(30, 130, 120, _("Size of country"), MakeColor(255, 136, 96, 52),
                        glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM | glArchivItem_Font::DF_NO_OUTLINE, NormalFont); // qx: fix for bug #1106952
 
@@ -155,7 +155,7 @@ iwStatistics::iwStatistics()
                                      glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_TOP, LOADER.GetFontN("resource", 0));
     }
 
-    // Standardansicht: 15min / Landesgrˆﬂe
+    // Standardansicht: 15min / Landesgr√∂√üe
     statChanger->SetSelection(11);
     currentView = STAT_COUNTRY;
     timeChanger->SetSelection(21);
@@ -206,7 +206,7 @@ void iwStatistics::Msg_OptionGroupChange(const unsigned int ctrl_id, const unsig
 {
     switch(ctrl_id)
     {
-        case 19: // Statistikart w‰hlen
+        case 19: // Statistikart w√§hlen
             switch(selection)
             {
                 case 11:
@@ -243,7 +243,7 @@ void iwStatistics::Msg_OptionGroupChange(const unsigned int ctrl_id, const unsig
                     break;
             }
             break;
-        case 20: // Zeitbereich w‰hlen
+        case 20: // Zeitbereich w√§hlen
             switch(selection)
             {
                 case 21:
@@ -302,7 +302,7 @@ void iwStatistics::Msg_PaintAfter()
  */
 void iwStatistics::DrawStatistic(StatisticType type)
 {
-    // Ein paar benˆtigte Werte...
+    // Ein paar ben√∂tigte Werte...
     const int sizeX = 180;
     const int sizeY = 80;
     const int topLeftX = this->x + 34;
@@ -400,7 +400,7 @@ void iwStatistics::DrawStatistic(StatisticType type)
  */
 void iwStatistics::DrawAxis()
 {
-    // Ein paar benˆtigte Werte...
+    // Ein paar ben√∂tigte Werte...
     const int sizeX = 180;
     const int sizeY = 80;
     const int topLeftX = this->x + 34;
@@ -421,7 +421,7 @@ void iwStatistics::DrawAxis()
     DrawLine(topLeftX + sizeX - 3, topLeftY + sizeY / 2, topLeftX + sizeX + 4, topLeftY + sizeY / 2, 1, MakeColor(255, 88, 44, 16));
 
     // Striche an der X-Achse + Beschriftung
-    // Zun‰chst die 0, die haben alle
+    // Zun√§chst die 0, die haben alle
     timeAnnotations[6]->Move(topLeftXrel + 180, topLeftYrel + sizeY + 6);
     timeAnnotations[6]->SetText("0");
     timeAnnotations[6]->SetVisible(true);

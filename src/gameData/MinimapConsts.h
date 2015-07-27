@@ -1,4 +1,4 @@
-// $Id: MinimapConsts.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: MinimapConsts.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -19,10 +19,10 @@
 #ifndef MINIMAP_CONSTS_H_
 #define MINIMAP_CONSTS_H_
 
-// Farben für die einzelnen Terrains (ARGB)
+// Farben fÃ¼r die einzelnen Terrains (ARGB)
 const unsigned TERRAIN_COLORS[3][16] =
 {
-    // Grünland
+    // GrÃ¼nland
     {
         0xFFFFFFFF,//TT_SNOW = 0,
         0xFFc09c7c,//TT_DESERT,
@@ -42,7 +42,7 @@ const unsigned TERRAIN_COLORS[3][16] =
         0xFFc02020 //TT_LAVA
     },
 
-    // Ödland
+    // Ã–dland
     {
         0xFF860000,//TT_SNOW is lava, too. was 0xFFFFFFFF
         0xFF9c7c64,//TT_DESERT,
@@ -84,17 +84,17 @@ const unsigned TERRAIN_COLORS[3][16] =
 
 };
 
-/// Farbe für Bäume
+/// Farbe fÃ¼r BÃ¤ume
 const unsigned TREE_COLOR = 0xFF003c14;
-/// Variierung der Helligkeit der Bäume
+/// Variierung der Helligkeit der BÃ¤ume
 const int VARY_TREE_COLOR = 20;
-/// Farbe für Granit
+/// Farbe fÃ¼r Granit
 const unsigned GRANITE_COLOR = 0xFFA2A2A2;
-/// Variierung der Helligkeit der Granitblöcke
+/// Variierung der Helligkeit der GranitblÃ¶cke
 const int VARY_GRANITE_COLOR = 20;
-/// Farbe für Gebäude
+/// Farbe fÃ¼r GebÃ¤ude
 const unsigned BUILDING_COLOR = 0xFFFFFFFF;
-/// Färbe für Straßen
+/// FÃ¤rbe fÃ¼r StraÃŸen
 const unsigned ROAD_COLOR = 0xFFAAAAAA;
 
 /// Skalierung in x-Richtung bei der Anzeige der Map

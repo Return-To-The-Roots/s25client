@@ -1,4 +1,4 @@
-// $Id: noCoordBase.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: noCoordBase.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -34,7 +34,7 @@ class noCoordBase : public noBase
         noCoordBase(const NodalObjectType nop, const MapPoint pt) : noBase(nop), pos(pt) {}
         noCoordBase(SerializedGameData* sgd, const unsigned obj_id);
 
-        /// Aufräummethoden
+        /// AufrÃ¤ummethoden
     protected:  void Destroy_noCoordBase(void) { Destroy_noBase(); }
     public:     void Destroy(void) { Destroy_noCoordBase(); }
 
@@ -50,7 +50,7 @@ class noCoordBase : public noBase
         /// Returns position
         MapPoint GetPos() const { return pos; }
 
-        /// Liefert GUI-ID zurück für die Fenster
+        /// Liefert GUI-ID zurÃ¼ck fÃ¼r die Fenster
         unsigned CreateGUIID() const;
 
     protected:

@@ -1,4 +1,4 @@
-// $Id: nofPlaner.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+Ôªø// $Id: nofPlaner.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -66,7 +66,7 @@ void nofPlaner::GoalReached()
 {
     state = STATE_WALKING;
 
-    // Zuf‰llig Uhrzeigersinn oder dagegen
+    // Zuf√§llig Uhrzeigersinn oder dagegen
     pd = ( RANDOM.Rand(__FILE__, __LINE__, obj_id, 2) == 0 ) ? (PD_CLOCKWISE) : (PD_COUNTERCLOCKWISE);
 
     // Je nachdem erst nach rechts oder links gehen
@@ -75,7 +75,7 @@ void nofPlaner::GoalReached()
 
 void nofPlaner::Walked()
 {
-    /// Zur Baustelle zur¸ckgelaufen? (=fertig)
+    /// Zur Baustelle zur√ºckgelaufen? (=fertig)
     if(pos == building_site->GetPos())
     {
         // Baustelle Bescheid sagen
@@ -222,13 +222,13 @@ void nofPlaner::HandleDerivedEvent(const unsigned int id)
         else if(pd == PD_COUNTERCLOCKWISE && dir == 3)
             StartWalking(1);
 
-        // Fertig -> zur Baustelle zur¸cklaufen
+        // Fertig -> zur Baustelle zur√ºcklaufen
         else if(pd == PD_CLOCKWISE && dir == 4)
             StartWalking(0);
         else if(pd == PD_COUNTERCLOCKWISE && dir == 4)
             StartWalking(2);
 
-        // In n‰chste Richtung gehen
+        // In n√§chste Richtung gehen
         else if(pd == PD_CLOCKWISE)
             StartWalking((dir + 1) % 6);
         else

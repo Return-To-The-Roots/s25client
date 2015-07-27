@@ -1,4 +1,4 @@
-// $Id: iwSettings.h
+﻿// $Id: iwSettings.h
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -35,7 +35,7 @@ class iwSettings : public IngameWindow
         ~iwSettings();
 
     private:
-        std::vector<VideoDriver::VideoMode> video_modes; ///< Vector für die Auflösungen
+        std::vector<VideoDriver::VideoMode> video_modes; ///< Vector fÃ¼r die AuflÃ¶sungen
         void Msg_OptionGroupChange(const unsigned int ctrl_id, const unsigned short selection);
         void Msg_CheckboxChange(const unsigned int ctrl_id, const bool checked);
         dskGameInterface* gameDesktop;

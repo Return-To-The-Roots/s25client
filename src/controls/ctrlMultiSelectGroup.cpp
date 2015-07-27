@@ -1,4 +1,4 @@
-// $Id: ctrlMultiSelectGroup.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+Ôªø// $Id: ctrlMultiSelectGroup.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -66,7 +66,7 @@ bool ctrlMultiSelectGroup::Draw_(void)
  */
 void ctrlMultiSelectGroup::AddSelection(unsigned short selection, bool notify)
 {
-    // Neuen Button ausw‰hlen
+    // Neuen Button ausw√§hlen
     ctrlButton* button = GetCtrl<ctrlButton>(selection);
     assert(button);
     switch(select_type)
@@ -90,7 +90,7 @@ void ctrlMultiSelectGroup::AddSelection(unsigned short selection, bool notify)
  */
 void ctrlMultiSelectGroup::RemoveSelection(unsigned short selection, bool notify)
 {
-    // Neuen Button ausw‰hlen
+    // Neuen Button ausw√§hlen
     ctrlButton* button = GetCtrl<ctrlButton>(selection);
     assert(button);
     switch(select_type)

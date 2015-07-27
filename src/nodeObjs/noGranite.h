@@ -1,4 +1,4 @@
-// $Id: noGranite.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: noGranite.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -33,7 +33,7 @@ class noGranite : public noBase
         noGranite(const GraniteType type, const unsigned char state);
         noGranite(SerializedGameData* sgd, const unsigned obj_id);
 
-        /// Aufräummethoden
+        /// AufrÃ¤ummethoden
     protected:  void Destroy_noGranite() { Destroy_noBase(); }
     public:     void Destroy() { Destroy_noGranite(); }
 
@@ -47,12 +47,12 @@ class noGranite : public noBase
 
         BlockingManner GetBM() const { return BM_GRANITE; }
 
-        /// Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung" für den Fog of War
+        /// Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung" fÃ¼r den Fog of War
         FOWObject* CreateFOWObject() const;
 
         /// "Bearbeitet" den Granitglotz --> haut ein Stein ab
         void Hew();
-        /// Gibt true zurück, falls der Granitblock nur noch 1 Stein groß ist und damit dann vernichtet werden kann
+        /// Gibt true zurÃ¼ck, falls der Granitblock nur noch 1 Stein groÃŸ ist und damit dann vernichtet werden kann
         bool IsSmall() const { return (state == 0); }
 
 };

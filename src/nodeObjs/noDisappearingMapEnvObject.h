@@ -1,4 +1,4 @@
-// $Id: noDisappearingMapEnvObject.h 9357 2014-04-25 15:35:25Z FloSoft $
+﻿// $Id: noDisappearingMapEnvObject.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -31,7 +31,7 @@ class noDisappearingMapEnvObject : public noDisappearingEnvObject
         noDisappearingMapEnvObject(const MapPoint pt, const unsigned short map_id);
         noDisappearingMapEnvObject(SerializedGameData* sgd, const unsigned obj_id);
 
-        /// Aufr�ummethoden
+        /// Aufräummethoden
     protected:  void Destroy_noDisappearingMapEnvObject();
     public:     void Destroy() { Destroy_noDisappearingMapEnvObject(); }
         /// Serialisierungsfunktionen

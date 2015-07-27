@@ -1,4 +1,4 @@
-// $Id: FOWObjects.h 9357 2014-04-25 15:35:25Z FloSoft $
+Ôªø// $Id: FOWObjects.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -24,7 +24,7 @@
 
 class SerializedGameData;
 
-/// Typen f¸r die FOW Objekte
+/// Typen f√ºr die FOW Objekte
 enum FOW_Type
 {
     FOW_NOTHING,
@@ -37,7 +37,7 @@ enum FOW_Type
 
 /// Helligkeit der Objekte beim Zeichnen
 const unsigned FOW_DRAW_COLOR_BRIGHTNESS = 0x80;
-/// Farbe f¸r das Zeichnen
+/// Farbe f√ºr das Zeichnen
 const unsigned FOW_DRAW_COLOR = 0xFF808080;
 
 /// Berechnet die dunklere Spielerfarbe zum Zeichnen
@@ -54,7 +54,7 @@ class FOWObject
         virtual void Draw(int x, int y) const = 0;
         /// Serialisierungsfunktion.
         virtual void Serialize(SerializedGameData* sgd) const = 0;
-        /// Gibt Typ zur¸ck
+        /// Gibt Typ zur√ºck
         virtual FOW_Type GetType() const = 0;
 };
 
@@ -72,13 +72,13 @@ class fowNothing : public FOWObject
 
 
 
-/// Geb‰ude im Nebel
+/// Geb√§ude im Nebel
 class fowBuilding : public FOWObject
 {
     private:
-        /// Typ des Geb‰udes
+        /// Typ des Geb√§udes
         const BuildingType type;
-        /// Volk des Geb‰udes (muss extra gespeichert werden, da ja auch z.B. fremde Geb‰ude erobert werden kˆnnen)
+        /// Volk des Geb√§udes (muss extra gespeichert werden, da ja auch z.B. fremde Geb√§ude erobert werden k√∂nnen)
         const Nation nation;
     public:
 
@@ -95,11 +95,11 @@ class fowBuildingSite : public FOWObject
     private:
         /// Wird planiert?
         const bool planing;
-        /// Typ des Geb‰udes
+        /// Typ des Geb√§udes
         const BuildingType type;
-        /// Volk des Geb‰udes (muss extra gespeichert werden, da ja auch z.B. fremde Geb‰ude erobert werden kˆnnen)
+        /// Volk des Geb√§udes (muss extra gespeichert werden, da ja auch z.B. fremde Geb√§ude erobert werden k√∂nnen)
         const Nation nation;
-        /// Gibt den Baufortschritt an, wie hoch das Geb‰ude schon gebaut ist, gemessen in 8 Stufen f¸r jede verbaute Ware
+        /// Gibt den Baufortschritt an, wie hoch das Geb√§ude schon gebaut ist, gemessen in 8 Stufen f√ºr jede verbaute Ware
         const unsigned char build_progress;
     public:
 
@@ -136,7 +136,7 @@ class fowTree : public FOWObject
 
         /// Typ des Baumes (also welche Baumart)
         const unsigned char type;
-        /// Grˆﬂe des Baumes (0-2, 3 = aufgewachsen!)
+        /// Gr√∂√üe des Baumes (0-2, 3 = aufgewachsen!)
         const unsigned char size;
 
     public:

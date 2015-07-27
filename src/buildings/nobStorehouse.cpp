@@ -1,4 +1,4 @@
-// $Id: nobStorehouse.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+Ôªø// $Id: nobStorehouse.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -41,7 +41,7 @@ static char THIS_FILE[] = __FILE__;
 nobStorehouse::nobStorehouse(const MapPoint pos, const unsigned char player, const Nation nation)
     : nobBaseWarehouse(BLD_STOREHOUSE, pos, player, nation)
 {
-    // Alle Waren 0, auﬂer 100 Tr‰ger
+    // Alle Waren 0, au√üer 100 Tr√§ger
     goods.clear();
     real_goods.clear();
 
@@ -79,7 +79,7 @@ nobStorehouse::nobStorehouse(SerializedGameData* sgd, const unsigned obj_id) : n
 
 void nobStorehouse::Draw(int x, int y)
 {
-    // Geb‰ude an sich zeichnen
+    // Geb√§ude an sich zeichnen
     DrawBaseBuilding(x, y);
 }
 

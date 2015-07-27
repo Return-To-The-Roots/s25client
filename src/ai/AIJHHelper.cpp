@@ -1,4 +1,4 @@
-// $Id: AIJHHelper.cpp 9589 2015-02-01 09:38:05Z marcus $
+﻿// $Id: AIJHHelper.cpp 9589 2015-02-01 09:38:05Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -72,7 +72,7 @@ void AIJH::BuildJob::ExecuteJob()
         break;
         case AIJH::JOB_EXECUTING_ROAD2_2:
         {
-            // evtl noch pr�fen ob auch dieser Stra�enbau erfolgreich war?
+            // evtl noch prï¿½fen ob auch dieser Straï¿½enbau erfolgreich war?
             aijh->RecalcGround(target, route);
             status = AIJH::JOB_FINISHED;
         }
@@ -124,7 +124,7 @@ void AIJH::BuildJob::TryToBuild()
     if (searchMode == SEARCHMODE_GLOBAL)
     {
         // TODO: tmp solution for testing: only woodcutter
-        //hier machen f�r mehre geb�ude
+        //hier machen fï¿½r mehre gebï¿½ude
         //erstmal wieder rausgenommen weil kaputt - todo: fix positionsearch
         if (type != BLD_WOODCUTTER)
         {
@@ -276,9 +276,9 @@ void AIJH::BuildJob::BuildMainRoad()
     const noBuildingSite* bld;
     if (!(bld = aii->GetSpecObj<noBuildingSite>(target)))
     {
-        // Pr�fen ob sich vielleicht die BQ ge�ndert hat und damit Bau unm�glich ist
+        // Prï¿½fen ob sich vielleicht die BQ geï¿½ndert hat und damit Bau unmï¿½glich ist
         BuildingQuality bq = aii->GetBuildingQuality(target);
-        if (!(bq >= BUILDING_SIZE[type] && bq < BQ_MINE) // normales Geb�ude
+        if (!(bq >= BUILDING_SIZE[type] && bq < BQ_MINE) // normales Gebï¿½ude
                 && !(bq == BUILDING_SIZE[type]))    // auch Bergwerke
         {
             status = AIJH::JOB_FAILED;
@@ -304,7 +304,7 @@ void AIJH::BuildJob::BuildMainRoad()
     // Gucken noch nicht ans Wegnetz angeschlossen
     if (!aijh->GetConstruction()->IsConnectedToRoadSystem(houseFlag))
     {
-        // Bau unm�glich?
+        // Bau unmï¿½glich?
         if (!aijh->GetConstruction()->ConnectFlagToRoadSytem(houseFlag, route))
         {
             status = AIJH::JOB_FAILED;
@@ -325,7 +325,7 @@ void AIJH::BuildJob::BuildMainRoad()
         }
     }
 
-    // Wir sind angeschlossen, BQ f�r den eben gebauten Weg aktualisieren
+    // Wir sind angeschlossen, BQ fï¿½r den eben gebauten Weg aktualisieren
     //aijh->RecalcBQAround(target);
     //aijh->RecalcGround(target, route);
 
@@ -401,7 +401,7 @@ void AIJH::BuildJob::TryToBuildSecondaryRoad()
 
     if (!houseFlag)
     {
-        // Baustelle wurde wohl zerst�rt, oh schreck!
+        // Baustelle wurde wohl zerstï¿½rt, oh schreck!
         status = AIJH::JOB_FAILED;
 #ifdef DEBUG_AI
         std::cout << "Player " << (unsigned)aijh->GetPlayerID() << ", Job failed: House flag is gone, " << BUILDING_NAMES[type] << " at " << target_x << "/" << target_y << ". Retrying..." << std::endl;

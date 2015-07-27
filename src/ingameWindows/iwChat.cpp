@@ -1,4 +1,4 @@
-// $Id: iwChat.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: iwChat.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -47,18 +47,18 @@ unsigned char iwChat::chat_dest = 0;
 iwChat::iwChat()
     : IngameWindow(CGI_CHAT, 0xFFFF, 0xFFFF, 300, 150, _("Chat Window"), LOADER.GetImageN("resource", 41))
 {
-    // Eingabefeld für Chattext
+    // Eingabefeld fÃ¼r Chattext
     AddEdit(0, 20, 30, 260, 22, TC_GREY, NormalFont);
 
     ctrlOptionGroup* group = AddOptionGroup(1, ctrlOptionGroup::CHECK);
     // "Alle"
     group->AddTextButton(0,  20,  80, 260, 22, TC_GREY, _("All"), NormalFont);
-    // "Verbündete"
+    // "VerbÃ¼ndete"
     group->AddTextButton(1,  20, 112, 125, 22, TC_GREEN2, _("Allies"), NormalFont);
     // "Feinde"
     group->AddTextButton(2, 155, 112, 125, 22, TC_RED1, _("Enemies"), NormalFont);
 
-    // Entspr. vom letzten Mal auswählen auswählen
+    // Entspr. vom letzten Mal auswÃ¤hlen auswÃ¤hlen
     group->SetSelection(chat_dest);
 }
 

@@ -1,4 +1,4 @@
-// $Id: nofStonemason.cpp 9402 2014-05-10 06:54:13Z FloSoft $
+ï»¿// $Id: nofStonemason.cpp 9402 2014-05-10 06:54:13Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -65,13 +65,13 @@ void nofStonemason::DrawWorking(int x, int y)
 
 }
 
-/// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren rausträgt (bzw rein)
+/// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren raustrÃ¤gt (bzw rein)
 unsigned short nofStonemason::GetCarryID() const
 {
     return 63;
 }
 
-/// Abgeleitete Klasse informieren, wenn sie anfängt zu arbeiten (Vorbereitungen)
+/// Abgeleitete Klasse informieren, wenn sie anfÃ¤ngt zu arbeiten (Vorbereitungen)
 void nofStonemason::WorkStarted()
 {
 }
@@ -82,16 +82,16 @@ void nofStonemason::WorkFinished()
     // Stein abhauen (wenn er nur noch ganz klein ist, dann wird er von der Landkarte getilgt)
     if(gwg->GetSpecObj<noGranite>(pos)->IsSmall())
     {
-        // Granitklötzchen löschen
+        // GranitklÃ¶tzchen lÃ¶schen
         gwg->GetSpecObj<noGranite>(pos)->Destroy();
         delete gwg->GetSpecObj<noGranite>(pos);
         gwg->SetNO(0, pos);
 
-        // Minimap Bescheid geben (Granitglötzchen muss weg)
+        // Minimap Bescheid geben (GranitglÃ¶tzchen muss weg)
         if(gwg->GetGameInterface())
             gwg->GetGameInterface()->GI_UpdateMinimap(pos);
 
-        // Drumherum BQ neu berechnen, da diese sich ja jetzt hätten ändern können
+        // Drumherum BQ neu berechnen, da diese sich ja jetzt hÃ¤tten Ã¤ndern kÃ¶nnen
         gwg->RecalcBQAroundPoint(pos);
     }
     else

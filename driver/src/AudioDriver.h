@@ -1,4 +1,4 @@
-// $Id: AudioDriver.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: AudioDriver.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -26,7 +26,7 @@
 
 #include "../../src/drivers/AudioDriverLoaderInterface.h"
 
-/// Basisklasse für einen Audiotreiber.
+/// Basisklasse fÃ¼r einen Audiotreiber.
 class AudioDriver
 {
     public:
@@ -42,7 +42,7 @@ class AudioDriver
         /// Treiberinitialisierungsfunktion.
         virtual bool Initialize(void) = 0;
 
-        /// Treiberaufräumfunktion.
+        /// TreiberaufrÃ¤umfunktion.
         virtual void CleanUp(void) = 0;
 
         virtual Sound* LoadEffect(unsigned int data_type, unsigned char* data, unsigned long size) = 0;
@@ -58,13 +58,13 @@ class AudioDriver
         virtual void StopEffect(const unsigned int play_id) = 0;
         /// Wird ein Sound (noch) abgespielt?
         virtual bool IsEffectPlaying(const unsigned play_id) = 0;
-        /// Verändert die Lautstärke von einem abgespielten Sound (falls er noch abgespielt wird)
+        /// VerÃ¤ndert die LautstÃ¤rke von einem abgespielten Sound (falls er noch abgespielt wird)
         virtual void ChangeVolume(const unsigned play_id, const unsigned char volume) = 0;
 
         virtual void SetMasterEffectVolume(unsigned char volume) = 0;
         virtual void SetMasterMusicVolume(unsigned char volume) = 0;
 
-        /// prüft auf Initialisierung.
+        /// prÃ¼ft auf Initialisierung.
         bool IsInitialized() { return initialized; }
 
     protected:
@@ -74,7 +74,7 @@ class AudioDriver
 
     private:
 
-        /// Counter für Play-IDs
+        /// Counter fÃ¼r Play-IDs
         unsigned play_id_counter;
 
 
@@ -93,13 +93,13 @@ class AudioDriver
 
         AudioDriverLoaderInterface* adli;
 
-        ///< Das DriverCallback für Rückmeldungen.
+        ///< Das DriverCallback fÃ¼r RÃ¼ckmeldungen.
 
         bool initialized; ///< Initialisierungsstatus.
 
         std::vector<Sound*> sounds;
 
-        /// Anzahl Channels, die reserviert werden können (für Effekte!)
+        /// Anzahl Channels, die reserviert werden kÃ¶nnen (fÃ¼r Effekte!)
         static const unsigned CHANNEL_COUNT = 64;
 
 

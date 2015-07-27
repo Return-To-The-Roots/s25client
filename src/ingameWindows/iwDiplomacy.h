@@ -1,4 +1,4 @@
-// $Id: iwDiplomacy.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: iwDiplomacy.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -22,7 +22,7 @@
 
 #include "IngameWindow.h"
 
-/// Diplomatiefenster: Übersicht über alle Spieler im Spiel und Schmieden von Bündnissen
+/// Diplomatiefenster: Ãœbersicht Ã¼ber alle Spieler im Spiel und Schmieden von BÃ¼ndnissen
 class iwDiplomacy : public IngameWindow
 {
     public:
@@ -36,7 +36,7 @@ class iwDiplomacy : public IngameWindow
         void Msg_ButtonClick(const unsigned int ctrl_id);
 };
 
-/// Kleines Fenster, über das einem Spieler ein neues Bündnis angeboten werden kann
+/// Kleines Fenster, Ã¼ber das einem Spieler ein neues BÃ¼ndnis angeboten werden kann
 class iwSuggestPact : public IngameWindow
 {
         const PactType pt;

@@ -1,4 +1,4 @@
-// $Id: nofWoodcutter.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: nofWoodcutter.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -59,7 +59,7 @@ void nofWoodcutter::DrawWorking(int x, int y)
 
     if(i < 10)
     {
-        // 1. Ein Stück vom Baum nach links laufen
+        // 1. Ein StÃ¼ck vom Baum nach links laufen
         Loader::bob_jobs_cache[gwg->GetPlayer(player)->nation][JOB_WOODCUTTER][0][i % 8].draw(x - i, y, COLOR_WHITE, COLORS[gwg->GetPlayer(player)->color]);
 
 //      LOADER.GetBobN("jobs")->Draw(5,0,false,i%8,x-i,y,COLORS[gwg->GetPlayer(player)->color]);
@@ -79,7 +79,7 @@ void nofWoodcutter::DrawWorking(int x, int y)
     }
     else if(i < 105)
     {
-        // 3. Warten bis Baum umfällt
+        // 3. Warten bis Baum umfÃ¤llt
         LOADER.GetImageN("rom_bobs", 24)->Draw(x - 9, y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(player)->color]);
 
         if(i == 90)
@@ -90,7 +90,7 @@ void nofWoodcutter::DrawWorking(int x, int y)
     }
     else if(i < 115)
     {
-        // 4. Wieder zurückgehen nach rechts
+        // 4. Wieder zurÃ¼ckgehen nach rechts
         Loader::bob_jobs_cache[gwg->GetPlayer(player)->nation][JOB_WOODCUTTER][3][(i - 105) % 8].draw(x - (9 - (i - 105)), y, COLOR_WHITE, COLORS[gwg->GetPlayer(player)->color]);
 
 //      LOADER.GetBobN("jobs")->Draw(5,3,false,(i-105)%8,x-(9-(i-105)),y,COLORS[gwg->GetPlayer(player)->color]);
@@ -108,13 +108,13 @@ void nofWoodcutter::DrawWorking(int x, int y)
 
 }
 
-/// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren rausträgt (bzw rein)
+/// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren raustrÃ¤gt (bzw rein)
 unsigned short nofWoodcutter::GetCarryID() const
 {
     return 61;
 }
 
-/// Abgeleitete Klasse informieren, wenn sie anfängt zu arbeiten (Vorbereitungen)
+/// Abgeleitete Klasse informieren, wenn sie anfÃ¤ngt zu arbeiten (Vorbereitungen)
 void nofWoodcutter::WorkStarted()
 {
     assert(gwg->GetSpecObj<noTree>(dest)->GetType() == NOP_TREE);
@@ -136,7 +136,7 @@ void nofWoodcutter::WorkFinished()
 nofFarmhand::PointQuality nofWoodcutter::GetPointQuality(const MapPoint pt)
 {
     // Gibt es hier an dieser Position einen Baum und ist dieser ausgewachsen?
-    // außerdem keine Ananas fällen!
+    // auÃŸerdem keine Ananas fÃ¤llen!
     noBase* no = gwg->GetNO(pt);
     if(no->GetType() == NOP_TREE)
     {

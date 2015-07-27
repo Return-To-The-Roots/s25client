@@ -1,4 +1,4 @@
-// $Id: glArchivItem_Bitmap_Direct.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: glArchivItem_Bitmap_Direct.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -94,9 +94,9 @@ void glArchivItem_Bitmap_Direct::tex_setPixel(unsigned short x, unsigned short y
  *  @param[in] x X Koordinate des Pixels
  *  @param[in] y Y Koordinate des Pixels
  *  @param[in] r Roter Wert
- *  @param[in] g Grüner Wert
+ *  @param[in] g GrÃ¼ner Wert
  *  @param[in] b Blauer Wert
- *  @param[in] a Alpha Wert (bei paletted nur 0xFF/0x00 unterstützt)
+ *  @param[in] a Alpha Wert (bei paletted nur 0xFF/0x00 unterstÃ¼tzt)
  *
  *  @author FloSoft
  */

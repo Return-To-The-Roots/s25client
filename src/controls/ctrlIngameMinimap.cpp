@@ -1,4 +1,4 @@
-// $Id: ctrlIngameMinimap.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+﻿// $Id: ctrlIngameMinimap.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -77,29 +77,29 @@ bool ctrlIngameMinimap::Draw_()
     short xpos = middle_corrected.x * width_show / minimap->GetMapWidth() + 2;
     short ypos = middle_corrected.y * height_show / minimap->GetMapHeight() + 2;
 
-    // Scroll-Auswahl-Bild an den R�ndern verkleinern, damit es nicht �ber die Karte "�berlappt"
+    // Scroll-Auswahl-Bild an den Rï¿½ndern verkleinern, damit es nicht ï¿½ber die Karte "ï¿½berlappt"
     short src_x = 0, src_y = 0;
     short draw_width = image->getWidth();
     short draw_height = image->getHeight();
 
-    // �berlappung am linken Rand?
+    // ï¿½berlappung am linken Rand?
     if(xpos - image->getNx() < 0)
     {
         src_x = -(xpos - image->getNx());
         draw_width += (xpos - image->getNx());
         xpos = image->getNx();
     }
-    // �berlappung am oberen Rand?
+    // ï¿½berlappung am oberen Rand?
     if(ypos - image->getNy() < 0)
     {
         src_y = -(ypos - image->getNy());
         draw_height += (ypos - image->getNy());
         ypos = image->getNy();
     }
-    // �berlappung am rechten Rand?
+    // ï¿½berlappung am rechten Rand?
     if(xpos - image->getNx() + image->getWidth() >= width_show)
         draw_width -= (xpos - image->getNx() + image->getWidth() - width_show);
-    // �berlappung am unteren Rand?
+    // ï¿½berlappung am unteren Rand?
     if(ypos - image->getNy() + image->getHeight() >= height_show)
         draw_height -= (ypos - image->getNy() + image->getHeight() - height_show);
 
@@ -148,7 +148,7 @@ bool ctrlIngameMinimap::Msg_MouseMove(const MouseCoords& mc)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Setzt Breite und H�he des Controls
+ *  Setzt Breite und Hï¿½he des Controls
  *
  *  @author OLiver
  */

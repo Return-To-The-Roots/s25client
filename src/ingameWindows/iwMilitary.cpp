@@ -1,4 +1,4 @@
-// $Id: iwMilitary.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+﻿// $Id: iwMilitary.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -61,7 +61,7 @@ iwMilitary::iwMilitary(void)
     AddImageButton(20, 18, 282, 30, 32, TC_GREY, LOADER.GetImageN("io", 21), _("Help"));
     AddImageButton(21, 120, 282, 30, 32, TC_GREY, LOADER.GetImageN("io", 191), _("Default"));
 
-    // Falls Verteidiger ändern verboten ist, einfach die Bar ausblenden
+    // Falls Verteidiger Ã¤ndern verboten ist, einfach die Bar ausblenden
     if (GAMECLIENT.GetGGS().getSelection(ADDON_DEFENDER_BEHAVIOR) == 1)
     {
         GetCtrl<ctrlProgress>(2)->SetVisible(false);
@@ -77,10 +77,10 @@ iwMilitary::~iwMilitary()
     TransmitSettings();
 }
 
-/// Sendet veränderte Einstellungen (an den Client), falls sie verändert wurden
+/// Sendet verÃ¤nderte Einstellungen (an den Client), falls sie verÃ¤ndert wurden
 void iwMilitary::TransmitSettings()
 {
-    // Wurden Einstellungen geändert?
+    // Wurden Einstellungen geÃ¤ndert?
     if(settings_changed)
     {
         // Einstellungen speichern
@@ -99,14 +99,14 @@ void iwMilitary::Msg_Timer(const unsigned int ctrl_id)
         // Im Replay aktualisieren wir die Werte
         UpdateSettings();
     else
-        // Im normalen Spielmodus schicken wir den ganzen Spaß ab
+        // Im normalen Spielmodus schicken wir den ganzen SpaÃŸ ab
         TransmitSettings();
 }
 
 void iwMilitary::Msg_ProgressChange(const unsigned int ctrl_id, const unsigned short position)
 {
 
-    // Einstellungen wurden geändert
+    // Einstellungen wurden geÃ¤ndert
     settings_changed = true;
 }
 

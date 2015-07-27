@@ -1,4 +1,4 @@
-// $Id: RoadSegment.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: RoadSegment.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -35,51 +35,51 @@ class RoadSegment : public GameObject
     public:
         enum RoadType
         {
-            RT_NORMAL,  ///< Normale Straße bzw. Bergstraße
-            RT_DONKEY,  ///< Eselstraße
-            RT_BOAT     ///< Wasserstraße
+            RT_NORMAL,  ///< Normale StraÃŸe bzw. BergstraÃŸe
+            RT_DONKEY,  ///< EselstraÃŸe
+            RT_BOAT     ///< WasserstraÃŸe
         };
 
     public:
         RoadSegment(const RoadType rt, noRoadNode* const f1, noRoadNode* const f2, const std::vector<unsigned char>& route);
         RoadSegment(SerializedGameData* sgd, const unsigned obj_id);
 
-        /// zerstört das Objekt.
+        /// zerstÃ¶rt das Objekt.
         void Destroy(void) { Destroy_RoadSegment(); }
         /// serialisiert das Objekt.
         void Serialize(SerializedGameData* sgd) const { Serialize_RoadSegment(sgd); }
         /// liefert den GO-Type.
         inline GO_Type GetGOT() const { return GOT_ROADSEGMENT; }
-        /// Gibt die ID (0 oder 1) eines RoadNodes dieser Straße zurück (die Flagge muss zu dieser Straße gehören, sonst kommt Müll raus!!)
+        /// Gibt die ID (0 oder 1) eines RoadNodes dieser StraÃŸe zurÃ¼ck (die Flagge muss zu dieser StraÃŸe gehÃ¶ren, sonst kommt MÃ¼ll raus!!)
         inline bool GetNodeID(const noRoadNode* rn) { return (rn == f2); }
-        /// Gibt Straßen-Typ zurück
+        /// Gibt StraÃŸen-Typ zurÃ¼ck
         inline RoadType GetRoadType() const { return rt; }
-        /// Gibt die Länge der Staße zurück
+        /// Gibt die LÃ¤nge der StaÃŸe zurÃ¼ck
         inline unsigned GetLength() const { return route.size(); }
-        /// gibt Flagge 1 zurück
+        /// gibt Flagge 1 zurÃ¼ck
         inline noRoadNode* GetF1() const { return f1; }
         /// setzt Flagge 1 auf o
         inline void SetF1(noRoadNode* o) { f1 = o; }
-        /// gibt Flagge 2 zurück
+        /// gibt Flagge 2 zurÃ¼ck
         inline noRoadNode* GetF2() const { return f2; }
         /// setzt Flagge 2 auf o
         inline void SetF2(noRoadNode* o) { f2 = o; }
-        /// gibt die Route nr zurück
+        /// gibt die Route nr zurÃ¼ck
         inline unsigned char GetRoute(unsigned short nr) const { return route.at(nr); }
         /// setzt die Route nr auf r
         inline void SetRoute(unsigned short nr, unsigned char r) { route[nr] = r; }
-        /// gibt den Carrier nr zurück
+        /// gibt den Carrier nr zurÃ¼ck
         inline nofCarrier* getCarrier(unsigned char nr) const { return carrier[nr]; }
         /// setzt den Carrier nr auf c
         inline void setCarrier(unsigned char nr, nofCarrier* c) { carrier[nr] = c; }
         /// haben wir den Carrier "nr"?
         inline bool hasCarrier(unsigned char nr) const { return (carrier[nr] != NULL); }
-        /// Braucht die Straße einen Esel? Nur wenn sie auch einen Träger schon hat!
+        /// Braucht die StraÃŸe einen Esel? Nur wenn sie auch einen TrÃ¤ger schon hat!
         inline bool NeedDonkey() const { return (rt == RT_DONKEY && carrier[0] && !carrier[1]); }
         /// Hat einen Esel als Arbeiter dazubekommen.
         inline void GotDonkey(nofCarrier* donkey) { assert(!carrier[1]); carrier[1] = donkey; }
 
-        /// haben wir überhaupt Carrier?
+        /// haben wir Ã¼berhaupt Carrier?
         inline bool isOccupied() const
         {
             return((carrier[0]) || (carrier[1]));
@@ -93,19 +93,19 @@ class RoadSegment : public GameObject
                 return route[id];
         }
 
-        /// zerteilt die Straße in 2 Teile.
+        /// zerteilt die StraÃŸe in 2 Teile.
         void SplitRoad(noFlag* splitflag);
-        /// Überprüft ob es an den Flaggen noch Waren zu tragen gibt für den Träger.
+        /// ÃœberprÃ¼ft ob es an den Flaggen noch Waren zu tragen gibt fÃ¼r den TrÃ¤ger.
         bool AreWareJobs(const bool flag, unsigned int carrier_type, const bool take_ware_immediately) const;
-        /// Eine Ware sagt Bescheid, dass sie über dem Weg getragen werden will.
+        /// Eine Ware sagt Bescheid, dass sie Ã¼ber dem Weg getragen werden will.
         void AddWareJob(const noRoadNode* rn);
-        /// Eine Ware will nicht mehr befördert werden.
+        /// Eine Ware will nicht mehr befÃ¶rdert werden.
         void WareJobRemoved(const noFigure* const exception);
-        /// Baut die Straße zu einer Eselstraße aus.
+        /// Baut die StraÃŸe zu einer EselstraÃŸe aus.
         void UpgradeDonkeyRoad();
         /// Soll versuchen einen Esel zu bekommen.
         void TryGetDonkey();
-        /// Ein Träger muss kündigen, aus welchen Gründen auch immer.
+        /// Ein TrÃ¤ger muss kÃ¼ndigen, aus welchen GrÃ¼nden auch immer.
         void CarrierAbrogated(nofCarrier* carrier);
         /// given a flag returns the other end location
         noFlag* GetOtherFlag(const noFlag* flag);
@@ -113,19 +113,19 @@ class RoadSegment : public GameObject
         unsigned char GetOtherFlagDir(const noFlag* flag);
 
     protected:
-        /// zerstört das Objekt.
+        /// zerstÃ¶rt das Objekt.
         void Destroy_RoadSegment(void);
         /// serialisiert das Objekt.
         void Serialize_RoadSegment(SerializedGameData* sgd) const;
 
     private:
-        /// Straßentyp
+        /// StraÃŸentyp
         RoadType rt;
         /// die 2 Roadnodes, die den Weg eingrenzen
         noRoadNode* f1, *f2;
-        /// Beschreibung des Weges, ist length groß und liegt als Beschreibung der einzelnen Richtungen vor (von f1 zu f2)
+        /// Beschreibung des Weges, ist length groÃŸ und liegt als Beschreibung der einzelnen Richtungen vor (von f1 zu f2)
         std::vector<unsigned char> route;
-        /// Träger (und ggf. Esel), der auf diesem Weg arbeitet
+        /// TrÃ¤ger (und ggf. Esel), der auf diesem Weg arbeitet
         nofCarrier* carrier[2];
 };
 

@@ -1,4 +1,4 @@
-// $Id: noBuildingSite.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: noBuildingSite.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -33,7 +33,7 @@ enum BuildingType;
 class nofBuilder;
 class nofPlaner;
 
-/// repräsentiert eine Baustelle
+/// reprÃ¤sentiert eine Baustelle
 class noBuildingSite : public noBaseBuilding
 {
         friend class nofBuilder;
@@ -52,7 +52,7 @@ class noBuildingSite : public noBaseBuilding
         unsigned char boards, stones;
         /// Bretter und Steine, die schon verbaut wurden
         unsigned char used_boards, used_stones;
-        /// Gibt den Baufortschritt an, wie hoch das Gebäude schon gebaut ist, gemessen in 8 Stufen für jede verbaute Ware
+        /// Gibt den Baufortschritt an, wie hoch das GebÃ¤ude schon gebaut ist, gemessen in 8 Stufen fÃ¼r jede verbaute Ware
         unsigned char build_progress;
         /// Bestellte Bretter und Steine, d.h. Steine/Bretter, die noch "bestellt" wurden, aber noch nicht da sind
         std::list<Ware*> ordered_boards, ordered_stones;
@@ -64,13 +64,13 @@ class noBuildingSite : public noBaseBuilding
         unsigned char getStones() const { return stones; }
 
         noBuildingSite(const BuildingType type, const MapPoint pt, const unsigned char player);
-        /// Konstruktor für Hafenbaustellen vom Schiff aus
+        /// Konstruktor fÃ¼r Hafenbaustellen vom Schiff aus
         noBuildingSite(const MapPoint pt, const unsigned char player);
         noBuildingSite(SerializedGameData* sgd, const unsigned obj_id);
 
         ~noBuildingSite();
 
-        /// Aufräummethoden
+        /// AufrÃ¤ummethoden
     protected:  void Destroy_noBuildingSite();
     public:     void Destroy() { Destroy_noBuildingSite(); }
 
@@ -82,7 +82,7 @@ class noBuildingSite : public noBaseBuilding
 
         void Draw(int x, int y);
 
-        /// Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung" für den Fog of War
+        /// Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung" fÃ¼r den Fog of War
         FOWObject* CreateFOWObject() const;
 
         void AddWare(Ware* ware);
@@ -90,23 +90,23 @@ class noBuildingSite : public noBaseBuilding
 
         /// Fordert Baumaterial an
         void OrderConstructionMaterial();
-        /// Wird aufgerufen, wenn der Bauarbeiter kündigt
+        /// Wird aufgerufen, wenn der Bauarbeiter kÃ¼ndigt
         void Abrogate();
         /// Eine bestellte Ware konnte doch nicht kommen
         void WareLost(Ware* ware);
-        /// Gibt den Bau-Fortschritt zurück
+        /// Gibt den Bau-Fortschritt zurÃ¼ck
         unsigned char GetBuildProgress(bool percent = true) const;
 
         unsigned CalcDistributionPoints(noRoadNode* start, const GoodType type);
 
-        /// Wird aufgerufen, wenn eine neue Ware zum dem Gebäude geliefert wird (nicht wenn sie bestellt wurde vom Gebäude!)
+        /// Wird aufgerufen, wenn eine neue Ware zum dem GebÃ¤ude geliefert wird (nicht wenn sie bestellt wurde vom GebÃ¤ude!)
         void TakeWare(Ware* ware);
-        /// Gibt zurück, ob die Baustelle fertiggestellt ist
+        /// Gibt zurÃ¼ck, ob die Baustelle fertiggestellt ist
         bool IsBuildingComplete();
 
         /// Aufgerufen, wenn Planierung beendet wurde
         void PlaningFinished();
-        /// Gibt zurück, ob eine bestimmte Baustellen eine Baustelle ist, die vom Schiff aus errichtet wurde
+        /// Gibt zurÃ¼ck, ob eine bestimmte Baustellen eine Baustelle ist, die vom Schiff aus errichtet wurde
         bool IsHarborBuildingSiteFromSea() const;
 
 

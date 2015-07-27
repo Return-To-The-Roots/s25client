@@ -1,4 +1,4 @@
-// $Id: iwBuildings.h 9595 2015-02-01 09:40:54Z marcus $
+Ôªø// $Id: iwBuildings.h 9595 2015-02-01 09:40:54Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -24,7 +24,7 @@
 class dskGameInterface;
 class GameWorldViewer;
 
-/// Fenster, welches die Anzahl aller Geb‰ude und der Baustellena auflistet
+/// Fenster, welches die Anzahl aller Geb√§ude und der Baustellena auflistet
 class iwBuildings : public IngameWindow
 {
 	GameWorldViewer* const gwv;
@@ -36,7 +36,7 @@ class iwBuildings : public IngameWindow
 
     private:
 
-        /// Anzahlen der Geb‰ude zeichnen
+        /// Anzahlen der Geb√§ude zeichnen
         void Msg_PaintAfter();
 		
 		void Msg_ButtonClick(const unsigned int ctrl_id);

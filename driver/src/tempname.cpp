@@ -1,4 +1,4 @@
-// $Id: tempname.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+Ôªø// $Id: tempname.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -39,12 +39,12 @@ static char THIS_FILE[] = __FILE__;
 ///////////////////////////////////////////////////////////////////////////////
 /** @name tempname
  *
- *  liefert den Namen und Pfad einer tempor‰ren Datei.
+ *  liefert den Namen und Pfad einer tempor√§ren Datei.
  *
  *  @author     FloSoft
  *
  *  @param[in,out] name   Pfad/Name der Datei
- *  @param[in]     length Grˆﬂe des Speicherblocks von @p name
+ *  @param[in]     length Gr√∂√üe des Speicherblocks von @p name
  *
  *  @return               bei Erfolg wird true geliefert, bei Fehler false
  */
@@ -57,7 +57,7 @@ bool tempname(char* name, unsigned int length)
 
     const char* tempdir = NULL;
 
-    // Ort des Tempor‰ren Verzeichnisses holen
+    // Ort des Tempor√§ren Verzeichnisses holen
     tempdir = getenv("TMPDIR");
     if (tempdir == NULL || *tempdir == '\0')
         tempdir = getenv("TMP");

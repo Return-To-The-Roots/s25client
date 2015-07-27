@@ -1,4 +1,4 @@
-// $Id: noRoadNode.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+Ôªø// $Id: noRoadNode.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -151,10 +151,10 @@ void noRoadNode::DestroyRoad(const unsigned char dir)
     }
 }
 
-/// Vernichtet Alle Straﬂe um diesen Knoten
+/// Vernichtet Alle Stra√üe um diesen Knoten
 void noRoadNode::DestroyAllRoads()
 {
-    // Alle Straﬂen um mich herum zerstˆren
+    // Alle Stra√üen um mich herum zerst√∂ren
     for(unsigned char i = 0; i < 6; ++i)
         DestroyRoad(i);
 }

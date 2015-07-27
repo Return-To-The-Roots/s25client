@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+﻿// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -92,7 +92,7 @@ const std::string JOB_NAMES[JOB_TYPES_COUNT] =
 	gettext_noop("Shipwright"),
 	gettext_noop("Scout"),
 	gettext_noop("Pack donkey"),
-	"", // Bootstr�ger
+	"", // Bootsträger
 	gettext_noop("Charburner")
 };
 #endif // JobTypes_h__

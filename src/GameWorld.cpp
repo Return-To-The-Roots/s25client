@@ -1,4 +1,4 @@
-// $Id: GameWorld.cpp 9540 2014-12-14 11:32:47Z marcus $
+﻿// $Id: GameWorld.cpp 9540 2014-12-14 11:32:47Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -49,7 +49,7 @@
 #include <queue>
 #include <algorithm>
 
-/// Lädt eine Karte
+/// LÃ¤dt eine Karte
 bool GameWorld::LoadMap(const std::string& filename)
 {
     // Map laden
@@ -98,7 +98,7 @@ void GameWorld::Scan(glArchivItem_Map* map)
 
     Init();
 
-    // Dummy-Hafenpos für Index 0 einfügen // ask Oliverr why!
+    // Dummy-Hafenpos fÃ¼r Index 0 einfÃ¼gen // ask Oliverr why!
     // -> I just did, the dummy is so that the harbor "0" might be used for ships with no particular destination
     // poc: if you ever remove this dummy go to GameWorldBase::CalcDistanceToNearestHarbor and fix the loop to include the first harbor again (think Ive seen other instances of dummyadjusted loops as well...)
     GameWorldBase::HarborPos dummy;
@@ -145,7 +145,7 @@ void GameWorld::Scan(glArchivItem_Map* map)
                 // ggf 0-4 Wasser setzen
                 if( (node.t1 == TT_DESERT || node.t2 == TT_DESERT) ||
                         (node.t1 == TT_WATER || node.t2 == TT_WATER) )
-                    node.resources = 0; // Kein Wasser, in der Wüste, da isses trocken!
+                    node.resources = 0; // Kein Wasser, in der WÃ¼ste, da isses trocken!
                 else if( (node.t1 == TT_STEPPE || node.t2 == TT_STEPPE) )
                     node.resources = 0x23; // 2 Wasser
                 else if( (node.t1 == TT_SAVANNAH || node.t2 == TT_SAVANNAH) )
@@ -270,8 +270,8 @@ void GameWorld::Scan(glArchivItem_Map* map)
                 // Sonstiges Naturzeug ohne Funktion, nur zur Dekoration
                 case 0xC8:
                 {
-                    /// @todo mis0bobs unvollständig (dieses lagerzelt), 4 und 5 überhaupt nicht erwähnt
-                    // mis1bobs, 2 und 3 sind vollständig eingebaut
+                    /// @todo mis0bobs unvollstÃ¤ndig (dieses lagerzelt), 4 und 5 Ã¼berhaupt nicht erwÃ¤hnt
+                    // mis1bobs, 2 und 3 sind vollstÃ¤ndig eingebaut
 
                     // Objekte aus der map_?_z.lst
                     if(lc <= 0x0A)
@@ -289,7 +289,7 @@ void GameWorld::Scan(glArchivItem_Map* map)
                     else if(lc >= 0x10 && lc <= 0x14)
                         nodes[pos].obj = new noEnvObject(pt, 542 + lc - 0x10);
 
-                    // gestrandetes Schiff (mis0bobs, unvollständig)
+                    // gestrandetes Schiff (mis0bobs, unvollstÃ¤ndig)
                     else if(lc == 0x15)
                         nodes[pos].obj = new noStaticObject(pt, (lc - 0x15) * 2, 0, 1);
 
@@ -297,7 +297,7 @@ void GameWorld::Scan(glArchivItem_Map* map)
                     else if(lc == 0x16)
                         nodes[pos].obj = new noStaticObject(pt, 560, 0xFFFF, 2);
 
-                    // das geöffnete Tor aus map_?_z.lst
+                    // das geÃ¶ffnete Tor aus map_?_z.lst
                     else if(lc == 0x17)
                         nodes[pos].obj = new noStaticObject(pt, 561, 0xFFFF, 2);
 
@@ -321,7 +321,7 @@ void GameWorld::Scan(glArchivItem_Map* map)
                     else if(lc >= 0x28 && lc <= 0x2B)
                         nodes[pos].obj = new noEnvObject(pt, 556 + lc - 0x28);
 
-                    // die "kaputten" Gebäuderuinen usw (mis2bobs)
+                    // die "kaputten" GebÃ¤uderuinen usw (mis2bobs)
                     else if(lc >= 0x2C && lc <= 0x2D)
                         nodes[pos].obj = new noStaticObject(pt, (lc - 0x2C) * 2, 2);
                     else if(lc == 0x2E)
@@ -406,7 +406,7 @@ void GameWorld::Scan(glArchivItem_Map* map)
     // HQ setzen
     for(unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
     {
-        // Existiert überhaupt ein HQ?
+        // Existiert Ã¼berhaupt ein HQ?
         if(GetPlayer(i)->hqPos.x != 0xFFFF)
         {
             if(GetPlayer(i)->ps == PS_OCCUPIED || GetPlayer(i)->ps == PS_KI)
@@ -431,8 +431,8 @@ void GameWorld::Scan(glArchivItem_Map* map)
             Species species;
             switch(map->GetMapDataAt(MAP_ANIMALS, x, y))
             {
-                    // TODO: Welche ID ist Polarbär?
-                case 1: species = Species(SPEC_RABBITWHITE+RANDOM.Rand(__FILE__, __LINE__, 0, 2)); break; // zufällige Hasenart nehmen
+                    // TODO: Welche ID ist PolarbÃ¤r?
+                case 1: species = Species(SPEC_RABBITWHITE+RANDOM.Rand(__FILE__, __LINE__, 0, 2)); break; // zufÃ¤llige Hasenart nehmen
                 case 2: species = SPEC_FOX; break;
                 case 3: species = SPEC_STAG; break;
                 case 4: species = SPEC_DEER; break;
@@ -481,7 +481,7 @@ void GameWorld::Scan(glArchivItem_Map* map)
             harbor_pos[i].cps[z].sea_id = IsCoastalPoint(GetNeighbour(harbor_pos[i].pos, z));
     }
 
-    // Nachbarn der einzelnen Hafenplätze ermitteln
+    // Nachbarn der einzelnen HafenplÃ¤tze ermitteln
     CalcHarborPosNeighbors();
 
     /// Schatten und BQ berechnen
@@ -495,7 +495,7 @@ void GameWorld::Scan(glArchivItem_Map* map)
         }
     }
 
-    /// Bei FoW und aufgedeckt müssen auch die ersten FoW-Objekte erstellt werden
+    /// Bei FoW und aufgedeckt mÃ¼ssen auch die ersten FoW-Objekte erstellt werden
     if(GAMECLIENT.GetGGS().exploration == GlobalGameSettings::EXP_FOGOFWARE_EXPLORED)
     {
         for(unsigned y = 0; y < height; ++y)
@@ -506,7 +506,7 @@ void GameWorld::Scan(glArchivItem_Map* map)
                 // Alle Spieler durchgehen
                 for(unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
                 {
-                    // An der Stelle FOW für diesen Spieler?
+                    // An der Stelle FOW fÃ¼r diesen Spieler?
                     if(GetNode(pt).fow[i].visibility == VIS_FOW)
                         SaveFOWNode(pt, i);
                 }
@@ -560,7 +560,7 @@ void GameWorld::Serialize(SerializedGameData* sgd) const
         for(unsigned z = 0; z < GAMECLIENT.GetPlayerCount(); ++z)
         {
             sgd->PushUnsignedChar(static_cast<unsigned char>(nodes[i].fow[z].visibility));
-            // Nur im FoW können FOW-Objekte stehen
+            // Nur im FoW kÃ¶nnen FOW-Objekte stehen
             if(nodes[i].fow[z].visibility == VIS_FOW)
             {
                 sgd->PushUnsignedInt(nodes[i].fow[z].last_update_time);
@@ -653,7 +653,7 @@ void GameWorld::Deserialize(SerializedGameData* sgd)
         for(unsigned z = 0; z < GAMECLIENT.GetPlayerCount(); ++z)
         {
             nodes[i].fow[z].visibility = Visibility(sgd->PopUnsignedChar());
-            // Nur im FoW können FOW-Objekte stehen
+            // Nur im FoW kÃ¶nnen FOW-Objekte stehen
             if(nodes[i].fow[z].visibility == VIS_FOW)
             {
                 nodes[i].fow[z].last_update_time = sgd->PopUnsignedInt();
@@ -760,17 +760,17 @@ void GameWorld::MilitaryBuildingCaptured(const MapPoint pt, const unsigned char 
 }
 
 /// Vermisst ein neues Weltmeer von einem Punkt aus, indem es alle mit diesem Punkt verbundenen
-/// Wasserpunkte mit der gleichen ID belegt und die Anzahl zurückgibt
+/// Wasserpunkte mit der gleichen ID belegt und die Anzahl zurÃ¼ckgibt
 unsigned GameWorld::MeasureSea(const MapPoint pt, const unsigned short sea_id)
 {
-    // Breitensuche von diesem Punkt aus durchführen
+    // Breitensuche von diesem Punkt aus durchfÃ¼hren
     std::vector<bool> visited(width * height, false);
     std::queue< MapPoint > todo;
 
     MapPoint start(pt);
     todo.push(start);
 
-    // Knoten zählen (Startknoten schon mit inbegriffen)
+    // Knoten zÃ¤hlen (Startknoten schon mit inbegriffen)
     unsigned count = 0;
 
     while(!todo.empty())

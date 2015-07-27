@@ -1,4 +1,4 @@
-// $Id: iwMinimap.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+Ôªø// $Id: iwMinimap.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -26,20 +26,20 @@
 #include "controls/ctrlButton.h"
 
 
-/// (maximale) Grˆﬂe des Minimapfensters normal
+/// (maximale) Gr√∂√üe des Minimapfensters normal
 const unsigned short MINIMAP_WINDOW_WIDTH = 200;
 const unsigned short MINIMAP_WINDOW_HEIGHT = 200;
-/// (maximale) Grˆﬂe des Minimapfensters groﬂ
+/// (maximale) Gr√∂√üe des Minimapfensters gro√ü
 const unsigned short MINIMAP_WINDOW_BIG_WIDTH = 400;
 const unsigned short MINIMAP_WINDOW_BIG_HEIGHT = 400;
 
-/// Abstand der Kartenr‰nder zum Fensterrand
+/// Abstand der Kartenr√§nder zum Fensterrand
 const unsigned short WINDOW_MAP_SPACE = 5;
 /// Minimale Fensterbreite
 const unsigned short MIN_WINDOW_WIDTH = 200;
 /// Breite der unteren Buttons
 const unsigned short BUTTON_WIDTH = 36;
-/// Hˆhe der unteren Buttons
+/// H√∂he der unteren Buttons
 const unsigned short BUTTON_HEIGHT = 36;
 /// Abstand zwischen Buttons und Karte (Y)
 const unsigned short BUTTON_MAP_SPACE = 3;
@@ -57,25 +57,25 @@ iwMinimap::iwMinimap(IngameMinimap* minimap, GameWorldViewer& gwv)
     AddCtrl(0, new ctrlIngameMinimap(this, 0, 10, 20, WINDOW_MAP_SPACE, WINDOW_MAP_SPACE, WINDOW_MAP_SPACE, WINDOW_MAP_SPACE, minimap, gwv));
 
 
-    // Land, H‰user, Straﬂen an/aus
+    // Land, H√§user, Stra√üen an/aus
     for(unsigned i = 0; i < 3; ++i)
         AddImageButton(i + 1, 10 + WINDOW_MAP_SPACE + BUTTON_WIDTH * i, 0, BUTTON_WIDTH, BUTTON_HEIGHT, TC_GREY, LOADER.GetImageN("io", 85 + i));
 
-    // Fenster vergrˆﬂern/verkleinern
+    // Fenster vergr√∂√üern/verkleinern
     AddImageButton(4, 0, 0, BUTTON_WIDTH, BUTTON_HEIGHT, TC_GREY, LOADER.GetImageN("io", 109));
 
 
     ChangeWindowSize(width, height);
 }
 
-/// Ver‰ndert die Grˆﬂe des Fensters und positioniert alle Controls etc. neu
+/// Ver√§ndert die Gr√∂√üe des Fensters und positioniert alle Controls etc. neu
 void iwMinimap::ChangeWindowSize(const unsigned short width, const unsigned short height)
 {
     ctrlIngameMinimap* im = GetCtrl<ctrlIngameMinimap>(0);
 
     im->SetDisplaySize(width - 20, height - 30);
 
-    // Control k¸rzen in der Hˆhe
+    // Control k√ºrzen in der H√∂he
     im->RemoveBoundingBox(BUTTON_WIDTH * 4 + WINDOW_MAP_SPACE * 2, 0);
 
     ////// Und nach ganz oben verschieben
@@ -90,10 +90,10 @@ void iwMinimap::ChangeWindowSize(const unsigned short width, const unsigned shor
     for(unsigned i = 1; i < 4; ++i)
         GetCtrl<ctrlImageButton>(i)->Move(GetCtrl<ctrlImageButton>(i)->GetX(false), GetHeight() - 10 - BUTTON_HEIGHT - BUTTON_WINDOW_SPACE);
 
-    // Vergrˆﬂern/Verkleinern-Button nach unten rechts verschieben
+    // Vergr√∂√üern/Verkleinern-Button nach unten rechts verschieben
     GetCtrl<ctrlImageButton>(4)->Move(GetWidth() - 10 - BUTTON_WIDTH - WINDOW_MAP_SPACE, GetHeight() - 10 - BUTTON_HEIGHT - BUTTON_WINDOW_SPACE);
 
-    // Bild vom Vergrˆﬂern/Verkleinern-Button anpassen
+    // Bild vom Vergr√∂√üern/Verkleinern-Button anpassen
     GetCtrl<ctrlImageButton>(4)->SetImage(LOADER.GetImageN("io", extended ? 108 : 109));
 }
 
@@ -106,7 +106,7 @@ void iwMinimap::Msg_ButtonClick(const unsigned ctrl_id)
         case 3: GetCtrl<ctrlIngameMinimap>(0)->ToggleRoads(); break;
         case 4:
         {
-            // Fenster vergrˆﬂern/verkleinern
+            // Fenster vergr√∂√üern/verkleinern
             this->extended = !extended;
 
             ChangeWindowSize(extended ? MINIMAP_WINDOW_BIG_WIDTH : MINIMAP_WINDOW_WIDTH,

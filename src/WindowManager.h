@@ -1,4 +1,4 @@
-// $Id: WindowManager.h 9357 2014-04-25 15:35:25Z FloSoft $
+﻿// $Id: WindowManager.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -57,23 +57,23 @@ class WindowManager : public Singleton<WindowManager>, public VideoDriverLoaderI
         /// Sendet eine Mausnachricht weiter an alle Steuerelemente
         void RelayMouseMessage(bool (Window::*msg)(const MouseCoords&), const MouseCoords& mc);
 
-        /// �ffnet ein IngameWindow und f�gt es zur Fensterliste hinzu.
+        /// ï¿½ffnet ein IngameWindow und fï¿½gt es zur Fensterliste hinzu.
         void Show(IngameWindow* window, bool mouse = false);
         /// schliesst ein IngameWindow und entfernt es aus der Fensterliste.
         void Close(IngameWindow* window);
-        /// Sucht ein Fenster mit der entsprechenden Fenster-ID und schlie�t es (falls es so eins gibt)
+        /// Sucht ein Fenster mit der entsprechenden Fenster-ID und schlieï¿½t es (falls es so eins gibt)
         void Close(unsigned int id);
         /// merkt einen Desktop zum Wechsel vor.
         void Switch(Desktop* desktop, void* data = NULL, bool mouse = false);
-        /// Verarbeitung des Dr�ckens der Linken Maustaste.
+        /// Verarbeitung des Drï¿½ckens der Linken Maustaste.
         void Msg_LeftDown(MouseCoords mc);
         /// Verarbeitung des Loslassens der Linken Maustaste.
         void Msg_LeftUp(const MouseCoords& mc);
-        /// Verarbeitung des Dr�ckens der Rechten Maustaste.
+        /// Verarbeitung des Drï¿½ckens der Rechten Maustaste.
         void Msg_RightUp(const MouseCoords& mc);
         /// Verarbeitung des Loslassens der Rechten Maustaste.
         void Msg_RightDown(const MouseCoords& mc);
-        /// Verarbeitung des Dr�ckens des Rad hoch.
+        /// Verarbeitung des Drï¿½ckens des Rad hoch.
         void Msg_WheelUp(const MouseCoords& mc);
         /// Verarbeitung Rad runter.
         void Msg_WheelDown(const MouseCoords& mc);
@@ -84,10 +84,10 @@ class WindowManager : public Singleton<WindowManager>, public VideoDriverLoaderI
         // setzt den Tooltip
         void SetToolTip(Window* ttw, const std::string& tooltip);
 
-        /// Verarbeitung Spielfenstergr��e ver�ndert (vom Betriebssystem aus)
+        /// Verarbeitung Spielfenstergrï¿½ï¿½e verï¿½ndert (vom Betriebssystem aus)
         void ScreenResized(unsigned short width, unsigned short height);
-        /// Verarbeitung Spielfenstergr��e ver�ndert (vom Spiel aus)
-        // Achtung: nicht dieselbe Nachricht, die die Window-Klasse empf�ngt
+        /// Verarbeitung Spielfenstergrï¿½ï¿½e verï¿½ndert (vom Spiel aus)
+        // Achtung: nicht dieselbe Nachricht, die die Window-Klasse empfï¿½ngt
         void Msg_ScreenResize(unsigned short width, unsigned short height);
 
     protected:
@@ -99,17 +99,17 @@ class WindowManager : public Singleton<WindowManager>, public VideoDriverLoaderI
 
     private:
         Desktop* desktop;        ///< aktueller Desktop
-        Desktop* nextdesktop;    ///< der n�chste Desktop
-        void* nextdesktop_data;  ///< Daten f�r den n�chsten Desktop, welche dann MSG_SWITCH �bergeben werden
-        bool disable_mouse;      ///< Mausdeaktivator, zum beheben des "Switch-Anschlie�end-Dr�ck-Bug"s
+        Desktop* nextdesktop;    ///< der nï¿½chste Desktop
+        void* nextdesktop_data;  ///< Daten fï¿½r den nï¿½chsten Desktop, welche dann MSG_SWITCH ï¿½bergeben werden
+        bool disable_mouse;      ///< Mausdeaktivator, zum beheben des "Switch-Anschlieï¿½end-Drï¿½ck-Bug"s
 
         IgwList windows; ///< Fensterliste
         const MouseCoords* mc;
         std::string tooltip;
-        unsigned short screenWidth;  /// letzte g�ltige Bildschirm-/Fensterbreite
-        unsigned short screenHeight; /// letzte g�ltige Bildschirm-/Fensterh�he
+        unsigned short screenWidth;  /// letzte gï¿½ltige Bildschirm-/Fensterbreite
+        unsigned short screenHeight; /// letzte gï¿½ltige Bildschirm-/Fensterhï¿½he
 
-        // F�r Doppelklick merken:
+        // Fï¿½r Doppelklick merken:
         unsigned last_left_click_time; /// Zeit des letzten Links-Klicks
         Point<int> last_left_click_point; /// Position beim letzten Links-Klick
 

@@ -1,4 +1,4 @@
-// $Id: iwSave.h 9357 2014-04-25 15:35:25Z FloSoft $
+﻿// $Id: iwSave.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -24,7 +24,7 @@
 #include "IngameWindow.h"
 #include "iwDirectIPCreate.h"
 
-/// Fenster fürs Speichern UND(!) Laden von Spielständen
+/// Fenster fÃ¼rs Speichern UND(!) Laden von SpielstÃ¤nden
 class iwSaveLoad : public IngameWindow
 {
     public:
@@ -36,7 +36,7 @@ class iwSaveLoad : public IngameWindow
         void RefreshTable();
 
     private:
-        /// Speichert bzw. läd die angegebene Datei
+        /// Speichert bzw. lÃ¤d die angegebene Datei
         virtual void SaveLoad() = 0;
 
         void Msg_EditEnter(const unsigned int ctrl_id);
@@ -71,7 +71,7 @@ class iwLoad: public iwSaveLoad
         /// Handle double click on the table
         void Msg_TableChooseItem(const unsigned ctrl_id, const unsigned short selection);
 
-        // Läd Datei
+        // LÃ¤d Datei
         void SaveLoad();
 };
 

@@ -1,4 +1,4 @@
-// $Id: noShip.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: noShip.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -34,7 +34,7 @@ class noFigure;
 class Ware;
 class nofAttacker;
 
-/// Klasse für die Schiffe
+/// Klasse fÃ¼r die Schiffe
 class noShip : public noMovable
 {
         /// Spieler des Schiffes
@@ -43,7 +43,7 @@ class noShip : public noMovable
         /// Was macht das Schiff gerade?
         enum State
         {
-            STATE_IDLE = 0, /// Schiff hat nix zu tun und hängt irgendwo an der Küste rum
+            STATE_IDLE = 0, /// Schiff hat nix zu tun und hÃ¤ngt irgendwo an der KÃ¼ste rum
             STATE_GOTOHARBOR,
             STATE_EXPEDITION_LOADING,
             STATE_EXPEDITION_UNLOADING,
@@ -53,18 +53,18 @@ class noShip : public noMovable
             STATE_EXPLORATIONEXPEDITION_UNLOADING,
             STATE_EXPLORATIONEXPEDITION_WAITING,
             STATE_EXPLORATIONEXPEDITION_DRIVING,
-            STATE_TRANSPORT_LOADING, // Schiff wird mit Waren/Figuren erst noch beladen, bleibt also für kurze Zeit am Hafen
+            STATE_TRANSPORT_LOADING, // Schiff wird mit Waren/Figuren erst noch beladen, bleibt also fÃ¼r kurze Zeit am Hafen
             STATE_TRANSPORT_DRIVING, /// Schiff transportiert Waren/Figuren von einen Ort zum anderen
-            STATE_TRANSPORT_UNLOADING, /// Entlädt Schiff am Zielhafen, kurze Zeit ankern, bevor Waren im Hafengebäude ankommen..
+            STATE_TRANSPORT_UNLOADING, /// EntlÃ¤dt Schiff am Zielhafen, kurze Zeit ankern, bevor Waren im HafengebÃ¤ude ankommen..
             STATE_SEAATTACK_LOADING,
             STATE_SEAATTACK_UNLOADING,
-            STATE_SEAATTACK_DRIVINGTODESTINATION, /// Fährt mit den Soldaten zum Zielhafenpunkt
-            STATE_SEAATTACK_WAITING, /// wartet an der Küste, während die Soldaten was schönes machen
-            STATE_SEAATTACK_RETURN /// fährt mit den Soldaten wieder zurück zum Heimathafen
+            STATE_SEAATTACK_DRIVINGTODESTINATION, /// FÃ¤hrt mit den Soldaten zum Zielhafenpunkt
+            STATE_SEAATTACK_WAITING, /// wartet an der KÃ¼ste, wÃ¤hrend die Soldaten was schÃ¶nes machen
+            STATE_SEAATTACK_RETURN /// fÃ¤hrt mit den Soldaten wieder zurÃ¼ck zum Heimathafen
 
         } state;
 
-        /// Das Meer, auf dem dieses Schiff fährt
+        /// Das Meer, auf dem dieses Schiff fÃ¤hrt
         unsigned short sea_id;
         /// Zielpunkt des Schiffes
         unsigned goal_harbor_id;
@@ -82,19 +82,19 @@ class noShip : public noMovable
         /// um sein Zeug auszuladen
         bool lost;
         /// Bei Schiffen im STATE_SEAATTACK_WAITING:
-        /// Anzahl der Soldaten, die noch kommen müssten
+        /// Anzahl der Soldaten, die noch kommen mÃ¼ssten
         /// For ships in STATE_TRANSPORT_x a 1 indicates that the ship is carrying returning soldiers from a sea attack
         unsigned remaining_sea_attackers;
         /// Heimathafen der Schiffs-Angreifer
         unsigned home_harbor;
-        /// Anzahl an Strecke, die das Schiff schon seit Expeditionsstart zurückgelegt hat
+        /// Anzahl an Strecke, die das Schiff schon seit Expeditionsstart zurÃ¼ckgelegt hat
         unsigned covered_distance;
 
     private:
 
         /// entscheidet, was nach einem gefahrenen Abschnitt weiter zu tun ist
         void Driven();
-        /// Fängt an zu fahren
+        /// FÃ¤ngt an zu fahren
         void StartDriving(const unsigned char dir);
 
         void HandleState_GoToHarbor();
@@ -113,16 +113,16 @@ class noShip : public noMovable
         };
 
 
-        /// Fährt weiter zu einem Hafen
+        /// FÃ¤hrt weiter zu einem Hafen
         Result DriveToHarbour();
-        /// Fährt weiter zu Hafenbauplatz
+        /// FÃ¤hrt weiter zu Hafenbauplatz
         Result DriveToHarbourPlace();
 
         /// Zeichnet das Schiff stehend mit oder ohne Waren
         void DrawFixed(const int x, const int y, const bool draw_wares);
-        /// Zeichnet normales Fahren auf dem Meer ohne irgendwelche Güter
+        /// Zeichnet normales Fahren auf dem Meer ohne irgendwelche GÃ¼ter
         void DrawDriving(int& x, int& y);
-        /// Zeichnet normales Fahren auf dem Meer mit Gütern
+        /// Zeichnet normales Fahren auf dem Meer mit GÃ¼tern
         void DrawDrivingWithWares(int& x, int& y);
 
         /// Startet die eigentliche Transportaktion, nachdem das Schiff beladen wurde
@@ -131,10 +131,10 @@ class noShip : public noMovable
         /// Startet Schiffs-Angreiff
         void StartSeaAttack();
 
-        /// Fängt an mit idlen und setzt nötigen Sachen auf NULL
+        /// FÃ¤ngt an mit idlen und setzt nÃ¶tigen Sachen auf NULL
         void StartIdling();
 
-        /// Fängt an zu einem Hafen zu fahren (berechnet Route usw.)
+        /// FÃ¤ngt an zu einem Hafen zu fahren (berechnet Route usw.)
         void StartDrivingToHarborPlace();
 
     public:
@@ -155,15 +155,15 @@ class noShip : public noMovable
         // Benachrichtigen, wenn neuer gf erreicht wurde
         void HandleEvent(const unsigned int id);
 
-        /// Gibt den Besitzer zurück
+        /// Gibt den Besitzer zurÃ¼ck
         unsigned char GetPlayer() const { return player; }
         /// Hat das Schiff gerade nichts zu tun
         bool IsIdling() const { return (state == STATE_IDLE); }
-        /// Gibt die ID des Meeres zurück, auf dem es sich befindet
+        /// Gibt die ID des Meeres zurÃ¼ck, auf dem es sich befindet
         unsigned short GetSeaID() const { return sea_id; }
-        /// Gibt den Schiffsnamen zurück
+        /// Gibt den Schiffsnamen zurÃ¼ck
         const std::string& GetName() const { return name; }
-        /// Führt das Schiff gerade eine Expedition durch und wartet auf weitere Befehle?
+        /// FÃ¼hrt das Schiff gerade eine Expedition durch und wartet auf weitere Befehle?
         bool IsWaitingForExpeditionInstructions() const
         { return (state == STATE_EXPEDITION_WAITING); }
         /// Ist das Schiff gerade irgendwie am Expeditionieren und hat entsprechenden Kram an Bord?
@@ -178,21 +178,21 @@ class noShip : public noMovable
             return (state == STATE_EXPLORATIONEXPEDITION_LOADING || state == STATE_EXPLORATIONEXPEDITION_UNLOADING
                     || state == STATE_EXPLORATIONEXPEDITION_WAITING || state == STATE_EXPLORATIONEXPEDITION_DRIVING);
         }
-        /// Gibt Liste der Waren an Bord zurück
+        /// Gibt Liste der Waren an Bord zurÃ¼ck
         const std::list<Ware*> &GetWares() const { return wares; }
-        /// Gibt Liste der Menschen an Bord zurück
+        /// Gibt Liste der Menschen an Bord zurÃ¼ck
         const std::list<noFigure*> &GetFigures() const { return figures; }
-        /// Gibt Sichtradius dieses Schiffes zurück
+        /// Gibt Sichtradius dieses Schiffes zurÃ¼ck
         unsigned GetVisualRange() const;
 
-        /// Beim Warten bei der Expedition: Gibt die Hafenpunkt-ID zurück, wo es sich gerade befindet
+        /// Beim Warten bei der Expedition: Gibt die Hafenpunkt-ID zurÃ¼ck, wo es sich gerade befindet
         unsigned GetCurrentHarbor() const;
 
-        /// Sagt dem Schiff, an welchem Hafenpunkt es gerade ankert, wenn es das selber noch nicht weiß
+        /// Sagt dem Schiff, an welchem Hafenpunkt es gerade ankert, wenn es das selber noch nicht weiÃŸ
         void AssignHarborId(const unsigned harbor_id)
         { this->goal_harbor_id = harbor_id; }
 
-        /// Fährt zum Hafen, um dort eine Mission (Expedition) zu erledigen
+        /// FÃ¤hrt zum Hafen, um dort eine Mission (Expedition) zu erledigen
         void GoToHarbor(nobHarborBuilding* hb, const std::vector<unsigned char>& route);
         /// Startet eine Expedition
         void StartExpedition();
@@ -201,28 +201,28 @@ class noShip : public noMovable
         /// Weist das Schiff an, in einer bestimmten Richtung die Expedition fortzusetzen
         void ContinueExpedition(const unsigned char dir);
         /// Weist das Schiff an, eine Expedition abzubrechen (nur wenn es steht) und zum
-        /// Hafen zurückzukehren
+        /// Hafen zurÃ¼ckzukehren
         void CancelExpedition();
         /// Weist das Schiff an, seine Erkundungs-Expedition fortzusetzen
         void ContinueExplorationExpedition();
-        /// Gibt zurück, ob das Schiff jetzt in der Lage wäre, eine Kolonie zu gründen
+        /// Gibt zurÃ¼ck, ob das Schiff jetzt in der Lage wÃ¤re, eine Kolonie zu grÃ¼nden
         bool IsAbleToFoundColony() const;
-        /// Weist das Schiff an, an der aktuellen Position einen Hafen zu gründen
+        /// Weist das Schiff an, an der aktuellen Position einen Hafen zu grÃ¼nden
         void FoundColony();
-        /// Gibt zurück, ob das Schiff einen bestimmten Hafen ansteuert
+        /// Gibt zurÃ¼ck, ob das Schiff einen bestimmten Hafen ansteuert
         bool IsGoingToHarbor(nobHarborBuilding* hb) const;
 
-        /// Belädt das Schiff mit Waren und Figuren, um eine Transportfahrt zu starten
+        /// BelÃ¤dt das Schiff mit Waren und Figuren, um eine Transportfahrt zu starten
         void PrepareTransport(MapPoint goal, const std::list<noFigure*>& figures, const std::list<Ware*>& wares);
 
-        /// Belädt das Schiff mit Schiffs-Angreifern
+        /// BelÃ¤dt das Schiff mit Schiffs-Angreifern
         void PrepareSeaAttack(MapPoint goal, const std::list<noFigure*>& figures);
         /// Sagt Bescheid, dass ein Schiffsangreifer nicht mehr mit nach Hause fahren will
         void SeaAttackerWishesNoReturn();
-        /// Schiffs-Angreifer sind nach dem Angriff wieder zurückgekehrt
+        /// Schiffs-Angreifer sind nach dem Angriff wieder zurÃ¼ckgekehrt
         void AddAttacker(nofAttacker* attacker);
 
-        /// Sagt dem Schiff, das ein bestimmter Hafen zerstört wurde
+        /// Sagt dem Schiff, das ein bestimmter Hafen zerstÃ¶rt wurde
         void HarborDestroyed(nobHarborBuilding* hb);
         /// Sagt dem Schiff, dass ein neuer Hafen erbaut wurde
         void NewHarborBuilt(nobHarborBuilding* hb);

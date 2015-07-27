@@ -1,4 +1,4 @@
-// $Id: MusicPlayer.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: MusicPlayer.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -84,7 +84,7 @@ bool Playlist::SaveAs(const std::string& filename, const bool overwrite)
         std::ifstream in(filename.c_str());
         if(in.good())
         {
-            // Datei existiert und wir sollen sie nicht überschreiben
+            // Datei existiert und wir sollen sie nicht Ã¼berschreiben
             in.close();
             return false;
         }
@@ -137,7 +137,7 @@ bool Playlist::Load(const std::string& filename)
 
     random = (random_str == "random_playback" || random_str == "random");
 
-    // Liste leeren von evtl vorherigen Stücken
+    // Liste leeren von evtl vorherigen StÃ¼cken
     /*songs.clear();
     order.clear();*/
 
@@ -153,7 +153,7 @@ bool Playlist::Load(const std::string& filename)
         while((k = line.find('\n', k)) != std::string::npos)
             line.erase(k, 1);
 
-        // bei leeren Zeilen oder bei eof aufhören
+        // bei leeren Zeilen oder bei eof aufhÃ¶ren
         if(line.length() == 0 || in.eof())
         {
             in.close();
@@ -172,7 +172,7 @@ bool Playlist::Load(const std::string& filename)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Füllt das iwMusicPlayer-Fenster mit den entsprechenden Werten
+ *  FÃ¼llt das iwMusicPlayer-Fenster mit den entsprechenden Werten
  *
  *  @author OLiver
  */
@@ -199,7 +199,7 @@ void Playlist::ReadMusicPlayer(const iwMusicPlayer* const window)
     Prepare();
 }
 
-// Wählt den Start-Song aus
+// WÃ¤hlt den Start-Song aus
 void Playlist::SetStartSong(const unsigned id)
 {
     for(unsigned i = 0; i < order.size(); ++i)
@@ -249,7 +249,7 @@ void MusicPlayer::Stop()
 
 /////////////////////////////////////////////////////////////////////////////
 /**
- * Spielt nächstes Stück ab
+ * Spielt nÃ¤chstes StÃ¼ck ab
  *
  *  @author OLiver
  */
@@ -264,26 +264,26 @@ void MusicPlayer::PlayNext()
         return;
     }
 
-    // Evtl ein Siedlerstück ("sNN")?
+    // Evtl ein SiedlerstÃ¼ck ("sNN")?
     if(song.length() == 3)
     {
         unsigned int nr = atoi(song.substr(1).c_str());
         if( nr <= 14)
         {
-            // Siedlerstück abspielen (falls es geladen wurde)
+            // SiedlerstÃ¼ck abspielen (falls es geladen wurde)
             if(GetMusic(sng_lst, nr - 1))
                 GetMusic(sng_lst, nr - 1)->Play(1);
         }
         return;
     }
 
-    // anderes benutzerdefiniertes Stück abspielen
-    // in "sng" speichern, daher evtl. altes Stück erstmal löschen
+    // anderes benutzerdefiniertes StÃ¼ck abspielen
+    // in "sng" speichern, daher evtl. altes StÃ¼ck erstmal lÃ¶schen
     sng.clear();
 
     LOG.lprintf("lade \"%s\": ", song.c_str());
 
-    // Neues Stück laden
+    // Neues StÃ¼ck laden
     if(libsiedler2::loader::LoadSND(song.c_str(), &sng) != 0 )
     {
         Stop();

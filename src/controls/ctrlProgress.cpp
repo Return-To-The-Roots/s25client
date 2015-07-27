@@ -1,4 +1,4 @@
-// $Id: ctrlProgress.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+﻿// $Id: ctrlProgress.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -117,7 +117,7 @@ bool ctrlProgress::Draw_(void)
         color = force_color;
     else
     {
-        // Farbe w�hlen je nachdem wie viel Prozent
+        // Farbe wählen je nachdem wie viel Prozent
         if(percentage >= 60)
             color = 0xFF00E000;
         else if(percentage >= 30)

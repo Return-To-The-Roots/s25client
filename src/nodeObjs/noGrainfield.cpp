@@ -1,4 +1,4 @@
-// $Id: noGrainfield.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: noGrainfield.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -39,9 +39,9 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 
-/// Länge des Wachs-Wartens
+/// LÃ¤nge des Wachs-Wartens
 const unsigned GROWING_WAITING_LENGTH = 1100;
-/// Länge des Wachsens
+/// LÃ¤nge des Wachsens
 const unsigned GROWING_LENGTH = 16;
 
 noGrainfield::noGrainfield(const MapPoint pos) : noCoordBase(NOP_GRAINFIELD, pos),
@@ -58,7 +58,7 @@ void noGrainfield::Destroy_noGrainfield()
 {
     em->RemoveEvent(event);
 
-    // Bauplätze drumrum neu berechnen
+    // BauplÃ¤tze drumrum neu berechnen
     gwg->RecalcBQAroundPoint(pos);
 
     Destroy_noCoordBase();
@@ -118,17 +118,17 @@ void noGrainfield::HandleEvent(const unsigned int id)
     {
         case STATE_GROWING_WAITING:
         {
-            // Feld hat gewartet, also wächst es jetzt
+            // Feld hat gewartet, also wÃ¤chst es jetzt
             event = em->AddEvent(this, GROWING_LENGTH);
             state = STATE_GROWING;
         } break;
         case STATE_GROWING:
         {
-            // Wenn er ausgewachsen ist, dann nicht, ansonsten nochmal ein "Warteevent" anmelden, damit er noch weiter wächst
+            // Wenn er ausgewachsen ist, dann nicht, ansonsten nochmal ein "Warteevent" anmelden, damit er noch weiter wÃ¤chst
             if(++size != 3)
             {
                 event = em->AddEvent(this, GROWING_WAITING_LENGTH);
-                // Erstmal wieder bis zum nächsten Wachsstumsschub warten
+                // Erstmal wieder bis zum nÃ¤chsten Wachsstumsschub warten
                 state = STATE_GROWING_WAITING;
             }
             else
@@ -148,7 +148,7 @@ void noGrainfield::HandleEvent(const unsigned int id)
         } break;
         case STATE_WITHERING:
         {
-            // Selbst zerstören
+            // Selbst zerstÃ¶ren
             event = 0;
             gwg->SetNO(0, pos);
             em->AddToKillList(this);
@@ -159,7 +159,7 @@ void noGrainfield::HandleEvent(const unsigned int id)
 
 void noGrainfield::BeginHarvesting()
 {
-    // Event killen, damit wir nicht plötzlich verschwinden, wenn er uns aberntet
+    // Event killen, damit wir nicht plÃ¶tzlich verschwinden, wenn er uns aberntet
     em->RemoveEvent(event);
     event = 0;
     state = STATE_NORMAL;

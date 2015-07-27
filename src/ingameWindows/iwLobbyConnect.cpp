@@ -1,4 +1,4 @@
-// $Id: iwLobbyConnect.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: iwLobbyConnect.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -231,7 +231,7 @@ void iwLobbyConnect::Msg_ButtonClick(const unsigned int ctrl_id)
 
             if( user == "" || pass == "" || email == "")
             {
-                // Einige Felder nicht ausgefüllt
+                // Einige Felder nicht ausgefÃ¼llt
                 SetText(_("Please fill out all fields!"), COLOR_RED, true);
                 break; // raus
             }
@@ -296,7 +296,7 @@ void iwLobbyConnect::SetText(std::string text, unsigned int color, bool button)
  */
 void iwLobbyConnect::LC_LoggedIn(const std::string& email)
 {
-    // geänderte Daten speichern (also die erhaltene Emailadresse)
+    // geÃ¤nderte Daten speichern (also die erhaltene Emailadresse)
     std::string user, pass, email2 = email;
 
     GetCtrl<ctrlEdit>(5)->SetText(email);
@@ -334,7 +334,7 @@ void iwLobbyConnect::LC_Status_Waiting()
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Status: Benutzerdefinierter Fehler (inkl Conn-Reset u.ä)
+ *  Status: Benutzerdefinierter Fehler (inkl Conn-Reset u.Ã¤)
  *
  *  @author FloSoft
  */

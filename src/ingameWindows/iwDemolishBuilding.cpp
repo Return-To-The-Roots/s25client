@@ -1,4 +1,4 @@
-// $Id: iwDemolishBuilding.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: iwDemolishBuilding.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -48,9 +48,9 @@ iwDemolishBuilding::iwDemolishBuilding(GameWorldViewer* const gwv, const noBaseB
     AddImageButton(1, 82, 140, 66, 40, TC_GREY, LOADER.GetImageN("io", 40));
     // Gehe zum Standort
     AddImageButton(2, 150, 140, 36, 40, TC_GREY, LOADER.GetImageN("io", 107));
-    // Gebäudebild
+    // GebÃ¤udebild
     AddImage(3, 104, 109, building->GetBuildingImage());
-    // Gebäudename
+    // GebÃ¤udename
     AddText(4, 100, 125, _(BUILDING_NAMES[building->GetBuildingType()]), 0xFFFFFF00, glArchivItem_Font::DF_CENTER, NormalFont);
 }
 
@@ -62,7 +62,7 @@ void iwDemolishBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
         {
             if (flag)
             {
-                // Flagge (mitsamt Gebäude) wegreißen
+                // Flagge (mitsamt GebÃ¤ude) wegreiÃŸen
                 GAMECLIENT.AddGC(new gc::DestroyFlag(gwv->GetNeighbour(building->GetPos(), 4)));
             }
             else
@@ -75,7 +75,7 @@ void iwDemolishBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
         } break;
         case 1:
         {
-            // Einfach schließen
+            // Einfach schlieÃŸen
             Close();
         } break;
         case 2:
@@ -88,7 +88,7 @@ void iwDemolishBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
 
 void iwDemolishBuilding::Msg_PaintBefore()
 {
-    // Schatten des Gebäudes (muss hier gezeichnet werden wegen schwarz und halbdurchsichtig)
+    // Schatten des GebÃ¤udes (muss hier gezeichnet werden wegen schwarz und halbdurchsichtig)
     glArchivItem_Bitmap* bitmap = building->GetBuildingImageShadow();
 
     if(bitmap)

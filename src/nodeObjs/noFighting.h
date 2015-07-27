@@ -1,4 +1,4 @@
-// $Id: noFighting.h 9601 2015-02-07 11:09:14Z marcus $
+ï»¿// $Id: noFighting.h 9601 2015-02-07 11:09:14Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -28,7 +28,7 @@ class nofActiveSoldier;
 /// Kampf an einem Punkt zwischen 2 Soldaten, der erstgenannt ist immer der, der links steht
 class noFighting : public noBase
 {
-        /// die kämpfenden Soldaten
+        /// die kÃ¤mpfenden Soldaten
         nofActiveSoldier* soldiers[2];
         // Wer ist an der Reihe mit angreifen (2 = Beginn des Kampfes)
         unsigned char turn;
@@ -42,7 +42,7 @@ class noFighting : public noBase
     private:
 
         /// Bestimmt, ob der Angreifer erfolgreich angreift oder ob der Verteidiger sich verteidigt usw
-        /// bereitet also alles für eine solche Angrifsseinheit vor
+        /// bereitet also alles fÃ¼r eine solche Angrifsseinheit vor
         void StartAttack();
 
     public:
@@ -50,7 +50,7 @@ class noFighting : public noBase
         noFighting(nofActiveSoldier* soldier1, nofActiveSoldier* soldier2);
         noFighting(SerializedGameData* sgd, const unsigned obj_id);
 
-        /// Aufräummethoden
+        /// AufrÃ¤ummethoden
     protected:  void Destroy_noFighting();
     public:     void Destroy() { Destroy_noFighting(); }
 
@@ -63,11 +63,11 @@ class noFighting : public noBase
         void Draw(int x, int y);
         void HandleEvent(const unsigned int id);
 
-        /// Dürfen andern Figuren diesen Kampf schon durchqueren?
+        /// DÃ¼rfen andern Figuren diesen Kampf schon durchqueren?
         bool IsActive() const;
 		bool IsFighter(nofActiveSoldier* as) {return as==soldiers[0] || as ==soldiers[1];}
 
-        /// Prüfen, ob ein Soldat von einem bestimmten Spieler in den Kampf verwickelt ist
+        /// PrÃ¼fen, ob ein Soldat von einem bestimmten Spieler in den Kampf verwickelt ist
         bool IsSoldierOfPlayer(const unsigned char player) const;
 
 };

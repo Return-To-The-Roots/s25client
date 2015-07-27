@@ -1,4 +1,4 @@
-// $Id: nofWarehouseWorker.h 9357 2014-04-25 15:35:25Z FloSoft $
+Ôªø// $Id: nofWarehouseWorker.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -34,21 +34,21 @@ class Ware;
 class nobBaseWarehouse;
 
 
-/// Der "Warehouse-Worker" ist ein einfacher(er) Tr‰ger, der die Waren aus dem Lagerhaus holt
+/// Der "Warehouse-Worker" ist ein einfacher(er) Tr√§ger, der die Waren aus dem Lagerhaus holt
 class nofWarehouseWorker : public noFigure
 {
-        // Mein Lagerhaus, in dem ich arbeite, darf auch mal ein bisschen was an mir ‰ndern
+        // Mein Lagerhaus, in dem ich arbeite, darf auch mal ein bisschen was an mir √§ndern
         friend class nobBaseWarehouse;
 
     private:
 
-        // Die Ware, die er gerade tr‰gt (GD_NOTHING wenn er nix tr‰gt?)
+        // Die Ware, die er gerade tr√§gt (GD_NOTHING wenn er nix tr√§gt?)
         Ware* carried_ware;
 
         // Aufgabe, die der Warenhaustyp hat (Ware raustragen (0) oder reinholen)
         const bool task;
 
-        // Bin ich fett? (werde immer mal d¸nn oder fett, damits nicht immer gleich aussieht, wenn jemand rauskommt)
+        // Bin ich fett? (werde immer mal d√ºnn oder fett, damits nicht immer gleich aussieht, wenn jemand rauskommt)
         bool fat;
 
 
@@ -56,7 +56,7 @@ class nofWarehouseWorker : public noFigure
 
         void GoalReached();
         void Walked();
-        /// wenn man beim Arbeitsplatz "k¸ndigen" soll, man das Laufen zum Ziel unterbrechen muss (warum auch immer)
+        /// wenn man beim Arbeitsplatz "k√ºndigen" soll, man das Laufen zum Ziel unterbrechen muss (warum auch immer)
         void AbrogateWorkplace();
 
         void HandleDerivedEvent(const unsigned int id);
@@ -70,7 +70,7 @@ class nofWarehouseWorker : public noFigure
 
         ~nofWarehouseWorker();
 
-        /// Aufr‰ummethoden
+        /// Aufr√§ummethoden
     protected:  void Destroy_nofWarehouseWorker();
     public:     void Destroy() { Destroy_nofWarehouseWorker(); }
 
@@ -82,10 +82,10 @@ class nofWarehouseWorker : public noFigure
 
         void Draw(int x, int y);
 
-        // Ware nach drauﬂen bringen (von Lagerhaus aus aufgerufen)
+        // Ware nach drau√üen bringen (von Lagerhaus aus aufgerufen)
         void CarryWare(Ware* ware);
 
-        /// Mitglied von nem Lagerhaus(Lagerhausarbeiter, die die Tr‰ger-Best‰nde nicht beeinflussen?)
+        /// Mitglied von nem Lagerhaus(Lagerhausarbeiter, die die Tr√§ger-Best√§nde nicht beeinflussen?)
         bool MemberOfWarehouse() const { return true; }
 
 };

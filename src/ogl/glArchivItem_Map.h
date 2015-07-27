@@ -1,4 +1,4 @@
-// $Id: glArchivItem_Map.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: glArchivItem_Map.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -58,26 +58,26 @@ class glArchivItem_Map : public libsiedler2::ArchivItem_Map
         /// Destruktor von @p glArchivItem_Map.
         ~glArchivItem_Map(void);
 
-        /// lädt die Mapdaten aus einer Datei.
+        /// lÃ¤dt die Mapdaten aus einer Datei.
         int load(FILE* file, bool only_header);
 
         void Serialize(SerializedGameData* sgd) const;
         void Deserialize(SerializedGameData* sgd, const char* const map_name);
 
-        /// liefert den Header der Map als konstantes Objekt zurück.
+        /// liefert den Header der Map als konstantes Objekt zurÃ¼ck.
         const libsiedler2::ArchivItem_Map_Header& getHeader(void) const { return *header; }
 
-        /// liefert einen Map-Layer zurück.
+        /// liefert einen Map-Layer zurÃ¼ck.
         const unsigned char* GetLayer(MapLayer type) const;
-        /// liefert einen Map-Layer zurück.
+        /// liefert einen Map-Layer zurÃ¼ck.
         unsigned char* GetLayer(MapLayer type);
 
-        /// liefert die Mapdaten an einer bestimmten Stelle zurück.
+        /// liefert die Mapdaten an einer bestimmten Stelle zurÃ¼ck.
         unsigned char GetMapDataAt(MapLayer type, unsigned int pos) const;
         /// setzt die Mapdaten an einer bestimmten Stelle.
         void SetMapDataAt(MapLayer type, unsigned int pos, unsigned char value);
 
-        /// liefert die Mapdaten an der Stelle X,Y zurück.
+        /// liefert die Mapdaten an der Stelle X,Y zurÃ¼ck.
         unsigned char GetMapDataAt(MapLayer type, unsigned short x, unsigned short y) const;
         /// setzt die Mapdaten an der Stelle X,Y.
         void SetMapDataAt(MapLayer type, unsigned short x, unsigned short y, unsigned char value);

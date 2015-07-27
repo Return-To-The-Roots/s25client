@@ -1,4 +1,4 @@
-// $Id: iwAction.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: iwAction.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -31,13 +31,13 @@ class iwAction : public IngameWindow
 {
     public:
 
-        /// Konstanten für ActionWindow-Flag-Tab - Typen
+        /// Konstanten fÃ¼r ActionWindow-Flag-Tab - Typen
         enum
         {
             AWFT_NORMAL = 0,
-            AWFT_HQ,         ///< von der HQ-Flagge kann nur eine Straße gebaut werden
-            AWFT_STOREHOUSE, ///< von einer Lagerhaus-Flagge kann nur eine Straße gebaut werden oder die Flagge abgerissen werden
-            AWFT_WATERFLAG   ///< Flagge mit Anker drauf (Wasserstraße kann gebaut werden)
+            AWFT_HQ,         ///< von der HQ-Flagge kann nur eine StraÃŸe gebaut werden
+            AWFT_STOREHOUSE, ///< von einer Lagerhaus-Flagge kann nur eine StraÃŸe gebaut werden oder die Flagge abgerissen werden
+            AWFT_WATERFLAG   ///< Flagge mit Anker drauf (WasserstraÃŸe kann gebaut werden)
         };
 
         /// Struktur mit den Tabs, die angestellt werden sollen
@@ -47,7 +47,7 @@ class iwAction : public IngameWindow
 
                 /// Haupttabs
                 bool build, setflag, watch, flag, cutroad, attack, sea_attack;
-                /// Gebäude-Bau-Tabs
+                /// GebÃ¤ude-Bau-Tabs
                 enum BuildTab { BT_HUT = 0, BT_HOUSE, BT_CASTLE, BT_MINE, BT_HARBOR } build_tabs;
 
                 Tabs() : build(false), setflag(false), watch(false), flag(false), cutroad(false), attack(false), sea_attack(false),
@@ -63,20 +63,20 @@ class iwAction : public IngameWindow
         unsigned short last_x;
         unsigned short last_y;
 
-        /// Anzahl gewählter Soldaten für den Angriff und die Maximalanzahl
+        /// Anzahl gewÃ¤hlter Soldaten fÃ¼r den Angriff und die Maximalanzahl
         unsigned int selected_soldiers_count;
         unsigned int available_soldiers_count;
-        /// Dasselbe für Schiffsangriffe
+        /// Dasselbe fÃ¼r Schiffsangriffe
         unsigned selected_soldiers_count_sea;
         unsigned int available_soldiers_count_sea;
-        /// Die einzelnen Höhen für die einzelnen Tabs im Bautab
+        /// Die einzelnen HÃ¶hen fÃ¼r die einzelnen Tabs im Bautab
         unsigned short building_tab_heights[4];
 
     public:
         iwAction(dskGameInterface* const gi, GameWorldViewer* const gwv, const Tabs& tabs, MapPoint selectedPt, int mouse_x, int mouse_y, unsigned int params, bool military_buildings);
         ~iwAction();
 
-        /// Gibt zurück, auf welchen Punkt es sich bezieht
+        /// Gibt zurÃ¼ck, auf welchen Punkt es sich bezieht
         unsigned short GetSelectedX() const { return selectedPt.x; }
         unsigned short GetSelectedY() const { return selectedPt.y; }
 
@@ -95,7 +95,7 @@ class iwAction : public IngameWindow
         inline void Msg_ButtonClick_TabSetFlag(const unsigned int ctrl_id);
         inline void Msg_ButtonClick_TabWatch(const unsigned int ctrl_id);
 
-        /// Fügt Angriffs-Steuerelemente für bestimmte Gruppe hinzu
+        /// FÃ¼gt Angriffs-Steuerelemente fÃ¼r bestimmte Gruppe hinzu
         void AddAttackControls(ctrlGroup* group, const unsigned attackers_count);
         void AddUpgradeRoad(ctrlGroup* group, unsigned int& x, unsigned int& width);
         void DoUpgradeRoad();

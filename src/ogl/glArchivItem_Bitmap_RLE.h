@@ -1,4 +1,4 @@
-// $Id: glArchivItem_Bitmap_RLE.h 9357 2014-04-25 15:35:25Z FloSoft $
+﻿// $Id: glArchivItem_Bitmap_RLE.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -24,7 +24,7 @@
 #include "glArchivItem_Bitmap.h"
 #include "../libsiedler2/src/ArchivItem_Bitmap_RLE.h"
 
-/// Klasse f�r GL-RLE-Bitmaps.
+/// Klasse für GL-RLE-Bitmaps.
 class glArchivItem_Bitmap_RLE : public libsiedler2::baseArchivItem_Bitmap_RLE, public glArchivItem_Bitmap
 {
     public:

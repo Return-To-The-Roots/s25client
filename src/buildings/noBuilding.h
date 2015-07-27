@@ -1,4 +1,4 @@
-// $Id: noBuilding.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: noBuilding.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -28,13 +28,13 @@ class noBuilding : public noBaseBuilding
 {
     protected:
 
-        /// Gibt an, wie viele Leute die Tür geöffnet haben (wenns 0 ist, ist die Tür zu, ansonsten offen)
+        /// Gibt an, wie viele Leute die TÃ¼r geÃ¶ffnet haben (wenns 0 ist, ist die TÃ¼r zu, ansonsten offen)
         unsigned char opendoor;
 
         noBuilding(const BuildingType type, const MapPoint pt, const unsigned char player, const Nation nation);
         noBuilding(SerializedGameData* sgd, const unsigned obj_id);
 
-        /// Aufräummethoden
+        /// AufrÃ¤ummethoden
     protected:  void Destroy_noBuilding();
     public:     void Destroy() { Destroy_noBuilding(); }
 
@@ -42,7 +42,7 @@ class noBuilding : public noBaseBuilding
     protected:  void Serialize_noBuilding(SerializedGameData* sgd) const;
     public:     void Serialize(SerializedGameData* sgd) const { Serialize_noBuilding(sgd); }
 
-        /// Zeichnet das Gebäude an sich mit Tür ohne zusätzlichen Schnickschnack
+        /// Zeichnet das GebÃ¤ude an sich mit TÃ¼r ohne zusÃ¤tzlichen Schnickschnack
         void DrawBaseBuilding(int x, int y);
 
         void OpenDoor() {++opendoor;}
@@ -50,18 +50,18 @@ class noBuilding : public noBaseBuilding
 
         void GotWorker(Job job, noFigure* worker);
 
-        /// Wird aufgerufen, wenn von der Fahne vor dem Gebäude ein Rohstoff aufgenommen wurde
+        /// Wird aufgerufen, wenn von der Fahne vor dem GebÃ¤ude ein Rohstoff aufgenommen wurde
         virtual bool FreePlaceAtFlag() = 0;
 
-        /// Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung" für den Fog of War
+        /// Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung" fÃ¼r den Fog of War
         FOWObject* CreateFOWObject() const;
 };
 
 
-/// Prüft, ob es sich um ein Gebäude handelt
+/// PrÃ¼ft, ob es sich um ein GebÃ¤ude handelt
 inline bool IsBuilding(const GO_Type got)
 { return (got >= GOT_NOB_HQ && got <= GOT_NOB_USUAL); }
-/// Prüft, ob es sich um ein Gebäude oder eine Baustelle handelt
+/// PrÃ¼ft, ob es sich um ein GebÃ¤ude oder eine Baustelle handelt
 inline bool IsBaseBuilding(const GO_Type got)
 { return (got >= GOT_NOB_HQ && got <= GOT_BUILDINGSITE); }
 

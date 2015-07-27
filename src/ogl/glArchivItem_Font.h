@@ -1,4 +1,4 @@
-// $Id: glArchivItem_Font.h 9357 2014-04-25 15:35:25Z FloSoft $
+﻿// $Id: glArchivItem_Font.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -30,7 +30,7 @@
 
 class glArchivItem_Bitmap;
 
-/// Klasse f�r GL-Fontfiles.
+/// Klasse fï¿½r GL-Fontfiles.
 class glArchivItem_Font : public libsiedler2::ArchivItem_Font
 {
     public:
@@ -43,17 +43,17 @@ class glArchivItem_Font : public libsiedler2::ArchivItem_Font
         void Draw(short x, short y, const std::wstring& wtext, unsigned int format, unsigned int color = COLOR_WHITE, unsigned short length = 0, unsigned short max = 0xFFFF, const std::wstring& wend = L"...", unsigned short end_length = 0);
         void Draw(short x, short y, const std::string& text, unsigned int format, unsigned int color = COLOR_WHITE, unsigned short length = 0, unsigned short max = 0xFFFF, const std::string& end = "...", unsigned short end_length = 0);
 
-        /// liefert die L�nge einer Zeichenkette.
+        /// liefert die Lï¿½nge einer Zeichenkette.
         unsigned short getWidth(const std::wstring& text, unsigned length = 0, unsigned max_width = 0xffffffff, unsigned short* max = NULL) const;
         unsigned short getWidth(const std::string& text, unsigned length = 0, unsigned max_width = 0xffffffff, unsigned short* max = NULL) const;
-        /// liefert die H�he des Textes ( entspricht @p getDy()+1 )
+        /// liefert die Hï¿½he des Textes ( entspricht @p getDy()+1 )
         inline unsigned short getHeight() const { return dy + 1; }
 
-        /// Gibt Infos, �ber die Unterbrechungspunkte in einem Text
+        /// Gibt Infos, ï¿½ber die Unterbrechungspunkte in einem Text
         class WrapInfo
         {
             public:
-                /// Erzeugt ein Arrays aus eigenst�ndigen Strings aus den Unterbrechungsinfos.
+                /// Erzeugt ein Arrays aus eigenstï¿½ndigen Strings aus den Unterbrechungsinfos.
                 void CreateSingleStrings(const std::string& origin_text, std::string* dest_strings);
 
             public:
@@ -61,8 +61,8 @@ class glArchivItem_Font : public libsiedler2::ArchivItem_Font
                 std::vector<unsigned int> positions;
         };
 
-        /// Gibt Infos, �ber die Unterbrechungspunkte in einem Text, versucht W�rter nicht zu trennen, tut dies aber, falls
-        /// es unumg�nglich ist (Wort l�nger als die Zeile)
+        /// Gibt Infos, ï¿½ber die Unterbrechungspunkte in einem Text, versucht Wï¿½rter nicht zu trennen, tut dies aber, falls
+        /// es unumgï¿½nglich ist (Wort lï¿½nger als die Zeile)
         void GetWrapInfo(const std::string& text, const unsigned short primary_width, const unsigned short secondary_width, WrapInfo& wi);
 
         enum
@@ -93,7 +93,7 @@ class glArchivItem_Font : public libsiedler2::ArchivItem_Font
             unsigned short reserved; // so we have 8 byte's
         };
 
-        /// pr�ft ob ein Buchstabe existiert.
+        /// prï¿½ft ob ein Buchstabe existiert.
         inline bool CharExist(unsigned int c) const { return (CharWidth(c) > 0); }
         inline bool CharExist(char_info ci) const { return (ci.width > 0); }
 

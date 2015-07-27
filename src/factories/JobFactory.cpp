@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+ï»¿// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -110,13 +110,13 @@ noFigure* JobFactory::CreateJob(const Job job_id, const MapPoint pt, const unsig
     case JOB_GEOLOGIST:
         return new nofGeologist(pt, player, static_cast<noFlag*>(goal));
     case JOB_SCOUT:
-        // Im Spähturm arbeitet ein anderer Spähter-Typ
+        // Im SpÃ¤hturm arbeitet ein anderer SpÃ¤hter-Typ
         // Wenn goal = 0 oder Lagerhaus, dann Auslagern anscheinend und mann kann irgendeinen Typ nehmen
         if(!goal)
             return new nofScout_LookoutTower(pt, player, NULL);
         if(goal->GetGOT() == GOT_NOB_HARBORBUILDING || goal->GetGOT() == GOT_NOB_STOREHOUSE || goal->GetGOT() == GOT_NOB_HQ)
             return new nofPassiveWorker(JOB_SCOUT, pt, player, goal);
-        // Spähturm / Lagerhaus?
+        // SpÃ¤hturm / Lagerhaus?
         if(goal->GetGOT() == GOT_NOB_USUAL || goal->GetGOT() == GOT_NOB_HARBORBUILDING)
             return new nofScout_LookoutTower(pt, player, static_cast<nobUsual*>(goal));
         if(goal->GetGOT() == GOT_FLAG)

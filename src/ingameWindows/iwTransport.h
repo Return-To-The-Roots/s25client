@@ -1,4 +1,4 @@
-// $Id: iwTransport.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: iwTransport.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -27,9 +27,9 @@ class iwTransport : public IngameWindow
 {
     private:
 
-        glArchivItem_Bitmap* TRANSPORT_SPRITES[14]; ///< Einzelne Bilder für die Waren.
+        glArchivItem_Bitmap* TRANSPORT_SPRITES[14]; ///< Einzelne Bilder fÃ¼r die Waren.
 
-        /// Einstellungen nach dem letzten Netzwerk-Versenden nochmal verändert?
+        /// Einstellungen nach dem letzten Netzwerk-Versenden nochmal verÃ¤ndert?
         bool settings_changed;
 
     public:
@@ -41,7 +41,7 @@ class iwTransport : public IngameWindow
 
         /// Updatet die Steuerelemente mit den aktuellen Einstellungen aus dem Spiel
         void UpdateSettings();
-        /// Sendet veränderte Einstellungen (an den Client), falls sie verändert wurden
+        /// Sendet verÃ¤nderte Einstellungen (an den Client), falls sie verÃ¤ndert wurden
         void TransmitSettings();
 
         void Msg_ButtonClick(const unsigned int ctrl_id);

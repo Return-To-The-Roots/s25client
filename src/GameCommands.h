@@ -1,4 +1,4 @@
-#ifndef GAME_COMMANDS_H_
+ï»¿#ifndef GAME_COMMANDS_H_
 #define GAME_COMMANDS_H_
 
 #include "Serializer.h"
@@ -72,18 +72,18 @@ namespace gc
 
             GameCommand(const Type gst) : gst(gst) {}
 
-            /// Gibt den entsprechenden Typen zurück
+            /// Gibt den entsprechenden Typen zurÃ¼ck
             Type GetType() const { return gst; }
             /// Serialisiert dieses GameCommand
             virtual void Serialize(Serializer* ser) const = 0;
 
-            /// Führt das GameCommand aus
+            /// FÃ¼hrt das GameCommand aus
             virtual void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid) = 0;
     };
 
 
 
-/// Basisklasse für sämtliche GameCommands mit Koordinaten
+/// Basisklasse fÃ¼r sÃ¤mtliche GameCommands mit Koordinaten
     class Coords : public GameCommand
     {
         private: MapPoint PopMapPoint(Serializer* ser)
@@ -120,11 +120,11 @@ namespace gc
             SetFlag(Serializer* ser)
                 : Coords(SETFLAG, ser) {}
 
-            /// Führt das GameCommand aus
+            /// FÃ¼hrt das GameCommand aus
             void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
-/// Flagge zerstören
+/// Flagge zerstÃ¶ren
     class DestroyFlag : public Coords
     {
             friend class GameClient;
@@ -134,17 +134,17 @@ namespace gc
             DestroyFlag(Serializer* ser)
                 : Coords(DESTROYFLAG, ser) {}
 
-            /// Führt das GameCommand aus
+            /// FÃ¼hrt das GameCommand aus
             void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
-/// Straße bauen
+/// StraÃŸe bauen
     class BuildRoad : public Coords
     {
             friend class GameClient;
-            /// Boot-Straße oder nicht?
+            /// Boot-StraÃŸe oder nicht?
             const bool boat_road;
-            /// Beschreibung der Straße mittels einem Array aus Richtungen
+            /// Beschreibung der StraÃŸe mittels einem Array aus Richtungen
             std::vector<unsigned char> route;
         public:
             BuildRoad(const MapPoint pt, const bool boat_road, const std::vector<unsigned char>& route)
@@ -168,15 +168,15 @@ namespace gc
                     ser->PushUnsignedChar(route[i]);
             }
 
-            /// Führt das GameCommand aus
+            /// FÃ¼hrt das GameCommand aus
             void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
-/// Straße zerstören
+/// StraÃŸe zerstÃ¶ren
     class DestroyRoad : public Coords
     {
             friend class GameClient;
-            /// Richtung in der von der Flagge an x;y aus gesehen die Straße zerstört werden soll
+            /// Richtung in der von der Flagge an x;y aus gesehen die StraÃŸe zerstÃ¶rt werden soll
             const unsigned char start_dir;
         public:
             DestroyRoad(const MapPoint pt, const unsigned char start_dir)
@@ -192,15 +192,15 @@ namespace gc
                 ser->PushUnsignedChar(start_dir);
             }
 
-            /// Führt das GameCommand aus
+            /// FÃ¼hrt das GameCommand aus
             void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
-/// Straße aufwerten
+/// StraÃŸe aufwerten
     class UpgradeRoad : public Coords
     {
             friend class GameClient;
-            /// Richtung in der von der Flagge an x;y aus gesehen die Straße zerstört werden soll
+            /// Richtung in der von der Flagge an x;y aus gesehen die StraÃŸe zerstÃ¶rt werden soll
             const unsigned char start_dir;
         public:
             UpgradeRoad(const MapPoint pt, const unsigned char start_dir)
@@ -214,17 +214,17 @@ namespace gc
                 ser->PushUnsignedChar(start_dir);
             }
 
-            /// Führt das GameCommand aus
+            /// FÃ¼hrt das GameCommand aus
             void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
-/// Warenverteilung ändern
+/// Warenverteilung Ã¤ndern
     class ChangeDistribution : public GameCommand
     {
             friend class GameClient;
-            /// Größe der Distributionsdaten
+            /// GrÃ¶ÃŸe der Distributionsdaten
             static const unsigned DATA_SIZE = 23;
-            /// Daten der Distribution (einzelne Prozente der Waren in Gebäuden)
+            /// Daten der Distribution (einzelne Prozente der Waren in GebÃ¤uden)
             std::vector<unsigned char> data;
         public:
             ChangeDistribution(const std::vector<unsigned char>& data)
@@ -242,15 +242,15 @@ namespace gc
                     ser->PushUnsignedChar(data[i]);
             }
 
-            /// Führt das GameCommand aus
+            /// FÃ¼hrt das GameCommand aus
             void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
-/// Baureihenfolge ändern
+/// Baureihenfolge Ã¤ndern
     class ChangeBuildOrder : public GameCommand
     {
             friend class GameClient;
-            /// Größe der BuildOrder-Daten
+            /// GrÃ¶ÃŸe der BuildOrder-Daten
             static const unsigned DATA_SIZE = 31;
             /// Ordnungs-Typ
             const unsigned char order_type;
@@ -273,7 +273,7 @@ namespace gc
                     ser->PushUnsignedChar(data[i]);
             }
 
-            /// Führt das GameCommand aus
+            /// FÃ¼hrt das GameCommand aus
             void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
@@ -282,7 +282,7 @@ namespace gc
     class SetBuildingSite : public Coords
     {
             friend class GameClient;
-            /// Art des Gebäudes, was gebaut werden soll
+            /// Art des GebÃ¤udes, was gebaut werden soll
             const BuildingType bt;
         public:
             SetBuildingSite(const MapPoint pt, const BuildingType bt)
@@ -298,11 +298,11 @@ namespace gc
                 ser->PushUnsignedChar(static_cast<unsigned char>(bt));
             }
 
-            /// Führt das GameCommand aus
+            /// FÃ¼hrt das GameCommand aus
             void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
-/// Gebäude zerstören
+/// GebÃ¤ude zerstÃ¶ren
     class DestroyBuilding : public Coords
     {
             friend class GameClient;
@@ -312,7 +312,7 @@ namespace gc
             DestroyBuilding(Serializer* ser)
                 : Coords(DESTROYBUILDING, ser) {}
 
-            /// Führt das GameCommand aus
+            /// FÃ¼hrt das GameCommand aus
             void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
@@ -326,7 +326,7 @@ namespace gc
             SendSoldiersHome(Serializer* ser)
                 : Coords(SENDSOLDIERSHOME, ser) {}
 
-            /// Führt das GameCommand aus
+            /// FÃ¼hrt das GameCommand aus
             void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
@@ -340,18 +340,18 @@ namespace gc
             OrderNewSoldiers(Serializer* ser)
                 : Coords(ORDERNEWSOLDIERS, ser) {}
 
-            /// Führt das GameCommand aus
+            /// FÃ¼hrt das GameCommand aus
             void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
 
-/// Transportreihenfolge ändern
+/// Transportreihenfolge Ã¤ndern
     class ChangeTransport : public GameCommand
     {
             friend class GameClient;
-            /// Größe der Distributionsdaten
+            /// GrÃ¶ÃŸe der Distributionsdaten
             static const unsigned DATA_SIZE = 14;
-            /// Daten der Distribution (einzelne Prozente der Waren in Gebäuden)
+            /// Daten der Distribution (einzelne Prozente der Waren in GebÃ¤uden)
             std::vector<unsigned char> data;
         public:
             ChangeTransport(const std::vector<unsigned char>& data)
@@ -369,17 +369,17 @@ namespace gc
                     ser->PushUnsignedChar(data[i]);
             }
 
-            /// Führt das GameCommand aus
+            /// FÃ¼hrt das GameCommand aus
             void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
-/// Transportreihenfolge ändern
+/// Transportreihenfolge Ã¤ndern
     class ChangeMilitary : public GameCommand
     {
             friend class GameClient;
-            /// Größe der Distributionsdaten
+            /// GrÃ¶ÃŸe der Distributionsdaten
             static const unsigned DATA_SIZE = MILITARY_SETTINGS_COUNT;
-            /// Daten der Distribution (einzelne Prozente der Waren in Gebäuden)
+            /// Daten der Distribution (einzelne Prozente der Waren in GebÃ¤uden)
             std::vector<unsigned char> data;
         public:
             ChangeMilitary(const std::vector<unsigned char>& data)
@@ -397,17 +397,17 @@ namespace gc
                     ser->PushUnsignedChar(data[i]);
             }
 
-            /// Führt das GameCommand aus
+            /// FÃ¼hrt das GameCommand aus
             void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
-/// Werkzeugeinstellungen ändern
+/// Werkzeugeinstellungen Ã¤ndern
     class ChangeTools : public GameCommand
     {
             friend class GameClient;
-            /// Größe der Distributionsdaten
+            /// GrÃ¶ÃŸe der Distributionsdaten
             static const unsigned DATA_SIZE = 12;
-            /// Daten der Distribution (einzelne Prozente der Waren in Gebäuden)
+            /// Daten der Distribution (einzelne Prozente der Waren in GebÃ¤uden)
             std::vector<unsigned char> data;
 
             signed char orders[TOOL_COUNT];
@@ -448,7 +448,7 @@ namespace gc
                     ser->PushSignedChar(orders[i]);
             }
 
-            /// Führt das GameCommand aus
+            /// FÃ¼hrt das GameCommand aus
             void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
@@ -462,11 +462,11 @@ namespace gc
             CallGeologist(Serializer* ser)
                 : Coords(CALLGEOLOGIST, ser) {}
 
-            /// Führt das GameCommand aus
+            /// FÃ¼hrt das GameCommand aus
             void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
-/// Späher rufen
+/// SpÃ¤her rufen
     class CallScout : public Coords
     {
         public:
@@ -475,11 +475,11 @@ namespace gc
             CallScout(Serializer* ser)
                 : Coords(CALLSCOUT, ser) {}
 
-            /// Führt das GameCommand aus
+            /// FÃ¼hrt das GameCommand aus
             void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
-/// Basisklasse für beide Angriffstypen
+/// Basisklasse fÃ¼r beide Angriffstypen
     class BaseAttack : public Coords
     {
         protected:
@@ -516,7 +516,7 @@ namespace gc
             Attack(Serializer* ser)
                 : BaseAttack(ATTACK, ser) {}
 
-            /// Führt das GameCommand aus
+            /// FÃ¼hrt das GameCommand aus
             void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
@@ -529,7 +529,7 @@ namespace gc
             SeaAttack(Serializer* ser)
                 : BaseAttack(SEAATTACK, ser) {}
 
-            /// Führt das GameCommand aus
+            /// FÃ¼hrt das GameCommand aus
             void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
@@ -554,11 +554,11 @@ namespace gc
 
             const unsigned int GetNewPlayerId() const { return new_player_id; }
 
-            /// Führt das GameCommand aus
+            /// FÃ¼hrt das GameCommand aus
             void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
-/// Goldzufuhr in einem Gebäude stoppen/erlauben
+/// Goldzufuhr in einem GebÃ¤ude stoppen/erlauben
     class StopGold : public Coords
     {
             friend class GameClient;
@@ -568,11 +568,11 @@ namespace gc
             StopGold(Serializer* ser)
                 : Coords(STOPGOLD, ser) {}
 
-            /// Führt das GameCommand aus
+            /// FÃ¼hrt das GameCommand aus
             void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
-/// Produktivität in einem Gebäude deaktivieren/aktivieren
+/// ProduktivitÃ¤t in einem GebÃ¤ude deaktivieren/aktivieren
     class StopProduction : public Coords
     {
             friend class GameClient;
@@ -582,11 +582,11 @@ namespace gc
             StopProduction(Serializer* ser)
                 : Coords(STOPPRODUCTION, ser) {}
 
-            /// Führt das GameCommand aus
+            /// FÃ¼hrt das GameCommand aus
             void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
-/// Produktivität in einem Gebäude deaktivieren/aktivieren
+/// ProduktivitÃ¤t in einem GebÃ¤ude deaktivieren/aktivieren
     class NotifyAlliesOfLocation : public Coords
     {
             friend class GameClient;
@@ -596,11 +596,11 @@ namespace gc
             NotifyAlliesOfLocation(Serializer* ser)
                 : Coords(NOTIFYALLIESOFLOCATION, ser) {}
 
-            /// Führt das GameCommand aus
+            /// FÃ¼hrt das GameCommand aus
             void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
-/// Einlagerungseinstellungen von einem Lagerhaus verändern
+/// Einlagerungseinstellungen von einem Lagerhaus verÃ¤ndern
     class ChangeInventorySetting : public Coords
     {
             /// Kategorie (Waren, Menschen), Status (Einlagern/Auslagern), type (welche Ware, welcher Mensch)
@@ -625,11 +625,11 @@ namespace gc
                 ser->PushUnsignedChar(type);
             }
 
-            /// Führt das GameCommand aus
+            /// FÃ¼hrt das GameCommand aus
             void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
-/// Alle Einlagerungseinstellungen (für alle Menschen oder Waren) von einem Lagerhaus verändern
+/// Alle Einlagerungseinstellungen (fÃ¼r alle Menschen oder Waren) von einem Lagerhaus verÃ¤ndern
     class ChangeAllInventorySettings : public Coords
     {
             friend class GameClient;
@@ -653,17 +653,17 @@ namespace gc
                 ser->PushUnsignedChar(state);
             }
 
-            /// Führt das GameCommand aus
+            /// FÃ¼hrt das GameCommand aus
             void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
-/// Verändert die Reserve im HQ auf einen bestimmten Wert
+/// VerÃ¤ndert die Reserve im HQ auf einen bestimmten Wert
     class ChangeReserve : public Coords
     {
             friend class GameClient;
-            /// Rang des Soldaten, der verändert werden soll
+            /// Rang des Soldaten, der verÃ¤ndert werden soll
             const unsigned char rank;
-            /// Anzahl der Reserve für diesen Rang
+            /// Anzahl der Reserve fÃ¼r diesen Rang
             const unsigned char count;
         public:
             ChangeReserve(const MapPoint pt, const unsigned char rank, const unsigned char count)
@@ -682,11 +682,11 @@ namespace gc
                 ser->PushUnsignedChar(count);
             }
 
-            /// Führt das GameCommand aus
+            /// FÃ¼hrt das GameCommand aus
             void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
-/// Alle Fahnen zerstören
+/// Alle Fahnen zerstÃ¶ren
     class CheatArmageddon : public GameCommand
     {
             friend class GameClient;
@@ -699,7 +699,7 @@ namespace gc
             virtual void Serialize(Serializer* ser) const
             {}
 
-            /// Führt das GameCommand aus
+            /// FÃ¼hrt das GameCommand aus
             void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
@@ -716,11 +716,11 @@ namespace gc
             virtual void Serialize(Serializer* ser) const
             {}
 
-            /// Führt das GameCommand aus
+            /// FÃ¼hrt das GameCommand aus
             void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
-/// Alle eigenen Fahnen zerstören
+/// Alle eigenen Fahnen zerstÃ¶ren
     class DestroyAll : public GameCommand
     {
             friend class GameClient;
@@ -733,11 +733,11 @@ namespace gc
             virtual void Serialize(Serializer* ser) const
             {}
 
-            /// Führt das GameCommand aus
+            /// FÃ¼hrt das GameCommand aus
             void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
-/// Unterbreitet anderen Spielern einen Bündnisvertrag
+/// Unterbreitet anderen Spielern einen BÃ¼ndnisvertrag
     class SuggestPact : public GameCommand
     {
             /// Spieler, dem das Angebot unterbreitet werden soll
@@ -762,12 +762,12 @@ namespace gc
                 ser->PushUnsignedInt(duration);
             }
 
-            /// Führt das GameCommand aus
+            /// FÃ¼hrt das GameCommand aus
             void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
 
-/// Antwortet auf einen Bündnisvorschlag mit Annehmen oder Ablehnung
+/// Antwortet auf einen BÃ¼ndnisvorschlag mit Annehmen oder Ablehnung
     class AcceptPact : public GameCommand
     {
             /// Vertrag angenommen oder abgelehnt?
@@ -795,12 +795,12 @@ namespace gc
                 ser->PushUnsignedChar(player);
             }
 
-            /// Führt das GameCommand aus
+            /// FÃ¼hrt das GameCommand aus
             void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
 
-/// Bündnis abbrechen bzw. das Angebot zurücknehmen, falls dieses schon gestellt wurde
+/// BÃ¼ndnis abbrechen bzw. das Angebot zurÃ¼cknehmen, falls dieses schon gestellt wurde
     class CancelPact : public GameCommand
     {
             /// Vertragsart
@@ -822,7 +822,7 @@ namespace gc
                 ser->PushUnsignedChar(player);
             }
 
-            /// Führt das GameCommand aus
+            /// FÃ¼hrt das GameCommand aus
             void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
@@ -835,7 +835,7 @@ namespace gc
             ChangeShipYardMode(Serializer* ser)
                 : Coords(CHANGESHIPYARDMODE, ser) {}
 
-            /// Führt das GameCommand aus
+            /// FÃ¼hrt das GameCommand aus
             void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
@@ -849,7 +849,7 @@ namespace gc
             StartExpedition(Serializer* ser)
                 : Coords(STARTEXPEDITION, ser) {}
 
-            /// Führt das GameCommand aus
+            /// FÃ¼hrt das GameCommand aus
             void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
@@ -863,7 +863,7 @@ namespace gc
             StartExplorationExpedition(Serializer* ser)
                 : Coords(STARTEXPLORATIONEXPEDITION, ser) {}
 
-            /// Führt das GameCommand aus
+            /// FÃ¼hrt das GameCommand aus
             void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
@@ -872,7 +872,7 @@ namespace gc
     {
         public:
 
-            /// Aktion, die ausgeführt wird
+            /// Aktion, die ausgefÃ¼hrt wird
             enum Action
             {
                 FOUNDCOLONY = 0,
@@ -899,11 +899,11 @@ namespace gc
                 ser->PushUnsignedInt(ship_id);
             }
 
-            /// Führt das GameCommand aus
+            /// FÃ¼hrt das GameCommand aus
             void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
 
         private:
-            /// Die Aktion, die ausgeführt werden soll
+            /// Die Aktion, die ausgefÃ¼hrt werden soll
             Action action;
             /// Schiff, welches dieses Command betrifft
             unsigned ship_id;
@@ -942,7 +942,7 @@ namespace gc
                 ser->PushUnsignedInt(count);
             }
 
-            /// Führt das GameCommand aus
+            /// FÃ¼hrt das GameCommand aus
             void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 

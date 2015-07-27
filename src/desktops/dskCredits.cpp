@@ -1,4 +1,4 @@
-// $Id: dskCredits.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+﻿// $Id: dskCredits.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -67,7 +67,7 @@ const unsigned FADING_TIME = 2000;
  */
 dskCredits::dskCredits(void) : Desktop(LOADER.GetImageN("setup013", 0))
 {
-    // Zurück
+    // ZurÃ¼ck
     AddTextButton(0, 300, 550, 200, 22,   TC_RED1, _("Back"), NormalFont);
 
     // "Die Siedler II.5 RTTR"
@@ -100,7 +100,7 @@ dskCredits::dskCredits(void) : Desktop(LOADER.GetImageN("setup013", 0))
     this->entries.push_back(entry);
     entry.lines.clear();
 
-    entry.title = "Stefan Schüchl (Z-Stef):";
+    entry.title = "Stefan SchÃ¼chl (Z-Stef):";
     entry.picId = 6;
     entry.lastLine = "";
     entry.lines.push_back(CreditsEntry::Line(_("Website Administration")));
@@ -146,7 +146,7 @@ dskCredits::dskCredits(void) : Desktop(LOADER.GetImageN("setup013", 0))
     this->entries.push_back(entry);
     entry.lines.clear();
 
-    entry.title = "Marcus Ströbel (Maqs):";
+    entry.title = "Marcus StrÃ¶bel (Maqs):";
     entry.picId = -1;
     entry.lastLine = "";
     entry.lines.push_back(CreditsEntry::Line(_("Programming")));

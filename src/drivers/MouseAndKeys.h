@@ -1,4 +1,4 @@
-// $Id: MouseAndKeys.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: MouseAndKeys.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 20052008 Settlers Freaks (sfteam at siedler25.org)
 //
@@ -35,12 +35,12 @@ class MouseCoords
     public:
         int x;      /// xKoordinate
         int y;      /// yKoordinate
-        bool ldown; /// Linke Maustaste gedrückt
-        bool rdown; /// Rechte Maustaste gedrückt
+        bool ldown; /// Linke Maustaste gedrÃ¼ckt
+        bool rdown; /// Rechte Maustaste gedrÃ¼ckt
         bool dbl_click; /// Linke Maustaste - Doppelklick
 };
 
-/// Maximale Zeitdifferenz in ms für einen Doppeklick
+/// Maximale Zeitdifferenz in ms fÃ¼r einen Doppeklick
 const unsigned DOUBLE_CLICK_INTERVAL = 500;
 
 ///////////////////////////////////////////////////////////////////////////////

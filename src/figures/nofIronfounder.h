@@ -1,4 +1,4 @@
-// $Id: nofIronfounder.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: nofIronfounder.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -24,12 +24,12 @@
 
 class nobUsualBuilding;
 
-/// Klasse für den Schreiner
+/// Klasse fÃ¼r den Schreiner
 class nofIronfounder : public nofWorkman
 {
         /// Zeichnet ihn beim Arbeiten
         void DrawWorking(int x, int y);
-        /// Gibt die ID in JOBS.BOB zurück, wenn der Beruf Waren rausträgt (bzw rein)
+        /// Gibt die ID in JOBS.BOB zurÃ¼ck, wenn der Beruf Waren raustrÃ¤gt (bzw rein)
         unsigned short GetCarryID() const { return 69; }
         /// Der Arbeiter erzeugt eine Ware
         GoodType ProduceWare();

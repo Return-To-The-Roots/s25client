@@ -1,4 +1,4 @@
-// $Id: dskSinglePlayer.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: dskSinglePlayer.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -80,7 +80,7 @@ dskSinglePlayer::dskSinglePlayer(void) : Desktop(LOADER.GetImageN("menu", 0))
     AddTextButton(6, 115, 290, 220, 22, TC_GREEN2, _("Unlimited Play"), NormalFont);
     // "Spiel laden"
     AddTextButton(7, 115, 320, 220, 22, TC_GREEN2, _("Load game"), NormalFont);
-    // "Zurück"
+    // "ZurÃ¼ck"
     AddTextButton(8, 115, 360, 220, 22, TC_RED1, _("Back"), NormalFont);
 
     AddImage(11, 20, 20, LOADER.GetImageN("logo", 0));
@@ -106,7 +106,7 @@ void dskSinglePlayer::Msg_ButtonClick(const unsigned int ctrl_id)
             {
                 Savegame save;
 
-                // Datei öffnen
+                // Datei Ã¶ffnen
                 if (!save.Load(*it, false, false))
                     continue;
 
@@ -175,7 +175,7 @@ void dskSinglePlayer::Msg_ButtonClick(const unsigned int ctrl_id)
         {
             PrepareLoadGame();
         } break;
-        case 8: // "Zurück"
+        case 8: // "ZurÃ¼ck"
         {
             WINDOWMANAGER.Switch(new dskMainMenu);
         } break;

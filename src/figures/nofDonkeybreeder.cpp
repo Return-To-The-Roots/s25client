@@ -1,4 +1,4 @@
-// $Id: nofDonkeybreeder.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: nofDonkeybreeder.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -113,7 +113,7 @@ GoodType nofDonkeybreeder::ProduceWare()
 
 void nofDonkeybreeder::WorkFinished()
 {
-    // Straße und Zielflagge für Esel suchen
+    // StraÃŸe und Zielflagge fÃ¼r Esel suchen
     noRoadNode* flag_goal;
     RoadSegment* road = gwg->GetPlayer(player)->FindRoadForDonkey(workplace, &flag_goal);
 
@@ -122,7 +122,7 @@ void nofDonkeybreeder::WorkFinished()
     gwg->GetPlayer(player)->IncreaseInventoryJob(JOB_PACKDONKEY, 1);
     donkey->InitializeRoadWalking(gwg->GetSpecObj<noRoadNode>(pos)->routes[4], 0, true);
 
-    // Wenn keine Straße gefunden wurde, muss er nach Hause gehen
+    // Wenn keine StraÃŸe gefunden wurde, muss er nach Hause gehen
     if(!road)
         donkey->GoHome();
     else

@@ -1,4 +1,4 @@
-// $Id: ctrlTab.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: ctrlTab.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -33,17 +33,17 @@ class ctrlTab : public Window
         /// Konstruktor von @p ctrlTab.
         ctrlTab(Window* parent, unsigned int id, unsigned short x, unsigned short y, unsigned short width);
 
-        /// fügt eine Tab hinzu.
+        /// fÃ¼gt eine Tab hinzu.
         ctrlGroup* AddTab(glArchivItem_Bitmap* image, std::string tooltip, const unsigned int id);
-        /// löscht alle Tabs.
+        /// lÃ¶scht alle Tabs.
         void DeleteAllTabs(void);
         /// aktiviert eine bestimmte Tabseite.
         void SetSelection(unsigned short nr, bool notify = false);
-        /// Gibt ID des aktuell gewählten Tabs zurück
+        /// Gibt ID des aktuell gewÃ¤hlten Tabs zurÃ¼ck
         unsigned int GetCurrentTab(void) const { return tabs[tab_selection]; }
-        /// Gibt Tab-Group zurück, über die die Steuerelemente der Tab angesprochen werden können
+        /// Gibt Tab-Group zurÃ¼ck, Ã¼ber die die Steuerelemente der Tab angesprochen werden kÃ¶nnen
         ctrlGroup* GetGroup(const unsigned int tab_id);
-        /// Gibt aktuell ausgewählte Tab-Gruppe zürck
+        /// Gibt aktuell ausgewÃ¤hlte Tab-Gruppe zÃ¼rck
         ctrlGroup* GetCurrentGroup() { return GetGroup(GetCurrentTab()); }
 
         virtual void Msg_Group_ButtonClick(const unsigned int group_id, const unsigned int ctrl_id);

@@ -1,4 +1,4 @@
-// $Id: ctrlText.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: ctrlText.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -24,7 +24,7 @@
 #include "Window.h"
 
 
-/// Basisklasse für Controls mit Texten wie auch Buttons, damit diese alle einheitlich verändert werden können
+/// Basisklasse fÃ¼r Controls mit Texten wie auch Buttons, damit diese alle einheitlich verÃ¤ndert werden kÃ¶nnen
 class ctrlBaseText
 {
     public:
@@ -38,7 +38,7 @@ class ctrlBaseText
         /// Setzt Textfarbe
         void SetColor(const unsigned color) { this->color = color; }
 
-        /// Gibt Text zurück
+        /// Gibt Text zurÃ¼ck
         const std::string& GetText() const { return text; }
 
     protected:

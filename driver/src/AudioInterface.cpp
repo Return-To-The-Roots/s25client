@@ -1,4 +1,4 @@
-// $Id: AudioInterface.cpp 7521 2011-09-08 20:45:55Z FloSoft $
+ï»¿// $Id: AudioInterface.cpp 7521 2011-09-08 20:45:55Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -35,7 +35,7 @@ static char THIS_FILE[] = __FILE__;
  *
  *  Instanzierungsfunktion.
  *
- *  @param[in] CallBack DriverCallback für Rückmeldungen.
+ *  @param[in] CallBack DriverCallback fÃ¼r RÃ¼ckmeldungen.
  *
  *  @return liefert eine Instanz des jeweiligen Treibers
  *

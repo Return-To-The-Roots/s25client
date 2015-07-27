@@ -1,4 +1,4 @@
-// $Id: SerializedGameData.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: SerializedGameData.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -35,7 +35,7 @@ class GameObject;
 class GameWorld;
 
 
-/// Kümmert sich um das Serialisieren der GameDaten fürs Speichern und Resynchronisieren
+/// KÃ¼mmert sich um das Serialisieren der GameDaten fÃ¼rs Speichern und Resynchronisieren
 class SerializedGameData : public Serializer
 {
         /// Objektreferenzen
@@ -155,7 +155,7 @@ class SerializedGameData : public Serializer
         }
 
 
-        /// Fügt ein gelesenes Objekt zur globalen Objektliste dazu
+        /// FÃ¼gt ein gelesenes Objekt zur globalen Objektliste dazu
         void AddObject(GameObject* go);
 
 
