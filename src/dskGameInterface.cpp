@@ -655,7 +655,7 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
                 GameClientPlayer* player = GameClient::inst().GetPlayer(ke.c - '1');
                 if(player)
                 {
-                    if(player->ps == PS_KI && player->aiType == AI_DUMMY)
+                    if(player->ps == PS_KI && player->aiInfo.type == AI::DUMMY)
                         GAMECLIENT.AddGC(new gc::SwitchPlayer(ke.c - '1'));
                 }
             }

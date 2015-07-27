@@ -532,12 +532,12 @@ void GameClient::OnNMSPlayerList(const GameMessage_Player_List& msg)
         {
             if(!strncmp(players[i].name.c_str(), "Computer", 7))
             {
-                players[i].aiType = AI_JH;
+                players[i].aiInfo = AI::Info(AI::DEFAULT, AI::EASY);
                 players[i].rating = 666;
             }
             else
             {
-                players[i].aiType = AI_DUMMY;
+                players[i].aiInfo = AI::Info(AI::DUMMY, AI::EASY);
                 players[i].rating = 0;
             }
         }
@@ -617,27 +617,28 @@ void GameClient::OnNMSPlayerToggleState(const GameMessage_Player_Toggle_State& m
                 case PS_FREE:
                 {
                     player->ps = PS_KI;
-                    player->aiType = AI_JH;
-                    // Baby mit einem Namen Taufen ("Name (KI)")
-                    char str[512];
-                    sprintf(str, _("Computer %u"), unsigned(msg.player));
-                    player->name = str;
-                    player->name += _(" (AI)");
-                    player->rating = 666;
+                    player->aiInfo = AI::Info(AI::DEFAULT, AI::EASY);
                 } break;
                 case PS_KI:
                 {
                     // Verschiedene KIs durchgehen
-                    switch(player->aiType)
+                    switch(player->aiInfo.type)
                     {
-                        case AI_JH:
-                            player->aiType = AI_DUMMY;
-                            char str[512];
-                            sprintf(str, _("Dummy %u"), unsigned(msg.player));
-                            player->name = str;
-                            player->rating = 0; // ;-)
+                    case AI::DEFAULT:
+                        switch(player->aiInfo.level)
+                        {
+                        case AI::EASY:
+                            player->aiInfo.level = AI::MEDIUM;
                             break;
-                        case AI_DUMMY:
+                        case AI::MEDIUM:
+                            player->aiInfo.level = AI::HARD;
+                            break;
+                        case AI::HARD:
+                            player->aiInfo = AI::Info(AI::DUMMY);
+                            break;
+                        }
+                        break;
+                    case AI::DUMMY:
                             if(mapinfo.map_type != MAPTYPE_SAVEGAME)
                                 player->ps = PS_LOCKED;
                             else
@@ -661,6 +662,35 @@ void GameClient::OnNMSPlayerToggleState(const GameMessage_Player_Toggle_State& m
                         player->ps = PS_FREE;
                 } break;
                 default: break;
+            }
+
+            // Baby mit einem Namen Taufen ("Name (KI)")
+            if (player->aiInfo.type == AI::DEFAULT)
+            {
+                char str[512];
+                sprintf(str, _("Computer %u"), unsigned(msg.player));
+                player->name = str;
+                player->name += _(" (AI)");
+                player->rating = 666;
+                switch (player->aiInfo.level)
+                {
+                case AI::EASY:
+                    player->name += _(" (easy)");
+                    break;
+                case AI::MEDIUM:
+                    player->name += _(" (medium)");
+                    break;
+                case AI::HARD:
+                    player->name += _(" (hard)");
+                    break;
+                }
+            }
+            else if (player->aiInfo.type == AI::DUMMY)
+            {
+                char str[512];
+                sprintf(str, _("Dummy %u"), unsigned(msg.player));
+                player->name = str;
+                player->rating = 0; // ;-)
             }
 
             if(ci)
@@ -2076,15 +2106,15 @@ AIBase* GameClient::CreateAIPlayer(const unsigned playerid)
     }
     */
 
-    switch (players[playerid].aiType)
+    switch (players[playerid].aiInfo.type)
     {
-        case AI_DUMMY:
+    case AI::DUMMY:
         {
             return new AIPlayer(playerid, gw, &players[playerid], &players, &ggs, AI::EASY);
         } break;
-        case AI_JH:
+    case AI::DEFAULT:
         {
-            return new AIPlayerJH(playerid, gw, &players[playerid], &players, &ggs, AI::EASY);
+            return new AIPlayerJH(playerid, gw, &players[playerid], &players, &ggs, players[playerid].aiInfo.level);
         } break;
         default:
         {

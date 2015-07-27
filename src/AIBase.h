@@ -30,15 +30,7 @@ class GlobalGameSettings;
 class GameClientPlayerList;
 namespace gc { class GameCommand; }
 
-namespace AI
-{
-    enum Level
-    {
-        EASY = 0,
-        MEDIUM,
-        HARD
-    };
-}
+
 
 /// Basisklasse für sämtliche KI-Spieler
 class AIBase

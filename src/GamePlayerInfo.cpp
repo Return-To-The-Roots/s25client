@@ -39,7 +39,7 @@ GamePlayerInfo::GamePlayerInfo(const unsigned playerid) :
     playerid(playerid),
     defeated(false),
     ps(PS_FREE),
-    aiType(AI_DUMMY),
+    aiInfo(),
     is_host(false),
     nation(NAT_ROMANS),
     team(TM_NOTEAM),
@@ -54,7 +54,7 @@ GamePlayerInfo::GamePlayerInfo(const unsigned playerid) :
 GamePlayerInfo::GamePlayerInfo(const unsigned playerid, Serializer* ser) :
     playerid(playerid),
     ps(PlayerState(ser->PopUnsignedChar())),
-    aiType(AI_DUMMY),
+    aiInfo(),
     name(ser->PopString()),
     origin_name(ser->PopString()),
     is_host(ser->PopBool()),
@@ -105,7 +105,7 @@ void GamePlayerInfo::SwapPlayer(GamePlayerInfo& two)
 {
     /// Besiegt?
     Swap(ps, two.ps);
-    Swap(aiType, two.aiType);
+    Swap(aiInfo, two.aiInfo);
     Swap(defeated, two.defeated);
     Swap(name, two.name);
     Swap(is_host, two.is_host);
