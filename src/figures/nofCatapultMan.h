@@ -41,12 +41,11 @@ class nofCatapultMan : public nofBuildingWorker
 
                 PossibleTarget() : pos(0, 0), distance(0) {}
                 PossibleTarget(const MapPoint pt, const unsigned distance) : pos(pt), distance(distance) {}
-                PossibleTarget(SerializedGameData* sgd) : pos(sgd->PopUnsignedShort(), sgd->PopUnsignedShort()), distance(sgd->PopUnsignedInt()) {}
+                PossibleTarget(SerializedGameData* sgd) : pos(sgd->PopMapPoint()), distance(sgd->PopUnsignedInt()) {}
 
                 void Serialize_PossibleTarget(SerializedGameData* sgd) const
                 {
-                    sgd->PushUnsignedShort(pos.x);
-                    sgd->PushUnsignedShort(pos.y);
+                    sgd->PushMapPoint(pos);
                     sgd->PushUnsignedInt(distance);
                 }
 

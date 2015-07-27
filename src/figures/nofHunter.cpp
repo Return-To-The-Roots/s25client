@@ -59,8 +59,7 @@ void nofHunter::Serialize_nofHunter(SerializedGameData* sgd) const
     if(state != STATE_FIGUREWORK && state != STATE_WAITING1)
     {
         sgd->PushObject(animal, true);
-        sgd->PushUnsignedShort(shootingPos.x);
-        sgd->PushUnsignedShort(shootingPos.y);
+        sgd->PushMapPoint(shootingPos);
         sgd->PushUnsignedChar(shooting_dir);
     }
 }
@@ -70,8 +69,7 @@ nofHunter::nofHunter(SerializedGameData* sgd, const unsigned obj_id) : nofBuildi
     if(state != STATE_FIGUREWORK && state != STATE_WAITING1)
     {
         animal = sgd->PopObject<noAnimal>(GOT_ANIMAL);
-        shootingPos.x = sgd->PopUnsignedShort();
-        shootingPos.y = sgd->PopUnsignedShort();
+        shootingPos = sgd->PopMapPoint();
         shooting_dir = sgd->PopUnsignedChar();
     }
 }

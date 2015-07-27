@@ -86,6 +86,13 @@ namespace gc
 /// Basisklasse für sämtliche GameCommands mit Koordinaten
     class Coords : public GameCommand
     {
+        private: MapPoint PopMapPoint(Serializer* ser)
+                 {
+                     MapPoint pt;
+                     pt.x = ser->PopUnsignedShort();
+                     pt.y = ser->PopUnsignedShort();
+                     return pt;
+                 }
         protected:
             /// Koordinaten auf der Map, die dieses Command betreffen
             const MapPoint pt;
@@ -93,7 +100,7 @@ namespace gc
             Coords(const Type gst, const MapPoint pt)
                 : GameCommand(gst), pt(pt) {}
             Coords(const Type gst, Serializer* ser)
-                : GameCommand(gst), pt(ser->PopUnsignedShort(), ser->PopUnsignedShort()) {}
+                : GameCommand(gst), pt(PopMapPoint(ser)){}
 
             virtual void Serialize(Serializer* ser) const
             {

@@ -195,15 +195,13 @@ void nobHarborBuilding::Serialize(SerializedGameData* sgd) const
     sgd->PushUnsignedInt(figures_for_ships.size());
     for(std::list<FigureForShip>::const_iterator it = figures_for_ships.begin(); it != figures_for_ships.end(); ++it)
     {
-        sgd->PushUnsignedShort(it->dest.x);
-        sgd->PushUnsignedShort(it->dest.y);
+        sgd->PushMapPoint(it->dest);
         sgd->PushObject(it->fig, false);
     }
     sgd->PushUnsignedInt(soldiers_for_ships.size());
     for(std::list<SoldierForShip>::const_iterator it = soldiers_for_ships.begin(); it != soldiers_for_ships.end(); ++it)
     {
-        sgd->PushUnsignedShort(it->dest.x);
-        sgd->PushUnsignedShort(it->dest.y);
+        sgd->PushMapPoint(it->dest);
         sgd->PushObject(it->attacker, true);
     }
 
@@ -229,8 +227,7 @@ nobHarborBuilding::nobHarborBuilding(SerializedGameData* sgd, const unsigned obj
     for(unsigned i = 0; i < count; ++i)
     {
         FigureForShip ffs;
-        ffs.dest.x = sgd->PopUnsignedShort();
-        ffs.dest.y = sgd->PopUnsignedShort();
+        ffs.dest = sgd->PopMapPoint();
         ffs.fig = sgd->PopObject<noFigure>(GOT_UNKNOWN);
         figures_for_ships.push_back(ffs);
     }
@@ -239,8 +236,7 @@ nobHarborBuilding::nobHarborBuilding(SerializedGameData* sgd, const unsigned obj
     for(unsigned i = 0; i < count; ++i)
     {
         SoldierForShip ffs;
-        ffs.dest.x = sgd->PopUnsignedShort();
-        ffs.dest.y = sgd->PopUnsignedShort();
+        ffs.dest = sgd->PopMapPoint();
         ffs.attacker = sgd->PopObject<nofAttacker>(GOT_NOF_ATTACKER);
         soldiers_for_ships.push_back(ffs);
     }

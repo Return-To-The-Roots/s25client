@@ -60,8 +60,7 @@ void nofActiveSoldier::Serialize_nofActiveSoldier(SerializedGameData* sgd) const
 
     sgd->PushUnsignedChar(static_cast<unsigned char>(state));
     sgd->PushObject(enemy, false);
-    sgd->PushUnsignedShort(fight_spot.x);
-    sgd->PushUnsignedShort(fight_spot.y);
+    sgd->PushMapPoint(fight_spot);
 }
 
 
@@ -69,8 +68,7 @@ nofActiveSoldier::nofActiveSoldier(SerializedGameData* sgd, const unsigned obj_i
     state(SoldierState(sgd->PopUnsignedChar())),
     enemy(sgd->PopObject<nofActiveSoldier>(GOT_UNKNOWN))
 {
-    fight_spot.x = sgd->PopUnsignedShort();
-    fight_spot.y = sgd->PopUnsignedShort();
+    fight_spot = sgd->PopMapPoint();
 }
 
 

@@ -124,8 +124,7 @@ void noFigure::Serialize_noFigure(SerializedGameData* sgd) const
     {
         sgd->PushUnsignedShort(wander_way);
         sgd->PushUnsignedShort(wander_tryings);
-        sgd->PushUnsignedShort(flagPos.x);
-        sgd->PushUnsignedShort(flagPos.y);
+        sgd->PushMapPoint(flagPos);
         sgd->PushUnsignedInt(flag_obj_id);
         sgd->PushUnsignedInt(burned_wh_id);
     }
@@ -152,8 +151,7 @@ noFigure::noFigure(SerializedGameData* sgd, const unsigned obj_id) : noMovable(s
     {
         wander_way = sgd->PopUnsignedShort();
         wander_tryings = sgd->PopUnsignedShort();
-        flagPos.x = sgd->PopUnsignedShort();
-        flagPos.y = sgd->PopUnsignedShort();
+        flagPos = sgd->PopMapPoint();
         flag_obj_id = sgd->PopUnsignedInt();
         burned_wh_id = sgd->PopUnsignedInt();
     }

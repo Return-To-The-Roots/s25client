@@ -52,8 +52,8 @@ CatapultStone::CatapultStone(const MapPoint dest_building, const MapPoint dest_m
 
 
 CatapultStone::CatapultStone(SerializedGameData* sgd, const unsigned obj_id) : GameObject(sgd, obj_id),
-    dest_building(sgd->PopUnsignedShort(), sgd->PopUnsignedShort()),
-    dest_map(sgd->PopUnsignedShort(), sgd->PopUnsignedShort()),
+    dest_building(sgd->PopMapPoint()),
+    dest_map(sgd->PopMapPoint()),
     start_x(sgd->PopSignedInt()),
     start_y(sgd->PopSignedInt()),
     dest_x(sgd->PopSignedInt()),
@@ -67,10 +67,8 @@ CatapultStone::CatapultStone(SerializedGameData* sgd, const unsigned obj_id) : G
 /// Serialisierungsfunktionen
 void CatapultStone::Serialize_CatapultStone(SerializedGameData* sgd) const
 {
-    sgd->PushUnsignedShort(dest_building.x);
-    sgd->PushUnsignedShort(dest_building.y);
-    sgd->PushUnsignedShort(dest_map.x);
-    sgd->PushUnsignedShort(dest_map.y);
+    sgd->PushMapPoint(dest_building);
+    sgd->PushMapPoint(dest_map);
     sgd->PushSignedInt(start_x);
     sgd->PushSignedInt(start_y);
     sgd->PushSignedInt(dest_x);

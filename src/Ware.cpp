@@ -70,8 +70,7 @@ void Ware::Serialize_Ware(SerializedGameData* sgd) const
     sgd->PushObject(location, false);
     sgd->PushUnsignedChar(static_cast<unsigned char>(type));
     sgd->PushObject(goal, false);
-    sgd->PushUnsignedShort(next_harbor.x);
-    sgd->PushUnsignedShort(next_harbor.y);
+    sgd->PushMapPoint(next_harbor);
 }
 
 Ware::Ware(SerializedGameData* sgd, const unsigned obj_id) : GameObject(sgd, obj_id),
@@ -79,11 +78,9 @@ Ware::Ware(SerializedGameData* sgd, const unsigned obj_id) : GameObject(sgd, obj
     state(State(sgd->PopUnsignedChar())),
     location(sgd->PopObject<noRoadNode>(GOT_UNKNOWN)),
     type(GoodType(sgd->PopUnsignedChar())),
-    goal(sgd->PopObject<noBaseBuilding>(GOT_UNKNOWN))
-
-{
-    next_harbor.x = sgd->PopUnsignedShort();
-    next_harbor.y = sgd->PopUnsignedShort();
+    goal(sgd->PopObject<noBaseBuilding>(GOT_UNKNOWN)),
+    next_harbor(sgd->PopMapPoint())
+{   
     //assert(obj_id != 1197877);
 }
 

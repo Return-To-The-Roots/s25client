@@ -47,12 +47,11 @@ void nofScout_Free::Serialize_nofScout_Free(SerializedGameData* sgd) const
 {
     Serialize_nofFlagWorker(sgd);
 
-    sgd->PushUnsignedShort(nextPos.x);
-    sgd->PushUnsignedShort(nextPos.y);
+    sgd->PushMapPoint(nextPos);
 }
 
 nofScout_Free::nofScout_Free(SerializedGameData* sgd, const unsigned obj_id) : nofFlagWorker(sgd, obj_id),
-    nextPos(sgd->PopUnsignedShort(), sgd->PopUnsignedShort())
+    nextPos(sgd->PopMapPoint())
 {
 }
 

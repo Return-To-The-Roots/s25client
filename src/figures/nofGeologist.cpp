@@ -59,12 +59,10 @@ void nofGeologist::Serialize_nofGeologist(SerializedGameData* sgd) const
     sgd->PushUnsignedInt(available_nodes.size());
     for(std::vector< MapPoint >::const_iterator it = available_nodes.begin(); it != available_nodes.end(); ++it)
     {
-        sgd->PushUnsignedShort(it->x);
-        sgd->PushUnsignedShort(it->y);
+        sgd->PushMapPoint(*it);
     }
 
-    sgd->PushUnsignedShort(node_goal.x);
-    sgd->PushUnsignedShort(node_goal.y);
+    sgd->PushMapPoint(node_goal);
 
     for(unsigned i = 0; i < 5; ++i)
         sgd->PushBool(resAlreadyFound[i]);
@@ -77,14 +75,11 @@ nofGeologist::nofGeologist(SerializedGameData* sgd, const unsigned obj_id) : nof
     unsigned available_nodes_count = sgd->PopUnsignedInt();
     for(unsigned i = 0; i < available_nodes_count; ++i)
     {
-        MapPoint p;
-        p.x = sgd->PopUnsignedShort();
-        p.y = sgd->PopUnsignedShort();
+        MapPoint p = sgd->PopMapPoint();
         available_nodes.push_back(p);
     }
 
-    node_goal.x = sgd->PopUnsignedShort();
-    node_goal.y = sgd->PopUnsignedShort();
+    node_goal = sgd->PopMapPoint();
 
     for(unsigned i = 0; i < 5; ++i)
         resAlreadyFound[i] = sgd->PopBool();

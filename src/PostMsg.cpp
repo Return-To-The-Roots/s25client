@@ -54,13 +54,12 @@ PostMsgWithLocation::PostMsgWithLocation(const std::string& text, PostMessageCat
     : PostMsg(text, cat), pt(pt) { type = PMT_WITH_LOCATION; }
 
 PostMsgWithLocation::PostMsgWithLocation(SerializedGameData* sgd)
-    : PostMsg(sgd), pt(sgd->PopUnsignedShort(), sgd->PopUnsignedShort()) { }
+    : PostMsg(sgd), pt(sgd->PopMapPoint()) { }
 
 void PostMsgWithLocation::Serialize(SerializedGameData* sgd)
 {
     PostMsg::Serialize(sgd);
-    sgd->PushUnsignedShort(pt.x);
-    sgd->PushUnsignedShort(pt.y);
+    sgd->PushMapPoint(pt);
 }
 
 ImagePostMsgWithLocation::ImagePostMsgWithLocation(const std::string& text, PostMessageCategory cat,

@@ -242,8 +242,7 @@ void GameClientPlayer::Serialize(SerializedGameData* sgd)
         sgd->PushBool(defenders[i]);
     sgd->PushUnsignedShort(defenders_pos);
 
-    sgd->PushUnsignedShort(hqPos.x);
-    sgd->PushUnsignedShort(hqPos.y);
+    sgd->PushMapPoint(hqPos);
 
     for(unsigned i = 0; i < WARE_TYPES_COUNT; ++i)
     {
@@ -358,8 +357,7 @@ void GameClientPlayer::Deserialize(SerializedGameData* sgd)
         defenders[i] = sgd->PopBool();
     defenders_pos = sgd->PopUnsignedShort();
 
-    hqPos.x = sgd->PopUnsignedShort();
-    hqPos.y = sgd->PopUnsignedShort();
+    hqPos = sgd->PopMapPoint();
 
     for(unsigned i = 0; i < WARE_TYPES_COUNT; ++i)
     {

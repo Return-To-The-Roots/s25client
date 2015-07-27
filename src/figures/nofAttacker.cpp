@@ -113,10 +113,8 @@ void nofAttacker::Serialize_nofAttacker(SerializedGameData* sgd) const
         if(state == STATE_ATTACKING_WAITINGFORDEFENDER)
             sgd->PushObject(blocking_event, true);
 
-        sgd->PushUnsignedShort(harborPos.x);
-        sgd->PushUnsignedShort(harborPos.y);
-        sgd->PushUnsignedShort(shipPos.x);
-        sgd->PushUnsignedShort(shipPos.y);
+        sgd->PushMapPoint(harborPos);
+        sgd->PushMapPoint(shipPos);
         sgd->PushUnsignedInt(ship_obj_id);
     }
 }
@@ -132,10 +130,8 @@ nofAttacker::nofAttacker(SerializedGameData* sgd, const unsigned obj_id) : nofAc
         if(state == STATE_ATTACKING_WAITINGFORDEFENDER)
             blocking_event = sgd->PopObject<EventManager::Event>(GOT_EVENT);
 
-        harborPos.x = sgd->PopUnsignedShort();
-        harborPos.y = sgd->PopUnsignedShort();
-        shipPos.x = sgd->PopUnsignedShort();
-        shipPos.y = sgd->PopUnsignedShort();
+        harborPos = sgd->PopMapPoint();
+        shipPos = sgd->PopMapPoint();
         ship_obj_id = sgd->PopUnsignedInt();
     }
     else

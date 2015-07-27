@@ -28,12 +28,11 @@ void noCoordBase::Serialize_noCoordBase(SerializedGameData* sgd) const
 {
     Serialize_noBase(sgd);
 
-    sgd->PushUnsignedShort(pos.x);
-    sgd->PushUnsignedShort(pos.y);
+    sgd->PushMapPoint(pos);
 }
 
 noCoordBase::noCoordBase(SerializedGameData* sgd, const unsigned obj_id) : noBase(sgd, obj_id),
-    pos(sgd->PopUnsignedShort(), sgd->PopUnsignedShort())
+    pos(sgd->PopMapPoint())
 {
 }
 

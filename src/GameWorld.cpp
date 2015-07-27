@@ -590,8 +590,7 @@ void GameWorld::Serialize(SerializedGameData* sgd) const
     sgd->PushUnsignedInt(harbor_pos.size());
     for(unsigned i = 0; i < harbor_pos.size(); ++i)
     {
-        sgd->PushUnsignedShort(harbor_pos[i].pos.x);
-        sgd->PushUnsignedShort(harbor_pos[i].pos.y);
+        sgd->PushMapPoint(harbor_pos[i].pos);
         for(unsigned z = 0; z < 6; ++z)
             sgd->PushUnsignedShort(harbor_pos[i].cps[z].sea_id);
         for(unsigned z = 0; z < 6; ++z)
@@ -702,8 +701,7 @@ void GameWorld::Deserialize(SerializedGameData* sgd)
     harbor_pos.resize(sgd->PopUnsignedInt());
     for(unsigned i = 0; i < harbor_pos.size(); ++i)
     {
-        harbor_pos[i].pos.x = sgd->PopUnsignedShort();
-        harbor_pos[i].pos.y = sgd->PopUnsignedShort();
+        harbor_pos[i].pos = sgd->PopMapPoint();
         for(unsigned z = 0; z < 6; ++z)
             harbor_pos[i].cps[z].sea_id = sgd->PopUnsignedShort();
         for(unsigned z = 0; z < 6; ++z)

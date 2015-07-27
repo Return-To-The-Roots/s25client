@@ -152,7 +152,7 @@ void nofShipWright::HandleDerivedEvent(const unsigned int id)
 
 nofShipWright::nofShipWright(SerializedGameData* sgd, const unsigned obj_id)
     : nofWorkman(sgd, obj_id),
-      dest(sgd->PopUnsignedShort(), sgd->PopUnsignedShort())
+      dest(sgd->PopMapPoint())
 {
 }
 
@@ -160,8 +160,7 @@ void nofShipWright::Serialize(SerializedGameData* sgd) const
 {
     nofWorkman::Serialize(sgd);
 
-    sgd->PushUnsignedShort(dest.x);
-    sgd->PushUnsignedShort(dest.y);
+    sgd->PushMapPoint(dest);
 }
 
 

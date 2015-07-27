@@ -49,12 +49,10 @@ void nofFarmhand::Serialize_nofFarmhand(SerializedGameData* sgd) const
 {
     Serialize_nofBuildingWorker(sgd);
 
-    sgd->PushUnsignedShort(dest.x);
-    sgd->PushUnsignedShort(dest.y);
+    sgd->PushMapPoint(dest);
 }
 
-nofFarmhand::nofFarmhand(SerializedGameData* sgd, const unsigned obj_id) : nofBuildingWorker(sgd, obj_id),
-    dest(sgd->PopUnsignedShort(), sgd->PopUnsignedShort())
+nofFarmhand::nofFarmhand(SerializedGameData* sgd, const unsigned obj_id) : nofBuildingWorker(sgd, obj_id), dest(sgd->PopMapPoint())
 {}
 
 
