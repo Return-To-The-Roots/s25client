@@ -204,7 +204,7 @@ void GameWorldGame::AddFigure(noBase* fig, MapPoint pt)
     std::list<noBase*>& figures = GetNode(pt).figures;
     assert(std::find(figures.begin(), figures.end(), fig) == figures.end());
     figures.push_back(fig);
-
+/*
     for(unsigned char i = 0; i < 6; ++i)
     {
         pt = GetNeighbour(pt, i);
@@ -213,7 +213,7 @@ void GameWorldGame::AddFigure(noBase* fig, MapPoint pt)
         if(std::find(figures.begin(), figures.end(), fig) != figures.end())
             throw std::runtime_error("Added figure that is in surrounding?");
     }
-
+*/
     //if(fig->GetDir() == 1 || fig->GetDir() == 2)
     //  figures[y*width+x].push_front(fig);
     //else
