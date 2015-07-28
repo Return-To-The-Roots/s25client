@@ -760,7 +760,7 @@ class GameWorldGame : public virtual GameWorldBase
         inline GameInterface* GetGameInterface() const { return gi; }
 
         inline void SetNO(noBase* obj, const MapPoint pt) { GetNode(pt).obj = obj; }
-        void AddFigure(noBase* fig, MapPoint pt);
+        void AddFigure(noBase* fig, const MapPoint pt);
         void RemoveFigure(noBase* fig, const MapPoint pt);
 
         /// Berechnet Bauqualitäten an Punkt x;y und den ersten Kreis darum neu

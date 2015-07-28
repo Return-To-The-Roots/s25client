@@ -196,7 +196,7 @@ void GameWorldGame::SetPointRoad(const MapPoint pt, unsigned char dir, unsigned 
 
 
 
-void GameWorldGame::AddFigure(noBase* fig, MapPoint pt)
+void GameWorldGame::AddFigure(noBase* fig, const MapPoint pt)
 {
     if(!fig)
         return;
@@ -204,16 +204,18 @@ void GameWorldGame::AddFigure(noBase* fig, MapPoint pt)
     std::list<noBase*>& figures = GetNode(pt).figures;
     assert(std::find(figures.begin(), figures.end(), fig) == figures.end());
     figures.push_back(fig);
-/*
+
+#ifndef NDEBUG
     for(unsigned char i = 0; i < 6; ++i)
     {
-        pt = GetNeighbour(pt, i);
+        MapPoint nb = GetNeighbour(pt, i);
 
-        const std::list<noBase*>& figures = GetNode(pt).figures;
+        const std::list<noBase*>& figures = GetNode(nb).figures;
         if(std::find(figures.begin(), figures.end(), fig) != figures.end())
             throw std::runtime_error("Added figure that is in surrounding?");
     }
-*/
+#endif // NDEBUG
+
     //if(fig->GetDir() == 1 || fig->GetDir() == 2)
     //  figures[y*width+x].push_front(fig);
     //else
