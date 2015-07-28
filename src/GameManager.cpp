@@ -83,7 +83,7 @@ bool GameManager::Start()
         return false;
     }
 
-    // Im Vollbildmodus Ã¼berprÃ¼fen, ob Video-Mode Ã¼berhaupt existiert
+    // Im Vollbildmodus überprüfen, ob Video-Mode überhaupt existiert
     if(SETTINGS.video.fullscreen)
     {
         std::vector<VideoDriver::VideoMode> available_video_modes;
@@ -99,7 +99,7 @@ bool GameManager::Start()
 
         if(!found && !available_video_modes.empty())
         {
-            // Nicht gefunden, erste gÃ¼ltige AuflÃ¶sung nehmen
+            // Nicht gefunden, erste gültige Auflösung nehmen
             SETTINGS.video.fullscreen_width = available_video_modes[0].width;
             SETTINGS.video.fullscreen_height = available_video_modes[0].height;
         }
@@ -118,7 +118,7 @@ bool GameManager::Start()
         //return false;
     }
 
-    /// LautstÃ¤rken gleich mit setzen
+    /// Lautstärken gleich mit setzen
     AUDIODRIVER.SetMasterEffectVolume(SETTINGS.sound.effekte_volume);
     AUDIODRIVER.SetMasterMusicVolume(SETTINGS.sound.musik_volume);
 
@@ -175,7 +175,7 @@ bool GameManager::Run()
     {
         static unsigned long vsync = SETTINGS.video.vsync;
 
-        // immer 10% dazu/weg bis man Ã¼ber der Framerate liegt
+        // immer 10% dazu/weg bis man über der Framerate liegt
         if(vsync < 200 && 1000 * framerate < (unsigned int)(960 * vsync) )
             vsync = (1100 * vsync) / 1000;
         else if(vsync > SETTINGS.video.vsync)
@@ -248,7 +248,7 @@ bool GameManager::Run()
         // weitere Sekunde vergangen
         ++run_time;
 
-        // Gesamtzahl der gezeichneten Frames erhÃ¶hen
+        // Gesamtzahl der gezeichneten Frames erhöhen
         frame_count += frames;
 
         // normale Framerate berechnen
@@ -272,7 +272,7 @@ bool GameManager::Run()
 	}
     ++frames;
 
-    // Fenstermanager aufrÃ¤umen
+    // Fenstermanager aufräumen
     if(!GLOBALVARS.notdone)
         WINDOWMANAGER.CleanUp();
 
@@ -281,7 +281,7 @@ bool GameManager::Run()
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Startet und lÃ¤dt das MenÃ¼.
+ *  Startet und lädt das Menü.
  *
  *  @author FloSoft
  */
@@ -309,7 +309,7 @@ bool GameManager::StartMenu()
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  zeigt das HauptmenÃ¼.
+ *  zeigt das Hauptmenü.
  *
  *  @author FloSoft
  */
@@ -328,7 +328,7 @@ bool GameManager::ShowMenu()
         // Lobby zeigen
         WINDOWMANAGER.Switch(new dskLobby);
     else
-        // HauptmenÃ¼ zeigen
+        // Hauptmenü zeigen
         WINDOWMANAGER.Switch(new dskMainMenu);
 
     return true;

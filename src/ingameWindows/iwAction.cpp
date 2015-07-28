@@ -292,7 +292,7 @@ iwAction::iwAction(dskGameInterface* const gi, GameWorldViewer* const gwv, const
         if(params == AWFT_WATERFLAG)
             nr = 94;
 
-        // StraÃŸe aufwerten ggf anzeigen
+        // Straße aufwerten ggf anzeigen
         unsigned int width = 180, x = 90;
         AddUpgradeRoad(group, x, width);
 
@@ -304,7 +304,7 @@ iwAction::iwAction(dskGameInterface* const gi, GameWorldViewer* const gwv, const
     {
         ctrlGroup* group = main_tab->AddTab(LOADER.GetImageN("io", 19), _("Dig up road"), TAB_CUTROAD);
 
-        // StraÃŸe aufwerten ggf anzeigen
+        // Straße aufwerten ggf anzeigen
         unsigned int width = 180, x = 0;
         if(!tabs.setflag)
             AddUpgradeRoad(group, x, width);
@@ -375,13 +375,13 @@ void iwAction::DoUpgradeRoad()
         GAMECLIENT.AddGC(new gc::UpgradeRoad(flag->GetPos(), flag_dir));
 }
 
-/// FÃ¼gt Angriffs-Steuerelemente fÃ¼r bestimmte Gruppe hinzu
+/// Fügt Angriffs-Steuerelemente für bestimmte Gruppe hinzu
 void iwAction::AddAttackControls(ctrlGroup* group, const unsigned attackers_count)
 {
-    // VerfÃ¼gbare Soldatenzahl steht in params, wenns keine gibt, einfach Meldung anzeigen: "Angriff nicht mÃ¶glich!"
+    // Verfügbare Soldatenzahl steht in params, wenns keine gibt, einfach Meldung anzeigen: "Angriff nicht möglich!"
     if(attackers_count == 0)
     {
-        // Angriff nicht  mÃ¶glich!
+        // Angriff nicht  möglich!
         group->AddText(1, 90, 56, _("Attack not possible."), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, NormalFont);
     }
     else
@@ -396,7 +396,7 @@ void iwAction::AddAttackControls(ctrlGroup* group, const unsigned attackers_coun
         ctrlOptionGroup* ogroup = group->AddOptionGroup(3, ctrlOptionGroup::ILLUMINATE);
         ogroup->AddImageButton(0, 146, 49, 30, 33, TC_GREY, LOADER.GetImageN("io", 31), _("Weak attackers"));
         ogroup->AddImageButton(1, 117, 49, 30, 33, TC_GREY, LOADER.GetImageN("io", 30), _("Strong attackers"));
-        // standardmÃ¤ÃŸig starke Soldaten
+        // standardmäßig starke Soldaten
         ogroup->SetSelection(1);
 
         // Schnellauswahl-Buttons
@@ -476,7 +476,7 @@ void iwAction::Msg_TabChange(const unsigned int ctrl_id, const unsigned short ta
                 case TAB_CUTROAD: height = 138; break;
                 case TAB_BUILD:
                 {
-                    // unterschiedliche HÃ¶he, je nachdem welches GebÃ¤ude
+                    // unterschiedliche Höhe, je nachdem welches Gebäude
                     switch(GetCtrl<ctrlTab>(0)->GetGroup(TAB_BUILD)->GetCtrl<ctrlTab>(1)->GetCurrentTab())
                     {
                         case Tabs::BT_HUT:    height = 222; break;
@@ -514,7 +514,7 @@ void iwAction::Msg_Group_TabChange(const unsigned group_id, const unsigned int c
 {
     switch(ctrl_id)
     {
-        case 1: // GebÃ¤udetabs
+        case 1: // Gebäudetabs
         {
             SetIwHeight(building_tab_heights[tab_id]);
         } break;
@@ -527,7 +527,7 @@ void iwAction::Msg_PaintAfter()
     ctrlTab* tab = GetCtrl<ctrlTab>(0);
     if(tab)
     {
-        // Anzeige Soldaten/mÃ¶gliche Soldatenanzahl bei Angriffstab
+        // Anzeige Soldaten/mögliche Soldatenanzahl bei Angriffstab
         if(tab->GetCurrentTab() == TAB_ATTACK && available_soldiers_count > 0)
         {
             char str[32];
@@ -621,30 +621,30 @@ void iwAction::Msg_ButtonClick_TabFlag(const unsigned int ctrl_id)
 {
     switch(ctrl_id)
     {
-        case 1: // StraÃŸe bauen
+        case 1: // Straße bauen
         {
             gi->ActivateRoadMode(RM_NORMAL);
             Close();
         } break;
-        case 2: // WasserstraÃŸe bauen
+        case 2: // Wasserstraße bauen
         {
             gi->ActivateRoadMode(RM_BOAT);
             Close();
         } break;
-        case 3: // Flagge abreiÃŸen
+        case 3: // Flagge abreißen
         {
             NodalObjectType nop = (gwv->GetNO(gwv->GetNeighbour(selectedPt, 1)))->GetType() ;
-            // Haben wir ne Baustelle/GebÃ¤ude dran?
+            // Haben wir ne Baustelle/Gebäude dran?
             if(nop == NOP_BUILDING || nop == NOP_BUILDINGSITE)
             {
-                // AbreiÃŸen?
+                // Abreißen?
                 Close();
                 noBaseBuilding* building = gwv->GetSpecObj<noBaseBuilding>(gwv->GetNeighbour(selectedPt, 1));
 
-                // MilitÃ¤rgebÃ¤ude?
+                // Militärgebäude?
                 if(building->GetGOT() == GOT_NOB_MILITARY)
                 {
-                    // Darf das GebÃ¤ude abgerissen werden?
+                    // Darf das Gebäude abgerissen werden?
                     if(!static_cast<nobMilitary*>(building)->IsDemolitionAllowed())
                     {
                         // Nein, dann Messagebox anzeigen
@@ -667,7 +667,7 @@ void iwAction::Msg_ButtonClick_TabFlag(const unsigned int ctrl_id)
             GAMECLIENT.AddGC(new gc::CallGeologist(selectedPt));
             Close();
         } break;
-        case 5: // SpÃ¤her rufen
+        case 5: // Späher rufen
         {
             GAMECLIENT.AddGC(new gc::CallScout(selectedPt));
             Close();
@@ -677,12 +677,12 @@ void iwAction::Msg_ButtonClick_TabFlag(const unsigned int ctrl_id)
 
 void iwAction::Msg_ButtonClick_TabBuild(const unsigned int ctrl_id)
 {
-    // Klick auf GebÃ¤udebauicon
+    // Klick auf Gebäudebauicon
     GAMECLIENT.AddGC(new gc::SetBuildingSite(selectedPt,
                      GetCtrl<ctrlTab>(0)->GetGroup(TAB_BUILD)->GetCtrl<ctrlTab>(1)->GetCurrentGroup()->
                      GetCtrl<ctrlBuildingIcon>(ctrl_id)->GetType()));
 
-    // Fenster schlieÃŸen
+    // Fenster schließen
     Close();
 }
 
@@ -707,14 +707,14 @@ void iwAction::Msg_ButtonClick_TabCutRoad(const unsigned int ctrl_id)
 {
     switch(ctrl_id)
     {
-        case 1: // StraÃŸe abreiÃŸen
+        case 1: // Straße abreißen
         {
             unsigned char flag_dir = 0;
             noFlag* flag = gwv->GetRoadFlag(selectedPt, flag_dir);
             if(flag)
                 GAMECLIENT.AddGC(new gc::DestroyRoad(flag->GetPos(), flag_dir));
         } break;
-        case 2: // StraÃŸe aufwerten
+        case 2: // Straße aufwerten
         {
             DoUpgradeRoad();
         } break;
@@ -733,7 +733,7 @@ void iwAction::Msg_ButtonClick_TabWatch(const unsigned int ctrl_id)
 // TODO: bestimen, was an der position selected ist
             WINDOWMANAGER.Show(new iwObservate(gwv, selectedPt));
         } break;
-        case 2: // HÃ¤usernamen/Prozent anmachen
+        case 2: // Häusernamen/Prozent anmachen
         {
             gwv->ShowNamesAndProductivity();
         } break;

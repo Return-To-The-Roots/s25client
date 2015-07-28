@@ -24,23 +24,23 @@ contact@stefankriwanek.de
 
 erstellt mit libsiedler2 rev 3935
 
-Die Methode loadEdges() der Klasse lÃ¤dt die zum Erstellen eines Rahmens nÃ¶tigen Bitmaps in den Speicher.
-Ãœbergeben wird
+Die Methode loadEdges() der Klasse lädt die zum Erstellen eines Rahmens nötigen Bitmaps in den Speicher.
+Übergeben wird
 archiveInfo:    Zeiger auf ein geladenes ArchivInfo der RESOURCE.DAT/IDX
 
-Die Methode buildBorder() erstellt einen Rahmen zu gegebener GrÃ¶ÃŸe.
-Ãœbergeben werden:
-width, height:  die gewÃ¼nschte GrÃ¶ÃŸe
+Die Methode buildBorder() erstellt einen Rahmen zu gegebener Größe.
+Übergeben werden:
+width, height:  die gewünschte Größe
 borderInfo:     Zeiger auf ein initialisiertes, leeres ArchivInfo
 
-In borderInfo werden vier Bilder als glArchivItem_Bitmap_RLE an Index 0 bis 3 geschrieben, das sind die Rahmen oben, unten, links und rechts, wobei die Ecken zu oben/unten gehÃ¶ren. Sie mÃ¼ssen also an den Stellen
+In borderInfo werden vier Bilder als glArchivItem_Bitmap_RLE an Index 0 bis 3 geschrieben, das sind die Rahmen oben, unten, links und rechts, wobei die Ecken zu oben/unten gehören. Sie müssen also an den Stellen
 oben:   0        0
 unten:  0        height-12
 links:  0        12
 rechts: widht-12 12
 zu sehen sein.
 
-Vor dem Aufruf von buildBorder() muss der interne, Ã¶ffentliche Zeiger *palette auf ein ArchivItem_Palette* gesetzt werden.
+Vor dem Aufruf von buildBorder() muss der interne, öffentliche Zeiger *palette auf ein ArchivItem_Palette* gesetzt werden.
 */
 
 #include "defines.h"
@@ -61,7 +61,7 @@ CustomBorderBuilder::~CustomBorderBuilder()
 {
     if (edgesLoaded)
     {
-        // temporÃ¤re Bitmaps lÃ¶schen
+        // temporäre Bitmaps löschen
         for(unsigned char i = 0; i < numCorners; i++)
             delete corners[i];
         for(unsigned char i = 0; i < 3; i++)
@@ -86,11 +86,11 @@ int CustomBorderBuilder::loadEdges(const ArchivInfo* archiveInfo)
 {
     // simples Fehlerabfangen
     if (archiveInfo->getCount() != 57)
-        return 1; // nicht RESOURCE.DAT Ã¼bergeben
+        return 1; // nicht RESOURCE.DAT übergeben
 
-    // MusterstÃ¼cke einladen
-    /* Evtl. kÃ¶nnte man hier nur den grÃ¶ÃŸten Rahmen laden und alle Teile aus diesem rauskopieren, um das Ganze etwas schneller zu machen.
-       Allerdings sind die einander entsprechenden StÃ¼cke teilweise nicht in jeder AuflÃ¶sung tatsÃ¤chlich gleich, sodass man das fÃ¼r jedes vorher prÃ¼fen mÃ¼sste.*/
+    // Musterstücke einladen
+    /* Evtl. könnte man hier nur den größten Rahmen laden und alle Teile aus diesem rauskopieren, um das Ganze etwas schneller zu machen.
+       Allerdings sind die einander entsprechenden Stücke teilweise nicht in jeder Auflösung tatsächlich gleich, sodass man das für jedes vorher prüfen müsste.*/
     BdrBitmap* tempBMP;
     tempBMP = new BdrBitmap(1280, 1024);
     //palette = dynamic_cast<glArchivItem_Bitmap_RLE*>(archiveInfo->get(4))->getPalette();
@@ -176,9 +176,9 @@ int CustomBorderBuilder::buildBorder(const unsigned int width, const unsigned in
     if (width < 640 || height < 480)
         return 1; // kleiner geht nicht
     if (!edgesLoaded)
-        return 2; // Die StÃ¼cken sind noch nicht geladen worden, so gehts nicht!
+        return 2; // Die Stücken sind noch nicht geladen worden, so gehts nicht!
 
-    // temporÃ¤re BdrBitmap's deklarieren
+    // temporäre BdrBitmap's deklarieren
     BdrBitmap* customEdge[4];
     customEdge[0] = new BdrBitmap(width, 12); //oben
     customEdge[1] = new BdrBitmap(width, 12); //unten
@@ -188,13 +188,13 @@ int CustomBorderBuilder::buildBorder(const unsigned int width, const unsigned in
 
     // den Rahmen zusammenbauen
     {
-        // Ecken werden einfach eingefÃ¼gt
+        // Ecken werden einfach eingefügt
         // horizontale Ecken:
         customEdge[0]->put(0, 0, corners[0]);
         customEdge[0]->put(width - 56, 0, corners[1]);
         customEdge[1]->put(0, 0, corners[2]);
         customEdge[1]->put(width - 132, 0, corners[3]);
-        // das MittelstÃ¼ck, damit das Bedienfeld passt
+        // das Mittelstück, damit das Bedienfeld passt
         customEdge[1]->put(width / 2 - 118, 0, corners[4]);
         // vertikale Ecken:
         customEdge[2]->put(0, 0, corners[5]);
@@ -202,7 +202,7 @@ int CustomBorderBuilder::buildBorder(const unsigned int width, const unsigned in
         customEdge[3]->put(0, 0, corners[7]);
         customEdge[3]->put(0, height - 212, corners[8]);
 
-        // Freie FlÃ¤chen mit Kanten ausfÃ¼llen
+        // Freie Flächen mit Kanten ausfüllen
         // Kanten
         unsigned int emptyFromPixel;
         unsigned int toFillPixel;
@@ -255,7 +255,7 @@ int CustomBorderBuilder::buildBorder(const unsigned int width, const unsigned in
                               numFillersRight, fillersRight, customEdge[3]);
     }
 
-    // Bildspeicher fÃ¼r Ausgaberahmen vorbereiten; in glArchivItem_Bitmap_RLE kovertieren
+    // Bildspeicher für Ausgaberahmen vorbereiten; in glArchivItem_Bitmap_RLE kovertieren
     borderInfo->alloc(4);
     for(unsigned int i = 0; i < 4; i++)
     {
@@ -296,32 +296,32 @@ void CustomBorderBuilder::BdrBitmap2BitmapRLE2(BdrBitmap* bdrBitmap, glArchivIte
 
 void CustomBorderBuilder::FindEdgeDistribution(unsigned int toFill, unsigned short lengths[3], unsigned char (counts)[3])
 {
-    // Die should-Variablen speichern die bisher als am besten befundene Kombination; die would-Variablen die gerade zu prÃ¼fende
+    // Die should-Variablen speichern die bisher als am besten befundene Kombination; die would-Variablen die gerade zu prüfende
     unsigned char* &shouldCounts = counts;
     shouldCounts[0] = 0; shouldCounts[1] = 0; shouldCounts[2] = 0;
     unsigned char wouldCounts[3];
-    unsigned char maxCounts[3]; // wieviel mal passt jedes Teil maximal in die FreiflÃ¤che?
+    unsigned char maxCounts[3]; // wieviel mal passt jedes Teil maximal in die Freifläche?
     for(unsigned char i = 0; i < 3; i++)
         maxCounts[i] = toFill / lengths[i];
     unsigned int shouldBeFilled = 0;
     unsigned char shouldNumDifferentTiles = 0;
-    // Schleife Ã¼ber alle mÃ¶glichen Kombinationen
+    // Schleife über alle möglichen Kombinationen
     for(wouldCounts[0] = 0; wouldCounts[0] <= maxCounts[0]; wouldCounts[0]++)
         for(wouldCounts[1] = 0; wouldCounts[1] <= maxCounts[1]; wouldCounts[1]++)
             for(wouldCounts[2] = 0; wouldCounts[2] <= maxCounts[2]; wouldCounts[2]++)
             {
-                // Finde, wieviel Platz die Kombination ausfÃ¼llen wÃ¼rde
+                // Finde, wieviel Platz die Kombination ausfüllen würde
                 unsigned int wouldBeFilled = 0;
                 for(unsigned char i = 0; i < 3; i++)
                     wouldBeFilled += wouldCounts[i] * lengths[i];
-                // wenn die Kombination nicht zu groÃŸ ist und weniger oder gleich viel Platz frei lieÃŸe als/wie bisher
+                // wenn die Kombination nicht zu groß ist und weniger oder gleich viel Platz frei ließe als/wie bisher
                 if (wouldBeFilled <= toFill) if (wouldBeFilled >= shouldBeFilled)
                     {
-                        // Finde, ob mehr verschiedene StÃ¼cken benutzt wÃ¼rden als bisher
+                        // Finde, ob mehr verschiedene Stücken benutzt würden als bisher
                         unsigned char wouldNumDifferentTiles = 3;
                         for(unsigned char i = 0; i < 3; i++) if (wouldCounts[i] == 0)
                                 wouldNumDifferentTiles--;
-                        // wenn mehr StÃ¼cke benutzt wÃ¼rden oder weniger FreiflÃ¤che bleibt
+                        // wenn mehr Stücke benutzt würden oder weniger Freifläche bleibt
                         if ((wouldNumDifferentTiles > shouldNumDifferentTiles) || (wouldBeFilled > shouldBeFilled))
                         {
                             // Bessere Verteilung gefunden, in should-Variablen speichern
@@ -347,12 +347,12 @@ void CustomBorderBuilder::WriteEdgeDistribution(const unsigned int x,
         const unsigned char numFillers,
         BdrBitmap* fillers[],
         BdrBitmap* outBorder)
-// Schreibt die Ã¼bergebene Verteilung ins Bild und fÃ¼llt die restliche FlÃ¤che auf.
+// Schreibt die übergebene Verteilung ins Bild und füllt die restliche Fläche auf.
 {
     unsigned int emptyFromPixel = direction ? y : x;
     unsigned int toFillPixel = toFill;
 
-    // Wieviele groÃŸe StÃ¼cken zu schreiben?
+    // Wieviele große Stücken zu schreiben?
     unsigned char edgesToDistribute = 0;
     for(unsigned char i = 0; i < 3; i++)
         edgesToDistribute += edgeCounts[i];
@@ -375,11 +375,11 @@ void CustomBorderBuilder::WriteEdgeDistribution(const unsigned int x,
         takeEdgeNum = (takeEdgeNum + 1) % 3;
     }
 
-    // FÃ¼lle den Rest auf
+    // Fülle den Rest auf
     unsigned char* numFillersToUse = new unsigned char[numFillers];
     for(unsigned char i = 0; i < numFillers; i++)
         numFillersToUse[i] = 0;
-    // Finde, wie oft jedes FÃ¼llerstÃ¼ck gebraucht wird. Einfach von groÃŸ nach klein einfÃ¼gen, wenn der Platz jeweils noch reicht.
+    // Finde, wie oft jedes Füllerstück gebraucht wird. Einfach von groß nach klein einfügen, wenn der Platz jeweils noch reicht.
     unsigned char curFiller = numFillers - 1;
     while (toFillPixel > 0)
     {
@@ -391,9 +391,9 @@ void CustomBorderBuilder::WriteEdgeDistribution(const unsigned int x,
         }
         else
         {
-            if (curFiller > 0) // Das nÃ¤chstkleinere FÃ¼llerstÃ¼ck testen
+            if (curFiller > 0) // Das nächstkleinere Füllerstück testen
                 curFiller--;
-            else // Wenn am Ende weniger Platz freibleibt als das kleinste FÃ¼llerstÃ¼ck groÃŸ ist (2 Pixel), wird sofort ein passendes TeilstÃ¼ck eingefÃ¼gt.
+            else // Wenn am Ende weniger Platz freibleibt als das kleinste Füllerstück groß ist (2 Pixel), wird sofort ein passendes Teilstück eingefügt.
             {
                 if (direction)
                     outBorder->put(x, emptyFromPixel, fillers[0]->get(0, 0, 12, toFillPixel), true);
@@ -405,7 +405,7 @@ void CustomBorderBuilder::WriteEdgeDistribution(const unsigned int x,
         }
     }
 
-    // Schreibe die FÃ¼llerstÃ¼ckkombination von groÃŸ nach klein
+    // Schreibe die Füllerstückkombination von groß nach klein
     unsigned char numUsedFillers = 0;
     for(unsigned char i = 1; i < numFillers; i++)
         numUsedFillers += numFillersToUse[i];
@@ -413,7 +413,7 @@ void CustomBorderBuilder::WriteEdgeDistribution(const unsigned int x,
     {
         for(unsigned char j = 0; j < numFillersToUse[i]; j++)
         {
-            // Vor jedem groÃŸen zuerst ein paar der kleinsten FÃ¼ller, damit die groÃŸen nicht so aneinander gequetscht sind.
+            // Vor jedem großen zuerst ein paar der kleinsten Füller, damit die großen nicht so aneinander gequetscht sind.
             for(unsigned char j = 0; j < numFillersToUse[0] / (numUsedFillers + 1); j++)
             {
                 if (direction)
@@ -429,7 +429,7 @@ void CustomBorderBuilder::WriteEdgeDistribution(const unsigned int x,
             emptyFromPixel += direction ? fillers[i]->h : fillers[i]->w;
         }
     }
-    // Die restlichen kleinen FÃ¼ller
+    // Die restlichen kleinen Füller
     const unsigned char numSmallFillers = numFillersToUse[0] - (numFillersToUse[0] / (numUsedFillers + 1)) * numUsedFillers;
     for(unsigned char j = 0; j < numSmallFillers; j++)
     {
@@ -454,7 +454,7 @@ CustomBorderBuilder::BdrBitmap::BdrBitmap(const unsigned int width, const unsign
     h = height;
     value = new unsigned char [w * h];
     /*  for(unsigned long i = 0; i < w*h; i++)
-        value[i] = 254; */ // Initialisieren nicht mehr nÃ¶tig, da nix transparent bleibt
+        value[i] = 254; */ // Initialisieren nicht mehr nötig, da nix transparent bleibt
 }
 
 CustomBorderBuilder::BdrBitmap::~BdrBitmap()

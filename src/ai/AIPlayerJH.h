@@ -91,7 +91,7 @@ struct PositionSearch
     }
 };
 
-/// Klasse fï¿½r die besser JH-KI
+/// Klasse für die besser JH-KI
 class AIPlayerJH : public AIBase
 {
         friend class AIJH::BuildJob;

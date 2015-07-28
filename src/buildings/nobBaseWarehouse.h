@@ -44,12 +44,12 @@ struct InventorySettings
     { memset(wares, 0, sizeof(wares)); memset(figures, 0, sizeof(figures)); }
 };
 
-/// Grundlegende Warenhausklasse, die alle Funktionen vereint, die fÃ¼r WarenhÃ¤user (HQ, Lagerhaus, HÃ¤fen)
+/// Grundlegende Warenhausklasse, die alle Funktionen vereint, die für Warenhäuser (HQ, Lagerhaus, Häfen)
 /// wichtig sind.
 class nobBaseWarehouse : public nobBaseMilitary
 {
     protected:
-        // Liste von Waren, die noch rausgebracht werden mÃ¼ssen, was im Moment aber nicht mÃ¶glich ist,
+        // Liste von Waren, die noch rausgebracht werden müssen, was im Moment aber nicht möglich ist,
         // weil die Flagge voll ist vor dem Lagerhaus
         std::list<Ware*> waiting_wares;
         // verhindert doppeltes Holen von Waren
@@ -58,13 +58,13 @@ class nobBaseWarehouse : public nobBaseMilitary
         std::list<noFigure*> dependent_figures;
         /// Liste von Waren, die auf dem Weg zum Lagerhaus sind
         std::list<Ware*> dependent_wares;
-        /// Produzier-TrÃ¤ger-Event
+        /// Produzier-Träger-Event
         EventManager::EventPointer producinghelpers_event;
-        /// Rekrutierungsevent fÃ¼r Soldaten
+        /// Rekrutierungsevent für Soldaten
         EventManager::EventPointer recruiting_event;
-        /// Auslagerevent fÃ¼r Waren und Figuren
+        /// Auslagerevent für Waren und Figuren
         EventManager::EventPointer empty_event;
-        /// Einlagerevent fÃ¼r Waren und Figuren
+        /// Einlagerevent für Waren und Figuren
         EventManager::EventPointer store_event;
 
 
@@ -75,37 +75,37 @@ class nobBaseWarehouse : public nobBaseMilitary
         unsigned reserve_soldiers_claimed_visual[5]; /// geforderte Soldaten zur Reserve - visuell
         unsigned reserve_soldiers_claimed_real[5]; /// geforderte Soldaten zur Reserve - real
 
-        /// Waren bzw. Menschenanzahl im GebÃ¤ude, real_goods ist die tatsÃ¤chliche Anzahl und wird zum berechnen verwendet, goods ist nur die, die auch angezeigt wird
+        /// Waren bzw. Menschenanzahl im Gebäude, real_goods ist die tatsächliche Anzahl und wird zum berechnen verwendet, goods ist nur die, die auch angezeigt wird
         Goods goods, real_goods;
         InventorySettings inventory_settings_visual; ///< die Inventar-Einstellungen, visuell
         InventorySettings inventory_settings_real; ///< die Inventar-Einstellungen, real
 
     private:
 
-        /// PrÃ¼ft, ob alle Bedingungen zum Rekrutieren erfÃ¼llt sind
+        /// Prüft, ob alle Bedingungen zum Rekrutieren erfüllt sind
         bool AreRecruitingConditionsComply();
         /// Abgeleitete kann eine gerade erzeugte Ware ggf. sofort verwenden
-        /// (muss in dem Fall true zurÃ¼ckgeben)
+        /// (muss in dem Fall true zurückgeben)
         virtual bool UseWareAtOnce(Ware* ware, noBaseBuilding* const goal);
-        /// Dasselbe fÃ¼r Menschen
+        /// Dasselbe für Menschen
         virtual bool UseFigureAtOnce(noFigure* fig, noRoadNode* const goal);
-        /// PrÃ¼ft verschiedene Verwendungszwecke fÃ¼r eine neuangekommende Ware
+        /// Prüft verschiedene Verwendungszwecke für eine neuangekommende Ware
         void CheckUsesForNewWare(const GoodType gt);
-        /// PrÃ¼ft verschiedene Sachen, falls ein neuer Mensch das Haus betreten hat
+        /// Prüft verschiedene Sachen, falls ein neuer Mensch das Haus betreten hat
         void CheckJobsForNewFigure(const Job job);
 
 
     protected:
 
-        /// Stellt Verteidiger zur VerfÃ¼gung
+        /// Stellt Verteidiger zur Verfügung
         virtual nofDefender* ProvideDefender(nofAttacker* const attacker);
 
         void HandleBaseEvent(const unsigned int id);
-        /// Versucht ein Rekrutierungsevent anzumelden, falls ausreichend Waffen und Bier sowie genÃ¼gend Gehilfen
-        /// vorhanden sind (je nach MilitÃ¤reinstellungen)
+        /// Versucht ein Rekrutierungsevent anzumelden, falls ausreichend Waffen und Bier sowie genügend Gehilfen
+        /// vorhanden sind (je nach Militäreinstellungen)
         void TryRecruiting();
-        /// Versucht Rekrutierungsevent abzumeldne, falls die Bedingungen nicht mehr erfÃ¼llt sind (z.B. wenn Ware
-        /// rausgetragen wurde o.Ã„.)
+        /// Versucht Rekrutierungsevent abzumeldne, falls die Bedingungen nicht mehr erfüllt sind (z.B. wenn Ware
+        /// rausgetragen wurde o.ä.)
         void TryStopRecruiting();
         /// Aktuellen Warenbestand zur aktuellen Inventur dazu addieren
         void AddToInventory();
@@ -118,7 +118,7 @@ class nobBaseWarehouse : public nobBaseMilitary
         
         virtual ~nobBaseWarehouse();
 
-        /// AufrÃ¤ummethoden
+        /// Aufräummethoden
     protected:
         void Destroy_nobBaseWarehouse();
     public:
@@ -130,37 +130,37 @@ class nobBaseWarehouse : public nobBaseMilitary
 
         const Goods* GetInventory() const;
 
-        /// FÃ¼gt einige GÃ¼ter hinzu
+        /// Fügt einige Güter hinzu
         void AddGoods(const Goods goods);
 
 
-        /// Gibt Anzahl der Waren bzw. Figuren zurÃ¼ck
+        /// Gibt Anzahl der Waren bzw. Figuren zurück
         unsigned GetRealWaresCount(GoodType type) const { return real_goods.goods[type]; }
         unsigned GetRealFiguresCount(Job type) const { return real_goods.people[type]; }
         unsigned GetVisualWaresCount(GoodType type) const { return goods.goods[type]; }
         unsigned GetVisualFiguresCount(Job type) const { return goods.people[type]; }
 
 
-        /// VerÃ¤ndert Ein/Auslagerungseinstellungen (visuell)
+        /// Verändert Ein/Auslagerungseinstellungen (visuell)
         void ChangeVisualInventorySettings(unsigned char category, unsigned char state, unsigned char type);
-        /// Gibt Ein/Auslagerungseinstellungen zurÃ¼ck (visuell)
+        /// Gibt Ein/Auslagerungseinstellungen zurück (visuell)
         bool CheckVisualInventorySettings(unsigned char category, unsigned char state, unsigned char type) const;
-        ///// Generiert einen NC-Befehl fÃ¼r eine Inventory Settings Ã„nderung und fÃ¼hrt noch entsprechend eigene Ã„nderungen aus
+        ///// Generiert einen NC-Befehl für eine Inventory Settings änderung und führt noch entsprechend eigene änderungen aus
         //void SubmitInventorySettings();
 
-        /// VerÃ¤ndert Ein/Auslagerungseinstellungen (real)
+        /// Verändert Ein/Auslagerungseinstellungen (real)
         void ChangeRealInventorySetting(unsigned char category, unsigned char state, unsigned char type);
-        /// VerÃ¤ndert alle Ein/Auslagerungseinstellungen einer Kategorie (also Waren oder Figuren)(real)
+        /// Verändert alle Ein/Auslagerungseinstellungen einer Kategorie (also Waren oder Figuren)(real)
         void ChangeAllRealInventorySettings(unsigned char category, unsigned char state);
-        /// Gibt Ein/Auslagerungseinstellungen zurÃ¼ck (real), cannot check for state 0
+        /// Gibt Ein/Auslagerungseinstellungen zurück (real), cannot check for state 0
         bool CheckRealInventorySettings(unsigned char category, unsigned char state, unsigned char type) const
         { return ((((category == 0) ? inventory_settings_real.wares[type] : inventory_settings_real.figures[type]) & state) == state); }
 
-        /// LÃ¤sst einen bestimmten Waren/Job-Typ ggf auslagern
+        /// Lässt einen bestimmten Waren/Job-Typ ggf auslagern
         void CheckOuthousing(unsigned char category, unsigned job_ware_id);
 
 
-        /// Bestellt einen TrÃ¤ger
+        /// Bestellt einen Träger
         void OrderCarrier(noRoadNode* const goal, RoadSegment* workplace);
         /// Bestellt irgendeinen Beruf (ggf. stellt er ihn noch mit einem Werkzeug her)
         bool OrderJob(const Job job, noRoadNode* const goal, const bool allow_recruiting);
@@ -168,17 +168,17 @@ class nobBaseWarehouse : public nobBaseMilitary
         nofCarrier* OrderDonkey(RoadSegment* road, noRoadNode* const goal_flag);
 
         /// Reiht einen Beruf sofort in die Warteschlange zum Rausgehen rein, wenn er da ist und gibt den Pointer auf
-        /// ihn zurÃ¼ck, wenn keiner da ist, wird 0 zurÃ¼ckgegeben
+        /// ihn zurück, wenn keiner da ist, wird 0 zurückgegeben
         noFigure* OrderDefender();
-        /// "Bestellt" eine Ware --> gibt den Pointer auf die Ware zurÃ¼ck
+        /// "Bestellt" eine Ware --> gibt den Pointer auf die Ware zurück
         Ware* OrderWare(const GoodType good, noBaseBuilding* const goal);
-        /// Wird von den Lagerhaus-Arbeitern aufgerufen, wenn sie ein Ware wieder zurÃ¼ckbringen, die sie vorne nicht ablegen konnten
+        /// Wird von den Lagerhaus-Arbeitern aufgerufen, wenn sie ein Ware wieder zurückbringen, die sie vorne nicht ablegen konnten
         void AddWaitingWare(Ware* ware);
-        /// Wird aufgerufen, wenn von der Fahne vor dem GebÃ¤ude ein Rohstoff aufgenommen wurde
+        /// Wird aufgerufen, wenn von der Fahne vor dem Gebäude ein Rohstoff aufgenommen wurde
         bool FreePlaceAtFlag();
         // Eine Ware liegt vor der Flagge des Warenhauses und will rein --> ein Warenhausmitarbeiter muss kommen und sie holen
         void FetchWare();
-        // Soll die nÃ¤chste Ware nicht holen
+        // Soll die nächste Ware nicht holen
         void DontFetchNextWare() {fetch_double_protection = true;}
 
         /// Legt eine Ware im Lagerhaus ab
@@ -194,30 +194,30 @@ class nobBaseWarehouse : public nobBaseMilitary
         /// Bestellte Figur, die sich noch inder Warteschlange befindet, kommt nicht mehr und will rausgehauen werden
         virtual void CancelFigure(noFigure* figure);
 
-        /// Sowas ist bei WarenhÃ¤usern nicht nÃ¶tig
+        /// Sowas ist bei Warenhäusern nicht nötig
         unsigned CalcDistributionPoints(noRoadNode* start, const GoodType type) { return 0; }
-        /// Wird aufgerufen, wenn eine neue Ware zum dem GebÃ¤ude geliefert wird (nicht wenn sie bestellt wurde vom GebÃ¤ude!)
+        /// Wird aufgerufen, wenn eine neue Ware zum dem Gebäude geliefert wird (nicht wenn sie bestellt wurde vom Gebäude!)
         void TakeWare(Ware* ware);
 
-        /// FÃ¼gt eine Figur hinzu, die auf dem Weg zum Lagerhaus ist
+        /// Fügt eine Figur hinzu, die auf dem Weg zum Lagerhaus ist
         void AddDependentFigure(noFigure* figure) { assert(!CheckDependentFigure(figure)); dependent_figures.push_back(figure); }
-        //// Entfernt eine abhÃ¤ngige Figur wieder aus der Liste
+        //// Entfernt eine abhängige Figur wieder aus der Liste
         virtual void RemoveDependentFigure(noFigure* figure) { dependent_figures.remove(figure); }
         /// Wird aufgerufen, wenn ein Arbeiter hierher kommt
         void GotWorker(Job job, noFigure* worker)
         { assert(!CheckDependentFigure(worker)); dependent_figures.push_back(worker); }
 
-        //// Entfernt eine abhÃ¤ngige Ware wieder aus der Liste (wird mit TakeWare hinzugefÃ¼gt)
+        //// Entfernt eine abhängige Ware wieder aus der Liste (wird mit TakeWare hinzugefügt)
 		void RemoveDependentWare(Ware* ware) { dependent_wares.remove(ware); }
-        /// ÃœberprÃ¼ft, ob Ware abhÃ¤ngig ist
+        /// Überprüft, ob Ware abhängig ist
 		bool IsWareDependent(Ware* ware) { return std::find(dependent_wares.begin(),dependent_wares.end(),ware)!=dependent_wares.end(); }
 		std::list<Ware*> GetDependentWares() {return dependent_wares;}
-        /// PrÃ¼ft, ob es Waren zum Auslagern gibt
+        /// Prüft, ob es Waren zum Auslagern gibt
         bool AreWaresToEmpty() const;
 
-        /// FÃ¼gt aktiven Soldaten (der aus von einer Mission) zum MilitÃ¤rgebÃ¤ude hinzu
+        /// Fügt aktiven Soldaten (der aus von einer Mission) zum Militärgebäude hinzu
         void AddActiveSoldier(nofActiveSoldier* soldier);
-        /// Gibt Gesamtanzahl aller im Lager befindlichen Soldaten zurÃ¼ck
+        /// Gibt Gesamtanzahl aller im Lager befindlichen Soldaten zurück
         unsigned GetSoldiersCount() const
         {
             return real_goods.people[JOB_PRIVATE] + real_goods.people[JOB_PRIVATEFIRSTCLASS] +
@@ -231,10 +231,10 @@ class nobBaseWarehouse : public nobBaseMilitary
         /// Wird aufgerufen, wenn ein Soldat nicht mehr kommen kann
         void SoldierLost(nofSoldier* soldier);
 
-        /// Sind noch Truppen drinne, die dieses GebÃ¤ude verteidigen kÃ¶nnten?
+        /// Sind noch Truppen drinne, die dieses Gebäude verteidigen könnten?
         bool DefendersAvailable() const;
 
-        /// VerÃ¤ndert Reserveeinstellung - visuell (nur das geforderte natÃ¼rlich) und gibt neue Anzahl zurÃ¼ck
+        /// Verändert Reserveeinstellung - visuell (nur das geforderte natürlich) und gibt neue Anzahl zurück
         unsigned IncreaseReserveVisual(unsigned rank);
         unsigned DecreaseReserveVisual(unsigned rank);
         void SetRealReserve(const unsigned rank, const unsigned count);
@@ -242,7 +242,7 @@ class nobBaseWarehouse : public nobBaseMilitary
         /// Versucht, die geforderten Reserve-Soldaten bereitzustellen
         void RefreshReserve(unsigned rank);
 
-        /// Gibt Zeiger auf dir Reserve zurÃ¼ck fÃ¼r das GUI
+        /// Gibt Zeiger auf dir Reserve zurück für das GUI
         const unsigned* GetReservePointerAvailable(unsigned rank) const { return &reserve_soldiers_available[rank]; }
         const unsigned* GetReservePointerClaimed(unsigned rank) const { return &reserve_soldiers_claimed_visual[rank]; }
 
@@ -259,7 +259,7 @@ class nobBaseWarehouse : public nobBaseMilitary
 
 
 
-/// Vorgefertigte Bedingungsfunktionen fÃ¼r FindWarehouse, param jeweils Pointer auf die einzelnen Strukturen
+/// Vorgefertigte Bedingungsfunktionen für FindWarehouse, param jeweils Pointer auf die einzelnen Strukturen
 namespace FW
 {
     struct Param_Ware { GoodType type; unsigned count; };
@@ -273,11 +273,11 @@ namespace FW
     bool Condition_StoreWare(nobBaseWarehouse* wh, const void* param);   // param = &GoodType -> Warentyp
     bool Condition_StoreFigure(nobBaseWarehouse* wh, const void* param);   // param = &Job -> Jobtyp
 
-    // Die LagerhÃ¤user lagern die jeweiligen Waren ein
+    // Die Lagerhäuser lagern die jeweiligen Waren ein
     bool Condition_WantStoreWare(nobBaseWarehouse* wh, const void* param);   // param = &GoodType -> Warentyp
     bool Condition_WantStoreFigure(nobBaseWarehouse* wh, const void* param);   // param = &Job -> Jobtyp
 
-    // LagerhÃ¤user enthalten die jeweilien Waren, liefern sie aber NICHT gleichzeitig ein
+    // Lagerhäuser enthalten die jeweilien Waren, liefern sie aber NICHT gleichzeitig ein
     bool Condition_StoreAndDontWantWare(nobBaseWarehouse* wh, const void* param);   // param = &GoodType -> Warentyp
     bool Condition_StoreAndDontWantFigure(nobBaseWarehouse* wh, const void* param);   // param = &Job -> Jobtyp
 

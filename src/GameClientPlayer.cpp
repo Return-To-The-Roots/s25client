@@ -81,7 +81,7 @@ GameClientPlayer::GameClientPlayer(const unsigned playerid):
         building_enabled[i] = true;
     }
 
-    // Verteilung mit Standardwerten fÃ¼llen bei Waren mit nur einem Ziel (wie z.B. Mehl, Holz...)
+    // Verteilung mit Standardwerten füllen bei Waren mit nur einem Ziel (wie z.B. Mehl, Holz...)
     distribution[GD_FLOUR].client_buildings.push_back(BLD_BAKERY);
     distribution[GD_GOLD].client_buildings.push_back(BLD_MINT);
     distribution[GD_IRONORE].client_buildings.push_back(BLD_IRONSMELTER);
@@ -90,7 +90,7 @@ GameClientPlayer::GameClientPlayer(const unsigned playerid):
     distribution[GD_STONES].client_buildings.push_back(BLD_CATAPULT);
 
 
-    // Waren mit mehreren mÃ¶glichen Zielen erstmal nullen, kann dann im Fenster eingestellt werden
+    // Waren mit mehreren möglichen Zielen erstmal nullen, kann dann im Fenster eingestellt werden
     for(unsigned char i = 0; i < WARE_TYPES_COUNT; ++i)
     {
         memset(distribution[i].percent_buildings, 0, 40 * sizeof(unsigned char));
@@ -132,7 +132,7 @@ GameClientPlayer::GameClientPlayer(const unsigned playerid):
 
     GAMECLIENT.visual_settings.order_type = order_type = 0;
 
-    // Baureihenfolge fÃ¼llen (0 ist das HQ!)
+    // Baureihenfolge füllen (0 ist das HQ!)
     for(unsigned char i = 1, j = 0; i < 40; ++i)
     {
         // Diese Ids sind noch nicht besetzt
@@ -161,7 +161,7 @@ GameClientPlayer::GameClientPlayer(const unsigned playerid):
     GAMECLIENT.visual_settings.transport_order[12] = STD_TRANSPORT[GD_HAMMER];
     GAMECLIENT.visual_settings.transport_order[13] = STD_TRANSPORT[GD_BOAT];
 
-    // MilitÃ¤r- und Werkzeugeinstellungen
+    // Militär- und Werkzeugeinstellungen
     military_settings[0] = 10;
     military_settings[1] = 3;
     military_settings[2] = 5;
@@ -191,7 +191,7 @@ GameClientPlayer::GameClientPlayer(const unsigned playerid):
     // Inventur nullen
     global_inventory.clear();
 
-    // Statistiken mit 0en fÃ¼llen
+    // Statistiken mit 0en füllen
     memset(&statistic[STAT_15M], 0, sizeof(statistic[STAT_15M]));
     memset(&statistic[STAT_1H], 0, sizeof(statistic[STAT_1H]));
     memset(&statistic[STAT_4H], 0, sizeof(statistic[STAT_4H]));
@@ -281,7 +281,7 @@ void GameClientPlayer::Serialize(SerializedGameData* sgd)
     for(unsigned i = 0; i < JOB_TYPES_COUNT; ++i)
         sgd->PushUnsignedInt(global_inventory.people[i]);
 
-    // fÃ¼r Statistik
+    // für Statistik
     for (unsigned i = 0; i < STAT_TIME_COUNT; ++i)
     {
         // normale Statistik
@@ -411,7 +411,7 @@ void GameClientPlayer::Deserialize(SerializedGameData* sgd)
 
     // Visuelle Einstellungen festlegen
 
-    // fÃ¼r Statistik
+    // für Statistik
     for (unsigned i = 0; i < STAT_TIME_COUNT; ++i)
     {
         // normale Statistik
@@ -469,7 +469,7 @@ nobBaseWarehouse* GameClientPlayer::FindWarehouse(const noRoadNode* const start,
 			//now check if there is at least a chance that the next wh is closer than current best because pathfinding takes time
 			if(gwg->CalcDistance(start->GetPos(),(*w)->GetPos()) > best_length)
 				continue;
-            // Bei der erlaubten Benutzung von BootsstraÃƒÂŸen Waren-Pathfinding benutzen wenns zu nem Lagerhaus gehn soll start <-> ziel tauschen bei der wegfindung
+            // Bei der erlaubten Benutzung von Bootsstraßen Waren-Pathfinding benutzen wenns zu nem Lagerhaus gehn soll start <-> ziel tauschen bei der wegfindung
             if(gwg->FindPathOnRoads(to_wh ? start : *w, to_wh ? *w : start, use_boat_roads, &tlength, NULL, NULL, forbidden, true, best_length))
             {
                 if(tlength < best_length || !best)
@@ -490,27 +490,27 @@ nobBaseWarehouse* GameClientPlayer::FindWarehouse(const noRoadNode* const start,
 
 void GameClientPlayer::NewRoad(RoadSegment* const rs)
 {
-    // Zu den StraÃƒÂŸen hinzufgen, da's ja ne neue ist
+    // Zu den Straßen hinzufgen, da's ja ne neue ist
     roads.push_back(rs);
 
-    // Alle StraÃƒÂŸen mÃ¼ssen nun gucken, ob sie einen Weg zu einem Warehouse finden
+    // Alle Straßen müssen nun gucken, ob sie einen Weg zu einem Warehouse finden
     FindWarehouseForAllRoads();
 
-    // Alle StraÃƒÂŸen mÃ¼ssen gucken, ob sie einen Esel bekommen kÃ¶nnen
+    // Alle Straßen müssen gucken, ob sie einen Esel bekommen können
     for(std::list<RoadSegment*>::iterator it = roads.begin(); it != roads.end(); ++it)
         (*it)->TryGetDonkey();
 
-    // Alle ArbeitsplÃ¤tze mÃ¼ssen nun gucken, ob sie einen Weg zu einem Lagerhaus mit entsprechender Arbeitskraft finden
+    // Alle Arbeitsplätze müssen nun gucken, ob sie einen Weg zu einem Lagerhaus mit entsprechender Arbeitskraft finden
     FindWarehouseForAllJobs(JOB_NOTHING);
 
-    // Alle Baustellen mÃ¼ssen nun gucken, ob sie ihr benÃ¶tigtes Baumaterial bekommen (evtl war vorher die StraÃƒÂŸe zum Lagerhaus unterbrochen
+    // Alle Baustellen müssen nun gucken, ob sie ihr benötigtes Baumaterial bekommen (evtl war vorher die Straße zum Lagerhaus unterbrochen
     FindMaterialForBuildingSites();
 
-    // Alle Lost-Wares mÃ¼ssen gucken, ob sie ein Lagerhaus finden
+    // Alle Lost-Wares müssen gucken, ob sie ein Lagerhaus finden
     FindClientForLostWares();
 
-    // Alle MilitÃ¤rgebÃ¤ude mÃ¼ssen ihre Truppen Ã¼berprÃ¼fen und kÃ¶nnen nun ggf. neue bestellen
-    // und mÃ¼ssen prÃ¼fen, ob sie evtl Gold bekommen
+    // Alle Militärgebäude müssen ihre Truppen überprüfen und können nun ggf. neue bestellen
+    // und müssen prüfen, ob sie evtl Gold bekommen
     for(std::list<nobMilitary*>::iterator it = military_buildings.begin(); it != military_buildings.end(); ++it)
     {
         (*it)->RegulateTroops();
@@ -522,7 +522,7 @@ void GameClientPlayer::NewRoad(RoadSegment* const rs)
 
 void GameClientPlayer::FindClientForLostWares()
 {
-    // Alle Lost-Wares mÃ¼ssen gucken, ob sie ein Lagerhaus finden
+    // Alle Lost-Wares müssen gucken, ob sie ein Lagerhaus finden
     for(std::list<Ware*>::iterator it = ware_list.begin(); it != ware_list.end(); ++it)
     {
         if((*it)->IsLostWare())
@@ -534,7 +534,7 @@ void GameClientPlayer::FindClientForLostWares()
 
 void GameClientPlayer::RoadDestroyed()
 {
-    // Alle Waren, die an Flagge liegen und in LagerhÃ¤usern, mÃ¼ssen gucken, ob sie ihr Ziel noch erreichen kÃ¶nnen, jetzt wo eine StraÃƒÂŸe fehlt
+    // Alle Waren, die an Flagge liegen und in Lagerhäusern, müssen gucken, ob sie ihr Ziel noch erreichen können, jetzt wo eine Straße fehlt
     for(std::list<Ware*>::iterator it = ware_list.begin(); it != ware_list.end(); )
     {
         if((*it)->LieAtFlag()) // Liegt die Flagge an einer Flagge, muss ihr Weg neu berechnet werden
@@ -608,7 +608,7 @@ void GameClientPlayer::RoadDestroyed()
         ++it;
     }
 
-    // Alle HÃ¤fen mÃ¼ssen ihre Figuren den Weg Ã¼berprÃ¼fen lassen
+    // Alle Häfen müssen ihre Figuren den Weg überprüfen lassen
     for(std::list<nobHarborBuilding*>::iterator it = harbors.begin();
             it != harbors.end(); ++it)
     {
@@ -616,7 +616,7 @@ void GameClientPlayer::RoadDestroyed()
     }
 }
 
-/// Hafen zur Warenhausliste hinzufÃ¼gen
+/// Hafen zur Warenhausliste hinzufügen
 void GameClientPlayer::AddHarbor(nobHarborBuilding* hb)
 {
     harbors.push_back(hb);
@@ -634,7 +634,7 @@ bool GameClientPlayer::FindCarrierForRoad(RoadSegment* rs)
     // Braucht der ein Boot?
     if(rs->GetRoadType() == RoadSegment::RT_BOAT)
     {
-        // dann braucht man TrÃ¤ger UND Boot
+        // dann braucht man Träger UND Boot
         FW::Param_WareAndJob p = { {GD_BOAT, 1}, {JOB_HELPER, 1} };
         best[0] = FindWarehouse(rs->GetF1(), FW::Condition_WareAndJob, rs, 0, &p, false, &length[0]);
         // 2. Flagge des Weges
@@ -649,7 +649,7 @@ bool GameClientPlayer::FindCarrierForRoad(RoadSegment* rs)
         best[1] = FindWarehouse(rs->GetF2(), FW::Condition_Job, rs, 0, &p, false, &length[1]);
     }
 
-    // Ã¼berhaupt nen Weg gefunden?
+    // überhaupt nen Weg gefunden?
     // Welche Flagge benutzen?
     if(best[0] && (length[0] < length[1]))
         best[0]->OrderCarrier(rs->GetF1(), rs);
@@ -674,12 +674,12 @@ void GameClientPlayer::RecalcDistribution()
 
 void GameClientPlayer::RecalcDistributionOfWare(const GoodType ware)
 {
-    // Punktesystem zur Verteilung, in der Liste alle GebÃ¤ude sammeln, die die Ware wollen
+    // Punktesystem zur Verteilung, in der Liste alle Gebäude sammeln, die die Ware wollen
     distribution[ware].client_buildings.clear();
 
     // 1. Anteile der einzelnen Waren ausrechnen
 
-    // Liste von GebÃ¤udetypen, die die Waren wollen
+    // Liste von Gebäudetypen, die die Waren wollen
     std::list<BuildingWhichWantWare> bwww_list;
 
     unsigned goal_count = 0;
@@ -695,9 +695,9 @@ void GameClientPlayer::RecalcDistributionOfWare(const GoodType ware)
         }
     }
 
-    // TODO: evtl noch die counts miteinander kÃ¼rzen (ggt berechnen)
+    // TODO: evtl noch die counts miteinander kürzen (ggt berechnen)
 
-    // Array fÃ¼r die GebÃ¤udtypen erstellen
+    // Array für die Gebäudtypen erstellen
 
     distribution[ware].goals.clear();
     distribution[ware].goals.resize(goal_count);
@@ -747,7 +747,7 @@ void GameClientPlayer::RecalcDistributionOfWare(const GoodType ware)
             LOG.lprintf("\t[%u] = %u\n", it->building, it->count);
         }*/
 
-    // Und ordentlich schÃ¼tteln ;)
+    // Und ordentlich schütteln ;)
     //RandomShuffle(distribution[ware].goals,distribution[ware].goal_count);
 
 
@@ -756,7 +756,7 @@ void GameClientPlayer::RecalcDistributionOfWare(const GoodType ware)
     //LOG.lprintf("\n");
 
 
-    // Alles fÃ¤ngt wieder von vorne an...
+    // Alles fängt wieder von vorne an...
     distribution[ware].selected_goal = 0;
 }
 
@@ -849,12 +849,12 @@ Ware* GameClientPlayer::OrderWare(const GoodType ware, noBaseBuilding* goal)
 
     if(wh)
     {
-        // PrÃ¼fe ob Notfallprogramm aktiv
+        // Prüfe ob Notfallprogramm aktiv
         if (!emergency)
             return wh->OrderWare(ware, goal);
         else
         {
-            // Wenn Notfallprogramm aktiv nur an HolzfÃ¤ller und SÃ¤gewerke Bretter/Steine liefern
+            // Wenn Notfallprogramm aktiv nur an Holzfäller und Sägewerke Bretter/Steine liefern
             if ((ware != GD_BOARDS && ware != GD_STONES) || goal->GetBuildingType() == BLD_WOODCUTTER || goal->GetBuildingType() == BLD_SAWMILL)
                 return wh->OrderWare(ware, goal);
             else
@@ -896,7 +896,7 @@ nofCarrier* GameClientPlayer::OrderDonkey(RoadSegment* road)
     // 2. Flagge des Weges
     best[1] = FindWarehouse(road->GetF2(), FW::Condition_Job, road, 0, &p, false, &length[1]);
 
-    // Ã¼berhaupt nen Weg gefunden?
+    // überhaupt nen Weg gefunden?
     // Welche Flagge benutzen?
     if(best[0] && (length[0] < length[1]))
         return best[0]->OrderDonkey(road, road->GetF1());
@@ -908,15 +908,15 @@ nofCarrier* GameClientPlayer::OrderDonkey(RoadSegment* road)
 
 RoadSegment* GameClientPlayer::FindRoadForDonkey(noRoadNode* start, noRoadNode** goal)
 {
-    // Bisher hÃ¶chste TrÃ¤gerproduktivitÃ¤t und die entsprechende StraÃƒÂŸe dazu
+    // Bisher höchste Trägerproduktivität und die entsprechende Straße dazu
     unsigned best_productivity = 0;
     RoadSegment* best_road = 0;
-    // Beste Flagge dieser StraÃƒÂŸe
+    // Beste Flagge dieser Straße
     *goal = 0;
 
     for(std::list<RoadSegment*>::iterator it = roads.begin(); it != roads.end(); ++it)
     {
-        // Braucht die StraÃƒÂŸe einen Esel?
+        // Braucht die Straße einen Esel?
         if((*it)->NeedDonkey())
         {
             // Beste Flagge von diesem Weg, und beste Wegstrecke
@@ -933,25 +933,25 @@ RoadSegment* GameClientPlayer::FindRoadForDonkey(noRoadNode* start, noRoadNode**
                 current_best_goal = (length1) ? (*it)->GetF1() : 0;
             else
             {
-                // ansonsten die kÃ¼rzeste von beiden
+                // ansonsten die kürzeste von beiden
                 current_best_goal = (length1 < length2) ? (*it)->GetF1() : (*it)->GetF2();
             }
 
-            // Kein Weg fÃ¼hrt hin, nÃ¤chste StraÃƒÂŸe bitte
+            // Kein Weg führt hin, nächste Straße bitte
             if(!current_best_goal)
                 continue;
 
             // Jeweiligen Weg bestimmen
             unsigned current_best_way = ((*it)->GetF1() == current_best_goal) ? length1 : length2;
 
-            // ProduktivitÃ¤t ausrechnen, *10 die ProduktivitÃ¤t + die Wegstrecke, damit die
+            // Produktivität ausrechnen, *10 die Produktivität + die Wegstrecke, damit die
             // auch noch mit einberechnet wird
             unsigned current_productivity = 10 * (*it)->getCarrier(0)->GetProductivity() + current_best_way;
 
             // Besser als der bisher beste?
             if(current_productivity > best_productivity)
             {
-                // Dann wird der vom Thron gestoÃƒÂŸen
+                // Dann wird der vom Thron gestoßen
                 best_productivity = current_productivity;
                 best_road = (*it);
                 *goal = current_best_goal;
@@ -998,7 +998,7 @@ struct ClientForWare
 
 noBaseBuilding* GameClientPlayer::FindClientForWare(Ware* ware)
 {
-    // Wenn es eine GoldmÃ¼nze ist, wird das Ziel auf eine andere Art und Weise berechnet
+    // Wenn es eine Goldmünze ist, wird das Ziel auf eine andere Art und Weise berechnet
     if(ware->type == GD_COINS)
         return FindClientForCoin(ware);
 
@@ -1008,9 +1008,9 @@ noBaseBuilding* GameClientPlayer::FindClientForWare(Ware* ware)
 
     // Warentyp herausfinden
     GoodType gt = ware->type;
-    // Warentyp fÃ¼r Client-GebÃ¤ude
+    // Warentyp für Client-Gebäude
     GoodType gt_clients = ware->type;
-    // Andere Nahrung als Fisch ansehen, da nur dieser als Nahrung fÃ¼r Bergwerke und in der Verteilung
+    // Andere Nahrung als Fisch ansehen, da nur dieser als Nahrung für Bergwerke und in der Verteilung
     // akzeptiert wird
     if(gt_clients == GD_BREAD || gt_clients == GD_MEAT)
         gt_clients = GD_FISH;
@@ -1019,7 +1019,7 @@ noBaseBuilding* GameClientPlayer::FindClientForWare(Ware* ware)
 
     noRoadNode* start = ware->GetLocation();
 
-    // Bretter und Steine kÃ¶nnen evtl. auch HÃ¤fen fÃ¼r Expeditionen gebrauchen
+    // Bretter und Steine können evtl. auch Häfen für Expeditionen gebrauchen
     if(gt_clients == GD_STONES || gt_clients == GD_BOARDS)
     {
         for(std::list<nobHarborBuilding*>::iterator it = harbors.begin(); it != harbors.end(); ++it)
@@ -1028,7 +1028,7 @@ noBaseBuilding* GameClientPlayer::FindClientForWare(Ware* ware)
 
             if (points)
             {
-                points += 10 * 30; // Verteilung existiert nicht, Expeditionen haben allerdings hohe PrioritÃ¤t
+                points += 10 * 30; // Verteilung existiert nicht, Expeditionen haben allerdings hohe Priorität
 
                 cfw.push_back(ClientForWare(*it, points - (gwg->CalcDistance(start->GetPos(), (*it)->GetPos()) / 2), points));
             }
@@ -1038,7 +1038,7 @@ noBaseBuilding* GameClientPlayer::FindClientForWare(Ware* ware)
     for(std::list<BuildingType>::iterator it = distribution[gt_clients].client_buildings.begin();
             it != distribution[gt_clients].client_buildings.end(); ++it)
     {
-        // BLD_HEADQUARTERS sind Baustellen!!, da HQs ja sowieso nicht gebaut werden kÃ¶nnen
+        // BLD_HEADQUARTERS sind Baustellen!!, da HQs ja sowieso nicht gebaut werden können
         if(*it == BLD_HEADQUARTERS)
         {
             // Bei Baustellen die Extraliste abfragen
@@ -1056,7 +1056,7 @@ noBaseBuilding* GameClientPlayer::FindClientForWare(Ware* ware)
         }
         else
         {
-            // FÃ¼r Ã¼brige GebÃ¤ude
+            // Für übrige Gebäude
             for(std::list<nobUsual*>::iterator i = buildings[*it - 10].begin(); i != buildings[*it - 10].end(); ++i)
             {
                 points = (*i)->CalcDistributionPoints(ware->GetLocation(), gt);
@@ -1123,9 +1123,9 @@ noBaseBuilding* GameClientPlayer::FindClientForWare(Ware* ware)
     // Wenn kein Abnehmer gefunden wurde, muss es halt in ein Lagerhaus
     if(!bb)
     {
-        // Zuerst Einlagernde LagerhÃ¤user durchgehen
+        // Zuerst Einlagernde Lagerhäuser durchgehen
         bb = FindWarehouse(ware->GetLocation(), FW::Condition_WantStoreWare, 0, true, &gt, true);
-        // Wenn das nichts wurde, dann auch restliche LagerhÃ¤user mit einbeziehen
+        // Wenn das nichts wurde, dann auch restliche Lagerhäuser mit einbeziehen
         if(!bb)
             bb = FindWarehouse(ware->GetLocation(), FW::Condition_StoreWare, 0, true, &gt, true);
     }
@@ -1142,13 +1142,13 @@ nobBaseMilitary* GameClientPlayer::FindClientForCoin(Ware* ware)
     nobBaseMilitary* bb = 0;
     unsigned best_points = 0, points;
 
-    // MilitÃ¤rgebÃ¤ude durchgehen
+    // Militärgebäude durchgehen
     for(std::list<nobMilitary*>::iterator it = military_buildings.begin(); it != military_buildings.end(); ++it)
     {
         unsigned way_points;
 
         points = (*it)->CalcCoinsPoints();
-        // Wenn 0, will er gar keine MÃ¼nzen (Goldzufuhr gestoppt)
+        // Wenn 0, will er gar keine Münzen (Goldzufuhr gestoppt)
         if(points)
         {
             // Weg dorthin berechnen
@@ -1217,7 +1217,7 @@ void GameClientPlayer::RemoveMilitaryBuilding(nobMilitary* building)
     TestDefeat();
 }
 
-/// Gibt Liste von GebÃ¤uden des Spieler zurÃ¼ck
+/// Gibt Liste von Gebäuden des Spieler zurück
 const std::list<nobUsual*>& GameClientPlayer::GetBuildings(const BuildingType type) const
 {
     assert(type >= 10);
@@ -1225,27 +1225,27 @@ const std::list<nobUsual*>& GameClientPlayer::GetBuildings(const BuildingType ty
     return buildings[type - 10];
 }
 
-/// Liefert die Anzahl aller GebÃ¤ude einzeln
+/// Liefert die Anzahl aller Gebäude einzeln
 void GameClientPlayer::GetBuildingCount(BuildingCount& bc) const
 {
     memset(&bc, 0, sizeof(bc));
 
-    // Normale GebÃ¤ude zÃ¤hlen
+    // Normale Gebäude zählen
     for(unsigned i = 0; i < 30; ++i)
         bc.building_counts[i + 10] = buildings[i].size();
-    // LagerhÃ¤user zÃ¤hlen
+    // Lagerhäuser zählen
     for(std::list<nobBaseWarehouse*>::const_iterator it = warehouses.begin(); it != warehouses.end(); ++it)
         ++bc.building_counts[(*it)->GetBuildingType()];
-    // MilitÃ¤rgebÃ¤ude zÃ¤hlen
+    // Militärgebäude zählen
     for(std::list<nobMilitary*>::const_iterator it = military_buildings.begin(); it != military_buildings.end(); ++it)
         ++bc.building_counts[(*it)->GetBuildingType()];
-    // Baustellen zÃ¤hlen
+    // Baustellen zählen
     for(std::list<noBuildingSite*>::const_iterator it = building_sites.begin(); it != building_sites.end(); ++it)
         ++bc.building_site_counts[(*it)->GetBuildingType()];
 }
 
 
-/// Berechnet die durschnittlichen ProduktivitÃ¤t eines jeden GebÃ¤udetyps
+/// Berechnet die durschnittlichen Produktivität eines jeden Gebäudetyps
 /// (erwartet als Argument ein 40-er Array!)
 void GameClientPlayer::CalcProductivities(std::vector<unsigned short>& productivities)
 {
@@ -1253,7 +1253,7 @@ void GameClientPlayer::CalcProductivities(std::vector<unsigned short>& productiv
 
     for(unsigned i = 0; i < 30; ++i)
     {
-        // Durschnittliche ProduktivitÃ¤t errrechnen, indem man die ProduktivitÃ¤ten aller GebÃ¤ude summiert
+        // Durschnittliche Produktivität errrechnen, indem man die Produktivitäten aller Gebäude summiert
         // und den Mittelwert bildet
         unsigned total_productivity = 0;
 
@@ -1267,14 +1267,14 @@ void GameClientPlayer::CalcProductivities(std::vector<unsigned short>& productiv
     }
 }
 
-/// Berechnet die durschnittlichen ProduktivitÃ¤t aller GebÃ¤ude
+/// Berechnet die durschnittlichen Produktivität aller Gebäude
 unsigned short GameClientPlayer::CalcAverageProductivitiy()
 {
     unsigned total_productivity = 0;
     unsigned total_count = 0;
     for(unsigned i = 0; i < 30; ++i)
     {
-        // Durschnittliche ProduktivitÃ¤t errrechnen, indem man die ProduktivitÃ¤ten aller GebÃ¤ude summiert
+        // Durschnittliche Produktivität errrechnen, indem man die Produktivitäten aller Gebäude summiert
         // und den Mittelwert bildet
         for(std::list<nobUsual*>::iterator it = buildings[i].begin(); it != buildings[i].end(); ++it)
             total_productivity += *(*it)->GetProduktivityPointer();
@@ -1295,7 +1295,7 @@ unsigned GameClientPlayer::GetBuidingSitePriority(const noBuildingSite* building
     {
         // Spezielle Reihenfolge
 
-        // Typ in der Reihenfolge suchen und Position als PrioritÃ¤t zurÃ¼ckgeben
+        // Typ in der Reihenfolge suchen und Position als Priorität zurückgeben
         for(unsigned i = 0; i < 31; ++i)
         {
             if(building_site->GetBuildingType() == static_cast<BuildingType>(build_order[i]))
@@ -1310,7 +1310,7 @@ unsigned GameClientPlayer::GetBuidingSitePriority(const noBuildingSite* building
     }
     else
     {
-        // Reihenfolge der BauauftrÃ¤ge, also was zuerst in Auftrag gegeben wurde, wird zuerst gebaut
+        // Reihenfolge der Bauaufträge, also was zuerst in Auftrag gegeben wurde, wird zuerst gebaut
         unsigned i = 0;
         for(std::list<noBuildingSite*>::iterator it = building_sites.begin(); it != building_sites.end(); ++it, ++i)
         {
@@ -1329,7 +1329,7 @@ void GameClientPlayer::ConvertTransportData(const std::vector<unsigned char>& tr
     if(GAMECLIENT.IsReplayModeOn())
         GAMECLIENT.visual_settings.transport_order = transport_data;
 
-    // Mit Hilfe der Standardbelegung lÃ¤sst sich das recht einfach konvertieren:
+    // Mit Hilfe der Standardbelegung lässt sich das recht einfach konvertieren:
     for(unsigned i = 0; i < 35; ++i)
     {
         for(unsigned z = 0; z < 14; ++z)
@@ -1346,7 +1346,7 @@ void GameClientPlayer::ConvertTransportData(const std::vector<unsigned char>& tr
 
 bool GameClientPlayer::IsAlly(const unsigned char player) const
 {
-    // Der Spieler ist ja auch zu sich selber verbÃ¼ndet ;
+    // Der Spieler ist ja auch zu sich selber verbündet ;
     if(playerid == player)
         return true;
     else
@@ -1357,7 +1357,7 @@ bool GameClientPlayer::IsAlly(const unsigned char player) const
 /// Darf der andere Spieler von mir angegriffen werden?
 bool GameClientPlayer::IsPlayerAttackable(const unsigned char player) const
 {
-    // VerbÃ¼ndete dÃ¼rfen nicht angegriffen werden
+    // Verbündete dürfen nicht angegriffen werden
     if(IsAlly(player))
         return false;
     else
@@ -1368,7 +1368,7 @@ bool GameClientPlayer::IsPlayerAttackable(const unsigned char player) const
 
 void GameClientPlayer::OrderTroops(nobMilitary* goal, unsigned count,bool ignoresettingsendweakfirst)
 {
-    // Solange LagerhÃ¤user nach Soldaten absuchen, bis entweder keins mehr Ã¼brig ist oder alle Soldaten bestellt sind
+    // Solange Lagerhäuser nach Soldaten absuchen, bis entweder keins mehr übrig ist oder alle Soldaten bestellt sind
     nobBaseWarehouse* wh;
     do
     {
@@ -1391,19 +1391,19 @@ void GameClientPlayer::RegulateAllTroops()
         (*it)->RegulateTroops();
 }
 
-/// PrÃ¼ft von allen MilitÃ¤rgebÃ¤uden die Fahnen neu
+/// Prüft von allen Militärgebäuden die Fahnen neu
 void GameClientPlayer::RecalcMilitaryFlags()
 {
     for(std::list<nobMilitary*>::iterator it = military_buildings.begin(); it != military_buildings.end(); ++it)
         (*it)->LookForEnemyBuildings(NULL);
 }
 
-/// Sucht fÃ¼r EINEN Soldaten ein neues MilitÃ¤rgebÃ¤ude, als Argument wird Referenz auf die
+/// Sucht für EINEN Soldaten ein neues Militärgebäude, als Argument wird Referenz auf die
 /// entsprechende Soldatenanzahl im Lagerhaus verlangt
 void GameClientPlayer::NewSoldierAvailable(const unsigned& soldier_count)
 {
     // solange laufen lassen, bis soldier_count = 0, d.h. der Soldat irgendwohin geschickt wurde
-    // Zuerst nach unbesetzten MilitÃ¤rgebÃ¤ude schauen
+    // Zuerst nach unbesetzten Militärgebäude schauen
     for(std::list<nobMilitary*>::iterator it = military_buildings.begin(); it != military_buildings.end() && soldier_count; ++it)
     {
         if((*it)->IsNewBuilt())
@@ -1413,7 +1413,7 @@ void GameClientPlayer::NewSoldierAvailable(const unsigned& soldier_count)
     if(!soldier_count)
         return;
 
-    // Als nÃ¤chstes GebÃ¤ude in GrenznÃ¤he
+    // Als nächstes Gebäude in Grenznähe
     for(std::list<nobMilitary*>::iterator it = military_buildings.begin(); it != military_buildings.end() && soldier_count; ++it)
     {
         if((*it)->GetFrontierDistance() == 2)
@@ -1452,7 +1452,7 @@ void GameClientPlayer::CallFlagWorker(const MapPoint pt, const Job job)
 
 void GameClientPlayer::FlagDestroyed(noFlag* flag)
 {
-    // Alle durchgehen und ggf. sagen, dass sie keine Flagge mehr haben, wenn das ihre Flagge war, die zerstÃ¶rt wurde
+    // Alle durchgehen und ggf. sagen, dass sie keine Flagge mehr haben, wenn das ihre Flagge war, die zerstört wurde
     for(std::list<nofFlagWorker*>::iterator it = flagworkers.begin(); it != flagworkers.end();)
     {
         if((*it)->GetFlag() == flag)
@@ -1471,7 +1471,7 @@ void GameClientPlayer::RefreshDefenderList()
     memset(defenders, 0, 5);
     for(unsigned i = 0; i < 5; ++i)
         defenders[i] = (i < military_settings[2] * 5 / MILITARY_SETTINGS_SCALE[2]);
-    // und ordentlich schÃ¼tteln
+    // und ordentlich schütteln
     RANDOM.Shuffle(defenders, 5);
 
     defenders_pos = 0;
@@ -1489,7 +1489,7 @@ void GameClientPlayer::ChangeMilitarySettings(const std::vector<unsigned char>& 
         assert(military_settings[i] <= MILITARY_SETTINGS_SCALE[i]);
         this->military_settings[i] = military_settings[i];
     }
-    /// Truppen mÃ¼ssen neu kalkuliert werden
+    /// Truppen müssen neu kalkuliert werden
     RegulateAllTroops();
     /// Die Verteidigungsliste muss erneuert werden
     RefreshDefenderList();
@@ -1572,7 +1572,7 @@ bool GameClientPlayer::ShouldSendDefender()
 void GameClientPlayer::TestDefeat()
 {
     // Nicht schon besiegt?
-    // Keine MilitÃ¤rgebÃ¤ude, keine LagerhÃ¤user (HQ,HÃ¤fen) -> kein Land --> verloren
+    // Keine Militärgebäude, keine Lagerhäuser (HQ,Häfen) -> kein Land --> verloren
     if(!defeated && military_buildings.empty() && warehouses.empty())
     {
         defeated = true;
@@ -1608,7 +1608,7 @@ void GameClientPlayer::TestDefeat()
 //      JOB_SERGEANT, JOB_OFFICER, JOB_GENERAL
 //  };*/
 //
-//  // Warenlisten der WarenhÃ¤user sammeln
+//  // Warenlisten der Warenhäuser sammeln
 //  for(std::list<nobBaseWarehouse*>::iterator wh = warehouses.begin(); wh != warehouses.end(); ++wh)
 //      (*wh)->GetInventory(wares, figures);
 //
@@ -1677,17 +1677,17 @@ void GameClientPlayer::IncreaseMerchandiseStatistic(GoodType type)
 /// Calculates current statistics
 void GameClientPlayer::CalcStatistics()
 {
-    // Waren aus der Inventur zÃ¤hlen
+    // Waren aus der Inventur zählen
     statisticCurrentData[STAT_MERCHANDISE] = 0;
     for (unsigned int i = 0; i < WARE_TYPES_COUNT; ++i)
         statisticCurrentData[STAT_MERCHANDISE] += global_inventory.goods[i];
 
-    // BevÃ¶lkerung aus der Inventur zÃ¤hlen
+    // Bevölkerung aus der Inventur zählen
     statisticCurrentData[STAT_INHABITANTS] = 0;
     for (unsigned int i = 0; i < JOB_TYPES_COUNT; ++i)
         statisticCurrentData[STAT_INHABITANTS] += global_inventory.people[i];
 
-    // MilitÃ¤r aus der Inventur zÃ¤hlen
+    // Militär aus der Inventur zählen
     statisticCurrentData[STAT_MILITARY] =
         global_inventory.people[JOB_PRIVATE]
         + global_inventory.people[JOB_PRIVATEFIRSTCLASS] * 2
@@ -1696,7 +1696,7 @@ void GameClientPlayer::CalcStatistics()
         + global_inventory.people[JOB_GENERAL] * 5;
 
 
-    // ProduktivitÃ¤t berechnen
+    // Produktivität berechnen
     statisticCurrentData[STAT_PRODUCTIVITY] = CalcAverageProductivitiy();
 
     // Total points for tournament games
@@ -1721,9 +1721,9 @@ void GameClientPlayer::StatisticStep()
 
     statistic[STAT_15M].counter++;
 
-    // PrÃ¼fen ob 4mal 15-min-Statistik weitergeschoben wurde, wenn ja: 1-h-Statistik weiterschieben
+    // Prüfen ob 4mal 15-min-Statistik weitergeschoben wurde, wenn ja: 1-h-Statistik weiterschieben
     // und aktuellen Wert der 15min-Statistik benutzen
-    // gleiches fÃ¼r die 4h und 16h Statistik
+    // gleiches für die 4h und 16h Statistik
     for (unsigned t = STAT_15M; t < STAT_16H; t++)
     {
         if (statistic[t].counter == 4)
@@ -1734,7 +1734,7 @@ void GameClientPlayer::StatisticStep()
                 statistic[t + 1].data[i][incrStatIndex(statistic[t + 1].currentIndex)] = statisticCurrentData[i];
             }
 
-            // Summe fÃ¼r den Zeitraum berechnen (immer 4 Zeitschritte der jeweils kleineren Statistik)
+            // Summe für den Zeitraum berechnen (immer 4 Zeitschritte der jeweils kleineren Statistik)
             for (unsigned int i = 0; i < STAT_MERCHANDISE_TYPE_COUNT; ++i)
             {
                 statistic[t + 1].merchandiseData[i][incrStatIndex(statistic[t + 1].currentIndex)] = statisticCurrentMerchandiseData[i]
@@ -1748,7 +1748,7 @@ void GameClientPlayer::StatisticStep()
         }
     }
 
-    // WarenstatistikzÃ¤hler nullen
+    // Warenstatistikzähler nullen
     for (unsigned int i = 0; i < STAT_MERCHANDISE_TYPE_COUNT; ++i)
     {
         statisticCurrentMerchandiseData[i] = 0;
@@ -1767,7 +1767,7 @@ void GameClientPlayer::Pact::Serialize(SerializedGameData* ser)
     ser->PushBool(want_cancel);
 }
 
-/// Macht BÃ¼ndnisvorschlag an diesen Spieler
+/// Macht Bündnisvorschlag an diesen Spieler
 void GameClientPlayer::SuggestPact(const unsigned char other_player, const PactType pt, const unsigned duration)
 {
     pacts[other_player][pt].accepted = false;
@@ -1779,7 +1779,7 @@ void GameClientPlayer::SuggestPact(const unsigned char other_player, const PactT
         GAMECLIENT.SendPostMessage(new DiplomacyPostQuestion(pacts[other_player][pt].start, playerid, pt, duration));
 }
 
-/// Akzeptiert ein bestimmtes BÃ¼ndnis, welches an diesen Spieler gemacht wurde
+/// Akzeptiert ein bestimmtes Bündnis, welches an diesen Spieler gemacht wurde
 void GameClientPlayer::AcceptPact(const unsigned id, const PactType pt, const unsigned char other_player)
 {
     if(!pacts[other_player][pt].accepted && pacts[other_player][pt].start == id)
@@ -1788,8 +1788,8 @@ void GameClientPlayer::AcceptPact(const unsigned id, const PactType pt, const un
         MakePact(pt, other_player, pacts[other_player][pt].duration);
         GAMECLIENT.GetPlayer(other_player)->MakePact(pt, playerid, pacts[other_player][pt].duration);
 
-        // Besetzung der MilitÃ¤rgebÃ¤ude der jeweiligen Spieler Ã¼berprÃ¼fen, da ja jetzt neue Feinde oder neue
-        // VerbÃ¼ndete sich in GrenznÃ¤he befinden kÃ¶nnten
+        // Besetzung der Militärgebäude der jeweiligen Spieler überprüfen, da ja jetzt neue Feinde oder neue
+        // Verbündete sich in Grenznähe befinden könnten
         this->RegulateAllTroops();
         GAMECLIENT.GetPlayer(other_player)->RecalcMilitaryFlags();
 
@@ -1802,7 +1802,7 @@ void GameClientPlayer::AcceptPact(const unsigned id, const PactType pt, const un
     }
 }
 
-/// BÃ¼ndnis (real, d.h. spielentscheidend) abschlieÃƒÂŸen
+/// Bündnis (real, d.h. spielentscheidend) abschließen
 void GameClientPlayer::MakePact(const PactType pt, const unsigned char other_player, const unsigned duration)
 {
     pacts[other_player][pt].accepted = true;
@@ -1819,7 +1819,7 @@ void GameClientPlayer::MakePact(const PactType pt, const unsigned char other_pla
 /// Zeigt an, ob ein Pakt besteht
 GameClientPlayer::PactState GameClientPlayer::GetPactState(const PactType pt, const unsigned char other_player) const
 {
-    // PrÃ¼fen, ob BÃ¼ndnis in Kraft ist
+    // Prüfen, ob Bündnis in Kraft ist
     if(pacts[other_player][pt].duration)
     {
         if(!pacts[other_player][pt].accepted)
@@ -1852,7 +1852,7 @@ void GameClientPlayer::NotifyAlliesOfLocation(const MapPoint pt, unsigned char a
 	}
 }
 
-/// Gibt die verbleibende Dauer zurÃ¼ck, die ein BÃ¼ndnis noch laufen wird (0xFFFFFFFF = fÃ¼r immer)
+/// Gibt die verbleibende Dauer zurück, die ein Bündnis noch laufen wird (0xFFFFFFFF = für immer)
 unsigned GameClientPlayer::GetRemainingPactTime(const PactType pt, const unsigned char other_player) const
 {
     if(pacts[other_player][pt].duration)
@@ -1869,20 +1869,20 @@ unsigned GameClientPlayer::GetRemainingPactTime(const PactType pt, const unsigne
     return 0;
 }
 
-/// Gibt EinverstÃ¤ndnis, dass dieser Spieler den Pakt auflÃ¶sen will
-/// Falls dieser Spieler einen BÃ¼ndnisvorschlag gemacht hat, wird dieser dagegen zurÃ¼ckgenommen
+/// Gibt Einverständnis, dass dieser Spieler den Pakt auflösen will
+/// Falls dieser Spieler einen Bündnisvorschlag gemacht hat, wird dieser dagegen zurückgenommen
 void GameClientPlayer::CancelPact(const PactType pt, const unsigned char other_player)
 {
-    // Besteht bereits ein BÃ¼ndnis?
+    // Besteht bereits ein Bündnis?
     if(pacts[other_player][pt].accepted)
     {
-        // Vermerken, dass der Spieler das BÃ¼ndnis auflÃ¶sen will
+        // Vermerken, dass der Spieler das Bündnis auflösen will
         pacts[other_player][pt].want_cancel = true;
 
-        // Will der andere Spieler das BÃ¼ndnis auch auflÃ¶sen?
+        // Will der andere Spieler das Bündnis auch auflösen?
         if(GAMECLIENT.GetPlayer(other_player)->pacts[playerid][pt].want_cancel)
         {
-            // Dann wird das BÃ¼ndnis aufgelÃ¶st
+            // Dann wird das Bündnis aufgelöst
             pacts[other_player][pt].accepted = false;
             pacts[other_player][pt].duration = 0;
             pacts[other_player][pt].want_cancel = false;
@@ -1913,14 +1913,14 @@ void GameClientPlayer::CancelPact(const PactType pt, const unsigned char other_p
     }
     else
     {
-        // Es besteht kein BÃ¼ndnis, also unseren BÃ¼ndnisvorschlag wieder zurÃ¼cknehmen
+        // Es besteht kein Bündnis, also unseren Bündnisvorschlag wieder zurücknehmen
         pacts[other_player][pt].duration = 0;
     }
 }
 
 void GameClientPlayer::MakeStartPacts()
 {
-    // Zu den Spielern im selben Team BÃ¼ndnisse (sowohl BÃ¼ndnisvertrag als auch Nichtangriffspakt) aufbauen
+    // Zu den Spielern im selben Team Bündnisse (sowohl Bündnisvertrag als auch Nichtangriffspakt) aufbauen
     for(unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
     {
         GameClientPlayer* p = GAMECLIENT.GetPlayer(i);
@@ -1978,7 +1978,7 @@ struct ShipForHarbor
     }
 };
 
-/// Schiff fÃ¼r Hafen bestellen
+/// Schiff für Hafen bestellen
 bool GameClientPlayer::OrderShip(nobHarborBuilding* hb)
 {
     std::vector<ShipForHarbor> sfh;
@@ -2090,15 +2090,15 @@ void GameClientPlayer::RemoveShip(noShip* ship)
     }
 }
 
-/// Versucht, fÃ¼r ein untÃ¤tiges Schiff eine Arbeit zu suchen
+/// Versucht, für ein untätiges Schiff eine Arbeit zu suchen
 void GameClientPlayer::GetJobForShip(noShip* ship)
 {
-    // Evtl. steht irgendwo eine Expedition an und das Schiff kann diese Ã¼bernehmen
+    // Evtl. steht irgendwo eine Expedition an und das Schiff kann diese übernehmen
     nobHarborBuilding* best = 0;
     int best_points = 0;
     std::vector<unsigned char> best_route;
 
-    // Beste WeglÃ¤nge, die ein Schiff zurÃ¼cklegen muss, welches gerade nichts zu tun hat
+    // Beste Weglänge, die ein Schiff zurücklegen muss, welches gerade nichts zu tun hat
     for(std::list<nobHarborBuilding*>::iterator it = harbors.begin(); it != harbors.end(); ++it)
     {
         // Braucht der Hafen noch Schiffe?
@@ -2149,7 +2149,7 @@ void GameClientPlayer::GetJobForShip(noShip* ship)
 }
 
 
-/// Gibt die ID eines Schiffes zurÃ¼ck
+/// Gibt die ID eines Schiffes zurück
 unsigned GameClientPlayer::GetShipID(const noShip* const ship) const
 {
     for(unsigned i = 0; i < ships.size(); ++i)
@@ -2159,7 +2159,7 @@ unsigned GameClientPlayer::GetShipID(const noShip* const ship) const
     return 0xFFFFFFFF;
 }
 
-/// Gibt ein Schiff anhand der ID zurÃ¼ck bzw. NULL, wenn keines mit der ID existiert
+/// Gibt ein Schiff anhand der ID zurück bzw. NULL, wenn keines mit der ID existiert
 noShip* GameClientPlayer::GetShipByID(const unsigned ship_id) const
 {
     if(ship_id >= ships.size())
@@ -2169,7 +2169,7 @@ noShip* GameClientPlayer::GetShipByID(const unsigned ship_id) const
 }
 
 
-/// Gibt eine Liste mit allen HÃ¤fen dieses Spieler zurÃ¼ck, die an ein bestimmtes Meer angrenzen
+/// Gibt eine Liste mit allen Häfen dieses Spieler zurück, die an ein bestimmtes Meer angrenzen
 void GameClientPlayer::GetHarborBuildings(std::vector<nobHarborBuilding*>& harbor_buildings,
         const unsigned short sea_id) const
 {
@@ -2198,7 +2198,7 @@ void GameClientPlayer::GetHarborBuildings(std::vector<nobHarborBuilding*>& harbo
 }
 
 
-/// Gibt die Anzahl der Schiffe, die einen bestimmten Hafen ansteuern, zurÃ¼ck
+/// Gibt die Anzahl der Schiffe, die einen bestimmten Hafen ansteuern, zurück
 unsigned GameClientPlayer::GetShipsToHarbor(nobHarborBuilding* hb) const
 {
     unsigned count = 0;
@@ -2212,7 +2212,7 @@ unsigned GameClientPlayer::GetShipsToHarbor(nobHarborBuilding* hb) const
 }
 
 
-/// Gibt der Wirtschaft Bescheid, dass ein Hafen zerstÃ¶rt wurde
+/// Gibt der Wirtschaft Bescheid, dass ein Hafen zerstört wurde
 void GameClientPlayer::HarborDestroyed(nobHarborBuilding* hb)
 {
     // Schiffen Bescheid sagen
@@ -2221,8 +2221,8 @@ void GameClientPlayer::HarborDestroyed(nobHarborBuilding* hb)
 }
 
 
-/// Sucht einen Hafen in der NÃ¤he, wo dieses Schiff seine Waren abladen kann
-/// gibt true zurÃ¼ck, falls erfolgreich
+/// Sucht einen Hafen in der Nähe, wo dieses Schiff seine Waren abladen kann
+/// gibt true zurück, falls erfolgreich
 bool GameClientPlayer::FindHarborForUnloading(noShip* ship, const MapPoint start, unsigned* goal_harbor_id,
         std::vector<unsigned char>* route, nobHarborBuilding* exception)
 {
@@ -2232,18 +2232,18 @@ bool GameClientPlayer::FindHarborForUnloading(noShip* ship, const MapPoint start
     for(std::list<nobHarborBuilding*>::iterator it = harbors.begin(); it != harbors.end(); ++it)
     {
         nobHarborBuilding* hb = *it;
-        // Bestimmten Hafen ausschlieÃƒÂŸen
+        // Bestimmten Hafen ausschließen
         if(hb == exception)
             continue;
 
-        // PrÃ¼fen, ob Hafen an das Meer, wo sich das Schiff gerade befindet, angrenzt
+        // Prüfen, ob Hafen an das Meer, wo sich das Schiff gerade befindet, angrenzt
         if(!gwg->IsAtThisSea(hb->GetHarborPosID(), ship->GetSeaID()))
             continue;
 
-        // Distanz ermitteln zwischen Schiff und Hafen, Schiff kann natÃ¼rlich auch Ã¼ber KartenrÃ¤nder fahren
+        // Distanz ermitteln zwischen Schiff und Hafen, Schiff kann natürlich auch über Kartenränder fahren
         unsigned distance = gwg->CalcDistance(ship->GetPos(), hb->GetPos());
 
-        // KÃ¼rzerer Weg als bisher bestes Ziel?
+        // Kürzerer Weg als bisher bestes Ziel?
         if(distance < best_distance)
         {
             best_distance = distance;
@@ -2274,7 +2274,7 @@ void GameClientPlayer::TestForEmergencyProgramm()
         return;
     }
 
-    // In Lagern vorhandene Bretter und Steine zÃ¤hlen
+    // In Lagern vorhandene Bretter und Steine zählen
     unsigned boards = 0;
     unsigned stones = 0;
     for(std::list<nobBaseWarehouse*>::iterator w = warehouses.begin(); w != warehouses.end(); ++w)
@@ -2307,11 +2307,11 @@ void GameClientPlayer::TestForEmergencyProgramm()
 			LOG.lprintf("NOW HORRIBLE job needed type %i at %i,%i player %i, jobc %i \n",it->job,it->workplace->GetX(),it->workplace->GetY(),playerid,c);
 	}*/
 
-    // HolzfÃ¤ller und SÃ¤gewerke zÃ¤hlen, -10 ftw
+    // Holzfäller und Sägewerke zählen, -10 ftw
     unsigned woodcutter = buildings[BLD_WOODCUTTER - 10].size();
     unsigned sawmills = buildings[BLD_SAWMILL - 10].size();
 
-    // Wenn nÃ¶tig, Notfallprogramm auslÃ¶sen
+    // Wenn nötig, Notfallprogramm auslösen
     if ((boards <= 10 || stones <= 10) && (woodcutter == 0 || sawmills == 0) && (!isDefeated()))
     {
         if (!emergency)
@@ -2334,7 +2334,7 @@ void GameClientPlayer::TestForEmergencyProgramm()
     }
 }
 
-/// Testet die BÃ¼ndnisse, ob sie nicht schon abgelaufen sind
+/// Testet die Bündnisse, ob sie nicht schon abgelaufen sind
 void GameClientPlayer::TestPacts()
 {
     for(unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
@@ -2390,7 +2390,7 @@ bool GameClientPlayer::CanBuildCatapult() const
 /// Returns true if yes and false if not
 bool GameClientPlayer::ShipDiscoveredHostileTerritory(const MapPoint location)
 {
-    // PrÃ¼fen, ob Abstand zu bisherigen Punkten nicht zu klein
+    // Prüfen, ob Abstand zu bisherigen Punkten nicht zu klein
     for(unsigned i = 0; i < enemies_discovered_by_ships.size(); ++i)
     {
         if(gwg->CalcDistance(enemies_discovered_by_ships[i].x, enemies_discovered_by_ships[i].y, location.x, location.y) < 30)

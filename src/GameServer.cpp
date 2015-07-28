@@ -200,21 +200,21 @@ bool GameServer::TryToStart(const CreateServerInfo& csi, const std::string& map_
         } break;
     }
 
-    // Von Lobby abhÃ¤ngig? Dann der Bescheid sagen und auf eine Antwort warten, dass wir den Server
-    // erstellen dÃ¼rfen
+    // Von Lobby abhängig? Dann der Bescheid sagen und auf eine Antwort warten, dass wir den Server
+    // erstellen dürfen
     if(serverconfig.servertype == NP_LOBBY)
     {
         LOBBYCLIENT.AddServer(serverconfig.gamename.c_str(), map_title.c_str(), (serverconfig.password.length() != 0), serverconfig.port);
         return true;
     }
     else
-        // ansonsten kÃ¶nnen wir sofort starten
+        // ansonsten können wir sofort starten
         return Start();
 }
 
 bool GameServer::Start()
 {
-    // map-shortname fÃ¼llen
+    // map-shortname füllen
     size_t pos = serverconfig.mapname.find_last_of('/');
     if(pos == std::string::npos)
         mapinfo.name =  serverconfig.mapname;
@@ -224,7 +224,7 @@ bool GameServer::Start()
     // mapinfo einlesen
     FILE* map_f = fopen(serverconfig.mapname.c_str(), "rb");
 
-    // grÃ¶ÃŸe der map
+    // größe der map
     fseek(map_f, 0, SEEK_END);
     mapinfo.length = ftell(map_f);
     fseek(map_f, 0, SEEK_SET);
@@ -291,7 +291,7 @@ bool GameServer::Start()
 
     mapinfo.partcount = mapinfo.ziplength / MAP_PART_SIZE +  ( (mapinfo.ziplength % MAP_PART_SIZE) ? 1 : 0);
 
-    // Speicher fÃ¼r Spieler anlegen
+    // Speicher für Spieler anlegen
     for(unsigned i = 0; i < serverconfig.playercount; ++i)
         players.push_back(GameServerPlayer(i));
 
@@ -311,7 +311,7 @@ bool GameServer::Start()
             // Host bei normalen Spieler der erste Spieler
             players[0].is_host = true;
 
-            // Standardeinstellungen aus den SETTINGS fÃ¼r die Addons laden
+            // Standardeinstellungen aus den SETTINGS für die Addons laden
             //GAMECLIENT.GetGGS().LoadSettings();
             GAMECLIENT.LoadGGS();
             ggs = GAMECLIENT.GetGGS();
@@ -344,7 +344,7 @@ bool GameServer::Start()
                 if(players[i].ps == PS_OCCUPIED)
                 {
                     players[i].ps = PS_FREE;
-                    // Erster richtiger Spieler? Dann ist das der Host spÃ¤ter
+                    // Erster richtiger Spieler? Dann ist das der Host später
                     if(!host_found)
                     {
                         players[i].is_host = true;
@@ -370,7 +370,7 @@ bool GameServer::Start()
                 }
             }
 
-            // Einstellungen aus dem Savegame fÃ¼r die Addons werden in Load geladen
+            // Einstellungen aus dem Savegame für die Addons werden in Load geladen
 
             // Und die GGS
             ggs = save.ggs;
@@ -416,7 +416,7 @@ void GameServer::Run(void)
     if(status == SS_STOPPED)
         return;
 
-    // auf tote Clients prÃ¼fen
+    // auf tote Clients prüfen
     ClientWatchDog();
 
     // auf neue Clients warten
@@ -474,13 +474,13 @@ void GameServer::Stop(void)
     // player verabschieden
     players.clear();
 
-    // aufrÃ¤umen
+    // aufräumen
     framesinfo.Clear();
     serverconfig.Clear();
     mapinfo.Clear();
     countdown.Clear();
 
-    // KI-Player zerstÃ¶ren
+    // KI-Player zerstören
     for(unsigned i = 0; i < ai_players.size(); ++i)
         delete ai_players[i];
     ai_players.clear();
@@ -534,7 +534,7 @@ bool GameServer::StartCountdown()
 
         if( (player->ps == PS_OCCUPIED) || (player->ps == PS_KI) )
         {
-            // farbe schon belegt -> und tschÃ¼ss
+            // farbe schon belegt -> und tschüss
             if(reserved_colors[player->color])
                 return false;
 
@@ -575,7 +575,7 @@ bool GameServer::StartGame()
     // Bei Savegames wird der Startwert von den Clients aus der Datei gelesen!
     unsigned random_init = (mapinfo.map_type == MAPTYPE_SAVEGAME) ? 0xFFFFFFFF : VIDEODRIVER.GetTickCount();
 
-    // HÃ¶chsten Ping ermitteln
+    // Höchsten Ping ermitteln
     unsigned highest_ping = 0;
     GameServerPlayer* player = NULL;
     unsigned char client = 0xFF;
@@ -593,7 +593,7 @@ bool GameServer::StartGame()
 
     framesinfo.gf_length_new = framesinfo.gf_length = SPEED_GF_LENGTHS[ggs.game_speed];
 
-    // NetworkFrame-LÃ¤nge bestimmen, je schlechter (also hÃ¶her) die Pings, desto lÃ¤nger auch die FramelÃ¤nge
+    // NetworkFrame-Länge bestimmen, je schlechter (also höher) die Pings, desto länger auch die Framelänge
     unsigned i = 1;
     for( ; i < 20; ++i)
     {
@@ -618,7 +618,7 @@ bool GameServer::StartGame()
 
     framesinfo.lasttime = VIDEODRIVER.GetTickCount();
 
-    // GameClient soll erstmal starten, damit wir von ihm die benÃ¶tigten Daten fÃ¼r die KIs bekommen
+    // GameClient soll erstmal starten, damit wir von ihm die benötigten Daten für die KIs bekommen
     GAMECLIENT.StartGame(random_init);
 
     // read back gf_nr (if savegame)
@@ -710,7 +710,7 @@ void GameServer::TogglePlayerState(unsigned char client)
 
         case PS_LOCKED:
         {
-            // Im Savegame kÃ¶nnen auf geschlossene Slots keine Spieler
+            // Im Savegame können auf geschlossene Slots keine Spieler
             // gesetzt werden, der entsprechende Spieler existierte ja gar nicht auf
             // der Karte!
             if(mapinfo.map_type != MAPTYPE_SAVEGAME)
@@ -719,7 +719,7 @@ void GameServer::TogglePlayerState(unsigned char client)
     }
     player->ready = (player->ps == PS_KI);
 
-    // Tat verkÃ¼nden
+    // Tat verkünden
     SendToAll(GameMessage_Player_Toggle_State(client));
 
     // freie farbe suchen lassen
@@ -747,7 +747,7 @@ void GameServer::TogglePlayerState(unsigned char client)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// Team der KI Ã¤ndern
+// Team der KI ändern
 void GameServer::TogglePlayerTeam(unsigned char client)
 {
     GameServerPlayer* player = &players[client];
@@ -792,7 +792,7 @@ void GameServer::TogglePlayerTeam(unsigned char client)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// Farbe der KI Ã¤ndern
+// Farbe der KI ändern
 void GameServer::TogglePlayerColor(unsigned char client)
 {
     GameServerPlayer* player = &players[client];
@@ -806,7 +806,7 @@ void GameServer::TogglePlayerColor(unsigned char client)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// Nation der KI Ã¤ndern
+// Nation der KI ändern
 void GameServer::TogglePlayerNation(unsigned char client)
 {
     GameServerPlayer* player = &players[client];
@@ -848,7 +848,7 @@ void GameServer::SendToAll(const GameMessage& msg)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// kickt einen spieler und rÃ¤umt auf
+// kickt einen spieler und räumt auf
 void GameServer::KickPlayer(unsigned char playerid, unsigned char cause, unsigned short param)
 {
     NS_PlayerKicked npk;
@@ -866,13 +866,13 @@ void GameServer::KickPlayer(NS_PlayerKicked npk)
     // send-queue flushen
     player->send_queue.flush(&player->so);
 
-    // tÃ¶ten, falls auÃŸerhalb
+    // töten, falls außerhalb
     if(status == SS_GAME)
     {
-        // KI-Spieler muss Ã¼bernehmen
+        // KI-Spieler muss übernehmen
         player->ps = PS_KI;
         ai_players[npk.playerid] = GAMECLIENT.CreateAIPlayer(npk.playerid);
-        // Und Socket schlieÃŸen, das brauchen wir nicht mehr
+        // Und Socket schließen, das brauchen wir nicht mehr
         player->so.Close();
     }
     else
@@ -909,20 +909,20 @@ void GameServer::ClientWatchDog()
     unsigned char client = 0xFF;
     SocketSet set;
 
-    // auf Fehler prÃ¼fen
+    // auf Fehler prüfen
     set.Clear();
 
-    // sockets zum set hinzufÃ¼gen
+    // sockets zum set hinzufügen
     for(client = 0; client < serverconfig.playercount; ++client)
     {
         if( players[client].isValid() )
         {
-            // zum set hinzufÃ¼gen
+            // zum set hinzufügen
             set.Add(players[client].so);
         }
     }
 
-    // auf fehler prÃ¼fen
+    // auf fehler prüfen
     if(set.Select(0, 2) > 0)
     {
         for(client = 0; client < serverconfig.playercount; ++client)
@@ -942,24 +942,24 @@ void GameServer::ClientWatchDog()
         // player anpingen
         player->doPing();
 
-        // auf timeout prÃ¼fen
+        // auf timeout prüfen
         player->doTimeout();
     }
 
-    // prÃ¼fen ob GF vergangen
+    // prüfen ob GF vergangen
     if(status == SS_GAME)
     {
         unsigned int currenttime = VIDEODRIVER.GetTickCount();
 
         if(!framesinfo.pause)
         {
-            // network frame durchfÃ¼hren
+            // network frame durchführen
 			if(currenttime - framesinfo.lasttime > framesinfo.gf_length || skiptogf > framesinfo.gf_nr)
             {
 				//if(skiptogf > framesinfo.gf_nr)
 					//LOG.lprintf("skipping to gf %i \n",skiptogf);
                 ++framesinfo.gf_nr;
-                // KIs ausfÃ¼hren
+                // KIs ausführen
                 for(unsigned i = 0; i < ai_players.size(); ++i)
                 {
                     if(ai_players[i])
@@ -969,7 +969,7 @@ void GameServer::ClientWatchDog()
                 // NWF vergangen?
                 if(framesinfo.gf_nr % framesinfo.nwf_length == 0)
                 {
-                    // auf laggende spieler prÃ¼fen und evtl Kommandos der KI-Spieler senden
+                    // auf laggende spieler prüfen und evtl Kommandos der KI-Spieler senden
                     unsigned char lagging_player = 0xFF;
 
                     for(client = 0; client < serverconfig.playercount; ++client)
@@ -1106,7 +1106,7 @@ void GameServer::ClientWatchDog()
                         }
 
                         SendToAll(GameMessage_Server_NWFDone(0xff, framesinfo.gf_nr, framesinfo.gf_length));
-                        // Framecounter erhÃ¶hen
+                        // Framecounter erhöhen
                         ++framesinfo.nr;
                     }
                     else
@@ -1189,22 +1189,22 @@ void GameServer::WaitForClients(void)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// fÃ¼llt die warteschlangen mit "paketen"
+// füllt die warteschlangen mit "paketen"
 void GameServer::FillPlayerQueues(void)
 {
     SocketSet set;
     unsigned char client = 0xFF;
     bool not_empty = false;
 
-    // erstmal auf Daten Ã¼berprÃ¼fen
+    // erstmal auf Daten überprüfen
     do
     {
-        // sockets zum set hinzufÃ¼gen
+        // sockets zum set hinzufügen
         for(client = 0; client < serverconfig.playercount; ++client)
         {
             if( players[client].isValid() )
             {
-                // zum set hinzufÃ¼gen
+                // zum set hinzufügen
                 set.Add(players[client].so);
             }
         }
@@ -1307,9 +1307,9 @@ void GameServer::OnNMSServerChat(const GameMessage_Server_Chat& msg)
         {
             SendToAll(msg);
         } break;
-    case CD_ALLIES: // VerbÃ¼ndete
+    case CD_ALLIES: // Verbündete
         {
-            // Besiegte dÃ¼rfen nicht mehr heimlich mit VerbÃ¼ndeten reden
+            // Besiegte dürfen nicht mehr heimlich mit Verbündeten reden
             if(!player->isDefeated())
             {
                 for(unsigned int i = 0; i < players.getCount(); ++i)
@@ -1323,7 +1323,7 @@ void GameServer::OnNMSServerChat(const GameMessage_Server_Chat& msg)
         } break;
     case CD_ENEMIES: // Feinde
         {
-            // Besiegte dÃ¼rfen nicht mehr heimlich mit Feinden reden
+            // Besiegte dürfen nicht mehr heimlich mit Feinden reden
             if(!player->isDefeated())
             {
                 for(unsigned int i = 0; i < players.getCount(); ++i)
@@ -1349,7 +1349,7 @@ inline void GameServer::OnNMSPlayerName(const GameMessage_Player_Name& msg)
 
     player->name = msg.playername;
 
-    // Als Antwort Karteninformationen Ã¼bertragen
+    // Als Antwort Karteninformationen übertragen
     player->temp_ul = 0;
 
     player->send_queue.push(new GameMessage_Map_Info(mapinfo.name, mapinfo.map_type, mapinfo.partcount,
@@ -1402,7 +1402,7 @@ inline void GameServer::OnNMSPlayerToggleColor(const GameMessage_Player_Toggle_C
 {
     GameServerPlayer* player = &players[msg.player];
 
-    // ist die farbe auch frei, wenn nicht, "Ã¼berspringen"?
+    // ist die farbe auch frei, wenn nicht, "überspringen"?
     bool reserved_colors[PLAYER_COLORS_COUNT];
     memset(reserved_colors, 0, sizeof(bool) * PLAYER_COLORS_COUNT);
 
@@ -1526,7 +1526,7 @@ void GameServer::OnNMSGameCommand(const GameMessage_GameCommand& msg)
     // NFCs speichern
     player->gc_queue.push_back(msg);
 
-    //// Command schlieÃŸlich an alle Clients weiterleiten, aber nicht in der Pause und nicht, wenn derjenige Spieler besiegt wurde!
+    //// Command schließlich an alle Clients weiterleiten, aber nicht in der Pause und nicht, wenn derjenige Spieler besiegt wurde!
     if(!this->framesinfo.pause && !players[msg.player].isDefeated())
         SendToAll(msg);
     else
@@ -1693,14 +1693,14 @@ void GameServer::OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, std::lis
 void GameServer::ChangePlayer(const unsigned char old_id, const unsigned char new_id)
 {
 	LOG.lprintf("GameServer::ChangePlayer %i - %i \n",old_id, new_id);
-    // old_id muss richtiger Spieler, new_id KI sein, ansonsten geht das natÃ¼rlich nicht
+    // old_id muss richtiger Spieler, new_id KI sein, ansonsten geht das natürlich nicht
     if( !(players[old_id].ps == PS_OCCUPIED && players[new_id].ps == PS_KI) )
         return;	
     players[old_id].ps = PS_KI;
     players[new_id].ps = PS_OCCUPIED;
     players[new_id].so = players[old_id].so;
 
-    // Alte KI lÃ¶schen
+    // Alte KI löschen
     delete ai_players[new_id];
     ai_players[new_id] = 0;
 

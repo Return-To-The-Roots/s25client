@@ -67,7 +67,7 @@ void noCharburnerPile::Destroy_noCharburnerPile()
 {
     em->RemoveEvent(event);
 
-    // BauplÃ¤tze drumrum neu berechnen
+    // Bauplätze drumrum neu berechnen
     gwg->RecalcBQAroundPointBig(pos);
 
     Destroy_noCoordBase();

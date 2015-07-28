@@ -70,7 +70,7 @@ void nofPassiveWorker::Draw(int x, int y)
     DrawWalking(x, y);
 }
 
-/// FÃ¼r alle restlichen Events, die nicht von noFigure behandelt werden
+/// Für alle restlichen Events, die nicht von noFigure behandelt werden
 void nofPassiveWorker::HandleDerivedEvent(const unsigned int id)
 {
 

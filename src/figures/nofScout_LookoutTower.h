@@ -21,7 +21,7 @@
 
 #include "nofBuildingWorker.h"
 
-/// SpÃ¤her, der in einem SpÃ¤hturm "arbeitet"
+/// Späher, der in einem Spähturm "arbeitet"
 class nofScout_LookoutTower : public nofBuildingWorker
 {
     private:
@@ -30,7 +30,7 @@ class nofScout_LookoutTower : public nofBuildingWorker
         void WalkedDerived();
         /// Malt den Arbeiter beim Arbeiten
         void DrawWorking(int x, int y);
-        /// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren raustrÃ¤gt (bzw rein)
+        /// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren rausträgt (bzw rein)
         unsigned short GetCarryID() const { return 0; }
         /// Arbeit musste wegen Arbeitsplatzverlust abgebrochen werden
         void WorkAborted();

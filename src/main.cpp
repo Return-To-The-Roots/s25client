@@ -94,7 +94,7 @@ static char THIS_FILE[] = __FILE__;
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Exit-Handler, wird bei @p exit ausgefÃ¼hrt.
+ *  Exit-Handler, wird bei @p exit ausgeführt.
  *
  *  @author FloSoft
  */
@@ -111,7 +111,7 @@ void ExitHandler(void)
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER && !defined NOHWETRANS
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Exception-Handler, wird bei einer C-Exception ausgefÃ¼hrt, falls
+ *  Exception-Handler, wird bei einer C-Exception ausgeführt, falls
  *  dies in der build_paths.h mit deaktiviertem NOHWETRANS und
  *  im Projekt mit den Compilerflags (/EHa) aktiviert ist.
  *
@@ -185,8 +185,8 @@ void LinExceptionHandler(int sig)
 /**
  *  Hauptfunktion von Siedler II.5 Return to the Roots
  *
- *  @param[in] argc Anzahl Ã¼bergebener Argumente
- *  @param[in] argv Array der Ã¼bergebenen Argumente
+ *  @param[in] argc Anzahl übergebener Argumente
+ *  @param[in] argv Array der übergebenen Argumente
  *
  *  @return Exit Status, 0 bei Erfolg, > 0 bei Fehler
  *
@@ -277,7 +277,7 @@ int main(int argc, char* argv[])
     libsiedler2::setTextureFormat(libsiedler2::FORMAT_RGBA);
     libsiedler2::setAllocator(glAllocator);
 
-    // Zufallsgenerator initialisieren (Achtung: nur fÃ¼r Animationens-Offsets interessant, fÃ¼r alles andere (spielentscheidende) wird unser Generator verwendet)
+    // Zufallsgenerator initialisieren (Achtung: nur für Animationens-Offsets interessant, für alles andere (spielentscheidende) wird unser Generator verwendet)
     srand(static_cast<unsigned int>(std::time(NULL)));
 
     // Exit-Handler initialisieren
