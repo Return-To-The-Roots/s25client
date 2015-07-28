@@ -184,7 +184,7 @@ GameClientPlayer::GameClientPlayer(const unsigned playerid) : GamePlayerInfo(pla
     for(unsigned i = 0; i < 5; ++i)
         defenders[i] = true;
 
-    is_lagging = true;
+    is_lagging = false;
 
     // Inventur nullen
     global_inventory.clear();
