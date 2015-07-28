@@ -1,5 +1,4 @@
-﻿// $Id: iwMilitaryBuilding.cpp 9596 2015-02-01 09:41:54Z marcus $
-//
+﻿//
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
@@ -98,7 +97,7 @@ void iwMilitaryBuilding::Msg_PaintAfter()
 
     // Sammeln aus der Rausgeh-Liste und denen, die wirklich noch drinne sind
     std::multiset<unsigned> soldiers;
-    for(std::list<nofPassiveSoldier*>::iterator it = building->troops.begin(); it != building->troops.end(); ++it)
+    for(nobMilitary::SortedTroopsContainer::iterator it = building->troops.begin(); it != building->troops.end(); ++it)
         soldiers.insert((*it)->GetRank());
 
     for(std::list<noFigure*>::iterator it = building->leave_house.begin(); it != building->leave_house.end(); ++it)

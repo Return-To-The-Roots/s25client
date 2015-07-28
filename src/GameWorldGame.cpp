@@ -1061,10 +1061,10 @@ void GameWorldGame::Attack(const unsigned char player_attacker, const MapPoint p
 
         // Take soldier(s)
         unsigned i = 0;
-        std::list<nofPassiveSoldier*>& troops = static_cast<nobMilitary*>(*it)->troops;
+        nobMilitary::SortedTroopsContainer& troops = static_cast<nobMilitary*>(*it)->troops;
         if(strong_soldiers){
             // Strong soldiers first
-            for(std::list<nofPassiveSoldier*>::reverse_iterator it2 = troops.rbegin();
+            for(nobMilitary::SortedTroopsContainer::reverse_iterator it2 = troops.rbegin();
                     it2 != troops.rend() && i < soldiers_count;
                     ++it2, ++i){
                 bool inserted = false;
@@ -1087,7 +1087,7 @@ void GameWorldGame::Attack(const unsigned char player_attacker, const MapPoint p
             }
         }else{
             // Weak soldiers first
-            for(std::list<nofPassiveSoldier*>::iterator it2 = troops.begin();
+            for(nobMilitary::SortedTroopsContainer::iterator it2 = troops.begin();
                     it2 != troops.end() && i < soldiers_count;
                     ++it2, ++i){
                 bool inserted = false;
