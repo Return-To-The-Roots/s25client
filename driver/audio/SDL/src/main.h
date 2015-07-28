@@ -1,4 +1,4 @@
-// $Id: main.h 9357 2014-04-25 15:35:25Z FloSoft $
+﻿// $Id: main.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -51,13 +51,8 @@
 #include <string.h>
 #include <ctype.h>
 
-#ifdef __APPLE__
 #include <SDL.h>
 #include <SDL_mixer.h>
-#else
-#include <SDL/SDL.h>
-#include <SDL/SDL_mixer.h>
-#endif // !__APPLE__
 
 
 ///////////////////////////////////////////////////////////////////////////////

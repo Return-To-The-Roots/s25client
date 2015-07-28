@@ -1,4 +1,4 @@
-// $Id: Loader.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+﻿// $Id: Loader.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -18,26 +18,41 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 ///////////////////////////////////////////////////////////////////////////////
-// Header
-#include "main.h"
 
-#include <iomanip>
+// Conflict with DATADIR in shlwapi -> include build_paths later
+#define NO_BUILD_PATHS
+#include "defines.h"
+
+#ifdef _WIN32
+#   include <shlwapi.h>
+#   include "build_paths.h"
+#else
+#	include <sys/stat.h>
+#endif // _WIN32
+
 #include "Loader.h"
-
 #include "files.h"
-#include "GlobalVars.h"
+
 #include "Settings.h"
 
-#include "VideoDriverWrapper.h"
-#include "AudioDriverWrapper.h"
+#include "drivers/VideoDriverWrapper.h"
+#include "drivers/AudioDriverWrapper.h"
+#include "Log.h"
 
-#include "CollisionDetection.h"
-#include "GameClient.h"
-#include "GameClientPlayer.h"
+#include "GameWorld.h"
 #include "ListDir.h"
+#include "fileFuncs.h"
 
-#include "glSmartBitmap.h"
-#include "JobConsts.h"
+#include "ogl/glSmartBitmap.h"
+#include "ogl/glArchivItem_Bitmap_Raw.h"
+#include "ogl/glAllocator.h"
+#include "gameData/JobConsts.h"
+#include "../libsiedler2/src/types.h"
+#include "../libsiedler2/src/prototypen.h"
+
+#include <iomanip>
+#include <sstream>
+#include <algorithm>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -73,7 +88,7 @@ Loader::~Loader(void)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Lädt alle allgemeinen Dateien.
+ *  LÃ¤dt alle allgemeinen Dateien.
  *
  *  @return @p true bei Erfolg, @p false bei Fehler.
  *
@@ -88,8 +103,8 @@ bool Loader::LoadFilesAtStart(void)
     {
         5, 6, 7, 8, 9, 10, 17, // Paletten:     pal5.bbm, pal6.bbm, pal7.bbm, paletti0.bbm, paletti1.bbm, paletti8.bbm, colors.act
         FILE_SPLASH_ID,        // Splashscreen: splash.bmp
-        11, 12,                // Menüdateien:  resource.dat, io.dat
-        102, 103,              // Hintergründe: setup013.lbm, setup015.lbm
+        11, 12,                // MenÃ¼dateien:  resource.dat, io.dat
+        102, 103,              // HintergrÃ¼nde: setup013.lbm, setup015.lbm
         64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84 // Die ganzen Spielladescreens.
     };
 
@@ -99,7 +114,7 @@ bool Loader::LoadFilesAtStart(void)
     if(!LoadSounds())
         return false;
 
-    if(!LoadLsts(95)) // lade systemweite und persönliche lst files
+    if(!LoadLsts(95)) // lade systemweite und persÃ¶nliche lst files
         return false;
 
     return true;
@@ -117,7 +132,7 @@ bool Loader::LoadFileOrDir(const std::string& file, const unsigned int file_id, 
     if(IsDir(file))
     {
         // yes, load all files in the directory
-        unsigned int ladezeit = VideoDriverWrapper::inst().GetTickCount();
+        unsigned int ladezeit = VIDEODRIVER.GetTickCount();
 
         LOG.lprintf("Lade LST,BOB,IDX,BMP,TXT,GER,ENG Dateien aus \"%s\"\n", GetFilePath(file).c_str());
 
@@ -135,7 +150,7 @@ bool Loader::LoadFileOrDir(const std::string& file, const unsigned int file_id, 
             if(!LoadFile( i->c_str(), GetPaletteN("pal5"), load_always ) )
                 return false;
         }
-        LOG.lprintf("fertig (%ums)\n", VideoDriverWrapper::inst().GetTickCount() - ladezeit);
+        LOG.lprintf("fertig (%ums)\n", VIDEODRIVER.GetTickCount() - ladezeit);
     }
     else
     {
@@ -148,8 +163,8 @@ bool Loader::LoadFileOrDir(const std::string& file, const unsigned int file_id, 
         {
             glArchivItem_Bitmap* image = GetImageN("splash", 0);
             image->setFilter(GL_LINEAR);
-            image->Draw(0, 0, VideoDriverWrapper::inst().GetScreenWidth(), VideoDriverWrapper::inst().GetScreenHeight(), 0, 0, 0, 0);
-            VideoDriverWrapper::inst().SwapBuffers();
+            image->Draw(0, 0, VIDEODRIVER.GetScreenWidth(), VIDEODRIVER.GetScreenHeight(), 0, 0, 0, 0);
+            VIDEODRIVER.SwapBuffers();
         }
     }
     return true;
@@ -157,7 +172,7 @@ bool Loader::LoadFileOrDir(const std::string& file, const unsigned int file_id, 
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Lädt Dateien aus FILE_PATHS bzw aus dem Verzeichnis.
+ *  LÃ¤dt Dateien aus FILE_PATHS bzw aus dem Verzeichnis.
  *
  *  @return @p true bei Erfolg, @p false bei Fehler.
  *
@@ -180,7 +195,7 @@ bool Loader::LoadFilesFromArray(const unsigned int files_count, const unsigned i
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Lädt die "override" lst-files aus den systemweiten und persönlichen verzeichnissen
+ *  LÃ¤dt die "override" lst-files aus den systemweiten und persÃ¶nlichen verzeichnissen
  *
  *  @return @p true bei Erfolg, @p false bei Fehler.
  *
@@ -218,7 +233,7 @@ bool Loader::LoadLsts(unsigned int dir)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Lädt alle Sounds.
+ *  LÃ¤dt alle Sounds.
  *
  *  @return liefert true bei Erfolg, false bei Fehler
  *
@@ -232,16 +247,16 @@ bool Loader::LoadSounds(void)
         // nein, dann konvertieren
 
         std::stringstream cmdss;
-        cmdss << GetFilePath(FILE_PATHS[57]); // pfad zum sound-converter hinzufügen
+        cmdss << GetFilePath(FILE_PATHS[57]); // pfad zum sound-converter hinzufÃ¼gen
 
-        // name anhängen
+        // name anhÃ¤ngen
 #ifdef _WIN32
         cmdss << "\\sound-convert.exe";
 #else
         cmdss << "/sound-convert";
 #endif
 
-        // parameter anhängen
+        // parameter anhÃ¤ngen
         cmdss << " -s \"";
         cmdss << GetFilePath(FILE_PATHS[56]); // script
         cmdss << "\" -f \"";
@@ -262,7 +277,7 @@ bool Loader::LoadSounds(void)
         // die konvertierte muss nicht extra geladen werden, da sie im override-ordner landet
     }
 
-    // ggf original laden, hier das overriding benutzen wär ladezeitverschwendung
+    // ggf original laden, hier das overriding benutzen wÃ¤r ladezeitverschwendung
     if(!FileExists(FILE_PATHS[55]))
     {
         // existiert nicht
@@ -298,8 +313,8 @@ bool Loader::LoadSounds(void)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  sortiert einen string nach Startzahl, Namen oder Länge (in dieser Reihenfolge).
- *  Wird für das Sortieren der Dateien benutzt.
+ *  sortiert einen string nach Startzahl, Namen oder LÃ¤nge (in dieser Reihenfolge).
+ *  Wird fÃ¼r das Sortieren der Dateien benutzt.
  *
  *  @author FloSoft
  */
@@ -337,7 +352,7 @@ bool Loader::SortFilesHelper(const std::string& lhs, const std::string& rhs)
 ///////////////////////////////////////////////////////////////////////////////
 /**
  *  zerlegt einen String in Einzelteile
- *  Wird für das richtige Laden der Dateien benutzt.
+ *  Wird fÃ¼r das richtige Laden der Dateien benutzt.
  *
  *  @author FloSoft
  */
@@ -363,7 +378,7 @@ std::vector<std::string> Loader::ExplodeString(std::string const& line, const ch
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Lädt die Settings.
+ *  LÃ¤dt die Settings.
  *
  *  @return @p true bei Erfolg, @p false bei Fehler.
  *
@@ -414,10 +429,10 @@ bool Loader::SaveSettings()
 glSmartBitmap Loader::animal_cache[SPEC_COUNT][6][ANIMAL_MAX_ANIMATION_STEPS + 1] = {{{glSmartBitmap()}}};
 
 // building_cache[nation][type][skeleton?]
-glSmartBitmap Loader::building_cache[NATION_COUNT][BUILDING_TYPES_COUNT][2] = {{{glSmartBitmap()}}};
+glSmartBitmap Loader::building_cache[NAT_COUNT][BUILDING_TYPES_COUNT][2] = {{{glSmartBitmap()}}};
 
 // flag_cache[nation][type][animation]
-glSmartBitmap Loader::flag_cache[NATION_COUNT][3][8] = {{{glSmartBitmap()}}};
+glSmartBitmap Loader::flag_cache[NAT_COUNT][3][8] = {{{glSmartBitmap()}}};
 
 glSmartBitmap Loader::building_flag_cache[8] = {glSmartBitmap()};
 
@@ -425,19 +440,19 @@ glSmartBitmap Loader::building_flag_cache[8] = {glSmartBitmap()};
 glSmartBitmap Loader::tree_cache[9][15] = {{glSmartBitmap()}};
 
 // Bobs from jobs.bob: bob_jobs_cache[nation][job][direction][animation]
-glSmartBitmap Loader::bob_jobs_cache[NATION_COUNT][JOB_TYPES_COUNT + 1][6][8];
+glSmartBitmap Loader::bob_jobs_cache[NAT_COUNT][JOB_TYPES_COUNT + 1][6][8];
 
-// Granit - zwei Typen, sechs größen
+// Granit - zwei Typen, sechs grÃ¶ÃŸen
 glSmartBitmap Loader::granite_cache[2][6];
 
-// Felder - 2 Typen, vier Größen
+// Felder - 2 Typen, vier GrÃ¶ÃŸen
 glSmartBitmap Loader::grainfield_cache[2][4];
 
 // carrier_cache[ware][direction][animation_step][fat]
 glSmartBitmap Loader::carrier_cache[WARE_TYPES_COUNT][6][8][2];
 
 // boundary_stone_cache[nation]
-glSmartBitmap Loader::boundary_stone_cache[NATION_COUNT];
+glSmartBitmap Loader::boundary_stone_cache[NAT_COUNT];
 
 // boat_cache[direction][animation_step]
 glSmartBitmap Loader::boat_cache[6][8];
@@ -450,7 +465,7 @@ glSmartBitmap Loader::gateway_cache[5];
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Lädt die Spieldateien.
+ *  LÃ¤dt die Spieldateien.
  *
  *  @param[in] gfxset  Das GFX-Set
  *  @param[in] nations Array der zu ladenden Nationen.
@@ -463,7 +478,7 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool* nations)
 {
     assert(gfxset <= 2);
 
-    const unsigned int files_count = NATIVE_NATION_COUNT + 5 + 6 + 4 + 1 + 1;
+    const unsigned int files_count = NATIVE_NAT_COUNT + 5 + 6 + 4 + 1 + 1;
 
     unsigned int files[files_count] =
     {
@@ -475,11 +490,11 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool* nations)
         20u + gfxset                                     // tex?.lbm
     };
 
-    for(unsigned char i = 0; i < NATIVE_NATION_COUNT; ++i)
+    for(unsigned char i = 0; i < NATIVE_NAT_COUNT; ++i)
     {
-        // ggf. Völker-Grafiken laden
+        // ggf. VÃ¶lker-Grafiken laden
         if(nations[i] || ((i == 2) && (nations[4])))
-            files[i] = 27 + i + (gfxset == 2) * NATIVE_NATION_COUNT;
+            files[i] = 27 + i + (gfxset == 2) * NATIVE_NAT_COUNT;
     }
 
     // dateien ggf nur einmal laden - qx: wozu? performance is hier echt egal -> fixing bug #1085693
@@ -495,7 +510,7 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool* nations)
         return false;
     }
 
-    if(!LoadLsts(96)) // lade systemweite und persönliche lst files
+    if(!LoadLsts(96)) // lade systemweite und persÃ¶nliche lst files
     {
         lastgfx = 0xFF;
         return false;
@@ -505,7 +520,7 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool* nations)
 
 
 
-    for (unsigned int nation = 0; nation < NATION_COUNT; ++nation)
+    for (unsigned int nation = 0; nation < NAT_COUNT; ++nation)
     {
         nation_gfx[nation] = &(this->files[NATION_GFXSET_Z[lastgfx][nation]]);
     }
@@ -536,16 +551,16 @@ void Loader::fillCaches()
 
                 bmp.reset();
 
-                bmp.add(LOADER.GetMapImageN(ANIMALCONSTS[species].walking_id + ANIMALCONSTS[species].animation_steps * ( (dir + 3) % 6) + ani_step));
+                bmp.add(GetMapImageN(ANIMALCONSTS[species].walking_id + ANIMALCONSTS[species].animation_steps * ( (dir + 3) % 6) + ani_step));
 
                 if(ANIMALCONSTS[species].shadow_id)
                 {
                     if(species == SPEC_DUCK)
-                        // Ente Sonderfall, da gibts nur einen Schatten für jede Richtung!
-                        bmp.addShadow(LOADER.GetMapImageN(ANIMALCONSTS[species].shadow_id));
+                        // Ente Sonderfall, da gibts nur einen Schatten fÃ¼r jede Richtung!
+                        bmp.addShadow(GetMapImageN(ANIMALCONSTS[species].shadow_id));
                     else
                         // ansonsten immer pro Richtung einen Schatten
-                        bmp.addShadow(LOADER.GetMapImageN(ANIMALCONSTS[species].shadow_id + (dir + 3) % 6));
+                        bmp.addShadow(GetMapImageN(ANIMALCONSTS[species].shadow_id + (dir + 3) % 6));
                 }
 
                 stp->add(bmp);
@@ -558,20 +573,20 @@ void Loader::fillCaches()
 
         if (ANIMALCONSTS[species].dead_id)
         {
-            bmp.add(LOADER.GetMapImageN(ANIMALCONSTS[species].dead_id));
+            bmp.add(GetMapImageN(ANIMALCONSTS[species].dead_id));
 
             if (ANIMALCONSTS[species].shadow_dead_id)
             {
-                bmp.addShadow(LOADER.GetMapImageN(ANIMALCONSTS[species].shadow_dead_id));
+                bmp.addShadow(GetMapImageN(ANIMALCONSTS[species].shadow_dead_id));
             }
 
             stp->add(bmp);
         }
     }
 
-    glArchivItem_Bob* bob_jobs = LOADER.GetBobN("jobs");
+    glArchivItem_Bob* bob_jobs = GetBobN("jobs");
 
-    for (unsigned nation = 0; nation < NATION_COUNT; ++nation)
+    for (unsigned nation = 0; nation < NAT_COUNT; ++nation)
     {
 // BUILDINGS
         for (unsigned type = 0; type < BUILDING_TYPES_COUNT; ++type)
@@ -586,18 +601,18 @@ void Loader::fillCaches()
             {
                 unsigned id = nation * 8;
 
-                bmp.add(LOADER.GetImageN("charburner", id + ((lastgfx == LT_WINTERWORLD) ? 6 : 1)));
-                bmp.addShadow(LOADER.GetImageN("charburner", id + 2));
+                bmp.add(GetImageN("charburner", id + ((lastgfx == LT_WINTERWORLD) ? 6 : 1)));
+                bmp.addShadow(GetImageN("charburner", id + 2));
 
-                skel.add(LOADER.GetImageN("charburner", id + 3));
-                skel.addShadow(LOADER.GetImageN("charburner", id + 4));
+                skel.add(GetImageN("charburner", id + 3));
+                skel.addShadow(GetImageN("charburner", id + 4));
             }
             else
             {
-                bmp.add(LOADER.GetNationImageN(nation, 250 + 5 * type));
-                bmp.addShadow(LOADER.GetNationImageN(nation, 250 + 5 * type + 1));
-                skel.add(LOADER.GetNationImageN(nation, 250 + 5 * type + 2));
-                skel.addShadow(LOADER.GetNationImageN(nation, 250 + 5 * type + 3));
+                bmp.add(GetNationImageN(nation, 250 + 5 * type));
+                bmp.addShadow(GetNationImageN(nation, 250 + 5 * type + 1));
+                skel.add(GetNationImageN(nation, 250 + 5 * type + 2));
+                skel.addShadow(GetNationImageN(nation, 250 + 5 * type + 3));
             }
 
             stp->add(bmp);
@@ -609,15 +624,15 @@ void Loader::fillCaches()
         {
             for (unsigned ani_step = 0; ani_step < 8; ++ani_step)
             {
-                // Flaggentyp berücksichtigen
+                // Flaggentyp berÃ¼cksichtigen
                 int nr = ani_step + 100 + 20 * type;
 
                 glSmartBitmap& bmp = flag_cache[nation][type][ani_step];
 
                 bmp.reset();
 
-                bmp.add(static_cast<glArchivItem_Bitmap_Player*>(LOADER.GetNationImageN(nation, nr)));
-                bmp.addShadow(LOADER.GetNationImageN(nation, nr + 10));
+                bmp.add(static_cast<glArchivItem_Bitmap_Player*>(GetNationImageN(nation, nr)));
+                bmp.addShadow(GetNationImageN(nation, nr + 10));
 
                 stp->add(bmp);
             }
@@ -650,7 +665,7 @@ void Loader::fillCaches()
 
                         if ((job == JOB_SCOUT) || ((job >= JOB_PRIVATE) && (job <= JOB_GENERAL)))
                         {
-                            if (nation < NATIVE_NATION_COUNT)
+                            if (nation < NATIVE_NAT_COUNT)
                             {
                                 id += NATION_RTTR_TO_S2[nation] * 6;
                             }
@@ -663,7 +678,7 @@ void Loader::fillCaches()
                                                                 overlayOffset = (job == JOB_SCOUT) ? 1740 : 1655;
 
                                                                 //8 Frames * 6 Directions * 6 Types
-                                                                overlayOffset += (nation - NATIVE_NATION_COUNT) * (8 * 6 * 6);
+                                                                overlayOffset += (nation - NATIVE_NAT_COUNT) * (8 * 6 * 6);
                                 */
                             }
                         }
@@ -680,7 +695,7 @@ void Loader::fillCaches()
 
                     bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(bob_jobs->get(body)));
                     bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(bob_jobs->get(overlayOffset + bob_jobs->getLink(good))));
-                    bmp.addShadow(LOADER.GetMapImageN(900 + ( (dir + 3) % 6 ) * 8 + ani_step));
+                    bmp.addShadow(GetMapImageN(900 + ( (dir + 3) % 6 ) * 8 + ani_step));
 
                     stp->add(bmp);
                 }
@@ -691,8 +706,8 @@ void Loader::fillCaches()
 
         bmp.reset();
 
-        bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(LOADER.GetNationImageN(nation, 0)));
-        bmp.addShadow(LOADER.GetNationImageN(nation, 1));
+        bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(GetNationImageN(nation, 0)));
+        bmp.addShadow(GetNationImageN(nation, 1));
 
         stp->add(bmp);
     }
@@ -705,10 +720,10 @@ void Loader::fillCaches()
 
             bmp.reset();
 
-            bmp.add(static_cast<glArchivItem_Bitmap_Player *>(LOADER.GetMapImageN(3162+ani_step)));
+            bmp.add(static_cast<glArchivItem_Bitmap_Player *>(GetMapImageN(3162+ani_step)));
 
             int a, b, c, d;
-            static_cast<glArchivItem_Bitmap_Player *>(LOADER.GetMapImageN(3162+ani_step))->getVisibleArea(a, b, c, d);
+            static_cast<glArchivItem_Bitmap_Player *>(GetMapImageN(3162+ani_step))->getVisibleArea(a, b, c, d);
             fprintf(stderr, "%i,%i (%ix%i)\n", a, b, c, d);
 
 
@@ -724,8 +739,8 @@ void Loader::fillCaches()
 
             bmp.reset();
 
-            bmp.add(LOADER.GetMapImageN(200 + type * 15 + ani_step));
-            bmp.addShadow(LOADER.GetMapImageN(350 + type * 15 + ani_step));
+            bmp.add(GetMapImageN(200 + type * 15 + ani_step));
+            bmp.addShadow(GetMapImageN(350 + type * 15 + ani_step));
 
             stp->add(bmp);
         }
@@ -740,8 +755,8 @@ void Loader::fillCaches()
 
             bmp.reset();
 
-            bmp.add(LOADER.GetMapImageN(516 + type * 6 + size));
-            bmp.addShadow(LOADER.GetMapImageN(616 + type * 6 + size));
+            bmp.add(GetMapImageN(516 + type * 6 + size));
+            bmp.addShadow(GetMapImageN(616 + type * 6 + size));
 
             stp->add(bmp);
         }
@@ -756,8 +771,8 @@ void Loader::fillCaches()
 
             bmp.reset();
 
-            bmp.add(LOADER.GetMapImageN(532 + type * 5 + size));
-            bmp.addShadow(LOADER.GetMapImageN(632 + type * 5 + size));
+            bmp.add(GetMapImageN(532 + type * 5 + size));
+            bmp.addShadow(GetMapImageN(632 + type * 5 + size));
 
             stp->add(bmp);
         }
@@ -772,8 +787,8 @@ void Loader::fillCaches()
 
             bmp.reset();
 
-            bmp.add(LOADER.GetMapImageN(2000 + ((dir + 3) % 6) * 8 + ani_step));
-            bmp.addShadow(LOADER.GetMapImageN(2048 + dir % 3));
+            bmp.add(GetMapImageN(2000 + ((dir + 3) % 6) * 8 + ani_step));
+            bmp.addShadow(GetMapImageN(2048 + dir % 3));
 
             stp->add(bmp);
         }
@@ -788,15 +803,15 @@ void Loader::fillCaches()
 
             bmp.reset();
 
-            bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(LOADER.GetImageN("boat", ((dir + 3) % 6) * 8 + ani_step)));
-            bmp.addShadow(dynamic_cast<glArchivItem_Bitmap*>(LOADER.GetMapImageN(2048 + dir % 3)));
+            bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(GetImageN("boat", ((dir + 3) % 6) * 8 + ani_step)));
+            bmp.addShadow(dynamic_cast<glArchivItem_Bitmap*>(GetMapImageN(2048 + dir % 3)));
 
             stp->add(bmp);
         }
     }
 
 // carrier_cache[ware][direction][animation_step][fat]
-    glArchivItem_Bob* bob_carrier = LOADER.GetBobN("carrier");
+    glArchivItem_Bob* bob_carrier = GetBobN("carrier");
 
     for (unsigned ware = 0; ware < WARE_TYPES_COUNT; ++ware)
     {
@@ -831,7 +846,7 @@ void Loader::fillCaches()
 
                     bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(bob_carrier->get(body)));
                     bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(bob_carrier->get(96 + bob_carrier->getLink(good))));
-                    bmp.addShadow(LOADER.GetMapImageN(900 + ( (dir + 3) % 6 ) * 8 + ani_step));
+                    bmp.addShadow(GetMapImageN(900 + ( (dir + 3) % 6 ) * 8 + ani_step));
 
                     stp->add(bmp);
                 }
@@ -844,11 +859,11 @@ void Loader::fillCaches()
         const unsigned char start_index = 248;
         const unsigned char color_count = 4;
 
-        libsiedler2::ArchivItem_Palette* palette = LOADER.GetPaletteN("pal5");
-        glArchivItem_Bitmap* image = LOADER.GetMapImageN(561);
-        glArchivItem_Bitmap* shadow = LOADER.GetMapImageN(661);
+        libsiedler2::ArchivItem_Palette* palette = GetPaletteN("pal5");
+        glArchivItem_Bitmap* image = GetMapImageN(561);
+        glArchivItem_Bitmap* shadow = GetMapImageN(661);
 
-        if ((image != NULL) && (shadow != NULL) && (palette != NULL))
+        if ((image) && (shadow) && (palette))
         {
             unsigned short width = image->getWidth();
             unsigned short height = image->getHeight();
@@ -910,7 +925,7 @@ void Loader::fillCaches()
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Lädt Dateien von Addons.
+ *  LÃ¤dt Dateien von Addons.
  *
  *  @param[in] id die Addon ID
  *
@@ -941,50 +956,50 @@ bool Loader::CreateTerrainTextures(void)
     // Unanimierte Texturen
     Rect rects[16] =
     {
-        {0, 0, 48, 48},
-        {48, 0, 96, 48},
-        {96, 0, 144, 48},
-        {144, 0, 192, 48},
+        Rect(0, 0, 48, 48),
+        Rect(48, 0, 48, 48),
+        Rect(96, 0, 48, 48),
+        Rect(144, 0, 48, 48),
 
-        {0, 48, 48, 96},
-        {48, 48, 96, 96},
-        {96, 48, 144, 96},
-        {144, 48, 192, 96},
+        Rect(0, 48, 48, 48),
+        Rect(48, 48, 48, 48),
+        Rect(96, 48, 48, 48),
+        Rect(144, 48, 48, 48),
 
-        {0, 96, 48, 144},
-        {48, 96, 96, 144},
-        {96, 96, 144, 144},
-        {144, 96, 192, 144},
+        Rect(0, 96, 48, 48),
+        Rect(48, 96, 48, 48),
+        Rect(96, 96, 48, 48),
+        Rect(144, 96, 48, 48),
 
-        {0, 144, 48, 192},
-        {48, 144, 96, 192},
+        Rect(0, 144, 48, 48),
+        Rect(48, 144, 48, 48),
 
-        {192, 48, 247, 104},
-        {192, 104, 247, 160},
+        Rect(192, 48, 48, 48),
+        Rect(192, 104, 48, 48),
     };
 
-    // Ränder
+    // RÃ¤nder
     Rect rec_raender[5] =
     {
-        {192, 176, 256, 192}, // Schnee
-        {192, 192, 256, 208}, // Berg
-        {192, 208, 256, 224}, // Wste
-        {192, 224, 256, 240}, // Wiese
-        {192, 240, 256, 256} // Wasser
+        Rect(192, 176, 64, 16), // Schnee
+        Rect(192, 192, 64, 16), // Berg
+        Rect(192, 208, 64, 16), // Wste
+        Rect(192, 224, 64, 16), // Wiese
+        Rect(192, 240, 64, 16) // Wasser
     };
 
     // Wege
     Rect rec_roads[8] =
     {
-        {192, 0, 242, 16},
-        {192, 16, 242, 32},
-        {192, 32, 242, 48},
-        {192, 160, 242, 176},
+        Rect(192, 0, 50, 16),
+        Rect(192, 16, 50, 16),
+        Rect(192, 32, 50, 16),
+        Rect(192, 160, 50, 16),
 
-        {242, 0, 256, 16},
-        {242, 16, 256, 32},
-        {242, 32, 256, 48},
-        {242, 160, 256, 176},
+        Rect(242, 0, 50, 16),
+        Rect(242, 16, 50, 16),
+        Rect(242, 32, 50, 16),
+        Rect(242, 160, 50, 16),
     };
 
     textures.clear();
@@ -999,7 +1014,7 @@ bool Loader::CreateTerrainTextures(void)
     lava.clear();
     ExtractAnimatedTexture(&lava,  rects[15], 4, 248);
 
-    // die 5 Ränder
+    // die 5 RÃ¤nder
     borders.clear();
     for(unsigned char i = 0; i < 5; ++i)
         ExtractTexture(&borders, rec_raender[i]);
@@ -1070,7 +1085,7 @@ void Loader::ExtractAnimatedTexture(libsiedler2::ArchivInfo* destination, Rect& 
 
     unsigned char* buffer = new unsigned char[width * height];
 
-    // Mit Startindex (also irgendeiner Farbe) füllen, um transparente Pixel und damit schwarze Punke am Rand zu verhindern
+    // Mit Startindex (also irgendeiner Farbe) fÃ¼llen, um transparente Pixel und damit schwarze Punke am Rand zu verhindern
     memset(buffer, start_index, width * height);
 
     image->print(buffer, width, height, libsiedler2::FORMAT_PALETTED, palette, 0, 0, rect.left, rect.top, width, height);
@@ -1099,10 +1114,10 @@ void Loader::ExtractAnimatedTexture(libsiedler2::ArchivInfo* destination, Rect& 
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  @brief Lädt eine Datei in ein ArchivInfo.
+ *  @brief LÃ¤dt eine Datei in ein ArchivInfo.
  *
  *  @param[in] pfad    Der Dateipfad
- *  @param[in] palette (falls benötigt) die Palette.
+ *  @param[in] palette (falls benÃ¶tigt) die Palette.
  *  @param[in] archiv  Das Zielarchivinfo.
  *
  *  @return @p true bei Erfolg, @p false bei Fehler.
@@ -1111,7 +1126,7 @@ void Loader::ExtractAnimatedTexture(libsiedler2::ArchivInfo* destination, Rect& 
  */
 bool Loader::LoadArchiv(const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette, libsiedler2::ArchivInfo* archiv)
 {
-    unsigned int ladezeit = VideoDriverWrapper::inst().GetTickCount();
+    unsigned int ladezeit = VIDEODRIVER.GetTickCount();
 
     std::string file = GetFilePath(pfad);
 
@@ -1124,7 +1139,7 @@ bool Loader::LoadArchiv(const std::string& pfad, const libsiedler2::ArchivItem_P
         return false;
     }
 
-    LOG.lprintf("fertig (%ums)\n", VideoDriverWrapper::inst().GetTickCount() - ladezeit);
+    LOG.lprintf("fertig (%ums)\n", VIDEODRIVER.GetTickCount() - ladezeit);
 
     return true;
 }
@@ -1227,7 +1242,7 @@ bool Loader::LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Pal
             if(!LoadArchiv( *i, palette, &temp ) )
                 return false;
 
-            // Nun Daten abhängig der Typen erstellen, nur erstes Element wird bei Bitmaps konvertiert
+            // Nun Daten abhÃ¤ngig der Typen erstellen, nur erstes Element wird bei Bitmaps konvertiert
 
             glArchivItem_Bitmap* in = dynamic_cast<glArchivItem_Bitmap*>(temp.get(0));
             glArchivItem_Bitmap* out = dynamic_cast<glArchivItem_Bitmap*>(glAllocator(bobtype, 0, NULL));
@@ -1336,7 +1351,7 @@ bool Loader::LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Pal
 
     if(files.find(p) == files.end() || files.find(p)->second.getCount() == 0)
     {
-        // leeres Archiv in Map einfügen
+        // leeres Archiv in Map einfÃ¼gen
         files.insert(std::make_pair(p, archiv));
         to = &files.find(p)->second;
     }
@@ -1346,7 +1361,7 @@ bool Loader::LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Pal
     if(!LoadFile(pfad, palette, to))
         return false;
 
-    // haben wir eine override file? dann nicht-leere items überschreiben
+    // haben wir eine override file? dann nicht-leere items Ã¼berschreiben
     if(override_file)
     {
         LOG.lprintf("Ersetze Daten der vorher geladenen Datei\n");
@@ -1355,7 +1370,7 @@ bool Loader::LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Pal
         if(e == ".bob")
             to = dynamic_cast<libsiedler2::ArchivInfo*>(to->get(0));
 
-        if(to == NULL)
+        if(!to)
         {
             LOG.lprintf("Fehler beim Ersetzen einer BOB-Datei\n");
             return false;

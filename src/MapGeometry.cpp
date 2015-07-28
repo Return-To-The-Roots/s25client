@@ -1,4 +1,4 @@
-// $Id: MapGeometry.cpp 3120
+﻿// $Id: MapGeometry.cpp 3120
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -17,7 +17,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "main.h"
+#include "defines.h"
 #include "MapGeometry.h"
 #include <cmath>
 #include <algorithm>

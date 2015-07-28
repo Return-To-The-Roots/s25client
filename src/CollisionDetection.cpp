@@ -1,4 +1,4 @@
-// $Id: CollisionDetection.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+﻿// $Id: CollisionDetection.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -19,8 +19,11 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "CollisionDetection.h"
+#include "Rect.h"
+#include <cstdlib>
+#include <cmath>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -76,8 +79,8 @@ bool Coll(const Rect& rect1, const Rect& rect2)
     int Center2Y = rect2.top + Radius2Y;
 
     // Abstand berechnen
-    int OffsetX = abs(Center1X - Center2X);
-    int OffsetY = abs(Center1Y - Center2Y);
+    int OffsetX = std::abs(Center1X - Center2X);
+    int OffsetY = std::abs(Center1Y - Center2Y);
 
     return CollEdges(rect1, rect2) || (OffsetX < Radius1X + Radius2X && OffsetY < Radius1Y + Radius2Y);
 }

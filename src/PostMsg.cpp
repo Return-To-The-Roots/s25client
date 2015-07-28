@@ -1,4 +1,4 @@
-// $Id: PostMsg.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: PostMsg.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -19,7 +19,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "PostMsg.h"
 
 #include "GameClient.h"
@@ -50,29 +50,28 @@ void PostMsg::Serialize(SerializedGameData* sgd)
     sgd->PushUnsignedInt(sendFrame);
 }
 
-PostMsgWithLocation::PostMsgWithLocation(const std::string& text, PostMessageCategory cat, MapCoord x, MapCoord y)
-    : PostMsg(text, cat), x(x), y(y) { type = PMT_WITH_LOCATION; }
+PostMsgWithLocation::PostMsgWithLocation(const std::string& text, PostMessageCategory cat, const MapPoint pt)
+    : PostMsg(text, cat), pt(pt) { type = PMT_WITH_LOCATION; }
 
 PostMsgWithLocation::PostMsgWithLocation(SerializedGameData* sgd)
-    : PostMsg(sgd), x(sgd->PopUnsignedShort()), y(sgd->PopUnsignedShort()) { }
+    : PostMsg(sgd), pt(sgd->PopMapPoint()) { }
 
 void PostMsgWithLocation::Serialize(SerializedGameData* sgd)
 {
     PostMsg::Serialize(sgd);
-    sgd->PushUnsignedShort(x);
-    sgd->PushUnsignedShort(y);
+    sgd->PushMapPoint(pt);
 }
 
 ImagePostMsgWithLocation::ImagePostMsgWithLocation(const std::string& text, PostMessageCategory cat,
-        MapCoord x, MapCoord y, BuildingType senderBuilding, Nation senderNation)
-    : PostMsgWithLocation(text, cat, x, y), senderBuilding(senderBuilding), senderNation(senderNation)
+        const MapPoint pt, BuildingType senderBuilding, Nation senderNation)
+    : PostMsgWithLocation(text, cat, pt), senderBuilding(senderBuilding), senderNation(senderNation)
 {
     type = PMT_IMAGE_WITH_LOCATION;
 }
 
 ImagePostMsgWithLocation::ImagePostMsgWithLocation(const std::string& text, PostMessageCategory cat,
-        MapCoord x, MapCoord y, Nation senderNation)
-    : PostMsgWithLocation(text, cat, x, y), senderNation(senderNation)
+        const MapPoint pt, Nation senderNation)
+    : PostMsgWithLocation(text, cat, pt), senderNation(senderNation)
 {
     type = PMT_IMAGE_WITH_LOCATION;
 }
@@ -98,7 +97,7 @@ void ImagePostMsgWithLocation::Serialize(SerializedGameData* sgd)
     sgd->PushUnsignedInt(senderNation);
 }
 
-/// Titel für die Fenster für unterschiedliche Bündnistypen
+/// Titel fÃ¼r die Fenster fÃ¼r unterschiedliche BÃ¼ndnistypen
 const char* const PACT_TITLES[PACTS_COUNT] =
 {
     gettext_noop("treaty of alliance"),
@@ -112,26 +111,26 @@ DiplomacyPostQuestion::DiplomacyPostQuestion(const unsigned id, const unsigned c
     type = PMT_DIPLOMACYQUESTION;
 
     char msg[512];
-    sprintf(msg, _("The player '%s' offers you a %s."), GameClient::inst().GetPlayer(player)->name.c_str(),
+    sprintf(msg, _("The player '%s' offers you a %s."), GAMECLIENT.GetPlayer(player)->name.c_str(),
             _(PACT_TITLES[pt]));
 
     char duration_msg[512];
     if(duration == 0xFFFFFFFF)
         strcpy(duration_msg, _("Duration: Forever"));
     else
-        sprintf(duration_msg, _("Duration: %u GF (%s)"), duration, GameClient::inst().FormatGFTime(duration).c_str());
+        sprintf(duration_msg, _("Duration: %u GF (%s)"), duration, GAMECLIENT.FormatGFTime(duration).c_str());
 
     text = std::string(msg) + "\n" + duration_msg;
 }
 
-/// Vertrag auflösen
+/// Vertrag auflÃ¶sen
 DiplomacyPostQuestion::DiplomacyPostQuestion(const unsigned id, const unsigned char player, const PactType pt)
     : PostMsg("", PMC_DIPLOMACY), dp_type(CANCEL), id(id), player(player), pt(pt)
 {
     type = PMT_DIPLOMACYQUESTION;
 
     char msg[512];
-    sprintf(msg, _("The player '%s' want to cancel the '%s' between you both primaturely. Do you agree?"), GameClient::inst().GetPlayer(player)->name.c_str(),
+    sprintf(msg, _("The player '%s' want to cancel the '%s' between you both primaturely. Do you agree?"), GAMECLIENT.GetPlayer(player)->name.c_str(),
             _(PACT_TITLES[pt]));
 
     text = msg;
@@ -156,10 +155,10 @@ DiplomacyPostInfo::DiplomacyPostInfo(const unsigned char other_player, const Typ
     char msg[512];
     if(type == ACCEPT)
         sprintf(msg, _("The %s between player '%s' and you has been concluded."), _(PACT_TITLES[pt]),
-                GameClient::inst().GetPlayer(other_player)->name.c_str());
+                GAMECLIENT.GetPlayer(other_player)->name.c_str());
     else if(type == CANCEL)
         sprintf(msg, _("The %s between player '%s' and you has been cancelled."), _(PACT_TITLES[pt]),
-                GameClient::inst().GetPlayer(other_player)->name.c_str());
+                GAMECLIENT.GetPlayer(other_player)->name.c_str());
 
     text = msg;
 }
@@ -176,8 +175,8 @@ void DiplomacyPostInfo::Serialize(SerializedGameData* sgd)
 }
 
 
-ShipPostMsg::ShipPostMsg(const std::string& text, PostMessageCategory cat, Nation senderNation, MapCoord x, MapCoord y)
-    :   ImagePostMsgWithLocation(text, cat, x, y, senderNation)
+ShipPostMsg::ShipPostMsg(const std::string& text, PostMessageCategory cat, Nation senderNation, const MapPoint pt)
+    :   ImagePostMsgWithLocation(text, cat, pt, senderNation)
 {
     type = PMT_SHIP;
 }

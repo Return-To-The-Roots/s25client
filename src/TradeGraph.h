@@ -1,9 +1,12 @@
-#ifndef TRADE_GRAPH_H_
+﻿#ifndef TRADE_GRAPH_H_
 #define TRADE_GRAPH_H_
 
-#include "MapConsts.h"
+#include "gameTypes/MapTypes.h"
+#include "gameData/GameConsts.h"
+#include "Point.h"
+
 #include <memory.h>
-#include "GameConsts.h"
+#include <vector>
 
 class GameWorldGame;
 class TradeGraph;
@@ -23,7 +26,7 @@ const MapCoord NO_EDGE = 0xffff;
 struct TradeGraphNode
 {
     /// Point of the node, representing the main node
-    Point<MapCoord> main_pos;
+    MapPoint main_pos;
     /// Possible 8 directions with way costs
     MapCoord dirs[8];
     /// Direction not possible, even in the future (water, lava, swamp etc.)
@@ -41,9 +44,9 @@ struct TradeGraphNode
     void Serialize(SerializedGameData* sgd) const;
 
     /// Converts map coords to TG coords
-    static Point<MapCoord> ConverToTGCoords(const Point<MapCoord> pos)
+    static MapPoint ConverToTGCoords(const MapPoint pos)
     {
-        Point<MapCoord> ret(pos.x / TGN_SIZE, pos.y / TGN_SIZE);
+        MapPoint ret(pos.x / TGN_SIZE, pos.y / TGN_SIZE);
         return ret;
     }
 
@@ -64,7 +67,7 @@ class TradeRoute
         const TradeGraph* const tg;
 
         /// Start and goal, current posistion in usual map coordinates and TG coordinates
-        Point<MapCoord> start, goal, current_pos, current_pos_tg;
+        MapPoint start, goal, current_pos, current_pos_tg;
         /// Current "global" route on the trade graph
         std::vector<unsigned char> global_route;
         unsigned global_pos;
@@ -80,7 +83,7 @@ class TradeRoute
 
     public:
 
-        TradeRoute(const TradeGraph* const tg, const Point<MapCoord> start, const Point<MapCoord> goal) :
+        TradeRoute(const TradeGraph* const tg, const MapPoint start, const MapPoint goal) :
             tg(tg), start(start), goal(goal), current_pos(start), global_pos(0), local_pos(0) { RecalcGlobalRoute(); }
         TradeRoute(SerializedGameData* sgd, const GameWorldGame* const gwg, const unsigned char player);
 
@@ -93,7 +96,7 @@ class TradeRoute
         /// Gets the next direction the caravane has to take
         unsigned char GetNextDir();
         /// Assigns new start and goal positions and hence, a new route
-        void AssignNewGoal(const Point<MapCoord> new_goal, const Point<MapCoord> current);
+        void AssignNewGoal(const MapPoint new_goal, const MapPoint current);
 
 
 };
@@ -107,14 +110,14 @@ class TradeGraph
         /// Player which uses the graph
         const unsigned char player;
         /// Size of the graph
-        Point<MapCoord> size;
+        MapPoint size;
         /// The trade graph consisting of big squares
         std::vector<TradeGraphNode> trade_graph;
 
     private:
 
         /// Finds a main point for a speciefic node
-        void FindMainPoint(const Point<MapCoord> tgn);
+        void FindMainPoint(const MapPoint tgn);
 
 
     public:
@@ -130,21 +133,21 @@ class TradeGraph
         void CreateWithHelpOfAnotherPlayer(const TradeGraph& helper, const GameClientPlayerList& players);
 
         /// Returns a speciefic TradeGraphNode
-        TradeGraphNode& GetNode(const Point<MapCoord> pos)
+        TradeGraphNode& GetNode(const MapPoint pos)
         { return trade_graph[pos.y * size.x + pos.x]; }
-        const TradeGraphNode& GetNode(const Point<MapCoord> pos) const
+        const TradeGraphNode& GetNode(const MapPoint pos) const
         { return trade_graph[pos.y * size.x + pos.x]; }
 
 
         /// Returns to coordinate of the node around this node
         /// (Directions 1-8 (incl), 0 = no change)
-        Point<MapCoord> GetNodeAround(const Point<MapCoord> pos, const unsigned char dir) const;
+        MapPoint GetNodeAround(const MapPoint pos, const unsigned char dir) const;
 
 
         /// Updates one speciefic edge
-        void UpdateEdge(Point<MapCoord> pos, const unsigned char dir, const TradeGraph* const tg);
+        void UpdateEdge(MapPoint pos, const unsigned char dir, const TradeGraph* const tg);
         /// Find a path on the Trade Graph
-        bool FindPath(const Point<MapCoord> start, const Point<MapCoord> goal, std::vector<unsigned char>& route) const;
+        bool FindPath(const MapPoint start, const MapPoint goal, std::vector<unsigned char>& route) const;
 };
 
 

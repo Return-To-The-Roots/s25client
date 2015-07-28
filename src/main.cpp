@@ -1,4 +1,4 @@
-// $Id: main.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+﻿// $Id: main.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -19,7 +19,22 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
+
+
+#ifdef _WIN32
+#   include <windows.h>
+#   define chdir !SetCurrentDirectoryA
+#   ifndef __CYGWIN__
+#       include <conio.h>
+#   endif
+#else
+#   include <unistd.h>
+#endif
+
+#ifndef _MSC_VER
+#   include <csignal>
+#endif
 
 #include "GlobalVars.h"
 #include "signale.h"
@@ -29,19 +44,27 @@
 
 #include "GameClient.h"
 #include "Settings.h"
+#include "Log.h"
+#include "error.h"
+#include "files.h"
+
+#include "../libsiedler2/src/types.h"
+#include "ogl/glAllocator.h"
 
 // This is for catching crashes and reporting bugs, it does not slow down anything.
 #include "Debug.h"
 
 #ifndef NDEBUG
-#include "GameWorld.h"
-#include "GameServer.h"
-#include "iwDirectIPCreate.h"
-#include "WindowManager.h"
-#include "dskGameLoader.h"
-#include "dskSelectMap.h"
-#include "iwPleaseWait.h"
+    #include "GameWorld.h"
+    #include "GameServer.h"
+    #include "ingameWindows/iwDirectIPCreate.h"
+    #include "WindowManager.h"
+    #include "desktops/dskGameLoader.h"
+    #include "desktops/dskSelectMap.h"
+    #include "ingameWindows/iwPleaseWait.h"
 #endif
+
+#include "fileFuncs.h"
 
 #ifdef __APPLE__
 #   include <SDL_main.h>
@@ -49,13 +72,17 @@
 
 #ifdef _WIN32
 #   include "../win32/resource.h"
-#   include "VideoDriverWrapper.h"
+#   include "drivers/VideoDriverWrapper.h"
+#   ifdef _MSC_VER
+#        define getch _getch
+#   endif
 #endif
 
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER && !defined NOHWETRANS
-#   include <windows.h>
 #   include <eh.h>
 #endif
+
+#include <ctime>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -67,7 +94,7 @@ static char THIS_FILE[] = __FILE__;
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Exit-Handler, wird bei @p exit ausgeführt.
+ *  Exit-Handler, wird bei @p exit ausgefÃ¼hrt.
  *
  *  @author FloSoft
  */
@@ -84,7 +111,7 @@ void ExitHandler(void)
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER && !defined NOHWETRANS
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Exception-Handler, wird bei einer C-Exception ausgeführt, falls
+ *  Exception-Handler, wird bei einer C-Exception ausgefÃ¼hrt, falls
  *  dies in der build_paths.h mit deaktiviertem NOHWETRANS und
  *  im Projekt mit den Compilerflags (/EHa) aktiviert ist.
  *
@@ -98,39 +125,6 @@ void ExceptionHandler (unsigned int exception_type, _EXCEPTION_POINTERS* excepti
     fatal_error("C-Exception caught\n");
 }
 #endif // _WIN32 && _DEBUG && !NOHWETRANS
-
-int mkdir_p(const std::string dir)
-{
-    if(IsDir(dir))
-        return 0;
-
-    if (
-#ifdef _WIN32
-        !CreateDirectoryA(dir.c_str(), NULL)
-#else
-        mkdir(dir.c_str(), 0750) < 0
-#endif
-    )
-    {
-        size_t slash = dir.rfind('/');
-        if (slash != std::string::npos)
-        {
-            std::string prefix = dir.substr(0, slash);
-            if(mkdir_p(prefix) == 0)
-            {
-                return (
-#ifdef _WIN32
-                           CreateDirectoryA(dir.c_str(), NULL) ? 0 : -1
-#else
-                           mkdir(dir.c_str(), 0750)
-#endif
-                       );
-            }
-        }
-        return -1;
-    }
-    return 0;
-}
 
 #ifdef _WIN32
 #ifdef _MSC_VER
@@ -151,7 +145,7 @@ WinExceptionHandler(
                         _("RttR crashed. Would you like to send debug information to RttR to help us avoiding this crash in the future? Thank you very much!"),
                         _("Error"), MB_YESNO | MB_ICONERROR | MB_TASKMODAL | MB_SETFOREGROUND) == IDYES)
     {
-        VideoDriverWrapper::inst().DestroyScreen();
+        VIDEODRIVER.DestroyScreen();
 
         DebugInfo di;
 
@@ -191,8 +185,8 @@ void LinExceptionHandler(int sig)
 /**
  *  Hauptfunktion von Siedler II.5 Return to the Roots
  *
- *  @param[in] argc Anzahl übergebener Argumente
- *  @param[in] argv Array der übergebenen Argumente
+ *  @param[in] argc Anzahl Ã¼bergebener Argumente
+ *  @param[in] argv Array der Ã¼bergebenen Argumente
  *
  *  @return Exit Status, 0 bei Erfolg, > 0 bei Fehler
  *
@@ -239,6 +233,21 @@ int main(int argc, char* argv[])
     signal(SIGSEGV, LinExceptionHandler);
 #endif // _WIN32
 
+
+	// We need to make the exe's path to the current dir
+	std::string exePath = argv[0];
+	// get '/' or '\\' depending on unix/mac or windows.
+#if defined(_WIN32) || defined(WIN32)
+	size_t pos = exePath.rfind('\\');
+#else
+	size_t pos = exePath.rfind('/');
+#endif
+	if(pos != std::string::npos){
+		exePath = exePath.substr(0, pos);
+		if(chdir(exePath.c_str()))
+			error("Could not change dir to %s", exePath.c_str());
+	}
+
     // diverse dirs anlegen
     const unsigned int dir_count = 7;
     unsigned int dirs[dir_count] = { 94, 47, 48, 51, 85, 98, 99 }; // settingsdir muss zuerst angelegt werden (94)
@@ -268,7 +277,7 @@ int main(int argc, char* argv[])
     libsiedler2::setTextureFormat(libsiedler2::FORMAT_RGBA);
     libsiedler2::setAllocator(glAllocator);
 
-    // Zufallsgenerator initialisieren (Achtung: nur für Animationens-Offsets interessant, für alles andere (spielentscheidende) wird unser Generator verwendet)
+    // Zufallsgenerator initialisieren (Achtung: nur fÃ¼r Animationens-Offsets interessant, fÃ¼r alles andere (spielentscheidende) wird unser Generator verwendet)
     srand(static_cast<unsigned int>(std::time(NULL)));
 
     // Exit-Handler initialisieren
@@ -301,7 +310,7 @@ int main(int argc, char* argv[])
 
         printf("loading game!\n");
 
-        WindowManager::inst().Switch(new dskSelectMap(csi));
+        WINDOWMANAGER.Switch(new dskSelectMap(csi));
 
         if(!GAMESERVER.TryToStart(csi, argv[1], MAPTYPE_SAVEGAME))
         {
@@ -327,19 +336,19 @@ int main(int argc, char* argv[])
                 }
                 else
                 {
-                    WindowManager::inst().Switch(new dskGameLoader(gwv));
+                    WINDOWMANAGER.Switch(new dskGameLoader(gwv));
                 }
             }
             else
             {
-                WindowManager::inst().Draw();
-                WindowManager::inst().Show(new iwPleaseWait);
+                WINDOWMANAGER.Draw();
+                WINDOWMANAGER.Show(new iwPleaseWait);
             }
         }
         else
         {
-            WindowManager::inst().Draw();
-            WindowManager::inst().Show(new iwPleaseWait);
+            WINDOWMANAGER.Draw();
+            WINDOWMANAGER.Show(new iwPleaseWait);
         }
     }
 #endif

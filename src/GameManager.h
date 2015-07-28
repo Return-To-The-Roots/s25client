@@ -1,4 +1,4 @@
-// $Id: GameManager.h 9541 2014-12-14 12:02:52Z marcus $
+ï»¿// $Id: GameManager.h 9541 2014-12-14 12:02:52Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -47,7 +47,7 @@ class GameManager : public Singleton<GameManager>
         bool StartMenu();
         bool ShowMenu();
 
-        /// Average FPS Zähler zurücksetzen.
+        /// Average FPS ZÃ¤hler zurÃ¼cksetzen.
         inline void ResetAverageFPS(void)
         {
             run_time = 0;

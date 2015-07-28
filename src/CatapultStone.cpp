@@ -1,4 +1,4 @@
-// $Id: CatapultStone.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+﻿// $Id: CatapultStone.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -19,7 +19,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "CatapultStone.h"
 
 #include "EventManager.h"
@@ -27,10 +27,12 @@
 #include "SerializedGameData.h"
 #include "Loader.h"
 #include "GameClient.h"
-#include "nobMilitary.h"
-#include "noEnvObject.h"
+#include "buildings/nobMilitary.h"
+#include "nodeObjs/noEnvObject.h"
 #include "Random.h"
-#include "MapConsts.h"
+#include "gameData/MapConsts.h"
+
+#include <cmath>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -40,9 +42,9 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-CatapultStone::CatapultStone(const unsigned short dest_building_x, const unsigned short dest_building_y, const unsigned short dest_map_x, const unsigned short dest_map_y,
+CatapultStone::CatapultStone(const MapPoint dest_building, const MapPoint dest_map,
                              const int start_x, const int start_y, const int dest_x, const int dest_y, const unsigned fly_duration) :
-    dest_building_x(dest_building_x), dest_building_y(dest_building_y), dest_map_x(dest_map_x), dest_map_y(dest_map_y), start_x(start_x),
+    dest_building(dest_building), dest_map(dest_map), start_x(start_x),
     start_y(start_y), dest_x(dest_x), dest_y(dest_y), explode(false), event(em->AddEvent(this, fly_duration))
 {
 }
@@ -50,10 +52,8 @@ CatapultStone::CatapultStone(const unsigned short dest_building_x, const unsigne
 
 
 CatapultStone::CatapultStone(SerializedGameData* sgd, const unsigned obj_id) : GameObject(sgd, obj_id),
-    dest_building_x(sgd->PopUnsignedShort()),
-    dest_building_y(sgd->PopUnsignedShort()),
-    dest_map_x(sgd->PopUnsignedShort()),
-    dest_map_y(sgd->PopUnsignedShort()),
+    dest_building(sgd->PopMapPoint()),
+    dest_map(sgd->PopMapPoint()),
     start_x(sgd->PopSignedInt()),
     start_y(sgd->PopSignedInt()),
     dest_x(sgd->PopSignedInt()),
@@ -67,10 +67,8 @@ CatapultStone::CatapultStone(SerializedGameData* sgd, const unsigned obj_id) : G
 /// Serialisierungsfunktionen
 void CatapultStone::Serialize_CatapultStone(SerializedGameData* sgd) const
 {
-    sgd->PushUnsignedShort(dest_building_x);
-    sgd->PushUnsignedShort(dest_building_y);
-    sgd->PushUnsignedShort(dest_map_x);
-    sgd->PushUnsignedShort(dest_map_y);
+    sgd->PushMapPoint(dest_building);
+    sgd->PushMapPoint(dest_map);
     sgd->PushSignedInt(start_x);
     sgd->PushSignedInt(start_y);
     sgd->PushSignedInt(dest_x);
@@ -85,9 +83,9 @@ void CatapultStone::Destroy()
 
 void CatapultStone::Draw(const GameWorldView& gwv, const int xoffset, const int yoffset)
 {
-    // Stein überhaupt zeichnen (wenn Quelle und Ziel nicht sichtbar sind, dann nicht!)
-    if(gwv.GetGameWorldViewer()->GetVisibility(dest_building_x, dest_building_y) != VIS_VISIBLE &&
-            gwv.GetGameWorldViewer()->GetVisibility(dest_map_x, dest_map_y) != VIS_VISIBLE)
+    // Stein Ã¼berhaupt zeichnen (wenn Quelle und Ziel nicht sichtbar sind, dann nicht!)
+    if(gwv.GetGameWorldViewer()->GetVisibility(dest_building) != VIS_VISIBLE &&
+            gwv.GetGameWorldViewer()->GetVisibility(dest_map) != VIS_VISIBLE)
         return;
 
     int world_width = gwg->GetWidth() * TR_W;
@@ -96,17 +94,17 @@ void CatapultStone::Draw(const GameWorldView& gwv, const int xoffset, const int 
     if(explode)
     {
         // Stein explodierend am Ziel zeichnen
-        LOADER.GetMapImageN(3102 + GameClient::inst().Interpolate(4, event))->
+        LOADER.GetMapImageN(3102 + GAMECLIENT.Interpolate(4, event))->
         Draw((dest_x - xoffset + world_width) % world_width, (dest_y - yoffset + world_height) % world_height);
     }
     else
     {
         // Linear interpolieren zwischen Ausgangs- und Zielpunkt
-        int x = GameClient::inst().Interpolate(start_x, dest_x, event);
-        int y = GameClient::inst().Interpolate(start_y, dest_y, event);
+        int x = GAMECLIENT.Interpolate(start_x, dest_x, event);
+        int y = GAMECLIENT.Interpolate(start_y, dest_y, event);
 
-        int whole = int(sqrt(double((dest_x - start_x) * (dest_x - start_x) + (dest_y - start_y) * (dest_y - start_y))));
-        int s = GameClient::inst().Interpolate(whole , event);
+        int whole = int(std::sqrt(double((dest_x - start_x) * (dest_x - start_x) + (dest_y - start_y) * (dest_y - start_y))));
+        int s = GAMECLIENT.Interpolate(whole , event);
 
 
         double dx = double(s) / double(whole)  - 0.5;
@@ -128,7 +126,7 @@ void CatapultStone::HandleEvent(const unsigned int id)
 {
     if(explode)
     {
-        // Explodiert --> mich zerstören
+        // Explodiert --> mich zerstÃ¶ren
         gwg->RemoveCatapultStone(this);
         em->AddToKillList(this);
     }
@@ -139,18 +137,18 @@ void CatapultStone::HandleEvent(const unsigned int id)
         explode = true;
 
         // Trifft der Stein?
-        if(dest_building_x == dest_map_x && dest_building_y == dest_map_y)
+        if(dest_building == dest_map)
         {
-            // Steht an der Stelle noch ein Militärgebäude zum Bombardieren?
-            if(gwg->GetNO(dest_building_x, dest_building_y)->GetGOT() == GOT_NOB_MILITARY)
-                gwg->GetSpecObj<nobMilitary>(dest_building_x, dest_building_y)->HitOfCatapultStone();
+            // Steht an der Stelle noch ein MilitÃ¤rgebÃ¤ude zum Bombardieren?
+            if(gwg->GetNO(dest_building)->GetGOT() == GOT_NOB_MILITARY)
+                gwg->GetSpecObj<nobMilitary>(dest_building)->HitOfCatapultStone();
         }
         else
         {
             // Trifft nicht
             // ggf. Leiche hinlegen, falls da nix ist
-            if(!gwg->GetSpecObj<noBase>(dest_map_x, dest_map_y))
-                gwg->SetNO(new noEnvObject(dest_map_x, dest_map_y, 502 + Random::inst().Rand(__FILE__, __LINE__, obj_id, 2)), dest_map_x, dest_map_y);
+            if(!gwg->GetSpecObj<noBase>(dest_map))
+                gwg->SetNO(new noEnvObject(dest_map, 502 + RANDOM.Rand(__FILE__, __LINE__, obj_id, 2)), dest_map);
         }
     }
 }

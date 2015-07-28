@@ -1,4 +1,4 @@
-// $Id: VideoDriver.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: VideoDriver.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -41,7 +41,7 @@ static char THIS_FILE[] = __FILE__;
 ///////////////////////////////////////////////////////////////////////////////
 /** @class VideoDriver
  *
- *  Basisklasse für einen Videotreiber.
+ *  Basisklasse fÃ¼r einen Videotreiber.
  *
  *  @author FloSoft
  */
@@ -49,7 +49,7 @@ static char THIS_FILE[] = __FILE__;
 ///////////////////////////////////////////////////////////////////////////////
 /** @var VideoGLFW::CallBack
  *
- *  Das DriverCallback für Rückmeldungen.
+ *  Das DriverCallback fÃ¼r RÃ¼ckmeldungen.
  *
  *  @author FloSoft
  */
@@ -90,7 +90,7 @@ static char THIS_FILE[] = __FILE__;
 /**
  *  Konstruktor von @p VideoDriver.
  *
- *  @param[in] CallBack DriverCallback für Rückmeldungen.
+ *  @param[in] CallBack DriverCallback fÃ¼r RÃ¼ckmeldungen.
  *
  *  @author FloSoft
  */
@@ -113,7 +113,7 @@ VideoDriver::~VideoDriver(void)
 /**
  *  Funktion zum Auslesen des Treibernamens.
  *
- *  @return liefert den Treibernamen zurück
+ *  @return liefert den Treibernamen zurÃ¼ck
  *
  *  @author FloSoft
  */
@@ -137,7 +137,7 @@ bool VideoDriver::Initialize(void)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Treiberaufräumfunktion.
+ *  TreiberaufrÃ¤umfunktion.
  *
  *  @author FloSoft
  */
@@ -150,7 +150,7 @@ void VideoDriver::CleanUp(void)
  *  Erstellt das Fenster mit entsprechenden Werten.
  *
  *  @param[in] width      Breite des Fensters
- *  @param[in] height     Höhe des Fensters
+ *  @param[in] height     HÃ¶he des Fensters
  *  @param[in] fullscreen Vollbildmodus ja oder nein
  *
  *  @return @p true bei Erfolg, @p false bei Fehler
@@ -164,10 +164,10 @@ bool VideoDriver::CreateScreen(unsigned short width, unsigned short height, cons
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Erstellt oder verändert das Fenster mit entsprechenden Werten.
+ *  Erstellt oder verÃ¤ndert das Fenster mit entsprechenden Werten.
  *
  *  @param[in] width      Breite des Fensters
- *  @param[in] height     Höhe des Fensters
+ *  @param[in] height     HÃ¶he des Fensters
  *  @param[in] fullscreen Vollbildmodus ja oder nein
  *
  *  @return @p true bei Erfolg, @p false bei Fehler
@@ -243,7 +243,7 @@ void* VideoDriver::GetFunction(const char* function) const
     return NULL;
 }
 
-/// Listet verfügbare Videomodi auf
+/// Listet verfÃ¼gbare Videomodi auf
 void VideoDriver::ListVideoModes(std::vector<VideoMode>& video_modes) const
 {
 }
@@ -328,9 +328,9 @@ void VideoDriver::SetMousePosY(int y)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Funktion zum Auslesen ob die Linke Maustaste gedrückt ist.
+ *  Funktion zum Auslesen ob die Linke Maustaste gedrÃ¼ckt ist.
  *
- *  @return @p true bei Gedrückt, @p false bei Losgelassen
+ *  @return @p true bei GedrÃ¼ckt, @p false bei Losgelassen
  *
  *  @author FloSoft
  */
@@ -341,9 +341,9 @@ bool VideoDriver::GetMouseStateL(void) const
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Funktion zum Auslesen ob die Rechte Maustaste gedrückt ist.
+ *  Funktion zum Auslesen ob die Rechte Maustaste gedrÃ¼ckt ist.
  *
- *  @return @p true bei Gedrückt, @p false bei Losgelassen
+ *  @return @p true bei GedrÃ¼ckt, @p false bei Losgelassen
  *
  *  @author FloSoft
  */

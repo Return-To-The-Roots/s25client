@@ -1,4 +1,4 @@
-// $Id: ExtensionList.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: ExtensionList.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -48,10 +48,10 @@ extern PFNWGLSWAPINTERVALFARPROC wglSwapIntervalEXT;
 #ifndef __APPLE__
 // GL_ARB_vertex_buffer_object
 extern PFNGLBINDBUFFERARBPROC glBindBufferARB; // VBO Bind-Prozedur
-extern PFNGLDELETEBUFFERSARBPROC glDeleteBuffersARB; // VBO Lösch-Prozedur
+extern PFNGLDELETEBUFFERSARBPROC glDeleteBuffersARB; // VBO LÃ¶sch-Prozedur
 extern PFNGLGENBUFFERSARBPROC glGenBuffersARB; // VBO Namens Generations-Prozedur
 extern PFNGLBUFFERDATAARBPROC glBufferDataARB; // VBO Daten-Lade-Prozedur
-extern PFNGLBUFFERSUBDATAARBPROC glBufferSubDataARB; /// VBO Daten-Änder-Prozedur
+extern PFNGLBUFFERSUBDATAARBPROC glBufferSubDataARB; /// VBO Daten-Ã„nder-Prozedur
 // GL_EXT_paletted_texture
 extern PFNGLCOLORTABLEEXTPROC glColorTableEXT;
 #endif // !__APPLE__

@@ -1,4 +1,4 @@
-// $Id: GameMessage.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: GameMessage.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -44,7 +44,7 @@ class GameMessage : public Message
         /// Destruktor von @p GameMessage.
         virtual ~GameMessage(void) {};
 
-        /// Run Methode für GameMessages, wobei PlayerID ggf. schon in der Message festgemacht wurde
+        /// Run Methode fÃ¼r GameMessages, wobei PlayerID ggf. schon in der Message festgemacht wurde
         virtual void Run(MessageInterface* callback) = 0;
 
         virtual void run(MessageInterface* callback, unsigned int id)
@@ -55,7 +55,7 @@ class GameMessage : public Message
             Run(callback);
         }
 
-        /// Gibt Netto-Länge der Message zurück ohne zusätzliche Daten (Player usw)
+        /// Gibt Netto-LÃ¤nge der Message zurÃ¼ck ohne zusÃ¤tzliche Daten (Player usw)
         unsigned GetNetLength() const { return GetLength() - 1; }
 
         static Message* create_game(unsigned short id);

@@ -1,4 +1,4 @@
-// $Id: GameServerPlayer.cpp 9558 2014-12-18 09:01:20Z FloSoft $
+ï»¿// $Id: GameServerPlayer.cpp 9558 2014-12-18 09:01:20Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -19,11 +19,13 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "GameServerPlayer.h"
 #include "GameMessage.h"
 #include "GameMessages.h"
-#include "VideoDriverWrapper.h"
+#include "drivers/VideoDriverWrapper.h"
+
+#include <algorithm>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -72,11 +74,11 @@ GameServerPlayer::~GameServerPlayer()
 /// pingt ggf den Spieler
 void GameServerPlayer::doPing()
 {
-    if( (ps == PS_OCCUPIED) && (pinging == false) && ( ( VideoDriverWrapper::inst().GetTickCount() - lastping ) > 1000 ) )
+    if( (ps == PS_OCCUPIED) && (!pinging) && ( ( VIDEODRIVER.GetTickCount() - lastping ) > 1000 ) )
     {
         pinging = true;
 
-        lastping = VideoDriverWrapper::inst().GetTickCount();
+        lastping = VIDEODRIVER.GetTickCount();
 
         // Ping Nachricht senden
         send_queue.push(new GameMessage_Ping(0xFF));
@@ -84,10 +86,10 @@ void GameServerPlayer::doPing()
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/// prüft auf Ping-Timeout beim verbinden
+/// prÃ¼ft auf Ping-Timeout beim verbinden
 void GameServerPlayer::doTimeout()
 {
-    if( (ps == PS_RESERVED) && ( ( VideoDriverWrapper::inst().GetTickCount() - connecttime ) > PING_TIMEOUT ) )
+    if( (ps == PS_RESERVED) && ( ( VIDEODRIVER.GetTickCount() - connecttime ) > PING_TIMEOUT ) )
     {
         LOG.lprintf("SERVER: Reserved slot %d freed due to ping timeout\n", playerid);
 
@@ -95,7 +97,7 @@ void GameServerPlayer::doTimeout()
         Message_Dead dm();
         dm.send(&so);*/
 
-        // und aufräumen
+        // und aufrÃ¤umen
         clear();
     }
 }
@@ -110,7 +112,7 @@ void GameServerPlayer::reserve(Socket* sock, unsigned char id)
 
     playerid = id;
 
-    connecttime = VideoDriverWrapper::inst().GetTickCount();
+    connecttime = VIDEODRIVER.GetTickCount();
 
     so = *sock;
 
@@ -144,20 +146,20 @@ void GameServerPlayer::SwapPlayer(GameServerPlayer& two)
 {
     GamePlayerInfo::SwapPlayer(two);
 
-    Swap(this->connecttime, two.connecttime);
-    Swap(this->last_command_timeout, two.last_command_timeout);
+    std::swap(this->connecttime, two.connecttime);
+    std::swap(this->last_command_timeout, two.last_command_timeout);
 
-    Swap(this->so, two.so);
-    Swap(this->pinging, two.pinging);
+    std::swap(this->so, two.so);
+    std::swap(this->pinging, two.pinging);
 
-    Swap(this->send_queue, two.send_queue);
-    Swap(this->recv_queue, two.recv_queue);
-    Swap(this->gc_queue, two.gc_queue);
+    std::swap(this->send_queue, two.send_queue);
+    std::swap(this->recv_queue, two.recv_queue);
+    std::swap(this->gc_queue, two.gc_queue);
 
-    Swap(this->lastping, two.lastping);
+    std::swap(this->lastping, two.lastping);
 
-    Swap(this->temp_ul, two.temp_ul);
-    Swap(this->temp_ui, two.temp_ui);
+    std::swap(this->temp_ul, two.temp_ul);
+    std::swap(this->temp_ui, two.temp_ui);
 }
 
 /// Spieler laggt

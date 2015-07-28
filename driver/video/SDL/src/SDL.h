@@ -1,4 +1,4 @@
-// $Id: SDL.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: SDL.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -23,7 +23,7 @@
 
 #include <VideoDriver.h>
 
-/// Klasse für den SDL Videotreiber.
+/// Klasse fÃ¼r den SDL Videotreiber.
 class VideoSDL : public VideoDriver
 {
     public:
@@ -39,13 +39,13 @@ class VideoSDL : public VideoDriver
         /// Treiberinitialisierungsfunktion.
         bool Initialize(void);
 
-        /// Treiberaufräumfunktion.
+        /// TreiberaufrÃ¤umfunktion.
         void CleanUp(void);
 
         /// Erstellt das Fenster mit entsprechenden Werten.
         bool CreateScreen(unsigned short width, unsigned short height, const bool fullscreen);
 
-        /// Erstellt oder verändert das Fenster mit entsprechenden Werten.
+        /// Erstellt oder verÃ¤ndert das Fenster mit entsprechenden Werten.
         bool ResizeScreen(unsigned short width, unsigned short height, const bool fullscreen);
 
         /// Schliesst das Fenster.
@@ -63,7 +63,7 @@ class VideoSDL : public VideoDriver
         /// Funktion zum Holen einer Subfunktion.
         void* GetFunction(const char* function) const;
 
-        /// Listet verfügbare Videomodi auf
+        /// Listet verfÃ¼gbare Videomodi auf
         void ListVideoModes(std::vector<VideoMode>& video_modes) const;
 
         /// Funktion zum Setzen der Mauskoordinaten.
@@ -78,8 +78,8 @@ class VideoSDL : public VideoDriver
         /// Get state of the modifier keys
         KeyEvent GetModKeyState(void) const;
 
-        /// Gibt Pointer auf ein Fenster zurück (device-dependent!), HWND unter Windows
-        void* GetWindowPointer() const;
+        /// Gibt Pointer auf ein Fenster zurÃ¼ck (device-dependent!), HWND unter Windows
+        void* GetMapPointer() const;
 
     private:
         SDL_Surface* screen; ///< Das Fenster-SDL-Surface.

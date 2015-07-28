@@ -1,4 +1,4 @@
-// $Id: GameProtocol.h 9557 2014-12-18 08:57:19Z FloSoft $
+ï»¿// $Id: GameProtocol.h 9557 2014-12-18 08:57:19Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -152,12 +152,12 @@ struct NS_PlayerKicked
 //////////////////////////////////////////
 // Sonstige Konstanten
 
-// Gründe fürs Kicken
+// GrÃ¼nde fÃ¼rs Kicken
 enum
 {
-    NP_NOCAUSE = 0, // Ohne Grund --> manuell vom GameServer rausgehauen, weiß der Teufel warum
+    NP_NOCAUSE = 0, // Ohne Grund --> manuell vom GameServer rausgehauen, weiÃŸ der Teufel warum
     NP_CONNECTIONLOST, // Verbindung verloren/abgebrochen, wie auch immer
-    NP_INVALIDMSG, // Unglütige Message, (evtl Cheater bzw. Asynchronität)
+    NP_INVALIDMSG, // UnglÃ¼tige Message, (evtl Cheater bzw. AsynchronitÃ¤t)
     NP_INCOMPLETEMSG, // zu wenig gesendet
     NP_PINGTIMEOUT, // Ping Timeout
     NP_WRONGPASSWORD, // falsches passwort
@@ -176,7 +176,7 @@ enum
 // Wie lange maximal warten, bis Rausschmiss des Spielers (in milliseconds)
 const unsigned PING_TIMEOUT     = 2 * 60 * 1000; // 2min
 
-// Ziele fürs Chatten (Ingame)
+// Ziele fÃ¼rs Chatten (Ingame)
 enum ChatDestination
 {
     CD_SYSTEM = 0,
@@ -194,7 +194,7 @@ enum MapType
     MAPTYPE_RANDOMMAP
 };
 
-/// Größe eines Map-Paketes
+/// GrÃ¶ÃŸe eines Map-Paketes
 /// ACHTUNG: IPV4 garantiert nur maximal 576!!
 const unsigned MAP_PART_SIZE = 512;
 

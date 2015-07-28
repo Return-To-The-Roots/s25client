@@ -1,4 +1,4 @@
-// $Id: RoadSegment.h 9357 2014-04-25 15:35:25Z FloSoft $
+Ôªø// $Id: RoadSegment.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -22,6 +22,8 @@
 #pragma once
 
 #include "GameObject.h"
+#include <vector>
+#include <cassert>
 
 class nofCarrier;
 class noRoadNode;
@@ -33,51 +35,51 @@ class RoadSegment : public GameObject
     public:
         enum RoadType
         {
-            RT_NORMAL,  ///< Normale Straﬂe bzw. Bergstraﬂe
-            RT_DONKEY,  ///< Eselstraﬂe
-            RT_BOAT     ///< Wasserstraﬂe
+            RT_NORMAL,  ///< Normale Stra√üe bzw. Bergstra√üe
+            RT_DONKEY,  ///< Eselstra√üe
+            RT_BOAT     ///< Wasserstra√üe
         };
 
     public:
         RoadSegment(const RoadType rt, noRoadNode* const f1, noRoadNode* const f2, const std::vector<unsigned char>& route);
         RoadSegment(SerializedGameData* sgd, const unsigned obj_id);
 
-        /// zerstˆrt das Objekt.
+        /// zerst√∂rt das Objekt.
         void Destroy(void) { Destroy_RoadSegment(); }
         /// serialisiert das Objekt.
         void Serialize(SerializedGameData* sgd) const { Serialize_RoadSegment(sgd); }
         /// liefert den GO-Type.
         inline GO_Type GetGOT() const { return GOT_ROADSEGMENT; }
-        /// Gibt die ID (0 oder 1) eines RoadNodes dieser Straﬂe zur¸ck (die Flagge muss zu dieser Straﬂe gehˆren, sonst kommt M¸ll raus!!)
+        /// Gibt die ID (0 oder 1) eines RoadNodes dieser Stra√üe zur√ºck (die Flagge muss zu dieser Stra√üe geh√∂ren, sonst kommt M√ºll raus!!)
         inline bool GetNodeID(const noRoadNode* rn) { return (rn == f2); }
-        /// Gibt Straﬂen-Typ zur¸ck
+        /// Gibt Stra√üen-Typ zur√ºck
         inline RoadType GetRoadType() const { return rt; }
-        /// Gibt die L‰nge der Staﬂe zur¸ck
+        /// Gibt die L√§nge der Sta√üe zur√ºck
         inline unsigned GetLength() const { return route.size(); }
-        /// gibt Flagge 1 zur¸ck
+        /// gibt Flagge 1 zur√ºck
         inline noRoadNode* GetF1() const { return f1; }
         /// setzt Flagge 1 auf o
         inline void SetF1(noRoadNode* o) { f1 = o; }
-        /// gibt Flagge 2 zur¸ck
+        /// gibt Flagge 2 zur√ºck
         inline noRoadNode* GetF2() const { return f2; }
         /// setzt Flagge 2 auf o
         inline void SetF2(noRoadNode* o) { f2 = o; }
-        /// gibt die Route nr zur¸ck
+        /// gibt die Route nr zur√ºck
         inline unsigned char GetRoute(unsigned short nr) const { return route.at(nr); }
         /// setzt die Route nr auf r
         inline void SetRoute(unsigned short nr, unsigned char r) { route[nr] = r; }
-        /// gibt den Carrier nr zur¸ck
+        /// gibt den Carrier nr zur√ºck
         inline nofCarrier* getCarrier(unsigned char nr) const { return carrier[nr]; }
         /// setzt den Carrier nr auf c
         inline void setCarrier(unsigned char nr, nofCarrier* c) { carrier[nr] = c; }
         /// haben wir den Carrier "nr"?
         inline bool hasCarrier(unsigned char nr) const { return (carrier[nr] != NULL); }
-        /// Braucht die Straﬂe einen Esel? Nur wenn sie auch einen Tr‰ger schon hat!
+        /// Braucht die Stra√üe einen Esel? Nur wenn sie auch einen Tr√§ger schon hat!
         inline bool NeedDonkey() const { return (rt == RT_DONKEY && carrier[0] && !carrier[1]); }
         /// Hat einen Esel als Arbeiter dazubekommen.
         inline void GotDonkey(nofCarrier* donkey) { assert(!carrier[1]); carrier[1] = donkey; }
 
-        /// haben wir ¸berhaupt Carrier?
+        /// haben wir √ºberhaupt Carrier?
         inline bool isOccupied() const
         {
             return((carrier[0]) || (carrier[1]));
@@ -91,19 +93,19 @@ class RoadSegment : public GameObject
                 return route[id];
         }
 
-        /// zerteilt die Straﬂe in 2 Teile.
+        /// zerteilt die Stra√üe in 2 Teile.
         void SplitRoad(noFlag* splitflag);
-        /// ‹berpr¸ft ob es an den Flaggen noch Waren zu tragen gibt f¸r den Tr‰ger.
+        /// √úberpr√ºft ob es an den Flaggen noch Waren zu tragen gibt f√ºr den Tr√§ger.
         bool AreWareJobs(const bool flag, unsigned int carrier_type, const bool take_ware_immediately) const;
-        /// Eine Ware sagt Bescheid, dass sie ¸ber dem Weg getragen werden will.
+        /// Eine Ware sagt Bescheid, dass sie √ºber dem Weg getragen werden will.
         void AddWareJob(const noRoadNode* rn);
-        /// Eine Ware will nicht mehr befˆrdert werden.
+        /// Eine Ware will nicht mehr bef√∂rdert werden.
         void WareJobRemoved(const noFigure* const exception);
-        /// Baut die Straﬂe zu einer Eselstraﬂe aus.
+        /// Baut die Stra√üe zu einer Eselstra√üe aus.
         void UpgradeDonkeyRoad();
         /// Soll versuchen einen Esel zu bekommen.
         void TryGetDonkey();
-        /// Ein Tr‰ger muss k¸ndigen, aus welchen Gr¸nden auch immer.
+        /// Ein Tr√§ger muss k√ºndigen, aus welchen Gr√ºnden auch immer.
         void CarrierAbrogated(nofCarrier* carrier);
         /// given a flag returns the other end location
         noFlag* GetOtherFlag(const noFlag* flag);
@@ -111,19 +113,19 @@ class RoadSegment : public GameObject
         unsigned char GetOtherFlagDir(const noFlag* flag);
 
     protected:
-        /// zerstˆrt das Objekt.
+        /// zerst√∂rt das Objekt.
         void Destroy_RoadSegment(void);
         /// serialisiert das Objekt.
         void Serialize_RoadSegment(SerializedGameData* sgd) const;
 
     private:
-        /// Straﬂentyp
+        /// Stra√üentyp
         RoadType rt;
         /// die 2 Roadnodes, die den Weg eingrenzen
         noRoadNode* f1, *f2;
-        /// Beschreibung des Weges, ist length groﬂ und liegt als Beschreibung der einzelnen Richtungen vor (von f1 zu f2)
+        /// Beschreibung des Weges, ist length gro√ü und liegt als Beschreibung der einzelnen Richtungen vor (von f1 zu f2)
         std::vector<unsigned char> route;
-        /// Tr‰ger (und ggf. Esel), der auf diesem Weg arbeitet
+        /// Tr√§ger (und ggf. Esel), der auf diesem Weg arbeitet
         nofCarrier* carrier[2];
 };
 

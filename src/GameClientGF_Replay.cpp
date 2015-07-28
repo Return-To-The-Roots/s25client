@@ -1,4 +1,4 @@
-// $Id: GameClientGF_Replay.cpp 9524 2014-12-01 14:06:14Z marcus $
+ï»¿// $Id: GameClientGF_Replay.cpp 9524 2014-12-01 14:06:14Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -19,14 +19,14 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "GameClient.h"
 
 #include "GlobalVars.h"
 #include "Loader.h"
 #include "Random.h"
 #include "GameManager.h"
-#include "dskGameInterface.h"
+#include "desktops/dskGameInterface.h"
 #include "ClientInterface.h"
 #include "GameMessages.h"
 
@@ -50,7 +50,7 @@ void GameClient::ExecuteGameFrame_Replay()
                 std::string message;
                 replayinfo.replay.ReadChatCommand(&player, &dest, message);
 
-                // Nächsten Zeitpunkt lesen
+                // NÃ¤chsten Zeitpunkt lesen
                 replayinfo.replay.ReadGF(&replayinfo.next_gf);
 
                 /*      char from[256];
@@ -66,14 +66,14 @@ void GameClient::ExecuteGameFrame_Replay()
                 unsigned short length;
 
                 replayinfo.replay.ReadGameCommand(&length, &data);
-                // Nächsten Zeitpunkt lesen
+                // NÃ¤chsten Zeitpunkt lesen
                 replayinfo.replay.ReadGF(&replayinfo.next_gf);
                 GameMessage_GameCommand msg(data, length);
 
-                // NCs ausführen (4 Bytes Checksumme und 1 Byte Player-ID überspringen)
+                // NCs ausfÃ¼hren (4 Bytes Checksumme und 1 Byte Player-ID Ã¼berspringen)
                 ExecuteAllGCs(msg, 0, 0);
 
-                // Replay ist NSYNC äh ASYNC!
+                // Replay ist NSYNC Ã¤h ASYNC!
                 if(msg.checksum != 0 && msg.checksum != (unsigned)randcheckinfo.rand)
                 {
                     if(replayinfo.async == 0)
@@ -107,7 +107,7 @@ void GameClient::ExecuteGameFrame_Replay()
         }
     }
 
-    // Frame ausführen
+    // Frame ausfÃ¼hren
     NextGF();
 
     // Replay zu Ende?
@@ -117,7 +117,7 @@ void GameClient::ExecuteGameFrame_Replay()
 
         // Meldung erzeugen
         char text[256];
-        sprintf(text, _("Notice: The played replay has ended. (GF: %u, %dh %dmin %ds, TF: %u, AVG_FPS: %u)"), framesinfo.nr, GameManager::inst().GetRuntime() / 3600, ((GameManager::inst().GetRuntime()) % 3600) / 60, (GameManager::inst().GetRuntime()) % 3600 % 60, GameManager::inst().GetFrameCount(), GameManager::inst().GetAverageFPS());
+        sprintf(text, _("Notice: The played replay has ended. (GF: %u, %dh %dmin %ds, TF: %u, AVG_FPS: %u)"), framesinfo.nr, GAMEMANAGER.GetRuntime() / 3600, ((GAMEMANAGER.GetRuntime()) % 3600) / 60, (GameManager::inst().GetRuntime()) % 3600 % 60, GameManager::inst().GetFrameCount(), GameManager::inst().GetAverageFPS());
 
         // Messenger im Game
         if(ci && GLOBALVARS.ingame)

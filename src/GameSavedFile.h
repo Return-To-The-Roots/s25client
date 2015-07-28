@@ -1,4 +1,4 @@
-// $Id: GameSavedFile.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: GameSavedFile.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -21,10 +21,14 @@
 
 #pragma once
 
-#include "GameConsts.h"
+#include "gameData/NationConsts.h"
 #include "GlobalGameSettings.h"
+#include "../libutil/src/MyTime.h"
+#include <string>
 
-/// Basisklasse für Replays und Savegames
+class BinaryFile;
+
+/// Basisklasse fÃ¼r Replays und Savegames
 class SavedFile
 {
     public:
@@ -34,7 +38,7 @@ class SavedFile
     protected:
         /// Schreibt Signatur und Version der Datei
         void WriteVersion(BinaryFile& file, unsigned int signature_length, const char* signature, unsigned short version);
-        /// Überprüft Signatur und Version der Datei
+        /// ÃœberprÃ¼ft Signatur und Version der Datei
         bool ValidateFile(BinaryFile& file, unsigned int signature_length, const char* signature, unsigned short version);
 
         /// Schreibt Spielerdaten

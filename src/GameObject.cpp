@@ -1,4 +1,4 @@
-// $Id: GameObject.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+﻿// $Id: GameObject.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -19,7 +19,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "GameObject.h"
 #include "SerializedGameData.h"
 #include "EventManager.h"

@@ -1,4 +1,4 @@
-// $Id: GameSavegame.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: GameSavegame.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -19,10 +19,11 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "GameSavegame.h"
+#include "Log.h"
 
-/// Kleine Signatur am Anfang "RTTRSAVE", die ein gültiges S25 RTTR Savegame kennzeichnet
+/// Kleine Signatur am Anfang "RTTRSAVE", die ein gÃ¼ltiges S25 RTTR Savegame kennzeichnet
 const char Savegame::SAVE_SIGNATURE[8] = {'R', 'T', 'T', 'R', 'S', 'A', 'V', 'E'};
 /// Version des Savegame-Formates
 const unsigned short Savegame::SAVE_VERSION = 25;
@@ -83,7 +84,7 @@ bool Savegame::Save(BinaryFile& file)
     // Anzahl Spieler
     file.WriteUnsignedChar(player_count);
 
-    // Größe der Spielerdaten (später ausfüllen)
+    // GrÃ¶ÃŸe der Spielerdaten (spÃ¤ter ausfÃ¼llen)
     unsigned players_size = 0;
     unsigned players_pos = file.Tell();
     file.WriteUnsignedInt(players_size);
@@ -91,7 +92,7 @@ bool Savegame::Save(BinaryFile& file)
     // Spielerdaten
     WritePlayerData(file);
 
-    // Wieder zurückspringen und Größe des Spielerblocks eintragen
+    // Wieder zurÃ¼ckspringen und GrÃ¶ÃŸe des Spielerblocks eintragen
     unsigned new_pos = file.Tell();
     file.Seek(players_pos, SEEK_SET);
     file.WriteUnsignedInt(new_pos - players_pos - 4);
@@ -154,14 +155,14 @@ bool Savegame::Load(BinaryFile& file, const bool load_players, const bool load_s
     // Spielerzeug
     if(load_players)
     {
-        // Größe des Spielerblocks überspringen
+        // GrÃ¶ÃŸe des Spielerblocks Ã¼berspringen
         file.Seek(4, SEEK_CUR);
 
         ReadPlayerData(file);
     }
     else
     {
-        // Überspringen
+        // Ãœberspringen
         players = 0;
         unsigned player_size = file.ReadUnsignedInt();
         file.Seek(player_size, SEEK_CUR);

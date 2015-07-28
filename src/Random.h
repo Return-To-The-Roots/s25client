@@ -1,4 +1,4 @@
-// $Id: Random.h 9363 2014-04-26 15:00:08Z FloSoft $
+﻿// $Id: Random.h 9363 2014-04-26 15:00:08Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -23,6 +23,11 @@
 
 #include "Singleton.h"
 #include <list>
+#include <cstddef>
+
+#ifdef max
+    #undef max
+#endif
 
 struct RandomEntry
 {
@@ -68,7 +73,7 @@ class Random : public Singleton<Random>
             }
         }
 
-        /// Gibt aktuelle Zufallszahl zur�ck
+        /// Gibt aktuelle Zufallszahl zurï¿½ck
         int GetCurrentRandomValue() const { return zahl; }
         void ReplaySet(const unsigned int checksum) { zahl = checksum; }
 
