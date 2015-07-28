@@ -1,4 +1,4 @@
-// $Id: Settings.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: Settings.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -24,17 +24,19 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Header
 #include "Singleton.h"
+#include <string>
+#include <map>
 
 #undef interface
 
 ///////////////////////////////////////////////////////////////////////////////
-// Klasse für die Konfiguration
+// Klasse fÃ¼r die Konfiguration
 class Settings : public Singleton<Settings>
 {
     public:
         Settings(void);
 
-        bool Load(void); // Lädt Einstellungen
+        bool Load(void); // LÃ¤dt Einstellungen
         void Save(void); // Speichert Einstellungen
 
     protected:

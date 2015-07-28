@@ -1,4 +1,4 @@
-// $Id: Sound.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: Sound.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -33,7 +33,7 @@ static char THIS_FILE[] = __FILE__;
 ///////////////////////////////////////////////////////////////////////////////
 /** @class Sound
  *
- *  Basisklasse für einen Sound.
+ *  Basisklasse fÃ¼r einen Sound.
  *
  *  @author FloSoft
  */
@@ -49,7 +49,7 @@ static char THIS_FILE[] = __FILE__;
 ///////////////////////////////////////////////////////////////////////////////
 /** @var Sound::CallBack
  *
- *  Callback für Spielbenachrichtigung.
+ *  Callback fÃ¼r Spielbenachrichtigung.
  *
  *  @author FloSoft
  */

@@ -1,4 +1,4 @@
-// $Id: MusicPlayer.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: MusicPlayer.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -20,12 +20,15 @@
 #define MUSICPLAYER_H_INCLUDED
 
 #include "Singleton.h"
+#include "../libsiedler2/src/ArchivInfo.h"
+#include <string>
+#include <vector>
 
 #pragma once
 
 class iwMusicPlayer;
 
-/// Speichert die Daten über eine Playlist und verwaltet diese
+/// Speichert die Daten Ã¼ber eine Playlist und verwaltet diese
 class Playlist
 {
     public:
@@ -41,16 +44,16 @@ class Playlist
         const std::string getNextSong();
 
         /// Playlist in Datei speichern
-        bool SaveAs(const std::string filename, const bool overwrite);
+        bool SaveAs(const std::string& filename, const bool overwrite);
         /// Playlist laden
-        bool Load(const std::string filename);
+        bool Load(const std::string& filename);
 
-        /// Füllt das iwMusicPlayer-Fenster mit den entsprechenden Werten
+        /// FÃ¼llt das iwMusicPlayer-Fenster mit den entsprechenden Werten
         void FillMusicPlayer(iwMusicPlayer* window) const;
         /// Liest die Werte aus dem iwMusicPlayer-Fenster
         void ReadMusicPlayer(const iwMusicPlayer* const window);
 
-        /// Wählt den Start-Song aus
+        /// WÃ¤hlt den Start-Song aus
         void SetStartSong(const unsigned id);
 
     protected:
@@ -72,20 +75,22 @@ class MusicPlayer : public Singleton<MusicPlayer>
         void Stop();
 
         /// Playlist laden
-        bool Load(const std::string filename) { return list.Load(filename); }
+        bool Load(const std::string& filename) { return list.Load(filename); }
         /// Musik wurde fertiggespielt (Callback)
         void MusicFinished()    {   PlayNext(); }
         /// liefert die Playlist.
         Playlist& GetPlaylist() { return list;}
 
     protected:
-        /// Spielt nächstes Stück ab
+        /// Spielt nÃ¤chstes StÃ¼ck ab
         void PlayNext();
 
     private:
-        bool playing;                   ///< Läuft die Musik gerade?
+        bool playing;                   ///< LÃ¤uft die Musik gerade?
         Playlist list;                  ///< Unsere aktuell aktive Playlist
-        libsiedler2::ArchivInfo sng;    ///< externes benutzerdefiniertes Musikstück (z.B. andere mp3)
+        libsiedler2::ArchivInfo sng;    ///< externes benutzerdefiniertes MusikstÃ¼ck (z.B. andere mp3)
 };
+
+#define MUSICPLAYER MusicPlayer::inst()
 
 #endif // !MUSICPLAYER_H_INCLUDED

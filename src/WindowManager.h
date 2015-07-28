@@ -1,4 +1,4 @@
-// $Id: WindowManager.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: WindowManager.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -22,8 +22,12 @@
 #pragma once
 
 #include "Singleton.h"
-#include "MouseAndKeys.h"
-#include "VideoDriverLoaderInterface.h"
+#include "drivers/MouseAndKeys.h"
+#include "drivers/VideoDriverLoaderInterface.h"
+#include "Point.h"
+#include <cstddef>
+#include <list>
+#include <string>
 
 class Window;
 class Desktop;
@@ -32,8 +36,8 @@ class IngameWindow;
 /// Verwaltet alle (offenen) Fenster bzw Desktops samt ihren Controls und Messages
 class WindowManager : public Singleton<WindowManager>, public VideoDriverLoaderInterface
 {
-        typedef list<IngameWindow*> IngameWindowList;                   ///< Fensterlistentyp
-        typedef list<IngameWindow*>::iterator IngameWindowListIterator; ///< Fensterlistentypiterator
+        typedef std::list<IngameWindow*> IgwList;                   ///< Fensterlistentyp
+        typedef std::list<IngameWindow*>::iterator IgwListIterator; ///< Fensterlistentypiterator
 
     public:
         /// Konstruktor von @p WindowManager.
@@ -53,23 +57,23 @@ class WindowManager : public Singleton<WindowManager>, public VideoDriverLoaderI
         /// Sendet eine Mausnachricht weiter an alle Steuerelemente
         void RelayMouseMessage(bool (Window::*msg)(const MouseCoords&), const MouseCoords& mc);
 
-        /// öffnet ein IngameWindow und fügt es zur Fensterliste hinzu.
+        /// Ã–ffnet ein IngameWindow und fÃ¼gt es zur Fensterliste hinzu.
         void Show(IngameWindow* window, bool mouse = false);
         /// schliesst ein IngameWindow und entfernt es aus der Fensterliste.
         void Close(IngameWindow* window);
-        /// Sucht ein Fenster mit der entsprechenden Fenster-ID und schließt es (falls es so eins gibt)
+        /// Sucht ein Fenster mit der entsprechenden Fenster-ID und schlieÃŸt es (falls es so eins gibt)
         void Close(unsigned int id);
         /// merkt einen Desktop zum Wechsel vor.
         void Switch(Desktop* desktop, void* data = NULL, bool mouse = false);
-        /// Verarbeitung des Drückens der Linken Maustaste.
+        /// Verarbeitung des DrÃ¼ckens der Linken Maustaste.
         void Msg_LeftDown(MouseCoords mc);
         /// Verarbeitung des Loslassens der Linken Maustaste.
         void Msg_LeftUp(const MouseCoords& mc);
-        /// Verarbeitung des Drückens der Rechten Maustaste.
+        /// Verarbeitung des DrÃ¼ckens der Rechten Maustaste.
         void Msg_RightUp(const MouseCoords& mc);
         /// Verarbeitung des Loslassens der Rechten Maustaste.
         void Msg_RightDown(const MouseCoords& mc);
-        /// Verarbeitung des Drückens des Rad hoch.
+        /// Verarbeitung des DrÃ¼ckens des Rad hoch.
         void Msg_WheelUp(const MouseCoords& mc);
         /// Verarbeitung Rad runter.
         void Msg_WheelDown(const MouseCoords& mc);
@@ -80,34 +84,32 @@ class WindowManager : public Singleton<WindowManager>, public VideoDriverLoaderI
         // setzt den Tooltip
         void SetToolTip(Window* ttw, const std::string& tooltip);
 
-        /// Verarbeitung Spielfenstergröße verändert (vom Betriebssystem aus)
+        /// Verarbeitung SpielfenstergrÃ¶ÃŸe verÃ¤ndert (vom Betriebssystem aus)
         void ScreenResized(unsigned short width, unsigned short height);
-        /// Verarbeitung Spielfenstergröße verändert (vom Spiel aus)
-        // Achtung: nicht dieselbe Nachricht, die die Window-Klasse empfängt
+        /// Verarbeitung SpielfenstergrÃ¶ÃŸe verÃ¤ndert (vom Spiel aus)
+        // Achtung: nicht dieselbe Nachricht, die die Window-Klasse empfÃ¤ngt
         void Msg_ScreenResize(unsigned short width, unsigned short height);
 
     protected:
         void DrawToolTip();
-
+        IngameWindow* FindWindowUnderMouse(const MouseCoords& mc) const;
     private:
-        /// schliesst ein IngameWindow und entfernt es aus der Fensterliste.
-        void Close(IngameWindowListIterator& it);
         /// wechselt einen Desktop
         void Switch(void);
 
     private:
         Desktop* desktop;        ///< aktueller Desktop
-        Desktop* nextdesktop;    ///< der nächste Desktop
-        void* nextdesktop_data;  ///< Daten für den nächsten Desktop, welche dann MSG_SWITCH übergeben werden
-        bool disable_mouse;      ///< Mausdeaktivator, zum beheben des "Switch-Anschließend-Drück-Bug"s
+        Desktop* nextdesktop;    ///< der nÃ¤chste Desktop
+        void* nextdesktop_data;  ///< Daten fÃ¼r den nÃ¤chsten Desktop, welche dann MSG_SWITCH Ã¼bergeben werden
+        bool disable_mouse;      ///< Mausdeaktivator, zum beheben des "Switch-AnschlieÃŸend-DrÃ¼ck-Bug"s
 
-        IngameWindowList windows; ///< Fensterliste
+        IgwList windows; ///< Fensterliste
         const MouseCoords* mc;
         std::string tooltip;
-        unsigned short screenWidth;  /// letzte gültige Bildschirm-/Fensterbreite
-        unsigned short screenHeight; /// letzte gültige Bildschirm-/Fensterhöhe
+        unsigned short screenWidth;  /// letzte gÃ¼ltige Bildschirm-/Fensterbreite
+        unsigned short screenHeight; /// letzte gÃ¼ltige Bildschirm-/FensterhÃ¶he
 
-        // Für Doppelklick merken:
+        // FÃ¼r Doppelklick merken:
         unsigned last_left_click_time; /// Zeit des letzten Links-Klicks
         Point<int> last_left_click_point; /// Position beim letzten Links-Klick
 
@@ -116,5 +118,7 @@ class WindowManager : public Singleton<WindowManager>, public VideoDriverLoaderI
 //  unsigned short lastScreenHeightSignal;
 //  unsigned short lastScreenSignalCount;
 };
+
+#define WINDOWMANAGER WindowManager::inst()
 
 #endif // !WINDOWMANAGER_H_INCLUDED

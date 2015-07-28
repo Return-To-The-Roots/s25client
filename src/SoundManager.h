@@ -1,4 +1,4 @@
-// $Id: SoundManager.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: SoundManager.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -21,7 +21,7 @@
 #define SOUNDMANAGER_H_
 
 #include "Singleton.h"
-#include "list.h"
+#include <list>
 
 class noBase;
 class glArchivItem_Sound;
@@ -36,14 +36,14 @@ class SoundManager : public Singleton<SoundManager>
         {
             /// Objekt, das den Sound "wiedergibt"
             noBase* obj;
-            /// Zusätzliche ID, falls das Objekt im Zuge seiner Arbeit mehrere Sounds von sich gibt
+            /// ZusÃ¤tzliche ID, falls das Objekt im Zuge seiner Arbeit mehrere Sounds von sich gibt
             unsigned id;
-            /// Abspiel ID - identifiziert ein abgespieltes Stück, mit dem man abgespielte Stücke stoppen kann
+            /// Abspiel ID - identifiziert ein abgespieltes StÃ¼ck, mit dem man abgespielte StÃ¼cke stoppen kann
             unsigned play_id;
         };
 
         /// Liste von NO-Sounds
-        list<NOSound> no_sounds;
+        std::list<NOSound> no_sounds;
 
         //////////////////////////////////
 
@@ -51,7 +51,7 @@ class SoundManager : public Singleton<SoundManager>
         unsigned int last_bird;
         /// Intervall zwischen den Vogelzwitschern
         unsigned bird_interval;
-        /// Play-ID fürs Meeresrauschen
+        /// Play-ID fÃ¼rs Meeresrauschen
         unsigned ocean_play_id;
 
     public:
@@ -67,9 +67,9 @@ class SoundManager : public Singleton<SoundManager>
 
         /////////////////////////////////
 
-        /// Wird immer aufgerufen, wenn der GameWorld alles gezeichnet hat und die Vögel abgespielt werden
+        /// Wird immer aufgerufen, wenn der GameWorld alles gezeichnet hat und die VÃ¶gel abgespielt werden
         void PlayBirdSounds(const unsigned short tree_count);
-        /// Spielt Meeresrauschen ab (wird der Anteil von Wasser an der aktuell gezeichneten Fläche in % angegeben)
+        /// Spielt Meeresrauschen ab (wird der Anteil von Wasser an der aktuell gezeichneten FlÃ¤che in % angegeben)
         void PlayOceanBrawling(const unsigned water_percent);
 
         void StopAll();

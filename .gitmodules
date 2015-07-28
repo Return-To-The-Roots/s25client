@@ -1,26 +1,26 @@
 [submodule "libendian"]
-	url = https://github.com/Return-To-The-Roots/libendian.git
+	url = https://github.com/Flamefire/libendian.git
 	path = libendian
 [submodule "liblobby"]
-	url = https://github.com/Return-To-The-Roots/liblobby.git
+	url = https://github.com/Flamefire/liblobby.git
 	path = liblobby
 [submodule "libsiedler2"]
-	url = https://github.com/Return-To-The-Roots/libsiedler2.git
+	url = https://github.com/Flamefire/libsiedler2.git
 	path = libsiedler2
 [submodule "libutil"]
-	url = https://github.com/Return-To-The-Roots/libutil.git
+	url = https://github.com/Flamefire/libutil.git
 	path = libutil
 [submodule "mygettext"]
-	url = https://github.com/Return-To-The-Roots/mygettext.git
+	url = https://github.com/Flamefire/mygettext.git
 	path = mygettext
 [submodule "s-c"]
-	url = https://github.com/Return-To-The-Roots/s-c.git
+	url = https://github.com/Flamefire/s-c.git
 	path = s-c
 [submodule "s25update"]
-	url = https://github.com/Return-To-The-Roots/s25update.git
+	url = https://github.com/Flamefire/s25update.git
 	path = s25update
 [submodule "version"]
-	url = https://github.com/Return-To-The-Roots/version.git
+	url = https://github.com/Flamefire/version.git
 	path = version
 [submodule "RTTR/languages"]
 	url = https://github.com/Return-To-The-Roots/languages.git

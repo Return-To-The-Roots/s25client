@@ -1,4 +1,4 @@
-// $Id: SDL.h 9357 2014-04-25 15:35:25Z FloSoft $
+Ôªø// $Id: SDL.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -21,16 +21,16 @@
 
 #include <AudioDriver.h>
 
-/// Klasse f¸r den SDL Audiotreiber.
+/// Klasse f√ºr den SDL Audiotreiber.
 class AudioSDL : public AudioDriver
 {
     private:
 
         /// Welche Sounds werden in den Channels gerade gespielt?
         unsigned channels[CHANNEL_COUNT];
-        /// Lautst‰rke der Effekte.
+        /// Lautst√§rke der Effekte.
         unsigned char master_effects_volume;
-        /// Lautst‰rke der Musik.
+        /// Lautst√§rke der Musik.
         unsigned char master_music_volume;
 
     public:
@@ -46,7 +46,7 @@ class AudioSDL : public AudioDriver
         /// Treiberinitialisierungsfunktion.
         bool Initialize(void);
 
-        /// Treiberaufr‰umfunktion.
+        /// Treiberaufr√§umfunktion.
         void CleanUp(void);
 
         Sound* LoadEffect(unsigned int data_type, unsigned char* data, unsigned long size);
@@ -62,7 +62,7 @@ class AudioSDL : public AudioDriver
         bool IsEffectPlaying(const unsigned play_id);
         /// Stoppt einen Sound
         void StopEffect(const unsigned play_id);
-        /// Ver‰ndert die Lautst‰rke von einem abgespielten Sound (falls er noch abgespielt wird)
+        /// Ver√§ndert die Lautst√§rke von einem abgespielten Sound (falls er noch abgespielt wird)
         void ChangeVolume(const unsigned play_id, const unsigned char volume);
 
         void SetMasterEffectVolume(unsigned char volume);
@@ -70,7 +70,7 @@ class AudioSDL : public AudioDriver
 
     private:
 
-        /// Callback f¸r Audiotreiber
+        /// Callback f√ºr Audiotreiber
         static void MusicFinished();
 };
 

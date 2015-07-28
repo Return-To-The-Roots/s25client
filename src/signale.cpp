@@ -1,4 +1,4 @@
-// $Id: signale.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+﻿// $Id: signale.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -19,10 +19,16 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
+#ifdef _WIN32
+    #include <windows.h>
+#endif // _WIN32
+#include "signale.h"
 #include "signal.h"
 
 #include "GlobalVars.h"
+#include "Log.h"
+#include <cstdlib>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -71,7 +77,7 @@ void HandlerRoutine(int sig)
         c = getchar();
         if(c == 'j' || c == 1079565930)
         {
-            if(killme == true)
+            if(killme)
                 exit(1);
 
             killme = true;

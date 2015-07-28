@@ -1,4 +1,4 @@
-// $Id: TerritoryRegion.h 9357 2014-04-25 15:35:25Z FloSoft $
+Ôªø// $Id: TerritoryRegion.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -24,8 +24,8 @@
 
 #include "GameWorld.h"
 
-/// TerritoryRegion ist ein Rechteck aus der Karte quasi "ausgeschnitten", die f¸r die Berechnung bei Milit‰rgeb‰uden-
-/// aktionen (Neubau, ‹bernahme, Abriss) benˆtigt wird von RecalcTerritory
+/// TerritoryRegion ist ein Rechteck aus der Karte quasi "ausgeschnitten", die f√ºr die Berechnung bei Milit√§rgeb√§uden-
+/// aktionen (Neubau, √úbernahme, Abriss) ben√∂tigt wird von RecalcTerritory
 
 class noBaseBuilding;
 class GameWorldBase;
@@ -34,7 +34,7 @@ class TerritoryRegion
 {
         /// Lage des Ausschnittes in der Karte
         const int x1, y1, x2, y2;
-        /// Grˆﬂe der Karte (wird aus x1,y1...) berechnet
+        /// Gr√∂√üe der Karte (wird aus x1,y1...) berechnet
         const unsigned short width, height;
 
         /// Beschreibung eines Knotenpunktes
@@ -42,7 +42,7 @@ class TerritoryRegion
         {
             /// Spieler-index (+1, da 0 = besitzlos!)
             unsigned char owner;
-            /// Entfernung vom Milit‰rgeb‰ude
+            /// Entfernung vom Milit√§rgeb√§ude
             unsigned char radius;
         }* nodes;
 
@@ -50,12 +50,12 @@ class TerritoryRegion
 
     private:
         /// Check whether the point x, y is part of the polygon
-        static bool IsPointInPolygon(GameWorldBase* gwb, std::vector< Point<MapCoord> > &polygon, MapCoord x, MapCoord y);
+        static bool IsPointInPolygon(GameWorldBase* gwb, std::vector< MapPoint > &polygon, const MapPoint pt);
 
-        /// Testet einen Punkt, ob der neue Spieler ihn ¸bernehmen kann und ¸bernimmt ihn ggf.
+        /// Testet einen Punkt, ob der neue Spieler ihn √ºbernehmen kann und √ºbernimmt ihn ggf.
         void TestNode( int x, int y, const unsigned char player, const unsigned char radius, const bool check_barriers);
         /// Unterfunktionen von AdjustBorders, vergleicht 2 Punkte, ob sie von unterschiedlichen Spielern sind und setzt
-        /// Punkt ggf. zu gar keinem Spieler, 2. Funktion wird f¸r Punkte im 2er Abstand verwendet, da es dort ein bisschen anders l‰uft!
+        /// Punkt ggf. zu gar keinem Spieler, 2. Funktion wird f√ºr Punkte im 2er Abstand verwendet, da es dort ein bisschen anders l√§uft!
         void AdjustNodes(const unsigned short x1, const unsigned short y1, const unsigned short x2, const unsigned short y2);
         void AdjustNodes2(const unsigned short x1, const unsigned short y1, const unsigned short x2, const unsigned short y2);
 
@@ -65,9 +65,9 @@ class TerritoryRegion
         TerritoryRegion(const int x1, const int y1, const int x2, const int y2, GameWorldBase* const gwb);
         ~TerritoryRegion();
 
-        static bool IsPointValid(GameWorldBase* gwb, std::vector< Point<MapCoord> > &polygon, MapCoord x, MapCoord y);
+        static bool IsPointValid(GameWorldBase* gwb, std::vector< MapPoint > &polygon, const MapPoint pt);
 
-        /// Berechnet ein Milit‰rgeb‰ude mit ein
+        /// Berechnet ein Milit√§rgeb√§ude mit ein
         void CalcTerritoryOfBuilding(const noBaseBuilding* const building);
 
         // Liefert den Besitzer eines Punktes (mit absoluten Koordinaten, werden automatisch in relative umgerechnet!)
@@ -77,7 +77,7 @@ class TerritoryRegion
         unsigned char GetRadius(const int x, const int y) const
         { return nodes[(y - y1) * (x2 - x1) + (x - x1)].radius; }
 
-        // Korrigiert die Grenzen (schneidet vom aktuellen Territorium immer noch die ‰uﬂeren Punkte ab f¸r die Grenzpf‰hle)
+        // Korrigiert die Grenzen (schneidet vom aktuellen Territorium immer noch die √§u√üeren Punkte ab f√ºr die Grenzpf√§hle)
         void AdjustBorders();
 
 

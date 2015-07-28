@@ -1,4 +1,4 @@
-// $Id: GameServer.h 9539 2014-12-14 10:15:57Z marcus $
+ï»¿// $Id: GameServer.h 9539 2014-12-14 10:15:57Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -30,7 +30,7 @@
 #include "GlobalGameSettings.h"
 #include "GamePlayerList.h"
 
-#include "AIEventManager.h"
+#include "ai/AIEventManager.h"
 
 
 class GameServerPlayer;
@@ -66,7 +66,7 @@ class GameServer : public Singleton<GameServer>, public GameMessageInterface
         void TogglePlayerState(unsigned char client);
         void ChangeGlobalGameSettings(const GlobalGameSettings& ggs);
 
-        /// Lässt einen Spieler wechseln (nur zu Debugzwecken)
+        /// LÃ¤sst einen Spieler wechseln (nur zu Debugzwecken)
         void ChangePlayer(const unsigned char old_id, const unsigned char new_id);
 
         /// Tauscht Spieler(positionen) bei Savegames in dskHostGame
@@ -123,11 +123,11 @@ class GameServer : public Singleton<GameServer>, public GameMessageInterface
 
                 /// Aktueller nwf
                 unsigned int nr;
-                /// Länge der Network-Frames in ms (gf-Länge * nwf_length des Clients)
+                /// LÃ¤nge der Network-Frames in ms (gf-LÃ¤nge * nwf_length des Clients)
                 unsigned int nwf_length;
                 /// Aktueller GF
                 unsigned gf_nr;
-                /// GF-Länge in ms
+                /// GF-LÃ¤nge in ms
                 unsigned gf_length;
                 unsigned gf_length_new;
 

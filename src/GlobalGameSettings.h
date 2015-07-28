@@ -1,4 +1,4 @@
-// $Id: GlobalGameSettings.h 9357 2014-04-25 15:35:25Z FloSoft $
+﻿// $Id: GlobalGameSettings.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -16,12 +16,16 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
+#pragma once
 #ifndef GlobalGameSettings_H_INCLUDED
 #define GlobalGameSettings_H_INCLUDED
 
-#include "Addons.h"
+#include "addons/Addons.h"
 #include <iostream>
-#pragma once
+#include <vector>
+#include <algorithm>
+
+class Serializer;
 
 class GlobalGameSettings
 {

@@ -1,4 +1,4 @@
-// $Id: GameInterface.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: GameInterface.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -19,10 +19,10 @@
 #ifndef GAMEINTERFACE_H_
 #define GAMEINTERFACE_H_
 
-#include "MapConsts.h"
+#include "gameTypes/MapTypes.h"
 
 /// Interface, welches vom Spiel angesprocehn werden kann, um beispielsweise GUI wichtige Nachrichten
-/// zu übermiteln
+/// zu Ã¼bermiteln
 class GameInterface
 {
     public:
@@ -30,11 +30,11 @@ class GameInterface
 
         /// Ein Spieler hat verloren
         virtual void GI_PlayerDefeated(const unsigned player_id) = 0;
-        /// Es wurde etwas Minimap entscheidendes geändert --> Minimap updaten
-        virtual void GI_UpdateMinimap(const MapCoord x, const MapCoord y) = 0;
-        /// Flagge wurde zerstört
-        virtual void GI_FlagDestroyed(const MapCoord x, const MapCoord y) = 0;
-        /// Bündnisvertrag wurde abgeschlossen oder abgebrochen --> Minimap updaten
+        /// Es wurde etwas Minimap entscheidendes geÃ¤ndert --> Minimap updaten
+        virtual void GI_UpdateMinimap(const MapPoint pt) = 0;
+        /// Flagge wurde zerstÃ¶rt
+        virtual void GI_FlagDestroyed(const MapPoint pt) = 0;
+        /// BÃ¼ndnisvertrag wurde abgeschlossen oder abgebrochen --> Minimap updaten
         virtual void GI_TreatyOfAllianceChanged() = 0;
 
         virtual void GI_Winner(const unsigned player_id) = 0;

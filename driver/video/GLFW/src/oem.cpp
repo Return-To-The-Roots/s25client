@@ -1,4 +1,4 @@
-// $Id: oem.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: oem.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005-2009 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -41,9 +41,9 @@ static char THIS_FILE[] = __FILE__;
  *
  *  @param[in]  from   konstanter Quellstring
  *  @param[out] to     Zielstring (ausreichend Speicher muss vorhanden sein)
- *  @param[in]  length Länge des Quellstrings, wenn 0 wird @p strlen(from) verwendet
+ *  @param[in]  length LÃ¤nge des Quellstrings, wenn 0 wird @p strlen(from) verwendet
  *
- *  @return            @p to wird zurückgeliefert
+ *  @return            @p to wird zurÃ¼ckgeliefert
  */
 char* AnsiToOem(const char* from, char* to, unsigned int length)
 {
@@ -64,7 +64,7 @@ char* AnsiToOem(const char* from, char* to, unsigned int length)
     if(to == NULL || from == NULL)
         return NULL;
 
-    // wir haben keine Länge erhalten, also ermitteln
+    // wir haben keine LÃ¤nge erhalten, also ermitteln
     if(length == 0)
         length = (unsigned int)strlen(from);
 
@@ -75,7 +75,7 @@ char* AnsiToOem(const char* from, char* to, unsigned int length)
         {
             unsigned char C = (unsigned char)from[x];
 
-            // ab char 128 nötig
+            // ab char 128 nÃ¶tig
             if(C > 128)
                 to[x] = (char)ansi2oem_tab[C & 0x7F];
             else
@@ -94,9 +94,9 @@ char* AnsiToOem(const char* from, char* to, unsigned int length)
  *
  *  @param[in]  from   konstanter Quellstring
  *  @param[out] to     Zielstring (ausreichend Speicher muss vorhanden sein)
- *  @param[in]  length Länge des Quellstrings, wenn 0 wird @p strlen(from) verwendet
+ *  @param[in]  length LÃ¤nge des Quellstrings, wenn 0 wird @p strlen(from) verwendet
  *
- *  @return            @p to wird zurückgeliefert
+ *  @return            @p to wird zurÃ¼ckgeliefert
  */
 char* OemToAnsi(const char* from, char* to, unsigned int length)
 {
@@ -125,7 +125,7 @@ char* OemToAnsi(const char* from, char* to, unsigned int length)
     if(to == NULL || from == NULL)
         return NULL;
 
-    // wir haben keine Länge erhalten, also ermitteln
+    // wir haben keine LÃ¤nge erhalten, also ermitteln
     if(length == 0)
         length = (unsigned int)strlen(from);
 

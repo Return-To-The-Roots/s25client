@@ -1,4 +1,4 @@
-// $Id: Loader.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: Loader.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -22,13 +22,31 @@
 #pragma once
 
 #include "../libutil/src/Singleton.h"
-#include "../libsiedler2/src/libsiedler2.h"
-#include "const_addons.h"
+#include "addons/const_addons.h"
+#include "gameData/NationConsts.h"
+#include "Rect.h"
+#include "ogl/glArchivItem_Bitmap.h"
+#include "ogl/glArchivItem_Font.h"
+#include "ogl/glArchivItem_Sound.h"
+#include "ogl/glArchivItem_Bob.h"
+#include "../libsiedler2/src/ArchivInfo.h"
+#include "../libsiedler2/src/ArchivItem_Text.h"
+#include "../libsiedler2/src/ArchivItem_Ini.h"
+#include <string>
+#include <vector>
+#include <map>
+
+namespace libsiedler2{
+    class ArchivItem_Palette;
+    class ArchivItem_Ini;
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 
 class glSmartBitmap;
 class glSmartTexturePacker;
+
+const std::string CONFIG_NAME = "config";
 
 /// Loader Klasse.
 class Loader : public Singleton<Loader>
@@ -39,23 +57,23 @@ class Loader : public Singleton<Loader>
         /// Desktruktor von @p Loader.
         ~Loader(void);
 
-        /// Lädt alle allgemeinen Dateien.
+        /// LÃ¤dt alle allgemeinen Dateien.
         bool LoadFilesAtStart(void);
-        /// Lädt die Spieldateien.
+        /// LÃ¤dt die Spieldateien.
         bool LoadFilesAtGame(unsigned char gfxset, bool* nations);
-        /// Lädt Dateien von Addons.
+        /// LÃ¤dt Dateien von Addons.
         bool LoadFilesFromAddon(const AddonId id);
         void fillCaches();
-        /// Lädt das Terrain.
+        /// LÃ¤dt das Terrain.
         bool CreateTerrainTextures(void);
 
-        /// Lädt die Settings.
+        /// LÃ¤dt die Settings.
         bool LoadSettings();
         /// Speichert die Settings.
         bool SaveSettings();
 
     protected:
-        /// Lädt alle Sounds.
+        /// LÃ¤dt alle Sounds.
         inline bool LoadSounds();
 
     private:
@@ -92,7 +110,7 @@ class Loader : public Singleton<Loader>
     private:
         std::map<std::string, libsiedler2::ArchivInfo> files;
         unsigned char lastgfx;
-        libsiedler2::ArchivInfo* nation_gfx[NATION_COUNT];
+        libsiedler2::ArchivInfo* nation_gfx[NAT_COUNT];
         libsiedler2::ArchivInfo* map_gfx;
         libsiedler2::ArchivInfo* tex_gfx;
 
@@ -109,15 +127,15 @@ class Loader : public Singleton<Loader>
         glSmartTexturePacker* stp;
 
         static glSmartBitmap animal_cache[8][6][9];
-        static glSmartBitmap building_cache[NATION_COUNT][40][2];
-        static glSmartBitmap flag_cache[NATION_COUNT][3][8];
+        static glSmartBitmap building_cache[NAT_COUNT][40][2];
+        static glSmartBitmap flag_cache[NAT_COUNT][3][8];
         static glSmartBitmap building_flag_cache[8];
         static glSmartBitmap tree_cache[9][15];
-        static glSmartBitmap bob_jobs_cache[NATION_COUNT][33][6][8];
+        static glSmartBitmap bob_jobs_cache[NAT_COUNT][33][6][8];
         static glSmartBitmap granite_cache[2][6];
         static glSmartBitmap grainfield_cache[2][4];
         static glSmartBitmap carrier_cache[35][6][8][2];
-        static glSmartBitmap boundary_stone_cache[NATION_COUNT];
+        static glSmartBitmap boundary_stone_cache[NAT_COUNT];
         static glSmartBitmap boat_cache[6][8];
         static glSmartBitmap donkey_cache[6][8];
         static glSmartBitmap gateway_cache[5];

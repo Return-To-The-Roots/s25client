@@ -1,4 +1,4 @@
-// $Id: GameClientGF_Game.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: GameClientGF_Game.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -19,19 +19,19 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "GameClient.h"
 #include "Random.h"
 #include "GameMessages.h"
 
 void GameClient::ExecuteGameFrame_Game()
 {
-    // Geschickte Network Commands der Spieler ausführen und ggf. im Replay aufzeichnen
+    // Geschickte Network Commands der Spieler ausfÃ¼hren und ggf. im Replay aufzeichnen
 
     // Bei evtl. Spielerwechsel die IDs speichern, die "gewechselt" werden sollen
     unsigned char player_switch_old_id = 255, player_switch_new_id = 255;
 
-    int checksum = Random::inst().GetCurrentRandomValue();
+    int checksum = RANDOM.GetCurrentRandomValue();
 
     for(unsigned char i = 0; i < players.getCount(); ++i)
     {
@@ -39,7 +39,7 @@ void GameClient::ExecuteGameFrame_Game()
         {
             GameMessage_GameCommand& msg = players[i].gc_queue.front();
 
-            // Command im Replay aufzeichnen (wenn nicht gerade eins schon läuft xD)
+            // Command im Replay aufzeichnen (wenn nicht gerade eins schon lÃ¤uft xD)
             // Nur Commands reinschreiben, KEINE PLATZHALTER (nc_count = 0)
             if(msg.gcs.size() > 0 && !replay_mode)
             {
@@ -48,7 +48,7 @@ void GameClient::ExecuteGameFrame_Game()
                 replayinfo.replay.AddGameCommand(framesinfo.nr, tmp.GetLength(), tmp.GetData());
             }
 
-            // Das ganze Zeug soll die andere Funktion ausführen
+            // Das ganze Zeug soll die andere Funktion ausfÃ¼hren
             ExecuteAllGCs(msg, &player_switch_old_id, &player_switch_new_id);
 
             // Nachricht abwerfen :)
@@ -57,15 +57,15 @@ void GameClient::ExecuteGameFrame_Game()
         }
     }
 
-    // Frame ausführen
+    // Frame ausfÃ¼hren
     NextGF();
 
-    //LOG.lprintf("%d = %d - %d\n", framesinfo.nr / framesinfo.nwf_length, checksum, Random::inst().GetCurrentRandomValue());
+    //LOG.lprintf("%d = %d - %d\n", framesinfo.nr / framesinfo.nwf_length, checksum, RANDOM.GetCurrentRandomValue());
 
-    // Stehen eigene Commands an, die gesendet werden müssen?
+    // Stehen eigene Commands an, die gesendet werden mÃ¼ssen?
     send_queue.push(new GameMessage_GameCommand(playerid, checksum, gcs));
 
-    // alles gesendet --> Liste löschen
+    // alles gesendet --> Liste lÃ¶schen
     gcs.clear();
 
 

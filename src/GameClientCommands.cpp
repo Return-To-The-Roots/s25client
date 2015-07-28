@@ -1,4 +1,4 @@
-// $Id: GameClientCommands.cpp 9561 2014-12-30 10:51:38Z marcus $
+ï»¿// $Id: GameClientCommands.cpp 9561 2014-12-30 10:51:38Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -19,19 +19,19 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "GameClient.h"
 
-#include "VideoDriverWrapper.h"
-#include "noFlag.h"
+#include "drivers/VideoDriverWrapper.h"
+#include "nodeObjs/noFlag.h"
 #include "GameWorld.h"
 #include "GameClientPlayer.h"
 
 #include "GameServer.h"
-#include "nobUsual.h"
-#include "nobMilitary.h"
-#include "nobBaseWarehouse.h"
-#include "dskGameInterface.h"
+#include "buildings/nobUsual.h"
+#include "buildings/nobMilitary.h"
+#include "buildings/nobBaseWarehouse.h"
+#include "desktops/dskGameInterface.h"
 #include "ClientInterface.h"
 #include "GameCommands.h"
 #include "GameMessages.h"
@@ -53,14 +53,14 @@ static char THIS_FILE[] = __FILE__;
  *
  *  @author OLiver
  */
-void GameClient::Command_SetFlag2(int x, int y, unsigned char player)
+void GameClient::Command_SetFlag2(const MapPoint pt, unsigned char player)
 {
-    gw->SetFlag(x, y, player);
+    gw->SetFlag(pt, player);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Chatbefehl, hängt eine Textnachricht in die Sende-Queue.
+ *  Chatbefehl, hÃ¤ngt eine Textnachricht in die Sende-Queue.
  *
  *  @param[in] text        Der Text
  *  @param[in] destination Ziel der Nachricht
@@ -70,7 +70,7 @@ void GameClient::Command_SetFlag2(int x, int y, unsigned char player)
 void GameClient::Command_Chat(const std::string& text, const ChatDestination cd)
 {
     // Replaymodus oder kein Text --> nichts senden
-    if(GameClient::inst().IsReplayModeOn() || text.length() == 0)
+    if(GAMECLIENT.IsReplayModeOn() || text.length() == 0)
         return;
 
     send_queue.push(new GameMessage_Server_Chat(playerid, cd, text));
@@ -85,7 +85,7 @@ void GameClient::Command_Chat(const std::string& text, const ChatDestination cd)
 void GameClient::Command_ToggleNation()
 {
     send_queue.push(new GameMessage_Player_Toggle_Nation
-                    (0xff, Nation((this->GetLocalPlayer()->nation + 1) % NATION_COUNT)));
+                    (0xff, Nation((this->GetLocalPlayer()->nation + 1) % NAT_COUNT)));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -138,11 +138,11 @@ void GameClient::ChangePlayer(const unsigned char old_id, const unsigned char ne
     if(new_id >= players.getCount())
         return;
 
-    // Gleiche ID - wäre unsinnig zu wechseln
+    // Gleiche ID - wÃ¤re unsinnig zu wechseln
     if(old_id == new_id)
         return;
 
-    // old_id muss richtiger Spieler, new_id KI sein, ansonsten geht das natürlich nicht
+    // old_id muss richtiger Spieler, new_id KI sein, ansonsten geht das natÃ¼rlich nicht
     if( !(players[old_id].ps == PS_OCCUPIED && players[new_id].ps == PS_KI) )
         return;
 
@@ -154,18 +154,18 @@ void GameClient::ChangePlayer(const unsigned char old_id, const unsigned char ne
     {
         playerid = new_id;
 
-        // BQ überall neu berechnen
+        // BQ Ã¼berall neu berechnen
         for(unsigned y = 0; y < gw->GetHeight(); ++y)
         {
             for(unsigned x = 0; x < gw->GetWidth(); ++x)
-                gw->SetBQ(x, y, new_id);
+                gw->SetBQ(MapPoint(x, y), new_id);
         }
 
         // Visuelle Einstellungen vom Spieler wieder holen
         GetVisualSettings();
 
         //// zum HQ hinscrollen
-        //gw->MoveToMapObject(player->hqx,player->hqy);
+        //gw->MoveToMapObject(player->hqPos.x,player->hqy);
         //GameClientPlayer *player = players[playerid]; // wegen GCC-Fehlermeldung auskommentiert
     }
 	//swap command que
@@ -185,22 +185,22 @@ void GameClient::ChangeReplayPlayer(const unsigned new_id)
     if(old_id == new_id)
         // Unsinn auf den selben Spieler zu wechseln
         return;
-    // Auch innerhalb der gültigen Spieler?
-    if(new_id >= GameClient::inst().GetPlayerCount())
+    // Auch innerhalb der gÃ¼ltigen Spieler?
+    if(new_id >= GAMECLIENT.GetPlayerCount())
         return;
     // Und ein richtiger ehemaliger Spieler?
-    if(GameClient::inst().GetPlayer(new_id)->ps != PS_KI &&
-            GameClient::inst().GetPlayer(new_id)->ps != PS_OCCUPIED)
+    if(GAMECLIENT.GetPlayer(new_id)->ps != PS_KI &&
+            GAMECLIENT.GetPlayer(new_id)->ps != PS_OCCUPIED)
         return;
 
 
     playerid = new_id;
 
-    // BQ überall neu berechnen
+    // BQ Ã¼berall neu berechnen
     for(unsigned y = 0; y < gw->GetHeight(); ++y)
     {
         for(unsigned x = 0; x < gw->GetWidth(); ++x)
-            gw->SetBQ(x, y, new_id);
+            gw->SetBQ(MapPoint(x, y), new_id);
     }
 
     // GUI Bescheid sagen (um z.B. Schatten neu zu berechnen)

@@ -1,4 +1,4 @@
-// $Id: ListDir.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+﻿// $Id: ListDir.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -19,8 +19,18 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "ListDir.h"
+
+#include <algorithm>
+
+#ifdef _WIN32
+#   include <windows.h>
+#else
+#   include <sys/types.h>
+#	include <sys/stat.h>
+#   include <dirent.h>
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -82,9 +92,9 @@ void ListDir(const std::string& path, bool directories, void (*CallBack)(const s
 #else
     DIR* dir_d;
     dirent* dir = NULL;
-    if ((dir_d = opendir(rpath.c_str())) != NULL)
+    if ((dir_d = opendir(rpath.c_str())))
     {
-        while( (dir = readdir(dir_d)) != NULL)
+        while( (dir = readdir(dir_d)))
         {
             struct stat file_stat;
             std::string whole_path = rpath + dir->d_name;

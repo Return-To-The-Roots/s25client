@@ -1,4 +1,4 @@
-// $Id: languages.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+﻿// $Id: languages.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -19,13 +19,16 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "languages.h"
 
 #include "Loader.h"
 
 #include "files.h"
 #include "Settings.h"
+#include "../mygettext/src/mygettext.h"
+
+#include <algorithm>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -67,7 +70,7 @@ void Languages::loadLanguages()
     // Sprachen sortieren
     std::sort(languages.begin(), languages.end(), Language::compare);
 
-    // Systemsprache hinzuf�gen
+    // Systemsprache hinzufügen
     Language l(gettext_noop("System language"), "");
     languages.insert(languages.begin(), l);
 
@@ -114,11 +117,11 @@ unsigned int Languages::getCount(void)
  */
 void Languages::setLanguage(const std::string& lang_code)
 {
-    Settings::inst().language.language = lang_code;
+    SETTINGS.language.language = lang_code;
 
     std::string locale = mysetlocale(LC_ALL, lang_code.c_str());
-    if(Settings::inst().language.language.length() == 0)
-        Settings::inst().language.language = locale;
+    if(SETTINGS.language.language.length() == 0)
+        SETTINGS.language.language = locale;
 
     const char* domain = "rttr";
     bind_textdomain_codeset(domain, "UTF-8");

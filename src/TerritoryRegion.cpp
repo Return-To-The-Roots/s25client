@@ -1,4 +1,4 @@
-// $Id: TerritoryRegion.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+Ôªø// $Id: TerritoryRegion.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -19,13 +19,14 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "TerritoryRegion.h"
 
-#include "nobBaseMilitary.h"
-#include "nobMilitary.h"
-#include "MilitaryConsts.h"
+#include "buildings/nobBaseMilitary.h"
+#include "buildings/nobMilitary.h"
+#include "gameData/MilitaryConsts.h"
 #include "GameWorld.h"
+#include <stdexcept>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -47,23 +48,23 @@ TerritoryRegion::TerritoryRegion(const int x1, const int y1, const int x2, const
 
 TerritoryRegion::~TerritoryRegion()
 {
-    // Feld lˆschen
+    // Feld l√∂schen
     delete [] nodes;
 }
 
-bool TerritoryRegion::IsPointInPolygon(GameWorldBase* gwb, std::vector< Point<MapCoord> > &polygon, MapCoord x, MapCoord y)
+bool TerritoryRegion::IsPointInPolygon(GameWorldBase* gwb, std::vector< MapPoint > &polygon, const MapPoint pt)
 {
 // Adapted from http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
 // The site contains a lot of details and information.
 
     bool ret = false;
 
-    std::vector< Point<MapCoord> >::iterator it = polygon.begin();
-    std::vector< Point<MapCoord> >::iterator prev = polygon.end() - 1;
+    std::vector< MapPoint >::iterator it = polygon.begin();
+    std::vector< MapPoint >::iterator prev = polygon.end() - 1;
 
     for (; it < polygon.end(); prev = it, ++it)
     {
-        if ((((*it).y > y) != ((*prev).y > y)) && (x < ((*prev).x - (*it).x) * (y - (*it).y) / ((*prev).y - (*it).y) + (*it).x))
+        if (((it->y > pt.y) != (prev->y > pt.y)) && (pt.x < (prev->x - it->x) * (pt.y - it->y) / (prev->y - it->y) + it->x))
         {
             ret = !ret;
         }
@@ -72,21 +73,24 @@ bool TerritoryRegion::IsPointInPolygon(GameWorldBase* gwb, std::vector< Point<Ma
     return(ret);
 }
 
-bool TerritoryRegion::IsPointValid(GameWorldBase* gwb, std::vector< Point<MapCoord> > &polygon, MapCoord x, MapCoord y)
+bool TerritoryRegion::IsPointValid(GameWorldBase* gwb, std::vector< MapPoint > &polygon, const MapPoint pt)
 {
     // This is for specifying polyons that wrap around corners:
     // - e.g. w=64, h=64, polygon = {(40,40), (40,80), (80,80), (80,40)}
+    MapPoint pt2 = MapPoint(pt.x + gwb->GetWidth(), pt.y),
+             pt3 = MapPoint(pt.x, pt.y + gwb->GetHeight()),
+             pt4 = MapPoint(pt.x + gwb->GetWidth(), pt.y + gwb->GetHeight());
     return(polygon.empty() ||
-           IsPointInPolygon(gwb, polygon, x, y) ||
-           IsPointInPolygon(gwb, polygon, x + gwb->GetWidth(), y) ||
-           IsPointInPolygon(gwb, polygon, x, y + gwb->GetHeight()) ||
-           IsPointInPolygon(gwb, polygon, x + gwb->GetWidth(), y + gwb->GetHeight()));
+           IsPointInPolygon(gwb, polygon, pt) ||
+           IsPointInPolygon(gwb, polygon, pt2) ||
+           IsPointInPolygon(gwb, polygon, pt3) ||
+           IsPointInPolygon(gwb, polygon, pt4));
 }
 
 
 void TerritoryRegion::TestNode( int x,  int y, const unsigned char player, const unsigned char radius, const bool check_barriers)
 {
-    // Gucken, ob der Punkt ¸berhaupt mit in diese Region gehˆrt
+    // Gucken, ob der Punkt √ºberhaupt mit in diese Region geh√∂rt
     if(x + gwb->GetWidth() >= int(x1) && x + gwb->GetWidth() < int(x2))
         x += gwb->GetWidth();
     else if(x - gwb->GetWidth() >= int(x1) && x - gwb->GetWidth() < int(x2))
@@ -101,11 +105,14 @@ void TerritoryRegion::TestNode( int x,  int y, const unsigned char player, const
     else if(y < int(y1) || y >= int(y2))
         return;
 
+    if(x < 0 || x > std::numeric_limits<MapCoord>::max() ||
+        y < 0 || y > std::numeric_limits<MapCoord>::max())
+        throw std::overflow_error("Coords to test not in map");
     // check whether his node is within the area we may have territory in
-    if (check_barriers && !IsPointValid(gwb, gwb->GetPlayer(player)->GetRestrictedArea(), x, y))
+    if (check_barriers && !IsPointValid(gwb, gwb->GetPlayer(player)->GetRestrictedArea(), MapPoint(x, y)))
         return;
 
-    /// Wenn das Militargeb‰ude jetzt n‰her dran ist, dann geht dieser Punkt in den Besitz vom jeweiligen Spieler
+    /// Wenn das Militargeb√§ude jetzt n√§her dran ist, dann geht dieser Punkt in den Besitz vom jeweiligen Spieler
     /// oder wenn es halt gar nicht besetzt ist
     unsigned idx = (y - y1) * (x2 - x1) + (x - x1);
     if(radius < nodes[idx].radius || !nodes[(y - y1) * (x2 - x1) + (x - x1)].owner)
@@ -131,22 +138,22 @@ void TerritoryRegion::CalcTerritoryOfBuilding(const noBaseBuilding* const buildi
         check_barriers = !(static_cast<const nobMilitary*>(building)->WasCapturedOnce());
     }
 
-    // Punkt, auf dem das Milit‰rgeb‰ude steht
-    MapCoord x = building->GetX(), y = building->GetY();
-    TestNode(x, y, building->GetPlayer(), 0, false);    // no need to check barriers here. this point is on our territory.
+    // Punkt, auf dem das Milit√§rgeb√§ude steht
+    MapPoint pt = building->GetPos();
+    TestNode(pt.x, pt.y, building->GetPlayer(), 0, false);    // no need to check barriers here. this point is on our territory.
 
     for(unsigned r = 1; r <= radius; ++r)
     {
         // Eins weiter nach links gehen
-        gwb->GetPointA(x, y, 0);
+        pt = gwb->GetNeighbour(pt, 0);
 
         for(unsigned dir = 0; dir < 6; ++dir)
         {
             for(unsigned short i = 0; i < r; ++i)
             {
-                TestNode(x, y, building->GetPlayer(), r, check_barriers);
+                TestNode(pt.x, pt.y, building->GetPlayer(), r, check_barriers);
                 // Nach rechts oben anfangen
-                gwb->GetPointA(x, y, (2 + dir) % 6);
+                pt = gwb->GetNeighbour(pt, (2 + dir) % 6);
             }
         }
     }

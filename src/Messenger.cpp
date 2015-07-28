@@ -1,4 +1,4 @@
-// $Id: Messenger.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: Messenger.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -19,11 +19,13 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "Messenger.h"
 
 #include "Loader.h"
-#include "VideoDriverWrapper.h"
+#include "Log.h"
+#include "drivers/VideoDriverWrapper.h"
+#include "../mygettext/src/mygettext.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -39,7 +41,7 @@ const std::string CD_STRINGS[4] =
     "", "(All) ", "(Team) ", "(Enemies) "
 };
 
-/// Farbe für die einzelnen CDs
+/// Farbe fÃ¼r die einzelnen CDs
 const unsigned CD_COLORS[4] =
 {
     0, COLOR_WHITE, COLOR_GREEN, COLOR_RED
@@ -53,17 +55,13 @@ Messenger::~Messenger()
 void Messenger::Draw()
 {
     unsigned y = 100;
-    for(std::list<Messenger::Msg>::iterator it = messages.begin(); it != messages.end(); ++it, y += LargeFont->getHeight())
+    for(std::list<Messenger::Msg>::iterator it = messages.begin(); it != messages.end(); y += LargeFont->getHeight())
     {
-        unsigned diff = VideoDriverWrapper::inst().GetTickCount() - it->starttime;
+        unsigned diff = VIDEODRIVER.GetTickCount() - it->starttime;
         if(diff > 20000)
         {
-            messages.erase(it++);
-            if(it != messages.end())
-                continue;
-            else
-                break;
-
+            it = messages.erase(it);
+            continue;
         }
 
         // Transparenz der Schrift ausrechnen, da sie am Ende ausgeblendet wird
@@ -72,7 +70,7 @@ void Messenger::Draw()
             transparency = (transparency - transparency * (diff - 18000) / 2000);
 
 
-        // Auf Alphaposition verschieben (höchstes Byte)
+        // Auf Alphaposition verschieben (hÃ¶chstes Byte)
         transparency = transparency << 24;
 
         std::string cd_str = (it->cd == CD_SYSTEM) ? "" : _(CD_STRINGS[it->cd]);
@@ -83,6 +81,7 @@ void Messenger::Draw()
         LargeFont->Draw(20 + LargeFont->getWidth(it->author, static_cast<unsigned>(it->author.length())) +
                         +LargeFont->getWidth(cd_str, static_cast<unsigned>(cd_str.length())), y,
                         it->msg, 0, (it->color_msg & 0x00FFFFFF) | transparency);
+        ++it;
     }
 }
 
@@ -95,9 +94,9 @@ void Messenger::AddMessage(const std::string& author, const unsigned color_autho
     glArchivItem_Font::WrapInfo wi;
 
     // in Zeilen aufteilen, damit alles auf den Bildschirm passt
-    LargeFont->GetWrapInfo(msg.c_str(), VideoDriverWrapper::inst().GetScreenWidth() - 60
+    LargeFont->GetWrapInfo(msg.c_str(), VIDEODRIVER.GetScreenWidth() - 60
                            - LargeFont->getWidth(author.c_str()) - ((cd == CD_SYSTEM) ? 0 : LargeFont->getWidth(_(CD_STRINGS[cd]))),
-                           VideoDriverWrapper::inst().GetScreenWidth() - 60, wi);
+                           VIDEODRIVER.GetScreenWidth() - 60, wi);
 
     // Message-Strings erzeugen aus den WrapInfo
     std::string* strings = new std::string[wi.positions.size()];
@@ -125,7 +124,7 @@ void Messenger::AddMessage(const std::string& author, const unsigned color_autho
 
         tmp.color_author = color_author;
         tmp.color_msg = color_msg;
-        tmp.starttime = VideoDriverWrapper::inst().GetTickCount();
+        tmp.starttime = VIDEODRIVER.GetTickCount();
 
         messages.push_back(tmp);
     }

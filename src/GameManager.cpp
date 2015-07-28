@@ -1,4 +1,4 @@
-// $Id: GameManager.cpp 9543 2014-12-14 12:04:38Z marcus $
+﻿// $Id: GameManager.cpp 9543 2014-12-14 12:04:38Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -19,7 +19,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "GameManager.h"
 
 #include "GlobalVars.h"
@@ -27,19 +27,24 @@
 
 #include "SoundManager.h"
 #include "WindowManager.h"
-#include "VideoDriverWrapper.h"
-#include "AudioDriverWrapper.h"
+#include "drivers/VideoDriverWrapper.h"
+#include "drivers/AudioDriverWrapper.h"
 
 #include "LobbyClient.h"
 #include "GameServer.h"
 #include "GameClient.h"
 
-#include "dskSplash.h"
-#include "dskMainMenu.h"
-#include "dskLobby.h"
-#include "iwMusicPlayer.h"
+#include "desktops/dskSplash.h"
+#include "desktops/dskMainMenu.h"
+#include "desktops/dskLobby.h"
+#include "ingameWindows/iwMusicPlayer.h"
 
 #include "MusicPlayer.h"
+#include "Log.h"
+#include "helpers/win32_nanosleep.h"
+#include "../libutil/src/error.h"
+
+#include <ctime>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -72,17 +77,17 @@ bool GameManager::Start()
         return false;
 
     /// Videotreiber laden
-    if(!VideoDriverWrapper::inst().LoadDriver())
+    if(!VIDEODRIVER.LoadDriver())
     {
         LOG.lprintf("Video driver couldn't be loaded!\n");
         return false;
     }
 
-    // Im Vollbildmodus überprüfen, ob Video-Mode überhaupt existiert
+    // Im Vollbildmodus Ã¼berprÃ¼fen, ob Video-Mode Ã¼berhaupt existiert
     if(SETTINGS.video.fullscreen)
     {
         std::vector<VideoDriver::VideoMode> available_video_modes;
-        VideoDriverWrapper::inst().ListVideoModes(available_video_modes);
+        VIDEODRIVER.ListVideoModes(available_video_modes);
 
         bool found = false;
         for(size_t i = 0; i < available_video_modes.size(); ++i)
@@ -92,30 +97,30 @@ bool GameManager::Start()
                 found = true;
         }
 
-        if(!found && available_video_modes.size())
+        if(!found && !available_video_modes.empty())
         {
-            // Nicht gefunden, erste gültige Auflösung nehmen
+            // Nicht gefunden, erste gÃ¼ltige AuflÃ¶sung nehmen
             SETTINGS.video.fullscreen_width = available_video_modes[0].width;
             SETTINGS.video.fullscreen_height = available_video_modes[0].height;
         }
     }
 
     // Fenster erstellen
-    if(!VideoDriverWrapper::inst().CreateScreen(SETTINGS.video.fullscreen ? SETTINGS.video.fullscreen_width : SETTINGS.video.windowed_width,
+    if(!VIDEODRIVER.CreateScreen(SETTINGS.video.fullscreen ? SETTINGS.video.fullscreen_width : SETTINGS.video.windowed_width,
             SETTINGS.video.fullscreen ? SETTINGS.video.fullscreen_height : SETTINGS.video.windowed_height,
             SETTINGS.video.fullscreen))
         return false;
 
     /// Audiodriver laden
-    if(!AudioDriverWrapper::inst().LoadDriver())
+    if(!AUDIODRIVER.LoadDriver())
     {
         LOG.lprintf("Audio driver couldn't be loaded!\n");
         //return false;
     }
 
-    /// Lautstärken gleich mit setzen
-    AudioDriverWrapper::inst().SetMasterEffectVolume(SETTINGS.sound.effekte_volume);
-    AudioDriverWrapper::inst().SetMasterMusicVolume(SETTINGS.sound.musik_volume);
+    /// LautstÃ¤rken gleich mit setzen
+    AUDIODRIVER.SetMasterEffectVolume(SETTINGS.sound.effekte_volume);
+    AUDIODRIVER.SetMasterMusicVolume(SETTINGS.sound.musik_volume);
 
     // Treibereinstellungen abspeichern
     SETTINGS.Save();
@@ -125,8 +130,8 @@ bool GameManager::Start()
         return false;
 
     std::string playlist = iwMusicPlayer::GetFullPlaylistPath(SETTINGS.sound.playlist);
-    if(MusicPlayer::inst().Load(playlist))
-        MusicPlayer::inst().Play();
+    if(MUSICPLAYER.Load(playlist))
+        MUSICPLAYER.Play();
 
     return true;
 }
@@ -143,7 +148,7 @@ void GameManager::Stop()
     SETTINGS.Save();
 
     // Fenster beenden
-    VideoDriverWrapper::inst().DestroyScreen();
+    VIDEODRIVER.DestroyScreen();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -155,7 +160,7 @@ void GameManager::Stop()
 bool GameManager::Run()
 {
     // Nachrichtenschleife
-    if(!VideoDriverWrapper::inst().Run())
+    if(!VIDEODRIVER.Run())
         GLOBALVARS.notdone = false;
 
     LOBBYCLIENT.Run();
@@ -163,14 +168,14 @@ bool GameManager::Run()
     GAMECLIENT.Run();
     GAMESERVER.Run();
 
-    unsigned int current_time = VideoDriverWrapper::inst().GetTickCount();
+    unsigned int current_time = VIDEODRIVER.GetTickCount();
 
     // SW-VSync (mit 4% Toleranz)
     if(SETTINGS.video.vsync > 1)
     {
         static unsigned long vsync = SETTINGS.video.vsync;
 
-        // immer 10% dazu/weg bis man über der Framerate liegt
+        // immer 10% dazu/weg bis man Ã¼ber der Framerate liegt
         if(vsync < 200 && 1000 * framerate < (unsigned int)(960 * vsync) )
             vsync = (1100 * vsync) / 1000;
         else if(vsync > SETTINGS.video.vsync)
@@ -193,16 +198,16 @@ bool GameManager::Run()
             while(nanosleep(&req, &req) == -1)
                 continue;
 
-            current_time = VideoDriverWrapper::inst().GetTickCount();
+            current_time = VIDEODRIVER.GetTickCount();
         }
     }
 	//only draw if we dont skip ahead right now
 	if(!GAMECLIENT.skiptogf || GAMECLIENT.skiptogf < GAMECLIENT.GetGFNumber())
 	{
-		WindowManager::inst().Draw();
+		WINDOWMANAGER.Draw();
 		if ((GAMECLIENT.GetState() == GameClient::CS_GAME) && (GAMECLIENT.GetGFLength() < 30))
 		{
-			LOADER.GetImageN("io", 164)->Draw(VideoDriverWrapper::inst().GetScreenWidth() - 55, 35, 0, 0, 0, 0);
+			LOADER.GetImageN("io", 164)->Draw(VIDEODRIVER.GetScreenWidth() - 55, 35, 0, 0, 0, 0);
 		}
 
 		DrawCursor();
@@ -214,10 +219,10 @@ bool GameManager::Run()
 		if(GAMECLIENT.GetGFNumber() > skipgf_last_report_gf)
 		{
 			if(skipgf_last_time)
-				LOG.lprintf("jumping to gf %i, now at gf %i, time for last 5k gf: %.3f s, avg gf time %.3f ms \n",GAMECLIENT.skiptogf, GAMECLIENT.GetGFNumber(),double (VideoDriverWrapper::inst().GetTickCount()-skipgf_last_time)/1000,double (VideoDriverWrapper::inst().GetTickCount()-skipgf_last_time)/5000);
+				LOG.lprintf("jumping to gf %i, now at gf %i, time for last 5k gf: %.3f s, avg gf time %.3f ms \n",GAMECLIENT.skiptogf, GAMECLIENT.GetGFNumber(),double (VIDEODRIVER.GetTickCount()-skipgf_last_time)/1000,double (VIDEODRIVER.GetTickCount()-skipgf_last_time)/5000);
 			else
 				LOG.lprintf("jumping to gf %i, now at gf %i \n",GAMECLIENT.skiptogf, GAMECLIENT.GetGFNumber());
-			skipgf_last_time=VideoDriverWrapper::inst().GetTickCount();
+			skipgf_last_time=VIDEODRIVER.GetTickCount();
 			skipgf_last_report_gf=GAMECLIENT.GetGFNumber();
 		}
 	}
@@ -227,7 +232,7 @@ bool GameManager::Run()
 		if(skipgf_last_time)
 		{
 			if((GAMECLIENT.skiptogf-1)%5000>0)
-				LOG.lprintf("jump to gf %i complete, time for last %i gf: %.3f s, avg gf time %.3f ms \n",GAMECLIENT.skiptogf, (GAMECLIENT.skiptogf-1)%5000+1,double (VideoDriverWrapper::inst().GetTickCount()-skipgf_last_time)/1000,double (VideoDriverWrapper::inst().GetTickCount()-skipgf_last_time)/((GAMECLIENT.skiptogf-1)%5000));
+				LOG.lprintf("jump to gf %i complete, time for last %i gf: %.3f s, avg gf time %.3f ms \n",GAMECLIENT.skiptogf, (GAMECLIENT.skiptogf-1)%5000+1,double (VIDEODRIVER.GetTickCount()-skipgf_last_time)/1000,double (VIDEODRIVER.GetTickCount()-skipgf_last_time)/((GAMECLIENT.skiptogf-1)%5000));
 			else
 				LOG.lprintf("jump to gf %i complete \n",GAMECLIENT.skiptogf);
 		}
@@ -243,7 +248,7 @@ bool GameManager::Run()
         // weitere Sekunde vergangen
         ++run_time;
 
-        // Gesamtzahl der gezeichneten Frames erhöhen
+        // Gesamtzahl der gezeichneten Frames erhÃ¶hen
         frame_count += frames;
 
         // normale Framerate berechnen
@@ -260,23 +265,23 @@ bool GameManager::Run()
 		char frame_str[64];
 		sprintf(frame_str, "%d fps", framerate);
 
-		SmallFont->Draw( VideoDriverWrapper::inst().GetScreenWidth(), 0, frame_str, glArchivItem_Font::DF_RIGHT, COLOR_YELLOW);
+		SmallFont->Draw( VIDEODRIVER.GetScreenWidth(), 0, frame_str, glArchivItem_Font::DF_RIGHT, COLOR_YELLOW);
 
 		// Zeichenpuffer wechseln
-		VideoDriverWrapper::inst().SwapBuffers();
+		VIDEODRIVER.SwapBuffers();
 	}
     ++frames;
 
-    // Fenstermanager aufräumen
-    if(GLOBALVARS.notdone == false)
-        WindowManager::inst().CleanUp();
+    // Fenstermanager aufrÃ¤umen
+    if(!GLOBALVARS.notdone)
+        WINDOWMANAGER.CleanUp();
 
     return GLOBALVARS.notdone;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Startet und lädt das Menü.
+ *  Startet und lÃ¤dt das MenÃ¼.
  *
  *  @author FloSoft
  */
@@ -297,14 +302,14 @@ bool GameManager::StartMenu()
     }
 
     // Splash-Screen anzeigen
-    WindowManager::inst().Switch(new dskSplash);
+    WINDOWMANAGER.Switch(new dskSplash);
 
     return true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  zeigt das Hauptmenü.
+ *  zeigt das HauptmenÃ¼.
  *
  *  @author FloSoft
  */
@@ -314,17 +319,17 @@ bool GameManager::ShowMenu()
     GAMESERVER.Stop();
     SOUNDMANAGER.StopAll();
 
-    GameClient::inst().SetInterface(NULL);
+    GAMECLIENT.SetInterface(NULL);
 
     // Wir sind nicht mehr im Spiel
     GLOBALVARS.ingame = false;
 
     if(LOBBYCLIENT.LoggedIn())
         // Lobby zeigen
-        WindowManager::inst().Switch(new dskLobby);
+        WINDOWMANAGER.Switch(new dskLobby);
     else
-        // Hauptmenü zeigen
-        WindowManager::inst().Switch(new dskMainMenu);
+        // HauptmenÃ¼ zeigen
+        WINDOWMANAGER.Switch(new dskMainMenu);
 
     return true;
 }
@@ -355,17 +360,17 @@ void GameManager::DrawCursor()
     {
         case CURSOR_HAND:
         {
-            if(VideoDriverWrapper::inst().IsLeftDown())
-                LOADER.GetImageN("resource", 31)->Draw(VideoDriverWrapper::inst().GetMouseX(), VideoDriverWrapper::inst().GetMouseY(), 0, 0, 0, 0, 0, 0);
+            if(VIDEODRIVER.IsLeftDown())
+                LOADER.GetImageN("resource", 31)->Draw(VIDEODRIVER.GetMouseX(), VIDEODRIVER.GetMouseY(), 0, 0, 0, 0, 0, 0);
             else
-                LOADER.GetImageN("resource", 30)->Draw(VideoDriverWrapper::inst().GetMouseX(), VideoDriverWrapper::inst().GetMouseY(), 0, 0, 0, 0, 0, 0);
+                LOADER.GetImageN("resource", 30)->Draw(VIDEODRIVER.GetMouseX(), VIDEODRIVER.GetMouseY(), 0, 0, 0, 0, 0, 0);
         } break;
         case CURSOR_SCROLL:
         case CURSOR_MOON:
         case CURSOR_RM:
         case CURSOR_RM_PRESSED:
         {
-            LOADER.GetImageN("resource", cursor_next)->Draw(VideoDriverWrapper::inst().GetMouseX(), VideoDriverWrapper::inst().GetMouseY(), 0, 0, 0, 0, 0, 0);
+            LOADER.GetImageN("resource", cursor_next)->Draw(VIDEODRIVER.GetMouseX(), VIDEODRIVER.GetMouseY(), 0, 0, 0, 0, 0, 0);
         } break;
         case CURSOR_NONE:
         default:

@@ -1,4 +1,4 @@
-// $Id: Window.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: Window.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -23,10 +23,12 @@
 
 #include "CollisionDetection.h"
 
-#include "MouseAndKeys.h"
+#include "drivers/MouseAndKeys.h"
 #include "Msgbox.h"
-#include "GameConsts.h"
+#include "gameData/GameConsts.h"
 #include "colors.h"
+#include "Rect.h"
+#include <map>
 
 class WindowManager;
 
@@ -58,6 +60,10 @@ class ctrlVarDeepening;
 class ctrlVarText;
 class ctrlMultiSelectGroup;
 
+class glArchivItem_Map;
+class glArchivItem_Font;
+class glArchivItem_Bitmap;
+
 /// Die Basisklasse der Fenster.
 class Window
 {
@@ -78,13 +84,13 @@ class Window
         unsigned short GetY(bool absolute = true) const;
         /// liefert die Breite des Fensters.
         unsigned short GetWidth(const bool scale = false) const { return (scale) ? ScaleX(width) : width; }
-        /// liefert die Höhe des Fensters.
+        /// liefert die HÃ¶he des Fensters.
         unsigned short GetHeight(const bool scale = false) const { return (scale) ? ScaleY(height) : height; }
-        /// setzt die Größe des Fensters
+        /// setzt die GrÃ¶ÃŸe des Fensters
         void Resize(unsigned short width, unsigned short height) { Resize_(width, height); this->width = width; this->height = height; }
         /// setzt die Breite des Fensters
         void SetWidth(unsigned short width)   { Resize(width, this->height); }
-        /// setzt die Höhe des Fensters
+        /// setzt die HÃ¶he des Fensters
         void SetHeight(unsigned short height) { Resize(this->width, height); }
         /// Sendet eine Tastaturnachricht an die Steuerelemente.
         bool RelayKeyboardMessage(bool (Window::*msg)(const KeyEvent&), const KeyEvent& ke);
@@ -94,11 +100,11 @@ class Window
         void SetActive(bool activate = true);
         /// aktiviert die Steuerelemente des Fensters.
         void ActivateControls(bool activate = true);
-        /// Sperrt eine bestimmte Region für Mausereignisse.
+        /// Sperrt eine bestimmte Region fÃ¼r Mausereignisse.
         void LockRegion(Window* window, const Rect& rect);
         /// Gibt eine gesperrte Region wieder frei.
         void FreeRegion(Window* window);
-        /// Größe verändern oder überhaupt setzen
+        /// GrÃ¶ÃŸe verÃ¤ndern oder Ã¼berhaupt setzen
 
         /// setzt das Parentfenster.
         void SetParent(Window* parent) { this->parent = parent; }
@@ -111,7 +117,7 @@ class Window
         bool GetVisible() const { return visible; }
         /// Ist das Fenster aktiv?
         bool GetActive() const { return active; }
-        /// liefert das übergeordnete Fenster
+        /// liefert das Ã¼bergeordnete Fenster
         Window* GetParent() const { return parent; }
         const unsigned int GetID(void) const { return id; }
 
@@ -147,60 +153,60 @@ class Window
             idmap.erase(it);
         }
 
-        /// fügt ein BuildingIcon hinzu.
+        /// fÃ¼gt ein BuildingIcon hinzu.
         ctrlBuildingIcon* AddBuildingIcon(unsigned int id, unsigned short x, unsigned short y, BuildingType type, const Nation nation, unsigned short size = 36, const std::string& tooltip = "");
-        /// fügt einen Text-ButtonCtrl hinzu.
+        /// fÃ¼gt einen Text-ButtonCtrl hinzu.
         ctrlTextButton* AddTextButton(unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, const TextureColor tc, const std::string& text,  glArchivItem_Font* font, const std::string& tooltip = "");
-        /// fügt einen Color-ButtonCtrl hinzu.
+        /// fÃ¼gt einen Color-ButtonCtrl hinzu.
         ctrlColorButton* AddColorButton(unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, const TextureColor tc, const unsigned int fillColor, const std::string& tooltip = "");
-        /// fügt einen Image-ButtonCtrl hinzu.
+        /// fÃ¼gt einen Image-ButtonCtrl hinzu.
         ctrlImageButton* AddImageButton(unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, const TextureColor tc, glArchivItem_Bitmap* const image, const std::string& tooltip = "");
 
         //ctrlButton *AddButton(unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, bool type, const char *text, const char *tooltip, glArchivItem_Font *font, glArchivItem_Bitmap *image = NULL, bool border = true);
-        /// fügt ein ChatCtrl hinzu.
+        /// fÃ¼gt ein ChatCtrl hinzu.
         ctrlChat* AddChatCtrl(unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, glArchivItem_Font* font);
-        /// fügt ein CheckBoxCtrl hinzu.
+        /// fÃ¼gt ein CheckBoxCtrl hinzu.
         ctrlCheck* AddCheckBox(unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, const std::string& text, glArchivItem_Font* font, bool readonly = false);
-        /// fügt eine ComboBox hinzu.
+        /// fÃ¼gt eine ComboBox hinzu.
         ctrlComboBox* AddComboBox(unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, glArchivItem_Font* font, unsigned short max_list_height, bool readonly = false);
-        /// fügt ein vertieftes TextCtrl hinzu.
+        /// fÃ¼gt ein vertieftes TextCtrl hinzu.
         ctrlDeepening* AddDeepening(unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, const std::string& text, glArchivItem_Font* font, unsigned int color);
         /// Deepening fille with a color
         ctrlColorDeepening* AddColorDeepening(unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, unsigned int fillColor);
-        /// fügt ein EditCtrl hinzu.
+        /// fÃ¼gt ein EditCtrl hinzu.
         ctrlEdit* AddEdit(unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, glArchivItem_Font* font, unsigned short maxlength = 0, bool password = false, bool disabled = false, bool notify = false);
-        /// fügt eine Gruppe hinzu.
+        /// fÃ¼gt eine Gruppe hinzu.
         ctrlGroup* AddGroup(unsigned int id, bool scale = false);
-        /// fügt ein ImageCtrl hinzu.
+        /// fÃ¼gt ein ImageCtrl hinzu.
         ctrlImage* AddImage(unsigned int id, unsigned short x, unsigned short y, glArchivItem_Bitmap* image, const std::string& tooltip = "");
-        /// fügt eine ListenCtrl hinzu.
+        /// fÃ¼gt eine ListenCtrl hinzu.
         ctrlList* AddList(unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, glArchivItem_Font* font);
-        /// fügt ein mehrzeilen EditCtrl hinzu.
+        /// fÃ¼gt ein mehrzeilen EditCtrl hinzu.
         ctrlMultiline* AddMultiline(unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, glArchivItem_Font* font, unsigned int format = 0);
-        /// fügt eine OptionenGruppe hinzu.
+        /// fÃ¼gt eine OptionenGruppe hinzu.
         ctrlOptionGroup* AddOptionGroup(unsigned int id, int select_type, bool scale = false);
-        /// fügt eine MultiSelectGruppe hinzu.
+        /// fÃ¼gt eine MultiSelectGruppe hinzu.
         ctrlMultiSelectGroup* AddMultiSelectGroup(unsigned int id, int select_type, bool scale = false);
-        /// fügt eine prozentuale ProgressBar hinzu.
+        /// fÃ¼gt eine prozentuale ProgressBar hinzu.
         ctrlPercent* AddPercent(unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, unsigned int text_color, glArchivItem_Font* font, const unsigned short* percentage);
-        /// fügt eine ProgressBar hinzu.
+        /// fÃ¼gt eine ProgressBar hinzu.
         ctrlProgress* AddProgress(unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, unsigned short button_minus, unsigned short button_plus, unsigned short maximum,
                                   const std::string& tooltip  = "", unsigned short x_padding = 0, unsigned short y_padding = 0, unsigned int force_color = 0, const std::string& button_minus_tooltip = "", const std::string& button_plus_tooltip = "");
-        /// fügt eine Scrollbar hinzu.
+        /// fÃ¼gt eine Scrollbar hinzu.
         ctrlScrollBar* AddScrollBar(unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, unsigned short button_height, TextureColor tc, unsigned short page_size);
-        /// fügt ein TabCtrl hinzu.
+        /// fÃ¼gt ein TabCtrl hinzu.
         ctrlTab* AddTabCtrl(unsigned int id, unsigned short x, unsigned short y, unsigned short width);
-        /// fügt eine Tabelle hinzu.
+        /// fÃ¼gt eine Tabelle hinzu.
         ctrlTable* AddTable(unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, glArchivItem_Font* font, unsigned int columns, ...);
-        /// fügt ein TextCtrl hinzu.
+        /// fÃ¼gt ein TextCtrl hinzu.
         ctrlText* AddText(unsigned int id, unsigned short x, unsigned short y, const std::string& text, unsigned int color, unsigned int format, glArchivItem_Font* font);
-        /// fügt einen Timer hinzu.
+        /// fÃ¼gt einen Timer hinzu.
         ctrlTimer* AddTimer(unsigned int id, unsigned int timeout);
-        /// fügt ein vertieftes variables TextCtrl hinzu.
+        /// fÃ¼gt ein vertieftes variables TextCtrl hinzu.
         ctrlVarDeepening* AddVarDeepening(unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, const std::string& formatstr, glArchivItem_Font* font, unsigned int color, unsigned int parameters, ...);
-        /// fügt ein variables TextCtrl hinzu.
+        /// fÃ¼gt ein variables TextCtrl hinzu.
         ctrlVarText* AddVarText(unsigned int id, unsigned short x, unsigned short y,  const std::string& formatstr, unsigned int color, unsigned int format, glArchivItem_Font* font, unsigned int parameters, ...);
-        /// Fügt eine MapPreview hinzu
+        /// FÃ¼gt eine MapPreview hinzu
         ctrlPreviewMinimap* AddPreviewMinimap(const unsigned id,
                                               unsigned short x,
                                               unsigned short y,
@@ -229,7 +235,7 @@ class Window
         virtual bool Msg_MouseMove(const MouseCoords& mc);
         virtual bool Msg_KeyDown(const KeyEvent& ke);
         // Wird aufgerufen, nachdem schon ein Mausklick behandelt wurde
-        // NUR VORÜBERGEHEND für Edit-Controls, bis richtiger Steuerelement-Fokus
+        // NUR VORÃœBERGEHEND fÃ¼r Edit-Controls, bis richtiger Steuerelement-Fokus
         // eingebaut wurde!
         virtual bool Msg_LeftDown_After(const MouseCoords& mc);
         virtual void Msg_ScreenResize(const ScreenResizeEvent& sr);
@@ -275,7 +281,7 @@ class Window
     protected:
 
         /// gets the extent of the window
-        Rect GetRect() const { Rect rect = { x, y, static_cast<unsigned short>(x + GetWidth()), static_cast<unsigned short>(y + GetHeight()) }; return rect; }
+        Rect GetRect() const { return Rect(x, y, GetWidth(), GetHeight()); }
         /// scales X- und Y values to fit the screen
         unsigned short ScaleX(const unsigned short val) const;
         unsigned short ScaleY(const unsigned short val) const;
@@ -283,13 +289,13 @@ class Window
         void SetScale(bool scale = true) { this->scale = scale; }
         /// zeichnet die Steuerelemente.
         void DrawControls(void);
-        /// prüft ob Mauskoordinaten in einer gesperrten Region liegt.
-        bool TestWindowInRegion(Window* window, const MouseCoords& mc);
+        /// prÃ¼ft ob Mauskoordinaten in einer gesperrten Region liegt.
+        bool TestWindowInRegion(Window* window, const MouseCoords& mc) const;
         /// zeichnet das Fenster. (virtuelle Memberfunktion)
         virtual bool Draw_() = 0;
         /// Weiterleitung von Nachrichten von abgeleiteten Klassen erlaubt oder nicht?
         virtual bool IsMessageRelayAllowed() const;
-        /// Auf Größe verändern evtl. auch individuell reagieren?
+        /// Auf GrÃ¶ÃŸe verÃ¤ndern evtl. auch individuell reagieren?
         virtual void Resize_(unsigned short width, unsigned short height) {}
 
         template <typename T>
@@ -301,7 +307,7 @@ class Window
             // scale-Eigenschaft weitervererben
             ctrl->scale = scale;
 
-            //// Control zur Liste hinzufügen.
+            //// Control zur Liste hinzufÃ¼gen.
             //controls.push_back(ctrl);
 
             return ctrl;
@@ -319,21 +325,15 @@ class Window
         unsigned short x;         ///< X-Position des Fensters.
         unsigned short y;         ///< Y-Position des Fensters.
         unsigned short width;     ///< Breite des Fensters.
-        unsigned short height;    ///< Höhe des Fensters.
+        unsigned short height;    ///< HÃ¶he des Fensters.
         unsigned int id;          ///< ID des Fensters.
         Window* parent;           ///< Handle auf das Parentfenster.
         bool active;              ///< Fenster aktiv?
         bool visible;             ///< Fenster sichtbar?
-        bool scale;               ///< Sollen Controls an Fenstergröße angepasst werden?
+        bool scale;               ///< Sollen Controls an FenstergrÃ¶ÃŸe angepasst werden?
         std::string tooltip;      ///< Tooltip des Fensters (nur bei Controls benutzt)
 
-        struct LockedRegion
-        {
-            Window* window; ///< das Fenster, welches die Region sperrt.
-            Rect rect;      ///< das Rechteck, welches die Region beschreibt.
-        };
-
-        list<LockedRegion> locked_areas;       ///< gesperrte Regionen des Fensters.
+        std::map<Window*, Rect> locked_areas;       ///< gesperrte Regionen des Fensters.
         std::map<unsigned int, Window*> idmap; ///< Die Steuerelemente des Fensters.
 };
 

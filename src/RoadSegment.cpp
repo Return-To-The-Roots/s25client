@@ -1,4 +1,4 @@
-// $Id: RoadSegment.cpp 9599 2015-02-07 11:08:22Z marcus $
+﻿// $Id: RoadSegment.cpp 9599 2015-02-07 11:08:22Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -19,18 +19,20 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "RoadSegment.h"
 
-#include "nofCarrier.h"
-#include "noRoadNode.h"
-#include "noFlag.h"
-#include "nobBaseWarehouse.h"
+#include "figures/nofCarrier.h"
+#include "nodeObjs/noRoadNode.h"
+#include "nodeObjs/noFlag.h"
+#include "buildings/nobBaseWarehouse.h"
 
 #include "SerializedGameData.h"
 #include "Random.h"
 #include "GameWorld.h"
 #include "GameClient.h"
+
+#include "Log.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -97,19 +99,16 @@ void RoadSegment::Destroy_RoadSegment()
     if(carrier[1])
         carrier[1]->LostWork();
 
-    if(route.size())
+    if(!route.empty())
     {
-        // Straße durchgehen und alle Figuren sagen, dass sie die Arbeit verloren haben
-        unsigned short x = f1->GetX();
-        unsigned short y = f1->GetY();
+        // StraÃŸe durchgehen und alle Figuren sagen, dass sie die Arbeit verloren haben
+        MapPoint pt = f1->GetPos();
 
         for(unsigned short i = 0; i < route.size() + 1; ++i)
         {
-            // Figuren sammeln, Achtung, einige können (... ? was?)
-            list<noBase*> objects;
-            gwg->GetDynamicObjectsFrom(x, y, objects);
-
-            for(list<noBase*>::iterator it = objects.begin(); it.valid(); ++it)
+            // Figuren sammeln, Achtung, einige kÃ¶nnen (... ? was?)
+            std::vector<noBase*> objects = gwg->GetDynamicObjectsFrom(pt);
+            for(std::vector<noBase*>::iterator it = objects.begin(); it != objects.end(); ++it)
             {
                 if((*it)->GetType() == NOP_FIGURE)
                 {
@@ -121,13 +120,11 @@ void RoadSegment::Destroy_RoadSegment()
                 }
             }
 
-            gwg->RoadNodeAvailable(x, y);
+            gwg->RoadNodeAvailable(pt);
 
             if(i != route.size())
             {
-                int tx = x, ty = y;
-                x = gwg->GetXA(tx, ty, route[i]);
-                y = gwg->GetYA(tx, ty, route[i]);
+                pt = gwg->GetNeighbour(pt, route[i]);
             }
         }
 
@@ -158,7 +155,7 @@ void RoadSegment::Serialize_RoadSegment(SerializedGameData* sgd) const
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  zerteilt die Straße in 2 Teile.
+ *  zerteilt die StraÃŸe in 2 Teile.
  *
  *  @author OLiver
  */
@@ -167,18 +164,18 @@ void RoadSegment::SplitRoad(noFlag* splitflag)
     // Flagge 1 _________ Diese Flagge _________ Flagge 2
     //         |       unterbrochener Weg       |
 
-    // Alten Straßenverlauf merken, damit wir später allen Leuten darau Bescheid sagen können
+    // Alten StraÃŸenverlauf merken, damit wir spÃ¤ter allen Leuten darau Bescheid sagen kÃ¶nnen
     std::vector<unsigned char> old_route(route);
 
-    // Stelle herausfinden, an der der Weg zerschnitten wird ( = Länge des ersten Teilstücks )
+    // Stelle herausfinden, an der der Weg zerschnitten wird ( = LÃ¤nge des ersten TeilstÃ¼cks )
     unsigned int length1, length2;
-    unsigned short tx = f1->GetX(), ty = f1->GetY();
+    MapPoint t = f1->GetPos();
     for(length1 = 0; length1 < route.size(); ++length1)
     {
-        if(tx == splitflag->GetX() && ty == splitflag->GetY())
+        if(t == splitflag->GetPos())
             break;
 
-        gwg->GetPointA(tx, ty, route[length1]);
+        t = gwg->GetNeighbour(t, route[length1]);
     }
 
     length2 = this->route.size() - length1;
@@ -189,11 +186,11 @@ void RoadSegment::SplitRoad(noFlag* splitflag)
 
     RoadSegment* second = new RoadSegment(rt, splitflag, f2, second_route);
 
-    // Eselstraße? Dann prächtige Flagge, da sie ja wieder zwischen Eselstraßen ist
+    // EselstraÃŸe? Dann prÃ¤chtige Flagge, da sie ja wieder zwischen EselstraÃŸen ist
     if(rt == RT_DONKEY)
         splitflag->Upgrade();
 
-    // 1. Teilstück von F1 bis zu dieser F erstellen ( 1. Teilstück ist dieser Weg dann! )
+    // 1. TeilstÃ¼ck von F1 bis zu dieser F erstellen ( 1. TeilstÃ¼ck ist dieser Weg dann! )
 
     route.resize(length1);
     //f1 = f1;
@@ -202,20 +199,20 @@ void RoadSegment::SplitRoad(noFlag* splitflag)
     f1->routes[route.front()] = this;
     splitflag->routes[(route.back() + 3) % 6] = this;
 
-    // 2. Teilstück von dieser F bis zu F2
+    // 2. TeilstÃ¼ck von dieser F bis zu F2
 
     splitflag->routes[second->route.front()] = second;
     second->f2->routes[(second->route.back() + 3) % 6] = second;
 
-    // Straße durchgehen und allen Figuren Bescheid sagen
-    tx = f1->GetX();
-    ty = f1->GetY();
+    // StraÃŸe durchgehen und allen Figuren Bescheid sagen
+    t = f1->GetPos();
 
     for(unsigned short i = 0; i < old_route.size() + 1; ++i)
     {
-        for(list<noBase*>::iterator it = gwg->GetFigures(tx, ty).begin(); it.valid(); ++it)
+        const std::list<noBase*>& figures = gwg->GetFigures(t);
+        for(std::list<noBase*>::const_iterator it = figures.begin(); it != figures.end(); ++it)
         {
-            if(static_cast<noFigure*>(*it)->GetType() == NOP_FIGURE)
+            if((*it)->GetType() == NOP_FIGURE)
             {
                 if(static_cast<noFigure*>(*it)->GetCurrentRoad() == this)
                     static_cast<noFigure*>(*it)->CorrectSplitData(second);
@@ -224,9 +221,7 @@ void RoadSegment::SplitRoad(noFlag* splitflag)
 
         if(i != old_route.size())
         {
-            int tx2 = tx, ty2 = ty;
-            tx = gwg->GetXA(tx2, ty2, old_route[i]);
-            ty = gwg->GetYA(tx2, ty2, old_route[i]);
+            t = gwg->GetNeighbour(t, old_route[i]);
         }
     }
 
@@ -237,7 +232,7 @@ void RoadSegment::SplitRoad(noFlag* splitflag)
         if(carrier[i])
             carrier[i]->RoadSplitted(this, second);
         else if(i == 0)
-            // Die Straße war vorher unbesetzt? Dann 2. Straßenteil zu den unoccupied rodes
+            // Die StraÃŸe war vorher unbesetzt? Dann 2. StraÃŸenteil zu den unoccupied rodes
             // (1. ist ja schon drin)
             gwg->GetPlayer(f1->GetPlayer())->FindCarrierForRoad(second);
     }
@@ -245,8 +240,8 @@ void RoadSegment::SplitRoad(noFlag* splitflag)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Überprüft ob es an den Flaggen noch Waren zu tragen gibt für den Träger.
- *  Nur bei Straßen mit 2 Flagge aufrufen, nicht bei Hauseingängen etc. !!
+ *  ÃœberprÃ¼ft ob es an den Flaggen noch Waren zu tragen gibt fÃ¼r den TrÃ¤ger.
+ *  Nur bei StraÃŸen mit 2 Flagge aufrufen, nicht bei HauseingÃ¤ngen etc. !!
  *
  *  @author OLiver
  */
@@ -260,8 +255,8 @@ bool RoadSegment::AreWareJobs(const bool flag, unsigned ct, const bool take_ware
     else
         jobs_count = static_cast<noFlag*>(f1)->GetWaresCountForRoad(route.front());
 
-    // Nur eine Ware da --> evtl läuft schon ein anderer Träger/Esel hin, nur wo Esel und Träger da sind
-    // Wenn der Träger nun natürlich schon da ist, kann er die mitnehmen
+    // Nur eine Ware da --> evtl lÃ¤uft schon ein anderer TrÃ¤ger/Esel hin, nur wo Esel und TrÃ¤ger da sind
+    // Wenn der TrÃ¤ger nun natÃ¼rlich schon da ist, kann er die mitnehmen
     if(jobs_count == 1 && carrier[0] && carrier[1] && !take_ware_immediately)
     {
         // anderen Esel ermitteln
@@ -275,16 +270,16 @@ bool RoadSegment::AreWareJobs(const bool flag, unsigned ct, const bool take_ware
             case CARRS_WAITFORWARESPACE:
             case CARRS_GOBACKFROMFLAG:
             {
-                // Läuft der in die Richtung, holt eine Ware bzw. ist schon fast da, braucht der hier nicht hinlaufen
+                // LÃ¤uft der in die Richtung, holt eine Ware bzw. ist schon fast da, braucht der hier nicht hinlaufen
                 if(carrier[ct]->GetRoadDir() == !flag)
                     return false;
             } break;
             case CARRS_CARRYWARETOBUILDING:
             case CARRS_LEAVEBUILDING:
             {
-                // Wenn an die Flagge ein Gebäude angrenzt und der Träger da was reinträgt, kann der auch die Ware
+                // Wenn an die Flagge ein GebÃ¤ude angrenzt und der TrÃ¤ger da was reintrÃ¤gt, kann der auch die Ware
                 // gleich mitnehmen, der zweite muss hier also nicht kommen
-                if((carrier[ct]->GetCurrentRoad()->f1 == f1 && flag == false) || (carrier[ct]->GetCurrentRoad()->f1 == f2 && flag == true))
+                if((carrier[ct]->GetCurrentRoad()->f1 == f1 && !flag) || (carrier[ct]->GetCurrentRoad()->f1 == f2 && flag))
                     return false;
             } break;
 
@@ -295,7 +290,7 @@ bool RoadSegment::AreWareJobs(const bool flag, unsigned ct, const bool take_ware
 }
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Eine Ware sagt Bescheid, dass sie über dem Weg getragen werden will.
+ *  Eine Ware sagt Bescheid, dass sie Ã¼ber dem Weg getragen werden will.
  *
  *  rn ist die Flagge, von der sie kommt
  *
@@ -303,7 +298,7 @@ bool RoadSegment::AreWareJobs(const bool flag, unsigned ct, const bool take_ware
  */
 void RoadSegment::AddWareJob(const noRoadNode* rn)
 {
-    // Wenn das eine Straße zu einer Gebäudetür ist, muss dem entsprechenden Gebäude Bescheid gesagt werden (momentan nur Lagerhäuser!)
+    // Wenn das eine StraÃŸe zu einer GebÃ¤udetÃ¼r ist, muss dem entsprechenden GebÃ¤ude Bescheid gesagt werden (momentan nur LagerhÃ¤user!)
     if(route.size() == 1)
     {
         if(f2->GetType() == NOP_BUILDING)
@@ -313,14 +308,14 @@ void RoadSegment::AddWareJob(const noRoadNode* rn)
                     static_cast<noBuilding*>(f2)->GetBuildingType() == BLD_HARBORBUILDING)
                 static_cast<nobBaseWarehouse*>(f2)->FetchWare();
             else
-                LOG.lprintf("RoadSegment::AddWareJob: WARNING: Ware in front of building at %i,%i (gf: %u)!\n", f2->GetX(), f2->GetY(), GAMECLIENT.GetGFNumber());
+                LOG.lprintf("RoadSegment::AddWareJob: WARNING: Ware in front of building at %i,%i (gf: %u)!\n", f2->GetPos().x, f2->GetPos().y, GAMECLIENT.GetGFNumber());
         }
         else
-			LOG.lprintf("RoadSegment::AddWareJob: WARNING: Ware in front of building site at %i,%i (gf: %u)!\n",f2->GetX(), f2->GetY(), GAMECLIENT.GetGFNumber());
+			LOG.lprintf("RoadSegment::AddWareJob: WARNING: Ware in front of building site at %i,%i (gf: %u)!\n", f2->GetPos().x, f2->GetPos().y, GAMECLIENT.GetGFNumber());
     }
 
-    // Zufällig Esel oder Träger zuerst fragen, ob er Zeit hat
-    unsigned char first = Random::inst().Rand(__FILE__, __LINE__, this->obj_id, 2);
+    // ZufÃ¤llig Esel oder TrÃ¤ger zuerst fragen, ob er Zeit hat
+    unsigned char first = RANDOM.Rand(__FILE__, __LINE__, this->obj_id, 2);
     for(unsigned char i = 0; i < 2; ++i)
     {
         if(carrier[(i + first) % 2])
@@ -334,13 +329,13 @@ void RoadSegment::AddWareJob(const noRoadNode* rn)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Eine Ware will nicht mehr befördert werden.
+ *  Eine Ware will nicht mehr befÃ¶rdert werden.
  *
  *  @author OLiver
  */
 void RoadSegment::WareJobRemoved(const noFigure* const exception)
 {
-    // Allen Trägern Bescheid sagen
+    // Allen TrÃ¤gern Bescheid sagen
     for(unsigned char i = 0; i < 2; ++i)
     {
         if(carrier[i] && carrier[i] != exception)
@@ -350,26 +345,24 @@ void RoadSegment::WareJobRemoved(const noFigure* const exception)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Baut die Straße zu einer Eselstraße aus.
+ *  Baut die StraÃŸe zu einer EselstraÃŸe aus.
  *
  *  @author OLiver
  */
 void RoadSegment::UpgradeDonkeyRoad()
 {
-    // Nur normale Straße können Eselstraßen werden
+    // Nur normale StraÃŸe kÃ¶nnen EselstraÃŸen werden
     if(rt != RT_NORMAL)
         return;
 
     rt = RT_DONKEY;
 
-    // Eselstraßen setzen
-    int x = f1->GetX(), y = f1->GetY();
+    // EselstraÃŸen setzen
+    MapPoint pt = f1->GetPos();
     for(unsigned short i = 0; i < route.size(); ++i)
     {
-        gwg->SetPointRoad(x, y, route[i], RT_DONKEY + 1);
-        int tx = x, ty = y;
-        x = gwg->GetXA(tx, ty, route[i]);
-        y = gwg->GetYA(tx, ty, route[i]);
+        gwg->SetPointRoad(pt, route[i], RT_DONKEY + 1);
+        pt = gwg->GetNeighbour(pt, route[i]);
     }
 
     // Flaggen auf beiden Seiten upgraden
@@ -391,24 +384,24 @@ void RoadSegment::UpgradeDonkeyRoad()
  */
 void RoadSegment::TryGetDonkey()
 {
-    // Nur rufen, falls es eine Eselstraße ist, noch kein Esel da ist, aber schon ein Träger da ist
+    // Nur rufen, falls es eine EselstraÃŸe ist, noch kein Esel da ist, aber schon ein TrÃ¤ger da ist
     if(NeedDonkey())
         carrier[1] = gwg->GetPlayer(f1->GetPlayer())->OrderDonkey(this);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Ein Träger muss kündigen, aus welchen Gründen auch immer.
+ *  Ein TrÃ¤ger muss kÃ¼ndigen, aus welchen GrÃ¼nden auch immer.
  *
  *  @author OLiver
  */
 void RoadSegment::CarrierAbrogated(nofCarrier* carrier)
 {
-    // Gucken, ob Träger und Esel gekündigt hat
+    // Gucken, ob TrÃ¤ger und Esel gekÃ¼ndigt hat
     if(carrier->GetCarrierType() == nofCarrier::CT_NORMAL ||
             carrier->GetCarrierType() == nofCarrier::CT_BOAT)
     {
-        // Straße wieder unbesetzt, bzw. nur noch Esel
+        // StraÃŸe wieder unbesetzt, bzw. nur noch Esel
         this->carrier[0] = NULL;
         gwg->GetPlayer(f1->GetPlayer())->FindCarrierForRoad(this);
     }
@@ -429,9 +422,9 @@ noFlag* RoadSegment::GetOtherFlag(const noFlag* flag)
     //is it a valid flag?
     assert((flag->GetX() == f1->GetX() && flag->GetY() == f1->GetY()) || (flag->GetX() == f2->GetX() && flag->GetY() == f2->GetY()));
     if(flag->GetX() == f1->GetX() && flag->GetY() == f1->GetY())
-        return gwg->GetSpecObj<noFlag>(f2->GetX(), f2->GetY());
+        return gwg->GetSpecObj<noFlag>(f2->GetPos());
     if(flag->GetX() == f2->GetX() && flag->GetY() == f2->GetY())
-        return gwg->GetSpecObj<noFlag>(f1->GetX(), f1->GetY());
+        return gwg->GetSpecObj<noFlag>(f1->GetPos());
     //shouldnt get here or at least catch the assertion fail
     return NULL;
 }

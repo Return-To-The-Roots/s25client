@@ -1,4 +1,4 @@
-// $Id: PostMsg.h jh
+ï»¿// $Id: PostMsg.h jh
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -20,10 +20,10 @@
 #ifndef POSTMSG_H_
 #define POSTMSG_H_
 
-#include "main.h"
+#include "defines.h"
 #include <string>
-#include "GameConsts.h"
-#include "MapConsts.h"
+#include "gameData/GameConsts.h"
+#include "gameTypes/MapTypes.h"
 #include "Loader.h"
 
 class SerializedGameData;
@@ -49,28 +49,28 @@ class PostMsg
         unsigned sendFrame;
 };
 
-/// Post-Nachricht mit Text und einem Goto-Knopf der zu einem bestimmten Kartenpunkt führt
+/// Post-Nachricht mit Text und einem Goto-Knopf der zu einem bestimmten Kartenpunkt fÃ¼hrt
 class PostMsgWithLocation : public PostMsg
 {
     public:
-        PostMsgWithLocation(const std::string& text, PostMessageCategory cat, MapCoord x, MapCoord y);
+        PostMsgWithLocation(const std::string& text, PostMessageCategory cat, const MapPoint pt);
         PostMsgWithLocation(SerializedGameData* sgd);
 
-        MapCoord GetX() const { return x; }
-        MapCoord GetY() const { return y; }
+        MapCoord GetX() const { return pt.x; }
+        MapCoord GetY() const { return pt.y; }
+        MapPoint GetPos() const { return pt; }
         virtual void Serialize(SerializedGameData* sgd);
 
     private:
-        MapCoord x;
-        MapCoord y;
+        MapPoint pt;
 };
 
 /// Post-Nachricht mit Bild, Text und Goto-Button
 class ImagePostMsgWithLocation : public PostMsgWithLocation
 {
     public:
-        ImagePostMsgWithLocation(const std::string& text, PostMessageCategory cat, MapCoord x, MapCoord y, BuildingType senderBuilding, Nation senderNation);
-        ImagePostMsgWithLocation(const std::string& text, PostMessageCategory cat, MapCoord x, MapCoord y, Nation senderNation);
+        ImagePostMsgWithLocation(const std::string& text, PostMessageCategory cat, const MapPoint pt, BuildingType senderBuilding, Nation senderNation);
+        ImagePostMsgWithLocation(const std::string& text, PostMessageCategory cat, const MapPoint pt, Nation senderNation);
         ImagePostMsgWithLocation(SerializedGameData* sgd);
 
         glArchivItem_Bitmap* GetImage_() const;
@@ -82,7 +82,7 @@ class ImagePostMsgWithLocation : public PostMsgWithLocation
 };
 
 class iwPostWindow;
-// TODO: evtl noch verschiedene ermöglichen durch einen weiteren Parameter? Allianz, Nicht-Angriffspakt, Zeitbegrenzung, whatever
+// TODO: evtl noch verschiedene ermÃ¶glichen durch einen weiteren Parameter? Allianz, Nicht-Angriffspakt, Zeitbegrenzung, whatever
 /// Diplomatie-Post-Nachricht, mit Annehmen- und Ablehnen-Knopf
 class DiplomacyPostQuestion : public PostMsg
 {
@@ -92,12 +92,12 @@ class DiplomacyPostQuestion : public PostMsg
         enum Type
         {
             ACCEPT, /// Nachricht, die den Spieler fragt, ob ein anderer Spieler den Vertrag akzeptiert
-            CANCEL /// Nachricht, die den Spieler fragt, ob ein bestehender Vertrag aufgelöst werden soll
+            CANCEL /// Nachricht, die den Spieler fragt, ob ein bestehender Vertrag aufgelÃ¶st werden soll
         };
 
         /// Vertrag akzeptieren
         DiplomacyPostQuestion(const unsigned id, const unsigned char player, const PactType pt, const unsigned duration);
-        /// Vertrag auflösen
+        /// Vertrag auflÃ¶sen
         DiplomacyPostQuestion(const unsigned id, const unsigned char player, const PactType pt);
         DiplomacyPostQuestion(SerializedGameData* sgd);
 
@@ -110,7 +110,7 @@ class DiplomacyPostQuestion : public PostMsg
 
         /// ID des Vertrages (= normalerweise die GF-Nummer, zu der es vorgeschlagen wurde)
         unsigned id;
-        /// Spieler, den das Bündnis betrifft
+        /// Spieler, den das BÃ¼ndnis betrifft
         unsigned char player;
         /// Vertragsart
         PactType pt;
@@ -124,7 +124,7 @@ class DiplomacyPostInfo : public PostMsg
         enum Type
         {
             ACCEPT, /// Nachricht, die den Spieler fragt, ob ein anderer Spieler den Vertrag akzeptiert
-            CANCEL /// Nachricht, die den Spieler fragt, ob ein bestehender Vertrag aufgelöst werden soll
+            CANCEL /// Nachricht, die den Spieler fragt, ob ein bestehender Vertrag aufgelÃ¶st werden soll
         };
 
         DiplomacyPostInfo(const unsigned char other_player, const Type dp_type, const PactType pt);
@@ -141,7 +141,7 @@ class noShip;
 class ShipPostMsg : public ImagePostMsgWithLocation
 {
     public:
-        ShipPostMsg(const std::string& text, PostMessageCategory cat, Nation senderNation, MapCoord x, MapCoord y);
+        ShipPostMsg(const std::string& text, PostMessageCategory cat, Nation senderNation, const MapPoint pt);
         glArchivItem_Bitmap* GetImage_() const;
         MapCoord GetX() const;
         MapCoord GetY() const;

@@ -1,4 +1,4 @@
-// $Id: GameServerPlayer.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: GameServerPlayer.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -22,15 +22,15 @@
 #pragma once
 
 #include "GamePlayerInfo.h"
-//#include "GameMessages.h"
 #include "MessageQueue.h"
+#include "../libutil/src/MyTime.h"
 
 #include <list>
 
 class GameMessage_GameCommand;
 class Serializer;
 
-// GamePlayerInfo für die PlayerSlots des Servers
+// GamePlayerInfo fÃ¼r die PlayerSlots des Servers
 class GameServerPlayer : public GamePlayerInfo
 {
     public:
@@ -38,7 +38,7 @@ class GameServerPlayer : public GamePlayerInfo
         GameServerPlayer(const unsigned playerid, Serializer* ser);
         ~GameServerPlayer();
 
-        /// Gibt Sekunden bis zum TimeOut (Rausschmiss) zurück
+        /// Gibt Sekunden bis zum TimeOut (Rausschmiss) zurÃ¼ck
         unsigned GetTimeOut() const;
 
         void doPing();

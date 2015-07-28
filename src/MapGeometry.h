@@ -1,4 +1,4 @@
-// $Id: MapGeometry.h 3120
+﻿// $Id: MapGeometry.h 3120
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -19,8 +19,8 @@
 #ifndef MAP_GEOMETRY_H_
 #define MAP_GEOMETRY_H_
 
-#include "MapConsts.h"
-
+#include "gameTypes/MapTypes.h"
+#include "Point.h"
 
 /// Ermittelt Abstand zwischen 2 Punkten auf der Map
 unsigned CalcRawDistance(const int x1, const int y1,

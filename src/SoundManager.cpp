@@ -1,4 +1,4 @@
-// $Id: SoundManager.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: SoundManager.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -19,14 +19,14 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "SoundManager.h"
 
 #include "Loader.h"
-#include "VideoDriverWrapper.h"
-#include "AudioDriverWrapper.h"
+#include "drivers/VideoDriverWrapper.h"
+#include "drivers/AudioDriverWrapper.h"
 #include "Settings.h"
-#include "noBase.h"
+#include "nodeObjs/noBase.h"
 #include "GameClient.h"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -49,24 +49,24 @@ void SoundManager::PlayNOSound(const unsigned sound_lst_id, noBase* const obj, c
     if (GAMECLIENT.IsPaused())
         return;
 
-    if(SETTINGS.sound.effekte == false)
+    if(!SETTINGS.sound.effekte)
         return;
 
     // Wird Sound schon gespielt?
-    for(list<NOSound>::iterator it = no_sounds.begin(); it.valid(); ++it)
+    for(std::list<NOSound>::iterator it = no_sounds.begin(); it != no_sounds.end(); ++it)
     {
         if(it->obj == obj && it->id == id)
             return;
     }
 
-    // Sound wird noch nicht gespielt --> hinzufügen und abspielen
+    // Sound wird noch nicht gespielt --> hinzufÃ¼gen und abspielen
     unsigned play_id = LOADER.GetSoundN("sound", sound_lst_id)->Play(volume, false);
 
     // Konnte er auch abgespielt werden?
 
     if(play_id != 0)
     {
-        // Dann hinzufügen zur abgespielt-Liste
+        // Dann hinzufÃ¼gen zur abgespielt-Liste
         NOSound nos = { obj, id, play_id };
         no_sounds.push_back(nos);
     }
@@ -80,14 +80,15 @@ void SoundManager::WorkingFinished(noBase* const obj)
 
     if(SETTINGS.sound.effekte == false)
         return;
-    // Alle Sounds von diesem Objekt stoppen und löschen
-    for(list<NOSound>::iterator it = no_sounds.begin(); it.valid(); ++it)
+    // Alle Sounds von diesem Objekt stoppen und lÃ¶schen
+    for(std::list<NOSound>::iterator it = no_sounds.begin(); it != no_sounds.end();)
     {
         if(it->obj == obj)
         {
-            AudioDriverWrapper::inst().StopEffect(it->play_id);
-            no_sounds.erase(&it);
-        }
+            AUDIODRIVER.StopEffect(it->play_id);
+            it = no_sounds.erase(it);
+        }else
+            ++it;
     }
 }
 
@@ -97,10 +98,10 @@ void SoundManager::PlayBirdSounds(const unsigned short tree_count)
     if (GAMECLIENT.IsPaused())
         return;
 
-    if(SETTINGS.sound.effekte == false)
+    if(!SETTINGS.sound.effekte)
         return;
 
-    // Abstände zwischen den Vogelsounds berechnen (je nachdem wieviel Bäume)
+    // AbstÃ¤nde zwischen den Vogelsounds berechnen (je nachdem wieviel BÃ¤ume)
     unsigned interval;
     if(1000 > tree_count * 10)
         interval = 1000 - tree_count * 10;
@@ -110,12 +111,12 @@ void SoundManager::PlayBirdSounds(const unsigned short tree_count)
     interval += bird_interval;
 
     // Nach einiger Zeit neuen Sound abspielen
-    if(VideoDriverWrapper::inst().GetTickCount() - last_bird  > interval)
+    if(VIDEODRIVER.GetTickCount() - last_bird  > interval)
     {
         // ohne baum - kein vogel
         if(tree_count > 0)
             LOADER.GetSoundN("sound", 87 + rand() % 5)->Play(80 - rand() % 30, false);
-        last_bird = VideoDriverWrapper::inst().GetTickCount();
+        last_bird = VIDEODRIVER.GetTickCount();
         bird_interval = rand() % 1000;
     }
 }
@@ -125,36 +126,36 @@ void SoundManager::PlayOceanBrawling(const unsigned water_percent)
     if (GAMECLIENT.IsPaused())
         return;
 
-    if(SETTINGS.sound.effekte == false)
+    if(!SETTINGS.sound.effekte)
         return;
 
     // Ist genug Wasser da zum Rauschen?
     if(water_percent > 10)
     {
         // Wird schon ein Sound gespielt?
-        if(!AudioDriverWrapper::inst().IsEffectPlaying(ocean_play_id))
+        if(!AUDIODRIVER.IsEffectPlaying(ocean_play_id))
         {
             // Wenn nicht --> neuen abspielen
             ocean_play_id = LOADER.GetSoundN("sound", 98 + rand() % 3)->Play(255, true);
         }
 
-        // Lautstärke setzen
-        AudioDriverWrapper::inst().ChangeVolume(ocean_play_id, water_percent * 2 + 55);
+        // LautstÃ¤rke setzen
+        AUDIODRIVER.ChangeVolume(ocean_play_id, water_percent * 2 + 55);
     }
     else
     {
         // Rauschen ggf. stoppen
         if(ocean_play_id)
-            AudioDriverWrapper::inst().StopEffect(ocean_play_id);
+            AUDIODRIVER.StopEffect(ocean_play_id);
     }
 }
 
 void SoundManager::StopAll()
 {
     if(ocean_play_id)
-        AudioDriverWrapper::inst().StopEffect(ocean_play_id);
+        AUDIODRIVER.StopEffect(ocean_play_id);
 
-    last_bird = VideoDriverWrapper::inst().GetTickCount();
+    last_bird = VIDEODRIVER.GetTickCount();
     bird_interval = 0;
 }
 

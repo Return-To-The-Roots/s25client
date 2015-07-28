@@ -10,6 +10,7 @@ IF(${CMAKE_MAJOR_VERSION} EQUAL 2 AND ${CMAKE_MINOR_VERSION} GREATER 7 AND ${CMA
 ENDIF(${CMAKE_MAJOR_VERSION} EQUAL 2 AND ${CMAKE_MINOR_VERSION} GREATER 7 AND ${CMAKE_PATCH_VERSION} GREATER 0)
 
 SET(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/Modules)
+set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${CMAKE_SOURCE_DIR}/contrib)
 
 INCLUDE(CMakeMacroSetCCache)
 INCLUDE(CMakeMacroAddFlags)
@@ -18,8 +19,19 @@ INCLUDE(CMakeMacroCorrectLib)
 INCLUDE(CMakeMacroEnsureOutOfSourceBuild)
 
 ################################################################################
-
-INCLUDE(cmake/crosscompile.cmake)
+IF(${CMAKE_HOST_SYSTEM_NAME} MATCHES "Windows" OR WIN32)
+	SET(COMPILEFOR_PLATFORM "windows")
+	SET(COMPILEFOR "windows")
+	SET(CROSSCOMPILE "0")
+	SET(CROSS "")
+	IF ("${CMAKE_SIZEOF_VOID_P}" EQUAL "8")
+		SET(COMPILEARCH "x86_64")
+	ELSE ("${CMAKE_SIZEOF_VOID_P}" EQUAL "8")
+		SET(COMPILEARCH "i386")
+	ENDIF ("${CMAKE_SIZEOF_VOID_P}" EQUAL "8")
+ELSE()
+	INCLUDE(cmake/crosscompile.cmake)
+ENDIF()
 
 PROJECT(s25client)
 
@@ -92,13 +104,28 @@ IF ("${COMPILEFOR}" STREQUAL "windows")
 	SET(DATADIR "." CACHE STRING "" FORCE)
 	SET(LIBDIR "." CACHE STRING "" FORCE)
 	SET(DRIVERDIR "./driver" CACHE STRING "" FORCE)
-	ADD_DEFINITIONS(-D_WIN32_WINNT=0x0501)
-	ADD_DEFINITIONS(-D__CYGWIN__)
+	#ADD_DEFINITIONS(-D_WIN32_WINNT=0x0501)
 ENDIF ("${COMPILEFOR}" STREQUAL "windows")
 
 # add build directory to compiler search path
 FORCE_ADD_FLAGS(CMAKE_C_FLAGS -I${CMAKE_BINARY_DIR})
 FORCE_ADD_FLAGS(CMAKE_CXX_FLAGS -I${CMAKE_BINARY_DIR})
+
+IF (MSVC)
+	# disable MSVC "use secure function" and 4250: 'class1' : inherits 'class2::member' via dominance (virtual inheritance related)
+	ADD_DEFINITIONS(-D_CRT_SECURE_NO_WARNINGS /wd"4250")
+	SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Oi /GL") # systemintern functions for faster code; Optimize whole program
+	# Strip unused symbols and us COMDAT folding
+	SET(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /OPT:REF /OPT:ICF")
+    SET(CMAKE_EXE_LINKER_FLAGS_MINSIZEREL "${CMAKE_EXE_LINKER_FLAGS_MINSIZEREL} /OPT:REF /OPT:ICF")
+    SET(CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO "${CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO} /OPT:REF /OPT:ICF") 
+	# Add optimized debugging features
+	IF (MSVC_VERSION GREATER 1800) #VS13
+		ADD_DEFINITIONS(/d2Zi+)
+	ELSEIF (NOT(MSVC_VERSION LESS 1800)) # VS12
+		ADD_DEFINITIONS(/Zo)
+	ENDIF()
+ENDIF (MSVC)
 
 ################################################################################
 
@@ -116,28 +143,30 @@ CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/build/postinstall.sh.cmake"
 ADD_SUBDIRECTORY(version)
 
 ADD_CUSTOM_TARGET(updateversion ALL
-				  COMMAND "${CMAKE_BINARY_DIR}/version/src/version" "${CMAKE_SOURCE_DIR}"
+				  COMMAND "$<TARGET_FILE:version>" "${CMAKE_SOURCE_DIR}"
 				  DEPENDS version
 				  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
 )
 
-ADD_CUSTOM_TARGET(mrproper
-				  COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/build/cleanup.sh"
-				  WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-)
+IF(NOT ${CMAKE_HOST_SYSTEM_NAME} MATCHES "Windows")
+	ADD_CUSTOM_TARGET(mrproper
+					  COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/build/cleanup.sh"
+					  WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+	)
 
-ADD_CUSTOM_TARGET(create_nightly
-				  COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/release/create_release.sh" "nightly" "${CMAKE_SOURCE_DIR}"
-				  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
-)
+	ADD_CUSTOM_TARGET(create_nightly
+					  COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/release/create_release.sh" "nightly" "${CMAKE_SOURCE_DIR}"
+					  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
+	)
 
-ADD_CUSTOM_TARGET(create_stable
-				  COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/release/create_release.sh" "stable" "${CMAKE_SOURCE_DIR}"
-				  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
-)
+	ADD_CUSTOM_TARGET(create_stable
+					  COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/release/create_release.sh" "stable" "${CMAKE_SOURCE_DIR}"
+					  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
+	)
 
-# preinstall script
-INSTALL(SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/cmake/preinstall.cmake")
+	# preinstall script
+	INSTALL(SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/cmake/preinstall.cmake")
+ENDIF()
 
 ################################################################################
 
@@ -163,8 +192,10 @@ INSTALL(CODE "INCLUDE(src/cmake_install.cmake)")
 # and then dont let him install anything
 INSTALL(CODE "SET(CMAKE_INSTALL_LOCAL_ONLY 1)")
   
-# postinstall script
-INSTALL(SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/cmake/postinstall.cmake")
+IF(NOT ${CMAKE_HOST_SYSTEM_NAME} MATCHES "Windows")
+	# postinstall script
+	INSTALL(SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/cmake/postinstall.cmake")
+ENDIF()
 
 INSTALL(CODE "MESSAGE(STATUS \"Installation is now complete\")")
 

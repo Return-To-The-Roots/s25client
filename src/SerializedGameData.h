@@ -1,4 +1,4 @@
-// $Id: SerializedGameData.h 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: SerializedGameData.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -24,18 +24,18 @@
 #include <memory.h>
 #include <list>
 #include <vector>
-#include "list.h"
 #include "BinaryFile.h"
 #include "GameObject.h"
 #include "FOWObjects.h"
 #include "Serializer.h"
+#include "Point.h"
 
 class noBase;
 class GameObject;
 class GameWorld;
 
 
-/// Kümmert sich um das Serialisieren der GameDaten fürs Speichern und Resynchronisieren
+/// KÃ¼mmert sich um das Serialisieren der GameDaten fÃ¼rs Speichern und Resynchronisieren
 class SerializedGameData : public Serializer
 {
         /// Objektreferenzen
@@ -79,17 +79,6 @@ class SerializedGameData : public Serializer
 
         /// Kopiert eine Liste von GameObjects
         template <typename T>
-        void PushObjectList(const list<T*>& gos, const bool known)
-        {
-            // Anzahl
-            PushUnsignedInt(gos.size());
-            // einzelne Objekte
-            for(typename list<T*>::const_iterator it = gos.begin(); it.valid(); ++it)
-                PushObject(*it, known);
-        }
-
-        /// Kopiert eine Liste von GameObjects
-        template <typename T>
         void PushObjectList(const std::list<T*>& gos, const bool known)
         {
             // Anzahl
@@ -114,16 +103,16 @@ class SerializedGameData : public Serializer
         void PushFOWObject(const FOWObject* fowobj);
 
         /// Point of map coords
-        void PushMapPoint(const Point<MapCoord> p)
+        void PushMapPoint(const MapPoint p)
         {
             PushUnsignedShort(p.x);
             PushUnsignedShort(p.y);
         }
 
         /// Point of map coords
-        Point<MapCoord> PopMapPoint()
+        MapPoint PopMapPoint()
         {
-            Point<MapCoord> p;
+            MapPoint p;
             p.x = PopUnsignedShort();
             p.y = PopUnsignedShort();
             return p;
@@ -141,17 +130,6 @@ class SerializedGameData : public Serializer
 
         /// FoW-Objekt
         FOWObject* PopFOWObject();
-
-        /// Liest eine Liste von GameObjects
-        template <typename T>
-        void PopObjectList(list<T*>& gos, GO_Type got)
-        {
-            // Anzahl
-            unsigned size = PopUnsignedInt();
-            // einzelne Objekte
-            for(unsigned i = 0; i < size; ++i)
-                gos.push_back(PopObject<T>(got));
-        }
 
         /// Liest eine Liste von GameObjects
         template <typename T>
@@ -177,7 +155,7 @@ class SerializedGameData : public Serializer
         }
 
 
-        /// Fügt ein gelesenes Objekt zur globalen Objektliste dazu
+        /// FÃ¼gt ein gelesenes Objekt zur globalen Objektliste dazu
         void AddObject(GameObject* go);
 
 

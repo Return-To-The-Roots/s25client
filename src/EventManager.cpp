@@ -1,4 +1,4 @@
-// $Id: EventManager.cpp 9372 2014-04-28 15:25:24Z FloSoft $
+ï»¿// $Id: EventManager.cpp 9372 2014-04-28 15:25:24Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -19,7 +19,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "EventManager.h"
 
 #include "GameWorld.h"
@@ -52,10 +52,10 @@ EventManager::~EventManager()
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  fügt ein Event der Eventliste hinzu.
+ *  fÃ¼gt ein Event der Eventliste hinzu.
  *
  *  @param[in] obj       Das Objekt
- *  @param[in] gf_length Die GameFrame-Länge
+ *  @param[in] gf_length Die GameFrame-LÃ¤nge
  *  @param[in] id        ID des Events
  *
  *  @author OLiver
@@ -95,7 +95,7 @@ EventManager::EventPointer EventManager::AddEvent(GameObject* obj, const unsigne
             LOG.lprintf("EventManager::AddEvent2(): already active: %u %u\n", obj->GetGOT(), id);
         }*/
 
-    // Anfang des Events in die Vergangenheit zurückverlegen
+    // Anfang des Events in die Vergangenheit zurÃ¼ckverlegen
     Event* event = new Event(obj, GAMECLIENT.GetGFNumber() - gf_elapsed, gf_length, id);
     eis[event->gf_next].push_back(event);
 
@@ -104,7 +104,7 @@ EventManager::EventPointer EventManager::AddEvent(GameObject* obj, const unsigne
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  führt alle Events des aktuellen GameFrames aus.
+ *  fÃ¼hrt alle Events des aktuellen GameFrames aus.
  *
  *  @author OLiver
  */
@@ -136,7 +136,7 @@ void EventManager::NextGF()
         eis.erase(it);
     }
 
-    // Kill-List durchgehen und Objekte in den Bytehimmel befördern
+    // Kill-List durchgehen und Objekte in den Bytehimmel befÃ¶rdern
     for (std::list<GameObject*>::iterator it = kill_list.begin(); it != kill_list.end(); ++it)
     {
         (*it)->Destroy();
@@ -192,14 +192,14 @@ void EventManager::Serialize(SerializedGameData* sgd) const
 void EventManager::Deserialize(SerializedGameData* sgd)
 {
     // Events laden
-    // Nicht zur Eventliste hinzufügen, da dies ohnehin schon in Create_GameObject geschieht!!
+    // Nicht zur Eventliste hinzufÃ¼gen, da dies ohnehin schon in Create_GameObject geschieht!!
     unsigned size = sgd->PopUnsignedInt();
     // einzelne Objekte
     for(unsigned i = 0; i < size; ++i)
         sgd->PopObject<Event>(GOT_EVENT);
 }
 
-/// Ist ein Event mit bestimmter id für ein bestimmtes Objekt bereits vorhanden?
+/// Ist ein Event mit bestimmter id fÃ¼r ein bestimmtes Objekt bereits vorhanden?
 bool EventManager::IsEventActive(const GameObject* const obj, const unsigned id) const
 {
     for(std::map< unsigned, std::list<Event*> >::const_iterator it = eis.begin(); it != eis.end(); ++it)
@@ -237,7 +237,7 @@ void EventManager::RemoveAllEventsOfObject(GameObject* obj)
 
 void EventManager::RemoveEvent(EventPointer ep)
 {
-    if (ep == NULL)
+    if (!ep)
     {
         return;
     }

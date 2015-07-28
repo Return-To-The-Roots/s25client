@@ -1,4 +1,4 @@
-// $Id: FileChecksum.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+﻿// $Id: FileChecksum.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -21,8 +21,9 @@
 // Header
 
 
-#include "main.h"
+#include "defines.h"
 #include "FileChecksum.h"
+#include <cstdio>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -54,7 +55,7 @@ unsigned int CalcChecksumOfFile(const char* const path)
 
 unsigned int CalcChecksumOfBuffer(const unsigned char* buffer, unsigned int size)
 {
-    if(buffer == NULL || size == 0)
+    if(!buffer || size == 0)
         return 0;
 
     unsigned int checksum = 0;

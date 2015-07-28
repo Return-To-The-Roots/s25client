@@ -1,4 +1,4 @@
-// $Id: SoundSDL_Effect.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: SoundSDL_Effect.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -57,8 +57,8 @@ SoundSDL_Effect::~SoundSDL_Effect(void)
 /**
  *  Abspielen Starten.
  *
- *  @param[in] volume Lautstärke (0-254) für den Sound
- *  @param[in] loop   @p true für ununterbrochenes Abspielen
+ *  @param[in] volume LautstÃ¤rke (0-254) fÃ¼r den Sound
+ *  @param[in] loop   @p true fÃ¼r ununterbrochenes Abspielen
  *
  *  @return @p Play-ID bei Erfolg, @p 0xFFFFFFFF bei Fehler
  *
@@ -83,7 +83,7 @@ SoundSDL_Effect::~SoundSDL_Effect(void)
 /**
  *  Abspielen Stoppen.
  *
- *  @param[in] channel Channel der gestoppt werden soll (-1 für alle)
+ *  @param[in] channel Channel der gestoppt werden soll (-1 fÃ¼r alle)
  *
  *  @author FloSoft
  */

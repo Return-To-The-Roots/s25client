@@ -1,4 +1,4 @@
-// $Id: WinAPI.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+ï»¿// $Id: WinAPI.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -25,6 +25,8 @@
 #include "../../../../win32/resource.h"
 #include <build_version.h>
 #include <VideoInterface.h>
+#include <cstdlib>
+#include <cstring>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -38,7 +40,7 @@ static char THIS_FILE[] = __FILE__;
 /**
  *  Instanzierungsfunktion von @p VideoWinAPI.
  *
- *  @param[in] CallBack DriverCallback für Rückmeldungen.
+ *  @param[in] CallBack DriverCallback fÃ¼r RÃ¼ckmeldungen.
  *
  *  @return liefert eine Instanz des jeweiligen Treibers
  *
@@ -57,7 +59,7 @@ DRIVERDLLAPI const char* GetDriverName(void)
 ///////////////////////////////////////////////////////////////////////////////
 /** @class VideoWinAPI
  *
- *  Klasse für den WinAPI Videotreiber.
+ *  Klasse fÃ¼r den WinAPI Videotreiber.
  *
  *  @author FloSoft
  */
@@ -106,7 +108,7 @@ static VideoWinAPI* pVideoWinAPI = NULL;
 /**
  *  Konstruktor von @p VideoWinAPI.
  *
- *  @param[in] CallBack DriverCallback für Rückmeldungen.
+ *  @param[in] CallBack DriverCallback fÃ¼r RÃ¼ckmeldungen.
  *
  *  @author FloSoft
  */
@@ -133,7 +135,7 @@ VideoWinAPI::~VideoWinAPI(void)
 /**
  *  Funktion zum Auslesen des Treibernamens.
  *
- *  @return liefert den Treibernamen zurück
+ *  @return liefert den Treibernamen zurÃ¼ck
  *
  *  @author FloSoft
  */
@@ -167,13 +169,13 @@ bool VideoWinAPI::Initialize(void)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Treiberaufräumfunktion.
+ *  TreiberaufrÃ¤umfunktion.
  *
  *  @author FloSoft
  */
 void VideoWinAPI::CleanUp(void)
 {
-    // Fenster zerstören
+    // Fenster zerstÃ¶ren
     DestroyScreen();
 
     memset(&dm_prev, 0, sizeof(DEVMODE));
@@ -202,7 +204,7 @@ LPWSTR AnsiToUtf8(LPWSTR& wTarget, LPCSTR tSource, int nLength = -1)
  *  Erstellt das Fenster mit entsprechenden Werten.
  *
  *  @param[in] width      Breite des Fensters
- *  @param[in] height     Höhe des Fensters
+ *  @param[in] height     HÃ¶he des Fensters
  *  @param[in] fullscreen Vollbildmodus ja oder nein
  *
  *  @return @p true bei Erfolg, @p false bei Fehler
@@ -365,10 +367,10 @@ bool VideoWinAPI::CreateScreen(unsigned short width, unsigned short height, cons
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Erstellt oder verändert das Fenster mit entsprechenden Werten.
+ *  Erstellt oder verÃ¤ndert das Fenster mit entsprechenden Werten.
  *
  *  @param[in] width      Breite des Fensters
- *  @param[in] height     Höhe des Fensters
+ *  @param[in] height     HÃ¶he des Fensters
  *  @param[in] fullscreen Vollbildmodus ja oder nein
  *
  *  @return @p true bei Erfolg, @p false bei Fehler
@@ -387,7 +389,7 @@ bool VideoWinAPI::ResizeScreen(unsigned short width, unsigned short height, cons
 
     ShowWindow(screen, SW_HIDE);
 
-    // Fensterstyle ggf. ändern
+    // Fensterstyle ggf. Ã¤ndern
     SetWindowLongPtr(screen, GWL_STYLE, (fullscreen ? WS_POPUP : (WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_OVERLAPPED | WS_SYSMENU | WS_MINIMIZEBOX | WS_CAPTION) ) );
     SetWindowLongPtr(screen, GWL_EXSTYLE, (fullscreen ? WS_EX_APPWINDOW : (WS_EX_APPWINDOW | WS_EX_WINDOWEDGE) ) );
     SetWindowPos(screen, NULL, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
@@ -400,10 +402,10 @@ bool VideoWinAPI::ResizeScreen(unsigned short width, unsigned short height, cons
         (height) + (fullscreen ? 0 : 2 * GetSystemMetrics(SM_CXFIXEDFRAME) + GetSystemMetrics(SM_CYCAPTION))
     };
 
-    // Fenstergröße ändern
+    // FenstergrÃ¶ÃŸe Ã¤ndern
     SetWindowPos(screen, HWND_TOP, pos.left, pos.top, pos.right, pos.bottom, SWP_SHOWWINDOW | SWP_DRAWFRAME | SWP_FRAMECHANGED);
 
-    // Bei Vollbild Auflösung umstellen
+    // Bei Vollbild AuflÃ¶sung umstellen
     if(fullscreen)
     {
         DEVMODE dm;
@@ -536,17 +538,23 @@ unsigned long VideoWinAPI::GetTickCount(void) const
  */
 void* VideoWinAPI::GetFunction(const char* function) const
 {
-    return (void*)wglGetProcAddress(function);
+    union
+    {
+        PROC procAddress;
+        void* func;
+    };// Avoid warning about pointer conversion
+    procAddress = wglGetProcAddress(function);
+    return func;
 }
 
-/// Listet verfügbare Videomodi auf
+/// Listet verfÃ¼gbare Videomodi auf
 void VideoWinAPI::ListVideoModes(std::vector<VideoMode>& video_modes) const
 {
     DEVMODE dm;
     unsigned m = 0;
     while(EnumDisplaySettings(NULL, m++, &dm))
     {
-        // Prüfen, ob es die Auflösung nicht schonmal gab (kann es noch mit unterschiedlichen Bit-Tiefen geben
+        // PrÃ¼fen, ob es die AuflÃ¶sung nicht schonmal gab (kann es noch mit unterschiedlichen Bit-Tiefen geben
         bool already_in_vector = false;
         for(size_t i = 0; i < video_modes.size(); ++i)
         {
@@ -560,7 +568,7 @@ void VideoWinAPI::ListVideoModes(std::vector<VideoMode>& video_modes) const
         if(already_in_vector)
             continue;
 
-        // Es gibt die Auflösung noch nicht --> hinzufügen
+        // Es gibt die AuflÃ¶sung noch nicht --> hinzufÃ¼gen
         VideoMode vm = { static_cast<unsigned short>(dm.dmPelsWidth),
                          static_cast<unsigned short>(dm.dmPelsHeight)
                        };
@@ -615,7 +623,7 @@ void VideoWinAPI::SetMousePosY(int y)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Funktion zum Senden einer gedrückten Taste.
+ *  Funktion zum Senden einer gedrÃ¼ckten Taste.
  *
  *  @param[in] c Tastencode
  *
@@ -645,7 +653,7 @@ void VideoWinAPI::OnWMChar(unsigned int c, bool disablepaste, LPARAM lParam)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Funktion zum Senden einer gedrückten Taste.
+ *  Funktion zum Senden einer gedrÃ¼ckten Taste.
  *
  *  @param[in] c Tastencode
  *
@@ -806,7 +814,7 @@ LRESULT CALLBACK VideoWinAPI::WindowProc(HWND window, UINT msg, WPARAM wParam, L
             pVideoWinAPI->mouse_z += GET_WHEEL_DELTA_WPARAM(wParam);
 
             // We don't want to crash if there were even wheels that produce higher values...
-            while (abs(pVideoWinAPI->mouse_z) >= WHEEL_DELTA)
+            while (std::abs(pVideoWinAPI->mouse_z) >= WHEEL_DELTA)
             {
                 if (pVideoWinAPI->mouse_z > 0) // Scrolled to top
                 {
@@ -821,12 +829,12 @@ LRESULT CALLBACK VideoWinAPI::WindowProc(HWND window, UINT msg, WPARAM wParam, L
             }
         } break;
         case WM_KEYDOWN:
-//  case WM_SYSKEYDOWN: // auch abfangen, wenn linkes ALT mit gedrückt wurde
+//  case WM_SYSKEYDOWN: // auch abfangen, wenn linkes ALT mit gedrÃ¼ckt wurde
         {
             pVideoWinAPI->OnWMKeyDown((unsigned int)wParam, lParam);
         } return 0;
         case WM_CHAR:
-        case WM_SYSCHAR: // auch abfangen, wenn linkes ALT mit gedrückt wurde
+        case WM_SYSCHAR: // auch abfangen, wenn linkes ALT mit gedrÃ¼ckt wurde
         {
             pVideoWinAPI->OnWMChar((unsigned int)wParam, false, lParam);
         } return 0;
@@ -850,8 +858,8 @@ KeyEvent VideoWinAPI::GetModKeyState(void) const
     return ke;
 }
 
-/// Gibt Pointer auf ein Fenster zurück (device-dependent!), HWND unter Windows
-void* VideoWinAPI::GetWindowPointer() const
+/// Gibt Pointer auf ein Fenster zurÃ¼ck (device-dependent!), HWND unter Windows
+void* VideoWinAPI::GetMapPointer() const
 {
     return (void*)this->screen;
 }

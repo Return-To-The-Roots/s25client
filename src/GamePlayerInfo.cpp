@@ -19,11 +19,12 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "GamePlayerInfo.h"
 
-#include "VideoDriverWrapper.h"
+#include "drivers/VideoDriverWrapper.h"
 #include "GameMessage.h"
+#include <algorithm>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -46,6 +47,8 @@ GamePlayerInfo::GamePlayerInfo(const unsigned playerid) :
     color(0),
     ping(0),
     rating(0),
+	obj_cnt(0),
+	obj_id_cnt(0),
     ready(false)
 {
 }
@@ -63,6 +66,8 @@ GamePlayerInfo::GamePlayerInfo(const unsigned playerid, Serializer* ser) :
     color(ser->PopUnsignedChar()),
     ping(ser->PopUnsignedInt()),
     rating(ser->PopUnsignedInt()),
+	obj_cnt(0),
+	obj_id_cnt(0),
     ready(ser->PopBool())
 {
 }
@@ -104,14 +109,14 @@ void GamePlayerInfo::serialize(Serializer* ser) const
 void GamePlayerInfo::SwapPlayer(GamePlayerInfo& two)
 {
     /// Besiegt?
-    Swap(ps, two.ps);
-    Swap(aiInfo, two.aiInfo);
-    Swap(defeated, two.defeated);
-    Swap(name, two.name);
-    Swap(is_host, two.is_host);
-    Swap(ping, two.ping);
-    Swap(rating, two.rating);
-    Swap(checksum, two.checksum);
-    Swap(ready, two.ready);
+    std::swap(ps, two.ps);
+    std::swap(aiInfo, two.aiInfo);
+    std::swap(defeated, two.defeated);
+    std::swap(name, two.name);
+    std::swap(is_host, two.is_host);
+    std::swap(ping, two.ping);
+    std::swap(rating, two.rating);
+    std::swap(checksum, two.checksum);
+    std::swap(ready, two.ready);
 }
 

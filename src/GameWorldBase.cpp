@@ -1,4 +1,4 @@
-// $Id: GameWorldBase.cpp 9556 2014-12-16 15:50:37Z marcus $
+﻿// $Id: GameWorldBase.cpp 9556 2014-12-16 15:50:37Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -9,7 +9,7 @@
 // the Free Software Foundation, either version 2 of the License, or
 // (at your option) any later version.
 //
-// Return To The Roots is distributed in the hope that it will be useful,
+// Return To The Roots is distributed in the hope that it will be useful, 
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
@@ -19,26 +19,30 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "defines.h"
 #include "GameWorld.h"
 #include "GameObject.h"
-#include "noFlag.h"
+#include "nodeObjs/noFlag.h"
 #include "RoadSegment.h"
-#include "noTree.h"
-#include "noBaseBuilding.h"
-#include "noStaticObject.h"
+#include "nodeObjs/noTree.h"
+#include "buildings/noBaseBuilding.h"
+#include "nodeObjs/noStaticObject.h"
 #include "GameClient.h"
 #include "TerrainRenderer.h"
-#include "nobBaseMilitary.h"
+#include "buildings/nobBaseMilitary.h"
 #include "MapGeometry.h"
-#include "noMovable.h"
-#include "nofPassiveSoldier.h"
-#include "nobHarborBuilding.h"
-#include "nobMilitary.h"
-#include "noEnvObject.h"
-#include "noStaticObject.h"
+#include "nodeObjs/noMovable.h"
+#include "figures/nofPassiveSoldier.h"
+#include "buildings/nobHarborBuilding.h"
+#include "buildings/nobMilitary.h"
+#include "nodeObjs/noEnvObject.h"
+#include "nodeObjs/noStaticObject.h"
 #include "WindowManager.h"
-#include "iwMissionStatement.h"
+#include "ingameWindows/iwMissionStatement.h"
+#include "luaIncludes.h"
+#include "Log.h"
+#include <set>
+#include <stdexcept>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -50,8 +54,7 @@ static char THIS_FILE[] = __FILE__;
 
 #define ADD_LUA_CONST(name) lua_pushnumber(lua, name); lua_setglobal(lua, #name);
 
-GameWorldBase::GameWorldBase() : gi(NULL), width(0), height(0), lt(LT_GREENLAND), handled_nodes(NULL),
-    nodes(NULL)
+GameWorldBase::GameWorldBase() : gi(NULL), width(0), height(0), lt(LT_GREENLAND)
 {
     noTree::ResetInstanceCounter();
     GameObject::ResetCounter();
@@ -67,26 +70,26 @@ GameWorldBase::GameWorldBase() : gi(NULL), width(0), height(0), lt(LT_GREENLAND)
     
     static const luaL_Reg meta[] =
     {
-        {"EnableBuilding", LUA_EnableBuilding},
-        {"DisableBuilding", LUA_DisableBuilding},
-        {"SetRestrictedArea", LUA_SetRestrictedArea},
-        {"ClearResources", LUA_ClearResources},
-        {"AddWares", LUA_AddWares},
-        {"AddPeople", LUA_AddPeople},
-        {"GetGF", LUA_GetGF},
-        {"GetPlayerCount", LUA_GetPlayerCount},
-        {"GetPeopleCount", LUA_GetPeopleCount},
-        {"GetWareCount", LUA_GetWareCount},
-        {"GetBuildingCount", LUA_GetBuildingCount},
-        {"Log", LUA_Log},
-        {"Chat", LUA_Chat},
-        {"MissionStatement", LUA_MissionStatement},
-        {"PostMessage", LUA_PostMessage},
-        {"PostMessageWithLocation", LUA_PostMessageWithLocation},
-        {"PostNewBuildings", LUA_PostNewBuildings},
-        {"AddStaticObject", LUA_AddStaticObject},
-        {"AddEnvObject", LUA_AddEnvObject},
-		{"AIConstructionOrder", LUA_AIConstructionOrder},
+        {"EnableBuilding", LUA_EnableBuilding}, 
+        {"DisableBuilding", LUA_DisableBuilding}, 
+        {"SetRestrictedArea", LUA_SetRestrictedArea}, 
+        {"ClearResources", LUA_ClearResources}, 
+        {"AddWares", LUA_AddWares}, 
+        {"AddPeople", LUA_AddPeople}, 
+        {"GetGF", LUA_GetGF}, 
+        {"GetPlayerCount", LUA_GetPlayerCount}, 
+        {"GetPeopleCount", LUA_GetPeopleCount}, 
+        {"GetWareCount", LUA_GetWareCount}, 
+        {"GetBuildingCount", LUA_GetBuildingCount}, 
+        {"Log", LUA_Log}, 
+        {"Chat", LUA_Chat}, 
+        {"MissionStatement", LUA_MissionStatement}, 
+        {"PostMessage", LUA_PostMessage}, 
+        {"PostMessageWithLocation", LUA_PostMessageWithLocation}, 
+        {"PostNewBuildings", LUA_PostNewBuildings}, 
+        {"AddStaticObject", LUA_AddStaticObject}, 
+        {"AddEnvObject", LUA_AddEnvObject}, 
+		{"AIConstructionOrder", LUA_AIConstructionOrder}, 
         {NULL, NULL}
     };
     
@@ -216,39 +219,31 @@ void GameWorldBase::Init()
     map_size = width * height;
 
     // Map-Knoten erzeugen
-    nodes = new MapNode[map_size];
-    handled_nodes = new unsigned short[map_size];
-    military_squares = new list<nobBaseMilitary*>[ (width / MILITARY_SQUARE_SIZE + 1) * (height / MILITARY_SQUARE_SIZE + 1)];
-}
-
-MapNode::MapNode()
-{
-
+    nodes.resize(map_size);
+    handled_nodes.resize(map_size);
+    military_squares.resize((width / MILITARY_SQUARE_SIZE + 1) * (height / MILITARY_SQUARE_SIZE + 1));
 }
 
 void GameWorldBase::Unload()
 {
-    // Straßen sammeln und alle dann vernichten
-    list<RoadSegment*> roadsegments;
+    // StraÃŸen sammeln und alle dann vernichten
+    std::set<RoadSegment*> roadsegments;
     for(unsigned i = 0; i < map_size; ++i)
     {
-        if(nodes[i].obj)
+        if(!nodes[i].obj)
+            continue;
+        if(nodes[i].obj->GetGOT() != GOT_FLAG)
+            continue;
+        for(unsigned r = 0; r < 6; ++r)
         {
-            if(nodes[i].obj->GetGOT() == GOT_FLAG)
+            if(static_cast<noFlag*>(nodes[i].obj)->routes[r])
             {
-                for(unsigned r = 0; r < 6; ++r)
-                {
-                    if(static_cast<noFlag*>(nodes[i].obj)->routes[r])
-                    {
-                        if(!((roadsegments.search(static_cast<noFlag*>(nodes[i].obj)->routes[r])).valid()))
-                            roadsegments.push_back(static_cast<noFlag*>(nodes[i].obj)->routes[r]);
-                    }
-                }
+                roadsegments.insert(static_cast<noFlag*>(nodes[i].obj)->routes[r]);
             }
         }
     }
 
-    for(list<RoadSegment*>::iterator it = roadsegments.begin(); it.valid(); ++it)
+    for(std::set<RoadSegment*>::iterator it = roadsegments.begin(); it != roadsegments.end(); ++it)
         delete (*it);
 
 
@@ -261,7 +256,7 @@ void GameWorldBase::Unload()
             nodes[i].obj = NULL;
         }
 
-        for(unsigned z = 0; z < GameClient::inst().GetPlayerCount(); ++z)
+        for(unsigned z = 0; z < GAMECLIENT.GetPlayerCount(); ++z)
         {
             if(nodes[i].fow[z].object)
             {
@@ -274,9 +269,9 @@ void GameWorldBase::Unload()
     // Figuren vernichten
     for(unsigned i = 0; i < map_size; ++i)
     {
-        if(nodes[i].figures.size())
+        if(!nodes[i].figures.empty())
         {
-            for(list<noBase*>::iterator it = nodes[i].figures.begin(); it.valid(); ++it)
+            for(std::list<noBase*>::iterator it = nodes[i].figures.begin(); it != nodes[i].figures.end(); ++it)
                 delete (*it);
 
             nodes[i].figures.clear();
@@ -285,54 +280,50 @@ void GameWorldBase::Unload()
 
     catapult_stones.clear();
 
-    delete [] nodes;
-    delete [] handled_nodes;
-    delete [] military_squares;
-
-    nodes = NULL;
-    handled_nodes = NULL;
-    military_squares = NULL;
+    nodes.clear();
+    handled_nodes.clear();
+    military_squares.clear();
 
     map_size = 0;
 }
 
-noBase* GameWorldBase::GetNO(const MapCoord x, const MapCoord y)
+noBase* GameWorldBase::GetNO(const MapPoint pt)
 {
-    if(GetNode(x, y).obj)
-        return GetNode(x, y).obj;
+    if(GetNode(pt).obj)
+        return GetNode(pt).obj;
     else
         return &nothing;
 }
 
 
 
-const noBase* GameWorldBase::GetNO(const MapCoord x, const MapCoord y) const
+const noBase* GameWorldBase::GetNO(const MapPoint pt) const
 {
-    if(GetNode(x, y).obj)
-        return GetNode(x, y).obj;
+    if(GetNode(pt).obj)
+        return GetNode(pt).obj;
     else
         return &nothing;
 }
 
-const FOWObject* GameWorldBase::GetFOWObject(const MapCoord x, const MapCoord y, const unsigned spectator_player) const
+const FOWObject* GameWorldBase::GetFOWObject(const MapPoint pt, const unsigned spectator_player) const
 {
-    if(GetNode(x, y).fow[spectator_player].object)
-        return GetNode(x, y).fow[spectator_player].object;
+    if(GetNode(pt).fow[spectator_player].object)
+        return GetNode(pt).fow[spectator_player].object;
     else
         return &::nothing;
 }
 
-/// Gibt den GOT des an diesem Punkt befindlichen Objekts zurück bzw. GOT_NOTHING, wenn keins existiert
-GO_Type GameWorldBase::GetGOT(const MapCoord x, const MapCoord y) const
+/// Gibt den GOT des an diesem Punkt befindlichen Objekts zurÃ¼ck bzw. GOT_NOTHING, wenn keins existiert
+GO_Type GameWorldBase::GetGOT(const MapPoint pt) const
 {
-    noBase* obj = GetNode(x, y).obj;
+    noBase* obj = GetNode(pt).obj;
     if(obj)
         return obj->GetGOT();
     else
         return GOT_NOTHING;
 }
 
-void GameWorldBase::ConvertCoords(int x, int y, unsigned short* x_out, unsigned short* y_out) const
+MapPoint GameWorldBase::ConvertCoords(int x, int y) const
 {
     while(x < 0)
         x += width;
@@ -344,8 +335,7 @@ void GameWorldBase::ConvertCoords(int x, int y, unsigned short* x_out, unsigned 
     x %= width;
     y %= height;
 
-    *x_out = static_cast<unsigned short>(x);
-    *y_out = static_cast<unsigned short>(y);
+    return MapPoint(static_cast<MapCoord>(x), static_cast<MapCoord>(y));
 }
 
 MapCoord GameWorldBase::CalcDistanceAroundBorderX(const MapCoord x1, const MapCoord x2) const
@@ -353,11 +343,11 @@ MapCoord GameWorldBase::CalcDistanceAroundBorderX(const MapCoord x1, const MapCo
     int diff = int(x2) - int(x1);
 
     if(diff >= 0)
-        // Differenz positiv --> nicht über den Rand, d.h. normale Distanz
+        // Differenz positiv --> nicht Ã¼ber den Rand, d.h. normale Distanz
         return MapCoord(diff);
     else
     {
-        // Ansonten Stück bis zum Rand und das Stück vom Rand bis zu Punkt 2
+        // Ansonten StÃ¼ck bis zum Rand und das StÃ¼ck vom Rand bis zu Punkt 2
         return (width - x1) + x2;
     }
 
@@ -368,17 +358,17 @@ MapCoord GameWorldBase::CalcDistanceAroundBorderY(const MapCoord y1, const MapCo
     int diff = int(y2) - int(y1);
 
     if(diff >= 0)
-        // Differenz positiv --> nicht über den Rand, d.h. normale Distanz
+        // Differenz positiv --> nicht Ã¼ber den Rand, d.h. normale Distanz
         return MapCoord(diff);
     else
     {
-        // Ansonten Stück bis zum Rand und das Stück vom Rand bis zu Punkt 2
+        // Ansonten StÃ¼ck bis zum Rand und das StÃ¼ck vom Rand bis zu Punkt 2
         return (width - y1) + y2;
     }
 }
 
-/// Ermittelt Abstand zwischen 2 Punkten auf der Map unter Berücksichtigung der Kartengrenzüberquerung
-unsigned GameWorldBase::CalcDistance(const int x1, const int y1,
+/// Ermittelt Abstand zwischen 2 Punkten auf der Map unter BerÃ¼cksichtigung der KartengrenzÃ¼berquerung
+unsigned GameWorldBase::CalcDistance(const int x1, const int y1, 
                                      const int x2, const int y2) const
 {
     int dx = ((x1 - x2) << 1) + (y1 & 1) - (y2 & 1);
@@ -404,103 +394,100 @@ unsigned GameWorldBase::CalcDistance(const int x1, const int y1,
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  liefert den Straßen-Wert an der Stelle X,Y (berichtigt).
+ *  liefert den StraÃŸen-Wert an der Stelle X, Y (berichtigt).
  *
  *
  *  @author OLiver
  */
-unsigned char GameWorldBase::GetRoad(const MapCoord x, const MapCoord y, unsigned char dir, bool all) const
+unsigned char GameWorldBase::GetRoad(const MapPoint pt, unsigned char dir, bool all) const
 {
-    assert(dir < 3);
+    assert(pt.x < width && pt.y < height);
 
-    assert(x < width && y < height);
+    unsigned pos = GetIdx(pt);
 
-    unsigned pos = width * unsigned(y) + unsigned(x);
+    if(dir >= 3)
+    	throw std::out_of_range("Dir");
 
-    // Entweder muss es eine richtige Straße sein oder es müssen auch visuelle Straßen erlaubt sein
-    if(dir < 3)
-    {
-        if(nodes[pos].roads_real[(unsigned)dir] || all)
-            return nodes[pos].roads[(unsigned)dir];
-    }
+    // Entweder muss es eine richtige StraÃŸe sein oder es mÃ¼ssen auch visuelle StraÃŸen erlaubt sein
+	if(nodes[pos].roads_real[(unsigned)dir] || all)
+		return nodes[pos].roads[(unsigned)dir];
 
     return 0;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  liefert den Straßen-Wert um den Punkt X,Y.
+ *  liefert den StraÃŸen-Wert um den Punkt X, Y.
  *
  *  @author OLiver
  */
-unsigned char GameWorldBase::GetPointRoad(const MapCoord x, const MapCoord y, unsigned char dir, bool all) const
+unsigned char GameWorldBase::GetPointRoad(const MapPoint pt, unsigned char dir, bool all) const
 {
     assert(dir < 6);
 
     if(dir >= 3)
-        return GetRoad(x, y, dir % 3, all);
+        return GetRoad(pt, dir % 3, all);
     else
-        return GetRoad(GetXA(x, y, dir), GetYA(x, y, dir), dir, all);
+        return GetRoad(GetNeighbour(pt, dir), dir, all);
 }
 
-unsigned char GameWorldBase::GetPointFOWRoad(MapCoord x, MapCoord y, unsigned char dir, const unsigned char viewing_player) const
+unsigned char GameWorldBase::GetPointFOWRoad(MapPoint pt, unsigned char dir, const unsigned char viewing_player) const
 {
     if(dir >= 3)
         dir = dir - 3;
     else
     {
-        x = GetXA(x, y, dir);
-        y = GetYA(x, y, dir);
+        pt = GetNeighbour(pt, dir);
     }
 
-    return GetNode(x, y).fow[viewing_player].roads[dir];
+    return GetNode(pt).fow[viewing_player].roads[dir];
 }
 
-bool GameWorldBase::IsPlayerTerritory(const MapCoord x, const MapCoord y) const
+bool GameWorldBase::IsPlayerTerritory(const MapPoint pt) const
 {
-    unsigned char owner = GetNode(x, y).owner;
+    unsigned char owner = GetNode(pt).owner;
 
-    // Umliegende Punkte dürfen keinem anderen gehören
+    // Umliegende Punkte dÃ¼rfen keinem anderen gehÃ¶ren
     for(unsigned i = 0; i < 6; ++i)
     {
-        if(GetNodeAround(x, y, i).owner != owner)
+        if(GetNodeAround(pt, i).owner != owner)
             return false;
     }
 
     return true;
 }
 
-bool GameWorldBase::RoadAvailable(const bool boat_road, const int x, const int y, unsigned char to_dir, const bool visual) const
+bool GameWorldBase::RoadAvailable(const bool boat_road, const MapPoint pt, unsigned char to_dir, const bool visual) const
 {
     // Hindernisse
-    if(GetNode(x, y).obj)
+    if(GetNode(pt).obj)
     {
-        noBase::BlockingManner bm = GetNode(x, y).obj->GetBM();
+        noBase::BlockingManner bm = GetNode(pt).obj->GetBM();
         if(bm != noBase::BM_NOTBLOCKING)
             return false;
     }
 
     //dont build on the border
-    if(GetNode(x, y).boundary_stones[0])
+    if(GetNode(pt).boundary_stones[0])
         return false;
 
     for(unsigned char z = 0; z < 6; ++z)
     {
         // Roads around charburner piles are not possible
-        if(GetNO(GetXA(x, y, z), GetYA(x, y, z))->GetBM() == noBase::BM_CHARBURNERPILE)
+        if(GetNO(GetNeighbour(pt, z))->GetBM() == noBase::BM_CHARBURNERPILE)
             return false;
 
         // Other roads at this point?
-        if(GetPointRoad(x, y, z, visual))
+        if(GetPointRoad(pt, z, visual))
         {
-//            (void) GetPointRoad(x, y, z, visual);
+//            (void) GetPointRoad(pt, z, visual);
             return false;
         }
     }
 
     for(unsigned char i = 3; i < 6; ++i)
     {
-        if(GetNO(GetXA(x, y, i), GetYA(x, y, i))->GetBM() == noBase::BM_CASTLE)
+        if(GetNO(GetNeighbour(pt, i))->GetBM() == noBase::BM_CASTLE)
             return false;
     }
 
@@ -512,7 +499,7 @@ bool GameWorldBase::RoadAvailable(const bool boat_road, const int x, const int y
 
         for(unsigned char i = 0; i < 6; ++i)
         {
-            t = GetTerrainAround(x, y, i);
+            t = GetTerrainAround(pt, i);
             if(TERRAIN_BQ[t] == BQ_CASTLE || TERRAIN_BQ[t] == BQ_CASTLE || TERRAIN_BQ[t] == BQ_MINE || TERRAIN_BQ[t] == BQ_FLAG) ++flag_hits;
             else if(TERRAIN_BQ[t] == BQ_DANGER)
                 return 0;
@@ -521,15 +508,15 @@ bool GameWorldBase::RoadAvailable(const bool boat_road, const int x, const int y
         if(!flag_hits)
             return false;
 
-        // Richtung übergeben? Dann auch das zwischen den beiden Punkten beachten, damit
-        // man nicht über ein Wasser oder so hüpft
+        // Richtung Ã¼bergeben? Dann auch das zwischen den beiden Punkten beachten, damit
+        // man nicht Ã¼ber ein Wasser oder so hÃ¼pft
         if(to_dir != 0xFF)
         {
-            // Richtung genau entgegengesetzt, da das ja hier der Zielpunkt ist, wir müssen wieder zurück zum Quellpunkt
+            // Richtung genau entgegengesetzt, da das ja hier der Zielpunkt ist, wir mÃ¼ssen wieder zurÃ¼ck zum Quellpunkt
             to_dir = (to_dir + 3) % 6;
 
-            //// Nicht über Wasser, Lava, Sümpfe gehen
-            //if(!IsNodeToNodeForFigure(x,y,to_dir,boat_road))
+            //// Nicht Ã¼ber Wasser, Lava, SÃ¼mpfe gehen
+            //if(!IsNodeToNodeForFigure(x, y, to_dir, boat_road))
             //  return false;
         }
 
@@ -539,70 +526,64 @@ bool GameWorldBase::RoadAvailable(const bool boat_road, const int x, const int y
     {
         // Beim Wasserweg muss um den Punkt herum Wasser sein
         for(unsigned i = 0; i < 6; ++i)
-            if(GetTerrainAround(x, y, i) != 14)
+            if(GetTerrainAround(pt, i) != 14)
                 return false;
     }
 
     return true;
 }
 
-bool GameWorldBase::RoadAlreadyBuilt(const bool boat_road, unsigned short start_x, unsigned short start_y, const std::vector<unsigned char>& route)
+bool GameWorldBase::RoadAlreadyBuilt(const bool boat_road, const MapPoint start, const std::vector<unsigned char>& route)
 {
-    int tx = start_x;
-    int ty = start_y;
+    MapPoint tmp(start);
     for(unsigned i = 0; i < route.size() - 1; ++i)
     {
         // Richtiger Weg auf diesem Punkt?
-        if(!GetPointRoad(tx, ty, route[i]))
+        if(!GetPointRoad(tmp, route[i]))
             return false;
 
-        int tmpx = tx;
-        tx = GetXA(tx, ty, route[i]);
-        ty = GetYA(tmpx, ty, route[i]);
+        tmp = GetNeighbour(tmp, route[i]);
     }
     return true;
 }
 
 
-bool GameWorldBase::FlagNear(const int x, const int y) const
+bool GameWorldBase::FlagNear(const MapPoint pt) const
 {
     for(unsigned char i = 0; i < 6; ++i)
     {
-        int ya = GetYA(x, y, i);
-        int xa = GetXA(x, y, i);
-
-        if(GetNO(xa, ya)->GetType() == NOP_FLAG)
+        if(GetNO(GetNeighbour(pt, i))->GetType() == NOP_FLAG)
             return 1;
     }
     return 0;
 }
 
-void GameWorldBase::CalcRoad(const MapCoord x, const MapCoord y, const unsigned char player)
+void GameWorldBase::CalcRoad(const MapPoint pt, const unsigned char player)
 {
-    SetBQ(x, y, GAMECLIENT.GetPlayerID());
+    SetBQ(pt, GAMECLIENT.GetPlayerID());
 
     for(unsigned i = 3; i < 6; ++i)
-        SetBQ(GetXA(x, y, i), GetYA(x, y, i), GAMECLIENT.GetPlayerID());
+        SetBQ(GetNeighbour(pt, i), GAMECLIENT.GetPlayerID());
 }
 
-bool GameWorldBase::IsMilitaryBuildingNearNode(const MapCoord nx, const MapCoord ny, const unsigned char player) const
+bool GameWorldBase::IsMilitaryBuildingNearNode(const MapPoint nPt, const unsigned char player) const
 {
-    // Im Umkreis von 4 Punkten ein Militärgebäude suchen
-    MapCoord x = nx, y = ny;
+    // Im Umkreis von 4 Punkten ein MilitÃ¤rgebÃ¤ude suchen
+    MapPoint pt(nPt);
 
     for(int r = 1; r <= 4; ++r)
     {
         // Eins weiter nach links gehen
-        this->GetPointA(x, y, 0);
+        pt = GetNeighbour(pt, 0);
 
         for(unsigned dir = 0; dir < 6; ++dir)
         {
             for(unsigned short i = 0; i < r; ++i)
             {
-                if(IsMilitaryBuilding(x, y) && (GetNode(x, y).owner == player + 1))
+                if(IsMilitaryBuilding(pt) && (GetNode(pt).owner == player + 1))
                     return true;
                 // Nach rechts oben anfangen
-                this->GetPointA(x, y, (2 + dir) % 6);
+                pt = GetNeighbour(pt, (2 + dir) % 6);
             }
         }
     }
@@ -613,46 +594,46 @@ bool GameWorldBase::IsMilitaryBuildingNearNode(const MapCoord nx, const MapCoord
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  setzt den virtuellen Straßen-Wert an der Stelle X,Y (berichtigt).
+ *  setzt den virtuellen StraÃŸen-Wert an der Stelle X, Y (berichtigt).
  *
  *  @author OLiver
  */
-void GameWorldBase::SetVirtualRoad(const MapCoord x, const MapCoord y, unsigned char dir, unsigned char type)
+void GameWorldBase::SetVirtualRoad(const MapPoint pt, unsigned char dir, unsigned char type)
 {
     assert(dir < 3);
 
-    unsigned pos = width * unsigned(y) + unsigned(x);
+    unsigned pos = width * unsigned(pt.y) + unsigned(pt.x);
 
     nodes[pos].roads[dir] = type;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  setzt den virtuellen Straßen-Wert um den Punkt X,Y.
+ *  setzt den virtuellen StraÃŸen-Wert um den Punkt X, Y.
  *
  *  @author OLiver
  */
-void GameWorldBase::SetPointVirtualRoad(const MapCoord x, const MapCoord y, unsigned char dir, unsigned char type)
+void GameWorldBase::SetPointVirtualRoad(const MapPoint pt, unsigned char dir, unsigned char type)
 {
     assert(dir < 6);
 
     if(dir >= 3)
-        SetVirtualRoad(x, y, dir - 3, type);
+        SetVirtualRoad(pt, dir - 3, type);
     else
-        SetVirtualRoad(GetXA(x, y, dir), GetYA(x, y, dir), dir, type);
+        SetVirtualRoad(GetNeighbour(pt, dir), dir, type);
 }
 
 
 
 
-bool GameWorldBase::IsMilitaryBuilding(const MapCoord x, const MapCoord y) const
+bool GameWorldBase::IsMilitaryBuilding(const MapPoint pt) const
 {
-    if(GetNO(x, y)->GetType() == NOP_BUILDING || GetNO(x, y)->GetType() == NOP_BUILDINGSITE)
+    if(GetNO(pt)->GetType() == NOP_BUILDING || GetNO(pt)->GetType() == NOP_BUILDINGSITE)
     {
-        if( (GetSpecObj<noBaseBuilding>(x, y)->GetBuildingType() >= BLD_BARRACKS &&
-                GetSpecObj<noBaseBuilding>(x, y)->GetBuildingType() <= BLD_FORTRESS) ||
-                GetSpecObj<noBaseBuilding>(x, y)->GetBuildingType() == BLD_HEADQUARTERS ||
-                GetSpecObj<noBaseBuilding>(x, y)->GetBuildingType() == BLD_HARBORBUILDING)
+        if( (GetSpecObj<noBaseBuilding>(pt)->GetBuildingType() >= BLD_BARRACKS &&
+                GetSpecObj<noBaseBuilding>(pt)->GetBuildingType() <= BLD_FORTRESS) ||
+                GetSpecObj<noBaseBuilding>(pt)->GetBuildingType() == BLD_HEADQUARTERS ||
+                GetSpecObj<noBaseBuilding>(pt)->GetBuildingType() == BLD_HARBORBUILDING)
             return true;
     }
 
@@ -660,26 +641,28 @@ bool GameWorldBase::IsMilitaryBuilding(const MapCoord x, const MapCoord y) const
     return false;
 }
 
-void GameWorldBase::LookForMilitaryBuildings(std::list<nobBaseMilitary*>& buildings, const MapCoord x, const MapCoord y, unsigned short radius) const
+std::set<nobBaseMilitary*> GameWorldBase::LookForMilitaryBuildings(const MapPoint pt, unsigned short radius) const
 {
-    // Radius auf Anzahl der Militärquadrate begrenzen, sonst gibt es Überlappungen
-    radius = min<MapCoord>(width / MILITARY_SQUARE_SIZE + 1, radius);
+    // Radius auf Anzahl der MilitÃ¤rquadrate begrenzen, sonst gibt es Ãœberlappungen
+    radius = std::min<MapCoord>(width / MILITARY_SQUARE_SIZE + 1, radius);
 
-    // in Militärquadrat-Koordinaten umwandeln-
-    int first_x = x / MILITARY_SQUARE_SIZE;
-    int first_y = y / MILITARY_SQUARE_SIZE;
+    // in MilitÃ¤rquadrat-Koordinaten umwandeln-
+    int first_x = pt.x / MILITARY_SQUARE_SIZE;
+    int first_y = pt.y / MILITARY_SQUARE_SIZE;
 
     // linkes, oberes Quadrat ermitteln, dabei aufpassen dass wir nicht unter 0 geraden
     first_x -= radius;
     first_y -= radius;
 
-    // in Militärquadrat-Koordinaten umwandeln
-    unsigned short last_x = x / MILITARY_SQUARE_SIZE;
-    unsigned short last_y = y / MILITARY_SQUARE_SIZE;
+    // in MilitÃ¤rquadrat-Koordinaten umwandeln
+    unsigned short last_x = pt.x / MILITARY_SQUARE_SIZE;
+    unsigned short last_y = pt.y / MILITARY_SQUARE_SIZE;
 
-    // rechtes unteres Quadrat ermitteln, dabei nicht über die Karte hinausgehen
+    // rechtes unteres Quadrat ermitteln, dabei nicht Ã¼ber die Karte hinausgehen
     last_x += radius;
     last_y += radius;
+
+    std::set<nobBaseMilitary*> buildings;
 
     // Liste erzeugen
     for(int cy = first_y; cy <= last_y; ++cy)
@@ -695,41 +678,44 @@ void GameWorldBase::LookForMilitaryBuildings(std::list<nobBaseMilitary*>& buildi
             else if(cx >= width / MILITARY_SQUARE_SIZE + 1) tx = cx - width / MILITARY_SQUARE_SIZE - 1;
             else tx = cx;
 
-            for(list<nobBaseMilitary*>::iterator it = military_squares[ty * (width / MILITARY_SQUARE_SIZE + 1) + tx].begin(); it.valid(); ++it)
+            const std::list<nobBaseMilitary*>& milBuildings  = military_squares[ty * (width / MILITARY_SQUARE_SIZE + 1) + tx];
+            for(std::list<nobBaseMilitary*>::const_iterator it = milBuildings.begin(); it != milBuildings.end(); ++it)
             {
-                // Jedes Militärgebäude nur einmal hinzufügen
-                if(std::find(buildings.begin(), buildings.end(), *it) == buildings.end())
-                    buildings.push_back(*it);
+                // Jedes MilitÃ¤rgebÃ¤ude nur einmal hinzufÃ¼gen
+                buildings.insert(*it);
             }
         }
     }
+
+    return buildings;
 }
 
 
-/// Baut eine (bisher noch visuell gebaute) Straße wieder zurück
-void GameWorldBase::RemoveVisualRoad(unsigned short start_x, unsigned short start_y, const std::vector<unsigned char>& route)
+/// Baut eine (bisher noch visuell gebaute) StraÃŸe wieder zurÃ¼ck
+void GameWorldBase::RemoveVisualRoad(const MapPoint start, const std::vector<unsigned char>& route)
 {
-    // Wieder zurückbauen
+    MapPoint pt(start);
+    // Wieder zurÃ¼ckbauen
     for(unsigned z = 0; z < route.size(); ++z)
     {
-        if (!GetPointRoad(start_x, start_y, route[z], false))
+        if (!GetPointRoad(pt, route[z], false))
         {
-            SetPointVirtualRoad(start_x, start_y, route[z], 0);
-            CalcRoad(start_x, start_y, GAMECLIENT.GetPlayerID());
+            SetPointVirtualRoad(pt, route[z], 0);
+            CalcRoad(pt, GAMECLIENT.GetPlayerID());
         }
 
-        GetPointA(start_x, start_y, route[z]);
+        pt = GetNeighbour(pt, route[z]);
     }
 }
 
-BuildingQuality GameWorldBase::CalcBQ(const MapCoord x, const MapCoord y, const unsigned char player, const bool flagonly, const bool visual, const bool ignore_player) const
+BuildingQuality GameWorldBase::CalcBQ(const MapPoint pt, const unsigned char player, const bool flagonly, const bool visual, const bool ignore_player) const
 {
 
     ///////////////////////
     // 1. nach Terrain
 
     // Unser Land?
-    if(!ignore_player && (GetNode(x, y).owner - 1 != player  || !IsPlayerTerritory(x, y)))
+    if(!ignore_player && (GetNode(pt).owner - 1 != player  || !IsPlayerTerritory(pt)))
         return BQ_NOTHING;
 
     unsigned building_hits = 0;
@@ -741,7 +727,7 @@ BuildingQuality GameWorldBase::CalcBQ(const MapCoord x, const MapCoord y, const 
     // bebaubar?
     for(unsigned char i = 0; i < 6; ++i)
     {
-        t = GetTerrainAround(x, y, i);
+        t = GetTerrainAround(pt, i);
         if(TERRAIN_BQ[t] == BQ_CASTLE) ++building_hits;
         else if(TERRAIN_BQ[t] == BQ_MINE) ++mine_hits;
         else if(TERRAIN_BQ[t] == BQ_FLAG) ++flag_hits;
@@ -765,22 +751,22 @@ BuildingQuality GameWorldBase::CalcBQ(const MapCoord x, const MapCoord y, const 
     //////////////////////////////////////
     // 2. nach Terrain
 
-    unsigned char ph = GetNode(x, y).altitude, th;
+    unsigned char ph = GetNode(pt).altitude, th;
 
     // Bergwerke anders handhaben
     if(val == BQ_CASTLE && val != BQ_FLAG)
     {
 
-        if((th = GetNodeAround(x, y, 4).altitude) > ph)
+        if((th = GetNodeAround(pt, 4).altitude) > ph)
         {
             if(th - ph > 1)
                 val =   BQ_FLAG;
         }
 
-        // 2. Außenschale prüfen ( keine Hütten werden ab Steigung 3 )
+        // 2. AuÃŸenschale prÃ¼fen ( keine HÃ¼tten werden ab Steigung 3 )
         for(unsigned i = 0; i < 12; ++i)
         {
-            if( (th = GetNode(GetXA2(x, y, i), GetYA2(x, y, i)).altitude ) > ph)
+            if( (th = GetNode(GetNeighbour2(pt, i)).altitude ) > ph)
             {
                 if(th - ph > 2)
                 {
@@ -789,7 +775,7 @@ BuildingQuality GameWorldBase::CalcBQ(const MapCoord x, const MapCoord y, const 
                 }
             }
 
-            if( (th = GetNode(GetXA2(x, y, i), GetYA2(x, y, i)).altitude ) < ph)
+            if( (th = GetNode(GetNeighbour2(pt, i)).altitude ) < ph)
             {
                 if(ph - th > 2)
                 {
@@ -799,23 +785,23 @@ BuildingQuality GameWorldBase::CalcBQ(const MapCoord x, const MapCoord y, const 
             }
         }
 
-        // 1. Auäcnschale ( käcnen Flaggen werden ab Steigung 4)
+        // 1. AuÃ¤cnschale ( kÃ¤cnen Flaggen werden ab Steigung 4)
         for(unsigned i = 0; i < 6; ++i)
         {
-            if((th = GetNodeAround(x, y, i).altitude) > ph)
+            if((th = GetNodeAround(pt, i).altitude) > ph)
             {
                 if(th - ph > 3)
                     val = BQ_FLAG;
             }
 
-            if((th = GetNodeAround(x, y, i).altitude) < ph)
+            if((th = GetNodeAround(pt, i).altitude) < ph)
             {
                 if(ph - th > 3)
                     val = BQ_FLAG;
             }
         }
     }
-    else if ((th = GetNodeAround(x, y, 4).altitude) > ph)
+    else if ((th = GetNodeAround(pt, 4).altitude) > ph)
     {
         if(th - ph > 3)
             val = BQ_FLAG;
@@ -824,18 +810,18 @@ BuildingQuality GameWorldBase::CalcBQ(const MapCoord x, const MapCoord y, const 
     //////////////////////////////////////////
     // 3. nach Objekten
 
-    if(flagonly) if(FlagNear(x, y)) return BQ_NOTHING;
+    if(flagonly) if(FlagNear(pt)) return BQ_NOTHING;
 
 
     // allgemein nix bauen auf folgenden Objekten:
 
-    if(GetNO(x, y)->GetBM() != noBase::BM_NOTBLOCKING)
+    if(GetNO(pt)->GetBM() != noBase::BM_NOTBLOCKING)
         return BQ_NOTHING;
 
     // Don't build anything around charburner piles
     for(unsigned i = 0; i < 6; ++i)
     {
-        if(GetNO(GetXA(x, y, i), GetYA(x, y, i))->GetBM() == noBase::BM_CHARBURNERPILE)
+        if(GetNO(GetNeighbour(pt, i))->GetBM() == noBase::BM_CHARBURNERPILE)
             return BQ_NOTHING;
     }
 
@@ -843,17 +829,17 @@ BuildingQuality GameWorldBase::CalcBQ(const MapCoord x, const MapCoord y, const 
     {
         for(unsigned i = 0; i < 6; ++i)
         {
-            // Baum --> rundrum Hütte
-            if(GetNO(GetXA(x, y, i), GetYA(x, y, i))->GetType() == NOP_TREE)
+            // Baum --> rundrum HÃ¼tte
+            if(GetNO(GetNeighbour(pt, i))->GetType() == NOP_TREE)
             {
                 val = BQ_HUT;
                 break;
             }
 
-            /*// StaticObject --> rundrum Flagge/Hütte
-            else if(GetNO(GetXA(x,y,i),GetYA(x,y,i))->GetType() == NOP_OBJECT)
+            /*// StaticObject --> rundrum Flagge/HÃ¼tte
+            else if(GetNO(GetXA(x, y, i), GetYA(x, y, i))->GetType() == NOP_OBJECT)
             {
-                const noStaticObject *obj = GetSpecObj<noStaticObject>(GetXA(x,y,i),GetYA(x,y,i));
+                const noStaticObject *obj = GetSpecObj<noStaticObject>(GetXA(x, y, i), GetYA(x, y, i));
                 if(obj->GetSize() == 2)
                     val = BQ_FLAG;
                 else
@@ -867,7 +853,7 @@ BuildingQuality GameWorldBase::CalcBQ(const MapCoord x, const MapCoord y, const 
     // Stein, Feuer und Getreidefeld --> rundrum Flagge
     for(unsigned i = 0; i < 6; ++i)
     {
-        const noBase* nob = GetNO(GetXA(x, y, i), GetYA(x, y, i));
+        const noBase* nob = GetNO(GetNeighbour(pt, i));
         if(nob->GetBM() == noBase::BM_GRANITE)
         {
             val = BQ_FLAG;
@@ -880,25 +866,25 @@ BuildingQuality GameWorldBase::CalcBQ(const MapCoord x, const MapCoord y, const 
     {
         for(unsigned char i = 0; i < 3; ++i)
         {
-            if(GetNodeAround(x, y, i).obj)
+            if(GetNodeAround(pt, i).obj)
             {
-                if(GetNodeAround(x, y, i).obj->GetBM() == noBase::BM_FLAG)
+                if(GetNodeAround(pt, i).obj->GetBM() == noBase::BM_FLAG)
                     val = BQ_HOUSE;
             }
         }
     }
 
-    if(GetNO(GetXA(x, y, 3), GetYA(x, y, 3))->GetBM() == noBase::BM_FLAG)
+    if(GetNO(GetNeighbour(pt, 3))->GetBM() == noBase::BM_FLAG)
         return BQ_NOTHING;
-    if(GetNO(GetXA(x, y, 5), GetYA(x, y, 5))->GetBM() == noBase::BM_FLAG)
+    if(GetNO(GetNeighbour(pt, 5))->GetBM() == noBase::BM_FLAG)
         return BQ_NOTHING;
 
-    // Gebäude
+    // GebÃ¤ude
     if(val == BQ_CASTLE)
     {
         for(unsigned i = 0; i < 12; ++i)
         {
-            noBase::BlockingManner bm = GetNO(GetXA2(x, y, i), GetYA2(x, y, i))->GetBM();
+            noBase::BlockingManner bm = GetNO(GetNeighbour2(pt, i))->GetBM();
 
             if(bm >= noBase::BM_HUT && bm <= noBase::BM_MINE)
                 val = BQ_HOUSE;
@@ -911,7 +897,7 @@ BuildingQuality GameWorldBase::CalcBQ(const MapCoord x, const MapCoord y, const 
         {
             for(unsigned char c = 0; c < 6; ++c)
             {
-                if(GetPointRoad(GetXA(x, y, i), GetYA(x, y, i), c, visual))
+                if(GetPointRoad(GetNeighbour(pt, i), c, visual))
                 {
                     val = BQ_HOUSE;
                     break;
@@ -922,7 +908,7 @@ BuildingQuality GameWorldBase::CalcBQ(const MapCoord x, const MapCoord y, const 
 
     for(unsigned char c = 0; c < 6; ++c)
     {
-        if(GetPointRoad(x, y, c, visual))
+        if(GetPointRoad(pt, c, visual))
         {
             val = BQ_FLAG;
             break;
@@ -933,7 +919,7 @@ BuildingQuality GameWorldBase::CalcBQ(const MapCoord x, const MapCoord y, const 
     {
         for(unsigned char i = 0; i < 6; ++i)
         {
-            if(GetNO(GetXA(x, y, i), GetYA(x, y, i))->GetBM() == noBase::BM_FLAG)
+            if(GetNO(GetNeighbour(pt, i))->GetBM() == noBase::BM_FLAG)
                 return BQ_NOTHING;
         }
     }
@@ -945,22 +931,22 @@ BuildingQuality GameWorldBase::CalcBQ(const MapCoord x, const MapCoord y, const 
     if(val == BQ_FLAG)
     {
         for(unsigned char i = 0; i < 3; ++i)
-            if(GetNO(GetXA(x, y, i), GetYA(x, y, i))->GetBM() == noBase::BM_FLAG)
+            if(GetNO(GetNeighbour(pt, i))->GetBM() == noBase::BM_FLAG)
                 return BQ_NOTHING;
     }
 
 
     // Schloss bis hierhin und ist hier ein Hafenplatz?
-    if(val == BQ_CASTLE && GetNode(x, y).harbor_id)
+    if(val == BQ_CASTLE && GetNode(pt).harbor_id)
         // Dann machen wir einen Hafen draus
         val = BQ_HARBOR;
 
     if(val >= BQ_HUT && val <= BQ_HARBOR)
     {
-        if(GetNO(GetXA(x, y, 4), GetYA(x, y, 4))->GetBM() == noBase::BM_FLAG)
+        if(GetNO(GetNeighbour(pt, 4))->GetBM() == noBase::BM_FLAG)
             return val;
 
-        if(CalcBQ(GetXA(x, y, 4), GetYA(x, y, 4), player, true, visual, ignore_player))
+        if(CalcBQ(GetNeighbour(pt, 4), player, true, visual, ignore_player))
         {
             return val;
         }
@@ -968,7 +954,7 @@ BuildingQuality GameWorldBase::CalcBQ(const MapCoord x, const MapCoord y, const 
         {
 
             for(unsigned char i = 0; i < 3; ++i)
-                if(GetNO(GetXA(x, y, i), GetYA(x, y, i))->GetBM() == noBase::BM_FLAG)
+                if(GetNO(GetNeighbour(pt, i))->GetBM() == noBase::BM_FLAG)
                     return BQ_NOTHING;
             return BQ_FLAG;
         }
@@ -978,15 +964,15 @@ BuildingQuality GameWorldBase::CalcBQ(const MapCoord x, const MapCoord y, const 
     return val;
 }
 
-bool GameWorldBase::IsNodeToNodeForFigure(const MapCoord x, const MapCoord y, const unsigned dir) const
+bool GameWorldBase::IsNodeToNodeForFigure(const MapPoint pt, const unsigned dir) const
 {
-    // Nicht über Wasser, Lava, Sümpfe gehen
-    // Als Boot dürfen wir das natürlich
-    unsigned char t1 = GetWalkingTerrain1(x, y, dir),
-                  t2 = GetWalkingTerrain2(x, y, dir);
+    // Nicht Ã¼ber Wasser, Lava, SÃ¼mpfe gehen
+    // Als Boot dÃ¼rfen wir das natÃ¼rlich
+    unsigned char t1 = GetWalkingTerrain1(pt, dir), 
+                  t2 = GetWalkingTerrain2(pt, dir);
 
-    // Wenn ein Weg da drüber geht, dürfen wir das sowieso, aber kein Wasserweg!
-    unsigned char road = GetPointRoad(x, y, dir);
+    // Wenn ein Weg da drÃ¼ber geht, dÃ¼rfen wir das sowieso, aber kein Wasserweg!
+    unsigned char road = GetPointRoad(pt, dir);
     if(road && road != RoadSegment::RT_BOAT + 1)
         return true;
 
@@ -997,7 +983,7 @@ bool GameWorldBase::IsNodeToNodeForFigure(const MapCoord x, const MapCoord y, co
         return true;
 }
 
-noFlag* GameWorldBase::GetRoadFlag(int x, int y, unsigned char& dir, unsigned last_i)
+noFlag* GameWorldBase::GetRoadFlag(MapPoint pt, unsigned char& dir, unsigned last_i)
 {
     unsigned char i = 0;
 
@@ -1006,158 +992,119 @@ noFlag* GameWorldBase::GetRoadFlag(int x, int y, unsigned char& dir, unsigned la
         // suchen, wo der Weg weitergeht
         for(i = 0; i < 6; ++i)
         {
-            if(GetPointRoad(x, y, i) && i != last_i)
+            if(GetPointRoad(pt, i) && i != last_i)
                 break;
         }
 
         if(i == 6)
             return 0;
 
-        int tx = x, ty = y;
-        x = GetXA(tx, ty, i);
-        y = GetYA(tx, ty, i);
+        pt = GetNeighbour(pt, i);
 
         // endlich am Ende des Weges und an einer Flagge angekommen?
-        if(GetNO(x, y)->GetType() == NOP_FLAG)
+        if(GetNO(pt)->GetType() == NOP_FLAG)
         {
             dir = (i + 3) % 6;
-            return GetSpecObj<noFlag>(x, y);
+            return GetSpecObj<noFlag>(pt);
         }
         last_i = (i + 3) % 6;
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
-unsigned short GameWorldBase::GetXA(const MapCoord x, const MapCoord y, unsigned dir) const
+MapCoord GameWorldBase::GetXA(const MapCoord x, const MapCoord y, unsigned dir) const
 {
-    assert(dir < 6);
-
-    switch(dir)
-    {
-        case 1:
-        case 5:
-            if (y & 1)
-                return(x);
-        case 0:
-            if (x == 0)
-                return(width - 1);
-
-            return(x - 1);
-        case 2:
-        case 4:
-            if (!(y & 1))
-                return(x);
-        case 3:
-            if (x == width - 1)
-                return(0);
-
-            return(x + 1);
-    }
-
-    // never reached, but compiler likes to complain :)
-    return(0);
+    return GetNeighbour(MapPoint(x, y), dir).x;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
-unsigned short GameWorldBase::GetYA(const MapCoord x, const MapCoord y, unsigned dir) const
+MapCoord GameWorldBase::GetYA(const MapCoord x, const MapCoord y, unsigned dir) const
+{
+    return GetNeighbour(MapPoint(x, y), dir).y;
+}
+
+MapPoint GameWorldBase::GetNeighbour(const MapPoint pt, unsigned dir) const
 {
     assert(dir < 6);
-
+    MapPoint res;
     switch (dir)
     {
-        case 1:
-        case 2:
-            if (y == 0)
-                return(height - 1);
-
-            return(y - 1);
-        case 4:
-        case 5:
-            if (y == height - 1)
-                return(0);
-
-            return(y + 1);
-        default:
-            return(y);
+    case 0:
+        res.x = (pt.x == 0) ? width - 1 : pt.x - 1;
+        res.y = pt.y;
+        break;
+    case 1:
+        res.x = (pt.y & 1) ? pt.x : ((pt.x == 0) ? width - 1 : pt.x - 1);
+        res.y = (pt.y == 0) ? height - 1 : pt.y - 1;
+        break;
+    case 2:
+        res.x = (!(pt.y & 1)) ? pt.x : ((pt.x == width - 1) ? 0 : pt.x + 1);
+        res.y = (pt.y == 0) ? height - 1 : pt.y - 1;
+        break;
+    case 3:
+        res.x = (pt.x == width - 1) ? 0 : pt.x + 1;
+        res.y = pt.y;
+        break;
+    case 4:
+        res.x = (!(pt.y & 1)) ? pt.x : ((pt.x == width - 1) ? 0 : pt.x + 1);
+        res.y = (pt.y == height - 1) ? 0 : pt.y + 1;
+        break;
+    case 5:
+        res.x = (pt.y & 1) ? pt.x : ((pt.x == 0) ? width - 1 : pt.y - 1);
+        res.y = (pt.y == height - 1) ? 0 : pt.y + 1;
+        break;
+    default:
+        throw std::logic_error("Invalid direction!");
     }
-
-    // never reached, but compiler likes to complain :)
-    return(0);
+    return res;
 }
 
-/// Wie GetXA, bloß 2. Außenschale (dir zwischen 0 bis 11)
-MapCoord GameWorldBase::GetXA2(const MapCoord x, const MapCoord y, unsigned dir) const
+MapPoint GameWorldBase::GetNeighbour2(const MapPoint pt, unsigned dir) const
 {
-    int tx;
-
-    switch(dir)
-    {
-        default: assert(false); tx = 0xFFFF;
-        case 0: tx = x-2; break;
-        case 1: tx = x-2+(y&1); break;
-        case 2: tx = x-1; break;
-        case 3: tx = x; break;
-        case 4: tx = x+1; break;
-        case 5: tx = x+2-!(y&1); break;
-        case 6: tx = x+2; break;
-        case 7: tx = x-2+(y&1); break;
-        case 8: tx = x-1; break;
-        case 9: tx = x; break;
-        case 10: tx = x+1; break;
-        case 11: tx = x+2-!(y&1);
-    }
-
-
-    unsigned short rx, ry;
-    ConvertCoords(tx, int(y), &rx, &ry);
-
-    return rx;
-}
-
-/// Wie GetYA, bloß 2. Außenschale (dir zwischen 0 bis 11)
-MapCoord GameWorldBase::GetYA2(const MapCoord x, const MapCoord y, unsigned dir) const
-{
-    assert(dir < 12);
+    if(dir >= 12)
+        throw std::logic_error("Invalid direction!");
 
     static const int ADD_Y[12] =
     { 0, -1, -2, -2, -2, -1, 0, 1, 2, 2, 2, 1 };
 
-
-    unsigned short rx, ry;
-    ConvertCoords(int(x), int(y) + ADD_Y[dir], &rx, &ry);
-
-    return ry;
+    int tx;
+    switch(dir)
+    {
+        default: throw std::logic_error("Invalid direction!");
+        case 0: tx = pt.x-2; break;
+        case 1: tx = pt.x-2+((pt.y&1) ? 1 : 0); break;
+        case 2: tx = pt.x-1; break;
+        case 3: tx = pt.x; break;
+        case 4: tx = pt.x+1; break;
+        case 5: tx = pt.x+2-((pt.y&1) ? 0 : 1); break;
+        case 6: tx = pt.x+2; break;
+        case 7: tx = pt.x-2+((pt.y&1) ? 1 : 0); break;
+        case 8: tx = pt.x-1; break;
+        case 9: tx = pt.x; break;
+        case 10: tx = pt.x+1; break;
+        case 11: tx = pt.x+2-((pt.y&1) ? 0 : 1);
+    }
+    MapPoint res = ConvertCoords(tx, int(pt.y) + ADD_Y[dir]);
+    return res;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  liefert das Terrain um den Punkt X,Y.
+ *  liefert das Terrain um den Punkt X, Y.
  *
  *  @author OLiver
  *  @author FloSoft
  */
-unsigned char GameWorldBase::GetTerrainAround(int x, int y, unsigned char dir)  const
+unsigned char GameWorldBase::GetTerrainAround(const MapPoint pt, unsigned char dir)  const
 {
     assert(dir < 6);
 
     switch(dir)
     {
-        case 0: return GetNodeAround(x, y, 1).t1;
-        case 1: return GetNodeAround(x, y, 1).t2;
-        case 2: return GetNodeAround(x, y, 2).t1;
-        case 3: return GetNode(x, y).t2;
-        case 4: return GetNode(x, y).t1;
-        case 5: return GetNodeAround(x, y, 0).t2;
+        case 0: return GetNodeAround(pt, 1).t1;
+        case 1: return GetNodeAround(pt, 1).t2;
+        case 2: return GetNodeAround(pt, 2).t1;
+        case 3: return GetNode(pt).t2;
+        case 4: return GetNode(pt).t1;
+        case 5: return GetNodeAround(pt, 0).t2;
     }
 
     return 0xFF;
@@ -1166,23 +1113,23 @@ unsigned char GameWorldBase::GetTerrainAround(int x, int y, unsigned char dir)  
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Gibt das Terrain zurück, über das ein Mensch/Tier laufen müsste, von X,Y
- *  in Richtung DIR (Vorwärts).
+ *  Gibt das Terrain zurÃ¼ck, Ã¼ber das ein Mensch/Tier laufen mÃ¼sste, von X, Y
+ *  in Richtung DIR (VorwÃ¤rts).
  *
  *  @author OLiver
  */
-unsigned char GameWorldBase::GetWalkingTerrain1(MapCoord x, MapCoord y, unsigned char dir)  const
+unsigned char GameWorldBase::GetWalkingTerrain1(const MapPoint pt, unsigned char dir)  const
 {
     assert(dir < 6);
 
     switch(dir)
     {
-        case 0: return GetTerrainAround(x, y, 5);
-        case 1: return GetTerrainAround(x, y, 0);
-        case 2: return GetTerrainAround(x, y, 1);
-        case 3: return GetTerrainAround(x, y, 2);
-        case 4: return GetTerrainAround(x, y, 3);
-        case 5: return GetTerrainAround(x, y, 4);
+        case 0: return GetTerrainAround(pt, 5);
+        case 1: return GetTerrainAround(pt, 0);
+        case 2: return GetTerrainAround(pt, 1);
+        case 3: return GetTerrainAround(pt, 2);
+        case 4: return GetTerrainAround(pt, 3);
+        case 5: return GetTerrainAround(pt, 4);
     }
 
     return 0xFF;
@@ -1190,79 +1137,79 @@ unsigned char GameWorldBase::GetWalkingTerrain1(MapCoord x, MapCoord y, unsigned
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Gibt das Terrain zurück, über das ein Mensch/Tier laufen müsste, von X,Y
- *  in Richtung DIR (Rückwärts).
+ *  Gibt das Terrain zurÃ¼ck, Ã¼ber das ein Mensch/Tier laufen mÃ¼sste, von X, Y
+ *  in Richtung DIR (RÃ¼ckwÃ¤rts).
  *
  *  @author OLiver
  */
-unsigned char GameWorldBase::GetWalkingTerrain2(MapCoord x, MapCoord y, unsigned char dir)  const
+unsigned char GameWorldBase::GetWalkingTerrain2(const MapPoint pt, unsigned char dir)  const
 {
     assert(dir < 6);
 
     switch(dir)
     {
-        case 0: return GetTerrainAround(x, y, 0);
-        case 1: return GetTerrainAround(x, y, 1);
-        case 2: return GetTerrainAround(x, y, 2);
-        case 3: return GetTerrainAround(x, y, 3);
-        case 4: return GetTerrainAround(x, y, 4);
-        case 5: return GetTerrainAround(x, y, 5);
+        case 0: return GetTerrainAround(pt, 0);
+        case 1: return GetTerrainAround(pt, 1);
+        case 2: return GetTerrainAround(pt, 2);
+        case 3: return GetTerrainAround(pt, 3);
+        case 4: return GetTerrainAround(pt, 4);
+        case 5: return GetTerrainAround(pt, 5);
     }
 
     return 0xFF;
 }
 
-/// Gibt zurück, ob ein Punkt vollständig von Wasser umgeben ist
-bool GameWorldBase::IsSeaPoint(MapCoord x, MapCoord y) const
+/// Gibt zurÃ¼ck, ob ein Punkt vollstÃ¤ndig von Wasser umgeben ist
+bool GameWorldBase::IsSeaPoint(const MapPoint pt) const
 {
     for(unsigned i = 0; i < 6; ++i)
     {
-        if(GetTerrainAround(x, y, i) != TT_WATER)
+        if(GetTerrainAround(pt, i) != TT_WATER)
             return false;
     }
 
     return true;
 }
 
-/// Verändert die Höhe eines Punktes und die damit verbundenen Schatten
-void GameWorldBase::ChangeAltitude(const MapCoord x, const MapCoord y, const unsigned char altitude)
+/// VerÃ¤ndert die HÃ¶he eines Punktes und die damit verbundenen Schatten
+void GameWorldBase::ChangeAltitude(const MapPoint pt, const unsigned char altitude)
 {
-    // Höhe verändern
-    GetNode(x, y).altitude = altitude;
+    // HÃ¶he verÃ¤ndern
+    GetNode(pt).altitude = altitude;
 
     // Schattierung neu berechnen von diesem Punkt und den Punkten drumherum
-    RecalcShadow(x, y);
+    RecalcShadow(pt);
     for(unsigned i = 0; i < 6; ++i)
-        RecalcShadow(GetXA(x, y, i), GetYA(x, y, i));
+        RecalcShadow(GetNeighbour(pt, i));
 
-    // Baumöglichkeiten neu berechnen
+    // BaumÃ¶glichkeiten neu berechnen
     // Direkt drumherum
     for(unsigned i = 0; i < 6; ++i)
-        SetBQ(GetXA(x, y, i), GetYA(x, y, i), GameClient::inst().GetPlayerID());
-    // noch eine Schale weiter außen
+        SetBQ(GetNeighbour(pt, i), GAMECLIENT.GetPlayerID());
+    // noch eine Schale weiter auÃŸen
     for(unsigned i = 0; i < 12; ++i)
-        SetBQ(GetXA2(x, y, i), GetYA2(x, y, i), GameClient::inst().GetPlayerID());
+        SetBQ(GetNeighbour2(pt, i), GAMECLIENT.GetPlayerID());
 
     // Abgeleiteter Klasse Bescheid sagen
-    AltitudeChanged(x, y);
+    AltitudeChanged(pt);
 }
 
-void GameWorldBase::RecalcShadow(const MapCoord x, const MapCoord y)
+void GameWorldBase::RecalcShadow(const MapPoint pt)
 {
     const int SHADOW_COEFFICIENT = 6;
 
     // Normale Ausleuchtung
     int shadow = 0x40;
 
-    // Höhendifferenz zu den Punkten darum betrachten, auf der einen Seite entsprechend heller, wenn höher, sonst dunkler
-    shadow += (SHADOW_COEFFICIENT * (GetNode(x, y).altitude - GetNodeAround(x, y, 0).altitude));
-    shadow += (SHADOW_COEFFICIENT * (GetNode(x, y).altitude - GetNodeAround(x, y, 5).altitude));
-    shadow += (SHADOW_COEFFICIENT * (GetNode(x, y).altitude - GetNodeAround(x, y, 4).altitude));
+    // HÃ¶hendifferenz zu den Punkten darum betrachten, auf der einen Seite entsprechend heller, wenn hÃ¶her, sonst dunkler
+    shadow += (SHADOW_COEFFICIENT * (GetNode(pt).altitude - GetNodeAround(pt, 0).altitude));
+    shadow += (SHADOW_COEFFICIENT * (GetNode(pt).altitude - GetNodeAround(pt, 5).altitude));
+    shadow += (SHADOW_COEFFICIENT * (GetNode(pt).altitude - GetNodeAround(pt, 4).altitude));
 
     // und hier genau umgekehrt
-    shadow -= (SHADOW_COEFFICIENT * (GetNode(x, y).altitude - GetNodeAround(x, y, 1).altitude));
-    shadow -= (SHADOW_COEFFICIENT * (GetNode(x, y).altitude - GetNodeAround(x, y, 3).altitude));
-    shadow -= (SHADOW_COEFFICIENT * (GetNode(x, y).altitude - GetNodeAround(x, y, 3).altitude));
+    shadow -= (SHADOW_COEFFICIENT * (GetNode(pt).altitude - GetNodeAround(pt, 1).altitude));
+    shadow -= (SHADOW_COEFFICIENT * (GetNode(pt).altitude - GetNodeAround(pt, 3).altitude));
+    shadow -= (SHADOW_COEFFICIENT * (GetNode(pt).altitude - GetNodeAround(pt, 3).altitude));
 
     // Zu niedrig? Zu hoch? --> extreme Werte korrigieren
     if(shadow < 0x00)
@@ -1270,26 +1217,26 @@ void GameWorldBase::RecalcShadow(const MapCoord x, const MapCoord y)
     else if(shadow > 0x60)
         shadow = 0x60;
 
-    GetNode(x, y).shadow = static_cast<unsigned char>(shadow);
+    GetNode(pt).shadow = static_cast<unsigned char>(shadow);
 }
 
-Visibility GameWorldBase::CalcWithAllyVisiblity(const MapCoord x, const MapCoord y, const unsigned char player) const
+Visibility GameWorldBase::CalcWithAllyVisiblity(const MapPoint pt, const unsigned char player) const
 {
-    Visibility best_visibility = GetNode(x, y).fow[player].visibility;
+    Visibility best_visibility = GetNode(pt).fow[player].visibility;
 
     if (best_visibility == VIS_VISIBLE)
         return best_visibility;
 
     /// Teamsicht aktiviert?
-    if(GameClient::inst().GetGGS().team_view)
+    if(GAMECLIENT.GetGGS().team_view)
     {
-        // Dann prüfen, ob Teammitglieder evtl. eine bessere Sicht auf diesen Punkt haben
-        for(unsigned i = 0; i < GameClient::inst().GetPlayerCount(); ++i)
+        // Dann prÃ¼fen, ob Teammitglieder evtl. eine bessere Sicht auf diesen Punkt haben
+        for(unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
         {
-            if(GameClient::inst().GetPlayer(i)->IsAlly(player))
+            if(GAMECLIENT.GetPlayer(i)->IsAlly(player))
             {
-                if(GetNode(x, y).fow[i].visibility > best_visibility)
-                    best_visibility = GetNode(x, y).fow[i].visibility;
+                if(GetNode(pt).fow[i].visibility > best_visibility)
+                    best_visibility = GetNode(pt).fow[i].visibility;
             }
         }
     }
@@ -1298,20 +1245,20 @@ Visibility GameWorldBase::CalcWithAllyVisiblity(const MapCoord x, const MapCoord
 }
 
 
-/// Ermittelt, ob ein Punkt Küstenpunkt ist, d.h. Zugang zu einem schiffbaren Meer hat
-unsigned short GameWorldBase::IsCoastalPoint(const MapCoord x, const MapCoord y) const
+/// Ermittelt, ob ein Punkt KÃ¼stenpunkt ist, d.h. Zugang zu einem schiffbaren Meer hat
+unsigned short GameWorldBase::IsCoastalPoint(const MapPoint pt) const
 {
-    // Punkt muss selbst zu keinem Meer gehören
-    if(GetNode(x, y).sea_id)
+    // Punkt muss selbst zu keinem Meer gehÃ¶ren
+    if(GetNode(pt).sea_id)
         return 0;
 
-    // Um den Punkt herum muss ein gültiger Meeres Punkt sein
+    // Um den Punkt herum muss ein gÃ¼ltiger Meeres Punkt sein
     for(unsigned i = 0; i < 6; ++i)
     {
-        if(unsigned short sea_id = GetNodeAround(x, y, i).sea_id)
+        if(unsigned short sea_id = GetNodeAround(pt, i).sea_id)
         {
-            // Dieses Meer schiffbar (todo: andere Kritierien wie Hafenplätze etc.)?
-            if(seas[GetNodeAround(x, y, i).sea_id].nodes_count > 20)
+            // Dieses Meer schiffbar (todo: andere Kritierien wie HafenplÃ¤tze etc.)?
+            if(seas[GetNodeAround(pt, i).sea_id].nodes_count > 20)
                 return sea_id;
         }
     }
@@ -1319,9 +1266,9 @@ unsigned short GameWorldBase::IsCoastalPoint(const MapCoord x, const MapCoord y)
     return false;
 }
 
-unsigned short GameWorldBase::IsCoastalPointToSeaWithHarbor(const MapCoord x, const MapCoord y) const
+unsigned short GameWorldBase::IsCoastalPointToSeaWithHarbor(const MapPoint pt) const
 {
-    short sea = IsCoastalPoint(x, y);
+    short sea = IsCoastalPoint(pt);
     if(sea)
     {
         for(unsigned i = 1; i < harbor_pos.size(); i++)
@@ -1333,35 +1280,36 @@ unsigned short GameWorldBase::IsCoastalPointToSeaWithHarbor(const MapCoord x, co
     return false;
 }
 
-/// Gibt Dynamische Objekte, die von einem bestimmten Punkt aus laufen oder dort stehen sowie andere Objekte,
-/// die sich dort befinden, zurück
-void GameWorldBase::GetDynamicObjectsFrom(const MapCoord x, const MapCoord y, list<noBase*>& objects) const
+/// Gibt Dynamische Objekte, die von einem bestimmten Punkt aus laufen oder dort stehen sowie andere Objekte, 
+/// die sich dort befinden, zurÃ¼ck
+std::vector<noBase*> GameWorldBase::GetDynamicObjectsFrom(const MapPoint pt) const
 {
-    // Auch über und unter dem Punkt gucken, da dort auch die Figuren hängen können!
-    const unsigned short coords[6] =
+    std::vector<noBase*> objects;
+    // Look also on the points above and below for figures
+    const MapPoint coords[3] =
     {
-        x, y,
-        GetXA(x, y, 1), GetYA(x, y, 1),
-        GetXA(x, y, 2), GetYA(x, y, 2)
+        pt, 
+        MapPoint(GetNeighbour(pt, 1)), 
+        MapPoint(GetNeighbour(pt, 2))
     };
 
     for(unsigned i = 0; i < 3; ++i)
     {
-        for(list<noBase*>::iterator it = GetFigures(coords[i * 2], coords[i * 2 + 1]).begin();
-                it.valid(); ++it)
+        const std::list<noBase*>& figures = GetFigures(coords[i]);
+        for(std::list<noBase*>::const_iterator it = figures.begin(); it != figures.end(); ++it)
         {
             // Ist es auch ein Figur und befindet sie sich an diesem Punkt?
             if((*it)->GetType() == NOP_FIGURE || (*it)->GetGOT() == GOT_ANIMAL || (*it)->GetGOT() == GOT_SHIP)
             {
-                if(static_cast<noMovable*>(*it)->GetX() == x && static_cast<noMovable*>(*it)->GetY() == y)
+                if(static_cast<noMovable*>(*it)->GetPos() == pt)
                     objects.push_back(*it);
             }
             else if(i == 0)
                 // Den Rest nur bei den richtigen Koordinaten aufnehmen
                 objects.push_back(*it);
-
         }
     }
+    return objects;
 }
 
 
@@ -1376,16 +1324,16 @@ bool GameWorldBase::IsAtThisSea(const unsigned harbor_id, const unsigned short s
     return false;
 }
 
-/// Gibt die Koordinaten eines bestimmten Hafenpunktes zurück
-Point<MapCoord> GameWorldBase::GetHarborPoint(const unsigned harbor_id) const
+/// Gibt die Koordinaten eines bestimmten Hafenpunktes zurÃ¼ck
+MapPoint GameWorldBase::GetHarborPoint(const unsigned harbor_id) const
 {
     assert(harbor_id);
 
-    return Point<MapCoord>(harbor_pos[harbor_id].x, harbor_pos[harbor_id].y);
+    return harbor_pos[harbor_id].pos;
 }
 
-/// Gibt den Punkt eines bestimmtes Meeres um den Hafen herum an, sodass Schiffe diesen anfahren können
-void GameWorldBase::GetCoastalPoint(const unsigned harbor_id, MapCoord* px, MapCoord* py, const unsigned short sea_id) const
+/// Gibt den Punkt eines bestimmtes Meeres um den Hafen herum an, sodass Schiffe diesen anfahren kÃ¶nnen
+MapPoint GameWorldBase::GetCoastalPoint(const unsigned harbor_id, const unsigned short sea_id) const
 {
     assert(harbor_id);
 
@@ -1393,22 +1341,19 @@ void GameWorldBase::GetCoastalPoint(const unsigned harbor_id, MapCoord* px, MapC
     {
         if(harbor_pos[harbor_id].cps[i].sea_id == sea_id)
         {
-            *px = GetXA(harbor_pos[harbor_id].x, harbor_pos[harbor_id].y, i);
-            *py = GetYA(harbor_pos[harbor_id].x, harbor_pos[harbor_id].y, i);
-            return;
+            return GetNeighbour(harbor_pos[harbor_id].pos, i);
         }
     }
 
     // Keinen Punkt gefunden
-    *px = 0xFFFF;
-    *py = 0xFFFF;
+    return MapPoint(0xFFFF, 0xFFFF);
 }
 
 
-/// Gibt nächsten Hafenpunkt in einer bestimmten Richtung zurück, bzw. 0, jwenn es keinen gibt
-unsigned GameWorldBase::GetNextHarborPoint(const MapCoord x, const MapCoord y,
-        const unsigned origin_harbor_id, const unsigned char dir,
-        const unsigned char player,
+/// Gibt nÃ¤chsten Hafenpunkt in einer bestimmten Richtung zurÃ¼ck, bzw. 0, jwenn es keinen gibt
+unsigned GameWorldBase::GetNextHarborPoint(const MapPoint pt, 
+        const unsigned origin_harbor_id, const unsigned char dir, 
+        const unsigned char player, 
         bool (GameWorldBase::*IsPointOK)(const unsigned, const unsigned char, const unsigned short) const) const
 {
 
@@ -1419,8 +1364,7 @@ unsigned GameWorldBase::GetNextHarborPoint(const MapCoord x, const MapCoord y,
 
     for(unsigned char i = 0; i < 6; ++i)
     {
-        if(GetXA(harbor_pos[origin_harbor_id].x, harbor_pos[origin_harbor_id].y, i) == x &&
-                GetYA(harbor_pos[origin_harbor_id].x, harbor_pos[origin_harbor_id].y, i) == y)
+        if(GetNeighbour(harbor_pos[origin_harbor_id].pos, i) == pt)
         {
             coastal_point_dir = i;
             break;
@@ -1447,10 +1391,10 @@ unsigned GameWorldBase::GetNextHarborPoint(const MapCoord x, const MapCoord y,
     return 0;
 }
 
-/// Ist es an dieser Stelle für einen Spieler möglich einen Hafen zu bauen
+/// Ist es an dieser Stelle fÃ¼r einen Spieler mÃ¶glich einen Hafen zu bauen
 bool GameWorldBase::IsHarborPointFree(const unsigned harbor_id, const unsigned char player, const unsigned short sea_id) const
 {
-    Point<MapCoord> coords(GetHarborPoint(harbor_id));
+    MapPoint coords(GetHarborPoint(harbor_id));
 
     // Befindet sich der Hafenpunkt auch an dem erforderlichen Meer?
     bool at_sea = false;
@@ -1466,19 +1410,18 @@ bool GameWorldBase::IsHarborPointFree(const unsigned harbor_id, const unsigned c
     if(!at_sea)
         return false;
 
-    // Überprüfen, ob das Gebiet in einem bestimmten Radius entweder vom Spieler oder gar nicht besetzt ist außer wenn der Hafen und die Flagge im Spielergebiet liegen
-    MapCoord tx3 = coords.x, ty3 = coords.y;
-    GetPointA(tx3, ty3, 4);
-    if(GetNode(coords.x, coords.y).owner != player + 1 || GetNode(tx3, ty3).owner != player + 1)
+    // ÃœberprÃ¼fen, ob das Gebiet in einem bestimmten Radius entweder vom Spieler oder gar nicht besetzt ist außer wenn der Hafen und die Flagge im Spielergebiet liegen
+    MapPoint t3 = GetNeighbour(coords, 4);
+    if(GetNode(coords).owner != player + 1 || GetNode(t3).owner != player + 1)
     {
         for(MapCoord tx = GetXA(coords.x, coords.y, 0), r = 1; r <= 4; tx = GetXA(tx, coords.y, 0), ++r)
         {
-            MapCoord tx2 = tx, ty2 = coords.y;
+            MapPoint t2(tx, coords.y);
             for(unsigned i = 2; i < 8; ++i)
             {
-                for(MapCoord r2 = 0; r2 < r; GetPointA(tx2, ty2, i % 6), ++r2)
+                for(MapCoord r2 = 0; r2 < r; t2 = GetNeighbour(t2, i % 6), ++r2)
                 {
-                    unsigned char owner = GetNode(tx2, ty2).owner;
+                    unsigned char owner = GetNode(t2).owner;
                     if(owner != 0 && owner != player + 1)
                         return false;
                 }
@@ -1486,17 +1429,17 @@ bool GameWorldBase::IsHarborPointFree(const unsigned harbor_id, const unsigned c
         }
     }
 
-    return (CalcBQ(coords.x, coords.y, 0, false, false, true) == BQ_HARBOR);
+    return (CalcBQ(coords, 0, false, false, true) == BQ_HARBOR);
 }
 
 /// Sucht freie Hafenpunkte, also wo noch ein Hafen gebaut werden kann
-unsigned GameWorldBase::GetNextFreeHarborPoint(const MapCoord x, const MapCoord y, const unsigned origin_harbor_id, const unsigned char dir,
+unsigned GameWorldBase::GetNextFreeHarborPoint(const MapPoint pt, const unsigned origin_harbor_id, const unsigned char dir, 
         const unsigned char player) const
 {
-    return GetNextHarborPoint(x, y, origin_harbor_id, dir, player, &GameWorldBase::IsHarborPointFree);
+    return GetNextHarborPoint(pt, origin_harbor_id, dir, player, &GameWorldBase::IsHarborPointFree);
 }
 
-/// Gibt die angrenzenden Sea-IDs eines Hafenpunktes zurück
+/// Gibt die angrenzenden Sea-IDs eines Hafenpunktes zurÃ¼ck
 void GameWorldBase::GetSeaIDs(const unsigned harbor_id, unsigned short* sea_ids) const
 {
     for(unsigned i = 0; i < 6; ++i)
@@ -1524,24 +1467,24 @@ unsigned GameWorldBase::CalcHarborDistance(const unsigned habor_id1, const unsig
     return 0xffffffff;
 }
 
-/// Bestimmt für einen beliebigen Punkt auf der Karte die Entfernung zum nächsten Hafenpunkt
-unsigned GameWorldBase::CalcDistanceToNearestHarbor(const Point<MapCoord> pos) const
+/// Bestimmt fÃ¼r einen beliebigen Punkt auf der Karte die Entfernung zum nÃ¤chsten Hafenpunkt
+unsigned GameWorldBase::CalcDistanceToNearestHarbor(const MapPoint pos) const
 {
     unsigned min_distance = 0xffffffff;
     for(unsigned i = 1; i < harbor_pos.size(); ++i) //poc: harbor dummy at spot 0 ask Oliverr why
-        min_distance = min(min_distance, this->CalcDistance(pos.x, pos.y, harbor_pos[i].x, harbor_pos[i].y));
+        min_distance = std::min(min_distance, this->CalcDistance(pos, harbor_pos[i].pos));
 
     return min_distance;
 }
 
 /// returns true when a harborpoint is in SEAATTACK_DISTANCE for figures!
-bool GameWorldBase::IsAHarborInSeaAttackDistance(const Point<MapCoord> pos) const
+bool GameWorldBase::IsAHarborInSeaAttackDistance(const MapPoint pos) const
 {
     for(unsigned i = 1; i < harbor_pos.size(); ++i) //poc: harbor dummy at spot 0 ask Oliverr why
     {
-        if(CalcDistance(pos.x, pos.y, harbor_pos[i].x, harbor_pos[i].y) < SEAATTACK_DISTANCE)
+        if(CalcDistance(pos, harbor_pos[i].pos) < SEAATTACK_DISTANCE)
         {
-            if(FindHumanPath(pos.x, pos.y, harbor_pos[i].x, harbor_pos[i].y, SEAATTACK_DISTANCE != 0xff))
+            if(FindHumanPath(pos, harbor_pos[i].pos, SEAATTACK_DISTANCE != 0xff))
                 return true;
         }
     }
@@ -1569,144 +1512,41 @@ bool GameWorldBase::PotentialSeaAttacker::operator<(const GameWorldBase::Potenti
 }
 
 /// returns all sea_ids found in the given vector from which a given building can be attacked by sea
-void GameWorldBase::GetValidSeaIDsAroundMilitaryBuildingForAttackCompare(const MapCoord x,const MapCoord y, std::vector<unsigned short> * use_seas, const unsigned char player_attacker)const
+void GameWorldBase::GetValidSeaIDsAroundMilitaryBuildingForAttackCompare(const MapPoint pt, std::vector<unsigned short> * use_seas, const unsigned char player_attacker)const
 {
-	// Nach Hafenpunkten in der Nähe des angegriffenen Gebäudes suchen
-	// Alle unsere Häfen durchgehen
+	// Nach Hafenpunkten in der NÃ¤he des angegriffenen GebÃ¤udes suchen
+	// Alle unsere HÃ¤fen durchgehen
 	std::vector<unsigned short> confirmedseaids;
 	for(unsigned i = 1;i<harbor_pos.size();++i)
 
 	{
-		MapCoord harbor_x = harbor_pos[i].x, harbor_y = harbor_pos[i].y;
+		MapPoint harborPt = harbor_pos[i].pos;
 		
-		if(CalcDistance(harbor_x,harbor_y,x,y) <= SEAATTACK_DISTANCE)
+		if(CalcDistance(harborPt, pt) <= SEAATTACK_DISTANCE)
 		{
 			//target isnt the harbor pos AND there is an enemy harbor AND the sea attack addon is set to block on enemy harbor? -> done for this harbor pos
-			const nobHarborBuilding *hb=GetSpecObj<nobHarborBuilding>(harbor_x,harbor_y);
-			if(!(x == harbor_x && y == harbor_y) && hb && (players->getElement(player_attacker)->IsPlayerAttackable(GetNode(harbor_x,harbor_y).owner-1) && GameClient::inst().GetGGS().getSelection(ADDON_SEA_ATTACK)==1))
+			const nobHarborBuilding *hb=GetSpecObj<nobHarborBuilding>(harborPt);
+			if(pt != harborPt && hb && (players->getElement(player_attacker)->IsPlayerAttackable(GetNode(harborPt).owner-1) && GAMECLIENT.GetGGS().getSelection(ADDON_SEA_ATTACK)==1))
 			{				
 				continue;
 			}
 			else
 			{
 				// Ist Ziel der Hafenspot? -> add sea_ids
-				if(x == harbor_x && y == harbor_y)
+				if(pt == harborPt)
 				{
 					unsigned short sea_ids[6];
-					GetSeaIDs(i,sea_ids);
+					GetSeaIDs(i, sea_ids);
 					for(unsigned z = 0;z<6;++z)
 					{
-						if(sea_ids[z])
+						if(!sea_ids[z])
+                            continue;
+						//sea id is in compare list and not yet in confirmed list? add to confirmed list if the pathfinding is ok
+						if(std::find(use_seas->begin(), use_seas->end(), sea_ids[z])!=use_seas->end() && !(std::find(confirmedseaids.begin(), confirmedseaids.end(), sea_ids[z])!=confirmedseaids.end()))
 						{
-							//sea id is in compare list and not yet in confirmed list? add to confirmed list if the pathfinding is ok
-							if(std::find(use_seas->begin(),use_seas->end(),sea_ids[z])!=use_seas->end() && !(std::find(confirmedseaids.begin(),confirmedseaids.end(),sea_ids[z])!=confirmedseaids.end()))
-							{
-								bool previouslytested=false;
-								for(unsigned k=0;k<z;k++)
-								{	
-									if(sea_ids[z]==sea_ids[k])
-									{
-										previouslytested=true;
-										break;
-									}
-								}
-								if(previouslytested)
-									continue;
-								//can figures walk from the flag of the harbor to the coastal point? Important because in some locations where the coast is north of the harbor this might be blocked
-								MapCoord coastal_x, coastal_y;
-								GetCoastalPoint(i,&coastal_x, &coastal_y,sea_ids[z]);
-							
-								if(( GetXA(x,y,4)==coastal_x && GetYA(x,y,4)==coastal_y) || FindHumanPath(GetXA(x,y,4),GetYA(x,y,4),coastal_x,coastal_y,SEAATTACK_DISTANCE) != 0xff)
-								{
-									confirmedseaids.push_back(sea_ids[z]);
-									//all sea ids confirmed? return without changes
-									if(confirmedseaids.size()==use_seas->size())
-										return;																	
-								}								
-							}
-						}
-					}
-				}			
-				//so our target building is in range of a free or allied harbor pos but not the harborspot - now lets see if we can findhumanpath
-				else //if(FindHumanPath(x,y,harbor_x,harbor_y,SEAATTACK_DISTANCE) != 0xff)				
-				{
-					unsigned short sea_ids[6];
-					GetSeaIDs(i,sea_ids);
-					for(unsigned z = 0;z<6;++z)
-					{
-						if(sea_ids[z])
-						{
-							//sea id is in compare list and not yet in confirmed list? add to confirmed list
-							if(std::find(use_seas->begin(),use_seas->end(),sea_ids[z])!=use_seas->end() && !(std::find(confirmedseaids.begin(),confirmedseaids.end(),sea_ids[z])!=confirmedseaids.end()))
-							{
-								bool previouslytested=false;
-								for(unsigned k=0;k<z;k++) //checks previously tested sea ids to skip pathfinding
-								{
-									if(sea_ids[z]==sea_ids[k])
-									{
-										previouslytested=true;
-										break;
-									}
-								}
-								if(previouslytested)
-									continue;
-								//can figures walk from the coastal point to the harbor?
-								MapCoord coastal_x, coastal_y;
-								GetCoastalPoint(i,&coastal_x, &coastal_y,sea_ids[z]);
-								if(FindHumanPath(x,y,coastal_x,coastal_y,SEAATTACK_DISTANCE) != 0xff) //valid human path from target building to coastal point?
-								{
-									confirmedseaids.push_back(sea_ids[z]);
-									//all sea ids confirmed? return without changes
-									if(confirmedseaids.size()==use_seas->size())
-										return;
-								}								
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-	//all harbor positions tested: erase all entries from use_seas we could not confirm
-	use_seas->clear();
-	use_seas->assign(confirmedseaids.begin(),confirmedseaids.end());
-}
-	
-/// returns all sea_ids from which a given building can be attacked by sea
-void GameWorldBase::GetValidSeaIDsAroundMilitaryBuildingForAttack(const MapCoord x,const MapCoord y, std::vector<bool> * use_seas, const unsigned char player_attacker,std::vector<unsigned>*harbor_points) const
-{
-	assert(use_seas);
-	// Nach Hafenpunkten in der Nähe des angegriffenen Gebäudes suchen
-	// Alle unsere Häfen durchgehen
-	for(unsigned i = 1;i<harbor_pos.size();++i)
-
-	{
-		MapCoord harbor_x = harbor_pos[i].x, harbor_y = harbor_pos[i].y;
-		
-		if(CalcDistance(harbor_x,harbor_y,x,y) <= SEAATTACK_DISTANCE)
-		{
-			//target isnt the harbor pos AND there is an enemy harbor AND the sea attack addon is set to block on enemy harbor? -> done for this harbor pos
-			const nobHarborBuilding *hb=GetSpecObj<nobHarborBuilding>(harbor_x,harbor_y);
-			if(!(x == harbor_x && y == harbor_y) && hb && (players->getElement(player_attacker)->IsPlayerAttackable(GetNode(harbor_x,harbor_y).owner-1) && GameClient::inst().GetGGS().getSelection(ADDON_SEA_ATTACK)==1))
-			{				
-				continue;
-			}
-			else
-			{
-				// Ist Ziel der Hafenspot? -> add sea_ids from which we can actually attack the harbor
-				if(x == harbor_x && y == harbor_y)
-				{
-					bool harborinlist=false;					
-					unsigned short sea_ids[6];
-					GetSeaIDs(i,sea_ids);
-					for(unsigned z = 0;z<6;++z)
-					{
-						if(sea_ids[z] ) //there is a sea id in the given direction?
-						{
-							//already tested the path from this coastal point to the goal (pathfinding takes a while so avoid as much as possible)
 							bool previouslytested=false;
 							for(unsigned k=0;k<z;k++)
-							{
+							{	
 								if(sea_ids[z]==sea_ids[k])
 								{
 									previouslytested=true;
@@ -1715,31 +1555,30 @@ void GameWorldBase::GetValidSeaIDsAroundMilitaryBuildingForAttack(const MapCoord
 							}
 							if(previouslytested)
 								continue;
-							//can figures walk from the flag of the harbor to the coastal point?
-							MapCoord coastal_x, coastal_y;
-							GetCoastalPoint(i,&coastal_x, &coastal_y,sea_ids[z]);
+							//can figures walk from the flag of the harbor to the coastal point? Important because in some locations where the coast is north of the harbor this might be blocked
+							MapPoint coastal = GetCoastalPoint(i, sea_ids[z]);
 							
-							if(( GetXA(x,y,4)==coastal_x && GetYA(x,y,4)==coastal_y) || FindHumanPath(GetXA(x,y,4),GetYA(x,y,4),coastal_x,coastal_y,SEAATTACK_DISTANCE) != 0xff)
+							if((GetNeighbour(pt, 4) == coastal) || FindHumanPath(GetNeighbour(pt, 4), coastal, SEAATTACK_DISTANCE) != 0xff)
 							{
-								use_seas->at(sea_ids[z]) = true;
-								if(!harborinlist)
-								{
-									harbor_points->push_back(i);
-									harborinlist=true;
-								}
-							}
+								confirmedseaids.push_back(sea_ids[z]);
+								//all sea ids confirmed? return without changes
+								if(confirmedseaids.size()==use_seas->size())
+									return;																	
+							}								
 						}
 					}
 				}			
 				//so our target building is in range of a free or allied harbor pos but not the harborspot - now lets see if we can findhumanpath
-				else //if(FindHumanPath(x,y,harbor_x,harbor_y,SEAATTACK_DISTANCE) != 0xff)				
-				{	//first get sea ids around currently tested harbor, then for each sea id try to find a human path between the coastal point and the goal
-					bool harborinlist=false;
+				else //if(FindHumanPath(x, y, harbor_x, harbor_y, SEAATTACK_DISTANCE) != 0xff)				
+				{
 					unsigned short sea_ids[6];
-					GetSeaIDs(i,sea_ids);
-					for(unsigned z = 0;z<6;++z) //for all directions check the sea ids
+					GetSeaIDs(i, sea_ids);
+					for(unsigned z = 0;z<6;++z)
 					{
-						if(sea_ids[z]) //sea id not 0 = any sea
+						if(!sea_ids[z])
+                            continue;
+						//sea id is in compare list and not yet in confirmed list? add to confirmed list
+						if(std::find(use_seas->begin(), use_seas->end(), sea_ids[z])!=use_seas->end() && !(std::find(confirmedseaids.begin(), confirmedseaids.end(), sea_ids[z])!=confirmedseaids.end()))
 						{
 							bool previouslytested=false;
 							for(unsigned k=0;k<z;k++) //checks previously tested sea ids to skip pathfinding
@@ -1753,16 +1592,114 @@ void GameWorldBase::GetValidSeaIDsAroundMilitaryBuildingForAttack(const MapCoord
 							if(previouslytested)
 								continue;
 							//can figures walk from the coastal point to the harbor?
-							MapCoord coastal_x, coastal_y;
-							GetCoastalPoint(i,&coastal_x, &coastal_y,sea_ids[z]);
-							if(FindHumanPath(x,y,coastal_x,coastal_y,SEAATTACK_DISTANCE) != 0xff) //valid human path from target building to coastal point?
+							MapPoint coastal = GetCoastalPoint(i, sea_ids[z]);
+							if(FindHumanPath(pt, coastal, SEAATTACK_DISTANCE) != 0xff) //valid human path from target building to coastal point?
 							{
-								use_seas->at(sea_ids[z]) = true;
-								if(!harborinlist)
-								{
-									harbor_points->push_back(i);
-									harborinlist=true;
-								}
+								confirmedseaids.push_back(sea_ids[z]);
+								//all sea ids confirmed? return without changes
+								if(confirmedseaids.size()==use_seas->size())
+									return;
+							}								
+						}
+					}
+				}
+			}
+		}
+	}
+	//all harbor positions tested: erase all entries from use_seas we could not confirm
+	use_seas->clear();
+	use_seas->assign(confirmedseaids.begin(), confirmedseaids.end());
+}
+	
+/// returns all sea_ids from which a given building can be attacked by sea
+void GameWorldBase::GetValidSeaIDsAroundMilitaryBuildingForAttack(const MapPoint pt, std::vector<bool> * use_seas, const unsigned char player_attacker, std::vector<unsigned>*harbor_points) const
+{
+	assert(use_seas);
+	// Nach Hafenpunkten in der NÃ¤he des angegriffenen GebÃ¤udes suchen
+	// Alle unsere HÃ¤fen durchgehen
+	for(unsigned i = 1;i<harbor_pos.size();++i)
+
+	{
+		MapPoint harborPt = harbor_pos[i].pos;
+		
+		if(CalcDistance(harborPt, pt) > SEAATTACK_DISTANCE)
+		    continue;
+
+		//target isnt the harbor pos AND there is an enemy harbor AND the sea attack addon is set to block on enemy harbor? -> done for this harbor pos
+		const nobHarborBuilding *hb=GetSpecObj<nobHarborBuilding>(harborPt);
+		if(pt != harborPt && hb && (players->getElement(player_attacker)->IsPlayerAttackable(GetNode(harborPt).owner-1) && GAMECLIENT.GetGGS().getSelection(ADDON_SEA_ATTACK)==1))
+		{				
+			continue;
+		}
+		else
+		{
+			// Ist Ziel der Hafenspot? -> add sea_ids from which we can actually attack the harbor
+			if(pt == harborPt)
+			{
+				bool harborinlist=false;					
+				unsigned short sea_ids[6];
+				GetSeaIDs(i, sea_ids);
+				for(unsigned z = 0;z<6;++z)
+				{
+					if(sea_ids[z] ) //there is a sea id in the given direction?
+					{
+						//already tested the path from this coastal point to the goal (pathfinding takes a while so avoid as much as possible)
+						bool previouslytested=false;
+						for(unsigned k=0;k<z;k++)
+						{
+							if(sea_ids[z]==sea_ids[k])
+							{
+								previouslytested=true;
+								break;
+							}
+						}
+						if(previouslytested)
+							continue;
+						//can figures walk from the flag of the harbor to the coastal point?
+						MapPoint coastal = GetCoastalPoint(i, sea_ids[z]);
+							
+						if(( GetNeighbour(pt, 4) == coastal) || FindHumanPath(GetNeighbour(pt, 4), coastal, SEAATTACK_DISTANCE) != 0xff)
+						{
+							use_seas->at(sea_ids[z]) = true;
+							if(!harborinlist)
+							{
+								harbor_points->push_back(i);
+								harborinlist=true;
+							}
+						}
+					}
+				}
+			}			
+			//so our target building is in range of a free or allied harbor pos but not the harborspot - now lets see if we can findhumanpath
+			else //if(FindHumanPath(x, y, harbor_x, harbor_y, SEAATTACK_DISTANCE) != 0xff)				
+			{	//first get sea ids around currently tested harbor, then for each sea id try to find a human path between the coastal point and the goal
+				bool harborinlist=false;
+				unsigned short sea_ids[6];
+				GetSeaIDs(i, sea_ids);
+				for(unsigned z = 0;z<6;++z) //for all directions check the sea ids
+				{
+					if(sea_ids[z]) //sea id not 0 = any sea
+					{
+						bool previouslytested=false;
+						for(unsigned k=0;k<z;k++) //checks previously tested sea ids to skip pathfinding
+						{
+							if(sea_ids[z]==sea_ids[k])
+							{
+								previouslytested=true;
+								break;
+							}
+						}
+						if(previouslytested)
+							continue;
+						//can figures walk from the coastal point to the harbor?
+						MapPoint coastal = GetCoastalPoint(i, sea_ids[z]);
+						if(FindHumanPath(pt, coastal, SEAATTACK_DISTANCE) != 0xff) //valid human path from target building to coastal point?
+						{
+							use_seas->at(sea_ids[z]) = true;
+							if(!harborinlist)
+							{
+								harbor_points->push_back(i);
+								harborinlist=true;
 							}
 						}
 					}
@@ -1773,41 +1710,41 @@ void GameWorldBase::GetValidSeaIDsAroundMilitaryBuildingForAttack(const MapCoord
 
 }
 
-/// Liefert Hafenpunkte im Umkreis von einem bestimmten Militärgebäude
-void GameWorldBase::GetHarborPointsAroundMilitaryBuilding(const MapCoord x, const MapCoord y, std::vector<unsigned> * harbor_points) const
+/// Liefert Hafenpunkte im Umkreis von einem bestimmten MilitÃ¤rgebÃ¤ude
+void GameWorldBase::GetHarborPointsAroundMilitaryBuilding(const MapPoint pt, std::vector<unsigned> * harbor_points) const
 {
     assert(harbor_points);
 
 
-    // Nach Hafenpunkten in der Nähe des angegriffenen Gebäudes suchen
-    // Alle unsere Häfen durchgehen
+    // Nach Hafenpunkten in der NÃ¤he des angegriffenen GebÃ¤udes suchen
+    // Alle unsere HÃ¤fen durchgehen
     for(unsigned i = 1; i < harbor_pos.size(); ++i)
 
     {
-        MapCoord harbor_x = harbor_pos[i].x, harbor_y = harbor_pos[i].y;
+        MapPoint harborPt = harbor_pos[i].pos;
 
-        if(CalcDistance(harbor_x, harbor_y, x, y) <= SEAATTACK_DISTANCE)
+        if(CalcDistance(harborPt, pt) <= SEAATTACK_DISTANCE)
         {
-            // Wird ein Weg vom Militärgebäude zum Hafen gefunden bzw. Ziel = Hafen?
-            if(x == harbor_x && y == harbor_y)
+            // Wird ein Weg vom MilitÃ¤rgebÃ¤ude zum Hafen gefunden bzw. Ziel = Hafen?
+            if(pt == harborPt)
                 harbor_points->push_back(i);
-            else if(FindHumanPath(x, y, harbor_x, harbor_y, SEAATTACK_DISTANCE) != 0xff)
+            else if(FindHumanPath(pt, harborPt, SEAATTACK_DISTANCE) != 0xff)
                 harbor_points->push_back(i);
         }
     }
 }
 
-/// Gibt Anzahl oder geschätzte Stärke(rang summe + anzahl) der verfügbaren Soldaten die zu einem Schiffsangriff starten können von einer bestimmten sea id aus
+/// Gibt Anzahl oder geschÃ¤tzte StÃ¤rke(rang summe + anzahl) der verfÃ¼gbaren Soldaten die zu einem Schiffsangriff starten kÃ¶nnen von einer bestimmten sea id aus
 unsigned int GameWorldBase::GetAvailableSoldiersForSeaAttackAtSea(const unsigned char player_attacker, unsigned short seaid, bool count)const
 {
-    // Liste alle Militärgebäude des Angreifers, die Soldaten liefern
+    // Liste alle MilitÃ¤rgebÃ¤ude des Angreifers, die Soldaten liefern
     std::vector<nobHarborBuilding::SeaAttackerBuilding> buildings;
     unsigned int attackercount = 0;
-    // Angrenzende Häfen des Angreifers an den entsprechenden Meeren herausfinden
+    // Angrenzende HÃ¤fen des Angreifers an den entsprechenden Meeren herausfinden
     for(std::list<nobHarborBuilding*>::const_iterator it = players->getElement(player_attacker)->GetHarbors()
             .begin(); it != players->getElement(player_attacker)->GetHarbors().end(); ++it)
     {
-        // Bestimmen, ob Hafen an einem der Meere liegt, über die sich auch die gegnerischen
+        // Bestimmen, ob Hafen an einem der Meere liegt, Ã¼ber die sich auch die gegnerischen
         // Hafenpunkte erreichen lassen
         bool is_at_sea = false;
         unsigned short sea_ids[6];
@@ -1827,18 +1764,18 @@ unsigned int GameWorldBase::GetAvailableSoldiersForSeaAttackAtSea(const unsigned
         (*it)->GetAttackerBuildingsForSeaIdAttack(&buildings);
     }
 
-    // Die Soldaten aus allen Militärgebäuden sammeln
+    // Die Soldaten aus allen MilitÃ¤rgebÃ¤uden sammeln
     for(unsigned i = 0; i < buildings.size(); ++i)
     {
         // Soldaten holen
         std::vector<nofPassiveSoldier*> tmp_soldiers;
-        buildings[i].building->GetSoldiersForAttack(buildings[i].harbor->GetX(), buildings[i].harbor->GetY(), player_attacker, &tmp_soldiers);
+        buildings[i].building->GetSoldiersForAttack(buildings[i].harbor->GetPos(), player_attacker, tmp_soldiers);
 
-        // Überhaupt welche gefunden?
-        if(!tmp_soldiers.size())
+        // Ãœberhaupt welche gefunden?
+        if(tmp_soldiers.empty())
             continue;
 
-        // Soldaten hinzufügen
+        // Soldaten hinzufÃ¼gen
         for(unsigned j = 0; j < tmp_soldiers.size(); ++j)
         {
             if(count)
@@ -1850,40 +1787,40 @@ unsigned int GameWorldBase::GetAvailableSoldiersForSeaAttackAtSea(const unsigned
     return attackercount;
 }
 
-/// Sucht verfügbare Soldaten, um dieses Militärgebäude mit einem Seeangriff anzugreifen
-void GameWorldBase::GetAvailableSoldiersForSeaAttack(const unsigned char player_attacker, const MapCoord x, const MapCoord y,
+/// Sucht verfÃ¼gbare Soldaten, um dieses MilitÃ¤rgebÃ¤ude mit einem Seeangriff anzugreifen
+void GameWorldBase::GetAvailableSoldiersForSeaAttack(const unsigned char player_attacker, const MapPoint pt, 
         std::list<GameWorldBase::PotentialSeaAttacker> * attackers) const
 {
     //sea attack abgeschaltet per addon?
-    if(GameClient::inst().GetGGS().getSelection(ADDON_SEA_ATTACK) == 2)
+    if(GAMECLIENT.GetGGS().getSelection(ADDON_SEA_ATTACK) == 2)
         return;
-    // Ist das Ziel auch ein richtiges Militärgebäude?
-    if(GetNO(x, y)->GetGOT() != GOT_NOB_HARBORBUILDING && GetNO(x, y)->GetGOT() !=  GOT_NOB_HQ
-            && GetNO(x, y)->GetGOT() !=  GOT_NOB_MILITARY)
+    // Ist das Ziel auch ein richtiges MilitÃ¤rgebÃ¤ude?
+    if(GetNO(pt)->GetGOT() != GOT_NOB_HARBORBUILDING && GetNO(pt)->GetGOT() !=  GOT_NOB_HQ
+            && GetNO(pt)->GetGOT() !=  GOT_NOB_MILITARY)
         return;
-    // Auch noch ein Gebäude von einem Feind (nicht inzwischen eingenommen)?
-    if(!GetPlayer(player_attacker)->IsPlayerAttackable(GetSpecObj<noBuilding>(x, y)->GetPlayer()))
+    // Auch noch ein GebÃ¤ude von einem Feind (nicht inzwischen eingenommen)?
+    if(!GetPlayer(player_attacker)->IsPlayerAttackable(GetSpecObj<noBuilding>(pt)->GetPlayer()))
         return;
-    // Prüfen, ob der angreifende Spieler das Gebäude überhaupt sieht (Cheatvorsorge)
-    if(CalcWithAllyVisiblity(x, y, player_attacker) != VIS_VISIBLE)
+    // PrÃ¼fen, ob der angreifende Spieler das GebÃ¤ude Ã¼berhaupt sieht (Cheatvorsorge)
+    if(CalcWithAllyVisiblity(pt, player_attacker) != VIS_VISIBLE)
         return;
     //bool use_seas[512];
-    //memset(use_seas,0,512);
+    //memset(use_seas, 0, 512);
     std::vector<bool>use_seas;
     use_seas.resize(seas.size());
 
-    // Mögliche Hafenpunkte in der Nähe des Gebäudes
+    // MÃ¶gliche Hafenpunkte in der NÃ¤he des GebÃ¤udes
     std::vector< unsigned > defender_harbors;
-    GetValidSeaIDsAroundMilitaryBuildingForAttack(x, y, &use_seas, player_attacker, &defender_harbors);
+    GetValidSeaIDsAroundMilitaryBuildingForAttack(pt, &use_seas, player_attacker, &defender_harbors);
 
-    // Liste alle Militärgebäude des Angreifers, die Soldaten liefern
+    // Liste alle MilitÃ¤rgebÃ¤ude des Angreifers, die Soldaten liefern
     std::vector<nobHarborBuilding::SeaAttackerBuilding> buildings;
 
-    // Angrenzende Häfen des Angreifers an den entsprechenden Meeren herausfinden
+    // Angrenzende HÃ¤fen des Angreifers an den entsprechenden Meeren herausfinden
     for(std::list<nobHarborBuilding*>::const_iterator it = players->getElement(player_attacker)->GetHarbors()
             .begin(); it != players->getElement(player_attacker)->GetHarbors().end(); ++it)
     {
-        // Bestimmen, ob Hafen an einem der Meere liegt, über die sich auch die gegnerischen
+        // Bestimmen, ob Hafen an einem der Meere liegt, Ã¼ber die sich auch die gegnerischen
         // Hafenpunkte erreichen lassen
         bool is_at_sea = false;
         unsigned short sea_ids[6];
@@ -1903,19 +1840,18 @@ void GameWorldBase::GetAvailableSoldiersForSeaAttack(const unsigned char player_
         (*it)->GetAttackerBuildingsForSeaAttack(&buildings, defender_harbors);
     }
 
-    // Die Soldaten aus allen Militärgebäuden sammeln
+    // Die Soldaten aus allen MilitÃ¤rgebÃ¤uden sammeln
     for(unsigned i = 0; i < buildings.size(); ++i)
     {
         // Soldaten holen
         std::vector<nofPassiveSoldier*> tmp_soldiers;
-        buildings[i].building->GetSoldiersForAttack(buildings[i].harbor->GetX(), buildings[i].harbor->GetY(),
-                player_attacker, &tmp_soldiers);
+        buildings[i].building->GetSoldiersForAttack(buildings[i].harbor->GetPos(), player_attacker, tmp_soldiers);
 
-        // Überhaupt welche gefunden?
-        if(!tmp_soldiers.size())
+        // Ãœberhaupt welche gefunden?
+        if(tmp_soldiers.empty())
             continue;
 
-        // Soldaten hinzufügen
+        // Soldaten hinzufÃ¼gen
         for(unsigned j = 0; j < tmp_soldiers.size(); ++j)
         {
             PotentialSeaAttacker pa = { tmp_soldiers[j], buildings[i].harbor, buildings[i].distance };
@@ -1929,7 +1865,7 @@ void GameWorldBase::GetAvailableSoldiersForSeaAttack(const unsigned char player_
 
 int GameWorldBase::LUA_EnableBuilding(lua_State* L)
 {
-//  GameWorldBase *gw = static_cast<GameWorldBase*>(lua_touserdata(L,lua_upvalueindex(1)));
+//  GameWorldBase *gw = static_cast<GameWorldBase*>(lua_touserdata(L, lua_upvalueindex(1)));
     int argc = lua_gettop(L);
 
     if (argc < 1)
@@ -1983,7 +1919,7 @@ int GameWorldBase::LUA_EnableBuilding(lua_State* L)
 
 int GameWorldBase::LUA_DisableBuilding(lua_State* L)
 {
-//  GameWorldBase *gw = static_cast<GameWorldBase*>(lua_touserdata(L,lua_upvalueindex(1)));
+//  GameWorldBase *gw = static_cast<GameWorldBase*>(lua_touserdata(L, lua_upvalueindex(1)));
     int argc = lua_gettop(L);
 
     if (argc < 1)
@@ -2037,7 +1973,7 @@ int GameWorldBase::LUA_DisableBuilding(lua_State* L)
 
 int GameWorldBase::LUA_SetRestrictedArea(lua_State* L)
 {
-//  GameWorldBase *gw = static_cast<GameWorldBase*>(lua_touserdata(L,lua_upvalueindex(1)));
+//  GameWorldBase *gw = static_cast<GameWorldBase*>(lua_touserdata(L, lua_upvalueindex(1)));
     int argc = lua_gettop(L) - 1;
 
     if ((argc < 0) || (argc % 2 == 1))
@@ -2059,7 +1995,7 @@ int GameWorldBase::LUA_SetRestrictedArea(lua_State* L)
 
     GameClientPlayer* player = GAMECLIENT.GetPlayer(pnr);
 
-    std::vector< Point<MapCoord> > &restricted_area = player->GetRestrictedArea();
+    std::vector< MapPoint > &restricted_area = player->GetRestrictedArea();
 
     restricted_area.clear();
 
@@ -2070,7 +2006,7 @@ int GameWorldBase::LUA_SetRestrictedArea(lua_State* L)
         MapCoord y = (MapCoord) luaL_checknumber(L, cnt++);
 //        fprintf(stderr, "RESTRICTED AREA - %u, %u\n", x, y);
 
-        restricted_area.push_back(Point<MapCoord>(x, y));
+        restricted_area.push_back(MapPoint(x, y));
     }
 
     return(0);
@@ -2113,7 +2049,7 @@ int GameWorldBase::LUA_ClearResources(lua_State *L)
 
 int GameWorldBase::LUA_AddWares(lua_State* L)
 {
-//  GameWorldBase *gw = static_cast<GameWorldBase*>(lua_touserdata(L,lua_upvalueindex(1)));
+//  GameWorldBase *gw = static_cast<GameWorldBase*>(lua_touserdata(L, lua_upvalueindex(1)));
     int argc = lua_gettop(L) - 1;
 
     if ((argc < 0) || (argc % 2 == 1))
@@ -2137,7 +2073,7 @@ int GameWorldBase::LUA_AddWares(lua_State* L)
 
     nobBaseWarehouse* warehouse = player->GetFirstWH();
 
-    if (warehouse == NULL)
+    if (!warehouse)
     {
         lua_pushnumber(L, 0);
         return(1);
@@ -2166,7 +2102,7 @@ int GameWorldBase::LUA_AddWares(lua_State* L)
 
 int GameWorldBase::LUA_AddPeople(lua_State* L)
 {
-//  GameWorldBase *gw = static_cast<GameWorldBase*>(lua_touserdata(L,lua_upvalueindex(1)));
+//  GameWorldBase *gw = static_cast<GameWorldBase*>(lua_touserdata(L, lua_upvalueindex(1)));
     int argc = lua_gettop(L) - 1;
 
     if ((argc < 0) || (argc % 2 == 1))
@@ -2190,7 +2126,7 @@ int GameWorldBase::LUA_AddPeople(lua_State* L)
 
     nobBaseWarehouse* warehouse = player->GetFirstWH();
 
-    if (warehouse == NULL)
+    if (!warehouse)
     {
         lua_pushnumber(L, 0);
         return(1);
@@ -2405,7 +2341,7 @@ int GameWorldBase::LUA_MissionStatement(lua_State *L)
         message.append(luaL_checklstring(L, n, NULL));
     }
     
-    WindowManager::inst().Show(new iwMissionStatement(luaL_checklstring(L, 2, NULL), message));
+    WINDOWMANAGER.Show(new iwMissionStatement(luaL_checklstring(L, 2, NULL), message));
     
     return(0);
 }
@@ -2464,7 +2400,7 @@ int GameWorldBase::LUA_PostMessageWithLocation(lua_State *L)
         message.append(luaL_checklstring(L, n, NULL));
     }
     
-    GAMECLIENT.SendPostMessage(new PostMsgWithLocation(message, PMC_OTHER, x, y));
+    GAMECLIENT.SendPostMessage(new PostMsgWithLocation(message, PMC_OTHER, MapPoint(x, y)));
     
     return(0);
 }
@@ -2493,7 +2429,7 @@ int GameWorldBase::LUA_PostNewBuildings(lua_State *L)
         
         if (building_type < BUILDING_TYPES_COUNT)
         {
-            GAMECLIENT.SendPostMessage(new ImagePostMsgWithLocation(_(BUILDING_NAMES[building_type]), PMC_GENERAL, GAMECLIENT.GetPlayer(pnr)->hqx, GAMECLIENT.GetPlayer(pnr)->hqy, (BuildingType) building_type, (Nation) GAMECLIENT.GetPlayer(pnr)->nation));
+            GAMECLIENT.SendPostMessage(new ImagePostMsgWithLocation(_(BUILDING_NAMES[building_type]), PMC_GENERAL, GAMECLIENT.GetPlayer(pnr)->hqPos, (BuildingType) building_type, (Nation) GAMECLIENT.GetPlayer(pnr)->nation));
         }
     }
     
@@ -2502,9 +2438,9 @@ int GameWorldBase::LUA_PostNewBuildings(lua_State *L)
 
 int GameWorldBase::LUA_AddStaticObject(lua_State *L)
 {
-    GameWorldGame *gwg = dynamic_cast<GameWorldGame*>((GameWorldBase*) lua_touserdata(L,lua_upvalueindex(1)));
+    GameWorldGame *gwg = dynamic_cast<GameWorldGame*>((GameWorldBase*) lua_touserdata(L, lua_upvalueindex(1)));
     
-    if (gwg == NULL)
+    if (!gwg)
     {
         return(0);
     }
@@ -2518,9 +2454,10 @@ int GameWorldBase::LUA_AddStaticObject(lua_State *L)
         return(0);
     }
     
-    unsigned x = (unsigned) luaL_checknumber(L, 1);
-    unsigned y = (unsigned) luaL_checknumber(L, 2);
+    MapCoord x = (MapCoord) luaL_checknumber(L, 1);
+    MapCoord y = (MapCoord) luaL_checknumber(L, 2);
     unsigned id = (unsigned) luaL_checknumber(L, 3);
+    MapPoint pt(x, y);
     
     unsigned file = 0xFFFF;
     unsigned size = 0;
@@ -2542,14 +2479,14 @@ int GameWorldBase::LUA_AddStaticObject(lua_State *L)
         }
     }
     
-    if (gwg->GetNode(x, y).obj && (gwg->GetNode(x, y).obj->GetGOT() != GOT_NOTHING) && (gwg->GetNode(x, y).obj->GetGOT() != GOT_STATICOBJECT) && (gwg->GetNode(x, y).obj->GetGOT() != GOT_ENVOBJECT))
+    if (gwg->GetNode(pt).obj && (gwg->GetNode(pt).obj->GetGOT() != GOT_NOTHING) && (gwg->GetNode(pt).obj->GetGOT() != GOT_STATICOBJECT) && (gwg->GetNode(pt).obj->GetGOT() != GOT_ENVOBJECT))
     {
         lua_pushnumber(L, 0);
         return(1);
     }
     
-    gwg->GetNode(x, y).obj = new noStaticObject(x, y, id, file, size);
-    gwg->RecalcBQAroundPoint(x, y);
+    gwg->GetNode(pt).obj = new noStaticObject(pt, id, file, size);
+    gwg->RecalcBQAroundPoint(pt);
        
     lua_pushnumber(L, 1);
     return(1);
@@ -2557,9 +2494,9 @@ int GameWorldBase::LUA_AddStaticObject(lua_State *L)
 
 int GameWorldBase::LUA_AddEnvObject(lua_State *L)
 {
-    GameWorldGame *gwg = dynamic_cast<GameWorldGame*>((GameWorldBase*) lua_touserdata(L,lua_upvalueindex(1)));
+    GameWorldGame *gwg = dynamic_cast<GameWorldGame*>((GameWorldBase*) lua_touserdata(L, lua_upvalueindex(1)));
     
-    if (gwg == NULL)
+    if (!gwg)
     {
         return(0);
     }
@@ -2573,9 +2510,10 @@ int GameWorldBase::LUA_AddEnvObject(lua_State *L)
         return(0);
     }
     
-    unsigned x = (unsigned) luaL_checknumber(L, 1);
-    unsigned y = (unsigned) luaL_checknumber(L, 2);
+    MapCoord x = (MapCoord) luaL_checknumber(L, 1);
+    MapCoord y = (MapCoord) luaL_checknumber(L, 2);
     unsigned id = (unsigned) luaL_checknumber(L, 3);
+    MapPoint pt(x, y);
     
     unsigned file = 0xFFFF;
     
@@ -2584,14 +2522,14 @@ int GameWorldBase::LUA_AddEnvObject(lua_State *L)
         file = (unsigned) luaL_checknumber(L, 4);
     }
     
-    if (gwg->GetNode(x, y).obj && (gwg->GetNode(x, y).obj->GetGOT() != GOT_NOTHING) && (gwg->GetNode(x, y).obj->GetGOT() != GOT_STATICOBJECT) && (gwg->GetNode(x, y).obj->GetGOT() != GOT_ENVOBJECT))
+    if (gwg->GetNode(pt).obj && (gwg->GetNode(pt).obj->GetGOT() != GOT_NOTHING) && (gwg->GetNode(pt).obj->GetGOT() != GOT_STATICOBJECT) && (gwg->GetNode(pt).obj->GetGOT() != GOT_ENVOBJECT))
     {
         lua_pushnumber(L, 0);
         return(1);
     }
     
-    gwg->GetNode(x, y).obj = new noEnvObject(x, y, id, file);
-    gwg->RecalcBQAroundPoint(x, y);   
+    gwg->GetNode(pt).obj = new noEnvObject(pt, id, file);
+    gwg->RecalcBQAroundPoint(pt);   
     
     lua_pushnumber(L, 1);
     return(1);
@@ -2599,16 +2537,16 @@ int GameWorldBase::LUA_AddEnvObject(lua_State *L)
 
 int GameWorldBase::LUA_AIConstructionOrder(lua_State *L)
 {
-    GameWorldGame *gwg = dynamic_cast<GameWorldGame*>((GameWorldBase*) lua_touserdata(L,lua_upvalueindex(1)));
+    GameWorldGame *gwg = dynamic_cast<GameWorldGame*>((GameWorldBase*) lua_touserdata(L, lua_upvalueindex(1)));
     
-    if (gwg == NULL)
+    if (!gwg)
     {
         return(0);
     }
     
     int argc = lua_gettop(L);
     
-    if (argc < 4)//player,x,y,buildingtype
+    if (argc < 4)//player, x, y, buildingtype
     {
         lua_pushstring(L, "Too few arguments!");
         lua_error(L);
@@ -2616,26 +2554,26 @@ int GameWorldBase::LUA_AIConstructionOrder(lua_State *L)
     }
     
     unsigned pn = (unsigned) luaL_checknumber(L, 1);
-    unsigned x = (unsigned) luaL_checknumber(L, 2);
-    unsigned y = (unsigned) luaL_checknumber(L, 3);
+    MapCoord x = (MapCoord) luaL_checknumber(L, 2);
+    MapCoord y = (MapCoord) luaL_checknumber(L, 3);
     unsigned id = (unsigned) luaL_checknumber(L, 4);
-	BuildingType bt=static_cast<BuildingType>(id);
+	BuildingType bt=static_cast<BuildingType>(id);    
     
-    GameClient::inst().SendAIEvent(new AIEvent::Building(AIEvent::LuaConstructionOrder, x, y,bt), pn);  
+    GAMECLIENT.SendAIEvent(new AIEvent::Building(AIEvent::LuaConstructionOrder, MapPoint(x, y), bt), pn);  
     
     lua_pushnumber(L, 1);
     return(1);
 }
 
-void GameWorldBase::LUA_EventExplored(unsigned player, MapCoord x, MapCoord y)
+void GameWorldBase::LUA_EventExplored(unsigned player, const MapPoint pt)
 {
     lua_getglobal(lua, "onExplored");
 
     if (lua_isfunction(lua, -1))
     {
         lua_pushnumber(lua, player);
-        lua_pushnumber(lua, x);
-        lua_pushnumber(lua, y);
+        lua_pushnumber(lua, pt.x);
+        lua_pushnumber(lua, pt.y);
 
         // 3 arguments, 0 return values, no error handler
         if (lua_pcall(lua, 3, 0, 0))
@@ -2650,15 +2588,15 @@ void GameWorldBase::LUA_EventExplored(unsigned player, MapCoord x, MapCoord y)
     }
 }
 
-void GameWorldBase::LUA_EventOccupied(unsigned player, MapCoord x, MapCoord y)
+void GameWorldBase::LUA_EventOccupied(unsigned player, const MapPoint pt)
 {
     lua_getglobal(lua, "onOccupied");
 
     if (lua_isfunction(lua, -1))
     {
         lua_pushnumber(lua, player);
-        lua_pushnumber(lua, x);
-        lua_pushnumber(lua, y);
+        lua_pushnumber(lua, pt.x);
+        lua_pushnumber(lua, pt.y);
 
         // 3 arguments, 0 return values, no error handler
         if (lua_pcall(lua, 3, 0, 0))
@@ -2713,15 +2651,15 @@ void GameWorldBase::LUA_EventGF(unsigned nr)
     }
 }
 
-void GameWorldBase::LUA_EventResourceFound(const unsigned char player, const unsigned short x, const unsigned short y, const unsigned char type, const unsigned char quantity)
+void GameWorldBase::LUA_EventResourceFound(const unsigned char player, const MapPoint pt, const unsigned char type, const unsigned char quantity)
 {
     lua_getglobal(lua, "onResourceFound");
 
     if (lua_isfunction(lua, -1))
     {
         lua_pushnumber(lua, player);
-        lua_pushnumber(lua, x);
-        lua_pushnumber(lua, y);
+        lua_pushnumber(lua, pt.x);
+        lua_pushnumber(lua, pt.y);
         lua_pushnumber(lua, type);
         lua_pushnumber(lua, quantity);
         

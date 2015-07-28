@@ -1,4 +1,4 @@
-// $Id: GameReplay.h 9517 2014-11-30 09:21:25Z marcus $
+ï»¿// $Id: GameReplay.h 9517 2014-11-30 09:21:25Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -24,11 +24,12 @@
 #include "BinaryFile.h"
 #include "GameSavedFile.h"
 #include "GameProtocol.h"
-#include "MapConsts.h"
+#include "gameTypes/MapTypes.h"
+#include "Point.h"
 
 class Savegame;
 
-/// Klasse für geladene bzw. zu speichernde Replays
+/// Klasse fÃ¼r geladene bzw. zu speichernde Replays
 class Replay : public SavedFile
 {
     public:
@@ -45,23 +46,23 @@ class Replay : public SavedFile
         Replay();
         ~Replay();
 
-        /// Räumt auf, schließt datei
+        /// RÃ¤umt auf, schlieÃŸt datei
         void StopRecording();
 
-        /// Replaydatei gültig?
+        /// Replaydatei gÃ¼ltig?
         bool IsValid() const { return file.IsValid(); }
 
         /// Beginnt die Save-Datei und schreibt den Header
         bool WriteHeader(const std::string& filename);
-        /// Lädt den Header
+        /// LÃ¤dt den Header
         bool LoadHeader(const std::string& filename, const bool load_extended_header);
 
-        /// Fügt ein Chat-Kommando hinzu (schreibt)
+        /// FÃ¼gt ein Chat-Kommando hinzu (schreibt)
         void AddChatCommand(const unsigned gf, const unsigned char player, const unsigned char dest, const std::string& str);
-        /// Fügt ein Spiel-Kommando hinzu (schreibt)
+        /// FÃ¼gt ein Spiel-Kommando hinzu (schreibt)
         void AddGameCommand(const unsigned gf, const unsigned short length, const unsigned char* const data);
-        /// Fügt Pathfinding-Result hinzu
-        void AddPathfindingResult(const unsigned char data, const unsigned* const length, const Point<MapCoord> * const next_harbor);
+        /// FÃ¼gt Pathfinding-Result hinzu
+        void AddPathfindingResult(const unsigned char data, const unsigned* const length, const MapPoint * const next_harbor);
 
         /// Liest RC-Type aus, liefert false, wenn das Replay zu Ende ist
         bool ReadGF(unsigned* gf);
@@ -70,7 +71,7 @@ class Replay : public SavedFile
         /// Liest ein Chat-Command aus
         void ReadChatCommand(unsigned char* player, unsigned char*   dest, std::string& str);
         void ReadGameCommand(unsigned short* length, unsigned char** data);
-        bool ReadPathfindingResult(unsigned char* data, unsigned* length, Point<MapCoord> * next_harbor);
+        bool ReadPathfindingResult(unsigned char* data, unsigned* length, MapPoint * next_harbor);
 
         /// Aktualisiert den End-GF, schreibt ihn in die Replaydatei (nur beim Spielen bzw. Schreiben verwenden!)
         void UpdateLastGF(const unsigned last_gf);
@@ -79,7 +80,7 @@ class Replay : public SavedFile
         BinaryFile* GetFile() { return &file; }
 
     public:
-        /// NWF-Länge
+        /// NWF-LÃ¤nge
         unsigned short nwf_length;
         /// Zufallsgeneratorinitialisierung
         unsigned random_init;
@@ -88,17 +89,17 @@ class Replay : public SavedFile
 
         /// Gespeichertes Spiel, Zufallskarte, normale Karte...?
         MapType map_type;
-        /// Gepackte Map - Daten (für alte Karte)
+        /// Gepackte Map - Daten (fÃ¼r alte Karte)
         unsigned map_length, map_zip_length;
         unsigned char* map_data;
-        /// Savegame (für gespeichertes Spiel)
+        /// Savegame (fÃ¼r gespeichertes Spiel)
         Savegame* savegame;
 
         /// End-GF
         unsigned last_gf;
         /// Position des End-GF in der Datei
         unsigned last_gf_file_pos;
-        /// Position des GFs fürs nächste Command -> muss gleich hinter
+        /// Position des GFs fÃ¼rs nÃ¤chste Command -> muss gleich hinter
         /// bestehendes beschrieben werden
         unsigned gf_file_pos;
 
