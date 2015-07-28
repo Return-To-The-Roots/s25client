@@ -73,7 +73,7 @@ class Random : public Singleton<Random>
             }
         }
 
-        /// Gibt aktuelle Zufallszahl zurï¿½ck
+        /// Gibt aktuelle Zufallszahl zurück
         int GetCurrentRandomValue() const { return zahl; }
         void ReplaySet(const unsigned int checksum) { zahl = checksum; }
 

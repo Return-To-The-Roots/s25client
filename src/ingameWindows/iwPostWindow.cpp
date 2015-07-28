@@ -178,7 +178,7 @@ void iwPostWindow::Msg_PaintBefore()
     if (currentSize != lastSize)
     {
         // Neue Nachrichten dazugekommen, wÃ¤hrend das Fenster offen ist:
-        // Ansicht der vorherigen Nachricht beibehalten, auÃŸer es gab vorher gar keine Nachricht
+        // Ansicht der vorherigen Nachricht beibehalten, außer es gab vorher gar keine Nachricht
 
         if (lastSize < currentSize && lastSize != 0
                 // Wenn die erste Nachricht ausgewÃ¤hlt wurde, nehmen bleiben wir bei der ersten (=aktuellsten)
@@ -284,7 +284,7 @@ void iwPostWindow::DisplayPostMessage()
         return;
     }
 
-    // Falls currentMessage auÃŸerhalb der aktuellen Nachrichtenmenge liegt: korrigieren
+    // Falls currentMessage außerhalb der aktuellen Nachrichtenmenge liegt: korrigieren
     if (currentMessage >= size)
         currentMessage = size - 1;
 

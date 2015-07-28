@@ -77,29 +77,29 @@ bool ctrlIngameMinimap::Draw_()
     short xpos = middle_corrected.x * width_show / minimap->GetMapWidth() + 2;
     short ypos = middle_corrected.y * height_show / minimap->GetMapHeight() + 2;
 
-    // Scroll-Auswahl-Bild an den Rï¿½ndern verkleinern, damit es nicht ï¿½ber die Karte "ï¿½berlappt"
+    // Scroll-Auswahl-Bild an den Rändern verkleinern, damit es nicht über die Karte "überlappt"
     short src_x = 0, src_y = 0;
     short draw_width = image->getWidth();
     short draw_height = image->getHeight();
 
-    // ï¿½berlappung am linken Rand?
+    // überlappung am linken Rand?
     if(xpos - image->getNx() < 0)
     {
         src_x = -(xpos - image->getNx());
         draw_width += (xpos - image->getNx());
         xpos = image->getNx();
     }
-    // ï¿½berlappung am oberen Rand?
+    // überlappung am oberen Rand?
     if(ypos - image->getNy() < 0)
     {
         src_y = -(ypos - image->getNy());
         draw_height += (ypos - image->getNy());
         ypos = image->getNy();
     }
-    // ï¿½berlappung am rechten Rand?
+    // überlappung am rechten Rand?
     if(xpos - image->getNx() + image->getWidth() >= width_show)
         draw_width -= (xpos - image->getNx() + image->getWidth() - width_show);
-    // ï¿½berlappung am unteren Rand?
+    // überlappung am unteren Rand?
     if(ypos - image->getNy() + image->getHeight() >= height_show)
         draw_height -= (ypos - image->getNy() + image->getHeight() - height_show);
 
@@ -148,7 +148,7 @@ bool ctrlIngameMinimap::Msg_MouseMove(const MouseCoords& mc)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Setzt Breite und Hï¿½he des Controls
+ *  Setzt Breite und Höhe des Controls
  *
  *  @author OLiver
  */

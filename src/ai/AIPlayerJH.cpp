@@ -1334,7 +1334,7 @@ unsigned AIPlayerJH::GetDensity(MapPoint pt, AIJH::Resource res, int radius)
     unsigned short height = aii->GetMapHeight();
 
 
-    // TODO: check warum das so ist, und ob das sinn macht! ist so weil der punkt dann auÃŸerhalb der karte liegen wÃ¼rde ... kÃ¶nnte trotzdem crashen wenn wir kein hq mehr haben ... mehr checks!
+    // TODO: check warum das so ist, und ob das sinn macht! ist so weil der punkt dann außerhalb der karte liegen wÃ¼rde ... kÃ¶nnte trotzdem crashen wenn wir kein hq mehr haben ... mehr checks!
     if (pt.x >= width || pt.y >= height)
     {
         pt = aii->GetStorehouses().front()->GetPos();

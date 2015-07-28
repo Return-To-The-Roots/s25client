@@ -1157,7 +1157,7 @@ void Window::DrawControls(void)
  *  @param[in] mc     Mauskoordinaten.
  *
  *  @return @p true falls Mausposition innerhalb der gesperrten Region,
- *          @p false falls auÃŸerhalb
+ *          @p false falls außerhalb
  *
  *  @author OLiver
  */

@@ -44,7 +44,7 @@ class CustomBorderBuilder
                 ~BdrBitmap();
                 BdrBitmap* get(const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height) const;
                 inline unsigned char get(const unsigned int x, const unsigned int y) const;
-                void put(const unsigned int x, const unsigned int y, BdrBitmap* pic, bool picGetted = false); // mit true wird das Ã¼bergebene BdrBitmap wieder zerstÃ¶rt. Das ist genau dann sinnvoll, wenn es mit BdrBitmap::get() erstellt wurde, da der Zeiger ja auÃŸeralb von BdrBitmap::put() nicht mehr verfÃ¼gbar ist.
+                void put(const unsigned int x, const unsigned int y, BdrBitmap* pic, bool picGetted = false); // mit true wird das Ã¼bergebene BdrBitmap wieder zerstÃ¶rt. Das ist genau dann sinnvoll, wenn es mit BdrBitmap::get() erstellt wurde, da der Zeiger ja außeralb von BdrBitmap::put() nicht mehr verfÃ¼gbar ist.
                 inline void put(const unsigned int x, const unsigned int y, const unsigned char c);
                 unsigned int w;
                 unsigned int h;

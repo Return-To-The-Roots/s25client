@@ -67,9 +67,9 @@ VideoDriverWrapper::~VideoDriverWrapper()
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Wï¿½hlt und lï¿½dt einen Displaytreiber.
+ *  Wählt und lädt einen Displaytreiber.
  *
- *  @param[in] second @p true wenn 2te Chance aktiv, @p false wenn 2te Chance ausgefï¿½hrt werden soll.
+ *  @param[in] second @p true wenn 2te Chance aktiv, @p false wenn 2te Chance ausgeführt werden soll.
  *
  *  @return liefert @p true bei Erfolg, @p false bei Fehler
  *
@@ -78,7 +78,7 @@ VideoDriverWrapper::~VideoDriverWrapper()
 bool VideoDriverWrapper::LoadDriver(void)
 {
 #ifdef _WIN32
-    // unter Windows standardmï¿½ï¿½ig WinAPI prï¿½farieren
+    // unter Windows standardmäßig WinAPI prüfen
     if(SETTINGS.driver.video == "")
         SETTINGS.driver.video = "(WinAPI) OpenGL via the glorious WinAPI";
 #endif
@@ -106,7 +106,7 @@ bool VideoDriverWrapper::LoadDriver(void)
  *  Erstellt das Fenster.
  *
  *  @param[in] width  Breite des Fensters
- *  @param[in] height Hï¿½he des Fensters
+ *  @param[in] height Höhe des Fensters
  *
  *  @return Bei Erfolg @p true ansonsten @p false
  *
@@ -165,10 +165,10 @@ bool VideoDriverWrapper::CreateScreen(const unsigned short screen_width, const u
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Verï¿½ndert Auflï¿½sung, Fenster/Fullscreen
+ *  Verändert Auflösung, Fenster/Fullscreen
  *
  *  @param[in] screenWidth neue Breite des Fensters
- *  @param[in] screenHeight neue Hï¿½he des Fensters
+ *  @param[in] screenHeight neue Höhe des Fensters
  *  @param[in] fullscreen Vollbild oder nicht
  *
  *  @return Bei Erfolg @p true ansonsten @p false
@@ -194,7 +194,7 @@ bool VideoDriverWrapper::ResizeScreen(const unsigned short screenWidth, const un
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Zerstï¿½rt den DriverWrapper-Bildschirm.
+ *  Zerstört den DriverWrapper-Bildschirm.
  *
  *  @author FloSoft
  */
@@ -206,13 +206,13 @@ bool VideoDriverWrapper::DestroyScreen()
         return false;
     }
 
-    // Texturen aufrï¿½umen
+    // Texturen aufräumen
     LOG.lprintf("Saeubere Texturespeicher: ");
     unsigned int ladezeit = GetTickCount();
     CleanUp();
     LOG.lprintf("fertig (nach %dms)\n", GetTickCount() - ladezeit);
 
-    // Videotreiber zurï¿½cksetzen
+    // Videotreiber zurücksetzen
     videodriver->DestroyScreen();
 
     return true;
@@ -220,7 +220,7 @@ bool VideoDriverWrapper::DestroyScreen()
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  prï¿½ft, ob eine bestimmte Extension existiert.
+ *  prüft, ob eine bestimmte Extension existiert.
  *
  *  @param[in] extension Die zu suchende Extension
  *
@@ -265,7 +265,7 @@ bool VideoDriverWrapper::hasExtension(const char* extension)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Lï¿½scht alle herausgegebenen Texturen aus dem Speicher.
+ *  Löscht alle herausgegebenen Texturen aus dem Speicher.
  *
  *  @author FloSoft
  */
@@ -414,7 +414,7 @@ void VideoDriverWrapper::RenewViewport(bool onlyRenew)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  lï¿½dt die driverwrapper-extensions.
+ *  lädt die driverwrapper-extensions.
  *
  *  @author flosoft
  */
@@ -473,11 +473,11 @@ unsigned int VideoDriverWrapper::GetTickCount()
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  lï¿½dt eine bestimmte DriverWrapper Extension-Funktion.
+ *  lädt eine bestimmte DriverWrapper Extension-Funktion.
  *
  *  @param[in] extension Die Extension-Funktion
  *
- *  @return @p NULL bei Fehler, Adresse der gewï¿½nschten Funktion bei Erfolg.
+ *  @return @p NULL bei Fehler, Adresse der gewünschten Funktion bei Erfolg.
  *
  *  @author FloSoft
  */
@@ -565,7 +565,7 @@ void VideoDriverWrapper::SetMousePos(const int x, const int y)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Listet verfï¿½gbare Videomodi auf.
+ *  Listet verfügbare Videomodi auf.
  *
  *  @author OLiver
  */
@@ -574,7 +574,7 @@ void VideoDriverWrapper::ListVideoModes(std::vector<VideoDriver::VideoMode>& vid
     if(!videodriver)
         return;
 
-    // Standard-Modi hinzufï¿½gen
+    // Standard-Modi hinzufügen
     VideoDriver::VideoMode vm800  = {  800, 600 };
     VideoDriver::VideoMode vm1024 = { 1024, 768 };
 
@@ -586,7 +586,7 @@ void VideoDriverWrapper::ListVideoModes(std::vector<VideoDriver::VideoMode>& vid
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Gibt Pointer auf ein Fenster zurï¿½ck (device-dependent!), HWND unter Windows.
+ *  Gibt Pointer auf ein Fenster zurück (device-dependent!), HWND unter Windows.
  *
  *  @author OLiver
  */

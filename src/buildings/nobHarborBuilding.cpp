@@ -88,7 +88,7 @@ nobHarborBuilding::nobHarborBuilding(const MapPoint pos, const unsigned char pla
     gwg->GetMilitarySquare(pos).push_back(this);
     gwg->RecalcTerritory(this, GetMilitaryRadius(), false, true);
 
-    // Alle Waren 0, auÃŸer 100 TrÃ¤ger
+    // Alle Waren 0, außer 100 TrÃ¤ger
     goods.clear();
     real_goods.clear();
 

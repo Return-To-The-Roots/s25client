@@ -1410,7 +1410,7 @@ bool GameWorldBase::IsHarborPointFree(const unsigned harbor_id, const unsigned c
     if(!at_sea)
         return false;
 
-    // ÃœberprÃ¼fen, ob das Gebiet in einem bestimmten Radius entweder vom Spieler oder gar nicht besetzt ist auÃŸer wenn der Hafen und die Flagge im Spielergebiet liegen
+    // ÃœberprÃ¼fen, ob das Gebiet in einem bestimmten Radius entweder vom Spieler oder gar nicht besetzt ist außer wenn der Hafen und die Flagge im Spielergebiet liegen
     MapPoint t3 = GetNeighbour(coords, 4);
     if(GetNode(coords).owner != player + 1 || GetNode(t3).owner != player + 1)
     {

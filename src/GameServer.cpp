@@ -866,7 +866,7 @@ void GameServer::KickPlayer(NS_PlayerKicked npk)
     // send-queue flushen
     player->send_queue.flush(&player->so);
 
-    // tÃ¶ten, falls auÃŸerhalb
+    // tÃ¶ten, falls außerhalb
     if(status == SS_GAME)
     {
         // KI-Spieler muss Ã¼bernehmen

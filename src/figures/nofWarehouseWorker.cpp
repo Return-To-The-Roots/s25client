@@ -108,7 +108,7 @@ void nofWarehouseWorker::GoalReached()
     if(!task)
     {
         // Ware an der Fahne ablegen ( wenn noch genug Platz ist, 8 max pro Flagge!)
-        // auÃŸerdem ggf. Waren wieder mit reinnehmen, deren ZÃ­el zerstÃ¶rt wurde
+        // außerdem ggf. Waren wieder mit reinnehmen, deren ZÃ­el zerstÃ¶rt wurde
         // ( dann ist goal = location )
         if(gwg->GetSpecObj<noFlag>(pos)->GetWareCount() < 8 && carried_ware->goal != carried_ware->GetLocation())
         {

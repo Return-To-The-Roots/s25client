@@ -670,7 +670,7 @@ void nofAttacker::ReachedDestination()
     }
     else
     {
-        // dann hinstellen und warten, bis wir an die Reihe kommmen mit KÃ¤mpfen und auÃŸerdem diesen Platz
+        // dann hinstellen und warten, bis wir an die Reihe kommmen mit KÃ¤mpfen und außerdem diesen Platz
         // reservieren, damit sich kein anderer noch hier hinstellt
         state = STATE_ATTACKING_WAITINGAROUNDBUILDING;
         // zur Flagge hin ausrichten
@@ -713,7 +713,7 @@ void nofAttacker::TryToOrderAggressiveDefender()
 
             for(std::set<nobBaseMilitary*>::iterator it = buildings.begin(); it != buildings.end(); ++it)
             {
-                // darf kein HQ sein, auÃŸer, das HQ wird selbst angegriffen, darf nicht weiter weg als 15 sein
+                // darf kein HQ sein, außer, das HQ wird selbst angegriffen, darf nicht weiter weg als 15 sein
                 // und es darf natÃ¼rlich auch der entsprechende Feind sein, aber es darf auch nicht derselbe Spieler
                 // wie man selbst sein, da das GebÃ¤ude ja z.B. schon erobert worden sein kann
                 if(((*it)->GetBuildingType() != BLD_HEADQUARTERS || (*it) == attacked_goal)
@@ -838,7 +838,7 @@ void nofAttacker::CapturingWalking()
                 attacked_goal->GetBuildingType() <= BLD_FORTRESS)
             static_cast<nobMilitary*>(attacked_goal)->CapturingSoldierArrived();
 
-        // auÃŸerdem aus der Angreiferliste entfernen
+        // außerdem aus der Angreiferliste entfernen
         attacked_goal->UnlinkAggressor(this);
         attacked_goal = 0;
 

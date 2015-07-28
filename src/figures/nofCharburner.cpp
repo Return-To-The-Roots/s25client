@@ -191,7 +191,7 @@ nofFarmhand::PointQuality nofCharburner::GetPointQuality(const MapPoint pt)
         BlockingManner bm = gwg->GetNO(gwg->GetNeighbour(pt, i))->GetBM();
         if(bm != BM_NOTBLOCKING)
             return PQ_NOTPOSSIBLE;
-        // darf auÃŸerdem nicht neben einer StraÃŸe liegen
+        // darf außerdem nicht neben einer StraÃŸe liegen
         for(unsigned char j = 0; j < 6; ++j)
         {
             if(gwg->GetPointRoad(gwg->GetNeighbour(pt, i), j))
