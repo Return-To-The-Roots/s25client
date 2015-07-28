@@ -195,7 +195,6 @@ TARGET_LINK_LIBRARIES(s25client
 	s25util
 	mygettext
 	${BZIP2_LIBRARIES}
-	#pthread
 	${OPENGL_gl_LIBRARY}
 	${LUA_LIB}
 )
@@ -213,7 +212,7 @@ IF ( "${COMPILEFOR}" STREQUAL "windows")
 ENDIF ( "${COMPILEFOR}" STREQUAL "windows")
 
 IF ( "${COMPILEFOR}" STREQUAL "linux")
-	TARGET_LINK_LIBRARIES(s25client dl )
+	TARGET_LINK_LIBRARIES(s25client dl pthread)
 ENDIF ( "${COMPILEFOR}" STREQUAL "linux")
 
 IF (MSVC)
