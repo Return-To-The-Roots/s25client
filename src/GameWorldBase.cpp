@@ -1023,8 +1023,8 @@ MapCoord GameWorldBase::GetYA(const MapCoord x, const MapCoord y, unsigned dir) 
 
 MapPoint GameWorldBase::GetNeighbour(const MapPoint pt, unsigned dir) const
 {
-    assert(dir < 6);
     MapPoint res;
+    
     switch (dir)
     {
     case 0:
@@ -1048,12 +1048,13 @@ MapPoint GameWorldBase::GetNeighbour(const MapPoint pt, unsigned dir) const
         res.y = (pt.y == height - 1) ? 0 : pt.y + 1;
         break;
     case 5:
-        res.x = (pt.y & 1) ? pt.x : ((pt.x == 0) ? width - 1 : pt.y - 1);
+        res.x = (pt.y & 1) ? pt.x : ((pt.x == 0) ? width - 1 : pt.x - 1);
         res.y = (pt.y == height - 1) ? 0 : pt.y + 1;
         break;
     default:
         throw std::logic_error("Invalid direction!");
     }
+    
     return res;
 }
 
