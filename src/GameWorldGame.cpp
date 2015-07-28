@@ -567,7 +567,7 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding* const building, const 
     // Daten von der TR kopieren in die richtige Karte, dabei zus. Grenzen korrigieren und Objekte zerstÃ¶ren, falls
     // das Land davon jemanden anders nun gehÃ¶rt
 	
-	new_owner_of_trigger_building=tr.GetOwner(building->GetPos().x, building->GetPos().x);
+	new_owner_of_trigger_building=tr.GetOwner(building->GetPos().x, building->GetPos().y);
 
     for(int y = y1; y < y2; ++y)
     {
