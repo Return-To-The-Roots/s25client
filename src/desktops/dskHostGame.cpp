@@ -1,4 +1,4 @@
-ï»¿// $Id: dskHostGame.cpp 9388 2014-05-02 07:37:20Z FloSoft $
+// $Id: dskHostGame.cpp 9388 2014-05-02 07:37:20Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -89,15 +89,15 @@ dskHostGame::dskHostGame(bool single_player) :
     if (!single_player)
     {
         // Chatfenster
-        AddChatCtrl(1, 20, 310, 360, 218, TC_GREY, NormalFont);
-        // Edit fÃ¼r Chatfenster
-        AddEdit(4, 20, 530, 360, 22, TC_GREY, NormalFont);
+        AddChatCtrl(1, 20, 320, 360, 218, TC_GREY, NormalFont);
+        // Edit für Chatfenster
+        AddEdit(4, 20, 540, 360, 22, TC_GREY, NormalFont);
     }
 
     // "Spiel starten"
     AddTextButton(2, 600, 560, 180, 22, TC_GREEN2, (GAMECLIENT.IsHost() ? _("Start game") : _("Ready")), NormalFont);
 
-    // "ZurÃ¼ck"
+    // "Zurück"
     AddTextButton(3, 400, 560, 180, 22, TC_RED1, _("Return"), NormalFont);
 
     // "Teams sperren"
@@ -115,7 +115,7 @@ dskHostGame::dskHostGame(bool single_player) :
 
     // umgedrehte Reihenfolge, damit die Listen nicht dahinter sind
 
-    // "AufklÃ¤rung"
+    // "Aufklärung"
     AddText(30, 400, 405, _("Exploration:"), COLOR_YELLOW, 0, NormalFont);
     combo = AddComboBox(40, 600, 400, 180, 20, TC_GREY, NormalFont, 100, !GAMECLIENT.IsHost() || GAMECLIENT.IsSavegame());
     combo->AddString(_("Off (all visible)"));
@@ -169,7 +169,7 @@ dskHostGame::dskHostGame(bool single_player) :
             glArchivItem_Map* map = static_cast<glArchivItem_Map*>(ai.get(0));
             ctrlPreviewMinimap* preview = AddPreviewMinimap(70, 560, 40, 220, 220, map);
 
-            // Titel der Karte, Y-Position relativ je nach HÃ¶he der Minimap festlegen, daher nochmals danach
+            // Titel der Karte, Y-Position relativ je nach Höhe der Minimap festlegen, daher nochmals danach
             // verschieben, da diese Position sonst skaliert wird!
             ctrlText* text = AddText(71, 670, 0, _("Map: ") +  GAMECLIENT.GetMapTitle(), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, NormalFont);
             text->Move(text->GetX(false), preview->GetY(false) + preview->GetBottom() + 10);
@@ -217,14 +217,14 @@ dskHostGame::dskHostGame(bool single_player) :
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  GrÃ¶ÃŸe Ã¤ndern-Reaktionen die nicht vom Skaling-Mechanismus erfasst werden.
+ *  Größe ändern-Reaktionen die nicht vom Skaling-Mechanismus erfasst werden.
  *
  *  @author Divan
  */
 void dskHostGame::Resize_(unsigned short width, unsigned short height)
 {
-    // Text unter der PreviewMinimap verschieben, dessen HÃ¶he von der HÃ¶he der
-    // PreviewMinimap abhÃ¤ngt, welche sich gerade geÃ¤ndert hat.
+    // Text unter der PreviewMinimap verschieben, dessen Höhe von der Höhe der
+    // PreviewMinimap abhängt, welche sich gerade geändert hat.
     ctrlPreviewMinimap* preview = GetCtrl<ctrlPreviewMinimap>(70);
     ctrlText* text = GetCtrl<ctrlText>(71);
     assert(preview);
@@ -246,7 +246,7 @@ void dskHostGame::UpdatePlayerRow(const unsigned row)
     unsigned cy = 80 + row * 30;
     TextureColor tc = (row & 1 ? TC_GREY : TC_GREEN2);
 
-    // Alle Controls erstmal zerstÃ¶ren (die ganze Gruppe)
+    // Alle Controls erstmal zerstören (die ganze Gruppe)
     DeleteCtrl(58 - row);
     // und neu erzeugen
     ctrlGroup* group = AddGroup(58 - row, scale);
@@ -335,7 +335,7 @@ void dskHostGame::UpdatePlayerRow(const unsigned row)
         {
             ctrlComboBox* combo = group->AddComboBox(8, 570, cy, 150, 22, tc, NormalFont, 150, !GAMECLIENT.IsHost());
 
-            // Mit den alten Namen fÃ¼llen
+            // Mit den alten Namen füllen
             for(unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
             {
                 if(GAMECLIENT.GetPlayer(i)->origin_name.length())
@@ -351,7 +351,7 @@ void dskHostGame::UpdatePlayerRow(const unsigned row)
         if(player->ps == PS_KI || player->is_host)
             ping->SetVisible(false);
 
-        // Felder ausfÃ¼llen
+        // Felder ausfüllen
         ChangeNation(row, player->nation);
         ChangeTeam(row, player->team);
         ChangePing(row);
@@ -438,7 +438,7 @@ void dskHostGame::Msg_Group_ButtonClick(const unsigned int group_id, const unsig
                 ChangeColor(GAMECLIENT.GetPlayerID(), player->color);
             }
 
-            // Start-Farbe der Minimap Ã¤ndern
+            // Start-Farbe der Minimap ändern
         } break;
 
         // Team
@@ -566,7 +566,7 @@ void dskHostGame::Msg_ButtonClick(const unsigned int ctrl_id)
                 CI_PlayersSwapped(p, ctrl_id - 81);
             }
         } break;
-        case 3: // ZurÃ¼ck
+        case 3: // Zurück
         {
             if(GAMECLIENT.IsHost())
                 GAMESERVER.Stop();
@@ -580,7 +580,7 @@ void dskHostGame::Msg_ButtonClick(const unsigned int ctrl_id)
             else if(LOBBYCLIENT.LoggedIn())
                 WINDOWMANAGER.Switch(new dskLobby);
             else
-                // HauptmenÃ¼ zeigen
+                // Hauptmenü zeigen
                 WINDOWMANAGER.Switch(new dskDirectIP);
 
         } break;
@@ -731,9 +731,9 @@ void dskHostGame::Msg_ComboSelectItem(const unsigned int ctrl_id, const unsigned
         case 43: // Geschwindigkeit
         case 42: // Ziel
         case 41: // Waren
-        case 40: // AufklÃ¤rung
+        case 40: // Aufklärung
         {
-            // GameSettings wurden verÃ¤ndert, resetten
+            // GameSettings wurden verändert, resetten
             UpdateGGS();
         } break;
     }
@@ -756,7 +756,7 @@ void dskHostGame::Msg_CheckboxChange(const unsigned int ctrl_id, const bool chec
         case 20: // Teams
         case 23: //random startlocation
         {
-            // GameSettings wurden verÃ¤ndert, resetten
+            // GameSettings wurden verändert, resetten
             UpdateGGS();
         } break;
     }
@@ -776,7 +776,7 @@ void dskHostGame::UpdateGGS()
     ggs.game_objective = static_cast<GlobalGameSettings::GameObjective>(GetCtrl<ctrlComboBox>(42)->GetSelection());
     // Waren zu Beginn
     ggs.start_wares = static_cast<GlobalGameSettings::StartWares>(GetCtrl<ctrlComboBox>(41)->GetSelection());
-    // AufklÃ¤rung
+    // Aufklärung
     ggs.exploration = static_cast<GlobalGameSettings::Exploration>(GetCtrl<ctrlComboBox>(40)->GetSelection());
     // Teams gesperrt
     ggs.lock_teams = GetCtrl<ctrlCheck>(20)->GetCheck();
@@ -785,7 +785,7 @@ void dskHostGame::UpdateGGS()
     //random locations
     ggs.random_location = GetCtrl<ctrlCheck>(23)->GetCheck();
 
-    // An Server Ã¼bermitteln
+    // An Server übermitteln
     GAMESERVER.ChangeGlobalGameSettings(ggs);
 }
 
@@ -866,7 +866,7 @@ void dskHostGame::ChangeColor(const unsigned i, const unsigned char color)
 {
     GetCtrl<ctrlGroup>(58 - i)->GetCtrl<ColorControlInterface>(4)->SetColor(COLORS[color]);
 
-    // Minimap-Startfarbe Ã¤ndern
+    // Minimap-Startfarbe ändern
     if(GetCtrl<ctrlPreviewMinimap>(70))
         GetCtrl<ctrlPreviewMinimap>(70)->SetPlayerColor(i, COLORS[color]);
 }
@@ -1031,7 +1031,7 @@ void dskHostGame::CI_GGSChanged(const GlobalGameSettings& ggs)
     GetCtrl<ctrlComboBox>(42)->SetSelection(static_cast<unsigned short>(ggs.game_objective));
     // Waren
     GetCtrl<ctrlComboBox>(41)->SetSelection(static_cast<unsigned short>(ggs.start_wares));
-    // AufklÃ¤rung
+    // Aufklärung
     GetCtrl<ctrlComboBox>(40)->SetSelection(static_cast<unsigned short>(ggs.exploration));
     // Teams
     GetCtrl<ctrlCheck>(20)->SetCheck(ggs.lock_teams);
@@ -1099,7 +1099,7 @@ void dskHostGame::LC_RankingInfo(const LobbyPlayerInfo& player)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  (Lobby-)Status: Benutzerdefinierter Fehler (kann auch Conn-Loss o.Ã¤ sein)
+ *  (Lobby-)Status: Benutzerdefinierter Fehler (kann auch Conn-Loss o.ä sein)
  *
  *  @author FloSoft
  */

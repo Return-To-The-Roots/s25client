@@ -1,4 +1,4 @@
-﻿// $Id: GamePlayerInfo.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: GamePlayerInfo.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -40,7 +40,7 @@ GamePlayerInfo::GamePlayerInfo(const unsigned playerid) :
     playerid(playerid),
     defeated(false),
     ps(PS_FREE),
-    aiType(AI_DUMMY),
+    aiInfo(),
     is_host(false),
     nation(NAT_ROMANS),
     team(TM_NOTEAM),
@@ -57,7 +57,7 @@ GamePlayerInfo::GamePlayerInfo(const unsigned playerid) :
 GamePlayerInfo::GamePlayerInfo(const unsigned playerid, Serializer* ser) :
     playerid(playerid),
     ps(PlayerState(ser->PopUnsignedChar())),
-    aiType(AI_DUMMY),
+    aiInfo(),
     name(ser->PopString()),
     origin_name(ser->PopString()),
     is_host(ser->PopBool()),
@@ -110,7 +110,7 @@ void GamePlayerInfo::SwapPlayer(GamePlayerInfo& two)
 {
     /// Besiegt?
     std::swap(ps, two.ps);
-    std::swap(aiType, two.aiType);
+    std::swap(aiInfo, two.aiInfo);
     std::swap(defeated, two.defeated);
     std::swap(name, two.name);
     std::swap(is_host, two.is_host);

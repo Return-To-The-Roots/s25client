@@ -1,4 +1,4 @@
-ï»¿// $Id: AIBase.h 9577 2015-01-23 08:28:23Z marcus $
+// $Id: AIBase.h 9577 2015-01-23 08:28:23Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -30,17 +30,9 @@ class GlobalGameSettings;
 class GameClientPlayerList;
 namespace gc { class GameCommand; }
 
-namespace AI
-{
-    enum Level
-    {
-        EASY = 0,
-        MEDIUM,
-        HARD
-    };
-}
 
-/// Basisklasse fÃ¼r sÃ¤mtliche KI-Spieler
+
+/// Basisklasse für sämtliche KI-Spieler
 class AIBase
 {
     protected:
@@ -50,11 +42,11 @@ class AIBase
         const GameWorldBase* const gwb;
         /// Verweis auf den eigenen GameClientPlayer, d.h. die Wirtschaft, um daraus entsprechend Informationen zu gewinnen
         const GameClientPlayer* const player;
-        /// Verweis auf etwaige andere Spieler, bspw. um deren BÃ¼ndnisse zu Ã¼berprÃ¼fen etc.
+        /// Verweis auf etwaige andere Spieler, bspw. um deren Bündnisse zu überprüfen etc.
         const GameClientPlayerList* const players;
-        /// Queue der GameCommands, die noch bearbeitet werden mÃ¼ssen
+        /// Queue der GameCommands, die noch bearbeitet werden müssen
         std::vector<gc::GameCommand*> gcs;
-        /// StÃ¤rke der KI
+        /// Stärke der KI
         const AI::Level level;
         /// Abstrahiertes Interfaces, leitet Befehle weiter an
         AIInterface* aii;
@@ -70,11 +62,11 @@ class AIBase
         /// Wird jeden GF aufgerufen und die KI kann hier entsprechende Handlungen vollziehen
         virtual void RunGF(const unsigned gf, bool gfisnwf) = 0;
 
-        /// Verweis auf die Globalen Spieleinstellungen, da diese auch die weiteren Entscheidungen beeinflussen kÃ¶nnen
+        /// Verweis auf die Globalen Spieleinstellungen, da diese auch die weiteren Entscheidungen beeinflussen können
         /// (beispielsweise Siegesbedingungen, FOW usw.)
         const GlobalGameSettings* const ggs;
 
-        /// Zugriff auf die GameCommands, um diese abarbeiten zu kÃ¶nnen
+        /// Zugriff auf die GameCommands, um diese abarbeiten zu können
         const std::vector<gc::GameCommand*>& GetGameCommands() const { return gcs; }
         /// Markiert die GameCommands als abgearbeitet
         void FetchGameCommands() { gcs.clear(); }

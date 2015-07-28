@@ -358,13 +358,13 @@ bool GameServer::Start()
                     if(!strncmp(save.players[i].name.c_str(), "Computer", 7))
                     {
                         LOG.lprintf("loading aijh: %s \n", save.players[i].name.c_str());
-                        players[i].aiType = AI_JH;
+                        players[i].aiInfo = AI::Info(AI::DEFAULT);
                         players[i].rating = 666;
                     }
                     else
                     {
                         LOG.lprintf("loading default - dummy: %s \n", save.players[i].name.c_str());
-                        players[i].aiType = AI_DUMMY;
+                        players[i].aiInfo = AI::Info(AI::DUMMY);
                     }
                     players[i].name = save.players[i].name;
                 }
@@ -667,20 +667,31 @@ void GameServer::TogglePlayerState(unsigned char client)
         case PS_FREE:
         {
             player->ps = PS_KI;
-            player->aiType = AI_JH;
+            player->aiInfo = AI::Info(AI::DEFAULT, AI::EASY);
             // Baby mit einem Namen Taufen ("Name (KI)")
             SetAIName(client);
         } break;
         case PS_KI:
-        {
-            // Verschiedene KIs durchgehen
-            switch(player->aiType)
             {
-                case AI_JH:
-                    player->aiType = AI_DUMMY;
+                // Verschiedene KIs durchgehen
+                switch(player->aiInfo.type)
+                {
+                case AI::DEFAULT:
+                    switch(player->aiInfo.level)
+                    {
+                    case AI::EASY:
+                        player->aiInfo.level = AI::MEDIUM;
+                        break;
+                    case AI::MEDIUM:
+                        player->aiInfo.level = AI::HARD;
+                        break;
+                    case AI::HARD:
+                        player->aiInfo = AI::Info(AI::DUMMY);
+                        break;
+                    }
                     SetAIName(client);
                     break;
-                case AI_DUMMY:
+                case AI::DUMMY:
                     if(mapinfo.map_type != MAPTYPE_SAVEGAME)
                         player->ps = PS_LOCKED;
                     else
@@ -692,9 +703,9 @@ void GameServer::TogglePlayerState(unsigned char client)
                     else
                         player->ps = PS_FREE;
                     break;
+                }
+                break;
             }
-            break;
-        }
 
 
         case PS_LOCKED:
@@ -1724,13 +1735,30 @@ void GameServer::SetAIName(const unsigned player_id)
 {
     // Baby mit einem Namen Taufen ("Name (KI)")
     char str[128];
-    if (players[player_id].aiType == AI_DUMMY)
+    if (players[player_id].aiInfo.type == AI::DUMMY)
         sprintf(str, _("Dummy %u"), unsigned(player_id));
     else
         sprintf(str, _("Computer %u"), unsigned(player_id));
 
     players[player_id].name = str;
     players[player_id].name += _(" (AI)");
+
+    if (players[player_id].aiInfo.type == AI::DEFAULT)
+    {
+        switch(players[player_id].aiInfo.level)
+        {
+        case AI::EASY:
+            players[player_id].name += _(" (easy)");
+            break;
+        case AI::MEDIUM:
+            players[player_id].name += _(" (medium)");
+            break;
+        case AI::HARD:
+            players[player_id].name += _(" (hard)");
+            break;
+        }
+    }
+
 }
 
 

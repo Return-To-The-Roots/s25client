@@ -1497,9 +1497,18 @@ bool GameWorldBase::PotentialSeaAttacker::operator<(const GameWorldBase::Potenti
 {
     // Erst nach Rang, an zweiter Stelle nach Entfernung sortieren (
     if(soldier->GetRank() == pa.soldier->GetRank())
-        return distance < pa.distance;
-    else
+    {
+    	if (distance == pa.distance)
+    	{
+    		return(soldier->GetObjId() < pa.soldier->GetObjId());
+    	} else
+    	{
+        	return distance < pa.distance;
+    	}
+    } else
+    {
         return soldier->GetRank() > pa.soldier->GetRank();
+    }
 }
 
 /// returns all sea_ids found in the given vector from which a given building can be attacked by sea

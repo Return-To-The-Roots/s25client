@@ -1,4 +1,4 @@
-﻿// $Id: nobHarborBuilding.cpp 9546 2014-12-14 12:06:35Z marcus $
+// $Id: nobHarborBuilding.cpp 9546 2014-12-14 12:06:35Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -7,7 +7,7 @@
 // Return To The Roots is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 2 of the License, or
-// (at your oposion) any later version.
+// (at your option) any later version.
 //
 // Return To The Roots is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -1266,10 +1266,11 @@ void nobHarborBuilding::GetAttackerBuildingsForSeaAttack(std::vector<SeaAttacker
         if((*it)->GetPlayer() != player || gwg->CalcDistance((*it)->GetPos(), pos) > BASE_ATTACKING_DISTANCE)
             continue;
 
-        // Weg vom Hafen zum MilitÃ¤rgebÃ¤ude berechnen
-        if(!gwg->FindFreePath((*it)->GetPos(), pos, false, MAX_ATTACKING_RUN_DISTANCE, NULL, NULL, NULL, NULL, NULL, NULL, false))
+        // Weg vom Hafen zum Militärgebäude berechnen
+        if (gwg->FindHumanPath((*it)->GetPos(), pos, MAX_ATTACKING_RUN_DISTANCE, false, NULL, false) == 0xFF)
             continue;
 
+        // Entfernung zwischen Hafen und möglichen Zielhafenpunkt ausrechnen
         // Entfernung zwischen Hafen und mÃ¶glichen Zielhafenpunkt ausrechnen
         unsigned min_distance = 0xffffffff;
         for(unsigned i = 0; i < defender_harbors.size(); ++i)
@@ -1277,7 +1278,7 @@ void nobHarborBuilding::GetAttackerBuildingsForSeaAttack(std::vector<SeaAttacker
             min_distance = std::min(min_distance, gwg->CalcHarborDistance(GetHarborPosID(), defender_harbors.at(i)));
         }
 
-        // GebÃ¤ude suchen, vielleicht schon vorhanden?
+        // Gebäude suchen, vielleicht schon vorhanden?
         std::vector<SeaAttackerBuilding>::iterator it2 = std::find(buildings->begin(), buildings->end(),
                 static_cast<nobMilitary*>(*it));
         // Noch nicht vorhanden?

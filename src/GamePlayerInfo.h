@@ -1,4 +1,4 @@
-﻿// $Id: GamePlayerInfo.h 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: GamePlayerInfo.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -35,11 +35,30 @@ enum PlayerState
     PS_KI
 };
 
-enum AIType
+namespace AI
 {
-    AI_DUMMY = 0,
-    AI_JH
-};
+    enum Level
+    {
+        EASY = 0,
+        MEDIUM,
+        HARD
+    };
+
+    enum Type
+    {
+        DUMMY = 0,
+        DEFAULT
+    };
+
+    struct Info
+    {
+        Type type;
+        Level level;
+        Info(Type t = DUMMY, Level l = EASY) : type(t), level(l) { }
+    };
+}
+
+
 
 class GamePlayerInfo
 {
@@ -76,8 +95,8 @@ class GamePlayerInfo
     public:
         /// Spielertyp (Mensch, KI oder geschlossen..?)
         PlayerState ps;
-        /// Wenn KI, was für eine?
-        AIType aiType;
+        /// Wenn KI, was f�r eine?
+        AI::Info aiInfo;
 
         /// Spielername
         std::string name;
