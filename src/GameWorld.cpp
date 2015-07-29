@@ -101,30 +101,32 @@ void GameWorld::Scan(glArchivItem_Map* map)
     // Dummy-Hafenpos fÃ¼r Index 0 einfÃ¼gen // ask Oliverr why!
     // -> I just did, the dummy is so that the harbor "0" might be used for ships with no particular destination
     // poc: if you ever remove this dummy go to GameWorldBase::CalcDistanceToNearestHarbor and fix the loop to include the first harbor again (think Ive seen other instances of dummyadjusted loops as well...)
-    GameWorldBase::HarborPos dummy;
-    dummy.pos = MapPoint(0, 0);
+    GameWorldBase::HarborPos dummy(MapPoint(0, 0));
+    
     harbor_pos.push_back(dummy);
 
     // Andere Sachen setzen
-    for(MapCoord y = 0; y < height; ++y)
+	MapPoint pt(0, 0);
+	
+    for(pt.y = 0; pt.y < height; ++pt.y)
     {
-        for(MapCoord x = 0; x < width; ++x)
+        for(pt.x = 0; pt.x < width; ++pt.x)
         {
-            MapNode& node = nodes[GetIdx(MapPoint(x, y))];
+        	MapNode& node = GetNode(pt);
 
             node.roads[2] = node.roads[1] = node.roads[0] = 0;
             node.roads_real[2] = node.roads_real[1] = node.roads_real[0] = false;
-            node.altitude = map->GetMapDataAt(MAP_ALTITUDE, x, y);
+            node.altitude = map->GetMapDataAt(MAP_ALTITUDE, pt.x, pt.y);
             // Aufpassen, dass die Terrainindizes im Rahmen liegen, ansonsten 0 nehmen, unbekanntes Terrain (Bsp.
             // Karte "Drachenebene")
-            unsigned char t1 = map->GetMapDataAt(MAP_TERRAIN1, x, y), t2 = map->GetMapDataAt(MAP_TERRAIN2, x, y);
+            unsigned char t1 = map->GetMapDataAt(MAP_TERRAIN1, pt.x, pt.y), t2 = map->GetMapDataAt(MAP_TERRAIN2, pt.x, pt.y);
 
             // Hafenplatz?
             if(t1 >= 0x40 && t1 <= 0x54)
             {
                 t1 -= 0x40;
-
-                GameWorldBase::HarborPos p(MapPoint(x, y));
+				
+				GameWorldBase::HarborPos p(pt);
                 node.harbor_id = harbor_pos.size();
                 harbor_pos.push_back(p);
             }
@@ -136,7 +138,7 @@ void GameWorld::Scan(glArchivItem_Map* map)
             node.t1 = (t1 < 20) ? TERRAIN_INDIZES[t1] : 0;
             node.t2 = (t2 < 20) ? TERRAIN_INDIZES[t2] : 0;
 
-            node.resources = map->GetMapDataAt(MAP_RESOURCES, x, y);
+            node.resources = map->GetMapDataAt(MAP_RESOURCES, pt.x, pt.y);
 
             // Wasser?
             if(node.resources == 0x20 || node.resources == 0x21)
@@ -197,15 +199,14 @@ void GameWorld::Scan(glArchivItem_Map* map)
     std::vector< MapPoint > headquarter_positions;
 
     // Objekte auslesen
-    for(MapCoord y = 0; y < height; ++y)
+    for(pt.y = 0; pt.y < height; ++pt.y)
     {
-        for(MapCoord x = 0; x < width; ++x)
+        for(pt.x = 0; pt.x < width; ++pt.x)
         {
-            MapPoint pt(x, y);
             unsigned int pos = GetIdx(pt);
-            unsigned char lc = map->GetMapDataAt(MAP_LANDSCAPE, x, y);
+            unsigned char lc = map->GetMapDataAt(MAP_LANDSCAPE, pt.x, pt.y);
 
-            switch(map->GetMapDataAt(MAP_TYPE, x, y))
+            switch(map->GetMapDataAt(MAP_TYPE, pt.x, pt.y))
             {
                     // Player Startpos (provisorisch)
                 case 0x80:
@@ -232,7 +233,7 @@ void GameWorld::Scan(glArchivItem_Map* map)
                         nodes[pos].obj = new noTree(pt, 3, 3);
                     else
                     {
-                        LOG.lprintf("Unbekannter Baum1-4 auf x=%d, y=%d: id=%d (0x%0X)\n", x, y, lc, lc);
+                        LOG.lprintf("Unbekannter Baum1-4 auf x=%d, y=%d: id=%d (0x%0X)\n", pt.x, pt.y, lc, lc);
                         nodes[pos].obj = NULL;
                     }
                 } break;
@@ -250,7 +251,7 @@ void GameWorld::Scan(glArchivItem_Map* map)
                         nodes[pos].obj = new noTree(pt, 7, 3);
                     else
                     {
-                        LOG.lprintf("Unbekannter Baum5-8 auf x=%d, y=%d: id=%d (0x%0X)\n", x, y, lc, lc);
+                        LOG.lprintf("Unbekannter Baum5-8 auf x=%d, y=%d: id=%d (0x%0X)\n", pt.x, pt.y, lc, lc);
                         nodes[pos].obj = NULL;
                     }
                 } break;
@@ -262,7 +263,7 @@ void GameWorld::Scan(glArchivItem_Map* map)
                         nodes[pos].obj = new noTree(pt, 8, 3);
                     else
                     {
-                        LOG.lprintf("Unbekannter Baum9 auf x=%d, y=%d: id=%d (0x%0X)\n", x, y, lc, lc);
+                        LOG.lprintf("Unbekannter Baum9 auf x=%d, y=%d: id=%d (0x%0X)\n", pt.x, pt.y, lc, lc);
                         nodes[pos].obj = NULL;
                     }
                 } break;
@@ -337,7 +338,7 @@ void GameWorld::Scan(glArchivItem_Map* map)
 
                     else
                     {
-                        LOG.lprintf("Unbekanntes Naturzeug auf x=%d, y=%d: id=%d (0x%0X)\n", x, y, lc, lc);
+                        LOG.lprintf("Unbekanntes Naturzeug auf x=%d, y=%d: id=%d (0x%0X)\n", pt.x, pt.y, lc, lc);
                         nodes[pos].obj = NULL;
                     }
 
@@ -350,7 +351,7 @@ void GameWorld::Scan(glArchivItem_Map* map)
                         nodes[pos].obj = new noGranite(GT_1, lc - 1);
                     else
                     {
-                        LOG.lprintf("Unbekannter Granit1 auf x=%d, y=%d: id=%d (0x%0X)\n", x, y, lc, lc);
+                        LOG.lprintf("Unbekannter Granit1 auf x=%d, y=%d: id=%d (0x%0X)\n", pt.x, pt.y, lc, lc);
                         nodes[pos].obj = NULL;
                     }
                 } break;
@@ -362,7 +363,7 @@ void GameWorld::Scan(glArchivItem_Map* map)
                         nodes[pos].obj = new noGranite(GT_2, lc - 1);
                     else
                     {
-                        LOG.lprintf("Unbekannter Granit2 auf x=%d, y=%d: id=%d (0x%0X)\n", x, y, lc, lc);
+                        LOG.lprintf("Unbekannter Granit2 auf x=%d, y=%d: id=%d (0x%0X)\n", pt.x, pt.y, lc, lc);
                         nodes[pos].obj = NULL;
                     }
                 } break;
@@ -383,11 +384,11 @@ void GameWorld::Scan(glArchivItem_Map* map)
     }
 
     // BQ mit nichts erstmal inititalisieren (HQ-Setzen berechnet diese neu und braucht sie)
-    for(unsigned y = 0; y < height; ++y)
+    for(pt.y = 0; pt.y < height; ++pt.y)
     {
-        for(unsigned x = 0; x < width; ++x)
+        for(pt.x = 0; pt.x < width; ++pt.x)
         {
-            SetBQ(MapPoint(x, y), BQ_NOTHING);
+            SetBQ(pt, BQ_NOTHING);
         }
     }
 
@@ -421,15 +422,14 @@ void GameWorld::Scan(glArchivItem_Map* map)
     }
 
     // Tiere auslesen
-    for(MapCoord y = 0; y < height; ++y)
+    for(pt.y = 0; pt.y < height; ++pt.y)
     {
-        for(MapCoord x = 0; x < width; ++x)
+        for(pt.x = 0; pt.x < width; ++pt.x)
         {
-            MapPoint pt(x, y);
             unsigned pos = GetIdx(pt);
             // Tiere setzen
             Species species;
-            switch(map->GetMapDataAt(MAP_ANIMALS, x, y))
+            switch(map->GetMapDataAt(MAP_ANIMALS, pt.x, pt.y))
             {
                     // TODO: Welche ID ist PolarbÃ¤r?
                 case 1: species = Species(SPEC_RABBITWHITE+RANDOM.Rand(__FILE__, __LINE__, 0, 2)); break; // zufÃ¤llige Hasenart nehmen
@@ -456,11 +456,10 @@ void GameWorld::Scan(glArchivItem_Map* map)
     }
 
     /// Weltmeere vermessen
-    for(unsigned y = 0; y < height; ++y)
+    for(pt.y = 0; pt.y < height; ++pt.y)
     {
-        for(unsigned x = 0; x < width; ++x)
+        for(pt.x = 0; pt.x < width; ++pt.x)
         {
-            MapPoint pt(x, y);
             // Noch kein Meer an diesem Punkt?
             if(!GetNode(pt).sea_id)
             {
@@ -485,11 +484,10 @@ void GameWorld::Scan(glArchivItem_Map* map)
     CalcHarborPosNeighbors();
 
     /// Schatten und BQ berechnen
-    for(unsigned y = 0; y < height; ++y)
+    for(pt.y = 0; pt.y < height; ++pt.y)
     {
-        for(unsigned x = 0; x < width; ++x)
+        for(pt.x = 0; pt.x < width; ++pt.x)
         {
-            MapPoint pt(x, y);
             RecalcShadow(pt);
             SetBQ(pt, GAMECLIENT.GetPlayerID());
         }
@@ -498,11 +496,10 @@ void GameWorld::Scan(glArchivItem_Map* map)
     /// Bei FoW und aufgedeckt mÃ¼ssen auch die ersten FoW-Objekte erstellt werden
     if(GAMECLIENT.GetGGS().exploration == GlobalGameSettings::EXP_FOGOFWARE_EXPLORED)
     {
-        for(unsigned y = 0; y < height; ++y)
+        for(pt.y = 0; pt.y < height; ++pt.y)
         {
-            for(unsigned x = 0; x < width; ++x)
+            for(pt.x = 0; pt.x < width; ++pt.x)
             {
-                MapPoint pt(x, y);
                 // Alle Spieler durchgehen
                 for(unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
                 {
