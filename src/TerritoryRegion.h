@@ -53,7 +53,8 @@ class TerritoryRegion
         static bool IsPointInPolygon(GameWorldBase* gwb, std::vector< MapPoint > &polygon, const MapPoint pt);
 
         /// Testet einen Punkt, ob der neue Spieler ihn übernehmen kann und übernimmt ihn ggf.
-        void TestNode( int x, int y, const unsigned char player, const unsigned char radius, const bool check_barriers);
+        void TestNode(MapPoint pt, const unsigned char player, const unsigned char radius, const bool check_barriers);
+
         /// Unterfunktionen von AdjustBorders, vergleicht 2 Punkte, ob sie von unterschiedlichen Spielern sind und setzt
         /// Punkt ggf. zu gar keinem Spieler, 2. Funktion wird für Punkte im 2er Abstand verwendet, da es dort ein bisschen anders läuft!
         void AdjustNodes(const unsigned short x1, const unsigned short y1, const unsigned short x2, const unsigned short y2);

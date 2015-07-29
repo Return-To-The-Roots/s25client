@@ -87,9 +87,10 @@ bool TerritoryRegion::IsPointValid(GameWorldBase* gwb, std::vector< MapPoint > &
            IsPointInPolygon(gwb, polygon, pt4));
 }
 
-
-void TerritoryRegion::TestNode( int x,  int y, const unsigned char player, const unsigned char radius, const bool check_barriers)
+void TerritoryRegion::TestNode(MapPoint pt, const unsigned char player, const unsigned char radius, const bool check_barriers)
 {
+    int x = static_cast<int>(pt.x), y = static_cast<int>(pt.y);
+
     // Gucken, ob der Punkt ï¿½berhaupt mit in diese Region gehï¿½rt
     if(x + gwb->GetWidth() >= int(x1) && x + gwb->GetWidth() < int(x2))
         x += gwb->GetWidth();
@@ -106,13 +107,14 @@ void TerritoryRegion::TestNode( int x,  int y, const unsigned char player, const
         return;
 
     // check whether his node is within the area we may have territory in
-    if (check_barriers && !IsPointValid(gwb, gwb->GetPlayer(player)->GetRestrictedArea(), MapPoint(x, y)))
+    if (check_barriers && !IsPointValid(gwb, gwb->GetPlayer(player)->GetRestrictedArea(), pt))
         return;
 
     /// Wenn das Militargebï¿½ude jetzt nï¿½her dran ist, dann geht dieser Punkt in den Besitz vom jeweiligen Spieler
     /// oder wenn es halt gar nicht besetzt ist
     unsigned idx = (y - y1) * (x2 - x1) + (x - x1);
-    if(radius < nodes[idx].radius || !nodes[(y - y1) * (x2 - x1) + (x - x1)].owner)
+
+    if(radius < nodes[idx].radius || !nodes[idx].owner)
     {
         nodes[idx].owner = player + 1;
         nodes[idx].radius = radius;
@@ -137,7 +139,7 @@ void TerritoryRegion::CalcTerritoryOfBuilding(const noBaseBuilding* const buildi
 
     // Punkt, auf dem das Militï¿½rgebï¿½ude steht
     MapPoint pt = building->GetPos();
-    TestNode(pt.x, pt.y, building->GetPlayer(), 0, false);    // no need to check barriers here. this point is on our territory.
+    TestNode(pt, building->GetPlayer(), 0, false);    // no need to check barriers here. this point is on our territory.
 
     for(unsigned r = 1; r <= radius; ++r)
     {
@@ -148,14 +150,10 @@ void TerritoryRegion::CalcTerritoryOfBuilding(const noBaseBuilding* const buildi
         {
             for(unsigned short i = 0; i < r; ++i)
             {
-                TestNode(pt.x, pt.y, building->GetPlayer(), r, check_barriers);
+                TestNode(pt, building->GetPlayer(), r, check_barriers);
                 // Nach rechts oben anfangen
                 pt = gwb->GetNeighbour(pt, (2 + dir) % 6);
             }
         }
     }
 }
-
-
-//for(unsigned short x = fx;x < building->GetX()-radius+(y+(building->GetY()&1))/2+radius*2+1-y;++x)
-//              TestNode(x,building->GetY()+y,building->GetPlayer(),y);
