@@ -105,9 +105,6 @@ void TerritoryRegion::TestNode( int x,  int y, const unsigned char player, const
     else if(y < int(y1) || y >= int(y2))
         return;
 
-    if(x < 0 || x > std::numeric_limits<MapCoord>::max() ||
-        y < 0 || y > std::numeric_limits<MapCoord>::max())
-        throw std::overflow_error("Coords to test not in map");
     // check whether his node is within the area we may have territory in
     if (check_barriers && !IsPointValid(gwb, gwb->GetPlayer(player)->GetRestrictedArea(), MapPoint(x, y)))
         return;
