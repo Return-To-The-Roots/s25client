@@ -72,7 +72,7 @@ VERSION=$(grep WINDOW_VERSION build_version.h | cut -d ' ' -f 3 | cut -d \" -f 2
 # get revision
 REVISION=$(grep WINDOW_REVISION build_version.h | cut -d ' ' -f 3 | cut -d \" -f 2)
 
-if [ $REVISION -eq 0 ] ; then
+if [[ $1 =~ "^[0-9]+$" ]] && [ $REVISION -eq 0 ] ; then
 	echo "error: revision is null"
 	error
 fi
