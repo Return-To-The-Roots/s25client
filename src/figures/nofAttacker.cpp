@@ -590,7 +590,7 @@ void nofAttacker::MissAttackingWalk()
     MapPoint goal = attacked_goal->FindAnAttackerPlace(radius, this);
 
     // Keinen Platz mehr gefunden?
-    if(goal.isValid())
+    if(!goal.isValid())
     {
         // Dann nach Haus gehen
         ReturnHomeMissionAttacking();
