@@ -785,7 +785,7 @@ unsigned GameWorld::MeasureSea(const MapPoint pt, const unsigned short sea_id)
             MapPoint pa = GetNeighbour(p, i);
 
             // Ist das dort auch ein Meerespunkt?
-            if(!IsSeaPoint(p))
+            if(!IsSeaPoint(pa))
                 continue;
 
             if(!visited[GetIdx(pa)])
