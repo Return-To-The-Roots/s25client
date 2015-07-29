@@ -974,8 +974,8 @@ bool Loader::CreateTerrainTextures(void)
         Rect(0, 144, 48, 48),
         Rect(48, 144, 48, 48),
 
-        Rect(192, 48, 48, 48),
-        Rect(192, 104, 48, 48),
+        Rect(192, 48, 55, 56),
+        Rect(192, 104, 55, 56)
     };
 
     // RÃ¤nder
