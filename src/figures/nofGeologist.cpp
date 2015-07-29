@@ -355,7 +355,7 @@ void nofGeologist::TestNode(const MapPoint pt)
     // Prüfen, ob er überhaupt auf der Karte liegt und nicht irgendwo im Nirvana
     if(pt.x < gwg->GetWidth() && pt.y < gwg->GetHeight())
     {
-        if(IsNodeGood(pos) && (gwg->FindHumanPath(this->pos, pt, 20)) != 0xFF && !gwg->GetNode(pt).reserved)
+        if(IsNodeGood(pt) && (gwg->FindHumanPath(this->pos, pt, 20)) != 0xFF && !gwg->GetNode(pt).reserved)
         {
             available_nodes.push_back(pt);
         }
