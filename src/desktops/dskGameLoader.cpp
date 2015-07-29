@@ -61,10 +61,10 @@ dskGameLoader::dskGameLoader(GameWorldViewer* gwv)
 
     AddTimer(1, 50);
 
-    AddText(10, VIDEODRIVER.GetScreenWidth() / 2, VIDEODRIVER.GetScreenHeight() - 50, "", COLOR_YELLOW, glArchivItem_Font::DF_CENTER, LargeFont);
+    AddText(10, 800 / 2, 600 - 50, "", COLOR_YELLOW, glArchivItem_Font::DF_CENTER, LargeFont);
 
     for(unsigned int i = 0; i < 8; ++i)
-        AddText(10 + i, 30, 30 + i * 20, "", COLOR_GREEN, 0, LargeFont);
+        AddText(11 + i, 30, 30 + i * 20, "", COLOR_GREEN, 0, LargeFont);
 
     LOBBYCLIENT.SetInterface(this);
     GAMECLIENT.SetInterface(this);

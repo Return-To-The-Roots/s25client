@@ -1779,6 +1779,7 @@ unsigned GameClient::StartReplay(const std::string& path, GameWorldViewer*& gwv)
 
     // Map-Type auslesen
     mapinfo.map_type = replayinfo.replay.map_type;
+    mapinfo.title = replayinfo.replay.map_name;
 
     switch(replayinfo.replay.map_type)
     {
