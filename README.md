@@ -9,6 +9,15 @@ see more information on http://www.rttr.info
 
 # How to build
 
+## On Linux or Darwin/MacOS
+
+### Prerequisite:
+- cmake
+- git
+- miniupnp-dev (linux)
+- liblua52-dev (linux)
+
+### Steps:
 ```
 git clone https://github.com/Return-To-The-Roots/s25client s25client
 cd s25client
@@ -17,5 +26,25 @@ cd build
 ./cmake.sh --prefix=.
 make
 ```
+
+## On Windows
+
+### Prerequisite:
+- cmake (from contrib)
+- Visual Studio (at least 2010)
+- Git Client (i.e TortoiseGit)
+
+### Steps:
+- Clone GIT Repository from https://github.com/Return-To-The-Roots/s25client
+- Update/Initialize GIT Submodule
+- Extract contrib/full-contrib-msvc2010.rar to contrib (so that contrib/bin, contrib/include and contrib/lib exist)
+- Use cmake-gui:
+  - "Where is the source code": Select checked out directory
+  - "Where to build the binaries": Select "build" directory
+  - Press configure
+  - Press generate
+- Open and use build/s25client.sln
+
+--
 
 for more info or help see INSTALL file or http://www.rttr.info 

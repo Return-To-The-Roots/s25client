@@ -88,31 +88,32 @@ bool TerritoryRegion::IsPointValid(GameWorldBase* gwb, std::vector< MapPoint > &
 }
 
 
-void TerritoryRegion::TestNode( int x,  int y, const unsigned char player, const unsigned char radius, const bool check_barriers)
+void TerritoryRegion::TestNode(MapPoint pt, const unsigned char player, const unsigned char radius, const bool check_barriers)
 {
-    // Gucken, ob der Punkt ï¿½berhaupt mit in diese Region gehï¿½rt
-    if(x + gwb->GetWidth() >= int(x1) && x + gwb->GetWidth() < int(x2))
-        x += gwb->GetWidth();
-    else if(x - gwb->GetWidth() >= int(x1) && x - gwb->GetWidth() < int(x2))
-        x -= gwb->GetWidth();
-    else if(x < int(x1) || x >= int(x2))
-        return;
-
-    if(y + gwb->GetHeight() >= int(y1) && y + gwb->GetHeight() < int(y2))
-        y += gwb->GetHeight();
-    else if(y - gwb->GetHeight() >= int(y1) && y - gwb->GetHeight() < int(y2))
-        y -= gwb->GetHeight();
-    else if(y < int(y1) || y >= int(y2))
-        return;
-
     // check whether his node is within the area we may have territory in
-    if (check_barriers && !IsPointValid(gwb, gwb->GetPlayer(player)->GetRestrictedArea(), MapPoint(x, y)))
+    if (check_barriers && !IsPointValid(gwb, gwb->GetPlayer(player)->GetRestrictedArea(), pt))
+        return;
+
+    // Gucken, ob der Punkt ï¿½berhaupt mit in diese Region gehï¿½rt
+    if(pt.x + gwb->GetWidth() >= int(x1) && pt.x + gwb->GetWidth() < int(x2))
+        pt.x += gwb->GetWidth();
+    else if(pt.x - gwb->GetWidth() >= int(x1) && pt.x - gwb->GetWidth() < int(x2))
+        pt.x -= gwb->GetWidth();
+    else if(pt.x < int(x1) || pt.x >= int(x2))
+        return;
+
+    if(pt.y + gwb->GetHeight() >= int(y1) && pt.y + gwb->GetHeight() < int(y2))
+        pt.y += gwb->GetHeight();
+    else if(pt.y - gwb->GetHeight() >= int(y1) && pt.y - gwb->GetHeight() < int(y2))
+        pt.y -= gwb->GetHeight();
+    else if(pt.y < int(y1) || pt.y >= int(y2))
         return;
 
     /// Wenn das Militargebï¿½ude jetzt nï¿½her dran ist, dann geht dieser Punkt in den Besitz vom jeweiligen Spieler
     /// oder wenn es halt gar nicht besetzt ist
-    unsigned idx = (y - y1) * (x2 - x1) + (x - x1);
-    if(radius < nodes[idx].radius || !nodes[(y - y1) * (x2 - x1) + (x - x1)].owner)
+    unsigned idx = (pt.y - y1) * (x2 - x1) + (pt.x - x1);
+
+    if(radius < nodes[idx].radius || !nodes[idx].owner)
     {
         nodes[idx].owner = player + 1;
         nodes[idx].radius = radius;
@@ -137,7 +138,7 @@ void TerritoryRegion::CalcTerritoryOfBuilding(const noBaseBuilding* const buildi
 
     // Punkt, auf dem das Militï¿½rgebï¿½ude steht
     MapPoint pt = building->GetPos();
-    TestNode(pt.x, pt.y, building->GetPlayer(), 0, false);    // no need to check barriers here. this point is on our territory.
+    TestNode(pt, building->GetPlayer(), 0, false);    // no need to check barriers here. this point is on our territory.
 
     for(unsigned r = 1; r <= radius; ++r)
     {
@@ -148,7 +149,7 @@ void TerritoryRegion::CalcTerritoryOfBuilding(const noBaseBuilding* const buildi
         {
             for(unsigned short i = 0; i < r; ++i)
             {
-                TestNode(pt.x, pt.y, building->GetPlayer(), r, check_barriers);
+                TestNode(pt, building->GetPlayer(), r, check_barriers);
                 // Nach rechts oben anfangen
                 pt = gwb->GetNeighbour(pt, (2 + dir) % 6);
             }
