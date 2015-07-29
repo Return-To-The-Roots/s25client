@@ -37,12 +37,13 @@ make
 ### Steps:
 - Clone GIT Repository from https://github.com/Return-To-The-Roots/s25client
 - Update/Initialize GIT Submodule
+- Extract contrib/full-contrib-msvc2010.rar to contrib (so that contrib/bin, contrib/include and contrib/lib exist)
 - Use cmake-gui:
   - "Where is the source code": Select checked out directory
   - "Where to build the binaries": Select "build" directory
-  - ... TODO (SDL...)
   - Press configure
   - Press generate
+- Open and use build/s25client.sln
 
 --
 
