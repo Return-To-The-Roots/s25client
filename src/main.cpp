@@ -233,21 +233,6 @@ int main(int argc, char* argv[])
     signal(SIGSEGV, LinExceptionHandler);
 #endif // _WIN32
 
-
-	// We need to make the exe's path to the current dir
-	std::string exePath = argv[0];
-	// get '/' or '\\' depending on unix/mac or windows.
-#if defined(_WIN32) || defined(WIN32)
-	size_t pos = exePath.rfind('\\');
-#else
-	size_t pos = exePath.rfind('/');
-#endif
-	if(pos != std::string::npos){
-		exePath = exePath.substr(0, pos);
-		if(chdir(exePath.c_str()))
-			error("Could not change dir to %s", exePath.c_str());
-	}
-
     // diverse dirs anlegen
     const unsigned int dir_count = 7;
     unsigned int dirs[dir_count] = { 94, 47, 48, 51, 85, 98, 99 }; // settingsdir muss zuerst angelegt werden (94)
