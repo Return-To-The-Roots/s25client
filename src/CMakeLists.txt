@@ -181,7 +181,7 @@ IF (MSVC)
 	SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /MANIFEST:NO")
 	# disable warning 4267: 'var' : conversion from 'size_t' to 'type', possible loss of data
 	ADD_DEFINITIONS(/wd"4267")
-	ADD_DEFINITIONS(/WX) # warning = error
+	#ADD_DEFINITIONS(/WX) # warning = error
 	ADD_DEFINITIONS(/MP) # parallel compilation
 ELSE()
 	SET(s25client_RC "")
