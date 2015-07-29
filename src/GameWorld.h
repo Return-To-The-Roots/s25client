@@ -32,6 +32,7 @@
 #include "Point.h"
 #include "GamePlayerList.h"
 #include "TradeGraph.h"
+#include "buildings/nobBaseMilitary.h"
 #include <vector>
 #include <list>
 #include <set>
@@ -48,7 +49,6 @@ class nobCatapult;
 class ncFlag;
 class noRoadNode;
 class noCoordBase;
-class nobBaseMilitary;
 class SerializedGameData;
 class CatapultStone;
 class nofAttacker;
@@ -323,7 +323,7 @@ class GameWorldBase
         bool IsMilitaryBuilding(const MapPoint pt) const;
 
         /// Erstellt eine Liste mit allen Militärgebäuden in der Umgebung, radius bestimmt wie viele Kästchen nach einer Richtung im Umkreis
-        std::set<nobBaseMilitary*> LookForMilitaryBuildings(const MapPoint pt, unsigned short radius) const;
+        nobBaseMilitarySet LookForMilitaryBuildings(const MapPoint pt, unsigned short radius) const;
 
         /// Prüft, ob von einem bestimmten Punkt aus der Untergrund für Figuren zugänglich ist (kein Wasser,Lava,Sumpf)
         bool IsNodeToNodeForFigure(const MapPoint pt, const unsigned dir) const;

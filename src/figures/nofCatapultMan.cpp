@@ -130,13 +130,12 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned int id)
         case STATE_WAITING1:
         {
             // Fertig mit warten --> anfangen zu arbeiten
-            std::set<nobBaseMilitary*> buildings = gwg->LookForMilitaryBuildings(pos, 3);
 
             // Liste von potentiellen Zielen
             std::vector<PossibleTarget> pts;
 
-
-            for(std::set<nobBaseMilitary*>::iterator it = buildings.begin(); it != buildings.end(); ++it)
+            nobBaseMilitarySet buildings = gwg->LookForMilitaryBuildings(pos, 3);
+            for(nobBaseMilitarySet::iterator it = buildings.begin(); it != buildings.end(); ++it)
             {
                 // Auch ein richtiges Militärgebäude (kein HQ usw.),
                 if((*it)->GetGOT() == GOT_NOB_MILITARY && GAMECLIENT.GetPlayer(player)->IsPlayerAttackable((*it)->GetPlayer()))

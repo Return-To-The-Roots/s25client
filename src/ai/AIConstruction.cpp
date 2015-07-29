@@ -476,8 +476,8 @@ BuildingType AIConstruction::ChooseMilitaryBuilding(const MapPoint pt)
 		bld = BLD_FORTRESS;
 		return bld;
 	}
-    std::set<nobBaseMilitary*> military = aii->GetMilitaryBuildings(pt, 3);
-    for(std::set<nobBaseMilitary*>::iterator it = military.begin(); it != military.end(); ++it)
+    nobBaseMilitarySet military = aii->GetMilitaryBuildings(pt, 3);
+    for(nobBaseMilitarySet::iterator it = military.begin(); it != military.end(); ++it)
     {
         unsigned distance = aii->GetDistance((*it)->GetPos(), pt);
 

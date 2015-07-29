@@ -521,8 +521,7 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding* const building, const 
 	unsigned char new_owner_of_trigger_building;
 
     // alle Militärgebäude in der Nähe abgrasen
-	std::set<nobBaseMilitary*> buildingsUnsorted = LookForMilitaryBuildings(building->GetPos(), 3);
-	std::set<nobBaseMilitary*, nobBaseMilitary::Comparer> buildings(buildingsUnsorted.begin(), buildingsUnsorted.end());
+	nobBaseMilitarySet buildings = LookForMilitaryBuildings(building->GetPos(), 3);
 
     // Radius der noch draufaddiert wird auf den eigentlich ausreichenden Bereich, für das Eliminieren von
     // herausragenden Landesteilen und damit Grenzsteinen
@@ -538,7 +537,7 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding* const building, const 
     TerritoryRegion tr(x1, y1, x2, y2, this);
 
     // Alle Gebäude ihr Terrain in der Nähe neu berechnen
-    for(std::set<nobBaseMilitary*, nobBaseMilitary::Comparer>::iterator it = buildings.begin(); it != buildings.end(); ++it)
+    for(nobBaseMilitarySet::iterator it = buildings.begin(); it != buildings.end(); ++it)
     {
         // Ist es ein richtiges Militärgebäude?
         if((*it)->GetBuildingType() >= BLD_BARRACKS && (*it)->GetBuildingType() <= BLD_FORTRESS)
@@ -796,8 +795,7 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding* const building, const 
 
 bool GameWorldGame::TerritoryChange(const noBaseBuilding* const building, const unsigned short radius, const bool destroyed, const bool newBuilt)
 {
-    std::set<nobBaseMilitary*> buildingsUnsorted = LookForMilitaryBuildings(building->GetPos(), 3);
-    std::set<nobBaseMilitary*, nobBaseMilitary::Comparer> buildings(buildingsUnsorted.begin(), buildingsUnsorted.end());
+    nobBaseMilitarySet buildings = LookForMilitaryBuildings(building->GetPos(), 3);
 
     // Radius der noch draufaddiert wird auf den eigentlich ausreichenden Bereich, für das Eliminieren von
     // herausragenden Landesteilen und damit Grenzsteinen
@@ -813,7 +811,7 @@ bool GameWorldGame::TerritoryChange(const noBaseBuilding* const building, const 
     TerritoryRegion tr(x1, y1, x2, y2, this);
 
     // Alle Gebäude ihr Terrain in der Nähe neu berechnen
-    for(std::set<nobBaseMilitary*, nobBaseMilitary::Comparer>::iterator it = buildings.begin(); it != buildings.end(); ++it)
+    for(nobBaseMilitarySet::iterator it = buildings.begin(); it != buildings.end(); ++it)
     {
         // Ist es ein richtiges Militärgebäude?
         if((*it)->GetBuildingType() >= BLD_BARRACKS && (*it)->GetBuildingType() <= BLD_FORTRESS)
@@ -1021,13 +1019,13 @@ void GameWorldGame::Attack(const unsigned char player_attacker, const MapPoint p
     }
 
     // Militärgebäude in der Nähe finden
-    std::set<nobBaseMilitary*> buildings = LookForMilitaryBuildings(pt, 3);
+    nobBaseMilitarySet buildings = LookForMilitaryBuildings(pt, 3);
 
     // Liste von verfügbaren Soldaten, geordnet einfügen, damit man dann starke oder schwache Soldaten nehmen kann
     std::list<PotentialAttacker> soldiers;
 
 
-    for(std::set<nobBaseMilitary*>::iterator it = buildings.begin(); it != buildings.end(); ++it) {
+    for(nobBaseMilitarySet::iterator it = buildings.begin(); it != buildings.end(); ++it) {
         // Muss ein Gebäude von uns sein und darf nur ein "normales Militärgebäude" sein (kein HQ etc.)
         if((*it)->GetPlayer() != player_attacker || (*it)->GetBuildingType() < BLD_BARRACKS || (*it)->GetBuildingType() > BLD_FORTRESS)
             continue;
@@ -1382,10 +1380,10 @@ bool GameWorldGame::ValidPointForFighting(const MapPoint pt, const bool avoid_mi
 
 bool GameWorldGame::IsPointCompletelyVisible(const MapPoint pt, const unsigned char player, const noBaseBuilding* const exception) const
 {
-    std::set<nobBaseMilitary*> buildings = LookForMilitaryBuildings(pt, 3);
+    nobBaseMilitarySet buildings = LookForMilitaryBuildings(pt, 3);
 
     // Sichtbereich von Militärgebäuden
-    for(std::set<nobBaseMilitary*>::iterator it = buildings.begin(); it != buildings.end(); ++it)
+    for(nobBaseMilitarySet::iterator it = buildings.begin(); it != buildings.end(); ++it)
     {
         if((*it)->GetPlayer() == player && *it != exception)
         {
