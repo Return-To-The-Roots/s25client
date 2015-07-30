@@ -39,8 +39,9 @@ static char THIS_FILE[] = __FILE__;
 
 noSkeleton::noSkeleton(const MapPoint pos)
     : noCoordBase(NOP_ENVIRONMENT, pos),
-      type(0), current_event(em->AddEvent(this, 15000 + RANDOM.Rand(__FILE__, __LINE__, obj_id, 10000)))
+      type(0)
 {
+    current_event = em->AddEvent(this, 15000 + RANDOM.Rand(__FILE__, __LINE__, obj_id, 10000));
 }
 
 noSkeleton::~noSkeleton()

@@ -86,13 +86,13 @@ noBuildingSite::noBuildingSite(const MapPoint pos, const unsigned char player)
     : noBaseBuilding(NOP_BUILDINGSITE, BLD_HARBORBUILDING, pos, player),
       state(STATE_BUILDING),
       planer(0),
-      builder(new nofBuilder(pos, player, this)),
       boards(BUILDING_COSTS[nation][BLD_HARBORBUILDING].boards),
       stones(BUILDING_COSTS[nation][BLD_HARBORBUILDING].stones),
       used_boards(0),
       used_stones(0),
       build_progress(0)
 {
+    builder = new nofBuilder(pos, player, this);
     // Baustelle in den Index eintragen, damit die Wirtschaft auch Bescheid weiß
     gwg->GetPlayer(player)->AddBuildingSite(this);
     // Bauarbeiter auch auf der Karte auftragen

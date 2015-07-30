@@ -538,11 +538,11 @@ class GameWorldView
         std::list<BorderTile> sorted_borders[5];
         std::list<PreparedRoad> sorted_roads[4];
 
-        GameWorldView(GameWorldViewer* gwv, const MapPoint pt, unsigned short width, unsigned short height);
+        GameWorldView(const MapPoint pt, unsigned short width, unsigned short height);
         ~GameWorldView();
 
-        GameWorldViewer* GetGameWorldViewer() {return(gwv);}
-        GameWorldViewer* GetGameWorldViewer() const {return(gwv);};
+        GameWorldViewer* GetGameWorldViewer() const {return(gwv);}
+        void SetGameWorldViewer(GameWorldViewer* viewer);
 
 
         inline void SetPos(MapPoint newPos) { pos = newPos; }
@@ -556,7 +556,6 @@ class GameWorldView
         inline void ShowProductivity() { show_productivity = !show_productivity; };
         /// Schaltet Produktivitäten/Namen komplett aus oder an
         void ShowNamesAndProductivity();
-
 
         void Draw(const unsigned char player, unsigned* water, const bool draw_selected, const MapPoint selected, const RoadsBuilding& rb);
         /*

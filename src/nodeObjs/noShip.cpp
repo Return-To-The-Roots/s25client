@@ -85,7 +85,7 @@ const Point<int> SHIPS_FLAG_POS[12] =
 noShip::noShip(const MapPoint pos, const unsigned char player)
     : noMovable(NOP_SHIP, pos),
       player(player), state(STATE_IDLE), sea_id(0), goal_harbor_id(0), goal_dir(0),
-      name(ship_names[gwg->GetPlayer(player)->nation][RANDOM.Rand(__FILE__, __LINE__, this->obj_id, ship_count)]),
+      name(ship_names[gwg->GetPlayer(player)->nation][RANDOM.Rand(__FILE__, __LINE__, obj_id, ship_count)]),
       lost(false), remaining_sea_attackers(0), home_harbor(0), covered_distance(0)
 {
     // Meer ermitteln, auf dem dieses Schiff fährt

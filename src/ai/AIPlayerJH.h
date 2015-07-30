@@ -28,7 +28,6 @@
 #include "AIJHHelper.h"
 #include "GameWorld.h"
 #include "AIEventManager.h"
-#include "AIConstruction.h"
 
 #include <queue>
 #include <deque>
@@ -41,6 +40,7 @@ class nobBaseMilitary;
 class AIPlayerJH;
 class nobMilitary;
 class nobBaseMilitary;
+class AIConstruction;
 
 enum PositionSearchState
 {
@@ -103,6 +103,8 @@ class AIPlayerJH : public AIBase
         AIPlayerJH(const unsigned char playerid, const GameWorldBase* const gwb, const GameClientPlayer* const player,
                    const GameClientPlayerList* const players, const GlobalGameSettings* const ggs,
                    const AI::Level level);
+        ~AIPlayerJH();
+
 		int initgfcomplete;
         int GetResMapValue(const MapPoint pt, AIJH::Resource res);
         AIInterface* GetInterface() { return aii; }
@@ -132,7 +134,7 @@ class AIPlayerJH : public AIBase
 
         /// Executes a job form the job queue
         void ExecuteAIJob();
-        void AddBuildJob(AIJH::BuildJob* job, bool front = false) { construction.AddBuildJob(job, front); }
+        void AddBuildJob(AIJH::BuildJob* job, bool front = false);
         void AddBuildJob(BuildingType type, const MapPoint pt, bool front = false);
 		//adds buildjobs for a buildingtype around every warehouse or military building
 		void AddBuildJobAroundEvery(BuildingType bt, bool warehouse);
@@ -328,11 +330,11 @@ class AIPlayerJH : public AIBase
 
         const std::string& GetPlayerName() { return player->name; }
         unsigned char GetPlayerID() { return playerid; }
-        AIConstruction* GetConstruction() { return &construction; }
+        AIConstruction* GetConstruction() { return construction; }
         AIJH::Job* GetCurrentJob() { return currentJob; }
     public:
         inline AIJH::Node& GetAINode(const MapPoint pt) { return nodes[gwb->GetIdx(pt)]; }
-		inline unsigned GetJobNum() const { return eventManager.GetEventNum() + construction.GetBuildJobNum() + construction.GetConnectJobNum(); }	
+		unsigned GetJobNum() const;
 		int UpgradeBldListNumber;
 		unsigned PlannedConnectedInlandMilitary() {return aii->GetMilitaryBuildings().size()/5<6 ? 6:aii->GetMilitaryBuildings().size()/5;}
         /// checks distance to all harborpositions
@@ -348,7 +350,7 @@ class AIPlayerJH : public AIBase
 // Event...
     protected:
         AIEventManager eventManager;
-        AIConstruction construction;
+        AIConstruction* construction;
 
 
 };

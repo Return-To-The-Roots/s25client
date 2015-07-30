@@ -45,8 +45,9 @@ const unsigned GROWING_WAITING_LENGTH = 1100;
 const unsigned GROWING_LENGTH = 16;
 
 noGrainfield::noGrainfield(const MapPoint pos) : noCoordBase(NOP_GRAINFIELD, pos),
-    type(RANDOM.Rand(__FILE__, __LINE__, obj_id, 2)), state(STATE_GROWING_WAITING), size(0), event(em->AddEvent(this, GROWING_WAITING_LENGTH))
+    type(RANDOM.Rand(__FILE__, __LINE__, obj_id, 2)), state(STATE_GROWING_WAITING), size(0)
 {
+    event = em->AddEvent(this, GROWING_WAITING_LENGTH);
 }
 
 noGrainfield::~noGrainfield()

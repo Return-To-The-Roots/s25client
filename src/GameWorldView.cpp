@@ -43,8 +43,9 @@
 #include "ai/AIPlayerJH.h"
 
 #include "ogl/glSmartBitmap.h"
+#include <stdexcept>
 
-GameWorldView::GameWorldView(GameWorldViewer* gwv, const MapPoint pos, unsigned short width, unsigned short height):
+GameWorldView::GameWorldView(const MapPoint pos, unsigned short width, unsigned short height):
 	selPt(0, 0),
 	show_coordinates(false),
 	show_bq(false),
@@ -52,7 +53,7 @@ GameWorldView::GameWorldView(GameWorldViewer* gwv, const MapPoint pos, unsigned 
 	show_productivity(false),
 	offset(0, 0),
 	lastOffset(0, 0),
-	gwv(gwv),
+	gwv(NULL),
 	d_what(0),
 	d_player(0),
 	d_active(false),
@@ -63,13 +64,19 @@ GameWorldView::GameWorldView(GameWorldViewer* gwv, const MapPoint pos, unsigned 
 	terrain_last_global_animation(0),
 	terrain_last_water(0)
 {
-    CalcFxLx();
 }
 
 GameWorldView::~GameWorldView()
 {
     if (terrain_list != 0)
         glDeleteLists(terrain_list, 1);
+}
+
+void GameWorldView::SetGameWorldViewer(GameWorldViewer* viewer)
+{
+    if(gwv)
+        throw::std::logic_error("Tried to set gwv multiple times!");
+    gwv = viewer;
 }
 
 struct ObjectBetweenLines

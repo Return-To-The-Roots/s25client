@@ -67,9 +67,10 @@ const unsigned short RECRUITE_GF = 200;
 const unsigned short RECRUITE_RANDOM_GF = 200;
 
 nobBaseWarehouse::nobBaseWarehouse(const BuildingType type, const MapPoint pos, const unsigned char player, const Nation nation)
-    : nobBaseMilitary(type, pos, player, nation), fetch_double_protection(false), producinghelpers_event(em->AddEvent(this, PRODUCE_HELPERS_GF + RANDOM.Rand(__FILE__, __LINE__, obj_id, PRODUCE_HELPERS_RANDOM_GF), 1)), recruiting_event(0),
+    : nobBaseMilitary(type, pos, player, nation), fetch_double_protection(false), recruiting_event(0),
       empty_event(0), store_event(0)
 {
+    producinghelpers_event = em->AddEvent(this, PRODUCE_HELPERS_GF + RANDOM.Rand(__FILE__, __LINE__, obj_id, PRODUCE_HELPERS_RANDOM_GF), 1);
     // Reserve nullen
     for(unsigned i = 0; i < 5; ++i)
         reserve_soldiers_available[i] =

@@ -47,8 +47,9 @@ static char THIS_FILE[] = __FILE__;
 //IngameWindow::IngameWindow(unsigned int id, const MapPoint pt, unsigned short width, unsigned short height, const std::string& title, glArchivItem_Bitmap *background, bool modal)
 iwObservate::iwObservate(GameWorldViewer* const gwv, const MapPoint selectedPt)
     : IngameWindow(gwv->CreateGUIID(selectedPt), 0xFFFE, 0xFFFE, 300, 250, _("Observation window"), NULL),
-      view(new GameWorldView(gwv, MapPoint(GetX() + 10, GetY() + 15), 300 - 20, 250 - 20)), selectedPt(selectedPt), last_x(-1), last_y(-1), scroll(false)
+      view(new GameWorldView(MapPoint(GetX() + 10, GetY() + 15), 300 - 20, 250 - 20)), selectedPt(selectedPt), last_x(-1), last_y(-1), scroll(false)
 {
+    view->SetGameWorldViewer(gwv);
     view->MoveToMapObject(selectedPt);
     SetCloseOnRightClick(false);
 

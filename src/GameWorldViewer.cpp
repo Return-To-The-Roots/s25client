@@ -40,8 +40,9 @@
 
 #include "GameServer.h"
 
-GameWorldViewer::GameWorldViewer() : scroll(false), sx(0), sy(0), view(GameWorldView(this, MapPoint(0, 0), VIDEODRIVER.GetScreenWidth(), VIDEODRIVER.GetScreenHeight()))
+GameWorldViewer::GameWorldViewer() : scroll(false), sx(0), sy(0), view(GameWorldView(MapPoint(0, 0), VIDEODRIVER.GetScreenWidth(), VIDEODRIVER.GetScreenHeight()))
 {
+    view.SetGameWorldViewer(this);
     MoveTo(0, 0);
 }
 

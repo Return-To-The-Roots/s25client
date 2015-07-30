@@ -35,6 +35,7 @@
 #include "nodeObjs/noAnimal.h"
 
 #include "MapGeometry.h"
+#include "AIConstruction.h"
 
 #include <iostream>
 #include <list>
@@ -49,14 +50,19 @@ bool IsPointOK_RoadPath(const GameWorldBase& gwb, const MapPoint pt, const unsig
 
 AIPlayerJH::AIPlayerJH(const unsigned char playerid, const GameWorldBase* const gwb, const GameClientPlayer* const player,
                        const GameClientPlayerList* const players, const GlobalGameSettings* const ggs,
-                       const AI::Level level) : AIBase(playerid, gwb, player, players, ggs, level), defeated(false),
-    construction(AIConstruction(aii, this))
+                       const AI::Level level) : AIBase(playerid, gwb, player, players, ggs, level), defeated(false)
 {
+    construction = new AIConstruction(aii, this);
 	initgfcomplete=0;
     currentJob = 0;
     InitNodes();
     InitResourceMaps();
     SaveResourceMapsToFile();
+}
+
+AIPlayerJH::~AIPlayerJH()
+{
+    delete construction;
 }
 
 /// Wird jeden GF aufgerufen und die KI kann hier entsprechende Handlungen vollziehen
@@ -71,7 +77,7 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
     {
         InitStoreAndMilitarylists();		
 		InitDistribution();
-		construction.constructionorders.resize(BUILDING_TYPES_COUNT);
+		construction->constructionorders.resize(BUILDING_TYPES_COUNT);
     }
 	if(initgfcomplete<10)
 	{
@@ -80,9 +86,9 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
 	}
 	if (gfisnwf)//nwf -> now the orders have been executed -> new constructions can be started
 	{	
-		construction.constructionlocations.clear();
+		construction->constructionlocations.clear();
 		for(unsigned i=0;i<BUILDING_TYPES_COUNT;i++)
-			construction.constructionorders[i]=0;
+			construction->constructionorders[i]=0;
 	}
 
     if (gf == 100)
@@ -97,7 +103,7 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
     if (!gfisnwf) //try to complete a job on the list
     {
 		//LOG.lprintf("ai doing stuff %i \n",playerid);
-        construction.RefreshBuildingCount();
+        construction->RefreshBuildingCount();
         ExecuteAIJob();
     }
 
@@ -183,7 +189,7 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
     }
     if((gf + playerid * 7) % 200 == 0) // plan new buildings
     {
-        construction.RefreshBuildingCount();
+        construction->RefreshBuildingCount();
 		
         //pick a random storehouse and try to build one of these buildings around it (checks if we actually want more of the building type)
         BuildingType bldToTest[] =
@@ -235,13 +241,13 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
 			UpdateNodesAroundNoBorder((*it)->GetPos(), 15); //update the area we want to build in first
 			for (unsigned int i = 0; i < numBldToTest; i++)
 			{
-				if (construction.Wanted(bldToTest[i]))
+				if (construction->Wanted(bldToTest[i]))
 				{
 					AddBuildJobAroundEvery(bldToTest[i], true); //add a buildorder for the picked buildingtype at every warehouse
 				}
 			}
 			if(gf > 1500 || aii->GetInventory()->goods[GD_BOARDS] > 11)
-	            AddBuildJob(construction.ChooseMilitaryBuilding((*it)->GetPos()), (*it)->GetPos());
+	            AddBuildJob(construction->ChooseMilitaryBuilding((*it)->GetPos()), (*it)->GetPos());
 		}
 		//end of construction around & orders for warehouses
 
@@ -255,12 +261,12 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
 		numBldToTest=14; //resource gathering buildings only around military; processing only close to warehouses
         for (unsigned int i = 0; i < numBldToTest; i++)
         {
-            if (construction.Wanted(bldToTest[i]))
+            if (construction->Wanted(bldToTest[i]))
             {
                 AddBuildJobAroundEvery(bldToTest[i], false);
             }
         }
-        AddBuildJob(construction.ChooseMilitaryBuilding(t), t);
+        AddBuildJob(construction->ChooseMilitaryBuilding(t), t);
         if((*it2)->IsUseless() && (*it2)->IsDemolitionAllowed() && randomstore!=UpdateUpgradeBuilding())
         {
             aii->DestroyBuilding(t);
@@ -280,6 +286,8 @@ bool AIPlayerJH::TestDefeat()
     }
     return false;
 }
+
+unsigned AIPlayerJH::GetJobNum() const { return eventManager.GetEventNum() + construction->GetBuildJobNum() + construction->GetConnectJobNum(); }	
 
 /// returns the warehouse closest to the upgradebuilding or if it cant find a way the first warehouse and if there is no warehouse left null
 nobBaseWarehouse* AIPlayerJH::GetUpgradeBuildingWarehouse()
@@ -304,9 +312,11 @@ nobBaseWarehouse* AIPlayerJH::GetUpgradeBuildingWarehouse()
 	return wh;
 }
 
+void AIPlayerJH::AddBuildJob(AIJH::BuildJob* job, bool front /*= false*/){ construction->AddBuildJob(job, front); }
+
 void AIPlayerJH::AddBuildJob(BuildingType type, const MapPoint pt, bool front)
 {
-    construction.AddBuildJob(new AIJH::BuildJob(this, type, pt), front);
+    construction->AddBuildJob(new AIJH::BuildJob(this, type, pt), front);
 }
 
 void AIPlayerJH::AddBuildJobAroundEvery(BuildingType bt, bool warehouse)
@@ -315,14 +325,14 @@ void AIPlayerJH::AddBuildJobAroundEvery(BuildingType bt, bool warehouse)
 	{
 		for(std::list<nobBaseWarehouse*>::const_iterator it=aii->GetStorehouses().begin();it!=aii->GetStorehouses().end();it++)
 		{
-			construction.AddBuildJob(new AIJH::BuildJob(this,bt,(*it)->GetPos()),false);
+			construction->AddBuildJob(new AIJH::BuildJob(this,bt,(*it)->GetPos()),false);
 		}
 	}
 	else
 	{
 		for(std::list<nobMilitary*>::const_iterator it=aii->GetMilitaryBuildings().begin();it!=aii->GetMilitaryBuildings().end();it++)
 		{
-			construction.AddBuildJob(new AIJH::BuildJob(this,bt,(*it)->GetPos()),false);
+			construction->AddBuildJob(new AIJH::BuildJob(this,bt,(*it)->GetPos()),false);
 		}
 	}
 }
@@ -1092,14 +1102,14 @@ void AIPlayerJH::ExecuteAIJob()
 	if (quota>40)
 		quota=40;
 
-	construction.ExecuteJobs(quota); //try to execute up to quota connect & construction jobs
+	construction->ExecuteJobs(quota); //try to execute up to quota connect & construction jobs
 	/*
     // if no current job available, take next one! events first, then constructions
     if (!currentJob)
     {
-        if (construction.BuildJobAvailable())
+        if (construction->BuildJobAvailable())
         {
-            currentJob = construction.GetBuildJob();
+            currentJob = construction->GetBuildJob();
         }
     }
     // Something to do? Do it!
@@ -1369,7 +1379,7 @@ void AIPlayerJH::HandleNewMilitaryBuilingOccupied(const MapPoint pt)
 {
     //kill bad flags we find
     RemoveAllUnusedRoads(pt);
-    construction.RefreshBuildingCount();
+    construction->RefreshBuildingCount();
     const nobMilitary* mil = aii->GetSpecObj<nobMilitary>(pt);
     if (mil)
     {
@@ -1390,9 +1400,9 @@ void AIPlayerJH::HandleNewMilitaryBuilingOccupied(const MapPoint pt)
         AddBuildJob(BLD_SHIPYARD, pt);
     if (SoldierAvailable())
     {
-        AddBuildJob(construction.ChooseMilitaryBuilding(pt), pt);
-        AddBuildJob(construction.ChooseMilitaryBuilding(pt), pt);
-        AddBuildJob(construction.ChooseMilitaryBuilding(pt), pt);
+        AddBuildJob(construction->ChooseMilitaryBuilding(pt), pt);
+        AddBuildJob(construction->ChooseMilitaryBuilding(pt), pt);
+        AddBuildJob(construction->ChooseMilitaryBuilding(pt), pt);
     }
 
     // try to build one the following buildings around the new military building
@@ -1436,7 +1446,7 @@ void AIPlayerJH::HandleNewMilitaryBuilingOccupied(const MapPoint pt)
 
     for (unsigned int i = numBldToTest; i < 11; ++i)
     {
-        if (construction.Wanted(bldToTest[i]))
+        if (construction->Wanted(bldToTest[i]))
         {
             AddBuildJob(bldToTest[i], pt);
         }
@@ -1510,7 +1520,7 @@ void AIPlayerJH::HandleRoadConstructionComplete(MapPoint pt, unsigned char dir)
     //goal is to move roadsegments with a length of more than 2 away from the warehouse
     MapPoint t = flag->routes[dir]->GetOtherFlag(flag)->GetPos();
     t = gwb->GetNeighbour(t, 1);
-	construction.constructionlocations.push_back(t);
+	construction->constructionlocations.push_back(t);
     if(aii->IsBuildingOnNode(t, BLD_STOREHOUSE) || aii->IsBuildingOnNode(t, BLD_HARBORBUILDING) || aii->IsBuildingOnNode(t, BLD_HEADQUARTERS))
     {
         t = gwb->GetNeighbour(t, 4);
@@ -1548,7 +1558,7 @@ void AIPlayerJH::HandleRoadConstructionFailed(const MapPoint pt, unsigned char d
     }
     //if it isnt a useless flag AND it has no current road connection then retry to build a road.
     if(RemoveUnusedRoad(flag, 255, true, false))
-        construction.AddConnectFlagJob(flag);
+        construction->AddConnectFlagJob(flag);
 }
 
 void AIPlayerJH::HandleMilitaryBuilingLost(const MapPoint pt)
@@ -1594,7 +1604,7 @@ void AIPlayerJH::HandleBuildingFinished(const MapPoint pt, BuildingType bld)
 
 void AIPlayerJH::HandleNewColonyFounded(const MapPoint pt)
 {
-    construction.AddConnectFlagJob(aii->GetSpecObj<noFlag>(aii->GetNeighbour(pt, 4)));
+    construction->AddConnectFlagJob(aii->GetSpecObj<noFlag>(aii->GetNeighbour(pt, 4)));
 }
 
 void AIPlayerJH::HandleExpedition(const noShip* ship)
@@ -1658,7 +1668,7 @@ void AIPlayerJH::HandleTreeChopped(const MapPoint pt)
 
 
     if (random % 2 == 0)
-        AddBuildJob(construction.ChooseMilitaryBuilding(pt), pt);
+        AddBuildJob(construction->ChooseMilitaryBuilding(pt), pt);
     else //if (random % 12 == 0)
         AddBuildJob(BLD_WOODCUTTER, pt);
 
@@ -1707,8 +1717,8 @@ void AIPlayerJH::HandleNoMoreResourcesReachable(const MapPoint pt, BuildingType 
     RemoveUnusedRoad(aii->GetSpecObj<noFlag>(aii->GetNeighbour(pt, 4)), 1, true);
 
     // try to expand, maybe res blocked a passage
-    AddBuildJob(construction.ChooseMilitaryBuilding(pt), pt);
-    AddBuildJob(construction.ChooseMilitaryBuilding(pt), pt);
+    AddBuildJob(construction->ChooseMilitaryBuilding(pt), pt);
+    AddBuildJob(construction->ChooseMilitaryBuilding(pt), pt);
 
     // and try to rebuild the same building
     if(bld != BLD_HUNTER)
@@ -1751,7 +1761,7 @@ void AIPlayerJH::HandleBorderChanged(const MapPoint pt)
         }
         if (mil->GetBuildingType() == BLD_BARRACKS || mil->GetBuildingType() == BLD_GUARDHOUSE)
         {
-            AddBuildJob(construction.ChooseMilitaryBuilding(pt), pt);
+            AddBuildJob(construction->ChooseMilitaryBuilding(pt), pt);
         }
     }
 }
@@ -1784,7 +1794,7 @@ void AIPlayerJH::MilUpgradeOptim()
 				}
 				else if ((*it)->GetFrontierDistance()>=1) // frontier building - connect to road system
 				{
-					construction.AddConnectFlagJob((*it)->GetFlag());
+					construction->AddConnectFlagJob((*it)->GetFlag());
 				}
 			}
 			else //no upgrade building? -> activate gold for frontier buildings
@@ -1797,9 +1807,9 @@ void AIPlayerJH::MilUpgradeOptim()
 		}
 		else //upgrade building 
 		{
-			if(!construction.IsConnectedToRoadSystem((*it)->GetFlag()))
+			if(!construction->IsConnectedToRoadSystem((*it)->GetFlag()))
 			{
-				construction.AddConnectFlagJob((*it)->GetFlag());				
+				construction->AddConnectFlagJob((*it)->GetFlag());				
 				continue;
 			}
 			if((*it)->IsGoldDisabled()) // activate gold
@@ -2202,7 +2212,7 @@ bool AIPlayerJH::IsFlagPartofCircle(const noFlag* startFlag, unsigned maxlen, co
 void AIPlayerJH::RemoveAllUnusedRoads(const MapPoint pt)
 {
     std::vector<const noFlag*> flags;
-    construction.FindFlags(flags, pt, 25);
+    construction->FindFlags(flags, pt, 25);
     // Jede Flagge testen...
     std::list<const noFlag*>reconnectflags;
     for(unsigned i = 0; i < flags.size(); ++i)
@@ -2213,7 +2223,7 @@ void AIPlayerJH::RemoveAllUnusedRoads(const MapPoint pt)
     UpdateNodesAroundNoBorder(pt, 25);
     while(reconnectflags.size() > 0)
     {
-        construction.AddConnectFlagJob(reconnectflags.front());
+        construction->AddConnectFlagJob(reconnectflags.front());
         reconnectflags.pop_front();
     }
 }
@@ -2369,9 +2379,9 @@ int AIPlayerJH::UpdateUpgradeBuilding()
 		for (std::list<nobMilitary*>::const_iterator it = aii->GetMilitaryBuildings().begin(); it!=aii->GetMilitaryBuildings().end(); it++)
 		{
 			//inland building, tower or fortress, connected to warehouse 1 
-			if((*it)->GetBuildingType()>=BLD_WATCHTOWER && (*it)->GetFrontierDistance()<1 && construction.IsConnectedToRoadSystem((*it)->GetFlag()))
+			if((*it)->GetBuildingType()>=BLD_WATCHTOWER && (*it)->GetFrontierDistance()<1 && construction->IsConnectedToRoadSystem((*it)->GetFlag()))
 			{
-				if (construction.IsConnectedToRoadSystem((*it)->GetFlag()))
+				if (construction->IsConnectedToRoadSystem((*it)->GetFlag()))
 				{
 					//LOG.lprintf("UpdateUpgradeBuilding at %i,%i for player %i (listslot %i) \n",(*it)->GetX(), (*it)->GetY(), playerid, count);
 					UpgradeBldX=(*it)->GetX();
@@ -2388,7 +2398,7 @@ int AIPlayerJH::UpdateUpgradeBuilding()
 	//no valid upgrade building yet - try to reconnect correctly flagged buildings
 	for (std::list<nobMilitary*>::const_iterator it=backup.begin();it!=backup.end();it++)
 	{
-		construction.AddConnectFlagJob((*it)->GetFlag());
+		construction->AddConnectFlagJob((*it)->GetFlag());
 	}
 	UpgradeBldX=0;
 	UpgradeBldY=0;
@@ -2491,13 +2501,13 @@ void AIPlayerJH::ExecuteLuaConstructionOrder(const MapPoint pt, BuildingType bt,
 		AIJH::BuildJob* j=new AIJH::BuildJob(this, bt, pt);
 		j->SetStatus(AIJH::JOB_EXECUTING_ROAD1);
 		j->SetTarget(pt);
-		construction.AddBuildJob(j,true); //connects the buildingsite to roadsystem
+		construction->AddBuildJob(j,true); //connects the buildingsite to roadsystem
 	}
 	else 
 	{
-		if (construction.Wanted(bt))
+		if (construction->Wanted(bt))
 		{
-			construction.AddBuildJob(new AIJH::BuildJob(this, bt, pt), true); //add build job to the front of the list
+			construction->AddBuildJob(new AIJH::BuildJob(this, bt, pt), true); //add build job to the front of the list
 		}
 	}
 }
@@ -2714,13 +2724,13 @@ void AIPlayerJH::AdjustSettings()
     toolsettings[2] = (aii->GetInventory()->goods[GD_SAW] + aii->GetInventory()->people[JOB_CARPENTER] < 2) ? 4 : aii->GetInventory()->goods[GD_SAW] < 1 ? 1 : 0;                                                                       //saw
     toolsettings[3] = (aii->GetInventory()->goods[GD_PICKAXE] < 1) ? 1 : 0;                                                                                                                     //pickaxe
     toolsettings[4] = (aii->GetInventory()->goods[GD_HAMMER] < 1) ? 1 : 0;                                                                                                                      //hammer
-    toolsettings[6] = (aii->GetInventory()->goods[GD_CRUCIBLE] + aii->GetInventory()->people[JOB_IRONFOUNDER] < construction.GetBuildingCount(BLD_IRONSMELTER) + 1) ? 1 : 0;;                   //crucible
+    toolsettings[6] = (aii->GetInventory()->goods[GD_CRUCIBLE] + aii->GetInventory()->people[JOB_IRONFOUNDER] < construction->GetBuildingCount(BLD_IRONSMELTER) + 1) ? 1 : 0;;                   //crucible
     toolsettings[8] = (toolsettings[4] < 1 && toolsettings[3] < 1 && toolsettings[6] < 1 && toolsettings[2] < 1 && (aii->GetInventory()->goods[GD_SCYTHE] < 1)) ? 1 : 0;                        //scythe
-    toolsettings[10] = (aii->GetInventory()->goods[GD_ROLLINGPIN] + aii->GetInventory()->people[JOB_BAKER] < construction.GetBuildingCount(BLD_BAKERY) + 1) ? 1 : 0;                            //rollingpin
+    toolsettings[10] = (aii->GetInventory()->goods[GD_ROLLINGPIN] + aii->GetInventory()->people[JOB_BAKER] < construction->GetBuildingCount(BLD_BAKERY) + 1) ? 1 : 0;                            //rollingpin
     toolsettings[5] = (toolsettings[4] < 1 && toolsettings[3] < 1 && toolsettings[6] < 1 && toolsettings[2] < 1 && (aii->GetInventory()->goods[GD_SHOVEL] < 1)) ? 1 : 0 ;                       //shovel
     toolsettings[1] = (toolsettings[4] < 1 && toolsettings[3] < 1 && toolsettings[6] < 1 && toolsettings[2] < 1 && (aii->GetInventory()->goods[GD_AXE] + aii->GetInventory()->people[JOB_WOODCUTTER] < 12) && aii->GetInventory()->goods[GD_AXE] < 1) ? 1 : 0; //axe
     toolsettings[0] = 0; //(toolsettings[4]<1&&toolsettings[3]<1&&toolsettings[6]<1&&toolsettings[2]<1&&(aii->GetInventory()->goods[GD_TONGS]<1))?1:0;                                                //Tongs(metalworks)
-    toolsettings[9] = 0; //(aii->GetInventory()->goods[GD_CLEAVER]+aii->GetInventory()->people[JOB_BUTCHER]<construction.GetBuildingCount(BLD_SLAUGHTERHOUSE)+1)?1:0;                                //cleaver
+    toolsettings[9] = 0; //(aii->GetInventory()->goods[GD_CLEAVER]+aii->GetInventory()->people[JOB_BUTCHER]<construction->GetBuildingCount(BLD_SLAUGHTERHOUSE)+1)?1:0;                                //cleaver
     toolsettings[7] = 0;                                                                                                                                                                        //rod & line
     toolsettings[11] = 0;                                                                                                                                                                       //bow
     aii->SetToolSettings(toolsettings);

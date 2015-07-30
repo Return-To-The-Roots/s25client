@@ -50,9 +50,9 @@ static char THIS_FILE[] = __FILE__;
 noDisappearingEnvObject::noDisappearingEnvObject(const MapPoint pos,
         const unsigned living_time, const unsigned add_var_living_time)
     : noCoordBase(NOP_ENVIRONMENT, pos),
-      disappearing(false), dead_event(em->AddEvent(this, living_time +
-                                      RANDOM.Rand(__FILE__, __LINE__, obj_id, add_var_living_time)))
+      disappearing(false)
 {
+    dead_event = em->AddEvent(this, living_time + RANDOM.Rand(__FILE__, __LINE__, obj_id, add_var_living_time));
 }
 
 void noDisappearingEnvObject::Serialize_noDisappearingEnvObject(SerializedGameData* sgd) const
