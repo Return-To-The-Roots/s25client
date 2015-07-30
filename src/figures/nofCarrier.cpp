@@ -50,19 +50,19 @@ static char THIS_FILE[] = __FILE__;
 ///////////////////////////////////////////////////////////////////////////////
 // Konstanten
 
-/// Zeitabstand, in dem die ProduktivitÃ¤t vom TrÃ¤ger gemessen wird
+/// Zeitabstand, in dem die Produktivität vom Träger gemessen wird
 const unsigned PRODUCTIVITY_GF = 6000;
-/// Ab wieviel Prozent Auslastung in Prozent eines TrÃ¤gers ein Esel kommen soll
+/// Ab wieviel Prozent Auslastung in Prozent eines Trägers ein Esel kommen soll
 const unsigned DONKEY_PRODUCTIVITY = 80;
 
 
 
-/// Abstand zur nÃ¤chsten Animation (Wert ergibt sich aus NEXT_ANIMATION + rand(NEXT_ANIMATION_RANDOM) )
+/// Abstand zur nächsten Animation (Wert ergibt sich aus NEXT_ANIMATION + rand(NEXT_ANIMATION_RANDOM) )
 const unsigned NEXT_ANIMATION = 200; // fest
-const unsigned NEXT_ANIMATION_RANDOM = 200; // was noch dazu zufÃ¤lliges addiert wird
+const unsigned NEXT_ANIMATION_RANDOM = 200; // was noch dazu zufälliges addiert wird
 
 
-/// LÃ¤ngen in Frames der Animationenen
+/// Längen in Frames der Animationenen
 const unsigned ANIMATION_FRAME_LENGTHS[2][4] =
 { {11, 10, 35, 20}, {9, 12, 12, 13} };
 /// Dauer in GF eines Frames
@@ -72,19 +72,19 @@ const unsigned FRAME_GF = 3;
 const unsigned short ANIMATION[2][4][35] =
 {
     {
-        // dÃ¼nn
+        // dünn
         {1745, 1746, 1747, 1748, 1749, 1750, 1751, 1748, 1748, 1747, 1746}, // Reifenspringen
-        // dÃ¼nn
+        // dünn
         {1752, 1753, 1754, 1755, 1756, 1757, 1758, 1754, 1753, 1752}, // Winken
-        // dÃ¼nn
+        // dünn
         {
             1759, 1760, 1761, 1762, 1763, 1763, 1763, 1765, 1763, 1763, // Zeitung lesen
             1763, 1765, 1763, 1762, 1765, 1763, 1764, 1764, 1763, 1763,
             1763, 1765, 1765, 1765, 1763, 1763, 1763, 1765, 1763, 1763,
             1763, 1765, 1765, 1764, 1761
         },
-        // dÃ¼nn
-        {1752, 1770, 1771, 1772, 1773, 1772, 1773, 1772, 1773, 1772, 1773, 1771, 1771, 1773, 1771, 1771, 1771, 1771, 1770, 1752} // GÃ¤hnen
+        // dünn
+        {1752, 1770, 1771, 1772, 1773, 1772, 1773, 1772, 1773, 1772, 1773, 1771, 1771, 1773, 1771, 1771, 1771, 1771, 1770, 1752} // Gähnen
     },
     {
         // dick
@@ -219,7 +219,7 @@ void nofCarrier::Destroy_nofCarrier()
  */
 void nofCarrier::Draw(int x, int y)
 {
-    // Unterscheiden, um was fÃ¼r eine Art von TrÃ¤ger es sich handelt
+    // Unterscheiden, um was für eine Art von Träger es sich handelt
     switch(ct)
     {
         case CT_NORMAL:
@@ -228,7 +228,7 @@ void nofCarrier::Draw(int x, int y)
             {
                 bool animation = false;
 
-                // Ist es schon Zeit fÃ¼r eine Animation?
+                // Ist es schon Zeit für eine Animation?
                 unsigned current_gf = GAMECLIENT.GetGFNumber();
 
                 if(current_gf >= next_animation)
@@ -251,7 +251,7 @@ void nofCarrier::Draw(int x, int y)
                     if (((animation_id < 4) && (current_gf >= next_animation + ANIMATION_FRAME_LENGTHS[fat ? 1 : 0][animation_id]*FRAME_GF)) ||
                             ((animation_id == 4) && (current_gf >= next_animation + 32 * 3)))
                     {
-                        // Neuen nÃ¤chsten Animationszeitpunkt bestimmen
+                        // Neuen nächsten Animationszeitpunkt bestimmen
                         SetNewAnimationMoment();
                     }
                     else
@@ -296,14 +296,14 @@ void nofCarrier::Draw(int x, int y)
                 // Steht und wartet (mit Ware)
                 Loader::carrier_cache[carried_ware->type][dir][2][fat].draw(x, y, COLOR_WHITE, COLORS[gwg->GetPlayer(player)->color]);
 
-                // Japaner-Schild-Animation existiert leider nicht --> RÃ¶merschild nehmen
+                // Japaner-Schild-Animation existiert leider nicht --> Römerschild nehmen
 //              LOADER.GetBobN("carrier")->Draw((carried_ware->type==GD_SHIELDJAPANESE)?GD_SHIELDROMANS:carried_ware->type,
 //                  dir,fat,2,x,y,COLORS[gwg->GetPlayer(player)->color]);
 //              DrawShadow(x,y,0,dir);
             }
             else
             {
-                // LÃ¤uft normal mit oder ohne Ware
+                // Läuft normal mit oder ohne Ware
                 if(carried_ware)
                     DrawWalkingBobCarrier(x, y, carried_ware->type, fat);
 //                  DrawWalking(x,y,LOADER.GetBobN("carrier"),(carried_ware->type==GD_SHIELDJAPANESE)?GD_SHIELDROMANS:carried_ware->type,fat);
@@ -324,7 +324,7 @@ void nofCarrier::Draw(int x, int y)
             else if(state == CARRS_WAITFORWARESPACE || (waiting_for_free_node && !pause_walked_gf && carried_ware))
             {
                 //// Steht und wartet (mit Ware)
-                //// Japaner-Schild-Animation existiert leider nicht --> RÃ¶merschild nehmen
+                //// Japaner-Schild-Animation existiert leider nicht --> Römerschild nehmen
 
                 // Esel
                 Loader::donkey_cache[dir][0].draw(x, y);
@@ -335,13 +335,13 @@ void nofCarrier::Draw(int x, int y)
             }
             else
             {
-                // Wenn wir warten auf ein freies PlÃ¤tzchen, mÃ¼ssen wir den stehend zeichnen!
+                // Wenn wir warten auf ein freies Plätzchen, müssen wir den stehend zeichnen!
                 // Wenn event = 0, dann sind wir mittem auf dem Weg angehalten!
                 unsigned ani_step = waiting_for_free_node ? 2 : GAMECLIENT.Interpolate(ASCENT_ANIMATION_STEPS[ascent], current_ev) % 8;
 
                 CalcFigurRelative(x, y);
 
-                // LÃ¤uft normal mit oder ohne Ware
+                // Läuft normal mit oder ohne Ware
 
                 // Esel
                 Loader::donkey_cache[dir][ani_step].draw(x, y);
@@ -361,7 +361,7 @@ void nofCarrier::Draw(int x, int y)
         {
             if(state == CARRS_FIGUREWORK)
             {
-                // Beim normalen Laufen TrÃ¤ger mit Boot Ã¼ber den Schultern zeichnen
+                // Beim normalen Laufen Träger mit Boot über den Schultern zeichnen
                 DrawWalkingBobCarrier(x, y, GD_BOAT, fat);
 //              DrawWalking(x,y,LOADER.GetBobN("carrier"),GD_BOAT,fat);
             }
@@ -379,7 +379,7 @@ void nofCarrier::Draw(int x, int y)
             }
             else
             {
-                // Wenn wir warten auf ein freies PlÃ¤tzchen, mÃ¼ssen wir den (fest)stehend zeichnen!
+                // Wenn wir warten auf ein freies Plätzchen, müssen wir den (fest)stehend zeichnen!
                 // Wenn event = 0, dann sind wir mittem auf dem Weg angehalten!
                 unsigned ani_step = waiting_for_free_node ? 2 : GAMECLIENT.Interpolate(ASCENT_ANIMATION_STEPS[ascent], current_ev) % 8;
 
@@ -388,7 +388,7 @@ void nofCarrier::Draw(int x, int y)
                 // ruderndes Boot zeichnen
                 Loader::boat_cache[dir][ani_step].draw(x, y, 0xFFFFFFFF, COLORS[gwg->GetPlayer(player)->color]);
 
-                // LÃ¤uft normal mit oder ohne Ware
+                // Läuft normal mit oder ohne Ware
                 if(carried_ware)
                     // Ware im Boot zeichnen
                     LOADER.GetMapImageN(2350 + carried_ware->type)
@@ -419,7 +419,7 @@ void nofCarrier::SetNewAnimationMoment()
  */
 void nofCarrier::Walked()
 {
-    // Bootssounds ggf. lÃ¶schen
+    // Bootssounds ggf. löschen
     if(ct == CT_BOAT && state != CARRS_FIGUREWORK)
         SOUNDMANAGER.WorkingFinished(this);
 
@@ -430,7 +430,7 @@ void nofCarrier::Walked()
         case CARRS_GOTOMIDDLEOFROAD:
         {
             // Gibts an der Flagge in der entgegengesetzten Richtung, in die ich laufe, evtl Waren zu tragen
-            // (da wir darÃ¼ber nicht unmittelbar informiert werden!)
+            // (da wir darüber nicht unmittelbar informiert werden!)
             if(workplace->AreWareJobs(rs_dir, ct, false))
             {
                 // Dann umdrehen und holen
@@ -451,10 +451,10 @@ void nofCarrier::Walked()
 
                 current_ev = 0;
 
-                // Jetzt wird wieder nur rumgegammelt, dann kriegen wir aber evtl keinen schÃ¶nen IH-AH!
+                // Jetzt wird wieder nur rumgegammelt, dann kriegen wir aber evtl keinen schönen IH-AH!
                 StopWorking();
 
-                // Animation auf spÃ¤ter verschieben, damit die nicht mittendrin startet
+                // Animation auf später verschieben, damit die nicht mittendrin startet
                 SetNewAnimationMoment();
             }
             else
@@ -496,16 +496,16 @@ void nofCarrier::Walked()
                 // Will die Waren jetzt gleich zur Baustelle neben der Flagge?
                 if(WantInBuilding(&calculated))
                 {
-                    // Erst noch zur Baustelle bzw GebÃ¤ude laufen
+                    // Erst noch zur Baustelle bzw Gebäude laufen
                     state = CARRS_CARRYWARETOBUILDING;
                     StartWalking(1);
                     cur_rs = this_flag->routes[1];
-                    // location wird immer auf nÃ¤chste Flagge gesetzt --> in dem Fall aktualisieren
+                    // location wird immer auf nächste Flagge gesetzt --> in dem Fall aktualisieren
                     carried_ware->Carry((cur_rs->GetF1() == this_flag) ? cur_rs->GetF2() : cur_rs->GetF1());
                 }
                 else
                 {
-                    // Ist an der Flagge noch genÃ¼gend Platz (wenn wir wieder eine Ware mitnehmen, kann sie auch voll sein)
+                    // Ist an der Flagge noch genügend Platz (wenn wir wieder eine Ware mitnehmen, kann sie auch voll sein)
                     if(this_flag->IsSpaceForWare())
                     {
                         carried_ware->LieAtFlag(this_flag);
@@ -525,7 +525,7 @@ void nofCarrier::Walked()
                     }
                     else if(workplace->AreWareJobs(!rs_dir, ct, true))
                     {
-                        // die Flagge ist voll, aber wir kÃ¶nnen eine Ware mitnehmen, daher erst Ware nehmen und dann erst ablegen
+                        // die Flagge ist voll, aber wir können eine Ware mitnehmen, daher erst Ware nehmen und dann erst ablegen
 
                         // Ware "merken"
                         Ware* tmp_ware = carried_ware;
@@ -543,7 +543,7 @@ void nofCarrier::Walked()
                     }
                     else
                     {
-                        // wenn kein Platz mehr ist --> wieder umdrehen und zurÃ¼ckgehen
+                        // wenn kein Platz mehr ist --> wieder umdrehen und zurückgehen
                         state = CARRS_GOBACKFROMFLAG;
                         rs_dir = !rs_dir;
                         rs_pos = cur_rs->GetLength() - rs_pos;
@@ -580,20 +580,20 @@ void nofCarrier::Walked()
             gwg->GetSpecObj<noRoadNode>(pos)->AddWare(carried_ware);
             // Ich trag' keine Ware mehr
             carried_ware = 0;
-            // Wieder zurÃ¼ck zu meinem Weg laufen
+            // Wieder zurück zu meinem Weg laufen
             state = CARRS_LEAVEBUILDING;
             StartWalking(4);
         } break;
         case CARRS_LEAVEBUILDING:
         {
-            // So tun, als ob der TrÃ¤ger gerade vom anderen Ende des Weges kommt, damit alles korrekt funktioniert
+            // So tun, als ob der Träger gerade vom anderen Ende des Weges kommt, damit alles korrekt funktioniert
             cur_rs = workplace;
             dir = workplace->GetDir(rs_dir, workplace->GetLength() - 1);
             LookForWares();
         } break;
         case CARRS_GOBACKFROMFLAG:
         {
-            // Wieder umdrehen und so tun, als wÃ¤ren wir gerade normal angekommen
+            // Wieder umdrehen und so tun, als wären wir gerade normal angekommen
             rs_dir = !rs_dir;
             rs_pos = cur_rs->GetLength() - rs_pos;
             state = CARRS_CARRYWARE;
@@ -617,7 +617,7 @@ void nofCarrier::LookForWares()
     // Gibts an dieser Flagge etwas, das ich tragen muss?
     if(workplace->AreWareJobs(!rs_dir, ct, true))
     {
-        // Dann soll das CARRS_FETCHWARE Ã¼bernehmen
+        // Dann soll das CARRS_FETCHWARE übernehmen
         FetchWare(false);
     }
     else if(workplace->AreWareJobs(rs_dir, ct, false))
@@ -630,7 +630,7 @@ void nofCarrier::LookForWares()
     }
     else
     {
-        // Wieder zurÃ¼ck in die Mitte gehen
+        // Wieder zurück in die Mitte gehen
         state = CARRS_GOTOMIDDLEOFROAD;
         rs_dir = !rs_dir;
         rs_pos = 0;
@@ -646,7 +646,7 @@ void nofCarrier::LookForWares()
  */
 void nofCarrier::GoalReached()
 {
-    // Erstes ProduktivitÃ¤tsevent anmelden
+    // Erstes Produktivitätsevent anmelden
     productivity_ev = em->AddEvent(this, PRODUCTIVITY_GF, 1);
     // Wir arbeiten schonmal
     StartWorking();
@@ -676,7 +676,7 @@ void nofCarrier::GoalReached()
                 if(carried_ware)
                     state = CARRS_CARRYWARE;
             }
-            // wenn was an der gegenÃ¼berliegenden Flaggge liegt, ebenfalls holen
+            // wenn was an der gegenüberliegenden Flaggge liegt, ebenfalls holen
             else if(workplace->AreWareJobs(!rs_dir, ct, false))
                 state = CARRS_FETCHWARE;
             return;
@@ -699,10 +699,10 @@ void nofCarrier::AbrogateWorkplace()
         em->RemoveEvent(productivity_ev);
         productivity_ev = 0;
 
-        // anderen TrÃ¤ger herausfinden
+        // anderen Träger herausfinden
         unsigned other = (ct == CT_DONKEY) ? 0 : 1;
 
-        // wenn ich in ein GebÃ¤ude gegangen bin und dann vom Weg geworfen wurde, muss der andere
+        // wenn ich in ein Gebäude gegangen bin und dann vom Weg geworfen wurde, muss der andere
         // ggf. die Waren tragen, die ich jetzt nicht mehr tragen kann
         if((state == CARRS_LEAVEBUILDING || state == CARRS_CARRYWARETOBUILDING) && workplace->hasCarrier(other))
         {
@@ -714,7 +714,7 @@ void nofCarrier::AbrogateWorkplace()
 
         workplace->CarrierAbrogated(this);
         workplace = 0;
-        // Wenn ich noch ne Ware in der Hand habe, muss die gelÃ¶scht werden
+        // Wenn ich noch ne Ware in der Hand habe, muss die gelöscht werden
         if(carried_ware)
         {
             carried_ware->WareLost(player);
@@ -742,7 +742,7 @@ void nofCarrier::LostWork()
         GoHome();
     else
     {
-        // Wenn ich noch ne Ware in der Hand habe, muss die gelÃ¶scht werden
+        // Wenn ich noch ne Ware in der Hand habe, muss die gelöscht werden
         if(carried_ware)
         {
             carried_ware->WareLost(player);
@@ -806,10 +806,10 @@ void nofCarrier::LostWork()
  */
 void nofCarrier::RoadSplitted(RoadSegment* rs1, RoadSegment* rs2)
 {
-    // Bin ich schon auf meinem Arbeitsplatz (=StraÃŸe) oder bin ich erst noch auf dem Weg dorthin?
+    // Bin ich schon auf meinem Arbeitsplatz (=Straße) oder bin ich erst noch auf dem Weg dorthin?
     if(state == CARRS_FIGUREWORK)
     {
-        // ich gehe erst noch hin, also gucken, welche Flagge ich anvisiert habe und das jeweilige TeilstÃ¼ck dann als ArbeitsstraÃŸe
+        // ich gehe erst noch hin, also gucken, welche Flagge ich anvisiert habe und das jeweilige Teilstück dann als Arbeitsstraße
         if(GetGoal() == rs1->GetF1())
             workplace = rs1;
         else
@@ -817,7 +817,7 @@ void nofCarrier::RoadSplitted(RoadSegment* rs1, RoadSegment* rs2)
     }
     else if(state == CARRS_CARRYWARETOBUILDING || state == CARRS_LEAVEBUILDING)
     {
-        // Wenn ich in ein GebÃ¤ude gehen oder rauskomme, auf den Weg gehen, der an dieses GebÃ¤ude grenzt
+        // Wenn ich in ein Gebäude gehen oder rauskomme, auf den Weg gehen, der an dieses Gebäude grenzt
         if(cur_rs->GetF1() == rs1->GetF1() || cur_rs->GetF1() == rs1->GetF2())
             workplace = rs1;
         else
@@ -829,29 +829,29 @@ void nofCarrier::RoadSplitted(RoadSegment* rs1, RoadSegment* rs2)
         workplace = (cur_rs == rs1) ? rs1 : rs2;
     }
 
-    // Sonstige Sachen fÃ¼r jeweilige States unternehmen
+    // Sonstige Sachen für jeweilige States unternehmen
     switch(state)
     {
         default:
             break;
         case CARRS_WAITFORWARE:
         {
-            // Wenn wir stehen, mÃ¼ssen wir in die Mitte laufen
+            // Wenn wir stehen, müssen wir in die Mitte laufen
             state = CARRS_GOTOMIDDLEOFROAD;
             Walked();
         } break;
         case CARRS_FETCHWARE:
         {
-            // Wenn wir zur 2. Flagge vom 1. WegstÃ¼ck gelaufen sind, kÃ¶nnen wir das nun vergessen
+            // Wenn wir zur 2. Flagge vom 1. Wegstück gelaufen sind, können wir das nun vergessen
             if(!workplace->AreWareJobs(!rs_dir, ct, false))
                 state = CARRS_GOTOMIDDLEOFROAD;
         } break;
     }
 
-    // Mich als TrÃ¤ger fÃ¼r meinen neuen Arbeitsplatz zuweisen
+    // Mich als Träger für meinen neuen Arbeitsplatz zuweisen
     workplace->setCarrier(ct == CT_DONKEY ? 1 : 0, this);
 
-    // FÃ¼r andere StraÃŸe neuen TrÃ¤ger/Esel rufen
+    // Für andere Straße neuen Träger/Esel rufen
     RoadSegment* uc_road = ((rs1 == workplace) ? (rs2) : (rs1));
     uc_road->setCarrier(ct == CT_DONKEY ? 1 : 0, NULL);
 
@@ -871,30 +871,30 @@ void nofCarrier::HandleDerivedEvent(const unsigned int id)
 {
     switch(id)
     {
-            // ProduktivitÃ¤tsevent
+            // Produktivitätsevent
         case 1:
         {
             productivity_ev = 0;
 
-            // Gucken, ob bis jetzt gearbeitet wurde/wird oder nicht, je nachdem noch was dazuzÃ¤hlen
+            // Gucken, ob bis jetzt gearbeitet wurde/wird oder nicht, je nachdem noch was dazuzählen
             if(since_working_gf != 0xFFFFFFFF)
             {
-                // Es wurde bis jetzt nicht mehr gearbeitet, das also noch dazuzÃ¤hlen
+                // Es wurde bis jetzt nicht mehr gearbeitet, das also noch dazuzählen
                 worked_gf += static_cast<unsigned short>(GAMECLIENT.GetGFNumber() - since_working_gf);
-                // ZÃ¤hler zurÃ¼cksetzen
+                // Zähler zurücksetzen
                 since_working_gf = GAMECLIENT.GetGFNumber();
             }
 
-            // ProduktivitÃ¤t ausrechnen
+            // Produktivität ausrechnen
             productivity = worked_gf * 100 / PRODUCTIVITY_GF;
 
-            // ZÃ¤hler zurÃ¼cksetzen
+            // Zähler zurücksetzen
             worked_gf = 0;
 
-            // NÃ¤chstes Event anmelden
+            // Nächstes Event anmelden
             productivity_ev = em->AddEvent(this, PRODUCTIVITY_GF, 1);
 
-            // Reif fÃ¼r einen Esel?
+            // Reif für einen Esel?
             if(productivity >= DONKEY_PRODUCTIVITY && ct == CT_NORMAL)
                 workplace->UpgradeDonkeyRoad();
 
@@ -917,7 +917,7 @@ bool nofCarrier::AddWareJob(const noRoadNode* rn)
         if(rs_dir == workplace->GetNodeID(rn) && state == CARRS_WAITFORWARE)
         {
             rs_dir = !rs_dir;
-            // wenn wir zur Mitte laufen, mÃ¼ssen noch 2 von der pos abgezogen werden wegen dem Laufen
+            // wenn wir zur Mitte laufen, müssen noch 2 von der pos abgezogen werden wegen dem Laufen
             rs_pos = cur_rs->GetLength() - rs_pos - ((state == CARRS_GOTOMIDDLEOFROAD) ? 2 : 0);
         }
         // beim Gehen in die Mitte nicht sofort umdrehen!
@@ -935,20 +935,20 @@ bool nofCarrier::AddWareJob(const noRoadNode* rn)
 
         state = CARRS_FETCHWARE;
 
-        // Wir Ã¼bernehmen den Job
+        // Wir übernehmen den Job
         return true;
     }
     else if(state == CARRS_WAITFORWARESPACE && rs_dir == !workplace->GetNodeID(rn))
     {
-        // Wenn wir auf einen freien Platz warten, kÃ¶nnen wir nun losgehen, da wir ja die Waren dann "tauschen" kÃ¶nnen
+        // Wenn wir auf einen freien Platz warten, können wir nun losgehen, da wir ja die Waren dann "tauschen" können
         StartWalking(cur_rs->GetDir(rs_dir, rs_pos));
         state = CARRS_CARRYWARE;
 
-        // Wir Ã¼bernehmen den Job
+        // Wir übernehmen den Job
         return true;
     }
 
-    // Wir Ã¼bernehmen den Job nicht
+    // Wir übernehmen den Job nicht
     return false;
 
 }
@@ -1004,7 +1004,7 @@ void nofCarrier::FetchWare(const bool swap_wares)
 
         StartWalking(cur_rs->GetDir(rs_dir, rs_pos));
     }
-    else // zurÃ¼cklaufen lassen
+    else // zurücklaufen lassen
         state = CARRS_GOTOMIDDLEOFROAD;
 }
 
@@ -1053,7 +1053,7 @@ bool nofCarrier::WantInBuilding(bool* calculated)
     return (carried_ware->GetNextDir() == 1);
 }
 
-/// FÃ¼r ProduktivitÃ¤tsmessungen: fÃ¤ngt an zu arbeiten
+/// Für Produktivitätsmessungen: fängt an zu arbeiten
 void nofCarrier::StartWorking()
 {
     // Wenn noch kein Zeitpunkt festgesetzt wurde, jetzt merken
@@ -1061,10 +1061,10 @@ void nofCarrier::StartWorking()
         since_working_gf = GAMECLIENT.GetGFNumber();
 }
 
-/// FÃ¼r ProduktivitÃ¤tsmessungen: hÃ¶rt auf zu arbeiten
+/// Für Produktivitätsmessungen: hört auf zu arbeiten
 void nofCarrier::StopWorking()
 {
-    // Falls wir vorher nicht gearbeitet haben, diese Zeit merken fÃ¼r die ProduktivitÃ¤t
+    // Falls wir vorher nicht gearbeitet haben, diese Zeit merken für die Produktivität
     if(since_working_gf != 0xFFFFFFFF)
     {
         worked_gf += static_cast<unsigned short>(GAMECLIENT.GetGFNumber() - since_working_gf);
@@ -1072,7 +1072,7 @@ void nofCarrier::StopWorking()
     }
 }
 
-/// Wird aufgerufen, wenn die StraÃŸe unter der Figur geteilt wurde (fÃ¼r abgeleitete Klassen)
+/// Wird aufgerufen, wenn die Straße unter der Figur geteilt wurde (für abgeleitete Klassen)
 void nofCarrier::CorrectSplitData_Derived()
 {
     // Tragen wir eine Ware?

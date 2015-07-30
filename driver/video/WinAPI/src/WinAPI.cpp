@@ -40,7 +40,7 @@ static char THIS_FILE[] = __FILE__;
 /**
  *  Instanzierungsfunktion von @p VideoWinAPI.
  *
- *  @param[in] CallBack DriverCallback fï¿½r Rï¿½ckmeldungen.
+ *  @param[in] CallBack DriverCallback für Rückmeldungen.
  *
  *  @return liefert eine Instanz des jeweiligen Treibers
  *
@@ -59,7 +59,7 @@ DRIVERDLLAPI const char* GetDriverName(void)
 ///////////////////////////////////////////////////////////////////////////////
 /** @class VideoWinAPI
  *
- *  Klasse fï¿½r den WinAPI Videotreiber.
+ *  Klasse für den WinAPI Videotreiber.
  *
  *  @author FloSoft
  */
@@ -108,7 +108,7 @@ static VideoWinAPI* pVideoWinAPI = NULL;
 /**
  *  Konstruktor von @p VideoWinAPI.
  *
- *  @param[in] CallBack DriverCallback fï¿½r Rï¿½ckmeldungen.
+ *  @param[in] CallBack DriverCallback für Rückmeldungen.
  *
  *  @author FloSoft
  */
@@ -135,7 +135,7 @@ VideoWinAPI::~VideoWinAPI(void)
 /**
  *  Funktion zum Auslesen des Treibernamens.
  *
- *  @return liefert den Treibernamen zurï¿½ck
+ *  @return liefert den Treibernamen zurück
  *
  *  @author FloSoft
  */
@@ -169,13 +169,13 @@ bool VideoWinAPI::Initialize(void)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Treiberaufrï¿½umfunktion.
+ *  Treiberaufräumfunktion.
  *
  *  @author FloSoft
  */
 void VideoWinAPI::CleanUp(void)
 {
-    // Fenster zerstï¿½ren
+    // Fenster zerstören
     DestroyScreen();
 
     memset(&dm_prev, 0, sizeof(DEVMODE));
@@ -204,7 +204,7 @@ LPWSTR AnsiToUtf8(LPWSTR& wTarget, LPCSTR tSource, int nLength = -1)
  *  Erstellt das Fenster mit entsprechenden Werten.
  *
  *  @param[in] width      Breite des Fensters
- *  @param[in] height     Hï¿½he des Fensters
+ *  @param[in] height     Höhe des Fensters
  *  @param[in] fullscreen Vollbildmodus ja oder nein
  *
  *  @return @p true bei Erfolg, @p false bei Fehler
@@ -367,10 +367,10 @@ bool VideoWinAPI::CreateScreen(unsigned short width, unsigned short height, cons
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Erstellt oder verï¿½ndert das Fenster mit entsprechenden Werten.
+ *  Erstellt oder verändert das Fenster mit entsprechenden Werten.
  *
  *  @param[in] width      Breite des Fensters
- *  @param[in] height     Hï¿½he des Fensters
+ *  @param[in] height     Höhe des Fensters
  *  @param[in] fullscreen Vollbildmodus ja oder nein
  *
  *  @return @p true bei Erfolg, @p false bei Fehler
@@ -389,7 +389,7 @@ bool VideoWinAPI::ResizeScreen(unsigned short width, unsigned short height, cons
 
     ShowWindow(screen, SW_HIDE);
 
-    // Fensterstyle ggf. ï¿½ndern
+    // Fensterstyle ggf. ändern
     SetWindowLongPtr(screen, GWL_STYLE, (fullscreen ? WS_POPUP : (WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_OVERLAPPED | WS_SYSMENU | WS_MINIMIZEBOX | WS_CAPTION) ) );
     SetWindowLongPtr(screen, GWL_EXSTYLE, (fullscreen ? WS_EX_APPWINDOW : (WS_EX_APPWINDOW | WS_EX_WINDOWEDGE) ) );
     SetWindowPos(screen, NULL, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
@@ -402,10 +402,10 @@ bool VideoWinAPI::ResizeScreen(unsigned short width, unsigned short height, cons
         (height) + (fullscreen ? 0 : 2 * GetSystemMetrics(SM_CXFIXEDFRAME) + GetSystemMetrics(SM_CYCAPTION))
     };
 
-    // Fenstergrï¿½ï¿½e ï¿½ndern
+    // Fenstergröße ändern
     SetWindowPos(screen, HWND_TOP, pos.left, pos.top, pos.right, pos.bottom, SWP_SHOWWINDOW | SWP_DRAWFRAME | SWP_FRAMECHANGED);
 
-    // Bei Vollbild Auflï¿½sung umstellen
+    // Bei Vollbild Auflösung umstellen
     if(fullscreen)
     {
         DEVMODE dm;
@@ -547,14 +547,14 @@ void* VideoWinAPI::GetFunction(const char* function) const
     return func;
 }
 
-/// Listet verfï¿½gbare Videomodi auf
+/// Listet verfügbare Videomodi auf
 void VideoWinAPI::ListVideoModes(std::vector<VideoMode>& video_modes) const
 {
     DEVMODE dm;
     unsigned m = 0;
     while(EnumDisplaySettings(NULL, m++, &dm))
     {
-        // Prï¿½fen, ob es die Auflï¿½sung nicht schonmal gab (kann es noch mit unterschiedlichen Bit-Tiefen geben
+        // Prüfen, ob es die Auflösung nicht schonmal gab (kann es noch mit unterschiedlichen Bit-Tiefen geben
         bool already_in_vector = false;
         for(size_t i = 0; i < video_modes.size(); ++i)
         {
@@ -568,7 +568,7 @@ void VideoWinAPI::ListVideoModes(std::vector<VideoMode>& video_modes) const
         if(already_in_vector)
             continue;
 
-        // Es gibt die Auflï¿½sung noch nicht --> hinzufï¿½gen
+        // Es gibt die Auflösung noch nicht --> hinzufügen
         VideoMode vm = { static_cast<unsigned short>(dm.dmPelsWidth),
                          static_cast<unsigned short>(dm.dmPelsHeight)
                        };
@@ -623,7 +623,7 @@ void VideoWinAPI::SetMousePosY(int y)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Funktion zum Senden einer gedrï¿½ckten Taste.
+ *  Funktion zum Senden einer gedrückten Taste.
  *
  *  @param[in] c Tastencode
  *
@@ -653,7 +653,7 @@ void VideoWinAPI::OnWMChar(unsigned int c, bool disablepaste, LPARAM lParam)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Funktion zum Senden einer gedrï¿½ckten Taste.
+ *  Funktion zum Senden einer gedrückten Taste.
  *
  *  @param[in] c Tastencode
  *
@@ -829,12 +829,12 @@ LRESULT CALLBACK VideoWinAPI::WindowProc(HWND window, UINT msg, WPARAM wParam, L
             }
         } break;
         case WM_KEYDOWN:
-//  case WM_SYSKEYDOWN: // auch abfangen, wenn linkes ALT mit gedrï¿½ckt wurde
+//  case WM_SYSKEYDOWN: // auch abfangen, wenn linkes ALT mit gedrückt wurde
         {
             pVideoWinAPI->OnWMKeyDown((unsigned int)wParam, lParam);
         } return 0;
         case WM_CHAR:
-        case WM_SYSCHAR: // auch abfangen, wenn linkes ALT mit gedrï¿½ckt wurde
+        case WM_SYSCHAR: // auch abfangen, wenn linkes ALT mit gedrückt wurde
         {
             pVideoWinAPI->OnWMChar((unsigned int)wParam, false, lParam);
         } return 0;
@@ -858,7 +858,7 @@ KeyEvent VideoWinAPI::GetModKeyState(void) const
     return ke;
 }
 
-/// Gibt Pointer auf ein Fenster zurï¿½ck (device-dependent!), HWND unter Windows
+/// Gibt Pointer auf ein Fenster zurück (device-dependent!), HWND unter Windows
 void* VideoWinAPI::GetMapPointer() const
 {
     return (void*)this->screen;

@@ -63,7 +63,7 @@ DRIVERDLLAPI const char* GetDriverName(void)
 ///////////////////////////////////////////////////////////////////////////////
 /** @class AudioSDL
  *
- *  Klasse fÃ¼r den SDL-Audiotreiber.
+ *  Klasse für den SDL-Audiotreiber.
  *
  *  @author FloSoft
  */
@@ -95,7 +95,7 @@ AudioSDL::~AudioSDL(void)
 /**
  *  Funktion zum Auslesen des Treibernamens.
  *
- *  @return liefert den Treibernamen zurÃ¼ck
+ *  @return liefert den Treibernamen zurück
  *
  *  @author FloSoft
  */
@@ -141,13 +141,13 @@ bool AudioSDL::Initialize(void)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  TreiberaufrÃ¤umfunktion.
+ *  Treiberaufräumfunktion.
  *
  *  @author FloSoft
  */
 void AudioSDL::CleanUp(void)
 {
-    // Sounddeskriptoren aufrÃ¤umen
+    // Sounddeskriptoren aufräumen
     for(std::vector<Sound*>::iterator it = sounds.begin(); it != sounds.end(); ++it)
         delete (*it);
 
@@ -162,11 +162,11 @@ void AudioSDL::CleanUp(void)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  LÃ¤d einen Effekt.
+ *  Läd einen Effekt.
  *
  *  @param[in] type Typ der Daten
  *  @param[in] data Datenblock
- *  @param[in] size GrÃ¶ÃŸe des Datenblocks
+ *  @param[in] size Größe des Datenblocks
  *
  *  @return Sounddeskriptor bei Erfolg, @p NULL bei Fehler
  *
@@ -220,11 +220,11 @@ Sound* AudioSDL::LoadEffect(unsigned int data_type, unsigned char* data, unsigne
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  LÃ¤d ein MusikstÃ¼ck.
+ *  Läd ein Musikstück.
  *
  *  @param[in] type Typ der Daten
  *  @param[in] data Datenblock
- *  @param[in] size GrÃ¶ÃŸe des Datenblocks
+ *  @param[in] size Größe des Datenblocks
  *
  *  @return Sounddeskriptor bei Erfolg, @p NULL bei Fehler
  *
@@ -333,7 +333,7 @@ void AudioSDL::PlayMusic(Sound* sound, const unsigned repeats)
     // Musik starten
     Mix_PlayMusic(static_cast<SoundSDL_Music*>(sound)->music, repeats == 0 ? -1 : int(repeats));
 
-    // LautstÃ¤rke neu setzen
+    // Lautstärke neu setzen
     Mix_VolumeMusic(master_music_volume / 2);
 }
 
@@ -380,7 +380,7 @@ void AudioSDL::ChangeVolume(const unsigned play_id, const unsigned char volume)
     for(unsigned int i = 0; i < CHANNEL_COUNT; ++i)
     {
         if(channels[i] == play_id)
-            // LautstÃ¤rke verÃ¤ndern
+            // Lautstärke verändern
             Mix_Volume(i, (int(master_effects_volume)*volume / 255) / 2);
     }
 }

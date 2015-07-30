@@ -24,7 +24,7 @@
 #include "IngameWindow.h"
 #include "iwDirectIPCreate.h"
 
-/// Fenster fÃ¼rs Speichern UND(!) Laden von SpielstÃ¤nden
+/// Fenster fürs Speichern UND(!) Laden von Spielständen
 class iwSaveLoad : public IngameWindow
 {
     public:
@@ -36,7 +36,7 @@ class iwSaveLoad : public IngameWindow
         void RefreshTable();
 
     private:
-        /// Speichert bzw. lÃ¤d die angegebene Datei
+        /// Speichert bzw. läd die angegebene Datei
         virtual void SaveLoad() = 0;
 
         void Msg_EditEnter(const unsigned int ctrl_id);
@@ -71,7 +71,7 @@ class iwLoad: public iwSaveLoad
         /// Handle double click on the table
         void Msg_TableChooseItem(const unsigned ctrl_id, const unsigned short selection);
 
-        // LÃ¤d Datei
+        // Läd Datei
         void SaveLoad();
 };
 

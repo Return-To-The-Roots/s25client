@@ -88,10 +88,10 @@ Ware::Ware(SerializedGameData* sgd, const unsigned obj_id) : GameObject(sgd, obj
 void Ware::RecalcRoute()
 {
 	
-    // NÃ¤chste Richtung nehmen
+    // Nächste Richtung nehmen
     next_dir = gwg->FindPathForWareOnRoads(location, goal, NULL, &next_harbor);
 
-    // Evtl gibts keinen Weg mehr? Dann wieder zurÃ¼ck ins Lagerhaus (wenns vorher Ã¼berhaupt zu nem Ziel ging)
+    // Evtl gibts keinen Weg mehr? Dann wieder zurück ins Lagerhaus (wenns vorher überhaupt zu nem Ziel ging)
     if(next_dir == 0xFF && goal)
     {
         // meinem Ziel Becheid sagen
@@ -136,7 +136,7 @@ void Ware::RecalcRoute()
         static_cast<nobHarborBuilding*>(location)->WareDontWantToTravelByShip(this);        
     }
 
-    //// Es wurde ein gÃ¼ltiger Weg gefunden! Dann muss aber noch dem nÃ¤chsten TrÃ¤ger Bescheid gesagt werden
+    //// Es wurde ein gültiger Weg gefunden! Dann muss aber noch dem nächsten Träger Bescheid gesagt werden
     //location->routes[next_dir]->AddWareJob(location);
 }
 
@@ -149,8 +149,8 @@ void Ware::GoalDestroyed()
     // Ist sie evtl. gerade mit dem Schiff unterwegs?
     else if(state == STATE_ONSHIP)
     {
-        // Ziel zunÃ¤chst auf NULL setzen, was dann vom Zielhafen erkannt wird,
-        // woraufhin dieser die Ware gleich in sein Inventar mit Ã¼bernimmt		
+        // Ziel zunächst auf NULL setzen, was dann vom Zielhafen erkannt wird,
+        // woraufhin dieser die Ware gleich in sein Inventar mit übernimmt		
         goal = NULL;
     }
     // Oder wartet sie im Hafen noch auf ein Schiff
@@ -182,7 +182,7 @@ void Ware::GoalDestroyed()
                 next_dir = 0xFF;
             }
         }
-        // Wenn sie an einer Flagge liegt, muss der Weg neu berechnet werden und dem TrÃ¤ger Bescheid gesagt werden
+        // Wenn sie an einer Flagge liegt, muss der Weg neu berechnet werden und dem Träger Bescheid gesagt werden
         else if(state == STATE_WAITATFLAG)
         {
             goal = gwg->GetPlayer(location->GetPlayer())->FindWarehouse(location, FW::Condition_StoreWare, 0, true, &type, true);
@@ -195,13 +195,13 @@ void Ware::GoalDestroyed()
             // Kein Lagerhaus gefunden bzw kein Weg dorthin?
             if(!goal || next_dir == 0xFF)
             {
-                //// Mich aus der globalen Warenliste rausnehmen und in die WareLost Liste einfÃ¼gen
+                //// Mich aus der globalen Warenliste rausnehmen und in die WareLost Liste einfügen
                 //gwg->GetPlayer((location->GetPlayer()].RemoveWare(this);
                 //gwg->GetPlayer((location->GetPlayer()].RegisterLostWare(this);
                 return;
             }
 
-            // Es wurde ein gÃ¼ltiger Weg gefunden! Dann muss aber noch dem nÃ¤chsten TrÃ¤ger Bescheid gesagt werden
+            // Es wurde ein gültiger Weg gefunden! Dann muss aber noch dem nächsten Träger Bescheid gesagt werden
             location->routes[next_dir]->AddWareJob(location);
 
             // Lagerhaus Bescheid sagen
@@ -249,7 +249,7 @@ void Ware::WareLost(const unsigned char player)
     gwg->GetPlayer(player)->DecreaseInventoryWare(type, 1);
     // Ziel der Ware Bescheid sagen
     NotifyGoalAboutLostWare();
-    // Zentrale Registrierung der Ware lÃ¶schen
+    // Zentrale Registrierung der Ware löschen
     gwg->GetPlayer(player)->RemoveWare(this);
 }
 
@@ -257,17 +257,17 @@ void Ware::WareLost(const unsigned char player)
 void Ware::RemoveWareJobForCurrentDir(const unsigned char last_next_dir)
 {
     // last_next_dir war die letzte Richtung, in die die Ware eigentlich wollte,
-    // aber nun nicht mehr will, deshalb muss dem TrÃ¤ger Bescheid gesagt werden
+    // aber nun nicht mehr will, deshalb muss dem Träger Bescheid gesagt werden
 
-    // War's Ã¼berhaupt ne richtige Richtung?
+    // War's überhaupt ne richtige Richtung?
     if(last_next_dir < 6)
     {
-        // Existiert da noch ne StraÃŸe?
+        // Existiert da noch ne Straße?
         if(location->routes[last_next_dir])
         {
-            // Den TrÃ¤gern Bescheid sagen
+            // Den Trägern Bescheid sagen
             location->routes[last_next_dir]->WareJobRemoved(0);
-            // Wenn nicht, kÃ¶nntes ja sein, dass die StraÃŸe in ein Lagerhaus fÃ¼hrt, dann muss dort Bescheid gesagt werden
+            // Wenn nicht, könntes ja sein, dass die Straße in ein Lagerhaus führt, dann muss dort Bescheid gesagt werden
             if(location->routes[last_next_dir]->GetF2()->GetType() == NOP_BUILDING)
             {
                 if(static_cast<noBuilding*>(location->routes[1]->GetF2())->GetBuildingType() == BLD_HEADQUARTERS ||
@@ -278,10 +278,10 @@ void Ware::RemoveWareJobForCurrentDir(const unsigned char last_next_dir)
         }
 
 
-        //// Und stand ein TrÃ¤ger drauf?
+        //// Und stand ein Träger drauf?
         //if(location->routes[last_next_dir]->carrier)
         //  location->routes[last_next_dir]->carrier->RemoveWareJob();
-        //// Wenn nicht, kÃ¶nntes ja sein, dass die StraÃŸe in ein Lagerhaus fÃ¼hrt, dann muss dort Bescheid gesagt werden
+        //// Wenn nicht, könntes ja sein, dass die Straße in ein Lagerhaus führt, dann muss dort Bescheid gesagt werden
         //else if(location->routes[1])
         //{
         //  if(location->routes[1]->f2->GetType() == NOP_BUILDING)
@@ -312,7 +312,7 @@ void Ware::FindRouteToWarehouse()
         // Weg suchen
         next_dir = gwg->FindPathForWareOnRoads(location, goal);
 
-        // Es wurde ein gÃ¼ltiger Weg gefunden! Dann muss aber noch dem nÃ¤chsten TrÃ¤ger Bescheid gesagt werden
+        // Es wurde ein gültiger Weg gefunden! Dann muss aber noch dem nächsten Träger Bescheid gesagt werden
         location->routes[next_dir]->AddWareJob(location);
 
         // Lagerhaus auch Bescheid sagen
@@ -391,7 +391,7 @@ void Ware::StartShipJourney()
     location = 0;
 }
 
-/// Informiert Ware, dass Schiffsreise beendet ist und die Ware nun in einem HafengebÃ¤ude liegt
+/// Informiert Ware, dass Schiffsreise beendet ist und die Ware nun in einem Hafengebäude liegt
 bool Ware::ShipJorneyEnded(nobHarborBuilding* hb)
 {
 

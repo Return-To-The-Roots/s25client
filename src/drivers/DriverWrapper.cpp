@@ -88,10 +88,10 @@ void DriverWrapper::Unload()
  */
 bool DriverWrapper::Load(const DriverType dt, std::string& preference)
 {
-    // ggf. aufrÃ¤umen vorher
+    // ggf. aufräumen vorher
     Unload();
 
-    /// VerfÃ¼gbare Treiber auflisten
+    /// Verfügbare Treiber auflisten
     std::vector<DriverItem> drivers;
     const std::string DIRECTORY[2] = { "video", "audio" };
 
@@ -103,7 +103,7 @@ bool DriverWrapper::Load(const DriverType dt, std::string& preference)
     if(drivers.empty())
         return false;
 
-    /// Suche, ob der Treiber dabei ist, den wir wÃ¼nschen
+    /// Suche, ob der Treiber dabei ist, den wir wünschen
     for(std::vector<DriverItem>::iterator it = drivers.begin(); it != drivers.end(); ++it)
     {
         if(it->GetName() == preference)
@@ -165,7 +165,7 @@ void* DriverWrapper::GetDLLFunction(const std::string& name)
  */
 void DriverWrapper::LoadDriverList(const DriverType dt, std::vector<DriverItem>& driver_list)
 {
-    /// VerfÃ¼gbare Treiber auflisten
+    /// Verfügbare Treiber auflisten
     std::list<std::string> driver_files;
 
     const std::string DIRECTORY[2] = { "video", "audio" };

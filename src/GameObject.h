@@ -136,12 +136,12 @@ class GameObject
         static void ResetCounter(void) { obj_id_counter = 1; obj_counter = 0; };
         /// Gibt Anzahl Objekte zurück.
         static unsigned GetObjCount() { return obj_counter; }
-        /// Setzt Anzahl der Objekte (NUR FÃœR DAS LADEN!)
+        /// Setzt Anzahl der Objekte (NUR FÜR DAS LADEN!)
         static void SetObjCount(const unsigned obj_count)
         { obj_counter = obj_count; }
-        /// Gibt Obj-ID-Counter zurück (NUR FÃœR DAS SPEICHERN!)
+        /// Gibt Obj-ID-Counter zurück (NUR FÜR DAS SPEICHERN!)
         static unsigned GetObjIDCounter() { return obj_id_counter; }
-        /// Setzt Counter (NUR FÃœR DAS LADEN!)
+        /// Setzt Counter (NUR FÜR DAS LADEN!)
         static void SetObjIDCounter(const unsigned obj_id_counter)
         { GameObject::obj_id_counter = obj_id_counter; }
 

@@ -60,22 +60,22 @@ bool ctrlGroup::Draw_(void)
 
 ///////////////////////////////////////////////////////////////////////////////
 /*
- *  Reagiert auf SpielfenstergrÃ¶ÃŸenÃ¤nderung
+ *  Reagiert auf Spielfenstergrößenänderung
  *
  *  @author Divan
  */
 void ctrlGroup::Msg_ScreenResize(const ScreenResizeEvent& sr)
 {
 // Keep the following block the same as in Desktop class:
-    // FÃ¼r skalierte Desktops ist alles einfach, die brauchen im besten Fall gar nichts selbst implementieren
+    // Für skalierte Desktops ist alles einfach, die brauchen im besten Fall gar nichts selbst implementieren
     if (scale)
     {
-        //ZunÃ¤chst an die Kinder weiterleiten
+        //Zunächst an die Kinder weiterleiten
         for(std::map<unsigned int, Window*>::iterator it = idmap.begin(); it != idmap.end(); ++it)
             if(it->second)
             {
                 Window* ctrl = it->second;
-                // unskalierte Position und GrÃ¶ÃŸe bekommen
+                // unskalierte Position und Größe bekommen
                 unsigned realx = ctrl->GetX() * 800 / sr.oldWidth;
                 unsigned realy = ctrl->GetY() * 600 / sr.oldHeight;
                 unsigned realwidth  = ctrl->GetWidth()  * 800 / sr.oldWidth;

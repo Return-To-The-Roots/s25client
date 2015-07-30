@@ -59,7 +59,7 @@ ctrlTable::ctrlTable(Window* parent,
     header_height = font->getHeight() + 10;
     line_count = (height - header_height - 2) / font->getHeight();
 
-    // Scrollbar hinzufÃ¼gen
+    // Scrollbar hinzufügen
     AddScrollBar(0, width - 20, 0, 20, height, 20, tc, line_count);
 
     if(column_count > 0)
@@ -75,7 +75,7 @@ ctrlTable::ctrlTable(Window* parent,
             c.width = (unsigned short)va_arg(liste, int);
             c.sortType = (SortType)va_arg(liste, int);
 
-            // Button fÃ¼r die Spalte hinzufÃ¼gen
+            // Button für die Spalte hinzufügen
             AddTextButton(i + 1, 0, 0, 0, header_height, tc, c.title, font);
 
             columns.push_back(c);
@@ -99,7 +99,7 @@ ctrlTable::~ctrlTable(void)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  GrÃ¶ÃŸe verÃ¤ndern
+ *  Größe verändern
  *
  *  @author Divan
  */
@@ -132,7 +132,7 @@ void ctrlTable::Resize_(unsigned short width, unsigned short height)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  lÃ¶scht alle Items.
+ *  löscht alle Items.
  *
  *  @author OLiver
  */
@@ -153,7 +153,7 @@ void ctrlTable::DeleteAllItems(void)
  *  setzt die Auswahl.
  *
  *  @param[in] selection Der Auswahlindex
- *  @param[in] left      Auswahl fÃ¼r linke (@p true) oder rechte (@p false) Maustaste setzen.
+ *  @param[in] left      Auswahl für linke (@p true) oder rechte (@p false) Maustaste setzen.
  *
  *  @author FloSoft
  *  @author OLiver
@@ -174,10 +174,10 @@ void ctrlTable::SetSelection(unsigned short selection, bool left)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  fÃ¼gt eine Zeile hinzu.
+ *  fügt eine Zeile hinzu.
  *
- *  @param[in] alwaysnull Immer 0, wird nur fÃ¼r Liste gebraucht
- *  @param[in] ...        Die Werte fÃ¼r die Spalten.
+ *  @param[in] alwaysnull Immer 0, wird nur für Liste gebraucht
+ *  @param[in] ...        Die Werte für die Spalten.
  *
  *  @author OLiver
  */
@@ -441,7 +441,7 @@ void ctrlTable::Msg_ScrollShow(const unsigned int ctrl_id, const bool visible)
     if(visible)
     {
         /// Scrollbar wird angezeigt
-        // Breite der letzten Spalte entsprechend anpassen, wenn plÃ¶tzlich ne Scrolleiste sich hier noch reindrÃ¤ngelt
+        // Breite der letzten Spalte entsprechend anpassen, wenn plötzlich ne Scrolleiste sich hier noch reindrängelt
         // Aufteilen dieser Breite auf die einzelnen Spalten
         unsigned width_col_minus = unsigned(20 / columns.size());
         // Rest, der nicht aufgeteilt wurde
@@ -479,7 +479,7 @@ void ctrlTable::Msg_ScrollShow(const unsigned int ctrl_id, const bool visible)
     }
     else
     {
-        // Scrollbar wird nicht mehr angezeigt --> Breite und Position wieder zurÃ¼cksetzen
+        // Scrollbar wird nicht mehr angezeigt --> Breite und Position wieder zurücksetzen
         ResetButtonWidths();
     }
 }
@@ -488,7 +488,7 @@ void ctrlTable::Msg_ScrollShow(const unsigned int ctrl_id, const bool visible)
 /// Setzt die Breite und Position der Buttons ohne Scrolleiste
 void ctrlTable::ResetButtonWidths()
 {
-    // Scrollbar wird nicht mehr angezeigt --> Breite und Position wieder zurÃ¼cksetzen
+    // Scrollbar wird nicht mehr angezeigt --> Breite und Position wieder zurücksetzen
     unsigned short x_pos = 0;
     for(unsigned i = 0; i < columns.size(); ++i)
     {
@@ -510,7 +510,7 @@ void ctrlTable::ResetButtonWidths()
     }
 }
 
-/// Verschiedene SortiermÃ¶glichkeiten
+/// Verschiedene Sortiermöglichkeiten
 int ctrlTable::Compare(const std::string& a, const std::string& b, SortType sortType)
 {
     switch (sortType)
@@ -519,7 +519,7 @@ int ctrlTable::Compare(const std::string& a, const std::string& b, SortType sort
         case SRT_STRING:
             return a.compare(b);
             break;
-            // Nach MapgrÃ¶ÃŸen-String sortieren: ZahlxZahl
+            // Nach Mapgrößen-String sortieren: ZahlxZahl
         case SRT_MAPSIZE:
         {
             std::stringstream ss_a(a);

@@ -464,7 +464,7 @@ void AIPlayerJH::InitReachableNodes()
 
 void AIPlayerJH::IterativeReachableNodeChecker(std::queue<MapPoint>& toCheck)
 {
-    // TODO auch mal bootswege bauen kÃ¶nnen
+    // TODO auch mal bootswege bauen können
     //Param_RoadPath prp = { false };
 
     while(toCheck.size() > 0)
@@ -641,7 +641,7 @@ void AIPlayerJH::RecalcResource(AIJH::Resource restype)
 
 void AIPlayerJH::SetFarmedNodes(const MapPoint pt, bool set)
 {
-    // Radius in dem Bausplatz fÃ¼r Felder blockiert wird
+    // Radius in dem Bausplatz für Felder blockiert wird
     const unsigned radius = 3;
 
     nodes[aii->GetIdx(pt)].farmed = set;
@@ -691,7 +691,7 @@ bool AIPlayerJH::FindGoodPosition(MapPoint& pt, AIJH::Resource res, int threshol
         pt.y = aii->GetHeadquarter()->GetY();
     }
 
-    // TODO was besseres wÃ¤r schÃ¶n ;)
+    // TODO was besseres wär schön ;)
     if (radius == -1)
         radius = 30;
 
@@ -707,7 +707,7 @@ bool AIPlayerJH::FindGoodPosition(MapPoint& pt, AIJH::Resource res, int threshol
                 {
                     if ((inTerritory && !aii->IsOwnTerritory(t2)) || nodes[i].farmed)
                         continue;
-                    if ( (aii->GetBuildingQuality(t2) >= size && aii->GetBuildingQuality(t2) < BQ_MINE) // normales GebÃ¤ude
+                    if ( (aii->GetBuildingQuality(t2) >= size && aii->GetBuildingQuality(t2) < BQ_MINE) // normales Gebäude
                             || (aii->GetBuildingQuality(t2) == size)) // auch Bergwerke
                     {
                         pt = t2;
@@ -829,7 +829,7 @@ bool AIPlayerJH::FindBestPositionDiminishingResource(MapPoint& pt, AIJH::Resourc
         pt.y = aii->GetStorehouses().front()->GetY();
     }
 
-    // TODO was besseres wÃ¤r schÃ¶n ;)
+    // TODO was besseres wär schön ;)
     if (radius == -1)
         radius = 11;
 
@@ -933,7 +933,7 @@ bool AIPlayerJH::FindBestPositionDiminishingResource(MapPoint& pt, AIJH::Resourc
                         continue;
                     }
                     BuildingQuality bq = aii->GetBuildingQuality(t2);
-                    if ( (bq >= size && bq < BQ_MINE) // normales GebÃ¤ude
+                    if ( (bq >= size && bq < BQ_MINE) // normales Gebäude
                             || (bq == size))    // auch Bergwerke
                     {
                         best = t2;
@@ -969,7 +969,7 @@ bool AIPlayerJH::FindBestPosition(MapPoint& pt, AIJH::Resource res, BuildingQual
         pt = aii->GetStorehouses().front()->GetPos();
     }
 
-    // TODO was besseres wÃ¤r schÃ¶n ;)
+    // TODO was besseres wär schön ;)
     if (radius == -1)
         radius = 11;
 
@@ -1022,7 +1022,7 @@ bool AIPlayerJH::FindBestPosition(MapPoint& pt, AIJH::Resource res, BuildingQual
                         continue;
                     }
                     BuildingQuality bq = aii->GetBuildingQuality(t2);
-                    if (( (bq >= size && bq < BQ_MINE) // normales GebÃ¤ude
+                    if (( (bq >= size && bq < BQ_MINE) // normales Gebäude
                             || (bq == size)) &&     // auch Bergwerke
 							(res!=AIJH::BORDERLAND || !aii->IsRoadPoint(aii->GetNeighbour(t2,4))))
 					//special: military buildings cannot be build next to an existing road as that would have them connected to 2 roads which the ai no longer should do
@@ -1294,7 +1294,7 @@ bool AIPlayerJH::SimpleFindPosition(MapPoint& pt, BuildingQuality size, int radi
         pt = aii->GetStorehouses().front()->GetPos();
     }
 
-    // TODO was besseres wÃ¤r schÃ¶n ;)
+    // TODO was besseres wär schön ;)
     if (radius == -1)
         radius = 30;
 
@@ -1315,7 +1315,7 @@ bool AIPlayerJH::SimpleFindPosition(MapPoint& pt, BuildingQuality size, int radi
                         continue;
                 }
                 BuildingQuality bq = aii->GetBuildingQuality(t2);
-                if ( (bq >= size && bq < BQ_MINE) // normales GebÃ¤ude
+                if ( (bq >= size && bq < BQ_MINE) // normales Gebäude
                         || (bq == size))    // auch Bergwerke
                 {
                     pt = t2;
@@ -1334,7 +1334,7 @@ unsigned AIPlayerJH::GetDensity(MapPoint pt, AIJH::Resource res, int radius)
     unsigned short height = aii->GetMapHeight();
 
 
-    // TODO: check warum das so ist, und ob das sinn macht! ist so weil der punkt dann auÃŸerhalb der karte liegen wÃ¼rde ... kÃ¶nnte trotzdem crashen wenn wir kein hq mehr haben ... mehr checks!
+    // TODO: check warum das so ist, und ob das sinn macht! ist so weil der punkt dann außerhalb der karte liegen würde ... könnte trotzdem crashen wenn wir kein hq mehr haben ... mehr checks!
     if (pt.x >= width || pt.y >= height)
     {
         pt = aii->GetStorehouses().front()->GetPos();
@@ -2327,7 +2327,7 @@ bool AIPlayerJH::HuntablesinRange(const MapPoint pt, unsigned min)
             {
                 if((*it)->GetType() == NOP_ANIMAL)
                 {
-                    // Ist das Tier Ã¼berhaupt zum Jagen geeignet?
+                    // Ist das Tier überhaupt zum Jagen geeignet?
                     if(!static_cast<noAnimal*>(*it)->CanHunted())
                         continue;
                     // Und komme ich hin?

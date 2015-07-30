@@ -83,7 +83,7 @@ void CatapultStone::Destroy()
 
 void CatapultStone::Draw(const GameWorldView& gwv, const int xoffset, const int yoffset)
 {
-    // Stein Ã¼berhaupt zeichnen (wenn Quelle und Ziel nicht sichtbar sind, dann nicht!)
+    // Stein überhaupt zeichnen (wenn Quelle und Ziel nicht sichtbar sind, dann nicht!)
     if(gwv.GetGameWorldViewer()->GetVisibility(dest_building) != VIS_VISIBLE &&
             gwv.GetGameWorldViewer()->GetVisibility(dest_map) != VIS_VISIBLE)
         return;
@@ -126,7 +126,7 @@ void CatapultStone::HandleEvent(const unsigned int id)
 {
     if(explode)
     {
-        // Explodiert --> mich zerstÃ¶ren
+        // Explodiert --> mich zerstören
         gwg->RemoveCatapultStone(this);
         em->AddToKillList(this);
     }
@@ -139,7 +139,7 @@ void CatapultStone::HandleEvent(const unsigned int id)
         // Trifft der Stein?
         if(dest_building == dest_map)
         {
-            // Steht an der Stelle noch ein MilitÃ¤rgebÃ¤ude zum Bombardieren?
+            // Steht an der Stelle noch ein Militärgebäude zum Bombardieren?
             if(gwg->GetNO(dest_building)->GetGOT() == GOT_NOB_MILITARY)
                 gwg->GetSpecObj<nobMilitary>(dest_building)->HitOfCatapultStone();
         }

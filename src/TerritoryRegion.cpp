@@ -48,7 +48,7 @@ TerritoryRegion::TerritoryRegion(const int x1, const int y1, const int x2, const
 
 TerritoryRegion::~TerritoryRegion()
 {
-    // Feld lï¿½schen
+    // Feld löschen
     delete [] nodes;
 }
 
@@ -91,7 +91,7 @@ void TerritoryRegion::TestNode(MapPoint pt, const unsigned char player, const un
 {
     int x = static_cast<int>(pt.x), y = static_cast<int>(pt.y);
 
-    // Gucken, ob der Punkt ï¿½berhaupt mit in diese Region gehï¿½rt
+    // Gucken, ob der Punkt überhaupt mit in diese Region gehï¿½rt
     if(x + gwb->GetWidth() >= int(x1) && x + gwb->GetWidth() < int(x2))
         x += gwb->GetWidth();
     else if(x - gwb->GetWidth() >= int(x1) && x - gwb->GetWidth() < int(x2))
@@ -110,7 +110,7 @@ void TerritoryRegion::TestNode(MapPoint pt, const unsigned char player, const un
     if (check_barriers && !IsPointValid(gwb, gwb->GetPlayer(player)->GetRestrictedArea(), pt))
         return;
 
-    /// Wenn das Militargebï¿½ude jetzt nï¿½her dran ist, dann geht dieser Punkt in den Besitz vom jeweiligen Spieler
+    /// Wenn das Militargebäude jetzt näher dran ist, dann geht dieser Punkt in den Besitz vom jeweiligen Spieler
     /// oder wenn es halt gar nicht besetzt ist
     unsigned idx = (y - y1) * (x2 - x1) + (x - x1);
 
@@ -137,7 +137,7 @@ void TerritoryRegion::CalcTerritoryOfBuilding(const noBaseBuilding* const buildi
         check_barriers = !(static_cast<const nobMilitary*>(building)->WasCapturedOnce());
     }
 
-    // Punkt, auf dem das Militï¿½rgebï¿½ude steht
+    // Punkt, auf dem das Militärgebäude steht
     MapPoint pt = building->GetPos();
     TestNode(pt, building->GetPlayer(), 0, false);    // no need to check barriers here. this point is on our territory.
 

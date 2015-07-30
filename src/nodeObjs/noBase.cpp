@@ -45,7 +45,7 @@ noBase::BlockingManner noBase::GetBM() const
     return BM_NOTBLOCKING;
 }
 
-/// Gibt zurÃ¼ck, ob sich das angegebene Objekt zwischen zwei Punkten bewegt
+/// Gibt zurück, ob sich das angegebene Objekt zwischen zwei Punkten bewegt
 bool noBase::IsMoving() const
 {
     return false;

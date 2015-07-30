@@ -30,30 +30,30 @@ class GameWorld;
 class nobHarborBuilding;
 
 
-// Die Klasse Ware kennzeichnet eine Ware, die von einem TrÃ¤ger transportiert wird bzw gerade an einer Flagge liegt
+// Die Klasse Ware kennzeichnet eine Ware, die von einem Träger transportiert wird bzw gerade an einer Flagge liegt
 class Ware : public GameObject
 {
-        /// Die Richtung von der Fahne auf dem Weg, auf dem die Ware transportiert werden will als nÃ¤chstes
+        /// Die Richtung von der Fahne auf dem Weg, auf dem die Ware transportiert werden will als nächstes
         unsigned char next_dir;
         /// In welchem Status die Ware sich gerade befindet
         enum State
         {
             STATE_WAITINWAREHOUSE = 0, // Ware wartet im Lagerhaus noch auf Auslagerun
-            STATE_WAITATFLAG, // Ware liegt an einer Fahne und wartet auf den TrÃ¤ger, der kommt
-            STATE_CARRIED, // Ware wird von einem TrÃ¤ger getragen
-            STATE_WAITFORSHIP, // Ware wartet im HafengebÃ¤ude auf das Schiff, das sie abholt
+            STATE_WAITATFLAG, // Ware liegt an einer Fahne und wartet auf den Träger, der kommt
+            STATE_CARRIED, // Ware wird von einem Träger getragen
+            STATE_WAITFORSHIP, // Ware wartet im Hafengebäude auf das Schiff, das sie abholt
             STATE_ONSHIP // Ware befindet sich auf einem Schiff
         } state;
-        /// Auf welcher Flagge, in welchem GebÃ¤ude die Ware gerade ist (bei STATE_CARRIED ist es die Flagge, zu der die Ware getragen wird!)
+        /// Auf welcher Flagge, in welchem Gebäude die Ware gerade ist (bei STATE_CARRIED ist es die Flagge, zu der die Ware getragen wird!)
         noRoadNode* location;
 
     public:
 
-        /// Was fÃ¼r eine Ware
+        /// Was für eine Ware
         const GoodType type;
         /// Wo die Ware mal hin soll
         noBaseBuilding* goal;
-        /// NÃ¤chster Hafenpunkt, der ggf. angesteuert werden soll
+        /// Nächster Hafenpunkt, der ggf. angesteuert werden soll
         MapPoint next_harbor;
 
     public:
@@ -73,7 +73,7 @@ class Ware : public GameObject
 
         /// siehe oben
         inline unsigned char GetNextDir() const { return next_dir; }
-        /// Gibt nÃ¤chsten Hafen zurÃ¼ck, falls vorhanden
+        /// Gibt nächsten Hafen zurück, falls vorhanden
         MapPoint GetNextHarbor() const { return  next_harbor; }
         /// Berechnet den Weg neu zu ihrem Ziel
         void RecalcRoute();
@@ -81,34 +81,34 @@ class Ware : public GameObject
 		void SetNextDir(unsigned char newnextdir) {next_dir=newnextdir;}
         /// Wird aufgerufen, wenn es das Ziel der Ware nicht mehr gibt und sie wieder "nach Hause" getragen werden muss
         void GoalDestroyed();
-        /// VerÃ¤ndert den Status der Ware
+        /// Verändert den Status der Ware
         void LieAtFlag(noRoadNode* flag) { state = STATE_WAITATFLAG; location = flag; }
         void Carry(noRoadNode* next_flag) { state = STATE_CARRIED; location = next_flag;  }
         /// Gibt dem Ziel der Ware bekannt, dass diese nicht mehr kommen kann
         void NotifyGoalAboutLostWare();
         /// Wenn die Ware vernichtet werden muss
         void WareLost(const unsigned char player);
-        /// Gibt Status der Ware zurÃ¼ck
+        /// Gibt Status der Ware zurück
         bool LieAtFlag() const { return (state == STATE_WAITATFLAG); }
         bool LieInWarehouse() const { return (state == STATE_WAITINWAREHOUSE); }
         bool LieInHarborBuilding() const { return (state == STATE_WAITFORSHIP); }
-        /// Sagt dem TrÃ¤ger Bescheid, dass sie in die aktuelle (next_dir) Richtung nicht mehr getragen werden will
+        /// Sagt dem Träger Bescheid, dass sie in die aktuelle (next_dir) Richtung nicht mehr getragen werden will
         void RemoveWareJobForCurrentDir(const unsigned char last_next_dir);
-        /// ÃœberprÃ¼ft, ob es noch ein Weg zum Ziel gibt fÃ¼r Waren, die noch im Lagerhaus liegen
+        /// Überprüft, ob es noch ein Weg zum Ziel gibt für Waren, die noch im Lagerhaus liegen
         bool FindRouteFromWarehouse();
-        /// Sagt der Ware, dass sie sich ein Lagerhaus nochmal suchen soll (fÃ¼r LostWares gedacht, die kein Lagerhaus mehr gefunden haben)
+        /// Sagt der Ware, dass sie sich ein Lagerhaus nochmal suchen soll (für LostWares gedacht, die kein Lagerhaus mehr gefunden haben)
         void FindRouteToWarehouse();
 		///a building is looking for a ware - check if this lost ware can be send to the building and then do it
 		unsigned CheckNewGoalForLostWare(noBaseBuilding* newgoal);
 		void SetNewGoalForLostWare(noBaseBuilding* newgoal);
-        /// Gibt Ort der Ware zurÃ¼ck
+        /// Gibt Ort der Ware zurück
         noRoadNode* GetLocation() { return location; }
         /// Ist die Ware eine LostWare (Ware, die kein Ziel mehr hat und irgendwo sinnlos rumliegt)?
         bool IsLostWare() const { return ((goal ? false : true) && state != STATE_ONSHIP); }
         /// Informiert Ware, dass eine Schiffsreise beginnt
         void StartShipJourney();
-        /// Informiert Ware, dass Schiffsreise beendet ist und die Ware nun in einem HafengebÃ¤ude liegt
-        /// Gibt true zurÃ¼ck, wenn die Ware rausgetragen will oder false, wenn sie kein Ziel mehr hat und ins HafengebÃ¤ude
+        /// Informiert Ware, dass Schiffsreise beendet ist und die Ware nun in einem Hafengebäude liegt
+        /// Gibt true zurück, wenn die Ware rausgetragen will oder false, wenn sie kein Ziel mehr hat und ins Hafengebäude
         /// eingelagert werden will
         bool ShipJorneyEnded(nobHarborBuilding* hb);
         /// Beginnt damit auf ein Schiff im Hafen zu warten

@@ -91,12 +91,12 @@ void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool
 
     glTranslatef((GLfloat) pos.x, (GLfloat) pos.y, 0.0f);
 
-    // Draw-Counter der BÃ¤ume zurÃ¼cksetzen vor jedem Zeichnen
+    // Draw-Counter der Bäume zurücksetzen vor jedem Zeichnen
     noTree::ResetDrawCounter();
 
     for(int y = firstPt.y; y < lastPt.y; ++y)
     {
-        // Figuren speichern, die in dieser Zeile gemalt werden mÃ¼ssen
+        // Figuren speichern, die in dieser Zeile gemalt werden müssen
         // und sich zwischen zwei Zeilen befinden, da sie dazwischen laufen
         std::vector<ObjectBetweenLines> between_lines;
 
@@ -265,7 +265,7 @@ void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool
                 int xpos = (int)(gwv->GetTerrainRenderer()->GetTerrainX(t) - offset.x + xo);
                 int ypos = (int)(gwv->GetTerrainRenderer()->GetTerrainY(t) - offset.y + yo);
 
-                // Name bzw ProduktivitÃ¤t anzeigen
+                // Name bzw Produktivität anzeigen
                 GO_Type got = gwv->GetNO(t)->GetGOT();
                 if(IsBaseBuilding(got))
                 {
@@ -368,7 +368,7 @@ void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool
 
     // GUI-Symbole auf der Map zeichnen
 
-    // Falls im StraÃƒÂŸenbaumodus: Punkte um den aktuellen StraÃƒÂŸenbaupunkt herum ermitteln
+    // Falls im Straßenbaumodus: Punkte um den aktuellen Straßenbaupunkt herum ermitteln
     MapPoint road_points[6];
 
     if(rb.mode)
@@ -524,7 +524,7 @@ void GameWorldView::DrawBoundaryStone(const int x, const int y, const MapPoint t
     }
 }
 
-/// Schaltet ProduktivitÃ¤ten/Namen komplett aus oder an
+/// Schaltet Produktivitäten/Namen komplett aus oder an
 void GameWorldView::ShowNamesAndProductivity()
 {
     if(show_productivity && show_names)
