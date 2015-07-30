@@ -44,8 +44,9 @@ class TerritoryRegion
             unsigned char owner;
             /// Entfernung vom Militärgebäude
             unsigned char radius;
-        }* nodes;
+        };
 
+        std::vector<TRNode> nodes;
         GameWorldBase* const gwb;
 
     private:

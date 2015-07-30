@@ -1,4 +1,4 @@
-﻿// $Id: TerritoryRegion.cpp 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: TerritoryRegion.cpp 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
@@ -40,17 +40,18 @@ TerritoryRegion::TerritoryRegion(const int x1, const int y1, const int x2, const
     : x1(x1), y1(y1), x2(x2), y2(y2), width(x2 - x1), height(y2 - y1), gwb(gwb)
 {
     // Feld erzeugen
-    nodes = new TRNode[(x2 - x1) * (y2 - y1)];
+    nodes.resize((x2 - x1) * (y2 - y1));
 
     // und erstmal hat es niemand im Besitz
-    memset(nodes, 0, sizeof(TRNode) * (x2 - x1) * (y2 - y1));
+    for(std::vector<TRNode>::iterator it = nodes.begin(); it != nodes.end(); ++it)
+    {
+        it->owner = 0;
+        it->radius = 0;
+    }
 }
 
 TerritoryRegion::~TerritoryRegion()
-{
-    // Feld löschen
-    delete [] nodes;
-}
+{}
 
 bool TerritoryRegion::IsPointInPolygon(GameWorldBase* gwb, std::vector< MapPoint > &polygon, const MapPoint pt)
 {
@@ -91,7 +92,7 @@ void TerritoryRegion::TestNode(MapPoint pt, const unsigned char player, const un
 {
     int x = static_cast<int>(pt.x), y = static_cast<int>(pt.y);
 
-    // Gucken, ob der Punkt überhaupt mit in diese Region gehï¿½rt
+    // Gucken, ob der Punkt überhaupt mit in diese Region gehört
     if(x + gwb->GetWidth() >= int(x1) && x + gwb->GetWidth() < int(x2))
         x += gwb->GetWidth();
     else if(x - gwb->GetWidth() >= int(x1) && x - gwb->GetWidth() < int(x2))
