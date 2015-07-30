@@ -309,6 +309,8 @@ void GameClient::Stop()
 
     clientconfig.Clear();
     mapinfo.Clear();
+    for(std::list<PostMsg*>::iterator it = postMessages.begin(); it != postMessages.end(); ++it)
+        delete *it;
     postMessages.clear();
 
     replayinfo.replay.StopRecording();

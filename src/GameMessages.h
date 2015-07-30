@@ -803,6 +803,14 @@ class GameMessage_GameCommand : public GameMessage
 
         }
 
+        ~GameMessage_GameCommand()
+        {
+            // This class gets copied. Without move copy this is hard to kkep track of GCs
+            //for(std::vector<gc::GameCommand*>::iterator it = gcs.begin(); it != gcs.end(); ++it)
+            //    delete *it;
+            //gcs.clear();
+        }
+
         void Run(MessageInterface* callback)
         {
             checksum = PopUnsignedInt();

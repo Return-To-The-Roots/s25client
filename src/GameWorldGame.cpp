@@ -562,7 +562,7 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding* const building, const 
     }
 
     // Merken, wo sich der Besitzer geändert hat
-    bool* owner_changed = new bool[(x2 - x1) * (y2 - y1)];
+    std::vector<bool> owner_changed((x2 - x1) * (y2 - y1));
 
 
     std::vector<int> sizeChanges(GAMECLIENT.GetPlayerCount());
@@ -677,8 +677,6 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding* const building, const 
             }
         }
     }
-
-    delete [] owner_changed;
 
     // Grenzsteine neu berechnen, noch 1 über das Areal hinausgehen, da dieses auch die Grenzsteine rundrum
     // mit beeinflusst

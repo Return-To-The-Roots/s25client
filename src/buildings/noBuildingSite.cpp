@@ -125,6 +125,9 @@ void noBuildingSite::Destroy_noBuildingSite()
     for(std::list<Ware*>::iterator it = ordered_stones.begin(); it != ordered_stones.end(); ++it)
         WareNotNeeded((*it));
 
+    ordered_boards.clear();
+    ordered_stones.clear();
+
     // und Feld wird leer
     gwg->SetNO(0, pos);
     // Anbauten drumrum ggf. zerstören

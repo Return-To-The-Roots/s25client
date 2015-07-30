@@ -87,7 +87,7 @@ class EventManager
         /// Event entfernen
         void RemoveEvent(EventPointer ep);
         /// Objekt will gekillt werden
-        void AddToKillList(GameObject* obj) { assert(std::count(kill_list.begin(), kill_list.end(), obj) == 0); kill_list.push_back(obj); }
+        void AddToKillList(GameObject* obj) { assert(std::find(kill_list.begin(), kill_list.end(), obj) == kill_list.end()); kill_list.push_back(obj); }
 
         /// Serialisieren
         void Serialize(SerializedGameData* sgd) const;
