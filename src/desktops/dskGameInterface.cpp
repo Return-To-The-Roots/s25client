@@ -620,6 +620,12 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
         {
             WINDOWMANAGER.Show(new iwTextfile("readme.txt", _("Readme!")));
         } return true;
+#ifndef NDEBUG
+        case KT_F10:
+        {
+	        GAMECLIENT.ToggleHumanAIPlayer();
+        } return true;
+#endif
         case KT_F11: // Music player (midi files)
         {
             WINDOWMANAGER.Show(new iwMusicPlayer);

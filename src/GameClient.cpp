@@ -155,7 +155,7 @@ void GameClient::ReplayInfo::Clear()
  */
 GameClient::GameClient(void)
     : recv_queue(&GameMessage::create_game), send_queue(&GameMessage::create_game),
-      ci(NULL)
+      ci(NULL), human_ai(NULL)
 {
     clientconfig.Clear();
     framesinfo.Clear();
@@ -1600,6 +1600,17 @@ void GameClient::ExecuteGameFrame(const bool skipping)
         // Frame-Time setzen zum Zeichnen, (immer auÃŸer bei Lags)
         framesinfo.frame_time = currenttime - framesinfo.lasttime;
     }
+    
+    if (human_ai)
+    {
+        human_ai->RunGF(framesinfo.nr, (framesinfo.nr % framesinfo.nwf_length == 0));
+
+        std::vector<gc::GameCommand*> ai_gcs = human_ai->GetGameCommands();
+
+        gcs.insert(gcs.end(), ai_gcs.begin(), ai_gcs.end());
+
+        human_ai->FetchGameCommands();
+    }
 }
 
 /// Fï¿½hrt notwendige Dinge fï¿½r nï¿½chsten GF aus
@@ -2185,6 +2196,12 @@ void GameClient::DeletePostMessage(PostMsg* msg)
 
 void GameClient::SendAIEvent(AIEvent::Base* ev, unsigned receiver)
 {
+    if (human_ai && playerid == receiver)
+    {
+        human_ai->SendAIEvent(ev);
+        return;
+    }
+    
     if (IsHost())
         GAMESERVER.SendAIEvent(ev, receiver);
     else
@@ -2244,3 +2261,16 @@ void GameClient::LoadGGS()
     ggs.LoadSettings();
     std::cout << "Done." << std::endl;
 }
+
+void GameClient::ToggleHumanAIPlayer()
+{
+    if (human_ai)
+    {
+        delete human_ai;
+        human_ai = NULL;
+    } else
+    {
+        human_ai = new AIPlayerJH(playerid, gw, &players[playerid], &players, &ggs, AI::EASY);
+    }
+}
+

@@ -167,6 +167,8 @@ class GameClient : public Singleton<GameClient>, public GameMessageInterface
         bool ReadPathfindingResult( unsigned char* dir, unsigned* length, MapPoint* next_harbor);
 
         void SystemChat(std::string text);
+        
+        void ToggleHumanAIPlayer();
     private:
         /// Versucht einen neuen GameFrame auszuführen, falls die Zeit dafür gekommen ist
         void ExecuteGameFrame(const bool skipping = false);
@@ -358,6 +360,8 @@ class GameClient : public Singleton<GameClient>, public GameMessageInterface
 
 
         ClientInterface* ci;
+        
+        AIBase *human_ai;
 
         /// GameCommands, die vom Client noch an den Server gesendet werden müssen
         std::vector<gc::GameCommand*> gcs;
