@@ -56,6 +56,14 @@ const char* GetWindowRevision()
     return revision;
 }
 
+const char* GetWindowRevisionShort()
+{
+    static char revision[8];
+    std::memset(revision, 0, 8);
+    std::strncpy(revision, WINDOW_REVISION, 7);
+    return revision;
+}
+
 const char* GetCurrentYear() //nasty but works, if versioning principle changes, we should make it use date function
 {
     static char year[5];

@@ -66,7 +66,7 @@ iwOptionsWindow::iwOptionsWindow(dskGameInterface* gameDesktop)
     AddImage(1, 150, 36, LOADER.GetImageN("io", 30));
 
     // Versionszeile
-    AddVarText(2, 150, 76, _("Return To The Roots - v%s-%s"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, NormalFont, 2, GetWindowVersion(), GetWindowRevision());
+    AddVarText(2, 150, 76, _("Return To The Roots v%s-%s"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, NormalFont, 2, GetWindowVersion(), GetWindowRevisionShort());
     // Copyright
     AddVarText(3, 150, 96, _("\xA9 2005 - %s Settlers Freaks"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, NormalFont, 1, GetCurrentYear());
 

@@ -8,6 +8,7 @@
 const char *GetWindowTitle();
 const char *GetWindowVersion();
 const char *GetWindowRevision();
+const char *GetWindowRevisionShort();
 const char *GetCurrentYear();
 
 #endif // VERSION_H_INCLUDED
