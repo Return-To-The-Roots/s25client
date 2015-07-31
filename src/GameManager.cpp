@@ -170,18 +170,20 @@ bool GameManager::Run()
 
     unsigned int current_time = VIDEODRIVER.GetTickCount();
 
-    // SW-VSync (mit 4% Toleranz)
-    if(SETTINGS.video.vsync > 1)
-    {
-        static unsigned long vsync = SETTINGS.video.vsync;
+    unsigned long vsync_wanted = ((GAMECLIENT.GetState() != GameClient::CS_GAME) || GAMECLIENT.IsPaused()) ? 30 : SETTINGS.video.vsync;
 
+    // SW-VSync (mit 4% Toleranz)
+    if(vsync_wanted > 1)
+    {
+    	static unsigned long vsync = vsync_wanted;
+    	
         // immer 10% dazu/weg bis man Ã¼ber der Framerate liegt
         if(vsync < 200 && 1000 * framerate < (unsigned int)(960 * vsync) )
             vsync = (1100 * vsync) / 1000;
-        else if(vsync > SETTINGS.video.vsync)
+        else if(vsync > vsync_wanted)
             vsync = (900 * vsync) / 1000;
         else
-            vsync = SETTINGS.video.vsync;
+            vsync = vsync_wanted;
 
         unsigned long goal_ticks = 960 * 1000 * 1000 / vsync;
 #ifdef _WIN32
