@@ -41,13 +41,6 @@ TerritoryRegion::TerritoryRegion(const int x1, const int y1, const int x2, const
 {
     // Feld erzeugen
     nodes.resize((x2 - x1) * (y2 - y1));
-
-    // und erstmal hat es niemand im Besitz
-    for(std::vector<TRNode>::iterator it = nodes.begin(); it != nodes.end(); ++it)
-    {
-        it->owner = 0;
-        it->radius = 0;
-    }
 }
 
 TerritoryRegion::~TerritoryRegion()

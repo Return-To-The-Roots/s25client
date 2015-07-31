@@ -44,6 +44,8 @@ class TerritoryRegion
             unsigned char owner;
             /// Entfernung vom Militärgebäude
             unsigned char radius;
+
+            TRNode(): owner(0), radius(0){}
         };
 
         std::vector<TRNode> nodes;
