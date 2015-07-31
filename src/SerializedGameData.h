@@ -22,6 +22,7 @@
 #pragma once
 
 #include <memory.h>
+#include <set>
 #include <list>
 #include <vector>
 #include "BinaryFile.h"
@@ -90,6 +91,17 @@ class SerializedGameData : public Serializer
 
         /// Kopiert eine Liste von GameObjects
         template <typename T>
+        void PushObjectSet(const T& gos, const bool known)
+        {
+            // Anzahl
+            PushUnsignedInt(gos.size());
+            // einzelne Objekte
+            for(typename T::const_iterator it = gos.begin(); it != gos.end(); ++it)
+                PushObject(*it, known);
+        }
+
+        /// Kopiert eine Liste von GameObjects
+        template <typename T>
         void PushObjectVector(const std::vector<T*>& gos, const bool known)
         {
             // Anzahl
@@ -152,6 +164,17 @@ class SerializedGameData : public Serializer
             // einzelne Objekte
             for(unsigned i = 0; i < size; ++i)
                 gos[i] = PopObject<T>(got);
+        }
+
+        /// Liest einen Vektor von GameObjects
+        template <typename T, typename U>
+        void PopObjectSet(std::set<T*, U>& gos, GO_Type got)
+        {
+            // Anzahl
+            unsigned size = PopUnsignedInt();
+            // einzelne Objekte
+            for(unsigned i = 0; i < size; ++i)
+                gos.insert(PopObject<T>(got));
         }
 
 

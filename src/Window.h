@@ -301,6 +301,7 @@ class Window
         template <typename T>
         T* AddCtrl(unsigned int id, T* ctrl)
         {
+            assert(idmap.find(id) == idmap.end());
             // ID auf control mappen
             idmap.insert(std::make_pair(id, ctrl));
 

@@ -88,7 +88,7 @@ Loader::~Loader(void)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  LÃ¤dt alle allgemeinen Dateien.
+ *  Lädt alle allgemeinen Dateien.
  *
  *  @return @p true bei Erfolg, @p false bei Fehler.
  *
@@ -103,8 +103,8 @@ bool Loader::LoadFilesAtStart(void)
     {
         5, 6, 7, 8, 9, 10, 17, // Paletten:     pal5.bbm, pal6.bbm, pal7.bbm, paletti0.bbm, paletti1.bbm, paletti8.bbm, colors.act
         FILE_SPLASH_ID,        // Splashscreen: splash.bmp
-        11, 12,                // MenÃ¼dateien:  resource.dat, io.dat
-        102, 103,              // HintergrÃ¼nde: setup013.lbm, setup015.lbm
+        11, 12,                // Menüdateien:  resource.dat, io.dat
+        102, 103,              // Hintergründe: setup013.lbm, setup015.lbm
         64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84 // Die ganzen Spielladescreens.
     };
 
@@ -114,7 +114,7 @@ bool Loader::LoadFilesAtStart(void)
     if(!LoadSounds())
         return false;
 
-    if(!LoadLsts(95)) // lade systemweite und persÃ¶nliche lst files
+    if(!LoadLsts(95)) // lade systemweite und persönliche lst files
         return false;
 
     return true;
@@ -172,7 +172,7 @@ bool Loader::LoadFileOrDir(const std::string& file, const unsigned int file_id, 
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  LÃ¤dt Dateien aus FILE_PATHS bzw aus dem Verzeichnis.
+ *  Lädt Dateien aus FILE_PATHS bzw aus dem Verzeichnis.
  *
  *  @return @p true bei Erfolg, @p false bei Fehler.
  *
@@ -195,7 +195,7 @@ bool Loader::LoadFilesFromArray(const unsigned int files_count, const unsigned i
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  LÃ¤dt die "override" lst-files aus den systemweiten und persÃ¶nlichen verzeichnissen
+ *  Lädt die "override" lst-files aus den systemweiten und persönlichen verzeichnissen
  *
  *  @return @p true bei Erfolg, @p false bei Fehler.
  *
@@ -233,7 +233,7 @@ bool Loader::LoadLsts(unsigned int dir)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  LÃ¤dt alle Sounds.
+ *  Lädt alle Sounds.
  *
  *  @return liefert true bei Erfolg, false bei Fehler
  *
@@ -247,16 +247,16 @@ bool Loader::LoadSounds(void)
         // nein, dann konvertieren
 
         std::stringstream cmdss;
-        cmdss << GetFilePath(FILE_PATHS[57]); // pfad zum sound-converter hinzufÃ¼gen
+        cmdss << GetFilePath(FILE_PATHS[57]); // pfad zum sound-converter hinzufügen
 
-        // name anhÃ¤ngen
+        // name anhängen
 #ifdef _WIN32
         cmdss << "\\sound-convert.exe";
 #else
         cmdss << "/sound-convert";
 #endif
 
-        // parameter anhÃ¤ngen
+        // parameter anhängen
         cmdss << " -s \"";
         cmdss << GetFilePath(FILE_PATHS[56]); // script
         cmdss << "\" -f \"";
@@ -277,7 +277,7 @@ bool Loader::LoadSounds(void)
         // die konvertierte muss nicht extra geladen werden, da sie im override-ordner landet
     }
 
-    // ggf original laden, hier das overriding benutzen wÃ¤r ladezeitverschwendung
+    // ggf original laden, hier das overriding benutzen wär ladezeitverschwendung
     if(!FileExists(FILE_PATHS[55]))
     {
         // existiert nicht
@@ -313,8 +313,8 @@ bool Loader::LoadSounds(void)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  sortiert einen string nach Startzahl, Namen oder LÃ¤nge (in dieser Reihenfolge).
- *  Wird fÃ¼r das Sortieren der Dateien benutzt.
+ *  sortiert einen string nach Startzahl, Namen oder Länge (in dieser Reihenfolge).
+ *  Wird für das Sortieren der Dateien benutzt.
  *
  *  @author FloSoft
  */
@@ -352,7 +352,7 @@ bool Loader::SortFilesHelper(const std::string& lhs, const std::string& rhs)
 ///////////////////////////////////////////////////////////////////////////////
 /**
  *  zerlegt einen String in Einzelteile
- *  Wird fÃ¼r das richtige Laden der Dateien benutzt.
+ *  Wird für das richtige Laden der Dateien benutzt.
  *
  *  @author FloSoft
  */
@@ -378,7 +378,7 @@ std::vector<std::string> Loader::ExplodeString(std::string const& line, const ch
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  LÃ¤dt die Settings.
+ *  Lädt die Settings.
  *
  *  @return @p true bei Erfolg, @p false bei Fehler.
  *
@@ -442,10 +442,10 @@ glSmartBitmap Loader::tree_cache[9][15] = {{glSmartBitmap()}};
 // Bobs from jobs.bob: bob_jobs_cache[nation][job][direction][animation]
 glSmartBitmap Loader::bob_jobs_cache[NAT_COUNT][JOB_TYPES_COUNT + 1][6][8];
 
-// Granit - zwei Typen, sechs grÃ¶ÃŸen
+// Granit - zwei Typen, sechs größen
 glSmartBitmap Loader::granite_cache[2][6];
 
-// Felder - 2 Typen, vier GrÃ¶ÃŸen
+// Felder - 2 Typen, vier Größen
 glSmartBitmap Loader::grainfield_cache[2][4];
 
 // carrier_cache[ware][direction][animation_step][fat]
@@ -465,7 +465,7 @@ glSmartBitmap Loader::gateway_cache[5];
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  LÃ¤dt die Spieldateien.
+ *  Lädt die Spieldateien.
  *
  *  @param[in] gfxset  Das GFX-Set
  *  @param[in] nations Array der zu ladenden Nationen.
@@ -492,7 +492,7 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool* nations)
 
     for(unsigned char i = 0; i < NATIVE_NAT_COUNT; ++i)
     {
-        // ggf. VÃ¶lker-Grafiken laden
+        // ggf. Völker-Grafiken laden
         if(nations[i] || ((i == 2) && (nations[4])))
             files[i] = 27 + i + (gfxset == 2) * NATIVE_NAT_COUNT;
     }
@@ -510,7 +510,7 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool* nations)
         return false;
     }
 
-    if(!LoadLsts(96)) // lade systemweite und persÃ¶nliche lst files
+    if(!LoadLsts(96)) // lade systemweite und persönliche lst files
     {
         lastgfx = 0xFF;
         return false;
@@ -556,7 +556,7 @@ void Loader::fillCaches()
                 if(ANIMALCONSTS[species].shadow_id)
                 {
                     if(species == SPEC_DUCK)
-                        // Ente Sonderfall, da gibts nur einen Schatten fÃ¼r jede Richtung!
+                        // Ente Sonderfall, da gibts nur einen Schatten für jede Richtung!
                         bmp.addShadow(GetMapImageN(ANIMALCONSTS[species].shadow_id));
                     else
                         // ansonsten immer pro Richtung einen Schatten
@@ -624,7 +624,7 @@ void Loader::fillCaches()
         {
             for (unsigned ani_step = 0; ani_step < 8; ++ani_step)
             {
-                // Flaggentyp berÃ¼cksichtigen
+                // Flaggentyp berücksichtigen
                 int nr = ani_step + 100 + 20 * type;
 
                 glSmartBitmap& bmp = flag_cache[nation][type][ani_step];
@@ -925,7 +925,7 @@ void Loader::fillCaches()
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  LÃ¤dt Dateien von Addons.
+ *  Lädt Dateien von Addons.
  *
  *  @param[in] id die Addon ID
  *
@@ -978,7 +978,7 @@ bool Loader::CreateTerrainTextures(void)
         Rect(192, 104, 55, 56)
     };
 
-    // RÃ¤nder
+    // Ränder
     Rect rec_raender[5] =
     {
         Rect(192, 176, 64, 16), // Schnee
@@ -1014,7 +1014,7 @@ bool Loader::CreateTerrainTextures(void)
     lava.clear();
     ExtractAnimatedTexture(&lava,  rects[15], 4, 248);
 
-    // die 5 RÃ¤nder
+    // die 5 Ränder
     borders.clear();
     for(unsigned char i = 0; i < 5; ++i)
         ExtractTexture(&borders, rec_raender[i]);
@@ -1085,7 +1085,7 @@ void Loader::ExtractAnimatedTexture(libsiedler2::ArchivInfo* destination, Rect& 
 
     unsigned char* buffer = new unsigned char[width * height];
 
-    // Mit Startindex (also irgendeiner Farbe) fÃ¼llen, um transparente Pixel und damit schwarze Punke am Rand zu verhindern
+    // Mit Startindex (also irgendeiner Farbe) füllen, um transparente Pixel und damit schwarze Punke am Rand zu verhindern
     memset(buffer, start_index, width * height);
 
     image->print(buffer, width, height, libsiedler2::FORMAT_PALETTED, palette, 0, 0, rect.left, rect.top, width, height);
@@ -1114,10 +1114,10 @@ void Loader::ExtractAnimatedTexture(libsiedler2::ArchivInfo* destination, Rect& 
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  @brief LÃ¤dt eine Datei in ein ArchivInfo.
+ *  @brief Lädt eine Datei in ein ArchivInfo.
  *
  *  @param[in] pfad    Der Dateipfad
- *  @param[in] palette (falls benÃ¶tigt) die Palette.
+ *  @param[in] palette (falls benötigt) die Palette.
  *  @param[in] archiv  Das Zielarchivinfo.
  *
  *  @return @p true bei Erfolg, @p false bei Fehler.
@@ -1242,7 +1242,7 @@ bool Loader::LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Pal
             if(!LoadArchiv( *i, palette, &temp ) )
                 return false;
 
-            // Nun Daten abhÃ¤ngig der Typen erstellen, nur erstes Element wird bei Bitmaps konvertiert
+            // Nun Daten abhängig der Typen erstellen, nur erstes Element wird bei Bitmaps konvertiert
 
             glArchivItem_Bitmap* in = dynamic_cast<glArchivItem_Bitmap*>(temp.get(0));
             glArchivItem_Bitmap* out = dynamic_cast<glArchivItem_Bitmap*>(glAllocator(bobtype, 0, NULL));
@@ -1351,7 +1351,7 @@ bool Loader::LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Pal
 
     if(files.find(p) == files.end() || files.find(p)->second.getCount() == 0)
     {
-        // leeres Archiv in Map einfÃ¼gen
+        // leeres Archiv in Map einfügen
         files.insert(std::make_pair(p, archiv));
         to = &files.find(p)->second;
     }
@@ -1361,7 +1361,7 @@ bool Loader::LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Pal
     if(!LoadFile(pfad, palette, to))
         return false;
 
-    // haben wir eine override file? dann nicht-leere items Ã¼berschreiben
+    // haben wir eine override file? dann nicht-leere items überschreiben
     if(override_file)
     {
         LOG.lprintf("Ersetze Daten der vorher geladenen Datei\n");

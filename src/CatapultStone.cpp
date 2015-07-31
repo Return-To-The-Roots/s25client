@@ -45,8 +45,9 @@ static char THIS_FILE[] = __FILE__;
 CatapultStone::CatapultStone(const MapPoint dest_building, const MapPoint dest_map,
                              const int start_x, const int start_y, const int dest_x, const int dest_y, const unsigned fly_duration) :
     dest_building(dest_building), dest_map(dest_map), start_x(start_x),
-    start_y(start_y), dest_x(dest_x), dest_y(dest_y), explode(false), event(em->AddEvent(this, fly_duration))
+    start_y(start_y), dest_x(dest_x), dest_y(dest_y), explode(false)
 {
+    event = em->AddEvent(this, fly_duration);
 }
 
 
@@ -83,7 +84,7 @@ void CatapultStone::Destroy()
 
 void CatapultStone::Draw(const GameWorldView& gwv, const int xoffset, const int yoffset)
 {
-    // Stein Ã¼berhaupt zeichnen (wenn Quelle und Ziel nicht sichtbar sind, dann nicht!)
+    // Stein überhaupt zeichnen (wenn Quelle und Ziel nicht sichtbar sind, dann nicht!)
     if(gwv.GetGameWorldViewer()->GetVisibility(dest_building) != VIS_VISIBLE &&
             gwv.GetGameWorldViewer()->GetVisibility(dest_map) != VIS_VISIBLE)
         return;
@@ -126,7 +127,7 @@ void CatapultStone::HandleEvent(const unsigned int id)
 {
     if(explode)
     {
-        // Explodiert --> mich zerstÃ¶ren
+        // Explodiert --> mich zerstören
         gwg->RemoveCatapultStone(this);
         em->AddToKillList(this);
     }
@@ -139,7 +140,7 @@ void CatapultStone::HandleEvent(const unsigned int id)
         // Trifft der Stein?
         if(dest_building == dest_map)
         {
-            // Steht an der Stelle noch ein MilitÃ¤rgebÃ¤ude zum Bombardieren?
+            // Steht an der Stelle noch ein Militärgebäude zum Bombardieren?
             if(gwg->GetNO(dest_building)->GetGOT() == GOT_NOB_MILITARY)
                 gwg->GetSpecObj<nobMilitary>(dest_building)->HitOfCatapultStone();
         }

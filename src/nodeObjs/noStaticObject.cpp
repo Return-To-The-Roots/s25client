@@ -45,7 +45,7 @@ static char THIS_FILE[] = __FILE__;
  *
  *  @param[in] id   Nr der Grafik
  *  @param[in] file Nr der Datei (0xFFFF map_?_z.lst, 0-5 mis?bobs.lst)
- *  @param[in] size Grï¿½ï¿½e des Objekts
+ *  @param[in] size Größe des Objekts
  *  @param[in] type Typ des Objekts
  *
  *  @author FloSoft
@@ -135,7 +135,7 @@ void noStaticObject::Draw(int x, int y)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  zerstï¿½rt das Objekt.
+ *  zerstört das Objekt.
  *
  *  @author FloSoft
  */

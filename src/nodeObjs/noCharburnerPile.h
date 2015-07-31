@@ -56,7 +56,7 @@ class noCharburnerPile : public noCoordBase
 
         ~noCharburnerPile();
 
-        /// AufrÃ¤ummethoden
+        /// Aufräummethoden
     protected:  void Destroy_noCharburnerPile();
     public:     void Destroy() { Destroy_noCharburnerPile(); }
 

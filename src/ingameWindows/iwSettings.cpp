@@ -69,10 +69,10 @@ iwSettings::iwSettings(dskGameInterface* gameDesktop)
     optiongroup->SetSelection( (SETTINGS.video.fullscreen ? 1 : 2) );
     VIDEODRIVER.ListVideoModes(video_modes);
 
-    // "AuflÃ¶sung"
+    // "Auflösung"
     AddComboBox(0, 200, 35, 150, 22, TC_GREY, NormalFont, 110);
 
-    // Und zu der Combobox hinzufÃ¼gen
+    // Und zu der Combobox hinzufügen
     for(unsigned i = 0; i < video_modes.size(); ++i)
     {
         // >=800x600, alles andere macht keinen Sinn
@@ -83,7 +83,7 @@ iwSettings::iwSettings(dskGameInterface* gameDesktop)
 
             GetCtrl<ctrlComboBox>(0)->AddString(str);
 
-            // Ist das die aktuelle AuflÃ¶sung? Dann selektieren
+            // Ist das die aktuelle Auflösung? Dann selektieren
             if(video_modes[i].width == SETTINGS.video.fullscreen_width &&
                     video_modes[i].height == SETTINGS.video.fullscreen_height)
                 GetCtrl<ctrlComboBox>(0)->SetSelection(i);
@@ -108,7 +108,7 @@ iwSettings::~iwSettings()
     SETTINGS.video.fullscreen_width = video_modes[SizeCombo->GetSelection()].width;
     SETTINGS.video.fullscreen_height = video_modes[SizeCombo->GetSelection()].height;
 
-    // AuflÃ¶sung/Vollbildmodus geÃ¤ndert?
+    // Auflösung/Vollbildmodus geändert?
 #ifdef _WIN32
     if((SETTINGS.video.fullscreen_width != VIDEODRIVER.GetScreenWidth()
             ||

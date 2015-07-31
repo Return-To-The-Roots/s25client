@@ -55,7 +55,7 @@ ctrlMinimap::ctrlMinimap( Window* parent,
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  GrÃ¶ÃŸe Ã¤ndern
+ *  Größe ändern
  *
  *  @author Divan
  */

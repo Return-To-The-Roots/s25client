@@ -39,17 +39,17 @@ class nofAttacker : public nofActiveSoldier
         /// Building which is attacked by the soldier
         nobBaseMilitary* attacked_goal;
         /// Soll er von nem Verteidiger gejagt werden? (wenn nicht wurde er schon gejagt oder er soll
-        /// wegen den MilitÃ¤reinstellungen nicht gejagt werden
+        /// wegen den Militäreinstellungen nicht gejagt werden
         bool should_haunted;
         /// In welchem Radius steht der Soldat, wenn er um eine Fahne herum wartet?
         unsigned short radius;
-        /// Nach einer bestimmten Zeit, in der der Angreifer an der Flagge des GebÃ¤udes steht, blockt er den Weg
+        /// Nach einer bestimmten Zeit, in der der Angreifer an der Flagge des Gebäudes steht, blockt er den Weg
         /// nur benutzt bei STATE_ATTACKING_WAITINGFORDEFENDER
         EventManager::EventPointer blocking_event;
 
-        /// FÃ¼r Seeangreifer: Stelle, wo sich der Hafen befindet, von wo aus sie losfahren sollen
+        /// Für Seeangreifer: Stelle, wo sich der Hafen befindet, von wo aus sie losfahren sollen
         MapPoint harborPos;
-        /// FÃ¼r Seeangreifer: Landepunkt, wo sich das Schiff befindet, mit dem der Angreifer
+        /// Für Seeangreifer: Landepunkt, wo sich das Schiff befindet, mit dem der Angreifer
         /// ggf. wieder nach Hause fahren kann
         MapPoint shipPos;
         unsigned ship_obj_id;
@@ -58,44 +58,44 @@ class nofAttacker : public nofActiveSoldier
 
         /// wenn man gelaufen ist
         void Walked();
-        /// Geht nach Hause fÃ¼r Attacking-Missoin
+        /// Geht nach Hause für Attacking-Missoin
         void ReturnHomeMissionAttacking();
-        /// LÃ¤uft weiter
+        /// Läuft weiter
         void MissAttackingWalk();
-        /// Ist am MilitÃ¤rgebÃ¤ude angekommen
+        /// Ist am Militärgebäude angekommen
         void ReachedDestination();
-        /// Versucht, eine aggressiven Verteidiger fÃ¼r uns zu bestellen
+        /// Versucht, eine aggressiven Verteidiger für uns zu bestellen
         void TryToOrderAggressiveDefender();
         /// Doesn't find a defender at the flag -> Send defenders or capture it
         void ContinueAtFlag();
 
-        /// Geht zum STATE_ATTACKING_WAITINGFORDEFENDER Ã¼ber und meldet gleichzeitig ein Block-Event an
+        /// Geht zum STATE_ATTACKING_WAITINGFORDEFENDER über und meldet gleichzeitig ein Block-Event an
         void SwitchStateAttackingWaitingForDefender();
 
 
 
 
 
-        /// FÃ¼r Schiffsangreifer: Sagt dem Schiff Bescheid, dass wir nicht mehr kommen
+        /// Für Schiffsangreifer: Sagt dem Schiff Bescheid, dass wir nicht mehr kommen
         void CancelAtShip();
-        /// Behandelt das Laufen zurÃ¼ck zum Schiff
+        /// Behandelt das Laufen zurück zum Schiff
         void HandleState_SeaAttack_ReturnToShip();
 
         /// The derived classes regain control after a fight of nofActiveSoldier
         void FreeFightEnded();
 
     public:
-        /// Sagt den verschiedenen Zielen Bescheid, dass wir doch nicht mehr kommen kÃ¶nnen
+        /// Sagt den verschiedenen Zielen Bescheid, dass wir doch nicht mehr kommen können
         void InformTargetsAboutCancelling();
-        /// Normaler Konstruktor fÃ¼r Angreifer
+        /// Normaler Konstruktor für Angreifer
         nofAttacker(nofPassiveSoldier* other, nobBaseMilitary* const attacked_goal);
-        /// Konstruktor fÃ¼r Schiffs-Angreifer, die zuerst einmal zu einem Hafen laufen mÃ¼ssen
+        /// Konstruktor für Schiffs-Angreifer, die zuerst einmal zu einem Hafen laufen müssen
         nofAttacker(nofPassiveSoldier* other, nobBaseMilitary* const attacked_goal,
                     const nobHarborBuilding* const harbor);
         nofAttacker(SerializedGameData* sgd, const unsigned obj_id);
         ~nofAttacker();
 
-        /// AufrÃ¤ummethoden
+        /// Aufräummethoden
     protected:  void Destroy_nofAttacker();
     public:     void Destroy() { Destroy_nofAttacker(); }
 
@@ -109,11 +109,11 @@ class nofAttacker : public nofActiveSoldier
         /// Blockt der Angreifer noch?
         bool IsBlockingRoads() const;
 
-        /// Wenn ein Heimat-MilitÃ¤rgebÃ¤ude bei MissionseinsÃ¤tzen zerstÃ¶rt wurde
+        /// Wenn ein Heimat-Militärgebäude bei Missionseinsätzen zerstört wurde
         void HomeDestroyed();
-        /// Wenn er noch in der Warteschleife vom AusgangsgebÃ¤ude hÃ¤ngt und dieses zerstÃ¶rt wurde
+        /// Wenn er noch in der Warteschleife vom Ausgangsgebäude hängt und dieses zerstört wurde
         void HomeDestroyedAtBegin();
-        /// Sagt dem HeimatgebÃ¤ude Bescheid, dass er nicht mehr nach Hause kommen wird
+        /// Sagt dem Heimatgebäude Bescheid, dass er nicht mehr nach Hause kommen wird
         void CancelAtHomeMilitaryBuilding();
 
         /// Wenn ein Kampf gewonnen wurde
@@ -125,21 +125,21 @@ class nofAttacker : public nofActiveSoldier
         void AttackedGoalDestroyed();
         /// aggressiv Verteidigender Soldat kann nich mehr kommen
         void AggressiveDefenderLost();
-        /// Der Angreifer, der gerade um die Fahne wartet soll zur Fahne laufen, wo der Verteidiger wartet und dort kÃ¤mpfen
+        /// Der Angreifer, der gerade um die Fahne wartet soll zur Fahne laufen, wo der Verteidiger wartet und dort kämpfen
         bool AttackFlag(nofDefender* defender);
         /// Der Platz von einem anderen Kampf wurde frei --> angreifender Soldat soll hinlaufen (KEIN Verteidiger da!)
         void AttackFlag();
-        /// Ein um-die-Flagge-wartender Angreifer soll, nachdem das MilitÃ¤rgebÃ¤ude besetzt wurde, ebenfalls mit reingehen
+        /// Ein um-die-Flagge-wartender Angreifer soll, nachdem das Militärgebäude besetzt wurde, ebenfalls mit reingehen
         void CaptureBuilding();
         /// Siehe oben, wird nach jeder Wegeinheit aufgerufen
         void CapturingWalking();
-        /// Ein um-die-Flagge-wartender Angreifer soll wieder nach Hause gehen, da das eingenommene GebÃ¤ude bereits
+        /// Ein um-die-Flagge-wartender Angreifer soll wieder nach Hause gehen, da das eingenommene Gebäude bereits
         /// voll besetzt ist
         void CapturedBuildingFull();
-        /// Gibt den Radius von einem um-eine-Fahne-herum-wartenden angreifenden Soldaten zurÃ¼ck
+        /// Gibt den Radius von einem um-eine-Fahne-herum-wartenden angreifenden Soldaten zurück
         unsigned GetRadius() const { return radius; }
-        /// Ein um-die-Flagge-Swartender Angreifer soll auf einen frei gewordenen Platz nachrÃ¼cken, damit keine
-        /// LÃ¼cken entstehen
+        /// Ein um-die-Flagge-Swartender Angreifer soll auf einen frei gewordenen Platz nachrücken, damit keine
+        /// Lücken entstehen
         void StartSucceeding(const MapPoint pt, const unsigned short new_radius, const unsigned char dir);
         /// Siehe oben, wird nach jeder Wegeinheit aufgerufen
         void SucceedingWalk();
@@ -147,18 +147,18 @@ class nofAttacker : public nofActiveSoldier
         /// Returns true if successful
         bool TryToStartFarAwayCapturing(nobMilitary* dest);
 
-        /// aggressiv-verteidigender Soldat will mit einem Angreifer kÃ¤mpfen oder umgekehrt
+        /// aggressiv-verteidigender Soldat will mit einem Angreifer kämpfen oder umgekehrt
         void LetsFight(nofAggressiveDefender* other);
 
-        /// Fragt, ob ein Angreifender Soldat vor dem GebÃ¤ude wartet und kÃ¤mpfen will
+        /// Fragt, ob ein Angreifender Soldat vor dem Gebäude wartet und kämpfen will
         bool IsAttackerReady() const { return (state == STATE_ATTACKING_WAITINGAROUNDBUILDING); }
 
-        /// Liefert das angegriffene GebÃ¤ude zurÃ¼ck
+        /// Liefert das angegriffene Gebäude zurück
         nobBaseMilitary* GetAttackedGoal() const { return attacked_goal; }
 
         /// Startet den Angriff am Landungspunkt vom Schiff
         void StartAttackOnOtherIsland(const MapPoint shipPos, const unsigned ship_id);
-        /// Sagt Schiffsangreifern, dass sie mit dem Schiff zurÃ¼ck fahren
+        /// Sagt Schiffsangreifern, dass sie mit dem Schiff zurück fahren
         void StartReturnViaShip();
         /// Sea attacker enters harbor and finds no shipping route or no longer has a valid target: return home soon on a road
         void SeaAttackFailedBeforeLaunch();
@@ -168,7 +168,7 @@ class nofAttacker : public nofActiveSoldier
         void SeaAttackStarted()
         { state = STATE_SEAATTACKING_ONSHIP; }
         /// Fragt einen Schiffs-Angreifer auf dem Schiff, ob er schon einmal
-        /// drauÃŸen war und gekÃ¤mpft hat
+        /// draußen war und gekämpft hat
         bool IsSeaAttackCompleted() const { return (state != STATE_SEAATTACKING_ONSHIP); }
         /// Bricht einen Seeangriff ab
         void CancelSeaAttack();

@@ -82,7 +82,7 @@ iwMusicPlayer::iwMusicPlayer()
     //AddTextButton(5,b1->GetX(false),320,button_width,22,TC_GREEN2,_("Save"),NormalFont);
     //AddTextButton(6,b2->GetX(false),320,button_width,22,TC_GREEN2,_("Load"),NormalFont);
 
-    // Buttons fÃ¼r die MusikstÃ¼cke
+    // Buttons für die Musikstücke
     AddImageButton(7, 370, 30, 40, 40, TC_GREY, LOADER.GetImageN("io", 138), _("Add track"));
     AddImageButton(8, 370, 80, 40, 40, TC_GREY, LOADER.GetImageN("io_new", 2), _("Add directory of tracks"));
     AddImageButton(9, 370, 130, 40, 40, TC_RED1, LOADER.GetImageN("io", 220), _("Remove track"));
@@ -93,14 +93,14 @@ iwMusicPlayer::iwMusicPlayer()
     AddImageButton(14, 390, 240, 20, 20, TC_GREY, LOADER.GetImageN("io", 138), _("More repeats"));
     AddImageButton(15, 370, 270, 40, 40, TC_GREY, LOADER.GetImageN("io", 107), _("Playback in this order")); //225
 
-    // Mit Werten fÃ¼llen
+    // Mit Werten füllen
     MUSICPLAYER.GetPlaylist().FillMusicPlayer(this);
     UpdatePlaylistCombo(SETTINGS.sound.playlist);
 }
 
 iwMusicPlayer::~iwMusicPlayer()
 {
-    // Playlist ggf. speichern, die ausgewÃ¤hlt ist, falls eine ausgewÃ¤hlt ist
+    // Playlist ggf. speichern, die ausgewählt ist, falls eine ausgewählt ist
     unsigned short selection = GetCtrl<ctrlComboBox>(2)->GetSelection();
 
 
@@ -112,7 +112,7 @@ iwMusicPlayer::~iwMusicPlayer()
 
         std::string str(GetCtrl<ctrlComboBox>(2)->GetText(selection));
 
-        // RTTR-Playlisten dÃ¼rfen nicht gelÃ¶scht werden
+        // RTTR-Playlisten dürfen nicht gelöscht werden
         if(str == "S2_Standard")
             return;
 
@@ -142,7 +142,7 @@ void iwMusicPlayer::Msg_ComboSelectItem(const unsigned ctrl_id, const unsigned s
         Playlist pl;
         if(pl.Load(GetFullPlaylistPath(GetCtrl<ctrlComboBox>(2)->GetText(selection))))
         {
-            // Das Fenster entsprechend mit den geladenen Werten fÃ¼llen
+            // Das Fenster entsprechend mit den geladenen Werten füllen
             pl.FillMusicPlayer(this);
             changed = true;
         }
@@ -160,7 +160,7 @@ void iwMusicPlayer::Msg_ListChooseItem(const unsigned int ctrl_id, const unsigne
     MUSICPLAYER.GetPlaylist().SetStartSong(selection);
     MUSICPLAYER.Play();
 
-    // Wir haben ab jetzt quasi keine VerÃ¤nderungen mehr --> damit Musik nicht neugestartet werden muss
+    // Wir haben ab jetzt quasi keine Veränderungen mehr --> damit Musik nicht neugestartet werden muss
     changed = false;
 }
 
@@ -183,12 +183,12 @@ void iwMusicPlayer::Msg_ButtonClick(const unsigned int ctrl_id)
         {
             unsigned short selection = GetCtrl<ctrlComboBox>(2)->GetSelection();
 
-            // Entsprechende Datei lÃ¶schen
+            // Entsprechende Datei löschen
             if(selection != 0xFFFF)
             {
                 std::string str(GetCtrl<ctrlComboBox>(2)->GetText(selection));
 
-                // RTTR-Playlisten dÃ¼rfen nicht gelÃ¶scht werden
+                // RTTR-Playlisten dürfen nicht gelöscht werden
                 if(str == "S2_Standard")
                 {
                     WINDOWMANAGER.Show(new iwMsgbox(_("Error"), _("You are not allowed to delete the standard playlist!"), this, MSB_OK, MSB_EXCLAMATIONRED));
@@ -324,7 +324,7 @@ void iwMusicPlayer::Msg_Input(const unsigned int win_id, const std::string& msg)
                 valid = true;
             else
             {
-                // Evtl ein SiedlerstÃ¼ck ("sNN")?
+                // Evtl ein Siedlerstück ("sNN")?
                 if(msg.length() == 3)
                 {
                     if(atoi(msg.substr(1).c_str()) <= 14)
@@ -332,10 +332,10 @@ void iwMusicPlayer::Msg_Input(const unsigned int win_id, const std::string& msg)
                 }
             }
 
-            // GÃ¼ltiges SiedlerstÃ¼ck?
+            // Gültiges Siedlerstück?
             if(valid)
             {
-                // HinzufÃ¼gen
+                // Hinzufügen
                 GetCtrl<ctrlList>(0)->AddString(msg);
                 changed = true;
             }
@@ -348,7 +348,7 @@ void iwMusicPlayer::Msg_Input(const unsigned int win_id, const std::string& msg)
         {
             bool valid = true;
 
-            // UngÃ¼ltige Namen ausschlieÃŸen
+            // Ungültige Namen ausschließen
             if(msg.length() == 0) valid = false;
             else if(!((msg[0] >= 'a' && msg[0] <= 'z') || (msg[0] >= 'A' && msg[0] <= 'Z'))) valid = false;
 

@@ -40,14 +40,15 @@
 
 #include "GameServer.h"
 
-GameWorldViewer::GameWorldViewer() : scroll(false), sx(0), sy(0), view(GameWorldView(this, MapPoint(0, 0), VIDEODRIVER.GetScreenWidth(), VIDEODRIVER.GetScreenHeight()))
+GameWorldViewer::GameWorldViewer() : scroll(false), sx(0), sy(0), view(GameWorldView(MapPoint(0, 0), VIDEODRIVER.GetScreenWidth(), VIDEODRIVER.GetScreenHeight()))
 {
+    view.SetGameWorldViewer(this);
     MoveTo(0, 0);
 }
 
 unsigned GameWorldViewer::GetAvailableSoldiersForAttack(const unsigned char player_attacker, const MapPoint pt)
 {
-    // Ist das angegriffenne ein normales GebÃ¤ude?
+    // Ist das angegriffenne ein normales Gebäude?
     nobBaseMilitary* attacked_building = GetSpecObj<nobBaseMilitary>(pt);
     if(attacked_building->GetBuildingType() >= BLD_BARRACKS && attacked_building->GetBuildingType() <= BLD_FORTRESS)
     {
@@ -57,17 +58,15 @@ unsigned GameWorldViewer::GetAvailableSoldiersForAttack(const unsigned char play
             return 0;
     }
 
-    // MilitÃ¤rgebÃ¤ude in der NÃ¤he finden
-    std::set<nobBaseMilitary*> buildings = LookForMilitaryBuildings(pt, 3);
-
+    // Militärgebäude in der Nähe finden
     unsigned total_count = 0;
 
-    for(std::set<nobBaseMilitary*>::iterator it = buildings.begin(); it != buildings.end(); ++it)
+    nobBaseMilitarySet buildings = LookForMilitaryBuildings(pt, 3);
+    for(nobBaseMilitarySet::iterator it = buildings.begin(); it != buildings.end(); ++it)
     {
-        // Muss ein GebÃ¤ude von uns sein und darf nur ein "normales MilitÃ¤rgebÃ¤ude" sein (kein HQ etc.)
+        // Muss ein Gebäude von uns sein und darf nur ein "normales Militärgebäude" sein (kein HQ etc.)
         if((*it)->GetPlayer() == player_attacker && (*it)->GetBuildingType() >= BLD_BARRACKS && (*it)->GetBuildingType() <= BLD_FORTRESS)
             total_count += static_cast<nobMilitary*>(*it)->GetSoldiersForAttack(pt, player_attacker);
-
     }
 
     return total_count;
@@ -119,7 +118,7 @@ void GameWorldViewer::MouseMove(const MouseCoords& mc)
     }
 }
 
-// HÃ¶he wurde VerÃ¤ndert: TerrainRenderer Bescheid sagen, damit es entsprechend verÃ¤ndert werden kann
+// Höhe wurde Verändert: TerrainRenderer Bescheid sagen, damit es entsprechend verändert werden kann
 void GameWorldViewer::AltitudeChanged(const MapPoint pt)
 {
     tr.AltitudeChanged(pt, this);
@@ -150,19 +149,19 @@ void GameWorldViewer::RecalcAllColors()
     tr.UpdateAllColors(this);
 }
 
-/// liefert sichtbare StraÃƒÂŸe, im FoW entsprechend die FoW-StraÃƒÂŸe
+/// liefert sichtbare Straße, im FoW entsprechend die FoW-Straße
 unsigned char GameWorldViewer::GetVisibleRoad(const MapPoint pt, unsigned char dir, const Visibility visibility) const
 {
     if(visibility == VIS_VISIBLE)
-        // Normal die sichtbaren StraÃƒÂŸen zurÃ¼ckliefern
+        // Normal die sichtbaren Straßen zurückliefern
         return GetRoad(pt, dir, true);
 //      return GetPointRoad(x,y,dir,true);
     else if(visibility == VIS_FOW)
-        // entsprechende FoW-StraÃƒÂŸe liefern
+        // entsprechende FoW-Straße liefern
 //      return GetPointFOWRoad(x,y,dir,GetYoungestFOWNodePlayer(MapPoint(x,y)));
         return GetNode(pt).fow[GetYoungestFOWNodePlayer(pt)].roads[dir];
     else
-        // Unsichtbar -> keine StraÃƒÂŸe zeichnen
+        // Unsichtbar -> keine Straße zeichnen
         return 0;
 }
 
@@ -211,7 +210,7 @@ noShip* GameWorldViewer::GetShip(const MapPoint pt, const unsigned char player) 
     return(ship);
 }
 
-/// Gibt die verfÃ¼gbar Anzahl der Angreifer fÃ¼r einen Seeangriff zurÃ¼ck
+/// Gibt die verfügbar Anzahl der Angreifer für einen Seeangriff zurück
 unsigned GameWorldViewer::GetAvailableSoldiersForSeaAttackCount(const unsigned char player_attacker,
         const MapPoint pt) const
 {

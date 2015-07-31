@@ -34,7 +34,7 @@ class nofPassiveWorker : public noFigure
         void Walked(); // wenn man gelaufen ist
         void GoalReached(); // wenn das Ziel erreicht wurde
         void AbrogateWorkplace();
-        void HandleDerivedEvent(const unsigned int id); /// FÃ¼r alle restlichen Events, die nicht von noFigure behandelt werden
+        void HandleDerivedEvent(const unsigned int id); /// Für alle restlichen Events, die nicht von noFigure behandelt werden
 
     public:
 

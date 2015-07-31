@@ -21,7 +21,9 @@
 #define NOB_MILITARYBUILDING_H_
 
 #include "nobBaseMilitary.h"
+#include "figures/nofSoldier.h"
 #include <list>
+#include <set>
 
 class nofPassiveSoldier;
 class nofActiveSoldier;
@@ -31,33 +33,36 @@ class nofDefender;
 class Ware;
 class iwMilitaryBuilding;
 
-/// Stellt ein MilitÃ¤rgebÃ¤ude beliebiger GrÃ¶ÃŸe (also von Baracke bis Festung) dar
+/// Stellt ein Militärgebäude beliebiger Größe (also von Baracke bis Festung) dar
 class nobMilitary : public nobBaseMilitary
 {
-        /// wurde das GebÃ¤ude gerade neu gebaut (muss also die Landgrenze beim Eintreffen von einem Soldaten neu berechnet werden?)
+public: typedef std::set<nofPassiveSoldier*, ComparatorSoldiersByRank<true> > SortedTroopsContainer;
+
+private:
+        /// wurde das Gebäude gerade neu gebaut (muss also die Landgrenze beim Eintreffen von einem Soldaten neu berechnet werden?)
         bool new_built;
-        /// Anzahl der GoldmÃ¼nzen im GebÃ¤ude
+        /// Anzahl der Goldmünzen im Gebäude
         unsigned char coins;
-        /// Gibt an, ob GoldmÃ¼nzen gesperrt worden (letzteres nur visuell, um Netzwerk-Latenzen zu verstecken)
+        /// Gibt an, ob Goldmünzen gesperrt worden (letzteres nur visuell, um Netzwerk-Latenzen zu verstecken)
         bool disable_coins, disable_coins_virtual;
         /// Entfernung zur freindlichen Grenze (woraus sich dann die Besatzung ergibt) von 0-3, 0 fern, 3 nah, 2 Hafen!
         unsigned char frontier_distance;
-        /// GrÃ¶ÃŸe bzw Typ des MilitÃ¤rgebÃ¤udes (0 = Baracke, 3 = Festung)
+        /// Größe bzw Typ des Militärgebäudes (0 = Baracke, 3 = Festung)
         unsigned char size;
         /// Bestellte Soldaten
-        std::list<nofPassiveSoldier*> ordered_troops;
-        /// Bestellter GoldmÃ¼nzen
+        SortedTroopsContainer ordered_troops;
+        /// Bestellter Goldmünzen
         std::list<Ware*> ordered_coins;
-        /// Gibt an, ob gerade die Eroberer in das GebÃ¤ude gehen (und es so nicht angegegriffen werden sollte)
+        /// Gibt an, ob gerade die Eroberer in das Gebäude gehen (und es so nicht angegegriffen werden sollte)
         bool capturing;
-        /// Anzahl der Soldaten, die das MilitÃ¤rgebÃ¤ude gerade noch einnehmen
+        /// Anzahl der Soldaten, die das Militärgebäude gerade noch einnehmen
         unsigned capturing_soldiers;
         /// List of soldiers who are on the way to capture the military building
         /// but who are still quite far away (didn't stand around the building)
         std::list<nofAttacker*> far_away_capturers;
         /// Gold-Bestell-Event
         EventManager::EventPointer goldorder_event;
-        /// BefÃ¶rderung-Event
+        /// Beförderung-Event
         EventManager::EventPointer upgrade_event;
         /// Is the military building regulating its troops at the moment? (then block furthere RegulateTroop calls)
         bool is_regulating_troops;
@@ -66,23 +71,23 @@ class nobMilitary : public nobBaseMilitary
     public:
 
         /// Soldatenbesatzung
-        std::list<nofPassiveSoldier*> troops;
+        SortedTroopsContainer troops;
 
         // Das Fenster braucht ja darauf Zugriff
         friend class iwMilitaryBuilding;
 
     private:
 
-        /// Bestellungen (sowohl Truppen als auch GoldmÃ¼nzen) zurÃ¼cknehmen
+        /// Bestellungen (sowohl Truppen als auch Goldmünzen) zurücknehmen
         void CancelOrders();
-        /// WÃ¤hlt je nach MilitÃ¤reinstellungen (VerteidigerstÃ¤rke) einen passenden Soldaten aus
+        /// Wählt je nach Militäreinstellungen (Verteidigerstärke) einen passenden Soldaten aus
         nofPassiveSoldier* ChooseSoldier();
-        /// Stellt Verteidiger zur VerfÃ¼gung
+        /// Stellt Verteidiger zur Verfügung
         nofDefender* ProvideDefender(nofAttacker* const attacker);
-        /// Will/kann das GebÃ¤ude noch MÃ¼nzen bekommen?
+        /// Will/kann das Gebäude noch Münzen bekommen?
         bool WantCoins();
-        /// PrÃ¼ft, ob GoldmÃ¼nzen und Soldaten, die befÃ¶rdert werden kÃ¶nnen, vorhanden sind und meldet ggf. ein
-        /// BefÃ¶rderungsevent an
+        /// Prüft, ob Goldmünzen und Soldaten, die befördert werden können, vorhanden sind und meldet ggf. ein
+        /// Beförderungsevent an
         void PrepareUpgrading();
         /// Gets the total amount of soldiers (ordered, stationed, on mission)
         size_t GetTotalSoldiers() const;
@@ -95,7 +100,7 @@ class nobMilitary : public nobBaseMilitary
 
         ~nobMilitary();
 
-        /// AufrÃ¤ummethoden
+        /// Aufräummethoden
     protected:  void Destroy_nobMilitary();
     public:     void Destroy() { Destroy_nobMilitary(); }
 
@@ -108,48 +113,48 @@ class nobMilitary : public nobBaseMilitary
         void Draw(int x, int y);
         void HandleEvent(const unsigned int id);
 
-        /// Wurde das MilitÃ¤rgebÃ¤ude neu gebaut und noch nicht besetzt und kann somit abgerissen werden bei Land-verlust?
+        /// Wurde das Militärgebäude neu gebaut und noch nicht besetzt und kann somit abgerissen werden bei Land-verlust?
         bool IsNewBuilt() const { return new_built; }
 
-        /// Liefert MilitÃ¤rradius des GebÃ¤udes
+        /// Liefert Militärradius des Gebäudes
         MapCoord GetMilitaryRadius() const;
 
-        /// Sucht feindliche MiitÃ¤rgebÃ¤ude im Umkreis und setzt die frontier_distance entsprechend (sowohl selber als
-        /// auch von den feindlichen GebÃ¤uden) und bestellt somit ggf. neue Soldaten, exception wird nicht mit einbezogen
+        /// Sucht feindliche Miitärgebäude im Umkreis und setzt die frontier_distance entsprechend (sowohl selber als
+        /// auch von den feindlichen Gebäuden) und bestellt somit ggf. neue Soldaten, exception wird nicht mit einbezogen
         void LookForEnemyBuildings(const nobBaseMilitary* const exception = NULL);
 
-        /// Wird von gegnerischem GebÃ¤ude aufgerufen, wenn sie neu gebaut worden sind und es so ein neues GebÃ¤ude im Umkreis gibt
-        /// setzt frontier_distance neu falls mÃ¶glich und sendet ggf. VerstÃ¤rkung
+        /// Wird von gegnerischem Gebäude aufgerufen, wenn sie neu gebaut worden sind und es so ein neues Gebäude im Umkreis gibt
+        /// setzt frontier_distance neu falls möglich und sendet ggf. Verstärkung
         void NewEnemyMilitaryBuilding(const unsigned short distance);
         bool IsUseless() const;
-        /// Gibt Distanz zurÃ¼ck
+        /// Gibt Distanz zurück
         unsigned char GetFrontierDistance() const { return frontier_distance; }
 
-        /// Berechnet die gewÃ¼nschte Besatzung je nach GrenznÃ¤he
+        /// Berechnet die gewünschte Besatzung je nach Grenznähe
         int CalcTroopsCount();
-        /// Reguliert die Besatzung des GebÃ¤udes je nach GrenznÃ¤he, bestellt neue Soldaten und schickt Ã¼berflÃ¼ssige raus
+        /// Reguliert die Besatzung des Gebäudes je nach Grenznähe, bestellt neue Soldaten und schickt überflüssige raus
         void RegulateTroops();
-        /// Gibt aktuelle Besetzung zurÃ¼ck
+        /// Gibt aktuelle Besetzung zurück
         unsigned GetTroopsCount() const { return troops.size(); }
 
 
-        /// Wird aufgerufen, wenn eine neue Ware zum dem GebÃ¤ude geliefert wird (in dem Fall nur GoldstÃ¼cke)
+        /// Wird aufgerufen, wenn eine neue Ware zum dem Gebäude geliefert wird (in dem Fall nur Goldstücke)
         void TakeWare(Ware* ware);
-        /// Legt eine Ware am Objekt ab (an allen StraÃŸenknoten (GebÃ¤ude, Baustellen und Flaggen) kann man Waren ablegen
+        /// Legt eine Ware am Objekt ab (an allen Straßenknoten (Gebäude, Baustellen und Flaggen) kann man Waren ablegen
         void AddWare(Ware* ware);
         /// Eine bestellte Ware konnte doch nicht kommen
         void WareLost(Ware* ware);
-        /// Wird aufgerufen, wenn von der Fahne vor dem GebÃ¤ude ein Rohstoff aufgenommen wurde
+        /// Wird aufgerufen, wenn von der Fahne vor dem Gebäude ein Rohstoff aufgenommen wurde
         bool FreePlaceAtFlag();
 
-        /// Berechnet, wie dringend eine GoldmÃ¼nze gebraucht wird, in Punkten, je hÃ¶her desto dringender
+        /// Berechnet, wie dringend eine Goldmünze gebraucht wird, in Punkten, je höher desto dringender
         unsigned CalcCoinsPoints();
 
         /// Wird aufgerufen, wenn ein Soldat kommt
         void GotWorker(Job job, noFigure* worker);
-        /// FÃ¼gt aktiven Soldaten (der aus von einer Mission) zum MilitÃ¤rgebÃ¤ude hinzu
+        /// Fügt aktiven Soldaten (der aus von einer Mission) zum Militärgebäude hinzu
         void AddActiveSoldier(nofActiveSoldier* soldier);
-        /// FÃ¼gt passiven Soldaten (der aus einem Lagerhaus kommt) zum MilitÃ¤rgebÃ¤ude hinzu
+        /// Fügt passiven Soldaten (der aus einem Lagerhaus kommt) zum Militärgebäude hinzu
         void AddPassiveSoldier(nofPassiveSoldier* soldier);
         /// Soldat konnte nicht kommen
         void SoldierLost(nofSoldier* soldier);
@@ -159,32 +164,32 @@ class nobMilitary : public nobBaseMilitary
         /// Schickt einen Verteidiger raus, der einem Angreifer in den Weg rennt
         nofAggressiveDefender* SendDefender(nofAttacker* attacker);
 
-        /// Gibt die Anzahl der Soldaten zurÃ¼ck, die fÃ¼r einen Angriff auf ein bestimmtes Ziel zur VerfÃ¼gung stehen
+        /// Gibt die Anzahl der Soldaten zurück, die für einen Angriff auf ein bestimmtes Ziel zur Verfügung stehen
         unsigned GetSoldiersForAttack(const MapPoint dest, const unsigned char player_attacker) const;
-        /// Gibt die Soldaten zurÃ¼ck, die fÃ¼r einen Angriff auf ein bestimmtes Ziel zur VerfÃ¼gung stehen
+        /// Gibt die Soldaten zurück, die für einen Angriff auf ein bestimmtes Ziel zur Verfügung stehen
         void GetSoldiersForAttack(const MapPoint dest,
                                   const unsigned char player_attacker, std::vector<nofPassiveSoldier*>& soldiers) const;
-        /// Gibt die StÃ¤rke der Soldaten zurÃ¼ck, die fÃ¼r einen Angriff auf ein bestimmtes Ziel zur VerfÃ¼gung stehen
+        /// Gibt die Stärke der Soldaten zurück, die für einen Angriff auf ein bestimmtes Ziel zur Verfügung stehen
         unsigned GetSoldiersStrengthForAttack(const MapPoint dest,
                                               const unsigned char player_attacker, unsigned& soldiers_count) const;
-        /// Gibt die StÃ¤rke eines MilitÃ¤rgebÃ¤udes zurÃ¼ck
+        /// Gibt die Stärke eines Militärgebäudes zurück
         unsigned GetSoldiersStrength() const;
 
-        /// GebÃ¤ude wird vom Gegner eingenommen, player ist die neue Spieler-ID
+        /// Gebäude wird vom Gegner eingenommen, player ist die neue Spieler-ID
         void Capture(const unsigned char new_owner);
-        /// Das GebÃ¤ude wurde bereits eingenommen, hier wird geprÃ¼ft, ob noch weitere Soldaten fÃ¼r die Besetzung
+        /// Das Gebäude wurde bereits eingenommen, hier wird geprüft, ob noch weitere Soldaten für die Besetzung
         /// notwendig sind, wenn ja wird ein neuer Soldat gerufen, wenn nein, werden alle restlichen nach Hause
         /// geschickt
         void NeedOccupyingTroops(const unsigned char new_owner);
-        /// Sagt dem GebÃ¤ude schonmal, dass es eingenommen wird, wenn er erste Eroberer gerade in das GebÃ¤ude reinlÃ¤uft
-        /// (also noch bevor er drinnen ist!) - damit da nicht zusÃ¤tzliche Soldaten reinlaufen
+        /// Sagt dem Gebäude schonmal, dass es eingenommen wird, wenn er erste Eroberer gerade in das Gebäude reinläuft
+        /// (also noch bevor er drinnen ist!) - damit da nicht zusätzliche Soldaten reinlaufen
         void PrepareCapturing() { capturing = true; ++capturing_soldiers; }
 
-        /// Wird das GebÃ¤ude gerade eingenommen?
+        /// Wird das Gebäude gerade eingenommen?
         bool IsCaptured() const { return capturing; }
-        /// GebÃ¤ude wird nicht mehr eingenommen (falls anderer Soldat zuvor reingekommen ist beim Einnehmen)
+        /// Gebäude wird nicht mehr eingenommen (falls anderer Soldat zuvor reingekommen ist beim Einnehmen)
         void StopCapturing() { capturing = false; }
-        /// Sagt, dass ein erobernder Soldat das MilitÃ¤rgebÃ¤ude erreicht hat
+        /// Sagt, dass ein erobernder Soldat das Militärgebäude erreicht hat
         void CapturingSoldierArrived() { --capturing_soldiers; }
         /// A far-away capturer arrived at the building/flag and starts the capturing
         void FarAwayAttackerReachedGoal(nofAttacker* attacker);
@@ -200,13 +205,13 @@ class nobMilitary : public nobBaseMilitary
 		/// is there a max rank soldier in the building?
 		unsigned HasMaxRankSoldier() const;
 
-        /// Sucht sÃ¤mtliche LagerhÃ¤user nach GoldmÃ¼nzen ab und bestellt ggf. eine, falls eine gebraucht wird
+        /// Sucht sämtliche Lagerhäuser nach Goldmünzen ab und bestellt ggf. eine, falls eine gebraucht wird
         void SearchCoins();
 
-        /// GebÃ¤ude wird von einem Katapultstein getroffen
+        /// Gebäude wird von einem Katapultstein getroffen
         void HitOfCatapultStone();
 
-        /// Sind noch Truppen drinne, die dieses GebÃ¤ude verteidigen kÃ¶nnen
+        /// Sind noch Truppen drinne, die dieses Gebäude verteidigen können
         bool DefendersAvailable() const { return (GetTroopsCount() > 0); }
 
 		/// send all soldiers of the highest rank home (if highest=lowest keep 1)
@@ -214,7 +219,7 @@ class nobMilitary : public nobBaseMilitary
 		/// order new troops
 		void OrderNewSoldiers();
 
-        /// Darf das MilitÃ¤rgebÃ¤ude abgerissen werden (Abriss-Verbot berÃ¼cksichtigen)?
+        /// Darf das Militärgebäude abgerissen werden (Abriss-Verbot berücksichtigen)?
         bool IsDemolitionAllowed() const;
 
         bool WasCapturedOnce() const {return(captured_not_built);}

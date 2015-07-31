@@ -65,5 +65,20 @@ class nofSoldier : public noFigure
 
 };
 
+/// Comparator to sort soldiers by rank (and ID for ties)
+/// Template arguments defines the sort order: True for weak ones first, false for strong ones first
+template< bool T_SortAsc >
+struct ComparatorSoldiersByRank
+{
+    bool operator()(nofSoldier* left, nofSoldier* right)
+    {
+        if(left->GetRank() == right->GetRank())
+            return (T_SortAsc) ? left->GetObjId() < right->GetObjId() : left->GetObjId() > right->GetObjId();
+        else if(T_SortAsc)
+            return left->GetRank() < right->GetRank();
+        else
+            return left->GetRank() > right->GetRank();
+    }
+};
 
 #endif

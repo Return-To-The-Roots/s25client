@@ -24,6 +24,7 @@
 #include "gameData/BuildingConsts.h"
 #include "gameData/GameConsts.h"
 #include "EventManager.h"
+#include <set>
 
 class nofSoldier;
 class nofActiveSoldier;
@@ -151,13 +152,13 @@ class nobBaseMilitary : public noBuilding
         { return (*one) < (*two); }
 
         struct Comparer{
-            bool operator()(const nobBaseMilitary* const one, const nobBaseMilitary* const two){
+            bool operator()(const nobBaseMilitary* const one, const nobBaseMilitary* const two) const {
                 return (*one) < (*two);
             }
         };
 };
 
-
+typedef std::set<nobBaseMilitary*, nobBaseMilitary::Comparer> nobBaseMilitarySet;
 
 
 #endif //! NOB_BASEMILITARY_H_
