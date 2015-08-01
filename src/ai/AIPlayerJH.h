@@ -99,6 +99,10 @@ class AIPlayerJH : public AIBase
         friend class AIJH::ConnectJob;
         friend class AIJH::SearchJob;
         friend class iwAIDebug;
+    private:
+        unsigned attack_interval;
+        unsigned build_interval;
+
     public:
         AIPlayerJH(const unsigned char playerid, const GameWorldBase* const gwb, const GameClientPlayer* const player,
                    const GameClientPlayerList* const players, const GlobalGameSettings* const ggs,

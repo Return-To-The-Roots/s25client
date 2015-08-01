@@ -722,7 +722,6 @@ void AIConstruction::InitBuildingsWanted()
     buildingsWanted[BLD_FORESTER] = 1;
     buildingsWanted[BLD_SAWMILL] = 1;
     buildingsWanted[BLD_WOODCUTTER] = 12;
-    buildingsWanted[BLD_QUARRY] = 6;
     buildingsWanted[BLD_GRANITEMINE] = 0;
     buildingsWanted[BLD_COALMINE] = 4;
     buildingsWanted[BLD_IRONMINE] = 2;

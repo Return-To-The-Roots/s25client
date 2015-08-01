@@ -58,6 +58,26 @@ AIPlayerJH::AIPlayerJH(const unsigned char playerid, const GameWorldBase* const 
     InitNodes();
     InitResourceMaps();
     SaveResourceMapsToFile();
+
+    switch (level)
+    {
+        case AI::EASY:
+            attack_interval = 2500;
+            build_interval = 1000;
+            break;
+        case AI::MEDIUM:
+            attack_interval = 750;
+            build_interval = 400;
+            break;
+        case AI::HARD:
+            attack_interval = 100;
+            build_interval = 200;
+            break;
+        default:
+            attack_interval = 1;
+            build_interval = 1;
+            break;
+    }
 }
 
 AIPlayerJH::~AIPlayerJH()
@@ -96,7 +116,8 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
         if(aii->GetMilitaryBuildings().size() < 1 && aii->GetStorehouses().size() < 2)
         {
             Chat(_("Hi, I'm an artifical player and I'm not very good yet!"));
-            Chat(_("And I may crash your game sometimes..."));
+            // AI doesn't usually crash the game any more :)
+            // Chat(_("And I may crash your game sometimes..."));
         }
 	}
 
@@ -107,17 +128,17 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
         ExecuteAIJob();
     }
 
-    if ((gf + playerid * 17) % 100 == 0)
+    if ((gf + playerid * 17) % attack_interval == 0)
     {
         //CheckExistingMilitaryBuildings();
         TryToAttack();
     }
-	if ((gf + playerid * 17) % 73 == 0)
+	if (((gf + playerid * 17) % 73 == 0) && (level != AI::EASY))
     {
         MilUpgradeOptim();
     }
 
-    if ((gf + 41 + playerid * 17) % 100 == 0)
+    if ((gf + 41 + playerid * 17) % attack_interval == 0)
     {
         if(ggs->getSelection(ADDON_SEA_ATTACK) < 2) //not deactivated by addon? -> go ahead
             TrySeaAttack();
@@ -187,7 +208,7 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
             }
         }
     }
-    if((gf + playerid * 7) % 200 == 0) // plan new buildings
+    if((gf + playerid * 7) % build_interval == 0) // plan new buildings
     {
         construction->RefreshBuildingCount();
 		
@@ -1928,7 +1949,7 @@ void AIPlayerJH::TryToAttack()
         if (attackersCount == 0)
             continue;
 
-        if ((*target)->GetGOT() == GOT_NOB_MILITARY)
+        if ((level == AI::HARD) && ((*target)->GetGOT() == GOT_NOB_MILITARY))
         {
             const nobMilitary* enemyTarget = dynamic_cast<const nobMilitary*>((*target));
 
@@ -1936,10 +1957,6 @@ void AIPlayerJH::TryToAttack()
             {
                 continue;
             }
-        }
-
-        if ((*target)->DefendersAvailable() && (attackersCount < 3))
-        {
         }
 
         aii->Attack(dest, attackersCount, true);
