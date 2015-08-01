@@ -195,22 +195,7 @@ const GoodType SHIELD_TYPES[NAT_COUNT] =
 /// Reichweite der Bergarbeiter
 const unsigned MINER_RADIUS = 2;
 
-/// Vertragsypen
-enum PactType
-{
-    TREATY_OF_ALLIANCE = 0,
-    NON_AGGRESSION_PACT
-};
-
-/// Anzahl der unterschiedlichen Bündnisse
-const unsigned PACTS_COUNT = 2;
-
-/// Namen der Verträge
-const std::string PACT_NAMES[32] =
-{
-    gettext_noop("Treaty of alliance"),
-    gettext_noop("Non-aggression pact")
-};
+#include "gameTypes/PactTypes.h"
 
 /// Post-Nachrichten-Kategorien
 enum PostMessageCategory

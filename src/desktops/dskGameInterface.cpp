@@ -659,7 +659,7 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
                 if(player)
                 {
                     if(player->ps == PS_KI && player->aiInfo.type == AI::DUMMY)
-                        GAMECLIENT.AddGC(new gc::SwitchPlayer(ke.c - '1'));
+                        GAMECLIENT.SwitchPlayer(ke.c - '1');
                 }
             }
         } return true;
@@ -941,7 +941,7 @@ void dskGameInterface::ShowActionWindow(const iwAction::Tabs& action_tabs, MapPo
  */
 void dskGameInterface::CommandBuildRoad()
 {
-    GAMECLIENT.AddGC(new gc::BuildRoad(road.start, road.mode == RM_BOAT, road.route));
+    GAMECLIENT.BuildRoad(road.start, road.mode == RM_BOAT, road.route);
     road.mode = RM_DISABLED;
 }
 

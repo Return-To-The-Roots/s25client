@@ -86,7 +86,7 @@ void iwMilitary::TransmitSettings()
         for(unsigned char i = 0; i < MILITARY_SETTINGS_COUNT; ++i)
             GAMECLIENT.visual_settings.military_settings[i] = (unsigned char)GetCtrl<ctrlProgress>(i)->GetPosition();
 
-        GAMECLIENT.AddGC(new gc::ChangeMilitary(GAMECLIENT.visual_settings.military_settings));
+        GAMECLIENT.ChangeMilitary(GAMECLIENT.visual_settings.military_settings);
         settings_changed = false;
     }
 }

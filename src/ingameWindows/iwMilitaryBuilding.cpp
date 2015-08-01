@@ -148,7 +148,7 @@ void iwMilitaryBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
                 // visuell anzeigen
                 building->ToggleCoinsVirtual();
                 // NC senden
-                GAMECLIENT.AddGC(new gc::ToggleCoins(building->GetPos()));
+                GAMECLIENT.ToggleCoins(building->GetPos());
                 // anderes Bild auf dem Button
                 if(building->IsGoldDisabledVirtual())
                     GetCtrl<ctrlImageButton>(6)->SetImage(LOADER.GetImageN("io", 226));
@@ -186,7 +186,7 @@ void iwMilitaryBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
 		} break;
 		case 10: //send home button (addon)
 		{
-			GAMECLIENT.AddGC(new gc::SendSoldiersHome(building->GetPos()));
+			GAMECLIENT.SendSoldiersHome(building->GetPos());
 		}
 		break;
     }

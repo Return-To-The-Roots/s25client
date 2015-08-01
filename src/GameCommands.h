@@ -491,6 +491,8 @@ namespace gc{
                 ser->PushUnsignedChar(new_player_id);
             }
 
+            unsigned GetNewPlayerId() const { return new_player_id; }
+
             /// Führt das GameCommand aus
             void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
@@ -687,7 +689,6 @@ namespace gc{
             const unsigned duration;
 
         protected:
-
             SuggestPact(const unsigned char player, const PactType pt, const unsigned duration) : GameCommand(SUGGESTPACT),
                 player(player), pt(pt), duration(duration) {}
             SuggestPact(Serializer* ser) : GameCommand(SUGGESTPACT),
@@ -720,7 +721,6 @@ namespace gc{
             const unsigned char player;
 
         protected:
-
             AcceptPact(const bool accepted, const unsigned id, const PactType pt, const unsigned char player) : GameCommand(ACCEPTPACT),
                 accepted(accepted), id(id), pt(pt), player(player) {}
             AcceptPact(Serializer* ser) : GameCommand(ACCEPTPACT),
@@ -750,7 +750,6 @@ namespace gc{
             const unsigned char player;
 
         protected:
-
             CancelPact(const PactType pt, const unsigned char player) : GameCommand(CANCELPACT),
                 pt(pt), player(player) {}
             CancelPact(Serializer* ser) : GameCommand(CANCELPACT),

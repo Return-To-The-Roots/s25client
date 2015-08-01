@@ -371,7 +371,7 @@ void iwAction::DoUpgradeRoad()
     unsigned char flag_dir = 0;
     noFlag* flag = gwv->GetRoadFlag(selectedPt, flag_dir);
     if(flag)
-        GAMECLIENT.AddGC(new gc::UpgradeRoad(flag->GetPos(), flag_dir));
+        GAMECLIENT.UpgradeRoad(flag->GetPos(), flag_dir);
 }
 
 /// Fügt Angriffs-Steuerelemente für bestimmte Gruppe hinzu
@@ -572,7 +572,7 @@ void iwAction::Msg_ButtonClick_TabAttack(const unsigned int ctrl_id)
         {
             ctrlOptionGroup* ogroup = GetCtrl<ctrlTab>(0)->GetGroup(TAB_ATTACK)->GetCtrl<ctrlOptionGroup>(3);
 
-            GAMECLIENT.AddGC(new gc::Attack(selectedPt, selected_soldiers_count, (ogroup->GetSelection() == 1)));
+            GAMECLIENT.Attack(selectedPt, selected_soldiers_count, (ogroup->GetSelection() == 1));
 
             Close();
         } break;
@@ -608,7 +608,7 @@ void iwAction::Msg_ButtonClick_TabSeaAttack(const unsigned int ctrl_id)
         {
             ctrlOptionGroup* ogroup = GetCtrl<ctrlTab>(0)->GetGroup(TAB_SEAATTACK)->GetCtrl<ctrlOptionGroup>(3);
 
-            GAMECLIENT.AddGC(new gc::SeaAttack(selectedPt, selected_soldiers_count_sea, (ogroup->GetSelection() == 1)));
+            GAMECLIENT.SeaAttack(selectedPt, selected_soldiers_count_sea, (ogroup->GetSelection() == 1));
 
             Close();
         } break;
@@ -657,18 +657,18 @@ void iwAction::Msg_ButtonClick_TabFlag(const unsigned int ctrl_id)
             }
             else
             {
-                GAMECLIENT.AddGC(new gc::DestroyFlag(selectedPt));
+                GAMECLIENT.DestroyFlag(selectedPt);
                 Close();
             }
         } break;
         case 4: // Geologen rufen
         {
-            GAMECLIENT.AddGC(new gc::CallGeologist(selectedPt));
+            GAMECLIENT.CallGeologist(selectedPt);
             Close();
         } break;
         case 5: // Späher rufen
         {
-            GAMECLIENT.AddGC(new gc::CallScout(selectedPt));
+            GAMECLIENT.CallScout(selectedPt);
             Close();
         } break;
     }
@@ -677,9 +677,9 @@ void iwAction::Msg_ButtonClick_TabFlag(const unsigned int ctrl_id)
 void iwAction::Msg_ButtonClick_TabBuild(const unsigned int ctrl_id)
 {
     // Klick auf Gebäudebauicon
-    GAMECLIENT.AddGC(new gc::SetBuildingSite(selectedPt,
+    GAMECLIENT.SetBuildingSite(selectedPt,
                      GetCtrl<ctrlTab>(0)->GetGroup(TAB_BUILD)->GetCtrl<ctrlTab>(1)->GetCurrentGroup()->
-                     GetCtrl<ctrlBuildingIcon>(ctrl_id)->GetType()));
+                     GetCtrl<ctrlBuildingIcon>(ctrl_id)->GetType());
 
     // Fenster schließen
     Close();
@@ -691,7 +691,7 @@ void iwAction::Msg_ButtonClick_TabSetFlag(const unsigned int ctrl_id)
     {
         case 1: // Flagge setzen
         {
-            GAMECLIENT.AddGC(new gc::SetFlag(selectedPt));
+            GAMECLIENT.SetFlag(selectedPt);
         } break;
         case 2: // Weg aufwerten
         {
@@ -711,7 +711,7 @@ void iwAction::Msg_ButtonClick_TabCutRoad(const unsigned int ctrl_id)
             unsigned char flag_dir = 0;
             noFlag* flag = gwv->GetRoadFlag(selectedPt, flag_dir);
             if(flag)
-                GAMECLIENT.AddGC(new gc::DestroyRoad(flag->GetPos(), flag_dir));
+                GAMECLIENT.DestroyRoad(flag->GetPos(), flag_dir);
         } break;
         case 2: // Straße aufwerten
         {
@@ -743,7 +743,7 @@ void iwAction::Msg_ButtonClick_TabWatch(const unsigned int ctrl_id)
         } break;
 		case 4:
 		{
-			GAMECLIENT.AddGC(new gc::NotifyAlliesOfLocation(selectedPt));
+			GAMECLIENT.NotifyAlliesOfLocation(selectedPt);
 			Close();			
 		}break;
     }

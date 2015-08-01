@@ -84,12 +84,12 @@ void iwChat::Msg_EditEnter(const unsigned int ctrl_id)
 //#ifndef NDEBUG
     if (edit->GetText() == "apocalypsis")
     {
-        GAMECLIENT.AddGC(new gc::CheatArmageddon);
+        GAMECLIENT.CheatArmageddon();
         return;
     }
     else if (edit->GetText() == "surrender")
     {
-        GAMECLIENT.AddGC(new gc::Surrender);
+        GAMECLIENT.Surrender();
         return;
     }
     else if (edit->GetText() == "async!")

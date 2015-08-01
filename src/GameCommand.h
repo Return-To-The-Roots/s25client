@@ -22,10 +22,13 @@ class Serializer;
 class GameWorldGame;
 class GameClientPlayer;
 class AIInterface;
+class GameClient;
+template<typename T>
+class GameCommandFactory;
 
 // Macro used by all derived GameCommands to allow specified class access to non-public members (e.g. contructor)
 // Only factory classes should be in here
-#define GC_FRIEND_DECL friend class GameCommand; friend class ::GameCommandFactory
+#define GC_FRIEND_DECL friend class GameCommand; friend class ::GameCommandFactory<GameClient>; friend class ::GameCommandFactory<AIInterface>
 
 namespace gc
 {

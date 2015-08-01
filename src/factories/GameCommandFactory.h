@@ -23,6 +23,7 @@
 #include "gameTypes/GoodTypes.h"
 #include "gameTypes/JobTypes.h"
 #include "gameTypes/Direction.h"
+#include "gameTypes/PactTypes.h"
 #include <vector>
 
 namespace gc { class GameCommand; }
@@ -78,6 +79,9 @@ public:
     /// Simply surrenders...
     bool Surrender();
     bool DestroyAll();
+    bool SuggestPact(const unsigned char player, const PactType pt, const unsigned duration);
+    bool AcceptPact(const bool accepted, const unsigned id, const PactType pt, const unsigned char player);
+    bool CancelPact(const PactType pt, const unsigned char player);
     /// Toggles the construction mode of the shipyard between boat and ship
     bool ToggleShipYardMode(const MapPoint pt);
     /// Starts Preparation of an sea expedition in a habor

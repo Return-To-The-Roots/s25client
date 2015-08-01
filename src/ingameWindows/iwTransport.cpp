@@ -159,7 +159,7 @@ void iwTransport::TransmitSettings()
     if(settings_changed)
     {
         // Daten übertragen
-        GAMECLIENT.AddGC(new gc::ChangeTransport(GAMECLIENT.visual_settings.transport_order));
+        GAMECLIENT.ChangeTransport(GAMECLIENT.visual_settings.transport_order);
 
         settings_changed = false;
     }

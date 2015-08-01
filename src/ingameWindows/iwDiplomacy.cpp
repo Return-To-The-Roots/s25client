@@ -204,7 +204,7 @@ void iwDiplomacy::Msg_ButtonClick(const unsigned int ctrl_id)
             WINDOWMANAGER.Show(new iwSuggestPact(TREATY_OF_ALLIANCE, player_id));
         else
             // ansonsten Vertrag versuchen abzubrechen
-            GAMECLIENT.AddGC(new gc::CancelPact(TREATY_OF_ALLIANCE, player_id));
+            GAMECLIENT.CancelPact(TREATY_OF_ALLIANCE, player_id);
     }
     // Nichtangriffspakte
     if(ctrl_id >= 400 && ctrl_id < 500)
@@ -216,7 +216,7 @@ void iwDiplomacy::Msg_ButtonClick(const unsigned int ctrl_id)
             WINDOWMANAGER.Show(new iwSuggestPact(NON_AGGRESSION_PACT, player_id));
         else
             // ansonsten Vertrag versuchen abzubrechen
-            GAMECLIENT.AddGC(new gc::CancelPact(NON_AGGRESSION_PACT, player_id));
+            GAMECLIENT.CancelPact(NON_AGGRESSION_PACT, player_id);
     }
 
 }
@@ -297,6 +297,6 @@ void iwSuggestPact::Msg_ButtonClick(const unsigned int ctrl_id)
     /// Dauer auswählen (wenn id == DURATION_COUNT, dann "für alle Ewigkeit" ausgewählt)
     unsigned selected_id = GetCtrl<ctrlComboBox>(6)->GetSelection();
     unsigned duration = (selected_id == DURATION_COUNT) ? 0xFFFFFFFF : DURATIONS[selected_id];
-    GAMECLIENT.AddGC(new gc::SuggestPact(player, this->pt, duration));
+    GAMECLIENT.SuggestPact(player, this->pt, duration);
     Close();
 }

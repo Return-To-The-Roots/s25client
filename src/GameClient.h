@@ -44,6 +44,10 @@ class AIBase;
 
 class GameClient : public Singleton<GameClient>, public GameMessageInterface, public GameCommandFactory<GameClient>
 {
+    friend class GameCommandFactory<GameClient>;
+    /// Fügt ein GameCommand für den Spieler hinzu und gibt bei Erfolg true zurück, ansonstn false (in der Pause oder wenn Spieler besiegt ist)
+    bool AddGC(gc::GameCommand* gc);
+
     public:
         enum ClientState
         {
@@ -103,9 +107,6 @@ class GameClient : public Singleton<GameClient>, public GameMessageInterface, pu
         unsigned int Interpolate(unsigned max_val, EventManager::EventPointer ev);
         int Interpolate(int x1, int x2, EventManager::EventPointer ev);
         /// Gibt Geschwindigkeits-Faktor zurück
-
-        /// Fügt ein GameCommand für den Spieler hinzu und gibt bei Erfolg true zurück, ansonstn false (in der Pause oder wenn Spieler besiegt ist)
-        bool AddGC(gc::GameCommand* gc);
 
         void Command_SetFlag2(const MapPoint pt, unsigned char player);
         void Command_Chat(const std::string& text, const ChatDestination cd );

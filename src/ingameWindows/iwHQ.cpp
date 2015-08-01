@@ -79,13 +79,13 @@ void iwHQ::Msg_Group_ButtonClick(const unsigned int group_id, const unsigned int
         if(ctrl_id >= 11 && ctrl_id < 16)
         {
             // Netzwerk-Nachricht generieren
-            GAMECLIENT.AddGC(new gc::ChangeReserve(wh->GetPos(), ctrl_id - 11, wh->DecreaseReserveVisual(ctrl_id - 11)));
+            GAMECLIENT.ChangeReserve(wh->GetPos(), ctrl_id - 11, wh->DecreaseReserveVisual(ctrl_id - 11));
         }
         // Plus-Button
         else if(ctrl_id >= 16 && ctrl_id < 21)
         {
             // Netzwerk-Nachricht generieren
-            GAMECLIENT.AddGC(new gc::ChangeReserve(wh->GetPos(), ctrl_id - 16, wh->IncreaseReserveVisual(ctrl_id - 16)));
+            GAMECLIENT.ChangeReserve(wh->GetPos(), ctrl_id - 16, wh->IncreaseReserveVisual(ctrl_id - 16));
         }
     }
 

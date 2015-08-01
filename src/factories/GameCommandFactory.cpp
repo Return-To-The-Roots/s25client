@@ -19,8 +19,10 @@
 #include "GameCommandFactory.h"
 #include "GameCommands.h"
 
-class GameClient;
-class AIInterface;
+#include "GameClient.h"
+#include "ai/AIInterface.h"
+
+#include <stdexcept>
 
 template<class T_Handler>
 bool GameCommandFactory<T_Handler>::SetFlag(const MapPoint pt)
@@ -101,7 +103,7 @@ bool GameCommandFactory<T_Handler>::ChangeMilitary(const std::vector<unsigned ch
 }
 
 template<class T_Handler>
-bool GameCommandFactory<T_Handler>::ChangeTools(const std::vector<unsigned char>& data, signed char* order_delta = 0)
+bool GameCommandFactory<T_Handler>::ChangeTools(const std::vector<unsigned char>& data, signed char* order_delta/* = 0*/)
 {
     return AddGC_Virt( new gc::ChangeTools(data, order_delta) );
 }
@@ -191,6 +193,24 @@ bool GameCommandFactory<T_Handler>::DestroyAll()
 }
 
 template<class T_Handler>
+bool GameCommandFactory<T_Handler>::SuggestPact(const unsigned char player, const PactType pt, const unsigned duration)
+{
+    return AddGC_Virt( new gc::SuggestPact(player, pt, duration) );
+}
+
+template<class T_Handler>
+bool GameCommandFactory<T_Handler>::AcceptPact(const bool accepted, const unsigned id, const PactType pt, const unsigned char player)
+{
+    return AddGC_Virt( new gc::AcceptPact(accepted, id, pt, player) );
+}
+
+template<class T_Handler>
+bool GameCommandFactory<T_Handler>::CancelPact(const PactType pt, const unsigned char player)
+{
+    return AddGC_Virt( new gc::CancelPact(pt, player) );
+}
+
+template<class T_Handler>
 bool GameCommandFactory<T_Handler>::ToggleShipYardMode(const MapPoint pt)
 {
     return AddGC_Virt( new gc::ToggleShipYardMode(pt) );
@@ -205,32 +225,32 @@ bool GameCommandFactory<T_Handler>::StartExpedition(const MapPoint pt)
 template<class T_Handler>
 bool GameCommandFactory<T_Handler>::FoundColony(unsigned int shipID)
 {
-    return AddGC_Virt( new ExpeditionCommand(gc::ExpeditionCommand::FOUNDCOLONY, shipID) );
+    return AddGC_Virt( new gc::ExpeditionCommand(gc::ExpeditionCommand::FOUNDCOLONY, shipID) );
 }
 
 template<class T_Handler>
 bool GameCommandFactory<T_Handler>::TravelToNextSpot(Direction direction, unsigned int shipID)
 {
     gc::ExpeditionCommand::Action action;
-    switch (direction)
+    switch (Direction::Type(direction))
     {
-    case NORTH:
-        action = gc::ExpeditionCommand::Action::NORTH;
+    case Direction::NORTH:
+        action = gc::ExpeditionCommand::NORTH;
         break;
-    case NORTHEAST:
-        action = gc::ExpeditionCommand::Action::NORTHEAST;
+    case Direction::NORTHEAST:
+        action = gc::ExpeditionCommand::NORTHEAST;
         break;
-    case SOUTHEAST:
-        action = gc::ExpeditionCommand::Action::SOUTHEAST;
+    case Direction::SOUTHEAST:
+        action = gc::ExpeditionCommand::SOUTHEAST;
         break;
-    case SOUTH:
-        action = gc::ExpeditionCommand::Action::SOUTH;
+    case Direction::SOUTH:
+        action = gc::ExpeditionCommand::SOUTH;
         break;
-    case SOUTHWEST:
-        action = gc::ExpeditionCommand::Action::SOUTHWEST;
+    case Direction::SOUTHWEST:
+        action = gc::ExpeditionCommand::SOUTHWEST;
         break;
-    case NORTHWEST:
-        action = gc::ExpeditionCommand::Action::NORTHWEST;
+    case Direction::NORTHWEST:
+        action = gc::ExpeditionCommand::NORTHWEST;
         break;
     default:
         throw std::invalid_argument("Direction");
@@ -241,7 +261,7 @@ bool GameCommandFactory<T_Handler>::TravelToNextSpot(Direction direction, unsign
 template<class T_Handler>
 bool GameCommandFactory<T_Handler>::CancelExpedition(unsigned int shipID)
 {
-    return AddGC_Virt( new ExpeditionCommand(gc::ExpeditionCommand::CANCELEXPEDITION, shipID) );
+    return AddGC_Virt( new gc::ExpeditionCommand(gc::ExpeditionCommand::CANCELEXPEDITION, shipID) );
 }
 
 template<class T_Handler>
@@ -259,8 +279,6 @@ bool GameCommandFactory<T_Handler>::TradeOverLand(const MapPoint pt, const bool 
 //////////////////////////////////////////////////////////////////////////
 /// Declare all Factories/Derived classes here to create the code for them
 
-template<>
-class GameCommandFactory<GameClient>;
+template class GameCommandFactory<GameClient>;
 
-template<>
-class GameCommandFactory<AIInterface>;
+template class GameCommandFactory<AIInterface>;
