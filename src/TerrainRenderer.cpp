@@ -979,6 +979,9 @@ void TerrainRenderer::PrepareWaysPoint(GameWorldView* gwv, MapPoint t, int xo, i
 
     Visibility visibility = gwv->GetGameWorldViewer()->GetVisibility(t);
 
+	int x_shift = gwv->GetGameWorldViewer()->GetWidth() * TR_W;
+	int y_shift = gwv->GetGameWorldViewer()->GetHeight() * TR_H;
+
     for(unsigned dir = 0; dir < 3; ++dir)
     {
         if ((type = gwv->GetGameWorldViewer()->GetVisibleRoad(t, dir, visibility)))
@@ -989,20 +992,20 @@ void TerrainRenderer::PrepareWaysPoint(GameWorldView* gwv, MapPoint t, int xo, i
             float ypos2 = GetTerrainY(ta) - gwv->GetYOffset() + yo;
 
             // Gehen wir über einen Kartenrand (horizontale Richung?)
-            if(std::abs(xpos - xpos2) >= gwv->GetGameWorldViewer()->GetWidth() * TR_W / 2)
+            if(std::abs(xpos - xpos2) >= x_shift / 2)
             {
-                if(std::abs(xpos2 - int(gwv->GetGameWorldViewer()->GetWidth())*TR_W - xpos) < std::abs(xpos - xpos2))
-                    xpos2 -= gwv->GetGameWorldViewer()->GetWidth() * TR_W;
+                if(std::abs(xpos2 - x_shift - xpos) < std::abs(xpos - xpos2))
+                    xpos2 -= x_shift;
                 else
-                    xpos2 += gwv->GetGameWorldViewer()->GetWidth() * TR_W;
+                    xpos2 += x_shift;
             }
             // Und dasselbe für vertikale Richtung
-            if(std::abs(ypos - ypos2) >= gwv->GetGameWorldViewer()->GetHeight() * TR_H / 2)
+            if(std::abs(ypos - ypos2) >= y_shift / 2)
             {
-                if(std::abs(ypos2 - int(gwv->GetGameWorldViewer()->GetHeight())*TR_H - ypos) < std::abs(ypos - ypos2))
-                    ypos2 -= gwv->GetGameWorldViewer()->GetHeight() * TR_H;
+                if(std::abs(ypos2 - y_shift - ypos) < std::abs(ypos - ypos2))
+                    ypos2 -= y_shift;
                 else
-                    ypos2 += gwv->GetGameWorldViewer()->GetHeight() * TR_H;
+                    ypos2 += y_shift;
             }
 
             --type;
