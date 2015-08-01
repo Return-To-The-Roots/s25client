@@ -26,7 +26,6 @@
 #include "buildings/nobHarborBuilding.h"
 #include "controls/ctrlGroup.h"
 #include "GameClient.h"
-#include "GameCommands.h"
 #include "controls/ctrlButton.h"
 
 ///////////////////////////////////////////////////////////////////////////////

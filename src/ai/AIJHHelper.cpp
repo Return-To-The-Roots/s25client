@@ -25,7 +25,6 @@
 
 #include "GameClientPlayer.h"
 #include "GameWorld.h"
-#include "GameCommands.h"
 #include "GamePlayerList.h"
 #include "buildings/nobMilitary.h"
 #include "buildings/nobHQ.h"
@@ -300,7 +299,7 @@ void AIJH::BuildJob::BuildMainRoad()
         status = AIJH::JOB_FAILED;
         return;
     }
-    const noFlag* houseFlag = aii->GetSpecObj<noFlag>(aii->GetNeighbour(target, 4));
+    const noFlag* houseFlag = aii->GetSpecObj<noFlag>(aii->GetNeighbour(target, Direction::SOUTHWEST));
     // Gucken noch nicht ans Wegnetz angeschlossen
     if (!aijh->GetConstruction()->IsConnectedToRoadSystem(houseFlag))
     {
@@ -397,7 +396,7 @@ void AIJH::BuildJob::BuildMainRoad()
 
 void AIJH::BuildJob::TryToBuildSecondaryRoad()
 {
-    const noFlag* houseFlag = aii->GetSpecObj<noFlag>(aii->GetNeighbour(target, 4));
+    const noFlag* houseFlag = aii->GetSpecObj<noFlag>(aii->GetNeighbour(target, Direction::SOUTHWEST));
 
     if (!houseFlag)
     {
@@ -555,7 +554,7 @@ void AIJH::ConnectJob::ExecuteJob()
     }
 
 	//is flag of a military building and has some road connection alraedy (not necessarily to a warehouse so this is required to avoid multiple connections on mil buildings)
-	if(aii->IsMilitaryBuildingOnNode(aii->GetNeighbour(flag->GetPos(),1)))
+	if(aii->IsMilitaryBuildingOnNode(aii->GetNeighbour(flag->GetPos(), Direction::NORTHEAST)))
 	{
 		for(unsigned i=2;i<7;i++)
 		{

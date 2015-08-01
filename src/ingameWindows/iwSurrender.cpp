@@ -29,7 +29,6 @@
 #include "iwSave.h"
 #include "WindowManager.h"
 #include "GameClient.h"
-#include "GameCommands.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

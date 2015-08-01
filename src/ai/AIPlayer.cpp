@@ -22,7 +22,6 @@
 #include "AIPlayer.h"
 #include "GameClientPlayer.h"
 #include "GameWorld.h"
-#include "GameCommands.h"
 
 AIPlayer::AIPlayer(const unsigned char playerid, const GameWorldBase* const gwb, const GameClientPlayer* const player,
                    const GameClientPlayerList* const players, const GlobalGameSettings* const ggs,

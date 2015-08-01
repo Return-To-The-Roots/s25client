@@ -1,6 +1,7 @@
 ﻿#ifndef GAME_COMMANDS_H_
 #define GAME_COMMANDS_H_
 
+#include "GameCommand.h"
 #include "Serializer.h"
 #include "gameData/GameConsts.h"
 #include "gameTypes/MapTypes.h"
@@ -13,79 +14,12 @@ class GameServer;
 class GameWorldGame;
 class GameClientPlayer;
 
-namespace gc
-{
-
-    enum Type
-    {
-        NOTSEND = 0,
-        NOTHING,
-        SETFLAG,
-        DESTROYFLAG,
-        BUILDROAD,
-        DESTROYROAD,
-        CHANGEDISTRIBUTION,
-        CHANGEBUILDORDER,
-        SETBUILDINGSITE,
-        DESTROYBUILDING,
-        CHANGETRANSPORT,
-        CHANGEMILITARY,
-        CHANGETOOLS,
-        CALLGEOLOGIST,
-        CALLSCOUT,
-        ATTACK,
-        SWITCHPLAYER,
-        STOPGOLD,
-        STOPPRODUCTION,
-        CHANGEINVENTORYSETTING,
-        CHANGEALLINVENTORYSETTINGS,
-        CHANGERESERVE,
-        SUGGESTPACT,
-        ACCEPTPACT,
-        CANCELPACT,
-        CHANGESHIPYARDMODE,
-        STARTEXPEDITION,
-        STARTATTACKINGEXPEDITION,
-        EXPEDITION_COMMAND,
-        SEAATTACK,
-        STARTEXPLORATIONEXPEDITION,
-        TRADEOVERLAND,
-        SURRENDER,
-        CHEAT_ARMAGEDDON,
-        DESTROYALL,
-        UPGRADEROAD,
-		SENDSOLDIERSHOME,
-		ORDERNEWSOLDIERS,
-		NOTIFYALLIESOFLOCATION
-    };
-
-
-    class GameCommand
-    {
-            /// Typ dieses Command
-            const Type gst;
-        public:
-            virtual ~GameCommand(void) {}
-
-            /// Erzeugt GameCommand anhand von Typen
-            static GameCommand* CreateGameCommand(const Type gst, Serializer* ser);
-
-            GameCommand(const Type gst) : gst(gst) {}
-
-            /// Gibt den entsprechenden Typen zurück
-            Type GetType() const { return gst; }
-            /// Serialisiert dieses GameCommand
-            virtual void Serialize(Serializer* ser) const = 0;
-
-            /// Führt das GameCommand aus
-            virtual void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid) = 0;
-    };
-
-
+namespace gc{
 
 /// Basisklasse für sämtliche GameCommands mit Koordinaten
     class Coords : public GameCommand
     {
+        GC_FRIEND_DECL;
         private: MapPoint PopMapPoint(Serializer* ser)
                  {
                      MapPoint pt;
@@ -96,12 +30,12 @@ namespace gc
         protected:
             /// Koordinaten auf der Map, die dieses Command betreffen
             const MapPoint pt;
-        public:
             Coords(const Type gst, const MapPoint pt)
                 : GameCommand(gst), pt(pt) {}
             Coords(const Type gst, Serializer* ser)
                 : GameCommand(gst), pt(PopMapPoint(ser)){}
 
+        public:
             virtual void Serialize(Serializer* ser) const
             {
                 ser->PushUnsignedShort(pt.x);
@@ -113,12 +47,13 @@ namespace gc
 /// Flagge setzen
     class SetFlag : public Coords
     {
-            friend class GameClient;
-        public:
+        GC_FRIEND_DECL;
+        protected:
             SetFlag(const MapPoint pt)
                 : Coords(SETFLAG, pt) {}
             SetFlag(Serializer* ser)
                 : Coords(SETFLAG, ser) {}
+        public:
 
             /// Führt das GameCommand aus
             void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
@@ -127,13 +62,13 @@ namespace gc
 /// Flagge zerstören
     class DestroyFlag : public Coords
     {
-            friend class GameClient;
-        public:
+        GC_FRIEND_DECL;
+        protected:
             DestroyFlag(const MapPoint pt)
                 : Coords(DESTROYFLAG, pt) {}
             DestroyFlag(Serializer* ser)
                 : Coords(DESTROYFLAG, ser) {}
-
+        public:
             /// Führt das GameCommand aus
             void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
@@ -141,12 +76,12 @@ namespace gc
 /// Straße bauen
     class BuildRoad : public Coords
     {
-            friend class GameClient;
+        GC_FRIEND_DECL;
             /// Boot-Straße oder nicht?
             const bool boat_road;
             /// Beschreibung der Straße mittels einem Array aus Richtungen
             std::vector<unsigned char> route;
-        public:
+        protected:
             BuildRoad(const MapPoint pt, const bool boat_road, const std::vector<unsigned char>& route)
                 : Coords(BUILDROAD, pt), boat_road(boat_road), route(route) {}
             BuildRoad(Serializer* ser)
@@ -157,6 +92,7 @@ namespace gc
                 for(unsigned i = 0; i < route.size(); ++i)
                     route[i] = ser->PopUnsignedChar();
             }
+        public:
 
             virtual void Serialize(Serializer* ser) const
             {
@@ -175,16 +111,16 @@ namespace gc
 /// Straße zerstören
     class DestroyRoad : public Coords
     {
-            friend class GameClient;
+        GC_FRIEND_DECL;
             /// Richtung in der von der Flagge an x;y aus gesehen die Straße zerstört werden soll
             const unsigned char start_dir;
-        public:
+        protected:
             DestroyRoad(const MapPoint pt, const unsigned char start_dir)
                 : Coords(DESTROYROAD, pt), start_dir(start_dir) {}
             DestroyRoad(Serializer* ser)
                 : Coords(DESTROYROAD, ser),
                   start_dir(ser->PopUnsignedChar()) {}
-
+        public:
             virtual void Serialize(Serializer* ser) const
             {
                 Coords::Serialize(ser);
@@ -199,15 +135,15 @@ namespace gc
 /// Straße aufwerten
     class UpgradeRoad : public Coords
     {
-            friend class GameClient;
+        GC_FRIEND_DECL;
             /// Richtung in der von der Flagge an x;y aus gesehen die Straße zerstört werden soll
             const unsigned char start_dir;
-        public:
+        protected:
             UpgradeRoad(const MapPoint pt, const unsigned char start_dir)
                 : Coords(UPGRADEROAD, pt), start_dir(start_dir) {}
             UpgradeRoad(Serializer* ser)
                 : Coords(UPGRADEROAD, ser), start_dir(ser->PopUnsignedChar()) {}
-
+        public:
             virtual void Serialize(Serializer* ser) const
             {
                 Coords::Serialize(ser);
@@ -221,12 +157,12 @@ namespace gc
 /// Warenverteilung ändern
     class ChangeDistribution : public GameCommand
     {
-            friend class GameClient;
+        GC_FRIEND_DECL;
             /// Größe der Distributionsdaten
             static const unsigned DATA_SIZE = 23;
             /// Daten der Distribution (einzelne Prozente der Waren in Gebäuden)
             std::vector<unsigned char> data;
-        public:
+        protected:
             ChangeDistribution(const std::vector<unsigned char>& data)
                 : GameCommand(CHANGEDISTRIBUTION), data(data) { assert(data.size() == DATA_SIZE); }
             ChangeDistribution(Serializer* ser)
@@ -235,7 +171,7 @@ namespace gc
                 for(unsigned i = 0; i < DATA_SIZE; ++i)
                     data[i] = ser->PopUnsignedChar();
             }
-
+        public:
             virtual void Serialize(Serializer* ser) const
             {
                 for(unsigned i = 0; i < DATA_SIZE; ++i)
@@ -249,14 +185,14 @@ namespace gc
 /// Baureihenfolge ändern
     class ChangeBuildOrder : public GameCommand
     {
-            friend class GameClient;
+        GC_FRIEND_DECL;
             /// Größe der BuildOrder-Daten
             static const unsigned DATA_SIZE = 31;
             /// Ordnungs-Typ
             const unsigned char order_type;
             /// Daten der BuildOrder
             std::vector<unsigned char> data;
-        public:
+        protected:
             ChangeBuildOrder(const unsigned char order_type, const std::vector<unsigned char>& data)
                 : GameCommand(CHANGEBUILDORDER), order_type(order_type), data(data) { assert(data.size() == DATA_SIZE); }
             ChangeBuildOrder(Serializer* ser)
@@ -265,7 +201,7 @@ namespace gc
                 for(unsigned i = 0; i < DATA_SIZE; ++i)
                     data[i] = ser->PopUnsignedChar();
             }
-
+        public:
             virtual void Serialize(Serializer* ser) const
             {
                 ser->PushUnsignedChar(order_type);
@@ -281,16 +217,16 @@ namespace gc
 /// Baustelle setzen
     class SetBuildingSite : public Coords
     {
-            friend class GameClient;
+        GC_FRIEND_DECL;
             /// Art des Gebäudes, was gebaut werden soll
             const BuildingType bt;
-        public:
+        protected:
             SetBuildingSite(const MapPoint pt, const BuildingType bt)
                 : Coords(SETBUILDINGSITE, pt), bt(bt) {}
             SetBuildingSite(Serializer* ser)
                 : Coords(SETBUILDINGSITE, ser),
                   bt(BuildingType(ser->PopUnsignedChar())) {}
-
+        public:
             virtual void Serialize(Serializer* ser) const
             {
                 Coords::Serialize(ser);
@@ -305,13 +241,13 @@ namespace gc
 /// Gebäude zerstören
     class DestroyBuilding : public Coords
     {
-            friend class GameClient;
-        public:
+        GC_FRIEND_DECL;
+        protected:
             DestroyBuilding(const MapPoint pt)
                 : Coords(DESTROYBUILDING, pt) {}
             DestroyBuilding(Serializer* ser)
                 : Coords(DESTROYBUILDING, ser) {}
-
+        public:
             /// Führt das GameCommand aus
             void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
@@ -319,13 +255,13 @@ namespace gc
 /// Send all highest rank soldiers home (used by ai to upgrade troops instead of changing mil settings all the time)
     class SendSoldiersHome : public Coords
     {
-            friend class GameClient;
-        public:
+        GC_FRIEND_DECL;
+        protected:
             SendSoldiersHome(const MapPoint pt)
                 : Coords(SENDSOLDIERSHOME, pt) {}
             SendSoldiersHome(Serializer* ser)
                 : Coords(SENDSOLDIERSHOME, ser) {}
-
+        public:
             /// Führt das GameCommand aus
             void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
@@ -333,13 +269,13 @@ namespace gc
 /// call for new min rank soldiers (used by ai to upgrade troops instead of changing mil settings all the time)
     class OrderNewSoldiers : public Coords
     {
-            friend class GameClient;
-        public:
+        GC_FRIEND_DECL;
+        protected:
             OrderNewSoldiers(const MapPoint pt)
                 : Coords(ORDERNEWSOLDIERS, pt) {}
             OrderNewSoldiers(Serializer* ser)
                 : Coords(ORDERNEWSOLDIERS, ser) {}
-
+        public:
             /// Führt das GameCommand aus
             void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
@@ -348,12 +284,12 @@ namespace gc
 /// Transportreihenfolge ändern
     class ChangeTransport : public GameCommand
     {
-            friend class GameClient;
+        GC_FRIEND_DECL;
             /// Größe der Distributionsdaten
             static const unsigned DATA_SIZE = 14;
             /// Daten der Distribution (einzelne Prozente der Waren in Gebäuden)
             std::vector<unsigned char> data;
-        public:
+        protected:
             ChangeTransport(const std::vector<unsigned char>& data)
                 : GameCommand(CHANGETRANSPORT), data(data) { assert(data.size() == DATA_SIZE); }
             ChangeTransport(Serializer* ser)
@@ -362,7 +298,7 @@ namespace gc
                 for(unsigned i = 0; i < DATA_SIZE; ++i)
                     data[i] = ser->PopUnsignedChar();
             }
-
+        public:
             virtual void Serialize(Serializer* ser) const
             {
                 for(unsigned i = 0; i < DATA_SIZE; ++i)
@@ -376,12 +312,12 @@ namespace gc
 /// Transportreihenfolge ändern
     class ChangeMilitary : public GameCommand
     {
-            friend class GameClient;
+        GC_FRIEND_DECL;
             /// Größe der Distributionsdaten
             static const unsigned DATA_SIZE = MILITARY_SETTINGS_COUNT;
             /// Daten der Distribution (einzelne Prozente der Waren in Gebäuden)
             std::vector<unsigned char> data;
-        public:
+        protected:
             ChangeMilitary(const std::vector<unsigned char>& data)
                 : GameCommand(CHANGEMILITARY), data(data) { assert(data.size() == DATA_SIZE); }
             ChangeMilitary(Serializer* ser)
@@ -390,7 +326,7 @@ namespace gc
                 for(unsigned i = 0; i < DATA_SIZE; ++i)
                     data[i] = ser->PopUnsignedChar();
             }
-
+        public:
             virtual void Serialize(Serializer* ser) const
             {
                 for(unsigned i = 0; i < DATA_SIZE; ++i)
@@ -404,14 +340,14 @@ namespace gc
 /// Werkzeugeinstellungen ändern
     class ChangeTools : public GameCommand
     {
-            friend class GameClient;
+        GC_FRIEND_DECL;
             /// Größe der Distributionsdaten
             static const unsigned DATA_SIZE = 12;
             /// Daten der Distribution (einzelne Prozente der Waren in Gebäuden)
             std::vector<unsigned char> data;
 
             signed char orders[TOOL_COUNT];
-        public:
+        protected:
             ChangeTools(const std::vector<unsigned char>& data, signed char* order_delta = 0)
                 : GameCommand(CHANGETOOLS), data(data)
             {
@@ -438,7 +374,7 @@ namespace gc
                 for (unsigned i = 0; i < TOOL_COUNT; ++i)
                     orders[i] = (signed char)ser->PopSignedChar();
             }
-
+        public:
             virtual void Serialize(Serializer* ser) const
             {
                 for(unsigned i = 0; i < DATA_SIZE; ++i)
@@ -455,13 +391,13 @@ namespace gc
 /// Geologen rufen
     class CallGeologist : public Coords
     {
-            friend class GameClient;
-        public:
+        GC_FRIEND_DECL;
+        protected:
             CallGeologist(const MapPoint pt)
                 : Coords(CALLGEOLOGIST, pt) {}
             CallGeologist(Serializer* ser)
                 : Coords(CALLGEOLOGIST, ser) {}
-
+        public:
             /// Führt das GameCommand aus
             void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
@@ -469,12 +405,13 @@ namespace gc
 /// Späher rufen
     class CallScout : public Coords
     {
-        public:
+        GC_FRIEND_DECL;
+        protected:
             CallScout(const MapPoint pt)
                 : Coords(CALLSCOUT, pt) {}
             CallScout(Serializer* ser)
                 : Coords(CALLSCOUT, ser) {}
-
+        public:
             /// Führt das GameCommand aus
             void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
@@ -482,20 +419,20 @@ namespace gc
 /// Basisklasse für beide Angriffstypen
     class BaseAttack : public Coords
     {
+        GC_FRIEND_DECL;
         protected:
-            friend class GameClient;
             /// Anzahl der Soldaten
             const unsigned soldiers_count;
             /// Starke Soldaten oder schwache Soldaten?
             const bool strong_soldiers;
 
-        public:
+        protected:
             BaseAttack(const Type gst, const MapPoint pt, const unsigned soldiers_count, const bool strong_soldiers)
                 : Coords(gst, pt), soldiers_count(soldiers_count), strong_soldiers(strong_soldiers) {}
             BaseAttack(const Type gst, Serializer* ser)
                 : Coords(gst, ser),
                   soldiers_count(ser->PopUnsignedInt()), strong_soldiers(ser->PopBool()) {}
-
+        public:
             virtual void Serialize(Serializer* ser) const
             {
                 Coords::Serialize(ser);
@@ -510,12 +447,13 @@ namespace gc
 /// Angriff starten
     class Attack : public BaseAttack
     {
-        public:
+        GC_FRIEND_DECL;
+        protected:
             Attack(const MapPoint pt, const unsigned soldiers_count, const bool strong_soldiers)
                 : BaseAttack(ATTACK, pt, soldiers_count, strong_soldiers) {}
             Attack(Serializer* ser)
                 : BaseAttack(ATTACK, ser) {}
-
+        public:
             /// Führt das GameCommand aus
             void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
@@ -523,12 +461,13 @@ namespace gc
 /// See-Angriff starten
     class SeaAttack : public BaseAttack
     {
-        public:
+        GC_FRIEND_DECL;
+        protected:
             SeaAttack(const MapPoint pt, const unsigned soldiers_count, const bool strong_soldiers)
                 : BaseAttack(SEAATTACK, pt, soldiers_count, strong_soldiers) {}
             SeaAttack(Serializer* ser)
                 : BaseAttack(SEAATTACK, ser) {}
-
+        public:
             /// Führt das GameCommand aus
             void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
@@ -536,52 +475,50 @@ namespace gc
 /// Spielerwechsel
     class SwitchPlayer : public GameCommand
     {
-            friend class GameClient;
+        GC_FRIEND_DECL;
             friend class GameServer;
             /// ID des Spielers, zu den hingewechselt werden soll
             const unsigned new_player_id;
 
-        public:
+        protected:
             SwitchPlayer(const unsigned char new_player_id)
                 : GameCommand(SWITCHPLAYER), new_player_id(new_player_id) {}
             SwitchPlayer(Serializer* ser)
                 : GameCommand(SWITCHPLAYER), new_player_id(ser->PopUnsignedChar()) {}
-
+        public:
             virtual void Serialize(Serializer* ser) const
             {
                 ser->PushUnsignedChar(new_player_id);
             }
-
-            const unsigned int GetNewPlayerId() const { return new_player_id; }
 
             /// Führt das GameCommand aus
             void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
 /// Goldzufuhr in einem Gebäude stoppen/erlauben
-    class StopGold : public Coords
+    class ToggleCoins : public Coords
     {
-            friend class GameClient;
+        GC_FRIEND_DECL;
+        protected:
+            ToggleCoins(const MapPoint pt)
+                : Coords(TOGGLECOINS, pt) {}
+            ToggleCoins(Serializer* ser)
+                : Coords(TOGGLECOINS, ser) {}
         public:
-            StopGold(const MapPoint pt)
-                : Coords(STOPGOLD, pt) {}
-            StopGold(Serializer* ser)
-                : Coords(STOPGOLD, ser) {}
-
             /// Führt das GameCommand aus
             void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
 /// Produktivität in einem Gebäude deaktivieren/aktivieren
-    class StopProduction : public Coords
+    class ToggleProduction : public Coords
     {
-            friend class GameClient;
+        GC_FRIEND_DECL;
+        protected:
+            ToggleProduction(const MapPoint pt)
+                : Coords(TOGGLEPRODUCTION, pt) {}
+            ToggleProduction(Serializer* ser)
+                : Coords(TOGGLEPRODUCTION, ser) {}
         public:
-            StopProduction(const MapPoint pt)
-                : Coords(STOPPRODUCTION, pt) {}
-            StopProduction(Serializer* ser)
-                : Coords(STOPPRODUCTION, ser) {}
-
             /// Führt das GameCommand aus
             void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
@@ -589,13 +526,13 @@ namespace gc
 /// Produktivität in einem Gebäude deaktivieren/aktivieren
     class NotifyAlliesOfLocation : public Coords
     {
-            friend class GameClient;
-        public:
+        GC_FRIEND_DECL;
+        protected:
             NotifyAlliesOfLocation(const MapPoint pt)
                 : Coords(NOTIFYALLIESOFLOCATION, pt) {}
             NotifyAlliesOfLocation(Serializer* ser)
                 : Coords(NOTIFYALLIESOFLOCATION, ser) {}
-
+        public:
             /// Führt das GameCommand aus
             void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
@@ -603,9 +540,10 @@ namespace gc
 /// Einlagerungseinstellungen von einem Lagerhaus verändern
     class ChangeInventorySetting : public Coords
     {
+        GC_FRIEND_DECL;
             /// Kategorie (Waren, Menschen), Status (Einlagern/Auslagern), type (welche Ware, welcher Mensch)
             const unsigned char category, state, type;
-        public:
+        protected:
             ChangeInventorySetting(const MapPoint pt, const unsigned char category,
                                    const unsigned char state, const unsigned char type)
                 : Coords(CHANGEINVENTORYSETTING, pt), category(category), state(state), type(type) {}
@@ -615,7 +553,7 @@ namespace gc
                   state(ser->PopUnsignedChar()),
                   type(ser->PopUnsignedChar())
             {}
-
+        public:
             virtual void Serialize(Serializer* ser) const
             {
                 Coords::Serialize(ser);
@@ -632,10 +570,10 @@ namespace gc
 /// Alle Einlagerungseinstellungen (für alle Menschen oder Waren) von einem Lagerhaus verändern
     class ChangeAllInventorySettings : public Coords
     {
-            friend class GameClient;
+        GC_FRIEND_DECL;
             /// Kategorie (Waren, Menschen), Status (Einlagern/Auslagern), type (welche Ware, welcher Mensch)
             const unsigned char category, state;
-        public:
+        protected:
             ChangeAllInventorySettings(const MapPoint pt, const unsigned char category,
                                        const unsigned char state)
                 : Coords(CHANGEALLINVENTORYSETTINGS, pt), category(category), state(state) {}
@@ -644,7 +582,7 @@ namespace gc
                   category(ser->PopUnsignedChar()),
                   state(ser->PopUnsignedChar())
             {}
-
+        public:
             virtual void Serialize(Serializer* ser) const
             {
                 Coords::Serialize(ser);
@@ -660,12 +598,12 @@ namespace gc
 /// Verändert die Reserve im HQ auf einen bestimmten Wert
     class ChangeReserve : public Coords
     {
-            friend class GameClient;
+        GC_FRIEND_DECL;
             /// Rang des Soldaten, der verändert werden soll
             const unsigned char rank;
             /// Anzahl der Reserve für diesen Rang
             const unsigned char count;
-        public:
+        protected:
             ChangeReserve(const MapPoint pt, const unsigned char rank, const unsigned char count)
                 : Coords(CHANGERESERVE, pt), rank(rank), count(count) {}
             ChangeReserve(Serializer* ser)
@@ -673,7 +611,7 @@ namespace gc
                   rank(ser->PopUnsignedChar()),
                   count(ser->PopUnsignedChar())
             {}
-
+        public:
             virtual void Serialize(Serializer* ser) const
             {
                 Coords::Serialize(ser);
@@ -689,13 +627,13 @@ namespace gc
 /// Alle Fahnen zerstören
     class CheatArmageddon : public GameCommand
     {
-            friend class GameClient;
-        public:
+        GC_FRIEND_DECL;
+        protected:
             CheatArmageddon()
                 : GameCommand(CHEAT_ARMAGEDDON) {}
             CheatArmageddon(Serializer* ser)
                 : GameCommand(CHEAT_ARMAGEDDON) {}
-
+        public:
             virtual void Serialize(Serializer* ser) const
             {}
 
@@ -706,13 +644,13 @@ namespace gc
 /// Aufgeben
     class Surrender : public GameCommand
     {
-            friend class GameClient;
-        public:
+        GC_FRIEND_DECL;
+        protected:
             Surrender()
                 : GameCommand(SURRENDER) {}
             Surrender(Serializer* ser)
                 : GameCommand(SURRENDER) {}
-
+        public:
             virtual void Serialize(Serializer* ser) const
             {}
 
@@ -723,13 +661,13 @@ namespace gc
 /// Alle eigenen Fahnen zerstören
     class DestroyAll : public GameCommand
     {
-            friend class GameClient;
-        public:
+        GC_FRIEND_DECL;
+        protected:
             DestroyAll()
                 : GameCommand(DESTROYALL) {}
             DestroyAll(Serializer* ser)
                 : GameCommand(DESTROYALL) {}
-
+        public:
             virtual void Serialize(Serializer* ser) const
             {}
 
@@ -740,6 +678,7 @@ namespace gc
 /// Unterbreitet anderen Spielern einen Bündnisvertrag
     class SuggestPact : public GameCommand
     {
+        GC_FRIEND_DECL;
             /// Spieler, dem das Angebot unterbreitet werden soll
             const unsigned char player;
             /// Art des Vertrages
@@ -747,13 +686,13 @@ namespace gc
             /// Dauer des Vertrages
             const unsigned duration;
 
-        public:
+        protected:
 
             SuggestPact(const unsigned char player, const PactType pt, const unsigned duration) : GameCommand(SUGGESTPACT),
                 player(player), pt(pt), duration(duration) {}
             SuggestPact(Serializer* ser) : GameCommand(SUGGESTPACT),
                 player(ser->PopUnsignedChar()), pt(PactType(ser->PopUnsignedChar())), duration(ser->PopUnsignedInt()) {}
-
+        public:
 
             virtual void Serialize(Serializer* ser) const
             {
@@ -770,6 +709,7 @@ namespace gc
 /// Antwortet auf einen Bündnisvorschlag mit Annehmen oder Ablehnung
     class AcceptPact : public GameCommand
     {
+        GC_FRIEND_DECL;
             /// Vertrag angenommen oder abgelehnt?
             bool accepted;
             /// ID des Vertrages
@@ -779,13 +719,13 @@ namespace gc
             /// Spieler, der das Angebot unterbreitet hat
             const unsigned char player;
 
-        public:
+        protected:
 
             AcceptPact(const bool accepted, const unsigned id, const PactType pt, const unsigned char player) : GameCommand(ACCEPTPACT),
                 accepted(accepted), id(id), pt(pt), player(player) {}
             AcceptPact(Serializer* ser) : GameCommand(ACCEPTPACT),
                 accepted(ser->PopBool()), id(ser->PopUnsignedInt()), pt(PactType(ser->PopUnsignedChar())), player(ser->PopUnsignedChar()) {}
-
+        public:
 
             virtual void Serialize(Serializer* ser) const
             {
@@ -803,18 +743,19 @@ namespace gc
 /// Bündnis abbrechen bzw. das Angebot zurücknehmen, falls dieses schon gestellt wurde
     class CancelPact : public GameCommand
     {
+        GC_FRIEND_DECL;
             /// Vertragsart
             const PactType pt;
             /// Anderen Spieler, den dies noch betrifft
             const unsigned char player;
 
-        public:
+        protected:
 
             CancelPact(const PactType pt, const unsigned char player) : GameCommand(CANCELPACT),
                 pt(pt), player(player) {}
             CancelPact(Serializer* ser) : GameCommand(CANCELPACT),
                 pt(PactType(ser->PopUnsignedChar())), player(ser->PopUnsignedChar()) {}
-
+        public:
 
             virtual void Serialize(Serializer* ser) const
             {
@@ -827,14 +768,15 @@ namespace gc
     };
 
 /// Zwischen Boote und Schiffen beim Schiffsbauer hin- und herschalten
-    class ChangeShipYardMode : public Coords
+    class ToggleShipYardMode : public Coords
     {
+        GC_FRIEND_DECL;
+        protected:
+            ToggleShipYardMode(const MapPoint pt)
+                : Coords(TOGGLESHIPYARDMODE, pt) {}
+            ToggleShipYardMode(Serializer* ser)
+                : Coords(TOGGLESHIPYARDMODE, ser) {}
         public:
-            ChangeShipYardMode(const MapPoint pt)
-                : Coords(CHANGESHIPYARDMODE, pt) {}
-            ChangeShipYardMode(Serializer* ser)
-                : Coords(CHANGESHIPYARDMODE, ser) {}
-
             /// Führt das GameCommand aus
             void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
@@ -842,13 +784,13 @@ namespace gc
 /// Expedition starten
     class StartExpedition : public Coords
     {
-            friend class GameClient;
-        public:
+        GC_FRIEND_DECL;
+        protected:
             StartExpedition(const MapPoint pt)
                 : Coords(STARTEXPEDITION, pt) {}
             StartExpedition(Serializer* ser)
                 : Coords(STARTEXPEDITION, ser) {}
-
+        public:
             /// Führt das GameCommand aus
             void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
@@ -856,13 +798,13 @@ namespace gc
 /// Expedition starten
     class StartExplorationExpedition : public Coords
     {
-            friend class GameClient;
-        public:
+        GC_FRIEND_DECL;
+        protected:
             StartExplorationExpedition(const MapPoint pt)
                 : Coords(STARTEXPLORATIONEXPEDITION, pt) {}
             StartExplorationExpedition(Serializer* ser)
                 : Coords(STARTEXPLORATIONEXPEDITION, ser) {}
-
+        public:
             /// Führt das GameCommand aus
             void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
@@ -870,7 +812,8 @@ namespace gc
 /// Wartendes Schiff einer Expedition Befehle geben
     class ExpeditionCommand : public GameCommand
     {
-        public:
+        GC_FRIEND_DECL;
+        protected:
 
             /// Aktion, die ausgeführt wird
             enum Action
@@ -892,7 +835,7 @@ namespace gc
                 : GameCommand(EXPEDITION_COMMAND),
                   action(Action(ser->PopUnsignedChar())),
                   ship_id(ser->PopUnsignedInt()) {}
-
+        public:
             virtual void Serialize(Serializer* ser) const
             {
                 ser->PushUnsignedChar(static_cast<unsigned char>(action));
@@ -913,7 +856,7 @@ namespace gc
 /// Send wares to another allied player via donkeys
     class TradeOverLand : public Coords
     {
-            friend class GameClient;
+        GC_FRIEND_DECL;
             /// Type of Ware / Figure
             bool ware_figure;
             GoodType gt;
@@ -921,7 +864,7 @@ namespace gc
             /// Number of wares/figures we want to trade
             unsigned count;
 
-        public:
+        protected:
             TradeOverLand(const MapPoint pt, const bool ware_figure, const GoodType gt, const Job job, const unsigned count)
                 : Coords(TRADEOVERLAND, pt), ware_figure(ware_figure), gt(gt), job(job), count(count) {}
             TradeOverLand(Serializer* ser)
@@ -931,7 +874,7 @@ namespace gc
                   job( ware_figure ? Job(ser->PopUnsignedChar()) : JOB_NOTHING),
                   count(ser->PopUnsignedInt())
             {}
-
+        public:
             virtual void Serialize(Serializer* ser) const
             {
                 Coords::Serialize(ser);

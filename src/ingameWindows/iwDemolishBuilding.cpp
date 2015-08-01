@@ -28,7 +28,6 @@
 #include "WindowManager.h"
 #include "GameWorld.h"
 #include "iwMsgbox.h"
-#include "GameCommands.h"
 
 
 ///////////////////////////////////////////////////////////////////////////////

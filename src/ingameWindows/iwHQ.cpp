@@ -26,7 +26,6 @@
 #include "buildings/nobHQ.h"
 #include "controls/ctrlGroup.h"
 #include "GameClient.h"
-#include "GameCommands.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

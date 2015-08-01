@@ -27,7 +27,6 @@
 #include "GameClient.h"
 #include "controls/controls.h"
 #include "WindowManager.h"
-#include "GameCommands.h"
 #include "nodeObjs/noShip.h"
 #include "iwMsgbox.h"
 #include "figures/noFigure.h"

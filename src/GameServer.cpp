@@ -49,6 +49,7 @@
 #include "ogl/glArchivItem_Map.h"
 #include "../libsiedler2/src/prototypen.h"
 #include "../libsiedler2/src/ArchivItem_Map_Header.h"
+#include "GameCommands.h"
 
 #include "files.h"
 #include <bzlib.h>
@@ -906,14 +907,13 @@ void GameServer::KickPlayer(NS_PlayerKicked npk)
 void GameServer::ClientWatchDog()
 {
     GameServerPlayer* player = NULL;
-    unsigned char client = 0xFF;
     SocketSet set;
 
     // auf Fehler prüfen
     set.Clear();
 
     // sockets zum set hinzufügen
-    for(client = 0; client < serverconfig.playercount; ++client)
+    for(unsigned char client = 0; client < serverconfig.playercount; ++client)
     {
         if( players[client].isValid() )
         {
@@ -925,7 +925,7 @@ void GameServer::ClientWatchDog()
     // auf fehler prüfen
     if(set.Select(0, 2) > 0)
     {
-        for(client = 0; client < serverconfig.playercount; ++client)
+        for(unsigned char client = 0; client < serverconfig.playercount; ++client)
         {
             if(set.InSet(players[client].so))
             {
@@ -935,7 +935,7 @@ void GameServer::ClientWatchDog()
         }
     }
 
-    for(client = 0; client < serverconfig.playercount; ++client)
+    for(unsigned char client = 0; client < serverconfig.playercount; ++client)
     {
         player = &players[client];
 
@@ -972,7 +972,7 @@ void GameServer::ClientWatchDog()
                     // auf laggende spieler prüfen und evtl Kommandos der KI-Spieler senden
                     unsigned char lagging_player = 0xFF;
 
-                    for(client = 0; client < serverconfig.playercount; ++client)
+                    for(unsigned char client = 0; client < serverconfig.playercount; ++client)
                     {
                         player = &players[client];
 
@@ -993,12 +993,13 @@ void GameServer::ClientWatchDog()
                         framesinfo.lasttime = currenttime - ( currenttime - framesinfo.lasttime - framesinfo.gf_length);
 
                         // Bei evtl. Spielerwechsel die IDs speichern, die "gewechselt" werden sollen
+                        // TODO: Better solution without using the GameCommands include?
                         unsigned char player_switch_old_id = 255, player_switch_new_id = 255;
 
                         // Checksumme des ersten Spielers als Richtwert
                         GameServerPlayer* firstHumanPlayer = NULL;
 
-                        for(client = 0; client < serverconfig.playercount; ++client)
+                        for(unsigned char client = 0; client < serverconfig.playercount; ++client)
                         {
                             player = &players[client];
 
@@ -1707,9 +1708,7 @@ void GameServer::ChangePlayer(const unsigned char old_id, const unsigned char ne
     ai_players[old_id] = GAMECLIENT.CreateAIPlayer(old_id);
 
 	//swap the gamecommand que
-	std::list<GameMessage_GameCommand> temp=players[old_id].gc_queue;
-	players[old_id].gc_queue=players[new_id].gc_queue;
-	players[new_id].gc_queue=temp;
+    std::swap(players[old_id].gc_queue, players[new_id].gc_queue);
 }
 
 

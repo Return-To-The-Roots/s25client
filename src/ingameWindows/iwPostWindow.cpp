@@ -34,7 +34,6 @@
 #include "macros.h"
 #include "GameClient.h"
 #include "GameClientPlayer.h"
-#include "GameCommands.h"
 #include <iostream>
 #include <sstream>
 ///////////////////////////////////////////////////////////////////////////////

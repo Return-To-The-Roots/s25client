@@ -34,7 +34,6 @@
 #include "buildings/nobMilitary.h"
 #include "figures/nofPassiveSoldier.h"
 #include "figures/nofActiveSoldier.h"
-#include "GameCommands.h"
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -147,9 +146,9 @@ void iwMilitaryBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
             if(!GAMECLIENT.IsReplayModeOn() && !GAMECLIENT.IsPaused())
             {
                 // visuell anzeigen
-                building->StopGoldVirtual();
+                building->ToggleCoinsVirtual();
                 // NC senden
-                GAMECLIENT.AddGC(new gc::StopGold(building->GetPos()));
+                GAMECLIENT.AddGC(new gc::ToggleCoins(building->GetPos()));
                 // anderes Bild auf dem Button
                 if(building->IsGoldDisabledVirtual())
                     GetCtrl<ctrlImageButton>(6)->SetImage(LOADER.GetImageN("io", 226));

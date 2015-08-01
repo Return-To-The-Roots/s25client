@@ -29,7 +29,6 @@
 #include "GameClient.h"
 #include "controls/controls.h"
 #include "WindowManager.h"
-#include "GameCommands.h"
 
 #include "iwMsgbox.h"
 
@@ -197,10 +196,10 @@ void iwBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
         {
             // Produktion einstellen/fortführen
             // NC senden
-            if(GAMECLIENT.AddGC(new gc::StopProduction(building->GetPos())))
+            if(GAMECLIENT.AddGC(new gc::ToggleProduction(building->GetPos())))
             {
                 // visuell anzeigen, falls erfolgreich
-                building->StopProductionVirtual();
+                building->ToggleProductionVirtual();
 
                 // anderes Bild auf dem Button
                 if(building->IsProductionDisabledVirtual())
@@ -222,7 +221,7 @@ void iwBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
         } break;
         case 11: // Schiff/Boot umstellen bei Schiffsbauer
         {
-            if(GAMECLIENT.AddGC(new gc::ChangeShipYardMode(building->GetPos())))
+            if(GAMECLIENT.AddGC(new gc::ToggleShipYardMode(building->GetPos())))
             {
                 // Auch optisch den Button umstellen
                 ctrlImageButton* button = GetCtrl<ctrlImageButton>(11);

@@ -33,6 +33,7 @@
 #include "GameWorld.h"
 #include "GlobalGameSettings.h"
 #include "ai/AIEventManager.h"
+#include "factories/GameCommandFactory.h"
 
 class Window;
 class GameClientPlayer;
@@ -41,9 +42,7 @@ class ClientInterface;
 class GameMessage;
 class AIBase;
 
-namespace gc { class GameCommand; }
-
-class GameClient : public Singleton<GameClient>, public GameMessageInterface
+class GameClient : public Singleton<GameClient>, public GameMessageInterface, public GameCommandFactory<GameClient>
 {
     public:
         enum ClientState
@@ -176,7 +175,7 @@ class GameClient : public Singleton<GameClient>, public GameMessageInterface
         void ExecuteGameFrame_Game();
         /// Filtert aus einem Network-Command-Paket alle Commands aus und führt sie aus, falls ein Spielerwechsel-Command
         /// dabei ist, füllt er die übergebenen IDs entsprechend aus
-        void ExecuteAllGCs(const GameMessage_GameCommand& gcs,  unsigned char* player_switch_old_id, unsigned char* player_switch_new_id);
+        void ExecuteAllGCs(const GameMessage_GameCommand& gcs);
         /// Sendet ein NC-Paket ohne Befehle
         void SendNothingNC(int checksum = -1);
         /// Findet heraus, ob ein Spieler laggt und setzt bei diesen Spieler den entsprechenden flag

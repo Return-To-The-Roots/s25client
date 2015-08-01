@@ -249,7 +249,7 @@ bool AIInterface::IsRoadPoint(const MapPoint pt) const
 }
 
 
-bool AIInterface::FindFreePathForNewRoad(MapPoint start, MapPoint target, std::vector<Direction> *route,
+bool AIInterface::FindFreePathForNewRoad(MapPoint start, MapPoint target, std::vector<unsigned char> *route,
         unsigned* length) const
 {
     bool boat = false;
@@ -309,10 +309,10 @@ const nobHQ* AIInterface::GetHeadquarter() const
 
 bool AIInterface::IsExplorationDirectionPossible(const MapPoint pt, const nobHarborBuilding* originHarbor, Direction direction) const
 {
-    return gwb->GetNextFreeHarborPoint(pt, originHarbor->GetHarborPosID(), direction, playerID) > 0;
+    return gwb->GetNextFreeHarborPoint(pt, originHarbor->GetHarborPosID(), direction.toUInt(), playerID) > 0;
 }
 
 bool AIInterface::IsExplorationDirectionPossible(const MapPoint pt, unsigned int originHarborID, Direction direction) const
 {
-    return gwb->GetNextFreeHarborPoint(pt, originHarborID, direction, playerID) > 0;
+    return gwb->GetNextFreeHarborPoint(pt, originHarborID, direction.toUInt(), playerID) > 0;
 }

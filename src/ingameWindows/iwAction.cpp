@@ -33,7 +33,6 @@
 #include "GameClient.h"
 #include "GameWorld.h"
 #include "WindowManager.h"
-#include "GameCommands.h"
 
 #include "nodeObjs/noFlag.h"
 #include "buildings/nobMilitary.h"

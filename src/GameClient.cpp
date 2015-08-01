@@ -47,7 +47,6 @@
 #include "files.h"
 #include "fileFuncs.h"
 #include "ClientInterface.h"
-#include "GameCommands.h"
 #include "ai/AIPlayer.h"
 #include "ai/AIPlayerJH.h"
 
@@ -1639,19 +1638,12 @@ void GameClient::NextGF()
 }
 
 
-void GameClient::ExecuteAllGCs(const GameMessage_GameCommand& gcs, unsigned char* player_switch_old_id, unsigned char* player_switch_new_id)
+void GameClient::ExecuteAllGCs(const GameMessage_GameCommand& gcs)
 {
     for(unsigned char i = 0; i < gcs.gcs.size(); ++i)
     {
         // NC ausführen
         gcs.gcs[i]->Execute(*gw, players[gcs.player], gcs.player);
-        //// Wenn ein Spieler gewechselt werden soll...
-        if(gcs.gcs[i]->GetType() == gc::SWITCHPLAYER && player_switch_old_id && player_switch_new_id)
-        {
-            // ...müssen wir uns das merken
-            *player_switch_old_id = gcs.player;
-            *player_switch_new_id = dynamic_cast<gc::SwitchPlayer*>(gcs.gcs[i])->GetNewPlayerId();
-        }
     }
 }
 

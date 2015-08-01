@@ -71,7 +71,7 @@ void GameClient::ExecuteGameFrame_Replay()
                 GameMessage_GameCommand msg(data, length);
 
                 // NCs ausführen (4 Bytes Checksumme und 1 Byte Player-ID überspringen)
-                ExecuteAllGCs(msg, 0, 0);
+                ExecuteAllGCs(msg);
 
                 // Replay ist NSYNC äh ASYNC!
                 if(msg.checksum != 0 && msg.checksum != (unsigned)randcheckinfo.rand)

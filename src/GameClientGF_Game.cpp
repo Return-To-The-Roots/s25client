@@ -29,7 +29,8 @@ void GameClient::ExecuteGameFrame_Game()
     // Geschickte Network Commands der Spieler ausführen und ggf. im Replay aufzeichnen
 
     // Bei evtl. Spielerwechsel die IDs speichern, die "gewechselt" werden sollen
-    unsigned char player_switch_old_id = 255, player_switch_new_id = 255;
+    gw->switchedPlayers.oldPlayer = 255;
+    gw->switchedPlayers.newPlayer = 255;
 
     int checksum = RANDOM.GetCurrentRandomValue();
 
@@ -49,7 +50,7 @@ void GameClient::ExecuteGameFrame_Game()
             }
 
             // Das ganze Zeug soll die andere Funktion ausführen
-            ExecuteAllGCs(msg, &player_switch_old_id, &player_switch_new_id);
+            ExecuteAllGCs(msg);
 
             // Nachricht abwerfen :)
             players[i].gc_queue.pop_front();
@@ -68,8 +69,7 @@ void GameClient::ExecuteGameFrame_Game()
     // alles gesendet --> Liste löschen
     gcs.clear();
 
-
     // Evtl Spieler wechseln?
-    if(player_switch_old_id != 255)
-        ChangePlayer(player_switch_old_id, player_switch_new_id);
+    if(gw->switchedPlayers.newPlayer != 255)
+        ChangePlayer(gw->switchedPlayers.oldPlayer, gw->switchedPlayers.newPlayer);
 }

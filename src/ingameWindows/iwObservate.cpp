@@ -29,7 +29,6 @@
 #include "WindowManager.h"
 #include "GameWorld.h"
 #include "iwMsgbox.h"
-#include "GameCommands.h"
 #include "desktops/dskGameInterface.h"
 #include "Settings.h"
 #include "controls/ctrlButton.h"

@@ -23,7 +23,6 @@
 
 #include "GameClientPlayer.h"
 #include "GameWorld.h"
-#include "GameCommands.h"
 #include "GamePlayerList.h"
 
 #include "buildings/nobMilitary.h"
@@ -164,12 +163,12 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
 			//stop the forester
 		{
 			if(!(*aii->GetBuildings(BLD_FORESTER).begin())->IsProductionDisabled())
-				aii->StopProduction(aii->GetBuildings(BLD_FORESTER).front()->GetPos());
+				aii->ToggleProduction(aii->GetBuildings(BLD_FORESTER).front()->GetPos());
 		}
 		else //activate the forester 
 		{
 			if(aii->GetBuildings(BLD_FORESTER).size()>0 && (*aii->GetBuildings(BLD_FORESTER).begin())->IsProductionDisabled())
-				aii->StopProduction(aii->GetBuildings(BLD_FORESTER).front()->GetPos());
+				aii->ToggleProduction(aii->GetBuildings(BLD_FORESTER).front()->GetPos());
 		}
 		//stop production in granite mines when the ai has many stones (100+ and at least 15 for each warehouse)
 		if(AmountInStorage(GD_STONES,0)<100 || AmountInStorage(GD_STONES,0)<15*aii->GetStorehouses().size())
@@ -178,7 +177,7 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
 			for(std::list<nobUsual*>::const_iterator it=aii->GetBuildings(BLD_GRANITEMINE).begin();it!=aii->GetBuildings(BLD_GRANITEMINE).end();it++)
 			{
 				if((*it)->IsProductionDisabled())
-					aii->StopProduction((*it)->GetPos());
+					aii->ToggleProduction((*it)->GetPos());
 			}
 		}
 		else //deactivate
@@ -186,7 +185,7 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
 			for(std::list<nobUsual*>::const_iterator it=aii->GetBuildings(BLD_GRANITEMINE).begin();it!=aii->GetBuildings(BLD_GRANITEMINE).end();it++)
 			{
 				if(!(*it)->IsProductionDisabled())
-					aii->StopProduction((*it)->GetPos());
+					aii->ToggleProduction((*it)->GetPos());
 			}
 		}
     }
@@ -202,7 +201,7 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
                 if(*(*it)->GetProduktivityPointer() < 1 && (*it)->HasWorker() && (*it)->GetWares(0) < 1 && (aii->GetBuildings(BLD_SAWMILL).size() - burns) > 3 && !(*it)->AreThereAnyOrderedWares())
                 {
                     aii->DestroyBuilding((*it));
-                    RemoveUnusedRoad(aii->GetSpecObj<noFlag>(aii->GetNeighbour((*it)->GetPos(), 4)), 1, true);
+                    RemoveUnusedRoad(aii->GetSpecObj<noFlag>(aii->GetNeighbour((*it)->GetPos(), Direction::SOUTHWEST)), 1, true);
                     burns++;
                 }
             }
@@ -418,9 +417,9 @@ AIJH::Resource AIPlayerJH::CalcResource(const MapPoint pt)
             unsigned char t;
             bool good = !aii->IsRoadPoint(pt);
 
-            for(unsigned char i = 0; i < 6; ++i)
+            for(unsigned char i = 0; i < Direction::COUNT; ++i)
             {
-                t = aii->GetTerrainAround(pt, i);
+                t = aii->GetTerrainAround(pt, Direction::fromUInt(i));
 
                 // check against valid terrains for planting
                 if(t != 3 && (t < 8 || t > 12))
@@ -504,9 +503,9 @@ void AIPlayerJH::IterativeReachableNodeChecker(std::queue<MapPoint>& toCheck)
         MapPoint r = toCheck.front();
 
         // Coordinates to test around this reachable coordinate
-        for (unsigned dir = 0; dir < 6; ++dir)
+        for (unsigned dir = 0; dir < Direction::COUNT; ++dir)
         {
-            MapPoint n = aii->GetNeighbour(r, dir);
+            MapPoint n = aii->GetNeighbour(r, Direction::fromUInt(dir));
             unsigned ni = aii->GetIdx(n);
 
             // already reached, don't test again
@@ -530,12 +529,12 @@ void AIPlayerJH::UpdateReachableNodes(const MapPoint pt, unsigned radius)
 {
     std::queue<MapPoint> toCheck;
 
-    for(MapCoord tx = aii->GetXA(pt, 0), r = 1; r <= radius; tx = aii->GetXA(tx, pt.y, 0), ++r)
+    for(MapCoord tx = aii->GetXA(pt, Direction::NORTH), r = 1; r <= radius; tx = aii->GetXA(tx, pt.y, Direction::NORTH), ++r)
     {
         MapPoint t2(tx, pt.y);
         for(unsigned i = 2; i < 8; ++i)
         {
-            for(MapCoord r2 = 0; r2 < r; t2 = aii->GetNeighbour(t2, i % 6), ++r2)
+            for(MapCoord r2 = 0; r2 < r; t2 = aii->GetNeighbour(t2, Direction(i)), ++r2)
             {
                 unsigned i = aii->GetIdx(t2);
                 nodes[i].reachable = false;
@@ -677,12 +676,12 @@ void AIPlayerJH::SetFarmedNodes(const MapPoint pt, bool set)
 
     nodes[aii->GetIdx(pt)].farmed = set;
 
-    for(MapCoord tx = aii->GetXA(pt, 0), r = 1; r <= radius; tx = aii->GetXA(tx, pt.y, 0), ++r)
+    for(MapCoord tx = aii->GetXA(pt, Direction::NORTH), r = 1; r <= radius; tx = aii->GetXA(tx, pt.y, Direction::NORTH), ++r)
     {
         MapPoint t2(tx, pt.y);
         for(unsigned i = 2; i < 8; ++i)
         {
-            for(MapCoord r2 = 0; r2 < r; t2 = aii->GetNeighbour(t2, i % 6), ++r2)
+            for(MapCoord r2 = 0; r2 < r; t2 = aii->GetNeighbour(t2, Direction(i)), ++r2)
             {
                 unsigned i = aii->GetIdx(t2);
                 nodes[i].farmed = set;
@@ -695,12 +694,12 @@ void AIPlayerJH::ChangeResourceMap(const MapPoint pt, unsigned radius, std::vect
 {
     resMap[aii->GetIdx(pt)] += value * radius;
 
-    for(MapCoord tx = aii->GetXA(pt, 0), r = 1; r <= radius; tx = aii->GetXA(tx, pt.y, 0), ++r)
+    for(MapCoord tx = aii->GetXA(pt, Direction::NORTH), r = 1; r <= radius; tx = aii->GetXA(tx, pt.y, Direction::NORTH), ++r)
     {
         MapPoint t2(tx, pt.y);
         for(unsigned i = 2; i < 8; ++i)
         {
-            for(MapCoord r2 = 0; r2 < r; t2 = aii->GetNeighbour(t2, i % 6), ++r2)
+            for(MapCoord r2 = 0; r2 < r; t2 = aii->GetNeighbour(t2, Direction(i)), ++r2)
             {
                 unsigned i = aii->GetIdx(t2);
                 resMap[i] += value * (radius - r);
@@ -726,12 +725,12 @@ bool AIPlayerJH::FindGoodPosition(MapPoint& pt, AIJH::Resource res, int threshol
     if (radius == -1)
         radius = 30;
 
-    for(MapCoord tx = aii->GetXA(pt, 0), r = 1; r <= radius; tx = aii->GetXA(tx, pt.y, 0), ++r)
+    for(MapCoord tx = aii->GetXA(pt, Direction::NORTH), r = 1; r <= radius; tx = aii->GetXA(tx, pt.y, Direction::NORTH), ++r)
     {
         MapPoint t2(tx, pt.y);
         for(unsigned i = 2; i < 8; ++i)
         {
-            for(MapCoord r2 = 0; r2 < r; t2 = aii->GetNeighbour(t2, i % 6), ++r2)
+            for(MapCoord r2 = 0; r2 < r; t2 = aii->GetNeighbour(t2, Direction(i)), ++r2)
             {
                 unsigned i = aii->GetIdx(t2);
                 if (resourceMaps[res][i] >= threshold)
@@ -806,9 +805,9 @@ PositionSearchState AIPlayerJH::FindGoodPosition(PositionSearch* search, bool be
         }
 
         // now insert neighbouring nodes...
-        for (unsigned char dir = 0; dir < 6; ++dir)
+        for (unsigned char dir = 0; dir < Direction::COUNT; ++dir)
         {
-            MapPoint n = aii->GetNeighbour(pt, dir);
+            MapPoint n = aii->GetNeighbour(pt, Direction::fromUInt(dir));
             unsigned ni = aii->GetIdx(n);
 
             // test if already tested or not in territory
@@ -867,7 +866,7 @@ bool AIPlayerJH::FindBestPositionDiminishingResource(MapPoint& pt, AIJH::Resourc
     MapPoint best(0, 0);
     int best_value = -1;
 
-    for(MapCoord tx = aii->GetXA(pt, 0), r = 1; r <= radius; tx = aii->GetXA(tx, pt.y, 0), ++r)
+    for(MapCoord tx = aii->GetXA(pt, Direction::NORTH), r = 1; r <= radius; tx = aii->GetXA(tx, pt.y, Direction::NORTH), ++r)
     {
         MapPoint t2(tx, pt.y);
         for(unsigned i = 2; i < 8; ++i)
@@ -945,7 +944,7 @@ bool AIPlayerJH::FindBestPositionDiminishingResource(MapPoint& pt, AIJH::Resourc
                 {
                     if (!nodes[n].reachable || (inTerritory && !aii->IsOwnTerritory(t2)) || nodes[n].farmed)
                     {
-                        t2 = aii->GetNeighbour(t2, i % 6);
+                        t2 = aii->GetNeighbour(t2, Direction(i));
                         continue;
                     }
                     //special case fish -> check for other fishery buildings
@@ -953,7 +952,7 @@ bool AIPlayerJH::FindBestPositionDiminishingResource(MapPoint& pt, AIJH::Resourc
                     {
                         if(BuildingNearby(t2, BLD_FISHERY, 6))
                         {
-                            t2 = aii->GetNeighbour(t2, i % 6);
+                            t2 = aii->GetNeighbour(t2, Direction(i));
                             continue;
                         }
                     }
@@ -972,7 +971,7 @@ bool AIPlayerJH::FindBestPositionDiminishingResource(MapPoint& pt, AIJH::Resourc
                         //TODO: calculate "perfect" rating and instantly return if we got that already
                     }
                 }
-                t2 = aii->GetNeighbour(t2, i % 6);
+                t2 = aii->GetNeighbour(t2, Direction(i));
             }
         }
     }
@@ -1007,7 +1006,7 @@ bool AIPlayerJH::FindBestPosition(MapPoint& pt, AIJH::Resource res, BuildingQual
     MapPoint best(0, 0);
     int best_value = -1;
 
-    for(MapCoord tx = aii->GetXA(pt, 0), r = 1; r <= radius; tx = aii->GetXA(tx, pt.y, 0), ++r)
+    for(MapCoord tx = aii->GetXA(pt, Direction::NORTH), r = 1; r <= radius; tx = aii->GetXA(tx, pt.y, Direction::NORTH), ++r)
     {
         MapPoint t2(tx, pt.y);
         for(unsigned i = 2; i < 8; ++i)
@@ -1044,18 +1043,18 @@ bool AIPlayerJH::FindBestPosition(MapPoint& pt, AIJH::Resource res, BuildingQual
                 {
                     if (!nodes[n].reachable || (inTerritory && !aii->IsOwnTerritory(t2)) || nodes[n].farmed)
                     {
-                        t2 = aii->GetNeighbour(t2, i % 6);
+                        t2 = aii->GetNeighbour(t2, Direction(i));
                         continue;
                     }
                     if(HarborPosClose(t2, 3, true))
                     {
-                        t2 = aii->GetNeighbour(t2, i % 6);
+                        t2 = aii->GetNeighbour(t2, Direction(i));
                         continue;
                     }
                     BuildingQuality bq = aii->GetBuildingQuality(t2);
                     if (( (bq >= size && bq < BQ_MINE) // normales Gebäude
                             || (bq == size)) &&     // auch Bergwerke
-							(res!=AIJH::BORDERLAND || !aii->IsRoadPoint(aii->GetNeighbour(t2,4))))
+							(res!=AIJH::BORDERLAND || !aii->IsRoadPoint(aii->GetNeighbour(t2, Direction::SOUTHWEST))))
 					//special: military buildings cannot be build next to an existing road as that would have them connected to 2 roads which the ai no longer should do
                     {
                         best = t2;
@@ -1063,7 +1062,7 @@ bool AIPlayerJH::FindBestPosition(MapPoint& pt, AIJH::Resource res, BuildingQual
                         //TODO: calculate "perfect" rating and instantly return if we got that already
                     }
                 }
-                t2 = aii->GetNeighbour(t2, i % 6);
+                t2 = aii->GetNeighbour(t2, Direction(i));
             }
         }
     }
@@ -1329,12 +1328,12 @@ bool AIPlayerJH::SimpleFindPosition(MapPoint& pt, BuildingQuality size, int radi
     if (radius == -1)
         radius = 30;
 
-    for(MapCoord tx = aii->GetXA(pt, 0), r = 1; r <= radius; tx = aii->GetXA(tx, pt.y, 0), ++r)
+    for(MapCoord tx = aii->GetXA(pt, Direction::NORTH), r = 1; r <= radius; tx = aii->GetXA(tx, pt.y, Direction::NORTH), ++r)
     {
         MapPoint t2(tx, pt.y);
         for(unsigned i = 2; i < 8; ++i)
         {
-            for(MapCoord r2 = 0; r2 < r; t2 = aii->GetNeighbour(t2, i % 6), ++r2)
+            for(MapCoord r2 = 0; r2 < r; t2 = aii->GetNeighbour(t2, Direction(i)), ++r2)
             {
                 unsigned i = aii->GetIdx(t2);
 
@@ -1376,12 +1375,12 @@ unsigned AIPlayerJH::GetDensity(MapPoint pt, AIJH::Resource res, int radius)
     unsigned good = 0;
     unsigned all = 0;
 
-    for(MapCoord tx = aii->GetXA(pt, 0), r = 1; r <= radius; tx = aii->GetXA(tx, pt.y, 0), ++r)
+    for(MapCoord tx = aii->GetXA(pt, Direction::NORTH), r = 1; r <= radius; tx = aii->GetXA(tx, pt.y, Direction::NORTH), ++r)
     {
         MapPoint t2(tx, pt.y);
         for(unsigned i = 2; i < 8; ++i)
         {
-            for(MapCoord r2 = 0; r2 < r; t2 = aii->GetNeighbour(t2, i % 6), ++r2)
+            for(MapCoord r2 = 0; r2 < r; t2 = aii->GetNeighbour(t2, Direction(i)), ++r2)
             {
                 unsigned i = aii->GetIdx(t2);
 
@@ -1484,7 +1483,7 @@ void AIPlayerJH::HandleBuilingDestroyed(MapPoint pt, BuildingType bld)
         case BLD_HARBORBUILDING:
         {
             //destroy all other buildings around the harborspot in range 2 so we can rebuild the harbor ...
-            pt = aii->GetNeighbour(pt, 0);
+            pt = aii->GetNeighbour(pt, Direction::NORTH);
             for(int i = 2; i < 8; i++) //range 1
             {
                 const noBaseBuilding* bb;
@@ -1497,9 +1496,9 @@ void AIPlayerJH::HandleBuilingDestroyed(MapPoint pt, BuildingType bld)
                 {
                     aii->DestroyFlag(gwb->GetNeighbour(pt, 4));
                 }
-                pt = aii->GetNeighbour(pt, i % 6);
+                pt = aii->GetNeighbour(pt, Direction(i));
             }
-            pt = aii->GetNeighbour(pt, 0);
+            pt = aii->GetNeighbour(pt, Direction::NORTH);
             for(int i = 2; i < 8; i++) //range 2
             {
                 for(int r = 0; r < 2; r++)
@@ -1514,7 +1513,7 @@ void AIPlayerJH::HandleBuilingDestroyed(MapPoint pt, BuildingType bld)
                     {
                         aii->DestroyFlag(gwb->GetNeighbour(pt, 4));
                     }
-                    pt = aii->GetNeighbour(pt, i % 6);
+                    pt = aii->GetNeighbour(pt, Direction(i));
                 }
             }
             break;
@@ -1547,7 +1546,7 @@ void AIPlayerJH::HandleRoadConstructionComplete(MapPoint pt, unsigned char dir)
         t = gwb->GetNeighbour(t, 4);
         for(unsigned i = 0; i < flag->routes[dir]->GetLength(); ++i)
         {
-            t = aii->GetNeighbour(t, flag->routes[dir]->GetDir(true, i));
+            t = aii->GetNeighbour(t, Direction::fromUInt(flag->routes[dir]->GetDir(true, i)));
             {
                 aii->SetFlag(t);
             }
@@ -1558,7 +1557,7 @@ void AIPlayerJH::HandleRoadConstructionComplete(MapPoint pt, unsigned char dir)
         //set flags on our new road starting from the new flag
         for(unsigned i = 0; i < flag->routes[dir]->GetLength(); ++i)
         {
-            pt = aii->GetNeighbour(pt, flag->routes[dir]->GetDir(false, i));
+            pt = aii->GetNeighbour(pt, Direction::fromUInt(flag->routes[dir]->GetDir(false, i)));
             {
                 aii->SetFlag(pt);
             }
@@ -1599,7 +1598,7 @@ void AIPlayerJH::HandleBuildingFinished(const MapPoint pt, BuildingType bld)
         case BLD_HARBORBUILDING:
             UpdateNodesAround(pt, 8); // todo: fix radius
             RemoveAllUnusedRoads(pt); // repair & reconnect road system - required when a colony gets a new harbor by expedition
-            aii->SetDefenders(pt, 0, 1); //order 1 defender to stay in the harborbuilding
+            aii->ChangeReserve(pt, 0, 1); //order 1 defender to stay in the harborbuilding
 
             //if there are positions free start an expedition!
             if(HarborPosRelevant(gwb->GetHarborPointID(pt), true))
@@ -1609,7 +1608,7 @@ void AIPlayerJH::HandleBuildingFinished(const MapPoint pt, BuildingType bld)
             break;
 
         case BLD_SHIPYARD:
-            aii->ToggleShipyardMode(pt);
+            aii->ToggleShipYardMode(pt);
             break;
 
         case BLD_STOREHOUSE:
@@ -1625,7 +1624,7 @@ void AIPlayerJH::HandleBuildingFinished(const MapPoint pt, BuildingType bld)
 
 void AIPlayerJH::HandleNewColonyFounded(const MapPoint pt)
 {
-    construction->AddConnectFlagJob(aii->GetSpecObj<noFlag>(aii->GetNeighbour(pt, 4)));
+    construction->AddConnectFlagJob(aii->GetSpecObj<noFlag>(aii->GetNeighbour(pt, Direction::SOUTHWEST)));
 }
 
 void AIPlayerJH::HandleExpedition(const noShip* ship)
@@ -1636,12 +1635,12 @@ void AIPlayerJH::HandleExpedition(const noShip* ship)
         aii->FoundColony(ship);
     else
     {
-        unsigned char start = rand() % 6;
-        for(unsigned char i = start; i < start + 6; ++i)
+        unsigned char start = rand() % Direction::COUNT;
+        for(unsigned char i = start; i < start + Direction::COUNT; ++i)
         {
-            if (aii->IsExplorationDirectionPossible(ship->GetPos(), ship->GetCurrentHarbor(), i % 6))
+            if (aii->IsExplorationDirectionPossible(ship->GetPos(), ship->GetCurrentHarbor(), Direction(i)))
             {
-                aii->TravelToNextSpot(i % 6, ship);
+                aii->TravelToNextSpot(Direction(i), ship);
                 return;
             }
         }
@@ -1735,7 +1734,7 @@ void AIPlayerJH::HandleNoMoreResourcesReachable(const MapPoint pt, BuildingType 
     else
         return;
     UpdateNodesAround(pt, 11); // todo: fix radius
-    RemoveUnusedRoad(aii->GetSpecObj<noFlag>(aii->GetNeighbour(pt, 4)), 1, true);
+    RemoveUnusedRoad(aii->GetSpecObj<noFlag>(aii->GetNeighbour(pt, Direction::SOUTHWEST)), 1, true);
 
     // try to expand, maybe res blocked a passage
     AddBuildJob(construction->ChooseMilitaryBuilding(pt), pt);
@@ -1765,7 +1764,7 @@ void AIPlayerJH::HandleShipBuilt(const MapPoint pt)
             }
         }
         if(shipyard && mindist < 12)//might have been destroyed by now and anything further away than 12 should be wrong anyways
-            aii->StopProduction( shipyard->GetPos() );
+            aii->ToggleProduction( shipyard->GetPos() );
     }
 }
 
@@ -2133,7 +2132,7 @@ void AIPlayerJH::RecalcGround(const MapPoint buildingPos, std::vector<unsigned c
     }
 
     // flag of building
-    pt = aii->GetNeighbour(pt, 4);
+    pt = aii->GetNeighbour(pt,Direction::SOUTHWEST);
     RecalcBQAround(pt);
     if (GetAINode(pt).res == AIJH::PLANTSPACE)
     {
@@ -2144,7 +2143,7 @@ void AIPlayerJH::RecalcGround(const MapPoint buildingPos, std::vector<unsigned c
     // along the road
     for (unsigned i = 0; i < route_road.size(); ++i)
     {
-        pt = aii->GetNeighbour(pt, route_road[i]);
+        pt = aii->GetNeighbour(pt, Direction::fromUInt(route_road[i]));
         RecalcBQAround(pt);
         // Auch Plantspace entsprechend anpassen:
         if (GetAINode(pt).res == AIJH::PLANTSPACE)
@@ -2203,7 +2202,7 @@ bool AIPlayerJH::IsFlagPartofCircle(const noFlag* startFlag, unsigned maxlen, co
             testdir++;
             continue;
         }
-        if(testdir == 1 && (aii->IsObjectTypeOnNode(aii->GetNeighbour(curFlag->GetPos(), 1), NOP_BUILDING) || aii->IsObjectTypeOnNode(aii->GetNeighbour(curFlag->GetPos(), 1), NOP_BUILDINGSITE)))
+        if(testdir == 1 && (aii->IsObjectTypeOnNode(aii->GetNeighbour(curFlag->GetPos(), Direction::NORTHEAST), NOP_BUILDING) || aii->IsObjectTypeOnNode(aii->GetNeighbour(curFlag->GetPos(), Direction::NORTHEAST), NOP_BUILDINGSITE)))
         {
             testdir++;
             continue;
@@ -2255,7 +2254,7 @@ bool AIPlayerJH::RemoveUnusedRoad(const noFlag* startFlag, unsigned char exclude
     {
         if (dir == excludeDir)
             continue;
-        if(dir == 1 && (aii->IsObjectTypeOnNode(aii->GetNeighbour(startFlag->GetPos(), 1), NOP_BUILDING) || aii->IsObjectTypeOnNode(aii->GetNeighbour(startFlag->GetPos(), 1), NOP_BUILDINGSITE)))
+        if(dir == 1 && (aii->IsObjectTypeOnNode(aii->GetNeighbour(startFlag->GetPos(), Direction::NORTHEAST), NOP_BUILDING) || aii->IsObjectTypeOnNode(aii->GetNeighbour(startFlag->GetPos(), Direction::NORTHEAST), NOP_BUILDINGSITE)))
         {
             //the flag belongs to a building - update the pathing map around us and try to reconnect it (if we cant reconnect it -> burn it(burning takes place at the pathfinding job))
             finds += 3;
@@ -2457,7 +2456,7 @@ void AIPlayerJH::InitDistribution()
         goodSettings[20] = 10; //water brewery
         goodSettings[21] = 10; //water pigfarm
         goodSettings[22] = 10; //water donkeybreeder
-        aii->SetDistribution(goodSettings);
+        aii->ChangeDistribution(goodSettings);
 }
 
 bool AIPlayerJH::ValidTreeinRange(const MapPoint pt)
@@ -2750,7 +2749,7 @@ void AIPlayerJH::AdjustSettings()
     toolsettings[9] = 0; //(aii->GetInventory()->goods[GD_CLEAVER]+aii->GetInventory()->people[JOB_BUTCHER]<construction->GetBuildingCount(BLD_SLAUGHTERHOUSE)+1)?1:0;                                //cleaver
     toolsettings[7] = 0;                                                                                                                                                                        //rod & line
     toolsettings[11] = 0;                                                                                                                                                                       //bow
-    aii->SetToolSettings(toolsettings);
+    aii->ChangeTools(toolsettings);
 
     // Set military settings to some currently required values
     std::vector<unsigned char> milSettings;
@@ -2765,7 +2764,7 @@ void AIPlayerJH::AdjustSettings()
 	milSettings[5] = CalcMilSettings(); //inland 1bar min 50% max 100% depending on how many soldiers are available
 	milSettings[7] = 8;                                                     //front: 100%
 	if(player->military_settings[5] != milSettings[5] || player->military_settings[6] != milSettings[6] || player->military_settings[4]!=milSettings[4] || player->military_settings[1]!=milSettings[1]) //only send the command if we want to change something
-		aii->SetMilitarySettings(milSettings);
+		aii->ChangeMilitary(milSettings);
 }
 
 unsigned AIPlayerJH::CalcMilSettings()

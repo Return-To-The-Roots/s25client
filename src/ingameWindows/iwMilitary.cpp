@@ -25,7 +25,6 @@
 #include "Loader.h"
 #include "controls/controls.h"
 #include "GameClient.h"
-#include "GameCommands.h"
 
 
 ///////////////////////////////////////////////////////////////////////////////

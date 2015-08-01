@@ -23,7 +23,7 @@
 #include "GameMessageInterface.h"
 #include "GameProtocol.h"
 #include "GamePlayerList.h"
-#include "GameCommands.h"
+#include "GameCommand.h"
 #include "GameObject.h"
 #include "GlobalGameSettings.h"
 #include "Random.h"
@@ -798,7 +798,7 @@ class GameMessage_GameCommand : public GameMessage
             for(unsigned i = 0; i < gcs.size(); ++i)
             {
                 gc::Type type = gc::Type(PopUnsignedChar());
-                gcs[i] = gc::GameCommand::CreateGameCommand(type, this);
+                gcs[i] = gc::GameCommand::Deserialize(type, this);
             }
 
         }
@@ -820,7 +820,7 @@ class GameMessage_GameCommand : public GameMessage
             for(unsigned i = 0; i < gcs.size(); ++i)
             {
                 gc::Type type = gc::Type(PopUnsignedChar());
-                gcs[i] = gc::GameCommand::CreateGameCommand(type, this);
+                gcs[i] = gc::GameCommand::Deserialize(type, this);
             }
 
             GetInterface(callback)->OnNMSGameCommand(*this);

@@ -30,7 +30,6 @@
 #include "iwDemolishBuilding.h"
 #include "WindowManager.h"
 #include "iwHelp.h"
-#include "GameCommands.h"
 #include "iwHQ.h"
 #include "iwStorehouse.h"
 #include "iwHarborBuilding.h"

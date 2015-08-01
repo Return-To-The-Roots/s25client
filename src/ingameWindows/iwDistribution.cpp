@@ -26,7 +26,6 @@
 #include "controls/controls.h"
 
 #include "GameClient.h"
-#include "GameCommands.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
