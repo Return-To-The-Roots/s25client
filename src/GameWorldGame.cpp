@@ -1658,7 +1658,7 @@ void GameWorldGame::RecalcMovingVisibilities(const MapPoint pt, const unsigned c
     unsigned char dir = (moving_dir + 2) % 6;
     for(MapCoord i = 0; i < radius; ++i)
     {
-        tt = GetNeighbour(tt, moving_dir);
+        tt = GetNeighbour(tt, dir);
         // Sichtbarkeit und für FOW-Gebiet vorherigen Besitzer merken
         // (d.h. der dort  zuletzt war, als es für Spieler player sichtbar war)
         Visibility old_vis = CalcWithAllyVisiblity(tt, player);
@@ -1682,7 +1682,7 @@ void GameWorldGame::RecalcMovingVisibilities(const MapPoint pt, const unsigned c
     dir = (moving_dir + 6 - 2) % 6;
     for(MapCoord i = 0; i < radius; ++i)
     {
-        tt = GetNeighbour(tt, moving_dir);
+        tt = GetNeighbour(tt, dir);
         // Sichtbarkeit und für FOW-Gebiet vorherigen Besitzer merken
         // (d.h. der dort  zuletzt war, als es für Spieler player sichtbar war)
         Visibility old_vis = CalcWithAllyVisiblity(tt, player);
