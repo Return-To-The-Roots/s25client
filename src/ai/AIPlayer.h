@@ -27,8 +27,8 @@
 class AIPlayer : public AIBase
 {
     public:
-        AIPlayer(const unsigned char playerid, const GameWorldBase* const gwb, const GameClientPlayer* const player,
-                 const GameClientPlayerList* const players, const GlobalGameSettings* const ggs,
+        AIPlayer(const unsigned char playerid, const GameWorldBase& gwb, const GameClientPlayer& player,
+                 const GameClientPlayerList& players, const GlobalGameSettings& ggs,
                  const AI::Level level);
 
         /// Wird jeden GF aufgerufen und die KI kann hier entsprechende Handlungen vollziehen

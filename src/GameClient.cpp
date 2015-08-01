@@ -2121,15 +2121,15 @@ AIBase* GameClient::CreateAIPlayer(const unsigned playerid)
     {
     case AI::DUMMY:
         {
-            return new AIPlayer(playerid, gw, &players[playerid], &players, &ggs, AI::EASY);
+            return new AIPlayer(playerid, *gw, players[playerid], players, ggs, AI::EASY);
         } break;
     case AI::DEFAULT:
         {
-            return new AIPlayerJH(playerid, gw, &players[playerid], &players, &ggs, players[playerid].aiInfo.level);
+            return new AIPlayerJH(playerid, *gw, players[playerid], players, ggs, players[playerid].aiInfo.level);
         } break;
         default:
         {
-            return new AIPlayer(playerid, gw, &players[playerid], &players, &ggs, AI::EASY);
+            return new AIPlayer(playerid, *gw, players[playerid], players, ggs, AI::EASY);
         } break;
     }
 
@@ -2265,7 +2265,7 @@ void GameClient::ToggleHumanAIPlayer()
         human_ai = NULL;
     } else
     {
-        human_ai = new AIPlayerJH(playerid, gw, &players[playerid], &players, &ggs, AI::EASY);
+        human_ai = new AIPlayerJH(playerid, *gw, players[playerid], players, ggs, AI::EASY);
     }
 }
 

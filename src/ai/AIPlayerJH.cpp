@@ -47,8 +47,8 @@
 // from Pathfinding.cpp
 bool IsPointOK_RoadPath(const GameWorldBase& gwb, const MapPoint pt, const unsigned char dir, const void* param);
 
-AIPlayerJH::AIPlayerJH(const unsigned char playerid, const GameWorldBase* const gwb, const GameClientPlayer* const player,
-                       const GameClientPlayerList* const players, const GlobalGameSettings* const ggs,
+AIPlayerJH::AIPlayerJH(const unsigned char playerid, const GameWorldBase& gwb, const GameClientPlayer& player,
+                       const GameClientPlayerList& players, const GlobalGameSettings& ggs,
                        const AI::Level level) : AIBase(playerid, gwb, player, players, ggs, level), defeated(false)
 {
     construction = new AIConstruction(aii, this);
@@ -139,7 +139,7 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
 
     if ((gf + 41 + playerid * 17) % attack_interval == 0)
     {
-        if(ggs->getSelection(ADDON_SEA_ATTACK) < 2) //not deactivated by addon? -> go ahead
+        if(ggs.getSelection(ADDON_SEA_ATTACK) < 2) //not deactivated by addon? -> go ahead
             TrySeaAttack();
     }
 	// check expeditions (order new / cancel) and if we have 1 complete forester but less than 1 military building and less than 2 buildingsites stop production
@@ -250,7 +250,7 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
 			nobBaseWarehouse* wh = GetUpgradeBuildingWarehouse();
 			SetGatheringForUpgradeWarehouse(wh);
 		
-			if (MAX_MILITARY_RANK - ggs->getSelection(ADDON_MAX_RANK) > 0) //there is more than 1 rank available -> distribute
+			if (MAX_MILITARY_RANK - ggs.getSelection(ADDON_MAX_RANK) > 0) //there is more than 1 rank available -> distribute
 				DistributeMaxRankSoldiersByBlocking(5,wh);
 			//unlimited when every warehouse has at least that amount
 			DistributeGoodsByBlocking(23, 30); //30 boards for each warehouse - block after that - should speed up expansion
@@ -391,7 +391,7 @@ void AIPlayerJH::SetGatheringForUpgradeWarehouse(nobBaseWarehouse* upgradewareho
 			if(!(*it)->CheckRealInventorySettings(0, 8, 21)) //not collecting shields? -> start it
 				aii->ChangeInventorySetting((*it)->GetPos(), 0, 8, 21);
 
-			if(!(*it)->CheckRealInventorySettings(1, 8, JOB_PRIVATE) && MAX_MILITARY_RANK - ggs->getSelection(ADDON_MAX_RANK) > 0) //not collecting privates AND we can actually upgrade soldiers? -> start it
+			if(!(*it)->CheckRealInventorySettings(1, 8, JOB_PRIVATE) && MAX_MILITARY_RANK - ggs.getSelection(ADDON_MAX_RANK) > 0) //not collecting privates AND we can actually upgrade soldiers? -> start it
 				aii->ChangeInventorySetting((*it)->GetPos(), 1, 8, JOB_PRIVATE);
 
 			if(((*it)->CheckRealInventorySettings(1, 8, 0) && ((*it)->GetInventory()->people[JOB_HELPER] > 50)) || (!(*it)->CheckRealInventorySettings(1, 8, 0) && !((*it)->GetInventory()->people[JOB_HELPER] > 50)))
@@ -436,7 +436,7 @@ AIJH::Resource AIPlayerJH::CalcResource(const MapPoint pt)
         {
             if (res == AIJH::WOOD)
             {
-                if((gwb->GetSpecObj<noTree>(pt))->type == 5) //exclude pineapple (because they are more of a "blocker" than a tree and only count as tree for animation&sound)
+                if((gwb.GetSpecObj<noTree>(pt))->type == 5) //exclude pineapple (because they are more of a "blocker" than a tree and only count as tree for animation&sound)
                     res = AIJH::NOTHING;
             }
         }
@@ -447,7 +447,7 @@ AIJH::Resource AIPlayerJH::CalcResource(const MapPoint pt)
         {
             if (aii->GetSubsurfaceResource(pt) == AIJH::WOOD)
             {
-                if ((gwb->GetSpecObj<noTree>(pt))->type != 5)
+                if ((gwb.GetSpecObj<noTree>(pt))->type != 5)
                     res = AIJH::MULTIPLE;
             }
             else
@@ -475,7 +475,7 @@ void AIPlayerJH::InitReachableNodes()
     {
         for (pt.x = 0; pt.x < width; ++pt.x)
         {
-            unsigned i = gwb->GetIdx(pt);
+            unsigned i = gwb.GetIdx(pt);
             nodes[i].reachable = false;
             const noFlag* myFlag = 0;
             if ( (myFlag = aii->GetSpecObj<noFlag>(pt)) )
@@ -514,7 +514,7 @@ void AIPlayerJH::IterativeReachableNodeChecker(std::queue<MapPoint>& toCheck)
 
             bool boat = false;
             // Test whether point is reachable; yes->add to check list
-            if (IsPointOK_RoadPath(*gwb, n, (dir + 3) % 6, (void*) &boat))
+            if (IsPointOK_RoadPath(gwb, n, (dir + 3) % 6, (void*) &boat))
             {
                 nodes[ni].reachable = true;
                 toCheck.push(n);
@@ -566,7 +566,7 @@ void AIPlayerJH::InitNodes()
     {
         for (pt.x = 0; pt.x < width; ++pt.x)
         {
-            unsigned i = gwb->GetIdx(pt);
+            unsigned i = gwb.GetIdx(pt);
 
             // if reachable, we'll calc bq
             if (nodes[i].reachable)
@@ -643,7 +643,7 @@ void AIPlayerJH::RecalcResource(AIJH::Resource restype)
         {
             unsigned i = aii->GetIdx(pt);
             //resourceMaps[res][i] = 0;
-            if (nodes[i].res == (AIJH::Resource)res && (AIJH::Resource)res != AIJH::BORDERLAND && gwb->GetNode(pt).t1 != TT_WATER && gwb->GetNode(pt).t1 != TT_LAVA && gwb->GetNode(pt).t1 != TT_SWAMPLAND && gwb->GetNode(pt).t1 != TT_SNOW )
+            if (nodes[i].res == (AIJH::Resource)res && (AIJH::Resource)res != AIJH::BORDERLAND && gwb.GetNode(pt).t1 != TT_WATER && gwb.GetNode(pt).t1 != TT_LAVA && gwb.GetNode(pt).t1 != TT_SWAMPLAND && gwb.GetNode(pt).t1 != TT_SNOW )
             {
                 ChangeResourceMap(pt, AIJH::RES_RADIUS[res], resourceMaps[res], 1);
             }
@@ -651,10 +651,10 @@ void AIPlayerJH::RecalcResource(AIJH::Resource restype)
             else if (aii->IsBorder(pt) && (AIJH::Resource)res == AIJH::BORDERLAND)
             {
                 //only count border area that is actually passable terrain
-                if(gwb->GetNode(pt).t1 != TT_WATER && gwb->GetNode(pt).t1 != TT_LAVA && gwb->GetNode(pt).t1 != TT_SWAMPLAND && gwb->GetNode(pt).t1 != TT_SNOW)
+                if(gwb.GetNode(pt).t1 != TT_WATER && gwb.GetNode(pt).t1 != TT_LAVA && gwb.GetNode(pt).t1 != TT_SWAMPLAND && gwb.GetNode(pt).t1 != TT_SNOW)
                     ChangeResourceMap(pt, AIJH::RES_RADIUS[AIJH::BORDERLAND], resourceMaps[AIJH::BORDERLAND], 1);
             }
-            if (nodes[i].res == AIJH::MULTIPLE && gwb->GetNode(pt).t1 != TT_WATER && gwb->GetNode(pt).t1 != TT_LAVA && gwb->GetNode(pt).t1 != TT_SWAMPLAND )
+            if (nodes[i].res == AIJH::MULTIPLE && gwb.GetNode(pt).t1 != TT_WATER && gwb.GetNode(pt).t1 != TT_LAVA && gwb.GetNode(pt).t1 != TT_SWAMPLAND )
             {
                 if(aii->GetSubsurfaceResource(pt) == (AIJH::Resource)res || aii->GetSurfaceResource(pt) == (AIJH::Resource)res)
                     ChangeResourceMap(pt, AIJH::RES_RADIUS[res], resourceMaps[res], 1);
@@ -844,7 +844,7 @@ PositionSearchState AIPlayerJH::FindGoodPosition(PositionSearch* search, bool be
 
 bool AIPlayerJH::FindBestPositionDiminishingResource(MapPoint& pt, AIJH::Resource res, BuildingQuality size, int minimum, int radius, bool inTerritory)
 {
-    bool fixed = ggs->isEnabled(ADDON_INEXHAUSTIBLE_MINES) && (res == AIJH::IRONORE || res == AIJH::COAL || res == AIJH::GOLD || res == AIJH::GRANITE);
+    bool fixed = ggs.isEnabled(ADDON_INEXHAUSTIBLE_MINES) && (res == AIJH::IRONORE || res == AIJH::COAL || res == AIJH::GOLD || res == AIJH::GRANITE);
     unsigned short width = aii->GetMapWidth();
     unsigned short height = aii->GetMapHeight();
     int temp = 0;
@@ -930,13 +930,13 @@ bool AIPlayerJH::FindBestPositionDiminishingResource(MapPoint& pt, AIJH::Resourc
                 if(res == AIJH::FISH || res == AIJH::STONES)
                 {
                     //remove permanently invalid spots to speed up future checks
-                    unsigned char t1 = gwb->GetNode(t2).t1;
+                    unsigned char t1 = gwb.GetNode(t2).t1;
                     if(t1 == TT_DESERT || t1 == TT_SNOW || t1 == TT_LAVA || t1 == TT_WATER || t1 == TT_SWAMPLAND || t1 == TT_MOUNTAIN1 || t1 == TT_MOUNTAIN2 || t1 == TT_MOUNTAIN3 || t1 == TT_MOUNTAIN4)
                         resourceMaps[res][n] = 0;
                 }
                 else //= granite,gold,iron,coal
                 {
-                    unsigned char t1 = gwb->GetNode(t2).t1;
+                    unsigned char t1 = gwb.GetNode(t2).t1;
                     if(t1 != TT_MOUNTAIN1 && t1 != TT_MOUNTAIN2 && t1 != TT_MOUNTAIN3 && t1 != TT_MOUNTAIN4)
                         resourceMaps[res][n] = 0;
                 }
@@ -959,7 +959,7 @@ bool AIPlayerJH::FindBestPositionDiminishingResource(MapPoint& pt, AIJH::Resourc
                     //dont build next to harborspots
                     if(HarborPosClose(t2, 3, true))
                     {
-                        t2 = aii->GetNeighbour(t2, i % 6);
+                        t2 = aii->GetNeighbour(t2, Direction(i));
                         continue;
                     }
                     BuildingQuality bq = aii->GetBuildingQuality(t2);
@@ -1194,7 +1194,7 @@ void AIPlayerJH::DistributeMaxRankSoldiersByBlocking(unsigned limit,nobBaseWareh
 	if(completewh<1) //no warehouses -> no job
 		return;
 
-	unsigned char maxrankjobnr=JOB_PRIVATE + MAX_MILITARY_RANK  - ggs->getSelection(ADDON_MAX_RANK); //private + general - max rank limiter
+	unsigned char maxrankjobnr=JOB_PRIVATE + MAX_MILITARY_RANK  - ggs.getSelection(ADDON_MAX_RANK); //private + general - max rank limiter
 	
 	if(completewh==1 ) //only 1 warehouse? dont block max ranks here
 	{
@@ -1445,7 +1445,7 @@ void AIPlayerJH::HandleNewMilitaryBuilingOccupied(const MapPoint pt)
     //remove the storehouse from the building test list if we are close to another storehouse already
     for (std::list<nobBaseWarehouse*>::const_iterator it = aii->GetStorehouses().begin(); it != aii->GetStorehouses().end(); it++)
     {
-        if (gwb->CalcDistance((*it)->GetPos(), pt) < 20)
+        if (gwb.CalcDistance((*it)->GetPos(), pt) < 20)
         {
             numBldToTest = 1;
             break;
@@ -1456,7 +1456,7 @@ void AIPlayerJH::HandleNewMilitaryBuilingOccupied(const MapPoint pt)
     {
         if((*it)->GetBuildingType() == BLD_STOREHOUSE || (*it)->GetBuildingType() == BLD_HARBORBUILDING)
         {
-            if (gwb->CalcDistance((*it)->GetPos(), pt) < 20)
+            if (gwb.CalcDistance((*it)->GetPos(), pt) < 20)
             {
                 numBldToTest = 1;
                 break;
@@ -1494,7 +1494,7 @@ void AIPlayerJH::HandleBuilingDestroyed(MapPoint pt, BuildingType bld)
                 }
                 if((bs = aii->GetSpecObj<noBuildingSite>(pt)))
                 {
-                    aii->DestroyFlag(gwb->GetNeighbour(pt, 4));
+                    aii->DestroyFlag(gwb.GetNeighbour(pt, 4));
                 }
                 pt = aii->GetNeighbour(pt, Direction(i));
             }
@@ -1511,7 +1511,7 @@ void AIPlayerJH::HandleBuilingDestroyed(MapPoint pt, BuildingType bld)
                     }
                     if((bs = aii->GetSpecObj<noBuildingSite>(pt)))
                     {
-                        aii->DestroyFlag(gwb->GetNeighbour(pt, 4));
+                        aii->DestroyFlag(gwb.GetNeighbour(pt, 4));
                     }
                     pt = aii->GetNeighbour(pt, Direction(i));
                 }
@@ -1539,11 +1539,11 @@ void AIPlayerJH::HandleRoadConstructionComplete(MapPoint pt, unsigned char dir)
     //check if this road leads to a warehouseflag and if it does start setting flags from the warehouseflag else from the new flag
     //goal is to move roadsegments with a length of more than 2 away from the warehouse
     MapPoint t = flag->routes[dir]->GetOtherFlag(flag)->GetPos();
-    t = gwb->GetNeighbour(t, 1);
+    t = gwb.GetNeighbour(t, 1);
 	construction->constructionlocations.push_back(t);
     if(aii->IsBuildingOnNode(t, BLD_STOREHOUSE) || aii->IsBuildingOnNode(t, BLD_HARBORBUILDING) || aii->IsBuildingOnNode(t, BLD_HEADQUARTERS))
     {
-        t = gwb->GetNeighbour(t, 4);
+        t = gwb.GetNeighbour(t, 4);
         for(unsigned i = 0; i < flag->routes[dir]->GetLength(); ++i)
         {
             t = aii->GetNeighbour(t, Direction::fromUInt(flag->routes[dir]->GetDir(true, i)));
@@ -1601,7 +1601,7 @@ void AIPlayerJH::HandleBuildingFinished(const MapPoint pt, BuildingType bld)
             aii->ChangeReserve(pt, 0, 1); //order 1 defender to stay in the harborbuilding
 
             //if there are positions free start an expedition!
-            if(HarborPosRelevant(gwb->GetHarborPointID(pt), true))
+            if(HarborPosRelevant(gwb.GetHarborPointID(pt), true))
             {
                 aii->StartExpedition(pt);
             }
@@ -1707,10 +1707,10 @@ void AIPlayerJH::HandleNoMoreResourcesReachable(const MapPoint pt, BuildingType 
             for (std::list<nobUsual*>::const_iterator it = aii->GetBuildings(BLD_FORESTER).begin(); it != aii->GetBuildings(BLD_FORESTER).end(); it++)
             {
                 //is the forester somewhat close?
-                if(gwb->CalcDistance(pt, (*it)->GetPos()) < 6)
+                if(gwb.CalcDistance(pt, (*it)->GetPos()) < 6)
                     //then find it's 2 woodcutters
                 {
-                    unsigned maxdist = gwb->CalcDistance(pt, (*it)->GetPos());
+                    unsigned maxdist = gwb.CalcDistance(pt, (*it)->GetPos());
                     char betterwoodcutters = 0;
                     for (std::list<nobUsual*>::const_iterator it2 = aii->GetBuildings(BLD_WOODCUTTER).begin(); it2 != aii->GetBuildings(BLD_WOODCUTTER).end() && betterwoodcutters < 2; it2++)
                     {
@@ -1718,7 +1718,7 @@ void AIPlayerJH::HandleNoMoreResourcesReachable(const MapPoint pt, BuildingType 
                         if(pt == (*it2)->GetPos())
                             continue;
                         //closer or equally close to forester than woodcutter in question?
-                        if(gwb->CalcDistance((*it2)->GetPos(), (*it)->GetPos()) <= maxdist)
+                        if(gwb.CalcDistance((*it2)->GetPos(), (*it)->GetPos()) <= maxdist)
                             betterwoodcutters++;
                     }
                     //couldnt find 2 closer woodcutter -> keep it alive
@@ -1751,7 +1751,7 @@ void AIPlayerJH::HandleNoMoreResourcesReachable(const MapPoint pt, BuildingType 
 void AIPlayerJH::HandleShipBuilt(const MapPoint pt)
 {
     // Stop building ships if reached a maximum (TODO: make variable)
-    if (((aii->GetShipCount() > 6 || aii->GetShipCount() >= (3 * aii->GetBuildings(BLD_SHIPYARD).size())) && GetCountofAIRelevantSeaIds() > 1) || (GetCountofAIRelevantSeaIds() < 2 && aii->GetShipCount() > gwb->GetHarborPointCount()))
+    if (((aii->GetShipCount() > 6 || aii->GetShipCount() >= (3 * aii->GetBuildings(BLD_SHIPYARD).size())) && GetCountofAIRelevantSeaIds() > 1) || (GetCountofAIRelevantSeaIds() < 2 && aii->GetShipCount() > gwb.GetHarborPointCount()))
     {
         unsigned mindist = 255;
         nobUsual* shipyard = NULL;
@@ -1900,7 +1900,7 @@ void AIPlayerJH::TryToAttack()
                     continue;
             }
             MapPoint dest = (*target)->GetPos();
-            if (gwb->CalcDistance(src, dest) < BASE_ATTACKING_DISTANCE
+            if (gwb.CalcDistance(src, dest) < BASE_ATTACKING_DISTANCE
                     && aii->IsPlayerAttackable((*target)->GetPlayer()) && aii->IsVisible(dest))
             {
                 if (((*target)->GetGOT() != GOT_NOB_MILITARY) && (!(*target)->DefendersAvailable()))
@@ -1982,7 +1982,7 @@ void AIPlayerJH::TrySeaAttack()
         //sea id not already listed as valid or invalid?
         if(std::find(seaidswithattackers.begin(), seaidswithattackers.end(), (*it)->GetSeaID()) == seaidswithattackers.end() && std::find(invalidseas.begin(), invalidseas.end(), (*it)->GetSeaID()) == invalidseas.end())
         {
-            unsigned int attackercount = gwb->GetAvailableSoldiersForSeaAttackAtSea(playerid, (*it)->GetSeaID(), false);
+            unsigned int attackercount = gwb.GetAvailableSoldiersForSeaAttackAtSea(playerid, (*it)->GetSeaID(), false);
             if(attackercount) //got attackers at this sea id? -> add to valid list
             {
                 seaidswithattackers.push_back((*it)->GetSeaID());
@@ -2002,10 +2002,10 @@ void AIPlayerJH::TrySeaAttack()
             LOG.lprintf("attackers at sea ids for player %i, sea id %i, count %i \n",playerid, seaidswithattackers[i], attackersatseaid[i]);
     }*/
     //first check all harbors there might be some undefended ones - start at 1 to skip the harbor dummy
-    for(unsigned i = 1; i < gwb->GetHarborPointCount(); i++)
+    for(unsigned i = 1; i < gwb.GetHarborPointCount(); i++)
     {
         const nobHarborBuilding* hb;
-        if((hb = aii->GetSpecObj<nobHarborBuilding>(gwb->GetHarborPoint(i))))
+        if((hb = aii->GetSpecObj<nobHarborBuilding>(gwb.GetHarborPoint(i))))
         {
             if(aii->IsVisible(hb->GetPos()))
             {
@@ -2013,7 +2013,7 @@ void AIPlayerJH::TrySeaAttack()
                 {
                     //attackers for this building?
                     std::vector<unsigned short> testseaidswithattackers(seaidswithattackers);
-                    gwb->GetValidSeaIDsAroundMilitaryBuildingForAttackCompare(gwb->GetHarborPoint(i), &testseaidswithattackers, playerid);
+                    gwb.GetValidSeaIDsAroundMilitaryBuildingForAttackCompare(gwb.GetHarborPoint(i), &testseaidswithattackers, playerid);
                     if(!testseaidswithattackers.empty()) //harbor can be attacked?
                     {
                         if(!hb->DefendersAvailable()) //no defenders?
@@ -2033,7 +2033,7 @@ void AIPlayerJH::TrySeaAttack()
         else//no harbor -> add to list
         {
             searcharoundharborspots.push_back(i);
-            //LOG.lprintf("found an unused harborspot we have to look around of at %i,%i \n",gwb->GetHarborPoint(i).x,gwb->GetHarborPoint(i).y);
+            //LOG.lprintf("found an unused harborspot we have to look around of at %i,%i \n",gwb.GetHarborPoint(i).x,gwb.GetHarborPoint(i).y);
         }
     }
     //any undefendedTargets? -> pick one by random
@@ -2043,7 +2043,7 @@ void AIPlayerJH::TrySeaAttack()
         for(std::deque<const nobBaseMilitary*>::iterator it = undefendedTargets.begin(); it != undefendedTargets.end(); it++)
         {
             std::list<GameWorldBase::PotentialSeaAttacker> attackers;
-            gwb->GetAvailableSoldiersForSeaAttack(playerid, (*it)->GetPos(), &attackers);
+            gwb.GetAvailableSoldiersForSeaAttack(playerid, (*it)->GetPos(), &attackers);
             if(!attackers.empty()) //try to attack it!
             {
                 aii->SeaAttack((*it)->GetPos(), 1, true);
@@ -2060,7 +2060,7 @@ void AIPlayerJH::TrySeaAttack()
     {
         limit--;
         //now add all military buildings around the harborspot to our list of potential targets
-        nobBaseMilitarySet buildings = aii->GetMilitaryBuildings(gwb->GetHarborPoint(searcharoundharborspots[i]), 2);
+        nobBaseMilitarySet buildings = aii->GetMilitaryBuildings(gwb.GetHarborPoint(searcharoundharborspots[i]), 2);
         for(nobBaseMilitarySet::const_iterator it = buildings.begin(); it != buildings.end(); it++)
         {
             if(aii->IsPlayerAttackable((*it)->GetPlayer()) && aii->IsVisible((*it)->GetPos()))
@@ -2072,7 +2072,7 @@ void AIPlayerJH::TrySeaAttack()
                 if (((*it)->GetGOT() != GOT_NOB_MILITARY) && (!(*it)->DefendersAvailable())) //undefended headquarter(or unlikely as it is a harbor...) - priority list!
                 {
                     std::vector<unsigned short> testseaidswithattackers(seaidswithattackers);
-                    gwb->GetValidSeaIDsAroundMilitaryBuildingForAttackCompare((*it)->GetPos(), &testseaidswithattackers, playerid);
+                    gwb.GetValidSeaIDsAroundMilitaryBuildingForAttackCompare((*it)->GetPos(), &testseaidswithattackers, playerid);
                     if(!testseaidswithattackers.empty())
                     {
                         undefendedTargets.push_back(*it);
@@ -2093,7 +2093,7 @@ void AIPlayerJH::TrySeaAttack()
         for(std::deque<const nobBaseMilitary*>::iterator it = undefendedTargets.begin(); it != undefendedTargets.end(); it++)
         {
             std::list<GameWorldBase::PotentialSeaAttacker> attackers;
-            gwb->GetAvailableSoldiersForSeaAttack(playerid, (*it)->GetPos(), &attackers);
+            gwb.GetAvailableSoldiersForSeaAttack(playerid, (*it)->GetPos(), &attackers);
             if(!attackers.empty()) //try to attack it!
             {
                 aii->SeaAttack((*it)->GetPos(), 1, true);
@@ -2105,11 +2105,11 @@ void AIPlayerJH::TrySeaAttack()
     for(std::deque<const nobBaseMilitary*>::iterator it = potentialTargets.begin(); it != potentialTargets.end(); it++)
     {
         std::vector<unsigned short> testseaidswithattackers(seaidswithattackers); //TODO: decide if it is worth attacking the target and not just "possible"
-        gwb->GetValidSeaIDsAroundMilitaryBuildingForAttackCompare((*it)->GetPos(), &testseaidswithattackers, playerid); //test only if we should have attackers from one of our valid sea ids
+        gwb.GetValidSeaIDsAroundMilitaryBuildingForAttackCompare((*it)->GetPos(), &testseaidswithattackers, playerid); //test only if we should have attackers from one of our valid sea ids
         if(testseaidswithattackers.size() > 0) //only do the final check if it will probably be a good result
         {
             std::list<GameWorldBase::PotentialSeaAttacker> attackers;
-            gwb->GetAvailableSoldiersForSeaAttack(playerid, (*it)->GetPos(), &attackers); //now get a final list of attackers and attack it
+            gwb.GetAvailableSoldiersForSeaAttack(playerid, (*it)->GetPos(), &attackers); //now get a final list of attackers and attack it
             if(!attackers.empty())
             {
                 aii->SeaAttack((*it)->GetPos(), attackers.size(), true);
@@ -2345,9 +2345,9 @@ bool AIPlayerJH::HuntablesinRange(const MapPoint pt, unsigned min)
         for(p2.x = fx; p2.x <= lx; ++p2.x)
         {
             // Gibts hier was bewegliches?
-            if(gwb->GetFigures(p2).empty())
+            if(gwb.GetFigures(p2).empty())
                 continue;
-            const std::list<noBase*>& figures = gwb->GetFigures(p2);
+            const std::list<noBase*>& figures = gwb.GetFigures(p2);
             // Dann nach Tieren suchen
             for(std::list<noBase*>::const_iterator it = figures.begin(); it != figures.end(); ++it)
             {
@@ -2357,7 +2357,7 @@ bool AIPlayerJH::HuntablesinRange(const MapPoint pt, unsigned min)
                     if(!static_cast<noAnimal*>(*it)->CanHunted())
                         continue;
                     // Und komme ich hin?
-                    if(gwb->FindHumanPath(pt, static_cast<noAnimal*>(*it)->GetPos(), maxrange) != 0xFF)
+                    if(gwb.FindHumanPath(pt, static_cast<noAnimal*>(*it)->GetPos(), maxrange) != 0xFF)
                         // Dann nehmen wir es
                     {
                         if(++huntablecount >= min)
@@ -2462,20 +2462,20 @@ void AIPlayerJH::InitDistribution()
 bool AIPlayerJH::ValidTreeinRange(const MapPoint pt)
 {
     unsigned max_radius = 6;
-    for(MapCoord tx = gwb->GetXA(pt, 0), r = 1; r <= max_radius; tx = gwb->GetXA(tx, pt.y, 0), ++r)
+    for(MapCoord tx = gwb.GetXA(pt, 0), r = 1; r <= max_radius; tx = gwb.GetXA(tx, pt.y, 0), ++r)
     {
         MapPoint t2(tx, pt.y);
         for(unsigned i = 2; i < 8; ++i)
         {
-            for(MapCoord r2 = 0; r2 < r; t2 = gwb->GetNeighbour(t2, i % 6), ++r2)
+            for(MapCoord r2 = 0; r2 < r; t2 = gwb.GetNeighbour(t2, i % 6), ++r2)
             {
                 //point has tree & path is available?
-                if(gwb->GetNO(t2)->GetType() == NOP_TREE)
+                if(gwb.GetNO(t2)->GetType() == NOP_TREE)
                 {
                     //not already getting cut down or a freaking pineapple thingy?
-                    if (!gwb->GetNode(t2).reserved && (gwb->GetSpecObj<noTree>(t2))->type != 5)
+                    if (!gwb.GetNode(t2).reserved && (gwb.GetSpecObj<noTree>(t2))->type != 5)
                     {
-                        if(gwb->FindHumanPath(pt, t2, 20) != 0xFF)
+                        if(gwb.FindHumanPath(pt, t2, 20) != 0xFF)
                             return true;;
                     }
                 }
@@ -2488,17 +2488,17 @@ bool AIPlayerJH::ValidTreeinRange(const MapPoint pt)
 bool AIPlayerJH::ValidStoneinRange(const MapPoint pt)
 {
     unsigned max_radius = 8;
-    for(MapCoord tx = gwb->GetXA(pt, 0), r = 1; r <= max_radius; tx = gwb->GetXA(tx, pt.y, 0), ++r)
+    for(MapCoord tx = gwb.GetXA(pt, 0), r = 1; r <= max_radius; tx = gwb.GetXA(tx, pt.y, 0), ++r)
     {
         MapPoint t2(tx, pt.y);
         for(unsigned i = 2; i < 8; ++i)
         {
-            for(MapCoord r2 = 0; r2 < r; t2 = gwb->GetNeighbour(t2, i % 6), ++r2)
+            for(MapCoord r2 = 0; r2 < r; t2 = gwb.GetNeighbour(t2, i % 6), ++r2)
             {
                 //point has tree & path is available?
-                if(gwb->GetNO(t2)->GetType() == NOP_GRANITE)
+                if(gwb.GetNO(t2)->GetType() == NOP_GRANITE)
                 {
-                    if(gwb->FindHumanPath(pt, t2, 20) != 0xFF)
+                    if(gwb.FindHumanPath(pt, t2, 20) != 0xFF)
                         return true;
                 }
             }
@@ -2534,14 +2534,14 @@ bool AIPlayerJH::BuildingNearby(const MapPoint pt, BuildingType bld, unsigned mi
     assert(bld >= 10);
     for(std::list<nobUsual*>::const_iterator it = aii->GetBuildings(bld).begin(); it != aii->GetBuildings(bld).end(); it++)
     {
-        if(gwb->CalcDistance(pt, (*it)->GetPos()) < min)
+        if(gwb.CalcDistance(pt, (*it)->GetPos()) < min)
             return true;
     }
     for(std::list<noBuildingSite*>::const_iterator it = aii->GetBuildingSites().begin(); it != aii->GetBuildingSites().end(); it++)
     {
         if((*it)->GetBuildingType() == bld)
         {
-            if(gwb->CalcDistance(pt, (*it)->GetPos()) < min)
+            if(gwb.CalcDistance(pt, (*it)->GetPos()) < min)
                 return true;
         }
     }
@@ -2551,11 +2551,11 @@ bool AIPlayerJH::BuildingNearby(const MapPoint pt, BuildingType bld, unsigned mi
 bool AIPlayerJH::HarborPosClose(const MapPoint pt, unsigned range, bool onlyempty)
 {
     //skip harbordummy ... ask oliver why there has to be a dummy
-    for (unsigned i = 1; i <= gwb->GetHarborPointCount(); i++)
+    for (unsigned i = 1; i <= gwb.GetHarborPointCount(); i++)
     {
-        if(gwb->CalcDistance(pt, gwb->GetHarborPoint(i)) < range && HarborPosRelevant(i)) //in range and valid for ai - as in actually at a sea with more than 1 harbor spot
+        if(gwb.CalcDistance(pt, gwb.GetHarborPoint(i)) < range && HarborPosRelevant(i)) //in range and valid for ai - as in actually at a sea with more than 1 harbor spot
         {
-            if(!onlyempty || !aii->IsBuildingOnNode(gwb->GetHarborPoint(i), BLD_HARBORBUILDING))
+            if(!onlyempty || !aii->IsBuildingOnNode(gwb.GetHarborPoint(i), BLD_HARBORBUILDING))
                 return true;
         }
     }
@@ -2571,19 +2571,19 @@ unsigned AIPlayerJH::BQsurroundcheck(const MapPoint pt, unsigned range, bool inc
     {
 		count++;
     }
-	NodalObjectType nob = gwb->GetNO(pt)->GetType();
+	NodalObjectType nob = gwb.GetNO(pt)->GetType();
 	if (includeexisting)
 	{
 		if ( nob==NOP_BUILDING || nob==NOP_BUILDINGSITE ||nob==NOP_EXTENSION || nob==NOP_FIRE || nob==NOP_CHARBURNERPILE )
 			count++;
 	}	
 	//first count all the possible building places
-    for(MapCoord tx = gwb->GetXA(pt, 0), r = 1; r <= range; tx = gwb->GetXA(tx, pt.y, 0), ++r)
+    for(MapCoord tx = gwb.GetXA(pt, 0), r = 1; r <= range; tx = gwb.GetXA(tx, pt.y, 0), ++r)
     {
         MapPoint t2(tx, pt.y);
         for(unsigned i = 2; i < 8; ++i)
         {
-            for(MapCoord r2 = 0; r2 < r; t2 = gwb->GetNeighbour(t2, i % 6), ++r2)
+            for(MapCoord r2 = 0; r2 < r; t2 = gwb.GetNeighbour(t2, i % 6), ++r2)
             {
 				if (limit && ((count*100)/maxvalue) > limit)
 					return ((count*100)/maxvalue);
@@ -2595,7 +2595,7 @@ unsigned AIPlayerJH::BQsurroundcheck(const MapPoint pt, unsigned range, bool inc
                 }
 				if (includeexisting)
 				{
-					nob = gwb->GetNO(t2)->GetType();
+					nob = gwb.GetNO(t2)->GetType();
 					if ( nob==NOP_BUILDING || nob==NOP_BUILDINGSITE ||nob==NOP_EXTENSION || nob==NOP_FIRE || nob==NOP_CHARBURNERPILE )
 						count++;
 				}				
@@ -2608,25 +2608,25 @@ unsigned AIPlayerJH::BQsurroundcheck(const MapPoint pt, unsigned range, bool inc
 
 bool AIPlayerJH::HarborPosRelevant(unsigned harborid, bool onlyempty)
 {
-    if(harborid < 1 || harborid > gwb->GetHarborPointCount()) //not a real harbor - shouldnt happen...
+    if(harborid < 1 || harborid > gwb.GetHarborPointCount()) //not a real harbor - shouldnt happen...
     {
         assert(false);
         return false;
     }
     //get sea ids of harbor id given - is there at least 1 sea id? if so check for other harbors with the same id!
     unsigned short sea_ids[6];
-    gwb->GetSeaIDs(harborid, sea_ids);
+    gwb.GetSeaIDs(harborid, sea_ids);
     for(unsigned r = 0; r < 6; r++)
     {
         if(sea_ids[r] > 0) //there is a sea id? -> check all other harbors to find if there is another at the same id!
         {
-            for(unsigned i = 1; i <= gwb->GetHarborPointCount(); i++) //start at 1 harbor dummy yadayada :>
+            for(unsigned i = 1; i <= gwb.GetHarborPointCount(); i++) //start at 1 harbor dummy yadayada :>
             {
-                if(i != harborid && gwb->IsAtThisSea(i, sea_ids[r]))
+                if(i != harborid && gwb.IsAtThisSea(i, sea_ids[r]))
                 {
                     if(onlyempty) //check if the spot is actually free for colonization?
                     {
-                        if(gwb->IsHarborPointFree(i, playerid, sea_ids[r]))
+                        if(gwb.IsHarborPointFree(i, playerid, sea_ids[r]))
                         {
                             return true;
                         }
@@ -2642,9 +2642,9 @@ bool AIPlayerJH::HarborPosRelevant(unsigned harborid, bool onlyempty)
 
 bool AIPlayerJH::NoEnemyHarbor()
 {
-    for(unsigned i = 1; i <= gwb->GetHarborPointCount(); i++)
+    for(unsigned i = 1; i <= gwb.GetHarborPointCount(); i++)
     {
-        if(aii->IsBuildingOnNode(gwb->GetHarborPoint(i), BLD_HARBORBUILDING) && !aii->IsOwnTerritory(gwb->GetHarborPoint(i)))
+        if(aii->IsBuildingOnNode(gwb.GetHarborPoint(i), BLD_HARBORBUILDING) && !aii->IsOwnTerritory(gwb.GetHarborPoint(i)))
         {
             //LOG.lprintf("found a harbor at spot %i ",i);
             return false;
@@ -2677,20 +2677,20 @@ unsigned AIPlayerJH::AmountInStorage(unsigned char num,unsigned char page)
 bool AIPlayerJH::ValidFishInRange(const MapPoint pt)
 {
     unsigned max_radius = 5;
-    for(MapCoord tx = gwb->GetXA(pt, 0), r = 1; r <= max_radius; tx = gwb->GetXA(tx, pt.y, 0), ++r)
+    for(MapCoord tx = gwb.GetXA(pt, 0), r = 1; r <= max_radius; tx = gwb.GetXA(tx, pt.y, 0), ++r)
     {
         MapPoint t2(tx, pt.y);
         for(unsigned i = 2; i < 8; ++i)
         {
-            for(MapCoord r2 = 0; r2 < r; t2 = gwb->GetNeighbour(t2, i % 6), ++r2)
+            for(MapCoord r2 = 0; r2 < r; t2 = gwb.GetNeighbour(t2, i % 6), ++r2)
             {
-                if(gwb->GetNode(t2).resources > 0x80 && gwb->GetNode(t2).resources < 0x90) //fish on current spot?
+                if(gwb.GetNode(t2).resources > 0x80 && gwb.GetNode(t2).resources < 0x90) //fish on current spot?
                 {
                     //LOG.lprintf("found fish at %i,%i ",t2);
                     //try to find a path to a neighboring node on the coast
                     for(int j = 0; j < 6; j++)
                     {
-                        if(gwb->FindHumanPath(pt, gwb->GetNeighbour(t2, j), 10) != 0xFF)
+                        if(gwb.FindHumanPath(pt, gwb.GetNeighbour(t2, j), 10) != 0xFF)
                             return true;
                     }
                 }
@@ -2705,10 +2705,10 @@ unsigned AIPlayerJH::GetCountofAIRelevantSeaIds()
     std::list<unsigned short>validseaids;
     std::list<unsigned short>onetimeuseseaids;
     unsigned short sea_ids[6];
-    for(unsigned i = 1; i <= gwb->GetHarborPointCount(); i++)
+    for(unsigned i = 1; i <= gwb.GetHarborPointCount(); i++)
     {
         //get sea ids of harbor id given
-        gwb->GetSeaIDs(i, sea_ids);
+        gwb.GetSeaIDs(i, sea_ids);
         for(unsigned r = 0; r < 6; r++)
         {
             if(sea_ids[r] > 0) //there is a sea id? -> check if it is already a validid or a once found id
@@ -2760,10 +2760,10 @@ void AIPlayerJH::AdjustSettings()
     milSettings[3] = 5;
 	//interior 0bar full if we have an upgrade building and gold(or produce gold) else 1 soldier each
 	milSettings[4] = UpdateUpgradeBuilding() >= 0 && (aii->GetInventory()->goods[GD_COINS]>0 || (aii->GetInventory()->goods[GD_GOLD]>0 && aii->GetInventory()->goods[GD_COAL]>0 && aii->GetBuildings(BLD_MINT).size()) )? 8 : 0;     
-    milSettings[6] = ggs->getSelection(ADDON_SEA_ATTACK)==2 ? 0 : 8; //harbor flag: no sea attacks?->no soldiers else 50% to 100%
+    milSettings[6] = ggs.getSelection(ADDON_SEA_ATTACK)==2 ? 0 : 8; //harbor flag: no sea attacks?->no soldiers else 50% to 100%
 	milSettings[5] = CalcMilSettings(); //inland 1bar min 50% max 100% depending on how many soldiers are available
 	milSettings[7] = 8;                                                     //front: 100%
-	if(player->military_settings[5] != milSettings[5] || player->military_settings[6] != milSettings[6] || player->military_settings[4]!=milSettings[4] || player->military_settings[1]!=milSettings[1]) //only send the command if we want to change something
+	if(player.military_settings[5] != milSettings[5] || player.military_settings[6] != milSettings[6] || player.military_settings[4]!=milSettings[4] || player.military_settings[1]!=milSettings[1]) //only send the command if we want to change something
 		aii->ChangeMilitary(milSettings);
 }
 
@@ -2799,7 +2799,7 @@ unsigned AIPlayerJH::CalcMilSettings()
 			convtype=2;
 		if((*it)->GetBuildingType()==BLD_FORTRESS)
 			convtype=3;
-		if((*it)->GetFrontierDistance()==3 || ((*it)->GetFrontierDistance()==2 && ggs->getSelection(ADDON_SEA_ATTACK)!=2) || ((*it)->GetFrontierDistance()==0 && (aii->GetMilitaryBuildings().size()-howmanyshouldstayconnected < (unsigned)count || count==uun)))//front or connected interior
+		if((*it)->GetFrontierDistance()==3 || ((*it)->GetFrontierDistance()==2 && ggs.getSelection(ADDON_SEA_ATTACK)!=2) || ((*it)->GetFrontierDistance()==0 && (aii->GetMilitaryBuildings().size()-howmanyshouldstayconnected < (unsigned)count || count==uun)))//front or connected interior
 		{
 			soldierinusefixed+=maxtroops[4][convtype];
 		}
@@ -2818,7 +2818,7 @@ unsigned AIPlayerJH::CalcMilSettings()
 	unsigned returnvalue=8;
 	while (returnvalue - 4 > 0)
 	{//have more than enough soldiers for this setting or just enough and this is the current setting? -> return it else try the next lower setting down to 4 (50%)
-		if(soldierinusefixed + InlandTroops[returnvalue - 4] < soldiercount*10/11 || (player->military_settings[5]>=returnvalue && soldierinusefixed + InlandTroops[returnvalue - 4] < soldiercount))
+		if(soldierinusefixed + InlandTroops[returnvalue - 4] < soldiercount*10/11 || (player.military_settings[5]>=returnvalue && soldierinusefixed + InlandTroops[returnvalue - 4] < soldiercount))
 			break;
 		returnvalue--;
 	}

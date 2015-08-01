@@ -199,7 +199,7 @@ void AIJH::BuildJob::TryToBuild()
                 foundPos = aijh->FindBestPosition(bPos, AIJH::IRONORE, BQ_MINE, 11, true);
                 break;
             case BLD_GRANITEMINE:
-                if(!aijh->ggs->isEnabled(ADDON_INEXHAUSTIBLE_GRANITEMINES)) //inexhaustible granite mines do not require granite
+                if(!aijh->ggs.isEnabled(ADDON_INEXHAUSTIBLE_GRANITEMINES)) //inexhaustible granite mines do not require granite
                     foundPos = aijh->FindBestPosition(bPos, AIJH::GRANITE, BQ_MINE, 11, true);
                 else
                     foundPos = aijh->SimpleFindPosition(bPos, BQ_MINE, 11);
@@ -219,7 +219,7 @@ void AIJH::BuildJob::TryToBuild()
                 break;
             case BLD_HARBORBUILDING:
                 foundPos = aijh->SimpleFindPosition(bPos, BUILDING_SIZE[type], 11);
-                if(foundPos && !aijh->HarborPosRelevant(aijh->gwb->GetHarborPointID(bPos))) //bad harborspot detected DO NOT USE
+                if(foundPos && !aijh->HarborPosRelevant(aijh->gwb.GetHarborPointID(bPos))) //bad harborspot detected DO NOT USE
                     foundPos = false;
                 break;
             case BLD_SHIPYARD:
@@ -347,7 +347,7 @@ void AIJH::BuildJob::BuildMainRoad()
         case BLD_COALMINE:
             break;
         case BLD_IRONMINE:
-            //if(!(aijh->ggs->isEnabled(ADDON_INEXHAUSTIBLE_MINES)))
+            //if(!(aijh->ggs.isEnabled(ADDON_INEXHAUSTIBLE_MINES)))
             break;
         case BLD_GRANITEMINE:
             break;
