@@ -26,16 +26,17 @@ class GameClient;
 template<typename T>
 class GameCommandFactory;
 
+// fwd decl
+namespace gc{ class GameCommand; }
+void intrusive_ptr_add_ref(gc::GameCommand* x);
+void intrusive_ptr_release(gc::GameCommand* x);
+
 #include <boost/intrusive_ptr.hpp>
 
 // Macro used by all derived GameCommands to allow specified class access to non-public members (e.g. contructor)
 // Only factory classes should be in here
 #define GC_FRIEND_DECL friend class GameCommand; friend class ::GameCommandFactory<GameClient>; friend class ::GameCommandFactory<AIInterface>
 
-// fwd decl
-namespace gc{ class GameCommand; }
-void intrusive_ptr_add_ref(gc::GameCommand* x);
-void intrusive_ptr_release(gc::GameCommand* x);
 
 namespace gc
 {
