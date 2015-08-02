@@ -534,10 +534,6 @@ class GameWorldView
         unsigned int terrain_last_global_animation;
         unsigned int terrain_last_water;
 
-        std::list<MapTile> sorted_textures[16];
-        std::list<BorderTile> sorted_borders[5];
-        std::list<PreparedRoad> sorted_roads[4];
-
         GameWorldView(const MapPoint pt, unsigned short width, unsigned short height);
         ~GameWorldView();
 

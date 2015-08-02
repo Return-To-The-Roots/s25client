@@ -97,4 +97,11 @@ namespace helpers{
         container.erase(container.begin());
     }
 
+    /// Returns true if the container contains the given value
+    template<typename T, typename U>
+    bool contains(const T& container, const U& value)
+    {
+        return std::find(container.begin(), container.end(), value) != container.end();
+    }
+
 } // namespace helpers

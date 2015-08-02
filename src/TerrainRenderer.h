@@ -20,6 +20,8 @@
 #define TERRAIN_RENDERER_H_
 
 #include "gameTypes/MapTypes.h"
+#include <vector>
+#include <boost/array.hpp>
 
 class GameWorldViewer;
 class GameWorldView;
@@ -120,6 +122,8 @@ class TerrainRenderer
         Borders* borders;
         unsigned int border_count;
 
+        typedef boost::array<std::vector<PreparedRoad>, 4> PreparedRoads;
+
     private:
 
         unsigned GetTRIdx(const MapPoint pt)
@@ -159,10 +163,9 @@ class TerrainRenderer
         float GetBColor(const MapPoint pt, unsigned char triangle) { return GetVertex(pt).border[triangle].color; }
 
         /// Zeichnet die Wege
-        void PrepareWays(GameWorldView* gwv);
-        void PrepareWaysPoint(GameWorldView* gwv, MapPoint t, int xo, int yo);
+        void PrepareWaysPoint(PreparedRoads& sorted_roads, GameWorldView* gwv, MapPoint t, int xo, int yo);
 
-        void DrawWays(GameWorldView* gwv);
+        void DrawWays(const PreparedRoads& sorted_roads);
 
 
     public:

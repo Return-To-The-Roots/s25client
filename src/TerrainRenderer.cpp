@@ -705,11 +705,10 @@ void TerrainRenderer::Draw(GameWorldView* gwv, unsigned int* water)
 
         glNewList(gwv->terrain_list, GL_COMPILE_AND_EXECUTE);*/
 
-    PrepareWays(gwv);
-
     // nach Texture in Listen sortieren
-    std::list<MapTile> sorted_textures[16];
-    std::list<BorderTile> sorted_borders[5];
+    boost::array< std::vector<MapTile>, 16> sorted_textures;
+    boost::array< std::vector<BorderTile>, 5> sorted_borders;
+    PreparedRoads sorted_roads;
 
     int lastxo = 0, lastyo = 0;
     int xo, yo;
@@ -787,7 +786,7 @@ void TerrainRenderer::Draw(GameWorldView* gwv, unsigned int* water)
                 }
             }
 
-            PrepareWaysPoint(gwv, tP, xo, yo);
+            PrepareWaysPoint(sorted_roads, gwv, tP, xo, yo);
 
             lastxo = xo;
             lastyo = yo;
@@ -798,7 +797,7 @@ void TerrainRenderer::Draw(GameWorldView* gwv, unsigned int* water)
     {
         unsigned water_count = 0;
 
-        for(std::list<MapTile>::iterator it = sorted_textures[TT_WATER].begin(); it != sorted_textures[TT_WATER].end(); ++it)
+        for(std::vector<MapTile>::iterator it = sorted_textures[TT_WATER].begin(); it != sorted_textures[TT_WATER].end(); ++it)
         {
             water_count += it->count;
         }
@@ -861,7 +860,7 @@ void TerrainRenderer::Draw(GameWorldView* gwv, unsigned int* water)
                     VIDEODRIVER.BindTexture(GetImage(textures, i)->GetTexture());
             }
 
-            for(std::list<MapTile>::iterator it = sorted_textures[i].begin(); it != sorted_textures[i].end(); ++it)
+            for(std::vector<MapTile>::iterator it = sorted_textures[i].begin(); it != sorted_textures[i].end(); ++it)
             {
                 if(it->xo != lastxo || it->yo != lastyo)
                 {
@@ -884,26 +883,25 @@ void TerrainRenderer::Draw(GameWorldView* gwv, unsigned int* water)
     lastyo = 0;
     for(unsigned short i = 0; i < 5; ++i)
     {
-        if(!sorted_borders[i].empty())
-        {
-            VIDEODRIVER.BindTexture(GetImage(borders, i)->GetTexture());
+        if(sorted_borders[i].empty())
+            continue;
+        VIDEODRIVER.BindTexture(GetImage(borders, i)->GetTexture());
 
-            for(std::list<BorderTile>::iterator it = sorted_borders[i].begin(); it != sorted_borders[i].end(); ++it)
+        for(std::vector<BorderTile>::iterator it = sorted_borders[i].begin(); it != sorted_borders[i].end(); ++it)
+        {
+            if(it->xo != lastxo || it->yo != lastyo)
             {
-                if(it->xo != lastxo || it->yo != lastyo)
-                {
-                    glTranslatef( float(it->xo - lastxo), float(it->yo - lastyo), 0.0f);
-                    lastxo = it->xo;
-                    lastyo = it->yo;
-                }
-                glDrawArrays(GL_TRIANGLES, it->offset * 3, it->count * 3);
+                glTranslatef( float(it->xo - lastxo), float(it->yo - lastyo), 0.0f);
+                lastxo = it->xo;
+                lastyo = it->yo;
             }
+            glDrawArrays(GL_TRIANGLES, it->offset * 3, it->count * 3);
         }
     }
 
     glLoadIdentity();
 
-    DrawWays(gwv);
+    DrawWays(sorted_roads);
 
     // Wieder zurück ins normale modulate
     glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
@@ -961,15 +959,7 @@ struct GL_T2F_C3F_V3F_Struct
     GLfloat x, y, z;
 };
 
-void TerrainRenderer::PrepareWays(GameWorldView* gwv)
-{
-    for (unsigned char type = 0; type < 4; type++)
-    {
-        gwv->sorted_roads[type].clear();
-    }
-}
-
-void TerrainRenderer::PrepareWaysPoint(GameWorldView* gwv, MapPoint t, int xo, int yo)
+void TerrainRenderer::PrepareWaysPoint(PreparedRoads& sorted_roads, GameWorldView* gwv, MapPoint t, int xo, int yo)
 {
     float xpos = GetTerrainX(t) - gwv->GetXOffset() + xo;
     float ypos = GetTerrainY(t) - gwv->GetYOffset() + yo;
@@ -1032,7 +1022,7 @@ void TerrainRenderer::PrepareWaysPoint(GameWorldView* gwv, MapPoint t, int xo, i
                 } break;
             }
 
-            gwv->sorted_roads[type].push_back(
+            sorted_roads[type].push_back(
                 PreparedRoad(type,
                              xpos, ypos, xpos2, ypos2,
                              GetColor(t), GetColor(ta),
@@ -1043,7 +1033,7 @@ void TerrainRenderer::PrepareWaysPoint(GameWorldView* gwv, MapPoint t, int xo, i
     }
 }
 
-void TerrainRenderer::DrawWays(GameWorldView* gwv)
+void TerrainRenderer::DrawWays(const PreparedRoads& sorted_roads)
 {
     const float begin_end_coords[24] =
     {
@@ -1069,12 +1059,13 @@ void TerrainRenderer::DrawWays(GameWorldView* gwv)
         glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
     }
 
-    for (unsigned char type = 0; type < 4; type++)
+    int type = 0;
+    for (PreparedRoads::const_iterator itRoad = sorted_roads.begin(); itRoad != sorted_roads.end(); ++itRoad, ++type)
     {
         unsigned int i = 0;
-        GL_T2F_C3F_V3F_Struct* tmp = new GL_T2F_C3F_V3F_Struct[gwv->sorted_roads[type].size() * 4];
+        GL_T2F_C3F_V3F_Struct* tmp = new GL_T2F_C3F_V3F_Struct[itRoad->size() * 4];
 
-        for (std::list<PreparedRoad>::iterator it = gwv->sorted_roads[type].begin(); it != gwv->sorted_roads[type].end(); ++it)
+        for (std::vector<PreparedRoad>::const_iterator it = itRoad->begin(); it != itRoad->end(); ++it)
         {
             tmp[i].tx = 0.0f;
             tmp[i].ty = 0.0f;
