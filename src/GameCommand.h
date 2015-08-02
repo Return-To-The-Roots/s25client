@@ -26,9 +26,16 @@ class GameClient;
 template<typename T>
 class GameCommandFactory;
 
+#include <boost/intrusive_ptr.hpp>
+
 // Macro used by all derived GameCommands to allow specified class access to non-public members (e.g. contructor)
 // Only factory classes should be in here
 #define GC_FRIEND_DECL friend class GameCommand; friend class ::GameCommandFactory<GameClient>; friend class ::GameCommandFactory<AIInterface>
+
+// fwd decl
+namespace gc{ class GameCommand; }
+void intrusive_ptr_add_ref(gc::GameCommand* x);
+void intrusive_ptr_release(gc::GameCommand* x);
 
 namespace gc
 {
@@ -80,6 +87,9 @@ namespace gc
     {
         /// Typ dieses Command
         const Type gst;
+        unsigned refCounter_;
+        friend void ::intrusive_ptr_add_ref(GameCommand* x);
+        friend void ::intrusive_ptr_release(GameCommand* x);
     public:
         virtual ~GameCommand(void) {}
 
@@ -93,10 +103,26 @@ namespace gc
 
         /// Führt das GameCommand aus
         virtual void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid) = 0;
+        
+        GameCommand(const GameCommand& obj): gst(obj.gst) // Do not copy refCounter!
+        {}
     protected:
-        GameCommand(const Type gst) : gst(gst) {}
+        GameCommand(const Type gst) : gst(gst), refCounter_(0) {}
     };
 
+    // Use this for safely using Pointers to GameCommands
+    typedef boost::intrusive_ptr<GameCommand> GameCommandPtr;
+
 } // ns gc
+
+inline void intrusive_ptr_add_ref(gc::GameCommand* x){
+    ++x->refCounter_;
+}
+
+inline void intrusive_ptr_release(gc::GameCommand* x){
+    assert(x->refCounter_);
+    if(--x->refCounter_ == 0) 
+        delete x;
+}
 
 #endif // GameCommand_h__

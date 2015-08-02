@@ -364,7 +364,7 @@ class GameClient : public Singleton<GameClient>, public GameMessageInterface, pu
         AIBase *human_ai;
 
         /// GameCommands, die vom Client noch an den Server gesendet werden müssen
-        std::vector<gc::GameCommand*> gcs;
+        std::vector<gc::GameCommandPtr> gcs;
 
         struct ReplayInfo
         {

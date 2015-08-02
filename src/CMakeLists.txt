@@ -5,6 +5,7 @@
 FIND_PACKAGE(BZip2 REQUIRED)
 FIND_PACKAGE(OpenGL REQUIRED)
 FIND_PACKAGE(Gettext REQUIRED)
+FIND_PACKAGE(Boost REQUIRED)
 
 ################################################################################
 
@@ -16,7 +17,9 @@ INCLUDE_DIRECTORIES(
 					"${CMAKE_SOURCE_DIR}/libendian/src/"
 					"${CMAKE_SOURCE_DIR}/src"
 					${BZIP2_INCLUDE_DIR}
+					${Boost_INCLUDE_DIR}
 					)
+
 LINK_DIRECTORIES("${CMAKE_SOURCE_DIR}/libsiedler2/src" "${CMAKE_SOURCE_DIR}/mygettext/src" "${CMAKE_SOURCE_DIR}/libutil/src" "${CMAKE_SOURCE_DIR}/liblobby/src" "${CMAKE_SOURCE_DIR}/libendian/src")
 
 ################################################################################

@@ -113,4 +113,10 @@ class GameMessageInterface : public MessageInterface
         virtual void OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, std::list<RandomEntry>* his, bool last);
 };
 
+/// Castet das allgemeine Message-Interface in ein GameMessage-Interface
+inline GameMessageInterface* GetInterface(MessageInterface* callback)
+{
+    return dynamic_cast<GameMessageInterface*>(callback);
+}
+
 #endif //!GAMEMESSAGEINTERFACE_H_INCLUDED

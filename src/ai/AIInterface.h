@@ -39,7 +39,7 @@ class AIInterface: public GameCommandFactory<AIInterface>
 {
     public:
         AIInterface(const GameWorldBase& gwb, const GameClientPlayer& player,
-                    const GameClientPlayerList& players, std::vector<gc::GameCommand*>& gcs, const unsigned char playerID) :
+                    const GameClientPlayerList& players, std::vector<gc::GameCommandPtr>& gcs, const unsigned char playerID) :
             gwb(gwb), player(player), players(players), gcs(gcs), playerID(playerID) {}
 
     private:
@@ -53,7 +53,7 @@ class AIInterface: public GameCommandFactory<AIInterface>
         /// Pointer to list with all other players, for alliances, etc
         const GameClientPlayerList& players;
         /// Pointer to the game commands queue, to send commands to the game
-        std::vector<gc::GameCommand*>& gcs;
+        std::vector<gc::GameCommandPtr>& gcs;
         /// ID of AI player
         const unsigned char playerID;
 

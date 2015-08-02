@@ -53,7 +53,7 @@ void GameClient::ExecuteGameFrame_Game()
             ExecuteAllGCs(msg);
 
             // Nachricht abwerfen :)
-            players[i].gc_queue.pop_front();
+            players[i].gc_queue.pop();
 
         }
     }

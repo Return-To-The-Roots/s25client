@@ -1019,14 +1019,14 @@ void GameServer::ClientWatchDog()
                                 player->obj_cnt = player->gc_queue.front().obj_cnt;
                                 player->obj_id_cnt = player->gc_queue.front().obj_id_cnt;
 
-                                for(std::vector<gc::GameCommand*>::iterator it = player->gc_queue.front().gcs.begin();
+                                for(std::vector<gc::GameCommandPtr>::iterator it = player->gc_queue.front().gcs.begin();
                                         it != player->gc_queue.front().gcs.end(); ++it)
                                 {
                                     if((*it)->GetType() == gc::SWITCHPLAYER)
                                     {
                                         // Dann merken und NACH der Schleife erst wechseln!
                                         player_switch_old_id = client;
-                                        player_switch_new_id = dynamic_cast<gc::SwitchPlayer*>(*it)->GetNewPlayerId();
+                                        player_switch_new_id = dynamic_cast<gc::SwitchPlayer*>(it->get())->GetNewPlayerId();
                                     }
 
                                 }
@@ -1144,7 +1144,7 @@ void GameServer::ClientWatchDog()
  */
 void GameServer::SendNothingNC(const unsigned int& id)
 {
-    SendToAll(GameMessage_GameCommand(id, 0, std::vector<gc::GameCommand*>()));
+    SendToAll(GameMessage_GameCommand(id, 0, std::vector<gc::GameCommandPtr>()));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1531,7 +1531,7 @@ void GameServer::OnNMSGameCommand(const GameMessage_GameCommand& msg)
     if(!this->framesinfo.pause && !players[msg.player].isDefeated())
         SendToAll(msg);
     else
-        SendToAll(GameMessage_GameCommand(msg.player, msg.checksum, std::vector<gc::GameCommand*>()));
+        SendToAll(GameMessage_GameCommand(msg.player, msg.checksum, std::vector<gc::GameCommandPtr>()));
 }
 
 void GameServer::OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, std::list<RandomEntry>* in, bool last)

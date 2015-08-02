@@ -23,12 +23,12 @@
 
 #include "AIEventManager.h"
 #include "AIInterface.h"
+#include "GameCommand.h"
 
 class GameWorldBase;
 class GameClientPlayer;
 class GlobalGameSettings;
 class GameClientPlayerList;
-namespace gc { class GameCommand; }
 
 
 
@@ -45,7 +45,7 @@ class AIBase
         /// Verweis auf etwaige andere Spieler, bspw. um deren Bündnisse zu überprüfen etc.
         const GameClientPlayerList& players;
         /// Queue der GameCommands, die noch bearbeitet werden müssen
-        std::vector<gc::GameCommand*> gcs;
+        std::vector<gc::GameCommandPtr> gcs;
         /// Stärke der KI
         const AI::Level level;
         /// Abstrahiertes Interfaces, leitet Befehle weiter an
@@ -67,7 +67,7 @@ class AIBase
         const GlobalGameSettings& ggs;
 
         /// Zugriff auf die GameCommands, um diese abarbeiten zu können
-        const std::vector<gc::GameCommand*>& GetGameCommands() const { return gcs; }
+        const std::vector<gc::GameCommandPtr>& GetGameCommands() const { return gcs; }
         /// Markiert die GameCommands als abgearbeitet
         void FetchGameCommands() { gcs.clear(); }
 

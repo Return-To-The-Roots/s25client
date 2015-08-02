@@ -23,7 +23,6 @@
 #include "GameMessageInterface.h"
 #include "GameProtocol.h"
 #include "GamePlayerList.h"
-#include "GameCommand.h"
 #include "GameObject.h"
 #include "GlobalGameSettings.h"
 #include "Random.h"
@@ -38,13 +37,6 @@
  * Konstruktor(en) mit Parametern (wenns auch nur der "reserved"-Parameter ist)
  * ist zum Verschicken der Nachrichten gedacht!
  */
-
-
-/// Castet das allgemeine Message-Interface in ein GameMessage-Interface
-inline GameMessageInterface* GetInterface(MessageInterface* callback)
-{
-    return dynamic_cast<GameMessageInterface*>(callback);
-}
 
 ///////////////////////////////////////////////////////////////////////////////
 /// eingehende Ping-Nachricht
@@ -754,76 +746,6 @@ class GameMessage_GGSChange : public GameMessage
 
             LOG.write("<<< NMS_GGS_CHANGE\n");
             GetInterface(callback)->OnNMSGGSChange(*this);
-        }
-};
-
-
-class GameMessage_GameCommand : public GameMessage
-{
-    public:
-        /// Checksumme, die der Spieler übermittelt
-        unsigned checksum;
-        unsigned obj_cnt;
-        unsigned obj_id_cnt;
-        /// Die einzelnen GameCommands
-        std::vector<gc::GameCommand*> gcs;
-
-    public:
-
-        GameMessage_GameCommand(void) : GameMessage(NMS_GAMECOMMANDS) { }
-        GameMessage_GameCommand(const unsigned char player, const unsigned checksum,
-                                const std::vector<gc::GameCommand*>& gcs)
-            : GameMessage(NMS_GAMECOMMANDS, player)
-        {
-            PushUnsignedInt(checksum);
-            PushUnsignedInt(GameObject::GetObjCount());
-            PushUnsignedInt(GameObject::GetObjIDCounter());
-            PushUnsignedInt(gcs.size());
-
-            for(unsigned i = 0; i < gcs.size(); ++i)
-            {
-                PushUnsignedChar(gcs[i]->GetType());
-                gcs[i]->Serialize(this);
-            }
-
-        }
-
-        GameMessage_GameCommand(const unsigned char* const data, const unsigned length)
-            : GameMessage(NMS_GAMECOMMANDS, data, length),
-              checksum(PopUnsignedInt()),
-              obj_cnt(PopUnsignedInt()),
-              obj_id_cnt(PopUnsignedInt()),
-              gcs(PopUnsignedInt())
-        {
-            for(unsigned i = 0; i < gcs.size(); ++i)
-            {
-                gc::Type type = gc::Type(PopUnsignedChar());
-                gcs[i] = gc::GameCommand::Deserialize(type, this);
-            }
-
-        }
-
-        ~GameMessage_GameCommand()
-        {
-            // This class gets copied. Without move copy this is hard to kkep track of GCs
-            //for(std::vector<gc::GameCommand*>::iterator it = gcs.begin(); it != gcs.end(); ++it)
-            //    delete *it;
-            //gcs.clear();
-        }
-
-        void Run(MessageInterface* callback)
-        {
-            checksum = PopUnsignedInt();
-            obj_cnt = PopUnsignedInt();
-            obj_id_cnt = PopUnsignedInt();
-            gcs.resize(PopUnsignedInt());
-            for(unsigned i = 0; i < gcs.size(); ++i)
-            {
-                gc::Type type = gc::Type(PopUnsignedChar());
-                gcs[i] = gc::GameCommand::Deserialize(type, this);
-            }
-
-            GetInterface(callback)->OnNMSGameCommand(*this);
         }
 };
 

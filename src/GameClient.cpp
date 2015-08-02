@@ -1078,7 +1078,6 @@ inline void GameClient::OnNMSMapData(const GameMessage_Map_Data& msg)
     LOG.write("<<< NMS_MAP_DATA(%u)\n", msg.GetNetLength());
 
     unsigned char* data = msg.map_data;
-
     memcpy(&mapinfo.zipdata[temp_ul], data, msg.GetNetLength());
     temp_ul += msg.GetNetLength();
 
@@ -1205,7 +1204,7 @@ void GameClient::OnNMSGameCommand(const GameMessage_GameCommand& msg)
 {
     if(msg.player != 0xFF)
         // Nachricht in Queue einhängen
-        players[msg.player].gc_queue.push_back(msg);
+        players[msg.player].gc_queue.push(msg);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1627,7 +1626,7 @@ void GameClient::NextGF()
     {
         human_ai->RunGF(framesinfo.nr, (framesinfo.nr % framesinfo.nwf_length == 0));
 
-        std::vector<gc::GameCommand*> ai_gcs = human_ai->GetGameCommands();
+        const std::vector<gc::GameCommandPtr>& ai_gcs = human_ai->GetGameCommands();
 
         gcs.insert(gcs.end(), ai_gcs.begin(), ai_gcs.end());
 
@@ -1662,7 +1661,7 @@ void GameClient::SendNothingNC(int checksum)
     /*GameMessage nfc(NMS_NFC_COMMANDS, 5);
     *static_cast<int*>(nfc.m_pData) = checksum;*/
 
-    send_queue.push(new GameMessage_GameCommand(playerid, checksum, std::vector<gc::GameCommand*>()));
+    send_queue.push(new GameMessage_GameCommand(playerid, checksum, std::vector<gc::GameCommandPtr>()));
 }
 
 void GameClient::WriteReplayHeader(const unsigned random_init)
