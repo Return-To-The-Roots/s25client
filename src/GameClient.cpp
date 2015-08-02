@@ -47,7 +47,6 @@
 #include "files.h"
 #include "fileFuncs.h"
 #include "ClientInterface.h"
-#include "GameCommands.h"
 #include "ai/AIPlayer.h"
 #include "ai/AIPlayerJH.h"
 
@@ -1079,7 +1078,6 @@ inline void GameClient::OnNMSMapData(const GameMessage_Map_Data& msg)
     LOG.write("<<< NMS_MAP_DATA(%u)\n", msg.GetNetLength());
 
     unsigned char* data = msg.map_data;
-
     memcpy(&mapinfo.zipdata[temp_ul], data, msg.GetNetLength());
     temp_ul += msg.GetNetLength();
 
@@ -1206,7 +1204,7 @@ void GameClient::OnNMSGameCommand(const GameMessage_GameCommand& msg)
 {
     if(msg.player != 0xFF)
         // Nachricht in Queue einhängen
-        players[msg.player].gc_queue.push_back(msg);
+        players[msg.player].gc_queue.push(msg);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1628,7 +1626,7 @@ void GameClient::NextGF()
     {
         human_ai->RunGF(framesinfo.nr, (framesinfo.nr % framesinfo.nwf_length == 0));
 
-        std::vector<gc::GameCommand*> ai_gcs = human_ai->GetGameCommands();
+        const std::vector<gc::GameCommandPtr>& ai_gcs = human_ai->GetGameCommands();
 
         gcs.insert(gcs.end(), ai_gcs.begin(), ai_gcs.end());
 
@@ -1639,19 +1637,12 @@ void GameClient::NextGF()
 }
 
 
-void GameClient::ExecuteAllGCs(const GameMessage_GameCommand& gcs, unsigned char* player_switch_old_id, unsigned char* player_switch_new_id)
+void GameClient::ExecuteAllGCs(const GameMessage_GameCommand& gcs)
 {
     for(unsigned char i = 0; i < gcs.gcs.size(); ++i)
     {
         // NC ausführen
         gcs.gcs[i]->Execute(*gw, players[gcs.player], gcs.player);
-        //// Wenn ein Spieler gewechselt werden soll...
-        if(gcs.gcs[i]->GetType() == gc::SWITCHPLAYER && player_switch_old_id && player_switch_new_id)
-        {
-            // ...müssen wir uns das merken
-            *player_switch_old_id = gcs.player;
-            *player_switch_new_id = dynamic_cast<gc::SwitchPlayer*>(gcs.gcs[i])->GetNewPlayerId();
-        }
     }
 }
 
@@ -1670,7 +1661,7 @@ void GameClient::SendNothingNC(int checksum)
     /*GameMessage nfc(NMS_NFC_COMMANDS, 5);
     *static_cast<int*>(nfc.m_pData) = checksum;*/
 
-    send_queue.push(new GameMessage_GameCommand(playerid, checksum, std::vector<gc::GameCommand*>()));
+    send_queue.push(new GameMessage_GameCommand(playerid, checksum, std::vector<gc::GameCommandPtr>()));
 }
 
 void GameClient::WriteReplayHeader(const unsigned random_init)
@@ -2129,15 +2120,15 @@ AIBase* GameClient::CreateAIPlayer(const unsigned playerid)
     {
     case AI::DUMMY:
         {
-            return new AIPlayer(playerid, gw, &players[playerid], &players, &ggs, AI::EASY);
+            return new AIPlayer(playerid, *gw, players[playerid], players, ggs, AI::EASY);
         } break;
     case AI::DEFAULT:
         {
-            return new AIPlayerJH(playerid, gw, &players[playerid], &players, &ggs, players[playerid].aiInfo.level);
+            return new AIPlayerJH(playerid, *gw, players[playerid], players, ggs, players[playerid].aiInfo.level);
         } break;
         default:
         {
-            return new AIPlayer(playerid, gw, &players[playerid], &players, &ggs, AI::EASY);
+            return new AIPlayer(playerid, *gw, players[playerid], players, ggs, AI::EASY);
         } break;
     }
 
@@ -2273,7 +2264,7 @@ void GameClient::ToggleHumanAIPlayer()
         human_ai = NULL;
     } else
     {
-        human_ai = new AIPlayerJH(playerid, gw, &players[playerid], &players, &ggs, AI::EASY);
+        human_ai = new AIPlayerJH(playerid, *gw, players[playerid], players, ggs, AI::EASY);
     }
 }
 

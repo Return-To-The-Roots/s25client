@@ -28,7 +28,6 @@
 #include "WindowManager.h"
 #include "GameWorld.h"
 #include "iwMsgbox.h"
-#include "GameCommands.h"
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -63,11 +62,11 @@ void iwDemolishBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
             if (flag)
             {
                 // Flagge (mitsamt Gebäude) wegreißen
-                GAMECLIENT.AddGC(new gc::DestroyFlag(gwv->GetNeighbour(building->GetPos(), 4)));
+                GAMECLIENT.DestroyFlag(gwv->GetNeighbour(building->GetPos(), 4));
             }
             else
             {
-                GAMECLIENT.AddGC(new gc::DestroyBuilding(building->GetPos()));
+                GAMECLIENT.DestroyBuilding(building->GetPos());
             }
 
             Close();

@@ -25,7 +25,6 @@
 #include "Loader.h"
 #include "controls/controls.h"
 #include "GameClient.h"
-#include "GameCommands.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -93,7 +92,7 @@ void iwBuildOrder::TransmitSettings()
     if(settings_changed)
     {
         // Einstellungen speichern
-        GAMECLIENT.AddGC(new gc::ChangeBuildOrder((unsigned char)GetCtrl<ctrlComboBox>(6)->GetSelection(), GAMECLIENT.visual_settings.build_order));
+        GAMECLIENT.ChangeBuildOrder((unsigned char)GetCtrl<ctrlComboBox>(6)->GetSelection(), GAMECLIENT.visual_settings.build_order);
         settings_changed = false;
     }
 }

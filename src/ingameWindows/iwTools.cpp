@@ -26,7 +26,6 @@
 #include "GameClient.h"
 #include "controls/controls.h"
 
-#include "GameCommands.h"
 
 #include <sstream>
 #include <iostream>
@@ -105,7 +104,7 @@ void iwTools::TransmitSettings()
             GAMECLIENT.visual_settings.tools_settings[i] =
                 (unsigned char)GetCtrl<ctrlProgress>(i)->GetPosition();
 
-        GAMECLIENT.AddGC(new gc::ChangeTools(GAMECLIENT.visual_settings.tools_settings, GAMECLIENT.GetLocalPlayer()->tools_ordered_delta));
+        GAMECLIENT.ChangeTools(GAMECLIENT.visual_settings.tools_settings, GAMECLIENT.GetLocalPlayer()->tools_ordered_delta);
 
         settings_changed = false;
     }

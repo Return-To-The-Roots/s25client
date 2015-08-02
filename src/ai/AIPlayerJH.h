@@ -104,8 +104,8 @@ class AIPlayerJH : public AIBase
         unsigned build_interval;
 
     public:
-        AIPlayerJH(const unsigned char playerid, const GameWorldBase* const gwb, const GameClientPlayer* const player,
-                   const GameClientPlayerList* const players, const GlobalGameSettings* const ggs,
+        AIPlayerJH(const unsigned char playerid, const GameWorldBase& gwb, const GameClientPlayer& player,
+                   const GameClientPlayerList& players, const GlobalGameSettings& ggs,
                    const AI::Level level);
         ~AIPlayerJH();
 
@@ -332,12 +332,12 @@ class AIPlayerJH : public AIBase
 		// Required by the AIJobs:
 		
 
-        const std::string& GetPlayerName() { return player->name; }
+        const std::string& GetPlayerName() { return player.name; }
         unsigned char GetPlayerID() { return playerid; }
         AIConstruction* GetConstruction() { return construction; }
         AIJH::Job* GetCurrentJob() { return currentJob; }
     public:
-        inline AIJH::Node& GetAINode(const MapPoint pt) { return nodes[gwb->GetIdx(pt)]; }
+        inline AIJH::Node& GetAINode(const MapPoint pt) { return nodes[gwb.GetIdx(pt)]; }
 		unsigned GetJobNum() const;
 		int UpgradeBldListNumber;
 		unsigned PlannedConnectedInlandMilitary() {return aii->GetMilitaryBuildings().size()/5<6 ? 6:aii->GetMilitaryBuildings().size()/5;}

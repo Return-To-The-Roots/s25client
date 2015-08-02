@@ -33,6 +33,7 @@
 #include "GameWorld.h"
 #include "GlobalGameSettings.h"
 #include "ai/AIEventManager.h"
+#include "factories/GameCommandFactory.h"
 
 class Window;
 class GameClientPlayer;
@@ -41,10 +42,12 @@ class ClientInterface;
 class GameMessage;
 class AIBase;
 
-namespace gc { class GameCommand; }
-
-class GameClient : public Singleton<GameClient>, public GameMessageInterface
+class GameClient : public Singleton<GameClient>, public GameMessageInterface, public GameCommandFactory<GameClient>
 {
+    friend class GameCommandFactory<GameClient>;
+    /// Fügt ein GameCommand für den Spieler hinzu und gibt bei Erfolg true zurück, ansonstn false (in der Pause oder wenn Spieler besiegt ist)
+    bool AddGC(gc::GameCommand* gc);
+
     public:
         enum ClientState
         {
@@ -104,9 +107,6 @@ class GameClient : public Singleton<GameClient>, public GameMessageInterface
         unsigned int Interpolate(unsigned max_val, EventManager::EventPointer ev);
         int Interpolate(int x1, int x2, EventManager::EventPointer ev);
         /// Gibt Geschwindigkeits-Faktor zurück
-
-        /// Fügt ein GameCommand für den Spieler hinzu und gibt bei Erfolg true zurück, ansonstn false (in der Pause oder wenn Spieler besiegt ist)
-        bool AddGC(gc::GameCommand* gc);
 
         void Command_SetFlag2(const MapPoint pt, unsigned char player);
         void Command_Chat(const std::string& text, const ChatDestination cd );
@@ -176,7 +176,7 @@ class GameClient : public Singleton<GameClient>, public GameMessageInterface
         void ExecuteGameFrame_Game();
         /// Filtert aus einem Network-Command-Paket alle Commands aus und führt sie aus, falls ein Spielerwechsel-Command
         /// dabei ist, füllt er die übergebenen IDs entsprechend aus
-        void ExecuteAllGCs(const GameMessage_GameCommand& gcs,  unsigned char* player_switch_old_id, unsigned char* player_switch_new_id);
+        void ExecuteAllGCs(const GameMessage_GameCommand& gcs);
         /// Sendet ein NC-Paket ohne Befehle
         void SendNothingNC(int checksum = -1);
         /// Findet heraus, ob ein Spieler laggt und setzt bei diesen Spieler den entsprechenden flag
@@ -364,7 +364,7 @@ class GameClient : public Singleton<GameClient>, public GameMessageInterface
         AIBase *human_ai;
 
         /// GameCommands, die vom Client noch an den Server gesendet werden müssen
-        std::vector<gc::GameCommand*> gcs;
+        std::vector<gc::GameCommandPtr> gcs;
 
         struct ReplayInfo
         {

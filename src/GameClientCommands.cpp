@@ -33,7 +33,6 @@
 #include "buildings/nobBaseWarehouse.h"
 #include "desktops/dskGameInterface.h"
 #include "ClientInterface.h"
-#include "GameCommands.h"
 #include "GameMessages.h"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -169,9 +168,7 @@ void GameClient::ChangePlayer(const unsigned char old_id, const unsigned char ne
         //GameClientPlayer *player = players[playerid]; // wegen GCC-Fehlermeldung auskommentiert
     }
 	//swap command que
-	std::list<GameMessage_GameCommand> temp=players[old_id].gc_queue;
-	players[old_id].gc_queue=players[new_id].gc_queue;
-	players[new_id].gc_queue=temp;
+    std::swap(players[old_id].gc_queue, players[new_id].gc_queue);
 
     // GUI Bescheid sagen (um z.B. Schatten neu zu berechnen)
     if(ci)

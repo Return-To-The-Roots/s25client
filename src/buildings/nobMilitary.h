@@ -195,9 +195,9 @@ private:
         void FarAwayAttackerReachedGoal(nofAttacker* attacker);
 
         /// Stoppt/Erlaubt Goldzufuhr (visuell)
-        void StopGoldVirtual() { disable_coins_virtual = !disable_coins_virtual; }
+        void ToggleCoinsVirtual() { disable_coins_virtual = !disable_coins_virtual; }
         /// Stoppt/Erlaubt Goldzufuhr (real)
-        void StopGold();
+        void ToggleCoins();
         /// Fragt ab, ob Goldzufuhr ausgeschaltet ist (visuell)
         bool IsGoldDisabledVirtual() const { return disable_coins_virtual; }
         /// Fragt ab, ob Goldzufuhr ausgeschaltet ist (real)

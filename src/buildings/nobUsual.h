@@ -120,9 +120,9 @@ protected:
         bool IsMine() const { return type >= BLD_GRANITEMINE && type <= BLD_GOLDMINE; }
 
         /// Stoppt/Erlaubt Produktion (visuell)
-        void StopProductionVirtual() { disable_production_virtual = !disable_production_virtual; }
+        void ToggleProductionVirtual() { disable_production_virtual = !disable_production_virtual; }
         /// Stoppt/Erlaubt Produktion (real)
-        void StopProduction();
+        void ToggleProduction();
         /// Fragt ab, ob Produktion ausgeschaltet ist (visuell)
         bool IsProductionDisabledVirtual() { return disable_production_virtual; }
         /// Fragt ab, ob Produktion ausgeschaltet ist (real)

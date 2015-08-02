@@ -27,7 +27,6 @@
 #include "GameClient.h"
 #include "controls/controls.h"
 #include "WindowManager.h"
-#include "GameCommands.h"
 #include "nodeObjs/noShip.h"
 #include "iwMsgbox.h"
 #include "figures/noFigure.h"
@@ -153,7 +152,12 @@ void iwShip::Msg_ButtonClick(const unsigned int ctrl_id)
     // Expeditionskommando? (Schiff weiterfahren lassen, Kolonie gründen)
     if(ctrl_id >= 10 && ctrl_id <= 17)
     {
-        GAMECLIENT.AddGC(new gc::ExpeditionCommand(gc::ExpeditionCommand::Action(ctrl_id - 10), ship_id));
+        if(ctrl_id == 10)
+            GAMECLIENT.FoundColony(ship_id);
+        else if(ctrl_id == 11)
+            GAMECLIENT.CancelExpedition(ship_id);
+        else
+            GAMECLIENT.TravelToNextSpot(Direction(ctrl_id - 12), ship_id);
         Close();
     }
 

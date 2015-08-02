@@ -25,7 +25,6 @@
 
 #include "GameClientPlayer.h"
 #include "GameWorld.h"
-#include "GameCommands.h"
 #include "GamePlayerList.h"
 #include "buildings/nobMilitary.h"
 #include "buildings/nobHQ.h"
@@ -200,7 +199,7 @@ void AIJH::BuildJob::TryToBuild()
                 foundPos = aijh->FindBestPosition(bPos, AIJH::IRONORE, BQ_MINE, 11, true);
                 break;
             case BLD_GRANITEMINE:
-                if(!aijh->ggs->isEnabled(ADDON_INEXHAUSTIBLE_GRANITEMINES)) //inexhaustible granite mines do not require granite
+                if(!aijh->ggs.isEnabled(ADDON_INEXHAUSTIBLE_GRANITEMINES)) //inexhaustible granite mines do not require granite
                     foundPos = aijh->FindBestPosition(bPos, AIJH::GRANITE, BQ_MINE, 11, true);
                 else
                     foundPos = aijh->SimpleFindPosition(bPos, BQ_MINE, 11);
@@ -220,7 +219,7 @@ void AIJH::BuildJob::TryToBuild()
                 break;
             case BLD_HARBORBUILDING:
                 foundPos = aijh->SimpleFindPosition(bPos, BUILDING_SIZE[type], 11);
-                if(foundPos && !aijh->HarborPosRelevant(aijh->gwb->GetHarborPointID(bPos))) //bad harborspot detected DO NOT USE
+                if(foundPos && !aijh->HarborPosRelevant(aijh->gwb.GetHarborPointID(bPos))) //bad harborspot detected DO NOT USE
                     foundPos = false;
                 break;
             case BLD_SHIPYARD:
@@ -300,7 +299,7 @@ void AIJH::BuildJob::BuildMainRoad()
         status = AIJH::JOB_FAILED;
         return;
     }
-    const noFlag* houseFlag = aii->GetSpecObj<noFlag>(aii->GetNeighbour(target, 4));
+    const noFlag* houseFlag = aii->GetSpecObj<noFlag>(aii->GetNeighbour(target, Direction::SOUTHWEST));
     // Gucken noch nicht ans Wegnetz angeschlossen
     if (!aijh->GetConstruction()->IsConnectedToRoadSystem(houseFlag))
     {
@@ -348,7 +347,7 @@ void AIJH::BuildJob::BuildMainRoad()
         case BLD_COALMINE:
             break;
         case BLD_IRONMINE:
-            //if(!(aijh->ggs->isEnabled(ADDON_INEXHAUSTIBLE_MINES)))
+            //if(!(aijh->ggs.isEnabled(ADDON_INEXHAUSTIBLE_MINES)))
             break;
         case BLD_GRANITEMINE:
             break;
@@ -397,7 +396,7 @@ void AIJH::BuildJob::BuildMainRoad()
 
 void AIJH::BuildJob::TryToBuildSecondaryRoad()
 {
-    const noFlag* houseFlag = aii->GetSpecObj<noFlag>(aii->GetNeighbour(target, 4));
+    const noFlag* houseFlag = aii->GetSpecObj<noFlag>(aii->GetNeighbour(target, Direction::SOUTHWEST));
 
     if (!houseFlag)
     {
@@ -555,7 +554,7 @@ void AIJH::ConnectJob::ExecuteJob()
     }
 
 	//is flag of a military building and has some road connection alraedy (not necessarily to a warehouse so this is required to avoid multiple connections on mil buildings)
-	if(aii->IsMilitaryBuildingOnNode(aii->GetNeighbour(flag->GetPos(),1)))
+	if(aii->IsMilitaryBuildingOnNode(aii->GetNeighbour(flag->GetPos(), Direction::NORTHEAST)))
 	{
 		for(unsigned i=2;i<7;i++)
 		{

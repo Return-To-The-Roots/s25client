@@ -23,12 +23,12 @@
 
 #include "AIEventManager.h"
 #include "AIInterface.h"
+#include "GameCommand.h"
 
 class GameWorldBase;
 class GameClientPlayer;
 class GlobalGameSettings;
 class GameClientPlayerList;
-namespace gc { class GameCommand; }
 
 
 
@@ -39,13 +39,13 @@ class AIBase
         /// Eigene PlayerID, die der KI-Spieler wissen sollte, z.B. wenn er die Karte untersucht
         const unsigned char playerid;
         /// Verweis auf die Spielwelt, um entsprechend Informationen daraus zu erhalten
-        const GameWorldBase* const gwb;
+        const GameWorldBase& gwb;
         /// Verweis auf den eigenen GameClientPlayer, d.h. die Wirtschaft, um daraus entsprechend Informationen zu gewinnen
-        const GameClientPlayer* const player;
+        const GameClientPlayer& player;
         /// Verweis auf etwaige andere Spieler, bspw. um deren Bündnisse zu überprüfen etc.
-        const GameClientPlayerList* const players;
+        const GameClientPlayerList& players;
         /// Queue der GameCommands, die noch bearbeitet werden müssen
-        std::vector<gc::GameCommand*> gcs;
+        std::vector<gc::GameCommandPtr> gcs;
         /// Stärke der KI
         const AI::Level level;
         /// Abstrahiertes Interfaces, leitet Befehle weiter an
@@ -53,9 +53,9 @@ class AIBase
 
     public:
 
-        AIBase(const unsigned char playerid, const GameWorldBase* const gwb, const GameClientPlayer* const player,
-               const GameClientPlayerList* const players, const GlobalGameSettings* const ggs, const AI::Level level)
-            : playerid(playerid), gwb(gwb), player(player), players(players), level(level), aii(new AIInterface(gwb, player, players, &gcs, playerid)), ggs(ggs) {}
+        AIBase(const unsigned char playerid, const GameWorldBase& gwb, const GameClientPlayer& player,
+               const GameClientPlayerList& players, const GlobalGameSettings& ggs, const AI::Level level)
+            : playerid(playerid), gwb(gwb), player(player), players(players), level(level), aii(new AIInterface(gwb, player, players, gcs, playerid)), ggs(ggs) {}
 
         virtual ~AIBase() {}
 
@@ -64,10 +64,10 @@ class AIBase
 
         /// Verweis auf die Globalen Spieleinstellungen, da diese auch die weiteren Entscheidungen beeinflussen können
         /// (beispielsweise Siegesbedingungen, FOW usw.)
-        const GlobalGameSettings* const ggs;
+        const GlobalGameSettings& ggs;
 
         /// Zugriff auf die GameCommands, um diese abarbeiten zu können
-        const std::vector<gc::GameCommand*>& GetGameCommands() const { return gcs; }
+        const std::vector<gc::GameCommandPtr>& GetGameCommands() const { return gcs; }
         /// Markiert die GameCommands als abgearbeitet
         void FetchGameCommands() { gcs.clear(); }
 

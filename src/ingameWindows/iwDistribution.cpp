@@ -26,7 +26,6 @@
 #include "controls/controls.h"
 
 #include "GameClient.h"
-#include "GameCommands.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -203,7 +202,7 @@ void iwDistribution::TransmitSettings()
         }
 
         // und übermitteln
-        GAMECLIENT.AddGC(new gc::ChangeDistribution(GAMECLIENT.visual_settings.distribution));
+        GAMECLIENT.ChangeDistribution(GAMECLIENT.visual_settings.distribution);
 
         settings_changed = false;
     }

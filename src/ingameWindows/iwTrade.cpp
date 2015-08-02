@@ -29,7 +29,6 @@
 #include "GameClient.h"
 #include "controls/controls.h"
 #include "WindowManager.h"
-#include "GameCommands.h"
 
 #include "iwMsgbox.h"
 
@@ -134,7 +133,7 @@ void iwTrade::Msg_ButtonClick(const unsigned int ctrl_id)
     // Start trading
     if(!GetCtrl<ctrlComboBox>(4)->GetCtrl<ctrlList>(0)->GetVisible() && atoi(number_str.c_str()) > 0)
     {
-        GAMECLIENT.AddGC(new gc::TradeOverLand(wh->GetPos(), ware_figure, gt, job, atoi(number_str.c_str())));
+        GAMECLIENT.TradeOverLand(wh->GetPos(), ware_figure, gt, job, atoi(number_str.c_str()));
         this->Close();
     }
 }

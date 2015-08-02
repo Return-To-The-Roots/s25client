@@ -642,7 +642,7 @@ void nobUsual::WorkerArrived()
  *
  *  @author OLiver
  */
-void nobUsual::StopProduction()
+void nobUsual::ToggleProduction()
 {
     // Umstellen
     disable_production = !disable_production;

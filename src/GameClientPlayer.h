@@ -23,11 +23,13 @@
 #include "GamePlayerInfo.h"
 #include "gameData/GameConsts.h"
 #include <list>
+#include <queue>
 #include <algorithm>
 #include "gameTypes/MapTypes.h"
 #include "PostMsg.h"
 #include "TradeGraph.h"
 #include "Point.h"
+#include "GameMessage_GameCommand.h"
 
 
 class GameWorld;
@@ -48,7 +50,6 @@ class nofCarrier;
 class noShip;
 class nobHarborBuilding;
 class GameWorldGame;
-class GameMessage_GameCommand;
 class nofPassiveSoldier;
 class noFigure;
 
@@ -148,7 +149,7 @@ class GameClientPlayer : public GamePlayerInfo
         /// Laggt der Spieler?
         bool is_lagging;
         /// Empfangene GC für diesen Spieler
-        std::list<GameMessage_GameCommand> gc_queue;
+        std::queue<GameMessage_GameCommand> gc_queue;
 
         /// Koordinaten des HQs des Spielers
         MapPoint hqPos;

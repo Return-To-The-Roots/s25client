@@ -1104,7 +1104,7 @@ void nobMilitary::NeedOccupyingTroops(const unsigned char new_owner)
     }
 }
 
-void nobMilitary::StopGold()
+void nobMilitary::ToggleCoins()
 {
     // Umstellen
     disable_coins = !disable_coins;

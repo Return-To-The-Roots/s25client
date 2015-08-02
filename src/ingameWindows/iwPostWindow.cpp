@@ -34,7 +34,6 @@
 #include "macros.h"
 #include "GameClient.h"
 #include "GameClientPlayer.h"
-#include "GameCommands.h"
 #include <iostream>
 #include <sstream>
 ///////////////////////////////////////////////////////////////////////////////
@@ -144,10 +143,10 @@ void iwPostWindow::Msg_ButtonClick(const unsigned int ctrl_id)
             {
                 // Vertrag akzeptieren? Ja
                 if(dpm->dp_type == DiplomacyPostQuestion::ACCEPT)
-                    GAMECLIENT.AddGC(new gc::AcceptPact(true, dpm->id, dpm->pt, dpm->player));
+                    GAMECLIENT.AcceptPact(true, dpm->id, dpm->pt, dpm->player);
                 // Vertrag beenden? Ja
                 else if(dpm->dp_type == DiplomacyPostQuestion::CANCEL)
-                    GAMECLIENT.AddGC(new gc::CancelPact(dpm->pt, dpm->player));
+                    GAMECLIENT.CancelPact(dpm->pt, dpm->player);
                 DeletePostMessage(pm);
             }
         } break;
@@ -162,7 +161,7 @@ void iwPostWindow::Msg_ButtonClick(const unsigned int ctrl_id)
                 // Vertrag annehmen? Nein
                 // TODO: Sinnvoll ne art reject schicken, damit der andere mitbekommmt dass man nich will
                 //if(dpm->dp_type == DiplomacyPostQuestion::ACCEPT)
-                //  GAMECLIENT.AddGC(new gc::CancelPact(dpm->pt,dpm->player));
+                //  GAMECLIENT.CancelPact(dpm->pt,dpm->player);
                 DeletePostMessage(pm);
             }
         }

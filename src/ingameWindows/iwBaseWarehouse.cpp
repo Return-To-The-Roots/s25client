@@ -30,7 +30,6 @@
 #include "iwDemolishBuilding.h"
 #include "WindowManager.h"
 #include "iwHelp.h"
-#include "GameCommands.h"
 #include "iwHQ.h"
 #include "iwStorehouse.h"
 #include "iwHarborBuilding.h"
@@ -144,7 +143,7 @@ void iwBaseWarehouse::Msg_Group_ButtonClick(const unsigned int group_id, const u
             if(data != 0)
             {
                 // Nicht bei Replays setzen
-                if(GAMECLIENT.AddGC(new gc::ChangeInventorySetting(wh->GetPos(), page, data, ctrl_id - 100)))
+                if(GAMECLIENT.ChangeInventorySetting(wh->GetPos(), page, data, ctrl_id - 100))
                     // optisch schonmal setzen
                     ChangeOverlay(ctrl_id - 100, data);;
             }
@@ -177,7 +176,7 @@ void iwBaseWarehouse::Msg_ButtonClick(const unsigned int ctrl_id)
                 if(data != 0)
                 {
                     // Nicht bei Replays setzen
-                    if(GAMECLIENT.AddGC(new gc::ChangeAllInventorySettings(wh->GetPos(), page, data)))
+                    if(GAMECLIENT.ChangeAllInventorySettings(wh->GetPos(), page, data))
                     {
                         // optisch setzen
                         unsigned short count = ((page == 0) ? WARE_TYPES_COUNT : JOB_TYPES_COUNT);
