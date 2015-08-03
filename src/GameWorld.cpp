@@ -74,7 +74,7 @@ bool GameWorld::LoadMap(const std::string& filename)
 
     CreateTradeGraphs();
 
-    tr.GenerateOpenGL(this);
+    tr.GenerateOpenGL(*this);
 
     if(GetPlayer(GAMECLIENT.GetPlayerID())->hqPos.x != 0xFFFF)
         this->MoveToMapObject(GetPlayer(GAMECLIENT.GetPlayerID())->hqPos);
@@ -723,7 +723,7 @@ void GameWorld::Deserialize(SerializedGameData* sgd)
         }
     }
 
-    tr.GenerateOpenGL(this);
+    tr.GenerateOpenGL(*this);
 
     // Zum HQ am Anfang springen, falls dieses existiert
     if(GetPlayer(GAMECLIENT.GetPlayerID())->hqPos.x != 0xFFFF)

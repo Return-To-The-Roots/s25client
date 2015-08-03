@@ -121,12 +121,12 @@ void GameWorldViewer::MouseMove(const MouseCoords& mc)
 // Höhe wurde Verändert: TerrainRenderer Bescheid sagen, damit es entsprechend verändert werden kann
 void GameWorldViewer::AltitudeChanged(const MapPoint pt)
 {
-    tr.AltitudeChanged(pt, this);
+    tr.AltitudeChanged(pt, *this);
 }
 
 void GameWorldViewer::VisibilityChanged(const MapPoint pt)
 {
-    tr.VisibilityChanged(pt, this);
+    tr.VisibilityChanged(pt, *this);
 }
 
 
@@ -146,7 +146,7 @@ Visibility GameWorldViewer::GetVisibility(const MapPoint pt) const
 
 void GameWorldViewer::RecalcAllColors()
 {
-    tr.UpdateAllColors(this);
+    tr.UpdateAllColors(*this);
 }
 
 /// liefert sichtbare Straße, im FoW entsprechend die FoW-Straße

@@ -132,22 +132,22 @@ class TerrainRenderer
         const Vertex& GetVertex(const MapPoint pt) const { return vertices[GetVertexIdx(pt)]; }
 
         /// erzeugt die Terrain-Vertices.
-        void GenerateVertices(const GameWorldViewer* gwv);
+        void GenerateVertices(const GameWorldViewer& gwv);
         /// erzeugt Vertex (update, wenn die Daten ggf. im Vertexbuffer ersetzt werden sollen, bei Veränderung)
-        void UpdateVertexPos(const MapPoint pt, const GameWorldViewer* gwv);
-        void UpdateVertexColor(const MapPoint pt, const GameWorldViewer* gwv);
-        void UpdateVertexTerrain(const MapPoint pt, const GameWorldViewer* gwv);
+        void UpdateVertexPos(const MapPoint pt, const GameWorldViewer& gwv);
+        void UpdateVertexColor(const MapPoint pt, const GameWorldViewer& gwv);
+        void UpdateVertexTerrain(const MapPoint pt, const GameWorldViewer& gwv);
         /// erzeugt Rand-Vertex
-        void UpdateBorderVertex(const MapPoint pt, const GameWorldViewer* gwv);
+        void UpdateBorderVertex(const MapPoint pt, const GameWorldViewer& gwv);
 
         /// Erzeugt fertiges Dreieick für OpenGL
-        void UpdateTrianglePos(const MapPoint pt, const GameWorldViewer* gwv, const bool update);
-        void UpdateTriangleColor(const MapPoint pt, const GameWorldViewer* gwv, const bool update);
-        void UpdateTriangleTerrain(const MapPoint pt, const GameWorldViewer* gwv, const bool update);
+        void UpdateTrianglePos(const MapPoint pt, const GameWorldViewer& gwv, const bool update);
+        void UpdateTriangleColor(const MapPoint pt, const GameWorldViewer& gwv, const bool update);
+        void UpdateTriangleTerrain(const MapPoint pt, const GameWorldViewer& gwv, const bool update);
         /// Erzeugt die Dreiecke für die Ränder
-        void UpdateBorderTrianglePos(const MapPoint pt, const GameWorldViewer* gwv, const bool update);
-        void UpdateBorderTriangleColor(const MapPoint pt, const GameWorldViewer* gwv, const bool update);
-        void UpdateBorderTriangleTerrain(const MapPoint pt, const GameWorldViewer* gwv, const bool update);
+        void UpdateBorderTrianglePos(const MapPoint pt, const GameWorldViewer& gwv, const bool update);
+        void UpdateBorderTriangleColor(const MapPoint pt, const GameWorldViewer& gwv, const bool update);
+        void UpdateBorderTriangleTerrain(const MapPoint pt, const GameWorldViewer& gwv, const bool update);
 
         /// liefert den Vertex-Farbwert an der Stelle X,Y
         float GetColor(const MapPoint pt) { return GetVertex(pt).pos.color; }
@@ -159,7 +159,7 @@ class TerrainRenderer
         float GetBColor(const MapPoint pt, unsigned char triangle) { return GetVertex(pt).border[triangle].color; }
 
         /// Zeichnet die Wege
-        void PrepareWaysPoint(PreparedRoads& sorted_roads, GameWorldView* gwv, MapPoint t, PointI offset);
+        void PrepareWaysPoint(PreparedRoads& sorted_roads, const GameWorldView& gwv, MapPoint t, PointI offset);
 
         void DrawWays(const PreparedRoads& sorted_roads);
 
@@ -170,11 +170,11 @@ class TerrainRenderer
         ~TerrainRenderer();
 
         /// erzeugt die OpenGL-Vertices.
-        void GenerateOpenGL(const GameWorldViewer* gwv);
+        void GenerateOpenGL(const GameWorldViewer& gwv);
 
 
         /// zeichnet den Kartenausschnitt.
-        void Draw(GameWorldView* gwv, unsigned int* water);
+        void Draw(const GameWorldView& gwv, unsigned int* water);
 
         /// Konvertiert "falsche Koordinaten", also im Minusbereich oder zu groß wegen Zeichnen, in "richtige Koordinaten"
         /// mit 0 <= x_out < width und 0 <= y_out < height
@@ -185,12 +185,12 @@ class TerrainRenderer
         PointF GetTerrainAround(MapPoint pt, const unsigned dir);
 
         /// Höhe eines Punktes wurde (durch Planierer) verändert --> updaten
-        void AltitudeChanged(const MapPoint pt, const GameWorldViewer* gwv);
+        void AltitudeChanged(const MapPoint pt, const GameWorldViewer& gwv);
         /// Sichtbarkeit eines Punktes verändert
-        void VisibilityChanged(const MapPoint pt, const GameWorldViewer* gwv);
+        void VisibilityChanged(const MapPoint pt, const GameWorldViewer& gwv);
 
         /// Berechnet Schattierungen der gesamten Map neu
-        void UpdateAllColors(const GameWorldViewer* gwv);
+        void UpdateAllColors(const GameWorldViewer& gwv);
 
 };
 

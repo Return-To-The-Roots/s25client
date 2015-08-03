@@ -94,7 +94,7 @@ void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool
 
     glScissor(pos.x, VIDEODRIVER.GetScreenHeight() - pos.y - height, width, height);
 
-    gwv->GetTerrainRenderer()->Draw(this, water);
+    gwv->GetTerrainRenderer()->Draw(*this, water);
 
     glTranslatef((GLfloat) pos.x, (GLfloat) pos.y, 0.0f);
 
