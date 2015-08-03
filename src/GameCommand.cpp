@@ -64,6 +64,7 @@ GameCommand* GameCommand::Deserialize(const Type gst, Serializer* ser)
     case ORDERNEWSOLDIERS: return new OrderNewSoldiers(ser);
     case SENDSOLDIERSHOME: return new SendSoldiersHome(ser);
     case NOTIFYALLIESOFLOCATION: return new NotifyAlliesOfLocation(ser);
+    default: break;
     }
 
     throw std::logic_error("Invalid GC Type: " + helpers::toString(gst));
