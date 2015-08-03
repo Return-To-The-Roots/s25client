@@ -121,7 +121,7 @@ class glSmartTexturePackerNode
         glSmartTexturePackerNode() : x(0), y(0), w(0), h(0), bmp(NULL) {child[0] = child[1] = NULL;}
         glSmartTexturePackerNode(int w, int h) : x(0), y(0), w(w), h(h), bmp(NULL) {child[0] = child[1] = NULL;}
 
-        bool insert(glSmartBitmap* b, unsigned char* buffer, unsigned gw, unsigned gh, unsigned reserve = 0);
+        bool insert(glSmartBitmap* b, unsigned char* buffer, unsigned gw, unsigned gh, std::vector<glSmartTexturePackerNode*>& todo);
         void destroy(unsigned reserve = 0);
 };
 
