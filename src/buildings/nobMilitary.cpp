@@ -322,6 +322,15 @@ void nobMilitary::HandleEvent(const unsigned int id)
             // Wurde jemand befördert?
             if(last_rank < MAX_MILITARY_RANK - GAMECLIENT.GetGGS().getSelection(ADDON_MAX_RANK))
             {
+                // Beförderung kann Reihenfolge im Container ändern, neu sortieren.
+                SortedTroopsContainer troops_resorted;
+                for(SortedTroopsContainer::iterator it = troops.begin(); it != troops.end(); ++it)
+                {
+                    troops_resorted.insert(*it);
+                }
+
+                troops = troops_resorted;
+
                 // Goldmünze verbrauchen
                 --coins;
                 gwg->GetPlayer(player)->DecreaseInventoryWare(GD_COINS, 1);
