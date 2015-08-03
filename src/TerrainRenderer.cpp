@@ -872,92 +872,90 @@ struct GL_T2F_C3F_V3F_Struct
 
 void TerrainRenderer::PrepareWaysPoint(PreparedRoads& sorted_roads, GameWorldView* gwv, MapPoint t, PointI offset)
 {
-    PointF pos = GetTerrain(t) - PointF(gwv->GetOffset() + offset);
-
-    // Wegtypen für die drei Richtungen
-    unsigned char type;
+    PointI startPos = PointI(GetTerrain(t)) - gwv->GetOffset() + offset;
 
     Visibility visibility = gwv->GetGameWorldViewer()->GetVisibility(t);
 
-	int x_shift = gwv->GetGameWorldViewer()->GetWidth() * TR_W;
-	int y_shift = gwv->GetGameWorldViewer()->GetHeight() * TR_H;
+	int totalWidth  = gwv->GetGameWorldViewer()->GetWidth()  * TR_W;
+	int totalHeight = gwv->GetGameWorldViewer()->GetHeight() * TR_H;
 
+    // Wegtypen für die drei Richtungen
     for(unsigned dir = 0; dir < 3; ++dir)
     {
-        if ((type = gwv->GetGameWorldViewer()->GetVisibleRoad(t, dir, visibility)))
+        unsigned char type = gwv->GetGameWorldViewer()->GetVisibleRoad(t, dir, visibility);
+        if (!type)
+            continue;
+        MapPoint ta = gwv->GetGameWorldViewer()->GetNeighbour(t, 3 + dir);
+
+        PointI endPos = PointI(GetTerrain(ta)) - gwv->GetOffset() + offset;
+        PointI diff = startPos - endPos;
+
+        // Gehen wir über einen Kartenrand (horizontale Richung?)
+        if(std::abs(diff.x) >= totalWidth / 2)
         {
-            MapPoint ta = gwv->GetGameWorldViewer()->GetNeighbour(t, 3 + dir);
-
-            PointF pos2 = GetTerrain(ta) - PointF(gwv->GetOffset() + offset);
-            PointF diff = pos - pos2;
-
-            // Gehen wir über einen Kartenrand (horizontale Richung?)
-            if(std::abs(diff.x) >= x_shift / 2)
-            {
-                if(std::abs(pos2.x - x_shift - pos.x) < std::abs(diff.x))
-                    pos2.x -= x_shift;
-                else
-                    pos2.x += x_shift;
-            }
-            // Und dasselbe für vertikale Richtung
-            if(std::abs(diff.y) >= y_shift / 2)
-            {
-                if(std::abs(pos2.y - y_shift - pos.y) < std::abs(diff.y))
-                    pos2.y -= y_shift;
-                else
-                    pos2.y += y_shift;
-            }
-
-            --type;
-
-            // Wegtypen "konvertieren"
-            switch(type)
-            {
-                case RoadSegment::RT_DONKEY:
-                case RoadSegment::RT_NORMAL:
-                {
-                    unsigned t1 = gwv->GetGameWorldViewer()->GetTerrainAround(t, dir + 2);
-                    unsigned t2 = gwv->GetGameWorldViewer()->GetTerrainAround(t, dir + 3);
-
-                    // Prüfen, ob Bergwerge gezeichnet werden müssen, indem man guckt, ob der Weg einen
-                    // Berg "streift" oder auch eine Bergwiese
-                    if(( (t1 >= TT_MOUNTAIN1 && t1 <= TT_MOUNTAIN4) || t1 == TT_MOUNTAINMEADOW)
-                            || ( (t2 >= TT_MOUNTAIN1  && t2 <= TT_MOUNTAIN4) || t2 == TT_MOUNTAINMEADOW))
-                        type = 3;
-
-                } break;
-                case RoadSegment::RT_BOAT:
-                {
-                    type = 2;
-                } break;
-            }
-
-            sorted_roads[type].push_back(
-                PreparedRoad(type, pos, pos2, GetColor(t), GetColor(ta), dir)
-            );
+            if(std::abs(endPos.x - totalWidth - startPos.x) < std::abs(diff.x))
+                endPos.x -= totalWidth;
+            else
+                endPos.x += totalWidth;
         }
+        // Und dasselbe für vertikale Richtung
+        if(std::abs(diff.y) >= totalHeight / 2)
+        {
+            if(std::abs(endPos.y - totalHeight - startPos.y) < std::abs(diff.y))
+                endPos.y -= totalHeight;
+            else
+                endPos.y += totalHeight;
+        }
+
+        --type;
+
+        // Wegtypen "konvertieren"
+        switch(type)
+        {
+            case RoadSegment::RT_DONKEY:
+            case RoadSegment::RT_NORMAL:
+            {
+                unsigned t1 = gwv->GetGameWorldViewer()->GetTerrainAround(t, dir + 2);
+                unsigned t2 = gwv->GetGameWorldViewer()->GetTerrainAround(t, dir + 3);
+
+                // Prüfen, ob Bergwerge gezeichnet werden müssen, indem man guckt, ob der Weg einen
+                // Berg "streift" oder auch eine Bergwiese
+                if(( (t1 >= TT_MOUNTAIN1 && t1 <= TT_MOUNTAIN4) || t1 == TT_MOUNTAINMEADOW)
+                        || ( (t2 >= TT_MOUNTAIN1  && t2 <= TT_MOUNTAIN4) || t2 == TT_MOUNTAINMEADOW))
+                    type = 3;
+
+                break;
+            }
+            case RoadSegment::RT_BOAT:
+                type = 2;
+                break;
+        }
+
+        sorted_roads[type].push_back(
+            PreparedRoad(type, startPos, endPos, GetColor(t), GetColor(ta), dir)
+        );
     }
 }
 
 void TerrainRenderer::DrawWays(const PreparedRoads& sorted_roads)
 {
     // 2D Array: [3][4]
-    static const boost::array<PointF, 12> begin_end_coords =
+    static const boost::array<PointI, 12> begin_end_coords =
     {
-        PointF(-3.0f, -3.0f),
-        PointF(-3.0f, 3.0f),
-        PointF(-3.0f, 3.0f),
-        PointF(-3.0f, -3.0f),
+        PointI(-3, -3),
+        PointI(-3,  3),
+        PointI(-3,  3),
+        PointI(-3, -3),
 
-        PointF(3.0f, -3.0f),
-        PointF(-3.0f, 3.0f),
-        PointF(-3.0f, 3.0f),
-        PointF(3.0f, -3.0f),
+        PointI( 3, -3),
+        PointI(-3,  3),
+        PointI(-3,  3),
+        PointI( 3, -3),
 
-        PointF(3.0f, 3.0f),
-        PointF(-3.0f, -3.0f),
-        PointF(-3.0f, -3.0f),
-        PointF(3.0f, 3.0f)
+        PointI( 3,  3),
+        PointI(-3, -3),
+        PointI(-3, -3),
+        PointI( 3,  3)
     };
 
     if (SETTINGS.video.vbo)
@@ -982,9 +980,9 @@ void TerrainRenderer::DrawWays(const PreparedRoads& sorted_roads)
             tmp[i].g = it->color1;
             tmp[i].b = it->color1;
 
-            PointF tmpP = it->pos + begin_end_coords[it->dir * 4];
-            tmp[i].x = tmpP.x;
-            tmp[i].y = tmpP.y;
+            PointI tmpP = it->pos + begin_end_coords[it->dir * 4];
+            tmp[i].x = GLfloat(tmpP.x);
+            tmp[i].y = GLfloat(tmpP.y);
             tmp[i].z = 0.0f;
 
             i++;
@@ -997,8 +995,8 @@ void TerrainRenderer::DrawWays(const PreparedRoads& sorted_roads)
             tmp[i].b = it->color1;
 
             tmpP = it->pos + begin_end_coords[it->dir * 4 + 1];
-            tmp[i].x = tmpP.x;
-            tmp[i].y = tmpP.y;
+            tmp[i].x = GLfloat(tmpP.x);
+            tmp[i].y = GLfloat(tmpP.y);
             tmp[i].z = 0.0f;
 
             i++;
@@ -1011,8 +1009,8 @@ void TerrainRenderer::DrawWays(const PreparedRoads& sorted_roads)
             tmp[i].b = it->color2;
 
             tmpP = it->pos2 + begin_end_coords[it->dir * 4 + 2];
-            tmp[i].x = tmpP.x;
-            tmp[i].y = tmpP.y;
+            tmp[i].x = GLfloat(tmpP.x);
+            tmp[i].y = GLfloat(tmpP.y);
             tmp[i].z = 0.0f;
 
             i++;
@@ -1025,8 +1023,8 @@ void TerrainRenderer::DrawWays(const PreparedRoads& sorted_roads)
             tmp[i].b = it->color2;
 
             tmpP = it->pos2 + begin_end_coords[it->dir * 4 + 3];
-            tmp[i].x = tmpP.x;
-            tmp[i].y = tmpP.y;
+            tmp[i].x = GLfloat(tmpP.x);
+            tmp[i].y = GLfloat(tmpP.y);
             tmp[i].z = 0.0f;
 
             i++;

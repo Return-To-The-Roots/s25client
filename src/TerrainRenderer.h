@@ -30,36 +30,37 @@ class GameWorldView;
 /// Klasse, die für das grafische Anzeigen (Rendern) des Terrains zuständig ist
 class TerrainRenderer
 {
+        typedef Point<float> PointF;
+        typedef Point<int> PointI;
+
         struct MapTile
         {
             unsigned tileOffset;
             unsigned int count;
-            Point<int> posOffset;
-            MapTile(unsigned tileOffset, Point<int> posOffset): tileOffset(tileOffset), count(1), posOffset(posOffset){}
+            PointI posOffset;
+            MapTile(unsigned tileOffset, PointI posOffset): tileOffset(tileOffset), count(1), posOffset(posOffset){}
         };
 
         struct BorderTile
         {
             unsigned tileOffset;
             unsigned count;
-            Point<int> posOffset;
-            BorderTile(unsigned tileOffset, Point<int> posOffset): tileOffset(tileOffset), count(1), posOffset(posOffset){}
+            PointI posOffset;
+            BorderTile(unsigned tileOffset, PointI posOffset): tileOffset(tileOffset), count(1), posOffset(posOffset){}
         };
 
         struct PreparedRoad
         {
             unsigned char type;
-            Point<float> pos, pos2;
+            PointI pos, pos2;
             float color1, color2;
             unsigned char dir;
 
-            PreparedRoad(unsigned char type, Point<float> pos, Point<float> pos2, float color1, float color2, unsigned char dir) : type(type), pos(pos), pos2(pos2), color1(color1), color2(color2), dir(dir) {}
+            PreparedRoad(unsigned char type, PointI pos, PointI pos2, float color1, float color2, unsigned char dir) : type(type), pos(pos), pos2(pos2), color1(color1), color2(color2), dir(dir) {}
 
             bool operator<(const PreparedRoad b) const {return(type < b.type);}
         };
 
-        typedef Point<float> PointF;
-        typedef Point<int> PointI;
         struct ColorPoint
         {
             PointF pos;
