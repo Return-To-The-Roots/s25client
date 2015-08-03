@@ -1147,8 +1147,7 @@ void  GameWorldGame::AttackViaSea(const unsigned char player_attacker, const Map
         return;
 
     // Verfügbare Soldaten herausfinden
-    std::list<GameWorldBase::PotentialSeaAttacker> attackers;
-    GetAvailableSoldiersForSeaAttack(player_attacker, pt, &attackers);
+    std::vector<GameWorldBase::PotentialSeaAttacker> attackers = GetAvailableSoldiersForSeaAttack(player_attacker, pt);
 
     // Ist das angegriffenne ein normales Gebäude?
     nobBaseMilitary* attacked_building = GetSpecObj<nobBaseMilitary>(pt);
@@ -1164,7 +1163,7 @@ void  GameWorldGame::AttackViaSea(const unsigned char player_attacker, const Map
 
     unsigned counter = 0;
     if(strong_soldiers)
-        for(std::list<GameWorldBase::PotentialSeaAttacker>::iterator it = attackers.begin(); it != attackers.end() &&
+        for(std::vector<GameWorldBase::PotentialSeaAttacker>::iterator it = attackers.begin(); it != attackers.end() &&
                 counter < soldiers_count; ++it, ++counter)
         {
             // neuen Angreifer-Soldaten erzeugen
@@ -1174,7 +1173,7 @@ void  GameWorldGame::AttackViaSea(const unsigned char player_attacker, const Map
             delete it->soldier;
         }
     else
-        for(std::list<GameWorldBase::PotentialSeaAttacker>::reverse_iterator it = attackers.rbegin(); it != attackers.rend() &&
+        for(std::vector<GameWorldBase::PotentialSeaAttacker>::reverse_iterator it = attackers.rbegin(); it != attackers.rend() &&
                 counter < soldiers_count; ++it, ++counter)
         {
             // neuen Angreifer-Soldaten erzeugen

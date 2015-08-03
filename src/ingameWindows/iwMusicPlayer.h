@@ -53,7 +53,7 @@ class iwMusicPlayer : public IngameWindow
         void SetRandomPlayback(const bool random_playback);
 
         /// Gibt Werte zurück
-        void GetSegments(std::vector<std::string>& segments) const;
+        std::vector<std::string> GetSegments() const;
         unsigned GetRepeats() const;
         bool GetRandomPlayback() const;
 

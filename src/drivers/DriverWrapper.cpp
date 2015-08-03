@@ -92,10 +92,9 @@ bool DriverWrapper::Load(const DriverType dt, std::string& preference)
     Unload();
 
     /// Verfügbare Treiber auflisten
-    std::vector<DriverItem> drivers;
     const std::string DIRECTORY[2] = { "video", "audio" };
 
-    LoadDriverList(dt, drivers);
+    std::vector<DriverItem> drivers = LoadDriverList(dt);
 
     LOG.lprintf("%u %s drivers found!\n", unsigned(drivers.size()), DIRECTORY[dt].c_str());
 
@@ -163,8 +162,9 @@ void* DriverWrapper::GetDLLFunction(const std::string& name)
  *
  *  @author FloSoft
  */
-void DriverWrapper::LoadDriverList(const DriverType dt, std::vector<DriverItem>& driver_list)
+std::vector<DriverWrapper::DriverItem> DriverWrapper::LoadDriverList(const DriverType dt)
 {
+    std::vector<DriverItem> driver_list;
     /// Verfügbare Treiber auflisten
     std::list<std::string> driver_files;
 
@@ -232,5 +232,6 @@ void DriverWrapper::LoadDriverList(const DriverType dt, std::vector<DriverItem>&
             dll = 0;
         }
     }
+    return driver_list;
 }
 

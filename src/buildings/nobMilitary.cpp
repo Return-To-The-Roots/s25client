@@ -798,7 +798,7 @@ nofAggressiveDefender* nobMilitary::SendDefender(nofAttacker* attacker)
 }
 
 /// Gibt die Anzahl der Soldaten zurück, die für einen Angriff auf ein bestimmtes Ziel zur Verfügung stehen
-unsigned nobMilitary::GetSoldiersForAttack(const MapPoint dest, const unsigned char player_attacker) const
+unsigned nobMilitary::GetNumSoldiersForAttack(const MapPoint dest, const unsigned char player_attacker) const
 {
     // Soldaten ausrechnen, wie viel man davon nehmen könnte, je nachdem wie viele in den
     // Militäreinstellungen zum Angriff eingestellt wurden
@@ -828,24 +828,23 @@ unsigned nobMilitary::GetSoldiersForAttack(const MapPoint dest, const unsigned c
 }
 
 /// Gibt die Soldaten zurück, die für einen Angriff auf ein bestimmtes Ziel zur Verfügung stehen
-void nobMilitary::GetSoldiersForAttack(const MapPoint dest,
-                                       const unsigned char player_attacker, std::vector<nofPassiveSoldier*>& soldiers) const
+std::vector<nofPassiveSoldier*> nobMilitary::GetSoldiersForAttack(const MapPoint dest, const unsigned char player_attacker) const
 {
-    unsigned soldiers_count = GetSoldiersForAttack(dest, player_attacker);
+    std::vector<nofPassiveSoldier*> soldiers;
+    unsigned soldiers_count = GetNumSoldiersForAttack(dest, player_attacker);
     for(SortedTroopsContainer::const_reverse_iterator it = troops.rbegin(); it != troops.rend() && soldiers_count; ++it, --soldiers_count)
     {
         soldiers.push_back(*it);
     }
-
+    return soldiers;
 }
 
 /// Gibt die Stärke der Soldaten zurück, die für einen Angriff auf ein bestimmtes Ziel zur Verfügung stehen
-unsigned nobMilitary::GetSoldiersStrengthForAttack(const MapPoint dest,
-        const unsigned char player_attacker, unsigned& count) const
+unsigned nobMilitary::GetSoldiersStrengthForAttack(const MapPoint dest, const unsigned char player_attacker, unsigned& count) const
 {
     unsigned strength = 0;
 
-    unsigned soldiers_count = GetSoldiersForAttack(dest, player_attacker);
+    unsigned soldiers_count = GetNumSoldiersForAttack(dest, player_attacker);
     count = soldiers_count;
 
     for(SortedTroopsContainer::const_reverse_iterator it = troops.rbegin(); it != troops.rend() && soldiers_count; ++it, --soldiers_count)

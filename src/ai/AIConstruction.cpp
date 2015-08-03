@@ -163,11 +163,9 @@ bool AIConstruction::CanStillConstructHere(const MapPoint pt)
 	return true;
 }
 
-void AIConstruction::FindFlags(std::vector<const noFlag*>& flags, const MapPoint pt, unsigned short radius,
-                               MapPoint real, unsigned short real_radius, bool clear)
+std::vector<const noFlag*> AIConstruction::FindFlags(const MapPoint pt, unsigned short radius, MapPoint real, unsigned short real_radius)
 {
-    if (clear)
-        flags.clear();
+    std::vector<const noFlag*> flags;
 
     for(MapCoord tx = aii->GetXA(pt, Direction::NORTH), r = 1; r <= radius; tx = aii->GetXA(tx, pt.y, Direction::NORTH), ++r)
     {
@@ -183,12 +181,12 @@ void AIConstruction::FindFlags(std::vector<const noFlag*>& flags, const MapPoint
             }
         }
     }
+    return flags;
 }
 
-void AIConstruction::FindFlags(std::vector<const noFlag*>& flags, const MapPoint pt, unsigned short radius, bool clear)
+std::vector<const noFlag*> AIConstruction::FindFlags(const MapPoint pt, unsigned short radius)
 {
-    if (clear)
-        flags.clear();
+    std::vector<const noFlag*> flags;
 
     // TODO Performance Killer!
     /*
@@ -220,12 +218,13 @@ void AIConstruction::FindFlags(std::vector<const noFlag*>& flags, const MapPoint
                     flags.push_back(flag);
                     if (flags.size() > 30)
                     {
-                        return;
+                        return flags;
                     }
                 }
             }
         }
     }
+    return flags;
 }
 
 bool AIConstruction::MilitaryBuildingWantsRoad(nobMilitary* milbld, unsigned listpos)
@@ -275,8 +274,7 @@ bool AIConstruction::ConnectFlagToRoadSytem(const noFlag* flag, std::vector<unsi
         return false;
 
     // Flaggen in der Umgebung holen
-    std::vector<const noFlag*> flags;
-    FindFlags(flags, flag->GetPos(), maxSearchRadius);
+    std::vector<const noFlag*> flags = FindFlags(flag->GetPos(), maxSearchRadius);
 
 #ifdef DEBUG_AI
     std::cout << "FindFlagsNum: " << flags.size() << std::endl;
@@ -744,8 +742,7 @@ bool AIConstruction::BuildAlternativeRoad(const noFlag* flag, std::vector<unsign
 
 
     // Flaggen in der Umgebung holen
-    std::vector<const noFlag*> flags;
-    FindFlags(flags, flag->GetPos(), maxRoadLength);
+    std::vector<const noFlag*> flags = FindFlags(flag->GetPos(), maxRoadLength);
     std::vector<unsigned char>mainroad = route;
     //targetflag for mainroad
     MapPoint t = flag->GetPos();

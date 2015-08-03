@@ -869,16 +869,17 @@ void nobHarborBuilding::RemoveDependentFigure(noFigure* figure)
 }
 
 /// Gibt eine Liste mit möglichen Verbindungen zurück
-void nobHarborBuilding::GetShipConnections(std::vector<ShipConnection>& connections) const
+std::vector<nobHarborBuilding::ShipConnection> nobHarborBuilding::GetShipConnections() const
 {
+    std::vector<ShipConnection> connections;
     // Is there any harbor building at all? (could be destroyed)?
     if(gwg->GetGOT(this->pos) != GOT_NOB_HARBORBUILDING)
         // Then good-bye
-        return;
+        return connections;
 
     // Is the harbor being destroyed right now?
     if (IsBeingDestroyedNow())
-        return;
+        return connections;
 
     std::vector<nobHarborBuilding*> harbor_buildings;
     for(unsigned short sea_id = 0; sea_id < 6; ++sea_id)
@@ -896,6 +897,7 @@ void nobHarborBuilding::GetShipConnections(std::vector<ShipConnection>& connecti
         sc.way_costs = 2 * gwg->CalcHarborDistance(GetHarborPosID(), harbor_buildings[i]->GetHarborPosID()) + 10;
         connections.push_back(sc);
     }
+    return connections;
 }
 
 
@@ -1219,10 +1221,10 @@ void nobHarborBuilding::CancelFigure(noFigure* figure)
 }
 
 ///Gibt verfügbare Angreifer zurück
-void nobHarborBuilding::GetAttackerBuildingsForSeaIdAttack(std::vector<SeaAttackerBuilding>*buildings)
+std::vector<nobHarborBuilding::SeaAttackerBuilding> nobHarborBuilding::GetAttackerBuildingsForSeaIdAttack()
 {
+    std::vector<nobHarborBuilding::SeaAttackerBuilding> buildings;
     nobBaseMilitarySet all_buildings = gwg->LookForMilitaryBuildings(pos, 3);
-
     // Und zählen
     for(nobBaseMilitarySet::iterator it = all_buildings.begin(); it != all_buildings.end(); ++it)
     {
@@ -1233,7 +1235,7 @@ void nobHarborBuilding::GetAttackerBuildingsForSeaIdAttack(std::vector<SeaAttack
         if((*it)->GetPlayer() != player || gwg->CalcDistance((*it)->GetPos(), pos) > BASE_ATTACKING_DISTANCE)
             continue;
         // Gebäude suchen, vielleicht schon vorhanden? Dann können wir uns den pathfinding Aufwand sparen!
-        if(helpers::contains(*buildings, static_cast<nobMilitary*>(*it)))
+        if(helpers::contains(buildings, static_cast<nobMilitary*>(*it)))
         {
             // Dann zum nächsten test
             continue;
@@ -1243,15 +1245,15 @@ void nobHarborBuilding::GetAttackerBuildingsForSeaIdAttack(std::vector<SeaAttack
             continue;
         //neues Gebäude mit weg und allem -> in die Liste!
         SeaAttackerBuilding sab = { static_cast<nobMilitary*>(*it), this , 0};
-        buildings->push_back(sab);
+        buildings.push_back(sab);
     }
+    return buildings;
 }
 /// Gibt die Angreifergebäude zurück, die dieser Hafen für einen Seeangriff zur Verfügung stellen kann
-void nobHarborBuilding::GetAttackerBuildingsForSeaAttack(std::vector<SeaAttackerBuilding> * buildings,
-        const std::vector<unsigned>& defender_harbors)
+std::vector<nobHarborBuilding::SeaAttackerBuilding> nobHarborBuilding::GetAttackerBuildingsForSeaAttack(const std::vector<unsigned>& defender_harbors)
 {
+    std::vector<nobHarborBuilding::SeaAttackerBuilding> buildings;
     nobBaseMilitarySet all_buildings = gwg->LookForMilitaryBuildings(pos, 3);
-
     // Und zählen
     for(nobBaseMilitarySet::iterator it = all_buildings.begin(); it != all_buildings.end(); ++it)
     {
@@ -1275,13 +1277,13 @@ void nobHarborBuilding::GetAttackerBuildingsForSeaAttack(std::vector<SeaAttacker
         }
 
         // Gebäude suchen, vielleicht schon vorhanden?
-        std::vector<SeaAttackerBuilding>::iterator it2 = std::find(buildings->begin(), buildings->end(), static_cast<nobMilitary*>(*it));
+        std::vector<SeaAttackerBuilding>::iterator it2 = std::find(buildings.begin(), buildings.end(), static_cast<nobMilitary*>(*it));
         // Noch nicht vorhanden?
-        if(it2 == buildings->end())
+        if(it2 == buildings.end())
         {
             // Dann neu hinzufügen
             SeaAttackerBuilding sab = { static_cast<nobMilitary*>(*it), this, min_distance };
-            buildings->push_back(sab);
+            buildings.push_back(sab);
         }
         // Oder vorhanden und jetzige Distanz ist kleiner?
         else if(min_distance < it2->distance)
@@ -1291,6 +1293,7 @@ void nobHarborBuilding::GetAttackerBuildingsForSeaAttack(std::vector<SeaAttacker
             it2->harbor = this;
         }
     }
+    return buildings;
 }
 
 /// Fügt einen Schiffs-Angreifer zum Hafen hinzu
@@ -1298,8 +1301,7 @@ void nobHarborBuilding::AddSeaAttacker(nofAttacker* attacker)
 {
     unsigned best_distance = 0xffffffff;
     unsigned best_harbor_point = 0xffffffff;
-    std::vector<unsigned> harbor_points;
-    gwg->GetHarborPointsAroundMilitaryBuilding(attacker->GetAttackedGoal()->GetPos(), &harbor_points);
+    std::vector<unsigned> harbor_points = gwg->GetHarborPointsAroundMilitaryBuilding(attacker->GetAttackedGoal()->GetPos());
     for(unsigned i = 0; i < harbor_points.size(); ++i)
     {
         unsigned tmp_distance = gwg->CalcHarborDistance(this->GetHarborPosID(), harbor_points[i]);

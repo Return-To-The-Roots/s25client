@@ -165,10 +165,9 @@ private:
         nofAggressiveDefender* SendDefender(nofAttacker* attacker);
 
         /// Gibt die Anzahl der Soldaten zurück, die für einen Angriff auf ein bestimmtes Ziel zur Verfügung stehen
-        unsigned GetSoldiersForAttack(const MapPoint dest, const unsigned char player_attacker) const;
+        unsigned GetNumSoldiersForAttack(const MapPoint dest, const unsigned char player_attacker) const;
         /// Gibt die Soldaten zurück, die für einen Angriff auf ein bestimmtes Ziel zur Verfügung stehen
-        void GetSoldiersForAttack(const MapPoint dest,
-                                  const unsigned char player_attacker, std::vector<nofPassiveSoldier*>& soldiers) const;
+        std::vector<nofPassiveSoldier*> GetSoldiersForAttack(const MapPoint dest, const unsigned char player_attacker) const;
         /// Gibt die Stärke der Soldaten zurück, die für einen Angriff auf ein bestimmtes Ziel zur Verfügung stehen
         unsigned GetSoldiersStrengthForAttack(const MapPoint dest,
                                               const unsigned char player_attacker, unsigned& soldiers_count) const;

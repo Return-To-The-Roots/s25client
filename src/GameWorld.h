@@ -439,13 +439,13 @@ class GameWorldBase
 
 
         /// Liefert Hafenpunkte im Umkreis von einem bestimmten Militärgebäude
-        void GetHarborPointsAroundMilitaryBuilding(const MapPoint pt, std::vector<unsigned> * harbor_points) const;
+        std::vector<unsigned> GetHarborPointsAroundMilitaryBuilding(const MapPoint pt) const;
         /// returns all sea_ids from which a given building can be attacked by sea
-        void GetValidSeaIDsAroundMilitaryBuildingForAttack(const MapPoint pt, std::vector<bool> * use_seas, const unsigned char player_attacker, std::vector<unsigned>*harbor_points)const;
+        std::vector<unsigned> GetValidSeaIDsAroundMilitaryBuildingForAttack(const MapPoint pt, std::vector<bool>& use_seas, const unsigned char player_attacker)const;
         /// returns all sea_ids found in the given vector from which a given building can be attacked by sea
-        void GetValidSeaIDsAroundMilitaryBuildingForAttackCompare(const MapPoint pt, std::vector<unsigned short> * use_seas, const unsigned char player_attacker)const;
+        void GetValidSeaIDsAroundMilitaryBuildingForAttackCompare(const MapPoint pt, std::vector<unsigned short>& use_seas, const unsigned char player_attacker)const;
         /// Sucht verfügbare Soldaten, um dieses Militärgebäude mit einem Seeangriff anzugreifen
-        void GetAvailableSoldiersForSeaAttack(const unsigned char player_attacker, const MapPoint pt, std::list<PotentialSeaAttacker> * attackers) const;
+        std::vector<PotentialSeaAttacker> GetAvailableSoldiersForSeaAttack(const unsigned char player_attacker, const MapPoint pt) const;
         /// Gibt Anzahl oder geschätzte Stärke(rang summe + anzahl) der verfügbaren Soldaten die zu einem Schiffsangriff starten können von einer bestimmten sea id aus
         unsigned int GetAvailableSoldiersForSeaAttackAtSea(const unsigned char player_attacker, unsigned short seaid, bool count = true) const;
 
