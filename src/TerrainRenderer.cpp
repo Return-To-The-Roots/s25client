@@ -58,28 +58,6 @@ TerrainRenderer::~TerrainRenderer()
     }
 }
 
-void GetPointAround(int& x, int& y, const unsigned dir)
-{
-    switch(dir)
-    {
-        case 0: x = x - 1; break;
-        case 1: x = x - !(y&1); break;
-        case 2: x = x + (y&1); break;
-        case 3: x = x + 1; break;
-        case 4: x = x + (y&1); break;
-        case 5: x = x - !(y&1); break;
-    }
-
-    switch(dir)
-    {
-        default: break;
-        case 1:
-        case 2: --y; break;
-        case 4:
-        case 5: ++y; break;
-    }
-}
-
 TerrainRenderer::PointF TerrainRenderer::GetTerrainAround(MapPoint pt, const unsigned dir)
 {
     PointI ptNb = GetPointAround(PointI(pt), dir);
@@ -632,7 +610,7 @@ void TerrainRenderer::Draw(GameWorldView* gwv, unsigned int* water)
         for(int x = gwv->GetFirstPt().x; x < gwv->GetLastPt().x; ++x)
         {
             Point<int> posOffset;
-            MapPoint tP = ConvertCoords(x, y, &posOffset);
+            MapPoint tP = ConvertCoords(Point<int>(x, y), &posOffset);
 
             unsigned char t = gwv->GetGameWorldViewer()->GetNode(tP).t1;
             if(posOffset != lastOffset)

@@ -323,19 +323,19 @@ GO_Type GameWorldBase::GetGOT(const MapPoint pt) const
         return GOT_NOTHING;
 }
 
-MapPoint GameWorldBase::ConvertCoords(int x, int y) const
+MapPoint GameWorldBase::ConvertCoords(Point<int> pt) const
 {
-    while(x < 0)
-        x += width;
+    while(pt.x < 0)
+        pt.x += width;
 
-    while(y < 0)
-        y += height;
+    while(pt.y < 0)
+        pt.y += height;
 
 
-    x %= width;
-    y %= height;
+    pt.x %= width;
+    pt.y %= height;
 
-    return MapPoint(static_cast<MapCoord>(x), static_cast<MapCoord>(y));
+    return MapPoint(pt);
 }
 
 MapCoord GameWorldBase::CalcDistanceAroundBorderX(const MapCoord x1, const MapCoord x2) const
@@ -1083,7 +1083,7 @@ MapPoint GameWorldBase::GetNeighbour2(const MapPoint pt, unsigned dir) const
         case 10: tx = pt.x+1; break;
         case 11: tx = pt.x+2-((pt.y&1) ? 0 : 1);
     }
-    MapPoint res = ConvertCoords(tx, int(pt.y) + ADD_Y[dir]);
+    MapPoint res = ConvertCoords(Point<int>(tx, int(pt.y) + ADD_Y[dir]));
     return res;
 }
 

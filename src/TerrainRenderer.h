@@ -178,7 +178,6 @@ class TerrainRenderer
 
         /// Konvertiert "falsche Koordinaten", also im Minusbereich oder zu groß wegen Zeichnen, in "richtige Koordinaten"
         /// mit 0 <= x_out < width und 0 <= y_out < height
-        MapPoint ConvertCoords(int x, int y, Point<int>* offset = 0) const{ return ConvertCoords(PointI(x, y), offset); }
         MapPoint ConvertCoords(const PointI pt, Point<int>* offset = 0) const;
         /// liefert den XY-Vertex an der Stelle X,Y
         PointF GetTerrain(const MapPoint pt) { return GetVertex(pt).pos.pos; }

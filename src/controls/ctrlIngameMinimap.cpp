@@ -64,11 +64,10 @@ bool ctrlIngameMinimap::Draw_()
     DrawMap(*minimap);
 
     // Mittleren Punkt berechnen und dort hinscrollen
-    int middle_x = (gwv.GetLastPt().x + gwv.GetFirstPt().x) / 2;
-    int middle_y = (gwv.GetLastPt().y + gwv.GetFirstPt().y) / 2;
+    Point<int> middlePt = (gwv.GetLastPt() + gwv.GetFirstPt()) / 2;
 
     // Koordinaten korrigieren
-    MapPoint middle_corrected = gwv.ConvertCoords(middle_x, middle_y);
+    MapPoint middle_corrected = gwv.ConvertCoords(middlePt);
 
     // Scroll-Auswahl-Bild holen
     glArchivItem_Bitmap* image = LOADER.GetMapImageN(23);

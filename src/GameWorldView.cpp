@@ -110,7 +110,7 @@ void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool
         for(int x = firstPt.x; x < lastPt.x; ++x)
         {
             Point<int> curOffset;
-            MapPoint t = gwv->GetTerrainRenderer()->ConvertCoords(x, y, &curOffset);
+            MapPoint t = gwv->GetTerrainRenderer()->ConvertCoords(Point<int>(x, y), &curOffset);
             Point<int> curPos = Point<int>(gwv->GetTerrain(t)) - offset + curOffset;
 
             if(std::abs(VIDEODRIVER.GetMouseX() - curPos.x) + std::abs(VIDEODRIVER.GetMouseY() - curPos.y) < shortest_len)
@@ -264,7 +264,7 @@ void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool
             {
                 // Coordinate transform
                 Point<int> curOffset;
-                MapPoint t = gwv->GetTerrainRenderer()->ConvertCoords(x, y, &curOffset);
+                MapPoint t = gwv->GetTerrainRenderer()->ConvertCoords(Point<int>(x, y), &curOffset);
                 Point<int> curPos = Point<int>(gwv->GetTerrain(t)) - offset + curOffset;
 
                 // Name bzw Produktivität anzeigen
@@ -387,7 +387,7 @@ void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool
         {
             // Coordinates transform
             Point<int> curOffset;
-            MapPoint t = gwv->GetTerrainRenderer()->ConvertCoords(x, y, &curOffset);
+            MapPoint t = gwv->GetTerrainRenderer()->ConvertCoords(Point<int>(x, y), &curOffset);
             Point<int> curPos = Point<int>(gwv->GetTerrain(t)) - offset + curOffset;
 
             /// Current point indicated by Mouse

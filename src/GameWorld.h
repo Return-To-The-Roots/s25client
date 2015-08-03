@@ -368,7 +368,8 @@ class GameWorldBase
         noFlag* GetRoadFlag(MapPoint pt, unsigned char& dir, unsigned last_i = 255);
 
         /// Konvertiert die Koordinaten.
-        MapPoint ConvertCoords(int x, int y) const;
+        MapPoint ConvertCoords(Point<int> pt) const;
+        MapPoint ConvertCoords(int x, int y) const { return ConvertCoords(Point<int>(x, y)); }
 
         /// Erzeugt eine GUI-ID für die Fenster von Map-Objekten
         inline unsigned CreateGUIID(const MapPoint pt) const
