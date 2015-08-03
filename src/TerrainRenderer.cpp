@@ -631,22 +631,21 @@ void TerrainRenderer::Draw(GameWorldView* gwv, unsigned int* water)
 
         for(int x = gwv->GetFirstPt().x; x < gwv->GetLastPt().x; ++x)
         {
-            Point<int> offset;
-            MapPoint tP = ConvertCoords(x, y, &offset);
+            Point<int> posOffset;
+            MapPoint tP = ConvertCoords(x, y, &posOffset);
 
             unsigned char t = gwv->GetGameWorldViewer()->GetNode(tP).t1;
-            if(offset != lastOffset)
+            if(posOffset != lastOffset)
                 last = 255;
 
-            if(t == last)
+            if(t == last && tP != MapPoint(0, 0))
                 ++sorted_textures[t].back().count;
             else
             {
-                MapTile tmp(GetTriangleIdx(tP), offset);
+                MapTile tmp(GetTriangleIdx(tP), posOffset);
                 sorted_textures[t].push_back(tmp);
+                last = t;
             }
-
-            last = t;
 
             t = gwv->GetGameWorldViewer()->GetNode(tP).t2;
 
@@ -654,7 +653,7 @@ void TerrainRenderer::Draw(GameWorldView* gwv, unsigned int* water)
                 ++sorted_textures[t].back().count;
             else
             {
-                MapTile tmp(GetTriangleIdx(tP) + 1, offset);
+                MapTile tmp(GetTriangleIdx(tP) + 1, posOffset);
                 sorted_textures[t].push_back(tmp);
             }
 
@@ -671,7 +670,8 @@ void TerrainRenderer::Draw(GameWorldView* gwv, unsigned int* water)
                 curBorders.top_down[1],
             };
 
-            boost::array<unsigned char, 6> offsets = 
+            // Offsets into gl_* arrays
+            boost::array<unsigned, 6> offsets = 
             {
                 curBorders.left_right_offset[0],
                 curBorders.left_right_offset[1],
@@ -687,19 +687,22 @@ void TerrainRenderer::Draw(GameWorldView* gwv, unsigned int* water)
                     continue;
                 if(tiles[i] == last_border)
                 {
-                    ++sorted_borders[last_border - 1].back().count;
-                    assert(sorted_borders[last_border - 1].back().tileOffset + sorted_borders[last_border - 1].back().count < gl_vertices.size());
-                }else
-                {
-                    last_border = tiles[i];
-                    BorderTile tmp((int)offsets[ i ], offset, tP);
-                    sorted_borders[last_border - 1].push_back(tmp);
+                    BorderTile& curTile = sorted_borders[last_border - 1].back();
+                    // Check that we did not wrap around the map and the expected offset matches
+                    if(curTile.tileOffset + curTile.count == offsets[i])
+                    {
+                        ++curTile.count;
+                        continue;
+                    }
                 }
+                last_border = tiles[i];
+                BorderTile tmp(offsets[i], posOffset);
+                sorted_borders[last_border - 1].push_back(tmp);
             }
 
-            PrepareWaysPoint(sorted_roads, gwv, tP, offset);
+            PrepareWaysPoint(sorted_roads, gwv, tP, posOffset);
 
-            lastOffset = offset;
+            lastOffset = posOffset;
         }
     }
 
@@ -779,7 +782,7 @@ void TerrainRenderer::Draw(GameWorldView* gwv, unsigned int* water)
                     lastOffset = it->posOffset;
                 }
 
-                assert(it->tileOffset + it->count < width * height * 2u);
+                assert(it->tileOffset + it->count <= width * height * 2u);
                 glDrawArrays(GL_TRIANGLES, it->tileOffset * 3, it->count * 3); // Arguments are in Elements. 1 triangle has 3 values
             }
         }
@@ -805,7 +808,7 @@ void TerrainRenderer::Draw(GameWorldView* gwv, unsigned int* water)
                 glTranslatef( float(trans.x), float(trans.y), 0.0f);
                 lastOffset = it->posOffset;
             }
-            assert(it->tileOffset + it->count < gl_vertices.size());
+            assert(it->tileOffset + it->count <= gl_vertices.size());
             glDrawArrays(GL_TRIANGLES, it->tileOffset * 3, it->count * 3); // Arguments are in Elements. 1 triangle has 3 values
         }
     }
@@ -930,11 +933,7 @@ void TerrainRenderer::PrepareWaysPoint(PreparedRoads& sorted_roads, GameWorldVie
             }
 
             sorted_roads[type].push_back(
-                PreparedRoad(type,
-                             pos, pos2,
-                             GetColor(t), GetColor(ta),
-                             dir
-                            )
+                PreparedRoad(type, pos, pos2, GetColor(t), GetColor(ta), dir)
             );
         }
     }

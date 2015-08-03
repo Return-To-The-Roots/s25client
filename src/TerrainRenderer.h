@@ -43,8 +43,7 @@ class TerrainRenderer
             unsigned tileOffset;
             unsigned count;
             Point<int> posOffset;
-            MapPoint pt;
-            BorderTile(unsigned tileOffset, Point<int> posOffset, MapPoint pt): tileOffset(tileOffset), count(1), posOffset(posOffset), pt(pt){}
+            BorderTile(unsigned tileOffset, Point<int> posOffset): tileOffset(tileOffset), count(1), posOffset(posOffset){}
         };
 
         struct PreparedRoad
