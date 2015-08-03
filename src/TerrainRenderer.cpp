@@ -42,10 +42,7 @@ static char THIS_FILE[] = __FILE__;
 
 TerrainRenderer::TerrainRenderer() :
 	width(0), height(0),
-    vertices(NULL),
-    gl_vertices(NULL), gl_texcoords(NULL), gl_colors(NULL),
-    vbo_vertices(0), vbo_texcoords(0), vbo_colors(0),
-    borders(NULL)
+    vbo_vertices(0), vbo_texcoords(0), vbo_colors(0)
 {}
 
 TerrainRenderer::~TerrainRenderer()
@@ -599,7 +596,7 @@ void TerrainRenderer::Draw(const GameWorldView& gwv, unsigned int* water)
     boost::array< std::vector<BorderTile>, 5> sorted_borders;
     PreparedRoads sorted_roads;
 
-    Point<int> lastOffset;
+    Point<int> lastOffset(0, 0);
  
     // Beim zeichnen immer nur beginnen, wo man auch was sieht
     for(int y = gwv.GetFirstPt().y; y < gwv.GetLastPt().y; ++y)
@@ -639,25 +636,25 @@ void TerrainRenderer::Draw(const GameWorldView& gwv, unsigned int* water)
 
             const Borders& curBorders = borders[GetVertexIdx(tP)];
             boost::array<unsigned char, 6> tiles =
-            {
+            {{
                 curBorders.left_right[0],
                 curBorders.left_right[1],
                 curBorders.right_left[0],
                 curBorders.right_left[1],
                 curBorders.top_down[0],
-                curBorders.top_down[1],
-            };
+                curBorders.top_down[1]
+            }};
 
             // Offsets into gl_* arrays
             boost::array<unsigned, 6> offsets = 
-            {
+            {{
                 curBorders.left_right_offset[0],
                 curBorders.left_right_offset[1],
                 curBorders.right_left_offset[0],
                 curBorders.right_left_offset[1],
                 curBorders.top_down_offset[0],
-                curBorders.top_down_offset[1],
-            };
+                curBorders.top_down_offset[1]
+            }};
 
             for(unsigned char i = 0; i < 6; ++i)
             {
@@ -919,7 +916,7 @@ void TerrainRenderer::DrawWays(const PreparedRoads& sorted_roads)
 {
     // 2D Array: [3][4]
     static const boost::array<PointI, 12> begin_end_coords =
-    {
+    {{
         PointI(-3, -3),
         PointI(-3,  3),
         PointI(-3,  3),
@@ -934,7 +931,7 @@ void TerrainRenderer::DrawWays(const PreparedRoads& sorted_roads)
         PointI(-3, -3),
         PointI(-3, -3),
         PointI( 3,  3)
-    };
+    }};
 
     if (SETTINGS.video.vbo)
     {

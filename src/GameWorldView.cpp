@@ -508,16 +508,16 @@ void GameWorldView::DrawBoundaryStone(const int x, const int y, const MapPoint t
         {
             if(boundary_stones[i + 1])
             {
-                Point<int> tmp = curPos - Point<int>( (gwv->GetTerrain(t) - Point<float>(gwv->GetTerrainRenderer()->GetTerrainAround(t, 3 + i))) / 2.0f );
+                Point<int> tmp = curPos - Point<int>( (gwv->GetTerrain(t) - gwv->GetTerrainRenderer()->GetTerrainAround(t, 3 + i)) / 2.0f );
 
                 Loader::boundary_stone_cache[nation].draw(
-                    curPos.x, curPos.y,
+                    tmp.x, tmp.y,
                     fow ? FOW_DRAW_COLOR : COLOR_WHITE,
                     fow ? CalcPlayerFOWDrawColor(player_color) : player_color);
 
                 /* Why twice?
                 Loader::boundary_stone_cache[nation].draw(
-                    curPos.x, curPos.y,
+                    tmp.x, tmp.y,
                     fow ? FOW_DRAW_COLOR : COLOR_WHITE,
                     fow ? CalcPlayerFOWDrawColor(player_color) : player_color);*/
             }
