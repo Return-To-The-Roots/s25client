@@ -302,34 +302,33 @@ void nobMilitary::HandleEvent(const unsigned int id)
             // Von hinten durchgehen
             // Wenn der nachfolgende (schwächere) Soldat einen niedrigeren Rang hat,
             // wird dieser ebenfalls befördert usw.!
-
+            std::vector<nofPassiveSoldier*> upgradedSoldiers;
             // Rang des letzten beförderten Soldaten, 4-MaxRank am Anfang setzen, damit keiner über den maximalen Rang befördert wird
             unsigned char last_rank = MAX_MILITARY_RANK - GAMECLIENT.GetGGS().getSelection(ADDON_MAX_RANK);
-
-            for(SortedTroopsContainer::reverse_iterator it = troops.rbegin(); it != troops.rend(); ++it)
+            for(SortedTroopsContainer::reverse_iterator it = troops.rbegin(); it != troops.rend();)
             {
                 // Es wurde schon einer befördert, dieser Soldat muss nun einen niedrigeren Rang
                 // als der letzte haben, damit er auch noch befördert werden kann
                 if((*it)->GetRank() < last_rank)
                 {
+                    nofPassiveSoldier* soldier = *it;
                     // Rang merken
-                    last_rank = (*it)->GetRank();
+                    last_rank = soldier->GetRank();
+                    // Remove from sorted container as changing it breaks sorting
+                    it = helpers::erase(troops, it);
                     // Dann befördern
-                    (*it)->Upgrade();
-                }
+                    soldier->Upgrade();
+                    upgradedSoldiers.push_back(soldier);
+                }else
+                    ++it;
             }
 
             // Wurde jemand befördert?
-            if(last_rank < MAX_MILITARY_RANK - GAMECLIENT.GetGGS().getSelection(ADDON_MAX_RANK))
+            if(!upgradedSoldiers.empty())
             {
-                // Beförderung kann Reihenfolge im Container ändern, neu sortieren.
-                SortedTroopsContainer troops_resorted;
-                for(SortedTroopsContainer::iterator it = troops.begin(); it != troops.end(); ++it)
-                {
-                    troops_resorted.insert(*it);
-                }
-
-                troops = troops_resorted;
+                // Reinsert upgraded soldiers
+                for(std::vector<nofPassiveSoldier*>::iterator it = upgradedSoldiers.begin(); it != upgradedSoldiers.end(); ++it)
+                    troops.insert(*it);
 
                 // Goldmünze verbrauchen
                 --coins;
