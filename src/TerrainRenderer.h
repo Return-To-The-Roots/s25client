@@ -27,37 +27,38 @@
 class GameWorldViewer;
 class GameWorldView;
 
-struct MapTile
-{
-    Point<int> pos;
-    unsigned int count;
-    Point<int> offset;
-    MapTile(const Point<int> pos, unsigned count, Point<int> offset): pos(pos), count(count), offset(offset){}
-};
-
-struct BorderTile
-{
-    int offset;
-    unsigned int count;
-    Point<int> posOffset;
-};
-
-struct PreparedRoad
-{
-    unsigned char type;
-    Point<float> pos, pos2;
-    float color1, color2;
-    unsigned char dir;
-
-    PreparedRoad(unsigned char type, Point<float> pos, Point<float> pos2, float color1, float color2, unsigned char dir) : type(type), pos(pos), pos2(pos2), color1(color1), color2(color2), dir(dir) {}
-
-    bool operator<(const PreparedRoad b) const {return(type < b.type);}
-};
-
-
 /// Klasse, die für das grafische Anzeigen (Rendern) des Terrains zuständig ist
 class TerrainRenderer
 {
+        struct MapTile
+        {
+            unsigned tileOffset;
+            unsigned int count;
+            Point<int> posOffset;
+            MapTile(unsigned tileOffset, Point<int> posOffset): tileOffset(tileOffset), count(1), posOffset(posOffset){}
+        };
+
+        struct BorderTile
+        {
+            unsigned tileOffset;
+            unsigned count;
+            Point<int> posOffset;
+            MapPoint pt;
+            BorderTile(unsigned tileOffset, Point<int> posOffset, MapPoint pt): tileOffset(tileOffset), count(1), posOffset(posOffset), pt(pt){}
+        };
+
+        struct PreparedRoad
+        {
+            unsigned char type;
+            Point<float> pos, pos2;
+            float color1, color2;
+            unsigned char dir;
+
+            PreparedRoad(unsigned char type, Point<float> pos, Point<float> pos2, float color1, float color2, unsigned char dir) : type(type), pos(pos), pos2(pos2), color1(color1), color2(color2), dir(dir) {}
+
+            bool operator<(const PreparedRoad b) const {return(type < b.type);}
+        };
+
         typedef Point<float> PointF;
         typedef Point<int> PointI;
         struct ColorPoint
@@ -84,7 +85,7 @@ class TerrainRenderer
 
         struct Triangle
         {
-            boost::array<Point<float>, 3> pos;
+            boost::array<PointF, 3> pos;
         };
 
         struct ColorTriangle
@@ -116,21 +117,22 @@ class TerrainRenderer
         unsigned int vbo_colors;
 
         std::vector<Borders> borders;
-        unsigned int border_count;
 
         typedef boost::array<std::vector<PreparedRoad>, 4> PreparedRoads;
 
     private:
 
-        unsigned GetTRIdx(const MapPoint pt) const
-        { return static_cast<unsigned>(pt.y) * static_cast<unsigned>(width) + static_cast<unsigned>(pt.x); }
+        /// Returns the index of a vertex. Used to access vertices and borders
+        unsigned GetVertexIdx(const MapPoint pt) const { return static_cast<unsigned>(pt.y) * static_cast<unsigned>(width) + static_cast<unsigned>(pt.x); }
+        /// Returns the index of the first triangle (each point has 2). Used to access gl_* structs
+        unsigned GetTriangleIdx(const MapPoint pt) const { return GetVertexIdx(pt) * 2; }
 
         /// liefert den Vertex an der Stelle X, Y.
-        Vertex& GetVertex(const MapPoint pt) { return vertices[GetTRIdx(pt)]; }
-        const Vertex& GetVertex(const MapPoint pt) const { return vertices[GetTRIdx(pt)]; }
+        Vertex& GetVertex(const MapPoint pt) { return vertices[GetVertexIdx(pt)]; }
+        const Vertex& GetVertex(const MapPoint pt) const { return vertices[GetVertexIdx(pt)]; }
 
         /// erzeugt die Terrain-Vertices.
-        void GenerateVertices(const GameWorldViewer* gwb);
+        void GenerateVertices(const GameWorldViewer* gwv);
         /// erzeugt Vertex (update, wenn die Daten ggf. im Vertexbuffer ersetzt werden sollen, bei Veränderung)
         void UpdateVertexPos(const MapPoint pt, const GameWorldViewer* gwv);
         void UpdateVertexColor(const MapPoint pt, const GameWorldViewer* gwv);
