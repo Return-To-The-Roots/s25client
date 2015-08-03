@@ -74,10 +74,10 @@ iwMilitaryBuilding::iwMilitaryBuilding(GameWorldViewer* const gwv, dskGameInterf
     // Gebäudebild
     AddImage(8, 117, 114, LOADER.GetNationImageN(building->GetNation(), 250 + 5 * building->GetBuildingType()));
 	// "Go to next" (building of same type)
-    AddImageButton( 9, 179, 115, 30, 32, TC_GREY, LOADER.GetImageN("io", 107), _("Go to next military building"));
+    AddImageButton( 9, 179, 115, 30, 32, TC_GREY, LOADER.GetImageN("io_new", 11), _("Go to next military building"));
 	//addon military control active? -> show button
 	if(GAMECLIENT.GetGGS().isEnabled(ADDON_MILITARY_CONTROL))
-		AddImageButton( 10, 124, 147, 30, 32, TC_GREY, LOADER.GetImageN("io_new", 4), _("Send max rank soldiers to a warehouse"));
+		AddImageButton( 10, 124, 147, 30, 32, TC_GREY, LOADER.GetImageN("io_new", 12), _("Send max rank soldiers to a warehouse"));
 }
 
 void iwMilitaryBuilding::Msg_PaintAfter()

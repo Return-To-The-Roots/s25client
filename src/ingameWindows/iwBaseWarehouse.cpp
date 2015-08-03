@@ -74,9 +74,9 @@ iwBaseWarehouse::iwBaseWarehouse(GameWorldViewer* const gwv, dskGameInterface* c
     // Alle auswählen bzw setzen!
     AddImageButton(11, 122, 335, 32, 32, TC_GREY, LOADER.GetImageN("io", 223), _("Select all"));
     // "Gehe Zu Ort"
-    AddImageButton(13, 122, 369, 15, 32, TC_GREY, LOADER.GetImageN("io", 107), _("Go to place"));
+    AddImageButton(13, 122, 369, 15, 32, TC_GREY, LOADER.GetImageN("io_new", 10), _("Go to place"));
 	// Go to next warehouse
-	AddImageButton(14, 139, 369, 15, 32, TC_GREY, LOADER.GetImageN("io", 107), _("Go to next warehouse"));
+	AddImageButton(14, 139, 369, 15, 32, TC_GREY, LOADER.GetImageN("io_new", 13), _("Go to next warehouse"));
 
     // Ein/Auslager Overlays entsprechend setzen
     // bei Replays die reellen Einstellungen nehmen, weils die visuellen da logischweise nich gibt!

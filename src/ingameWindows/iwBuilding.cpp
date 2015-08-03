@@ -115,7 +115,7 @@ iwBuilding::iwBuilding(GameWorldViewer* const gwv, dskGameInterface* const gi, n
     AddText(10, 113, 50, _("(House unoccupied)"), COLOR_RED, glArchivItem_Font::DF_CENTER, NormalFont);
 
 	// "Go to next" (building of same type)
-    AddImageButton( 12, 179, 115, 30, 32, TC_GREY, LOADER.GetImageN("io", 107), _("Go to next building of same type"));
+    AddImageButton( 12, 179, 115, 30, 32, TC_GREY, LOADER.GetImageN("io_new", 11), _("Go to next building of same type"));
 }
 
 
