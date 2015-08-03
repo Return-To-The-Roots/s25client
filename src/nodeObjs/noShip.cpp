@@ -1107,7 +1107,7 @@ void noShip::SeaAttackerWishesNoReturn()
 /// Schiffs-Angreifer sind nach dem Angriff wieder zurückgekehrt
 void noShip::AddAttacker(nofAttacker* attacker)
 {
-    assert(std::find(figures.begin(), figures.end(), attacker) == figures.end());
+    assert(!helpers::contains(figures, attacker));
 
     figures.push_back(attacker);
     // Nun brauchen wir quasi einen Angreifer weniger

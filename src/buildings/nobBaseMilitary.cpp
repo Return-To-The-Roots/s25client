@@ -397,12 +397,12 @@ bool nobBaseMilitary::SendSuccessor(const MapPoint pt, const unsigned short radi
 
 bool nobBaseMilitary::Test(nofAttacker* attacker)
 {
-    return std::find(aggressors.begin(), aggressors.end(), attacker) != aggressors.end();
+    return helpers::contains(aggressors, attacker);
 }
 
 bool nobBaseMilitary::TestOnMission(nofActiveSoldier* soldier)
 {
-    return std::find(troops_on_mission.begin(), troops_on_mission.end(), soldier) != troops_on_mission.end();
+    return helpers::contains(troops_on_mission, soldier);
 }
 
 /// Bricht einen aktuell von diesem Haus gestarteten Angriff/aggressive Verteidigung ab, d.h. setzt die Soldaten

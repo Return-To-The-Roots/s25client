@@ -22,6 +22,7 @@
 #pragma once
 
 #include "const_addons.h"
+#include "helpers/containerUtils.h"
 #include <string>
 #include <vector>
 #include <algorithm>
@@ -91,7 +92,7 @@ class AddonList : public Addon
 
         void addOption(const std::string& name)
         {
-            if(std::find(options.begin(), options.end(), name) == options.end())
+            if(!helpers::contains(options, name))
                 options.push_back(name);
         }
 

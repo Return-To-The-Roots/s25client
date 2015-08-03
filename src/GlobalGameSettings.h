@@ -21,6 +21,7 @@
 #define GlobalGameSettings_H_INCLUDED
 
 #include "addons/Addons.h"
+#include "helpers/containerUtils.h"
 #include <iostream>
 #include <vector>
 #include <algorithm>
@@ -97,7 +98,7 @@ class GlobalGameSettings
             if(!addon)
                 return;
 
-            if(std::find(addons.begin(), addons.end(), addon->getId()) == addons.end())
+            if(!helpers::contains(addons, addon->getId()))
                 addons.push_back(item(addon));
 
             std::sort(addons.begin(), addons.end());

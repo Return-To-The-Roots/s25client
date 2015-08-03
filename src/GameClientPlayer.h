@@ -30,7 +30,7 @@
 #include "TradeGraph.h"
 #include "Point.h"
 #include "GameMessage_GameCommand.h"
-
+#include "helpers/containerUtils.h"
 
 class GameWorld;
 class noFlag;
@@ -304,7 +304,7 @@ class GameClientPlayer : public GamePlayerInfo
         /// Ware zur globalen Warenliste hinzufügen und entfernen
         void RegisterWare(Ware* ware) { ware_list.push_back(ware); }
         void RemoveWare(Ware* ware) { ware_list.remove(ware); }
-        bool IsWareRegistred(Ware* ware) { return (std::find(ware_list.begin(), ware_list.end(), ware) != ware_list.end()); }
+        bool IsWareRegistred(Ware* ware) { return (helpers::contains(ware_list, ware)); }
         bool IsWareDependent(Ware* ware);
 
         /// Fügt Waren zur Inventur hinzu

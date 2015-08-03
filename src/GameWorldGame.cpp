@@ -54,6 +54,7 @@
 #include "WindowManager.h"
 #include "GameInterface.h"
 #include "drivers/VideoDriverWrapper.h"
+#include "helpers/containerUtils.h"
 
 #include <algorithm>
 #include <stdexcept>
@@ -202,7 +203,7 @@ void GameWorldGame::AddFigure(noBase* fig, const MapPoint pt)
         return;
 
     std::list<noBase*>& figures = GetNode(pt).figures;
-    assert(std::find(figures.begin(), figures.end(), fig) == figures.end());
+    assert(!helpers::contains(figures, fig));
     figures.push_back(fig);
 
 #ifndef NDEBUG
@@ -211,7 +212,7 @@ void GameWorldGame::AddFigure(noBase* fig, const MapPoint pt)
         MapPoint nb = GetNeighbour(pt, i);
 
         const std::list<noBase*>& figures = GetNode(nb).figures;
-        if(std::find(figures.begin(), figures.end(), fig) != figures.end())
+        if(helpers::contains(figures, fig))
             throw std::runtime_error("Added figure that is in surrounding?");
     }
 #endif // NDEBUG
@@ -1985,8 +1986,7 @@ bool GameWorldGame::FoundColony(const unsigned harbor_point, const unsigned char
 /// Gibt zurück, ob eine bestimmte Baustellen eine Baustelle ist, die vom Schiff aus errichtet wurde
 bool GameWorldGame::IsHarborBuildingSiteFromSea(const noBuildingSite* building_site) const
 {
-    return (std::find(harbor_building_sites_from_sea.begin(), 
-                      harbor_building_sites_from_sea.end(), building_site) != harbor_building_sites_from_sea.end());
+    return helpers::contains(harbor_building_sites_from_sea, building_site);
 }
 
 

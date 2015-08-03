@@ -210,7 +210,7 @@ class nobBaseWarehouse : public nobBaseMilitary
         //// Entfernt eine abhängige Ware wieder aus der Liste (wird mit TakeWare hinzugefügt)
 		void RemoveDependentWare(Ware* ware) { dependent_wares.remove(ware); }
         /// Überprüft, ob Ware abhängig ist
-		bool IsWareDependent(Ware* ware) { return std::find(dependent_wares.begin(),dependent_wares.end(),ware)!=dependent_wares.end(); }
+		bool IsWareDependent(Ware* ware) { return helpers::contains(dependent_wares, ware); }
 		std::list<Ware*> GetDependentWares() {return dependent_wares;}
         /// Prüft, ob es Waren zum Auslagern gibt
         bool AreWaresToEmpty() const;

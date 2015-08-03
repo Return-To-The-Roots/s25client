@@ -654,7 +654,7 @@ void noFigure::HandleEvent(const unsigned int id)
 
             // Wenn Figur verschwunden ist, muss ihr ehemaliger gesamter Sichtbereich noch einmal
             // neue berechnet werden
-            if(std::find(figures.begin(), figures.end(), this) == figures.end())
+            if(!helpers::contains(figures, this))
                 CalcVisibilities(old_pos);
         }
 

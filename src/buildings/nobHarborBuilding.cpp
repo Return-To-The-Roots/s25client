@@ -37,7 +37,7 @@
 #include "nobMilitary.h"
 #include "figures/nofAttacker.h"
 #include "figures/nofDefender.h"
-
+#include "helpers/containerUtils.h"
 #include "ogl/glSmartBitmap.h"
 
 #include <set>
@@ -939,7 +939,7 @@ unsigned nobHarborBuilding::GetNeededShipsCount() const
 
         for (std::list<FigureForShip>::const_iterator it = figures_for_ships.begin(); it != figures_for_ships.end(); ++it)
         {
-            if (std::find(destinations.begin(), destinations.end(), it->dest) == destinations.end())
+            if (!helpers::contains(destinations, it->dest))
             {
                 destinations.push_back(it->dest);
                 ++count;
@@ -948,8 +948,7 @@ unsigned nobHarborBuilding::GetNeededShipsCount() const
 
         for (std::list<Ware*>::const_iterator it = wares_for_ships.begin(); it != wares_for_ships.end(); ++it)
         {
-            if (std::find(destinations.begin(), destinations.end(), (*it)->GetNextHarbor())
-                    == destinations.end())
+            if (!helpers::contains(destinations, (*it)->GetNextHarbor()))
             {
                 destinations.push_back((*it)->GetNextHarbor());
                 ++count;
@@ -964,8 +963,7 @@ unsigned nobHarborBuilding::GetNeededShipsCount() const
         for(std::list<SoldierForShip>::const_iterator it = soldiers_for_ships.begin();
                 it != soldiers_for_ships.end(); ++it)
         {
-            if(std::find(different_dests.begin(), different_dests.end(), it->dest)
-                    == different_dests.end())
+            if(!helpers::contains(different_dests, it->dest))
             {
                 different_dests.push_back(it->dest);
                 ++count;
@@ -1235,9 +1233,7 @@ void nobHarborBuilding::GetAttackerBuildingsForSeaIdAttack(std::vector<SeaAttack
         if((*it)->GetPlayer() != player || gwg->CalcDistance((*it)->GetPos(), pos) > BASE_ATTACKING_DISTANCE)
             continue;
         // Gebäude suchen, vielleicht schon vorhanden? Dann können wir uns den pathfinding Aufwand sparen!
-        std::vector<SeaAttackerBuilding>::iterator it2 = std::find(buildings->begin(), buildings->end(), static_cast<nobMilitary*>(*it));
-        // in liste gefunden?
-        if(it2 != buildings->end())
+        if(helpers::contains(*buildings, static_cast<nobMilitary*>(*it)))
         {
             // Dann zum nächsten test
             continue;
@@ -1279,8 +1275,7 @@ void nobHarborBuilding::GetAttackerBuildingsForSeaAttack(std::vector<SeaAttacker
         }
 
         // Gebäude suchen, vielleicht schon vorhanden?
-        std::vector<SeaAttackerBuilding>::iterator it2 = std::find(buildings->begin(), buildings->end(),
-                static_cast<nobMilitary*>(*it));
+        std::vector<SeaAttackerBuilding>::iterator it2 = std::find(buildings->begin(), buildings->end(), static_cast<nobMilitary*>(*it));
         // Noch nicht vorhanden?
         if(it2 == buildings->end())
         {
@@ -1458,7 +1453,7 @@ bool nobHarborBuilding::IsBeingDestroyedNow() const
 {
     // check if this harbor is in the known harbors. if not, it is probably being destroyed right now.
     const std::list<nobHarborBuilding*> allHarbors = gwg->GetPlayer(player)->GetHarbors();
-    if (std::find(allHarbors.begin(), allHarbors.end(), this) == allHarbors.end())
+    if (!helpers::contains(allHarbors, this))
     {
         return true;
     }

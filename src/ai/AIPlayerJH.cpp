@@ -1239,7 +1239,7 @@ void AIPlayerJH::DistributeMaxRankSoldiersByBlocking(unsigned limit,nobBaseWareh
 		//if understaffed was found block in all with >=limit else unblock in all
 		for (std::list<nobBaseWarehouse*>::const_iterator it=aii->GetStorehouses().begin();it!=aii->GetStorehouses().end();it++)
 		{
-			if(std::find(frontierwhs.begin(),frontierwhs.end(),(*it))!=frontierwhs.end()) //frontier wh?
+			if(helpers::contains(frontierwhs, (*it))) //frontier wh?
 			{
 				if(understaffedwh)
 				{
@@ -1980,7 +1980,7 @@ void AIPlayerJH::TrySeaAttack()
     for(std::vector<noShip*>::const_iterator it = aii->GetShips().begin(); it != aii->GetShips().end(); it++)
     {
         //sea id not already listed as valid or invalid?
-        if(std::find(seaidswithattackers.begin(), seaidswithattackers.end(), (*it)->GetSeaID()) == seaidswithattackers.end() && std::find(invalidseas.begin(), invalidseas.end(), (*it)->GetSeaID()) == invalidseas.end())
+        if(!helpers::contains(seaidswithattackers, (*it)->GetSeaID()) && !helpers::contains(invalidseas, (*it)->GetSeaID()))
         {
             unsigned int attackercount = gwb.GetAvailableSoldiersForSeaAttackAtSea(playerid, (*it)->GetSeaID(), false);
             if(attackercount) //got attackers at this sea id? -> add to valid list
@@ -2213,7 +2213,7 @@ bool AIPlayerJH::IsFlagPartofCircle(const noFlag* startFlag, unsigned maxlen, co
             if (!flag)
                 return(false);
 
-            bool alreadyinlist = std::find(oldFlags.begin(), oldFlags.end(), flag->GetPos()) != oldFlags.end();
+            bool alreadyinlist = helpers::contains(oldFlags, flag->GetPos());
             if(!alreadyinlist)
             {
                 oldFlags.push_back(flag->GetPos());
@@ -2713,9 +2713,9 @@ unsigned AIPlayerJH::GetCountofAIRelevantSeaIds()
         {
             if(sea_ids[r] > 0) //there is a sea id? -> check if it is already a validid or a once found id
             {
-                if(std::find(validseaids.begin(), validseaids.end(), sea_ids[r]) == validseaids.end()) //not yet in validseas?
+                if(!helpers::contains(validseaids, sea_ids[r])) //not yet in validseas?
                 {
-                    if(std::find(onetimeuseseaids.begin(), onetimeuseseaids.end(), sea_ids[r]) == onetimeuseseaids.end()) //not yet in onetimeuseseaids?
+                    if(!helpers::contains(onetimeuseseaids, sea_ids[r])) //not yet in onetimeuseseaids?
                         onetimeuseseaids.push_back(sea_ids[r]);
                     else
                     {

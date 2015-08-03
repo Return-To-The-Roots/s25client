@@ -41,6 +41,7 @@
 #include "ingameWindows/iwMissionStatement.h"
 #include "luaIncludes.h"
 #include "Log.h"
+#include "helpers/containerUtils.h"
 #include <set>
 #include <stdexcept>
 
@@ -1543,7 +1544,7 @@ void GameWorldBase::GetValidSeaIDsAroundMilitaryBuildingForAttackCompare(const M
 						if(!sea_ids[z])
                             continue;
 						//sea id is in compare list and not yet in confirmed list? add to confirmed list if the pathfinding is ok
-						if(std::find(use_seas->begin(), use_seas->end(), sea_ids[z])!=use_seas->end() && !(std::find(confirmedseaids.begin(), confirmedseaids.end(), sea_ids[z])!=confirmedseaids.end()))
+						if(helpers::contains(*use_seas, sea_ids[z]) && !helpers::contains(confirmedseaids, sea_ids[z]))
 						{
 							bool previouslytested=false;
 							for(unsigned k=0;k<z;k++)
@@ -1579,7 +1580,7 @@ void GameWorldBase::GetValidSeaIDsAroundMilitaryBuildingForAttackCompare(const M
 						if(!sea_ids[z])
                             continue;
 						//sea id is in compare list and not yet in confirmed list? add to confirmed list
-						if(std::find(use_seas->begin(), use_seas->end(), sea_ids[z])!=use_seas->end() && !(std::find(confirmedseaids.begin(), confirmedseaids.end(), sea_ids[z])!=confirmedseaids.end()))
+						if(helpers::contains(*use_seas, sea_ids[z]) && !helpers::contains(confirmedseaids, sea_ids[z]))
 						{
 							bool previouslytested=false;
 							for(unsigned k=0;k<z;k++) //checks previously tested sea ids to skip pathfinding

@@ -24,6 +24,7 @@
 #include "Singleton.h"
 #include "gameData/GameConsts.h"
 #include "GameObject.h"
+#include "helpers/containerUtils.h"
 
 #include <list>
 #include <map>
@@ -87,7 +88,7 @@ class EventManager
         /// Event entfernen
         void RemoveEvent(EventPointer ep);
         /// Objekt will gekillt werden
-        void AddToKillList(GameObject* obj) { assert(std::find(kill_list.begin(), kill_list.end(), obj) == kill_list.end()); kill_list.push_back(obj); }
+        void AddToKillList(GameObject* obj) { assert(!helpers::contains(kill_list, obj)); kill_list.push_back(obj); }
 
         /// Serialisieren
         void Serialize(SerializedGameData* sgd) const;
