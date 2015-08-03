@@ -374,10 +374,9 @@ class GameWorldBase
         inline unsigned CreateGUIID(const MapPoint pt) const
         { return 1000 + width * pt.y + pt.x; }
         /// Gibt Terrainkoordinaten zurück
-        inline float GetTerrainX(const MapPoint pt)
-        { return tr.GetTerrainX(pt); }
-        inline float GetTerrainY(const MapPoint pt)
-        { return tr.GetTerrainY(pt); }
+        inline Point<float> GetTerrain(const MapPoint pt){ return tr.GetTerrain(pt); }
+        inline float GetTerrainX(const MapPoint pt){ return GetTerrain(pt).x; }
+        inline float GetTerrainY(const MapPoint pt){ return GetTerrain(pt).y; }
 
         /// Verändert die Höhe eines Punktes und die damit verbundenen Schatten
         void ChangeAltitude(const MapPoint pt, const unsigned char altitude);
@@ -584,12 +583,13 @@ class GameWorldView
         /// Gibt Scrolling-Offset zurück
         inline int GetXOffset() const { return offset.x - pos.x; }
         inline int GetYOffset() const { return offset.y - pos.y; }
+        inline Point<int> GetOffset() const { return offset - Point<int>(pos); }
         /// Gibt ersten Punkt an, der beim Zeichnen angezeigt wird
         inline Point<int> GetFirstPt() const { return firstPt; }
         /// Gibt letzten Punkt an, der beim Zeichnen angezeigt wird
         inline Point<int> GetLastPt() const { return lastPt; }
 
-        void DrawBoundaryStone(const int x, const int y, const MapPoint t, const int xpos, const int ypos, Visibility vis);
+        void DrawBoundaryStone(const int x, const int y, const MapPoint t, const Point<int> pos, Visibility vis);
 
         void Resize(unsigned short width, unsigned short height);
 

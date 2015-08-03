@@ -109,23 +109,20 @@ void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool
 
         for(int x = firstPt.x; x < lastPt.x; ++x)
         {
-            int xo, yo;
-            MapPoint t = gwv->GetTerrainRenderer()->ConvertCoords(x, y, &xo, &yo);
+            Point<int> curOffset;
+            MapPoint t = gwv->GetTerrainRenderer()->ConvertCoords(x, y, &curOffset);
+            Point<int> curPos = Point<int>(gwv->GetTerrain(t)) - offset + curOffset;
 
-
-            int xpos = int(gwv->GetTerrainRenderer()->GetTerrainX(t)) - offset.x + xo;
-            int ypos = int(gwv->GetTerrainRenderer()->GetTerrainY(t)) - offset.y + yo;
-
-            if(std::abs(VIDEODRIVER.GetMouseX() - static_cast<int>(xpos)) + std::abs(VIDEODRIVER.GetMouseY() - static_cast<int>(ypos)) < shortest_len)
+            if(std::abs(VIDEODRIVER.GetMouseX() - curPos.x) + std::abs(VIDEODRIVER.GetMouseY() - curPos.y) < shortest_len)
             {
                 selPt = t;
-                selO = Point<int>(xo, yo);
-                shortest_len = std::abs(VIDEODRIVER.GetMouseX() - static_cast<int>(xpos)) + std::abs(VIDEODRIVER.GetMouseY() - static_cast<int>(ypos));
+                selO = curOffset;
+                shortest_len = std::abs(VIDEODRIVER.GetMouseX() - curPos.x) + std::abs(VIDEODRIVER.GetMouseY() - curPos.y);
             }
 
             Visibility visibility = gwv->GetVisibility(t);
 
-            DrawBoundaryStone(x, y, t, xpos, ypos, visibility);
+            DrawBoundaryStone(x, y, t, curPos, visibility);
 
             /// Nur bei Sichtbaren Stellen zeichnen
             // Visible terrain
@@ -140,7 +137,7 @@ void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool
                 MapNode& mn = gwv->GetNode(t);
                 if(mn.obj)
                 {
-                    mn.obj->Draw(static_cast<int>(xpos), static_cast<int>(ypos));
+                    mn.obj->Draw(curPos.x, curPos.y);
                     if (false) //TODO: military aid - display icon overlay of attack possibility
                     {
                         noBuilding* building = gwv->GetSpecObj<noBuilding>(t);
@@ -154,7 +151,7 @@ void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool
                                     || bt == BLD_HARBORBUILDING) //is it a military building?
                             {
                                 if(gwv->GetAvailableSoldiersForAttack(GAMECLIENT.GetPlayerID(), t)) //soldiers available for attack?
-                                    LOADER.GetImageN("map_new", 20000)->Draw(static_cast<int>(xpos) + 1, static_cast<int>(ypos) - 5, 0, 0, 0, 0, 0, 0);;
+                                    LOADER.GetImageN("map_new", 20000)->Draw(curPos.x + 1, curPos.y - 5, 0, 0, 0, 0, 0, 0);;
                             }
                         }
                     }
@@ -169,10 +166,10 @@ void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool
                         // Bewegt er sich oder ist es ein Schiff?
                         if((*it)->IsMoving() || (*it)->GetGOT() == GOT_SHIP)
                             // Dann nach der gesamten Zeile zeichnen
-                            between_lines.push_back(ObjectBetweenLines(*it, Point<int>(static_cast<int>(xpos), static_cast<int>(ypos))));
+                            between_lines.push_back(ObjectBetweenLines(*it, Point<int>(curPos.x, curPos.y)));
                         else
                             // Ansonsten jetzt schon zeichnen
-                            (*it)->Draw(static_cast<int>(xpos), static_cast<int>(ypos));
+                            (*it)->Draw(curPos.x, curPos.y);
                     }
                 }
 
@@ -184,12 +181,12 @@ void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool
                     BuildingQuality bq = gwv->GetNode(t).bq;
                     glArchivItem_Bitmap* bm = LOADER.GetMapImageN(49 + bq);
                     //Draw building quality icon
-                    bm->Draw(static_cast<int>(xpos), static_cast<int>(ypos), 0, 0, 0, 0, 0, 0);
+                    bm->Draw(curPos.x, curPos.y, 0, 0, 0, 0, 0, 0);
                     //Show ability to construct military buildings
                     if(GAMECLIENT.GetGGS().isEnabled(ADDON_MILITARY_AID))
                     {
                         if(!gwv->IsMilitaryBuildingNearNode(t, GAMECLIENT.GetPlayerID()) && (bq == BQ_HUT || bq == BQ_HOUSE || bq == BQ_CASTLE || bq == BQ_HARBOR))
-                            LOADER.GetImageN("map_new", 20000)->Draw(static_cast<int>(xpos) + (1), static_cast<int>(ypos) - bm->getHeight() - 5, 0, 0, 0, 0, 0, 0);
+                            LOADER.GetImageN("map_new", 20000)->Draw(curPos.x + 1, curPos.y - bm->getHeight() - 5, 0, 0, 0, 0, 0, 0);
                     }
                 }
             }
@@ -199,7 +196,7 @@ void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool
             {
                 const FOWObject* fowobj = gwv->GetYoungestFOWObject(MapPoint(t));
                 if(fowobj)
-                    fowobj->Draw(static_cast<int>(xpos), static_cast<int>(ypos));
+                    fowobj->Draw(curPos.x, curPos.y);
             }
 
 
@@ -210,11 +207,11 @@ void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool
                 sprintf(high, "%d;%d", t.x, t.y);
                 //*sprintf(high,"%X",unsigned(GetNode(tx,ty))).resources;*/
                 //sprintf(high,"%u",GetNode(tx,ty)).reserved;
-                NormalFont->Draw(static_cast<int>(xpos), static_cast<int>(ypos), high, 0, 0xFFFFFF00);
+                NormalFont->Draw(curPos.x, curPos.y, high, 0, 0xFFFFFF00);
 
                 if(gwv->GetNode(t).reserved)
                 {
-                    NormalFont->Draw(static_cast<int>(xpos), static_cast<int>(ypos), "R", 0, 0xFFFF0000);
+                    NormalFont->Draw(curPos.x, curPos.y, "R", 0, 0xFFFF0000);
                 }
 
             }
@@ -228,26 +225,26 @@ void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool
                     if (d_what == 1)
                     {
                         if(ai->GetAINode(t).bq && ai->GetAINode(t).bq  < 7)
-                            LOADER.GetMapImageN(49 + ai->GetAINode(t).bq)->Draw(static_cast<int>(xpos), static_cast<int>(ypos), 0, 0, 0, 0, 0, 0);
+                            LOADER.GetMapImageN(49 + ai->GetAINode(t).bq)->Draw(curPos.x, curPos.y, 0, 0, 0, 0, 0, 0);
                     }
                     else if (d_what == 2)
                     {
                         if (ai->GetAINode(t).reachable)
-                            LOADER.GetImageN("io", 32)->Draw(static_cast<int>(xpos), static_cast<int>(ypos), 0, 0, 0, 0, 0, 0);
+                            LOADER.GetImageN("io", 32)->Draw(curPos.x, curPos.y, 0, 0, 0, 0, 0, 0);
                         else
-                            LOADER.GetImageN("io", 40)->Draw(static_cast<int>(xpos), static_cast<int>(ypos), 0, 0, 0, 0, 0, 0);
+                            LOADER.GetImageN("io", 40)->Draw(curPos.x, curPos.y, 0, 0, 0, 0, 0, 0);
                     }
                     else if (d_what == 3)
                     {
                         if (ai->GetAINode(t).farmed)
-                            LOADER.GetImageN("io", 32)->Draw(static_cast<int>(xpos), static_cast<int>(ypos), 0, 0, 0, 0, 0, 0);
+                            LOADER.GetImageN("io", 32)->Draw(curPos.x, curPos.y, 0, 0, 0, 0, 0, 0);
                         else
-                            LOADER.GetImageN("io", 40)->Draw(static_cast<int>(xpos), static_cast<int>(ypos), 0, 0, 0, 0, 0, 0);
+                            LOADER.GetImageN("io", 40)->Draw(curPos.x, curPos.y, 0, 0, 0, 0, 0, 0);
                     }
                     else if (d_what > 3 && d_what < 13)
                     {
                         ss << ai->GetResMapValue(t, AIJH::Resource(d_what - 4));
-                        NormalFont->Draw(static_cast<int>(xpos), static_cast<int>(ypos), ss.str().c_str(), 0, 0xFFFFFF00);
+                        NormalFont->Draw(curPos.x, curPos.y, ss.str().c_str(), 0, 0xFFFFFF00);
                     }
                 }
             }
@@ -266,11 +263,9 @@ void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool
             for(int y = firstPt.y; y < lastPt.y; ++y)
             {
                 // Coordinate transform
-                int xo, yo;
-                MapPoint t = gwv->GetTerrainRenderer()->ConvertCoords(x, y, &xo, &yo);
-
-                int xpos = (int)(gwv->GetTerrainRenderer()->GetTerrainX(t) - offset.x + xo);
-                int ypos = (int)(gwv->GetTerrainRenderer()->GetTerrainY(t) - offset.y + yo);
+                Point<int> curOffset;
+                MapPoint t = gwv->GetTerrainRenderer()->ConvertCoords(x, y, &curOffset);
+                Point<int> curPos = Point<int>(gwv->GetTerrain(t)) - offset + curOffset;
 
                 // Name bzw Produktivität anzeigen
                 GO_Type got = gwv->GetNO(t)->GetGOT();
@@ -282,14 +277,14 @@ void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool
                     if(no->GetPlayer() != GAMECLIENT.GetPlayerID())
                         continue;
 
-                    int py = ypos - 10;
+                    curPos.y -= 10;
 
                     // Draw object name
                     if(show_names)
                     {
                         unsigned int color = (no->GetGOT() == GOT_BUILDINGSITE) ? COLOR_GREY : COLOR_YELLOW;
-                        SmallFont->Draw(xpos, py, _(BUILDING_NAMES[no->GetBuildingType()]), glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, color);
-                        py += SmallFont->getHeight();
+                        SmallFont->Draw(curPos.x, curPos.y, _(BUILDING_NAMES[no->GetBuildingType()]), glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, color);
+                        curPos.y += SmallFont->getHeight();
                     }
 
                     //Draw productivity/soldiers
@@ -307,7 +302,7 @@ void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool
 
                                     unsigned short p = n->GetBuildProgress();
                                     snprintf(text, 256, "(%d %%)", p);
-                                    SmallFont->Draw(xpos, py, text, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, color);
+                                    SmallFont->Draw(curPos.x, curPos.y, text, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, color);
                                 }
                             }
                             break;
@@ -342,7 +337,7 @@ void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool
                                                 color = 0xFFFF8000;
                                         }
                                     }
-                                    SmallFont->Draw(xpos, py, text, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, color);
+                                    SmallFont->Draw(curPos.x, curPos.y, text, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, color);
                                 }
                             }
                             break;
@@ -358,9 +353,9 @@ void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool
                                     sprintf(str, _("(%d soldiers)"), soldiers_count);
 
 
-                                SmallFont->Draw(xpos, py, str, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER,
+                                SmallFont->Draw(curPos.x, curPos.y, str, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER,
                                                 (soldiers_count > 0) ? COLOR_YELLOW : COLOR_RED);
-                                py += SmallFont->getHeight();
+                                curPos.y += SmallFont->getHeight();
                             }
                             break;
 
@@ -391,11 +386,9 @@ void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool
         for(int y = firstPt.y; y < lastPt.y; ++y)
         {
             // Coordinates transform
-            int xo, yo;
-            MapPoint t = gwv->GetTerrainRenderer()->ConvertCoords(x, y, &xo, &yo);
-
-            int xpos = (int)(gwv->GetTerrainRenderer()->GetTerrainX(t) - offset.x + xo);
-            int ypos = (int)(gwv->GetTerrainRenderer()->GetTerrainY(t) - offset.y + yo);
+            Point<int> curOffset;
+            MapPoint t = gwv->GetTerrainRenderer()->ConvertCoords(x, y, &curOffset);
+            Point<int> curPos = Point<int>(gwv->GetTerrain(t)) - offset + curOffset;
 
             /// Current point indicated by Mouse
             if(selPt == t)
@@ -416,18 +409,18 @@ void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool
                 if(rb.mode)
                     mid = 22;
 
-                LOADER.GetMapImageN(mid)->Draw(xpos, ypos, 0, 0, 0, 0, 0, 0);
+                LOADER.GetMapImageN(mid)->Draw(curPos.x, curPos.y, 0, 0, 0, 0, 0, 0);
             }
 
             // Currently selected point
             if(draw_selected && selected == t)
-                LOADER.GetMapImageN(20)->Draw(xpos, ypos, 0, 0, 0, 0, 0, 0);
+                LOADER.GetMapImageN(20)->Draw(curPos.x, curPos.y, 0, 0, 0, 0, 0, 0);
 
             // Wegbauzeug
             if(rb.mode)
             {
                 if(rb.point == t)
-                    LOADER.GetMapImageN(21)->Draw(xpos, ypos, 0, 0, 0, 0, 0, 0);
+                    LOADER.GetMapImageN(21)->Draw(curPos.x, curPos.y, 0, 0, 0, 0, 0, 0);
 
 
 
@@ -461,21 +454,21 @@ void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool
                                 case -4: case -5: id = 66; break;
                             }
 
-                            LOADER.GetMapImageN(id)->Draw(xpos, ypos, 0, 0, 0, 0, 0, 0);
+                            LOADER.GetMapImageN(id)->Draw(curPos.x, curPos.y, 0, 0, 0, 0, 0, 0);
                         }
 
                         if(gwv->GetNO(t))
                         {
                             // Flaggenanschluss? --> extra zeichnen
                             if(gwv->GetNO(t)->GetType() == NOP_FLAG && t != rb.start)
-                                LOADER.GetMapImageN(20)->Draw(xpos, ypos, 0, 0, 0, 0, 0, 0);
+                                LOADER.GetMapImageN(20)->Draw(curPos.x, curPos.y, 0, 0, 0, 0, 0, 0);
                         }
                     }
 
                     if(!rb.route.empty())
                     {
                         if(unsigned(rb.route.back() + 3) % 6 == i)
-                            LOADER.GetMapImageN(67)->Draw(xpos, ypos, 0, 0, 0, 0, 0, 0);
+                            LOADER.GetMapImageN(67)->Draw(curPos.x, curPos.y, 0, 0, 0, 0, 0, 0);
                     }
                 }
             }
@@ -493,7 +486,7 @@ void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool
     SOUNDMANAGER.PlayBirdSounds(noTree::QueryDrawCounter());
 }
 
-void GameWorldView::DrawBoundaryStone(const int x, const int y, const MapPoint t, const int xpos, const int ypos, Visibility vis)
+void GameWorldView::DrawBoundaryStone(const int x, const int y, const MapPoint t, const Point<int> curPos, Visibility vis)
 {
     if(vis == VIS_INVISIBLE)
         // schwarz/unsichtbar, nichts zeichnen
@@ -509,23 +502,24 @@ void GameWorldView::DrawBoundaryStone(const int x, const int y, const MapPoint t
         unsigned nation = gwv->GetPlayer(owner - 1)->nation;
         unsigned player_color = COLORS[gwv->GetPlayer(owner - 1)->color];
 
-        Loader::boundary_stone_cache[nation].draw(xpos, ypos, fow ? FOW_DRAW_COLOR : COLOR_WHITE, fow ? CalcPlayerFOWDrawColor(player_color) : player_color);
+        Loader::boundary_stone_cache[nation].draw(curPos.x, curPos.y, fow ? FOW_DRAW_COLOR : COLOR_WHITE, fow ? CalcPlayerFOWDrawColor(player_color) : player_color);
 
         for(unsigned i = 0; i < 3; ++i)
         {
             if(boundary_stones[i + 1])
             {
+                Point<int> tmp = curPos - Point<int>( (gwv->GetTerrain(t) - Point<float>(gwv->GetTerrainRenderer()->GetTerrainAround(t, 3 + i))) / 2.0f );
+
                 Loader::boundary_stone_cache[nation].draw(
-                    xpos - static_cast<int>((gwv->GetTerrainRenderer()->GetTerrainX(t) - gwv->GetTerrainRenderer()->GetTerrainXAround(t.x, t.y, 3 + i)) / 2.0f),
-                    ypos - static_cast<int>((gwv->GetTerrainRenderer()->GetTerrainY(t) - gwv->GetTerrainRenderer()->GetTerrainYAround(t.x, t.y, 3 + i)) / 2.0f),
+                    curPos.x, curPos.y,
                     fow ? FOW_DRAW_COLOR : COLOR_WHITE,
                     fow ? CalcPlayerFOWDrawColor(player_color) : player_color);
 
+                /* Why twice?
                 Loader::boundary_stone_cache[nation].draw(
-                    xpos - static_cast<int>((gwv->GetTerrainRenderer()->GetTerrainX(t) - gwv->GetTerrainRenderer()->GetTerrainXAround(t.x, t.y, 3 + i)) / 2.0f),
-                    ypos - static_cast<int>((gwv->GetTerrainRenderer()->GetTerrainY(t) - gwv->GetTerrainRenderer()->GetTerrainYAround(t.x, t.y, 3 + i)) / 2.0f),
+                    curPos.x, curPos.y,
                     fow ? FOW_DRAW_COLOR : COLOR_WHITE,
-                    fow ? CalcPlayerFOWDrawColor(player_color) : player_color);
+                    fow ? CalcPlayerFOWDrawColor(player_color) : player_color);*/
             }
         }
     }

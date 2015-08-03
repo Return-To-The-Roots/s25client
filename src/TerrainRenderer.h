@@ -20,6 +20,7 @@
 #define TERRAIN_RENDERER_H_
 
 #include "gameTypes/MapTypes.h"
+#include "Point.h"
 #include <vector>
 #include <boost/array.hpp>
 
@@ -28,30 +29,27 @@ class GameWorldView;
 
 struct MapTile
 {
-    int x;
-    int y;
+    Point<int> pos;
     unsigned int count;
-    int xo;
-    int yo;
+    Point<int> offset;
+    MapTile(const Point<int> pos, unsigned count, Point<int> offset): pos(pos), count(count), offset(offset){}
 };
 
 struct BorderTile
 {
     int offset;
     unsigned int count;
-    int xo;
-    int yo;
+    Point<int> posOffset;
 };
 
 struct PreparedRoad
 {
     unsigned char type;
-    float xpos, ypos;
-    float xpos2, ypos2;
+    Point<float> pos, pos2;
     float color1, color2;
     unsigned char dir;
 
-    PreparedRoad(unsigned char type, float xpos, float ypos, float xpos2, float ypos2, float color1, float color2, unsigned char dir) : type(type), xpos(xpos), ypos(ypos), xpos2(xpos2), ypos2(ypos2), color1(color1), color2(color2), dir(dir) {}
+    PreparedRoad(unsigned char type, Point<float> pos, Point<float> pos2, float color1, float color2, unsigned char dir) : type(type), pos(pos), pos2(pos2), color1(color1), color2(color2), dir(dir) {}
 
     bool operator<(const PreparedRoad b) const {return(type < b.type);}
 };
@@ -60,23 +58,21 @@ struct PreparedRoad
 /// Klasse, die für das grafische Anzeigen (Rendern) des Terrains zuständig ist
 class TerrainRenderer
 {
-        struct Point
-        {
-            float x;
-            float y;
-        };
-
+        typedef Point<float> PointF;
+        typedef Point<int> PointI;
         struct ColorPoint
         {
-            Point pos;
+            PointF pos;
             float color;
+            ColorPoint(): color(0){}
         };
 
         struct Vertex
         {
             ColorPoint pos; // Position vom jeweiligen Punkt
-            unsigned char terrain[2]; // Terrain der Dreiecke
+            boost::array<unsigned char, 2 > terrain; // Terrain der Dreiecke
             ColorPoint border[2]; // Mittelpunkt für Ränder
+            Vertex(){ terrain[0] = 0; terrain[1] = 0; }
         };
 
         struct Color
@@ -88,49 +84,50 @@ class TerrainRenderer
 
         struct Triangle
         {
-            Point pos[3];
+            boost::array<Point<float>, 3> pos;
         };
 
         struct ColorTriangle
         {
-            Color colors[3];
+            boost::array<Color, 3> colors;
         };
 
         struct Borders
         {
-            unsigned char left_right[2];
-            unsigned char right_left[2];
-            unsigned char top_down[2];
-            unsigned int left_right_offset[2];
-            unsigned int right_left_offset[2];
-            unsigned int top_down_offset[2];
+            boost::array<unsigned char, 2 > left_right;
+            boost::array<unsigned char, 2 > right_left;
+            boost::array<unsigned char, 2 > top_down;
+            boost::array<unsigned, 2 > left_right_offset;
+            boost::array<unsigned, 2 > right_left_offset;
+            boost::array<unsigned, 2 > top_down_offset;
         };
 
         /// Breite und Höhe der Karte
         unsigned short width, height;
 
-        Vertex* vertices;
+        std::vector<Vertex> vertices;
 
-        Triangle* gl_vertices;
-        Triangle* gl_texcoords;
-        ColorTriangle* gl_colors;
+        std::vector<Triangle> gl_vertices;
+        std::vector<Triangle> gl_texcoords;
+        std::vector<ColorTriangle> gl_colors;
 
         unsigned int vbo_vertices;
         unsigned int vbo_texcoords;
         unsigned int vbo_colors;
 
-        Borders* borders;
+        std::vector<Borders> borders;
         unsigned int border_count;
 
         typedef boost::array<std::vector<PreparedRoad>, 4> PreparedRoads;
 
     private:
 
-        unsigned GetTRIdx(const MapPoint pt)
+        unsigned GetTRIdx(const MapPoint pt) const
         { return static_cast<unsigned>(pt.y) * static_cast<unsigned>(width) + static_cast<unsigned>(pt.x); }
 
         /// liefert den Vertex an der Stelle X, Y.
         Vertex& GetVertex(const MapPoint pt) { return vertices[GetTRIdx(pt)]; }
+        const Vertex& GetVertex(const MapPoint pt) const { return vertices[GetTRIdx(pt)]; }
 
         /// erzeugt die Terrain-Vertices.
         void GenerateVertices(const GameWorldViewer* gwb);
@@ -152,18 +149,15 @@ class TerrainRenderer
 
         /// liefert den Vertex-Farbwert an der Stelle X,Y
         float GetColor(const MapPoint pt) { return GetVertex(pt).pos.color; }
-        /// liefert den X-Rand-Vertex an der Stelle X,Y
-        float GetBX(const MapPoint pt, unsigned char triangle) { return GetVertex(pt).border[triangle].pos.x; }
-        /// liefert den Y-Rand-Vertex an der Stelle X,Y
-        float GetBY(const MapPoint pt, unsigned char triangle) { return GetVertex(pt).border[triangle].pos.y; }
+        /// liefert den Rand-Vertex an der Stelle X,Y
+        PointF GetB(const MapPoint pt, unsigned char triangle) const { return GetVertex(pt).border[triangle].pos; }
         /// Liefert BX,BY um einen Punkt herum, beachtet auch Kartenränder (entspricht GetTerrainX)
-        float GetBXAround(int x, int y, const unsigned char triangle, const unsigned char dir);
-        float GetBYAround(int x, int y, const unsigned char triangle, const unsigned char dir);
+        PointF GetBAround(const MapPoint pt, const unsigned char triangle, const unsigned char dir);
         /// liefert den Rand-Vertex-Farbwert an der Stelle X,Y
         float GetBColor(const MapPoint pt, unsigned char triangle) { return GetVertex(pt).border[triangle].color; }
 
         /// Zeichnet die Wege
-        void PrepareWaysPoint(PreparedRoads& sorted_roads, GameWorldView* gwv, MapPoint t, int xo, int yo);
+        void PrepareWaysPoint(PreparedRoads& sorted_roads, GameWorldView* gwv, MapPoint t, PointI offset);
 
         void DrawWays(const PreparedRoads& sorted_roads);
 
@@ -182,14 +176,12 @@ class TerrainRenderer
 
         /// Konvertiert "falsche Koordinaten", also im Minusbereich oder zu groß wegen Zeichnen, in "richtige Koordinaten"
         /// mit 0 <= x_out < width und 0 <= y_out < height
-        MapPoint ConvertCoords(int x, int y, int* xo = 0, int* yo = 0) const;
-        /// liefert den X-Vertex an der Stelle X,Y
-        float GetTerrainX(const MapPoint pt) { return GetVertex(pt).pos.pos.x; }
-        /// liefert den Y-Vertex an der Stelle X,Y
-        float GetTerrainY(const MapPoint pt) { return GetVertex(pt).pos.pos.y; }
-        /// liefert X-Vertex drumherum, korrigiert Koordinaten nicht
-        float GetTerrainXAround(int x,  int y, const unsigned dir);
-        float GetTerrainYAround(int x,  int y, const unsigned dir);
+        MapPoint ConvertCoords(int x, int y, Point<int>* offset = 0) const{ return ConvertCoords(PointI(x, y), offset); }
+        MapPoint ConvertCoords(const PointI pt, Point<int>* offset = 0) const;
+        /// liefert den XY-Vertex an der Stelle X,Y
+        PointF GetTerrain(const MapPoint pt) { return GetVertex(pt).pos.pos; }
+        /// liefert XY-Vertex drumherum, korrigiert Koordinaten nicht
+        PointF GetTerrainAround(MapPoint pt, const unsigned dir);
 
         /// Höhe eines Punktes wurde (durch Planierer) verändert --> updaten
         void AltitudeChanged(const MapPoint pt, const GameWorldViewer* gwv);
