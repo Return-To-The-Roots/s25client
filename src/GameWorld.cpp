@@ -570,13 +570,13 @@ void GameWorld::Serialize(SerializedGameData* sgd) const
             }
         }
         sgd->PushObject(nodes[i].obj, false);
-        sgd->PushObjectList(nodes[i].figures, false);
+        sgd->PushObjectContainer(nodes[i].figures, false);
         sgd->PushUnsignedShort(nodes[i].sea_id);
         sgd->PushUnsignedInt(nodes[i].harbor_id);
     }
 
     // Katapultsteine serialisieren
-    sgd->PushObjectList<CatapultStone>(catapult_stones, true);
+    sgd->PushObjectContainer(catapult_stones, true);
     // Meeresinformationen serialisieren
     sgd->PushUnsignedInt(seas.size());
     for(unsigned i = 0; i < seas.size(); ++i)
@@ -602,7 +602,7 @@ void GameWorld::Serialize(SerializedGameData* sgd) const
         }
     }
 
-    sgd->PushObjectList(harbor_building_sites_from_sea, true);
+    sgd->PushObjectContainer(harbor_building_sites_from_sea, true);
 }
 
 void GameWorld::Deserialize(SerializedGameData* sgd)
@@ -673,7 +673,7 @@ void GameWorld::Deserialize(SerializedGameData* sgd)
             }
         }
         nodes[i].obj = sgd->PopObject<noBase>(GOT_UNKNOWN);
-        sgd->PopObjectList<noBase>(nodes[i].figures, GOT_UNKNOWN);
+        sgd->PopObjectContainer(nodes[i].figures, GOT_UNKNOWN);
         nodes[i].sea_id = sgd->PopUnsignedShort();
         nodes[i].harbor_id = sgd->PopUnsignedInt();
 
@@ -685,7 +685,7 @@ void GameWorld::Deserialize(SerializedGameData* sgd)
     }
 
     // Katapultsteine deserialisieren
-    sgd->PopObjectList(catapult_stones, GOT_CATAPULTSTONE);
+    sgd->PopObjectContainer(catapult_stones, GOT_CATAPULTSTONE);
 
     // Meeresinformationen deserialisieren
     seas.resize(sgd->PopUnsignedInt());
@@ -712,7 +712,7 @@ void GameWorld::Deserialize(SerializedGameData* sgd)
         }
     }
 
-    sgd->PopObjectList<noBuildingSite>(harbor_building_sites_from_sea, GOT_BUILDINGSITE);
+    sgd->PopObjectContainer(harbor_building_sites_from_sea, GOT_BUILDINGSITE);
 
     // BQ neu berechnen
     for(unsigned y = 0; y < height; ++y)

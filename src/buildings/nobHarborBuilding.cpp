@@ -191,7 +191,7 @@ void nobHarborBuilding::Serialize(SerializedGameData* sgd) const
     sgd->PushObject(orderware_ev, true);
     for(unsigned i = 0; i < 6; ++i)
         sgd->PushUnsignedShort(sea_ids[i]);
-    sgd->PushObjectList(wares_for_ships, true);
+    sgd->PushObjectContainer(wares_for_ships, true);
     sgd->PushUnsignedInt(figures_for_ships.size());
     for(std::list<FigureForShip>::const_iterator it = figures_for_ships.begin(); it != figures_for_ships.end(); ++it)
     {
@@ -221,7 +221,7 @@ nobHarborBuilding::nobHarborBuilding(SerializedGameData* sgd, const unsigned obj
     for(unsigned i = 0; i < 6; ++i)
         sea_ids[i] = sgd->PopUnsignedShort();
 
-    sgd->PopObjectList<Ware>(wares_for_ships, GOT_WARE);
+    sgd->PopObjectContainer(wares_for_ships, GOT_WARE);
 
     unsigned count = sgd->PopUnsignedInt();
     for(unsigned i = 0; i < count; ++i)

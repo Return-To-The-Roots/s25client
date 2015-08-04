@@ -128,10 +128,10 @@ void nobBaseWarehouse::Serialize_nobBaseWarehouse(SerializedGameData* sgd) const
 {
     Serialize_nobBaseMilitary(sgd);
 
-    sgd->PushObjectList(waiting_wares, true);
+    sgd->PushObjectContainer(waiting_wares, true);
     sgd->PushBool(fetch_double_protection);
-    sgd->PushObjectList(dependent_figures, false);
-    sgd->PushObjectList(dependent_wares, true);
+    sgd->PushObjectContainer(dependent_figures, false);
+    sgd->PushObjectContainer(dependent_wares, true);
     sgd->PushObject(producinghelpers_event, true);
     sgd->PushObject(recruiting_event, true);
     sgd->PushObject(empty_event, true);
@@ -160,10 +160,10 @@ void nobBaseWarehouse::Serialize_nobBaseWarehouse(SerializedGameData* sgd) const
 
 nobBaseWarehouse::nobBaseWarehouse(SerializedGameData* sgd, const unsigned obj_id) : nobBaseMilitary(sgd, obj_id)
 {
-    sgd->PopObjectList(waiting_wares, GOT_WARE);
+    sgd->PopObjectContainer(waiting_wares, GOT_WARE);
     fetch_double_protection = sgd->PopBool();
-    sgd->PopObjectList(dependent_figures, GOT_UNKNOWN);
-    sgd->PopObjectList(dependent_wares, GOT_WARE);
+    sgd->PopObjectContainer(dependent_figures, GOT_UNKNOWN);
+    sgd->PopObjectContainer(dependent_wares, GOT_WARE);
 
     producinghelpers_event = sgd->PopObject<EventManager::Event>(GOT_EVENT);
     recruiting_event = sgd->PopObject<EventManager::Event>(GOT_EVENT);
