@@ -40,11 +40,9 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-bool glSmartTexturePackerNode::insert(glSmartBitmap* b, unsigned char* buffer, unsigned gw, unsigned gh, unsigned reserve)
+bool glSmartTexturePackerNode::insert(glSmartBitmap* b, unsigned char* buffer, unsigned gw, unsigned gh, std::vector<glSmartTexturePackerNode*>& todo)
 {
-    std::vector<glSmartTexturePackerNode*> todo;
-
-    todo.reserve(reserve);
+    todo.clear();
 
     todo.push_back(this);
 
@@ -220,6 +218,8 @@ bool glSmartTexturePacker::packHelper(std::vector<glSmartBitmap*> &list)
 
     // maximum texture size reached?
     bool maxTex = false;
+    std::vector<glSmartTexturePackerNode*> tmpVec;
+    tmpVec.reserve(list.size());
 
     do
     {
@@ -244,7 +244,7 @@ bool glSmartTexturePacker::packHelper(std::vector<glSmartBitmap*> &list)
             // try storing bitmaps in the big texture
             for (std::vector<glSmartBitmap*>::const_iterator it = list.begin(); it != list.end(); ++it)
             {
-                if (!root->insert((*it), buffer, w, h, list.size()))
+                if (!root->insert((*it), buffer, w, h, tmpVec))
                 {
                     // inserting this bitmap failed? just remember it for next texture
                     left.push_back((*it));

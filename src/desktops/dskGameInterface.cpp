@@ -500,9 +500,8 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
 
         // Bisheriges Actionfenster schließen, falls es eins gab
         // aktuelle Mausposition merken, da diese durch das Schließen verändert werden kann
-        int mx = mc.x, my = mc.y;
         WINDOWMANAGER.Close(actionwindow);
-        VIDEODRIVER.SetMousePos(mx, my);
+        VIDEODRIVER.SetMousePos(mc.x, mc.y);
 
         ShowActionWindow(action_tabs, cSel, mc.x, mc.y, enable_military_buildings);
 
@@ -788,9 +787,8 @@ void dskGameInterface::ActivateRoadMode(const RoadMode rm)
     if(rm != RM_DISABLED)
     {
         road.route.clear();
+        assert(selected.x < width && selected.y < height);
         road.start = road.point = selected;
-        road.point = gwv->ConvertCoords(road.point.x, road.point.y);
-        road.start = gwv->ConvertCoords(road.start.x, road.start.y);
     }
     else
     {

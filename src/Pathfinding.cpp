@@ -694,8 +694,7 @@ bool GameWorldBase::FindPathOnRoads(const noRoadNode* const start,  const noRoad
         // Stehen wir hier auf einem Hafenplatz
         if (best->GetGOT() == GOT_NOB_HARBORBUILDING)
         {
-            std::vector<nobHarborBuilding::ShipConnection> scs;
-            static_cast<const nobHarborBuilding*>(best)->GetShipConnections(scs);
+            std::vector<nobHarborBuilding::ShipConnection> scs = static_cast<const nobHarborBuilding*>(best)->GetShipConnections();
 
             for (unsigned i = 0; i < scs.size(); ++i)
             {

@@ -21,6 +21,7 @@
 // Header
 #include "main.h"
 #include "SDL.h"
+#include "../../../../src/helpers/containerUtils.h"
 #include <VideoInterface.h>
 #include <build_version.h>
 
@@ -460,7 +461,7 @@ void VideoSDL::ListVideoModes(std::vector<VideoMode>& video_modes) const
     for (unsigned int i = 0; modes[i]; ++i)
     {
         VideoMode vm = { modes[i]->w, modes[i]->h };
-        if(std::find(video_modes.begin(), video_modes.end(), vm) == video_modes.end())
+        if(!helpers::contains(video_modes, vm))
             video_modes.push_back(vm);
     }
 }

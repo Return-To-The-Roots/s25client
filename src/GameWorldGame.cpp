@@ -54,6 +54,7 @@
 #include "WindowManager.h"
 #include "GameInterface.h"
 #include "drivers/VideoDriverWrapper.h"
+#include "helpers/containerUtils.h"
 
 #include <algorithm>
 #include <stdexcept>
@@ -202,7 +203,7 @@ void GameWorldGame::AddFigure(noBase* fig, const MapPoint pt)
         return;
 
     std::list<noBase*>& figures = GetNode(pt).figures;
-    assert(std::find(figures.begin(), figures.end(), fig) == figures.end());
+    assert(!helpers::contains(figures, fig));
     figures.push_back(fig);
 
 #ifndef NDEBUG
@@ -211,7 +212,7 @@ void GameWorldGame::AddFigure(noBase* fig, const MapPoint pt)
         MapPoint nb = GetNeighbour(pt, i);
 
         const std::list<noBase*>& figures = GetNode(nb).figures;
-        if(std::find(figures.begin(), figures.end(), fig) != figures.end())
+        if(helpers::contains(figures, fig))
             throw std::runtime_error("Added figure that is in surrounding?");
     }
 #endif // NDEBUG
@@ -1146,8 +1147,7 @@ void  GameWorldGame::AttackViaSea(const unsigned char player_attacker, const Map
         return;
 
     // Verfügbare Soldaten herausfinden
-    std::list<GameWorldBase::PotentialSeaAttacker> attackers;
-    GetAvailableSoldiersForSeaAttack(player_attacker, pt, &attackers);
+    std::vector<GameWorldBase::PotentialSeaAttacker> attackers = GetAvailableSoldiersForSeaAttack(player_attacker, pt);
 
     // Ist das angegriffenne ein normales Gebäude?
     nobBaseMilitary* attacked_building = GetSpecObj<nobBaseMilitary>(pt);
@@ -1163,7 +1163,7 @@ void  GameWorldGame::AttackViaSea(const unsigned char player_attacker, const Map
 
     unsigned counter = 0;
     if(strong_soldiers)
-        for(std::list<GameWorldBase::PotentialSeaAttacker>::iterator it = attackers.begin(); it != attackers.end() &&
+        for(std::vector<GameWorldBase::PotentialSeaAttacker>::iterator it = attackers.begin(); it != attackers.end() &&
                 counter < soldiers_count; ++it, ++counter)
         {
             // neuen Angreifer-Soldaten erzeugen
@@ -1173,7 +1173,7 @@ void  GameWorldGame::AttackViaSea(const unsigned char player_attacker, const Map
             delete it->soldier;
         }
     else
-        for(std::list<GameWorldBase::PotentialSeaAttacker>::reverse_iterator it = attackers.rbegin(); it != attackers.rend() &&
+        for(std::vector<GameWorldBase::PotentialSeaAttacker>::reverse_iterator it = attackers.rbegin(); it != attackers.rend() &&
                 counter < soldiers_count; ++it, ++counter)
         {
             // neuen Angreifer-Soldaten erzeugen
@@ -1985,8 +1985,7 @@ bool GameWorldGame::FoundColony(const unsigned harbor_point, const unsigned char
 /// Gibt zurück, ob eine bestimmte Baustellen eine Baustelle ist, die vom Schiff aus errichtet wurde
 bool GameWorldGame::IsHarborBuildingSiteFromSea(const noBuildingSite* building_site) const
 {
-    return (std::find(harbor_building_sites_from_sea.begin(), 
-                      harbor_building_sites_from_sea.end(), building_site) != harbor_building_sites_from_sea.end());
+    return helpers::contains(harbor_building_sites_from_sea, building_site);
 }
 
 

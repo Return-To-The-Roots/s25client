@@ -41,6 +41,7 @@
 #include "ingameWindows/iwMissionStatement.h"
 #include "luaIncludes.h"
 #include "Log.h"
+#include "helpers/containerUtils.h"
 #include <set>
 #include <stdexcept>
 
@@ -323,19 +324,19 @@ GO_Type GameWorldBase::GetGOT(const MapPoint pt) const
         return GOT_NOTHING;
 }
 
-MapPoint GameWorldBase::ConvertCoords(int x, int y) const
+MapPoint GameWorldBase::ConvertCoords(Point<int> pt) const
 {
-    while(x < 0)
-        x += width;
+    while(pt.x < 0)
+        pt.x += width;
 
-    while(y < 0)
-        y += height;
+    while(pt.y < 0)
+        pt.y += height;
 
 
-    x %= width;
-    y %= height;
+    pt.x %= width;
+    pt.y %= height;
 
-    return MapPoint(static_cast<MapCoord>(x), static_cast<MapCoord>(y));
+    return MapPoint(pt);
 }
 
 MapCoord GameWorldBase::CalcDistanceAroundBorderX(const MapCoord x1, const MapCoord x2) const
@@ -1083,7 +1084,7 @@ MapPoint GameWorldBase::GetNeighbour2(const MapPoint pt, unsigned dir) const
         case 10: tx = pt.x+1; break;
         case 11: tx = pt.x+2-((pt.y&1) ? 0 : 1);
     }
-    MapPoint res = ConvertCoords(tx, int(pt.y) + ADD_Y[dir]);
+    MapPoint res = ConvertCoords(Point<int>(tx, int(pt.y) + ADD_Y[dir]));
     return res;
 }
 
@@ -1513,7 +1514,7 @@ bool GameWorldBase::PotentialSeaAttacker::operator<(const GameWorldBase::Potenti
 }
 
 /// returns all sea_ids found in the given vector from which a given building can be attacked by sea
-void GameWorldBase::GetValidSeaIDsAroundMilitaryBuildingForAttackCompare(const MapPoint pt, std::vector<unsigned short> * use_seas, const unsigned char player_attacker)const
+void GameWorldBase::GetValidSeaIDsAroundMilitaryBuildingForAttackCompare(const MapPoint pt, std::vector<unsigned short>& use_seas, const unsigned char player_attacker)const
 {
 	// Nach Hafenpunkten in der Nähe des angegriffenen Gebäudes suchen
 	// Alle unsere Häfen durchgehen
@@ -1543,7 +1544,7 @@ void GameWorldBase::GetValidSeaIDsAroundMilitaryBuildingForAttackCompare(const M
 						if(!sea_ids[z])
                             continue;
 						//sea id is in compare list and not yet in confirmed list? add to confirmed list if the pathfinding is ok
-						if(std::find(use_seas->begin(), use_seas->end(), sea_ids[z])!=use_seas->end() && !(std::find(confirmedseaids.begin(), confirmedseaids.end(), sea_ids[z])!=confirmedseaids.end()))
+						if(helpers::contains(use_seas, sea_ids[z]) && !helpers::contains(confirmedseaids, sea_ids[z]))
 						{
 							bool previouslytested=false;
 							for(unsigned k=0;k<z;k++)
@@ -1563,7 +1564,7 @@ void GameWorldBase::GetValidSeaIDsAroundMilitaryBuildingForAttackCompare(const M
 							{
 								confirmedseaids.push_back(sea_ids[z]);
 								//all sea ids confirmed? return without changes
-								if(confirmedseaids.size()==use_seas->size())
+								if(confirmedseaids.size()==use_seas.size())
 									return;																	
 							}								
 						}
@@ -1579,7 +1580,7 @@ void GameWorldBase::GetValidSeaIDsAroundMilitaryBuildingForAttackCompare(const M
 						if(!sea_ids[z])
                             continue;
 						//sea id is in compare list and not yet in confirmed list? add to confirmed list
-						if(std::find(use_seas->begin(), use_seas->end(), sea_ids[z])!=use_seas->end() && !(std::find(confirmedseaids.begin(), confirmedseaids.end(), sea_ids[z])!=confirmedseaids.end()))
+						if(helpers::contains(use_seas, sea_ids[z]) && !helpers::contains(confirmedseaids, sea_ids[z]))
 						{
 							bool previouslytested=false;
 							for(unsigned k=0;k<z;k++) //checks previously tested sea ids to skip pathfinding
@@ -1598,7 +1599,7 @@ void GameWorldBase::GetValidSeaIDsAroundMilitaryBuildingForAttackCompare(const M
 							{
 								confirmedseaids.push_back(sea_ids[z]);
 								//all sea ids confirmed? return without changes
-								if(confirmedseaids.size()==use_seas->size())
+								if(confirmedseaids.size()==use_seas.size())
 									return;
 							}								
 						}
@@ -1608,18 +1609,17 @@ void GameWorldBase::GetValidSeaIDsAroundMilitaryBuildingForAttackCompare(const M
 		}
 	}
 	//all harbor positions tested: erase all entries from use_seas we could not confirm
-	use_seas->clear();
-	use_seas->assign(confirmedseaids.begin(), confirmedseaids.end());
+	use_seas.clear();
+	use_seas.assign(confirmedseaids.begin(), confirmedseaids.end());
 }
 	
 /// returns all sea_ids from which a given building can be attacked by sea
-void GameWorldBase::GetValidSeaIDsAroundMilitaryBuildingForAttack(const MapPoint pt, std::vector<bool> * use_seas, const unsigned char player_attacker, std::vector<unsigned>*harbor_points) const
+std::vector<unsigned> GameWorldBase::GetValidSeaIDsAroundMilitaryBuildingForAttack(const MapPoint pt, std::vector<bool>& use_seas, const unsigned char player_attacker) const
 {
-	assert(use_seas);
+    std::vector<unsigned> harbor_points;
 	// Nach Hafenpunkten in der Nähe des angegriffenen Gebäudes suchen
 	// Alle unsere Häfen durchgehen
 	for(unsigned i = 1;i<harbor_pos.size();++i)
-
 	{
 		MapPoint harborPt = harbor_pos[i].pos;
 		
@@ -1628,99 +1628,89 @@ void GameWorldBase::GetValidSeaIDsAroundMilitaryBuildingForAttack(const MapPoint
 
 		//target isnt the harbor pos AND there is an enemy harbor AND the sea attack addon is set to block on enemy harbor? -> done for this harbor pos
 		const nobHarborBuilding *hb=GetSpecObj<nobHarborBuilding>(harborPt);
-		if(pt != harborPt && hb && (players->getElement(player_attacker)->IsPlayerAttackable(GetNode(harborPt).owner-1) && GAMECLIENT.GetGGS().getSelection(ADDON_SEA_ATTACK)==1))
-		{				
+		if(pt != harborPt && hb && (players->getElement(player_attacker)->IsPlayerAttackable(GetNode(harborPt).owner-1) && GAMECLIENT.GetGGS().getSelection(ADDON_SEA_ATTACK)==1))		
 			continue;
-		}
-		else
+		// Ist Ziel der Hafenspot? -> add sea_ids from which we can actually attack the harbor
+		if(pt == harborPt)
 		{
-			// Ist Ziel der Hafenspot? -> add sea_ids from which we can actually attack the harbor
-			if(pt == harborPt)
+			bool harborinlist=false;					
+			unsigned short sea_ids[6];
+			GetSeaIDs(i, sea_ids);
+			for(unsigned z = 0;z<6;++z)
 			{
-				bool harborinlist=false;					
-				unsigned short sea_ids[6];
-				GetSeaIDs(i, sea_ids);
-				for(unsigned z = 0;z<6;++z)
+				if(!sea_ids[z] ) //there is a sea id in the given direction?
+                    continue;
+				//already tested the path from this coastal point to the goal (pathfinding takes a while so avoid as much as possible)
+				bool previouslytested=false;
+				for(unsigned k=0;k<z;k++)
 				{
-					if(sea_ids[z] ) //there is a sea id in the given direction?
+					if(sea_ids[z]==sea_ids[k])
 					{
-						//already tested the path from this coastal point to the goal (pathfinding takes a while so avoid as much as possible)
-						bool previouslytested=false;
-						for(unsigned k=0;k<z;k++)
-						{
-							if(sea_ids[z]==sea_ids[k])
-							{
-								previouslytested=true;
-								break;
-							}
-						}
-						if(previouslytested)
-							continue;
-						//can figures walk from the flag of the harbor to the coastal point?
-						MapPoint coastal = GetCoastalPoint(i, sea_ids[z]);
-							
-						if(( GetNeighbour(pt, 4) == coastal) || FindHumanPath(GetNeighbour(pt, 4), coastal, SEAATTACK_DISTANCE) != 0xff)
-						{
-							use_seas->at(sea_ids[z]) = true;
-							if(!harborinlist)
-							{
-								harbor_points->push_back(i);
-								harborinlist=true;
-							}
-						}
+						previouslytested=true;
+						break;
 					}
 				}
-			}			
-			//so our target building is in range of a free or allied harbor pos but not the harborspot - now lets see if we can findhumanpath
-			else //if(FindHumanPath(x, y, harbor_x, harbor_y, SEAATTACK_DISTANCE) != 0xff)				
-			{	//first get sea ids around currently tested harbor, then for each sea id try to find a human path between the coastal point and the goal
-				bool harborinlist=false;
-				unsigned short sea_ids[6];
-				GetSeaIDs(i, sea_ids);
-				for(unsigned z = 0;z<6;++z) //for all directions check the sea ids
+				if(previouslytested)
+					continue;
+				//can figures walk from the flag of the harbor to the coastal point?
+				MapPoint coastal = GetCoastalPoint(i, sea_ids[z]);
+							
+				if(( GetNeighbour(pt, 4) == coastal) || FindHumanPath(GetNeighbour(pt, 4), coastal, SEAATTACK_DISTANCE) != 0xff)
 				{
-					if(sea_ids[z]) //sea id not 0 = any sea
+					use_seas.at(sea_ids[z]) = true;
+					if(!harborinlist)
 					{
-						bool previouslytested=false;
-						for(unsigned k=0;k<z;k++) //checks previously tested sea ids to skip pathfinding
-						{
-							if(sea_ids[z]==sea_ids[k])
-							{
-								previouslytested=true;
-								break;
-							}
-						}
-						if(previouslytested)
-							continue;
-						//can figures walk from the coastal point to the harbor?
-						MapPoint coastal = GetCoastalPoint(i, sea_ids[z]);
-						if(FindHumanPath(pt, coastal, SEAATTACK_DISTANCE) != 0xff) //valid human path from target building to coastal point?
-						{
-							use_seas->at(sea_ids[z]) = true;
-							if(!harborinlist)
-							{
-								harbor_points->push_back(i);
-								harborinlist=true;
-							}
-						}
+						harbor_points.push_back(i);
+						harborinlist=true;
+					}
+				}
+			}
+		}			
+		//so our target building is in range of a free or allied harbor pos but not the harborspot - now lets see if we can findhumanpath
+		else //if(FindHumanPath(x, y, harbor_x, harbor_y, SEAATTACK_DISTANCE) != 0xff)				
+		{	//first get sea ids around currently tested harbor, then for each sea id try to find a human path between the coastal point and the goal
+			bool harborinlist=false;
+			unsigned short sea_ids[6];
+			GetSeaIDs(i, sea_ids);
+			for(unsigned z = 0;z<6;++z) //for all directions check the sea ids
+			{
+				if(!sea_ids[z]) //sea id not 0 = any sea
+                continue;
+				bool previouslytested=false;
+				for(unsigned k=0;k<z;k++) //checks previously tested sea ids to skip pathfinding
+				{
+					if(sea_ids[z]==sea_ids[k])
+					{
+						previouslytested=true;
+						break;
+					}
+				}
+				if(previouslytested)
+					continue;
+				//can figures walk from the coastal point to the harbor?
+				MapPoint coastal = GetCoastalPoint(i, sea_ids[z]);
+				if(FindHumanPath(pt, coastal, SEAATTACK_DISTANCE) != 0xff) //valid human path from target building to coastal point?
+				{
+					use_seas.at(sea_ids[z]) = true;
+					if(!harborinlist)
+					{
+						harbor_points.push_back(i);
+						harborinlist=true;
 					}
 				}
 			}
 		}
 	}
-
+    return harbor_points;
 }
 
 /// Liefert Hafenpunkte im Umkreis von einem bestimmten Militärgebäude
-void GameWorldBase::GetHarborPointsAroundMilitaryBuilding(const MapPoint pt, std::vector<unsigned> * harbor_points) const
+std::vector<unsigned> GameWorldBase::GetHarborPointsAroundMilitaryBuilding(const MapPoint pt) const
 {
-    assert(harbor_points);
-
-
+    std::vector<unsigned> harbor_points;
     // Nach Hafenpunkten in der Nähe des angegriffenen Gebäudes suchen
     // Alle unsere Häfen durchgehen
     for(unsigned i = 1; i < harbor_pos.size(); ++i)
-
     {
         MapPoint harborPt = harbor_pos[i].pos;
 
@@ -1728,11 +1718,12 @@ void GameWorldBase::GetHarborPointsAroundMilitaryBuilding(const MapPoint pt, std
         {
             // Wird ein Weg vom Militärgebäude zum Hafen gefunden bzw. Ziel = Hafen?
             if(pt == harborPt)
-                harbor_points->push_back(i);
+                harbor_points.push_back(i);
             else if(FindHumanPath(pt, harborPt, SEAATTACK_DISTANCE) != 0xff)
-                harbor_points->push_back(i);
+                harbor_points.push_back(i);
         }
     }
+    return harbor_points;
 }
 
 /// Gibt Anzahl oder geschätzte Stärke(rang summe + anzahl) der verfügbaren Soldaten die zu einem Schiffsangriff starten können von einer bestimmten sea id aus
@@ -1742,8 +1733,8 @@ unsigned int GameWorldBase::GetAvailableSoldiersForSeaAttackAtSea(const unsigned
     std::vector<nobHarborBuilding::SeaAttackerBuilding> buildings;
     unsigned int attackercount = 0;
     // Angrenzende Häfen des Angreifers an den entsprechenden Meeren herausfinden
-    for(std::list<nobHarborBuilding*>::const_iterator it = players->getElement(player_attacker)->GetHarbors()
-            .begin(); it != players->getElement(player_attacker)->GetHarbors().end(); ++it)
+    const std::list<nobHarborBuilding*>& harbors = players->getElement(player_attacker)->GetHarbors();
+    for(std::list<nobHarborBuilding*>::const_iterator it = harbors.begin(); it != harbors.end(); ++it)
     {
         // Bestimmen, ob Hafen an einem der Meere liegt, über die sich auch die gegnerischen
         // Hafenpunkte erreichen lassen
@@ -1762,15 +1753,15 @@ unsigned int GameWorldBase::GetAvailableSoldiersForSeaAttackAtSea(const unsigned
         if(!is_at_sea)
             continue;
 
-        (*it)->GetAttackerBuildingsForSeaIdAttack(&buildings);
+        std::vector<nobHarborBuilding::SeaAttackerBuilding> tmp = (*it)->GetAttackerBuildingsForSeaIdAttack();
+        buildings.insert(buildings.begin(), tmp.begin(), tmp.end());
     }
 
     // Die Soldaten aus allen Militärgebäuden sammeln
     for(unsigned i = 0; i < buildings.size(); ++i)
     {
         // Soldaten holen
-        std::vector<nofPassiveSoldier*> tmp_soldiers;
-        buildings[i].building->GetSoldiersForAttack(buildings[i].harbor->GetPos(), player_attacker, tmp_soldiers);
+        std::vector<nofPassiveSoldier*> tmp_soldiers = buildings[i].building->GetSoldiersForAttack(buildings[i].harbor->GetPos(), player_attacker);
 
         // Überhaupt welche gefunden?
         if(tmp_soldiers.empty())
@@ -1789,37 +1780,36 @@ unsigned int GameWorldBase::GetAvailableSoldiersForSeaAttackAtSea(const unsigned
 }
 
 /// Sucht verfügbare Soldaten, um dieses Militärgebäude mit einem Seeangriff anzugreifen
-void GameWorldBase::GetAvailableSoldiersForSeaAttack(const unsigned char player_attacker, const MapPoint pt, 
-        std::list<GameWorldBase::PotentialSeaAttacker> * attackers) const
+std::vector<GameWorldBase::PotentialSeaAttacker> GameWorldBase::GetAvailableSoldiersForSeaAttack(const unsigned char player_attacker, const MapPoint pt) const
 {
+    std::vector<GameWorldBase::PotentialSeaAttacker> attackers;
     //sea attack abgeschaltet per addon?
     if(GAMECLIENT.GetGGS().getSelection(ADDON_SEA_ATTACK) == 2)
-        return;
+        return attackers;
     // Ist das Ziel auch ein richtiges Militärgebäude?
     if(GetNO(pt)->GetGOT() != GOT_NOB_HARBORBUILDING && GetNO(pt)->GetGOT() !=  GOT_NOB_HQ
             && GetNO(pt)->GetGOT() !=  GOT_NOB_MILITARY)
-        return;
+        return attackers;
     // Auch noch ein Gebäude von einem Feind (nicht inzwischen eingenommen)?
     if(!GetPlayer(player_attacker)->IsPlayerAttackable(GetSpecObj<noBuilding>(pt)->GetPlayer()))
-        return;
+        return attackers;
     // Prüfen, ob der angreifende Spieler das Gebäude überhaupt sieht (Cheatvorsorge)
     if(CalcWithAllyVisiblity(pt, player_attacker) != VIS_VISIBLE)
-        return;
+        return attackers;
     //bool use_seas[512];
     //memset(use_seas, 0, 512);
     std::vector<bool>use_seas;
     use_seas.resize(seas.size());
 
     // Mögliche Hafenpunkte in der Nähe des Gebäudes
-    std::vector< unsigned > defender_harbors;
-    GetValidSeaIDsAroundMilitaryBuildingForAttack(pt, &use_seas, player_attacker, &defender_harbors);
+    std::vector< unsigned > defender_harbors = GetValidSeaIDsAroundMilitaryBuildingForAttack(pt, use_seas, player_attacker);
 
     // Liste alle Militärgebäude des Angreifers, die Soldaten liefern
     std::vector<nobHarborBuilding::SeaAttackerBuilding> buildings;
 
     // Angrenzende Häfen des Angreifers an den entsprechenden Meeren herausfinden
-    for(std::list<nobHarborBuilding*>::const_iterator it = players->getElement(player_attacker)->GetHarbors()
-            .begin(); it != players->getElement(player_attacker)->GetHarbors().end(); ++it)
+    const std::list<nobHarborBuilding*>& harbors = players->getElement(player_attacker)->GetHarbors();
+    for(std::list<nobHarborBuilding*>::const_iterator it = harbors.begin(); it != harbors.end(); ++it)
     {
         // Bestimmen, ob Hafen an einem der Meere liegt, über die sich auch die gegnerischen
         // Hafenpunkte erreichen lassen
@@ -1838,15 +1828,15 @@ void GameWorldBase::GetAvailableSoldiersForSeaAttack(const unsigned char player_
         if(!is_at_sea)
             continue;
 
-        (*it)->GetAttackerBuildingsForSeaAttack(&buildings, defender_harbors);
+        std::vector<nobHarborBuilding::SeaAttackerBuilding> tmp = (*it)->GetAttackerBuildingsForSeaAttack(defender_harbors);
+        buildings.insert(buildings.begin(), tmp.begin(), tmp.end());
     }
 
     // Die Soldaten aus allen Militärgebäuden sammeln
     for(unsigned i = 0; i < buildings.size(); ++i)
     {
         // Soldaten holen
-        std::vector<nofPassiveSoldier*> tmp_soldiers;
-        buildings[i].building->GetSoldiersForAttack(buildings[i].harbor->GetPos(), player_attacker, tmp_soldiers);
+        std::vector<nofPassiveSoldier*> tmp_soldiers = buildings[i].building->GetSoldiersForAttack(buildings[i].harbor->GetPos(), player_attacker);
 
         // Überhaupt welche gefunden?
         if(tmp_soldiers.empty())
@@ -1856,12 +1846,13 @@ void GameWorldBase::GetAvailableSoldiersForSeaAttack(const unsigned char player_
         for(unsigned j = 0; j < tmp_soldiers.size(); ++j)
         {
             PotentialSeaAttacker pa = { tmp_soldiers[j], buildings[i].harbor, buildings[i].distance };
-            attackers->push_back(pa);
+            attackers.push_back(pa);
         }
     }
 
     // Entsprechend nach Rang sortieren
-    attackers->sort();
+    std::sort(attackers.begin(), attackers.end());
+    return attackers;
 }
 
 int GameWorldBase::LUA_EnableBuilding(lua_State* L)

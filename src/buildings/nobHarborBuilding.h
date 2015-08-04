@@ -162,7 +162,7 @@ public:
             unsigned way_costs;
         };
         /// Gibt eine Liste mit möglichen Verbindungen zurück
-        void GetShipConnections(std::vector<ShipConnection>& connections) const;
+        std::vector<ShipConnection> GetShipConnections() const;
 
         /// Fügt einen Mensch hinzu, der mit dem Schiff irgendwo hin fahren will
         void AddFigureForShip(noFigure* fig, MapPoint dest);
@@ -197,10 +197,9 @@ public:
 
         /// Gibt die Angreifer zurück, die dieser Hafen für einen Seeangriff zur Verfügung stellen kann
         /// defender_harbors sind dabei mögliche Zielhäfen
-        void GetAttackerBuildingsForSeaAttack(std::vector<SeaAttackerBuilding> * buildings,
-                                              const std::vector<unsigned>& defender_harbors);
+        std::vector<SeaAttackerBuilding> GetAttackerBuildingsForSeaAttack(const std::vector<unsigned>& defender_harbors);
         ///Gibt verfügbare Angreifer zurück
-        void GetAttackerBuildingsForSeaIdAttack(std::vector<SeaAttackerBuilding>*buildings);
+        std::vector<SeaAttackerBuilding> GetAttackerBuildingsForSeaIdAttack();
 
         /// Fügt einen Schiffs-Angreifer zum Hafen hinzu
         void AddSeaAttacker(nofAttacker* attacker);

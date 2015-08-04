@@ -47,15 +47,14 @@ class AIConstruction
         unsigned GetBuildJobNum() const { return buildJobs.size(); }
 		unsigned GetConnectJobNum() const {return connectJobs.size();}
 
-        void AddConnectFlagJob(const noFlag* flag); // todo aijh als param suckt
+        void AddConnectFlagJob(const noFlag* flag);
 
         bool BuildJobAvailable() const { return buildJobs.size() > 0;}
 
         /// Finds flags in the area around pt
-        void FindFlags(std::vector<const noFlag*>& flags, const MapPoint pt, unsigned short radius, bool clear = true);
+        std::vector<const noFlag*> FindFlags(const MapPoint pt, unsigned short radius);
 
-        void FindFlags(std::vector<const noFlag*>& flags, const MapPoint pt, unsigned short radius,
-                       MapPoint real, unsigned short real_radius, bool clear = true);
+        std::vector<const noFlag*> FindFlags(const MapPoint pt, unsigned short radius, MapPoint real, unsigned short real_radius);
 		
 		/// returns true if the military building should be connected to the roadsystem
 		bool MilitaryBuildingWantsRoad(nobMilitary* milbld, unsigned listpos);

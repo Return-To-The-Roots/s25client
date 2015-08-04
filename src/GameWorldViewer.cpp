@@ -66,7 +66,7 @@ unsigned GameWorldViewer::GetAvailableSoldiersForAttack(const unsigned char play
     {
         // Muss ein Gebäude von uns sein und darf nur ein "normales Militärgebäude" sein (kein HQ etc.)
         if((*it)->GetPlayer() == player_attacker && (*it)->GetBuildingType() >= BLD_BARRACKS && (*it)->GetBuildingType() <= BLD_FORTRESS)
-            total_count += static_cast<nobMilitary*>(*it)->GetSoldiersForAttack(pt, player_attacker);
+            total_count += static_cast<nobMilitary*>(*it)->GetNumSoldiersForAttack(pt, player_attacker);
     }
 
     return total_count;
@@ -121,12 +121,12 @@ void GameWorldViewer::MouseMove(const MouseCoords& mc)
 // Höhe wurde Verändert: TerrainRenderer Bescheid sagen, damit es entsprechend verändert werden kann
 void GameWorldViewer::AltitudeChanged(const MapPoint pt)
 {
-    tr.AltitudeChanged(pt, this);
+    tr.AltitudeChanged(pt, *this);
 }
 
 void GameWorldViewer::VisibilityChanged(const MapPoint pt)
 {
-    tr.VisibilityChanged(pt, this);
+    tr.VisibilityChanged(pt, *this);
 }
 
 
@@ -146,7 +146,7 @@ Visibility GameWorldViewer::GetVisibility(const MapPoint pt) const
 
 void GameWorldViewer::RecalcAllColors()
 {
-    tr.UpdateAllColors(this);
+    tr.UpdateAllColors(*this);
 }
 
 /// liefert sichtbare Straße, im FoW entsprechend die FoW-Straße
@@ -216,9 +216,7 @@ unsigned GameWorldViewer::GetAvailableSoldiersForSeaAttackCount(const unsigned c
 {
     if(GAMECLIENT.GetGGS().getSelection(ADDON_SEA_ATTACK) == 2) //deactivated by addon?
         return 0;
-    std::list<GameWorldBase::PotentialSeaAttacker> attackers;
-    GetAvailableSoldiersForSeaAttack(player_attacker, pt, &attackers);
-    return unsigned(attackers.size());
+    return unsigned(GetAvailableSoldiersForSeaAttack(player_attacker, pt).size());
 }
 
 /// Get the "youngest" FOWObject of all players who share the view with the local player

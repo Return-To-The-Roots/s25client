@@ -404,11 +404,12 @@ void iwMusicPlayer::SetRandomPlayback(const bool random_playback)
         random_playback ? LOADER.GetImageN("io", 225) : LOADER.GetImageN("io", 107));
 }
 
-void iwMusicPlayer::GetSegments(std::vector<std::string>& segments) const
+std::vector<std::string> iwMusicPlayer::GetSegments() const
 {
-    segments.clear();
+    std::vector<std::string> segments;
     for(unsigned i = 0; i < GetCtrl<ctrlList>(0)->GetLineCount(); ++i)
         segments.push_back(GetCtrl<ctrlList>(0)->GetItemText(i));
+    return segments;
 }
 
 unsigned iwMusicPlayer::GetRepeats() const

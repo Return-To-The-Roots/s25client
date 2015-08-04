@@ -1239,7 +1239,7 @@ void AIPlayerJH::DistributeMaxRankSoldiersByBlocking(unsigned limit,nobBaseWareh
 		//if understaffed was found block in all with >=limit else unblock in all
 		for (std::list<nobBaseWarehouse*>::const_iterator it=aii->GetStorehouses().begin();it!=aii->GetStorehouses().end();it++)
 		{
-			if(std::find(frontierwhs.begin(),frontierwhs.end(),(*it))!=frontierwhs.end()) //frontier wh?
+			if(helpers::contains(frontierwhs, (*it))) //frontier wh?
 			{
 				if(understaffedwh)
 				{
@@ -1980,7 +1980,7 @@ void AIPlayerJH::TrySeaAttack()
     for(std::vector<noShip*>::const_iterator it = aii->GetShips().begin(); it != aii->GetShips().end(); it++)
     {
         //sea id not already listed as valid or invalid?
-        if(std::find(seaidswithattackers.begin(), seaidswithattackers.end(), (*it)->GetSeaID()) == seaidswithattackers.end() && std::find(invalidseas.begin(), invalidseas.end(), (*it)->GetSeaID()) == invalidseas.end())
+        if(!helpers::contains(seaidswithattackers, (*it)->GetSeaID()) && !helpers::contains(invalidseas, (*it)->GetSeaID()))
         {
             unsigned int attackercount = gwb.GetAvailableSoldiersForSeaAttackAtSea(playerid, (*it)->GetSeaID(), false);
             if(attackercount) //got attackers at this sea id? -> add to valid list
@@ -2013,7 +2013,7 @@ void AIPlayerJH::TrySeaAttack()
                 {
                     //attackers for this building?
                     std::vector<unsigned short> testseaidswithattackers(seaidswithattackers);
-                    gwb.GetValidSeaIDsAroundMilitaryBuildingForAttackCompare(gwb.GetHarborPoint(i), &testseaidswithattackers, playerid);
+                    gwb.GetValidSeaIDsAroundMilitaryBuildingForAttackCompare(gwb.GetHarborPoint(i), testseaidswithattackers, playerid);
                     if(!testseaidswithattackers.empty()) //harbor can be attacked?
                     {
                         if(!hb->DefendersAvailable()) //no defenders?
@@ -2042,8 +2042,7 @@ void AIPlayerJH::TrySeaAttack()
         std::random_shuffle(undefendedTargets.begin(), undefendedTargets.end());
         for(std::deque<const nobBaseMilitary*>::iterator it = undefendedTargets.begin(); it != undefendedTargets.end(); it++)
         {
-            std::list<GameWorldBase::PotentialSeaAttacker> attackers;
-            gwb.GetAvailableSoldiersForSeaAttack(playerid, (*it)->GetPos(), &attackers);
+            std::vector<GameWorldBase::PotentialSeaAttacker> attackers = gwb.GetAvailableSoldiersForSeaAttack(playerid, (*it)->GetPos());
             if(!attackers.empty()) //try to attack it!
             {
                 aii->SeaAttack((*it)->GetPos(), 1, true);
@@ -2072,7 +2071,7 @@ void AIPlayerJH::TrySeaAttack()
                 if (((*it)->GetGOT() != GOT_NOB_MILITARY) && (!(*it)->DefendersAvailable())) //undefended headquarter(or unlikely as it is a harbor...) - priority list!
                 {
                     std::vector<unsigned short> testseaidswithattackers(seaidswithattackers);
-                    gwb.GetValidSeaIDsAroundMilitaryBuildingForAttackCompare((*it)->GetPos(), &testseaidswithattackers, playerid);
+                    gwb.GetValidSeaIDsAroundMilitaryBuildingForAttackCompare((*it)->GetPos(), testseaidswithattackers, playerid);
                     if(!testseaidswithattackers.empty())
                     {
                         undefendedTargets.push_back(*it);
@@ -2092,8 +2091,7 @@ void AIPlayerJH::TrySeaAttack()
         std::random_shuffle(undefendedTargets.begin(), undefendedTargets.end());
         for(std::deque<const nobBaseMilitary*>::iterator it = undefendedTargets.begin(); it != undefendedTargets.end(); it++)
         {
-            std::list<GameWorldBase::PotentialSeaAttacker> attackers;
-            gwb.GetAvailableSoldiersForSeaAttack(playerid, (*it)->GetPos(), &attackers);
+            std::vector<GameWorldBase::PotentialSeaAttacker> attackers = gwb.GetAvailableSoldiersForSeaAttack(playerid, (*it)->GetPos());
             if(!attackers.empty()) //try to attack it!
             {
                 aii->SeaAttack((*it)->GetPos(), 1, true);
@@ -2105,11 +2103,10 @@ void AIPlayerJH::TrySeaAttack()
     for(std::deque<const nobBaseMilitary*>::iterator it = potentialTargets.begin(); it != potentialTargets.end(); it++)
     {
         std::vector<unsigned short> testseaidswithattackers(seaidswithattackers); //TODO: decide if it is worth attacking the target and not just "possible"
-        gwb.GetValidSeaIDsAroundMilitaryBuildingForAttackCompare((*it)->GetPos(), &testseaidswithattackers, playerid); //test only if we should have attackers from one of our valid sea ids
+        gwb.GetValidSeaIDsAroundMilitaryBuildingForAttackCompare((*it)->GetPos(), testseaidswithattackers, playerid); //test only if we should have attackers from one of our valid sea ids
         if(testseaidswithattackers.size() > 0) //only do the final check if it will probably be a good result
         {
-            std::list<GameWorldBase::PotentialSeaAttacker> attackers;
-            gwb.GetAvailableSoldiersForSeaAttack(playerid, (*it)->GetPos(), &attackers); //now get a final list of attackers and attack it
+            std::vector<GameWorldBase::PotentialSeaAttacker> attackers = gwb.GetAvailableSoldiersForSeaAttack(playerid, (*it)->GetPos()); //now get a final list of attackers and attack it
             if(!attackers.empty())
             {
                 aii->SeaAttack((*it)->GetPos(), attackers.size(), true);
@@ -2213,7 +2210,7 @@ bool AIPlayerJH::IsFlagPartofCircle(const noFlag* startFlag, unsigned maxlen, co
             if (!flag)
                 return(false);
 
-            bool alreadyinlist = std::find(oldFlags.begin(), oldFlags.end(), flag->GetPos()) != oldFlags.end();
+            bool alreadyinlist = helpers::contains(oldFlags, flag->GetPos());
             if(!alreadyinlist)
             {
                 oldFlags.push_back(flag->GetPos());
@@ -2227,8 +2224,7 @@ bool AIPlayerJH::IsFlagPartofCircle(const noFlag* startFlag, unsigned maxlen, co
 
 void AIPlayerJH::RemoveAllUnusedRoads(const MapPoint pt)
 {
-    std::vector<const noFlag*> flags;
-    construction->FindFlags(flags, pt, 25);
+    std::vector<const noFlag*> flags = construction->FindFlags(pt, 25);
     // Jede Flagge testen...
     std::list<const noFlag*>reconnectflags;
     for(unsigned i = 0; i < flags.size(); ++i)
@@ -2713,9 +2709,9 @@ unsigned AIPlayerJH::GetCountofAIRelevantSeaIds()
         {
             if(sea_ids[r] > 0) //there is a sea id? -> check if it is already a validid or a once found id
             {
-                if(std::find(validseaids.begin(), validseaids.end(), sea_ids[r]) == validseaids.end()) //not yet in validseas?
+                if(!helpers::contains(validseaids, sea_ids[r])) //not yet in validseas?
                 {
-                    if(std::find(onetimeuseseaids.begin(), onetimeuseseaids.end(), sea_ids[r]) == onetimeuseseaids.end()) //not yet in onetimeuseseaids?
+                    if(!helpers::contains(onetimeuseseaids, sea_ids[r])) //not yet in onetimeuseseaids?
                         onetimeuseseaids.push_back(sea_ids[r]);
                     else
                     {

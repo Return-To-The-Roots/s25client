@@ -302,34 +302,33 @@ void nobMilitary::HandleEvent(const unsigned int id)
             // Von hinten durchgehen
             // Wenn der nachfolgende (schwächere) Soldat einen niedrigeren Rang hat,
             // wird dieser ebenfalls befördert usw.!
-
+            std::vector<nofPassiveSoldier*> upgradedSoldiers;
             // Rang des letzten beförderten Soldaten, 4-MaxRank am Anfang setzen, damit keiner über den maximalen Rang befördert wird
             unsigned char last_rank = MAX_MILITARY_RANK - GAMECLIENT.GetGGS().getSelection(ADDON_MAX_RANK);
-
-            for(SortedTroopsContainer::reverse_iterator it = troops.rbegin(); it != troops.rend(); ++it)
+            for(SortedTroopsContainer::reverse_iterator it = troops.rbegin(); it != troops.rend();)
             {
                 // Es wurde schon einer befördert, dieser Soldat muss nun einen niedrigeren Rang
                 // als der letzte haben, damit er auch noch befördert werden kann
                 if((*it)->GetRank() < last_rank)
                 {
+                    nofPassiveSoldier* soldier = *it;
                     // Rang merken
-                    last_rank = (*it)->GetRank();
+                    last_rank = soldier->GetRank();
+                    // Remove from sorted container as changing it breaks sorting
+                    it = helpers::erase(troops, it);
                     // Dann befördern
-                    (*it)->Upgrade();
-                }
+                    soldier->Upgrade();
+                    upgradedSoldiers.push_back(soldier);
+                }else
+                    ++it;
             }
 
             // Wurde jemand befördert?
-            if(last_rank < MAX_MILITARY_RANK - GAMECLIENT.GetGGS().getSelection(ADDON_MAX_RANK))
+            if(!upgradedSoldiers.empty())
             {
-                // Beförderung kann Reihenfolge im Container ändern, neu sortieren.
-                SortedTroopsContainer troops_resorted;
-                for(SortedTroopsContainer::iterator it = troops.begin(); it != troops.end(); ++it)
-                {
-                    troops_resorted.insert(*it);
-                }
-
-                troops = troops_resorted;
+                // Reinsert upgraded soldiers
+                for(std::vector<nofPassiveSoldier*>::iterator it = upgradedSoldiers.begin(); it != upgradedSoldiers.end(); ++it)
+                    troops.insert(*it);
 
                 // Goldmünze verbrauchen
                 --coins;
@@ -799,7 +798,7 @@ nofAggressiveDefender* nobMilitary::SendDefender(nofAttacker* attacker)
 }
 
 /// Gibt die Anzahl der Soldaten zurück, die für einen Angriff auf ein bestimmtes Ziel zur Verfügung stehen
-unsigned nobMilitary::GetSoldiersForAttack(const MapPoint dest, const unsigned char player_attacker) const
+unsigned nobMilitary::GetNumSoldiersForAttack(const MapPoint dest, const unsigned char player_attacker) const
 {
     // Soldaten ausrechnen, wie viel man davon nehmen könnte, je nachdem wie viele in den
     // Militäreinstellungen zum Angriff eingestellt wurden
@@ -829,24 +828,23 @@ unsigned nobMilitary::GetSoldiersForAttack(const MapPoint dest, const unsigned c
 }
 
 /// Gibt die Soldaten zurück, die für einen Angriff auf ein bestimmtes Ziel zur Verfügung stehen
-void nobMilitary::GetSoldiersForAttack(const MapPoint dest,
-                                       const unsigned char player_attacker, std::vector<nofPassiveSoldier*>& soldiers) const
+std::vector<nofPassiveSoldier*> nobMilitary::GetSoldiersForAttack(const MapPoint dest, const unsigned char player_attacker) const
 {
-    unsigned soldiers_count = GetSoldiersForAttack(dest, player_attacker);
+    std::vector<nofPassiveSoldier*> soldiers;
+    unsigned soldiers_count = GetNumSoldiersForAttack(dest, player_attacker);
     for(SortedTroopsContainer::const_reverse_iterator it = troops.rbegin(); it != troops.rend() && soldiers_count; ++it, --soldiers_count)
     {
         soldiers.push_back(*it);
     }
-
+    return soldiers;
 }
 
 /// Gibt die Stärke der Soldaten zurück, die für einen Angriff auf ein bestimmtes Ziel zur Verfügung stehen
-unsigned nobMilitary::GetSoldiersStrengthForAttack(const MapPoint dest,
-        const unsigned char player_attacker, unsigned& count) const
+unsigned nobMilitary::GetSoldiersStrengthForAttack(const MapPoint dest, const unsigned char player_attacker, unsigned& count) const
 {
     unsigned strength = 0;
 
-    unsigned soldiers_count = GetSoldiersForAttack(dest, player_attacker);
+    unsigned soldiers_count = GetNumSoldiersForAttack(dest, player_attacker);
     count = soldiers_count;
 
     for(SortedTroopsContainer::const_reverse_iterator it = troops.rbegin(); it != troops.rend() && soldiers_count; ++it, --soldiers_count)

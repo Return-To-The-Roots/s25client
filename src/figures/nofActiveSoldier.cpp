@@ -488,7 +488,7 @@ bool nofActiveSoldier::GetFightSpotNear(nofActiveSoldier* other, MapPoint * figh
     }
 
     // We could have crossed the border due to our interpolating across the borders
-    middle = gwg->ConvertCoords(middle.x, middle.y);
+    middle = gwg->ConvertCoords(Point<int>(middle));
 
 
     // Test Middle point first

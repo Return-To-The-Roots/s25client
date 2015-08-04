@@ -162,6 +162,7 @@ void nofPassiveSoldier::LeaveBuilding()
 
 void nofPassiveSoldier::Upgrade()
 {
+    assert(!building || !helpers::contains(static_cast<nobMilitary*>(building)->troops, this)); // We must not be in the buildings list while upgrading. This would destroy the ordered list
     // Einen Rang höher
     job = Job(unsigned(job) + 1);
 

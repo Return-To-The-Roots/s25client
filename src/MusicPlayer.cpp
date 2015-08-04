@@ -193,7 +193,7 @@ void Playlist::ReadMusicPlayer(const iwMusicPlayer* const window)
 {
     repeats = window->GetRepeats();
     random = window->GetRandomPlayback();
-    window->GetSegments(songs);
+    songs = window->GetSegments();
 
     // zum Abspielen vorbereiten
     Prepare();

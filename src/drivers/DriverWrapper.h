@@ -66,7 +66,7 @@ class DriverWrapper
         void* GetDLLFunction(const std::string& name);
 
         /// Läd eine Liste von verfügbaren Treibern
-        static void LoadDriverList(const DriverType dt, std::vector<DriverItem>& driver_list);
+        static std::vector<DriverItem> LoadDriverList(const DriverType dt);
 
     private:
         /// Handle auf die DLL

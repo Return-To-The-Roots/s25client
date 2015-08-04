@@ -73,7 +73,7 @@ class VideoDriver
             unsigned short width;
             unsigned short height;
 
-            bool operator==(const VideoMode& o) {   return (width == o.width && height == o.height);    }
+            bool operator==(const VideoMode& o) const {   return (width == o.width && height == o.height);    }
         };
         virtual void ListVideoModes(std::vector<VideoMode>& video_modes) const;
 

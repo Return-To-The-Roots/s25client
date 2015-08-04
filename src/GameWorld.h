@@ -368,16 +368,16 @@ class GameWorldBase
         noFlag* GetRoadFlag(MapPoint pt, unsigned char& dir, unsigned last_i = 255);
 
         /// Konvertiert die Koordinaten.
-        MapPoint ConvertCoords(int x, int y) const;
+        MapPoint ConvertCoords(Point<int> pt) const;
+        MapPoint ConvertCoords(int x, int y) const { return ConvertCoords(Point<int>(x, y)); }
 
         /// Erzeugt eine GUI-ID für die Fenster von Map-Objekten
         inline unsigned CreateGUIID(const MapPoint pt) const
         { return 1000 + width * pt.y + pt.x; }
         /// Gibt Terrainkoordinaten zurück
-        inline float GetTerrainX(const MapPoint pt)
-        { return tr.GetTerrainX(pt); }
-        inline float GetTerrainY(const MapPoint pt)
-        { return tr.GetTerrainY(pt); }
+        inline Point<float> GetTerrain(const MapPoint pt){ return tr.GetTerrain(pt); }
+        inline float GetTerrainX(const MapPoint pt){ return GetTerrain(pt).x; }
+        inline float GetTerrainY(const MapPoint pt){ return GetTerrain(pt).y; }
 
         /// Verändert die Höhe eines Punktes und die damit verbundenen Schatten
         void ChangeAltitude(const MapPoint pt, const unsigned char altitude);
@@ -439,13 +439,13 @@ class GameWorldBase
 
 
         /// Liefert Hafenpunkte im Umkreis von einem bestimmten Militärgebäude
-        void GetHarborPointsAroundMilitaryBuilding(const MapPoint pt, std::vector<unsigned> * harbor_points) const;
+        std::vector<unsigned> GetHarborPointsAroundMilitaryBuilding(const MapPoint pt) const;
         /// returns all sea_ids from which a given building can be attacked by sea
-        void GetValidSeaIDsAroundMilitaryBuildingForAttack(const MapPoint pt, std::vector<bool> * use_seas, const unsigned char player_attacker, std::vector<unsigned>*harbor_points)const;
+        std::vector<unsigned> GetValidSeaIDsAroundMilitaryBuildingForAttack(const MapPoint pt, std::vector<bool>& use_seas, const unsigned char player_attacker)const;
         /// returns all sea_ids found in the given vector from which a given building can be attacked by sea
-        void GetValidSeaIDsAroundMilitaryBuildingForAttackCompare(const MapPoint pt, std::vector<unsigned short> * use_seas, const unsigned char player_attacker)const;
+        void GetValidSeaIDsAroundMilitaryBuildingForAttackCompare(const MapPoint pt, std::vector<unsigned short>& use_seas, const unsigned char player_attacker)const;
         /// Sucht verfügbare Soldaten, um dieses Militärgebäude mit einem Seeangriff anzugreifen
-        void GetAvailableSoldiersForSeaAttack(const unsigned char player_attacker, const MapPoint pt, std::list<PotentialSeaAttacker> * attackers) const;
+        std::vector<PotentialSeaAttacker> GetAvailableSoldiersForSeaAttack(const unsigned char player_attacker, const MapPoint pt) const;
         /// Gibt Anzahl oder geschätzte Stärke(rang summe + anzahl) der verfügbaren Soldaten die zu einem Schiffsangriff starten können von einer bestimmten sea id aus
         unsigned int GetAvailableSoldiersForSeaAttackAtSea(const unsigned char player_attacker, unsigned short seaid, bool count = true) const;
 
@@ -534,10 +534,6 @@ class GameWorldView
         unsigned int terrain_last_global_animation;
         unsigned int terrain_last_water;
 
-        std::list<MapTile> sorted_textures[16];
-        std::list<BorderTile> sorted_borders[5];
-        std::list<PreparedRoad> sorted_roads[4];
-
         GameWorldView(const MapPoint pt, unsigned short width, unsigned short height);
         ~GameWorldView();
 
@@ -588,12 +584,13 @@ class GameWorldView
         /// Gibt Scrolling-Offset zurück
         inline int GetXOffset() const { return offset.x - pos.x; }
         inline int GetYOffset() const { return offset.y - pos.y; }
+        inline Point<int> GetOffset() const { return offset - Point<int>(pos); }
         /// Gibt ersten Punkt an, der beim Zeichnen angezeigt wird
         inline Point<int> GetFirstPt() const { return firstPt; }
         /// Gibt letzten Punkt an, der beim Zeichnen angezeigt wird
         inline Point<int> GetLastPt() const { return lastPt; }
 
-        void DrawBoundaryStone(const int x, const int y, const MapPoint t, const int xpos, const int ypos, Visibility vis);
+        void DrawBoundaryStone(const int x, const int y, const MapPoint t, const Point<int> pos, Visibility vis);
 
         void Resize(unsigned short width, unsigned short height);
 
