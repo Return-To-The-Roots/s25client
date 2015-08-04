@@ -166,8 +166,8 @@ void noBuildingSite::Serialize_noBuildingSite(SerializedGameData* sgd) const
     sgd->PushUnsignedChar(used_boards);
     sgd->PushUnsignedChar(used_stones);
     sgd->PushUnsignedChar(build_progress);
-    sgd->PushObjectList(ordered_boards, true);
-    sgd->PushObjectList(ordered_stones, true);
+    sgd->PushObjectContainer(ordered_boards, true);
+    sgd->PushObjectContainer(ordered_stones, true);
 }
 
 noBuildingSite::noBuildingSite(SerializedGameData* sgd, const unsigned obj_id) : noBaseBuilding(sgd, obj_id),
@@ -180,8 +180,8 @@ noBuildingSite::noBuildingSite(SerializedGameData* sgd, const unsigned obj_id) :
     used_stones(sgd->PopUnsignedChar()),
     build_progress(sgd->PopUnsignedChar())
 {
-    sgd->PopObjectList(ordered_boards, GOT_WARE);
-    sgd->PopObjectList(ordered_stones, GOT_WARE);
+    sgd->PopObjectContainer(ordered_boards, GOT_WARE);
+    sgd->PopObjectContainer(ordered_stones, GOT_WARE);
 }
 
 void noBuildingSite::OrderConstructionMaterial()

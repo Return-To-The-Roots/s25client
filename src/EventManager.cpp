@@ -186,7 +186,7 @@ void EventManager::Serialize(SerializedGameData* sgd) const
         }
     }
 
-    sgd->PushObjectList(save_events, true);
+    sgd->PushObjectContainer(save_events, true);
 }
 
 void EventManager::Deserialize(SerializedGameData* sgd)

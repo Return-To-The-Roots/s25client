@@ -212,11 +212,11 @@ void GameClientPlayer::Serialize(SerializedGameData* sgd)
     if(!(ps == PS_OCCUPIED || ps == PS_KI))
         return;
 
-    sgd->PushObjectList(warehouses, false);
-    sgd->PushObjectList(harbors, true);
+    sgd->PushObjectContainer(warehouses, false);
+    sgd->PushObjectContainer(harbors, true);
 
-    //sgd->PushObjectList(unoccupied_roads,true);
-    sgd->PushObjectList(roads, true);
+    //sgd->PushObjectContainer(unoccupied_roads,true);
+    sgd->PushObjectContainer(roads, true);
 
     sgd->PushUnsignedInt(jobs_wanted.size());
     for(std::list<JobNeeded>::iterator it = jobs_wanted.begin(); it != jobs_wanted.end(); ++it)
@@ -226,17 +226,17 @@ void GameClientPlayer::Serialize(SerializedGameData* sgd)
     }
 
     for(unsigned i = 0; i < 30; ++i)
-        sgd->PushObjectList(buildings[i], true);
+        sgd->PushObjectContainer(buildings[i], true);
 
-    sgd->PushObjectList(building_sites, true);
+    sgd->PushObjectContainer(building_sites, true);
 
-    sgd->PushObjectList(military_buildings, true);
+    sgd->PushObjectContainer(military_buildings, true);
 
-    sgd->PushObjectList(ware_list, true);
+    sgd->PushObjectContainer(ware_list, true);
 
-    sgd->PushObjectList(flagworkers, false);
+    sgd->PushObjectContainer(flagworkers, false);
 
-    sgd->PushObjectVector(ships, true);
+    sgd->PushObjectContainer(ships, true);
 
     for(unsigned i = 0; i < 5; ++i)
         sgd->PushBool(defenders[i]);
@@ -323,11 +323,11 @@ void GameClientPlayer::Deserialize(SerializedGameData* sgd)
     if(!(origin_ps == PS_OCCUPIED || origin_ps == PS_KI))
         return;
 
-    sgd->PopObjectList(warehouses, GOT_UNKNOWN);
-    sgd->PopObjectList(harbors, GOT_NOB_HARBORBUILDING);
+    sgd->PopObjectContainer(warehouses, GOT_UNKNOWN);
+    sgd->PopObjectContainer(harbors, GOT_NOB_HARBORBUILDING);
 
-    //sgd->PopObjectList(unoccupied_roads,GOT_ROADSEGMENT);
-    sgd->PopObjectList(roads, GOT_ROADSEGMENT);
+    //sgd->PopObjectContainer(unoccupied_roads,GOT_ROADSEGMENT);
+    sgd->PopObjectContainer(roads, GOT_ROADSEGMENT);
 
     unsigned list_size = sgd->PopUnsignedInt();
     for(unsigned i = 0; i < list_size; ++i)
@@ -341,17 +341,17 @@ void GameClientPlayer::Deserialize(SerializedGameData* sgd)
     }
 
     for(unsigned i = 0; i < 30; ++i)
-        sgd->PopObjectList(buildings[i], GOT_NOB_USUAL);
+        sgd->PopObjectContainer(buildings[i], GOT_NOB_USUAL);
 
-    sgd->PopObjectList(building_sites, GOT_BUILDINGSITE);
+    sgd->PopObjectContainer(building_sites, GOT_BUILDINGSITE);
 
-    sgd->PopObjectList(military_buildings, GOT_NOB_MILITARY);
+    sgd->PopObjectContainer(military_buildings, GOT_NOB_MILITARY);
 
-    sgd->PopObjectList(ware_list, GOT_WARE);
+    sgd->PopObjectContainer(ware_list, GOT_WARE);
 
-    sgd->PopObjectList(flagworkers, GOT_UNKNOWN);
+    sgd->PopObjectContainer(flagworkers, GOT_UNKNOWN);
 
-    sgd->PopObjectVector(ships, GOT_SHIP);
+    sgd->PopObjectContainer(ships, GOT_SHIP);
 
     for(unsigned i = 0; i < 5; ++i)
         defenders[i] = sgd->PopBool();

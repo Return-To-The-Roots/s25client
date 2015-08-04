@@ -123,8 +123,8 @@ void noShip::Serialize(SerializedGameData* sgd) const
     sgd->PushUnsignedInt(covered_distance);
     for(unsigned i = 0; i < route.size(); ++i)
         sgd->PushUnsignedChar(route[i]);
-    sgd->PushObjectList(figures, false);
-    sgd->PushObjectList(wares, true);
+    sgd->PushObjectContainer(figures, false);
+    sgd->PushObjectContainer(wares, true);
 
 
 }
@@ -146,8 +146,8 @@ noShip::noShip(SerializedGameData* sgd, const unsigned obj_id) :
 {
     for(unsigned i = 0; i < route.size(); ++i)
         route[i] = sgd->PopUnsignedChar();
-    sgd->PopObjectList(figures, GOT_UNKNOWN);
-    sgd->PopObjectList(wares, GOT_WARE);
+    sgd->PopObjectContainer(figures, GOT_UNKNOWN);
+    sgd->PopObjectContainer(wares, GOT_WARE);
 }
 
 void noShip::Destroy()

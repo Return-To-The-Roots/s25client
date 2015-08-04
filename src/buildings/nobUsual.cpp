@@ -100,7 +100,7 @@ nobUsual::nobUsual(SerializedGameData* sgd, const unsigned int obj_id)
         ordered_wares.clear();
 
     for(unsigned i = 0; i < USUAL_BUILDING_CONSTS[type - 10].wares_needed_count; ++i)
-        sgd->PopObjectList(ordered_wares[i], GOT_WARE);
+        sgd->PopObjectContainer(ordered_wares[i], GOT_WARE);
     for(unsigned i = 0; i < LAST_PRODUCTIVITIES_COUNT; ++i)
         last_productivities[i] = sgd->PopUnsignedShort();
 
@@ -174,7 +174,7 @@ void nobUsual::Serialize_nobUsual(SerializedGameData* sgd) const
     for(unsigned i = 0; i < 3; ++i)
         sgd->PushUnsignedChar(wares[i]);
     for(unsigned i = 0; i < USUAL_BUILDING_CONSTS[type - 10].wares_needed_count; ++i)
-        sgd->PushObjectList(ordered_wares[i], true);
+        sgd->PushObjectContainer(ordered_wares[i], true);
     for(unsigned i = 0; i < LAST_PRODUCTIVITIES_COUNT; ++i)
         sgd->PushUnsignedShort(last_productivities[i]);
 }
