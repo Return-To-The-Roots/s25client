@@ -166,7 +166,7 @@ class SerializedGameData : public Serializer
 
             unsigned size = PopUnsignedInt();
             ReserveElements<T>::reserve(gos, size);
-            GetInsertIterator<T>::iterator it = GetInsertIterator<T>::get(gos);
+            typename GetInsertIterator<T>::iterator it = GetInsertIterator<T>::get(gos);
             for(unsigned i = 0; i < size; ++i)
                 *it = PopObject<Object>(got);
         }
