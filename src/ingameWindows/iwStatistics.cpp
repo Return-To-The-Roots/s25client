@@ -85,7 +85,7 @@ iwStatistics::iwStatistics()
         }
 
         // Statistik-Sichtbarkeit abhängig von Auswahl
-        switch (GAMECLIENT.GetGGS().getSelection(ADDON_STATISTICS_VISIBILITY))
+        switch (GAMECLIENT.IsReplayModeOn() ? 0 : GAMECLIENT.GetGGS().getSelection(ADDON_STATISTICS_VISIBILITY))
         {
             default: // Passiert eh nicht, nur zur Sicherheit
                 activePlayers[i] = false;
