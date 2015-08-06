@@ -48,7 +48,7 @@ glArchivItem_Bitmap_Direct::glArchivItem_Bitmap_Direct(void)
  *
  *  @author FloSoft
  */
-glArchivItem_Bitmap_Direct::glArchivItem_Bitmap_Direct(const glArchivItem_Bitmap_Direct* item)
+glArchivItem_Bitmap_Direct::glArchivItem_Bitmap_Direct(const glArchivItem_Bitmap_Direct& item)
     : baseArchivItem_Bitmap(item), glArchivItem_Bitmap(item)
 {
 }

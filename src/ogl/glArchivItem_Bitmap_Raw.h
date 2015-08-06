@@ -32,7 +32,7 @@ class glArchivItem_Bitmap_Raw : public libsiedler2::baseArchivItem_Bitmap_Raw, p
         glArchivItem_Bitmap_Raw(void) : baseArchivItem_Bitmap(), baseArchivItem_Bitmap_Raw(), glArchivItem_Bitmap() {}
 
         /// Kopierkonstruktor von @p glArchivItem_Bitmap_Raw.
-        glArchivItem_Bitmap_Raw(const glArchivItem_Bitmap_Raw* item) : baseArchivItem_Bitmap(item), baseArchivItem_Bitmap_Raw(item), glArchivItem_Bitmap(item) {}
+        glArchivItem_Bitmap_Raw(const glArchivItem_Bitmap_Raw& item) : baseArchivItem_Bitmap(item), baseArchivItem_Bitmap_Raw(item), glArchivItem_Bitmap(item) {}
 };
 
 #endif // !GLARCHIVITEM_BITMAP_RAW_H_INCLUDED

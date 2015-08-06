@@ -32,7 +32,7 @@ class glArchivItem_Bitmap_Direct : public glArchivItem_Bitmap
         /// Konstruktor von @p glArchivItem_Bitmap_Direct.
         glArchivItem_Bitmap_Direct(void);
         /// Kopierkonstruktor von @p glArchivItem_Bitmap_Direct.
-        glArchivItem_Bitmap_Direct(const glArchivItem_Bitmap_Direct* item);
+        glArchivItem_Bitmap_Direct(const glArchivItem_Bitmap_Direct& item);
 
         /// setzt einen Pixel auf einen bestimmten Wert.
         virtual void tex_setPixel(unsigned short x, unsigned short y, unsigned char color, const libsiedler2::ArchivItem_Palette* palette);

@@ -21,6 +21,7 @@
 
 #pragma once
 
+// @Todo: Remove this includes
 #include "glArchivItem_Sound.h"
 #include "glArchivItem_Music.h"
 #include "glArchivItem_Sound_Wave.h"
@@ -39,7 +40,12 @@
 #include "glArchivItem_Font.h"
 #include "glArchivItem_Map.h"
 
-libsiedler2::ArchivItem* glAllocator(unsigned short type, unsigned short subtype);
-libsiedler2::ArchivItem* glAllocator(const libsiedler2::ArchivItem& item);
+#include "../../libsiedler2/src/types.h"
+
+class GlAllocator: public libsiedler2::StandardAllocator{
+public:
+    virtual libsiedler2::ArchivItem* create(unsigned short type, unsigned short subtype) const;
+    virtual libsiedler2::ArchivItem* clone(const libsiedler2::ArchivItem& item) const;
+};
 
 #endif // !GLALLOCATOR_H_INCLUDED

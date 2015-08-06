@@ -1245,7 +1245,7 @@ bool Loader::LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Pal
             // Nun Daten abhängig der Typen erstellen, nur erstes Element wird bei Bitmaps konvertiert
 
             glArchivItem_Bitmap* in = dynamic_cast<glArchivItem_Bitmap*>(temp.get(0));
-            glArchivItem_Bitmap* out = dynamic_cast<glArchivItem_Bitmap*>(glAllocator(bobtype, 0, NULL));
+            glArchivItem_Bitmap* out = dynamic_cast<glArchivItem_Bitmap*>(GlAllocator().create(bobtype, 0));
 
             if(!out)
             {

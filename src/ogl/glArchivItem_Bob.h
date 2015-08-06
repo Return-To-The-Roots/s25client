@@ -27,11 +27,6 @@
 class glArchivItem_Bob : public libsiedler2::ArchivItem_Bob
 {
     public:
-        /// Konstruktor von @p glArchivItem_Bob.
-        glArchivItem_Bob(void) : ArchivItem_Bob() {};
-        /// Kopierkonstruktor von @p glArchivItem_Bob.
-        glArchivItem_Bob(const glArchivItem_Bob* item) : ArchivItem_Bob(item) {};
-
         /// Zeichnet einen Animationsstep.
         void Draw(unsigned int item, unsigned int direction, bool fat, unsigned int animationstep, short x, short y, unsigned int color);
 };

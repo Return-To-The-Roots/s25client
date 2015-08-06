@@ -648,8 +648,9 @@ void glArchivItem_Font::GetWrapInfo(const std::string& text,
  */
 void glArchivItem_Font::initFont()
 {
-    _font_outline = dynamic_cast<glArchivItem_Bitmap*>(glAllocator(libsiedler2::BOBTYPE_BITMAP_RLE, 0, NULL));
-    _font = dynamic_cast<glArchivItem_Bitmap*>(glAllocator(libsiedler2::BOBTYPE_BITMAP_RLE, 0, NULL));
+    // @todo: Shouldn't we use libsiedler2::allocator?
+    _font_outline = dynamic_cast<glArchivItem_Bitmap*>(GlAllocator().create(libsiedler2::BOBTYPE_BITMAP_RLE, 0));
+    _font = dynamic_cast<glArchivItem_Bitmap*>(GlAllocator().create(libsiedler2::BOBTYPE_BITMAP_RLE, 0));
 
     //memset(_charwidths, 0, sizeof(_charwidths));
 

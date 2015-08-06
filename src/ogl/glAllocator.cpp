@@ -41,7 +41,7 @@ static char THIS_FILE[] = __FILE__;
  *
  *  @author FloSoft
  */
-libsiedler2::ArchivItem* glAllocator(unsigned short type, unsigned short subtype)
+libsiedler2::ArchivItem* GlAllocator::create(unsigned short type, unsigned short subtype) const
 {
     switch(type)
     {
@@ -77,7 +77,7 @@ libsiedler2::ArchivItem* glAllocator(unsigned short type, unsigned short subtype
         default:
             break;
     }
-    return libsiedler2::StandardAllocator(type, subtype, NULL);
+    return libsiedler2::StandardAllocator::create(type, subtype);
 }
 
 /**
@@ -87,7 +87,7 @@ libsiedler2::ArchivItem* glAllocator(unsigned short type, unsigned short subtype
  *
  *  @author FloSoft
  */
-libsiedler2::ArchivItem* glAllocator(const libsiedler2::ArchivItem& item)
+libsiedler2::ArchivItem* GlAllocator::clone(const libsiedler2::ArchivItem& item) const
 {
     libsiedler2::BOBTYPES type = static_cast<libsiedler2::BOBTYPES>(item.getBobType());
 
@@ -130,5 +130,5 @@ libsiedler2::ArchivItem* glAllocator(const libsiedler2::ArchivItem& item)
         default:
             break;
     }
-    return libsiedler2::StandardAllocator(type, 0, &item);
+    return libsiedler2::StandardAllocator::clone(item);
 }

@@ -30,7 +30,7 @@ class glArchivItem_Sound : public virtual libsiedler2::baseArchivItem_Sound
         /// Konstruktor von @p glArchivItem_Sound.
         glArchivItem_Sound(void);
         /// Kopiekonstruktor von @p glArchivItem_Sound.
-        glArchivItem_Sound(const glArchivItem_Sound* item);
+        glArchivItem_Sound(const glArchivItem_Sound& item);
 
         /// Destruktor von @p glArchivItem_Sound.
         virtual ~glArchivItem_Sound(void);

@@ -69,7 +69,7 @@ glArchivItem_Bitmap::glArchivItem_Bitmap(void)
  *
  *  @author FloSoft
  */
-glArchivItem_Bitmap::glArchivItem_Bitmap(const glArchivItem_Bitmap* item)
+glArchivItem_Bitmap::glArchivItem_Bitmap(const glArchivItem_Bitmap& item)
     : baseArchivItem_Bitmap(item), texture(0), filter(GL_NEAREST)
 {
 }

@@ -57,7 +57,7 @@ glArchivItem_Map::glArchivItem_Map()
  *
  *  @author FloSoft
  */
-glArchivItem_Map::glArchivItem_Map(const glArchivItem_Map* item)
+glArchivItem_Map::glArchivItem_Map(const glArchivItem_Map& item)
     : ArchivItem_Map(item)
 {
     header = dynamic_cast<const libsiedler2::ArchivItem_Map_Header*>(get(0));
@@ -113,19 +113,24 @@ int glArchivItem_Map::load(FILE* file, bool only_header)
     if((unsigned int)(j - i) > (unsigned int)(header->getWidth() * header->getHeight() * 2))
     {
         // Wenn noch Platz ist, restliches Zeug noch auslesen
-        libsiedler2::ArchivItem_Raw* reservations = dynamic_cast<libsiedler2::ArchivItem_Raw*>(glAllocator(libsiedler2::BOBTYPE_RAW, 0, NULL));
-        if(reservations->load(file, header->getWidth() * header->getHeight()) != 0)
+        // @todo: Shouldn't we use libsiedler2::allocator?
+        libsiedler2::ArchivItem_Raw* reservations = dynamic_cast<libsiedler2::ArchivItem_Raw*>(GlAllocator().create(libsiedler2::BOBTYPE_RAW, 0));
+        if(reservations->load(file, header->getWidth() * header->getHeight()) != 0){
+            delete reservations;
             return 2;
+        }
         set(MAP_RESERVATIONS, reservations);
 
-        libsiedler2::ArchivItem_Raw* owner = dynamic_cast<libsiedler2::ArchivItem_Raw*>(glAllocator(libsiedler2::BOBTYPE_RAW, 0, NULL));
-        if(owner->load(file, header->getWidth() * header->getHeight()) != 0)
+        libsiedler2::ArchivItem_Raw* owner = dynamic_cast<libsiedler2::ArchivItem_Raw*>(GlAllocator().create(libsiedler2::BOBTYPE_RAW, 0));
+        if(owner->load(file, header->getWidth() * header->getHeight()) != 0){
+            owner;
             return 3;
+        }
         set(MAP_OWNER, owner);
     }
     else
     {
-        libsiedler2::ArchivItem_Raw* item = dynamic_cast<libsiedler2::ArchivItem_Raw*>(glAllocator(libsiedler2::BOBTYPE_RAW, 0, NULL));
+        libsiedler2::ArchivItem_Raw* item = dynamic_cast<libsiedler2::ArchivItem_Raw*>(GlAllocator().create(libsiedler2::BOBTYPE_RAW, 0));
         item->alloc(header->getWidth() * header->getHeight());
 
         set(MAP_RESERVATIONS, item);
