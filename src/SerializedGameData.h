@@ -30,6 +30,7 @@
 #include "FOWObjects.h"
 #include "Serializer.h"
 #include "Point.h"
+#include "helpers/traits.h"
 
 class noBase;
 class GameObject;
@@ -57,6 +58,42 @@ class SerializedGameData : public Serializer
         /// Objekt(referenzen) lesen
         GameObject* PopObject_(GO_Type got);
 
+        /// Reserves space if possible
+        template<class T, bool T_hasReserve = helpers::has_member_function_reserve<void (T::*)(size_t)>::value>
+        struct ReserveElements
+        {
+            static void reserve(T& gos, unsigned size)
+            {
+                gos.reserve(size);
+            }
+        };
+        template<class T>
+        struct ReserveElements<T, false>
+        {
+            static void reserve(T& gos, unsigned size)
+            {}
+        };
+
+        /// Returns the most efficient insert operator defining its type as "iterator"
+        template<class T, bool T_hasPushBack = helpers::has_member_function_push_back<void (T::*)(const typename T::value_type&)>::value>
+        struct GetInsertIterator
+        {
+            typedef std::back_insert_iterator<T> iterator;
+            static iterator get(T& gos)
+            {
+                return iterator(gos);
+            }
+        };
+        template<class T>
+        struct GetInsertIterator<T, false>
+        {
+            typedef std::insert_iterator<T> iterator;
+            static iterator get(T& gos)
+            {
+                return iterator(gos, gos.end());
+            }
+        };
+
     public:
 
         SerializedGameData();
@@ -78,37 +115,15 @@ class SerializedGameData : public Serializer
         /// Objekt(referenzen) kopieren
         void PushObject(const GameObject* go, const bool known);
 
-        /// Kopiert eine Liste von GameObjects
+        /// Copies a container of GameObjects
         template <typename T>
-        void PushObjectList(const std::list<T*>& gos, const bool known)
-        {
-            // Anzahl
-            PushUnsignedInt(gos.size());
-            // einzelne Objekte
-            for(typename std::list<T*>::const_iterator it = gos.begin(); it != gos.end(); ++it)
-                PushObject(*it, known);
-        }
-
-        /// Kopiert eine Liste von GameObjects
-        template <typename T>
-        void PushObjectSet(const T& gos, const bool known)
+        void PushObjectContainer(const T& gos, const bool known)
         {
             // Anzahl
             PushUnsignedInt(gos.size());
             // einzelne Objekte
             for(typename T::const_iterator it = gos.begin(); it != gos.end(); ++it)
                 PushObject(*it, known);
-        }
-
-        /// Kopiert eine Liste von GameObjects
-        template <typename T>
-        void PushObjectVector(const std::vector<T*>& gos, const bool known)
-        {
-            // Anzahl
-            PushUnsignedInt(gos.size());
-            // einzelne Objekte
-            for(unsigned i = 0; i < gos.size(); ++i)
-                PushObject(gos[i], known);
         }
 
         /// FoW-Objekt
@@ -121,6 +136,10 @@ class SerializedGameData : public Serializer
             PushUnsignedShort(p.y);
         }
 
+        //////////////////////////////////////////////////////////////////////////
+        //Lesemethoden
+        //////////////////////////////////////////////////////////////////////////
+
         /// Point of map coords
         MapPoint PopMapPoint()
         {
@@ -130,12 +149,6 @@ class SerializedGameData : public Serializer
             return p;
         }
 
-
-
-
-
-        // Lesemethoden
-
         /// Objekt(referenzen) lesen
         template <typename T>
         T* PopObject(GO_Type got) { return static_cast<T*>(PopObject_(got)); }
@@ -143,40 +156,20 @@ class SerializedGameData : public Serializer
         /// FoW-Objekt
         FOWObject* PopFOWObject();
 
-        /// Liest eine Liste von GameObjects
-        template <typename T>
-        void PopObjectList(std::list<T*>& gos, GO_Type got)
-        {
-            // Anzahl
-            unsigned size = PopUnsignedInt();
-            // einzelne Objekte
-            for(unsigned i = 0; i < size; ++i)
-                gos.push_back(PopObject<T>(got));
-        }
 
         /// Liest einen Vektor von GameObjects
         template <typename T>
-        void PopObjectVector(std::vector<T*>& gos, GO_Type got)
+        void PopObjectContainer(T& gos, GO_Type got)
         {
-            // Anzahl
-            unsigned size = PopUnsignedInt();
-            gos.resize(size);
-            // einzelne Objekte
-            for(unsigned i = 0; i < size; ++i)
-                gos[i] = PopObject<T>(got);
-        }
+            typedef typename T::value_type ObjectPtr;
+            typedef typename helpers::remove_pointer<ObjectPtr>::type Object;
 
-        /// Liest einen Vektor von GameObjects
-        template <typename T, typename U>
-        void PopObjectSet(std::set<T*, U>& gos, GO_Type got)
-        {
-            // Anzahl
             unsigned size = PopUnsignedInt();
-            // einzelne Objekte
+            ReserveElements<T>::reserve(gos, size);
+            typename GetInsertIterator<T>::iterator it = GetInsertIterator<T>::get(gos);
             for(unsigned i = 0; i < size; ++i)
-                gos.insert(PopObject<T>(got));
+                *it = PopObject<Object>(got);
         }
-
 
         /// Fügt ein gelesenes Objekt zur globalen Objektliste dazu
         void AddObject(GameObject* go);

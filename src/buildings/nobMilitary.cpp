@@ -176,10 +176,10 @@ void nobMilitary::Serialize_nobMilitary(SerializedGameData* sgd) const
     sgd->PushObject(goldorder_event, true);
     sgd->PushObject(upgrade_event, true);
 
-    sgd->PushObjectSet(ordered_troops, true);
-    sgd->PushObjectList(ordered_coins, true);
-    sgd->PushObjectSet(troops, true);
-    sgd->PushObjectList(far_away_capturers, true);
+    sgd->PushObjectContainer(ordered_troops, true);
+    sgd->PushObjectContainer(ordered_coins, true);
+    sgd->PushObjectContainer(troops, true);
+    sgd->PushObjectContainer(far_away_capturers, true);
 }
 
 nobMilitary::nobMilitary(SerializedGameData* sgd, const unsigned obj_id) : nobBaseMilitary(sgd, obj_id),
@@ -204,10 +204,10 @@ nobMilitary::nobMilitary(SerializedGameData* sgd, const unsigned obj_id) : nobBa
     upgrade_event = sgd->PopObject<EventManager::Event>(GOT_EVENT);
 
 
-    sgd->PopObjectSet(ordered_troops, GOT_NOF_PASSIVESOLDIER);
-    sgd->PopObjectList(ordered_coins, GOT_WARE);
-    sgd->PopObjectSet(troops, GOT_NOF_PASSIVESOLDIER);
-    sgd->PopObjectList(far_away_capturers, GOT_NOF_ATTACKER);
+    sgd->PopObjectContainer(ordered_troops, GOT_NOF_PASSIVESOLDIER);
+    sgd->PopObjectContainer(ordered_coins, GOT_WARE);
+    sgd->PopObjectContainer(troops, GOT_NOF_PASSIVESOLDIER);
+    sgd->PopObjectContainer(far_away_capturers, GOT_NOF_ATTACKER);
 
     // ins Militärquadrat einfügen
     gwg->GetMilitarySquare(pos).push_back(this);
