@@ -39,6 +39,7 @@
 #include "glArchivItem_Font.h"
 #include "glArchivItem_Map.h"
 
-libsiedler2::ArchivItem* glAllocator(unsigned short type, unsigned short subtype, const libsiedler2::ArchivItem* item);
+libsiedler2::ArchivItem* glAllocator(unsigned short type, unsigned short subtype);
+libsiedler2::ArchivItem* glAllocator(const libsiedler2::ArchivItem& item);
 
 #endif // !GLALLOCATOR_H_INCLUDED
