@@ -61,8 +61,8 @@ unsigned GameWorldViewer::GetAvailableSoldiersForAttack(const unsigned char play
     // Militärgebäude in der Nähe finden
     unsigned total_count = 0;
 
-    nobBaseMilitarySet buildings = LookForMilitaryBuildings(pt, 3);
-    for(nobBaseMilitarySet::iterator it = buildings.begin(); it != buildings.end(); ++it)
+    sortedMilitaryBlds buildings = LookForMilitaryBuildings(pt, 3);
+    for(sortedMilitaryBlds::iterator it = buildings.begin(); it != buildings.end(); ++it)
     {
         // Muss ein Gebäude von uns sein und darf nur ein "normales Militärgebäude" sein (kein HQ etc.)
         if((*it)->GetPlayer() == player_attacker && (*it)->GetBuildingType() >= BLD_BARRACKS && (*it)->GetBuildingType() <= BLD_FORTRESS)

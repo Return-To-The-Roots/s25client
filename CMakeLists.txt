@@ -146,6 +146,29 @@ IF (MSVC)
 	ENDIF()
 ENDIF (MSVC)
 
+CHECK_CXX_SOURCE_COMPILES("
+  constexpr int foo()
+  { return 0; }
+
+  template<int v>
+  struct A
+  {
+    static const int value = v;
+  };
+
+  int main(void)
+  {
+    return A<foo()>::value;
+  }
+" HAVE_CONSTEXPR
+)
+
+IF (${HAVE_CONSTEXPR})
+	ADD_DEFINITIONS(-DCONSTEXPR=constexpr)
+ELSE (${HAVE_CONSTEXPR})
+	ADD_DEFINITIONS(-DCONSTEXPR=const)
+ENDIF (${HAVE_CONSTEXPR})
+	
 ################################################################################
 
 CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/build_paths.h.cmake"

@@ -161,7 +161,7 @@ class AIInterface: public GameCommandFactory<AIInterface>
 		nobBaseWarehouse* FindWarehouse(const noRoadNode* const start, bool (*IsWarehouseGood)(nobBaseWarehouse*, const void*), const RoadSegment* const forbidden, const bool to_wh, const void* param, const bool use_boat_roads, unsigned* const length = 0);
 		
         /// Returns a list of military buildings around a given point and a given radius
-		nobBaseMilitarySet GetMilitaryBuildings(const MapPoint pt, unsigned radius) const { return gwb.LookForMilitaryBuildings(pt, radius); }
+		sortedMilitaryBlds GetMilitaryBuildings(const MapPoint pt, unsigned radius) const { return gwb.LookForMilitaryBuildings(pt, radius); }
 
         /// Returns the headquarter of the player (or null if destroyed)
         const nobHQ* GetHeadquarter() const;

@@ -642,7 +642,7 @@ bool GameWorldBase::IsMilitaryBuilding(const MapPoint pt) const
     return false;
 }
 
-nobBaseMilitarySet GameWorldBase::LookForMilitaryBuildings(const MapPoint pt, unsigned short radius) const
+sortedMilitaryBlds GameWorldBase::LookForMilitaryBuildings(const MapPoint pt, unsigned short radius) const
 {
     // Radius auf Anzahl der Militärquadrate begrenzen, sonst gibt es Überlappungen
     radius = std::min<MapCoord>(width / MILITARY_SQUARE_SIZE + 1, radius);
@@ -663,7 +663,7 @@ nobBaseMilitarySet GameWorldBase::LookForMilitaryBuildings(const MapPoint pt, un
     last_x += radius;
     last_y += radius;
 
-    nobBaseMilitarySet buildings;
+    sortedMilitaryBlds buildings;
 
     // Liste erzeugen
     for(int cy = first_y; cy <= last_y; ++cy)
