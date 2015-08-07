@@ -14,8 +14,9 @@ see more information on http://www.rttr.info
 ### Prerequisite:
 - cmake
 - git
-- miniupnp-dev (linux)
-- liblua52-dev (linux)
+- boost / libboost1.55-dev (i.e from contrib)
+- libminiupnpc-dev (linux)
+- liblua5.2-dev (linux, i.e from contrib)
 
 ### Steps:
 ```
@@ -30,21 +31,34 @@ make
 ## On Windows
 
 ### Prerequisite:
-- cmake (from contrib)
+- cmake (i.e from contrib)
+- boost (i.e from contrib)
 - Visual Studio (at least 2010)
 - Git Client (i.e TortoiseGit)
 
 ### Steps:
 - Clone GIT Repository from https://github.com/Return-To-The-Roots/s25client
 - Update/Initialize GIT Submodule
-- Extract contrib/full-contrib-msvc2010.rar to contrib (so that contrib/bin, contrib/include and contrib/lib exist)
+- Extract contrib/full-contrib-msvc2010.rar to contrib 
+  (so that contrib/full-contrib-msvc2010/bin, contrib/full-contrib-msvc2010/include and contrib/full-contrib-msvc2010/lib exist)
+- If you havent installed boost, install boost
+  Fast Way:
+  - extract boost-1.55.zip (i.e to contrib/boost, so that contrib/boost/bootstrap.bat exist)
+  - run that "bootstrap.bat"
+  - run created "b2.exe" (this should build boost)
 - Use cmake-gui:
   - "Where is the source code": Select checked out directory
   - "Where to build the binaries": Select "build" directory
   - Press configure
+  - If it can't find boost:
+    - "Add Entry"
+    - Enter as "Name" "BOOST_ROOT" (exact casing!)
+    - Select for "Type" "PATH"
+    - Enter boost installation path for "Value"
+    - Press ok
   - Press generate
 - Open and use build/s25client.sln
 
 --
 
-for more info or help see INSTALL file or http://www.rttr.info 
+for advanced info or help see INSTALL file or http://www.rttr.info 
