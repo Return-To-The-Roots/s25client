@@ -5,7 +5,7 @@
 FIND_PACKAGE(BZip2 REQUIRED)
 FIND_PACKAGE(OpenGL REQUIRED)
 FIND_PACKAGE(Gettext REQUIRED)
-FIND_PACKAGE(Boost 1.54.0 REQUIRED)
+FIND_PACKAGE(Boost 1.55.0 REQUIRED)
 
 ################################################################################
 
