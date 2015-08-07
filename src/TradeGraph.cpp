@@ -1,4 +1,4 @@
-﻿
+
 #include "defines.h"
 #include "TradeGraph.h"
 #include "GameWorld.h"

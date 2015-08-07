@@ -1,4 +1,4 @@
-﻿// $Id: DriverInterfaceVersion.h 6458 2010-05-31 11:38:51Z FloSoft $
+// $Id: DriverInterfaceVersion.h 6458 2010-05-31 11:38:51Z FloSoft $
 //
 // Copyright (c) 2005-2009 Settlers Freaks (sf-team at siedler25.org)
 //

@@ -1,4 +1,4 @@
-﻿// $Id: GameClient.cpp 9548 2014-12-14 19:51:50Z marcus $
+// $Id: GameClient.cpp 9548 2014-12-14 19:51:50Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //

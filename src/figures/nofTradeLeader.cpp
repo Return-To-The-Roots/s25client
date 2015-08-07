@@ -1,4 +1,4 @@
-﻿
+
 #include "defines.h"
 #include "nofTradeLeader.h"
 #include "nofTradeDonkey.h"

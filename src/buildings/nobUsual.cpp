@@ -1,4 +1,4 @@
-﻿// $Id: nobUsual.cpp 9505 2014-11-29 10:48:29Z marcus $
+// $Id: nobUsual.cpp 9505 2014-11-29 10:48:29Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //

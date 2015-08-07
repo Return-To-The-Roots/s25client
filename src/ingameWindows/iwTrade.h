@@ -1,4 +1,4 @@
-﻿#ifndef IW_TRADE_H_
+#ifndef IW_TRADE_H_
 #define IW_TRADE_H_
 
 #include "IngameWindow.h"

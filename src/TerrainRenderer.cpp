@@ -1,4 +1,4 @@
-﻿// $Id: TerrainRenderer.cpp 9518 2014-11-30 09:22:47Z marcus $
+// $Id: TerrainRenderer.cpp 9518 2014-11-30 09:22:47Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //

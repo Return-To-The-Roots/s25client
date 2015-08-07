@@ -1,4 +1,4 @@
-﻿// $Id: MouseAndKeys.h 9357 2014-04-25 15:35:25Z FloSoft $
+// $Id: MouseAndKeys.h 9357 2014-04-25 15:35:25Z FloSoft $
 //
 // Copyright (c) 20052008 Settlers Freaks (sfteam at siedler25.org)
 //

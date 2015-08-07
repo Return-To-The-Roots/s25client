@@ -1,4 +1,4 @@
-﻿// $Id: nofButcher.cpp 9503 2014-11-29 10:47:02Z marcus $
+// $Id: nofButcher.cpp 9503 2014-11-29 10:47:02Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //

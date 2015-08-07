@@ -1,4 +1,4 @@
-﻿// $Id: noBaseBuilding.cpp 9402 2014-05-10 06:54:13Z FloSoft $
+// $Id: noBaseBuilding.cpp 9402 2014-05-10 06:54:13Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //

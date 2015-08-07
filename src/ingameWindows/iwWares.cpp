@@ -1,4 +1,4 @@
-﻿// $Id: iwWares.cpp 9374 2014-04-29 15:42:33Z FloSoft $
+// $Id: iwWares.cpp 9374 2014-04-29 15:42:33Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //

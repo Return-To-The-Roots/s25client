@@ -1,4 +1,4 @@
-﻿// $Id: GameProtocol.h 9557 2014-12-18 08:57:19Z FloSoft $
+// $Id: GameProtocol.h 9557 2014-12-18 08:57:19Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
