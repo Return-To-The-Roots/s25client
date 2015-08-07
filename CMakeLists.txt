@@ -11,8 +11,6 @@ ENDIF(${CMAKE_MAJOR_VERSION} EQUAL 2 AND ${CMAKE_MINOR_VERSION} GREATER 7 AND ${
 
 SET(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/Modules)
 SET(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${CMAKE_SOURCE_DIR}/contrib)
-SET(BOOST_INCLUDEDIR ${CMAKE_SOURCE_DIR}/contrib/boost)
-SET(Boost_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/contrib)
 
 INCLUDE(CMakeMacroSetCCache)
 INCLUDE(CMakeMacroAddFlags)
@@ -36,6 +34,25 @@ ELSE()
 ENDIF()
 
 PROJECT(s25client)
+
+################################################################################
+
+IF (MSVC)
+	IF(NOT EXISTS "${CMAKE_SOURCE_DIR}/contrib/full-contrib-msvc2010" OR NOT IS_DIRECTORY "${CMAKE_SOURCE_DIR}/contrib/full-contrib-msvc2010")
+		MESSAGE(FATAL_ERROR "You have to extract contrib/full-contrib-msvc2010.rar to contrib/full-contrib-msvc2010 first!")
+	ENDIF()
+	SET(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${CMAKE_SOURCE_DIR}/contrib/full-contrib-msvc2010)
+	SET(CONTRIB_DIR "${CMAKE_SOURCE_DIR}/contrib/full-contrib-msvc2010" CACHE PATH "Path to base dir from contrib package")
+ENDIF()
+
+IF(EXISTS "${CMAKE_SOURCE_DIR}/contrib/boost" AND IS_DIRECTORY "${CMAKE_SOURCE_DIR}/contrib/boost")
+	SET(BOOST_ROOT ${CMAKE_SOURCE_DIR}/contrib/boost CACHE PATH "Path to find boost at")
+ELSE()
+	FIND_PACKAGE(Boost 1.54.0 REQUIRED)
+	IF(NOT Boost_FOUND)
+		MESSAGE(FATAL_ERROR "You have to install boost into contrib/boost or set BOOST_ROOT environment variable, since cmake was unable to find boost!")
+	ENDIF()
+ENDIF()
 
 ################################################################################
 
