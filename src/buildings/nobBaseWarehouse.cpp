@@ -1,4 +1,4 @@
-﻿// $Id: nobBaseWarehouse.cpp 9580 2015-01-23 08:29:54Z marcus $
+// $Id: nobBaseWarehouse.cpp 9580 2015-01-23 08:29:54Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //

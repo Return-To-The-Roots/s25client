@@ -1,4 +1,4 @@
-﻿// $Id: dskHostGame.cpp 9388 2014-05-02 07:37:20Z FloSoft $
+// $Id: dskHostGame.cpp 9388 2014-05-02 07:37:20Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //

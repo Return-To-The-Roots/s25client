@@ -1,4 +1,4 @@
-﻿// $Id: nofDefender.cpp 9537 2014-12-10 22:14:07Z marcus $
+// $Id: nofDefender.cpp 9537 2014-12-10 22:14:07Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //

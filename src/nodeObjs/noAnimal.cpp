@@ -1,4 +1,4 @@
-﻿// $Id: noAnimal.cpp 9521 2014-11-30 23:31:02Z marcus $
+// $Id: noAnimal.cpp 9521 2014-11-30 23:31:02Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //

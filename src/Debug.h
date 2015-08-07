@@ -1,4 +1,4 @@
-﻿// $Id: Debug.h 7680 2011-12-29 15:52:11Z marcus $
+// $Id: Debug.h 7680 2011-12-29 15:52:11Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //

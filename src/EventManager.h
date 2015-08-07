@@ -1,4 +1,4 @@
-﻿// $Id: EventManager.h 9363 2014-04-26 15:00:08Z FloSoft $
+// $Id: EventManager.h 9363 2014-04-26 15:00:08Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //

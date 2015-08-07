@@ -1,4 +1,4 @@
-﻿// $Id: AIJHHelper.h 9589 2015-02-01 09:38:05Z marcus $
+// $Id: AIJHHelper.h 9589 2015-02-01 09:38:05Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //

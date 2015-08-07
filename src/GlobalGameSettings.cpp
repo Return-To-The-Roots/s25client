@@ -1,4 +1,4 @@
-﻿// $Id: GlobalGameSettings.cpp 9596 2015-02-01 09:41:54Z marcus $
+// $Id: GlobalGameSettings.cpp 9596 2015-02-01 09:41:54Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //

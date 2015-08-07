@@ -1,4 +1,4 @@
-﻿// $Id: GameClientGF_Replay.cpp 9524 2014-12-01 14:06:14Z marcus $
+// $Id: GameClientGF_Replay.cpp 9524 2014-12-01 14:06:14Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //

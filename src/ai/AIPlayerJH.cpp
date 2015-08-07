@@ -1,4 +1,4 @@
-﻿// $Id: AIPlayerJH.cpp 9586 2015-02-01 09:36:43Z marcus $
+// $Id: AIPlayerJH.cpp 9586 2015-02-01 09:36:43Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //

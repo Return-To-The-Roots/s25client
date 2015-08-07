@@ -1,4 +1,4 @@
-﻿
+
 #include "defines.h"
 #include "nobShipYard.h"
 #include "SerializedGameData.h"

@@ -1,4 +1,4 @@
-﻿#ifndef TRADE_GRAPH_H_
+#ifndef TRADE_GRAPH_H_
 #define TRADE_GRAPH_H_
 
 #include "gameTypes/MapTypes.h"

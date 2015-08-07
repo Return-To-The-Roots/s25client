@@ -1,4 +1,4 @@
-﻿// $Id: GameServer.h 9539 2014-12-14 10:15:57Z marcus $
+// $Id: GameServer.h 9539 2014-12-14 10:15:57Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //

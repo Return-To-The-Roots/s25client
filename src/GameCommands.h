@@ -1,4 +1,4 @@
-﻿#ifndef GAME_COMMANDS_H_
+#ifndef GAME_COMMANDS_H_
 #define GAME_COMMANDS_H_
 
 #include "GameCommand.h"

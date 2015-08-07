@@ -1,4 +1,4 @@
-﻿// $Id: iwDemolishBuilding.h
+// $Id: iwDemolishBuilding.h
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //

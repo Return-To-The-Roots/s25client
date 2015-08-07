@@ -1,4 +1,4 @@
-﻿// $Id: iwBuilding.cpp 7091 2011-03-27 10:57:38Z OLiver $
+// $Id: iwBuilding.cpp 7091 2011-03-27 10:57:38Z OLiver $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //

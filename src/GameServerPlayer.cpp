@@ -1,4 +1,4 @@
-﻿// $Id: GameServerPlayer.cpp 9558 2014-12-18 09:01:20Z FloSoft $
+// $Id: GameServerPlayer.cpp 9558 2014-12-18 09:01:20Z FloSoft $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //

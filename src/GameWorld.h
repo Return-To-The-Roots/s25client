@@ -1,4 +1,4 @@
-﻿// $Id: GameWorld.h 9578 2015-01-23 08:28:58Z marcus $
+// $Id: GameWorld.h 9578 2015-01-23 08:28:58Z marcus $
 //
 // Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
 //
