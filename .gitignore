@@ -2,6 +2,7 @@
 *.user
 *.opensdf
 *.sdf
+*.suo
 /build/*.vcxproj
 /build/*.filters
 /build/CMakeCache.txt
@@ -29,4 +30,3 @@
 /GFX
 /build/DATA
 /build/GFX
-
