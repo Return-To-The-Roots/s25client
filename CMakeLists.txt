@@ -133,6 +133,8 @@ FORCE_ADD_FLAGS(CMAKE_CXX_FLAGS -I${CMAKE_BINARY_DIR})
 IF (MSVC)
 	# disable MSVC "use secure function" and 4250: 'class1' : inherits 'class2::member' via dominance (virtual inheritance related)
 	ADD_DEFINITIONS(-D_CRT_SECURE_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS /wd"4250")
+	# disable MSVC posix functions
+	ADD_DEFINITIONS(-D_CRT_NONSTDC_NO_DEPRECATE)
 	SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Oi /GL") # systemintern functions for faster code; Optimize whole program
 	# Strip unused symbols and us COMDAT folding
 	SET(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /OPT:REF /OPT:ICF")
