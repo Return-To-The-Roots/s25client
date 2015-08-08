@@ -12,6 +12,7 @@
 /build/build_version.h
 /build/cmake_install.cmake
 /build/driver
+/build/ipch
 /build/libendian
 /build/liblobby
 /build/libsiedler2
