@@ -29,6 +29,7 @@
 #include "../mygettext/src/mygettext.h"
 
 #include <algorithm>
+#include <locale>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
