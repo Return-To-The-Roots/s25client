@@ -1,52 +1,52 @@
-#!/bin/bash
+#!/bin/sh
 
 cd $(dirname $0)
 
 if [ ! "$1" = "interminal" ] ; then
-	echo "$0 interminal" > /tmp/rttr.command
+	echo "#!/bin/sh" > /tmp/rttr.command
+	echo "$0 interminal" >> /tmp/rttr.command
 	chmod 0755 /tmp/rttr.command
 	open rttr.terminal
 	sleep 2
 	rm -f /tmp/rttr.command
 	exit $?
-fi 
+fi
 
-chmod 0755 ../rttr.command ../share/s25rttr/RTTR/s25update ../bin/s25client ../share/s25rttr/RTTR/sound-convert >/dev/null 2>/dev/null
+chmod 0755 ../rttr.command ../share/s25rttr/RTTR/s25update ../bin/s25client ../share/s25rttr/RTTR/sound-convert >/dev/null 2>&1
 
 RTTR_TEST_FILEA="share/s25rttr/S2/DATA/CREDITS.LST"
 RTTR_TEST_FILEB="share/s25rttr/S2/GFX/PALETTE/PAL5.BBM"
 
-if ([ ! -f "$RTTR_TEST_FILEA" ] || [ ! -f "$RTTR_TEST_FILEB" ]); then
+if [ ! -f "$RTTR_TEST_FILEA" ] || [ ! -f "$RTTR_TEST_FILEB" ]; then
 	
-	while ([ ! -d /Volumes/S2_GOLD ] && ([ ! -f "$RTTR_TEST_FILEA" ] || [ ! -f "$RTTR_TEST_FILEB" ]) ) ; do
-		echo "Die Siedler II Dateien sind noch nicht vorhanden"
-		echo "Entweder kopieren sie den \"DATA\" und \"GFX\" Ordner ihrer S2-Installation nach \"$(dirname $0)/share/s25rttr/S2\" oder"
-		echo "legen sie bitte die Siedler II Gold CD in ihr Laufwerk und bestätigen sie mit \"Enter\""
+	while [ ! -d /Volumes/S2_GOLD ] && ([ ! -f "$RTTR_TEST_FILEA" ] || [ ! -f "$RTTR_TEST_FILEB" ]); do
+		echo "Couldn't find data files for Settlers II"
+		echo "Please copy the folders \"DATA\" and \"GFX\" from your Settlers II install to"
+		echo "\"$(dirname $0)/share/s25rttr/S2\" or"
+		echo "insert the Settlers II Gold CD in your drive and hit \"Enter\"."
 		read
 	done
-	
-	if ([ ! -f "$RTTR_TEST_FILEA" ] || [ ! -f "$RTTR_TEST_FILEB" ]) ; then
-		echo "Kopiere Dateien"
-		
+
+	if [ ! -f "$RTTR_TEST_FILEA" ] || [ ! -f "$RTTR_TEST_FILEB" ]; then
+		echo "Copying files ..."
+
 		if [ ! -f "$RTTR_TEST_FILEA" ] ; then
-			cp -rv /Volumes/S2_GOLD/S2/DATA share/s25rttr/S2
-			if [ ! $? -eq 0 ] ; then
-				echo "Fehlgeschlagen"
+			if ! cp -rv /Volumes/S2_GOLD/S2/DATA share/s25rttr/S2; then
+				echo "Error copying files" >&2
 				rm -rf share/s25rttr/S2/DATA
 				exit 1
 			fi
 		fi
 
 		if [ ! -f "$RTTR_TEST_FILEB" ] ; then
-			cp -rv /Volumes/S2_GOLD/S2/GFX share/s25rttr/S2
-			if [ ! $? -eq 0 ] ; then
-				echo "Fehlgeschlagen"
+			if ! cp -rv /Volumes/S2_GOLD/S2/GFX share/s25rttr/S2; then
+				echo "Error copying files" >&2
 				rm -rf share/s25rttr/S2/GFX
 				exit 1
 			fi
 		fi
 
-		echo "Fertig"
+		echo "Done."
 	fi
 fi
 
@@ -56,7 +56,7 @@ if [ ! "$1" = "noupdate" ] ; then
 	fi
 fi
 
-chmod 0755 ./rttr.command ./share/s25rttr/RTTR/s25update ./bin/s25client ./share/s25rttr/RTTR/sound-convert >/dev/null 2>/dev/null
+chmod 0755 ./rttr.command ./share/s25rttr/RTTR/s25update ./bin/s25client ./share/s25rttr/RTTR/sound-convert >/dev/null 2>&1
 
 ./bin/s25client
 
