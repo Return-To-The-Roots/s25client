@@ -8,6 +8,7 @@
 /build/CMakeCache.txt
 /build/CMakeFiles
 /build/Win32/Debug
+/build/Win32/Release
 /build/build_paths.h
 /build/build_version.h
 /build/cmake_install.cmake
