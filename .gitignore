@@ -30,5 +30,12 @@
 /contrib/full-contrib-msvc2010
 /DATA
 /GFX
+/build/Debug
+/build/Release
+/build/Win32
 /build/DATA
 /build/GFX
+/build/*.dll
+/build/*.exe
+/build/*.pdb
+/build/*.ilk
