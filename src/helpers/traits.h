@@ -20,7 +20,7 @@
 
 #include <boost/tti/has_member_function.hpp>
 #include <boost/typeof/typeof.hpp>
-#include <boost/core/is_same.hpp>
+#include <boost/type_traits.hpp>
 #include <assert.h>
 
 namespace helpers{
