@@ -197,7 +197,7 @@ bool GameServer::TryToStart(const CreateServerInfo& csi, const std::string& map_
             // Spieleranzahl
             serverconfig.playercount = save.player_count;
 
-
+            map_title = serverconfig.mapname;
         } break;
     }
 
