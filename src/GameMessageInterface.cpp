@@ -1,6 +1,6 @@
 // $Id: GameMessageInterface.cpp 9381 2014-05-01 10:27:24Z FloSoft $
 //
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //

@@ -1,6 +1,6 @@
 // $Id: GameManager.h 9541 2014-12-14 12:02:52Z marcus $
 //
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //

@@ -1,6 +1,6 @@
 // $Id: dskHostGame.cpp 9388 2014-05-02 07:37:20Z FloSoft $
 //
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //

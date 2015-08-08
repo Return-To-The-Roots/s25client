@@ -1,6 +1,6 @@
 // $Id: Ware.h 9599 2015-02-07 11:08:22Z marcus $
 //
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //

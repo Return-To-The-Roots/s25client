@@ -1,6 +1,6 @@
 // $Id: iwObservate.cpp 7414 2011-08-25 17:44:38Z marcus $
 //
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //

@@ -1,6 +1,6 @@
 // $Id: nofMetalworker.h 9447 2014-06-20 21:40:55Z jh $
 //
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
