@@ -295,14 +295,14 @@ bool Loader::LoadSounds(void)
         libsiedler2::ArchivInfo sng;
 
         LOG.lprintf("lade \"%s\": ", it->c_str());
-        if(libsiedler2::loader::LoadSND(it->c_str(), &sng) != 0 )
+        if(libsiedler2::loader::LoadSND(it->c_str(), sng) != 0 )
         {
             LOG.lprintf("fehlgeschlagen\n");
             return false;
         }
         LOG.lprintf("fertig\n");
 
-        sng_lst.setC(i++, sng.get(0));
+        sng_lst.setC(i++, *sng.get(0));
     }
 
     // Siedler I MIDI-Musik
@@ -414,7 +414,7 @@ bool Loader::SaveSettings()
     LOG.lprintf("schreibe \"%s\": ", file.c_str());
     fflush(stdout);
 
-    if(libsiedler2::Write(file.c_str(), &files.find("config")->second) != 0)
+    if(libsiedler2::Write(file.c_str(), files.find("config")->second) != 0)
         return false;
 
 #ifndef _WIN32
@@ -1062,7 +1062,7 @@ void Loader::ExtractTexture(libsiedler2::ArchivInfo* destination, Rect& rect)
 
     delete[] buffer;
 
-    destination->pushC(&bitmap);
+    destination->pushC(bitmap);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1106,7 +1106,7 @@ void Loader::ExtractAnimatedTexture(libsiedler2::ArchivInfo* destination, Rect& 
 
         bitmap.create(width, height, buffer, width, height, libsiedler2::FORMAT_PALETTED, palette);
 
-        destination->pushC(&bitmap);
+        destination->pushC(bitmap);
     }
 
     delete[] buffer;
@@ -1124,7 +1124,7 @@ void Loader::ExtractAnimatedTexture(libsiedler2::ArchivInfo* destination, Rect& 
  *
  *  @author FloSoft
  */
-bool Loader::LoadArchiv(const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette, libsiedler2::ArchivInfo* archiv)
+bool Loader::LoadArchiv(const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette, libsiedler2::ArchivInfo& archiv)
 {
     unsigned int ladezeit = VIDEODRIVER.GetTickCount();
 
@@ -1150,7 +1150,7 @@ bool Loader::LoadArchiv(const std::string& pfad, const libsiedler2::ArchivItem_P
  *
  *  @author FloSoft
  */
-bool Loader::LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette, libsiedler2::ArchivInfo* to)
+bool Loader::LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette, libsiedler2::ArchivInfo& to)
 {
     bool directory = false;
 #ifdef _WIN32
@@ -1231,7 +1231,7 @@ bool Loader::LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Pal
         if( wf.back() == "empty" )
         {
             LOG.lprintf("ueberspringe %s\n", i->c_str());
-            to->alloc_inc(1);
+            to.alloc_inc(1);
             continue;
         }
 
@@ -1239,7 +1239,7 @@ bool Loader::LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Pal
         else if( wf.back() == "bmp" )
         {
             libsiedler2::ArchivInfo temp;
-            if(!LoadArchiv( *i, palette, &temp ) )
+            if(!LoadArchiv( *i, palette, temp ) )
                 return false;
 
             // Nun Daten abhängig der Typen erstellen, nur erstes Element wird bei Bitmaps konvertiert
@@ -1280,23 +1280,23 @@ bool Loader::LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Pal
         else if( (wf.back() == "bbm") || (wf.back() == "act") )
         {
             libsiedler2::ArchivInfo temp;
-            if(!LoadArchiv( *i, palette, &temp ) )
+            if(!LoadArchiv( *i, palette, temp ) )
                 return false;
-            item = temp.get(0);
+            item = GlAllocator().clone(*temp.get(0));
         }
 
         // Font
         else if( wf.back() == "fon" )
         {
-            glArchivItem_Font font;
-            font.setName(i->c_str());
-            font.setDx(dx);
-            font.setDy(dy);
+            glArchivItem_Font* font = new glArchivItem_Font();
+            font->setName(i->c_str());
+            font->setDx(dx);
+            font->setDy(dy);
 
-            if(!LoadFile(*i, palette, &font))
+            if(!LoadFile(*i, palette, *font))
                 return false;
 
-            item = &font;
+            item = font;
         }
 
         if(item)
@@ -1304,12 +1304,12 @@ bool Loader::LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Pal
             // had the filename a number? then set it to the corresponding item.
             if(nr >= 0)
             {
-                if(nr >= (int)to->getCount())
-                    to->alloc_inc(nr - to->getCount() + 1);
-                to->setC(nr, item);
+                if(nr >= (int)to.size())
+                    to.alloc_inc(nr - to.size() + 1);
+                to.setC(nr, *item);
             }
             else
-                to->pushC(item);
+                to.pushC(*item);
         }
     }
     delete[] buffer;
@@ -1341,7 +1341,7 @@ bool Loader::LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Pal
     }
 
     // bereits geladen und wir wollen kein nochmaliges laden
-    if(!load_always && files.find(p) != files.end() && files.find(p)->second.getCount() != 0)
+    if(!load_always && files.find(p) != files.end() && files.find(p)->second.size() != 0)
         return true;
 
     bool override_file = false;
@@ -1349,7 +1349,7 @@ bool Loader::LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Pal
     libsiedler2::ArchivInfo archiv;
     libsiedler2::ArchivInfo* to = &archiv;
 
-    if(files.find(p) == files.end() || files.find(p)->second.getCount() == 0)
+    if(files.find(p) == files.end() || files.find(p)->second.size() == 0)
     {
         // leeres Archiv in Map einfügen
         files.insert(std::make_pair(p, archiv));
@@ -1358,7 +1358,7 @@ bool Loader::LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Pal
     else
         override_file = true;
 
-    if(!LoadFile(pfad, palette, to))
+    if(!LoadFile(pfad, palette, *to))
         return false;
 
     // haben wir eine override file? dann nicht-leere items überschreiben
@@ -1376,17 +1376,15 @@ bool Loader::LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Pal
             return false;
         }
 
-        if(archiv.getCount() > to->getCount())
-            to->alloc_inc(archiv.getCount() - to->getCount());
+        if(archiv.size() > to->size())
+            to->alloc_inc(archiv.size() - to->size());
 
-        for(unsigned int i = 0; i < archiv.getCount(); ++i)
+        for(unsigned int i = 0; i < archiv.size(); ++i)
         {
             if(archiv.get(i))
             {
-                if(to->get(i))
-                    delete to->get(i);
                 LOG.lprintf("Ersetze Eintrag %d durch %s\n", i, archiv.get(i)->getName());
-                to->setC(i, archiv.get(i));
+                to->setC(i, *archiv.get(i));
             }
         }
     }

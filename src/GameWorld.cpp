@@ -56,7 +56,7 @@ bool GameWorld::LoadMap(const std::string& filename)
     libsiedler2::ArchivInfo ai;
 
     // Karteninformationen laden
-    if(libsiedler2::loader::LoadMAP(filename.c_str(), &ai) != 0)
+    if(libsiedler2::loader::LoadMAP(filename.c_str(), ai) != 0)
         return false;
 
     glArchivItem_Map* map = static_cast<glArchivItem_Map*>(ai.get(0));

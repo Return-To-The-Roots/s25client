@@ -164,7 +164,7 @@ dskHostGame::dskHostGame(bool single_player) :
         // Map laden
         libsiedler2::ArchivInfo ai;
         // Karteninformationen laden
-        if(libsiedler2::loader::LoadMAP(GAMECLIENT.GetMapPath().c_str(), &ai) == 0)
+        if(libsiedler2::loader::LoadMAP(GAMECLIENT.GetMapPath().c_str(), ai) == 0)
         {
             glArchivItem_Map* map = static_cast<glArchivItem_Map*>(ai.get(0));
             ctrlPreviewMinimap* preview = AddPreviewMinimap(70, 560, 40, 220, 220, map);

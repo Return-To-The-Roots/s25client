@@ -656,7 +656,7 @@ void glArchivItem_Font::initFont()
 
     // first, we have to find how much chars we really have, but we can also skip first 32
     unsigned int chars = 32;
-    for(unsigned int i = 32; i < getCount(); ++i)
+    for(unsigned int i = 32; i < size(); ++i)
     {
         if(get(i))
             ++chars;
@@ -673,7 +673,7 @@ void glArchivItem_Font::initFont()
     int x = 1;
     int y = 1;
     chars = 0;
-    for(unsigned int i = 32; i < getCount(); ++i)
+    for(unsigned int i = 32; i < size(); ++i)
     {
         if( (chars % chars_per_line) == 0 && i != 32 )
         {
@@ -706,7 +706,7 @@ void glArchivItem_Font::initFont()
     x = 1;
     y = 1;
     chars = 0;
-    for(unsigned int i = 32; i < getCount(); ++i)
+    for(unsigned int i = 32; i < size(); ++i)
     {
         if( (chars % chars_per_line) == 0 && i != 32 )
         {

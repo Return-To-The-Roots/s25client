@@ -134,7 +134,7 @@ int glArchivItem_Map::load(FILE* file, bool only_header)
         item->alloc(header->getWidth() * header->getHeight());
 
         set(MAP_RESERVATIONS, item);
-        setC(MAP_OWNER, item);
+        setC(MAP_OWNER, *item);
     }
 
     return 0;

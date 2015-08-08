@@ -158,7 +158,7 @@ bool Settings::LoadDefaults()
 // Routine zum Laden der Konfiguration
 bool Settings::Load(void)
 {
-    if(!LOADER.LoadSettings() && LOADER.GetInfoN(CONFIG_NAME)->getCount() != SETTINGS_SECTIONS)
+    if(!LOADER.LoadSettings() && LOADER.GetInfoN(CONFIG_NAME)->size() != SETTINGS_SECTIONS)
     {
         warning("No or corrupt \"%s\" found, using default values.\n", GetFilePath(FILE_PATHS[0]).c_str());
         return LoadDefaults();
@@ -190,7 +190,7 @@ bool Settings::Load(void)
     // global
     // {
     // stimmt die Spielrevision überein?
-    if(strcmp(global->getValue("gameversion"), GetWindowRevision()) != 0)
+    if(global->getValue("gameversion") != GetWindowRevision())
         warning("Your application version has changed - please recheck your settings!\n");
 
     this->global.submit_debug_data = global->getValueI("submit_debug_data");
@@ -298,12 +298,12 @@ bool Settings::Load(void)
 
     // addons
     // {
-    for(unsigned int addon = 0; addon < addons->getCount(); ++addon)
+    for(unsigned int addon = 0; addon < addons->size(); ++addon)
     {
         const libsiedler2::ArchivItem_Text* item = dynamic_cast<const libsiedler2::ArchivItem_Text*>(addons->get(addon));
 
         if(item)
-            this->addons.configuration.insert(std::make_pair(atoi(item->getName()), atoi(item->getText())));
+            this->addons.configuration.insert(std::make_pair(atoi(item->getName().c_str()), atoi(item->getText().c_str())));
     }
     // }
 
@@ -314,14 +314,14 @@ bool Settings::Load(void)
 // Routine zum Speichern der Konfiguration
 void Settings::Save(void)
 {
-    if(LOADER.GetInfoN(CONFIG_NAME)->getCount() != SETTINGS_SECTIONS)
+    if(LOADER.GetInfoN(CONFIG_NAME)->size() != SETTINGS_SECTIONS)
     {
         libsiedler2::ArchivItem_Ini item;
         LOADER.GetInfoN(CONFIG_NAME)->alloc(SETTINGS_SECTIONS);
         for(unsigned int i = 0; i < SETTINGS_SECTIONS; ++i)
         {
             item.setName(SETTINGS_SECTION_NAMES[i].c_str());
-            LOADER.GetInfoN(CONFIG_NAME)->setC(i, &item);
+            LOADER.GetInfoN(CONFIG_NAME)->setC(i, item);
         }
     }
 
