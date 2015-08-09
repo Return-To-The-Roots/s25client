@@ -59,7 +59,7 @@ static char THIS_FILE[] = __FILE__;
 dskLobby::dskLobby() : Desktop(LOADER.GetImageN("setup013", 0)), serverinfo(NULL), servercreate(NULL)
 {
     // Version
-    AddVarText(0, 0, 600, _("Return To The Roots - v%s-%s"), COLOR_YELLOW, 0 | glArchivItem_Font::DF_BOTTOM, NormalFont, 2, GetWindowVersion(), GetWindowRevision());
+    AddVarText(0, 0, 600, _("Return To The Roots - v%s-%s"), COLOR_YELLOW, 0 | glArchivItem_Font::DF_BOTTOM, NormalFont, 2, GetWindowVersion(), GetWindowRevisionShort());
     // URL
     AddText(1, 400, 600, _("http://www.siedler25.org"), COLOR_GREEN, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, NormalFont);
     // Copyright
@@ -138,11 +138,17 @@ void dskLobby::Msg_ButtonClick(const unsigned int ctrl_id)
                     {
                         if(serverlist->getElement(i)->getId() == selection)
                         {
-                            iwDirectIPConnect* connect = new iwDirectIPConnect(NP_LOBBY);
-                            connect->SetHost(serverlist->getElement(i)->getHost().c_str());
-                            connect->SetPort(serverlist->getElement(i)->getPort());
-                            WINDOWMANAGER.Show(connect);
+							if(serverlist->getElement(i)->getVersion() == std::string(GetWindowVersion()))
+							{
+								iwDirectIPConnect* connect = new iwDirectIPConnect(NP_LOBBY);
+								connect->SetHost(serverlist->getElement(i)->getHost().c_str());
+								connect->SetPort(serverlist->getElement(i)->getPort());
+								WINDOWMANAGER.Show(connect);
+							}
+							else
+								WINDOWMANAGER.Show(new iwMsgbox(_("Sorry!"), _("You can't join that game with your version!"), this, MSB_OK, MSB_EXCLAMATIONRED, 1));
                             break;
+
                         }
                     }
                 }
@@ -284,7 +290,7 @@ void dskLobby::UpdateServerList(bool first)
 
             for(unsigned int i = 0; i < serverlist->getCount(); ++i)
             {
-                if(!serverlist->getElement(i)->getName().empty() && (serverlist->getElement(i)->getVersion() == std::string(GetWindowVersion())))
+                if(!serverlist->getElement(i)->getName().empty()) // && (serverlist->getElement(i)->getVersion() == std::string(GetWindowVersion())))
                 {
                     char id[128];
                     char player[128];

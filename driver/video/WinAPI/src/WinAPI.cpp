@@ -267,7 +267,7 @@ bool VideoWinAPI::CreateScreen(unsigned short width, unsigned short height, cons
 
     SetClipboardViewer(screen);
 
-    sprintf(title, "%s - v%s-%s", GetWindowTitle(), GetWindowVersion(), GetWindowRevision());
+    sprintf(title, "%s - v%s-%s", GetWindowTitle(), GetWindowVersion(), GetWindowRevisionShort());
 
     AnsiToUtf8(wTitle, title);
 
