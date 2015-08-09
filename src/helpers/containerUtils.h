@@ -22,68 +22,121 @@
 #ifndef containerUtils_h__
 #define containerUtils_h__
 
+#include "traits.h"
 #include <algorithm>
-#include <list>
-#include <set>
 
 namespace helpers{
-    template<class T>
-    struct EraseFromContainer;
 
-    template<typename T>
-    struct EraseFromContainer< std::list<T> >
-    {
-        typedef std::list<T> list;
-        typedef typename list::iterator iterator;
-        typedef typename list::const_iterator const_iterator;
+    namespace detail{
+        template<class T, EEraseIterValidy::Type T_EraseIterValidy = EraseIterValidy<T>::value>
+        struct EraseImpl;
 
-        static iterator erase(list& container, const iterator& it) {
-            return container.erase(it);
-        }
-        static const_iterator erase(list& container, const const_iterator& it) {
-            return container.erase(it);
-        }
-    };
+        template<class T>
+        struct EraseImpl<T, EEraseIterValidy::IterReturned>
+        {
+            typedef typename T::iterator iterator;
+            typedef typename T::const_iterator const_iterator;
+            static iterator erase(T& container, iterator it) {
+                return container.erase(it);
+            }
+            static const_iterator erase(T& container, const_iterator it) {
+                return container.erase(it);
+            }
+        };
+        template<class T>
+        struct EraseImpl<T, EEraseIterValidy::NextValid>
+        {
+            // This one gets used for e.g. std::set whos erase does not return
+            // an iterator until C++11
+            typedef typename T::iterator iterator;
+            typedef typename T::const_iterator const_iterator;
+            static iterator erase(T& container, iterator it) {
+                container.erase(it++);
+                return it;
+            }
+            static const_iterator erase(T& container, const_iterator it) {
+                container.erase(it++);
+                return it;
+            }
+        };
 
-    template<typename T, typename U>
-    struct EraseFromContainer< std::set<T, U> >
-    {
-        typedef std::set<T, U> set;
-        typedef typename set::iterator iterator;
-        typedef typename set::const_iterator const_iterator;
+        template<class T>
+        struct EraseImpl<T, EEraseIterValidy::PrevValid>
+        {
+            typedef typename T::iterator iterator;
+            typedef typename T::const_iterator const_iterator;
+            static iterator erase(T& container, iterator it) {
+                // If only previous iterators remain valid, store the predecessor
+                // and return this after incrementing it after the erase
+                // Corner case: If we erase the first element there is no previous one and we return begin()
+                bool isBegin = it == container.begin();
+                iterator tmp = it;
+                if(!isBegin)
+                    --tmp;
+                container.erase(it);
+                if(isBegin)
+                    tmp = container.begin();
+                else
+                    ++tmp;
+                return tmp;
+            }
+            static const_iterator erase(T& container, const_iterator it) {
+                bool isBegin = it == container.begin();
+                iterator tmp = it;
+                if(!isBegin)
+                    --tmp;
+                container.erase(it);
+                if(isBegin)
+                    tmp = container.begin();
+                else
+                    ++tmp;
+                return tmp;
+            }
+        };
 
-        static iterator erase(set& container, const iterator& it) {
-            // Sets do not support returning the next iterator until C++11
-            iterator tmp = it;
-            container.erase(tmp++);
-            return tmp;
-        }
-    };
+        template<class T, bool T_hasPopFront = helpers::has_member_function_pop_front<T, void>::value>
+        struct PopFrontImpl
+        {
+            static void pop(T& container)
+            {
+                container.pop_front();
+            }
+        };
+        template<class T>
+        struct PopFrontImpl<T, false>
+        {
+            static void pop(T& container)
+            {
+                container.erase(container.begin());
+            }
+        };
+    } // namespace detail
+
 
     /// Removes an element from a container by its iterator and returns an iterator to the next element
     /// Works only for list and set as they don't invalidate other iterators, so erase is save to call inside a loop
     /// Works also for reverse iterators
     template<typename T>
-    inline typename T::iterator erase(T& container, const typename T::iterator& it)
+    inline typename T::iterator erase(T& container, typename T::iterator it)
     {
-        return EraseFromContainer<T>::erase(container, it);
+        return detail::EraseImpl<T>::erase(container, it);
     }
 
     /*template<typename T>
-    inline typename T::const_iterator erase(T& container, const typename T::const_iterator& it)
+    inline typename T::const_iterator erase(T& container, typename T::const_iterator it)
     {
         return EraseFromContainer<T>::erase(it);
     }*/
 
     template<typename T>
-    inline typename T::reverse_iterator erase(T& container, const typename T::reverse_iterator& it)
+    inline typename T::reverse_iterator erase(T& container, typename T::reverse_iterator it)
     {
         typename T::reverse_iterator tmp = it;
         return typename T::reverse_iterator(erase(container, (++tmp).base()));
     }
 
     /*template<typename T>
-    inline typename T::const_reverse_iterator erase(T& container, const typename T::const_reverse_iterator& it)
+    inline typename T::const_reverse_iterator erase(T& container, typename T::const_reverse_iterator it)
     {
         typename std::set<T>::const_reverse_iterator tmp = it;
         return typename T::const_reverse_iterator(erase(container, (++tmp).base()));
@@ -94,14 +147,7 @@ namespace helpers{
     inline void pop_front(T& container)
     {
         assert(!container.empty());
-        container.pop_front();
-    }
-
-    template<typename T, typename U>
-    inline void pop_front(std::set<T, U>& container)
-    {
-        assert(!container.empty());
-        container.erase(container.begin());
+        detail::PopFrontImpl<T>::pop(container);
     }
 
     /// Returns true if the container contains the given value

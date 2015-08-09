@@ -21,6 +21,7 @@
 #define NOF_SOLDIER_H_
 
 #include "figures/noFigure.h"
+#include <boost/container/flat_set.hpp>
 
 class nobBaseMilitary;
 
@@ -70,7 +71,7 @@ class nofSoldier : public noFigure
 template< bool T_SortAsc >
 struct ComparatorSoldiersByRank
 {
-    bool operator()(nofSoldier* left, nofSoldier* right)
+    bool operator()(nofSoldier* left, nofSoldier* right) const
     {
         if(left->GetRank() == right->GetRank())
             return (T_SortAsc) ? left->GetObjId() < right->GetObjId() : left->GetObjId() > right->GetObjId();
@@ -80,5 +81,8 @@ struct ComparatorSoldiersByRank
             return left->GetRank() > right->GetRank();
     }
 };
+
+class nofPassiveSoldier;
+typedef boost::container::flat_set<nofPassiveSoldier*, ComparatorSoldiersByRank<true> > SortedTroops;
 
 #endif

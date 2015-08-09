@@ -522,7 +522,7 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding* const building, const 
 	unsigned char new_owner_of_trigger_building;
 
     // alle Militärgebäude in der Nähe abgrasen
-	nobBaseMilitarySet buildings = LookForMilitaryBuildings(building->GetPos(), 3);
+	sortedMilitaryBlds buildings = LookForMilitaryBuildings(building->GetPos(), 3);
 
     // Radius der noch draufaddiert wird auf den eigentlich ausreichenden Bereich, für das Eliminieren von
     // herausragenden Landesteilen und damit Grenzsteinen
@@ -538,7 +538,7 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding* const building, const 
     TerritoryRegion tr(x1, y1, x2, y2, this);
 
     // Alle Gebäude ihr Terrain in der Nähe neu berechnen
-    for(nobBaseMilitarySet::iterator it = buildings.begin(); it != buildings.end(); ++it)
+    for(sortedMilitaryBlds::iterator it = buildings.begin(); it != buildings.end(); ++it)
     {
         // Ist es ein richtiges Militärgebäude?
         if((*it)->GetBuildingType() >= BLD_BARRACKS && (*it)->GetBuildingType() <= BLD_FORTRESS)
@@ -796,7 +796,7 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding* const building, const 
 
 bool GameWorldGame::TerritoryChange(const noBaseBuilding* const building, const unsigned short radius, const bool destroyed, const bool newBuilt)
 {
-    nobBaseMilitarySet buildings = LookForMilitaryBuildings(building->GetPos(), 3);
+    sortedMilitaryBlds buildings = LookForMilitaryBuildings(building->GetPos(), 3);
 
     // Radius der noch draufaddiert wird auf den eigentlich ausreichenden Bereich, für das Eliminieren von
     // herausragenden Landesteilen und damit Grenzsteinen
@@ -812,7 +812,7 @@ bool GameWorldGame::TerritoryChange(const noBaseBuilding* const building, const 
     TerritoryRegion tr(x1, y1, x2, y2, this);
 
     // Alle Gebäude ihr Terrain in der Nähe neu berechnen
-    for(nobBaseMilitarySet::iterator it = buildings.begin(); it != buildings.end(); ++it)
+    for(sortedMilitaryBlds::iterator it = buildings.begin(); it != buildings.end(); ++it)
     {
         // Ist es ein richtiges Militärgebäude?
         if((*it)->GetBuildingType() >= BLD_BARRACKS && (*it)->GetBuildingType() <= BLD_FORTRESS)
@@ -1020,13 +1020,13 @@ void GameWorldGame::Attack(const unsigned char player_attacker, const MapPoint p
     }
 
     // Militärgebäude in der Nähe finden
-    nobBaseMilitarySet buildings = LookForMilitaryBuildings(pt, 3);
+    sortedMilitaryBlds buildings = LookForMilitaryBuildings(pt, 3);
 
     // Liste von verfügbaren Soldaten, geordnet einfügen, damit man dann starke oder schwache Soldaten nehmen kann
     std::list<PotentialAttacker> soldiers;
 
 
-    for(nobBaseMilitarySet::iterator it = buildings.begin(); it != buildings.end(); ++it) {
+    for(sortedMilitaryBlds::iterator it = buildings.begin(); it != buildings.end(); ++it) {
         // Muss ein Gebäude von uns sein und darf nur ein "normales Militärgebäude" sein (kein HQ etc.)
         if((*it)->GetPlayer() != player_attacker || (*it)->GetBuildingType() < BLD_BARRACKS || (*it)->GetBuildingType() > BLD_FORTRESS)
             continue;
@@ -1060,10 +1060,10 @@ void GameWorldGame::Attack(const unsigned char player_attacker, const MapPoint p
 
         // Take soldier(s)
         unsigned i = 0;
-        nobMilitary::SortedTroopsContainer& troops = static_cast<nobMilitary*>(*it)->troops;
+        SortedTroops& troops = static_cast<nobMilitary*>(*it)->troops;
         if(strong_soldiers){
             // Strong soldiers first
-            for(nobMilitary::SortedTroopsContainer::reverse_iterator it2 = troops.rbegin();
+            for(SortedTroops::reverse_iterator it2 = troops.rbegin();
                     it2 != troops.rend() && i < soldiers_count;
                     ++it2, ++i){
                 bool inserted = false;
@@ -1086,7 +1086,7 @@ void GameWorldGame::Attack(const unsigned char player_attacker, const MapPoint p
             }
         }else{
             // Weak soldiers first
-            for(nobMilitary::SortedTroopsContainer::iterator it2 = troops.begin();
+            for(SortedTroops::iterator it2 = troops.begin();
                     it2 != troops.end() && i < soldiers_count;
                     ++it2, ++i){
                 bool inserted = false;
@@ -1380,10 +1380,10 @@ bool GameWorldGame::ValidPointForFighting(const MapPoint pt, const bool avoid_mi
 
 bool GameWorldGame::IsPointCompletelyVisible(const MapPoint pt, const unsigned char player, const noBaseBuilding* const exception) const
 {
-    nobBaseMilitarySet buildings = LookForMilitaryBuildings(pt, 3);
+    sortedMilitaryBlds buildings = LookForMilitaryBuildings(pt, 3);
 
     // Sichtbereich von Militärgebäuden
-    for(nobBaseMilitarySet::iterator it = buildings.begin(); it != buildings.end(); ++it)
+    for(sortedMilitaryBlds::iterator it = buildings.begin(); it != buildings.end(); ++it)
     {
         if((*it)->GetPlayer() == player && *it != exception)
         {

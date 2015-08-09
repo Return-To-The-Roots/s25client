@@ -96,7 +96,7 @@ nobMilitary::nobMilitary(const BuildingType type, const MapPoint pos, const unsi
 nobMilitary::~nobMilitary()
 {
     // Soldaten vernichten
-    for(SortedTroopsContainer::iterator it = troops.begin(); it != troops.end(); ++it)
+    for(SortedTroops::iterator it = troops.begin(); it != troops.end(); ++it)
         delete (*it);
 }
 
@@ -116,7 +116,7 @@ void nobMilitary::Destroy_nobMilitary()
     CancelOrders();
 
     // Soldaten rausschicken
-    for(SortedTroopsContainer::iterator it = troops.begin(); it != troops.end(); ++it)
+    for(SortedTroops::iterator it = troops.begin(); it != troops.end(); ++it)
         (*it)->InBuildingDestroyed();
 
     // Inform far-away capturers
@@ -305,7 +305,7 @@ void nobMilitary::HandleEvent(const unsigned int id)
             std::vector<nofPassiveSoldier*> upgradedSoldiers;
             // Rang des letzten beförderten Soldaten, 4-MaxRank am Anfang setzen, damit keiner über den maximalen Rang befördert wird
             unsigned char last_rank = MAX_MILITARY_RANK - GAMECLIENT.GetGGS().getSelection(ADDON_MAX_RANK);
-            for(SortedTroopsContainer::reverse_iterator it = troops.rbegin(); it != troops.rend();)
+            for(SortedTroops::reverse_iterator it = troops.rbegin(); it != troops.rend();)
             {
                 // Es wurde schon einer befördert, dieser Soldat muss nun einen niedrigeren Rang
                 // als der letzte haben, damit er auch noch befördert werden kann
@@ -353,10 +353,10 @@ unsigned short nobMilitary::GetMilitaryRadius() const
 void nobMilitary::LookForEnemyBuildings(const nobBaseMilitary* const exceposion)
 {
     // Umgebung nach Militärgebäuden absuchen
-    nobBaseMilitarySet buildings = gwg->LookForMilitaryBuildings(pos, 3);
+    sortedMilitaryBlds buildings = gwg->LookForMilitaryBuildings(pos, 3);
     frontier_distance = 0;
 
-    for(nobBaseMilitarySet::iterator it = buildings.begin(); it != buildings.end(); ++it)
+    for(sortedMilitaryBlds::iterator it = buildings.begin(); it != buildings.end(); ++it)
     {
         // feindliches Militärgebäude?
         if(*it != exceposion && (*it)->GetPlayer() != player && gwg->GetPlayer((*it)->GetPlayer())->IsPlayerAttackable(player))
@@ -461,7 +461,7 @@ void nobMilitary::RegulateTroops()
         std::vector<nofPassiveSoldier*> notNeededSoldiers;
         if (gwg->GetPlayer(player)->military_settings[1] > MILITARY_SETTINGS_SCALE[1] / 2)
         {
-            for(SortedTroopsContainer::iterator it = ordered_troops.begin(); diff && !ordered_troops.empty(); ++diff)
+            for(SortedTroops::iterator it = ordered_troops.begin(); diff && !ordered_troops.empty(); ++diff)
             {
                 notNeededSoldiers.push_back(*it);
                 it = helpers::erase(ordered_troops, it);
@@ -470,7 +470,7 @@ void nobMilitary::RegulateTroops()
         // Strong ones first
         else
         {
-            for(SortedTroopsContainer::reverse_iterator it = ordered_troops.rbegin(); diff && !ordered_troops.empty(); ++diff)
+            for(SortedTroops::reverse_iterator it = ordered_troops.rbegin(); diff && !ordered_troops.empty(); ++diff)
             {
                 notNeededSoldiers.push_back(*it);
                 it = helpers::erase(ordered_troops, it);
@@ -490,7 +490,7 @@ void nobMilitary::RegulateTroops()
             // erst die schwachen Soldaten raus
             if (gwg->GetPlayer(player)->military_settings[1] > MILITARY_SETTINGS_SCALE[1] / 2)
             {
-                for(SortedTroopsContainer::iterator it = troops.begin(); diff && troops.size() > 1; ++diff)
+                for(SortedTroops::iterator it = troops.begin(); diff && troops.size() > 1; ++diff)
                 {
                     (*it)->LeaveBuilding();
                     AddLeavingFigure(*it);
@@ -500,7 +500,7 @@ void nobMilitary::RegulateTroops()
             // erst die starken Soldaten raus
             else
             {
-                for(SortedTroopsContainer::reverse_iterator it = troops.rbegin(); diff && troops.size() > 1; ++diff)
+                for(SortedTroops::reverse_iterator it = troops.rbegin(); diff && troops.size() > 1; ++diff)
                 {
                     (*it)->LeaveBuilding();
                     AddLeavingFigure(*it);
@@ -551,7 +551,7 @@ void nobMilitary::SendSoldiersHome()
         if(!gwg->GetPlayer(player)->FindWarehouse(this, FW::NoCondition, 0, true, 0, false))
             return;
         int mrank=-1;
-        for(SortedTroopsContainer::reverse_iterator it = troops.rbegin(); diff && troops.size() > 1; ++diff)
+        for(SortedTroops::reverse_iterator it = troops.rbegin(); diff && troops.size() > 1; ++diff)
         {
             if(mrank<0) //set mrank = highest rank
                 mrank=(*it)->GetRank();
@@ -569,7 +569,7 @@ void nobMilitary::OrderNewSoldiers()
 {
 	//cancel all max ranks on their way to this building
 	std::vector<nofPassiveSoldier*> noNeed;
-	for(SortedTroopsContainer::iterator it = ordered_troops.begin(); it != ordered_troops.end(); )
+	for(SortedTroops::iterator it = ordered_troops.begin(); it != ordered_troops.end(); )
     {
 		if((*it)->GetRank() >= MAX_MILITARY_RANK - GAMECLIENT.GetGGS().getSelection(ADDON_MAX_RANK))
 		{
@@ -650,7 +650,7 @@ void nobMilitary::GotWorker(Job job, noFigure* worker)
 void nobMilitary::CancelOrders()
 {
     // Soldaten zurückschicken
-    for(SortedTroopsContainer::iterator it = ordered_troops.begin(); it != ordered_troops.end(); ++it)
+    for(SortedTroops::iterator it = ordered_troops.begin(); it != ordered_troops.end(); ++it)
         (*it)->NotNeeded();
 
     ordered_troops.clear();
@@ -742,7 +742,7 @@ nofPassiveSoldier* nobMilitary::ChooseSoldier()
     // how many ranks
     unsigned rank_count = 0;
 
-    for(SortedTroopsContainer::iterator it = troops.begin(); it != troops.end(); ++it)
+    for(SortedTroops::iterator it = troops.begin(); it != troops.end(); ++it)
     {
         if(!candidates[(*it)->GetRank()])
         {
@@ -832,7 +832,7 @@ std::vector<nofPassiveSoldier*> nobMilitary::GetSoldiersForAttack(const MapPoint
 {
     std::vector<nofPassiveSoldier*> soldiers;
     unsigned soldiers_count = GetNumSoldiersForAttack(dest, player_attacker);
-    for(SortedTroopsContainer::const_reverse_iterator it = troops.rbegin(); it != troops.rend() && soldiers_count; ++it, --soldiers_count)
+    for(SortedTroops::const_reverse_iterator it = troops.rbegin(); it != troops.rend() && soldiers_count; ++it, --soldiers_count)
     {
         soldiers.push_back(*it);
     }
@@ -847,7 +847,7 @@ unsigned nobMilitary::GetSoldiersStrengthForAttack(const MapPoint dest, const un
     unsigned soldiers_count = GetNumSoldiersForAttack(dest, player_attacker);
     count = soldiers_count;
 
-    for(SortedTroopsContainer::const_reverse_iterator it = troops.rbegin(); it != troops.rend() && soldiers_count; ++it, --soldiers_count)
+    for(SortedTroops::const_reverse_iterator it = troops.rbegin(); it != troops.rend() && soldiers_count; ++it, --soldiers_count)
     {
         strength += HITPOINTS[nation][(*it)->GetRank()];
     }
@@ -860,7 +860,7 @@ unsigned nobMilitary::GetSoldiersStrength() const
 {
     unsigned strength = 0;
 
-    for(SortedTroopsContainer::const_iterator it = troops.begin(); it != troops.end(); ++it)
+    for(SortedTroops::const_iterator it = troops.begin(); it != troops.end(); ++it)
     {
         strength += HITPOINTS[nation][(*it)->GetRank()];
     }
@@ -872,7 +872,7 @@ unsigned nobMilitary::GetSoldiersStrength() const
 unsigned nobMilitary::HasMaxRankSoldier() const
 {
 	unsigned count=0;
-    for(SortedTroopsContainer::const_reverse_iterator it = troops.rbegin(); it != troops.rend(); ++it)
+    for(SortedTroops::const_reverse_iterator it = troops.rbegin(); it != troops.rend(); ++it)
     {
 		if ((*it)->GetRank() >= (MAX_MILITARY_RANK - GAMECLIENT.GetGGS().getSelection(ADDON_MAX_RANK)))
 			count++;
@@ -952,8 +952,8 @@ void nobMilitary::Capture(const unsigned char new_owner)
     // Grenzflagge entsprechend neu setzen von den Feinden
     LookForEnemyBuildings();
     // und von den Verbündeten (da ja ein Feindgebäude weg ist)!
-    nobBaseMilitarySet buildings = gwg->LookForMilitaryBuildings(pos, 4);
-    for(nobBaseMilitarySet::iterator it = buildings.begin(); it != buildings.end(); ++it)
+    sortedMilitaryBlds buildings = gwg->LookForMilitaryBuildings(pos, 4);
+    for(sortedMilitaryBlds::iterator it = buildings.begin(); it != buildings.end(); ++it)
     {
         // verbündetes Gebäude?
         if(gwg->GetPlayer((*it)->GetPlayer())->IsPlayerAttackable(old_player)
@@ -1145,7 +1145,7 @@ unsigned nobMilitary::CalcCoinsPoints()
     points -= (coins + ordered_coins.size()) * 30;
 
     // Beförderbare Soldaten zählen
-    for(SortedTroopsContainer::iterator it = troops.begin(); it != troops.end(); ++it)
+    for(SortedTroops::iterator it = troops.begin(); it != troops.end(); ++it)
     {
         // Solange es kein Max Rank (default 4) ist, kann der Soldat noch befördert werden
         if((*it)->GetRank() < 4 - GAMECLIENT.GetGGS().getSelection(ADDON_MAX_RANK))
@@ -1205,7 +1205,7 @@ void nobMilitary::PrepareUpgrading()
     // Noch Soldaten, die befördert werden können?
     bool soldiers_available = false;
 
-    for(SortedTroopsContainer::iterator it = troops.begin(); it != troops.end(); ++it)
+    for(SortedTroops::iterator it = troops.begin(); it != troops.end(); ++it)
     {
         if((*it)->GetRank() < 4 - GAMECLIENT.GetGGS().getSelection(ADDON_MAX_RANK))
         {

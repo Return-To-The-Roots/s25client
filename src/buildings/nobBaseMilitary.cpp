@@ -105,8 +105,8 @@ void nobBaseMilitary::Destroy_nobBaseMilitary()
 
     // Umgebung nach feindlichen Militärgebäuden absuchen und die ihre Grenzflaggen neu berechnen lassen
     // da, wir ja nicht mehr existieren
-    nobBaseMilitarySet buildings = gwg->LookForMilitaryBuildings(pos, 4);
-    for(nobBaseMilitarySet::iterator it = buildings.begin(); it != buildings.end(); ++it)
+    sortedMilitaryBlds buildings = gwg->LookForMilitaryBuildings(pos, 4);
+    for(sortedMilitaryBlds::iterator it = buildings.begin(); it != buildings.end(); ++it)
     {
         if((*it)->GetPlayer() != player
                 && (*it)->GetBuildingType() >= BLD_BARRACKS  && (*it)->GetBuildingType() <= BLD_FORTRESS)

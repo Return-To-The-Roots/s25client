@@ -134,8 +134,8 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned int id)
             // Liste von potentiellen Zielen
             std::vector<PossibleTarget> pts;
 
-            nobBaseMilitarySet buildings = gwg->LookForMilitaryBuildings(pos, 3);
-            for(nobBaseMilitarySet::iterator it = buildings.begin(); it != buildings.end(); ++it)
+            sortedMilitaryBlds buildings = gwg->LookForMilitaryBuildings(pos, 3);
+            for(sortedMilitaryBlds::iterator it = buildings.begin(); it != buildings.end(); ++it)
             {
                 // Auch ein richtiges Militärgebäude (kein HQ usw.),
                 if((*it)->GetGOT() == GOT_NOB_MILITARY && GAMECLIENT.GetPlayer(player)->IsPlayerAttackable((*it)->GetPlayer()))

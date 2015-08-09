@@ -133,6 +133,9 @@ FORCE_ADD_FLAGS(CMAKE_CXX_FLAGS -I${CMAKE_BINARY_DIR})
 IF (MSVC)
 	# disable MSVC "use secure function" and 4250: 'class1' : inherits 'class2::member' via dominance (virtual inheritance related)
 	ADD_DEFINITIONS(-D_CRT_SECURE_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS /wd"4250")
+	# disable MSVC posix functions
+	ADD_DEFINITIONS(-D_CRT_NONSTDC_NO_DEPRECATE)
+	ADD_DEFINITIONS(-D_WINSOCK_DEPRECATED_NO_WARNINGS)
 	SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Oi /GL") # systemintern functions for faster code; Optimize whole program
 	# Strip unused symbols and us COMDAT folding
 	SET(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /OPT:REF /OPT:ICF")
@@ -146,6 +149,29 @@ IF (MSVC)
 	ENDIF()
 ENDIF (MSVC)
 
+CHECK_CXX_SOURCE_COMPILES("
+  constexpr int foo()
+  { return 0; }
+
+  template<int v>
+  struct A
+  {
+    static const int value = v;
+  };
+
+  int main(void)
+  {
+    return A<foo()>::value;
+  }
+" HAVE_CONSTEXPR
+)
+
+IF (${HAVE_CONSTEXPR})
+	ADD_DEFINITIONS(-DCONSTEXPR=constexpr)
+ELSE (${HAVE_CONSTEXPR})
+	ADD_DEFINITIONS(-DCONSTEXPR=const)
+ENDIF (${HAVE_CONSTEXPR})
+	
 ################################################################################
 
 CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/build_paths.h.cmake"

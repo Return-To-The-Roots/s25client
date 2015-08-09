@@ -709,8 +709,8 @@ void nofAttacker::TryToOrderAggressiveDefender()
         if(RANDOM.Rand(__FILE__, __LINE__, obj_id, 10) < 2)
         {
             // Militärgebäude in der Nähe abgrasen
-            nobBaseMilitarySet buildings = gwg->LookForMilitaryBuildings(pos, 2);
-            for(nobBaseMilitarySet::iterator it = buildings.begin(); it != buildings.end(); ++it)
+            sortedMilitaryBlds buildings = gwg->LookForMilitaryBuildings(pos, 2);
+            for(sortedMilitaryBlds::iterator it = buildings.begin(); it != buildings.end(); ++it)
             {
                 // darf kein HQ sein, außer, das HQ wird selbst angegriffen, darf nicht weiter weg als 15 sein
                 // und es darf natürlich auch der entsprechende Feind sein, aber es darf auch nicht derselbe Spieler

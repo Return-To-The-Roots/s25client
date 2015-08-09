@@ -1,5 +1,3 @@
-// $Id: win32_nanosleep.h 9357 2014-04-25 15:35:25Z FloSoft $
-//
 // Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
@@ -16,29 +14,22 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef WIN32_NANOSLEEP_H_INCLUDED
-#define WIN32_NANOSLEEP_H_INCLUDED
 
-#pragma once
+#ifndef setTraits_h__
+#define setTraits_h__
 
-#ifdef _WIN32
-typedef unsigned int useconds_t;
+// This file defines the traits for std::set
+// You can include this instead of <set>
 
-#ifndef _TIMESPEC_DEFINED
-#define _TIMESPEC_DEFINED
-struct timespec
-{
-    unsigned int tv_sec;    // Seconds.
-    long int tv_nsec;       // Nanoseconds.
-};
-#endif
+#include "traits.h"
+#include <set>
 
-/// Sleep at least some number of microseconds.
-int usleep (useconds_t microseconds);
+namespace helpers{
+    template<class T, class Pr, class Alloc>
+    struct EraseIterValidyImpl<std::set<T, Pr, Alloc>{
+        // Default case for unspecialized containers (whose erase dos not return an iterator) is AllInvalidate to be safe
+        static CONSTEXPR value = EEraseIterValidy::NextValid; 
+    };
+} // namespace helpers
 
-/// nanosleep replacement for windows.
-int nanosleep(const struct timespec* requested_delay, struct timespec* remaining_delay);
-
-#endif // _WIN32
-
-#endif // !WIN32_NANOSLEEP_H_INCLUDED
+#endif // setTraits_h__

@@ -1224,9 +1224,9 @@ void nobHarborBuilding::CancelFigure(noFigure* figure)
 std::vector<nobHarborBuilding::SeaAttackerBuilding> nobHarborBuilding::GetAttackerBuildingsForSeaIdAttack()
 {
     std::vector<nobHarborBuilding::SeaAttackerBuilding> buildings;
-    nobBaseMilitarySet all_buildings = gwg->LookForMilitaryBuildings(pos, 3);
+    sortedMilitaryBlds all_buildings = gwg->LookForMilitaryBuildings(pos, 3);
     // Und zählen
-    for(nobBaseMilitarySet::iterator it = all_buildings.begin(); it != all_buildings.end(); ++it)
+    for(sortedMilitaryBlds::iterator it = all_buildings.begin(); it != all_buildings.end(); ++it)
     {
         if((*it)->GetGOT() != GOT_NOB_MILITARY)
             continue;
@@ -1253,9 +1253,9 @@ std::vector<nobHarborBuilding::SeaAttackerBuilding> nobHarborBuilding::GetAttack
 std::vector<nobHarborBuilding::SeaAttackerBuilding> nobHarborBuilding::GetAttackerBuildingsForSeaAttack(const std::vector<unsigned>& defender_harbors)
 {
     std::vector<nobHarborBuilding::SeaAttackerBuilding> buildings;
-    nobBaseMilitarySet all_buildings = gwg->LookForMilitaryBuildings(pos, 3);
+    sortedMilitaryBlds all_buildings = gwg->LookForMilitaryBuildings(pos, 3);
     // Und zählen
-    for(nobBaseMilitarySet::iterator it = all_buildings.begin(); it != all_buildings.end(); ++it)
+    for(sortedMilitaryBlds::iterator it = all_buildings.begin(); it != all_buildings.end(); ++it)
     {
         if((*it)->GetGOT() != GOT_NOB_MILITARY)
             continue;

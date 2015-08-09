@@ -323,7 +323,7 @@ class GameWorldBase
         bool IsMilitaryBuilding(const MapPoint pt) const;
 
         /// Erstellt eine Liste mit allen Militärgebäuden in der Umgebung, radius bestimmt wie viele Kästchen nach einer Richtung im Umkreis
-        nobBaseMilitarySet LookForMilitaryBuildings(const MapPoint pt, unsigned short radius) const;
+        sortedMilitaryBlds LookForMilitaryBuildings(const MapPoint pt, unsigned short radius) const;
 
         /// Prüft, ob von einem bestimmten Punkt aus der Untergrund für Figuren zugänglich ist (kein Wasser,Lava,Sumpf)
         bool IsNodeToNodeForFigure(const MapPoint pt, const unsigned dir) const;

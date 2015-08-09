@@ -30,15 +30,29 @@ make
 
 ## On Windows
 
-### Prerequisite:
-- cmake (i.e from contrib)
-- boost (i.e from contrib)
+### Prerequisites:
+- cmake (i.e from https://github.com/Return-To-The-Roots/contrib or http://www.cmake.org/download/)
+- boost (i.e from https://github.com/Return-To-The-Roots/contrib or http://www.boost.org/)
 - Visual Studio (at least 2010)
 - Git Client (i.e TortoiseGit)
 
 ### Steps:
 - Clone GIT Repository from https://github.com/Return-To-The-Roots/s25client
-- Update/Initialize GIT Submodule
+- And Update/Initialize GIT Submodule
+	1. Using Git bash:
+	
+	```
+	git clone https://github.com/Return-To-The-Roots/s25client s25client
+	cd s25client
+	git submodule update --init
+	```
+	
+	2. **OR** using TortoiseGit:
+		- Rightclick -> "Git clone..."
+		- Put in https://github.com/Return-To-The-Roots/s25client as URL
+		- Select "Directory" to clone to and push OK
+		- Open the selected folder and rightclick in some free space -> TortoiseGit-> Submodule Update
+		- Make sure you see some pathes and push OK
 - Extract contrib/full-contrib-msvc2010.rar to contrib 
   (so that contrib/full-contrib-msvc2010/bin, contrib/full-contrib-msvc2010/include and contrib/full-contrib-msvc2010/lib exist)
 - If you havent installed boost, install boost
