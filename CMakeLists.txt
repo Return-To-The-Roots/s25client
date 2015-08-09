@@ -107,15 +107,17 @@ SET (LOBBY_C TRUE)
 ################################################################################
 
 INCLUDE(CheckCXXCompilerFlag)
+MACRO(CheckAndAddFlag flag)
+	CHECK_CXX_COMPILER_FLAG(${flag} FLAG_${flag}_SUPPORTED)
+	IF (FLAG_${flag}_SUPPORTED)
+		ADD_DEFINITIONS(${flag})
+	ENDIF ()
+ENDMACRO()
 
-CHECK_CXX_COMPILER_FLAG("-Wall -Werror -pedantic -Wno-long-long -fno-strict-aliasing" WERROR_FLAGS)
-IF (WERROR_FLAGS)
-	IF (NOT "${COMPILEFOR}" STREQUAL "windows" )
-		ADD_DEFINITIONS(-Wall -pedantic -fno-strict-aliasing)
-	ELSE (NOT "${COMPILEFOR}" STREQUAL "windows" )
-		ADD_DEFINITIONS(-Wall -pedantic -Wno-long-long) # win32 cross build with -Werror does not work
-	ENDIF (NOT "${COMPILEFOR}" STREQUAL "windows" )
-ENDIF (WERROR_FLAGS)
+CheckAndAddFlag("-Wall")
+CheckAndAddFlag("-pedantic")
+CheckAndAddFlag("-Wno-long-long")
+CheckAndAddFlag("-fno-strict-aliasing")
 
 # avoid lhs-path bug in windows
 IF ("${COMPILEFOR}" STREQUAL "windows")
