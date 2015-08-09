@@ -38,21 +38,21 @@ make
 
 ### Steps:
 - Clone GIT Repository from https://github.com/Return-To-The-Roots/s25client
-- And Update/Initialize GIT Submodule
-	1. Using Git bash:
-	
-	```
-	git clone https://github.com/Return-To-The-Roots/s25client s25client
-	cd s25client
-	git submodule update --init
-	```
-	
-	2. **OR** using TortoiseGit:
-		- Rightclick -> "Git clone..."
-		- Put in https://github.com/Return-To-The-Roots/s25client as URL
-		- Select "Directory" to clone to and push OK
-		- Open the selected folder and rightclick in some free space -> TortoiseGit-> Submodule Update
-		- Make sure you see some pathes and push OK
+  - Using Git bash:
+     ```
+     git clone https://github.com/Return-To-The-Roots/s25client s25client
+     cd s25client
+     git submodule update --init
+     ```
+
+  - **OR** using TortoiseGit:
+     - Rightclick -> "Git clone..."
+     - Put in https://github.com/Return-To-The-Roots/s25client as URL
+     - Select "Directory" to clone to
+     - press OK
+     - Rightclick on the newly created folder -> TortoiseGit-> Submodule Update
+     - Make sure all modules are selected and "Initialize submodules (--init)" is checked
+     - press OK
 - Extract contrib/full-contrib-msvc2010.rar to contrib 
   (so that contrib/full-contrib-msvc2010/bin, contrib/full-contrib-msvc2010/include and contrib/full-contrib-msvc2010/lib exist)
 - If you havent installed boost, install boost
@@ -60,6 +60,7 @@ make
   - extract boost-1.55.zip (i.e to contrib/boost, so that contrib/boost/bootstrap.bat exist)
   - run that "bootstrap.bat"
   - run created "b2.exe" (this should build boost)
+  - run "b2 install --prefix=%CD%" (this should install everything so the system can find it)
 - Use cmake-gui:
   - "Where is the source code": Select checked out directory
   - "Where to build the binaries": Select "build" directory
