@@ -65,6 +65,7 @@ make
   - "Where is the source code": Select checked out directory
   - "Where to build the binaries": Select "build" directory
   - Press configure
+  - Select your compiler version (i.e Visual Studio 2010 x86)
   - If it can't find boost:
     - "Add Entry"
     - Enter as "Name" "BOOST_ROOT" (exact casing!)
