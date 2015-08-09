@@ -30,6 +30,9 @@
 
 #include "../libutil/src/error.h"
 #include <sstream>
+#ifndef _WIN32
+#   include <cstring>
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

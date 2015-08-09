@@ -123,7 +123,7 @@ int glArchivItem_Map::load(FILE* file, bool only_header)
 
         libsiedler2::ArchivItem_Raw* owner = dynamic_cast<libsiedler2::ArchivItem_Raw*>(GlAllocator().create(libsiedler2::BOBTYPE_RAW, 0));
         if(owner->load(file, header->getWidth() * header->getHeight()) != 0){
-            owner;
+            delete owner;
             return 3;
         }
         set(MAP_OWNER, owner);

@@ -1383,7 +1383,7 @@ bool Loader::LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Pal
         {
             if(archiv.get(i))
             {
-                LOG.lprintf("Ersetze Eintrag %d durch %s\n", i, archiv.get(i)->getName());
+                LOG.lprintf("Ersetze Eintrag %d durch %s\n", i, archiv.get(i)->getName().c_str());
                 to->setC(i, *archiv.get(i));
             }
         }
