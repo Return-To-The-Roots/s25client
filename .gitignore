@@ -28,6 +28,7 @@
 /build/src
 /build/version
 /contrib/full-contrib-msvc2010
+/contrib/boost*
 /DATA
 /GFX
 /build/Debug
