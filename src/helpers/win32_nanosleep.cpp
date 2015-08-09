@@ -62,7 +62,7 @@ int usleep (useconds_t microseconds)
 /**
  *  nanosleep replacement for windows.
  */
-int nanosleep(const timespec_t* requested_delay, timespec_t* remaining_delay)
+int nanosleep(const struct timespec* requested_delay, struct timespec* remaining_delay)
 {
     const useconds_t one_second = 1000000;
     const useconds_t nano_per_micro = 1000;

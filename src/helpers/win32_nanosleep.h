@@ -26,18 +26,18 @@ typedef unsigned int useconds_t;
 
 #ifndef _TIMESPEC_DEFINED
 #define _TIMESPEC_DEFINED
-typedef struct timespec
+struct timespec
 {
     unsigned int tv_sec;    // Seconds.
     long int tv_nsec;       // Nanoseconds.
-} timespec_t;
+};
 #endif
 
 /// Sleep at least some number of microseconds.
 int usleep (useconds_t microseconds);
 
 /// nanosleep replacement for windows.
-int nanosleep(const timespec_t* requested_delay, timespec_t* remaining_delay);
+int nanosleep(const struct timespec* requested_delay, struct timespec* remaining_delay);
 
 #endif // _WIN32
 
