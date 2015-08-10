@@ -45,8 +45,8 @@ class AudioDriver
         /// Treiberaufräumfunktion.
         virtual void CleanUp(void) = 0;
 
-        virtual Sound* LoadEffect(unsigned int data_type, unsigned char* data, unsigned long size) = 0;
-        virtual Sound* LoadMusic(unsigned int data_type, unsigned char* data, unsigned long size) = 0;
+        virtual Sound* LoadEffect(unsigned int data_type, const unsigned char* data, unsigned long size) = 0;
+        virtual Sound* LoadMusic(unsigned int data_type, const unsigned char* data, unsigned long size) = 0;
 
         /// Spielt Sound ab
         virtual unsigned int PlayEffect(Sound* sound, const unsigned char volume, const bool loop) = 0;

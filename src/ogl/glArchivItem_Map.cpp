@@ -131,7 +131,7 @@ int glArchivItem_Map::load(FILE* file, bool only_header)
     else
     {
         libsiedler2::ArchivItem_Raw* item = dynamic_cast<libsiedler2::ArchivItem_Raw*>(GlAllocator().create(libsiedler2::BOBTYPE_RAW, 0));
-        item->alloc(header->getWidth() * header->getHeight());
+        item->getData().resize(header->getWidth() * header->getHeight()); // TODO: Really required?
 
         set(MAP_RESERVATIONS, item);
         setC(MAP_OWNER, *item);
@@ -148,7 +148,7 @@ int glArchivItem_Map::load(FILE* file, bool only_header)
  *
  *  @author FloSoft
  */
-const unsigned char* glArchivItem_Map::GetLayer(MapLayer type) const
+const std::vector<unsigned char>& glArchivItem_Map::GetLayer(MapLayer type) const
 {
     const libsiedler2::ArchivItem_Raw* item = dynamic_cast<const libsiedler2::ArchivItem_Raw*>(get(type));
     assert(item);
@@ -163,7 +163,7 @@ const unsigned char* glArchivItem_Map::GetLayer(MapLayer type) const
  *
  *  @author FloSoft
  */
-unsigned char* glArchivItem_Map::GetLayer(MapLayer type)
+std::vector<unsigned char>& glArchivItem_Map::GetLayer(MapLayer type)
 {
     libsiedler2::ArchivItem_Raw* item = dynamic_cast<libsiedler2::ArchivItem_Raw*>(get(type));
     assert(item);
@@ -181,10 +181,7 @@ unsigned char* glArchivItem_Map::GetLayer(MapLayer type)
  */
 unsigned char glArchivItem_Map::GetMapDataAt(MapLayer type, unsigned int pos) const
 {
-    const unsigned char* data = GetLayer(type);
-    assert(data);
-
-    return data[pos];
+    return GetLayer(type)[pos];
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -199,10 +196,7 @@ unsigned char glArchivItem_Map::GetMapDataAt(MapLayer type, unsigned int pos) co
  */
 void glArchivItem_Map::SetMapDataAt(MapLayer type, unsigned int pos, unsigned char value)
 {
-    unsigned char* data = GetLayer(type);
-    assert(data);
-
-    data[pos] = value;
+    GetLayer(type)[pos] = value;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -27,6 +27,7 @@
 #include "Loader.h"
 
 #include "../libsiedler2/src/types.h"
+#include <vector>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -212,12 +213,9 @@ void glArchivItem_Bitmap::GenerateTexture(void)
 
     int iformat = GL_RGBA, dformat = GL_BGRA;
 
-    unsigned char* buffer = new unsigned char[tex_width * tex_height * 4];
+    std::vector<unsigned char> buffer(tex_width * tex_height * 4);
 
-    memset(buffer, 0, tex_width * tex_height * 4);
-    print(buffer, tex_width, tex_height, libsiedler2::FORMAT_RGBA, palette, 0, 0, 0, 0, 0, 0);
-    glTexImage2D(GL_TEXTURE_2D, 0, iformat, tex_width, tex_height, 0, dformat, GL_UNSIGNED_BYTE, buffer);
-
-    delete[] buffer;
+    print(&buffer.front(), tex_width, tex_height, libsiedler2::FORMAT_RGBA, palette, 0, 0, 0, 0, 0, 0);
+    glTexImage2D(GL_TEXTURE_2D, 0, iformat, tex_width, tex_height, 0, dformat, GL_UNSIGNED_BYTE, &buffer.front());
 }
 

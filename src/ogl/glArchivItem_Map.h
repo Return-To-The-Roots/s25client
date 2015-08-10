@@ -68,9 +68,9 @@ class glArchivItem_Map : public libsiedler2::ArchivItem_Map
         const libsiedler2::ArchivItem_Map_Header& getHeader(void) const { return *header; }
 
         /// liefert einen Map-Layer zurück.
-        const unsigned char* GetLayer(MapLayer type) const;
+        const std::vector<unsigned char>& GetLayer(MapLayer type) const;
         /// liefert einen Map-Layer zurück.
-        unsigned char* GetLayer(MapLayer type);
+        std::vector<unsigned char>& GetLayer(MapLayer type);
 
         /// liefert die Mapdaten an einer bestimmten Stelle zurück.
         unsigned char GetMapDataAt(MapLayer type, unsigned int pos) const;
