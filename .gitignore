@@ -3,6 +3,8 @@
 *.opensdf
 *.sdf
 *.suo
+*.cproject
+*.project
 /build/*.vcxproj
 /build/*.filters
 /build/CMakeCache.txt
@@ -36,7 +38,15 @@
 /build/Win32
 /build/DATA
 /build/GFX
+/build/s25rttr
+/build/share
+/build/Makefile
+/build/bin
 /build/*.dll
 /build/*.exe
 /build/*.pdb
 /build/*.ilk
+/s25update
+/RTTR/s25update
+/RTTR/s-c_resample
+/RTTR/sound-convert
