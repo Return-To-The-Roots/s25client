@@ -430,7 +430,7 @@ void dskSelectMap::FillTable(const std::string& filename, void* param)
             _("Winter world")
         };
 
-        tabelle->AddRow(0, header->getName(), header->getAuthor(), players, landscapes[header->getGfxSet()].c_str(), size, filename.c_str());
+        tabelle->AddRow(0, header->getName().c_str(), header->getAuthor().c_str(), players, landscapes[header->getGfxSet()].c_str(), size, filename.c_str());
     }
 }
 
