@@ -114,14 +114,14 @@ int glArchivItem_Map::load(FILE* file, bool only_header)
     {
         // Wenn noch Platz ist, restliches Zeug noch auslesen
         // @todo: Shouldn't we use libsiedler2::allocator?
-        libsiedler2::ArchivItem_Raw* reservations = dynamic_cast<libsiedler2::ArchivItem_Raw*>(GlAllocator().create(libsiedler2::BOBTYPE_RAW, 0));
+        libsiedler2::ArchivItem_Raw* reservations = dynamic_cast<libsiedler2::ArchivItem_Raw*>(GlAllocator().create(libsiedler2::BOBTYPE_RAW));
         if(reservations->load(file, header->getWidth() * header->getHeight()) != 0){
             delete reservations;
             return 2;
         }
         set(MAP_RESERVATIONS, reservations);
 
-        libsiedler2::ArchivItem_Raw* owner = dynamic_cast<libsiedler2::ArchivItem_Raw*>(GlAllocator().create(libsiedler2::BOBTYPE_RAW, 0));
+        libsiedler2::ArchivItem_Raw* owner = dynamic_cast<libsiedler2::ArchivItem_Raw*>(GlAllocator().create(libsiedler2::BOBTYPE_RAW));
         if(owner->load(file, header->getWidth() * header->getHeight()) != 0){
             delete owner;
             return 3;
@@ -130,7 +130,7 @@ int glArchivItem_Map::load(FILE* file, bool only_header)
     }
     else
     {
-        libsiedler2::ArchivItem_Raw* item = dynamic_cast<libsiedler2::ArchivItem_Raw*>(GlAllocator().create(libsiedler2::BOBTYPE_RAW, 0));
+        libsiedler2::ArchivItem_Raw* item = dynamic_cast<libsiedler2::ArchivItem_Raw*>(GlAllocator().create(libsiedler2::BOBTYPE_RAW));
         item->getData().resize(header->getWidth() * header->getHeight()); // TODO: Really required?
 
         set(MAP_RESERVATIONS, item);

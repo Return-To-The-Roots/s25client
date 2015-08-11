@@ -21,30 +21,11 @@
 
 #pragma once
 
-// @Todo: Remove this includes
-#include "glArchivItem_Sound.h"
-#include "glArchivItem_Music.h"
-#include "glArchivItem_Sound_Wave.h"
-#include "glArchivItem_Sound_Midi.h"
-#include "glArchivItem_Sound_XMidi.h"
-#include "glArchivItem_Sound_Other.h"
-
-#include "glArchivItem_Bitmap.h"
-#include "glArchivItem_Bitmap_RLE.h"
-#include "glArchivItem_Bitmap_Player.h"
-#include "glArchivItem_Bitmap_Shadow.h"
-#include "glArchivItem_Bitmap_Raw.h"
-#include "glArchivItem_Bitmap_Direct.h"
-
-#include "glArchivItem_Bob.h"
-#include "glArchivItem_Font.h"
-#include "glArchivItem_Map.h"
-
 #include "../../libsiedler2/src/types.h"
 
 class GlAllocator: public libsiedler2::StandardAllocator{
 public:
-    virtual libsiedler2::ArchivItem* create(unsigned short type, unsigned short subtype) const;
+    virtual libsiedler2::ArchivItem* create(libsiedler2::BOBTYPES type, libsiedler2::SOUNDTYPES subtype = libsiedler2::SOUNDTYPE_NONE) const;
     virtual libsiedler2::ArchivItem* clone(const libsiedler2::ArchivItem& item) const;
 };
 

@@ -29,7 +29,7 @@
 #include "Log.h"
 #include "glAllocator.h"
 
-#include "../libsiedler2/src/types.h"
+#include "../libsiedler2/src/ArchivItem_Bitmap_Player.h"
 #include <cmath>
 #include <vector>
 
@@ -650,8 +650,8 @@ void glArchivItem_Font::GetWrapInfo(const std::string& text,
 void glArchivItem_Font::initFont()
 {
     // @todo: Shouldn't we use libsiedler2::allocator?
-    _font_outline = dynamic_cast<glArchivItem_Bitmap*>(GlAllocator().create(libsiedler2::BOBTYPE_BITMAP_RLE, 0));
-    _font = dynamic_cast<glArchivItem_Bitmap*>(GlAllocator().create(libsiedler2::BOBTYPE_BITMAP_RLE, 0));
+    _font_outline = dynamic_cast<glArchivItem_Bitmap*>(GlAllocator().create(libsiedler2::BOBTYPE_BITMAP_RLE));
+    _font = dynamic_cast<glArchivItem_Bitmap*>(GlAllocator().create(libsiedler2::BOBTYPE_BITMAP_RLE));
 
 
     // first, we have to find how much chars we really have, but we can also skip first 32
