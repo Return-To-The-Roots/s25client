@@ -114,7 +114,11 @@ MACRO(CheckAndAddFlag flag)
 	ENDIF ()
 ENDMACRO()
 
-CheckAndAddFlag("-Wall")
+IF (MSVC)
+	CheckAndAddFlag("/W3")
+ELSE (MSVC)
+	CheckAndAddFlag("-Wall")
+ENDIF (MSVC)
 CheckAndAddFlag("-pedantic")
 CheckAndAddFlag("-Wno-long-long")
 CheckAndAddFlag("-fno-strict-aliasing")
@@ -133,8 +137,16 @@ FORCE_ADD_FLAGS(CMAKE_C_FLAGS -I${CMAKE_BINARY_DIR})
 FORCE_ADD_FLAGS(CMAKE_CXX_FLAGS -I${CMAKE_BINARY_DIR})
 
 IF (MSVC)
-	# disable MSVC "use secure function" and 4250: 'class1' : inherits 'class2::member' via dominance (virtual inheritance related)
+	# disable MSVC "use secure function"
 	ADD_DEFINITIONS(-D_CRT_SECURE_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS /wd"4250")
+	# 'class1' : inherits 'class2::member' via dominance (virtual inheritance related)
+	ADD_DEFINITIONS(/wd"4250")
+	# conditional expr is constant
+	ADD_DEFINITIONS(/wd"4127")
+	# unreferenced formal parameter
+	ADD_DEFINITIONS(/wd"4100")
+	# assignment operator could not be created
+	ADD_DEFINITIONS(/wd"4512")
 	# disable MSVC posix functions
 	ADD_DEFINITIONS(-D_CRT_NONSTDC_NO_DEPRECATE)
 	ADD_DEFINITIONS(-D_WINSOCK_DEPRECATED_NO_WARNINGS)
