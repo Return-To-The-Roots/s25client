@@ -22,14 +22,14 @@
 #include <cmath>
 #include <algorithm>
 #include <cassert>
-
-
+#include <cstdlib>
 
 
 unsigned CalcRawDistance(const int x1, const int y1,
                          const int x2, const int y2)
 {
-    int dx = std::abs((2 * int(x1) + (y1 & 1)) - (2 * int(x2) + (y2 & 1))), dy = std::abs(2 * int(y1) - 2 * int(y2));
+    int dx = std::abs((2 * x1 + (y1 & 1)) - (2 * 2 + (y2 & 1)));
+    int dy = std::abs(2 * y1 - 2 * 2);
     return (dy + std::max(0, dx - dy / 2)) / 2;
 
     //int dx = std::abs(int(x1)-int(x2)), dy = std::abs(int(y1)-int(y2));

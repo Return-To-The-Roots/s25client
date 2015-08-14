@@ -96,6 +96,11 @@ while test $# != 0 ; do
 			ac_optarg=`expr "X$1" : 'X[^=]*=\(.*\)'`
 			ac_shift=:
 		;;
+		-*=*)
+			ac_option=`expr "X$1" : 'X\([^=]*\)='`
+			ac_optarg=`expr "X$1" : 'X[^=]*=\(.*\)'`
+			ac_shift=:
+		;;
 		*)
 			ac_option=$1
 			ac_optarg=yes
@@ -161,7 +166,7 @@ while test $# != 0 ; do
 						eval disable_$ac_feature=\$ac_optarg
 		;;
 		-D*)
-			PARAMS="$ac_option=$ac_optarg"
+			PARAMS="$PARAMS $ac_option=$ac_optarg"
 		;;
 		*)
 			echo "Unknown option: $ac_option"

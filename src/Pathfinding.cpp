@@ -59,36 +59,6 @@ class RoadNodeComperatorInv
     public:
         bool operator()(const noRoadNode* const rn1,  const noRoadNode* const rn2) const;
 };
-struct PathfindingPoint;
-
-/// Klass für einen Knoten mit dazugehörigen Informationen
-/// Wir speichern einfach die gesamte Map und sparen uns so das dauernde Allokieren und Freigeben von Speicher
-/// Die Knoten können im Array mit einer eindeutigen ID (gebildet aus y*Kartenbreite+x) identifiziert werden
-struct NewNode
-{
-    NewNode() : way(0),  dir(0),  prev(INVALID_PREV),  lastVisited(0) {}
-
-    /// Wegkosten,  die vom Startpunkt bis zu diesem Knoten bestehen
-    unsigned way;
-	unsigned wayEven;
-    /// Die Richtung,  über die dieser Knoten erreicht wurde
-    unsigned char dir;
-	unsigned char dirEven;
-    /// ID (gebildet aus y*Kartenbreite+x) des Vorgänngerknotens
-    unsigned prev;
-	unsigned prevEven;
-    /// Iterator auf Position in der Prioritätswarteschlange (std::set),  freies Pathfinding
-    std::set<PathfindingPoint>::iterator it_p;
-    /// Wurde Knoten schon besucht (für A*-Algorithmus),  wenn lastVisited == currentVisit
-    unsigned lastVisited;
-	unsigned lastVisitedEven; //used for road pathfinding (for ai only for now)
-};
-
-const unsigned maxMapSize = 1024;
-/// Die Knoten der Map gespeichert,  größtmöglichste Kartengröße nehmen
-NewNode pf_nodes[maxMapSize* maxMapSize];
-unsigned currentVisit = 0;
-//unsigned currentVisitEven = 0; //used for road pathfinding (for now only the ai gets the comfort version)
 
 /// Punkte als Verweise auf die obengenannen Knoten,  damit nur die beiden Koordinaten x, y im set mit rumgeschleppt
 /// werden müsen
@@ -119,22 +89,54 @@ struct PathfindingPoint
         }
 
         /// Operator für den Vergleich
-        bool operator<(const PathfindingPoint two) const
-        {
-            // Weglängen schätzen für beide Punkte,  indem man den bisherigen Weg mit der Luftlinie vom aktullen
-            // Punkt zum Ziel addiert und auf diese Weise den kleinsten Weg auswählt
-            unsigned way1 = pf_nodes[id].way + distance;
-            unsigned way2 = pf_nodes[two.id].way + two.distance;
-
-            // Wenn die Wegkosten gleich sind,  vergleichen wir die Koordinaten,  da wir für std::set eine streng
-            // monoton steigende Folge brauchen
-            if(way1 == way2)
-                return (id < two.id);
-            else
-                return (way1 < way2);
-        }
+        bool operator<(const PathfindingPoint two) const;
 };
 
+
+/// Klass für einen Knoten mit dazugehörigen Informationen
+/// Wir speichern einfach die gesamte Map und sparen uns so das dauernde Allokieren und Freigeben von Speicher
+/// Die Knoten können im Array mit einer eindeutigen ID (gebildet aus y*Kartenbreite+x) identifiziert werden
+struct NewNode
+{
+    NewNode() : way(0),  dir(0),  prev(INVALID_PREV),  lastVisited(0) {}
+
+    /// Wegkosten,  die vom Startpunkt bis zu diesem Knoten bestehen
+    unsigned way;
+	unsigned wayEven;
+    /// Die Richtung,  über die dieser Knoten erreicht wurde
+    unsigned char dir;
+	unsigned char dirEven;
+    /// ID (gebildet aus y*Kartenbreite+x) des Vorgänngerknotens
+    unsigned prev;
+	unsigned prevEven;
+    /// Iterator auf Position in der Prioritätswarteschlange (std::set),  freies Pathfinding
+    std::set<PathfindingPoint>::iterator it_p;
+    /// Wurde Knoten schon besucht (für A*-Algorithmus),  wenn lastVisited == currentVisit
+    unsigned lastVisited;
+	unsigned lastVisitedEven; //used for road pathfinding (for ai only for now)
+};
+
+const unsigned maxMapSize = 1024;
+/// Die Knoten der Map gespeichert,  größtmöglichste Kartengröße nehmen
+NewNode pf_nodes[maxMapSize* maxMapSize];
+unsigned currentVisit = 0;
+//unsigned currentVisitEven = 0; //used for road pathfinding (for now only the ai gets the comfort version)
+
+
+bool PathfindingPoint::operator<(const PathfindingPoint two) const
+{
+    // Weglängen schätzen für beide Punkte,  indem man den bisherigen Weg mit der Luftlinie vom aktullen
+    // Punkt zum Ziel addiert und auf diese Weise den kleinsten Weg auswählt
+    unsigned way1 = pf_nodes[id].way + distance;
+    unsigned way2 = pf_nodes[two.id].way + two.distance;
+
+    // Wenn die Wegkosten gleich sind,  vergleichen wir die Koordinaten,  da wir für std::set eine streng
+    // monoton steigende Folge brauchen
+    if(way1 == way2)
+        return (id < two.id);
+    else
+        return (way1 < way2);
+}
 
 
 /// Definitionen siehe oben

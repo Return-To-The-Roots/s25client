@@ -53,8 +53,11 @@ DebugInfo::DebugInfo() : Socket()
     // OS
 #ifdef _WIN32
     SendString("WIN");
+    // TODO: These should be based on uname(3) output.
 #elif defined __APPLE__
     SendString("MAC");
+#elif defined __FreeBSD__
+    SendString("BSD");
 #else
     SendString("LNX");
 #endif
