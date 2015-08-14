@@ -152,19 +152,19 @@ GoodType nofMetalworker::ProduceWare()
     // desto höher jeweils die Wahrscheinlichkeit
     unsigned short all_size = 0;
 
-    for(unsigned i = 0; i < 12; ++i)
+    for(unsigned int i = 0; i < TOOL_COUNT; ++i)
         all_size += gwg->GetPlayer(player)->tools_settings[i];
 
-    // Wenn alle auf 0 gesetzt sind, einfach eins zufällig auswählen
-    if(!all_size)
-        return TOOLS_SETTINGS_IDS[RANDOM.Rand(__FILE__, __LINE__, obj_id, 12)];
+    // if they're all zero, do nothing
+    if(all_size == 0)
+        return GD_NOTHING;
 
     // Ansonsten Array mit den Werkzeugtypen erstellen und davon dann eins zufällig zurückliefern, je höher Wahr-
     // scheinlichkeit (Balken), desto öfter im Array enthalten
     unsigned char* random_array = new unsigned char[all_size];
     unsigned pos = 0;
 
-    for(unsigned i = 0; i < 12; ++i)
+    for(unsigned int i = 0; i < TOOL_COUNT; ++i)
     {
         for(unsigned g = 0; g < gwg->GetPlayer(player)->tools_settings[i]; ++g)
             random_array[pos++] = i;

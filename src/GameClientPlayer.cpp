@@ -161,7 +161,7 @@ GameClientPlayer::GameClientPlayer(const unsigned playerid):
     GAMECLIENT.visual_settings.transport_order[12] = STD_TRANSPORT[GD_HAMMER];
     GAMECLIENT.visual_settings.transport_order[13] = STD_TRANSPORT[GD_BOAT];
 
-    // Militär- und Werkzeugeinstellungen
+    // military settings (military-window-slider, in 10th percent)
     military_settings[0] = 10;
     military_settings[1] = 3;
     military_settings[2] = 5;
@@ -171,13 +171,30 @@ GameClientPlayer::GameClientPlayer(const unsigned playerid):
     military_settings[6] = MILITARY_SETTINGS_SCALE[6];
     military_settings[7] = MILITARY_SETTINGS_SCALE[7];
     GAMECLIENT.visual_settings.military_settings = military_settings;
-    GAMECLIENT.visual_settings.tools_settings = tools_settings;
 
-    // qx:tools
+    // metalwork tool request
+
+    // manually
     for (unsigned i = 0; i < TOOL_COUNT; ++i)
+    {
         tools_ordered[i] = 0;
-    for (unsigned i = 0; i < TOOL_COUNT; ++i)
         tools_ordered_delta[i] = 0;
+    }
+
+    // percentage (tool-settings-window-slider, in 10th percent)
+    tools_settings[0]  = 1;
+    tools_settings[1]  = 4;
+    tools_settings[2]  = 2;
+    tools_settings[3]  = 5;
+    tools_settings[4]  = 7;
+    tools_settings[5]  = 1;
+    tools_settings[6]  = 3;
+    tools_settings[7]  = 1;
+    tools_settings[8]  = 2;
+    tools_settings[9]  = 1;
+    tools_settings[10] = 2;
+    tools_settings[11] = 1;
+    GAMECLIENT.visual_settings.tools_settings = tools_settings;
 
     // Standardeinstellungen kopieren
     GAMECLIENT.default_settings = GAMECLIENT.visual_settings;
