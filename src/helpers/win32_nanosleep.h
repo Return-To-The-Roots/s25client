@@ -22,13 +22,14 @@
 #pragma once
 
 #ifdef _WIN32
+#include <ctime>
 typedef unsigned int useconds_t;
 
 #ifndef _TIMESPEC_DEFINED
 #define _TIMESPEC_DEFINED
 struct timespec
 {
-    unsigned int tv_sec;    // Seconds.
+    time_t tv_sec;    // Seconds.
     long int tv_nsec;       // Nanoseconds.
 };
 #endif
