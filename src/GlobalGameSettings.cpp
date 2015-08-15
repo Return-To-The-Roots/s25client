@@ -31,6 +31,7 @@
 #include "addons/AddonRefundOnEmergency.h"
 #include "addons/AddonManualRoadEnlargement.h"
 #include "addons/AddonCatapultGraphics.h"
+#include "addons/AddonMetalworksBehaviorOnZero.h"
 
 #include "addons/AddonDemolitionProhibition.h"
 #include "addons/AddonCharburner.h"
@@ -128,6 +129,7 @@ void GlobalGameSettings::reset(bool recreate)
         registerAddon(new AddonRefundOnEmergency);
         registerAddon(new AddonManualRoadEnlargement);
         registerAddon(new AddonCatapultGraphics);
+        registerAddon(new AddonMetalworksBehaviorOnZero);
 
         registerAddon(new AddonDemolitionProhibition);
         registerAddon(new AddonCharburner);

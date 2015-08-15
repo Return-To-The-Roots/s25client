@@ -155,9 +155,15 @@ GoodType nofMetalworker::ProduceWare()
     for(unsigned int i = 0; i < TOOL_COUNT; ++i)
         all_size += gwg->GetPlayer(player)->tools_settings[i];
 
-    // if they're all zero, do nothing
+	// if they're all zero
     if(all_size == 0)
-        return GD_NOTHING;
+	{
+	    // do nothing if addon is enabled, otherwise produce random ware (orig S2 behaviour)
+		if (GAMECLIENT.GetGGS().isEnabled(ADDON_METALWORKSBEHAVIORONZERO) && GAMECLIENT.GetGGS().getSelection(ADDON_METALWORKSBEHAVIORONZERO) == 1)
+			return GD_NOTHING;
+		else
+			return TOOLS_SETTINGS_IDS[RANDOM.Rand(__FILE__, __LINE__, obj_id, 12)];
+	}
 
     // Ansonsten Array mit den Werkzeugtypen erstellen und davon dann eins zufällig zurückliefern, je höher Wahr-
     // scheinlichkeit (Balken), desto öfter im Array enthalten
