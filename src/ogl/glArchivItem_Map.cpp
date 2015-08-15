@@ -86,9 +86,9 @@ glArchivItem_Map::~glArchivItem_Map()
  *
  *  @author FloSoft
  */
-int glArchivItem_Map::load(FILE* file, bool only_header)
+int glArchivItem_Map::load(std::istream& file, bool only_header)
 {
-    if(loadHelper(file, only_header) != 0)
+    if(libsiedler2::ArchivItem_Map::load(file, only_header) != 0)
         return 1;
 
     alloc_inc(2);

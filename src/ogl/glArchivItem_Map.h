@@ -59,7 +59,7 @@ class glArchivItem_Map : public libsiedler2::ArchivItem_Map
         ~glArchivItem_Map(void);
 
         /// lädt die Mapdaten aus einer Datei.
-        int load(FILE* file, bool only_header);
+        virtual int load(std::istream& file, bool only_header);
 
         void Serialize(SerializedGameData* sgd) const;
         void Deserialize(SerializedGameData* sgd, const char* const map_name);
