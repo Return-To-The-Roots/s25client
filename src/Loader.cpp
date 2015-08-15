@@ -53,6 +53,7 @@
 #include <iomanip>
 #include <sstream>
 #include <algorithm>
+#include <stdexcept>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -1271,6 +1272,8 @@ bool Loader::LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Pal
                 {
                     dynamic_cast<glArchivItem_Bitmap_Player*>(out)->create(in->getWidth(), in->getHeight(), buffer, 1000, 1000, libsiedler2::FORMAT_RGBA, palette, 128);
                 } break;
+                default:
+                    throw std::logic_error("Invalid Bitmap type");
             }
 
             item = out;
