@@ -104,6 +104,9 @@ ENSURE_OUT_OF_SOURCE_BUILD("${PROJECT_NAME} requires an out of source build. Ple
 # Build lobby client
 SET (LOBBY_C TRUE)
 
+# Use static libs (required for windows at least)
+SET(Boost_USE_STATIC_LIBS ON)
+
 ################################################################################
 
 INCLUDE(CheckCXXCompilerFlag)
