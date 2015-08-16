@@ -5,7 +5,7 @@
 FIND_PACKAGE(BZip2 REQUIRED)
 FIND_PACKAGE(OpenGL REQUIRED)
 FIND_PACKAGE(Gettext REQUIRED)
-FIND_PACKAGE(Boost 1.55.0 REQUIRED)
+FIND_PACKAGE(Boost 1.55.0 COMPONENTS filesystem iostreams system REQUIRED)
 
 ################################################################################
 
@@ -201,6 +201,7 @@ TARGET_LINK_LIBRARIES(s25client
 	${BZIP2_LIBRARIES}
 	${OPENGL_gl_LIBRARY}
 	${LUA_LIB}
+	${Boost_LIBRARIES}
 )
 
 IF ( "${COMPILEFOR}" STREQUAL "apple")
