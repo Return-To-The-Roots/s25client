@@ -50,7 +50,7 @@ nobUsual::nobUsual(BuildingType type,
                    unsigned char player,
                    Nation nation)
     : noBuilding(type, pos, player, nation),
-      worker(NULL), productivity(0), disable_production(false), disable_production_virtual(false),
+      worker(NULL), productivity(50), disable_production(false), disable_production_virtual(false),
       last_ordered_ware(0), orderware_ev(NULL), productivity_ev(NULL), is_working(false)
 {
     wares[0] = wares[1] = wares[2] = 0;
