@@ -390,20 +390,28 @@ bool VideoWinAPI::ResizeScreen(unsigned short width, unsigned short height, cons
     ShowWindow(screen, SW_HIDE);
 
     // Fensterstyle ggf. ändern
-    SetWindowLongPtr(screen, GWL_STYLE, (fullscreen ? WS_POPUP : (WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_OVERLAPPED | WS_SYSMENU | WS_MINIMIZEBOX | WS_CAPTION) ) );
-    SetWindowLongPtr(screen, GWL_EXSTYLE, (fullscreen ? WS_EX_APPWINDOW : (WS_EX_APPWINDOW | WS_EX_WINDOWEDGE) ) );
-    SetWindowPos(screen, NULL, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
+    LONG_PTR wStyle   = fullscreen ? WS_POPUP : (WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_OVERLAPPEDWINDOW | WS_SYSMENU | WS_MINIMIZEBOX | WS_CAPTION);
+    LONG_PTR wExStyle = fullscreen ? WS_EX_APPWINDOW : (WS_EX_APPWINDOW | WS_EX_WINDOWEDGE);
+    SetWindowLongPtr(screen, GWL_STYLE, wStyle);
+    SetWindowLongPtr(screen, GWL_EXSTYLE, wExStyle);
+    //SetWindowPos(screen, NULL, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
 
-    RECT pos =
+    RECT wRect;
+    if(fullscreen)
     {
-        (fullscreen ? 0 : GetSystemMetrics(SM_CXSCREEN) / 2 - (width) / 2),
-        (fullscreen ? 0 : GetSystemMetrics(SM_CYSCREEN) / 2 - (height) / 2),
-        (width) + (fullscreen ? 0 : 2 * GetSystemMetrics(SM_CXFIXEDFRAME)),
-        (height) + (fullscreen ? 0 : 2 * GetSystemMetrics(SM_CXFIXEDFRAME) + GetSystemMetrics(SM_CYCAPTION))
-    };
+        wRect.left = 0;
+        wRect.top  = 0;
+    }else{
+        wRect.left = (GetSystemMetrics(SM_CXSCREEN) - width)  / 2;
+        wRect.top  = (GetSystemMetrics(SM_CYSCREEN) - height) / 2;
+    }
+    wRect.right  = wRect.left + width;
+    wRect.bottom = wRect.top  + height;
+    // Calculate real right/bottom based on the window style
+    AdjustWindowRectEx(&wRect, wStyle, false, wExStyle);
 
     // Fenstergröße ändern
-    SetWindowPos(screen, HWND_TOP, pos.left, pos.top, pos.right, pos.bottom, SWP_SHOWWINDOW | SWP_DRAWFRAME | SWP_FRAMECHANGED);
+    SetWindowPos(screen, HWND_TOP, wRect.left, wRect.top, wRect.right - wRect.left, wRect.bottom - wRect.top, SWP_SHOWWINDOW | SWP_DRAWFRAME | SWP_FRAMECHANGED);
 
     // Bei Vollbild Auflösung umstellen
     if(fullscreen)
