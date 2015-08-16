@@ -102,7 +102,7 @@ void ExitHandler(void)
 {
     Socket::Shutdown();
 
-#if defined _WIN32 && !defined __CYGWIN__
+#if defined _MSC_VER
     LOG.lprintf("\n\nDr%ccken Sie eine beliebige Taste . . .\n", 129);
     getch();
 #endif
