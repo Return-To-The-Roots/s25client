@@ -1272,6 +1272,8 @@ bool Loader::LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Pal
                 {
                     dynamic_cast<glArchivItem_Bitmap_Player*>(out)->create(in->getWidth(), in->getHeight(), buffer, 1000, 1000, libsiedler2::FORMAT_RGBA, palette, 128);
                 } break;
+                case libsiedler2::BOBTYPE_BITMAP_RAW:
+                    break; // Nothing?
                 default:
                     throw std::logic_error("Invalid Bitmap type");
             }
