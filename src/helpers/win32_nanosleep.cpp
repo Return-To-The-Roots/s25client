@@ -68,7 +68,7 @@ int nanosleep(const struct timespec* requested_delay, struct timespec* remaining
     const useconds_t nano_per_micro = 1000;
     useconds_t micro_delay;
 
-    micro_delay = requested_delay->tv_sec * one_second
+    micro_delay = useconds_t(requested_delay->tv_sec) * one_second
                   + ( requested_delay->tv_nsec + nano_per_micro - 1 )
                   / nano_per_micro;
 

@@ -30,7 +30,7 @@ typedef unsigned int useconds_t;
 struct timespec
 {
     time_t tv_sec;    // Seconds.
-    long int tv_nsec;       // Nanoseconds.
+    long   tv_nsec;   // Nanoseconds.
 };
 #endif
 
