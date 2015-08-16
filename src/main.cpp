@@ -25,9 +25,6 @@
 #ifdef _WIN32
 #   include <windows.h>
 #   define chdir !SetCurrentDirectoryA
-#   ifndef __CYGWIN__
-#       include <conio.h>
-#   endif
 #else
 #   include <unistd.h>
 #endif
@@ -83,6 +80,8 @@
 #endif
 
 #include <ctime>
+#include <iostream>
+#include <limits>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -91,6 +90,18 @@
 #undef THIS_FILE
 static char THIS_FILE[] = __FILE__;
 #endif
+
+void WaitForEnter()
+{
+    static bool waited = false;
+    if(waited)
+        return;
+    waited = true;
+    std::cout << "\n\nPress ENTER to close this window . . ." << std::endl;
+    std::cin.clear();
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    std::cin.get();
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
@@ -102,9 +113,8 @@ void ExitHandler(void)
 {
     Socket::Shutdown();
 
-#if defined _MSC_VER
-    LOG.lprintf("\n\nDr%ccken Sie eine beliebige Taste . . .\n", 129);
-    getch();
+#ifdef _DEBUG
+    WaitForEnter();
 #endif
 }
 
@@ -253,8 +263,9 @@ int main(int argc, char* argv[])
 
         if(mkdir_p(dir) < 0)
         {
-            error("Verzeichnis %s konnte nicht erstellt werden: ", dir.c_str());
-            error("Das Spiel konnte nicht gestartet werden");
+            error("Directory %s could not be created: ", dir.c_str());
+            error("Failed to start the game");
+            WaitForEnter();
             return 1;
         }
     }
@@ -271,14 +282,17 @@ int main(int argc, char* argv[])
     // Socketzeug initialisieren
     if(!Socket::Initialize())
     {
-        error("Konnte Sockets nicht initialisieren!");
+        error("Could not init sockets!");
+        error("Failed to start the game");
+        WaitForEnter();
         return 1;
     }
 
     // Spiel starten
     if(!GAMEMANAGER.Start())
     {
-        error("Das Spiel konnte nicht gestartet werden");
+        error("Failed to start the game");
+        WaitForEnter();
         return 1;
     }
 
