@@ -63,6 +63,12 @@ class dskLobby :
         void Msg_ButtonClick(const unsigned int ctrl_id);
         void Msg_EditEnter(const unsigned int ctrl_id);
         void Msg_TableRightButton(const unsigned int ctrl_id, const unsigned short selection);
+        void Msg_TableChooseItem(const unsigned ctrl_id, const unsigned short selection);
+
+        /**
+         * Connectes to the currently selected game and returns true on success
+         */
+        bool ConnectToSelectedGame();
 };
 
 #endif // dskLOBBY_H_INCLUDED

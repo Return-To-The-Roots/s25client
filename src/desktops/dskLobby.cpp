@@ -125,35 +125,8 @@ void dskLobby::Msg_ButtonClick(const unsigned int ctrl_id)
             WINDOWMANAGER.Switch(new dskMultiPlayer);
         } break;
         case 4: // Verbinden - Button
-        {
-            if(serverlist)
-            {
-                ctrlTable* table = GetCtrl<ctrlTable>(10);
-
-                unsigned int selection = table->GetSelection();
-                if(selection < serverlist->getCount())
-                {
-                    selection = atoi(table->GetItemText(selection, 0).c_str());
-                    for(unsigned int i = 0; i < serverlist->getCount(); ++i)
-                    {
-                        if(serverlist->getElement(i)->getId() == selection)
-                        {
-							if(serverlist->getElement(i)->getVersion() == std::string(GetWindowVersion()))
-							{
-								iwDirectIPConnect* connect = new iwDirectIPConnect(NP_LOBBY);
-								connect->SetHost(serverlist->getElement(i)->getHost().c_str());
-								connect->SetPort(serverlist->getElement(i)->getPort());
-								WINDOWMANAGER.Show(connect);
-							}
-							else
-								WINDOWMANAGER.Show(new iwMsgbox(_("Sorry!"), _("You can't join that game with your version!"), this, MSB_OK, MSB_EXCLAMATIONRED, 1));
-                            break;
-
-                        }
-                    }
-                }
-            }
-        } break;
+            ConnectToSelectedGame();
+            break;
         case 5: // Ranking - Button
         {
             LOBBYCLIENT.SendRankingListRequest();
@@ -191,7 +164,7 @@ void dskLobby::Msg_TableRightButton(const unsigned int ctrl_id, const unsigned s
     ctrlTable* table = GetCtrl<ctrlTable>(ctrl_id);
     switch(ctrl_id)
     {
-        case 10:
+        case 10: // Server list
         {
             const std::string item = table->GetItemText(table->GetSelection(false), 0);
 
@@ -215,6 +188,12 @@ void dskLobby::Msg_TableRightButton(const unsigned int ctrl_id, const unsigned s
             }
         } break;
     }
+}
+
+void dskLobby::Msg_TableChooseItem(const unsigned ctrl_id, const unsigned short selection)
+{
+    if(ctrl_id == 10 && selection != 0xFFFF) // Server list
+        ConnectToSelectedGame();
 }
 
 void dskLobby::UpdatePlayerList(bool first)
@@ -310,6 +289,37 @@ void dskLobby::UpdateServerList(bool first)
             servertable->SetSelection(selection);
         }
     }
+}
+
+bool dskLobby::ConnectToSelectedGame()
+{
+    if(!serverlist)
+        return false;
+
+    ctrlTable* table = GetCtrl<ctrlTable>(10);
+    unsigned int selection = table->GetSelection();
+    if(selection >= serverlist->getCount())
+        return false;
+
+    selection = atoi(table->GetItemText(selection, 0).c_str());
+    for(unsigned int i = 0; i < serverlist->getCount(); ++i)
+    {
+        if(serverlist->getElement(i)->getId() != selection)
+            continue;
+
+        if(serverlist->getElement(i)->getVersion() == std::string(GetWindowVersion()))
+        {
+            iwDirectIPConnect* connect = new iwDirectIPConnect(NP_LOBBY);
+            connect->SetHost(serverlist->getElement(i)->getHost().c_str());
+            connect->SetPort(serverlist->getElement(i)->getPort());
+            WINDOWMANAGER.Show(connect);
+            return true;
+        }
+        else
+            WINDOWMANAGER.Show(new iwMsgbox(_("Sorry!"), _("You can't join that game with your version!"), this, MSB_OK, MSB_EXCLAMATIONRED, 1));
+        break;
+    }
+    return false;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
