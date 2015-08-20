@@ -135,11 +135,18 @@ mkdir -vp ${DESTDIR}${DATADIR}/../doc/s25rttr || exit 1
 
 mecho --blue "## Installing binaries"
 
-if [ "$COMPILEFOR" = "windows" ] ; then
-	cp -v ${SRCDIR}/release/bin/rttr.bat ${DESTDIR}${BINDIR} || exit 1
-elif [ "$COMPILEFOR" = "linux" ] ; then
-	cp -v ${SRCDIR}/release/bin/rttr.sh ${DESTDIR}${BINDIR} || exit 1
-fi
+case "$COMPILEFOR" in
+	windows)
+		cp -v ${SRCDIR}/release/bin/rttr.bat ${DESTDIR}${BINDIR} || exit 1
+	;;
+	linux|freebsd)
+		cp -v ${SRCDIR}/release/bin/rttr.sh ${DESTDIR}${BINDIR} || exit 1
+	;;
+	*)
+		echo "$COMPILEFOR not supported" >&2
+		exit 1
+	;;
+esac
 
 mecho --blue "## Installing RTTR directory"
 if [ -d ${SRCDIR}/RTTR/.svn ] ; then
@@ -155,23 +162,29 @@ mecho --blue "## Installing language files"
 cp -v ${SRCDIR}/RTTR/languages/*.mo ${DESTDIR}${DATADIR}/RTTR/languages/ || exit 1
 
 mecho --blue "## Installing additional documents"
-if [ "$COMPILEFOR" = "windows" ] ; then
-	cp -v ${SRCDIR}/RTTR/texte/readme.txt ${DESTDIR} || exit 1
-	cp -v ${SRCDIR}/RTTR/texte/keyboardlayout.txt ${DESTDIR} || exit 1
-else
-	cp -v ${SRCDIR}/RTTR/texte/readme.txt ${DESTDIR}${DATADIR}/../doc/s25rttr || exit 1
-	cp -v ${SRCDIR}/RTTR/texte/keyboardlayout.txt ${DESTDIR}${DATADIR}/../doc/s25rttr || exit 1
-fi
+case "$COMPILEFOR" in
+	windows)
+		cp -v ${SRCDIR}/RTTR/texte/readme.txt ${DESTDIR} || exit 1
+		cp -v ${SRCDIR}/RTTR/texte/keyboardlayout.txt ${DESTDIR} || exit 1
+	;;
+	*)
+		cp -v ${SRCDIR}/RTTR/texte/readme.txt ${DESTDIR}${DATADIR}/../doc/s25rttr || exit 1
+		cp -v ${SRCDIR}/RTTR/texte/keyboardlayout.txt ${DESTDIR}${DATADIR}/../doc/s25rttr || exit 1
+	;;
+esac
 
 mecho --blue "## Installing S2 placeholder"
 
-if [ "$COMPILEFOR" = "windows" ] ; then
-	echo "creating ${DESTDIR}put\ your\ S2-Installation\ in\ here"
-	echo "put your S2-Installation in here" > ${DESTDIR}put\ your\ S2-Installation\ in\ here || exit 1
-else
-	echo "creating ${DESTDIR}${DATADIR}/S2/put\ your\ S2-Installation\ in\ here"
-	echo "put your S2-Installation in here" > ${DESTDIR}${DATADIR}/S2/put\ your\ S2-Installation\ in\ here || exit 1
-fi
+case "$COMPILEFOR" in
+	windows)
+		echo "creating ${DESTDIR}put\ your\ S2-Installation\ in\ here"
+		echo "put your S2-Installation in here" > ${DESTDIR}put\ your\ S2-Installation\ in\ here || exit 1
+	;;
+	*)
+		echo "creating ${DESTDIR}${DATADIR}/S2/put\ your\ S2-Installation\ in\ here"
+		echo "put your S2-Installation in here" > ${DESTDIR}${DATADIR}/S2/put\ your\ S2-Installation\ in\ here || exit 1
+	;;
+esac
 
 exit 0
 

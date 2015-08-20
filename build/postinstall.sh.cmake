@@ -148,8 +148,11 @@ extract_debug_symbols()
 		linux)
 			objcopy="${objcopy}-pc-linux-gnu"
 		;;
-		apple)
-			echo "not supported"
+		freebsd)
+			objcopy="${objcopy}"
+		;;
+		*)
+			echo "$COMPILEFOR not supported" >&2
 			return 1
 		;;
 	esac
@@ -164,6 +167,10 @@ extract_debug_symbols()
 		;;
 		powerpc|ppc)
 			objcopy="powerpc${objcopy}"
+		;;
+		*)
+			echo "$COMPILEARCH not supported" >&2
+			return 1
 		;;
 	esac
 
@@ -181,135 +188,161 @@ extract_debug_symbols()
 mecho --blue "## Extracting debug info from files and saving them into dbg"
 
 # strip out debug symbols into external file
-if [ "$COMPILEFOR" = "apple" ] ; then
-	echo "extraction not supported ???"
-	i686-apple-darwin10-strip -S ${DESTDIR}bin/s25client
-	i686-apple-darwin10-strip -S ${DESTDIR}share/s25rttr/driver/video/libvideoSDL.dylib
-	i686-apple-darwin10-strip -S ${DESTDIR}share/s25rttr/driver/audio/libaudioSDL.dylib
-	i686-apple-darwin10-strip -S ${DESTDIR}share/s25rttr/RTTR/s25update
-	i686-apple-darwin10-strip -S ${DESTDIR}share/s25rttr/RTTR/sound-convert
-	i686-apple-darwin10-strip -S ${DESTDIR}share/s25rttr/RTTR/s-c_resample
-elif [ "$COMPILEFOR" = "windows" ] ; then
-	extract_debug_symbols s25client.exe
-	extract_debug_symbols driver/video/libvideoWinAPI.dll
-	extract_debug_symbols driver/video/libvideoSDL.dll
-	extract_debug_symbols driver/audio/libaudioSDL.dll
-	extract_debug_symbols RTTR/s25update.exe
-	extract_debug_symbols RTTR/sound-convert.exe
-	extract_debug_symbols RTTR/s-c_resample.exe
-elif [ "$COMPILEFOR" = "linux" ] ; then
-	extract_debug_symbols bin/s25client
-	extract_debug_symbols share/s25rttr/driver/video/libvideoSDL.so
-	extract_debug_symbols share/s25rttr/driver/audio/libaudioSDL.so
-	extract_debug_symbols share/s25rttr/RTTR/s25update
-	extract_debug_symbols share/s25rttr/RTTR/sound-convert
-	extract_debug_symbols share/s25rttr/RTTR/s-c_resample
-fi
+case "$COMPILEFOR" in
+	apple)
+		echo "extraction not supported ???"
+		i686-apple-darwin10-strip -S ${DESTDIR}bin/s25client
+		i686-apple-darwin10-strip -S ${DESTDIR}share/s25rttr/driver/video/libvideoSDL.dylib
+		i686-apple-darwin10-strip -S ${DESTDIR}share/s25rttr/driver/audio/libaudioSDL.dylib
+		i686-apple-darwin10-strip -S ${DESTDIR}share/s25rttr/RTTR/s25update
+		i686-apple-darwin10-strip -S ${DESTDIR}share/s25rttr/RTTR/sound-convert
+		i686-apple-darwin10-strip -S ${DESTDIR}share/s25rttr/RTTR/s-c_resample
+	;;
+	windows)
+		extract_debug_symbols s25client.exe
+		extract_debug_symbols driver/video/libvideoWinAPI.dll
+		extract_debug_symbols driver/video/libvideoSDL.dll
+		extract_debug_symbols driver/audio/libaudioSDL.dll
+		extract_debug_symbols RTTR/s25update.exe
+		extract_debug_symbols RTTR/sound-convert.exe
+		extract_debug_symbols RTTR/s-c_resample.exe
+	;;
+	linux|freebsd)
+		extract_debug_symbols bin/s25client
+		extract_debug_symbols share/s25rttr/driver/video/libvideoSDL.so
+		extract_debug_symbols share/s25rttr/driver/audio/libaudioSDL.so
+		extract_debug_symbols share/s25rttr/RTTR/s25update
+		extract_debug_symbols share/s25rttr/RTTR/sound-convert
+		extract_debug_symbols share/s25rttr/RTTR/s-c_resample
+	;;
+	*)
+		echo "$COMPILEFOR not supported" >&2
+		exit 1
+	;;
+esac
 
 mecho --blue "## Performing additional tasks"
 
 # create app-bundle for apple
-if [ "$COMPILEFOR" = "apple" ] ; then
-	# app anlegen
-	mkdir -vp ${DESTDIR}s25client.app/Contents/{MacOS,Resources} || exit 1
+case "$COMPILEFOR" in
+	apple)
+		# app anlegen
+		mkdir -vp ${DESTDIR}s25client.app/Contents/{MacOS,Resources} || exit 1
 
-	# frameworks kopieren
-	mkdir -vp ${DESTDIR}s25client.app/Contents/MacOS/Frameworks || exit 1
-	mkdir -vp ${DESTDIR}s25client.app/Contents/MacOS/Frameworks/{SDL,SDL_mixer}.framework || exit 1
+		# frameworks kopieren
+		mkdir -vp ${DESTDIR}s25client.app/Contents/MacOS/Frameworks || exit 1
+		mkdir -vp ${DESTDIR}s25client.app/Contents/MacOS/Frameworks/{SDL,SDL_mixer}.framework || exit 1
 
-	if [ -d /Library/Frameworks ] ; then
-		cp -r /Library/Frameworks/SDL.framework ${DESTDIR}s25client.app/Contents/MacOS/Frameworks || exit 1
-		cp -r /Library/Frameworks/SDL_mixer.framework ${DESTDIR}s25client.app/Contents/MacOS/Frameworks || exit 1
-	else
-		cp -r /usr/lib/apple/SDKs/Library/Frameworks/SDL.framework ${DESTDIR}s25client.app/Contents/MacOS/Frameworks || exit 1
-		cp -r /usr/lib/apple/SDKs/Library/Frameworks/SDL_mixer.framework ${DESTDIR}s25client.app/Contents/MacOS/Frameworks || exit 1
-	fi
+		if [ -d /Library/Frameworks ] ; then
+			cp -r /Library/Frameworks/SDL.framework ${DESTDIR}s25client.app/Contents/MacOS/Frameworks || exit 1
+			cp -r /Library/Frameworks/SDL_mixer.framework ${DESTDIR}s25client.app/Contents/MacOS/Frameworks || exit 1
+		else
+			cp -r /usr/lib/apple/SDKs/Library/Frameworks/SDL.framework ${DESTDIR}s25client.app/Contents/MacOS/Frameworks || exit 1
+			cp -r /usr/lib/apple/SDKs/Library/Frameworks/SDL_mixer.framework ${DESTDIR}s25client.app/Contents/MacOS/Frameworks || exit 1
+		fi
 
-	# remove headers and additional libraries from the frameworks
-	find ${DESTDIR}s25client.app/Contents/MacOS/Frameworks/ -name Headers -exec rm -rf {} \;
-	find ${DESTDIR}s25client.app/Contents/MacOS/Frameworks/ -name Resources -exec rm -rf {} \;
+		# remove headers and additional libraries from the frameworks
+		find ${DESTDIR}s25client.app/Contents/MacOS/Frameworks/ -name Headers -exec rm -rf {} \;
+		find ${DESTDIR}s25client.app/Contents/MacOS/Frameworks/ -name Resources -exec rm -rf {} \;
 
-	# copy miniupnp
-	if [ -f /Developer/SDKs/MacOSX10.5.sdk/usr/lib/libminiupnpc.5.dylib ] ; then
-		cp -rv /Developer/SDKs/MacOSX10.5.sdk/usr/lib/libminiupnpc.5.dylib ${DESTDIR}s25client.app/Contents/MacOS || exit 1
-	elif  [ -f /usr/lib/apple/SDKs/MacOSX10.5.sdk/usr/lib/libminiupnpc.5.dylib ] ; then
-		cp -rv /usr/lib/apple/SDKs/MacOSX10.5.sdk/usr/lib/libminiupnpc.5.dylib ${DESTDIR}s25client.app/Contents/MacOS || exit 1
-	else
-		echo "libminiupnpc.5.dylib was not found"
+		# copy miniupnp
+		if [ -f /Developer/SDKs/MacOSX10.5.sdk/usr/lib/libminiupnpc.5.dylib ] ; then
+			cp -rv /Developer/SDKs/MacOSX10.5.sdk/usr/lib/libminiupnpc.5.dylib ${DESTDIR}s25client.app/Contents/MacOS || exit 1
+		elif  [ -f /usr/lib/apple/SDKs/MacOSX10.5.sdk/usr/lib/libminiupnpc.5.dylib ] ; then
+			cp -rv /usr/lib/apple/SDKs/MacOSX10.5.sdk/usr/lib/libminiupnpc.5.dylib ${DESTDIR}s25client.app/Contents/MacOS || exit 1
+		else
+			echo "libminiupnpc.5.dylib was not found"
+			exit 1
+		fi
+
+		mkdir -vp ${DESTDIR}s25client.app/Contents/MacOS/bin || exit 1
+
+		# binaries und paketdaten kopieren
+		cp -v ${SRCDIR}/release/bin/macos/rttr.command ${DESTDIR}s25client.app/Contents/MacOS/ || exit 1
+		cp -v ${SRCDIR}/release/bin/macos/rttr.terminal ${DESTDIR}s25client.app/Contents/MacOS/ || exit 1
+		cp -v ${SRCDIR}/release/bin/macos/icon.icns ${DESTDIR}s25client.app/Contents/Resources/ || exit 1
+		cp -v ${SRCDIR}/release/bin/macos/PkgInfo ${DESTDIR}s25client.app/Contents/ || exit 1
+		cp -v ${SRCDIR}/release/bin/macos/Info.plist ${DESTDIR}s25client.app/Contents/ || exit 1
+		mv -v ${DESTDIR}bin/* ${DESTDIR}s25client.app/Contents/MacOS/bin/ || exit 1
+
+		# remove dirs if empty
+		rmdir ${DESTDIR}bin
+		rmdir ${DESTDIR}lib
+
+		# RTTR-Ordner kopieren
+		mv -v ${DESTDIR}share ${DESTDIR}s25client.app/Contents/MacOS/ || exit 1
+	;;
+	windows)
+		mingw=/usr
+		lua=""
+		case "$COMPILEARCH" in
+			i686|*86)
+				mingw=/usr/i686-pc-mingw32
+				lua=win32
+			;;
+			x86_64|*64)
+				mingw=/usr/x86_64-pc-mingw32
+				lua=win64
+			;;
+		esac
+		
+		cp -v ${SRCDIR}/contrib/lua/${lua}/lua52.dll ${DESTDIR} || exit 1
+		cp -v ${mingw}/bin/libgcc_s_sjlj-1.dll ${DESTDIR} || exit 1
+		cp -v ${mingw}/bin/libminiupnpc-5.dll ${DESTDIR} || exit 1
+		cp -v ${mingw}/bin/libiconv-2.dll ${DESTDIR} || exit 1
+		cp -v ${mingw}/bin/libintl-8.dll ${DESTDIR} || exit 1
+		cp -v ${mingw}/bin/libogg-0.dll ${DESTDIR} || exit 1
+		cp -v ${mingw}/bin/SDL_mixer.dll ${DESTDIR} || exit 1
+		cp -v ${mingw}/bin/SDL.dll ${DESTDIR} || exit 1
+		cp -v ${mingw}/bin/libvorbis-0.dll ${DESTDIR} || exit 1
+		cp -v ${mingw}/bin/libvorbisfile-3.dll ${DESTDIR} || exit 1
+		
+		cp -v ${mingw}/bin/libgcc_s_sjlj-1.dll ${DESTDIR}RTTR || exit 1
+		cp -v ${mingw}/bin/libcurl-4.dll ${DESTDIR}RTTR || exit 1
+		cp -v ${mingw}/bin/zlib1.dll ${DESTDIR}RTTR || exit 1
+
+		rmdir --ignore-fail-on-non-empty -v ${DESTDIR}S2
+	;;
+	linux)
+		miniupnpc=/usr/lib/libminiupnpc.so
+		case "$COMPILEARCH" in
+			i686|*86)
+				if [ ! "$(uname -m | sed s/i686/i386/g)" = "$COMPILEARCH" ] ; then
+					miniupnpc=/usr/i686-pc-linux-gnu/lib/libminiupnpc.so
+				fi
+			;;
+			x86_64|*64)
+				if [ ! "$(uname -m)" = "$COMPILEARCH" ] ; then
+					miniupnpc=/usr/x86_64-pc-linux-gnu/lib/libminiupnpc.so
+				fi
+			;;
+		esac
+
+		if [ -f $miniupnpc ] ; then
+			mkdir -p ${DESTDIR}${PREFIX}/lib/ || exit 1
+			cp -rv $miniupnpc* ${DESTDIR}${PREFIX}/lib/ || exit 1
+		else
+			echo "libminiupnpc.so not found at $miniupnpc"
+			echo "will not bundle it in your installation"
+			echo "install it from http://packages.siedler25.org by yourself"
+		fi
+	;;
+	freebsd)
+		miniupnpc=/usr/local/lib/libminiupnpc.so
+		if [ -f $miniupnpc ] ; then
+			mkdir -p ${DESTDIR}${PREFIX}/lib/ || exit 1
+			cp -rv ${miniupnpc}* ${DESTDIR}${PREFIX}/lib/ || exit 1
+		else
+			echo "libminiupnpc.so not found at $miniupnpc"
+			echo "will not bundle it in your installation"
+			echo "install it with \"sudo pkg install miniupnpc\""
+		fi
+	;;
+	*)
+		echo "$COMPILEFOR not supported" >&2
 		exit 1
-	fi
-
-	mkdir -vp ${DESTDIR}s25client.app/Contents/MacOS/bin || exit 1
-
-	# binaries und paketdaten kopieren
-	cp -v ${SRCDIR}/release/bin/macos/rttr.command ${DESTDIR}s25client.app/Contents/MacOS/ || exit 1
-	cp -v ${SRCDIR}/release/bin/macos/rttr.terminal ${DESTDIR}s25client.app/Contents/MacOS/ || exit 1
-	cp -v ${SRCDIR}/release/bin/macos/icon.icns ${DESTDIR}s25client.app/Contents/Resources/ || exit 1
-	cp -v ${SRCDIR}/release/bin/macos/PkgInfo ${DESTDIR}s25client.app/Contents/ || exit 1
-	cp -v ${SRCDIR}/release/bin/macos/Info.plist ${DESTDIR}s25client.app/Contents/ || exit 1
-	mv -v ${DESTDIR}bin/* ${DESTDIR}s25client.app/Contents/MacOS/bin/ || exit 1
-
-	# remove dirs if empty
-	rmdir ${DESTDIR}bin
-	rmdir ${DESTDIR}lib
-
-	# RTTR-Ordner kopieren
-	mv -v ${DESTDIR}share ${DESTDIR}s25client.app/Contents/MacOS/ || exit 1
-
-elif [ "$COMPILEFOR" = "windows" ] ; then
-	mingw=/usr
-	lua=""
-	case "$COMPILEARCH" in
-		i686|*86)
-			mingw=/usr/i686-pc-mingw32
-			lua=win32
-		;;
-		x86_64|*64)
-			mingw=/usr/x86_64-pc-mingw32
-			lua=win64
-		;;
-	esac
-	
-	cp -v ${SRCDIR}/contrib/lua/${lua}/lua52.dll ${DESTDIR} || exit 1
-	cp -v ${mingw}/bin/libgcc_s_sjlj-1.dll ${DESTDIR} || exit 1
-	cp -v ${mingw}/bin/libminiupnpc-5.dll ${DESTDIR} || exit 1
-	cp -v ${mingw}/bin/libiconv-2.dll ${DESTDIR} || exit 1
-	cp -v ${mingw}/bin/libintl-8.dll ${DESTDIR} || exit 1
-	cp -v ${mingw}/bin/libogg-0.dll ${DESTDIR} || exit 1
-	cp -v ${mingw}/bin/SDL_mixer.dll ${DESTDIR} || exit 1
-	cp -v ${mingw}/bin/SDL.dll ${DESTDIR} || exit 1
-	cp -v ${mingw}/bin/libvorbis-0.dll ${DESTDIR} || exit 1
-	cp -v ${mingw}/bin/libvorbisfile-3.dll ${DESTDIR} || exit 1
-	
-	cp -v ${mingw}/bin/libgcc_s_sjlj-1.dll ${DESTDIR}RTTR || exit 1
-	cp -v ${mingw}/bin/libcurl-4.dll ${DESTDIR}RTTR || exit 1
-	cp -v ${mingw}/bin/zlib1.dll ${DESTDIR}RTTR || exit 1
-
-	rmdir --ignore-fail-on-non-empty -v ${DESTDIR}S2
-elif [ "$COMPILEFOR" = "linux" ] ; then
-	miniupnpc=/usr/lib/libminiupnpc.so
-	case "$COMPILEARCH" in
-		i686|*86)
-			if [ ! "$(uname -m | sed s/i686/i386/g)" = "$COMPILEARCH" ] ; then
-				miniupnpc=/usr/i686-pc-linux-gnu/lib/libminiupnpc.so
-			fi
-		;;
-		x86_64|*64)
-			if [ ! "$(uname -m)" = "$COMPILEARCH" ] ; then
-				miniupnpc=/usr/x86_64-pc-linux-gnu/lib/libminiupnpc.so
-			fi
-		;;
-	esac
-
-	if [ -f $miniupnpc ] ; then
-		mkdir -p ${DESTDIR}${PREFIX}/lib/ || exit 1
-		cp -rv $miniupnpc* ${DESTDIR}${PREFIX}/lib/ || exit 1
-	else
-		echo "libminiupnpc.so not found at $miniupnpc"
-		echo "will not bundle it in your installation"
-		echo "install it from http://packages.siedler25.org by yourself"
-	fi
-fi
+	;;
+esac
 
 exit 0
 
