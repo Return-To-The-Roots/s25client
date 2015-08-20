@@ -219,6 +219,10 @@ IF ( "${COMPILEFOR}" STREQUAL "linux")
 	TARGET_LINK_LIBRARIES(s25client dl pthread)
 ENDIF ( "${COMPILEFOR}" STREQUAL "linux")
 
+IF ( "${COMPILEFOR}" STREQUAL "freebsd")
+	TARGET_LINK_LIBRARIES(s25client execinfo)
+ENDIF ( "${COMPILEFOR}" STREQUAL "freebsd")
+
 IF (MSVC)
 	IF (EXISTS "${CONTRIB_DIR}/bin/libcurl.dll")
 		ADD_CUSTOM_COMMAND(TARGET s25client POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CONTRIB_DIR}/bin/ $<TARGET_FILE_DIR:s25client>)
