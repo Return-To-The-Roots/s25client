@@ -153,11 +153,19 @@ IF ( "${COMPILEFOR}" STREQUAL "linux")
 	ENDIF ( "${COMPILEARCH}" STREQUAL "i386" )
 ENDIF ( "${COMPILEFOR}" STREQUAL "linux")
 
+### XXX Add FindLua52
+#find_package(Lua52 REQUIRED)
+#IF ( "${COMPILEFOR}" STREQUAL "freebsd")
+IF (${CMAKE_HOST_SYSTEM_NAME} MATCHES "FreeBSD")
+	INCLUDE_DIRECTORIES("/usr/local/include/lua52")
+	SET(LUA_LIB "/usr/local/lib/liblua${LUA_VERSION}.a")
+ENDIF ()
+
 IF ( "${COMPILEFOR}" STREQUAL "apple")
 	SET(LUA_DIR "${CMAKE_SOURCE_DIR}/contrib/lua/mac")
 ENDIF ( "${COMPILEFOR}" STREQUAL "apple")
 
-IF (MSVC)
+IF (MSVC AND NOT DEFINED LUA_LIB)
 	SET(LUA_LIB "${CONTRIB_DIR}/lib/lua${LUA_VERSION}.lib")
 ELSE ()
 	SET(LUA_LIB "${LUA_DIR}/liblua${LUA_VERSION}.a")
@@ -172,6 +180,11 @@ ENDIF ( NOT EXISTS "${LUA_LIB}" )
 IF ( NOT EXISTS "${LUA_LIB}" )
 	SET(LUA_LIB "/usr/lib/liblua.so")
 	INCLUDE_DIRECTORIES("/usr/include/")
+ENDIF ( NOT EXISTS "${LUA_LIB}" )
+
+IF ( NOT EXISTS "${LUA_LIB}" )
+	SET(LUA_LIB "/usr/local/lib/liblua-5.2.so")
+	INCLUDE_DIRECTORIES("/usr/local/include/")
 ENDIF ( NOT EXISTS "${LUA_LIB}" )
 
 MESSAGE(STATUS "Using LUA library from ${LUA_LIB}")
