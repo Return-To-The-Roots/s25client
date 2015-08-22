@@ -187,7 +187,10 @@ bool Loader::LoadFilesFromArray(const unsigned int files_count, const unsigned i
             continue;
 
         if(!LoadFileOrDir(FILE_PATHS[ files[i] ], files[i], load_always))
+        {
+            LOG.lprintf(_("Failed to load %s\n"), FILE_PATHS[ files[i] ]);
             return false;
+        }
     }
 
     return true;
