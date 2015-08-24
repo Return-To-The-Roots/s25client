@@ -54,9 +54,9 @@ namespace {
     {
         unsigned num_players = 8;
         std::string names_arr[8] = {"Player 1", "Player 2", "Player 3", "Player 4", "Player 5", "Player 6", "Player 7", "Player 8"};
-        std::vector<EndStatisticData::StatisticPlayerInfo> player_infos;
+        std::vector<EndStatisticData::PlayerInfo> player_infos;
         for (unsigned i = 0; i < num_players; ++i)
-            player_infos.push_back(EndStatisticData::StatisticPlayerInfo(names_arr[i], COLORS[i], Team(0), Nation(0)));
+            player_infos.push_back(EndStatisticData::PlayerInfo(names_arr[i], COLORS[i], Team(0), Nation(0)));
 
         table->AddPlayerInfos(player_infos);
     }
@@ -68,23 +68,10 @@ namespace {
 
         for (unsigned i = 0; i < 8; ++i)
         {
-            data->SetValue(EndStatisticData::MIL_PRODUCED_SOLDIERS, i, rand.Rand("", 0, 0, 200));
-            data->SetValue(EndStatisticData::MIL_PRODUCED_GENERALS, i, rand.Rand("", 0, 0, 50));
-            data->SetValue(EndStatisticData::MIL_ATTACKS, i, rand.Rand("", 0, 0, 200));
-            data->SetValue(EndStatisticData::MIL_CONQUERED_BUILDINGS, i, rand.Rand("", 0, 0, 50));
-            data->SetValue(EndStatisticData::MIL_KILLED_SOLDIERS, i, rand.Rand("", 0, 0, 100));
-            data->SetValue(EndStatisticData::MIL_DUMMY, i, rand.Rand("", 0, 0, 42));
-
-            data->SetValue(EndStatisticData::ECO_LAND_SIZE, i, rand.Rand("", 0, 0, 1000));
-            data->SetValue(EndStatisticData::ECO_WAY_LENGTH, i, rand.Rand("", 0, 0, 500));
-            data->SetValue(EndStatisticData::ECO_PRODUCED_WARES, i, rand.Rand("", 0, 0, 1000));
-            data->SetValue(EndStatisticData::ECO_BUILT_SHIPS, i, rand.Rand("", 0, 0, 8));
-
-            data->SetValue(EndStatisticData::BLD_MILITARY, i, rand.Rand("", 0, 0, 25));
-            data->SetValue(EndStatisticData::BLD_CATAPULTS, i, rand.Rand("", 0, 0, 5));
-            data->SetValue(EndStatisticData::BLD_MINES, i, rand.Rand("", 0, 0, 15));
-            data->SetValue(EndStatisticData::BLD_SMITHS_AND_MELTERS, i, rand.Rand("", 0, 0, 8));
-            data->SetValue(EndStatisticData::BLD_HARBORS, i, rand.Rand("", 0, 0, 3));
+            for (unsigned j = 0; j <= EndStatisticData::MAX_VALUES; ++j)
+            {
+                data->SetValue(EndStatisticData::ValueIndex(j), i, rand.Rand("", 0, 0, 100));
+            }
         }
     }
 }
@@ -174,27 +161,8 @@ void dskEndStatistics::ShowCategory(EndStatisticData::CategoryIndex cat)
 
 void dskEndStatistics::Msg_StatisticGroupChange(const unsigned int ctrl_id, const unsigned short selection)
 {
-    switch(selection)
-    {
-    case 1: // Military
-        {
-            DeleteCtrl(2);
-            ShowCategory(EndStatisticData::MILITARY);
-        }
-        break;
-    case 2: // Economy
-        {
-            DeleteCtrl(2);
-            ShowCategory(EndStatisticData::ECONOMY);
-        }
-        break;
-    case 3: // Buildings
-        {
-            DeleteCtrl(2);
-            ShowCategory(EndStatisticData::BUILDINGS);
-        }
-        break;
-    }
+    DeleteCtrl(2);
+    ShowCategory(EndStatisticData::CategoryIndex(selection - 1));
 }
 
 void dskEndStatistics::Msg_ButtonClick(const unsigned int ctrl_id)

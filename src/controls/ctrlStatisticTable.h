@@ -47,7 +47,7 @@ class ctrlStatisticTable : public Window
 
         virtual ~ctrlStatisticTable(void);
               
-        void AddPlayerInfos(const std::vector<EndStatisticData::StatisticPlayerInfo> &players);
+        void AddPlayerInfos(const std::vector<EndStatisticData::PlayerInfo> &players);
         void AddColumn(unsigned col_idx, const std::vector<unsigned> &points);
         void AddRow(const std::string player_name, const std::vector<int> &points);
 

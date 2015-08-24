@@ -28,60 +28,103 @@ EndStatisticData::EndStatisticData(unsigned number_of_players)
     _main_categories.resize(MAX_CATEGORIES + 1);
     _values.resize(MAX_VALUES + 1);
 
-    _main_categories[MILITARY].title = _("Military");
-    
-    _values[MIL_PRODUCED_SOLDIERS] = Value (_("Trained soldiers"), _("Total number of trained soldiers."), number_of_players);
-    _main_categories[MILITARY].values.push_back(MIL_PRODUCED_SOLDIERS);
-
-    _values[MIL_PRODUCED_GENERALS] = Value (_("Trained generals"), _("Total number of trained generals."), number_of_players);
-    _main_categories[MILITARY].values.push_back(MIL_PRODUCED_GENERALS);
-
-    _values[MIL_ATTACKS] = Value (_("Attacks"), _("Total number of attacks ordered."), number_of_players);
-    _main_categories[MILITARY].values.push_back(MIL_ATTACKS);
-
-    _values[MIL_CONQUERED_BUILDINGS] = Value (_("Conquered buildings"), _("Total number of conquered buildings."), number_of_players);
-    _main_categories[MILITARY].values.push_back(MIL_CONQUERED_BUILDINGS);
-
-    _values[MIL_KILLED_SOLDIERS] = Value (_("Killed soldiers"), _("Total number of killed soldiers."), number_of_players);
-    _main_categories[MILITARY].values.push_back(MIL_KILLED_SOLDIERS);
-
-    _values[MIL_DUMMY] = Value (_("Dummy"), _("Total number of killed soldiers."), number_of_players);
-    _main_categories[MILITARY].values.push_back(MIL_DUMMY);
-
-
     _main_categories[ECONOMY].title = _("Economy");
+    
+    _values[ECO_COINS] = Value (_("Coins"), _(""), number_of_players);
+    _main_categories[ECONOMY].values.push_back(ECO_COINS);
 
-    _values[ECO_LAND_SIZE] = Value (_("Land size"), _("Maximal size of land."), number_of_players);
-    _main_categories[ECONOMY].values.push_back(ECO_LAND_SIZE);
+    _values[ECO_TOOLS] = Value (_("Tools"), _(""), number_of_players);
+    _main_categories[ECONOMY].values.push_back(ECO_TOOLS);
 
-    _values[ECO_WAY_LENGTH] = Value (_("Way length"), _("Maximal sum of all way lengths."), number_of_players);
-    _main_categories[ECONOMY].values.push_back(ECO_WAY_LENGTH);
-
-    _values[ECO_PRODUCED_WARES] = Value (_("Produced wares"), _("Total number of produced wares."), number_of_players);
+    _values[ECO_PRODUCED_WARES] = Value (_("Produced Wares"), _(""), number_of_players);
     _main_categories[ECONOMY].values.push_back(ECO_PRODUCED_WARES);
 
-    _values[ECO_BUILT_SHIPS] = Value (_("Ships"), _("Total number of built ships."), number_of_players);
-    _main_categories[ECONOMY].values.push_back(ECO_BUILT_SHIPS);
+    _values[ECO_USED_WARES] = Value (_("Consumed Wares"), _(""), number_of_players);
+    _main_categories[ECONOMY].values.push_back(ECO_USED_WARES);
+
+    _values[ECO_RESOURCE_SHORTAGE] = Value (_("Resource Shortages"), _(""), number_of_players);
+    _main_categories[ECONOMY].values.push_back(ECO_RESOURCE_SHORTAGE);
+
+    _values[ECO_SHIPS] = Value (_("Ships"), _(""), number_of_players);
+    _main_categories[ECONOMY].values.push_back(ECO_SHIPS);
 
 
-    _main_categories[BUILDINGS].title = _("Buildings");
+    _main_categories[INFRASTRUCTURE].title = _("Infrastructure");
 
-    _values[BLD_MILITARY] = Value (_("Military"), _("Total constructed number of military buildings."), number_of_players);
-    _main_categories[BUILDINGS].values.push_back(BLD_MILITARY);
+    _values[INF_BUILDINGS] = Value (_("Buildings"), _(""), number_of_players);
+    _main_categories[INFRASTRUCTURE].values.push_back(INF_BUILDINGS);
 
-    _values[BLD_CATAPULTS] = Value (_("Catapults"), _("Number of catapults at the end of the game."), number_of_players);
-    _main_categories[BUILDINGS].values.push_back(BLD_CATAPULTS);
+    _values[INF_WAYLENGTH] = Value (_("Way length"), _(""), number_of_players);
+    _main_categories[INFRASTRUCTURE].values.push_back(INF_WAYLENGTH);
 
-    _values[BLD_MINES] = Value (_("Mines"), _("Number of mines at the end of the game."), number_of_players);
-    _main_categories[BUILDINGS].values.push_back(BLD_MINES);
+    _values[INF_FLAGS] = Value (_("Flags"), _(""), number_of_players);
+    _main_categories[INFRASTRUCTURE].values.push_back(INF_FLAGS);
 
-    _values[BLD_SMITHS_AND_MELTERS] = Value (_("Smiths & Melters"), _("Number of smiths and melters at the end of the game."), number_of_players);
-    _main_categories[BUILDINGS].values.push_back(BLD_SMITHS_AND_MELTERS);
+    _values[INF_STOREHOUSES] = Value (_("Storehouses"), _(""), number_of_players);
+    _main_categories[INFRASTRUCTURE].values.push_back(INF_STOREHOUSES);
 
-    _values[BLD_HARBORS] = Value (_("Habors"), _("Number of harbors at the end of the game."), number_of_players);
-    _main_categories[BUILDINGS].values.push_back(BLD_HARBORS);
+    _values[INF_CATAPULTS] = Value (_("Catapults"), _(""), number_of_players);
+    _main_categories[INFRASTRUCTURE].values.push_back(INF_CATAPULTS);
 
 
+    _main_categories[PRODUCTION].title = _("Production");
+
+    _values[PROD_SETTLERS] = Value (_("Settlers"), _(""), number_of_players);
+    _main_categories[PRODUCTION].values.push_back(PROD_SETTLERS);
+
+    _values[PROD_BUILING_MATERIALS] = Value (_("Building Materials"), _(""), number_of_players);
+    _main_categories[PRODUCTION].values.push_back(PROD_BUILING_MATERIALS);
+
+    _values[PROD_FOOD] = Value (_("Food"), _(""), number_of_players);
+    _main_categories[PRODUCTION].values.push_back(PROD_FOOD);
+
+    _values[PROD_HEAVY_INDUSTRY] = Value (_("Heavy Industry"), _(""), number_of_players);
+    _main_categories[PRODUCTION].values.push_back(PROD_HEAVY_INDUSTRY);
+
+    _values[PROD_HEAVY_INDUSTRY_PRODUCTIVITY] = Value (_("Heavy Industry Productivity"), _(""), number_of_players);
+    _main_categories[PRODUCTION].values.push_back(PROD_HEAVY_INDUSTRY_PRODUCTIVITY);
+
+    
+    _main_categories[MILITARY].title = _("Military");
+    
+    _values[MIL_TRAINED_SOLDIERS] = Value (_("Trained Soldiers"), _(""), number_of_players);
+    _main_categories[MILITARY].values.push_back(MIL_TRAINED_SOLDIERS);
+
+    _values[MIL_TRAINED_GENERALS] = Value (_("Trained Generals"), _(""), number_of_players);
+    _main_categories[MILITARY].values.push_back(MIL_TRAINED_GENERALS);
+
+    _values[MIL_KILLED_ENEMIES] = Value (_("Killed Enemies"), _(""), number_of_players);
+    _main_categories[MILITARY].values.push_back(MIL_KILLED_ENEMIES);
+
+    _values[MIL_LOST_SOLDIERS] = Value (_("Lost Soldiers"), _(""), number_of_players);
+    _main_categories[MILITARY].values.push_back(MIL_LOST_SOLDIERS);
+
+    _values[MIL_DESTROYED_BUILDINGS] = Value (_("Destroyed Buildings"), _(""), number_of_players);
+    _main_categories[MILITARY].values.push_back(MIL_DESTROYED_BUILDINGS);
+
+    _values[MIL_LOST_MILBUILDINGS] = Value (_("Lost Military Buildings"), _(""), number_of_players);
+    _main_categories[MILITARY].values.push_back(MIL_LOST_MILBUILDINGS);
+
+
+    _main_categories[MISC].title = _("Miscellaneous");
+    
+    _values[MISC_EXPLORED_MAP] = Value (_("Explored"), _(""), number_of_players);
+    _main_categories[MISC].values.push_back(MISC_EXPLORED_MAP);
+
+    _values[MISC_SPEED] = Value (_("Player Speed"), _(""), number_of_players);
+    _main_categories[MISC].values.push_back(MISC_SPEED);
+
+    _values[MISC_TRADED_WARES] = Value (_("Traded Wares"), _(""), number_of_players);
+    _main_categories[MISC].values.push_back(MISC_TRADED_WARES);
+
+    _values[MISC_ATTACKS] = Value (_("Attacks"), _(""), number_of_players);
+    _main_categories[MISC].values.push_back(MISC_ATTACKS);
+
+    _values[MISC_SPYTOWERS] = Value (_("Spy Towers"), _(""), number_of_players);
+    _main_categories[MISC].values.push_back(MISC_SPYTOWERS);
+
+    _values[MISC_CATAPULT_SHOTS] = Value (_("Catapult Shots"), _(""), number_of_players);
+    _main_categories[MISC].values.push_back(MISC_CATAPULT_SHOTS);
 }
 
 
@@ -122,32 +165,38 @@ void EndStatisticData::CalculateDependantValues()
 unsigned EndStatisticData::CalcPointsForCategory(CategoryIndex cat, unsigned char player_id) const
 {
     unsigned points = 0;
-    switch(cat)
+
+    for (unsigned i = 0; i < _main_categories[cat].values.size(); ++i)
     {
-    case MILITARY:
-        points +=   _values[MIL_PRODUCED_SOLDIERS].value_per_player[player_id]      * 10;
-        points +=   _values[MIL_PRODUCED_GENERALS].value_per_player[player_id]      * 20;
-        points +=   _values[MIL_ATTACKS].value_per_player[player_id]                * 5;
-        points +=   _values[MIL_CONQUERED_BUILDINGS].value_per_player[player_id]    * 5;
-        points +=   _values[MIL_KILLED_SOLDIERS].value_per_player[player_id]        * 5;
-        return points;
-
-    case ECONOMY:
-        points +=   _values[ECO_LAND_SIZE].value_per_player[player_id]              * 10;
-        points +=   _values[ECO_WAY_LENGTH].value_per_player[player_id]             * 2;
-        points +=   _values[ECO_PRODUCED_WARES].value_per_player[player_id]         * 1;
-        points +=   _values[ECO_BUILT_SHIPS].value_per_player[player_id]            * 5;
-        return points;
-
-    case BUILDINGS:
-        points +=   _values[BLD_MILITARY].value_per_player[player_id]               * 5;
-        points +=   _values[BLD_CATAPULTS].value_per_player[player_id]              * 5;
-        points +=   _values[BLD_MINES].value_per_player[player_id]                  * 10;
-        points +=   _values[BLD_SMITHS_AND_MELTERS].value_per_player[player_id]     * 20;
-        points +=   _values[BLD_HARBORS].value_per_player[player_id]                * 10;
-        return points;
+        ValueIndex vi = _main_categories[cat].values[i];
+        points += _values[vi].value_per_player[player_id];
     }
-    return 0;
+    //switch(cat)
+    //{
+    //case MILITARY:
+    //    points +=   _values[MIL_PRODUCED_SOLDIERS].value_per_player[player_id]      * 10;
+    //    points +=   _values[MIL_PRODUCED_GENERALS].value_per_player[player_id]      * 20;
+    //    points +=   _values[MIL_ATTACKS].value_per_player[player_id]                * 5;
+    //    points +=   _values[MIL_CONQUERED_BUILDINGS].value_per_player[player_id]    * 5;
+    //    points +=   _values[MIL_KILLED_SOLDIERS].value_per_player[player_id]        * 5;
+    //    return points;
+
+    //case ECONOMY:
+    //    points +=   _values[ECO_LAND_SIZE].value_per_player[player_id]              * 10;
+    //    points +=   _values[ECO_WAY_LENGTH].value_per_player[player_id]             * 2;
+    //    points +=   _values[ECO_PRODUCED_WARES].value_per_player[player_id]         * 1;
+    //    points +=   _values[ECO_BUILT_SHIPS].value_per_player[player_id]            * 5;
+    //    return points;
+
+    //case BUILDINGS:
+    //    points +=   _values[BLD_MILITARY].value_per_player[player_id]               * 5;
+    //    points +=   _values[BLD_CATAPULTS].value_per_player[player_id]              * 5;
+    //    points +=   _values[BLD_MINES].value_per_player[player_id]                  * 10;
+    //    points +=   _values[BLD_SMITHS_AND_MELTERS].value_per_player[player_id]     * 20;
+    //    points +=   _values[BLD_HARBORS].value_per_player[player_id]                * 10;
+    //    return points;
+    //}
+    return points;
 }
 
 unsigned EndStatisticData::CalcTotalPoints(unsigned char player_id) const
@@ -159,6 +208,10 @@ unsigned EndStatisticData::CalcTotalPoints(unsigned char player_id) const
     return points;
 }
 
+const std::vector<EndStatisticData::PlayerInfo>& EndStatisticData::GetPlayerInfos() const
+{
+    return _player_infos;
+}
 
 void EndStatisticData::Serialize(SerializedGameData* sgd) const
 {

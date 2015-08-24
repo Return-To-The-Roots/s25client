@@ -114,7 +114,7 @@ void ctrlStatisticTable::Resize_(unsigned short width, unsigned short height)
     //    Msg_ScrollShow(0, true);
 }
 
-void ctrlStatisticTable::AddPlayerInfos(const std::vector<EndStatisticData::StatisticPlayerInfo> &player_names)
+void ctrlStatisticTable::AddPlayerInfos(const std::vector<EndStatisticData::PlayerInfo> &player_names)
 {
     assert(player_names.size() == _max_num_rows);
 

@@ -49,26 +49,41 @@ public:
     /// Contains an index for each value, for setter & getter methods
     enum ValueIndex
     {
-        MIL_PRODUCED_SOLDIERS,
-        MIL_PRODUCED_GENERALS,
-        MIL_ATTACKS,
-        MIL_CONQUERED_BUILDINGS,
-        MIL_KILLED_SOLDIERS,
-        MIL_DUMMY,
-
-        ECO_LAND_SIZE,
-        ECO_WAY_LENGTH,
+        ECO_COINS,
+        ECO_TOOLS,
         ECO_PRODUCED_WARES,
-        ECO_BUILT_SHIPS,
+        ECO_USED_WARES,
+        ECO_RESOURCE_SHORTAGE,
+        ECO_SHIPS,
 
-        BLD_MILITARY,
-        BLD_CATAPULTS,
-        BLD_MINES,
-        BLD_SMITHS_AND_MELTERS,
-        BLD_HARBORS,
+        INF_BUILDINGS,
+        INF_WAYLENGTH,
+        INF_FLAGS,
+        INF_STOREHOUSES,
+        INF_CATAPULTS,
+
+        PROD_SETTLERS,
+        PROD_BUILING_MATERIALS,
+        PROD_FOOD,
+        PROD_HEAVY_INDUSTRY,
+        PROD_HEAVY_INDUSTRY_PRODUCTIVITY,
+
+        MIL_TRAINED_SOLDIERS,
+        MIL_TRAINED_GENERALS,
+        MIL_KILLED_ENEMIES,
+        MIL_LOST_SOLDIERS,
+        MIL_DESTROYED_BUILDINGS,
+        MIL_LOST_MILBUILDINGS,
+
+        MISC_EXPLORED_MAP,
+        MISC_SPEED,
+        MISC_TRADED_WARES,
+        MISC_ATTACKS,
+        MISC_SPYTOWERS,
+        MISC_CATAPULT_SHOTS,
 
         // ...
-        MAX_VALUES = BLD_HARBORS // always set to the last item when changing this enum
+        MAX_VALUES = MISC_CATAPULT_SHOTS // always set to the last item when changing this enum
     };
 
 
@@ -81,22 +96,24 @@ public:
 
     enum CategoryIndex
     {
-        MILITARY,
         ECONOMY,
-        BUILDINGS,
-        MAX_CATEGORIES = BUILDINGS // always set to the last item when changing this enum
+        INFRASTRUCTURE,
+        PRODUCTION,
+        MILITARY,
+        MISC,
+        MAX_CATEGORIES = MISC // always set to the last item when changing this enum
     };
 
 
     /// Playerinfos, copied from GameClientPlayer before it is destroyed at the end of the game
-    struct StatisticPlayerInfo
+    struct PlayerInfo
     {
         std::string name;
         unsigned color;
         Team team;
         Nation nation;
 
-        StatisticPlayerInfo(const std::string& name, unsigned color, Team team, Nation nation) 
+        PlayerInfo(const std::string& name, unsigned color, Team team, Nation nation) 
             : name(name), color(color), team(team), nation(nation) { }
     };
 
@@ -122,6 +139,8 @@ public:
 
     const std::vector<ValueIndex>& GetValuesOfCategory(CategoryIndex cat) const;
 
+    const std::vector<PlayerInfo>& GetPlayerInfos() const;
+
     /// Serialisieren
     void Serialize(SerializedGameData* sgd) const;
     /// Deserialisieren
@@ -130,6 +149,7 @@ public:
 private:
     std::vector<Value> _values;
     std::vector<MainCategory> _main_categories;
+    std::vector<PlayerInfo> _player_infos;
 
 };
 
