@@ -359,6 +359,17 @@ ctrlColorButton* Window::AddColorButton(unsigned int id, unsigned short x, unsig
     return AddCtrl(id, new ctrlColorButton(this, id, x, y, width, height, tc, fillColor, tooltip));
 }
 
+ctrlColorBar* Window::AddColorBar(unsigned int id, unsigned short x,unsigned short y, unsigned short width, unsigned short height, TextureColor tc, unsigned int text_color, glArchivItem_Font* font, unsigned int bar_color, const unsigned value, const unsigned max_value)
+{
+    if(scale)
+    {
+        x = ScaleX(x);
+        y = ScaleY(y);
+        width = ScaleX(width);
+        height = ScaleY(height);
+    }
+    return AddCtrl(id, new ctrlColorBar(this, id, x, y, width, height, tc, text_color, font, bar_color, value, max_value));
+}
 
 /// fügt einen Image-ButtonCtrl hinzu.
 ctrlImageButton* Window::AddImageButton(unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, const TextureColor tc, glArchivItem_Bitmap* const image,  const std::string& tooltip)
@@ -793,6 +804,33 @@ ctrlTable* Window::AddTable(unsigned int id,
     ctrl = new ctrlTable(this, id, x, y, width, height, tc, font, columns, liste);
 
     va_end(liste);
+
+    return AddCtrl(id, ctrl);
+}
+
+ctrlStatisticTable* Window::AddStatisticTable(unsigned int id,
+                            unsigned short x,
+                            unsigned short y,
+                            unsigned short width,
+                            unsigned short height,
+                            const std::vector<std::pair<std::string,bool> >& column_titles,
+                            unsigned num_rows)
+{
+    ctrlStatisticTable* ctrl;
+
+    if(scale)
+    {
+        x = ScaleX(x);
+        y = ScaleY(y);
+        width = ScaleX(width);
+        height = ScaleY(height);
+    }
+
+    std::vector<ctrlStatisticTable::Column> columns;
+    for (unsigned i = 0; i < column_titles.size(); ++i)
+        columns.push_back(ctrlStatisticTable::Column(column_titles[i].first,column_titles[i].second));
+
+    ctrl = new ctrlStatisticTable(this, id, x, y, width, height, columns, num_rows);
 
     return AddCtrl(id, ctrl);
 }
@@ -1469,6 +1507,10 @@ void Window::Msg_TableRightButton(const unsigned int ctrl_id, const unsigned sho
  *  @author OLiver
  */
 void Window::Msg_TableLeftButton(const unsigned int ctrl_id, const unsigned short selection)
+{
+}
+
+void Window::Msg_StatisticGroupChange(const unsigned int ctrl_id, const unsigned short selection)
 {
 }
 

@@ -35,6 +35,7 @@
 #include "desktops/dskSplash.h"
 #include "desktops/dskMainMenu.h"
 #include "desktops/dskLobby.h"
+#include "desktops/dskEndStatistics.h"
 #include "ingameWindows/iwMusicPlayer.h"
 
 #include "MusicPlayer.h"
@@ -329,7 +330,8 @@ bool GameManager::ShowMenu()
         WINDOWMANAGER.Switch(new dskLobby);
     else
         // Hauptmenü zeigen
-        WINDOWMANAGER.Switch(new dskMainMenu);
+        //WINDOWMANAGER.Switch(new dskMainMenu);
+        WINDOWMANAGER.Switch(new dskEndStatistics);
 
     return true;
 }

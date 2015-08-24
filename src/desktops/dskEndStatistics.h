@@ -1,3 +1,5 @@
+// $Id: dskEndStatistics.h 
+//
 // Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
@@ -14,33 +16,34 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef CONTROLS_H_INCLUDED
-#define CONTROLS_H_INCLUDED
+#ifndef dskENDSTATISTICS_H_INCLUDED
+#define dskENDSTATISTICS_H_INCLUDED
 
-#include "ctrlBuildingIcon.h"
-#include "ctrlButton.h"
-#include "ctrlChat.h"
-#include "ctrlCheck.h"
-#include "ctrlColorBar.h"
-#include "ctrlComboBox.h"
-#include "ctrlDeepening.h"
-#include "ctrlEdit.h"
-#include "ctrlGroup.h"
-#include "ctrlImage.h"
-#include "ctrlList.h"
-#include "ctrlPreviewMinimap.h"
-#include "ctrlMultiline.h"
-#include "ctrlOptionGroup.h"
-#include "ctrlPercent.h"
-#include "ctrlProgress.h"
-#include "ctrlScrollBar.h"
-#include "ctrlTab.h"
-#include "ctrlTable.h"
-#include "ctrlStatisticTable.h"
-#include "ctrlText.h"
-#include "ctrlTimer.h"
-#include "ctrlVarDeepening.h"
-#include "ctrlVarText.h"
-#include "ctrlMultiSelectGroup.h"
+#pragma once
 
-#endif // !CONTROLS_H_INCLUDED
+#include "Desktop.h"
+#include "EndStatisticData.h"
+
+/// Klasse des Optionen Desktops.
+class dskEndStatistics: public Desktop
+{
+public:
+    dskEndStatistics(void);
+    ~dskEndStatistics();
+
+private:
+
+    void ShowOverview();
+    void ShowCategory(EndStatisticData::CategoryIndex cat);
+
+    void Msg_ButtonClick(const unsigned int ctrl_id);
+
+    void Msg_StatisticGroupChange(const unsigned int ctrl_id, const unsigned short selection);
+
+    bool _in_overview;
+
+    EndStatisticData data;
+
+};
+
+#endif // !dskENDSTATISTICS_H_INCLUDED

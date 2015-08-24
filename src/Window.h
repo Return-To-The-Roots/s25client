@@ -26,6 +26,7 @@
 #include "colors.h"
 #include "Rect.h"
 #include <map>
+#include <vector>
 
 class WindowManager;
 
@@ -33,6 +34,7 @@ class ctrlAlternativeEdit;
 class ctrlBuildingIcon;
 class ctrlTextButton;
 class ctrlColorButton;
+class ctrlColorBar;
 class ctrlImageButton;
 class ctrlChat;
 class ctrlCheck;
@@ -51,6 +53,7 @@ class ctrlProgress;
 class ctrlScrollBar;
 class ctrlTab;
 class ctrlTable;
+class ctrlStatisticTable;
 class ctrlText;
 class ctrlTimer;
 class ctrlVarDeepening;
@@ -160,6 +163,8 @@ class Window
         ctrlTextButton* AddTextButton(unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, const TextureColor tc, const std::string& text,  glArchivItem_Font* font, const std::string& tooltip = "");
         /// fügt einen Color-ButtonCtrl hinzu.
         ctrlColorButton* AddColorButton(unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, const TextureColor tc, const unsigned int fillColor, const std::string& tooltip = "");
+
+        ctrlColorBar* AddColorBar(unsigned int id, unsigned short x,unsigned short y, unsigned short width, unsigned short height, TextureColor tc, unsigned int text_color, glArchivItem_Font* font, unsigned int bar_color, const unsigned value, const unsigned max_value);
         /// fügt einen Image-ButtonCtrl hinzu.
         ctrlImageButton* AddImageButton(unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, const TextureColor tc, glArchivItem_Bitmap* const image, const std::string& tooltip = "");
 
@@ -199,6 +204,8 @@ class Window
         ctrlTab* AddTabCtrl(unsigned int id, unsigned short x, unsigned short y, unsigned short width);
         /// fügt eine Tabelle hinzu.
         ctrlTable* AddTable(unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, glArchivItem_Font* font, unsigned int columns, ...);
+        /// fügt eine Statistik-Tabelle hinzu.
+        ctrlStatisticTable* AddStatisticTable(unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, const std::vector<std::pair<std::string,bool> >& column_titles, unsigned num_rows);
         /// fügt ein TextCtrl hinzu.
         ctrlText* AddText(unsigned int id, unsigned short x, unsigned short y, const std::string& text, unsigned int color, unsigned int format, glArchivItem_Font* font);
         /// fügt einen Timer hinzu.
@@ -259,6 +266,7 @@ class Window
         virtual void Msg_TableChooseItem(const unsigned ctrl_id, const unsigned short selection);
         virtual void Msg_TableRightButton(const unsigned int ctrl_id, const unsigned short selection);
         virtual void Msg_TableLeftButton(const unsigned int ctrl_id, const unsigned short selection);
+        virtual void Msg_StatisticGroupChange(const unsigned int ctrl_id, const unsigned short selection);
 
         // Sonstiges
         virtual void Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr);
