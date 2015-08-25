@@ -76,8 +76,10 @@ namespace {
     }
 }
 
-dskEndStatistics::dskEndStatistics(void) : Desktop(LOADER.GetImageN("setup013", 0)), data(8)
+dskEndStatistics::dskEndStatistics(EndStatisticData *data) : Desktop(LOADER.GetImageN("setup013", 0)), data(data)
 {
+    assert(data != 0 && "no valid EndStatisticData supplied");
+    
     // Back
     AddTextButton(0, 300, 550, 200, 22,   TC_RED1, _("Back"), NormalFont);
 
@@ -85,14 +87,15 @@ dskEndStatistics::dskEndStatistics(void) : Desktop(LOADER.GetImageN("setup013", 
     AddText(1, 400, 10, _("Final Score"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, LargeFont);  
 
     // TODO get EndStatisticData from somewhere...
-    createDummyData(&data);
+    //createDummyData(&data);
     
     ShowOverview();
 }
 
 dskEndStatistics::~dskEndStatistics()
 {
-
+    if (data)
+        delete data;
 }
 
 
@@ -100,27 +103,25 @@ dskEndStatistics::~dskEndStatistics()
 void dskEndStatistics::ShowOverview()
 {
     _in_overview = true;
-    unsigned num_players = 8;  // TODO
+    unsigned num_players = data->GetPlayerInfos().size(); 
 
     std::vector<std::pair<std::string,bool> > main_categories;
     main_categories.push_back(std::make_pair(_("Player"), false));
 
-    for (unsigned i = 0; i < data.GetCategories().size(); ++i)
-        main_categories.push_back(std::make_pair(data.GetCategories()[i].title, true));
+    for (unsigned i = 0; i < data->GetCategories().size(); ++i)
+        main_categories.push_back(std::make_pair(data->GetCategories()[i].title, true));
 
     main_categories.push_back(std::make_pair(_("Total"), false));
 
     ctrlStatisticTable *table = AddStatisticTable(2, 25, 50, 750, 500, main_categories, num_players);
 
-    // TODO fix next two lines
-    addDummyNames(table);
-
+    table->AddPlayerInfos(data->GetPlayerInfos());
 
     for (unsigned cat = 0; cat <= EndStatisticData::MAX_CATEGORIES; ++cat)
     {
         std::vector<unsigned> points;
         for (unsigned i = 0; i < num_players; ++i)
-            points.push_back(data.CalcPointsForCategory((EndStatisticData::CategoryIndex)cat, i));
+            points.push_back(data->CalcPointsForCategory((EndStatisticData::CategoryIndex)cat, i));
 
         table->AddColumn(cat+1, points);
     }
@@ -128,7 +129,7 @@ void dskEndStatistics::ShowOverview()
 
     std::vector<unsigned> total_points;
     for (unsigned i = 0; i < num_players; ++i)
-        total_points.push_back(data.CalcTotalPoints(i));
+        total_points.push_back(data->CalcTotalPoints(i));
 
     table->AddColumn(EndStatisticData::MAX_CATEGORIES + 2, total_points);
 
@@ -137,24 +138,23 @@ void dskEndStatistics::ShowOverview()
 void dskEndStatistics::ShowCategory(EndStatisticData::CategoryIndex cat)
 {
     _in_overview = false;
-    unsigned num_players = 8; // TODO
+    unsigned num_players = data->GetPlayerInfos().size(); 
 
     std::vector<std::pair<std::string,bool> > categories;
     categories.push_back(std::make_pair(_("Player"), false));
 
-    std::vector<EndStatisticData::ValueIndex> value_indices = data.GetValuesOfCategory(cat);
+    std::vector<EndStatisticData::ValueIndex> value_indices = data->GetValuesOfCategory(cat);
 
     for (unsigned i = 0; i < value_indices.size(); ++i)
-        categories.push_back(std::make_pair(data.GetValue(value_indices[i]).name, false));
+        categories.push_back(std::make_pair(data->GetValue(value_indices[i]).name, false));
 
     ctrlStatisticTable *table = AddStatisticTable(2, 25, 50, 750, 500, categories, num_players);
 
-    // TODO fix next two lines
-    addDummyNames(table);
+    table->AddPlayerInfos(data->GetPlayerInfos());
 
     for (unsigned i = 0; i < value_indices.size(); ++i)
     {
-        table->AddColumn(i+1, data.GetValue(value_indices[i]).value_per_player);
+        table->AddColumn(i+1, data->GetValue(value_indices[i]).value_per_player);
     }
 }
 

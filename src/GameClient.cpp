@@ -47,6 +47,7 @@
 #include "ClientInterface.h"
 #include "ai/AIPlayer.h"
 #include "ai/AIPlayerJH.h"
+#include "EndStatisticData.h"
 
 #include "../libsiedler2/src/prototypen.h"
 #include "../libsiedler2/src/ArchivItem_Map_Header.h"
@@ -152,7 +153,7 @@ void GameClient::ReplayInfo::Clear()
  */
 GameClient::GameClient(void)
     : recv_queue(&GameMessage::create_game), send_queue(&GameMessage::create_game),
-      ci(NULL), human_ai(NULL)
+    ci(NULL), human_ai(NULL), end_statistic(NULL)
 {
     clientconfig.Clear();
     framesinfo.Clear();
@@ -425,6 +426,9 @@ void GameClient::StartGame(const unsigned int random_init)
         replayinfo.replay.map_data = 0;
         mapinfo.zipdata = NULL;
     }
+
+    // Endstatistik initialisieren
+    end_statistic = new EndStatisticData(players);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

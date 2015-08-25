@@ -20,6 +20,7 @@
 #pragma once
 
 #include "Singleton.h"
+class EndStatisticData;
 
 // Die verschiedenen Cursor mit ihren Indizes in resource.idx
 enum CursorType
@@ -43,7 +44,7 @@ class GameManager : public Singleton<GameManager>
         bool Run();
 
         bool StartMenu();
-        bool ShowMenu();
+        bool ShowEndStatistics(EndStatisticData *data);
 
         /// Average FPS Zähler zurücksetzen.
         inline void ResetAverageFPS(void)

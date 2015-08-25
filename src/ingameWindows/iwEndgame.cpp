@@ -60,7 +60,7 @@ void iwEndgame::Msg_ButtonClick(const unsigned int ctrl_id)
     {
         case 0: // OK
         {
-            GAMEMANAGER.ShowMenu();
+            GAMEMANAGER.ShowEndStatistics(GAMECLIENT.GetEndStatisticData());
             GAMECLIENT.ExitGame();
         } break;
         case 1: // Abbrechen

@@ -55,7 +55,7 @@ ctrlStatisticTable::ctrlStatisticTable(Window* parent,
     s.y_start = 0;
 
     s.x_grid = (width - s.player_col_width) / (column_titles.size() - 1);
-    s.y_grid = height / (_max_num_rows + 1);
+    s.y_grid = height / (8 + 1); // fix fow now TODO: add scrollbar
 
     _fifty = 50;
 
@@ -224,7 +224,7 @@ bool ctrlStatisticTable::Draw_()
     //Draw3D(GetX(), GetY(), width, height, tc, 2);
 
     // Die farbigen Zeilen malen
-    for(unsigned i = 0; i < 8; ++i)
+    for(unsigned i = 0; i < _max_num_rows; ++i)
     {
         // Rechtecke in Spielerfarbe malen mit entsprechender Transparenz
         // Font Height = 12

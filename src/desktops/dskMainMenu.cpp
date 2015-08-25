@@ -137,8 +137,8 @@ void dskMainMenu::Msg_ButtonClick(const unsigned int ctrl_id)
     {
         case 4: // "Single Player"
         {
-            //WINDOWMANAGER.Switch(new dskSinglePlayer);
-            WINDOWMANAGER.Switch(new dskEndStatistics);
+            WINDOWMANAGER.Switch(new dskSinglePlayer);
+            //WINDOWMANAGER.Switch(new dskEndStatistics);
         } break;
         case 5: // "Multiplayer"
         {

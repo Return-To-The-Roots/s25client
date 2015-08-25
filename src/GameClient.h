@@ -39,6 +39,7 @@ class WorldManager;
 class ClientInterface;
 class GameMessage;
 class AIBase;
+class EndStatisticData;
 
 class GameClient : public Singleton<GameClient>, public GameMessageInterface, public GameCommandFactory<GameClient>
 {
@@ -167,6 +168,8 @@ class GameClient : public Singleton<GameClient>, public GameMessageInterface, pu
         void SystemChat(std::string text);
         
         void ToggleHumanAIPlayer();
+
+        EndStatisticData *GetEndStatisticData() { return end_statistic; }  
     private:
         /// Versucht einen neuen GameFrame auszuführen, falls die Zeit dafür gekommen ist
         void ExecuteGameFrame(const bool skipping = false);
@@ -389,6 +392,9 @@ class GameClient : public Singleton<GameClient>, public GameMessageInterface, pu
 
         /// Spiel-Log für Asyncs
         FILE* game_log;
+
+        /// End-Statistik
+        EndStatisticData *end_statistic;
 };
 
 ///////////////////////////////////////////////////////////////////////////////

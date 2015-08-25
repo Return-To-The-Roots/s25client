@@ -24,10 +24,12 @@
 #include <string>
 #include <vector>
 
-#include "gameData\GameConsts.h"
-#include "gameData\NationConsts.h"
+#include "gameData/GameConsts.h"
+#include "gameData/NationConsts.h"
+
 
 class SerializedGameData;
+class GameClientPlayerList;
 
 class EndStatisticData
 {
@@ -118,7 +120,7 @@ public:
     };
 
 public:
-    EndStatisticData(unsigned number_of_players);
+    EndStatisticData(const GameClientPlayerList& players);
     ~EndStatisticData();
 
     void SetValue(ValueIndex value, unsigned char player_id, unsigned new_value);

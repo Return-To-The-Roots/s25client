@@ -314,7 +314,7 @@ bool GameManager::StartMenu()
  *
  *  @author FloSoft
  */
-bool GameManager::ShowMenu()
+bool GameManager::ShowEndStatistics(EndStatisticData *data)
 {
     GAMECLIENT.Stop();
     GAMESERVER.Stop();
@@ -331,7 +331,7 @@ bool GameManager::ShowMenu()
     else
         // Hauptmenü zeigen
         //WINDOWMANAGER.Switch(new dskMainMenu);
-        WINDOWMANAGER.Switch(new dskEndStatistics);
+        WINDOWMANAGER.Switch(new dskEndStatistics(data));
 
     return true;
 }

@@ -28,7 +28,7 @@
 class dskEndStatistics: public Desktop
 {
 public:
-    dskEndStatistics(void);
+    dskEndStatistics(EndStatisticData *data);
     ~dskEndStatistics();
 
 private:
@@ -42,7 +42,7 @@ private:
 
     bool _in_overview;
 
-    EndStatisticData data;
+    EndStatisticData *data;
 
 };
 

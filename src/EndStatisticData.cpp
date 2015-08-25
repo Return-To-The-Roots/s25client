@@ -22,9 +22,18 @@
 #include "mygettext.h" //?? TODO ok?
 
 #include "SerializedGameData.h"
+#include "GamePlayerList.h"
 
-EndStatisticData::EndStatisticData(unsigned number_of_players)
+EndStatisticData::EndStatisticData(const GameClientPlayerList& players)
 {
+    unsigned number_of_players = players.getCount();
+
+    for (unsigned i = 0; i < number_of_players; ++i)
+    {
+        GameClientPlayer gcp = players[i];
+        _player_infos.push_back(PlayerInfo(gcp.name, gcp.color, gcp.team, gcp.nation)); 
+    }
+
     _main_categories.resize(MAX_CATEGORIES + 1);
     _values.resize(MAX_VALUES + 1);
 
