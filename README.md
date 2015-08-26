@@ -2,14 +2,14 @@
 
 "Return To The Roots" is a fan-project, which aims to renew the original The Settlers 2.
 
-We aim to extend new features such as a multiplayer mode via internet as well as the support for modern hardware and several operating systems like Windows XP/Vista/Seven, Linux and MacOS. Likewise we want to invent some smaller upgrades. Unfortunately it is necessary to rewrite the whole game, but we will stick to the original graphics and sounds, because they are still common and nice to be heard or seen.
+We aim to extend new features such as a multiplayer mode via internet as well as the support for modern hardware and several operating systems like Windows XP/Vista/Seven, Linux and MacOS X. Likewise we want to invent some smaller upgrades. Unfortunately it is necessary to rewrite the whole game, but we will stick to the original graphics and sounds, because they are still common and nice to be heard or seen.
 So you will still need an original "The Settlers 2 Gold Edition" version to play Return To The Roots.
 
 see more information on http://www.rttr.info
 
 # How to build
 
-## On Linux or Darwin/MacOS
+## On Linux or Darwin/MacOSX
 
 ### Prerequisite:
 - cmake
@@ -20,13 +20,14 @@ see more information on http://www.rttr.info
 
 ### Steps:
 ```
-git clone https://github.com/Return-To-The-Roots/s25client s25client
-cd s25client
-git submodule update --init
-cd build
+git clone --recursive https://github.com/Return-To-The-Roots/s25client s25client
+cd s25client/build
 ./cmake.sh --prefix=.
 make
 ```
+
+Note that due to the use of submodules you always need to `git pull && git submodule update --init --recursive` to get the latest version.
+(The `--init` and `--recursive` arguments are only required should we add *new* submodules to the existing set.)
 
 ## On Windows
 
@@ -40,9 +41,7 @@ make
 - Clone GIT Repository from https://github.com/Return-To-The-Roots/s25client
   - Using Git bash:
      ```
-     git clone https://github.com/Return-To-The-Roots/s25client s25client
-     cd s25client
-     git submodule update --init
+     git clone --recursive https://github.com/Return-To-The-Roots/s25client s25client
      ```
 
   - **OR** using TortoiseGit:
