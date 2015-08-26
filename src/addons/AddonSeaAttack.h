@@ -41,7 +41,7 @@ class AddonSeaAttack : public AddonList
                                          ADDONGROUP_MILITARY,
                                          gettext_noop("Sea attack settings"),
                                          gettext_noop("set restriction level for sea attacks\n\n"),
-                                         1
+                                         2
                                         )
         {
             addOption(gettext_noop("enemy harbors don't block"));
