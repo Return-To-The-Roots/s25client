@@ -23,6 +23,7 @@
 #include "figures/nofBuildingWorker.h"
 #include "figures/nofPigbreeder.h"
 #include "Ware.h"
+#include "EndStatisticData.h"
 
 #include "GameClient.h"
 #include "GameWorld.h"
@@ -528,6 +529,9 @@ void nobUsual::ConsumeWares()
 
             gwg->GetPlayer(player)->DecreaseInventoryWare(USUAL_BUILDING_CONSTS[type - 10].wares_needed[0], 1);
             gwg->GetPlayer(player)->DecreaseInventoryWare(USUAL_BUILDING_CONSTS[type - 10].wares_needed[1], 1);
+
+            // Statistik anpassen
+            GAMECLIENT.GetEndStatisticData()->IncreaseValue(EndStatisticData::ECO_USED_WARES, player, 2);
         }
         else
         {
@@ -547,6 +551,9 @@ void nobUsual::ConsumeWares()
 
             // Inventur entsprechend verringern
             gwg->GetPlayer(player)->DecreaseInventoryWare(USUAL_BUILDING_CONSTS[type - 10].wares_needed[ware_type], 1);
+
+            // Statistik anpassen
+            GAMECLIENT.GetEndStatisticData()->IncreaseValue(EndStatisticData::ECO_USED_WARES, player, 1);
         }
     }
 

@@ -32,6 +32,7 @@
 #include "buildings/nobMilitary.h"
 #include "SerializedGameData.h"
 #include "FOWObjects.h"
+#include "EndStatisticData.h"
 
 #include "ogl/glSmartBitmap.h"
 #include "GameServer.h"
@@ -84,6 +85,8 @@ noFlag::noFlag(const MapPoint pos,
         if(TerrainData::IsWater(gwg->GetTerrainAround(pos, i)))
             flagtype = FT_WATER;
     }
+
+    GAMECLIENT.GetEndStatisticData()->IncreaseValue(EndStatisticData::INF_FLAGS, player);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

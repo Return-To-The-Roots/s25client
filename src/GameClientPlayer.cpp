@@ -38,6 +38,7 @@
 #include "nodeObjs/noShip.h"
 #include "buildings/nobHarborBuilding.h"
 #include "figures/nofTradeLeader.h"
+#include "EndStatisticData.h"
 
 #include "GameInterface.h"
 
@@ -1683,10 +1684,16 @@ void GameClientPlayer::IncreaseMerchandiseStatistic(GoodType type)
         case GD_IRONORE: statisticCurrentMerchandiseData[7]++; break;
         case GD_GOLD: statisticCurrentMerchandiseData[8]++; break;
         case GD_IRON: statisticCurrentMerchandiseData[9]++; break;
-        case GD_COINS: statisticCurrentMerchandiseData[10]++; break;
+        case GD_COINS: 
+            statisticCurrentMerchandiseData[10]++; 
+            GAMECLIENT.GetEndStatisticData()->IncreaseValue(EndStatisticData::ECO_COINS, playerid);
+            break;
         case GD_TONGS: case GD_AXE: case GD_SAW: case GD_PICKAXE: case GD_HAMMER: case GD_SHOVEL:
         case GD_CRUCIBLE: case GD_RODANDLINE: case GD_SCYTHE: case GD_CLEAVER: case GD_ROLLINGPIN:
-        case GD_BOW: statisticCurrentMerchandiseData[11]++; break;
+        case GD_BOW: 
+            statisticCurrentMerchandiseData[11]++; 
+            GAMECLIENT.GetEndStatisticData()->IncreaseValue(EndStatisticData::ECO_TOOLS, playerid);
+            break;
         case GD_SHIELDVIKINGS: case GD_SHIELDAFRICANS: case GD_SHIELDROMANS: case GD_SHIELDJAPANESE:
         case GD_SWORD: statisticCurrentMerchandiseData[12]++; break;
         case GD_BOAT: statisticCurrentMerchandiseData[13]++; break;
@@ -1694,6 +1701,7 @@ void GameClientPlayer::IncreaseMerchandiseStatistic(GoodType type)
             break;
     }
 
+    GAMECLIENT.GetEndStatisticData()->IncreaseValue(EndStatisticData::ECO_PRODUCED_WARES, playerid);
 }
 
 /// Calculates current statistics

@@ -38,6 +38,7 @@
 
 
 
+
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
@@ -198,10 +199,10 @@ void nofBuildingWorker::WorkingReady()
             // Ware ablegen
             flag->AddWare(real_ware);
             real_ware->LieAtFlag(flag);
-            // Warenstatistik erhöhen
-            GAMECLIENT.GetPlayer(this->player)->IncreaseMerchandiseStatistic(ware);
             // Tragen nun keine Ware mehr
             ware = GD_NOTHING;
+            // Warenstatistik & Endstatistik erhöhen
+            GAMECLIENT.GetPlayer(this->player)->IncreaseMerchandiseStatistic(ware);
         }
     }
 

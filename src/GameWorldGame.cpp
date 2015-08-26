@@ -56,6 +56,7 @@
 #include "drivers/VideoDriverWrapper.h"
 #include "gameData/TerrainData.h"
 #include "helpers/containerUtils.h"
+#include "EndStatisticData.h"
 
 #include <algorithm>
 #include <stdexcept>
@@ -443,7 +444,8 @@ void GameWorldGame::BuildRoad(const unsigned char playerid, const bool boat_road
     GetPlayer(playerid)->NewRoad(rs);
     // notify ai about the new road
     GAMECLIENT.SendAIEvent(new AIEvent::Direction(AIEvent::RoadConstructionComplete, start, route[0]), playerid);
-
+    // add to end statistic
+    GAMECLIENT.GetEndStatisticData()->IncreaseValue(EndStatisticData::INF_WAYLENGTH, playerid, route.size());
 }
 
 

@@ -357,6 +357,9 @@ void GameClient::StartGame(const unsigned int random_init)
     if(ci)
         ci->CI_GameStarted(gw);
 
+    // Endstatistik initialisieren
+    end_statistic = new EndStatisticData(players);
+
     Savegame* savegame = (mapinfo.map_type == MAPTYPE_SAVEGAME) ? &mapinfo.savegame : 0;
 
     if(savegame)
@@ -426,9 +429,6 @@ void GameClient::StartGame(const unsigned int random_init)
         replayinfo.replay.map_data = 0;
         mapinfo.zipdata = NULL;
     }
-
-    // Endstatistik initialisieren
-    end_statistic = new EndStatisticData(players);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

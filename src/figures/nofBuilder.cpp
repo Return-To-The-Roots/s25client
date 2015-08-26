@@ -34,6 +34,7 @@
 #include "SerializedGameData.h"
 #include "ai/AIEventManager.h"
 #include "buildings/nobBaseWarehouse.h"
+#include "EndStatisticData.h"
 
 #include "ogl/glSmartBitmap.h"
 #include "factories/BuildingFactory.h"
@@ -187,6 +188,9 @@ void nofBuilder::HandleDerivedEvent(const unsigned int id)
 
                 noBuilding* bld = BuildingFactory::CreateBuilding(gwg, building_type, pos, player, building_nation);
 
+                // Count building for end statistic
+                GAMECLIENT.GetEndStatisticData()->IncreaseValue(EndStatisticData::INF_BUILDINGS, player);
+
                 // Special handling for storehouses and harbours
                 if(building_type == BLD_STOREHOUSE || building_type == BLD_HARBORBUILDING){
                     nobBaseWarehouse* wh = static_cast<nobBaseWarehouse*>(bld);
@@ -200,6 +204,9 @@ void nofBuilder::HandleDerivedEvent(const unsigned int id)
 
                     // Evtl gabs verlorene Waren, die jetzt in das HQ wieder reinkönnen
                     gwg->GetPlayer(player)->FindClientForLostWares();
+
+                    // Count as storehouse for end statistic
+                    GAMECLIENT.GetEndStatisticData()->IncreaseValue(EndStatisticData::INF_STOREHOUSES, player);
 
                     return;
                 }

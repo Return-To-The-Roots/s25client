@@ -48,13 +48,13 @@ EndStatisticData::EndStatisticData(const GameClientPlayerList& players)
     _values[ECO_PRODUCED_WARES] = Value (_("Produced Wares"), _(""), number_of_players);
     _main_categories[ECONOMY].values.push_back(ECO_PRODUCED_WARES);
 
-    _values[ECO_USED_WARES] = Value (_("Consumed Wares"), _(""), number_of_players);
+    _values[ECO_USED_WARES] = Value (_("Consumed Wares"), _(""), number_of_players);  // TODO: decide wether building sites should count as ware consumer (currently not)
     _main_categories[ECONOMY].values.push_back(ECO_USED_WARES);
 
-    _values[ECO_RESOURCE_SHORTAGE] = Value (_("Resource Shortages"), _(""), number_of_players);
+    _values[ECO_RESOURCE_SHORTAGE] = Value (_("Resource Shortages"), _(""), number_of_players); // TODO
     _main_categories[ECONOMY].values.push_back(ECO_RESOURCE_SHORTAGE);
 
-    _values[ECO_SHIPS] = Value (_("Ships"), _(""), number_of_players);
+    _values[ECO_SHIPS] = Value (_("Ships"), _(""), number_of_players); // TODO
     _main_categories[ECONOMY].values.push_back(ECO_SHIPS);
 
 
