@@ -191,6 +191,45 @@ void nofBuilder::HandleDerivedEvent(const unsigned int id)
                 // Count building for end statistic
                 GAMECLIENT.GetEndStatisticData()->IncreaseValue(EndStatisticData::INF_BUILDINGS, player);
 
+                // count some buildings for special things in endstatistic
+                switch(building_type)
+                {
+                case BLD_STOREHOUSE:
+                case BLD_HARBORBUILDING:
+                    GAMECLIENT.GetEndStatisticData()->IncreaseValue(EndStatisticData::INF_STOREHOUSES, player);
+                    break;
+                case BLD_CATAPULT:
+                    GAMECLIENT.GetEndStatisticData()->IncreaseValue(EndStatisticData::INF_CATAPULTS, player);
+                    break;
+                case BLD_WOODCUTTER:
+                case BLD_FORESTER:
+                case BLD_SAWMILL:
+                case BLD_QUARRY:
+                    GAMECLIENT.GetEndStatisticData()->IncreaseValue(EndStatisticData::PROD_BUILING_MATERIALS, player);
+                    break;
+                case BLD_FISHERY:
+                case BLD_HUNTER:
+                case BLD_FARM:
+                case BLD_MILL:
+                case BLD_BAKERY:
+                case BLD_PIGFARM:
+                case BLD_SLAUGHTERHOUSE:
+                    GAMECLIENT.GetEndStatisticData()->IncreaseValue(EndStatisticData::PROD_FOOD, player);
+                    break;
+                case BLD_IRONSMELTER:
+                case BLD_ARMORY:
+                case BLD_METALWORKS:
+                case BLD_MINT:
+                    GAMECLIENT.GetEndStatisticData()->IncreaseValue(EndStatisticData::PROD_HEAVY_INDUSTRY, player);
+                    break;
+                case BLD_LOOKOUTTOWER:
+                    GAMECLIENT.GetEndStatisticData()->IncreaseValue(EndStatisticData::MISC_SPYTOWERS, player);
+                    break;
+
+                default:
+                    break;
+                }
+
                 // Special handling for storehouses and harbours
                 if(building_type == BLD_STOREHOUSE || building_type == BLD_HARBORBUILDING){
                     nobBaseWarehouse* wh = static_cast<nobBaseWarehouse*>(bld);
@@ -204,9 +243,6 @@ void nofBuilder::HandleDerivedEvent(const unsigned int id)
 
                     // Evtl gabs verlorene Waren, die jetzt in das HQ wieder reinkönnen
                     gwg->GetPlayer(player)->FindClientForLostWares();
-
-                    // Count as storehouse for end statistic
-                    GAMECLIENT.GetEndStatisticData()->IncreaseValue(EndStatisticData::INF_STOREHOUSES, player);
 
                     return;
                 }

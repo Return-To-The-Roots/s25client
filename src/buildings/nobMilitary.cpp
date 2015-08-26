@@ -36,6 +36,7 @@
 #include "EventManager.h"
 #include "Random.h"
 #include "nobBaseWarehouse.h"
+#include "EndStatisticData.h"
 
 #include "WindowManager.h"
 
@@ -303,6 +304,7 @@ void nobMilitary::HandleEvent(const unsigned int id)
             std::vector<nofPassiveSoldier*> upgradedSoldiers;
             // Rang des letzten beförderten Soldaten, 4-MaxRank am Anfang setzen, damit keiner über den maximalen Rang befördert wird
             unsigned char last_rank = GAMECLIENT.GetGGS().GetMaxMilitaryRank();
+            unsigned char highest_rank = last_rank;
             for(SortedTroops::reverse_iterator it = troops.rbegin(); it != troops.rend();)
             {
                 // Es wurde schon einer befördert, dieser Soldat muss nun einen niedrigeren Rang
@@ -317,6 +319,11 @@ void nobMilitary::HandleEvent(const unsigned int id)
                     // Dann befördern
                     soldier->Upgrade();
                     upgradedSoldiers.push_back(soldier);
+
+                    // add to endstatistic if upgrade to highest rank
+                    if (soldier->GetRank() == highest_rank)
+                        GAMECLIENT.GetEndStatisticData()->IncreaseValue(EndStatisticData::MIL_TRAINED_GENERALS, player);
+
                 }else
                     ++it;
             }
@@ -934,6 +941,9 @@ void nobMilitary::Capture(const unsigned char new_owner)
 
     // Alten Besitzer merken
     unsigned char old_player = player;
+
+    // Add lost military building to endstatistic of old_player
+    GAMECLIENT.GetEndStatisticData()->IncreaseValue(EndStatisticData::MIL_LOST_MILBUILDINGS, old_player);
 
     // neuer Spieler
     player = new_owner;

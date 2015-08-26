@@ -42,6 +42,7 @@
 #include "figures/nofTradeDonkey.h"
 #include "factories/JobFactory.h"
 #include "Log.h"
+#include "EndStatisticData.h"
 
 #include <algorithm>
 
@@ -284,6 +285,8 @@ bool nobBaseWarehouse::OrderJob(const Job job, noRoadNode* const goal, const boo
         // erhöhen, da er ja dann rauskommt und es bei den visuellen wieder abgezogen wird!
         ++goods.people[job];
         gwg->GetPlayer(player)->IncreaseInventoryJob(job, 1);
+
+        GAMECLIENT.GetEndStatisticData()->IncreaseValue(EndStatisticData::PROD_SETTLERS, player);
     }
 
 
@@ -512,6 +515,8 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
             goods.goods[GD_BEER] -= real_recruits;
             gwg->GetPlayer(player)->DecreaseInventoryWare(GD_BEER, real_recruits);
 
+            // add to endstatistic
+            GAMECLIENT.GetEndStatisticData()->IncreaseValue(EndStatisticData::MIL_TRAINED_SOLDIERS, player, real_recruits);
 
             // Evtl. versuchen nächsten zu rekrutieren
             TryRecruiting();

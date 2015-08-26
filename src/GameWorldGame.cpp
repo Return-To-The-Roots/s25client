@@ -904,6 +904,9 @@ void GameWorldGame::DestroyPlayerRests(const MapPoint pt, const unsigned char ne
 
             delete no;
 
+            // count destroyed building for new_player in endstatistic
+            GAMECLIENT.GetEndStatisticData()->IncreaseValue(EndStatisticData::MIL_DESTROYED_BUILDINGS, new_player);
+
             return;
         }
     }
@@ -1110,6 +1113,10 @@ void GameWorldGame::Attack(const unsigned char player_attacker, const MapPoint p
             }
         } // End weak/strong check
     }
+
+    // Count as attack for endstatistic if at least one soldiers attacks
+    if (!soldiers.empty())
+        GAMECLIENT.GetEndStatisticData()->IncreaseValue(EndStatisticData::MISC_ATTACKS, player_attacker);
 
     // Send the soldiers to attack
     unsigned short i = 0;

@@ -78,7 +78,7 @@ EndStatisticData::EndStatisticData(const GameClientPlayerList& players)
 
     _main_categories[PRODUCTION].title = _("Production");
 
-    _values[PROD_SETTLERS] = Value (_("Settlers"), _(""), number_of_players);
+    _values[PROD_SETTLERS] = Value (_("Settlers"), _(""), number_of_players); // TODO: currently only counts 'newly' created settlers *with* tools, not the living ones the player start with. Should this be different?
     _main_categories[PRODUCTION].values.push_back(PROD_SETTLERS);
 
     _values[PROD_BUILING_MATERIALS] = Value (_("Building Materials"), _(""), number_of_players);
@@ -90,7 +90,7 @@ EndStatisticData::EndStatisticData(const GameClientPlayerList& players)
     _values[PROD_HEAVY_INDUSTRY] = Value (_("Heavy Industry"), _(""), number_of_players);
     _main_categories[PRODUCTION].values.push_back(PROD_HEAVY_INDUSTRY);
 
-    _values[PROD_HEAVY_INDUSTRY_PRODUCTIVITY] = Value (_("Heavy Industry Productivity"), _(""), number_of_players);
+    _values[PROD_HEAVY_INDUSTRY_PRODUCTIVITY] = Value (_("Heavy Industry Productivity"), _(""), number_of_players); // TODO
     _main_categories[PRODUCTION].values.push_back(PROD_HEAVY_INDUSTRY_PRODUCTIVITY);
 
     
@@ -117,13 +117,13 @@ EndStatisticData::EndStatisticData(const GameClientPlayerList& players)
 
     _main_categories[MISC].title = _("Miscellaneous");
     
-    _values[MISC_EXPLORED_MAP] = Value (_("Explored"), _(""), number_of_players);
+    _values[MISC_EXPLORED_MAP] = Value (_("Explored"), _(""), number_of_players);   // TODO
     _main_categories[MISC].values.push_back(MISC_EXPLORED_MAP);
 
-    _values[MISC_SPEED] = Value (_("Player Speed"), _(""), number_of_players);
+    _values[MISC_SPEED] = Value (_("Player Speed"), _(""), number_of_players); // TODO
     _main_categories[MISC].values.push_back(MISC_SPEED);
 
-    _values[MISC_TRADED_WARES] = Value (_("Traded Wares"), _(""), number_of_players);
+    _values[MISC_TRADED_WARES] = Value (_("Traded Wares"), _(""), number_of_players); // TODO
     _main_categories[MISC].values.push_back(MISC_TRADED_WARES);
 
     _values[MISC_ATTACKS] = Value (_("Attacks"), _(""), number_of_players);
@@ -132,7 +132,7 @@ EndStatisticData::EndStatisticData(const GameClientPlayerList& players)
     _values[MISC_SPYTOWERS] = Value (_("Spy Towers"), _(""), number_of_players);
     _main_categories[MISC].values.push_back(MISC_SPYTOWERS);
 
-    _values[MISC_CATAPULT_SHOTS] = Value (_("Catapult Shots"), _(""), number_of_players);
+    _values[MISC_CATAPULT_SHOTS] = Value (_("Catapult Shots"), _(""), number_of_players); // TODO
     _main_categories[MISC].values.push_back(MISC_CATAPULT_SHOTS);
 }
 

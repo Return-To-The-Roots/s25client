@@ -31,6 +31,7 @@
 #include "buildings/nobBaseMilitary.h"
 #include "SoundManager.h"
 #include "SerializedGameData.h"
+#include "EndStatisticData.h"
 
 #include "ogl/glSmartBitmap.h"
 
@@ -226,6 +227,7 @@ void noFighting::HandleEvent(const unsigned int id)
                 {
                     if(--soldiers[!turn]->hitpoints == 0)
                     {
+                        unsigned player_lost = soldiers[!turn]->GetPlayer();
                         // Soldat Bescheid sagen, dass er stirbt
                         soldiers[!turn]->LostFighting();
                         // Anderen Soldaten auf die Karte wieder setzen, Bescheid sagen, er kann wieder loslaufen
@@ -242,8 +244,11 @@ void noFighting::HandleEvent(const unsigned int id)
                         /*em->AddEvent(this,RELEASE_FIGURES_OFFSET,1);*/
                         gwg->RoadNodeAvailable(soldiers[turn - 3]->GetPos());
 
-                        // In die Statistik eintragen
+                        // In die Statistik eintragen, besser zweimal!
                         gwg->GetPlayer(player_won)->ChangeStatisticValue(STAT_VANQUISHED, 1);
+
+                        GAMECLIENT.GetEndStatisticData()->IncreaseValue(EndStatisticData::MIL_KILLED_ENEMIES, player_won);
+                        GAMECLIENT.GetEndStatisticData()->IncreaseValue(EndStatisticData::MIL_LOST_SOLDIERS, player_lost);
                         return;
                     }
                 }
