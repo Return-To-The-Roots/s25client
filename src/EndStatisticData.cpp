@@ -51,10 +51,10 @@ EndStatisticData::EndStatisticData(const GameClientPlayerList& players)
     _values[ECO_USED_WARES] = Value (_("Consumed Wares"), _(""), number_of_players);  // TODO: decide wether building sites should count as ware consumer (currently not)
     _main_categories[ECONOMY].values.push_back(ECO_USED_WARES);
 
-    _values[ECO_RESOURCE_SHORTAGE] = Value (_("Resource Shortages"), _(""), number_of_players); // TODO
+    _values[ECO_RESOURCE_SHORTAGE] = Value (_("Resource Shortages"), _(""), number_of_players);
     _main_categories[ECONOMY].values.push_back(ECO_RESOURCE_SHORTAGE);
 
-    _values[ECO_SHIPS] = Value (_("Ships"), _(""), number_of_players); // TODO
+    _values[ECO_SHIPS] = Value (_("Ships"), _(""), number_of_players);
     _main_categories[ECONOMY].values.push_back(ECO_SHIPS);
 
 
@@ -117,10 +117,10 @@ EndStatisticData::EndStatisticData(const GameClientPlayerList& players)
 
     _main_categories[MISC].title = _("Miscellaneous");
     
-    _values[MISC_EXPLORED_MAP] = Value (_("Explored"), _(""), number_of_players);   // TODO
+    _values[MISC_EXPLORED_MAP] = Value (_("Explored"), _(""), number_of_players);   // TODO: I think fog of war will kill the counting mechanism (possible counting multiple times)
     _main_categories[MISC].values.push_back(MISC_EXPLORED_MAP);
 
-    _values[MISC_ACTIONS] = Value (_("Player Actions"), _(""), number_of_players); // TODO
+    _values[MISC_ACTIONS] = Value (_("Player Actions"), _(""), number_of_players);
     _main_categories[MISC].values.push_back(MISC_ACTIONS);
 
     _values[MISC_TRADED_WARES] = Value (_("Traded Wares"), _(""), number_of_players); // TODO
@@ -132,7 +132,7 @@ EndStatisticData::EndStatisticData(const GameClientPlayerList& players)
     _values[MISC_SPYTOWERS] = Value (_("Spy Towers"), _(""), number_of_players);
     _main_categories[MISC].values.push_back(MISC_SPYTOWERS);
 
-    _values[MISC_CATAPULT_SHOTS] = Value (_("Catapult Shots"), _(""), number_of_players); // TODO
+    _values[MISC_CATAPULT_SHOTS] = Value (_("Catapult Shots"), _(""), number_of_players);
     _main_categories[MISC].values.push_back(MISC_CATAPULT_SHOTS);
 }
 

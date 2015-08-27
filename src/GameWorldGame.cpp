@@ -1545,6 +1545,9 @@ void GameWorldGame::RecalcVisibility(const MapPoint pt, const unsigned char play
         if (visibility_before != VIS_VISIBLE)
         {
             LUA_EventExplored(player, pt);
+
+            // count for end statistic
+            GAMECLIENT.GetEndStatisticData()->IncreaseValue(EndStatisticData::MISC_EXPLORED_MAP, player);
         }
 
         GetNode(pt).fow[player].visibility = VIS_VISIBLE;
@@ -1598,6 +1601,9 @@ void GameWorldGame::SetVisibility(const MapPoint pt,  const unsigned char player
     if (visibility_before != VIS_VISIBLE)
     {
         LUA_EventExplored(player, pt);
+
+        // count for end statistic
+        GAMECLIENT.GetEndStatisticData()->IncreaseValue(EndStatisticData::MISC_EXPLORED_MAP, player);
     }
     
     // Etwaige FOW-Objekte zerstören

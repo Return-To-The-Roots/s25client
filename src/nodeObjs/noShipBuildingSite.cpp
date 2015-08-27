@@ -29,6 +29,7 @@
 #include "noShip.h"
 #include "GameClient.h"
 #include "PostMsg.h"
+#include "EndStatisticData.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -134,6 +135,9 @@ void noShipBuildingSite::MakeBuildStep()
         // Spieler über Fertigstellung benachrichtigen
         if(GAMECLIENT.GetPlayerID() == this->player)
             GAMECLIENT.SendPostMessage(new ShipPostMsg(_("A new ship is ready"), PMC_GENERAL, GAMECLIENT.GetPlayer(player)->nation, pos));
+
+        // Count for end statistic
+        GAMECLIENT.GetEndStatisticData()->IncreaseValue(EndStatisticData::ECO_SHIPS, player);
 
         // KI Event senden
         GAMECLIENT.SendAIEvent(new AIEvent::Location(AIEvent::ShipBuilt, pos), player);

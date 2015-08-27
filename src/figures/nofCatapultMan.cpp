@@ -27,6 +27,7 @@
 #include "CatapultStone.h"
 #include "MapGeometry.h"
 #include "gameData/MapConsts.h"
+#include "EndStatisticData.h"
 
 const int STONE_STARTS[12] = { -4, -48, -3, -47, -13, -47, -11, -48, -13, -47, -2, -47};
 
@@ -166,6 +167,9 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned int id)
 
             // Waren verbrauchen
             workplace->ConsumeWares();
+
+            // Count for end statistic
+            GAMECLIENT.GetEndStatisticData()->IncreaseValue(EndStatisticData::MISC_CATAPULT_SHOTS, player);
 
             // Eins zufällig auswählen
             target = pts[RANDOM.Rand(__FILE__, __LINE__, GetObjId(), pts.size())];

@@ -35,6 +35,7 @@
 #include "SoundManager.h"
 #include "SerializedGameData.h"
 #include "ai/AIEventManager.h"
+#include "EndStatisticData.h"
 
 
 
@@ -199,10 +200,10 @@ void nofBuildingWorker::WorkingReady()
             // Ware ablegen
             flag->AddWare(real_ware);
             real_ware->LieAtFlag(flag);
-            // Tragen nun keine Ware mehr
-            ware = GD_NOTHING;
             // Warenstatistik & Endstatistik erhöhen
             GAMECLIENT.GetPlayer(this->player)->IncreaseMerchandiseStatistic(ware);
+            // Tragen nun keine Ware mehr
+            ware = GD_NOTHING;
         }
     }
 
@@ -459,8 +460,12 @@ void nofBuildingWorker::StopNotWorking()
     // Falls wir vorher nicht gearbeitet haben, diese Zeit merken für die Produktivität
     if(since_not_working != 0xFFFFFFFF)
     {
-        not_working += static_cast<unsigned short>(GAMECLIENT.GetGFNumber() - since_not_working);
+        unsigned short not_working_gfs = static_cast<unsigned short>(GAMECLIENT.GetGFNumber() - since_not_working);
+        not_working += not_working_gfs;
         since_not_working = 0xFFFFFFFF;
+
+        // count GFs not working for end statistic
+        GAMECLIENT.GetEndStatisticData()->IncreaseValue(EndStatisticData::ECO_RESOURCE_SHORTAGE, player, not_working_gfs);
     }
 }
 
@@ -471,10 +476,14 @@ unsigned short nofBuildingWorker::CalcProductivity()
     // Gucken, ob bis jetzt gearbeitet wurde/wird oder nicht, je nachdem noch was dazuzählen
     if(since_not_working != 0xFFFFFFFF)
     {
+        unsigned short not_working_gfs = static_cast<unsigned short>(GAMECLIENT.GetGFNumber() - since_not_working);
         // Es wurde bis jetzt nicht mehr gearbeitet, das also noch dazuzählen
-        not_working += static_cast<unsigned short>(GAMECLIENT.GetGFNumber() - since_not_working);
+        not_working += not_working_gfs;
         // Zähler zurücksetzen
         since_not_working = GAMECLIENT.GetGFNumber();
+
+        // count GFs not working for end statistic
+        GAMECLIENT.GetEndStatisticData()->IncreaseValue(EndStatisticData::ECO_RESOURCE_SHORTAGE, player, not_working_gfs);
     }
 
     // Produktivität ausrechnen
