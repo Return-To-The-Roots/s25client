@@ -140,33 +140,16 @@ extract_debug_symbols()
 {
 	local FILE=$1
 
-	objcopy=""
-	case "$COMPILEFOR" in
-		windows)
-			objcopy="${objcopy}-pc-mingw32"
-		;;
-		linux)
-			objcopy="${objcopy}-pc-linux-gnu"
-		;;
-		freebsd)
-			objcopy="${objcopy}"
-		;;
-		*)
-			echo "$COMPILEFOR not supported" >&2
-			return 1
-		;;
-	esac
-	objcopy="${objcopy}-objcopy"
-
+	objcopyArch=""
 	case "$COMPILEARCH" in
 		i686|*86)
-			objcopy="i686${objcopy}"
+			objcopyArch="i686"
 		;;
 		x86_64|*64)
-			objcopy="x86_64${objcopy}"
+			objcopyArch="x86_64"
 		;;
 		powerpc|ppc)
-			objcopy="powerpc${objcopy}"
+			objcopyArch="powerpc"
 		;;
 		*)
 			echo "$COMPILEARCH not supported" >&2
@@ -174,14 +157,46 @@ extract_debug_symbols()
 		;;
 	esac
 
+	objcopyTarget=""
+	case "$COMPILEFOR" in
+		windows)
+			objcopyTarget="-pc-mingw32"
+		;;
+		linux)
+			objcopyTarget="-pc-linux-gnu"
+		;;
+		freebsd)
+			objcopyTarget=""
+		;;
+		*)
+			echo "$COMPILEFOR not supported" >&2
+			return 1
+		;;
+	esac
+
+	objcopy="${objcopyArch}${objcopyTarget}-objcopy"
+
+	if [ ! -f ${objcopy} ]; then
+		# Use fallback
+		case "$COMPILEFOR" in
+			windows)
+				objcopyTarget="-mingw32"
+			;;
+			linux)
+				objcopyTarget="-linux-gnu"
+			;;
+		esac
+		objcopy="${objcopyArch}${objcopyTarget}-objcopy"
+	fi
+
 	pushd ${DESTDIR}
 	mkdir -vp dbg/$(dirname $FILE)
-		echo "${objcopy} --only-keep-debug $FILE dbg/$FILE.dbg"
-		${objcopy} --only-keep-debug $FILE dbg/$FILE.dbg
-		echo "${objcopy} --strip-debug $FILE"
-		${objcopy} --strip-debug $FILE
-		echo "${objcopy} --add-gnu-debuglink=dbg/$FILE.dbg $FILE"
-		${objcopy} --add-gnu-debuglink=dbg/$FILE.dbg $FILE
+	echo "${objcopy} --only-keep-debug $FILE dbg/$FILE.dbg"
+	${objcopy} --only-keep-debug $FILE dbg/$FILE.dbg
+	echo "${objcopy} --strip-debug $FILE"
+	${objcopy} --strip-debug $FILE
+	echo "${objcopy} --add-gnu-debuglink=dbg/$FILE.dbg $FILE"
+	${objcopy} --add-gnu-debuglink=dbg/$FILE.dbg $FILE
 	popd
 }
 
@@ -277,11 +292,19 @@ case "$COMPILEFOR" in
 		lua=""
 		case "$COMPILEARCH" in
 			i686|*86)
-				mingw=/usr/i686-pc-mingw32
+				if [ -d /usr/i686-pc-mingw32 ]; then
+					mingw=/usr/i686-pc-mingw32
+				else
+					mingw=/usr/i686-mingw32
+				fi
 				lua=win32
 			;;
 			x86_64|*64)
-				mingw=/usr/x86_64-pc-mingw32
+				if [ -d /usr/i686-pc-mingw32 ]; then
+					mingw=/usr/x86_64-pc-mingw32
+				else
+					mingw=/usr/x86_64-mingw32
+				fi
 				lua=win64
 			;;
 		esac
@@ -309,11 +332,17 @@ case "$COMPILEFOR" in
 			i686|*86)
 				if [ ! "$(uname -m | sed s/i686/i386/g)" = "$COMPILEARCH" ] ; then
 					miniupnpc=/usr/i686-pc-linux-gnu/lib/libminiupnpc.so
+				elif [ ! -f $miniupnpc ]; then
+					# Use fallback
+					miniupnpc=/usr/lib/i686-linux-gnu/libminiupnpc.so
 				fi
 			;;
 			x86_64|*64)
 				if [ ! "$(uname -m)" = "$COMPILEARCH" ] ; then
 					miniupnpc=/usr/x86_64-pc-linux-gnu/lib/libminiupnpc.so
+				elif [ ! -f $miniupnpc ]; then
+					# Use fallback
+					miniupnpc=/usr/lib/x86_64-linux-gnu/libminiupnpc.so
 				fi
 			;;
 		esac
