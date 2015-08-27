@@ -178,13 +178,20 @@ while test $# != 0 ; do
 done
 
 if [ -z "$ARCH" ] ; then
-	if [ "$(uname -s)" = "Darwin" ] ; then
-		ARCH=apple.local
-	elif [ "$(uname -s)" = "Linux" ] ; then
-		ARCH=linux.local
-	else
-		ARCH=windows.local
-	fi
+	case $(uname -s) in
+		Darwin)
+			ARCH=apple.local
+			;;
+		Linux)
+			ARCH=linux.local
+			;;
+		FreeBSD)
+			ARCH=freebsd.local
+			;;
+		*)
+			ARCH=windows.local
+			;;
+	esac
 fi
 
 if [ -z "$GENERATOR" ] && [ "$(uname -s)" = "Darwin" ] ; then
