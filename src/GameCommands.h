@@ -56,7 +56,7 @@ namespace gc{
         public:
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void ExecuteImp(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
 /// Flagge zerstören
@@ -70,7 +70,7 @@ namespace gc{
                 : Coords(DESTROYFLAG, ser) {}
         public:
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void ExecuteImp(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
 /// Straße bauen
@@ -105,7 +105,7 @@ namespace gc{
             }
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void ExecuteImp(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
 /// Straße zerstören
@@ -129,7 +129,7 @@ namespace gc{
             }
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void ExecuteImp(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
 /// Straße aufwerten
@@ -151,7 +151,7 @@ namespace gc{
             }
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void ExecuteImp(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
 /// Warenverteilung ändern
@@ -179,7 +179,7 @@ namespace gc{
             }
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void ExecuteImp(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
 /// Baureihenfolge ändern
@@ -210,7 +210,7 @@ namespace gc{
             }
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void ExecuteImp(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
 
@@ -235,7 +235,7 @@ namespace gc{
             }
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void ExecuteImp(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
 /// Gebäude zerstören
@@ -249,7 +249,7 @@ namespace gc{
                 : Coords(DESTROYBUILDING, ser) {}
         public:
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void ExecuteImp(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
 /// Send all highest rank soldiers home (used by ai to upgrade troops instead of changing mil settings all the time)
@@ -263,7 +263,7 @@ namespace gc{
                 : Coords(SENDSOLDIERSHOME, ser) {}
         public:
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void ExecuteImp(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
 /// call for new min rank soldiers (used by ai to upgrade troops instead of changing mil settings all the time)
@@ -277,7 +277,7 @@ namespace gc{
                 : Coords(ORDERNEWSOLDIERS, ser) {}
         public:
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void ExecuteImp(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
 
@@ -306,7 +306,7 @@ namespace gc{
             }
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void ExecuteImp(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
 /// Transportreihenfolge ändern
@@ -334,7 +334,7 @@ namespace gc{
             }
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void ExecuteImp(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
 /// Werkzeugeinstellungen ändern
@@ -385,7 +385,7 @@ namespace gc{
             }
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void ExecuteImp(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
 /// Geologen rufen
@@ -399,7 +399,7 @@ namespace gc{
                 : Coords(CALLGEOLOGIST, ser) {}
         public:
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void ExecuteImp(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
 /// Späher rufen
@@ -413,7 +413,7 @@ namespace gc{
                 : Coords(CALLSCOUT, ser) {}
         public:
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void ExecuteImp(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
 /// Basisklasse für beide Angriffstypen
@@ -455,7 +455,7 @@ namespace gc{
                 : BaseAttack(ATTACK, ser) {}
         public:
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void ExecuteImp(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
 /// See-Angriff starten
@@ -469,7 +469,7 @@ namespace gc{
                 : BaseAttack(SEAATTACK, ser) {}
         public:
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void ExecuteImp(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
 /// Spielerwechsel
@@ -494,7 +494,7 @@ namespace gc{
             unsigned GetNewPlayerId() const { return new_player_id; }
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void ExecuteImp(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
 /// Goldzufuhr in einem Gebäude stoppen/erlauben
@@ -508,7 +508,7 @@ namespace gc{
                 : Coords(TOGGLECOINS, ser) {}
         public:
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void ExecuteImp(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
 /// Produktivität in einem Gebäude deaktivieren/aktivieren
@@ -522,7 +522,7 @@ namespace gc{
                 : Coords(TOGGLEPRODUCTION, ser) {}
         public:
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void ExecuteImp(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
 /// Produktivität in einem Gebäude deaktivieren/aktivieren
@@ -536,7 +536,7 @@ namespace gc{
                 : Coords(NOTIFYALLIESOFLOCATION, ser) {}
         public:
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void ExecuteImp(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
 /// Einlagerungseinstellungen von einem Lagerhaus verändern
@@ -566,7 +566,7 @@ namespace gc{
             }
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void ExecuteImp(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
 /// Alle Einlagerungseinstellungen (für alle Menschen oder Waren) von einem Lagerhaus verändern
@@ -594,7 +594,7 @@ namespace gc{
             }
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void ExecuteImp(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
 /// Verändert die Reserve im HQ auf einen bestimmten Wert
@@ -623,7 +623,7 @@ namespace gc{
             }
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void ExecuteImp(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
 /// Alle Fahnen zerstören
@@ -640,7 +640,7 @@ namespace gc{
             {}
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void ExecuteImp(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
 /// Aufgeben
@@ -657,7 +657,7 @@ namespace gc{
             {}
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void ExecuteImp(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
 /// Alle eigenen Fahnen zerstören
@@ -674,7 +674,7 @@ namespace gc{
             {}
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void ExecuteImp(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
 /// Unterbreitet anderen Spielern einen Bündnisvertrag
@@ -703,7 +703,7 @@ namespace gc{
             }
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void ExecuteImp(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
 
@@ -736,7 +736,7 @@ namespace gc{
             }
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void ExecuteImp(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
 
@@ -763,7 +763,7 @@ namespace gc{
             }
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void ExecuteImp(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
 /// Zwischen Boote und Schiffen beim Schiffsbauer hin- und herschalten
@@ -777,7 +777,7 @@ namespace gc{
                 : Coords(TOGGLESHIPYARDMODE, ser) {}
         public:
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void ExecuteImp(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
 /// Expedition starten
@@ -791,7 +791,7 @@ namespace gc{
                 : Coords(STARTEXPEDITION, ser) {}
         public:
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void ExecuteImp(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
 /// Expedition starten
@@ -805,7 +805,7 @@ namespace gc{
                 : Coords(STARTEXPLORATIONEXPEDITION, ser) {}
         public:
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void ExecuteImp(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
 /// Wartendes Schiff einer Expedition Befehle geben
@@ -842,7 +842,7 @@ namespace gc{
             }
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void ExecuteImp(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
 
         private:
             /// Die Aktion, die ausgeführt werden soll
@@ -885,7 +885,7 @@ namespace gc{
             }
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void ExecuteImp(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
 

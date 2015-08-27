@@ -104,6 +104,7 @@ namespace gc
 
         /// Execute this GameCommand
         virtual void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid) = 0;
+        virtual void ExecuteImp(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid) = 0;
 
         GameCommand(const GameCommand& obj): gst(obj.gst) // Do not copy refCounter!
         {}

@@ -78,7 +78,7 @@ public:
         MIL_LOST_MILBUILDINGS,
 
         MISC_EXPLORED_MAP,
-        MISC_SPEED,
+        MISC_ACTIONS,
         MISC_TRADED_WARES,
         MISC_ATTACKS,
         MISC_SPYTOWERS,

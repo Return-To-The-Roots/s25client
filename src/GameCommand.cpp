@@ -19,6 +19,8 @@
 #include "GameCommand.h"
 #include "GameCommands.h"
 #include "helpers/converters.h"
+#include "EndStatisticData.h"
+#include "GameClient.h"
 
 #include <stdexcept>
 
@@ -68,4 +70,11 @@ GameCommand* GameCommand::Deserialize(const Type gst, Serializer* ser)
     }
 
     throw std::logic_error("Invalid GC Type: " + helpers::toString(gst));
+}
+
+void GameCommand::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
+{
+    GAMECLIENT.GetEndStatisticData()->IncreaseValue(EndStatisticData::MISC_ACTIONS, playerid);
+
+    ExecuteImp(gwg, player, playerid);
 }

@@ -120,8 +120,8 @@ EndStatisticData::EndStatisticData(const GameClientPlayerList& players)
     _values[MISC_EXPLORED_MAP] = Value (_("Explored"), _(""), number_of_players);   // TODO
     _main_categories[MISC].values.push_back(MISC_EXPLORED_MAP);
 
-    _values[MISC_SPEED] = Value (_("Player Speed"), _(""), number_of_players); // TODO
-    _main_categories[MISC].values.push_back(MISC_SPEED);
+    _values[MISC_ACTIONS] = Value (_("Player Actions"), _(""), number_of_players); // TODO
+    _main_categories[MISC].values.push_back(MISC_ACTIONS);
 
     _values[MISC_TRADED_WARES] = Value (_("Traded Wares"), _(""), number_of_players); // TODO
     _main_categories[MISC].values.push_back(MISC_TRADED_WARES);
