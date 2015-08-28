@@ -9,7 +9,7 @@ CMAKE_COMMAND=cmake
 ###############################################################################
 
 if [ -z "$(type -p $CMAKE_COMMAND)" ] ; then
-	echo "You have to install CMake"
+	echo "You have to install CMake" >&2
 	exit 1
 fi
 
@@ -81,7 +81,7 @@ while test $# != 0 ; do
 		LIBDIR=$ac_optarg
 	;;
 	*)
-		echo "Unknown option: $ac_option"
+		echo "Unknown option: $ac_option" >&2
 		exit 1
 	;;
 	esac
@@ -205,7 +205,7 @@ mecho --blue "## Extracting debug info from files and saving them into dbg"
 # strip out debug symbols into external file
 case "$COMPILEFOR" in
 	apple)
-		echo "extraction not supported ???"
+		echo "extraction of debug symbols for $COMPILEFOR currently not supported" >&2
 		i686-apple-darwin10-strip -S ${DESTDIR}bin/s25client
 		i686-apple-darwin10-strip -S ${DESTDIR}share/s25rttr/driver/video/libvideoSDL.dylib
 		i686-apple-darwin10-strip -S ${DESTDIR}share/s25rttr/driver/audio/libaudioSDL.dylib
@@ -238,9 +238,9 @@ esac
 
 mecho --blue "## Performing additional tasks"
 
-# create app-bundle for apple
 case "$COMPILEFOR" in
 	apple)
+		# create app-bundle for apple
 		# app anlegen
 		mkdir -vp ${DESTDIR}s25client.app/Contents/{MacOS,Resources} || exit 1
 
@@ -266,7 +266,7 @@ case "$COMPILEFOR" in
 		elif  [ -f /usr/lib/apple/SDKs/MacOSX10.5.sdk/usr/lib/libminiupnpc.5.dylib ] ; then
 			cp -rv /usr/lib/apple/SDKs/MacOSX10.5.sdk/usr/lib/libminiupnpc.5.dylib ${DESTDIR}s25client.app/Contents/MacOS || exit 1
 		else
-			echo "libminiupnpc.5.dylib was not found"
+			echo "libminiupnpc.5.dylib was not found" >&2
 			exit 1
 		fi
 
@@ -351,9 +351,9 @@ case "$COMPILEFOR" in
 			mkdir -p ${DESTDIR}${PREFIX}/lib/ || exit 1
 			cp -rv $miniupnpc* ${DESTDIR}${PREFIX}/lib/ || exit 1
 		else
-			echo "libminiupnpc.so not found at $miniupnpc"
-			echo "will not bundle it in your installation"
-			echo "install it from http://packages.siedler25.org by yourself"
+			echo "libminiupnpc.so not found at $miniupnpc" >&2
+			echo "will not bundle it in your installation" >&2
+			echo "install it via \"sudo apt-get install miniupnpc\"" >&2
 		fi
 	;;
 	freebsd)
@@ -362,9 +362,9 @@ case "$COMPILEFOR" in
 			mkdir -p ${DESTDIR}${PREFIX}/lib/ || exit 1
 			cp -rv ${miniupnpc}* ${DESTDIR}${PREFIX}/lib/ || exit 1
 		else
-			echo "libminiupnpc.so not found at $miniupnpc"
-			echo "will not bundle it in your installation"
-			echo "install it with \"sudo pkg install miniupnpc\""
+			echo "libminiupnpc.so not found at $miniupnpc" >&2
+			echo "will not bundle it in your installation" >&2
+			echo "install it via \"sudo pkg install miniupnpc\"" >&2
 		fi
 	;;
 	*)
