@@ -55,7 +55,7 @@ ctrlStatisticTable::ctrlStatisticTable(Window* parent,
     s.y_start = 0;
 
     s.x_grid = (width - s.player_col_width) / (column_titles.size() - 1);
-    s.y_grid = height / (8 + 1); // fix fow now TODO: add scrollbar
+    s.y_grid = height / (8 + 1); // fix for now, TODO: add scrollbar
 
     _fifty = 50;
 
@@ -91,43 +91,25 @@ ctrlStatisticTable::~ctrlStatisticTable(void)
 
 void ctrlStatisticTable::Resize_(unsigned short width, unsigned short height)
 {
-    //// changed height
-
-    //scrollbar->Move(width - 20, 0);
-    //scrollbar->Resize(20, height);
-
-    //line_count = (height - header_height - 2) / font->getHeight();
-    //scrollbar->SetPageSize(line_count);
-
-    //// If the size was enlarged we have to check that we don't try to
-    //// display more lines than present
-    //if(height > this->height)
-    //    while(rows.size() - scrollbar->GetPos() < line_count
-    //            && scrollbar->GetPos() > 0)
-    //        scrollbar->SetPos(scrollbar->GetPos() - 1);
-
-    //// changed width
-
-    //this->width = width;
-    //ResetButtonWidths();
-    //if(scrollbar->GetVisible())
-    //    Msg_ScrollShow(0, true);
+    // TODO: is this needed?
 }
 
-void ctrlStatisticTable::AddPlayerInfos(const std::vector<EndStatisticData::PlayerInfo> &player_names)
+void ctrlStatisticTable::AddPlayerInfos(const std::vector<EndStatisticData::PlayerInfo> &player_infos)
 {
     assert(player_names.size() == _max_num_rows);
 
+    _players = player_infos;
+
     SetScale(false);
 
-    for (unsigned i = 0; i < player_names.size(); ++i)
+    for (unsigned i = 0; i < player_infos.size(); ++i)
     {
         unsigned id = 10 + i;
 
         AddText(id, 
             (s.player_col_width/4), 
             (i+1) * s.y_grid, 
-            player_names[i].name, COLOR_YELLOW, glArchivItem_Font::DF_LEFT, NormalFont);
+            player_infos[i].name, COLOR_YELLOW, glArchivItem_Font::DF_LEFT, NormalFont);
 
         // TODO draw team marker
         // TODO draw nation marker
@@ -163,7 +145,7 @@ void ctrlStatisticTable::AddColumn(unsigned col_idx, const std::vector<unsigned>
             TC_GREY,
             COLOR_YELLOW, NormalFont, COLORS[i], points[i], max_points);
 
-        if (points[i] == max_points)
+        if (points[i] == max_points && max_points != 0)
         {
 
             AddImage(100 + col_idx * _max_num_rows + i,
@@ -177,47 +159,6 @@ void ctrlStatisticTable::AddColumn(unsigned col_idx, const std::vector<unsigned>
     SetScale(true);
 }
 
-void ctrlStatisticTable::AddRow(const std::string player_name, const std::vector<int> &points)
-{
-    SetScale(false);
-    unsigned base_id = 10 + (_num_rows + 1) * (points.size() + 5);
-
-    AddText(base_id + 1, 
-        (s.x_grid/2) - (s.col_width/2), 
-        (_num_rows+1) * s.y_grid, 
-        player_name, COLOR_YELLOW, glArchivItem_Font::DF_LEFT, NormalFont);
-
-    for(unsigned short i = 0; i < points.size(); ++i)
-    {
-        std::stringstream ss;
-
-        ss << points[i];
-
-        /*AddText(base_id + 2 + i, 
-            (i + 1) * s.x_grid + (s.x_grid/2),
-            s.y_start + (_num_rows + 1) * s.y_grid, 
-            ss.str(), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, NormalFont);
-*/
-        unsigned fake_val = _num_rows;
-        unsigned fake_max = _max_num_rows;
-
-        unsigned box_height = ScaleY(22);
-        unsigned height_center_offset = ScaleY(40)/2 - (box_height/2) - 4; // why 4?
-
-        AddColorBar(base_id + 2 + i, 
-            (i+1) * s.x_grid + (s.x_grid/2) - (s.col_width/2), 
-            s.y_start + (_num_rows + 1) * s.y_grid - height_center_offset,
-            s.col_width, box_height, 
-            TC_GREY,
-            COLOR_YELLOW, NormalFont, COLORS[_num_rows], fake_val, fake_max);
-    }
-    _num_rows++;
-    SetScale(true);
-}
-
-
-
-
 bool ctrlStatisticTable::Draw_()
 {
     SetScale(false);
@@ -230,7 +171,7 @@ bool ctrlStatisticTable::Draw_()
         // Font Height = 12
         unsigned box_height = ScaleY(40);
         unsigned height_center_offset = (box_height / 2) - (12/2);
-        Window::DrawRectangle(GetX(), GetY() + (i+1) * s.y_grid - height_center_offset, width, box_height, (COLORS[i] & 0x00FFFFFF) | 0x40000000);
+        Window::DrawRectangle(GetX(), GetY() + (i+1) * s.y_grid - height_center_offset, width, box_height, (COLORS[_players[i].color] & 0x00FFFFFF) | 0x40000000);
     }
     SetScale(true);
     DrawControls();
@@ -243,7 +184,6 @@ bool ctrlStatisticTable::Draw_()
 
 void ctrlStatisticTable::Msg_ButtonClick(const unsigned int ctrl_id)
 {
-    //SortRows(ctrl_id - 1);
     if (ctrl_id > 1 && ctrl_id < _columns.size() + 1)
     {
         parent->Msg_StatisticGroupChange(id, ctrl_id - 1);

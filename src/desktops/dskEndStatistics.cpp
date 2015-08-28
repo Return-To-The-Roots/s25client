@@ -48,34 +48,6 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-
-namespace {
-    void addDummyNames(ctrlStatisticTable *table)
-    {
-        unsigned num_players = 8;
-        std::string names_arr[8] = {"Player 1", "Player 2", "Player 3", "Player 4", "Player 5", "Player 6", "Player 7", "Player 8"};
-        std::vector<EndStatisticData::PlayerInfo> player_infos;
-        for (unsigned i = 0; i < num_players; ++i)
-            player_infos.push_back(EndStatisticData::PlayerInfo(names_arr[i], COLORS[i], Team(0), Nation(0)));
-
-        table->AddPlayerInfos(player_infos);
-    }
-
-    void createDummyData(EndStatisticData *data)
-    {
-        Random rand;
-        rand.Init(0);
-
-        for (unsigned i = 0; i < 8; ++i)
-        {
-            for (unsigned j = 0; j <= EndStatisticData::MAX_VALUES; ++j)
-            {
-                data->SetValue(EndStatisticData::ValueIndex(j), i, rand.Rand("", 0, 0, 100));
-            }
-        }
-    }
-}
-
 dskEndStatistics::dskEndStatistics(EndStatisticData *data) : Desktop(LOADER.GetImageN("setup013", 0)), data(data)
 {
     assert(data != 0 && "no valid EndStatisticData supplied");
@@ -86,9 +58,8 @@ dskEndStatistics::dskEndStatistics(EndStatisticData *data) : Desktop(LOADER.GetI
     // Title
     AddText(1, 400, 10, _("Final Score"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, LargeFont);  
 
-    // TODO get EndStatisticData from somewhere...
-    //createDummyData(&data);
-    
+    data->RemoveUnusedPlayerSlotsFromData();
+
     ShowOverview();
 }
 
@@ -97,8 +68,6 @@ dskEndStatistics::~dskEndStatistics()
     if (data)
         delete data;
 }
-
-
 
 void dskEndStatistics::ShowOverview()
 {
@@ -172,7 +141,7 @@ void dskEndStatistics::Msg_ButtonClick(const unsigned int ctrl_id)
     case 0: // "Back"
         {
             if (_in_overview)
-                WINDOWMANAGER.Switch(new dskMainMenu);
+                WINDOWMANAGER.Switch(new dskMainMenu);  // TODO might want to switch to lobby
             else
             {
                 DeleteCtrl(2);

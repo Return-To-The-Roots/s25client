@@ -114,9 +114,13 @@ public:
         unsigned color;
         Team team;
         Nation nation;
+        bool exists;
 
-        PlayerInfo(const std::string& name, unsigned color, Team team, Nation nation) 
-            : name(name), color(color), team(team), nation(nation) { }
+        PlayerInfo(const std::string& name, unsigned color, Team team, Nation nation, bool exists) 
+            : name(name), color(color), team(team), nation(nation), exists(exists) { }
+
+        PlayerInfo() 
+            : name("invalid"), color(0), team(TM_NOTEAM), nation(NAT_INVALID), exists(false) { }
     };
 
 public:
@@ -135,6 +139,7 @@ public:
     /// Sum of the points of all categories for one player
     unsigned CalcTotalPoints(unsigned char player_id) const;
 
+    void RemoveUnusedPlayerSlotsFromData();
 
     const Value& GetValue(ValueIndex value) const;
     const std::vector<MainCategory>& GetCategories() const;

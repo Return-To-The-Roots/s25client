@@ -103,7 +103,7 @@ namespace gc
         virtual void Serialize(Serializer* ser) const = 0;
 
         /// Execute this GameCommand
-        virtual void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid) = 0;
+        virtual void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
         virtual void ExecuteImp(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid) = 0;
 
         GameCommand(const GameCommand& obj): gst(obj.gst) // Do not copy refCounter!

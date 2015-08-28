@@ -24,14 +24,16 @@
 #include "SerializedGameData.h"
 #include "GamePlayerList.h"
 
-EndStatisticData::EndStatisticData(const GameClientPlayerList& players)
+EndStatisticData::EndStatisticData(const GameClientPlayerList& players) : _player_infos(0)
 {
     unsigned number_of_players = players.getCount();
 
     for (unsigned i = 0; i < number_of_players; ++i)
     {
         GameClientPlayer gcp = players[i];
-        _player_infos.push_back(PlayerInfo(gcp.name, gcp.color, gcp.team, gcp.nation)); 
+        bool slot_taken = gcp.ps == PS_OCCUPIED || gcp.ps == PS_KI;
+
+        _player_infos.push_back(PlayerInfo(gcp.name, gcp.color, gcp.team, gcp.nation, slot_taken)); 
     }
 
     _main_categories.resize(MAX_CATEGORIES + 1);
@@ -215,6 +217,32 @@ unsigned EndStatisticData::CalcTotalPoints(unsigned char player_id) const
         points += CalcPointsForCategory(CategoryIndex(i), player_id);
 
     return points;
+}
+
+void EndStatisticData::RemoveUnusedPlayerSlotsFromData()
+{
+    // find out which slots are taken
+    std::vector<unsigned> used;
+    for (unsigned i = 0; i < _player_infos.size(); ++i)
+    {
+        if (_player_infos[i].exists)
+            used.push_back(i);
+    }
+
+    // compactify values
+    for (unsigned v = 0; v <= MAX_VALUES; ++v)
+    {
+        for (unsigned i = 0; i < used.size(); ++i)
+            _values[v].value_per_player[i] = _values[v].value_per_player[used[i]];
+
+        _values[v].value_per_player.resize(used.size());
+    }
+
+    // compactify playerinfos
+    for (unsigned i = 0; i < used.size(); ++i)
+        _player_infos[i] = _player_infos[used[i]];
+
+    _player_infos.resize(used.size());
 }
 
 const std::vector<EndStatisticData::PlayerInfo>& EndStatisticData::GetPlayerInfos() const
