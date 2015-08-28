@@ -142,6 +142,8 @@ case "$COMPILEFOR" in
 	linux|freebsd)
 		cp -v ${SRCDIR}/release/bin/rttr.sh ${DESTDIR}${BINDIR} || exit 1
 	;;
+	apple)
+	;;
 	*)
 		echo "$COMPILEFOR not supported" >&2
 		exit 1
