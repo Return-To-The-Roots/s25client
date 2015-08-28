@@ -9,7 +9,7 @@ CMAKE_COMMAND=cmake
 ###############################################################################
 
 if [ -z "$(type -p $CMAKE_COMMAND)" ] ; then
-	echo "You have to install CMake"
+	echo "You have to install CMake" >&2
 	exit 1
 fi
 
@@ -76,7 +76,7 @@ while test $# != 0 ; do
 		LIBDIR=$ac_optarg
 	;;
 	*)
-		echo "Unknown option: $ac_option"
+		echo "Unknown option: $ac_option" >&2
 		exit 1
 	;;
 	esac
