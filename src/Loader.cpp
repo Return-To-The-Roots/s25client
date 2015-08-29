@@ -952,9 +952,10 @@ void Loader::ClearTerrainTextures()
 {
     for(std::map<TerrainType, glArchivItem_Bitmap*>::iterator it = terrainTextures.begin(); it != terrainTextures.end(); ++it)
         delete it->second;
+    for(std::map<TerrainType, libsiedler2::ArchivInfo*>::iterator it = terrainTexturesAnim.begin(); it != terrainTexturesAnim.end(); ++it)
+        delete it->second;
     terrainTextures.clear();
-    water.clear();
-    lava.clear();
+    terrainTexturesAnim.clear();
     borders.clear();
     roads.clear();
     roads_points.clear();
@@ -997,17 +998,22 @@ bool Loader::CreateTerrainTextures(void)
         Rect(242, 160, 50, 16),
     };
 
+    bool waterLoaded = false;
+
     for(unsigned char i=0; i<TT_COUNT; ++i)
     {
         TerrainType t = TerrainType(i);
-        if(t == TT_LAVA)
-            ExtractAnimatedTexture(lava, TerrainData::GetPosInTexture(t), 4, 248);
-        else if(TerrainData::IsWater(t))
+        if(TerrainData::IsWater(t))
         {
             // All water uses the same texture, so load only once
-            if(!water.getCount())
-                ExtractAnimatedTexture(water, TerrainData::GetPosInTexture(t), 8, 240);
-        }else
+            if(waterLoaded)
+                continue;
+            t = TT_WATER;
+            waterLoaded = true;
+        }
+        if(TerrainData::IsAnimated(t))
+            terrainTexturesAnim[t] = ExtractAnimatedTexture(TerrainData::GetPosInTexture(t), TerrainData::GetFrameCount(t), TerrainData::GetStartColor(t));
+        else
             terrainTextures[t] = ExtractTexture(TerrainData::GetPosInTexture(t));
     }
 
@@ -1027,11 +1033,13 @@ bool Loader::CreateTerrainTextures(void)
 
 glArchivItem_Bitmap& Loader::GetTerrainTexture(TerrainType t, unsigned animationFrame/* = 0*/)
 {
-    if(t == TT_LAVA)
-        return *dynamic_cast<glArchivItem_Bitmap*>(lava.get(animationFrame));
-    else if(TerrainData::IsWater(t))
-        return *dynamic_cast<glArchivItem_Bitmap*>(water.get(animationFrame));
-    else
+    if(TerrainData::IsAnimated(t))
+    {
+        libsiedler2::ArchivInfo* archive = terrainTexturesAnim[t];
+        if(!archive)
+            throw std::runtime_error("Invalid terrain texture requested");
+        return *dynamic_cast<glArchivItem_Bitmap*>(archive->get(animationFrame));
+    }else
     {
         glArchivItem_Bitmap* bmp = terrainTextures[t];
         if(!bmp)
@@ -1076,7 +1084,7 @@ glArchivItem_Bitmap_Raw* Loader::ExtractTexture(const Rect& rect)
  *
  *  @author OLiver
  */
-void Loader::ExtractAnimatedTexture(libsiedler2::ArchivInfo& destination, const Rect& rect, unsigned char color_count, unsigned char start_index)
+libsiedler2::ArchivInfo* Loader::ExtractAnimatedTexture(const Rect& rect, unsigned char color_count, unsigned char start_index)
 {
     libsiedler2::ArchivItem_Palette* palette = GetTexPaletteN(1);
     glArchivItem_Bitmap* image = GetTexImageN(0);
@@ -1093,6 +1101,7 @@ void Loader::ExtractAnimatedTexture(libsiedler2::ArchivInfo& destination, const 
     bitmap.setPalette(palette);
     bitmap.setFormat(libsiedler2::FORMAT_PALETTED);
 
+    libsiedler2::ArchivInfo* destination = new libsiedler2::ArchivInfo();
     for(unsigned char i = 0; i < color_count; ++i)
     {
         for(std::vector<unsigned char>::iterator it = buffer.begin(); it != buffer.end(); ++it)
@@ -1106,8 +1115,9 @@ void Loader::ExtractAnimatedTexture(libsiedler2::ArchivInfo& destination, const 
 
         bitmap.create(width, height, &buffer.front(), width, height, libsiedler2::FORMAT_PALETTED, palette);
 
-        destination.pushC(&bitmap);
+        destination->pushC(&bitmap);
     }
+    return destination;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

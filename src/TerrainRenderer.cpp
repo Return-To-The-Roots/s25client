@@ -305,25 +305,26 @@ void TerrainRenderer::UpdateTriangleTerrain(const MapPoint pt, const GameWorldVi
 {
     unsigned int pos = GetTriangleIdx(pt);
 
+    // TODO: Check those offsets for lava2-lava4
     TerrainType t1 = gwv.GetNode(pt).t1;
-    bool isWaterOrLava = TerrainData::IsWater(t1) || t1 == TT_LAVA;
-    gl_texcoords[pos].pos[0].x = (isWaterOrLava) ? 0.4375f   : 0.45f;
-    gl_texcoords[pos].pos[0].y = (isWaterOrLava) ? 0.0f      : 0.45f;
-    gl_texcoords[pos].pos[1].y = (isWaterOrLava) ? 0.445312f : 0.0f;
-    gl_texcoords[pos].pos[1].x = (isWaterOrLava) ? 0.0f      : 0.225f;
-    gl_texcoords[pos].pos[2].x = (isWaterOrLava) ? 0.84375f  : 0.0f;
-    gl_texcoords[pos].pos[2].y = (isWaterOrLava) ? 0.445312f : 0.45f;
+    bool isAnimated = TerrainData::IsAnimated(t1);
+    gl_texcoords[pos].pos[0].x = (isAnimated) ? 0.4375f   : 0.45f;
+    gl_texcoords[pos].pos[0].y = (isAnimated) ? 0.0f      : 0.45f;
+    gl_texcoords[pos].pos[1].y = (isAnimated) ? 0.445312f : 0.0f;
+    gl_texcoords[pos].pos[1].x = (isAnimated) ? 0.0f      : 0.225f;
+    gl_texcoords[pos].pos[2].x = (isAnimated) ? 0.84375f  : 0.0f;
+    gl_texcoords[pos].pos[2].y = (isAnimated) ? 0.445312f : 0.45f;
 
     ++pos;
 
     TerrainType t2 = gwv.GetNode(pt).t2;
-    isWaterOrLava = TerrainData::IsWater(t2) || t2 == TT_LAVA;
-    gl_texcoords[pos].pos[0].x = (isWaterOrLava) ? 0.4375f   : 0.0f;
-    gl_texcoords[pos].pos[0].y = (isWaterOrLava) ? 0.859375f : 0.0f;
-    gl_texcoords[pos].pos[1].x = (isWaterOrLava) ? 0.84375f  : 0.235f;
-    gl_texcoords[pos].pos[1].y = (isWaterOrLava) ? 0.445312f : 0.45f;
-    gl_texcoords[pos].pos[2].x = (isWaterOrLava) ? 0.0f      : 0.47f;
-    gl_texcoords[pos].pos[2].y = (isWaterOrLava) ? 0.445312f : 0.0f;
+    isAnimated = TerrainData::IsAnimated(t2);
+    gl_texcoords[pos].pos[0].x = (isAnimated) ? 0.4375f   : 0.0f;
+    gl_texcoords[pos].pos[0].y = (isAnimated) ? 0.859375f : 0.0f;
+    gl_texcoords[pos].pos[1].x = (isAnimated) ? 0.84375f  : 0.235f;
+    gl_texcoords[pos].pos[1].y = (isAnimated) ? 0.445312f : 0.45f;
+    gl_texcoords[pos].pos[2].x = (isAnimated) ? 0.0f      : 0.47f;
+    gl_texcoords[pos].pos[2].y = (isAnimated) ? 0.445312f : 0.0f;
 
 
     /// Bei Vertexbuffern das die Daten aktualisieren
@@ -742,10 +743,10 @@ void TerrainRenderer::Draw(const GameWorldView& gwv, unsigned int* water)
             continue;
         unsigned animationFrame;
         TerrainType tt = TerrainType(t);
-        if(tt == TT_LAVA)
-            animationFrame = GAMECLIENT.GetGlobalAnimation(4, 5, 4, 0);
+        if(TerrainData::IsLava(tt))
+            animationFrame = GAMECLIENT.GetGlobalAnimation(TerrainData::GetFrameCount(tt), 5, 4, 0);
         else if(TerrainData::IsWater(tt))
-            animationFrame = GAMECLIENT.GetGlobalAnimation(8, 5, 2, 0);
+            animationFrame = GAMECLIENT.GetGlobalAnimation(TerrainData::GetFrameCount(tt), 5, 2, 0);
         else
             animationFrame = 0;
 

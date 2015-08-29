@@ -85,7 +85,7 @@ class Loader : public Singleton<Loader>
         bool LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette, libsiedler2::ArchivInfo* archiv);
         bool LoadArchiv(const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette, libsiedler2::ArchivInfo* archiv);
         glArchivItem_Bitmap_Raw* ExtractTexture(const Rect& rect);
-        void ExtractAnimatedTexture(libsiedler2::ArchivInfo& destination, const Rect& rect, unsigned char color_count, unsigned char start_index);
+        libsiedler2::ArchivInfo* ExtractAnimatedTexture(const Rect& rect, unsigned char color_count, unsigned char start_index);
 
         bool LoadFilesFromArray(const unsigned int files_count, const unsigned int* files, bool load_always = true);
         bool LoadLsts(unsigned int dir);
@@ -118,8 +118,7 @@ class Loader : public Singleton<Loader>
         /// Terraintextures (unanimated)
         std::map<TerrainType, glArchivItem_Bitmap*> terrainTextures;
         /// Terraintextures (animated) (currently only water and lava)
-        libsiedler2::ArchivInfo water;
-        libsiedler2::ArchivInfo lava;
+        std::map<TerrainType, libsiedler2::ArchivInfo*> terrainTexturesAnim;
 
         unsigned char lastgfx;
         libsiedler2::ArchivInfo* nation_gfx[NAT_COUNT];

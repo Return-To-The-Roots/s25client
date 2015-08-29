@@ -31,6 +31,12 @@ public:
     static TerrainType MapIdx2Terrain(unsigned char mapIdx);
     /// Returns the position in the texture image
     static Rect GetPosInTexture(TerrainType t);
+    /// Returns whether the terrains texture is animated
+    static bool IsAnimated(TerrainType t);
+    /// Gets the number of frames in the animation
+    static unsigned GetFrameCount(TerrainType t);
+    /// Gets the start color for the animation (extraction)
+    static unsigned char GetStartColor(TerrainType t);
     /// Returns the color for the terrain
     static unsigned GetColor(LandscapeType landsCape, TerrainType t);
     /// Gets the edge type for a terrain type
@@ -48,6 +54,8 @@ public:
     static bool IsVital(TerrainType t);
     /// Returns whether the given terrain is any kind of water
     static bool IsWater(TerrainType t);
+    /// Returns whether the given terrain is any kind of lava
+    static bool IsLava(TerrainType t);
     /// Returns whether the given terrain is a mountain
     static bool IsMountain(TerrainType t);
     /// Returns whether the given terrain is a mineable mountain

@@ -45,11 +45,14 @@ enum TerrainType
     TT_LAVA,
     TT_WATER2,
     TT_BUILDABLE_WATER,
-    TT_BUILDABLE_MOUNTAIN
+    TT_BUILDABLE_MOUNTAIN,
+    TT_LAVA2,
+    TT_LAVA3,
+    TT_LAVA4
 };
 
 // Keep this in sync with TerrainType
-static const unsigned char TT_COUNT = TT_BUILDABLE_MOUNTAIN + 1;
+static const unsigned char TT_COUNT = TT_LAVA4 + 1;
 
 enum EdgeType
 {
