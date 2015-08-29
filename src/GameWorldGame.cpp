@@ -54,6 +54,7 @@
 #include "WindowManager.h"
 #include "GameInterface.h"
 #include "drivers/VideoDriverWrapper.h"
+#include "gameData/TerrainData.h"
 #include "helpers/containerUtils.h"
 
 #include <algorithm>
@@ -846,15 +847,15 @@ bool GameWorldGame::TerritoryChange(const noBaseBuilding* const building, const 
                 // if gameobjective isnt 75% ai can ignore water/snow/lava/swamp terrain (because it wouldnt help win the game)
                 if(GAMECLIENT.GetGGS().game_objective == GlobalGameSettings::GO_CONQUER3_4)
                     return false;
-                unsigned char t1 = GetNode(t).t1, t2 = GetNode(t).t2;
-                if((t1 != TT_WATER && t1 != TT_LAVA && t1 != TT_SWAMPLAND && t1 != TT_SNOW) && (t2 != TT_WATER && t2 != TT_LAVA && t2 != TT_SWAMPLAND && t2 != TT_SNOW))
+                TerrainType t1 = GetNode(t).t1, t2 = GetNode(t).t2;
+                if(TerrainData::IsUseable(t1) && TerrainData::IsUseable(t2))
                     return false;
                 //also check neighboring nodes for their terrain since border will still count as player territory but not allow any buildings !
                 for(int j = 0; j < 6; j++)
                 {
                     t1 = GetNode(GetNeighbour(t, j)).t1;
                     t2 = GetNode(GetNeighbour(t, j)).t2;
-                    if((t1 != TT_WATER && t1 != TT_LAVA && t1 != TT_SWAMPLAND && t1 != TT_SNOW) || (t2 != TT_WATER && t2 != TT_LAVA && t2 != TT_SWAMPLAND && t2 != TT_SNOW))
+                    if(TerrainData::IsUseable(t1) || TerrainData::IsUseable(t2))
                         return false;
                 }
             }

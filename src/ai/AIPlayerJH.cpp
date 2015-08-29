@@ -35,6 +35,7 @@
 
 #include "MapGeometry.h"
 #include "AIConstruction.h"
+#include "gameData/TerrainData.h"
 
 #include <iostream>
 #include <list>
@@ -404,63 +405,52 @@ void AIPlayerJH::SetGatheringForUpgradeWarehouse(nobBaseWarehouse* upgradewareho
 
 AIJH::Resource AIPlayerJH::CalcResource(const MapPoint pt)
 {
-    AIJH::Resource res = aii->GetSubsurfaceResource(pt);
+    AIJH::Resource subRes = aii->GetSubsurfaceResource(pt);
 
     // resources on surface
-    if (res == AIJH::NOTHING)
+    if (subRes == AIJH::NOTHING)
     {
-        res = aii->GetSurfaceResource(pt);
+        AIJH::Resource res = aii->GetSurfaceResource(pt);
 
         if(res == AIJH::NOTHING)
         {
-            // check terrain
-            unsigned char t;
-            bool good = !aii->IsRoadPoint(pt);
+            if(aii->IsRoadPoint(pt))
+                return AIJH::NOTHING;
 
             for(unsigned char i = 0; i < Direction::COUNT; ++i)
             {
-                t = aii->GetTerrainAround(pt, Direction::fromUInt(i));
+                TerrainType t = aii->GetTerrainAround(pt, Direction::fromUInt(i));
 
                 // check against valid terrains for planting
-                if(t != 3 && (t < 8 || t > 12))
-                {
-                    good = false;
-                }
+                if(!TerrainData::IsVital(t))
+                    return AIJH::NOTHING;
             }
-            if (good)
-            {
-                res = AIJH::PLANTSPACE;
-            }
+            return AIJH::PLANTSPACE;
         }
-        else
+        else if (res == AIJH::WOOD)
         {
-            if (res == AIJH::WOOD)
-            {
-                if((gwb.GetSpecObj<noTree>(pt))->type == 5) //exclude pineapple (because they are more of a "blocker" than a tree and only count as tree for animation&sound)
-                    res = AIJH::NOTHING;
-            }
+            if((gwb.GetSpecObj<noTree>(pt))->type == 5) //exclude pineapple (because they are more of a "blocker" than a tree and only count as tree for animation&sound)
+                return AIJH::NOTHING;
         }
     }
     else
     {
-        if ((aii->GetSurfaceResource(pt) == AIJH::STONES) || (aii->GetSurfaceResource(pt) == AIJH::WOOD))
+        AIJH::Resource res = aii->GetSurfaceResource(pt);
+        if (res == AIJH::STONES || res == AIJH::WOOD)
         {
-            if (aii->GetSubsurfaceResource(pt) == AIJH::WOOD)
+            if (subRes == AIJH::WOOD)
             {
                 if ((gwb.GetSpecObj<noTree>(pt))->type != 5)
-                    res = AIJH::MULTIPLE;
+                    return AIJH::MULTIPLE;
             }
             else
-            {
-                res = AIJH::MULTIPLE;
-            }
+                return AIJH::MULTIPLE;
         }
     }
-    if (res == AIJH::BLOCKED)
-    {
-        res = AIJH::NOTHING; // nicht so ganz logisch... aber Blocked als res is doof TODO
-    }
-    return res;
+    if (subRes == AIJH::BLOCKED)
+        subRes = AIJH::NOTHING; // nicht so ganz logisch... aber Blocked als res is doof TODO
+
+    return subRes;
 }
 
 void AIPlayerJH::InitReachableNodes()
@@ -627,11 +617,10 @@ void AIPlayerJH::InitResourceMaps()
     }
 }
 
-void AIPlayerJH::RecalcResource(AIJH::Resource restype)
+void AIPlayerJH::RecalcResource(AIJH::Resource res)
 {
     unsigned short width = aii->GetMapWidth();
     unsigned short height = aii->GetMapHeight();
-    unsigned res = restype;
     std::vector<int> &resmap = resourceMaps[res];
     for (unsigned y = 0; y < resmap.size(); ++y)
     {
@@ -643,28 +632,28 @@ void AIPlayerJH::RecalcResource(AIJH::Resource restype)
         {
             unsigned i = aii->GetIdx(pt);
             //resourceMaps[res][i] = 0;
-            if (nodes[i].res == (AIJH::Resource)res && (AIJH::Resource)res != AIJH::BORDERLAND && gwb.GetNode(pt).t1 != TT_WATER && gwb.GetNode(pt).t1 != TT_LAVA && gwb.GetNode(pt).t1 != TT_SWAMPLAND && gwb.GetNode(pt).t1 != TT_SNOW )
+            if (nodes[i].res == res && res != AIJH::BORDERLAND && TerrainData::IsUseable(gwb.GetNode(pt).t1))
             {
-                ChangeResourceMap(pt, AIJH::RES_RADIUS[res], resourceMaps[res], 1);
+                ChangeResourceMap(pt, AIJH::RES_RADIUS[res], resmap, 1);
             }
             // Grenzgebiet"ressource"
-            else if (aii->IsBorder(pt) && (AIJH::Resource)res == AIJH::BORDERLAND)
+            else if (aii->IsBorder(pt) && res == AIJH::BORDERLAND)
             {
                 //only count border area that is actually passable terrain
-                if(gwb.GetNode(pt).t1 != TT_WATER && gwb.GetNode(pt).t1 != TT_LAVA && gwb.GetNode(pt).t1 != TT_SWAMPLAND && gwb.GetNode(pt).t1 != TT_SNOW)
-                    ChangeResourceMap(pt, AIJH::RES_RADIUS[AIJH::BORDERLAND], resourceMaps[AIJH::BORDERLAND], 1);
+                if(TerrainData::IsUseable(gwb.GetNode(pt).t1))
+                    ChangeResourceMap(pt, AIJH::RES_RADIUS[AIJH::BORDERLAND], resmap, 1);
             }
-            if (nodes[i].res == AIJH::MULTIPLE && gwb.GetNode(pt).t1 != TT_WATER && gwb.GetNode(pt).t1 != TT_LAVA && gwb.GetNode(pt).t1 != TT_SWAMPLAND )
+            if (nodes[i].res == AIJH::MULTIPLE && TerrainData::IsUseable(gwb.GetNode(pt).t1) )
             {
-                if(aii->GetSubsurfaceResource(pt) == (AIJH::Resource)res || aii->GetSurfaceResource(pt) == (AIJH::Resource)res)
-                    ChangeResourceMap(pt, AIJH::RES_RADIUS[res], resourceMaps[res], 1);
+                if(aii->GetSubsurfaceResource(pt) == res || aii->GetSurfaceResource(pt) == res)
+                    ChangeResourceMap(pt, AIJH::RES_RADIUS[res], resmap, 1);
             }
             if(res == AIJH::WOOD && aii->IsBuildingOnNode(pt, BLD_WOODCUTTER)) //existing woodcutters reduce wood rating
-                ChangeResourceMap(pt, 7, resourceMaps[res], -10);
+                ChangeResourceMap(pt, 7, resmap, -10);
             if(res == AIJH::PLANTSPACE && aii->IsBuildingOnNode(pt, BLD_FARM)) //existing farm reduce plantspace rating
-                ChangeResourceMap(pt, 3, resourceMaps[res], -25);
+                ChangeResourceMap(pt, 3, resmap, -25);
             if(res == AIJH::PLANTSPACE && aii->IsBuildingOnNode(pt, BLD_FORESTER)) //existing forester reduce plantspace rating
-                ChangeResourceMap(pt, 6, resourceMaps[res], -25);
+                ChangeResourceMap(pt, 6, resmap, -25);
         }
     }
 }
@@ -930,14 +919,13 @@ bool AIPlayerJH::FindBestPositionDiminishingResource(MapPoint& pt, AIJH::Resourc
                 if(res == AIJH::FISH || res == AIJH::STONES)
                 {
                     //remove permanently invalid spots to speed up future checks
-                    unsigned char t1 = gwb.GetNode(t2).t1;
-                    if(t1 == TT_DESERT || t1 == TT_SNOW || t1 == TT_LAVA || t1 == TT_WATER || t1 == TT_SWAMPLAND || t1 == TT_MOUNTAIN1 || t1 == TT_MOUNTAIN2 || t1 == TT_MOUNTAIN3 || t1 == TT_MOUNTAIN4)
+                    TerrainType t1 = gwb.GetNode(t2).t1;
+                    if(!TerrainData::IsUseable(t1) || TerrainData::IsMineable(t1))
                         resourceMaps[res][n] = 0;
                 }
                 else //= granite,gold,iron,coal
                 {
-                    unsigned char t1 = gwb.GetNode(t2).t1;
-                    if(t1 != TT_MOUNTAIN1 && t1 != TT_MOUNTAIN2 && t1 != TT_MOUNTAIN3 && t1 != TT_MOUNTAIN4)
+                    if(!TerrainData::IsMineable(gwb.GetNode(t2).t1))
                         resourceMaps[res][n] = 0;
                 }
                 if (temp > best_value)

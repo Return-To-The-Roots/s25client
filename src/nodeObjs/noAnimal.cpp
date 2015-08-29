@@ -32,6 +32,7 @@
 #include "figures/nofHunter.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "SerializedGameData.h"
+#include "gameData/TerrainData.h"
 
 #include "ogl/glSmartBitmap.h"
 
@@ -272,7 +273,8 @@ unsigned char noAnimal::FindDir()
     {
         unsigned char d = (dtmp + doffset) % 6;
 
-        unsigned char t1 = gwg->GetWalkingTerrain1(pos, d);
+        TerrainType t1 = gwg->GetWalkingTerrain1(pos, d);
+        TerrainType t2 = gwg->GetWalkingTerrain2(pos, d);
 
 		/* Animals are people, too. They should be allowed to cross borders as well!
 		
@@ -300,26 +302,20 @@ unsigned char noAnimal::FindDir()
 
         if(species == SPEC_DUCK)
         {
-            // Enten schwimmen nur auf dem Wasser --> muss daher Wasser sein (ID 14 = Wasser)
-            unsigned char t2 = gwg->GetWalkingTerrain2(pos, d);
-            
-            if(t1 == 14 &&
-                    t2 == 14)
+            // Enten schwimmen nur auf dem Wasser --> muss daher Wasser sein       
+            if(TerrainData::IsWater(t1) || TerrainData::IsWater(t2))
                 return d;
         }
         else if(species == SPEC_POLARBEAR)
         {
             // Polarbären laufen nur auf Schnee rum
-            unsigned char t2 = gwg->GetWalkingTerrain2(pos, d);
-
-            if(t1 == 0 ||
-                    t2 == 0)
+            if(t1 == TT_SNOW || t2 == TT_SNOW)
                 return d;
         }
         else
         {
             // Die anderen Tiere dürfen nur auf Wiesen,Savannen usw. laufen, nicht auf Bergen oder in der Wüste!
-            if(!((t1 == 3 || (t1 >= 8 && t1 <= 13)) && (t1 == 3 || (t1 >= 8 && t1 <= 13))))
+            if(!TerrainData::IsVital(t1) || !TerrainData::IsVital(t2))
                 continue;
 
             // Außerdem dürfen keine Hindernisse im Weg sein

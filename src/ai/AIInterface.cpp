@@ -26,6 +26,7 @@
 #include "buildings/nobHQ.h"
 #include "nodeObjs/noTree.h"
 #include "GameWorld.h"
+#include "gameData/TerrainData.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -62,14 +63,14 @@ AIJH::Resource AIInterface::GetSubsurfaceResource(const MapPoint pt) const
 AIJH::Resource AIInterface::GetSurfaceResource(const MapPoint pt) const
 {
     NodalObjectType no = gwb.GetNO(pt)->GetType();
-    unsigned char t1 = gwb.GetNode(pt).t1;
+    TerrainType t1 = gwb.GetNode(pt).t1;
     //valid terrain?
-    if(t1 != TT_WATER && t1 != TT_LAVA && t1 != TT_SWAMPLAND && t1 != TT_SNOW)
+    if(TerrainData::IsUseable(t1))
     {
         if (no == NOP_TREE)
         {
             //exclude pineapple because it's not a real tree
-            if ((gwb.GetSpecObj<noTree>(pt))->type != 5)
+            if (gwb.GetSpecObj<noTree>(pt)->type != 5)
                 return AIJH::WOOD;
             else
                 return AIJH::BLOCKED;
@@ -85,6 +86,37 @@ AIJH::Resource AIInterface::GetSurfaceResource(const MapPoint pt) const
         return AIJH::BLOCKED;
 }
 
+int AIInterface::GetResourceRating(const MapPoint pt, AIJH::Resource res) const
+{
+    //surface resource?
+    if(res == AIJH::PLANTSPACE || res == AIJH::BORDERLAND || res == AIJH::WOOD || res == AIJH::STONES)
+    {
+        AIJH::Resource tres = GetSurfaceResource(pt);
+        TerrainType t1 = gwb.GetNode(pt).t1, t2 = gwb.GetNode(pt).t2;
+        if (tres == res ||
+            (res == AIJH::PLANTSPACE && tres == AIJH::NOTHING && TerrainData::IsVital(t1)) ||
+            (res == AIJH::BORDERLAND && (IsBorder(pt) || !IsOwnTerritory(pt)) && (TerrainData::IsUseable(t1) || TerrainData::IsUseable(t2))))
+        {
+            return AIJH::RES_RADIUS[res];
+        }
+        //another building using our "resource"? reduce rating!
+        if(res == AIJH::WOOD || res == AIJH::PLANTSPACE)
+        {
+            if((res == AIJH::WOOD && IsBuildingOnNode(pt, BLD_WOODCUTTER)) || (res == AIJH::PLANTSPACE && IsBuildingOnNode(pt, BLD_FORESTER)))
+                return -40;
+        }
+    }
+    //so it's a subsurface resource or something we dont calculate (multiple,blocked,nothing)
+    else
+    {
+        if (GetSubsurfaceResource(pt) == res)
+        {
+            return AIJH::RES_RADIUS[res];
+        }
+    }
+    return 0;
+}
+
 int AIInterface::CalcResourceValue(const MapPoint pt, AIJH::Resource res, char direction, int lastval) const
 {
     int returnval = 0;
@@ -97,58 +129,12 @@ int AIInterface::CalcResourceValue(const MapPoint pt, AIJH::Resource res, char d
             {
                 for(MapCoord r2 = 0; r2 < r; tP2 = gwb.GetNeighbour(tP2, i % 6), ++r2)
                 {
-                    //surface resource?
-                    if(res == AIJH::PLANTSPACE || res == AIJH::BORDERLAND || res == AIJH::WOOD || res == AIJH::STONES)
-                    {
-                        AIJH::Resource tres = GetSurfaceResource(tP2);
-                        unsigned char t1 = gwb.GetNode(tP2).t1, t2 = gwb.GetNode(tP2).t2;
-                        if (tres == res || (res == AIJH::PLANTSPACE && tres == AIJH::NOTHING && t1 != TT_DESERT && t1 != TT_MOUNTAINMEADOW && t1 != TT_MOUNTAIN1 && t1 != TT_MOUNTAIN2 && t1 != TT_MOUNTAIN3 && t1 != TT_MOUNTAIN4) || (res == AIJH::BORDERLAND && (IsBorder(tP2) || !IsOwnTerritory(tP2)) && ((t1 != TT_SNOW && t1 != TT_LAVA && t1 != TT_SWAMPLAND && t1 != TT_WATER) || (t2 != TT_SNOW && t2 != TT_LAVA && t2 != TT_SWAMPLAND && t2 != TT_WATER))))
-                        {
-                            returnval += (AIJH::RES_RADIUS[res]);
-                        }
-                        //another building using our "resource"? reduce rating!
-                        if(res == AIJH::WOOD || res == AIJH::PLANTSPACE)
-                        {
-                            if((res == AIJH::WOOD && IsBuildingOnNode(tP2, BLD_WOODCUTTER)) || (res == AIJH::PLANTSPACE && IsBuildingOnNode(tP2, BLD_FORESTER)))
-                                returnval -= (40);
-                        }
-                    }
-                    //so it's a subsurface resource or something we dont calculate (multiple,blocked,nothing)
-                    else
-                    {
-                        if (GetSubsurfaceResource(tP2) == res)
-                        {
-                            returnval += (AIJH::RES_RADIUS[res]);
-                        }
-                    }
+                    returnval += GetResourceRating(tP2, res);
                 }
             }
         }
         //add the center point value
-        //surface resource?
-        if(res == AIJH::PLANTSPACE || res == AIJH::BORDERLAND || res == AIJH::WOOD || res == AIJH::STONES)
-        {
-            AIJH::Resource tres = GetSurfaceResource(pt);
-            unsigned char t1 = gwb.GetNode(pt).t1, t2 = gwb.GetNode(pt).t2;
-            if (tres == res || (res == AIJH::PLANTSPACE && tres == AIJH::NOTHING && t1 != TT_DESERT && t1 != TT_MOUNTAINMEADOW && t1 != TT_MOUNTAIN1 && t1 != TT_MOUNTAIN2 && t1 != TT_MOUNTAIN3 && t1 != TT_MOUNTAIN4) || (res == AIJH::BORDERLAND && (IsBorder(pt) || !IsOwnTerritory(pt)) && ((t1 != TT_SNOW && t1 != TT_LAVA && t1 != TT_SWAMPLAND && t1 != TT_WATER) || (t2 != TT_SNOW && t2 != TT_LAVA && t2 != TT_SWAMPLAND && t2 != TT_WATER))))
-            {
-                returnval += (AIJH::RES_RADIUS[res]);
-            }
-            //another building using our "resource"? reduce rating!
-            if(res == AIJH::WOOD || res == AIJH::PLANTSPACE)
-            {
-                if((res == AIJH::WOOD && IsBuildingOnNode(pt, BLD_WOODCUTTER)) || (res == AIJH::PLANTSPACE && IsBuildingOnNode(pt, BLD_FORESTER)))
-                    returnval -= (40);
-            }
-        }
-        //so it's a subsurface resource or something we dont calculate (multiple,blocked,nothing)
-        else
-        {
-            if (GetSubsurfaceResource(pt) == res)
-            {
-                returnval += (AIJH::RES_RADIUS[res]);
-            }
-        }
+        returnval += GetResourceRating(pt, res);
     }
     else//calculate different nodes only (4n+2 ?anyways much faster)
     {
@@ -164,30 +150,7 @@ int AIInterface::CalcResourceValue(const MapPoint pt, AIJH::Resource res, char d
             //add 1 extra step on the second side we check to complete the side
             for(MapCoord r2 = 0; r2 < AIJH::RES_RADIUS[res] || (r2 < AIJH::RES_RADIUS[res] + 1 && i == direction + 2); ++r2)
             {
-                //surface resource?
-                if(res == AIJH::PLANTSPACE || res == AIJH::BORDERLAND || res == AIJH::WOOD || res == AIJH::STONES)
-                {
-                    AIJH::Resource tres = GetSurfaceResource(t);
-                    unsigned char t1 = gwb.GetNode(t).t1, t2 = gwb.GetNode(t).t2;
-                    if (tres == res || (res == AIJH::PLANTSPACE && tres == AIJH::NOTHING && t1 != TT_DESERT && t1 != TT_MOUNTAINMEADOW && t1 != TT_MOUNTAIN1 && t1 != TT_MOUNTAIN2 && t1 != TT_MOUNTAIN3 && t1 != TT_MOUNTAIN4) || (res == AIJH::BORDERLAND && (IsBorder(t) || !IsOwnTerritory(t)) && ((t1 != TT_SNOW && t1 != TT_LAVA && t1 != TT_SWAMPLAND && t1 != TT_WATER) || (t2 != TT_SNOW && t2 != TT_LAVA && t2 != TT_SWAMPLAND && t2 != TT_WATER))))
-                    {
-                        returnval += (AIJH::RES_RADIUS[res]);
-                    }
-                    //another building using our "resource"? reduce rating!
-                    if(res == AIJH::WOOD || res == AIJH::PLANTSPACE)
-                    {
-                        if((res == AIJH::WOOD && IsBuildingOnNode(t, BLD_WOODCUTTER)) || (res == AIJH::PLANTSPACE && IsBuildingOnNode(t, BLD_FORESTER)))
-                            returnval -= (40);
-                    }
-                }
-                //so it's a subsurface resource or something we dont calculate (multiple,blocked,nothing)
-                else
-                {
-                    if (GetSubsurfaceResource(t) == res)
-                    {
-                        returnval += (AIJH::RES_RADIUS[res]);
-                    }
-                }
+                returnval += GetResourceRating(t, res);
                 t = gwb.GetNeighbour(t, i % 6);
             }
         }
@@ -203,30 +166,7 @@ int AIInterface::CalcResourceValue(const MapPoint pt, AIJH::Resource res, char d
         {
             for(MapCoord r2 = 0; r2 < AIJH::RES_RADIUS[res] || (r2 < AIJH::RES_RADIUS[res] + 1 && i == direction + 5); ++r2)
             {
-                //surface resource?
-                if(res == AIJH::PLANTSPACE || res == AIJH::BORDERLAND || res == AIJH::WOOD || res == AIJH::STONES)
-                {
-                    AIJH::Resource tres = GetSurfaceResource(t);
-                    unsigned char t1 = gwb.GetNode(t).t1, t2 = gwb.GetNode(t).t2;
-                    if (tres == res || (res == AIJH::PLANTSPACE && tres == AIJH::NOTHING && t1 != TT_DESERT && t1 != TT_MOUNTAINMEADOW && t1 != TT_MOUNTAIN1 && t1 != TT_MOUNTAIN2 && t1 != TT_MOUNTAIN3 && t1 != TT_MOUNTAIN4) || (res == AIJH::BORDERLAND && (IsBorder(t) || !IsOwnTerritory(t)) && ((t1 != TT_SNOW && t1 != TT_LAVA && t1 != TT_SWAMPLAND && t1 != TT_WATER) || (t2 != TT_SNOW && t2 != TT_LAVA && t2 != TT_SWAMPLAND && t2 != TT_WATER))))
-                    {
-                        returnval -= (AIJH::RES_RADIUS[res]);
-                    }
-                    //another building using our "resource"? reduce rating!
-                    if(res == AIJH::WOOD || res == AIJH::PLANTSPACE)
-                    {
-                        if((res == AIJH::WOOD && IsBuildingOnNode(t, BLD_WOODCUTTER)) || (res == AIJH::PLANTSPACE && IsBuildingOnNode(t, BLD_FORESTER)))
-                            returnval += (40);
-                    }
-                }
-                //so it's a subsurface resource or something we dont calculate (multiple,blocked,nothing)
-                else
-                {
-                    if (GetSubsurfaceResource(t) == res)
-                    {
-                        returnval -= (AIJH::RES_RADIUS[res]);
-                    }
-                }
+                returnval += GetResourceRating(t, res);
                 t = gwb.GetNeighbour(t, i % 6);
             }
         }

@@ -47,12 +47,15 @@
 #include "ogl/glArchivItem_Bitmap_Raw.h"
 #include "ogl/glAllocator.h"
 #include "gameData/JobConsts.h"
+#include "gameData/TerrainData.h"
+
 #include "../libsiedler2/src/types.h"
 #include "../libsiedler2/src/prototypen.h"
 
 #include <iomanip>
 #include <sstream>
 #include <algorithm>
+#include <stdexcept>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -84,6 +87,7 @@ Loader::~Loader(void)
     {
         delete stp;
     }
+    ClearTerrainTextures();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -944,6 +948,18 @@ bool Loader::LoadFilesFromAddon(const AddonId id)
     return LoadFileOrDir(s.str(), 96, true);
 }
 
+void Loader::ClearTerrainTextures()
+{
+    for(std::map<TerrainType, glArchivItem_Bitmap*>::iterator it = terrainTextures.begin(); it != terrainTextures.end(); ++it)
+        delete it->second;
+    terrainTextures.clear();
+    water.clear();
+    lava.clear();
+    borders.clear();
+    roads.clear();
+    roads_points.clear();
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 /**
  *  zerschneidet die Terraintexturen.
@@ -955,31 +971,7 @@ bool Loader::LoadFilesFromAddon(const AddonId id)
 bool Loader::CreateTerrainTextures(void)
 {
     assert(lastgfx <= 2);
-
-    // Unanimierte Texturen
-    Rect rects[16] =
-    {
-        Rect(0, 0, 48, 48),
-        Rect(48, 0, 48, 48),
-        Rect(96, 0, 48, 48),
-        Rect(144, 0, 48, 48),
-
-        Rect(0, 48, 48, 48),
-        Rect(48, 48, 48, 48),
-        Rect(96, 48, 48, 48),
-        Rect(144, 48, 48, 48),
-
-        Rect(0, 96, 48, 48),
-        Rect(48, 96, 48, 48),
-        Rect(96, 96, 48, 48),
-        Rect(144, 96, 48, 48),
-
-        Rect(0, 144, 48, 48),
-        Rect(48, 144, 48, 48),
-
-        Rect(192, 48, 55, 56),
-        Rect(192, 104, 55, 56)
-    };
+    ClearTerrainTextures();
 
     // Ränder
     Rect rec_raender[5] =
@@ -1005,33 +997,47 @@ bool Loader::CreateTerrainTextures(void)
         Rect(242, 160, 50, 16),
     };
 
-    textures.clear();
-    // (unanimiertes) Terrain
-    for(unsigned char i = 0; i < 14; ++i)
-        ExtractTexture(&textures, rects[i]);
-
-    // Wasser und Lava
-    water.clear();
-    ExtractAnimatedTexture(&water, rects[14], 8, 240);
-
-    lava.clear();
-    ExtractAnimatedTexture(&lava,  rects[15], 4, 248);
+    for(unsigned char i=0; i<TT_COUNT; ++i)
+    {
+        TerrainType t = TerrainType(i);
+        if(t == TT_LAVA)
+            ExtractAnimatedTexture(lava, TerrainData::GetPosInTexture(t), 4, 248);
+        else if(TerrainData::IsWater(t))
+        {
+            // All water uses the same texture, so load only once
+            if(!water.getCount())
+                ExtractAnimatedTexture(water, TerrainData::GetPosInTexture(t), 8, 240);
+        }else
+            terrainTextures[t] = ExtractTexture(TerrainData::GetPosInTexture(t));
+    }
 
     // die 5 Ränder
-    borders.clear();
     for(unsigned char i = 0; i < 5; ++i)
-        ExtractTexture(&borders, rec_raender[i]);
+        borders.push(ExtractTexture(rec_raender[i]));
 
     // Wege
-    roads.clear();
-    roads_points.clear();
     for(unsigned char i = 0; i < 4; ++i)
     {
-        ExtractTexture(&roads, rec_roads[i]);
-        ExtractTexture(&roads_points, rec_roads[4 + i]);
+        roads.push(ExtractTexture(rec_roads[i]));
+        roads_points.push(ExtractTexture(rec_roads[4 + i]));
     }
 
     return true;
+}
+
+glArchivItem_Bitmap& Loader::GetTerrainTexture(TerrainType t, unsigned animationFrame/* = 0*/)
+{
+    if(t == TT_LAVA)
+        return *dynamic_cast<glArchivItem_Bitmap*>(lava.get(animationFrame));
+    else if(TerrainData::IsWater(t))
+        return *dynamic_cast<glArchivItem_Bitmap*>(water.get(animationFrame));
+    else
+    {
+        glArchivItem_Bitmap* bmp = terrainTextures[t];
+        if(!bmp)
+            throw std::runtime_error("Invalid terrain texture requested");
+        return *bmp;
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1040,32 +1046,28 @@ bool Loader::CreateTerrainTextures(void)
  *
  *  @author OLiver
  */
-void Loader::ExtractTexture(libsiedler2::ArchivInfo* destination, Rect& rect)
+glArchivItem_Bitmap_Raw* Loader::ExtractTexture(const Rect& rect)
 {
-    glArchivItem_Bitmap_Raw bitmap;
     libsiedler2::ArchivItem_Palette* palette = GetTexPaletteN(1);
     glArchivItem_Bitmap* image = GetTexImageN(0);
 
     unsigned short width = rect.right - rect.left;
     unsigned short height = rect.bottom - rect.top;
 
-    unsigned char* buffer = new unsigned char[width * height];
+    std::vector<unsigned char> buffer(width * height, libsiedler2::TRANSPARENT_INDEX);
 
-    memset(buffer, libsiedler2::TRANSPARENT_INDEX, width * height);
-    image->print(buffer, width, height, libsiedler2::FORMAT_PALETTED, palette, 0, 0, rect.left, rect.top, width, height);
-    for(unsigned int x = 0; x < (unsigned int)(width * height); ++x)
+    image->print(&buffer.front(), width, height, libsiedler2::FORMAT_PALETTED, palette, 0, 0, rect.left, rect.top, width, height);
+    for(std::vector<unsigned char>::iterator it = buffer.begin(); it != buffer.end(); ++it)
     {
-        if(buffer[x] == 0)
-            buffer[x] = libsiedler2::TRANSPARENT_INDEX;
+        if(*it == 0)
+            *it = libsiedler2::TRANSPARENT_INDEX;
     }
 
-    bitmap.create(width, height, buffer, width, height, libsiedler2::FORMAT_PALETTED, palette);
-    bitmap.setPalette(palette);
-    bitmap.setFormat(libsiedler2::FORMAT_PALETTED);
-
-    delete[] buffer;
-
-    destination->pushC(&bitmap);
+    glArchivItem_Bitmap_Raw* bitmap = new glArchivItem_Bitmap_Raw();
+    bitmap->create(width, height, &buffer.front(), width, height, libsiedler2::FORMAT_PALETTED, palette);
+    bitmap->setPalette(palette);
+    bitmap->setFormat(libsiedler2::FORMAT_PALETTED);
+    return bitmap;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1074,45 +1076,38 @@ void Loader::ExtractTexture(libsiedler2::ArchivInfo* destination, Rect& rect)
  *
  *  @author OLiver
  */
-void Loader::ExtractAnimatedTexture(libsiedler2::ArchivInfo* destination, Rect& rect, unsigned char color_count, unsigned char start_index)
+void Loader::ExtractAnimatedTexture(libsiedler2::ArchivInfo& destination, const Rect& rect, unsigned char color_count, unsigned char start_index)
 {
-    glArchivItem_Bitmap_Raw bitmap;
     libsiedler2::ArchivItem_Palette* palette = GetTexPaletteN(1);
     glArchivItem_Bitmap* image = GetTexImageN(0);
-
-    bitmap.setPalette(palette);
-    bitmap.setFormat(libsiedler2::FORMAT_PALETTED);
 
     unsigned short width = rect.right - rect.left;
     unsigned short height = rect.bottom - rect.top;
 
-    unsigned char* buffer = new unsigned char[width * height];
-
     // Mit Startindex (also irgendeiner Farbe) füllen, um transparente Pixel und damit schwarze Punke am Rand zu verhindern
-    memset(buffer, start_index, width * height);
+    std::vector<unsigned char> buffer(width * height, start_index);
 
-    image->print(buffer, width, height, libsiedler2::FORMAT_PALETTED, palette, 0, 0, rect.left, rect.top, width, height);
+    image->print(&buffer.front(), width, height, libsiedler2::FORMAT_PALETTED, palette, 0, 0, rect.left, rect.top, width, height);
+
+    glArchivItem_Bitmap_Raw bitmap;
+    bitmap.setPalette(palette);
+    bitmap.setFormat(libsiedler2::FORMAT_PALETTED);
 
     for(unsigned char i = 0; i < color_count; ++i)
     {
-        for(unsigned int x = 0; x < width; ++x)
+        for(std::vector<unsigned char>::iterator it = buffer.begin(); it != buffer.end(); ++it)
         {
-            for(unsigned int y = 0; y < height; ++y)
+            if(*it >= start_index && *it < start_index + color_count)
             {
-                if(buffer[y * width + x] >= start_index && buffer[y * width + x] < start_index + color_count)
-                {
-                    if(++buffer[y * width + x] >= start_index + color_count)
-                        buffer[y * width + x] = start_index;
-                }
+                if(++*it >= start_index + color_count)
+                    *it = start_index;
             }
         }
 
-        bitmap.create(width, height, buffer, width, height, libsiedler2::FORMAT_PALETTED, palette);
+        bitmap.create(width, height, &buffer.front(), width, height, libsiedler2::FORMAT_PALETTED, palette);
 
-        destination->pushC(&bitmap);
+        destination.pushC(&bitmap);
     }
-
-    delete[] buffer;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

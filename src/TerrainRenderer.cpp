@@ -28,6 +28,7 @@
 #include "Settings.h"
 #include "GameClient.h"
 #include "MapGeometry.h"
+#include "gameData/TerrainData.h"
 #include <cstdlib>
 #include <cmath>
 #include <boost/scoped_array.hpp>
@@ -133,11 +134,8 @@ void TerrainRenderer::UpdateVertexColor(const MapPoint pt, const GameWorldViewer
 void TerrainRenderer::UpdateVertexTerrain(const MapPoint pt, const GameWorldViewer& gwv)
 {
     const MapNode& node = gwv.GetNode(pt);
-    if(node.t1 < 20)
-        GetVertex(pt).terrain[0] = node.t1;
-
-    if(node.t2 < 20)
-        GetVertex(pt).terrain[1] = node.t2;
+    GetVertex(pt).terrain[0] = node.t1;
+    GetVertex(pt).terrain[1] = node.t2;
 }
 
 /// erzeugt Rand-Vertex
@@ -177,26 +175,26 @@ void TerrainRenderer::GenerateOpenGL(const GameWorldViewer& gwv)
         for(MapCoord x = 0; x < width; ++x)
         {
             MapPoint pt(x, y);
-            unsigned char t1 = gwv.GetNode(pt).t1;
-            unsigned char t2 = gwv.GetNode(pt).t2;
+            TerrainType t1 = gwv.GetNode(pt).t1;
+            TerrainType t2 = gwv.GetNode(pt).t2;
             unsigned int pos = GetVertexIdx(pt);
 
-            if( (borders[pos].left_right[0] = BORDER_TABLES[lt][t1][t2][1]) )
+            if( (borders[pos].left_right[0] = TerrainData::GetEdgeType(lt, t2, t1)) )
                 borders[pos].left_right_offset[0] = triangleCount++;
-            if( (borders[pos].left_right[1] = BORDER_TABLES[lt][t1][t2][0]) )
+            if( (borders[pos].left_right[1] = TerrainData::GetEdgeType(lt, t1, t2)) )
                 borders[pos].left_right_offset[1] = triangleCount++;
 
             t1 = gwv.GetNodeAround(pt, 3).t1;
-            if( (borders[pos].right_left[0] = BORDER_TABLES[lt][t2][t1][1]) )
+            if( (borders[pos].right_left[0] = TerrainData::GetEdgeType(lt, t1, t2)) )
                 borders[pos].right_left_offset[0] = triangleCount++;
-            if( (borders[pos].right_left[1] = BORDER_TABLES[lt][t2][t1][0]) )
+            if( (borders[pos].right_left[1] = TerrainData::GetEdgeType(lt, t2, t1)) )
                 borders[pos].right_left_offset[1] = triangleCount++;
 
             t1 = gwv.GetNode(pt).t1;
             t2 = gwv.GetNodeAround(pt, 5).t2;
-            if( (borders[pos].top_down[0] = BORDER_TABLES[lt][t1][t2][1]) )
+            if( (borders[pos].top_down[0] = TerrainData::GetEdgeType(lt, t2, t1)) )
                 borders[pos].top_down_offset[0] = triangleCount++;
-            if( (borders[pos].top_down[1] = BORDER_TABLES[lt][t1][t2][0]) )
+            if( (borders[pos].top_down[1] = TerrainData::GetEdgeType(lt, t1, t2)) )
                 borders[pos].top_down_offset[1] = triangleCount++;
         }
     }
@@ -307,23 +305,25 @@ void TerrainRenderer::UpdateTriangleTerrain(const MapPoint pt, const GameWorldVi
 {
     unsigned int pos = GetTriangleIdx(pt);
 
-    unsigned char t1 = gwv.GetNode(pt).t1;
-    gl_texcoords[pos].pos[0].x = (t1 == 14 || t1 == 15) ? 0.4375f   : 0.45f;
-    gl_texcoords[pos].pos[0].y = (t1 == 14 || t1 == 15) ? 0.0f      : 0.45f;
-    gl_texcoords[pos].pos[1].y = (t1 == 14 || t1 == 15) ? 0.445312f : 0.0f;
-    gl_texcoords[pos].pos[1].x = (t1 == 14 || t1 == 15) ? 0.0f      : 0.225f;
-    gl_texcoords[pos].pos[2].x = (t1 == 14 || t1 == 15) ? 0.84375f  : 0.0f;
-    gl_texcoords[pos].pos[2].y = (t1 == 14 || t1 == 15) ? 0.445312f : 0.45f;
+    TerrainType t1 = gwv.GetNode(pt).t1;
+    bool isWaterOrLava = TerrainData::IsWater(t1) || t1 == TT_LAVA;
+    gl_texcoords[pos].pos[0].x = (isWaterOrLava) ? 0.4375f   : 0.45f;
+    gl_texcoords[pos].pos[0].y = (isWaterOrLava) ? 0.0f      : 0.45f;
+    gl_texcoords[pos].pos[1].y = (isWaterOrLava) ? 0.445312f : 0.0f;
+    gl_texcoords[pos].pos[1].x = (isWaterOrLava) ? 0.0f      : 0.225f;
+    gl_texcoords[pos].pos[2].x = (isWaterOrLava) ? 0.84375f  : 0.0f;
+    gl_texcoords[pos].pos[2].y = (isWaterOrLava) ? 0.445312f : 0.45f;
 
     ++pos;
 
-    unsigned char t2 = gwv.GetNode(pt).t2;
-    gl_texcoords[pos].pos[0].x = (t2 == 14 || t2 == 15) ? 0.4375f   : 0.0f;
-    gl_texcoords[pos].pos[0].y = (t2 == 14 || t2 == 15) ? 0.859375f : 0.0f;
-    gl_texcoords[pos].pos[1].x = (t2 == 14 || t2 == 15) ? 0.84375f  : 0.235f;
-    gl_texcoords[pos].pos[1].y = (t2 == 14 || t2 == 15) ? 0.445312f : 0.45f;
-    gl_texcoords[pos].pos[2].x = (t2 == 14 || t2 == 15) ? 0.0f      : 0.47f;
-    gl_texcoords[pos].pos[2].y = (t2 == 14 || t2 == 15) ? 0.445312f : 0.0f;
+    TerrainType t2 = gwv.GetNode(pt).t2;
+    isWaterOrLava = TerrainData::IsWater(t2) || t2 == TT_LAVA;
+    gl_texcoords[pos].pos[0].x = (isWaterOrLava) ? 0.4375f   : 0.0f;
+    gl_texcoords[pos].pos[0].y = (isWaterOrLava) ? 0.859375f : 0.0f;
+    gl_texcoords[pos].pos[1].x = (isWaterOrLava) ? 0.84375f  : 0.235f;
+    gl_texcoords[pos].pos[1].y = (isWaterOrLava) ? 0.445312f : 0.45f;
+    gl_texcoords[pos].pos[2].x = (isWaterOrLava) ? 0.0f      : 0.47f;
+    gl_texcoords[pos].pos[2].y = (isWaterOrLava) ? 0.445312f : 0.0f;
 
 
     /// Bei Vertexbuffern das die Daten aktualisieren
@@ -592,7 +592,7 @@ void TerrainRenderer::Draw(const GameWorldView& gwv, unsigned int* water)
         glNewList(gwv.terrain_list, GL_COMPILE_AND_EXECUTE);*/
 
     // nach Texture in Listen sortieren
-    boost::array< std::vector<MapTile>, 16> sorted_textures;
+    boost::array< std::vector<MapTile>, TT_COUNT> sorted_textures;
     boost::array< std::vector<BorderTile>, 5> sorted_borders;
     PreparedRoads sorted_roads;
 
@@ -601,30 +601,30 @@ void TerrainRenderer::Draw(const GameWorldView& gwv, unsigned int* water)
     // Beim zeichnen immer nur beginnen, wo man auch was sieht
     for(int y = gwv.GetFirstPt().y; y < gwv.GetLastPt().y; ++y)
     {
-        unsigned char last = 255;
-        unsigned char last_border = 255;
+        unsigned char lastTerrain = 255;
+        unsigned char lastBorder  = 255;
 
         for(int x = gwv.GetFirstPt().x; x < gwv.GetLastPt().x; ++x)
         {
             Point<int> posOffset;
             MapPoint tP = ConvertCoords(Point<int>(x, y), &posOffset);
 
-            unsigned char t = gwv.GetGameWorldViewer()->GetNode(tP).t1;
+            TerrainType t = gwv.GetGameWorldViewer()->GetNode(tP).t1;
             if(posOffset != lastOffset)
-                last = 255;
+                lastTerrain = 255;
 
-            if(t == last && tP != MapPoint(0, 0))
+            if(t == lastTerrain && tP != MapPoint(0, 0))
                 ++sorted_textures[t].back().count;
             else
             {
                 MapTile tmp(GetTriangleIdx(tP), posOffset);
                 sorted_textures[t].push_back(tmp);
-                last = t;
+                lastTerrain = t;
             }
 
             t = gwv.GetGameWorldViewer()->GetNode(tP).t2;
 
-            if(t == last)
+            if(t == lastTerrain)
                 ++sorted_textures[t].back().count;
             else
             {
@@ -632,7 +632,7 @@ void TerrainRenderer::Draw(const GameWorldView& gwv, unsigned int* water)
                 sorted_textures[t].push_back(tmp);
             }
 
-            last = t;
+            lastTerrain = t;
 
             const Borders& curBorders = borders[GetVertexIdx(tP)];
             boost::array<unsigned char, 6> tiles =
@@ -660,9 +660,9 @@ void TerrainRenderer::Draw(const GameWorldView& gwv, unsigned int* water)
             {
                 if(!tiles[i])
                     continue;
-                if(tiles[i] == last_border)
+                if(tiles[i] == lastBorder)
                 {
-                    BorderTile& curTile = sorted_borders[last_border - 1].back();
+                    BorderTile& curTile = sorted_borders[lastBorder - 1].back();
                     // Check that we did not wrap around the map and the expected offset matches
                     if(curTile.tileOffset + curTile.count == offsets[i])
                     {
@@ -670,9 +670,9 @@ void TerrainRenderer::Draw(const GameWorldView& gwv, unsigned int* water)
                         continue;
                     }
                 }
-                last_border = tiles[i];
+                lastBorder = tiles[i];
                 BorderTile tmp(offsets[i], posOffset);
-                sorted_borders[last_border - 1].push_back(tmp);
+                sorted_borders[lastBorder - 1].push_back(tmp);
             }
 
             PrepareWaysPoint(sorted_roads, gwv, tP, posOffset);
@@ -685,9 +685,13 @@ void TerrainRenderer::Draw(const GameWorldView& gwv, unsigned int* water)
     {
         unsigned water_count = 0;
 
-        for(std::vector<MapTile>::iterator it = sorted_textures[TT_WATER].begin(); it != sorted_textures[TT_WATER].end(); ++it)
-        {
-            water_count += it->count;
+        for(unsigned char t = 0; t < TT_COUNT; ++t){
+            if(!TerrainData::IsWater(TerrainType(t)))
+                continue;
+            for(std::vector<MapTile>::iterator it = sorted_textures[t].begin(); it != sorted_textures[t].end(); ++it)
+            {
+                water_count += it->count;
+            }
         }
 
         PointI diff = gwv.GetLastPt() - gwv.GetFirstPt();
@@ -732,34 +736,32 @@ void TerrainRenderer::Draw(const GameWorldView& gwv, unsigned int* water)
     // Alphablending aus
     glDisable(GL_BLEND);
 
-    for(unsigned char i = 0; i < 16; ++i)
+    for(unsigned char t = 0; t < TT_COUNT; ++t)
     {
-        if(!sorted_textures[i].empty())
+        if(sorted_textures[t].empty())
+            continue;
+        unsigned animationFrame;
+        TerrainType tt = TerrainType(t);
+        if(tt == TT_LAVA)
+            animationFrame = GAMECLIENT.GetGlobalAnimation(4, 5, 4, 0);
+        else if(TerrainData::IsWater(tt))
+            animationFrame = GAMECLIENT.GetGlobalAnimation(8, 5, 2, 0);
+        else
+            animationFrame = 0;
+
+        VIDEODRIVER.BindTexture(LOADER.GetTerrainTexture(tt, animationFrame).GetTexture());
+
+        for(std::vector<MapTile>::iterator it = sorted_textures[t].begin(); it != sorted_textures[t].end(); ++it)
         {
-            switch(i)
+            if(it->posOffset != lastOffset)
             {
-                case TT_WATER:
-                    VIDEODRIVER.BindTexture(GetImage(water, GAMECLIENT.GetGlobalAnimation(8, 5, 2, 0))->GetTexture());
-                    break;
-                case TT_LAVA:
-                    VIDEODRIVER.BindTexture(GetImage(lava, GAMECLIENT.GetGlobalAnimation(4, 5, 4, 0))->GetTexture());
-                    break;
-                default:
-                    VIDEODRIVER.BindTexture(GetImage(textures, i)->GetTexture());
+                PointI trans = it->posOffset - lastOffset;
+                glTranslatef( float(trans.x), float(trans.y), 0.0f);
+                lastOffset = it->posOffset;
             }
 
-            for(std::vector<MapTile>::iterator it = sorted_textures[i].begin(); it != sorted_textures[i].end(); ++it)
-            {
-                if(it->posOffset != lastOffset)
-                {
-                    PointI trans = it->posOffset - lastOffset;
-                    glTranslatef( float(trans.x), float(trans.y), 0.0f);
-                    lastOffset = it->posOffset;
-                }
-
-                assert(it->tileOffset + it->count <= width * height * 2u);
-                glDrawArrays(GL_TRIANGLES, it->tileOffset * 3, it->count * 3); // Arguments are in Elements. 1 triangle has 3 values
-            }
+            assert(it->tileOffset + it->count <= width * height * 2u);
+            glDrawArrays(GL_TRIANGLES, it->tileOffset * 3, it->count * 3); // Arguments are in Elements. 1 triangle has 3 values
         }
     }
 
@@ -890,13 +892,12 @@ void TerrainRenderer::PrepareWaysPoint(PreparedRoads& sorted_roads, const GameWo
             case RoadSegment::RT_DONKEY:
             case RoadSegment::RT_NORMAL:
             {
-                unsigned t1 = gwv.GetGameWorldViewer()->GetTerrainAround(t, dir + 2);
-                unsigned t2 = gwv.GetGameWorldViewer()->GetTerrainAround(t, dir + 3);
+                TerrainType t1 = gwv.GetGameWorldViewer()->GetTerrainAround(t, dir + 2);
+                TerrainType t2 = gwv.GetGameWorldViewer()->GetTerrainAround(t, dir + 3);
 
-                // Prüfen, ob Bergwerge gezeichnet werden müssen, indem man guckt, ob der Weg einen
+                // Prüfen, ob Bergwege gezeichnet werden müssen, indem man guckt, ob der Weg einen
                 // Berg "streift" oder auch eine Bergwiese
-                if(( (t1 >= TT_MOUNTAIN1 && t1 <= TT_MOUNTAIN4) || t1 == TT_MOUNTAINMEADOW)
-                        || ( (t2 >= TT_MOUNTAIN1  && t2 <= TT_MOUNTAIN4) || t2 == TT_MOUNTAINMEADOW))
+                if(TerrainData::IsMountain(t1) || TerrainData::IsMountain(t2))
                     type = 3;
 
                 break;

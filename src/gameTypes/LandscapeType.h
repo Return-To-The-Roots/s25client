@@ -1,5 +1,3 @@
-// $Id: MinimapConsts.h 9357 2014-04-25 15:35:25Z FloSoft $
-//
 // Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
@@ -16,24 +14,18 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef MINIMAP_CONSTS_H_
-#define MINIMAP_CONSTS_H_
 
-/// Farbe für Bäume
-const unsigned TREE_COLOR = 0xFF003c14;
-/// Variierung der Helligkeit der Bäume
-const int VARY_TREE_COLOR = 20;
-/// Farbe für Granit
-const unsigned GRANITE_COLOR = 0xFFA2A2A2;
-/// Variierung der Helligkeit der Granitblöcke
-const int VARY_GRANITE_COLOR = 20;
-/// Farbe für Gebäude
-const unsigned BUILDING_COLOR = 0xFFFFFFFF;
-/// Färbe für Straßen
-const unsigned ROAD_COLOR = 0xFFAAAAAA;
+#ifndef LandscapeType_h__
+#define LandscapeType_h__
 
-/// Skalierung in x-Richtung bei der Anzeige der Map
-const double MINIMAP_SCALE_X = 1.5;
+enum LandscapeType
+{
+    LT_GREENLAND = 0,
+    LT_WASTELAND,
+    LT_WINTERWORLD
+};
 
+// Keep this in sync with LandscapeType
+static const unsigned char LT_COUNT = LT_WINTERWORLD + 1;
 
-#endif
+#endif // LandscapeType_h__

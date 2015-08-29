@@ -42,7 +42,23 @@ enum TerrainType
     TT_STEPPE,
     TT_MOUNTAINMEADOW,
     TT_WATER,
-    TT_LAVA
+    TT_LAVA,
+    TT_WATER2,
+    TT_BUILDABLE_WATER,
+    TT_BUILDABLE_MOUNTAIN
+};
+
+// Keep this in sync with TerrainType
+static const unsigned char TT_COUNT = TT_BUILDABLE_MOUNTAIN + 1;
+
+enum EdgeType
+{
+    ET_NONE,
+    ET_SNOW,
+    ET_MOUNTAIN,
+    ET_DESSERT,
+    ET_MEADOW,
+    ET_WATER
 };
 
 /// Sichtbarkeit für ALLE Spieler

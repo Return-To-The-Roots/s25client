@@ -25,6 +25,7 @@
 #include "gameData/MapConsts.h"
 #include "GameWorld.h"
 #include "GameClient.h"
+#include "gameData/TerrainData.h"
 
 #include "ogl/glArchivItem_Map.h"
 
@@ -170,8 +171,9 @@ unsigned PreviewMinimap::CalcPixelColor(const void* param, const MapPoint pt, co
     // Ansonsten die jeweilige Terrainfarbe nehmen
     else
     {
-        color = TERRAIN_COLORS[s2map.getHeader().getGfxSet()]
-                [TERRAIN_INDIZES[s2map.GetMapDataAt(MapLayer(MAP_TERRAIN1 + t), pt.x, pt.y)]];
+        unsigned char gfxSet = s2map.getHeader().getGfxSet();
+        assert(gfxSet < LT_COUNT);
+        color = TerrainData::GetColor(LandscapeType(gfxSet), TerrainData::MapIdx2Terrain(s2map.GetMapDataAt(MapLayer(MAP_TERRAIN1 + t), pt.x, pt.y)));
 
         // Schattierung
         int r = GetRed(color) + s2map.GetMapDataAt(MAP_SHADOWS, pt.x, pt.y) - 0x40;
@@ -323,7 +325,7 @@ unsigned IngameMinimap::CalcPixelColor(const void* param, const MapPoint pt, con
  */
 unsigned IngameMinimap::CalcTerrainColor(const MapPoint pt, const unsigned t)
 {
-    unsigned color = TERRAIN_COLORS[gwv.GetLandscapeType()][ (t == 0) ? gwv.GetNode(pt).t1 : gwv.GetNode(pt).t2];
+    unsigned color = TerrainData::GetColor(gwv.GetLandscapeType(), (t == 0) ? gwv.GetNode(pt).t1 : gwv.GetNode(pt).t2);
 
     // Schattierung
     int shadow = gwv.GetNode(pt).shadow;
