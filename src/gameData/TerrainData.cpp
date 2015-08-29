@@ -391,9 +391,9 @@ bool TerrainData::IsUsableByShip(TerrainType t)
     {
     case TT_WATER:
     case TT_BUILDABLE_WATER:
-        return false;
-    default:
         return true;
+    default:
+        return false;
     }
 }
 
