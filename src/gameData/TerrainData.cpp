@@ -543,3 +543,38 @@ bool TerrainData::IsMineable(TerrainType t)
         return false;
     }
 }
+
+BuildingQuality TerrainData::GetBuildingQuality(TerrainType t)
+{
+    switch(t)
+    {
+    case TT_SNOW:
+    case TT_LAVA:
+    case TT_LAVA2:
+    case TT_LAVA3:
+    case TT_LAVA4:
+        return BQ_DANGER;
+    case TT_DESERT:
+        return BQ_FLAG;
+    case TT_SWAMPLAND:
+    case TT_WATER:
+    case TT_WATER2:
+        return BQ_NOTHING;
+    case TT_MOUNTAIN1:
+    case TT_MOUNTAIN2:
+    case TT_MOUNTAIN3:
+    case TT_MOUNTAIN4:
+        return BQ_MINE;
+    case TT_MEADOW_FLOWERS:
+    case TT_SAVANNAH:
+    case TT_MEADOW1:
+    case TT_MEADOW2:
+    case TT_MEADOW3:
+    case TT_STEPPE:
+    case TT_MOUNTAINMEADOW:
+    case TT_BUILDABLE_WATER:
+    case TT_BUILDABLE_MOUNTAIN:
+        return BQ_CASTLE;
+    }
+    throw std::logic_error("Invalid terrain type");
+}

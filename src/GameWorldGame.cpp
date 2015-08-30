@@ -936,15 +936,13 @@ bool GameWorldGame::IsNodeForFigures(const MapPoint pt) const
     if(bm != noBase::BM_NOTBLOCKING && bm != noBase::BM_TREE && bm != noBase::BM_FLAG)
         return false;
 
-    unsigned char t;
-
     // Terrain untersuchen
     unsigned char good_terrains = 0;
     for(unsigned char i = 0; i < 6; ++i)
     {
-        t = GetTerrainAround(pt, i);
-        if(TERRAIN_BQ[t] == BQ_CASTLE || TERRAIN_BQ[t] == BQ_MINE || TERRAIN_BQ[t] == BQ_FLAG) ++good_terrains;
-        else if(TERRAIN_BQ[t] == BQ_DANGER) return false; // in die Nähe von Lava usw. dürfen die Figuren gar nich kommen!
+        BuildingQuality bq = TerrainData::GetBuildingQuality(GetTerrainAround(pt, i));
+        if(bq == BQ_CASTLE || bq == BQ_MINE || bq == BQ_FLAG) ++good_terrains;
+        else if(bq == BQ_DANGER) return false; // in die Nähe von Lava usw. dürfen die Figuren gar nich kommen!
     }
 
     // Darf nicht im Wasser liegen, 

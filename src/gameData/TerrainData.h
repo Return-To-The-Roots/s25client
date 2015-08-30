@@ -20,6 +20,7 @@
 
 #include "gameTypes/MapTypes.h"
 #include "gameTypes/LandscapeType.h"
+#include "gameTypes/BuildingQuality.h"
 #include "Rect.h"
 
 class TerrainData
@@ -60,6 +61,8 @@ public:
     static bool IsMountain(TerrainType t);
     /// Returns whether the given terrain is a mineable mountain
     static bool IsMineable(TerrainType t);
+    /// Returns what kind of buildings can be build on that terrain
+    static BuildingQuality GetBuildingQuality(TerrainType t);
 };
 
 #endif // TerrainData_h__

@@ -34,6 +34,7 @@
 #include "GameInterface.h"
 #include "nodeObjs/noCharburnerPile.h"
 #include "buildings/nobUsual.h"
+#include "gameData/TerrainData.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -200,12 +201,12 @@ nofFarmhand::PointQuality nofCharburner::GetPointQuality(const MapPoint pt)
     }
 
     // Terrain untersuchen (nur auf Wiesen und Savanne und Steppe pflanzen
-    unsigned char t, good_terrains = 0;
+    unsigned char good_terrains = 0;
 
     for(unsigned char i = 0; i < 6; ++i)
     {
-        t = gwg->GetTerrainAround(pt, i);
-        if(t == 1 || t == 3 || (t >= 8 && t <= 13))
+        TerrainType t = gwg->GetTerrainAround(pt, i);
+        if(TerrainData::IsVital(t) || t == TT_DESERT)
             ++good_terrains;
     }
 

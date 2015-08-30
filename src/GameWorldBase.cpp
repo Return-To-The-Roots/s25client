@@ -497,13 +497,12 @@ bool GameWorldBase::RoadAvailable(const bool boat_road, const MapPoint pt, unsig
     if(!boat_road)
     {
         unsigned flag_hits = 0;
-        unsigned char t;
 
         for(unsigned char i = 0; i < 6; ++i)
         {
-            t = GetTerrainAround(pt, i);
-            if(TERRAIN_BQ[t] == BQ_CASTLE || TERRAIN_BQ[t] == BQ_CASTLE || TERRAIN_BQ[t] == BQ_MINE || TERRAIN_BQ[t] == BQ_FLAG) ++flag_hits;
-            else if(TERRAIN_BQ[t] == BQ_DANGER)
+            BuildingQuality bq = TerrainData::GetBuildingQuality(GetTerrainAround(pt, i));
+            if(bq == BQ_CASTLE || bq == BQ_CASTLE || bq == BQ_MINE || bq == BQ_FLAG) ++flag_hits;
+            else if(bq == BQ_DANGER)
                 return 0;
         }
 
@@ -528,7 +527,7 @@ bool GameWorldBase::RoadAvailable(const bool boat_road, const MapPoint pt, unsig
     {
         // Beim Wasserweg muss um den Punkt herum Wasser sein
         for(unsigned i = 0; i < 6; ++i)
-            if(GetTerrainAround(pt, i) != 14)
+            if(!TerrainData::IsWater(GetTerrainAround(pt, i)))
                 return false;
     }
 
@@ -723,19 +722,22 @@ BuildingQuality GameWorldBase::CalcBQ(const MapPoint pt, const unsigned char pla
     unsigned building_hits = 0;
     unsigned mine_hits = 0;
     unsigned flag_hits = 0;
-    BuildingQuality val = BQ_CASTLE;
-    unsigned char t;
 
     // bebaubar?
     for(unsigned char i = 0; i < 6; ++i)
     {
-        t = GetTerrainAround(pt, i);
-        if(TERRAIN_BQ[t] == BQ_CASTLE) ++building_hits;
-        else if(TERRAIN_BQ[t] == BQ_MINE) ++mine_hits;
-        else if(TERRAIN_BQ[t] == BQ_FLAG) ++flag_hits;
-        else if(TERRAIN_BQ[t] == BQ_DANGER) return BQ_NOTHING;
+        BuildingQuality bq = TerrainData::GetBuildingQuality(GetTerrainAround(pt, i));
+        if(bq == BQ_CASTLE)
+            ++building_hits;
+        else if(bq == BQ_MINE)
+            ++mine_hits;
+        else if(bq == BQ_FLAG)
+            ++flag_hits;
+        else if(bq == BQ_DANGER)
+            return BQ_NOTHING;
     }
 
+    BuildingQuality val;
     if(flag_hits)
         val = BQ_FLAG;
     else if(mine_hits == 6)
@@ -812,7 +814,8 @@ BuildingQuality GameWorldBase::CalcBQ(const MapPoint pt, const unsigned char pla
     //////////////////////////////////////////
     // 3. nach Objekten
 
-    if(flagonly) if(FlagNear(pt)) return BQ_NOTHING;
+    if(flagonly && FlagNear(pt))
+        return BQ_NOTHING;
 
 
     // allgemein nix bauen auf folgenden Objekten:
