@@ -22,6 +22,21 @@
 #include "defines.h"
 #include "Debug.h"
 #include "build_version.h"
+
+#include "Settings.h"
+#include "GameClient.h"
+
+#ifdef _WIN32
+#   include <windows.h>
+// Disable warning for faulty nameless enum typdef (check sfImage.../hdBase...)
+#   pragma warning(push)
+#   pragma warning(disable: 4091)
+#   include <dbghelp.h>
+#   pragma warning(pop)
+#else
+#   include <execinfo.h>
+#endif
+
 #include "../libutil/src/Log.h"
 #include <bzlib.h>
 

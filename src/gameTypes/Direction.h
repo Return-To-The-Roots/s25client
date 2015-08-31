@@ -30,7 +30,7 @@ struct Direction
         SOUTHWEST, // 4
         NORTHWEST  // 5
     };
-    static const unsigned int COUNT = NORTHWEST + 1;
+    static const int COUNT = NORTHWEST + 1;
 
     Type t_;
     Direction(Type t) : t_(t) { assert(t_ >= NORTH && t_ < COUNT); }

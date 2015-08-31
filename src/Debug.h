@@ -19,17 +19,9 @@
 #ifndef DEBUG_H_
 #define DEBUG_H_
 
-#include "defines.h"
-#include "Settings.h"
-#include "GameClient.h"
 #include "Random.h"
-
-#ifdef _WIN32
-#   include <windows.h>
-#   include <dbghelp.h>
-#else
-#   include <execinfo.h>
-#endif
+#include "../libutil/src/Socket.h"
+#include <list>
 
 class DebugInfo : Socket
 {

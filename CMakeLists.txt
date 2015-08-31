@@ -41,8 +41,11 @@ IF (MSVC)
 	IF(NOT EXISTS "${CMAKE_SOURCE_DIR}/contrib/full-contrib-msvc2010" OR NOT IS_DIRECTORY "${CMAKE_SOURCE_DIR}/contrib/full-contrib-msvc2010")
 		MESSAGE(FATAL_ERROR "You have to extract contrib/full-contrib-msvc2010.rar to contrib/full-contrib-msvc2010 first!")
 	ENDIF()
-	SET(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${CMAKE_SOURCE_DIR}/contrib/full-contrib-msvc2010)
 	SET(CONTRIB_DIR "${CMAKE_SOURCE_DIR}/contrib/full-contrib-msvc2010" CACHE PATH "Path to base dir from contrib package")
+	IF(MSVC_VERSION GREATER 1800) # MSVC 2015
+		SET(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} "${CONTRIB_DIR}/VS2015")
+	ENDIF()
+	SET(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${CONTRIB_DIR})		
 ENDIF()
 
 IF(EXISTS "${CMAKE_SOURCE_DIR}/contrib/boost" AND IS_DIRECTORY "${CMAKE_SOURCE_DIR}/contrib/boost")

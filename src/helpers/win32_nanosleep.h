@@ -25,7 +25,7 @@
 #include <ctime>
 typedef unsigned int useconds_t;
 
-#ifndef _TIMESPEC_DEFINED
+#if !defined(_TIMESPEC_DEFINED) && (!defined(_MSC_VER) || _MSC_VER < 1900)
 #define _TIMESPEC_DEFINED
 struct timespec
 {

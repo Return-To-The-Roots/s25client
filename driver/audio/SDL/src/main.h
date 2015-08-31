@@ -33,13 +33,13 @@
 #endif // !_WIN32
 
 #ifdef _MSC_VER
-#define getch _getch
-#ifndef snprintf
-#define snprintf _snprintf
-#endif
-#ifndef assert
-#define assert _ASSERT
-#endif
+#   define getch _getch
+#   if !defined(snprintf) && _MSC_VER < 1800
+#       define snprintf _snprintf
+#   endif
+#   ifndef assert
+#       define assert _ASSERT
+#   endif
 #endif
 
 #if defined _WIN32 && defined _DEBUG

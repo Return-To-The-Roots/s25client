@@ -23,7 +23,7 @@
 #include "ctrlMultiline.h"
 #include "ctrlScrollBar.h"
 #include "ogl/glArchivItem_Font.h"
-
+#include <algorithm>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
