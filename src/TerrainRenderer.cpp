@@ -310,8 +310,8 @@ void TerrainRenderer::UpdateTriangleTerrain(const MapPoint pt, const GameWorldVi
     bool isAnimated = TerrainData::IsAnimated(t1);
     gl_texcoords[pos].pos[0].x = (isAnimated) ? 0.4375f   : 0.45f;
     gl_texcoords[pos].pos[0].y = (isAnimated) ? 0.0f      : 0.45f;
-    gl_texcoords[pos].pos[1].y = (isAnimated) ? 0.445312f : 0.0f;
     gl_texcoords[pos].pos[1].x = (isAnimated) ? 0.0f      : 0.225f;
+    gl_texcoords[pos].pos[1].y = (isAnimated) ? 0.445312f : 0.0f;
     gl_texcoords[pos].pos[2].x = (isAnimated) ? 0.84375f  : 0.0f;
     gl_texcoords[pos].pos[2].y = (isAnimated) ? 0.445312f : 0.45f;
 
