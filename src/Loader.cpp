@@ -1035,6 +1035,11 @@ glArchivItem_Bitmap& Loader::GetTerrainTexture(TerrainType t, unsigned animation
 {
     if(TerrainData::IsAnimated(t))
     {
+        if(TerrainData::IsWater(t))
+        {
+            // All water uses the same texture
+            t = TT_WATER;
+        }
         libsiedler2::ArchivInfo* archive = terrainTexturesAnim[t];
         if(!archive)
             throw std::runtime_error("Invalid terrain texture requested");
