@@ -91,7 +91,6 @@ bool TerrainData::IsAnimated(TerrainType t)
 
 unsigned TerrainData::GetFrameCount(TerrainType t)
 {
-    // TODO: Get frame count for lava2-lava4
     switch (t)
     {
     case TT_WATER:
@@ -110,7 +109,6 @@ unsigned TerrainData::GetFrameCount(TerrainType t)
 
 unsigned char TerrainData::GetStartColor(TerrainType t)
 {
-    // TODO: Get start color for lava2-lava4
     switch (t)
     {
     case TT_WATER:

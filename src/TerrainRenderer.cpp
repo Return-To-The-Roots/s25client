@@ -29,9 +29,11 @@
 #include "GameClient.h"
 #include "MapGeometry.h"
 #include "gameData/TerrainData.h"
+#include "helpers/roundToNextPow2.h"
+#include <boost/scoped_array.hpp>
 #include <cstdlib>
 #include <cmath>
-#include <boost/scoped_array.hpp>
+#include <stdexcept>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -303,29 +305,70 @@ void TerrainRenderer::UpdateTriangleColor(const MapPoint pt, const GameWorldView
 
 void TerrainRenderer::UpdateTriangleTerrain(const MapPoint pt, const GameWorldViewer& gwv, const bool update)
 {
+    const MapNode& node = gwv.GetNode(pt);
     unsigned int pos = GetTriangleIdx(pt);
 
-    // TODO: Check those offsets for lava2-lava4
-    TerrainType t1 = gwv.GetNode(pt).t1;
-    bool isAnimated = TerrainData::IsAnimated(t1);
-    gl_texcoords[pos].pos[0].x = (isAnimated) ? 0.4375f   : 0.45f;
-    gl_texcoords[pos].pos[0].y = (isAnimated) ? 0.0f      : 0.45f;
-    gl_texcoords[pos].pos[1].x = (isAnimated) ? 0.0f      : 0.225f;
-    gl_texcoords[pos].pos[1].y = (isAnimated) ? 0.445312f : 0.0f;
-    gl_texcoords[pos].pos[2].x = (isAnimated) ? 0.84375f  : 0.0f;
-    gl_texcoords[pos].pos[2].y = (isAnimated) ? 0.445312f : 0.45f;
+    Triangle& texCoord = gl_texcoords[pos];
+    if(!TerrainData::IsAnimated(node.t1))
+    {
+        texCoord.pos[1].x = 0.225f;
+        texCoord.pos[1].y = 0.f;
+        texCoord.pos[2].x = 0.f;
+        texCoord.pos[2].y = 0.45f;
+        texCoord.pos[0].x = 0.45f;
+        texCoord.pos[0].y = texCoord.pos[2].y;
+    }else
+    {
+        // We use the full texture as it already consists of 2 triangles
+        // But we need to make sure to only use the correct part of it (texture sizes are powers of 2)
+        // Note: Better would be to use the actual textures, but they are not loaded when this is called during game start
+        Rect texRect = TerrainData::GetPosInTexture(node.t1);
+        int w = texRect.right - texRect.left;
+        int h = texRect.bottom - texRect.top;
+        assert(w > 0 && h > 0);
+        unsigned texW = helpers::roundToNextPowerOfTwo(w);
+        unsigned texH = helpers::roundToNextPowerOfTwo(h);
 
-    ++pos;
+        float texScaleW = 1.f / texW;
+        float texScaleH = 1.f / texH;
+        // Tip of the triangle is in the middle in x
+        texCoord.pos[1].x = (w + 1) / 2.f * texScaleW;
+        texCoord.pos[1].y = 0.f;
+        // Bottom of the triangle is in the middle in y
+        texCoord.pos[2].x = 0.f;
+        texCoord.pos[2].y = (h + 1) / 2.f * texScaleH;
+        texCoord.pos[0].x = (w - 1)       * texScaleW;
+        texCoord.pos[0].y = texCoord.pos[2].y;
+    }
 
-    TerrainType t2 = gwv.GetNode(pt).t2;
-    isAnimated = TerrainData::IsAnimated(t2);
-    gl_texcoords[pos].pos[0].x = (isAnimated) ? 0.4375f   : 0.0f;
-    gl_texcoords[pos].pos[0].y = (isAnimated) ? 0.859375f : 0.0f;
-    gl_texcoords[pos].pos[1].x = (isAnimated) ? 0.84375f  : 0.235f;
-    gl_texcoords[pos].pos[1].y = (isAnimated) ? 0.445312f : 0.45f;
-    gl_texcoords[pos].pos[2].x = (isAnimated) ? 0.0f      : 0.47f;
-    gl_texcoords[pos].pos[2].y = (isAnimated) ? 0.445312f : 0.0f;
-
+    Triangle& texCoord2 = gl_texcoords[pos+1];
+    if(!TerrainData::IsAnimated(node.t2))
+    {
+        texCoord2.pos[1].x = 0.235f;
+        texCoord2.pos[1].y = 0.45f;
+        texCoord2.pos[2].x = 0.47f;
+        texCoord2.pos[2].y = 0.0f;
+        texCoord2.pos[0].x = 0.0f;
+        texCoord2.pos[0].y = texCoord2.pos[2].y;
+    }else
+    {
+        Rect texRect = TerrainData::GetPosInTexture(node.t1);
+        int w = texRect.right - texRect.left;
+        int h = texRect.bottom - texRect.top;
+        assert(w > 0 && h > 0);
+        unsigned texW = helpers::roundToNextPowerOfTwo(w);
+        unsigned texH = helpers::roundToNextPowerOfTwo(h);
+        float texScaleW = 1.f / texW;
+        float texScaleH = 1.f / texH;
+        // Bottom tip of the triangle is in the middle in x
+        texCoord2.pos[1].x = (w + 1) / 2.f * texScaleW;
+        texCoord2.pos[1].y = (h - 1)       * texScaleH;
+        // Top of the triangle is in the middle in y
+        texCoord2.pos[2].x = (w - 1)       * texScaleW;
+        texCoord2.pos[2].y = (h + 1) / 2.f * texScaleH;
+        texCoord2.pos[0].x = 0.f;
+        texCoord2.pos[0].y = texCoord2.pos[2].y;
+    }
 
     /// Bei Vertexbuffern das die Daten aktualisieren
     if(update && SETTINGS.video.vbo)
