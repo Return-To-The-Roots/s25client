@@ -527,6 +527,21 @@ bool TerrainData::IsLava(TerrainType t)
     }
 }
 
+bool TerrainData::IsSnow(LandscapeType lt, TerrainType t)
+{
+    switch (lt)
+    {
+    case LT_GREENLAND:
+        return t == TT_SNOW;
+    case LT_WASTELAND:
+        return false;
+    case LT_WINTERWORLD:
+        return t == TT_MOUNTAINMEADOW;
+        break;
+    }
+    throw std::logic_error("Invalid terrain type");
+}
+
 bool TerrainData::IsMountain(TerrainType t)
 {
     switch (t)

@@ -309,7 +309,8 @@ unsigned char noAnimal::FindDir()
         else if(species == SPEC_POLARBEAR)
         {
             // Polarbären laufen nur auf Schnee rum
-            if(t1 == TT_SNOW || t2 == TT_SNOW)
+            LandscapeType lt = gwg->GetLandscapeType();
+            if(TerrainData::IsSnow(lt, t1) && TerrainData::IsSnow(lt, t2))
                 return d;
         }
         else
