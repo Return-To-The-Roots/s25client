@@ -303,7 +303,7 @@ unsigned char noAnimal::FindDir()
         if(species == SPEC_DUCK)
         {
             // Enten schwimmen nur auf dem Wasser --> muss daher Wasser sein       
-            if(TerrainData::IsWater(t1) || TerrainData::IsWater(t2))
+            if(TerrainData::IsWater(t1) && TerrainData::IsWater(t2))
                 return d;
         }
         else if(species == SPEC_POLARBEAR)
