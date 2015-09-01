@@ -51,7 +51,9 @@ public:
     static bool IsUseable(TerrainType t);
     /// Returns whether the given terrain type can be used by a ship (non-blocking water)
     static bool IsUsableByShip(TerrainType t);
-    /// Returns whether stuff (animals, corn fields) can grow on the terrain (no dessert, mountain etc)
+    /// Returns whether "regular" animals walk on that terrain (no water or snow animals)
+    static bool IsUsableByAnimals(TerrainType t);
+    /// Returns whether corn fields can grow on the terrain (no dessert, mountain etc)
     static bool IsVital(TerrainType t);
     /// Returns whether the given terrain is any kind of water
     static bool IsWater(TerrainType t);

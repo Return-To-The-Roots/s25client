@@ -315,7 +315,7 @@ unsigned char noAnimal::FindDir()
         else
         {
             // Die anderen Tiere dürfen nur auf Wiesen,Savannen usw. laufen, nicht auf Bergen oder in der Wüste!
-            if(!TerrainData::IsVital(t1) || !TerrainData::IsVital(t2))
+            if(!TerrainData::IsUsableByAnimals(t1) || !TerrainData::IsUsableByAnimals(t2))
                 continue;
 
             // Außerdem dürfen keine Hindernisse im Weg sein

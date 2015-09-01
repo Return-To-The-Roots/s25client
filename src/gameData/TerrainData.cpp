@@ -467,6 +467,23 @@ bool TerrainData::IsUsableByShip(TerrainType t)
     }
 }
 
+bool TerrainData::IsUsableByAnimals(TerrainType t)
+{
+    switch (t)
+    {
+    case TT_MEADOW_FLOWERS:
+    case TT_SAVANNAH:
+    case TT_MEADOW1:
+    case TT_MEADOW2:
+    case TT_MEADOW3:
+    case TT_STEPPE:
+    case TT_MOUNTAINMEADOW:
+        return true;
+    default:
+        return false;
+    }
+}
+
 bool TerrainData::IsVital(TerrainType t)
 {
     switch (t)
