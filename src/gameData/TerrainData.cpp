@@ -73,14 +73,13 @@ Rect TerrainData::GetPosInTexture(TerrainType t)
     case TT_MEADOW3:            return Rect(144, 96,  48, 48);
     case TT_STEPPE:             return Rect(0,   144, 48, 48);
     case TT_MOUNTAINMEADOW:     return Rect(48,  144, 48, 48);
-    case TT_WATER:              return Rect(192, 48,  55, 56);
+    case TT_WATER:
+    case TT_WATER2:
+    case TT_BUILDABLE_WATER:    return Rect(192, 48,  55, 56);
     case TT_LAVA:               return Rect(192, 104, 55, 56);
     case TT_LAVA2:              return Rect(66,  223, 31, 32);
     case TT_LAVA3:              return Rect(99,  223, 31, 32);
     case TT_LAVA4:              return Rect(132, 223, 31, 32);
-    case TT_WATER2:
-    case TT_BUILDABLE_WATER:
-        throw std::logic_error("Use normal water for that!");
     }
     throw std::logic_error("Invalid parameters given");
 }
