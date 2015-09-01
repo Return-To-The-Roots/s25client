@@ -920,7 +920,7 @@ bool AIPlayerJH::FindBestPositionDiminishingResource(MapPoint& pt, AIJH::Resourc
                 {
                     //remove permanently invalid spots to speed up future checks
                     TerrainType t1 = gwb.GetNode(t2).t1;
-                    if(!TerrainData::IsUseable(t1) || TerrainData::IsMineable(t1))
+                    if(!TerrainData::IsUseable(t1) || TerrainData::IsMineable(t1) || t1 == TT_DESERT)
                         resourceMaps[res][n] = 0;
                 }
                 else //= granite,gold,iron,coal
