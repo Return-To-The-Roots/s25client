@@ -1,12 +1,12 @@
-#!/bin/bash
+#!/bin/sh
 
-# Editable Variables
-CMAKE_COMMAND=cmake
+# You may override these from the environment
+: ${CMAKE_COMMAND:=cmake}
 
 ###############################################################################
 
-if [ -z "$(type -p $CMAKE_COMMAND)" ] ; then
-	echo "You have to install CMake"
+if [ -z "$($CMAKE_COMMAND) --version" ] ; then
+	echo "You have to install CMake" >&2
 	exit 1
 fi
 
@@ -26,47 +26,47 @@ mecho()
 ###############################################################################
 
 if [ ! -e bin ] ; then
-	mecho --blue "Creating symlink «bin» ..."
+	mecho --blue "Creating symlink 'bin' ..."
 	ln -vs . bin
 fi
 
 if [ ! -e RTTR ] ; then
 	if [ -e "${SRCDIR}/RTTR" ] ; then
-		mecho --blue "Creating symlink «RTTR» ..."
+		mecho --blue "Creating symlink 'RTTR' ..."
 		ln -vs "${SRCDIR}/RTTR" RTTR
 	else
-		mecho --red "Directory «RTTR» missing!"
+		mecho --red "Directory 'RTTR' missing!"
 		exit 1
 	fi
 fi
 
 if [ ! -e share ] ; then
-	mecho --blue "Creating symlink «share» ..."
+	mecho --blue "Creating symlink 'share' ..."
 	ln -vs . share
 fi
 
 if [ ! -e s25rttr ] ; then
-	mecho --blue "Creating symlink «s25rttr» ..."
+	mecho --blue "Creating symlink 's25rttr' ..."
 	ln -vs . s25rttr
 fi
 
 if [ ! -e S2 ] ; then
 	if [ -e "${SRCDIR}/S2" ] ; then
-		mecho --blue "Creating symlink «S2» ..."
+		mecho --blue "Creating symlink 'S2' ..."
 		ln -vs "${SRCDIR}/S2" S2
 	else
-		mecho --red "Directory «S2» missing!"
+		mecho --red "Directory 'S2' missing!"
 		mecho --yellow "Direct debugging from this directory will not work then!"
 	fi
 fi
 
-if ( [ ! -f cleanup.sh ] && [ -f "${SRCDIR}/build/cleanup.sh" ] ) ; then
-	mecho --blue "Creating symlink «cleanup.sh» ..."
+if [ ! -f cleanup.sh ] && [ -f "${SRCDIR}/build/cleanup.sh" ] ; then
+	mecho --blue "Creating symlink 'cleanup.sh' ..."
 	ln -vs $SRCDIR/build/cleanup.sh cleanup.sh
 fi
 
-if ( [ ! -f cmake.sh ] && [ -f "${SRCDIR}/build/cmake.sh" ] ) ; then
-	mecho --blue "Creating symlink «cmake.sh» ..."
+if [ ! -f cmake.sh ] && [ -f "${SRCDIR}/build/cmake.sh" ] ; then
+	mecho --blue "Creating symlink 'cmake.sh' ..."
 	ln -vs $SRCDIR/build/cmake.sh cmake.sh
 fi
 
@@ -235,13 +235,13 @@ for I in $NOARCH ; do
 done
 
 case "$enable_debug" in
-	yes|YES|Yes)
+	[Yy][Ee][Ss])
 		mecho --magenta "Activating debug build"
 		PARAMS="$PARAMS -DCMAKE_BUILD_TYPE=Debug"
 	;;
 	*)
 		case "$enable_reldeb" in
-			yes|YES|Yes)
+			[Yy][Ee][Ss])
 				mecho --magenta "Activating release build with debug information"
 				PARAMS="$PARAMS -DCMAKE_BUILD_TYPE=RelWithDebInfo"
 			;;
@@ -254,7 +254,7 @@ case "$enable_debug" in
 esac
 
 case "$enable_verbose" in
-	yes|YES|Yes)
+	[Yy][Ee][Ss])
 		mecho --magenta "Activating verbose build"
 		PARAMS="$PARAMS -DCMAKE_VERBOSE_MAKEFILE=On"
 	;;
