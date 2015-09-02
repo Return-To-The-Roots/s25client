@@ -20,17 +20,17 @@
 
 #include <string>
 
-/// Vertragsypen
+/// Types of pacts
 enum PactType
 {
     TREATY_OF_ALLIANCE = 0,
     NON_AGGRESSION_PACT
 };
 
-/// Anzahl der unterschiedlichen Bündnisse
+/// Number of the various pacts
 const unsigned PACTS_COUNT = 2;
 
-/// Namen der Verträge
+/// Names of the possible pacts
 const std::string PACT_NAMES[PACTS_COUNT] =
 {
     gettext_noop("Treaty of alliance"),

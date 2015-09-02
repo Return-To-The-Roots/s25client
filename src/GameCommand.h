@@ -86,7 +86,7 @@ namespace gc
 
     class GameCommand
     {
-        /// Typ dieses Command
+        /// Type of this command
         const Type gst;
         unsigned refCounter_;
         friend void ::intrusive_ptr_add_ref(GameCommand* x);
@@ -94,17 +94,17 @@ namespace gc
     public:
         virtual ~GameCommand(void) {}
 
-        /// Erzeugt GameCommand anhand von Typen
+        /// Builds a GameCommand depending on Type
         static GameCommand* Deserialize(const Type gst, Serializer* ser);
 
-        /// Gibt den entsprechenden Typen zurück
+        /// Returns the Type
         Type GetType() const { return gst; }
-        /// Serialisiert dieses GameCommand
+        /// Serializes this GameCommand
         virtual void Serialize(Serializer* ser) const = 0;
 
-        /// Führt das GameCommand aus
+        /// Execute this GameCommand
         virtual void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid) = 0;
-        
+
         GameCommand(const GameCommand& obj): gst(obj.gst) // Do not copy refCounter!
         {}
     protected:
