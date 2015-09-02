@@ -218,8 +218,14 @@ const char* const BUILDING_HELP_STRINGS[40] =
         "(in the Armory) and tools "
         "(in the metalworks)."),
 
-    // Nothing
-    "",
+    // Charburner
+    gettext_noop(
+        "The charburner stacks up piles of "
+        "wood and straw which is then burned "
+        "to create charcoal. This can be used "
+        "just like the coal from the mine without "
+        "any loss in quality."
+    ),
 
     // Pig farm
     gettext_noop(
