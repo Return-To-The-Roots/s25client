@@ -1,6 +1,3 @@
-################################################################################
-### $Id: linux.common.cmake 7918 2012-04-01 12:58:20Z marcus $
-################################################################################
 
 # set compiler flags
 FORCE_ADD_FLAGS(CMAKE_C_FLAGS -ffast-math -mmmx -msse -mfpmath=sse -ggdb)

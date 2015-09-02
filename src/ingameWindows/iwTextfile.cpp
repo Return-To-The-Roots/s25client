@@ -1,5 +1,3 @@
-// $Id: iwTextfile.cpp 9357 2014-04-25 15:35:25Z FloSoft $
-//
 // Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 // Copyright (c) 2013 Nevik Rehnel (hai.kataker at gmx.de)
 //

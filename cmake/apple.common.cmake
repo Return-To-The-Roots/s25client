@@ -1,6 +1,3 @@
-################################################################################
-### $Id: apple.common.cmake 6807 2010-10-18 14:12:04Z FloSoft $
-################################################################################
 
 IF ( "${CMAKE_OSX_DEPLOYMENT_TARGET}" STREQUAL "" )
 	SET(CMAKE_OSX_DEPLOYMENT_TARGET "10.4" CACHE STRING "OSX-Deployment-Target" FORCE)

@@ -1,5 +1,3 @@
-// $Id: MilitaryConsts.h 9536 2014-12-10 22:12:56Z marcus $
-//
 // Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.

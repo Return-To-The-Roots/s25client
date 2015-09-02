@@ -1,5 +1,3 @@
-// $Id: EventManager.cpp 9372 2014-04-28 15:25:24Z FloSoft $
-//
 // Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.

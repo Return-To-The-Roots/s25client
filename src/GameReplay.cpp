@@ -1,5 +1,3 @@
-// $Id: GameReplay.cpp 9517 2014-11-30 09:21:25Z marcus $
-//
 // Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.

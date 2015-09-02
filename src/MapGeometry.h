@@ -1,5 +1,3 @@
-// $Id: MapGeometry.h 3120
-//
 // Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.

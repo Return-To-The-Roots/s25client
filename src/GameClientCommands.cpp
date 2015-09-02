@@ -1,5 +1,3 @@
-// $Id: GameClientCommands.cpp 9561 2014-12-30 10:51:38Z marcus $
-//
 // Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.

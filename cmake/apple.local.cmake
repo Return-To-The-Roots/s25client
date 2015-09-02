@@ -1,6 +1,3 @@
-################################################################################
-### $Id: apple.local.cmake 6807 2010-10-18 14:12:04Z FloSoft $
-################################################################################
 
 # this one is important
 EXECUTE_PROCESS(COMMAND "uname" OUTPUT_VARIABLE CMAKE_SYSTEM_NAME OUTPUT_STRIP_TRAILING_WHITESPACE)

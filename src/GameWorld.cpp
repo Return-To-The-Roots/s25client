@@ -1,5 +1,3 @@
-// $Id: GameWorld.cpp 9540 2014-12-14 11:32:47Z marcus $
-//
 // Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.

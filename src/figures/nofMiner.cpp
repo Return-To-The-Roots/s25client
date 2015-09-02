@@ -1,5 +1,3 @@
-// $Id: nofMiner.cpp 9501 2014-11-29 10:45:47Z marcus $
-//
 // Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.

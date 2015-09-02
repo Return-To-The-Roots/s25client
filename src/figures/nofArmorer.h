@@ -1,5 +1,3 @@
-// $Id: nofArmorer.h 9567 2015-01-03 19:34:57Z marcus $
-//
 // Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.

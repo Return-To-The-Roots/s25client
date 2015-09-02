@@ -1,5 +1,3 @@
-// $Id: ctrlBuildingIcon.cpp 9594 2015-02-01 09:40:27Z marcus $
-//
 // Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.

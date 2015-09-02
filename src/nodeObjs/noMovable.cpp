@@ -1,5 +1,3 @@
-// $Id: noMovable.cpp 9518 2014-11-30 09:22:47Z marcus $
-//
 // Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.

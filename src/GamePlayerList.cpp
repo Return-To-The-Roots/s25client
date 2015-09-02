@@ -1,5 +1,3 @@
-// $Id: GamePlayerList.cpp 9357 2014-04-25 15:35:25Z FloSoft $
-//
 // Copyright (c) 2005-2008 Settlers Freaks (sf-team at siedler25.org)
 //
 // This program is free software; you can redistribute it and/or modify it
