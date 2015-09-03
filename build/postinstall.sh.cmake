@@ -90,7 +90,7 @@ extract_debug_symbols()
 			objcopyTarget="-pc-linux-gnu"
 		;;
 		FreeBSD)
-			objcopyTarget=""
+			objcopy="objcopy"  # no cross-build support for FreeBSD
 		;;
 		*)
 			echo "$SYSTEM_NAME not supported" >&2
@@ -98,9 +98,10 @@ extract_debug_symbols()
 		;;
 	esac
 
-	objcopy="${objcopyArch}${objcopyTarget}-objcopy"
+	# Set if not yet set
+	: ${objcopy:=${objcopyArch}${objcopyTarget}-objcopy}
 
-	if [ ! -f ${objcopy} ]; then
+	if ! `${objcopy} -V >/dev/null 2>&1`; then
 		# Use fallback
 		case "$SYSTEM_NAME" in
 			Windows)
