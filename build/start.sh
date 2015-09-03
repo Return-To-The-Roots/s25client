@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 export LD_LIBRARY_PATH=libsiedler2/src
 export EF_ALLOW_MALLOC_0=1
@@ -24,10 +24,10 @@ while test $# != 0 ; do
 			ac_shift=1
 			;;
 	esac
-	
+
 	case $ac_option in
-                -l | --load)
-                        BINARGS="$ac_optarg"
+		-l | --load)
+			BINARGS="$ac_optarg"
 			if [ -n "$ac_optarg" ]
 			then
 				ac_shift=2
@@ -74,7 +74,7 @@ while test $# != 0 ; do
 			exit 1
 			;;
 	esac
-	
+
 	shift $ac_shift
 done
 
@@ -84,6 +84,8 @@ if [ -f /proc/cpuinfo ] ; then
 	if test "$CPU_COUNT" -gt 1; then
 		MAKEARGS="-j $((1+$CPU_COUNT)) $MAKEARGS"
 	fi
+elif [ $(sysctl -n hw.ncpu) -gt 1 ]; then
+	MAKEARGS="-j $((1 + $(sysctl -n hw.ncpu))) $MAKEARGS"
 fi
 
 make $MAKEARGS

@@ -1,7 +1,2 @@
-#!/bin/bash
-
-cd build
-
-bash -c ./start.sh $*
-
-exit $?
+#!/bin/sh
+cd build && exec ./start.sh "$@"
