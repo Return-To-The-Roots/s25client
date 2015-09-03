@@ -1,5 +1,5 @@
 
-IF ("${COMPILEFOR}/${COMPILEARCH}" STREQUAL "linux/i386" )
+IF (${CMAKE_SYSTEM_NAME} STREQUAL "Linux" AND (${CMAKE_SYSTEM_PROCESSOR} STREQUAL "i386" OR ${CMAKE_SYSTEM_PROCESSOR} STREQUAL "i686") )
 	FIND_LIBRARY(GLFW_LIBRARY glfw) 
 	
 	IF (GLFW_LIBRARY)
@@ -26,6 +26,6 @@ IF ("${COMPILEFOR}/${COMPILEARCH}" STREQUAL "linux/i386" )
 	ELSE (GLFW_LIBRARY)
 		MESSAGE(WARNING ": GLFW library not found: Not building GLFW videodriver")
 	ENDIF (GLFW_LIBRARY)
-ENDIF ("${COMPILEFOR}/${COMPILEARCH}" STREQUAL "linux/i386" )
+ENDIF ()
 
 #################################################################################

@@ -29,88 +29,15 @@ mecho()
 
 ###############################################################################
 
-COMPILEFOR=@COMPILEFOR@
-COMPILEARCH=@COMPILEARCH@
+SYSTEM_NAME=@CMAKE_SYSTEM_NAME@
+SYSTEM_ARCH=@CMAKE_SYSTEM_PROCESSOR@
+IS_CROSS_COMPILE=@CMAKE_CROSSCOMPILING@
 PREFIX=@PREFIX@
 BINDIR=@BINDIR@
 DATADIR=@DATADIR@
 LIBDIR=@LIBDIR@
 
-###############################################################################
-
-while test $# != 0 ; do
-	case $1 in
-	--*=*)
-		ac_option=`expr "X$1" : 'X\([^=]*\)='`
-		ac_optarg=`expr "X$1" : 'X[^=]*=\(.*\)'`
-		ac_shift=:
-	;;
-	*)
-		ac_option=$1
-		ac_optarg=$2
-		ac_shift=shift
-	;;
-	esac
-
-	case $ac_option in
-	-compilefor | --compilefor)
-		$ac_shift
-		COMPILEFOR=$ac_optarg
-	;;
-	-compilearch | --compilearch)
-		$ac_shift
-		COMPILEARCH=$ac_optarg
-	;;
-	-prefix | --prefix)
-		$ac_shift
-		PREFIX=$ac_optarg
-	;;
-	-bindir | --bindir)
-		$ac_shift
-		BINDIR=$ac_optarg
-	;;
-	-datadir | --datadir)
-		$ac_shift
-		DATADIR=$ac_optarg
-	;;
-	-libdir | --libdir)
-		$ac_shift
-		LIBDIR=$ac_optarg
-	;;
-	*)
-		echo "Unknown option: $ac_option" >&2
-		exit 1
-	;;
-	esac
-
-	shift
-done
-
-if [ -z "${COMPILEFOR}" ] ; then
-	COMPILEFOR=$(uname -s | tr '[:upper:]' '[:lower:]')
-fi
-
-if [ -z "${COMPILEARCH}" ] ;then
-	COMPILEARCH=$(uname -m)
-fi
-
-if [ -z "${PREFIX}" ] ; then
-	PREFIX=/usr/local
-fi
-
-if [ -z "${BINDIR}" ] ; then
-	BINDIR=${PREFIX}/bin
-fi
-
-if [ -z "${DATADIR}" ] ; then
-	DATADIR=${PREFIX}/share/s25rttr
-fi
-
-if [ -z "${LIBDIR}" ] ; then
-	LIBDIR=${DATADIR}
-fi
-
-echo "## Installing for \"${COMPILEFOR}\""
+echo "## Installing for \"${SYSTEM_NAME}\""
 echo "## Using Path-Prefix \"${PREFIX}\""
 echo "## Using Binary Dir \"${BINDIR}\""
 echo "## Using Data Dir \"${DATADIR}\""
@@ -138,7 +65,7 @@ extract_debug_symbols()
 	local FILE=$1
 
 	objcopyArch=""
-	case "$COMPILEARCH" in
+	case "$SYSTEM_ARCH" in
 		i686|*86)
 			objcopyArch="i686"
 		;;
@@ -149,24 +76,24 @@ extract_debug_symbols()
 			objcopyArch="powerpc"
 		;;
 		*)
-			echo "$COMPILEARCH not supported" >&2
+			echo "$SYSTEM_ARCH not supported" >&2
 			return 1
 		;;
 	esac
 
 	objcopyTarget=""
-	case "$COMPILEFOR" in
-		windows)
+	case "$SYSTEM_NAME" in
+		Windows)
 			objcopyTarget="-pc-mingw32"
 		;;
-		linux)
+		Linux)
 			objcopyTarget="-pc-linux-gnu"
 		;;
-		freebsd)
+		FreeBSD)
 			objcopyTarget=""
 		;;
 		*)
-			echo "$COMPILEFOR not supported" >&2
+			echo "$SYSTEM_NAME not supported" >&2
 			return 1
 		;;
 	esac
@@ -175,11 +102,11 @@ extract_debug_symbols()
 
 	if [ ! -f ${objcopy} ]; then
 		# Use fallback
-		case "$COMPILEFOR" in
-			windows)
+		case "$SYSTEM_NAME" in
+			Windows)
 				objcopyTarget="-mingw32"
 			;;
-			linux)
+			Linux)
 				objcopyTarget="-linux-gnu"
 			;;
 		esac
@@ -200,9 +127,9 @@ extract_debug_symbols()
 mecho --blue "## Extracting debug info from files and saving them into dbg"
 
 # strip out debug symbols into external file
-case "$COMPILEFOR" in
-	apple)
-		echo "extraction of debug symbols for $COMPILEFOR currently not supported" >&2
+case "$SYSTEM_NAME" in
+	Apple)
+		echo "extraction of debug symbols for Apple currently not supported" >&2
 		i686-apple-darwin10-strip -S ${DESTDIR}bin/s25client
 		i686-apple-darwin10-strip -S ${DESTDIR}share/s25rttr/driver/video/libvideoSDL.dylib
 		i686-apple-darwin10-strip -S ${DESTDIR}share/s25rttr/driver/audio/libaudioSDL.dylib
@@ -210,7 +137,7 @@ case "$COMPILEFOR" in
 		i686-apple-darwin10-strip -S ${DESTDIR}share/s25rttr/RTTR/sound-convert
 		i686-apple-darwin10-strip -S ${DESTDIR}share/s25rttr/RTTR/s-c_resample
 	;;
-	windows)
+	Windows)
 		extract_debug_symbols s25client.exe
 		extract_debug_symbols driver/video/libvideoWinAPI.dll
 		extract_debug_symbols driver/video/libvideoSDL.dll
@@ -219,7 +146,7 @@ case "$COMPILEFOR" in
 		extract_debug_symbols RTTR/sound-convert.exe
 		extract_debug_symbols RTTR/s-c_resample.exe
 	;;
-	linux|freebsd)
+	Linux|FreeBSD)
 		extract_debug_symbols bin/s25client
 		extract_debug_symbols share/s25rttr/driver/video/libvideoSDL.so
 		extract_debug_symbols share/s25rttr/driver/audio/libaudioSDL.so
@@ -228,15 +155,15 @@ case "$COMPILEFOR" in
 		extract_debug_symbols share/s25rttr/RTTR/s-c_resample
 	;;
 	*)
-		echo "$COMPILEFOR not supported" >&2
+		echo "$SYSTEM_NAME not supported" >&2
 		exit 1
 	;;
 esac
 
 mecho --blue "## Performing additional tasks"
 
-case "$COMPILEFOR" in
-	apple)
+case "$SYSTEM_NAME" in
+	Apple)
 		# create app-bundle for apple
 		# app anlegen
 		mkdir -vp ${DESTDIR}s25client.app/Contents/{MacOS,Resources} || exit 1
@@ -284,10 +211,10 @@ case "$COMPILEFOR" in
 		# RTTR-Ordner kopieren
 		mv -v ${DESTDIR}share ${DESTDIR}s25client.app/Contents/MacOS/ || exit 1
 	;;
-	windows)
+	Windows)
 		mingw=/usr
 		lua=""
-		case "$COMPILEARCH" in
+		case "$SYSTEM_ARCH" in
 			i686|*86)
 				if [ -d /usr/i686-pc-mingw32 ]; then
 					mingw=/usr/i686-pc-mingw32
@@ -323,11 +250,11 @@ case "$COMPILEFOR" in
 
 		rmdir --ignore-fail-on-non-empty -v ${DESTDIR}S2
 	;;
-	linux)
+	Linux)
 		miniupnpc=/usr/lib/libminiupnpc.so
-		case "$COMPILEARCH" in
+		case "$SYSTEM_ARCH" in
 			i686|*86)
-				if [ ! "$(uname -m | sed s/i686/i386/g)" = "$COMPILEARCH" ] ; then
+				if [ "${IS_CROSS_COMPILE}" = "TRUE" ] ; then
 					miniupnpc=/usr/i686-pc-linux-gnu/lib/libminiupnpc.so
 				elif [ ! -f $miniupnpc ]; then
 					# Use fallback
@@ -335,7 +262,7 @@ case "$COMPILEFOR" in
 				fi
 			;;
 			x86_64|*64)
-				if [ ! "$(uname -m)" = "$COMPILEARCH" ] ; then
+				if [ "${IS_CROSS_COMPILE}" = "TRUE" ] ; then
 					miniupnpc=/usr/x86_64-pc-linux-gnu/lib/libminiupnpc.so
 				elif [ ! -f $miniupnpc ]; then
 					# Use fallback
@@ -353,7 +280,7 @@ case "$COMPILEFOR" in
 			echo "install it via \"sudo apt-get install miniupnpc\"" >&2
 		fi
 	;;
-	freebsd)
+	FreeBSD)
 		miniupnpc=/usr/local/lib/libminiupnpc.so
 		if [ -f $miniupnpc ] ; then
 			mkdir -p ${DESTDIR}${PREFIX}/lib/ || exit 1
@@ -365,7 +292,7 @@ case "$COMPILEFOR" in
 		fi
 	;;
 	*)
-		echo "$COMPILEFOR not supported" >&2
+		echo "$SYSTEM_ARCH not supported" >&2
 		exit 1
 	;;
 esac
