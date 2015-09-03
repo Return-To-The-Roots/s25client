@@ -56,10 +56,6 @@ const unsigned short PING_FIELD_POS = 150;
 const unsigned short TREATIES_POS = 240;
 /// Abstand zwischen den beiden Bündnis-Buttons (Achtung: von Mittelpunkten aus!)
 const unsigned short TREATIE_BUTTON_SPACE = 20;
-/// Länge des Verbleibenden-Zeit-Balkens
-const unsigned short REMAINING_TIME_WIDTH = 50;
-/// Zusätzlicher Abstand für diesen Balken
-const unsigned short REMAINING_TIME_SPACE = 10;
 
 
 ///////////////////////////////////////////////////////////////////////////////

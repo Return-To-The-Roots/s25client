@@ -34,8 +34,6 @@ static char THIS_FILE[] = __FILE__;
 
 /// Breite der Scrollbar
 static const unsigned short SCROLLBAR_WIDTH = 20;
-/// Einschubbreite für sekundäre Zeilen (die umgebrochen wurden)
-static const unsigned short SECONDARY_PUGGING = 30;
 
 ///////////////////////////////////////////////////////////////////////////////
 /**

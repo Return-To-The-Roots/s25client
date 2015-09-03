@@ -33,8 +33,6 @@ const unsigned short MINIMAP_WINDOW_BIG_HEIGHT = 400;
 
 /// Abstand der Kartenränder zum Fensterrand
 const unsigned short WINDOW_MAP_SPACE = 5;
-/// Minimale Fensterbreite
-const unsigned short MIN_WINDOW_WIDTH = 200;
 /// Breite der unteren Buttons
 const unsigned short BUTTON_WIDTH = 36;
 /// Höhe der unteren Buttons
