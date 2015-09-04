@@ -195,7 +195,7 @@ fi
 echo "Setting Path-Prefix to \"$PREFIX\""
 PARAMS="$PARAMS -DPREFIX=$PREFIX"
 
-if ![ -z "$TOOL_CHAIN" ] ; then
+if [ ! -z "$TOOL_CHAIN" ] ; then
     echo "Using toolchain \"$TOOL_CHAIN\""
     PARAMS="$PARAMS -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchains/$TOOL_CHAIN"	
 fi
