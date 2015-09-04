@@ -3,15 +3,17 @@
 # If a NO{ARCH} variable is set, then {ARCH} will be ignored
 
 MACRO(DetectOsXArchs)
-    # find lipo
-	FIND_PROGRAM(LIPO NAMES apple-lipo lipo)
-	SET(CMAKE_LIPO "${LIPO}" CACHE PATH "" FORCE)
+    IF(NOT ${CMAKE_LIPO})
+    	# find lipo
+		FIND_PROGRAM(LIPO NAMES apple-lipo lipo i686-apple-darwin10-lipo)
+		SET(CMAKE_LIPO "${LIPO}" CACHE PATH "" FORCE)
+	ENDIF(NOT ${CMAKE_LIPO})
 
 	MESSAGE(STATUS "Checking ${CMAKE_PREFIX_PATH}/usr/lib/libSystem.B.dylib for possible architectures")
 
 	# read supported platforms	
 	EXECUTE_PROCESS(
-		COMMAND ${LIPO} "-info" "${CMAKE_PREFIX_PATH}/usr/lib/libSystem.B.dylib"
+		COMMAND ${CMAKE_LIPO} "-info" "${CMAKE_PREFIX_PATH}/usr/lib/libSystem.B.dylib"
 		RESULT_VARIABLE LIPO_RESULT
 		ERROR_VARIABLE LIPO_ERROR
 		OUTPUT_VARIABLE LIPO_OUTPUT
