@@ -30,7 +30,7 @@ mecho()
 ###############################################################################
 
 SYSTEM_NAME=@CMAKE_SYSTEM_NAME@
-SYSTEM_ARCH=@CMAKE_SYSTEM_PROCESSOR@
+SYSTEM_ARCH=@PLATFORM_ARCH@
 IS_CROSS_COMPILE=@CMAKE_CROSSCOMPILING@
 PREFIX=@PREFIX@
 BINDIR=@BINDIR@
