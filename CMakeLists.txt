@@ -59,12 +59,11 @@ ELSE (CMAKE_CROSSCOMPILING)
 ENDIF (CMAKE_CROSSCOMPILING)
 
 #Include generic platform config
+MESSAGE(STATUS "Using platform config cmake/${PLATFORM_NAME}.cmake")
 INCLUDE("cmake/${PLATFORM_NAME}.cmake")
 
 ################################################################################
 
-#SET(Boost_USE_STATIC_LIBS TRUE)
-#SET(Boost_USE_STATIC_RUNTIME TRUE)
 SET(Boost_ADDITIONAL_VERSIONS "1.55")
 
 IF (MSVC)
