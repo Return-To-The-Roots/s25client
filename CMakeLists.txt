@@ -41,6 +41,10 @@ INCLUDE("cmake/${PLATFORM_NAME}.cmake")
 
 ################################################################################
 
+#SET(Boost_USE_STATIC_LIBS TRUE)
+SET(Boost_USE_STATIC_RUNTIME TRUE)
+SET(Boost_ADDITIONAL_VERSIONS "1.55")
+
 IF (MSVC)
 	IF(NOT EXISTS "${CMAKE_SOURCE_DIR}/contrib/full-contrib-msvc2010" OR NOT IS_DIRECTORY "${CMAKE_SOURCE_DIR}/contrib/full-contrib-msvc2010")
 		MESSAGE(FATAL_ERROR "You have to extract contrib/full-contrib-msvc2010.rar to contrib/full-contrib-msvc2010 first!")
@@ -60,10 +64,6 @@ ELSE()
 		MESSAGE(FATAL_ERROR "You have to install boost into contrib/boost or set BOOST_ROOT environment variable, since cmake was unable to find boost!")
 	ENDIF()
 ENDIF()
-
-#SET(Boost_USE_STATIC_LIBS TRUE)
-#SET(Boost_USE_STATIC_RUNTIME TRUE)
-SET(Boost_ADDITIONAL_VERSIONS "1.55")
 
 ################################################################################
 
