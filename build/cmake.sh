@@ -197,7 +197,7 @@ PARAMS="$PARAMS -DPREFIX=$PREFIX"
 
 if [ ! -z "$TOOL_CHAIN" ] ; then
     echo "Using toolchain \"$TOOL_CHAIN\""
-    PARAMS="$PARAMS -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchains/$TOOL_CHAIN.cmake"	
+    PARAMS="$PARAMS -DCMAKE_TOOLCHAIN_FILE=${SRCDIR}/cmake/toolchains/$TOOL_CHAIN.cmake"	
 fi
 
 echo "Setting Binary Dir to \"$BINDIR\""
