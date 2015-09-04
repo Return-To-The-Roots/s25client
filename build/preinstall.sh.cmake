@@ -75,7 +75,7 @@ case "$SYSTEM_NAME" in
 	Linux|FreeBSD)
 		cp -v ${SRCDIR}/release/bin/rttr.sh ${DESTDIR}${BINDIR} || exit 1
 	;;
-	Apple)
+	Darwin)
 	;;
 	*)
 		echo "$SYSTEM_NAME not supported" >&2

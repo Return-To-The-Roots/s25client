@@ -129,7 +129,7 @@ mecho --blue "## Extracting debug info from files and saving them into dbg"
 
 # strip out debug symbols into external file
 case "$SYSTEM_NAME" in
-	Apple)
+	Darwin)
 		echo "extraction of debug symbols for Apple currently not supported" >&2
 		i686-apple-darwin10-strip -S ${DESTDIR}bin/s25client
 		i686-apple-darwin10-strip -S ${DESTDIR}share/s25rttr/driver/video/libvideoSDL.dylib
@@ -164,7 +164,7 @@ esac
 mecho --blue "## Performing additional tasks"
 
 case "$SYSTEM_NAME" in
-	Apple)
+	Darwin)
 		# create app-bundle for apple
 		# app anlegen
 		mkdir -vp ${DESTDIR}s25client.app/Contents/{MacOS,Resources} || exit 1
