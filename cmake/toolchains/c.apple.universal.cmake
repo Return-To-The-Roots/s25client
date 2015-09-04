@@ -5,4 +5,4 @@ SET(CMAKE_SYSTEM_NAME Darwin)
 #SET(CMAKE_OSX_ARCHITECTURES "???" CACHE STRING "OSX-Architectures" FORCE)
 
 # set compilers...
-INCLUDE(cmake/toolchains/c.apple.common.cmake)
+INCLUDE("${CMAKE_CURRENT_LIST_DIR}/c.apple.common.cmake")

@@ -5,4 +5,4 @@ SET(CMAKE_SYSTEM_PROCESSOR powerpc)
 SET(CMAKE_OSX_ARCHITECTURES "ppc" CACHE STRING "OSX-Architectures")
 
 # set compilers...
-INCLUDE(cmake/toolchains/c.apple.common.cmake)
+INCLUDE("${CMAKE_CURRENT_LIST_DIR}/c.apple.common.cmake")
