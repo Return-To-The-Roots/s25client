@@ -39,7 +39,7 @@ if [ ! -d "$TARGET" ] ; then
 fi
 
 # get arch
-ARCH="$(grep COMPILEFOR CMakeCache.txt | cut -d '=' -f 2 | head -n 1).$(grep COMPILEARCH CMakeCache.txt | cut -d '=' -f 2 | head -n 1)"
+ARCH="$(grep PLATFORM_NAME CMakeCache.txt | cut -d '=' -f 2 | head -n 1).$(grep PLATFORM_ARCH CMakeCache.txt | cut -d '=' -f 2 | head -n 1)"
 
 # current and new package directory
 ARCHDIR=$TARGET/$ARCH

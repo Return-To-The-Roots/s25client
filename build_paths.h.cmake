@@ -24,32 +24,4 @@
 ///////////////////////////////////////////////////////////////////////////////
 #endif
 
-///////////////////////////////////////////////////////////////////////////////
-//	Other Configuration
-
-//	set global prefix (normal /usr/local)
-//#define PREFIX "/usr/local"
-#cmakedefine PREFIX "${PREFIX}"
-
-//	set binary directory (normal $(prefix)/bin)
-//#define BINDIR PREFIX"/bin"
-#cmakedefine BINDIR "${BINDIR}"
-
-//	set data directory (normal $(datadir)/s25rttr)
-//#define DATADIR PREFIX"/share/s25rttr"
-#cmakedefine DATADIR "${DATADIR}"
-
-//	set game directory (normal $(datadir)/s25rttr/S2)
-//#define GAMEDIR DATADIR"/S2"
-
-//	set driver directory (normal $(libdir)/driver)
-//#define DRIVERDIR LIBDIR"/driver"
-#cmakedefine DRIVERDIR "${DRIVERDIR}"
-
-//	set settings directory (normal $HOME/.s25rttr)
-//#define SETTINGSDIR "~/.s25rttr"
-
-//
-///////////////////////////////////////////////////////////////////////////////
-
 #endif // !LOCAL_H_INCLUDED
