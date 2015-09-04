@@ -1,6 +1,6 @@
 
 MACRO(SET_CCACHE var filepath)
-  GET_FILENAME_COMPONENT(file, filepath, NAME)
+  GET_FILENAME_COMPONENT(file ${filepath} NAME)
 	IF(EXISTS /usr/lib/ccache_lipo/${file})
 		SET(${var} /usr/lib/ccache_lipo/${file})
 	ELSE(EXISTS /usr/lib/ccache_lipo/${file})
