@@ -76,7 +76,7 @@ PREFIX=/usr/local
 BINDIR=
 DATADIR=
 LIBDIR=
-ToolChain=
+TOOL_CHAIN=
 NOARCH=
 GENERATOR=
 PARAMS=""
@@ -124,7 +124,7 @@ while test $# != 0 ; do
 		;;
 		-arch | --arch | -target | --target | -toolchain | --toolchain)
 			$ac_shift
-			ToolChain=$ac_optarg
+			TOOL_CHAIN=$ac_optarg
 		;;
 		-no-arch | --no-arch)
 			$ac_shift
@@ -195,9 +195,9 @@ fi
 echo "Setting Path-Prefix to \"$PREFIX\""
 PARAMS="$PARAMS -DPREFIX=$PREFIX"
 
-if ![ -z "$ToolChain" ] ; then
-    echo "Using toolchain \"$ToolChain\""
-    PARAMS="$PARAMS -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchains/$ToolChain"	
+if ![ -z "$TOOL_CHAIN" ] ; then
+    echo "Using toolchain \"$TOOL_CHAIN\""
+    PARAMS="$PARAMS -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchains/$TOOL_CHAIN"	
 fi
 
 echo "Setting Binary Dir to \"$BINDIR\""
