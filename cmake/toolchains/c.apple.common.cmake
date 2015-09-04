@@ -1,6 +1,6 @@
 # specify the cross compiler
-SET(CMAKE_C_COMPILER i686-apple-darwin10-gcc)
-SET(CMAKE_CXX_COMPILER i686-apple-darwin10-g++)
+SET_CCACHE(CMAKE_C_COMPILER i686-apple-darwin10-gcc)
+SET_CCACHE(CMAKE_CXX_COMPILER i686-apple-darwin10-g++)
 SET(CMAKE_RANLIB i686-apple-darwin10-ranlib CACHE STRING "" FORCE)
 SET(CMAKE_LIPO i686-apple-darwin10-lipo CACHE STRING "" FORCE)
 

@@ -3,8 +3,8 @@ SET(CMAKE_SYSTEM_NAME Linux)
 SET(CMAKE_SYSTEM_PROCESSOR i686)
 
 # specify the cross compiler
-SET(CMAKE_C_COMPILER   i686-pc-linux-gnu-gcc)
-SET(CMAKE_CXX_COMPILER i686-pc-linux-gnu-g++)
+SET_CCACHE(CMAKE_C_COMPILER   i686-pc-linux-gnu-gcc)
+SET_CCACHE(CMAKE_CXX_COMPILER i686-pc-linux-gnu-g++)
 SET(CMAKE_RANLIB i686-pc-linux-gnu-ranlib CACHE PATH "" FORCE)
 SET(CMAKE_AR i686-pc-linux-gnu-ar CACHE PATH "" FORCE)
 

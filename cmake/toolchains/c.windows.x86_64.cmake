@@ -3,9 +3,9 @@ SET(CMAKE_SYSTEM_NAME Windows)
 SET(CMAKE_SYSTEM_PROCESSOR x86_64)
 
 # specify the cross compiler
-SET(CMAKE_C_COMPILER x86_64-pc-mingw32-gcc)
-SET(CMAKE_CXX_COMPILER x86_64-pc-mingw32-g++)
-SET(CMAKE_RC_COMPILER x86_64-pc-mingw32-windres)
+SET_CCACHE(CMAKE_C_COMPILER x86_64-pc-mingw32-gcc)
+SET_CCACHE(CMAKE_CXX_COMPILER x86_64-pc-mingw32-g++)
+SET_CCACHE(CMAKE_RC_COMPILER x86_64-pc-mingw32-windres)
 SET(CMAKE_RANLIB x86_64-pc-mingw32-ranlib CACHE PATH "" FORCE)
 
 # find AR program

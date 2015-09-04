@@ -3,8 +3,8 @@ SET(CMAKE_SYSTEM_NAME Linux)
 SET(CMAKE_SYSTEM_PROCESSOR arm)
 
 # specify the cross compiler
-SET(CMAKE_C_COMPILER   arm-linux-gnueabi-gcc)
-SET(CMAKE_CXX_COMPILER arm-linux-gnueabi-g++)
+SET_CCACHE(CMAKE_C_COMPILER   arm-linux-gnueabi-gcc)
+SET_CCACHE(CMAKE_CXX_COMPILER arm-linux-gnueabi-g++)
 SET(CMAKE_RANLIB arm-linux-gnueabi-ranlib CACHE PATH "" FORCE)
 SET(CMAKE_AR arm-linux-gnueabi-ar CACHE PATH "" FORCE)
 
