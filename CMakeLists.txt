@@ -35,13 +35,17 @@ ENDIF (${CMAKE_CROSSCOMPILING})
 INCLUDE("cmake/${PLATFORM_NAME}.cmake")
 
 #Check for ccache
-find_program(CCACHE_FOUND ccache)
-MARK_AS_ADVANCED(CCACHE_FOUND)
-if(CCACHE_FOUND)
-    MESSAGE(STATUS "Using ccache to speed up builds")
-    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
-    set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
-endif(CCACHE_FOUND)
+SET_CCACHE(CMAKE_C_COMPILER ${CMAKE_C_COMPILER})
+SET_CCACHE(CMAKE_CXX_COMPILER ${CMAKE_CXX_COMPILER})
+SET_CCACHE(CMAKE_RC_COMPILER ${CMAKE_RC_COMPILER})
+# Use the below if the above workaround for apple is no longer required
+#find_program(CCACHE_FOUND ccache)
+#MARK_AS_ADVANCED(CCACHE_FOUND)
+#if(CCACHE_FOUND)
+#    MESSAGE(STATUS "Using ccache to speed up builds")
+#    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
+#    set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
+#endif(CCACHE_FOUND)
 
 ################################################################################
 
