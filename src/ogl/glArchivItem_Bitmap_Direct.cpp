@@ -46,7 +46,7 @@ glArchivItem_Bitmap_Direct::glArchivItem_Bitmap_Direct(void)
  *
  *  @author FloSoft
  */
-glArchivItem_Bitmap_Direct::glArchivItem_Bitmap_Direct(const glArchivItem_Bitmap_Direct* item)
+glArchivItem_Bitmap_Direct::glArchivItem_Bitmap_Direct(const glArchivItem_Bitmap_Direct& item)
     : baseArchivItem_Bitmap(item), glArchivItem_Bitmap(item)
 {
 }
@@ -72,15 +72,21 @@ void glArchivItem_Bitmap_Direct::tex_setPixel(unsigned short x, unsigned short y
     {
         if(x < tex_width && y < tex_height)
         {
-            unsigned char buffer[4] = { 0x00, 0x00, 0x00, 0xFF };
+            struct{
+                libsiedler2::Color clr;
+                unsigned char a;
+            } clr;
 
             if(color == libsiedler2::TRANSPARENT_INDEX)
-                buffer[3] = 0x00;
+                clr.a = 0x00;
             else
-                this->palette->get(color, &buffer[0], &buffer[1], &buffer[2]);
+            {
+                clr.clr = (*this->palette)[color];
+                clr.a = 0xFF;
+            }
 
             VIDEODRIVER.BindTexture(texture);
-            glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &buffer);
+            glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &clr);
         }
     }
 }

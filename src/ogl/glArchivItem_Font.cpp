@@ -27,8 +27,9 @@
 #include "Log.h"
 #include "glAllocator.h"
 
-#include "../libsiedler2/src/types.h"
+#include "../libsiedler2/src/ArchivItem_Bitmap_Player.h"
 #include <cmath>
+#include <vector>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -646,14 +647,14 @@ void glArchivItem_Font::GetWrapInfo(const std::string& text,
  */
 void glArchivItem_Font::initFont()
 {
-    _font_outline = dynamic_cast<glArchivItem_Bitmap*>(glAllocator(libsiedler2::BOBTYPE_BITMAP_RLE, 0, NULL));
-    _font = dynamic_cast<glArchivItem_Bitmap*>(glAllocator(libsiedler2::BOBTYPE_BITMAP_RLE, 0, NULL));
+    // @todo: Shouldn't we use libsiedler2::allocator?
+    _font_outline = dynamic_cast<glArchivItem_Bitmap*>(GlAllocator().create(libsiedler2::BOBTYPE_BITMAP_RLE));
+    _font = dynamic_cast<glArchivItem_Bitmap*>(GlAllocator().create(libsiedler2::BOBTYPE_BITMAP_RLE));
 
-    //memset(_charwidths, 0, sizeof(_charwidths));
 
     // first, we have to find how much chars we really have, but we can also skip first 32
     unsigned int chars = 32;
-    for(unsigned int i = 32; i < getCount(); ++i)
+    for(unsigned int i = 32; i < size(); ++i)
     {
         if(get(i))
             ++chars;
@@ -663,14 +664,12 @@ void glArchivItem_Font::initFont()
 
     int w = (dx + 2) * chars_per_line + 2;
     int h = (dy + 2) * chars_per_line + 2;
-    unsigned int buffersize = w * h * 4; // RGBA Puffer für alle Buchstaben
-    unsigned char* buffer = new unsigned char[buffersize];
-    memset(buffer, 0, buffersize);
+    std::vector<unsigned char> buffer(w * h * 4); // RGBA Puffer für alle Buchstaben
 
     int x = 1;
     int y = 1;
     chars = 0;
-    for(unsigned int i = 32; i < getCount(); ++i)
+    for(unsigned int i = 32; i < size(); ++i)
     {
         if( (chars % chars_per_line) == 0 && i != 32 )
         {
@@ -683,7 +682,7 @@ void glArchivItem_Font::initFont()
         {
             // Spezialpalette (blaue Spielerfarben sind Grau) verwenden,
             // damit man per OpenGL einfärben kann!
-            c->print(buffer, w, h, libsiedler2::FORMAT_RGBA, LOADER.GetPaletteN("colors"), 128, x, y, 0, 0, 0, 0, true);
+            c->print(&buffer.front(), w, h, libsiedler2::FORMAT_RGBA, LOADER.GetPaletteN("colors"), 128, x, y, 0, 0, 0, 0, true);
 
             char_info ci;
             ci.x = x;
@@ -698,12 +697,12 @@ void glArchivItem_Font::initFont()
 
     // Spezialpalette (blaue Spielerfarben sind Grau) verwenden,
     // damit man per OpenGL einfärben kann!
-    _font->create(w, h, buffer, w, h, libsiedler2::FORMAT_RGBA, LOADER.GetPaletteN("colors"));
+    _font->create(w, h, &buffer.front(), w, h, libsiedler2::FORMAT_RGBA, LOADER.GetPaletteN("colors"));
 
     x = 1;
     y = 1;
     chars = 0;
-    for(unsigned int i = 32; i < getCount(); ++i)
+    for(unsigned int i = 32; i < size(); ++i)
     {
         if( (chars % chars_per_line) == 0 && i != 32 )
         {
@@ -716,16 +715,14 @@ void glArchivItem_Font::initFont()
         {
             // Spezialpalette (blaue Spielerfarben sind Grau) verwenden,
             // damit man per OpenGL einfärben kann!
-            c->print(buffer, w, h, libsiedler2::FORMAT_RGBA, LOADER.GetPaletteN("colors"), 128, x, y);
+            c->print(&buffer.front(), w, h, libsiedler2::FORMAT_RGBA, LOADER.GetPaletteN("colors"), 128, x, y);
 
             x += dx + 2;
             ++chars;
         }
     }
 
-    _font_outline->create(w, h, buffer, w, h, libsiedler2::FORMAT_RGBA, LOADER.GetPaletteN("colors"));
-
-    delete[] buffer;
+    _font_outline->create(w, h, &buffer.front(), w, h, libsiedler2::FORMAT_RGBA, LOADER.GetPaletteN("colors"));
 
     /*ArchivInfo items;
     items.pushC(_font);

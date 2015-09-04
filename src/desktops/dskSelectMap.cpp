@@ -205,7 +205,7 @@ void dskSelectMap::Msg_TableSelectItem(const unsigned int ctrl_id, const unsigne
 
                 libsiedler2::ArchivInfo ai;
                 // load map data
-                if(libsiedler2::loader::LoadMAP(path.c_str(), &ai) == 0)
+                if(libsiedler2::loader::LoadMAP(path.c_str(), ai) == 0)
                 {
                     glArchivItem_Map* map = dynamic_cast<glArchivItem_Map*>(ai.get(0));
                     if(map)
@@ -408,7 +408,7 @@ void dskSelectMap::FillTable(const std::string& filename, void* param)
         return;
 
     // Karteninformationen laden
-    if(libsiedler2::loader::LoadMAP(filename.c_str(), &map, true) == 0)
+    if(libsiedler2::loader::LoadMAP(filename.c_str(), map, true) == 0)
     {
         const libsiedler2::ArchivItem_Map_Header* header = &(dynamic_cast<const glArchivItem_Map*>(map.get(0))->getHeader());
         assert(header);
@@ -428,7 +428,7 @@ void dskSelectMap::FillTable(const std::string& filename, void* param)
             _("Winter world")
         };
 
-        tabelle->AddRow(0, header->getName(), header->getAuthor(), players, landscapes[header->getGfxSet()].c_str(), size, filename.c_str());
+        tabelle->AddRow(0, header->getName().c_str(), header->getAuthor().c_str(), players, landscapes[header->getGfxSet()].c_str(), size, filename.c_str());
     }
 }
 

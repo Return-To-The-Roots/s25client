@@ -47,8 +47,8 @@ class AudioSDL : public AudioDriver
         /// Treiberaufräumfunktion.
         void CleanUp(void);
 
-        Sound* LoadEffect(unsigned int data_type, unsigned char* data, unsigned long size);
-        Sound* LoadMusic(unsigned int data_type, unsigned char* data, unsigned long size);
+        Sound* LoadEffect(unsigned int data_type, const unsigned char* data, unsigned long size);
+        Sound* LoadMusic(unsigned int data_type, const unsigned char* data, unsigned long size);
 
         /// Spielt Sound ab
         unsigned int PlayEffect(Sound* sound, const unsigned char volume, const bool loop);

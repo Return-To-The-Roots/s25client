@@ -52,12 +52,12 @@ class glArchivItem_Map : public libsiedler2::ArchivItem_Map
         /// Konstruktor von @p glArchivItem_Map.
         glArchivItem_Map(void);
         /// Kopierkonstruktor von @p glArchivItem_Map.
-        glArchivItem_Map(const glArchivItem_Map* item);
+        glArchivItem_Map(const glArchivItem_Map& item);
         /// Destruktor von @p glArchivItem_Map.
         ~glArchivItem_Map(void);
 
         /// lädt die Mapdaten aus einer Datei.
-        int load(FILE* file, bool only_header);
+        virtual int load(std::istream& file, bool only_header);
 
         void Serialize(SerializedGameData* sgd) const;
         void Deserialize(SerializedGameData* sgd, const char* const map_name);
@@ -66,9 +66,9 @@ class glArchivItem_Map : public libsiedler2::ArchivItem_Map
         const libsiedler2::ArchivItem_Map_Header& getHeader(void) const { return *header; }
 
         /// liefert einen Map-Layer zurück.
-        const unsigned char* GetLayer(MapLayer type) const;
+        const std::vector<unsigned char>& GetLayer(MapLayer type) const;
         /// liefert einen Map-Layer zurück.
-        unsigned char* GetLayer(MapLayer type);
+        std::vector<unsigned char>& GetLayer(MapLayer type);
 
         /// liefert die Mapdaten an einer bestimmten Stelle zurück.
         unsigned char GetMapDataAt(MapLayer type, unsigned int pos) const;

@@ -282,7 +282,7 @@ void MusicPlayer::PlayNext()
     LOG.lprintf("lade \"%s\": ", song.c_str());
 
     // Neues Stück laden
-    if(libsiedler2::loader::LoadSND(song.c_str(), &sng) != 0 )
+    if(libsiedler2::loader::LoadSND(song.c_str(), sng) != 0 )
     {
         Stop();
         return;

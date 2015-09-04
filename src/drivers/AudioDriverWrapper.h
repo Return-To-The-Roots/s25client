@@ -41,8 +41,8 @@ class AudioDriverWrapper : public Singleton<AudioDriverWrapper>, public AudioDri
         bool LoadDriver(void);
 
         /// Lädt einen Sound.
-        Sound* LoadEffect(unsigned int data_type, unsigned char* data, unsigned int size);
-        Sound* LoadMusic(unsigned int data_type, unsigned char* data, unsigned int size);
+        Sound* LoadEffect(unsigned int data_type, const unsigned char* data, unsigned int size);
+        Sound* LoadMusic(unsigned int data_type, const unsigned char* data, unsigned int size);
 
         /// Spielt einen Sound
         unsigned PlayEffect(Sound* sound, const unsigned char volume, const bool loop);

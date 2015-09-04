@@ -170,7 +170,7 @@ void AudioSDL::CleanUp(void)
  *
  *  @author FloSoft
  */
-Sound* AudioSDL::LoadEffect(unsigned int data_type, unsigned char* data, unsigned long size)
+Sound* AudioSDL::LoadEffect(unsigned int data_type, const unsigned char* data, unsigned long size)
 {
     SoundSDL_Effect* sd = new SoundSDL_Effect();
 
@@ -228,7 +228,7 @@ Sound* AudioSDL::LoadEffect(unsigned int data_type, unsigned char* data, unsigne
  *
  *  @author FloSoft
  */
-Sound* AudioSDL::LoadMusic(unsigned int data_type, unsigned char* data, unsigned long size)
+Sound* AudioSDL::LoadMusic(unsigned int data_type, const unsigned char* data, unsigned long size)
 {
     SoundSDL_Music* sd = new SoundSDL_Music;
 
@@ -253,7 +253,7 @@ Sound* AudioSDL::LoadMusic(unsigned int data_type, unsigned char* data, unsigned
 
         case AudioDriver::AD_OTHER:
         {
-            const char* header = (const char*)data;
+            const char* header = reinterpret_cast<const char*>(data);
             if(strncmp(header, "OggS", 4) == 0)
                 strncat(file, ".ogg", 512);
             else if (strncmp(header, "ID3", 3) == 0 || ((unsigned char)header[0] == 0xFF && (unsigned char)header[1] == 0xFB) )

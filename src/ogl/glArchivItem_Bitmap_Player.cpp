@@ -24,6 +24,7 @@
 #include "GlobalVars.h"
 #include "Loader.h"
 #include "../libsiedler2/src/types.h"
+#include <vector>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -112,17 +113,14 @@ void glArchivItem_Bitmap_Player::GenerateTexture(void)
 
     int iformat = GL_RGBA, dformat = GL_BGRA; //GL_BGRA_EXT;
 
-    unsigned char* buffer = new unsigned char[tex_width * 2 * tex_height * 4];
+    std::vector<unsigned char> buffer(tex_width * 2 * tex_height * 4);
 
     VIDEODRIVER.BindTexture(texture);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
 
-    memset(buffer, 0, tex_width * 2 * tex_height * 4);
-    print(buffer, tex_width * 2, tex_height, libsiedler2::FORMAT_RGBA, palette, 128, 0, 0, 0, 0, 0, 0, false);
-    print(buffer, tex_width * 2, tex_height, libsiedler2::FORMAT_RGBA, palette, 128, tex_width, 0, 0, 0, 0, 0, true);
-    glTexImage2D(GL_TEXTURE_2D, 0, iformat, tex_width * 2, tex_height, 0, dformat, GL_UNSIGNED_BYTE, buffer);
-
-    delete[] buffer;
+    print(&buffer.front(), tex_width * 2, tex_height, libsiedler2::FORMAT_RGBA, palette, 128, 0, 0, 0, 0, 0, 0, false);
+    print(&buffer.front(), tex_width * 2, tex_height, libsiedler2::FORMAT_RGBA, palette, 128, tex_width, 0, 0, 0, 0, 0, true);
+    glTexImage2D(GL_TEXTURE_2D, 0, iformat, tex_width * 2, tex_height, 0, dformat, GL_UNSIGNED_BYTE, &buffer.front());
 }

@@ -29,7 +29,7 @@ class glArchivItem_Sound_Wave : public libsiedler2::baseArchivItem_Sound_Wave, p
         glArchivItem_Sound_Wave(void) : baseArchivItem_Sound(), baseArchivItem_Sound_Wave(), glArchivItem_Sound() {}
 
         /// Kopierkonstruktor von @p glArchivItem_Sound_Wave.
-        glArchivItem_Sound_Wave(const glArchivItem_Sound_Wave* item) : baseArchivItem_Sound(item), baseArchivItem_Sound_Wave(item), glArchivItem_Sound(item) {}
+        glArchivItem_Sound_Wave(const glArchivItem_Sound_Wave& item) : baseArchivItem_Sound(item), baseArchivItem_Sound_Wave(item), glArchivItem_Sound(item) {}
 
         /// Spielt den Sound ab.
         unsigned Play(const unsigned char volume, const bool loop);

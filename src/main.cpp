@@ -269,7 +269,7 @@ int main(int argc, char* argv[])
     }
 
     libsiedler2::setTextureFormat(libsiedler2::FORMAT_RGBA);
-    libsiedler2::setAllocator(glAllocator);
+    libsiedler2::setAllocator(new GlAllocator());
 
     // Zufallsgenerator initialisieren (Achtung: nur für Animationens-Offsets interessant, für alles andere (spielentscheidende) wird unser Generator verwendet)
     srand(static_cast<unsigned int>(std::time(NULL)));

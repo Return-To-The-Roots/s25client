@@ -209,7 +209,7 @@ void iwLobbyConnect::Msg_ButtonClick(const unsigned int ctrl_id)
             LobbyForm(user, pass, email);
 
             // Einloggen
-            if(!LOBBYCLIENT.Login(LOADER.GetTextN("client", 0), atoi(LOADER.GetTextN("client", 1)), user, pass, SETTINGS.server.ipv6))
+            if(!LOBBYCLIENT.Login(LOADER.GetTextN("client", 0), atoi(LOADER.GetTextN("client", 1).c_str()), user, pass, SETTINGS.server.ipv6))
             {
                 SetText(_("Connection failed!"), COLOR_RED, true);
                 break;

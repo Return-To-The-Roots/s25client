@@ -33,7 +33,7 @@ class glArchivItem_Bitmap : public virtual libsiedler2::baseArchivItem_Bitmap
         /// Konstruktor von @p glArchivItem_Bitmap.
         glArchivItem_Bitmap(void);
         /// Kopiekonstruktor von @p glArchivItem_Bitmap.
-        glArchivItem_Bitmap(const glArchivItem_Bitmap* item);
+        glArchivItem_Bitmap(const glArchivItem_Bitmap& item);
 
         /// Destruktor von @p glArchivItem_Bitmap.
         virtual ~glArchivItem_Bitmap(void);

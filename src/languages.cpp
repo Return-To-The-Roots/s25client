@@ -44,7 +44,7 @@ static char THIS_FILE[] = __FILE__;
  */
 void Languages::loadLanguages()
 {
-    unsigned int count = LOADER.GetInfoN("lang")->getCount();
+    unsigned int count = LOADER.GetInfoN("lang")->size();
 
     // abrunden
     count -= (count % 2);

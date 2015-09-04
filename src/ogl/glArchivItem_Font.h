@@ -35,7 +35,7 @@ class glArchivItem_Font : public libsiedler2::ArchivItem_Font
         /// Konstruktor von @p glArchivItem_Font.
         glArchivItem_Font(void) : ArchivItem_Font(), _font(NULL), chars_per_line(16) {}
         /// Kopierkonstruktor von @p glArchivItem_Font.
-        glArchivItem_Font(const glArchivItem_Font* item) : ArchivItem_Font(item), _font(NULL) {}
+        glArchivItem_Font(const glArchivItem_Font& item) : ArchivItem_Font(item), _font(NULL) {}
 
         /// Zeichnet einen Text.
         void Draw(short x, short y, const std::wstring& wtext, unsigned int format, unsigned int color = COLOR_WHITE, unsigned short length = 0, unsigned short max = 0xFFFF, const std::wstring& wend = L"...", unsigned short end_length = 0);

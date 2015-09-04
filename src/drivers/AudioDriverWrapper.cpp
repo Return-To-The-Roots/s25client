@@ -79,7 +79,7 @@ bool AudioDriverWrapper::LoadDriver(void)
  *
  *  @author FloSoft
  */
-Sound* AudioDriverWrapper::LoadMusic(unsigned int data_type, unsigned char* data, unsigned int size)
+Sound* AudioDriverWrapper::LoadMusic(unsigned int data_type, const unsigned char* data, unsigned int size)
 {
     if(!audiodriver)
         return NULL;
@@ -87,7 +87,7 @@ Sound* AudioDriverWrapper::LoadMusic(unsigned int data_type, unsigned char* data
     return audiodriver->LoadMusic(data_type, data, size);
 }
 
-Sound* AudioDriverWrapper::LoadEffect(unsigned int data_type, unsigned char* data, unsigned int size)
+Sound* AudioDriverWrapper::LoadEffect(unsigned int data_type, const unsigned char* data, unsigned int size)
 {
     if(!audiodriver)
         return NULL;

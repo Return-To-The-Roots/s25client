@@ -47,7 +47,7 @@ glArchivItem_Sound::glArchivItem_Sound(void)
  *
  *  @author FloSoft
  */
-glArchivItem_Sound::glArchivItem_Sound(const glArchivItem_Sound* item)
+glArchivItem_Sound::glArchivItem_Sound(const glArchivItem_Sound& item)
     : baseArchivItem_Sound(item), sound(NULL)
 {
 }
