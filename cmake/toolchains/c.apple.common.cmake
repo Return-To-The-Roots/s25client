@@ -1,3 +1,5 @@
+INCLUDE("${CMAKE_CURRENT_LIST_DIR}/../Modules/CMakeMacroSetCCache.cmake")
+
 # specify the cross compiler
 SET_CCACHE(CMAKE_C_COMPILER i686-apple-darwin10-gcc)
 SET_CCACHE(CMAKE_CXX_COMPILER i686-apple-darwin10-g++)
