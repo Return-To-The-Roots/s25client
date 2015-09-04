@@ -29,6 +29,7 @@
 /build/s25update
 /build/src
 /build/version
+/build/WORLDS
 /contrib/full-contrib-msvc2010
 /contrib/boost*
 /DATA

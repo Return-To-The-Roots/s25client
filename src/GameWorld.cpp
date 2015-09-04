@@ -40,6 +40,7 @@
 
 #include "WindowManager.h"
 #include "SoundManager.h"
+#include "gameData/TerrainData.h"
 
 #include "../libsiedler2/src/prototypen.h"
 #include "luaIncludes.h"
@@ -120,10 +121,8 @@ void GameWorld::Scan(glArchivItem_Map* map)
             unsigned char t1 = map->GetMapDataAt(MAP_TERRAIN1, pt.x, pt.y), t2 = map->GetMapDataAt(MAP_TERRAIN2, pt.x, pt.y);
 
             // Hafenplatz?
-            if(t1 >= 0x40 && t1 <= 0x54)
-            {
-                t1 -= 0x40;
-				
+            if(TerrainData::IsHarborSpot(t1))
+            {	
 				GameWorldBase::HarborPos p(pt);
                 node.harbor_id = harbor_pos.size();
                 harbor_pos.push_back(p);
@@ -131,10 +130,8 @@ void GameWorld::Scan(glArchivItem_Map* map)
             else
                 node.harbor_id = 0;
 
-
-
-            node.t1 = (t1 < 20) ? TERRAIN_INDIZES[t1] : 0;
-            node.t2 = (t2 < 20) ? TERRAIN_INDIZES[t2] : 0;
+            node.t1 = TerrainData::MapIdx2Terrain(t1);
+            node.t2 = TerrainData::MapIdx2Terrain(t2);
 
             node.resources = map->GetMapDataAt(MAP_RESOURCES, pt.x, pt.y);
 
@@ -144,7 +141,7 @@ void GameWorld::Scan(glArchivItem_Map* map)
                 // TODO: Berge hatten komische Wasserbeeinflussung
                 // ggf 0-4 Wasser setzen
                 if( (node.t1 == TT_DESERT || node.t2 == TT_DESERT) ||
-                        (node.t1 == TT_WATER || node.t2 == TT_WATER) )
+                        TerrainData::IsWater(node.t1) || TerrainData::IsWater(node.t2) )
                     node.resources = 0; // Kein Wasser, in der Wüste, da isses trocken!
                 else if( (node.t1 == TT_STEPPE || node.t2 == TT_STEPPE) )
                     node.resources = 0x23; // 2 Wasser
@@ -637,8 +634,8 @@ void GameWorld::Deserialize(SerializedGameData* sgd)
 
         nodes[i].altitude = sgd->PopUnsignedChar();
         nodes[i].shadow = sgd->PopUnsignedChar();
-        nodes[i].t1 = sgd->PopUnsignedChar();
-        nodes[i].t2 = sgd->PopUnsignedChar();
+        nodes[i].t1 = TerrainType(sgd->PopUnsignedChar());
+        nodes[i].t2 = TerrainType(sgd->PopUnsignedChar());
         nodes[i].resources = sgd->PopUnsignedChar();
         nodes[i].reserved = sgd->PopBool();
         nodes[i].owner = sgd->PopUnsignedChar();

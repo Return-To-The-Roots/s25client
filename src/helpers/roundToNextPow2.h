@@ -14,16 +14,26 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef MAPCONSTS_H_INCLUDED
-#define MAPCONSTS_H_INCLUDED
 
-#pragma once
 
-/// Wie hoch und breit ist ein Dreieck?
-static const int TR_W = 53;
-static const int TR_H = 29;
+#ifndef roundToNextPow2_h__
+#define roundToNextPow2_h__
 
-/// Faktor fr die Höhen
-const int HEIGHT_FACTOR = 5;
+namespace helpers{
+    /// compute the next highest power of 2 of 32-bit v
+    inline unsigned roundToNextPowerOfTwo(unsigned v)
+    {
+        if(!v)
+            return 1;
+        v--;
+        v |= v >> 1;
+        v |= v >> 2;
+        v |= v >> 4;
+        v |= v >> 8;
+        v |= v >> 16;
+        v++;
+        return v;
+    }
+} // namespace helpers
 
-#endif // !MAPCONSTS_H_INCLUDED
+#endif // roundToNextPow2_h__

@@ -21,6 +21,7 @@
 #include "mygettext.h"
 #include "GoodTypes.h"
 #include "JobTypes.h"
+#include "BuildingQuality.h"
 
 struct BuildingCost
 {
@@ -35,19 +36,6 @@ enum BuildingSize
 	BZ_HOUSE,
 	BZ_CASTLE,
 	BZ_MINE
-};
-
-// Bauqualitäten
-enum BuildingQuality
-{
-	BQ_NOTHING = 0,
-	BQ_FLAG,
-	BQ_HUT,
-	BQ_HOUSE,
-	BQ_CASTLE,
-	BQ_MINE,
-	BQ_HARBOR,
-	BQ_DANGER = 255
 };
 
 // Konstanten zu den "normalen Gebäuden" (Betrieben), beginnt erst mit Granitmine

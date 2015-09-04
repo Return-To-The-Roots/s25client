@@ -66,6 +66,7 @@
 #include "buildings/nobMilitary.h"
 #include "buildings/nobStorehouse.h"
 #include "buildings/nobUsual.h"
+#include "gameData/TerrainData.h"
 #include <sstream>
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -901,7 +902,7 @@ void dskGameInterface::ShowActionWindow(const iwAction::Tabs& action_tabs, MapPo
     {
         for(unsigned char x = 0; x < 6; ++x)
         {
-            if(gwv->GetTerrainAround(cSel, x) == 14)
+            if(TerrainData::IsWater(gwv->GetTerrainAround(cSel, x)))
                 params = iwAction::AWFT_WATERFLAG;
         }
     }

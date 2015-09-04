@@ -27,6 +27,7 @@
 #include "MapGeometry.h"
 #include "buildings/nobHarborBuilding.h"
 #include "GameClient.h"
+#include "gameData/TerrainData.h"
 
 #include <set>
 #include <vector>
@@ -845,7 +846,7 @@ bool IsPointOK_ShipPath(const GameWorldBase& gwb,  const MapPoint pt,  const uns
     // Ein Meeresfeld?
     for(unsigned i = 0; i < 6; ++i)
     {
-        if(gwb.GetTerrainAround(pt,  i) != TT_WATER)
+        if(!TerrainData::IsUsableByShip(gwb.GetTerrainAround(pt,  i)))
             return false;
     }
 
@@ -857,7 +858,7 @@ bool IsPointOK_ShipPath(const GameWorldBase& gwb,  const MapPoint pt,  const uns
 bool IsPointToDestOK_ShipPath(const GameWorldBase& gwb,  const MapPoint pt,  const unsigned char dir,  const void* param)
 {
     // Der Übergang muss immer aus Wasser sein zu beiden Seiten
-    if(gwb.GetWalkingTerrain1(pt,  (dir + 3) % 6) == TT_WATER && gwb.GetWalkingTerrain2(pt,  (dir + 3) % 6) == TT_WATER)
+    if(TerrainData::IsUsableByShip(gwb.GetWalkingTerrain1(pt,  (dir + 3) % 6)) && TerrainData::IsUsableByShip(gwb.GetWalkingTerrain2(pt,  (dir + 3) % 6)))
         return true;
     else
         return false;

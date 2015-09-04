@@ -47,26 +47,6 @@ enum Team
 /// Anzahl der Team-Optionen
 const unsigned TEAM_COUNT = 6; //teamrandom2,3,4 dont count
 
-const BuildingQuality TERRAIN_BQ[] =
-{
-    BQ_DANGER,
-    BQ_FLAG,
-    BQ_NOTHING,
-    BQ_CASTLE,
-    BQ_MINE,
-    BQ_MINE,
-    BQ_MINE,
-    BQ_MINE,
-    BQ_CASTLE,
-    BQ_CASTLE,
-    BQ_CASTLE,
-    BQ_CASTLE,
-    BQ_CASTLE,
-    BQ_CASTLE,
-    BQ_NOTHING,
-    BQ_DANGER
-};
-
 struct RoadWindowInfo
 {
     bool flag;

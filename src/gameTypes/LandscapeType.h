@@ -14,16 +14,18 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef MAPCONSTS_H_INCLUDED
-#define MAPCONSTS_H_INCLUDED
 
-#pragma once
+#ifndef LandscapeType_h__
+#define LandscapeType_h__
 
-/// Wie hoch und breit ist ein Dreieck?
-static const int TR_W = 53;
-static const int TR_H = 29;
+enum LandscapeType
+{
+    LT_GREENLAND = 0,
+    LT_WASTELAND,
+    LT_WINTERWORLD
+};
 
-/// Faktor fr die Höhen
-const int HEIGHT_FACTOR = 5;
+// Keep this in sync with LandscapeType
+static const unsigned char LT_COUNT = LT_WINTERWORLD + 1;
 
-#endif // !MAPCONSTS_H_INCLUDED
+#endif // LandscapeType_h__

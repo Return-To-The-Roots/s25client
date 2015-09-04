@@ -52,6 +52,7 @@
 #include "WindowManager.h"
 #include "GameInterface.h"
 #include "drivers/VideoDriverWrapper.h"
+#include "gameData/TerrainData.h"
 #include "helpers/containerUtils.h"
 
 #include <algorithm>
@@ -844,15 +845,15 @@ bool GameWorldGame::TerritoryChange(const noBaseBuilding* const building, const 
                 // if gameobjective isnt 75% ai can ignore water/snow/lava/swamp terrain (because it wouldnt help win the game)
                 if(GAMECLIENT.GetGGS().game_objective == GlobalGameSettings::GO_CONQUER3_4)
                     return false;
-                unsigned char t1 = GetNode(t).t1, t2 = GetNode(t).t2;
-                if((t1 != TT_WATER && t1 != TT_LAVA && t1 != TT_SWAMPLAND && t1 != TT_SNOW) && (t2 != TT_WATER && t2 != TT_LAVA && t2 != TT_SWAMPLAND && t2 != TT_SNOW))
+                TerrainType t1 = GetNode(t).t1, t2 = GetNode(t).t2;
+                if(TerrainData::IsUseable(t1) && TerrainData::IsUseable(t2))
                     return false;
                 //also check neighboring nodes for their terrain since border will still count as player territory but not allow any buildings !
                 for(int j = 0; j < 6; j++)
                 {
                     t1 = GetNode(GetNeighbour(t, j)).t1;
                     t2 = GetNode(GetNeighbour(t, j)).t2;
-                    if((t1 != TT_WATER && t1 != TT_LAVA && t1 != TT_SWAMPLAND && t1 != TT_SNOW) || (t2 != TT_WATER && t2 != TT_LAVA && t2 != TT_SWAMPLAND && t2 != TT_SNOW))
+                    if(TerrainData::IsUseable(t1) || TerrainData::IsUseable(t2))
                         return false;
                 }
             }
@@ -933,15 +934,13 @@ bool GameWorldGame::IsNodeForFigures(const MapPoint pt) const
     if(bm != noBase::BM_NOTBLOCKING && bm != noBase::BM_TREE && bm != noBase::BM_FLAG)
         return false;
 
-    unsigned char t;
-
     // Terrain untersuchen
     unsigned char good_terrains = 0;
     for(unsigned char i = 0; i < 6; ++i)
     {
-        t = GetTerrainAround(pt, i);
-        if(TERRAIN_BQ[t] == BQ_CASTLE || TERRAIN_BQ[t] == BQ_MINE || TERRAIN_BQ[t] == BQ_FLAG) ++good_terrains;
-        else if(TERRAIN_BQ[t] == BQ_DANGER) return false; // in die Nähe von Lava usw. dürfen die Figuren gar nich kommen!
+        BuildingQuality bq = TerrainData::GetBuildingQuality(GetTerrainAround(pt, i));
+        if(bq == BQ_CASTLE || bq == BQ_MINE || bq == BQ_FLAG) ++good_terrains;
+        else if(bq == BQ_DANGER) return false; // in die Nähe von Lava usw. dürfen die Figuren gar nich kommen!
     }
 
     // Darf nicht im Wasser liegen, 

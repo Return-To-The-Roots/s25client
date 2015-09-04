@@ -136,6 +136,7 @@ IF (MSVC)
 	# disable MSVC posix functions
 	ADD_DEFINITIONS(-D_CRT_NONSTDC_NO_DEPRECATE)
 	ADD_DEFINITIONS(-D_WINSOCK_DEPRECATED_NO_WARNINGS)
+	ADD_DEFINITIONS(/w34062) # Enum not handled in switch
 	SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Oi /GL") # systemintern functions for faster code; Optimize whole program
 	# Strip unused symbols and us COMDAT folding
 	SET(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /OPT:REF /OPT:ICF")

@@ -35,6 +35,7 @@
 
 #include "ogl/glSmartBitmap.h"
 #include "GameServer.h"
+#include "gameData/TerrainData.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -80,7 +81,7 @@ noFlag::noFlag(const MapPoint pos,
     // auf Wasseranteile prüfen
     for(unsigned char i = 0; i < 6; ++i)
     {
-        if(gwg->GetTerrainAround(pos, i) == 14)
+        if(TerrainData::IsWater(gwg->GetTerrainAround(pos, i)))
             flagtype = FT_WATER;
     }
 }

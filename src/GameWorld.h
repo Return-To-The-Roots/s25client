@@ -31,6 +31,7 @@
 #include "GamePlayerList.h"
 #include "TradeGraph.h"
 #include "buildings/nobBaseMilitary.h"
+#include "gameTypes/LandscapeType.h"
 #include <vector>
 #include <list>
 #include <set>
@@ -77,7 +78,7 @@ struct MapNode
     /// Schattierung
     unsigned char shadow;
     /// Terrain
-    unsigned char t1, t2;
+    TerrainType t1, t2;
     /// Ressourcen
     unsigned char resources;
     /// Reservierungen
@@ -114,13 +115,6 @@ struct MapNode
     noBase* obj;
     /// Figuren, Kämpfe, die sich dort befinden
     std::list<noBase*> figures;
-};
-
-enum LandscapeType
-{
-    LT_GREENLAND = 0,
-    LT_WASTELAND,
-    LT_WINTERWORLD
 };
 
 /// Grundlegende Klasse, die die Gamewelt darstellt, enthält nur deren Daten
@@ -278,11 +272,11 @@ class GameWorldBase
         template<typename T> inline const T* GetSpecObj(const MapPoint pt) const { return dynamic_cast<const T*>( GetNode(pt).obj ); }
 
         /// Gibt ein Terrain-Dreieck um einen Punkt herum zurück.
-        unsigned char GetTerrainAround(const MapPoint pt, unsigned char dir) const;
+        TerrainType GetTerrainAround(const MapPoint pt, unsigned char dir) const;
         /// Gibt das Terrain zurück, über das ein Mensch/Tier laufen müsste, von X,Y in Richtung DIR (Vorwärts).
-        unsigned char GetWalkingTerrain1(const MapPoint pt, unsigned char dir) const;
+        TerrainType GetWalkingTerrain1(const MapPoint pt, unsigned char dir) const;
         /// Gibt das Terrain zurück, über das ein Mensch/Tier laufen müsste, von X,Y in Richtung DIR (Rückwärts).
-        unsigned char GetWalkingTerrain2(const MapPoint pt, unsigned char dir) const;
+        TerrainType GetWalkingTerrain2(const MapPoint pt, unsigned char dir) const;
         /// Gibt zurück, ob ein Punkt vollständig von Wasser umgeben ist
         bool IsSeaPoint(const MapPoint pt) const;
 
