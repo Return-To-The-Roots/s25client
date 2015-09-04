@@ -1,3 +1,6 @@
+SET_CCACHE(CMAKE_C_COMPILER ${CMAKE_C_COMPILER})
+SET_CCACHE(CMAKE_CXX_COMPILER ${CMAKE_CXX_COMPILER})
+
 # set compiler flags
 FORCE_ADD_FLAGS(CMAKE_C_FLAGS -ffast-math -mmmx -msse -mfpmath=sse -ggdb)
 FORCE_ADD_FLAGS(CMAKE_CXX_FLAGS -ffast-math -mmmx -msse -mfpmath=sse -ggdb)
