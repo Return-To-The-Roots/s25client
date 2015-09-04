@@ -18,19 +18,24 @@ INCLUDE(CMakeDetectOsXArchs)
 
 PROJECT(s25client)
 
+IF (DEFINED CMAKE_TOOLCHAIN_FILE)
+	MESSAGE(STATUS "Using Toolchain definition file '${CMAKE_TOOLCHAIN_FILE}'")
+ENDIF()
+
 STRING(TOLOWER ${CMAKE_SYSTEM_NAME} PLATFORM_NAME)
 SET(PLATFORM_NAME ${PLATFORM_NAME} CACHE STRING "Do not change" FORCE)
 SET(PLATFORM_ARCH ${CMAKE_SYSTEM_PROCESSOR} CACHE STRING "Do not change" FORCE)
 MARK_AS_ADVANCED(PLATFORM_NAME PLATFORM_ARCH)
-IF (${CMAKE_CROSSCOMPILING})
+IF (CMAKE_CROSSCOMPILING)
 	MESSAGE(STATUS "Configuring for cross-compiling to ${CMAKE_SYSTEM} on ${CMAKE_SYSTEM_PROCESSOR}")
 	#Include cross-compile platform config
 	IF (EXISTS "cmake/c.${PLATFORM_NAME}.cmake")
-	    INCLUDE("cmake/c.${PLATFORM_NAME}.cmake")
+		INCLUDE("cmake/c.${PLATFORM_NAME}.cmake")
 	ENDIF()
-ELSE (${CMAKE_CROSSCOMPILING})
+ELSE (CMAKE_CROSSCOMPILING)
 	MESSAGE(STATUS "Configuring for native compiling to ${CMAKE_SYSTEM} on ${CMAKE_SYSTEM_PROCESSOR}")
-ENDIF (${CMAKE_CROSSCOMPILING})
+ENDIF (CMAKE_CROSSCOMPILING)
+
 #Include generic platform config
 INCLUDE("cmake/${PLATFORM_NAME}.cmake")
 
@@ -72,8 +77,8 @@ ELSE()
 	ENDIF()
 ENDIF()
 
-SET(Boost_USE_STATIC_LIBS TRUE)
-SET(Boost_USE_STATIC_RUNTIME TRUE)
+#SET(Boost_USE_STATIC_LIBS TRUE)
+#SET(Boost_USE_STATIC_RUNTIME TRUE)
 SET(Boost_ADDITIONAL_VERSIONS "1.55")
 
 ################################################################################
@@ -133,11 +138,6 @@ ENSURE_OUT_OF_SOURCE_BUILD("${PROJECT_NAME} requires an out of source build. Ple
 
 # Build lobby client
 SET (LOBBY_C TRUE)
-
-# Use static libs (required for windows at least)
-IF (MSVC)
-	SET(Boost_USE_STATIC_LIBS ON)
-ENDIF(MSVC)
 
 ################################################################################
 
