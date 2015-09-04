@@ -19,20 +19,20 @@ IF (SDL_FOUND)
         
         ADD_LIBRARY(audioSDL SHARED SDL.cpp SDL.h main.h SoundSDL_Music.cpp SoundSDL_Music.h SoundSDL_Effect.cpp SoundSDL_Effect.h ${PROJECT_SOURCE_DIR}/build_version.cpp ../../../src/DriverInterface.cpp ../../../src/tempname.cpp ../../../src/tempname.h)
         ADD_DEPENDENCIES(audioSDL updateversion)
-        IF ( NOT "${COMPILEFOR}" STREQUAL "windows" )
+        IF ( NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "Windows" )
             CHECK_CXX_COMPILER_FLAG("-fPIC" FPIC_FLAGS)
             IF (FPIC_FLAGS)
                 ADD_DEFINITIONS(-fPIC)
             ENDIF (FPIC_FLAGS)
-        ENDIF ( NOT "${COMPILEFOR}" STREQUAL "windows" )
+        ENDIF ( NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "Windows" )
 
         TARGET_LINK_LIBRARIES(audioSDL audiodrv endian ${SDL_LIBRARY} ${SDLMIXER_LIBRARY})
         
 		SET(SL_PREFIX ${CMAKE_SHARED_LIBRARY_PREFIX})
-        IF ( "${COMPILEFOR}" STREQUAL "windows")
+        IF ( "${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
             ADD_DEFINITIONS(-DBUILD_DLL)
             SET(SL_PREFIX "")
-        ENDIF ( "${COMPILEFOR}" STREQUAL "windows")
+        ENDIF ( "${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
             
 		IF (MSVC)
 			SET_TARGET_PROPERTIES(audioSDL PROPERTIES

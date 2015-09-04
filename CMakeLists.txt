@@ -14,23 +14,38 @@ INCLUDE(CMakeMacroAddFlags)
 INCLUDE(CMakeMacroForceAddFlags)
 INCLUDE(CMakeMacroCorrectLib)
 INCLUDE(CMakeMacroEnsureOutOfSourceBuild)
-
-################################################################################
-IF(${CMAKE_HOST_SYSTEM_NAME} MATCHES "Windows" OR WIN32)
-	SET(COMPILEFOR_PLATFORM "windows")
-	SET(COMPILEFOR "windows")
-	SET(CROSSCOMPILE "0")
-	SET(CROSS "")
-	IF ("${CMAKE_SIZEOF_VOID_P}" EQUAL "8")
-		SET(COMPILEARCH "x86_64")
-	ELSE ("${CMAKE_SIZEOF_VOID_P}" EQUAL "8")
-		SET(COMPILEARCH "i386")
-	ENDIF ("${CMAKE_SIZEOF_VOID_P}" EQUAL "8")
-ELSE()
-	INCLUDE(cmake/crosscompile.cmake)
-ENDIF()
+INCLUDE(CMakeDetectOsXArchs)
 
 PROJECT(s25client)
+
+STRING(TOLOWER ${CMAKE_SYSTEM_NAME} PLATFORM_NAME)
+SET(PLATFORM_NAME ${PLATFORM_NAME} CACHE STRING "Do not change" FORCE)
+SET(PLATFORM_ARCH ${CMAKE_SYSTEM_PROCESSOR} CACHE STRING "Do not change" FORCE)
+MARK_AS_ADVANCED(PLATFORM_NAME PLATFORM_ARCH)
+IF (${CMAKE_CROSSCOMPILING})
+	MESSAGE(STATUS "Configuring for cross-compiling to ${CMAKE_SYSTEM} on ${CMAKE_SYSTEM_PROCESSOR}")
+	#Include cross-compile platform config
+	IF (EXISTS "cmake/c.${PLATFORM_NAME}.cmake")
+	    INCLUDE("cmake/c.${PLATFORM_NAME}.cmake")
+	ENDIF()
+ELSE (${CMAKE_CROSSCOMPILING})
+	MESSAGE(STATUS "Configuring for native compiling to ${CMAKE_SYSTEM} on ${CMAKE_SYSTEM_PROCESSOR}")
+ENDIF (${CMAKE_CROSSCOMPILING})
+#Include generic platform config
+INCLUDE("cmake/${PLATFORM_NAME}.cmake")
+
+#Check for ccache
+SET_CCACHE(CMAKE_C_COMPILER ${CMAKE_C_COMPILER})
+SET_CCACHE(CMAKE_CXX_COMPILER ${CMAKE_CXX_COMPILER})
+SET_CCACHE(CMAKE_RC_COMPILER ${CMAKE_RC_COMPILER})
+# Use the below if the above workaround for apple is no longer required
+#find_program(CCACHE_FOUND ccache)
+#MARK_AS_ADVANCED(CCACHE_FOUND)
+#if(CCACHE_FOUND)
+#    MESSAGE(STATUS "Using ccache to speed up builds")
+#    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
+#    set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
+#endif(CCACHE_FOUND)
 
 ################################################################################
 
@@ -54,7 +69,19 @@ ELSE()
 	ENDIF()
 ENDIF()
 
+SET(Boost_USE_STATIC_LIBS TRUE)
+SET(Boost_USE_STATIC_RUNTIME TRUE)
+SET(Boost_ADDITIONAL_VERSIONS "1.55")
+
 ################################################################################
+
+IF ("${PREFIX}" STREQUAL "")
+    IF ("${CMAKE_INSTALL_PREFIX}" STREQUAL "")
+        SET(PREFIX .)
+    ELSE()
+        SET(PREFIX ${CMAKE_INSTALL_PREFIX})
+    ENDIF()
+ENDIF()
 
 SET(PREFIX ${PREFIX} CACHE STRING "Path prefix")
 SET(BINDIR ${BINDIR} CACHE STRING "Directory for the binaries")
@@ -83,9 +110,9 @@ IF (NOT "${LIBDIR}" STREQUAL "" AND "${DRIVERDIR}" STREQUAL "")
 ENDIF (NOT "${LIBDIR}" STREQUAL "" AND "${DRIVERDIR}" STREQUAL "")
 
 # avoid lhs-path bug in windows
-IF ("${COMPILEFOR}" STREQUAL "windows")
+IF ("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
 	SET(CMAKE_INSTALL_PREFIX "" CACHE STRING "" FORCE)
-ENDIF ("${COMPILEFOR}" STREQUAL "windows")
+ENDIF ("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
 
 IF(NOT "$ENV{CMAKE_INSTALL_PREFIX}" STREQUAL "")
 	SET(ENV{DESTDIR} "$ENV{CMAKE_INSTALL_PREFIX}" CACHE STRING "" FORCE)
@@ -129,45 +156,17 @@ CheckAndAddFlag("-Wno-long-long")
 CheckAndAddFlag("-fno-strict-aliasing")
 
 # avoid lhs-path bug in windows
-IF ("${COMPILEFOR}" STREQUAL "windows")
+IF ("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
 	SET(BINDIR "." CACHE STRING "" FORCE)
 	SET(DATADIR "." CACHE STRING "" FORCE)
 	SET(LIBDIR "." CACHE STRING "" FORCE)
 	SET(DRIVERDIR "./driver" CACHE STRING "" FORCE)
 	#ADD_DEFINITIONS(-D_WIN32_WINNT=0x0501)
-ENDIF ("${COMPILEFOR}" STREQUAL "windows")
+ENDIF ("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
 
 # add build directory to compiler search path
 FORCE_ADD_FLAGS(CMAKE_C_FLAGS -I${CMAKE_BINARY_DIR})
 FORCE_ADD_FLAGS(CMAKE_CXX_FLAGS -I${CMAKE_BINARY_DIR})
-
-IF (MSVC)
-	# disable MSVC "use secure function"
-	ADD_DEFINITIONS(-D_CRT_SECURE_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS /wd"4250")
-	# 'class1' : inherits 'class2::member' via dominance (virtual inheritance related)
-	ADD_DEFINITIONS(/wd"4250")
-	# conditional expr is constant
-	ADD_DEFINITIONS(/wd"4127")
-	# unreferenced formal parameter
-	ADD_DEFINITIONS(/wd"4100")
-	# assignment operator could not be created
-	ADD_DEFINITIONS(/wd"4512")
-	# disable MSVC posix functions
-	ADD_DEFINITIONS(-D_CRT_NONSTDC_NO_DEPRECATE)
-	ADD_DEFINITIONS(-D_WINSOCK_DEPRECATED_NO_WARNINGS)
-	ADD_DEFINITIONS(/w34062) # Enum not handled in switch
-	SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Oi /GL") # systemintern functions for faster code; Optimize whole program
-	# Strip unused symbols and us COMDAT folding
-	SET(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /OPT:REF /OPT:ICF")
-    SET(CMAKE_EXE_LINKER_FLAGS_MINSIZEREL "${CMAKE_EXE_LINKER_FLAGS_MINSIZEREL} /OPT:REF /OPT:ICF")
-    SET(CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO "${CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO} /OPT:REF /OPT:ICF") 
-	# Add optimized debugging features
-	IF (MSVC_VERSION GREATER 1800) #VS13
-		ADD_DEFINITIONS(/d2Zi+)
-	ELSEIF (NOT(MSVC_VERSION LESS 1800)) # VS12
-		ADD_DEFINITIONS(/Zo)
-	ENDIF()
-ENDIF (MSVC)
 
 CHECK_CXX_SOURCE_COMPILES("
   constexpr int foo()

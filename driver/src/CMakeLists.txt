@@ -1,10 +1,10 @@
 
-IF ( NOT "${COMPILEFOR}" STREQUAL "windows" )
+IF ( NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "Windows" )
 	CHECK_CXX_COMPILER_FLAG("-fPIC" FPIC_FLAGS)
 	IF (FPIC_FLAGS)
 		ADD_DEFINITIONS(-fPIC)
 	ENDIF (FPIC_FLAGS)
-ENDIF ( NOT "${COMPILEFOR}" STREQUAL "windows" )
+ENDIF ( NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "Windows" )
 
 ################################################################################
 

@@ -76,7 +76,7 @@ PREFIX=/usr/local
 BINDIR=
 DATADIR=
 LIBDIR=
-ARCH=
+TOOL_CHAIN=
 NOARCH=
 GENERATOR=
 PARAMS=""
@@ -122,9 +122,9 @@ while test $# != 0 ; do
 			$ac_shift
 			LIBDIR=$ac_optarg
 		;;
-		-arch | --arch | -target | --target)
+		-arch | --arch | -target | --target | -toolchain | --toolchain)
 			$ac_shift
-			ARCH=$ac_optarg
+			TOOL_CHAIN=$ac_optarg
 		;;
 		-no-arch | --no-arch)
 			$ac_shift
@@ -174,23 +174,6 @@ while test $# != 0 ; do
 	shift
 done
 
-if [ -z "$ARCH" ] ; then
-	case $(uname -s) in
-		Darwin)
-			ARCH=apple.local
-			;;
-		Linux)
-			ARCH=linux.local
-			;;
-		FreeBSD)
-			ARCH=freebsd.local
-			;;
-		*)
-			ARCH=windows.local
-			;;
-	esac
-fi
-
 if [ -z "$GENERATOR" ] && [ "$(uname -s)" = "Darwin" ] ; then
 	GENERATOR="Xcode"
 fi
@@ -212,8 +195,10 @@ fi
 echo "Setting Path-Prefix to \"$PREFIX\""
 PARAMS="$PARAMS -DPREFIX=$PREFIX"
 
-echo "Setting Architecture to \"$ARCH\""
-PARAMS="$PARAMS -DCOMPILEFOR_PLATFORM=$ARCH"
+if ![ -z "$TOOL_CHAIN" ] ; then
+    echo "Using toolchain \"$TOOL_CHAIN\""
+    PARAMS="$PARAMS -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchains/$TOOL_CHAIN"	
+fi
 
 echo "Setting Binary Dir to \"$BINDIR\""
 PARAMS="$PARAMS -DBINDIR=$BINDIR"
