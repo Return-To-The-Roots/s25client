@@ -21,6 +21,7 @@ ELSE()
 ENDIF()
 MESSAGE(STATUS "Using OSX SDK at ${CMAKE_OSX_SYSROOT}")
 
+SET(CMAKE_PREFIX_PATH ${CMAKE_OSX_SYSROOT})
 SET(BOOST_ROOT ${CMAKE_OSX_SYSROOT})
 
 # search for programs in the build host directories
