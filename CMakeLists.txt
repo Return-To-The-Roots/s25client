@@ -105,7 +105,9 @@ ENSURE_OUT_OF_SOURCE_BUILD("${PROJECT_NAME} requires an out of source build. Ple
 SET (LOBBY_C TRUE)
 
 # Use static libs (required for windows at least)
-SET(Boost_USE_STATIC_LIBS ON)
+IF (MSVC)
+	SET(Boost_USE_STATIC_LIBS ON)
+ENDIF(MSVC)
 
 ################################################################################
 
