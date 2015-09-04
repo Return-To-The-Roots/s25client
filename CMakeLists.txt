@@ -29,7 +29,7 @@ MARK_AS_ADVANCED(PLATFORM_NAME PLATFORM_ARCH)
 IF (CMAKE_CROSSCOMPILING)
 	MESSAGE(STATUS "Configuring for cross-compiling to ${CMAKE_SYSTEM} on ${CMAKE_SYSTEM_PROCESSOR}")
 	#Include cross-compile platform config
-	IF (EXISTS "cmake/c.${PLATFORM_NAME}.cmake")
+	IF (EXISTS "${CMAKE_CURRENT_LIST_DIR}/cmake/c.${PLATFORM_NAME}.cmake")
 		INCLUDE("cmake/c.${PLATFORM_NAME}.cmake")
 	ENDIF()
 ELSE (CMAKE_CROSSCOMPILING)
