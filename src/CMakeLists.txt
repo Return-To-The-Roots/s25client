@@ -101,15 +101,9 @@ SET(s25client_SRCS
 IF ( "${CMAKE_SYSTEM_NAME}" STREQUAL "Windows" AND NOT ${CMAKE_HOST_SYSTEM_NAME} MATCHES "Windows")
 	ADD_DEFINITIONS("-DAFX_TARG_DEU")
 
-	IF ( "${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "i386" )
-		FIND_PROGRAM(WINDRES NAMES windres i686-pc-mingw32-windres i686-mingw32-windres i586-mingw32msvc-windres DOC "path to mingw's windres executable")
-	ELSE ( "${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "i386" )
-		FIND_PROGRAM(WINDRES NAMES windres x86_64-pc-mingw32-windres x86_64-mingw32-windres amd64-mingw32msvc-windres DOC "path to mingw's windres executable")
-	ENDIF ( "${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "i386" )
-
 	# Add Icon to Application
 	ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/s25client.res.o
-					   COMMAND ${WINDRES} -I${CMAKE_CURRENT_SOURCE_DIR}/../win32/ -i${CMAKE_CURRENT_SOURCE_DIR}/../win32/s25client.rc -o ${CMAKE_CURRENT_BINARY_DIR}/s25client.res.o)
+					   COMMAND ${CMAKE_RC_COMPILER} -I${CMAKE_CURRENT_SOURCE_DIR}/../win32/ -i${CMAKE_CURRENT_SOURCE_DIR}/../win32/s25client.rc -o ${CMAKE_CURRENT_BINARY_DIR}/s25client.res.o)
 
 	SET(s25client_SRCS ${s25client_SRCS} ${CMAKE_CURRENT_BINARY_DIR}/s25client.res.o)
 
