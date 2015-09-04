@@ -36,7 +36,6 @@ class iwSettings : public IngameWindow
         std::vector<VideoDriver::VideoMode> video_modes; ///< Vector für die Auflösungen
         void Msg_OptionGroupChange(const unsigned int ctrl_id, const unsigned short selection);
         void Msg_CheckboxChange(const unsigned int ctrl_id, const bool checked);
-        dskGameInterface* gameDesktop;
 };
 
 #endif // !iwSETTINGS_H_INCLUDED

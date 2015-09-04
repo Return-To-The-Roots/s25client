@@ -48,8 +48,7 @@ static char THIS_FILE[] = __FILE__;
  *  @author NastX
  */
 iwSettings::iwSettings(dskGameInterface* gameDesktop)
-    : IngameWindow(CGI_SETTINGS, 0xFFFF, 0xFFFF, 370, 172, _("Settings"), LOADER.GetImageN("resource", 41)),
-      gameDesktop(gameDesktop)
+    : IngameWindow(CGI_SETTINGS, 0xFFFF, 0xFFFF, 370, 172, _("Settings"), LOADER.GetImageN("resource", 41))
 {
     AddText(  46,  15,  40, _("Fullscreen resolution:"), COLOR_YELLOW, 0, NormalFont);
     AddText(  47,  15,  85, _("Mode:"), COLOR_YELLOW, 0, NormalFont);
