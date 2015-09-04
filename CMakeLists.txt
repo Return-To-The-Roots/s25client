@@ -86,6 +86,11 @@ ELSE()
 	ENDIF()
 ENDIF()
 
+# avoid lhs-path bug in windows
+IF ("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
+	SET(CMAKE_INSTALL_PREFIX "" CACHE STRING "" FORCE)
+ENDIF ("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
+
 ################################################################################
 
 IF ("${PREFIX}" STREQUAL "")
@@ -121,11 +126,6 @@ IF (NOT "${LIBDIR}" STREQUAL "" AND "${DRIVERDIR}" STREQUAL "")
 	SET(DRIVERDIR "${LIBDIR}/driver" CACHE STRING "Directory for driver objects" FORCE)
 	MESSAGE(STATUS "Set DRIVERDIR to ${DRIVERDIR}")
 ENDIF (NOT "${LIBDIR}" STREQUAL "" AND "${DRIVERDIR}" STREQUAL "")
-
-# avoid lhs-path bug in windows
-IF ("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
-	SET(CMAKE_INSTALL_PREFIX "" CACHE STRING "" FORCE)
-ENDIF ("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
 
 IF(NOT "$ENV{CMAKE_INSTALL_PREFIX}" STREQUAL "")
 	SET(ENV{DESTDIR} "$ENV{CMAKE_INSTALL_PREFIX}" CACHE STRING "" FORCE)
