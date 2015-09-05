@@ -16,7 +16,7 @@ INCLUDE(CMakeMacroCorrectLib)
 INCLUDE(CMakeMacroEnsureOutOfSourceBuild)
 INCLUDE(CMakeDetectOsXArchs)
 
-PROJECT(s25client)
+################################################################################
 
 IF (DEFINED CMAKE_TOOLCHAIN_FILE)
 	MESSAGE(STATUS "Used Toolchain definition file '${CMAKE_TOOLCHAIN_FILE}'")
@@ -25,7 +25,7 @@ ENDIF()
 STRING(TOLOWER ${CMAKE_SYSTEM_NAME} PLATFORM_NAME)
 SET(PLATFORM_NAME ${PLATFORM_NAME} CACHE STRING "Do not change" FORCE)
 
-#Set PLATFORM_ARCH
+# Set PLATFORM_ARCH
 IF(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
 	IF ("${CMAKE_SIZEOF_VOID_P}" EQUAL "8")
 		SET(PLATFORM_ARCH "x86_64")
@@ -33,17 +33,17 @@ IF(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
 		SET(PLATFORM_ARCH "i386")
 	ENDIF ("${CMAKE_SIZEOF_VOID_P}" EQUAL "8")
 ELSE()
-	IF(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "i386" OR ${CMAKE_SYSTEM_PROCESSOR} STREQUAL "i686")
+	IF("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "i386" OR "${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "i686")
 		SET(PLATFORM_ARCH "i386")
-	ELSEIF(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "x86_64" OR ${CMAKE_SYSTEM_PROCESSOR} STREQUAL "AMD64")
+	ELSEIF("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "x86_64" OR "${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "AMD64")
 		SET(PLATFORM_ARCH "x86_64")
-	ELSEIF(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "universal" AND ${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
+	ELSEIF(("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "universal" OR "${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "") AND ${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
 		SET(PLATFORM_ARCH "universal")
 	ELSE()
 		MESSAGE(FATAL_ERROR "Unknown processor arch: ${CMAKE_SYSTEM_PROCESSOR}")
 	ENDIF()
 ENDIF()
-#Fill cache for post-processing tools
+# Fill cache for post-processing tools
 SET(PLATFORM_ARCH ${PLATFORM_ARCH} CACHE STRING "Do not change" FORCE)
 
 MARK_AS_ADVANCED(PLATFORM_NAME PLATFORM_ARCH)
@@ -61,6 +61,10 @@ ENDIF (CMAKE_CROSSCOMPILING)
 #Include generic platform config
 MESSAGE(STATUS "Using platform config cmake/${PLATFORM_NAME}.cmake")
 INCLUDE("cmake/${PLATFORM_NAME}.cmake")
+
+################################################################################
+
+PROJECT(s25client)
 
 ################################################################################
 
