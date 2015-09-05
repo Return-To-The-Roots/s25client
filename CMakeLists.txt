@@ -18,6 +18,10 @@ INCLUDE(CMakeDetectOsXArchs)
 
 ################################################################################
 
+PROJECT(s25client)
+
+################################################################################
+
 IF (DEFINED CMAKE_TOOLCHAIN_FILE)
 	MESSAGE(STATUS "Used Toolchain definition file '${CMAKE_TOOLCHAIN_FILE}'")
 ENDIF()
@@ -61,10 +65,6 @@ ENDIF (CMAKE_CROSSCOMPILING)
 #Include generic platform config
 MESSAGE(STATUS "Using platform config cmake/${PLATFORM_NAME}.cmake")
 INCLUDE("cmake/${PLATFORM_NAME}.cmake")
-
-################################################################################
-
-PROJECT(s25client)
 
 ################################################################################
 
