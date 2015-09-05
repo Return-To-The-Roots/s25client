@@ -37,7 +37,8 @@ struct Direction
     /// Converts an UInt safely to a Direction
     explicit Direction(unsigned t): t_(Type(t % COUNT)){ assert(t_ >= NORTH && t_ < COUNT); }
     /// Converts an UInt to a Direction without checking its value. Use only when this is actually a Direction
-    static Direction fromUInt(unsigned t){ return Type(t); }
+    static Direction fromInt(unsigned t){ return Type(t); }
+    static Direction fromInt(int t){ return Type(t); }
     operator Type() const { return t_; }
     /// Returns the Direction as an UInt (for legacy code)
     unsigned toUInt(){ return t_; }

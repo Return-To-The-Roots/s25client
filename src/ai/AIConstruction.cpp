@@ -304,7 +304,7 @@ bool AIConstruction::ConnectFlagToRoadSytem(const noFlag* flag, std::vector<unsi
             MapPoint t = flag->GetPos();
             for(unsigned j = 0; j < tmpRoute.size(); ++j)
             {
-                t = aii->GetNeighbour(t, Direction::fromUInt(tmpRoute[j]));
+                t = aii->GetNeighbour(t, Direction::fromInt(tmpRoute[j]));
                 if(aii->GetBuildingQuality(t) < 1)
                     temp++;
                 else
@@ -367,8 +367,8 @@ bool AIConstruction::MinorRoadImprovements(const noRoadNode* start, const noRoad
         if(((route[i] + 1) % 6 == route[i + 1]) || ((route[i] + 5) % 6 == route[i + 1])) //switching current and next route element will result in the same position after building both
         {
             MapPoint t(pStart);
-            t = aii->GetNeighbour(t, Direction::fromUInt(route[i + 1]));
-            pStart = aii->GetNeighbour(pStart, Direction::fromUInt(route[i]));
+            t = aii->GetNeighbour(t, Direction::fromInt(route[i + 1]));
+            pStart = aii->GetNeighbour(pStart, Direction::fromInt(route[i]));
             if(aii->RoadAvailable(t, route[i + 1]) && aii->IsOwnTerritory(t)) //can the alternative road be build?
             {
                 if(aii->CalcBQSumDifference(pStart, t)) //does the alternative road block a lower buildingquality point than the normal planned route?
@@ -390,7 +390,7 @@ bool AIConstruction::MinorRoadImprovements(const noRoadNode* start, const noRoad
             }
         }
         else
-            pStart = aii->GetNeighbour(pStart, Direction::fromUInt(route[i]));
+            pStart = aii->GetNeighbour(pStart, Direction::fromInt(route[i]));
     }
     /*if(done)
     {
@@ -746,7 +746,7 @@ bool AIConstruction::BuildAlternativeRoad(const noFlag* flag, std::vector<unsign
     MapPoint t = flag->GetPos();
     for(unsigned i = 0; i < mainroad.size(); i++)
     {
-        t = aii->GetNeighbour(t, Direction::fromUInt(mainroad[i]));
+        t = aii->GetNeighbour(t, Direction::fromInt(mainroad[i]));
     }
     const noFlag* mainflag = aii->GetSpecObj<noFlag>(t);
 
@@ -782,12 +782,12 @@ bool AIConstruction::BuildAlternativeRoad(const noFlag* flag, std::vector<unsign
             t = flag->GetPos();
             for(unsigned j = 0; j < route.size(); ++j)
             {
-                t = aii->GetNeighbour(t, Direction::fromUInt(route[j]));
+                t = aii->GetNeighbour(t, Direction::fromInt(route[j]));
                 MapPoint t2 = flag->GetPos();
                 //check if we cross the planned main road
                 for(unsigned k = 0; k < mainroad.size(); ++k)
                 {
-                    t2 = aii->GetNeighbour(t2, Direction::fromUInt(mainroad[k]));
+                    t2 = aii->GetNeighbour(t2, Direction::fromInt(mainroad[k]));
                     if(t2 == t)
                     {
                         crossmainpath = true;

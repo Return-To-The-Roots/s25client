@@ -19,30 +19,51 @@ INCLUDE(CMakeDetectOsXArchs)
 PROJECT(s25client)
 
 IF (DEFINED CMAKE_TOOLCHAIN_FILE)
-	MESSAGE(STATUS "Using Toolchain definition file '${CMAKE_TOOLCHAIN_FILE}'")
+	MESSAGE(STATUS "Used Toolchain definition file '${CMAKE_TOOLCHAIN_FILE}'")
 ENDIF()
 
 STRING(TOLOWER ${CMAKE_SYSTEM_NAME} PLATFORM_NAME)
 SET(PLATFORM_NAME ${PLATFORM_NAME} CACHE STRING "Do not change" FORCE)
-SET(PLATFORM_ARCH ${CMAKE_SYSTEM_PROCESSOR} CACHE STRING "Do not change" FORCE)
+
+#Set PLATFORM_ARCH
+IF(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
+	IF ("${CMAKE_SIZEOF_VOID_P}" EQUAL "8")
+		SET(PLATFORM_ARCH "x86_64")
+	ELSE ("${CMAKE_SIZEOF_VOID_P}" EQUAL "8")
+		SET(PLATFORM_ARCH "i386")
+	ENDIF ("${CMAKE_SIZEOF_VOID_P}" EQUAL "8")
+ELSE()
+	IF(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "i386" OR ${CMAKE_SYSTEM_PROCESSOR} STREQUAL "i686")
+		SET(PLATFORM_ARCH "i386")
+	ELSEIF(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "x86_64" OR ${CMAKE_SYSTEM_PROCESSOR} STREQUAL "AMD64")
+		SET(PLATFORM_ARCH "x86_64")
+	ELSEIF(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "universal" AND ${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
+		SET(PLATFORM_ARCH "universal")
+	ELSE()
+		MESSAGE(FATAL_ERROR "Unknown processor arch: ${CMAKE_SYSTEM_PROCESSOR}")
+	ENDIF()
+ENDIF()
+#Fill cache for post-processing tools
+SET(PLATFORM_ARCH ${PLATFORM_ARCH} CACHE STRING "Do not change" FORCE)
+
 MARK_AS_ADVANCED(PLATFORM_NAME PLATFORM_ARCH)
+
 IF (CMAKE_CROSSCOMPILING)
-	MESSAGE(STATUS "Configuring for cross-compiling to ${CMAKE_SYSTEM} on ${CMAKE_SYSTEM_PROCESSOR}")
+	MESSAGE(STATUS "Configuring for cross-compiling to ${CMAKE_SYSTEM} on ${PLATFORM_ARCH}")
 	#Include cross-compile platform config
 	IF (EXISTS "${CMAKE_CURRENT_LIST_DIR}/cmake/c.${PLATFORM_NAME}.cmake")
 		INCLUDE("cmake/c.${PLATFORM_NAME}.cmake")
 	ENDIF()
 ELSE (CMAKE_CROSSCOMPILING)
-	MESSAGE(STATUS "Configuring for native compiling to ${CMAKE_SYSTEM} on ${CMAKE_SYSTEM_PROCESSOR}")
+	MESSAGE(STATUS "Configuring for native compiling to ${CMAKE_SYSTEM} on ${PLATFORM_ARCH}")
 ENDIF (CMAKE_CROSSCOMPILING)
 
 #Include generic platform config
+MESSAGE(STATUS "Using platform config cmake/${PLATFORM_NAME}.cmake")
 INCLUDE("cmake/${PLATFORM_NAME}.cmake")
 
 ################################################################################
 
-#SET(Boost_USE_STATIC_LIBS TRUE)
-#SET(Boost_USE_STATIC_RUNTIME TRUE)
 SET(Boost_ADDITIONAL_VERSIONS "1.55")
 
 IF (MSVC)
@@ -64,6 +85,11 @@ ELSE()
 		MESSAGE(FATAL_ERROR "You have to install boost into contrib/boost or set BOOST_ROOT environment variable, since cmake was unable to find boost!")
 	ENDIF()
 ENDIF()
+
+# avoid lhs-path bug in windows
+IF ("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
+	SET(CMAKE_INSTALL_PREFIX "" CACHE STRING "" FORCE)
+ENDIF ("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
 
 ################################################################################
 
@@ -100,11 +126,6 @@ IF (NOT "${LIBDIR}" STREQUAL "" AND "${DRIVERDIR}" STREQUAL "")
 	SET(DRIVERDIR "${LIBDIR}/driver" CACHE STRING "Directory for driver objects" FORCE)
 	MESSAGE(STATUS "Set DRIVERDIR to ${DRIVERDIR}")
 ENDIF (NOT "${LIBDIR}" STREQUAL "" AND "${DRIVERDIR}" STREQUAL "")
-
-# avoid lhs-path bug in windows
-IF ("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
-	SET(CMAKE_INSTALL_PREFIX "" CACHE STRING "" FORCE)
-ENDIF ("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
 
 IF(NOT "$ENV{CMAKE_INSTALL_PREFIX}" STREQUAL "")
 	SET(ENV{DESTDIR} "$ENV{CMAKE_INSTALL_PREFIX}" CACHE STRING "" FORCE)

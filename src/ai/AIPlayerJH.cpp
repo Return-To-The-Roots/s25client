@@ -415,9 +415,9 @@ AIJH::Resource AIPlayerJH::CalcResource(const MapPoint pt)
             if(aii->IsRoadPoint(pt))
                 return AIJH::NOTHING;
 
-            for(unsigned char i = 0; i < Direction::COUNT; ++i)
+            for(int i = 0; i < Direction::COUNT; ++i)
             {
-                TerrainType t = aii->GetTerrainAround(pt, Direction::fromUInt(i));
+                TerrainType t = aii->GetTerrainAround(pt, Direction::fromInt(i));
 
                 // check against valid terrains for planting
                 if(!TerrainData::IsVital(t))
@@ -491,9 +491,9 @@ void AIPlayerJH::IterativeReachableNodeChecker(std::queue<MapPoint>& toCheck)
         MapPoint r = toCheck.front();
 
         // Coordinates to test around this reachable coordinate
-        for (unsigned dir = 0; dir < Direction::COUNT; ++dir)
+        for (int dir = 0; dir < Direction::COUNT; ++dir)
         {
-            MapPoint n = aii->GetNeighbour(r, Direction::fromUInt(dir));
+            MapPoint n = aii->GetNeighbour(r, Direction::fromInt(dir));
             unsigned ni = aii->GetIdx(n);
 
             // already reached, don't test again
@@ -792,9 +792,9 @@ PositionSearchState AIPlayerJH::FindGoodPosition(PositionSearch* search, bool be
         }
 
         // now insert neighbouring nodes...
-        for (unsigned char dir = 0; dir < Direction::COUNT; ++dir)
+        for (int dir = 0; dir < Direction::COUNT; ++dir)
         {
-            MapPoint n = aii->GetNeighbour(pt, Direction::fromUInt(dir));
+            MapPoint n = aii->GetNeighbour(pt, Direction::fromInt(dir));
             unsigned ni = aii->GetIdx(n);
 
             // test if already tested or not in territory
@@ -1532,7 +1532,7 @@ void AIPlayerJH::HandleRoadConstructionComplete(MapPoint pt, unsigned char dir)
         t = gwb.GetNeighbour(t, 4);
         for(unsigned i = 0; i < flag->routes[dir]->GetLength(); ++i)
         {
-            t = aii->GetNeighbour(t, Direction::fromUInt(flag->routes[dir]->GetDir(true, i)));
+            t = aii->GetNeighbour(t, Direction::fromInt(flag->routes[dir]->GetDir(true, i)));
             {
                 aii->SetFlag(t);
             }
@@ -1543,7 +1543,7 @@ void AIPlayerJH::HandleRoadConstructionComplete(MapPoint pt, unsigned char dir)
         //set flags on our new road starting from the new flag
         for(unsigned i = 0; i < flag->routes[dir]->GetLength(); ++i)
         {
-            pt = aii->GetNeighbour(pt, Direction::fromUInt(flag->routes[dir]->GetDir(false, i)));
+            pt = aii->GetNeighbour(pt, Direction::fromInt(flag->routes[dir]->GetDir(false, i)));
             {
                 aii->SetFlag(pt);
             }
@@ -2126,7 +2126,7 @@ void AIPlayerJH::RecalcGround(const MapPoint buildingPos, std::vector<unsigned c
     // along the road
     for (unsigned i = 0; i < route_road.size(); ++i)
     {
-        pt = aii->GetNeighbour(pt, Direction::fromUInt(route_road[i]));
+        pt = aii->GetNeighbour(pt, Direction::fromInt(route_road[i]));
         RecalcBQAround(pt);
         // Auch Plantspace entsprechend anpassen:
         if (GetAINode(pt).res == AIJH::PLANTSPACE)
