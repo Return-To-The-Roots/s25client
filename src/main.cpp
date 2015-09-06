@@ -260,8 +260,9 @@ int main(int argc, char* argv[])
     for(unsigned int i = 0; i < dir_count; ++i)
     {
         std::string dir = GetFilePath(FILE_PATHS[dirs[i]]);
-
-        if(mkdir_p(dir) < 0)
+        boost::system::error_code ec;
+        boost::filesystem::create_directories(dir, ec);
+        if(ec != boost::system::errc::success)
         {
             error("Directory %s could not be created: ", dir.c_str());
             error("Failed to start the game");
