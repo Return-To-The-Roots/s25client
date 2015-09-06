@@ -77,6 +77,7 @@
 #   include <eh.h>
 #endif
 
+#include <boost/filesystem.hpp>
 #include <ctime>
 #include <iostream>
 #include <limits>
@@ -245,15 +246,16 @@ int main(int argc, char* argv[])
     const unsigned int dir_count = 7;
     unsigned int dirs[dir_count] = { 94, 47, 48, 51, 85, 98, 99 }; // settingsdir muss zuerst angelegt werden (94)
 
-#ifdef _WIN32
-    if(IsDir(GetFilePath("~/Siedler II.5 RttR")))
-        MoveFileA(GetFilePath("~/Siedler II.5 RttR").c_str(), GetFilePath(FILE_PATHS[94]).c_str());
-#endif
+    std::string oldSettingsDir;
+    std::string newSettingsDir = GetFilePath(FILE_PATHS[94]);
 
-#ifdef __APPLE__
-    if(IsDir(GetFilePath("~/.s25rttr")))
-        rename(GetFilePath("~/.s25rttr").c_str(), GetFilePath(FILE_PATHS[94]).c_str());
+#ifdef _WIN32
+    oldSettingsDir = GetFilePath("~/Siedler II.5 RttR");
+#elif defined(__APPLE__)
+    oldSettingsDir = GetFilePath("~/.s25rttr");
 #endif
+    if(!oldSettingsDir.empty() && boost::filesystem::is_directory(oldSettingsDir))
+        boost::filesystem::rename(oldSettingsDir, newSettingsDir);
 
     for(unsigned int i = 0; i < dir_count; ++i)
     {

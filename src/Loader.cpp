@@ -17,16 +17,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 
-// Conflict with DATADIR in shlwapi -> include build_paths later
-#define NO_BUILD_PATHS
 #include "defines.h"
-
-#ifdef _WIN32
-#   include <shlwapi.h>
-#   include "build_paths.h"
-#else
-#	include <sys/stat.h>
-#endif // _WIN32
 
 #include "Loader.h"
 #include "files.h"
@@ -50,6 +41,7 @@
 #include "../libsiedler2/src/types.h"
 #include "../libsiedler2/src/prototypen.h"
 
+#include <boost/filesystem.hpp>
 #include <iomanip>
 #include <sstream>
 #include <algorithm>
@@ -130,29 +122,37 @@ bool Loader::LoadFilesAtStart(void)
  */
 bool Loader::LoadFileOrDir(const std::string& file, const unsigned int file_id, bool load_always)
 {
+    if(file.at(0) == '~')
+        throw std::logic_error("You must use resolved pathes: " + file);
+
+    if(!boost::filesystem::exists(file))
+    {
+        LOG.lprintf(_("File or directory does not exist: %s\n"), file.c_str());
+        return false;
+    }
     // is the entry a directory?
-    if(IsDir(file))
+    if(boost::filesystem::is_directory(file))
     {
         // yes, load all files in the directory
         unsigned int ladezeit = VIDEODRIVER.GetTickCount();
 
-        LOG.lprintf("Lade LST,BOB,IDX,BMP,TXT,GER,ENG Dateien aus \"%s\"\n", GetFilePath(file).c_str());
+        LOG.lprintf(_("Loading LST,BOB,IDX,BMP,TXT,GER,ENG files from \"%s\"\n"), GetFilePath(file).c_str());
 
         std::list<std::string> lst;
-        ListDir(GetFilePath(file) + "*.lst", true, NULL, NULL, &lst);
-        ListDir(GetFilePath(file) + "*.bob", true, NULL, NULL, &lst);
-        ListDir(GetFilePath(file) + "*.idx", true, NULL, NULL, &lst);
-        ListDir(GetFilePath(file) + "*.bmp", true, NULL, NULL, &lst);
-        ListDir(GetFilePath(file) + "*.txt", true, NULL, NULL, &lst);
-        ListDir(GetFilePath(file) + "*.ger", true, NULL, NULL, &lst);
-        ListDir(GetFilePath(file) + "*.eng", true, NULL, NULL, &lst);
+        ListDir(file + "*.lst", true, NULL, NULL, &lst);
+        ListDir(file + "*.bob", true, NULL, NULL, &lst);
+        ListDir(file + "*.idx", true, NULL, NULL, &lst);
+        ListDir(file + "*.bmp", true, NULL, NULL, &lst);
+        ListDir(file + "*.txt", true, NULL, NULL, &lst);
+        ListDir(file + "*.ger", true, NULL, NULL, &lst);
+        ListDir(file + "*.eng", true, NULL, NULL, &lst);
 
         for(std::list<std::string>::iterator i = lst.begin(); i != lst.end(); ++i)
         {
             if(!LoadFile( i->c_str(), GetPaletteN("pal5"), load_always ) )
                 return false;
         }
-        LOG.lprintf("fertig (%ums)\n", VIDEODRIVER.GetTickCount() - ladezeit);
+        LOG.lprintf(_("finished in %ums\n"), VIDEODRIVER.GetTickCount() - ladezeit);
     }
     else
     {
@@ -188,9 +188,10 @@ bool Loader::LoadFilesFromArray(const unsigned int files_count, const unsigned i
         if(files[i] == 0xFFFFFFFF)
             continue;
 
-        if(!LoadFileOrDir(FILE_PATHS[ files[i] ], files[i], load_always))
+        std::string filePath = GetFilePath(FILE_PATHS[ files[i] ]);
+        if(!LoadFileOrDir(filePath, files[i], load_always))
         {
-            LOG.lprintf(_("Failed to load %s\n"), FILE_PATHS[ files[i] ]);
+            LOG.lprintf(_("Failed to load %s\n"), filePath.c_str());
             return false;
         }
     }
@@ -246,8 +247,9 @@ bool Loader::LoadLsts(unsigned int dir)
  */
 bool Loader::LoadSounds(void)
 {
+    std::string soundLSTPath = GetFilePath(FILE_PATHS[55]);
     // ist die konvertierte sound.lst vorhanden?
-    if(!FileExists(FILE_PATHS[55]))
+    if(!boost::filesystem::exists(soundLSTPath))
     {
         // nein, dann konvertieren
 
@@ -283,10 +285,10 @@ bool Loader::LoadSounds(void)
     }
 
     // ggf original laden, hier das overriding benutzen wär ladezeitverschwendung
-    if(!FileExists(FILE_PATHS[55]))
+    if(!boost::filesystem::exists(soundLSTPath))
     {
         // existiert nicht
-        if(!LoadFile(FILE_PATHS[49]))
+        if(!LoadFile(GetFilePath(FILE_PATHS[49])))
             return false;
     }
 
@@ -299,13 +301,13 @@ bool Loader::LoadSounds(void)
     {
         libsiedler2::ArchivInfo sng;
 
-        LOG.lprintf("lade \"%s\": ", it->c_str());
+        LOG.lprintf(_("Loading \"%s\": "), it->c_str());
         if(libsiedler2::loader::LoadSND(it->c_str(), sng) != 0 )
         {
-            LOG.lprintf("fehlgeschlagen\n");
+            LOG.lprintf(_("failed\n"));
             return false;
         }
-        LOG.lprintf("fertig\n");
+        LOG.lprintf(_("finished\n"));
 
         sng_lst.setC(i++, *sng.get(0));
     }
@@ -416,17 +418,16 @@ bool Loader::SaveSettings()
 {
     std::string file = GetFilePath(FILE_PATHS[0]);
 
-    LOG.lprintf("schreibe \"%s\": ", file.c_str());
+    LOG.lprintf(_("Writing \"%s\": "), file.c_str());
     fflush(stdout);
 
     if(libsiedler2::Write(file.c_str(), files.find("config")->second) != 0)
         return false;
 
-#ifndef _WIN32
-    chmod(file.c_str(), S_IRUSR | S_IWUSR);
-#endif // !_WIN32
+    using namespace boost::filesystem;
+    permissions(file, owner_read | owner_write);
 
-    LOG.lprintf("fertig\n");
+    LOG.lprintf(_("finished\n"));
 
     return true;
 }
@@ -509,7 +510,7 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool* nations)
         return false;
     }
 
-    if ((nations[4]) && !LoadFileOrDir(RTTRDIR "/LSTS/GAME/Babylonier/", 0, true))
+    if ((nations[4]) && !LoadFileOrDir(GetFilePath(RTTRDIR "/LSTS/GAME/Babylonier/"), 0, true))
     {
         lastgfx = 0xFF;
         return false;
@@ -1141,16 +1142,16 @@ bool Loader::LoadArchiv(const std::string& pfad, const libsiedler2::ArchivItem_P
 
     std::string file = GetFilePath(pfad);
 
-    LOG.lprintf("lade \"%s\": ", file.c_str());
+    LOG.lprintf(_("Loading \"%s\": "), file.c_str());
     fflush(stdout);
 
     if(libsiedler2::Load(file.c_str(), archiv, palette) != 0)
     {
-        LOG.lprintf("fehlgeschlagen\n");
+        LOG.lprintf(_("failed\n"));
         return false;
     }
 
-    LOG.lprintf("fertig (%ums)\n", VIDEODRIVER.GetTickCount() - ladezeit);
+    LOG.lprintf(_("done in %ums\n"), VIDEODRIVER.GetTickCount() - ladezeit);
 
     return true;
 }
@@ -1161,39 +1162,32 @@ bool Loader::LoadArchiv(const std::string& pfad, const libsiedler2::ArchivItem_P
  *
  *  @author FloSoft
  */
-bool Loader::LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette, libsiedler2::ArchivInfo& to)
+bool Loader::LoadFile(const std::string& filePath, const libsiedler2::ArchivItem_Palette* palette, libsiedler2::ArchivInfo& to)
 {
-    bool directory = false;
-#ifdef _WIN32
-    if(!PathFileExistsA(GetFilePath(pfad).c_str()))
+    if(filePath.at(0) == '~')
+        throw std::logic_error("You must use resolved pathes: " + filePath);
+
+    if(!boost::filesystem::exists(filePath))
     {
-        LOG.lprintf("Fehler: Datei oder Verzeichnis \"%s\" existiert nicht.\n", GetFilePath(pfad).c_str());
+        LOG.lprintf(_("File or directory does not exist: %s\n"), filePath.c_str());
         return false;
     }
-    if ( (GetFileAttributesA(GetFilePath(pfad).c_str()) & FILE_ATTRIBUTE_DIRECTORY) == FILE_ATTRIBUTE_DIRECTORY)
-        directory = true;
-#else
-    struct stat file_stat;
-    stat(GetFilePath(pfad).c_str(), &file_stat);
-    if(S_ISDIR(file_stat.st_mode))
-        directory = true;
-#endif
-
-    if(!directory)
+    if(boost::filesystem::is_regular_file(filePath))
+        return LoadArchiv(filePath, palette, to);
+    if(!boost::filesystem::is_directory(filePath))
     {
-        if(!LoadArchiv(pfad, palette, to))
-            return false;
-        return true;
+        LOG.lprintf(_("Could not determine type of path %s\n"), filePath.c_str());
+        return false;
     }
 
-    LOG.lprintf("lade Verzeichnis %s\n", GetFilePath(pfad).c_str());
+    LOG.lprintf(_("Loading directory %s\n"), GetFilePath(filePath).c_str());
     std::list<std::string> lst;
-    ListDir(GetFilePath(pfad) + "/*.bmp", false, NULL, NULL, &lst);
-    ListDir(GetFilePath(pfad) + "/*.txt", false, NULL, NULL, &lst);
-    ListDir(GetFilePath(pfad) + "/*.ger", false, NULL, NULL, &lst);
-    ListDir(GetFilePath(pfad) + "/*.eng", false, NULL, NULL, &lst);
-    ListDir(GetFilePath(pfad) + "/*.fon", true, NULL, NULL, &lst);
-    ListDir(GetFilePath(pfad) + "/*.empty", false, NULL, NULL, &lst);
+    ListDir(filePath + "/*.bmp", false, NULL, NULL, &lst);
+    ListDir(filePath + "/*.txt", false, NULL, NULL, &lst);
+    ListDir(filePath + "/*.ger", false, NULL, NULL, &lst);
+    ListDir(filePath + "/*.eng", false, NULL, NULL, &lst);
+    ListDir(filePath + "/*.fon", true, NULL, NULL, &lst);
+    ListDir(filePath + "/*.empty", false, NULL, NULL, &lst);
 
     lst.sort(SortFilesHelper);
 
@@ -1241,7 +1235,7 @@ bool Loader::LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Pal
         // Placeholder
         if( wf.back() == "empty" )
         {
-            LOG.lprintf("ueberspringe %s\n", i->c_str());
+            LOG.lprintf(_("Skipping %s\n"), i->c_str());
             to.alloc_inc(1);
             continue;
         }
@@ -1340,67 +1334,47 @@ bool Loader::LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Pal
  */
 bool Loader::LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette, bool load_always)
 {
-    std::string p = pfad;
-    transform ( p.begin(), p.end(), p.begin(), tolower );
+    std::string lowerPath = pfad;
+    std::transform( lowerPath.begin(), lowerPath.end(), lowerPath.begin(), tolower );
 
-    size_t pp = p.find_last_of("/\\");
-    if(pp != std::string::npos)
-        p = p.substr(pp + 1);
-
-    std::string e = p;
-    pp = p.find_first_of('.');
-    if(pp != std::string::npos)
-    {
-        e = p.substr(pp);
-        p = p.substr(0, pp);
-    }
+    boost::filesystem::path filePath(lowerPath);
+    boost::filesystem::path fileName = filePath.filename();
+    std::string name = fileName.stem().string();
 
     // bereits geladen und wir wollen kein nochmaliges laden
-    if(!load_always && files.find(p) != files.end() && files.find(p)->second.size() != 0)
+    if(!load_always && files[name].size() != 0)
         return true;
 
-    bool override_file = false;
-
-    libsiedler2::ArchivInfo archiv;
-    libsiedler2::ArchivInfo* to = &archiv;
-
-    if(files.find(p) == files.end() || files.find(p)->second.size() == 0)
-    {
-        // leeres Archiv in Map einfügen
-        files.insert(std::make_pair(p, archiv));
-        to = &files.find(p)->second;
-    }
-    else
-        override_file = true;
-
-    if(!LoadFile(pfad, palette, *to))
-        return false;
+    if(files[name].size() == 0)
+        return LoadFile(pfad, palette, files[name]);
 
     // haben wir eine override file? dann nicht-leere items überschreiben
-    if(override_file)
+    libsiedler2::ArchivInfo newEntries;
+    if(!LoadFile(pfad, palette, newEntries))
+        return false;
+
+    LOG.lprintf(_("Replacing entries of previously loaded file '%s'\n"), name.c_str());
+
+    libsiedler2::ArchivInfo* existing = &files.find(name)->second;
+    if(fileName.extension() == ".bob")
     {
-        LOG.lprintf("Ersetze Daten der vorher geladenen Datei\n");
-        to = &files.find(p)->second;
-
-        if(e == ".bob")
-            to = dynamic_cast<libsiedler2::ArchivInfo*>(to->get(0));
-
-        if(!to)
+        existing = dynamic_cast<libsiedler2::ArchivInfo*>(existing->get(0));
+        if(!existing)
         {
-            LOG.lprintf("Fehler beim Ersetzen einer BOB-Datei\n");
+            LOG.lprintf(_("Error while replacing a BOB file\n"));
             return false;
         }
+    }
 
-        if(archiv.size() > to->size())
-            to->alloc_inc(archiv.size() - to->size());
+    if(newEntries.size() > existing->size())
+        existing->alloc_inc(newEntries.size() - existing->size());
 
-        for(unsigned int i = 0; i < archiv.size(); ++i)
+    for(unsigned int i = 0; i < newEntries.size(); ++i)
+    {
+        if(newEntries.get(i))
         {
-            if(archiv.get(i))
-            {
-                LOG.lprintf("Ersetze Eintrag %d durch %s\n", i, archiv.get(i)->getName().c_str());
-                to->setC(i, *archiv.get(i));
-            }
+            LOG.lprintf(_("Replacing entry %d with %s\n"), i, newEntries.get(i)->getName().c_str());
+            existing->setC(i, *newEntries.get(i));
         }
     }
 
