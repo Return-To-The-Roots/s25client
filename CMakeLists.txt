@@ -68,7 +68,7 @@ INCLUDE("cmake/${PLATFORM_NAME}.cmake")
 
 ################################################################################
 
-SET(Boost_ADDITIONAL_VERSIONS "1.55")
+SET(Boost_ADDITIONAL_VERSIONS "1.55 1.56 1.57 1.58")
 
 IF (MSVC)
 	IF(NOT EXISTS "${CMAKE_SOURCE_DIR}/contrib/full-contrib-msvc2010" OR NOT IS_DIRECTORY "${CMAKE_SOURCE_DIR}/contrib/full-contrib-msvc2010")
@@ -83,11 +83,19 @@ ENDIF()
 
 IF(EXISTS "${CMAKE_SOURCE_DIR}/contrib/boost" AND IS_DIRECTORY "${CMAKE_SOURCE_DIR}/contrib/boost")
 	SET(BOOST_ROOT ${CMAKE_SOURCE_DIR}/contrib/boost CACHE PATH "Path to find boost at")
+ENDIF()
+
+FIND_PACKAGE(Boost 1.55.0 REQUIRED)
+IF(NOT Boost_FOUND)
+	MESSAGE(FATAL_ERROR "You have to install boost into contrib/boost or set BOOST_ROOT environment variable, since cmake was unable to find boost!")
+ENDIF()
+
+STRING(COMPARE LESS "${Boost_VERSION}" "105800" Boost_NEED_BACKPORT)
+IF(Boost_NEED_BACKPORT)
+	MESSAGE(STATUS "Boost version smaller than 1.58 detected. Using backport")
+	INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/contrib/backport/boost_1.58")
 ELSE()
-	FIND_PACKAGE(Boost 1.55.0 REQUIRED)
-	IF(NOT Boost_FOUND)
-		MESSAGE(FATAL_ERROR "You have to install boost into contrib/boost or set BOOST_ROOT environment variable, since cmake was unable to find boost!")
-	ENDIF()
+	MESSAGE(STATUS "Boost ${Boost_VERSION} detected. No backport required")
 ENDIF()
 
 # avoid lhs-path bug in windows
@@ -202,7 +210,8 @@ IF (${HAVE_CONSTEXPR})
 ELSE (${HAVE_CONSTEXPR})
 	ADD_DEFINITIONS(-DCONSTEXPR=const)
 ENDIF (${HAVE_CONSTEXPR})
-	
+
+
 ################################################################################
 
 CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/build_paths.h.cmake"
