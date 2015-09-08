@@ -22,7 +22,6 @@
 
 #include "drivers/AudioDriverWrapper.h"
 #include "Settings.h"
-#include "../driver/src/AudioDriver.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -47,7 +46,7 @@ void glArchivItem_Sound_Other::Play(const unsigned repeats)
         return;
 
     if(!sound)
-        sound = AUDIODRIVER.LoadMusic(AudioDriver::AD_OTHER, &data.front(), data.size());
+        sound = AUDIODRIVER.LoadMusic(AudioType::AD_OTHER, &data.front(), data.size());
 
     if(sound)
         AUDIODRIVER.PlayMusic(sound, repeats);

@@ -21,7 +21,6 @@
 
 #include "CollisionDetection.h"
 
-#include "drivers/MouseAndKeys.h"
 #include "Msgbox.h"
 #include "gameData/GameConsts.h"
 #include "colors.h"
@@ -61,6 +60,10 @@ class ctrlMultiSelectGroup;
 class glArchivItem_Map;
 class glArchivItem_Font;
 class glArchivItem_Bitmap;
+
+struct KeyEvent;
+class MouseCoords;
+struct ScreenResizeEvent;
 
 /// Die Basisklasse der Fenster.
 class Window

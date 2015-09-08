@@ -23,6 +23,7 @@
 #include "SoundSDL_Effect.h"
 #include "SoundSDL_Music.h"
 #include "libutil/src/tmpFile.h"
+#include "AudioDriverLoaderInterface.h"
 
 #include <AudioInterface.h>
 #include <fstream>
@@ -173,7 +174,7 @@ void AudioSDL::CleanUp(void)
  *
  *  @author FloSoft
  */
-Sound* AudioSDL::LoadEffect(unsigned int data_type, const unsigned char* data, unsigned long size)
+Sound* AudioSDL::LoadEffect(AudioType data_type, const unsigned char* data, unsigned long size)
 {
     std::ofstream dat;
     std::string filePath = createTempFile(dat, ".wav");
@@ -192,7 +193,7 @@ Sound* AudioSDL::LoadEffect(unsigned int data_type, const unsigned char* data, u
         default:
             return(NULL);
 
-        case AudioDriver::AD_WAVE:
+        case AudioType::AD_WAVE:
         {
             sound = Mix_LoadWAV(filePath.c_str());
         } break;
@@ -227,7 +228,7 @@ Sound* AudioSDL::LoadEffect(unsigned int data_type, const unsigned char* data, u
  *
  *  @author FloSoft
  */
-Sound* AudioSDL::LoadMusic(unsigned int data_type, const unsigned char* data, unsigned long size)
+Sound* AudioSDL::LoadMusic(AudioType data_type, const unsigned char* data, unsigned long size)
 {
     std::string extension;
     switch(data_type)
@@ -235,17 +236,17 @@ Sound* AudioSDL::LoadMusic(unsigned int data_type, const unsigned char* data, un
         default:
             return(NULL);
 
-        case AudioDriver::AD_MIDI:
+        case AudioType::AD_MIDI:
         {
             extension = ".mid";
         } break;
 
-        case AudioDriver::AD_WAVE:
+        case AudioType::AD_WAVE:
         {
             extension = ".wav";
         } break;
 
-        case AudioDriver::AD_OTHER:
+        case AudioType::AD_OTHER:
         {
             const char* header = reinterpret_cast<const char*>(data);
             if(strncmp(header, "OggS", 4) == 0)

@@ -23,6 +23,7 @@
 #include "Loader.h"
 #include "controls/controls.h"
 #include "drivers/VideoDriverWrapper.h"
+#include "driver/src/MouseCoords.h"
 #include <cstdarg>
 
 ///////////////////////////////////////////////////////////////////////////////

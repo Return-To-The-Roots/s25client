@@ -21,6 +21,7 @@
 #include "ctrlIngameMinimap.h"
 #include "Minimap.h"
 #include "GameWorld.h"
+#include "driver/src/MouseCoords.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

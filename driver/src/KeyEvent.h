@@ -12,34 +12,9 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
-#ifndef MOUSEANDKEYS_H_INCLUDED
-#define MOUSEANDKEYS_H_INCLUDED
 
-#pragma once
-
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Mausstatusstruct
- *
- *  @author OLiver
- */
-class MouseCoords
-{
-    public:
-        MouseCoords() : x(0), y(0), ldown(false), rdown(false), dbl_click(false) {}
-        MouseCoords(int x, int y, bool ldown, bool rdown, const bool dbl_click)
-            : x(x), y(y), ldown(ldown), rdown(rdown), dbl_click(dbl_click) {}
-
-    public:
-        int x;      /// xKoordinate
-        int y;      /// yKoordinate
-        bool ldown; /// Linke Maustaste gedrückt
-        bool rdown; /// Rechte Maustaste gedrückt
-        bool dbl_click; /// Linke Maustaste - Doppelklick
-};
-
-/// Maximale Zeitdifferenz in ms für einen Doppeklick
-const unsigned DOUBLE_CLICK_INTERVAL = 500;
+#ifndef KeyEvent_h__
+#define KeyEvent_h__
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
@@ -75,13 +50,4 @@ struct KeyEvent
     bool ctrl, shift, alt;
 };
 
-/// ScreenResize-Event
-struct ScreenResizeEvent
-{
-    unsigned short oldWidth;
-    unsigned short oldHeight;
-    unsigned short newWidth;
-    unsigned short newHeight;
-};
-
-#endif //!MOUSEANDKEYS_H_INCLUDED
+#endif // KeyEvent_h__

@@ -7,6 +7,7 @@ FIND_PACKAGE(Boost 1.55.0 COMPONENTS filesystem iostreams system REQUIRED)
 ################################################################################
 
 INCLUDE_DIRECTORIES(
+					${CMAKE_SOURCE_DIR}
 					"${CMAKE_SOURCE_DIR}/liblobby/src/"
 					"${CMAKE_SOURCE_DIR}/libutil/src/"
 					"${CMAKE_SOURCE_DIR}/mygettext/src/"

@@ -19,7 +19,8 @@
 
 #pragma once
 
-#include "MouseAndKeys.h"
+#include "MouseCoords.h"
+#include "KeyEvent.h"
 
 class VideoDriverLoaderInterface
 {

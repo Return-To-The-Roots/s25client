@@ -22,6 +22,7 @@
 
 #include "drivers/VideoDriverWrapper.h"
 #include "ogl/glArchivItem_Font.h"
+#include "driver/src/MouseCoords.h"
 
 #include <sstream>
 

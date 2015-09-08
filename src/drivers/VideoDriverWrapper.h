@@ -21,7 +21,7 @@
 #include "Singleton.h"
 #include "ExtensionList.h"
 #include "DriverWrapper.h"
-#include "../driver/src/VideoDriver.h"
+#include "driver/src/VideoInterface.h"
 
 class VideoDriver;
 
@@ -61,7 +61,7 @@ class VideoDriverWrapper : public Singleton<VideoDriverWrapper>
         int GetMouseY();
 
         /// Listet verfügbare Videomodi auf
-        void ListVideoModes(std::vector<VideoDriver::VideoMode>& video_modes) const;
+        void ListVideoModes(std::vector<VideoMode>& video_modes) const;
 
         /// Gibt Pointer auf ein Fenster zurück (device-dependent!), HWND unter Windows
         void* GetMapPointer() const;

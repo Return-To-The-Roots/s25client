@@ -22,6 +22,7 @@
 
 #include "WindowManager.h"
 #include "drivers/VideoDriverWrapper.h"
+#include "drivers/ScreenResizeEvent.h"
 #include "ogl/glArchivItem_Bitmap.h"
 
 ///////////////////////////////////////////////////////////////////////////////

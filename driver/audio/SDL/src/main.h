@@ -38,6 +38,8 @@
 #   ifndef assert
 #       define assert _ASSERT
 #   endif
+#else
+#   include <assert.h>
 #endif
 
 #if defined _WIN32 && defined _DEBUG

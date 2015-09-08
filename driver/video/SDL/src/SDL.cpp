@@ -20,6 +20,7 @@
 #include "main.h"
 #include "SDL.h"
 #include "../../../../src/helpers/containerUtils.h"
+#include "VideoDriverLoaderInterface.h"
 #include <VideoInterface.h>
 #include <build_version.h>
 

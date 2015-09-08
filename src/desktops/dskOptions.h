@@ -20,7 +20,7 @@
 #pragma once
 
 #include "Desktop.h"
-#include "../driver/src/VideoDriver.h"
+#include "driver/src/VideoInterface.h"
 #include "GlobalGameSettings.h"
 
 /// Klasse des Optionen Desktops.
@@ -42,7 +42,7 @@ class dskOptions: public Desktop
 
     private:
         GlobalGameSettings ggs;
-        std::vector<VideoDriver::VideoMode> video_modes; ///< Vector für die Auflösungen
+        std::vector<VideoMode> video_modes; ///< Vector für die Auflösungen
 };
 
 #endif // !dskOPTIONS_H_INCLUDED

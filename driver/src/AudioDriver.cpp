@@ -19,6 +19,8 @@
 // Header
 #include "main.h"
 #include "AudioDriver.h"
+#include "Sound.h"
+#include <cstddef>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

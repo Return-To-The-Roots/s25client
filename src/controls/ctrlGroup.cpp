@@ -19,6 +19,8 @@
 // Header
 #include "defines.h"
 #include "ctrlGroup.h"
+#include "drivers/ScreenResizeEvent.h"
+#include "driver/src/MouseCoords.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

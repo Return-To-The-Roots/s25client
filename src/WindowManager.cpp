@@ -27,6 +27,7 @@
 #include "Window.h"
 #include "desktops/Desktop.h"
 #include "ingameWindows/IngameWindow.h"
+#include "drivers/ScreenResizeEvent.h"
 
 #include <ctime>
 #include <algorithm>

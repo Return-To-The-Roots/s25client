@@ -21,6 +21,7 @@
 #include "WinAPI.h"
 
 #include "../../../../win32/resource.h"
+#include "VideoDriverLoaderInterface.h"
 #include <build_version.h>
 #include <VideoInterface.h>
 #include <cstdlib>

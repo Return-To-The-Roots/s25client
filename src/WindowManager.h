@@ -20,8 +20,7 @@
 #pragma once
 
 #include "Singleton.h"
-#include "drivers/MouseAndKeys.h"
-#include "drivers/VideoDriverLoaderInterface.h"
+#include "driver/src/VideoDriverLoaderInterface.h"
 #include "Point.h"
 #include <cstddef>
 #include <list>

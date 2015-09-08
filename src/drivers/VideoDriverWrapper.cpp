@@ -568,14 +568,14 @@ void VideoDriverWrapper::SetMousePos(const int x, const int y)
  *
  *  @author OLiver
  */
-void VideoDriverWrapper::ListVideoModes(std::vector<VideoDriver::VideoMode>& video_modes) const
+void VideoDriverWrapper::ListVideoModes(std::vector<VideoMode>& video_modes) const
 {
     if(!videodriver)
         return;
 
     // Standard-Modi hinzufügen
-    VideoDriver::VideoMode vm800  = {  800, 600 };
-    VideoDriver::VideoMode vm1024 = { 1024, 768 };
+    VideoMode vm800  = {  800, 600 };
+    VideoMode vm1024 = { 1024, 768 };
 
     video_modes.push_back(vm800);
     video_modes.push_back(vm1024);

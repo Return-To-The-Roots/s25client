@@ -22,6 +22,8 @@
 
 #include "ctrlButton.h"
 #include "ogl/glArchivItem_Font.h"
+#include "driver/src/MouseCoords.h"
+#include "driver/src/KeyEvent.h"
 #include <sstream>
 #include <cstdarg>
 

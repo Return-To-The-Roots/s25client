@@ -20,6 +20,7 @@
 #include "defines.h"
 #include "ctrlCheck.h"
 #include "Loader.h"
+#include "driver/src/MouseCoords.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

@@ -20,6 +20,7 @@
 #include "defines.h"
 #include "AudioDriverWrapper.h"
 #include "VideoDriverWrapper.h"
+#include "driver/src/AudioInterface.h"
 #include "Settings.h"
 #include "MusicPlayer.h"
 
@@ -40,6 +41,55 @@ AudioDriverWrapper::~AudioDriverWrapper()
 {
     PDRIVER_FREEAUDIOINSTANCE FreeAudioInstance = pto2ptf<PDRIVER_FREEAUDIOINSTANCE>(driver_wrapper.GetDLLFunction("FreeAudioInstance"));
     FreeAudioInstance(audiodriver);
+}
+
+/// Spielt Midi ab
+void AudioDriverWrapper::PlayMusic(Sound* sound, const unsigned repeats)
+{
+    if(audiodriver)
+        audiodriver->PlayMusic(sound, repeats);
+}
+
+/// Stoppt die Musik.
+void AudioDriverWrapper::StopMusic(void)
+{
+    if(audiodriver)
+        audiodriver->StopMusic();
+}
+
+/// Wird ein Sound (noch) abgespielt?
+bool AudioDriverWrapper::IsEffectPlaying(const unsigned play_id)
+{
+    if(audiodriver)
+        return audiodriver->IsEffectPlaying(play_id);
+    else
+        return false;
+}
+
+/// Verändert die Lautstärke von einem abgespielten Sound (falls er noch abgespielt wird)
+void AudioDriverWrapper::ChangeVolume(const unsigned play_id, const unsigned char volume)
+{
+    if(audiodriver)
+        audiodriver->ChangeVolume(play_id, volume);
+}
+
+void AudioDriverWrapper::SetMasterEffectVolume(unsigned char volume)
+{
+    if(audiodriver)
+        audiodriver->SetMasterEffectVolume(volume);
+}
+
+void AudioDriverWrapper::SetMasterMusicVolume(unsigned char volume)
+{
+    if(audiodriver)
+        audiodriver->SetMasterMusicVolume(volume);
+}
+
+const char* AudioDriverWrapper::GetName(void) const
+{
+    if(audiodriver)
+        return audiodriver->GetName();
+    return EMPTY_STR;
 }
 
 /// Lädt den Treiber
@@ -80,7 +130,7 @@ bool AudioDriverWrapper::LoadDriver(void)
  *
  *  @author FloSoft
  */
-Sound* AudioDriverWrapper::LoadMusic(unsigned int data_type, const unsigned char* data, unsigned int size)
+Sound* AudioDriverWrapper::LoadMusic(AudioType data_type, const unsigned char* data, unsigned int size)
 {
     if(!audiodriver)
         return NULL;
@@ -88,7 +138,7 @@ Sound* AudioDriverWrapper::LoadMusic(unsigned int data_type, const unsigned char
     return audiodriver->LoadMusic(data_type, data, size);
 }
 
-Sound* AudioDriverWrapper::LoadEffect(unsigned int data_type, const unsigned char* data, unsigned int size)
+Sound* AudioDriverWrapper::LoadEffect(AudioType data_type, const unsigned char* data, unsigned int size)
 {
     if(!audiodriver)
         return NULL;

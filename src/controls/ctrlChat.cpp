@@ -23,6 +23,7 @@
 #include "ctrlScrollBar.h"
 #include "ogl/glArchivItem_Font.h"
 #include "Log.h"
+#include "driver/src/MouseCoords.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

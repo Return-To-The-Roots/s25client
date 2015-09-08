@@ -22,7 +22,6 @@
 
 #include "drivers/AudioDriverWrapper.h"
 #include "Settings.h"
-#include "../driver/src/AudioDriver.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -47,7 +46,7 @@ unsigned int glArchivItem_Sound_Wave::Play(unsigned char volume, bool loop)
         return 0xFFFFFFFF;
 
     if(!sound)
-        sound = AUDIODRIVER.LoadEffect(AudioDriver::AD_WAVE, &data.front(), data.size());
+        sound = AUDIODRIVER.LoadEffect(AudioType::AD_WAVE, &data.front(), data.size());
 
     return AUDIODRIVER.PlayEffect(sound, volume, loop);
 }

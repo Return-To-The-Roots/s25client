@@ -84,7 +84,7 @@ bool GameManager::Start()
     // Im Vollbildmodus überprüfen, ob Video-Mode überhaupt existiert
     if(SETTINGS.video.fullscreen)
     {
-        std::vector<VideoDriver::VideoMode> available_video_modes;
+        std::vector<VideoMode> available_video_modes;
         VIDEODRIVER.ListVideoModes(available_video_modes);
 
         bool found = false;

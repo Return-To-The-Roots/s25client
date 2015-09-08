@@ -37,6 +37,7 @@
 #include "Settings.h"
 
 #include "GameServer.h"
+#include "driver/src/MouseCoords.h"
 
 GameWorldViewer::GameWorldViewer() : scroll(false), sx(0), sy(0), view(GameWorldView(MapPoint(0, 0), VIDEODRIVER.GetScreenWidth(), VIDEODRIVER.GetScreenHeight()))
 {

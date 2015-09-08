@@ -24,6 +24,7 @@
 
 #include "ctrlButton.h"
 #include "ctrlList.h"
+#include "driver/src/MouseCoords.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

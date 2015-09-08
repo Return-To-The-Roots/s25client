@@ -22,7 +22,6 @@
 
 #include "drivers/AudioDriverWrapper.h"
 #include "Settings.h"
-#include "../driver/src/AudioDriver.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -47,7 +46,7 @@ void glArchivItem_Sound_Midi::Play(const unsigned repeats)
         return;
 
     if(!sound)
-        sound = AUDIODRIVER.LoadMusic(AudioDriver::AD_MIDI, tracklist[0].getMid(true), tracklist[0].getMidLength(true));
+        sound = AUDIODRIVER.LoadMusic(AudioType::AD_MIDI, tracklist[0].getMid(true), tracklist[0].getMidLength(true));
 
     if(sound)
         AUDIODRIVER.PlayMusic(sound, repeats);
