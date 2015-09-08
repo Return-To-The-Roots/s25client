@@ -1,5 +1,5 @@
 
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6.0)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8.7)
 CMAKE_POLICY(SET CMP0003 OLD)
 
 IF(${CMAKE_MAJOR_VERSION} EQUAL 2 AND ${CMAKE_MINOR_VERSION} GREATER 7 AND ${CMAKE_PATCH_VERSION} GREATER 0)
@@ -56,6 +56,7 @@ IF (CMAKE_CROSSCOMPILING)
 	MESSAGE(STATUS "Configuring for cross-compiling to ${CMAKE_SYSTEM} on ${PLATFORM_ARCH}")
 	#Include cross-compile platform config
 	IF (EXISTS "${CMAKE_CURRENT_LIST_DIR}/cmake/c.${PLATFORM_NAME}.cmake")
+		MESSAGE(STATUS "Using cross-platform config cmake/c.${PLATFORM_NAME}.cmake")
 		INCLUDE("cmake/c.${PLATFORM_NAME}.cmake")
 	ENDIF()
 ELSE (CMAKE_CROSSCOMPILING)
@@ -68,7 +69,7 @@ INCLUDE("cmake/${PLATFORM_NAME}.cmake")
 
 ################################################################################
 
-SET(Boost_ADDITIONAL_VERSIONS "1.55 1.56 1.57 1.58")
+SET(Boost_ADDITIONAL_VERSIONS "1.55" "1.56" "1.57" "1.58" "1.59")
 
 IF (MSVC)
 	IF(NOT EXISTS "${CMAKE_SOURCE_DIR}/contrib/full-contrib-msvc2010" OR NOT IS_DIRECTORY "${CMAKE_SOURCE_DIR}/contrib/full-contrib-msvc2010")
@@ -85,9 +86,9 @@ IF(EXISTS "${CMAKE_SOURCE_DIR}/contrib/boost" AND IS_DIRECTORY "${CMAKE_SOURCE_D
 	SET(BOOST_ROOT ${CMAKE_SOURCE_DIR}/contrib/boost CACHE PATH "Path to find boost at")
 ENDIF()
 
-FIND_PACKAGE(Boost 1.55.0 REQUIRED)
+FIND_PACKAGE(Boost 1.55.0)
 IF(NOT Boost_FOUND)
-	MESSAGE(FATAL_ERROR "You have to install boost into contrib/boost or set BOOST_ROOT environment variable, since cmake was unable to find boost!")
+	MESSAGE(FATAL_ERROR "You have to install boost into contrib/boost or set BOOST_ROOT environment variable (currently: ${BOOST_ROOT}), since cmake was unable to find boost!")
 ENDIF()
 
 STRING(COMPARE LESS "${Boost_VERSION}" "105800" Boost_NEED_BACKPORT)
