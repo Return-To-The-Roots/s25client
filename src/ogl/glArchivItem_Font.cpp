@@ -423,7 +423,8 @@ unsigned short glArchivItem_Font::getWidth(const std::wstring& text, unsigned le
         // haben wir das maximum erreicht?
         if(unsigned((wm > 0 ? wm : w) + cw) > max_width)
         {
-            *max = i;
+            if(max)
+                *max = i;
             if(wm == 0)
                 wm = w;
             return wm;
@@ -460,7 +461,8 @@ unsigned short glArchivItem_Font::getWidth(const std::string& text, unsigned len
         // haben wir das maximum erreicht?
         if(unsigned((wm > 0 ? wm : w) + cw) > max_width)
         {
-            *max = i;
+            if(max)
+                *max = i;
             if(wm == 0)
                 wm = w;
             return wm;
