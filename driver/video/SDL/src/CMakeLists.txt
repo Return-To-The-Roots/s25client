@@ -12,7 +12,7 @@ IF (SDL_FOUND)
 	INCLUDE(AddFileDependencies)
 	ADD_FILE_DEPENDENCIES(${PROJECT_SOURCE_DIR}/build_version.cpp ${CMAKE_BINARY_DIR}/build_version.h)
 
-	ADD_LIBRARY(videoSDL SHARED SDL.cpp SDL.h main.h ${PROJECT_SOURCE_DIR}/build_version.cpp ${PROJECT_SOURCE_DIR}/driver/src/DriverInterface.cpp)
+	ADD_LIBRARY(videoSDL SHARED VideoSDL.cpp VideoSDL.h main.h ${PROJECT_SOURCE_DIR}/build_version.cpp ${PROJECT_SOURCE_DIR}/driver/src/DriverInterface.cpp)
 	ADD_DEPENDENCIES(videoSDL updateversion)
     IF ( NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "Windows" )
         CHECK_CXX_COMPILER_FLAG("-fPIC" FPIC_FLAGS)

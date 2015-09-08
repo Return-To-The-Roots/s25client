@@ -19,6 +19,7 @@
 // Header
 #include "main.h"
 #include "SoundSDL_Effect.h"
+#include <SDL_mixer.h>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

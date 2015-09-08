@@ -21,7 +21,7 @@ IF (SDL_FOUND)
         INCLUDE(AddFileDependencies)
         ADD_FILE_DEPENDENCIES("${PROJECT_SOURCE_DIR}/build_version.cpp" "${CMAKE_BINARY_DIR}/build_version.h")
         
-        ADD_LIBRARY(audioSDL SHARED SDL.cpp SDL.h main.h SoundSDL_Music.cpp SoundSDL_Music.h SoundSDL_Effect.cpp SoundSDL_Effect.h ${PROJECT_SOURCE_DIR}/build_version.cpp ../../../src/DriverInterface.cpp)
+        ADD_LIBRARY(audioSDL SHARED AudioSDL.cpp AudioSDL.h main.h SoundSDL_Music.cpp SoundSDL_Music.h SoundSDL_Effect.cpp SoundSDL_Effect.h ${PROJECT_SOURCE_DIR}/build_version.cpp ../../../src/DriverInterface.cpp)
         ADD_DEPENDENCIES(audioSDL updateversion)
         IF ( NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "Windows" )
             CHECK_CXX_COMPILER_FLAG("-fPIC" FPIC_FLAGS)

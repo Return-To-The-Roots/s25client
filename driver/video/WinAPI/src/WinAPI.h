@@ -20,6 +20,8 @@
 #pragma once
 
 #include <VideoDriver.h>
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
 
 /// Klasse für den WinAPI Videotreiber.
 class VideoWinAPI : public VideoDriver

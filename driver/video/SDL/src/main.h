@@ -20,18 +20,6 @@
 #pragma once
 
 ///////////////////////////////////////////////////////////////////////////////
-// System-Header
-#ifdef _WIN32
-#   define _CRTDBG_MAP_ALLOC
-#   define WINVER 0x0501
-#   define _WIN32_WINNT 0x0501
-#   include <windows.h>
-#   include <io.h>
-#else
-#   include <unistd.h>
-#   include <limits.h>
-#endif // !_WIN32
-
 #ifdef _WIN32
 #    define WIN32_LEAN_AND_MEAN
 #    ifdef _MSC_VER
@@ -42,20 +30,11 @@
 #    else
 #        include <assert.h>
 #    endif
-
 #    ifdef _DEBUG
 #        include <crtdbg.h>
 #    endif // _WIN32 && _DEBUG
 #else
 #    include <assert.h>
 #endif // !_WIN32
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-#include <algorithm>
-
-#include <SDL.h>
 
 #endif // !MAIN_H_INCLUDED

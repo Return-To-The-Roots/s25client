@@ -20,40 +20,21 @@
 #pragma once
 
 ///////////////////////////////////////////////////////////////////////////////
-// System-Header
 #ifdef _WIN32
-#   define _CRTDBG_MAP_ALLOC
-#   include <windows.h>
-#   include <io.h>
+#    define WIN32_LEAN_AND_MEAN
+#    ifdef _MSC_VER
+#        include <crtdbg.h>
+#        ifndef assert
+#            define assert _ASSERT
+#        endif
+#    else
+#        include <assert.h>
+#    endif
+#    ifdef _DEBUG
+#        include <crtdbg.h>
+#    endif // _WIN32 && _DEBUG
 #else
-#   include <unistd.h>
-#   include <limits.h>
+#    include <assert.h>
 #endif // !_WIN32
-
-#ifdef _MSC_VER
-#   define getch _getch
-#   if !defined(snprintf) && _MSC_VER < 1800
-#       define snprintf _snprintf
-#   endif
-#   ifndef assert
-#       define assert _ASSERT
-#   endif
-#else
-#   include <assert.h>
-#endif
-
-#if defined _WIN32 && defined _DEBUG
-#   include <crtdbg.h>
-#endif // _WIN32 && _DEBUG
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-
-#include <SDL.h>
-#include <SDL_mixer.h>
-
-#include <Interface.h>
 
 #endif // !MAIN_H_INCLUDED

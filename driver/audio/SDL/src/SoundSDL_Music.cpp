@@ -28,8 +28,6 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-SoundSDL_Music* SoundSDL_Music::mthis = NULL;
-
 ///////////////////////////////////////////////////////////////////////////////
 /**
  *  Konstruktor von @p SoundSDL_Music.

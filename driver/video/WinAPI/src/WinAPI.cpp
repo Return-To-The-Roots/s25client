@@ -24,8 +24,10 @@
 #include "VideoDriverLoaderInterface.h"
 #include <build_version.h>
 #include <VideoInterface.h>
+#include <GL/gl.h>
 #include <cstdlib>
 #include <cstring>
+#include <sstream>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -220,8 +222,6 @@ LPWSTR AnsiToUtf8(LPWSTR& wTarget, LPCSTR tSource, int nLength = -1)
  */
 bool VideoWinAPI::CreateScreen(unsigned short width, unsigned short height, const bool fullscreen)
 {
-    char title[512];
-
     if(!initialized)
         return false;
 
@@ -271,9 +271,10 @@ bool VideoWinAPI::CreateScreen(unsigned short width, unsigned short height, cons
 
     SetClipboardViewer(screen);
 
-    sprintf(title, "%s - v%s-%s", GetWindowTitle(), GetWindowVersion(), GetWindowRevisionShort());
+    std::stringstream title;
+    title << GetWindowTitle() << " - v" << GetWindowVersion() << "-" << GetWindowRevisionShort();
 
-    AnsiToUtf8(wTitle, title);
+    AnsiToUtf8(wTitle, title.str().c_str());
 
     SetWindowTextW(screen, wTitle);
     SetWindowTextW(GetConsoleWindow(), wTitle);

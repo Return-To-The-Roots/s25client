@@ -18,6 +18,7 @@
 #define SOUNDSDL_MUSIC_H_INCLUDED
 
 #include <Sound.h>
+#include <SDL_mixer.h>
 
 class AudioSDL;
 
@@ -33,7 +34,6 @@ class SoundSDL_Music : public Sound
 
     private:
 
-        static SoundSDL_Music* mthis;
         Mix_Music* music;  ///< Das Music-Handle.
 
 };
