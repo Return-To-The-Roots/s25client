@@ -22,12 +22,10 @@
 
 #include "SoundSDL_Effect.h"
 #include "SoundSDL_Music.h"
+#include "libutil/src/tmpFile.h"
 
+#include <fstream>
 #include <AudioInterface.h>
-
-#ifdef _MSC_VER
-    #define unlink _unlink
-#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -172,23 +170,18 @@ void AudioSDL::CleanUp(void)
  */
 Sound* AudioSDL::LoadEffect(unsigned int data_type, const unsigned char* data, unsigned long size)
 {
-    SoundSDL_Effect* sd = new SoundSDL_Effect();
-
-    char file[512];
-    if (!tempname(file, 512))
-        return(NULL);
-
-    strncat(file, ".wav", 512);
-
-    FILE* dat = fopen(file, "wb");
+    std::ofstream dat;
+    std::string filePath = createTempFile(dat, ".wav");
+    
     if (!dat)
         return(NULL);
 
-    if (fwrite(data, 1, size, dat) != size)
+    if (!dat.write(reinterpret_cast<const char*>(data), size))
         return(NULL);
 
-    fclose(dat);
+    dat.close();
 
+    Mix_Chunk* sound;
     switch(data_type)
     {
         default:
@@ -196,20 +189,21 @@ Sound* AudioSDL::LoadEffect(unsigned int data_type, const unsigned char* data, u
 
         case AudioDriver::AD_WAVE:
         {
-            sd->sound = Mix_LoadWAV(file);
+            sound = Mix_LoadWAV(filePath.c_str());
         } break;
         /// @todo Alle Formate die SDL mit LoadWAV laden kann angeben
     }
 
-    unlink(file);
+    unlinkFile(filePath);
 
-    if(sd->sound == NULL)
+    if(sound == NULL)
     {
         fprintf(stderr, "%s\n", Mix_GetError());
-        delete sd;
         return(NULL);
     }
 
+    SoundSDL_Effect* sd = new SoundSDL_Effect();
+    sd->sound = sound;
     sd->SetNr((int)sounds.size());
     sounds.push_back(sd);
 
@@ -230,12 +224,7 @@ Sound* AudioSDL::LoadEffect(unsigned int data_type, const unsigned char* data, u
  */
 Sound* AudioSDL::LoadMusic(unsigned int data_type, const unsigned char* data, unsigned long size)
 {
-    SoundSDL_Music* sd = new SoundSDL_Music;
-
-    char file[512];
-    if (!tempname(file, 512))
-        return(NULL);
-
+    std::string extension;
     switch(data_type)
     {
         default:
@@ -243,48 +232,50 @@ Sound* AudioSDL::LoadMusic(unsigned int data_type, const unsigned char* data, un
 
         case AudioDriver::AD_MIDI:
         {
-            strncat(file, ".mid", 512);
+            extension = ".mid";
         } break;
 
         case AudioDriver::AD_WAVE:
         {
-            strncat(file, ".wav", 512);
+            extension = ".wav";
         } break;
 
         case AudioDriver::AD_OTHER:
         {
             const char* header = reinterpret_cast<const char*>(data);
             if(strncmp(header, "OggS", 4) == 0)
-                strncat(file, ".ogg", 512);
+                extension = ".ogg";
             else if (strncmp(header, "ID3", 3) == 0 || ((unsigned char)header[0] == 0xFF && (unsigned char)header[1] == 0xFB) )
-                strncat(file, ".mp3", 512);
+                extension = ".mp3";
             else
-                strncat(file, ".tmp", 512);
+                extension = ".tmp";
         } break;
 
         /// @todo Alle Formate die SDL mit LoadMUS laden kann angeben
     }
 
-    FILE* dat = fopen(file, "wb");
+    std::ofstream dat;
+    std::string filePath = createTempFile(dat, extension);
     if (!dat)
         return(NULL);
 
-    if (fwrite(data, 1, size, dat) != size)
+    if (!dat.write(reinterpret_cast<const char*>(data), size))
         return(NULL);
 
-    fclose(dat);
+    dat.close();
 
-    sd->music = Mix_LoadMUS(file);
+    Mix_Music* music = Mix_LoadMUS(filePath.c_str());
 
-    unlink(file);
+    unlinkFile(filePath);
 
-    if(sd->music == NULL)
+    if(music == NULL)
     {
         fprintf(stderr, "%s\n", Mix_GetError());
-        delete sd;
         return(NULL);
     }
 
+    SoundSDL_Music* sd = new SoundSDL_Music;
+    sd->music = music;
     sd->SetNr((int)sounds.size());
     sounds.push_back(sd);
 

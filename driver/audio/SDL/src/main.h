@@ -52,12 +52,6 @@
 #include <SDL.h>
 #include <SDL_mixer.h>
 
-
-///////////////////////////////////////////////////////////////////////////////
-// Header
-#include "tempname.h"
-#include "../../../../libendian/src/main.h"
-
 #include <Interface.h>
 
 #endif // !MAIN_H_INCLUDED
