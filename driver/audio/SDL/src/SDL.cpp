@@ -24,8 +24,8 @@
 #include "SoundSDL_Music.h"
 #include "libutil/src/tmpFile.h"
 
-#include <fstream>
 #include <AudioInterface.h>
+#include <fstream>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -45,10 +45,15 @@ static AudioSDL* nthis = NULL;
  *
  *  @author FloSoft
  */
-DRIVERDLLAPI AudioDriver* CreateAudioInstance(AudioDriverLoaderInterface* adli, void* device_dependent)
+DRIVERDLLAPI IAudioDriver* CreateAudioInstance(AudioDriverLoaderInterface* adli, void* device_dependent)
 {
     nthis = new AudioSDL(adli);
     return nthis;
+}
+
+DRIVERDLLAPI void FreeAudioInstance(IAudioDriver* driver)
+{
+    delete driver;
 }
 
 DRIVERDLLAPI const char* GetDriverName(void)

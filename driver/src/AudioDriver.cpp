@@ -28,6 +28,9 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
+// Do not inline! That would break DLL compatibility: http://stackoverflow.com/questions/32444520/how-to-handle-destructors-in-dll-exported-interfaces
+IAudioDriver::~IAudioDriver(){}
+
 ///////////////////////////////////////////////////////////////////////////////
 /** @class AudioDriver
  *

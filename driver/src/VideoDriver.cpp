@@ -28,6 +28,9 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
+// Do not inline! That would break DLL compatibility: http://stackoverflow.com/questions/32444520/how-to-handle-destructors-in-dll-exported-interfaces
+IVideoDriver::~IVideoDriver(){}
+
 ///////////////////////////////////////////////////////////////////////////////
 /** @var typedef void (*VideoDriverLoaderInterface *)(unsigned int msg, void *param)
  *
@@ -99,155 +102,6 @@ VideoDriver::VideoDriver(VideoDriverLoaderInterface* CallBack) : CallBack(CallBa
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Destruktor von @p VideoDriver.
- *
- *  @author FloSoft
- */
-VideoDriver::~VideoDriver(void)
-{
-}
-
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Funktion zum Auslesen des Treibernamens.
- *
- *  @return liefert den Treibernamen zurück
- *
- *  @author FloSoft
- */
-const char* VideoDriver::GetName(void) const
-{
-    return NULL;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Treiberinitialisierungsfunktion.
- *
- *  @return @p true bei Erfolg, @p false bei Fehler
- *
- *  @author FloSoft
- */
-bool VideoDriver::Initialize(void)
-{
-    return false;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Treiberaufräumfunktion.
- *
- *  @author FloSoft
- */
-void VideoDriver::CleanUp(void)
-{
-}
-
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Erstellt das Fenster mit entsprechenden Werten.
- *
- *  @param[in] width      Breite des Fensters
- *  @param[in] height     Höhe des Fensters
- *  @param[in] fullscreen Vollbildmodus ja oder nein
- *
- *  @return @p true bei Erfolg, @p false bei Fehler
- *
- *  @author FloSoft
- */
-bool VideoDriver::CreateScreen(unsigned short width, unsigned short height, const bool fullscreen)
-{
-    return false;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Erstellt oder verändert das Fenster mit entsprechenden Werten.
- *
- *  @param[in] width      Breite des Fensters
- *  @param[in] height     Höhe des Fensters
- *  @param[in] fullscreen Vollbildmodus ja oder nein
- *
- *  @return @p true bei Erfolg, @p false bei Fehler
- *
- *  @author FloSoft
- */
-bool VideoDriver::ResizeScreen(unsigned short width, unsigned short height, const bool fullscreen)
-{
-    return false;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Schliesst das Fenster.
- *
- *  @author FloSoft
- */
-void VideoDriver::DestroyScreen(void)
-{
-}
-
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Wechselt die OpenGL-Puffer.
- *
- *  @return @p true bei Erfolg, @p false bei Fehler
- *
- *  @author FloSoft
- */
-bool VideoDriver::SwapBuffers(void)
-{
-    return false;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Die Nachrichtenschleife.
- *
- *  @return @p true bei Erfolg, @p false bei Fehler
- *
- *  @author FloSoft
- */
-bool VideoDriver::MessageLoop(void)
-{
-    return false;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Funktion zum Auslesen des TickCounts.
- *
- *  @return liefert den TickCount
- *
- *  @author FloSoft
- */
-unsigned long VideoDriver::GetTickCount(void) const
-{
-    return 0;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Funktion zum Holen einer Subfunktion.
- *
- *  @param[in] function Name der Funktion welche geholt werden soll.
- *
- *  @return Adresse der Funktion bei Erfolg, @p NULL bei Fehler
- *
- *  @author FloSoft
- */
-void* VideoDriver::GetFunction(const char* function) const
-{
-    return NULL;
-}
-
-/// Listet verfügbare Videomodi auf
-void VideoDriver::ListVideoModes(std::vector<VideoMode>& video_modes) const
-{
-}
-
-///////////////////////////////////////////////////////////////////////////////
-/**
  *  Funktion zum Auslesen der Mauskoordinaten.
  *
  *  @param[out] x X-Koordinate
@@ -259,19 +113,6 @@ void VideoDriver::GetMousePos(int& x, int& y) const
 {
     x = mouse_xy.x;
     y = mouse_xy.y;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Funktion zum Setzen der Mauskoordinaten.
- *
- *  @param[in] x X-Koordinate
- *  @param[in] y Y-Koordinate
- *
- *  @author FloSoft
- */
-void VideoDriver::SetMousePos(int x, int y)
-{
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -289,18 +130,6 @@ int VideoDriver::GetMousePosX() const
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Funktion zum Setzen der X-Koordinate der Maus.
- *
- *  @param[in] x X-Koordinate
- *
- *  @author FloSoft
- */
-void VideoDriver::SetMousePosX(int x)
-{
-}
-
-///////////////////////////////////////////////////////////////////////////////
-/**
  *  Funktion zum Auslesen der Y-Koordinate der Maus.
  *
  *  @return liefert die Y-Koordinate
@@ -310,18 +139,6 @@ void VideoDriver::SetMousePosX(int x)
 int VideoDriver::GetMousePosY() const
 {
     return mouse_xy.y;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Funktion zum Setzen der Y-Koordinate der Maus.
- *
- *  @param[in] y Y-Koordinate
- *
- *  @author FloSoft
- */
-void VideoDriver::SetMousePosY(int y)
-{
 }
 
 ///////////////////////////////////////////////////////////////////////////////

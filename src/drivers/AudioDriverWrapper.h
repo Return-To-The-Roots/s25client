@@ -75,7 +75,7 @@ class AudioDriverWrapper : public Singleton<AudioDriverWrapper>, public AudioDri
     private:
 
         DriverWrapper driver_wrapper;
-        AudioDriver* audiodriver;
+        IAudioDriver* audiodriver;
 };
 
 #define AUDIODRIVER AudioDriverWrapper::inst()

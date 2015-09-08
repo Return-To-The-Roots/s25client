@@ -26,7 +26,6 @@
 #ifdef _WIN32
 #   if defined _USRDLL || defined _LIB || defined BUILD_DLL
 #       define DRIVERDLLAPI extern "C" __declspec(dllexport)
-#       define class        class __declspec(dllexport)
 #   else
 #       define DRIVERDLLAPI extern "C" __declspec(dllimport)
 #   endif // !_USRDLL
@@ -35,9 +34,11 @@
 #endif // !_WIN32
 
 /// Instanzierungsfunktion der Treiber.
-DRIVERDLLAPI AudioDriver* CreateAudioInstance(AudioDriverLoaderInterface* CallBack, void* device_dependent);
+DRIVERDLLAPI IAudioDriver* CreateAudioInstance(AudioDriverLoaderInterface* CallBack, void* device_dependent);
+DRIVERDLLAPI void FreeAudioInstance(IAudioDriver* driver);
 
 ///
-typedef AudioDriver* (*PDRIVER_CREATEAUDIOINSTANCE)(AudioDriverLoaderInterface*, void* );
+typedef IAudioDriver* (*PDRIVER_CREATEAUDIOINSTANCE)(AudioDriverLoaderInterface*, void* );
+typedef void (*PDRIVER_FREEAUDIOINSTANCE)(IAudioDriver*);
 
 #endif // !AUDIOINTERFACE_H_INCLUDED

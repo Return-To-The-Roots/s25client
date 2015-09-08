@@ -27,7 +27,6 @@
 #ifdef _WIN32
 #   if defined _USRDLL || defined _LIB || defined BUILD_DLL
 #       define DRIVERDLLAPI extern "C" __declspec(dllexport)
-#       define class        class __declspec(dllexport)
 #   else
 #       define DRIVERDLLAPI extern "C" __declspec(dllimport)
 #   endif // !_USRDLL
@@ -36,9 +35,12 @@
 #endif // !_WIN32
 
 /// Instanzierungsfunktion der Treiber.
-DRIVERDLLAPI VideoDriver* CreateVideoInstance(VideoDriverLoaderInterface* CallBack);
+DRIVERDLLAPI IVideoDriver* CreateVideoInstance(VideoDriverLoaderInterface* CallBack);
+DRIVERDLLAPI void FreeVideoInstance(IVideoDriver* driver);
 
 ///
-typedef VideoDriver* (*PDRIVER_CREATEVIDEOINSTANCE)(VideoDriverLoaderInterface*);
+typedef IVideoDriver* (*PDRIVER_CREATEVIDEOINSTANCE)(VideoDriverLoaderInterface*);
+typedef void (*PDRIVER_FREEVIDEOINSTANCE)(IVideoDriver*);
+
 
 #endif // !VIDEOINTERFACE_H_INCLUDED

@@ -61,6 +61,8 @@ VideoDriverWrapper::VideoDriverWrapper() :  videodriver(NULL), texture_pos(0), t
 VideoDriverWrapper::~VideoDriverWrapper()
 {
     CleanUp();
+    PDRIVER_FREEVIDEOINSTANCE FreeVideoInstance = pto2ptf<PDRIVER_FREEVIDEOINSTANCE>(driver_wrapper.GetDLLFunction("FreeVideoInstance"));
+    FreeVideoInstance(videodriver);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -85,12 +87,11 @@ bool VideoDriverWrapper::LoadDriver(void)
     if(!driver_wrapper.Load(DriverWrapper::DT_VIDEO, SETTINGS.driver.video))
         return false;
 
-    PDRIVER_CREATEVIDEOINSTANCE CreateVideoInstance;
-
-    CreateVideoInstance = pto2ptf<PDRIVER_CREATEVIDEOINSTANCE>(driver_wrapper.GetDLLFunction("CreateVideoInstance"));
+    PDRIVER_CREATEVIDEOINSTANCE CreateVideoInstance = pto2ptf<PDRIVER_CREATEVIDEOINSTANCE>(driver_wrapper.GetDLLFunction("CreateVideoInstance"));
 
     // Instanz erzeugen
-    if(!(videodriver = CreateVideoInstance(&WINDOWMANAGER)))
+    videodriver = CreateVideoInstance(&WINDOWMANAGER);
+    if(!videodriver)
         return false;
 
     if(!videodriver->Initialize())

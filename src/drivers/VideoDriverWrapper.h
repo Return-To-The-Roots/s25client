@@ -103,7 +103,7 @@ class VideoDriverWrapper : public Singleton<VideoDriverWrapper>
     private:
 
         DriverWrapper driver_wrapper;
-        VideoDriver* videodriver;
+        IVideoDriver* videodriver;
 
         unsigned int texture_list[100000];
         unsigned int texture_pos;

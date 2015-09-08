@@ -19,7 +19,6 @@
 // Header
 #include "defines.h"
 #include "AudioDriverWrapper.h"
-
 #include "VideoDriverWrapper.h"
 #include "Settings.h"
 #include "MusicPlayer.h"
@@ -39,7 +38,8 @@ AudioDriverWrapper::AudioDriverWrapper() : audiodriver(0)
 
 AudioDriverWrapper::~AudioDriverWrapper()
 {
-    delete audiodriver;
+    PDRIVER_FREEAUDIOINSTANCE FreeAudioInstance = pto2ptf<PDRIVER_FREEAUDIOINSTANCE>(driver_wrapper.GetDLLFunction("FreeAudioInstance"));
+    FreeAudioInstance(audiodriver);
 }
 
 /// Lädt den Treiber
@@ -52,7 +52,8 @@ bool AudioDriverWrapper::LoadDriver(void)
     PDRIVER_CREATEAUDIOINSTANCE CreateAudioInstance = pto2ptf<PDRIVER_CREATEAUDIOINSTANCE>(driver_wrapper.GetDLLFunction("CreateAudioInstance"));
 
     // Instanz erzeugen
-    if(!(audiodriver = CreateAudioInstance(this, VIDEODRIVER.GetMapPointer())))
+    audiodriver = CreateAudioInstance(this, VIDEODRIVER.GetMapPointer());
+    if(!audiodriver)
         return false;
 
     if(!audiodriver->Initialize())

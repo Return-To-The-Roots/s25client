@@ -44,9 +44,14 @@ static char THIS_FILE[] = __FILE__;
  *
  *  @author FloSoft
  */
-DRIVERDLLAPI VideoDriver* CreateVideoInstance(VideoDriverLoaderInterface* CallBack)
+DRIVERDLLAPI IVideoDriver* CreateVideoInstance(VideoDriverLoaderInterface* CallBack)
 {
     return new VideoWinAPI(CallBack);
+}
+
+DRIVERDLLAPI void FreeVideoInstance(IVideoDriver* driver)
+{
+    delete driver;
 }
 
 DRIVERDLLAPI const char* GetDriverName(void)
