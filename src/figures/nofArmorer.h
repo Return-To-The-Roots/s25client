@@ -42,7 +42,7 @@ class nofArmorer : public nofWorkman
 
         nofArmorer(const MapPoint pt, const unsigned char player, nobUsual* workplace);
         nofArmorer(SerializedGameData* sgd, const unsigned obj_id);
-		void TryToWork();
+		virtual void TryToWork();
 
         /// Serialisierungsfunktionen
     protected:  void Serialize_nofArmorer(SerializedGameData* sgd) const;

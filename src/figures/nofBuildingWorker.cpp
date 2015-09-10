@@ -159,10 +159,7 @@ void nofBuildingWorker::Walked()
             else
             {
                 // Anfangen zu Arbeiten
-				if(job!=JOB_ARMORER)
-					TryToWork();
-				else
-					dynamic_cast<nofArmorer*>(this)->TryToWork();
+			    TryToWork();
             }
 
         } break;
@@ -236,7 +233,6 @@ void nofBuildingWorker::TryToWork()
         state = STATE_WAITING1;
         current_ev = em->AddEvent(this, (GetGOT() == GOT_NOF_CATAPULTMAN) ? CATAPULT_WAIT1_LENGTH : JOB_CONSTS[job].wait1_length, 1);
         StopNotWorking();
-
     }
     else
     {
@@ -254,10 +250,7 @@ void nofBuildingWorker::GotWareOrProductionAllowed()
     if(state == STATE_WAITINGFORWARES_OR_PRODUCTIONSTOPPED)
     {
         // anfangen zu arbeiten
-		if(job!=JOB_ARMORER)
-			TryToWork();
-		else
-			dynamic_cast<nofArmorer*>(this)->TryToWork();
+		TryToWork();
     }
 }
 

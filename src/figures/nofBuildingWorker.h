@@ -81,7 +81,7 @@ class nofBuildingWorker : public noFigure
         /// wenn man beim Arbeitsplatz "kündigen" soll, man das Laufen zum Ziel unterbrechen muss (warum auch immer)
         void AbrogateWorkplace();
         // Fängt das "Warten-vor-dem-Arbeiten" an, falls Rohstoffe zum Arbeiten vorhanden sind, ansonsten Warten auf Rohstoffe
-        void TryToWork();
+        virtual void TryToWork();
 
     private:
 
