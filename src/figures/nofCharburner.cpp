@@ -281,3 +281,8 @@ void nofCharburner::DrawOtherStates(const int x, const int y)
     }
 }
 
+bool nofCharburner::AreWaresAvailable(){
+    // Charburner doesn't need wares for harvesting!
+    // -> Wares are considered when calling GetPointQuality!
+    return true;
+}

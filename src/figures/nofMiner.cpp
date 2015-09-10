@@ -92,3 +92,9 @@ GoodType nofMiner::ProduceWare()
         default: return GD_STONES;
     }
 }
+
+bool nofMiner::AreWaresAvailable()
+{
+    return nofWorkman::AreWaresAvailable() &&
+        GetResources(workplace->GetBuildingType() - BLD_GRANITEMINE);
+}

@@ -43,8 +43,14 @@ nofMetalworker::nofMetalworker(const MapPoint pos, const unsigned char player, n
 {
 }
 
-nofMetalworker::nofMetalworker(SerializedGameData* sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id)
+nofMetalworker::nofMetalworker(SerializedGameData* sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id), nextProducedTool(GoodType(sgd->PopUnsignedChar()))
 {
+}
+
+void nofMetalworker::Serialize(SerializedGameData* sgd) const
+{
+    nofWorkman::Serialize(sgd);
+    sgd->PushUnsignedChar(nextProducedTool);
 }
 
 
@@ -92,7 +98,7 @@ unsigned short nofMetalworker::GetCarryID() const
 }
 
 /// Zuordnungen Werkzeugeinstellungs-ID - Richtige IDs
-const GoodType TOOLS_SETTINGS_IDS[12] =
+const GoodType TOOLS_SETTINGS_IDS[TOOL_COUNT] =
 {
     GD_TONGS,       // Zange
     GD_AXE,         // Axt,
@@ -116,36 +122,38 @@ unsigned nofMetalworker::ToolsOrderedTotal() const
     return sum;
 }
 
-GoodType nofMetalworker::ProduceWare()
+GoodType nofMetalworker::GetOrderedTool()
 {
     // qx:tools
+    int prio = -1;
+    int tool = -1;
+
+    for (unsigned i = 0; i < TOOL_COUNT; ++i)
     {
-        int prio = -1;
-        int tool = -1;
-        
-        for (unsigned i = 0; i < TOOL_COUNT; ++i)
+        if (gwg->GetPlayer(player)->tools_ordered[i] > 0 && (gwg->GetPlayer(player)->tools_settings[i] > prio) )
         {
-            if (gwg->GetPlayer(player)->tools_ordered[i] > 0 && (gwg->GetPlayer(player)->tools_settings[i] > prio) )
-            {
-                prio = gwg->GetPlayer(player)->tools_settings[i];
-                tool = i;
-            }
-        }
-        
-        if (tool != -1)
-        {
-            --gwg->GetPlayer(player)->tools_ordered[tool];
-            
-            if ( (player == GAMECLIENT.GetPlayerID()) && (ToolsOrderedTotal() == 0) )
-            {
-                GAMECLIENT.SendPostMessage( new PostMsg( _("Completed the ordered amount of tools."), PMC_GENERAL ) );
-            }
-            
-            iwTools::UpdateOrders();
-            return TOOLS_SETTINGS_IDS[tool];
+            prio = gwg->GetPlayer(player)->tools_settings[i];
+            tool = i;
         }
     }
 
+    if (tool != -1)
+    {
+        --gwg->GetPlayer(player)->tools_ordered[tool];
+
+        if ( (player == GAMECLIENT.GetPlayerID()) && (ToolsOrderedTotal() == 0) )
+        {
+            GAMECLIENT.SendPostMessage( new PostMsg( _("Completed the ordered amount of tools."), PMC_GENERAL ) );
+        }
+
+        iwTools::UpdateOrders();
+        return TOOLS_SETTINGS_IDS[tool];
+    }
+    return GD_NOTHING;
+}
+
+GoodType nofMetalworker::GetRandomTool()
+{
     // Je nach Werkzeugeinstellungen zufällig ein Werkzeug produzieren, je größer der Balken,
     // desto höher jeweils die Wahrscheinlichkeit
     unsigned short all_size = 0;
@@ -165,7 +173,7 @@ GoodType nofMetalworker::ProduceWare()
 
     // Ansonsten Array mit den Werkzeugtypen erstellen und davon dann eins zufällig zurückliefern, je höher Wahr-
     // scheinlichkeit (Balken), desto öfter im Array enthalten
-    unsigned char* random_array = new unsigned char[all_size];
+    std::vector<unsigned char> random_array(all_size);
     unsigned pos = 0;
 
     for(unsigned int i = 0; i < TOOL_COUNT; ++i)
@@ -176,8 +184,19 @@ GoodType nofMetalworker::ProduceWare()
 
     GoodType tool = TOOLS_SETTINGS_IDS[random_array[RANDOM.Rand(__FILE__, __LINE__, obj_id, all_size)]];
 
-    delete [] random_array;
-
     return tool;
+}
 
+bool nofMetalworker::ReadyForWork()
+{
+    nextProducedTool = GetOrderedTool();
+    if(nextProducedTool == GD_NOTHING)
+        nextProducedTool = GetRandomTool();
+
+    return nextProducedTool != GD_NOTHING;
+}
+
+GoodType nofMetalworker::ProduceWare()
+{
+    return nextProducedTool;
 }

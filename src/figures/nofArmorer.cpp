@@ -127,28 +127,9 @@ void nofArmorer::HandleDerivedEvent(const unsigned int id)
 	}
 }
 
-void nofArmorer::TryToWork()
+bool nofArmorer::AreWaresAvailable()
 {
-    // Wurde die Produktion eingestellt?
-    if(workplace->IsProductionDisabled())
-    {
-        state = STATE_WAITINGFORWARES_OR_PRODUCTIONSTOPPED;
-        // Nun arbeite ich nich mehr
-        StartNotWorking();
-    }
-    else if ( workplace->WaresAvailable() || (GAMECLIENT.GetGGS().isEnabled(ADDON_HALF_COST_MIL_EQUIP) && sword_shield )) 
-    {
-        state = STATE_WAITING1;
-        current_ev = em->AddEvent(this, JOB_CONSTS[job].wait1_length, 1);
-        StopNotWorking();
-
-    }
-    else
-    {
-        state = STATE_WAITINGFORWARES_OR_PRODUCTIONSTOPPED;
-        // Nun arbeite ich nich mehr
-        StartNotWorking();
-    }
+    return workplace->WaresAvailable() || (GAMECLIENT.GetGGS().isEnabled(ADDON_HALF_COST_MIL_EQUIP) && sword_shield );
 }
 
 GoodType nofArmorer::ProduceWare()

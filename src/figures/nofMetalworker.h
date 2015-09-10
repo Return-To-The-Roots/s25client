@@ -25,19 +25,28 @@ class nobUsualBuilding;
 /// Klasse für den Schreiner
 class nofMetalworker : public nofWorkman
 {
+    GoodType nextProducedTool;
+    protected:
         /// Zeichnet ihn beim Arbeiten
         void DrawWorking(int x, int y);
         /// Gibt die ID in JOBS.BOB zurück, wenn der Beruf Waren rausträgt (bzw rein)
         unsigned short GetCarryID() const;
         /// Der Arbeiter erzeugt eine Ware
         GoodType ProduceWare();
+        /// Returns the next tool to be produced according to the orders
+        GoodType GetOrderedTool();
+        /// Returns a random tool according to the priorities
+        GoodType GetRandomTool();
         
         unsigned ToolsOrderedTotal() const;
+
+        bool ReadyForWork() override;
 
     public:
 
         nofMetalworker(const MapPoint pt, const unsigned char player, nobUsual* workplace);
         nofMetalworker(SerializedGameData* sgd, const unsigned obj_id);
+        void Serialize(SerializedGameData* sgd) const;
 
         GO_Type GetGOT() const { return GOT_NOF_METALWORKER; }
 };

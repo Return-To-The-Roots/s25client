@@ -30,7 +30,7 @@ class nofArmorer : public nofWorkman
         /// Bestimmt, was der Schmied als nächstes schmieden soll (immer Schwert-Schild im Wechsel)
         bool sword_shield;
 
-    private:
+    protected:
         void DrawWorking(int x, int y);
         /// Gibt die ID in JOBS.BOB zurück, wenn der Beruf Waren rausträgt (bzw rein)
         unsigned short GetCarryID() const;
@@ -38,11 +38,12 @@ class nofArmorer : public nofWorkman
         GoodType ProduceWare();
 		void HandleDerivedEvent(const unsigned int id);
 
+        bool AreWaresAvailable() override;
+
     public:
 
         nofArmorer(const MapPoint pt, const unsigned char player, nobUsual* workplace);
         nofArmorer(SerializedGameData* sgd, const unsigned obj_id);
-		virtual void TryToWork();
 
         /// Serialisierungsfunktionen
     protected:  void Serialize_nofArmorer(SerializedGameData* sgd) const;
