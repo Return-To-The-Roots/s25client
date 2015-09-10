@@ -189,28 +189,15 @@ ENDIF ("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
 FORCE_ADD_FLAGS(CMAKE_C_FLAGS -I${CMAKE_BINARY_DIR})
 FORCE_ADD_FLAGS(CMAKE_CXX_FLAGS -I${CMAKE_BINARY_DIR})
 
-CHECK_CXX_SOURCE_COMPILES("
-  constexpr int foo()
-  { return 0; }
-
-  template<int v>
-  struct A
-  {
-    static const int value = v;
-  };
-
-  int main(void)
-  {
-    return A<foo()>::value;
-  }
-" HAVE_CONSTEXPR
-)
-
-IF (${HAVE_CONSTEXPR})
+INCLUDE(CMakeDetectCxxFeatures)
+IF (${CXX_HAVE_CONSTEXPR})
 	ADD_DEFINITIONS(-DCONSTEXPR=constexpr)
-ELSE (${HAVE_CONSTEXPR})
+ELSE()
 	ADD_DEFINITIONS(-DCONSTEXPR=const)
-ENDIF (${HAVE_CONSTEXPR})
+ENDIF()
+IF (NOT ${CXX_HAVE_OVERRIDE})
+	ADD_DEFINITIONS(-Doverride=)
+ENDIF()
 
 
 ################################################################################
