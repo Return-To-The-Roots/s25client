@@ -148,3 +148,9 @@ GoodType nofWellguy::ProduceWare()
 {
     return GD_WATER;
 }
+
+bool nofWellguy::AreWaresAvailable()
+{
+    // Check for water
+    return GetResources(4);
+}

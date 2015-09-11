@@ -54,6 +54,9 @@ class nofCharburner : public nofFarmhand
         /// (overriding standard method of nofFarmhand)
         void DrawOtherStates(const int x, const int y);
 
+    protected:
+        bool AreWaresAvailable() override;
+
     public:
 
         nofCharburner(const MapPoint pt, const unsigned char player, nobUsual* workplace);

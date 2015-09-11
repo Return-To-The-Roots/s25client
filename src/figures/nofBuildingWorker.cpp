@@ -220,19 +220,14 @@ void nofBuildingWorker::TryToWork()
         StartNotWorking();
     }
     // Falls man auf Waren wartet, kann man dann anfangen zu arbeiten
-    // (bei Bergwerken müssen zusätzlich noch Rohstoffvorkommen vorhanden sein!)
-    // (bei Brunnen muss ebenfalls auf Wasser geprüft werden!)
-    // Spähturm-Erkunder arbeiten nie!
-    // Charburner doesn't need wares for harvesting!
-    // -> Wares are considered when calling GetPointQuality!
-    else if( (workplace->WaresAvailable() || job == JOB_CHARBURNER) &&
-             (job != JOB_MINER || GetResources(workplace->GetBuildingType() - BLD_GRANITEMINE)) &&
-             (job != JOB_HELPER || GetResources(4)) &&
-             job != JOB_SCOUT)
+    else if(AreWaresAvailable())
     {
-        state = STATE_WAITING1;
-        current_ev = em->AddEvent(this, (GetGOT() == GOT_NOF_CATAPULTMAN) ? CATAPULT_WAIT1_LENGTH : JOB_CONSTS[job].wait1_length, 1);
-        StopNotWorking();
+        if(ReadyForWork())
+        {
+            state = STATE_WAITING1;
+            current_ev = em->AddEvent(this, (GetGOT() == GOT_NOF_CATAPULTMAN) ? CATAPULT_WAIT1_LENGTH : JOB_CONSTS[job].wait1_length, 1);
+            StopNotWorking();
+        }
     }
     else
     {
@@ -242,7 +237,15 @@ void nofBuildingWorker::TryToWork()
     }
 }
 
+bool nofBuildingWorker::AreWaresAvailable()
+{
+    return workplace->WaresAvailable();
+}
 
+bool nofBuildingWorker::ReadyForWork()
+{
+    return true;
+}
 
 void nofBuildingWorker::GotWareOrProductionAllowed()
 {

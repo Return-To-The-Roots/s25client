@@ -25,6 +25,7 @@ class nobUsualBuilding;
 /// Klasse für den Schreiner
 class nofWellguy : public nofWorkman
 {
+    protected:
         /// Zeichnet ihn beim Arbeiten
         void DrawWorking(int x, int y);
         /// Gibt die ID in JOBS.BOB zurück, wenn der Beruf Waren rausträgt (bzw rein)
@@ -32,6 +33,8 @@ class nofWellguy : public nofWorkman
         unsigned short GetCarryID() const { return 111; }
         /// Der Arbeiter erzeugt eine Ware
         GoodType ProduceWare();
+
+        bool AreWaresAvailable() override;
 
     public:
 

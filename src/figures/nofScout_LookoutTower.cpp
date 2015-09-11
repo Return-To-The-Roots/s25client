@@ -81,3 +81,9 @@ void nofScout_LookoutTower::WorkplaceReached()
                                                _("Lookout-tower occupied"), PMC_MILITARY, pos, workplace->GetBuildingType(), workplace->GetNation()));
 
 }
+
+bool nofScout_LookoutTower::AreWaresAvailable()
+{
+    // Spähturm-Erkunder arbeiten nie!
+    return false;
+}

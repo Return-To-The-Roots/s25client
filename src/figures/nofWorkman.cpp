@@ -123,9 +123,6 @@ void nofWorkman::HandleStateWork()
     }
 }
 
-
-
-
 void nofWorkman::WalkedDerived()
 {
 }

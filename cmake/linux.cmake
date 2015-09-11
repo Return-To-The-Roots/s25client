@@ -1,3 +1,5 @@
+SET(Boost_USE_STATIC_LIBS TRUE)
+
 #Check for ccache
 find_program(CCACHE_FOUND ccache)
 MARK_AS_ADVANCED(CCACHE_FOUND)
