@@ -48,7 +48,7 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-dskEndStatistics::dskEndStatistics(EndStatisticData *data) : Desktop(LOADER.GetImageN("setup013", 0)), data(data)
+dskEndStatistics::dskEndStatistics(EndStatisticData *data) : Desktop(LOADER.GetImageN("setup013", 0)), _info_shown(false), data(data)
 {
     assert(data != 0 && "no valid EndStatisticData supplied");
     
@@ -61,6 +61,9 @@ dskEndStatistics::dskEndStatistics(EndStatisticData *data) : Desktop(LOADER.GetI
     data->RemoveUnusedPlayerSlotsFromData();
 
     ShowOverview();
+
+    // Temporary info 
+
 }
 
 dskEndStatistics::~dskEndStatistics()
@@ -128,8 +131,20 @@ void dskEndStatistics::ShowCategory(EndStatisticData::CategoryIndex cat)
 }
 
 
+void dskEndStatistics::Msg_PaintAfter()
+{
+    if (!_info_shown)
+    {
+        WINDOWMANAGER.Show(new iwMsgbox(_("New Feature!"), _("Currently, the data is not saved in a savegame, so the results only valid since the last loading of the game. This will be fixed in the future. Feel free to give feedback in the RTTR forum or via GitHub."), 
+                                                         this, MSB_OK, MSB_EXCLAMATIONGREEN, 1));
+        _info_shown = true;
+    }
+}
+
 void dskEndStatistics::Msg_StatisticGroupChange(const unsigned int ctrl_id, const unsigned short selection)
 {
+
+
     DeleteCtrl(2);
     ShowCategory(EndStatisticData::CategoryIndex(selection - 1));
 }

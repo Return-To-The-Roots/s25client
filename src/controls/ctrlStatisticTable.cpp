@@ -96,7 +96,7 @@ void ctrlStatisticTable::Resize_(unsigned short width, unsigned short height)
 
 void ctrlStatisticTable::AddPlayerInfos(const std::vector<EndStatisticData::PlayerInfo> &player_infos)
 {
-    assert(player_names.size() == _max_num_rows);
+    assert(player_infos.size() == _max_num_rows);
 
     _players = player_infos;
 
@@ -197,6 +197,16 @@ bool ctrlStatisticTable::Msg_LeftDown(const MouseCoords& mc)
 
 bool ctrlStatisticTable::Msg_MouseMove(const MouseCoords& mc)
 {
+    //for (
+    //if(Coll(mc.x, mc.y, GetX(), GetY(), width, height))
+    //{
+    //    WINDOWMANAGER.SetToolTip(this, tooltip);
+    //}
+    //else
+    //{
+    //    WINDOWMANAGER.SetToolTip(this, "");
+    //}
+
     // ButtonMessages weiterleiten
     return RelayMouseMessage(&Window::Msg_MouseMove, mc);
 }
@@ -205,3 +215,4 @@ bool ctrlStatisticTable::Msg_LeftUp(const MouseCoords& mc)
 {
     return RelayMouseMessage(&Window::Msg_LeftUp, mc);
 }
+

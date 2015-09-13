@@ -31,6 +31,11 @@ public:
     dskEndStatistics(EndStatisticData *data);
     ~dskEndStatistics();
 
+    // Remove these after finalizing
+    virtual void Msg_PaintAfter();
+    bool _info_shown;
+
+
 private:
 
     void ShowOverview();
