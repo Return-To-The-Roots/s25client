@@ -29,6 +29,7 @@
 #include "SoundManager.h"
 
 #include "ingameWindows/iwTools.h"
+#include "Log.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -45,6 +46,12 @@ nofMetalworker::nofMetalworker(const MapPoint pos, const unsigned char player, n
 
 nofMetalworker::nofMetalworker(SerializedGameData* sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id), nextProducedTool(GoodType(sgd->PopUnsignedChar()))
 {
+    if(state == STATE_ENTERBUILDING && current_ev == NULL && ware == GD_NOTHING && nextProducedTool == GD_NOTHING)
+    {
+        LOG.lprintf("Found invalid metalworker. Assuming corrupted savegame -> Trying to fix this. If you encounter this with a new game, report this!");
+        state = STATE_WAITINGFORWARES_OR_PRODUCTIONSTOPPED;
+        current_ev = em->AddEvent(this, 1000, 2);
+    }
 }
 
 void nofMetalworker::Serialize(SerializedGameData* sgd) const
@@ -193,10 +200,27 @@ bool nofMetalworker::ReadyForWork()
     if(nextProducedTool == GD_NOTHING)
         nextProducedTool = GetRandomTool();
 
-    return nextProducedTool != GD_NOTHING;
+    if(nextProducedTool != GD_NOTHING)
+        return true;
+
+    // Try again in some time (3000GF ~= 2min at 40ms/GF)
+    current_ev = em->AddEvent(this, 3000, 2);
+    return false;
 }
 
 GoodType nofMetalworker::ProduceWare()
 {
     return nextProducedTool;
+}
+
+void nofMetalworker::HandleDerivedEvent(const unsigned int id)
+{
+    if(id != 2)
+    {
+        nofWorkman::HandleDerivedEvent(id);
+        return;
+    }
+    assert(state == STATE_WAITINGFORWARES_OR_PRODUCTIONSTOPPED);
+    current_ev = NULL;
+    TryToWork();
 }

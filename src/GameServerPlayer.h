@@ -41,7 +41,7 @@ class GameServerPlayer : public GamePlayerInfo
 
         void doPing();
         void doTimeout();
-        void reserve(Socket* sock, unsigned char id);
+        void reserve(Socket sock, unsigned char id);
         void clear();
 
         /// Tauscht Spieler

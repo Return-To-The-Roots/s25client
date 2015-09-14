@@ -455,7 +455,7 @@ void GameServer::Run(void)
         //unsigned char count = 0;
 
         // maximal 10 Pakete verschicken
-        player->send_queue.send(&player->so, 10);
+        player->send_queue.send(player->so, 10);
 
         // recv-queue abarbeiten
         while(player->recv_queue.count() > 0)
@@ -863,7 +863,7 @@ void GameServer::KickPlayer(NS_PlayerKicked npk)
     GameServerPlayer* player = &players[npk.playerid];
 
     // send-queue flushen
-    player->send_queue.flush(&player->so);
+    player->send_queue.flush(player->so);
 
     // töten, falls außerhalb
     if(status == SS_GAME)
@@ -1057,12 +1057,12 @@ void GameServer::ClientWatchDog()
                                         async_player1 = client;
                                         async_player1_done = false;
                                         player->send_queue.push(new GameMessage_GetAsyncLog(client));
-                                        player->send_queue.flush(&player->so);
+                                        player->send_queue.flush(player->so);
 
                                         async_player2 = firstHumanPlayer->getPlayerID();
                                         async_player2_done = false;
                                         firstHumanPlayer->send_queue.push(new GameMessage_GetAsyncLog(firstHumanPlayer->getPlayerID()));
-                                        firstHumanPlayer->send_queue.flush(&firstHumanPlayer->so);
+                                        firstHumanPlayer->send_queue.flush(firstHumanPlayer->so);
                                     }
 
                                     // Async-Meldung rausgeben.
@@ -1156,20 +1156,20 @@ void GameServer::WaitForClients(void)
     {
         if(set.InSet(serversocket))
         {
-            Socket socket;
-            unsigned char playerid = 0xFF;
+            Socket socket = serversocket.Accept();
 
             // Verbindung annehmen
-            if(!serversocket.Accept(socket))
+            if(!socket.isValid())
                 return;
 
+            unsigned char playerid = 0xFF;
             // Geeigneten Platz suchen
             for(unsigned int client = 0; client < serverconfig.playercount; ++client)
             {
                 if(players[client].ps == PS_FREE)
                 {
                     // platz reservieren
-                    players[client].reserve(&socket, client);
+                    players[client].reserve(socket, client);
                     playerid = client;
                     //LOG.lprintf("new socket, about to tell him about his playerid: %i \n",playerid);
                     // schleife beenden
@@ -1178,7 +1178,7 @@ void GameServer::WaitForClients(void)
             }
 
             GameMessage_Player_Id msg(playerid);
-            msg.send(&socket);
+            msg.send(socket);
 
             // war kein platz mehr frei, wenn ja dann verbindung trennen?
             if(playerid == 0xFF)
@@ -1218,7 +1218,7 @@ void GameServer::FillPlayerQueues(void)
                 if( players[client].isValid() && set.InSet(players[client].so) )
                 {
                     // nachricht empfangen
-                    if(!players[client].recv_queue.recv(&players[client].so))
+                    if(!players[client].recv_queue.recv(players[client].so))
                     {
                         LOG.lprintf("SERVER: Receiving Message for player %d failed, kick it like Beckham!\n", client);
                         KickPlayer(client, NP_CONNECTIONLOST, 0);
@@ -1632,13 +1632,11 @@ void GameServer::OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, std::lis
         di.SendReplay();
     }
 
-    char filename[256], time_str[80];
-    unser_time_t temp = TIME.CurrentTime();
-    TIME.FormatTime(time_str, "async_%Y-%m-%d_%H-%i-%s", &temp);
+    std::string timeStr = TIME.FormatTime("async_%Y-%m-%d_%H-%i-%s");
+    std::string fileName = GetFilePath(FILE_PATHS[47]) + timeStr + ".log";
 
     // open async log
-    snprintf(filename, sizeof(filename), "%s%s.log", GetFilePath(FILE_PATHS[47]).c_str(), time_str);
-    FILE* file = fopen(filename, "w");
+    FILE* file = fopen(fileName.c_str(), "w");
 
     if (file)
     {
@@ -1662,11 +1660,11 @@ void GameServer::OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, std::lis
 
         fclose(file);
 
-        LOG.lprintf("Async log saved at \"%s\"\n", filename);
+        LOG.lprintf("Async log saved at \"%s\"\n", fileName.c_str());
     }
     else
     {
-        LOG.lprintf("Failed to save async log at \"%s\"\n", filename);
+        LOG.lprintf("Failed to save async log at \"%s\"\n", fileName.c_str());
     }
 
     for (std::list<RandomEntry>::iterator it = async_player1_log.begin(); it != async_player1_log.end(); ++it)
@@ -1683,8 +1681,8 @@ void GameServer::OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, std::lis
     async_player2_log.clear();
 
     // write async save
-    snprintf(filename, sizeof(filename), "%s%s.sav", GetFilePath(FILE_PATHS[85]).c_str(), time_str);
-    GAMECLIENT.WriteSaveHeader(filename);
+    fileName = GetFilePath(FILE_PATHS[85]) + timeStr + ".sav";
+    GAMECLIENT.WriteSaveHeader(fileName);
 
     KickPlayer(msg.player, NP_ASYNC, 0);
 }
@@ -1697,11 +1695,12 @@ void GameServer::ChangePlayer(const unsigned char old_id, const unsigned char ne
         return;	
     players[old_id].ps = PS_KI;
     players[new_id].ps = PS_OCCUPIED;
-    players[new_id].so = players[old_id].so;
+    using std::swap;
+    swap(players[new_id].so, players[old_id].so);
 
     // Alte KI löschen
     delete ai_players[new_id];
-    ai_players[new_id] = 0;
+    ai_players[new_id] = NULL;
 
     ai_players[old_id] = GAMECLIENT.CreateAIPlayer(old_id);
 

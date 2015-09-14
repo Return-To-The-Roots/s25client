@@ -172,8 +172,7 @@ void iwPlayReplay::FillReplayTable(const std::string& filename, void* param)
         return;
 
     // Zeitstamp benutzen
-    char datestring[64];
-    TIME.FormatTime(datestring, "%d.%m.%Y - %H:%i", &replay.save_time);
+    std::string dateStr = TIME.FormatTime("%d.%m.%Y - %H:%i", &replay.save_time);
 
     // Spielernamen auslesen
     std::string tmp_players;
@@ -202,7 +201,7 @@ void iwPlayReplay::FillReplayTable(const std::string& filename, void* param)
     snprintf(gfl, 50, "%u", replay.last_gf);
 
     // Und das Zeug zur Tabelle hinzufügen
-    static_cast<ctrlTable*>(param)->AddRow(0, extracted_filename.c_str(), datestring, tmp_players.c_str(), gfl, filename.c_str());
+    static_cast<ctrlTable*>(param)->AddRow(0, extracted_filename.c_str(), dateStr.c_str(), tmp_players.c_str(), gfl, filename.c_str());
 }
 
 

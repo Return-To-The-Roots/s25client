@@ -1051,12 +1051,10 @@ void dskHostGame::CI_Chat(const unsigned player_id, const ChatDestination cd, co
 {
     if ((player_id != 0xFFFFFFFF) && !single_player) // Keine Lobby-Nachrichten anzeigen
     {
-        // Zeit holen
-        char time_string[64];
-        TIME.FormatTime(time_string, "(%H:%i:%s)", NULL);
+        std::string time = TIME.FormatTime("(%H:%i:%s)");
 
-        GetCtrl<ctrlChat>(1)->AddMessage(time_string, GAMECLIENT.GetPlayer(player_id)->name.c_str(),
-                                         COLORS[GAMECLIENT.GetPlayer(player_id)->color], msg.c_str(), 0xFFFFFF00);
+        GetCtrl<ctrlChat>(1)->AddMessage(time, GAMECLIENT.GetPlayer(player_id)->name,
+                                         COLORS[GAMECLIENT.GetPlayer(player_id)->color], msg, 0xFFFFFF00);
     }
 }
 

@@ -227,6 +227,9 @@ void nofBuildingWorker::TryToWork()
             state = STATE_WAITING1;
             current_ev = em->AddEvent(this, (GetGOT() == GOT_NOF_CATAPULTMAN) ? CATAPULT_WAIT1_LENGTH : JOB_CONSTS[job].wait1_length, 1);
             StopNotWorking();
+        }else
+        {
+            state = STATE_WAITINGFORWARES_OR_PRODUCTIONSTOPPED;
         }
     }
     else

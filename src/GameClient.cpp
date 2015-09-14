@@ -239,7 +239,7 @@ void GameClient::Run()
     if(set.Select(0, 0) > 0)
     {
         // nachricht empfangen
-        if(!recv_queue.recv(&socket))
+        if(!recv_queue.recv(socket))
         {
             LOG.lprintf("Receiving Message from server failed\n");
             ServerLost();
@@ -267,7 +267,7 @@ void GameClient::Run()
         ExecuteGameFrame();
 
     // maximal 10 Pakete verschicken
-    send_queue.send(&socket, 10);
+    send_queue.send(socket, 10);
 
     // recv-queue abarbeiten
     while(recv_queue.count() > 0)
@@ -411,13 +411,11 @@ void GameClient::StartGame(const unsigned int random_init)
     if(!replay_mode)
     {
         WriteReplayHeader(random_init);
+        std::stringstream fileName;
+        fileName << FILE_PATHS[47] << TIME.FormatTime("game_%Y-%m-%d_%H-%i-%s")
+                 << "-" << (rand() % 100) << ".log";
 
-        char filename[256], time_str[80];
-        unser_time_t temp = TIME.CurrentTime();
-        TIME.FormatTime(time_str, "game_%Y-%m-%d_%H-%i-%s", &temp);
-        sprintf(filename, "%s%s-%u.log", FILE_PATHS[47], time_str, rand() % 100);
-
-        game_log = fopen(filename, "a");
+        game_log = fopen(fileName.str().c_str(), "a");
     }
 
     // Daten nach dem Schreiben des Replays ggf wieder löschen
@@ -978,9 +976,7 @@ void GameClient::OnNMSServerAsync(const GameMessage_Server_Async& msg)
     if(ci && GLOBALVARS.ingame)
         ci->CI_Async(checksum_list.str());
 
-    char filename[256], time_str[80];
-    unser_time_t temp = TIME.CurrentTime();
-    TIME.FormatTime(time_str, "async_%Y-%m-%d_%H-%i-%s", &temp);
+    std::string fileName = GetFilePath(FILE_PATHS[85]) + TIME.FormatTime("async_%Y-%m-%d_%H-%i-%s") + ".sav";
 
 //  sprintf(filename,"%s%s-%u.log",  GetFilePath(FILE_PATHS[47]).c_str(), time_str, rand()%100);
 
@@ -988,9 +984,7 @@ void GameClient::OnNMSServerAsync(const GameMessage_Server_Async& msg)
 
 //  LOG.lprintf("Async log saved at \"%s\"\n",filename);
 
-    sprintf(filename, "%s%s.sav", GetFilePath(FILE_PATHS[85]).c_str(), time_str);
-
-    GAMECLIENT.WriteSaveHeader(filename);
+    GAMECLIENT.WriteSaveHeader(fileName);
 
     // Pausieren
 
@@ -1665,16 +1659,13 @@ void GameClient::SendNothingNC(int checksum)
 void GameClient::WriteReplayHeader(const unsigned random_init)
 {
     // Dateiname erzeugen
-    char filename[256], time[80];
-    unser_time_t temp = TIME.CurrentTime();
-    TIME.FormatTime(time, "%Y-%m-%d_%H-%i-%s", &temp);
-
-    sprintf(filename, "%s%s.rpl", GetFilePath(FILE_PATHS[51]).c_str(), time);
+    unser_time_t cTime = TIME.CurrentTime();
+    std::string fileName = GetFilePath(FILE_PATHS[51]) + TIME.FormatTime("%Y-%m-%d_%H-%i-%s", &cTime) + ".rpl";
 
     // Headerinfos füllen
 
     // Timestamp der Aufzeichnung
-    replayinfo.replay.save_time = temp;
+    replayinfo.replay.save_time = cTime;
     /// NWF-Länge
     replayinfo.replay.nwf_length = framesinfo.nwf_length;
     // Random-Init
@@ -1732,7 +1723,7 @@ void GameClient::WriteReplayHeader(const unsigned random_init)
     replayinfo.replay.map_name = clientconfig.mapfile;
 
     // Datei speichern
-    if(!replayinfo.replay.WriteHeader(filename))
+    if(!replayinfo.replay.WriteHeader(fileName))
         LOG.lprintf("GameClient::WriteReplayHeader: WARNING: File couldn't be opened. Don't use a replayinfo.replay.\n");
 }
 
