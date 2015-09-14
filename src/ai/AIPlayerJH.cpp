@@ -404,51 +404,44 @@ void AIPlayerJH::SetGatheringForUpgradeWarehouse(nobBaseWarehouse* upgradewareho
 AIJH::Resource AIPlayerJH::CalcResource(const MapPoint pt)
 {
     AIJH::Resource subRes = aii->GetSubsurfaceResource(pt);
+    AIJH::Resource surfRes = aii->GetSurfaceResource(pt);
 
-    // resources on surface
+    // no resources underground
     if (subRes == AIJH::NOTHING)
     {
-        AIJH::Resource res = aii->GetSurfaceResource(pt);
-
-        if(res == AIJH::NOTHING)
+        // also no resource on the ground: plant space or unusable?
+        if(surfRes == AIJH::NOTHING) 
         {
+            // already road, really no resources here
             if(aii->IsRoadPoint(pt))
                 return AIJH::NOTHING;
-
-            for(int i = 0; i < Direction::COUNT; ++i)
-            {
-                TerrainType t = aii->GetTerrainAround(pt, Direction::fromInt(i));
-
-                // check against valid terrains for planting
-                if(!TerrainData::IsVital(t))
-                    return AIJH::NOTHING;
-            }
-            return AIJH::PLANTSPACE;
-        }
-        else if (res == AIJH::WOOD)
-        {
-            if((gwb.GetSpecObj<noTree>(pt))->type == 5) //exclude pineapple (because they are more of a "blocker" than a tree and only count as tree for animation&sound)
-                return AIJH::NOTHING;
-        }
-    }
-    else
-    {
-        AIJH::Resource res = aii->GetSurfaceResource(pt);
-        if (res == AIJH::STONES || res == AIJH::WOOD)
-        {
-            if (subRes == AIJH::WOOD)
-            {
-                if ((gwb.GetSpecObj<noTree>(pt))->type != 5)
-                    return AIJH::MULTIPLE;
-            }
             else
-                return AIJH::MULTIPLE;
-        }
-    }
-    if (subRes == AIJH::BLOCKED)
-        subRes = AIJH::NOTHING; // nicht so ganz logisch... aber Blocked als res is doof TODO
+            {
+                // check for vital plant space
+                for(int i = 0; i < Direction::COUNT; ++i)
+                {
+                    TerrainType t = aii->GetTerrainAround(pt, Direction::fromInt(i));
 
-    return subRes;
+                    // check against valid terrains for planting
+                    if(!TerrainData::IsVital(t))
+                        return AIJH::NOTHING;
+                }
+                return AIJH::PLANTSPACE;
+            }
+        }
+
+        return surfRes;
+    }
+    else // resources in underground
+    {
+        if (surfRes == AIJH::STONES || surfRes == AIJH::WOOD)
+            return AIJH::MULTIPLE;
+
+        if (subRes == AIJH::BLOCKED)
+            return AIJH::NOTHING; // nicht so ganz logisch... aber Blocked als res is doof TODO
+
+        return subRes;
+    }
 }
 
 void AIPlayerJH::InitReachableNodes()
