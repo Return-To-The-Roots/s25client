@@ -70,7 +70,7 @@ void glArchivItem_Bitmap_Direct::tex_setPixel(unsigned short x, unsigned short y
     // Ist eine GL-Textur bereits erzeugt? Wenn ja, Pixel in Textur austauschen
     if(texture != 0)
     {
-        if(x < tex_width && y < tex_height)
+        if(x < tex_width_ && y < tex_height_)
         {
             struct{
                 libsiedler2::Color clr;
@@ -81,7 +81,7 @@ void glArchivItem_Bitmap_Direct::tex_setPixel(unsigned short x, unsigned short y
                 clr.a = 0x00;
             else
             {
-                clr.clr = (*this->palette)[color];
+                clr.clr = (*this->palette_)[color];
                 clr.a = 0xFF;
             }
 
@@ -112,7 +112,7 @@ void glArchivItem_Bitmap_Direct::tex_setPixel(unsigned short x, unsigned short y
     // Ist ein GL-Textur bereits erzeugt? Wenn ja, Pixel in Textur austauschen
     if(texture != 0)
     {
-        if(x < tex_width && y < tex_height)
+        if(x < tex_width_ && y < tex_height_)
         {
             unsigned char buffer[4] = { r, g, b, a };
 
@@ -125,6 +125,6 @@ void glArchivItem_Bitmap_Direct::tex_setPixel(unsigned short x, unsigned short y
 /// liefert die Farbwerte eines Pixels als uc-Array: {r,g,b,a}
 unsigned char* glArchivItem_Bitmap_Direct::tex_getPixel(const unsigned short x, const unsigned short y)
 {
-    return &tex_data[y * tex_width + x];
+    return &tex_data_[y * tex_width_ + x];
 }
 

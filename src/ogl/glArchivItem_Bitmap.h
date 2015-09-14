@@ -48,8 +48,8 @@ class glArchivItem_Bitmap : public virtual libsiedler2::baseArchivItem_Bitmap
         /// Setzt den Texturfilter auf einen bestimmten Wert.
         virtual void setFilter(unsigned int filter);
 
-        unsigned short GetTexWidth() {return(tex_width);}
-        unsigned short GetTexHeight() {return(tex_width);}
+        unsigned short GetTexWidth() {return(tex_width_);}
+        unsigned short GetTexHeight() {return(tex_height_);}
 
     protected:
         /// Erzeugt die Textur.
