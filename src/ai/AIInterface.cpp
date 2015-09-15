@@ -95,7 +95,7 @@ int AIInterface::GetResourceRating(const MapPoint pt, AIJH::Resource res) const
             (res == AIJH::PLANTSPACE && tres == AIJH::NOTHING && TerrainData::IsVital(t1)) ||
             (res == AIJH::BORDERLAND && (IsBorder(pt) || !IsOwnTerritory(pt)) && (TerrainData::IsUseable(t1) || TerrainData::IsUseable(t2))))
         {
-            return AIJH::RES_RADIUS[res];
+           return AIJH::RES_RADIUS[res];
         }
         //another building using our "resource"? reduce rating!
         if(res == AIJH::WOOD || res == AIJH::PLANTSPACE)
@@ -164,7 +164,7 @@ int AIInterface::CalcResourceValue(const MapPoint pt, AIJH::Resource res, char d
         {
             for(MapCoord r2 = 0; r2 < AIJH::RES_RADIUS[res] || (r2 < AIJH::RES_RADIUS[res] + 1 && i == direction + 5); ++r2)
             {
-                returnval += GetResourceRating(t, res);
+                returnval -= GetResourceRating(t, res);
                 t = gwb.GetNeighbour(t, i % 6);
             }
         }
