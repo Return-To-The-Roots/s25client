@@ -35,11 +35,12 @@
 #include "AIConstruction.h"
 #include "gameData/TerrainData.h"
 
-#include <iostream>
-#include <list>
-
 #include "GameMessages.h"
 #include "GameServer.h"
+
+#include <boost/array.hpp>
+#include <iostream>
+#include <list>
 #include <set>
 #include <algorithm>
 
@@ -141,53 +142,14 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
         if(ggs.getSelection(ADDON_SEA_ATTACK) < 2) //not deactivated by addon? -> go ahead
             TrySeaAttack();
     }
-	// check expeditions (order new / cancel) and if we have 1 complete forester but less than 1 military building and less than 2 buildingsites stop production
-	// stop/resume granitemine production
+
     if ((gf + playerid * 13) % 1500 == 0) 
     {
-        for(std::list<nobHarborBuilding*>::const_iterator it = aii->GetHarbors().begin(); it != aii->GetHarbors().end(); it++)
-        {
-            if(((*it)->IsExpeditionActive() && !HarborPosRelevant((*it)->GetHarborPosID(), true)) || (!(*it)->IsExpeditionActive() && HarborPosRelevant((*it)->GetHarborPosID(), true))) //harbor is collecting for expedition and shouldnt OR not collecting and should -> toggle expedition
-            {
-                aii->StartExpedition((*it)->GetPos()); //command is more of a toggle despite it's name
-            }
-        }
-        //find lost expedition ships - ai should get a notice and catch them all but just in case some fell through the system
-        for(std::vector<noShip*>::const_iterator it = aii->GetShips().begin(); it != aii->GetShips().end(); it++)
-        {
-            if((*it)->IsWaitingForExpeditionInstructions())
-                HandleExpedition(*it);
-        }
-		if(aii->GetBuildings(BLD_FORESTER).size()>0 && aii->GetBuildings(BLD_FORESTER).size()<2 && aii->GetMilitaryBuildings().size()<3 && aii->GetBuildingSites().size()<3)
-			//stop the forester
-		{
-			if(!(*aii->GetBuildings(BLD_FORESTER).begin())->IsProductionDisabled())
-				aii->ToggleProduction(aii->GetBuildings(BLD_FORESTER).front()->GetPos());
-		}
-		else //activate the forester 
-		{
-			if(aii->GetBuildings(BLD_FORESTER).size()>0 && (*aii->GetBuildings(BLD_FORESTER).begin())->IsProductionDisabled())
-				aii->ToggleProduction(aii->GetBuildings(BLD_FORESTER).front()->GetPos());
-		}
-		//stop production in granite mines when the ai has many stones (100+ and at least 15 for each warehouse)
-		if(AmountInStorage(GD_STONES,0)<100 || AmountInStorage(GD_STONES,0)<15*aii->GetStorehouses().size())
-			//activate
-		{
-			for(std::list<nobUsual*>::const_iterator it=aii->GetBuildings(BLD_GRANITEMINE).begin();it!=aii->GetBuildings(BLD_GRANITEMINE).end();it++)
-			{
-				if((*it)->IsProductionDisabled())
-					aii->ToggleProduction((*it)->GetPos());
-			}
-		}
-		else //deactivate
-		{
-			for(std::list<nobUsual*>::const_iterator it=aii->GetBuildings(BLD_GRANITEMINE).begin();it!=aii->GetBuildings(BLD_GRANITEMINE).end();it++)
-			{
-				if(!(*it)->IsProductionDisabled())
-					aii->ToggleProduction((*it)->GetPos());
-			}
-		}
+        CheckExpeditions();
+        CheckForester();
+        CheckGranitMine();
     }
+
     if((gf + playerid * 11) % 150 == 0)
     {
         AdjustSettings();
@@ -206,91 +168,98 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
             }
         }
     }
+
     if((gf + playerid * 7) % build_interval == 0) // plan new buildings
     {
-        construction->RefreshBuildingCount();
-		
-        //pick a random storehouse and try to build one of these buildings around it (checks if we actually want more of the building type)
-        BuildingType bldToTest[] =
-        {
-            BLD_HARBORBUILDING,
-            BLD_SHIPYARD,
-            BLD_SAWMILL,
-            BLD_FORESTER,			
-            BLD_FARM,
-            BLD_FISHERY,
-            BLD_WOODCUTTER,
-            BLD_QUARRY,
-            BLD_GOLDMINE,
-            BLD_IRONMINE,
-            BLD_COALMINE,
-            BLD_GRANITEMINE,
-            BLD_HUNTER,
-            BLD_CHARBURNER,
-            BLD_IRONSMELTER,
-            BLD_MINT,
-            BLD_ARMORY,
-            BLD_METALWORKS,
-            BLD_BREWERY,
-            BLD_MILL,
-            BLD_PIGFARM,
-            BLD_SLAUGHTERHOUSE,
-            BLD_BAKERY,
-            BLD_DONKEYBREEDER
-        };
-        unsigned numBldToTest = 24;
-        int randomstore=0;
-		//LOG.lprintf("new buildorders %i whs and %i mil for player %i \n",aii->GetStorehouses().size(),aii->GetMilitaryBuildings().size(),playerid);
-		
-        if(aii->GetStorehouses().size() > 0)
-		{			
-			randomstore = rand() % (aii->GetStorehouses().size());
-			//collect swords,shields,helpers,privates and beer in first storehouse or whatever is closest to the upgradebuilding if we have one!
-			nobBaseWarehouse* wh = GetUpgradeBuildingWarehouse();
-			SetGatheringForUpgradeWarehouse(wh);
-		
-			if (MAX_MILITARY_RANK - ggs.getSelection(ADDON_MAX_RANK) > 0) //there is more than 1 rank available -> distribute
-				DistributeMaxRankSoldiersByBlocking(5,wh);
-			//unlimited when every warehouse has at least that amount
-			DistributeGoodsByBlocking(23, 30); //30 boards for each warehouse - block after that - should speed up expansion
-			DistributeGoodsByBlocking(24, 50); //50 stones for each warehouse - block after that - should limit losses in case a warehouse is destroyed
-			//go to the picked random warehouse and try to build around it
-			std::list<nobBaseWarehouse*>::const_iterator it = aii->GetStorehouses().begin();
-			std::advance(it, randomstore);
-			UpdateNodesAroundNoBorder((*it)->GetPos(), 15); //update the area we want to build in first
-			for (unsigned int i = 0; i < numBldToTest; i++)
-			{
-				if (construction->Wanted(bldToTest[i]))
-				{
-					AddBuildJobAroundEvery(bldToTest[i], true); //add a buildorder for the picked buildingtype at every warehouse
-				}
-			}
-			if(gf > 1500 || aii->GetInventory()->goods[GD_BOARDS] > 11)
-	            AddBuildJob(construction->ChooseMilitaryBuilding((*it)->GetPos()), (*it)->GetPos());
-		}
-		//end of construction around & orders for warehouses
+        PlanNewBuildings(gf);
+    }	
+}
 
-        //now pick a random military building and try to build around that as well
-        if(aii->GetMilitaryBuildings().size() < 1)return;
-        randomstore = rand() % (aii->GetMilitaryBuildings().size());
-        std::list<nobMilitary*>::const_iterator it2 = aii->GetMilitaryBuildings().begin();
-        std::advance(it2, randomstore);
-        MapPoint t = (*it2)->GetPos();
-        UpdateReachableNodes(t, 15);
-		numBldToTest=14; //resource gathering buildings only around military; processing only close to warehouses
-        for (unsigned int i = 0; i < numBldToTest; i++)
+void AIPlayerJH::PlanNewBuildings( const unsigned gf )
+{
+    construction->RefreshBuildingCount();
+
+    //pick a random storehouse and try to build one of these buildings around it (checks if we actually want more of the building type)
+    boost::array<BuildingType, 24> bldToTest =
+    {{
+        BLD_HARBORBUILDING,
+        BLD_SHIPYARD,
+        BLD_SAWMILL,
+        BLD_FORESTER,			
+        BLD_FARM,
+        BLD_FISHERY,
+        BLD_WOODCUTTER,
+        BLD_QUARRY,
+        BLD_GOLDMINE,
+        BLD_IRONMINE,
+        BLD_COALMINE,
+        BLD_GRANITEMINE,
+        BLD_HUNTER,
+        BLD_CHARBURNER,
+        BLD_IRONSMELTER,
+        BLD_MINT,
+        BLD_ARMORY,
+        BLD_METALWORKS,
+        BLD_BREWERY,
+        BLD_MILL,
+        BLD_PIGFARM,
+        BLD_SLAUGHTERHOUSE,
+        BLD_BAKERY,
+        BLD_DONKEYBREEDER
+    }};
+    const int resGatherBldCount = 14; /* The first n buildings in the above list, that gather resources */
+
+    //LOG.lprintf("new buildorders %i whs and %i mil for player %i \n",aii->GetStorehouses().size(),aii->GetMilitaryBuildings().size(),playerid);
+
+    if(!aii->GetStorehouses().empty())
+    {			
+        int randomStore = rand() % (aii->GetStorehouses().size());
+        //collect swords,shields,helpers,privates and beer in first storehouse or whatever is closest to the upgradebuilding if we have one!
+        nobBaseWarehouse* wh = GetUpgradeBuildingWarehouse();
+        SetGatheringForUpgradeWarehouse(wh);
+
+        if (MAX_MILITARY_RANK - ggs.getSelection(ADDON_MAX_RANK) > 0) //there is more than 1 rank available -> distribute
+            DistributeMaxRankSoldiersByBlocking(5,wh);
+        //unlimited when every warehouse has at least that amount
+        DistributeGoodsByBlocking(23, 30); //30 boards for each warehouse - block after that - should speed up expansion
+        DistributeGoodsByBlocking(24, 50); //50 stones for each warehouse - block after that - should limit losses in case a warehouse is destroyed
+        //go to the picked random warehouse and try to build around it
+        std::list<nobBaseWarehouse*>::const_iterator it = aii->GetStorehouses().begin();
+        std::advance(it, randomStore);
+        UpdateNodesAroundNoBorder((*it)->GetPos(), 15); //update the area we want to build in first
+        for (unsigned int i = 0; i < bldToTest.size(); i++)
         {
             if (construction->Wanted(bldToTest[i]))
             {
-                AddBuildJobAroundEvery(bldToTest[i], false);
+                AddBuildJobAroundEvery(bldToTest[i], true); //add a buildorder for the picked buildingtype at every warehouse
             }
         }
-        AddBuildJob(construction->ChooseMilitaryBuilding(t), t);
-        if((*it2)->IsUseless() && (*it2)->IsDemolitionAllowed() && randomstore!=UpdateUpgradeBuilding())
+        if(gf > 1500 || aii->GetInventory()->goods[GD_BOARDS] > 11)
+            AddBuildJob(construction->ChooseMilitaryBuilding((*it)->GetPos()), (*it)->GetPos());
+    }
+    //end of construction around & orders for warehouses
+
+    //now pick a random military building and try to build around that as well
+    if(aii->GetMilitaryBuildings().empty())
+        return;
+    int randomMiliBld = rand() % (aii->GetMilitaryBuildings().size());
+    std::list<nobMilitary*>::const_iterator it2 = aii->GetMilitaryBuildings().begin();
+    std::advance(it2, randomMiliBld);
+    MapPoint bldPos = (*it2)->GetPos();
+    UpdateReachableNodes(bldPos, 15);
+    //resource gathering buildings only around military; processing only close to warehouses
+    for (unsigned int i = 0; i < resGatherBldCount; i++)
+    {
+        if (construction->Wanted(bldToTest[i]))
         {
-            aii->DestroyBuilding(t);
+            AddBuildJobAroundEvery(bldToTest[i], false);
         }
-    }	
+    }
+    AddBuildJob(construction->ChooseMilitaryBuilding(bldPos), bldPos);
+    if((*it2)->IsUseless() && (*it2)->IsDemolitionAllowed() && randomMiliBld!=UpdateUpgradeBuilding())
+    {
+        aii->DestroyBuilding(bldPos);
+    }
 }
 
 bool AIPlayerJH::TestDefeat()
@@ -415,19 +384,16 @@ AIJH::Resource AIPlayerJH::CalcResource(const MapPoint pt)
             // already road, really no resources here
             if(aii->IsRoadPoint(pt))
                 return AIJH::NOTHING;
-            else
+            // check for vital plant space
+            for(int i = 0; i < Direction::COUNT; ++i)
             {
-                // check for vital plant space
-                for(int i = 0; i < Direction::COUNT; ++i)
-                {
-                    TerrainType t = aii->GetTerrainAround(pt, Direction::fromInt(i));
+                TerrainType t = aii->GetTerrainAround(pt, Direction::fromInt(i));
 
-                    // check against valid terrains for planting
-                    if(!TerrainData::IsVital(t))
-                        return AIJH::NOTHING;
-                }
-                return AIJH::PLANTSPACE;
+                // check against valid terrains for planting
+                if(!TerrainData::IsVital(t))
+                    return AIJH::NOTHING;
             }
+            return AIJH::PLANTSPACE;
         }
 
         return surfRes;
@@ -1839,6 +1805,60 @@ bool AIPlayerJH::HasFrontierBuildings()
 			return true;
 	}
 	return false;
+}
+
+void AIPlayerJH::CheckExpeditions()
+{
+    for(std::list<nobHarborBuilding*>::const_iterator it = aii->GetHarbors().begin(); it != aii->GetHarbors().end(); it++)
+    {
+        if(((*it)->IsExpeditionActive() && !HarborPosRelevant((*it)->GetHarborPosID(), true)) || (!(*it)->IsExpeditionActive() && HarborPosRelevant((*it)->GetHarborPosID(), true))) //harbor is collecting for expedition and shouldnt OR not collecting and should -> toggle expedition
+        {
+            aii->StartExpedition((*it)->GetPos()); //command is more of a toggle despite it's name
+        }
+    }
+    //find lost expedition ships - ai should get a notice and catch them all but just in case some fell through the system
+    for(std::vector<noShip*>::const_iterator it = aii->GetShips().begin(); it != aii->GetShips().end(); it++)
+    {
+        if((*it)->IsWaitingForExpeditionInstructions())
+            HandleExpedition(*it);
+    }
+}
+
+void AIPlayerJH::CheckForester()
+{
+    if(aii->GetBuildings(BLD_FORESTER).size()>0 && aii->GetBuildings(BLD_FORESTER).size()<2 && aii->GetMilitaryBuildings().size()<3 && aii->GetBuildingSites().size()<3)
+        //stop the forester
+    {
+        if(!(*aii->GetBuildings(BLD_FORESTER).begin())->IsProductionDisabled())
+            aii->ToggleProduction(aii->GetBuildings(BLD_FORESTER).front()->GetPos());
+    }
+    else //activate the forester 
+    {
+        if(aii->GetBuildings(BLD_FORESTER).size()>0 && (*aii->GetBuildings(BLD_FORESTER).begin())->IsProductionDisabled())
+            aii->ToggleProduction(aii->GetBuildings(BLD_FORESTER).front()->GetPos());
+    }
+}
+
+void AIPlayerJH::CheckGranitMine()
+{
+    //stop production in granite mines when the ai has many stones (100+ and at least 15 for each warehouse)
+    if(AmountInStorage(GD_STONES,0)<100 || AmountInStorage(GD_STONES,0)<15*aii->GetStorehouses().size())
+        //activate
+    {
+        for(std::list<nobUsual*>::const_iterator it=aii->GetBuildings(BLD_GRANITEMINE).begin();it!=aii->GetBuildings(BLD_GRANITEMINE).end();it++)
+        {
+            if((*it)->IsProductionDisabled())
+                aii->ToggleProduction((*it)->GetPos());
+        }
+    }
+    else //deactivate
+    {
+        for(std::list<nobUsual*>::const_iterator it=aii->GetBuildings(BLD_GRANITEMINE).begin();it!=aii->GetBuildings(BLD_GRANITEMINE).end();it++)
+        {
+            if(!(*it)->IsProductionDisabled())
+                aii->ToggleProduction((*it)->GetPos());
+        }
+    }
 }
 
 void AIPlayerJH::TryToAttack()

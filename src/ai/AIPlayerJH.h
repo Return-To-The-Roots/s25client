@@ -129,6 +129,8 @@ class AIPlayerJH : public AIBase
     protected:
         void RunGF(const unsigned gf,bool gfisnwf);
 
+        void PlanNewBuildings( const unsigned gf );
+
         void SendAIEvent(AIEvent::Base* ev);
 		
         /// resigned yes/no
@@ -257,6 +259,15 @@ class AIPlayerJH : public AIBase
 
         /// Sends a chat messsage to all players
         void Chat(std::string message);
+
+        /// check expeditions (order new / cancel)
+        void CheckExpeditions();
+
+        /// if we have 1 complete forester but less than 1 military building and less than 2 buildingsites stop production
+        void CheckForester();
+        
+        /// stop/resume granitemine production
+        void CheckGranitMine();
 
         /// Tries to attack the enemy
         void TryToAttack();
