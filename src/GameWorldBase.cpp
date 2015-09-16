@@ -499,7 +499,8 @@ bool GameWorldBase::RoadAvailable(const bool boat_road, const MapPoint pt, unsig
         for(unsigned char i = 0; i < 6; ++i)
         {
             BuildingQuality bq = TerrainData::GetBuildingQuality(GetTerrainAround(pt, i));
-            if(bq == BQ_CASTLE || bq == BQ_CASTLE || bq == BQ_MINE || bq == BQ_FLAG) ++flag_hits;
+            if(bq == BQ_CASTLE || bq == BQ_MINE || bq == BQ_FLAG)
+                ++flag_hits;
             else if(bq == BQ_DANGER)
                 return 0;
         }
@@ -756,7 +757,7 @@ BuildingQuality GameWorldBase::CalcBQ(const MapPoint pt, const unsigned char pla
     unsigned char ph = GetNode(pt).altitude, th;
 
     // Bergwerke anders handhaben
-    if(val == BQ_CASTLE && val != BQ_FLAG)
+    if(val == BQ_CASTLE)
     {
 
         if((th = GetNodeAround(pt, 4).altitude) > ph)

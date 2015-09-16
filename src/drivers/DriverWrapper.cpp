@@ -182,9 +182,6 @@ std::vector<DriverWrapper::DriverItem> DriverWrapper::LoadDriverList(const Drive
     LOG.lprintf("searching for drivers in %s\n", path.c_str());
     ListDir(path, false, 0, 0, &driver_files);
 
-    /// Welcher Treiber letzendliche genommen wird
-    std::string choice;
-
     HINSTANCE dll;
     for(std::list<std::string>::iterator it = driver_files.begin(); it != driver_files.end(); ++it)
     {

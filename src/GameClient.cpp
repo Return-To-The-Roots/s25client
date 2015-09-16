@@ -1563,7 +1563,7 @@ void GameClient::ExecuteGameFrame(const bool skipping)
             // Alle .... GF
             if(framesinfo.nr % SETTINGS.interface.autosave_interval == 0)
             {
-                std::string tmp = GetFilePath(FILE_PATHS[85]).c_str();
+                std::string tmp = GetFilePath(FILE_PATHS[85]);
 
                 if (this->mapinfo.title.length())
                 {

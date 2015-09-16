@@ -31,7 +31,6 @@
 #include "Log.h"
 
 #include <ctime>
-#include <cstring>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -227,37 +226,30 @@ bool VideoDriverWrapper::DestroyScreen()
  *
  *  @author FloSoft
  */
-bool VideoDriverWrapper::hasExtension(const char* extension)
+bool VideoDriverWrapper::hasExtension(const std::string& extension)
 {
-    const unsigned char* extensions = NULL;
-
-    const unsigned char* start;
-    unsigned char* position, *ende;
-
     // Extension mit Leerzeichen gibts nich
-    position = (unsigned char*)strchr(extension, ' ');
-    if( position || *extension == '\0' )
+    if( extension.empty() || extension.find(' ') != std::string::npos)
         return false;
 
     // ermittle Extensions String
-    extensions = glGetString( GL_EXTENSIONS );
+    const std::string extensions = reinterpret_cast<const char*>(glGetString( GL_EXTENSIONS ));
 
     // such nach einer exakten Kopie des Extensions Strings
-    start = extensions;
-    for(;;)
-    {
-        position = (unsigned char*)strstr( (const char*)start, extension );
-        if( !position )
+    size_t curOffset = 0;
+    do{
+        size_t curPos = extensions.find(extension, curOffset);
+        if(curPos == std::string::npos)
             break;
 
-        ende = position + strlen( extension );
-        if( position == start || *( position - 1 ) == ' ' )
+        size_t endPos = curPos + extension.length();
+        if(curPos == 0 || extensions[curPos - 1] == ' ')
         {
-            if( *ende == ' ' || *ende == '\0' )
+            if(endPos == extensions.length() || extensions[endPos] == ' ')
                 return true;
         }
-        start = ende;
-    }
+        curOffset = endPos;
+    }while(curOffset < extensions.length());
 
     return false;
 }
@@ -480,7 +472,7 @@ unsigned int VideoDriverWrapper::GetTickCount()
  *
  *  @author FloSoft
  */
-void* VideoDriverWrapper::loadExtension(const char* extension)
+void* VideoDriverWrapper::loadExtension(const std::string& extension)
 {
     if (!videodriver)
     {
@@ -488,7 +480,7 @@ void* VideoDriverWrapper::loadExtension(const char* extension)
         return(NULL);
     }
 
-    return videodriver->GetFunction(extension);
+    return videodriver->GetFunction(extension.c_str());
 }
 
 ///////////////////////////////////////////////////////////////////////////////

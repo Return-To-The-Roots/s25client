@@ -22,6 +22,7 @@
 #include "ExtensionList.h"
 #include "DriverWrapper.h"
 #include "driver/src/VideoInterface.h"
+#include <string>
 
 class VideoDriver;
 
@@ -92,10 +93,10 @@ class VideoDriverWrapper : public Singleton<VideoDriverWrapper>
         bool Initialize();
 
         // prüft ob eine Extension verfügbar ist
-        bool hasExtension(const char* extension);
+        bool hasExtension(const std::string& extension);
 
         // lädt eine Funktion aus den Extensions
-        void* loadExtension(const char* extension);
+        void* loadExtension(const std::string& extension);
 
         // Alle (im Programm benutzen) Extensions laden
         bool LoadAllExtensions();

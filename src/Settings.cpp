@@ -321,7 +321,7 @@ void Settings::Save(void)
         LOADER.GetInfoN(CONFIG_NAME)->alloc(SETTINGS_SECTIONS);
         for(unsigned int i = 0; i < SETTINGS_SECTIONS; ++i)
         {
-            item.setName(SETTINGS_SECTION_NAMES[i].c_str());
+            item.setName(SETTINGS_SECTION_NAMES[i]);
             LOADER.GetInfoN(CONFIG_NAME)->setC(i, item);
         }
     }

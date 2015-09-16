@@ -20,6 +20,7 @@
 #include "defines.h"
 #include "ctrlVarText.h"
 #include "ogl/glArchivItem_Font.h"
+#include <sstream>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -61,12 +62,9 @@ ctrlVarText::ctrlVarText(Window* parent,
     // Pointerliste einlesen
     if(count > 0)
     {
-        // Pointerliste anlegen
-        vars = new void*[count];
-
         // und zuweisen
         for(unsigned int i = 0; i < count; ++i)
-            vars[i] = va_arg(liste, void*);
+            vars.push_back(va_arg(liste, void*));
     }
 }
 
@@ -77,10 +75,7 @@ ctrlVarText::ctrlVarText(Window* parent,
  *  @author FloSoft
  */
 ctrlVarText::~ctrlVarText()
-{
-    // Pointerliste aufräumen
-    delete[] vars;
-}
+{}
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
@@ -92,48 +87,54 @@ ctrlVarText::~ctrlVarText()
  */
 bool ctrlVarText::Draw_(void)
 {
-    char buffer[1025];
-
-    for(unsigned int i = 0, j = 0, k = 0; i < text.length() && j < 1024; ++i)
-    {
-        if(text[i] == '%')
-        {
-            ++i;
-            char temp[1025];
-            switch(text[i])
-            {
-                case 'd':
-                case 'u':
-                {
-                    snprintf(temp, 1024, (text[i] == 'd') ? "%d" : "%u", *(int*)vars[k++]);
-                    for(unsigned int x = 0; x < strlen(temp); ++x)
-                        buffer[j++] = temp[x];
-                } break;
-                case 's':
-                {
-                    snprintf(temp, 1024, "%s", (char*)vars[k++]);
-                    for(unsigned int x = 0; x < strlen(temp); ++x)
-                        buffer[j++] = temp[x];
-                } break;
-                default:
-                {
-                    buffer[j++] = text[i - 1];
-                    buffer[j++] = text[i];
-                } break;
-            }
-        }
-        else
-            buffer[j++] = text[i];
-        buffer[j] = '\0';
-    }
-    // variablen Inhalt erzeugen
-    //vsnprintf(buffer, 1024, text, *(va_list*)&vars);
-
-    // letzte byte nullen (safety, vsnprintf schreibt bei zu großem string kein null-terminator)
-    buffer[1024] = '\0';
-
-    // und zeichnen
-    font->Draw( GetX(), GetY(), buffer, format, color);
+    font->Draw( GetX(), GetY(), GetFormatedText(), format, color);
 
     return true;
+}
+
+std::string ctrlVarText::GetFormatedText() const
+{
+    std::stringstream str;
+
+    unsigned curVar = 0;
+    bool isInFormat = false;
+
+    for(std::string::const_iterator it = text.begin(); it != text.end(); ++it)
+    {
+        if(isInFormat)
+        {
+            isInFormat = false;
+            switch(*it)
+            {
+            case 'd':
+                str << *reinterpret_cast<int*>(vars[curVar]);
+                curVar++;
+                break;
+            case 'u':
+                str << *reinterpret_cast<unsigned*>(vars[curVar]);
+                curVar++;
+                break;
+            case 's':
+                str << *reinterpret_cast<char*>(vars[curVar]);
+                curVar++;
+                break;
+            default:
+                assert(false); // Invalid format string
+                str << '%' << *it;
+                break;
+            }
+        }
+        else if(*it == '%')
+            isInFormat = true;
+        else
+            str << *it;
+    }
+
+    if(isInFormat)
+    {
+        assert(false); // Invalid format string
+        str << '%';
+    }
+
+    return str.str();
 }

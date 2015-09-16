@@ -218,7 +218,7 @@ void dskSelectMap::Msg_TableSelectItem(const unsigned int ctrl_id, const unsigne
                         text->Move(preview->GetX(true) + preview->GetWidth() + 10, text->GetY(true), true);
 
                         text = GetCtrl<ctrlText>(13);
-                        text->SetText(path.c_str());
+                        text->SetText(path);
                         text->Move(preview->GetX(true) + preview->GetWidth() + 10, text->GetY(true), true);
                     }
                 }

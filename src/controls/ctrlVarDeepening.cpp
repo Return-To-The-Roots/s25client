@@ -69,46 +69,7 @@ bool ctrlVarDeepening::Draw_(void)
 {
     Draw3D(x, y, width, height, tc, 2);
 
-    char buffer[1025];
-
-    // variablen Inhalt erzeugen
-    for(unsigned int i = 0, j = 0, k = 0; i < text.length() && j < 1024; ++i)
-    {
-        if(text[i] == '%')
-        {
-            ++i;
-            char temp[1025];
-            switch(text[i])
-            {
-                case 'd':
-                {
-                    snprintf(temp, 1024, "%d", *(int*)vars[k++]);
-                    for(unsigned int x = 0; x < strlen(temp); ++x)
-                        buffer[j++] = temp[x];
-                } break;
-                case 's':
-                {
-                    snprintf(temp, 1024, "%s", (char*)vars[k++]);
-                    for(unsigned int x = 0; x < strlen(temp); ++x)
-                        buffer[j++] = temp[x];
-                } break;
-                default:
-                {
-                    buffer[j++] = text[i - 1];
-                    buffer[j++] = text[i];
-                } break;
-            }
-        }
-        else
-            buffer[j++] = text[i];
-        buffer[j] = '\0';
-    }
-    //vsnprintf(buffer, 1024, text, *(va_list*)&vars);
-
-    // letzte byte nullen (safety, vsnprintf schreibt bei zu großem string kein null-terminator)
-    buffer[1024] = '\0';
-
-    font->Draw(x + width / 2, y + height / 2, buffer, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, color);
+    font->Draw(x + width / 2, y + height / 2, GetFormatedText(), glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, color);
 
     return true;
 }

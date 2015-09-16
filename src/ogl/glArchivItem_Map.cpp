@@ -97,18 +97,19 @@ int glArchivItem_Map::load(std::istream& file, bool only_header)
     if(only_header)
         return 0;
 
+    /* TODO: Not required anymore? Then remove it
     // Noch nicht am Ende der Datei?
-    unsigned i = 0, j = 0;
-    //if(!feof(file))
-    //{
-    //  // Gucken, wieviel noch danach kommt
-    //  i = ftell(file);
-    //  fseek(file, 0L, SEEK_END);
-    //  j = ftell(file);
-    //  fseek(file, i, SEEK_SET);
-    //}
+    unsigned curPos = 0, fileSize = 0;
+    if(!feof(file))
+    {
+      // Gucken, wieviel noch danach kommt
+      curPos = ftell(file);
+      fseek(file, 0L, SEEK_END);
+      fileSize = ftell(file);
+      fseek(file, i, SEEK_SET);
+    }
 
-    if((unsigned int)(j - i) > (unsigned int)(header->getWidth() * header->getHeight() * 2))
+    if((unsigned int)(fileSize - curPos) > (unsigned int)(header->getWidth() * header->getHeight() * 2))
     {
         // Wenn noch Platz ist, restliches Zeug noch auslesen
         // @todo: Shouldn't we use libsiedler2::allocator?
@@ -126,7 +127,7 @@ int glArchivItem_Map::load(std::istream& file, bool only_header)
         }
         set(MAP_OWNER, owner);
     }
-    else
+    else*/
     {
         libsiedler2::ArchivItem_Raw* item = dynamic_cast<libsiedler2::ArchivItem_Raw*>(GlAllocator().create(libsiedler2::BOBTYPE_RAW));
         item->getData().resize(header->getWidth() * header->getHeight()); // TODO: Really required?
