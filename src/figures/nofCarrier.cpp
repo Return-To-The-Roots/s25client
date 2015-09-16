@@ -669,10 +669,11 @@ void nofCarrier::GoalReached()
                 // Ware aufnehmen
                 carried_ware = static_cast<noFlag*>(rn)->SelectWare(dir, false, this);
 
-                carried_ware->Carry( (rs_dir ? workplace->GetF1() : workplace->GetF2()) );
-
                 if(carried_ware)
+                {
+                    carried_ware->Carry( (rs_dir ? workplace->GetF1() : workplace->GetF2()) );
                     state = CARRS_CARRYWARE;
+                }
             }
             // wenn was an der gegenüberliegenden Flaggge liegt, ebenfalls holen
             else if(workplace->AreWareJobs(!rs_dir, ct, false))
