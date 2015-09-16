@@ -70,9 +70,8 @@ void iwObservate::Msg_ButtonClick(const unsigned int ctrl_id)
         case 2:
             break;
         case 3:
-            view->GetGameWorldViewer()->MoveToMapObject(MapPoint(
-                view->GetLastPt().x - (view->GetLastPt().x - view->GetLastPt().x) / 2,
-                view->GetLastPt().x - (view->GetLastPt().x - view->GetLastPt().x) / 2)
+            view->GetGameWorldViewer()->MoveToMapObject(
+                MapPoint(view->GetLastPt() - (view->GetLastPt() - view->GetFirstPt()) / 2)
                 );
             break;
         case 4:
