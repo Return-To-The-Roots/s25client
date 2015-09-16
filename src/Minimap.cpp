@@ -274,7 +274,7 @@ unsigned IngameMinimap::CalcPixelColor(const void* param, const MapPoint pt, con
                 FOW_Type fot = gwv.GetFOWObject(pt, viewing_player)->GetType();
 
                 if(((!fow && (got == GOT_NOB_USUAL || got == GOT_NOB_MILITARY ||
-                              got == GOT_NOB_STOREHOUSE || got == GOT_NOB_USUAL ||
+                              got == GOT_NOB_STOREHOUSE || got == GOT_NOB_SHIPYARD || got == GOT_NOB_HARBORBUILDING ||
                               got == GOT_NOB_HQ || got == GOT_BUILDINGSITE)) || (fow && (fot == FOW_BUILDING || fot == FOW_BUILDINGSITE))))
                     drawn_object = DO_BUILDING;
                 /// Straßen?
