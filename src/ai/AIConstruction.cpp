@@ -706,7 +706,7 @@ void AIConstruction::RefreshBuildingCount()
                 buildingsWanted[BLD_GRANITEMINE] = 0;
         }
     }
-    if(MAX_MILITARY_RANK - aijh->ggs.getSelection(ADDON_MAX_RANK) < 1)
+    if(aijh->ggs.GetMaxMilitaryRank() == 0)
     {
         buildingsWanted[BLD_GOLDMINE] = 0; // max rank is 0 = private / recruit ==> gold is useless!
     }

@@ -341,13 +341,14 @@ bool nofActiveSoldier::FindEnemiesNearby(unsigned char excludedOwner)
 void nofActiveSoldier::IncreaseRank()
 {   
 	//max rank reached? -> dont increase!
-	if(MAX_MILITARY_RANK - (GetRank() + GAMECLIENT.GetGGS().getSelection(ADDON_MAX_RANK)) < 1)
+	if(GetRank() >= GAMECLIENT.GetGGS().GetMaxMilitaryRank())
 		return;
-	// Einen Rang höher
+
+    // Einen Rang höher
+    // Inventur entsprechend erhöhen und verringern
+    gwg->GetPlayer(player)->DecreaseInventoryJob(job, 1);
     job = Job(unsigned(job) + 1);
-	// Inventur entsprechend erhöhen und verringern
     gwg->GetPlayer(player)->IncreaseInventoryJob(job, 1);
-    gwg->GetPlayer(player)->DecreaseInventoryJob(Job(unsigned(job) - 1), 1);
 }
 
 /// Handle state "meet enemy" after each walking step

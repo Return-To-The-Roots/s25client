@@ -90,6 +90,10 @@ class GlobalGameSettings
         /// saves the current addon configuration to the SETTINGS.
         void SaveSettings() const;
 
+        /// Get current maximum rank for soldiers
+        /// 0 = Private, 1 = Private First Class, ...
+        unsigned int GetMaxMilitaryRank() const;
+
     private:
         void registerAddon(Addon* addon)
         {

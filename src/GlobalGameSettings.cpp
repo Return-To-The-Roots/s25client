@@ -65,6 +65,7 @@
 
 #include "Serializer.h"
 #include "Log.h"
+#include "gameData/MilitaryConsts.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
@@ -262,4 +263,11 @@ void GlobalGameSettings::setSelection(AddonId id, unsigned int selection)
     }
 
     it->status = selection;
+}
+
+unsigned GlobalGameSettings::GetMaxMilitaryRank() const
+{
+    unsigned selection = getSelection(ADDON_MAX_RANK);
+    assert(selection <= MAX_MILITARY_RANK);
+    return MAX_MILITARY_RANK - selection;
 }

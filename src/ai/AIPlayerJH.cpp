@@ -218,7 +218,7 @@ void AIPlayerJH::PlanNewBuildings( const unsigned gf )
         nobBaseWarehouse* wh = GetUpgradeBuildingWarehouse();
         SetGatheringForUpgradeWarehouse(wh);
 
-        if (MAX_MILITARY_RANK - ggs.getSelection(ADDON_MAX_RANK) > 0) //there is more than 1 rank available -> distribute
+        if (ggs.GetMaxMilitaryRank() > 0) //there is more than 1 rank available -> distribute
             DistributeMaxRankSoldiersByBlocking(5,wh);
         //unlimited when every warehouse has at least that amount
         DistributeGoodsByBlocking(23, 30); //30 boards for each warehouse - block after that - should speed up expansion
@@ -359,7 +359,7 @@ void AIPlayerJH::SetGatheringForUpgradeWarehouse(nobBaseWarehouse* upgradewareho
 			if(!(*it)->CheckRealInventorySettings(0, 8, 21)) //not collecting shields? -> start it
 				aii->ChangeInventorySetting((*it)->GetPos(), 0, 8, 21);
 
-			if(!(*it)->CheckRealInventorySettings(1, 8, JOB_PRIVATE) && MAX_MILITARY_RANK - ggs.getSelection(ADDON_MAX_RANK) > 0) //not collecting privates AND we can actually upgrade soldiers? -> start it
+			if(!(*it)->CheckRealInventorySettings(1, 8, JOB_PRIVATE) && ggs.GetMaxMilitaryRank() > 0) //not collecting privates AND we can actually upgrade soldiers? -> start it
 				aii->ChangeInventorySetting((*it)->GetPos(), 1, 8, JOB_PRIVATE);
 
 			if(((*it)->CheckRealInventorySettings(1, 8, 0) && ((*it)->GetInventory()->people[JOB_HELPER] > 50)) || (!(*it)->CheckRealInventorySettings(1, 8, 0) && !((*it)->GetInventory()->people[JOB_HELPER] > 50)))
@@ -1134,95 +1134,95 @@ void AIPlayerJH::DistributeGoodsByBlocking(unsigned char goodnumber, unsigned li
 }
 void AIPlayerJH::DistributeMaxRankSoldiersByBlocking(unsigned limit,nobBaseWarehouse* upwh)
 {
-	unsigned completewh=aii->GetStorehouses().size();
+	unsigned numCompleteWh=aii->GetStorehouses().size();
 	
-	if(completewh<1) //no warehouses -> no job
+	if(numCompleteWh<1) //no warehouses -> no job
 		return;
 
-	unsigned char maxrankjobnr=JOB_PRIVATE + MAX_MILITARY_RANK  - ggs.getSelection(ADDON_MAX_RANK); //private + general - max rank limiter
+	unsigned char maxRankJobNr=JOB_PRIVATE + ggs.GetMaxMilitaryRank(); //private + general - max rank limiter
 	
-	if(completewh==1 ) //only 1 warehouse? dont block max ranks here
+	if(numCompleteWh==1 ) //only 1 warehouse? dont block max ranks here
 	{
-		if ((*(aii->GetStorehouses().begin()))->CheckRealInventorySettings(1,2,maxrankjobnr))
-			aii->ChangeInventorySetting(aii->GetStorehouses().front()->GetPos(),1,2,maxrankjobnr);
+		if (aii->GetStorehouses().front()->CheckRealInventorySettings(1,2,maxRankJobNr))
+			aii->ChangeInventorySetting(aii->GetStorehouses().front()->GetPos(),1,2,maxRankJobNr);
 		return;
 	}
 	//rest applies for at least 2 complete warehouses!
-	std::list<nobMilitary*>frontiermils; //make a list containing frontier military buildings
+	std::list<nobMilitary*>frontierMils; //make a list containing frontier military buildings
 	for (std::list<nobMilitary*>::const_iterator it = aii->GetMilitaryBuildings().begin();it!=aii->GetMilitaryBuildings().end();it++)
 	{
 		if ((*it)->GetFrontierDistance()>0 && !(*it)->IsNewBuilt())
-			frontiermils.push_back(*it);
+			frontierMils.push_back(*it);
 	}
-	std::list<nobBaseWarehouse*>frontierwhs; //make a list containing all warehouses near frontier military buildings
+	std::list<nobBaseWarehouse*>frontierWhs; //make a list containing all warehouses near frontier military buildings
 	for (std::list<nobBaseWarehouse*>::const_iterator it = aii->GetStorehouses().begin(); it!=aii->GetStorehouses().end();it++)
 	{
-		for (std::list<nobMilitary*>::const_iterator it2 = frontiermils.begin(); it2!=frontiermils.end();it2++)
+		for (std::list<nobMilitary*>::const_iterator it2 = frontierMils.begin(); it2!=frontierMils.end();it2++)
 		{	
 			if(aii->CalcDistance((*it)->GetPos(),(*it2)->GetPos())<12)
 			{
-				frontierwhs.push_back(*it);
+				frontierWhs.push_back(*it);
 				break;
 			}
 		}		
 	}
 	//have frontier warehouses?
-	if(!frontierwhs.empty())
+	if(!frontierWhs.empty())
 	{
 		//LOG.lprintf("distribute maxranks - got frontierwhs for player %i \n",playerid);
-		bool understaffedwh=false;
+		bool hasUnderstaffedWh=false;
 		//try to gather limit maxranks in each - if we have that many unblock for all frontier whs, 
 		//check if there is at least one with less than limit first
-		for (std::list<nobBaseWarehouse*>::const_iterator it=frontierwhs.begin();it!=frontierwhs.end();it++)
+		for (std::list<nobBaseWarehouse*>::const_iterator it=frontierWhs.begin();it!=frontierWhs.end();it++)
 		{
-			if((*it)->GetInventory()->people[maxrankjobnr]<limit)
+			if((*it)->GetInventory()->people[maxRankJobNr]<limit)
 			{
-				understaffedwh=true;
+				hasUnderstaffedWh=true;
 				break;
 			}
 		}
 		//if understaffed was found block in all with >=limit else unblock in all
 		for (std::list<nobBaseWarehouse*>::const_iterator it=aii->GetStorehouses().begin();it!=aii->GetStorehouses().end();it++)
 		{
-			if(helpers::contains(frontierwhs, (*it))) //frontier wh?
+			if(helpers::contains(frontierWhs, (*it))) //frontier wh?
 			{
-				if(understaffedwh)
+				if(hasUnderstaffedWh)
 				{
-					if((*it)->GetInventory()->people[maxrankjobnr]<limit)
+					if((*it)->GetInventory()->people[maxRankJobNr]<limit)
 					{
-						if ((*it)->CheckRealInventorySettings(1,2,maxrankjobnr)) //maxranks blocked? -> unblock
-							aii->ChangeInventorySetting((*it)->GetPos(),1,2,maxrankjobnr);
+						if ((*it)->CheckRealInventorySettings(1,2,maxRankJobNr)) //maxranks blocked? -> unblock
+							aii->ChangeInventorySetting((*it)->GetPos(),1,2,maxRankJobNr);
 					}
 					else //more than limit
 					{
-						if (!(*it)->CheckRealInventorySettings(1,2,maxrankjobnr)) //maxranks not blocked -> block
-							aii->ChangeInventorySetting((*it)->GetPos(),1,2,maxrankjobnr);
+						if (!(*it)->CheckRealInventorySettings(1,2,maxRankJobNr)) //maxranks not blocked -> block
+							aii->ChangeInventorySetting((*it)->GetPos(),1,2,maxRankJobNr);
 					}					
 				}
 				else //no understaffedwh
 				{
-					if ((*it)->CheckRealInventorySettings(1,2,maxrankjobnr)) //maxranks blocked? -> unblock
-							aii->ChangeInventorySetting((*it)->GetPos(),1,2,maxrankjobnr);
+					if ((*it)->CheckRealInventorySettings(1,2,maxRankJobNr)) //maxranks blocked? -> unblock
+							aii->ChangeInventorySetting((*it)->GetPos(),1,2,maxRankJobNr);
 				}
 			}
 			else //not frontier wh! block it
 			{
-				if (!(*it)->CheckRealInventorySettings(1,2,maxrankjobnr)) //maxranks not blocked -> block
-							aii->ChangeInventorySetting((*it)->GetPos(),1,2,maxrankjobnr);
+				if (!(*it)->CheckRealInventorySettings(1,2,maxRankJobNr)) //maxranks not blocked -> block
+							aii->ChangeInventorySetting((*it)->GetPos(),1,2,maxRankJobNr);
 			}
 		}
 	}
 	else //there are no frontier whs!
 	{
 		//LOG.lprintf("distribute maxranks - got NO frontierwhs for player %i \n",playerid);
-		bool understaffedwh=false;
+		bool hasUnderstaffedWh=false;
 		//try to gather limit maxranks in each - if we have that many unblock for all  whs, 
 		//check if there is at least one with less than limit first
 		for (std::list<nobBaseWarehouse*>::const_iterator it=aii->GetStorehouses().begin();it!=aii->GetStorehouses().end();it++)
 		{
-			if((*it)->GetInventory()->people[maxrankjobnr]<limit && (*it)->GetPos() != upwh->GetPos()) // warehouse next to upgradebuilding is special case
+			if((*it)->GetInventory()->people[maxRankJobNr]<limit && (*it)->GetPos() != upwh->GetPos()) // warehouse next to upgradebuilding is special case
 			{
-				understaffedwh=true;
+				hasUnderstaffedWh=true;
 				break;
 			}
 		}
@@ -1231,28 +1231,28 @@ void AIPlayerJH::DistributeMaxRankSoldiersByBlocking(unsigned limit,nobBaseWareh
 			if((*it)->GetPos() == upwh->GetPos()) // warehouse next to upgradebuilding should block when there is more than 1 wh
 			{
 				//LOG.lprintf("distribute maxranks - got NO frontierwhs for player %i , block at hq \n",playerid);
-				if (!(*it)->CheckRealInventorySettings(1,2,maxrankjobnr))
-					aii->ChangeInventorySetting((*it)->GetPos(),1,2,maxrankjobnr);
+				if (!(*it)->CheckRealInventorySettings(1,2,maxRankJobNr))
+					aii->ChangeInventorySetting((*it)->GetPos(),1,2,maxRankJobNr);
 				continue;
 			}
-			if(understaffedwh)
+			if(hasUnderstaffedWh)
 			{
 				
-				if((*it)->GetInventory()->people[maxrankjobnr]<limit )
+				if((*it)->GetInventory()->people[maxRankJobNr]<limit )
 				{
-					if ((*it)->CheckRealInventorySettings(1,2,maxrankjobnr)) //maxranks blocked? -> unblock
-						aii->ChangeInventorySetting((*it)->GetPos(),1,2,maxrankjobnr);
+					if ((*it)->CheckRealInventorySettings(1,2,maxRankJobNr)) //maxranks blocked? -> unblock
+						aii->ChangeInventorySetting((*it)->GetPos(),1,2,maxRankJobNr);
 				}
 				else //more than limit
 				{
-					if (!(*it)->CheckRealInventorySettings(1,2,maxrankjobnr)) //maxranks not blocked -> block
-						aii->ChangeInventorySetting((*it)->GetPos(),1,2,maxrankjobnr);
+					if (!(*it)->CheckRealInventorySettings(1,2,maxRankJobNr)) //maxranks not blocked -> block
+						aii->ChangeInventorySetting((*it)->GetPos(),1,2,maxRankJobNr);
 				}					
 			}
 			else //no understaffedwh
 			{
-				if ((*it)->CheckRealInventorySettings(1,2,maxrankjobnr)) //maxranks blocked? -> unblock
-						aii->ChangeInventorySetting((*it)->GetPos(),1,2,maxrankjobnr);
+				if ((*it)->CheckRealInventorySettings(1,2,maxRankJobNr)) //maxranks blocked? -> unblock
+						aii->ChangeInventorySetting((*it)->GetPos(),1,2,maxRankJobNr);
 			}
 		}
 	}
@@ -2764,12 +2764,6 @@ void AIPlayerJH::AdjustSettings()
 
 unsigned AIPlayerJH::CalcMilSettings()
 {
-	///first sum up all soldiers we have
-	unsigned milrank=JOB_PRIVATE;
-	unsigned soldiercount=0;
-	unsigned soldierinusefixed=0; 
-	int uun=UpdateUpgradeBuilding();
-	int count=0;	
 	unsigned InlandTroops[5]= {0,0,0,0,0}; //how many troops are required to fill inland buildings at settings 4,5,6,7,8
 	unsigned maxtroops[5][4]= //max troops in the military buildings at settings 4-8
 	{
@@ -2779,24 +2773,32 @@ unsigned AIPlayerJH::CalcMilSettings()
 		{1,2,5,8},
 		{2,3,6,9}
 	};
-	unsigned howmanyshouldstayconnected=PlannedConnectedInlandMilitary();
-	for (unsigned i=0;i<5;i++){soldiercount += aii->GetInventory()->people[milrank++];}
+    ///first sum up all soldiers we have
+    unsigned soldierCount=0;
+	for (unsigned i=0; i<ggs.GetMaxMilitaryRank(); i++)
+        soldierCount += aii->GetInventory()->people[JOB_PRIVATE + i];
 	
 	//now add up all counts of soldiers that are fixed in use and those that depend on whatever we have as a result
-	for (std::list<nobMilitary*>::const_iterator it=aii->GetMilitaryBuildings().begin();it!=aii->GetMilitaryBuildings().end();it++)
+    const unsigned numShouldStayConnected = PlannedConnectedInlandMilitary();
+    int count=0;	
+    unsigned soldierInUseFixed=0; 
+    const int uun=UpdateUpgradeBuilding();
+	for (std::list<nobMilitary*>::const_iterator it=aii->GetMilitaryBuildings().begin(); it!=aii->GetMilitaryBuildings().end(); ++it)
 	{		
 		unsigned convtype=0;
 		if((*it)->GetBuildingType()==BLD_BARRACKS)
 			convtype=0;
-		if((*it)->GetBuildingType()==BLD_GUARDHOUSE)			
+		else if((*it)->GetBuildingType()==BLD_GUARDHOUSE)			
 			convtype=1;
-		if((*it)->GetBuildingType()==BLD_WATCHTOWER)
+		else if((*it)->GetBuildingType()==BLD_WATCHTOWER)
 			convtype=2;
-		if((*it)->GetBuildingType()==BLD_FORTRESS)
+		else if((*it)->GetBuildingType()==BLD_FORTRESS)
 			convtype=3;
-		if((*it)->GetFrontierDistance()==3 || ((*it)->GetFrontierDistance()==2 && ggs.getSelection(ADDON_SEA_ATTACK)!=2) || ((*it)->GetFrontierDistance()==0 && (aii->GetMilitaryBuildings().size()-howmanyshouldstayconnected < (unsigned)count || count==uun)))//front or connected interior
+		if((*it)->GetFrontierDistance()==3 ||
+            ((*it)->GetFrontierDistance()==2 && ggs.getSelection(ADDON_SEA_ATTACK)!=2) ||
+            ((*it)->GetFrontierDistance()==0 && (aii->GetMilitaryBuildings().size() < (unsigned)count + numShouldStayConnected || count==uun)))//front or connected interior
 		{
-			soldierinusefixed+=maxtroops[4][convtype];
+			soldierInUseFixed+=maxtroops[4][convtype];
 		}
 		else if((*it)->GetFrontierDistance()==1) //1 bar (inland)
 		{
@@ -2804,19 +2806,20 @@ unsigned AIPlayerJH::CalcMilSettings()
 				InlandTroops[i]+=maxtroops[i][convtype];	
 		}
 		else//setting should be 0 so add 1 soldier
-			soldierinusefixed++;
+			soldierInUseFixed++;
 
 		count++;
 	}
 	
 	//now the current need total and for inland and harbor is ready for use
-	unsigned returnvalue=8;
-	while (returnvalue - 4 > 0)
-	{//have more than enough soldiers for this setting or just enough and this is the current setting? -> return it else try the next lower setting down to 4 (50%)
-		if(soldierinusefixed + InlandTroops[returnvalue - 4] < soldiercount*10/11 || (player.military_settings[5]>=returnvalue && soldierinusefixed + InlandTroops[returnvalue - 4] < soldiercount))
+	unsigned returnValue=8;
+	while (returnValue > 4)
+	{
+        //have more than enough soldiers for this setting or just enough and this is the current setting? -> return it else try the next lower setting down to 4 (50%)
+		if(soldierInUseFixed + InlandTroops[returnValue - 4] < soldierCount*10/11 || (player.military_settings[5]>=returnValue && soldierInUseFixed + InlandTroops[returnValue - 4] < soldierCount))
 			break;
-		returnvalue--;
+		returnValue--;
 	}
 	//LOG.lprintf("player %i inland milsetting %i \n",playerid,returnvalue);
-	return returnvalue;
+	return returnValue;
 }

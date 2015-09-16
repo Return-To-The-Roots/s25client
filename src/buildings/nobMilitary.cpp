@@ -302,7 +302,7 @@ void nobMilitary::HandleEvent(const unsigned int id)
             // wird dieser ebenfalls befördert usw.!
             std::vector<nofPassiveSoldier*> upgradedSoldiers;
             // Rang des letzten beförderten Soldaten, 4-MaxRank am Anfang setzen, damit keiner über den maximalen Rang befördert wird
-            unsigned char last_rank = MAX_MILITARY_RANK - GAMECLIENT.GetGGS().getSelection(ADDON_MAX_RANK);
+            unsigned char last_rank = GAMECLIENT.GetGGS().GetMaxMilitaryRank();
             for(SortedTroops::reverse_iterator it = troops.rbegin(); it != troops.rend();)
             {
                 // Es wurde schon einer befördert, dieser Soldat muss nun einen niedrigeren Rang
@@ -569,7 +569,7 @@ void nobMilitary::OrderNewSoldiers()
 	std::vector<nofPassiveSoldier*> noNeed;
 	for(SortedTroops::iterator it = ordered_troops.begin(); it != ordered_troops.end(); )
     {
-		if((*it)->GetRank() >= MAX_MILITARY_RANK - GAMECLIENT.GetGGS().getSelection(ADDON_MAX_RANK))
+		if((*it)->GetRank() >= GAMECLIENT.GetGGS().GetMaxMilitaryRank())
 		{
 			nofPassiveSoldier* soldier = *it;
 			it = helpers::erase(ordered_troops, it);
@@ -872,7 +872,7 @@ unsigned nobMilitary::HasMaxRankSoldier() const
 	unsigned count=0;
     for(SortedTroops::const_reverse_iterator it = troops.rbegin(); it != troops.rend(); ++it)
     {
-		if ((*it)->GetRank() >= (MAX_MILITARY_RANK - GAMECLIENT.GetGGS().getSelection(ADDON_MAX_RANK)))
+		if ((*it)->GetRank() >= GAMECLIENT.GetGGS().GetMaxMilitaryRank())
 			count++;
     }
 	return count;
@@ -1145,8 +1145,8 @@ unsigned nobMilitary::CalcCoinsPoints()
     // Beförderbare Soldaten zählen
     for(SortedTroops::iterator it = troops.begin(); it != troops.end(); ++it)
     {
-        // Solange es kein Max Rank (default 4) ist, kann der Soldat noch befördert werden
-        if((*it)->GetRank() < 4 - GAMECLIENT.GetGGS().getSelection(ADDON_MAX_RANK))
+        // Solange es kein Max Rank ist, kann der Soldat noch befördert werden
+        if((*it)->GetRank() < GAMECLIENT.GetGGS().GetMaxMilitaryRank())
             points += 20;
     }
 
@@ -1205,7 +1205,7 @@ void nobMilitary::PrepareUpgrading()
 
     for(SortedTroops::iterator it = troops.begin(); it != troops.end(); ++it)
     {
-        if((*it)->GetRank() < 4 - GAMECLIENT.GetGGS().getSelection(ADDON_MAX_RANK))
+        if((*it)->GetRank() < GAMECLIENT.GetGGS().GetMaxMilitaryRank())
         {
             // es wurde ein Soldat gefunden, der befördert werden kann
             soldiers_available = true;

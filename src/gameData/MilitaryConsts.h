@@ -18,6 +18,8 @@
 #ifndef MILITARY_CONSTS_H_
 #define MILITARY_CONSTS_H_
 
+#include "gameData/NationConsts.h"
+
 /// Größe der Militärquadrate (in Knotenpunkten), in die die Welt eingeteilt wurde für Militärgebäude
 const unsigned short MILITARY_SQUARE_SIZE = 20;
 
