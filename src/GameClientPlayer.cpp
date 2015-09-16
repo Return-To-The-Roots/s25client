@@ -878,23 +878,25 @@ Ware* GameClientPlayer::OrderWare(const GoodType ware, noBaseBuilding* goal)
     }	
     else //no warehouse can deliver the ware -> check all our wares for lost wares that might match the order
 	{
-		unsigned tlength = 0xFFFFFFFF, best_length = 0xFFFFFFFF;
-		Ware* tempbest=0;
+		unsigned bestLength = 0xFFFFFFFF;
+		Ware* bestWare = NULL;
 		for(std::list<Ware*>::iterator it = ware_list.begin(); it != ware_list.end(); ++it)
 		{
 			if((*it)->IsLostWare() && (*it)->type==ware)
-			{ //got a lost ware with a road to goal -> find best
-				if((tlength=(*it)->CheckNewGoalForLostWare(goal)<best_length))
+			{
+                //got a lost ware with a road to goal -> find best
+                unsigned curLength = (*it)->CheckNewGoalForLostWare(goal);
+				if(curLength < bestLength)
 				{
-					best_length=tlength;
-					tempbest=(*it);	
+					bestLength = curLength;
+					bestWare = (*it);	
 				}
 			}
 		}
-		if(tempbest)
+		if(bestWare)
 		{
-			tempbest->SetNewGoalForLostWare(goal);
-			return tempbest;
+			bestWare->SetNewGoalForLostWare(goal);
+			return bestWare;
 		}
 	}
 	return 0;
@@ -937,15 +939,15 @@ RoadSegment* GameClientPlayer::FindRoadForDonkey(noRoadNode* start, noRoadNode**
             // Beste Flagge von diesem Weg, und beste Wegstrecke
             noRoadNode* current_best_goal = 0;
             // Weg zu beiden Flaggen berechnen
-            unsigned length1 = 0, length2 = 0;
-            gwg->FindHumanPathOnRoads(start, (*it)->GetF1(), &length1, NULL, *it);
-            gwg->FindHumanPathOnRoads(start, (*it)->GetF2(), &length2, NULL, *it);
+            unsigned length1, length2;
+            bool isF1Reachable = gwg->FindHumanPathOnRoads(start, (*it)->GetF1(), &length1, NULL, *it) != 0xFF;
+            bool isF2Reachable = gwg->FindHumanPathOnRoads(start, (*it)->GetF2(), &length2, NULL, *it) != 0xFF;
 
             // Wenn man zu einer Flagge nich kommt, die jeweils andere nehmen
-            if(!length1)
-                current_best_goal = (length2) ? (*it)->GetF2() : 0;
-            else if(length2)
-                current_best_goal = (length1) ? (*it)->GetF1() : 0;
+            if(!isF1Reachable)
+                current_best_goal = (isF2Reachable) ? (*it)->GetF2() : 0;
+            else if(!isF2Reachable)
+                current_best_goal = (isF1Reachable) ? (*it)->GetF1() : 0;
             else
             {
                 // ansonsten die kürzeste von beiden
