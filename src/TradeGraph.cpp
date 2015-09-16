@@ -203,25 +203,19 @@ unsigned char TradeRoute::RecalcLocalRoute()
     }
 
     unsigned char next_dir;
-    // Global route over or are we near the goal? Then find a (real) path to our goal
-    if(global_pos >= global_route.size()
-            || tg->gwg->CalcDistance(current_pos, goal) < TGN_SIZE / 2)
+    if(global_pos >= global_route.size() || tg->gwg->CalcDistance(current_pos, goal) < TGN_SIZE / 2)
     {
+        // Global route over or are we near the goal? Then find a (real) path to our goal
         global_pos = global_route.size();
         next_dir = tg->gwg->FindTradePath(current_pos, goal, tg->player, TG_PF_LENGTH, false, &local_route);
         local_pos = 0;
     }
     else
     {
-        next_dir = tg->gwg->FindTradePath(current_pos, tg->GetNode(current_pos_tg).main_pos, tg->player, TG_PF_LENGTH,
-                                          false, &local_route);
+        next_dir = tg->gwg->FindTradePath(current_pos, tg->GetNode(current_pos_tg).main_pos, tg->player, TG_PF_LENGTH, false, &local_route);
         local_pos = 0;
     }
-    if(next_dir != 0xff)
-        return next_dir;
-    else
-        return next_dir; //so we can actually fail to find a path now
-    //return RecalcGlobalRoute();
+    return next_dir;
 }
 
 /// Recalc the whole route and returns next direction
