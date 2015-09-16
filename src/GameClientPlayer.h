@@ -461,8 +461,8 @@ class GameClientPlayer : public GamePlayerInfo
         Statistic statistic[STAT_TIME_COUNT];
 
         // Die Statistikwerte die 'aktuell' gemessen werden
-        unsigned int statisticCurrentData[STAT_TYPE_COUNT];
-        unsigned short statisticCurrentMerchandiseData[STAT_MERCHANDISE_TYPE_COUNT];
+        int statisticCurrentData[STAT_TYPE_COUNT];
+        int statisticCurrentMerchandiseData[STAT_MERCHANDISE_TYPE_COUNT];
 
         unsigned short incrStatIndex(unsigned short i) { return (i == STAT_STEP_COUNT - 1) ? 0 : ++i; }
         unsigned short decrStatIndex(unsigned short i) { return (i == 0) ? STAT_STEP_COUNT - 1 : --i; }
