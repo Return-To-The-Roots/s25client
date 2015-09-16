@@ -23,6 +23,7 @@
 #include "DriverWrapper.h"
 #include "driver/src/VideoInterface.h"
 #include <string>
+#include <boost/array.hpp>
 
 class VideoDriver;
 
@@ -106,7 +107,7 @@ class VideoDriverWrapper : public Singleton<VideoDriverWrapper>
         DriverWrapper driver_wrapper;
         IVideoDriver* videodriver;
 
-        unsigned int texture_list[100000];
+        boost::array<unsigned int, 100000> texture_list;
         unsigned int texture_pos;
         unsigned int texture_current;
 };

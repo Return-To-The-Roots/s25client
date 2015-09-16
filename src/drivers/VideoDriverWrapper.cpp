@@ -31,6 +31,7 @@
 #include "Log.h"
 
 #include <ctime>
+#include <algorithm>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -48,7 +49,7 @@ static char THIS_FILE[] = __FILE__;
  */
 VideoDriverWrapper::VideoDriverWrapper() :  videodriver(NULL), texture_pos(0), texture_current(0)
 {
-    memset(texture_list, 0, sizeof(unsigned int) * 100000);
+    std::fill(texture_list.begin(), texture_list.end(), 0);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -262,9 +263,9 @@ bool VideoDriverWrapper::hasExtension(const std::string& extension)
  */
 void VideoDriverWrapper::CleanUp()
 {
-    glDeleteTextures(texture_pos, (const GLuint*)texture_list);
+    glDeleteTextures(texture_pos, (const GLuint*)&texture_list.front());
 
-    memset(texture_list, 0, sizeof(unsigned int)*texture_pos);
+    std::fill(texture_list.begin(), texture_list.end(), 0);
     texture_pos = 0;
 }
 
@@ -276,9 +277,9 @@ void VideoDriverWrapper::CleanUp()
  */
 unsigned int VideoDriverWrapper::GenerateTexture()
 {
-    if(texture_pos >= 100000)
+    if(texture_pos >= texture_list.size())
     {
-        fatal_error("100000 texture-limit reached!!!!\n");
+        fatal_error("texture-limit reached!!!!\n");
         return 0;
     }
 

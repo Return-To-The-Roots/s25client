@@ -207,7 +207,7 @@ void AIPlayerJH::PlanNewBuildings( const unsigned gf )
         BLD_BAKERY,
         BLD_DONKEYBREEDER
     }};
-    const int resGatherBldCount = 14; /* The first n buildings in the above list, that gather resources */
+    const unsigned resGatherBldCount = 14; /* The first n buildings in the above list, that gather resources */
 
     //LOG.lprintf("new buildorders %i whs and %i mil for player %i \n",aii->GetStorehouses().size(),aii->GetMilitaryBuildings().size(),playerid);
 
