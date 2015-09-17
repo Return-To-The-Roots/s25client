@@ -42,7 +42,7 @@ class iwSaveLoad : public IngameWindow
         void Msg_TableSelectItem(const unsigned int ctrl_id, const unsigned short selection);
 
         /// Callbackfunktion zum Eintragen eines Spielstandes in die Tabelle
-        static void FillSaveTable(const std::string& filename, void* param);
+        static void FillSaveTable(const std::string& filePath, void* param);
 };
 
 class iwSave: public iwSaveLoad

@@ -37,6 +37,8 @@
 #	include <unistd.h>
 #endif // _WIN32
 
+#include <boost/filesystem.hpp>
+
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
@@ -159,16 +161,15 @@ void iwPlayReplay::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult
  *  @param[in] param    Ein benutzerdefinierter Parameter
  *
  *  @todo Noch korrekt dokumentieren (was wird da so übersprungen usw)
- *  @todo Fehlerabfrage der freads!!!
  *
  *  @author OLiver
  */
-void iwPlayReplay::FillReplayTable(const std::string& filename, void* param)
+void iwPlayReplay::FillReplayTable(const std::string& filePath, void* param)
 {
     Replay replay;
 
     // Datei laden
-    if(!replay.LoadHeader(filename, false))
+    if(!replay.LoadHeader(filePath, false))
         return;
 
     // Zeitstamp benutzen
@@ -192,25 +193,21 @@ void iwPlayReplay::FillReplayTable(const std::string& filename, void* param)
     }
 
     // Dateiname noch rausextrahieren aus dem Pfad
-    size_t pos = filename.find_last_of('/');
-    if(pos == std::string::npos)
+    bfs::path path = filePath;
+    if(!path.has_filename())
         return;
-    std::string extracted_filename = filename.substr(pos + 1);
+    bfs::path fileName = path.filename();
 
     char gfl[50];
     snprintf(gfl, 50, "%u", replay.last_gf);
 
     // Und das Zeug zur Tabelle hinzufügen
-    static_cast<ctrlTable*>(param)->AddRow(0, extracted_filename.c_str(), dateStr.c_str(), tmp_players.c_str(), gfl, filename.c_str());
+    static_cast<ctrlTable*>(param)->AddRow(0, fileName.c_str(), dateStr.c_str(), tmp_players.c_str(), gfl, filePath.c_str());
 }
 
 
-void iwPlayReplay::RemoveReplay(const std::string& filename, void* param)
+void iwPlayReplay::RemoveReplay(const std::string& filePath, void* param)
 {
-    // und tschüss
-#ifdef _MSC_VER
-	_unlink(filename.c_str());
-#else
-	unlink(filename.c_str());
-#endif // _MSC_VER
+    boost::system::error_code ec;
+    bfs::remove(filePath, ec);
 }

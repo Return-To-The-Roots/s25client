@@ -131,8 +131,8 @@ class glArchivItem_Font : public libsiedler2::ArchivItem_Font
             return ci;
         }
 
-        boost::scoped_ptr<glArchivItem_Bitmap> _font_outline;
         boost::scoped_ptr<glArchivItem_Bitmap> _font;
+        boost::scoped_ptr<glArchivItem_Bitmap> _font_outline;
 
         unsigned int chars_per_line;
         std::map<unsigned int, char_info> utf8_mapping;

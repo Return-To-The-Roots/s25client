@@ -35,9 +35,9 @@ class iwPlayReplay : public IngameWindow
         void Msg_TableChooseItem(const unsigned ctrl_id, const unsigned short selection);
 
         /// Callbackfunktion zum Eintragen einer Replay-Zeile in der Tabelle.
-        static void FillReplayTable(const std::string& filename, void* param);
+        static void FillReplayTable(const std::string& filePath, void* param);
         /// Callbackfunktion zum löschen aller Replays
-        static void RemoveReplay(const std::string& filename, void* param);
+        static void RemoveReplay(const std::string& filePath, void* param);
 
         /// Startet das Replay (aktuell ausgewählter Eintrag)
         void StartReplay();

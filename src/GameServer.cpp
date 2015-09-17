@@ -53,6 +53,8 @@
 #include <bzlib.h>
 #include "luaIncludes.h"
 
+#include <boost/filesystem.hpp>
+
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
@@ -214,11 +216,11 @@ bool GameServer::TryToStart(const CreateServerInfo& csi, const std::string& map_
 bool GameServer::Start()
 {
     // map-shortname füllen
-    size_t pos = serverconfig.mapname.find_last_of('/');
-    if(pos == std::string::npos)
-        mapinfo.name =  serverconfig.mapname;
+    bfs::path mapPath = serverconfig.mapname;
+    if(mapPath.has_filename())
+        mapinfo.name =  mapPath.filename().string();
     else
-        mapinfo.name = serverconfig.mapname.substr(pos + 1);
+        mapinfo.name = serverconfig.mapname;
 
     // mapinfo einlesen
     FILE* map_f = fopen(serverconfig.mapname.c_str(), "rb");

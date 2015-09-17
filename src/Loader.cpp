@@ -329,13 +329,10 @@ bool Loader::SortFilesHelper(const std::string& lhs, const std::string& rhs)
 {
     int a, b;
 
-    std::string lf = lhs.substr(lhs.find_last_of('/') + 1);
-    std::string rf = rhs.substr(rhs.find_last_of('/') + 1);
-
     std::stringstream aa;
-    aa << lf;
+    aa << bfs::path(lhs).filename().string();
     std::stringstream bb;
-    bb << rf;
+    bb << bfs::path(rhs).filename().string();
 
     if( !(aa >> a) || !(bb >> b) )
     {
@@ -1191,11 +1188,11 @@ bool Loader::LoadFile(const std::string& filePath, const libsiedler2::ArchivItem
 
     lst.sort(SortFilesHelper);
 
-    unsigned char* buffer = new unsigned char[1000 * 1000 * 4];
-    for(std::list<std::string>::iterator i = lst.begin(); i != lst.end(); ++i)
+    std::vector<unsigned char> buffer(1000 * 1000 * 4);
+    for(std::list<std::string>::iterator itFile = lst.begin(); itFile != lst.end(); ++itFile)
     {
         // read file number, to set the index correctly
-        std::string filename = i->substr(i->find_last_of('/') + 1);
+        std::string filename = bfs::path(*itFile).filename().string();
         std::stringstream nrs;
         int nr = -1;
         nrs << filename;
@@ -1203,7 +1200,7 @@ bool Loader::LoadFile(const std::string& filePath, const libsiedler2::ArchivItem
             nr = -1;
 
         // Dateiname zerlegen
-        std::vector<std::string> wf = ExplodeString(*i, '.');
+        std::vector<std::string> wf = ExplodeString(*itFile, '.');
 
         libsiedler2::BOBTYPES bobtype = libsiedler2::BOBTYPE_BITMAP_RAW;
         short nx = 0;
@@ -1232,19 +1229,15 @@ bool Loader::LoadFile(const std::string& filePath, const libsiedler2::ArchivItem
                 dy = atoi(it->substr(2).c_str());
         }
 
-        // Placeholder
-        if( wf.back() == "empty" )
+        if( wf.back() == "empty" ) // Placeholder
         {
-            LOG.lprintf(_("Skipping %s\n"), i->c_str());
+            LOG.lprintf(_("Skipping %s\n"), itFile->c_str());
             to.alloc_inc(1);
             continue;
-        }
-
-        // Bitmap
-        else if( wf.back() == "bmp" )
+        }else if( wf.back() == "bmp" ) // Bitmap
         {
             libsiedler2::ArchivInfo temp;
-            if(!LoadArchiv( *i, palette, temp ) )
+            if(!LoadArchiv( *itFile, palette, temp ) )
                 return false;
 
             // Nun Daten abhängig der Typen erstellen, nur erstes Element wird bei Bitmaps konvertiert
@@ -1258,23 +1251,23 @@ bool Loader::LoadFile(const std::string& filePath, const libsiedler2::ArchivItem
                 return false;
             }
 
-            out->setName(i->c_str());
+            out->setName(itFile->c_str());
             out->setNx(nx);
             out->setNy(ny);
 
-            memset(buffer, 0, 1000 * 1000 * 4);
-            in->print(buffer, 1000, 1000, libsiedler2::FORMAT_RGBA, palette);
+            std::fill(buffer.begin(), buffer.end(), 0);
+            in->print(&buffer.front(), 1000, 1000, libsiedler2::FORMAT_RGBA, palette);
 
             switch(bobtype)
             {
                 case libsiedler2::BOBTYPE_BITMAP_RLE:
                 case libsiedler2::BOBTYPE_BITMAP_SHADOW:
                 {
-                    out->create(in->getWidth(), in->getHeight(), buffer, 1000, 1000, libsiedler2::FORMAT_RGBA, palette);
+                    out->create(in->getWidth(), in->getHeight(), &buffer.front(), 1000, 1000, libsiedler2::FORMAT_RGBA, palette);
                 } break;
                 case libsiedler2::BOBTYPE_BITMAP_PLAYER:
                 {
-                    dynamic_cast<glArchivItem_Bitmap_Player*>(out)->create(in->getWidth(), in->getHeight(), buffer, 1000, 1000, libsiedler2::FORMAT_RGBA, palette, 128);
+                    dynamic_cast<glArchivItem_Bitmap_Player*>(out)->create(in->getWidth(), in->getHeight(), &buffer.front(), 1000, 1000, libsiedler2::FORMAT_RGBA, palette, 128);
                 } break;
                 case libsiedler2::BOBTYPE_BITMAP_RAW:
                     break; // Nothing?
@@ -1283,26 +1276,20 @@ bool Loader::LoadFile(const std::string& filePath, const libsiedler2::ArchivItem
             }
 
             item = out;
-        }
-
-        // Palettes
-        else if( (wf.back() == "bbm") || (wf.back() == "act") )
+        }else if( (wf.back() == "bbm") || (wf.back() == "act") ) // Palettes
         {
             libsiedler2::ArchivInfo temp;
-            if(!LoadArchiv( *i, palette, temp ) )
+            if(!LoadArchiv( *itFile, palette, temp ) )
                 return false;
             item = GlAllocator().clone(*temp.get(0));
-        }
-
-        // Font
-        else if( wf.back() == "fon" )
+        }else if( wf.back() == "fon" ) // Font
         {
             glArchivItem_Font* font = new glArchivItem_Font();
-            font->setName(i->c_str());
+            font->setName(itFile->c_str());
             font->setDx(dx);
             font->setDy(dy);
 
-            if(!LoadFile(*i, palette, *font))
+            if(!LoadFile(*itFile, palette, *font))
                 return false;
 
             item = font;
@@ -1321,7 +1308,6 @@ bool Loader::LoadFile(const std::string& filePath, const libsiedler2::ArchivItem
                 to.pushC(*item);
         }
     }
-    delete[] buffer;
 
     return true;
 }

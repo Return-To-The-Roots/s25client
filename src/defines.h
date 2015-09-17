@@ -107,5 +107,11 @@ inline T max(T a, T b) { return (a < b) ? b : a; }
 template <typename T>
 inline T SafeDiff(T a, T b) { return (a > b) ? a - b : b - a; }
 
+// Fwd decl
+namespace boost{namespace filesystem{}}
+
+/// Shortcut for boost::filesystem
+namespace bfs = boost::filesystem;
+
 #endif // defines_h__
 
