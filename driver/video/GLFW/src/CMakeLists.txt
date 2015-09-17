@@ -6,7 +6,7 @@ IF (${CMAKE_SYSTEM_NAME} STREQUAL "Linux" AND ${PLATFORM_ARCH} STREQUAL "i386")
 		INCLUDE_DIRECTORIES(../../../src)
 
 		INCLUDE(AddFileDependencies)
-		ADD_FILE_DEPENDENCIES(${PROJECT_SOURCE_DIR}/build_version.cpp ${CMAKE_BINARY_DIR}/build_version.h)
+		ADD_FILE_DEPENDENCIES(${PROJECT_SOURCE_DIR}/build_version.cpp ${CMAKE_BINARY_DIR}/build_version_defines.h)
 
 		ADD_LIBRARY(videoGLFW SHARED GLFW.cpp GLFW.h oem.cpp oem.h main.h .${PROJECT_SOURCE_DIR}/build_version.cpp ../../../src/DriverInterface.cpp)
 		ADD_DEPENDENCIES(videoGLFW updateversion)

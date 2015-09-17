@@ -206,6 +206,8 @@ CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/build_paths.h.cmake"
 			   build_paths.h)
 CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/build_version.h.cmake"
 			   build_version.h)
+CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/build_version_defines.h.cmake"
+			   build_version_defines.h)
 CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/build/preinstall.sh.cmake"
 			   preinstall.sh @ONLY)
 CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/build/postinstall.sh.cmake"
@@ -220,7 +222,7 @@ ADD_CUSTOM_TARGET(updateversion ALL
 				  DEPENDS version
 				  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
 )
-
+	
 IF(NOT ${CMAKE_HOST_SYSTEM_NAME} MATCHES "Windows")
 	ADD_CUSTOM_TARGET(mrproper
 					  COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/build/cleanup.sh"

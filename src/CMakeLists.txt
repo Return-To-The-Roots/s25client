@@ -90,7 +90,7 @@ IF ( ${CMAKE_SYSTEM_NAME} STREQUAL "Windows" )
 ENDIF ( ${CMAKE_SYSTEM_NAME} STREQUAL "Windows" )
 
 INCLUDE(AddFileDependencies)
-ADD_FILE_DEPENDENCIES(${PROJECT_SOURCE_DIR}/build_version.cpp ${CMAKE_BINARY_DIR}/build_version.h)
+ADD_FILE_DEPENDENCIES(${PROJECT_SOURCE_DIR}/build_version.cpp ${CMAKE_BINARY_DIR}/build_version_defines.h)
 
 SET(s25client_SRCS
 	${PROJECT_SOURCE_DIR}/build_version.cpp
@@ -235,6 +235,12 @@ IF ( "${CMAKE_SYSTEM_NAME}" STREQUAL "FreeBSD")
 ENDIF ( "${CMAKE_SYSTEM_NAME}" STREQUAL "FreeBSD")
 
 IF (MSVC)
+	ADD_CUSTOM_COMMAND( TARGET s25client
+						PRE_BUILD
+						COMMAND "$<TARGET_FILE:version>" "${CMAKE_SOURCE_DIR}"
+						DEPENDS version
+						WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
+	)
 	IF (EXISTS "${CONTRIB_DIR}/bin/libcurl.dll")
 		ADD_CUSTOM_COMMAND(TARGET s25client POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CONTRIB_DIR}/bin/ $<TARGET_FILE_DIR:s25client>)
 	ELSE()
