@@ -51,8 +51,6 @@ class glArchivItem_Map : public libsiedler2::ArchivItem_Map
     public:
         /// Konstruktor von @p glArchivItem_Map.
         glArchivItem_Map(void);
-        /// Kopierkonstruktor von @p glArchivItem_Map.
-        glArchivItem_Map(const glArchivItem_Map& item);
         /// Destruktor von @p glArchivItem_Map.
         ~glArchivItem_Map(void);
 

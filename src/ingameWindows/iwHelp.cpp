@@ -74,11 +74,8 @@ iwHelp::iwHelp(const GUI_ID gui_id, const std::string& title, const std::string&
     ctrlMultiline* text = AddMultiline(2, 10, 20, HELP_WINDOW_WIDTH - 20, text_height + 4, TC_GREEN1, NormalFont, glArchivItem_Font::DF_LEFT | glArchivItem_Font::DF_TOP);
     text->EnableBox(false);
 
-    std::string* lines = new std::string[wi.positions.size()];
-    wi.CreateSingleStrings(content, lines);
-    for(unsigned i = 0; i < wi.positions.size(); ++i)
-        text->AddString(lines[i], COLOR_YELLOW, false);
+    std::vector<std::string> lines = wi.CreateSingleStrings(content);
+    for(std::vector<std::string>::const_iterator it = lines.begin(); it != lines.end(); ++it)
+        text->AddString(*it, COLOR_YELLOW, false);
 
-
-    delete [] lines;
 }

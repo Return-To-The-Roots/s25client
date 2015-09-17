@@ -18,7 +18,6 @@
 #define NOF_TRADEDONKEY_H_
 
 #include "figures/noFigure.h"
-#include "TradeGraph.h"
 #include <deque>
 
 class nofTradeLeader;

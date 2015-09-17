@@ -15,3 +15,5 @@ enum Nation
 };
 
 const std::string NationNames[NAT_COUNT] = { "Africans", "Japaneses", "Romans", "Vikings", "Babylonians" };
+
+#define NATIVE_NAT_COUNT 4

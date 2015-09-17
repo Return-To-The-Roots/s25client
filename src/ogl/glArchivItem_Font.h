@@ -20,8 +20,10 @@
 #pragma once
 
 #include "../libsiedler2/src/ArchivItem_Font.h"
+#include "ogl/glArchivItem_Bitmap.h"
 #include "oglIncludes.h"
 #include "colors.h"
+#include <boost/scoped_ptr.hpp>
 #include <map>
 #include <vector>
 #include <string>
@@ -33,9 +35,11 @@ class glArchivItem_Font : public libsiedler2::ArchivItem_Font
 {
     public:
         /// Konstruktor von @p glArchivItem_Font.
-        glArchivItem_Font(void) : ArchivItem_Font(), _font(NULL), chars_per_line(16) {}
+        glArchivItem_Font(void) : ArchivItem_Font(), _font(NULL), _font_outline(NULL), chars_per_line(16) {}
         /// Kopierkonstruktor von @p glArchivItem_Font.
-        glArchivItem_Font(const glArchivItem_Font& item) : ArchivItem_Font(item), _font(NULL) {}
+        glArchivItem_Font(const glArchivItem_Font& item);
+
+        glArchivItem_Font& operator=(const glArchivItem_Font& obj);
 
         /// Zeichnet einen Text.
         void Draw(short x, short y, const std::wstring& wtext, unsigned int format, unsigned int color = COLOR_WHITE, unsigned short length = 0, unsigned short max = 0xFFFF, const std::wstring& wend = L"...", unsigned short end_length = 0);
@@ -52,7 +56,7 @@ class glArchivItem_Font : public libsiedler2::ArchivItem_Font
         {
             public:
                 /// Erzeugt ein Arrays aus eigenständigen Strings aus den Unterbrechungsinfos.
-                void CreateSingleStrings(const std::string& origin_text, std::string* dest_strings);
+                std::vector<std::string> CreateSingleStrings(const std::string& origin_text);
 
             public:
                 /// Array von Positionen, wo der Text umbrochen werden soll (jeweils der Anfang vom String)
@@ -127,8 +131,8 @@ class glArchivItem_Font : public libsiedler2::ArchivItem_Font
             return ci;
         }
 
-        glArchivItem_Bitmap* _font_outline;
-        glArchivItem_Bitmap* _font;
+        boost::scoped_ptr<glArchivItem_Bitmap> _font_outline;
+        boost::scoped_ptr<glArchivItem_Bitmap> _font;
 
         unsigned int chars_per_line;
         std::map<unsigned int, char_info> utf8_mapping;

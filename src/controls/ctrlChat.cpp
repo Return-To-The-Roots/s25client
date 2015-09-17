@@ -234,16 +234,15 @@ void ctrlChat::WrapLine(unsigned short i)
     font->GetWrapInfo(line.msg, width - prefix_width - 2 - SCROLLBAR_WIDTH, width - 2 - SCROLLBAR_WIDTH, wi);
 
     // Message-Strings erzeugen aus den WrapInfo
-    std::string* strings = new std::string[wi.positions.size()];
-
-    wi.CreateSingleStrings(line.msg, strings);
+    std::vector<std::string> strings = wi.CreateSingleStrings(line.msg);
 
     // Zeilen hinzufügen
     for(unsigned int i = 0; i < wi.positions.size(); ++i)
     {
         ChatLine wrap_line;
         // Nur bei den ersten Zeilen müssen ja Zeit und Spielername mit angegeben werden
-        if(!(wrap_line.secondary = (i ? true : false)))
+        wrap_line.secondary = (i ? true : false);
+        if(wrap_line.secondary)
         {
             wrap_line.time_string = line.time_string;
             wrap_line.player = line.player;
@@ -256,7 +255,6 @@ void ctrlChat::WrapLine(unsigned short i)
         chat_lines.push_back(wrap_line);
     }
 
-    delete [] strings;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

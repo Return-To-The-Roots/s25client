@@ -99,7 +99,7 @@ void iwChat::Msg_EditEnter(const unsigned int ctrl_id)
     {
         char* x = NULL;
 
-        *x = 1;
+        *x = 1; //-V522
 
         return;
     }

@@ -39,6 +39,29 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
+glArchivItem_Font::glArchivItem_Font(const glArchivItem_Font& obj): ArchivItem_Font(obj), chars_per_line(obj.chars_per_line), utf8_mapping(obj.utf8_mapping)
+{
+    if(obj._font)
+        _font.reset(dynamic_cast<glArchivItem_Bitmap*>(GlAllocator().clone(*obj._font)));
+    if(obj._font_outline)
+        _font_outline.reset(dynamic_cast<glArchivItem_Bitmap*>(GlAllocator().clone(*obj._font_outline)));
+}
+
+glArchivItem_Font& glArchivItem_Font::operator=(const glArchivItem_Font& obj)
+{
+    if(this == &obj)
+        return *this;
+
+    libsiedler2::ArchivItem_Font::operator=(obj);
+    chars_per_line = obj.chars_per_line;
+    utf8_mapping = obj.utf8_mapping;
+    if(obj._font)
+        _font.reset(dynamic_cast<glArchivItem_Bitmap*>(GlAllocator().clone(*obj._font)));
+    if(obj._font_outline)
+        _font_outline.reset(dynamic_cast<glArchivItem_Bitmap*>(GlAllocator().clone(*obj._font_outline)));
+    return *this;
+}
+
 std::string glArchivItem_Font::Unicode_to_Utf8(unsigned int c) const
 {
     std::string text;
@@ -485,33 +508,22 @@ unsigned short glArchivItem_Font::getWidth(const std::string& text, unsigned len
  *
  *  @author OLiver
  */
-void glArchivItem_Font::WrapInfo::CreateSingleStrings(const std::string& origin_text, std::string* dest_strings)
+std::vector<std::string> glArchivItem_Font::WrapInfo::CreateSingleStrings(const std::string& origin_text)
 {
-    // Kopie des ursprünglichen Strings erstellen
-    std::string copy(origin_text);
+    std::vector<std::string> destStrings;
+    if(positions.empty())
+        return destStrings;
 
-    for(unsigned i = 0; i < positions.size(); ++i)
+    destStrings.reserve(positions.size());
+    unsigned curStart = positions.front();
+    for(std::vector<unsigned>::const_iterator it = positions.begin() + 1; it != positions.end(); ++it)
     {
-        // Gibts noch weitere Teile danach?
-        char temp = 0;
-        if(i + 1 < positions.size())
-        {
-            // dann muss statt des Leerzeichens o.ä. ein Nullzeichen gesetzt werden, damit nur der Teilstring aufgenommen
-            // wird und nicht noch alles was danach kommt
-
-            // das Zeichen merken, was da vorher war
-            temp = origin_text[positions.at(i + 1)];
-            // Zeichen 0 setzen
-            copy[positions.at(i + 1)] = 0;
-        }
-
-        if(i < origin_text.length()) //in case of empty string dont try to read char 1 ...
-            dest_strings[i] = &copy[positions.at(i)];
-
-        // wieder ggf. zurücksetzen, siehe oben
-        if(i + 1 < positions.size())
-            copy[positions.at(i + 1)] = temp;
+        destStrings.push_back(origin_text.substr(curStart, *it - curStart));
+        curStart = *it;
     }
+    /* Push last part */
+    destStrings.push_back(origin_text.substr(curStart));
+    return destStrings;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -650,8 +662,8 @@ void glArchivItem_Font::GetWrapInfo(const std::string& text,
 void glArchivItem_Font::initFont()
 {
     // @todo: Shouldn't we use libsiedler2::allocator?
-    _font_outline = dynamic_cast<glArchivItem_Bitmap*>(GlAllocator().create(libsiedler2::BOBTYPE_BITMAP_RLE));
-    _font = dynamic_cast<glArchivItem_Bitmap*>(GlAllocator().create(libsiedler2::BOBTYPE_BITMAP_RLE));
+    _font_outline.reset(dynamic_cast<glArchivItem_Bitmap*>(GlAllocator().create(libsiedler2::BOBTYPE_BITMAP_RLE)));
+    _font.reset(dynamic_cast<glArchivItem_Bitmap*>(GlAllocator().create(libsiedler2::BOBTYPE_BITMAP_RLE)));
 
 
     // first, we have to find how much chars we really have, but we can also skip first 32

@@ -379,8 +379,7 @@ void iwPostWindow::SetMessageText(const std::string& message)
     glArchivItem_Font::WrapInfo wi;
 
     NormalFont->GetWrapInfo(message, 190, 190, wi);
-    std::string* lines = new std::string[wi.positions.size()];
-    wi.CreateSingleStrings(message, lines);
+    std::vector<std::string> lines = wi.CreateSingleStrings(message);
     for(unsigned i = 0; i < 3; ++i)
     {
         if (i < wi.positions.size())
@@ -388,8 +387,6 @@ void iwPostWindow::SetMessageText(const std::string& message)
         else
             text->SetLine(i, "", COLOR_WINDOWBROWN);
     }
-
-    delete [] lines;
 }
 
 void iwPostWindow::DeletePostMessage(PostMsg* pm)

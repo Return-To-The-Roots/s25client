@@ -92,14 +92,12 @@ void Messenger::AddMessage(const std::string& author, const unsigned color_autho
     glArchivItem_Font::WrapInfo wi;
 
     // in Zeilen aufteilen, damit alles auf den Bildschirm passt
-    LargeFont->GetWrapInfo(msg.c_str(), VIDEODRIVER.GetScreenWidth() - 60
-                           - LargeFont->getWidth(author.c_str()) - ((cd == CD_SYSTEM) ? 0 : LargeFont->getWidth(_(CD_STRINGS[cd]))),
+    LargeFont->GetWrapInfo(msg, VIDEODRIVER.GetScreenWidth() - 60
+                           - LargeFont->getWidth(author) - ((cd == CD_SYSTEM) ? 0 : LargeFont->getWidth(_(CD_STRINGS[cd]))),
                            VIDEODRIVER.GetScreenWidth() - 60, wi);
 
     // Message-Strings erzeugen aus den WrapInfo
-    std::string* strings = new std::string[wi.positions.size()];
-
-    wi.CreateSingleStrings(msg.c_str(), strings);
+    std::vector<std::string> strings = wi.CreateSingleStrings(msg);
 
     for(unsigned i = 0; i < wi.positions.size(); ++i)
     {
@@ -116,9 +114,9 @@ void Messenger::AddMessage(const std::string& author, const unsigned color_autho
 
         tmp.msg = strings[i];
 
-        tmp.width = LargeFont->getWidth(msg.c_str());
+        tmp.width = LargeFont->getWidth(msg);
         if(i == 0)
-            tmp.width += LargeFont->getWidth(author.c_str());
+            tmp.width += LargeFont->getWidth(author);
 
         tmp.color_author = color_author;
         tmp.color_msg = color_msg;
@@ -126,6 +124,4 @@ void Messenger::AddMessage(const std::string& author, const unsigned color_autho
 
         messages.push_back(tmp);
     }
-
-    delete [] strings;
 }

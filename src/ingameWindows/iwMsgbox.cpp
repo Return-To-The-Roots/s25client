@@ -51,9 +51,7 @@ iwMsgbox::iwMsgbox(const std::string& title, const std::string& text, Window* pa
     glArchivItem_Font::WrapInfo wi;
     NormalFont->GetWrapInfo(text, 330, 330, wi);
     // Einzelne Zeilen-Strings erzeugen
-    strings = new std::string[wi.positions.size()];
-    wi.CreateSingleStrings(text, strings);
-    lines_count = wi.positions.size();
+    strings = wi.CreateSingleStrings(text);
 
     // Buttons erstellen
     switch(button)
@@ -89,9 +87,7 @@ iwMsgbox::iwMsgbox(const std::string& title, const std::string& text, Window* pa
 }
 
 iwMsgbox::~iwMsgbox()
-{
-    delete [] strings;
-}
+{}
 
 
 const MsgboxResult RET_IDS[4][3] =
@@ -112,7 +108,7 @@ void iwMsgbox::Msg_ButtonClick(const unsigned int ctrl_id)
 void iwMsgbox::Msg_PaintAfter()
 {
     // Text zeichnen
-    for(unsigned i = 0; i < lines_count; ++i)
+    for(unsigned i = 0; i < strings.size(); ++i)
         NormalFont->Draw(GetX() + 80, GetY() + 30 + NormalFont->getHeight()*i, strings[i], glArchivItem_Font::DF_LEFT, 0xFFFFFF00);
 }
 

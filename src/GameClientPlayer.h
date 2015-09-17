@@ -25,7 +25,6 @@
 #include <algorithm>
 #include "gameTypes/MapTypes.h"
 #include "PostMsg.h"
-#include "TradeGraph.h"
 #include "Point.h"
 #include "GameMessage_GameCommand.h"
 #include "helpers/containerUtils.h"

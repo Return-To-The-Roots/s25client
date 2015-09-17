@@ -48,6 +48,8 @@
 #include "MapGeometry.h"
 #include "figures/nofScout_Free.h"
 #include "nodeObjs/noShip.h"
+#include "TradeGraph.h"
+#include "TradeRoute.h"
 
 #include "WindowManager.h"
 #include "GameInterface.h"

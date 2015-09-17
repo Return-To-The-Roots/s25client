@@ -18,7 +18,7 @@
 #define NOF_TRADELEADER_H_
 
 #include "figures/noFigure.h"
-#include "TradeGraph.h"
+#include "TradeRoute.h"
 
 class nofTradeDonkey;
 class nobBaseWarehouse;

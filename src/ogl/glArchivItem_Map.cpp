@@ -49,21 +49,6 @@ glArchivItem_Map::glArchivItem_Map()
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Kopierkonstruktor von @p glArchivItem_Map.
- *
- *  @param[in] item Quellitem.
- *
- *  @author FloSoft
- */
-glArchivItem_Map::glArchivItem_Map(const glArchivItem_Map& item)
-    : ArchivItem_Map(item)
-{
-    header = dynamic_cast<const libsiedler2::ArchivItem_Map_Header*>(get(0));
-    assert(header);
-}
-
-///////////////////////////////////////////////////////////////////////////////
-/**
  *  Destruktor von @p glArchivItem_Map.
  *
  *  @author FloSoft

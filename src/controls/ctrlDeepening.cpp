@@ -47,13 +47,11 @@ ctrlDeepening::ctrlDeepening(Window* parent,
                              glArchivItem_Font* font,
                              unsigned int color)
     : ctrlText(parent, id, x, y, text, color, 0, font),
-      tc(tc)
+    tc(tc)
 {
     // We don't want to pass these through all those constructors
-    // of only-text objects down to the Window class. This is a special
-    // situation, as we are a Deepening _and_ a VarText instead
-    // of owning the VarText.
-    this->width  = width;
+    // of only-text objects down to the Window class.
+    this->width = width;
     this->height = height;
 }
 
@@ -89,8 +87,6 @@ ctrlColorDeepening::ctrlColorDeepening(Window* parent,
                                        TextureColor tc,
                                        unsigned int fillColor)
     : ctrlDeepening(parent, id, x, y, width, height, tc, "", NormalFont, COLOR_YELLOW),
-      width(width),
-      height(height),
       fillColor(fillColor)
 {
 }

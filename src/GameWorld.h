@@ -29,7 +29,6 @@
 #include "defines.h"
 #include "Point.h"
 #include "GamePlayerList.h"
-#include "TradeGraph.h"
 #include "buildings/nobBaseMilitary.h"
 #include "gameTypes/LandscapeType.h"
 #include <vector>
@@ -59,6 +58,7 @@ class glArchivItem_Map;
 class noShip;
 class nofActiveSoldier;
 class TradeGraph;
+class TradeRoute;
 
 struct RoadsBuilding;
 class FOWObject;

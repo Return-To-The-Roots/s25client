@@ -34,9 +34,7 @@ class iwMsgbox : public IngameWindow
         /// (Haupt)Text, der angezeigt werden soll
         const std::string& text;
         /// Einzelne Stringzeilen, die durch die Umbrechung ggf. zu Stande kommen
-        std::string* strings;
-        /// Anzahl der Stringzeilen
-        unsigned lines_count;
+        std::vector<std::string> strings;
 
     public:
         iwMsgbox(const std::string& title, const std::string& text, Window* parent, MsgboxButton button, unsigned short icon, unsigned int msgboxid = 0);

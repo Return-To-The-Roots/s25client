@@ -29,8 +29,8 @@ class ctrlDeepening : public ctrlText
 
     protected:
         virtual bool Draw_(void);
-        /// Abgeleitete Klassen müssen erweiterten Inhalt zeichnen
-        virtual void DrawContent() const {}
+        /// Derived classes cann draw extended content
+        virtual void DrawContent() const{}
 
     private:
         TextureColor tc;
@@ -46,10 +46,9 @@ class ctrlColorDeepening : public ctrlDeepening, public ColorControlInterface
         virtual void SetColor(const unsigned int fill_color);
 
     protected:
-        void DrawContent() const;
+        void DrawContent() const override;
 
     protected:
-        unsigned short width, height;
         unsigned int fillColor;
 };
 
