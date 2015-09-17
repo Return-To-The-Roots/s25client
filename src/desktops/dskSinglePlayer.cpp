@@ -97,8 +97,7 @@ void dskSinglePlayer::Msg_ButtonClick(const unsigned int ctrl_id)
             std::list<std::string> liste;
             std::string tmp = GetFilePath(FILE_PATHS[85]);
 
-            tmp += "*.sav";
-            ListDir(tmp.c_str(), false, NULL, NULL, &liste);
+            ListDir(tmp + "*.sav", false, NULL, NULL, &liste);
 
             bfs::path path;
             unser_time_t recent = 0;
@@ -155,7 +154,6 @@ void dskSinglePlayer::Msg_ButtonClick(const unsigned int ctrl_id)
                 WINDOWMANAGER.Show(new iwMsgbox(_("Error"), _("The specified file couldn't be loaded!"), this, MSB_OK, MSB_EXCLAMATIONRED));
             }
 
-            liste.clear();
         } break;
         case 4: // "Replay abspielen"
         {

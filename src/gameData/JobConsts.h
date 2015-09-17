@@ -19,6 +19,11 @@
 #define JOB_CONSTS_H_
 
 #include "gameData/GameConsts.h"
+#include "gameTypes/JobTypes.h"
+#include <boost/array.hpp>
+
+
+extern const boost::array<std::string, JOB_TYPES_COUNT> JOB_NAMES;
 
 /// Berufsstruktur
 struct JobConst

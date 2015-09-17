@@ -35,6 +35,7 @@
 #include "iwHelp.h"
 #include "gameData/BuildingConsts.h"
 #include "buildings/nobBaseWarehouse.h"
+#include "gameData/JobConsts.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

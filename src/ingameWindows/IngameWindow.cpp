@@ -25,6 +25,7 @@
 #include "Settings.h"
 #include "GlobalVars.h"
 #include "driver/src/MouseCoords.h"
+#include <cstring>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

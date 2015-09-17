@@ -25,6 +25,7 @@
 #include "WindowManager.h"
 
 #include "GameClient.h"
+#include "gameData/JobConsts.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
