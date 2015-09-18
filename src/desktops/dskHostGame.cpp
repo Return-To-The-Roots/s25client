@@ -247,7 +247,7 @@ void dskHostGame::UpdatePlayerRow(const unsigned row)
     // Alle Controls erstmal zerstören (die ganze Gruppe)
     DeleteCtrl(58 - row);
     // und neu erzeugen
-    ctrlGroup* group = AddGroup(58 - row, scale);
+    ctrlGroup* group = AddGroup(58 - row, scale_);
 
     std::string name;
     // Name
@@ -845,9 +845,9 @@ void dskHostGame::ChangePing(const unsigned i)
     unsigned int color = COLOR_RED;
 
     // Farbe bestimmen
-    if(GAMECLIENT.GetPlayer(id)->ping < 300)
+    if(GAMECLIENT.GetPlayer(id_)->ping < 300)
         color = COLOR_GREEN;
-    else if(GAMECLIENT.GetPlayer(id)->ping < 800 )
+    else if(GAMECLIENT.GetPlayer(id_)->ping < 800 )
         color = COLOR_YELLOW;
 
     // und setzen

@@ -37,11 +37,11 @@ class ctrlButton : public Window
         void SetTexture(TextureColor tc) { this->tc = tc; }
 
         /// Setzt Tooltip
-        void SetTooltip(const std::string& tooltip) { this->tooltip = tooltip; }
+        void SetTooltip(const std::string& tooltip) { this->tooltip_ = tooltip; }
         /// Liefert Tooltip zurück
-        std::string GetTooltip(void) const { return tooltip; }
+        std::string GetTooltip(void) const { return tooltip_; }
         /// Tauscht Tooltips
-        void SwapTooltip(ctrlButton* two) { std::swap(tooltip, two->tooltip); }
+        void SwapTooltip(ctrlButton* two) { std::swap(tooltip_, two->tooltip_); }
 
         void SetCheck(bool check) { this->check = check; }
         bool GetCheck(void) { return check; }

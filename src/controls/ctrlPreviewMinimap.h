@@ -64,7 +64,7 @@ class ctrlPreviewMinimap : public ctrlMinimap
         void SetMap(glArchivItem_Map* s2map)
         {
             if(s2map)
-                SetDisplaySize(width, height, s2map->getHeader().getWidth(), s2map->getHeader().getHeight());
+                SetDisplaySize(width_, height_, s2map->getHeader().getWidth(), s2map->getHeader().getHeight());
             minimap.SetMap(s2map);
         }
 };

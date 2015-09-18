@@ -92,8 +92,8 @@ void ctrlOptionGroup::SetSelection(unsigned short selection, bool notify)
 
     this->selection = selection;
 
-    if(notify && parent)
-        parent->Msg_OptionGroupChange(GetID(), selection);
+    if(notify && parent_)
+        parent_->Msg_OptionGroupChange(GetID(), selection);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

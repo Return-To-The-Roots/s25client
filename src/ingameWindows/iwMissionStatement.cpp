@@ -53,7 +53,7 @@ static char THIS_FILE[] = __FILE__;
 iwMissionStatement::iwMissionStatement(const std::string& title, const std::string& content)
     : IngameWindow(CGI_MISSION_STATEMENT, 0xFFFF, 0xFFFF, 640, 480, title, LOADER.GetImageN("io", 5))
 {
-    ctrlMultiline* text = AddMultiline(0, 10, 20, width - 20, 450, TC_GREEN2, NormalFont, glArchivItem_Font::DF_LEFT | glArchivItem_Font::DF_TOP);
+    ctrlMultiline* text = AddMultiline(0, 10, 20, width_ - 20, 450, TC_GREEN2, NormalFont, glArchivItem_Font::DF_LEFT | glArchivItem_Font::DF_TOP);
 
     unsigned short max_line_width = 0;
     
@@ -73,7 +73,7 @@ iwMissionStatement::iwMissionStatement(const std::string& title, const std::stri
     SetWidth(max_line_width + 20 + 30); // set window width to our determined max width
     text->SetWidth(max_line_width + 30);
     
-    AddTextButton(1, width / 2 - 100, 435, 200, 22, TC_GREEN2, _("Continue"), NormalFont);
+    AddTextButton(1, width_ / 2 - 100, 435, 200, 22, TC_GREEN2, _("Continue"), NormalFont);
 }
 
 void iwMissionStatement::Msg_ButtonClick(const unsigned int ctrl_id)

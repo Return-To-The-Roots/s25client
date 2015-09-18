@@ -536,7 +536,7 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding* const building, const 
     int y2 = int(building->GetY()) + (radius + ADD_RADIUS) + 1;
 
 
-    TerritoryRegion tr(x1, y1, x2, y2, this);
+    TerritoryRegion region(x1, y1, x2, y2, this);
 
     // Alle Gebäude ihr Terrain in der Nähe neu berechnen
     for(sortedMilitaryBlds::iterator it = buildings.begin(); it != buildings.end(); ++it)
@@ -551,7 +551,7 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding* const building, const 
 
         // Wenn das Gebäude abgerissen wird oder wenn es noch nicht besetzt war, natürlich nicht mit einberechnen
         if(*it != building || !destroyed)
-            tr.CalcTerritoryOfBuilding(*it);
+            region.CalcTerritoryOfBuilding(*it);
     }
 
     // Baustellen von Häfen mit einschließen
@@ -559,7 +559,7 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding* const building, const 
             it != harbor_building_sites_from_sea.end(); ++it)
     {
         if(*it != building || !destroyed)
-            tr.CalcTerritoryOfBuilding(*it);
+            region.CalcTerritoryOfBuilding(*it);
     }
 
     // Merken, wo sich der Besitzer geändert hat
@@ -570,7 +570,7 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding* const building, const 
     // Daten von der TR kopieren in die richtige Karte, dabei zus. Grenzen korrigieren und Objekte zerstören, falls
     // das Land davon jemanden anders nun gehört
 	
-	new_owner_of_trigger_building=tr.GetOwner(building->GetPos().x, building->GetPos().y);
+	new_owner_of_trigger_building=region.GetOwner(building->GetPos().x, building->GetPos().y);
 
     for(int y = y1; y < y2; ++y)
     {
@@ -580,7 +580,7 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding* const building, const 
             MapPoint t = ConvertCoords(x, y);
 			
 			// Wenn der Punkt den Besitz geändert hat
-			if ((prev_player = GetNode(t).owner) != (player = tr.GetOwner(x, y)))
+			if ((prev_player = GetNode(t).owner) != (player = region.GetOwner(x, y)))
             {
                 // Dann entsprechend neuen Besitzer setzen - bei improved alliances addon noch paar extra bedingungen prüfen
 				if (GAMECLIENT.GetGGS().isEnabled(ADDON_NO_ALLIED_PUSH))

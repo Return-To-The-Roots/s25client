@@ -55,8 +55,8 @@ ctrlVarDeepening::ctrlVarDeepening(Window* parent,
     // of only-text objects down to the Window class. This is a special
     // situation, as we are a Deepening _and_ a VarText instead
     // of owning the VarText.
-    this->width  = width;
-    this->height = height;
+    this->width_  = width;
+    this->height_ = height;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -67,9 +67,9 @@ ctrlVarDeepening::ctrlVarDeepening(Window* parent,
  */
 bool ctrlVarDeepening::Draw_(void)
 {
-    Draw3D(x, y, width, height, tc, 2);
+    Draw3D(x_, y_, width_, height_, tc, 2);
 
-    font->Draw(x + width / 2, y + height / 2, GetFormatedText(), glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, color);
+    font->Draw(x_ + width_ / 2, y_ + height_ / 2, GetFormatedText(), glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, color);
 
     return true;
 }

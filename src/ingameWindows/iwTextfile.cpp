@@ -60,7 +60,7 @@ iwTextfile::iwTextfile(const std::string& filename, const std::string& title)
 
     std::ifstream file(path.c_str());
 
-    ctrlMultiline* text = AddMultiline(2, 10, 20, width - 20, 450, TC_GREEN1, NormalFont, glArchivItem_Font::DF_LEFT | glArchivItem_Font::DF_TOP);
+    ctrlMultiline* text = AddMultiline(2, 10, 20, width_ - 20, 450, TC_GREEN1, NormalFont, glArchivItem_Font::DF_LEFT | glArchivItem_Font::DF_TOP);
 
     if(!file.good())
     {

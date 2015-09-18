@@ -51,8 +51,8 @@ ctrlDeepening::ctrlDeepening(Window* parent,
 {
     // We don't want to pass these through all those constructors
     // of only-text objects down to the Window class.
-    this->width = width;
-    this->height = height;
+    this->width_ = width;
+    this->height_ = height;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -63,9 +63,9 @@ ctrlDeepening::ctrlDeepening(Window* parent,
  */
 bool ctrlDeepening::Draw_(void)
 {
-    Draw3D(GetX(), GetY(), width, height, tc, 2);
+    Draw3D(GetX(), GetY(), width_, height_, tc, 2);
 
-    font->Draw(GetX() + width / 2, GetY() + height / 2, text.c_str(), glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, color);
+    font->Draw(GetX() + width_ / 2, GetY() + height_ / 2, text.c_str(), glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, color);
 
     DrawContent();
 
@@ -105,5 +105,5 @@ void ctrlColorDeepening::SetColor(const unsigned int fill_color)
  */
 void ctrlColorDeepening::DrawContent(void) const
 {
-    DrawRectangle(x + 3, y + 3, width - 6, height - 6, fillColor);
+    DrawRectangle(x_ + 3, y_ + 3, width_ - 6, height_ - 6, fillColor);
 }

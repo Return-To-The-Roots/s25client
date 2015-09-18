@@ -99,10 +99,10 @@ void Desktop::Msg_ScreenResize(const ScreenResizeEvent& sr)
 {
 // Keep the following block the same as in ctrlGroup class:
     // Für skalierte Desktops ist alles einfach, die brauchen im besten Fall gar nichts selbst implementieren
-    if (scale)
+    if (scale_)
     {
         //Zunächst an die Kinder weiterleiten
-        for(std::map<unsigned int, Window*>::iterator it = idmap.begin(); it != idmap.end(); ++it)
+        for(std::map<unsigned int, Window*>::iterator it = childIdToWnd_.begin(); it != childIdToWnd_.end(); ++it)
             if(it->second)
             {
                 Window* ctrl = it->second;

@@ -76,12 +76,12 @@ bool ctrlList::Msg_MouseMove(const MouseCoords& mc)
     ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
 
     // Wenn Maus in der Liste
-    if(Coll(mc.x, mc.y, GetX() + 2, GetY() + 2, width - 22, height - 4))
+    if(Coll(mc.x, mc.y, GetX() + 2, GetY() + 2, width_ - 22, height_ - 4))
     {
         // Neue Selektierung
         mouseover = (mc.y - (GetY() + 2) ) / font->getHeight();
         WINDOWMANAGER.SetToolTip(this,
-                                         ((font->getWidth(GetItemText(mouseover)) > width - 22) ?
+                                         ((font->getWidth(GetItemText(mouseover)) > width_ - 22) ?
                                           GetItemText(mouseover) : ""));
         return true;
     }
@@ -105,7 +105,7 @@ bool ctrlList::Msg_LeftDown(const MouseCoords& mc)
     ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
 
     // Wenn Maus in der Liste
-    if(Coll(mc.x, mc.y, GetX() + 2, GetY() + 2, width - 22, height - 4))
+    if(Coll(mc.x, mc.y, GetX() + 2, GetY() + 2, width_ - 22, height_ - 4))
     {
         // Tooltip löschen, sonst bleibt er ewig
         WINDOWMANAGER.SetToolTip(this, "");
@@ -113,9 +113,9 @@ bool ctrlList::Msg_LeftDown(const MouseCoords& mc)
         // aktuellen Eintrag selektieren
         selection = mouseover + scrollbar->GetPos();
 
-        if(parent) parent->Msg_ListSelectItem(id, selection);
+        if(parent_) parent_->Msg_ListSelectItem(id_, selection);
         // Doppelklick? Dann noch einen extra Eventhandler aufrufen
-        if(mc.dbl_click && parent) parent->Msg_ListChooseItem(id, selection);
+        if(mc.dbl_click && parent_) parent_->Msg_ListChooseItem(id_, selection);
 
         return true;
     }
@@ -135,14 +135,14 @@ bool ctrlList::Msg_RightDown(const MouseCoords& mc)
     ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
 
     // Wenn Maus in der Liste
-    if(Coll(mc.x, mc.y, GetX() + 2, GetY() + 2, width - 22, height - 4))
+    if(Coll(mc.x, mc.y, GetX() + 2, GetY() + 2, width_ - 22, height_ - 4))
     {
         // Tooltip löschen, sonst bleibt er ewig
         WINDOWMANAGER.SetToolTip(this, "");
 
         // aktuellen Eintrag selektieren
         selection = mouseover + scrollbar->GetPos();
-        parent->Msg_ListSelectItem(id, selection);
+        parent_->Msg_ListSelectItem(id_, selection);
 
         return true;
     }
@@ -177,7 +177,7 @@ bool ctrlList::Msg_WheelUp(const MouseCoords& mc)
     ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
 
     // If mouse in list or scrollbar
-    if(Coll(mc.x, mc.y, GetX() + 2, GetY() + 2, width - /*2*/2, height - 4))
+    if(Coll(mc.x, mc.y, GetX() + 2, GetY() + 2, width_ - /*2*/2, height_ - 4))
     {
         // Simulate Button Click
         scrollbar->Msg_ButtonClick(0);
@@ -199,7 +199,7 @@ bool ctrlList::Msg_WheelDown(const MouseCoords& mc)
     ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
 
     // If mouse in list
-    if(Coll(mc.x, mc.y, GetX() + 2, GetY() + 2, width - /*2*/2, height - 4))
+    if(Coll(mc.x, mc.y, GetX() + 2, GetY() + 2, width_ - /*2*/2, height_ - 4))
     {
         // Simulate Button Click
         scrollbar->Msg_ButtonClick(1);
@@ -222,7 +222,7 @@ bool ctrlList::Draw_(void)
     ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
 
     // Box malen
-    Draw3D(GetX(), GetY(), width, height, tc, 2);
+    Draw3D(GetX(), GetY(), width_, height_, tc, 2);
 
     // Scrolleiste zeichnen
     DrawControls();
@@ -235,10 +235,10 @@ bool ctrlList::Draw_(void)
     {
         // Schwarze Markierung, wenn die Maus drauf ist
         if(i == mouseover)
-            DrawRectangle(GetX() + 2, GetY() + 2 + i * font->getHeight(), width - 22, font->getHeight(), 0x80000000);
+            DrawRectangle(GetX() + 2, GetY() + 2 + i * font->getHeight(), width_ - 22, font->getHeight(), 0x80000000);
 
         // Text an sich
-        font->Draw(GetX() + 2, GetY() + 2 + i * font->getHeight(), lines[i + scrollbar->GetPos()], 0, (selection == i + scrollbar->GetPos() ? 0xFFFFAA00 : 0xFFFFFF00), 0, width - 22);
+        font->Draw(GetX() + 2, GetY() + 2 + i * font->getHeight(), lines[i + scrollbar->GetPos()], 0, (selection == i + scrollbar->GetPos() ? 0xFFFFAA00 : 0xFFFFFF00), 0, width_ - 22);
     }
 
     return true;
@@ -320,7 +320,7 @@ void ctrlList::Resize_(unsigned short width, unsigned short height)
 
     // If the size was enlarged we have to check that we don't try to
     // display more lines than present
-    if(height > this->height)
+    if(height > this->height_)
         while(lines.size() - scrollbar->GetPos() < pagesize
                 && scrollbar->GetPos() > 0)
             scrollbar->SetPos(scrollbar->GetPos() - 1);

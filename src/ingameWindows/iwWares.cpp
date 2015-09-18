@@ -96,7 +96,7 @@ iwWares::iwWares(unsigned int id, unsigned short x , unsigned short y,
             x = 0;
             ++y;
             if(y == 7)
-                continue;
+                break;
 
             four = !four;
         }

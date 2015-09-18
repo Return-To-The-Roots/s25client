@@ -1049,7 +1049,6 @@ void noFigure::WanderToFlag()
                                       gwg->GetSpecObj<noRoadNode>(pos), FW::Condition_StoreFigure, 0, true, &job, false))
         {
             // ja, dann können wir ja hingehen
-            fs = FS_GOTOGOAL;
             goal = wh;
             cur_rs = 0;
             rs_pos = 0;

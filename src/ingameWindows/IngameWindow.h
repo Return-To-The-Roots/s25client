@@ -39,9 +39,9 @@ class IngameWindow : public Window
         ~IngameWindow(void);
 
         /// setzt die Fenster-ID.
-        void SetID(unsigned int id) { this->id = id; }
+        void SetID(unsigned int id) { this->id_ = id; }
         /// liefert die Fenster-ID.
-        unsigned int GetID(void) { return id; }
+        unsigned int GetID(void) { return id_; }
 
         /// setzt den Hintergrund.
         void SetBackground(glArchivItem_Bitmap* background) { this->background = background; }
@@ -54,7 +54,7 @@ class IngameWindow : public Window
         const std::string& GetTitle(void) { return title; }
 
         /// setzt die ausgeklappte Höhe des Fensters.
-        void SetIwHeight(unsigned short height) { this->iwHeight = height; if(!minimized) this->height = height; }
+        void SetIwHeight(unsigned short height) { this->iwHeight = height; if(!minimized) this->height_ = height; }
         /// liefert die ausgeklappte Höhe des Fensters.
         unsigned short GetIwHeight(void) const { return iwHeight; }
 
@@ -102,8 +102,8 @@ class IngameWindow : public Window
         bool last_down2;
         ButtonState button_state[2];
 
-        Rect GetLeftButtonRect()  const { return Rect(x, y, 16, 16); }
-        Rect GetRightButtonRect() const { return Rect(static_cast<unsigned short>(x + width - 16), y, 16, 16); }
+        Rect GetLeftButtonRect()  const { return Rect(x_, y_, 16, 16); }
+        Rect GetRightButtonRect() const { return Rect(static_cast<unsigned short>(x_ + width_ - 16), y_, 16, 16); }
 
     private:
         bool modal;

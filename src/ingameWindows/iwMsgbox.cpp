@@ -58,30 +58,30 @@ iwMsgbox::iwMsgbox(const std::string& title, const std::string& text, Window* pa
     {
         case MSB_OK:
         {
-            AddButton(0, width / 2 - 45, _("OK"), TC_GREEN2);
-            VIDEODRIVER.SetMousePos(GetX() + width / 2, GetY() + 110);
+            AddButton(0, width_ / 2 - 45, _("OK"), TC_GREEN2);
+            VIDEODRIVER.SetMousePos(GetX() + width_ / 2, GetY() + 110);
         } break;
 
         case MSB_OKCANCEL:
         {
-            AddButton(0, width / 2 - 3 - 90, _("OK"), TC_GREEN2);
-            AddButton(1, width / 2 + 3, _("Cancel"), TC_RED1);
-            VIDEODRIVER.SetMousePos(GetX() + width / 2 + 3 + 45, GetY() + 110);
+            AddButton(0, width_ / 2 - 3 - 90, _("OK"), TC_GREEN2);
+            AddButton(1, width_ / 2 + 3, _("Cancel"), TC_RED1);
+            VIDEODRIVER.SetMousePos(GetX() + width_ / 2 + 3 + 45, GetY() + 110);
         } break;
 
         case MSB_YESNO:
         {
-            AddButton(0, width / 2 - 3 - 90, _("Yes"), TC_GREEN2);
-            AddButton(1, width / 2 + 3, _("No"), TC_RED1);
-            VIDEODRIVER.SetMousePos(GetX() + width / 2 + 3 + 45, GetY() + 110);
+            AddButton(0, width_ / 2 - 3 - 90, _("Yes"), TC_GREEN2);
+            AddButton(1, width_ / 2 + 3, _("No"), TC_RED1);
+            VIDEODRIVER.SetMousePos(GetX() + width_ / 2 + 3 + 45, GetY() + 110);
         } break;
 
         case MSB_YESNOCANCEL:
         {
-            AddButton(0, width / 2 - 45 - 6 - 90, _("Yes"), TC_GREEN2);
-            AddButton(1, width / 2 - 45, _("No"), TC_RED1);
-            AddButton(2, width / 2 + 45 + 6, _("Cancel"), TC_GREY);
-            VIDEODRIVER.SetMousePos(GetX() + width / 2 + 6 + 90, GetY() + 110);
+            AddButton(0, width_ / 2 - 45 - 6 - 90, _("Yes"), TC_GREEN2);
+            AddButton(1, width_ / 2 - 45, _("No"), TC_RED1);
+            AddButton(2, width_ / 2 + 45 + 6, _("Cancel"), TC_GREY);
+            VIDEODRIVER.SetMousePos(GetX() + width_ / 2 + 6 + 90, GetY() + 110);
         } break;
     }
 }
@@ -100,8 +100,8 @@ const MsgboxResult RET_IDS[4][3] =
 
 void iwMsgbox::Msg_ButtonClick(const unsigned int ctrl_id)
 {
-    if(parent)
-        parent->Msg_MsgBoxResult(msgboxid, RET_IDS[button][ctrl_id - 2]);
+    if(parent_)
+        parent_->Msg_MsgBoxResult(msgboxid, RET_IDS[button][ctrl_id - 2]);
     Close();
 }
 

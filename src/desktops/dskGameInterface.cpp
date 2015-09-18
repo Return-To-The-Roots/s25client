@@ -786,7 +786,7 @@ void dskGameInterface::ActivateRoadMode(const RoadMode rm)
     if(rm != RM_DISABLED)
     {
         road.route.clear();
-        assert(selected.x < width && selected.y < height);
+        assert(selected.x < width_ && selected.y < height_);
         road.start = road.point = selected;
     }
     else

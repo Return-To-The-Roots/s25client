@@ -82,7 +82,7 @@ void ctrlMultiline::AddString(const std::string& str, unsigned int color, bool s
 bool ctrlMultiline::Draw_(void)
 {
     if(draw_box)
-        Draw3D(GetX(), GetY(), width, height, tc, 2);
+        Draw3D(GetX(), GetY(), width_, height_, tc, 2);
 
     DrawControls();
 
@@ -129,7 +129,7 @@ bool ctrlMultiline::Msg_WheelUp(const MouseCoords& mc)
     ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
 
     //If mouse in list
-    if(Coll(mc.x, mc.y, GetX() + 2, GetY() + 2, width - /*2*/2, height - 4))
+    if(Coll(mc.x, mc.y, GetX() + 2, GetY() + 2, width_ - /*2*/2, height_ - 4))
     {
         // Simulate three Button Clicks
         scrollbar->Msg_ButtonClick(0);
@@ -154,7 +154,7 @@ bool ctrlMultiline::Msg_WheelDown(const MouseCoords& mc)
     ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
 
     // If mouse in list
-    if(Coll(mc.x, mc.y, GetX() + 2, GetY() + 2, width - /*2*/2, height - 4))
+    if(Coll(mc.x, mc.y, GetX() + 2, GetY() + 2, width_ - /*2*/2, height_ - 4))
     {
         // Simulate three Button Clicks
         scrollbar->Msg_ButtonClick(1);

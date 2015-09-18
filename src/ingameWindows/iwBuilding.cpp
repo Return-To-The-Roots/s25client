@@ -158,18 +158,18 @@ void iwBuilding::Msg_PaintAfter()
             unsigned wares_count = (building->GetBuildingType() == BLD_CATAPULT) ? 4 : 6;
 
             // "Schwarzer Rahmen"
-            DrawRectangle(GetX() + width / 2 - 24 * wares_count / 2, GetY() + 60 + i * 29, 24 * wares_count, 24, 0x80000000);
+            DrawRectangle(GetX() + width_ / 2 - 24 * wares_count / 2, GetY() + 60 + i * 29, 24 * wares_count, 24, 0x80000000);
 
             for(unsigned char z = 0; z < wares_count; ++z)
             {
                 glArchivItem_Bitmap* bitmap = LOADER.GetMapImageN(2250 + USUAL_BUILDING_CONSTS[building->GetBuildingType() - 10].wares_needed[i]);
-                bitmap->Draw(GetX() + width / 2 - 24 * wares_count / 2 + 24 * z + 12, GetY() + 72 + i * 28, 0, 0, 0, 0, 0, 0, (z < building->GetWares(i) ? 0xFFFFFFFF : 0xFF404040) );
+                bitmap->Draw(GetX() + width_ / 2 - 24 * wares_count / 2 + 24 * z + 12, GetY() + 72 + i * 28, 0, 0, 0, 0, 0, 0, (z < building->GetWares(i) ? 0xFFFFFFFF : 0xFF404040) );
 
             }
 
             std::stringstream text;
             text << (unsigned int)building->GetWares(i) << "/" << wares_count;
-            NormalFont->Draw(GetX() + width / 2, GetY() + 60 + 12 + i * 29, text.str(), glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER);
+            NormalFont->Draw(GetX() + width_ / 2, GetY() + 60 + 12 + i * 29, text.str(), glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER);
         }
     }
 }
@@ -247,7 +247,7 @@ void iwBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
 							it=GAMECLIENT.GetPlayer(building->GetPlayer())->GetBuildings(building->GetBuildingType()).begin();
 						gwv->MoveToMapObject((*it)->GetPos());
 						iwBuilding* nextscrn=new iwBuilding(gwv, gi, (*it));
-						nextscrn->Move(x,y);
+						nextscrn->Move(x_,y_);
 						WINDOWMANAGER.Show(nextscrn);
 						break;
 					}

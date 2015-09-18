@@ -48,8 +48,8 @@ class ctrlMinimap : public Window
         unsigned short GetHeightShow() const { return height_show; }
 
         /// Gibt die entsprechenden Kanten relativ zur oberen linken Ecke der Bounding-Box
-        inline unsigned short GetLeft() const { return padding_x + (width - width_show - 2 * padding_x) / 2; }
-        inline unsigned short GetTop() const { return padding_y + (height - height_show - 2 * padding_y) / 2; }
+        inline unsigned short GetLeft() const { return padding_x + (width_ - width_show - 2 * padding_x) / 2; }
+        inline unsigned short GetTop() const { return padding_y + (height_ - height_show - 2 * padding_y) / 2; }
         inline unsigned short GetRight() const { return GetLeft() + width_show + padding_x; }
         inline unsigned short GetBottom() const { return GetTop() + height_show + padding_y; }
 

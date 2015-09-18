@@ -251,7 +251,7 @@ void WindowManager::Show(IngameWindow* window, bool mouse)
         if((*it)->ShouldBeClosed())
             continue;
 
-        if(window->id == (*it)->id)
+        if(window->id_ == (*it)->id_)
         {
             // Ja, also vorheriges schliessen
             (*it)->Close();
@@ -898,7 +898,7 @@ void WindowManager::Close(unsigned int id)
 {
     for(IgwListIterator it = windows.begin(); it != windows.end(); ++it)
     {
-        if((*it)->id == id){
+        if((*it)->id_ == id){
             Close(*it);
             return;
         }

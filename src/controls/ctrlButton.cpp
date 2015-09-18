@@ -66,14 +66,14 @@ ctrlButton::~ctrlButton()
  */
 bool ctrlButton::Msg_MouseMove(const MouseCoords& mc)
 {
-    if(enabled && Coll(mc.x, mc.y, GetX(), GetY(), width, height))
+    if(enabled && Coll(mc.x, mc.y, GetX(), GetY(), width_, height_))
     {
         if(mc.ldown)
             state = BUTTON_PRESSED;
         else
             state = BUTTON_HOVER;
 
-        WINDOWMANAGER.SetToolTip(this, tooltip);
+        WINDOWMANAGER.SetToolTip(this, tooltip_);
 
         return true;
     }
@@ -94,7 +94,7 @@ bool ctrlButton::Msg_MouseMove(const MouseCoords& mc)
  */
 bool ctrlButton::Msg_LeftDown(const MouseCoords& mc)
 {
-    if(enabled && Coll(mc.x, mc.y, GetX(), GetY(), width, height))
+    if(enabled && Coll(mc.x, mc.y, GetX(), GetY(), width_, height_))
     {
         state = BUTTON_PRESSED;
         return true;
@@ -128,9 +128,9 @@ bool ctrlButton::Msg_LeftUp(const MouseCoords& mc)
     {
         state =  BUTTON_UP;
 
-        if(enabled && Coll(mc.x, mc.y, GetX(), GetY(), width, height))
+        if(enabled && Coll(mc.x, mc.y, GetX(), GetY(), width_, height_))
         {
-            parent->Msg_ButtonClick(GetID());
+            parent_->Msg_ButtonClick(GetID());
             return true;
         }
     }
@@ -144,7 +144,7 @@ void ctrlButton::TestMouseOver()
     if(state == BUTTON_HOVER || state == BUTTON_PRESSED)
     {
         if(!Coll(VIDEODRIVER.GetMouseX(), VIDEODRIVER.GetMouseY(),
-                 GetX(), GetY(), width, height))
+                 GetX(), GetY(), width_, height_))
             // Nicht mehr drauf --> wieder normalen Zustand
             state = BUTTON_UP;
     }
@@ -158,24 +158,24 @@ void ctrlButton::TestMouseOver()
  */
 bool ctrlButton::Draw_(void)
 {
-    if(width == 0 || height == 0)
+    if(width_ == 0 || height_ == 0)
         return true;
 
     // Prüfen, ob bei gehighlighteten Button die Maus auch noch über dem Button ist
     TestMouseOver();
 
-    Rect buttonrect(GetX(), GetY(), width, height);
+    Rect buttonrect(GetX(), GetY(), width_, height_);
 
     if(tc != TC_INVISIBLE)
     {
         if(border)
-            Draw3D(buttonrect.left, buttonrect.top, width, height, tc, (unsigned short)((check) ? 2 : state), illuminated);
+            Draw3D(buttonrect.left, buttonrect.top, width_, height_, tc, (unsigned short)((check) ? 2 : state), illuminated);
         else
         {
             if(state == BUTTON_UP || state == BUTTON_PRESSED)
-                LOADER.GetImageN("io", tc * 2 + 1)->Draw(buttonrect.left, buttonrect.top, 0, 0, 0, 0, width, height);
+                LOADER.GetImageN("io", tc * 2 + 1)->Draw(buttonrect.left, buttonrect.top, 0, 0, 0, 0, width_, height_);
             else
-                LOADER.GetImageN("io", tc * 2)->Draw(buttonrect.left, buttonrect.top,  0, 0, 0, 0, width, height);
+                LOADER.GetImageN("io", tc * 2)->Draw(buttonrect.left, buttonrect.top,  0, 0, 0, 0, width_, height_);
         }
     }
 
@@ -203,8 +203,8 @@ void ctrlTextButton::DrawContent() const
     else
         color = this->color;
 
-    font->Draw(GetX() + width / 2 + ( (state == BUTTON_PRESSED || check) ? 2 : 0 ),
-               GetY() + height / 2 + ( (state == BUTTON_PRESSED || check) ? 2 : 0 ), text.c_str(), glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, color );
+    font->Draw(GetX() + width_ / 2 + ( (state == BUTTON_PRESSED || check) ? 2 : 0 ),
+               GetY() + height_ / 2 + ( (state == BUTTON_PRESSED || check) ? 2 : 0 ), text.c_str(), glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, color );
 }
 
 
@@ -219,7 +219,7 @@ void ctrlImageButton::DrawContent() const
 {
     // Bild
     if(image)
-        image->Draw(GetX() + width / 2   + ( (state == BUTTON_PRESSED || check) ? 2 : 0 ), GetY() + height / 2   + ( (state == BUTTON_PRESSED || check) ? 2 : 0 ), 0, 0, 0, 0, 0, 0, modulation_color);
+        image->Draw(GetX() + width_ / 2   + ( (state == BUTTON_PRESSED || check) ? 2 : 0 ), GetY() + height_ / 2   + ( (state == BUTTON_PRESSED || check) ? 2 : 0 ), 0, 0, 0, 0, 0, 0, modulation_color);
 }
 
 
@@ -236,7 +236,7 @@ ctrlColorButton::ctrlColorButton(Window* parent, unsigned int id, unsigned short
 /// Abgeleitete Klassen müssen erweiterten Button-Inhalt zeichnen (Farbe in dem Fall)
 void ctrlColorButton::DrawContent() const
 {
-    DrawRectangle(x + 3, y + 3, width - 6, height - 6, fillColor);
+    DrawRectangle(x_ + 3, y_ + 3, width_ - 6, height_ - 6, fillColor);
 }
 
 

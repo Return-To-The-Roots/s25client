@@ -111,7 +111,7 @@ const std::string ctrlEdit::GetText(void) const
 bool ctrlEdit::Draw_(void)
 {
     // Box malen
-    Draw3D(GetX(), GetY(), width, height, tc, 2);
+    Draw3D(GetX(), GetY(), width_, height_, tc, 2);
 
     std::wstring dtext;
 
@@ -121,7 +121,7 @@ bool ctrlEdit::Draw_(void)
     else
         dtext = text;
 
-    const unsigned max_width = width - 8 - font->getDx();
+    const unsigned max_width = width_ - 8 - font->getDx();
     unsigned short max;
     font->getWidth(dtext.substr(view_start), unsigned(text.length()) - view_start, max_width, &max);
     while(max > 0 && text.length() - view_start > max)
@@ -147,8 +147,8 @@ bool ctrlEdit::Draw_(void)
         start = cursor_pos - 5;
     if(cursor_pos <= 5)
         start = 0;
-    font->Draw(GetX() + 4, GetY() + height / 2, dtext.substr(start), glArchivItem_Font::DF_VCENTER,
-               (focus ? 0xFFFFA000 : COLOR_YELLOW), 0, width - 8);
+    font->Draw(GetX() + 4, GetY() + height_ / 2, dtext.substr(start), glArchivItem_Font::DF_VCENTER,
+               (focus ? 0xFFFFA000 : COLOR_YELLOW), 0, width_ - 8);
 
     // Alle 500ms Cursor für 500ms anzeigen
     if(focus && !disabled && VIDEODRIVER.GetTickCount() % 1000 < 500)
@@ -158,7 +158,7 @@ bool ctrlEdit::Draw_(void)
         if(cursor_pos > start)
             cwidth = font->getWidth(&dtext[start], cursor_pos - start) + 4;
 
-        DrawRectangle(GetX() + cwidth , GetY() + ( height - (font->getHeight() + 2) ) / 2, 1, font->getHeight() + 2, 0xFFFFA000);
+        DrawRectangle(GetX() + cwidth , GetY() + ( height_ - (font->getHeight() + 2) ) / 2, 1, font->getHeight() + 2, 0xFFFFA000);
     }
 
     return true;
@@ -213,10 +213,10 @@ void ctrlEdit::RemoveChar()
  */
 void ctrlEdit::Notify()
 {
-    if(!notify || !parent)
+    if(!notify || !parent_)
         return;
 
-    parent->Msg_EditChange(GetID());
+    parent_->Msg_EditChange(GetID());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -238,7 +238,7 @@ void ctrlEdit::Msg_PaintAfter()
  */
 bool ctrlEdit::Msg_LeftDown(const MouseCoords& mc)
 {
-    if((newfocus = Coll(mc.x, mc.y, GetX(), GetY(), width, height)))
+    if((newfocus = Coll(mc.x, mc.y, GetX(), GetY(), width_, height_)))
         return false; /// vorläufig, um Fokus zu für andere Edit-Felder zu kriegen, damit es zu keinen Doppelfokus kommt
     else
         return false;
@@ -247,7 +247,7 @@ bool ctrlEdit::Msg_LeftDown(const MouseCoords& mc)
 // vorläufig
 bool ctrlEdit::Msg_LeftDown_After(const MouseCoords& mc)
 {
-    if(!Coll(mc.x, mc.y, GetX(), GetY(), width, height))
+    if(!Coll(mc.x, mc.y, GetX(), GetY(), width_, height_))
         newfocus = false;
 
     return false;
@@ -351,8 +351,8 @@ bool ctrlEdit::Msg_KeyDown(const KeyEvent& ke)
 
         case KT_RETURN: // Enter gedrückt
         {
-            if(!disabled && parent)
-                parent->Msg_EditEnter(GetID());
+            if(!disabled && parent_)
+                parent_->Msg_EditEnter(GetID());
         } break;
 
         case KT_HOME: // Pos1 gedrückt

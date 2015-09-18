@@ -51,7 +51,7 @@ ctrlScrollBar::ctrlScrollBar(Window* parent,
       button_height(button_height), tc(tc), pagesize(pagesize),
       move(false), scroll_range(0), scroll_pos(0), scroll_height(0), scrollbar_height(0), scrollbar_pos(0), last_y(0)
 {
-    visible = false;
+    visible_ = false;
 
     AddImageButton(0, 0, 0, width, button_height, tc, LOADER.GetImageN("io", 33));
     AddImageButton(1, 0, (height > button_height) ? height - button_height : 1, width, button_height, tc, LOADER.GetImageN("io", 34));
@@ -83,7 +83,7 @@ bool ctrlScrollBar::Msg_LeftUp(const MouseCoords& mc)
  */
 bool ctrlScrollBar::Msg_LeftDown(const MouseCoords& mc)
 {
-    if (Coll(mc.x, mc.y, GetX(), GetY() + button_height + scrollbar_pos, width, scrollbar_height))
+    if (Coll(mc.x, mc.y, GetX(), GetY() + button_height + scrollbar_pos, width_, scrollbar_height))
     {
         // Maus auf dem Scrollbutton
         move = true;
@@ -91,7 +91,7 @@ bool ctrlScrollBar::Msg_LeftDown(const MouseCoords& mc)
         return true;
     }
 
-    else if (Coll(mc.x, mc.y, GetX(), GetY(), width, button_height) || Coll(mc.x, mc.y, GetX(), GetY() + height - button_height, width, button_height))
+    else if (Coll(mc.x, mc.y, GetX(), GetY(), width_, button_height) || Coll(mc.x, mc.y, GetX(), GetY() + height_ - button_height, width_, button_height))
     {
         // Maus auf einer Schaltflaeche
         return RelayMouseMessage(&Window::Msg_LeftDown, mc);
@@ -102,7 +102,7 @@ bool ctrlScrollBar::Msg_LeftDown(const MouseCoords& mc)
         // Maus auf der Leiste
         unsigned short diff = scrollbar_height / 2;
 
-        if (Coll(mc.x, mc.y, GetX(), GetY() + button_height, width, scrollbar_pos))
+        if (Coll(mc.x, mc.y, GetX(), GetY() + button_height, width_, scrollbar_pos))
         {
             if (scrollbar_pos < diff)
                 scrollbar_pos = 0;
@@ -110,14 +110,14 @@ bool ctrlScrollBar::Msg_LeftDown(const MouseCoords& mc)
                 scrollbar_pos -= diff;
 
             CalculatePosition();
-            parent->Msg_ScrollChange(id, scroll_pos);
+            parent_->Msg_ScrollChange(id_, scroll_pos);
             return true;
         }
         else
         {
             unsigned short sbb = button_height + scrollbar_pos + scrollbar_height;
 
-            if (Coll(mc.x, mc.y, GetX(), GetY() + sbb, width, height - (sbb + button_height)))
+            if (Coll(mc.x, mc.y, GetX(), GetY() + sbb, width_, height_ - (sbb + button_height)))
             {
                 scrollbar_pos += diff;
 
@@ -125,7 +125,7 @@ bool ctrlScrollBar::Msg_LeftDown(const MouseCoords& mc)
                     scrollbar_pos = scroll_height - scrollbar_height;
 
                 CalculatePosition();
-                parent->Msg_ScrollChange(id, scroll_pos);
+                parent_->Msg_ScrollChange(id_, scroll_pos);
                 return true;
             }
         }
@@ -151,7 +151,7 @@ bool ctrlScrollBar::Msg_MouseMove(const MouseCoords& mc)
         CalculatePosition();
         if(scroll_pos > scroll_range - pagesize)
             scroll_pos = scroll_range - pagesize;
-        parent->Msg_ScrollChange(id, scroll_pos);
+        parent_->Msg_ScrollChange(id_, scroll_pos);
     }
     last_y = mc.y;
 
@@ -174,7 +174,7 @@ void ctrlScrollBar::Msg_ButtonClick(const unsigned int ctrl_id)
             if(scroll_pos > 0)
             {
                 --scroll_pos;
-                parent->Msg_ScrollChange(id, scroll_pos);
+                parent_->Msg_ScrollChange(id_, scroll_pos);
             }
         } break;
         case 1: // Downwards
@@ -182,7 +182,7 @@ void ctrlScrollBar::Msg_ButtonClick(const unsigned int ctrl_id)
             if(scroll_pos < scroll_range - pagesize)
             {
                 ++scroll_pos;
-                parent->Msg_ScrollChange(id, scroll_pos);
+                parent_->Msg_ScrollChange(id_, scroll_pos);
             }
         } break;
     }
@@ -265,13 +265,13 @@ void ctrlScrollBar::Resize_(unsigned short width, unsigned short height)
 bool ctrlScrollBar::Draw_(void)
 {
     // Leiste
-    Draw3D(GetX(), GetY() + button_height - 2, width, height - button_height * 2 + 4, tc, 2);
+    Draw3D(GetX(), GetY() + button_height - 2, width_, height_ - button_height * 2 + 4, tc, 2);
 
     // Buttons
     DrawControls();
 
     // Scrollbar
-    Draw3D(GetX(), GetY() + button_height + scrollbar_pos, width, scrollbar_height, tc, 0);
+    Draw3D(GetX(), GetY() + button_height + scrollbar_pos, width_, scrollbar_height, tc, 0);
 
     return true;
 }
@@ -285,7 +285,7 @@ bool ctrlScrollBar::Draw_(void)
 void ctrlScrollBar::CalculateScrollBar(unsigned short height)
 {
     // Default parameter
-    if(height == 0) height = this->height;
+    if(height == 0) height = this->height_;
 
     scroll_height = ((height > 2 * button_height) ? height - 2 * button_height : 0);
 
@@ -298,10 +298,10 @@ void ctrlScrollBar::CalculateScrollBar(unsigned short height)
         else
             scrollbar_pos = (scroll_height * scroll_pos) / scroll_range;
 
-        if(!visible)
+        if(!visible_)
         {
-            visible = true;
-            parent->Msg_ScrollShow(id, visible);
+            visible_ = true;
+            parent_->Msg_ScrollShow(id_, visible_);
         }
     }
     else
@@ -311,10 +311,10 @@ void ctrlScrollBar::CalculateScrollBar(unsigned short height)
         scroll_pos = 0;
 
         // nicht nötig, Scrollleiste kann weg
-        if(visible)
+        if(visible_)
         {
-            visible = false;
-            parent->Msg_ScrollShow(id, visible);
+            visible_ = false;
+            parent_->Msg_ScrollShow(id_, visible_);
         }
     }
 }

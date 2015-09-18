@@ -90,7 +90,7 @@ void ctrlComboBox::Resize_(unsigned short width, unsigned short height)
         // zu große geworden?
         list_height += font->getHeight();
 
-        if(list_height > (scale ? ScaleY(max_list_height) : max_list_height))
+        if(list_height > (scale_ ? ScaleY(max_list_height) : max_list_height))
         {
             // kann nicht mal ein Item aufnehmen, dann raus
             if(i == 0)
@@ -142,14 +142,14 @@ bool ctrlComboBox::Msg_LeftDown(const MouseCoords& mc)
     ctrlList* list = GetCtrl<ctrlList>(0);
 
     // Irgendwo anders hingeklickt --> Liste ausblenden
-    if(!readonly && !Coll(mc.x, mc.y, GetX(), GetY(), width, height + list->GetHeight()))
+    if(!readonly && !Coll(mc.x, mc.y, GetX(), GetY(), width_, height_ + list->GetHeight()))
     {
         // Liste wieder ausblenden
         ShowList(false);
         return false;
     }
 
-    if(!readonly && Coll(mc.x, mc.y, GetX(), GetY(), width, height))
+    if(!readonly && Coll(mc.x, mc.y, GetX(), GetY(), width_, height_))
     {
         // Liste wieder ein/ausblenden
         ShowList(!list->GetVisible());
@@ -186,7 +186,7 @@ bool ctrlComboBox::Msg_RightDown(const MouseCoords& mc)
     bool ret = RelayMouseMessage(&Window::Msg_RightDown, mc);
 
     // Clicked on list -> close it
-    if(!readonly && Coll(mc.x, mc.y, GetX(), GetY() + height, width, height + list->GetHeight()))
+    if(!readonly && Coll(mc.x, mc.y, GetX(), GetY() + height_, width_, height_ + list->GetHeight()))
     {
         // Liste wieder ausblenden
         ShowList(false);
@@ -205,13 +205,13 @@ bool ctrlComboBox::Msg_WheelUp(const MouseCoords& mc)
 {
     ctrlList* list = GetCtrl<ctrlList>(0);
 
-    if(!readonly && Coll(mc.x, mc.y, GetX(), GetY() + height, width, height + list->GetHeight()) && list->GetVisible())
+    if(!readonly && Coll(mc.x, mc.y, GetX(), GetY() + height_, width_, height_ + list->GetHeight()) && list->GetVisible())
     {
         // Scrolled in opened list ->
         return RelayMouseMessage(&Window::Msg_WheelUp, mc);
     }
 
-    if(!readonly && Coll(mc.x, mc.y, GetX(), GetY(), width, height))
+    if(!readonly && Coll(mc.x, mc.y, GetX(), GetY(), width_, height_))
     {
         // Scrolled without list opened
         if (list->GetSelection() > 0)
@@ -232,13 +232,13 @@ bool ctrlComboBox::Msg_WheelDown(const MouseCoords& mc)
 {
     ctrlList* list = GetCtrl<ctrlList>(0);
 
-    if(!readonly && Coll(mc.x, mc.y, GetX(), GetY() + height, width, height + list->GetHeight()) && list->GetVisible())
+    if(!readonly && Coll(mc.x, mc.y, GetX(), GetY() + height_, width_, height_ + list->GetHeight()) && list->GetVisible())
     {
         // Scrolled in opened list ->
         return RelayMouseMessage(&Window::Msg_WheelDown, mc);
     }
 
-    if(!readonly && Coll(mc.x, mc.y, GetX(), GetY(), width, height))
+    if(!readonly && Coll(mc.x, mc.y, GetX(), GetY(), width_, height_))
     {
         // Scrolled without list opened
         if (list->GetSelection() < list->GetLineCount() - 1)
@@ -268,7 +268,7 @@ void ctrlComboBox::Msg_ListSelectItem(const unsigned int ctrl_id, const unsigned
         this->selection = selection;
 
         // Nachricht an übergeordnetes Fenster verschicken
-        parent->Msg_ComboSelectItem(GetID(), selection);
+        parent_->Msg_ComboSelectItem(GetID(), selection);
     }
 }
 
@@ -282,7 +282,7 @@ void ctrlComboBox::Msg_ListSelectItem(const unsigned int ctrl_id, const unsigned
 void ctrlComboBox::AddString(const std::string& text)
 {
     GetCtrl<ctrlList>(0)->AddString(text);
-    Resize_(width, height);
+    Resize_(width_, height_);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -294,7 +294,7 @@ void ctrlComboBox::AddString(const std::string& text)
 void ctrlComboBox::DeleteAllItems()
 {
     GetCtrl<ctrlList>(0)->DeleteAllItems();
-    Resize_(width, height);
+    Resize_(width_, height_);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -320,11 +320,11 @@ bool ctrlComboBox::Draw_(void)
     ctrlList* liste = GetCtrl<ctrlList>(0);
 
     // Box
-    Draw3D(GetX(), GetY(), width, height, tc, 2);
+    Draw3D(GetX(), GetY(), width_, height_, tc, 2);
 
     // Namen des selektierten Strings in der Box anzeigen
     if(liste->GetLineCount() > 0)
-        font->Draw(GetX() + 2, GetY() + height / 2, liste->GetSelItemText(), glArchivItem_Font::DF_VCENTER, COLOR_YELLOW, 0, width - 2 - height, "");
+        font->Draw(GetX() + 2, GetY() + height_ / 2, liste->GetSelItemText(), glArchivItem_Font::DF_VCENTER, COLOR_YELLOW, 0, width_ - 2 - height_, "");
 
     // Male restliche Controls per Hand, denn ein einfaches DrawControls() würde
     // auch die Liste malen, die bei Msg_PaintAfter() sowieso gemalt wird.
@@ -359,13 +359,13 @@ void ctrlComboBox::ShowList(bool show)
     // Region sperren für die Liste, oder freigeben
     if(show)
     {
-        Rect list_region (liste->GetX(), liste->GetY(), width, liste->GetHeight());
+        Rect list_region (liste->GetX(), liste->GetY(), width_, liste->GetHeight());
 
-        parent->LockRegion(this, list_region);
+        parent_->LockRegion(this, list_region);
     }
     else
     {
-        parent->FreeRegion(this);
+        parent_->FreeRegion(this);
     }
 
     LOADER.GetSoundN("sound", 113)->Play(255, false);

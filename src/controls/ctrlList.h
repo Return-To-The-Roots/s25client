@@ -56,8 +56,8 @@ class ctrlList : public Window
             if(selection != this->selection && selection < lines.size())
             {
                 this->selection = selection;
-                if(parent)
-                    parent->Msg_ListSelectItem(id, selection);
+                if(parent_)
+                    parent_->Msg_ListSelectItem(id_, selection);
             }
         }
 

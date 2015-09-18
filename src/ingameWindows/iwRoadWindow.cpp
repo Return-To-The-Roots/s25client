@@ -55,10 +55,10 @@ iwRoadWindow::iwRoadWindow(dskGameInterface* const GameInterface, bool flagpossi
         cancel->Move(46, 20);
     }
 
-    if(x + GetWidth() > VIDEODRIVER.GetScreenWidth())
-        x = mouse_x - GetWidth() - 40;
-    if(y + GetIwHeight() > VIDEODRIVER.GetScreenHeight())
-        y = mouse_y - GetIwHeight() - 40;
+    if(x_ + GetWidth() > VIDEODRIVER.GetScreenWidth())
+        x_ = mouse_x - GetWidth() - 40;
+    if(y_ + GetIwHeight() > VIDEODRIVER.GetScreenHeight())
+        y_ = mouse_y - GetIwHeight() - 40;
 
     VIDEODRIVER.SetMousePos(GetX() + 20, GetY() + 45);
 }

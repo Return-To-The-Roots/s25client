@@ -61,7 +61,7 @@ iwMinimap::iwMinimap(IngameMinimap* minimap, GameWorldViewer& gwv)
     AddImageButton(4, 0, 0, BUTTON_WIDTH, BUTTON_HEIGHT, TC_GREY, LOADER.GetImageN("io", 109));
 
 
-    ChangeWindowSize(width, height);
+    ChangeWindowSize(width_, height_);
 }
 
 /// Verändert die Größe des Fensters und positioniert alle Controls etc. neu

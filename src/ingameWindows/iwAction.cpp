@@ -290,10 +290,10 @@ iwAction::iwAction(dskGameInterface* const gi, GameWorldViewer* const gwv, const
             nr = 94;
 
         // Straße aufwerten ggf anzeigen
-        unsigned int width = 180, x = 90;
-        AddUpgradeRoad(group, x, width);
+        unsigned int btWidth = 180, btPosX = 90;
+        AddUpgradeRoad(group, btPosX, btWidth);
 
-        group->AddImageButton(1, 0, 45, width, 36, TC_GREY, LOADER.GetImageN("io", nr), _("Erect flag"));
+        group->AddImageButton(1, 0, 45, btWidth, 36, TC_GREY, LOADER.GetImageN("io", nr), _("Erect flag"));
     }
 
     // Cut-main_tab
@@ -302,11 +302,11 @@ iwAction::iwAction(dskGameInterface* const gi, GameWorldViewer* const gwv, const
         ctrlGroup* group = main_tab->AddTab(LOADER.GetImageN("io", 19), _("Dig up road"), TAB_CUTROAD);
 
         // Straße aufwerten ggf anzeigen
-        unsigned int width = 180, x = 0;
+        unsigned int btWidth = 180, btPosX = 0;
         if(!tabs.setflag)
-            AddUpgradeRoad(group, x, width);
+            AddUpgradeRoad(group, btPosX, btWidth);
 
-        group->AddImageButton(1, x, 45, width, 36, TC_GREY, LOADER.GetImageN("io", 32), _("Dig up road"));
+        group->AddImageButton(1, btPosX, 45, btWidth, 36, TC_GREY, LOADER.GetImageN("io", 32), _("Dig up road"));
     }
 
     if(tabs.attack)
@@ -340,10 +340,10 @@ iwAction::iwAction(dskGameInterface* const gi, GameWorldViewer* const gwv, const
 
     main_tab->SetSelection(0, true);
 
-    if(x + GetWidth() > VIDEODRIVER.GetScreenWidth())
-        x = mouse_x - GetWidth() - 40;
-    if(y + GetHeight() > VIDEODRIVER.GetScreenHeight())
-        y = mouse_y - GetHeight() - 40;
+    if(x_ + GetWidth() > VIDEODRIVER.GetScreenWidth())
+        x_ = mouse_x - GetWidth() - 40;
+    if(y_ + GetHeight() > VIDEODRIVER.GetScreenHeight())
+        y_ = mouse_y - GetHeight() - 40;
 
     VIDEODRIVER.SetMousePos(GetX() + 20, GetY() + 75);
 }

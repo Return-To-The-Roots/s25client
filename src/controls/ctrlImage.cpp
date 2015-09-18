@@ -87,7 +87,7 @@ bool ctrlImage::Msg_MouseMove(const MouseCoords& mc)
     {
         // Jeweils Tooltip ein- und ausblenden, wenn die Maus über dem Bild ist
         if(Coll(mc.x, mc.y, GetX() - image->getNx(), GetY() - image->getNy(), image->getWidth(), image->getHeight()))
-            WINDOWMANAGER.SetToolTip(this, tooltip);
+            WINDOWMANAGER.SetToolTip(this, tooltip_);
         else
             WINDOWMANAGER.SetToolTip(this, "");
     }

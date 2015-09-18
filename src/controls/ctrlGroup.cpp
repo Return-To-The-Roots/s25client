@@ -68,10 +68,10 @@ void ctrlGroup::Msg_ScreenResize(const ScreenResizeEvent& sr)
 {
 // Keep the following block the same as in Desktop class:
     // Für skalierte Desktops ist alles einfach, die brauchen im besten Fall gar nichts selbst implementieren
-    if (scale)
+    if (scale_)
     {
         //Zunächst an die Kinder weiterleiten
-        for(std::map<unsigned int, Window*>::iterator it = idmap.begin(); it != idmap.end(); ++it)
+        for(std::map<unsigned int, Window*>::iterator it = childIdToWnd_.begin(); it != childIdToWnd_.end(); ++it)
             if(it->second)
             {
                 Window* ctrl = it->second;
@@ -100,7 +100,7 @@ void ctrlGroup::Msg_ScreenResize(const ScreenResizeEvent& sr)
  */
 void ctrlGroup::Msg_ButtonClick(const unsigned int ctrl_id)
 {
-    parent->Msg_Group_ButtonClick(this->id, ctrl_id);
+    parent_->Msg_Group_ButtonClick(this->id_, ctrl_id);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -111,7 +111,7 @@ void ctrlGroup::Msg_ButtonClick(const unsigned int ctrl_id)
  */
 void ctrlGroup::Msg_EditEnter(const unsigned int ctrl_id)
 {
-    parent->Msg_Group_EditEnter(this->id, ctrl_id);
+    parent_->Msg_Group_EditEnter(this->id_, ctrl_id);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -122,7 +122,7 @@ void ctrlGroup::Msg_EditEnter(const unsigned int ctrl_id)
  */
 void ctrlGroup::Msg_EditChange(const unsigned int ctrl_id)
 {
-    parent->Msg_Group_EditChange(this->id, ctrl_id);
+    parent_->Msg_Group_EditChange(this->id_, ctrl_id);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -133,7 +133,7 @@ void ctrlGroup::Msg_EditChange(const unsigned int ctrl_id)
  */
 void ctrlGroup::Msg_TabChange(const unsigned int ctrl_id, const unsigned short tab_id)
 {
-    parent->Msg_Group_TabChange(this->id, ctrl_id, tab_id);
+    parent_->Msg_Group_TabChange(this->id_, ctrl_id, tab_id);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -144,7 +144,7 @@ void ctrlGroup::Msg_TabChange(const unsigned int ctrl_id, const unsigned short t
  */
 void ctrlGroup::Msg_ListSelectItem(const unsigned int ctrl_id, const unsigned short selection)
 {
-    parent->Msg_Group_ListSelectItem(this->id, ctrl_id, selection);
+    parent_->Msg_Group_ListSelectItem(this->id_, ctrl_id, selection);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -155,7 +155,7 @@ void ctrlGroup::Msg_ListSelectItem(const unsigned int ctrl_id, const unsigned sh
  */
 void ctrlGroup::Msg_ComboSelectItem(const unsigned int ctrl_id, const unsigned short selection)
 {
-    parent->Msg_Group_ComboSelectItem(this->id, ctrl_id, selection);
+    parent_->Msg_Group_ComboSelectItem(this->id_, ctrl_id, selection);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -166,7 +166,7 @@ void ctrlGroup::Msg_ComboSelectItem(const unsigned int ctrl_id, const unsigned s
  */
 void ctrlGroup::Msg_CheckboxChange(const unsigned int ctrl_id, const bool checked)
 {
-    parent->Msg_Group_CheckboxChange(this->id, ctrl_id, checked);
+    parent_->Msg_Group_CheckboxChange(this->id_, ctrl_id, checked);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -177,7 +177,7 @@ void ctrlGroup::Msg_CheckboxChange(const unsigned int ctrl_id, const bool checke
  */
 void ctrlGroup::Msg_ProgressChange(const unsigned int ctrl_id, const unsigned short position)
 {
-    parent->Msg_Group_ProgressChange(this->id, ctrl_id, position);
+    parent_->Msg_Group_ProgressChange(this->id_, ctrl_id, position);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -188,7 +188,7 @@ void ctrlGroup::Msg_ProgressChange(const unsigned int ctrl_id, const unsigned sh
  */
 void ctrlGroup::Msg_ScrollShow(const unsigned int ctrl_id, const bool visible)
 {
-    parent->Msg_Group_ScrollShow(this->id, ctrl_id, visible);
+    parent_->Msg_Group_ScrollShow(this->id_, ctrl_id, visible);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -199,7 +199,7 @@ void ctrlGroup::Msg_ScrollShow(const unsigned int ctrl_id, const bool visible)
  */
 void ctrlGroup::Msg_OptionGroupChange(const unsigned int ctrl_id, const unsigned short selection)
 {
-    parent->Msg_Group_OptionGroupChange(this->id, ctrl_id, selection);
+    parent_->Msg_Group_OptionGroupChange(this->id_, ctrl_id, selection);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -210,7 +210,7 @@ void ctrlGroup::Msg_OptionGroupChange(const unsigned int ctrl_id, const unsigned
  */
 void ctrlGroup::Msg_Timer(const unsigned int ctrl_id)
 {
-    parent->Msg_Group_Timer(this->id, ctrl_id);
+    parent_->Msg_Group_Timer(this->id_, ctrl_id);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -221,7 +221,7 @@ void ctrlGroup::Msg_Timer(const unsigned int ctrl_id)
  */
 void ctrlGroup::Msg_TableSelectItem(const unsigned int ctrl_id, const unsigned short selection)
 {
-    parent->Msg_Group_TableSelectItem(this->id, ctrl_id, selection);
+    parent_->Msg_Group_TableSelectItem(this->id_, ctrl_id, selection);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -232,7 +232,7 @@ void ctrlGroup::Msg_TableSelectItem(const unsigned int ctrl_id, const unsigned s
  */
 void ctrlGroup::Msg_TableRightButton(const unsigned int ctrl_id, const unsigned short selection)
 {
-    parent->Msg_Group_TableRightButton(this->id, ctrl_id, selection);
+    parent_->Msg_Group_TableRightButton(this->id_, ctrl_id, selection);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -243,7 +243,7 @@ void ctrlGroup::Msg_TableRightButton(const unsigned int ctrl_id, const unsigned 
  */
 void ctrlGroup::Msg_TableLeftButton(const unsigned int ctrl_id, const unsigned short selection)
 {
-    parent->Msg_Group_TableLeftButton(this->id, ctrl_id, selection);
+    parent_->Msg_Group_TableLeftButton(this->id_, ctrl_id, selection);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -343,7 +343,7 @@ bool ctrlGroup::Msg_KeyDown(const KeyEvent& ke)
  */
 void ctrlGroup::Msg_Group_ButtonClick(const unsigned int group_id, const unsigned int ctrl_id)
 {
-    parent->Msg_Group_ButtonClick(this->id, ctrl_id);
+    parent_->Msg_Group_ButtonClick(this->id_, ctrl_id);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -354,7 +354,7 @@ void ctrlGroup::Msg_Group_ButtonClick(const unsigned int group_id, const unsigne
  */
 void ctrlGroup::Msg_Group_EditEnter(const unsigned int group_id, const unsigned int ctrl_id)
 {
-    parent->Msg_Group_EditEnter(this->id, ctrl_id);
+    parent_->Msg_Group_EditEnter(this->id_, ctrl_id);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -365,7 +365,7 @@ void ctrlGroup::Msg_Group_EditEnter(const unsigned int group_id, const unsigned 
  */
 void ctrlGroup::Msg_Group_EditChange(const unsigned int group_id, const unsigned int ctrl_id)
 {
-    parent->Msg_Group_EditChange(this->id, ctrl_id);
+    parent_->Msg_Group_EditChange(this->id_, ctrl_id);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -376,7 +376,7 @@ void ctrlGroup::Msg_Group_EditChange(const unsigned int group_id, const unsigned
  */
 void ctrlGroup::Msg_Group_TabChange(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short tab_id)
 {
-    parent->Msg_Group_TabChange(this->id, ctrl_id, tab_id);
+    parent_->Msg_Group_TabChange(this->id_, ctrl_id, tab_id);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -387,7 +387,7 @@ void ctrlGroup::Msg_Group_TabChange(const unsigned int group_id, const unsigned 
  */
 void ctrlGroup::Msg_Group_ListSelectItem(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short selection)
 {
-    parent->Msg_Group_ListSelectItem(this->id, ctrl_id, selection);
+    parent_->Msg_Group_ListSelectItem(this->id_, ctrl_id, selection);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -398,7 +398,7 @@ void ctrlGroup::Msg_Group_ListSelectItem(const unsigned int group_id, const unsi
  */
 void ctrlGroup::Msg_Group_ComboSelectItem(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short selection)
 {
-    parent->Msg_Group_ComboSelectItem(this->id, ctrl_id, selection);
+    parent_->Msg_Group_ComboSelectItem(this->id_, ctrl_id, selection);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -409,7 +409,7 @@ void ctrlGroup::Msg_Group_ComboSelectItem(const unsigned int group_id, const uns
  */
 void ctrlGroup::Msg_Group_CheckboxChange(const unsigned int group_id, const unsigned int ctrl_id, const bool checked)
 {
-    parent->Msg_Group_CheckboxChange(this->id, ctrl_id, checked);
+    parent_->Msg_Group_CheckboxChange(this->id_, ctrl_id, checked);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -420,7 +420,7 @@ void ctrlGroup::Msg_Group_CheckboxChange(const unsigned int group_id, const unsi
  */
 void ctrlGroup::Msg_Group_ProgressChange(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short position)
 {
-    parent->Msg_Group_ProgressChange(this->id, ctrl_id, position);
+    parent_->Msg_Group_ProgressChange(this->id_, ctrl_id, position);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -431,7 +431,7 @@ void ctrlGroup::Msg_Group_ProgressChange(const unsigned int group_id, const unsi
  */
 void ctrlGroup::Msg_Group_ScrollShow(const unsigned int group_id, const unsigned int ctrl_id, const bool visible)
 {
-    parent->Msg_Group_ScrollShow(this->id, ctrl_id, visible);
+    parent_->Msg_Group_ScrollShow(this->id_, ctrl_id, visible);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -442,7 +442,7 @@ void ctrlGroup::Msg_Group_ScrollShow(const unsigned int group_id, const unsigned
  */
 void ctrlGroup::Msg_Group_OptionGroupChange(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short selection)
 {
-    parent->Msg_Group_OptionGroupChange(this->id, ctrl_id, selection);
+    parent_->Msg_Group_OptionGroupChange(this->id_, ctrl_id, selection);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -453,7 +453,7 @@ void ctrlGroup::Msg_Group_OptionGroupChange(const unsigned int group_id, const u
  */
 void ctrlGroup::Msg_Group_Timer(const unsigned int group_id, const unsigned int ctrl_id)
 {
-    parent->Msg_Group_Timer(this->id, ctrl_id);
+    parent_->Msg_Group_Timer(this->id_, ctrl_id);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -464,7 +464,7 @@ void ctrlGroup::Msg_Group_Timer(const unsigned int group_id, const unsigned int 
  */
 void ctrlGroup::Msg_Group_TableSelectItem(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short selection)
 {
-    parent->Msg_Group_TableSelectItem(this->id, ctrl_id, selection);
+    parent_->Msg_Group_TableSelectItem(this->id_, ctrl_id, selection);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -475,7 +475,7 @@ void ctrlGroup::Msg_Group_TableSelectItem(const unsigned int group_id, const uns
  */
 void ctrlGroup::Msg_Group_TableRightButton(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short selection)
 {
-    parent->Msg_Group_TableRightButton(this->id, ctrl_id, selection);
+    parent_->Msg_Group_TableRightButton(this->id_, ctrl_id, selection);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -486,5 +486,5 @@ void ctrlGroup::Msg_Group_TableRightButton(const unsigned int group_id, const un
  */
 void ctrlGroup::Msg_Group_TableLeftButton(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short selection)
 {
-    parent->Msg_Group_TableLeftButton(this->id, ctrl_id, selection);
+    parent_->Msg_Group_TableLeftButton(this->id_, ctrl_id, selection);
 }

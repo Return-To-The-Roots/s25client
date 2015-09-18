@@ -56,8 +56,7 @@ iwSettings::iwSettings(dskGameInterface* gameDesktop)
     GetCtrl<ctrlCheck>(4)->SetCheck(SETTINGS.ingame.scale_statistics);
 
     // "Vollbild"
-    ctrlOptionGroup* optiongroup = AddOptionGroup(10, ctrlOptionGroup::CHECK, scale);
-    optiongroup = AddOptionGroup(3, ctrlOptionGroup::CHECK, scale);
+    ctrlOptionGroup* optiongroup = AddOptionGroup(3, ctrlOptionGroup::CHECK, scale_);
     optiongroup->AddTextButton(1, 200, 70, 150, 22, TC_GREY, _("Fullscreen"), NormalFont);
     optiongroup->AddTextButton(2, 200, 95, 150, 22, TC_GREY, _("Windowed"), NormalFont);
 

@@ -76,8 +76,8 @@ void ctrlMultiSelectGroup::AddSelection(unsigned short selection, bool notify)
 
     this->selection.insert(selection);
 
-    if(notify && parent)
-        parent->Msg_OptionGroupChange(GetID(), selection);
+    if(notify && parent_)
+        parent_->Msg_OptionGroupChange(GetID(), selection);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -100,8 +100,8 @@ void ctrlMultiSelectGroup::RemoveSelection(unsigned short selection, bool notify
 
     this->selection.erase(selection);
 
-    if(notify && parent)
-        parent->Msg_OptionGroupChange(GetID(), selection);
+    if(notify && parent_)
+        parent_->Msg_OptionGroupChange(GetID(), selection);
 }
 
 

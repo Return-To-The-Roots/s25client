@@ -1437,7 +1437,7 @@ void GameClientPlayer::NewSoldierAvailable(const unsigned& soldier_count)
             (*it)->RegulateTroops();
     }
 
-    if(!soldier_count)
+    if(!soldier_count) //-V649
         return;
 
     // Und den Rest ggf.

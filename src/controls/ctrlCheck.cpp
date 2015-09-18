@@ -64,10 +64,10 @@ ctrlCheck::ctrlCheck(Window* parent,
 
 bool ctrlCheck::Msg_LeftDown(const MouseCoords& mc)
 {
-    if(!readonly && Coll(mc.x, mc.y, GetX(), GetY(), width, height))
+    if(!readonly && Coll(mc.x, mc.y, GetX(), GetY(), width_, height_))
     {
         check = !check;
-        parent->Msg_CheckboxChange(GetID(), check);
+        parent_->Msg_CheckboxChange(GetID(), check);
         return true;
     }
 
@@ -83,17 +83,17 @@ bool ctrlCheck::Msg_LeftDown(const MouseCoords& mc)
 bool ctrlCheck::Draw_(void)
 {
     const unsigned short box_size = 20;
-    unsigned short distance = (height - box_size) / 2;
+    unsigned short distance = (height_ - box_size) / 2;
 
-    Draw3D(GetX(), GetY(), width, height, tc, 2);
+    Draw3D(GetX(), GetY(), width_, height_, tc, 2);
 
     if(font)
-        font->Draw(GetX() + 4, GetY() + height / 2, text, glArchivItem_Font::DF_VCENTER, (check ? COLOR_YELLOW : 0xFFBBBBBB) );
+        font->Draw(GetX() + 4, GetY() + height_ / 2, text, glArchivItem_Font::DF_VCENTER, (check ? COLOR_YELLOW : 0xFFBBBBBB) );
 
-    Draw3D(GetX() + width - distance - box_size, GetY() + distance, box_size, box_size, tc, 2);
+    Draw3D(GetX() + width_ - distance - box_size, GetY() + distance, box_size, box_size, tc, 2);
 
     if(check)
-        LOADER.GetImageN("io", 32)->Draw(GetX() + width - distance - box_size / 2, GetY() + distance + box_size / 2, 0, 0, 0, 0, 0, 0);
+        LOADER.GetImageN("io", 32)->Draw(GetX() + width_ - distance - box_size / 2, GetY() + distance + box_size / 2, 0, 0, 0, 0, 0, 0);
 
     return true;
 }

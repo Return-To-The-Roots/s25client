@@ -99,7 +99,7 @@ void iwShip::Msg_PaintAfter()
         // Immer noch nicht? Dann gibt es keine Schiffe mehr und wir zeigen eine entsprechende Meldung an
         if(!ship)
         {
-            NormalFont->Draw(GetX() + width / 2, GetY() + 60, _("No ships available"), glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_NO_OUTLINE, COLOR_WINDOWBROWN);
+            NormalFont->Draw(GetX() + width_ / 2, GetY() + 60, _("No ships available"), glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_NO_OUTLINE, COLOR_WINDOWBROWN);
             return;
         }
     }
@@ -230,8 +230,8 @@ void iwShip::DrawCargo()
     }
 
     // Start Offset zum malen
-    const int xStart = 40 + this->x;
-    const int yStart = 130 + this->y;
+    const int xStart = 40 + this->x_;
+    const int yStart = 130 + this->y_;
 
     // Step pro Ware/Figur
     const int xStep = 10;

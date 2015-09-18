@@ -25,8 +25,6 @@ class iwMusicPlayer : public IngameWindow
         /// Kleines Fenster zur Eingabe von Text
         class InputWindow  : public IngameWindow
         {
-                /// Fenster, von dem aus die Box aufgerufen wurde
-                iwMusicPlayer* parent;
                 const unsigned win_id;
             public:
 
