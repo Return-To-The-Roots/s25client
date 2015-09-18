@@ -1419,29 +1419,34 @@ void GameClientPlayer::RecalcMilitaryFlags()
 /// entsprechende Soldatenanzahl im Lagerhaus verlangt
 void GameClientPlayer::NewSoldierAvailable(const unsigned& soldier_count)
 {
+    assert(soldier_count > 0);
     // solange laufen lassen, bis soldier_count = 0, d.h. der Soldat irgendwohin geschickt wurde
     // Zuerst nach unbesetzten Militärgebäude schauen
-    for(std::list<nobMilitary*>::iterator it = military_buildings.begin(); it != military_buildings.end() && soldier_count; ++it)
+    for(std::list<nobMilitary*>::iterator it = military_buildings.begin(); it != military_buildings.end(); ++it)
     {
         if((*it)->IsNewBuilt())
+        {
             (*it)->RegulateTroops();
+            // Used that soldier? Go out
+            if(!soldier_count)
+                return;
+        }
     }
-
-    if(!soldier_count)
-        return;
 
     // Als nächstes Gebäude in Grenznähe
-    for(std::list<nobMilitary*>::iterator it = military_buildings.begin(); it != military_buildings.end() && soldier_count; ++it)
+    for(std::list<nobMilitary*>::iterator it = military_buildings.begin(); it != military_buildings.end(); ++it)
     {
         if((*it)->GetFrontierDistance() == 2)
+        {
             (*it)->RegulateTroops();
+            // Used that soldier? Go out
+            if(!soldier_count)
+                return;
+        }
     }
 
-    if(!soldier_count) //-V649
-        return;
-
     // Und den Rest ggf.
-    for(std::list<nobMilitary*>::iterator it = military_buildings.begin(); it != military_buildings.end() && soldier_count; ++it)
+    for(std::list<nobMilitary*>::iterator it = military_buildings.begin(); it != military_buildings.end(); ++it)
 	{
 		//already checked? -> skip
 		if((*it)->GetFrontierDistance() == 2 || (*it)->IsNewBuilt())
