@@ -33,7 +33,8 @@ class IngameWindow : public Window
         static std::vector< Point<unsigned short> > last_pos;
     public:
         /// Konstruktor von @p IngameWindow.
-        IngameWindow(unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, const std::string& title, glArchivItem_Bitmap* background, bool modal = false, bool close_on_right_click = true);
+        IngameWindow(unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height,
+            const std::string& title, glArchivItem_Bitmap* background, bool modal = false, bool close_on_right_click = true, Window* parent = NULL);
         /// Destruktor von @p IngameWindow.
         ~IngameWindow(void);
 

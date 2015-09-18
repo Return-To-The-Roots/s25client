@@ -53,7 +53,7 @@ class dskCredits : public Desktop
         };
 
         std::list<CreditsEntry> entries;
-        std::list<dskCredits::CreditsEntry>::iterator it;
+        std::list<dskCredits::CreditsEntry>::iterator itCurEntry;
 
         struct Bob
         {

@@ -64,7 +64,7 @@ enum TabID
  */
 iwAction::iwAction(dskGameInterface* const gi, GameWorldViewer* const gwv, const Tabs& tabs, MapPoint selectedPt, int mouse_x, int mouse_y, unsigned int params, bool military_buildings)
     : IngameWindow(CGI_ACTION, mouse_x, mouse_y, 200, 254, _("Activity window"), LOADER.GetImageN("io", 1)),
-      gi(gi), gwv(gwv), selectedPt(selectedPt), last_x(mouse_x), last_y(mouse_y)
+      gi(gi), gwv(gwv), selectedPt(selectedPt), mousePosAtOpen_(mouse_x, mouse_y)
 {
     /*
         TAB_FLAG    1 = Land road
@@ -411,7 +411,7 @@ void iwAction::AddAttackControls(ctrlGroup* group, const unsigned attackers_coun
 
 iwAction::~iwAction()
 {
-    VIDEODRIVER.SetMousePos(last_x, last_y);
+    VIDEODRIVER.SetMousePos(mousePosAtOpen_.x, mousePosAtOpen_.y);
     gi->ActionWindowClosed();
 }
 

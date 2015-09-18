@@ -27,8 +27,7 @@ class iwRoadWindow : public IngameWindow
 {
     private:
         dskGameInterface* const GameInterface;
-        unsigned short last_x;
-        unsigned short last_y;
+        Point<unsigned short> mousePosAtOpen_;
 
     public:
         iwRoadWindow(dskGameInterface* const gi, bool flagpossible, int mouse_x, int mouse_y);

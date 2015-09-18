@@ -332,7 +332,8 @@ void nofHunter::HandleStateChasing()
     else
     {
         // Weg dorthin suchen
-        if((dir = gwg->FindHumanPath(pos, animal->GetPos(), MAX_HUNTING_DISTANCE)) != 0xFF)
+        unsigned char dir = gwg->FindHumanPath(pos, animal->GetPos(), MAX_HUNTING_DISTANCE);
+        if(dir != 0xFF)
         {
             // Weg gefunden, dann hinlaufen
             StartWalking(dir);
@@ -358,7 +359,8 @@ void nofHunter::HandleStateFindingShootingPoint()
     else
     {
         // Weg dorthin suchen
-        if((dir = gwg->FindHumanPath(pos, shootingPos, 6)) != 0xFF)
+        unsigned char dir = gwg->FindHumanPath(pos, shootingPos, 6);
+        if(dir != 0xFF)
         {
             // Weg gefunden, dann hinlaufen
             StartWalking(dir);
@@ -393,7 +395,8 @@ void nofHunter::HandleStateWalkingToCadaver()
     else
     {
         // Weg dorthin suchen
-        if((dir = gwg->FindHumanPath(pos, animal->GetPos(), 6)) != 0xFF)
+        unsigned char dir = gwg->FindHumanPath(pos, animal->GetPos(), 6);
+        if(dir != 0xFF)
         {
             // Weg gefunden, dann hinlaufen
             StartWalking(dir);
@@ -444,10 +447,13 @@ void nofHunter::WalkHome()
     {
         // Weiteres übernimmt nofBuildingWorker
         WorkingReady();
+        return;
     }
+
     // Weg suchen und ob wir überhaupt noch nach Hause kommen (Toleranz bei dem Weg mit einberechnen,
     // damit er nicht einfach rumirrt und wegstirbt, wenn er einmal ein paar Felder zu weit gelaufen ist)
-    else if((dir = gwg->FindHumanPath(pos, flagPos, MAX_HUNTING_DISTANCE + MAX_HUNTING_DISTANCE / 4)) == 0xFF)
+    unsigned char dir = gwg->FindHumanPath(pos, flagPos, MAX_HUNTING_DISTANCE + MAX_HUNTING_DISTANCE / 4);
+    if(dir == 0xFF)
     {
         // Kein Weg führt mehr nach Hause--> Rumirren
         StartWandering();

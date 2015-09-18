@@ -23,8 +23,6 @@
 
 class iwMsgbox : public IngameWindow
 {
-        /// Fenster, von dem aus die Box aufgerufen wurde
-        Window* parent;
         /// Buttons, die auf der Box erscheinen sollen
         MsgboxButton button;
         /// ID für die Msgbox, um unterschiedliche

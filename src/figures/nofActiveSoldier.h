@@ -96,9 +96,6 @@ class nofActiveSoldier : public nofSoldier
         bool GetFightSpotNear(nofActiveSoldier* other, MapPoint * fight_spot);
 		/// increase rank (used by addon CombatPromotion)
 		void IncreaseRank();
-
-
-
         /// The derived classes regain control after a fight of nofActiveSoldier
         virtual void FreeFightEnded() = 0;
 
@@ -109,7 +106,6 @@ class nofActiveSoldier : public nofSoldier
 
         /// Gets the visual range radius of this soldier
         virtual unsigned GetVisualRange() const;
-
 
     public:
 
@@ -150,7 +146,6 @@ class nofActiveSoldier : public nofSoldier
         bool IsReadyForFight() const;
         /// Informs a waiting soldier about the start of a fight
         void FightingStarted();
-
 
         /// Gets the current state
         SoldierState GetState() const { return state; }

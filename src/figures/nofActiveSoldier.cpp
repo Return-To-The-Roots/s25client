@@ -118,17 +118,20 @@ void nofActiveSoldier::WalkingHome()
     {
         // Enter via the door
         StartWalking(1);
+        return;
     }
     // or are have we come into the building?
-    else if(GetPos() == building->GetPos())
+    if(GetPos() == building->GetPos())
     {
         // We're there!
         building->AddActiveSoldier(this);
         // Remove myself from the map
         gwg->RemoveFigure(this, pos);
+        return;
     }
+    unsigned char dir = gwg->FindHumanPath(pos, building->GetFlag()->GetPos(), 100);
     // Or we don't find a route?
-    else if((dir = gwg->FindHumanPath(pos, building->GetFlag()->GetPos(), 100)) == 0xFF)
+    if(dir == 0xFF)
     {
         // Start wandering around then
         StartWandering();
@@ -145,7 +148,6 @@ void nofActiveSoldier::WalkingHome()
         if(FindEnemiesNearby())
             // Enemy found -> abort, because nofActiveSoldier handles all things now (inclusive one walking step)
             return;
-
 
         // Start walking
         StartWalking(dir);
@@ -403,8 +405,8 @@ void nofActiveSoldier::MeetingEnemy()
     // Not at the fighting spot yet, continue walking there
     else
     {
-        dir = gwg->FindHumanPath(pos, fight_spot, MAX_ATTACKING_RUN_DISTANCE);
-        if (dir != 255)
+        unsigned char dir = gwg->FindHumanPath(pos, fight_spot, MAX_ATTACKING_RUN_DISTANCE);
+        if (dir != 0xFF)
         {
             StartWalking(dir);
         }
@@ -461,7 +463,7 @@ void nofActiveSoldier::MeetEnemy(nofActiveSoldier* other, const MapPoint figh_sp
 bool nofActiveSoldier::GetFightSpotNear(nofActiveSoldier* other, MapPoint * fight_spot)
 {
     // Calc middle between the two soldiers and use this as origin spot for the search of more fight spots
-    MapPoint otherPos = gwg->GetNeighbour(other->GetPos(), other->GetDir());
+    MapPoint otherPos = gwg->GetNeighbour(other->GetPos(), other->GetCurMoveDir());
     MapPoint middle( (pos.x + otherPos.x) / 2, (pos.y + otherPos.y) / 2 );
 
     // Did we cross the borders ? ( horizontally)

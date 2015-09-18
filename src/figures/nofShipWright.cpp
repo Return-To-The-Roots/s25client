@@ -206,10 +206,11 @@ void nofShipWright::WalkToWorkpoint()
         // Anfangen zu arbeiten
         state = STATE_WORK;
         current_ev = em->AddEvent(this, WORKING_TIME_SHIPS, 1);
+        return;
     }
+    unsigned char dir = gwg->FindHumanPath(pos, dest, 20);
     // Weg suchen und gucken ob der Punkt noch in Ordnung ist
-    else if((dir = gwg->FindHumanPath(pos, dest, 20)) == 0xFF || (!IsPointGood(dest)
-            && gwg->GetGOT(dest) != GOT_SHIPBUILDINGSITE))
+    if(dir == 0xFF || (!IsPointGood(dest) && gwg->GetGOT(dest) != GOT_SHIPBUILDINGSITE))
     {
         // Punkt freigeben
         gwg->GetNode(dest).reserved = false;;
@@ -240,9 +241,11 @@ void nofShipWright::WalkHome()
     {
         // Weiteres übernimmt nofBuildingWorker
         WorkingReady();
+        return;
     }
+    unsigned char dir = gwg->FindHumanPath(pos, dest, SHIPWRIGHT_WALKING_DISTANCE);
     // Weg suchen und ob wir überhaupt noch nach Hause kommen
-    else if((dir = gwg->FindHumanPath(pos, dest, SHIPWRIGHT_WALKING_DISTANCE)) == 0xFF)
+    if(dir == 0xFF)
     {
         // Kein Weg führt mehr nach Hause--> Rumirren
         StartWandering();

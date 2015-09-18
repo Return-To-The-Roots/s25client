@@ -135,13 +135,12 @@ void nofScout_Free::Scout()
     else
     {
         // Weg suchen
-        dir = gwg->FindHumanPath(pos, nextPos, 30);
+        unsigned char dir = gwg->FindHumanPath(pos, nextPos, 30);
 
         // Wenns keinen gibt, neuen suchen, ansonsten hinlaufen
         if(dir == 0xFF)
             // Neuen Punkt suchen
             GoToNewNode();
-
         else
             StartWalking(dir);
     }

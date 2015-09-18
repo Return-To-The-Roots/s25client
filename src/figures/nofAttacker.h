@@ -70,10 +70,6 @@ class nofAttacker : public nofActiveSoldier
         /// Geht zum STATE_ATTACKING_WAITINGFORDEFENDER über und meldet gleichzeitig ein Block-Event an
         void SwitchStateAttackingWaitingForDefender();
 
-
-
-
-
         /// Für Schiffsangreifer: Sagt dem Schiff Bescheid, dass wir nicht mehr kommen
         void CancelAtShip();
         /// Behandelt das Laufen zurück zum Schiff

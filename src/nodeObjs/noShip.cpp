@@ -157,12 +157,12 @@ void noShip::Destroy()
 /// Zeichnet das Schiff stehend mit oder ohne Waren
 void noShip::DrawFixed(const int x, const int y, const bool draw_wares)
 {
-    LOADER.GetImageN("boot_z",  ((dir + 3) % 6) * 2 + 1)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
-    LOADER.GetImageN("boot_z",  ((dir + 3) % 6) * 2)->Draw(x, y);
+    LOADER.GetImageN("boot_z",  ((GetCurMoveDir() + 3) % 6) * 2 + 1)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+    LOADER.GetImageN("boot_z",  ((GetCurMoveDir() + 3) % 6) * 2)->Draw(x, y);
 
     if(draw_wares)
         /// Waren zeichnen
-        LOADER.GetImageN("boot_z",  30 + ((dir + 3) % 6))->Draw(x, y);
+        LOADER.GetImageN("boot_z",  30 + ((GetCurMoveDir() + 3) % 6))->Draw(x, y);
 }
 
 void noShip::Draw(int x, int y)
@@ -226,11 +226,11 @@ void noShip::Draw(int x, int y)
     }
 
     LOADER.GetImageN("boot_z", 40 + GAMECLIENT.GetGlobalAnimation(6, 1, 1, obj_id))->
-    Draw(x + SHIPS_FLAG_POS[dir + flag_drawing_type * 6].x, y + SHIPS_FLAG_POS[dir + flag_drawing_type * 6].y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(player)->color]);
+    Draw(x + SHIPS_FLAG_POS[GetCurMoveDir() + flag_drawing_type * 6].x, y + SHIPS_FLAG_POS[GetCurMoveDir() + flag_drawing_type * 6].y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(player)->color]);
     // Second, white flag, only when on expedition, always swinging in the opposite direction
     if(state >= STATE_EXPEDITION_LOADING && state <= STATE_EXPEDITION_DRIVING)
         LOADER.GetImageN("boot_z", 40 + GAMECLIENT.GetGlobalAnimation(6, 1, 1, obj_id + 4))->
-        Draw(x + SHIPS_FLAG_POS[dir + flag_drawing_type * 6].x, y + 4 + SHIPS_FLAG_POS[dir + flag_drawing_type * 6].y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLOR_WHITE);
+        Draw(x + SHIPS_FLAG_POS[GetCurMoveDir() + flag_drawing_type * 6].x, y + 4 + SHIPS_FLAG_POS[GetCurMoveDir() + flag_drawing_type * 6].y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLOR_WHITE);
 
 }
 /// Zeichnet normales Fahren auf dem Meer ohne irgendwelche Güter
@@ -239,8 +239,8 @@ void noShip::DrawDriving(int& x, int& y)
     // Interpolieren zwischen beiden Knotenpunkten
     CalcWalkingRelative(x, y);
 
-    LOADER.GetImageN("boot_z", 13 + ((dir + 3) % 6) * 2)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
-    LOADER.GetImageN("boot_z", 12 + ((dir + 3) % 6) * 2)->Draw(x, y);
+    LOADER.GetImageN("boot_z", 13 + ((GetCurMoveDir() + 3) % 6) * 2)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+    LOADER.GetImageN("boot_z", 12 + ((GetCurMoveDir() + 3) % 6) * 2)->Draw(x, y);
 }
 
 /// Zeichnet normales Fahren auf dem Meer mit Gütern
@@ -249,10 +249,10 @@ void noShip::DrawDrivingWithWares(int& x, int& y)
     // Interpolieren zwischen beiden Knotenpunkten
     CalcWalkingRelative(x, y);
 
-    LOADER.GetImageN("boot_z", 13 + ((dir + 3) % 6) * 2)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
-    LOADER.GetImageN("boot_z", 12 + ((dir + 3) % 6) * 2)->Draw(x, y);
+    LOADER.GetImageN("boot_z", 13 + ((GetCurMoveDir() + 3) % 6) * 2)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+    LOADER.GetImageN("boot_z", 12 + ((GetCurMoveDir() + 3) % 6) * 2)->Draw(x, y);
     /// Waren zeichnen
-    LOADER.GetImageN("boot_z",  30 + ((dir + 3) % 6))->Draw(x, y);
+    LOADER.GetImageN("boot_z",  30 + ((GetCurMoveDir() + 3) % 6))->Draw(x, y);
 }
 
 
@@ -437,7 +437,7 @@ void noShip::StartDriving(const unsigned char dir)
 void noShip::Driven()
 {
     MapPoint enemy_territory_discovered(0xffff, 0xffff);
-    gwg->RecalcMovingVisibilities(pos, player, GetVisualRange(), dir, &enemy_territory_discovered);
+    gwg->RecalcMovingVisibilities(pos, player, GetVisualRange(), GetCurMoveDir(), &enemy_territory_discovered);
 
     // Feindliches Territorium entdeckt?
     if(enemy_territory_discovered.x != 0xffff)

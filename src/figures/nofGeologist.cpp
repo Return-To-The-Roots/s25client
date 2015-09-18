@@ -216,7 +216,7 @@ void nofGeologist::Walked()
         else
         {
             // Weg zum nächsten Punkt suchen
-            dir = gwg->FindHumanPath(pos, node_goal, 20);
+            unsigned char dir = gwg->FindHumanPath(pos, node_goal, 20);
 
             // Wenns keinen gibt
             if(dir == 0xFF)
@@ -230,12 +230,11 @@ void nofGeologist::Walked()
                 {
                     state = STATE_GOTOFLAG;
                     Walked();
+                    return;
                 }
-                else
-                    StartWalking(dir);
             }
-            else
-                StartWalking(dir);
+            
+            StartWalking(dir);
         }
     }
     else if(state == STATE_GOTOFLAG)
@@ -406,7 +405,7 @@ void nofGeologist::GoToNextNode()
     }
 
     // ersten Punkt suchen
-    dir = GetNextNode();
+    unsigned char dir = GetNextNode();
 
     if(dir != 0xFF)
     {

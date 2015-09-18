@@ -54,7 +54,7 @@ static char THIS_FILE[] = __FILE__;
  *  @author FloSoft
  */
 dskHostGame::dskHostGame(bool single_player) :
-    Desktop(LOADER.GetImageN("setup015", 0)), temppunkte(0), has_countdown(false), single_player(single_player)
+    Desktop(LOADER.GetImageN("setup015", 0)), temppunkte_(0), hasCountdown_(false), isSinglePlayer_(single_player)
 {
     // Kartenname
     AddText(0, 400, 5, GAMECLIENT.GetGameName().c_str(), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, LargeFont);
@@ -367,7 +367,7 @@ void dskHostGame::UpdatePlayerRow(const unsigned row)
 void dskHostGame::Msg_PaintBefore()
 {
     // Chatfenster Fokus geben
-    if (!single_player)
+    if (!isSinglePlayer_)
     {
         GetCtrl<ctrlEdit>(4)->SetFocus();
     }
@@ -571,7 +571,7 @@ void dskHostGame::Msg_ButtonClick(const unsigned int ctrl_id)
 
             GAMECLIENT.Stop();
 
-            if (single_player)
+            if (isSinglePlayer_)
             {
                 WINDOWMANAGER.Switch(new dskSinglePlayer);
             }
@@ -610,7 +610,7 @@ void dskHostGame::Msg_ButtonClick(const unsigned int ctrl_id)
         } break;
         case 22: // Addons
         {
-            iwAddons* w = new iwAddons(&ggs, GAMECLIENT.IsHost() ? iwAddons::HOSTGAME : iwAddons::READONLY);
+            iwAddons* w = new iwAddons(&ggs_, GAMECLIENT.IsHost() ? iwAddons::HOSTGAME : iwAddons::READONLY);
             w->SetParent(this);
             WINDOWMANAGER.Show(w);
         } break;
@@ -637,9 +637,9 @@ void dskHostGame::Msg_EditEnter(const unsigned int ctrl_id)
  */
 void dskHostGame::CI_Countdown(int countdown)
 {
-    has_countdown = true;
+    hasCountdown_ = true;
 
-    if (single_player)
+    if (isSinglePlayer_)
     {
         return;
     }
@@ -669,14 +669,14 @@ void dskHostGame::CI_Countdown(int countdown)
  */
 void dskHostGame::CI_CancelCountdown()
 {
-    if (single_player)
+    if (isSinglePlayer_)
     {
         return;
     }
 
     GetCtrl<ctrlChat>(1)->AddMessage("", "", 0xFFCC2222, _("Start aborted"), 0xFFFFCC00);
 
-    has_countdown = false;
+    hasCountdown_ = false;
 
     if(GAMECLIENT.IsHost())
         TogglePlayerReady(GAMECLIENT.GetPlayerID(), false);
@@ -696,7 +696,7 @@ void dskHostGame::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult 
         {
             GAMECLIENT.Stop();
 
-            if (single_player)
+            if (isSinglePlayer_)
             {
                 WINDOWMANAGER.Switch(new dskSinglePlayer);
             }
@@ -769,22 +769,22 @@ void dskHostGame::Msg_CheckboxChange(const unsigned int ctrl_id, const bool chec
 void dskHostGame::UpdateGGS()
 {
     // Geschwindigkeit
-    ggs.game_speed = static_cast<GlobalGameSettings::GameSpeed>(GetCtrl<ctrlComboBox>(43)->GetSelection());
+    ggs_.game_speed = static_cast<GlobalGameSettings::GameSpeed>(GetCtrl<ctrlComboBox>(43)->GetSelection());
     // Spielziel
-    ggs.game_objective = static_cast<GlobalGameSettings::GameObjective>(GetCtrl<ctrlComboBox>(42)->GetSelection());
+    ggs_.game_objective = static_cast<GlobalGameSettings::GameObjective>(GetCtrl<ctrlComboBox>(42)->GetSelection());
     // Waren zu Beginn
-    ggs.start_wares = static_cast<GlobalGameSettings::StartWares>(GetCtrl<ctrlComboBox>(41)->GetSelection());
+    ggs_.start_wares = static_cast<GlobalGameSettings::StartWares>(GetCtrl<ctrlComboBox>(41)->GetSelection());
     // Aufklärung
-    ggs.exploration = static_cast<GlobalGameSettings::Exploration>(GetCtrl<ctrlComboBox>(40)->GetSelection());
+    ggs_.exploration = static_cast<GlobalGameSettings::Exploration>(GetCtrl<ctrlComboBox>(40)->GetSelection());
     // Teams gesperrt
-    ggs.lock_teams = GetCtrl<ctrlCheck>(20)->GetCheck();
+    ggs_.lock_teams = GetCtrl<ctrlCheck>(20)->GetCheck();
     // Team sicht
-    ggs.team_view = GetCtrl<ctrlCheck>(19)->GetCheck();
+    ggs_.team_view = GetCtrl<ctrlCheck>(19)->GetCheck();
     //random locations
-    ggs.random_location = GetCtrl<ctrlCheck>(23)->GetCheck();
+    ggs_.random_location = GetCtrl<ctrlCheck>(23)->GetCheck();
 
     // An Server übermitteln
-    GAMESERVER.ChangeGlobalGameSettings(ggs);
+    GAMESERVER.ChangeGlobalGameSettings(ggs_);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -817,7 +817,7 @@ void dskHostGame::ChangeReady(const unsigned int player, const bool ready)
     if(player == GAMECLIENT.GetPlayerID() && (start = GetCtrl<ctrlTextButton>(2)))
     {
         if(GAMECLIENT.IsHost())
-            start->SetText(has_countdown ? _("Cancel start") : _("Start game"));
+            start->SetText(hasCountdown_ ? _("Cancel start") : _("Start game"));
         else
             start->SetText(ready ? _("Not Ready") : _("Ready"));
     }
@@ -939,7 +939,7 @@ void dskHostGame::CI_GameStarted(GameWorldViewer* gwv)
  */
 void dskHostGame::CI_PSChanged(const unsigned player_id, const PlayerState ps)
 {
-    if ((single_player) && (ps == PS_FREE))
+    if ((isSinglePlayer_) && (ps == PS_FREE))
         GAMESERVER.TogglePlayerState(player_id);
 
     UpdatePlayerRow(player_id);
@@ -1021,7 +1021,7 @@ void dskHostGame::CI_PlayersSwapped(const unsigned player1, const unsigned playe
  */
 void dskHostGame::CI_GGSChanged(const GlobalGameSettings& ggs)
 {
-    this->ggs = ggs;
+    this->ggs_ = ggs;
 
     // Geschwindigkeit
     GetCtrl<ctrlComboBox>(43)->SetSelection(static_cast<unsigned short>(ggs.game_speed));
@@ -1049,7 +1049,7 @@ void dskHostGame::CI_GGSChanged(const GlobalGameSettings& ggs)
  */
 void dskHostGame::CI_Chat(const unsigned player_id, const ChatDestination cd, const std::string& msg)
 {
-    if ((player_id != 0xFFFFFFFF) && !single_player) // Keine Lobby-Nachrichten anzeigen
+    if ((player_id != 0xFFFFFFFF) && !isSinglePlayer_) // Keine Lobby-Nachrichten anzeigen
     {
         std::string time = TIME.FormatTime("(%H:%i:%s)");
 

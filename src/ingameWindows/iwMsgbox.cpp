@@ -40,7 +40,7 @@ static char THIS_FILE[] = __FILE__;
  *  @author OLiver
  */
 iwMsgbox::iwMsgbox(const std::string& title, const std::string& text, Window* parent, MsgboxButton button, unsigned short icon, unsigned int msgboxid)
-    : IngameWindow(CGI_MSGBOX, 0xFFFF, 0xFFFF, 420, 140, title, LOADER.GetImageN("resource", 41), true), parent(parent), button(button), msgboxid(msgboxid), text(text)
+    : IngameWindow(CGI_MSGBOX, 0xFFFF, 0xFFFF, 420, 140, title, LOADER.GetImageN("resource", 41), true, true, parent), button(button), msgboxid(msgboxid), text(text)
 {
     AddImage(0, 42, 42, LOADER.GetImageN("io", icon));
     //ctrlMultiline *multiline = AddMultiline(1, 77, 34, 400, 90, TC_GREEN2, NormalFont);

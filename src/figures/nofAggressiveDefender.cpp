@@ -276,7 +276,7 @@ void nofAggressiveDefender::MissAggressiveDefendingWalk()
         return;
 
     // Calc next walking direction
-    dir = gwg->FindHumanPath(pos, attacker->GetPos(), 100, true);
+    unsigned char dir = gwg->FindHumanPath(pos, attacker->GetPos(), 100, true);
 
     if(dir == 0xFF)
     {

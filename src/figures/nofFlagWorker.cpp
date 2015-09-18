@@ -116,7 +116,7 @@ void nofFlagWorker::GoToFlag()
     else
     {
         // Weg suchen
-        dir = gwg->FindHumanPath(pos, flag->GetPos(), 40);
+        unsigned char dir = gwg->FindHumanPath(pos, flag->GetPos(), 40);
 
         // Wenns keinen gibt, rumirren, ansonsten hinlaufen
         if(dir == 0xFF)

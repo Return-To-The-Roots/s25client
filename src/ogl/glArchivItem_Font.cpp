@@ -518,7 +518,8 @@ std::vector<std::string> glArchivItem_Font::WrapInfo::CreateSingleStrings(const 
     unsigned curStart = positions.front();
     for(std::vector<unsigned>::const_iterator it = positions.begin() + 1; it != positions.end(); ++it)
     {
-        destStrings.push_back(origin_text.substr(curStart, *it - curStart));
+        if(*it > curStart)
+            destStrings.push_back(origin_text.substr(curStart, *it - curStart - 1));
         curStart = *it;
     }
     /* Push last part */

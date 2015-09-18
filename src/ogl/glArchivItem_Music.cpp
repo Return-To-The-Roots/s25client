@@ -48,8 +48,17 @@ glArchivItem_Music::glArchivItem_Music(void)
  *  @author FloSoft
  */
 glArchivItem_Music::glArchivItem_Music(const glArchivItem_Music& item)
-    : libsiedler2::baseArchivItem_Sound(item), sound(NULL)
+    : libsiedler2::baseArchivItem_Sound(item), sound(item.sound)
 {
+}
+
+glArchivItem_Music& glArchivItem_Music::operator=(const glArchivItem_Music& item)
+{
+    if(this == &item)
+        return *this;
+    libsiedler2::baseArchivItem_Sound::operator=(item);
+    sound = item.sound;
+    return *this;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

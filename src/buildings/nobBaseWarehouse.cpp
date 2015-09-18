@@ -539,7 +539,7 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
 
             empty_event = 0;
 
-            std::vector<unsigned> type_list;
+            std::vector<unsigned> possibleIds;
             // Waren und Figuren zum Auslagern zusammensuchen (id >= 34 --> Figur!)
             // Wenn keine Platz an Flagge, dann keine Waren raus
             if(GetFlag()->IsSpaceForWare())
@@ -547,7 +547,7 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
                 for(unsigned i = 0; i < WARE_TYPES_COUNT; ++i)
                 {
                     if(CheckRealInventorySettings(0, 4, i) && real_goods.goods[i])
-                        type_list.push_back(i);
+                        possibleIds.push_back(i);
                 }
             }
 
@@ -555,22 +555,22 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
             {
                 // Figuren, die noch nicht implementiert sind, nicht nehmen!
                 if(CheckRealInventorySettings(1, 4, i) && real_goods.people[i])
-                    type_list.push_back(WARE_TYPES_COUNT + i);
+                    possibleIds.push_back(WARE_TYPES_COUNT + i);
             }
 
             // Gibts überhaupos welche?
-            if(type_list.empty())
+            if(possibleIds.empty())
                 // ansonsten gleich tschüss
                 return;
 
             // Eine ID zufällig auswählen
-            unsigned type = type_list[RANDOM.Rand(__FILE__, __LINE__, obj_id, type_list.size())];
+            unsigned selectedId = possibleIds[RANDOM.Rand(__FILE__, __LINE__, obj_id, possibleIds.size())];
 
-            if(type < WARE_TYPES_COUNT)
+            if(selectedId < WARE_TYPES_COUNT)
             {
                 // Ware
 
-                Ware* ware = new Ware(GoodType(type), 0, this);
+                Ware* ware = new Ware(GoodType(selectedId), 0, this);
                 ware->goal = gwg->GetPlayer(player)->FindClientForWare(ware);
 
                 // Ware zur Liste hinzufügen, damit sie dann rausgetragen wird
@@ -579,7 +579,7 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
                 AddLeavingEvent();
 
                 // Ware aus Inventar entfernen
-                --(real_goods.goods[type]);
+                --(real_goods.goods[selectedId]);
 
                 // Evtl. kein Schwert/Schild/Bier mehr da, sodass das Rekrutieren gestoppos werden muss
                 TryStopRecruiting();
@@ -587,10 +587,10 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
             else
             {
                 // Figur
-                type -= WARE_TYPES_COUNT;
+                selectedId -= WARE_TYPES_COUNT;
 
-                nobBaseWarehouse* wh = gwg->GetPlayer(player)->FindWarehouse(this, FW::Condition_StoreFigure, 0, true, &type, false);
-                nofPassiveWorker* fig = new nofPassiveWorker(Job(type), pos, player, NULL);
+                nobBaseWarehouse* wh = gwg->GetPlayer(player)->FindWarehouse(this, FW::Condition_StoreFigure, 0, true, &selectedId, false);
+                nofPassiveWorker* fig = new nofPassiveWorker(Job(selectedId), pos, player, NULL);
 
                 if(wh)
                     fig->GoHome(wh);
@@ -604,7 +604,7 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
                 AddLeavingFigure(fig);
 
                 // Person aus Inventar entfernen
-                --(real_goods.people[type]);
+                --(real_goods.people[selectedId]);
 
                 // Evtl. kein Gehilfe mehr da, sodass das Rekrutieren gestoppos werden muss
                 TryStopRecruiting();

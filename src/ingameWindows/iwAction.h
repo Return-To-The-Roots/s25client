@@ -58,8 +58,7 @@ class iwAction : public IngameWindow
         GameWorldViewer* const gwv;
 
         MapPoint selectedPt;
-        unsigned short last_x;
-        unsigned short last_y;
+        Point<unsigned short> mousePosAtOpen_;
 
         /// Anzahl gewählter Soldaten für den Angriff und die Maximalanzahl
         unsigned int selected_soldiers_count;

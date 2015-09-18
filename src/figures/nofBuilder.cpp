@@ -274,8 +274,9 @@ void nofBuilder::StartFreewalk()
     if(rel_x + FREEWALK_LENGTH_SLANTWISE[waiting_walk] <= RIGHT_MAX && rel_y + FREEWALK_LENGTH_SLANTWISE[waiting_walk] <= DOWN_MAX)
         possible_directions.push_back(4);
 
+    assert(possible_directions.size() > 0);
     // Zufällige Richtung von diesen auswählen
-    dir = possible_directions[RANDOM.Rand(__FILE__, __LINE__, obj_id, possible_directions.size())];
+    FaceDir(possible_directions[RANDOM.Rand(__FILE__, __LINE__, obj_id, possible_directions.size())]);
 
     // Und dort auch hinlaufen
     current_ev = em->AddEvent(this, (state == STATE_WAITINGFREEWALK) ? 24 : 17, 1);
@@ -284,7 +285,7 @@ void nofBuilder::StartFreewalk()
     next_rel_x = rel_x;
     next_rel_y = rel_y;
 
-    switch(dir)
+    switch(GetCurMoveDir())
     {
         case 0: next_rel_x -= FREEWALK_LENGTH[waiting_walk]; break;
         case 1: next_rel_x -= FREEWALK_LENGTH_SLANTWISE[waiting_walk]; next_rel_y -= FREEWALK_LENGTH_SLANTWISE[waiting_walk]; break;
@@ -311,7 +312,7 @@ void nofBuilder::Draw(int x, int y)
             x += (GAMECLIENT.Interpolate(rel_x, next_rel_x, current_ev) + building_site->GetDoorPointX());
             y += (GAMECLIENT.Interpolate(rel_y, next_rel_y, current_ev) + building_site->GetDoorPointY());
 
-            Loader::bob_jobs_cache[building_site->GetNation()][JOB_BUILDER][dir][GAMECLIENT.Interpolate(12, current_ev) % 8].draw(x, y, COLOR_WHITE, COLORS[gwg->GetPlayer(player)->color]);
+            Loader::bob_jobs_cache[building_site->GetNation()][JOB_BUILDER][GetCurMoveDir()][GAMECLIENT.Interpolate(12, current_ev) % 8].draw(x, y, COLOR_WHITE, COLORS[gwg->GetPlayer(player)->color]);
 //          LOADER.GetBobN("jobs")->Draw(23,dir,false,GAMECLIENT.Interpolate(12,current_ev)%8,x,y,COLORS[gwg->GetPlayer(player)->color]);
 //          DrawShadow(x,y,GAMECLIENT.Interpolate(12,current_ev)%8,dir);
 

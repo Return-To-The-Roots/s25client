@@ -91,11 +91,10 @@ class dskHostGame :
         void LC_Status_Error(const std::string& error);
 
     private:
-        int temppunkte; // TODO - wegmachen und durch korrekte punkte ersetzen!
-        glArchivItem_Bitmap_Raw preview;
-        GlobalGameSettings ggs;
-        bool has_countdown;
-        bool single_player;
+        int temppunkte_; // TODO - wegmachen und durch korrekte punkte ersetzen!
+        GlobalGameSettings ggs_;
+        bool hasCountdown_;
+        bool isSinglePlayer_;
 };
 
 

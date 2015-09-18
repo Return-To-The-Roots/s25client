@@ -167,13 +167,13 @@ void nofAttacker::Walked()
                 return;
             }
 
-            MapPoint flagPos = attacked_goal->GetFlag()->GetPos();
+            MapPoint goalFlagPos = attacked_goal->GetFlag()->GetPos();
             //assert(enemy->GetGOT() == GOT_NOF_DEFENDER);
             // Are we at the flag?
 
             nofDefender* defender = NULL;
             // Look for defenders at this position
-            const std::list<noBase*>& figures = gwg->GetFigures(flagPos);
+            const std::list<noBase*>& figures = gwg->GetFigures(goalFlagPos);
             for(std::list<noBase*>::const_iterator it = figures.begin(); it != figures.end(); ++it)
             {
                 if((*it)->GetGOT() == GOT_NOF_DEFENDER)
@@ -188,7 +188,7 @@ void nofAttacker::Walked()
             }
 
 
-            if(pos == flagPos)
+            if(pos == goalFlagPos)
             {
                 if(defender)
                 {
@@ -206,7 +206,8 @@ void nofAttacker::Walked()
             }
             else
             {
-                if( (dir = gwg->FindHumanPath(pos, flagPos, 5, true)) == 0xFF)
+                unsigned char dir = gwg->FindHumanPath(pos, goalFlagPos, 5, true);
+                if(dir == 0xFF)
                 {
                     // es wurde kein Weg mehr gefunden --> neues Plätzchen suchen und warten
                     state = STATE_ATTACKING_WALKINGTOGOAL;
@@ -388,10 +389,7 @@ void nofAttacker::HomeDestroyed()
             Wander();
 
             // und evtl einen Nachrücker für diesen Platz suchen
-            attacked_goal->SendSuccessor(pos, radius, dir);
-
-
-
+            attacked_goal->SendSuccessor(pos, radius, GetCurMoveDir());
         } break;
 
         default:
@@ -614,7 +612,7 @@ void nofAttacker::MissAttackingWalk()
 
 
     // Ansonsten Weg zum Ziel suchen
-    dir = gwg->FindHumanPath(pos, goal, MAX_ATTACKING_RUN_DISTANCE, true);
+    unsigned char dir = gwg->FindHumanPath(pos, goal, MAX_ATTACKING_RUN_DISTANCE, true);
     // Keiner gefunden? Nach Hause gehen
     if(dir == 0xff)
     {
@@ -672,26 +670,42 @@ void nofAttacker::ReachedDestination()
         // reservieren, damit sich kein anderer noch hier hinstellt
         state = STATE_ATTACKING_WAITINGAROUNDBUILDING;
         // zur Flagge hin ausrichten
+        unsigned char dir = 0; 
         MapPoint attFlagPos = attacked_goal->GetFlag()->GetPos();
-        if(pos.y == attFlagPos.y && pos.x <= attFlagPos.x) dir = 3;
-        else if(pos.y == attFlagPos.y && pos.x > attFlagPos.x) dir = 0;
-        else if(pos.y < attFlagPos.y && pos.x < attFlagPos.x) dir = 4;
-        else if(pos.y < attFlagPos.y && pos.x >  attFlagPos.x) dir = 5;
-        else if(pos.y > attFlagPos.y && pos.x < attFlagPos.x) dir = 2;
-        else if(pos.y > attFlagPos.y && pos.x >  attFlagPos.x) dir = 1;
-        else if(pos.x ==  attFlagPos.x)
+        if(pos.y == attFlagPos.y && pos.x <= attFlagPos.x)
+            dir = 3;
+        else if(pos.y == attFlagPos.y && pos.x > attFlagPos.x)
+            dir = 0;
+        else if(pos.y < attFlagPos.y && pos.x < attFlagPos.x)
+            dir = 4;
+        else if(pos.y < attFlagPos.y && pos.x >  attFlagPos.x)
+            dir = 5;
+        else if(pos.y > attFlagPos.y && pos.x < attFlagPos.x)
+            dir = 2;
+        else if(pos.y > attFlagPos.y && pos.x >  attFlagPos.x)
+            dir = 1;
+        else/* (pos.x ==  attFlagPos.x)*/
         {
-            if(pos.y < attFlagPos.y && !(SafeDiff(pos.y, attFlagPos.y) & 1)) dir = 4;
+            if(pos.y < attFlagPos.y && !(SafeDiff(pos.y, attFlagPos.y) & 1))
+                dir = 4;
             else if(pos.y < attFlagPos.y && (SafeDiff(pos.y, attFlagPos.y) & 1))
             {
-                if(pos.y & 1) dir = 5; else dir = 4;
+                if(pos.y & 1)
+                    dir = 5;
+                else
+                    dir = 4;
             }
-            else if(pos.y > attFlagPos.y && !(SafeDiff(pos.y, attFlagPos.y) & 1)) dir = 2;
-            else if(pos.y > attFlagPos.y && (SafeDiff(pos.y, attFlagPos.y) & 1))
+            else if(pos.y > attFlagPos.y && !(SafeDiff(pos.y, attFlagPos.y) & 1))
+                dir = 2;
+            else/* (pos.y > attFlagPos.y && (SafeDiff(pos.y, attFlagPos.y) & 1))*/
             {
-                if(pos.y & 1) dir = 1; else dir = 2;
+                if(pos.y & 1)
+                    dir = 1;
+                else
+                    dir = 2;
             }
         }
+        FaceDir(dir);
     }
 }
 
@@ -761,7 +775,7 @@ bool nofAttacker::AttackFlag(nofDefender* defender)
     if(tmp_dir != 0xFF)
     {
         // alte Richtung für Nachrücker merken
-        unsigned char old_dir = dir;
+        unsigned char old_dir = GetCurMoveDir();
 
         // Hat er drumrum gewartet?
         bool waiting_around_building = (state == STATE_ATTACKING_WAITINGAROUNDBUILDING);
@@ -877,7 +891,8 @@ void nofAttacker::CapturingWalking()
         }
 
         // weiter zur Flagge laufen
-        if((dir = gwg->FindHumanPath(pos, attFlagPos, 10, true)) == 0xFF)
+        unsigned char dir = gwg->FindHumanPath(pos, attFlagPos, 10, true);
+        if(dir == 0xFF)
         {
             // auweia, es wurde kein Weg mehr gefunden
 
@@ -927,7 +942,7 @@ void nofAttacker::StartSucceeding(const MapPoint pt, const unsigned short new_ra
     state = STATE_ATTACKING_WALKINGTOGOAL;
 
     // Unsere alte Richtung merken für evtl. weitere Nachrücker
-    unsigned char old_dir = this->dir;
+    unsigned char old_dir = GetCurMoveDir();
 
     // unser alter Platz ist ja nun auch leer, da gibts vielleicht auch einen Nachrücker?
     attacked_goal->SendSuccessor(this->pos, radius, old_dir);
@@ -1107,9 +1122,11 @@ void nofAttacker::HandleState_SeaAttack_ReturnToShip()
         StartWandering();
         state = STATE_FIGUREWORK;
         Wander();
+        return;
     }
+    unsigned char dir  = gwg->FindHumanPath(pos, shipPos, MAX_ATTACKING_RUN_DISTANCE);
     // oder finden wir gar keinen Weg mehr?
-    else if((dir = gwg->FindHumanPath(pos, shipPos, MAX_ATTACKING_RUN_DISTANCE)) == 0xFF)
+    if(dir == 0xFF)
     {
         // Kein Weg gefunden --> Rumirren
         StartWandering();
@@ -1127,7 +1144,6 @@ void nofAttacker::HandleState_SeaAttack_ReturnToShip()
         // weiterlaufen
         StartWalking(dir);
     }
-
 }
 
 /// Bricht einen Seeangriff ab

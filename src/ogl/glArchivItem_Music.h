@@ -29,6 +29,7 @@ class glArchivItem_Music : public virtual libsiedler2::baseArchivItem_Sound
         glArchivItem_Music(void);
         /// Kopiekonstruktor von @p glArchivItem_Sound.
         glArchivItem_Music(const glArchivItem_Music& item);
+        glArchivItem_Music& operator=(const glArchivItem_Music& item);
 
         /// Destruktor von @p glArchivItem_Sound.
         virtual ~glArchivItem_Music(void);
@@ -37,7 +38,8 @@ class glArchivItem_Music : public virtual libsiedler2::baseArchivItem_Sound
         virtual void Play(const unsigned repeats) = 0;
 
     protected:
-        Sound* sound; ///< Der Sound.
+        /// Handle to the sound, managed by driver, hence safe to copy
+        Sound* sound;
 };
 
 #endif // !GLARCHIVITEM_MUSIC_INCLUDED

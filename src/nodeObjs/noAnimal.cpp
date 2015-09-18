@@ -90,7 +90,7 @@ void noAnimal::Draw(int x, int y)
             unsigned ani_step = GAMECLIENT.Interpolate(ASCENT_ANIMATION_STEPS[ascent], current_ev) % ANIMALCONSTS[species].animation_steps;
 
             // Zeichnen
-            Loader::animal_cache[species][dir][ani_step].draw(x, y);
+            Loader::animal_cache[species][GetCurMoveDir()][ani_step].draw(x, y);
 
             // Bei Enten und Schafen: Soll ein Sound gespielt werden?
             if(species == SPEC_DUCK || species == SPEC_SHEEP)
@@ -113,7 +113,7 @@ void noAnimal::Draw(int x, int y)
         case STATE_PAUSED:
         {
             // Stehend zeichnen
-            Loader::animal_cache[species][dir][0].draw(x, y);
+            Loader::animal_cache[species][GetCurMoveDir()][0].draw(x, y);
         } break;
         case STATE_DEAD:
         {
@@ -132,10 +132,10 @@ void noAnimal::Draw(int x, int y)
             {
                 Loader::animal_cache[species][0][ANIMAL_MAX_ANIMATION_STEPS].draw(x, y, SetAlpha(COLOR_WHITE, alpha));
             }
-            else if (dir < 6)
+            else
             {
                 // Stehend zeichnen
-                Loader::animal_cache[species][dir][0].draw(x, y, SetAlpha(COLOR_WHITE, alpha));
+                Loader::animal_cache[species][GetCurMoveDir()][0].draw(x, y, SetAlpha(COLOR_WHITE, alpha));
             }
 
         } break;
@@ -202,7 +202,8 @@ void noAnimal::StartWalking(const unsigned char dir)
 void noAnimal::StandardWalking()
 {
     // neuen Weg suchen
-    if( (dir = FindDir()) == 0xFF)
+    unsigned char dir = FindDir();
+    if( dir == 0xFF)
     {
         // Sterben, weil kein Weg mehr gefunden wurde
         Die();
@@ -378,7 +379,7 @@ MapPoint noAnimal::HunterIsNear()
     {
         // ansonsten nach dem Laufen stehenbleiben und die Koordinaten zurückgeben von dem Punkt, der erreicht wird
         state = STATE_WALKINGUNTILWAITINGFORHUNTER;
-        return gwg->GetNeighbour(pos, dir);
+        return gwg->GetNeighbour(pos, GetCurMoveDir());
     }
 }
 
@@ -404,8 +405,6 @@ void noAnimal::StopHunting()
         } break;
     }
 }
-
-
 
 void noAnimal::Die()
 {

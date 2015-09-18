@@ -281,18 +281,18 @@ void nofCarrier::Draw(int x, int y)
 
                 if(!animation)
                 {
-                    Loader::bob_jobs_cache[gwg->GetPlayer(player)->nation][fat ? JOB_TYPES_COUNT : 0][dir][2].draw(x, y, COLOR_WHITE, COLORS[gwg->GetPlayer(player)->color]);
+                    Loader::bob_jobs_cache[gwg->GetPlayer(player)->nation][fat ? JOB_TYPES_COUNT : 0][GetCurMoveDir()][2].draw(x, y, COLOR_WHITE, COLORS[gwg->GetPlayer(player)->color]);
                 }
                 else
                     // Steht und wartet (ohne Ware)
 //                  LOADER.GetBobN("jobs")->Draw(0,dir,fat,2,x,y,COLORS[gwg->GetPlayer(player)->color]);
 
-                    DrawShadow(x, y, 0, dir);
+                    DrawShadow(x, y, 0, GetCurMoveDir());
             }
             else if(state == CARRS_WAITFORWARESPACE || (waiting_for_free_node && !pause_walked_gf && carried_ware))
             {
                 // Steht und wartet (mit Ware)
-                Loader::carrier_cache[carried_ware->type][dir][2][fat].draw(x, y, COLOR_WHITE, COLORS[gwg->GetPlayer(player)->color]);
+                Loader::carrier_cache[carried_ware->type][GetCurMoveDir()][2][fat].draw(x, y, COLOR_WHITE, COLORS[gwg->GetPlayer(player)->color]);
 
                 // Japaner-Schild-Animation existiert leider nicht --> Römerschild nehmen
 //              LOADER.GetBobN("carrier")->Draw((carried_ware->type==GD_SHIELDJAPANESE)?GD_SHIELDROMANS:carried_ware->type,
@@ -317,7 +317,7 @@ void nofCarrier::Draw(int x, int y)
                 // Steht und wartet (ohne Ware)
 
                 // Esel
-                Loader::donkey_cache[dir][0].draw(x, y);
+                Loader::donkey_cache[GetCurMoveDir()][0].draw(x, y);
             }
             else if(state == CARRS_WAITFORWARESPACE || (waiting_for_free_node && !pause_walked_gf && carried_ware))
             {
@@ -325,11 +325,10 @@ void nofCarrier::Draw(int x, int y)
                 //// Japaner-Schild-Animation existiert leider nicht --> Römerschild nehmen
 
                 // Esel
-                Loader::donkey_cache[dir][0].draw(x, y);
+                Loader::donkey_cache[GetCurMoveDir()][0].draw(x, y);
 
                 // Ware im Korb zeichnen
-                LOADER.GetMapImageN(2350 + carried_ware->type)
-                ->Draw(x + WARE_POS_DONKEY[(dir) * 16], y + WARE_POS_DONKEY[(dir) * 16 + 1]);
+                LOADER.GetMapImageN(2350 + carried_ware->type)->Draw(x + WARE_POS_DONKEY[GetCurMoveDir() * 16], y + WARE_POS_DONKEY[GetCurMoveDir() * 16 + 1]);
             }
             else
             {
@@ -342,17 +341,14 @@ void nofCarrier::Draw(int x, int y)
                 // Läuft normal mit oder ohne Ware
 
                 // Esel
-                Loader::donkey_cache[dir][ani_step].draw(x, y);
+                Loader::donkey_cache[GetCurMoveDir()][ani_step].draw(x, y);
 
                 if(carried_ware)
                 {
                     // Ware im Korb zeichnen
-                    LOADER.GetMapImageN(2350 + carried_ware->type)
-                    ->Draw(x + WARE_POS_DONKEY[dir * 16 + ani_step * 2], y + WARE_POS_DONKEY[dir * 16 + ani_step * 2 + 1]);
+                    LOADER.GetMapImageN(2350 + carried_ware->type)->Draw(x + WARE_POS_DONKEY[GetCurMoveDir() * 16 + ani_step * 2], y + WARE_POS_DONKEY[GetCurMoveDir() * 16 + ani_step * 2 + 1]);
                 }
             }
-
-
 
         } break;
         case CT_BOAT:
@@ -365,15 +361,14 @@ void nofCarrier::Draw(int x, int y)
             }
             else if(state == CARRS_WAITFORWARE || (waiting_for_free_node && !pause_walked_gf && !carried_ware))
             {
-                Loader::boat_cache[dir][0].draw(x, y, 0xFFFFFFFF, COLORS[gwg->GetPlayer(player)->color]);
+                Loader::boat_cache[GetCurMoveDir()][0].draw(x, y, 0xFFFFFFFF, COLORS[gwg->GetPlayer(player)->color]);
             }
             else if(state == CARRS_WAITFORWARESPACE || (waiting_for_free_node && !pause_walked_gf && carried_ware))
             {
-                Loader::boat_cache[dir][0].draw(x, y, 0xFFFFFFFF, COLORS[gwg->GetPlayer(player)->color]);
+                Loader::boat_cache[GetCurMoveDir()][0].draw(x, y, 0xFFFFFFFF, COLORS[gwg->GetPlayer(player)->color]);
 
                 // Ware im Boot zeichnen
-                LOADER.GetMapImageN(2350 + carried_ware->type)
-                ->Draw(x + WARE_POS_BOAT[(dir) * 2], y + WARE_POS_BOAT[(dir) * 2 + 1]);
+                LOADER.GetMapImageN(2350 + carried_ware->type)->Draw(x + WARE_POS_BOAT[GetCurMoveDir() * 2], y + WARE_POS_BOAT[GetCurMoveDir() * 2 + 1]);
             }
             else
             {
@@ -384,13 +379,12 @@ void nofCarrier::Draw(int x, int y)
                 CalcFigurRelative(x, y);
 
                 // ruderndes Boot zeichnen
-                Loader::boat_cache[dir][ani_step].draw(x, y, 0xFFFFFFFF, COLORS[gwg->GetPlayer(player)->color]);
+                Loader::boat_cache[GetCurMoveDir()][ani_step].draw(x, y, 0xFFFFFFFF, COLORS[gwg->GetPlayer(player)->color]);
 
                 // Läuft normal mit oder ohne Ware
                 if(carried_ware)
                     // Ware im Boot zeichnen
-                    LOADER.GetMapImageN(2350 + carried_ware->type)
-                    ->Draw(x + WARE_POS_BOAT[dir * 2], y + WARE_POS_BOAT[dir * 2 + 1]);
+                    LOADER.GetMapImageN(2350 + carried_ware->type)->Draw(x + WARE_POS_BOAT[GetCurMoveDir() * 2], y + WARE_POS_BOAT[GetCurMoveDir() * 2 + 1]);
 
                 // Sound ggf. abspielen
                 if(ani_step == 2)
@@ -442,10 +436,10 @@ void nofCarrier::Walked()
             {
                 // Wir sind in der Mitte angekommen
                 state = CARRS_WAITFORWARE;
-                if(dir == 0 || dir == 1 || dir == 5)
-                    dir = 5;
+                if(GetCurMoveDir() == 0 || GetCurMoveDir() == 1 || GetCurMoveDir() == 5)
+                    FaceDir(5);
                 else
-                    dir = 4;
+                    FaceDir(4);
 
                 current_ev = 0;
 
@@ -545,7 +539,7 @@ void nofCarrier::Walked()
                         state = CARRS_GOBACKFROMFLAG;
                         rs_dir = !rs_dir;
                         rs_pos = cur_rs->GetLength() - rs_pos;
-                        StartWalking((dir + 3) % 6);
+                        StartWalking((GetCurMoveDir() + 3) % 6);
                     }
                 }
             }
@@ -563,7 +557,7 @@ void nofCarrier::Walked()
                 {
                     // Wenn kein Platz ist, stehenbleiben und warten!
                     state = CARRS_WAITFORWARESPACE;
-                    dir = cur_rs->GetDir(rs_dir, rs_pos);
+                    FaceDir(cur_rs->GetDir(rs_dir, rs_pos));
                 }
             }
             else
@@ -586,7 +580,7 @@ void nofCarrier::Walked()
         {
             // So tun, als ob der Träger gerade vom anderen Ende des Weges kommt, damit alles korrekt funktioniert
             cur_rs = workplace;
-            dir = workplace->GetDir(rs_dir, workplace->GetLength() - 1);
+            FaceDir(workplace->GetDir(rs_dir, workplace->GetLength() - 1));
             LookForWares();
         } break;
         case CARRS_GOBACKFROMFLAG:
@@ -667,7 +661,7 @@ void nofCarrier::GoalReached()
             if(workplace->AreWareJobs(rs_dir, ct, true))
             {
                 // Ware aufnehmen
-                carried_ware = static_cast<noFlag*>(rn)->SelectWare(dir, false, this);
+                carried_ware = static_cast<noFlag*>(rn)->SelectWare(GetCurMoveDir(), false, this);
 
                 if(carried_ware)
                 {
@@ -757,10 +751,8 @@ void nofCarrier::LostWork()
             {
                 // If we are walking choose the destination point as start point
                 // for the pathfinding!
-                tmpPos = gwg->GetNeighbour(tmpPos, dir);
+                tmpPos = gwg->GetNeighbour(tmpPos, GetCurMoveDir());
             }
-
-
 
             // Look for the shore
             for(MapCoord tx = gwg->GetXA(tmpPos, 0), r = 1; r <= 5; tx = gwg->GetXA(tx, tmpPos.y, 0), ++r)
@@ -991,7 +983,7 @@ void nofCarrier::RemoveWareJob()
 void nofCarrier::FetchWare(const bool swap_wares)
 {
     // Ware aufnehmnen
-    carried_ware = gwg->GetSpecObj<noFlag>(pos)->SelectWare((dir + 3) % 6, swap_wares, this);
+    carried_ware = gwg->GetSpecObj<noFlag>(pos)->SelectWare((GetCurMoveDir() + 3) % 6, swap_wares, this);
 
     if(carried_ware)
     {

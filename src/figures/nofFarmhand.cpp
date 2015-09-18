@@ -264,9 +264,12 @@ void nofFarmhand::WalkToWorkpoint()
         state = STATE_WORK;
         current_ev = em->AddEvent(this, JOB_CONSTS[job].work_length, 1);
         WorkStarted();
+        return;
     }
+
     // Weg suchen und gucken ob der Punkt noch in Ordnung ist
-    else if((dir = gwg->FindHumanPath(pos, dest, 20)) == 0xFF || GetPointQuality(dest) == PQ_NOTPOSSIBLE)
+    unsigned char dir = gwg->FindHumanPath(pos, dest, 20);
+    if(dir == 0xFF || GetPointQuality(dest) == PQ_NOTPOSSIBLE)
     {
         // Punkt freigeben
         gwg->GetNode(dest).reserved = false;
@@ -297,9 +300,12 @@ void nofFarmhand::WalkHome()
     {
         // Weiteres übernimmt nofBuildingWorker
         WorkingReady();
+        return;
     }
+
+    unsigned char dir = gwg->FindHumanPath(pos, dest, 40);
     // Weg suchen und ob wir überhaupt noch nach Hause kommen
-    else if((dir = gwg->FindHumanPath(pos, dest, 40)) == 0xFF)
+    if(dir == 0xFF)
     {
         // Kein Weg führt mehr nach Hause--> Rumirren
         StartWandering();

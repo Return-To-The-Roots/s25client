@@ -155,7 +155,7 @@ bool ctrlEdit::Draw_(void)
     {
         unsigned short cwidth = 5;
 
-        if(cursor_pos - start > 0)
+        if(cursor_pos > start)
             cwidth = font->getWidth(&dtext[start], cursor_pos - start) + 4;
 
         DrawRectangle(GetX() + cwidth , GetY() + ( height - (font->getHeight() + 2) ) / 2, 1, font->getHeight() + 2, 0xFFFFA000);

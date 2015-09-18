@@ -517,7 +517,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
  *
  *  @author Divan
  */
-bool dskGameInterface::Msg_LeftUp(const MouseCoords& mc)\
+bool dskGameInterface::Msg_LeftUp(const MouseCoords& mc)
 {
     // Stop Scrolling
     gwv->MouseUp();
@@ -554,7 +554,7 @@ bool dskGameInterface::Msg_RightDown(const MouseCoords& mc)
  *
  *  @author OLiver
  */
-bool dskGameInterface::Msg_RightUp(const MouseCoords& mc)
+bool dskGameInterface::Msg_RightUp(const MouseCoords& mc) //-V524
 {
     // Stop Scrolling
     gwv->MouseUp();

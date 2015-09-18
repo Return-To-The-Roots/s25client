@@ -1249,7 +1249,7 @@ void GameWorldGame::StopOnRoads(const MapPoint pt, const unsigned char dir)
     {
         if(dir < 6)
         {
-            if((dir + 3) % 6 == static_cast<noFigure*>(*it)->GetDir())
+            if((dir + 3) % 6 == static_cast<noFigure*>(*it)->GetCurMoveDir())
             {
                 if(GetNeighbour(pt, dir) == static_cast<noFigure*>(*it)->GetPos())
                     continue;

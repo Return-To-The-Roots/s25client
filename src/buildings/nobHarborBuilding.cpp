@@ -1116,7 +1116,7 @@ void nobHarborBuilding::ReceiveGoodsFromShip(const std::list<noFigure*> figures,
         else //figure has a different goal
         {
             MapPoint next_harbor = (*it)->ExamineRouteBeforeShipping();
-            unsigned char next_dir = (*it)->GetDir();
+            unsigned char next_dir = (*it)->GetCurMoveDir();
 
             if (next_dir == 4)
             {
@@ -1426,7 +1426,7 @@ void nobHarborBuilding::ExamineShipRouteOfPeople()
             it != figures_for_ships.end();)
     {
         it->dest = it->fig->ExamineRouteBeforeShipping();
-        unsigned char next_dir = it->fig->GetDir();
+        unsigned char next_dir = it->fig->GetCurMoveDir();
 
         if(next_dir == 0xff)
         {

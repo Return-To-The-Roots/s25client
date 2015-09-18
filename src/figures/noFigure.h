@@ -203,9 +203,6 @@ class noFigure : public noMovable
         /// Stoppt, wenn er auf diesen Punkt zuläuft
         void StopIfNecessary(const MapPoint pt);
 
-
-        unsigned char GetDir() const { return dir; }
-
         unsigned char GetPlayer() const { return player; }
 
         /// Macht die Figur Job-Arbeiten?
