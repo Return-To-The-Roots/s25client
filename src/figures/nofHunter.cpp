@@ -132,6 +132,10 @@ void nofHunter::HandleDerivedEvent(const unsigned int id)
             // Fertig mit warten --> anfangen zu arbeiten
             TryStartHunting();
         } break;
+        case STATE_HUNTER_FINDINGSHOOTINGPOINT:
+            if(id == 2)
+                HandleStateFindingShootingPoint();
+            break;
         case STATE_HUNTER_SHOOTING:
         {
             HandleStateShooting();
@@ -152,55 +156,38 @@ void nofHunter::HandleDerivedEvent(const unsigned int id)
 
 void nofHunter::TryStartHunting()
 {
-    // in einem Quadrat um die Hütte (Kreis unnötig, da ja die Tiere sich sowieso bewegen) Tiere suchen
-
-    // Unter- und Obergrenzen für das Quadrat bzw. Rechteck (nicht über Kartenränder hinauslesen)
-    MapCoord fx, fy, lx, ly;
-    const unsigned short SQUARE_SIZE = 19;
-
-    if(pos.x > SQUARE_SIZE)
-        fx = pos.x - SQUARE_SIZE;
-    else
-        fx = 0;
-    if(pos.y > SQUARE_SIZE)
-        fy = pos.y - SQUARE_SIZE;
-    else
-        fy = 0;
-    if(pos.x + SQUARE_SIZE < gwg->GetWidth())
-        lx = pos.x + SQUARE_SIZE;
-    else
-        lx = gwg->GetWidth() - 1;
-    if(pos.y + SQUARE_SIZE < gwg->GetHeight())
-        ly = pos.y + SQUARE_SIZE;
-    else
-        ly = gwg->GetHeight() - 1;
+    // Find animals in a square around building (actually should be circle, but animals are moving anyway)
+    const int SQUARE_SIZE = 19;
 
     // Liste mit den gefundenen Tieren
     std::vector<noAnimal*> available_animals;
 
     // Durchgehen und nach Tieren suchen
-    for(MapPoint p(0, fy); p.y <= ly; ++p.y)
+    Point<int> curPos;
+    for(curPos.y = pos.y - SQUARE_SIZE; curPos.y <= pos.y + SQUARE_SIZE; ++curPos.y)
     {
-        for(p.x = fx; p.x <= lx; ++p.x)
+        for(curPos.x = pos.x - SQUARE_SIZE; curPos.x <= pos.x + SQUARE_SIZE; ++curPos.x)
         {
+            MapPoint curMapPos = gwg->MakeMapPoint(curPos);
             // Gibts hier was bewegliches?
-            const std::list<noBase*>& figures = gwg->GetFigures(p);
-            if(!figures.empty())
-            {
-                // Dann nach Tieren suchen
-                for(std::list<noBase*>::const_iterator it = figures.begin(); it != figures.end(); ++it)
-                {
-                    if((*it)->GetType() == NOP_ANIMAL)
-                    {
-                        // Ist das Tier überhaupt zum Jagen geeignet?
-                        if(!static_cast<noAnimal*>(*it)->CanHunted())
-                            continue;
+            const std::list<noBase*>& figures = gwg->GetFigures(curMapPos);
+            if(figures.empty())
+                continue;
 
-                        // Und komme ich hin?
-                        if(gwg->FindHumanPath(pos, static_cast<noAnimal*>(*it)->GetPos(), MAX_HUNTING_DISTANCE) != 0xFF)
-                            // Dann nehmen wir es
-                                available_animals.push_back(static_cast<noAnimal*>(*it));
-                    }
+            // Dann nach Tieren suchen
+            for(std::list<noBase*>::const_iterator it = figures.begin(); it != figures.end(); ++it)
+            {
+                if((*it)->GetType() != NOP_ANIMAL)
+                    continue;
+                // Ist das Tier überhaupt zum Jagen geeignet?
+                if(!static_cast<noAnimal*>(*it)->CanHunted())
+                    continue;
+
+                // Und komme ich hin?
+                if(gwg->FindHumanPath(pos, static_cast<noAnimal*>(*it)->GetPos(), MAX_HUNTING_DISTANCE) != 0xFF)
+                {
+                    // Dann nehmen wir es
+                    available_animals.push_back(static_cast<noAnimal*>(*it));
                 }
             }
         }
@@ -287,42 +274,41 @@ void nofHunter::HandleStateChasing()
         unsigned char d;
         for(d = 0; d < 6; ++d)
         {
-            int dx, dy;
+            Point<int> delta;
             switch((d + doffset) % 6)
             {
                 case 0:
-                    dx = -4;
-                    dy = 0;
+                    delta.x = -4;
+                    delta.y = 0;
                     break;
                 case 1:
-                    dx = -2;
-                    dy = -4;
+                    delta.x = -2;
+                    delta.y = -4;
                     break;
                 case 2:
-                    dx = 2;
-                    dy = -4;
+                    delta.x = 2;
+                    delta.y = -4;
                     break;
                 case 3:
-                    dx = 4;
-                    dy = 0;
+                    delta.x = 4;
+                    delta.y = 0;
                     break;
                 case 4:
-                    dx = 2;
-                    dy = 4;
+                    delta.x = 2;
+                    delta.y = 4;
                     break;
                 case 5:
-                    dx = -2;
-                    dy = 4;
+                    delta.x = -2;
+                    delta.y = 4;
                     break;
                 default:
                     throw std::logic_error("Wrong value?");
             }
 
-            animalPos.x += dx;
-            animalPos.y += dy;
-            if(animalPos.x >=0 && animalPos.y >=0 && animalPos.x < static_cast<int>(gwg->GetWidth()) && animalPos.y < static_cast<int>(gwg->GetHeight()))
+            MapPoint curShootingPos = gwg->MakeMapPoint(animalPos + delta);
+            if(curShootingPos == pos || gwg->FindHumanPath(pos, curShootingPos, 6) != 0xFF)
             {
-                shootingPos = MapPoint(animalPos);
+                shootingPos = curShootingPos;
                 break;
             }
         }
@@ -365,12 +351,23 @@ void nofHunter::HandleStateChasing()
 
 void nofHunter::HandleStateFindingShootingPoint()
 {
-    // Sind wir schon da und steht das Tier schon?
-    if(shootingPos == pos && animal->IsReadyForShooting())
+    // Are we there yet?
+    if(shootingPos == pos)
     {
-        // dann schießen
-        state = STATE_HUNTER_SHOOTING;
-        current_ev = em->AddEvent(this, 16, 1);
+        // Is the animal ready?
+        if(animal->IsReadyForShooting())
+        {
+            // fire!
+            state = STATE_HUNTER_SHOOTING;
+            current_ev = em->AddEvent(this, 16, 1);
+        }else if(animal->IsGettingReadyForShooting())
+            current_ev = em->AddEvent(this, 15, 2); // Give the animal some time for getting ready
+        else
+        {
+            // Something went wrong, animal is doing something else?
+            StartWalkingHome();
+            WalkHome();
+        }
     }
     else
     {
@@ -449,7 +446,7 @@ void nofHunter::StartWalkingHome()
     if(animal)
     {
         animal->StopHunting();
-        animal = 0;
+        animal = NULL;
     }
 
     state = STATE_WALKINGHOME;

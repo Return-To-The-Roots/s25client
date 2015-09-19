@@ -371,25 +371,40 @@ MapCoord GameWorldBase::CalcDistanceAroundBorderY(const MapCoord y1, const MapCo
 unsigned GameWorldBase::CalcDistance(const int x1, const int y1, 
                                      const int x2, const int y2) const
 {
-    int dx = ((x1 - x2) << 1) + (y1 & 1) - (y2 & 1);
-    int dy = ((y1 > y2) ? (y1 - y2) : (y2 - y1)) << 1;
+    int dx = ((x1 - x2) * 2) + (y1 & 1) - (y2 & 1);
+    int dy = ((y1 > y2) ? (y1 - y2) : (y2 - y1)) * 2;
 
     if (dx < 0)
         dx = -dx;
 
     if (dy > height)
     {
-        dy = (height << 1) - dy;
+        dy = (height * 2) - dy;
     }
 
     if (dx > width)
     {
-        dx = (width << 1) - dx;
+        dx = (width  * 2) - dx;
     }
 
-    dx -= dy >> 1;
+    dx -= dy / 2;
 
-    return((dy + (dx > 0 ? dx : 0)) >> 1);
+    return((dy + (dx > 0 ? dx : 0)) / 2);
+}
+
+MapPoint GameWorldBase::MakeMapPoint(Point<int> pt) const
+{
+    // Shift into range
+    pt.x %= width;
+    pt.y %= height;
+    // Handle negative values (sign is implementation defined, but |value| < width)
+    if(pt.x < 0)
+        pt.x += width;
+    if(pt.y < 0)
+        pt.y += height;
+    assert(pt.x >= 0 && pt.y >= 0);
+    assert(pt.x < width && pt.y < height);
+    return MapPoint(pt);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -230,12 +230,12 @@ class GameWorldBase
 
         /// Ermittelt Abstand zwischen 2 Punkten auf der Map unter Berücksichtigung der Kartengrenzüberquerung
         unsigned CalcDistance(int x1, int y1, int x2, int y2) const;
-        inline unsigned CalcDistance(const MapPoint p1, const MapPoint p2) const
-        { return CalcDistance(p1.x, p1.y, p2.x, p2.y); }
+        inline unsigned CalcDistance(const MapPoint p1, const MapPoint p2) const { return CalcDistance(p1.x, p1.y, p2.x, p2.y); }
 
+        /// Returns a MapPoint from a point. This ensures, the coords are actually in the map [0, mapSize)
+        MapPoint MakeMapPoint(Point<int> pt) const;
         // Erzeugt eindeutige ID aus gegebenen X und Y-Werten
-        inline unsigned MakeCoordID(const MapPoint pt) const
-        { return GetIdx(pt); }
+        inline unsigned MakeCoordID(const MapPoint pt) const { return GetIdx(pt); }
 
         // Returns the linear index for a map point
         inline unsigned GetIdx(const MapPoint pt) const
@@ -364,8 +364,7 @@ class GameWorldBase
         MapPoint ConvertCoords(int x, int y) const { return ConvertCoords(Point<int>(x, y)); }
 
         /// Erzeugt eine GUI-ID für die Fenster von Map-Objekten
-        inline unsigned CreateGUIID(const MapPoint pt) const
-        { return 1000 + width * pt.y + pt.x; }
+        inline unsigned CreateGUIID(const MapPoint pt) const { return 1000 + width * pt.y + pt.x; }
         /// Gibt Terrainkoordinaten zurück
         inline Point<float> GetTerrain(const MapPoint pt){ return tr.GetTerrain(pt); }
         inline float GetTerrainX(const MapPoint pt){ return GetTerrain(pt).x; }
@@ -386,8 +385,7 @@ class GameWorldBase
         /// Gibt die Koordinaten eines bestimmten Hafenpunktes zurück
         MapPoint GetHarborPoint(const unsigned harbor_id) const;
         /// Gibt die ID eines Hafenpunktes zurück
-        inline unsigned GetHarborPointID(const MapPoint pt) const
-        { return GetNode(pt).harbor_id; }
+        inline unsigned GetHarborPointID(const MapPoint pt) const { return GetNode(pt).harbor_id; }
         /// Ermittelt, ob ein Punkt Küstenpunkt ist, d.h. Zugang zu einem schiffbaren Meer hat
         /// und gibt ggf. die Meeres-ID zurück, ansonsten 0
         unsigned short IsCoastalPoint(const MapPoint pt) const;
@@ -440,7 +438,6 @@ class GameWorldBase
         std::vector<PotentialSeaAttacker> GetAvailableSoldiersForSeaAttack(const unsigned char player_attacker, const MapPoint pt) const;
         /// Gibt Anzahl oder geschätzte Stärke(rang summe + anzahl) der verfügbaren Soldaten die zu einem Schiffsangriff starten können von einer bestimmten sea id aus
         unsigned int GetAvailableSoldiersForSeaAttackAtSea(const unsigned char player_attacker, unsigned short seaid, bool count = true) const;
-
 
     protected:
 

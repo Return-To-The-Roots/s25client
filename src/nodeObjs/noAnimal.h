@@ -100,6 +100,7 @@ class noAnimal : public noMovable
 
         /// Steht das Tier schon schön ruhig, damit der Jäger es erschießen kann?
         bool IsReadyForShooting() const { return (state == STATE_WAITINGFORHUNTER); }
+        bool IsGettingReadyForShooting() const { return (state == STATE_WALKINGUNTILWAITINGFORHUNTER); }
         /// Tier soll sterben - erstmal nur Leiche liegen lassen
         void Die();
         /// Tier wurde vom Jäger ausgenommen und muss sofort verschwinden
