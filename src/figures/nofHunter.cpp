@@ -130,94 +130,7 @@ void nofHunter::HandleDerivedEvent(const unsigned int id)
         case STATE_WAITING1:
         {
             // Fertig mit warten --> anfangen zu arbeiten
-            // in einem Quadrat um die Hütte (Kreis unnötig, da ja die Tiere sich sowieso bewegen) Tiere suchen
-
-            // Unter- und Obergrenzen für das Quadrat bzw. Rechteck (nicht über Kartenränder hinauslesen)
-            MapCoord fx, fy, lx, ly;
-            const unsigned short SQUARE_SIZE = 19;
-
-            if(pos.x > SQUARE_SIZE)
-                fx = pos.x - SQUARE_SIZE;
-            else
-                fx = 0;
-            if(pos.y > SQUARE_SIZE)
-                fy = pos.y - SQUARE_SIZE;
-            else
-                fy = 0;
-            if(pos.x + SQUARE_SIZE < gwg->GetWidth())
-                lx = pos.x + SQUARE_SIZE;
-            else
-                lx = gwg->GetWidth() - 1;
-            if(pos.y + SQUARE_SIZE < gwg->GetHeight())
-                ly = pos.y + SQUARE_SIZE;
-            else
-                ly = gwg->GetHeight() - 1;
-
-            // Liste mit den gefundenen Tieren
-            std::vector<noAnimal*> available_animals;
-
-            // Durchgehen und nach Tieren suchen
-            for(MapPoint p(0, fy); p.y <= ly; ++p.y)
-            {
-                for(p.x = fx; p.x <= lx; ++p.x)
-                {
-                    // Gibts hier was bewegliches?
-                    const std::list<noBase*>& figures = gwg->GetFigures(p);
-                    if(!figures.empty())
-                    {
-                        // Dann nach Tieren suchen
-                        for(std::list<noBase*>::const_iterator it = figures.begin(); it != figures.end(); ++it)
-                        {
-                            if((*it)->GetType() == NOP_ANIMAL)
-                            {
-                                // Ist das Tier überhaupt zum Jagen geeignet?
-                                if(!static_cast<noAnimal*>(*it)->CanHunted())
-                                    continue;
-
-                                // Und komme ich hin?
-                                if(gwg->FindHumanPath(pos, static_cast<noAnimal*>(*it)->GetPos(), MAX_HUNTING_DISTANCE) != 0xFF)
-                                    // Dann nehmen wir es
-                                    available_animals.push_back(static_cast<noAnimal*>(*it));
-                            }
-                        }
-                    }
-                }
-            }
-
-
-
-            // Gibt es überhaupt ein Tier, das ich jagen kann?
-            if(!available_animals.empty())
-            {
-                // Ein Tier zufällig heraussuchen
-                animal = available_animals[RANDOM.Rand(__FILE__, __LINE__, GetObjId(), available_animals.size())];
-
-                // Wir jagen es jetzt
-                state = STATE_HUNTER_CHASING;
-
-                // Wir arbeiten jetzt
-                workplace->is_working = true;
-
-                // Tier Bescheid sagen
-                animal->BeginHunting(this);
-
-                // Anfangen zu laufen (erstmal aus dem Haus raus!)
-                StartWalking(4);
-
-                StopNotWorking();
-            }
-            else
-            {
-                // Weiter warten, vielleicht gibts ja später wieder mal was
-                current_ev = em->AddEvent(this, JOB_CONSTS[job].wait1_length, 1);
-                //tell the ai that there is nothing left to hunt!
-                GAMECLIENT.SendAIEvent(new AIEvent::Building(AIEvent::NoMoreResourcesReachable, workplace->GetPos(), workplace->GetBuildingType()), player);
-
-                StartNotWorking();
-            }
-
-            was_sounding = false;
-
+            TryStartHunting();
         } break;
         case STATE_HUNTER_SHOOTING:
         {
@@ -235,6 +148,97 @@ void nofHunter::HandleDerivedEvent(const unsigned int id)
             }
         } break;
     }
+}
+
+void nofHunter::TryStartHunting()
+{
+    // in einem Quadrat um die Hütte (Kreis unnötig, da ja die Tiere sich sowieso bewegen) Tiere suchen
+
+    // Unter- und Obergrenzen für das Quadrat bzw. Rechteck (nicht über Kartenränder hinauslesen)
+    MapCoord fx, fy, lx, ly;
+    const unsigned short SQUARE_SIZE = 19;
+
+    if(pos.x > SQUARE_SIZE)
+        fx = pos.x - SQUARE_SIZE;
+    else
+        fx = 0;
+    if(pos.y > SQUARE_SIZE)
+        fy = pos.y - SQUARE_SIZE;
+    else
+        fy = 0;
+    if(pos.x + SQUARE_SIZE < gwg->GetWidth())
+        lx = pos.x + SQUARE_SIZE;
+    else
+        lx = gwg->GetWidth() - 1;
+    if(pos.y + SQUARE_SIZE < gwg->GetHeight())
+        ly = pos.y + SQUARE_SIZE;
+    else
+        ly = gwg->GetHeight() - 1;
+
+    // Liste mit den gefundenen Tieren
+    std::vector<noAnimal*> available_animals;
+
+    // Durchgehen und nach Tieren suchen
+    for(MapPoint p(0, fy); p.y <= ly; ++p.y)
+    {
+        for(p.x = fx; p.x <= lx; ++p.x)
+        {
+            // Gibts hier was bewegliches?
+            const std::list<noBase*>& figures = gwg->GetFigures(p);
+            if(!figures.empty())
+            {
+                // Dann nach Tieren suchen
+                for(std::list<noBase*>::const_iterator it = figures.begin(); it != figures.end(); ++it)
+                {
+                    if((*it)->GetType() == NOP_ANIMAL)
+                    {
+                        // Ist das Tier überhaupt zum Jagen geeignet?
+                        if(!static_cast<noAnimal*>(*it)->CanHunted())
+                            continue;
+
+                        // Und komme ich hin?
+                        if(gwg->FindHumanPath(pos, static_cast<noAnimal*>(*it)->GetPos(), MAX_HUNTING_DISTANCE) != 0xFF)
+                            // Dann nehmen wir es
+                                available_animals.push_back(static_cast<noAnimal*>(*it));
+                    }
+                }
+            }
+        }
+    }
+
+
+
+    // Gibt es überhaupt ein Tier, das ich jagen kann?
+    if(!available_animals.empty())
+    {
+        // Ein Tier zufällig heraussuchen
+        animal = available_animals[RANDOM.Rand(__FILE__, __LINE__, GetObjId(), available_animals.size())];
+
+        // Wir jagen es jetzt
+        state = STATE_HUNTER_CHASING;
+
+        // Wir arbeiten jetzt
+        workplace->is_working = true;
+
+        // Tier Bescheid sagen
+        animal->BeginHunting(this);
+
+        // Anfangen zu laufen (erstmal aus dem Haus raus!)
+        StartWalking(4);
+
+        StopNotWorking();
+    }
+    else
+    {
+        // Weiter warten, vielleicht gibts ja später wieder mal was
+        current_ev = em->AddEvent(this, JOB_CONSTS[job].wait1_length, 1);
+        //tell the ai that there is nothing left to hunt!
+        GAMECLIENT.SendAIEvent(new AIEvent::Building(AIEvent::NoMoreResourcesReachable, workplace->GetPos(), workplace->GetBuildingType()), player);
+
+        StartNotWorking();
+    }
+
+    was_sounding = false;
 }
 
 void nofHunter::WalkedDerived()

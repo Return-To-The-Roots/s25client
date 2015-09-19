@@ -73,6 +73,8 @@ class nofHunter : public nofBuildingWorker
 
         void HandleDerivedEvent(const unsigned int id);
 
+        void TryStartHunting();
+
         /// das Tier ist nicht mehr verfügbar (von selbst gestorben o.Ä.)
         void AnimalLost();
         /// wird aufgerufen, wenn die Arbeit abgebrochen wird (von nofBuildingWorker aufgerufen)
