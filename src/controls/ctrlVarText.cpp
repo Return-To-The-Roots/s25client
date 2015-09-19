@@ -115,7 +115,7 @@ std::string ctrlVarText::GetFormatedText() const
                 curVar++;
                 break;
             case 's':
-                str << *reinterpret_cast<char*>(vars[curVar]);
+                str << reinterpret_cast<const char*>(vars[curVar]);
                 curVar++;
                 break;
             default:
