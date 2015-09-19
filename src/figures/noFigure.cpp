@@ -721,7 +721,7 @@ void noFigure::StartWandering(const unsigned burned_wh_id)
     this->burned_wh_id = burned_wh_id;
     // eine bestimmte Strecke rumirren und dann eine Flagge suchen
     // 3x rumirren und eine Flagge suchen, wenn dann keine gefunden wurde, stirbt die Figur
-    wander_way = WANDER_WAY_MIN + RANDOM.Rand(__FILE__, __LINE__, obj_id, WANDER_WAY_MAX - WANDER_WAY_MIN);
+    wander_way = WANDER_WAY_MIN + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), WANDER_WAY_MAX - WANDER_WAY_MIN);
     // Soldaten sind härter im Nehmen
     bool is_soldier = (job >= JOB_PRIVATE && job <= JOB_GENERAL);
     wander_tryings = is_soldier ? WANDER_TRYINGS_SOLDIERS : WANDER_TRYINGS;
@@ -847,7 +847,7 @@ void noFigure::Wander()
             if(--wander_tryings > 0)
             {
                 // von vorne beginnen wieder mit Rumirren
-                wander_way = WANDER_WAY_MIN + RANDOM.Rand(__FILE__, __LINE__, obj_id, WANDER_WAY_MAX - WANDER_WAY_MIN);
+                wander_way = WANDER_WAY_MIN + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), WANDER_WAY_MAX - WANDER_WAY_MIN);
             }
             else
             {
@@ -859,7 +859,7 @@ void noFigure::Wander()
 
         // weiter umherirren, einfach in eine zufällige Richtung
         // Müssen dabei natürlich aufpassen, dass wir nur dorthin gehen wo es auch für Figuren möglich ist
-        unsigned char doffset = RANDOM.Rand(__FILE__, __LINE__, obj_id, 6);
+        unsigned char doffset = RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6);
         for(unsigned char d = 0; d < 6; ++d)
         {
             unsigned char dir = (d + doffset) % 6;

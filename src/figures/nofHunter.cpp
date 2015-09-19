@@ -136,10 +136,22 @@ void nofHunter::HandleDerivedEvent(const unsigned int id)
             MapCoord fx, fy, lx, ly;
             const unsigned short SQUARE_SIZE = 19;
 
-            if(pos.x > SQUARE_SIZE) fx = pos.x - SQUARE_SIZE; else fx = 0;
-            if(pos.y > SQUARE_SIZE) fy = pos.y - SQUARE_SIZE; else fy = 0;
-            if(pos.x + SQUARE_SIZE < gwg->GetWidth()) lx = pos.x + SQUARE_SIZE; else lx = gwg->GetWidth() - 1;
-            if(pos.y + SQUARE_SIZE < gwg->GetHeight()) ly = pos.y + SQUARE_SIZE; else ly = gwg->GetHeight() - 1;
+            if(pos.x > SQUARE_SIZE)
+                fx = pos.x - SQUARE_SIZE;
+            else
+                fx = 0;
+            if(pos.y > SQUARE_SIZE)
+                fy = pos.y - SQUARE_SIZE;
+            else
+                fy = 0;
+            if(pos.x + SQUARE_SIZE < gwg->GetWidth())
+                lx = pos.x + SQUARE_SIZE;
+            else
+                lx = gwg->GetWidth() - 1;
+            if(pos.y + SQUARE_SIZE < gwg->GetHeight())
+                ly = pos.y + SQUARE_SIZE;
+            else
+                ly = gwg->GetHeight() - 1;
 
             // Liste mit den gefundenen Tieren
             std::vector<noAnimal*> available_animals;
@@ -178,7 +190,7 @@ void nofHunter::HandleDerivedEvent(const unsigned int id)
             if(!available_animals.empty())
             {
                 // Ein Tier zufällig heraussuchen
-                animal = available_animals[RANDOM.Rand(__FILE__, __LINE__, obj_id, available_animals.size())];
+                animal = available_animals[RANDOM.Rand(__FILE__, __LINE__, GetObjId(), available_animals.size())];
 
                 // Wir jagen es jetzt
                 state = STATE_HUNTER_CHASING;
@@ -266,7 +278,7 @@ void nofHunter::HandleStateChasing()
 
         // Nun müssen wir drumherum einen Punkt suchen, von dem wir schießen, der natürlich direkt dem Standort
         // des Tieres gegenüberliegen muss (mit zufälliger Richtung beginnen)
-        unsigned char doffset = RANDOM.Rand(__FILE__, __LINE__, obj_id, 6);
+        unsigned char doffset = RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6);
         shootingPos = MapPoint::Invalid();
         unsigned char d;
         for(d = 0; d < 6; ++d)

@@ -252,7 +252,7 @@ void nofActiveSoldier::ExpelEnemies()
             // Not walking? (Could be carriers who are waiting for wares on roads)
             if(!fig->IsMoving())
                 // Go, go, go
-                fig->StartWalking(RANDOM.Rand(__FILE__, __LINE__, obj_id, 6));
+                fig->StartWalking(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6));
         }
     }
 }

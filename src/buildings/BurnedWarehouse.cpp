@@ -126,7 +126,7 @@ void BurnedWarehouse::HandleEvent(const unsigned int id)
 
         // In Alle Richtungen verteilen
         // Startrichtung zufällig bestimmen
-        unsigned char start_dir = RANDOM.Rand(__FILE__, __LINE__, obj_id, 6);
+        unsigned char start_dir = RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6);
 
         // Letzte mögliche Richtung bestimmen
         unsigned char last_dir = 0xFF;
@@ -163,7 +163,7 @@ void BurnedWarehouse::HandleEvent(const unsigned int id)
                 // Auf die Map setzen
                 gwg->AddFigure(figure, pos);
                 // Losrumirren in die jeweilige Richtung
-                figure->StartWandering(obj_id);
+                figure->StartWandering(GetObjId());
                 figure->StartWalking(dir);
             }
         }

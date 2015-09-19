@@ -38,6 +38,8 @@ class glArchivItem_Bitmap : public virtual libsiedler2::baseArchivItem_Bitmap
         /// Destruktor von @p glArchivItem_Bitmap.
         virtual ~glArchivItem_Bitmap(void);
 
+        glArchivItem_Bitmap& operator=(const glArchivItem_Bitmap& item);
+
         /// Erzeugt und zeichnet die Textur.
         virtual void Draw(short dst_x, short dst_y, short dst_w = 0, short dst_h = 0, short src_x = 0, short src_y = 0, short src_w = 0, short src_h = 0, const unsigned int color = COLOR_WHITE, const unsigned int unused = COLOR_WHITE);
 

@@ -123,9 +123,9 @@ class Window
         const unsigned int GetID(void) const { return id_; }
 
         template<typename T>
-        T* GetCtrl(unsigned int id_)
+        T* GetCtrl(unsigned int id)
         {
-            std::map<unsigned int, Window*>::iterator it = childIdToWnd_.find(id_);
+            std::map<unsigned int, Window*>::iterator it = childIdToWnd_.find(id);
             if(it == childIdToWnd_.end())
                 return NULL;
 
@@ -133,18 +133,18 @@ class Window
         }
 
         template<typename T>
-        const T* GetCtrl(unsigned int id_) const
+        const T* GetCtrl(unsigned int id) const
         {
-            std::map<unsigned int, Window*>::const_iterator it = childIdToWnd_.find(id_);
+            std::map<unsigned int, Window*>::const_iterator it = childIdToWnd_.find(id);
             if(it == childIdToWnd_.end())
                 return NULL;
 
             return dynamic_cast<T*>( it->second );
         }
 
-        void DeleteCtrl(unsigned int id_)
+        void DeleteCtrl(unsigned int id)
         {
-            std::map<unsigned int, Window*>::iterator it = childIdToWnd_.find(id_);
+            std::map<unsigned int, Window*>::iterator it = childIdToWnd_.find(id);
 
             if(it == childIdToWnd_.end())
                 return;
@@ -300,17 +300,14 @@ class Window
         virtual void Resize_(unsigned short width, unsigned short height) {}
 
         template <typename T>
-        T* AddCtrl(unsigned int id_, T* ctrl)
+        T* AddCtrl(unsigned int id, T* ctrl)
         {
-            assert(childIdToWnd_.find(id_) == childIdToWnd_.end());
+            assert(childIdToWnd_.find(id) == childIdToWnd_.end());
             // ID auf control mappen
-            childIdToWnd_.insert(std::make_pair(id_, ctrl));
+            childIdToWnd_.insert(std::make_pair(id, ctrl));
 
             // scale-Eigenschaft weitervererben
             ctrl->scale_ = scale_;
-
-            //// Control zur Liste hinzufügen.
-            //controls.push_back(ctrl);
 
             return ctrl;
         }

@@ -69,7 +69,7 @@ glArchivItem_Bitmap::glArchivItem_Bitmap(void)
  *  @author FloSoft
  */
 glArchivItem_Bitmap::glArchivItem_Bitmap(const glArchivItem_Bitmap& item)
-    : baseArchivItem_Bitmap(item), texture(0), filter(GL_NEAREST)
+    : baseArchivItem_Bitmap(item), texture(0), filter(item.filter)
 {
 }
 
@@ -82,6 +82,16 @@ glArchivItem_Bitmap::glArchivItem_Bitmap(const glArchivItem_Bitmap& item)
 glArchivItem_Bitmap::~glArchivItem_Bitmap(void)
 {
     DeleteTexture();
+}
+
+glArchivItem_Bitmap& glArchivItem_Bitmap::operator=(const glArchivItem_Bitmap& item)
+{
+    if(this == &item)
+        return *this;
+    baseArchivItem_Bitmap::operator=(item);
+    texture = 0;
+    filter = item.filter;
+    return *this;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

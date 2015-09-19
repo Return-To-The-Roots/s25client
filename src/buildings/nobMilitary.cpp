@@ -278,7 +278,7 @@ void nobMilitary::HandleEvent(const unsigned int id)
 
             // Wenn noch weitere drin sind, die müssen auch noch raus
             if(!leave_house.empty())
-                leaving_event = em->AddEvent(this, 30 + RANDOM.Rand(__FILE__, __LINE__, obj_id, 10));
+                leaving_event = em->AddEvent(this, 30 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 10));
             else
                 go_out = false;
 
@@ -1185,7 +1185,7 @@ void nobMilitary::SearchCoins()
             ordered_coins.push_back(ware);
 
             // Nach einer Weile nochmal nach evtl neuen Goldmünzen gucken
-            goldorder_event = em->AddEvent(this, 200 + RANDOM.Rand(__FILE__, __LINE__, obj_id, 400), 1);
+            goldorder_event = em->AddEvent(this, 200 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 400), 1);
         }
     }
 }
@@ -1217,7 +1217,7 @@ void nobMilitary::PrepareUpgrading()
         return;
 
     // Alles da --> Beförderungsevent anmelden
-    upgrade_event = em->AddEvent(this, UPGRADE_TIME + RANDOM.Rand(__FILE__, __LINE__, obj_id, UPGRADE_TIME_RANDOM), 2);
+    upgrade_event = em->AddEvent(this, UPGRADE_TIME + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), UPGRADE_TIME_RANDOM), 2);
 }
 
 void nobMilitary::HitOfCatapultStone()

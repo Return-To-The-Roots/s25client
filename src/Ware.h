@@ -112,7 +112,7 @@ class Ware : public GameObject
         /// Beginnt damit auf ein Schiff im Hafen zu warten
         void WaitForShip(nobHarborBuilding* hb);
 
-        std::string ToString() const {std::stringstream s; s << "Ware(" << obj_id << "): type=" << GoodType2String(type) << ", location=" << location->GetX() << "," << location->GetY(); return s.str();}
+        std::string ToString() const {std::stringstream s; s << "Ware(" << GetObjId() << "): type=" << GoodType2String(type) << ", location=" << location->GetX() << "," << location->GetY(); return s.str();}
 
         static std::string GoodType2String(GoodType value)
         {

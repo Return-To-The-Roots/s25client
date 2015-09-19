@@ -276,7 +276,7 @@ void nofBuilder::StartFreewalk()
 
     assert(possible_directions.size() > 0);
     // Zufällige Richtung von diesen auswählen
-    FaceDir(possible_directions[RANDOM.Rand(__FILE__, __LINE__, obj_id, possible_directions.size())]);
+    FaceDir(possible_directions[RANDOM.Rand(__FILE__, __LINE__, GetObjId(), possible_directions.size())]);
 
     // Und dort auch hinlaufen
     current_ev = em->AddEvent(this, (state == STATE_WAITINGFREEWALK) ? 24 : 17, 1);

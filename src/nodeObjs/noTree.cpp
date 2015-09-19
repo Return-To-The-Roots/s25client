@@ -65,7 +65,7 @@ noTree::noTree(const MapPoint pos, const unsigned char type, const unsigned char
 
     // Falls das der Fall ist, dann wollen wir doch gleich mal eins produzieren
     if(produce_animals)
-        produce_animal_event = em->AddEvent(this, 6000 + RANDOM.Rand(__FILE__, __LINE__, obj_id, 2000), 3);
+        produce_animal_event = em->AddEvent(this, 6000 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 2000), 3);
 }
 
 noTree::~noTree()
@@ -165,7 +165,7 @@ void noTree::HandleEvent(const unsigned int id)
         // Neues Tier erzeugen
         ProduceAnimal();
         // nächstes Event anmelden
-        produce_animal_event = em->AddEvent(this, 6000 + RANDOM.Rand(__FILE__, __LINE__, obj_id, 2000), 3);
+        produce_animal_event = em->AddEvent(this, 6000 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 2000), 3);
 
         return;
     }
@@ -262,7 +262,7 @@ void noTree::ProduceAnimal()
         SPEC_DEER,
         SPEC_SHEEP
     };
-    noAnimal* animal = new noAnimal(possible_species[RANDOM.Rand(__FILE__, __LINE__, obj_id, 6)], pos);
+    noAnimal* animal = new noAnimal(possible_species[RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6)], pos);
     // In die Landschaft setzen
     gwg->AddFigure(animal, pos);
     // Und ihm die Pforten geben..

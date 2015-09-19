@@ -168,7 +168,7 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned int id)
             workplace->ConsumeWares();
 
             // Eins zufällig auswählen
-            target = pts[RANDOM.Rand(__FILE__, __LINE__, obj_id, pts.size())];
+            target = pts[RANDOM.Rand(__FILE__, __LINE__, GetObjId(), pts.size())];
 
             // Richtung, in die sich der Katapult drehen soll, bestimmen
             unsigned char shooting_dir;
@@ -224,7 +224,7 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned int id)
             // Stein in Bewegung setzen
 
             // Soll das Gebäude getroffen werden (70%)
-            bool hit = (RANDOM.Rand(__FILE__, __LINE__, obj_id, 99) < 70);
+            bool hit = (RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 99) < 70);
 
             // Radius fürs Treffen und Nicht-Treffen,  (in Pixeln), nur visuell
             const int RADIUS_HIT = 15; // nicht nach unten hin!
@@ -240,7 +240,7 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned int id)
             else
             {
                 // Ansonsten zufälligen Punkt rundrum heraussuchen
-                unsigned d = RANDOM.Rand(__FILE__, __LINE__, obj_id, 6);
+                unsigned d = RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6);
 
                 destMap = gwg->GetNeighbour(target.pos, d);
             }
@@ -272,10 +272,10 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned int id)
             // Bei getroffenen den Aufschlagspunkt am Gebäude ein bisschen variieren
             if(hit)
             {
-                dest_x += (RANDOM.Rand(__FILE__, __LINE__, obj_id, RADIUS_HIT * 2) - RADIUS_HIT);
+                dest_x += (RANDOM.Rand(__FILE__, __LINE__, GetObjId(), RADIUS_HIT * 2) - RADIUS_HIT);
                 // hier nicht nach unten gehen, da die Tür (also Nullpunkt
                 // ja schon ziemlich weit unten ist!
-                dest_y -= RANDOM.Rand(__FILE__, __LINE__, obj_id, RADIUS_HIT);
+                dest_y -= RANDOM.Rand(__FILE__, __LINE__, GetObjId(), RADIUS_HIT);
             }
 
             // Stein erzeugen

@@ -370,7 +370,7 @@ unsigned char nofGeologist::GetNextNode()
         while(!available_nodes.empty())
         {
             // Dann einen Punkt zufällig auswählen
-            int randNode = RANDOM.Rand(__FILE__, __LINE__, obj_id, available_nodes.size());
+            int randNode = RANDOM.Rand(__FILE__, __LINE__, GetObjId(), available_nodes.size());
             node_goal = available_nodes[randNode];
             // und aus der Liste entfernen
             available_nodes.erase(available_nodes.begin() + randNode);

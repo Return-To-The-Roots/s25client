@@ -175,7 +175,7 @@ GoodType nofMetalworker::GetRandomTool()
 		if (GAMECLIENT.GetGGS().isEnabled(ADDON_METALWORKSBEHAVIORONZERO) && GAMECLIENT.GetGGS().getSelection(ADDON_METALWORKSBEHAVIORONZERO) == 1)
 			return GD_NOTHING;
 		else
-			return TOOLS_SETTINGS_IDS[RANDOM.Rand(__FILE__, __LINE__, obj_id, 12)];
+			return TOOLS_SETTINGS_IDS[RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 12)];
 	}
 
     // Ansonsten Array mit den Werkzeugtypen erstellen und davon dann eins zufällig zurückliefern, je höher Wahr-
@@ -189,7 +189,7 @@ GoodType nofMetalworker::GetRandomTool()
             random_array[pos++] = i;
     }
 
-    GoodType tool = TOOLS_SETTINGS_IDS[random_array[RANDOM.Rand(__FILE__, __LINE__, obj_id, all_size)]];
+    GoodType tool = TOOLS_SETTINGS_IDS[random_array[RANDOM.Rand(__FILE__, __LINE__, GetObjId(), all_size)]];
 
     return tool;
 }

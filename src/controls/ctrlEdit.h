@@ -31,12 +31,12 @@ class ctrlEdit : public Window
         void SetText(const unsigned int text);
 
         const std::string GetText(void) const;
-        const std::wstring& GetWText(void) const { return text; }
-        void SetFocus(bool focus = true) { newfocus = focus; }
-        void SetDisabled(bool disabled = true) { this->disabled = disabled; }
-        void SetNotify(bool notify = true) { this->notify = notify; }
-        void SetMaxLength(unsigned short maxlength = 0) { this->maxlength = maxlength; }
-        void SetNumberOnly(const bool activated) {this->number_only = activated; }
+        const std::wstring& GetWText(void) const { return text_; }
+        void SetFocus(bool focus = true) { newFocus_ = focus; }
+        void SetDisabled(bool disabled = true) { this->isDisabled_ = disabled; }
+        void SetNotify(bool notify = true) { this->notify_ = notify; }
+        void SetMaxLength(unsigned short maxlength = 0) { this->maxLength_ = maxlength; }
+        void SetNumberOnly(const bool activated) {this->numberOnly_ = activated; }
 
         virtual void Msg_PaintAfter();
         virtual bool Msg_LeftDown(const MouseCoords& mc);
@@ -51,24 +51,24 @@ class ctrlEdit : public Window
         void RemoveChar(void);
         void Notify(void);
 
-        void CursorLeft() { if(cursor_pos == 0) return; --cursor_pos; Notify(); };
-        void CursorRight() { if(cursor_pos == text.length()) return; ++cursor_pos; Notify(); };
+        void CursorLeft() { if(cursorPos_ == 0) return; --cursorPos_; Notify(); };
+        void CursorRight() { if(cursorPos_ == text_.length()) return; ++cursorPos_; Notify(); };
 
     private:
-        unsigned short maxlength;
-        TextureColor tc;
-        glArchivItem_Font* font;
-        bool password;
-        bool disabled;
-        bool focus;
-        bool newfocus;
-        bool notify;
+        unsigned short maxLength_;
+        TextureColor texColor_;
+        glArchivItem_Font* font_;
+        bool isPassword_;
+        bool isDisabled_;
+        bool focus_;
+        bool newFocus_;
+        bool notify_;
 
-        std::wstring text;
-        unsigned cursor_pos;
-        unsigned view_start;
+        std::wstring text_;
+        unsigned cursorPos_;
+        unsigned viewStart_;
 
-        bool number_only;
+        bool numberOnly_;
 };
 
 #endif // !CTRLEDIT_H_INCLUDED

@@ -88,7 +88,7 @@ class nobBaseMilitary : public noBuilding
 
         /// Das Alter wird immer verglichen
         /// absteigend sortieren, da jünger <=> age größer
-        bool operator < (const nobBaseMilitary& other) const { return obj_id > other.GetObjId(); }
+        bool operator < (const nobBaseMilitary& other) const { return GetObjId() > other.GetObjId(); }
 
         /// Meldet ein neues "Rausgeh"-Event an, falls gerade keiner rausgeht
         /// (damit nicht alle auf einmal rauskommen), für Lager- und Militärhäuser)

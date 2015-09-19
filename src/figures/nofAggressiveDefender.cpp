@@ -131,7 +131,7 @@ void nofAggressiveDefender::HomeDestroyedAtBegin()
 
     // Rumirren
     StartWandering();
-    StartWalking(RANDOM.Rand(__FILE__, __LINE__, obj_id, 6));
+    StartWalking(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6));
 }
 
 /// Wenn ein Kampf gewonnen wurde

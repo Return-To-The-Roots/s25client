@@ -116,18 +116,14 @@ void noCharburnerPile::Draw( int x, int y)
         } return;
         case STATE_SMOLDERING:
         {
-            LOADER.GetImageN("charburner_bobs", 27 + GAMECLIENT.
-                             GetGlobalAnimation(2, 10, 1, obj_id + this->pos.x * 10 + this->pos.y * 10))->Draw(x, y);
+            LOADER.GetImageN("charburner_bobs", 27 + GAMECLIENT.GetGlobalAnimation(2, 10, 1, GetObjId() + this->pos.x * 10 + this->pos.y * 10))->Draw(x, y);
 
             // Dann Qualm zeichnen
-            LOADER.GetMapImageN(692 + 1 * 8 + GAMECLIENT.GetGlobalAnimation(8, 5, 2, (this->pos.x + this->pos.y) * 100))
-            ->Draw(x + 21, y - 11, 0, 0, 0, 0, 0, 0, 0x99EEEEEE);
-            LOADER.GetMapImageN(692 + 2 * 8 + GAMECLIENT.GetGlobalAnimation(8, 5, 2, (this->pos.x + this->pos.y) * 100))
-            ->Draw(x - 2, y - 06, 0, 0, 0, 0, 0, 0, 0x99EEEEEE);
-            LOADER.GetMapImageN(692 + 1 * 8 + GAMECLIENT.GetGlobalAnimation(8, 5, 2, (this->pos.x + this->pos.y) * 100))
-            ->Draw(x - 25, y - 11, 0, 0, 0, 0, 0, 0, 0x99EEEEEE);
-            LOADER.GetMapImageN(692 + 3 * 8 + GAMECLIENT.GetGlobalAnimation(8, 5, 2, (this->pos.x + this->pos.y) * 100))
-            ->Draw(x - 2, y - 35, 0, 0, 0, 0, 0, 0, 0x99EEEEEE);
+            unsigned int globalAnimation = GAMECLIENT.GetGlobalAnimation(8, 5, 2, (this->pos.x + this->pos.y) * 100);
+            LOADER.GetMapImageN(692 + 1 * 8 + globalAnimation)->Draw(x + 21, y - 11, 0, 0, 0, 0, 0, 0, 0x99EEEEEE);
+            LOADER.GetMapImageN(692 + 2 * 8 + globalAnimation)->Draw(x - 02, y - 06, 0, 0, 0, 0, 0, 0, 0x99EEEEEE);
+            LOADER.GetMapImageN(692 + 1 * 8 + globalAnimation)->Draw(x - 25, y - 11, 0, 0, 0, 0, 0, 0, 0x99EEEEEE);
+            LOADER.GetMapImageN(692 + 3 * 8 + globalAnimation)->Draw(x - 02, y - 35, 0, 0, 0, 0, 0, 0, 0x99EEEEEE);
         } return;
         case STATE_REMOVECOVER:
         {

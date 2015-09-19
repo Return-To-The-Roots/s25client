@@ -68,7 +68,7 @@ nobBaseWarehouse::nobBaseWarehouse(const BuildingType type, const MapPoint pos, 
     : nobBaseMilitary(type, pos, player, nation), fetch_double_protection(false), recruiting_event(0),
       empty_event(0), store_event(0)
 {
-    producinghelpers_event = em->AddEvent(this, PRODUCE_HELPERS_GF + RANDOM.Rand(__FILE__, __LINE__, obj_id, PRODUCE_HELPERS_RANDOM_GF), 1);
+    producinghelpers_event = em->AddEvent(this, PRODUCE_HELPERS_GF + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), PRODUCE_HELPERS_RANDOM_GF), 1);
     // Reserve nullen
     for(unsigned i = 0; i < 5; ++i)
         reserve_soldiers_available[i] =
@@ -419,7 +419,7 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
 
 
             if(go_out)
-                leaving_event = em->AddEvent(this, 20 + RANDOM.Rand(__FILE__, __LINE__, obj_id, 10));
+                leaving_event = em->AddEvent(this, 20 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 10));
         } break;
         // Träger-Produzier-Event
         case 1:
@@ -450,7 +450,7 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
                 gwg->GetPlayer(player)->DecreaseInventoryJob(JOB_HELPER, 1);
             }
 
-            producinghelpers_event = em->AddEvent(this, PRODUCE_HELPERS_GF + RANDOM.Rand(__FILE__, __LINE__, obj_id, PRODUCE_HELPERS_RANDOM_GF), 1);
+            producinghelpers_event = em->AddEvent(this, PRODUCE_HELPERS_GF + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), PRODUCE_HELPERS_RANDOM_GF), 1);
 
 
             // Evtl. genau der Gehilfe, der zum Rekrutieren notwendig ist
@@ -486,7 +486,7 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
                 / MILITARY_SETTINGS_SCALE[0];
             // Wurde abgerundet?
             if (real_recruits * recruiting_ratio % MILITARY_SETTINGS_SCALE[0] != 0)
-                if (unsigned(RANDOM.Rand(__FILE__, __LINE__, obj_id, MILITARY_SETTINGS_SCALE[0] - 1))
+                if (unsigned(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), MILITARY_SETTINGS_SCALE[0] - 1))
                         < real_recruits * recruiting_ratio % MILITARY_SETTINGS_SCALE[0])
                 {
                     ++real_recruits;
@@ -564,7 +564,7 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
                 return;
 
             // Eine ID zufällig auswählen
-            unsigned selectedId = possibleIds[RANDOM.Rand(__FILE__, __LINE__, obj_id, possibleIds.size())];
+            unsigned selectedId = possibleIds[RANDOM.Rand(__FILE__, __LINE__, GetObjId(), possibleIds.size())];
 
             if(selectedId < WARE_TYPES_COUNT)
             {
@@ -1121,7 +1121,7 @@ void nobBaseWarehouse::TryRecruiting()
     if(!recruiting_event)
     {
         if(AreRecruitingConditionsComply())
-            recruiting_event = em->AddEvent(this, RECRUITE_GF + RANDOM.Rand(__FILE__, __LINE__, obj_id, RECRUITE_RANDOM_GF), 2);
+            recruiting_event = em->AddEvent(this, RECRUITE_GF + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), RECRUITE_RANDOM_GF), 2);
     }
 }
 

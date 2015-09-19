@@ -45,18 +45,18 @@ void Addon::hideGui(Window* window, unsigned int id) const
  *
  *  @author FloSoft
  */
-void Addon::createGui(Window* window, unsigned int id, unsigned short& y, bool readonly, unsigned int status) const
+void Addon::createGui(Window* window, unsigned int id, unsigned short& y, bool readonly, unsigned int status) const //-V669
 {
     ctrlText* text = window->GetCtrl<ctrlText>(id);
     if(!text)
-        text = window->AddText(id, 52, y + 4, _(name), COLOR_YELLOW, 0, NormalFont);
+        text = window->AddText(id, 52, y + 4, _(name_), COLOR_YELLOW, 0, NormalFont);
 
     text->SetVisible(true);
     text->Move(52, y + 4);
 
     ctrlImageButton* button = window->GetCtrl<ctrlImageButton>(id + 1);
     if(!button)
-        button = window->AddImageButton(id + 1, 20, y, 22, 22, TC_GREY, LOADER.GetImageN("io", 21), _(description));
+        button = window->AddImageButton(id + 1, 20, y, 22, 22, TC_GREY, LOADER.GetImageN("io", 21), _(description_));
 
     button->SetVisible(true);
     button->Move(20, y);

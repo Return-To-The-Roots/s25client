@@ -98,7 +98,7 @@ void nofPassiveSoldier::HandleDerivedEvent(const unsigned int id)
 
                     // Sind wir immer noch nicht gesund? Dann neues Event anmelden!
                     if(hitpoints < HITPOINTS[gwg->GetPlayer(player)->nation][job - JOB_PRIVATE])
-                        healing_event = em->AddEvent(this, CONVALESCE_TIME + RANDOM.Rand(__FILE__, __LINE__, obj_id, CONVALESCE_TIME_RANDOM), 1);
+                        healing_event = em->AddEvent(this, CONVALESCE_TIME + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), CONVALESCE_TIME_RANDOM), 1);
                 }
             }
 
@@ -119,7 +119,7 @@ void nofPassiveSoldier::Heal()
     // Ist er verletzt?
     // Dann muss er geheilt werden
     if(hitpoints < HITPOINTS[gwg->GetPlayer(player)->nation][job - JOB_PRIVATE])
-        healing_event = em->AddEvent(this, CONVALESCE_TIME + RANDOM.Rand(__FILE__, __LINE__, obj_id, CONVALESCE_TIME_RANDOM), 1);
+        healing_event = em->AddEvent(this, CONVALESCE_TIME + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), CONVALESCE_TIME_RANDOM), 1);
 }
 
 void nofPassiveSoldier::GoalReached()
@@ -142,7 +142,7 @@ void nofPassiveSoldier::InBuildingDestroyed()
     // Erstmal in zufällige Richtung rammeln
     StartWandering();
 
-    StartWalking(RANDOM.Rand(__FILE__, __LINE__, obj_id, 6));
+    StartWalking(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6));
 
 }
 

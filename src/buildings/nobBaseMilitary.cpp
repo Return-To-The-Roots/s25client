@@ -95,7 +95,7 @@ void nobBaseMilitary::Destroy_nobBaseMilitary()
         {
             (*it)->Abrogate();
             (*it)->StartWandering();
-            (*it)->StartWalking(RANDOM.Rand(__FILE__, __LINE__, obj_id, 6));
+            (*it)->StartWalking(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6));
         }
     }
 
@@ -146,7 +146,7 @@ void nobBaseMilitary::AddLeavingEvent()
     // Wenn gerade keiner rausgeht, muss neues Event angemeldet werden
     if(!go_out)
     {
-        leaving_event = em->AddEvent(this, 20 + RANDOM.Rand(__FILE__, __LINE__, obj_id, 10));
+        leaving_event = em->AddEvent(this, 20 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 10));
         go_out = true;
     }
 }

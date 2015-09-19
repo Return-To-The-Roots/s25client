@@ -83,7 +83,7 @@ const Point<int> SHIPS_FLAG_POS[12] =
 noShip::noShip(const MapPoint pos, const unsigned char player)
     : noMovable(NOP_SHIP, pos),
       player(player), state(STATE_IDLE), sea_id(0), goal_harbor_id(0), goal_dir(0),
-      name(ship_names[gwg->GetPlayer(player)->nation][RANDOM.Rand(__FILE__, __LINE__, obj_id, ship_count)]),
+      name(ship_names[gwg->GetPlayer(player)->nation][RANDOM.Rand(__FILE__, __LINE__, GetObjId(), ship_count)]),
       lost(false), remaining_sea_attackers(0), home_harbor(0), covered_distance(0)
 {
     // Meer ermitteln, auf dem dieses Schiff fährt
@@ -225,11 +225,11 @@ void noShip::Draw(int x, int y)
         } break;
     }
 
-    LOADER.GetImageN("boot_z", 40 + GAMECLIENT.GetGlobalAnimation(6, 1, 1, obj_id))->
+    LOADER.GetImageN("boot_z", 40 + GAMECLIENT.GetGlobalAnimation(6, 1, 1, GetObjId()))->
     Draw(x + SHIPS_FLAG_POS[GetCurMoveDir() + flag_drawing_type * 6].x, y + SHIPS_FLAG_POS[GetCurMoveDir() + flag_drawing_type * 6].y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(player)->color]);
     // Second, white flag, only when on expedition, always swinging in the opposite direction
     if(state >= STATE_EXPEDITION_LOADING && state <= STATE_EXPEDITION_DRIVING)
-        LOADER.GetImageN("boot_z", 40 + GAMECLIENT.GetGlobalAnimation(6, 1, 1, obj_id + 4))->
+        LOADER.GetImageN("boot_z", 40 + GAMECLIENT.GetGlobalAnimation(6, 1, 1, GetObjId() + 4))->
         Draw(x + SHIPS_FLAG_POS[GetCurMoveDir() + flag_drawing_type * 6].x, y + 4 + SHIPS_FLAG_POS[GetCurMoveDir() + flag_drawing_type * 6].y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLOR_WHITE);
 
 }
@@ -414,7 +414,7 @@ void noShip::HandleEvent(const unsigned int id)
                     gwg->AddFigure(attacker, pos);
 
                     current_ev = em->AddEvent(this, 30, 1);
-                    attacker->StartAttackOnOtherIsland(pos, obj_id);
+                    attacker->StartAttackOnOtherIsland(pos, GetObjId());
                     ;
                 };
                 case STATE_SEAATTACK_UNLOADING:
@@ -1146,7 +1146,7 @@ void noShip::ContinueExplorationExpedition()
 
         else
             // Zufällig den nächsten Hafen auswählen
-            goal_harbor_id = hps[RANDOM.Rand(__FILE__, __LINE__, obj_id, hps.size())];
+            goal_harbor_id = hps[RANDOM.Rand(__FILE__, __LINE__, GetObjId(), hps.size())];
     }
 
     StartDrivingToHarborPlace();

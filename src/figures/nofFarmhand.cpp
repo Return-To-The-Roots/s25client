@@ -157,7 +157,7 @@ void nofFarmhand::HandleDerivedEvent(const unsigned int id)
                 {
                     if(!available_points[i].empty())
                     {
-                        p = available_points[i][RANDOM.Rand(__FILE__, __LINE__, obj_id, available_points[i].size())];
+                        p = available_points[i][RANDOM.Rand(__FILE__, __LINE__, GetObjId(), available_points[i].size())];
                         break;
                     }
                 }

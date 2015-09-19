@@ -65,7 +65,7 @@ void nofPlaner::GoalReached()
     state = STATE_WALKING;
 
     // Zufällig Uhrzeigersinn oder dagegen
-    pd = ( RANDOM.Rand(__FILE__, __LINE__, obj_id, 2) == 0 ) ? (PD_CLOCKWISE) : (PD_COUNTERCLOCKWISE);
+    pd = ( RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 2) == 0 ) ? (PD_CLOCKWISE) : (PD_COUNTERCLOCKWISE);
 
     // Je nachdem erst nach rechts oder links gehen
     StartWalking((pd == PD_CLOCKWISE) ? 5 : 3);

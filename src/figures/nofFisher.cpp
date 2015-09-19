@@ -115,7 +115,7 @@ unsigned short nofFisher::GetCarryID() const
 /// Abgeleitete Klasse informieren, wenn sie anfängt zu arbeiten (Vorbereitungen)
 void nofFisher::WorkStarted()
 {
-    unsigned char doffset = RANDOM.Rand(__FILE__, __LINE__, obj_id, 6);
+    unsigned char doffset = RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6);
     // Punkt mit Fisch suchen (mit zufälliger Richtung beginnen)
     fishing_dir = 0xFF;
     for(unsigned char i = 0; i < 6; ++i)
@@ -128,7 +128,7 @@ void nofFisher::WorkStarted()
 
     // Wahrscheinlichkeit, einen Fisch zu fangen sinkt mit abnehmendem Bestand
     unsigned short probability = 40 + (gwg->GetNode(gwg->GetNeighbour(pos, fishing_dir)).resources - 0x80) * 10;
-    successful = (RANDOM.Rand(__FILE__, __LINE__, obj_id, 100) < probability);
+    successful = (RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 100) < probability);
 }
 
 

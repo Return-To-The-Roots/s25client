@@ -417,7 +417,7 @@ void nofAttacker::HomeDestroyedAtBegin()
 
     // Rumirren
     StartWandering();
-    StartWalking(RANDOM.Rand(__FILE__, __LINE__, obj_id, 6));
+    StartWalking(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6));
 }
 
 /// Sagt dem Heimatgebäude Bescheid, dass er nicht mehr nach Hause kommen wird
@@ -718,7 +718,7 @@ void nofAttacker::TryToOrderAggressiveDefender()
     if(should_haunted && state >= STATE_ATTACKING_WALKINGTOGOAL)
     {
         // 20%ige Chance, dass wirklich jemand angreift
-        if(RANDOM.Rand(__FILE__, __LINE__, obj_id, 10) < 2)
+        if(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 10) < 2)
         {
             // Militärgebäude in der Nähe abgrasen
             sortedMilitaryBlds buildings = gwg->LookForMilitaryBuildings(pos, 2);

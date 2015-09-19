@@ -119,7 +119,7 @@ void nofForester::WorkFinished()
 
         // jungen Baum einsetzen
         gwg->SetNO(new noTree(pos, AVAILABLE_TREES[gwg->GetLandscapeType()]
-                              [RANDOM.Rand(__FILE__, __LINE__, obj_id, AVAILABLE_TREES_COUNT[gwg->GetLandscapeType()])], 0), pos);
+                              [RANDOM.Rand(__FILE__, __LINE__, GetObjId(), AVAILABLE_TREES_COUNT[gwg->GetLandscapeType()])], 0), pos);
 
         // BQ drumherum neu berechnen
         gwg->RecalcBQAroundPoint(pos);

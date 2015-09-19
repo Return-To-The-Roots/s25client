@@ -260,10 +260,8 @@ void nobUsual::Draw(int x, int y)
 
 
         /// Großes Schwein zeichnen
-        LOADER.GetMapImageN(2160)->Draw(
-            x + PIG_POSITIONS[nation][0][0], y + PIG_POSITIONS[nation][0][1], 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
-        LOADER.GetMapImageN(2100 + GAMECLIENT.GetGlobalAnimation(12, 3, 1, GetX() + GetY() + obj_id))->Draw(
-            x + PIG_POSITIONS[nation][0][0], y + PIG_POSITIONS[nation][0][1]);
+        LOADER.GetMapImageN(2160)->Draw(x + PIG_POSITIONS[nation][0][0], y + PIG_POSITIONS[nation][0][1], 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+        LOADER.GetMapImageN(2100 + GAMECLIENT.GetGlobalAnimation(12, 3, 1, GetX() + GetY() + GetObjId()))->Draw(x + PIG_POSITIONS[nation][0][0], y + PIG_POSITIONS[nation][0][1]);
 
         // Die 4 kleinen Schweinchen, je nach Produktivität
         for(unsigned i = 1; i < min<unsigned>(unsigned(productivity) / 20 + 1, 5); ++i)
@@ -277,11 +275,9 @@ void nobUsual::Draw(int x, int y)
                 2, 0, 0, 2, 2, 0, 1, 0, 3, 1, 2, 0, 1, 2, 2, 0,
                 0, 0, 3, 0, 2, 0, 3, 0, 3, 0, 1, 1, 0, 3, 0
             };
-            const unsigned short animpos = GAMECLIENT.GetGlobalAnimation(63 * 12, 63 * 4 - i * 5, 1, 183 * i + GetX() * obj_id + GetY() * i);
-            LOADER.GetMapImageN(2160)->Draw(
-                x + PIG_POSITIONS[nation][i][0], y + PIG_POSITIONS[nation][i][1], 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
-            LOADER.GetMapImageN(2112 + smallpig_animations[animpos / 12] * 12 + animpos % 12)->Draw(
-                x + PIG_POSITIONS[nation][i][0], y + PIG_POSITIONS[nation][i][1]);
+            const unsigned short animpos = GAMECLIENT.GetGlobalAnimation(63 * 12, 63 * 4 - i * 5, 1, 183 * i + GetX() * GetObjId() + GetY() * i);
+            LOADER.GetMapImageN(2160)->Draw(x + PIG_POSITIONS[nation][i][0], y + PIG_POSITIONS[nation][i][1], 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+            LOADER.GetMapImageN(2112 + smallpig_animations[animpos / 12] * 12 + animpos % 12)->Draw(x + PIG_POSITIONS[nation][i][0], y + PIG_POSITIONS[nation][i][1]);
         }
 
         // Ggf. Sounds abspielen (oink oink), da soll sich der Schweinezüchter drum kümmen
@@ -289,7 +285,7 @@ void nobUsual::Draw(int x, int y)
     }
     // Bei nubischen Bergwerken das Feuer vor dem Bergwerk zeichnen
     else if(type >= BLD_GRANITEMINE && type <= BLD_GOLDMINE && worker && nation == NAT_AFRICANS)
-        LOADER.GetMapImageN(740 + GAMECLIENT.GetGlobalAnimation(8, 5, 2, obj_id + GetX() + GetY()))->
+        LOADER.GetMapImageN(740 + GAMECLIENT.GetGlobalAnimation(8, 5, 2, GetObjId() + GetX() + GetY()))->
         Draw(x + NUBIAN_MINE_FIRE[type - BLD_GRANITEMINE][0], y + NUBIAN_MINE_FIRE[type - BLD_GRANITEMINE][1]);
 }
 

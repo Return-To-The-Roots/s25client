@@ -37,7 +37,7 @@ class Addon
 {
     public:
         Addon(const AddonId id, const unsigned int groups, const std::string& name, const std::string& description, const unsigned int default_status)
-            : id(id), groups(groups), name(name), description(description), default_status(default_status)  {   }
+            : id_(id), groups_(groups), name_(name), description_(description), defaultStatus_(default_status)  {   }
         virtual ~Addon() {  }
 
         virtual void hideGui(Window* window, unsigned int id) const;
@@ -50,18 +50,18 @@ class Addon
             return getDefaultStatus();
         }
 
-        AddonId getId() const { return id; }
-        unsigned int getGroups() const { return (ADDONGROUP_ALL | groups); }
-        std::string getName() const { return name; }
-        std::string getDescription() const { return description; }
-        unsigned int getDefaultStatus() const { return default_status; }
+        AddonId getId() const { return id_; }
+        unsigned int getGroups() const { return (ADDONGROUP_ALL | groups_); }
+        std::string getName() const { return name_; }
+        std::string getDescription() const { return description_; }
+        unsigned int getDefaultStatus() const { return defaultStatus_; }
 
     private:
-        AddonId id;
-        unsigned int groups;
-        std::string name;
-        std::string description;
-        unsigned int default_status;
+        AddonId id_;
+        unsigned int groups_;
+        std::string name_;
+        std::string description_;
+        unsigned int defaultStatus_;
 };
 
 ///////////////////////////////////////////////////////////////////////////////

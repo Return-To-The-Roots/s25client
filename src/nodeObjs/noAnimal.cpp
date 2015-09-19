@@ -36,7 +36,7 @@
 
 /// Konstruktor
 noAnimal::noAnimal(const Species species, const MapPoint pos) : noMovable(NOP_ANIMAL, pos)
-    , species(species), state(STATE_WALKING), pause_way(5 + RANDOM.Rand(__FILE__, __LINE__, obj_id, 15)), hunter(0), sound_moment(0)
+    , species(species), state(STATE_WALKING), pause_way(5 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 15)), hunter(0), sound_moment(0)
 {
     if(hunter)
         hunter->AnimalLost();
@@ -242,8 +242,8 @@ void noAnimal::Walked()
             {
                 // dann stellt es sich hier hin und wartet erstmal eine Weile
                 state = STATE_PAUSED;
-                pause_way = 5 + RANDOM.Rand(__FILE__, __LINE__, obj_id, 15);
-                current_ev = em->AddEvent(this, 50 + RANDOM.Rand(__FILE__, __LINE__, obj_id, 50), 1);
+                pause_way = 5 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 15);
+                current_ev = em->AddEvent(this, 50 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 50), 1);
             }
             else
             {
@@ -266,7 +266,7 @@ void noAnimal::Walked()
 unsigned char noAnimal::FindDir()
 {
     // mit zufälliger Richtung anfangen
-    unsigned doffset = RANDOM.Rand(__FILE__, __LINE__, obj_id, 6);
+    unsigned doffset = RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6);
 
     for(unsigned char dtmp = 0; dtmp < 6; ++dtmp)
     {

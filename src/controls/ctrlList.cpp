@@ -47,7 +47,7 @@ ctrlList::ctrlList(Window* parent,
                    TextureColor tc,
                    glArchivItem_Font* font)
     : Window(x, y, id, parent, width, height),
-      tc(tc), font(font), selection(0xFFFF), mouseover(0xFFFF)
+      tc(tc), font(font), selection_(0xFFFF), mouseover(0xFFFF)
 {
     pagesize = (height - 4) / font->getHeight();
 
@@ -111,11 +111,11 @@ bool ctrlList::Msg_LeftDown(const MouseCoords& mc)
         WINDOWMANAGER.SetToolTip(this, "");
 
         // aktuellen Eintrag selektieren
-        selection = mouseover + scrollbar->GetPos();
+        selection_ = mouseover + scrollbar->GetPos();
 
-        if(parent_) parent_->Msg_ListSelectItem(id_, selection);
+        if(parent_) parent_->Msg_ListSelectItem(id_, selection_);
         // Doppelklick? Dann noch einen extra Eventhandler aufrufen
-        if(mc.dbl_click && parent_) parent_->Msg_ListChooseItem(id_, selection);
+        if(mc.dbl_click && parent_) parent_->Msg_ListChooseItem(id_, selection_);
 
         return true;
     }
@@ -141,8 +141,8 @@ bool ctrlList::Msg_RightDown(const MouseCoords& mc)
         WINDOWMANAGER.SetToolTip(this, "");
 
         // aktuellen Eintrag selektieren
-        selection = mouseover + scrollbar->GetPos();
-        parent_->Msg_ListSelectItem(id_, selection);
+        selection_ = mouseover + scrollbar->GetPos();
+        parent_->Msg_ListSelectItem(id_, selection_);
 
         return true;
     }
@@ -238,7 +238,7 @@ bool ctrlList::Draw_(void)
             DrawRectangle(GetX() + 2, GetY() + 2 + i * font->getHeight(), width_ - 22, font->getHeight(), 0x80000000);
 
         // Text an sich
-        font->Draw(GetX() + 2, GetY() + 2 + i * font->getHeight(), lines[i + scrollbar->GetPos()], 0, (selection == i + scrollbar->GetPos() ? 0xFFFFAA00 : 0xFFFFFF00), 0, width_ - 22);
+        font->Draw(GetX() + 2, GetY() + 2 + i * font->getHeight(), lines[i + scrollbar->GetPos()], 0, (selection_ == i + scrollbar->GetPos() ? 0xFFFFAA00 : 0xFFFFFF00), 0, width_ - 22);
     }
 
     return true;
@@ -278,7 +278,7 @@ void ctrlList::SetString(const std::string& text, const unsigned id)
 void ctrlList::DeleteAllItems()
 {
     lines.clear();
-    selection = 0xFFFF;
+    selection_ = 0xFFFF;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -336,10 +336,10 @@ void ctrlList::Resize_(unsigned short width, unsigned short height)
 void ctrlList::Swap(unsigned short first, unsigned short second)
 {
     // Evtl Selection auf das jeweilige Element beibehalten?
-    if(first == selection)
-        selection = second;
-    else if(second == selection)
-        selection = first;
+    if(first == selection_)
+        selection_ = second;
+    else if(second == selection_)
+        selection_ = first;
 
     // Strings vertauschen
     std::swap(lines[first], lines[second]);
@@ -358,9 +358,9 @@ void ctrlList::Remove(const unsigned short index)
         lines.erase(lines.begin() + index);
 
         // Ggf. selection korrigieren
-        if(selection)
-            --selection;
+        if(selection_)
+            --selection_;
         else
-            selection = 0xFFFF;
+            selection_ = 0xFFFF;
     }
 }

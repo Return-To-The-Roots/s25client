@@ -43,7 +43,7 @@ const unsigned GROWING_WAITING_LENGTH = 1100;
 const unsigned GROWING_LENGTH = 16;
 
 noGrainfield::noGrainfield(const MapPoint pos) : noCoordBase(NOP_GRAINFIELD, pos),
-    type(RANDOM.Rand(__FILE__, __LINE__, obj_id, 2)), state(STATE_GROWING_WAITING), size(0)
+    type(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 2)), state(STATE_GROWING_WAITING), size(0)
 {
     event = em->AddEvent(this, GROWING_WAITING_LENGTH);
 }
@@ -135,7 +135,7 @@ void noGrainfield::HandleEvent(const unsigned int id)
                 // bin nun ausgewachsen
                 state = STATE_NORMAL;
                 // nach langer Zeit verdorren
-                event = em->AddEvent(this, 3000 + RANDOM.Rand(__FILE__, __LINE__, obj_id, 1000));
+                event = em->AddEvent(this, 3000 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 1000));
             }
 
         } break;
@@ -167,6 +167,6 @@ void noGrainfield::BeginHarvesting()
 void noGrainfield::EndHarvesting()
 {
     // nach langer Zeit verdorren (von neuem)
-    event = em->AddEvent(this, 3000 + RANDOM.Rand(__FILE__, __LINE__, obj_id, 1000));
+    event = em->AddEvent(this, 3000 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 1000));
 }
 

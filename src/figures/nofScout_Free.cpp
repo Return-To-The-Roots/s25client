@@ -64,7 +64,7 @@ void nofScout_Free::Draw(int x, int y)
 void nofScout_Free::GoalReached()
 {
     /// Bestimmte Anzahl an Punkten abklappern, leicht variieren
-    rest_way = 80 + RANDOM.Rand(__FILE__, __LINE__, obj_id, 20);
+    rest_way = 80 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 20);
 
     state = STATE_SCOUT_SCOUTING;
 
@@ -174,7 +174,7 @@ void nofScout_Free::GoToNewNode()
     while(numPointsLeft && !found_point)
     {
         std::list< MapPoint >::iterator p = available_points.begin();
-        std::advance(p, RANDOM.Rand(__FILE__, __LINE__, obj_id, numPointsLeft));
+        std::advance(p, RANDOM.Rand(__FILE__, __LINE__, GetObjId(), numPointsLeft));
 
         // Existiert ein Weg zu diesem Punkt und ist dieser Punkt auch noch von der Flagge noch in
         // einigermaßen vernünftiger Entfernung zu erreichen, um das Drumherumlaufen um Berge usw. zu
