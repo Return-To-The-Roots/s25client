@@ -185,15 +185,20 @@ case "$SYSTEM_NAME" in
 		find ${DESTDIR}s25client.app/Contents/MacOS/Frameworks/ -name Headers -exec rm -rf {} \;
 		find ${DESTDIR}s25client.app/Contents/MacOS/Frameworks/ -name Resources -exec rm -rf {} \;
 
-		# copy miniupnp
-		if [ -f /Developer/SDKs/MacOSX10.5.sdk/usr/lib/libminiupnpc.5.dylib ] ; then
-			cp -rv /Developer/SDKs/MacOSX10.5.sdk/usr/lib/libminiupnpc.5.dylib ${DESTDIR}s25client.app/Contents/MacOS || exit 1
-		elif  [ -f /usr/lib/apple/SDKs/MacOSX10.5.sdk/usr/lib/libminiupnpc.5.dylib ] ; then
-			cp -rv /usr/lib/apple/SDKs/MacOSX10.5.sdk/usr/lib/libminiupnpc.5.dylib ${DESTDIR}s25client.app/Contents/MacOS || exit 1
-		else
-			echo "libminiupnpc.5.dylib was not found" >&2
-			exit 1
+		SDK=/Developer/SDKs/MacOSX10.5.sdk
+		if [ ! -d $SDK ] ; then
+			SDK=/usr/lib/apple/SDKs/MacOSX10.5.sdk
 		fi
+
+		# copy libs
+		for LIB in /usr/lib/libminiupnpc.5.dylib /usr/lib/libboost_system.dylib /usr/lib/libboost_filesystem.dylib /usr/lib/libboost_iostreams.dylib ; do
+			if [ -f $SDK$LIB ] ; then
+				cp -rv $SDK$LIB ${DESTDIR}s25client.app/Contents/MacOS || exit 1
+			else
+				echo "$LIB was not found in $SDK" >&2
+				exit 1
+			fi
+		done
 
 		mkdir -vp ${DESTDIR}s25client.app/Contents/MacOS/bin || exit 1
 
