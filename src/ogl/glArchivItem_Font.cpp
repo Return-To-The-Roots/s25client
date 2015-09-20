@@ -518,8 +518,8 @@ std::vector<std::string> glArchivItem_Font::WrapInfo::CreateSingleStrings(const 
     unsigned curStart = positions.front();
     for(std::vector<unsigned>::const_iterator it = positions.begin() + 1; it != positions.end(); ++it)
     {
-        if(*it > curStart)
-            destStrings.push_back(origin_text.substr(curStart, *it - curStart - 1));
+        assert(*it >= curStart);
+        destStrings.push_back(origin_text.substr(curStart, *it - curStart));
         curStart = *it;
     }
     /* Push last part */
@@ -650,7 +650,7 @@ void glArchivItem_Font::GetWrapInfo(const std::string& text,
     }
 
     // Ignore trailing newline
-    if(wi.positions[wi.positions.size() - 1] == length - 1)
+    if(wi.positions.back() == length - 1)
         wi.positions.pop_back();
 }
 

@@ -382,7 +382,7 @@ void iwPostWindow::SetMessageText(const std::string& message)
     std::vector<std::string> lines = wi.CreateSingleStrings(message);
     for(unsigned i = 0; i < 3; ++i)
     {
-        if (i < wi.positions.size())
+        if (i < lines.size())
             text->SetLine(i, lines[i], COLOR_WINDOWBROWN);
         else
             text->SetLine(i, "", COLOR_WINDOWBROWN);

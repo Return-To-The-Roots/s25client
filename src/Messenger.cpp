@@ -99,7 +99,7 @@ void Messenger::AddMessage(const std::string& author, const unsigned color_autho
     // Message-Strings erzeugen aus den WrapInfo
     std::vector<std::string> strings = wi.CreateSingleStrings(msg);
 
-    for(unsigned i = 0; i < wi.positions.size(); ++i)
+    for(unsigned i = 0; i < strings.size(); ++i)
     {
         Messenger::Msg tmp;
 

@@ -237,12 +237,12 @@ void ctrlChat::WrapLine(unsigned short i)
     std::vector<std::string> strings = wi.CreateSingleStrings(line.msg);
 
     // Zeilen hinzufügen
-    for(unsigned int i = 0; i < wi.positions.size(); ++i)
+    for(unsigned int i = 0; i < strings.size(); ++i)
     {
         ChatLine wrap_line;
         // Nur bei den ersten Zeilen müssen ja Zeit und Spielername mit angegeben werden
         wrap_line.secondary = (i ? true : false);
-        if(wrap_line.secondary)
+        if(!wrap_line.secondary)
         {
             wrap_line.time_string = line.time_string;
             wrap_line.player = line.player;

@@ -39,6 +39,8 @@
 #include "ingameWindows/iwDirectIPConnect.h"
 #include "ingameWindows/iwMsgbox.h"
 
+#include <boost/lexical_cast.hpp>
+
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
@@ -227,9 +229,8 @@ void dskLobby::UpdatePlayerList(bool first)
             {
                 if(playerlist->getElement(i)->getId() != 0xFFFFFFFF)
                 {
-                    char punkte[128];
-                    snprintf(punkte, 128, "%d", playerlist->getElement(i)->getPunkte());
-                    playertable->AddRow(0, playerlist->getElement(i)->getName().c_str(), punkte, playerlist->getElement(i)->getVersion().c_str());
+                    std::string punkte = boost::lexical_cast<std::string>(playerlist->getElement(i)->getPunkte());
+                    playertable->AddRow(0, playerlist->getElement(i)->getName().c_str(), punkte.c_str(), playerlist->getElement(i)->getVersion().c_str());
                 }
             }
             if(first)
@@ -269,15 +270,11 @@ void dskLobby::UpdateServerList(bool first)
             {
                 if(!serverlist->getElement(i)->getName().empty()) // && (serverlist->getElement(i)->getVersion() == std::string(GetWindowVersion())))
                 {
-                    char id[128];
-                    char player[128];
-                    char ping[128];
-                    char name[128];
-                    snprintf(id, 128, "%d", serverlist->getElement(i)->getId());
-                    snprintf(name, 128, "%s%s", (serverlist->getElement(i)->hasPassword() ? "(pwd) " : ""), serverlist->getElement(i)->getName().c_str());
-                    snprintf(player, 128, "%d/%d", serverlist->getElement(i)->getCurPlayers(), serverlist->getElement(i)->getMaxPlayers());
-                    snprintf(ping, 128, "%d", serverlist->getElement(i)->getPing());
-                    servertable->AddRow(0, id, name, serverlist->getElement(i)->getMap().c_str(), player, serverlist->getElement(i)->getVersion().c_str(), ping);
+                    std::string id = boost::lexical_cast<std::string>(serverlist->getElement(i)->getId());
+                    std::string name = (serverlist->getElement(i)->hasPassword() ? "(pwd) " : "") + serverlist->getElement(i)->getName();
+                    std::string ping = boost::lexical_cast<std::string>(serverlist->getElement(i)->getPing());
+                    std::string player = boost::lexical_cast<std::string>(serverlist->getElement(i)->getCurPlayers()) + "/" + boost::lexical_cast<std::string>(serverlist->getElement(i)->getMaxPlayers());
+                    servertable->AddRow(0, id.c_str(), name.c_str(), serverlist->getElement(i)->getMap().c_str(), player.c_str(), serverlist->getElement(i)->getVersion().c_str(), ping.c_str());
                 }
             }
             if(first)
@@ -382,15 +379,15 @@ void dskLobby::LC_Chat(const std::string& player, const std::string& text)
     {
         std::string self = LOBBYCLIENT.GetUser();
 
-        if ((text.length() > (self.length() + 3)) && !text.compare(0, 1, " "))
+        if ((text.length() > (self.length() + 3)) && text[0] == ' ')
         {
-            if (!text.compare(1, self.length(), self))
+            if (text.substr(1, self.length()) == self)
             {
-                if (!text.compare(self.length() + 1, 2, ": "))
+                if (text.substr(self.length() + 1, 2) == ": ")
                 {
                     WINDOWMANAGER.Show(new iwMsgbox("LobbyBot", text.substr(self.length() + 3), this, MSB_OK, MSB_EXCLAMATIONGREEN, 2));
                 }
-                else if (!text.compare(self.length() + 1, 2, ", "))
+                else if (text.substr(self.length() + 1, 2) == ", ")
                 {
                     GetCtrl<ctrlChat>(20)->AddMessage(time, player, color, text.substr(self.length() + 3), COLOR_YELLOW);
                 }
