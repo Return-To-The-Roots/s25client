@@ -30,7 +30,7 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 ctrlBaseText::ctrlBaseText(const std::string& text, const unsigned color, glArchivItem_Font* font) :
-    text(text), color(color), font(font)
+    text(text), color_(color), font(font)
 {
 }
 
@@ -61,7 +61,7 @@ ctrlText::ctrlText(Window* parent,
 bool ctrlText::Draw_(void)
 {
     if(text.length())
-        font->Draw(GetX(), GetY(), text.c_str(), format, color);
+        font->Draw(GetX(), GetY(), text.c_str(), format, color_);
 
     return true;
 }

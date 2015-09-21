@@ -34,27 +34,27 @@ namespace gc{
 
     void SetFlag::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
     {
-        gwg.SetFlag(pt, playerid);
+        gwg.SetFlag(pt_, playerid);
     }
 
     void DestroyFlag::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
     {
-        gwg.DestroyFlag(pt);
+        gwg.DestroyFlag(pt_);
     }
 
     void BuildRoad::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
     {
-        gwg.BuildRoad(playerid, boat_road, pt, route);
+        gwg.BuildRoad(playerid, boat_road, pt_, route);
     }
 
     void DestroyRoad::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
     {
-        gwg.DestroyRoad(pt, start_dir);
+        gwg.DestroyRoad(pt_, start_dir);
     }
 
     void UpgradeRoad::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
     {
-        gwg.UpgradeRoad(pt, start_dir);
+        gwg.UpgradeRoad(pt_, start_dir);
     }
 
     void ChangeDistribution::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
@@ -69,12 +69,12 @@ namespace gc{
 
     void SetBuildingSite::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
     {
-        gwg.SetBuildingSite(bt, pt, playerid);
+        gwg.SetBuildingSite(bt, pt_, playerid);
     }
 
     void DestroyBuilding::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
     {
-        gwg.DestroyBuilding(pt, playerid);
+        gwg.DestroyBuilding(pt_, playerid);
     }
 
     void ChangeTransport::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
@@ -103,24 +103,24 @@ namespace gc{
 
     void CallGeologist::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
     {
-        if(gwg.GetNO(pt)->GetGOT() == GOT_FLAG)
-            player.CallFlagWorker(pt, JOB_GEOLOGIST);
+        if(gwg.GetNO(pt_)->GetGOT() == GOT_FLAG)
+            player.CallFlagWorker(pt_, JOB_GEOLOGIST);
     }
 
     void CallScout::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
     {
-        if(gwg.GetNO(pt)->GetGOT() == GOT_FLAG)
-            player.CallFlagWorker(pt, JOB_SCOUT);
+        if(gwg.GetNO(pt_)->GetGOT() == GOT_FLAG)
+            player.CallFlagWorker(pt_, JOB_SCOUT);
     }
 
     void Attack::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
     {
-        gwg.Attack(playerid, pt, soldiers_count, strong_soldiers);
+        gwg.Attack(playerid, pt_, soldiers_count, strong_soldiers);
     }
 
     void SeaAttack::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
     {
-        gwg.AttackViaSea(playerid, pt, soldiers_count, strong_soldiers);
+        gwg.AttackViaSea(playerid, pt_, soldiers_count, strong_soldiers);
     }
 
     void SwitchPlayer::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
@@ -131,55 +131,55 @@ namespace gc{
 
     void ToggleCoins::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
     {
-        if(gwg.GetNO(pt)->GetGOT() == GOT_NOB_MILITARY)
+        if(gwg.GetNO(pt_)->GetGOT() == GOT_NOB_MILITARY)
         {
-            if(gwg.GetSpecObj<nobMilitary>(pt)->GetPlayer() == playerid)
-                gwg.GetSpecObj<nobMilitary>(pt)->ToggleCoins();
+            if(gwg.GetSpecObj<nobMilitary>(pt_)->GetPlayer() == playerid)
+                gwg.GetSpecObj<nobMilitary>(pt_)->ToggleCoins();
         }
     }
 
     void SendSoldiersHome::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
     {
-        if(gwg.GetNO(pt)->GetGOT() == GOT_NOB_MILITARY)
+        if(gwg.GetNO(pt_)->GetGOT() == GOT_NOB_MILITARY)
         {
-            if(gwg.GetSpecObj<nobMilitary>(pt)->GetPlayer() == playerid)
-                gwg.GetSpecObj<nobMilitary>(pt)->SendSoldiersHome();
+            if(gwg.GetSpecObj<nobMilitary>(pt_)->GetPlayer() == playerid)
+                gwg.GetSpecObj<nobMilitary>(pt_)->SendSoldiersHome();
         }
     }
 
     void OrderNewSoldiers::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
     {
-        if(gwg.GetNO(pt)->GetGOT() == GOT_NOB_MILITARY)
+        if(gwg.GetNO(pt_)->GetGOT() == GOT_NOB_MILITARY)
         {
-            if(gwg.GetSpecObj<nobMilitary>(pt)->GetPlayer() == playerid)
-                gwg.GetSpecObj<nobMilitary>(pt)->OrderNewSoldiers();
+            if(gwg.GetSpecObj<nobMilitary>(pt_)->GetPlayer() == playerid)
+                gwg.GetSpecObj<nobMilitary>(pt_)->OrderNewSoldiers();
         }
     }
 
     void ToggleProduction::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
     {
-        if(gwg.GetNO(pt)->GetGOT() == GOT_NOB_USUAL || gwg.GetNO(pt)->GetGOT() == GOT_NOB_SHIPYARD)
-            gwg.GetSpecObj<nobUsual>(pt)->ToggleProduction();
+        if(gwg.GetNO(pt_)->GetGOT() == GOT_NOB_USUAL || gwg.GetNO(pt_)->GetGOT() == GOT_NOB_SHIPYARD)
+            gwg.GetSpecObj<nobUsual>(pt_)->ToggleProduction();
     }
 
     void ChangeInventorySetting::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
     {
-        if(gwg.GetNO(pt)->GetType() == NOP_BUILDING)
-            gwg.GetSpecObj<nobBaseWarehouse>(pt)
+        if(gwg.GetNO(pt_)->GetType() == NOP_BUILDING)
+            gwg.GetSpecObj<nobBaseWarehouse>(pt_)
             ->ChangeRealInventorySetting(category, state, type);
     }
 
     void ChangeAllInventorySettings::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
     {
-        if(gwg.GetNO(pt)->GetType() == NOP_BUILDING)
-            gwg.GetSpecObj<nobBaseWarehouse>(pt)
+        if(gwg.GetNO(pt_)->GetType() == NOP_BUILDING)
+            gwg.GetSpecObj<nobBaseWarehouse>(pt_)
             ->ChangeAllRealInventorySettings(category, state);
     }
 
     void ChangeReserve::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
     {
-        if(gwg.GetNO(pt)->GetType() == NOP_BUILDING)
-            gwg.GetSpecObj<nobBaseWarehouse>(pt)->SetRealReserve(rank, count);
+        if(gwg.GetNO(pt_)->GetType() == NOP_BUILDING)
+            gwg.GetSpecObj<nobBaseWarehouse>(pt_)->SetRealReserve(rank, count);
     }
 
     void Surrender::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
@@ -214,25 +214,25 @@ namespace gc{
 
     void NotifyAlliesOfLocation::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
     {
-	    player.NotifyAlliesOfLocation(pt, playerid);
+	    player.NotifyAlliesOfLocation(pt_, playerid);
     }
 
     void ToggleShipYardMode::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
     {
-        if(gwg.GetNO(pt)->GetGOT() == GOT_NOB_SHIPYARD)
-            gwg.GetSpecObj<nobShipYard>(pt)->ToggleMode();
+        if(gwg.GetNO(pt_)->GetGOT() == GOT_NOB_SHIPYARD)
+            gwg.GetSpecObj<nobShipYard>(pt_)->ToggleMode();
     }
 
     void StartExpedition::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
     {
-        if(gwg.GetNO(pt)->GetGOT() == GOT_NOB_HARBORBUILDING)
-            gwg.GetSpecObj<nobHarborBuilding>(pt)->StartExpedition();
+        if(gwg.GetNO(pt_)->GetGOT() == GOT_NOB_HARBORBUILDING)
+            gwg.GetSpecObj<nobHarborBuilding>(pt_)->StartExpedition();
     }
 
     void StartExplorationExpedition::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
     {
-        if(gwg.GetNO(pt)->GetGOT() == GOT_NOB_HARBORBUILDING)
-            gwg.GetSpecObj<nobHarborBuilding>(pt)->StartExplorationExpedition();
+        if(gwg.GetNO(pt_)->GetGOT() == GOT_NOB_HARBORBUILDING)
+            gwg.GetSpecObj<nobHarborBuilding>(pt_)->StartExplorationExpedition();
     }
 
     void ExpeditionCommand::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
@@ -252,7 +252,7 @@ namespace gc{
     /// Fuehrt das GameCommand aus
     void TradeOverLand::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
     {
-        noBase* nob = gwg.GetNO(pt);
+        noBase* nob = gwg.GetNO(pt_);
         if(nob->GetGOT() == GOT_NOB_HARBORBUILDING || nob->GetGOT() == GOT_NOB_HQ || nob->GetGOT() == GOT_NOB_STOREHOUSE)
             player.Trade(static_cast<nobBaseWarehouse*>(nob), gt, job, count);
     }

@@ -46,7 +46,7 @@ ctrlMinimap::ctrlMinimap( Window* parent,
                           const unsigned short padding_y,
                           const unsigned short map_width,
                           const unsigned short map_height)
-    : Window(x, y, id, parent, width, height), padding_x(padding_x), padding_y(padding_y), map_width(map_width), map_height(map_height)
+    : Window(x, y, id, parent, width, height), padding_x(padding_x), padding_y(padding_y), mapWidth_(map_width), mapHeight_(map_height)
 {
     SetDisplaySize(width, height, map_width, map_height);
 }
@@ -59,7 +59,7 @@ ctrlMinimap::ctrlMinimap( Window* parent,
  */
 void ctrlMinimap::Resize_(unsigned short width, unsigned short height)
 {
-    SetDisplaySize(width, height, map_width, map_height);
+    SetDisplaySize(width, height, mapWidth_, mapHeight_);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -73,8 +73,8 @@ void ctrlMinimap::SetDisplaySize(const unsigned short width, const unsigned shor
     this->width_ = width;
     this->height_ = height;
 
-    this->map_width = map_width;
-    this->map_height = map_height;
+    this->mapWidth_ = map_width;
+    this->mapHeight_ = map_height;
 
     unsigned short scaled_map_width = static_cast<unsigned short>(map_width * MINIMAP_SCALE_X);
     double x_scale = double(scaled_map_width) / double(width - padding_x * 2);

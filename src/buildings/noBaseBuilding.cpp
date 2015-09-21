@@ -45,7 +45,7 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 noBaseBuilding::noBaseBuilding(const NodalObjectType nop, const BuildingType type, const MapPoint pos, const unsigned char player)
-    : noRoadNode(nop, pos, player), type(type), nation(GAMECLIENT.GetPlayer(player)->nation), door_point_x(1000000), door_point_y(DOOR_CONSTS[GAMECLIENT.GetPlayer(player)->nation][type])
+    : noRoadNode(nop, pos, player), type_(type), nation(GAMECLIENT.GetPlayer(player)->nation), door_point_x(1000000), door_point_y(DOOR_CONSTS[GAMECLIENT.GetPlayer(player)->nation][type])
 {
 
     // Evtl Flagge setzen, wenn noch keine da ist
@@ -111,7 +111,7 @@ void noBaseBuilding::Destroy_noBaseBuilding()
 {
     DestroyAllRoads();
     //notify the ai about this
-    GAMECLIENT.SendAIEvent(new AIEvent::Building(AIEvent::BuildingDestroyed, pos, type), player);
+    GAMECLIENT.SendAIEvent(new AIEvent::Building(AIEvent::BuildingDestroyed, pos, type_), player);
 
     if(gwg->GetGameInterface())
         gwg->GetGameInterface()->GI_UpdateMinimap(pos);
@@ -146,8 +146,8 @@ void noBaseBuilding::Destroy_noBaseBuilding()
             const unsigned int percent = 10 * percents[percent_index];
 
             // zurückgaben berechnen (abgerundet)
-            unsigned int boards = (percent * BUILDING_COSTS[nation][type].boards) / 1000;
-            unsigned int stones = (percent * BUILDING_COSTS[nation][type].stones) / 1000;
+            unsigned int boards = (percent * BUILDING_COSTS[nation][type_].boards) / 1000;
+            unsigned int stones = (percent * BUILDING_COSTS[nation][type_].stones) / 1000;
 
             GoodType goods[2] = {GD_BOARDS, GD_STONES};
             bool which = 0;
@@ -186,14 +186,14 @@ void noBaseBuilding::Serialize_noBaseBuilding(SerializedGameData* sgd) const
 {
     Serialize_noRoadNode(sgd);
 
-    sgd->PushUnsignedChar(static_cast<unsigned char>(type));
+    sgd->PushUnsignedChar(static_cast<unsigned char>(type_));
     sgd->PushUnsignedChar(nation);
     sgd->PushSignedInt(door_point_x);
     sgd->PushSignedInt(door_point_y);
 }
 
 noBaseBuilding::noBaseBuilding(SerializedGameData* sgd, const unsigned obj_id) : noRoadNode(sgd, obj_id),
-    type(BuildingType(sgd->PopUnsignedChar())),
+    type_(BuildingType(sgd->PopUnsignedChar())),
     nation(Nation(sgd->PopUnsignedChar())),
     door_point_x(sgd->PopSignedInt()),
     door_point_y(sgd->PopSignedInt())
@@ -232,7 +232,7 @@ short noBaseBuilding::GetDoorPointX()
 
 
 
-        door_point_x = (DOOR_CONSTS[GAMECLIENT.GetPlayer(player)->nation][type] * (x1 - x2)) / (y1 - y2);
+        door_point_x = (DOOR_CONSTS[GAMECLIENT.GetPlayer(player)->nation][type_] * (x1 - x2)) / (y1 - y2);
     }
 
     return (short)(door_point_x & 0xFFFF);
@@ -303,45 +303,45 @@ noBase::BlockingManner noBaseBuilding::GetBM() const
 /// Gibt ein Bild zurück für das normale Gebäude
 glArchivItem_Bitmap* noBaseBuilding::GetBuildingImage() const
 {
-    if (type == BLD_CHARBURNER)
+    if (type_ == BLD_CHARBURNER)
         return LOADER.GetImageN("charburner", nation * 8 + ((gwg->GetLandscapeType() == LT_WINTERWORLD) ? 6 : 1));
     else
-        return LOADER.GetNationImageN(nation, 250 + 5 * type);
+        return LOADER.GetNationImageN(nation, 250 + 5 * type_);
 }
 
 /// Gibt ein Bild zurück für das Gebäudegerüst
 glArchivItem_Bitmap* noBaseBuilding::GetBuildingSkeletonImage() const
 {
-    if (type == BLD_CHARBURNER)
+    if (type_ == BLD_CHARBURNER)
         return LOADER.GetImageN("charburner", nation * 8 + 3);
     else
-        return LOADER.GetNationImageN(nation, 250 + 5 * type + 2);
+        return LOADER.GetNationImageN(nation, 250 + 5 * type_ + 2);
 }
 
 /// Gibt ein Bild zurück für das normale Gebäude
 glArchivItem_Bitmap* noBaseBuilding::GetBuildingImageShadow() const
 {
-    if (type == BLD_CHARBURNER)
+    if (type_ == BLD_CHARBURNER)
         return LOADER.GetImageN("charburner", nation * 8 + 2);
     else
-        return LOADER.GetNationImageN(nation, 250 + 5 * type + 1);
+        return LOADER.GetNationImageN(nation, 250 + 5 * type_ + 1);
 }
 
 /// Gibt ein Bild zurück für das Gebäudegerüst
 glArchivItem_Bitmap* noBaseBuilding::GetBuildingSkeletonImageShadow() const
 {
-    if (type == BLD_CHARBURNER)
+    if (type_ == BLD_CHARBURNER)
         return LOADER.GetImageN("charburner", nation * 8 + 4);
     else
-        return LOADER.GetNationImageN(nation, 250 + 5 * type + 3);
+        return LOADER.GetNationImageN(nation, 250 + 5 * type_ + 3);
 }
 
 /// Gibt ein Bild zurück für die Tür des Gebäudes
 glArchivItem_Bitmap* noBaseBuilding::GetDoorImage() const
 {
-    if (type == BLD_CHARBURNER)
+    if (type_ == BLD_CHARBURNER)
         return LOADER.GetImageN("charburner", nation * 8 + ((gwg->GetLandscapeType() == LT_WINTERWORLD) ? 7 : 5));
     else
-        return LOADER.GetNationImageN(nation, 250 + 5 * type + 4);
+        return LOADER.GetNationImageN(nation, 250 + 5 * type_ + 4);
 }
 

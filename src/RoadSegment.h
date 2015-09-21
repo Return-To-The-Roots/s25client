@@ -20,6 +20,7 @@
 #pragma once
 
 #include "GameObject.h"
+#include <boost/array.hpp>
 #include <vector>
 #include <cassert>
 
@@ -67,20 +68,20 @@ class RoadSegment : public GameObject
         /// setzt die Route nr auf r
         inline void SetRoute(unsigned short nr, unsigned char r) { route[nr] = r; }
         /// gibt den Carrier nr zurück
-        inline nofCarrier* getCarrier(unsigned char nr) const { return carrier[nr]; }
+        inline nofCarrier* getCarrier(unsigned char nr) const { return carriers_[nr]; }
         /// setzt den Carrier nr auf c
-        inline void setCarrier(unsigned char nr, nofCarrier* c) { carrier[nr] = c; }
+        inline void setCarrier(unsigned char nr, nofCarrier* c) { carriers_[nr] = c; }
         /// haben wir den Carrier "nr"?
-        inline bool hasCarrier(unsigned char nr) const { return (carrier[nr] != NULL); }
+        inline bool hasCarrier(unsigned char nr) const { return (carriers_[nr] != NULL); }
         /// Braucht die Straße einen Esel? Nur wenn sie auch einen Träger schon hat!
-        inline bool NeedDonkey() const { return (rt == RT_DONKEY && carrier[0] && !carrier[1]); }
+        inline bool NeedDonkey() const { return (rt == RT_DONKEY && carriers_[0] && !carriers_[1]); }
         /// Hat einen Esel als Arbeiter dazubekommen.
-        inline void GotDonkey(nofCarrier* donkey) { assert(!carrier[1]); carrier[1] = donkey; }
+        inline void GotDonkey(nofCarrier* donkey) { assert(!carriers_[1]); carriers_[1] = donkey; }
 
         /// haben wir überhaupt Carrier?
         inline bool isOccupied() const
         {
-            return((carrier[0]) || (carrier[1]));
+            return((carriers_[0]) || (carriers_[1]));
         }
 
         inline unsigned char GetDir(const bool dir, const unsigned int id) const
@@ -124,7 +125,7 @@ class RoadSegment : public GameObject
         /// Beschreibung des Weges, ist length groß und liegt als Beschreibung der einzelnen Richtungen vor (von f1 zu f2)
         std::vector<unsigned char> route;
         /// Träger (und ggf. Esel), der auf diesem Weg arbeitet
-        nofCarrier* carrier[2];
+        boost::array<nofCarrier*, 2> carriers_;
 };
 
 #endif // !ROADSEGMENT_H_INCLUDED

@@ -74,7 +74,7 @@ class nobBaseWarehouse : public nobBaseMilitary
         unsigned reserve_soldiers_claimed_real[5]; /// geforderte Soldaten zur Reserve - real
 
         /// Waren bzw. Menschenanzahl im Gebäude, real_goods ist die tatsächliche Anzahl und wird zum berechnen verwendet, goods ist nur die, die auch angezeigt wird
-        Goods goods, real_goods;
+        Goods goods_, real_goods;
         InventorySettings inventory_settings_visual; ///< die Inventar-Einstellungen, visuell
         InventorySettings inventory_settings_real; ///< die Inventar-Einstellungen, real
 
@@ -135,8 +135,8 @@ class nobBaseWarehouse : public nobBaseMilitary
         /// Gibt Anzahl der Waren bzw. Figuren zurück
         unsigned GetRealWaresCount(GoodType type) const { return real_goods.goods[type]; }
         unsigned GetRealFiguresCount(Job type) const { return real_goods.people[type]; }
-        unsigned GetVisualWaresCount(GoodType type) const { return goods.goods[type]; }
-        unsigned GetVisualFiguresCount(Job type) const { return goods.people[type]; }
+        unsigned GetVisualWaresCount(GoodType type) const { return goods_.goods[type]; }
+        unsigned GetVisualFiguresCount(Job type) const { return goods_.people[type]; }
 
 
         /// Verändert Ein/Auslagerungseinstellungen (visuell)

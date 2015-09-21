@@ -63,11 +63,11 @@ class GameClient : public Singleton<GameClient>, public GameMessageInterface, pu
         bool IsSavegame() const { return mapinfo.map_type == MAPTYPE_SAVEGAME; }
         std::string GetGameName() const { return clientconfig.gamename; }
 
-        inline unsigned char GetPlayerID() const { return playerid; }
+        inline unsigned char GetPlayerID() const { return playerId_; }
         inline unsigned GetPlayerCount() const { return players.getCount(); }
         /// Liefert einen Player zurück
         inline GameClientPlayer* GetPlayer(const unsigned int id) { return players.getElement(id); }
-        inline GameClientPlayer* GetLocalPlayer(void) { return GetPlayer(playerid); }
+        inline GameClientPlayer* GetLocalPlayer(void) { return GetPlayer(playerId_); }
         /// Erzeugt einen KI-Player, der mit den Daten vom GameClient gefüttert werden muss (zusätzlich noch mit den GameServer)
         AIBase* CreateAIPlayer(const unsigned playerid);
 
@@ -127,7 +127,7 @@ class GameClient : public Singleton<GameClient>, public GameMessageInterface, pu
         /// Prüft, ob FoW im Replaymodus ausgeschalten ist
         bool IsReplayFOWDisabled() const { return replayinfo.all_visible; }
         /// Gibt Replay-Ende (GF) zurück
-        unsigned GetLastReplayGF() const { return replayinfo.replay.last_gf; }
+        unsigned GetLastReplayGF() const { return replayinfo.replay.lastGF_; }
         /// Wandelt eine GF-Angabe in eine Zeitangabe um (HH:MM:SS oder MM:SS wenn Stunden = 0)
         std::string FormatGFTime(const unsigned gf) const;
 
@@ -277,7 +277,7 @@ class GameClient : public Singleton<GameClient>, public GameMessageInterface, pu
         /// Spieler
         GameClientPlayerList players;
         /// Spieler-ID dieses Clients
-        unsigned char playerid;
+        unsigned char playerId_;
         /// Globale Spieleinstellungen
         GlobalGameSettings ggs;
 
@@ -362,7 +362,7 @@ class GameClient : public Singleton<GameClient>, public GameMessageInterface, pu
         AIBase *human_ai;
 
         /// GameCommands, die vom Client noch an den Server gesendet werden müssen
-        std::vector<gc::GameCommandPtr> gcs;
+        std::vector<gc::GameCommandPtr> gameCommands_;
 
         struct ReplayInfo
         {

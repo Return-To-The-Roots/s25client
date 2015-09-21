@@ -39,7 +39,7 @@ ctrlMultiSelectGroup::ctrlMultiSelectGroup(Window* parent,
         int select_type,
         bool scale)
     : ctrlGroup(parent, id, scale),
-      selection(std::set<unsigned short>()), select_type(select_type)
+      selectedItems_(std::set<unsigned short>()), select_type(select_type)
 {
 }
 
@@ -74,7 +74,7 @@ void ctrlMultiSelectGroup::AddSelection(unsigned short selection, bool notify)
         case SHOW:       button->SetVisible(false);     break;
     }
 
-    this->selection.insert(selection);
+    this->selectedItems_.insert(selection);
 
     if(notify && parent_)
         parent_->Msg_OptionGroupChange(GetID(), selection);
@@ -98,7 +98,7 @@ void ctrlMultiSelectGroup::RemoveSelection(unsigned short selection, bool notify
         case SHOW:       button->SetVisible(true);        break;
     }
 
-    this->selection.erase(selection);
+    this->selectedItems_.erase(selection);
 
     if(notify && parent_)
         parent_->Msg_OptionGroupChange(GetID(), selection);
@@ -121,7 +121,7 @@ void ctrlMultiSelectGroup::ToggleSelection(unsigned short selection, bool notify
 
 bool ctrlMultiSelectGroup::IsSelected(unsigned short selection) const
 {
-    return (this->selection.count(selection) == 1);
+    return (this->selectedItems_.count(selection) == 1);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

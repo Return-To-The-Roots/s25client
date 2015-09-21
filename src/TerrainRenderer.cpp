@@ -113,7 +113,10 @@ void TerrainRenderer::GenerateVertices(const GameWorldViewer& gwv)
 /// erzeugt Vertex
 void TerrainRenderer::UpdateVertexPos(const MapPoint pt, const GameWorldViewer& gwv)
 {
-    GetVertex(pt).pos.pos.x = float(pt.x * TR_W + ( (pt.y & 1) ? TR_W / 2 : 0) );
+    int x = pt.x * TR_W;
+    if(pt.y & 1)
+        x += TR_W / 2;
+    GetVertex(pt).pos.pos.x = float(x);
     GetVertex(pt).pos.pos.y = float(pt.y * TR_H - HEIGHT_FACTOR * gwv.GetNode(pt).altitude + HEIGHT_FACTOR * 0x0A );
 }
 
@@ -877,8 +880,7 @@ MapPoint TerrainRenderer::ConvertCoords(const PointI pt, Point<int>* offset) con
 	    	offset->y = (pt.y / height) * (TR_H * height);
 		ptOut.y = static_cast<MapCoord>(pt.y % height);
 	}
-    assert(ptOut.x >= 0 && ptOut.x < width);
-    assert(ptOut.y >= 0 && ptOut.y < height);
+    assert(ptOut.x < width && ptOut.y < height);
     return ptOut;
 }
 

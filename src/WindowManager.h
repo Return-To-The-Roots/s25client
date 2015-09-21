@@ -95,14 +95,14 @@ class WindowManager : public Singleton<WindowManager>, public VideoDriverLoaderI
         void Switch(void);
 
     private:
-        Desktop* desktop;        ///< aktueller Desktop
+        Desktop* curDesktop;        ///< aktueller Desktop
         Desktop* nextdesktop;    ///< der nächste Desktop
         void* nextdesktop_data;  ///< Daten für den nächsten Desktop, welche dann MSG_SWITCH übergeben werden
         bool disable_mouse;      ///< Mausdeaktivator, zum beheben des "Switch-Anschließend-Drück-Bug"s
 
         IgwList windows; ///< Fensterliste
-        const MouseCoords* mc;
-        std::string tooltip;
+        const MouseCoords* mouseCoords;
+        std::string curTooltip;
         unsigned short screenWidth;  /// letzte gültige Bildschirm-/Fensterbreite
         unsigned short screenHeight; /// letzte gültige Bildschirm-/Fensterhöhe
 

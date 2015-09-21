@@ -78,14 +78,14 @@ bool glSmartTexturePackerNode::insert(glSmartBitmap* b, unsigned char* buffer, u
 
             b->drawTo(buffer, gw, gh, current->x, current->y);
 
-            b->tmp[0].tx = b->tmp[1].tx = (float) current->x / (float) gw;
-            b->tmp[2].tx = b->tmp[3].tx = b->isPlayer() ? (float) (current->x + current->w / 2) / (float) gw : (float) (current->x + current->w) / (float) gw;
+            b->tmpTexData[0].tx = b->tmpTexData[1].tx = (float) current->x / (float) gw;
+            b->tmpTexData[2].tx = b->tmpTexData[3].tx = b->isPlayer() ? (float) (current->x + current->w / 2) / (float) gw : (float) (current->x + current->w) / (float) gw;
 
-            b->tmp[0].ty = b->tmp[3].ty = b->tmp[4].ty = b->tmp[7].ty = (float) current->y / (float) gh;
-            b->tmp[1].ty = b->tmp[2].ty = b->tmp[5].ty = b->tmp[6].ty = (float) (current->y + current->h) / (float) gh;
+            b->tmpTexData[0].ty = b->tmpTexData[3].ty = b->tmpTexData[4].ty = b->tmpTexData[7].ty = (float) current->y / (float) gh;
+            b->tmpTexData[1].ty = b->tmpTexData[2].ty = b->tmpTexData[5].ty = b->tmpTexData[6].ty = (float) (current->y + current->h) / (float) gh;
 
-            b->tmp[4].tx = b->tmp[5].tx = (float) (current->x + current->w / 2) / (float) gw;
-            b->tmp[6].tx = b->tmp[7].tx = (float) (current->x + current->w) / (float) gw;
+            b->tmpTexData[4].tx = b->tmpTexData[5].tx = (float) (current->x + current->w / 2) / (float) gw;
+            b->tmpTexData[6].tx = b->tmpTexData[7].tx = (float) (current->x + current->w) / (float) gw;
 
             return(true);
         }
@@ -558,14 +558,14 @@ void glSmartBitmap::generateTexture()
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, stride, h, 0, GL_BGRA, GL_UNSIGNED_BYTE, &buffer.front());
 
-    tmp[0].tx = tmp[1].tx = 0.0f;
-    tmp[2].tx = tmp[3].tx = hasPlayer ? 0.5f : 1.0f;
+    tmpTexData[0].tx = tmpTexData[1].tx = 0.0f;
+    tmpTexData[2].tx = tmpTexData[3].tx = hasPlayer ? 0.5f : 1.0f;
 
-    tmp[0].ty = tmp[3].ty = tmp[4].ty = tmp[7].ty = 0.0f;
-    tmp[1].ty = tmp[2].ty = tmp[5].ty = tmp[6].ty = 1.0f;
+    tmpTexData[0].ty = tmpTexData[3].ty = tmpTexData[4].ty = tmpTexData[7].ty = 0.0f;
+    tmpTexData[1].ty = tmpTexData[2].ty = tmpTexData[5].ty = tmpTexData[6].ty = 1.0f;
 
-    tmp[4].tx = tmp[5].tx = 0.5f;
-    tmp[6].tx = tmp[7].tx = 1.0f;
+    tmpTexData[4].tx = tmpTexData[5].tx = 0.5f;
+    tmpTexData[6].tx = tmpTexData[7].tx = 1.0f;
 }
 
 void glSmartBitmap::draw(int x, int y, unsigned color, unsigned player_color)
@@ -580,37 +580,37 @@ void glSmartBitmap::draw(int x, int y, unsigned color, unsigned player_color)
         }
     }
 
-    tmp[0].x = tmp[1].x = GLfloat(x - nx);
-    tmp[2].x = tmp[3].x = GLfloat(x - nx + w);
+    tmpTexData[0].x = tmpTexData[1].x = GLfloat(x - nx);
+    tmpTexData[2].x = tmpTexData[3].x = GLfloat(x - nx + w);
 
-    tmp[0].y = tmp[3].y = GLfloat(y - ny);
-    tmp[1].y = tmp[2].y = GLfloat(y - ny + h);
+    tmpTexData[0].y = tmpTexData[3].y = GLfloat(y - ny);
+    tmpTexData[1].y = tmpTexData[2].y = GLfloat(y - ny + h);
 
-    tmp[0].r = tmp[1].r = tmp[2].r = tmp[3].r = GetRed(color);
-    tmp[0].g = tmp[1].g = tmp[2].g = tmp[3].g = GetGreen(color);
-    tmp[0].b = tmp[1].b = tmp[2].b = tmp[3].b = GetBlue(color);
-    tmp[0].a = tmp[1].a = tmp[2].a = tmp[3].a = GetAlpha(color);
+    tmpTexData[0].r = tmpTexData[1].r = tmpTexData[2].r = tmpTexData[3].r = GetRed(color);
+    tmpTexData[0].g = tmpTexData[1].g = tmpTexData[2].g = tmpTexData[3].g = GetGreen(color);
+    tmpTexData[0].b = tmpTexData[1].b = tmpTexData[2].b = tmpTexData[3].b = GetBlue(color);
+    tmpTexData[0].a = tmpTexData[1].a = tmpTexData[2].a = tmpTexData[3].a = GetAlpha(color);
 
     if ((player_color != 0x00000000) && hasPlayer)
     {
-        tmp[4].x = tmp[5].x = tmp[0].x;
-        tmp[6].x = tmp[7].x = tmp[2].x;
-        tmp[4].y = tmp[7].y = tmp[0].y;
-        tmp[5].y = tmp[6].y = tmp[1].y;
+        tmpTexData[4].x = tmpTexData[5].x = tmpTexData[0].x;
+        tmpTexData[6].x = tmpTexData[7].x = tmpTexData[2].x;
+        tmpTexData[4].y = tmpTexData[7].y = tmpTexData[0].y;
+        tmpTexData[5].y = tmpTexData[6].y = tmpTexData[1].y;
 
-        tmp[4].r = tmp[5].r = tmp[6].r = tmp[7].r = GetRed(player_color);
-        tmp[4].g = tmp[5].g = tmp[6].g = tmp[7].g = GetGreen(player_color);
-        tmp[4].b = tmp[5].b = tmp[6].b = tmp[7].b = GetBlue(player_color);
-        tmp[4].a = tmp[5].a = tmp[6].a = tmp[7].a = GetAlpha(player_color);
+        tmpTexData[4].r = tmpTexData[5].r = tmpTexData[6].r = tmpTexData[7].r = GetRed(player_color);
+        tmpTexData[4].g = tmpTexData[5].g = tmpTexData[6].g = tmpTexData[7].g = GetGreen(player_color);
+        tmpTexData[4].b = tmpTexData[5].b = tmpTexData[6].b = tmpTexData[7].b = GetBlue(player_color);
+        tmpTexData[4].a = tmpTexData[5].a = tmpTexData[6].a = tmpTexData[7].a = GetAlpha(player_color);
 
-        glInterleavedArrays(GL_T2F_C4UB_V3F, 0, tmp);
+        glInterleavedArrays(GL_T2F_C4UB_V3F, 0, tmpTexData);
         VIDEODRIVER.BindTexture(texture);
         glDrawArrays(GL_QUADS, 0, 8);
 
         return;
     }
 
-    glInterleavedArrays(GL_T2F_C4UB_V3F, 0, tmp);
+    glInterleavedArrays(GL_T2F_C4UB_V3F, 0, tmpTexData);
     VIDEODRIVER.BindTexture(texture);
     glDrawArrays(GL_QUADS, 0, 4);
 }
@@ -633,49 +633,49 @@ void glSmartBitmap::drawPercent(int x, int y, unsigned percent, unsigned color, 
         return;
     }
 
-    tmp[0].x = tmp[1].x = GLfloat(x - nx);
-    tmp[2].x = tmp[3].x = GLfloat(x - nx + w);
+    tmpTexData[0].x = tmpTexData[1].x = GLfloat(x - nx);
+    tmpTexData[2].x = tmpTexData[3].x = GLfloat(x - nx + w);
 
-    tmp[0].y = tmp[3].y = GLfloat(y - ny + h - h * (float) percent / 100.0f);
-    tmp[1].y = tmp[2].y = GLfloat(y - ny + h);
+    tmpTexData[0].y = tmpTexData[3].y = GLfloat(y - ny + h - h * (float) percent / 100.0f);
+    tmpTexData[1].y = tmpTexData[2].y = GLfloat(y - ny + h);
 
-    tmp[0].r = tmp[1].r = tmp[2].r = tmp[3].r = GetRed(color);
-    tmp[0].g = tmp[1].g = tmp[2].g = tmp[3].g = GetGreen(color);
-    tmp[0].b = tmp[1].b = tmp[2].b = tmp[3].b = GetBlue(color);
-    tmp[0].a = tmp[1].a = tmp[2].a = tmp[3].a = GetAlpha(color);
+    tmpTexData[0].r = tmpTexData[1].r = tmpTexData[2].r = tmpTexData[3].r = GetRed(color);
+    tmpTexData[0].g = tmpTexData[1].g = tmpTexData[2].g = tmpTexData[3].g = GetGreen(color);
+    tmpTexData[0].b = tmpTexData[1].b = tmpTexData[2].b = tmpTexData[3].b = GetBlue(color);
+    tmpTexData[0].a = tmpTexData[1].a = tmpTexData[2].a = tmpTexData[3].a = GetAlpha(color);
 
-    float cache = tmp[0].ty;
+    float cache = tmpTexData[0].ty;
 
-    tmp[0].ty = tmp[3].ty = tmp[1].ty - (tmp[1].ty - tmp[0].ty) * (float) percent / 100.0f;
+    tmpTexData[0].ty = tmpTexData[3].ty = tmpTexData[1].ty - (tmpTexData[1].ty - tmpTexData[0].ty) * (float) percent / 100.0f;
 
     if ((player_color != 0x00000000) && hasPlayer)
     {
-        tmp[4].x = tmp[5].x = tmp[0].x;
-        tmp[6].x = tmp[7].x = tmp[2].x;
-        tmp[4].y = tmp[7].y = tmp[0].y;
-        tmp[5].y = tmp[6].y = tmp[1].y;
+        tmpTexData[4].x = tmpTexData[5].x = tmpTexData[0].x;
+        tmpTexData[6].x = tmpTexData[7].x = tmpTexData[2].x;
+        tmpTexData[4].y = tmpTexData[7].y = tmpTexData[0].y;
+        tmpTexData[5].y = tmpTexData[6].y = tmpTexData[1].y;
 
-        tmp[4].r = tmp[5].r = tmp[6].r = tmp[7].r = GetRed(player_color);
-        tmp[4].g = tmp[5].g = tmp[6].g = tmp[7].g = GetGreen(player_color);
-        tmp[4].b = tmp[5].b = tmp[6].b = tmp[7].b = GetBlue(player_color);
-        tmp[4].a = tmp[5].a = tmp[6].a = tmp[7].a = GetAlpha(player_color);
+        tmpTexData[4].r = tmpTexData[5].r = tmpTexData[6].r = tmpTexData[7].r = GetRed(player_color);
+        tmpTexData[4].g = tmpTexData[5].g = tmpTexData[6].g = tmpTexData[7].g = GetGreen(player_color);
+        tmpTexData[4].b = tmpTexData[5].b = tmpTexData[6].b = tmpTexData[7].b = GetBlue(player_color);
+        tmpTexData[4].a = tmpTexData[5].a = tmpTexData[6].a = tmpTexData[7].a = GetAlpha(player_color);
 
-        tmp[4].ty = tmp[7].ty = tmp[3].ty;
+        tmpTexData[4].ty = tmpTexData[7].ty = tmpTexData[3].ty;
 
-        glInterleavedArrays(GL_T2F_C4UB_V3F, 0, tmp);
+        glInterleavedArrays(GL_T2F_C4UB_V3F, 0, tmpTexData);
         VIDEODRIVER.BindTexture(texture);
         glDrawArrays(GL_QUADS, 0, 8);
 
-        tmp[0].ty = tmp[3].ty = tmp[4].ty = tmp[7].ty = cache;
+        tmpTexData[0].ty = tmpTexData[3].ty = tmpTexData[4].ty = tmpTexData[7].ty = cache;
 
         return;
     }
 
-    glInterleavedArrays(GL_T2F_C4UB_V3F, 0, tmp);
+    glInterleavedArrays(GL_T2F_C4UB_V3F, 0, tmpTexData);
     VIDEODRIVER.BindTexture(texture);
     glDrawArrays(GL_QUADS, 0, 4);
 
-    tmp[0].ty = tmp[3].ty = cache;
+    tmpTexData[0].ty = tmpTexData[3].ty = cache;
 
 }
 

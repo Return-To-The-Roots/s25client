@@ -386,8 +386,8 @@ class GameMessage_Player_List : public GameMessage
             LOG.write("<<< NMS_PLAYER_LIST(%d)\n", gpl.getCount());
             for(unsigned int i = 0; i < gpl.getCount(); ++i)
             {
-                const GamePlayerInfo* player = gpl.getElement(i);
-                LOG.write("    %d: %s %d %d %d %d %d %d %s\n", i, player->name.c_str(), player->ps, player->rating, player->ping, player->nation, player->color, player->team, (player->ready ? "true" : "false") );
+                const GamePlayerInfo* playerInfo = gpl.getElement(i);
+                LOG.write("    %d: %s %d %d %d %d %d %d %s\n", i, playerInfo->name.c_str(), playerInfo->ps, playerInfo->rating, playerInfo->ping, playerInfo->nation, playerInfo->color, playerInfo->team, (playerInfo->ready ? "true" : "false") );
             }
             GetInterface(callback)->OnNMSPlayerList(*this);
         }

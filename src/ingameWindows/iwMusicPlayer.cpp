@@ -114,9 +114,11 @@ iwMusicPlayer::~iwMusicPlayer()
         if(str == "S2_Standard")
             return;
 
-        if(!pl.SaveAs(GetFullPlaylistPath(str), true))
-            // Fehler, konnte nicht gespeichert werden
-            WINDOWMANAGER.Show(new iwMsgbox(_("Error"), _("The specified file couldn't be saved!"), this, MSB_OK, MSB_EXCLAMATIONRED));
+        try{
+            if(!pl.SaveAs(GetFullPlaylistPath(str), true))
+                // Fehler, konnte nicht gespeichert werden
+                WINDOWMANAGER.Show(new iwMsgbox(_("Error"), _("The specified file couldn't be saved!"), this, MSB_OK, MSB_EXCLAMATIONRED));
+        }catch(std::exception&){}
     }
 
 

@@ -206,7 +206,7 @@ nobBaseWarehouse* AIInterface::FindWarehouse(const noRoadNode* const start, bool
 	//  unsigned char path = 0xFF, tpath = 0xFF;
     unsigned tlength = 0xFFFFFFFF, best_length = 0xFFFFFFFF;
 
-	for(std::list<nobBaseWarehouse*>::const_iterator w = player.GetStorehouses().begin(); w != player.GetStorehouses().end(); ++w)
+	for(std::list<nobBaseWarehouse*>::const_iterator w = player_.GetStorehouses().begin(); w != player_.GetStorehouses().end(); ++w)
     {
         // Lagerhaus geeignet?
         if(!IsWarehouseGood(*w, param))
@@ -229,10 +229,10 @@ nobBaseWarehouse* AIInterface::FindWarehouse(const noRoadNode* const start, bool
 bool AIInterface::CalcBQSumDifference(const MapPoint pt, const MapPoint t)
 {
     unsigned s1 = 0, s2 = 0;
-    if(gwb.CalcBQ(pt, playerID) != BQ_DANGER)
-        s1 += gwb.CalcBQ(pt, playerID);
-    if(gwb.CalcBQ(t, playerID) != BQ_DANGER)
-        s2 += gwb.CalcBQ(t, playerID);
+    if(gwb.CalcBQ(pt, playerID_) != BQ_DANGER)
+        s1 += gwb.CalcBQ(pt, playerID_);
+    if(gwb.CalcBQ(t, playerID_) != BQ_DANGER)
+        s2 += gwb.CalcBQ(t, playerID_);
     //LOG.lprintf("AIInterface::bqdiff - s1 %i,%i,%i s2 %i,%i,%i\n", pt,s1,tx,ty,s2);
     return s2 < s1;
 }
@@ -244,15 +244,15 @@ bool AIInterface::FindPathOnRoads(const noRoadNode* start, const noRoadNode* tar
 
 const nobHQ* AIInterface::GetHeadquarter() const
 {
-    return gwb.GetSpecObj<nobHQ>(player.hqPos);
+    return gwb.GetSpecObj<nobHQ>(player_.hqPos);
 }
 
 bool AIInterface::IsExplorationDirectionPossible(const MapPoint pt, const nobHarborBuilding* originHarbor, Direction direction) const
 {
-    return gwb.GetNextFreeHarborPoint(pt, originHarbor->GetHarborPosID(), direction.toUInt(), playerID) > 0;
+    return gwb.GetNextFreeHarborPoint(pt, originHarbor->GetHarborPosID(), direction.toUInt(), playerID_) > 0;
 }
 
 bool AIInterface::IsExplorationDirectionPossible(const MapPoint pt, unsigned int originHarborID, Direction direction) const
 {
-    return gwb.GetNextFreeHarborPoint(pt, originHarborID, direction.toUInt(), playerID) > 0;
+    return gwb.GetNextFreeHarborPoint(pt, originHarborID, direction.toUInt(), playerID_) > 0;
 }

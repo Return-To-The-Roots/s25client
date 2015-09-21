@@ -45,12 +45,9 @@ Minimap::Minimap(const unsigned short map_width, const unsigned short map_height
  *
  *  @author OLiver
  */
-void Minimap::CreateMapTexture(const void* param)
+void Minimap::CreateMapTexture()
 {
     map.DeleteTexture();
-
-    if(!param)
-        return;
 
     /// Buffer für die Daten erzeugen
     unsigned char* buffer = new unsigned char[map_width * 2 * map_height * 4];
@@ -62,7 +59,7 @@ void Minimap::CreateMapTexture(const void* param)
             // Die 2. Terraindreiecke durchgehen
             for(unsigned t = 0; t < 2; ++t)
             {
-                unsigned color = CalcPixelColor(param, MapPoint(x, y), t);
+                unsigned color = CalcPixelColor(MapPoint(x, y), t);
 
                 unsigned pos  = y * map_width * 4 * 2 + (x * 4 * 2 + t * 4 + (y & 1) * 4) % (map_width * 4 * 2);
                 buffer[pos + 2] = GetRed(color);
@@ -130,24 +127,16 @@ unsigned Minimap::VaryBrightness(const unsigned color, const int range) const
  *
  *  @author OLiver
  */
-PreviewMinimap::PreviewMinimap(glArchivItem_Map* s2map)
-{
-    SetMap(s2map);
-}
-
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *  @author OLiver
- */
-void Minimap::SetMap(glArchivItem_Map* s2map)
+PreviewMinimap::PreviewMinimap(const glArchivItem_Map* const s2map): s2Map(s2map)
 {
     if(s2map)
-    {
-        map_width = s2map->getHeader().getWidth();
-        map_height = s2map->getHeader().getHeight();
-        CreateMapTexture(s2map);
-    }
+        SetMap(*s2map);
+}
+
+void PreviewMinimap::SetMap(const glArchivItem_Map& s2map)
+{
+    s2Map = &s2map;
+    Minimap::SetMap(s2map);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -155,12 +144,23 @@ void Minimap::SetMap(glArchivItem_Map* s2map)
  *
  *  @author OLiver
  */
-unsigned PreviewMinimap::CalcPixelColor(const void* param, const MapPoint pt, const unsigned t)
+void Minimap::SetMap(const glArchivItem_Map& s2map)
 {
-    const glArchivItem_Map& s2map = *static_cast<const glArchivItem_Map*>(param);
+    map_width = s2map.getHeader().getWidth();
+    map_height = s2map.getHeader().getHeight();
+    CreateMapTexture();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/**
+ *
+ *  @author OLiver
+ */
+unsigned PreviewMinimap::CalcPixelColor(const MapPoint pt, const unsigned t)
+{
     unsigned color = 0;
     // Baum an dieser Stelle?
-    unsigned char landscape_obj = s2map.GetMapDataAt(MAP_TYPE, pt.x, pt.y);
+    unsigned char landscape_obj = s2Map->GetMapDataAt(MAP_TYPE, pt.x, pt.y);
     if(landscape_obj >= 0xC4 && landscape_obj <= 0xC6)
         color = VaryBrightness(TREE_COLOR, VARY_TREE_COLOR);
     // Granit an dieser Stelle?
@@ -169,14 +169,14 @@ unsigned PreviewMinimap::CalcPixelColor(const void* param, const MapPoint pt, co
     // Ansonsten die jeweilige Terrainfarbe nehmen
     else
     {
-        unsigned char gfxSet = s2map.getHeader().getGfxSet();
+        unsigned char gfxSet = s2Map->getHeader().getGfxSet();
         assert(gfxSet < LT_COUNT);
-        color = TerrainData::GetColor(LandscapeType(gfxSet), TerrainData::MapIdx2Terrain(s2map.GetMapDataAt(MapLayer(MAP_TERRAIN1 + t), pt.x, pt.y)));
+        color = TerrainData::GetColor(LandscapeType(gfxSet), TerrainData::MapIdx2Terrain(s2Map->GetMapDataAt(MapLayer(MAP_TERRAIN1 + t), pt.x, pt.y)));
 
         // Schattierung
-        int r = GetRed(color) + s2map.GetMapDataAt(MAP_SHADOWS, pt.x, pt.y) - 0x40;
-        int g = GetGreen(color) + s2map.GetMapDataAt(MAP_SHADOWS, pt.x, pt.y) - 0x40;
-        int b = GetBlue(color) + s2map.GetMapDataAt(MAP_SHADOWS, pt.x, pt.y) - 0x40;
+        int r = GetRed(color) + s2Map->GetMapDataAt(MAP_SHADOWS, pt.x, pt.y) - 0x40;
+        int g = GetGreen(color) + s2Map->GetMapDataAt(MAP_SHADOWS, pt.x, pt.y) - 0x40;
+        int b = GetBlue(color) + s2Map->GetMapDataAt(MAP_SHADOWS, pt.x, pt.y) - 0x40;
 
         if(r < 0) r = 0;
         if(r > 255) r = 255;
@@ -200,7 +200,7 @@ IngameMinimap::IngameMinimap(const GameWorldViewer& gwv) :
     Minimap(gwv.GetWidth(), gwv.GetHeight()), gwv(gwv), nodes_updated(gwv.GetWidth()*gwv.GetHeight(), false),
     dos(gwv.GetWidth()*gwv.GetHeight(), DO_INVALID), territory(true), houses(true), roads(true)
 {
-    CreateMapTexture(&gwv);
+    CreateMapTexture();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -208,10 +208,8 @@ IngameMinimap::IngameMinimap(const GameWorldViewer& gwv) :
  *
  *  @author OLiver
  */
-unsigned IngameMinimap::CalcPixelColor(const void* param, const MapPoint pt, const unsigned t)
+unsigned IngameMinimap::CalcPixelColor(const MapPoint pt, const unsigned t)
 {
-    const GameWorldViewer& gwv = *static_cast<const GameWorldViewer*>(param);
-
     unsigned color = 0;
 
     // Beobeachtender Spieler
@@ -421,7 +419,7 @@ void IngameMinimap::BeforeDrawing()
             {
                 for(unsigned t = 0; t < 2; ++t)
                 {
-                    unsigned color = CalcPixelColor(&gwv, *it, t);
+                    unsigned color = CalcPixelColor(*it, t);
                     map.tex_setPixel((it->x * 2 + t + (it->y & 1)) % (map_width * 2), it->y, GetRed(color), GetGreen(color),
                                      GetBlue(color), GetAlpha(color));
                 }
@@ -443,7 +441,7 @@ void IngameMinimap::BeforeDrawing()
 void IngameMinimap::UpdateAll()
 {
     map.DeleteTexture();
-    CreateMapTexture(&gwv);
+    CreateMapTexture();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -468,7 +466,7 @@ void IngameMinimap::UpdateAll(const DrawnObject drawn_object)
                          ((dos[GetMMIdx(pt)] == DO_BUILDING && !houses) || // achten, da dort auch nur das Player-
                           (dos[GetMMIdx(pt)] == DO_ROAD && !roads)))) // Territorium zu sehen ist!
                 {
-                    unsigned color = CalcPixelColor(&gwv, pt, t);
+                    unsigned color = CalcPixelColor(pt, t);
                     map.tex_setPixel((x * 2 + t + (y & 1)) % (map_width * 2), y, GetRed(color), GetGreen(color),
                                      GetBlue(color), GetAlpha(color));
                 }

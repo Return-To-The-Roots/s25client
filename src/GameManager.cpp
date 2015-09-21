@@ -58,7 +58,7 @@ static char THIS_FILE[] = __FILE__;
  *
  *  @author OLiver
  */
-GameManager::GameManager(void) : frames(0), frame_count(0), framerate(0), frame_time(0), run_time(0), last_time(0), cursor(CURSOR_HAND), cursor_next(CURSOR_HAND)
+GameManager::GameManager(void) : frames(0), frame_count(0), framerate(0), frame_time(0), run_time(0), last_time(0), cursor_(CURSOR_HAND), cursor_next(CURSOR_HAND)
 {
 }
 
@@ -263,7 +263,7 @@ bool GameManager::Run()
 	if(!GAMECLIENT.skiptogf || GAMECLIENT.skiptogf < GAMECLIENT.GetGFNumber())
 	{
 		char frame_str[64];
-		sprintf(frame_str, "%d fps", framerate);
+		sprintf(frame_str, "%u fps", framerate);
 
 		SmallFont->Draw( VIDEODRIVER.GetScreenWidth(), 0, frame_str, glArchivItem_Font::DF_RIGHT, COLOR_YELLOW);
 
@@ -343,7 +343,7 @@ bool GameManager::ShowMenu()
 void GameManager::SetCursor(CursorType cursor, bool once)
 {
     cursor_next = cursor;
-    if(!once) this->cursor = cursor;
+    if(!once) this->cursor_ = cursor;
     return;
 }
 
@@ -377,6 +377,6 @@ void GameManager::DrawCursor()
         {}
     }
 
-    cursor_next = cursor;
+    cursor_next = cursor_;
     return;
 }

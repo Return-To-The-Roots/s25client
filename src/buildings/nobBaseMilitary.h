@@ -54,7 +54,7 @@ class nobBaseMilitary : public noBuilding
         /// Liste von aggressiven Verteidigern, die dieses Gebäude mit verteidigen
         std::list<nofAggressiveDefender*> aggressive_defenders;
         /// Soldat, der grad dieses Gebäude verteidigt
-        nofDefender* defender;
+        nofDefender* defender_;
 
     private:
 
@@ -84,7 +84,7 @@ class nobBaseMilitary : public noBuilding
         virtual MapCoord GetMilitaryRadius() const { return 0; }
 
         /// Gibt Verteidiger zurück
-        nofDefender* GetDefender() const { return defender; }
+        nofDefender* GetDefender() const { return defender_; }
 
         /// Das Alter wird immer verglichen
         /// absteigend sortieren, da jünger <=> age größer
@@ -131,7 +131,7 @@ class nobBaseMilitary : public noBuilding
         /// zu kommen, diese Funktion sucht nach solchen Soldaten schickt einen ggf. zur Flagge, um anzugreifen
         void CheckArrestedAttackers();
         /// Der Verteidiger ist entweder tot oder wieder reingegegangen
-        void NoDefender() { defender = 0; }
+        void NoDefender() { defender_ = 0; }
         /// Bricht einen aktuell von diesem Haus gestarteten Angriff/aggressive Verteidigung ab, d.h. setzt die Soldaten
         /// aus der Warteschleife wieder in das Haus --> wenn Angreifer an der Fahne ist und Verteidiger rauskommen soll
         void CancelJobs();

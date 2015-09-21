@@ -2758,7 +2758,7 @@ void AIPlayerJH::AdjustSettings()
     milSettings[6] = ggs.getSelection(ADDON_SEA_ATTACK)==2 ? 0 : 8; //harbor flag: no sea attacks?->no soldiers else 50% to 100%
 	milSettings[5] = CalcMilSettings(); //inland 1bar min 50% max 100% depending on how many soldiers are available
 	milSettings[7] = 8;                                                     //front: 100%
-	if(player.military_settings[5] != milSettings[5] || player.military_settings[6] != milSettings[6] || player.military_settings[4]!=milSettings[4] || player.military_settings[1]!=milSettings[1]) //only send the command if we want to change something
+	if(player.militarySettings_[5] != milSettings[5] || player.militarySettings_[6] != milSettings[6] || player.militarySettings_[4]!=milSettings[4] || player.militarySettings_[1]!=milSettings[1]) //only send the command if we want to change something
 		aii->ChangeMilitary(milSettings);
 }
 
@@ -2816,7 +2816,7 @@ unsigned AIPlayerJH::CalcMilSettings()
 	while (returnValue > 4)
 	{
         //have more than enough soldiers for this setting or just enough and this is the current setting? -> return it else try the next lower setting down to 4 (50%)
-		if(soldierInUseFixed + InlandTroops[returnValue - 4] < soldierCount*10/11 || (player.military_settings[5]>=returnValue && soldierInUseFixed + InlandTroops[returnValue - 4] < soldierCount))
+		if(soldierInUseFixed + InlandTroops[returnValue - 4] < soldierCount*10/11 || (player.militarySettings_[5]>=returnValue && soldierInUseFixed + InlandTroops[returnValue - 4] < soldierCount))
 			break;
 		returnValue--;
 	}

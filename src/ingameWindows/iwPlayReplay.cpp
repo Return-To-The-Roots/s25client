@@ -199,7 +199,7 @@ void iwPlayReplay::FillReplayTable(const std::string& filePath, void* param)
     bfs::path fileName = path.filename();
 
     char gfl[50];
-    snprintf(gfl, 50, "%u", replay.last_gf);
+    snprintf(gfl, 50, "%u", replay.lastGF_);
 
     // Und das Zeug zur Tabelle hinzufügen
     static_cast<ctrlTable*>(param)->AddRow(0, fileName.c_str(), dateStr.c_str(), tmp_players.c_str(), gfl, filePath.c_str());

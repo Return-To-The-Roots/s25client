@@ -97,7 +97,7 @@ noBuilding::noBuilding(SerializedGameData* sgd, const unsigned obj_id) : noBaseB
  */
 void noBuilding::DrawBaseBuilding(int x, int y)
 {
-    Loader::building_cache[nation][type][0].draw(x, y);
+    Loader::building_cache[nation][type_][0].draw(x, y);
 
     if (opendoor && GetDoorImage())
     {
@@ -123,5 +123,5 @@ void noBuilding::GotWorker(Job job, noFigure* worker)
  */
 FOWObject* noBuilding::CreateFOWObject() const
 {
-    return new fowBuilding(type, nation);
+    return new fowBuilding(type_, nation);
 }

@@ -84,7 +84,7 @@ unsigned short nofArmorer::GetCarryID() const
         // Je nach Nation einen bestimmtem Schild fertigen
         switch(GAMECLIENT.GetPlayer(player)->nation)
         {
-            case 0: return 60;
+            case 0: return 60; //-V525
             case 1: return 58;
             case 2: return 57;
             case 3: return 59;
@@ -108,7 +108,7 @@ void nofArmorer::HandleDerivedEvent(const unsigned int id)
 			else
 			{
 				// Nach 1. Warten wird gearbeitet
-				current_ev = em->AddEvent(this, JOB_CONSTS[job].work_length, 1);
+				current_ev = em->AddEvent(this, JOB_CONSTS[job_].work_length, 1);
 				state = STATE_WORK;
 				workplace->is_working = true;
 				//LOG.lprintf("armorer handlewait1 - no consume wares %i \n",player);

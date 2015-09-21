@@ -45,7 +45,7 @@ class ctrlMultiSelectGroup : public ctrlGroup
         /// Wechselt zwischen selektiert/nicht selektiert
         void ToggleSelection(unsigned short selection, bool notify = false);
         /// Gibt Liste der aktuell selektierten Buttons zurück
-        const std::set<unsigned short> &GetSelection() const { return selection; }
+        const std::set<unsigned short> &GetSelection() const { return selectedItems_; }
         /// Prüft ob ein Button ausgewählt ist
         bool IsSelected(unsigned short selection) const;
         // Gibt einen Button aus der Gruppe zurück zum direkten Bearbeiten
@@ -63,7 +63,7 @@ class ctrlMultiSelectGroup : public ctrlGroup
         virtual bool Draw_(void);
 
     private:
-        std::set<unsigned short> selection; ///< aktuell ausgewählte Buttons
+        std::set<unsigned short> selectedItems_; ///< aktuell ausgewählte Buttons
         int select_type;         ///< Typ der Selektierung
 };
 

@@ -122,9 +122,9 @@ void nofBuildingWorker::Draw(int x, int y)
 
             // Über 100 bedeutet aus der carrier.bob nehmen, ansonsten aus der jobs.bob!
             if(id >= 100)
-                DrawWalking(x, y, LOADER.GetBobN("carrier"), GetCarryID() - 100, JOB_CONSTS[job].fat);
+                DrawWalking(x, y, LOADER.GetBobN("carrier"), GetCarryID() - 100, JOB_CONSTS[job_].fat);
             else
-                DrawWalking(x, y, LOADER.GetBobN("jobs"), GetCarryID(), JOB_CONSTS[job].fat);
+                DrawWalking(x, y, LOADER.GetBobN("jobs"), GetCarryID(), JOB_CONSTS[job_].fat);
         } break;
         case STATE_WALKINGHOME:
         case STATE_ENTERBUILDING:
@@ -225,7 +225,7 @@ void nofBuildingWorker::TryToWork()
         if(ReadyForWork())
         {
             state = STATE_WAITING1;
-            current_ev = em->AddEvent(this, (GetGOT() == GOT_NOF_CATAPULTMAN) ? CATAPULT_WAIT1_LENGTH : JOB_CONSTS[job].wait1_length, 1);
+            current_ev = em->AddEvent(this, (GetGOT() == GOT_NOF_CATAPULTMAN) ? CATAPULT_WAIT1_LENGTH : JOB_CONSTS[job_].wait1_length, 1);
             StopNotWorking();
         }else
         {
@@ -516,7 +516,7 @@ void nofBuildingWorker::DrawReturnStates(const int x, const int y)
 {
     // Beim Nachhausegehen (Landarbeiter) und beim Reingehen kann entweder eine Ware getragen werden oder nicht
     if(ware != GD_NOTHING)
-        DrawWalking(x, y, LOADER.GetBobN("jobs"), GetCarryID(), JOB_CONSTS[job].fat);
+        DrawWalking(x, y, LOADER.GetBobN("jobs"), GetCarryID(), JOB_CONSTS[job_].fat);
     else
         DrawWalking(x, y);
 }

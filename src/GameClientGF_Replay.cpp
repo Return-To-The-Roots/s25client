@@ -109,7 +109,7 @@ void GameClient::ExecuteGameFrame_Replay()
     NextGF();
 
     // Replay zu Ende?
-    if(framesinfo.nr == replayinfo.replay.last_gf)
+    if(framesinfo.nr == replayinfo.replay.lastGF_)
     {
         // Replay zu Ende
 

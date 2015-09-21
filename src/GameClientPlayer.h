@@ -161,15 +161,15 @@ class GameClientPlayer : public GamePlayerInfo
         } distribution[WARE_TYPES_COUNT];
 
         /// Art der Reihenfolge (0 = nach Auftraggebung, ansonsten nach build_order)
-        unsigned char order_type;
+        unsigned char orderType_;
         /// Baureihenfolge
         std::vector <unsigned char> build_order;
         /// Prioritäten der Waren im Transport
         unsigned char transport[WARE_TYPES_COUNT];
         /// Militäreinstellungen (die vom Militärmenü)
-        std::vector <unsigned char> military_settings;
+        std::vector <unsigned char> militarySettings_;
         /// Werkzeugeinstellungen (in der Reihenfolge wie im Fenster!)
-        std::vector <unsigned char> tools_settings;
+        std::vector <unsigned char> toolsSettings_;
         // qx:tools
         unsigned char tools_ordered[TOOL_COUNT];
         signed char tools_ordered_delta[TOOL_COUNT];

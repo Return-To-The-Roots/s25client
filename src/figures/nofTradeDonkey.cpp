@@ -112,7 +112,7 @@ void nofTradeDonkey::AbrogateWorkplace()
 void nofTradeDonkey::Draw(int x, int y)
 {
 
-    if(job == JOB_PACKDONKEY)
+    if(job_ == JOB_PACKDONKEY)
     {
         // Wenn wir warten auf ein freies Plätzchen, müssen wir den stehend zeichnen!
         // Wenn event = 0, dann sind wir mittem auf dem Weg angehalten!

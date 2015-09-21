@@ -73,7 +73,7 @@ bool SavedFile::ValidateFile(BinaryFile& file, unsigned int signature_length, co
     file.ReadRawData(read_signature, signature_length);
 
     // Signatur überprüfen
-    if(memcmp(read_signature, signature, signature_length))
+    if(memcmp(read_signature, signature, signature_length) != 0)
     {
         // unterscheiden sich! --> raus
         LOG.lprintf("SavedFile::Load: ERROR: Not a valid file!\n");

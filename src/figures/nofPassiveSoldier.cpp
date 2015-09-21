@@ -92,12 +92,12 @@ void nofPassiveSoldier::HandleDerivedEvent(const unsigned int id)
             if(fs == FS_JOB)
             {
                 // Dann uns heilen, wenn wir nicht schon gesund sind
-                if(hitpoints < HITPOINTS[gwg->GetPlayer(player)->nation][job - JOB_PRIVATE])
+                if(hitpoints < HITPOINTS[gwg->GetPlayer(player)->nation][job_ - JOB_PRIVATE])
                 {
                     ++hitpoints;
 
                     // Sind wir immer noch nicht gesund? Dann neues Event anmelden!
-                    if(hitpoints < HITPOINTS[gwg->GetPlayer(player)->nation][job - JOB_PRIVATE])
+                    if(hitpoints < HITPOINTS[gwg->GetPlayer(player)->nation][job_ - JOB_PRIVATE])
                         healing_event = em->AddEvent(this, CONVALESCE_TIME + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), CONVALESCE_TIME_RANDOM), 1);
                 }
             }
@@ -118,7 +118,7 @@ void nofPassiveSoldier::Heal()
 
     // Ist er verletzt?
     // Dann muss er geheilt werden
-    if(hitpoints < HITPOINTS[gwg->GetPlayer(player)->nation][job - JOB_PRIVATE])
+    if(hitpoints < HITPOINTS[gwg->GetPlayer(player)->nation][job_ - JOB_PRIVATE])
         healing_event = em->AddEvent(this, CONVALESCE_TIME + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), CONVALESCE_TIME_RANDOM), 1);
 }
 
@@ -162,14 +162,14 @@ void nofPassiveSoldier::Upgrade()
 {
     assert(!building || !helpers::contains(static_cast<nobMilitary*>(building)->troops, this)); // We must not be in the buildings list while upgrading. This would destroy the ordered list
     // Einen Rang höher
-    job = Job(unsigned(job) + 1);
+    job_ = Job(unsigned(job_) + 1);
 
     // wieder heilen bzw. Hitpoints anpasen
-    hitpoints = HITPOINTS[gwg->GetPlayer(player)->nation][job - JOB_PRIVATE];
+    hitpoints = HITPOINTS[gwg->GetPlayer(player)->nation][job_ - JOB_PRIVATE];
 
     // Inventur entsprechend erhöhen und verringern
-    gwg->GetPlayer(player)->IncreaseInventoryJob(job, 1);
-    gwg->GetPlayer(player)->DecreaseInventoryJob(Job(unsigned(job) - 1), 1);
+    gwg->GetPlayer(player)->IncreaseInventoryJob(job_, 1);
+    gwg->GetPlayer(player)->DecreaseInventoryJob(Job(unsigned(job_) - 1), 1);
 }
 
 void nofPassiveSoldier::Walked()

@@ -334,15 +334,15 @@ void TradeGraph::UpdateEdge(MapPoint pos, const unsigned char dir, const TradeGr
         length = NO_EDGE;
     GetNode(pos).dirs[dir] = static_cast<MapCoord>(length);
 
-    bool player = false;
+    bool hasOwner = false;
     for(unsigned i = 0; i < route.size(); ++i)
     {
         mpos = gwg->GetNeighbour(mpos, route[i]);
         if(gwg->GetNode(mpos).owner != 0)
-            player = true;
+            hasOwner = true;
     }
 
-    if(!player)
+    if(!hasOwner)
         GetNode(pos).dont_run_over_player_territory[dir] = true;
 
 }

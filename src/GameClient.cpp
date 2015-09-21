@@ -313,7 +313,7 @@ void GameClient::Stop()
     replayinfo.replay.StopRecording();
 
     // NFC-Queues aufräumen
-    gcs.clear();
+    gameCommands_.clear();
 
     socket.Close();
 
@@ -506,7 +506,7 @@ void GameClient::OnNMSPlayerId(const GameMessage_Player_Id& msg)
         return;
     }
 
-    this->playerid = msg.playerid;
+    this->playerId_ = msg.playerid;
 
     // Server-Typ senden
     send_queue.push(new GameMessage_Server_Type(clientconfig.servertyp, GetWindowVersion()));
@@ -814,10 +814,10 @@ inline void GameClient::OnNMSPlayerSwap(const GameMessage_Player_Swap& msg)
     players[msg.player].SwapPlayer(players[msg.player2]);
 
     // Evtl. sind wir betroffen?
-    if(playerid == msg.player)
-        playerid = msg.player2;
-    else if(playerid == msg.player2)
-        playerid = msg.player;
+    if(playerId_ == msg.player)
+        playerId_ = msg.player2;
+    else if(playerId_ == msg.player2)
+        playerId_ = msg.player;
 
 
     if(ci)
@@ -940,7 +940,7 @@ void GameClient::OnNMSServerChat(const GameMessage_Server_Chat& msg)
         // Chatziel unerscheiden und ggf. nicht senden
         if(!ally && msg.destination == CD_ALLIES)
             return;
-        if(ally && msg.destination == CD_ENEMIES && msg.player != playerid)
+        if(ally && msg.destination == CD_ENEMIES && msg.player != playerId_)
             return;
 
         if(ci)
@@ -1620,7 +1620,7 @@ void GameClient::NextGF()
 
         const std::vector<gc::GameCommandPtr>& ai_gcs = human_ai->GetGameCommands();
 
-        gcs.insert(gcs.end(), ai_gcs.begin(), ai_gcs.end());
+        gameCommands_.insert(gameCommands_.end(), ai_gcs.begin(), ai_gcs.end());
 
         human_ai->FetchGameCommands();
     }
@@ -1653,7 +1653,7 @@ void GameClient::SendNothingNC(int checksum)
     /*GameMessage nfc(NMS_NFC_COMMANDS, 5);
     *static_cast<int*>(nfc.m_pData) = checksum;*/
 
-    send_queue.push(new GameMessage_GameCommand(playerid, checksum, std::vector<gc::GameCommandPtr>()));
+    send_queue.push(new GameMessage_GameCommand(playerId_, checksum, std::vector<gc::GameCommandPtr>()));
 }
 
 void GameClient::WriteReplayHeader(const unsigned random_init)
@@ -1733,7 +1733,7 @@ unsigned GameClient::StartReplay(const std::string& path, GameWorldViewer*& gwv)
     replayinfo.replay.savegame = &mapinfo.savegame;
 
     if(!replayinfo.replay.LoadHeader(path, true))
-        return false;
+        return 42;
 
     // NWF-Länge
     framesinfo.nwf_length = replayinfo.replay.nwf_length;
@@ -1930,14 +1930,14 @@ void GameClient::SkipGF(unsigned int gf)
     unsigned ticks = VIDEODRIVER.GetTickCount() - start_ticks;
 	char text[256];
 	snprintf(text, sizeof(text), _("Jump finished (%.3f seconds)."), (double) ticks / 1000.0);
-	ci->CI_Chat(playerid, CD_SYSTEM, text); 
+	ci->CI_Chat(playerId_, CD_SYSTEM, text); 
 	SetReplayPause(true);
 
 }
 
 void GameClient::SystemChat(std::string text)
 {
-    ci->CI_Chat(playerid, CD_SYSTEM, text);
+    ci->CI_Chat(playerId_, CD_SYSTEM, text);
 }
 
 unsigned GameClient::WriteSaveHeader(const std::string& filename)
@@ -1978,7 +1978,7 @@ unsigned GameClient::WriteSaveHeader(const std::string& filename)
 
 
     // Spiel serialisieren
-    save.sgd.MakeSnapshot(gw, em);
+    save.sgd.MakeSnapshot(*gw, *em);
 
     // Und alles speichern
     if(!save.Save(filename))
@@ -2055,10 +2055,10 @@ void GameClient::GetVisualSettings()
     visual_settings.distribution[22] = player->distribution[GD_WATER].percent_buildings[BLD_DONKEYBREEDER];
 
 
-    visual_settings.military_settings = player->military_settings;
-    visual_settings.tools_settings = player->tools_settings;
+    visual_settings.military_settings = player->militarySettings_;
+    visual_settings.tools_settings = player->toolsSettings_;
 
-    visual_settings.order_type = player->order_type;
+    visual_settings.order_type = player->orderType_;
 
     // Baureihenfolge füllen (0 ist das HQ!)
     for(unsigned char i = 0; i < 31; ++i)
@@ -2082,7 +2082,7 @@ bool GameClient::AddGC(gc::GameCommand* gc)
     if(framesinfo.pause || GetLocalPlayer()->isDefeated())
         return false;
 
-    gcs.push_back(gc);
+    gameCommands_.push_back(gc);
     return true;
 }
 
@@ -2179,7 +2179,7 @@ void GameClient::DeletePostMessage(PostMsg* msg)
 
 void GameClient::SendAIEvent(AIEvent::Base* ev, unsigned receiver)
 {
-    if (human_ai && playerid == receiver)
+    if (human_ai && playerId_ == receiver)
     {
         human_ai->SendAIEvent(ev);
         return;
@@ -2253,7 +2253,7 @@ void GameClient::ToggleHumanAIPlayer()
         human_ai = NULL;
     } else
     {
-        human_ai = new AIPlayerJH(playerid, *gw, players[playerid], players, ggs, AI::EASY);
+        human_ai = new AIPlayerJH(playerId_, *gw, players[playerId_], players, ggs, AI::EASY);
     }
 }
 

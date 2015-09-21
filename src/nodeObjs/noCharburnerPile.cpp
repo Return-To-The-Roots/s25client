@@ -120,7 +120,7 @@ void noCharburnerPile::Draw( int x, int y)
 
             // Dann Qualm zeichnen
             unsigned int globalAnimation = GAMECLIENT.GetGlobalAnimation(8, 5, 2, (this->pos.x + this->pos.y) * 100);
-            LOADER.GetMapImageN(692 + 1 * 8 + globalAnimation)->Draw(x + 21, y - 11, 0, 0, 0, 0, 0, 0, 0x99EEEEEE);
+            LOADER.GetMapImageN(692 + 1 * 8 + globalAnimation)->Draw(x + 21, y - 11, 0, 0, 0, 0, 0, 0, 0x99EEEEEE); //-V525
             LOADER.GetMapImageN(692 + 2 * 8 + globalAnimation)->Draw(x - 02, y - 06, 0, 0, 0, 0, 0, 0, 0x99EEEEEE);
             LOADER.GetMapImageN(692 + 1 * 8 + globalAnimation)->Draw(x - 25, y - 11, 0, 0, 0, 0, 0, 0, 0x99EEEEEE);
             LOADER.GetMapImageN(692 + 3 * 8 + globalAnimation)->Draw(x - 02, y - 35, 0, 0, 0, 0, 0, 0, 0x99EEEEEE);

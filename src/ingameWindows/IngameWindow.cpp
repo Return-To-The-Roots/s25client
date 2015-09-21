@@ -48,8 +48,8 @@ std::vector< Point<unsigned short> > IngameWindow::last_pos(MAX_POS_SAVE_ENTRIES
 IngameWindow::IngameWindow(unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height,
                            const std::string& title, glArchivItem_Bitmap* background, bool modal, bool close_on_right_click, Window* parent)
     : Window(x, y, id, parent, width, height),
-      iwHeight(height), title(title), background(background), last_x(0), last_y(0),
-      last_down(false), last_down2(false), modal(modal), closeme(false), minimized(false), move(false), close_on_right_click(close_on_right_click)
+      iwHeight(height), title_(title), background(background), last_x(0), last_y(0),
+      last_down(false), last_down2(false), modal(modal), closeme(false), isMinimized_(false), move(false), close_on_right_click(close_on_right_click)
 {
     memset(button_state, BUTTON_UP, sizeof(ButtonState) * 2);
 
@@ -90,7 +90,7 @@ IngameWindow::~IngameWindow(void)
 
 void IngameWindow::SetMinimized(bool minimized)
 {
-    this->minimized = minimized;
+    this->isMinimized_ = minimized;
     SetHeight(minimized ? 31 : iwHeight);
 }
 
@@ -270,9 +270,9 @@ bool IngameWindow::Draw_()
         LOADER.GetImageN("resource", title_index)->Draw(x_ + LOADER.GetImageN("resource", 36)->getWidth() + title_count * LOADER.GetImageN("resource", title_index)->getWidth(), y_, rest, 0, 0, 0, rest, 0);
 
     // Text auf die Leiste
-    NormalFont->Draw( x_ + width_ / 2, y_ + LOADER.GetImageN("resource", 43)->getHeight() / 2, title, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, COLOR_YELLOW);
+    NormalFont->Draw( x_ + width_ / 2, y_ + LOADER.GetImageN("resource", 43)->getHeight() / 2, title_, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, COLOR_YELLOW);
 
-    if(!minimized)
+    if(!isMinimized_)
     {
         // Seitenleisten
 
@@ -384,5 +384,5 @@ void IngameWindow::MoveNextToMouse()
 bool IngameWindow::IsMessageRelayAllowed() const
 {
     // Wenn es minimiert wurde, sollen keine Nachrichten weitergeleitet werden
-    return !minimized;
+    return !isMinimized_;
 }

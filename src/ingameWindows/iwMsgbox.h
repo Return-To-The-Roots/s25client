@@ -28,8 +28,6 @@ class iwMsgbox : public IngameWindow
         /// ID für die Msgbox, um unterschiedliche
         unsigned int msgboxid;
 
-        /// (Haupt)Text, der angezeigt werden soll
-        const std::string& text;
         /// Einzelne Stringzeilen, die durch die Umbrechung ggf. zu Stande kommen
         std::vector<std::string> strings;
 

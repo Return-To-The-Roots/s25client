@@ -71,8 +71,8 @@ GameClientPlayer::GameClientPlayer(const unsigned playerid):
 		GamePlayerInfo(playerid),
 		hqPos(MapPoint::Invalid()),
 		build_order(31),
-		military_settings(MILITARY_SETTINGS_COUNT),
-		tools_settings(12, 0)
+		militarySettings_(MILITARY_SETTINGS_COUNT),
+		toolsSettings_(12, 0)
 {
     for (unsigned i = 0; i < BUILDING_TYPES_COUNT; ++i)
     {
@@ -128,7 +128,7 @@ GameClientPlayer::GameClientPlayer(const unsigned playerid):
 
     RecalcDistribution();
 
-    GAMECLIENT.visual_settings.order_type = order_type = 0;
+    GAMECLIENT.visual_settings.order_type = orderType_ = 0;
 
     // Baureihenfolge füllen (0 ist das HQ!)
     for(unsigned char i = 1, j = 0; i < 40; ++i)
@@ -160,15 +160,15 @@ GameClientPlayer::GameClientPlayer(const unsigned playerid):
     GAMECLIENT.visual_settings.transport_order[13] = STD_TRANSPORT[GD_BOAT];
 
     // military settings (military-window-slider, in 10th percent)
-    military_settings[0] = 10;
-    military_settings[1] = 3;
-    military_settings[2] = 5;
-    military_settings[3] = 3;
-    military_settings[4] = 2;
-    military_settings[5] = 4;
-    military_settings[6] = MILITARY_SETTINGS_SCALE[6];
-    military_settings[7] = MILITARY_SETTINGS_SCALE[7];
-    GAMECLIENT.visual_settings.military_settings = military_settings;
+    militarySettings_[0] = 10; //-V525
+    militarySettings_[1] = 3;
+    militarySettings_[2] = 5;
+    militarySettings_[3] = 3;
+    militarySettings_[4] = 2;
+    militarySettings_[5] = 4;
+    militarySettings_[6] = MILITARY_SETTINGS_SCALE[6];
+    militarySettings_[7] = MILITARY_SETTINGS_SCALE[7];
+    GAMECLIENT.visual_settings.military_settings = militarySettings_;
 
     // metalwork tool request
 
@@ -180,19 +180,19 @@ GameClientPlayer::GameClientPlayer(const unsigned playerid):
     }
 
     // percentage (tool-settings-window-slider, in 10th percent)
-    tools_settings[0]  = 1;
-    tools_settings[1]  = 4;
-    tools_settings[2]  = 2;
-    tools_settings[3]  = 5;
-    tools_settings[4]  = 7;
-    tools_settings[5]  = 1;
-    tools_settings[6]  = 3;
-    tools_settings[7]  = 1;
-    tools_settings[8]  = 2;
-    tools_settings[9]  = 1;
-    tools_settings[10] = 2;
-    tools_settings[11] = 1;
-    GAMECLIENT.visual_settings.tools_settings = tools_settings;
+    toolsSettings_[0]  = 1;
+    toolsSettings_[1]  = 4;
+    toolsSettings_[2]  = 2;
+    toolsSettings_[3]  = 5;
+    toolsSettings_[4]  = 7;
+    toolsSettings_[5]  = 1;
+    toolsSettings_[6]  = 3;
+    toolsSettings_[7]  = 1;
+    toolsSettings_[8]  = 2;
+    toolsSettings_[9]  = 1;
+    toolsSettings_[10] = 2;
+    toolsSettings_[11] = 1;
+    GAMECLIENT.visual_settings.tools_settings = toolsSettings_;
 
     // Standardeinstellungen kopieren
     GAMECLIENT.default_settings = GAMECLIENT.visual_settings;
@@ -274,7 +274,7 @@ void GameClientPlayer::Serialize(SerializedGameData* sgd)
         sgd->PushUnsignedInt(distribution[i].selected_goal);
     }
 
-    sgd->PushUnsignedChar(order_type);
+    sgd->PushUnsignedChar(orderType_);
 
     for(unsigned i = 0; i < 31; ++i)
         sgd->PushUnsignedChar(build_order[i]);
@@ -282,10 +282,10 @@ void GameClientPlayer::Serialize(SerializedGameData* sgd)
     sgd->PushRawData(transport, WARE_TYPES_COUNT);
 
     for(unsigned i = 0; i < MILITARY_SETTINGS_COUNT; ++i)
-        sgd->PushUnsignedChar(military_settings[i]);
+        sgd->PushUnsignedChar(militarySettings_[i]);
 
     for(unsigned i = 0; i < 12; ++i)
-        sgd->PushUnsignedChar(tools_settings[i]);
+        sgd->PushUnsignedChar(toolsSettings_[i]);
 
     //qx:tools
     for (unsigned i = 0; i < TOOL_COUNT; ++i)
@@ -390,7 +390,7 @@ void GameClientPlayer::Deserialize(SerializedGameData* sgd)
         distribution[i].selected_goal = sgd->PopUnsignedInt();
     }
 
-    order_type = sgd->PopUnsignedChar();
+    orderType_ = sgd->PopUnsignedChar();
 
     for(unsigned i = 0; i < 31; ++i)
         build_order[i] = sgd->PopUnsignedChar();
@@ -408,10 +408,10 @@ void GameClientPlayer::Deserialize(SerializedGameData* sgd)
     sgd->PopRawData(transport, WARE_TYPES_COUNT);
 
     for(unsigned i = 0; i < MILITARY_SETTINGS_COUNT; ++i)
-        military_settings[i] = sgd->PopUnsignedChar();
+        militarySettings_[i] = sgd->PopUnsignedChar();
 
     for(unsigned i = 0; i < 12; ++i)
-        tools_settings[i] = sgd->PopUnsignedChar();
+        toolsSettings_[i] = sgd->PopUnsignedChar();
 
     // qx:tools
     for (unsigned i = 0; i < TOOL_COUNT; ++i)
@@ -1308,7 +1308,7 @@ unsigned short GameClientPlayer::CalcAverageProductivitiy()
 
 unsigned GameClientPlayer::GetBuidingSitePriority(const noBuildingSite* building_site)
 {
-    if(order_type)
+    if(orderType_)
     {
         // Spezielle Reihenfolge
 
@@ -1492,7 +1492,7 @@ void GameClientPlayer::RefreshDefenderList()
     /// Die Verteidigungsliste muss erneuert werden
     memset(defenders, 0, 5);
     for(unsigned i = 0; i < 5; ++i)
-        defenders[i] = (i < military_settings[2] * 5 / MILITARY_SETTINGS_SCALE[2]);
+        defenders[i] = (i < militarySettings_[2] * 5 / MILITARY_SETTINGS_SCALE[2]);
     // und ordentlich schütteln
     RANDOM.Shuffle(defenders, 5);
 
@@ -1509,7 +1509,7 @@ void GameClientPlayer::ChangeMilitarySettings(const std::vector<unsigned char>& 
     {
         // Sicherstellen, dass im validen Bereich
         assert(military_settings[i] <= MILITARY_SETTINGS_SCALE[i]);
-        this->military_settings[i] = military_settings[i];
+        this->militarySettings_[i] = military_settings[i];
     }
     /// Truppen müssen neu kalkuliert werden
     RegulateAllTroops();
@@ -1524,7 +1524,7 @@ void GameClientPlayer::ChangeToolsSettings(const std::vector<unsigned char>& too
     if(GAMECLIENT.IsReplayModeOn())
         GAMECLIENT.visual_settings.tools_settings = tools_settings;
 
-    this->tools_settings = tools_settings;
+    this->toolsSettings_ = tools_settings;
 }
 
 /// Setzt neue Verteilungseinstellungen
@@ -1577,7 +1577,7 @@ void GameClientPlayer::ChangeBuildOrder(const unsigned char order_type, const st
         GAMECLIENT.visual_settings.build_order = oder_data;
     }
 
-    this->order_type = order_type;
+    this->orderType_ = order_type;
     for(unsigned i = 0; i < oder_data.size(); ++i)
         this->build_order[i] = oder_data[i];
 }
@@ -2467,28 +2467,28 @@ unsigned GameClientPlayer::GetAvailableWaresForTrading(nobBaseWarehouse* wh, con
 struct WarehouseDistanceComperator
 {
     // Reference warehouse, to which we want to calc the distance
-    static nobBaseWarehouse* ref;
+    static nobBaseWarehouse* refWareHouse_;
     /// GameWorld
-    static GameWorldGame* gwg;
+    static GameWorldGame* gwg_;
 
     /// Set Parameters
-    static void SetParameters(nobBaseWarehouse* ref, GameWorldGame* gwg)
+    static void SetParameters(nobBaseWarehouse* refWareHouse, GameWorldGame* gwg)
     {
-        WarehouseDistanceComperator::ref = ref;
-        WarehouseDistanceComperator::gwg = gwg;
+        WarehouseDistanceComperator::refWareHouse_ = refWareHouse;
+        WarehouseDistanceComperator::gwg_ = gwg;
     }
 
 
     static bool Compare(nobBaseWarehouse* const wh1, nobBaseWarehouse* const wh2)
     {
-        unsigned dist1 = gwg->CalcDistance(wh1->GetPos(), ref->GetPos());
-        unsigned dist2 = gwg->CalcDistance(wh2->GetPos(), ref->GetPos());
+        unsigned dist1 = gwg_->CalcDistance(wh1->GetPos(), refWareHouse_->GetPos());
+        unsigned dist2 = gwg_->CalcDistance(wh2->GetPos(), refWareHouse_->GetPos());
         return (dist1 < dist2 ) || (dist1 == dist2 && wh1->GetObjId() < wh2->GetObjId());
     }
 };
 
-nobBaseWarehouse* WarehouseDistanceComperator::ref;
-GameWorldGame* WarehouseDistanceComperator::gwg;
+nobBaseWarehouse* WarehouseDistanceComperator::refWareHouse_;
+GameWorldGame* WarehouseDistanceComperator::gwg_;
 
 /// Send wares to warehouse wh
 void GameClientPlayer::Trade(nobBaseWarehouse* wh, const GoodType gt, const Job job, unsigned count) const

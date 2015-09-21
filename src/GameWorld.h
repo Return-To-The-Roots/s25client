@@ -126,7 +126,7 @@ class GameWorldBase
         GameInterface* gi;
 
         /// Breite und Höhe der Karte in Kontenpunkten
-        unsigned short width, height;
+        unsigned short width_, height_;
         /// Landschafts-Typ
         LandscapeType lt;
 
@@ -208,8 +208,8 @@ class GameWorldBase
         inline void SetGameInterface(GameInterface* const gi) { this->gi = gi; }
 
         /// Größe der Map abfragen
-        inline unsigned short GetWidth() const { return width; }
-        inline unsigned short GetHeight() const { return height; }
+        inline unsigned short GetWidth() const { return width_; }
+        inline unsigned short GetHeight() const { return height_; }
 
         /// Landschaftstyp abfragen
         LandscapeType GetLandscapeType() const { return lt; }
@@ -239,11 +239,11 @@ class GameWorldBase
 
         // Returns the linear index for a map point
         inline unsigned GetIdx(const MapPoint pt) const
-        { return static_cast<unsigned>(pt.y) * static_cast<unsigned>(width) + static_cast<unsigned>(pt.x); }
+        { return static_cast<unsigned>(pt.y) * static_cast<unsigned>(width_) + static_cast<unsigned>(pt.x); }
 
         /// Gibt Map-Knotenpunkt zurück
-        inline const MapNode& GetNode(const MapPoint pt) const { assert(pt.x < width && pt.y < height);  return nodes[GetIdx(pt)]; }
-        MapNode& GetNode(const MapPoint pt) { assert(pt.x < width && pt.y < height); return nodes[GetIdx(pt)]; }
+        inline const MapNode& GetNode(const MapPoint pt) const { assert(pt.x < width_ && pt.y < height_);  return nodes[GetIdx(pt)]; }
+        MapNode& GetNode(const MapPoint pt) { assert(pt.x < width_ && pt.y < height_); return nodes[GetIdx(pt)]; }
         /// Gibt MapKnotenpunkt darum zurück
         inline const MapNode& GetNodeAround(const MapPoint pt, const unsigned i) const
         { return GetNode(GetNeighbour(pt, i));  }
@@ -364,7 +364,7 @@ class GameWorldBase
         MapPoint ConvertCoords(int x, int y) const { return ConvertCoords(Point<int>(x, y)); }
 
         /// Erzeugt eine GUI-ID für die Fenster von Map-Objekten
-        inline unsigned CreateGUIID(const MapPoint pt) const { return 1000 + width * pt.y + pt.x; }
+        inline unsigned CreateGUIID(const MapPoint pt) const { return 1000 + width_ * pt.y + pt.x; }
         /// Gibt Terrainkoordinaten zurück
         inline Point<float> GetTerrain(const MapPoint pt){ return tr.GetTerrain(pt); }
         inline float GetTerrainX(const MapPoint pt){ return GetTerrain(pt).x; }
@@ -821,7 +821,7 @@ class GameWorldGame : public virtual GameWorldBase
         void AttackViaSea(const unsigned char player_attacker, const MapPoint pt, const unsigned short soldiers_count, const bool strong_soldiers);
         // Liefert das entsprechende Militärquadrat für einen bestimmten Punkt auf der Karte zurück (normale Koordinaten)
         std::list<nobBaseMilitary*>& GetMilitarySquare(const MapPoint pt)
-        { return military_squares[(pt.y / MILITARY_SQUARE_SIZE) * (width / MILITARY_SQUARE_SIZE + 1) + pt.x / MILITARY_SQUARE_SIZE]; }
+        { return military_squares[(pt.y / MILITARY_SQUARE_SIZE) * (width_ / MILITARY_SQUARE_SIZE + 1) + pt.x / MILITARY_SQUARE_SIZE]; }
 
         /// Fügt einen Katapultstein der Welt hinzu, der gezeichnt werden will
         inline void AddCatapultStone(CatapultStone* cs) {catapult_stones.push_back(cs); }

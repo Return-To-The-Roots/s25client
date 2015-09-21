@@ -46,7 +46,7 @@ static char THIS_FILE[] = __FILE__;
 
 nobBaseMilitary::nobBaseMilitary(const BuildingType type, const MapPoint pos,
                                  const unsigned char player, const Nation nation)
-    : noBuilding(type, pos, player, nation), leaving_event(0), go_out(false), defender(0)
+    : noBuilding(type, pos, player, nation), leaving_event(0), go_out(false), defender_(0)
 {
 
 }
@@ -77,8 +77,8 @@ void nobBaseMilitary::Destroy_nobBaseMilitary()
         (*it)->AttackedGoalDestroyed();
 
     // Verteidiger Bescheid sagen
-    if(defender)
-        defender->HomeDestroyed();
+    if(defender_)
+        defender_->HomeDestroyed();
 
     // Warteschlangenevent vernichten
     em->RemoveEvent(leaving_event);
@@ -126,7 +126,7 @@ void nobBaseMilitary::Serialize_nobBaseMilitary(SerializedGameData* sgd) const
     sgd->PushObjectContainer(troops_on_mission, false);
     sgd->PushObjectContainer(aggressors, true);
     sgd->PushObjectContainer(aggressive_defenders, true);
-    sgd->PushObject(defender, true);
+    sgd->PushObject(defender_, true);
 }
 
 nobBaseMilitary::nobBaseMilitary(SerializedGameData* sgd, const unsigned obj_id) : noBuilding(sgd, obj_id)
@@ -138,7 +138,7 @@ nobBaseMilitary::nobBaseMilitary(SerializedGameData* sgd, const unsigned obj_id)
     sgd->PopObjectContainer(troops_on_mission, GOT_UNKNOWN);
     sgd->PopObjectContainer(aggressors, GOT_NOF_ATTACKER);
     sgd->PopObjectContainer(aggressive_defenders, GOT_NOF_AGGRESSIVEDEFENDER);
-    defender = sgd->PopObject<nofDefender>(GOT_NOF_DEFENDER);
+    defender_ = sgd->PopObject<nofDefender>(GOT_NOF_DEFENDER);
 }
 
 void nobBaseMilitary::AddLeavingEvent()
@@ -193,7 +193,7 @@ MapPoint nobBaseMilitary::FindAnAttackerPlace(unsigned short& ret_radius, nofAtt
 
     // Diesen Flaggenplatz nur nehmen, wenn es auch nich gerade eingenommen wird, sonst gibts Deserteure!
     // Eigenommen werden können natürlich nur richtige Militärgebäude
-    bool capturing = (type >= BLD_BARRACKS && type <= BLD_FORTRESS) ? (static_cast<nobMilitary*>(this)->IsCaptured()) : false;
+    bool capturing = (type_ >= BLD_BARRACKS && type_ <= BLD_FORTRESS) ? (static_cast<nobMilitary*>(this)->IsCaptured()) : false;
 
     if(gwg->ValidPointForFighting(flagPos, false) && !capturing)
     {
@@ -290,10 +290,10 @@ MapPoint nobBaseMilitary::FindAnAttackerPlace(unsigned short& ret_radius, nofAtt
 bool nobBaseMilitary::CallDefender(nofAttacker* attacker)
 {
     // Ist noch ein Verteidiger draußen (der z.B. grad wieder reingeht?
-    if(defender)
+    if(defender_)
     {
         // Dann nehmen wir den, müssen ihm nur den neuen Angreifer mitteilen
-        defender->NewAttacker(attacker);
+        defender_->NewAttacker(attacker);
         // Leute, die aus diesem Gebäude zum Angriff/aggressiver Verteidigung rauskommen wollen,
         // blocken
         CancelJobs();
@@ -301,13 +301,13 @@ bool nobBaseMilitary::CallDefender(nofAttacker* attacker)
         return true;
     }
     // ansonsten einen neuen aus dem Gebäude holen
-    else if((defender = ProvideDefender(attacker)))
+    else if((defender_ = ProvideDefender(attacker)))
     {
         // Leute, die aus diesem Gebäude zum Angriff/aggressiver Verteidigung rauskommen wollen,
         // blocken
         CancelJobs();
         // Soldat muss noch rauskommen
-        AddLeavingFigure(defender);
+        AddLeavingFigure(defender_);
 
         return true;
     }
@@ -342,7 +342,7 @@ nofAttacker* nobBaseMilitary::FindAttackerNearBuilding()
 
     if(best_attacker)
         // Den schließlich zur Flagge schicken
-        best_attacker->AttackFlag(defender);
+        best_attacker->AttackFlag(defender_);
 
     // und ihn zurückgeben, wenns keine gibt, natürlich 0
     return best_attacker;

@@ -60,9 +60,9 @@ class ctrlMinimap : public Window
 
         /// Liefert für einen gegebenen Map-Punkt die Pixel-Koordinaten relativ zur Bounding-Box
         inline unsigned short CalcMapCoordX(const unsigned short x) const
-        { return GetLeft() + width_show * x / map_width; }
+        { return GetLeft() + width_show * x / mapWidth_; }
         inline unsigned short CalcMapCoordY(const unsigned short y) const
-        { return GetTop() + height_show * y / map_height; }
+        { return GetTop() + height_show * y / mapHeight_; }
 
         /// Verkleinert Minimap soweit es geht (entfernt Bounding-Box) in Y-Richtung und gibt neue Höhe zurück
         void RemoveBoundingBox(const unsigned short width_min, const unsigned short height_min);
@@ -79,8 +79,8 @@ class ctrlMinimap : public Window
 
     protected:
 
-        unsigned short map_width;
-        unsigned short map_height;
+        unsigned short mapWidth_;
+        unsigned short mapHeight_;
 };
 
 

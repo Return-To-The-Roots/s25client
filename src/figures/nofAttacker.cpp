@@ -1040,7 +1040,7 @@ void nofAttacker::StartAttackOnOtherIsland(const MapPoint shipPos, const unsigne
 void nofAttacker::SeaAttackFailedBeforeLaunch()
 {
     attacked_goal = 0;
-    goal = 0;
+    goal_ = 0;
     building = 0;
     state = STATE_FIGUREWORK;
 }
@@ -1051,7 +1051,7 @@ void nofAttacker::StartReturnViaShip()
     // remove us from where we are, so nobody will ever draw us :)
     gwg->RemoveFigure(this, this->pos);
 
-    goal = building;
+    goal_ = building;
     state = STATE_FIGUREWORK;
     on_ship = true;
 }
@@ -1059,7 +1059,7 @@ void nofAttacker::StartReturnViaShip()
 /// notify sea attackers that they wont return home
 void nofAttacker::HomeHarborLost()
 {
-    goal = 0; //this in combination with telling the home building that the soldier is lost should work just fine
+    goal_ = 0; //this in combination with telling the home building that the soldier is lost should work just fine
 }
 
 /// Für Schiffsangreifer: Sagt dem Schiff Bescheid, dass wir nicht mehr kommen

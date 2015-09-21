@@ -68,12 +68,12 @@ class glSmartBitmap
         std::vector<glBitmapItem> items;
 
     public:
-        GL_T2F_C4UB_V3F_Struct tmp[8];
+        GL_T2F_C4UB_V3F_Struct tmpTexData[8];
 
         glSmartBitmap() : w(0), h(0), nx(0), ny(0), sharedTexture(false), texture(0), hasPlayer(false)
         {
-            tmp[0].z = tmp[1].z = tmp[2].z = tmp[3].z = 0.0f;
-            tmp[4].z = tmp[5].z = tmp[6].z = tmp[7].z = 0.0f;
+            tmpTexData[0].z = tmpTexData[1].z = tmpTexData[2].z = tmpTexData[3].z = 0.0f;
+            tmpTexData[4].z = tmpTexData[5].z = tmpTexData[6].z = tmpTexData[7].z = 0.0f;
         }
         ~glSmartBitmap();
         void reset();
@@ -81,8 +81,8 @@ class glSmartBitmap
         inline int getWidth() {return(w);}
         inline int getHeight() {return(h);}
 
-        inline int getTexWidth() {return(hasPlayer ? w << 1 : w);}
-        inline int getTexHeight() {return(h);}
+        inline int getTexWidth() {return(hasPlayer ? getWidth() * 2 : getWidth());}
+        inline int getTexHeight() {return getHeight();}
 
         inline bool isGenerated() {return(texture != 0);}
         inline bool isPlayer() {return(hasPlayer);}

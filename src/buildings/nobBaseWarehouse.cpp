@@ -144,13 +144,13 @@ void nobBaseWarehouse::Serialize_nobBaseWarehouse(SerializedGameData* sgd) const
 
     for(unsigned i = 0; i < WARE_TYPES_COUNT; ++i)
     {
-        sgd->PushUnsignedInt(goods.goods[i]);
+        sgd->PushUnsignedInt(goods_.goods[i]);
         sgd->PushUnsignedInt(real_goods.goods[i]);
         sgd->PushUnsignedChar(inventory_settings_real.wares[i]);
     }
     for(unsigned i = 0; i < JOB_TYPES_COUNT; ++i)
     {
-        sgd->PushUnsignedInt(goods.people[i]);
+        sgd->PushUnsignedInt(goods_.people[i]);
         sgd->PushUnsignedInt(real_goods.people[i]);
         sgd->PushUnsignedChar(inventory_settings_real.figures[i]);
     }
@@ -176,13 +176,13 @@ nobBaseWarehouse::nobBaseWarehouse(SerializedGameData* sgd, const unsigned obj_i
 
     for(unsigned i = 0; i < WARE_TYPES_COUNT; ++i)
     {
-        goods.goods[i] = sgd->PopUnsignedInt();
+        goods_.goods[i] = sgd->PopUnsignedInt();
         real_goods.goods[i] = sgd->PopUnsignedInt();
         inventory_settings_real.wares[i] = inventory_settings_visual.wares[i] = sgd->PopUnsignedChar();
     }
     for(unsigned i = 0; i < JOB_TYPES_COUNT; ++i)
     {
-        goods.people[i] = sgd->PopUnsignedInt();
+        goods_.people[i] = sgd->PopUnsignedInt();
         real_goods.people[i] = sgd->PopUnsignedInt();
         inventory_settings_real.figures[i] = inventory_settings_visual.figures[i] = sgd->PopUnsignedChar();
     }
@@ -193,14 +193,14 @@ void nobBaseWarehouse::Clear()
     for(unsigned i = 0; i < WARE_TYPES_COUNT; ++i)
     {
         gwg->GetPlayer(player)->DecreaseInventoryWare(GoodType(i), real_goods.goods[i]);
-        goods.goods[i] = 0;
+        goods_.goods[i] = 0;
         real_goods.goods[i] = 0;
     }
     
     for(unsigned i = 0; i < JOB_TYPES_COUNT; ++i)
     {
         gwg->GetPlayer(player)->DecreaseInventoryJob(Job(i), real_goods.people[i]);
-        goods.people[i] = 0;
+        goods_.people[i] = 0;
         real_goods.people[i] = 0;
     }
     
@@ -273,16 +273,16 @@ bool nobBaseWarehouse::OrderJob(const Job job, noRoadNode* const goal, const boo
         if(JOB_CONSTS[job].tool != GD_NOTHING)
         {
             --real_goods.goods[JOB_CONSTS[job].tool];
-            --goods.goods[JOB_CONSTS[job].tool];
+            --goods_.goods[JOB_CONSTS[job].tool];
             gwg->GetPlayer(player)->DecreaseInventoryWare(JOB_CONSTS[job].tool, 1);
         }
 
         --real_goods.people[JOB_HELPER];
-        --goods.people[JOB_HELPER];
+        --goods_.people[JOB_HELPER];
         gwg->GetPlayer(player)->DecreaseInventoryJob(JOB_HELPER, 1);
 
         // erhöhen, da er ja dann rauskommt und es bei den visuellen wieder abgezogen wird!
-        ++goods.people[job];
+        ++goods_.people[job];
         gwg->GetPlayer(player)->IncreaseInventoryJob(job, 1);
     }
 
@@ -375,17 +375,17 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
                     if(fig->GetJobType() == JOB_BOATCARRIER)
                     {
                         // Träger abziehen einzeln
-                        --goods.people[JOB_HELPER];
+                        --goods_.people[JOB_HELPER];
                         // Boot abziehen einzeln
-                        --goods.goods[GD_BOAT];
+                        --goods_.goods[GD_BOAT];
                     }
                     else
-                        --goods.people[(*leave_house.begin())->GetJobType()];
+                        --goods_.people[(*leave_house.begin())->GetJobType()];
 
                     if(fig->GetGOT() == GOT_NOF_TRADEDONKEY)
                     {
                         // Trade donkey carrying wares?
-                        --goods.goods[static_cast<nofTradeDonkey*>(fig)->GetCarriedWare()];
+                        --goods_.goods[static_cast<nofTradeDonkey*>(fig)->GetCarriedWare()];
                     }
                 }
 
@@ -400,8 +400,8 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
                     Ware* ware = *waiting_wares.begin();
                     nofWarehouseWorker* worker = new nofWarehouseWorker(pos, player, ware, 0);
                     gwg->AddFigure(worker, pos);
-                    assert(goods.goods[ConvertShields(ware->type)] > 0);
-                    --goods.goods[ConvertShields(ware->type)];
+                    assert(goods_.goods[ConvertShields(ware->type)] > 0);
+                    --goods_.goods[ConvertShields(ware->type)];
                     worker->WalkToGoal();
                     ware->Carry(GetFlag());
                     waiting_wares.pop_front();
@@ -428,7 +428,7 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
             if(real_goods.people[JOB_HELPER] < 100)
             {
                 ++real_goods.people[JOB_HELPER];
-                ++goods.people[JOB_HELPER];
+                ++goods_.people[JOB_HELPER];
 
                 gwg->GetPlayer(player)->IncreaseInventoryJob(JOB_HELPER, 1);
 
@@ -445,7 +445,7 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
             {
                 // Bei Überbevölkerung Träger vernichten
                 --real_goods.people[JOB_HELPER];
-                --goods.people[JOB_HELPER];
+                --goods_.people[JOB_HELPER];
 
                 gwg->GetPlayer(player)->DecreaseInventoryJob(JOB_HELPER, 1);
             }
@@ -479,7 +479,7 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
                                max_recruits);
 
             const unsigned recruiting_ratio
-            = gwg->GetPlayer(player)->military_settings[0];
+            = gwg->GetPlayer(player)->militarySettings_[0];
             unsigned real_recruits =
                 max_recruits
                 * recruiting_ratio
@@ -493,23 +493,23 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
                 }
 
             real_goods.people[JOB_PRIVATE] += real_recruits;
-            goods.people[JOB_PRIVATE] += real_recruits;
+            goods_.people[JOB_PRIVATE] += real_recruits;
             gwg->GetPlayer(player)->IncreaseInventoryJob(JOB_PRIVATE, real_recruits);
 
             real_goods.people[JOB_HELPER] -= real_recruits;
-            goods.people[JOB_HELPER] -= real_recruits;
+            goods_.people[JOB_HELPER] -= real_recruits;
             gwg->GetPlayer(player)->DecreaseInventoryJob(JOB_HELPER, real_recruits);
 
             real_goods.goods[GD_SWORD] -= real_recruits;
-            goods.goods[GD_SWORD] -= real_recruits;
+            goods_.goods[GD_SWORD] -= real_recruits;
             gwg->GetPlayer(player)->DecreaseInventoryWare(GD_SWORD, real_recruits);
 
             real_goods.goods[GD_SHIELDROMANS] -= real_recruits;
-            goods.goods[GD_SHIELDROMANS] -= real_recruits;
+            goods_.goods[GD_SHIELDROMANS] -= real_recruits;
             gwg->GetPlayer(player)->DecreaseInventoryWare(GD_SHIELDROMANS, real_recruits);
 
             real_goods.goods[GD_BEER] -= real_recruits;
-            goods.goods[GD_BEER] -= real_recruits;
+            goods_.goods[GD_BEER] -= real_recruits;
             gwg->GetPlayer(player)->DecreaseInventoryWare(GD_BEER, real_recruits);
 
 
@@ -732,7 +732,7 @@ void nobBaseWarehouse::AddWaitingWare(Ware* ware)
     // Wenn gerade keiner rausgeht, muss neues Event angemeldet werden
     AddLeavingEvent();
     // Die visuelle Warenanzahl wieder erhöhen
-    ++goods.goods[ConvertShields(ware->type)];
+    ++goods_.goods[ConvertShields(ware->type)];
 }
 
 bool nobBaseWarehouse::FreePlaceAtFlag()
@@ -770,7 +770,7 @@ void nobBaseWarehouse::AddWare(Ware* ware)
     delete ware;
 
     ++real_goods.goods[type];
-    ++goods.goods[type];
+    ++goods_.goods[type];
 
     CheckUsesForNewWare(type);
 }
@@ -798,7 +798,7 @@ void nobBaseWarehouse::CheckUsesForNewWare(const GoodType gt)
     TryRecruiting();
 
     // Evtl die Ware gleich wieder auslagern, falls erforderlich
-    CheckOuthousing(0, type);
+    CheckOuthousing(0, type_);
 }
 
 /// Prüft verschiedene Sachen, falls ein neuer Mensch das Haus betreten hat
@@ -857,15 +857,15 @@ void nobBaseWarehouse::AddFigure(noFigure* figure, const bool increase_visual_co
         if(figure->GetJobType() == JOB_BOATCARRIER)
         {
             // Träger hinzufügen einzeln
-            if(increase_visual_counts) ++goods.people[JOB_HELPER];
+            if(increase_visual_counts) ++goods_.people[JOB_HELPER];
             ++real_goods.people[JOB_HELPER];
             // Boot hinzufügen einzeln
-            if(increase_visual_counts) ++goods.goods[GD_BOAT];
+            if(increase_visual_counts) ++goods_.goods[GD_BOAT];
             ++real_goods.goods[GD_BOAT];
         }
         else
         {
-            if(increase_visual_counts) ++goods.people[figure->GetJobType()];
+            if(increase_visual_counts) ++goods_.people[figure->GetJobType()];
             ++real_goods.people[figure->GetJobType()];
         }
     }
@@ -924,7 +924,7 @@ void nobBaseWarehouse::OrderTroops(nobMilitary* goal, unsigned count,bool ignore
     // Soldaten durchgehen und count rausschicken
 
     // Ränge durchgehen, absteigend, starke zuerst
-    if (gwg->GetPlayer(player)->military_settings[1] >= MILITARY_SETTINGS_SCALE[1] / 2 && !ignoresettingsendweakfirst)
+    if (gwg->GetPlayer(player)->militarySettings_[1] >= MILITARY_SETTINGS_SCALE[1] / 2 && !ignoresettingsendweakfirst)
     {
         for(unsigned i = 5; i && count; --i)
         {
@@ -996,7 +996,7 @@ void nobBaseWarehouse::AddActiveSoldier(nofActiveSoldier* soldier)
 {
     // Soldat hinzufügen
     ++real_goods.people[JOB_PRIVATE + soldier->GetRank()];
-    ++goods.people[JOB_PRIVATE + soldier->GetRank()];
+    ++goods_.people[JOB_PRIVATE + soldier->GetRank()];
 
     // Evtl. geht der Soldat wieder in die Reserve
     RefreshReserve(soldier->GetRank());
@@ -1026,7 +1026,7 @@ nofDefender* nobBaseWarehouse::ProvideDefender(nofAttacker* const attacker)
     if(rank_count)
     {
         // Gewünschten Rang an Hand der Militäreinstellungen ausrechnen, je nachdem wie stark verteidigt werden soll
-        unsigned rank = (rank_count - 1) * gwg->GetPlayer(player)->military_settings[1] / MILITARY_SETTINGS_SCALE[1];
+        unsigned rank = (rank_count - 1) * gwg->GetPlayer(player)->militarySettings_[1] / MILITARY_SETTINGS_SCALE[1];
 
         // Gewünschten Rang suchen
         unsigned r = 0;
@@ -1055,7 +1055,7 @@ nofDefender* nobBaseWarehouse::ProvideDefender(nofAttacker* const attacker)
                     --reserve_soldiers_available[i];
                     // bei der visuellen Warenanzahl wieder hinzufügen, da er dann wiederrum von der abgezogen wird, wenn
                     // er rausgeht und es so ins minus rutschen würde
-                    ++goods.people[JOB_PRIVATE + i];
+                    ++goods_.people[JOB_PRIVATE + i];
                     nofDefender* soldier = new nofDefender(pos, player, this, i, attacker);
                     return soldier;
 
@@ -1104,7 +1104,7 @@ nofDefender* nobBaseWarehouse::ProvideDefender(nofAttacker* const attacker)
 bool nobBaseWarehouse::AreRecruitingConditionsComply()
 {
     // Mindestanzahl der Gehilfen die vorhanden sein müssen anhand der 1. Militäreinstellung ausrechnen
-    unsigned needed_helpers = 100 - 10 * gwg->GetPlayer(player)->military_settings[0];
+    unsigned needed_helpers = 100 - 10 * gwg->GetPlayer(player)->militarySettings_[0];
 
     // einer muss natürlich mindestens vorhanden sein!
     if(!needed_helpers) needed_helpers = 1;
@@ -1238,7 +1238,7 @@ bool FW::Condition_StoreAndDontWantFigure(nobBaseWarehouse* wh, const void* para
 
 const Goods* nobBaseWarehouse::GetInventory() const
 {
-    return &goods;
+    return &goods_;
 }
 
 /// Fügt einige Güter hinzu
@@ -1246,7 +1246,7 @@ void nobBaseWarehouse::AddGoods(const Goods goods)
 {
     for(unsigned int i = 0; i < WARE_TYPES_COUNT; ++i)
     {
-        this->goods.goods[i] += goods.goods[i];
+        this->goods_.goods[i] += goods.goods[i];
         this->real_goods.goods[i] += goods.goods[i];
 
         if(goods.goods[i])
@@ -1255,7 +1255,7 @@ void nobBaseWarehouse::AddGoods(const Goods goods)
 
     for(unsigned int i = 0; i < JOB_TYPES_COUNT; ++i)
     {
-        this->goods.people[i] += goods.people[i];
+        this->goods_.people[i] += goods.people[i];
         this->real_goods.people[i] += goods.people[i];
 
         if(goods.people[i])
@@ -1458,7 +1458,7 @@ void nobBaseWarehouse::RefreshReserve(unsigned rank)
             // Bei der Reserve hinzufügen
             reserve_soldiers_available[rank] += add;
             // vom Warenbestand abziehen
-            goods.people[JOB_PRIVATE + rank] -= add;
+            goods_.people[JOB_PRIVATE + rank] -= add;
             real_goods.people[JOB_PRIVATE + rank] -= add;
         }
     }
@@ -1470,7 +1470,7 @@ void nobBaseWarehouse::RefreshReserve(unsigned rank)
         // Bei der Reserve abziehen
         reserve_soldiers_available[rank] -= subtract;
         // beim Warenbestand hinzufügen
-        goods.people[JOB_PRIVATE + rank] += subtract;
+        goods_.people[JOB_PRIVATE + rank] += subtract;
         real_goods.people[JOB_PRIVATE + rank] += subtract;
 		// if the rank is supposed to be send away, do it!
 		CheckOuthousing(1,JOB_PRIVATE + rank);

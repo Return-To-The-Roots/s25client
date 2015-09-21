@@ -58,7 +58,7 @@ void nofActiveSoldier::Serialize_nofActiveSoldier(SerializedGameData* sgd) const
 
     sgd->PushUnsignedChar(static_cast<unsigned char>(state));
     sgd->PushObject(enemy, false);
-    sgd->PushMapPoint(fight_spot);
+    sgd->PushMapPoint(fightSpot_);
 }
 
 
@@ -66,7 +66,7 @@ nofActiveSoldier::nofActiveSoldier(SerializedGameData* sgd, const unsigned obj_i
     state(SoldierState(sgd->PopUnsignedChar())),
     enemy(sgd->PopObject<nofActiveSoldier>(GOT_UNKNOWN))
 {
-    fight_spot = sgd->PopMapPoint();
+    fightSpot_ = sgd->PopMapPoint();
 }
 
 
@@ -320,19 +320,19 @@ bool nofActiveSoldier::FindEnemiesNearby(unsigned char excludedOwner)
     // Try to find fighting spot
 	if(excludedOwner==255)
 	{
-		if(!GetFightSpotNear(enemy, &fight_spot))
+		if(!GetFightSpotNear(enemy, &fightSpot_))
 			// No success? Then no fight
 			return false;
 	}
 	else//we have an excluded owner for our new enemy and that only happens in ffa situations when we won against the last defender so our fightspot is the exact location we have right now
 	{
-		fight_spot = pos;
+		fightSpot_ = pos;
 	}
 
     // We try to meet us now
     state = STATE_MEETENEMY;
     // Inform the other soldier
-    enemy->MeetEnemy(this, fight_spot);
+    enemy->MeetEnemy(this, fightSpot_);
 
     // Walk to him
     MeetingEnemy();
@@ -348,9 +348,9 @@ void nofActiveSoldier::IncreaseRank()
 
     // Einen Rang höher
     // Inventur entsprechend erhöhen und verringern
-    gwg->GetPlayer(player)->DecreaseInventoryJob(job, 1);
-    job = Job(unsigned(job) + 1);
-    gwg->GetPlayer(player)->IncreaseInventoryJob(job, 1);
+    gwg->GetPlayer(player)->DecreaseInventoryJob(job_, 1);
+    job_ = Job(unsigned(job_) + 1);
+    gwg->GetPlayer(player)->IncreaseInventoryJob(job_, 1);
 }
 
 /// Handle state "meet enemy" after each walking step
@@ -365,10 +365,10 @@ void nofActiveSoldier::MeetingEnemy()
     }
 
     // Reached the fighting place?
-    if (GetPos() == fight_spot)
+    if (GetPos() == fightSpot_)
     {
         // Enemy already there?
-        if (enemy->GetPos() == fight_spot && enemy->GetState() == STATE_WAITINGFORFIGHT)
+        if (enemy->GetPos() == fightSpot_ && enemy->GetState() == STATE_WAITINGFORFIGHT)
         {
             // Start fighting
             gwg->AddFigure(new noFighting(enemy, this), pos);
@@ -405,7 +405,7 @@ void nofActiveSoldier::MeetingEnemy()
     // Not at the fighting spot yet, continue walking there
     else
     {
-        unsigned char dir = gwg->FindHumanPath(pos, fight_spot, MAX_ATTACKING_RUN_DISTANCE);
+        unsigned char dir = gwg->FindHumanPath(pos, fightSpot_, MAX_ATTACKING_RUN_DISTANCE);
         if (dir != 0xFF)
         {
             StartWalking(dir);
@@ -443,7 +443,7 @@ void nofActiveSoldier::MeetEnemy(nofActiveSoldier* other, const MapPoint figh_sp
 {
     // Remember these things
     enemy = other;
-    this->fight_spot = figh_spot;
+    this->fightSpot_ = figh_spot;
 
     SoldierState old_state = state;
     state = STATE_MEETENEMY;

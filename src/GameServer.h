@@ -171,7 +171,7 @@ class GameServer : public Singleton<GameServer>, public GameMessageInterface
 
         Socket serversocket;
         GameServerPlayerList players;
-        GlobalGameSettings ggs;
+        GlobalGameSettings ggs_;
 
         /// der Spielstartcountdown
         class CountDown

@@ -52,7 +52,7 @@ RoadSegment::RoadSegment(const RoadType rt,
                          const std::vector<unsigned char>& route)
     : rt(rt), f1(f1), f2(f2), route(route)
 {
-    carrier[0] = carrier[1] = NULL;
+    carriers_[0] = carriers_[1] = NULL;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -68,8 +68,8 @@ RoadSegment::RoadSegment(SerializedGameData* sgd, const unsigned int obj_id)
       f2(sgd->PopObject<noRoadNode>(GOT_UNKNOWN)),
       route(sgd->PopUnsignedShort())
 {
-    carrier[0] = sgd->PopObject<nofCarrier>(GOT_NOF_CARRIER);
-    carrier[1] = sgd->PopObject<nofCarrier>(GOT_NOF_CARRIER);
+    carriers_[0] = sgd->PopObject<nofCarrier>(GOT_NOF_CARRIER);
+    carriers_[1] = sgd->PopObject<nofCarrier>(GOT_NOF_CARRIER);
 
     for(unsigned short i = 0; i < route.size(); ++i)
         route[i] = sgd->PopUnsignedChar();
@@ -92,10 +92,10 @@ void RoadSegment::Destroy_RoadSegment()
     if(f1)
         gwg->GetPlayer(f1->GetPlayer())->DeleteRoad(this);
 
-    if(carrier[0])
-        carrier[0]->LostWork();
-    if(carrier[1])
-        carrier[1]->LostWork();
+    if(carriers_[0])
+        carriers_[0]->LostWork();
+    if(carriers_[1])
+        carriers_[1]->LostWork();
 
     if(!route.empty())
     {
@@ -144,8 +144,8 @@ void RoadSegment::Serialize_RoadSegment(SerializedGameData* sgd) const
     sgd->PushObject(f1, false);
     sgd->PushObject(f2, false);
     sgd->PushUnsignedShort(route.size());
-    sgd->PushObject(carrier[0], true);
-    sgd->PushObject(carrier[1], true);
+    sgd->PushObject(carriers_[0], true);
+    sgd->PushObject(carriers_[1], true);
 
     for(unsigned short i = 0; i < route.size(); ++i)
         sgd->PushUnsignedChar(route[i]);
@@ -227,8 +227,8 @@ void RoadSegment::SplitRoad(noFlag* splitflag)
 
     for(unsigned char i = 0; i < 2; ++i)
     {
-        if(carrier[i])
-            carrier[i]->RoadSplitted(this, second);
+        if(carriers_[i])
+            carriers_[i]->RoadSplitted(this, second);
         else if(i == 0)
             // Die Straße war vorher unbesetzt? Dann 2. Straßenteil zu den unoccupied rodes
             // (1. ist ja schon drin)
@@ -255,12 +255,12 @@ bool RoadSegment::AreWareJobs(const bool flag, unsigned ct, const bool take_ware
 
     // Nur eine Ware da --> evtl läuft schon ein anderer Träger/Esel hin, nur wo Esel und Träger da sind
     // Wenn der Träger nun natürlich schon da ist, kann er die mitnehmen
-    if(jobs_count == 1 && carrier[0] && carrier[1] && !take_ware_immediately)
+    if(jobs_count == 1 && carriers_[0] && carriers_[1] && !take_ware_immediately)
     {
         // anderen Esel ermitteln
         ct = 1 - ct;
 
-        switch(carrier[ct]->GetCarrierState())
+        switch(carriers_[ct]->GetCarrierState())
         {
             default: break;
             case CARRS_FETCHWARE:
@@ -269,7 +269,7 @@ bool RoadSegment::AreWareJobs(const bool flag, unsigned ct, const bool take_ware
             case CARRS_GOBACKFROMFLAG:
             {
                 // Läuft der in die Richtung, holt eine Ware bzw. ist schon fast da, braucht der hier nicht hinlaufen
-                if(carrier[ct]->GetRoadDir() == !flag)
+                if(carriers_[ct]->GetRoadDir() == !flag)
                     return false;
             } break;
             case CARRS_CARRYWARETOBUILDING:
@@ -277,7 +277,7 @@ bool RoadSegment::AreWareJobs(const bool flag, unsigned ct, const bool take_ware
             {
                 // Wenn an die Flagge ein Gebäude angrenzt und der Träger da was reinträgt, kann der auch die Ware
                 // gleich mitnehmen, der zweite muss hier also nicht kommen
-                if((carrier[ct]->GetCurrentRoad()->f1 == f1 && !flag) || (carrier[ct]->GetCurrentRoad()->f1 == f2 && flag))
+                if((carriers_[ct]->GetCurrentRoad()->f1 == f1 && !flag) || (carriers_[ct]->GetCurrentRoad()->f1 == f2 && flag))
                     return false;
             } break;
 
@@ -316,9 +316,9 @@ void RoadSegment::AddWareJob(const noRoadNode* rn)
     unsigned char first = RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 2);
     for(unsigned char i = 0; i < 2; ++i)
     {
-        if(carrier[(i + first) % 2])
+        if(carriers_[(i + first) % 2])
         {
-            if(carrier[(i + first) % 2]->AddWareJob(rn))
+            if(carriers_[(i + first) % 2]->AddWareJob(rn))
                 // Ja, hat Zeit, dann brauchen wir den anderen nicht zu fragen
                 break;
         }
@@ -336,8 +336,8 @@ void RoadSegment::WareJobRemoved(const noFigure* const exception)
     // Allen Trägern Bescheid sagen
     for(unsigned char i = 0; i < 2; ++i)
     {
-        if(carrier[i] && carrier[i] != exception)
-            carrier[i]->RemoveWareJob();
+        if(carriers_[i] && carriers_[i] != exception)
+            carriers_[i]->RemoveWareJob();
     }
 }
 
@@ -384,7 +384,7 @@ void RoadSegment::TryGetDonkey()
 {
     // Nur rufen, falls es eine Eselstraße ist, noch kein Esel da ist, aber schon ein Träger da ist
     if(NeedDonkey())
-        carrier[1] = gwg->GetPlayer(f1->GetPlayer())->OrderDonkey(this);
+        carriers_[1] = gwg->GetPlayer(f1->GetPlayer())->OrderDonkey(this);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -400,13 +400,13 @@ void RoadSegment::CarrierAbrogated(nofCarrier* carrier)
             carrier->GetCarrierType() == nofCarrier::CT_BOAT)
     {
         // Straße wieder unbesetzt, bzw. nur noch Esel
-        this->carrier[0] = NULL;
+        this->carriers_[0] = NULL;
         gwg->GetPlayer(f1->GetPlayer())->FindCarrierForRoad(this);
     }
     else
     {
         // Kein Esel mehr da, versuchen, neuen zu bestellen
-        this->carrier[1] = gwg->GetPlayer(f1->GetPlayer())->OrderDonkey(this);
+        this->carriers_[1] = gwg->GetPlayer(f1->GetPlayer())->OrderDonkey(this);
     }
 }
 ////////////////////////////////////////////////////////////////////////////////////////
