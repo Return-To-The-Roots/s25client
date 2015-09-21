@@ -91,8 +91,8 @@ ptrdiff_t GameWorld::myRandom(ptrdiff_t max)
 
 void GameWorld::Scan(glArchivItem_Map* map)
 {
-    width = map->getHeader().getWidth();
-    height = map->getHeader().getHeight();
+    width_ = map->getHeader().getWidth();
+    height_ = map->getHeader().getHeight();
     lt = LandscapeType(map->getHeader().getGfxSet());
 
     Init();
@@ -107,9 +107,9 @@ void GameWorld::Scan(glArchivItem_Map* map)
     // Andere Sachen setzen
 	MapPoint pt(0, 0);
 	
-    for(pt.y = 0; pt.y < height; ++pt.y)
+    for(pt.y = 0; pt.y < height_; ++pt.y)
     {
-        for(pt.x = 0; pt.x < width; ++pt.x)
+        for(pt.x = 0; pt.x < width_; ++pt.x)
         {
         	MapNode& node = GetNode(pt);
 
@@ -194,9 +194,9 @@ void GameWorld::Scan(glArchivItem_Map* map)
     std::vector< MapPoint > headquarter_positions;
 
     // Objekte auslesen
-    for(pt.y = 0; pt.y < height; ++pt.y)
+    for(pt.y = 0; pt.y < height_; ++pt.y)
     {
-        for(pt.x = 0; pt.x < width; ++pt.x)
+        for(pt.x = 0; pt.x < width_; ++pt.x)
         {
             unsigned int pos = GetIdx(pt);
             unsigned char lc = map->GetMapDataAt(MAP_LANDSCAPE, pt.x, pt.y);
@@ -379,9 +379,9 @@ void GameWorld::Scan(glArchivItem_Map* map)
     }
 
     // BQ mit nichts erstmal inititalisieren (HQ-Setzen berechnet diese neu und braucht sie)
-    for(pt.y = 0; pt.y < height; ++pt.y)
+    for(pt.y = 0; pt.y < height_; ++pt.y)
     {
-        for(pt.x = 0; pt.x < width; ++pt.x)
+        for(pt.x = 0; pt.x < width_; ++pt.x)
         {
             SetBQ(pt, BQ_NOTHING);
         }
@@ -417,9 +417,9 @@ void GameWorld::Scan(glArchivItem_Map* map)
     }
 
     // Tiere auslesen
-    for(pt.y = 0; pt.y < height; ++pt.y)
+    for(pt.y = 0; pt.y < height_; ++pt.y)
     {
-        for(pt.x = 0; pt.x < width; ++pt.x)
+        for(pt.x = 0; pt.x < width_; ++pt.x)
         {
             unsigned pos = GetIdx(pt);
             // Tiere setzen
@@ -451,9 +451,9 @@ void GameWorld::Scan(glArchivItem_Map* map)
     }
 
     /// Weltmeere vermessen
-    for(pt.y = 0; pt.y < height; ++pt.y)
+    for(pt.y = 0; pt.y < height_; ++pt.y)
     {
-        for(pt.x = 0; pt.x < width; ++pt.x)
+        for(pt.x = 0; pt.x < width_; ++pt.x)
         {
             // Noch kein Meer an diesem Punkt?
             if(!GetNode(pt).sea_id)
@@ -479,9 +479,9 @@ void GameWorld::Scan(glArchivItem_Map* map)
     CalcHarborPosNeighbors();
 
     /// Schatten und BQ berechnen
-    for(pt.y = 0; pt.y < height; ++pt.y)
+    for(pt.y = 0; pt.y < height_; ++pt.y)
     {
-        for(pt.x = 0; pt.x < width; ++pt.x)
+        for(pt.x = 0; pt.x < width_; ++pt.x)
         {
             RecalcShadow(pt);
             SetBQ(pt, GAMECLIENT.GetPlayerID());
@@ -491,9 +491,9 @@ void GameWorld::Scan(glArchivItem_Map* map)
     /// Bei FoW und aufgedeckt müssen auch die ersten FoW-Objekte erstellt werden
     if(GAMECLIENT.GetGGS().exploration == GlobalGameSettings::EXP_FOGOFWARE_EXPLORED)
     {
-        for(pt.y = 0; pt.y < height; ++pt.y)
+        for(pt.y = 0; pt.y < height_; ++pt.y)
         {
-            for(pt.x = 0; pt.x < width; ++pt.x)
+            for(pt.x = 0; pt.x < width_; ++pt.x)
             {
                 // Alle Spieler durchgehen
                 for(unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
@@ -511,8 +511,8 @@ void GameWorld::Scan(glArchivItem_Map* map)
 void GameWorld::Serialize(SerializedGameData* sgd) const
 {
     // Headinformationen
-    sgd->PushUnsignedShort(width);
-    sgd->PushUnsignedShort(height);
+    sgd->PushUnsignedShort(width_);
+    sgd->PushUnsignedShort(height_);
     sgd->PushUnsignedChar(static_cast<unsigned char>(lt));
 
     // Obj-ID-Counter reinschreiben
@@ -603,8 +603,8 @@ void GameWorld::Serialize(SerializedGameData* sgd) const
 void GameWorld::Deserialize(SerializedGameData* sgd)
 {
     // Headinformationen
-    width = sgd->PopUnsignedShort();
-    height = sgd->PopUnsignedShort();
+    width_ = sgd->PopUnsignedShort();
+    height_ = sgd->PopUnsignedShort();
     lt = LandscapeType(sgd->PopUnsignedChar());
 
     // Initialisierungen
@@ -674,7 +674,7 @@ void GameWorld::Deserialize(SerializedGameData* sgd)
 
         if (nodes[i].harbor_id)
         {
-            GameWorldBase::HarborPos p(MapPoint((MapCoord) (i % width), (MapCoord) (i / width)));
+            GameWorldBase::HarborPos p(MapPoint((MapCoord) (i % width_), (MapCoord) (i / width_)));
             harbor_pos.push_back(p);
         }
     }
@@ -710,9 +710,9 @@ void GameWorld::Deserialize(SerializedGameData* sgd)
     sgd->PopObjectContainer(harbor_building_sites_from_sea, GOT_BUILDINGSITE);
 
     // BQ neu berechnen
-    for(unsigned y = 0; y < height; ++y)
+    for(unsigned y = 0; y < height_; ++y)
     {
-        for(unsigned x = 0; x < width; ++x)
+        for(unsigned x = 0; x < width_; ++x)
         {
             SetBQ(MapPoint(x, y), GAMECLIENT.GetPlayerID());
         }
@@ -756,7 +756,7 @@ void GameWorld::MilitaryBuildingCaptured(const MapPoint pt, const unsigned char 
 unsigned GameWorld::MeasureSea(const MapPoint pt, const unsigned short sea_id)
 {
     // Breitensuche von diesem Punkt aus durchführen
-    std::vector<bool> visited(width * height, false);
+    std::vector<bool> visited(width_ * height_, false);
     std::queue< MapPoint > todo;
 
     MapPoint start(pt);

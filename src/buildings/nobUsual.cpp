@@ -54,13 +54,13 @@ nobUsual::nobUsual(BuildingType type,
     wares[0] = wares[1] = wares[2] = 0;
 
     // Entsprechend so viele Listen erstellen, wie nötig sind, bei Bergwerken 3
-    if(USUAL_BUILDING_CONSTS[type - 10].wares_needed_count)
-        ordered_wares.resize(USUAL_BUILDING_CONSTS[type - 10].wares_needed_count);
+    if(USUAL_BUILDING_CONSTS[type_ - 10].wares_needed_count)
+        ordered_wares.resize(USUAL_BUILDING_CONSTS[type_ - 10].wares_needed_count);
     else
         ordered_wares.clear();
 
     // Arbeiter bestellen
-    gwg->GetPlayer(player)->AddJobWanted(USUAL_BUILDING_CONSTS[type - 10].job, this);
+    gwg->GetPlayer(player)->AddJobWanted(USUAL_BUILDING_CONSTS[type_ - 10].job, this);
 
     // Tür aufmachen,bis Gebäude besetzt ist
     OpenDoor();
@@ -92,12 +92,12 @@ nobUsual::nobUsual(SerializedGameData* sgd, const unsigned int obj_id)
     for(unsigned i = 0; i < 3; ++i)
         wares[i] = sgd->PopUnsignedChar();
 
-    if(USUAL_BUILDING_CONSTS[type - 10].wares_needed_count)
-        ordered_wares.resize(USUAL_BUILDING_CONSTS[type - 10].wares_needed_count);
+    if(USUAL_BUILDING_CONSTS[type_ - 10].wares_needed_count)
+        ordered_wares.resize(USUAL_BUILDING_CONSTS[type_ - 10].wares_needed_count);
     else
         ordered_wares.clear();
 
-    for(unsigned i = 0; i < USUAL_BUILDING_CONSTS[type - 10].wares_needed_count; ++i)
+    for(unsigned i = 0; i < USUAL_BUILDING_CONSTS[type_ - 10].wares_needed_count; ++i)
         sgd->PopObjectContainer(ordered_wares[i], GOT_WARE);
     for(unsigned i = 0; i < LAST_PRODUCTIVITIES_COUNT; ++i)
         last_productivities[i] = sgd->PopUnsignedShort();
@@ -130,7 +130,7 @@ void nobUsual::Destroy_nobUsual()
         gwg->GetPlayer(player)->JobNotWanted(this);
 
     // Bestellte Waren Bescheid sagen
-    for(unsigned i = 0; i < USUAL_BUILDING_CONSTS[type - 10].wares_needed_count; ++i)
+    for(unsigned i = 0; i < USUAL_BUILDING_CONSTS[type_ - 10].wares_needed_count; ++i)
         for(std::list<Ware*>::iterator it = ordered_wares[i].begin(); it != ordered_wares[i].end(); ++it)
             WareNotNeeded((*it));
 
@@ -144,8 +144,8 @@ void nobUsual::Destroy_nobUsual()
     gwg->GetPlayer(player)->RemoveUsualBuilding(this);
 
     // Inventur entsprechend verringern wegen den Waren, die vernichtetet werden
-    for(unsigned i = 0; i < USUAL_BUILDING_CONSTS[type - 10].wares_needed_count; ++i)
-        gwg->GetPlayer(player)->DecreaseInventoryWare(USUAL_BUILDING_CONSTS[type - 10].wares_needed[i], wares[i]);
+    for(unsigned i = 0; i < USUAL_BUILDING_CONSTS[type_ - 10].wares_needed_count; ++i)
+        gwg->GetPlayer(player)->DecreaseInventoryWare(USUAL_BUILDING_CONSTS[type_ - 10].wares_needed[i], wares[i]);
 
     Destroy_noBuilding();
 }
@@ -171,7 +171,7 @@ void nobUsual::Serialize_nobUsual(SerializedGameData* sgd) const
 
     for(unsigned i = 0; i < 3; ++i)
         sgd->PushUnsignedChar(wares[i]);
-    for(unsigned i = 0; i < USUAL_BUILDING_CONSTS[type - 10].wares_needed_count; ++i)
+    for(unsigned i = 0; i < USUAL_BUILDING_CONSTS[type_ - 10].wares_needed_count; ++i)
         sgd->PushObjectContainer(ordered_wares[i], true);
     for(unsigned i = 0; i < LAST_PRODUCTIVITIES_COUNT; ++i)
         sgd->PushUnsignedShort(last_productivities[i]);
@@ -190,22 +190,22 @@ void nobUsual::Draw(int x, int y)
 
     // Wenn Produktion gestoppos ist, Schild außen am Gebäude zeichnen zeichnen
     if(disable_production_virtual)
-        LOADER.GetMapImageN(46)->Draw(x + BUILDING_SIGN_CONSTS[nation][type].x, y + BUILDING_SIGN_CONSTS[nation][type].y, 0, 0, 0, 0, 0, 0);
+        LOADER.GetMapImageN(46)->Draw(x + BUILDING_SIGN_CONSTS[nation][type_].x, y + BUILDING_SIGN_CONSTS[nation][type_].y, 0, 0, 0, 0, 0, 0);
 
     // Rauch zeichnen
 
     // Raucht dieses Gebäude und ist es in Betrieb? (nur arbeitende Gebäude rauchen schließlich)
-    if(BUILDING_SMOKE_CONSTS[nation][type - 10].type && is_working)
+    if(BUILDING_SMOKE_CONSTS[nation][type_ - 10].type && is_working)
     {
         // Dann Qualm zeichnen (damit Qualm nicht synchron ist, x- und y- Koordinate als Unterscheidung
-        LOADER.GetMapImageN(692 + BUILDING_SMOKE_CONSTS[nation][type - 10].type * 8 + GAMECLIENT.GetGlobalAnimation(8, 5, 2, (GetX() + GetY()) * 100))
-        ->Draw(x + BUILDING_SMOKE_CONSTS[nation][type - 10].x, y + BUILDING_SMOKE_CONSTS[nation][type - 10].y, 0, 0, 0, 0, 0, 0, 0x99EEEEEE);
+        LOADER.GetMapImageN(692 + BUILDING_SMOKE_CONSTS[nation][type_ - 10].type * 8 + GAMECLIENT.GetGlobalAnimation(8, 5, 2, (GetX() + GetY()) * 100))
+        ->Draw(x + BUILDING_SMOKE_CONSTS[nation][type_ - 10].x, y + BUILDING_SMOKE_CONSTS[nation][type_ - 10].y, 0, 0, 0, 0, 0, 0, 0x99EEEEEE);
     }
 
     // TODO: zusätzliche Dinge wie Mühlenräder, Schweinchen etc bei bestimmten Gebäuden zeichnen
 
     // Bei Mühle, wenn sie nicht arbeitet, immer Mühlenräder (nichtdrehend) zeichnen
-    if(type == BLD_MILL && !is_working)
+    if(type_ == BLD_MILL && !is_working)
     {
         // Flügel der Mühle
         LOADER.GetNationImageN(nation, 250 + 5 * 49)->Draw(x, y, 0, 0, 0, 0, 0, 0);
@@ -213,7 +213,7 @@ void nobUsual::Draw(int x, int y)
         LOADER.GetNationImageN(nation, 250 + 5 * 49 + 1)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
     }
     // Esel in den Kammer bei Eselzucht zeichnen
-    else if(type == BLD_DONKEYBREEDER)
+    else if(type_ == BLD_DONKEYBREEDER)
     {
         // Für alle Völker jeweils
         // X-Position der Esel
@@ -235,7 +235,7 @@ void nobUsual::Draw(int x, int y)
         if(productivity >= 90) LOADER.GetMapImageN(2180 + DONKEY_ANIMATION[GAMECLIENT.GetGlobalAnimation(sizeof(DONKEY_ANIMATION), 5, 2, GetX() + GetY() * (nation + 1))])->Draw(x + DONKEY_X[nation][2], y + DONKEY_Y[nation]);
     }
     // Bei Katapulthaus Katapult oben auf dem Dach zeichnen, falls er nicht "arbeitet"
-    else if(type == BLD_CATAPULT && !is_working)
+    else if(type_ == BLD_CATAPULT && !is_working)
     {
         LOADER.GetImageN("rom_bobs", 1776)->Draw(x - 7, y - 19, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLOR_WHITE);
 
@@ -245,7 +245,7 @@ void nobUsual::Draw(int x, int y)
     }
 
     // Bei Schweinefarm Schweinchen auf dem Hof zeichnen
-    else if(type == BLD_PIGFARM && this->HasWorker())
+    else if(type_ == BLD_PIGFARM && this->HasWorker())
     {
         // Position der 5 Schweinchen für alle 4 Völker (1. ist das große Schwein)
         const int PIG_POSITIONS[NAT_COUNT][5][2] =
@@ -284,9 +284,9 @@ void nobUsual::Draw(int x, int y)
         dynamic_cast<nofPigbreeder*>(worker)->MakePigSounds();
     }
     // Bei nubischen Bergwerken das Feuer vor dem Bergwerk zeichnen
-    else if(type >= BLD_GRANITEMINE && type <= BLD_GOLDMINE && worker && nation == NAT_AFRICANS)
+    else if(IsMine() && worker && nation == NAT_AFRICANS)
         LOADER.GetMapImageN(740 + GAMECLIENT.GetGlobalAnimation(8, 5, 2, GetObjId() + GetX() + GetY()))->
-        Draw(x + NUBIAN_MINE_FIRE[type - BLD_GRANITEMINE][0], y + NUBIAN_MINE_FIRE[type - BLD_GRANITEMINE][1]);
+        Draw(x + NUBIAN_MINE_FIRE[type_ - BLD_GRANITEMINE][0], y + NUBIAN_MINE_FIRE[type_ - BLD_GRANITEMINE][1]);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -322,22 +322,22 @@ void nobUsual::HandleEvent(const unsigned int id)
         {
             // Maximale Warenanzahlbestimmen
             unsigned wares_count;
-            if(USUAL_BUILDING_CONSTS[type - 10].wares_needed_count == 3)
+            if(USUAL_BUILDING_CONSTS[type_ - 10].wares_needed_count == 3)
                 wares_count = 2;
-            else if(type == BLD_CATAPULT)
+            else if(type_ == BLD_CATAPULT)
                 wares_count = 4;
             else
                 wares_count = 6;
 
             if(wares[last_ordered_ware] + ordered_wares[last_ordered_ware].size() < wares_count)
             {
-                Ware* w = gwg->GetPlayer(player)->OrderWare(USUAL_BUILDING_CONSTS[type - 10].wares_needed[last_ordered_ware], this);
+                Ware* w = gwg->GetPlayer(player)->OrderWare(USUAL_BUILDING_CONSTS[type_ - 10].wares_needed[last_ordered_ware], this);
                 if(w)
                     ordered_wares[last_ordered_ware].push_back(w);
             }
 
             // Wenn dieser Betrieb 2 Waren benötigt, muss sich bei den Warentypen abgewechselt werden
-            last_ordered_ware = (last_ordered_ware + 1) % USUAL_BUILDING_CONSTS[type - 10].wares_needed_count;
+            last_ordered_ware = (last_ordered_ware + 1) % USUAL_BUILDING_CONSTS[type_ - 10].wares_needed_count;
         }
 
         // Nach ner bestimmten Zeit dann nächste Ware holen
@@ -365,9 +365,9 @@ void nobUsual::AddWare(Ware* ware)
             wares_count = 6;*/
 
     // Gucken, um was für einen Warentyp es sich handelt und dann dort hinzufügen
-    for(unsigned char i = 0; i < USUAL_BUILDING_CONSTS[type - 10].wares_needed_count; ++i)
+    for(unsigned char i = 0; i < USUAL_BUILDING_CONSTS[type_ - 10].wares_needed_count; ++i)
     {
-        if(ware->type == USUAL_BUILDING_CONSTS[type - 10].wares_needed[i])
+        if(ware->type == USUAL_BUILDING_CONSTS[type_ - 10].wares_needed[i])
         {
             ++wares[i];
             //assert(wares[i] <= wares_count);
@@ -408,9 +408,9 @@ bool nobUsual::FreePlaceAtFlag()
 void nobUsual::WareLost(Ware* ware)
 {
     // Ware konnte nicht kommen --> raus damit
-    for(unsigned i = 0; i < USUAL_BUILDING_CONSTS[type - 10].wares_needed_count; ++i)
+    for(unsigned i = 0; i < USUAL_BUILDING_CONSTS[type_ - 10].wares_needed_count; ++i)
     {
-        if(USUAL_BUILDING_CONSTS[type - 10].wares_needed[i] == ware->type)
+        if(USUAL_BUILDING_CONSTS[type_ - 10].wares_needed[i] == ware->type)
             ordered_wares[i].remove(ware);
     }
 }
@@ -425,7 +425,7 @@ void nobUsual::GotWorker(Job job, noFigure* worker)
 {
     this->worker = static_cast<nofBuildingWorker*>(worker);
 
-    if(USUAL_BUILDING_CONSTS[type - 10].wares_needed[0] != GD_NOTHING)
+    if(USUAL_BUILDING_CONSTS[type_ - 10].wares_needed[0] != GD_NOTHING)
         // erste Ware bestellen
         HandleEvent(0);
 }
@@ -448,7 +448,7 @@ void nobUsual::WorkerLost()
 
     // neuen Arbeiter bestellen
     worker = 0;
-    gwg->GetPlayer(player)->AddJobWanted(USUAL_BUILDING_CONSTS[type - 10].job, this);
+    gwg->GetPlayer(player)->AddJobWanted(USUAL_BUILDING_CONSTS[type_ - 10].job, this);
 
 }
 
@@ -460,7 +460,7 @@ void nobUsual::WorkerLost()
  */
 bool nobUsual::WaresAvailable()
 {
-    switch(USUAL_BUILDING_CONSTS[type - 10].wares_needed_count)
+    switch(USUAL_BUILDING_CONSTS[type_ - 10].wares_needed_count)
     {
         case 0: return true;
         case 1: return (wares[0])?true:false;
@@ -480,7 +480,7 @@ void nobUsual::ConsumeWares()
 {
     unsigned char ware_type = 0xFF;
 
-    if(USUAL_BUILDING_CONSTS[type - 10].wares_needed_count == 3)
+    if(USUAL_BUILDING_CONSTS[type_ - 10].wares_needed_count == 3)
     {
         // Bei Bergwerken wird immer nur eine Lebensmittelart "konsumiert" und es wird natürlich immer die genommen, die am meisten vorhanden ist
         unsigned char best = 0;
@@ -496,9 +496,9 @@ void nobUsual::ConsumeWares()
     }
     else
     {
-        if(USUAL_BUILDING_CONSTS[type - 10].wares_needed[0] != GD_NOTHING)
+        if(USUAL_BUILDING_CONSTS[type_ - 10].wares_needed[0] != GD_NOTHING)
             ware_type = 0;
-        if(USUAL_BUILDING_CONSTS[type - 10].wares_needed[1] != GD_NOTHING)
+        if(USUAL_BUILDING_CONSTS[type_ - 10].wares_needed[1] != GD_NOTHING)
             // 2 Waren verbrauchen!
             ware_type = 3;
     }
@@ -515,19 +515,19 @@ void nobUsual::ConsumeWares()
             Ware* w;
 
             if ((wares[0] < 2) &&
-                    (w = gwg->GetPlayer(player)->OrderWare(USUAL_BUILDING_CONSTS[type - 10].wares_needed[0], this)))
+                    (w = gwg->GetPlayer(player)->OrderWare(USUAL_BUILDING_CONSTS[type_ - 10].wares_needed[0], this)))
             {
                 ordered_wares[0].push_back(w);
             }
 
             if ((wares[1] < 2) &&
-                    (w = gwg->GetPlayer(player)->OrderWare(USUAL_BUILDING_CONSTS[type - 10].wares_needed[1], this)))
+                    (w = gwg->GetPlayer(player)->OrderWare(USUAL_BUILDING_CONSTS[type_ - 10].wares_needed[1], this)))
             {
                 ordered_wares[1].push_back(w);
             }
 
-            gwg->GetPlayer(player)->DecreaseInventoryWare(USUAL_BUILDING_CONSTS[type - 10].wares_needed[0], 1);
-            gwg->GetPlayer(player)->DecreaseInventoryWare(USUAL_BUILDING_CONSTS[type - 10].wares_needed[1], 1);
+            gwg->GetPlayer(player)->DecreaseInventoryWare(USUAL_BUILDING_CONSTS[type_ - 10].wares_needed[0], 1);
+            gwg->GetPlayer(player)->DecreaseInventoryWare(USUAL_BUILDING_CONSTS[type_ - 10].wares_needed[1], 1);
         }
         else
         {
@@ -537,7 +537,7 @@ void nobUsual::ConsumeWares()
             // try to get ware from warehouses
             if (wares[ware_type] < 2)
             {
-                Ware* w = gwg->GetPlayer(player)->OrderWare(USUAL_BUILDING_CONSTS[type - 10].wares_needed[ware_type], this);
+                Ware* w = gwg->GetPlayer(player)->OrderWare(USUAL_BUILDING_CONSTS[type_ - 10].wares_needed[ware_type], this);
 
                 if (w)
                 {
@@ -546,7 +546,7 @@ void nobUsual::ConsumeWares()
             }
 
             // Inventur entsprechend verringern
-            gwg->GetPlayer(player)->DecreaseInventoryWare(USUAL_BUILDING_CONSTS[type - 10].wares_needed[ware_type], 1);
+            gwg->GetPlayer(player)->DecreaseInventoryWare(USUAL_BUILDING_CONSTS[type_ - 10].wares_needed[ware_type], 1);
         }
     }
 
@@ -564,7 +564,7 @@ unsigned nobUsual::CalcDistributionPoints(noRoadNode* start, const GoodType type
     unsigned id;
     for(id = 0; id < 3; ++id)
     {
-        if(USUAL_BUILDING_CONSTS[this->type - 10].wares_needed[id] == type)
+        if(USUAL_BUILDING_CONSTS[this->type_ - 10].wares_needed[id] == type)
             break;
     }
 
@@ -574,9 +574,9 @@ unsigned nobUsual::CalcDistributionPoints(noRoadNode* start, const GoodType type
 
     // Maximale Warenanzahlbestimmen
     unsigned wares_count;
-    if(USUAL_BUILDING_CONSTS[this->type - 10].wares_needed_count == 3)
+    if(USUAL_BUILDING_CONSTS[this->type_ - 10].wares_needed_count == 3)
         wares_count = 2;
-    else if(this->type == BLD_CATAPULT)
+    else if(this->type_ == BLD_CATAPULT)
         wares_count = 4;
     else
         wares_count = 6;
@@ -610,7 +610,7 @@ void nobUsual::TakeWare(Ware* ware)
     // Ware in die Bestellliste aufnehmen
     for(unsigned char i = 0; i < 3; ++i)
     {
-        if(ware->type == USUAL_BUILDING_CONSTS[this->type - 10].wares_needed[i])
+        if(ware->type == USUAL_BUILDING_CONSTS[this->type_ - 10].wares_needed[i])
         {
             ordered_wares[i].push_back(ware);
             return;

@@ -40,7 +40,7 @@ class ctrlOptionGroup : public ctrlGroup
         /// Selektiert einen neuen Button
         void SetSelection(unsigned short selection, bool notify = false);
         /// Gibt den aktuell selektierten Button zurück
-        unsigned short GetSelection() const { return selection; }
+        unsigned short GetSelection() const { return selection_; }
         // Gibt einen Button aus der Gruppe zurück zum direkten Bearbeiten
         ctrlButton* GetButton(unsigned int id) { return GetCtrl<ctrlButton>(id); }
 
@@ -56,7 +56,7 @@ class ctrlOptionGroup : public ctrlGroup
         virtual bool Draw_(void);
 
     private:
-        unsigned short selection; ///< aktuell ausgewählter Button ( @p 0xFFFF = nicht selektiert )
+        unsigned short selection_; ///< aktuell ausgewählter Button ( @p 0xFFFF = nicht selektiert )
         int select_type;         ///< Typ der Selektierung
 };
 

@@ -63,7 +63,7 @@ class noShip : public noMovable
         } state;
 
         /// Das Meer, auf dem dieses Schiff fährt
-        unsigned short sea_id;
+        unsigned short seaId_;
         /// Zielpunkt des Schiffes
         unsigned goal_harbor_id;
         /// Anlegepunkt am Zielhafen, d.h. die Richtung relativ zum Zielpunkt
@@ -72,7 +72,7 @@ class noShip : public noMovable
         std::string name;
         /// Schiffsroute und Position
         unsigned curRouteIdx;
-        std::vector<unsigned char> route;
+        std::vector<unsigned char> route_;
         /// Ladung des Schiffes
         std::list<noFigure*> figures;
         std::list<Ware*> wares;
@@ -158,7 +158,7 @@ class noShip : public noMovable
         /// Hat das Schiff gerade nichts zu tun
         bool IsIdling() const { return (state == STATE_IDLE); }
         /// Gibt die ID des Meeres zurück, auf dem es sich befindet
-        unsigned short GetSeaID() const { return sea_id; }
+        unsigned short GetSeaID() const { return seaId_; }
         /// Gibt den Schiffsnamen zurück
         const std::string& GetName() const { return name; }
         /// Führt das Schiff gerade eine Expedition durch und wartet auf weitere Befehle?

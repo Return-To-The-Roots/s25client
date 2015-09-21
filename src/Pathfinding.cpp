@@ -81,10 +81,10 @@ struct PathfindingPoint
         /// Pointer auf GameWorld,  die wir brauchen,  um die IDs zu berechnen bzw. die Kartengröße zu bekommen
         static const GameWorldBase* gwb;
         /// Diese statischen Variablen zu Beginn des Pathfindings festlegen
-        static void Init(const MapPoint dst,  const GameWorldBase* gwb)
+        static void Init(const MapPoint destPt,  const GameWorldBase* gameWorld)
         {
-            PathfindingPoint::dst = dst;
-            PathfindingPoint::gwb = gwb;
+            PathfindingPoint::dst = destPt;
+            PathfindingPoint::gwb = gameWorld;
         }
 
         /// Operator für den Vergleich
@@ -554,7 +554,7 @@ bool GameWorldBase::FindPathOnRoads(const noRoadNode* const start,  const noRoad
     // if the counter reaches its maxium,  tidy up
     if (current_visit_on_roads == std::numeric_limits<unsigned>::max())
     {
-        for (int idx = width * height; idx >= 0; --idx)
+        for (int idx = width_ * height_; idx >= 0; --idx)
         {
             const noRoadNode* node = dynamic_cast<const noRoadNode*>(nodes[idx].obj);
 
@@ -570,10 +570,10 @@ bool GameWorldBase::FindPathOnRoads(const noRoadNode* const start,  const noRoad
     // Anfangsknoten einfügen
     todo.clear();
 
-    start->distance = start->estimate = CalcDistance(start->GetPos(),  goal->GetPos());
+    start->targetDistance = start->estimate = CalcDistance(start->GetPos(),  goal->GetPos());
     start->last_visit = current_visit_on_roads;
     start->prev = NULL;
-    start->cost = start->dir = 0;
+    start->cost = start->dir_ = 0;
 
     todo.push(start);
 
@@ -604,7 +604,7 @@ bool GameWorldBase::FindPathOnRoads(const noRoadNode* const start,  const noRoad
 
             if (first_dir)
             {
-                *first_dir = (unsigned char) last->dir;
+                *first_dir = (unsigned char) last->dir_;
             }
 
             if (next_harbor)
@@ -616,7 +616,7 @@ bool GameWorldBase::FindPathOnRoads(const noRoadNode* const start,  const noRoad
             // Fertig,  es wurde ein Pfad gefunden
             if (record)
             {
-                GAMECLIENT.AddPathfindingResult((unsigned char) last->dir,  length,  next_harbor);
+                GAMECLIENT.AddPathfindingResult((unsigned char) last->dir_,  length,  next_harbor);
             }
 
             return true;
@@ -672,9 +672,9 @@ bool GameWorldBase::FindPathOnRoads(const noRoadNode* const start,  const noRoad
                 {
                     neighbour->cost = cost;
                     neighbour->prev = best;
-                    neighbour->estimate = neighbour->distance + cost;
+                    neighbour->estimate = neighbour->targetDistance + cost;
                     todo.rearrange(neighbour);
-                    neighbour->dir = i;
+                    neighbour->dir_ = i;
                 }
 
                 continue;
@@ -683,11 +683,11 @@ bool GameWorldBase::FindPathOnRoads(const noRoadNode* const start,  const noRoad
             // Alles in Ordnung,  Knoten kann gebildet werden
             neighbour->last_visit = current_visit_on_roads;
             neighbour->cost = cost;
-            neighbour->dir = i;
+            neighbour->dir_ = i;
             neighbour->prev = best;
 
-            neighbour->distance = CalcDistance(neighbour->GetPos(),  goal->GetPos());
-            neighbour->estimate = neighbour->distance + cost;
+            neighbour->targetDistance = CalcDistance(neighbour->GetPos(),  goal->GetPos());
+            neighbour->estimate = neighbour->targetDistance + cost;
 
             todo.push(neighbour);
         }
@@ -711,10 +711,10 @@ bool GameWorldBase::FindPathOnRoads(const noRoadNode* const start,  const noRoad
                     // Dann nur ggf. Weg und Vorgänger korrigieren,  falls der Weg kürzer ist
                     if (cost < scs[i].dest->cost)
                     {
-                        scs[i].dest->dir = 100;
+                        scs[i].dest->dir_ = 100;
                         scs[i].dest->cost = cost;
                         scs[i].dest->prev = best;
-                        scs[i].dest->estimate = scs[i].dest->distance + cost;
+                        scs[i].dest->estimate = scs[i].dest->targetDistance + cost;
                         todo.rearrange(scs[i].dest);
                     }
 
@@ -724,12 +724,12 @@ bool GameWorldBase::FindPathOnRoads(const noRoadNode* const start,  const noRoad
                 // Alles in Ordnung,  Knoten kann gebildet werden
                 scs[i].dest->last_visit = current_visit_on_roads;
 
-                scs[i].dest->dir = 100;
+                scs[i].dest->dir_ = 100;
                 scs[i].dest->prev = best;
                 scs[i].dest->cost = cost;
 
-                scs[i].dest->distance = CalcDistance(scs[i].dest->GetPos(),  goal->GetPos());
-                scs[i].dest->estimate = scs[i].dest->distance + cost;
+                scs[i].dest->targetDistance = CalcDistance(scs[i].dest->GetPos(),  goal->GetPos());
+                scs[i].dest->estimate = scs[i].dest->targetDistance + cost;
 
                 todo.push(scs[i].dest);
             }

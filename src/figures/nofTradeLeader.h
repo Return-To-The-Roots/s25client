@@ -31,7 +31,7 @@ class nofTradeLeader : public noFigure
         /// Successor (NULL if this is the one behind the leader)
         nofTradeDonkey* successor;
         /// The start and home warehosue
-        MapPoint start, goal;
+        MapPoint start, goal_;
 
     private:
 

@@ -47,7 +47,7 @@ class noFigure : public noMovable
 {
     protected:
         FigureState fs; // aktueller Status
-        Job job; // Beruf(sart)
+        Job job_; // Beruf(sart)
         unsigned char player;
 
         // Straßenlaufzeug: (nur genutzt beim Laufen im Straßennetz!)
@@ -60,7 +60,7 @@ class noFigure : public noMovable
         bool on_ship;
 
         /// zu welcher Flagge er laufen soll
-        noRoadNode* goal;
+        noRoadNode* goal_;
         /// ist der Platz davor besetzt (z.B. durch Kampf), muss er warten (Stehen bleiben), sowohl genau auf einem
         /// Wegpunkt, also auch beliebig dazwischen!
         bool waiting_for_free_node;
@@ -71,7 +71,7 @@ class noFigure : public noMovable
         /// Wieviel (erfolglose) Rumirr-Flaggensuch-Versuche hat es schon gegeben (nach bestimmter Zahl Figur sterben lassen)
         unsigned short wander_tryings;
         /// Falls eine Flagge gefunden wurde, Zielpunkt, der Flagge
-        MapPoint flagPos;
+        MapPoint flagPos_;
         /// Obj-ID der (damaligen) Flagge, (evtl wurde sie zwischendurch abgerissen)
         unsigned flag_obj_id;
         /// Wenn der Typ aus einem Lagerhaus geflohen ist, Obj-ID des abbrennenden Lagerhauses zur
@@ -139,9 +139,9 @@ class noFigure : public noMovable
         void HandleEvent(const unsigned int id);
 
         /// Ziel setzen
-        void SetGoalToNULL() { goal = NULL; }
+        void SetGoalToNULL() { goal_ = NULL; }
         /// Ziel zurückgeben
-        noRoadNode* GetGoal() const { return goal; }
+        noRoadNode* GetGoal() const { return goal_; }
 
         /// Getter
         bool GetRoadDir() const { return rs_dir; }
@@ -152,7 +152,7 @@ class noFigure : public noMovable
         /// Legt die Anfangsdaten für das Laufen auf Wegen fest
         void InitializeRoadWalking(const RoadSegment* const road, const unsigned short rs_pos, const bool rs_dir);
         /// Gibt Job-Typ zurück
-        Job GetJobType() const { return job; }
+        Job GetJobType() const { return job_; }
         /// Zeichnet eine Figur aus "carrier.bob" beim Laufen.
         void DrawWalkingBobCarrier(int x, int y, unsigned int ware, bool fat);
         /// Zeichnet eine Figur aus "jobs.bob", wenn sie läuft.
@@ -216,7 +216,7 @@ class noFigure : public noMovable
         void ShipJourneyEnded();
         /// Gibt zurück, ob die Figur kein Ziel mehr hat und damit nach einer Schifffahrt im
         /// Lagerhaus interniert werden muss
-        bool HasNoGoal() const { return (goal ==  NULL); }
+        bool HasNoGoal() const { return (goal_ ==  NULL); }
         /// Gibt zurück, ob die Figur auf Straßen läuft zu ihrem Arbeitsplatz o.Ä.
         bool IsWalkingOnRoad() const
         {

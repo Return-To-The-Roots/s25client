@@ -70,7 +70,7 @@ nofSoldier::nofSoldier(SerializedGameData* sgd, const unsigned obj_id) : noFigur
 
 void nofSoldier::DrawSoldierWalking(int x, int y, bool waitingsoldier)
 {
-    DrawWalking(x, y, LOADER.GetBobN("jobs"), 30 + NATION_RTTR_TO_S2[gwg->GetPlayer(player)->nation] * 6 + job - JOB_PRIVATE, false, waitingsoldier);
+    DrawWalking(x, y, LOADER.GetBobN("jobs"), 30 + NATION_RTTR_TO_S2[gwg->GetPlayer(player)->nation] * 6 + job_ - JOB_PRIVATE, false, waitingsoldier);
 }
 
 void nofSoldier::AbrogateWorkplace()

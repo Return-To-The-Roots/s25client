@@ -1062,7 +1062,7 @@ void Window::Draw3D(const unsigned short x,
 
         glVertex2i(x, y + 2);
         glVertex2i(x, y + height);
-        glVertex2i(x + 1, y + height);
+        glVertex2i(x + 1, y + height); //-V525
         glVertex2i(x + 1, y + 2);
 
         glVertex2i(x + 1, y + 2);

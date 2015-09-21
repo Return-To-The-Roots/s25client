@@ -30,7 +30,7 @@ class noBaseBuilding : public noRoadNode
     protected:
 
         /// Typ des Gebäudes
-        BuildingType type;
+        BuildingType type_;
 
         /// Volk des Gebäudes (muss extra gespeichert werden, da ja auch z.B. fremde Gebäude erobert werden können)
         const Nation nation;
@@ -64,8 +64,8 @@ class noBaseBuilding : public noRoadNode
         virtual void WareLost(Ware* ware) = 0;
 
         /// Gibt diverse Sachen zurück
-        BuildingQuality GetSize() const { return BUILDING_SIZE[type]; }
-        BuildingType GetBuildingType () const { return type; }
+        BuildingQuality GetSize() const { return BUILDING_SIZE[type_]; }
+        BuildingType GetBuildingType () const { return type_; }
         Nation GetNation() const { return nation; }
         virtual BlockingManner GetBM() const;
 

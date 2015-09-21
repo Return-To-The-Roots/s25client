@@ -810,7 +810,7 @@ bool GameWorldGame::TerritoryChange(const noBaseBuilding* const building, const 
     int y2 = int(building->GetY()) + (radius + ADD_RADIUS) + 1;
 
 
-    TerritoryRegion tr(x1, y1, x2, y2, this);
+    TerritoryRegion region(x1, y1, x2, y2, this);
 
     // Alle Gebäude ihr Terrain in der Nähe neu berechnen
     for(sortedMilitaryBlds::iterator it = buildings.begin(); it != buildings.end(); ++it)
@@ -825,7 +825,7 @@ bool GameWorldGame::TerritoryChange(const noBaseBuilding* const building, const 
 
         // Wenn das Gebäude abgerissen wird oder wenn es noch nicht besetzt war, natürlich nicht mit einberechnen
         if(*it != building)
-            tr.CalcTerritoryOfBuilding(*it);
+            region.CalcTerritoryOfBuilding(*it);
     }
 
     // Baustellen von Häfen mit einschließen
@@ -833,7 +833,7 @@ bool GameWorldGame::TerritoryChange(const noBaseBuilding* const building, const 
             it != harbor_building_sites_from_sea.end(); ++it)
     {
         if(*it != building || !destroyed)
-            tr.CalcTerritoryOfBuilding(*it);
+            region.CalcTerritoryOfBuilding(*it);
     }
     // schaun ob sich was ändern würd im berechneten gebiet
     for(int y = y1; y < y2; ++y)
@@ -842,7 +842,7 @@ bool GameWorldGame::TerritoryChange(const noBaseBuilding* const building, const 
         {
             unsigned char prev_player, player;
             MapPoint t = ConvertCoords(x, y);
-            if((prev_player = GetNode(t).owner) != (player = tr.GetOwner(x, y)))
+            if((prev_player = GetNode(t).owner) != (player = region.GetOwner(x, y)))
             {
                 // if gameobjective isnt 75% ai can ignore water/snow/lava/swamp terrain (because it wouldnt help win the game)
                 if(GAMECLIENT.GetGGS().game_objective == GlobalGameSettings::GO_CONQUER3_4)
@@ -927,7 +927,7 @@ void GameWorldGame::DestroyPlayerRests(const MapPoint pt, const unsigned char ne
 bool GameWorldGame::IsNodeForFigures(const MapPoint pt) const
 {
     // Nicht über die Kante gehen!
-    if(pt.x >= width || pt.y >= height)
+    if(pt.x >= width_ || pt.y >= height_)
         return false;
 
 
@@ -1034,7 +1034,7 @@ void GameWorldGame::Attack(const unsigned char player_attacker, const MapPoint p
         // Militäreinstellungen zum Angriff eingestellt wurden
         unsigned soldiers_count =
             (static_cast<nobMilitary*>(*it)->GetTroopsCount() > 1) ?
-            ((static_cast<nobMilitary*>(*it)->GetTroopsCount() - 1) * GetPlayer(player_attacker)->military_settings[3] / MILITARY_SETTINGS_SCALE[3]) : 0;
+            ((static_cast<nobMilitary*>(*it)->GetTroopsCount() - 1) * GetPlayer(player_attacker)->militarySettings_[3] / MILITARY_SETTINGS_SCALE[3]) : 0;
 
         unsigned int distance = CalcDistance(pt, (*it)->GetPos());
 
@@ -1780,8 +1780,8 @@ void GameWorldGame::ConvertMineResourceTypes(unsigned char from, unsigned char t
 
     //LOG.lprintf("Convert map resources from %i to %i\n", from, to);
     // Alle Punkte durchgehen
-    for (MapCoord x = 0; x < width; ++x)
-        for (MapCoord y = 0; y < height; ++y)
+    for (MapCoord x = 0; x < width_; ++x)
+        for (MapCoord y = 0; y < height_; ++y)
         {
             resources = &(GetNode(MapPoint(x, y)).resources);
             // Gibt es Ressourcen dieses Typs?
@@ -1861,13 +1861,13 @@ void GameWorldGame::CalcHarborPosNeighbors()
     // - completed points are just skipped (todo_offset)
     size_t todo_offset = 0;
     size_t todo_length = 0;
-    std::vector<CalcHarborPosNeighborsNode> todo_list(width * height);
+    std::vector<CalcHarborPosNeighborsNode> todo_list(width_ * height_);
 
     // pre-calculate sea-points, as IsSeaPoint is rather expensive
-    std::vector<unsigned int> flags_init(width * height);
+    std::vector<unsigned int> flags_init(width_ * height_);
 
-    for (MapPoint p(0, 0); p.y < height; p.y++)
-        for (p.x = 0; p.x < width; p.x++)
+    for (MapPoint p(0, 0); p.y < height_; p.y++)
+        for (p.x = 0; p.x < width_; p.x++)
             flags_init[GetIdx(p)] = IsSeaPoint(p) ? 1 : 0;
 
     for (size_t i = 1; i < harbor_pos.size(); ++i)
@@ -2032,7 +2032,7 @@ void GameWorldGame::CreateTradeGraphs()
 }
 
 /// Creates a Trade Route from one point to another
-void GameWorldGame::CreateTradeRoute(const MapPoint start, MapPoint dest, const unsigned char player, TradeRoute** tr)
+void GameWorldGame::CreateTradeRoute(const MapPoint start, MapPoint dest, const unsigned char player, TradeRoute** route)
 {
-    *tr = new TradeRoute(tgs[player], start, dest);
+    *route = new TradeRoute(tgs[player], start, dest);
 }

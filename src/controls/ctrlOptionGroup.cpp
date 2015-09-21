@@ -39,7 +39,7 @@ ctrlOptionGroup::ctrlOptionGroup(Window* parent,
                                  int select_type,
                                  bool scale)
     : ctrlGroup(parent, id, scale),
-      selection(0xFFFF), select_type(select_type)
+      selection_(0xFFFF), select_type(select_type)
 {
 }
 
@@ -65,9 +65,9 @@ bool ctrlOptionGroup::Draw_(void)
 void ctrlOptionGroup::SetSelection(unsigned short selection, bool notify)
 {
     // Aktuellen ausgewählten Button wieder normal machen
-    if(this->selection != 0xFFFF)
+    if(this->selection_ != 0xFFFF)
     {
-        ctrlButton* button = GetCtrl<ctrlButton>(this->selection);
+        ctrlButton* button = GetCtrl<ctrlButton>(this->selection_);
         assert(button);
         switch(select_type)
         {
@@ -90,7 +90,7 @@ void ctrlOptionGroup::SetSelection(unsigned short selection, bool notify)
         }
     }
 
-    this->selection = selection;
+    this->selection_ = selection;
 
     if(notify && parent_)
         parent_->Msg_OptionGroupChange(GetID(), selection);

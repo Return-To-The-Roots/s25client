@@ -111,7 +111,7 @@ void nofShipWright::HandleDerivedEvent(const unsigned int id)
                     // Nichts zu arbeiten gefunden
                     StartNotWorking();
                     // Weiter warten, vielleicht gibts ja später wieder mal was
-                    current_ev = em->AddEvent(this, JOB_CONSTS[job].wait1_length, 1);
+                    current_ev = em->AddEvent(this, JOB_CONSTS[job_].wait1_length, 1);
                 }
             }
         } break;

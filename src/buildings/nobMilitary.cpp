@@ -101,7 +101,7 @@ nobMilitary::~nobMilitary()
 size_t nobMilitary::GetTotalSoldiers() const
 {
     size_t sum = troops.size() + ordered_troops.size() + troops_on_mission.size();
-    if(defender && (defender->IsWaitingAtFlag() || defender->IsFightingAtFlag()))
+    if(defender_ && (defender_->IsWaitingAtFlag() || defender_->IsFightingAtFlag()))
         sum++;
     sum += /* capturing_soldiers*/ + far_away_capturers.size();
     return sum;
@@ -141,7 +141,7 @@ void nobMilitary::Destroy_nobMilitary()
     if(!new_built)
         gwg->RecalcTerritory(this, MILITARY_RADIUS[size], true, false);
 
-    GAMECLIENT.SendAIEvent(new AIEvent::Building(AIEvent::BuildingLost, pos, type), player);
+    GAMECLIENT.SendAIEvent(new AIEvent::Building(AIEvent::BuildingLost, pos, type_), player);
 
 }
 
@@ -243,7 +243,7 @@ void nobMilitary::Draw(int x, int y)
 
     // Wenn Goldzufuhr gestoppos ist, Schild außen am Gebäude zeichnen zeichnen
     if(disable_coins_virtual)
-        LOADER.GetMapImageN(46)->Draw(x + BUILDING_SIGN_CONSTS[nation][type].x, y + BUILDING_SIGN_CONSTS[nation][type].y, 0, 0, 0, 0, 0, 0);
+        LOADER.GetMapImageN(46)->Draw(x + BUILDING_SIGN_CONSTS[nation][type_].x, y + BUILDING_SIGN_CONSTS[nation][type_].y, 0, 0, 0, 0, 0, 0);
 
 
 
@@ -457,7 +457,7 @@ void nobMilitary::RegulateTroops()
         // Zuerst die bestellten Soldaten wegschicken
         // Weak ones first
         std::vector<nofPassiveSoldier*> notNeededSoldiers;
-        if (gwg->GetPlayer(player)->military_settings[1] > MILITARY_SETTINGS_SCALE[1] / 2)
+        if (gwg->GetPlayer(player)->militarySettings_[1] > MILITARY_SETTINGS_SCALE[1] / 2)
         {
             for(SortedTroops::iterator it = ordered_troops.begin(); diff && !ordered_troops.empty(); ++diff)
             {
@@ -486,7 +486,7 @@ void nobMilitary::RegulateTroops()
         {
             // Dann den Rest (einer muss immer noch drinbleiben!)
             // erst die schwachen Soldaten raus
-            if (gwg->GetPlayer(player)->military_settings[1] > MILITARY_SETTINGS_SCALE[1] / 2)
+            if (gwg->GetPlayer(player)->militarySettings_[1] > MILITARY_SETTINGS_SCALE[1] / 2)
             {
                 for(SortedTroops::iterator it = troops.begin(); diff && troops.size() > 1; ++diff)
                 {
@@ -516,7 +516,7 @@ void nobMilitary::RegulateTroops()
         // Addon aktiv, nur soviele Leute zum Nachbesetzen schicken wie Verteidiger eingestellt
         if (aggressors.size() > 0 && GAMECLIENT.GetGGS().getSelection(ADDON_DEFENDER_BEHAVIOR) == 2)
         {
-            diff = (gwg->GetPlayer(player)->military_settings[2] * diff) / MILITARY_SETTINGS_SCALE[2];
+            diff = (gwg->GetPlayer(player)->militarySettings_[2] * diff) / MILITARY_SETTINGS_SCALE[2];
         }
 		//only order new troops if there is a chance that there is a path - pathfinding from each warehouse with soldiers to this mil building will start at the warehouse and cost time
         bool mightHaveRoad=false;
@@ -537,7 +537,7 @@ void nobMilitary::RegulateTroops()
 
 int nobMilitary::CalcTroopsCount()
 {
-    return (TROOPS_COUNT[nation][size] - 1) * gwg->GetPlayer(player)->military_settings[4 + frontier_distance] / MILITARY_SETTINGS_SCALE[4 + frontier_distance] + 1;
+    return (TROOPS_COUNT[nation][size] - 1) * gwg->GetPlayer(player)->militarySettings_[4 + frontier_distance] / MILITARY_SETTINGS_SCALE[4 + frontier_distance] + 1;
 }
 
 void nobMilitary::SendSoldiersHome()
@@ -587,7 +587,7 @@ void nobMilitary::OrderNewSoldiers()
         // Addon aktiv, nur soviele Leute zum Nachbesetzen schicken wie Verteidiger eingestellt
         if (aggressors.size() > 0 && GAMECLIENT.GetGGS().getSelection(ADDON_DEFENDER_BEHAVIOR) == 2)
         {
-            diff = (gwg->GetPlayer(player)->military_settings[2] * diff) / MILITARY_SETTINGS_SCALE[2];
+            diff = (gwg->GetPlayer(player)->militarySettings_[2] * diff) / MILITARY_SETTINGS_SCALE[2];
         }
         gwg->GetPlayer(player)->OrderTroops(this, diff,true);
 	} 
@@ -692,7 +692,7 @@ void nobMilitary::AddPassiveSoldier(nofPassiveSoldier* soldier)
     if(new_built)
     {
         if(GAMECLIENT.GetPlayerID() == this->player)
-            GAMECLIENT.SendPostMessage(new ImagePostMsgWithLocation(_("Military building occupied"), PMC_MILITARY, pos, this->type, this->nation));
+            GAMECLIENT.SendPostMessage(new ImagePostMsgWithLocation(_("Military building occupied"), PMC_MILITARY, pos, this->type_, this->nation));
         // Ist nun besetzt
         new_built = false;
         // Landgrenzen verschieben
@@ -702,7 +702,7 @@ void nobMilitary::AddPassiveSoldier(nofPassiveSoldier* soldier)
         // Fanfarensound abspieln, falls das Militärgebäude im Sichtbereich ist und unseres ist
         gwg->MilitaryBuildingCaptured(pos, player);
         // AIEvent senden an besitzer
-        GAMECLIENT.SendAIEvent(new AIEvent::Building(AIEvent::BuildingConquered, pos, type), player);
+        GAMECLIENT.SendAIEvent(new AIEvent::Building(AIEvent::BuildingConquered, pos, type_), player);
     }
     else
     {
@@ -750,7 +750,7 @@ nofPassiveSoldier* nobMilitary::ChooseSoldier()
     }
 
     // ID ausrechnen
-    unsigned rank = ((rank_count - 1) * gwg->GetPlayer(player)->military_settings[1]) / MILITARY_SETTINGS_SCALE[1];
+    unsigned rank = ((rank_count - 1) * gwg->GetPlayer(player)->militarySettings_[1]) / MILITARY_SETTINGS_SCALE[1];
 
     unsigned r = 0;
 
@@ -802,7 +802,7 @@ unsigned nobMilitary::GetNumSoldiersForAttack(const MapPoint dest, const unsigne
     // Militäreinstellungen zum Angriff eingestellt wurden
     unsigned short soldiers_count =
         (GetTroopsCount() > 1) ?
-        ((GetTroopsCount() - 1) * players->getElement(player_attacker)->military_settings[3] / 5) : 0;
+        ((GetTroopsCount() - 1) * players->getElement(player_attacker)->militarySettings_[3] / 5) : 0;
 
     unsigned int distance = gwg->CalcDistance(pos, dest);
 
@@ -1000,8 +1000,8 @@ void nobMilitary::Capture(const unsigned char new_owner)
     gwg->ImportantObjectDestroyed(pos);
 
     // AIEvent senden an gewinner&verlierer
-    GAMECLIENT.SendAIEvent(new AIEvent::Building(AIEvent::BuildingConquered, pos, type), player);
-    GAMECLIENT.SendAIEvent(new AIEvent::Building(AIEvent::BuildingLost, pos, type), old_player);
+    GAMECLIENT.SendAIEvent(new AIEvent::Building(AIEvent::BuildingConquered, pos, type_), player);
+    GAMECLIENT.SendAIEvent(new AIEvent::Building(AIEvent::BuildingLost, pos, type_), old_player);
 
 }
 

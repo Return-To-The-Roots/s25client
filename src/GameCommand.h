@@ -87,12 +87,23 @@ namespace gc
     class GameCommand
     {
         /// Type of this command
-        const Type gst;
+        Type gst;
         unsigned refCounter_;
         friend void ::intrusive_ptr_add_ref(GameCommand* x);
         friend void ::intrusive_ptr_release(GameCommand* x);
     public:
+        GameCommand(const GameCommand& obj): gst(obj.gst), refCounter_(0) // Do not copy refCounter!
+        {}
         virtual ~GameCommand(void) {}
+
+        GameCommand& operator=(const GameCommand& obj)
+        {
+            if(this == &obj)
+                return *this;
+            gst = obj.gst;
+            // Do not copy or reset refCounter!
+            return *this;
+        }
 
         /// Builds a GameCommand depending on Type
         static GameCommand* Deserialize(const Type gst, Serializer* ser);
@@ -105,8 +116,6 @@ namespace gc
         /// Execute this GameCommand
         virtual void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid) = 0;
 
-        GameCommand(const GameCommand& obj): gst(obj.gst) // Do not copy refCounter!
-        {}
     protected:
         GameCommand(const Type gst) : gst(gst), refCounter_(0) {}
     };

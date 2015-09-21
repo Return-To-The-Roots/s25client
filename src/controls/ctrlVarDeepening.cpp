@@ -69,7 +69,7 @@ bool ctrlVarDeepening::Draw_(void)
 {
     Draw3D(x_, y_, width_, height_, tc, 2);
 
-    font->Draw(x_ + width_ / 2, y_ + height_ / 2, GetFormatedText(), glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, color);
+    font->Draw(x_ + width_ / 2, y_ + height_ / 2, GetFormatedText(), glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, color_);
 
     return true;
 }

@@ -29,17 +29,17 @@ namespace gc{
                  }
         protected:
             /// Koordinaten auf der Map, die dieses Command betreffen
-            const MapPoint pt;
+            const MapPoint pt_;
             Coords(const Type gst, const MapPoint pt)
-                : GameCommand(gst), pt(pt) {}
+                : GameCommand(gst), pt_(pt) {}
             Coords(const Type gst, Serializer* ser)
-                : GameCommand(gst), pt(PopMapPoint(ser)){}
+                : GameCommand(gst), pt_(PopMapPoint(ser)){}
 
         public:
             virtual void Serialize(Serializer* ser) const
             {
-                ser->PushUnsignedShort(pt.x);
-                ser->PushUnsignedShort(pt.y);
+                ser->PushUnsignedShort(pt_.x);
+                ser->PushUnsignedShort(pt_.y);
             }
 
     };

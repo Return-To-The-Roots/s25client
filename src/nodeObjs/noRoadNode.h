@@ -46,14 +46,14 @@ class noRoadNode : public noCoordBase
         // cost from start
         mutable unsigned cost;
         // distance to target
-        mutable unsigned distance;
+        mutable unsigned targetDistance;
         // estimated total distance (cost + distance)
         mutable unsigned estimate;
 
         mutable unsigned last_visit;
 
         mutable const noRoadNode* prev;
-        mutable unsigned dir;
+        mutable unsigned dir_;
     public:
 
         noRoadNode(const NodalObjectType nop, const MapPoint pt, const unsigned char player);
@@ -68,7 +68,14 @@ class noRoadNode : public noCoordBase
     protected:  void Serialize_noRoadNode(SerializedGameData* sgd) const;
     public:     void Serialize(SerializedGameData* sgd) const { Serialize_noRoadNode(sgd); }
 
-        inline noRoadNode* GetNeighbour(const unsigned char dir) const {if(!routes[dir]) return 0; return((routes[dir]->GetF1() == this) ? routes[dir]->GetF2() : routes[dir]->GetF1());}
+        inline noRoadNode* GetNeighbour(const unsigned char dir) const {
+            if(!routes[dir])
+                return 0;
+            else if(routes[dir]->GetF1() == this) 
+                return routes[dir]->GetF2();
+            else
+                return routes[dir]->GetF1();
+        }
 
         void DestroyRoad(const unsigned char dir);
         void UpgradeRoad(const unsigned char dir);

@@ -7,7 +7,7 @@
 #include "SerializedGameData.h"
 
 nofTradeLeader::nofTradeLeader(const MapPoint pos, const unsigned char player, const TradeRoute& tr, const MapPoint  start, const MapPoint goal)
-    : noFigure(JOB_HELPER, pos, player), tr(tr), successor(NULL), start(start), goal(goal), fails(0)
+    : noFigure(JOB_HELPER, pos, player), tr(tr), successor(NULL), start(start), goal_(goal), fails(0)
 {
 }
 
@@ -16,7 +16,7 @@ nofTradeLeader::nofTradeLeader(SerializedGameData* sgd, const unsigned obj_id)
       tr(sgd, gwg, player),
       successor(sgd->PopObject<nofTradeDonkey>(GOT_NOF_TRADEDONKEY)),
       start(sgd->PopMapPoint()),
-      goal(sgd->PopMapPoint()),
+      goal_(sgd->PopMapPoint()),
       fails(sgd->PopUnsignedChar())
 
 {
@@ -31,7 +31,7 @@ void nofTradeLeader::Serialize(SerializedGameData* sgd) const
 
     sgd->PushObject(successor, true);
     sgd->PushMapPoint(start);
-    sgd->PushMapPoint(goal);
+    sgd->PushMapPoint(goal_);
     sgd->PushUnsignedChar(fails);
 }
 
@@ -49,7 +49,7 @@ void nofTradeLeader::Walked()
     }
     bool invalid_goal = false;
 
-    noBase* nob = gwg->GetNO(goal);
+    noBase* nob = gwg->GetNO(goal_);
     if(nob->GetType() != NOP_BUILDING)
         invalid_goal = true;
     if(!static_cast<noBuilding*>(nob)->IsWarehouse())

@@ -198,10 +198,10 @@ ctrlTextButton::ctrlTextButton(Window* parent, unsigned int id, unsigned short x
 void ctrlTextButton::DrawContent() const
 {
     unsigned color;
-    if(this->color == COLOR_YELLOW)
+    if(this->color_ == COLOR_YELLOW)
         color = ( (state == BUTTON_PRESSED || check) ? 0xFFFFAA00 : COLOR_YELLOW );
     else
-        color = this->color;
+        color = this->color_;
 
     font->Draw(GetX() + width_ / 2 + ( (state == BUTTON_PRESSED || check) ? 2 : 0 ),
                GetY() + height_ / 2 + ( (state == BUTTON_PRESSED || check) ? 2 : 0 ), text.c_str(), glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, color );

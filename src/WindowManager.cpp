@@ -47,8 +47,8 @@ static char THIS_FILE[] = __FILE__;
  *  @author OLiver
  */
 WindowManager::WindowManager(void)
-    : desktop(NULL), nextdesktop(NULL), nextdesktop_data(NULL), disable_mouse(false),
-      mc(NULL), screenWidth(0), screenHeight(0), last_left_click_time(0), last_left_click_point(0, 0)
+    : curDesktop(NULL), nextdesktop(NULL), nextdesktop_data(NULL), disable_mouse(false),
+      mouseCoords(NULL), screenWidth(0), screenHeight(0), last_left_click_time(0), last_left_click_point(0, 0)
 {
 }
 
@@ -69,9 +69,9 @@ void WindowManager::CleanUp()
         delete (*it);
     windows.clear();
 
-    if(desktop)
-        delete desktop;
-    desktop = NULL;
+    if(curDesktop)
+        delete curDesktop;
+    curDesktop = NULL;
     if(nextdesktop)
         delete nextdesktop;
     nextdesktop = NULL;
@@ -93,14 +93,14 @@ void WindowManager::Draw(void)
         Switch();
 
     // haben wir einen gültigen Desktop?
-    if(!desktop)
+    if(!curDesktop)
         return;
 
     // ja, Msg_PaintBefore aufrufen
-    desktop->Msg_PaintBefore();
+    curDesktop->Msg_PaintBefore();
 
     // und Desktop zeichnen
-    desktop->Draw();
+    curDesktop->Draw();
 
     // haben wir Fenster?
     if(!windows.empty())
@@ -132,7 +132,7 @@ void WindowManager::Draw(void)
     DrawToolTip();
 
     // Msg_PaintAfter aufrufen
-    desktop->Msg_PaintAfter();
+    curDesktop->Msg_PaintAfter();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -146,8 +146,8 @@ void WindowManager::Draw(void)
  */
 bool WindowManager::IsDesktopActive(void)
 {
-    if(desktop)
-        return desktop->GetActive();
+    if(curDesktop)
+        return curDesktop->GetActive();
 
     return false;
 }
@@ -167,14 +167,14 @@ bool WindowManager::IsDesktopActive(void)
 void WindowManager::RelayKeyboardMessage(bool (Window::*msg)(const KeyEvent&), const KeyEvent& ke)
 {
     // ist der Desktop gültig?
-    if(!desktop)
+    if(!curDesktop)
         return;
     // ist der Desktop aktiv?
-    if(desktop->GetActive())
+    if(curDesktop->GetActive())
     {
         // Ja, dann Nachricht an Desktop weiterleiten
-        (desktop->*msg)(ke);
-        desktop->RelayKeyboardMessage(msg, ke);
+        (curDesktop->*msg)(ke);
+        curDesktop->RelayKeyboardMessage(msg, ke);
         return;
     }
 
@@ -193,8 +193,8 @@ void WindowManager::RelayKeyboardMessage(bool (Window::*msg)(const KeyEvent&), c
         if(!windows.back()->RelayKeyboardMessage(msg, ke))
         {
             // Falls Nachrichten nicht behandelt wurden, an Desktop wieder senden
-            (desktop->*msg)(ke);
-            desktop->RelayKeyboardMessage(msg, ke);
+            (curDesktop->*msg)(ke);
+            curDesktop->RelayKeyboardMessage(msg, ke);
         }
     }
 }
@@ -203,14 +203,14 @@ void WindowManager::RelayKeyboardMessage(bool (Window::*msg)(const KeyEvent&), c
 void WindowManager::RelayMouseMessage(bool (Window::*msg)(const MouseCoords&), const MouseCoords& mc)
 {
     // ist der Desktop gültig?
-    if(!desktop)
+    if(!curDesktop)
         return;
     // ist der Desktop aktiv?
-    if(desktop->GetActive())
+    if(curDesktop->GetActive())
     {
         // Ja, dann Nachricht an Desktop weiterleiten
-        (desktop->*msg)(mc);
-        desktop->RelayMouseMessage(msg, mc);
+        (curDesktop->*msg)(mc);
+        curDesktop->RelayMouseMessage(msg, mc);
     }
     else if(!windows.empty())
     {
@@ -241,7 +241,7 @@ void WindowManager::Show(IngameWindow* window, bool mouse)
         return;
 
     // haben wir einen gültigen Desktop?
-    if(!desktop)
+    if(!curDesktop)
         return;
 
     // war das Fenster schon offen?
@@ -264,7 +264,7 @@ void WindowManager::Show(IngameWindow* window, bool mouse)
     windows.push_back(window);
 
     // Desktop deaktivieren
-    desktop->SetActive(false);
+    curDesktop->SetActive(false);
 
     // alle anderen Fenster deaktivieren
     for(IgwListIterator it = windows.begin(); it != windows.end(); ++it)
@@ -323,7 +323,7 @@ IngameWindow* WindowManager::FindWindowUnderMouse(const MouseCoords& mc) const{
 void WindowManager::Msg_LeftDown(MouseCoords mc)
 {
     // ist unser Desktop gültig?
-    if(!desktop)
+    if(!curDesktop)
         return;
 
     // Sound abspielen
@@ -343,16 +343,16 @@ void WindowManager::Msg_LeftDown(MouseCoords mc)
     if(windows.empty())
     {
         // nein, dann Desktop aktivieren
-        desktop->SetActive(true);
+        curDesktop->SetActive(true);
 
         // ist der Maus-Klick-Fix aktiv?
         if(!disable_mouse)
         {
             // nein, Msg_LeftDown aufrufen
-            desktop->Msg_LeftDown(mc);
+            curDesktop->Msg_LeftDown(mc);
 
             // und allen unten drunter auch Bescheid sagen
-            desktop->RelayMouseMessage(&Window::Msg_LeftDown, mc);
+            curDesktop->RelayMouseMessage(&Window::Msg_LeftDown, mc);
         }
 
         // und raus
@@ -407,19 +407,19 @@ void WindowManager::Msg_LeftDown(MouseCoords mc)
         }
 
         // Desktop deaktivieren, falls aktiviert
-        desktop->SetActive(false);
+        curDesktop->SetActive(false);
     }else{
         // Desktop aktivieren
-        desktop->SetActive(true);
+        curDesktop->SetActive(true);
 
         // ist der Maus-Klick-Fix aktiv?
         if(!disable_mouse)
         {
             // nein, dann Msg_LeftDown aufrufen
-            desktop->Msg_LeftDown(mc);
+            curDesktop->Msg_LeftDown(mc);
 
             // und allen unten drunter auch Bescheid sagen
-            desktop->RelayMouseMessage(&Window::Msg_LeftDown, mc);;
+            curDesktop->RelayMouseMessage(&Window::Msg_LeftDown, mc);;
         }
     }
 }
@@ -435,20 +435,20 @@ void WindowManager::Msg_LeftDown(MouseCoords mc)
 void WindowManager::Msg_LeftUp(const MouseCoords& mc)
 {
     // ist unser Desktop gültig?
-    if(!desktop)
+    if(!curDesktop)
         return;
 
     // ist der Maus-Klick-Fix aktiv?
     if(!disable_mouse)
     {
         // ist der Desktop aktiv?
-        if(desktop->GetActive())
+        if(curDesktop->GetActive())
         {
             // ja, dann Msg_LeftUp aufrufen
-            desktop->Msg_LeftUp(mc);
+            curDesktop->Msg_LeftUp(mc);
 
             // und die Fenster darunter auch
-            desktop->RelayMouseMessage(&Window::Msg_LeftUp, mc);
+            curDesktop->RelayMouseMessage(&Window::Msg_LeftUp, mc);
         }
         else if(windows.back())
         {
@@ -478,7 +478,7 @@ void WindowManager::Msg_LeftUp(const MouseCoords& mc)
 void WindowManager::Msg_RightDown(const MouseCoords& mc)
 {
     // ist unser Desktop gültig?
-    if(!desktop)
+    if(!curDesktop)
         return;
 
     // Sind Fenster vorhanden && ist das aktive Fenster ok
@@ -502,7 +502,7 @@ void WindowManager::Msg_RightDown(const MouseCoords& mc)
                 windows.remove(foundWindow);
                 windows.push_back(foundWindow);
 
-                desktop->SetActive(false);
+                curDesktop->SetActive(false);
 
                 foundWindow->SetActive(true);
                 foundWindow->Msg_RightDown(mc);
@@ -513,13 +513,13 @@ void WindowManager::Msg_RightDown(const MouseCoords& mc)
     }
 
     // ist der Desktop aktiv?
-    if(desktop->GetActive())
+    if(curDesktop->GetActive())
     {
         // ja, dann Msg_RightDown aufrufen
-        desktop->Msg_RightDown(mc);
+        curDesktop->Msg_RightDown(mc);
 
         // und die Fenster darunter auch
-        desktop->RelayMouseMessage(&Window::Msg_RightDown, mc);
+        curDesktop->RelayMouseMessage(&Window::Msg_RightDown, mc);
     }
     else if(!windows.empty())
     {
@@ -532,13 +532,13 @@ void WindowManager::Msg_RightDown(const MouseCoords& mc)
         windows.back()->SetActive(false);
 
     // Desktop aktivieren
-    desktop->SetActive(true);
+    curDesktop->SetActive(true);
 
     // ja, dann Msg_RightDown aufrufen
-    desktop->Msg_RightDown(mc);
+    curDesktop->Msg_RightDown(mc);
 
     // und die Fenster darunter auch
-    desktop->RelayMouseMessage(&Window::Msg_RightDown, mc);
+    curDesktop->RelayMouseMessage(&Window::Msg_RightDown, mc);
 }
 
 void WindowManager::Msg_RightUp(const MouseCoords& mc)
@@ -557,20 +557,20 @@ void WindowManager::Msg_RightUp(const MouseCoords& mc)
 void WindowManager::Msg_WheelUp(const MouseCoords& mc)
 {
     // ist unser Desktop gültig?
-    if(!desktop)
+    if(!curDesktop)
         return;
 
     // haben wir überhaupt fenster?
     if(windows.empty())
     {
         // nein, dann Desktop aktivieren
-        desktop->SetActive(true);
+        curDesktop->SetActive(true);
 
         // nein, Msg_LeftDown aufrufen
-        desktop->Msg_WheelUp(mc);
+        curDesktop->Msg_WheelUp(mc);
 
         // und allen unten drunter auch Bescheid sagen
-        desktop->RelayMouseMessage(&Window::Msg_WheelUp, mc);
+        curDesktop->RelayMouseMessage(&Window::Msg_WheelUp, mc);
 
         // und raus
         return;
@@ -610,16 +610,16 @@ void WindowManager::Msg_WheelUp(const MouseCoords& mc)
         foundWindow->RelayMouseMessage(&Window::Msg_WheelUp, mc);
 
         // Desktop deaktivieren, falls aktiviert
-        desktop->SetActive(false);
+        curDesktop->SetActive(false);
     }else {
         // Desktop aktivieren
-        desktop->SetActive(true);
+        curDesktop->SetActive(true);
 
         // nein, dann Msg_WheelUpDown aufrufen
-        desktop->Msg_WheelUp(mc);
+        curDesktop->Msg_WheelUp(mc);
 
         // und allen unten drunter auch Bescheid sagen
-        desktop->RelayMouseMessage(&Window::Msg_WheelUp, mc);;
+        curDesktop->RelayMouseMessage(&Window::Msg_WheelUp, mc);;
     }
 }
 
@@ -633,13 +633,13 @@ void WindowManager::Msg_WheelUp(const MouseCoords& mc)
  */
 void WindowManager::Msg_WheelDown(const MouseCoords& mc)
 {
-    if(!desktop)
+    if(!curDesktop)
         return;
     if(windows.empty())
     {
-        desktop->SetActive(true);
-        desktop->Msg_WheelDown(mc);
-        desktop->RelayMouseMessage(&Window::Msg_WheelDown, mc);
+        curDesktop->SetActive(true);
+        curDesktop->Msg_WheelDown(mc);
+        curDesktop->RelayMouseMessage(&Window::Msg_WheelDown, mc);
         // und raus
         return;
     }
@@ -659,11 +659,11 @@ void WindowManager::Msg_WheelDown(const MouseCoords& mc)
         foundWindow->SetActive(true);
         foundWindow->Msg_WheelDown(mc);
         foundWindow->RelayMouseMessage(&Window::Msg_WheelDown, mc);
-        desktop->SetActive(false);
+        curDesktop->SetActive(false);
     }else{
-        desktop->SetActive(true);
-        desktop->Msg_WheelDown(mc);
-        desktop->RelayMouseMessage(&Window::Msg_WheelDown, mc);;
+        curDesktop->SetActive(true);
+        curDesktop->Msg_WheelDown(mc);
+        curDesktop->RelayMouseMessage(&Window::Msg_WheelDown, mc);;
     }
 }
 
@@ -677,23 +677,23 @@ void WindowManager::Msg_WheelDown(const MouseCoords& mc)
  */
 void WindowManager::Msg_MouseMove(const MouseCoords& mc)
 {
-    this->mc = &mc;
+    this->mouseCoords = &mc;
 
     // ist unser Desktop gültig?
-    if(!desktop)
+    if(!curDesktop)
         return;
 
     // ist der Maus-Klick-Fix aktiv?
     if(!disable_mouse)
     {
         // nein, ist unser Desktop aktiv?
-        if(desktop->GetActive())
+        if(curDesktop->GetActive())
         {
             // ja, dann Msg_MouseMove aufrufen
-            desktop->Msg_MouseMove(mc);
+            curDesktop->Msg_MouseMove(mc);
 
             // und alles drunter auch benachrichtigen
-            desktop->RelayMouseMessage(&Window::Msg_MouseMove, mc);
+            curDesktop->RelayMouseMessage(&Window::Msg_MouseMove, mc);
         }
         else if(!windows.empty())
         {
@@ -824,10 +824,10 @@ void WindowManager::Msg_ScreenResize(unsigned short width, unsigned short height
     }
 
     // ist unser Desktop gültig?
-    if(!desktop)
+    if(!curDesktop)
         return;
 
-    desktop->Msg_ScreenResize(sr);
+    curDesktop->Msg_ScreenResize(sr);
 
     // IngameWindow verschieben falls nötig, so dass sie komplett sichtbar sind
     for(IgwListIterator it = windows.begin(); it != windows.end(); ++it)
@@ -875,7 +875,7 @@ void WindowManager::Close(IngameWindow* window)
         else
         {
             // nein, also Desktop aktivieren
-            desktop->SetActive(true);
+            curDesktop->SetActive(true);
         }
     }
 
@@ -920,7 +920,7 @@ void WindowManager::Switch(void)
     SetToolTip(NULL, "");
 
     // haben wir einen aktuell gültigen Desktop?
-    if(desktop)
+    if(curDesktop)
     {
         // Alle (alten) Fenster zumachen
         for(IgwListIterator it = windows.begin(); it != windows.end(); ++it)
@@ -928,17 +928,17 @@ void WindowManager::Switch(void)
         windows.clear();
 
         // Desktop löschen
-        delete desktop;
+        delete curDesktop;
     }
 
     // Desktop auf Neuen umstellen
-    desktop = nextdesktop;
+    curDesktop = nextdesktop;
 
     // ist der neue Desktop gültig?
-    if(desktop)
+    if(curDesktop)
     {
         // Desktop aktivieren
-        desktop->SetActive(true);
+        curDesktop->SetActive(true);
 
         // aufräumen
         nextdesktop = NULL;
@@ -950,14 +950,14 @@ void WindowManager::SetToolTip(Window* ttw, const std::string& tooltip)
 {
     static Window* lttw = NULL;
 
-    if(tooltip.length() == 0 && !ttw)
-        this->tooltip = "";
+    if(tooltip.empty() && !ttw)
+        this->curTooltip.clear();
 
-    if(tooltip.length() == 0 && lttw == ttw)
-        this->tooltip = "";
+    if(tooltip.empty() && lttw == ttw)
+        this->curTooltip.clear();
     if(tooltip.length())
     {
-        this->tooltip = tooltip;
+        this->curTooltip = tooltip;
         lttw = ttw;
     }
 }
@@ -965,15 +965,15 @@ void WindowManager::SetToolTip(Window* ttw, const std::string& tooltip)
 void WindowManager::DrawToolTip()
 {
     // Tooltip zeichnen
-    if(tooltip.length() && mc)
+    if(curTooltip.length() && mouseCoords)
     {
-        unsigned text_width = NormalFont->getWidth(tooltip);
-        unsigned right_edge = mc->x + 30 + text_width + 2;
-        unsigned x = mc->x + 30;
+        unsigned text_width = NormalFont->getWidth(curTooltip);
+        unsigned right_edge = mouseCoords->x + 30 + text_width + 2;
+        unsigned x = mouseCoords->x + 30;
 
         // links neben der Maus, wenn es über den Rand gehen würde
         if(right_edge > VIDEODRIVER.GetScreenWidth() )
-            x = mc->x - 30 - text_width;
+            x = mouseCoords->x - 30 - text_width;
 
         unsigned int count = 0;
         size_t pos = 0;
@@ -982,12 +982,12 @@ void WindowManager::DrawToolTip()
             count++;
             if(pos != 0)
                 pos++;
-            pos = tooltip.find('\n', pos);
+            pos = curTooltip.find('\n', pos);
         }
-        while( pos != std::string::npos && (pos < tooltip.length() - 2));
+        while( pos != std::string::npos && (pos < curTooltip.length() - 2));
 
-        Window::DrawRectangle(x - 2 , mc->y - 2, text_width + 4, 4 + count * NormalFont->getDy(), 0x9F000000);
-        NormalFont->Draw(x, mc->y , tooltip, glArchivItem_Font::DF_TOP, COLOR_YELLOW);
+        Window::DrawRectangle(x - 2 , mouseCoords->y - 2, text_width + 4, 4 + count * NormalFont->getDy(), 0x9F000000);
+        NormalFont->Draw(x, mouseCoords->y , curTooltip, glArchivItem_Font::DF_TOP, COLOR_YELLOW);
 
     }
 }

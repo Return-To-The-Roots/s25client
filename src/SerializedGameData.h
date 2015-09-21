@@ -97,7 +97,7 @@ class SerializedGameData : public Serializer
         SerializedGameData();
 
         /// Nimmt das gesamte Spiel auf und speichert es im Buffer
-        void MakeSnapshot(GameWorld* const gw, EventManager* const em);
+        void MakeSnapshot(GameWorld& gw, EventManager& em);
         /// Liest den Buffer aus einer Datei
         void ReadFromFile(BinaryFile& file);
 

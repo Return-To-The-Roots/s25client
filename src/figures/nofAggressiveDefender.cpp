@@ -323,7 +323,7 @@ void nofAggressiveDefender::NeedForHomeDefence()
 }
 
 /// Sagt den verschiedenen Zielen Bescheid, dass wir doch nicht mehr kommen können
-void nofAggressiveDefender::InformTargetsAboutCancelling()
+void nofAggressiveDefender::InformTargetsAboutCancelling() //-V524
 {
     // Angreifer Bescheid sagen
     attacker = NULL;

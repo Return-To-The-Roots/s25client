@@ -135,10 +135,10 @@ void nofFarmer::WorkFinished()
         }
 
         // Was stand hier vorher?
-        NodalObjectType nop = gwg->GetNO(pos)->GetType();
+        NodalObjectType noType = gwg->GetNO(pos)->GetType();
 
         // Nur Zierobjekte und Schilder dürfen weggerissen werden
-        if(nop == NOP_ENVIRONMENT || nop == NOP_NOTHING)
+        if(noType == NOP_ENVIRONMENT || noType == NOP_NOTHING)
         {
             // ggf. vorher wegreißen
             noBase* no = gwg->GetSpecObj<noBase>(pos);
@@ -192,15 +192,15 @@ nofFarmhand::PointQuality nofFarmer::GetPointQuality(const MapPoint pt)
             return PQ_NOTPOSSIBLE;
 
         // Ist Platz frei?
-        NodalObjectType nop = gwg->GetNO(pt)->GetType();
-        if(nop != NOP_ENVIRONMENT && nop && nop != NOP_NOTHING)
+        NodalObjectType noType = gwg->GetNO(pt)->GetType();
+        if(noType != NOP_ENVIRONMENT && noType && noType != NOP_NOTHING)
             return PQ_NOTPOSSIBLE;
 
         for(unsigned char i = 0; i < 6; ++i)
         {
             // Nicht direkt neben andere Getreidefelder und Gebäude setzen!
-            nop = gwg->GetNO(gwg->GetNeighbour(pt, i))->GetType();
-            if(nop == NOP_GRAINFIELD || nop == NOP_BUILDING || nop == NOP_BUILDINGSITE)
+            noType = gwg->GetNO(gwg->GetNeighbour(pt, i))->GetType();
+            if(noType == NOP_GRAINFIELD || noType == NOP_BUILDING || noType == NOP_BUILDINGSITE)
                 return PQ_NOTPOSSIBLE;
         }
 

@@ -176,7 +176,7 @@ inline void glArchivItem_Font::DrawChar(const std::string& text,
                                         unsigned int& i,
                                         GL_T2F_V3F_Struct* tmp,
                                         short& cx,
-                                        short& cy,
+                                        short& cy, //-V669
                                         float tw,
                                         float th,
                                         unsigned int& idx)

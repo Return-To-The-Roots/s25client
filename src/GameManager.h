@@ -89,7 +89,7 @@ class GameManager : public Singleton<GameManager>
         unsigned int last_time;
 		unsigned int skipgf_last_time;
 		unsigned int skipgf_last_report_gf;
-        CursorType cursor;
+        CursorType cursor_;
         CursorType cursor_next;
 };
 

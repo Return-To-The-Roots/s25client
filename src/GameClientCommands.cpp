@@ -70,7 +70,7 @@ void GameClient::Command_Chat(const std::string& text, const ChatDestination cd)
     if(GAMECLIENT.IsReplayModeOn() || text.length() == 0)
         return;
 
-    send_queue.push(new GameMessage_Server_Chat(playerid, cd, text));
+    send_queue.push(new GameMessage_Server_Chat(playerId_, cd, text));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -147,9 +147,9 @@ void GameClient::ChangePlayer(const unsigned char old_id, const unsigned char ne
     players[new_id].ps = PS_OCCUPIED;
 
     // Wenn wir betroffen waren, unsere ID neu setzen und BQ neu berechnen
-    if(playerid == old_id)
+    if(playerId_ == old_id)
     {
-        playerid = new_id;
+        playerId_ = new_id;
 
         // BQ überall neu berechnen
         for(unsigned y = 0; y < gw->GetHeight(); ++y)
@@ -175,7 +175,7 @@ void GameClient::ChangePlayer(const unsigned char old_id, const unsigned char ne
 
 void GameClient::ChangeReplayPlayer(const unsigned new_id)
 {
-    unsigned old_id = playerid;
+    unsigned old_id = playerId_;
 
     if(old_id == new_id)
         // Unsinn auf den selben Spieler zu wechseln
@@ -189,7 +189,7 @@ void GameClient::ChangeReplayPlayer(const unsigned new_id)
         return;
 
 
-    playerid = new_id;
+    playerId_ = new_id;
 
     // BQ überall neu berechnen
     for(unsigned y = 0; y < gw->GetHeight(); ++y)

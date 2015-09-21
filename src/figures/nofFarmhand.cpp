@@ -106,8 +106,8 @@ void nofFarmhand::HandleDerivedEvent(const unsigned int id)
             // Available points: 1st class and 2st class
             std::vector< MapPoint > available_points[3];
 
-            unsigned max_radius = (job == JOB_CHARBURNER) ? 3 : RADIUS[job - JOB_WOODCUTTER];
-            unsigned add_radius_when_found = (job == JOB_CHARBURNER) ? 1 : ADD_RADIUS_WHEN_FOUND[job - JOB_WOODCUTTER];
+            unsigned max_radius = (job_ == JOB_CHARBURNER) ? 3 : RADIUS[job_ - JOB_WOODCUTTER];
+            unsigned add_radius_when_found = (job_ == JOB_CHARBURNER) ? 1 : ADD_RADIUS_WHEN_FOUND[job_ - JOB_WOODCUTTER];
 
             bool points_found = false;
             bool wait = false;
@@ -130,7 +130,7 @@ void nofFarmhand::HandleDerivedEvent(const unsigned int id)
                                 found_in_radius = true;
                                 points_found = true;
                             }
-                            else if (job == JOB_STONEMASON)
+                            else if (job_ == JOB_STONEMASON)
                             {
                                 // just wait a little bit longer
                                 wait = true;
@@ -183,7 +183,7 @@ void nofFarmhand::HandleDerivedEvent(const unsigned int id)
             else if (wait)
             {
                 // We have to wait, since we do not know whether there are any unreachable or reserved points where there's more to get
-                current_ev = em->AddEvent(this, JOB_CONSTS[job].wait1_length, 1);
+                current_ev = em->AddEvent(this, JOB_CONSTS[job_].wait1_length, 1);
 
                 StartNotWorking();
             }
@@ -194,7 +194,7 @@ void nofFarmhand::HandleDerivedEvent(const unsigned int id)
                 {
                     if (!OutOfRessourcesMsgSent)
                     {
-                        switch(job)
+                        switch(job_)
                         {
                             case JOB_STONEMASON:
                                 GAMECLIENT.SendPostMessage(
@@ -229,7 +229,7 @@ void nofFarmhand::HandleDerivedEvent(const unsigned int id)
                 }
 
                 // Weiter warten, vielleicht gibts ja später wieder mal was
-                current_ev = em->AddEvent(this, JOB_CONSTS[job].wait1_length, 1);
+                current_ev = em->AddEvent(this, JOB_CONSTS[job_].wait1_length, 1);
 
                 StartNotWorking();
             }
@@ -262,7 +262,7 @@ void nofFarmhand::WalkToWorkpoint()
     {
         // Anfangen zu arbeiten
         state = STATE_WORK;
-        current_ev = em->AddEvent(this, JOB_CONSTS[job].work_length, 1);
+        current_ev = em->AddEvent(this, JOB_CONSTS[job_].work_length, 1);
         WorkStarted();
         return;
     }

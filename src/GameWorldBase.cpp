@@ -54,7 +54,7 @@ static char THIS_FILE[] = __FILE__;
 
 #define ADD_LUA_CONST(name) lua_pushnumber(lua, name); lua_setglobal(lua, #name);
 
-GameWorldBase::GameWorldBase() : gi(NULL), width(0), height(0), lt(LT_GREENLAND)
+GameWorldBase::GameWorldBase() : gi(NULL), width_(0), height_(0), lt(LT_GREENLAND)
 {
     noTree::ResetInstanceCounter();
     GameObject::ResetCounter();
@@ -216,12 +216,12 @@ GameWorldBase::~GameWorldBase()
 
 void GameWorldBase::Init()
 {
-    map_size = width * height;
+    map_size = width_ * height_;
 
     // Map-Knoten erzeugen
     nodes.resize(map_size);
     handled_nodes.resize(map_size);
-    military_squares.resize((width / MILITARY_SQUARE_SIZE + 1) * (height / MILITARY_SQUARE_SIZE + 1));
+    military_squares.resize((width_ / MILITARY_SQUARE_SIZE + 1) * (height_ / MILITARY_SQUARE_SIZE + 1));
 }
 
 void GameWorldBase::Unload()
@@ -326,14 +326,14 @@ GO_Type GameWorldBase::GetGOT(const MapPoint pt) const
 MapPoint GameWorldBase::ConvertCoords(Point<int> pt) const
 {
     while(pt.x < 0)
-        pt.x += width;
+        pt.x += width_;
 
     while(pt.y < 0)
-        pt.y += height;
+        pt.y += height_;
 
 
-    pt.x %= width;
-    pt.y %= height;
+    pt.x %= width_;
+    pt.y %= height_;
 
     return MapPoint(pt);
 }
@@ -348,7 +348,7 @@ MapCoord GameWorldBase::CalcDistanceAroundBorderX(const MapCoord x1, const MapCo
     else
     {
         // Ansonten Stück bis zum Rand und das Stück vom Rand bis zu Punkt 2
-        return (width - x1) + x2;
+        return (width_ - x1) + x2;
     }
 
 }
@@ -363,7 +363,7 @@ MapCoord GameWorldBase::CalcDistanceAroundBorderY(const MapCoord y1, const MapCo
     else
     {
         // Ansonten Stück bis zum Rand und das Stück vom Rand bis zu Punkt 2
-        return (width - y1) + y2;
+        return (width_ - y1) + y2;
     }
 }
 
@@ -377,14 +377,14 @@ unsigned GameWorldBase::CalcDistance(const int x1, const int y1,
     if (dx < 0)
         dx = -dx;
 
-    if (dy > height)
+    if (dy > height_)
     {
-        dy = (height * 2) - dy;
+        dy = (height_ * 2) - dy;
     }
 
-    if (dx > width)
+    if (dx > width_)
     {
-        dx = (width  * 2) - dx;
+        dx = (width_  * 2) - dx;
     }
 
     dx -= dy / 2;
@@ -395,15 +395,15 @@ unsigned GameWorldBase::CalcDistance(const int x1, const int y1,
 MapPoint GameWorldBase::MakeMapPoint(Point<int> pt) const
 {
     // Shift into range
-    pt.x %= width;
-    pt.y %= height;
+    pt.x %= width_;
+    pt.y %= height_;
     // Handle negative values (sign is implementation defined, but |value| < width)
     if(pt.x < 0)
-        pt.x += width;
+        pt.x += width_;
     if(pt.y < 0)
-        pt.y += height;
+        pt.y += height_;
     assert(pt.x >= 0 && pt.y >= 0);
-    assert(pt.x < width && pt.y < height);
+    assert(pt.x < width_ && pt.y < height_);
     return MapPoint(pt);
 }
 
@@ -416,7 +416,7 @@ MapPoint GameWorldBase::MakeMapPoint(Point<int> pt) const
  */
 unsigned char GameWorldBase::GetRoad(const MapPoint pt, unsigned char dir, bool all) const
 {
-    assert(pt.x < width && pt.y < height);
+    assert(pt.x < width_ && pt.y < height_);
 
     unsigned pos = GetIdx(pt);
 
@@ -617,7 +617,7 @@ void GameWorldBase::SetVirtualRoad(const MapPoint pt, unsigned char dir, unsigne
 {
     assert(dir < 3);
 
-    unsigned pos = width * unsigned(pt.y) + unsigned(pt.x);
+    unsigned pos = width_ * unsigned(pt.y) + unsigned(pt.x);
 
     nodes[pos].roads[dir] = type;
 }
@@ -659,7 +659,7 @@ bool GameWorldBase::IsMilitaryBuilding(const MapPoint pt) const
 sortedMilitaryBlds GameWorldBase::LookForMilitaryBuildings(const MapPoint pt, unsigned short radius) const
 {
     // Radius auf Anzahl der Militärquadrate begrenzen, sonst gibt es Überlappungen
-    radius = std::min<MapCoord>(width / MILITARY_SQUARE_SIZE + 1, radius);
+    radius = std::min<MapCoord>(width_ / MILITARY_SQUARE_SIZE + 1, radius);
 
     // in Militärquadrat-Koordinaten umwandeln-
     int first_x = pt.x / MILITARY_SQUARE_SIZE;
@@ -683,17 +683,17 @@ sortedMilitaryBlds GameWorldBase::LookForMilitaryBuildings(const MapPoint pt, un
     for(int cy = first_y; cy <= last_y; ++cy)
     {
         MapCoord ty;
-        if(cy < 0) ty = (cy + 2 * (height / MILITARY_SQUARE_SIZE + 1)) % (height / MILITARY_SQUARE_SIZE + 1);
-        else if(cy >= height / MILITARY_SQUARE_SIZE + 1) ty = cy % (height / MILITARY_SQUARE_SIZE + 1);
+        if(cy < 0) ty = (cy + 2 * (height_ / MILITARY_SQUARE_SIZE + 1)) % (height_ / MILITARY_SQUARE_SIZE + 1);
+        else if(cy >= height_ / MILITARY_SQUARE_SIZE + 1) ty = cy % (height_ / MILITARY_SQUARE_SIZE + 1);
         else ty = cy;
         for(int cx = first_x; cx <= last_x; ++cx)
         {
             MapCoord tx;
-            if(cx < 0) tx = cx + width / MILITARY_SQUARE_SIZE + 1;
-            else if(cx >= width / MILITARY_SQUARE_SIZE + 1) tx = cx - width / MILITARY_SQUARE_SIZE - 1;
+            if(cx < 0) tx = cx + width_ / MILITARY_SQUARE_SIZE + 1;
+            else if(cx >= width_ / MILITARY_SQUARE_SIZE + 1) tx = cx - width_ / MILITARY_SQUARE_SIZE - 1;
             else tx = cx;
 
-            const std::list<nobBaseMilitary*>& milBuildings  = military_squares[ty * (width / MILITARY_SQUARE_SIZE + 1) + tx];
+            const std::list<nobBaseMilitary*>& milBuildings  = military_squares[ty * (width_ / MILITARY_SQUARE_SIZE + 1) + tx];
             for(std::list<nobBaseMilitary*>::const_iterator it = milBuildings.begin(); it != milBuildings.end(); ++it)
             {
                 // Jedes Militärgebäude nur einmal hinzufügen
@@ -1043,28 +1043,28 @@ MapPoint GameWorldBase::GetNeighbour(const MapPoint pt, unsigned dir) const
     switch (dir)
     {
     case 0:
-        res.x = (pt.x == 0) ? width - 1 : pt.x - 1;
+        res.x = (pt.x == 0) ? width_ - 1 : pt.x - 1;
         res.y = pt.y;
         break;
     case 1:
-        res.x = (pt.y & 1) ? pt.x : ((pt.x == 0) ? width - 1 : pt.x - 1);
-        res.y = (pt.y == 0) ? height - 1 : pt.y - 1;
+        res.x = (pt.y & 1) ? pt.x : ((pt.x == 0) ? width_ - 1 : pt.x - 1);
+        res.y = (pt.y == 0) ? height_ - 1 : pt.y - 1;
         break;
     case 2:
-        res.x = (!(pt.y & 1)) ? pt.x : ((pt.x == width - 1) ? 0 : pt.x + 1);
-        res.y = (pt.y == 0) ? height - 1 : pt.y - 1;
+        res.x = (!(pt.y & 1)) ? pt.x : ((pt.x == width_ - 1) ? 0 : pt.x + 1);
+        res.y = (pt.y == 0) ? height_ - 1 : pt.y - 1;
         break;
     case 3:
-        res.x = (pt.x == width - 1) ? 0 : pt.x + 1;
+        res.x = (pt.x == width_ - 1) ? 0 : pt.x + 1;
         res.y = pt.y;
         break;
     case 4:
-        res.x = (!(pt.y & 1)) ? pt.x : ((pt.x == width - 1) ? 0 : pt.x + 1);
-        res.y = (pt.y == height - 1) ? 0 : pt.y + 1;
+        res.x = (!(pt.y & 1)) ? pt.x : ((pt.x == width_ - 1) ? 0 : pt.x + 1);
+        res.y = (pt.y == height_ - 1) ? 0 : pt.y + 1;
         break;
     case 5:
-        res.x = (pt.y & 1) ? pt.x : ((pt.x == 0) ? width - 1 : pt.x - 1);
-        res.y = (pt.y == height - 1) ? 0 : pt.y + 1;
+        res.x = (pt.y & 1) ? pt.x : ((pt.x == 0) ? width_ - 1 : pt.x - 1);
+        res.y = (pt.y == height_ - 1) ? 0 : pt.y + 1;
         break;
     default:
         throw std::logic_error("Invalid direction!");
@@ -1218,7 +1218,7 @@ void GameWorldBase::RecalcShadow(const MapPoint pt)
 
     // und hier genau umgekehrt
     shadow -= (SHADOW_COEFFICIENT * (GetNode(pt).altitude - GetNodeAround(pt, 1).altitude));
-    shadow -= (SHADOW_COEFFICIENT * (GetNode(pt).altitude - GetNodeAround(pt, 3).altitude));
+    shadow -= (SHADOW_COEFFICIENT * (GetNode(pt).altitude - GetNodeAround(pt, 2).altitude));
     shadow -= (SHADOW_COEFFICIENT * (GetNode(pt).altitude - GetNodeAround(pt, 3).altitude));
 
     // Zu niedrig? Zu hoch? --> extreme Werte korrigieren
@@ -1273,7 +1273,7 @@ unsigned short GameWorldBase::IsCoastalPoint(const MapPoint pt) const
         }
     }
 
-    return false;
+    return 0;
 }
 
 unsigned short GameWorldBase::IsCoastalPointToSeaWithHarbor(const MapPoint pt) const
@@ -1287,7 +1287,7 @@ unsigned short GameWorldBase::IsCoastalPointToSeaWithHarbor(const MapPoint pt) c
                 return sea;
         }
     }
-    return false;
+    return 0;
 }
 
 /// Gibt Dynamische Objekte, die von einem bestimmten Punkt aus laufen oder dort stehen sowie andere Objekte, 

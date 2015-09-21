@@ -218,7 +218,7 @@ void nofHunter::TryStartHunting()
     else
     {
         // Weiter warten, vielleicht gibts ja später wieder mal was
-        current_ev = em->AddEvent(this, JOB_CONSTS[job].wait1_length, 1);
+        current_ev = em->AddEvent(this, JOB_CONSTS[job_].wait1_length, 1);
         //tell the ai that there is nothing left to hunt!
         GAMECLIENT.SendAIEvent(new AIEvent::Building(AIEvent::NoMoreResourcesReachable, workplace->GetPos(), workplace->GetBuildingType()), player);
 
@@ -455,8 +455,8 @@ void nofHunter::StartWalkingHome()
 void nofHunter::WalkHome()
 {
     // Sind wir zu Hause angekommen? (genauer an der Flagge !!)
-    MapPoint flagPos = gwg->GetNeighbour(workplace->GetPos(), 4);
-    if(pos == flagPos)
+    MapPoint homeFlagPos = gwg->GetNeighbour(workplace->GetPos(), 4);
+    if(pos == homeFlagPos)
     {
         // Weiteres übernimmt nofBuildingWorker
         WorkingReady();
@@ -465,7 +465,7 @@ void nofHunter::WalkHome()
 
     // Weg suchen und ob wir überhaupt noch nach Hause kommen (Toleranz bei dem Weg mit einberechnen,
     // damit er nicht einfach rumirrt und wegstirbt, wenn er einmal ein paar Felder zu weit gelaufen ist)
-    unsigned char dir = gwg->FindHumanPath(pos, flagPos, MAX_HUNTING_DISTANCE + MAX_HUNTING_DISTANCE / 4);
+    unsigned char dir = gwg->FindHumanPath(pos, homeFlagPos, MAX_HUNTING_DISTANCE + MAX_HUNTING_DISTANCE / 4);
     if(dir == 0xFF)
     {
         // Kein Weg führt mehr nach Hause--> Rumirren

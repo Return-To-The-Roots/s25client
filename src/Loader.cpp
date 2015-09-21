@@ -418,7 +418,7 @@ bool Loader::SaveSettings()
     LOG.lprintf(_("Writing \"%s\": "), file.c_str());
     fflush(stdout);
 
-    if(libsiedler2::Write(file.c_str(), files.find("config")->second) != 0)
+    if(libsiedler2::Write(file.c_str(), files_.find("config")->second) != 0)
         return false;
 
     using namespace boost::filesystem;
@@ -525,11 +525,11 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool* nations)
 
     for (unsigned int nation = 0; nation < NAT_COUNT; ++nation)
     {
-        nation_gfx[nation] = &(this->files[NATION_GFXSET_Z[lastgfx][nation]]);
+        nation_gfx[nation] = &(this->files_[NATION_GFXSET_Z[lastgfx][nation]]);
     }
 
-    map_gfx = &(this->files[MAP_GFXSET_Z[lastgfx]]);
-    tex_gfx = &(this->files[TEX_GFXSET[lastgfx]]);
+    map_gfx = &(this->files_[MAP_GFXSET_Z[lastgfx]]);
+    tex_gfx = &(this->files_[TEX_GFXSET[lastgfx]]);
 
     return true;
 }
@@ -1328,11 +1328,11 @@ bool Loader::LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Pal
     std::string name = fileName.stem().string();
 
     // bereits geladen und wir wollen kein nochmaliges laden
-    if(!load_always && files[name].size() != 0)
+    if(!load_always && files_[name].size() != 0)
         return true;
 
-    if(files[name].size() == 0)
-        return LoadFile(pfad, palette, files[name]);
+    if(files_[name].size() == 0)
+        return LoadFile(pfad, palette, files_[name]);
 
     // haben wir eine override file? dann nicht-leere items überschreiben
     libsiedler2::ArchivInfo newEntries;
@@ -1341,7 +1341,7 @@ bool Loader::LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Pal
 
     LOG.lprintf(_("Replacing entries of previously loaded file '%s'\n"), name.c_str());
 
-    libsiedler2::ArchivInfo* existing = &files.find(name)->second;
+    libsiedler2::ArchivInfo* existing = &files_.find(name)->second;
     if(fileName.extension() == ".bob")
     {
         existing = dynamic_cast<libsiedler2::ArchivInfo*>(existing->get(0));

@@ -49,12 +49,12 @@ class IngameWindow : public Window
         glArchivItem_Bitmap* GetBackground(void) { return background; }
 
         /// setzt den Fenstertitel.
-        void SetTitle(const std::string& title) { this->title = title; }
+        void SetTitle(const std::string& title) { this->title_ = title; }
         /// liefert den Fenstertitel.
-        const std::string& GetTitle(void) { return title; }
+        const std::string& GetTitle(void) { return title_; }
 
         /// setzt die ausgeklappte Höhe des Fensters.
-        void SetIwHeight(unsigned short height) { this->iwHeight = height; if(!minimized) this->height_ = height; }
+        void SetIwHeight(unsigned short height) { this->iwHeight = height; if(!isMinimized_) this->height_ = height; }
         /// liefert die ausgeklappte Höhe des Fensters.
         unsigned short GetIwHeight(void) const { return iwHeight; }
 
@@ -66,7 +66,7 @@ class IngameWindow : public Window
         /// minimiert das Fenster.
         void SetMinimized(bool minimized = true);
         /// ist das Fenster minimiert?
-        bool GetMinimized() { return minimized; }
+        bool GetMinimized() { return isMinimized_; }
 
         /// Fenster wird bei Rechtsklick geschlossen?
         void SetCloseOnRightClick(bool close_on_right_click) {this->close_on_right_click = close_on_right_click;}
@@ -94,7 +94,7 @@ class IngameWindow : public Window
 
     protected:
         unsigned short iwHeight;
-        std::string title;
+        std::string title_;
         glArchivItem_Bitmap* background;
         unsigned short last_x;
         unsigned short last_y;
@@ -108,7 +108,7 @@ class IngameWindow : public Window
     private:
         bool modal;
         bool closeme;
-        bool minimized;
+        bool isMinimized_;
         bool move;
         bool close_on_right_click;
 };

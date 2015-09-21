@@ -47,7 +47,7 @@ ctrlPercent::ctrlPercent(Window* parent,
                          glArchivItem_Font* font,
                          const unsigned short* percentage)
     : Window(x, y, id, parent, width, height),
-      tc(tc), text_color(text_color), font(font), percentage(percentage)
+      tc(tc), text_color(text_color), font(font), percentage_(percentage)
 {
 }
 
@@ -62,7 +62,7 @@ ctrlPercent::ctrlPercent(Window* parent,
 bool ctrlPercent::Draw_(void)
 {
     // Wenn der Prozentsatzpointer = 0, dann wird 0 angezeigt und es soll nich abstürzen!
-    unsigned short percentage = (this->percentage ?  *this->percentage : 0);
+    unsigned short percentage = (this->percentage_ ?  *this->percentage_ : 0);
 
     // Farbe herausfinden
     unsigned int color = 0xFFFF0000;

@@ -137,9 +137,9 @@ GoodType nofMetalworker::GetOrderedTool()
 
     for (unsigned i = 0; i < TOOL_COUNT; ++i)
     {
-        if (gwg->GetPlayer(player)->tools_ordered[i] > 0 && (gwg->GetPlayer(player)->tools_settings[i] > prio) )
+        if (gwg->GetPlayer(player)->tools_ordered[i] > 0 && (gwg->GetPlayer(player)->toolsSettings_[i] > prio) )
         {
-            prio = gwg->GetPlayer(player)->tools_settings[i];
+            prio = gwg->GetPlayer(player)->toolsSettings_[i];
             tool = i;
         }
     }
@@ -166,7 +166,7 @@ GoodType nofMetalworker::GetRandomTool()
     unsigned short all_size = 0;
 
     for(unsigned int i = 0; i < TOOL_COUNT; ++i)
-        all_size += gwg->GetPlayer(player)->tools_settings[i];
+        all_size += gwg->GetPlayer(player)->toolsSettings_[i];
 
 	// if they're all zero
     if(all_size == 0)
@@ -181,12 +181,12 @@ GoodType nofMetalworker::GetRandomTool()
     // Ansonsten Array mit den Werkzeugtypen erstellen und davon dann eins zufällig zurückliefern, je höher Wahr-
     // scheinlichkeit (Balken), desto öfter im Array enthalten
     std::vector<unsigned char> random_array(all_size);
-    unsigned pos = 0;
+    unsigned curIdx = 0;
 
     for(unsigned int i = 0; i < TOOL_COUNT; ++i)
     {
-        for(unsigned g = 0; g < gwg->GetPlayer(player)->tools_settings[i]; ++g)
-            random_array[pos++] = i;
+        for(unsigned g = 0; g < gwg->GetPlayer(player)->toolsSettings_[i]; ++g)
+            random_array[curIdx++] = i;
     }
 
     GoodType tool = TOOLS_SETTINGS_IDS[random_array[RANDOM.Rand(__FILE__, __LINE__, GetObjId(), all_size)]];

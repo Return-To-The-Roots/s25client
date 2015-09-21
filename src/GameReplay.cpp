@@ -33,7 +33,7 @@ const unsigned short Replay::REPLAY_VERSION = 26;
  *  @author OLiver
  */
 Replay::Replay() : nwf_length(0), random_init(0), pathfinding_results(false), map_length(0), map_zip_length(0), map_data(0),
-    savegame(0), last_gf(0), last_gf_file_pos(0), gf_file_pos(0)
+    savegame(0), lastGF_(0), last_gf_file_pos(0), gf_file_pos(0)
 {
 }
 
@@ -74,7 +74,7 @@ bool Replay::WriteHeader(const std::string& filename)
     if(!file.Open(filename.c_str(), OFM_WRITE))
         return false;
 
-    Replay::filename = filename;
+    Replay::fileName_ = filename;
 
     // Versionszeug schreiben
     WriteVersion(file, 6, REPLAY_SIGNATURE, REPLAY_VERSION);
@@ -91,7 +91,7 @@ bool Replay::WriteHeader(const std::string& filename)
     last_gf_file_pos = file.Tell();
 
     /// End-GF (erstmal nur 0, wird dann im Spiel immer geupdatet)
-    file.WriteUnsignedInt(last_gf);
+    file.WriteUnsignedInt(lastGF_);
     // Anzahl Spieler
     file.WriteUnsignedChar(player_count);
     // Spielerdaten
@@ -147,7 +147,7 @@ bool Replay::WriteHeader(const std::string& filename)
  */
 bool Replay::LoadHeader(const std::string& filename, const bool load_extended_header)
 {
-    this->filename = filename;
+    this->fileName_ = filename;
     // Datei öffnen
     if(!file.Open(filename.c_str(), OFM_READ))
         return false;
@@ -169,7 +169,7 @@ bool Replay::LoadHeader(const std::string& filename, const bool load_extended_he
     /// Pathfinding-Results hier drin?
     pathfinding_results = (file.ReadUnsignedChar() == 1);
     /// End-GF
-    last_gf = file.ReadUnsignedInt();
+    lastGF_ = file.ReadUnsignedInt();
     // Spieleranzahl
     player_count = file.ReadUnsignedChar();
 
@@ -402,7 +402,7 @@ bool Replay::ReadPathfindingResult(unsigned char* data, unsigned* length, MapPoi
     {
         // Open the file for writing
         pf_file.Close();
-        pf_file.Open((filename + "_res").c_str(), OFM_WRITE_ADD);
+        pf_file.Open((fileName_ + "_res").c_str(), OFM_WRITE_ADD);
         pathfinding_results = false;
         return false;
     }

@@ -68,7 +68,7 @@ class nofActiveSoldier : public nofSoldier
         /// Current enemy when fighting in the nofActiveSoldier modes (and only in this case!)
         nofActiveSoldier* enemy;
         /// Meeting point for fighting against the enemy
-        MapPoint fight_spot;
+        MapPoint fightSpot_;
 
     protected:
 

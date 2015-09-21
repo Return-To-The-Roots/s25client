@@ -62,10 +62,10 @@ void GameClient::ExecuteGameFrame_Game()
     //LOG.lprintf("%d = %d - %d\n", framesinfo.nr / framesinfo.nwf_length, checksum, RANDOM.GetCurrentRandomValue());
 
     // Stehen eigene Commands an, die gesendet werden müssen?
-    send_queue.push(new GameMessage_GameCommand(playerid, checksum, gcs));
+    send_queue.push(new GameMessage_GameCommand(playerId_, checksum, gameCommands_));
 
     // alles gesendet --> Liste löschen
-    gcs.clear();
+    gameCommands_.clear();
 
     // Evtl Spieler wechseln?
     if(gw->switchedPlayers.newPlayer != 255)

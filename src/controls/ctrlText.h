@@ -34,7 +34,7 @@ class ctrlBaseText
         /// Setzt Schriftart
         void SetFont(glArchivItem_Font* font) { this->font = font; }
         /// Setzt Textfarbe
-        void SetColor(const unsigned color) { this->color = color; }
+        void SetColor(const unsigned color) { this->color_ = color; }
 
         /// Gibt Text zurück
         const std::string& GetText() const { return text; }
@@ -42,7 +42,7 @@ class ctrlBaseText
     protected:
 
         std::string text;
-        unsigned int color;
+        unsigned int color_;
         glArchivItem_Font* font;
 };
 

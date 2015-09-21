@@ -60,7 +60,7 @@ class Minimap
         Minimap(const unsigned short map_width, const unsigned short map_height);
         virtual ~Minimap() {}
 
-        void SetMap(glArchivItem_Map* s2map);
+        virtual void SetMap(const glArchivItem_Map& s2map);
 
         /// Zeichnet die Minimap zentriert in die entsprechende Bounding-Box
         /// (x und y bezieht sich auf obere linke Ecke der Bounding Box)
@@ -73,23 +73,22 @@ class Minimap
     protected:
 
         /// Erstellt die Textur
-        void CreateMapTexture(const void* param);
-
+        void CreateMapTexture();
+        virtual unsigned CalcPixelColor(const MapPoint pt, const unsigned t) = 0;
         /// Berechnet einen bestimmten Punkt neu
         void RecalcNode(const void* param, const MapPoint pt);
-        /// Berechnet die Farbe eines Pixels
-        virtual unsigned CalcPixelColor(const void* param, const MapPoint pt, const unsigned t) = 0;
 };
 
 class PreviewMinimap : public Minimap
 {
+    const glArchivItem_Map* s2Map;
     public:
-        PreviewMinimap(glArchivItem_Map* s2map);
+        PreviewMinimap(const glArchivItem_Map* const s2map);
 
+        void SetMap(const glArchivItem_Map& s2map) override;
     protected:
-
         /// Berechnet die Farbe für einen bestimmten Pixel der Minimap (t = Terrain1 oder 2)
-        unsigned CalcPixelColor(const void* param, const MapPoint pt, const unsigned t);
+        unsigned CalcPixelColor(const MapPoint pt, const unsigned t) override;
 };
 
 class IngameMinimap : public Minimap
@@ -142,7 +141,7 @@ class IngameMinimap : public Minimap
     protected:
 
         /// Berechnet die Farbe für einen bestimmten Pixel der Minimap (t = Terrain1 oder 2)
-        unsigned CalcPixelColor(const void* param, const MapPoint pt, const unsigned t);
+        unsigned CalcPixelColor(const MapPoint pt, const unsigned t) override;
         /// Berechnet für einen bestimmten Punkt und ein Dreieck die normale Terrainfarbe
         unsigned CalcTerrainColor(const MapPoint pt, const unsigned t);
         /// Prüft ob an einer Stelle eine Straße gezeichnet werden muss

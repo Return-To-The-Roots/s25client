@@ -193,7 +193,7 @@ SerializedGameData::SerializedGameData() : objects_write(0), objects_count(0)
 }
 
 
-void SerializedGameData::MakeSnapshot(GameWorld* const gw, EventManager* const em)
+void SerializedGameData::MakeSnapshot(GameWorld& gw, EventManager& evMgr)
 {
     // Buffer erzeugen
     Clear();
@@ -206,9 +206,9 @@ void SerializedGameData::MakeSnapshot(GameWorld* const gw, EventManager* const e
     PushUnsignedInt(GameObject::GetObjCount());
 
     // Objektmanager serialisieren
-    gw->Serialize(this);
+    gw.Serialize(this);
     // EventManager serialisieren
-    em->Serialize(this);
+    evMgr.Serialize(this);
     // Spieler serialisieren
     for(unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
         GAMECLIENT.GetPlayer(i)->Serialize(this);

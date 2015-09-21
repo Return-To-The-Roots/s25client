@@ -315,7 +315,7 @@ bool GameServer::Start()
             // Standardeinstellungen aus den SETTINGS für die Addons laden
             //GAMECLIENT.GetGGS().LoadSettings();
             GAMECLIENT.LoadGGS();
-            ggs = GAMECLIENT.GetGGS();
+            ggs_ = GAMECLIENT.GetGGS();
         } break;
         case MAPTYPE_SAVEGAME:
         {
@@ -374,7 +374,7 @@ bool GameServer::Start()
             // Einstellungen aus dem Savegame für die Addons werden in Load geladen
 
             // Und die GGS
-            ggs = save.ggs;
+            ggs_ = save.ggs;
         } break;
     }
 
@@ -592,7 +592,7 @@ bool GameServer::StartGame()
         }
     }
 
-    framesinfo.gf_length_new = framesinfo.gf_length = SPEED_GF_LENGTHS[ggs.game_speed];
+    framesinfo.gf_length_new = framesinfo.gf_length = SPEED_GF_LENGTHS[ggs_.game_speed];
 
     // NetworkFrame-Länge bestimmen, je schlechter (also höher) die Pings, desto länger auch die Framelänge
     unsigned i = 1;
@@ -824,7 +824,7 @@ void GameServer::TogglePlayerNation(unsigned char client)
 // Spieleinstellungen verschicken
 void GameServer::ChangeGlobalGameSettings(const GlobalGameSettings& ggs)
 {
-    this->ggs = ggs;
+    this->ggs_ = ggs;
     SendToAll(GameMessage_GGSChange(ggs));
     LOG.write("SERVER >>> BROADCAST: NMS_GGS_CHANGE\n");
 }
@@ -1508,7 +1508,7 @@ inline void GameServer::OnNMSMapChecksum(const GameMessage_Map_Checksum& msg)
             OnNMSPlayerToggleColor(GameMessage_Player_Toggle_Color(msg.player, player->color));
 
         // GGS senden
-        player->send_queue.push(new GameMessage_GGSChange(ggs));
+        player->send_queue.push(new GameMessage_GGSChange(ggs_));
 
         LOG.write("SERVER >>> BROADCAST: NMS_GGS_CHANGE\n");
     }

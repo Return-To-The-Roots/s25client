@@ -74,7 +74,7 @@ class Replay : public SavedFile
         /// Aktualisiert den End-GF, schreibt ihn in die Replaydatei (nur beim Spielen bzw. Schreiben verwenden!)
         void UpdateLastGF(const unsigned last_gf);
 
-        const std::string& GetFileName() const { return filename; }
+        const std::string& GetFileName() const { return fileName_; }
         BinaryFile* GetFile() { return &file; }
 
     public:
@@ -94,7 +94,7 @@ class Replay : public SavedFile
         Savegame* savegame;
 
         /// End-GF
-        unsigned last_gf;
+        unsigned lastGF_;
         /// Position des End-GF in der Datei
         unsigned last_gf_file_pos;
         /// Position des GFs fürs nächste Command -> muss gleich hinter
@@ -111,7 +111,7 @@ class Replay : public SavedFile
         /// File handle for pathfinding results
         BinaryFile pf_file;
         /// File path +  name
-        std::string filename;
+        std::string fileName_;
 };
 
 #endif //!GAMEREPLAY_H_INCLUDED

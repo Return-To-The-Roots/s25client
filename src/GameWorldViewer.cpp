@@ -95,7 +95,7 @@ void GameWorldViewer::MouseDown(const MouseCoords& mc)
  */
 void GameWorldViewer::MouseUp()
 {
-    scroll = false;
+    DontScroll();
 }
 
 ///////////////////////////////////////////////////////////////////////////////

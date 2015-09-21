@@ -116,9 +116,9 @@ void nofCharburner::WorkFinished()
         // Delete previous elements
         // Only environt objects and signs are allowed to be removed by the worker!
         // Otherwise just do nothing
-        NodalObjectType nop = no->GetType();
+        NodalObjectType noType = no->GetType();
 
-        if(nop == NOP_ENVIRONMENT || nop == NOP_NOTHING)
+        if(noType == NOP_ENVIRONMENT || noType == NOP_NOTHING)
         {
             no = gwg->GetSpecObj<noBase>(pos);
             if(no)
@@ -144,13 +144,13 @@ nofFarmhand::PointQuality nofCharburner::GetPointQuality(const MapPoint pt)
     // Is a charburner pile already here?
     if(no->GetGOT() == GOT_CHARBURNERPILE)
     {
-        noCharburnerPile::State state = static_cast<noCharburnerPile*>(no)->GetState();
+        noCharburnerPile::State pileState = static_cast<noCharburnerPile*>(no)->GetState();
         // Can't it be harvested?
-        if(state == noCharburnerPile::STATE_SMOLDERING)
+        if(pileState == noCharburnerPile::STATE_SMOLDERING)
             return PQ_NOTPOSSIBLE;
 
         // Wood stack which stell need resources?
-        if(state == noCharburnerPile::STATE_WOOD)
+        if(pileState == noCharburnerPile::STATE_WOOD)
         {
             // Does it need resources and I don't have them hen starting new work (state = STATE_WAITING1)?
             if(!workplace->WaresAvailable() && this->state == STATE_WAITING1)
