@@ -57,15 +57,15 @@ class dskCredits : public Desktop
 
         struct Bob
         {
-            unsigned int id;
-            bool hasWare;
-            bool isFat;
-            unsigned int direction;
-            unsigned char speed;
-            unsigned int animationStep;
+            unsigned id;
+            unsigned direction;
+            unsigned animationStep;
+            unsigned color;
             short x;
             short y;
-            unsigned int color;
+            unsigned char speed;
+            bool hasWare;
+            bool isFat;
         };
 
         std::list<Bob> bobs;

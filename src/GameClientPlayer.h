@@ -125,16 +125,16 @@ class GameClientPlayer : public GamePlayerInfo
         /// Bündnisse mit anderen Spielern
         struct Pact
         {
-            /// Bündnis schon akzeptiert oder nur vorgeschlagen?
-            bool accepted;
             /// Dauer (in GF), 0 = kein Bündnise, 0xFFFFFFFF = Bündnis auf Ewigkeit
             unsigned duration;
             /// Startzeitpunkt (in GF)
             unsigned start;
+            /// Bündnis schon akzeptiert oder nur vorgeschlagen?
+            bool accepted;
             /// Will dieser Spieler (also der this-Pointer) diesen Vertrag auflösen?
             bool want_cancel;
 
-            Pact() : accepted(false), duration(0), start(0), want_cancel(false) {}
+            Pact() : duration(0), start(0), accepted(false), want_cancel(false) {}
             Pact(SerializedGameData* ser);
             void Serialize(SerializedGameData* ser);
         };

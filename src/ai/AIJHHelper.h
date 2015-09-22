@@ -72,10 +72,10 @@ namespace AIJH
 
     struct Node
     {
-        bool owned;
-        bool reachable;
         BuildingQuality bq;
         Resource res;
+        bool owned;
+        bool reachable;
         bool border;
         bool farmed;
     };
