@@ -114,20 +114,21 @@ void nobHarborBuilding::Destroy()
     players->getElement(player)->HarborDestroyed(this);
 
     // Der Wirtschaftsverwaltung Bescheid sagen
-    gwg->GetPlayer(player)->RemoveWarehouse(this);
-    gwg->GetPlayer(player)->RemoveHarbor(this);
+    GameClientPlayer& owner = gwg->GetPlayer(player);
+    owner.RemoveWarehouse(this);
+    owner.RemoveHarbor(this);
 
     // Baumaterialien in der Inventur verbuchen
     if(expedition.active)
     {
-        gwg->GetPlayer(player)->DecreaseInventoryWare(GD_BOARDS, expedition.boards);
-        gwg->GetPlayer(player)->DecreaseInventoryWare(GD_STONES, expedition.stones);
+        owner.DecreaseInventoryWare(GD_BOARDS, expedition.boards);
+        owner.DecreaseInventoryWare(GD_STONES, expedition.stones);
 
         // Und Bauarbeiter (später) rausschicken
         if(expedition.builder)
             ++real_goods.people[JOB_BUILDER];
         else
-            gwg->GetPlayer(player)->OneJobNotWanted(JOB_BUILDER, this);
+            owner.OneJobNotWanted(JOB_BUILDER, this);
     }
     //cancel order for scouts
     if (exploration_expedition.active)
@@ -135,11 +136,11 @@ void nobHarborBuilding::Destroy()
 		real_goods.people[JOB_SCOUT] += exploration_expedition.scouts;
         for (unsigned i = exploration_expedition.scouts; i < SCOUTS_EXPLORATION_EXPEDITION; i++)
         {
-            gwg->GetPlayer(player)->OneJobNotWanted(JOB_SCOUT, this);
+            owner.OneJobNotWanted(JOB_SCOUT, this);
         }
     }
 	//cancel all jobs wanted for this building
-	gwg->GetPlayer(player)->JobNotWanted(this,true);
+	owner.JobNotWanted(this,true);
     // Waiting Wares löschen
     for(std::list<Ware*>::iterator it = wares_for_ships.begin(); it != wares_for_ships.end(); ++it)
     {
@@ -388,7 +389,8 @@ void nobHarborBuilding::StartExpedition()
         bool convert = true;
         expedition.builder = false;
         //got a builder in ANY storehouse?
-        for(std::list<nobBaseWarehouse*>::const_iterator it = gwg->GetPlayer(player)->GetStorehouses().begin(); it != gwg->GetPlayer(player)->GetStorehouses().end(); ++it)
+        GameClientPlayer& owner = gwg->GetPlayer(player);
+        for(std::list<nobBaseWarehouse*>::const_iterator it = owner.GetStorehouses().begin(); it != owner.GetStorehouses().end(); ++it)
         {
             if((*it)->GetRealFiguresCount(JOB_BUILDER))
             {
@@ -400,17 +402,17 @@ void nobHarborBuilding::StartExpedition()
         {
             --real_goods.goods[GD_HAMMER];
             --goods_.goods[GD_HAMMER];
-            gwg->GetPlayer(player)->DecreaseInventoryWare(GD_HAMMER, 1);
+            owner.DecreaseInventoryWare(GD_HAMMER, 1);
             --real_goods.people[JOB_HELPER];
             --goods_.people[JOB_HELPER];
-            gwg->GetPlayer(player)->DecreaseInventoryJob(JOB_HELPER, 1);
+            owner.DecreaseInventoryJob(JOB_HELPER, 1);
 
-            gwg->GetPlayer(player)->IncreaseInventoryJob(JOB_BUILDER, 1);
+            owner.IncreaseInventoryJob(JOB_BUILDER, 1);
             expedition.builder = true;
         }
         // not in harbor, and didnt have to or couldnt convert so order a builder
         if(!expedition.builder)
-            gwg->GetPlayer(player)->AddJobWanted(JOB_BUILDER, this);
+            owner.AddJobWanted(JOB_BUILDER, this);
     }
 
     // Ggf. Waren bestellen, die noch fehlen
@@ -461,7 +463,8 @@ void nobHarborBuilding::StartExplorationExpedition()
     {
         unsigned missing = SCOUTS_EXPLORATION_EXPEDITION - exploration_expedition.scouts;
         //got scouts in ANY storehouse?
-        for(std::list<nobBaseWarehouse*>::const_iterator it = gwg->GetPlayer(player)->GetStorehouses().begin(); it != gwg->GetPlayer(player)->GetStorehouses().end(); ++it)
+        GameClientPlayer& owner = gwg->GetPlayer(player);
+        for(std::list<nobBaseWarehouse*>::const_iterator it = owner.GetStorehouses().begin(); it != owner.GetStorehouses().end(); ++it)
         {
             if((*it)->GetRealFiguresCount(JOB_SCOUT))
             {
@@ -474,20 +477,20 @@ void nobHarborBuilding::StartExplorationExpedition()
         {
             --real_goods.goods[GD_BOW];
             --goods_.goods[GD_BOW];
-            gwg->GetPlayer(player)->DecreaseInventoryWare(GD_BOW, 1);
+            owner.DecreaseInventoryWare(GD_BOW, 1);
             --real_goods.people[JOB_HELPER];
             --goods_.people[JOB_HELPER];
-            gwg->GetPlayer(player)->DecreaseInventoryJob(JOB_HELPER, 1);
+            owner.DecreaseInventoryJob(JOB_HELPER, 1);
 
             ++goods_.people[JOB_SCOUT];
-            gwg->GetPlayer(player)->IncreaseInventoryJob(JOB_SCOUT, 1);
+            owner.IncreaseInventoryJob(JOB_SCOUT, 1);
             missing--;
             exploration_expedition.scouts++;
         }
         // not in harbor, and didnt have to or couldnt convert so order scouts
         // Den Rest bestellen
         for(unsigned i = exploration_expedition.scouts; i < SCOUTS_EXPLORATION_EXPEDITION; ++i)
-            gwg->GetPlayer(player)->AddJobWanted(JOB_SCOUT, this);
+            owner.AddJobWanted(JOB_SCOUT, this);
     }
 
 

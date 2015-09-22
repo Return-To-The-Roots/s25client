@@ -1236,9 +1236,9 @@ bool FW::Condition_StoreAndDontWantFigure(nobBaseWarehouse* wh, const void* para
 
 
 
-const Goods* nobBaseWarehouse::GetInventory() const
+const Goods& nobBaseWarehouse::GetInventory() const
 {
-    return &goods_;
+    return goods_;
 }
 
 /// Fügt einige Güter hinzu

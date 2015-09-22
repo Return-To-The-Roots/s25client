@@ -412,7 +412,7 @@ class GameWorldBase
 
         inline void SetPlayers(GameClientPlayerList* pls) { players = pls; }
         /// Liefert einen Player zurück
-        inline GameClientPlayer* GetPlayer(const unsigned int id) const { return players->getElement(id); }
+        inline GameClientPlayer& GetPlayer(const unsigned int id) const { return *players->getElement(id); }
 
         struct PotentialSeaAttacker
         {

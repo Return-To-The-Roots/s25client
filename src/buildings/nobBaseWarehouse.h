@@ -126,7 +126,7 @@ class nobBaseWarehouse : public nobBaseMilitary
     protected: void Serialize_nobBaseWarehouse(SerializedGameData* sgd) const;
     public: void Serialize(SerializedGameData* sgd) const { Serialize_nobBaseWarehouse(sgd); }
 
-        const Goods* GetInventory() const;
+        const Goods& GetInventory() const;
 
         /// Fügt einige Güter hinzu
         void AddGoods(const Goods goods);

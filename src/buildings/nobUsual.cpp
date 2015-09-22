@@ -514,20 +514,21 @@ void nobUsual::ConsumeWares()
             // try to get wares from warehouses
             Ware* w;
 
+            GameClientPlayer& owner = gwg->GetPlayer(player);
             if ((wares[0] < 2) &&
-                    (w = gwg->GetPlayer(player)->OrderWare(USUAL_BUILDING_CONSTS[type_ - 10].wares_needed[0], this)))
+                    (w = owner.OrderWare(USUAL_BUILDING_CONSTS[type_ - 10].wares_needed[0], this)))
             {
                 ordered_wares[0].push_back(w);
             }
 
             if ((wares[1] < 2) &&
-                    (w = gwg->GetPlayer(player)->OrderWare(USUAL_BUILDING_CONSTS[type_ - 10].wares_needed[1], this)))
+                    (w = owner.OrderWare(USUAL_BUILDING_CONSTS[type_ - 10].wares_needed[1], this)))
             {
                 ordered_wares[1].push_back(w);
             }
 
-            gwg->GetPlayer(player)->DecreaseInventoryWare(USUAL_BUILDING_CONSTS[type_ - 10].wares_needed[0], 1);
-            gwg->GetPlayer(player)->DecreaseInventoryWare(USUAL_BUILDING_CONSTS[type_ - 10].wares_needed[1], 1);
+            owner.DecreaseInventoryWare(USUAL_BUILDING_CONSTS[type_ - 10].wares_needed[0], 1);
+            owner.DecreaseInventoryWare(USUAL_BUILDING_CONSTS[type_ - 10].wares_needed[1], 1);
         }
         else
         {

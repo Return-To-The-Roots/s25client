@@ -311,7 +311,7 @@ class GameClientPlayer : public GamePlayerInfo
         void DecreaseInventoryJob(const Job job, const unsigned count) { assert(global_inventory.people[job] >= count); global_inventory.people[job] -= count; }
 
         /// Gibt Inventory-Settings zurück
-        const Goods* GetInventory() const { return &global_inventory; }
+        const Goods& GetInventory() const { return global_inventory; }
 
         /// Setzt neue Militäreinstellungen
         void ChangeMilitarySettings(const std::vector<unsigned char>& military_settings);

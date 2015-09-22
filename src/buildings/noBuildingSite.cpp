@@ -190,15 +190,16 @@ void noBuildingSite::OrderConstructionMaterial()
 
     // Bretter
     Ware* w;
-    for(unsigned char i = used_boards + boards + ordered_boards.size(); i < BUILDING_COSTS[gwg->GetPlayer(player)->nation][type_].boards; ++i)
+    GameClientPlayer& owner = gwg->GetPlayer(player);
+    for(unsigned char i = used_boards + boards + ordered_boards.size(); i < BUILDING_COSTS[owner.nation][type_].boards; ++i)
     {
-        if( (w = gwg->GetPlayer(player)->OrderWare(GD_BOARDS, this)) )
+        if( (w = owner.OrderWare(GD_BOARDS, this)) )
             ordered_boards.push_front(w);
     }
     // Steine
-    for(unsigned char i = used_stones + stones + ordered_stones.size(); i < BUILDING_COSTS[gwg->GetPlayer(player)->nation][type_].stones; ++i)
+    for(unsigned char i = used_stones + stones + ordered_stones.size(); i < BUILDING_COSTS[owner.nation][type_].stones; ++i)
     {
-        if( (w = gwg->GetPlayer(player)->OrderWare(GD_STONES, this)) )
+        if( (w = owner.OrderWare(GD_STONES, this)) )
             ordered_stones.push_back(w);
     }
 }

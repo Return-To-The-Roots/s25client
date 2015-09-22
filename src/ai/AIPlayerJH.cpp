@@ -154,12 +154,13 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
     {
         AdjustSettings();
         //check for useless sawmills
-        if(aii->GetBuildings(BLD_SAWMILL).size() > 3)
+        const std::list<nobUsual*>& sawMills = aii->GetBuildings(BLD_SAWMILL);
+        if(sawMills.size() > 3)
         {
             int burns = 0;
-            for(std::list<nobUsual*>::const_iterator it = aii->GetBuildings(BLD_SAWMILL).begin(); it != aii->GetBuildings(BLD_SAWMILL).end(); ++it)
+            for(std::list<nobUsual*>::const_iterator it = sawMills.begin(); it != sawMills.end(); ++it)
             {
-                if(*(*it)->GetProduktivityPointer() < 1 && (*it)->HasWorker() && (*it)->GetWares(0) < 1 && (aii->GetBuildings(BLD_SAWMILL).size() - burns) > 3 && !(*it)->AreThereAnyOrderedWares())
+                if(*(*it)->GetProduktivityPointer() < 1 && (*it)->HasWorker() && (*it)->GetWares(0) < 1 && (sawMills.size() - burns) > 3 && !(*it)->AreThereAnyOrderedWares())
                 {
                     aii->DestroyBuilding((*it));
                     RemoveUnusedRoad(aii->GetSpecObj<noFlag>(aii->GetNeighbour((*it)->GetPos(), Direction::SOUTHWEST)), 1, true);
@@ -280,12 +281,13 @@ unsigned AIPlayerJH::GetJobNum() const { return eventManager.GetEventNum() + con
 /// returns the warehouse closest to the upgradebuilding or if it cant find a way the first warehouse and if there is no warehouse left null
 nobBaseWarehouse* AIPlayerJH::GetUpgradeBuildingWarehouse()
 {
-	if(aii->GetStorehouses().size()<1)
+    const std::list<nobBaseWarehouse*>& storehouses = aii->GetStorehouses();
+	if(storehouses.size()<1)
 		return 0;
-	nobBaseWarehouse* wh=(*aii->GetStorehouses().begin());
+	nobBaseWarehouse* wh=(*storehouses.begin());
 	int uub=UpdateUpgradeBuilding();
 	
-	if (uub>=0 && aii->GetStorehouses().size()>1) //upgradebuilding exists and more than 1 warehouse -> find warehouse closest to the upgradebuilding - gather stuff there and deactivate gathering in the previous one
+	if (uub>=0 && storehouses.size()>1) //upgradebuilding exists and more than 1 warehouse -> find warehouse closest to the upgradebuilding - gather stuff there and deactivate gathering in the previous one
 	{		
 		std::list<nobMilitary*>::const_iterator ubldit=aii->GetMilitaryBuildings().begin();
 		std::advance(ubldit,uub);
@@ -294,7 +296,7 @@ nobBaseWarehouse* AIPlayerJH::GetUpgradeBuildingWarehouse()
 		wh = aii->FindWarehouse((*ubldit), FW::Condition_Troops, 0, false, &param_count, false);
 		if(!wh)
 		{
-			wh = (*aii->GetStorehouses().begin());
+			wh = (*storehouses.begin());
 		}
 	}
 	return wh;
@@ -1826,16 +1828,17 @@ void AIPlayerJH::CheckExpeditions()
 
 void AIPlayerJH::CheckForester()
 {
-    if(aii->GetBuildings(BLD_FORESTER).size()>0 && aii->GetBuildings(BLD_FORESTER).size()<2 && aii->GetMilitaryBuildings().size()<3 && aii->GetBuildingSites().size()<3)
+    const std::list<nobUsual*>& foresters = aii->GetBuildings(BLD_FORESTER);
+    if(foresters.size()>0 && foresters.size()<2 && aii->GetMilitaryBuildings().size()<3 && aii->GetBuildingSites().size()<3)
         //stop the forester
     {
-        if(!(*aii->GetBuildings(BLD_FORESTER).begin())->IsProductionDisabled())
-            aii->ToggleProduction(aii->GetBuildings(BLD_FORESTER).front()->GetPos());
+        if(!(*foresters.begin())->IsProductionDisabled())
+            aii->ToggleProduction(foresters.front()->GetPos());
     }
     else //activate the forester 
     {
-        if(aii->GetBuildings(BLD_FORESTER).size()>0 && (*aii->GetBuildings(BLD_FORESTER).begin())->IsProductionDisabled())
-            aii->ToggleProduction(aii->GetBuildings(BLD_FORESTER).front()->GetPos());
+        if(foresters.size()>0 && (*foresters.begin())->IsProductionDisabled())
+            aii->ToggleProduction(foresters.front()->GetPos());
     }
 }
 
@@ -2313,7 +2316,10 @@ unsigned AIPlayerJH::SoldierAvailable(int rank)
     for (std::list<nobBaseWarehouse*>::const_iterator it = aii->GetStorehouses().begin(); it != aii->GetStorehouses().end(); ++it)
     {
 		if(rank<0 || rank>4)
-			freeSoldiers += ((*it)->GetInventory()->people[JOB_PRIVATE] + (*it)->GetInventory()->people[JOB_PRIVATEFIRSTCLASS] + (*it)->GetInventory()->people[JOB_SERGEANT] + (*it)->GetInventory()->people[JOB_OFFICER] + (*it)->GetInventory()->people[JOB_GENERAL]);
+        {
+            const Goods& inventory = (*it)->GetInventory();
+            freeSoldiers += (inventory.people[JOB_PRIVATE] + inventory.people[JOB_PRIVATEFIRSTCLASS] + inventory.people[JOB_SERGEANT] + inventory.people[JOB_OFFICER] + inventory.people[JOB_GENERAL]);
+        }
 		else
 			freeSoldiers += ((*it)->GetInventory()->people[rank+21]);
     }
@@ -2731,14 +2737,15 @@ void AIPlayerJH::AdjustSettings()
 	//update tool creation settings
     std::vector<unsigned char> toolsettings;
     toolsettings.resize(12);
-    toolsettings[2] = (aii->GetInventory()->goods[GD_SAW] + aii->GetInventory()->people[JOB_CARPENTER] < 2) ? 4 : aii->GetInventory()->goods[GD_SAW] < 1 ? 1 : 0;                                                                       //saw
-    toolsettings[3] = (aii->GetInventory()->goods[GD_PICKAXE] < 1) ? 1 : 0;                                                                                                                     //pickaxe
-    toolsettings[4] = (aii->GetInventory()->goods[GD_HAMMER] < 1) ? 1 : 0;                                                                                                                      //hammer
-    toolsettings[6] = (aii->GetInventory()->goods[GD_CRUCIBLE] + aii->GetInventory()->people[JOB_IRONFOUNDER] < construction->GetBuildingCount(BLD_IRONSMELTER) + 1) ? 1 : 0;;                   //crucible
-    toolsettings[8] = (toolsettings[4] < 1 && toolsettings[3] < 1 && toolsettings[6] < 1 && toolsettings[2] < 1 && (aii->GetInventory()->goods[GD_SCYTHE] < 1)) ? 1 : 0;                        //scythe
-    toolsettings[10] = (aii->GetInventory()->goods[GD_ROLLINGPIN] + aii->GetInventory()->people[JOB_BAKER] < construction->GetBuildingCount(BLD_BAKERY) + 1) ? 1 : 0;                            //rollingpin
-    toolsettings[5] = (toolsettings[4] < 1 && toolsettings[3] < 1 && toolsettings[6] < 1 && toolsettings[2] < 1 && (aii->GetInventory()->goods[GD_SHOVEL] < 1)) ? 1 : 0 ;                       //shovel
-    toolsettings[1] = (toolsettings[4] < 1 && toolsettings[3] < 1 && toolsettings[6] < 1 && toolsettings[2] < 1 && (aii->GetInventory()->goods[GD_AXE] + aii->GetInventory()->people[JOB_WOODCUTTER] < 12) && aii->GetInventory()->goods[GD_AXE] < 1) ? 1 : 0; //axe
+    const Goods& inventory = aii->GetInventory();
+    toolsettings[2] = (inventory.goods[GD_SAW] + inventory.people[JOB_CARPENTER] < 2) ? 4 : inventory.goods[GD_SAW] < 1 ? 1 : 0;                                                                       //saw
+    toolsettings[3] = (inventory.goods[GD_PICKAXE] < 1) ? 1 : 0;                                                                                                                     //pickaxe
+    toolsettings[4] = (inventory.goods[GD_HAMMER] < 1) ? 1 : 0;                                                                                                                      //hammer
+    toolsettings[6] = (inventory.goods[GD_CRUCIBLE] + inventory.people[JOB_IRONFOUNDER] < construction->GetBuildingCount(BLD_IRONSMELTER) + 1) ? 1 : 0;;                   //crucible
+    toolsettings[8] = (toolsettings[4] < 1 && toolsettings[3] < 1 && toolsettings[6] < 1 && toolsettings[2] < 1 && (inventory.goods[GD_SCYTHE] < 1)) ? 1 : 0;                        //scythe
+    toolsettings[10] = (inventory.goods[GD_ROLLINGPIN] + inventory.people[JOB_BAKER] < construction->GetBuildingCount(BLD_BAKERY) + 1) ? 1 : 0;                            //rollingpin
+    toolsettings[5] = (toolsettings[4] < 1 && toolsettings[3] < 1 && toolsettings[6] < 1 && toolsettings[2] < 1 && (inventory.goods[GD_SHOVEL] < 1)) ? 1 : 0 ;                       //shovel
+    toolsettings[1] = (toolsettings[4] < 1 && toolsettings[3] < 1 && toolsettings[6] < 1 && toolsettings[2] < 1 && (inventory.goods[GD_AXE] + inventory.people[JOB_WOODCUTTER] < 12) && inventory.goods[GD_AXE] < 1) ? 1 : 0; //axe
     toolsettings[0] = 0; //(toolsettings[4]<1&&toolsettings[3]<1&&toolsettings[6]<1&&toolsettings[2]<1&&(aii->GetInventory()->goods[GD_TONGS]<1))?1:0;                                                //Tongs(metalworks)
     toolsettings[9] = 0; //(aii->GetInventory()->goods[GD_CLEAVER]+aii->GetInventory()->people[JOB_BUTCHER]<construction->GetBuildingCount(BLD_SLAUGHTERHOUSE)+1)?1:0;                                //cleaver
     toolsettings[7] = 0;                                                                                                                                                                        //rod & line
@@ -2753,7 +2760,7 @@ void AIPlayerJH::AdjustSettings()
     milSettings[2] = 4;
     milSettings[3] = 5;
 	//interior 0bar full if we have an upgrade building and gold(or produce gold) else 1 soldier each
-	milSettings[4] = UpdateUpgradeBuilding() >= 0 && (aii->GetInventory()->goods[GD_COINS]>0 || (aii->GetInventory()->goods[GD_GOLD]>0 && aii->GetInventory()->goods[GD_COAL]>0 && aii->GetBuildings(BLD_MINT).size()) )? 8 : 0;     
+	milSettings[4] = UpdateUpgradeBuilding() >= 0 && (inventory.goods[GD_COINS]>0 || (inventory.goods[GD_GOLD]>0 && inventory.goods[GD_COAL]>0 && aii->GetBuildings(BLD_MINT).size()) )? 8 : 0;     
     milSettings[6] = ggs.getSelection(ADDON_SEA_ATTACK)==2 ? 0 : 8; //harbor flag: no sea attacks?->no soldiers else 50% to 100%
 	milSettings[5] = CalcMilSettings(); //inland 1bar min 50% max 100% depending on how many soldiers are available
 	milSettings[7] = 8;                                                     //front: 100%
