@@ -250,7 +250,7 @@ bool AIConstruction::ConnectFlagToRoadSytem(const noFlag* flag, std::vector<unsi
 	{
 		MapPoint m = aii->GetNeighbour(flag->GetPos(), Direction::NORTHEAST);
 		unsigned listpos=0;
-		for (std::list<nobMilitary*>::const_iterator it=aii->GetMilitaryBuildings().begin();it!=aii->GetMilitaryBuildings().end();it++)
+		for (std::list<nobMilitary*>::const_iterator it=aii->GetMilitaryBuildings().begin();it!=aii->GetMilitaryBuildings().end();++it)
 		{
 			if((*it)->GetPos() == m) 
 			{
@@ -489,12 +489,12 @@ BuildingType AIConstruction::ChooseMilitaryBuilding(const MapPoint pt)
             nobBaseWarehouse* wh = (*aii->GetStorehouses().begin());
             if (aii->CalcDistance(pt, wh->GetPos()) < min)
                 min = 0;
-            for(std::list<nobUsual*>::const_iterator it = aii->GetBuildings(BLD_CATAPULT).begin(); min > 0 && it != aii->GetBuildings(BLD_CATAPULT).end(); it++)
+            for(std::list<nobUsual*>::const_iterator it = aii->GetBuildings(BLD_CATAPULT).begin(); min > 0 && it != aii->GetBuildings(BLD_CATAPULT).end(); ++it)
             {
                 if(aii->CalcDistance(pt, (*it)->GetPos()) < min)
                     min = 0;
             }
-            for(std::list<noBuildingSite*>::const_iterator it = aii->GetBuildingSites().begin(); min > 0 && it != aii->GetBuildingSites().end(); it++)
+            for(std::list<noBuildingSite*>::const_iterator it = aii->GetBuildingSites().begin(); min > 0 && it != aii->GetBuildingSites().end(); ++it)
             {
                 if((*it)->GetBuildingType() == bld)
                 {
@@ -819,12 +819,12 @@ bool AIConstruction::BuildAlternativeRoad(const noFlag* flag, std::vector<unsign
 
 bool AIConstruction::OtherUsualBuildingInRadius(MapPoint pt, unsigned radius, BuildingType bt)
 {
-	for (std::list<nobUsual*>::const_iterator it = aii->GetBuildings(bt).begin(); it != aii->GetBuildings(bt).end(); it++)
+	for (std::list<nobUsual*>::const_iterator it = aii->GetBuildings(bt).begin(); it != aii->GetBuildings(bt).end(); ++it)
     {
         if(aii->CalcDistance((*it)->GetPos(), pt) < radius)
             return true;
     }
-	for(std::list<noBuildingSite*>::const_iterator it = aii->GetBuildingSites().begin(); it != aii->GetBuildingSites().end(); it++)
+	for(std::list<noBuildingSite*>::const_iterator it = aii->GetBuildingSites().begin(); it != aii->GetBuildingSites().end(); ++it)
     {
         if((*it)->GetBuildingType() == bt)
         {
@@ -837,12 +837,12 @@ bool AIConstruction::OtherUsualBuildingInRadius(MapPoint pt, unsigned radius, Bu
 
 bool AIConstruction::OtherStoreInRadius(MapPoint pt, unsigned radius)
 {
-    for (std::list<nobBaseWarehouse*>::const_iterator it = aii->GetStorehouses().begin(); it != aii->GetStorehouses().end(); it++)
+    for (std::list<nobBaseWarehouse*>::const_iterator it = aii->GetStorehouses().begin(); it != aii->GetStorehouses().end(); ++it)
     {
         if(aii->CalcDistance((*it)->GetPos(), pt) < radius)
             return true;
     }
-    for(std::list<noBuildingSite*>::const_iterator it = aii->GetBuildingSites().begin(); it != aii->GetBuildingSites().end(); it++)
+    for(std::list<noBuildingSite*>::const_iterator it = aii->GetBuildingSites().begin(); it != aii->GetBuildingSites().end(); ++it)
     {
         if((*it)->GetBuildingType() == BLD_STOREHOUSE || (*it)->GetBuildingType() == BLD_HARBORBUILDING)
         {
@@ -858,7 +858,7 @@ noFlag* AIConstruction::FindTargetStoreHouseFlag(const MapPoint pt)
     unsigned minDistance = std::numeric_limits<unsigned>::max();
     nobBaseWarehouse* minTarget = NULL;
     bool found = false;
-    for (std::list<nobBaseWarehouse*>::const_iterator it = aii->GetStorehouses().begin(); it != aii->GetStorehouses().end(); it++)
+    for (std::list<nobBaseWarehouse*>::const_iterator it = aii->GetStorehouses().begin(); it != aii->GetStorehouses().end(); ++it)
     {
         unsigned dist = aii->GetDistance(pt, (*it)->GetPos());
         if (dist < minDistance)

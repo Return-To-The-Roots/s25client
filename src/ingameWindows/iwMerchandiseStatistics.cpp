@@ -129,10 +129,8 @@ void iwMerchandiseStatistics::Msg_ButtonClick(const unsigned int ctrl_id)
             const std::set<unsigned short>& active = GetCtrl<ctrlMultiSelectGroup>(22)->GetSelection();
             for(std::set<unsigned short>::const_iterator it = active.begin(); it != active.end();)
             {
-                std::set<unsigned short>::const_iterator next_it = it;
-                next_it++;
-                GetCtrl<ctrlMultiSelectGroup>(22)->RemoveSelection(*it);
-                it = next_it;
+                std::set<unsigned short>::const_iterator curIt = it++;
+                GetCtrl<ctrlMultiSelectGroup>(22)->RemoveSelection(*curIt);
             }
         } break;
     }
@@ -189,7 +187,7 @@ void iwMerchandiseStatistics::DrawStatistic()
 
     // Maximalwert suchen
     unsigned short max = 1;
-    for(std::set<unsigned short>::const_iterator it = active.begin(); it != active.end(); it++)
+    for(std::set<unsigned short>::const_iterator it = active.begin(); it != active.end(); ++it)
     {
         for (unsigned int i = 0; i < STAT_STEP_COUNT; ++i)
         {
@@ -209,7 +207,7 @@ void iwMerchandiseStatistics::DrawStatistic()
     unsigned short previousY = 0;
     unsigned short currentIndex = stat.currentIndex;
 
-    for(std::set<unsigned short>::const_iterator it = active.begin(); it != active.end(); it++)
+    for(std::set<unsigned short>::const_iterator it = active.begin(); it != active.end(); ++it)
     {
         // Testing only:
         //DrawLine(topLeftX, topLeftY + 3 * (*it), topLeftX + sizeX, topLeftY + 3 * (*it), 2, BarColors[(*it) - 1]);

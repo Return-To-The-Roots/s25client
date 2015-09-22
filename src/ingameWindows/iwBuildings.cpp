@@ -139,7 +139,7 @@ void iwBuildings::Msg_ButtonClick(const unsigned int ctrl_id)
 	//military building open first of type if available
 	if(ctrl_id < 4)
 	{
-		for(std::list<nobMilitary*>::const_iterator it=GAMECLIENT.GetLocalPlayer()->GetMilitaryBuildings().begin(); it != GAMECLIENT.GetLocalPlayer()->GetMilitaryBuildings().end(); it++)
+		for(std::list<nobMilitary*>::const_iterator it=GAMECLIENT.GetLocalPlayer()->GetMilitaryBuildings().begin(); it != GAMECLIENT.GetLocalPlayer()->GetMilitaryBuildings().end(); ++it)
 		{
 			if((*it)->GetBuildingType()==bts[ctrl_id]) // got first of type -> open building window (military)
 			{
@@ -163,7 +163,7 @@ void iwBuildings::Msg_ButtonClick(const unsigned int ctrl_id)
 	else if(ctrl_id == 21)//warehouse?
 	{
 		//go through list until we get to a warehouse
-		for(std::list<nobBaseWarehouse*>::const_iterator it=GAMECLIENT.GetLocalPlayer()->GetStorehouses().begin(); it != GAMECLIENT.GetLocalPlayer()->GetStorehouses().end(); it++)
+		for(std::list<nobBaseWarehouse*>::const_iterator it=GAMECLIENT.GetLocalPlayer()->GetStorehouses().begin(); it != GAMECLIENT.GetLocalPlayer()->GetStorehouses().end(); ++it)
 		{
 			if((*it)->GetBuildingType()==bts[ctrl_id])
 			{
@@ -178,7 +178,7 @@ void iwBuildings::Msg_ButtonClick(const unsigned int ctrl_id)
 	else if(ctrl_id==31)//harbor
 	{
 		//go through list until we get to a harbor
-		for(std::list<nobBaseWarehouse*>::const_iterator it=GAMECLIENT.GetLocalPlayer()->GetStorehouses().begin(); it != GAMECLIENT.GetLocalPlayer()->GetStorehouses().end(); it++)
+		for(std::list<nobBaseWarehouse*>::const_iterator it=GAMECLIENT.GetLocalPlayer()->GetStorehouses().begin(); it != GAMECLIENT.GetLocalPlayer()->GetStorehouses().end(); ++it)
 		{
 			if((*it)->GetBuildingType()==bts[ctrl_id])
 			{

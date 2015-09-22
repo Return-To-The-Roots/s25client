@@ -388,7 +388,7 @@ void nobHarborBuilding::StartExpedition()
         bool convert = true;
         expedition.builder = false;
         //got a builder in ANY storehouse?
-        for(std::list<nobBaseWarehouse*>::const_iterator it = gwg->GetPlayer(player)->GetStorehouses().begin(); it != gwg->GetPlayer(player)->GetStorehouses().end(); it++)
+        for(std::list<nobBaseWarehouse*>::const_iterator it = gwg->GetPlayer(player)->GetStorehouses().begin(); it != gwg->GetPlayer(player)->GetStorehouses().end(); ++it)
         {
             if((*it)->GetRealFiguresCount(JOB_BUILDER))
             {
@@ -461,7 +461,7 @@ void nobHarborBuilding::StartExplorationExpedition()
     {
         unsigned missing = SCOUTS_EXPLORATION_EXPEDITION - exploration_expedition.scouts;
         //got scouts in ANY storehouse?
-        for(std::list<nobBaseWarehouse*>::const_iterator it = gwg->GetPlayer(player)->GetStorehouses().begin(); it != gwg->GetPlayer(player)->GetStorehouses().end(); it++)
+        for(std::list<nobBaseWarehouse*>::const_iterator it = gwg->GetPlayer(player)->GetStorehouses().begin(); it != gwg->GetPlayer(player)->GetStorehouses().end(); ++it)
         {
             if((*it)->GetRealFiguresCount(JOB_SCOUT))
             {
@@ -627,7 +627,7 @@ void nobHarborBuilding::ShipArrived(noShip* ship)
         // actually since the wares might not yet have informed the harbor that their target harbor was destroyed we pick the first figure/ware with a valid target instead
         MapPoint dest;
         bool gotdest = false;
-        for(std::list<FigureForShip>::iterator it = figures_for_ships.begin(); it != figures_for_ships.end(); it++)
+        for(std::list<FigureForShip>::iterator it = figures_for_ships.begin(); it != figures_for_ships.end(); ++it)
         {
             noBase* nb = gwg->GetNO(it->dest);
             if(nb->GetGOT() == GOT_NOB_HARBORBUILDING && gwg->GetNode(it->dest).owner == player + 1) //target is a harbor and owned by the same player
@@ -637,7 +637,7 @@ void nobHarborBuilding::ShipArrived(noShip* ship)
                 break;
             }
         }
-        for(std::list<Ware*>::iterator it = wares_for_ships.begin(); !gotdest && it != wares_for_ships.end(); it++)
+        for(std::list<Ware*>::iterator it = wares_for_ships.begin(); !gotdest && it != wares_for_ships.end(); ++it)
         {
             noBase* nb = gwg->GetNO((*it)->GetNextHarbor());
             if(nb->GetGOT() == GOT_NOB_HARBORBUILDING && gwg->GetNode((*it)->GetNextHarbor()).owner == player + 1)
