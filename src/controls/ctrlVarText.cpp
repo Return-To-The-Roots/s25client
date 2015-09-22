@@ -118,6 +118,9 @@ std::string ctrlVarText::GetFormatedText() const
                 str << reinterpret_cast<const char*>(vars[curVar]);
                 curVar++;
                 break;
+            case '%':
+                str << '%';
+                break;
             default:
                 assert(false); // Invalid format string
                 str << '%' << *it;

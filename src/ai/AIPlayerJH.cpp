@@ -1933,8 +1933,7 @@ void AIPlayerJH::TryToAttack()
         {
             if ((*it3)->GetPlayer() == playerid)
             {
-                const nobMilitary* myMil;
-                myMil = dynamic_cast<const nobMilitary*>(*it3);
+                const nobMilitary* myMil = dynamic_cast<const nobMilitary*>(*it3);
                 if (!myMil || myMil->IsUnderAttack())
                     continue;
 

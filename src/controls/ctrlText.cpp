@@ -60,8 +60,8 @@ ctrlText::ctrlText(Window* parent,
  */
 bool ctrlText::Draw_(void)
 {
-    if(text.length())
-        font->Draw(GetX(), GetY(), text.c_str(), format, color_);
+    if(!text.empty())
+        font->Draw(GetX(), GetY(), text, format, color_);
 
     return true;
 }

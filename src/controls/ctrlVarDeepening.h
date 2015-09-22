@@ -25,6 +25,7 @@
 class ctrlVarDeepening : public ctrlVarText
 {
     public:
+        /// liste contains pointers to int, unsigned or const char and must be valid for the lifetime of the var text!
         ctrlVarDeepening(Window* parent, unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc,  const std::string& text, glArchivItem_Font* font, unsigned int color, unsigned int count, va_list liste);
 
     protected:

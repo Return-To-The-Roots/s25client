@@ -204,8 +204,10 @@ class Window
         /// fügt einen Timer hinzu.
         ctrlTimer* AddTimer(unsigned int id, unsigned int timeout);
         /// fügt ein vertieftes variables TextCtrl hinzu.
+        /// var parameters are pointers to int, unsigned or const char and must be valid for the lifetime of the var text!
         ctrlVarDeepening* AddVarDeepening(unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, const std::string& formatstr, glArchivItem_Font* font, unsigned int color, unsigned int parameters, ...);
         /// fügt ein variables TextCtrl hinzu.
+        /// var parameters are pointers to int, unsigned or const char and must be valid for the lifetime of the var text!
         ctrlVarText* AddVarText(unsigned int id, unsigned short x, unsigned short y,  const std::string& formatstr, unsigned int color, unsigned int format, glArchivItem_Font* font, unsigned int parameters, ...);
         /// Fügt eine MapPreview hinzu
         ctrlPreviewMinimap* AddPreviewMinimap(const unsigned id,
