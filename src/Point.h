@@ -29,9 +29,9 @@ struct Point
     Point(const T x, const T y): x(x), y(y) {}
     template<typename U>
     explicit Point(const Point<U>& pt): x(static_cast<T>(pt.x)), y(static_cast<T>(pt.y)) {}
-    bool operator==(const Point second) const
+    bool operator==(const Point& second) const
     { return (x == second.x && y == second.y); }
-    bool operator!=(const Point second) const
+    bool operator!=(const Point& second) const
     { return !(*this == second); }
 
     static const Point Invalid()
@@ -42,24 +42,24 @@ struct Point
         return *this != Invalid();
     }
 
-    Point operator+(const Point right) const
+    Point operator+(const Point& right) const
     {
         return Point(x + right.x, y + right.y);
     }
 
-    Point& operator+=(const Point right)
+    Point& operator+=(const Point& right)
     {
         x += right.x;
         y += right.y;
         return *this;
     }
 
-    Point operator-(const Point right) const
+    Point operator-(const Point& right) const
     {
         return Point(x - right.x, y - right.y);
     }
 
-    Point& operator-=(const Point right)
+    Point& operator-=(const Point& right)
     {
         x -= right.x;
         y -= right.y;

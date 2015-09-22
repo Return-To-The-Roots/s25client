@@ -23,6 +23,7 @@
 /// Datentyp für Map-Koordinaten
 typedef unsigned short MapCoord;
 typedef Point<MapCoord> MapPoint;
+//-V:MapPoint:801 
 
 /// Terrainarten
 enum TerrainType
