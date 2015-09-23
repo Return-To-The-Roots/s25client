@@ -88,7 +88,7 @@ struct PathfindingPoint
         }
 
         /// Operator für den Vergleich
-        bool operator<(const PathfindingPoint two) const;
+        bool operator<(const PathfindingPoint& two) const;
 };
 
 
@@ -122,7 +122,7 @@ unsigned currentVisit = 0;
 //unsigned currentVisitEven = 0; //used for road pathfinding (for now only the ai gets the comfort version)
 
 
-bool PathfindingPoint::operator<(const PathfindingPoint two) const
+bool PathfindingPoint::operator<(const PathfindingPoint& two) const
 {
     // Weglängen schätzen für beide Punkte,  indem man den bisherigen Weg mit der Luftlinie vom aktullen
     // Punkt zum Ziel addiert und auf diese Weise den kleinsten Weg auswählt

@@ -79,10 +79,10 @@ void GameWorldView::SetGameWorldViewer(GameWorldViewer* viewer)
 
 struct ObjectBetweenLines
 {
-    noBase* obj;
+    noBase& obj;
     Point<int> pos; // Zeichenposition
 
-    ObjectBetweenLines(noBase* const obj, const Point<int> pos) : obj(obj), pos(pos) {}
+    ObjectBetweenLines(noBase& obj, const Point<int>& pos) : obj(obj), pos(pos) {}
 };
 
 void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool draw_selected, const MapPoint selected, const RoadsBuilding& rb)
@@ -164,7 +164,7 @@ void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool
                         // Bewegt er sich oder ist es ein Schiff?
                         if((*it)->IsMoving() || (*it)->GetGOT() == GOT_SHIP)
                             // Dann nach der gesamten Zeile zeichnen
-                            between_lines.push_back(ObjectBetweenLines(*it, Point<int>(curPos.x, curPos.y)));
+                            between_lines.push_back(ObjectBetweenLines(**it, curPos));
                         else
                             // Ansonsten jetzt schon zeichnen
                             (*it)->Draw(curPos.x, curPos.y);
@@ -250,7 +250,7 @@ void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool
 
         // Figuren zwischen den Zeilen zeichnen
         for(unsigned i = 0; i < between_lines.size(); ++i)
-            between_lines[i].obj->Draw(between_lines[i].pos.x, between_lines[i].pos.y);
+            between_lines[i].obj.Draw(between_lines[i].pos.x, between_lines[i].pos.y);
     }
 
     // Names & Productivity overlay

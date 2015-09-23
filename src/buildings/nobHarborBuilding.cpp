@@ -1076,7 +1076,7 @@ bool nobHarborBuilding::UseFigureAtOnce(noFigure* fig, noRoadNode* const goal)
 }
 
 /// Erhält die Waren von einem Schiff und nimmt diese in den Warenbestand auf
-void nobHarborBuilding::ReceiveGoodsFromShip(const std::list<noFigure*> figures, const std::list<Ware*> wares)
+void nobHarborBuilding::ReceiveGoodsFromShip(const std::list<noFigure*>& figures, const std::list<Ware*>& wares)
 {
     // Menschen zur Ausgehliste hinzufügen
     for(std::list<noFigure*>::const_iterator it = figures.begin(); it != figures.end(); ++it)

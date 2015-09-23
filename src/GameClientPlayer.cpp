@@ -988,7 +988,7 @@ struct ClientForWare
 
     ClientForWare(noBaseBuilding* bb, unsigned estimate, unsigned points) : bb(bb), estimate(estimate), points(points) {}
 
-    bool operator<(const ClientForWare b) const
+    bool operator<(const ClientForWare& b) const
     {
 		// use estimate, points and absolute location (in that order) for sorting
 		// absolute location must be different -> tiebreaker in case everything else is the same
@@ -1994,7 +1994,7 @@ struct ShipForHarbor
 
     ShipForHarbor(noShip* ship, uint32_t estimate) : ship(ship), estimate(estimate) {}
 
-    bool operator<(const ShipForHarbor b) const
+    bool operator<(const ShipForHarbor& b) const
     {
 		return (estimate < b.estimate) || (estimate == b.estimate && ship->GetObjId() < b.ship->GetObjId());
     }

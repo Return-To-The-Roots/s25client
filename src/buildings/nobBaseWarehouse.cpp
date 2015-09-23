@@ -1242,7 +1242,7 @@ const Goods& nobBaseWarehouse::GetInventory() const
 }
 
 /// Fügt einige Güter hinzu
-void nobBaseWarehouse::AddGoods(const Goods goods)
+void nobBaseWarehouse::AddGoods(const Goods& goods)
 {
     for(unsigned int i = 0; i < WARE_TYPES_COUNT; ++i)
     {

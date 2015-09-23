@@ -129,7 +129,7 @@ class nobBaseWarehouse : public nobBaseMilitary
         const Goods& GetInventory() const;
 
         /// Fügt einige Güter hinzu
-        void AddGoods(const Goods goods);
+        void AddGoods(const Goods& goods);
 
 
         /// Gibt Anzahl der Waren bzw. Figuren zurück
