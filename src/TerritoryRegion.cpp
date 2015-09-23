@@ -99,7 +99,7 @@ void TerritoryRegion::TestNode(MapPoint pt, const unsigned char player, const un
         return;
 
     // check whether his node is within the area we may have territory in
-    if (check_barriers && !IsPointValid(gwb, gwb->GetPlayer(player)->GetRestrictedArea(), pt))
+    if (check_barriers && !IsPointValid(gwb, gwb->GetPlayer(player).GetRestrictedArea(), pt))
         return;
 
     /// Wenn das Militargebäude jetzt näher dran ist, dann geht dieser Punkt in den Besitz vom jeweiligen Spieler

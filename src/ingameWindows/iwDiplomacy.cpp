@@ -77,14 +77,14 @@ iwDiplomacy::iwDiplomacy()
 
     for(unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
     {
-        if(GAMECLIENT.GetPlayer(i)->ps == PS_KI || GAMECLIENT.GetPlayer(i)->ps == PS_OCCUPIED)
+        if(GAMECLIENT.GetPlayer(i).ps == PS_KI || GAMECLIENT.GetPlayer(i).ps == PS_OCCUPIED)
         {
             // Einzelne Spielernamen
             AddText(100 + i, LINE_DISTANCE_TO_MARGINS + 10, FIRST_LINE_Y + i * (CELL_HEIGHT + SPACE_HEIGHT) + CELL_HEIGHT / 2,
-                    GAMECLIENT.GetPlayer(i)->name, COLORS[GAMECLIENT.GetPlayer(i)->color], glArchivItem_Font::DF_VCENTER,
+                    GAMECLIENT.GetPlayer(i).name, COLORS[GAMECLIENT.GetPlayer(i).color], glArchivItem_Font::DF_VCENTER,
                     NormalFont);
 
-            if(GAMECLIENT.GetPlayer(i)->ps == PS_OCCUPIED)
+            if(GAMECLIENT.GetPlayer(i).ps == PS_OCCUPIED)
                 // Ping
                 AddDeepening(200 + i, LINE_DISTANCE_TO_MARGINS + PING_FIELD_POS - PING_FIELD_WIDTH / 2,
                              FIRST_LINE_Y + i * (CELL_HEIGHT + SPACE_HEIGHT) + CELL_HEIGHT / 2 - 11, PING_FIELD_WIDTH, 22, TC_GREY, "0", NormalFont, COLOR_YELLOW);
@@ -125,7 +125,7 @@ void iwDiplomacy::Msg_PaintBefore()
     {
         // Rechtecke in Spielerfarbe malen mit entsprechender Transparenz
         Window::DrawRectangle(GetX() + LINE_DISTANCE_TO_MARGINS, GetY() + FIRST_LINE_Y + i * (CELL_HEIGHT + SPACE_HEIGHT), width_ - 2 * LINE_DISTANCE_TO_MARGINS, CELL_HEIGHT,
-                              (COLORS[GAMECLIENT.GetPlayer(i)->color] & 0x00FFFFFF) | 0x40000000);
+                              (COLORS[GAMECLIENT.GetPlayer(i).color] & 0x00FFFFFF) | 0x40000000);
     }
 }
 
@@ -147,18 +147,18 @@ void iwDiplomacy::Msg_PaintAfter()
         // Bündnisvertrag
         if(button)
             // Farbe je nach Bündnisstatus setzen
-            button->SetModulationColor(PACT_COLORS[GAMECLIENT.GetLocalPlayer()->GetPactState(TREATY_OF_ALLIANCE, i)]);
+            button->SetModulationColor(PACT_COLORS[GAMECLIENT.GetLocalPlayer().GetPactState(TREATY_OF_ALLIANCE, i)]);
         // Nicht-Angriffspakt
         button = GetCtrl<ctrlImageButton>(400 + i);
         if(button)
             // Farbe je nach Bündnisstatus setzen
-            button->SetModulationColor(PACT_COLORS[GAMECLIENT.GetLocalPlayer()->GetPactState(NON_AGGRESSION_PACT, i)]);
+            button->SetModulationColor(PACT_COLORS[GAMECLIENT.GetLocalPlayer().GetPactState(NON_AGGRESSION_PACT, i)]);
 
         // Ggf. Ping aktualisieren
         if(ctrlDeepening* pingfield = GetCtrl<ctrlDeepening>(200 + i))
         {
             char ping[64];
-            sprintf(ping, "%u", GAMECLIENT.GetPlayer(i)->ping);
+            sprintf(ping, "%u", GAMECLIENT.GetPlayer(i).ping);
             pingfield->SetText(ping);
         }
 
@@ -167,7 +167,7 @@ void iwDiplomacy::Msg_PaintAfter()
         {
             for(unsigned z = 0; z < 2; ++z)
             {
-                unsigned duration = GAMECLIENT.GetLocalPlayer()->GetRemainingPactTime(PactType(z), i);
+                unsigned duration = GAMECLIENT.GetLocalPlayer().GetRemainingPactTime(PactType(z), i);
                 // Überhaupt ein Bündnis abgeschlossen und Bündnis nicht für die Ewigkeit?
                 if(duration > 0 && duration != 0xFFFFFFFF)
                     // Dann entsprechende Zeit setzen
@@ -193,7 +193,7 @@ void iwDiplomacy::Msg_ButtonClick(const unsigned int ctrl_id)
     {
         unsigned char player_id = static_cast<unsigned char>(ctrl_id - 300);
         // Noch kein Bündnis abgeschlossen?
-        if(GAMECLIENT.GetLocalPlayer()->GetPactState(TREATY_OF_ALLIANCE, player_id) == GameClientPlayer::NO_PACT)
+        if(GAMECLIENT.GetLocalPlayer().GetPactState(TREATY_OF_ALLIANCE, player_id) == GameClientPlayer::NO_PACT)
             // Dann neues Bündnis vorschlagen
             WINDOWMANAGER.Show(new iwSuggestPact(TREATY_OF_ALLIANCE, player_id));
         else
@@ -205,7 +205,7 @@ void iwDiplomacy::Msg_ButtonClick(const unsigned int ctrl_id)
     {
         unsigned char player_id = static_cast<unsigned char>(ctrl_id - 400);
         // Noch kein Bündnis abgeschlossen?
-        if(GAMECLIENT.GetLocalPlayer()->GetPactState(NON_AGGRESSION_PACT, player_id) == GameClientPlayer::NO_PACT)
+        if(GAMECLIENT.GetLocalPlayer().GetPactState(NON_AGGRESSION_PACT, player_id) == GameClientPlayer::NO_PACT)
             // Dann neues Bündnis vorschlagen
             WINDOWMANAGER.Show(new iwSuggestPact(NON_AGGRESSION_PACT, player_id));
         else
@@ -265,7 +265,7 @@ iwSuggestPact::iwSuggestPact(const PactType pt, const unsigned char player) : In
     AddText(1, 100, 30, _("Contract type:"), COLOR_YELLOW, 0, NormalFont);
     AddText(2, 100, 45, _(PACT_NAMES[pt]), COLOR_GREEN, 0, NormalFont);
     AddText(3, 100, 70, _("To player:"), COLOR_YELLOW, 0, NormalFont);
-    AddText(4, 100, 85, GAMECLIENT.GetPlayer(player)->name, COLORS[GAMECLIENT.GetPlayer(player)->color], 0, NormalFont);
+    AddText(4, 100, 85, GAMECLIENT.GetPlayer(player).name, COLORS[GAMECLIENT.GetPlayer(player).color], 0, NormalFont);
     AddText(5, 100, 110, _("Duration:"), COLOR_YELLOW, 0, NormalFont);
     ctrlComboBox* combo = AddComboBox(6, 100, 125, 190, 22, TC_GREEN2, NormalFont, 100);
 

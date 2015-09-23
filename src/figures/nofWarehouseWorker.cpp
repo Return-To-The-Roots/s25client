@@ -45,7 +45,7 @@ nofWarehouseWorker::nofWarehouseWorker(const MapPoint pos, const unsigned char p
       carried_ware(ware), task(task), fat((RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 2)) ? true : false)
 {
     // Zur Inventur hinzufügen, sind ja sonst nicht registriert
-    gwg->GetPlayer(player)->IncreaseInventoryJob(JOB_HELPER, 1);
+    gwg->GetPlayer(player).IncreaseInventoryJob(JOB_HELPER, 1);
 
     /// Straße (also die 1-er-Straße vor dem Lagerhaus) setzen
     assert(gwg->GetSpecObj<noFlag>(gwg->GetNeighbour(pos, 4))->routes[1]->GetLength() == 1);
@@ -66,8 +66,8 @@ void nofWarehouseWorker::Destroy_nofWarehouseWorker()
 
     if(carried_ware)
     {
-        gwg->GetPlayer(player)->RemoveWare(carried_ware);
-        gwg->GetPlayer(player)->DecreaseInventoryWare(carried_ware->type, 1);
+        gwg->GetPlayer(player).RemoveWare(carried_ware);
+        gwg->GetPlayer(player).DecreaseInventoryWare(carried_ware->type, 1);
     }
 }
 
@@ -185,7 +185,7 @@ void nofWarehouseWorker::Walked()
     em->AddToKillList(this);
 
     // Von der Inventur wieder abziehen
-    gwg->GetPlayer(player)->DecreaseInventoryJob(JOB_HELPER, 1);
+    gwg->GetPlayer(player).DecreaseInventoryJob(JOB_HELPER, 1);
 }
 
 void nofWarehouseWorker::AbrogateWorkplace()

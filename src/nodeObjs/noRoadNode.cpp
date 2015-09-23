@@ -145,7 +145,7 @@ void noRoadNode::DestroyRoad(const unsigned char dir)
         delete tmp;
 
         // Spieler Bescheid sagen
-        gwg->GetPlayer(player)->RoadDestroyed();
+        gwg->GetPlayer(player).RoadDestroyed();
     }
 }
 

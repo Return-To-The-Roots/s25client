@@ -91,9 +91,9 @@ iwBuildingProductivities::iwBuildingProductivities()
             if(y * 2 + x < BUILDINGS_COUNT)
             {
 				if(bts[y*2+x]!=BLD_CHARBURNER)
-					AddImage((y * 2 + x) * 2, left_x + x * (percent_image_x + percent_width + image_percent_x), top_y + distance_y * y + percent_height / 2,LOADER.GetImageN(NATION_ICON_IDS[GAMECLIENT.GetLocalPlayer()->nation], bts[y * 2 + x]), _(BUILDING_NAMES[bts[y * 2 + x]]));
+					AddImage((y * 2 + x) * 2, left_x + x * (percent_image_x + percent_width + image_percent_x), top_y + distance_y * y + percent_height / 2,LOADER.GetImageN(NATION_ICON_IDS[GAMECLIENT.GetLocalPlayer().nation], bts[y * 2 + x]), _(BUILDING_NAMES[bts[y * 2 + x]]));
 				else
-					AddImage((y * 2 + x) * 2, left_x + x * (percent_image_x + percent_width + image_percent_x), top_y + distance_y * y + percent_height / 2,LOADER.GetImageN("charburner", GAMECLIENT.GetLocalPlayer()->nation * 8 + 8), _(BUILDING_NAMES[bts[y * 2 + x]]));
+					AddImage((y * 2 + x) * 2, left_x + x * (percent_image_x + percent_width + image_percent_x), top_y + distance_y * y + percent_height / 2,LOADER.GetImageN("charburner", GAMECLIENT.GetLocalPlayer().nation * 8 + 8), _(BUILDING_NAMES[bts[y * 2 + x]]));
 
                 AddPercent((y * 2 + x) * 2 + 1, left_x + image_percent_x + x * (percent_image_x + percent_width + image_percent_x), top_y + distance_y * y,
                            percent_width, percent_height, TC_GREY, COLOR_YELLOW, SmallFont, &percents[bts[y * 2 + x]]);
@@ -110,7 +110,7 @@ iwBuildingProductivities::iwBuildingProductivities()
 /// Aktualisieren der Prozente
 void iwBuildingProductivities::UpdatePercents()
 {
-    GAMECLIENT.GetLocalPlayer()->CalcProductivities(percents);
+    GAMECLIENT.GetLocalPlayer().CalcProductivities(percents);
 }
 
 /// Produktivitäts-percentbars aktualisieren

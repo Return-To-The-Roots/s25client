@@ -336,7 +336,7 @@ void nofShipWright::DrawWorking(int x, int y)
         {
             unsigned id = GAMECLIENT.Interpolate(42, current_ev);
             unsigned graphics_id = ANIMATION[id];
-            LOADER.GetImageN("rom_bobs", graphics_id)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(player)->color]);
+            LOADER.GetImageN("rom_bobs", graphics_id)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(player).color]);
 
             // Steh-Hammer-Sound
             if(graphics_id == 300)

@@ -459,14 +459,15 @@ BuildingType AIConstruction::ChooseMilitaryBuilding(const MapPoint pt)
 	//buildings with requirement > small have a chance to be replaced with small buildings to avoid getting stuck if there are no places for medium/large buildings
     BuildingType bld = BLD_BARRACKS;
 
-    if (((rand() % 3) == 0 || aii->GetInventory()->people[JOB_PRIVATE] < 15) && (aii->GetInventory()->goods[GD_STONES] > 6 || GetBuildingCount(BLD_QUARRY) > 0))
+    const Goods& inventory = aii->GetInventory();
+    if (((rand() % 3) == 0 || inventory.people[JOB_PRIVATE] < 15) && (inventory.goods[GD_STONES] > 6 || GetBuildingCount(BLD_QUARRY) > 0))
         bld = BLD_GUARDHOUSE;
 	if (aijh->HarborPosClose(pt,20) && rand()%10!=0 && aijh->ggs.getSelection(ADDON_SEA_ATTACK) != 2)
 	{
 		bld = BLD_WATCHTOWER;
 		return bld;
 	}
-	if(aijh->UpdateUpgradeBuilding()<0 && buildingCounts.building_site_counts[BLD_FORTRESS]<1 && (aii->GetInventory()->goods[GD_STONES] > 20 || GetBuildingCount(BLD_QUARRY) > 0) && rand()%10!=0)
+	if(aijh->UpdateUpgradeBuilding()<0 && buildingCounts.building_site_counts[BLD_FORTRESS]<1 && (inventory.goods[GD_STONES] > 20 || GetBuildingCount(BLD_QUARRY) > 0) && rand()%10!=0)
 	{
 		bld = BLD_FORTRESS;
 		return bld;
@@ -502,7 +503,7 @@ BuildingType AIConstruction::ChooseMilitaryBuilding(const MapPoint pt)
                         min = 0;
                 }
             }
-            if (min > 0 && randmil % 8 == 0 && aii->CanBuildCatapult() && militaryBuildingCount > 5 && aii->GetInventory()->goods[GD_STONES] > 50 + (4 * GetBuildingCount(BLD_CATAPULT)))
+            if (min > 0 && randmil % 8 == 0 && aii->CanBuildCatapult() && militaryBuildingCount > 5 && inventory.goods[GD_STONES] > 50 + (4 * GetBuildingCount(BLD_CATAPULT)))
             {
                 bld = BLD_CATAPULT;
             }
@@ -538,10 +539,10 @@ bool AIConstruction::Wanted(BuildingType type)
 	if (!aii->CanBuildBuildingtype(type))
 		return false;
     if (type == BLD_CATAPULT)
-        return aii->CanBuildCatapult() && (aii->GetInventory()->goods[GD_STONES] > 50 + (4 * GetBuildingCount(BLD_CATAPULT)));
+        return aii->CanBuildCatapult() && (aii->GetInventory().goods[GD_STONES] > 50 + (4 * GetBuildingCount(BLD_CATAPULT)));
     if ((type >= BLD_BARRACKS && type <= BLD_FORTRESS) || type == BLD_STOREHOUSE)
         //todo: find a better way to determine that there is no risk in expanding than sawmill up and complete
-        return ((GetBuildingCount(BLD_BARRACKS) + GetBuildingCount(BLD_GUARDHOUSE) + GetBuildingCount(BLD_FORTRESS) + GetBuildingCount(BLD_WATCHTOWER) > 0 || buildingCounts.building_counts[BLD_SAWMILL] > 0 || (aii->GetInventory()->goods[GD_BOARDS] > 30 && GetBuildingCount(BLD_SAWMILL) > 0)) && MilitaryBuildingSitesLimit());
+        return ((GetBuildingCount(BLD_BARRACKS) + GetBuildingCount(BLD_GUARDHOUSE) + GetBuildingCount(BLD_FORTRESS) + GetBuildingCount(BLD_WATCHTOWER) > 0 || buildingCounts.building_counts[BLD_SAWMILL] > 0 || (aii->GetInventory().goods[GD_BOARDS] > 30 && GetBuildingCount(BLD_SAWMILL) > 0)) && MilitaryBuildingSitesLimit());
     if(type==BLD_SAWMILL && GetBuildingCount(BLD_SAWMILL)>1)
 	{
 		if (aijh->AmountInStorage(GD_WOOD,0) < 15*(buildingCounts.building_site_counts[BLD_SAWMILL]+1))
@@ -729,7 +730,7 @@ void AIConstruction::InitBuildingsWanted()
     buildingsWanted[BLD_FISHERY] = 6;
     buildingsWanted[BLD_QUARRY] = 6;
     buildingsWanted[BLD_HUNTER] = 2;
-    buildingsWanted[BLD_FARM] = aii->GetInventory()->goods[GD_SCYTHE] + aii->GetInventory()->people[JOB_FARMER];
+    buildingsWanted[BLD_FARM] = aii->GetInventory().goods[GD_SCYTHE] + aii->GetInventory().people[JOB_FARMER];
     buildingsWanted[BLD_HARBORBUILDING] = 99;
     buildingsWanted[BLD_SHIPYARD] = aijh->GetCountofAIRelevantSeaIds() == 1 ? 1 : 99;
 }

@@ -172,7 +172,7 @@ iwAction::iwAction(dskGameInterface* const gi, GameWorldViewer* const gwv, const
             {
                 if (j < building_count[i])
                 {
-                    building_available[i][j] = GAMECLIENT.GetLocalPlayer()->IsBuildingEnabled(building_icons[i][j]);
+                    building_available[i][j] = GAMECLIENT.GetLocalPlayer().IsBuildingEnabled(building_icons[i][j]);
                 }
                 else
                 {
@@ -204,7 +204,7 @@ iwAction::iwAction(dskGameInterface* const gi, GameWorldViewer* const gwv, const
         }
 
         // Catapult
-        if (!GAMECLIENT.GetLocalPlayer()->CanBuildCatapult())
+        if (!GAMECLIENT.GetLocalPlayer().CanBuildCatapult())
             building_available[1][12] = false;
 
         // Charburner
@@ -226,16 +226,16 @@ iwAction::iwAction(dskGameInterface* const gi, GameWorldViewer* const gwv, const
                 tooltip << _(BUILDING_NAMES[building_icons[bt][j]]);
 
                 tooltip << _("\nCosts: ");
-                if(BUILDING_COSTS[GAMECLIENT.GetLocalPlayer()->nation][building_icons[bt][j]].boards > 0)
-                    tooltip << (int)BUILDING_COSTS[GAMECLIENT.GetLocalPlayer()->nation][building_icons[bt][j]].boards << _(" boards");
-                if(BUILDING_COSTS[GAMECLIENT.GetLocalPlayer()->nation][building_icons[bt][j]].stones > 0)
+                if(BUILDING_COSTS[GAMECLIENT.GetLocalPlayer().nation][building_icons[bt][j]].boards > 0)
+                    tooltip << (int)BUILDING_COSTS[GAMECLIENT.GetLocalPlayer().nation][building_icons[bt][j]].boards << _(" boards");
+                if(BUILDING_COSTS[GAMECLIENT.GetLocalPlayer().nation][building_icons[bt][j]].stones > 0)
                 {
-                    if(BUILDING_COSTS[GAMECLIENT.GetLocalPlayer()->nation][building_icons[bt][j]].boards > 0)
+                    if(BUILDING_COSTS[GAMECLIENT.GetLocalPlayer().nation][building_icons[bt][j]].boards > 0)
                         tooltip << ", ";
-                    tooltip << (int)BUILDING_COSTS[GAMECLIENT.GetLocalPlayer()->nation][building_icons[bt][j]].stones << _(" stones");
+                    tooltip << (int)BUILDING_COSTS[GAMECLIENT.GetLocalPlayer().nation][building_icons[bt][j]].stones << _(" stones");
                 }
 
-                build_tab->GetGroup(bt)->AddBuildingIcon(j, (k % 5) * 36, (k / 5) * 36 + 45, building_icons[bt][j], GAMECLIENT.GetLocalPlayer()->nation, 36, tooltip.str());
+                build_tab->GetGroup(bt)->AddBuildingIcon(j, (k % 5) * 36, (k / 5) * 36 + 45, building_icons[bt][j], GAMECLIENT.GetLocalPlayer().nation, 36, tooltip.str());
 
                 ++k;
             }
@@ -736,8 +736,8 @@ void iwAction::Msg_ButtonClick_TabWatch(const unsigned int ctrl_id)
         } break;
         case 3: // zum HQ
         {
-            GameClientPlayer* player = GAMECLIENT.GetLocalPlayer();
-            gwv->MoveToMapObject(player->hqPos);
+            GameClientPlayer& player = GAMECLIENT.GetLocalPlayer();
+            gwv->MoveToMapObject(player.hqPos);
         } break;
 		case 4:
 		{

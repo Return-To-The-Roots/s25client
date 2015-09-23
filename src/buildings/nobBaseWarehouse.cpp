@@ -86,7 +86,7 @@ nobBaseWarehouse::~nobBaseWarehouse()
 void nobBaseWarehouse::Destroy_nobBaseWarehouse()
 {
     // Aus der Warenhausliste entfernen
-    gwg->GetPlayer(player)->RemoveWarehouse(this);
+    gwg->GetPlayer(player).RemoveWarehouse(this);
     // Den Waren und Figuren Bescheid sagen, die zu uns auf den Weg sind, dass wir nun nicht mehr existieren
     for(std::list<noFigure*>::iterator it = dependent_figures.begin(); it != dependent_figures.end(); ++it)
         (*it)->GoHome();
@@ -110,10 +110,10 @@ void nobBaseWarehouse::Destroy_nobBaseWarehouse()
 
     // restliche Warenbestände von der Inventur wieder abziehen
     for(unsigned int i = 0; i < WARE_TYPES_COUNT; ++i)
-        gwg->GetPlayer(player)->DecreaseInventoryWare(GoodType(i), real_goods.goods[i]);
+        gwg->GetPlayer(player).DecreaseInventoryWare(GoodType(i), real_goods.goods[i]);
 
     //for(unsigned int i = 0; i < 30; ++i)
-    //  gwg->GetPlayer(player)->DecreaseInventoryJob(Job(i),real_goods.people[i]);
+    //  gwg->GetPlayer(player).DecreaseInventoryJob(Job(i),real_goods.people[i]);
 
     // Objekt, das die flüchtenden Leute nach und nach ausspuckt, erzeugen
     new BurnedWarehouse(pos, player, real_goods.people);
@@ -192,14 +192,14 @@ void nobBaseWarehouse::Clear()
 {
     for(unsigned i = 0; i < WARE_TYPES_COUNT; ++i)
     {
-        gwg->GetPlayer(player)->DecreaseInventoryWare(GoodType(i), real_goods.goods[i]);
+        gwg->GetPlayer(player).DecreaseInventoryWare(GoodType(i), real_goods.goods[i]);
         goods_.goods[i] = 0;
         real_goods.goods[i] = 0;
     }
     
     for(unsigned i = 0; i < JOB_TYPES_COUNT; ++i)
     {
-        gwg->GetPlayer(player)->DecreaseInventoryJob(Job(i), real_goods.people[i]);
+        gwg->GetPlayer(player).DecreaseInventoryJob(Job(i), real_goods.people[i]);
         goods_.people[i] = 0;
         real_goods.people[i] = 0;
     }
@@ -274,16 +274,16 @@ bool nobBaseWarehouse::OrderJob(const Job job, noRoadNode* const goal, const boo
         {
             --real_goods.goods[JOB_CONSTS[job].tool];
             --goods_.goods[JOB_CONSTS[job].tool];
-            gwg->GetPlayer(player)->DecreaseInventoryWare(JOB_CONSTS[job].tool, 1);
+            gwg->GetPlayer(player).DecreaseInventoryWare(JOB_CONSTS[job].tool, 1);
         }
 
         --real_goods.people[JOB_HELPER];
         --goods_.people[JOB_HELPER];
-        gwg->GetPlayer(player)->DecreaseInventoryJob(JOB_HELPER, 1);
+        gwg->GetPlayer(player).DecreaseInventoryJob(JOB_HELPER, 1);
 
         // erhöhen, da er ja dann rauskommt und es bei den visuellen wieder abgezogen wird!
         ++goods_.people[job];
-        gwg->GetPlayer(player)->IncreaseInventoryJob(job, 1);
+        gwg->GetPlayer(player).IncreaseInventoryJob(job, 1);
     }
 
 
@@ -430,15 +430,15 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
                 ++real_goods.people[JOB_HELPER];
                 ++goods_.people[JOB_HELPER];
 
-                gwg->GetPlayer(player)->IncreaseInventoryJob(JOB_HELPER, 1);
+                gwg->GetPlayer(player).IncreaseInventoryJob(JOB_HELPER, 1);
 
                 if(real_goods.people[JOB_HELPER] == 1)
                 {
 
                     // Wenn vorher keine Träger da waren, müssen alle unbesetzen Wege gucken, ob sie nen Weg hierher finden, könnte ja sein, dass vorher nich genug Träger da waren
-                    gwg->GetPlayer(player)->FindWarehouseForAllRoads();
+                    gwg->GetPlayer(player).FindWarehouseForAllRoads();
                     // evtl Träger mit Werkzeug kombiniert -> neuer Beruf
-                    gwg->GetPlayer(player)->FindWarehouseForAllJobs(JOB_NOTHING);
+                    gwg->GetPlayer(player).FindWarehouseForAllJobs(JOB_NOTHING);
                 }
             }
             else if(real_goods.people[JOB_HELPER] > 100)
@@ -447,7 +447,7 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
                 --real_goods.people[JOB_HELPER];
                 --goods_.people[JOB_HELPER];
 
-                gwg->GetPlayer(player)->DecreaseInventoryJob(JOB_HELPER, 1);
+                gwg->GetPlayer(player).DecreaseInventoryJob(JOB_HELPER, 1);
             }
 
             producinghelpers_event = em->AddEvent(this, PRODUCE_HELPERS_GF + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), PRODUCE_HELPERS_RANDOM_GF), 1);
@@ -479,7 +479,7 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
                                max_recruits);
 
             const unsigned recruiting_ratio
-            = gwg->GetPlayer(player)->militarySettings_[0];
+            = gwg->GetPlayer(player).militarySettings_[0];
             unsigned real_recruits =
                 max_recruits
                 * recruiting_ratio
@@ -494,23 +494,23 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
 
             real_goods.people[JOB_PRIVATE] += real_recruits;
             goods_.people[JOB_PRIVATE] += real_recruits;
-            gwg->GetPlayer(player)->IncreaseInventoryJob(JOB_PRIVATE, real_recruits);
+            gwg->GetPlayer(player).IncreaseInventoryJob(JOB_PRIVATE, real_recruits);
 
             real_goods.people[JOB_HELPER] -= real_recruits;
             goods_.people[JOB_HELPER] -= real_recruits;
-            gwg->GetPlayer(player)->DecreaseInventoryJob(JOB_HELPER, real_recruits);
+            gwg->GetPlayer(player).DecreaseInventoryJob(JOB_HELPER, real_recruits);
 
             real_goods.goods[GD_SWORD] -= real_recruits;
             goods_.goods[GD_SWORD] -= real_recruits;
-            gwg->GetPlayer(player)->DecreaseInventoryWare(GD_SWORD, real_recruits);
+            gwg->GetPlayer(player).DecreaseInventoryWare(GD_SWORD, real_recruits);
 
             real_goods.goods[GD_SHIELDROMANS] -= real_recruits;
             goods_.goods[GD_SHIELDROMANS] -= real_recruits;
-            gwg->GetPlayer(player)->DecreaseInventoryWare(GD_SHIELDROMANS, real_recruits);
+            gwg->GetPlayer(player).DecreaseInventoryWare(GD_SHIELDROMANS, real_recruits);
 
             real_goods.goods[GD_BEER] -= real_recruits;
             goods_.goods[GD_BEER] -= real_recruits;
-            gwg->GetPlayer(player)->DecreaseInventoryWare(GD_BEER, real_recruits);
+            gwg->GetPlayer(player).DecreaseInventoryWare(GD_BEER, real_recruits);
 
 
             // Evtl. versuchen nächsten zu rekrutieren
@@ -523,7 +523,7 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
             // Wenn vorher keine Soldaten hier waren, Militärgebäude prüfen (evtl kann der Soldat ja wieder in eins gehen)
             if(real_goods.people[JOB_PRIVATE] == real_recruits)
                 for (unsigned short i = 0; i < real_recruits; ++i)
-                    gwg->GetPlayer(player)->NewSoldierAvailable(real_goods.people[JOB_PRIVATE]);
+                    gwg->GetPlayer(player).NewSoldierAvailable(real_goods.people[JOB_PRIVATE]);
 
 
         } break;
@@ -571,7 +571,7 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
                 // Ware
 
                 Ware* ware = new Ware(GoodType(selectedId), 0, this);
-                ware->goal = gwg->GetPlayer(player)->FindClientForWare(ware);
+                ware->goal = gwg->GetPlayer(player).FindClientForWare(ware);
 
                 // Ware zur Liste hinzufügen, damit sie dann rausgetragen wird
                 waiting_wares.push_back(ware);
@@ -589,7 +589,7 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
                 // Figur
                 selectedId -= WARE_TYPES_COUNT;
 
-                nobBaseWarehouse* wh = gwg->GetPlayer(player)->FindWarehouse(this, FW::Condition_StoreFigure, 0, true, &selectedId, false);
+                nobBaseWarehouse* wh = gwg->GetPlayer(player).FindWarehouse(this, FW::Condition_StoreFigure, 0, true, &selectedId, false);
                 nofPassiveWorker* fig = new nofPassiveWorker(Job(selectedId), pos, player, NULL);
 
                 if(wh)
@@ -766,7 +766,7 @@ void nobBaseWarehouse::AddWare(Ware* ware)
     else
         type = ware->type;
 
-    gwg->GetPlayer(player)->RemoveWare(ware);
+    gwg->GetPlayer(player).RemoveWare(ware);
     delete ware;
 
     ++real_goods.goods[type];
@@ -784,7 +784,7 @@ void nobBaseWarehouse::CheckUsesForNewWare(const GoodType gt)
         for(unsigned i = 0; i < 30; ++i)
         {
             if(JOB_CONSTS[i].tool == gt)
-                gwg->GetPlayer(player)->FindWarehouseForAllJobs(Job(i));
+                gwg->GetPlayer(player).FindWarehouseForAllJobs(Job(i));
         }
     }
 
@@ -792,7 +792,7 @@ void nobBaseWarehouse::CheckUsesForNewWare(const GoodType gt)
 
     // Wars Baumaterial? Dann den Baustellen Bescheid sagen
     if(gt == GD_BOARDS || gt == GD_STONES)
-        gwg->GetPlayer(player)->FindMaterialForBuildingSites();
+        gwg->GetPlayer(player).FindMaterialForBuildingSites();
 
     // Evtl wurden Bier oder Waffen reingetragen --> versuchen zu rekrutieren
     TryRecruiting();
@@ -813,7 +813,7 @@ void nobBaseWarehouse::CheckJobsForNewFigure(const Job job)
         // Reserve prüfen
         RefreshReserve(job - JOB_PRIVATE);
         // Truppen prüfen in allen Häusern
-        gwg->GetPlayer(player)->NewSoldierAvailable(real_goods.people[job]);
+        gwg->GetPlayer(player).NewSoldierAvailable(real_goods.people[job]);
     }
     else
     {
@@ -821,7 +821,7 @@ void nobBaseWarehouse::CheckJobsForNewFigure(const Job job)
         {
             // Straße für Esel suchen
             noRoadNode* goal;
-            if(RoadSegment* road = gwg->GetPlayer(player)->FindRoadForDonkey(this, &goal))
+            if(RoadSegment* road = gwg->GetPlayer(player).FindRoadForDonkey(this, &goal))
             {
                 // gefunden --> Esel an die Straße bestellen
                 road->GotDonkey(OrderDonkey(road, goal));
@@ -831,14 +831,14 @@ void nobBaseWarehouse::CheckJobsForNewFigure(const Job job)
         else
         {
             // Evtl. Abnehmer für die Figur wieder finden
-            gwg->GetPlayer(player)->FindWarehouseForAllJobs(job);
+            gwg->GetPlayer(player).FindWarehouseForAllJobs(job);
             // Wenns ein Träger war, auch Wege prüfen
             if(job == JOB_HELPER && real_goods.people[JOB_HELPER] == 1)
             {
                 // evtl als Träger auf Straßen schicken
-                gwg->GetPlayer(player)->FindWarehouseForAllRoads();
+                gwg->GetPlayer(player).FindWarehouseForAllRoads();
                 // evtl Träger mit Werkzeug kombiniert -> neuer Beruf
-                gwg->GetPlayer(player)->FindWarehouseForAllJobs(JOB_NOTHING);
+                gwg->GetPlayer(player).FindWarehouseForAllJobs(JOB_NOTHING);
             }
 
         }
@@ -924,7 +924,7 @@ void nobBaseWarehouse::OrderTroops(nobMilitary* goal, unsigned count,bool ignore
     // Soldaten durchgehen und count rausschicken
 
     // Ränge durchgehen, absteigend, starke zuerst
-    if (gwg->GetPlayer(player)->militarySettings_[1] >= MILITARY_SETTINGS_SCALE[1] / 2 && !ignoresettingsendweakfirst)
+    if (gwg->GetPlayer(player).militarySettings_[1] >= MILITARY_SETTINGS_SCALE[1] / 2 && !ignoresettingsendweakfirst)
     {
         for(unsigned i = 5; i && count; --i)
         {
@@ -1002,7 +1002,7 @@ void nobBaseWarehouse::AddActiveSoldier(nofActiveSoldier* soldier)
     RefreshReserve(soldier->GetRank());
 
     // Truppen prüfen in allen Häusern
-    gwg->GetPlayer(player)->RegulateAllTroops();
+    gwg->GetPlayer(player).RegulateAllTroops();
 
     // und Soldat vernichten
     em->AddToKillList(soldier);
@@ -1026,7 +1026,7 @@ nofDefender* nobBaseWarehouse::ProvideDefender(nofAttacker* const attacker)
     if(rank_count)
     {
         // Gewünschten Rang an Hand der Militäreinstellungen ausrechnen, je nachdem wie stark verteidigt werden soll
-        unsigned rank = (rank_count - 1) * gwg->GetPlayer(player)->militarySettings_[1] / MILITARY_SETTINGS_SCALE[1];
+        unsigned rank = (rank_count - 1) * gwg->GetPlayer(player).militarySettings_[1] / MILITARY_SETTINGS_SCALE[1];
 
         // Gewünschten Rang suchen
         unsigned r = 0;
@@ -1104,7 +1104,7 @@ nofDefender* nobBaseWarehouse::ProvideDefender(nofAttacker* const attacker)
 bool nobBaseWarehouse::AreRecruitingConditionsComply()
 {
     // Mindestanzahl der Gehilfen die vorhanden sein müssen anhand der 1. Militäreinstellung ausrechnen
-    unsigned needed_helpers = 100 - 10 * gwg->GetPlayer(player)->militarySettings_[0];
+    unsigned needed_helpers = 100 - 10 * gwg->GetPlayer(player).militarySettings_[0];
 
     // einer muss natürlich mindestens vorhanden sein!
     if(!needed_helpers) needed_helpers = 1;
@@ -1266,10 +1266,10 @@ void nobBaseWarehouse::AddGoods(const Goods& goods)
 void nobBaseWarehouse::AddToInventory()
 {
     for(unsigned int i = 0; i < WARE_TYPES_COUNT; ++i)
-        gwg->GetPlayer(player)->IncreaseInventoryWare(GoodType(i), real_goods.goods[i]);
+        gwg->GetPlayer(player).IncreaseInventoryWare(GoodType(i), real_goods.goods[i]);
 
     for(unsigned int i = 0; i < JOB_TYPES_COUNT; ++i)
-        gwg->GetPlayer(player)->IncreaseInventoryJob(Job(i), real_goods.people[i]);
+        gwg->GetPlayer(player).IncreaseInventoryJob(Job(i), real_goods.people[i]);
 
 }
 
@@ -1300,7 +1300,7 @@ bool nobBaseWarehouse::CheckVisualInventorySettings(unsigned char category, unsi
 //  memcpy(inventory_settings_real.figures,figures,31);
 //
 //  // Evtl gabs verlorene Waren, die jetzt in das HQ wieder reinkönnen
-//  gwg->GetPlayer(player)->FindClientForLostWares();
+//  gwg->GetPlayer(player).FindClientForLostWares();
 //
 //  // Sind Waren vorhanden, die ausgelagert werden müssen und ist noch kein Auslagerungsevent vorhanden --> neues anmelden
 //  if(AreWaresToEmpty() && !empty_event.valid())
@@ -1329,7 +1329,7 @@ void nobBaseWarehouse::ChangeRealInventorySetting(unsigned char category, unsign
 
     // Evtl gabs verlorene Waren, die jetzt in das HQ wieder reinkönnen
     if(state == 2)
-        gwg->GetPlayer(player)->FindClientForLostWares();
+        gwg->GetPlayer(player).FindClientForLostWares();
 
     // Sind Waren vorhanden, die ausgelagert werden müssen und ist noch kein Auslagerungsevent vorhanden --> neues anmelden
     if(state == 4 && ((category == 0) ? real_goods.goods[type] : real_goods.people[type]) && !empty_event)
@@ -1369,7 +1369,7 @@ void nobBaseWarehouse::ChangeAllRealInventorySettings(unsigned char category, un
 
     // Evtl gabs verlorene Waren, die jetzt in das HQ wieder reinkönnen
     if(state == 2)
-        gwg->GetPlayer(player)->FindClientForLostWares();
+        gwg->GetPlayer(player).FindClientForLostWares();
 
     // Sind Waren vorhanden, die ausgelagert werden müssen und ist noch kein Auslagerungsevent vorhanden --> neues anmelden
     if(state == 4 && AreWaresToEmpty() && !empty_event)
@@ -1475,7 +1475,7 @@ void nobBaseWarehouse::RefreshReserve(unsigned rank)
 		// if the rank is supposed to be send away, do it!
 		CheckOuthousing(1,JOB_PRIVATE + rank);
         // Ggf. Truppen in die Militärgebäude schicken
-        gwg->GetPlayer(player)->RegulateAllTroops();
+        gwg->GetPlayer(player).RegulateAllTroops();
     }
     // ansonsten ists gleich und alles ist in Ordnung!
 }

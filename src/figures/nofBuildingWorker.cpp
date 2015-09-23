@@ -190,16 +190,16 @@ void nofBuildingWorker::WorkingReady()
             // Inventur entsprechend erhöhen, dabei Schilder unterscheiden!
             GoodType ware_type = (real_ware->type == GD_SHIELDVIKINGS || real_ware->type == GD_SHIELDAFRICANS ||
                                   real_ware->type == GD_SHIELDJAPANESE) ? GD_SHIELDROMANS : real_ware->type;
-            gwg->GetPlayer(player)->IncreaseInventoryWare(ware_type, 1);
+            gwg->GetPlayer(player).IncreaseInventoryWare(ware_type, 1);
             // Abnehmer für Ware finden
-            real_ware->goal = gwg->GetPlayer(player)->FindClientForWare(real_ware);
+            real_ware->goal = gwg->GetPlayer(player).FindClientForWare(real_ware);
             // Ware soll ihren weiteren Weg berechnen
             real_ware->RecalcRoute();
             // Ware ablegen
             flag->AddWare(real_ware);
             real_ware->LieAtFlag(flag);
             // Warenstatistik erhöhen
-            GAMECLIENT.GetPlayer(this->player)->IncreaseMerchandiseStatistic(ware);
+            GAMECLIENT.GetPlayer(this->player).IncreaseMerchandiseStatistic(ware);
             // Tragen nun keine Ware mehr
             ware = GD_NOTHING;
         }

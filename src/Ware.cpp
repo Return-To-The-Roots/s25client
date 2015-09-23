@@ -40,18 +40,18 @@ static char THIS_FILE[] = __FILE__;
 
 Ware::Ware(const GoodType type, noBaseBuilding* goal, noRoadNode* location) :
     next_dir(255), state(STATE_WAITINWAREHOUSE), location(location),
-    type(type == GD_SHIELDROMANS ? SHIELD_TYPES[GAMECLIENT.GetPlayer(location->GetPlayer())->nation] : type ),// Bin ich ein Schild? Dann evtl. Typ nach Nation anpassen
+    type(type == GD_SHIELDROMANS ? SHIELD_TYPES[GAMECLIENT.GetPlayer(location->GetPlayer()).nation] : type ),// Bin ich ein Schild? Dann evtl. Typ nach Nation anpassen
     goal(goal)
 {
     // Ware in den Index mit eintragen
-    gwg->GetPlayer(location->GetPlayer())->RegisterWare(this);
+    gwg->GetPlayer(location->GetPlayer()).RegisterWare(this);
 }
 
 Ware::~Ware()
 {
     /*assert(!gwg->GetPlayer((location->GetPlayer()].IsWareRegistred(this));*/
     //if(location)
-    //  assert(!gwg->GetPlayer((location->GetPlayer())->IsWareDependent(this));
+    //  assert(!gwg->GetPlayer((location->GetPlayer()).IsWareDependent(this));
 }
 
 void Ware::Destroy(void)
@@ -103,7 +103,7 @@ void Ware::RecalcRoute()
 		}
 		else
 		{
-			nobBaseWarehouse* wh = gwg->GetPlayer(location->GetPlayer())->FindWarehouse(location, FW::Condition_StoreWare, 0, true, &type, true);
+			nobBaseWarehouse* wh = gwg->GetPlayer(location->GetPlayer()).FindWarehouse(location, FW::Condition_StoreWare, 0, true, &type, true);
 			if(wh)
 			{
 				// Lagerhaus ist unser neues Ziel
@@ -156,7 +156,7 @@ void Ware::GoalDestroyed()
     {
         // Dann dem Hafen Bescheid sagen
         dynamic_cast<nobHarborBuilding*>(location)->CancelWareForShip(this);
-        GAMECLIENT.GetPlayer(location->GetPlayer())->RemoveWare(this);
+        GAMECLIENT.GetPlayer(location->GetPlayer()).RemoveWare(this);
         em->AddToKillList(this);
     }
     else
@@ -183,7 +183,7 @@ void Ware::GoalDestroyed()
         // Wenn sie an einer Flagge liegt, muss der Weg neu berechnet werden und dem Träger Bescheid gesagt werden
         else if(state == STATE_WAITATFLAG)
         {
-            goal = gwg->GetPlayer(location->GetPlayer())->FindWarehouse(location, FW::Condition_StoreWare, 0, true, &type, true);
+            goal = gwg->GetPlayer(location->GetPlayer()).FindWarehouse(location, FW::Condition_StoreWare, 0, true, &type, true);
 
             unsigned char last_next_dir = next_dir;
             next_dir = gwg->FindPathForWareOnRoads(location, goal, NULL, &next_harbor);
@@ -221,7 +221,7 @@ void Ware::GoalDestroyed()
 				}
 				else
 				{
-					goal = gwg->GetPlayer(location->GetPlayer())->FindWarehouse(location, FW::Condition_StoreWare, 0, true, &type, true);
+					goal = gwg->GetPlayer(location->GetPlayer()).FindWarehouse(location, FW::Condition_StoreWare, 0, true, &type, true);
 
 					if(goal)
 						// Lagerhaus ggf. Bescheid sagen
@@ -244,11 +244,11 @@ void Ware::NotifyGoalAboutLostWare()
 void Ware::WareLost(const unsigned char player)
 {
     // Inventur verringern
-    gwg->GetPlayer(player)->DecreaseInventoryWare(type, 1);
+    gwg->GetPlayer(player).DecreaseInventoryWare(type, 1);
     // Ziel der Ware Bescheid sagen
     NotifyGoalAboutLostWare();
     // Zentrale Registrierung der Ware löschen
-    gwg->GetPlayer(player)->RemoveWare(this);
+    gwg->GetPlayer(player).RemoveWare(this);
 }
 
 
@@ -299,7 +299,7 @@ void Ware::RemoveWareJobForCurrentDir(const unsigned char last_next_dir)
 
 void Ware::FindRouteToWarehouse()
 {
-    goal = gwg->GetPlayer(location->GetPlayer())->FindWarehouse(location, FW::Condition_StoreWare, 0, true, &type, true);
+    goal = gwg->GetPlayer(location->GetPlayer()).FindWarehouse(location, FW::Condition_StoreWare, 0, true, &type, true);
 
     if(goal && state == STATE_WAITATFLAG)
     {

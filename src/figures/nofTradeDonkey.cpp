@@ -72,8 +72,7 @@ void nofTradeDonkey::Walked()
             return;
         }
 
-        gwg->GetPlayer(static_cast<nobBaseWarehouse*>(nob)->GetPlayer())
-        ->IncreaseInventoryJob(this->GetJobType(), 1);
+        gwg->GetPlayer(static_cast<nobBaseWarehouse*>(nob)->GetPlayer()).IncreaseInventoryJob(this->GetJobType(), 1);
         gwg->RemoveFigure(this, pos);
         static_cast<nobBaseWarehouse*>(nob)->AddFigure(this);
 
@@ -83,9 +82,7 @@ void nofTradeDonkey::Walked()
             Goods goods;
             goods.goods[gt] = 1;
             static_cast<nobBaseWarehouse*>(nob)->AddGoods(goods);
-            gwg->GetPlayer(static_cast<nobBaseWarehouse*>(nob)->GetPlayer())
-            ->IncreaseInventoryWare(gt, 1);
-
+            gwg->GetPlayer(static_cast<nobBaseWarehouse*>(nob)->GetPlayer()).IncreaseInventoryWare(gt, 1);
         }
     }
     else

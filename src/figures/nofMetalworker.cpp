@@ -68,7 +68,7 @@ void nofMetalworker::DrawWorking(int x, int y)
     unsigned now_id;
 
     LOADER.GetImageN("rom_bobs", 190 + (now_id = GAMECLIENT.Interpolate(230, current_ev)) % 23)
-    ->Draw(x + offsets[workplace->GetNation()][0], y + offsets[workplace->GetNation()][1], 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(workplace->GetPlayer())->color]);
+    ->Draw(x + offsets[workplace->GetNation()][0], y + offsets[workplace->GetNation()][1], 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(workplace->GetPlayer()).color]);
 
     // Hämmer-Sound
     if(now_id % 23 == 3 || now_id % 23 == 7)
@@ -125,7 +125,7 @@ unsigned nofMetalworker::ToolsOrderedTotal() const
 {
     unsigned sum = 0;
     for (unsigned i = 0; i < TOOL_COUNT; ++i)
-        sum += gwg->GetPlayer(player)->tools_ordered[i];
+        sum += gwg->GetPlayer(player).tools_ordered[i];
     return sum;
 }
 
@@ -137,16 +137,16 @@ GoodType nofMetalworker::GetOrderedTool()
 
     for (unsigned i = 0; i < TOOL_COUNT; ++i)
     {
-        if (gwg->GetPlayer(player)->tools_ordered[i] > 0 && (gwg->GetPlayer(player)->toolsSettings_[i] > prio) )
+        if (gwg->GetPlayer(player).tools_ordered[i] > 0 && (gwg->GetPlayer(player).toolsSettings_[i] > prio) )
         {
-            prio = gwg->GetPlayer(player)->toolsSettings_[i];
+            prio = gwg->GetPlayer(player).toolsSettings_[i];
             tool = i;
         }
     }
 
     if (tool != -1)
     {
-        --gwg->GetPlayer(player)->tools_ordered[tool];
+        --gwg->GetPlayer(player).tools_ordered[tool];
 
         if ( (player == GAMECLIENT.GetPlayerID()) && (ToolsOrderedTotal() == 0) )
         {
@@ -166,7 +166,7 @@ GoodType nofMetalworker::GetRandomTool()
     unsigned short all_size = 0;
 
     for(unsigned int i = 0; i < TOOL_COUNT; ++i)
-        all_size += gwg->GetPlayer(player)->toolsSettings_[i];
+        all_size += gwg->GetPlayer(player).toolsSettings_[i];
 
 	// if they're all zero
     if(all_size == 0)
@@ -185,7 +185,7 @@ GoodType nofMetalworker::GetRandomTool()
 
     for(unsigned int i = 0; i < TOOL_COUNT; ++i)
     {
-        for(unsigned g = 0; g < gwg->GetPlayer(player)->toolsSettings_[i]; ++g)
+        for(unsigned g = 0; g < gwg->GetPlayer(player).toolsSettings_[i]; ++g)
             random_array[curIdx++] = i;
     }
 

@@ -243,7 +243,7 @@ void dskGameInterface::Msg_PaintAfter()
     if(GAMECLIENT.IsReplayModeOn())
         snprintf(nwf_string, 255, _("(Replay-Mode) Current GF: %u (End at: %u) / GF length: %u ms / NWF length: %u gf (%u ms)"), GAMECLIENT.GetGFNumber(), GAMECLIENT.GetLastReplayGF(), GAMECLIENT.GetGFLength(), GAMECLIENT.GetNWFLength(), GAMECLIENT.GetNWFLength() * GAMECLIENT.GetGFLength());
     else
-        snprintf(nwf_string, 255, _("Current GF: %u / GF length: %u ms / NWF length: %u gf (%u ms) /  Ping: %u ms"), GAMECLIENT.GetGFNumber(), GAMECLIENT.GetGFLength(), GAMECLIENT.GetNWFLength(), GAMECLIENT.GetNWFLength() * GAMECLIENT.GetGFLength(), GAMECLIENT.GetLocalPlayer()->ping);
+        snprintf(nwf_string, 255, _("Current GF: %u / GF length: %u ms / NWF length: %u gf (%u ms) /  Ping: %u ms"), GAMECLIENT.GetGFNumber(), GAMECLIENT.GetGFLength(), GAMECLIENT.GetNWFLength(), GAMECLIENT.GetNWFLength() * GAMECLIENT.GetGFLength(), GAMECLIENT.GetLocalPlayer().ping);
 
     // tournament mode?
     unsigned tmd = GAMECLIENT.GetTournamentModeDuration();
@@ -279,9 +279,9 @@ void dskGameInterface::Msg_PaintAfter()
     // Laggende Spieler anzeigen in Form von Schnecken
     for(unsigned int i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
     {
-        GameClientPlayer* player = GAMECLIENT.GetPlayer(i);
-        if(player->is_lagging)
-            LOADER.GetImageN("rttr", 0)->Draw(VIDEODRIVER.GetScreenWidth() - 70 - i * 40, 35, 30, 30, 0, 0, 0, 0,  COLOR_WHITE, COLORS[player->color]);
+        GameClientPlayer& player = GAMECLIENT.GetPlayer(i);
+        if(player.is_lagging)
+            LOADER.GetImageN("rttr", 0)->Draw(VIDEODRIVER.GetScreenWidth() - 70 - i * 40, 35, 30, 30, 0, 0, 0, 0,  COLOR_WHITE, COLORS[player.color]);
     }
 }
 
@@ -475,7 +475,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
                 if(GAMECLIENT.GetGGS().isEnabled(ADDON_TRADE))
                 {
                     // Allied warehouse? -> Show trade window
-                    if(GAMECLIENT.GetLocalPlayer()->IsAlly(building->GetPlayer())
+                    if(GAMECLIENT.GetLocalPlayer().IsAlly(building->GetPlayer())
                             && (bt == BLD_HEADQUARTERS || bt == BLD_HARBORBUILDING || bt == BLD_STOREHOUSE))
                     {
                         WINDOWMANAGER.Show(new iwTrade(gwv, this, static_cast<nobBaseWarehouse*>(building)));
@@ -649,16 +649,16 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
         case '4':   case '5':   case '6':
         case '7':   case '8':
         {
+            unsigned playerIdx = ke.c - '1';
             if(GAMECLIENT.IsReplayModeOn())
-                GAMECLIENT.ChangeReplayPlayer(ke.c - '1');
-            else
             {
-                GameClientPlayer* player = GAMECLIENT.GetPlayer(ke.c - '1');
-                if(player)
-                {
-                    if(player->ps == PS_KI && player->aiInfo.type == AI::DUMMY)
-                        GAMECLIENT.SwitchPlayer(ke.c - '1');
-                }
+                GAMECLIENT.ChangeReplayPlayer(playerIdx);
+            }
+            else if(playerIdx < GAMECLIENT.GetPlayerCount())
+            {
+                GameClientPlayer& player = GAMECLIENT.GetPlayer(playerIdx);
+                if(player.ps == PS_KI && player.aiInfo.type == AI::DUMMY)
+                    GAMECLIENT.SwitchPlayer(ke.c - '1');
             }
         } return true;
 
@@ -671,7 +671,7 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
             unsigned singleplayer = 0, i = 0;
             while(i < GAMECLIENT.GetPlayerCount() && singleplayer < 2)
             {
-                if(GAMECLIENT.GetPlayer(i)->ps == PS_OCCUPIED)singleplayer++;
+                if(GAMECLIENT.GetPlayer(i).ps == PS_OCCUPIED)singleplayer++;
                 i++;
             }
             if(singleplayer < 2)GAMECLIENT.IncreaseSpeed();
@@ -690,10 +690,10 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
         } return true;
         case 'h': // Zum HQ springen
         {
-            GameClientPlayer* player = GAMECLIENT.GetLocalPlayer();
+            GameClientPlayer& player = GAMECLIENT.GetLocalPlayer();
             // Prüfen, ob dieses überhaupt noch existiert
-            if(player->hqPos.x != 0xFFFF)
-                gwv->MoveToMapObject(player->hqPos);
+            if(player.hqPos.x != 0xFFFF)
+                gwv->MoveToMapObject(player.hqPos);
         } return true;
         case 'i': // Show inventory
         {
@@ -704,7 +704,7 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
             unsigned singleplayer = 0, i = 0;
             while(i < GAMECLIENT.GetPlayerCount() && singleplayer < 2)
             {
-                if(GAMECLIENT.GetPlayer(i)->ps == PS_OCCUPIED)singleplayer++;
+                if(GAMECLIENT.GetPlayer(i).ps == PS_OCCUPIED)singleplayer++;
                 i++;
             }
             if(singleplayer < 2 || GAMECLIENT.IsReplayModeOn())
@@ -923,7 +923,7 @@ void dskGameInterface::ShowActionWindow(const iwAction::Tabs& action_tabs, MapPo
     // Angriffstab muss wissen, wieviel Soldaten maximal entsendet werden können
     if(action_tabs.attack)
     {
-        if(GAMECLIENT.GetLocalPlayer()->IsPlayerAttackable(gwv->GetSpecObj<noBuilding>(cSel)->GetPlayer()))
+        if(GAMECLIENT.GetLocalPlayer().IsPlayerAttackable(gwv->GetSpecObj<noBuilding>(cSel)->GetPlayer()))
             params = gwv->GetAvailableSoldiersForAttack(GAMECLIENT.GetPlayerID(), cSel);
     }
 
@@ -999,7 +999,7 @@ void dskGameInterface::CI_PlayerLeft(const unsigned player_id)
 {
     // Info-Meldung ausgeben
     char text[256];
-    snprintf(text, sizeof(text), _("Player '%s' left the game!"), GAMECLIENT.GetPlayer(player_id)->name.c_str());
+    snprintf(text, sizeof(text), _("Player '%s' left the game!"), GAMECLIENT.GetPlayer(player_id).name.c_str());
     messenger.AddMessage("", 0, CD_SYSTEM, text, COLOR_RED);
     // Im Spiel anzeigen, dass die KI das Spiel betreten hat
     snprintf(text, sizeof(text), _("Player '%s' joined the game!"), "KI");
@@ -1029,9 +1029,9 @@ void dskGameInterface::CI_GGSChanged(const GlobalGameSettings& ggs)
 void dskGameInterface::CI_Chat(const unsigned player_id, const ChatDestination cd, const std::string& msg)
 {
     char from[256];
-    snprintf(from, sizeof(from), _("<%s> "), GAMECLIENT.GetPlayer(player_id)->name.c_str());
+    snprintf(from, sizeof(from), _("<%s> "), GAMECLIENT.GetPlayer(player_id).name.c_str());
     messenger.AddMessage(from,
-                         COLORS[GAMECLIENT.GetPlayer(player_id)->color], cd, msg);
+                         COLORS[GAMECLIENT.GetPlayer(player_id).color], cd, msg);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1164,8 +1164,8 @@ void dskGameInterface::CI_PlayersSwapped(const unsigned player1, const unsigned 
 {
     // Meldung anzeigen
     char text[256];
-    snprintf(text, sizeof(text), _("Player '%s' switched to player '%s'"), GAMECLIENT.GetPlayer(player1)->name.c_str()
-             , GAMECLIENT.GetPlayer(player2)->name.c_str());
+    snprintf(text, sizeof(text), _("Player '%s' switched to player '%s'"), GAMECLIENT.GetPlayer(player1).name.c_str()
+             , GAMECLIENT.GetPlayer(player2).name.c_str());
     messenger.AddMessage("", 0, CD_SYSTEM, text, COLOR_YELLOW);
 
 
@@ -1187,7 +1187,7 @@ void dskGameInterface::CI_PlayersSwapped(const unsigned player1, const unsigned 
 void dskGameInterface::GI_PlayerDefeated(const unsigned player_id)
 {
     char text[256];
-    snprintf(text, sizeof(text), _("Player '%s' was defeated!"), GAMECLIENT.GetPlayer(player_id)->name.c_str());
+    snprintf(text, sizeof(text), _("Player '%s' was defeated!"), GAMECLIENT.GetPlayer(player_id).name.c_str());
     messenger.AddMessage("", 0, CD_SYSTEM, text, COLOR_ORANGE);
 
     /// Lokaler Spieler?
@@ -1309,7 +1309,7 @@ void dskGameInterface::CI_PostMessageDeleted(const unsigned postmessages_count)
 void dskGameInterface::GI_Winner(const unsigned player_id)
 {
     char text[256];
-    snprintf(text, sizeof(text), _("Player '%s' is the winner!"), GAMECLIENT.GetPlayer(player_id)->name.c_str());
+    snprintf(text, sizeof(text), _("Player '%s' is the winner!"), GAMECLIENT.GetPlayer(player_id).name.c_str());
     messenger.AddMessage("", 0, CD_SYSTEM, text, COLOR_ORANGE);
 }
 ///////////////////////////////////////////////////////////////////////////////
@@ -1331,13 +1331,13 @@ void dskGameInterface::GI_TeamWinner(const unsigned player_id)
     switch (winnercount)
     {
         case 2:
-            snprintf(text, sizeof(text), _("Team victory! '%s' and '%s' are the winners!"), GAMECLIENT.GetPlayer(winners[0])->name.c_str(), GAMECLIENT.GetPlayer(winners[1])->name.c_str());
+            snprintf(text, sizeof(text), _("Team victory! '%s' and '%s' are the winners!"), GAMECLIENT.GetPlayer(winners[0]).name.c_str(), GAMECLIENT.GetPlayer(winners[1]).name.c_str());
             break;
         case 3:
-            snprintf(text, sizeof(text), _("Team victory! '%s' and '%s' and '%s' are the winners!"), GAMECLIENT.GetPlayer(winners[0])->name.c_str(), GAMECLIENT.GetPlayer(winners[1])->name.c_str(), GAMECLIENT.GetPlayer(winners[2])->name.c_str());
+            snprintf(text, sizeof(text), _("Team victory! '%s' and '%s' and '%s' are the winners!"), GAMECLIENT.GetPlayer(winners[0]).name.c_str(), GAMECLIENT.GetPlayer(winners[1]).name.c_str(), GAMECLIENT.GetPlayer(winners[2]).name.c_str());
             break;
         case 4:
-            snprintf(text, sizeof(text), _("Team victory! '%s' and '%s' and '%s' and '%s' are the winners!"), GAMECLIENT.GetPlayer(winners[0])->name.c_str(), GAMECLIENT.GetPlayer(winners[1])->name.c_str(), GAMECLIENT.GetPlayer(winners[2])->name.c_str(), GAMECLIENT.GetPlayer(winners[3])->name.c_str());
+            snprintf(text, sizeof(text), _("Team victory! '%s' and '%s' and '%s' and '%s' are the winners!"), GAMECLIENT.GetPlayer(winners[0]).name.c_str(), GAMECLIENT.GetPlayer(winners[1]).name.c_str(), GAMECLIENT.GetPlayer(winners[2]).name.c_str(), GAMECLIENT.GetPlayer(winners[3]).name.c_str());
             break;
         default:
             snprintf(text, sizeof(text), "%s", _("Team victory!"));

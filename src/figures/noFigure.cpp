@@ -509,7 +509,7 @@ void noFigure::WalkToGoal()
             if(fs == FS_GOHOME)
             {
                 // Mann im Lagerhaus angekommen     - this is what we hope happens ...
-                gwg->GetPlayer(static_cast<nobBaseWarehouse*>(goal)->GetPlayer())->IncreaseInventoryJob(this->GetJobType(),1);
+                gwg->GetPlayer(static_cast<nobBaseWarehouse*>(goal)->GetPlayer()).IncreaseInventoryJob(this->GetJobType(),1);
                 static_cast<nobBaseWarehouse*>(goal)->AddFigure(this);
                 gwg->RemoveFigure(this,x,y);
                 // the ware we carried is lost because poc forgot to carry the information and is too lazy to fix it now ...
@@ -682,7 +682,7 @@ void noFigure::GoHome(noRoadNode* goal)
             return;
         }
         else
-            this->goal_ = gwg->GetPlayer(player)->FindWarehouse((rs_dir) ? cur_rs->GetF1() : cur_rs->GetF2(), FW::Condition_StoreFigure, 0, true, &job_, false);
+            this->goal_ = gwg->GetPlayer(player).FindWarehouse((rs_dir) ? cur_rs->GetF1() : cur_rs->GetF2(), FW::Condition_StoreFigure, 0, true, &job_, false);
     }
     else
         this->goal_ = goal;
@@ -814,7 +814,7 @@ void noFigure::Wander()
                     if(gwg->FindHumanPath(pos, (*it)->GetPos(), 10, false) != 0xFF)
                     {
                         // gucken, ob ein Weg zu einem Warenhaus führt
-                        if(gwg->GetPlayer(player)->FindWarehouse(*it, FW::Condition_StoreFigure, 0, true, &job_, false))
+                        if(gwg->GetPlayer(player).FindWarehouse(*it, FW::Condition_StoreFigure, 0, true, &job_, false))
                         {
                             // dann nehmen wir die doch glatt
                             best_way = way;
@@ -950,7 +950,7 @@ void noFigure::WanderFailedTrade()
                     if((dir = gwg->FindHumanPath(x,y,(*it)->GetPos(),10,false)) != 0xFF)
                     {
                         // gucken, ob ein Weg zu einem Warenhaus führt
-                        if(gwg->GetPlayer(player)->FindWarehouse(*it,FW::Condition_StoreFigure,0,true,&job,false))
+                        if(gwg->GetPlayer(player).FindWarehouse(*it,FW::Condition_StoreFigure,0,true,&job,false))
                         {
                             // dann nehmen wir die doch glatt
                             best_way = way;
@@ -1045,7 +1045,7 @@ void noFigure::WanderToFlag()
     {
         // Gibts noch nen Weg zu einem Lagerhaus?
 
-        if(nobBaseWarehouse* wh = gwg->GetPlayer(player)->FindWarehouse(
+        if(nobBaseWarehouse* wh = gwg->GetPlayer(player).FindWarehouse(
                                       gwg->GetSpecObj<noRoadNode>(pos), FW::Condition_StoreFigure, 0, true, &job_, false))
         {
             // ja, dann können wir ja hingehen
@@ -1099,7 +1099,7 @@ void noFigure::WanderToFlag()
     {
         // Gibts noch nen Weg zu einem Lagerhaus?
 
-        if(nobBaseWarehouse * wh = gwg->GetPlayer(player)->FindWarehouse(
+        if(nobBaseWarehouse * wh = gwg->GetPlayer(player).FindWarehouse(
             gwg->GetSpecObj<noRoadNode>(x,y),FW::Condition_StoreFigure,0,true,&job,false))
         {
             // ja, dann können wir ja hingehen
@@ -1145,7 +1145,7 @@ void noFigure::WanderToFlag()
 //  {
 //      // Geht ein Weg zu einem Lagerhaus?
 //      unsigned length;
-//      if(nobBaseWarehouse * wh = gwg->GetPlayer(player)->FindWarehouse(gwg->GetSpecObj<noRoadNode>(x,y),GD_NOTHING,JOB_NOTHING,0,1,&length))
+//      if(nobBaseWarehouse * wh = gwg->GetPlayer(player).FindWarehouse(gwg->GetSpecObj<noRoadNode>(x,y),GD_NOTHING,JOB_NOTHING,0,1,&length))
 //      {
 //          // ja, dann können wir ja hingehen
 //          fs = FS_GOTOGOAL;
@@ -1168,7 +1168,7 @@ void noFigure::WanderToFlag()
 //      {
 //          // ja, eine Flagge in der Nähe, gucken, ob ein Weg zu einem Warenhaus führt
 //          unsigned length;
-//          if(gwg->GetPlayer(player)->FindWarehouse(gwg->GetSpecObj<noRoadNode>(gwg->GetXA(x,y,i),gwg->GetYA(x,y,i)),GD_NOTHING,JOB_NOTHING,0,1,&length))
+//          if(gwg->GetPlayer(player).FindWarehouse(gwg->GetSpecObj<noRoadNode>(gwg->GetXA(x,y,i),gwg->GetYA(x,y,i)),GD_NOTHING,JOB_NOTHING,0,1,&length))
 //          {
 //              // ja, dann gehen wir mal zu der Flagge
 //              StartWalking(i);
@@ -1266,7 +1266,7 @@ void noFigure::DrawWalkingBobCarrier(int x, int y, unsigned int ware, bool fat)
     if(!waiting_for_free_node || pause_walked_gf)
         CalcFigurRelative(x, y);
 
-    Loader::carrier_cache[ware][GetCurMoveDir()][ani_step][fat].draw(x, y, COLOR_WHITE, COLORS[gwg->GetPlayer(player)->color]);
+    Loader::carrier_cache[ware][GetCurMoveDir()][ani_step][fat].draw(x, y, COLOR_WHITE, COLORS[gwg->GetPlayer(player).color]);
 }
 
 
@@ -1275,7 +1275,7 @@ void noFigure::DrawWalkingBobJobs(int x, int y, unsigned int job)
 {
     if ((job == JOB_SCOUT) || ((job >= JOB_PRIVATE) && (job <= JOB_GENERAL)))
     {
-        DrawWalking(x, y, LOADER.GetBobN("jobs"), JOB_CONSTS[job].jobs_bob_id + NATION_RTTR_TO_S2[gwg->GetPlayer(player)->nation] * 6, false);
+        DrawWalking(x, y, LOADER.GetBobN("jobs"), JOB_CONSTS[job].jobs_bob_id + NATION_RTTR_TO_S2[gwg->GetPlayer(player).nation] * 6, false);
         return;
     }
 
@@ -1286,7 +1286,7 @@ void noFigure::DrawWalkingBobJobs(int x, int y, unsigned int job)
     if(!waiting_for_free_node || pause_walked_gf)
         CalcFigurRelative(x, y);
 
-    Loader::bob_jobs_cache[gwg->GetPlayer(player)->nation][job][GetCurMoveDir()][ani_step].draw(x, y, 0xFFFFFFFF, COLORS[gwg->GetPlayer(player)->color]);
+    Loader::bob_jobs_cache[gwg->GetPlayer(player).nation][job][GetCurMoveDir()][ani_step].draw(x, y, 0xFFFFFFFF, COLORS[gwg->GetPlayer(player).color]);
 }
 
 
@@ -1299,7 +1299,7 @@ void noFigure::DrawWalking(int x, int y, glArchivItem_Bob* file, unsigned int id
     if(!waitingsoldier && (!waiting_for_free_node || pause_walked_gf))
         CalcFigurRelative(x, y);
     if(file)
-        file->Draw(id, GetCurMoveDir(), fat, ani_step, x, y, COLORS[gwg->GetPlayer(player)->color]);
+        file->Draw(id, GetCurMoveDir(), fat, ani_step, x, y, COLORS[gwg->GetPlayer(player).color]);
     DrawShadow(x, y, ani_step, GetCurMoveDir());
 
     /*char number[256];
@@ -1317,7 +1317,7 @@ void noFigure::DrawWalking(int x, int y, const char* const file, unsigned int id
     if(!waiting_for_free_node || pause_walked_gf)
         CalcFigurRelative(x, y);
 
-    LOADER.GetImageN(file, id + ((GetCurMoveDir() + 3) % 6) * 8 + ani_step)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(player)->color]);
+    LOADER.GetImageN(file, id + ((GetCurMoveDir() + 3) % 6) * 8 + ani_step)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(player).color]);
     DrawShadow(x, y, ani_step, GetCurMoveDir());
 }
 
@@ -1365,11 +1365,11 @@ void noFigure::Die()
     // Wars ein Bootmann? Dann Boot und Träger abziehen
     if(job_ == JOB_BOATCARRIER)
     {
-        gwg->GetPlayer(player)->DecreaseInventoryJob(JOB_HELPER, 1);
-        gwg->GetPlayer(player)->DecreaseInventoryWare(GD_BOAT, 1);
+        gwg->GetPlayer(player).DecreaseInventoryJob(JOB_HELPER, 1);
+        gwg->GetPlayer(player).DecreaseInventoryWare(GD_BOAT, 1);
     }
     else
-        gwg->GetPlayer(player)->DecreaseInventoryJob(job_, 1);
+        gwg->GetPlayer(player).DecreaseInventoryJob(job_, 1);
 
     // Sichtbarkeiten neu berechnen für Erkunder und Soldaten
     CalcVisibilities(pos);

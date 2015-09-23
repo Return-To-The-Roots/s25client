@@ -58,15 +58,15 @@ void nofWoodcutter::DrawWorking(int x, int y)
     if(i < 10)
     {
         // 1. Ein Stück vom Baum nach links laufen
-        Loader::bob_jobs_cache[gwg->GetPlayer(player)->nation][JOB_WOODCUTTER][0][i % 8].draw(x - i, y, COLOR_WHITE, COLORS[gwg->GetPlayer(player)->color]);
+        Loader::bob_jobs_cache[gwg->GetPlayer(player).nation][JOB_WOODCUTTER][0][i % 8].draw(x - i, y, COLOR_WHITE, COLORS[gwg->GetPlayer(player).color]);
 
-//      LOADER.GetBobN("jobs")->Draw(5,0,false,i%8,x-i,y,COLORS[gwg->GetPlayer(player)->color]);
+//      LOADER.GetBobN("jobs")->Draw(5,0,false,i%8,x-i,y,COLORS[gwg->GetPlayer(player).color]);
 //      DrawShadow(x-i,y,static_cast<unsigned char>(i%8),dir);
     }
     else if(i < 82)
     {
         // 2. Hacken
-        LOADER.GetImageN("rom_bobs", 24 + (i - 10) % 8)->Draw(x - 9, y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(player)->color]);
+        LOADER.GetImageN("rom_bobs", 24 + (i - 10) % 8)->Draw(x - 9, y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(player).color]);
 
         if((i - 10) % 8 == 3)
         {
@@ -78,7 +78,7 @@ void nofWoodcutter::DrawWorking(int x, int y)
     else if(i < 105)
     {
         // 3. Warten bis Baum umfällt
-        LOADER.GetImageN("rom_bobs", 24)->Draw(x - 9, y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(player)->color]);
+        LOADER.GetImageN("rom_bobs", 24)->Draw(x - 9, y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(player).color]);
 
         if(i == 90)
         {
@@ -89,17 +89,17 @@ void nofWoodcutter::DrawWorking(int x, int y)
     else if(i < 115)
     {
         // 4. Wieder zurückgehen nach rechts
-        Loader::bob_jobs_cache[gwg->GetPlayer(player)->nation][JOB_WOODCUTTER][3][(i - 105) % 8].draw(x - (9 - (i - 105)), y, COLOR_WHITE, COLORS[gwg->GetPlayer(player)->color]);
+        Loader::bob_jobs_cache[gwg->GetPlayer(player).nation][JOB_WOODCUTTER][3][(i - 105) % 8].draw(x - (9 - (i - 105)), y, COLOR_WHITE, COLORS[gwg->GetPlayer(player).color]);
 
-//      LOADER.GetBobN("jobs")->Draw(5,3,false,(i-105)%8,x-(9-(i-105)),y,COLORS[gwg->GetPlayer(player)->color]);
+//      LOADER.GetBobN("jobs")->Draw(5,3,false,(i-105)%8,x-(9-(i-105)),y,COLORS[gwg->GetPlayer(player).color]);
 //      DrawShadow(x-(9-(i-95)),y,static_cast<unsigned char>((i-105)%8),dir);
     }
     else
     {
         // 5. kurz am Baum warten (quasi Baumstamm in die Hand nehmen)
-        Loader::bob_jobs_cache[gwg->GetPlayer(player)->nation][JOB_WOODCUTTER][3][1].draw(x, y, COLOR_WHITE, COLORS[gwg->GetPlayer(player)->color]);
+        Loader::bob_jobs_cache[gwg->GetPlayer(player).nation][JOB_WOODCUTTER][3][1].draw(x, y, COLOR_WHITE, COLORS[gwg->GetPlayer(player).color]);
 
-//      LOADER.GetBobN("jobs")->Draw(5,3,false,1,x,y,COLORS[gwg->GetPlayer(player)->color]);
+//      LOADER.GetBobN("jobs")->Draw(5,3,false,1,x,y,COLORS[gwg->GetPlayer(player).color]);
 //      DrawShadow(x,y,1,dir);
     }
 

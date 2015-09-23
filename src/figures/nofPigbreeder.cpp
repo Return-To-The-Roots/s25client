@@ -54,11 +54,11 @@ void nofPigbreeder::DrawWorking(int x, int y)
     unsigned int max_id = 240;
     int now_id = GAMECLIENT.Interpolate(max_id, current_ev);
     unsigned char wpNation = workplace->GetNation();
-    unsigned int plColor = gwg->GetPlayer(player)->color;
+    unsigned int plColor = gwg->GetPlayer(player).color;
     int walksteps = 16;
 
 //  LOADER.GetImageN("rom_bobs", 148+(now_id = GAMECLIENT.Interpolate(12,current_ev)%12))
-//      ->Draw(x+offsets[workplace->GetNation()][0],y+offsets[workplace->GetNation()][1],COLORS[gwg->GetPlayer(workplace->GetPlayer())->color]);
+//      ->Draw(x+offsets[workplace->GetNation()][0],y+offsets[workplace->GetNation()][1],COLORS[gwg->GetPlayer(workplace->GetPlayer()).color]);
 
     if(now_id < 16)
     {

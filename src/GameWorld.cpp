@@ -75,8 +75,8 @@ bool GameWorld::LoadMap(const std::string& filename)
 
     tr.GenerateOpenGL(*this);
 
-    if(GetPlayer(GAMECLIENT.GetPlayerID())->hqPos.x != 0xFFFF)
-        this->MoveToMapObject(GetPlayer(GAMECLIENT.GetPlayerID())->hqPos);
+    if(GetPlayer(GAMECLIENT.GetPlayerID()).hqPos.x != 0xFFFF)
+        this->MoveToMapObject(GetPlayer(GAMECLIENT.GetPlayerID()).hqPos);
 
     LUA_EventStart();
 
@@ -210,7 +210,7 @@ void GameWorld::Scan(glArchivItem_Map* map)
 
                     if(lc < GAMECLIENT.GetPlayerCount())
                     {
-                        GetPlayer(lc)->hqPos = pt;
+                        GetPlayer(lc).hqPos = pt;
                         nodes[pos].obj = NULL;
                     }
                 } break;
@@ -395,7 +395,7 @@ void GameWorld::Scan(glArchivItem_Map* map)
 
         for (unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
         {
-            GetPlayer(i)->hqPos = headquarter_positions.at(i);
+            GetPlayer(i).hqPos = headquarter_positions.at(i);
         }
     }
 
@@ -403,16 +403,16 @@ void GameWorld::Scan(glArchivItem_Map* map)
     for(unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
     {
         // Existiert überhaupt ein HQ?
-        if(GetPlayer(i)->hqPos.x != 0xFFFF)
+        if(GetPlayer(i).hqPos.x != 0xFFFF)
         {
-            if(GetPlayer(i)->ps == PS_OCCUPIED || GetPlayer(i)->ps == PS_KI)
+            if(GetPlayer(i).ps == PS_OCCUPIED || GetPlayer(i).ps == PS_KI)
             {
-                nobHQ* hq = new nobHQ(GetPlayer(i)->hqPos, i, GetPlayer(i)->nation);
-                SetNO(hq, GetPlayer(i)->hqPos);
-                GetPlayer(i)->AddWarehouse(reinterpret_cast<nobBaseWarehouse*>(hq));
+                nobHQ* hq = new nobHQ(GetPlayer(i).hqPos, i, GetPlayer(i).nation);
+                SetNO(hq, GetPlayer(i).hqPos);
+                GetPlayer(i).AddWarehouse(reinterpret_cast<nobBaseWarehouse*>(hq));
             }
             /*else
-                GetNode(GetPlayer(i)->hqx,GetPlayer(i)->hqy).obj = 0;*/
+                GetNode(GetPlayer(i).hqx,GetPlayer(i).hqy).obj = 0;*/
         }
     }
 
@@ -721,8 +721,8 @@ void GameWorld::Deserialize(SerializedGameData* sgd)
     tr.GenerateOpenGL(*this);
 
     // Zum HQ am Anfang springen, falls dieses existiert
-    if(GetPlayer(GAMECLIENT.GetPlayerID())->hqPos.x != 0xFFFF)
-        this->MoveToMapObject(GetPlayer(GAMECLIENT.GetPlayerID())->hqPos);
+    if(GetPlayer(GAMECLIENT.GetPlayerID()).hqPos.x != 0xFFFF)
+        this->MoveToMapObject(GetPlayer(GAMECLIENT.GetPlayerID()).hqPos);
 }
 
 

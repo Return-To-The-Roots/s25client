@@ -102,7 +102,7 @@ void nofFisher::DrawWorking(int x, int y)
         }
     }
 
-    LOADER.GetImageN("rom_bobs", draw_id)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(player)->color]);
+    LOADER.GetImageN("rom_bobs", draw_id)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(player).color]);
     DrawShadow(x, y, 0, fishing_dir);
 }
 

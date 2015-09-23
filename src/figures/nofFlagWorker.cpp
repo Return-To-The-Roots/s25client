@@ -44,7 +44,7 @@ nofFlagWorker::nofFlagWorker(const Job job, const MapPoint pos, const unsigned c
         if(goal->GetGOT() == GOT_FLAG)
         {
             this->flag = static_cast<noFlag*>(goal);
-            gwg->GetPlayer(player)->RegisterFlagWorker(this);
+            gwg->GetPlayer(player).RegisterFlagWorker(this);
         }
         else
             this->flag = 0;
@@ -75,7 +75,7 @@ void nofFlagWorker::AbrogateWorkplace()
 {
     flag = 0;
     /// uns entfernen, da wir wieder umdrehen müssen
-    gwg->GetPlayer(player)->RemoveFlagWorker(this);
+    gwg->GetPlayer(player).RemoveFlagWorker(this);
 }
 
 /// Geht wieder zurück zur Flagge und dann nach Hause
@@ -87,7 +87,7 @@ void nofFlagWorker::GoToFlag()
     if(pos == flag->GetPos())
     {
         // nach Hause gehen
-        if(nobBaseWarehouse* wh = gwg->GetPlayer(player)->FindWarehouse(flag, FW::Condition_StoreFigure, 0, true, &job_, false))
+        if(nobBaseWarehouse* wh = gwg->GetPlayer(player).FindWarehouse(flag, FW::Condition_StoreFigure, 0, true, &job_, false))
         {
             GoHome(wh);
             // Vorgaukeln, dass wir ein Stück Straße bereits geschafft haben
@@ -106,7 +106,7 @@ void nofFlagWorker::GoToFlag()
 
         // Da wir quasi "freiwillig" nach Hause gegangen sind ohne das Abreißen der Flagge, auch manuell wieder
         // "abmelden"
-        gwg->GetPlayer(player)->RemoveFlagWorker(this);
+        gwg->GetPlayer(player).RemoveFlagWorker(this);
 
         state = STATE_FIGUREWORK;
 

@@ -109,7 +109,7 @@ DiplomacyPostQuestion::DiplomacyPostQuestion(const unsigned id, const unsigned c
     type = PMT_DIPLOMACYQUESTION;
 
     char msg[512];
-    sprintf(msg, _("The player '%s' offers you a %s."), GAMECLIENT.GetPlayer(player)->name.c_str(),
+    sprintf(msg, _("The player '%s' offers you a %s."), GAMECLIENT.GetPlayer(player).name.c_str(),
             _(PACT_TITLES[pt]));
 
     char duration_msg[512];
@@ -128,7 +128,7 @@ DiplomacyPostQuestion::DiplomacyPostQuestion(const unsigned id, const unsigned c
     type = PMT_DIPLOMACYQUESTION;
 
     char msg[512];
-    sprintf(msg, _("The player '%s' want to cancel the '%s' between you both primaturely. Do you agree?"), GAMECLIENT.GetPlayer(player)->name.c_str(),
+    sprintf(msg, _("The player '%s' want to cancel the '%s' between you both primaturely. Do you agree?"), GAMECLIENT.GetPlayer(player).name.c_str(),
             _(PACT_TITLES[pt]));
 
     text = msg;
@@ -153,10 +153,10 @@ DiplomacyPostInfo::DiplomacyPostInfo(const unsigned char other_player, const Typ
     char msg[512];
     if(type == ACCEPT)
         sprintf(msg, _("The %s between player '%s' and you has been concluded."), _(PACT_TITLES[pt]),
-                GAMECLIENT.GetPlayer(other_player)->name.c_str());
+                GAMECLIENT.GetPlayer(other_player).name.c_str());
     else if(type == CANCEL)
         sprintf(msg, _("The %s between player '%s' and you has been cancelled."), _(PACT_TITLES[pt]),
-                GAMECLIENT.GetPlayer(other_player)->name.c_str());
+                GAMECLIENT.GetPlayer(other_player).name.c_str());
 
     text = msg;
 }

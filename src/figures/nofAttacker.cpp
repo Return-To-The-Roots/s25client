@@ -55,7 +55,7 @@ const unsigned BLOCK_OFFSET = 10;
 
 nofAttacker::nofAttacker(nofPassiveSoldier* other, nobBaseMilitary* const attacked_goal)
     : nofActiveSoldier(*other, STATE_ATTACKING_WALKINGTOGOAL), attacked_goal(attacked_goal),
-      should_haunted(GAMECLIENT.GetPlayer(attacked_goal->GetPlayer())->ShouldSendDefender()), blocking_event(0),
+      should_haunted(GAMECLIENT.GetPlayer(attacked_goal->GetPlayer()).ShouldSendDefender()), blocking_event(0),
       harborPos(MapPoint::Invalid()), shipPos(MapPoint::Invalid()), ship_obj_id(0)
 {
     // Dem Haus Bescheid sagen
@@ -70,7 +70,7 @@ nofAttacker::nofAttacker(nofPassiveSoldier* other, nobBaseMilitary* const attack
     : nofActiveSoldier(*other, STATE_SEAATTACKING_GOTOHARBOR),
 
       attacked_goal(attacked_goal),
-      should_haunted(GAMECLIENT.GetPlayer(attacked_goal->GetPlayer())->ShouldSendDefender()), blocking_event(0),
+      should_haunted(GAMECLIENT.GetPlayer(attacked_goal->GetPlayer()).ShouldSendDefender()), blocking_event(0),
       harborPos(harbor->GetPos()), shipPos(MapPoint::Invalid()), ship_obj_id(0)
 {
     // Dem Haus Bescheid sagen
@@ -86,7 +86,7 @@ nofAttacker::~nofAttacker()
 {
 
     //unsigned char oplayer = (player == 0) ? 1 : 0;
-    //assert(!GAMECLIENT.GetPlayer(oplayer)->GetFirstWH()->Test(this));
+    //assert(!GAMECLIENT.GetPlayer(oplayer).GetFirstWH()->Test(this));
 }
 
 void nofAttacker::Destroy_nofAttacker()
@@ -94,7 +94,7 @@ void nofAttacker::Destroy_nofAttacker()
     Destroy_nofActiveSoldier();
 
     /*unsigned char oplayer = (player == 0) ? 1 : 0;
-    assert(!GAMECLIENT.GetPlayer(oplayer)->GetFirstWH()->Test(this));*/
+    assert(!GAMECLIENT.GetPlayer(oplayer).GetFirstWH()->Test(this));*/
 }
 
 
@@ -729,8 +729,8 @@ void nofAttacker::TryToOrderAggressiveDefender()
                 // wie man selbst sein, da das Gebäude ja z.B. schon erobert worden sein kann
                 if(((*it)->GetBuildingType() != BLD_HEADQUARTERS || (*it) == attacked_goal)
                         && gwg->CalcDistance(pos, (*it)->GetPos()) < 15
-                        && GAMECLIENT.GetPlayer(attacked_goal->GetPlayer())->IsAlly((*it)->GetPlayer())  &&
-                        GAMECLIENT.GetPlayer(player)->IsPlayerAttackable((*it)->GetPlayer()))
+                        && GAMECLIENT.GetPlayer(attacked_goal->GetPlayer()).IsAlly((*it)->GetPlayer())  &&
+                        GAMECLIENT.GetPlayer(player).IsPlayerAttackable((*it)->GetPlayer()))
                 {
                     // ggf. Verteidiger rufen
                     if( ((*it)->SendDefender(this)))

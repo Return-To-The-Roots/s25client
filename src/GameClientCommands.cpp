@@ -82,7 +82,7 @@ void GameClient::Command_Chat(const std::string& text, const ChatDestination cd)
 void GameClient::Command_ToggleNation()
 {
     send_queue.push(new GameMessage_Player_Toggle_Nation
-                    (0xff, Nation((this->GetLocalPlayer()->nation + 1) % NAT_COUNT)));
+                    (0xff, Nation((this->GetLocalPlayer().nation + 1) % NAT_COUNT)));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -104,7 +104,7 @@ void GameClient::Command_ToggleTeam(Team newteam)
  */
 void GameClient::Command_ToggleReady()
 {
-    send_queue.push(new GameMessage_Player_Ready(0xFF, GetLocalPlayer()->ready ));
+    send_queue.push(new GameMessage_Player_Ready(0xFF, GetLocalPlayer().ready ));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -184,8 +184,8 @@ void GameClient::ChangeReplayPlayer(const unsigned new_id)
     if(new_id >= GAMECLIENT.GetPlayerCount())
         return;
     // Und ein richtiger ehemaliger Spieler?
-    if(GAMECLIENT.GetPlayer(new_id)->ps != PS_KI &&
-            GAMECLIENT.GetPlayer(new_id)->ps != PS_OCCUPIED)
+    if(GAMECLIENT.GetPlayer(new_id).ps != PS_KI &&
+            GAMECLIENT.GetPlayer(new_id).ps != PS_OCCUPIED)
         return;
 
 

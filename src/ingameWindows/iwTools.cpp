@@ -68,7 +68,7 @@ iwTools::iwTools(void)
             AddImageButton(100 + i * 2, 174, 25   + i * 28, 20, 13, TC_GREY, LOADER.GetImageN("io",  33), "+1");
             AddImageButton(101 + i * 2, 174, 25 + 13 + i * 28, 20, 13, TC_GREY, LOADER.GetImageN("io",  34), "-1");
             std::stringstream str;
-            str << std::max(0, int( GAMECLIENT.GetLocalPlayer()->tools_ordered[i] + GAMECLIENT.GetLocalPlayer()->tools_ordered_delta[i] ));
+            str << std::max(0, int( GAMECLIENT.GetLocalPlayer().tools_ordered[i] + GAMECLIENT.GetLocalPlayer().tools_ordered_delta[i] ));
             AddDeepening  (200 + i, 151, 25 + 4 + i * 28, 20, 18, TC_GREY, str.str(), NormalFont, COLOR_YELLOW);
         }
     }
@@ -101,7 +101,7 @@ void iwTools::TransmitSettings()
         for(unsigned char i = 0; i < TOOL_COUNT; ++i)
             GAMECLIENT.visual_settings.tools_settings[i] = (unsigned char)GetCtrl<ctrlProgress>(i)->GetPosition();
 
-        GAMECLIENT.ChangeTools(GAMECLIENT.visual_settings.tools_settings, GAMECLIENT.GetLocalPlayer()->tools_ordered_delta);
+        GAMECLIENT.ChangeTools(GAMECLIENT.visual_settings.tools_settings, GAMECLIENT.GetLocalPlayer().tools_ordered_delta);
 
         settings_changed = false;
     }
@@ -116,7 +116,7 @@ void iwTools::UpdateTexts()
         {
             ctrlDeepening* field = GetCtrl<ctrlDeepening>(200 + i);
             std::stringstream str;
-            str << std::max(0, int( GAMECLIENT.GetLocalPlayer()->tools_ordered[i] + GAMECLIENT.GetLocalPlayer()->tools_ordered_delta[i] ));
+            str << std::max(0, int( GAMECLIENT.GetLocalPlayer().tools_ordered[i] + GAMECLIENT.GetLocalPlayer().tools_ordered_delta[i] ));
             field->SetText(str.str());
         }
     }
@@ -142,30 +142,30 @@ void iwTools::Msg_ButtonClick(const unsigned int ctrl_id)
     if ( ctrl_id >= 100 && ctrl_id < (100 + 2 * TOOL_COUNT) )
     {
         unsigned int tool = (ctrl_id - 100) / 2;
-        GameClientPlayer* me = GAMECLIENT.GetLocalPlayer();
+        GameClientPlayer& me = GAMECLIENT.GetLocalPlayer();
 
         if (ctrl_id & 0x1)
         {
             // dec
-            if ( (me->tools_ordered[tool] + me->tools_ordered_delta[tool]) > 0 )
+            if ( (me.tools_ordered[tool] + me.tools_ordered_delta[tool]) > 0 )
             {
-                --GAMECLIENT.GetLocalPlayer()->tools_ordered_delta[tool];
+                --GAMECLIENT.GetLocalPlayer().tools_ordered_delta[tool];
                 settings_changed = true;
             }
         }
         else
         {
             // inc
-            if ( (GAMECLIENT.GetLocalPlayer()->tools_ordered[tool] + GAMECLIENT.GetLocalPlayer()->tools_ordered_delta[tool]) < 100 )
+            if ( (GAMECLIENT.GetLocalPlayer().tools_ordered[tool] + GAMECLIENT.GetLocalPlayer().tools_ordered_delta[tool]) < 100 )
             {
-                ++GAMECLIENT.GetLocalPlayer()->tools_ordered_delta[tool];
+                ++GAMECLIENT.GetLocalPlayer().tools_ordered_delta[tool];
                 settings_changed = true;
             }
         }
 
         ctrlDeepening* field = GetCtrl<ctrlDeepening>(200 + tool);
         std::stringstream txt;
-        txt << int(GAMECLIENT.GetLocalPlayer()->tools_ordered[tool] + GAMECLIENT.GetLocalPlayer()->tools_ordered_delta[tool]);
+        txt << int(GAMECLIENT.GetLocalPlayer().tools_ordered[tool] + GAMECLIENT.GetLocalPlayer().tools_ordered_delta[tool]);
         field->SetText(txt.str());
     }
     else

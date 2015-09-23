@@ -177,13 +177,13 @@ void nofPlaner::Draw(int x, int y)
             };
 
             if(now_id < 20)
-                LOADER.GetImageN("rom_bobs", 253 + now_id)->Draw(x, y, 0, 0, 0, 0, 0, 0,  COLOR_WHITE, COLORS[gwg->GetPlayer(building_site->GetPlayer())->color]);
+                LOADER.GetImageN("rom_bobs", 253 + now_id)->Draw(x, y, 0, 0, 0, 0, 0, 0,  COLOR_WHITE, COLORS[gwg->GetPlayer(building_site->GetPlayer()).color]);
             else if(now_id < 41)
-                LOADER.GetImageN("rom_bobs", ANIMATION[now_id - 20])->Draw(x, y, 0, 0, 0, 0, 0, 0,  COLOR_WHITE, COLORS[gwg->GetPlayer(building_site->GetPlayer())->color]);
+                LOADER.GetImageN("rom_bobs", ANIMATION[now_id - 20])->Draw(x, y, 0, 0, 0, 0, 0, 0,  COLOR_WHITE, COLORS[gwg->GetPlayer(building_site->GetPlayer()).color]);
             else if(now_id < 55)
-                LOADER.GetImageN("rom_bobs", 253 + now_id - 41)->Draw(x, y, 0, 0, 0, 0, 0, 0,  COLOR_WHITE, COLORS[gwg->GetPlayer(building_site->GetPlayer())->color]);
+                LOADER.GetImageN("rom_bobs", 253 + now_id - 41)->Draw(x, y, 0, 0, 0, 0, 0, 0,  COLOR_WHITE, COLORS[gwg->GetPlayer(building_site->GetPlayer()).color]);
             else
-                LOADER.GetImageN("rom_bobs", 253 + now_id - 55)->Draw(x, y, 0, 0, 0, 0, 0, 0,  COLOR_WHITE, COLORS[gwg->GetPlayer(building_site->GetPlayer())->color]);
+                LOADER.GetImageN("rom_bobs", 253 + now_id - 55)->Draw(x, y, 0, 0, 0, 0, 0, 0,  COLOR_WHITE, COLORS[gwg->GetPlayer(building_site->GetPlayer()).color]);
 
             // Schaufel-Sound
             if(now_id == 5 || now_id == 46 || now_id == 60)

@@ -47,7 +47,7 @@ nobStorehouse::nobStorehouse(const MapPoint pos, const unsigned char player, con
     AddToInventory();
 
     // Der Wirtschaftsverwaltung Bescheid sagen
-    gwg->GetPlayer(player)->AddWarehouse(this);
+    gwg->GetPlayer(player).AddWarehouse(this);
 
     // Post versenden
     if(GAMECLIENT.GetPlayerID() == this->player)
@@ -60,7 +60,7 @@ nobStorehouse::nobStorehouse(const MapPoint pos, const unsigned char player, con
 void nobStorehouse::Destroy_nobStorehouse()
 {
     // Der Wirtschaftsverwaltung Bescheid sagen
-    gwg->GetPlayer(player)->RemoveWarehouse(this);
+    gwg->GetPlayer(player).RemoveWarehouse(this);
 
     Destroy_nobBaseWarehouse();
 }

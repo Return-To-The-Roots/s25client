@@ -1243,7 +1243,7 @@ Visibility GameWorldBase::CalcWithAllyVisiblity(const MapPoint pt, const unsigne
         // Dann prüfen, ob Teammitglieder evtl. eine bessere Sicht auf diesen Punkt haben
         for(unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
         {
-            if(GAMECLIENT.GetPlayer(i)->IsAlly(player))
+            if(GAMECLIENT.GetPlayer(i).IsAlly(player))
             {
                 if(GetNode(pt).fow[i].visibility > best_visibility)
                     best_visibility = GetNode(pt).fow[i].visibility;
@@ -1799,7 +1799,7 @@ std::vector<GameWorldBase::PotentialSeaAttacker> GameWorldBase::GetAvailableSold
             && GetNO(pt)->GetGOT() !=  GOT_NOB_MILITARY)
         return attackers;
     // Auch noch ein Gebäude von einem Feind (nicht inzwischen eingenommen)?
-    if(!GetPlayer(player_attacker)->IsPlayerAttackable(GetSpecObj<noBuilding>(pt)->GetPlayer()))
+    if(!GetPlayer(player_attacker).IsPlayerAttackable(GetSpecObj<noBuilding>(pt)->GetPlayer()))
         return attackers;
     // Prüfen, ob der angreifende Spieler das Gebäude überhaupt sieht (Cheatvorsorge)
     if(CalcWithAllyVisiblity(pt, player_attacker) != VIS_VISIBLE)
@@ -1885,13 +1885,13 @@ int GameWorldBase::LUA_EnableBuilding(lua_State* L)
         return(0);
     }
 
-    GameClientPlayer* player = GAMECLIENT.GetPlayer(pnr);
+    GameClientPlayer& player = GAMECLIENT.GetPlayer(pnr);
 
     if (argc == 1)
     {
         for (unsigned building_type = 0; building_type < BUILDING_TYPES_COUNT; building_type++)
         {
-            player->EnableBuilding(BuildingType(building_type));
+            player.EnableBuilding(BuildingType(building_type));
         }
         
         return(0);
@@ -1905,7 +1905,7 @@ int GameWorldBase::LUA_EnableBuilding(lua_State* L)
 
         if (building_type < BUILDING_TYPES_COUNT)
         {
-            player->EnableBuilding(BuildingType(building_type));
+            player.EnableBuilding(BuildingType(building_type));
         }
         else
         {
@@ -1939,13 +1939,13 @@ int GameWorldBase::LUA_DisableBuilding(lua_State* L)
         return(0);
     }
     
-    GameClientPlayer* player = GAMECLIENT.GetPlayer(pnr);
+    GameClientPlayer& player = GAMECLIENT.GetPlayer(pnr);
     
     if (argc == 1)
     {
         for (unsigned building_type = 0; building_type < BUILDING_TYPES_COUNT; building_type++)
         {
-            player->DisableBuilding(BuildingType(building_type));
+            player.DisableBuilding(BuildingType(building_type));
         }
         
         return(0);
@@ -1959,7 +1959,7 @@ int GameWorldBase::LUA_DisableBuilding(lua_State* L)
 
         if (building_type < BUILDING_TYPES_COUNT)
         {
-            player->DisableBuilding(BuildingType(building_type));
+            player.DisableBuilding(BuildingType(building_type));
         } else
         {
             lua_pushstring(L, "building type invalid!");
@@ -1993,9 +1993,9 @@ int GameWorldBase::LUA_SetRestrictedArea(lua_State* L)
         return(0);
     }
 
-    GameClientPlayer* player = GAMECLIENT.GetPlayer(pnr);
+    GameClientPlayer& player = GAMECLIENT.GetPlayer(pnr);
 
-    std::vector< MapPoint > &restricted_area = player->GetRestrictedArea();
+    std::vector< MapPoint > &restricted_area = player.GetRestrictedArea();
 
     restricted_area.clear();
 
@@ -2025,7 +2025,7 @@ int GameWorldBase::LUA_ClearResources(lua_State *L)
             return(0);
         }
 
-        const std::list<nobBaseWarehouse*> warehouses = GAMECLIENT.GetPlayer(p)->GetStorehouses();
+        const std::list<nobBaseWarehouse*> warehouses = GAMECLIENT.GetPlayer(p).GetStorehouses();
         
         for (std::list<nobBaseWarehouse*>::const_iterator wh = warehouses.begin(); wh != warehouses.end(); ++wh)
         {
@@ -2035,7 +2035,7 @@ int GameWorldBase::LUA_ClearResources(lua_State *L)
     {
         for (unsigned p = 0; p < GAMECLIENT.GetPlayerCount(); p++)
         {
-            const std::list<nobBaseWarehouse*> warehouses = GAMECLIENT.GetPlayer(p)->GetStorehouses();
+            const std::list<nobBaseWarehouse*> warehouses = GAMECLIENT.GetPlayer(p).GetStorehouses();
             
             for (std::list<nobBaseWarehouse*>::const_iterator wh = warehouses.begin(); wh != warehouses.end(); ++wh)
             {
@@ -2069,9 +2069,9 @@ int GameWorldBase::LUA_AddWares(lua_State* L)
         return(0);
     }
 
-    GameClientPlayer* player = GAMECLIENT.GetPlayer(pnr);
+    GameClientPlayer& player = GAMECLIENT.GetPlayer(pnr);
 
-    nobBaseWarehouse* warehouse = player->GetFirstWH();
+    nobBaseWarehouse* warehouse = player.GetFirstWH();
 
     if (!warehouse)
     {
@@ -2090,7 +2090,7 @@ int GameWorldBase::LUA_AddWares(lua_State* L)
         if (type < WARE_TYPES_COUNT)
         {
             goods.goods[type] += count;
-            player->IncreaseInventoryWare(GoodType(type), count);
+            player.IncreaseInventoryWare(GoodType(type), count);
         }
     }
 
@@ -2122,9 +2122,9 @@ int GameWorldBase::LUA_AddPeople(lua_State* L)
         return(0);
     }
 
-    GameClientPlayer* player = GAMECLIENT.GetPlayer(pnr);
+    GameClientPlayer& player = GAMECLIENT.GetPlayer(pnr);
 
-    nobBaseWarehouse* warehouse = player->GetFirstWH();
+    nobBaseWarehouse* warehouse = player.GetFirstWH();
 
     if (!warehouse)
     {
@@ -2143,7 +2143,7 @@ int GameWorldBase::LUA_AddPeople(lua_State* L)
         if (type < JOB_TYPES_COUNT)
         {
             goods.people[type] += count;
-            player->IncreaseInventoryJob(Job(type), count);
+            player.IncreaseInventoryJob(Job(type), count);
         }
     }
 
@@ -2195,7 +2195,7 @@ int GameWorldBase::LUA_GetBuildingCount(lua_State *L)
     
     BuildingCount bc;
     
-    GAMECLIENT.GetPlayer(pnr)->GetBuildingCount(bc);
+    GAMECLIENT.GetPlayer(pnr).GetBuildingCount(bc);
     
     lua_pushnumber(L, bc.building_counts[building_type]);
     
@@ -2229,9 +2229,9 @@ int GameWorldBase::LUA_GetWareCount(lua_State *L)
         return(0);
     }
 
-    const Goods *goods = GAMECLIENT.GetPlayer(pnr)->GetInventory();
+    const Goods& goods = GAMECLIENT.GetPlayer(pnr).GetInventory();
     
-    lua_pushnumber(L, goods->goods[type]);
+    lua_pushnumber(L, goods.goods[type]);
     
     return(1);
 }
@@ -2263,9 +2263,9 @@ int GameWorldBase::LUA_GetPeopleCount(lua_State *L)
         return(0);
     }
 
-    const Goods *goods = GAMECLIENT.GetPlayer(pnr)->GetInventory();
+    const Goods& goods = GAMECLIENT.GetPlayer(pnr).GetInventory();
     
-    lua_pushnumber(L, goods->people[type]);
+    lua_pushnumber(L, goods.people[type]);
     
     return(1);
 }
@@ -2429,7 +2429,7 @@ int GameWorldBase::LUA_PostNewBuildings(lua_State *L)
         
         if (building_type < BUILDING_TYPES_COUNT)
         {
-            GAMECLIENT.SendPostMessage(new ImagePostMsgWithLocation(_(BUILDING_NAMES[building_type]), PMC_GENERAL, GAMECLIENT.GetPlayer(pnr)->hqPos, (BuildingType) building_type, (Nation) GAMECLIENT.GetPlayer(pnr)->nation));
+            GAMECLIENT.SendPostMessage(new ImagePostMsgWithLocation(_(BUILDING_NAMES[building_type]), PMC_GENERAL, GAMECLIENT.GetPlayer(pnr).hqPos, (BuildingType) building_type, (Nation) GAMECLIENT.GetPlayer(pnr).nation));
         }
     }
     

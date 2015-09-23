@@ -60,7 +60,7 @@ void nofArmorer::DrawWorking(int x, int y)
     unsigned int max_id = 280;
     unsigned now_id = GAMECLIENT.Interpolate(max_id, current_ev);
     unsigned char wpNation = workplace->GetNation();
-    unsigned int plColor = GAMECLIENT.GetPlayer(player)->color;
+    unsigned int plColor = GAMECLIENT.GetPlayer(player).color;
 
     if(now_id < 200)
     {
@@ -82,7 +82,7 @@ unsigned short nofArmorer::GetCarryID() const
     else
     {
         // Je nach Nation einen bestimmtem Schild fertigen
-        switch(GAMECLIENT.GetPlayer(player)->nation)
+        switch(GAMECLIENT.GetPlayer(player).nation)
         {
             case 0: return 60; //-V525
             case 1: return 58;
@@ -139,5 +139,5 @@ GoodType nofArmorer::ProduceWare()
     if(sword_shield)
         return GD_SWORD;
     else
-	return SHIELD_TYPES[GAMECLIENT.GetPlayer(player)->nation];
+	return SHIELD_TYPES[GAMECLIENT.GetPlayer(player).nation];
 }

@@ -136,7 +136,7 @@ Visibility GameWorldViewer::GetVisibility(const MapPoint pt) const
         return VIS_VISIBLE;
 
     // Spieler schon tot? Dann auch alles sichtbar?
-    if(GAMECLIENT.GetLocalPlayer()->isDefeated())
+    if(GAMECLIENT.GetLocalPlayer().isDefeated())
         return VIS_VISIBLE;
 
     return CalcWithAllyVisiblity(pt, GAMECLIENT.GetPlayerID());
@@ -239,7 +239,7 @@ unsigned char GameWorldViewer::GetYoungestFOWNodePlayer(const MapPoint pos) cons
         // Then check if team members have a better (="younger", see our economy) fow object
         for(unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
         {
-            if(GAMECLIENT.GetPlayer(i)->IsAlly(local_player))
+            if(GAMECLIENT.GetPlayer(i).IsAlly(local_player))
             {
                 // Has the player FOW at this point at all?
                 if(GetNode(pos).fow[i].visibility == VIS_FOW)

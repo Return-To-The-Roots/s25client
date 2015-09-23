@@ -41,7 +41,7 @@ static char THIS_FILE[] = __FILE__;
  *  @author FloSoft
  */
 iwInventory::iwInventory()
-    : iwWares(CGI_INVENTORY, 0xFFFF, 0xFFFF, 167, 376, _("Stock"), 2, false, SmallFont, GAMECLIENT.GetLocalPlayer()->GetInventory())
+    : iwWares(CGI_INVENTORY, 0xFFFF, 0xFFFF, 167, 376, _("Stock"), 2, false, SmallFont, GAMECLIENT.GetLocalPlayer().GetInventory())
 
 {
 }

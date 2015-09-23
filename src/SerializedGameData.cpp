@@ -211,7 +211,7 @@ void SerializedGameData::MakeSnapshot(GameWorld& gw, EventManager& evMgr)
     evMgr.Serialize(this);
     // Spieler serialisieren
     for(unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
-        GAMECLIENT.GetPlayer(i)->Serialize(this);
+        GAMECLIENT.GetPlayer(i).Serialize(this);
 
     delete [] objects_write;
 }

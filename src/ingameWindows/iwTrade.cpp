@@ -59,7 +59,7 @@ iwTrade::iwTrade(GameWorldViewer* const gwv, dskGameInterface* const gi, nobBase
 {
     // Get title of the player
     char title[512];
-    sprintf(title, _("Trade with %s"), GAMECLIENT.GetPlayer(wh->GetPlayer())->name.c_str());
+    sprintf(title, _("Trade with %s"), GAMECLIENT.GetPlayer(wh->GetPlayer()).name.c_str());
     SetTitle(title);
     // Gebäudebild und dessen Schatten
     AddImage( 0, 100, 144, LOADER.GetNationImageN(wh->GetNation(), 250 + 5 * wh->GetBuildingType()));
@@ -181,7 +181,7 @@ void iwTrade::Msg_ComboSelectItem(const unsigned ctrl_id, const unsigned short s
                 GetCtrl<ctrlImage>(5)->SetImage(LOADER.GetMapImageN(2250 + wares[selection]));
 
                 // Get the number of available wares/figures
-                number = GAMECLIENT.GetLocalPlayer()->GetAvailableWaresForTrading(wh, wares[selection], JOB_NOTHING);
+                number = GAMECLIENT.GetLocalPlayer().GetAvailableWaresForTrading(wh, wares[selection], JOB_NOTHING);
             }
             else
             {
@@ -192,7 +192,7 @@ void iwTrade::Msg_ComboSelectItem(const unsigned ctrl_id, const unsigned short s
                 GetCtrl<ctrlImage>(5)->SetImage(image);
 
                 // Get the number of available wares/figures
-                number = GAMECLIENT.GetLocalPlayer()->GetAvailableWaresForTrading(wh, GD_NOTHING, jobs[selection]);
+                number = GAMECLIENT.GetLocalPlayer().GetAvailableWaresForTrading(wh, GD_NOTHING, jobs[selection]);
             }
 
             char str[256];

@@ -57,7 +57,7 @@ void nofMinter::DrawWorking(int x, int y)
     if(now_id < 91)
     {
         LOADER.GetImageN("rom_bobs", 84 + (now_id) % 8)
-        ->Draw(x + offsets[workplace->GetNation()][0], y + offsets[workplace->GetNation()][1], 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(workplace->GetPlayer())->color]);
+        ->Draw(x + offsets[workplace->GetNation()][0], y + offsets[workplace->GetNation()][1], 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(workplace->GetPlayer()).color]);
 
         // Evtl Sound abspielen
         if(now_id % 8 == 3)
@@ -72,6 +72,6 @@ void nofMinter::DrawWorking(int x, int y)
 
 GoodType nofMinter::ProduceWare()
 {
-    gwg->GetPlayer(player)->ChangeStatisticValue(STAT_GOLD, 1);
+    gwg->GetPlayer(player).ChangeStatisticValue(STAT_GOLD, 1);
     return GD_COINS;
 }

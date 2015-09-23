@@ -199,8 +199,8 @@ void nofCarrier::Destroy_nofCarrier()
     // Ware vernichten (abmelden)
     if(carried_ware)
     {
-        gwg->GetPlayer(player)->RemoveWare(carried_ware);
-        gwg->GetPlayer(player)->DecreaseInventoryWare(carried_ware->type, 1);
+        gwg->GetPlayer(player).RemoveWare(carried_ware);
+        gwg->GetPlayer(player).DecreaseInventoryWare(carried_ware->type, 1);
     }
 
     em->RemoveEvent(productivity_ev);
@@ -260,7 +260,7 @@ void nofCarrier::Draw(int x, int y)
                         {
                             // Nein, dann Animation abspielen
                             LOADER.GetImageN("rom_bobs", ANIMATION[fat ? 1 : 0][animation_id][(current_gf - next_animation) / FRAME_GF])
-                            ->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(player)->color]);
+                            ->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(player).color]);
                         }
                         else if (animation_id == 4)     // Silvesteregg
                         {
@@ -268,7 +268,7 @@ void nofCarrier::Draw(int x, int y)
 
                             if (bmp)
                             {
-                                bmp->Draw(x - 26, y - 104, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(player)->color]);
+                                bmp->Draw(x - 26, y - 104, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(player).color]);
                             }
                             else
                             {
@@ -281,22 +281,22 @@ void nofCarrier::Draw(int x, int y)
 
                 if(!animation)
                 {
-                    Loader::bob_jobs_cache[gwg->GetPlayer(player)->nation][fat ? JOB_TYPES_COUNT : 0][GetCurMoveDir()][2].draw(x, y, COLOR_WHITE, COLORS[gwg->GetPlayer(player)->color]);
+                    Loader::bob_jobs_cache[gwg->GetPlayer(player).nation][fat ? JOB_TYPES_COUNT : 0][GetCurMoveDir()][2].draw(x, y, COLOR_WHITE, COLORS[gwg->GetPlayer(player).color]);
                 }
                 else
                     // Steht und wartet (ohne Ware)
-//                  LOADER.GetBobN("jobs")->Draw(0,dir,fat,2,x,y,COLORS[gwg->GetPlayer(player)->color]);
+//                  LOADER.GetBobN("jobs")->Draw(0,dir,fat,2,x,y,COLORS[gwg->GetPlayer(player).color]);
 
                     DrawShadow(x, y, 0, GetCurMoveDir());
             }
             else if(state == CARRS_WAITFORWARESPACE || (waiting_for_free_node && !pause_walked_gf && carried_ware))
             {
                 // Steht und wartet (mit Ware)
-                Loader::carrier_cache[carried_ware->type][GetCurMoveDir()][2][fat].draw(x, y, COLOR_WHITE, COLORS[gwg->GetPlayer(player)->color]);
+                Loader::carrier_cache[carried_ware->type][GetCurMoveDir()][2][fat].draw(x, y, COLOR_WHITE, COLORS[gwg->GetPlayer(player).color]);
 
                 // Japaner-Schild-Animation existiert leider nicht --> Römerschild nehmen
 //              LOADER.GetBobN("carrier")->Draw((carried_ware->type==GD_SHIELDJAPANESE)?GD_SHIELDROMANS:carried_ware->type,
-//                  dir,fat,2,x,y,COLORS[gwg->GetPlayer(player)->color]);
+//                  dir,fat,2,x,y,COLORS[gwg->GetPlayer(player).color]);
 //              DrawShadow(x,y,0,dir);
             }
             else
@@ -361,11 +361,11 @@ void nofCarrier::Draw(int x, int y)
             }
             else if(state == CARRS_WAITFORWARE || (waiting_for_free_node && !pause_walked_gf && !carried_ware))
             {
-                Loader::boat_cache[GetCurMoveDir()][0].draw(x, y, 0xFFFFFFFF, COLORS[gwg->GetPlayer(player)->color]);
+                Loader::boat_cache[GetCurMoveDir()][0].draw(x, y, 0xFFFFFFFF, COLORS[gwg->GetPlayer(player).color]);
             }
             else if(state == CARRS_WAITFORWARESPACE || (waiting_for_free_node && !pause_walked_gf && carried_ware))
             {
-                Loader::boat_cache[GetCurMoveDir()][0].draw(x, y, 0xFFFFFFFF, COLORS[gwg->GetPlayer(player)->color]);
+                Loader::boat_cache[GetCurMoveDir()][0].draw(x, y, 0xFFFFFFFF, COLORS[gwg->GetPlayer(player).color]);
 
                 // Ware im Boot zeichnen
                 LOADER.GetMapImageN(2350 + carried_ware->type)->Draw(x + WARE_POS_BOAT[GetCurMoveDir() * 2], y + WARE_POS_BOAT[GetCurMoveDir() * 2 + 1]);
@@ -379,7 +379,7 @@ void nofCarrier::Draw(int x, int y)
                 CalcFigurRelative(x, y);
 
                 // ruderndes Boot zeichnen
-                Loader::boat_cache[GetCurMoveDir()][ani_step].draw(x, y, 0xFFFFFFFF, COLORS[gwg->GetPlayer(player)->color]);
+                Loader::boat_cache[GetCurMoveDir()][ani_step].draw(x, y, 0xFFFFFFFF, COLORS[gwg->GetPlayer(player).color]);
 
                 // Läuft normal mit oder ohne Ware
                 if(carried_ware)
@@ -847,9 +847,9 @@ void nofCarrier::RoadSplitted(RoadSegment* rs1, RoadSegment* rs2)
     uc_road->setCarrier(ct == CT_DONKEY ? 1 : 0, NULL);
 
     if(ct == CT_NORMAL)
-        gwg->GetPlayer(player)->FindCarrierForRoad(uc_road);
+        gwg->GetPlayer(player).FindCarrierForRoad(uc_road);
     else if(ct == CT_DONKEY)
-        uc_road->setCarrier(1, gwg->GetPlayer(player)->OrderDonkey(uc_road));
+        uc_road->setCarrier(1, gwg->GetPlayer(player).OrderDonkey(uc_road));
 }
 
 ///////////////////////////////////////////////////////////////////////////////

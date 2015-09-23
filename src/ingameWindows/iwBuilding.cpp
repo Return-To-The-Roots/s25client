@@ -233,18 +233,18 @@ void iwBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
 		case 12: //go to next of same type
 		{
 			//is there at least 1 other building of the same type?
-			if(GAMECLIENT.GetPlayer(building->GetPlayer())->GetBuildings(building->GetBuildingType()).size()>1)
+			if(GAMECLIENT.GetPlayer(building->GetPlayer()).GetBuildings(building->GetBuildingType()).size()>1)
 			{
 				//go through list once we get to current building -> open window for the next one and go to next location
-				for(std::list<nobUsual*>::const_iterator it=GAMECLIENT.GetPlayer(building->GetPlayer())->GetBuildings(building->GetBuildingType()).begin(); it != GAMECLIENT.GetPlayer(building->GetPlayer())->GetBuildings(building->GetBuildingType()).end(); ++it)
+				for(std::list<nobUsual*>::const_iterator it=GAMECLIENT.GetPlayer(building->GetPlayer()).GetBuildings(building->GetBuildingType()).begin(); it != GAMECLIENT.GetPlayer(building->GetPlayer()).GetBuildings(building->GetBuildingType()).end(); ++it)
 				{
 					if((*it)->GetX()==building->GetX() && (*it)->GetY()==building->GetY()) //got to current building in the list?
 					{
 						//close old window, open new window (todo: only open if it isnt already open), move to location of next building
 						Close();
 						++it;
-						if(it == GAMECLIENT.GetPlayer(building->GetPlayer())->GetBuildings(building->GetBuildingType()).end()) //was last entry in list -> goto first												{
-							it=GAMECLIENT.GetPlayer(building->GetPlayer())->GetBuildings(building->GetBuildingType()).begin();
+						if(it == GAMECLIENT.GetPlayer(building->GetPlayer()).GetBuildings(building->GetBuildingType()).end()) //was last entry in list -> goto first												{
+							it=GAMECLIENT.GetPlayer(building->GetPlayer()).GetBuildings(building->GetBuildingType()).begin();
 						gwv->MoveToMapObject((*it)->GetPos());
 						iwBuilding* nextscrn=new iwBuilding(gwv, gi, (*it));
 						nextscrn->Move(x_,y_);

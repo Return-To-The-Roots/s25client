@@ -167,7 +167,7 @@ void nofActiveSoldier::Draw(int x, int y)
         case STATE_DEFENDING_WAITING:
         {
             // Draw waiting states
-            //Loader::bob_jobs_cache[GAMECLIENT.GetPlayer(player)->nation][job][dir][2].draw(x,y,COLOR_WHITE,COLORS[GAMECLIENT.GetPlayer(player)->color]);
+            //Loader::bob_jobs_cache[GAMECLIENT.GetPlayer(player).nation][job][dir][2].draw(x,y,COLOR_WHITE,COLORS[GAMECLIENT.GetPlayer(player).color]);
             DrawSoldierWalking(x, y, true); //cannot draw from Soldiers & Scouts from Loader::bob_jobs_cache v9102
         } break;
         case STATE_FIGUREWORK:
@@ -306,7 +306,7 @@ bool nofActiveSoldier::FindEnemiesNearby(unsigned char excludedOwner)
     for(unsigned i = 0; i < soldiersNearby.size(); ++i)
     {
         // Ready for fight and good enemy = Good victim
-        if (soldiersNearby[i]->IsReadyForFight() && !GAMECLIENT.GetPlayer(soldiersNearby[i]->GetPlayer())->IsAlly(this->player))
+        if (soldiersNearby[i]->IsReadyForFight() && !GAMECLIENT.GetPlayer(soldiersNearby[i]->GetPlayer()).IsAlly(this->player))
         {
             enemy = soldiersNearby[i];
             break;
@@ -348,9 +348,9 @@ void nofActiveSoldier::IncreaseRank()
 
     // Einen Rang höher
     // Inventur entsprechend erhöhen und verringern
-    gwg->GetPlayer(player)->DecreaseInventoryJob(job_, 1);
+    gwg->GetPlayer(player).DecreaseInventoryJob(job_, 1);
     job_ = Job(unsigned(job_) + 1);
-    gwg->GetPlayer(player)->IncreaseInventoryJob(job_, 1);
+    gwg->GetPlayer(player).IncreaseInventoryJob(job_, 1);
 }
 
 /// Handle state "meet enemy" after each walking step

@@ -90,7 +90,7 @@ void RoadSegment::Destroy_RoadSegment()
     assert(f1);
 
     if(f1)
-        gwg->GetPlayer(f1->GetPlayer())->DeleteRoad(this);
+        gwg->GetPlayer(f1->GetPlayer()).DeleteRoad(this);
 
     if(carriers_[0])
         carriers_[0]->LostWork();
@@ -223,7 +223,7 @@ void RoadSegment::SplitRoad(noFlag* splitflag)
         }
     }
 
-    gwg->GetPlayer(f1->GetPlayer())->AddRoad(second);
+    gwg->GetPlayer(f1->GetPlayer()).AddRoad(second);
 
     for(unsigned char i = 0; i < 2; ++i)
     {
@@ -232,7 +232,7 @@ void RoadSegment::SplitRoad(noFlag* splitflag)
         else if(i == 0)
             // Die Straße war vorher unbesetzt? Dann 2. Straßenteil zu den unoccupied rodes
             // (1. ist ja schon drin)
-            gwg->GetPlayer(f1->GetPlayer())->FindCarrierForRoad(second);
+            gwg->GetPlayer(f1->GetPlayer()).FindCarrierForRoad(second);
     }
 }
 
@@ -384,7 +384,7 @@ void RoadSegment::TryGetDonkey()
 {
     // Nur rufen, falls es eine Eselstraße ist, noch kein Esel da ist, aber schon ein Träger da ist
     if(NeedDonkey())
-        carriers_[1] = gwg->GetPlayer(f1->GetPlayer())->OrderDonkey(this);
+        carriers_[1] = gwg->GetPlayer(f1->GetPlayer()).OrderDonkey(this);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -401,12 +401,12 @@ void RoadSegment::CarrierAbrogated(nofCarrier* carrier)
     {
         // Straße wieder unbesetzt, bzw. nur noch Esel
         this->carriers_[0] = NULL;
-        gwg->GetPlayer(f1->GetPlayer())->FindCarrierForRoad(this);
+        gwg->GetPlayer(f1->GetPlayer()).FindCarrierForRoad(this);
     }
     else
     {
         // Kein Esel mehr da, versuchen, neuen zu bestellen
-        this->carriers_[1] = gwg->GetPlayer(f1->GetPlayer())->OrderDonkey(this);
+        this->carriers_[1] = gwg->GetPlayer(f1->GetPlayer()).OrderDonkey(this);
     }
 }
 ////////////////////////////////////////////////////////////////////////////////////////

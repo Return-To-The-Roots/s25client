@@ -364,7 +364,7 @@ void GameClient::StartGame(const unsigned int random_init)
         gw->Deserialize(&savegame->sgd);
         em->Deserialize(&savegame->sgd);
         for(unsigned i = 0; i < players.getCount(); ++i)
-            GetPlayer(i)->Deserialize(&savegame->sgd);
+            GetPlayer(i).Deserialize(&savegame->sgd);
 
         // TODO: schöner machen:
         // Die Fläche, die nur von einem Allierten des Spielers gesehen werden, müssen noch dem TerrainRenderer mitgeteilt werden
@@ -929,13 +929,13 @@ void GameClient::OnNMSServerChat(const GameMessage_Server_Chat& msg)
             /// Mit im Replay aufzeichnen
             replayinfo.replay.AddChatCommand(framesinfo.nr, msg.player, msg.destination, msg.text);
 
-        GameClientPlayer* player = GetPlayer(msg.player);
+        GameClientPlayer& player = GetPlayer(msg.player);
 
         // Besiegte dürfen nicht mehr heimlich mit Verbüdeten oder Feinden reden
-        if(player->isDefeated() && msg.destination != CD_ALL)
+        if(player.isDefeated() && msg.destination != CD_ALL)
             return;
         // Entscheiden, ob ich ein Gegner oder Vebündeter bin vom Absender
-        bool ally = GetLocalPlayer()->IsAlly(msg.player);
+        bool ally = GetLocalPlayer().IsAlly(msg.player);
 
         // Chatziel unerscheiden und ggf. nicht senden
         if(!ally && msg.destination == CD_ALLIES)
@@ -1991,78 +1991,78 @@ unsigned GameClient::WriteSaveHeader(const std::string& filename)
 
 void GameClient::GetVisualSettings()
 {
-    GameClientPlayer* player = GetLocalPlayer();
-    //visual_settings.transport_order[0] = player->transport[GD_COINS];
-    //visual_settings.transport_order[1] = player->transport[GD_SWORD];
-    //visual_settings.transport_order[2] = player->transport[GD_BEER];
-    //visual_settings.transport_order[3] = player->transport[GD_IRON];
-    //visual_settings.transport_order[4] = player->transport[GD_GOLD];
-    //visual_settings.transport_order[5] = player->transport[GD_IRONORE];
-    //visual_settings.transport_order[6] = player->transport[GD_COAL];
-    //visual_settings.transport_order[7] = player->transport[GD_BOARDS];
-    //visual_settings.transport_order[8] = player->transport[GD_STONES];
-    //visual_settings.transport_order[9] = player->transport[GD_WOOD];
-    //visual_settings.transport_order[10] = player->transport[GD_WATER];
-    //visual_settings.transport_order[11] = player->transport[GD_FISH];
-    //visual_settings.transport_order[12] = player->transport[GD_HAMMER];
-    //visual_settings.transport_order[13] = player->transport[GD_BOAT];
+    GameClientPlayer& player = GetLocalPlayer();
+    //visual_settings.transport_order[0] = player.transport[GD_COINS];
+    //visual_settings.transport_order[1] = player.transport[GD_SWORD];
+    //visual_settings.transport_order[2] = player.transport[GD_BEER];
+    //visual_settings.transport_order[3] = player.transport[GD_IRON];
+    //visual_settings.transport_order[4] = player.transport[GD_GOLD];
+    //visual_settings.transport_order[5] = player.transport[GD_IRONORE];
+    //visual_settings.transport_order[6] = player.transport[GD_COAL];
+    //visual_settings.transport_order[7] = player.transport[GD_BOARDS];
+    //visual_settings.transport_order[8] = player.transport[GD_STONES];
+    //visual_settings.transport_order[9] = player.transport[GD_WOOD];
+    //visual_settings.transport_order[10] = player.transport[GD_WATER];
+    //visual_settings.transport_order[11] = player.transport[GD_FISH];
+    //visual_settings.transport_order[12] = player.transport[GD_HAMMER];
+    //visual_settings.transport_order[13] = player.transport[GD_BOAT];
 
-    visual_settings.transport_order[player->transport[GD_COINS]] = 0;
-    visual_settings.transport_order[player->transport[GD_SWORD]] = 1;
-    visual_settings.transport_order[player->transport[GD_BEER]] = 2;
-    visual_settings.transport_order[player->transport[GD_IRON]] = 3;
-    visual_settings.transport_order[player->transport[GD_GOLD]] = 4;
-    visual_settings.transport_order[player->transport[GD_IRONORE]] = 5;
-    visual_settings.transport_order[player->transport[GD_COAL]] = 6;
-    visual_settings.transport_order[player->transport[GD_BOARDS]] = 7;
-    visual_settings.transport_order[player->transport[GD_STONES]] = 8;
-    visual_settings.transport_order[player->transport[GD_WOOD]] = 9;
-    visual_settings.transport_order[player->transport[GD_WATER]] = 10;
-    visual_settings.transport_order[player->transport[GD_FISH]] = 11;
-    visual_settings.transport_order[player->transport[GD_HAMMER]] = 12;
-    visual_settings.transport_order[player->transport[GD_BOAT]] = 13;
-
-
-
-    visual_settings.distribution[0] = player->distribution[GD_FISH].percent_buildings[BLD_GRANITEMINE];
-    visual_settings.distribution[1] = player->distribution[GD_FISH].percent_buildings[BLD_COALMINE];
-    visual_settings.distribution[2] = player->distribution[GD_FISH].percent_buildings[BLD_IRONMINE];
-    visual_settings.distribution[3] = player->distribution[GD_FISH].percent_buildings[BLD_GOLDMINE];
-
-    visual_settings.distribution[4] = player->distribution[GD_GRAIN].percent_buildings[BLD_MILL];
-    visual_settings.distribution[5] = player->distribution[GD_GRAIN].percent_buildings[BLD_PIGFARM];
-    visual_settings.distribution[6] = player->distribution[GD_GRAIN].percent_buildings[BLD_DONKEYBREEDER];
-    visual_settings.distribution[7] = player->distribution[GD_GRAIN].percent_buildings[BLD_BREWERY];
-    visual_settings.distribution[8] = player->distribution[GD_GRAIN].percent_buildings[BLD_CHARBURNER];
-
-    visual_settings.distribution[9] = player->distribution[GD_IRON].percent_buildings[BLD_ARMORY];
-    visual_settings.distribution[10] = player->distribution[GD_IRON].percent_buildings[BLD_METALWORKS];
-
-    visual_settings.distribution[11] = player->distribution[GD_COAL].percent_buildings[BLD_ARMORY];
-    visual_settings.distribution[12] = player->distribution[GD_COAL].percent_buildings[BLD_IRONSMELTER];
-    visual_settings.distribution[13] = player->distribution[GD_COAL].percent_buildings[BLD_MINT];
-
-    visual_settings.distribution[14] = player->distribution[GD_WOOD].percent_buildings[BLD_SAWMILL];
-    visual_settings.distribution[15] = player->distribution[GD_WOOD].percent_buildings[BLD_CHARBURNER];
-
-    visual_settings.distribution[16] = player->distribution[GD_BOARDS].percent_buildings[BLD_HEADQUARTERS];
-    visual_settings.distribution[17] = player->distribution[GD_BOARDS].percent_buildings[BLD_METALWORKS];
-    visual_settings.distribution[18] = player->distribution[GD_BOARDS].percent_buildings[BLD_SHIPYARD];
-
-    visual_settings.distribution[19] = player->distribution[GD_WATER].percent_buildings[BLD_BAKERY];
-    visual_settings.distribution[20] = player->distribution[GD_WATER].percent_buildings[BLD_BREWERY];
-    visual_settings.distribution[21] = player->distribution[GD_WATER].percent_buildings[BLD_PIGFARM];
-    visual_settings.distribution[22] = player->distribution[GD_WATER].percent_buildings[BLD_DONKEYBREEDER];
+    visual_settings.transport_order[player.transport[GD_COINS]] = 0;
+    visual_settings.transport_order[player.transport[GD_SWORD]] = 1;
+    visual_settings.transport_order[player.transport[GD_BEER]] = 2;
+    visual_settings.transport_order[player.transport[GD_IRON]] = 3;
+    visual_settings.transport_order[player.transport[GD_GOLD]] = 4;
+    visual_settings.transport_order[player.transport[GD_IRONORE]] = 5;
+    visual_settings.transport_order[player.transport[GD_COAL]] = 6;
+    visual_settings.transport_order[player.transport[GD_BOARDS]] = 7;
+    visual_settings.transport_order[player.transport[GD_STONES]] = 8;
+    visual_settings.transport_order[player.transport[GD_WOOD]] = 9;
+    visual_settings.transport_order[player.transport[GD_WATER]] = 10;
+    visual_settings.transport_order[player.transport[GD_FISH]] = 11;
+    visual_settings.transport_order[player.transport[GD_HAMMER]] = 12;
+    visual_settings.transport_order[player.transport[GD_BOAT]] = 13;
 
 
-    visual_settings.military_settings = player->militarySettings_;
-    visual_settings.tools_settings = player->toolsSettings_;
 
-    visual_settings.order_type = player->orderType_;
+    visual_settings.distribution[0] = player.distribution[GD_FISH].percent_buildings[BLD_GRANITEMINE];
+    visual_settings.distribution[1] = player.distribution[GD_FISH].percent_buildings[BLD_COALMINE];
+    visual_settings.distribution[2] = player.distribution[GD_FISH].percent_buildings[BLD_IRONMINE];
+    visual_settings.distribution[3] = player.distribution[GD_FISH].percent_buildings[BLD_GOLDMINE];
+
+    visual_settings.distribution[4] = player.distribution[GD_GRAIN].percent_buildings[BLD_MILL];
+    visual_settings.distribution[5] = player.distribution[GD_GRAIN].percent_buildings[BLD_PIGFARM];
+    visual_settings.distribution[6] = player.distribution[GD_GRAIN].percent_buildings[BLD_DONKEYBREEDER];
+    visual_settings.distribution[7] = player.distribution[GD_GRAIN].percent_buildings[BLD_BREWERY];
+    visual_settings.distribution[8] = player.distribution[GD_GRAIN].percent_buildings[BLD_CHARBURNER];
+
+    visual_settings.distribution[9] = player.distribution[GD_IRON].percent_buildings[BLD_ARMORY];
+    visual_settings.distribution[10] = player.distribution[GD_IRON].percent_buildings[BLD_METALWORKS];
+
+    visual_settings.distribution[11] = player.distribution[GD_COAL].percent_buildings[BLD_ARMORY];
+    visual_settings.distribution[12] = player.distribution[GD_COAL].percent_buildings[BLD_IRONSMELTER];
+    visual_settings.distribution[13] = player.distribution[GD_COAL].percent_buildings[BLD_MINT];
+
+    visual_settings.distribution[14] = player.distribution[GD_WOOD].percent_buildings[BLD_SAWMILL];
+    visual_settings.distribution[15] = player.distribution[GD_WOOD].percent_buildings[BLD_CHARBURNER];
+
+    visual_settings.distribution[16] = player.distribution[GD_BOARDS].percent_buildings[BLD_HEADQUARTERS];
+    visual_settings.distribution[17] = player.distribution[GD_BOARDS].percent_buildings[BLD_METALWORKS];
+    visual_settings.distribution[18] = player.distribution[GD_BOARDS].percent_buildings[BLD_SHIPYARD];
+
+    visual_settings.distribution[19] = player.distribution[GD_WATER].percent_buildings[BLD_BAKERY];
+    visual_settings.distribution[20] = player.distribution[GD_WATER].percent_buildings[BLD_BREWERY];
+    visual_settings.distribution[21] = player.distribution[GD_WATER].percent_buildings[BLD_PIGFARM];
+    visual_settings.distribution[22] = player.distribution[GD_WATER].percent_buildings[BLD_DONKEYBREEDER];
+
+
+    visual_settings.military_settings = player.militarySettings_;
+    visual_settings.tools_settings = player.toolsSettings_;
+
+    visual_settings.order_type = player.orderType_;
 
     // Baureihenfolge füllen (0 ist das HQ!)
     for(unsigned char i = 0; i < 31; ++i)
-        visual_settings.build_order[i] = player->build_order[i];
+        visual_settings.build_order[i] = player.build_order[i];
 }
 
 
@@ -2079,7 +2079,7 @@ void GameClient::SetReplayPause(bool pause)
 bool GameClient::AddGC(gc::GameCommand* gc)
 {
     // Nicht in der Pause oder wenn er besiegt wurde
-    if(framesinfo.pause || GetLocalPlayer()->isDefeated())
+    if(framesinfo.pause || GetLocalPlayer().isDefeated())
         return false;
 
     gameCommands_.push_back(gc);

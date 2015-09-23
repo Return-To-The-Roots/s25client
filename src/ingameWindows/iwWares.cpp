@@ -45,7 +45,7 @@ static char THIS_FILE[] = __FILE__;
 iwWares::iwWares(unsigned int id, unsigned short x , unsigned short y,
                  const unsigned short width, const unsigned short height,
                  const std::string& title, unsigned char page_count,
-                 bool allow_outhousing, glArchivItem_Font* font, const Goods* inventory)
+                 bool allow_outhousing, glArchivItem_Font* font, const Goods& inventory)
     : IngameWindow(id, x, y, width, height, title, LOADER.GetImageN("io", 5)),
       inventory(inventory), page(0), page_count(page_count)
 {
@@ -85,7 +85,7 @@ iwWares::iwWares(unsigned int id, unsigned short x , unsigned short y,
     // Figurenseite hinzufügen
     ctrlGroup* figures = AddGroup(101);
 
-    GameClientPlayer* player = GAMECLIENT.GetLocalPlayer();
+    GameClientPlayer& player = GAMECLIENT.GetLocalPlayer();
     bool four = true;
     unsigned short ware_id = 0;
     for(int x = 0, y = 0; y < 7; ++x, ++ware_id)
@@ -131,7 +131,7 @@ iwWares::iwWares(unsigned int id, unsigned short x , unsigned short y,
             figures->AddImage(200 + INVENTORY_IDS[1][ware_id], (four ? 40 : 26) + x * 28, 53 + y * 42, LOADER.GetMapImageN(2299));
 
         // die jeweilige Ware
-        wares->AddImage(300 + INVENTORY_IDS[0][ware_id], (four ? 40 : 26) + x * 28, 34 + y * 42, LOADER.GetMapImageN(2250 + (INVENTORY_IDS[0][ware_id] == GD_SHIELDROMANS ? shield_INVENTORY_IDS[player->nation] : INVENTORY_IDS[0][ware_id])));
+        wares->AddImage(300 + INVENTORY_IDS[0][ware_id], (four ? 40 : 26) + x * 28, 34 + y * 42, LOADER.GetMapImageN(2250 + (INVENTORY_IDS[0][ware_id] == GD_SHIELDROMANS ? shield_INVENTORY_IDS[player.nation] : INVENTORY_IDS[0][ware_id])));
         if(INVENTORY_IDS[1][ware_id] != 0xFFFF)
         {
             glArchivItem_Bitmap* image;
@@ -166,11 +166,11 @@ iwWares::iwWares(unsigned int id, unsigned short x , unsigned short y,
         // die jeweilige Anzahl (Texte)
         wares->AddVarText(600 + INVENTORY_IDS[0][ware_id], (four ? 53 : 39) + x * 28, 61 + y * 42, _("%d"), COLOR_YELLOW,
                           glArchivItem_Font::DF_BOTTOM | glArchivItem_Font::DF_RIGHT, font, 1,
-                          &inventory->goods[INVENTORY_IDS[0][ware_id]]);
+                          &inventory.goods[INVENTORY_IDS[0][ware_id]]);
         if(INVENTORY_IDS[1][ware_id] != 0xFFFF)
             figures->AddVarText(600 + INVENTORY_IDS[1][ware_id], (four ? 53 : 39) + x * 28, 61 + y * 42, _("%d"), COLOR_YELLOW,
                                 glArchivItem_Font::DF_BOTTOM | glArchivItem_Font::DF_RIGHT, font, 1,
-                                &inventory->people[INVENTORY_IDS[1][ware_id]]);
+                                &inventory.people[INVENTORY_IDS[1][ware_id]]);
 
         // Overlay für "Einlagern"
         image = wares->AddImage(700 + INVENTORY_IDS[0][ware_id], (four ? 40 : 26) + x * 28, 44 + y * 42, LOADER.GetImageN("io_new", 3));
@@ -219,7 +219,7 @@ void iwWares::Msg_PaintBefore()
         {
             ctrlVarText* text = group->GetCtrl<ctrlVarText>(600 + i);
             if(text)
-                text->SetColor( ((((page == 0) ? inventory->goods[i] : inventory->people[i]) == 0) ? COLOR_RED : COLOR_YELLOW) );
+                text->SetColor( ((((page == 0) ? inventory.goods[i] : inventory.people[i]) == 0) ? COLOR_RED : COLOR_YELLOW) );
 
         }
     }

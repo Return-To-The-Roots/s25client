@@ -144,7 +144,7 @@ void noFlag::Destroy_noFlag()
     }
 
     // Den Flag-Workern Bescheid sagen, die hier ggf. arbeiten
-    gwg->GetPlayer(player)->FlagDestroyed(this);
+    gwg->GetPlayer(player).FlagDestroyed(this);
 
     Destroy_noRoadNode();
 }
@@ -194,7 +194,7 @@ void noFlag::Draw(int x, int y)
 
     unsigned ani_step = GAMECLIENT.GetGlobalAnimation(8, 2, 1, ani_offset);
 
-    Loader::flag_cache[gwg->GetPlayer(player)->nation][flagtype][ani_step].draw(x, y, 0xFFFFFFFF, COLORS[gwg->GetPlayer(player)->color]);
+    Loader::flag_cache[gwg->GetPlayer(player).nation][flagtype][ani_step].draw(x, y, 0xFFFFFFFF, COLORS[gwg->GetPlayer(player).color]);
 
     // Waren (von hinten anfangen zu zeichnen)
     for(unsigned i = 8; i; --i)
@@ -281,7 +281,7 @@ Ware* noFlag::SelectWare(const unsigned char dir, const bool swap_wares, const n
             {
                 if(best_ware)
                 {
-                    if(gwg->GetPlayer(player)->transport[wares[i]->type] < gwg->GetPlayer(player)->transport[best_ware->type])
+                    if(gwg->GetPlayer(player).transport[wares[i]->type] < gwg->GetPlayer(player).transport[best_ware->type])
                     {
                         best_ware = wares[i];
                         best_ware_index = i;

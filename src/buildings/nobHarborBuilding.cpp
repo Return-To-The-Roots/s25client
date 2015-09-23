@@ -94,7 +94,7 @@ nobHarborBuilding::nobHarborBuilding(const MapPoint pos, const unsigned char pla
     AddToInventory();
 
     // Der Wirtschaftsverwaltung Bescheid sagen
-    gwg->GetPlayer(player)->AddWarehouse(this);
+    gwg->GetPlayer(player).AddWarehouse(this);
 
     /// Die Meere herausfinden, an die dieser Hafen grenzt
     for(unsigned i = 0; i < 6; ++i)
@@ -302,17 +302,17 @@ void nobHarborBuilding::Draw(int x, int y)
 
             if(id < 500)
             {
-                Loader::bob_jobs_cache[nation][JOB_BUILDER][0][walking_id].draw(right_point - walking_distance, y + BUILDER_POS[nation].y, COLOR_WHITE, COLORS[gwg->GetPlayer(player)->color]);
+                Loader::bob_jobs_cache[nation][JOB_BUILDER][0][walking_id].draw(right_point - walking_distance, y + BUILDER_POS[nation].y, COLOR_WHITE, COLORS[gwg->GetPlayer(player).color]);
 //              LOADER.GetBobN("jobs")->Draw(23,0,false,walking_id,right_point-walking_distance,
-//                  y+BUILDER_POS[nation].y,COLORS[gwg->GetPlayer(player)->color]);
+//                  y+BUILDER_POS[nation].y,COLORS[gwg->GetPlayer(player).color]);
                 //DrawShadow(right_point-walking_distance,y,walking_id,0);
             }
             else
             {
-                Loader::bob_jobs_cache[nation][JOB_BUILDER][3][walking_id].draw(right_point - WALKING_DISTANCE + walking_distance, y + BUILDER_POS[nation].y, COLOR_WHITE, COLORS[gwg->GetPlayer(player)->color]);
+                Loader::bob_jobs_cache[nation][JOB_BUILDER][3][walking_id].draw(right_point - WALKING_DISTANCE + walking_distance, y + BUILDER_POS[nation].y, COLOR_WHITE, COLORS[gwg->GetPlayer(player).color]);
 //              LOADER.GetBobN("jobs")->Draw(23,3,false,walking_id,
 //                  right_point-WALKING_DISTANCE+walking_distance,y+BUILDER_POS[nation].y,
-//                  COLORS[gwg->GetPlayer(player)->color]);
+//                  COLORS[gwg->GetPlayer(player).color]);
                 //DrawShadow(right_point-WALKING_DISTANCE+walking_distance,y,walking_id,0);
             }
         }
@@ -356,11 +356,11 @@ void nobHarborBuilding::StartExpedition()
             ++real_goods.people[JOB_BUILDER];
             ++goods_.people[JOB_BUILDER];
             // Evtl. Abnehmer für die Figur wieder finden
-            gwg->GetPlayer(player)->FindWarehouseForAllJobs(JOB_BUILDER);
+            gwg->GetPlayer(player).FindWarehouseForAllJobs(JOB_BUILDER);
         }
         else //todo falls noch nicht da - unterscheiden ob unterwegs oder nur bestellt - falls bestellt stornieren sonst informieren damit kein ersatz geschickt wird falls was nicht klappos aufm weg
         {
-            gwg->GetPlayer(player)->OneJobNotWanted(JOB_BUILDER, this);
+            gwg->GetPlayer(player).OneJobNotWanted(JOB_BUILDER, this);
         }
 
         return;
@@ -435,14 +435,14 @@ void nobHarborBuilding::StartExplorationExpedition()
         // cancel order for scouts
         for (unsigned i = exploration_expedition.scouts; i < SCOUTS_EXPLORATION_EXPEDITION; i++)
         {
-            gwg->GetPlayer(player)->OneJobNotWanted(JOB_SCOUT, this);
+            gwg->GetPlayer(player).OneJobNotWanted(JOB_SCOUT, this);
         }
         // Erkunder zurücktransferieren
         if(exploration_expedition.scouts)
         {
             real_goods.people[JOB_SCOUT] += exploration_expedition.scouts;
             // Evtl. Abnehmer für die Figur wieder finden
-            gwg->GetPlayer(player)->FindWarehouseForAllJobs(JOB_SCOUT);
+            gwg->GetPlayer(player).FindWarehouseForAllJobs(JOB_SCOUT);
         }
         return;
     }
@@ -529,7 +529,7 @@ void nobHarborBuilding::OrderExpeditionWares()
         Ware* ware;
         do
         {
-            ware = gwg->GetPlayer(player)->OrderWare(GD_BOARDS, this);
+            ware = gwg->GetPlayer(player).OrderWare(GD_BOARDS, this);
             if(ware)
             {
                 dependent_wares.push_back(ware);
@@ -546,7 +546,7 @@ void nobHarborBuilding::OrderExpeditionWares()
         Ware* ware;
         do
         {
-            ware = gwg->GetPlayer(player)->OrderWare(GD_STONES, this);
+            ware = gwg->GetPlayer(player).OrderWare(GD_STONES, this);
             if(ware)
             {
                 dependent_wares.push_back(ware);
@@ -719,7 +719,7 @@ void nobHarborBuilding::AddWare(Ware* ware)
             // Ware nicht mehr abhängig
             RemoveDependentWare(ware);
             // Dann zweigen wir die einfach mal für die Expedition ab
-            gwg->GetPlayer(player)->RemoveWare(ware);
+            gwg->GetPlayer(player).RemoveWare(ware);
             delete ware;
 
             // Ggf. ist jetzt alles benötigte da
@@ -1162,7 +1162,7 @@ void nobHarborBuilding::ReceiveGoodsFromShip(const std::list<noFigure*>& figures
                     if((*it)->type == GD_BOARDS) ++expedition.boards;
                     else ++expedition.stones;
                     RemoveDependentWare(*it);
-                    gwg->GetPlayer(player)->RemoveWare((*it));
+                    gwg->GetPlayer(player).RemoveWare((*it));
                     //remove item
                     delete *it;
                     CheckExpeditionReady();
@@ -1455,7 +1455,7 @@ void nobHarborBuilding::ExamineShipRouteOfPeople()
 bool nobHarborBuilding::IsBeingDestroyedNow() const
 {
     // check if this harbor is in the known harbors. if not, it is probably being destroyed right now.
-    const std::list<nobHarborBuilding*> allHarbors = gwg->GetPlayer(player)->GetHarbors();
+    const std::list<nobHarborBuilding*> allHarbors = gwg->GetPlayer(player).GetHarbors();
     if (!helpers::contains(allHarbors, this))
     {
         return true;

@@ -255,7 +255,7 @@ void GameWorldGame::SetBuildingSite(const BuildingType type, const MapPoint pt, 
     }
 
     // Prüfen ob Katapult und ob Katapult erlaubt ist
-    if (type == BLD_CATAPULT && !GetPlayer(player)->CanBuildCatapult())
+    if (type == BLD_CATAPULT && !GetPlayer(player).CanBuildCatapult())
         return;
 
     // ggf. vorherige Objekte löschen
@@ -440,7 +440,7 @@ void GameWorldGame::BuildRoad(const unsigned char playerid, const bool boat_road
     GetSpecObj<noFlag>(end)->routes[(route.back() + 3) % 6] = rs;
 
     // Der Wirtschaft mitteilen, dass eine neue Straße gebaut wurde, damit sie alles Näcige macht
-    GetPlayer(playerid)->NewRoad(rs);
+    GetPlayer(playerid).NewRoad(rs);
     // notify ai about the new road
     GAMECLIENT.SendAIEvent(new AIEvent::Direction(AIEvent::RoadConstructionComplete, start, route[0]), playerid);
 
@@ -586,7 +586,7 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding* const building, const 
 				if (GAMECLIENT.GetGGS().isEnabled(ADDON_NO_ALLIED_PUSH))
 				{
 					//rule 1: only take territory from an ally if that ally loses a building - special case: headquarter can take territory
-					if (prev_player>0 && player>0 && GetPlayer(prev_player-1)->IsAlly(player-1) && !(owneroftriggerbuilding==prev_player && !newBuilt) && !building->GetBuildingType()==BLD_HEADQUARTERS)
+					if (prev_player>0 && player>0 && GetPlayer(prev_player-1).IsAlly(player-1) && !(owneroftriggerbuilding==prev_player && !newBuilt) && !building->GetBuildingType()==BLD_HEADQUARTERS)
 					{
 						//LOG.lprintf("rule 1 \n");
 						owner_changed[(x2 - x1) * (y - y1) + (x - x1)] = false;
@@ -624,7 +624,7 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding* const building, const 
 
     for (unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
     {
-        GetPlayer(i)->ChangeStatisticValue(STAT_COUNTRY, sizeChanges[i]);
+        GetPlayer(i).ChangeStatisticValue(STAT_COUNTRY, sizeChanges[i]);
 
         // Negatives Wachstum per Post dem/der jeweiligen Landesherren/dame melden, nur bei neugebauten Gebäuden
         if (newBuilt && sizeChanges[i] < 0)
@@ -999,7 +999,7 @@ void GameWorldGame::Attack(const unsigned char player_attacker, const MapPoint p
         return;
 
     // Auch noch ein Gebäude von einem Feind (nicht inzwischen eingenommen)?
-    if(!GetPlayer(player_attacker)->IsPlayerAttackable(GetSpecObj<noBuilding>(pt)->GetPlayer()))
+    if(!GetPlayer(player_attacker).IsPlayerAttackable(GetSpecObj<noBuilding>(pt)->GetPlayer()))
         return;
 
     // Prüfen, ob der angreifende Spieler das Gebäude überhaupt sieht (Cheatvorsorge)
@@ -1034,7 +1034,7 @@ void GameWorldGame::Attack(const unsigned char player_attacker, const MapPoint p
         // Militäreinstellungen zum Angriff eingestellt wurden
         unsigned soldiers_count =
             (static_cast<nobMilitary*>(*it)->GetTroopsCount() > 1) ?
-            ((static_cast<nobMilitary*>(*it)->GetTroopsCount() - 1) * GetPlayer(player_attacker)->militarySettings_[3] / MILITARY_SETTINGS_SCALE[3]) : 0;
+            ((static_cast<nobMilitary*>(*it)->GetTroopsCount() - 1) * GetPlayer(player_attacker).militarySettings_[3] / MILITARY_SETTINGS_SCALE[3]) : 0;
 
         unsigned int distance = CalcDistance(pt, (*it)->GetPos());
 
@@ -1138,7 +1138,7 @@ void  GameWorldGame::AttackViaSea(const unsigned char player_attacker, const Map
         return;
 
     // Auch noch ein Gebäude von einem Feind (nicht inzwischen eingenommen)?
-    if(!GetPlayer(player_attacker)->IsPlayerAttackable(GetSpecObj<noBuilding>(pt)->GetPlayer()))
+    if(!GetPlayer(player_attacker).IsPlayerAttackable(GetSpecObj<noBuilding>(pt)->GetPlayer()))
         return;
 
     // Prüfen, ob der angreifende Spieler das Gebäude überhaupt sieht (Cheatvorsorge)
@@ -1414,8 +1414,8 @@ bool GameWorldGame::IsPointCompletelyVisible(const MapPoint pt, const unsigned c
 
     // Sichtbereich von Spähtürmen
 
-    for(std::list<nobUsual*>::const_iterator it = GetPlayer(player)->GetBuildings(BLD_LOOKOUTTOWER).begin();
-            it != GetPlayer(player)->GetBuildings(BLD_LOOKOUTTOWER).end(); ++it)
+    for(std::list<nobUsual*>::const_iterator it = GetPlayer(player).GetBuildings(BLD_LOOKOUTTOWER).begin();
+            it != GetPlayer(player).GetBuildings(BLD_LOOKOUTTOWER).end(); ++it)
     {
         // Ist Späturm überhaupt besetzt?
         if(!(*it)->HasWorker())
@@ -1577,7 +1577,7 @@ void GameWorldGame::RecalcVisibility(const MapPoint pt, const unsigned char play
 
     // Lokaler Spieler oder Verbündeter (wenn Team-Sicht an ist)? --> Terrain updaten
     if(player == GAMECLIENT.GetPlayerID() ||
-            (GAMECLIENT.GetGGS().team_view && GAMECLIENT.GetLocalPlayer()->IsAlly(player)))
+            (GAMECLIENT.GetGGS().team_view && GAMECLIENT.GetLocalPlayer().IsAlly(player)))
         VisibilityChanged(pt);
 }
 
@@ -1601,7 +1601,7 @@ void GameWorldGame::SetVisibility(const MapPoint pt,  const unsigned char player
 
     // Lokaler Spieler oder Verbündeter (wenn Team-Sicht an ist)? --> Terrain updaten
     if(player == GAMECLIENT.GetPlayerID() ||
-            (GAMECLIENT.GetGGS().team_view && GAMECLIENT.GetLocalPlayer()->IsAlly(player)))
+            (GAMECLIENT.GetGGS().team_view && GAMECLIENT.GetLocalPlayer().IsAlly(player)))
         VisibilityChanged(pt);
 }
 
@@ -1670,7 +1670,7 @@ void GameWorldGame::RecalcMovingVisibilities(const MapPoint pt, const unsigned c
         if(current_owner && (old_vis == VIS_INVISIBLE ||
                              (old_vis == VIS_FOW && old_owner != current_owner)))
         {
-            if(GAMECLIENT.GetPlayer(player)->IsPlayerAttackable(current_owner - 1) && enemy_territory)
+            if(GAMECLIENT.GetPlayer(player).IsPlayerAttackable(current_owner - 1) && enemy_territory)
             {
                 *enemy_territory = tt;
             }
@@ -1694,7 +1694,7 @@ void GameWorldGame::RecalcMovingVisibilities(const MapPoint pt, const unsigned c
         if(current_owner && (old_vis == VIS_INVISIBLE ||
                              (old_vis == VIS_FOW && old_owner != current_owner)))
         {
-            if(GAMECLIENT.GetPlayer(player)->IsPlayerAttackable(current_owner - 1) && enemy_territory)
+            if(GAMECLIENT.GetPlayer(player).IsPlayerAttackable(current_owner - 1) && enemy_territory)
             {
                 *enemy_territory = tt;
             }

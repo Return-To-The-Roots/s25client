@@ -66,8 +66,8 @@ class GameClient : public Singleton<GameClient>, public GameMessageInterface, pu
         inline unsigned char GetPlayerID() const { return playerId_; }
         inline unsigned GetPlayerCount() const { return players.getCount(); }
         /// Liefert einen Player zurück
-        inline GameClientPlayer* GetPlayer(const unsigned int id) { return players.getElement(id); }
-        inline GameClientPlayer* GetLocalPlayer(void) { return GetPlayer(playerId_); }
+        inline GameClientPlayer& GetPlayer(const unsigned int id) { return *players.getElement(id); }
+        inline GameClientPlayer& GetLocalPlayer(void) { return GetPlayer(playerId_); }
         /// Erzeugt einen KI-Player, der mit den Daten vom GameClient gefüttert werden muss (zusätzlich noch mit den GameServer)
         AIBase* CreateAIPlayer(const unsigned playerid);
 
@@ -149,7 +149,7 @@ class GameClient : public Singleton<GameClient>, public GameMessageInterface, pu
         /// Wechselt den aktuellen Spieler im Replaymodus
         void ChangeReplayPlayer(const unsigned new_id);
         /// Laggt ein bestimmter Spieler gerade?
-        bool IsLagging(const unsigned int id) { return GetPlayer(id)->is_lagging; }
+        bool IsLagging(const unsigned int id) { return GetPlayer(id).is_lagging; }
         /// Spiel pausiert?
         bool IsPaused() const { return framesinfo.pause; }
         /// Schreibt Header der Save-Datei

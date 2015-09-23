@@ -61,7 +61,7 @@ nofAggressiveDefender::nofAggressiveDefender(nofPassiveSoldier* other, nofAttack
 
 nofAggressiveDefender::~nofAggressiveDefender()
 {
-    //assert(!GAMECLIENT.GetPlayer(player)->GetFirstWH()->TestOnMission(this));
+    //assert(!GAMECLIENT.GetPlayer(player).GetFirstWH()->TestOnMission(this));
 }
 
 void nofAggressiveDefender::Destroy_nofAggressiveDefender()
@@ -69,7 +69,7 @@ void nofAggressiveDefender::Destroy_nofAggressiveDefender()
     Destroy_nofActiveSoldier();
 
     //// Debugging
-    //assert(!GAMECLIENT.GetPlayer(player)->GetFirstWH()->TestOnMission(this));
+    //assert(!GAMECLIENT.GetPlayer(player).GetFirstWH()->TestOnMission(this));
 }
 
 void nofAggressiveDefender::Serialize_nofAggressiveDefender(SerializedGameData* sgd) const

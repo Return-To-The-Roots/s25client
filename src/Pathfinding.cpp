@@ -933,7 +933,7 @@ bool IsPointOK_TradePath(const GameWorldBase& gwb,  const MapPoint pt,  const un
 
     unsigned char player = gwb.GetNode(pt).owner;
     // Ally or no player? Then ok
-    if(player == 0 || gwb.GetPlayer(*((unsigned char*)param))->IsAlly(player - 1))
+    if(player == 0 || gwb.GetPlayer(*((unsigned char*)param)).IsAlly(player - 1))
         return true;
     else
         return false;
@@ -950,12 +950,12 @@ bool IsPointToDestOK_TradePath(const GameWorldBase& gwb,  const MapPoint pt,  co
     unsigned char old_player = gwb.GetNode(gwb.GetNeighbour(pt,  (dir + 3) % 6)).owner, 
                   new_player = gwb.GetNode(pt).owner;
     // Ally or no player? Then ok
-    if(new_player == 0 || gwb.GetPlayer(*((unsigned char*)param))->IsAlly(new_player - 1))
+    if(new_player == 0 || gwb.GetPlayer(*((unsigned char*)param)).IsAlly(new_player - 1))
         return true;
     else
     {
         // Old player also evil?
-        if(old_player != 0 && !gwb.GetPlayer(*((unsigned char*)param))->IsAlly(old_player - 1))
+        if(old_player != 0 && !gwb.GetPlayer(*((unsigned char*)param)).IsAlly(old_player - 1))
             return true;
         else
             return false;
@@ -974,7 +974,7 @@ unsigned char GameWorldGame::FindTradePath(const MapPoint start,
     //++cc;
 
     unsigned char pp = GetNode(dest).owner;
-    if(!(pp == 0 || GetPlayer(player)->IsAlly(pp - 1)))
+    if(!(pp == 0 || GetPlayer(player).IsAlly(pp - 1)))
         return 0xff;
     bool is_warehouse_at_goal = false;
     if(GetNO(dest)->GetType() == NOP_BUILDING)

@@ -45,7 +45,7 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 noBaseBuilding::noBaseBuilding(const NodalObjectType nop, const BuildingType type, const MapPoint pos, const unsigned char player)
-    : noRoadNode(nop, pos, player), type_(type), nation(GAMECLIENT.GetPlayer(player)->nation), door_point_x(1000000), door_point_y(DOOR_CONSTS[GAMECLIENT.GetPlayer(player)->nation][type])
+    : noRoadNode(nop, pos, player), type_(type), nation(GAMECLIENT.GetPlayer(player).nation), door_point_x(1000000), door_point_y(DOOR_CONSTS[GAMECLIENT.GetPlayer(player).nation][type])
 {
 
     // Evtl Flagge setzen, wenn noch keine da ist
@@ -139,7 +139,7 @@ void noBaseBuilding::Destroy_noBaseBuilding()
                 percent_index = settings.getSelection(ADDON_REFUND_MATERIALS);
 
             // wenn Rückerstattung bei Notprogramm aktiv ist, 50% zurückerstatten
-            else if(gwg->GetPlayer(player)->hasEmergency() && settings.isEnabled(ADDON_REFUND_ON_EMERGENCY))
+            else if(gwg->GetPlayer(player).hasEmergency() && settings.isEnabled(ADDON_REFUND_ON_EMERGENCY))
                 percent_index = 2;
 
             // wieviel kriegt man von jeder Ware wieder?
@@ -159,9 +159,9 @@ void noBaseBuilding::Destroy_noBaseBuilding()
                     // Ware erzeugen
                     Ware* ware = new Ware(goods[which], 0, flag);
                     // Inventur anpassen
-                    gwg->GetPlayer(player)->IncreaseInventoryWare(goods[which], 1);
+                    gwg->GetPlayer(player).IncreaseInventoryWare(goods[which], 1);
                     // Abnehmer für Ware finden
-                    ware->goal = gwg->GetPlayer(player)->FindClientForWare(ware);
+                    ware->goal = gwg->GetPlayer(player).FindClientForWare(ware);
                     // Ware soll ihren weiteren Weg berechnen
                     ware->RecalcRoute();
                     // Ware ablegen
@@ -233,7 +233,7 @@ short noBaseBuilding::GetDoorPointX()
 
 
 
-        door_point_x = (DOOR_CONSTS[GAMECLIENT.GetPlayer(player)->nation][type_] * (x1 - x2)) / (y1 - y2);
+        door_point_x = (DOOR_CONSTS[GAMECLIENT.GetPlayer(player).nation][type_] * (x1 - x2)) / (y1 - y2);
     }
 
     return (short)(door_point_x & 0xFFFF);
@@ -259,8 +259,8 @@ void noBaseBuilding::WareNotNeeded(Ware* ware)
         static_cast<nobBaseWarehouse*>(ware->GetLocation())->CancelWare(ware);
         // Ware muss auch noch vernichtet werden!
         // Inventur entsprechend verringern
-        //GAMECLIENT.GetPlayer(player)->DecreaseInventoryWare(ware->type,1);
-        GAMECLIENT.GetPlayer(player)->RemoveWare(ware);
+        //GAMECLIENT.GetPlayer(player).DecreaseInventoryWare(ware->type,1);
+        GAMECLIENT.GetPlayer(player).RemoveWare(ware);
         delete ware;
     }
 

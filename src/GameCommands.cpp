@@ -204,7 +204,7 @@ namespace gc{
 
     void AcceptPact::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
     {
-        ::GAMECLIENT.GetPlayer(this->player)->AcceptPact(id, pt, playerid);
+        GAMECLIENT.GetPlayer(this->player).AcceptPact(id, pt, playerid);
     }
 
     void CancelPact::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)

@@ -119,14 +119,14 @@ void fowBuildingSite::Draw(int x, int y) const
     if(planing)
     {
         // Baustellenschild mit Schatten zeichnen
-        LOADER.GetNationImageN(GAMECLIENT.GetLocalPlayer()->nation, 450)->Draw(x, y, 0, 0, 0, 0, 0, 0, FOW_DRAW_COLOR);
-        LOADER.GetNationImageN(GAMECLIENT.GetLocalPlayer()->nation, 451)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+        LOADER.GetNationImageN(GAMECLIENT.GetLocalPlayer().nation, 450)->Draw(x, y, 0, 0, 0, 0, 0, 0, FOW_DRAW_COLOR);
+        LOADER.GetNationImageN(GAMECLIENT.GetLocalPlayer().nation, 451)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
     }
     else
     {
         // Baustellenstein und -schatten zeichnen
-        LOADER.GetNationImageN(GAMECLIENT.GetLocalPlayer()->nation, 455)->Draw(x, y, 0, 0, 0, 0, 0, 0, FOW_DRAW_COLOR);
-        LOADER.GetNationImageN(GAMECLIENT.GetLocalPlayer()->nation, 456)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+        LOADER.GetNationImageN(GAMECLIENT.GetLocalPlayer().nation, 455)->Draw(x, y, 0, 0, 0, 0, 0, 0, FOW_DRAW_COLOR);
+        LOADER.GetNationImageN(GAMECLIENT.GetLocalPlayer().nation, 456)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
 
 
         // bis dahin gebautes Haus zeichnen
@@ -230,9 +230,9 @@ void fowFlag::Serialize(SerializedGameData* sgd) const
 void fowFlag::Draw(int x, int y) const
 {
     // Flagge
-    LOADER.GetNationImageN(GAMECLIENT.GetPlayer(player)->nation, 100 + flag_type * 20)->Draw(x, y, 0, 0, 0, 0, 0, 0, FOW_DRAW_COLOR, CalcPlayerFOWDrawColor(COLORS[GAMECLIENT.GetPlayer(player)->color]));
+    LOADER.GetNationImageN(GAMECLIENT.GetPlayer(player).nation, 100 + flag_type * 20)->Draw(x, y, 0, 0, 0, 0, 0, 0, FOW_DRAW_COLOR, CalcPlayerFOWDrawColor(COLORS[GAMECLIENT.GetPlayer(player).color]));
     // Schatten
-    LOADER.GetNationImageN(GAMECLIENT.GetPlayer(player)->nation, 100 + flag_type * 20 + 10)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+    LOADER.GetNationImageN(GAMECLIENT.GetPlayer(player).nation, 100 + flag_type * 20 + 10)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////

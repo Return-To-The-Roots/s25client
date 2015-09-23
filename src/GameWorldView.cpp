@@ -141,7 +141,7 @@ void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool
                         noBuilding* building = gwv->GetSpecObj<noBuilding>(t);
                         if (mn.owner != GAMECLIENT.GetPlayerID() + 1 //not belonging to current player
                                 && gwv->GetNO(t)->GetType() == NOP_BUILDING //is a building
-                                && !GAMECLIENT.GetLocalPlayer()->IsAlly(building->GetPlayer())) //not an ally
+                                && !GAMECLIENT.GetLocalPlayer().IsAlly(building->GetPlayer())) //not an ally
                         {
                             BuildingType bt = building->GetBuildingType();
                             if ((bt >= BLD_BARRACKS && bt <= BLD_FORTRESS)
@@ -497,8 +497,8 @@ void GameWorldView::DrawBoundaryStone(const int x, const int y, const MapPoint t
 
     if(owner)
     {
-        unsigned nation = gwv->GetPlayer(owner - 1)->nation;
-        unsigned player_color = COLORS[gwv->GetPlayer(owner - 1)->color];
+        unsigned nation = gwv->GetPlayer(owner - 1).nation;
+        unsigned player_color = COLORS[gwv->GetPlayer(owner - 1).color];
 
         Loader::boundary_stone_cache[nation].draw(curPos.x, curPos.y, fow ? FOW_DRAW_COLOR : COLOR_WHITE, fow ? CalcPlayerFOWDrawColor(player_color) : player_color);
 

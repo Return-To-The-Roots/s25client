@@ -197,18 +197,18 @@ void iwBaseWarehouse::Msg_ButtonClick(const unsigned int ctrl_id)
 		case 14: //go to next of same type
 		{
 			//is there at least 1 other building of the same type?
-			if(GAMECLIENT.GetPlayer(wh->GetPlayer())->GetStorehouses().size()>1)
+			if(GAMECLIENT.GetPlayer(wh->GetPlayer()).GetStorehouses().size()>1)
 			{
 				//go through list once we get to current building -> open window for the next one and go to next location
-				for(std::list<nobBaseWarehouse*>::const_iterator it=GAMECLIENT.GetPlayer(wh->GetPlayer())->GetStorehouses().begin(); it != GAMECLIENT.GetPlayer(wh->GetPlayer())->GetStorehouses().end(); ++it)
+				for(std::list<nobBaseWarehouse*>::const_iterator it=GAMECLIENT.GetPlayer(wh->GetPlayer()).GetStorehouses().begin(); it != GAMECLIENT.GetPlayer(wh->GetPlayer()).GetStorehouses().end(); ++it)
 				{
 					if((*it)->GetX()==wh->GetX() && (*it)->GetY()==wh->GetY()) //got to current building in the list?
 					{
 						//close old window, open new window (todo: only open if it isnt already open), move to location of next building
 						Close();
 						++it;
-						if(it == GAMECLIENT.GetPlayer(wh->GetPlayer())->GetStorehouses().end()) //was last entry in list -> goto first												{
-							it=GAMECLIENT.GetPlayer(wh->GetPlayer())->GetStorehouses().begin();
+						if(it == GAMECLIENT.GetPlayer(wh->GetPlayer()).GetStorehouses().end()) //was last entry in list -> goto first												{
+							it=GAMECLIENT.GetPlayer(wh->GetPlayer()).GetStorehouses().begin();
 						gwv->MoveToMapObject((*it)->GetPos());
 						if((*it)->GetBuildingType()==BLD_HEADQUARTERS)
 						{

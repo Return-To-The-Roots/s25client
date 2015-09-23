@@ -126,7 +126,7 @@ void dskGameLoader::Msg_Timer(const unsigned int ctrl_id)
         {
             memset(load_nations, 0, sizeof(bool) * NAT_COUNT);
             for(unsigned char i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
-                load_nations[GAMECLIENT.GetPlayer(i)->nation] = true;
+                load_nations[GAMECLIENT.GetPlayer(i).nation] = true;
 
             text->SetText(_("Tribal chiefs assembled around the table..."));
             interval = 50;

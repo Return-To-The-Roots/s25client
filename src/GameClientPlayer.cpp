@@ -577,7 +577,7 @@ void GameClientPlayer::RoadDestroyed()
 				else //no route to goal -> notify goal, try to send ware to a warehouse and if that fails as well set goal = 0 to mark this ware as lost
 				{
 					(*it)->NotifyGoalAboutLostWare();
-					nobBaseWarehouse* wh = gwg->GetPlayer((*it)->GetLocation()->GetPlayer())->FindWarehouse((*it)->GetLocation(), FW::Condition_StoreWare, 0, true, &(*it)->type, true);
+					nobBaseWarehouse* wh = gwg->GetPlayer((*it)->GetLocation()->GetPlayer()).FindWarehouse((*it)->GetLocation(), FW::Condition_StoreWare, 0, true, &(*it)->type, true);
 					if(wh)
 					{
 						(*it)->goal = wh;
@@ -1808,12 +1808,12 @@ void GameClientPlayer::AcceptPact(const unsigned id, const PactType pt, const un
     {
         // Pakt einwickeln
         MakePact(pt, other_player, pacts[other_player][pt].duration);
-        GAMECLIENT.GetPlayer(other_player)->MakePact(pt, playerid, pacts[other_player][pt].duration);
+        GAMECLIENT.GetPlayer(other_player).MakePact(pt, playerid, pacts[other_player][pt].duration);
 
         // Besetzung der Militärgebäude der jeweiligen Spieler überprüfen, da ja jetzt neue Feinde oder neue
         // Verbündete sich in Grenznähe befinden könnten
         this->RegulateAllTroops();
-        GAMECLIENT.GetPlayer(other_player)->RecalcMilitaryFlags();
+        GAMECLIENT.GetPlayer(other_player).RecalcMilitaryFlags();
 
         // Ggf. den GUI Bescheid sagen, um Sichtbarkeiten etc. neu zu berechnen
         if(pt == TREATY_OF_ALLIANCE && (GAMECLIENT.GetPlayerID() == playerid || GAMECLIENT.GetPlayerID() == other_player))
@@ -1866,8 +1866,8 @@ void GameClientPlayer::NotifyAlliesOfLocation(const MapPoint pt, unsigned char a
 {	
 	for(unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
     {
-        GameClientPlayer* p = GAMECLIENT.GetPlayer(i);
-		if(i != allyplayerid && p->IsAlly(allyplayerid+1) && GAMECLIENT.GetPlayerID() == i)
+        GameClientPlayer& p = GAMECLIENT.GetPlayer(i);
+		if(i != allyplayerid && p.IsAlly(allyplayerid+1) && GAMECLIENT.GetPlayerID() == i)
 		{	            		
             GAMECLIENT.SendPostMessage(new PostMsgWithLocation(_("Your ally wishes to notify you of this location"), PMC_DIPLOMACY, pt));
 		}
@@ -1902,16 +1902,16 @@ void GameClientPlayer::CancelPact(const PactType pt, const unsigned char other_p
         pacts[other_player][pt].want_cancel = true;
 
         // Will der andere Spieler das Bündnis auch auflösen?
-        if(GAMECLIENT.GetPlayer(other_player)->pacts[playerid][pt].want_cancel)
+        if(GAMECLIENT.GetPlayer(other_player).pacts[playerid][pt].want_cancel)
         {
             // Dann wird das Bündnis aufgelöst
             pacts[other_player][pt].accepted = false;
             pacts[other_player][pt].duration = 0;
             pacts[other_player][pt].want_cancel = false;
 
-            GAMECLIENT.GetPlayer(other_player)->pacts[playerid][pt].accepted = false;
-            GAMECLIENT.GetPlayer(other_player)->pacts[playerid][pt].duration = 0;
-            GAMECLIENT.GetPlayer(other_player)->pacts[playerid][pt].want_cancel = false;
+            GAMECLIENT.GetPlayer(other_player).pacts[playerid][pt].accepted = false;
+            GAMECLIENT.GetPlayer(other_player).pacts[playerid][pt].duration = 0;
+            GAMECLIENT.GetPlayer(other_player).pacts[playerid][pt].want_cancel = false;
 
             // Den Spielern eine Informationsnachricht schicken
             if(GAMECLIENT.GetPlayerID() == playerid || GAMECLIENT.GetPlayerID() == other_player)
@@ -1945,8 +1945,8 @@ void GameClientPlayer::MakeStartPacts()
     // Zu den Spielern im selben Team Bündnisse (sowohl Bündnisvertrag als auch Nichtangriffspakt) aufbauen
     for(unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
     {
-        GameClientPlayer* p = GAMECLIENT.GetPlayer(i);
-        if(GetFixedTeam(team) == GetFixedTeam(p->team) && GetFixedTeam(team) >= TM_TEAM1 && GetFixedTeam(team) <= TM_TEAM4)
+        GameClientPlayer& p = GAMECLIENT.GetPlayer(i);
+        if(GetFixedTeam(team) == GetFixedTeam(p.team) && GetFixedTeam(team) >= TM_TEAM1 && GetFixedTeam(team) <= TM_TEAM4)
         {
             for(unsigned z = 0; z < PACTS_COUNT; ++z)
             {
@@ -2301,8 +2301,8 @@ void GameClientPlayer::TestForEmergencyProgramm()
     unsigned stones = 0;
     for(std::list<nobBaseWarehouse*>::iterator w = warehouses.begin(); w != warehouses.end(); ++w)
     {
-        boards += (*w)->GetInventory()->goods[GD_BOARDS];
-        stones += (*w)->GetInventory()->goods[GD_STONES];
+        boards += (*w)->GetInventory().goods[GD_BOARDS];
+        stones += (*w)->GetInventory().goods[GD_STONES];
 		/*std::list<Ware*> testwares = (*w)->GetDependentWares();
 		unsigned c=0;
 		unsigned bad=-1;

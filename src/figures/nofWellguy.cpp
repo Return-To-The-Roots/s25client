@@ -69,7 +69,7 @@ void nofWellguy::DrawWorking(int x, int y)
     unsigned int max_id = 112;
     unsigned now_id = GAMECLIENT.Interpolate(max_id, current_ev);
     unsigned char wpNation = workplace->GetNation();
-    unsigned int plColor = gwg->GetPlayer(player)->color;
+    unsigned int plColor = gwg->GetPlayer(player).color;
 
     //position zum rauslaufen berechnen
     int walkx = x + walkoffsets[wpNation][now_id % 8][0];

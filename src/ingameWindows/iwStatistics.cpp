@@ -49,7 +49,7 @@ iwStatistics::iwStatistics()
     numPlayingPlayers = 0;
     for (unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
     {
-        if (GAMECLIENT.GetPlayer(i)->ps == PS_KI || GAMECLIENT.GetPlayer(i)->ps == PS_OCCUPIED)
+        if (GAMECLIENT.GetPlayer(i).ps == PS_KI || GAMECLIENT.GetPlayer(i).ps == PS_OCCUPIED)
             numPlayingPlayers++;
     }
 
@@ -60,22 +60,22 @@ iwStatistics::iwStatistics()
     for (unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
     {
         // nicht belegte Spielplätze rauswerfen
-        if (!(GAMECLIENT.GetPlayer(i)->ps == PS_KI || GAMECLIENT.GetPlayer(i)->ps == PS_OCCUPIED))
+        if (!(GAMECLIENT.GetPlayer(i).ps == PS_KI || GAMECLIENT.GetPlayer(i).ps == PS_OCCUPIED))
         {
             activePlayers[i] = false;
             continue;
         }
-        switch(GAMECLIENT.GetPlayer(i)->nation)
+        switch(GAMECLIENT.GetPlayer(i).nation)
         {
-            case NAT_AFRICANS: AddImageButton(1+i, startX + pos * 34 - 17, 45-23, 34, 47, TC_GREEN1, LOADER.GetImageN("io", 257), GAMECLIENT.GetPlayer(i)->name)->SetBorder(false);
+            case NAT_AFRICANS: AddImageButton(1+i, startX + pos * 34 - 17, 45-23, 34, 47, TC_GREEN1, LOADER.GetImageN("io", 257), GAMECLIENT.GetPlayer(i).name)->SetBorder(false);
                 break;
-            case NAT_JAPANESES: AddImageButton(1+i, startX + pos * 34 - 17, 45-23, 34, 47, TC_GREEN1, LOADER.GetImageN("io", 253), GAMECLIENT.GetPlayer(i)->name)->SetBorder(false);
+            case NAT_JAPANESES: AddImageButton(1+i, startX + pos * 34 - 17, 45-23, 34, 47, TC_GREEN1, LOADER.GetImageN("io", 253), GAMECLIENT.GetPlayer(i).name)->SetBorder(false);
                 break;
-            case NAT_ROMANS: AddImageButton(1+i, startX + pos * 34 - 17, 45-23, 34, 47, TC_GREEN1, LOADER.GetImageN("io", 252), GAMECLIENT.GetPlayer(i)->name)->SetBorder(false);
+            case NAT_ROMANS: AddImageButton(1+i, startX + pos * 34 - 17, 45-23, 34, 47, TC_GREEN1, LOADER.GetImageN("io", 252), GAMECLIENT.GetPlayer(i).name)->SetBorder(false);
                 break;
-            case NAT_VIKINGS: AddImageButton(1+i, startX + pos * 34 - 17, 45-23, 34, 47, TC_GREEN1, LOADER.GetImageN("io", 256), GAMECLIENT.GetPlayer(i)->name)->SetBorder(false);
+            case NAT_VIKINGS: AddImageButton(1+i, startX + pos * 34 - 17, 45-23, 34, 47, TC_GREEN1, LOADER.GetImageN("io", 256), GAMECLIENT.GetPlayer(i).name)->SetBorder(false);
                 break;
-            case NAT_BABYLONIANS: AddImageButton(1+i, startX + pos * 34 - 17, 45-23, 34, 47, TC_GREEN1, LOADER.GetImageN("io_new", 7), GAMECLIENT.GetPlayer(i)->name)->SetBorder(false);
+            case NAT_BABYLONIANS: AddImageButton(1+i, startX + pos * 34 - 17, 45-23, 34, 47, TC_GREEN1, LOADER.GetImageN("io_new", 7), GAMECLIENT.GetPlayer(i).name)->SetBorder(false);
                 break;
             case NAT_COUNT:
             case NAT_INVALID:
@@ -94,7 +94,7 @@ iwStatistics::iwStatistics()
             } break;
             case 1: // Nur Verbündete teilen Sicht
             {
-                const bool visible = GAMECLIENT.GetLocalPlayer()->IsAlly(i);
+                const bool visible = GAMECLIENT.GetLocalPlayer().IsAlly(i);
                 activePlayers[i] = visible;
                 GetCtrl<ctrlImageButton>(1 + i)->Enable(visible);
             } break;
@@ -274,13 +274,13 @@ void iwStatistics::Msg_PaintAfter()
     unsigned pos = 0;
     for (unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
     {
-        if (!(GAMECLIENT.GetPlayer(i)->ps == PS_KI || GAMECLIENT.GetPlayer(i)->ps == PS_OCCUPIED))
+        if (!(GAMECLIENT.GetPlayer(i).ps == PS_KI || GAMECLIENT.GetPlayer(i).ps == PS_OCCUPIED))
         {
             continue;
         }
         if (activePlayers[i])
         {
-            DrawRectangle(this->x_ + startX + pos * 34, this->y_ + 68, 34, 12, COLORS[GAMECLIENT.GetPlayer(i)->color]);
+            DrawRectangle(this->x_ + startX + pos * 34, this->y_ + 68, 34, 12, COLORS[GAMECLIENT.GetPlayer(i).color]);
         }
         pos++;
     }
@@ -316,7 +316,7 @@ void iwStatistics::DrawStatistic(StatisticType type)
     {
         if (!activePlayers[p])
             continue;
-        const GameClientPlayer::Statistic& stat = GAMECLIENT.GetPlayer(p)->GetStatistic(currentTime);
+        const GameClientPlayer::Statistic& stat = GAMECLIENT.GetPlayer(p).GetStatistic(currentTime);
 
         currentIndex = stat.currentIndex;
         for (unsigned int i = 0; i < STAT_STEP_COUNT; ++i)
@@ -357,7 +357,7 @@ void iwStatistics::DrawStatistic(StatisticType type)
     {
         if (!activePlayers[p])
             continue;
-        const GameClientPlayer::Statistic& stat = GAMECLIENT.GetPlayer(p)->GetStatistic(currentTime);
+        const GameClientPlayer::Statistic& stat = GAMECLIENT.GetPlayer(p).GetStatistic(currentTime);
 
         currentIndex = stat.currentIndex;
         for (unsigned int i = 0; i < STAT_STEP_COUNT; ++i)
@@ -368,13 +368,13 @@ void iwStatistics::DrawStatistic(StatisticType type)
                 {
                     DrawLine(topLeftX + (STAT_STEP_COUNT - i) * stepX,
                              topLeftY + sizeY - ((stat.data[type][(currentIndex >= i) ? (currentIndex - i) : (STAT_STEP_COUNT - i + currentIndex)] - min)*sizeY) / (max - min),
-                             previousX, previousY, 2, COLORS[GAMECLIENT.GetPlayer(p)->color]);
+                             previousX, previousY, 2, COLORS[GAMECLIENT.GetPlayer(p).color]);
                 }
                 else
                 {
                     DrawLine(topLeftX + (STAT_STEP_COUNT - i) * stepX,
                              topLeftY + sizeY - ((stat.data[type][(currentIndex >= i) ? (currentIndex - i) : (STAT_STEP_COUNT - i + currentIndex)])*sizeY) / max,
-                             previousX, previousY, 2, COLORS[GAMECLIENT.GetPlayer(p)->color]);
+                             previousX, previousY, 2, COLORS[GAMECLIENT.GetPlayer(p).color]);
                 }
             }
             previousX = topLeftX + (STAT_STEP_COUNT - i) * stepX;
