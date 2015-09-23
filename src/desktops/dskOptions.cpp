@@ -129,7 +129,7 @@ dskOptions::dskOptions(void) : Desktop(LOADER.GetImageN("setup013", 0))
     ipv6->SetSelection( (SETTINGS.server.ipv6 ? 302 : 303) );
 
     // ipv6-feld ggf (de-)aktivieren
-    ipv6->GetCtrl<ctrlTextButton>(302)->Enable( (SETTINGS.proxy.typ != 4 && SETTINGS.proxy.typ != 40) );
+    ipv6->GetCtrl<ctrlTextButton>(302)->Enable( (SETTINGS.proxy.typ != 4 && SETTINGS.proxy.typ != 40) ); //-V807
 
     // Proxyserver
     groupAllgemein->AddText(36, 80, 280, _("Proxyserver:"), COLOR_YELLOW, 0, NormalFont);
@@ -242,7 +242,7 @@ dskOptions::dskOptions(void) : Desktop(LOADER.GetImageN("setup013", 0))
     optiongroup->AddTextButton(65, 380, 75, 90, 22, TC_GREY, _("Off"), NormalFont);
 
     ctrlProgress* Mvolume = groupSound->AddProgress(72, 480, 75, 190, 22, TC_GREY, 139, 138, 10);
-    Mvolume->SetPosition(SETTINGS.sound.musik_volume * 10 / 255);
+    Mvolume->SetPosition(SETTINGS.sound.musik_volume * 10 / 255); //-V807
 
     // Effekte
     groupSound->AddText(  66,  80, 130, _("Effects"), COLOR_YELLOW, 0, NormalFont);
@@ -590,7 +590,7 @@ void dskOptions::Msg_ButtonClick(const unsigned int ctrl_id)
 
             // Auflösung/Vollbildmodus geändert?
 #ifdef _WIN32
-            if((SETTINGS.video.fullscreen_width != VIDEODRIVER.GetScreenWidth()
+            if((SETTINGS.video.fullscreen_width != VIDEODRIVER.GetScreenWidth() //-V807
                     ||
                     SETTINGS.video.fullscreen_height != VIDEODRIVER.GetScreenHeight())
                     || SETTINGS.video.fullscreen != VIDEODRIVER.IsFullscreen())

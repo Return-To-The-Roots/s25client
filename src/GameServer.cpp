@@ -1015,12 +1015,12 @@ void GameServer::ClientWatchDog()
                                 }
 
                                 // Checksumme merken, da die Nachricht dann wieder entfernt wird
-                                player->checksum = player->gc_queue.front().checksum;
-                                player->obj_cnt = player->gc_queue.front().obj_cnt;
-                                player->obj_id_cnt = player->gc_queue.front().obj_id_cnt;
+                                const GameMessage_GameCommand& frontGC = player->gc_queue.front();
+                                player->checksum = frontGC.checksum;
+                                player->obj_cnt = frontGC.obj_cnt;
+                                player->obj_id_cnt = frontGC.obj_id_cnt;
 
-                                for(std::vector<gc::GameCommandPtr>::iterator it = player->gc_queue.front().gcs.begin();
-                                        it != player->gc_queue.front().gcs.end(); ++it)
+                                for(std::vector<gc::GameCommandPtr>::const_iterator it = frontGC.gcs.begin(); it != frontGC.gcs.end(); ++it)
                                 {
                                     if((*it)->GetType() == gc::SWITCHPLAYER)
                                     {

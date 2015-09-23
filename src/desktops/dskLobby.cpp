@@ -1,4 +1,3 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -225,12 +224,12 @@ void dskLobby::UpdatePlayerList(bool first)
                 column = 0;
             bool direction = !playertable->GetSortDirection();
 
-            for(unsigned int i = 0; i < playerlist->getCount(); ++i)
+            for(LobbyPlayerList::const_iterator it = playerlist->begin(); it != playerlist->end(); ++it)
             {
-                if(playerlist->getElement(i)->getId() != 0xFFFFFFFF)
+                if(it->getId() != 0xFFFFFFFF)
                 {
-                    std::string punkte = boost::lexical_cast<std::string>(playerlist->getElement(i)->getPunkte());
-                    playertable->AddRow(0, playerlist->getElement(i)->getName().c_str(), punkte.c_str(), playerlist->getElement(i)->getVersion().c_str());
+                    std::string punkte = boost::lexical_cast<std::string>(it->getPunkte());
+                    playertable->AddRow(0, it->getName().c_str(), punkte.c_str(), it->getVersion().c_str());
                 }
             }
             if(first)
@@ -266,15 +265,15 @@ void dskLobby::UpdateServerList(bool first)
                 column = 0;
             bool direction = !servertable->GetSortDirection();
 
-            for(unsigned int i = 0; i < serverlist->getCount(); ++i)
+            for(LobbyServerList::const_iterator it = serverlist->begin(); it != serverlist->end(); ++it)
             {
-                if(!serverlist->getElement(i)->getName().empty()) // && (serverlist->getElement(i)->getVersion() == std::string(GetWindowVersion())))
+                if(!it->getName().empty()) // && (serverlist->getElement(i)->getVersion() == std::string(GetWindowVersion())))
                 {
-                    std::string id = boost::lexical_cast<std::string>(serverlist->getElement(i)->getId());
-                    std::string name = (serverlist->getElement(i)->hasPassword() ? "(pwd) " : "") + serverlist->getElement(i)->getName();
-                    std::string ping = boost::lexical_cast<std::string>(serverlist->getElement(i)->getPing());
-                    std::string player = boost::lexical_cast<std::string>(serverlist->getElement(i)->getCurPlayers()) + "/" + boost::lexical_cast<std::string>(serverlist->getElement(i)->getMaxPlayers());
-                    servertable->AddRow(0, id.c_str(), name.c_str(), serverlist->getElement(i)->getMap().c_str(), player.c_str(), serverlist->getElement(i)->getVersion().c_str(), ping.c_str());
+                    std::string id = boost::lexical_cast<std::string>(it->getId());
+                    std::string name = (it->hasPassword() ? "(pwd) " : "") + it->getName();
+                    std::string ping = boost::lexical_cast<std::string>(it->getPing());
+                    std::string player = boost::lexical_cast<std::string>(it->getCurPlayers()) + "/" + boost::lexical_cast<std::string>(it->getMaxPlayers());
+                    servertable->AddRow(0, id.c_str(), name.c_str(), it->getMap().c_str(), player.c_str(), it->getVersion().c_str(), ping.c_str());
                 }
             }
             if(first)
@@ -297,16 +296,16 @@ bool dskLobby::ConnectToSelectedGame()
         return false;
 
     selection = atoi(table->GetItemText(selection, 0).c_str());
-    for(unsigned int i = 0; i < serverlist->getCount(); ++i)
+    for(LobbyServerList::const_iterator it = serverlist->begin(); it != serverlist->end(); ++it)
     {
-        if(serverlist->getElement(i)->getId() != selection)
+        if(it->getId() != selection)
             continue;
 
-        if(serverlist->getElement(i)->getVersion() == std::string(GetWindowVersion()))
+        if(it->getVersion() == std::string(GetWindowVersion()))
         {
             iwDirectIPConnect* connect = new iwDirectIPConnect(NP_LOBBY);
-            connect->SetHost(serverlist->getElement(i)->getHost().c_str());
-            connect->SetPort(serverlist->getElement(i)->getPort());
+            connect->SetHost(it->getHost().c_str());
+            connect->SetPort(it->getPort());
             WINDOWMANAGER.Show(connect);
             return true;
         }

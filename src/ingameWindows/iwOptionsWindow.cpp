@@ -85,7 +85,7 @@ iwOptionsWindow::iwOptionsWindow(dskGameInterface* gameDesktop)
     AddText(11, 85, 270, _("Save game!"), COLOR_YELLOW, 0 | glArchivItem_Font::DF_BOTTOM, NormalFont);
 
     // Geräusche an/aus
-    AddImageButton(12, 35, 300, 35, 35, TC_GREEN2, LOADER.GetImageN("io", 114 + !SETTINGS.sound.effekte));
+    AddImageButton(12, 35, 300, 35, 35, TC_GREEN2, LOADER.GetImageN("io", 114 + !SETTINGS.sound.effekte)); //-V807
 
     // Musik an/aus
     AddImageButton(13, 35, 340, 35, 35, TC_GREEN2, LOADER.GetImageN("io", 116 + !SETTINGS.sound.musik));
@@ -136,7 +136,7 @@ void iwOptionsWindow::Msg_ButtonClick(const unsigned int ctrl_id)
 
         case 12: // Geräusche an/aus
         {
-            SETTINGS.sound.effekte = !SETTINGS.sound.effekte;
+            SETTINGS.sound.effekte = !SETTINGS.sound.effekte; //-V807
             GetCtrl<ctrlImageButton>(12)->SetImage(LOADER.GetImageN("io", 114 + !SETTINGS.sound.effekte));
 
             if(!SETTINGS.sound.effekte)

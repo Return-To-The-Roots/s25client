@@ -173,7 +173,8 @@ void nofBuilder::HandleDerivedEvent(const unsigned int id)
                 state = STATE_FIGUREWORK;
 
                 // Baustelle abmelden
-                gwg->GetPlayer(player).RemoveBuildingSite(building_site);
+                GameClientPlayer& owner = gwg->GetPlayer(player);
+                owner.RemoveBuildingSite(building_site);
 
                 // ggf. Baustellenfenster schließen
                 gwg->ImportantObjectDestroyed(building_site->GetPos());
@@ -195,11 +196,11 @@ void nofBuilder::HandleDerivedEvent(const unsigned int id)
                     gwg->RemoveFigure(this, pos);
 
                     // Evtl Träger aus dem HQ wieder verwenden
-                    gwg->GetPlayer(player).FindWarehouseForAllRoads();
-                    gwg->GetPlayer(player).FindWarehouseForAllJobs(JOB_HELPER);
+                    owner.FindWarehouseForAllRoads();
+                    owner.FindWarehouseForAllJobs(JOB_HELPER);
 
                     // Evtl gabs verlorene Waren, die jetzt in das HQ wieder reinkönnen
-                    gwg->GetPlayer(player).FindClientForLostWares();
+                    owner.FindClientForLostWares();
 
                     return;
                 }

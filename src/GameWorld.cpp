@@ -551,17 +551,18 @@ void GameWorld::Serialize(SerializedGameData* sgd) const
         sgd->PushUnsignedChar(static_cast<unsigned char>(nodes[i].bq));
         for(unsigned z = 0; z < GAMECLIENT.GetPlayerCount(); ++z)
         {
-            sgd->PushUnsignedChar(static_cast<unsigned char>(nodes[i].fow[z].visibility));
+            const MapNode::FoWData& fow = nodes[i].fow[z];
+            sgd->PushUnsignedChar(static_cast<unsigned char>(fow.visibility));
             // Nur im FoW können FOW-Objekte stehen
-            if(nodes[i].fow[z].visibility == VIS_FOW)
+            if(fow.visibility == VIS_FOW)
             {
-                sgd->PushUnsignedInt(nodes[i].fow[z].last_update_time);
-                sgd->PushFOWObject(nodes[i].fow[z].object);
+                sgd->PushUnsignedInt(fow.last_update_time);
+                sgd->PushFOWObject(fow.object);
                 for(unsigned r = 0; r < 3; ++r)
-                    sgd->PushUnsignedChar(nodes[i].fow[z].roads[r]);
-                sgd->PushUnsignedChar(nodes[i].fow[z].owner);
+                    sgd->PushUnsignedChar(fow.roads[r]);
+                sgd->PushUnsignedChar(fow.owner);
                 for(unsigned b = 0; b < 4; ++b)
-                    sgd->PushUnsignedChar(nodes[i].fow[z].boundary_stones[b]);
+                    sgd->PushUnsignedChar(fow.boundary_stones[b]);
             }
         }
         sgd->PushObject(nodes[i].obj, false);
@@ -644,27 +645,28 @@ void GameWorld::Deserialize(SerializedGameData* sgd)
         nodes[i].bq = BuildingQuality(sgd->PopUnsignedChar());
         for(unsigned z = 0; z < GAMECLIENT.GetPlayerCount(); ++z)
         {
-            nodes[i].fow[z].visibility = Visibility(sgd->PopUnsignedChar());
+            MapNode::FoWData& fow = nodes[i].fow[z];
+            fow.visibility = Visibility(sgd->PopUnsignedChar());
             // Nur im FoW können FOW-Objekte stehen
-            if(nodes[i].fow[z].visibility == VIS_FOW)
+            if(fow.visibility == VIS_FOW)
             {
-                nodes[i].fow[z].last_update_time = sgd->PopUnsignedInt();
-                nodes[i].fow[z].object = sgd->PopFOWObject();
+                fow.last_update_time = sgd->PopUnsignedInt();
+                fow.object = sgd->PopFOWObject();
                 for(unsigned r = 0; r < 3; ++r)
-                    nodes[i].fow[z].roads[r] = sgd->PopUnsignedChar();
-                nodes[i].fow[z].owner = sgd->PopUnsignedChar();
+                    fow.roads[r] = sgd->PopUnsignedChar();
+                fow.owner = sgd->PopUnsignedChar();
                 for(unsigned b = 0; b < 4; ++b)
-                    nodes[i].fow[z].boundary_stones[b] = sgd->PopUnsignedChar();
+                    fow.boundary_stones[b] = sgd->PopUnsignedChar();
             }
             else
             {
-                nodes[i].fow[z].last_update_time = 0;
-                nodes[i].fow[z].object = NULL;
+                fow.last_update_time = 0;
+                fow.object = NULL;
                 for(unsigned r = 0; r < 3; ++r)
-                    nodes[i].fow[z].roads[r] = 0;
-                nodes[i].fow[z].owner = 0;
+                    fow.roads[r] = 0;
+                fow.owner = 0;
                 for(unsigned b = 0; b < 4; ++b)
-                    nodes[i].fow[z].boundary_stones[b] = 0;
+                    fow.boundary_stones[b] = 0;
             }
         }
         nodes[i].obj = sgd->PopObject<noBase>(GOT_UNKNOWN);

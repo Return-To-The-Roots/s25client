@@ -1730,28 +1730,29 @@ void GameWorldGame::RecalcMovingVisibilities(const MapPoint pt, const unsigned c
 
 void GameWorldGame::SaveFOWNode(const MapPoint pt, const unsigned player)
 {
-    GetNode(pt).fow[player].last_update_time = GAMECLIENT.GetGFNumber();
+    MapNode::FoWData& fow = GetNode(pt).fow[player];
+    fow.last_update_time = GAMECLIENT.GetGFNumber();
 
     // FOW-Objekt erzeugen
     noBase* obj = GetNO(pt);
-    delete GetNode(pt).fow[player].object;
-    GetNode(pt).fow[player].object = obj->CreateFOWObject();
+    delete fow.object;
+    fow.object = obj->CreateFOWObject();
 
 
     // Wege speichern, aber nur richtige, keine, die gerade gebaut werden
     for(unsigned i = 0; i < 3; ++i)
     {
         if(GetNode(pt).roads_real[i])
-            GetNode(pt).fow[player].roads[i] = GetNode(pt).roads[i];
+            fow.roads[i] = GetNode(pt).roads[i];
         else
-            GetNode(pt).fow[player].roads[i] = 0;
+            fow.roads[i] = 0;
     }
 
     // Besitzverhältnisse speichern, damit auch die Grenzsteine im FoW gezeichnet werden können
-    GetNode(pt).fow[player].owner = GetNode(pt).owner;
+    fow.owner = GetNode(pt).owner;
     // Grenzsteine merken
     for(unsigned i = 0; i < 4; ++i)
-        GetNode(pt).fow[player].boundary_stones[i] = GetNode(pt).boundary_stones[i];
+        fow.boundary_stones[i] = GetNode(pt).boundary_stones[i];
 }
 
 /// Stellt fest, ob auf diesem Punkt ein Grenzstein steht (ob das Grenzgebiet ist)

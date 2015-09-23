@@ -70,7 +70,7 @@ void iwObservate::Msg_ButtonClick(const unsigned int ctrl_id)
         case 2:
             break;
         case 3:
-            view->GetGameWorldViewer()->MoveToMapObject(
+            view->GetGameWorldViewer().MoveToMapObject(
                 MapPoint(view->GetLastPt() - (view->GetLastPt() - view->GetFirstPt()) / 2)
                 );
             break;
@@ -132,7 +132,7 @@ bool iwObservate::Draw_()
         road.point = MapPoint(0, 0);
         road.start = MapPoint(0, 0);
 
-        view->Draw(GAMECLIENT.GetPlayerID(), NULL, true, view->GetGameWorldViewer()->GetSel(), road);
+        view->Draw(GAMECLIENT.GetPlayerID(), NULL, true, view->GetGameWorldViewer().GetSel(), road);
     }
 
     return(IngameWindow::Draw_());

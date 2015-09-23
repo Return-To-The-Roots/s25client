@@ -51,7 +51,7 @@ iwLobbyConnect::iwLobbyConnect(void)
     AddText(0,  20, 40, _("Username:"), COLOR_YELLOW, 0, NormalFont);
     ctrlEdit* user = AddEdit(1, 260, 40, 220, 22, TC_GREEN2, NormalFont, 15);
     user->SetFocus();
-    user->SetText(SETTINGS.lobby.name);
+    user->SetText(SETTINGS.lobby.name); //-V807
 
     // Passwort
     AddText(2,  20, 70, _("Password:"), COLOR_YELLOW, 0, NormalFont);
@@ -126,7 +126,7 @@ void iwLobbyConnect::LobbyForm(std::string& user, std::string& pass, std::string
     email =  GetCtrl<ctrlEdit>(5)->GetText();
 
     // Name speichern
-    SETTINGS.lobby.name = user;
+    SETTINGS.lobby.name = user; //-V807
 
     // Ist Passwort speichern an?
     if(SETTINGS.lobby.save_password)

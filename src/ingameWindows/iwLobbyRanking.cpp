@@ -56,10 +56,11 @@ void iwLobbyRanking::UpdateRankings(bool first)
             {
                 //const LobbyPlayerInfo *player = rankinglist->getElement(i);
                 char gewonnen[128], verloren[128], punkte[128];
-                snprintf(punkte, 128, "%d", rankinglist->getElement(i)->getPunkte());
-                snprintf(verloren, 128, "%d", rankinglist->getElement(i)->getVerloren());
-                snprintf(gewonnen, 128, "%d", rankinglist->getElement(i)->getGewonnen());
-                rankingtable->AddRow(0, rankinglist->getElement(i)->getName().c_str(), punkte, verloren, gewonnen);
+                const LobbyPlayerInfo& rankInfo = *rankinglist->getElement(i);
+                snprintf(punkte, 128, "%d", rankInfo.getPunkte());
+                snprintf(verloren, 128, "%d", rankInfo.getVerloren());
+                snprintf(gewonnen, 128, "%d", rankInfo.getGewonnen());
+                rankingtable->AddRow(0, rankInfo.getName().c_str(), punkte, verloren, gewonnen);
             }
             if(first)
                 rankingtable->SetSelection(0);

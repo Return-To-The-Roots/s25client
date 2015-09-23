@@ -49,7 +49,8 @@ iwStatistics::iwStatistics()
     numPlayingPlayers = 0;
     for (unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
     {
-        if (GAMECLIENT.GetPlayer(i).ps == PS_KI || GAMECLIENT.GetPlayer(i).ps == PS_OCCUPIED)
+        PlayerState plState = GAMECLIENT.GetPlayer(i).ps;
+        if (plState == PS_KI || plState == PS_OCCUPIED)
             numPlayingPlayers++;
     }
 

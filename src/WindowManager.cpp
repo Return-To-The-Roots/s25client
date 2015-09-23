@@ -360,19 +360,20 @@ void WindowManager::Msg_LeftDown(MouseCoords mc)
     }
 
     // ist das zuletzt aktiv gewesene Fenster Modal?
-    if( windows.back()->GetModal())
+    IngameWindow& lastActiveWnd = *windows.back();
+    if( lastActiveWnd.GetModal())
     {
         // ja es ist modal, ist der Maus-Klick-Fix aktiv?
         if(!disable_mouse)
         {
             // nein, Msg_LeftDownaufrufen
-            windows.back()->Msg_LeftDown(mc);
+            lastActiveWnd.Msg_LeftDown(mc);
 
             // und allen unten drunter auch Bescheid sagen
-            windows.back()->RelayMouseMessage(&Window::Msg_LeftDown, mc);
+            lastActiveWnd.RelayMouseMessage(&Window::Msg_LeftDown, mc);
 
             // und noch MouseLeftDown vom Fenster aufrufen
-            windows.back()->MouseLeftDown(mc);
+            lastActiveWnd.MouseLeftDown(mc);
         }
 
         // und raus
@@ -382,7 +383,7 @@ void WindowManager::Msg_LeftDown(MouseCoords mc)
     IngameWindow* foundWindow = FindWindowUnderMouse(mc);
 
     // aktives Fenster deaktivieren
-    windows.back()->SetActive(false);
+    lastActiveWnd.SetActive(false);
 
     // Haben wir ein Fenster gefunden gehabt?
     if(foundWindow){

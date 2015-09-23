@@ -197,39 +197,37 @@ void iwBaseWarehouse::Msg_ButtonClick(const unsigned int ctrl_id)
 		case 14: //go to next of same type
 		{
 			//is there at least 1 other building of the same type?
-			if(GAMECLIENT.GetPlayer(wh->GetPlayer()).GetStorehouses().size()>1)
+            const std::list<nobBaseWarehouse*>& storehouses = GAMECLIENT.GetPlayer(wh->GetPlayer()).GetStorehouses();
+			//go through list once we get to current building -> open window for the next one and go to next location
+			for(std::list<nobBaseWarehouse*>::const_iterator it=storehouses.begin(); it != storehouses.end(); ++it)
 			{
-				//go through list once we get to current building -> open window for the next one and go to next location
-				for(std::list<nobBaseWarehouse*>::const_iterator it=GAMECLIENT.GetPlayer(wh->GetPlayer()).GetStorehouses().begin(); it != GAMECLIENT.GetPlayer(wh->GetPlayer()).GetStorehouses().end(); ++it)
+				if((*it)->GetX()==wh->GetX() && (*it)->GetY()==wh->GetY()) //got to current building in the list?
 				{
-					if((*it)->GetX()==wh->GetX() && (*it)->GetY()==wh->GetY()) //got to current building in the list?
+					//close old window, open new window (todo: only open if it isnt already open), move to location of next building
+					Close();
+					++it;
+					if(it == storehouses.end()) //was last entry in list -> goto first												{
+						it=storehouses.begin();
+					gwv->MoveToMapObject((*it)->GetPos());
+					if((*it)->GetBuildingType()==BLD_HEADQUARTERS)
 					{
-						//close old window, open new window (todo: only open if it isnt already open), move to location of next building
-						Close();
-						++it;
-						if(it == GAMECLIENT.GetPlayer(wh->GetPlayer()).GetStorehouses().end()) //was last entry in list -> goto first												{
-							it=GAMECLIENT.GetPlayer(wh->GetPlayer()).GetStorehouses().begin();
-						gwv->MoveToMapObject((*it)->GetPos());
-						if((*it)->GetBuildingType()==BLD_HEADQUARTERS)
-						{
-							iwHQ* nextscrn=new iwHQ(gwv, gi, (*it),_("Headquarters"), 3);
-							nextscrn->Move(x_,y_);
-							WINDOWMANAGER.Show(nextscrn);
-						}
-						else if((*it)->GetBuildingType()==BLD_HARBORBUILDING)
-						{
-							iwHarborBuilding* nextscrn = new iwHarborBuilding(gwv,gi,dynamic_cast<nobHarborBuilding*>((*it)));
-							nextscrn->Move(x_,y_);
-							WINDOWMANAGER.Show(nextscrn);
-						}
-						else if((*it)->GetBuildingType()==BLD_STOREHOUSE) 
-						{
-							iwStorehouse* nextscrn=new iwStorehouse(gwv,gi,dynamic_cast<nobStorehouse*>((*it)));
-							nextscrn->Move(x_,y_);
-							WINDOWMANAGER.Show(nextscrn);
-						}
-						break;
+						iwHQ* nextscrn=new iwHQ(gwv, gi, (*it),_("Headquarters"), 3);
+						nextscrn->Move(x_,y_);
+						WINDOWMANAGER.Show(nextscrn);
 					}
+					else if((*it)->GetBuildingType()==BLD_HARBORBUILDING)
+					{
+						iwHarborBuilding* nextscrn = new iwHarborBuilding(gwv,gi,dynamic_cast<nobHarborBuilding*>((*it)));
+						nextscrn->Move(x_,y_);
+						WINDOWMANAGER.Show(nextscrn);
+					}
+					else if((*it)->GetBuildingType()==BLD_STOREHOUSE) 
+					{
+						iwStorehouse* nextscrn=new iwStorehouse(gwv,gi,dynamic_cast<nobStorehouse*>((*it)));
+						nextscrn->Move(x_,y_);
+						WINDOWMANAGER.Show(nextscrn);
+					}
+					break;
 				}
 			}
 		} break;

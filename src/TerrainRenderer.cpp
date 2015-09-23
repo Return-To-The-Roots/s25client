@@ -285,15 +285,21 @@ void TerrainRenderer::UpdateTriangleColor(const MapPoint pt, const GameWorldView
 {
     unsigned int pos = GetTriangleIdx(pt);
 
-    gl_colors[pos].colors[0].r = gl_colors[pos].colors[0].g = gl_colors[pos].colors[0].b = GetColor(gwv.GetNeighbour(pt, 4));
-    gl_colors[pos].colors[1].r = gl_colors[pos].colors[1].g = gl_colors[pos].colors[1].b = GetColor(pt);
-    gl_colors[pos].colors[2].r = gl_colors[pos].colors[2].g = gl_colors[pos].colors[2].b = GetColor(gwv.GetNeighbour(pt, 5));
+    Color& clr0 = gl_colors[pos].colors[0];
+    Color& clr1 = gl_colors[pos].colors[1];
+    Color& clr2 = gl_colors[pos].colors[2];
+    clr0.r = clr0.g = clr0.b = GetColor(gwv.GetNeighbour(pt, 4));
+    clr1.r = clr1.g = clr1.b = GetColor(pt);
+    clr2.r = clr2.g = clr2.b = GetColor(gwv.GetNeighbour(pt, 5));
 
     ++pos;
 
-    gl_colors[pos].colors[0].r = gl_colors[pos].colors[0].g = gl_colors[pos].colors[0].b = GetColor(pt);
-    gl_colors[pos].colors[1].r = gl_colors[pos].colors[1].g = gl_colors[pos].colors[1].b = GetColor(gwv.GetNeighbour(pt, 4));
-    gl_colors[pos].colors[2].r = gl_colors[pos].colors[2].g = gl_colors[pos].colors[2].b = GetColor(gwv.GetNeighbour(pt, 3));
+    Color& clr3 = gl_colors[pos].colors[0];
+    Color& clr4 = gl_colors[pos].colors[1];
+    Color& clr5 = gl_colors[pos].colors[2];
+    clr3.r = clr3.g = clr3.b = GetColor(pt);
+    clr4.r = clr4.g = clr4.b = GetColor(gwv.GetNeighbour(pt, 4));
+    clr5.r = clr5.g = clr5.b = GetColor(gwv.GetNeighbour(pt, 3));
 
 
     /// Bei Vertexbuffern das die Daten aktualisieren
@@ -654,7 +660,7 @@ void TerrainRenderer::Draw(const GameWorldView& gwv, unsigned int* water)
             Point<int> posOffset;
             MapPoint tP = ConvertCoords(Point<int>(x, y), &posOffset);
 
-            TerrainType t = gwv.GetGameWorldViewer()->GetNode(tP).t1;
+            TerrainType t = gwv.GetGameWorldViewer().GetNode(tP).t1;
             if(posOffset != lastOffset)
                 lastTerrain = 255;
 
@@ -667,7 +673,7 @@ void TerrainRenderer::Draw(const GameWorldView& gwv, unsigned int* water)
                 lastTerrain = t;
             }
 
-            t = gwv.GetGameWorldViewer()->GetNode(tP).t2;
+            t = gwv.GetGameWorldViewer().GetNode(tP).t2;
 
             if(t == lastTerrain)
                 ++sorted_textures[t].back().count;
@@ -895,18 +901,19 @@ void TerrainRenderer::PrepareWaysPoint(PreparedRoads& sorted_roads, const GameWo
 {
     PointI startPos = PointI(GetTerrain(t)) - gwv.GetOffset() + offset;
 
-    Visibility visibility = gwv.GetGameWorldViewer()->GetVisibility(t);
+    GameWorldViewer& gwViewer = gwv.GetGameWorldViewer();
+    Visibility visibility = gwViewer.GetVisibility(t);
 
-	int totalWidth  = gwv.GetGameWorldViewer()->GetWidth()  * TR_W;
-	int totalHeight = gwv.GetGameWorldViewer()->GetHeight() * TR_H;
+	int totalWidth  = gwViewer.GetWidth()  * TR_W;
+	int totalHeight = gwViewer.GetHeight() * TR_H;
 
     // Wegtypen für die drei Richtungen
     for(unsigned dir = 0; dir < 3; ++dir)
     {
-        unsigned char type = gwv.GetGameWorldViewer()->GetVisibleRoad(t, dir, visibility);
+        unsigned char type = gwViewer.GetVisibleRoad(t, dir, visibility);
         if (!type)
             continue;
-        MapPoint ta = gwv.GetGameWorldViewer()->GetNeighbour(t, 3 + dir);
+        MapPoint ta = gwViewer.GetNeighbour(t, 3 + dir);
 
         PointI endPos = PointI(GetTerrain(ta)) - gwv.GetOffset() + offset;
         PointI diff = startPos - endPos;
@@ -936,8 +943,8 @@ void TerrainRenderer::PrepareWaysPoint(PreparedRoads& sorted_roads, const GameWo
             case RoadSegment::RT_DONKEY:
             case RoadSegment::RT_NORMAL:
             {
-                TerrainType t1 = gwv.GetGameWorldViewer()->GetTerrainAround(t, dir + 2);
-                TerrainType t2 = gwv.GetGameWorldViewer()->GetTerrainAround(t, dir + 3);
+                TerrainType t1 = gwViewer.GetTerrainAround(t, dir + 2);
+                TerrainType t2 = gwViewer.GetTerrainAround(t, dir + 3);
 
                 // Prüfen, ob Bergwege gezeichnet werden müssen, indem man guckt, ob der Weg einen
                 // Berg "streift" oder auch eine Bergwiese

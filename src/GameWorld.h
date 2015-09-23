@@ -90,7 +90,7 @@ struct MapNode
     /// Bauqualität
     BuildingQuality bq;
     /// Visuelle Sachen für alle Spieler, die in Zusammenhang mit dem FoW stehen
-    struct
+    struct FoWData
     {
         /// Zeit (GF-Zeitpunkt), zu der, der Punkt zuletzt aktualisiert wurde
         unsigned last_update_time;
@@ -104,7 +104,8 @@ struct MapNode
         unsigned char owner;
         /// Grenzsteine (der Punkt, und dann jeweils nach rechts, unten-links und unten-rechts die Zwischensteine)
         unsigned char boundary_stones[4];
-    } fow[MAX_PLAYERS];
+    };
+    FoWData fow[MAX_PLAYERS];
 
     /// Meeres-ID, d.h. zu welchem Meer gehört dieser Punkt (0 = kein Meer)
     unsigned short sea_id;
@@ -526,7 +527,7 @@ class GameWorldView
         GameWorldView(const MapPoint pt, unsigned short width, unsigned short height);
         ~GameWorldView();
 
-        GameWorldViewer* GetGameWorldViewer() const {return(gwv);}
+        GameWorldViewer& GetGameWorldViewer() const {return *gwv;}
         void SetGameWorldViewer(GameWorldViewer* viewer);
 
 

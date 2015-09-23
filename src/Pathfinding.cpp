@@ -706,32 +706,33 @@ bool GameWorldBase::FindPathOnRoads(const noRoadNode* const start,  const noRoad
                     continue;
 
                 // Knoten schon auf dem Feld gebildet?
-                if (scs[i].dest->last_visit == current_visit_on_roads)
+                noRoadNode& dest = *scs[i].dest;
+                if (dest.last_visit == current_visit_on_roads)
                 {
                     // Dann nur ggf. Weg und Vorgänger korrigieren,  falls der Weg kürzer ist
-                    if (cost < scs[i].dest->cost)
+                    if (cost < dest.cost)
                     {
-                        scs[i].dest->dir_ = 100;
-                        scs[i].dest->cost = cost;
-                        scs[i].dest->prev = best;
-                        scs[i].dest->estimate = scs[i].dest->targetDistance + cost;
-                        todo.rearrange(scs[i].dest);
+                        dest.dir_ = 100;
+                        dest.cost = cost;
+                        dest.prev = best;
+                        dest.estimate = dest.targetDistance + cost;
+                        todo.rearrange(&dest);
                     }
 
                     continue;
                 }
 
                 // Alles in Ordnung,  Knoten kann gebildet werden
-                scs[i].dest->last_visit = current_visit_on_roads;
+                dest.last_visit = current_visit_on_roads;
 
-                scs[i].dest->dir_ = 100;
-                scs[i].dest->prev = best;
-                scs[i].dest->cost = cost;
+                dest.dir_ = 100;
+                dest.prev = best;
+                dest.cost = cost;
 
-                scs[i].dest->targetDistance = CalcDistance(scs[i].dest->GetPos(),  goal->GetPos());
-                scs[i].dest->estimate = scs[i].dest->targetDistance + cost;
+                dest.targetDistance = CalcDistance(dest.GetPos(),  goal->GetPos());
+                dest.estimate = dest.targetDistance + cost;
 
-                todo.push(scs[i].dest);
+                todo.push(&dest);
             }
         }
     }

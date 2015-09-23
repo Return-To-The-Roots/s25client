@@ -267,15 +267,13 @@ void GameWorldBase::Unload()
     }
 
     // Figuren vernichten
-    for(unsigned i = 0; i < map_size; ++i)
+    for(std::vector<MapNode>::iterator itNode = nodes.begin(); itNode != nodes.end(); ++itNode)
     {
-        if(!nodes[i].figures.empty())
-        {
-            for(std::list<noBase*>::iterator it = nodes[i].figures.begin(); it != nodes[i].figures.end(); ++it)
-                delete (*it);
+        std::list<noBase*>& nodeFigures = itNode->figures;
+        for(std::list<noBase*>::iterator it = nodeFigures.begin(); it != nodeFigures.end(); ++it)
+            delete (*it);
 
-            nodes[i].figures.clear();
-        }
+        nodeFigures.clear();
     }
 
     catapult_stones.clear();

@@ -96,35 +96,36 @@ GameClientPlayer::GameClientPlayer(const unsigned playerid):
     }
 
     // Standardverteilung der Waren
-    GAMECLIENT.visual_settings.distribution[0] = distribution[GD_FISH].percent_buildings[BLD_GRANITEMINE] = 3;
-    GAMECLIENT.visual_settings.distribution[1] = distribution[GD_FISH].percent_buildings[BLD_COALMINE] = 5;
-    GAMECLIENT.visual_settings.distribution[2] = distribution[GD_FISH].percent_buildings[BLD_IRONMINE] = 7;
-    GAMECLIENT.visual_settings.distribution[3] = distribution[GD_FISH].percent_buildings[BLD_GOLDMINE] = 10;
+    std::vector<unsigned char>& visDistribution = GAMECLIENT.visual_settings.distribution;
+    visDistribution[0] = distribution[GD_FISH].percent_buildings[BLD_GRANITEMINE] = 3;
+    visDistribution[1] = distribution[GD_FISH].percent_buildings[BLD_COALMINE] = 5;
+    visDistribution[2] = distribution[GD_FISH].percent_buildings[BLD_IRONMINE] = 7;
+    visDistribution[3] = distribution[GD_FISH].percent_buildings[BLD_GOLDMINE] = 10;
 
-    GAMECLIENT.visual_settings.distribution[4] = distribution[GD_GRAIN].percent_buildings[BLD_MILL] = 5;
-    GAMECLIENT.visual_settings.distribution[5] = distribution[GD_GRAIN].percent_buildings[BLD_PIGFARM] = 3;
-    GAMECLIENT.visual_settings.distribution[6] = distribution[GD_GRAIN].percent_buildings[BLD_DONKEYBREEDER] = 2;
-    GAMECLIENT.visual_settings.distribution[7] = distribution[GD_GRAIN].percent_buildings[BLD_BREWERY] = 3;
-    GAMECLIENT.visual_settings.distribution[8] = distribution[GD_GRAIN].percent_buildings[BLD_CHARBURNER] = 3;
+    visDistribution[4] = distribution[GD_GRAIN].percent_buildings[BLD_MILL] = 5;
+    visDistribution[5] = distribution[GD_GRAIN].percent_buildings[BLD_PIGFARM] = 3;
+    visDistribution[6] = distribution[GD_GRAIN].percent_buildings[BLD_DONKEYBREEDER] = 2;
+    visDistribution[7] = distribution[GD_GRAIN].percent_buildings[BLD_BREWERY] = 3;
+    visDistribution[8] = distribution[GD_GRAIN].percent_buildings[BLD_CHARBURNER] = 3;
 
-    GAMECLIENT.visual_settings.distribution[9] = distribution[GD_IRON].percent_buildings[BLD_ARMORY] = 8;
-    GAMECLIENT.visual_settings.distribution[10] = distribution[GD_IRON].percent_buildings[BLD_METALWORKS] = 4;
+    visDistribution[9] = distribution[GD_IRON].percent_buildings[BLD_ARMORY] = 8;
+    visDistribution[10] = distribution[GD_IRON].percent_buildings[BLD_METALWORKS] = 4;
 
-    GAMECLIENT.visual_settings.distribution[11] = distribution[GD_COAL].percent_buildings[BLD_ARMORY] = 8;
-    GAMECLIENT.visual_settings.distribution[12] = distribution[GD_COAL].percent_buildings[BLD_IRONSMELTER] = 7;
-    GAMECLIENT.visual_settings.distribution[13] = distribution[GD_COAL].percent_buildings[BLD_MINT] = 10;
+    visDistribution[11] = distribution[GD_COAL].percent_buildings[BLD_ARMORY] = 8;
+    visDistribution[12] = distribution[GD_COAL].percent_buildings[BLD_IRONSMELTER] = 7;
+    visDistribution[13] = distribution[GD_COAL].percent_buildings[BLD_MINT] = 10;
 
-    GAMECLIENT.visual_settings.distribution[14] = distribution[GD_WOOD].percent_buildings[BLD_SAWMILL] = 8;
-    GAMECLIENT.visual_settings.distribution[15] = distribution[GD_WOOD].percent_buildings[BLD_CHARBURNER] = 3;
+    visDistribution[14] = distribution[GD_WOOD].percent_buildings[BLD_SAWMILL] = 8;
+    visDistribution[15] = distribution[GD_WOOD].percent_buildings[BLD_CHARBURNER] = 3;
 
-    GAMECLIENT.visual_settings.distribution[16] = distribution[GD_BOARDS].percent_buildings[BLD_HEADQUARTERS] = 10;
-    GAMECLIENT.visual_settings.distribution[17] = distribution[GD_BOARDS].percent_buildings[BLD_METALWORKS] = 4;
-    GAMECLIENT.visual_settings.distribution[18] = distribution[GD_BOARDS].percent_buildings[BLD_SHIPYARD] = 2;
+    visDistribution[16] = distribution[GD_BOARDS].percent_buildings[BLD_HEADQUARTERS] = 10;
+    visDistribution[17] = distribution[GD_BOARDS].percent_buildings[BLD_METALWORKS] = 4;
+    visDistribution[18] = distribution[GD_BOARDS].percent_buildings[BLD_SHIPYARD] = 2;
 
-    GAMECLIENT.visual_settings.distribution[19] = distribution[GD_WATER].percent_buildings[BLD_BAKERY] = 6;
-    GAMECLIENT.visual_settings.distribution[20] = distribution[GD_WATER].percent_buildings[BLD_BREWERY] = 3;
-    GAMECLIENT.visual_settings.distribution[21] = distribution[GD_WATER].percent_buildings[BLD_PIGFARM] = 2;
-    GAMECLIENT.visual_settings.distribution[22] = distribution[GD_WATER].percent_buildings[BLD_DONKEYBREEDER] = 3;
+    visDistribution[19] = distribution[GD_WATER].percent_buildings[BLD_BAKERY] = 6;
+    visDistribution[20] = distribution[GD_WATER].percent_buildings[BLD_BREWERY] = 3;
+    visDistribution[21] = distribution[GD_WATER].percent_buildings[BLD_PIGFARM] = 2;
+    visDistribution[22] = distribution[GD_WATER].percent_buildings[BLD_DONKEYBREEDER] = 3;
 
     RecalcDistribution();
 
@@ -1893,50 +1894,51 @@ unsigned GameClientPlayer::GetRemainingPactTime(const PactType pt, const unsigne
 
 /// Gibt Einverständnis, dass dieser Spieler den Pakt auflösen will
 /// Falls dieser Spieler einen Bündnisvorschlag gemacht hat, wird dieser dagegen zurückgenommen
-void GameClientPlayer::CancelPact(const PactType pt, const unsigned char other_player)
+void GameClientPlayer::CancelPact(const PactType pt, const unsigned char otherPlayerIdx)
 {
     // Besteht bereits ein Bündnis?
-    if(pacts[other_player][pt].accepted)
+    if(pacts[otherPlayerIdx][pt].accepted)
     {
         // Vermerken, dass der Spieler das Bündnis auflösen will
-        pacts[other_player][pt].want_cancel = true;
+        pacts[otherPlayerIdx][pt].want_cancel = true;
 
         // Will der andere Spieler das Bündnis auch auflösen?
-        if(GAMECLIENT.GetPlayer(other_player).pacts[playerid][pt].want_cancel)
+        GameClientPlayer& otherPlayer = GAMECLIENT.GetPlayer(otherPlayerIdx);
+        if(otherPlayer.pacts[playerid][pt].want_cancel)
         {
             // Dann wird das Bündnis aufgelöst
-            pacts[other_player][pt].accepted = false;
-            pacts[other_player][pt].duration = 0;
-            pacts[other_player][pt].want_cancel = false;
+            pacts[otherPlayerIdx][pt].accepted = false;
+            pacts[otherPlayerIdx][pt].duration = 0;
+            pacts[otherPlayerIdx][pt].want_cancel = false;
 
-            GAMECLIENT.GetPlayer(other_player).pacts[playerid][pt].accepted = false;
-            GAMECLIENT.GetPlayer(other_player).pacts[playerid][pt].duration = 0;
-            GAMECLIENT.GetPlayer(other_player).pacts[playerid][pt].want_cancel = false;
+            otherPlayer.pacts[playerid][pt].accepted = false;
+            otherPlayer.pacts[playerid][pt].duration = 0;
+            otherPlayer.pacts[playerid][pt].want_cancel = false;
 
             // Den Spielern eine Informationsnachricht schicken
-            if(GAMECLIENT.GetPlayerID() == playerid || GAMECLIENT.GetPlayerID() == other_player)
+            if(GAMECLIENT.GetPlayerID() == playerid || GAMECLIENT.GetPlayerID() == otherPlayerIdx)
             {
                 // Anderen Spieler von sich aus ermitteln
-                unsigned char client_other_player = (GAMECLIENT.GetPlayerID() == playerid) ? other_player : playerid;
+                unsigned char client_other_player = (GAMECLIENT.GetPlayerID() == playerid) ? otherPlayerIdx : playerid;
                 GAMECLIENT.SendPostMessage(new DiplomacyPostInfo(client_other_player, DiplomacyPostInfo::CANCEL, pt));
             }
 
             // Ggf. den GUI Bescheid sagen, um Sichtbarkeiten etc. neu zu berechnen
             if(pt == TREATY_OF_ALLIANCE && (GAMECLIENT.GetPlayerID() == playerid
-                                            || GAMECLIENT.GetPlayerID() == other_player))
+                                            || GAMECLIENT.GetPlayerID() == otherPlayerIdx))
             {
                 if(gwg->GetGameInterface())
                     gwg->GetGameInterface()->GI_TreatyOfAllianceChanged();
             }
         }
         // Ansonsten den anderen Spieler fragen, ob der das auch so sieht
-        else if(other_player == GAMECLIENT.GetPlayerID())
-            GAMECLIENT.SendPostMessage(new DiplomacyPostQuestion(pacts[other_player][pt].start, playerid, pt));
+        else if(otherPlayerIdx == GAMECLIENT.GetPlayerID())
+            GAMECLIENT.SendPostMessage(new DiplomacyPostQuestion(pacts[otherPlayerIdx][pt].start, playerid, pt));
     }
     else
     {
         // Es besteht kein Bündnis, also unseren Bündnisvorschlag wieder zurücknehmen
-        pacts[other_player][pt].duration = 0;
+        pacts[otherPlayerIdx][pt].duration = 0;
     }
 }
 

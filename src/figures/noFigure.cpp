@@ -226,17 +226,19 @@ bool noFigure::CalcFigurRelative(int& x, int& y)
 
     if(GetCurMoveDir() == 1 && (gwg->GetNO(nb)->GetType() == NOP_BUILDINGSITE || gwg->GetNO(nb)->GetType() == NOP_BUILDING))
     {
-        x2 += gwg->GetSpecObj<noBaseBuilding>(nb)->GetDoorPointX();
-        y2 += gwg->GetSpecObj<noBaseBuilding>(nb)->GetDoorPointY();
-        x += gwg->GetSpecObj<noBaseBuilding>(nb)->GetDoorPointX();
-        y += gwg->GetSpecObj<noBaseBuilding>(nb)->GetDoorPointY();
+        noBaseBuilding* bld = gwg->GetSpecObj<noBaseBuilding>(nb);
+        x2 += bld->GetDoorPointX();
+        y2 += bld->GetDoorPointY();
+        x += bld->GetDoorPointX();
+        y += bld->GetDoorPointY();
     }
     else if(gwg->GetNO(this->pos)->GetType() == NOP_BUILDINGSITE || gwg->GetNO(this->pos)->GetType() == NOP_BUILDING)
     {
-        x1 += gwg->GetSpecObj<noBaseBuilding>(this->pos)->GetDoorPointX();
-        y1 += gwg->GetSpecObj<noBaseBuilding>(this->pos)->GetDoorPointY();
-        x += gwg->GetSpecObj<noBaseBuilding>(this->pos)->GetDoorPointX();
-        y += gwg->GetSpecObj<noBaseBuilding>(this->pos)->GetDoorPointY();
+        noBaseBuilding* bld = gwg->GetSpecObj<noBaseBuilding>(this->pos);
+        x1 += bld->GetDoorPointX();
+        y1 += bld->GetDoorPointY();
+        x += bld->GetDoorPointX();
+        y += bld->GetDoorPointY();
     }
 
     // Wenn die Träger runterlaufne, muss es andersrum sein, da die Träger dann immer vom OBEREN Punkt aus gezeichnet werden

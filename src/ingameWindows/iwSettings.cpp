@@ -101,7 +101,7 @@ iwSettings::iwSettings(dskGameInterface* gameDesktop)
 iwSettings::~iwSettings()
 {
     ctrlComboBox* SizeCombo = GetCtrl<ctrlComboBox>(0);
-    SETTINGS.video.fullscreen_width = video_modes[SizeCombo->GetSelection()].width;
+    SETTINGS.video.fullscreen_width = video_modes[SizeCombo->GetSelection()].width; //-V807
     SETTINGS.video.fullscreen_height = video_modes[SizeCombo->GetSelection()].height;
 
     // Auflösung/Vollbildmodus geändert?

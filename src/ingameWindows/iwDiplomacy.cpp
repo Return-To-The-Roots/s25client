@@ -77,14 +77,15 @@ iwDiplomacy::iwDiplomacy()
 
     for(unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
     {
-        if(GAMECLIENT.GetPlayer(i).ps == PS_KI || GAMECLIENT.GetPlayer(i).ps == PS_OCCUPIED)
+        GameClientPlayer& player = GAMECLIENT.GetPlayer(i);
+        if(player.ps == PS_KI || player.ps == PS_OCCUPIED)
         {
             // Einzelne Spielernamen
             AddText(100 + i, LINE_DISTANCE_TO_MARGINS + 10, FIRST_LINE_Y + i * (CELL_HEIGHT + SPACE_HEIGHT) + CELL_HEIGHT / 2,
-                    GAMECLIENT.GetPlayer(i).name, COLORS[GAMECLIENT.GetPlayer(i).color], glArchivItem_Font::DF_VCENTER,
+                    player.name, COLORS[player.color], glArchivItem_Font::DF_VCENTER,
                     NormalFont);
 
-            if(GAMECLIENT.GetPlayer(i).ps == PS_OCCUPIED)
+            if(player.ps == PS_OCCUPIED)
                 // Ping
                 AddDeepening(200 + i, LINE_DISTANCE_TO_MARGINS + PING_FIELD_POS - PING_FIELD_WIDTH / 2,
                              FIRST_LINE_Y + i * (CELL_HEIGHT + SPACE_HEIGHT) + CELL_HEIGHT / 2 - 11, PING_FIELD_WIDTH, 22, TC_GREY, "0", NormalFont, COLOR_YELLOW);

@@ -522,40 +522,40 @@ void GameClient::OnNMSPlayerList(const GameMessage_Player_List& msg)
 {
     for(unsigned int i = 0; i < players.getCount(); ++i)
     {
-        players[i].ps = msg.gpl[i].ps;
-        players[i].name = msg.gpl[i].name;
-        players[i].origin_name = msg.gpl[i].origin_name;
-        players[i].is_host = msg.gpl[i].is_host;
-        players[i].nation = msg.gpl[i].nation;
-        players[i].team = msg.gpl[i].team;
-        players[i].color = msg.gpl[i].color;
-        players[i].ping = msg.gpl[i].ping;
-        players[i].rating = msg.gpl[i].rating;
-        players[i].ps = msg.gpl[i].ps;
-        if(players[i].ps == PS_KI)
+        GameClientPlayer& player = players[i];
+        const GameServerPlayer& msgPlayer = msg.gpl[i];
+        player.ps = msgPlayer.ps;
+        player.name = msgPlayer.name;
+        player.origin_name = msgPlayer.origin_name;
+        player.is_host = msgPlayer.is_host;
+        player.nation = msgPlayer.nation;
+        player.team = msgPlayer.team;
+        player.color = msgPlayer.color;
+        player.ping = msgPlayer.ping;
+        player.rating = msgPlayer.rating;
+        player.ps = msgPlayer.ps;
+        if(player.ps == PS_KI)
         {
-            if(!strncmp(players[i].name.c_str(), "Computer", 7))
+            if(!strncmp(player.name.c_str(), "Computer", 7))
             {
-                players[i].aiInfo = AI::Info(AI::DEFAULT, AI::EASY);
-                players[i].rating = 666;
+                player.aiInfo = AI::Info(AI::DEFAULT, AI::EASY);
+                player.rating = 666;
             }
             else
             {
-                players[i].aiInfo = AI::Info(AI::DUMMY, AI::EASY);
-                players[i].rating = 0;
+                player.aiInfo = AI::Info(AI::DUMMY, AI::EASY);
+                player.rating = 0;
             }
         }
 
-        GamePlayerInfo* player = players.getElement(i);
-
         if(ci)
-            ci->CI_PSChanged(i, player->ps);
+            ci->CI_PSChanged(i, player.ps);
 
-        if(player->ps == PS_KI)
+        if(player.ps == PS_KI)
         {
-            player->ready = true;
+            player.ready = true;
             if(ci)
-                ci->CI_ReadyChanged(i, player->ready);
+                ci->CI_ReadyChanged(i, player.ready);
         }
     }
 
