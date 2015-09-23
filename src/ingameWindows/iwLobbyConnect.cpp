@@ -271,7 +271,7 @@ void iwLobbyConnect::Msg_OptionGroupChange(const unsigned int ctrl_id, const uns
  *
  *  @author FloSoft
  */
-void iwLobbyConnect::SetText(std::string text, unsigned int color, bool button)
+void iwLobbyConnect::SetText(const std::string& text, unsigned int color, bool button)
 {
     ctrlText* t = GetCtrl<ctrlText>(9);
     ctrlButton* b = GetCtrl<ctrlButton>(7);

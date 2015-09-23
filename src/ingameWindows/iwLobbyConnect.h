@@ -41,7 +41,7 @@ class iwLobbyConnect : public IngameWindow, public LobbyInterface
         void Msg_OptionGroupChange(const unsigned int ctrl_id, const unsigned short selection);
 
     private:
-        void SetText(std::string text, unsigned int color, bool button);
+        void SetText(const std::string& text, unsigned int color, bool button);
         void LobbyForm(std::string& user, std::string& pass, std::string& email);
 };
 

@@ -221,7 +221,7 @@ void iwDirectIPCreate::SetText(const std::string& text, unsigned int color, bool
  *
  *  @author FloSoft
  */
-void iwDirectIPCreate::LC_Status_Error(std::string error)
+void iwDirectIPCreate::LC_Status_Error(const std::string& error)
 {
     ctrlEdit* name = GetCtrl<ctrlEdit>(1);
     ctrlEdit* port = GetCtrl<ctrlEdit>(3);

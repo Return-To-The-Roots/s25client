@@ -32,7 +32,7 @@ class ctrlTab : public Window
         ctrlTab(Window* parent, unsigned int id, unsigned short x, unsigned short y, unsigned short width);
 
         /// fügt eine Tab hinzu.
-        ctrlGroup* AddTab(glArchivItem_Bitmap* image, std::string tooltip, const unsigned int id);
+        ctrlGroup* AddTab(glArchivItem_Bitmap* image, const std::string& tooltip, const unsigned int id);
         /// löscht alle Tabs.
         void DeleteAllTabs(void);
         /// aktiviert eine bestimmte Tabseite.

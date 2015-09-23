@@ -123,7 +123,7 @@ bool ctrlTab::Msg_MouseMove(const MouseCoords& mc)
  *
  *  @author OLiver
  */
-ctrlGroup* ctrlTab::AddTab(glArchivItem_Bitmap* image, std::string tooltip, const unsigned int id)
+ctrlGroup* ctrlTab::AddTab(glArchivItem_Bitmap* image, const std::string& tooltip, const unsigned int id)
 {
     if(tab_count < MAX_TAB_COUNT)
     {

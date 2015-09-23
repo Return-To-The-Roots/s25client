@@ -47,18 +47,18 @@ static char THIS_FILE[] = __FILE__;
 noBaseBuilding::noBaseBuilding(const NodalObjectType nop, const BuildingType type, const MapPoint pos, const unsigned char player)
     : noRoadNode(nop, pos, player), type_(type), nation(GAMECLIENT.GetPlayer(player).nation), door_point_x(1000000), door_point_y(DOOR_CONSTS[GAMECLIENT.GetPlayer(player).nation][type])
 {
-
+    MapPoint flagPt = gwg->GetNeighbour(pos, 4);
     // Evtl Flagge setzen, wenn noch keine da ist
-    if(gwg->GetNO(gwg->GetNeighbour(pos, 4))->GetType() != NOP_FLAG)
+    if(gwg->GetNO(flagPt)->GetType() != NOP_FLAG)
     {
         // ggf. vorherige Objekte löschen
-        noBase* no = gwg->GetSpecObj<noBase>(gwg->GetNeighbour(pos, 4));
+        noBase* no = gwg->GetSpecObj<noBase>(flagPt);
         if(no)
         {
             no->Destroy();
             delete no;
         }
-        gwg->SetNO(new noFlag(gwg->GetNeighbour(pos, 4), player), gwg->GetNeighbour(pos, 4));
+        gwg->SetNO(new noFlag(flagPt, player), flagPt);
     }
 
     // Straßeneingang setzen (wenn nicht schon vorhanden z.b. durch vorherige Baustelle!)
@@ -70,14 +70,14 @@ noBaseBuilding::noBaseBuilding(const NodalObjectType nop, const BuildingType typ
         // immer von Flagge ZU Gebäude (!)
         std::vector<unsigned char> route(1, 1);
         // Straße zuweisen
-        gwg->GetSpecObj<noRoadNode>(gwg->GetNeighbour(pos, 4))->routes[1] = // der Flagge
+        gwg->GetSpecObj<noRoadNode>(flagPt)->routes[1] = // der Flagge
             routes[4] = // dem Gebäude
-                new RoadSegment(RoadSegment::RT_NORMAL, gwg->GetSpecObj<noRoadNode>(gwg->GetNeighbour(pos, 4)), this, route);
+                new RoadSegment(RoadSegment::RT_NORMAL, gwg->GetSpecObj<noRoadNode>(flagPt), this, route);
     }
     else
     {
         // vorhandene Straße der Flagge nutzen
-        noFlag* flag = gwg->GetSpecObj<noFlag>(gwg->GetNeighbour(pos, 4));
+        noFlag* flag = gwg->GetSpecObj<noFlag>(flagPt);
 
         assert(flag->routes[1]);
         routes[4] = flag->routes[1];

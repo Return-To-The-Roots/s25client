@@ -164,7 +164,7 @@ class GameClient : public Singleton<GameClient>, public GameMessageInterface, pu
         /// Gibt Pathfinding-Results zurück aus einem Replay
         bool ReadPathfindingResult( unsigned char* dir, unsigned* length, MapPoint* next_harbor);
 
-        void SystemChat(std::string text);
+        void SystemChat(const std::string& text);
         
         void ToggleHumanAIPlayer();
     private:

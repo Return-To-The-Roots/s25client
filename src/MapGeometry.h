@@ -25,6 +25,6 @@ unsigned CalcRawDistance(const int x1, const int y1,
                          const int x2, const int y2);
 
 
-Point<int> GetPointAround(Point<int> p, unsigned dir);
+Point<int> GetPointAround(const Point<int>& p, unsigned dir);
 
 #endif //!MAP_GEOMETRY_H_

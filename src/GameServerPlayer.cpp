@@ -104,7 +104,7 @@ void GameServerPlayer::doTimeout()
 // setzt den Player auf "reserviert"
 // @param sock Socket
 // @param id Spieler-ID                                                        */
-void GameServerPlayer::reserve(Socket sock, unsigned char id)
+void GameServerPlayer::reserve(const Socket& sock, unsigned char id)
 {
     clear();
 

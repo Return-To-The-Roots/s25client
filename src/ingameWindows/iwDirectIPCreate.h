@@ -38,7 +38,7 @@ class iwDirectIPCreate : public IngameWindow, public LobbyInterface
     public:
         iwDirectIPCreate(unsigned int server_type);
 
-        void LC_Status_Error(std::string error);
+        void LC_Status_Error(const std::string& error);
 
     protected:
         void Msg_EditChange(const unsigned int ctrl_id);

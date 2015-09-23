@@ -157,7 +157,7 @@ class TerrainRenderer
         float GetBColor(const MapPoint pt, unsigned char triangle) { return GetVertex(pt).border[triangle].color; }
 
         /// Zeichnet die Wege
-        void PrepareWaysPoint(PreparedRoads& sorted_roads, const GameWorldView& gwv, MapPoint t, PointI offset);
+        void PrepareWaysPoint(PreparedRoads& sorted_roads, const GameWorldView& gwv, MapPoint t, const PointI& offset);
 
         void DrawWays(const PreparedRoads& sorted_roads);
 

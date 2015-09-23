@@ -897,7 +897,7 @@ struct GL_T2F_C3F_V3F_Struct
     GLfloat x, y, z;
 };
 
-void TerrainRenderer::PrepareWaysPoint(PreparedRoads& sorted_roads, const GameWorldView& gwv, MapPoint t, PointI offset)
+void TerrainRenderer::PrepareWaysPoint(PreparedRoads& sorted_roads, const GameWorldView& gwv, MapPoint t, const PointI& offset)
 {
     PointI startPos = PointI(GetTerrain(t)) - gwv.GetOffset() + offset;
 

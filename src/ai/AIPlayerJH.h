@@ -258,7 +258,7 @@ class AIPlayerJH : public AIBase
         void HandleNewColonyFounded(const MapPoint pt);
 
         /// Sends a chat messsage to all players
-        void Chat(std::string message);
+        void Chat(const std::string& message);
 
         /// check expeditions (order new / cancel)
         void CheckExpeditions();

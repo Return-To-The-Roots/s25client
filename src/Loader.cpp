@@ -296,7 +296,7 @@ bool Loader::LoadSounds(void)
     ListDir(GetFilePath(FILE_PATHS[50]), false, NULL, NULL, &liste);
 
     unsigned int i = 0;
-    sng_lst.alloc(unsigned(liste.size()));
+    sng_lst.alloc(liste.size());
     for(std::list<std::string>::iterator it = liste.begin(); it != liste.end(); ++it)
     {
         libsiedler2::ArchivInfo sng;

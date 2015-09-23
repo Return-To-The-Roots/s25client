@@ -1793,7 +1793,7 @@ void AIPlayerJH::MilUpgradeOptim()
 }
 
 
-void AIPlayerJH::Chat(std::string message)
+void AIPlayerJH::Chat(const std::string& message)
 {
     GameMessage_Server_Chat chat = GameMessage_Server_Chat(playerid, CD_ALL, message);
     GAMESERVER.AIChat(chat);

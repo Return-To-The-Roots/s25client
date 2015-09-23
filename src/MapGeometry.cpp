@@ -34,7 +34,7 @@ unsigned CalcRawDistance(const int x1, const int y1,
     //return dy + std::max(0,dx+((dy&1)-dy)/2);
 }
 
-Point<int> GetPointAround(Point<int> p, unsigned dir)
+Point<int> GetPointAround(const Point<int>& p, unsigned dir)
 {
     switch(dir)
     {

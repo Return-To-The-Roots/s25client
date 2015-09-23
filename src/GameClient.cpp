@@ -1935,7 +1935,7 @@ void GameClient::SkipGF(unsigned int gf)
 
 }
 
-void GameClient::SystemChat(std::string text)
+void GameClient::SystemChat(const std::string& text)
 {
     ci->CI_Chat(playerId_, CD_SYSTEM, text);
 }
