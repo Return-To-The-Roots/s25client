@@ -171,7 +171,7 @@ bool ctrlStatisticTable::Draw_()
         // Font Height = 12
         unsigned box_height = ScaleY(40);
         unsigned height_center_offset = (box_height / 2) - (12/2);
-        Window::DrawRectangle(GetX(), GetY() + (i+1) * s.y_grid - height_center_offset, width, box_height, (COLORS[_players[i].color] & 0x00FFFFFF) | 0x40000000);
+        Window::DrawRectangle(GetX(), GetY() + (i+1) * s.y_grid - height_center_offset, width_, box_height, (COLORS[_players[i].color] & 0x00FFFFFF) | 0x40000000);
     }
     SetScale(true);
     DrawControls();
@@ -186,7 +186,7 @@ void ctrlStatisticTable::Msg_ButtonClick(const unsigned int ctrl_id)
 {
     if (ctrl_id > 1 && ctrl_id < _columns.size() + 1)
     {
-        parent->Msg_StatisticGroupChange(id, ctrl_id - 1);
+        parent_->Msg_StatisticGroupChange(id_, ctrl_id - 1);
     }
 }
 

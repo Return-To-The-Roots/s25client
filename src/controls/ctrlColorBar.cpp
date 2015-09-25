@@ -60,15 +60,15 @@ bool ctrlColorBar::Draw_(void)
         percentage = 100;
 
     // Box zeichnen
-    Draw3D(GetX(), GetY(), width, height, tc, 2);
+    Draw3D(GetX(), GetY(), width_, height_, tc, 2);
 
     // Fortschritt zeichnen
-    DrawRectangle(GetX() + 4, GetY() + 4, (width - 8)*percentage / 100, height - 8, _bar_color);
+    DrawRectangle(GetX() + 4, GetY() + 4, (width_ - 8)*percentage / 100, height_ - 8, _bar_color);
 
     // Text zeichnen
     char caption[256];
     sprintf(caption, "%u", _value);
-    font->Draw(GetX() + width / 2, GetY() + height / 2, caption, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, text_color);
+    font->Draw(GetX() + width_ / 2, GetY() + height_ / 2, caption, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, text_color);
 
     return true;
 }

@@ -361,7 +361,7 @@ ctrlColorButton* Window::AddColorButton(unsigned int id, unsigned short x, unsig
 
 ctrlColorBar* Window::AddColorBar(unsigned int id, unsigned short x,unsigned short y, unsigned short width, unsigned short height, TextureColor tc, unsigned int text_color, glArchivItem_Font* font, unsigned int bar_color, const unsigned value, const unsigned max_value)
 {
-    if(scale)
+    if(scale_)
     {
         x = ScaleX(x);
         y = ScaleY(y);
@@ -818,7 +818,7 @@ ctrlStatisticTable* Window::AddStatisticTable(unsigned int id,
 {
     ctrlStatisticTable* ctrl;
 
-    if(scale)
+    if(scale_)
     {
         x = ScaleX(x);
         y = ScaleY(y);
